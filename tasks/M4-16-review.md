@@ -1423,3 +1423,105 @@ were out of scope for this pass and are not claimed. No capture available to me
 exercises a bounce.
 
 M4-16 remains unaccepted.
+
+## Narrow confirmation pass — candidate `a16b88c` — 14 September 2026
+
+**Reviewing model: Claude Opus 5**, same reviewer and isolated checkout. Exact
+candidate `a16b88c`, range `9a3c504..a16b88c` (`adbbeb3` in that range is
+documentation). Scoped as requested: the two probe residuals, finding 6, the two
+couplings and the class number. Broad suites deliberately not re-run.
+
+### Verdict: all four confirmed closed. Approve this round.
+
+**Probe residuals — closed, reproduced four ways.**
+
+| reproduction | rc | result |
+| --- | --- | --- |
+| `freeze --first X --second X` | 1 | `a freeze needs two independent captures, not one directory twice` |
+| `freeze` with `consumed_at_frame` stripped from a copied report | 1 | `probe predates the consumption assertion; recapture before freezing` |
+| `native` with the field stripped | 1 | `probe predates the consumption assertion; recapture before comparing` |
+| `native` on my genuine pre-hardening event-21 report | 1 | same refusal — the bypass I demonstrated last round is gone |
+| `freeze` on the genuine event-8 pair | 0 | still accepted; the tightening is not over-tight |
+
+The capture's new cursors-meet refusal cites `$81C5CD-C5D0`, and that citation is
+exact: I disassembled it as `CPY $0D11` / `BEQ $81C5ED`, the opponent enqueue's
+return-without-publishing when the write cursor already equals the read cursor.
+(The same routine at `$81C5D5-C5E3` clears `$0CA7` and `$12E5` for events below
+22; `$12E5` is guarded at zero throughout, so that branch is never taken — which
+is what justifies `enqueue_zoom_opponent` omitting it, and this time the cited
+guard really does exist.)
+
+**Finding 6 — closed at the restore, and provably unable to refuse a reachable
+state.**
+
+The check walks `(read_cursor+1)&31` until it meets `write_cursor`. That set is
+*exactly* the set the consumer will read before the queue reports empty,
+including the degenerate `read == write` case, where both the check and the
+consumer traverse the same 31 slots. So it is structurally closed under one
+update rather than approximately so.
+
+Empirically, over **79,500 frames of my 12 independent captures** (1376 to each
+capture's last frame):
+
+- opponent pending-zero occurrences with `read != write`: **0**, at pending
+  depths up to 30;
+- frames with `read == write`: 3,876, of which **640 are inside the race window
+  1376-6723**; in every one of those 640 all 31 consumable slots are non-zero
+  (they saturate with event 39, the opponent finish publication, from frame
+  6565);
+- player pending-zero occurrences, as an accepted control: 0.
+
+Driven through the runner rather than only measured:
+
+| state | rc | result |
+| --- | --- | --- |
+| published zero in the opponent ring | 1 | `empty pending ZOOM ZOO opponent reward` at **restore**, 0 frames emitted — previously accepted, then thrown at frame 1722 |
+| same slot holding event 1 | 0 | restores and runs |
+| `read == write == 24` with all 31 consumable slots = 39, the exact shape the original reaches at 6565+ | **0** | **accepted and runs** |
+| the same state with one of those slots zeroed | 1 | rejected |
+
+That last pair is the point: the rejection discriminates the forged state from
+the reachable degenerate one rather than refusing both.
+
+**The 216-255 coupling — recording it is the right call, and I would not widen
+the guards.** I agree with the decision and would argue against the alternative.
+The race guards assert things about the *original's* authenticated timeline, and
+are checked before native evaluation; their purpose is to stop a capture that
+reaches unmodelled gameplay. `$7E21C9-$7E21D8` qualifies, because 200-215 is
+produced, does reach the reward path, and the model's correctness depends on
+those sixteen bytes. `$7E21D9` upward does not: nothing in the original can hand
+the consumer an event in 216-255, since the producer emits `200+(x&15)`. A guard
+there would block otherwise valid captures for a condition that is not a
+modelling gap — a false-positive generator. Guarding exactly the load-bearing
+range and recording the coupling is the principled line.
+
+One optional improvement, not blocking: the coupling is stated at the consumer
+branch, but the clause that actually enforces it is the entry-domain check
+`event>=72 && (event<200 || event>215)` in `deserialize_zoom_zoo`. A one-line
+cross-reference there would make the pair discoverable from either side.
+
+**Finding 7's coupling** is now recorded at the player weight bound, naming the
+`$82D7A4` template as the thing a future pack change must revisit. Adequate.
+
+**Class number — corrected and independently re-confirmed.** `tasks/M4-16.md`
+now reads "event 17 | class 34 counted at `$770819`" and records that 24 is
+event 18's class at `$770805`. That matches my measurements exactly: event 17
+increments `$770819` 0 to 1 with the feature total `$770825` unchanged; event 18
+increments `$770805` 0 to 1, its paired accumulator `$770807` 0 to 4 and the
+feature total `$770825` 4 to 8.
+
+### Commands for this pass
+
+| Command | rc | Result |
+| --- | --- | --- |
+| `cmake --build build/app-debug -j4` | 0 | 17 steps, all targets relinked |
+| `ctest --test-dir build/app-debug` | 0 | **21/21 passed, 0 failed** |
+| `probe native --probe rev2-probe-e8-a` on the closure binary `ed1de830...` | 0 | **passed, 9/9 observations**, `consumed_at_frame` 1722 — the closures changed no reachable behaviour |
+| five restore-domain states through `zoom_zoo_runner --seed` | 0 / 1 | all five as intended, table above |
+| four probe-residual reproductions plus the genuine-pair control | 1,1,1,1 / 0 | table above |
+| 12-capture pending-ring scan, 79,500 frames | 0 | zero violations; 640 in-race degenerate states all fully published |
+| disassembly of `$81C5C9-C5EA` | — | confirms the cited `$81C5CD-C5D0` publication limit |
+
+Broad suites, sanitizers, DRAGSTER native regressions, live controls and visuals
+were out of scope for this pass at the coordinator's request and are not
+claimed. M4-16 remains unaccepted on its own open product evidence.
