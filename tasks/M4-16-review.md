@@ -1186,3 +1186,28 @@ build and test were never chained.
   interventions sit at frame 1718 on that timeline.
 
 M4-16 remains unaccepted.
+
+### Addendum — both refuted claims have since propagated into tracked records
+
+Checked after the review above was written. `codex/m4-16-playable-zoom-zoo` has
+advanced to `7d1904d`; the three commits after the reviewed candidate
+(`5f850a5`, `825adf7`, `7d1904d`) are documentation only and change no source,
+so every finding above still applies to the branch tip unchanged. But `5f850a5`
+copied both refuted claims out of the code comments and into the project's
+tracked evidence:
+
+- `docs/research/R-0035-zoom-zoo-playable-recovery.md`: "The domain test
+  `$81C238` is a **signed** comparison with 72." Refuted by finding 1 —
+  `CMP #$48` followed by `BMI` is an N-flag test taken for 0-71 and 200-255,
+  and injecting event 150 into the original leaves the reward path's class
+  counter untouched while event 205 increments `$770801`.
+- `tasks/M4-16.md`: the overrun weight range "`$7E21C9-$7E21D8` ... is already
+  an explicit zero guard in `zoom-zoo-race-guards.reference.json`". Refuted by
+  finding 5 — that file has 82 items whose highest address is `0x150B` and none
+  covers `0x21C9-0x21D8`. The parenthetical in the same sentence is correct:
+  `$12E5` is guarded at zero (item `{address: 4837, width: 2, value: 0}`),
+  which makes the neighbouring false claim easier to mistake for verified.
+
+Findings 1 and 5 therefore escalate: they are no longer only source comments
+but the recorded research and task evidence, which is exactly what a later
+reader would rely on. Correct both records alongside the code.
