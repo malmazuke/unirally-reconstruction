@@ -1696,3 +1696,180 @@ a stable result (`result_updates == 115`, which saturates per
 restarted race verified clean at 0/3 and 0:00.00. Telemetry for that run must
 show non-zero `result updates` and `restarts`, and the reporter must say whether
 the tail counters describe the completed or the restarted race.
+
+## 2026-09-15 (retry) — Result/restart boundary exercised on c179765
+
+Reviewing model: **Claude Opus 5**. Candidate: `c179765` ("Make the pause menu's
+selected entry visible"), the current tip of local `codex/m4-16-playable-zoom-zoo`
+— note that `origin/codex/m4-16-playable-zoom-zoo` is still at `2a0ca8c`, so
+`c179765` is **unpushed** at the time of this review. Same checkout and same
+`local/classic-crawler-two-tracks-v5-review.pack`. `cmake --build build/app-debug -j4`
+returned 0.
+
+### Verdict
+
+**Acceptance item 5's reviewer clause is now SATISFIED.** I independently
+exercised live controls and a complete result/restart boundary: a full three-lap
+race under held keyboard input, through to the result screen, `ENTER` at the
+stable result, and a restarted race verified clean at 0/3 and 0:00.00.
+
+**However, `c179765` must not be accepted as it stands.** The fix it makes is
+correct, but it introduces a rendering regression that degrades every piece of UI
+text in the game, including the result screen this criterion depends on. Details
+in "Regression" below. Item 5 is satisfied as a *reviewer activity*; item 6's
+readable-scene requirement is now in a worse state than before `c179765`.
+
+### The `>` marker fix is confirmed
+
+Pausing now renders the selection marker on the focused entry. The menu reads
+`PAUSED / >[ ]RESUME / [ ][ ]RESTART[ ]RACE / UP[ ]DOWN[ ]-[ ]ENTER`. Your
+diagnosis was right: the marker was being emitted and silently dropped. Pausing
+also freezes the race clock, which stayed at `0:49.06` across captures.
+
+### Regression introduced by c179765 — every space now renders as a box
+
+`ui_glyph` has no `case ' '`. Space fell through to `default`, and the old
+`default` returned an all-zero bitmap, so spaces rendered blank **by accident**.
+`c179765` changed `default` to the box `{31,17,17,17,17,17,31}` so that a missing
+glyph is visible. Space is a missing glyph, so **every space in every `ui_text`
+string now draws a box.** Observed on screen, verbatim as rendered:
+
+```
+RUNNER[ ]UP
+PLAYER[ ][ ][ ][ ][ ][ ][ ][ ][ ]TOTAL[ ][ ][ ][ ][ ]BEST[ ]LAP
+LAPS[ ]ON[ ]ZOOM[ ]ZOO
+ENTER[ ]TO[ ][ ]RACE[ ]AGAIN
+```
+
+The audit that "found `'>'` was the only missing character" looked for missing
+*visible* characters; it could not see that the one character deliberately
+rendering as nothing was also relying on the unmapped path.
+
+This is worse than cosmetic, for two reasons. First, it affects the result
+screen, the pause menu and the column headers — exactly the authored UI the visual
+criteria require to stay readable. Second, the box glyph and `'O'` differ only in
+their top and bottom rows (`11111` vs `01110`) at 5x7, so a boxed space is easily
+misread as a letter: `LAPS ON ZOOM ZOO` renders ambiguously. The change intended
+to make omissions obvious instead makes them look like content.
+
+Fix is one line, alongside the new `'>'` case:
+
+```cpp
+case ' ':return {0,0,0,0,0,0,0};
+```
+
+The box default is still the right idea and should stay; space simply has to be a
+mapped glyph that happens to be blank, rather than an unmapped one.
+
+### A control-delivery fact worth recording
+
+Discrete key taps are invisible to this frontend, regardless of transport.
+`sdl_main` drains every pending SDL event in its `SDL_PollEvent` loop before it
+samples `input.snapshot()`, so a down and up delivered in the same frame set and
+clear the bit with no update in between. A display-scope `key` press of `Return`
+did nothing; the same key delivered as a 0.2 s `hold_key` opened the pause menu
+immediately. Every press in this pass — jumps and `ENTER` included — was
+therefore delivered as a short hold.
+
+This also **corrects my previous entry**: the two `Z` jumps I logged on 2a0ca8c
+were sent as instantaneous taps and most likely never registered as jumps at all,
+even though the telemetry counted their key events. I should not have claimed a
+jump there. In this pass the jump is visually confirmed — rider and unicycle
+clearly airborne above the track.
+
+### What I saw on screen
+
+Race start shows `READY`, then `GO`; the clock holds at `0:00.00` through
+`READY`, which is what makes the clean-restart check capturable.
+
+Result screen, read directly off the display (spaces shown as rendered boxes
+above, omitted here):
+
+| | TOTAL | BEST LAP |
+| --- | --- | --- |
+| MIKE | 2:35.24 | 0:32.04 |
+| BRONSEN | 1:38.15 | 0:32.50 |
+
+Winner text: **RUNNER UP** — BRONSEN won on total, and the player (MIKE) placed
+second. The lap chart plotted red markers for MIKE and yellow for BRONSEN against
+an axis labelled `1:20.87` at the top and `0:32.04` at the bottom, and the footer
+read `LAPS ON ZOOM ZOO` above `ENTER TO RACE AGAIN`.
+
+MIKE's 2:35.24 total is **not** a clean competitive time: it includes roughly 49 s
+of pre-ride idle and paused menu time before I began riding, which inflates lap
+one (the `1:20.87` outlier on the chart). The meaningful figure is the best lap,
+`0:32.04`, which beat BRONSEN's `0:32.50`. The result screen correctly ranks on
+total, so RUNNER UP is the right outcome for that race.
+
+After `ENTER` at the stable result: lap counter **0/3**, clock **0:00.00**,
+`READY` displayed, rider at the start line. The restarted race begins clean.
+
+### Verbatim exit telemetry (retry run)
+
+```
+Classic pack validated: "local/classic-crawler-two-tracks-v5-review.pack"
+PAL scheduler: 50 Hz, maximum catch-up 4 updates
+Audio is intentionally not implemented in M3.
+Presentation note: unsupported intermediate rider poses use the last recovered rider art while the scene stays current.
+Presentation frames: 12008; rider-pose fallback frames: 10338; identical consecutive redraws: 3382; longest identical run: 1555; identical fallback race redraws: 1720; longest identical fallback race run: 1373
+Live input: mapped key down/up 21/22; nonzero updates 5221; simultaneous updates 0; neutral updates after input 4124; focus losses/active clears 3/0
+Final native state: updates 12004; frame 2116; controller-0 mask 0; player x 9077; velocity x 328
+ZOOM ZOO result updates 0; restarts 1; totals 60000/60000
+Opponent tricks: updates 48; multi-axis updates 0; selectors seen 0
+```
+
+Quit with the window's real close button, so the process exited normally and
+flushed this. Not killed.
+
+### Reading the counters
+
+**These counters describe the restarted race, not the completed one.** I quit
+while riding the second race, so `result updates 0` and `totals 60000/60000`
+describe that unfinished restart. The completed race is evidenced by what I saw
+on screen and reported above, not by these tails.
+
+- `restarts 1` is the restart boundary being crossed, and it is the one tail
+  counter here that refers to the completed race's result screen.
+- `mapped key down/up 21/22` has **one more up than down**, which is not noise: the
+  restart branch in `sdl_main` consumes the `ENTER` `KEY_DOWN` and `break`s before
+  reaching the `mapped_key_down_events` increment, while the later `KEY_UP` is
+  still counted. The asymmetry is the signature of the restart having been taken
+  through the **result-screen path** specifically, not the pause-menu path.
+- `nonzero updates 5221` at 50 Hz is 104.4 s of genuinely held input across both
+  races, consistent with the 101.4 s ride schedule plus jumps and menu holds.
+- `simultaneous updates 0` — combined inputs (brake-plus-steer and similar) remain
+  unexercised by me, in this pass as in the last.
+- `Opponent tricks: updates 48; multi-axis updates 0; selectors seen 0` — still
+  only selector 0, across a **complete three-lap race** this time. See below.
+
+### Findings carried forward
+
+1. **The `df34615` multi-axis AI trick path is still not exercised live.** A full
+   three-lap race produced `multi-axis updates 0` and `selectors seen 0`. The
+   count of 48 is exactly twice the 24 an idle instance produces, which continues
+   to suggest these are start-phase updates independent of play. Whatever
+   `df34615` recovered, **no live run has yet entered it**, so "the repaired
+   multi-axis path running under live input" is not demonstrated by this or any
+   run I have made.
+2. **The result screen is gated on the player finishing, not the first finisher.**
+   You confirmed this matches the original (`brake-a`: opponent 6488, player 6492,
+   result 6733). Recorded here as expected behaviour, not a defect, so a future
+   reviewer does not re-raise it.
+3. The previously fixed "ZOOM ZOO multi-axis AI trick is unrecovered" abort did
+   **not** recur at any point, across a complete race and a restart.
+
+### Commands for this pass
+
+| Command | rc | Result |
+| --- | --- | --- |
+| `git checkout c179765` | 0 | detached at the candidate; note `origin` is still at `2a0ca8c` |
+| `cmake --build build/app-debug -j4` | 0 | rebuilt, rc checked separately |
+| `unirally --content-pack local/classic-crawler-two-tracks-v5-review.pack --track zoom-zoo` | 0 | complete race, result, restart; exited normally on window close |
+
+### Recommendation
+
+Add `case ' ':return {0,0,0,0,0,0,0};` to `ui_glyph`, re-run the frontend and
+confirm the result screen and pause menu read cleanly, then push
+`codex/m4-16-playable-zoom-zoo` so `c179765` and its follow-up exist on origin.
+Item 5's reviewer clause is satisfied and needs no third live pass; item 6 does,
+because the only screens it covers currently render boxes between every word.
