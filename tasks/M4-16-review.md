@@ -1525,3 +1525,255 @@ feature total `$770825` 4 to 8.
 Broad suites, sanitizers, DRAGSTER native regressions, live controls and visuals
 were out of scope for this pass at the coordinator's request and are not
 claimed. M4-16 remains unaccepted on its own open product evidence.
+
+## Opponent multi-axis AI trick review — candidate `df34615` — 15 September 2026
+
+**Reviewing model: Claude Opus 5**, same independent reviewer and isolated
+checkout `.worktrees/m4-16-review`, no inherited implementation context. Exact
+candidate `df34615912fdf0ef3b77530a806577ad6a0a64ee`, range
+`a16b88c..df34615`. My earlier review sections are already integrated at this
+tip, so this appends only the new pass.
+
+### Verdict: approve the recovery, with one required correction
+
+The bit mapping and the rotation-rate claim are both confirmed from the ROM —
+including the part inferred from a differential, which I read directly. I could
+not break the branch: two selectors reached at frames of my own choosing both
+match at 742 bytes. One required correction (a restore bound the removed throws
+were silently providing) and four Low probe/record findings.
+
+### (a) Source verification — both claims confirmed, read not inferred
+
+Disassembled with my own mode-tracking decoder; `$83E1CB` runs under
+`REP #$30` (M=X=0), which the operand widths confirm.
+
+```
+$83E1CB: AD 70 0B     LDA $0B70        ; opponent surface angle
+$83E1CE: D0 1E        BNE $83E1EE      ; sloped -> selector path
+$83E1D0: AD BD 04     LDA $04BD        ; flat: velocity sign
+$83E1D3: 30 0E        BMI $83E1E3
+$83E1D5: A0 01 00     LDY #$0001
+$83E1D8: 8C 2F 03     STY $032F        ; rotate positive
+$83E1DB: A0 01 00     LDY #$0001
+$83E1DE: 8C 75 0C     STY $0C75        ; selector 1
+$83E1E3: A0 01 00     LDY #$0001
+$83E1E6: 8C 2B 03     STY $032B        ; rotate negative
+$83E1E9: 9C 75 0C     STZ $0C75        ; selector 0
+$83E1EE: AD 17 04     LDA $0417        ; sloped: opponent x
+$83E1F1: 29 07 00     AND #$0007
+$83E1F4: 8D 75 0C     STA $0C75        ; selector = x & 7
+$83E1FD: 89 01 00     BIT #$0001 -> STY $032F / STY $032B
+$83E20A: 89 02 00     BIT #$0002 -> STY $031F
+$83E212: 89 04 00     BIT #$0004 -> STY $0323
+```
+
+Bit 0 to the rotation at `$032F`/`$032B`, bit 1 to `$031F`, bit 2 to `$0323`:
+confirmed exactly as recorded. The A/X attribution is independently anchored
+rather than assumed — this project's own playable projection already treats
+`$031D` and `$0321` as the player's A and X (the guard exclusion compares them
+against the controller timeline), so their stride-2 partners are the opponent's.
+
+**The rotation-rate claim, which the record says was inferred from a
+differential, is confirmed directly:**
+
+```
+$82A49F: C2 30        REP #$30
+$82A4AE: AC F9 0F     LDY $0FF9        ; rider selector; measured values 0 and 2
+ positive branch:
+$82A507: A9 02        LDA #$02
+$82A509: 38           SEC
+$82A50A: F9 1D 03     SBC $031D,Y      ; 2 - this rider's own A  -> 2 or 1
+$82A50D: 8D 57 0F     STA $0F57
+ negative branch:
+$82A562: A9 FE        LDA #$FE
+$82A564: 18           CLC
+$82A565: 79 1D 03     ADC $031D,Y      ; 254 + this rider's own A -> 254 or 255
+$82A568: 8D 57 0F     STA $0F57
+```
+
+`$031D,Y` indexed by `$0FF9` is unambiguous: the step is keyed to **each
+rider's** A button. The previous `buttons.a && index==0` was therefore wrong for
+the opponent, and the observed differential (orientation stepping by 2 instead
+of 1, `response_b` 254 against 255) is precisely what that spelling produces.
+The fix is correct. **Confirmed, not refuted.**
+
+Three further claims I checked while there, all correct: `$83E163 EOR #$FFFF /
+INC / LSR / STA $0C6F` is `-velocity_y/2`; `$83E12D LDA $054D / CMP #$0004 /
+BPL` is `unsupported_count >= 4`; `$83E15B LDA $04C1 / BMI` is the upward-velocity
+test. And a structural confirmation the record only asserted: `$83E125 LDA $0C6F
+/ BNE $83E1F7` means that while the impulse runs the original re-enters at
+`$83E1F7` and re-applies **all three** inputs from the retained selector every
+frame — which is exactly why re-deriving A and X from the retained selector each
+update is right, rather than latching them once.
+
+### (b) Attacking the probe
+
+Sound parts: pre-intervention frames are hash-verified in both WRAM and SRAM;
+the intervention is verified to change only bytes of `$770825` and no WRAM at
+all; it refuses a frame that is not under an opponent jump marker or where the
+total is already zero; it has a `fired` assertion that is the proper analogue of
+the reward probe's consumption assertion; `freeze` refuses one directory twice.
+**It cannot pass vacuously in the way the reward probe once could** — the
+`fired` assertion is real and it fired correctly in both of my captures.
+
+Findings:
+
+1. **Low — the lever is not gate-private, and the record says it is.** The
+   docstring calls zeroing `$770825` "exactly the documented gate clause". It is
+   not: scanning the ROM for the long operand `25 08 77` finds **22 sites**
+   across banks `$80`-`$83` — eleven `LDA`-long reads, four `CMP`-long, five
+   `STA`-long and two `ADC`-long, including `$809A62`, `$80C070`, `$80C954`,
+   `$80C9C3/CB`, `$80F2B2`, `$80F2E1`, `$81C3D3`, `$839270`, `$8399E4`,
+   `$83E95C`, `$83EADB`, `$83EAEA`, `$83F8F5` and `$83FAA5` besides the two gate
+   clauses and the reward accumulate. This does not invalidate the comparison —
+   both sides continue from the same value and `feature_total` is inside the
+   742-byte projection — but effects outside the projected inventory would be
+   invisible, and the claim of isolation is stronger than the evidence. Restate
+   it, and an access capture over the probe window would settle which of the 22
+   sites actually execute. I did not run one.
+2. **One SRAM word is nevertheless the more faithful lever, and I would keep
+   it.** Forcing the transition clause instead means writing `$0FCD`/`$0FCF`,
+   which feed `limit.player_progress`/`limit.opponent_progress` in the speed
+   limiter (`movement.cpp:1970-1971`), the progress adjustment at `:838` and the
+   lap/finish logic — perturbing speed and progress directly. The accumulator is
+   the less coupled of the two choices.
+3. **Low — `guards` is loaded and never used.** Line 71 reads the guard manifest
+   into `guards` and nothing consumes it. The sibling reward probe was hardened
+   one commit earlier (`a16b88c`) to fail a capture on any tripped guard; this
+   new tool checks none, so a forced trajectory leaving the guarded original
+   domain would not be flagged.
+4. **Low — `native()` dropped two checks the sibling has.** There is no
+   `timeline_sha256` agreement check between the report and the reference whose
+   timeline generates the controller inputs, so a probe captured on one
+   reference can be compared with another's inputs silently; and there is no
+   per-row frame-label check. The reward probe has both.
+5. **Low — the `fired` heuristic cannot distinguish a fresh selector from a
+   stale one.** It takes the first observation with any of selector/A/X
+   non-zero, and nothing asserts they were all zero immediately before the
+   intervention; when `fired_at_frame` equals the intervention frame, as it did
+   in both of my captures, the two cases are indistinguishable from the report.
+   I established independently that no staleness exists on these timelines
+   (below), so the heuristic is sound here — but unasserted.
+6. **Informational — selector 0 cannot be captured at all.** All three
+   observables are zero for it, so a frame that picks selector 0 fails with
+   "the opponent trick never fired", which is misleading rather than wrong.
+   Selector 0 is the pre-existing naturally reachable path, so coverage is
+   unaffected.
+
+### (c) Reachability bounds
+
+- **The domain really is exactly 0-7.** `$83E1F1 AND #$0007` on the sloped path
+  and the flat path's explicit 0/1 are the only writers of `$0C75` in the block;
+  no ROM path can produce another value, and bits 1 and 2 drive `$031F`/`$0323`
+  and nothing else there.
+- **The native's AI gate is a simplification of a three-way original
+  structure, and it is guard-backed.** `$83E16B LDA $1275 / CMP #$0002` splits
+  into: `< 2`, the clause the native models; `== 2`, a different clause using
+  `$0FCD - $0FCF + 15` and then testing `$04C7 & 7 == 7`; and `> 2`, which sets
+  suppression to `$3C` (60) and picks a trick unconditionally. The native models
+  only `$1275 < 2`. That is sound here because `$1275` is an **existing guard at
+  value 1**, and I measured it as 1 on every frame of two captures (6,225 and
+  8,625 frames) with `$1277` only ever 0 or 30 — never the 60 of the unmodelled
+  mode. A future capture entering those modes fails the guard before native
+  evaluation. Verified rather than a finding, but worth recording since this fix
+  touches the routine.
+- **`index==active` roll gating drops nothing on my evidence.** My selector-6
+  capture sets bit 2 (the X path) and matched 41/41 frames; and the original's
+  `$83E1F7` re-entry re-applies X every frame while the impulse holds, matching
+  the native's per-update re-derivation.
+
+### (d) What the removed throws were silently providing
+
+**Required correction — `opponent_ai.trick_selector` now has no restore
+bound.** Until this candidate, `if(ai.trick_selector&6U)throw` rejected any
+selector with bits 1-2 set the moment the AI consumed it; that throw was the
+only constraint on the field. Nothing in `deserialize_movement_state` or
+`deserialize_zoom_zoo` bounds it. Reproduced from my own frame-5367 original
+state (selector at offset 284, impulse 282, suppression 286):
+
+| forged selector | result |
+| --- | --- |
+| 0, 1, 6, 7 | accepted, run, round-trip unchanged — correct |
+| **8** | accepted, runs 12 frames, round-trips as 8 |
+| **14** | accepted, runs, round-trips as 14 — behaves as 6 |
+| **255** | accepted, runs, round-trips as 255 — behaves as 7 |
+| **65535** | accepted, runs, round-trips as 65535 — behaves as 7 |
+
+The original can only ever store 0-7, so every value above 7 is a state it
+cannot produce; worse, they alias (14 plays as 6, 255 plays as 7), so distinct
+serialized states are indistinguishable in play, which the original never is.
+This is the same class and the same one-line shape as the opponent
+`event_one_weight` bound accepted two rounds ago: bound `trick_selector <= 7` in
+the ZOOM ZOO block. `impulse_countdown` and `suppression_counter` are likewise
+unbounded, but that is pre-existing and untouched by this range.
+
+**The player is untouched.** For index 0, `holding_a` is `buttons.a`, the roll
+press is `buttons.x` and the reflection call is unchanged — textually identical
+to `a16b88c`. Confirmed end to end: the complete case on this candidate
+reproduces `rows_sha256 3113fa666d37944c965e62aac3925504ecc844a1fdf4082e5d9f6985ff62efd1`,
+byte-identical to every previous round. Nothing else in the range relaxes a
+check; the two remaining source diffs are comments.
+
+### (e) Trying to break it — I could not
+
+- **The reachability claim reproduces exactly.** My own independent filter over
+  frames 1651-6400 (marker `& 0x2000`, non-zero `$0B70`, upward `$04C1`,
+  `$054D >= 4`, impulse 0, non-zero `$770825`) yields **exactly 148** frames,
+  matching the recorded figure, of which 122 satisfy every AI precondition.
+- **No natural reach, independently confirmed.** `$0C75` is **0 on every frame
+  of all 12 of my captures** (79,500+ frames); `$031F`/`$0323` are non-zero only
+  after the loading frame, carrying the same `0x4C00`-family values that
+  `$042B` does outside the projected window. So the branch genuinely needs the
+  probe, and there was no stale selector that could have fooled finding 5.
+- **Two selectors at frames of my own choosing, both byte-exact:**
+
+| intervention frame | selector | bits | observations | result |
+| --- | --- | --- | --- | --- |
+| **5367** (a later lap, a different track location entirely) | **6** | A + X, no rotation | 41 | **passed, 742/742 bytes** |
+| **2095** | **3** | rotation + A — the case the rate fix bites | 41 | **passed, 742/742 bytes** |
+
+  The 5367 capture was repeated independently and frozen: `freeze` rc 0 with
+  identical `seed_sha256 c87ecc353bb3da65...` and
+  `rows_sha256 7ac98ff62534835d...`. The selector-3 observations also show the
+  original holding `$031F` at 1 and the rotation asserted on every frame of the
+  impulse, corroborating the re-derivation design.
+- **A usability note from a false start:** intervening at frame 5366 or 3708
+  fails with "the opponent trick never fired", because `$0C6F` is already
+  non-zero there once the gate opens; the correct frame is one after a candidate
+  whose *stored* state meets the preconditions. Not a defect, but the tool gives
+  no hint, which makes frame selection trial-and-error.
+
+### Commands, return codes and counts
+
+Each invoked separately with its own return code inspected; build and test never
+chained.
+
+| Command | rc | Result |
+| --- | --- | --- |
+| `cmake --build build/app-debug -j4` | 0 | 16 steps, all targets relinked, warnings-as-errors on |
+| `ctest --test-dir build/app-debug` | 0 | **21/21 passed, 0 failed** |
+| `zoom_zoo_playable compare` (early-compound-reverse a/b, v11 contract) | 0 | **6,225 states, 739 fresh-process restores**; `source_commit df34615`, binary `edd379f0...`; `rows_sha256 3113fa66...` unchanged |
+| `zoom_zoo_opponent_trick_probe capture --frame 5367 --through 5407` | 0 | selector **6**, multi-axis, fired 5367 |
+| same capture, repeat | 0 | identical seed and rows digests |
+| `... trick_probe freeze` on that pair | 0 | agrees |
+| `... trick_probe native --probe rev4-trick-f5367-a` | 0 | **passed, 41/41 observations** |
+| `... trick_probe capture --frame 2095 --through 2135` | 0 | selector **3** |
+| `... trick_probe native --probe rev4-trick-f2095-a` | 0 | **passed, 41/41 observations** |
+| `... trick_probe capture --frame 5386` / `--frame 5366` | 1 | "never fired" — the false start above |
+| eight forged `trick_selector` states through `zoom_zoo_runner --seed` | 0 | 8, 14, 255 and 65535 all accepted — the required correction |
+| ROM scan for the operand `25 08 77` | 0 | 22 sites, finding 1 |
+| 12-capture scans: `$0C75`, `$031F`, `$0323`, `$1275`, `$1277` | 0 | selector 0 throughout; `$1275` always 1; `$1277` only 0 or 30 |
+| own disassembly of `$83E118-E21F` and `$82A49F-A5A0` | — | claims (a) confirmed |
+
+### Live re-exercise is still owed and is not covered here
+
+Stated plainly rather than treated as covered: this defect was found by a real
+playthrough, and a live frontend re-exercise through lap two is still owed. It
+cannot be done from my session. Everything above is original-versus-native
+differential evidence and restore-domain probing; the six complete cases are not
+a substitute for the live path, and I do not claim them as one. Also not run
+here, as before: `app-sanitize`, the broad and CI suites, and the DRAGSTER
+native regressions, whose `local/native/` prerequisites are still absent from
+this checkout.
+
+M4-16 remains unaccepted.
