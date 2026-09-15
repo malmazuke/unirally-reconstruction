@@ -1525,3 +1525,174 @@ feature total `$770825` 4 to 8.
 Broad suites, sanitizers, DRAGSTER native regressions, live controls and visuals
 were out of scope for this pass at the coordinator's request and are not
 claimed. M4-16 remains unaccepted on its own open product evidence.
+
+## 2026-09-15 — Independent live-control and result/restart exercise (acceptance item 5, reviewer clause)
+
+Reviewing model: **Claude Opus 5**. Candidate under review: `2a0ca8c` ("docs: mark
+the multi-axis AI trick closed in the handover"). Performed in the dedicated
+checkout `.worktrees/m4-16-review`, with its own `build/app-debug` and its own
+`local/classic-crawler-two-tracks-v5-review.pack`. This pass addresses only the
+outstanding clause of acceptance item 5: "Reviewer independently exercises live
+controls and a result/restart boundary."
+
+### Verdict
+
+**NOT SATISFIED.** The clause has two halves. The live-controls half is
+independently demonstrated and evidenced below. The result/restart-boundary half
+is **not** demonstrated: I never reached the result screen, never saw
+"ENTER TO RACE AGAIN", and never restarted. The exit telemetry confirms this
+unambiguously with `result updates 0; restarts 0`. Item 5's reviewer clause
+therefore remains open, and I am not claiming partial credit for it.
+
+### What I could and could not drive
+
+GUI access was obtained through the documented flow, not by hand-granted TCC
+entries: `request_access` for `org.unirally.classic` was granted at tier `full`;
+`request_full_control` timed out on the first attempt (no response to the
+approval card) and was approved on the second.
+
+Display-scope control then worked for roughly 70 seconds of held input and
+**stopped permanently mid-run**. From the tenth ride segment onward every
+display-scope call — including a bare `screenshot` — returned
+`Batch aborted after 0 of N actions (user interrupt)`. This was not a lapsed
+approval and not a stolen-focus modal: `request_full_control` reported the
+approval still live, `release_full_control` + re-request did not clear it, and
+`lsappinfo front` confirmed Unirally (pid 87538) was frontmost throughout. The
+condition persisted for the remainder of the session.
+
+Background `app_*` control is not a substitute for the missing half:
+
+- `app_key` delivers discrete taps, not holds. Riding this loop needs multi-second
+  held arrows; taps cannot produce them.
+- Taps are also unreliable against a 50 Hz sampler. A first background `return`
+  opened the pause menu, but a second identical `return` had no effect at all —
+  consistent with a synthetic down/up landing entirely between two update
+  boundaries, so `input.snapshot()` never observes the key as pressed.
+
+No AppleScript, `osascript` or CGEvent helper was attempted; those are recorded
+dead ends in this project.
+
+### What I did exercise, independently
+
+Pre-flight on a throwaway instance (confirming the input path and the exit path
+before committing to the one-shot run): held `Left` 1.5 s, held `Right` 1.5 s,
+pressed `Z`. The rider visibly moved and the track scrolled under it. A click on
+the red close button exited that instance and printed telemetry, proving the
+quit-and-telemetry path before the real run. (An earlier click of mine landed on
+the yellow button and minimised the window — my aiming error, not an app defect;
+the traffic lights sit ~13.7 px apart.)
+
+The reviewed run, in a **single uninterrupted `computer_batch`**, delivered nine
+complete alternating hold segments plus two jumps at direction boundaries:
+
+`Left 4.4s, Right 12.8s, [Z], Left 3.9s, Right 2.9s, Left 11.1s, Right 13.7s,
+[Z], Left 4.2s, Right 3.2s, Left 11.7s` — 67.9 s of held riding.
+
+The tenth segment (`Right 13.7s`) was aborted by the harness interrupt described
+above, and no further held input was possible.
+
+Separately, via background `app_key`, I exercised **Start**: the pause menu
+rendered `PAUSED / RESUME / RESTART RACE / UP DOWN - ENTER` and the race clock
+froze at `5:27.22` and stayed frozen across subsequent captures, so pause
+genuinely halts the race clock. The menu draws **no visible selection highlight**,
+so a reviewer cannot tell which entry is focused — see findings below.
+
+### What I saw on screen
+
+- The HUD lap counter advanced **0/3 → 2/3** under live input alone. Two of the
+  three laps were completed by held keyboard input, with no fixed mask and no
+  autopilot seam.
+- Direction changes, leaning and the loop geometry all responded: the track
+  scrolled, the rider pitched on the slope, and the start/finish checker, the
+  blue/yellow slope and the green/blue/red track segments rendered legibly.
+- The rider is stationary when no key is held — two captures 3 s apart were
+  pixel-identical in rider position while the clock advanced — so idle time
+  inflates the clock but does not desync the loop.
+- **No abort and no error dialog at any point.** The previously fixed defect
+  "ZOOM ZOO multi-axis AI trick is unrecovered" did **not** recur; the session ran
+  well past lap two, and the opponent completed all three laps.
+- I did **not** see a result screen, winner text, rider totals or best laps,
+  because the race never finished. I am deliberately not reporting any of those.
+
+### Verbatim exit telemetry (reviewed run)
+
+```
+Classic pack validated: "local/classic-crawler-two-tracks-v5-review.pack"
+PAL scheduler: 50 Hz, maximum catch-up 4 updates
+Audio is intentionally not implemented in M3.
+Presentation note: unsupported intermediate rider poses use the last recovered rider art while the scene stays current.
+Presentation frames: 19514; rider-pose fallback frames: 19505; identical consecutive redraws: 3113; longest identical run: 2944; identical fallback race redraws: 3113; longest identical fallback race run: 2944
+Live input: mapped key down/up 16/16; nonzero updates 3566; simultaneous updates 0; neutral updates after input 15437; focus losses/active clears 2/0
+Final native state: updates 19515; frame 20891; controller-0 mask 0; player x 12608; velocity x 0
+ZOOM ZOO result updates 0; restarts 0; totals 60000/9810
+Opponent tricks: updates 24; multi-axis updates 0; selectors seen 0
+```
+
+The app was quit by pressing its real close button (via the accessibility
+`AXCloseButton`, since display-scope clicking was unavailable), so the process
+exited normally and flushed the telemetry. It was not killed.
+
+### Reading the counters
+
+These counters describe **the single unfinished race** that was running — paused
+at lap 2/3 — when I quit. There was no restart, so there is no ambiguity here
+about which race they describe.
+
+- `nonzero updates 3566` at 50 Hz is **71.3 s of genuinely held input**. That
+  corroborates sustained holds rather than taps, and matches the 67.9 s of
+  completed segments plus the partially delivered tenth segment.
+- `mapped key down/up 16/16` is balanced, so no auto-repeat inflation occurred in
+  this run; it is still an event count, not a press count. Sixteen matches twelve
+  display-scope events (nine holds, two jumps, one aborted hold) plus four
+  background taps.
+- `simultaneous updates 0` — correct, I never held two mapped keys at once. This
+  means **combined inputs such as brake-plus-steer remain unexercised by me.**
+- `result updates 0; restarts 0` — the plain evidence that the result/restart
+  boundary was never reached or crossed.
+- `totals 60000/9810` — the **opponent finished** with 9810; the player total is
+  the 60000 did-not-finish sentinel. Notably `result updates` stayed 0 while the
+  opponent was already finished, so the result screen is gated on the *player*
+  finishing, not on the first finisher. A future reviewer should not expect the
+  opponent's finish to end the race.
+- `focus losses/active clears 2/0` — two focus losses occurred, but none while
+  input was active, so no input was silently dropped.
+
+### Findings
+
+1. **Blocking, process not product:** display-scope input could not be sustained
+   for the ~101 s the documented ride schedule requires. The clause cannot be
+   closed by a subagent under these conditions. It is not evidence of a defect in
+   the candidate.
+2. **Product observation — the pause menu has no visible selection indicator.**
+   `PAUSED / RESUME / RESTART RACE` renders with no highlight, cursor or caret on
+   the focused entry, so neither a player nor a reviewer can tell what `ENTER`
+   will choose. `movement.cpp:1504` shows a real `paused_restart` path gated on
+   `pause.selection==0xffff && pause.released`, so the selection state exists and
+   is simply not presented. Worth a defect record against the frontend's
+   provisional HUD/menu artwork.
+3. **The `df34615` multi-axis recovery is still not exercised live.**
+   `Opponent tricks: updates 24; multi-axis updates 0; selectors seen 0` — only
+   selector 0 was ever entered, and the multi-axis branch never ran. An idle
+   12-second control instance produced the *identical* `updates 24`, which
+   suggests these 24 updates are start-phase activity independent of the player.
+   Whatever else is true, this run provides **no live coverage** of the
+   multi-axis AI trick path that `df34615` recovered.
+
+### Commands for this pass
+
+| Command | rc | Result |
+| --- | --- | --- |
+| `git checkout 2a0ca8c3fe91380a3df95df71db24151e3494123` | 0 | detached at the candidate |
+| `cmake --build build/app-debug -j4` | 0 | 17 steps, all targets relinked |
+| `unirally --content-pack local/classic-crawler-two-tracks-v5-review.pack --track zoom-zoo` | 0 | ran, exited normally on window close, telemetry above |
+
+### What is still required to close acceptance item 5
+
+A session that can hold display-scope arrow input for the full ~101 s schedule
+without interruption, and that then demonstrates: the finish and result screen
+(winner text, both riders' totals and best laps read off the screen), `Return` at
+a stable result (`result_updates == 115`, which saturates per
+`movement.cpp:1796`, with the prompt fading in over updates 108-115), and a
+restarted race verified clean at 0/3 and 0:00.00. Telemetry for that run must
+show non-zero `result updates` and `restarts`, and the reporter must say whether
+the tail counters describe the completed or the restarted race.
