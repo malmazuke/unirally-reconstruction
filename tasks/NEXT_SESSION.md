@@ -75,15 +75,19 @@ checkout; without it every historical command exits 2, missing prerequisite.
    `787c549`; the script is recorded in [M4-16](M4-16.md). Re-run it on the
    exact final tip before integration. Never edit tracked files while it runs:
    the tool refuses the mixed run.
-4. **Visual acceptance — independent readability review due.** Original scene
-   identities are frozen in
-   `tests/manifests/presentation/zoom-zoo-playable-v2.json`; private originals
-   are `visual-original-a/b` and `brake-a`, current comparison
-   `opus-resume/visual/comparison.png`. The HUD lap counter was one lap behind
-   and is fixed in `f39a0a9`; the pause `>` marker and the space glyph are fixed
-   in `c179765`/`787c549`. Recorded limitations: missing direction arrow and
-   coaching cue, authored HUD style, rider anchors off by roughly 8-14 pixels,
-   low-salience result graph points.
+4. **Visual acceptance — rider art open (criteria 1 and 3 failed review).**
+   Independent review `bfd41ed` of `06abab7` found six defects. Fixed: the HUD
+   was one update ahead of the original (it now draws from the previous
+   update), the clock ran on after the finish (now FINISH, finish time and
+   WINNER/LOSER), and the track layer sat 1 px low (missing scanline offset).
+   Open: riders are drawn facing right when riding left (D1), the steep-contact
+   anchor is 12-15 px off the wall (D2), and the starting pair draws the
+   opponent upside down (D3). All three come from ZOOM ZOO's rider pose
+   composition not being recovered: the atlas holds five DRAGSTER pose pairs.
+   Then re-review. Originals: `visual-original-a/b`, `brake-a`, and the
+   reviewer's 247 recaptured frames in
+   `.worktrees/m4-16-review/artifacts/m4-16-review/visual-06abab7/original-recapture`.
+   Read HUD values off original frames, never from WRAM alone.
 5. **Result-loading read classification** against the durable
    [persistent-input ledger](../docs/research/M4-16-persistent-input-ledger.md).
    Zero unresolved stores is not zero unresolved reads.
