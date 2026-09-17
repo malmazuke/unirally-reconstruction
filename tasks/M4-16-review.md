@@ -1852,3 +1852,144 @@ follow-up rather than stay only in this record.
 Evidence (ignored): `artifacts/m4-16-final-review/` (`gates/`, `native/`,
 `orig/`, `render/`, `render-batch/`, `render-sanitize/`, `sbs/`, `sbs2/`,
 `harness/`, `rider-pixel-report.json`, `tools/`).
+
+## Re-review — candidate `75626f8` — 17 September 2026
+
+Reviewing model: **Claude Opus 5**, the same fresh reviewer as the round above,
+in `.worktrees/m4-16-final-review`. `review/m4-16-final` could not
+fast-forward past my review commit `9559d0b`, so I merged
+`origin/codex/m4-16-playable-zoom-zoo` (`75626f85f6b4...`, equal to the remote
+ref) as `5ea8444`. `git diff 75626f8 5ea8444 -- src tests tools CMakeLists.txt
+CMakePresets.json` is empty; the merge adds only this file. Gate reports record
+`5ea8444` with an empty source diff for that reason. Started 08:36:03 UTC,
+checks finished 08:57:50 UTC. No implementation file was changed.
+
+### Verdict: approve
+
+Finding 1 (Linux CI) is closed, and hosted CI on the exact candidate passes on
+both platforms. Findings 2 and 3 are fixed exactly and change no other picture.
+Finding 4 is corrected in R-0035 and the task handover. `docs/STATE.md` is
+deferred to integration, which is acceptable if it is done there. Findings 5
+and 6 remain as recorded limitations, which I accept (below). No new blocking
+finding.
+
+### 1. `333fb58` and `36c37f6` compute the same values
+
+- `ui_text`: the one-line body `{glyph; for row for col if(...)pixel(...); x+=6;}`
+  is reformatted into the same statements in the same order. `x+=6` still runs
+  once per character, after both loops.
+- BG1 tile flip: `if(a)px=15-px;if(b)py=15-py;` is split onto two lines.
+  Same statements.
+- HUD clock: the timer digits are `std::uint16_t` and promote to `int`, so the
+  old sum was computed in `int` and converted once to `unsigned`. The largest
+  possible sum is 9*6000+5*1000+9*100+9*10+4*2 = 59,998. It fits both types,
+  so `*6000U` and the other unsigned literals give the same value.
+- `sdl_main.cpp` gamepad counter: the single-line `if` becomes a braced-style
+  three-line block with the same effect.
+- `rider_object.cpp` plane read: `tile[at]` is a `uint8_t` in 0..255, and the
+  shift `bit` is 0..7. `(int)v >> bit & 1U` and `(unsigned)v >> bit & 1U` give
+  the same bit.
+- Observed: the app-debug `zoom_zoo_runner` rebuilt at the new candidate is
+  byte-identical to the `9b43f3c` build (`bd8b913677a3d197`).
+
+### 2. Background camera change
+
+The candidate uses `previous_update->race.camera` whenever the previous update
+is a race state, in place of `camera - velocity`. To check it I linked a
+harness (`artifacts/m4-16-final-review/harness/all_frames.cpp`, `56b9d22f...`)
+twice: once against the preserved `9b43f3c` app-debug libraries and once
+against the new ones. It replays each native timeline as the `--timeline`
+runner does and digests every rendered picture. For each frame it also records
+whether `previous camera == camera - velocity`.
+
+| Timeline | Pictures | Changed | Frames where camera-velocity is not the previous camera |
+| --- | ---: | ---: | ---: |
+| boundary-a (primary) | 6,224 | 0 | 0 |
+| brake-a | 6,224 | 0 | 0 |
+| loss-a | 6,224 | 0 | 0 |
+| compound-reverse-a | 6,224 | 0 | 0 |
+| wrong-way-a | 8,124 | 0 | 0 |
+| pause-a | 6,224 | **11: 6000-6010** | **11: 6000-6010** |
+| stop-timeout-a | 30,924 | 192, all in 31584-31822 (time-out HUD, finding 3) | 0 |
+
+So the camera change alters exactly the pictures whose placement was wrong and
+nothing else, across 70,168 pictures including every result picture.
+
+- **Resume frame 6010** against my digest-checked recapture: 283 of 54,272
+  pixels below the HUD band differ (was 31,094). Their box, `[17,17]-[238,30]`,
+  is the same HUD-glyph box as in unpaused 6011, which has the same 283 count.
+  Luminance correlation at no shift is 0.9974 (was 0.7677).
+- **Paused 6000-6009**: pixel equality stays 0, because the authored dimming
+  and menu panel differ from the original. I measured luminance correlation
+  outside the native HUD band and pause panel (`tools/lumcorr.py`):
+
+  | Placement | Correlation at no shift | Best shift |
+  | --- | --- | --- |
+  | New, every paused frame | 0.9633 | (0,0) |
+  | New, also excluding the original's text rows | 0.9809 | (0,0) |
+  | Old | 0.7289 | 0.9222 at (9,5) |
+
+  My numbers differ from the record's 0.954 / 0.910 at (6,4) because the
+  region differs. The conclusion is the same: the background is now in place
+  under the menu.
+- **Unpaused frames 5995-5999 and 6011-6030** give the same per-frame counts as
+  before. The **frozen visual scenes** reproduce every hash recorded in round
+  one: `0bed1ceb af38a76b 4802eb04 66c713f1 06918740 1d9e5f36 0514f3d7 14c8df70
+  c1d2cffe 4f4c7a6d`, plus brake 6724 `b7706d1d`. So the round-one visual
+  verdicts carry over unchanged.
+- **Previous state equal to the current state** (single-state runner,
+  initialization, live restart): the new rule uses the current camera instead
+  of `camera - velocity`. Those pictures are black under the fade (1376
+  reproduces `0bed1ceb`) until real previous updates exist from 1393, so
+  nothing visible changes.
+
+### 3. Time-out clock (finding 3)
+
+New runner renders of stop-timeout 31582-31700: below the HUD band they are
+identical to round one. The HUD reads `9:59.98` at 31582, which shows update
+31581, before the limit. From 31583 it holds `9:59.90` at 31584, 31586, 31588,
+31600 and 31700, where it had cycled .92/.96/.90/.94/.94. The original shows
+`9:59:9` throughout. `presentation_tests` now sets subframe 3 and expects
+`9:59.90`.
+
+### 4. Gates and CI on this candidate
+
+| Command | rc | Result |
+| --- | --- | --- |
+| `python3 tools/project.py build --preset P` for lab-debug, lab-sanitize, app-debug, app-sanitize | 0 x4 | app-debug presentation runner `98d981c3...` (was `76e7444a`), `zoom_zoo_runner` `bd8b9136...` (unchanged); app-sanitize `zoom_zoo_runner` `ecd485a5...` |
+| `python3 tools/project.py test --suite synthetic --preset P`, all four presets | 0 x4 | **406/406 passed each, 22 ctest, 0 skipped** |
+| `python3 -m tools.unirally_lab.native.zoom_zoo_playable compare --reference <impl>/boundary-a --repeat <impl>/boundary-b --contract tests/manifests/native/zoom-zoo-playable-primary-v11.freeze.json --binary build/app-debug/src/core/zoom_zoo_runner --pack local/classic-crawler-two-tracks-v7.pack --out artifacts/m4-16-final-review/rereview/gates/primary-app-debug.json` | 0 | passed, **rows `b4a34af722b26693...` unchanged**, 1376-7600, 742 bytes, **757 restores**, restart; 6484/6488, loading 6725, visible 6833; 08:38:35-08:44:08 UTC |
+| same with `--binary build/app-sanitize/src/core/zoom_zoo_runner` | 0 | passed, rows `b4a34af7...`, **757 restores**, restart, no sanitizer report; 08:44:08-08:57:50 |
+| same with `<rider-art>/artifacts/m4-16-idle/captures/late-start-a` / `-b`, the idle late-start v11 freeze and app-debug (`gates/idle-direct-app-debug.json`) | 0 | passed, rows `205d1705...`, 1376-8100, **801 restores**, restart; player 7418 / opponent 6488, loading 7659, visible 7767, player_lost; 08:49:14-08:54:29 |
+| app-sanitize `unirally ... --track zoom-zoo --updates 3000 --hidden --fixed-controller-mask 128` | 0 | 2,089 frames through the live renderer, 0 pose fallbacks, no sanitizer output |
+| `gh run view 35200514079` | - | head `75626f85f6b4...`, **completed success**: `lab (ubuntu-24.04)` success, including "Build and test with sanitizers (Linux)"; `lab (macos-15)` success. No failed or skipped checks; the only `[missing]` lines are the optional pre-bootstrap doctor items |
+| `gh run view 35197851820` (`36c37f6`) | - | success on both platforms |
+
+The idle late-start gate on app-sanitize was still queued behind my gate
+script when this section was written, so it is not claimed. The implementer
+reports it for the `51c05f6` gameplay code. The runner is unchanged since then,
+and its app-debug binary is byte-identical.
+
+### Remaining minor findings: accepted as limitations
+
+- **Opponent finish time also shown after both finish.** Accepted. It is
+  original decoration, which criterion 2 excludes, and the record now covers
+  the whole period from the opponent's finish.
+- **Centred finish text early.** Accepted: the values are correct and it lasts
+  two to three pictures. Two precision notes for the record. My round-one
+  "6488" was slightly late: in the recapture the finish-time row first appears
+  at 6487, partly covered by the flag, and WINNER at 6488. The task record says
+  the original's banner "slides in over several frames". Measured, the text
+  rows stay at y 43 and 83 from 6487/6488 on; what animates is the flag
+  sweeping across them, so the visible width of the text changes. Native shows
+  both from 6485.
+
+### Minor residuals, non-blocking, for closeout
+
+- `docs/STATE.md` is still stale; the record assigns it to integration.
+- `tasks/NEXT_SESSION.md` line 36 still says "405 synthetic checks"; it is 406.
+
+Evidence (ignored): `artifacts/m4-16-final-review/rereview/` (`gates/`,
+`frames/`, `render/`, `render-pause/`, `render-timeout/`, test reports,
+`pause-a-6005.png`, `pause-a-6010.png`, `timeout-hud.png`) and the preserved
+`harness/libs-9b43f3c/`.
