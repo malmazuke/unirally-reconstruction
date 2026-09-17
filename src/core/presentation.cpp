@@ -1110,16 +1110,16 @@ std::span<const std::uint8_t> dragster_window_table(
 }
 
 namespace {
-// Frames since the winning rider's finish, counted so that the finishing frame
-// itself is 0. `record_finish` stamps that frame; the banner's first displayed
-// frame is the next one.
-std::optional<std::uint32_t> frames_since_winner_finish(const RaceFinishState& finish) {
+// Updates since the winning rider's finish: 0 on the update that records it.
+// The banner driver runs from the next update, so it starts one frame later.
+std::optional<std::uint32_t> updates_since_winner_finish(const RaceFinishState& finish) {
     if(finish.outcome==RaceOutcome::PlayerWon) {
         // The player owns the global finish delay, so its count is exact for
-        // the whole banner: 1..240 while it runs, then the loading updates.
-        if(finish.phase==RacePhase::FinishDelay)return finish.player_finish_delay;
-        if(finish.phase==RacePhase::ResultLoading && finish.result_loading_updates)
-            return 239U+finish.result_loading_updates;
+        // the whole banner: 0..240, held at 240 once result loading starts,
+        // which is the last update on which the driver runs.
+        if(finish.phase==RacePhase::FinishDelay ||
+           (finish.phase==RacePhase::ResultLoading && finish.result_loading_updates))
+            return finish.player_finish_delay;
         return std::nullopt;
     }
     if(finish.outcome==RaceOutcome::PlayerLost) {
@@ -1127,7 +1127,7 @@ std::optional<std::uint32_t> frames_since_winner_finish(const RaceFinishState& f
         // state while its 120-update finish animation counter runs (R-0040
         // records this bound and the cheapest way to lift it).
         const auto remaining=finish.finish_animation_countdown[1];
-        if(remaining==0)return std::nullopt;
+        if(remaining==0 || remaining>120U)return std::nullopt;
         return 120U-remaining;
     }
     return std::nullopt;
@@ -1135,16 +1135,28 @@ std::optional<std::uint32_t> frames_since_winner_finish(const RaceFinishState& f
 } // namespace
 
 std::optional<unsigned> dragster_window_table_index(const MovementState& state) {
-    const auto frame=state.frame;
+    // The race vblank, and with it the channel-6 setup, runs for the last time
+    // on result-loading update 1, so from update 2 the original keeps that
+    // update's selection. This is the frame whose selection is on screen, as
+    // `apply_dragster_palette_cycle` freezes the palette phase the same way.
+    const auto& loading_finish=state.finish;
+    const bool loading=loading_finish.phase==RacePhase::ResultLoading &&
+                       loading_finish.result_loading_updates!=0;
+    if(loading && loading_finish.result_loading_updates-1U>state.frame)
+        return std::nullopt;
+    const auto frame=loading?state.frame-(loading_finish.result_loading_updates-1U)
+                            :state.frame;
     // The winner banner replaces the countdown family; the two never overlap in
     // a race the countdown can hold at the line.
-    if(const auto since=frames_since_winner_finish(state.finish)) {
-        if(*since>=1U && *since<=winner_window_frames) {
-            const auto start=frame-*since;
+    if(const auto since=updates_since_winner_finish(state.finish)) {
+        // The driver's first update is the one after the finish, and the
+        // selection it makes is on screen on the following frame.
+        const auto first_driver_frame=frame+1U-*since;
+        if(*since>=2U && *since<=winner_window_frames+1U) {
             // $0300 alternates every frame ($83:CCED), and the index advances
             // only when it is set, so the step count is the number of odd
-            // logic frames from the finish through the frame before this one.
-            const auto steps=frame/2U-start/2U;
+            // driver frames from its first through the frame before this one.
+            const auto steps=frame/2U-first_driver_frame/2U;
             return winner_window_first+
                    static_cast<unsigned>(steps%winner_window_cycle);
         }
