@@ -93,9 +93,10 @@ untuned latest variations, representative frozen visual checks, and actual live
 complete race/result/restart with independent reviewer input exercise.
 
 Prototype rendering uses original track/background, prior camera, native HUD and
-result values. Rider art retains the last recovered pair as in DRAGSTER, but
-ZOOM ZOO fallback/anchor/readability still needs quantitative and independent
-visual acceptance. Audio is excluded by task scope. Current app exit diagnostics
+result values. Rider objects are now composed from the original pose frames,
+reflection flip, OAM projection and look overlays ([R-0036](R-0036-zoom-zoo-rider-objects.md),
+branch `codex/m4-16-rider-art`, unreviewed); independent visual re-review of
+D1-D3 is still required. Audio is excluded by task scope. Current app exit diagnostics
 still print generic movement race status for ZOOM ZOO; its separate result line
 is more informative, but diagnostics need correction. Gamepad is untested.
 

@@ -183,3 +183,21 @@ finish collision-pose selectors. `update_zoom_checkpoint`, `update_zoom_camera`,
 source order documented by [R-0034](../../docs/research/R-0034-zoom-zoo-race-completion.md).
 This is a seed-based simulation laboratory, not a ZOOM ZOO frontend or native
 race initializer. Existing `URZZ0001` and `URZZ0002` contracts remain supported.
+
+## ZOOM ZOO rider objects (R-0036)
+
+`rider_object.hpp/.cpp` composes one 64x64 rider OBJ as `$83:F0FF` builds it:
+a pose index selects a frame of five six-bit row masks and tile references in
+the packed `$20:8000` pointers, `$23-$26` frames and `$27-$3F` tiles; an
+optional overlay frame replaces covered slots; a row clip drops a wrapping
+row. `project_rider_oam` reproduces `$82:ACAC` for the one-player race
+(reflection is the horizontal flip) and `draw_rider_object` draws with the
+PPU's vertical wrap. Unknown poses and references throw.
+
+`rider_look.hpp/.cpp` reproduces the presentation-only look animation
+(`$82:836D-$82:8926`) and overlay choice (`$83:EC8E`). The serialized race
+does not carry its state, so `ZoomZooRiderLookTracker` in `presentation.hpp`
+follows consecutive updates for the live frontend and the runner's
+`--timeline` mode. `rider_presentation_tests` pins the mapping with synthetic
+tables; private validation against eight original WRAM series is in R-0036.
+
