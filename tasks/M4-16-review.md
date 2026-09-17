@@ -1873,3 +1873,239 @@ confirm the result screen and pause menu read cleanly, then push
 `codex/m4-16-playable-zoom-zoo` so `c179765` and its follow-up exist on origin.
 Item 5's reviewer clause is satisfied and needs no third live pass; item 6 does,
 because the only screens it covers currently render boxes between every word.
+
+## 2026-09-17 - Visual acceptance assessment, criteria 1-3, candidate 06abab7
+
+Reviewing model: **Claude Opus 5**. Scope: the visual contract
+`tests/manifests/presentation/zoom-zoo-playable-v2.json`, criteria 1-3 only.
+Criterion 4 (live evidence) is out of scope. No implementation was changed and
+nothing in `.worktrees/m4-16-playable-zoom-zoo` was modified; files there were
+only read.
+
+### Candidate and build identity
+
+- Candidate: `06abab7886e57ff6c45deb540b57c6d855388da4`
+  (`origin/codex/m4-16-playable-zoom-zoo`), merged into this review branch as
+  `c71ddf8`. `git diff 06abab7 -- src tests tools CMakeLists.txt
+  CMakePresets.json` is empty; the only difference is this file.
+- `cmake --preset app-debug && cmake --build --preset app-debug`: rc 0,
+  Apple clang 17.0.0. `zoom_zoo_presentation_runner` SHA-256 `22662cff...`,
+  `libunirally_presentation.a` `0946c9ba...`, `libunirally_frontend.a`
+  `22cb5bc9...`.
+- Pack: `.worktrees/m4-16-playable-zoom-zoo/local/classic-crawler-two-tracks-v5.pack`,
+  SHA-256 `b9c5f0ea...`, opened read-only.
+
+### Input authentication
+
+- All 20 frozen original PNGs (`visual-original-a` and `-b`, nine scenes each;
+  `brake-a` and `brake-b` frame 7000) match the manifest SHA-256 exactly.
+- `visual-original-a/reference.json` and `boundary-a/reference.json` carry the
+  same timeline digest `f3ab533d...`, so `boundary-a-native.txt` is the matching
+  native timeline. `brake-a` is the `late-brake-loss` variation (`c02c2a0b...`).
+- Independent original recapture: a reviewer script replayed the same primary
+  timeline on the authenticated bsnes core/ROM (identity asserted, timeline
+  digest `f3ab533d...` reproduced) and kept 247 extra frames. Its frames 1376,
+  1450, 1649, 3208, 4840, 6484 and 7000 are byte-identical to the frozen PNGs.
+  These extra frames settle the lap-counter latency and finish-phase clock
+  findings below.
+- The original per-frame WRAM stream `visual-original-a/memory.wram`
+  (6,394 x 131,072 bytes, frames 1207-7600) was used to read `$0EFB`.
+
+### Method
+
+Each needed native state was written to a scratch file and rendered with the
+review build's `zoom_zoo_presentation_runner`. Because that runner always uses
+the fixed art pair `0x04f9/0x0263`, a scratch harness linked against the same
+build libraries also replayed every timeline state through
+`app::LivePresentation::render_zoom`, the path `sdl_main` uses, to get the
+rider art the live app actually draws. The same harness drew layers with
+riders moved off-screen, so background agreement and each rider's pixel box
+could be measured. It also drew state copies with `pause.selection` = 1 and
+0xFFFF. HUD digits were read from 4x-8x crops of the originals, not
+thumbnails. Evidence, tool sources and renders are kept (ignored) under
+`artifacts/m4-16-review/visual-06abab7/`.
+
+### Per-scene comparison
+
+Original HUD values are exactly as drawn; the original shows tenths only.
+"Headless" is the runner; "live" is `render_zoom` with the live held-pose policy.
+
+| Scene | Frame | Lap orig / native | Clock orig / native | Geometry, camera | Riders: position / direction | Result |
+| --- | --- | --- | --- | --- | --- | --- |
+| initialization | 1376 | - / - | - / - | both frames entirely black (1 colour) | - | match |
+| countdown | 1450 | 0/3 / 0/3 | 0:00:0 / 0:00.00 | match | both at start x 9200. Original: two wheels side by side at track level. Native: opponent drawn upside down, wheel about 16 px above the player's wheel (D3) | lap/time match. Pose defect |
+| start | 1649 | 0/3 / 0/3 | ?:01:3 (first digit hidden by ring) / 0:01.34 | match | player mostly hidden behind original ring; visible seat fragment is inside native box 120-151 x 114-146 | lap/time match |
+| reversal | 1700 | 1/3 / 1/3 | 0:02:3 / 0:02.36 | match (track 1 px low, D6) | box orig 149-184 x 98-121, native 152-181 x 95-126 (centre delta 0,+1). Original leans left (vx -483); native leans right (D1) | **direction fail** |
+| steep_contact | 2501 | 1/3 / 1/3 | 0:18:3 / 0:18.38 | match (D6) | original wheel touches the wall. Native wheel centre is off by (-11,-9) headless and (-13.5,-12) live, 12-15 px clear of the wall (D2). Facing right in both | **anchor fail** |
+| lap_one | 3208 | **1/3 / 2/3** | 0:32:5 / 0:32.52 | match (D6) | orig pair 159-198 x 119-142; native centres within 2 px. Original: both lean left. Native: both lean right (D1); headless opponent upside down, live opponent covers the player | **lap mismatch (D5), direction fail** |
+| lap_two | 4840 | **2/3 / 3/3** | 1:05:1 / 1:05.16 | match (D6) | player centre -3 to -4 px x; opponent at right edge agrees. Original leans left, native right (D1) | **lap mismatch (D5), direction fail** |
+| finish | 6484 | 3/3 / 3/3 | 1:38:0 / 1:38.04 | match (D6) | centres within 2 px; live opponent box identical. Original leans left, native right (D1) | lap/time match at shown precision. Direction fail |
+| player_win | 7000 | - | - | - | - | MIKE total 1:38.02 / 1:38.02, best 0:32.50 / 0:32.50. BRONSEN 1:38.10 / 1:38.10, best 0:32.50 / 0:32.50. Axis 0:32, 0:30 / 0:32.88, 0:30.88 (range 3088-3288). Native `WINNER` correct (9802 < 9810). Per-lap marker order matches. **Values match** |
+| player_loss | 7000 (brake) | - | - | - | - | MIKE 1:38.18 / 1:38.18, best 0:32.50 / 0:32.50. BRONSEN 1:38.10 / 1:38.10, best 0:32.50 / 0:32.50. Axis 0:33, 0:31 / 0:33.04, 0:31.04 (3104-3304). Native `RUNNER UP` correct (9818 > 9810). Marker order matches. **Values match** |
+
+Native render SHA-256 prefixes for the 10 scenes, in table order:
+`0bed1ceb 0e8df80e 770836b2 2e0bb5c5 2ab4048b fe8f9412 171c9b12 d4aa4f8f
+c1d2cffe 4f4c7a6d`.
+
+Background and camera: over 18 race frames (the 7 frozen race scenes plus 11
+recaptured ones), the best whole-frame original-to-native offset is (0,0) in
+every frame. Outside the native HUD band, once a one-row BG1 shift is
+allowed, 96.6-99.3% of pixels are identical in the 14 frames without large
+original overlays. The other four (1450 arrow, 1649 ring, 6490/6600 flag) are
+80-89%, and the remainder is the overlay itself. Track geometry and camera
+framing match, apart from D6.
+
+### Defects
+
+- **D1 - Major (criteria 1 and 3). Rider art faces the wrong way whenever a
+  rider travels left.** `render_zoom_zoo` only draws reflected (right-facing)
+  DRAGSTER atlas art. `is_recovered_pose_pair` accepts only reflected pairs,
+  so a left-facing ZOOM ZOO pose is never shown. In the primary timeline,
+  racing updates 1650-6724 number 5,075. The player has vx < 0 in 2,449 of
+  them, and 2,369 of those have `reflected` = 0. Only 62 of the 5,075 are
+  recovered pairs. Four of the six moving frozen scenes (1700, 3208, 4840,
+  6484) show the unicycle leaning opposite to the original. DRAGSTER only
+  rides right, so holding a reflected pose never contradicted travel there.
+  Here it contradicts travel for about half the race.
+- **D2 - Moderate (criterion 3). Anchor at steep contact.** At 2501 the native
+  wheel is 12-15 px away from the wall it is in contact with in the original
+  (centre offsets above). Contact is not readable in the steep_contact scene.
+- **D3 - Moderate (criterion 3). The initial held pair draws the opponent
+  upside down.** Art `0x0263` draws the opponent with its wheel on top and
+  seat below, its wheel about 16 px above the player's when they share a
+  position. The headless runner uses this pair on every frame. The live app
+  shows it from initialization until the first recovered pair at frame 1956,
+  covering the whole countdown and start.
+- **D4 - Moderate (criterion 1; outside the frozen frames). After the player
+  finishes, the HUD clock keeps running instead of showing the finish time.**
+  From 6485 the original replaces the counter with `FINISH` and shows the
+  player's finish time. Win case: 1:38.02 with `WINNER`, plus the opponent's
+  1:38.10. Loss case: 1:38.18 with `LOSER`. Native keeps drawing the running
+  `movement.timer`. Win case: 1:38.16 at 6490, 1:40.36 at 6600, 1:42.84 at
+  6724. Loss case (player finishes at 6492): 1:40.36 at 6600, 1:42.84 at 6724.
+  The wrong time is on screen for about 240 updates (4.8 s) after every
+  finish. The finish time is already in `race.riders[0].time_digits` (1 3 8 0 2
+  and 1 3 8 1 8). Frozen scene 6484 misses this only because it is the finish
+  update itself, and the original shows tenths.
+- **D5 - Minor severity, but a contract failure at two scenes (criterion 1).
+  HUD values run one update ahead of the original picture.** Original video
+  frame N shows the HUD from update N-1: `$0EFB` changes at 1675, 3208, 4840
+  and 6484, but the recaptured HUD changes at 1676, 3209 and 4841. The native
+  HUD uses update N. So native shows 2/3 at 3208 and 3/3 at 4840, where the
+  frozen originals show 1/3 and 2/3. The clock leads the same way: at 3207,
+  native shows 0:32.50 and the original 0:32:4. At the other frozen scenes the
+  clock agrees at tenths only because none lands on an x.x0 hundredth. The
+  renderer already uses the prior update for fade and BG scroll; the HUD
+  needs the same treatment. `min(3, 4 - laps_remaining)` is the right mapping
+  once the latency is modelled.
+- **D6 - Minor (criterion 1). The BG1 track layer is drawn 1 px lower than the
+  original.** In all 15 tested race frames with visible track (frames 2000 and
+  5000 show none), the track differences are explained by
+  `original(y) == native(y+1)`, for example 2,979 of 3,619 pixels at 3208. At
+  1700, column 60, the original track starts at row 122 and native at 123. The
+  BG2 checkerboard and camera are exact.
+
+### Authored UI readability (criterion 2)
+
+- HUD band (`0/3`-`3/3`, `M:SS.hh`), captions (`READY`, `GO`, `WINNER`,
+  `FINISHED`), result screen (`WINNER`/`RUNNER UP`, the column header, both
+  rows, axis labels, `LAPS ON ZOOM ZOO`, `ENTER TO RACE AGAIN`) and pause
+  menu are all legible at 3x-8x. No boxes between words, no clipping, no
+  overlaps. A scan of 86 native renders found zero solid 5x7 unknown-glyph
+  blocks. Every character in the authored strings has a glyph case.
+- Pause menu, rendered from state copies at 3208 (live pause flow not
+  exercised): `PAUSED` / `> RESUME` / `RESTART RACE` / `UP DOWN - ENTER` with
+  selection 1, and the marker moves to `> RESTART RACE` with 0xFFFF. Readable
+  and inside its panel.
+- Cosmetic: result best-lap values start 12 px right of the `BEST LAP` header.
+  The opaque 12-row HUD band hides the top 5% of the scene; the original HUD
+  is a transparent overlay.
+
+### Limitations (excluded by criterion 2, not failures)
+
+- HUD pixel style and format: red overlay with M:SS:T tenths versus a white
+  band with hundredths; `FINISH` replacing the lap counter.
+- Original HUD/coaching content absent: the start direction arrow (1450), the
+  start ring (1583/1649), hints (`MORE STUNTS` at 1649/1700, `BIGGER BOOSTS`
+  at 2000), off-screen rider arrows (`<` at 1649/1700, `>` at 2501/2000), and
+  the finish flag with `WINNER`/`LOSER` and both riders' finish times (D4
+  concerns only the wrong clock value). Without the direction arrow, the rider
+  sprite is the only direction cue in a still frame, which makes D1 worse.
+- Result art: checker background, `TIME` label, rider icons beside totals,
+  stopwatch icons on best laps, progressively drawn markers (6845) and a
+  different graph scale (0.45 versus about 0.67 px/cs). No authored outcome
+  text exists in the original; native `WINNER`/`RUNNER UP` is correct for both
+  outcomes.
+- Audio.
+
+### Verdict
+
+- **Criterion 1: FAIL.** Track geometry, camera framing, rider positions
+  (centres within about 1-5 px on level and gentle track), clock values at
+  the original's displayed precision, and all result values (outcome, totals,
+  best laps, graph range and order) match. Readable riding direction fails in
+  the four leftward race scenes (D1). The lap counter is literally wrong at
+  frozen scenes 3208 and 4840 (D5). Outside the frozen frames the finish-phase
+  clock is wrong (D4). D6 is minor.
+- **Criterion 2: PASS with limitations.** Authored HUD, pause (state-copy
+  render) and result screens are readable, with no missing glyphs, boxes,
+  clipping or overlap. Exclusions are listed above.
+- **Criterion 3: FAIL.** Positions are readable, but the fallback does not
+  reach the DRAGSTER standard on a track ridden in both directions. The held
+  art contradicts travel direction for about half the race (D1), leaves the
+  rider detached at steep contact (D2), and draws the opponent upside down
+  through countdown and start (D3).
+
+### Agreement with the implementer's record
+
+Read only after the verdict above: `tasks/M4-16.md` "HUD lap counter was one
+lap behind" and "Visual acceptance status", plus the `f39a0a9` message.
+
+- **Disagree - the record misstates the original HUD.** It says the original
+  shows 2/3 at 3208 and 3/3 at 4840, and that the re-rendered natives are
+  "identical to the original". The hash-verified frozen originals and the
+  recapture show 1/3 at 3208 and 2/3 at 4840. Native shows 2/3 and 3/3, so the
+  record's own native readings do not match the original at those scenes. The
+  `f39a0a9` message repeats the wrong observations, and
+  `presentation_tests` pins them as "observed pairs". The old
+  `3 - min(3, laps)` mapping happened to match 3208 and 4840 and failed 1700
+  and 2501; the new one does the reverse. Neither models the one-update HUD
+  latency (D5).
+- **Agree** that the new mapping is right once latency is handled, that
+  `$0EFB` and native offset 423 agree, and that the old render was one lap
+  behind for most of the race.
+- **Agree** on winner text, totals, best laps and the lap graph at both
+  frame-7000 scenes.
+- **Disagree** that rider placement tracks the original: positions do, but
+  facing (D1), steep-contact anchor (D2) and the inverted opponent (D3) do not.
+- **Partly disagree** that the race clock tracks the original: it does at the
+  frozen frames' displayed precision, but it runs past the finish time for
+  4.8 s (D4) and leads by one update (D5).
+- The listed limitations are correct but incomplete: off-screen rider arrows,
+  hint messages, finish captions and times, the start ring, the HUD band's
+  occlusion, D6 and result-screen art are not mentioned. Minor factual slip:
+  `MORE STUNTS` is red; the pink element is the start ring.
+
+### Not assessed, and why
+
+- Criterion 4 and any live on-screen run; the live art path was replayed
+  offline through `LivePresentation::render_zoom`, not observed in the SDL
+  window. The live pause interaction and restart presentation were also not
+  exercised.
+- Brake-case frames other than 7000 (frozen) and 6724 (checked for D4), and
+  controller variations other than the two frozen timelines.
+- Original sprite OAM data was not decoded. Rider boxes come from pixel
+  differences against native background renders, and the original rider at
+  1649 is mostly hidden by the ring.
+- Audio, and original result animation timing beyond spot checks at 6725-6845.
+
+### Commands
+
+| Command | rc | Result |
+| --- | --- | --- |
+| `git fetch origin; git merge origin/codex/m4-16-playable-zoom-zoo` | 0 | `c71ddf8`; diff to `06abab7` over src/tests/tools/CMake is empty |
+| `cmake --preset app-debug && cmake --build --preset app-debug` | 0 | runner `22662cff...` |
+| `shasum -a 256` on 20 frozen PNGs | 0 | all match manifest |
+| `zoom_zoo_presentation_runner <pack> <state> <out.ppm>` x 11 | 0 | 10 scene renders plus brake 6484 |
+| scratch `dump`/`layers`/`facing` harness linked against the build libs | 0 | live-policy renders, layers, field dumps, facing counts |
+| `PYTHONPATH=. python3 extra_capture.py` (identity-asserting bsnes replay) | 0 | 247 original frames; 7 frozen frames byte-identical |
