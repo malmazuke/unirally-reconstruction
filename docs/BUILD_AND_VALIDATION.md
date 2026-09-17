@@ -450,16 +450,17 @@ and extend each horizon to include its own post-finish continuation.
 Implemented in `codex/m4-16-playable-zoom-zoo`, not accepted gameplay on main:
 
 ```sh
-python3 tools/project.py frontend run --track zoom-zoo --pack local/classic-crawler-two-tracks-v7.pack --preset app-debug --report artifacts/m4-16/FRESH-live.json
-build/app-debug/src/core/zoom_zoo_presentation_runner local/classic-crawler-two-tracks-v7.pack --timeline <native timeline> <frame> OUT.ppm
+python3 tools/project.py frontend run --track zoom-zoo --pack local/classic-crawler-two-tracks-v8.pack --preset app-debug --report artifacts/m4-16/FRESH-live.json
+build/app-debug/src/core/zoom_zoo_presentation_runner local/classic-crawler-two-tracks-v8.pack --timeline <native timeline> <frame> OUT.ppm
 python3 -m tools.unirally_lab.native.zoom_zoo_playable --help
 python3 -m tools.unirally_lab.native.zoom_zoo_playable_reference --help
 # idle variation: case JSON {"idle":{"from":F,"frames":N|null}} releases all buttons, then resumes the primary; horizon up to 40000
 ```
 
 The first-launch frontend accepts `--rom` plus a fresh pack destination and
-extracts 55 validated static entries (pack v6 added the R-0036 rider object and
-look tables; v7 adds the race palette cycle tables); later pack-only launches do not open ROM. The `--timeline` render
+extracts 56 validated static entries (pack v6 added the R-0036 rider object and
+look tables; v7 added the race palette cycle tables; v8 adds the R-0040
+channel-6 window HDMA family); later pack-only launches do not open ROM. The `--timeline` render
 replays consecutive native states from initialization so rider look overlays
 are exact; the single-state runner form omits them.
 The ordinary `content pack` CLI still targets accepted DRAGSTER rules. V4 pack
@@ -485,15 +486,17 @@ python3 -m tools.unirally_lab.native.dragster_playable_reference --core local/em
 # Freeze two identical captures, before evaluating native.
 python3 -m tools.unirally_lab.native.dragster_playable freeze --reference artifacts/FRESH-a --repeat artifacts/FRESH-b --out artifacts/FRESH.freeze.json
 # Native gate: 742-byte URDG0001 rows, second run, restart, fresh-process restores.
-python3 -m tools.unirally_lab.native.dragster_playable compare --reference artifacts/FRESH-a --repeat artifacts/FRESH-b --contract tests/manifests/native/dragster-ordinary-primary.freeze.json --binary build/app-debug/src/core/zoom_zoo_runner --pack local/classic-crawler-two-tracks-v7.pack --out artifacts/FRESH-compare.json
+python3 -m tools.unirally_lab.native.dragster_playable compare --reference artifacts/FRESH-a --repeat artifacts/FRESH-b --contract tests/manifests/native/dragster-ordinary-primary.freeze.json --binary build/app-debug/src/core/zoom_zoo_runner --pack local/classic-crawler-two-tracks-v8.pack --out artifacts/FRESH-compare.json
 # First divergence only, for exploration (no freeze needed).
-python3 -m tools.unirally_lab.native.dragster_playable explore --reference artifacts/FRESH-a --binary build/app-debug/src/core/zoom_zoo_runner --pack local/classic-crawler-two-tracks-v7.pack
+python3 -m tools.unirally_lab.native.dragster_playable explore --reference artifacts/FRESH-a --binary build/app-debug/src/core/zoom_zoo_runner --pack local/classic-crawler-two-tracks-v8.pack
 # Abort fuzz over complete races with the app's update, restart and render calls; failing races become capture cases.
-build/lab-release/src/app/dragster_fuzz_runner --content-pack local/classic-crawler-two-tracks-v7.pack --first-seed 1 --seeds 3000 --races 3 --max-updates 40000 --failure-cases artifacts/FRESH-failures
+build/lab-release/src/app/dragster_fuzz_runner --content-pack local/classic-crawler-two-tracks-v8.pack --first-seed 1 --seeds 3000 --races 3 --max-updates 40000 --failure-cases artifacts/FRESH-failures
 # One DRAGSTER race state drawn as the app draws it.
-build/app-debug/src/app/dragster_race_picture_runner --content-pack local/classic-crawler-two-tracks-v7.pack --race-state STATE.bin --out OUT.ppm
+build/app-debug/src/app/dragster_race_picture_runner --content-pack local/classic-crawler-two-tracks-v8.pack --race-state STATE.bin --out OUT.ppm
+# Extract the two-track pack (profile classic.pal.crawler.two-tracks.v8, 56 entries).
+python3 tools/project.py content pack --rules tests/manifests/content/classic-crawler-two-tracks-pack.json --out local/classic-crawler-two-tracks-v8.pack
 # Live play; a 25-entry DRAGSTER pack is upgraded to the two-track pack beside it, or one is extracted with --rom.
-python3 tools/project.py frontend run --track dragster --pack local/classic-crawler-two-tracks-v7.pack --preset app-debug
+python3 tools/project.py frontend run --track dragster --pack local/classic-crawler-two-tracks-v8.pack --preset app-debug
 ```
 
 `zoom_zoo_runner --start classic.crawler.dragster` requires `--content-pack`
@@ -514,7 +517,7 @@ new; every command above is unchanged.
 # Declared incomplete original inventory, for a case freeze deliberately refuses.
 python3 -m tools.unirally_lab.native.dragster_playable inventory --reference artifacts/FRESH-idle-a --repeat artifacts/FRESH-idle-b --out artifacts/FRESH-idle.inventory.json
 # Native gate over the inventory's exact race and loading prefix, with a bounded restore set.
-python3 -m tools.unirally_lab.native.dragster_playable compare --prefix --reference artifacts/FRESH-idle-a --repeat artifacts/FRESH-idle-b --contract tests/manifests/native/dragster-clock-limit-idle-incomplete.inventory.json --binary build/app-debug/src/core/zoom_zoo_runner --pack local/classic-crawler-two-tracks-v7.pack --out artifacts/FRESH-idle-gate.json
+python3 -m tools.unirally_lab.native.dragster_playable compare --prefix --reference artifacts/FRESH-idle-a --repeat artifacts/FRESH-idle-b --contract tests/manifests/native/dragster-clock-limit-idle-incomplete.inventory.json --binary build/app-debug/src/core/zoom_zoo_runner --pack local/classic-crawler-two-tracks-v8.pack --out artifacts/FRESH-idle-gate.json
 ```
 
 The frozen case is `tests/manifests/native/dragster-clock-limit-idle.case.json`

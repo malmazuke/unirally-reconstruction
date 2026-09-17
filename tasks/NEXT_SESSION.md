@@ -30,14 +30,18 @@ record UTC wall clock. No reset, purchase or provider change is authorized.
    Left+Right, Left alone and Right alone all exit 0. What is still missing is
    evidence that native matches the original for those inputs over a complete
    race; capture original ZOOM ZOO timelines before claiming it.
-3. **DRAGSTER window timing and shape, not started.** DRAGSTER-PALETTE-CYCLE
-   (integrated; R-0037) made the GO and winner windows take the cycled colour 0,
-   matching the original where their shapes overlap. Native still draws each
-   window from one frozen HDMA table and only on particular rider pose pairs:
-   GO appears natively only at frame 1600, and at 3322 the original's winner
-   shape covers 2,810 pixels against native's 5,001. Recover the original's
-   window enable and HDMA table timing (`$2123-$2132`, channel 6) from original
-   evidence.
+3. **DRAGSTER window timing and shape, candidate awaiting review.**
+   DRAGSTER-WINDOW-EFFECTS on `task/dragster-window-effects` recovers the
+   mechanism (R-0040) and draws the countdown, GO and winner windows from the
+   original's own per-frame channel-6 table selection, with no pose-pair gate.
+   Native's member equals the original's `$11FD` pointer on all 1,922 frames
+   from 1533 to 3454. It adds pack profile
+   `classic.pal.crawler.two-tracks.v8` (56 entries); a v8 pack is required for
+   the new behaviour and the launcher accepts `-v8.pack` beside a v1 pack.
+   Still unrecovered: the opponent-won banner after its 120-update
+   finish-animation counter, whose cheapest next experiment is in R-0040 and in
+   the task record's handoff. ZOOM ZOO's own window content shares the
+   mechanism and is a separate follow-up.
 4. **Closed: DRAGSTER 10:00 race limit.** DRAGSTER inherited the limit with the
    shared engine and needed no gameplay change: native matches the original for
    30,554 consecutive updates, with only the two-update SPC700 result-loading
@@ -48,11 +52,12 @@ record UTC wall clock. No reset, purchase or provider change is authorized.
 ## Launch recipe
 
 ```sh
-python3 tools/project.py frontend run --track zoom-zoo --pack local/classic-crawler-two-tracks-v7.pack --preset app-debug --report artifacts/FRESH-live.json
+python3 tools/project.py frontend run --track zoom-zoo --pack local/classic-crawler-two-tracks-v8.pack --preset app-debug --report artifacts/FRESH-live.json
 ```
 
 DRAGSTER runs from the same pack with `--track dragster` and then draws the
-recovered race palette cycle (R-0037); the DRAGSTER-only v1 pack keeps the
-accepted colours. Add `--rom` with the private locator's ROM and a fresh pack
-path for a first extraction. v5 and v6 packs are rejected. On macOS, disconnect a gamepad by
+recovered race palette cycle (R-0037) and, on a v8 pack, the recovered window
+effects (R-0040); the DRAGSTER-only v1 pack keeps the accepted colours and the
+accepted pose-keyed window placement. Add `--rom` with the private locator's ROM and a fresh pack
+path for a first extraction. v5, v6 and v7 packs are rejected. On macOS, disconnect a gamepad by
 turning Bluetooth off; the Xbox button opens the Games overlay.

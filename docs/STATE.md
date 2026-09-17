@@ -59,7 +59,9 @@ inventory rather than an acceptance freeze.
 
 Declared omissions: audio; the original's decorative objects and captions
 (start arrow and ring, hints, on-screen stunt names, opponent finish time,
-animated finish banner, off-screen arrows); original HUD and result pixel style;
+animated finish banner, off-screen arrows) except DRAGSTER's own countdown and
+winner windows, recovered in R-0040; ZOOM ZOO's window content uses the same
+channel-6 mechanism and remains omitted; original HUD and result pixel style;
 the two-update later result load after a time-out (audio handshake timing).
 Other tracks, riders, modes, menus and multiplayer remain outside the product.
 
@@ -70,9 +72,24 @@ is reviewed and integrated (acceptance conditional on its final-tip CI, closeout
 cycle ([R-0037](research/R-0037-dragster-race-palette-cycle.md)), visible as colour
 0 in the GO and winner windows, which now take the cycled colour 0 when the pack
 carries the tables (two-track v7), matching the original where their shapes
-agree; DRAGSTER v1 packs keep the accepted colours. Not started:
-DRAGSTER window timing and shape (still gated on rider poses), and DRAGSTER's
-10:00 limit. See [NEXT_SESSION](../tasks/NEXT_SESSION.md).
+agree; DRAGSTER v1 packs keep the accepted colours.
+[DRAGSTER-WINDOW-EFFECTS](../tasks/DRAGSTER-WINDOW-EFFECTS.md) then recovered
+when those windows appear and what shape each frame uses
+([R-0040](research/R-0040-dragster-window-effects.md)): the original picks one
+of a 25-table channel-6 family at `$15:8000` every frame, the countdown driver
+`$83:E59C` from `$11C5` and the winner driver `$83:EA19` cycling members 7-24
+from the winning rider's finish, and the vblank setup `$80:868E-$80:8699`
+publishes the previous frame's choice. Native now draws the countdown digits,
+their transitions, the alternating GO letters and the cycling winner banner
+with no rider pose-pair gate, and its member equals the original's own pointer
+on all 1,922 frames from 1533 to 3454 of a captured race. The family enters the
+two-track pack additively as `presentation.effect.classic.window-tables.v1`;
+the profile is now `classic.pal.crawler.two-tracks.v8` with 56 entries and
+DRAGSTER v1 packs keep the accepted pose-keyed placement, so the accepted v1
+contracts and the historical matrix are unchanged. That candidate is on
+`task/dragster-window-effects` and is not yet reviewed; the opponent-won banner
+beyond its 120-update counter is still unrecovered. See
+[NEXT_SESSION](../tasks/NEXT_SESSION.md).
 
 ## Accepted product and evidence
 
