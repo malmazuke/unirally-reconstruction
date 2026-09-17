@@ -63,6 +63,40 @@ int main() {
     require(hud.finish_time == "1:38.18" && hud.caption == "LOSER");
   }
 
+  // Race palette cycle $82:D382-D496. Original $0B84 ends frame n at
+  // (n-1381)&15, including through pause, so frame n draws (n-1382)&15.
+  require(!unirally::zoom_zoo_palette_cycle_index(1381));
+  require(unirally::zoom_zoo_palette_cycle_index(1382) == 0U);
+  require(unirally::zoom_zoo_palette_cycle_index(1649) == 11U);
+  require(unirally::zoom_zoo_palette_cycle_index(3208) == 2U);
+  require(unirally::zoom_zoo_palette_cycle_index(6005) == 15U);
+  {
+    // Synthetic tables: word = table * 256 + index, so a copied word names
+    // both its source table and entry.
+    std::vector<std::uint8_t> tables(544);
+    for (std::size_t table = 0; table < 17; ++table)
+      for (std::size_t index = 0; index < 16; ++index) {
+        tables[table * 32 + index * 2] = static_cast<std::uint8_t>(index);
+        tables[table * 32 + index * 2 + 1] = static_cast<std::uint8_t>(table);
+      }
+    std::array<std::uint8_t, 512> cgram{};
+    cgram.fill(0xee);
+    unirally::apply_zoom_zoo_palette_cycle(cgram, tables, 1381);
+    require(cgram[0] == 0xee && cgram[192] == 0xee);
+    unirally::apply_zoom_zoo_palette_cycle(cgram, tables, 1382 + 16 + 5);
+    require(cgram[192] == 5 && cgram[193] == 0);    // colour 96, table 0
+    require(cgram[222] == 5 && cgram[223] == 15);   // colour 111, table 15
+    require(cgram[0] == 5 && cgram[1] == 16);       // colour 0, table 16
+    require(cgram[190] == 0xee && cgram[224] == 0xee); // colours 95 and 112 untouched
+    bool rejected = false;
+    try {
+      unirally::apply_zoom_zoo_palette_cycle(cgram, std::span<const std::uint8_t>(tables).first(543), 1400);
+    } catch (const std::invalid_argument &) {
+      rejected = true;
+    }
+    require(rejected);
+  }
+
   std::vector<std::uint8_t> track(33815);
   for (std::size_t x = 0; x < 30; ++x)
     for (std::size_t y = 0; y < 16; ++y) {

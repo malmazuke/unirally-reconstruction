@@ -73,6 +73,11 @@ struct PresentationContent {
 };
 struct ZoomZooState;
 class ClassicContentPack;
+// Race palette cycle ($82:D382-D496): the table index a frame draws, if the
+// cycle has started, and its application to colours 96-111 and 0.
+std::optional<unsigned> zoom_zoo_palette_cycle_index(std::uint32_t frame);
+void apply_zoom_zoo_palette_cycle(std::array<std::uint8_t,512>& cgram,std::span<const std::uint8_t> tables,
+                                  std::uint32_t frame);
 // Lap shown for a laps_remaining value: 4,3,2,1,0 display as 0/3,1/3,2/3,3/3,3/3.
 unsigned zoom_zoo_hud_lap(unsigned laps_remaining);
 // Authored ZOOM ZOO HUD text. Callers pass the state from BEFORE the update

@@ -209,3 +209,35 @@ fresh initialization, not original Retire/tour emulation. Both input/art reset
 paths are implemented; actual live evidence remains due. The earlier producer
 table/gap lists above describe historical recovery boundaries where superseded
 by this checkpoint. M4-16 remains unaccepted.
+
+## Race palette cycle — `$82:D382-$82:D496`
+
+Verified 17 September 2026 against the primary initialization capture
+(`artifacts/m4-16/initialization-audit`, frames 1207-1650) and WRAM series.
+
+- While `$0B92` is nonzero, the routine sets CGRAM address `$60` and writes
+  colours 96-111 from sixteen 16-word ROM tables at `$80:82AB + 32k`, then
+  colour 0 from `$80:84AB`, all indexed by `$0B84`, and advances
+  `$0B84 = ($0B84 + 1) & 15` (`$82:D48D-D493`). The capture records 269 calls
+  over frames 1382-1650, one per frame.
+- `$0B84` ends frame n at `(n - 1381) & 15` from 1382 through the race, and
+  keeps advancing while paused (pause-a 6000-6009), so it counts video frames,
+  like native `movement.frame`. It stops at result loading (1 from 6725) and
+  `$0B92` becomes 14 on the result screen.
+- The cycle animates the checkered start/finish line: colour 97, for example,
+  steps `$7FFF, $56B5, $2D6B, $0000` two frames each.
+
+Native: frame n draws table index `(n - 1382) & 15`, applied to the CGRAM words
+before brightness. Pack `classic.pal.crawler.two-tracks.v7` adds entry
+`presentation.zoom.race-palette-cycle.v1` (file offset `0x02AB`, 544 bytes,
+SHA-256 `a82bb272...14f7a57f`, rules SHA-256 `5920a130...69308b236`, 55
+entries); two fresh extractions are byte-identical (`b75539a0...`). Across all
+489 recaptured primary race frames available (1382-6720), the cycle changes
+55,056 pixels in 91 frames relative to the previous renderer, and every one
+equals the original; the previous renderer matched none of them.
+
+The ZOOM ZOO renderer previously used DRAGSTER's pose-keyed late-finish
+palette (`build_race_cgram`), which is true on 284 of 6,225 primary states and
+only flipped the checker between two of the sixteen phases. DRAGSTER keeps its
+accepted rule; whether DRAGSTER's race runs the same routine is not
+investigated here.

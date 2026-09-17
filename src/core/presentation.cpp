@@ -139,7 +139,8 @@ std::uint16_t apply_snes_brightness(std::uint16_t colour_value,
 
 std::array<std::uint8_t, 512>
 build_race_cgram(const PresentationSample &sample,
-                 std::span<const std::uint8_t> packed_palette) {
+                 std::span<const std::uint8_t> packed_palette,
+                 bool dragster_late_finish = true) {
   std::array<std::uint8_t, 512> cgram{};
   constexpr std::array<std::size_t, 6> targets{{0, 224, 256, 352, 480, 384}};
   constexpr std::array<std::size_t, 6> lengths{{192, 32, 32, 32, 32, 32}};
@@ -157,9 +158,11 @@ build_race_cgram(const PresentationSample &sample,
   static constexpr std::array<std::uint8_t, 32> finish_cycle{
       16, 66,  0,   0,   255, 127, 181, 86, 107, 45, 0,  0,  148, 82, 255, 127,
       81, 102, 122, 127, 81,  102, 106, 73, 164, 48, 65, 20, 164, 48, 106, 73};
+  // DRAGSTER's late-finish palette is keyed to its own finish poses.
   const bool late_finish =
-      sample.movement.riders[1].pose.pose_index == 0x08d5 ||
-      sample.movement.riders[0].pose.pose_index == 0x04fe;
+      dragster_late_finish &&
+      (sample.movement.riders[1].pose.pose_index == 0x08d5 ||
+       sample.movement.riders[0].pose.pose_index == 0x04fe);
   const auto &cycle = late_finish ? finish_cycle : racing_cycle;
   std::copy(cycle.begin(), cycle.end(), cgram.begin() + 192);
   if (late_finish) {
@@ -958,6 +961,25 @@ void ZoomZooRiderLookTracker::observe_update(const ZoomZooState& previous,const 
     latest_.pose=rider_overlay_poses(look_,updated,tables);
     advance_rider_look(look_,updated,zoom_zoo_content(pack),tables);
 }
+std::optional<unsigned> zoom_zoo_palette_cycle_index(std::uint32_t frame) {
+    // $82:D382-D496 runs from frame 1382 while $0B92 is set: it loads the
+    // colours from index $0B84, then advances $0B84 modulo 16. $0B84 ends frame
+    // n at (n-1381)&15, through pause, so frame n draws index (n-1382)&15.
+    if(frame<1382U)return std::nullopt;
+    return (frame-1382U)&15U;
+}
+void apply_zoom_zoo_palette_cycle(std::array<std::uint8_t,512>& cgram,std::span<const std::uint8_t> tables,
+                                  std::uint32_t frame) {
+    if(tables.size()!=544)throw std::invalid_argument("ZOOM ZOO race palette cycle has the wrong size");
+    const auto index=zoom_zoo_palette_cycle_index(frame);
+    if(!index)return;
+    // Seventeen 16-word tables at $80:82AB: colours 96-111, then colour 0.
+    for(std::size_t table=0;table<17;++table) {
+        const auto source=table*32U+*index*2U;
+        const auto destination=table<16?(96U+table)*2U:0U;
+        cgram[destination]=tables[source];cgram[destination+1]=tables[source+1];
+    }
+}
 unsigned zoom_zoo_hud_lap(unsigned laps_remaining) {
     return std::min(3U,4U-std::min(4U,laps_remaining));
 }
@@ -1029,7 +1051,10 @@ RgbFrame render_zoom_zoo(const ZoomZooState& state,const ClassicContentPack& pac
     // frames too bright: green 15 at brightness 8 is 47 in the original, not 64.
     const auto prior_fade=state.movement.frame<=1376U?0U:std::min(30U,state.movement.frame-1377U);
     const auto brightness=prior_fade>15U?prior_fade-15U:0U;
-    auto cgram=build_race_cgram({state.movement,0,0,0,0,0},palette);
+    // Colours 96-111 and 0 are not DRAGSTER's pose-keyed late-finish palette
+    // here: the race NMI cycles them from ROM tables every frame.
+    auto cgram=build_race_cgram({state.movement,0,0,0,0,0},palette,false);
+    apply_zoom_zoo_palette_cycle(cgram,pack.entry("presentation.zoom.race-palette-cycle.v1"),state.movement.frame);
     if(brightness<15U) {
         for(std::size_t at=0;at<cgram.size();at+=2) {
             const auto faded=apply_snes_brightness(static_cast<std::uint16_t>(cgram[at]|(unsigned(cgram[at+1])<<8U)),brightness);
