@@ -69,9 +69,10 @@ checkout; without it every historical command exits 2, missing prerequisite.
    done (`78c595d`/`0915e10`). The user exercised an Xbox controller live on
    `aac6df0`: all 5,194 nonzero updates gamepad-only, pause, a restart,
    disconnect/reconnect, and the first live focus-loss active clears (2).
-   Not yet shown on a gamepad: that the restart followed a completed race
-   (logs from `cc001f2` split result from pause restarts) and a removal
-   clearing a held button.
+   The user confirmed the restart was Race Again from the results screen, so
+   the gamepad clause is closed. A removal while a button is held is covered
+   by `frontend_contract_tests` only. On macOS the Xbox button opens the Games
+   overlay, so disconnect a pad by turning Bluetooth off instead.
 3. **Closed: M4-15 race matrix.** The reference pairs were in the M4-15
    worktrees, not missing. All eight `zoom_zoo_race` commands (primary, delayed
    turns, early jump, lap-two jump on app-debug and app-sanitize) pass on clean
