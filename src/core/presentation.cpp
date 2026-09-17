@@ -923,10 +923,15 @@ std::array<unsigned,7> ui_glyph(char c) {
     // emitted "> RESUME" but drew it identically to "  RESUME", so the focused
     // entry was indistinguishable and ENTER's target was unknowable.
     case '>':return {16,8,4,2,4,8,16};
+    // Space must be explicit. It has no glyph of its own, so it used to reach
+    // the default and render blank only because the default was blank; once
+    // the default became a visible box, every space between words drew one.
+    case ' ':return {0,0,0,0,0,0,0};
     // An unmapped character used to render blank, which hides the omission at
-    // exactly the moment it matters. Draw a box so a future gap is visible on
-    // screen instead of silently absent.
-    default:return {31,17,17,17,17,17,31};
+    // exactly the moment it matters. Draw a solid block instead: a hollow box
+    // differs from 'O' only in its top and bottom rows at 5x7, so it reads as
+    // a letter, which is worse than blank. A solid block cannot.
+    default:return {31,31,31,31,31,31,31};
     }
 }
 void ui_text(RgbFrame& frame,int x,int y,std::string_view text,std::array<std::uint8_t,3> ink={255,240,220}) {
@@ -937,6 +942,9 @@ std::string race_time(unsigned value) {
     const auto digit=[](unsigned v){return static_cast<char>('0'+v%10);};
     return {digit(value/6000),':',digit(value/1000%6),digit(value/100),'.',digit(value/10),digit(value)};
 }
+}
+unsigned zoom_zoo_hud_lap(unsigned laps_remaining) {
+    return std::min(3U,4U-std::min(4U,laps_remaining));
 }
 RgbFrame render_zoom_zoo(const ZoomZooState& state,const ClassicContentPack& pack,
                          const std::array<RiderArtPose,2>* rider_art) {
@@ -1019,7 +1027,7 @@ RgbFrame render_zoom_zoo(const ZoomZooState& state,const ClassicContentPack& pac
                      static_cast<int>(rider.motion.y)-camera_y,i?136:0,i?0x68:0x66);
     }
     rect(frame,0,0,256,12,{15,30,30});
-    ui_text(frame,5,3,std::to_string(3U-std::min(3U,unsigned(state.race.riders[0].laps_remaining)))+"/3");
+    ui_text(frame,5,3,std::to_string(zoom_zoo_hud_lap(state.race.riders[0].laps_remaining))+"/3");
     const auto& t=state.movement.timer;
     ui_text(frame,195,3,race_time(t.minutes*6000+t.tens_seconds*1000+t.seconds*100+t.tenths*10+t.subframe*2));
     if(state.movement.countdown>=70)ui_text(frame,110,35,"READY");

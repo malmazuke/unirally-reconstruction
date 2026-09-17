@@ -69,17 +69,21 @@ checkout; without it every historical command exits 2, missing prerequisite.
    exercise of live controls and a result/restart boundary, gamepad (no
    hardware), and the focus-loss active-clear witness, which reads 0 because
    macOS releases held keys before `SDL_EVENT_WINDOW_FOCUS_LOST`.
-3. **M4-15 race matrix and the ZOOM ZOO trial differentials.** Not run: their
-   original reference pairs are absent from this checkout. Re-capturing the
-   M4-15 primary pair is roughly 1.3 GB against about 24 GB free. The legacy
-   empty-bank path is provably unchanged, which is a reason to expect a pass,
-   not evidence of one.
-4. **Visual acceptance.** Original scene identities are frozen in
+3. **Closed: M4-15 race matrix.** The reference pairs were in the M4-15
+   worktrees, not missing. All eight `zoom_zoo_race` commands (primary, delayed
+   turns, early jump, lap-two jump on app-debug and app-sanitize) pass on clean
+   `787c549`; the script is recorded in [M4-16](M4-16.md). Re-run it on the
+   exact final tip before integration. Never edit tracked files while it runs:
+   the tool refuses the mixed run.
+4. **Visual acceptance — independent readability review due.** Original scene
+   identities are frozen in
    `tests/manifests/presentation/zoom-zoo-playable-v2.json`; private originals
-   are `visual-original-a/b`, comparison `visual-7c3e3b6/comparison.png`. The
-   recorded limitations are a missing direction arrow and coaching cue, rider
-   anchors off by roughly 8-14 pixels, and low-salience result graph points.
-   Independent readability review is still due.
+   are `visual-original-a/b` and `brake-a`, current comparison
+   `opus-resume/visual/comparison.png`. The HUD lap counter was one lap behind
+   and is fixed in `f39a0a9`; the pause `>` marker and the space glyph are fixed
+   in `c179765`/`787c549`. Recorded limitations: missing direction arrow and
+   coaching cue, authored HUD style, rider anchors off by roughly 8-14 pixels,
+   low-salience result graph points.
 5. **Result-loading read classification** against the durable
    [persistent-input ledger](../docs/research/M4-16-persistent-input-ledger.md).
    Zero unresolved stores is not zero unresolved reads.
