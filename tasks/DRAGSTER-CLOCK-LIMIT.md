@@ -61,7 +61,7 @@ checkout under ignored `artifacts/dragster-clock-limit/regressions/`.
 | 3 (20:12-20:20Z) | The shared engine already applies `$81:C73E-C75B` on DRAGSTER | `dragster_playable explore`, then a full row-by-row census of native from initialization against the original | 30,871 of 30,873 updates match every declared byte. The only two differing rows are 31882 and 31883, and only in `result.player_total`/`result.opponent_total`: native publishes `{60000, 3358}` on the ordinary mode-0 update, the original two updates later. Original events: finish 31534/3214, loading 31775, first visible 31885, loser, settled 32016 | No gameplay change. Check the presentation |
 | 4 (20:20-20:30Z) | The app can draw the result the original draws | Rendered native DRAGSTER pictures at 31534, 31600, 32016 and 32100 with `dragster_race_picture_runner` and compared them with the original frames | Race frames render. Both result frames threw `unsupported Classic result composition`: the composition demands that a finished rider's five crossing digits equal its total, and a timed-out player keeps 0:00.70 against the 60000 sentinel. The original shows `MIKE` with ` NO TIME` in the same columns as the three `SOMEONE` rows | Admit that one sentinel and write the original's row |
 | 5 (20:30-20:40Z) | The fix is the existing 60000 convention, not a new rule | Changed the composition, added a ROM-free `presentation_tests` case pinning the timed-out map against the ordinary loser map and the empty rows, and two rejections (an opponent sentinel, a player total below the sentinel disagreeing with its digits) | Native renders `DRAGSTER COMPLETE / PLAYER TIME / MIKE NO TIME / SOMEONE NO TIME x3`, matching the original at 32100 within the accepted declared omissions. A deliberate mutant (` NOXTIME`) aborts the test; the restored source passes | Add the prefix gate and run the regressions |
-| 6 (20:40-21:0xZ) | Nothing accepted regresses | Four presets, both synthetic suites, the 20-command historical matrix from task-local fixture copies, the seven DRAGSTER frozen originals and the M4-16 ZOOM ZOO primary gate on app-debug and app-sanitize, plus the new prefix gate | See "Gate results" below | Records, push, CI, review |
+| 6 (20:40-21:20Z) | Nothing accepted regresses | Four presets, both synthetic suites, the 20-command historical matrix from task-local fixture copies, the seven DRAGSTER frozen originals and the M4-16 ZOOM ZOO primary gate on app-debug and app-sanitize, plus the new prefix gate | Everything passes; see "Gate results". One false start: the first frozen-gate run aborted on `source/binary/pack changed during validation` because I was editing docs and rebuilding presets while it ran. Committed first, then reran the whole script on a clean tree | Records, push, CI, review |
 
 ## Gate results
 
@@ -76,23 +76,29 @@ while running).
 | Four presets, `ctest` | 23/23 on lab-debug, lab-sanitize, app-debug, app-sanitize; no skips |
 | Both synthetic suites | 409/409 checks on each of the four presets, no skips |
 | DRAGSTER historical matrix | 20/20 commands, `ANY FAILURE: 0` (compare 6, restore 4, finish 6, opponent-first 2, presentation 2) |
-| Seven DRAGSTER frozen originals | app-debug and app-sanitize |
-| M4-16 ZOOM ZOO primary gate (`primary-v11`) | app-debug and app-sanitize |
-| DRAGSTER clock limit prefix gate | frames 1328-31881, 30,554 rows, 36 fresh-process restores |
+| Seven DRAGSTER frozen originals | pass on app-debug and app-sanitize with unchanged rows hashes and restore counts: primary 379, reversal 327, random-1 567, random-2 527, random-3 493, countdown-actions-tie 179, landing-held-roll 181 |
+| M4-16 ZOOM ZOO primary gate (`primary-v11`) | passes on app-debug and app-sanitize, frames 1376-7600, 757 restores and the full restart each |
+| DRAGSTER clock limit prefix gate | passes on app-debug and app-sanitize: frames 1328-31881, 30,554 rows, 36 fresh-process restores each (including 31533/31534/31535 around the limit, 31774/31775/31776 around loading, and 31880) |
+| Frozen-gate script total | 18/18 commands, `ANY FAILURE: 0` |
 
 ## Mistakes
 
-1. I built the first capture's `--frame-image` list into a shell variable and
+1. I ran the frozen-gate script while still editing documentation and
+   rebuilding presets. `compare` hashes the working tree and the binary at
+   both ends of a run, so it correctly refused the second case with
+   `source/binary/pack changed during validation`. I committed everything and
+   reran the whole script on a clean tree; only the rerun is reported.
+2. I built the first capture's `--frame-image` list into a shell variable and
    expanded it unquoted. zsh does not word-split there, so the whole list
    arrived as a single argument and the run died immediately. Relaunched with
    the flags written out; the second capture was unaffected and both runs
    still agree.
-2. I first read the race block of the 742-byte state with `lap_times` as three
+3. I first read the race block of the 742-byte state with `lap_times` as three
    entries per rider, which put `total_times` at the wrong offset and made an
    ordinary DRAGSTER race look as though it published no totals. The header
    says ten entries per rider and twenty checkpoint flags; with the right
    offsets the ordinary and timed-out states agree with the result screen.
-3. The first version of the prefix gate reused the ordinary restore set, which
+4. The first version of the prefix gate reused the ordinary restore set, which
    would have replayed the 30,000-update tail from several hundred boundaries.
    Replaced with a declared bounded set and said so in the tool and R-0039.
 
@@ -112,6 +118,13 @@ declared bytes for frames 1328-31881. The only native change is the result
 screen row. The only remaining difference over the whole capture is the
 two-update SPC700 result-loading wait at 31882-31883, which M4-16 already
 recorded for ZOOM ZOO and which the contract excludes as audio timing.
+
+Gate evidence is under ignored
+`artifacts/dragster-clock-limit/gates/` (historical, frozen, synthetic-*) with
+`gates/frozen/validation-ledger.jsonl`; the two originals are
+`artifacts/dragster-clock-limit/idle-a` and `idle-b` with the original PNGs in
+`idle-a`. Hosted CI (Ubuntu GCC `-Werror`, `synthetic.yml`) is green on every
+pushed commit of this branch.
 
 **Next step:** a fresh Claude Opus 5 independent reviewer in an isolated
 checkout at the exact tip, with the frozen inventory and its two captures;
