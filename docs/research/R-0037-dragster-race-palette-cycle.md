@@ -111,8 +111,8 @@ fixtures and historical gates are untouched. No new pack version is added:
 the two-track pack already carries every DRAGSTER entry and the tables. The app
 always accepted it for DRAGSTER, but `tools/project.py frontend run --track
 dragster` checked any existing pack against the DRAGSTER v1 rules and refused
-it (exit 3). The launcher now falls back to the two-track rules for an existing
-DRAGSTER pack that fails the v1 rules identity, so
+it (exit 3). With the default DRAGSTER rules, the launcher now validates an
+existing pack that fails any v1 check against the two-track rules instead, so
 `frontend run --track dragster --pack local/classic-crawler-two-tracks-v7.pack`
 launches with the recovered palette. The
 result screen and rider palettes are unchanged.

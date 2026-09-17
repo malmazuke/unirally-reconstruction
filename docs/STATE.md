@@ -43,8 +43,9 @@ is reviewed and integrated (acceptance conditional on its final-tip CI, closeout
 `artifacts/dragster-palette-cycle-integration/closeout.json` in
 `.worktrees/dragster-palette-cycle`): DRAGSTER's race runs the same NMI palette
 cycle ([R-0037](research/R-0037-dragster-race-palette-cycle.md)), visible as colour
-0 in the GO and winner windows, which now animate when the pack carries the
-tables (two-track v7); DRAGSTER v1 packs keep the accepted colours. Not started:
+0 in the GO and winner windows, which now take the cycled colour 0 when the pack
+carries the tables (two-track v7), matching the original where their shapes
+agree; DRAGSTER v1 packs keep the accepted colours. Not started:
 DRAGSTER window timing and shape (still gated on rider poses), and DRAGSTER's
 10:00 limit. See [NEXT_SESSION](../tasks/NEXT_SESSION.md).
 

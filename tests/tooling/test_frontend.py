@@ -81,6 +81,37 @@ class FrontendLaunchTests(unittest.TestCase):
         Path(self.args().pack).write_bytes(b"corrupt")
         self.assertEqual(commands.cmd_run(self.args(rom=str(self.rom_path))), EXIT_INVALID_INPUT)
 
+    def test_dragster_launch_accepts_a_valid_two_track_pack(self):
+        # DRAGSTER also runs from the two-track pack (R-0037). With the default
+        # DRAGSTER rules, an existing pack that fails them is validated against
+        # the two-track rules; an explicit other rules path gets no fallback.
+        two_track = dict(self.rules, profile_id=pack.TWO_TRACK_PROFILE,
+                         start_state_id=pack.TWO_TRACK_START)
+        (self.root / "two-track-rules.json").write_text(json.dumps(two_track))
+        two_track_rules, two_track_sha = pack.load_rules(self.root / "two-track-rules.json")
+        payload, _ = pack.build_pack(self.rom, two_track_rules, two_track_sha)
+        two_track_pack = self.root / "two-track.pack"
+        two_track_pack.write_bytes(payload)
+        with mock.patch.object(commands, "ROOT", self.root), \
+             mock.patch.object(pack, "RULES_PATH", "rules.json"), \
+             mock.patch.object(pack, "TWO_TRACK_RULES_PATH", "two-track-rules.json"):
+            self.assertEqual(commands.cmd_run(self.args(track="dragster", pack=str(two_track_pack))), EXIT_OK)
+            self.assertEqual(commands.cmd_run(self.args(track="dragster")), EXIT_MISSING_PREREQUISITE)
+            other_rules = self.root / "copy-of-rules.json"
+            other_rules.write_text(self.rules_path.read_text())
+            self.assertEqual(commands.cmd_run(self.args(track="dragster", pack=str(two_track_pack),
+                                                        rules=str(other_rules))), EXIT_INVALID_INPUT)
+            corrupt = bytearray(payload)
+            corrupt[-1] ^= 0xFF
+            corrupt_pack = self.root / "corrupt-two-track.pack"
+            corrupt_pack.write_bytes(bytes(corrupt))
+            report = self.root / "corrupt-two-track.json"
+            self.assertEqual(commands.cmd_run(self.args(track="dragster", pack=str(corrupt_pack),
+                                                        report=str(report))), EXIT_INVALID_INPUT)
+            detail = next(c for c in json.loads(report.read_text())["checks"]
+                          if c["name"] == "classic_pack")["detail"]
+            self.assertNotIn("extraction-rules identity", detail)
+
     def test_frontend_failure_is_not_a_successful_launch(self):
         self.assertEqual(commands.cmd_run(self.args(rom=str(self.rom_path), executable="/usr/bin/false")), EXIT_FAILURE)
 

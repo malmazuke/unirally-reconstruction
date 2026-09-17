@@ -2,7 +2,7 @@
 
 ## Assignment
 
-- Status: reviewed and integrated (implementation approved at `2c9dea3`, re-review `223cd0d`); acceptance conditional on final-tip CI and remote verification in the ignored `artifacts/dragster-palette-cycle-integration/closeout.json`
+- Status: reviewed and integrated (implementation approved at `2c9dea3` and, with the launcher fix, at `a2aac15`; reviews `223cd0d`, `913175c`); acceptance conditional on final-tip CI and remote verification in the ignored `artifacts/dragster-palette-cycle-integration/closeout.json`
 - Milestone: follow-up to accepted DRAGSTER presentation (M3/M4-01); not an M4 milestone gate
 - Coordinator: Claude Opus 5 primary session that is also integrating M4-16
 - Task provider: Anthropic (Claude Opus 5), as recorded in D-0004 for the current work
@@ -106,7 +106,7 @@ recovered palette was true only for the bare app. The reviewer's checks
 rendered headlessly and could not see this.
 
 Fix: when `--track dragster` uses the default DRAGSTER rules and an existing
-pack fails their identity, the launcher validates it against the two-track
+pack fails any of their checks, the launcher validates it against the two-track
 rules instead. If that also fails for a reason other than identity, it reports
 that more specific diagnosis. Launcher checks
 (`artifacts/dragster-palette-cycle/launcher-check.sh`):
@@ -122,6 +122,19 @@ that more specific diagnosis. Launcher checks
 
 This is a new change after approval, so it goes back to the reviewer before
 integration.
+
+### Independent re-review, round 3 (launcher)
+
+Same reviewer, `a2aac15`, report section at `913175c` (11:21-11:34 UTC).
+**Verdict: approve.**
+- **19 launcher cases behaved correctly:** fallback only with `--track dragster` and the default rules path, including symlinks; no fallback for a copied rules file or in reverse; a missing pack with `--rom` still extracts a byte-identical v1 pack; corrupt, truncated, wrong-source and non-pack inputs are refused.
+- **The launcher reaches the new colours at other phases:** redraw counters from 2,146-update hidden launches matched its harness prediction exactly for both packs. v1 gave 382 identical redraws (longest run 225), and v7 gave 380 (223), the difference coming from frames 3452 and 3454.
+- **No regressions:** v1 counts are unchanged and v1/v7 frozen renders byte-identical; `zoom_zoo_runner` is byte-identical; 406/406 on four presets; CI run 35215252623 green.
+
+Residuals, closed before integration:
+- **R3-1, medium: no automated test ran the fallback.** `test_dragster_launch_accepts_a_valid_two_track_pack` now authors DRAGSTER and two-track rule sets and checks four behaviours: acceptance, no fallback for a non-default rules path, a missing pack still needing a ROM, and a corrupt two-track pack reporting its own failure. It fails against the pre-fix launcher.
+- **R3-2, wording:** the fallback follows any v1 failure, not only identity. Corrected in R-0037 and above.
+- **R3-3, wording:** STATE said the windows "animate"; they take the cycled colour 0. Corrected.
 
 **Decision (17 September 2026):** no new DRAGSTER pack version. The two-track
 pack v7 already carries every DRAGSTER entry and the cycle tables, so DRAGSTER
