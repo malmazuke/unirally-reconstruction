@@ -1,0 +1,21 @@
+{"id": "dragster-ordinary-reversal", "changes": [
+  {"from": 1329, "to": 1400, "buttons": ["b"]},
+  {"from": 1401, "to": 1450, "buttons": ["left"]},
+  {"from": 1451, "to": 1520, "buttons": ["right"]},
+  {"from": 1540, "to": 1799, "buttons": ["right"]},
+  {"from": 1800, "to": 1803, "buttons": ["start"]},
+  {"from": 1860, "to": 1863, "buttons": ["start"]},
+  {"from": 1864, "to": 1999, "buttons": ["right"]},
+  {"from": 2000, "to": 2450, "buttons": ["left"]},
+  {"from": 2451, "to": 2462, "buttons": ["b", "left"]},
+  {"from": 2463, "to": 2480, "buttons": ["left", "r"]},
+  {"from": 2481, "to": 2520, "buttons": ["left", "y"]},
+  {"from": 2521, "to": 2560, "buttons": ["y"]},
+  {"from": 2561, "to": 2600, "buttons": ["a", "right"]},
+  {"from": 2601, "to": 2610, "buttons": ["right", "start"]},
+  {"from": 2611, "to": 2640, "buttons": ["right"]},
+  {"from": 2641, "to": 2645, "buttons": ["right", "start"]},
+  {"from": 2646, "to": 2900, "buttons": ["right"]},
+  {"from": 2901, "to": 2960, "buttons": ["left"]},
+  {"from": 2961, "to": 5000, "buttons": ["right"]}
+]}

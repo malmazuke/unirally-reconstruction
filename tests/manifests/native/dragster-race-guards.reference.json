@@ -1,0 +1,16 @@
+{
+  "kind": "dragster_race_guard_overrides",
+  "base": "tests/manifests/native/zoom-zoo-race-guards.reference.json",
+  "description": "DRAGSTER runs the shared race engine, so every ZOOM ZOO race guard applies from end-1601 (ZOOM ZOO's end-1649 on DRAGSTER's 48-frame-earlier menu path) with the same value, except these scenario and playfield words. Each takes DRAGSTER's value on the authenticated DRAGSTER originals, and native code derives it rather than assuming ZOOM ZOO's (R-0038).",
+  "overrides": [
+    {"address": 1009, "width": 2, "value": 0, "provenance": "$03F1 screen shift, $81:A4C1-A4FD playfield arm selected by track byte 13 = 0; TrackGeometry.screen_shift"},
+    {"address": 1011, "width": 2, "value": 65512, "provenance": "$03F3 camera follow window low -0x18; TrackGeometry.follow_window_low"},
+    {"address": 1013, "width": 2, "value": 25, "provenance": "$03F5 camera follow window high 0x19; TrackGeometry.follow_window_high"},
+    {"address": 1061, "width": 2, "value": 65487, "provenance": "$0425 visible span left -0x31; TrackGeometry.visible_left"},
+    {"address": 1063, "width": 2, "value": 256, "provenance": "$0427 visible span right 0x100; TrackGeometry.visible_right"},
+    {"address": 3349, "width": 2, "value": 2, "provenance": "$0D15 lap-count base, laps + 1 for the one-lap race ($81:D673, $82:DB96-DBB2 with $77:074B = 0); ClassicRaceScenario.laps"},
+    {"address": 3407, "width": 2, "value": 65535, "provenance": "$0D4F x wrap mask; TrackGeometry.position_mask"},
+    {"address": 3409, "width": 2, "value": 1023, "provenance": "$0D51 coarse columns - 1; TrackGeometry.coarse_columns"},
+    {"address": 4737, "width": 2, "value": 96, "provenance": "$1281 progress adjustment bound, $83:CC63-CC6D for race mode 0 with guarded $1283 = 0; race_adjustment_limit"}
+  ]
+}

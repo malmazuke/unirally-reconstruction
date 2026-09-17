@@ -1,0 +1,244 @@
+{
+  "kind": "dragster_ordinary_controls_freeze",
+  "case": {
+    "id": "dragster-ordinary-primary",
+    "changes": [
+      {
+        "from": 1329,
+        "to": 1520,
+        "buttons": [
+          "y"
+        ]
+      },
+      {
+        "from": 1521,
+        "to": 1599,
+        "buttons": [
+          "right"
+        ]
+      },
+      {
+        "from": 1600,
+        "to": 1612,
+        "buttons": [
+          "b",
+          "right"
+        ]
+      },
+      {
+        "from": 1613,
+        "to": 1614,
+        "buttons": [
+          "right"
+        ]
+      },
+      {
+        "from": 1615,
+        "to": 1616,
+        "buttons": [
+          "right",
+          "x"
+        ]
+      },
+      {
+        "from": 1617,
+        "to": 1699,
+        "buttons": [
+          "right"
+        ]
+      },
+      {
+        "from": 1700,
+        "to": 1712,
+        "buttons": [
+          "b",
+          "right"
+        ]
+      },
+      {
+        "from": 1713,
+        "to": 1729,
+        "buttons": [
+          "l",
+          "right"
+        ]
+      },
+      {
+        "from": 1730,
+        "to": 1799,
+        "buttons": [
+          "right"
+        ]
+      },
+      {
+        "from": 1800,
+        "to": 1811,
+        "buttons": [
+          "b",
+          "right"
+        ]
+      },
+      {
+        "from": 1812,
+        "to": 1829,
+        "buttons": [
+          "a",
+          "r",
+          "right"
+        ]
+      },
+      {
+        "from": 1830,
+        "to": 1899,
+        "buttons": [
+          "right"
+        ]
+      },
+      {
+        "from": 1900,
+        "to": 1912,
+        "buttons": [
+          "b",
+          "right"
+        ]
+      },
+      {
+        "from": 1913,
+        "to": 1930,
+        "buttons": [
+          "right",
+          "x"
+        ]
+      },
+      {
+        "from": 1931,
+        "to": 2049,
+        "buttons": [
+          "right"
+        ]
+      },
+      {
+        "from": 2050,
+        "to": 2052,
+        "buttons": [
+          "b",
+          "right"
+        ]
+      },
+      {
+        "from": 2053,
+        "to": 2199,
+        "buttons": [
+          "right"
+        ]
+      },
+      {
+        "from": 2200,
+        "to": 2215,
+        "buttons": [
+          "right",
+          "up"
+        ]
+      },
+      {
+        "from": 2216,
+        "to": 2299,
+        "buttons": [
+          "right"
+        ]
+      },
+      {
+        "from": 2300,
+        "to": 2310,
+        "buttons": [
+          "down",
+          "right"
+        ]
+      },
+      {
+        "from": 2311,
+        "to": 2399,
+        "buttons": [
+          "right"
+        ]
+      },
+      {
+        "from": 2400,
+        "to": 2403,
+        "buttons": [
+          "right",
+          "select"
+        ]
+      },
+      {
+        "from": 2404,
+        "to": 2599,
+        "buttons": [
+          "right"
+        ]
+      },
+      {
+        "from": 2600,
+        "to": 2606,
+        "buttons": [
+          "right",
+          "y"
+        ]
+      },
+      {
+        "from": 2607,
+        "to": 2699,
+        "buttons": [
+          "right"
+        ]
+      },
+      {
+        "from": 2700,
+        "to": 2712,
+        "buttons": [
+          "b",
+          "right"
+        ]
+      },
+      {
+        "from": 2713,
+        "to": 2729,
+        "buttons": [
+          "r",
+          "right"
+        ]
+      },
+      {
+        "from": 2730,
+        "to": 3900,
+        "buttons": [
+          "right"
+        ]
+      }
+    ]
+  },
+  "frames": [
+    1328,
+    3900
+  ],
+  "state_bytes": 742,
+  "original_sha256": "f12a4e4902852632d82bdf408427fad2bf5bbba88bc7b4144eae4932a1ec4981",
+  "rows_sha256": "dac612cc71a1a2155e4f47bb3e86e1aee9e61dbb55a1fad74aed2171df2a2469",
+  "events": {
+    "finish_frames": [
+      3211,
+      3214
+    ],
+    "loading_frame": 3452,
+    "outcome": "player_won",
+    "first_visible": 3560,
+    "stable_result": 3677
+  },
+  "timeline_sha256": "5c9f12677d5674a84110d994412ec195757799e1bc895b409de317747d94f64e",
+  "rom_sha256": "a1105819d48c04d680c8292bbfa9abbce05224f1bc231afd66af43b7e0a1fd4e",
+  "core_sha256": "e59bf88d4fc922c9fe3b5438e65ff3a6909d24e1628f0f87141c8de17699a91b",
+  "menu_manifest_sha256": "7c1b4bce9d300812670f712a9fbae1d89b4079385b83bee006733cd7a4ed737f",
+  "guards_sha256": "81661f848196d92bc0e81831b862aea35a9e0f56c2b42c8e903b05f5aa1936db",
+  "guard_overrides_sha256": "d375493673ba313a8e940adc1f17b837e5f89d3dd95e1005f344d88df95198e9",
+  "result_inventory": "Race bytes are original projections until loading; thereafter the archived race is checked against surviving SRAM lap slots and totals. Totals at SRAM 618/61a are projected every frame; the mode-0 result screen publishes no graph extrema. The load count is a semantic clock held at the stable winner (226) or loser (242) result."
+}
