@@ -1525,3 +1525,330 @@ feature total `$770825` 4 to 8.
 Broad suites, sanitizers, DRAGSTER native regressions, live controls and visuals
 were out of scope for this pass at the coordinator's request and are not
 claimed. M4-16 remains unaccepted on its own open product evidence.
+
+## Final independent review — candidate `9b43f3c` — 17 September 2026
+
+Reviewing model: **Claude Opus 5**, fresh subagent, no implementation
+conversation. Checkout `.worktrees/m4-16-final-review`, branch
+`review/m4-16-final`, at exact `9b43f3c9f0c5aff0299fe66a8412e3f293e1dd6d`
+(equal to `origin/codex/m4-16-playable-zoom-zoo` when checked). No
+implementation file was changed; other worktrees were only read. Started
+07:54:24 UTC; checks finished 08:22 UTC; report committed about 08:30 UTC. Scope: everything since the last
+visual review (`bfd41ed` of `06abab7`): `473dbc1` through `9b43f3c`, 27
+commits, 31 files.
+
+### Verdict: changes required — one blocking failure
+
+**Blocking.** Hosted CI on this exact candidate fails on Linux (item 7 requires
+it). Everything I reproduced for the behaviour and presentation scope passes:
+visual criteria 1 and 3 now **pass**, criterion 2 **passes with limitations**,
+and the primary and idle-late-start gates, all four presets, the DRAGSTER
+presentation gates and my ROM checks of the cited routines agree with the
+record. Findings 2-5 below are non-blocking.
+
+1. **High (blocking): the hosted Linux build fails on `9b43f3c`.**
+   `gh run view 35196948852`: head `9b43f3c9...`, `lab (macos-15)` success,
+   `lab (ubuntu-24.04)` failure at "Build lab-debug". GCC `-Werror`:
+   `src/core/presentation.cpp:943:78` misleading-indentation (`ui_text`),
+   `:1008:85` sign-conversion (`zoom_zoo_hud` clock sum passed to
+   `race_time(unsigned)`), `:1103:9` misleading-indentation (BG1 tile flip
+   `if(...)px=15-px;if(...)py=15-py;`). Apple clang 17 accepts the same flags,
+   so no local preset shows it. The coordinator reports a formatting-only fix on
+   `task/m4-16-linux-build` (`333fb58`, remote ref `36c37f6` when I checked); I
+   did not review it. Re-review of the next candidate should confirm
+   `git diff 9b43f3c <next> -- src tests tools` is formatting or casts only,
+   that both CI jobs pass, and that the four presets still pass. The evidence
+   below then carries over if the primary rows digest (`b4a34af7...`) and
+   the render hashes listed below are unchanged.
+2. **Minor, pre-existing (not introduced in this range): the BG scroll is wrong
+   on the pause-entry and unpause pictures.** `render_zoom_zoo` derives the
+   previous camera as `camera - camera.velocity`. A paused update does not move
+   the camera, so the first picture after the pause is drawn with the
+   background and track displaced. `pause-a` frame 6010 (first unpaused
+   picture): 31,094 of 54,272 pixels below the HUD band differ, and the best
+   whole-frame alignment of native to original is (+8,+4) (95.5% equal), while
+   6011-6030 align at (0,0) with only HUD glyph differences. The rider objects
+   are correct at 6010. The updates that enter, hold and leave the pause
+   (6000-6010) all leave the camera still, so by the same formula the dimmed
+   pause pictures carry the displacement too. I inferred that and did not
+   measure it, because the dim differs. Undimmed, it shows for one 20 ms
+   frame on every resume.
+3. **Minor: after a 10:00 time-out the authored clock cycles.** The held clock
+   keeps its subframe, so the HUD reads 9:59.98, then 9:59.90, .92, .94, .96,
+   .98, repeating until result loading (stop-timeout native frames 31582-31588).
+   The original shows a fixed `9:59:9`. The value matches at tenths, as
+   everywhere else, but the hundredths visibly run backwards and loop.
+4. **Minor, records: stale statements.** `docs/STATE.md` still describes
+   `ca46025`, a 50-entry v5 pack, an open opponent-reward finding and incomplete
+   live/visual gates. `R-0035` line 101 says "Gamepad is untested", and lines
+   96-99 call the rider work unreviewed and awaiting D1-D3 re-review.
+   `NEXT_SESSION` cites 21/21 focused tests (22 now). These need refreshing in
+   the closeout.
+5. **Minor, record precision.** The recorded limitation says the original shows
+   the opponent's finish time "while the player is still racing after the
+   opponent finishes". The original also shows it after both have finished:
+   `1:38:10` low centre at primary frame 6600 (player finished 6484) and at
+   wrong-way 6600-6850. Native omits it in every case. It is excluded
+   decoration, but the record should describe it as it appears.
+
+### Build and input identity
+
+- Presets `lab-debug`, `lab-sanitize`, `app-debug`, `app-sanitize` via
+  `python3 tools/project.py build --preset P`: all rc 0, Apple clang 17.0.0,
+  CMake 3.31.10, Ninja 1.13.2, clean source recorded in `lab-build-info.json`.
+  `zoom_zoo_runner` (app-debug) `bd8b9136...`, `zoom_zoo_presentation_runner`
+  (app-debug) `76e7444a...`, app-sanitize runner `058c5dfa...`,
+  app-sanitize `unirally` `91e69ac7...`.
+- **Pack v7 extracted by me from the ROM** (`frontend run --track zoom-zoo --rom
+  ... --pack local/classic-crawler-two-tracks-v7.pack --preset app-debug
+  --updates 20 --hidden`): rc 0, 55 entries, SHA-256 `b75539a0adfe13c3...fd442`.
+  That matches the record's `b75539a0...` and is byte-identical to the
+  implementer's pack. ROM SHA-256 `a1105819...0fd4e`. A copy of the old v6 pack
+  (`adfa974b...`) is refused: rc 3, "existing pack is invalid and was not
+  replaced: Classic pack extraction-rules identity is incompatible".
+- All 20 frozen original PNGs in `zoom-zoo-playable-v2.json` match their
+  SHA-256 values.
+- I regenerated every native timeline from native initialization on my build
+  (`zoom_zoo_runner --start classic.crawler.zoom-zoo --content-pack PACK
+  --inputs ...`). Each matches the original projection rows in full: boundary-a,
+  brake-a, loss-a and pause-a 6225/6225, compound-reverse-a 6225/6225,
+  wrong-way-a 8125/8125. My four boundary/brake/loss/pause timelines are
+  byte-identical to the implementer's `*-native.txt`.
+- **Original recaptures** used `recapture.py` (byte-identical copy
+  `359ab534...` of the rider-art worktree script), which asserts every
+  replayed frame's video and WRAM digest against the frozen `reference.json`.
+  Frames checked and PNGs kept: boundary-a 5,518 / 99; compound-reverse-a
+  5,284 / 137; wrong-way-a 5,694 / 56; pause-a 4,824 / 36; idle stop-timeout-a
+  31,094 / 35. My recaptured boundary-a frames 1376, 1450, 1700, 2501, 3208,
+  4840 and 6484 are byte-identical to the frozen PNGs.
+
+### Visual criteria 1-3 on the frozen scenes
+
+Native renders came from `zoom_zoo_presentation_runner PACK --timeline
+<my boundary-a|brake-a timeline> FRAME OUT.ppm` (1376 via the single-state
+form). "Below HUD" counts pixels equal to the frozen original in rows 12-223.
+The original HUD shows tenths only.
+
+| Scene | Frame | Lap orig / native | Clock orig / native | Below-HUD equal | What differs |
+| --- | --- | --- | --- | --- | --- |
+| initialization | 1376 | - | - | 54,272/54,272 | nothing (both black) |
+| countdown | 1450 | 0/3 / 0/3 | 0:00:0 / 0:00.00 | 44,195 | blue start arrow, red HUD glyphs, native `READY` |
+| start | 1649 | 0/3 / 0/3 | ?:01:3 / 0:01.32 | 44,400 | start ring, `MORE STUNTS`, `<` |
+| reversal | 1700 | 1/3 / 1/3 | 0:02:3 / 0:02.34 | 53,514 | `MORE STUNTS`, `<`, HUD glyphs; rider identical, leaning left in both |
+| steep_contact | 2501 | 1/3 / 1/3 | 0:18:3 / 0:18.36 | 53,965 | `>` and HUD glyphs; rider identical, wheel on the wall |
+| lap_one | 3208 | 1/3 / 1/3 | 0:32:5 / 0:32.50 | 53,985 | HUD glyphs only |
+| lap_two | 4840 | 2/3 / 2/3 | 1:05:1 / 1:05.14 | 54,001 | HUD glyphs only; both riders identical |
+| finish | 6484 | 3/3 / 3/3 | 1:38:0 / 1:38.02 | 53,985 | HUD glyphs only |
+| player_win | 7000 | - | - | authored | render hash `c1d2cffe...`, identical to the `bfd41ed` render: MIKE 1:38.02, BRONSEN 1:38.10, best laps 0:32.50, WINNER |
+| player_loss | 7000 brake | - | - | authored | render `4f4c7a6d...`, identical to `bfd41ed`: MIKE 1:38.18, BRONSEN 1:38.10, RUNNER UP |
+
+Native render SHA-256 prefixes in table order: `0bed1ceb af38a76b 4802eb04
+66c713f1 06918740 1d9e5f36 0514f3d7 14c8df70 c1d2cffe 4f4c7a6d`.
+
+- **D5 (HUD latency) closed.** HUD strips over the recaptures: the lap glyph
+  changes at 1676, 3209 and 4841 in both pictures, and FINISH appears at 6485
+  in both. Clock tenths agree at every inspected frame, for example 3207
+  `0:32:4` against `0:32.48`.
+- **D4 (post-finish HUD) closed, with the recorded approximation.** From 6485
+  native shows FINISH, `1:38.02` and WINNER (primary), and FINISH, `1:38.18`
+  and LOSER (brake frame 6724). The values match. Timing differs slightly more
+  than recorded: the original keeps the corner clock at 6485 and drops it at
+  6486, but its centred `1:38:02` and WINNER first appear at 6488 (recaptured
+  6486-6500). Native shows them from 6485, three pictures early. That is
+  cosmetic; the record's "one more frame" note should say 6488.
+- **D6 (BG1 row) closed.** Race scenes align at (0,0). Outside overlays and HUD
+  glyphs, the scene is pixel-identical.
+- **D1-D3 (rider art) closed.** Rider objects are pixel-identical wherever no
+  original overlay covers them; see the systematic count below.
+- **Fade.** Recaptured 1377-1412 differ only in the start arrow (its colour
+  cycles through the fade) and the countdown `3`. Brightness first shows at
+  1393 in both.
+- **Start/finish line palette.** The checker is pixel-identical on consecutive
+  frames 3205-3212 and 6480-6485 (primary) and 6470-6477 (compound-reverse, an
+  untuned case), which step through different cycle indices.
+
+**Systematic rider-pixel check.** A reviewer harness
+(`artifacts/m4-16-final-review/harness/rider_mask.cpp`, linked against the
+app-debug libraries) replays each timeline with `ZoomZooRiderLookTracker`, as
+the runner does. It renders every recaptured race frame twice, normally and
+with both riders moved off-screen. The difference is the set of pixels rider
+objects draw. The normal render was asserted equal to the runner output for
+every frame. Rider pixels equal to the original:
+
+| Timeline | Frames | Rider pixels | Equal | Every unequal pixel is |
+| --- | ---: | ---: | ---: | --- |
+| boundary-a (tuned) | 82 | 33,105 | 29,146 | start arrow during fade (single cycling colour per frame), arrow `2626ff` 1450, ring `ceceff` 1583, hint text over the seat 2100, finish flag 6486-6500 and 6724 |
+| compound-reverse-a (untuned) | 137 | 43,690 | 41,878 | ring 1650, `MORE STUNTS` text blended over the seat 1685-1701, finish flag 6479-6490 |
+| wrong-way-a (untuned) | 56 | 22,040 | 19,036 | flag and wrong-way arrow and caption overlays only |
+| pause-a | 36 | 10,993 | 8,323 | only the ten dimmed pause pictures 6000-6009 (pause fidelity excluded) |
+| stop-timeout-a (untuned) | 35 | 6,407 | 5,363 | time-out flag 31584-31600 only |
+
+I checked the colour lists and visual crops. None of the unequal pixels is a
+rider-art, facing or anchor difference. Both flip states are covered: the
+reflected player in all of pause-a and in compound-reverse. Wrong-way-a
+exercises sustained leftward riding (6551-6882) with tumbling poses. The facing
+matches at 6560, 6590, 6600, 6700 and 6850.
+
+**Criterion 1: PASS.** Geometry, camera, rider positions and facing, lap and
+clock at the original's precision, post-finish HUD, and result values for both
+outcomes match. **Criterion 2: PASS with limitations.** The authored HUD,
+FINISH/WINNER/LOSER, NO TIME and the pause menu are legible. Excluded
+decoration: start arrow and ring, countdown digits, hint text, off-screen
+arrows, finish flag and captions, the opponent's finish time (finding 5),
+result art and graph scale, original pause menu, audio. **Criterion 3: PASS.**
+Rider art is recovered rather than a fallback, and anchors are exact at 2501.
+The hidden app-sanitize run below reports 0 pose fallback frames.
+
+### Time-out path (untuned original)
+
+- Native rows from initialization equal the original's projection for
+  1376-31927 (30,552 rows). The first difference is at 31928, bytes 573-576
+  (graph extrema published natively, still 0 in the original). This reproduces
+  the recorded two-update-early limitation. The tool is
+  `artifacts/m4-16-final-review/tools/timeout_timeline.py`: the gate's
+  `original()` with only its +108 visible-timing and 200-stable checks relaxed.
+- Pictures: at 31588 the original shows `2/3`, `9:59:9` and LOSER, and native
+  shows `2/3`, `9:59.90` and LOSER. The result pictures at 32000 and 32300
+  show, in the original: MIKE `NO TIME`, BRONSEN `1:38.10`, both best laps
+  `0:32.50`. Native shows the same values under RUNNER UP, and the MIKE graph
+  plots only its completed lap, like the original.
+- The app-sanitize `zoom_zoo_runner` gives identical output over the whole
+  30,925-row time-out timeline with an empty stderr. Its presentation runner
+  renders 8 sampled frames (fade, lap, finish flag, result, wrong-way, pause,
+  compound, loss HUD) and the time-out result identically to app-debug, with no
+  sanitizer report.
+
+### Source claims checked against the ROM
+
+Disassembled from the PAL ROM with a reviewer script built on
+`tools/unirally_lab/coverage/opcodes.py`:
+
+- **Clock limit `$81:C73E-C75B`: confirmed.** On minutes reaching 10 it stores
+  9 to `$0E25/$0E21/$0E19`, 5 to `$0E1D`, and 1 to `$0EFF` and `$0F01` (the
+  finish flags; R-0012). The subframe `$0E29` was already reset, so the hold
+  re-triggers every five updates, as `advance_timer_digits` returns true every
+  fifth update. The routine writes no other gameplay state; `$81:C75E-C7CD` is
+  HUD glyph stores plus a `JSL $828000` sound at 9:5x.
+- **Palette cycle `$82:D382-D496`: confirmed.** While `$0B92` is set, CGRAM
+  address `$60` receives 16 words from `$80:82AB+32k,$0B84*2`, then address 0
+  receives `$80:84AB,$0B84*2`, then `$0B84=($0B84+1)&15`. Pack entry file offset
+  683 (`$80:82AB`), 544 bytes. In the frozen WRAM series, `$0B84` ends frame n at
+  `(n-1381)&15` for every frame from 1382 until result loading: all 5,343
+  frames 1382-6724 in boundary-a and all 5,352 frames 1382-6733 in pause-a,
+  including paused 6000-6009. The first departure is at loading.
+- **Fade: confirmed.** NMI `$80:883F-8849`: `LDA $0FF1; SEC; SBC #$0F; BPL;
+  LDA #0; STA $2100`. `$83:CCC1-CCC9` increments `$0FF1` up to 30.
+- **Rider objects `$83:F0FF-F2D9`: confirmed.** The row masks from
+  `$83:F2FF-F3F8` and `$83:F40C-F4FF` match the native header decoding bit for
+  bit, including the ROR/ROL carry handling. The top clip skips row-0 words for
+  both the pose and the overlay frame (`$2C/$2E`, `$18/$1A`). An overlay bit
+  consumes the covered pose word (`$83:F237/F249`). Tile decode `$83:F253-F26B`
+  matches `decode_rider_tile_reference`: the carry into `ADC #$27` is provably
+  0. A slot unused now but used in the previous update receives `$27:8000`
+  (`$83:F29C`). No read of `$0EF7` exists in banks `$80-$83`.
+- **OAM `$82:ACAC-AE5E` (one-player branch, `$0DE1`=0): confirmed.** The Y
+  window is `[$FFD7,$00E1)`. X is shifted by `$03F1` and bounded by
+  `$0425/$0427`. OAM X is the low byte of `(x-camera)&$0D4F`, with the ninth bit
+  set on a negative scaled X. Attribute bit 6 comes from `$0BA7/$0BA9`. A
+  hidden rider stores X/Y `$70` with the ninth bit set. The clip is 1 below
+  `$FFE0` and 2 from `$00D0`.
+- **Look latch clears: confirmed, and I agree they are unreachable in the
+  one-player race except for the recorded opponent caveat.** `$82:857F`
+  (`STA $0D5B`, player) and `$82:87AD` (`STA $0D5D`, opponent) are the only
+  latch stores in the look routine. Byte-pattern search finds the other
+  `$0D5B/$0D5D` stores only in the idle routine's copy-back (`$82:8E16`,
+  `$82:9304`). The only `JSR $8927` in bank `$82` is at `$82:8768`, in the
+  opponent's copy. So the player's cursor and end stay 0, and its clear needs
+  its delay to go from 0 through 65,536 decrements. Any no-target update with
+  the head nonzero, or any update without the latch, resets it; a target update
+  pauses it. Even if every race update were a player look update, the clock
+  limit bounds a race to about 30,450 updates, fewer than 65,536. From the ROM
+  tables the shortest opponent sequence is sequence 4 (`$17:C614`
+  `$140-$15A`), 145 look updates. My view: the argument is sound for the
+  player. For the opponent it depends on the recovered AI never idling mid-race
+  for about 290 updates, which is evidenced but not proven. This is acceptable
+  as the recorded residual.
+- **Audio-upload classification: confirmed.** `$82:812A-8150` sets bank `$65`
+  to `$10` and `$63` to `$8000`. It only advances the pointer, and its carry
+  path keeps the offset at `$8000` or above. `$82:8151` wraps to `$8000` and
+  increments the bank. In `$82:8082-8129` and `$82:82A9-831E`, values read
+  through `[$63]` go to `$2141-$2143`, to X or Y loop counts, or to the pushed
+  jump address compared with `$FFC0`. The only RAM stores are constants to
+  `$7E2000/2002/2004`. `$82:8088-809A` is the `$BBAA` reset handshake wait that
+  explains the time-out load delay.
+
+### Gates reproduced
+
+| Command | rc | Result |
+| --- | --- | --- |
+| `python3 tools/project.py test --suite synthetic --preset P` for lab-debug, lab-sanitize, app-debug, app-sanitize | 0 x4 | **406/406 passed on each, 22 ctest, 0 skipped**, source `9b43f3c` clean |
+| `python3 -m tools.unirally_lab.native.zoom_zoo_playable compare --reference <impl>/boundary-a --repeat <impl>/boundary-b --contract tests/manifests/native/zoom-zoo-playable-primary-v11.freeze.json --binary build/app-debug/src/core/zoom_zoo_runner --pack local/classic-crawler-two-tracks-v7.pack --out artifacts/m4-16-final-review/gates/primary-app-debug.json` | 0 | passed: 1376-7600, 742 bytes, rows `b4a34af7...`, **757 fresh restores**, full restart; events 6484/6488, loading 6725, visible 6833, stable 6839; 08:00:45-08:05:47 UTC |
+| same with `<rider-art>/artifacts/m4-16-idle/captures/late-start-a` / `-b` and `zoom-zoo-playable-idle-late-start-v11.freeze.json` | 0 | passed: 1376-8100, **801 restores**, restart; player 7418 / opponent 6488, loading 7659, visible 7767, player_lost; 08:06:15-08:11:33 |
+| `native presentation-check` DRAGSTER winner and loser (lab-debug, copied fixtures, `classic-crawler-dragster.pack` `5c1fc5b0...`) | 0 / 0 | **36/697/279/445/653/962/961** and **1073**, all unchanged |
+| app-sanitize `unirally --content-pack v7 --track zoom-zoo --updates 6000 --hidden --fixed-controller-mask 128` | 0 | 4,288 frames through `LivePresentation::render_zoom`, **rider-pose fallback frames 0**, no sanitizer output; not a completed race (totals 60000/9810) |
+| reviewer native timelines, recaptures, rider-pixel harness, time-out diagnostic (commands above) | 0 | as reported |
+
+Primary and idle-late-start gates ran on app-debug only. The implementer's
+`51c05f6` sanitizer gates were not repeated. Against `51c05f6`, `src`, `tools`
+and `tests` differ only in `presentation.cpp` and `presentation_tests.cpp`
+(`4df0c29`), so the runner's gameplay path is unchanged since that gated
+commit. The app-sanitize suite, time-out rows and renders above exercise the
+new clock-limit and presentation paths.
+
+### Reviewer checklist
+
+- **Baselines.** No existing freeze or manifest changed.
+  `zoom-zoo-playable-primary-v11.freeze.json`, `zoom-zoo-playable-v2.json`, the
+  DRAGSTER presentation manifests and the M4-12 to M4-15 contracts are untouched
+  in `06abab7..9b43f3c`. New files are additive: idle late-start freeze, time-out
+  inventory marked `"acceptance": false`, two case files. The two-track rules
+  file's profile moved v5 to v7 with appended entries. v4-v6 were unaccepted
+  experiments, and DRAGSTER v1 stays supported and unchanged.
+- **Weakened comparisons.** `zoom_zoo_playable.py` is unchanged. The restore
+  validator now admits a lap-short finish only when both riders are finished at
+  the held 9:59.9 clock with the 60000 total. That is the original's behaviour;
+  tests reject the 9:59.8x, one-finished and summed-total mutants.
+- **Masked skips.** None: 406 passed, 0 skipped, on every preset.
+- **Undefined arithmetic.** Read every new arithmetic path. Look and object
+  code wraps through `std::uint16_t`, and unsigned shifts stay in range.
+  `(screen_y-oam.y)&0xff` is defined in C++20. `1U<<button` is guarded below 32.
+  UBSan and ASan passed the suite, the time-out run and the renders. The GCC
+  sign-conversion error (finding 1) is a diagnostic, not UB.
+- **Readability (D-0003).** `rider_object` and `rider_look` are small, named and
+  address-cited, with fail-closed bounds. `render_zoom_zoo` keeps the dense
+  one-line style that trips GCC (finding 1). That is acceptable once reformatted.
+- **Content.** No ROM-derived bytes in tracked files. The diff contains no
+  binaries, and no byte runs in source, tests or docs. The rider tests use
+  synthetic tables only. Pack entries are offsets and hashes.
+
+### Recorded limitations — judgement
+
+Acceptable as recorded: the time-out result loading two updates early (audio
+handshake timing, time-out path only, reproduced exactly); the post-finish
+caption timing (native three pictures early, see D4); the opponent latch residual; poses `$1432/$1433` and 5171 and up
+failing closed with the held pose in live play; the omitted original overlays;
+the single-state runner omitting look overlays (the `--timeline` form is exact).
+The gamepad clause rests on the user's witness plus logs. The 05:47 rider-art
+playtest report was overwritten, so only its quoted console text survives; I did
+not re-exercise live input. DRAGSTER ignoring the 10:00 limit is a real gap in
+accepted DRAGSTER work, outside this range; it should get its own tracked
+follow-up rather than stay only in this record.
+
+### Not assessed, and why
+
+- The formatting fix `333fb58` / `36c37f6`: not my candidate.
+- Visible live window play on this candidate: live evidence was accepted in
+  earlier rounds, and no computer-use approval was requested. The hidden
+  app-sanitize run covers the live render path, but not keyboard or gamepad
+  delivery.
+- Primary and idle gates on app-sanitize, the M4-15 matrix, and the
+  M4-12 to M4-14 historical matrix on `9b43f3c`: not repeated here.
+- Edge cases without original evidence: a result for a rider timed out with no
+  completed lap (native would show `NO TIME` best lap); equal finish totals
+  (native HUD shows LOSER and the result shows RUNNER UP).
+- The time-out restore set (13 app-sanitize restores to 31927) was not
+  repeated; I reproduced the row equality instead.
+
+Evidence (ignored): `artifacts/m4-16-final-review/` (`gates/`, `native/`,
+`orig/`, `render/`, `render-batch/`, `render-sanitize/`, `sbs/`, `sbs2/`,
+`harness/`, `rider-pixel-report.json`, `tools/`).
