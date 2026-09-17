@@ -1993,3 +1993,20 @@ Evidence (ignored): `artifacts/m4-16-final-review/rereview/` (`gates/`,
 `frames/`, `render/`, `render-pause/`, `render-timeout/`, test reports,
 `pause-a-6005.png`, `pause-a-6010.png`, `timeout-hud.png`) and the preserved
 `harness/libs-9b43f3c/`.
+
+### Addendum — the queued gates finished (09:17 UTC)
+
+- **Idle late-start gate on app-sanitize: passed.** It ran 09:03:01-09:17:38
+  UTC at `c5f4566`, the review commit, with an empty diff. Its `src`, `tests`
+  and `tools` equal `75626f8`. Rows `205d1705...`, **801 restores**, restart,
+  player_lost at 7418/6488. The runner `ecd485a5...` gave no sanitizer report.
+  This closes the item marked "not claimed" above.
+- **A duplicate idle app-debug run from my queued script aborted, rc 1:**
+  "source/binary/pack changed during validation". It ran 08:57:50-09:03:01. I
+  committed `c5f4566` at 08:58:57, which moved `HEAD` during the run, and the
+  gate's identity guard (`zoom_zoo_playable.py` lines 151-153) rejected it as
+  intended. I discard it as a mixed run. It is not a failure of the candidate.
+  The app-debug evidence is the direct run above: 08:49:14-08:54:29 at
+  `5ea8444`, 801 restores, passed.
+
+The verdict is unchanged: **approve**.
