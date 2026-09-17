@@ -214,6 +214,50 @@ def freeze(a, b, out):
     return result
 
 
+def incomplete_inventory(a, b, out):
+    """Freeze a DRAGSTER original whose result load timing is not recovered.
+
+    The 10:00 clock limit ($81:C73E-C75B) is the only DRAGSTER case where the
+    result waits longer in the SPC700 reset handshake ($82:8088-809A), so the
+    first new result picture is load update 111 instead of the ordinary 109
+    and the mode-0 totals ($80:F88D-F8A5) publish two updates late. Audio
+    hardware timing is outside the contract, so the race and loading prefix up
+    to the ordinary publication update is inventoried instead of frozen for
+    acceptance, as M4-16 did for ZOOM ZOO's stop-timeout original.
+    """
+    if out.exists():
+        raise ValueError('fresh inventory required')
+    left, rows, events = original(a, allow_incomplete=True)
+    right, other, repeated = original(b, allow_incomplete=True)
+    if left != right or rows != other or events != repeated:
+        raise ValueError('two original runs differ')
+    if not events.get('complete') or events.get('projection_error'):
+        raise ValueError('inventory requires a complete original projection')
+    loading = events['loading_frame']
+    outcome = events['outcome']
+    late = events['first_visible']-loading-108
+    if late != 2:
+        raise ValueError(f'unexpected result load timing: {events["first_visible"]}, ordinary is {loading+108}')
+    stable = loading+STABLE_RESULT[outcome]-1
+    if left['frames'][1]-stable < 180:
+        raise ValueError('180 stable result updates required')
+    # The ordinary mode-0 publication update; every earlier row is an
+    # unqualified original projection of a timeline nothing else reaches.
+    prefix_last = loading+106
+    result = dict(inventory(left, rows, events), kind='dragster_clock_limit_incomplete_original_inventory', acceptance=False,
+                  race_and_loading_rows_sha256=digest(rows[:prefix_last-INITIALIZATION_FRAME+1]),
+                  race_and_loading_frames=[INITIALIZATION_FRAME, prefix_last],
+                  events=dict(events, stable_result=stable, result_visible_after_loading=events['first_visible']-loading))
+    result['reason'] = ('The player never completes its lap; the 10:00 clock limit ($81:C73E-C75B) finishes both riders at '
+                        f'{events["finish_frames"][0]} with the no-time total. Result loading waits for the SPC700 reset handshake at '
+                        f'$82:8088-809A two updates longer than in every other DRAGSTER case, so the mode-0 totals publish at '
+                        f'{loading+109} instead of {loading+107} and the first new result picture is {events["first_visible"]} '
+                        f'instead of {loading+108}. Audio is excluded from the contract, so this is an inventory, not an '
+                        'acceptance freeze; the race and loading prefix is exact.')
+    out.write_text(json.dumps(result, indent=2)+'\n')
+    return result
+
+
 def restore_boundaries(document, rows, events):
     first, last = INITIALIZATION_FRAME, document['frames'][1]
     loading = events['loading_frame']
@@ -295,7 +339,7 @@ def compare(a, b, contract, binary, pack, out, restores=True):
 
 def main():
     p = argparse.ArgumentParser(description=__doc__)
-    p.add_argument('command', choices=['explore', 'freeze', 'compare'])
+    p.add_argument('command', choices=['explore', 'freeze', 'inventory', 'compare'])
     p.add_argument('--reference', type=Path, required=True)
     p.add_argument('--repeat', type=Path)
     p.add_argument('--contract', type=Path)
@@ -308,6 +352,10 @@ def main():
         print(json.dumps(explore(a.reference, a.binary, a.pack), indent=1))
     elif a.command == 'freeze':
         r = freeze(a.reference, a.repeat, a.out); print(json.dumps(dict(case=r['case']['id'], rows=r['rows_sha256'], events=r['events'])))
+    elif a.command == 'inventory':
+        r = incomplete_inventory(a.reference, a.repeat, a.out)
+        print(json.dumps(dict(case=r['case']['id'], rows=r['rows_sha256'], prefix=r['race_and_loading_rows_sha256'],
+                              prefix_frames=r['race_and_loading_frames'], events=r['events'])))
     else:
         r = compare(a.reference, a.repeat, a.contract, a.binary, a.pack, a.out, not a.no_restores)
         print(json.dumps({k: v for k, v in r.items() if k != 'restore_frames'}, indent=1)); print('restores', len(r['restore_frames']))

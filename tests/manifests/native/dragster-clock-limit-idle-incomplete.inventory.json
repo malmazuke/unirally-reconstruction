@@ -1,0 +1,154 @@
+{
+  "kind": "dragster_clock_limit_incomplete_original_inventory",
+  "case": {
+    "id": "dragster-clock-limit-idle",
+    "changes": [
+      {
+        "from": 1329,
+        "to": 1520,
+        "buttons": [
+          "y"
+        ]
+      },
+      {
+        "from": 1521,
+        "to": 1599,
+        "buttons": [
+          "right"
+        ]
+      },
+      {
+        "from": 1600,
+        "to": 1612,
+        "buttons": [
+          "b",
+          "right"
+        ]
+      },
+      {
+        "from": 1613,
+        "to": 1614,
+        "buttons": [
+          "right"
+        ]
+      },
+      {
+        "from": 1615,
+        "to": 1616,
+        "buttons": [
+          "right",
+          "x"
+        ]
+      },
+      {
+        "from": 1617,
+        "to": 1699,
+        "buttons": [
+          "right"
+        ]
+      },
+      {
+        "from": 1700,
+        "to": 1712,
+        "buttons": [
+          "b",
+          "right"
+        ]
+      },
+      {
+        "from": 1713,
+        "to": 1729,
+        "buttons": [
+          "l",
+          "right"
+        ]
+      },
+      {
+        "from": 1730,
+        "to": 1799,
+        "buttons": [
+          "right"
+        ]
+      },
+      {
+        "from": 1800,
+        "to": 1811,
+        "buttons": [
+          "b",
+          "right"
+        ]
+      },
+      {
+        "from": 1812,
+        "to": 1829,
+        "buttons": [
+          "a",
+          "r",
+          "right"
+        ]
+      },
+      {
+        "from": 1830,
+        "to": 1899,
+        "buttons": [
+          "right"
+        ]
+      },
+      {
+        "from": 1900,
+        "to": 1912,
+        "buttons": [
+          "b",
+          "right"
+        ]
+      },
+      {
+        "from": 1913,
+        "to": 1930,
+        "buttons": [
+          "right",
+          "x"
+        ]
+      },
+      {
+        "from": 1931,
+        "to": 1999,
+        "buttons": [
+          "right"
+        ]
+      }
+    ]
+  },
+  "frames": [
+    1328,
+    32200
+  ],
+  "state_bytes": 742,
+  "original_sha256": "af0733a2d6946010364b72c2dd89f09ac3c7aee302c1030dc48a71794ec595ca",
+  "rows_sha256": "ba22a1a22c652b6dc2fc65d661a496763193306c35fa0573cb8ca62cc9e625f6",
+  "events": {
+    "finish_frames": [
+      31534,
+      3214
+    ],
+    "loading_frame": 31775,
+    "outcome": "player_lost",
+    "first_visible": 31885,
+    "complete": true,
+    "stable_result": 32016,
+    "result_visible_after_loading": 110
+  },
+  "timeline_sha256": "09f70d80693b168b9dde749be7aadc76c1951583daecaaab6f66a6538b064b6f",
+  "rom_sha256": "a1105819d48c04d680c8292bbfa9abbce05224f1bc231afd66af43b7e0a1fd4e",
+  "core_sha256": "e59bf88d4fc922c9fe3b5438e65ff3a6909d24e1628f0f87141c8de17699a91b",
+  "menu_manifest_sha256": "7c1b4bce9d300812670f712a9fbae1d89b4079385b83bee006733cd7a4ed737f",
+  "guards_sha256": "81661f848196d92bc0e81831b862aea35a9e0f56c2b42c8e903b05f5aa1936db",
+  "guard_overrides_sha256": "d375493673ba313a8e940adc1f17b837e5f89d3dd95e1005f344d88df95198e9",
+  "acceptance": false,
+  "race_and_loading_rows_sha256": "3fb792a5d39e8a2700f1665665907d214b31f8e41682bdf265b8ceb56ecd3666",
+  "race_and_loading_frames": [
+    1328,
+    31881
+  ],
+  "reason": "The player never completes its lap; the 10:00 clock limit ($81:C73E-C75B) finishes both riders at 31534 with the no-time total. Result loading waits for the SPC700 reset handshake at $82:8088-809A two updates longer than in every other DRAGSTER case, so the mode-0 totals publish at 31884 instead of 31882 and the first new result picture is 31885 instead of 31883. Audio is excluded from the contract, so this is an inventory, not an acceptance freeze; the race and loading prefix is exact."
+}
