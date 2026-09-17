@@ -1488,7 +1488,7 @@ ClassicRaceScenario classic_race_scenario(ClassicRaceTrack track) {
 }
 
 std::uint16_t race_adjustment_limit(const ClassicRaceScenario& scenario) {
-    return scenario.tour_race?0x48:0x60;
+    return static_cast<std::uint16_t>(scenario.tour_race?0x48U:0x60U);
 }
 
 TrackGeometry track_geometry(std::span<const std::uint8_t> decoded_track) {

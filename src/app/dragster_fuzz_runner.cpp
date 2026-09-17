@@ -42,22 +42,25 @@ public:
   std::uint16_t next() {
     ++updates_;
     if (style_ == 2 && updates_ <= 1500U)
-      return static_cast<std::uint16_t>(random_() & 0x0fffU);
+      return static_cast<std::uint16_t>(draw(0x1000U));
     if (remaining_ == 0) {
-      remaining_ = 1U + random_() % 90U;
+      remaining_ = 1U + draw(90U);
       mask_ = 0;
       const bool pausing = style_ == 1;
-      const auto roll = random_() % 100U;
+      const auto roll = draw(100U);
       if (roll < 78U) mask_ |= bit(LogicalButton::Right);
       else if (roll < 92U) mask_ |= bit(LogicalButton::Left);
-      if (pausing && random_() % 5U == 0U) mask_ |= bit(LogicalButton::Left) | bit(LogicalButton::Right);
+      if (pausing && draw(5U) == 0U) {
+        mask_ |= bit(LogicalButton::Left);
+        mask_ |= bit(LogicalButton::Right);
+      }
       const std::array<std::pair<LogicalButton, unsigned>, 9> odds{{
           {LogicalButton::B, 25}, {LogicalButton::Y, 8}, {LogicalButton::A, 10}, {LogicalButton::X, 15},
           {LogicalButton::LeftShoulder, 12}, {LogicalButton::RightShoulder, 12}, {LogicalButton::Up, pausing ? 20U : 5U},
           {LogicalButton::Down, pausing ? 20U : 5U}, {LogicalButton::Select, 2}}};
       for (const auto &[button, percent] : odds)
-        if (random_() % 100U < percent) mask_ |= bit(button);
-      if (random_() % 1000U < (pausing ? 60U : 5U)) {
+        if (draw(100U) < percent) mask_ |= bit(button);
+      if (draw(1000U) < (pausing ? 60U : 5U)) {
         mask_ |= bit(LogicalButton::Start);
         remaining_ = 1U + remaining_ % 6U;
       }
@@ -66,6 +69,8 @@ public:
     return mask_;
   }
 private:
+  // result_type is 64 bits wide on LP64 Linux; the bound keeps it in range.
+  unsigned draw(unsigned bound) { return static_cast<unsigned>(random_() % bound); }
   std::mt19937 random_;
   unsigned style_{};
   unsigned remaining_{}, updates_{};
