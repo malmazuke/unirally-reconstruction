@@ -1010,7 +1010,8 @@ ZoomZooHud zoom_zoo_hud(const ZoomZooState& previous_update) {
     }
     hud.lap=std::to_string(zoom_zoo_hud_lap(race.riders[0].laps_remaining))+"/3";
     const auto& t=previous_update.movement.timer;
-    hud.clock=race_time(t.minutes*6000U+t.tens_seconds*1000U+t.seconds*100U+t.tenths*10U+t.subframe*2U);
+    // A timed-out clock holds 9:59.9; its subframe keeps cycling, so drop it.
+    hud.clock=race_time(t.minutes*6000U+t.tens_seconds*1000U+t.seconds*100U+t.tenths*10U+(timed_out?0U:t.subframe*2U));
     const auto countdown=previous_update.movement.countdown;
     if(timed_out)hud.caption="LOSER";
     else if(countdown>=70)hud.caption="READY";
@@ -1088,8 +1089,14 @@ RgbFrame render_zoom_zoo(const ZoomZooState& state,const ClassicContentPack& pac
     // HDMA tables are published before the current camera update. Original
     // end1382..6724 tables equal previous camera minus the initial origin;
     // BG2 uses a logical word shift, including negative wrapped scrolls.
-    const int background_x=(camera_x-static_cast<std::int16_t>(state.race.camera.velocity_x))&0x3fff;
-    const int background_y=static_cast<std::int16_t>(static_cast<std::uint16_t>(camera_y-static_cast<std::int16_t>(state.race.camera.velocity_y)));
+    // Paused updates leave the camera still while velocity persists, so
+    // camera - velocity is the previous camera only when the previous update
+    // moved it: use the previous update's camera whenever it is available.
+    const bool previous_race=previous_update && !previous_update->result_updates;
+    const int background_x=previous_race?previous_update->race.camera.x&0x3fff
+        :(camera_x-static_cast<std::int16_t>(state.race.camera.velocity_x))&0x3fff;
+    const int background_y=previous_race?static_cast<std::int16_t>(previous_update->race.camera.y)
+        :static_cast<std::int16_t>(static_cast<std::uint16_t>(camera_y-static_cast<std::int16_t>(state.race.camera.velocity_y)));
     const auto origin_x=static_cast<std::uint16_t>(((unsigned(word(track,3))<<4)-256U)&0xfff0U);
     const auto origin_y=static_cast<std::uint16_t>(((unsigned(word(track,5))<<4)-256U)&0xfff0U);
     const int bg_x=static_cast<std::uint16_t>(background_x-origin_x)>>1U;
