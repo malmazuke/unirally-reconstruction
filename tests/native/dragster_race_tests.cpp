@@ -72,16 +72,18 @@ int main() {
 
     // A landing clears held rotations on the update a released roll counts its
     // hold, so a supported rider may hold 1 with 0 rotations (original 1623 of
-    // fuzz seed 31). Airborne without a landing response it stays impossible.
+    // fuzz seed 31).
     auto landing_hold=finished;landing_hold.rolls[0].step=0xfffb;landing_hold.rolls[0].held_updates=1;
     landing_hold.rolls[0].prior_orientation=0;landing_hold.rolls[0].pose_base=0x8000;
     landing_hold.movement.riders[0].pose.reflected=true;
     require(serialize_zoom_zoo(deserialize_zoom_zoo(serialize_zoom_zoo(landing_hold)))==serialize_zoom_zoo(landing_hold));
-    auto airborne_hold=landing_hold;airborne_hold.movement.riders[0].contact.unsupported_count=9;
-    airborne_hold.rolls[0].support_count_mirror=9;
-    rejects([&]{(void)deserialize_zoom_zoo(serialize_zoom_zoo(airborne_hold));});
-    auto held_rotations=airborne_hold;held_rotations.rolls[0].held_rotations=1;
-    require(serialize_zoom_zoo(deserialize_zoom_zoo(serialize_zoom_zoo(held_rotations)))==serialize_zoom_zoo(held_rotations));
+    // It stays ahead while the rider bounces (original 3472 of seed 383), but
+    // never beyond the elapsed updates.
+    auto airborne_hold=landing_hold;airborne_hold.movement.riders[0].contact.unsupported_count=2;
+    airborne_hold.rolls[0].support_count_mirror=2;
+    require(serialize_zoom_zoo(deserialize_zoom_zoo(serialize_zoom_zoo(airborne_hold)))==serialize_zoom_zoo(airborne_hold));
+    auto impossible_hold=landing_hold;impossible_hold.rolls[0].held_updates=2001;
+    rejects([&]{(void)deserialize_zoom_zoo(serialize_zoom_zoo(impossible_hold));});
 
     // Stable result: winner 226, loser 242 updates of result loading.
     require(classic_race_player_won(finished) && stable_result_updates(finished)==226);

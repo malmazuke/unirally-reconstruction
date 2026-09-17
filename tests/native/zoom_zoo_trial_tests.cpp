@@ -232,7 +232,10 @@ int main() {
     rejects([&]{(void)deserialize_zoom_zoo(serialize_zoom_zoo(active_roll));});
     auto held_roll=result;held_roll.rolls[0].step=0xfffb;
     held_roll.rolls[0].held_updates=7;held_roll.rolls[0].held_rotations=6;
-    rejects([&]{(void)deserialize_zoom_zoo(serialize_zoom_zoo(held_roll));});
+    // A hold above its rotations is reachable: a landing clears the rotations
+    // while a released roll keeps counting (R-0038, originals of DRAGSTER fuzz
+    // seeds 31 and 383). The elapsed-update bounds below still apply.
+    require(serialize_zoom_zoo(deserialize_zoom_zoo(serialize_zoom_zoo(held_roll)))==serialize_zoom_zoo(held_roll));
     // Previous held rotations survive a return/new roll; equality is not required.
     held_roll.rolls[0].held_updates=6;held_roll.rolls[0].held_rotations=7;
     require(serialize_zoom_zoo(deserialize_zoom_zoo(serialize_zoom_zoo(held_roll)))==serialize_zoom_zoo(held_roll));

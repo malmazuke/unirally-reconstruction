@@ -1055,10 +1055,12 @@ void update_zoom_throttle(RiderMovementState& rider,ReflectionTransition& transi
         rider.throttle=0;
         return;
     }
+    // $82:98CF-9A52. The charge latch ($0F63, serialized from $0D53/$0D55)
+    // clears on the airborne, steep and neutral paths ($82:999A, $82:9A2B).
     if(leading_support || rider.contact.unsupported_count>=2 || rider.contact.surface_angle==0xffe1U || rider.contact.surface_angle==31) {
-        rider.throttle=0;
+        rider.throttle=0;charge_announced=0;
     } else if(horizontal==1) {
-        rider.throttle=0;
+        rider.throttle=0;charge_announced=0;
     } else {
 
         // $82:A9C1–A9E0 / AA1E–AA3D: on inverted tiles the drive
@@ -1082,16 +1084,24 @@ void update_zoom_throttle(RiderMovementState& rider,ReflectionTransition& transi
         }
         if(transition.brake_input) {
             rider.motion.velocity_x=0;
-            // $829995-99EF: a reflection step inhibits the announcement,
-            // but preserves accumulated throttle ($0F5F). $0FB1/$0F45
-            // clear throttle separately and remain zero in this scenario.
-            charge_announced=rider.throttle && !transition.step?1:0;
+            // $829995-99EF: a reflection step clears the announcement but
+            // preserves accumulated throttle ($0F5F); nonzero throttle sets
+            // it; zero throttle leaves it as it was (Left and Y through the
+            // countdown carry throttle through zero, DRAGSTER fuzz seed 208).
+            // $0FB1/$0F45 clear throttle separately and remain zero here.
+            if(transition.step)charge_announced=0;
+            else if(rider.throttle)charge_announced=1;
         }
-        else if(rider.previous_brake && rider.throttle) {
-            rider.motion.velocity_x=add_word(rider.motion.velocity_x,rider.throttle);rider.throttle=0;rider.launch_override=256;
+        else {
+            // $82:99F1-9A49: releasing the brake launches any throttle and
+            // clears the announcement; without a previous brake nothing
+            // changes, and the latch is already clear there.
+            if(rider.previous_brake && rider.throttle) {
+                rider.motion.velocity_x=add_word(rider.motion.velocity_x,rider.throttle);rider.throttle=0;rider.launch_override=256;
+            }
+            if(rider.previous_brake)charge_announced=0;
         }
     }
-    if(!rider.throttle || !transition.brake_input)charge_announced=0;
     rider.previous_brake=transition.brake_input;
 }
 void enqueue_zoom_opponent(MovementState& state,unsigned event) {
@@ -1749,23 +1759,18 @@ static ZoomZooState deserialize_classic_race(std::span<const std::uint8_t> bytes
             if(roll.step && bool(roll.pose_base&0x8000U)!=
                (state.movement.riders[i].pose.reflected!=(roll.prior_reflection!=0)))
                 throw std::invalid_argument("inconsistent ZOOM ZOO active roll reflection");
-            // Each held/completed counter advances at most once per update.
-            // Before any word can wrap, positive hold duration cannot exceed
-            // accumulated held rotations ($82955F-9598). Returning from an
-            // earlier hold retains rotations, so equality would be too strict.
-            // A landing's reward pass ($829B69-9D97) then clears the rotations
-            // on the update the hold counts, leaving a positive hold with zero
-            // rotations while the rider is supported (DRAGSTER fuzz seed 31,
-            // matched by its original at 1623; R-0038).
+            // Each held/completed counter advances at most once per update,
+            // so neither can exceed the elapsed updates before a word wraps.
+            // Hold duration is not bounded by held rotations: a landing's
+            // reward pass ($829B69-9D97) clears the rotations while a released
+            // roll keeps counting its hold across the bounce, and the original
+            // reaches holds above rotations (DRAGSTER fuzz seeds 31 at 1623 and
+            // 383 at 3472; R-0038). The earlier M4-16 bound rejected them.
             const auto elapsed=state.movement.frame>=scenario.initialization_frame?state.movement.frame-scenario.initialization_frame:0U;
             if(elapsed<65536U) {
                 const auto held=static_cast<std::int16_t>(roll.held_updates);
                 const auto magnitude=static_cast<unsigned>(held<0?-static_cast<int>(held):held);
-                const auto& rider=state.movement.riders[i];
-                const bool landing_cleared_rotations=roll.held_rotations==0 &&
-                    (rider.contact.unsupported_count<2 || rider.motion.response_a!=0);
-                if(magnitude>elapsed || roll.held_rotations>elapsed || roll.completed_rolls>elapsed ||
-                   (held>0 && static_cast<unsigned>(held)>roll.held_rotations && !landing_cleared_rotations))
+                if(magnitude>elapsed || roll.held_rotations>elapsed || roll.completed_rolls>elapsed)
                     throw std::invalid_argument("inconsistent ZOOM ZOO held roll counters");
             }
         }
