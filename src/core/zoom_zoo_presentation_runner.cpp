@@ -6,13 +6,19 @@
 #include <iterator>
 #include <stdexcept>
 int main(int argc,char** argv) try {
-    if(argc!=4)throw std::invalid_argument("usage: zoom_zoo_presentation_runner PACK STATE OUT.ppm");
+    if(argc!=4 && argc!=5)
+        throw std::invalid_argument("usage: zoom_zoo_presentation_runner PACK STATE OUT.ppm [PREVIOUS_STATE]");
     unirally::ClassicContentPack pack(argv[1]);
-    std::ifstream input(argv[2],std::ios::binary);
-    if(!input)throw std::invalid_argument("cannot read state");
-    const std::vector<std::uint8_t> bytes{std::istreambuf_iterator<char>(input),{}};
-    const auto state=unirally::deserialize_zoom_zoo(bytes);
-    const auto frame=unirally::render_zoom_zoo(state,pack);
+    const auto load=[](const char* path) {
+        std::ifstream input(path,std::ios::binary);
+        if(!input)throw std::invalid_argument("cannot read state");
+        const std::vector<std::uint8_t> bytes{std::istreambuf_iterator<char>(input),{}};
+        return unirally::deserialize_zoom_zoo(bytes);
+    };
+    const auto state=load(argv[2]);
+    // The HUD shows the previous update; without PREVIOUS_STATE it is one ahead.
+    const auto previous=argc==5?load(argv[4]):state;
+    const auto frame=unirally::render_zoom_zoo(state,pack,nullptr,&previous);
     std::ofstream out(argv[3],std::ios::binary);
     out<<"P6\n256 224\n255\n";
     out.write(reinterpret_cast<const char*>(frame.pixels.data()),frame.pixels.size());

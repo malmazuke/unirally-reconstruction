@@ -150,7 +150,8 @@ LiveFrame LivePresentation::render(const MovementState &state,
           true};
 }
 
-LiveFrame LivePresentation::render_zoom(const ZoomZooState& state,const ClassicContentPack& pack) {
+LiveFrame LivePresentation::render_zoom(const ZoomZooState& state,const ZoomZooState& previous_update,
+                                        const ClassicContentPack& pack) {
   const bool fallback=!is_recovered_pose_pair(state.movement);
   if(!fallback) {
     for(unsigned i=0;i<2;++i) {
@@ -161,7 +162,7 @@ LiveFrame LivePresentation::render_zoom(const ZoomZooState& state,const ClassicC
   const std::array<RiderArtPose,2> art{{
     {recovered_pair_.pose_indices[0],recovered_pair_.reflected[0]},
     {recovered_pair_.pose_indices[1],recovered_pair_.reflected[1]}}};
-  return {render_zoom_zoo(state,pack,&art),fallback && !state.result_updates};
+  return {render_zoom_zoo(state,pack,&art,&previous_update),fallback && !state.result_updates};
 }
 
 } // namespace unirally::app

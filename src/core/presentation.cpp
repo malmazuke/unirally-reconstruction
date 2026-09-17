@@ -946,8 +946,27 @@ std::string race_time(unsigned value) {
 unsigned zoom_zoo_hud_lap(unsigned laps_remaining) {
     return std::min(3U,4U-std::min(4U,laps_remaining));
 }
+ZoomZooHud zoom_zoo_hud(const ZoomZooState& previous_update) {
+    const auto& race=previous_update.race;
+    ZoomZooHud hud;
+    if(race.riders[0].finished) {
+        const bool won=!race.riders[1].finished || race.total_times[0]<race.total_times[1];
+        hud.lap="FINISH";
+        hud.finish_time=race_time(race.total_times[0]);
+        hud.caption=won?"WINNER":"LOSER";
+        return hud;
+    }
+    hud.lap=std::to_string(zoom_zoo_hud_lap(race.riders[0].laps_remaining))+"/3";
+    const auto& t=previous_update.movement.timer;
+    hud.clock=race_time(t.minutes*6000+t.tens_seconds*1000+t.seconds*100+t.tenths*10+t.subframe*2);
+    const auto countdown=previous_update.movement.countdown;
+    if(countdown>=70)hud.caption="READY";
+    else if(countdown)hud.caption="GO";
+    return hud;
+}
 RgbFrame render_zoom_zoo(const ZoomZooState& state,const ClassicContentPack& pack,
-                         const std::array<RiderArtPose,2>* rider_art) {
+                         const std::array<RiderArtPose,2>* rider_art,
+                         const ZoomZooState* hud_source) {
     RgbFrame frame{};
     if(state.result_updates) {
         if(state.result_updates<=108)return frame;
@@ -1001,7 +1020,8 @@ RgbFrame render_zoom_zoo(const ZoomZooState& state,const ClassicContentPack& pac
     for(int y=0;y<224;++y)for(int x=0;x<256;++x) {
         const auto background=background_pixel(vram,0xe000,true,true,0x2000,false,static_cast<std::int16_t>(bg_x),static_cast<std::int16_t>(bg_y),x,y);
         pixel(frame,x,y,colour(cgram,background));
-        const int world_x=background_x+x,world_y=background_y+y;
+        // Screen row 0 is scanline 1, as in background_pixel's vertical +1.
+        const int world_x=background_x+x,world_y=background_y+y+1;
         if(world_x<0 || world_y<0 || world_x>=16384 || world_y>=4096)continue;
         const auto selector=word(track,15+static_cast<std::size_t>((world_y/64)*256+world_x/64)*2);
         const auto descriptor=word(track,0x800f+static_cast<std::size_t>(selector)*32+static_cast<std::size_t>((world_y%64)/16)*8+static_cast<std::size_t>((world_x%64)/16)*2);
@@ -1027,12 +1047,15 @@ RgbFrame render_zoom_zoo(const ZoomZooState& state,const ClassicContentPack& pac
                      static_cast<int>(rider.motion.y)-camera_y,i?136:0,i?0x68:0x66);
     }
     rect(frame,0,0,256,12,{15,30,30});
-    ui_text(frame,5,3,std::to_string(zoom_zoo_hud_lap(state.race.riders[0].laps_remaining))+"/3");
-    const auto& t=state.movement.timer;
-    ui_text(frame,195,3,race_time(t.minutes*6000+t.tens_seconds*1000+t.seconds*100+t.tenths*10+t.subframe*2));
-    if(state.movement.countdown>=70)ui_text(frame,110,35,"READY");
-    if(state.movement.countdown && state.movement.countdown<70)ui_text(frame,122,35,"GO");
-    if(state.race.riders[0].finished)ui_text(frame,99,35,state.race.total_times[0]<state.race.total_times[1]?"WINNER":"FINISHED");
+    const auto hud=zoom_zoo_hud(hud_source?*hud_source:state);
+    const auto centred=[](const std::string& text){return 128-3*static_cast<int>(text.size());};
+    ui_text(frame,5,3,hud.lap);
+    if(!hud.clock.empty())ui_text(frame,195,3,hud.clock);
+    if(hud.finish_time.empty())ui_text(frame,centred(hud.caption),35,hud.caption);
+    else {
+        ui_text(frame,centred(hud.finish_time),35,hud.finish_time);
+        ui_text(frame,centred(hud.caption),48,hud.caption);
+    }
     if(state.pause.selection) {
         for(auto& channel:frame.pixels)channel=static_cast<std::uint8_t>(channel/2U);
         rect(frame,55,74,146,74,{15,30,30});

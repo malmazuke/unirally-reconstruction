@@ -272,6 +272,7 @@ int main(int argc, char **argv) try {
   const auto zoom_content=parsed->zoom_zoo?unirally::zoom_zoo_content(content.pack):unirally::ZoomZooContent{};
   auto zoom_state=parsed->zoom_zoo?unirally::classic_crawler_zoom_zoo_start(zoom_content):unirally::ZoomZooState{};
   auto& state=parsed->zoom_zoo?zoom_state.movement:dragster_state;
+  auto zoom_hud_state=zoom_state; // State before the latest update, for the HUD.
   unsigned restarts=0;
 
 
@@ -347,7 +348,7 @@ int main(int argc, char **argv) try {
       case SDL_EVENT_KEY_UP:
         if(parsed->zoom_zoo && event.type==SDL_EVENT_KEY_DOWN && !event.key.repeat &&
            event.key.scancode==SDL_SCANCODE_RETURN && zoom_state.result_updates==115) {
-          unirally::restart_zoom_zoo(zoom_state,zoom_content);
+          unirally::restart_zoom_zoo(zoom_state,zoom_content);zoom_hud_state=zoom_state;
           input.clear();live_presentation=unirally::app::LivePresentation{};++restarts;redraw=true;
           break;
         }
@@ -387,6 +388,7 @@ int main(int argc, char **argv) try {
       }
       if(parsed->zoom_zoo) {
         const auto previous_simulation_frame=zoom_state.movement.frame;
+        zoom_hud_state=zoom_state;
         const auto buttons=unirally::app::controller_buttons(ports[0]);
         if(zoom_state.result_updates==115 && buttons.start)
           unirally::restart_zoom_zoo(zoom_state,zoom_content);
@@ -404,6 +406,7 @@ int main(int argc, char **argv) try {
           // Both keyboard and gamepad navigation replace all simulation/art
           // state. A physically held Start cannot immediately pause the new race.
           input.clear();live_presentation=unirally::app::LivePresentation{};++restarts;
+          zoom_hud_state=zoom_state;
         }
       }
       else unirally::update_movement(state,
@@ -421,7 +424,7 @@ int main(int argc, char **argv) try {
     if (redraw) {
       const auto canonical_before = parsed->zoom_zoo?unirally::serialize_zoom_zoo(zoom_state):unirally::serialize_movement_state(state);
       const auto live_frame =
-          parsed->zoom_zoo?live_presentation.render_zoom(zoom_state,content.pack):live_presentation.render(state, position, presentation_content);
+          parsed->zoom_zoo?live_presentation.render_zoom(zoom_state,zoom_hud_state,content.pack):live_presentation.render(state, position, presentation_content);
       if (live_frame.used_pose_fallback && !reported_held_frame) {
         std::cout << "Presentation note: unsupported intermediate rider poses use the last recovered rider art while the scene stays current.\n";
         reported_held_frame = true;

@@ -3,6 +3,7 @@
 #include <array>
 #include <cstdint>
 #include <span>
+#include <string>
 #include <string_view>
 #include <vector>
 namespace unirally {
@@ -70,11 +71,23 @@ struct PresentationContent {
 };
 struct ZoomZooState;
 class ClassicContentPack;
-// Laps shown on the authored ZOOM ZOO HUD. The original counts laps_remaining
-// down 4,3,2,1,0 and displays 0/3,1/3,2/3,3/3,3/3 against it.
+// Lap shown for a laps_remaining value: 4,3,2,1,0 display as 0/3,1/3,2/3,3/3,3/3.
 unsigned zoom_zoo_hud_lap(unsigned laps_remaining);
+// Authored ZOOM ZOO HUD text. Callers pass the state from BEFORE the update
+// being drawn: the original's lap glyph changes one frame after $0EFB at every
+// crossing of the frozen primary timeline (1675, 3208, 4840, 6484), while the
+// scene itself matches the current update. Once the player has finished, the
+// original replaces the lap with FINISH, drops the running clock and shows the
+// finish time with WINNER or LOSER.
+struct ZoomZooHud {
+  std::string lap, clock, finish_time, caption;
+};
+ZoomZooHud zoom_zoo_hud(const ZoomZooState& previous_update);
+// hud_source is the previous update's state; without one the HUD is drawn from
+// state itself, one update ahead of the original.
 RgbFrame render_zoom_zoo(const ZoomZooState&,const ClassicContentPack&,
-                         const std::array<RiderArtPose,2>* rider_art=nullptr);
+                         const std::array<RiderArtPose,2>* rider_art=nullptr,
+                         const ZoomZooState* hud_source=nullptr);
 RgbFrame render_dragster_headless(const PresentationSample &,
                                   const PresentationContent &);
 // Presentation-only rider atlas override. Gameplay state still controls the

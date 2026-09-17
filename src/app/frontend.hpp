@@ -85,7 +85,8 @@ public:
   LiveFrame render(const MovementState &state,
                    const PresentationPosition &position,
                    const PresentationContent &content);
-  LiveFrame render_zoom(const ZoomZooState& state,const ClassicContentPack& pack);
+  LiveFrame render_zoom(const ZoomZooState& state,const ZoomZooState& previous_update,
+                        const ClassicContentPack& pack);
   RiderPosePair last_recovered_pose_pair() const { return recovered_pair_; }
 
 private:
