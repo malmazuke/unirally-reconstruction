@@ -462,10 +462,17 @@ void build_result_map(std::array<std::uint8_t, 65536> &vram,
                            static_cast<unsigned>(digits[3]) * 10U + digits[4];
     return displayed == centiseconds;
   };
+  // $81:C73E-C75B ends the race at 10:00 with both riders finished and the
+  // lap-short player's total left at the 60000 no-time sentinel. Its crossing
+  // digits still hold the start-line crossing, so they do not describe the
+  // total and the original writes NO TIME in the player row instead
+  // (clock-limit original, stable result 32016-32200).
+  const bool player_has_no_time = finish.finish_time_centiseconds[0] >= 60000;
   const bool times_are_consistent =
       finish.rider_finished[0] && finish.rider_finished[1] &&
-      time_is_consistent(finish.finish_time_digits[0],
-                         finish.finish_time_centiseconds[0]) &&
+      (player_has_no_time ||
+       time_is_consistent(finish.finish_time_digits[0],
+                          finish.finish_time_centiseconds[0])) &&
       time_is_consistent(finish.finish_time_digits[1],
                          finish.finish_time_centiseconds[1]);
   // Equal times mean both riders crossed on one update; the player's crossing
@@ -495,7 +502,10 @@ void build_result_map(std::array<std::uint8_t, 65536> &vram,
                             static_cast<char>('0' + digits[3]),
                             static_cast<char>('0' + digits[4])}};
   write_result_text(vram, 7, 11, "MIKE    ");
-  write_result_text(vram, 17, 11, std::string_view(time.data(), time.size()));
+  write_result_text(vram, 17, 11,
+                    player_has_no_time
+                        ? std::string_view(" NO TIME")
+                        : std::string_view(time.data(), time.size()));
   for (const int row : {14, 17, 20}) {
     write_result_text(vram, 7, row, "SOMEONE ");
     write_result_text(vram, 17, row, " NO TIME");

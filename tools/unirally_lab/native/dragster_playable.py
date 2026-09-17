@@ -276,21 +276,62 @@ def restore_boundaries(document, rows, events):
     return sorted(f for f in frames if first <= f < last)
 
 
-def compare(a, b, contract, binary, pack, out, restores=True):
+def prefix_restore_boundaries(document, rows, events):
+    """Declared restore boundaries for the clock-limit prefix gate.
+
+    Every restore replays the whole 30,000-update tail, so this is a bounded
+    named set rather than the ordinary per-controller-change set: the
+    initialization edge, each controller change while the player still rides,
+    the opponent's finish, eight samples of the long rest, the clock limit,
+    the finish delay and the loading and prefix edges. The accepted DRAGSTER
+    originals already restore every ordinary control.
+    """
+    first = INITIALIZATION_FRAME
+    last = first+len(rows)-1
+    loading = events['loading_frame']
+    player, opponent = events['finish_frames']
+    timeline = document['timeline']
+    frames = {first, first+1, last-1, last}
+    frames.update(f-1 for f in range(first+1, 2001) if timeline[f] != timeline[f-1])
+    frames.update({opponent-1, opponent, opponent+1, player-1, player, player+1,
+                   loading-1, loading, loading+1})
+    frames.update(range(2000, player, (player-2000)//8))
+    return sorted(f for f in frames if first <= f < last)
+
+
+def compare(a, b, contract, binary, pack, out, restores=True, prefix=False):
+    """Gate native against a frozen original.
+
+    `prefix` gates the race and loading prefix of an incomplete inventory
+    instead of a whole acceptance freeze: the 10:00 clock-limit original's
+    result publication is two updates late behind the SPC700 reset handshake,
+    which the contract excludes, so only the rows before the ordinary mode-0
+    publication update are compared.
+    """
     if out.exists():
         raise ValueError('fresh report required')
     binary = binary.resolve(); pack = pack.resolve()
     head = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT); diff = sha(subprocess.check_output(['git', 'diff', 'HEAD'], cwd=ROOT))
     binary_sha = sha(binary.read_bytes()); pack_sha = sha(pack.read_bytes())
-    reference, rows, events = original(a); repeat, other, other_events = original(b)
+    reference, rows, events = original(a, allow_incomplete=prefix); repeat, other, other_events = original(b, allow_incomplete=prefix)
     if reference != repeat or rows != other or events != other_events:
         raise ValueError('original repeats differ')
     frozen = json.loads(contract.read_text())
-    if any(frozen.get(key) != value for key, value in inventory(reference, rows, events).items()):
+    if any(frozen.get(key) != value for key, value in inventory(reference, rows, events).items() if not (prefix and key in ('events', 'kind'))):
         raise ValueError('frozen original inventory differs')
     rules, rules_sha = load_rules(ROOT/TWO_TRACK_RULES_PATH); validate_pack(pack.read_bytes(), rules, rules_sha)
     first, last = INITIALIZATION_FRAME, reference['frames'][1]
-    boundaries = restore_boundaries(reference, rows, events) if restores else []
+    if prefix:
+        if (frozen.get('kind') != 'dragster_clock_limit_incomplete_original_inventory' or frozen.get('acceptance') is not False
+                or frozen.get('race_and_loading_frames', [None, None])[0] != first):
+            raise ValueError('prefix gate needs an incomplete inventory')
+        last = frozen['race_and_loading_frames'][1]
+        rows = rows[:last-first+1]
+        if digest(rows) != frozen['race_and_loading_rows_sha256']:
+            raise ValueError('frozen race and loading prefix differs')
+        events = dict(events, gated_frames=[first, last])
+    boundaries = [f for f in (restore_boundaries(reference, rows, events) if restores and not prefix else
+                              prefix_restore_boundaries(reference, rows, events) if restores else []) if f < last]
     with tempfile.TemporaryDirectory(prefix='dragster-playable-native-') as directory:
         root = Path(directory); local_pack = root/'classic.pack'; local_pack.write_bytes(pack.read_bytes())
         inputs = root/'inputs.txt'; seed = root/'restore.bin'
@@ -319,7 +360,7 @@ def compare(a, b, contract, binary, pack, out, restores=True):
             raise ValueError('native frame count differs')
         if execute(first) != actual:
             raise ValueError('fresh native initialization differs')
-        if execute(first, actual[-1], True) != actual:
+        if not prefix and execute(first, actual[-1], True) != actual:
             raise ValueError('restart retains stale race/result state')
         for frame in boundaries:
             if execute(frame, actual[frame-first]) != actual[frame-first:]:
@@ -327,7 +368,7 @@ def compare(a, b, contract, binary, pack, out, restores=True):
     if (subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT) != head or sha(subprocess.check_output(['git', 'diff', 'HEAD'], cwd=ROOT)) != diff
             or sha(binary.read_bytes()) != binary_sha or sha(pack.read_bytes()) != pack_sha):
         raise ValueError('source/binary/pack changed during validation')
-    result = dict(status='passed', case=reference['case']['id'], source_commit=head.decode().strip(), source_diff_sha256=diff,
+    result = dict(status='passed', acceptance=not prefix, case=reference['case']['id'], source_commit=head.decode().strip(), source_diff_sha256=diff,
                   binary_sha256=binary_sha, pack_sha256=pack_sha, contract_sha256=sha(contract.read_bytes()), frames=[first, last],
                   state_bytes=742, rows_sha256=digest(rows), restore_frames=boundaries, events=events,
                   native_inputs='validated two-track pack and live-compatible controller stream; native initialization, no original state')
@@ -347,6 +388,7 @@ def main():
     p.add_argument('--pack', type=Path)
     p.add_argument('--out', type=Path)
     p.add_argument('--no-restores', action='store_true')
+    p.add_argument('--prefix', action='store_true', help='gate the race and loading prefix of an incomplete inventory')
     a = p.parse_args()
     if a.command == 'explore':
         print(json.dumps(explore(a.reference, a.binary, a.pack), indent=1))
@@ -357,7 +399,7 @@ def main():
         print(json.dumps(dict(case=r['case']['id'], rows=r['rows_sha256'], prefix=r['race_and_loading_rows_sha256'],
                               prefix_frames=r['race_and_loading_frames'], events=r['events'])))
     else:
-        r = compare(a.reference, a.repeat, a.contract, a.binary, a.pack, a.out, not a.no_restores)
+        r = compare(a.reference, a.repeat, a.contract, a.binary, a.pack, a.out, not a.no_restores, a.prefix)
         print(json.dumps({k: v for k, v in r.items() if k != 'restore_frames'}, indent=1)); print('restores', len(r['restore_frames']))
 
 

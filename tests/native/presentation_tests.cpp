@@ -318,7 +318,51 @@ int main() {
   require(loser_result.pixels.size() == split_result.pixels.size());
   require(loser_before == unirally::serialize_movement_state(loser_state));
 
-  auto contradictory = loser_state;
+  // $81:C73E-C75B ends the race at 10:00 with the player lap-short: its total
+  // stays the 60000 no-time sentinel while its crossing digits still hold the
+  // start-line crossing (0:00.70 in the clock-limit original). The original
+  // result screen writes NO TIME in the player row, like the three empty ones.
+  auto timed_out = loser_state;
+  timed_out.finish.finish_time_centiseconds = {60000, 3358};
+  timed_out.finish.finish_time_digits[0] = {0, 0, 0, 7, 0};
+  const auto timed_out_before = unirally::serialize_movement_state(timed_out);
+  const auto timed_out_map =
+      unirally::build_dragster_result_map(timed_out, result);
+  for (std::size_t column = 17; column < 25; ++column) {
+    require(timed_out_map[11 * 32 + column] == timed_out_map[14 * 32 + column]);
+    require(timed_out_map[12 * 32 + column] == timed_out_map[15 * 32 + column]);
+  }
+  for (std::size_t entry = 0; entry < loser_map.size(); ++entry) {
+    const auto column = entry % 32;
+    const auto row = entry / 32;
+    const bool player_time =
+        (row == 11 || row == 12) && column >= 17 && column < 25;
+    require(player_time || timed_out_map[entry] == loser_map[entry]);
+  }
+  require(timed_out_before == unirally::serialize_movement_state(timed_out));
+  // The admission is the sentinel, not an inconsistent time: a player total
+  // below it must still agree with its digits, and an opponent with no time
+  // has no original evidence and stays rejected.
+  auto contradictory = timed_out;
+  contradictory.finish.finish_time_centiseconds[0] = 59999;
+  rejected = false;
+  try {
+    (void)unirally::build_dragster_result_map(contradictory, result);
+  } catch (const std::invalid_argument &) {
+    rejected = true;
+  }
+  require(rejected);
+  contradictory = timed_out;
+  contradictory.finish.finish_time_centiseconds[1] = 60000;
+  rejected = false;
+  try {
+    (void)unirally::build_dragster_result_map(contradictory, result);
+  } catch (const std::invalid_argument &) {
+    rejected = true;
+  }
+  require(rejected);
+
+  contradictory = loser_state;
   contradictory.finish.outcome = unirally::RaceOutcome::PlayerWon;
   rejected = false;
   try {
