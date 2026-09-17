@@ -130,6 +130,10 @@ private:
 RgbFrame render_zoom_zoo(const ZoomZooState&,const ClassicContentPack&,
                          const ZoomZooState* previous_update=nullptr,
                          const ZoomZooRiderOverlays* overlays=nullptr);
+// Authored standalone pause menu over a race picture (M4-16): the picture is
+// halved, then RESUME / RESTART RACE is drawn with the selection marker.
+void draw_race_pause_menu(RgbFrame& frame,std::uint16_t selection,std::array<std::uint8_t,3> panel,
+                          std::array<std::uint8_t,3> ink);
 RgbFrame render_dragster_headless(const PresentationSample &,
                                   const PresentationContent &);
 // Presentation-only rider atlas override. Gameplay state still controls the

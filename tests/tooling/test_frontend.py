@@ -112,6 +112,38 @@ class FrontendLaunchTests(unittest.TestCase):
                           if c["name"] == "classic_pack")["detail"]
             self.assertNotIn("extraction-rules identity", detail)
 
+    def test_dragster_only_pack_launches_with_the_two_track_pack(self):
+        # DRAGSTER's ordinary controls need the shared race tables (R-0038),
+        # which only the two-track pack carries. A valid DRAGSTER-only pack
+        # launches with a valid two-track pack beside it, or one extracted
+        # from --rom; without either it is a missing prerequisite.
+        two_track = dict(self.rules, profile_id=pack.TWO_TRACK_PROFILE,
+                         start_state_id=pack.TWO_TRACK_START)
+        (self.root / "two-track-rules.json").write_text(json.dumps(two_track))
+        dragster_pack = self.root / "classic.pack"
+        with mock.patch.object(commands, "ROOT", self.root), \
+             mock.patch.object(pack, "RULES_PATH", "rules.json"), \
+             mock.patch.object(pack, "TWO_TRACK_RULES_PATH", "two-track-rules.json"):
+            (self.root / "rules.json").write_text(self.rules_path.read_text())
+            rules = str(self.root / "rules.json")
+            report = self.root / "missing.json"
+            self.assertEqual(commands.cmd_run(self.args(rules=rules, rom=None, report=str(report))),
+                             EXIT_MISSING_PREREQUISITE)
+            self.assertFalse(dragster_pack.exists())
+            # First launch extracts the DRAGSTER pack and the two-track pack.
+            self.assertEqual(commands.cmd_run(self.args(rules=rules, rom=str(self.rom_path))), EXIT_OK)
+            upgraded = self.root / "local" / commands.TWO_TRACK_PACK_NAMES[0]
+            self.assertTrue(dragster_pack.is_file() and upgraded.is_file())
+            # Pack-only relaunch finds the two-track pack without the ROM.
+            self.rom_path.unlink()
+            report = self.root / "relaunch.json"
+            self.assertEqual(commands.cmd_run(self.args(rules=rules, rom=None, report=str(report))), EXIT_OK)
+            check = next(c for c in json.loads(report.read_text())["checks"] if c["name"] == "dragster_two_track_pack")
+            self.assertIn("ROM was not opened", check["detail"])
+            # Without a valid two-track pack and without --rom it cannot play.
+            upgraded.write_bytes(b"corrupt")
+            self.assertEqual(commands.cmd_run(self.args(rules=rules, rom=None)), EXIT_MISSING_PREREQUISITE)
+
     def test_frontend_failure_is_not_a_successful_launch(self):
         self.assertEqual(commands.cmd_run(self.args(rom=str(self.rom_path), executable="/usr/bin/false")), EXIT_FAILURE)
 

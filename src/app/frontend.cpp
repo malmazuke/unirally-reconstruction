@@ -3,6 +3,7 @@
 #include "zoom_zoo_movement.hpp"
 
 #include <algorithm>
+#include <cmath>
 #include <limits>
 #include <stdexcept>
 
@@ -149,6 +150,59 @@ LiveFrame LivePresentation::render(const MovementState &state,
                    recovered_pair_.reflected[1]}};
   return {render_dragster_headless_with_rider_art(sample, content, rider_art),
           true};
+}
+
+MovementState dragster_presentation_state(const ZoomZooState &race) {
+  auto state = race.movement;
+  auto &finish = state.finish;
+  for (std::size_t rider = 0; rider < 2; ++rider) {
+    const auto &lap = race.race.riders[rider];
+    finish.rider_finished[rider] = lap.finished != 0;
+    if (!lap.finished)
+      continue;
+    // One lap: the recorded crossing digits and the total are the finish time.
+    finish.finish_time_digits[rider] = lap.time_digits;
+    finish.finish_time_centiseconds[rider] = race.race.total_times[rider];
+  }
+  finish.player_finish_delay = race.race.finish_delay;
+  finish.result_loading_updates = race.result_updates;
+  if (race.race.riders[0].finished)
+    finish.outcome = classic_race_player_won(race) ? RaceOutcome::PlayerWon
+                                                   : RaceOutcome::PlayerLost;
+  if (race.result_updates && race.result_updates >= stable_result_updates(race))
+    finish.phase = RacePhase::ResultScreen;
+  else if (race.result_updates)
+    finish.phase = RacePhase::ResultLoading;
+  else if (race.race.riders[0].finished)
+    finish.phase = RacePhase::FinishDelay;
+  return state;
+}
+
+unsigned race_picture_brightness(const ZoomZooState &race) {
+  // The NMI writes INIDISP from the preceding update's $0FF1, (fade - 15)
+  // clamped at zero; the fade grows by one per update from initialization.
+  const auto first = classic_race_scenario(race.track).initialization_frame;
+  const auto prior_fade =
+      race.movement.frame <= first ? 0U : std::min(30U, race.movement.frame - first - 1U);
+  return prior_fade > 15U ? prior_fade - 15U : 0U;
+}
+
+LiveFrame LivePresentation::render_dragster_race(const ZoomZooState &race,
+                                                 const PresentationPosition &position,
+                                                 const PresentationContent &content) {
+  const auto state = dragster_presentation_state(race);
+  auto live = render(state, position, content);
+  const auto brightness = race_picture_brightness(race);
+  if (brightness < 15U) {
+    // Approximation: the original scales CGRAM words before output; this
+    // scales the converted picture with the same 1.5 output curve.
+    const auto scale = std::pow(brightness / 15.0, 1.5);
+    for (auto &channel : live.frame.pixels)
+      channel = static_cast<std::uint8_t>(std::lround(channel * scale));
+  }
+  if (race.pause.selection)
+    draw_race_pause_menu(live.frame, race.pause.selection, {15, 30, 30}, {255, 240, 220});
+  return live;
 }
 
 void LivePresentation::observe_zoom_update(const ZoomZooState& previous,const ZoomZooState& updated,

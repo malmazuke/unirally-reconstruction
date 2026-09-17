@@ -57,3 +57,7 @@ target_link_libraries(vertical_contact_probe PRIVATE unirally_contact)
 add_executable(zoom_zoo_trial_tests zoom_zoo_trial_tests.cpp)
 target_link_libraries(zoom_zoo_trial_tests PRIVATE unirally_movement)
 add_test(NAME zoom_zoo_trial_width_state_and_guards COMMAND zoom_zoo_trial_tests)
+
+add_executable(dragster_race_tests dragster_race_tests.cpp)
+target_link_libraries(dragster_race_tests PRIVATE unirally_movement)
+add_test(NAME dragster_shared_race_geometry_scenario_identity COMMAND dragster_race_tests)

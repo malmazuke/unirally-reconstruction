@@ -1190,15 +1190,18 @@ RgbFrame render_zoom_zoo(const ZoomZooState& state,const ClassicContentPack& pac
         ui_text(frame,centred(hud.finish_time),35,hud.finish_time,ink);
         ui_text(frame,centred(hud.caption),48,hud.caption,ink);
     }
-    if(state.pause.selection) {
-        for(auto& channel:frame.pixels)channel=static_cast<std::uint8_t>(channel/2U);
-        rect(frame,55,74,146,74,ui({15,30,30}));
-        ui_text(frame,109,83,"PAUSED",ink);
-        ui_text(frame,73,101,state.pause.selection==1?"> RESUME":"  RESUME",ink);
-        ui_text(frame,73,115,state.pause.selection==0xffffU?"> RESTART RACE":"  RESTART RACE",ink);
-        ui_text(frame,68,135,"UP DOWN - ENTER",ink);
-    }
+    if(state.pause.selection)draw_race_pause_menu(frame,state.pause.selection,ui({15,30,30}),ink);
     return frame;
+}
+
+void draw_race_pause_menu(RgbFrame& frame,std::uint16_t selection,std::array<std::uint8_t,3> panel,
+                          std::array<std::uint8_t,3> ink) {
+    for(auto& channel:frame.pixels)channel=static_cast<std::uint8_t>(channel/2U);
+    rect(frame,55,74,146,74,panel);
+    ui_text(frame,109,83,"PAUSED",ink);
+    ui_text(frame,73,101,selection==1?"> RESUME":"  RESUME",ink);
+    ui_text(frame,73,115,selection==0xffffU?"> RESTART RACE":"  RESTART RACE",ink);
+    ui_text(frame,68,135,"UP DOWN - ENTER",ink);
 }
 
 } // namespace unirally

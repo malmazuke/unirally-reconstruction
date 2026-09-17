@@ -90,6 +90,52 @@ def _finish(rep: reportmod.Report, report: Path | None, status: int) -> int:
     return status
 
 
+TWO_TRACK_PACK_NAMES = ("classic-crawler-two-tracks.pack", "classic-crawler-two-tracks-v7.pack")
+
+
+def _dragster_two_track_pack(rep: reportmod.Report, rom: Path | None) -> Path | int:
+    """A validated two-track pack for DRAGSTER, or the exit status to report."""
+    try:
+        rules, rules_sha = packmod.load_rules(_canonical_path(ROOT / packmod.TWO_TRACK_RULES_PATH))
+    except (FileNotFoundError, ValueError, json.JSONDecodeError, OSError) as exc:
+        rep.add_check("dragster_two_track_pack", "failed", detail=f"two-track rules unavailable: {exc}")
+        return EXIT_INVALID_INPUT
+    for name in TWO_TRACK_PACK_NAMES:
+        candidate = _canonical_path(ROOT / "local" / name)
+        if not candidate.is_file():
+            continue
+        try:
+            inspected = packmod.validate_pack(candidate.read_bytes(), rules, rules_sha)
+        except (ValueError, OSError):
+            continue
+        rep.add_check("dragster_two_track_pack", "passed",
+                      detail=f"the DRAGSTER-only pack lacks the shared race tables; using {candidate}; ROM was not opened")
+        rep.add_input("two_track_pack", candidate, inspected["pack_sha256"], size=inspected["pack_size"])
+        return candidate
+    if rom is None:
+        rep.add_check("dragster_two_track_pack", "missing",
+                      detail="DRAGSTER's jumps, brakes, reversal and tricks need the two-track pack; pass --rom PATH once to "
+                             f"create local/{TWO_TRACK_PACK_NAMES[0]} beside the DRAGSTER pack")
+        return EXIT_MISSING_PREREQUISITE
+    target = _canonical_path(ROOT / "local" / TWO_TRACK_PACK_NAMES[0])
+    try:
+        data = rom.read_bytes()
+        rep.add_input("rom", rom, hashlib.sha256(data).hexdigest(), size=len(data))
+        payload, rows = packmod.build_pack(data, rules, rules_sha)
+        packmod.write_atomic(target, payload)
+        inspected = packmod.validate_pack(target.read_bytes(), rules, rules_sha)
+    except ValueError as exc:
+        rep.add_check("dragster_two_track_pack", "failed", detail=str(exc))
+        return EXIT_INVALID_INPUT
+    except OSError as exc:
+        rep.add_check("dragster_two_track_pack", "failed", detail=str(exc))
+        return EXIT_FAILURE
+    rep.add_check("dragster_two_track_pack", "passed", detail=f"created {len(rows)} entries at {target}")
+    rep.add_input("two_track_pack", target, inspected["pack_sha256"], size=inspected["pack_size"])
+    rep.add_artifact("two_track_pack", target)
+    return target
+
+
 def cmd_run(args: argparse.Namespace) -> int:
     try:
         paths = _frontend_paths(args)
@@ -171,6 +217,16 @@ def cmd_run(args: argparse.Namespace) -> int:
         rep.add_artifact("classic_pack", pack_path)
         rep.data["first_launch_extraction"] = True
 
+    if (getattr(args, "track", "dragster") == "dragster" and inspected["profile_id"] == packmod.PROFILE_ID and
+            rules_path == _canonical_path(ROOT / packmod.RULES_PATH)):
+        # DRAGSTER plays on the shared race engine (R-0038). Its jump, brake,
+        # reversal and trick tables are track-independent ROM tables that only
+        # the two-track pack carries, so a 25-entry DRAGSTER pack is upgraded to
+        # a valid two-track pack beside it, or one is extracted from --rom.
+        upgraded = _dragster_two_track_pack(rep, paths.rom)
+        if isinstance(upgraded, int):
+            return _finish(rep, paths.report, upgraded)
+        pack_path = upgraded
     if not executable.is_file():
         rep.add_check("frontend_executable", "missing", detail=f"{executable} not found; run `project.py build --preset {args.preset}`")
         return _finish(rep, paths.report, EXIT_MISSING_PREREQUISITE)

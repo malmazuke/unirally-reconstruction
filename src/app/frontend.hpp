@@ -76,6 +76,13 @@ struct RiderPosePair {
 
 bool is_recovered_pose_pair(const MovementState &state);
 
+// DRAGSTER plays on the shared race engine (R-0038) but is drawn by the
+// accepted M3 presentation, which reads the legacy finish and result phases.
+// Derive those from the shared race state: presentation only, never gameplay.
+MovementState dragster_presentation_state(const ZoomZooState &race);
+// Picture brightness 0-15 from the preceding update's race fade ($80:883F).
+unsigned race_picture_brightness(const ZoomZooState &race);
+
 struct LiveFrame {
   RgbFrame frame;
   bool used_pose_fallback{};
@@ -88,6 +95,11 @@ public:
   LiveFrame render(const MovementState &state,
                    const PresentationPosition &position,
                    const PresentationContent &content);
+  // DRAGSTER on the shared race engine: the accepted scene, faded in from
+  // black and overlaid by the pause menu while the race is paused.
+  LiveFrame render_dragster_race(const ZoomZooState &race,
+                                 const PresentationPosition &position,
+                                 const PresentationContent &content);
   // ZOOM ZOO draws every packed pose (R-0036). Call observe_zoom_update once
   // per simulation update so the rider look overlays follow the race.
   void observe_zoom_update(const ZoomZooState& previous,const ZoomZooState& updated,

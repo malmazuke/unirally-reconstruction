@@ -211,22 +211,6 @@ struct RuntimeContent {
   explicit RuntimeContent(const std::filesystem::path &path) : pack(path) {}
   unirally::ClassicContentPack pack;
 
-  unirally::MovementContent movement() {
-    return {{entry("physics.track.dragster.data"),
-             entry("physics.rider.collision-poses"),
-             entry("physics.rider.collision-templates")},
-            {entry("physics.track.dragster.tile-columns"),
-             entry("physics.track.dragster.tile-flags")},
-            entry("physics.track.progress-transitions"),
-            entry("physics.rider.pose-slopes"),
-            entry("physics.rider.displacement-table"),
-            entry("physics.rider.idle-pose-table"),
-            entry("physics.reward.rotation-value"),
-            entry("physics.reward.rotation-class"),
-            {entry("physics.speed.masks"),
-             entry("physics.speed.decrements")}};
-  }
-
   unirally::PresentationContent presentation() {
     return {entry("physics.track.dragster.data"),
             entry("presentation.track.dragster.bg1-tiles.v1"),
@@ -276,12 +260,18 @@ int main(int argc, char **argv) try {
   if (!parsed)
     return 0;
   RuntimeContent content(parsed->pack); // validate before SDL or gameplay
-  auto movement_content = content.movement();
   auto presentation_content = content.presentation();
-  auto dragster_state=unirally::classic_crawler_dragster_start();
-  const auto zoom_content=parsed->zoom_zoo?unirally::zoom_zoo_content(content.pack):unirally::ZoomZooContent{};
-  auto zoom_state=parsed->zoom_zoo?unirally::classic_crawler_zoom_zoo_start(zoom_content):unirally::ZoomZooState{};
-  auto& state=parsed->zoom_zoo?zoom_state.movement:dragster_state;
+  // Both tracks run the shared race engine (R-0038). DRAGSTER's trick, landing,
+  // reversal and finish tables are track-independent ROM tables that only the
+  // two-track pack carries; the 25-entry DRAGSTER pack cannot play them.
+  if(!parsed->zoom_zoo && content.pack.optional_entry("zoom.landing-response-matrices").empty())
+    throw std::invalid_argument("DRAGSTER needs the two-track content pack for jumps, brakes, reversal and tricks; "
+                                "create it from your ROM with: python3 tools/project.py frontend run --track dragster "
+                                "--pack local/classic-crawler-two-tracks.pack --rom PATH");
+  const auto zoom_content=parsed->zoom_zoo?unirally::zoom_zoo_content(content.pack):unirally::dragster_race_content(content.pack);
+  auto zoom_state=parsed->zoom_zoo?unirally::classic_crawler_zoom_zoo_start(zoom_content)
+                                  :unirally::classic_crawler_dragster_race_start(zoom_content);
+  auto& state=zoom_state.movement;
   auto zoom_hud_state=zoom_state; // State before the latest update, for the HUD.
   unsigned restarts=0;
   // A restart from the stable result proves a completed race; one from the pause menu does not.
@@ -362,8 +352,9 @@ int main(int argc, char **argv) try {
       case SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED: redraw = true; break;
       case SDL_EVENT_KEY_DOWN:
       case SDL_EVENT_KEY_UP:
-        if(parsed->zoom_zoo && event.type==SDL_EVENT_KEY_DOWN && !event.key.repeat &&
-           event.key.scancode==SDL_SCANCODE_RETURN && zoom_state.result_updates==115) {
+        if(event.type==SDL_EVENT_KEY_DOWN && !event.key.repeat &&
+           event.key.scancode==SDL_SCANCODE_RETURN && zoom_state.result_updates &&
+           zoom_state.result_updates==unirally::stable_result_updates(zoom_state)) {
           unirally::restart_zoom_zoo(zoom_state,zoom_content);zoom_hud_state=zoom_state;
           input.clear();live_presentation=unirally::app::LivePresentation{};++restarts;++result_restarts;redraw=true;
           break;
@@ -424,13 +415,17 @@ int main(int argc, char **argv) try {
       } else if (observed_nonzero_input) {
         ++neutral_updates_after_input;
       }
-      if(parsed->zoom_zoo) {
+      {
         const auto previous_simulation_frame=zoom_state.movement.frame;
         const bool was_paused=zoom_state.pause.selection!=0;
-        const bool at_stable_result=zoom_state.result_updates==115;
+        const bool at_stable_result=zoom_state.result_updates!=0 &&
+            zoom_state.result_updates==unirally::stable_result_updates(zoom_state);
         zoom_hud_state=zoom_state;
-        const auto buttons=unirally::app::controller_buttons(ports[0]);
-        if(zoom_state.result_updates==115 && buttons.start)
+        auto buttons=unirally::app::controller_buttons(ports[0]);
+        // A SNES pad cannot report opposing directions; DRAGSTER's gates match
+        // the original with them dropped. ZOOM ZOO keeps its accepted mapping.
+        if(!parsed->zoom_zoo)buttons=unirally::with_physical_dpad(buttons);
+        if(at_stable_result && buttons.start)
           unirally::restart_zoom_zoo(zoom_state,zoom_content);
         else unirally::update_zoom_zoo(zoom_state,buttons,zoom_content);
         // Selector 0 is a real trick (the flat path's negative-velocity
@@ -444,7 +439,8 @@ int main(int argc, char **argv) try {
         }
         if(!was_paused && zoom_state.pause.selection &&
            (gamepad_mask&unirally::app::button_mask(unirally::app::LogicalButton::Start)))++gamepad_pause_openings;
-        if(!at_stable_result && zoom_state.result_updates==115)++results_reached;
+        if(!at_stable_result && zoom_state.result_updates &&
+           zoom_state.result_updates==unirally::stable_result_updates(zoom_state))++results_reached;
         if(zoom_state.movement.frame<previous_simulation_frame) {
           if(gamepad_only)++gamepad_only_restarts;
           if(at_stable_result)++result_restarts;
@@ -453,15 +449,12 @@ int main(int argc, char **argv) try {
           // state. A physically held Start cannot immediately pause the new race.
           input.clear();live_presentation=unirally::app::LivePresentation{};++restarts;
           zoom_hud_state=zoom_state;
-        } else {
+        } else if(parsed->zoom_zoo) {
           live_presentation.observe_zoom_update(zoom_hud_state,zoom_state,content.pack);
         }
       }
-      else unirally::update_movement(state,
-                                unirally::app::controller_buttons(ports[0]),
-                                movement_content);
       ++updates;
-      if (state.finish.phase == unirally::RacePhase::Racing)
+      if (!zoom_state.race.riders[0].finished)
         position = unirally::app::presentation_position(state.riders[0].motion.x);
       redraw = true;
       if (parsed->maximum_updates != 0 && updates >= parsed->maximum_updates) {
@@ -470,9 +463,10 @@ int main(int argc, char **argv) try {
       }
     }
     if (redraw) {
-      const auto canonical_before = parsed->zoom_zoo?unirally::serialize_zoom_zoo(zoom_state):unirally::serialize_movement_state(state);
+      const auto canonical_before = unirally::serialize_zoom_zoo(zoom_state);
       const auto live_frame =
-          parsed->zoom_zoo?live_presentation.render_zoom(zoom_state,zoom_hud_state,content.pack):live_presentation.render(state, position, presentation_content);
+          parsed->zoom_zoo?live_presentation.render_zoom(zoom_state,zoom_hud_state,content.pack)
+                          :live_presentation.render_dragster_race(zoom_state, position, presentation_content);
       if (live_frame.used_pose_fallback && !reported_held_frame) {
         std::cout << (parsed->zoom_zoo?"Presentation note: a rider pose outside the packed tables holds that rider's last drawn pose.\n":"Presentation note: unsupported intermediate rider poses use the last recovered rider art while the scene stays current.\n");
         reported_held_frame = true;
@@ -490,7 +484,7 @@ int main(int argc, char **argv) try {
       }
       if (previous_frame && previous_frame->pixels == live_frame.frame.pixels &&
           live_frame.used_pose_fallback &&
-          state.finish.phase == unirally::RacePhase::Racing) {
+          !zoom_state.race.riders[0].finished) {
         ++identical_fallback_race_redraws;
         ++current_identical_fallback_race_run;
         longest_identical_fallback_race_run = std::max(
@@ -499,7 +493,7 @@ int main(int argc, char **argv) try {
       } else {
         current_identical_fallback_race_run = 0;
       }
-      if ((parsed->zoom_zoo?unirally::serialize_zoom_zoo(zoom_state):unirally::serialize_movement_state(state)) != canonical_before)
+      if (unirally::serialize_zoom_zoo(zoom_state) != canonical_before)
         throw std::logic_error("presentation mutated canonical gameplay state");
       draw(renderer.get(), texture.get(), live_frame.frame);
       previous_frame = live_frame.frame;
@@ -527,9 +521,12 @@ int main(int argc, char **argv) try {
             << state.frame << "; controller-0 mask " << last_ports[0]
             << "; player x " << state.riders[0].motion.x << "; velocity x "
             << state.riders[0].motion.velocity_x << '\n';
-  if(!parsed->zoom_zoo)std::cout<<"DRAGSTER race phase "<<static_cast<unsigned>(state.finish.phase)
-      <<"; outcome "<<static_cast<unsigned>(state.finish.outcome)<<'\n';
-  if(parsed->zoom_zoo)std::cout<<"ZOOM ZOO result updates "<<zoom_state.result_updates<<"; restarts "<<restarts
+  if(!parsed->zoom_zoo) {
+    const auto shown=unirally::app::dragster_presentation_state(zoom_state);
+    std::cout<<"DRAGSTER race phase "<<static_cast<unsigned>(shown.finish.phase)
+      <<"; outcome "<<static_cast<unsigned>(shown.finish.outcome)<<'\n';
+  }
+  std::cout<<(parsed->zoom_zoo?"ZOOM ZOO":"DRAGSTER")<<" result updates "<<zoom_state.result_updates<<"; restarts "<<restarts
       <<"; totals "<<zoom_state.race.total_times[0]<<'/'<<zoom_state.race.total_times[1]
       <<"; stable results reached "<<results_reached<<"; restarts from result/pause "
       <<result_restarts<<'/'<<pause_restarts<<'\n';
