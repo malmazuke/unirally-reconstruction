@@ -168,3 +168,22 @@ ordinarily at 3214, not at the clock limit; R-0039 already says so.
 Not assessed by the reviewer: the other six frozen DRAGSTER originals (it
 re-ran `primary` from its own capture), the SPC700 handshake itself, whether a
 non-idle timeline reaches the limit, and live play.
+
+### Integration gates, and a masked skip of my own
+
+Gates on the merge candidate `75fbffc` (clean tree throughout;
+`artifacts/dragster-clock-limit-integration/gates-75fbffc`): four presets built
+with ctest and the synthetic suite each, the M4-16 ZOOM ZOO primary gate, and
+the DRAGSTER historical matrix 20/20 including both accepted DRAGSTER
+presentation contracts. `GATES ANY FAILURE: 0`.
+
+**My mistake:** the same script was meant to re-compare three frozen DRAGSTER
+originals, but I guarded those steps with `[ -d "$O/$c-a" ]` against a path
+inside this worktree, while the captures live in the controls worktree. The
+guard was false, so the steps silently skipped and the summary showed nothing
+between the presets and the ZOOM ZOO gate — a masked skip of exactly the kind
+the reviewer checklist warns about. Rerun with the correct absolute path, after
+the push, all three pass with the recorded restore counts: primary 379,
+reversal 327, countdown-actions tie 179. A conditional that silently skips a
+gate is worse than one that fails, so the next script in this area asserts the
+reference exists instead of testing it.
