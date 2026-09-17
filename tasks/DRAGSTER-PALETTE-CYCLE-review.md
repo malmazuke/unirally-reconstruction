@@ -2,9 +2,10 @@
 
 ## Identity
 
-- Current verdict: **approve** candidate `2c9dea3` (re-review, round 2,
-  below), with three non-blocking documentation and test residuals for
-  closeout.
+- Current verdict: **approve** candidate `a2aac15` (round 3, launcher
+  fallback, at the end of this report), with one medium and two low
+  non-blocking residuals.
+- Round 2 verdict at `2c9dea3`: **approve** (re-review, round 2, below).
 - Round 1 verdict at `a685712`: **changes required** (one blocking finding,
   F1). Sections 1-5 and the findings below are round 1 as reported.
 - Reviewer: fresh Claude Opus 5 subagent (Claude Code), no prior context, isolated
@@ -559,5 +560,212 @@ gates, and can be fixed in the integration commit.
 ### Closing (round 2)
 
 - Re-review ended 2026-09-17T11:09:23Z; about 10 minutes wall clock.
+- Commit on `review/dragster-palette-cycle`, pushed to `origin`; the remote ref
+  is verified in the reviewer's handoff.
+
+## Re-review, round 3: launcher fallback, candidate `a2aac15`
+
+### Identity
+
+- Candidate: `task/dragster-palette-cycle` at
+  `a2aac15de7dbe51673f26c26aa56bbe8d1b31786`, which `origin` resolves to that
+  commit. Since the approved `2c9dea3` it contains:
+  - `a4fd477`: the round-2 integration fixes plus the coordinator's
+    window-evidence wording correction;
+  - `829a7c9`: a merge of this review branch at `223cd0d`, where `main`
+    (`1ece1b8`) is already an ancestor;
+  - `a2aac15`: the launcher fallback in `tools/unirally_lab/frontend/commands.py`.
+- Checkout: merging `origin/task/dragster-palette-cycle` fast-forwarded
+  `review/dragster-palette-cycle` to `a2aac15`. All round-3 reports record
+  `source.commit=a2aac15`, `dirty=false`.
+- Round 3 started 2026-09-17T11:21:48Z. The end time is in the closing section.
+- Binaries rebuilt at `a2aac15`:
+  - `build/lab-debug/src/app/live_presentation_runner` `6001fb2a...` and
+    `build/lab-debug/src/core/presentation_runner` `f7f85a4e...`. They differ
+    from round 2 only through the header comment change;
+    `src/core/presentation.cpp` has no diff since `2c9dea3`.
+  - `build/app-debug/src/core/zoom_zoo_runner` `955d8fcf...`, identical to
+    rounds 1 and 2.
+- Evidence: ignored `artifacts/dragster-palette-review/round3/`, including
+  `launcher_cases.sh`, `launcher-cases.log`, `launcher/*.json|log` and the
+  preset reports.
+
+**Process note (evidence handling).** At 11:23Z I accidentally ran my
+four-preset script, which still wrote into `round2/`. Before I stopped it, it
+overwrote the round-2 JSON and log reports for app-debug, lab-debug and
+lab-sanitize with complete, valid runs of `a2aac15`; those were moved to
+`round3/`. The round-2 section's figures (406/406 at `4dc0dac`) stand as
+recorded; only the app-sanitize round-2 JSON survives. The stopped app-sanitize
+run was repeated cleanly for round 3 below. I also stopped the orphaned tooling
+test processes it had left behind.
+
+### 1. Code review of the launcher diff
+
+The fallback runs only when all of the following hold:
+- an existing pack fails validation against the loaded rules;
+- `--track` is `dragster`;
+- the resolved `--rules` path equals the resolved default DRAGSTER rules path.
+
+It then validates the same file against the repository's two-track rules and
+accepts it only if that validation fully passes. That validation checks magic,
+schema, source ROM identity, rules identity, profile, start state, inventory,
+layout and every entry hash. If it also fails, the v1 diagnosis is kept when the
+two-track failure is the rules identity; otherwise the two-track diagnosis is
+reported.
+
+Can it accept a pack it should not?
+- **Only a fully valid two-track pack can pass.** Such a pack carries the
+  two-track rules identity, which the v1 validation rejects at or before its
+  identity check.
+- **The launched pack keeps every DRAGSTER entry.** All 25 v1 entries are
+  byte-identical in v7 (round 1), and the app validates the pack again itself.
+- **Explicit `--rules` to any other file disables the fallback**, including a
+  byte-identical copy of the v1 rules (L05). Naming the default file or a
+  symlink to it enables it, which is the same rules file (L06, L07).
+- **`--track zoom-zoo` is excluded.** Its default rules are already the
+  two-track rules, and a v1 pack is still refused (L04).
+- **Missing pack with `--rom`** takes the extraction branch, which is unchanged
+  and uses the rules actually selected. DRAGSTER still extracts a
+  byte-identical v1 pack (L18).
+- **Non-pack, truncated, corrupt and wrong-source files** are refused with exit
+  3 and a specific diagnosis (L10-L16).
+
+Python: rebinding `exc` inside the nested `except` is valid, and `exc` is only
+used inside the outer handler. The report records
+`two_track_extraction_rules` as an input only when the fallback succeeds.
+
+### 2. Launcher cases (reviewer-owned)
+
+All cases ran `python3 tools/project.py frontend run --preset app-debug --hidden
+--timeout 300 --report ...` with `SDL_VIDEODRIVER=dummy`, via
+`round3/launcher_cases.sh`, 11:29Z.
+
+| Case | Arguments | Exit | Diagnosis / inputs |
+| --- | --- | --- | --- |
+| L01 | dragster, v1 pack | 0 | `extraction_rules` |
+| L02 | dragster, v7 pack | **0** | `+ two_track_extraction_rules`; app "Classic pack validated", DRAGSTER race |
+| L03 | zoom-zoo, v7 | 0 | |
+| L04 | zoom-zoo, v1 pack | 3 | extraction-rules identity is incompatible |
+| L05 | dragster, v7, `--rules` = a copy of the v1 rules elsewhere | **3** | identity incompatible (no fallback) |
+| L06 | dragster, v7, `--rules` = the default path spelled explicitly | 0 | fallback |
+| L07 | dragster, v7, `--rules` = a symlink to the default rules | 0 | fallback (resolved path) |
+| L08 | dragster, v7, `--rules` = two-track rules | 0 | direct (as before the change) |
+| L09 | dragster, v1 pack, `--rules` = two-track rules | 3 | identity incompatible (no reverse fallback) |
+| L10 | dragster, v7 with one payload byte flipped | 3 | entry payload hash differs (two-track diagnosis) |
+| L11 | dragster, v1 with one payload byte flipped | 3 | entry payload hash differs (v1 diagnosis kept) |
+| L12 | dragster, v7 with a flipped rules-identity byte | 3 | extraction-rules identity is incompatible |
+| L13 | dragster, v7 with a flipped source-identity byte | 3 | source ROM identity is incompatible |
+| L14 | dragster, first 200 bytes of v7 | 3 | pack is truncated |
+| L15 | dragster, a non-pack text file | 3 | header magic is invalid |
+| L16 | zoom-zoo, corrupt v7 | 3 | entry payload hash differs |
+| L17 | dragster, v7 plus `--rom` | 0 | fallback; ROM not opened |
+| L18 | dragster, missing pack plus `--rom` | 0 | extracted profile `classic.pal.crawler.dragster.v1`, byte-identical to `local/classic-crawler-dragster.pack` |
+| L19 | dragster, missing pack, no `--rom` | 2 | supported ROM missing |
+
+### 3. Observable effect through the launcher
+
+The hidden app prints redraw counters, which depend on pixels. I built a
+prediction harness (scratch `applike.cpp`) linked against this build's
+libraries. It replays `sdl_main.cpp`'s DRAGSTER path: classic start, fixed
+controller mask, `presentation_position` while racing, a persistent
+`LivePresentation`, an initial render plus one render per update, and the same
+identical-redraw counting.
+
+For 2,146 updates with Right held (`--fixed-controller-mask 128`), it predicts:
+- v1: 2,147 frames, 1,421 fallback frames, **382** identical redraws, longest
+  run **225**;
+- v7: **380** and **223**.
+
+The two differences are at 3453 and 3454. With v1, 3452→3453 and 3453→3454
+are identical. With v7, 3452 (phase 6, window (121,38,255)) differs from 3453
+(phase 7), and 3453 differs from 3454 (loading, black window).
+
+Launcher runs, 11:29:24-11:30:50Z:
+
+| Command | Exit | App output |
+| --- | --- | --- |
+| `SDL_VIDEODRIVER=dummy python3 tools/project.py frontend run --track dragster --pack local/classic-crawler-dragster.pack --preset app-debug --hidden --updates 2146 --fixed-controller-mask 128 --timeout 300` | 0 | Presentation frames 2147; fallback 1421; identical redraws **382**; longest run **225**; frame 3679; phase 3, outcome 1 |
+| same with `--pack local/classic-crawler-two-tracks-v7.pack` | 0 | Presentation frames 2147; fallback 1421; identical redraws **380**; longest run **223**; frame 3679; phase 3, outcome 1 |
+
+Both runs match the prediction exactly. So the documented launcher now reaches
+the app path that draws the cycled window colour at a phase other than 10 or 7.
+This is an indirect observable: no pixels leave a hidden run.
+
+### 4. Other checks at `a2aac15`
+
+| Check | Result |
+| --- | --- |
+| `build` + `test --suite synthetic`: app-debug, lab-debug, lab-sanitize (11:23-11:25Z), app-sanitize (11:32:12-11:32:54Z) | 4x passed: **406/406, 22 ctest, 0 skipped**, `a2aac15` clean, no source change during the run |
+| `native presentation-check` v1 winner and loser | **36/697/279/445/653/962/961** and **1,073** |
+| `render_compare.py`: frozen cases with v1 and v7 | identical counts, and v1 and v7 byte-identical in all 8 cases; frame 3452 scores v1 5,654 vs v7 653, as in round 2 |
+| Round-2 residual R2-3: F2 guard mutant against the new `presentation_tests.cpp` | **exit 134** (now caught); the window mutant is also still caught |
+| Round-2 residual R2-2: `presentation.hpp` comment | fixed |
+| Round-2 residual R2-1: R-0037 loading wording | fixed: black on updates 1-108 (winner 3454-3561, loser 3559-3666), result fading in from update 109, 3600/3677 explained by native drawing the race until update 225 |
+| ZOOM ZOO | no source change since `2c9dea3` apart from the header comment; `zoom_zoo_runner` byte-identical to the binary that passed the M4-16 primary gate in rounds 1 and 2, so that gate was not rerun. L03, L04 and L16 cover the ZOOM ZOO launcher path. |
+| `gh run view 35215252623` | workflow `synthetic`, push, head `a2aac15`: **success**; `lab (macos-15)` 11:21:38-11:24:01Z, `lab (ubuntu-24.04)` 11:21:33-11:24:52Z. Integration candidate `829a7c9` run 35214438206 also succeeded. |
+
+### 5. Window-evidence wording (coordinator's correction in `a4fd477`)
+
+The corrected R-0037 verification bullets and task-record attempt 5 match my
+round-2 measurements:
+- winner window 5,001/5,001 at 3452, and 823/823 on the overlap at 3322;
+- GO checked only through states relabelled to 1596, 1598 and 1602 (9,868,
+  9,479 and 9,839 with v7, 0 with v1), because native draws GO only at 1600;
+- the 3454-3561 matches are black loading frames on both sides (my
+  540,108/540,108).
+
+I did not recompute the coordinator's own 15-frame totals (61,239 of 75,015),
+but their described composition is consistent with my figures. The corrected
+text no longer overstates the racing-phase evidence.
+
+### Residuals (non-blocking)
+
+- **R3-1, medium: no automated test exercises the fallback.**
+  - `tests/tooling/test_frontend.py` uses a temporary rules path, so the new
+    branch never runs.
+  - Mutation: restoring the `2c9dea3` `commands.py` in a scratch copy of the
+    repository still passes all 10 frontend tests. The candidate's copy also
+    passes.
+  - The launcher gap was found only by an integration gate, and the checks live
+    in ignored artifacts. A ROM-free test (patching `commands.ROOT` or the rules
+    constants with two authored rule sets) should cover:
+    - a two-track pack launching under `--track dragster` with default rules;
+    - refusal with an explicit other rules file;
+    - refusal for `--track zoom-zoo` with a DRAGSTER pack;
+    - the payload-hash diagnosis for a corrupt two-track pack.
+  - A test-only addition that keeps the four presets and CI green would not
+    change this verdict.
+- **R3-2, low (docs precision): the trigger is broader than recorded.**
+  R-0037 and the task record say the fallback applies to a pack that "fails the
+  v1 rules identity". The code tries the two-track rules after *any* v1
+  validation failure under the default rules. The outcome is the same (see
+  section 1), but the wording should match the code.
+- **R3-3, low (docs): `docs/STATE.md` overstates the windows.** It says the
+  windows "now animate" with v7. In native play the winner window changes
+  colour only on 3322 and 3452-3453 before turning black for loading, and GO is
+  drawn only at 1600 (phase 10, unchanged white). "Take the cycled colour 0"
+  would be accurate until window timing is recovered.
+
+**Pre-existing (not a finding):** `frontend run --track dragster --pack
+<absent path> --rom` always extracts a DRAGSTER v1 pack, even at a path named
+`...two-tracks...`.
+
+### Verdict (round 3)
+
+**Approve** `a2aac15`. The fallback is correct and conservative: in 19 reviewer
+cases it accepted exactly the valid two-track pack under the default DRAGSTER
+rules and nothing else. The documented DRAGSTER v7 launch reaches the recovered
+palette path, which the full-run redraw counters confirm. Presets, accepted
+counts and CI are green.
+
+### Not assessed (round 3)
+
+- Visible (non-hidden) play.
+- Linux launcher behaviour beyond hosted CI.
+- A rerun of the M4-16 primary gate, since the binary is identical.
+
+### Closing (round 3)
+
+- Round 3 ended 2026-09-17T11:34:53Z; about 13 minutes wall clock.
 - Commit on `review/dragster-palette-cycle`, pushed to `origin`; the remote ref
   is verified in the reviewer's handoff.
