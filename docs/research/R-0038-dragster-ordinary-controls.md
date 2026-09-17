@@ -92,7 +92,9 @@ gates; the new path is additive (state identity `URDG0001`).
 - **Hold duration is not bounded by rotations.** A landing's reward pass
   (`$829B69-9D97`) clears held rotations while a released roll keeps counting
   its hold, also across a bounce: the original reaches hold 1 with 0 rotations
-  (fuzz seed 31, 1623) and hold 2 with 1 (seed 383, 3473). The M4-16 restore
+  (fuzz seed 31, 1623) and hold 2 with 1 (seed 383; the code comment and its
+  regression test record frame 3472 and this note earlier said 3473 — the exact
+  frame was not re-derived, and nothing depends on it). The M4-16 restore
   bound (hold at most rotations) rejected these reachable states and is
   removed; the elapsed-update bounds remain.
 - **Charge latch, `$82:9995-99EF` and `$82:99F1-9A49`.** With the brake held

@@ -89,6 +89,18 @@ int main() {
               camera.bg2_y == 104,
           "deterministic presentation-only follow rule");
 
+  // The follow rule floors the camera at 14 so BG1 never reads before the map
+  // (shared with the ZOOM ZOO live view). Early DRAGSTER frames sit there.
+  for (const std::uint16_t early : {std::uint16_t{0}, std::uint16_t{880},
+                                    std::uint16_t{893}}) {
+    const auto start = presentation_position(early);
+    require(start.camera_x == 14 && start.bg1_x == 0 && start.bg2_x == 0,
+            "camera floor holds before the rider passes the start area");
+  }
+  const auto first_moving = presentation_position(895);
+  require(first_moving.camera_x == 15 && first_moving.bg1_x == 1,
+          "the camera follows once the rider passes the floor");
+
   // Two display-poll cadences consume the same update-indexed live input
   // script. Every input snapshot advances exactly one canonical update.
   unirally::MovementState initial{};
