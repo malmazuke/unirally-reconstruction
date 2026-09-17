@@ -1,0 +1,31 @@
+{
+  "kind": "m4_16_incomplete_original_inventory",
+  "acceptance": false,
+  "frames": [
+    1376,
+    32300
+  ],
+  "state_bytes": 742,
+  "original_sha256": "316e8564484055853588846cc2d5a9f0399100dbd3dee24c0194cef764463368",
+  "rows_sha256": "2def26165ee5b29183a56ad53e8db2291797dec970d846dd52420db2d577e923",
+  "race_and_loading_rows_sha256": "17bcef43d2d293337f965149cebd24c0332cf7dd9947cc3c4795e68b0102a7b9",
+  "race_and_loading_frames": [
+    1376,
+    31927
+  ],
+  "events": {
+    "finish_frames": [
+      31582,
+      6488
+    ],
+    "loading_frame": 31823,
+    "first_visible": 31933,
+    "stable_result": 31939,
+    "outcome": "player_lost",
+    "result_visible_after_loading": 110
+  },
+  "timeline_sha256": "cb43ec60465c2d0c47b6caa05c99a2c381c7b7eeb8e053c391e86a0f388075d1",
+  "rom_sha256": "a1105819d48c04d680c8292bbfa9abbce05224f1bc231afd66af43b7e0a1fd4e",
+  "core_sha256": "e59bf88d4fc922c9fe3b5438e65ff3a6909d24e1628f0f87141c8de17699a91b",
+  "reason": "Player stops at 3240 and never moves; the 10:00 clock limit ($81:C73E-C75B) finishes both riders at 31582. Result loading waits for the SPC700 reset handshake at $82:8088-809A two updates longer than in every other frozen case, so graph/total publication and first visible result are two updates later (visible at loading+110). Audio is excluded; not an acceptance freeze."
+}

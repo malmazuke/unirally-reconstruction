@@ -26,6 +26,18 @@ def capture(core_path, out, horizon, post_events, variation=None):
     inputs = timeline(case, horizon, derive_script(json.loads(raw)))
     for f in range(6725, horizon+1):
         inputs[f] = [[], []]
+    idle=(variation or {}).get('idle')
+    if idle is not None:
+        # Ordinary controller pause in play: release every button from `from`
+        # for `frames` updates (all remaining updates when null), then resume
+        # the primary controller stream where it was left.
+        first,count=idle.get('from'),idle.get('frames')
+        if (type(first) is not int or not 1650<=first<=horizon or set(idle)!={'from','frames'} or
+                (count is not None and (type(count) is not int or count<1))):
+            raise ValueError('invalid idle variation')
+        primary=inputs
+        inputs=[primary[f] if f<first else [[],[]] if count is None or f<first+count else [list(p) for p in primary[f-count]]
+                for f in range(horizon+1)]
     varied=set()
     for event in (variation or {}).get('changes',[]):
         first,last,buttons=event['from'],event['to'],event['buttons']
@@ -83,8 +95,9 @@ def main():
     p.add_argument('--post-events',type=Path)
     p.add_argument('--case',type=Path)
     a=p.parse_args()
-    if not 6725 <= a.horizon <= 15000:
-        p.error('horizon must be 6725..15000')
-    capture(a.core.resolve(),a.out,a.horizon,json.loads(a.post_events.read_text()) if a.post_events else [],json.loads(a.case.read_text()) if a.case else None)
+    variation=json.loads(a.case.read_text()) if a.case else None
+    if not 6725 <= a.horizon <= (40000 if variation and 'idle' in variation else 15000):
+        p.error('horizon must be 6725..15000, or up to 40000 for an idle variation')
+    capture(a.core.resolve(),a.out,a.horizon,json.loads(a.post_events.read_text()) if a.post_events else [],variation)
 
 if __name__=='__main__':main()
