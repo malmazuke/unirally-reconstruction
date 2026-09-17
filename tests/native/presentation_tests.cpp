@@ -380,6 +380,43 @@ int main() {
     throw std::runtime_error("window mask did not cover its inclusive edge");
   if (masked.pixels == first.pixels)
     throw std::runtime_error("window table mutation did not affect output");
+  {
+    // With race palette tables present, the GO and winner windows show the
+    // cycled colour 0 (R-0037). Phases 7 and 10 reproduce the accepted
+    // (98,98,255) and white; phase 6 is the original's (121,38,255) at 3452.
+    std::vector<std::uint8_t> cycle(544);
+    const auto colour_zero = [&](unsigned index, std::uint16_t word) {
+      cycle[16 * 32 + index * 2] = static_cast<std::uint8_t>(word);
+      cycle[16 * 32 + index * 2 + 1] = static_cast<std::uint8_t>(word >> 8U);
+    };
+    colour_zero(6, 0x7cef);
+    colour_zero(7, 0x7dad);
+    colour_zero(10, 0x7fff);
+    auto cycled = visible_content;
+    cycled.race_palette_cycle = cycle;
+    auto go_state = state;
+    go_state.riders[0].pose.pose_index = 0x04f9;
+    go_state.riders[1].pose.pose_index = 0x0263;
+    auto go_content = cycled;
+    go_content.winner_window = winner_window;
+    go_content.go_window = visible_window;
+    const auto window_pixel = [](unirally::MovementState rider_state,
+                                 std::uint32_t frame,
+                                 const unirally::PresentationContent &assets) {
+      rider_state.frame = frame;
+      const auto rendered =
+          unirally::render_dragster_headless({rider_state, 0, 0, 0, 0, 0}, assets);
+      return std::array<std::uint8_t, 3>{rendered.pixels[45], rendered.pixels[46],
+                                         rendered.pixels[47]};
+    };
+    using Rgb = std::array<std::uint8_t, 3>;
+    require(window_pixel(winner_state, 1334 + 7, cycled) == Rgb{98, 98, 255});
+    require(window_pixel(winner_state, 1334 + 10, cycled) == Rgb{255, 255, 255});
+    require(window_pixel(winner_state, 3452, cycled) == Rgb{121, 38, 255});
+    require(window_pixel(go_state, 3452, go_content) == Rgb{121, 38, 255});
+    // Without the tables (v1 packs) the accepted fixed colours stay.
+    require(window_pixel(winner_state, 3452, visible_content) == Rgb{98, 98, 255});
+  }
   auto invalid_window = winner_window;
   invalid_window[0] = 0;
   auto invalid_content = content;
