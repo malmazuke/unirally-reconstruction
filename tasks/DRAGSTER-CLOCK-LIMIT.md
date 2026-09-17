@@ -7,7 +7,7 @@
 - Coordinator: Claude Opus 5 primary session (Claude Code desktop)
 - Task provider: Anthropic (Claude Opus 5), per D-0004
 - Worker/session/runtime/model: implementation subagent, Claude Opus 5
-- Provider quota: plan telemetry through the app usage tool. Session start 2026-09-17T19:50Z: 5-hour window 72% (resets 21:20Z), weekly 17% (resets 2026-09-24T08:00Z), extra usage disabled. **User budget: stop new work at 90% of the five-hour window or 45% of the weekly limit.** No reset, purchase or provider change.
+- Provider quota: plan telemetry through the app usage tool. Session start 2026-09-17T19:50Z: 5-hour window 72% (resets 21:20Z), weekly 17% (resets 2026-09-24T08:00Z), extra usage disabled. **User budget: stop new work at 90% of the five-hour window or 45% of the weekly limit.** No reset, purchase or provider change. At stop (2026-09-17T21:26Z, after the window reset at 21:20Z): five-hour 2% (resets 2026-09-18T02:20Z), weekly 19%. The run peaked at 85% of the pre-reset five-hour window, below the 90% stop.
 - Reviewer: fresh Claude Opus 5 subagent in an isolated checkout at the exact candidate (not yet run)
 - Dependencies: M4-16 (recovered ZOOM ZOO engine and its clock limit), DRAGSTER-ORDINARY-CONTROLS (DRAGSTER on the shared engine); both on main at `033d4a7`
 - Base commit: `033d4a7`
@@ -50,7 +50,7 @@ checkout under ignored `artifacts/dragster-clock-limit/regressions/`.
 | Seven DRAGSTER frozen originals | `dragster_playable compare` on each | all pass unchanged | gate reports (done) |
 | M4-16 ZOOM ZOO primary gate | `zoom_zoo_playable compare` against `primary-v11` | passes unchanged | gate report (done) |
 | DRAGSTER historical matrix | 20 commands (compare, restore, finish, opponent-first, presentation) | all pass with unchanged expectations | gate logs (done) |
-| Independent review, CI | fresh reviewer at the exact tip; hosted CI | approve; green | review, closeout (open) |
+| Independent review, CI | fresh reviewer at the exact tip; hosted CI | approve; green | CI green on all four pushed commits, latest run 35276201283 at `59efeaf` (done); review open |
 
 ## Evidence and attempts
 
