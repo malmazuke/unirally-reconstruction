@@ -3354,6 +3354,32 @@
       },
       "size": 819200,
       "sha256": "a1e3f8925386d80d700f85306cc4c33e7322a1de3cbc4cf10219d35a2f8f55cb"
+    },
+    {
+      "id": "presentation.rider.look-tables.v1",
+      "source": {
+        "kind": "raw",
+        "pieces": [
+          {
+            "file_offset": 66363,
+            "length": 48
+          },
+          {
+            "file_offset": 125998,
+            "length": 96
+          },
+          {
+            "file_offset": 771590,
+            "length": 14
+          },
+          {
+            "file_offset": 771604,
+            "length": 436
+          }
+        ]
+      },
+      "size": 594,
+      "sha256": "3ea809fc62e175660f9bb98c10b44bb80fd79ab98c7378c547790e3b6b986029"
     }
   ],
   "description": "Additive two-track content inventory; retains every v1 entry unchanged."

@@ -123,7 +123,7 @@ const std::array<RequiredEntry, 25> required{
      {"presentation.result.classic.palette-tail.v1", 128,
       "cd7b9fac3c3ec53d74450dcb28da0f53a09c927826ca3753ff047851c2b20641"}}};
 
-const std::array<RequiredEntry, 28> zoom_required{{
+const std::array<RequiredEntry, 29> zoom_required{{
     {"zoom.track-data", 50665, "db6770152e399f9d16fc6937b5d56588a8f67e825ae70d6578b77d36053fdd28"},
     {"zoom.collision-poses", 32768, "9d1754d38c20cb2900239557550211ab6fc23d9b0237e17b78fb29f3bf272c32"},
     {"zoom.collision-templates", 17249, "2f03a8cb985899436603ef36b233b28f7b4213e4ba106fca328a6b02cdb081c7"},
@@ -153,8 +153,10 @@ const std::array<RequiredEntry, 28> zoom_required{{
     {"presentation.rider.pose-pointers.v1", 15513, "089b5743b87cbcac9da71c8d54777f5a2ec829e30a177cf8499925701e53d8a9"},
     {"presentation.rider.pose-frames.v1", 124028, "f985fa7e6cdebe1418362efa9ee63f4a3a1307ef882be7eb210a7e4363157c51"},
     {"presentation.rider.object-tiles.v1", 819200, "a1e3f8925386d80d700f85306cc4c33e7322a1de3cbc4cf10219d35a2f8f55cb"},
+    // R-0036: $82:833B, $83:EC2E, $17:C606 and $17:C614 rider look tables.
+    {"presentation.rider.look-tables.v1", 594, "3ea809fc62e175660f9bb98c10b44bb80fd79ab98c7378c547790e3b6b986029"},
 }};
-constexpr std::string_view two_track_rules_sha="a0778356fb1ab2c79970609bbdc3d9fc2994dd1f918d49da5bc245f47cd33e1c";
+constexpr std::string_view two_track_rules_sha="c3db255d5cd50e25d2762d21aaac3370a827d967f8849100bd0f2a6453cdf4e7";
 
 std::array<std::uint8_t, 32> hex_digest(std::string_view text) {
   if (text.size() != 64)

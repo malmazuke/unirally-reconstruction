@@ -407,6 +407,8 @@ int main(int argc, char **argv) try {
           // state. A physically held Start cannot immediately pause the new race.
           input.clear();live_presentation=unirally::app::LivePresentation{};++restarts;
           zoom_hud_state=zoom_state;
+        } else {
+          live_presentation.observe_zoom_update(zoom_hud_state,zoom_state,content.pack);
         }
       }
       else unirally::update_movement(state,
@@ -426,7 +428,7 @@ int main(int argc, char **argv) try {
       const auto live_frame =
           parsed->zoom_zoo?live_presentation.render_zoom(zoom_state,zoom_hud_state,content.pack):live_presentation.render(state, position, presentation_content);
       if (live_frame.used_pose_fallback && !reported_held_frame) {
-        std::cout << "Presentation note: unsupported intermediate rider poses use the last recovered rider art while the scene stays current.\n";
+        std::cout << (parsed->zoom_zoo?"Presentation note: a rider pose outside the packed tables holds that rider's last drawn pose.\n":"Presentation note: unsupported intermediate rider poses use the last recovered rider art while the scene stays current.\n");
         reported_held_frame = true;
       }
       ++rendered_frames;

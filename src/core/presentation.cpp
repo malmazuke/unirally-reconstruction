@@ -2,6 +2,7 @@
 #include "zoom_zoo_movement.hpp"
 #include "content_pack.hpp"
 #include "rider_object.hpp"
+#include "zoom_zoo_pack.hpp"
 #include <string>
 #include <algorithm>
 #include <cmath>
@@ -943,6 +944,19 @@ std::string race_time(unsigned value) {
     const auto digit=[](unsigned v){return static_cast<char>('0'+v%10);};
     return {digit(value/6000),':',digit(value/1000%6),digit(value/100),'.',digit(value/10),digit(value)};
 }
+}
+void ZoomZooRiderLookTracker::reset() {
+    look_={};latest_={};on_screen_={};
+}
+void ZoomZooRiderLookTracker::observe_update(const ZoomZooState& previous,const ZoomZooState& updated,
+                                             const ClassicContentPack& pack) {
+    // R-0036: update N builds its objects with overlays chosen from the look
+    // state before its own look step; picture N+1 shows them.
+    on_screen_=latest_;
+    if(updated.result_updates || zoom_zoo_update_was_paused(previous,updated))return;
+    const auto tables=rider_look_tables(pack);
+    latest_.pose=rider_overlay_poses(look_,updated,tables);
+    advance_rider_look(look_,updated,zoom_zoo_content(pack),tables);
 }
 unsigned zoom_zoo_hud_lap(unsigned laps_remaining) {
     return std::min(3U,4U-std::min(4U,laps_remaining));

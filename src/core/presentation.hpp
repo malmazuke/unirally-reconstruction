@@ -1,5 +1,6 @@
 #pragma once
 #include "movement.hpp"
+#include "rider_look.hpp"
 #include <array>
 #include <cstdint>
 #include <optional>
@@ -85,10 +86,27 @@ struct ZoomZooHud {
 };
 ZoomZooHud zoom_zoo_hud(const ZoomZooState& previous_update);
 // Presentation-only $0D45/$0D47 upper-body overlay frames. The original
-// derives them from state the serialized race does not carry, so a caller
-// that cannot supply them draws the pose frames alone.
+// derives them from look state the serialized race does not carry (R-0036),
+// so a caller without that history draws the pose frames alone.
 struct ZoomZooRiderOverlays {
   std::array<std::optional<std::uint16_t>,2> pose{};
+  bool operator==(const ZoomZooRiderOverlays&) const = default;
+};
+// Follows the rider look animation across consecutive ZOOM ZOO race updates,
+// beginning at the native race initialization, and keeps the overlays of the
+// update currently on screen. Reset it whenever the race state is replaced.
+class ZoomZooRiderLookTracker {
+public:
+  void reset();
+  // Call once for every simulation update, with the state before and after it.
+  void observe_update(const ZoomZooState& previous,const ZoomZooState& updated,
+                      const ClassicContentPack& pack);
+  // Overlays for the update that produced the `previous_update` being drawn.
+  const ZoomZooRiderOverlays& on_screen() const {return on_screen_;}
+  const RiderLookState& look() const {return look_;}
+private:
+  RiderLookState look_{};
+  ZoomZooRiderOverlays latest_{}, on_screen_{};
 };
 // previous_update is the state before the update being drawn. The original
 // picture shows the HUD and both rider objects from that update (the BG scroll
