@@ -1,4 +1,5 @@
 #include "frontend.hpp"
+#include "rider_object.hpp"
 #include "zoom_zoo_movement.hpp"
 
 #include <algorithm>
@@ -150,19 +151,32 @@ LiveFrame LivePresentation::render(const MovementState &state,
           true};
 }
 
+void LivePresentation::observe_zoom_update(const ZoomZooState& previous,const ZoomZooState& updated,
+                                           const ClassicContentPack& pack) {
+  zoom_look_.observe_update(previous,updated,pack);
+}
+
 LiveFrame LivePresentation::render_zoom(const ZoomZooState& state,const ZoomZooState& previous_update,
                                         const ClassicContentPack& pack) {
-  const bool fallback=!is_recovered_pose_pair(state.movement);
-  if(!fallback) {
-    for(unsigned i=0;i<2;++i) {
-      recovered_pair_.pose_indices[i]=state.movement.riders[i].pose.pose_index;
-      recovered_pair_.reflected[i]=state.movement.riders[i].pose.reflected;
+  const auto& overlays=zoom_look_.on_screen();
+  if(state.result_updates)return {render_zoom_zoo(state,pack,&previous_update,&overlays),false};
+  const auto objects=rider_object_content(pack);
+  auto drawn=previous_update;
+  auto drawn_overlays=overlays;
+  bool fallback=false;
+  for(std::size_t rider=0;rider<2;++rider) {
+    auto& pose=drawn.movement.riders[rider].pose.pose_index;
+    try {
+      (void)compose_rider_object(objects,pose,drawn_overlays.pose[rider],RiderRowClip::none);
+      zoom_drawn_pose_[rider]=pose;
+    } catch(const std::invalid_argument&) {
+      if(!zoom_drawn_pose_[rider])throw;
+      pose=*zoom_drawn_pose_[rider];
+      drawn_overlays.pose[rider].reset();
+      fallback=true;
     }
   }
-  const std::array<RiderArtPose,2> art{{
-    {recovered_pair_.pose_indices[0],recovered_pair_.reflected[0]},
-    {recovered_pair_.pose_indices[1],recovered_pair_.reflected[1]}}};
-  return {render_zoom_zoo(state,pack,&art,&previous_update),fallback && !state.result_updates};
+  return {render_zoom_zoo(state,pack,&drawn,&drawn_overlays),fallback};
 }
 
 } // namespace unirally::app

@@ -1,6 +1,8 @@
 #include "presentation.hpp"
 #include "zoom_zoo_movement.hpp"
 #include "content_pack.hpp"
+#include "rider_object.hpp"
+#include "zoom_zoo_pack.hpp"
 #include <string>
 #include <algorithm>
 #include <cmath>
@@ -943,6 +945,19 @@ std::string race_time(unsigned value) {
     return {digit(value/6000),':',digit(value/1000%6),digit(value/100),'.',digit(value/10),digit(value)};
 }
 }
+void ZoomZooRiderLookTracker::reset() {
+    look_={};latest_={};on_screen_={};
+}
+void ZoomZooRiderLookTracker::observe_update(const ZoomZooState& previous,const ZoomZooState& updated,
+                                             const ClassicContentPack& pack) {
+    // R-0036: update N builds its objects with overlays chosen from the look
+    // state before its own look step; picture N+1 shows them.
+    on_screen_=latest_;
+    if(updated.result_updates || zoom_zoo_update_was_paused(previous,updated))return;
+    const auto tables=rider_look_tables(pack);
+    latest_.pose=rider_overlay_poses(look_,updated,tables);
+    advance_rider_look(look_,updated,zoom_zoo_content(pack),tables);
+}
 unsigned zoom_zoo_hud_lap(unsigned laps_remaining) {
     return std::min(3U,4U-std::min(4U,laps_remaining));
 }
@@ -965,8 +980,8 @@ ZoomZooHud zoom_zoo_hud(const ZoomZooState& previous_update) {
     return hud;
 }
 RgbFrame render_zoom_zoo(const ZoomZooState& state,const ClassicContentPack& pack,
-                         const std::array<RiderArtPose,2>* rider_art,
-                         const ZoomZooState* hud_source) {
+                         const ZoomZooState* previous_update,
+                         const ZoomZooRiderOverlays* overlays) {
     RgbFrame frame{};
     if(state.result_updates) {
         if(state.result_updates<=108)return frame;
@@ -1017,6 +1032,8 @@ RgbFrame render_zoom_zoo(const ZoomZooState& state,const ClassicContentPack& pac
     const auto origin_y=static_cast<std::uint16_t>(((unsigned(word(track,5))<<4)-256U)&0xfff0U);
     const int bg_x=static_cast<std::uint16_t>(background_x-origin_x)>>1U;
     const int bg_y=static_cast<std::uint16_t>(background_y-origin_y)>>1U;
+    // BG1 map entries with bit 13 set are drawn above priority-2 OBJs.
+    std::array<bool,256*224> bg1_above_objects{};
     for(int y=0;y<224;++y)for(int x=0;x<256;++x) {
         const auto background=background_pixel(vram,0xe000,true,true,0x2000,false,static_cast<std::int16_t>(bg_x),static_cast<std::int16_t>(bg_y),x,y);
         pixel(frame,x,y,colour(cgram,background));
@@ -1029,25 +1046,33 @@ RgbFrame render_zoom_zoo(const ZoomZooState& state,const ClassicContentPack& pac
         if(descriptor&0x4000)px=15-px;if(descriptor&0x8000)py=15-py;
         const auto tile=static_cast<std::uint16_t>(((descriptor&1023)+(px/8)+(py/8)*16)&1023);
         const auto value=tile_pixel(vram,0x4000,tile,px&7,py&7);
-        if(value)pixel(frame,x,y,colour(cgram,static_cast<std::uint8_t>(((descriptor>>10)&7)*16+value)));
-    }
-    auto art=state.movement;art.riders[0].pose.pose_index=0x04f9;art.riders[1].pose.pose_index=0x0263;
-    for(unsigned i=0;i<2;++i) {
-        art.riders[i].pose.reflected=true;
-        if(rider_art) {
-            art.riders[i].pose.pose_index=(*rider_art)[i].pose_index;
-            art.riders[i].pose.reflected=(*rider_art)[i].reflected;
+        if(value) {
+            pixel(frame,x,y,colour(cgram,static_cast<std::uint8_t>(((descriptor>>10)&7)*16+value)));
+            bg1_above_objects[static_cast<std::size_t>(y)*256+static_cast<std::size_t>(x)]=(descriptor&0x2000)!=0;
         }
     }
-    std::array<std::uint8_t,65536> rider_vram{};
-    load_rider_tiles(rider_vram,{art,0,0,0,0,0},pack.entry("presentation.rider.mike.race-tiles.v1"));
-    for(unsigned i=0;i<2;++i) {
-        const auto& rider=state.movement.riders[i];
-        render_rider(frame,rider_vram,cgram,static_cast<int>(rider.motion.x)-camera_x,
-                     static_cast<int>(rider.motion.y)-camera_y,i?136:0,i?0x68:0x66);
+    // R-0036: picture N shows the OBJ tiles and OAM the original published in
+    // update N-1, like the BG scroll above. Entry 98 (player, tile base 0,
+    // palette 3) has priority over entry 99 (opponent, base $88, palette 4);
+    // both use OBJ priority 2. Without a previous update the riders are drawn
+    // from this state, one update ahead.
+    const auto& rider_source=previous_update?*previous_update:state;
+    const auto objects=rider_object_content(pack);
+    for(int rider=1;rider>=0;--rider) {
+        const auto& source=rider_source.movement.riders[static_cast<std::size_t>(rider)];
+        const auto oam=project_rider_oam(source.motion.x,source.motion.y,rider_source.race.camera.x,
+                                         rider_source.race.camera.y,source.pose.reflected);
+        if(!oam.visible)continue;
+        const auto overlay=overlays?overlays->pose[static_cast<std::size_t>(rider)]:std::nullopt;
+        const auto pixels=compose_rider_object(objects,source.pose.pose_index,overlay,oam.clip);
+        const unsigned object_palette=128U+(rider?4U:3U)*16U;
+        draw_rider_object(pixels,oam,[&](int x,int y,std::uint8_t value) {
+            if(!bg1_above_objects[static_cast<std::size_t>(y)*256+static_cast<std::size_t>(x)])
+                pixel(frame,x,y,colour(cgram,static_cast<std::uint8_t>(object_palette+value)));
+        });
     }
     rect(frame,0,0,256,12,{15,30,30});
-    const auto hud=zoom_zoo_hud(hud_source?*hud_source:state);
+    const auto hud=zoom_zoo_hud(rider_source);
     const auto centred=[](const std::string& text){return 128-3*static_cast<int>(text.size());};
     ui_text(frame,5,3,hud.lap);
     if(!hud.clock.empty())ui_text(frame,195,3,hud.clock);

@@ -123,7 +123,7 @@ const std::array<RequiredEntry, 25> required{
      {"presentation.result.classic.palette-tail.v1", 128,
       "cd7b9fac3c3ec53d74450dcb28da0f53a09c927826ca3753ff047851c2b20641"}}};
 
-const std::array<RequiredEntry, 25> zoom_required{{
+const std::array<RequiredEntry, 29> zoom_required{{
     {"zoom.track-data", 50665, "db6770152e399f9d16fc6937b5d56588a8f67e825ae70d6578b77d36053fdd28"},
     {"zoom.collision-poses", 32768, "9d1754d38c20cb2900239557550211ab6fc23d9b0237e17b78fb29f3bf272c32"},
     {"zoom.collision-templates", 17249, "2f03a8cb985899436603ef36b233b28f7b4213e4ba106fca328a6b02cdb081c7"},
@@ -149,8 +149,14 @@ const std::array<RequiredEntry, 25> zoom_required{{
     {"zoom.roll-direction-table", 64, "670f922581331cb2546d768b7e2b94b6b3f0649b96ae1a46014cd9ebcf19f7ec"},
     {"zoom.roll-reward-weights", 26, "e27d32975fbc09805fa6bff958aaa3729167a1da354f7b6dfefa0bb838f104a2"},
     {"zoom.trick-combinations", 625, "a6424f66bbd354883f3bfe128487d6cab92add5651adbf969976733a353f0217"},
+    // R-0036: $83:F0FF rider object sources ($20:8000 pointers, $23-$26 frames, $27-$3F tiles).
+    {"presentation.rider.pose-pointers.v1", 15513, "089b5743b87cbcac9da71c8d54777f5a2ec829e30a177cf8499925701e53d8a9"},
+    {"presentation.rider.pose-frames.v1", 124028, "f985fa7e6cdebe1418362efa9ee63f4a3a1307ef882be7eb210a7e4363157c51"},
+    {"presentation.rider.object-tiles.v1", 819200, "a1e3f8925386d80d700f85306cc4c33e7322a1de3cbc4cf10219d35a2f8f55cb"},
+    // R-0036: $82:833B, $83:EC2E, $17:C606 and $17:C614 rider look tables.
+    {"presentation.rider.look-tables.v1", 594, "3ea809fc62e175660f9bb98c10b44bb80fd79ab98c7378c547790e3b6b986029"},
 }};
-constexpr std::string_view two_track_rules_sha="36850741e6fea1908b35954397272e85c558c12321eb1c053082b89304e6eb62";
+constexpr std::string_view two_track_rules_sha="c3db255d5cd50e25d2762d21aaac3370a827d967f8849100bd0f2a6453cdf4e7";
 
 std::array<std::uint8_t, 32> hex_digest(std::string_view text) {
   if (text.size() != 64)
@@ -273,8 +279,8 @@ ClassicContentPack::ClassicContentPack(const std::filesystem::path &path) {
         "Classic pack source ROM identity is unsupported");
   const auto profile=in.text();
   const auto start=in.text();
-  const bool two_tracks=profile=="classic.pal.crawler.two-tracks.v5";
-  if (profile != (two_tracks ? "classic.pal.crawler.two-tracks.v5" : "classic.pal.crawler.dragster.v1"))
+  const bool two_tracks=profile=="classic.pal.crawler.two-tracks.v6";
+  if (profile != (two_tracks ? "classic.pal.crawler.two-tracks.v6" : "classic.pal.crawler.dragster.v1"))
     throw std::invalid_argument("Classic pack profile is unsupported");
   if (start != (two_tracks ? "classic.crawler.race-start.v2" : "classic.crawler.dragster.race-start.v1"))
     throw std::invalid_argument("Classic pack start state is unsupported");

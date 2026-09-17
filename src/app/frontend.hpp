@@ -5,6 +5,7 @@
 
 #include <array>
 #include <cstdint>
+#include <optional>
 
 namespace unirally::app {
 
@@ -87,12 +88,21 @@ public:
   LiveFrame render(const MovementState &state,
                    const PresentationPosition &position,
                    const PresentationContent &content);
+  // ZOOM ZOO draws every packed pose (R-0036). Call observe_zoom_update once
+  // per simulation update so the rider look overlays follow the race.
+  void observe_zoom_update(const ZoomZooState& previous,const ZoomZooState& updated,
+                           const ClassicContentPack& pack);
+  // A rider pose outside the packed tables fails closed in the renderer; the
+  // live frame then holds that rider's last drawn pose and reports the frame
+  // as a fallback instead of ending the session.
   LiveFrame render_zoom(const ZoomZooState& state,const ZoomZooState& previous_update,
                         const ClassicContentPack& pack);
   RiderPosePair last_recovered_pose_pair() const { return recovered_pair_; }
 
 private:
   RiderPosePair recovered_pair_{{0x04f9, 0x0263}, {true, true}};
+  ZoomZooRiderLookTracker zoom_look_{};
+  std::array<std::optional<std::uint16_t>, 2> zoom_drawn_pose_{};
 };
 
 } // namespace unirally::app

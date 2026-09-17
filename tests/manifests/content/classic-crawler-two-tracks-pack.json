@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "kind": "classic_pack_rules",
-  "profile_id": "classic.pal.crawler.two-tracks.v5",
+  "profile_id": "classic.pal.crawler.two-tracks.v6",
   "source_rom": {
     "size": 2097152,
     "sha256": "a1105819d48c04d680c8292bbfa9abbce05224f1bc231afd66af43b7e0a1fd4e"
@@ -3204,6 +3204,182 @@
       },
       "size": 625,
       "sha256": "a6424f66bbd354883f3bfe128487d6cab92add5651adbf969976733a353f0217"
+    },
+    {
+      "id": "presentation.rider.pose-pointers.v1",
+      "source": {
+        "kind": "raw",
+        "pieces": [
+          {
+            "file_offset": 1048576,
+            "length": 15513
+          }
+        ]
+      },
+      "size": 15513,
+      "sha256": "089b5743b87cbcac9da71c8d54777f5a2ec829e30a177cf8499925701e53d8a9"
+    },
+    {
+      "id": "presentation.rider.pose-frames.v1",
+      "source": {
+        "kind": "raw",
+        "pieces": [
+          {
+            "file_offset": 1146880,
+            "length": 32768
+          },
+          {
+            "file_offset": 1179648,
+            "length": 32768
+          },
+          {
+            "file_offset": 1212416,
+            "length": 32768
+          },
+          {
+            "file_offset": 1245184,
+            "length": 25724
+          }
+        ]
+      },
+      "size": 124028,
+      "sha256": "f985fa7e6cdebe1418362efa9ee63f4a3a1307ef882be7eb210a7e4363157c51"
+    },
+    {
+      "id": "presentation.rider.object-tiles.v1",
+      "source": {
+        "kind": "raw",
+        "pieces": [
+          {
+            "file_offset": 1277952,
+            "length": 32768
+          },
+          {
+            "file_offset": 1310720,
+            "length": 32768
+          },
+          {
+            "file_offset": 1343488,
+            "length": 32768
+          },
+          {
+            "file_offset": 1376256,
+            "length": 32768
+          },
+          {
+            "file_offset": 1409024,
+            "length": 32768
+          },
+          {
+            "file_offset": 1441792,
+            "length": 32768
+          },
+          {
+            "file_offset": 1474560,
+            "length": 32768
+          },
+          {
+            "file_offset": 1507328,
+            "length": 32768
+          },
+          {
+            "file_offset": 1540096,
+            "length": 32768
+          },
+          {
+            "file_offset": 1572864,
+            "length": 32768
+          },
+          {
+            "file_offset": 1605632,
+            "length": 32768
+          },
+          {
+            "file_offset": 1638400,
+            "length": 32768
+          },
+          {
+            "file_offset": 1671168,
+            "length": 32768
+          },
+          {
+            "file_offset": 1703936,
+            "length": 32768
+          },
+          {
+            "file_offset": 1736704,
+            "length": 32768
+          },
+          {
+            "file_offset": 1769472,
+            "length": 32768
+          },
+          {
+            "file_offset": 1802240,
+            "length": 32768
+          },
+          {
+            "file_offset": 1835008,
+            "length": 32768
+          },
+          {
+            "file_offset": 1867776,
+            "length": 32768
+          },
+          {
+            "file_offset": 1900544,
+            "length": 32768
+          },
+          {
+            "file_offset": 1933312,
+            "length": 32768
+          },
+          {
+            "file_offset": 1966080,
+            "length": 32768
+          },
+          {
+            "file_offset": 1998848,
+            "length": 32768
+          },
+          {
+            "file_offset": 2031616,
+            "length": 32768
+          },
+          {
+            "file_offset": 2064384,
+            "length": 32768
+          }
+        ]
+      },
+      "size": 819200,
+      "sha256": "a1e3f8925386d80d700f85306cc4c33e7322a1de3cbc4cf10219d35a2f8f55cb"
+    },
+    {
+      "id": "presentation.rider.look-tables.v1",
+      "source": {
+        "kind": "raw",
+        "pieces": [
+          {
+            "file_offset": 66363,
+            "length": 48
+          },
+          {
+            "file_offset": 125998,
+            "length": 96
+          },
+          {
+            "file_offset": 771590,
+            "length": 14
+          },
+          {
+            "file_offset": 771604,
+            "length": 436
+          }
+        ]
+      },
+      "size": 594,
+      "sha256": "3ea809fc62e175660f9bb98c10b44bb80fd79ab98c7378c547790e3b6b986029"
     }
   ],
   "description": "Additive two-track content inventory; retains every v1 entry unchanged."
