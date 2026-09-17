@@ -53,7 +53,7 @@ checkout; without it every historical command exits 2, missing prerequisite.
    multi-axis updates across selectors 2 and 7** with no abort. Nothing is
    outstanding here; it is listed so the history is not re-derived.
 
-2. **Live controls — demonstrated; only the reviewer's own exercise is due.**
+2. **Live controls — demonstrated, reviewed, and exercised on a gamepad.**
    A complete three-lap race, the RUNNER UP result, the authored pause menu and
    a clean restart were driven with real key events: 5,785 nonzero updates from
    21 presses, PAL cadence measured at 10.16 s of race clock per 10 s wall. Use
@@ -65,10 +65,13 @@ checkout; without it every historical command exits 2, missing prerequisite.
    track is a **loop** — one held direction cannot finish it; the original
    alternates direction thirteen times. Ride the whole race in one uninterrupted
    sequence, since gaps let the rider coast and desync. Never substitute a fixed
-   mask, replay or terminal runner. Outstanding: the reviewer's independent
-   exercise of live controls and a result/restart boundary, gamepad (no
-   hardware), and the focus-loss active-clear witness, which reads 0 because
-   macOS releases held keys before `SDL_EVENT_WINDOW_FOCUS_LOST`.
+   mask, replay or terminal runner. The reviewer's independent live exercise is
+   done (`78c595d`/`0915e10`). The user exercised an Xbox controller live on
+   `aac6df0`: all 5,194 nonzero updates gamepad-only, pause, a restart,
+   disconnect/reconnect, and the first live focus-loss active clears (2).
+   Not yet shown on a gamepad: that the restart followed a completed race
+   (logs from `cc001f2` split result from pause restarts) and a removal
+   clearing a held button.
 3. **Closed: M4-15 race matrix.** The reference pairs were in the M4-15
    worktrees, not missing. All eight `zoom_zoo_race` commands (primary, delayed
    turns, early jump, lap-two jump on app-debug and app-sanitize) pass on clean
