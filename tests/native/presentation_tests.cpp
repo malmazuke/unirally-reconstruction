@@ -325,6 +325,10 @@ int main() {
   auto timed_out = loser_state;
   timed_out.finish.finish_time_centiseconds = {60000, 3358};
   timed_out.finish.finish_time_digits[0] = {0, 0, 0, 7, 0};
+  timed_out.timer.minutes = 9;
+  timed_out.timer.tens_seconds = 5;
+  timed_out.timer.seconds = 9;
+  timed_out.timer.tenths = 9;
   const auto timed_out_before = unirally::serialize_movement_state(timed_out);
   const auto timed_out_map =
       unirally::build_dragster_result_map(timed_out, result);
@@ -339,6 +343,21 @@ int main() {
         (row == 11 || row == 12) && column >= 17 && column < 25;
     require(player_time || timed_out_map[entry] == loser_map[entry]);
   }
+
+  // Only the held clock admits the sentinel: the same totals with an ordinary
+  // clock are not a timed-out race and stay rejected (review finding 2).
+  auto sentinel_without_limit = timed_out;
+  sentinel_without_limit.timer.minutes = 0;
+  sentinel_without_limit.timer.tens_seconds = 3;
+  sentinel_without_limit.timer.seconds = 3;
+  sentinel_without_limit.timer.tenths = 5;
+  rejected = false;
+  try {
+    (void)unirally::build_dragster_result_map(sentinel_without_limit, result);
+  } catch (const std::invalid_argument &) {
+    rejected = true;
+  }
+  require(rejected);
   require(timed_out_before == unirally::serialize_movement_state(timed_out));
   // The admission is the sentinel, not an inconsistent time: a player total
   // below it must still agree with its digits, and an opponent with no time

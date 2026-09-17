@@ -467,7 +467,14 @@ void build_result_map(std::array<std::uint8_t, 65536> &vram,
   // digits still hold the start-line crossing, so they do not describe the
   // total and the original writes NO TIME in the player row instead
   // (clock-limit original, stable result 32016-32200).
-  const bool player_has_no_time = finish.finish_time_centiseconds[0] >= 60000;
+  // $81:C73E-C75B holds 9:59.9 when it finishes both riders, so a no-time
+  // player total only belongs to that timed-out race (R-0039). A consistent
+  // time never reaches the sentinel, so this stays a strict extension.
+  const auto &clock = sample.movement.timer;
+  const bool clock_expired = clock.minutes == 9 && clock.tens_seconds == 5 &&
+                             clock.seconds == 9 && clock.tenths == 9;
+  const bool player_has_no_time =
+      finish.finish_time_centiseconds[0] >= 60000 && clock_expired;
   const bool times_are_consistent =
       finish.rider_finished[0] && finish.rider_finished[1] &&
       (player_has_no_time ||
