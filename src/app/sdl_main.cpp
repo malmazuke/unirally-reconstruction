@@ -375,7 +375,10 @@ int main(int argc, char **argv) try {
             ++mapped_key_up_events;
         }
         break;
-      case SDL_EVENT_GAMEPAD_ADDED: if (gamepads.added(event.gdevice.which)) ++gamepad_connections; break;
+      case SDL_EVENT_GAMEPAD_ADDED:
+        if (gamepads.added(event.gdevice.which))
+          ++gamepad_connections;
+        break;
       case SDL_EVENT_GAMEPAD_REMOVED:
         ++gamepad_removals;
         if (gamepads.removed(event.gdevice.which))

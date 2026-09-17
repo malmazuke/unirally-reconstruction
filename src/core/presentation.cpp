@@ -940,8 +940,13 @@ std::array<unsigned,7> ui_glyph(char c) {
     }
 }
 void ui_text(RgbFrame& frame,int x,int y,std::string_view text,std::array<std::uint8_t,3> ink={255,240,220}) {
-    for(char c:text) {const auto glyph=ui_glyph(c);for(int row=0;row<7;++row)for(int col=0;col<5;++col)
-        if(glyph[static_cast<std::size_t>(row)]&(1U<<(4-col)))pixel(frame,x+col,y+row,ink);x+=6;}
+    for(char c:text) {
+        const auto glyph=ui_glyph(c);
+        for(int row=0;row<7;++row)
+            for(int col=0;col<5;++col)
+                if(glyph[static_cast<std::size_t>(row)]&(1U<<(4-col)))pixel(frame,x+col,y+row,ink);
+        x+=6;
+    }
 }
 // The result screen writes NO TIME for the 60000 no-time sentinel (stop-timeout
 // original result, frames 32000-32100).
@@ -1005,7 +1010,7 @@ ZoomZooHud zoom_zoo_hud(const ZoomZooState& previous_update) {
     }
     hud.lap=std::to_string(zoom_zoo_hud_lap(race.riders[0].laps_remaining))+"/3";
     const auto& t=previous_update.movement.timer;
-    hud.clock=race_time(t.minutes*6000+t.tens_seconds*1000+t.seconds*100+t.tenths*10+t.subframe*2);
+    hud.clock=race_time(t.minutes*6000U+t.tens_seconds*1000U+t.seconds*100U+t.tenths*10U+t.subframe*2U);
     const auto countdown=previous_update.movement.countdown;
     if(timed_out)hud.caption="LOSER";
     else if(countdown>=70)hud.caption="READY";
@@ -1100,7 +1105,8 @@ RgbFrame render_zoom_zoo(const ZoomZooState& state,const ClassicContentPack& pac
         const auto selector=word(track,15+static_cast<std::size_t>((world_y/64)*256+world_x/64)*2);
         const auto descriptor=word(track,0x800f+static_cast<std::size_t>(selector)*32+static_cast<std::size_t>((world_y%64)/16)*8+static_cast<std::size_t>((world_x%64)/16)*2);
         int px=world_x&15,py=world_y&15;
-        if(descriptor&0x4000)px=15-px;if(descriptor&0x8000)py=15-py;
+        if(descriptor&0x4000)px=15-px;
+        if(descriptor&0x8000)py=15-py;
         const auto tile=static_cast<std::uint16_t>(((descriptor&1023)+(px/8)+(py/8)*16)&1023);
         const auto value=tile_pixel(vram,0x4000,tile,px&7,py&7);
         if(value) {
