@@ -20,7 +20,7 @@ RULES_PATH = "tests/manifests/content/classic-crawler-dragster-pack.json"
 PROFILE_ID = "classic.pal.crawler.dragster.v1"
 START_STATE_ID = "classic.crawler.dragster.race-start.v1"
 TWO_TRACK_RULES_PATH = "tests/manifests/content/classic-crawler-two-tracks-pack.json"
-TWO_TRACK_PROFILE = "classic.pal.crawler.two-tracks.v5"
+TWO_TRACK_PROFILE = "classic.pal.crawler.two-tracks.v6"
 TWO_TRACK_START = "classic.crawler.race-start.v2"
 
 

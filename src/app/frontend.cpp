@@ -152,17 +152,9 @@ LiveFrame LivePresentation::render(const MovementState &state,
 
 LiveFrame LivePresentation::render_zoom(const ZoomZooState& state,const ZoomZooState& previous_update,
                                         const ClassicContentPack& pack) {
-  const bool fallback=!is_recovered_pose_pair(state.movement);
-  if(!fallback) {
-    for(unsigned i=0;i<2;++i) {
-      recovered_pair_.pose_indices[i]=state.movement.riders[i].pose.pose_index;
-      recovered_pair_.reflected[i]=state.movement.riders[i].pose.reflected;
-    }
-  }
-  const std::array<RiderArtPose,2> art{{
-    {recovered_pair_.pose_indices[0],recovered_pair_.reflected[0]},
-    {recovered_pair_.pose_indices[1],recovered_pair_.reflected[1]}}};
-  return {render_zoom_zoo(state,pack,&art,&previous_update),fallback && !state.result_updates};
+  // R-0036 composes every packed pose, so ZOOM ZOO holds no rider art. A pose
+  // outside the packed tables still fails closed in render_zoom_zoo.
+  return {render_zoom_zoo(state,pack,&previous_update),false};
 }
 
 } // namespace unirally::app

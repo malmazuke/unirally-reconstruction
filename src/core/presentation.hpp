@@ -2,6 +2,7 @@
 #include "movement.hpp"
 #include <array>
 #include <cstdint>
+#include <optional>
 #include <span>
 #include <string>
 #include <string_view>
@@ -83,11 +84,20 @@ struct ZoomZooHud {
   std::string lap, clock, finish_time, caption;
 };
 ZoomZooHud zoom_zoo_hud(const ZoomZooState& previous_update);
-// hud_source is the previous update's state; without one the HUD is drawn from
-// state itself, one update ahead of the original.
+// Presentation-only $0D45/$0D47 upper-body overlay frames. The original
+// derives them from state the serialized race does not carry, so a caller
+// that cannot supply them draws the pose frames alone.
+struct ZoomZooRiderOverlays {
+  std::array<std::optional<std::uint16_t>,2> pose{};
+};
+// previous_update is the state before the update being drawn. The original
+// picture shows the HUD and both rider objects from that update (the BG scroll
+// is derived from this state's prior camera); without one they are drawn from
+// state itself, one update ahead.
+// Throws std::invalid_argument for a rider pose outside the packed tables.
 RgbFrame render_zoom_zoo(const ZoomZooState&,const ClassicContentPack&,
-                         const std::array<RiderArtPose,2>* rider_art=nullptr,
-                         const ZoomZooState* hud_source=nullptr);
+                         const ZoomZooState* previous_update=nullptr,
+                         const ZoomZooRiderOverlays* overlays=nullptr);
 RgbFrame render_dragster_headless(const PresentationSample &,
                                   const PresentationContent &);
 // Presentation-only rider atlas override. Gameplay state still controls the

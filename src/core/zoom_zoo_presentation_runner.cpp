@@ -16,9 +16,10 @@ int main(int argc,char** argv) try {
         return unirally::deserialize_zoom_zoo(bytes);
     };
     const auto state=load(argv[2]);
-    // The HUD shows the previous update; without PREVIOUS_STATE it is one ahead.
+    // The HUD and riders show the previous update; without PREVIOUS_STATE
+    // they are drawn one update ahead.
     const auto previous=argc==5?load(argv[4]):state;
-    const auto frame=unirally::render_zoom_zoo(state,pack,nullptr,&previous);
+    const auto frame=unirally::render_zoom_zoo(state,pack,&previous);
     std::ofstream out(argv[3],std::ios::binary);
     out<<"P6\n256 224\n255\n";
     out.write(reinterpret_cast<const char*>(frame.pixels.data()),frame.pixels.size());
