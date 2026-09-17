@@ -360,10 +360,19 @@ std::uint16_t result_text_tile(char glyph) {
     return 0xa8;
   case ':':
     return 0xcc;
+  // The small result font is contiguous from '.' at $A8: digits 0-9 are
+  // $A9-$B2 and letters follow from 'A' at $B3 without 'O', which reuses
+  // '0'. Ordinary finish times reach every digit (R-0038 frame 3860 shows 9).
   case '0':
     return 0xa9;
+  case '1':
+    return 0xaa;
+  case '2':
+    return 0xab;
   case '3':
     return 0xac;
+  case '4':
+    return 0xad;
   case '5':
     return 0xae;
   case '6':
@@ -372,6 +381,8 @@ std::uint16_t result_text_tile(char glyph) {
     return 0xb0;
   case '8':
     return 0xb1;
+  case '9':
+    return 0xb2;
   case 'A':
     return 0xb3;
   case 'E':
@@ -457,9 +468,11 @@ void build_result_map(std::array<std::uint8_t, 65536> &vram,
                          finish.finish_time_centiseconds[0]) &&
       time_is_consistent(finish.finish_time_digits[1],
                          finish.finish_time_centiseconds[1]);
+  // Equal times mean both riders crossed on one update; the player's crossing
+  // is processed first, so the race counts it as won (R-0038 tie original).
   const bool outcome_is_consistent =
       (finish.outcome == RaceOutcome::PlayerWon &&
-       finish.finish_time_centiseconds[0] <
+       finish.finish_time_centiseconds[0] <=
            finish.finish_time_centiseconds[1]) ||
       (finish.outcome == RaceOutcome::PlayerLost &&
        finish.finish_time_centiseconds[0] > finish.finish_time_centiseconds[1]);

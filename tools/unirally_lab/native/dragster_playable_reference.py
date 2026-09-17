@@ -16,7 +16,7 @@ import json
 from pathlib import Path
 import tempfile
 from .zoom_zoo_trial_reference import ROOT, ROM_SHA, CORE_SHA, sha, digest
-from ..reference.bsnes import BsnesCore, BUTTONS
+from ..reference.bsnes import BsnesCore, BUTTONS, frame_png
 from ..reference.worker import inputs_for_frame
 from ..replay.manifest import derive_script
 
@@ -68,7 +68,7 @@ def timeline(case, horizon):
     return rows
 
 
-def capture(core_path, out, case, horizon):
+def capture(core_path, out, case, horizon, frame_images=()):
     if out.exists():
         raise ValueError('fresh output directory required')
     raw, _ = menu_identity()
@@ -87,7 +87,10 @@ def capture(core_path, out, case, horizon):
                 for frame, ports in enumerate(inputs):
                     for port, buttons in enumerate(ports):
                         core.set_inputs(port, set(buttons))
+                    core.keep_frame = frame in frame_images
                     result = core.run_frame()
+                    if core.keep_frame and core.frame_raw:
+                        (out/f'frame-{frame}.png').write_bytes(frame_png(*core.frame_raw))
                     if frame < FIRST_RECORDED_FRAME:
                         continue
                     w, s = core.wram(), core.cartridge_ram()
@@ -111,10 +114,11 @@ def main():
     p.add_argument('--case', type=Path, required=True)
     p.add_argument('--out', type=Path, required=True)
     p.add_argument('--horizon', type=int, required=True)
+    p.add_argument('--frame-image', type=int, action='append', default=[], help='also write this frame as PNG (presentation evidence only)')
     a = p.parse_args()
     if not 1400 <= a.horizon <= 40000:
         p.error('horizon must be 1400..40000')
-    print(json.dumps(capture(a.core.resolve(), a.out, json.loads(a.case.read_text()), a.horizon)))
+    print(json.dumps(capture(a.core.resolve(), a.out, json.loads(a.case.read_text()), a.horizon, set(a.frame_image))))
 
 
 if __name__ == '__main__':

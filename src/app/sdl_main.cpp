@@ -210,26 +210,9 @@ std::optional<Options> options(int argc, char **argv) {
 struct RuntimeContent {
   explicit RuntimeContent(const std::filesystem::path &path) : pack(path) {}
   unirally::ClassicContentPack pack;
-
-  unirally::PresentationContent presentation() {
-    return {entry("physics.track.dragster.data"),
-            entry("presentation.track.dragster.bg1-tiles.v1"),
-            entry("presentation.track.dragster.bg2-tiles.v1"),
-            entry("presentation.track.dragster.bg2-map.v1"),
-            entry("presentation.classic.palette.v1"),
-            entry("presentation.classic.font.v1"),
-            entry("presentation.rider.mike.race-tiles.v1"),
-            entry("presentation.result.classic.font-layout.v1"),
-            entry("presentation.effect.go-window.v1"),
-            entry("presentation.effect.winner-window.v1"),
-            entry("presentation.result.classic.base-vram.v1"),
-            entry("presentation.result.classic.palette.v1"),
-            entry("presentation.result.classic.palette-tail.v1"),
-            pack.optional_entry("presentation.zoom.race-palette-cycle.v1")};
+  unirally::PresentationContent presentation() const {
+    return unirally::app::dragster_presentation_content(pack);
   }
-
-private:
-  std::span<const std::uint8_t> entry(const char *id) { return pack.entry(id); }
 };
 
 void draw(SDL_Renderer *renderer, SDL_Texture *texture,

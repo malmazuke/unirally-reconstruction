@@ -1753,12 +1753,19 @@ static ZoomZooState deserialize_classic_race(std::span<const std::uint8_t> bytes
             // Before any word can wrap, positive hold duration cannot exceed
             // accumulated held rotations ($82955F-9598). Returning from an
             // earlier hold retains rotations, so equality would be too strict.
+            // A landing's reward pass ($829B69-9D97) then clears the rotations
+            // on the update the hold counts, leaving a positive hold with zero
+            // rotations while the rider is supported (DRAGSTER fuzz seed 31,
+            // matched by its original at 1623; R-0038).
             const auto elapsed=state.movement.frame>=scenario.initialization_frame?state.movement.frame-scenario.initialization_frame:0U;
             if(elapsed<65536U) {
                 const auto held=static_cast<std::int16_t>(roll.held_updates);
                 const auto magnitude=static_cast<unsigned>(held<0?-static_cast<int>(held):held);
+                const auto& rider=state.movement.riders[i];
+                const bool landing_cleared_rotations=roll.held_rotations==0 &&
+                    (rider.contact.unsupported_count<2 || rider.motion.response_a!=0);
                 if(magnitude>elapsed || roll.held_rotations>elapsed || roll.completed_rolls>elapsed ||
-                   (held>0 && static_cast<unsigned>(held)>roll.held_rotations))
+                   (held>0 && static_cast<unsigned>(held)>roll.held_rotations && !landing_cleared_rotations))
                     throw std::invalid_argument("inconsistent ZOOM ZOO held roll counters");
             }
         }
@@ -1917,6 +1924,9 @@ void update_zoom_zoo(ZoomZooState& state,const ControllerButtons& requested_butt
     }
     if(state.native_initialization && next.pause.released && !buttons.start)next.pause.released=0;
     update_zoom_ai(next);
+    // $83:E7A2-E7BF also releases both riders' A ($031D/$031F) and X
+    // ($0321/$0323) publications while the countdown holds the brakes.
+    bool countdown_releases_actions=false;
     if(state.native_initialization && whole.countdown) {
         // $83:E59C-E7BD: countdown presentation feeds braking and start boost.
         if(next.fade_level>=5) {
@@ -1937,8 +1947,12 @@ void update_zoom_zoo(ZoomZooState& state,const ControllerButtons& requested_butt
             if(!player_input.brake_input)whole.player_input.horizontal=1;
             if(!next.reflection[1].brake_input)next.opponent_horizontal=1;
             for(auto& input:next.reflection) {input.brake_input=1;input.jump_input=0;}
+            countdown_releases_actions=true;
         }
     }
+    const bool player_a=buttons.a && !countdown_releases_actions;
+    const bool player_x=buttons.x && !countdown_releases_actions;
+    const auto opponent_trick=countdown_releases_actions?0U:unsigned(whole.opponent_ai.trick_selector);
     if(state.complete_race)update_zoom_finish(next,content);
     const unsigned active=whole.progress_phase?0U:1U;
     unsigned reward=0;
@@ -1982,12 +1996,12 @@ void update_zoom_zoo(ZoomZooState& state,const ControllerButtons& requested_butt
         }
         if(transition.pose_override>=0x600 && transition.pose_override<0x610)transition.pose_override=0;
         int animation_override=0;bool throttle_target=false;
-        if(index==0)update_reflection_transition(rider,transition,horizontal,index!=active,content.reflection_pose_table,state.native_initialization && buttons.a);
+        if(index==0)update_reflection_transition(rider,transition,horizontal,index!=active,content.reflection_pose_table,state.native_initialization && player_a);
         // The opponent's X comes from trick selector bit 2 ($0323) rather than
         // from a controller; the selector is retained state, so it re-derives
         // each update for as long as the impulse holds.
         if(state.native_initialization && index==active)
-            update_zoom_roll(next,index,index==0?buttons.x:(whole.opponent_ai.trick_selector&4U)!=0,content);
+            update_zoom_roll(next,index,index==0?player_x:(opponent_trick&4U)!=0,content);
         if(index==active || surface.leading_support) {
             if(state.native_initialization)update_zoom_landing_rewards(next,index,content);
             else {
@@ -2027,8 +2041,8 @@ void update_zoom_zoo(ZoomZooState& state,const ControllerButtons& requested_butt
                 // rate was keyed to the player's button, so the opponent always
                 // rotated at the fast step; its A arrives from trick selector
                 // bit 1 instead and must slow it the same way.
-                const bool holding_a=index==0?buttons.a:
-                    (state.native_initialization && (whole.opponent_ai.trick_selector&2U)!=0);
+                const bool holding_a=index==0?player_a:
+                    (state.native_initialization && (opponent_trick&2U)!=0);
                 rider.motion.response_b=static_cast<std::uint16_t>((rider.motion.response_b&0xff00U)|
                     (transition.rotate_negative_input?(holding_a?255U:254U):(holding_a?1U:2U)));
             }
@@ -2044,7 +2058,7 @@ void update_zoom_zoo(ZoomZooState& state,const ControllerButtons& requested_butt
         }
         update_rolling_mode(rider,surface.mode!=0);
         if(index==1)update_reflection_transition(rider,transition,horizontal,index!=active,content.reflection_pose_table,
-            state.native_initialization && (whole.opponent_ai.trick_selector&2U)!=0);
+            state.native_initialization && (opponent_trick&2U)!=0);
         update_zoom_throttle(rider,transition,horizontal,animation_override,throttle_target,next.charge_announced[index],surface.leading_support!=0);
         update_idle_pose(rider,!throttle_target && !surface.leading_support && transition.pose_override==0,index==1,whole.animation_counter,content.movement.idle_pose_table);
         if(rider.idle_pose.active)surface.tile_mode=1;

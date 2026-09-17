@@ -1,4 +1,5 @@
 #include "frontend.hpp"
+#include "content_pack.hpp"
 #include "rider_object.hpp"
 #include "zoom_zoo_movement.hpp"
 
@@ -111,7 +112,9 @@ Viewport integer_viewport(int output_width, int output_height) {
 
 PresentationPosition presentation_position(std::uint16_t player_x) {
   const auto signed_x = static_cast<std::int16_t>(player_x);
-  const auto camera = std::max<std::int32_t>(0, signed_x - 880);
+  // The accepted BG1 map starts at scroll 0. A rider reversing behind x 894
+  // holds the view at the start area instead of scrolling before the map.
+  const auto camera = std::max<std::int32_t>(14, signed_x - 880);
   const auto bg1 = static_cast<std::int16_t>(camera - 14);
   return {camera, bg1, 208, static_cast<std::int16_t>(bg1 / 2), 104};
 }
@@ -150,6 +153,23 @@ LiveFrame LivePresentation::render(const MovementState &state,
                    recovered_pair_.reflected[1]}};
   return {render_dragster_headless_with_rider_art(sample, content, rider_art),
           true};
+}
+
+PresentationContent dragster_presentation_content(const ClassicContentPack &pack) {
+  return {pack.entry("physics.track.dragster.data"),
+          pack.entry("presentation.track.dragster.bg1-tiles.v1"),
+          pack.entry("presentation.track.dragster.bg2-tiles.v1"),
+          pack.entry("presentation.track.dragster.bg2-map.v1"),
+          pack.entry("presentation.classic.palette.v1"),
+          pack.entry("presentation.classic.font.v1"),
+          pack.entry("presentation.rider.mike.race-tiles.v1"),
+          pack.entry("presentation.result.classic.font-layout.v1"),
+          pack.entry("presentation.effect.go-window.v1"),
+          pack.entry("presentation.effect.winner-window.v1"),
+          pack.entry("presentation.result.classic.base-vram.v1"),
+          pack.entry("presentation.result.classic.palette.v1"),
+          pack.entry("presentation.result.classic.palette-tail.v1"),
+          pack.optional_entry("presentation.zoom.race-palette-cycle.v1")};
 }
 
 MovementState dragster_presentation_state(const ZoomZooState &race) {

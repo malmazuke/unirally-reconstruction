@@ -76,6 +76,10 @@ struct RiderPosePair {
 
 bool is_recovered_pose_pair(const MovementState &state);
 
+// The accepted DRAGSTER presentation entries; the race palette cycle is
+// optional (DRAGSTER v1 packs keep the accepted colours).
+PresentationContent dragster_presentation_content(const ClassicContentPack &pack);
+
 // DRAGSTER plays on the shared race engine (R-0038) but is drawn by the
 // accepted M3 presentation, which reads the legacy finish and result phases.
 // Derive those from the shared race state: presentation only, never gameplay.
