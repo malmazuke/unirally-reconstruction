@@ -1044,7 +1044,8 @@ void update_zoom_ai(ZoomZooState& state) {
     }
 }
 void update_zoom_throttle(RiderMovementState& rider,ReflectionTransition& transition,unsigned horizontal,
-                          int& animation_override,bool& throttle_target,std::uint16_t& charge_announced,bool leading_support=false) {
+                          int& animation_override,bool& throttle_target,std::uint16_t& charge_announced,bool leading_support=false,
+                          bool bounce_active=false) {
     const auto incoming_speed=static_cast<std::int16_t>(rider.motion.velocity_x);
     const bool braking=transition.brake_input && (incoming_speed>=16 || incoming_speed < -16);
     if(!leading_support && rider.contact.unsupported_count<2 &&
@@ -1068,7 +1069,10 @@ void update_zoom_throttle(RiderMovementState& rider,ReflectionTransition& transi
         // Both drive routines return before throttle accumulation when an
         // inverted tile has zero incoming velocity ($82A9CC / $82AA29).
         if(!(rider.contact.selected_word&0x8000U) || rider.motion.velocity_x!=0) {
-            if(rider.contact.selected_word&0x8000U) {
+            // $82:AA42-AA49 / its mirror: a roll bounce ($042B) keeps the
+            // velocity; throttle still accumulates below.
+            if(bounce_active) {
+            } else if(rider.contact.selected_word&0x8000U) {
                 if(rider.motion.velocity_x)rider.motion.velocity_x=add_word(rider.motion.velocity_x,
                     negative(rider.motion.velocity_x)?static_cast<std::uint16_t>(-24):24);
             } else rider.motion.velocity_x=add_word(rider.motion.velocity_x,horizontal==2?24:static_cast<std::uint16_t>(-24));
@@ -2064,7 +2068,8 @@ void update_zoom_zoo(ZoomZooState& state,const ControllerButtons& requested_butt
         update_rolling_mode(rider,surface.mode!=0);
         if(index==1)update_reflection_transition(rider,transition,horizontal,index!=active,content.reflection_pose_table,
             state.native_initialization && (opponent_trick&2U)!=0);
-        update_zoom_throttle(rider,transition,horizontal,animation_override,throttle_target,next.charge_announced[index],surface.leading_support!=0);
+        update_zoom_throttle(rider,transition,horizontal,animation_override,throttle_target,next.charge_announced[index],surface.leading_support!=0,
+                             state.native_initialization && next.rolls[index].bounce_active!=0);
         update_idle_pose(rider,!throttle_target && !surface.leading_support && transition.pose_override==0,index==1,whole.animation_counter,content.movement.idle_pose_table);
         if(rider.idle_pose.active)surface.tile_mode=1;
         update_gravity(rider);

@@ -56,7 +56,7 @@ def original(directory, *, allow_incomplete=False, collect_guards=False):
         raise ValueError('original memory inventory incomplete')
     rows = []; finish = [None, None]; loading = None; archive = None; charge_archive = None
     announcements_archive = roll_archive = weights_archive = pause_archive = None
-    paused_updates = 0; countdown_paused = 0; previous = None; guard_violations = {}
+    paused_updates = 0; countdown_paused = 0; previous = None; guard_violations = {}; left_result = None
     guards = guard_items()
     with (directory/'memory.wram').open('rb') as ws, (directory/'memory.sram').open('rb') as ss:
         for frame in range(first, last+1):
@@ -80,8 +80,12 @@ def original(directory, *, allow_incomplete=False, collect_guards=False):
                         if at in {a+2*r for a in ROLL_WORDS for r in (0, 1)}:
                             continue
                         if at in (0x31d, 0x321, 0x339):
+                            # A finished player cannot pause, so Start is not published then;
+                            # native gates the pause on the same finish flag.
+                            if at == 0x339 and previous is not None and int.from_bytes(previous[0xeff:0xf01], 'little'):
+                                continue
                             if int.from_bytes(w[at:at+2], 'little') != int(({0x31d: 'a', 0x321: 'x', 0x339: 'start'}[at]) in document['timeline'][frame][0]):
-                                raise ValueError('A/X/Start input publication differs from controller timeline')
+                                raise ValueError(f'A/X/Start input publication differs from controller timeline at {frame}')
                             continue
                         value = int.from_bytes(w[at:at+item['width']], 'little')
                         if value != item['value']:
@@ -110,13 +114,20 @@ def original(directory, *, allow_incomplete=False, collect_guards=False):
                 row[-2:] = min(stable, frame-loading+1).to_bytes(2, 'little')
                 wanted = s[0x755:0x769]+s[0x7bf:0x7d3]+s[0x769:0x76b]+s[0x7d3:0x7d5]
                 if row[467:511] != wanted:
+                    # Other buttons on a settled result leave for the track menu, which
+                    # clears the lap slots; native waits for Start (Race Again).
+                    if allow_incomplete and frame-loading+1 > stable:
+                        left_result = frame
+                        break
                     raise ValueError('result lap/total archive differs from original')
             previous = w
             row += s[0x106f:0x1073]+s[0x618:0x61c]+charge_archive+announcements_archive+roll_archive+weights_archive+pause_archive
             rows.append(row.hex())
-        if ws.read(1) or ss.read(1):
+        if left_result is None and (ws.read(1) or ss.read(1)):
             raise ValueError('extra original memory')
     events = dict(finish_frames=finish, loading_frame=loading)
+    if left_result is not None:
+        events['left_result_frame'] = left_result
     if collect_guards:
         events['guard_violations'] = guard_violations
     if loading is None or any(f is None for f in finish):
@@ -127,6 +138,8 @@ def original(directory, *, allow_incomplete=False, collect_guards=False):
     changes = [f for f in range(loading+1, last+1) if video[f-first] != video[f-1-first]]
     outcome = 'player_won' if finish[0] <= finish[1] else 'player_lost'
     visible = changes[0] if changes else None
+    if allow_incomplete:
+        return document, rows, dict(events, outcome=outcome, first_visible=visible, complete=left_result is None)
     # Same black load as ZOOM ZOO: the first new picture is load update 109.
     if visible != loading+108:
         raise ValueError(f'new result load timing requires recovery: {visible}, expected {loading+108}')
