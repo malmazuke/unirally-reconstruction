@@ -347,6 +347,12 @@ ClassicContentPack::ClassicContentPack(const std::filesystem::path &path) {
 }
 
 std::span<const std::uint8_t>
+ClassicContentPack::optional_entry(const std::string &logical_id) const {
+  return entries_.contains(logical_id) ? entry(logical_id)
+                                       : std::span<const std::uint8_t>{};
+}
+
+std::span<const std::uint8_t>
 ClassicContentPack::entry(const std::string &logical_id) const {
   const auto found = entries_.find(logical_id);
   if (found == entries_.end())

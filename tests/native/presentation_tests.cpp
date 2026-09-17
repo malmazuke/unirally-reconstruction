@@ -112,6 +112,44 @@ int main() {
     require(rejected);
   }
 
+  {
+    // DRAGSTER race palette cycle (R-0037), against original CGRAM read from
+    // the race-crawler-dragster winner and loser replays. Synthetic tables:
+    // word = table * 256 + index names the source table and entry.
+    std::vector<std::uint8_t> tables(544);
+    for (std::size_t table = 0; table < 17; ++table)
+      for (std::size_t index = 0; index < 16; ++index) {
+        tables[table * 32 + index * 2] = static_cast<std::uint8_t>(index);
+        tables[table * 32 + index * 2 + 1] = static_cast<std::uint8_t>(table);
+      }
+    const auto drawn = [&](std::uint32_t frame, unirally::RacePhase phase,
+                           std::uint16_t loading_updates) {
+      unirally::MovementState state{};
+      state.frame = frame;
+      state.finish.phase = phase;
+      state.finish.result_loading_updates = loading_updates;
+      std::array<std::uint8_t, 512> cgram{};
+      cgram.fill(0xee);
+      unirally::apply_dragster_palette_cycle(cgram, tables, state);
+      return cgram;
+    };
+    using unirally::RacePhase;
+    auto cgram = drawn(1333, RacePhase::Racing, 0);
+    require(cgram[192] == 0xee && cgram[0] == 0xee); // before the routine runs
+    cgram = drawn(1600, RacePhase::Racing, 0);       // accepted racing_cycle phase
+    require(cgram[192] == 10 && cgram[193] == 0 && cgram[222] == 10 && cgram[223] == 15);
+    require(cgram[0] == 10 && cgram[1] == 16);
+    cgram = drawn(3453, RacePhase::FinishDelay, 0);  // accepted finish_cycle phase
+    require(cgram[192] == 7 && cgram[0] == 7 && cgram[1] == 16);
+    cgram = drawn(3454, RacePhase::ResultLoading, 1); // winner loading start
+    require(cgram[192] == 8 && cgram[223] == 15 && cgram[0] == 0 && cgram[1] == 0);
+    cgram = drawn(3528, RacePhase::ResultLoading, 75); // still frozen at 3454's phase
+    require(cgram[192] == 8 && cgram[0] == 0 && cgram[1] == 0);
+    cgram = drawn(3559, RacePhase::ResultLoading, 1); // loser loading start
+    require(cgram[192] == 1 && cgram[0] == 0);
+    require(cgram[190] == 0xee && cgram[224] == 0xee); // colours 95 and 112 untouched
+  }
+
   std::vector<std::uint8_t> track(33815);
   for (std::size_t x = 0; x < 30; ++x)
     for (std::size_t y = 0; y < 16; ++y) {
@@ -198,7 +236,8 @@ int main() {
                                               winner_window,
                                               result_base_vram,
                                               result_palette,
-                                              result_palette_tail};
+                                              result_palette_tail,
+                                              {}};
   const auto first = unirally::render_dragster_headless({state, 0, 0, 0, 0, 0},
                                                         content),
              second = unirally::render_dragster_headless({state, 0, 0, 0, 0, 0},

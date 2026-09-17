@@ -16,6 +16,8 @@ class ClassicContentPack {
 public:
     explicit ClassicContentPack(const std::filesystem::path& path);
     std::span<const std::uint8_t> entry(const std::string& logical_id) const;
+    // Empty when this pack profile does not carry the entry.
+    std::span<const std::uint8_t> optional_entry(const std::string& logical_id) const;
 
 private:
     struct Entry { std::size_t offset{}, size{}; };

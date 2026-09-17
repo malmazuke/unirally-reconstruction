@@ -64,15 +64,53 @@ equals 15), so the two fixed arrays can be right on at most two phases in
 eight, and only when the pose rule happens to pick the matching one; on the
 other six in eight the checkered line is drawn with the wrong phase.
 
-## Consequences for native
+## Original CGRAM on every frame
 
-The frame-driven cycle reproduces the accepted CGRAM exactly at all five frozen
-race frames, so the winner contract's race counts cannot regress from the
-palette. It needs the ROM tables in DRAGSTER's content. The accepted DRAGSTER
-pack `classic.pal.crawler.dragster.v1` does not hold them, so this needs an
-additive DRAGSTER content version with explicit compatibility behaviour. The
-M4-16 two-track pack v7 already carries them as
-`presentation.zoom.race-palette-cycle.v1`.
+Original-only replays (no intervention) of the accepted DRAGSTER winner
+scenario `race-crawler-dragster-12000-continuous-right-fields` (frames
+1600-3470) and loser scenario `race-crawler-dragster-12000-release-3000-3299-fields`
+(1600-3860) on the audited core, each run twice
+(`artifacts/dragster-palette-cycle/cgram_probe.py`, ignored). CGRAM was read
+from each frame's strict serialized state at offset 206063, located by the
+unique match of DRAGSTER's phase-10 colours at frame 1600. Both pairs of runs
+are identical.
 
-Not established here: DRAGSTER pause behaviour (native DRAGSTER has no pause),
-and whether colour 0 is visible anywhere in DRAGSTER.
+| Scenario | Racing frames matching `(n-1334)&15` (colours 96-111 and colour 0) | Loading frames matching the frozen rule |
+| --- | --- | --- |
+| Winner | 1,854 of 1,854 (1600-3453) | 17 of 17 (3454-3470) |
+| Loser | 1,959 of 1,959 (1600-3558) | 75 of 302: every frame 3559-3633 |
+
+Result loading starts at 3454 (winner) and 3559 (loser), exactly native's
+loading update 1 (225 and 242 updates before the published results at 3678
+and 3800), and exactly the routine's last call in the access captures. From
+that frame colours 96-111 hold that frame's phase and colour 0 is black
+(`$0000`). From loser loading update 76 (3634) the original writes the result
+screen's own palettes; those frames are outside this finding. Only 464 of the
+winner's 1,871 frames show either of the two fixed arrays.
+
+## Native implementation
+
+`apply_dragster_palette_cycle` draws racing frame n with index `(n-1334)&15`,
+and during result loading freezes colours 96-111 at the loading start frame's
+index with colour 0 black. It is used by the DRAGSTER race background whenever
+the loaded pack carries the tables (`presentation.zoom.race-palette-cycle.v1`,
+the same ROM bytes; the two-track pack v7 has them). DRAGSTER v1 packs, which
+do not, keep the accepted pose-keyed palette, so the accepted v1 contracts,
+fixtures and historical gates are untouched. No new pack version is added:
+the two-track pack already carries every DRAGSTER entry and the tables. The
+result screen and rider palettes are unchanged.
+
+Verification:
+- Accepted v1 presentation checks with the v1 pack: winner
+  36/697/279/445/653/962/961 and loser 1,073, unchanged.
+- The same frozen cases rendered with pack v7 (cycle active) and scored with
+  the checker's own comparison: identical counts, as the phases predict.
+- `presentation_tests` pins the rule to the observations above (1333 untouched,
+  1600 phase 10, 3453 phase 7, winner loading 3454 and 3528 frozen at phase 8
+  with black colour 0, loser loading 3559 at phase 1). Shifting the start frame
+  by one fails it.
+
+Not established: a pixel sweep of native DRAGSTER renders at non-frozen frames
+(the frozen presentation cases are the only native fixtures with original
+scroll values), the palette after loser loading update 75, and pause (native
+DRAGSTER has none).

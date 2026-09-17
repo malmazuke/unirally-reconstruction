@@ -240,7 +240,8 @@ struct RuntimeContent {
             entry("presentation.effect.winner-window.v1"),
             entry("presentation.result.classic.base-vram.v1"),
             entry("presentation.result.classic.palette.v1"),
-            entry("presentation.result.classic.palette-tail.v1")};
+            entry("presentation.result.classic.palette-tail.v1"),
+            pack.optional_entry("presentation.zoom.race-palette-cycle.v1")};
   }
 
 private:

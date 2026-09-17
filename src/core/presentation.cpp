@@ -271,7 +271,11 @@ void render_race_background(RgbFrame &frame, const PresentationSample &sample,
       vram[at] = static_cast<std::uint8_t>(entry);
       vram[at + 1] = static_cast<std::uint8_t>(entry >> 8U);
     }
-  const auto cgram = build_race_cgram(sample, content.palette);
+  auto cgram = build_race_cgram(sample, content.palette,
+                                content.race_palette_cycle.empty());
+  if (!content.race_palette_cycle.empty())
+    apply_dragster_palette_cycle(cgram, content.race_palette_cycle,
+                                 sample.movement);
   rect(frame, 0, 0, 256, 224, colour(cgram, 0));
   for (int y = 0; y < 224; ++y)
     for (int x = 0; x < 256; ++x) {
@@ -979,17 +983,38 @@ std::optional<unsigned> zoom_zoo_palette_cycle_index(std::uint32_t frame) {
     if(frame<1382U)return std::nullopt;
     return (frame-1382U)&15U;
 }
+namespace {
+// Seventeen 16-word tables at $80:82AB: colours 96-111, then colour 0.
+void load_race_palette_phase(std::array<std::uint8_t,512>& cgram,std::span<const std::uint8_t> tables,
+                             unsigned index,bool colour_zero) {
+    if(tables.size()!=544)throw std::invalid_argument("race palette cycle has the wrong size");
+    for(std::size_t table=0;table<(colour_zero?17U:16U);++table) {
+        const auto source=table*32U+index*2U;
+        const auto destination=table<16?(96U+table)*2U:0U;
+        cgram[destination]=tables[source];cgram[destination+1]=tables[source+1];
+    }
+}
+}
 void apply_zoom_zoo_palette_cycle(std::array<std::uint8_t,512>& cgram,std::span<const std::uint8_t> tables,
                                   std::uint32_t frame) {
     if(tables.size()!=544)throw std::invalid_argument("ZOOM ZOO race palette cycle has the wrong size");
     const auto index=zoom_zoo_palette_cycle_index(frame);
     if(!index)return;
-    // Seventeen 16-word tables at $80:82AB: colours 96-111, then colour 0.
-    for(std::size_t table=0;table<17;++table) {
-        const auto source=table*32U+*index*2U;
-        const auto destination=table<16?(96U+table)*2U:0U;
-        cgram[destination]=tables[source];cgram[destination+1]=tables[source+1];
-    }
+    load_race_palette_phase(cgram,tables,*index,true);
+}
+void apply_dragster_palette_cycle(std::array<std::uint8_t,512>& cgram,std::span<const std::uint8_t> tables,
+                                  const MovementState& state) {
+    if(tables.size()!=544)throw std::invalid_argument("DRAGSTER race palette cycle has the wrong size");
+    // $82:D382-D496 first runs at 1334. The race-crawler-dragster winner and
+    // loser originals match (frame-1334)&15 on every racing frame, and from the
+    // first loading frame (3454, 3559) hold that frame's colours 96-111 with a
+    // black colour 0 (R-0037).
+    const auto& finish=state.finish;
+    const bool loading=finish.phase==RacePhase::ResultLoading && finish.result_loading_updates;
+    const auto phase_frame=loading?state.frame-(finish.result_loading_updates-1U):state.frame;
+    if(phase_frame<1334U)return;
+    load_race_palette_phase(cgram,tables,(phase_frame-1334U)&15U,!loading);
+    if(loading)cgram[0]=cgram[1]=0;
 }
 unsigned zoom_zoo_hud_lap(unsigned laps_remaining) {
     return std::min(3U,4U-std::min(4U,laps_remaining));

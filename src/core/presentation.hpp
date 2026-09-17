@@ -70,6 +70,9 @@ struct PresentationContent {
   std::span<const std::uint8_t> go_window, winner_window;
   std::span<const std::uint8_t> result_base_vram, result_palette;
   std::span<const std::uint8_t> result_palette_tail;
+  // Race NMI palette tables ($80:82AB). Empty for DRAGSTER v1 packs, which keep
+  // the accepted pose-keyed palette; the two-track pack carries them.
+  std::span<const std::uint8_t> race_palette_cycle;
 };
 struct ZoomZooState;
 class ClassicContentPack;
@@ -78,6 +81,11 @@ class ClassicContentPack;
 std::optional<unsigned> zoom_zoo_palette_cycle_index(std::uint32_t frame);
 void apply_zoom_zoo_palette_cycle(std::array<std::uint8_t,512>& cgram,std::span<const std::uint8_t> tables,
                                   std::uint32_t frame);
+// DRAGSTER runs the same cycle from frame 1334 (R-0037): racing frame n draws
+// index (n-1334)&15. From loading update 1 the routine has stopped: colours
+// 96-111 hold the loading start frame's index and colour 0 is black.
+void apply_dragster_palette_cycle(std::array<std::uint8_t,512>& cgram,std::span<const std::uint8_t> tables,
+                                  const MovementState& state);
 // Lap shown for a laps_remaining value: 4,3,2,1,0 display as 0/3,1/3,2/3,3/3,3/3.
 unsigned zoom_zoo_hud_lap(unsigned laps_remaining);
 // Authored ZOOM ZOO HUD text. Callers pass the state from BEFORE the update
