@@ -17,13 +17,14 @@ record UTC wall clock. No reset, purchase or provider change is authorized.
 
 ## Ready follow-ups
 
-1. **DRAGSTER-PALETTE-CYCLE, in progress.** Branch
-   `task/dragster-palette-cycle` in `.worktrees/dragster-palette-cycle` holds the
-   verified finding (its `tasks/DRAGSTER-PALETTE-CYCLE.md` and R-0037): DRAGSTER's race runs the same `$82:D382-D496`
-   palette cycle, frame n drawing index `(n-1334)&15`, and its two fixed palette
-   arrays are exactly phases 10 and 7. Next: merge `main`, add the tables to an
-   additive DRAGSTER content version, draw the cycle, and show the accepted
-   presentation-check counts do not regress. Then independent review.
+1. **DRAGSTER window timing and shape, not started.** DRAGSTER-PALETTE-CYCLE
+   (integrated; R-0037) made the GO and winner windows take the cycled colour 0,
+   matching the original where their shapes overlap. Native still draws each
+   window from one frozen HDMA table and only on particular rider pose pairs:
+   GO appears natively only at frame 1600, and at 3322 the original's winner
+   shape covers 2,810 pixels against native's 5,001. Recover the original's
+   window enable and HDMA table timing (`$2123-$2132`, channel 6) from original
+   evidence.
 2. **DRAGSTER 10:00 race limit, not started.** ZOOM ZOO's `$81:C73E-C75B` finishes
    both riders at 9:59.9; native DRAGSTER ignores the limit. Needs original
    DRAGSTER evidence before any change.

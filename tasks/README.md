@@ -42,7 +42,9 @@ The coordinator maintains the status registry below. Work orders further below d
 | M4-14 | accepted (`38c72e8`; private sync and final-tip CI passed) | [Sustained ZOOM ZOO traversal](M4-14.md) |
 | M4-15 | accepted (`8bc2e71`; private sync and final-tip CI passed) | [ZOOM ZOO race completion](M4-15.md) |
 | M4-16 | reviewed and integrated (implementation `75626f8`, review `c5f4566`); accepted conditional on final-tip CI and remote verification | [Playable ZOOM ZOO](M4-16.md) |
-| DRAGSTER-PALETTE-CYCLE | in progress on `task/dragster-palette-cycle`; finding verified (R-0037 there), implementation next | Frame-driven DRAGSTER start-line palette |
+| DRAGSTER-PALETTE-CYCLE | reviewed and integrated (implementation `2c9dea3`, review `223cd0d`); accepted conditional on final-tip CI and remote verification | [DRAGSTER race palette cycle](DRAGSTER-PALETTE-CYCLE.md) |
+| DRAGSTER window timing and shape | not started; follow-up from DRAGSTER-PALETTE-CYCLE | GO and winner windows still gated on rider poses with one frozen shape each |
+| DRAGSTER 10:00 race limit | not started; follow-up from M4-16 | Needs original DRAGSTER evidence |
 | M4-17 – M6 | unclaimed; outside this assignment | Do not automatically dispatch |
 
 ## M0 — repeatable laboratory

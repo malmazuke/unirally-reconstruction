@@ -2,7 +2,7 @@
 
 ## Assignment
 
-- Status: review (round 1 changes required at `a685712`; corrections ready for re-review)
+- Status: reviewed and integrated (implementation approved at `2c9dea3`, re-review `223cd0d`); acceptance conditional on final-tip CI and remote verification in the ignored `artifacts/dragster-palette-cycle-integration/closeout.json`
 - Milestone: follow-up to accepted DRAGSTER presentation (M3/M4-01); not an M4 milestone gate
 - Coordinator: Claude Opus 5 primary session that is also integrating M4-16
 - Task provider: Anthropic (Claude Opus 5), as recorded in D-0004 for the current work
@@ -52,7 +52,7 @@ in R-0037; the accepted DRAGSTER presentation fixtures and
 | 3 | Implementation keeps accepted checks and draws the cycle with tables present | Four presets; v1 winner/loser presentation checks; same cases with pack v7 through the checker's comparison; mutation of the start frame | 22/22 tests on four presets; counts unchanged in both; mutant fails the new test | Independent review |
 
 | 4 | (Review round 1) The cycle is visible in native renders | Review swept every native frame 1533-3679 with v1 and v7 | **No pixel differed**: native uses only phase-invariant colours from 96-111, and the original shows the cycle through colour 0 in the GO and winner windows, which native filled with fixed colours. The checkered-line claim was wrong. The acceptance row had been weakened to CGRAM only | Fill windows from the cycled colour 0; restore a picture-level check |
-| 5 | Windows show colour 0 | Render-level test; v1 and v7 renders against original pictures on the review's native states | 61,239 of 75,015 changed pixels equal the original (0 before); winner window 5,001/5,001 at every sampled phase where its shape agrees; v1 and v7 frozen counts unchanged; test fails if the windows ignore the tables | Re-review |
+| 5 | Windows show colour 0 | Render-level test; v1 and v7 renders against original pictures on the review's native states | 61,239 of 75,015 changed pixels equal the original (0 before), most on black loading frames; racing-phase winner window 5,001/5,001 at 3452 and 823/823 overlapping at 3322; v1 and v7 frozen counts unchanged; test fails if the windows ignore the tables | Re-review |
 
 ### Independent review, round 1
 
@@ -72,6 +72,26 @@ required.**
 | F2: loading arithmetic wraps if the loading counter exceeds the frame | Low | Fixed: the palette is left unchanged in that unreachable case. |
 | F3: comment said the routine stops at loading update 1; winner only documented to update 17; loading rule invisible | Low | Corrected in the code comment and R-0037. |
 | F4: saving state every frame perturbs emulation depending on start frame | Info | Recorded; the probes started at 1600, where the review found video identical and only loading stack bytes affected. |
+
+### Independent re-review, round 2
+
+Same reviewer, `2c9dea3`, report section at `223cd0d` (10:59-11:09 UTC).
+**Verdict: approve.** Independently verified:
+- **Winner window against original pictures:** v7 matches every overlapping pixel at 3322 (823/823) and 3452 (5,001/5,001), and v1 matches none.
+- **GO window:** checked through relabelled states only, since accepted runs draw it natively only at 1600.
+- **Full-race sweep:** v1 and v7 now differ on 226 of 2,147 frames, where round 1 found 0.
+- **Frame 3452 contract-style score:** falls from 5,654 to 653 mismatches.
+- **Accepted counts:** unchanged with v1 and v7, and the renders are byte-identical in all eight frozen cases.
+- **Mutation checks:** five window mutants fail the test.
+- **ZOOM ZOO:** unchanged over frames 0-200,000; the M4-16 primary gate passes.
+- **Presets and CI:** 406/406 on four presets; CI run 35213305070 green on both platforms.
+
+Integration fixes it requested, applied before merge:
+- **Loading-screen wording in R-0037:** the original screen is black only on loading updates 1-108, and the 3600/3677 mismatches are native drawing the race until update 225.
+- **Stale header comment** in `presentation.hpp`.
+- **A test for the loading-counter guard.**
+
+**My own correction while applying them:** R-0037 and attempt 5 had described the winner window as matching "at every sampled phase". Most of those frames are loading frames where both screens are black. The racing-phase evidence is 3452 and the overlap at 3322, and the records now say so.
 
 **Decision (17 September 2026):** no new DRAGSTER pack version. The two-track
 pack v7 already carries every DRAGSTER entry and the cycle tables, so DRAGSTER

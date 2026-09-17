@@ -38,9 +38,15 @@ animated finish banner, off-screen arrows); original HUD and result pixel style;
 the two-update later result load after a time-out (audio handshake timing).
 Other tracks, riders, modes, menus and multiplayer remain outside the product.
 
-Follow-ups started from M4-16 findings: DRAGSTER's start-line palette is the same
-race NMI cycle (task branch `task/dragster-palette-cycle`, evidence recorded, implementation next), and DRAGSTER ignores the 10:00 limit
-(not started). See [NEXT_SESSION](../tasks/NEXT_SESSION.md).
+Follow-ups from M4-16 findings. [DRAGSTER-PALETTE-CYCLE](../tasks/DRAGSTER-PALETTE-CYCLE.md)
+is reviewed and integrated (acceptance conditional on its final-tip CI, closeout
+`artifacts/dragster-palette-cycle-integration/closeout.json` in
+`.worktrees/dragster-palette-cycle`): DRAGSTER's race runs the same NMI palette
+cycle ([R-0037](research/R-0037-dragster-race-palette-cycle.md)), visible as colour
+0 in the GO and winner windows, which now animate when the pack carries the
+tables (two-track v7); DRAGSTER v1 packs keep the accepted colours. Not started:
+DRAGSTER window timing and shape (still gated on rider poses), and DRAGSTER's
+10:00 limit. See [NEXT_SESSION](../tasks/NEXT_SESSION.md).
 
 ## Accepted product and evidence
 

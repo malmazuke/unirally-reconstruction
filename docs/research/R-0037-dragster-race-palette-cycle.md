@@ -92,8 +92,10 @@ and 3800). The routine still runs on update 1 and stops from update 2 (review
 traces), so colours 96-111 hold that frame's phase and colour 0 is black
 (`$0000`); the review confirmed this through update 75 in both outcomes. From
 update 76 (loser 3634) the original writes the result screen's own palettes.
-The original screen is black throughout loading, so this rule has no visible
-effect there. Only 464 of the
+The original screen is fully black on loading updates 1-108 (winner 3454-3561,
+loser 3559-3666) and fades in the result screen from update 109. Native draws
+the race until loading update 225, so on updates 1-108 its black colour 0 shows
+only inside the winner window. Only 464 of the
 winner's 1,871 frames show either of the two fixed arrays.
 
 ## Native implementation
@@ -111,13 +113,20 @@ result screen and rider palettes are unchanged.
 
 Verification:
 - Against original pictures, using the review's recaptured originals, native
-  states and original camera and scroll: on the 15 sampled frames where the
+  states and original camera and scroll. On the 15 sampled frames where the
   window colour changes, 61,239 of 75,015 changed pixels now equal the
-  original, against 0 for the fixed colours. Every one of the 5,001 winner
-  window pixels matches at 3452-3460, 3500 and 3528-3530 (phases 6, 8-14, 2-4).
-  The rest are shape and timing, not colour: at 3322 the original window
-  covers 2,810 pixels where native draws its fixed 5,001-pixel table, and at
-  3600 and 3677 the original screen is black during loading.
+  original, against 0 for the fixed colours. Most of those frames are loading
+  updates 1-108 (3454-3460, 3500, 3528-3530), where both screens are black. The
+  racing-phase evidence is narrower:
+  - The winner window at 3452 (phase 6) matches all 5,001 pixels.
+  - At 3322 (phase 4) it matches all 823 pixels where the original's
+    2,810-pixel shape overlaps native's fixed 5,001-pixel table.
+  - The re-review found the GO window drawn natively only at 1600 (phase 10);
+    relabelling that state as 1596, 1598 and 1602 gave 9,868, 9,479 and 9,839
+    matching pixels with v7 against 0 with v1.
+
+  The mismatches at 3600 and 3677 are native drawing the race until loading
+  update 225 while the original fades in the result screen from update 109.
 - Accepted v1 presentation checks with the v1 pack: winner
   36/697/279/445/653/962/961 and loser 1,073, unchanged.
 - The same frozen cases rendered with pack v7 (cycle active) and scored with

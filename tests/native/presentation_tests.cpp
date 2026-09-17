@@ -147,6 +147,8 @@ int main() {
     require(cgram[192] == 8 && cgram[0] == 0 && cgram[1] == 0);
     cgram = drawn(3559, RacePhase::ResultLoading, 1); // loser loading start
     require(cgram[192] == 1 && cgram[0] == 0);
+    cgram = drawn(10, RacePhase::ResultLoading, 20); // counter past the frame
+    require(cgram[192] == 0xee && cgram[0] == 0xee);
     require(cgram[190] == 0xee && cgram[224] == 0xee); // colours 95 and 112 untouched
   }
 
