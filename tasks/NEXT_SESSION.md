@@ -30,7 +30,7 @@ rejected; re-extract with `--rom`. The generic opponent reward consumer `$81C219
 and independently approved across three review rounds. Evidence and the exact
 commands are in [M4-16](M4-16.md); do not re-derive them.
 
-Passing on the current tip: 21/21 focused tests; six complete cases at 6225
+Passing on the current tip: 22/22 focused tests; six complete cases at 6225
 states each covering both outcomes; the primary gate at 6225 observations, 757
 fresh-process restores and a full fresh restart; seven reward probes plus the
 150 control; 405 synthetic checks on both app presets with no skips; 20

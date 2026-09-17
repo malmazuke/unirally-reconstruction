@@ -90,9 +90,11 @@ void copy_tile(const RiderObjectContent &content, std::uint16_t word,
   for (std::size_t y = 0; y < 8; ++y)
     for (std::size_t x = 0; x < 8; ++x) {
       const auto bit = 7U - x;
-      const auto value = ((tile[y * 2] >> bit) & 1U) | (((tile[y * 2 + 1] >> bit) & 1U) << 1U) |
-                         (((tile[16 + y * 2] >> bit) & 1U) << 2U) |
-                         (((tile[16 + y * 2 + 1] >> bit) & 1U) << 3U);
+      const auto plane = [&](std::size_t at) {
+        return (static_cast<unsigned>(tile[at]) >> bit) & 1U;
+      };
+      const auto value = plane(y * 2) | (plane(y * 2 + 1) << 1U) |
+                         (plane(16 + y * 2) << 2U) | (plane(16 + y * 2 + 1) << 3U);
       pixels[(row * 8 + y) * rider_object_size + column * 8 + x] =
           static_cast<std::uint8_t>(value);
     }

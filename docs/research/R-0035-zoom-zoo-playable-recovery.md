@@ -94,11 +94,12 @@ complete race/result/restart with independent reviewer input exercise.
 
 Prototype rendering uses original track/background, prior camera, native HUD and
 result values. Rider objects are now composed from the original pose frames,
-reflection flip, OAM projection and look overlays ([R-0036](R-0036-zoom-zoo-rider-objects.md),
-branch `codex/m4-16-rider-art`, unreviewed); independent visual re-review of
-D1-D3 is still required. Audio is excluded by task scope. Current app exit diagnostics
-still print generic movement race status for ZOOM ZOO; its separate result line
-is more informative, but diagnostics need correction. Gamepad is untested.
+reflection flip, OAM projection and look overlays ([R-0036](R-0036-zoom-zoo-rider-objects.md));
+the final independent review (`9559d0b`) found rider facing and anchors
+pixel-identical to the original, including untuned timelines. Audio is excluded
+by task scope. Current app exit diagnostics still print generic movement race
+status for ZOOM ZOO; its separate result line is more informative. A gamepad was
+exercised live by the user (see the task record).
 
 Earlier actual-window CUA taps produced2 down/up pairs but zero nonzero50Hz
 updates. The inspected app stayed neutral, never finished/restarted, and its

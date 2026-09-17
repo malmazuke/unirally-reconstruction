@@ -940,8 +940,13 @@ std::array<unsigned,7> ui_glyph(char c) {
     }
 }
 void ui_text(RgbFrame& frame,int x,int y,std::string_view text,std::array<std::uint8_t,3> ink={255,240,220}) {
-    for(char c:text) {const auto glyph=ui_glyph(c);for(int row=0;row<7;++row)for(int col=0;col<5;++col)
-        if(glyph[static_cast<std::size_t>(row)]&(1U<<(4-col)))pixel(frame,x+col,y+row,ink);x+=6;}
+    for(char c:text) {
+        const auto glyph=ui_glyph(c);
+        for(int row=0;row<7;++row)
+            for(int col=0;col<5;++col)
+                if(glyph[static_cast<std::size_t>(row)]&(1U<<(4-col)))pixel(frame,x+col,y+row,ink);
+        x+=6;
+    }
 }
 // The result screen writes NO TIME for the 60000 no-time sentinel (stop-timeout
 // original result, frames 32000-32100).
@@ -1005,7 +1010,8 @@ ZoomZooHud zoom_zoo_hud(const ZoomZooState& previous_update) {
     }
     hud.lap=std::to_string(zoom_zoo_hud_lap(race.riders[0].laps_remaining))+"/3";
     const auto& t=previous_update.movement.timer;
-    hud.clock=race_time(t.minutes*6000+t.tens_seconds*1000+t.seconds*100+t.tenths*10+t.subframe*2);
+    // A timed-out clock holds 9:59.9; its subframe keeps cycling, so drop it.
+    hud.clock=race_time(t.minutes*6000U+t.tens_seconds*1000U+t.seconds*100U+t.tenths*10U+(timed_out?0U:t.subframe*2U));
     const auto countdown=previous_update.movement.countdown;
     if(timed_out)hud.caption="LOSER";
     else if(countdown>=70)hud.caption="READY";
@@ -1083,8 +1089,14 @@ RgbFrame render_zoom_zoo(const ZoomZooState& state,const ClassicContentPack& pac
     // HDMA tables are published before the current camera update. Original
     // end1382..6724 tables equal previous camera minus the initial origin;
     // BG2 uses a logical word shift, including negative wrapped scrolls.
-    const int background_x=(camera_x-static_cast<std::int16_t>(state.race.camera.velocity_x))&0x3fff;
-    const int background_y=static_cast<std::int16_t>(static_cast<std::uint16_t>(camera_y-static_cast<std::int16_t>(state.race.camera.velocity_y)));
+    // Paused updates leave the camera still while velocity persists, so
+    // camera - velocity is the previous camera only when the previous update
+    // moved it: use the previous update's camera whenever it is available.
+    const bool previous_race=previous_update && !previous_update->result_updates;
+    const int background_x=previous_race?previous_update->race.camera.x&0x3fff
+        :(camera_x-static_cast<std::int16_t>(state.race.camera.velocity_x))&0x3fff;
+    const int background_y=previous_race?static_cast<std::int16_t>(previous_update->race.camera.y)
+        :static_cast<std::int16_t>(static_cast<std::uint16_t>(camera_y-static_cast<std::int16_t>(state.race.camera.velocity_y)));
     const auto origin_x=static_cast<std::uint16_t>(((unsigned(word(track,3))<<4)-256U)&0xfff0U);
     const auto origin_y=static_cast<std::uint16_t>(((unsigned(word(track,5))<<4)-256U)&0xfff0U);
     const int bg_x=static_cast<std::uint16_t>(background_x-origin_x)>>1U;
@@ -1100,7 +1112,8 @@ RgbFrame render_zoom_zoo(const ZoomZooState& state,const ClassicContentPack& pac
         const auto selector=word(track,15+static_cast<std::size_t>((world_y/64)*256+world_x/64)*2);
         const auto descriptor=word(track,0x800f+static_cast<std::size_t>(selector)*32+static_cast<std::size_t>((world_y%64)/16)*8+static_cast<std::size_t>((world_x%64)/16)*2);
         int px=world_x&15,py=world_y&15;
-        if(descriptor&0x4000)px=15-px;if(descriptor&0x8000)py=15-py;
+        if(descriptor&0x4000)px=15-px;
+        if(descriptor&0x8000)py=15-py;
         const auto tile=static_cast<std::uint16_t>(((descriptor&1023)+(px/8)+(py/8)*16)&1023);
         const auto value=tile_pixel(vram,0x4000,tile,px&7,py&7);
         if(value) {

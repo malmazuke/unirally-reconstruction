@@ -73,6 +73,7 @@ int main() {
     timed_out.movement.timer.tens_seconds = 5;
     timed_out.movement.timer.seconds = 9;
     timed_out.movement.timer.tenths = 9;
+    timed_out.movement.timer.subframe = 3;
     hud = unirally::zoom_zoo_hud(timed_out);
     require(hud.lap == "2/3" && hud.clock == "9:59.90" && hud.finish_time.empty() && hud.caption == "LOSER");
   }
