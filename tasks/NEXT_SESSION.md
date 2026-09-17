@@ -23,9 +23,10 @@ clock instead of inventing a figure.
 
 ## What is done and approved
 
-Experimental state is **URZZ000B / 742 bytes**; static pack is
-**v5 / 50 entries**, and fresh extraction from the user's ROM reproduces it
-byte for byte. The generic opponent reward consumer `$81C219-C2C9` is recovered
+Experimental state is **URZZ000B / 742 bytes** (the idle-latch work below may
+add a version); static pack is **v7 / 55 entries** (`b75539a0...`), and fresh
+extraction from the user's ROM reproduces it byte for byte. v5 and v6 packs are
+rejected; re-extract with `--rom`. The generic opponent reward consumer `$81C219-C2C9` is recovered
 and independently approved across three review rounds. Evidence and the exact
 commands are in [M4-16](M4-16.md); do not re-derive them.
 
@@ -79,19 +80,19 @@ checkout; without it every historical command exits 2, missing prerequisite.
    `787c549`; the script is recorded in [M4-16](M4-16.md). Re-run it on the
    exact final tip before integration. Never edit tracked files while it runs:
    the tool refuses the mixed run.
-4. **Visual acceptance — rider art open (criteria 1 and 3 failed review).**
-   Independent review `bfd41ed` of `06abab7` found six defects. Fixed: the HUD
-   was one update ahead of the original (it now draws from the previous
-   update), the clock ran on after the finish (now FINISH, finish time and
-   WINNER/LOSER), and the track layer sat 1 px low (missing scanline offset).
-   Open: riders are drawn facing right when riding left (D1), the steep-contact
-   anchor is 12-15 px off the wall (D2), and the starting pair draws the
-   opponent upside down (D3). All three come from ZOOM ZOO's rider pose
-   composition not being recovered: the atlas holds five DRAGSTER pose pairs.
-   Then re-review. Originals: `visual-original-a/b`, `brake-a`, and the
-   reviewer's 247 recaptured frames in
-   `.worktrees/m4-16-review/artifacts/m4-16-review/visual-06abab7/original-recapture`.
-   Read HUD values off original frames, never from WRAM alone.
+4. **Visual acceptance — fixes landed, re-review due.** The first review
+   (`bfd41ed`) failed criteria 1 and 3. All six findings are now addressed: the
+   HUD lag, the post-finish clock and the 1 px track offset (`473dbc1`), and the
+   rider art D1-D3, recovered from the original's pose tables by a worker
+   (R-0036, merged `e65623a`; a live playtest had 0 pose fallbacks). Also
+   corrected since: the fade curve (`1d8a2c1`) and the start/finish line's
+   race palette cycle (`89a1a04`, pack v7). A fresh independent review of all
+   of this is due. Originals: `visual-original-a/b`, `brake-a`, the reviewer's
+   247 recaptured frames and the worker's `original-primary` sweep. Read HUD
+   values off original frames, never from WRAM alone. Still open:
+   **idle latch cleared by the end of a scripted glance (`$82:857F/$82:87AD`)**,
+   a serialized-state divergence reachable by stopping and waiting; the rider
+   worker (`codex/m4-16-rider-art`) is recovering it from original evidence.
 5. **Result-loading read classification — classified, review due.** All
    11,738 unresolved reads in the result capture are static ROM audio data
    uploaded to the SPC700 by `$82:8082-8129` and `$82:82A9-831E`; see the
@@ -104,7 +105,7 @@ checkout; without it every historical command exits 2, missing prerequisite.
 ## Launch recipe
 
 ```sh
-python3 tools/project.py frontend run --track zoom-zoo --pack local/classic-crawler-two-tracks-v5.pack --preset app-debug --report artifacts/m4-16/FRESH-live.json
+python3 tools/project.py frontend run --track zoom-zoo --pack local/classic-crawler-two-tracks-v7.pack --preset app-debug --report artifacts/m4-16/FRESH-live.json
 ```
 
 Add `--rom` with the private locator's ROM and a fresh pack path for a first

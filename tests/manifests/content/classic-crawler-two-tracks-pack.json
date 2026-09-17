@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "kind": "classic_pack_rules",
-  "profile_id": "classic.pal.crawler.two-tracks.v6",
+  "profile_id": "classic.pal.crawler.two-tracks.v7",
   "source_rom": {
     "size": 2097152,
     "sha256": "a1105819d48c04d680c8292bbfa9abbce05224f1bc231afd66af43b7e0a1fd4e"
@@ -3380,6 +3380,20 @@
       },
       "size": 594,
       "sha256": "3ea809fc62e175660f9bb98c10b44bb80fd79ab98c7378c547790e3b6b986029"
+    },
+    {
+      "id": "presentation.zoom.race-palette-cycle.v1",
+      "source": {
+        "kind": "raw",
+        "pieces": [
+          {
+            "file_offset": 683,
+            "length": 544
+          }
+        ]
+      },
+      "size": 544,
+      "sha256": "a82bb2726a4bdbfd74483aae5261fb11e325ae35e88681125d9d68ad14f7a57f"
     }
   ],
   "description": "Additive two-track content inventory; retains every v1 entry unchanged."

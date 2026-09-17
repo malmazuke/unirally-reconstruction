@@ -450,15 +450,15 @@ and extend each horizon to include its own post-finish continuation.
 Implemented in `codex/m4-16-playable-zoom-zoo`, not accepted gameplay on main:
 
 ```sh
-python3 tools/project.py frontend run --track zoom-zoo --pack local/classic-crawler-two-tracks-v6.pack --preset app-debug --report artifacts/m4-16/FRESH-live.json
-build/app-debug/src/core/zoom_zoo_presentation_runner local/classic-crawler-two-tracks-v6.pack --timeline <native timeline> <frame> OUT.ppm
+python3 tools/project.py frontend run --track zoom-zoo --pack local/classic-crawler-two-tracks-v7.pack --preset app-debug --report artifacts/m4-16/FRESH-live.json
+build/app-debug/src/core/zoom_zoo_presentation_runner local/classic-crawler-two-tracks-v7.pack --timeline <native timeline> <frame> OUT.ppm
 python3 -m tools.unirally_lab.native.zoom_zoo_playable --help
 python3 -m tools.unirally_lab.native.zoom_zoo_playable_reference --help
 ```
 
 The first-launch frontend accepts `--rom` plus a fresh pack destination and
-extracts 54 validated static entries (pack v6 adds the R-0036 rider object and
-look tables); later pack-only launches do not open ROM. The `--timeline` render
+extracts 55 validated static entries (pack v6 added the R-0036 rider object and
+look tables; v7 adds the race palette cycle tables); later pack-only launches do not open ROM. The `--timeline` render
 replays consecutive native states from initialization so rider look overlays
 are exact; the single-state runner form omits them.
 The ordinary `content pack` CLI still targets accepted DRAGSTER rules. V4 pack
