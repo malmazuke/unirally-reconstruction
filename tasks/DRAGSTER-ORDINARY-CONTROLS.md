@@ -2,7 +2,7 @@
 
 ## Assignment
 
-- Status: in_progress
+- Status: reviewed and integrated (implementation approved at `16b8daf`, review `f427098`); acceptance conditional on final-tip CI, remote verification and the user's live playtest. Closeout: ignored `artifacts/dragster-ordinary-integration/closeout.json`
 - Milestone: follow-up to accepted DRAGSTER gameplay (M2-M3, M4-01); not an M4 milestone gate
 - Coordinator: Claude Opus 5 primary session (Claude Code desktop)
 - Task provider: Anthropic (Claude Opus 5), per D-0004
@@ -150,3 +150,41 @@ Mistakes:
   the DRAGSTER 10:00 time limit (no case reaches it), the original's result
   screen exit on other buttons, and ZOOM ZOO's physical D-pad (raised as a
   separate suggestion).
+
+## Independent review and integration
+
+Fresh Claude Opus 5 reviewer, isolated checkout at `16b8daf`, report
+`tasks/DRAGSTER-ORDINARY-CONTROLS-review.md` at `f427098` (pushed).
+**Verdict: approve, no blocking defect.** It reproduced rather than read:
+wrote its own 65816 disassembler and confirmed every cited address and all
+seven fuzz corrections; re-captured primary, reversal and the withheld
+random-3 with digests identical to both implementer captures; designed its own
+withheld race (countdown X+Left, four riding jumps, rolls, held L/R through a
+landing, moving brake, a 190-update reversal) which native matched for all
+3,473 updates; re-validated both tracked freezes against its own captures with
+379 and 493 restores; ran the DRAGSTER historical matrix, four presets, the
+M4-16 primary and idle gates, 400 fresh fuzz seeds (4.9M updates, 0 aborts) and
+a 12-mask probe; and checked that the removed M4-16 hold/rotation bound is only
+reachable by one frozen original's states.
+
+| Finding | Severity | Disposition |
+| --- | --- | --- |
+| 1. The shared follow rule's camera floor moved 0 to 14 with no test below x 13,696 | Low | Fixed in `1d8cfeb`: the floor and the first moving frame are pinned. |
+| 2. The tie relaxation in `build_result_map` also relaxes the legacy path | Low | Accepted: the reviewer verified it against the tie original (both finish 3226, totals 3358/3358) and the legacy gates pass. |
+| 3. R-0038 said seed 383 diverged at 3473 where the code and test say 3472 | Low | Fixed in `1d8cfeb`: the frame was not re-derived, so the note records the discrepancy instead of asserting either. |
+| 4. `zoom_zoo_runner` with a v1 pack gives the low-level entry-absent message, not the app's remedy | Low | Recorded, not fixed: the lab runner is not the product launch path. |
+| 5. Declared presentation limits are real and correctly stated | Note | No action. |
+
+Integration gates on the merge candidate `b452170` (clean tree, unchanged
+throughout; `artifacts/dragster-ordinary-integration/`): four presets built with
+ctest, both synthetic suites, all seven DRAGSTER originals compared (plus the
+primary under the sanitizer), the M4-16 primary and idle-late-start gates, the
+DRAGSTER historical matrix, hidden DRAGSTER and ZOOM ZOO launches, and the
+controls probe with no abort. **My mistake:** the first run reported the two
+DRAGSTER presentation checks as failures, exit 3. That was my harness passing an
+unquoted fixture path containing a space, not a candidate defect; rerun from
+inside the checkout they pass with the accepted counts unchanged
+(36/697/279/445/653/962/961 and 1,073).
+
+Still open: the user's live playtest, and their confirmation of the v1-pack
+product change.

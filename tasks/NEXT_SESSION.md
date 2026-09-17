@@ -17,7 +17,17 @@ record UTC wall clock. No reset, purchase or provider change is authorized.
 
 ## Ready follow-ups
 
-1. **DRAGSTER window timing and shape, not started.** DRAGSTER-PALETTE-CYCLE
+1. **DRAGSTER live playtest, waiting on the user.** DRAGSTER-ORDINARY-CONTROLS
+   is reviewed and integrated but its live criterion is unmet: play a full
+   DRAGSTER race with keyboard and with the gamepad, using jump, brake, Left
+   and tricks, through the result and Race Again, and record the run. Also
+   confirm the deliberate product change: a DRAGSTER-only v1 pack no longer
+   plays DRAGSTER (the app refuses it up front with the remedy; the launcher
+   upgrades to or extracts a two-track pack).
+2. **ZOOM ZOO opposing-direction input, not started.** Raised by the controls
+   work: ZOOM ZOO still rejects the input that DRAGSTER now accepts. Capture
+   original ZOOM ZOO evidence before changing anything.
+3. **DRAGSTER window timing and shape, not started.** DRAGSTER-PALETTE-CYCLE
    (integrated; R-0037) made the GO and winner windows take the cycled colour 0,
    matching the original where their shapes overlap. Native still draws each
    window from one frozen HDMA table and only on particular rider pose pairs:
@@ -25,7 +35,7 @@ record UTC wall clock. No reset, purchase or provider change is authorized.
    shape covers 2,810 pixels against native's 5,001. Recover the original's
    window enable and HDMA table timing (`$2123-$2132`, channel 6) from original
    evidence.
-2. **DRAGSTER 10:00 race limit, not started.** ZOOM ZOO's `$81:C73E-C75B` finishes
+4. **DRAGSTER 10:00 race limit, not started.** ZOOM ZOO's `$81:C73E-C75B` finishes
    both riders at 9:59.9; native DRAGSTER ignores the limit. Needs original
    DRAGSTER evidence before any change.
 

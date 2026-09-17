@@ -34,7 +34,8 @@ research: [R-0035](research/R-0035-zoom-zoo-playable-recovery.md),
 
 DRAGSTER ordinary controls (found in live play on 18 September 2026 local
 time: Left or B while riding aborted and Y was ignored): recovered on
-`task/dragster-ordinary-controls`, pending independent review and integration.
+`task/dragster-ordinary-controls`, reviewed (`f427098`) and integrated; its
+acceptance is conditional on the final-tip CI and the user's live playtest.
 DRAGSTER runs the shared race engine from native initialization with its own
 track content ([R-0038](research/R-0038-dragster-ordinary-controls.md)); seven
 frozen originals (win, loss, tie, reversal, pause, random input) match every
