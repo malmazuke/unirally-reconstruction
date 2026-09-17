@@ -7,7 +7,8 @@ the ROM and from fresh captures in this checkout, and none of it depended on
 the implementer's fixtures. The only native code change is a strict extension
 of the DRAGSTER result composition: it can turn a former exception into a
 render, and it cannot alter any render that previously succeeded (argument and
-evidence in Finding 1). Three advisory findings are recorded below; none of
+evidence in Finding 1). Three advisory findings (2, 3 and 4) are recorded
+below alongside Finding 1, which needs no action; none of
 them blocks integration and none of them changes a recovered behaviour.
 
 ## Candidate and build identity
