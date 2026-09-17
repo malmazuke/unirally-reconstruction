@@ -142,7 +142,9 @@ the result screen" difference.
 | `cmake --preset P && cmake --build build/P && ctest --test-dir build/P` for lab-debug, lab-release, lab-sanitize, app-debug, app-sanitize | 23/23 on each, 0 failures |
 | DRAGSTER historical matrix (`artifacts/dragster-window-effects/hist.sh`, the adapted `hist2.sh`) | 20/20 rc=0, ANY FAILURE: 0 |
 | accepted DRAGSTER presentation contracts with the v1 pack | winner 36/697/279/445/653/962/961, loser 1,073: identical to the accepted figures |
-| M4-16 ZOOM ZOO primary gate and DRAGSTER frozen originals primary, random-1, reversal (`artifacts/dragster-window-effects/gates2.sh`) | see the handoff |
+| M4-16 ZOOM ZOO primary gate with the v8 pack | passed: frames 1376-7600, 742 bytes, rows `b4a34af722b26693...` (the same digest as the M4-16 and palette reviews), 757 fresh restores, full restart; finishes 6484/6488, loading 6725, visible 6833, stable 6839, player_won |
+| DRAGSTER frozen originals with the v8 pack: primary, random-1, reversal | all passed: 1328-3900 rows `dac612cc71a1a215...`, 1328-4340 rows `7df2f728949c6ed9...`, 1328-5000 rows `f142311ef5a0fff4...`, 742 bytes each |
+| Hosted CI on the branch tip (Ubuntu GCC `-Werror`) | `synthetic` run 35287500821 success; the two runs before it failed on a GCC-only `-Werror=range-loop-construct` in the new test, fixed in `d03aed9` |
 
 ## Mistakes
 
@@ -160,6 +162,13 @@ the result screen" difference.
   synthetic all-zero palette makes colour 0, the background fill and the GO
   window all white. The fix was to give the test frame the pose pair whose
   colour 0 is not white, not to weaken the assertion.
+- Two gate runs were wasted by editing and rebuilding the tree while
+  `zoom_zoo_playable compare` was running; it checks the source, binary and pack
+  digests across the run and correctly refused. Leave the tree alone for the
+  duration of a validation run, or run it last.
+- Two commits went to CI with a GCC-only error that macOS Clang accepts. The
+  memory note "dispatch CI before integration" exists for exactly this; local
+  green is not evidence for the hosted build.
 
 ## Handoff
 
