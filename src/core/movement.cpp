@@ -345,11 +345,10 @@ void update_idle_pose(RiderMovementState& rider,bool race_active,bool opponent,
             idle.velocity=static_cast<std::uint16_t>(reference<32?-1:1);
         }
     } else if(velocity<0) {
-        if(reference<32) {
-            if(reference>=9) idle.velocity=static_cast<std::uint16_t>(-1);
-        } else if(reference<58) {
-            use_table=true;
-        }
+        // $82:A1F2-A1FF: a falling velocity below 32 is applied unchanged.
+        // An earlier reset to -1 for 9..31 had no source; DRAGSTER diff fuzz
+        // seed 66 reaches it at 1977 (R-0038).
+        if(reference>=32 && reference<58) use_table=true;
     } else if(reference>=9 && reference<32) {
         use_table=true;
     }
