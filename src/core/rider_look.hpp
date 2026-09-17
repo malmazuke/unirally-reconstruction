@@ -53,6 +53,11 @@ std::array<std::optional<std::uint16_t>, 2>
 rider_overlay_poses(const RiderLookState &look, const ZoomZooState &updated,
                     const RiderLookTables &tables);
 
+// $82:87C9-$82:8926: move `head` one step toward `target`. Heads travel along
+// four arcs, 1..17 (9 is neutral and stored as 0), 18..25, 26..33 and 34
+// upward, which join at 9/18, 2/26 and 7/34.
+void step_rider_head(RiderLook &look);
+
 // $82:836D-$82:8926 for the race update that produced `updated`. Only one
 // rider steps per update: the player on odd contact phases, the opponent on
 // even ones. The caller skips updates the pause menu diverted.

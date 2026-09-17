@@ -34,10 +34,9 @@ bool compares_negative(std::uint16_t value, std::uint16_t operand) {
   return (wrap(static_cast<unsigned>(value) - operand) & 0x8000U) != 0;
 }
 
-// $82:87C9-$82:8926. Heads move one step at a time along four arcs: 1..17
-// (9 is neutral, stored as 0), 18..25, 26..33 and 34 upward. Arcs join at
-// 9/18, 2/26 and 7/34.
-void step_head(RiderLook &look) {
+} // namespace
+
+void step_rider_head(RiderLook &look) {
   const std::uint16_t raw_target = look.target;
   const std::uint16_t target = raw_target ? raw_target : neutral_head;
   const std::uint16_t head = look.head ? look.head : neutral_head;
@@ -82,6 +81,8 @@ void step_head(RiderLook &look) {
   }
   look.head = next == neutral_head ? 0 : next;
 }
+
+namespace {
 
 struct HeadPoint {
   std::uint16_t x{}, y{};
@@ -211,7 +212,7 @@ void look_for_rider(RiderLook &look, RiderLook &player_look, std::size_t rider,
     look.target = target;
   }
   if (look.target != 0) {
-    step_head(look);
+    step_rider_head(look);
     return;
   }
   // $82:852B / $82:8756: scripted glances while the idle cycle is latched.
@@ -219,7 +220,7 @@ void look_for_rider(RiderLook &look, RiderLook &player_look, std::size_t rider,
   if (!latched || (look.sequence_cursor == 0 && look.head != 0)) {
     look.sequence_cursor = look.sequence_end = look.sequence_delay = 0;
     look.sequence_target = look.target = 0;
-    step_head(look);
+    step_rider_head(look);
     return;
   }
   if (look.sequence_cursor == 0 && rider == 1) {
@@ -248,7 +249,7 @@ void look_for_rider(RiderLook &look, RiderLook &player_look, std::size_t rider,
       look.sequence_cursor = wrap(look.sequence_cursor + 2U);
     }
   }
-  step_head(look);
+  step_rider_head(look);
 }
 
 } // namespace
