@@ -283,6 +283,8 @@ int main(int argc, char **argv) try {
   auto& state=parsed->zoom_zoo?zoom_state.movement:dragster_state;
   auto zoom_hud_state=zoom_state; // State before the latest update, for the HUD.
   unsigned restarts=0;
+  // A restart from the stable result proves a completed race; one from the pause menu does not.
+  unsigned results_reached=0,result_restarts=0,pause_restarts=0;
 
 
   if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMEPAD))
@@ -362,7 +364,7 @@ int main(int argc, char **argv) try {
         if(parsed->zoom_zoo && event.type==SDL_EVENT_KEY_DOWN && !event.key.repeat &&
            event.key.scancode==SDL_SCANCODE_RETURN && zoom_state.result_updates==115) {
           unirally::restart_zoom_zoo(zoom_state,zoom_content);zoom_hud_state=zoom_state;
-          input.clear();live_presentation=unirally::app::LivePresentation{};++restarts;redraw=true;
+          input.clear();live_presentation=unirally::app::LivePresentation{};++restarts;++result_restarts;redraw=true;
           break;
         }
         if (const auto key = keyboard_key(event.key.scancode)) {
@@ -421,6 +423,7 @@ int main(int argc, char **argv) try {
       if(parsed->zoom_zoo) {
         const auto previous_simulation_frame=zoom_state.movement.frame;
         const bool was_paused=zoom_state.pause.selection!=0;
+        const bool at_stable_result=zoom_state.result_updates==115;
         zoom_hud_state=zoom_state;
         const auto buttons=unirally::app::controller_buttons(ports[0]);
         if(zoom_state.result_updates==115 && buttons.start)
@@ -437,8 +440,11 @@ int main(int argc, char **argv) try {
         }
         if(!was_paused && zoom_state.pause.selection &&
            (gamepad_mask&unirally::app::button_mask(unirally::app::LogicalButton::Start)))++gamepad_pause_openings;
+        if(!at_stable_result && zoom_state.result_updates==115)++results_reached;
         if(zoom_state.movement.frame<previous_simulation_frame) {
           if(gamepad_only)++gamepad_only_restarts;
+          if(at_stable_result)++result_restarts;
+          else ++pause_restarts;
           // Both keyboard and gamepad navigation replace all simulation/art
           // state. A physically held Start cannot immediately pause the new race.
           input.clear();live_presentation=unirally::app::LivePresentation{};++restarts;
@@ -518,7 +524,9 @@ int main(int argc, char **argv) try {
   if(!parsed->zoom_zoo)std::cout<<"DRAGSTER race phase "<<static_cast<unsigned>(state.finish.phase)
       <<"; outcome "<<static_cast<unsigned>(state.finish.outcome)<<'\n';
   if(parsed->zoom_zoo)std::cout<<"ZOOM ZOO result updates "<<zoom_state.result_updates<<"; restarts "<<restarts
-      <<"; totals "<<zoom_state.race.total_times[0]<<'/'<<zoom_state.race.total_times[1]<<'\n';
+      <<"; totals "<<zoom_state.race.total_times[0]<<'/'<<zoom_state.race.total_times[1]
+      <<"; stable results reached "<<results_reached<<"; restarts from result/pause "
+      <<result_restarts<<'/'<<pause_restarts<<'\n';
   if(parsed->zoom_zoo) {
     std::cout<<"Opponent tricks: updates "<<opponent_trick_updates<<"; multi-axis updates "
              <<opponent_multi_axis_updates<<"; selectors seen";
