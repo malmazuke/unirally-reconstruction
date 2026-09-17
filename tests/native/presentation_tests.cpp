@@ -3,6 +3,7 @@
 #include "zoom_zoo_movement.hpp"
 #include <stdexcept>
 #include <string>
+#include <utility>
 #include <vector>
 namespace {
 int require_count = 0;
@@ -601,8 +602,9 @@ int main() {
     auto go_frame = state;
     go_frame.riders[0].pose.pose_index = 0x04fe;
     go_frame.riders[1].pose.pose_index = 0x037c;
-    for (const auto [frame, chosen] : {std::pair<std::uint32_t, unsigned>{1600, 3},
-                                       {1601, 4}, {1355, 0}}) {
+    for (const auto &[frame, chosen] : {std::pair<std::uint32_t, unsigned>{1600, 3},
+                                        std::pair<std::uint32_t, unsigned>{1601, 4},
+                                        std::pair<std::uint32_t, unsigned>{1355, 0}}) {
       go_frame.frame = frame;
       const auto go_drawn = unirally::render_dragster_headless(
           {go_frame, 0, 0, 0, 0, 0}, family_content);
