@@ -1021,7 +1021,28 @@ RgbFrame render_zoom_zoo(const ZoomZooState& state,const ClassicContentPack& pac
     }
     const auto bg=pack.entry("zoom.bg2-tiles"),map=pack.entry("zoom.bg2-map"),palette=pack.entry("zoom.palette");
     std::copy(bg.begin(),bg.end(),vram.begin()+0x2000);std::copy(map.begin(),map.end(),vram.begin()+0xe000);
+    // NMI $80883F-8849 writes INIDISP from the preceding update's $0FF1,
+    // clamping (fade-15) at zero; $83CCC1-CCC9 increments $0FF1 once per race
+    // update. The PPU scales each 5-bit channel before output conversion
+    // (bsnes lightTable: luma*c+0.5), so brightness applies to CGRAM words, as
+    // in the DRAGSTER result fade. Scaling converted pixels made mid-fade
+    // frames too bright: green 15 at brightness 8 is 47 in the original, not 64.
+    const auto prior_fade=state.movement.frame<=1376U?0U:std::min(30U,state.movement.frame-1377U);
+    const auto brightness=prior_fade>15U?prior_fade-15U:0U;
     auto cgram=build_race_cgram({state.movement,0,0,0,0,0},palette);
+    if(brightness<15U) {
+        for(std::size_t at=0;at<cgram.size();at+=2) {
+            const auto faded=apply_snes_brightness(static_cast<std::uint16_t>(cgram[at]|(unsigned(cgram[at+1])<<8U)),brightness);
+            cgram[at]=static_cast<std::uint8_t>(faded);cgram[at+1]=static_cast<std::uint8_t>(faded>>8U);
+        }
+    }
+    // Authored UI has no CGRAM entry; fade it through the same 1.5 output curve.
+    const auto ui_scale=std::pow(brightness/15.0,1.5);
+    const auto ui=[ui_scale](std::array<std::uint8_t,3> rgb) {
+        for(auto& channel:rgb)channel=static_cast<std::uint8_t>(std::lround(channel*ui_scale));
+        return rgb;
+    };
+    const std::array<std::uint8_t,3> ink=ui({255,240,220});
     const int camera_x=state.race.camera.x,camera_y=static_cast<std::int16_t>(state.race.camera.y);
     // HDMA tables are published before the current camera update. Original
     // end1382..6724 tables equal previous camera minus the initial origin;
@@ -1071,29 +1092,24 @@ RgbFrame render_zoom_zoo(const ZoomZooState& state,const ClassicContentPack& pac
                 pixel(frame,x,y,colour(cgram,static_cast<std::uint8_t>(object_palette+value)));
         });
     }
-    rect(frame,0,0,256,12,{15,30,30});
+    rect(frame,0,0,256,12,ui({15,30,30}));
     const auto hud=zoom_zoo_hud(rider_source);
     const auto centred=[](const std::string& text){return 128-3*static_cast<int>(text.size());};
-    ui_text(frame,5,3,hud.lap);
-    if(!hud.clock.empty())ui_text(frame,195,3,hud.clock);
-    if(hud.finish_time.empty())ui_text(frame,centred(hud.caption),35,hud.caption);
+    ui_text(frame,5,3,hud.lap,ink);
+    if(!hud.clock.empty())ui_text(frame,195,3,hud.clock,ink);
+    if(hud.finish_time.empty())ui_text(frame,centred(hud.caption),35,hud.caption,ink);
     else {
-        ui_text(frame,centred(hud.finish_time),35,hud.finish_time);
-        ui_text(frame,centred(hud.caption),48,hud.caption);
+        ui_text(frame,centred(hud.finish_time),35,hud.finish_time,ink);
+        ui_text(frame,centred(hud.caption),48,hud.caption,ink);
     }
     if(state.pause.selection) {
         for(auto& channel:frame.pixels)channel=static_cast<std::uint8_t>(channel/2U);
-        rect(frame,55,74,146,74,{15,30,30});
-        ui_text(frame,109,83,"PAUSED");
-        ui_text(frame,73,101,state.pause.selection==1?"> RESUME":"  RESUME");
-        ui_text(frame,73,115,state.pause.selection==0xffffU?"> RESTART RACE":"  RESTART RACE");
-        ui_text(frame,68,135,"UP DOWN - ENTER");
+        rect(frame,55,74,146,74,ui({15,30,30}));
+        ui_text(frame,109,83,"PAUSED",ink);
+        ui_text(frame,73,101,state.pause.selection==1?"> RESUME":"  RESUME",ink);
+        ui_text(frame,73,115,state.pause.selection==0xffffU?"> RESTART RACE":"  RESTART RACE",ink);
+        ui_text(frame,68,135,"UP DOWN - ENTER",ink);
     }
-    // NMI $80883F-8849 uses the preceding update's $0FF1 and clamps
-    // (fade-15) at zero. $83CCC1-CCC9 increments once per race update.
-    const auto prior_fade=state.movement.frame<=1376U?0U:std::min(30U,state.movement.frame-1377U);
-    const auto brightness=prior_fade>15U?prior_fade-15U:0U;
-    for(auto& channel:frame.pixels)channel=static_cast<std::uint8_t>(unsigned(channel)*brightness/15U);
     return frame;
 }
 
