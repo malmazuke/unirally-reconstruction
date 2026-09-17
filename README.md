@@ -19,7 +19,10 @@ handoffs kept in this repository.
 ## What works today
 
 - **DRAGSTER:** the accepted one-player CRAWLER/DRAGSTER path runs from race
-  start through winner or loser results in the native desktop app.
+  start through winner or loser results in the native desktop app. Its controls
+  are still limited to riding right and releasing: Left, or jumping while
+  riding, stops the app with an unsupported-input message (recovery in
+  progress).
 - **Desktop controls and display:** keyboard and gamepad input, integer-scaled
   presentation, and a 50 Hz PAL game update loop using SDL3.
 - **ZOOM ZOO:** playable in the native desktop app from native race

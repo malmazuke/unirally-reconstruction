@@ -32,6 +32,12 @@ the start-line palette cycle matching the original. Review record:
 research: [R-0035](research/R-0035-zoom-zoo-playable-recovery.md),
 [R-0036](research/R-0036-zoom-zoo-rider-objects.md).
 
+DRAGSTER control limit (found in live play on 18 September 2026 local time):
+native DRAGSTER only recovers riding right, releasing and its recorded inputs.
+Left, or SNES B (jump) held while riding, aborts with a fail-closed domain
+message, and Y (the original's brake) is ignored. Recovery is in progress in
+`task/dragster-ordinary-controls`.
+
 Declared omissions: audio; the original's decorative objects and captions
 (start arrow and ring, hints, on-screen stunt names, opponent finish time,
 animated finish banner, off-screen arrows); original HUD and result pixel style;
