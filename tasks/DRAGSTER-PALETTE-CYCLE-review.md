@@ -2,7 +2,11 @@
 
 ## Identity
 
-- Verdict: **changes required** (one blocking finding, F1).
+- Current verdict: **approve** candidate `2c9dea3` (re-review, round 2,
+  below), with three non-blocking documentation and test residuals for
+  closeout.
+- Round 1 verdict at `a685712`: **changes required** (one blocking finding,
+  F1). Sections 1-5 and the findings below are round 1 as reported.
 - Reviewer: fresh Claude Opus 5 subagent (Claude Code), no prior context, isolated
   worktree `.worktrees/dragster-palette-review` on `review/dragster-palette-cycle`.
 - Candidate: `task/dragster-palette-cycle` at exactly
@@ -351,3 +355,209 @@ unaffected.
 - Review ended 2026-09-17T10:54:12Z; about 31 minutes wall clock.
 - Report commit: on `review/dragster-palette-cycle`, pushed to `origin`; the
   remote ref is verified in the reviewer's handoff.
+
+## Re-review, round 2: candidate `2c9dea3`
+
+### Identity
+
+- Candidate: `task/dragster-palette-cycle` at
+  `2c9dea3e8159eacfe3e9f6b1c845c756630ee20c` ("Fill DRAGSTER's windows with
+  the cycled colour 0"), one commit on `a685712`. `origin` resolves the branch
+  to that commit.
+- Checkout: `origin/task/dragster-palette-cycle` merged into
+  `review/dragster-palette-cycle` as `4dc0dac`. `git diff --stat 2c9dea3 4dc0dac`
+  shows only this report file, so the source tree equals the candidate's. Every
+  round-2 report records `source.commit=4dc0dac`, `dirty=false`. Objects in all
+  four build directories were rebuilt after the merge (11:00-11:02Z).
+- Re-review started 2026-09-17T10:59:31Z. The end time is in the closing
+  section.
+- Binaries: `build/lab-debug/src/app/live_presentation_runner` `9ce3d161...`,
+  `build/lab-debug/src/core/presentation_runner` `b5fe6839...`, and
+  `build/app-debug/src/core/zoom_zoo_runner` `955d8fcf...`, byte-identical to
+  round 1.
+- Evidence: ignored `artifacts/dragster-palette-review/round2/`. Original
+  pictures and the original's colour-0 pixel masks were recaptured in the
+  session scratchpad with the round-1 scripts (`pngs.py`, and
+  `marker_original.py` extended to save the colour-0 masks).
+
+### What changed
+
+- `render_dragster` fills the GO and winner windows with CGRAM colour 0 from
+  `build_race_cgram(..., false)` plus `apply_dragster_palette_cycle` when the
+  pack has the tables. Otherwise it keeps white and (98,98,255).
+- `apply_dragster_palette_cycle` returns early when
+  `result_loading_updates - 1 > frame`.
+- `presentation_tests` adds a window test.
+- The `.cpp` comment, R-0037 and the task record are updated, including a
+  round-1 disposition table and a picture-level acceptance row.
+
+The diff touches no ZOOM ZOO function.
+
+### 1. Picture level (independent)
+
+`round2/window_compare.py` renders frames with the live runner and both packs.
+Native states come from a fresh `native finish-check` on
+`full-race-review-release-3213.case.json`. Its per-frame output is
+byte-identical to round 1, so gameplay is unchanged. Camera and scroll are the
+original's (`$2026`, `$2047/$2049`, `$2059/$205B`), as in round 1.
+
+It compares three things per frame:
+- the native window mask, read independently from the pack's HDMA window
+  tables (XOR of two inclusive windows per line);
+- the original's colour-0 pixels, from a marker ROM run on the same inputs;
+- the original picture.
+
+Results (`round2/window-compare.json`):
+
+| Frames | Native window px | Original colour-0 px | Overlap | v7 = original on overlap | v1 = original on overlap |
+| --- | --- | --- | --- | --- | --- |
+| 3322 winner, phase 4 | 5,001 | 2,810 | 823 | **823** | 0 |
+| 3452 winner, phase 6 | 5,001 | 5,001 | 5,001 | **5,001** | 0 |
+| 3453 winner, phase 7 (frozen) | 5,001 | 5,001 | 5,001 | 5,001 | 5,001 |
+| 1600 GO, phase 10 (frozen) | 9,895 | 9,895 | 9,895 | 9,830 | 9,830 |
+| GO, synthetic 1596 / 1598 / 1602 (phases 6, 8, 12) | 9,895 each | 9,895 each | 9,895 each | **9,868 / 9,479 / 9,839** | 0 / 0 / 0 |
+| GO, synthetic 1597 / 1599 / 1601 / 1603 | 9,895 each | 9,260 each | 0 | n/a (other shape) | n/a |
+
+- On every compared racing and finish-delay frame (the rows above), the
+  original's colour-0 pixels equal that frame's cycle phase colour.
+- The v7 window colour always equals the expected phase colour: (38,38,255) at
+  3322, (121,38,255) at 3452, (156,156,255) at 1598 and so on.
+- Outside the window, v1 and v7 are identical on every compared frame.
+- Frozen 1600 mismatches 65 pixels in both packs. These are pixels drawn over
+  the window.
+
+**GO frames.** In all six accepted native DRAGSTER series (the three full-race
+cases, m3-04 opponent-first, primary, withheld-cadence-17 and
+withheld-release-2347), the native GO pose pair `0x04F9/0x0263` occurs only at
+frame 1600, which is phase 10. No native state draws GO at another phase. The
+"synthetic" rows therefore take the frame-1600 native state, relabel its frame
+field, and use that frame's original camera and scroll. They test colour only;
+the remaining overlap mismatches are riders at their 1600 positions.
+
+On odd frames the original's GO shape is a different 9,260-pixel shape with no
+overlap with native's single table. This is shape and timing, outside the
+task.
+
+**Loading.** Native v7 draws the winner window black on loading updates 1-224
+(3454-3677).
+- The original screen is entirely black on 3454-3561 (updates 1-108). There, v7
+  matches **540,108 of 540,108** window pixels and v1 matches 0.
+- From 3562 (update 109) the original fades in the result screen (55,121
+  non-black pixels at 3562). There, v7 matches 23,510 of 580,116 and v1 0.
+- Native shows the race until update 225. This is a pre-existing
+  result-timing limit.
+- The loser original is black on 3559-3666 and fades in from 3667, also update
+  109.
+
+**Full-race sweep** (`round2/sweep-original.json`): exactly **226** of 2,147
+native frames now differ between v1 and v7: 3322, 3452 and 3454-3677, each by
+5,001 pixels (the winner window). Round 1 had 0.
+
+**Non-frozen frame score:** at 3452, rendered on the finish-delay rectangle and
+scored like the contract, v1 gives 5,654 mismatches and v7 gives **653**
+(`round2/render-compare-frozen.json`).
+
+### 2. v1 accepted checks
+
+| Command (lab-debug, v1 pack, `--artifacts artifacts/dragster-palette-review/round2/pres-*-v1`) | Result |
+| --- | --- |
+| `native presentation-check` winner contract | exit 0: **36/697/279/445/653/962/961** |
+| `native presentation-check` loser contract | exit 0: **1,073** |
+| `render_compare.py`: frozen cases with v1 and v7 | identical counts, and v1 and v7 PPMs byte-identical in all 8 cases (phases 10, 10, 10, 7, 7, result, result, result) |
+
+### 3. Test strength
+
+Each mutant was compiled from a scratch copy of `presentation.cpp` with the
+candidate's `presentation_tests.cpp` against this build's libraries:
+
+| Mutation | `presentation_tests` |
+| --- | --- |
+| none | exit 0 |
+| windows ignore the tables (always the accepted colour) | **exit 134** |
+| only GO ignores the tables | **exit 134** |
+| only winner ignores the tables | **exit 134** |
+| v1 packs (no tables) get black windows | **exit 134** |
+| window uses colour 96 instead of colour 0 | **exit 134** |
+| F2 guard removed | exit 0 (not covered; residual R2-3) |
+
+### 4. ZOOM ZOO unchanged
+
+- No ZOOM ZOO function is in the diff.
+- The `zoomequiv` harness (the verbatim `1ece1b8` body against the rebuilt
+  library, real v7 tables, frames 0-200,000): **0 frames differ**, and a short
+  table is still rejected.
+- `python3 -m tools.unirally_lab.native.zoom_zoo_playable compare ...
+  zoom-zoo-playable-primary-v11.freeze.json --binary build/app-debug/src/core/zoom_zoo_runner
+  --pack local/classic-crawler-two-tracks-v7.pack --out artifacts/dragster-palette-review/round2/m4-16-primary`
+  (11:02:48-11:08Z): exit 0, passed.
+  - Rows `b4a34af722b26693...`, unchanged.
+  - 757 fresh restores, 1376-7600, 742 bytes.
+  - Finishes 6484/6488, loading 6725, visible 6833, stable 6839.
+  - Binary `955d8fcf...`, identical to round 1.
+
+### 5. Regressions and CI
+
+| Command | Result |
+| --- | --- |
+| `build` + `test --suite synthetic` for app-debug, lab-debug, lab-sanitize, app-sanitize (11:00:13-11:03:02Z) | 4x exit 0: **406/406 each, 22 ctest, 0 skipped** |
+| `native finish-check` review-release-3213 (v1 pack) | passed; output identical to round 1 |
+| `native opponent-first-check` m3-04, `native compare` primary / withheld-cadence-17 / withheld-release-2347 | passed (run for GO-pair states) |
+| F2 harness with `-fsanitize=address,undefined,unsigned-integer-overflow` on the candidate source | no diagnostic. `frame=10, updates=20` and `frame=0, updates=65535` now leave CGRAM untouched. Frame 1334 with 2 updates is untouched, and 1335 with 2 updates draws phase 0 black, both correct. |
+| `gh run view 35213305070` | workflow `synthetic`, push, head `2c9dea3`: **success**; `lab (macos-15)` 10:59:21-11:02:40Z, `lab (ubuntu-24.04)` 10:59:17-11:03:46Z |
+
+### Round-1 findings
+
+| Finding | Status |
+| --- | --- |
+| F1 | **Closed.** The cycle is visible where the original shows it: the window colour matches the original picture wherever the window shapes overlap, at every tested phase. Pixel-level acceptance is restored, and a render-level test fails when the windows ignore the tables. |
+| F2 | **Closed** (behaviour); no regression test (R2-3). |
+| F3 | **Partly closed.** The `.cpp` comment and R-0037's update-1 and update-75 wording are fixed. The header comment remains (R2-2). |
+| F4 | Recorded in the task record. |
+
+**Scoping judgement.** Keeping window timing and shape pose-gated, with one
+frozen table each, is acceptable for this task. The task's corrected outcome is
+the colour, and that is now recovered and verified. Window timing and shape
+predate this task (M3-02/M4-01). They need a different recovery: in the
+original, the GO shapes alternate each frame over roughly 1359-1603, and the
+finish shapes change over 3215-3453. Both R-0037 ("Not established") and the
+task handoff ("Not done") record this. I recommend the coordinator register it
+as a named follow-up next to the DRAGSTER 10:00-limit follow-up, so it is not
+lost.
+
+### Residuals (non-blocking, for closeout)
+
+- **R2-1 (docs, R-0037).** Two statements are false:
+  - "The original screen is black throughout loading".
+  - "at 3600 and 3677 the original screen is black during loading".
+
+  Measured: the original is black only on loading updates 1-108 (winner
+  3454-3561, loser 3559-3666). From update 109 it fades in the result screen:
+  3562 has 55,121 non-black pixels, and 3600 and 3677 show the result screen.
+  The 3600 and 3677 mismatches come from native still drawing the race until
+  update 225, not from a black original. Also, "this rule has no visible
+  effect" is no longer true: native v7 now draws a black winner window through
+  loading, which matches the original's black screen on updates 1-108.
+- **R2-2 (docs).** `src/core/presentation.hpp` still says "From loading update
+  1 the routine has stopped". The task record's F3 disposition says the code
+  comment is corrected, but only the `.cpp` comment was.
+- **R2-3 (test).** Nothing tests the new F2 guard: removing it keeps
+  `presentation_tests` green. One `require` with frame 10 and 20 loading
+  updates would pin it.
+
+### Verdict (round 2)
+
+**Approve** `2c9dea3`. The residuals above do not affect behaviour or accepted
+gates, and can be fixed in the integration commit.
+
+### Not assessed (round 2)
+
+- A GO window drawn by native play at a phase other than 10. No accepted
+  native series produces one, so synthetic relabelled states were used.
+- Live SDL play with pack v7.
+- Private Linux differential execution.
+
+### Closing (round 2)
+
+- Re-review ended 2026-09-17T11:09:23Z; about 10 minutes wall clock.
+- Commit on `review/dragster-palette-cycle`, pushed to `origin`; the remote ref
+  is verified in the reviewer's handoff.
