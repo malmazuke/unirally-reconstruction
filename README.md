@@ -22,12 +22,13 @@ handoffs kept in this repository.
   start through winner or loser results in the native desktop app.
 - **Desktop controls and display:** keyboard and gamepad input, integer-scaled
   presentation, and a 50 Hz PAL game update loop using SDL3.
-- **ZOOM ZOO:** complete race simulation from a captured starting state has
-  passed the recorded comparisons. Native initialization and playable desktop
-  support are under development and are not yet accepted.
+- **ZOOM ZOO:** playable in the native desktop app from native race
+  initialization through countdown, three laps, result and Race Again, with the
+  original's rider art, HUD values and start-line animation (M4-16; see project
+  state for its acceptance record and declared omissions).
 
-This is a prototype with limited game coverage. Audio, complete rider artwork,
-other playable tracks and modes, menus and progression, multiplayer, and public
+This is a prototype with limited game coverage. Audio, complete DRAGSTER rider
+artwork, other playable tracks and modes, menus and progression, multiplayer, and public
 release packages are not yet supported. Native play uses extracted content and
 does not execute the original CPU.
 

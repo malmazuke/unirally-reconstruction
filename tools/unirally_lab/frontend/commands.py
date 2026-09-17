@@ -41,6 +41,10 @@ def _default_executable(preset: str) -> Path:
 
 
 def _frontend_paths(args: argparse.Namespace) -> FrontendPaths:
+    if getattr(args, "track", "dragster") == "zoom-zoo":
+        if args.rules == str(ROOT / packmod.RULES_PATH):args.rules=str(ROOT / packmod.TWO_TRACK_RULES_PATH)
+        if args.pack == str(ROOT / "local" / "classic-crawler-dragster.pack"):
+            args.pack=str(ROOT / "local" / "classic-crawler-two-tracks.pack")
     executable = (Path(args.executable) if args.executable else
                   _default_executable(args.preset))
     rom = (None if args.rom is None or not args.rom.strip()
@@ -155,6 +159,7 @@ def cmd_run(args: argparse.Namespace) -> int:
         rep.add_check("frontend_executable", "missing", detail=f"{executable} not found; run `project.py build --preset {args.preset}`")
         return _finish(rep, paths.report, EXIT_MISSING_PREREQUISITE)
     command = [str(executable), "--content-pack", str(pack_path)]
+    if getattr(args,"track","dragster")=="zoom-zoo":command.extend(["--track","zoom-zoo"])
     if args.hidden:
         command.append("--hidden")
     if args.updates is not None:
@@ -183,6 +188,7 @@ def register(sub: argparse._SubParsersAction) -> None:
     run = actions.add_parser("run", help="validate/create the Classic pack and run the desktop app",
                              description="Validate an existing Classic pack, or exact-gate --rom and create it atomically before launch. Audio is intentionally not implemented in M3.")
     run.add_argument("--pack", default=str(ROOT / "local" / "classic-crawler-dragster.pack"))
+    run.add_argument("--track", choices=["dragster","zoom-zoo"], default="dragster")
     run.add_argument("--rom", help="supported PAL ROM for first launch only; omission means selection was cancelled")
     run.add_argument("--preset", default="app-debug")
     run.add_argument("--executable", help=argparse.SUPPRESS)

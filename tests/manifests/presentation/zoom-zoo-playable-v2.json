@@ -1,0 +1,74 @@
+{
+  "kind": "m4_16_visual_contract_v2",
+  "status": "original identities frozen; visual/live review pending",
+  "rom_sha256": "a1105819d48c04d680c8292bbfa9abbce05224f1bc231afd66af43b7e0a1fd4e",
+  "core_sha256": "e59bf88d4fc922c9fe3b5438e65ff3a6909d24e1628f0f87141c8de17699a91b",
+  "scenes": [
+    {
+      "scene": "initialization",
+      "frame": 1376,
+      "reference": "visual-original-a/b",
+      "png_sha256": "0ed7b26b91b35f00cac8a9909698a5aeec7f2b425d7f4726a7fb21d0427b3bf4"
+    },
+    {
+      "scene": "countdown",
+      "frame": 1450,
+      "reference": "visual-original-a/b",
+      "png_sha256": "73c9df2830de784b33c6b203bdb45b764215a2cbaf805aa9265e9d4b1a234c2c"
+    },
+    {
+      "scene": "start",
+      "frame": 1649,
+      "reference": "visual-original-a/b",
+      "png_sha256": "9a2940b1ced1ec966e06a0d36f06fd4266917b69230adcc3f5e4dd6f9ea650f9"
+    },
+    {
+      "scene": "reversal",
+      "frame": 1700,
+      "reference": "visual-original-a/b",
+      "png_sha256": "812b5038a6e928b601f5e01e168eb4cdcfa5895c32f0c219fa091953f6cb5179"
+    },
+    {
+      "scene": "steep_contact",
+      "frame": 2501,
+      "reference": "visual-original-a/b",
+      "png_sha256": "701b5c0e4c72ddfab63be16ddd6d1d8d6a6f0b6cd6e05563eb15d6c90f03c72a"
+    },
+    {
+      "scene": "lap_one",
+      "frame": 3208,
+      "reference": "visual-original-a/b",
+      "png_sha256": "f26c3e991c7b9f2a9da662b94867fa404f5b6e63f8ce96374b6fe6ad55f78212"
+    },
+    {
+      "scene": "lap_two",
+      "frame": 4840,
+      "reference": "visual-original-a/b",
+      "png_sha256": "ddcce72cb1a4b5c434134c72123bf542fe83ae99ab8390e37bba4cf13816c87a"
+    },
+    {
+      "scene": "finish",
+      "frame": 6484,
+      "reference": "visual-original-a/b",
+      "png_sha256": "d49cae5be4647dd66af27a6a8ac960a285d802f0d8e851418cf5baaa84394ff6"
+    },
+    {
+      "scene": "player_win",
+      "frame": 7000,
+      "reference": "visual-original-a/b",
+      "png_sha256": "b18b82881d6a32f671d94668dcc2a6f87b0bf2cc6593ccccc9d596cd3e7b5921"
+    },
+    {
+      "scene": "player_loss",
+      "frame": 7000,
+      "reference": "brake-a/b",
+      "png_sha256": "40a123cd0810215efdd2246b76e1ce0999ead4ab590ae71afe1f2e5610ea7260"
+    }
+  ],
+  "criteria": [
+    "Compare full scenes with original: track geometry, camera, rider positions, readable riding direction, lap/time and correct result values.",
+    "Original decoration, audio and original HUD/result/pause pixel fidelity are excluded; authored UI must remain readable.",
+    "Rider pose fallback may meet accepted DRAGSTER standard only with independent readable-position/anchor assessment.",
+    "Actual visible live full race, result, fresh restart and focus-loss evidence remains separate and required."
+  ]
+}

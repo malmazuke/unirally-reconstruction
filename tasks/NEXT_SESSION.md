@@ -1,81 +1,39 @@
-# Next session — resume incomplete M4-16
+# Next session
 
-**M4-16 is incomplete and unaccepted.** The open high-priority opponent reward
-finding is closed and independently approved, but the product acceptance items
-below are still open. Nothing is merged to `main` and no milestone tag is due.
+**M4-16 is reviewed and integrated on `main`.** Acceptance is conditional on the
+final-tip CI and remote verification in the ignored closeout
+`.worktrees/m4-16-playable-zoom-zoo/artifacts/m4-16-integration/closeout.json`.
+Confirm it first. If absent, find the integration commit with
+`git log --first-parent main -- tasks/M4-16.md` and its CI with
+`gh run list --workflow synthetic.yml --commit <commit>`. M4 is not accepted, no
+milestone tag is due, and M4-17 must not be dispatched automatically.
 
-## Resume location and identity
+## Provider and review
 
-Use `.worktrees/m4-16-playable-zoom-zoo`, branch
-`codex/m4-16-playable-zoom-zoo`, not main. Main retains accepted M4-15 gameplay
-and a documentation pointer at `80cd742`. Inspect actual `git status`/`git log`
-before resuming. Read [M4-16](M4-16.md), [review](M4-16-review.md),
-[STATE](../docs/STATE.md), AGENTS, AGENT_WORKFLOW, D-0004/D-0006 and
-[R-0035](../docs/research/R-0035-zoom-zoo-playable-recovery.md).
+Claude Opus 5 is the primary under [D-0004](../docs/decisions/D-0004-model-and-usage-budget.md);
+independent review is a fresh Opus 5 subagent in an isolated checkout at the
+exact candidate. There is no percentage usage telemetry under this provider;
+record UTC wall clock. No reset, purchase or provider change is authorized.
 
-Primary is now **Claude Opus 5** by explicit user instruction after GPT Astra
-and Fable 5.1 credits were exhausted; D-0004 records the authorized move and its
-two consequences. The independent reviewer is a fresh Claude Opus 5 subagent in
-`.worktrees/m4-16-review`, which holds four review commits ending at `0945ef2`.
-No reset, purchase, paid fallback or further provider change is authorized.
-Weekly percentage telemetry does not exist under this provider; record UTC wall
-clock instead of inventing a figure.
+## Ready follow-ups
 
-## What is done and approved
-
-Experimental state is **URZZ000B / 742 bytes**; static pack is
-**v5 / 50 entries**, and fresh extraction from the user's ROM reproduces it
-byte for byte. The generic opponent reward consumer `$81C219-C2C9` is recovered
-and independently approved across three review rounds. Evidence and the exact
-commands are in [M4-16](M4-16.md); do not re-derive them.
-
-Passing on the current tip: 21/21 focused tests; six complete cases at 6225
-states each covering both outcomes; the primary gate at 6225 observations, 757
-fresh-process restores and a full fresh restart; seven reward probes plus the
-150 control; 405 synthetic checks on both app presets with no skips; 20
-historical M4-12-M4-14 and DRAGSTER commands on both lab presets; bootstrap,
-pack-only, wrong-ROM, truncated and corrupt-pack gates; and denied-execution
-autonomy with controls proving the denial was in force.
-
-`local/native/dragster-idle` was missing here and was restored from the main
-checkout; without it every historical command exits 2, missing prerequisite.
-
-## Remaining work, in order
-
-1. **Live controls — blocked on the user, not on code.** A visible window driven
-   by real key events through a complete race, result and restart is the main
-   acceptance gap. Synthesized events are dropped: macOS discards them from a
-   process without Accessibility permission and reports no error, so the
-   PID-restricted `artifacts/m4-16/live-key` helper returns 0 while the app
-   records `mapped key down/up 0/0` over 900 updates; activating the window via
-   System Events hangs on the Automation consent prompt. Either the user grants
-   Accessibility to the driving process, or the user exercises the app directly.
-   Do not retry this blindly and do not substitute a fixed mask, a replay or a
-   terminal runner. The app itself launches, validates, renders and runs 50 Hz
-   native updates correctly.
-2. **M4-15 race matrix and the ZOOM ZOO trial differentials.** Not run: their
-   original reference pairs are absent from this checkout. Re-capturing the
-   M4-15 primary pair is roughly 1.3 GB against about 24 GB free. The legacy
-   empty-bank path is provably unchanged, which is a reason to expect a pass,
-   not evidence of one.
-3. **Visual acceptance.** Original scene identities are frozen in
-   `tests/manifests/presentation/zoom-zoo-playable-v2.json`; private originals
-   are `visual-original-a/b`, comparison `visual-7c3e3b6/comparison.png`. The
-   recorded limitations are a missing direction arrow and coaching cue, rider
-   anchors off by roughly 8-14 pixels, and low-salience result graph points.
-   Independent readability review is still due.
-4. **Result-loading read classification** against the durable
-   [persistent-input ledger](../docs/research/M4-16-persistent-input-ledger.md).
-   Zero unresolved stores is not zero unresolved reads.
-5. **Final integration**: reviewed exact merge, hosted macOS/Linux CI on the
-   exact tip, and synchronized private main. Hosted Linux is synthetic coverage,
-   not private Linux differential execution. No M4-17 and no milestone tag.
+1. **DRAGSTER-PALETTE-CYCLE, in progress.** Branch
+   `task/dragster-palette-cycle` in `.worktrees/dragster-palette-cycle` holds the
+   verified finding (its `tasks/DRAGSTER-PALETTE-CYCLE.md` and R-0037): DRAGSTER's race runs the same `$82:D382-D496`
+   palette cycle, frame n drawing index `(n-1334)&15`, and its two fixed palette
+   arrays are exactly phases 10 and 7. Next: merge `main`, add the tables to an
+   additive DRAGSTER content version, draw the cycle, and show the accepted
+   presentation-check counts do not regress. Then independent review.
+2. **DRAGSTER 10:00 race limit, not started.** ZOOM ZOO's `$81:C73E-C75B` finishes
+   both riders at 9:59.9; native DRAGSTER ignores the limit. Needs original
+   DRAGSTER evidence before any change.
 
 ## Launch recipe
 
 ```sh
-python3 tools/project.py frontend run --track zoom-zoo --pack local/classic-crawler-two-tracks-v5.pack --preset app-debug --report artifacts/m4-16/FRESH-live.json
+python3 tools/project.py frontend run --track zoom-zoo --pack local/classic-crawler-two-tracks-v7.pack --preset app-debug --report artifacts/FRESH-live.json
 ```
 
 Add `--rom` with the private locator's ROM and a fresh pack path for a first
-extraction. This remains a prototype.
+extraction. v5 and v6 packs are rejected. On macOS, disconnect a gamepad by
+turning Bluetooth off; the Xbox button opens the Games overlay.

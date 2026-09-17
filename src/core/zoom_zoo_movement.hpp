@@ -31,7 +31,36 @@ struct ZoomZooRaceState {
     std::array<std::uint16_t,2> total_times{};
     std::uint16_t provisional_1225{}, provisional_1227{}, finish_delay{};
 };
+struct ZoomZooResult {
+    std::uint16_t graph_minimum{}, graph_maximum{};
+    std::array<std::uint16_t,2> published_totals{};
+    bool operator==(const ZoomZooResult&) const = default;
+};
+struct ZoomZooPlayerAnnouncements {
+    RewardQueueState queue;
+    std::uint16_t hints_active{}, hint_updates{}, hint_group{}, empty_display{};
+};
+struct ZoomZooRoll {
+    // $829398-9714. Word step is signed; all other values retain original bits.
+    std::uint16_t input_latched{}, prior_orientation{}, prior_reflection{}, pose_base{};
+    std::uint16_t step{}, held_updates{}, bounce_charge{}, completed_rolls{};
+    std::uint16_t held_rotations{}, bounce_active{}, support_count_mirror{}, prior_step{};
+};
+struct ZoomZooPause {
+    std::uint16_t selection{}, released{}; // $0EF3: 0/racing, 1/resume, -1/authored restart (original Retire); $0EF5.
+    std::uint32_t suspended_updates{}, suspended_countdown_updates{}; // Semantic update clocks.
+};
 struct ZoomZooState {
+    ZoomZooPause pause;
+    std::array<ZoomZooRoll,2> rolls{};
+    std::array<std::array<std::uint8_t,25>,2> learned_weights{}; // Events2–26; event1 remains in each queue.
+    bool native_initialization{};
+    ZoomZooResult result;
+    ZoomZooPlayerAnnouncements player_announcements;
+    std::array<std::uint16_t,2> charge_announced{}; // $0D53/$0D55, audio latch only.
+    std::uint16_t fade_level{};
+    std::uint16_t result_updates{};
+    std::array<std::uint16_t,2> start_boost{};
     bool complete_race{};
     ZoomZooRaceState race;
     bool sustained{};
@@ -47,14 +76,24 @@ struct ZoomZooContent {
     std::span<const std::uint8_t> reflection_pose_table;
     std::span<const std::uint8_t> landing_matrices;
     std::span<const std::uint8_t> finish_poses;
+    std::span<const std::uint8_t> roll_poses;
+    std::span<const std::uint8_t> roll_directions;
+    std::span<const std::uint8_t> reward_weights;
+    std::span<const std::uint8_t> trick_combinations;
 };
 // $82:9715–979D: count active updates opposing the track direction, with
 // original wrapped word comparisons at velocities -16 and +16 (1/32 units).
 std::uint16_t next_wrong_direction_counter(std::uint16_t previous,
-    std::uint16_t velocity_x,std::uint16_t marker,unsigned horizontal);
+    std::uint16_t velocity_x,std::uint16_t marker,unsigned horizontal,bool native_rewards=false);
 std::vector<std::uint8_t> serialize_zoom_zoo(const ZoomZooState& state);
 ZoomZooState deserialize_zoom_zoo(std::span<const std::uint8_t> bytes);
-// Experimental M4-12 continuation; no production frontend dispatch uses this.
+// $82:D7C6-DBD6, authenticated track header and one-player three-lap scenario.
+ZoomZooState classic_crawler_zoom_zoo_start(const ZoomZooContent& content);
+// Race Again selects the same clean scenario after the stable result.
+void restart_zoom_zoo(ZoomZooState& state,const ZoomZooContent& content);
+// Validate content-dependent restore invariants before emitting or advancing a state.
+void validate_zoom_zoo_content_state(const ZoomZooState& state,const ZoomZooContent& content);
+// Historical continuation and native scenario share this update path.
 void update_zoom_zoo(ZoomZooState& state,const ControllerButtons& buttons,
                      const ZoomZooContent& content);
 } // namespace unirally

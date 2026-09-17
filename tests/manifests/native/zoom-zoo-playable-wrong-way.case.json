@@ -1,0 +1,19 @@
+{
+  "id": "m4-16-wrong-way",
+  "changes": [
+    {
+      "from": 6000,
+      "to": 6550,
+      "buttons": [
+        "right"
+      ]
+    },
+    {
+      "from": 6551,
+      "to": 9500,
+      "buttons": [
+        "left"
+      ]
+    }
+  ]
+}

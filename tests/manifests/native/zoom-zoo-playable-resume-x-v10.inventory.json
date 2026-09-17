@@ -1,0 +1,19 @@
+{
+  "kind": "m4_16_incomplete_original_experiment",
+  "original_sha256": "25c45530d3728c56fbbeaa671eccf905f5d8d15745850675c8c92f3be2722a42",
+  "rows_sha256": "83c3d750d9bdf1ec9250b098d971569d267b95b3e6e6a98a0e710b17f95f3891",
+  "frames": [
+    1376,
+    7600
+  ],
+  "state_bytes": 730,
+  "events": {
+    "complete": false,
+    "finish_frames": [
+      null,
+      6488
+    ],
+    "scope": "Internal recovery experiment only; does not satisfy playable acceptance"
+  },
+  "acceptance": false
+}

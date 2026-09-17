@@ -2,6 +2,44 @@
 
 Status: adopted, 12 September 2026. Reassess from measured accepted work.
 
+## M4-16 continuation override — 14 September 2026
+
+After the incomplete recovery checkpoint, the user explicitly instructed:
+“You can ignore usage boundaries. Continue”. For this active M4-16 execution,
+ignore the percentage stop/reserve boundaries and continue toward acceptance.
+Retain usage telemetry for evidence, independent review and task/provider scope.
+This overrides the M4-16 percentage limits below; it does not authorize credit
+redemption, purchases, paid fallback or a provider change. Actual tool/account
+unavailability remains a resource limitation, not an invented percentage cutoff.
+
+The user subsequently requested committing a handover because usage was nearly
+exhausted (latest sample94%). Stop this run after recovery/synchronization; the
+prior continuation override does not imply automatic continuation past that
+new request. Preserve the no-spending/reset/provider-change boundary.
+
+## M4-16 provider move to Claude Opus 5 — 14 September 2026
+
+The user reported that GPT Astra and Fable 5.1 credits are exhausted and
+instructed resuming the incomplete M4-16 execution on Claude Opus 5. This
+document's rule is that a task and its children stay with the starting provider
+*unless the user moves it*; the user has moved it, so Claude Opus 5 is the
+authorized primary for the remainder of M4-16. This authorizes no reset, credit
+purchase or paid fallback, and it does not reopen any other task's provider.
+
+Two consequences are recorded rather than silently absorbed:
+
+- The automatic independent reviewer required by D-0006 becomes a fresh Claude
+  Opus 5 subagent in an isolated checkout, because Sol/medium is not available
+  under the new provider. Isolated checkout, no inherited conversation, explicit
+  model/effort and exact-candidate review are unchanged; review records must
+  name the actual reviewing model.
+- Shared weekly percentage telemetry does not carry across providers and this
+  harness exposes no equivalent tool. Prior samples stay as OpenAI-account
+  history. Continue recording UTC wall clock and session context budget instead
+  of inventing a percentage. The M4-16 continuation override already superseded
+  the percentage stop and reserve boundaries, so nothing depends on the missing
+  figure; a genuine resource or access limit is still reported as one.
+
 ## M4-16 playable-track extension
 
 The user authorized preparation of [M4-16](../../tasks/M4-16.md) after M4-15.

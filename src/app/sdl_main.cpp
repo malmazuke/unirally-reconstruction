@@ -1,6 +1,7 @@
 #include "content_pack.hpp"
 #include "frontend.hpp"
 #include "movement.hpp"
+#include "zoom_zoo_pack.hpp"
 #include "presentation.hpp"
 
 #include <SDL3/SDL.h>
@@ -85,36 +86,44 @@ class Gamepads {
 public:
   explicit Gamepads(unirally::app::InputState &input) : input_(input) {}
 
-  void added(SDL_JoystickID id) {
+  bool added(SDL_JoystickID id) {
     if (port_for(id))
-      return;
+      return false;
     const auto empty = std::find_if(slots_.begin(), slots_.end(),
                                     [](const auto &slot) { return !slot; });
     if (empty == slots_.end())
-      return;
+      return false;
     Gamepad opened(SDL_OpenGamepad(id));
     if (!opened)
       throw sdl_error("cannot open gamepad");
     const auto port = static_cast<std::size_t>(empty - slots_.begin());
     *empty = OpenGamepad{id, std::move(opened)};
-    std::cout << "Gamepad connected to controller port " << port << '\n';
+    std::cout << "Gamepad connected to controller port " << port << ": "
+              << SDL_GetGamepadName(empty->value().handle.get()) << '\n';
+    return true;
   }
 
-  void removed(SDL_JoystickID id) {
+  // Returns whether the removal cleared a held button.
+  bool removed(SDL_JoystickID id) {
     const auto port = port_for(id);
     if (!port)
-      return;
+      return false;
+    const bool held = input_.gamepad_mask(*port) != 0;
     input_.disconnect(*port);
     slots_[*port].reset();
     std::cout << "Gamepad removed from controller port " << unsigned(*port)
               << '\n';
+    return held;
   }
 
-  void button(SDL_JoystickID id, Uint8 button, bool pressed) {
+  // The port a mapped button reached, if any.
+  std::optional<std::uint8_t> button(SDL_JoystickID id, Uint8 button, bool pressed) {
     const auto port = port_for(id);
     const auto mapped = gamepad_button(button);
-    if (port && mapped)
-      input_.gamepad(*port, *mapped, pressed);
+    if (!port || !mapped)
+      return std::nullopt;
+    input_.gamepad(*port, *mapped, pressed);
+    return port;
   }
 
 private:
@@ -133,6 +142,7 @@ struct Options {
   std::uint32_t maximum_updates{};
   std::optional<std::uint16_t> fixed_controller_mask;
   bool hidden{};
+  bool zoom_zoo{};
 };
 
 std::uint32_t parse_updates(std::string_view value) {
@@ -157,10 +167,11 @@ std::uint16_t parse_controller_mask(std::string_view value) {
 
 void print_help() {
   std::cout
-      << "Usage: unirally --content-pack PATH [--updates N] [--hidden]\n"
+      << "Usage: unirally --content-pack PATH [--track dragster|zoom-zoo] [--updates N] [--hidden]\n"
       << "Runs the Classic CRAWLER / DRAGSTER native slice at PAL 50 Hz.\n"
       << "Keyboard: arrows, Z=B, X=Y, A=A, S=X, Q=L, W=R, Enter=Start.\n"
-      << "Two standard gamepads are tracked; this slice consumes port 0 only.\n"
+      << "Gamepad: D-pad, South=B, West=Y, East=A, North=X, shoulders=L/R, Start, Back=Select;\n"
+      << "the analog stick is not mapped. Two gamepads are tracked; this slice consumes port 0 only.\n"
       << "Audio is intentionally not implemented in M3.\n";
 }
 
@@ -179,7 +190,10 @@ std::optional<Options> options(int argc, char **argv) {
     if (index + 1 >= argc)
       throw std::invalid_argument(std::string(option) + " requires a value");
     const std::string_view value(argv[++index]);
-    if (option == "--content-pack")
+    if (option == "--track") {
+      if(value!="dragster" && value!="zoom-zoo")throw std::invalid_argument("unknown track");
+      result.zoom_zoo=value=="zoom-zoo";
+    } else if (option == "--content-pack")
       result.pack = value;
     else if (option == "--updates")
       result.maximum_updates = parse_updates(value);
@@ -263,14 +277,22 @@ int main(int argc, char **argv) try {
   RuntimeContent content(parsed->pack); // validate before SDL or gameplay
   auto movement_content = content.movement();
   auto presentation_content = content.presentation();
-  auto state = unirally::classic_crawler_dragster_start();
+  auto dragster_state=unirally::classic_crawler_dragster_start();
+  const auto zoom_content=parsed->zoom_zoo?unirally::zoom_zoo_content(content.pack):unirally::ZoomZooContent{};
+  auto zoom_state=parsed->zoom_zoo?unirally::classic_crawler_zoom_zoo_start(zoom_content):unirally::ZoomZooState{};
+  auto& state=parsed->zoom_zoo?zoom_state.movement:dragster_state;
+  auto zoom_hud_state=zoom_state; // State before the latest update, for the HUD.
+  unsigned restarts=0;
+  // A restart from the stable result proves a completed race; one from the pause menu does not.
+  unsigned results_reached=0,result_restarts=0,pause_restarts=0;
+
 
   if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMEPAD))
     throw sdl_error("SDL initialization failed");
   SdlQuitter quit;
   const auto flags = SDL_WINDOW_RESIZABLE |
                      (parsed->hidden ? SDL_WINDOW_HIDDEN : 0U);
-  Window window(SDL_CreateWindow("Unirally — Classic CRAWLER / DRAGSTER",
+  Window window(SDL_CreateWindow(parsed->zoom_zoo?"Unirally — Classic CRAWLER / ZOOM ZOO":"Unirally — Classic CRAWLER / DRAGSTER",
                                  768, 672, flags));
   if (!window)
     throw sdl_error("window creation failed");
@@ -303,6 +325,15 @@ int main(int argc, char **argv) try {
       longest_identical_fallback_race_run{};
   std::optional<unirally::RgbFrame> previous_frame;
   std::uint32_t mapped_key_down_events{}, mapped_key_up_events{};
+  // Opponent trick telemetry. The multi-axis branch is what aborted before it
+  // was recovered, and it is invisible in the other counters, so a live run
+  // can otherwise only show the absence of a crash rather than the presence of
+  // the repaired path. seen_selectors is a bitmask over selector values 0-7.
+  std::uint32_t opponent_trick_updates{}, opponent_multi_axis_updates{}, seen_selectors{};
+  // Gamepad witnesses, separate from the keyboard so a live run can show which drove it.
+  std::uint32_t gamepad_connections{}, gamepad_button_down_events{}, gamepad_button_up_events{},
+      gamepad_buttons_pressed{}, gamepad_nonzero_updates{}, gamepad_only_updates{},
+      gamepad_pause_openings{}, gamepad_only_restarts{}, gamepad_removals{}, gamepad_removal_active_clears{};
   std::uint32_t nonzero_input_updates{}, simultaneous_input_updates{};
   std::uint32_t neutral_updates_after_input{}, focus_loss_events{};
   std::uint32_t focus_loss_nonzero_clears{};
@@ -330,6 +361,12 @@ int main(int argc, char **argv) try {
       case SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED: redraw = true; break;
       case SDL_EVENT_KEY_DOWN:
       case SDL_EVENT_KEY_UP:
+        if(parsed->zoom_zoo && event.type==SDL_EVENT_KEY_DOWN && !event.key.repeat &&
+           event.key.scancode==SDL_SCANCODE_RETURN && zoom_state.result_updates==115) {
+          unirally::restart_zoom_zoo(zoom_state,zoom_content);zoom_hud_state=zoom_state;
+          input.clear();live_presentation=unirally::app::LivePresentation{};++restarts;++result_restarts;redraw=true;
+          break;
+        }
         if (const auto key = keyboard_key(event.key.scancode)) {
           input.keyboard(*key, event.type == SDL_EVENT_KEY_DOWN);
           if (event.type == SDL_EVENT_KEY_DOWN)
@@ -338,13 +375,29 @@ int main(int argc, char **argv) try {
             ++mapped_key_up_events;
         }
         break;
-      case SDL_EVENT_GAMEPAD_ADDED: gamepads.added(event.gdevice.which); break;
-      case SDL_EVENT_GAMEPAD_REMOVED: gamepads.removed(event.gdevice.which); break;
-      case SDL_EVENT_GAMEPAD_BUTTON_DOWN:
-      case SDL_EVENT_GAMEPAD_BUTTON_UP:
-        gamepads.button(event.gbutton.which, event.gbutton.button,
-                        event.type == SDL_EVENT_GAMEPAD_BUTTON_DOWN);
+      case SDL_EVENT_GAMEPAD_ADDED:
+        if (gamepads.added(event.gdevice.which))
+          ++gamepad_connections;
         break;
+      case SDL_EVENT_GAMEPAD_REMOVED:
+        ++gamepad_removals;
+        if (gamepads.removed(event.gdevice.which))
+          ++gamepad_removal_active_clears;
+        break;
+      case SDL_EVENT_GAMEPAD_BUTTON_DOWN:
+      case SDL_EVENT_GAMEPAD_BUTTON_UP: {
+        const bool down = event.type == SDL_EVENT_GAMEPAD_BUTTON_DOWN;
+        if (gamepads.button(event.gbutton.which, event.gbutton.button, down) == std::uint8_t{0}) {
+          if (down) {
+            ++gamepad_button_down_events;
+            if (event.gbutton.button < 32)
+              gamepad_buttons_pressed |= 1U << event.gbutton.button;
+          } else {
+            ++gamepad_button_up_events;
+          }
+        }
+        break;
+      }
       default: break;
       }
     }
@@ -353,6 +406,12 @@ int main(int argc, char **argv) try {
     const auto due = scheduler.updates_due(now);
     for (std::uint32_t index = 0; index < due; ++index) {
       auto ports = input.snapshot();
+      const auto gamepad_mask = input.gamepad_mask(0);
+      const bool gamepad_only = gamepad_mask != 0 && input.keyboard_mask() == 0;
+      if (gamepad_mask != 0)
+        ++gamepad_nonzero_updates;
+      if (gamepad_only)
+        ++gamepad_only_updates;
       if (parsed->fixed_controller_mask.has_value())
         ports[0] = *parsed->fixed_controller_mask;
       last_ports = ports;
@@ -364,7 +423,40 @@ int main(int argc, char **argv) try {
       } else if (observed_nonzero_input) {
         ++neutral_updates_after_input;
       }
-      unirally::update_movement(state,
+      if(parsed->zoom_zoo) {
+        const auto previous_simulation_frame=zoom_state.movement.frame;
+        const bool was_paused=zoom_state.pause.selection!=0;
+        const bool at_stable_result=zoom_state.result_updates==115;
+        zoom_hud_state=zoom_state;
+        const auto buttons=unirally::app::controller_buttons(ports[0]);
+        if(zoom_state.result_updates==115 && buttons.start)
+          unirally::restart_zoom_zoo(zoom_state,zoom_content);
+        else unirally::update_zoom_zoo(zoom_state,buttons,zoom_content);
+        // Selector 0 is a real trick (the flat path's negative-velocity
+        // rotation), so the impulse is the activity signal; the selector alone
+        // would silently drop it.
+        if(zoom_state.movement.opponent_ai.impulse_countdown) {
+          const auto selector=zoom_state.movement.opponent_ai.trick_selector;
+          ++opponent_trick_updates;
+          if(selector&6U)++opponent_multi_axis_updates;
+          if(selector<8U)seen_selectors|=1U<<selector;
+        }
+        if(!was_paused && zoom_state.pause.selection &&
+           (gamepad_mask&unirally::app::button_mask(unirally::app::LogicalButton::Start)))++gamepad_pause_openings;
+        if(!at_stable_result && zoom_state.result_updates==115)++results_reached;
+        if(zoom_state.movement.frame<previous_simulation_frame) {
+          if(gamepad_only)++gamepad_only_restarts;
+          if(at_stable_result)++result_restarts;
+          else ++pause_restarts;
+          // Both keyboard and gamepad navigation replace all simulation/art
+          // state. A physically held Start cannot immediately pause the new race.
+          input.clear();live_presentation=unirally::app::LivePresentation{};++restarts;
+          zoom_hud_state=zoom_state;
+        } else {
+          live_presentation.observe_zoom_update(zoom_hud_state,zoom_state,content.pack);
+        }
+      }
+      else unirally::update_movement(state,
                                 unirally::app::controller_buttons(ports[0]),
                                 movement_content);
       ++updates;
@@ -377,11 +469,11 @@ int main(int argc, char **argv) try {
       }
     }
     if (redraw) {
-      const auto canonical_before = unirally::serialize_movement_state(state);
+      const auto canonical_before = parsed->zoom_zoo?unirally::serialize_zoom_zoo(zoom_state):unirally::serialize_movement_state(state);
       const auto live_frame =
-          live_presentation.render(state, position, presentation_content);
+          parsed->zoom_zoo?live_presentation.render_zoom(zoom_state,zoom_hud_state,content.pack):live_presentation.render(state, position, presentation_content);
       if (live_frame.used_pose_fallback && !reported_held_frame) {
-        std::cout << "Presentation note: unsupported intermediate rider poses use the last recovered rider art while the scene stays current.\n";
+        std::cout << (parsed->zoom_zoo?"Presentation note: a rider pose outside the packed tables holds that rider's last drawn pose.\n":"Presentation note: unsupported intermediate rider poses use the last recovered rider art while the scene stays current.\n");
         reported_held_frame = true;
       }
       ++rendered_frames;
@@ -406,7 +498,7 @@ int main(int argc, char **argv) try {
       } else {
         current_identical_fallback_race_run = 0;
       }
-      if (unirally::serialize_movement_state(state) != canonical_before)
+      if ((parsed->zoom_zoo?unirally::serialize_zoom_zoo(zoom_state):unirally::serialize_movement_state(state)) != canonical_before)
         throw std::logic_error("presentation mutated canonical gameplay state");
       draw(renderer.get(), texture.get(), live_frame.frame);
       previous_frame = live_frame.frame;
@@ -433,9 +525,34 @@ int main(int argc, char **argv) try {
             << "Final native state: updates " << updates << "; frame "
             << state.frame << "; controller-0 mask " << last_ports[0]
             << "; player x " << state.riders[0].motion.x << "; velocity x "
-            << state.riders[0].motion.velocity_x << "; race phase "
-            << static_cast<unsigned>(state.finish.phase) << "; outcome "
-            << static_cast<unsigned>(state.finish.outcome) << '\n';
+            << state.riders[0].motion.velocity_x << '\n';
+  if(!parsed->zoom_zoo)std::cout<<"DRAGSTER race phase "<<static_cast<unsigned>(state.finish.phase)
+      <<"; outcome "<<static_cast<unsigned>(state.finish.outcome)<<'\n';
+  if(parsed->zoom_zoo)std::cout<<"ZOOM ZOO result updates "<<zoom_state.result_updates<<"; restarts "<<restarts
+      <<"; totals "<<zoom_state.race.total_times[0]<<'/'<<zoom_state.race.total_times[1]
+      <<"; stable results reached "<<results_reached<<"; restarts from result/pause "
+      <<result_restarts<<'/'<<pause_restarts<<'\n';
+  if(parsed->zoom_zoo) {
+    std::cout<<"Opponent tricks: updates "<<opponent_trick_updates<<"; multi-axis updates "
+             <<opponent_multi_axis_updates<<"; selectors seen";
+    if(!seen_selectors)std::cout<<" none";
+    else for(unsigned s=0;s<8;++s)if(seen_selectors&(1U<<s))std::cout<<' '<<s;
+    std::cout<<'\n';
+  }
+  std::cout << "Gamepad input: connections " << gamepad_connections
+            << "; port-0 button down/up " << gamepad_button_down_events << '/'
+            << gamepad_button_up_events << "; buttons pressed";
+  if (!gamepad_buttons_pressed)
+    std::cout << " none";
+  for (unsigned button = 0; button < 32; ++button)
+    if (gamepad_buttons_pressed & (1U << button))
+      std::cout << ' ' << SDL_GetGamepadStringForButton(static_cast<SDL_GamepadButton>(button));
+  std::cout << "; nonzero updates " << gamepad_nonzero_updates
+            << "; gamepad-only nonzero updates " << gamepad_only_updates
+            << "; pause openings " << gamepad_pause_openings
+            << "; gamepad-only restarts " << gamepad_only_restarts
+            << "; removals/active clears " << gamepad_removals << '/'
+            << gamepad_removal_active_clears << '\n';
   return 0;
 } catch (const std::exception &error) {
   std::cerr << "Unirally launch failed: " << error.what() << '\n';

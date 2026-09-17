@@ -1,5 +1,6 @@
 #include "zoom_zoo_movement.hpp"
 #include "content_pack.hpp"
+#include <memory>
 
 #include <filesystem>
 #include <fstream>
@@ -37,34 +38,57 @@ void emit(const unirally::ZoomZooState& state) {
 int main(int argc,char** argv) try {
     if(argc!=7)throw std::invalid_argument("usage: zoom_zoo_runner --seed FILE --content-dir DIR --inputs FILE");
     std::filesystem::path seed,content,inputs;
+    bool native_start=false,restart=false;
+    std::filesystem::path pack_path;
     for(int i=1;i<argc;i+=2) {
         const std::string option=argv[i];
         if(option=="--seed")seed=argv[i+1];
+        else if(option=="--restart-from") {seed=argv[i+1];restart=true;}
+        else if(option=="--start") {
+            if(std::string(argv[i+1])!="classic.crawler.zoom-zoo")throw std::invalid_argument("unknown scenario");
+            native_start=true;
+        }
+        else if(option=="--content-pack")pack_path=argv[i+1];
         else if(option=="--content-dir")content=argv[i+1];
         else if(option=="--inputs")inputs=argv[i+1];
         else throw std::invalid_argument("unknown ZOOM ZOO runner option");
     }
-    if(seed.empty()||content.empty()||inputs.empty())throw std::invalid_argument("missing ZOOM ZOO runner option");
-    auto state=unirally::deserialize_zoom_zoo(read_bytes(seed));
-    const auto track=read_bytes(content/"track-data.bin");
-    const auto poses=read_bytes(content/"collision-poses.bin");
-    const auto templates=read_bytes(content/"collision-templates.bin");
-    const auto columns=read_bytes(content/"tile-tables.bin");
-    const auto flags=read_bytes(content/"tile-flags.bin");
-    const auto progress=read_bytes(content/"progress-transitions.bin");
-    const auto slopes=read_bytes(content/"pose-slopes.bin");
-    const auto displacement=read_bytes(content/"displacement-table.bin");
-    const auto idle=read_bytes(content/"idle-pose-table.bin");
-    const auto reward=read_bytes(content/(state.complete_race?"race-finish-reward-values.bin":state.sustained?"sustained-reward-values.bin":"rotation-reward.bin"));
-    const auto reward_class=read_bytes(content/(state.complete_race?"race-finish-reward-classes.bin":state.sustained?"sustained-reward-classes.bin":"rotation-class.bin"));
-    const auto masks=read_bytes(content/"speed-masks.bin");
-    const auto decrements=read_bytes(content/"speed-decrements.bin");
-    const auto coefficients=read_bytes(content/(state.sustained?"sustained-slope-coefficients.bin":"reflected-vertical-slope-coefficients.bin"));
-    const auto reflection=read_bytes(content/"reflection-pose-table.bin");
+    if((seed.empty()&&!native_start)||(content.empty()&&pack_path.empty())||inputs.empty())throw std::invalid_argument("missing ZOOM ZOO runner option");
+    auto state=native_start?unirally::ZoomZooState{}:unirally::deserialize_zoom_zoo(read_bytes(seed));
+    if(native_start)state.complete_race=state.sustained=true;
+    const auto pack=pack_path.empty()?nullptr:std::make_unique<unirally::ClassicContentPack>(pack_path);
+    const auto load=[&](const char* filename) {
+        if(!pack)return read_bytes(content/filename);
+        auto name=std::string(filename);name.resize(name.size()-4);
+        const auto bytes=pack->entry("zoom."+name);
+        return std::vector<std::uint8_t>(bytes.begin(),bytes.end());
+    };
+    const auto track=load("track-data.bin");
+    const auto poses=load("collision-poses.bin");
+    const auto templates=load("collision-templates.bin");
+    const auto columns=load("tile-tables.bin");
+    const auto flags=load("tile-flags.bin");
+    const auto progress=load("progress-transitions.bin");
+    const auto slopes=load("pose-slopes.bin");
+    const auto displacement=load("displacement-table.bin");
+    const auto idle=load("idle-pose-table.bin");
+    const auto reward=load((state.complete_race?"race-finish-reward-values.bin":state.sustained?"sustained-reward-values.bin":"rotation-reward.bin"));
+    const auto reward_class=load((state.complete_race?"race-finish-reward-classes.bin":state.sustained?"sustained-reward-classes.bin":"rotation-class.bin"));
+    const auto masks=load("speed-masks.bin");
+    const auto decrements=load("speed-decrements.bin");
+    const auto coefficients=load((state.sustained?"sustained-slope-coefficients.bin":"reflected-vertical-slope-coefficients.bin"));
+    const auto reflection=load("reflection-pose-table.bin");
     const unirally::MovementContent movement{{track,poses,templates},{columns,flags},progress,slopes,displacement,idle,reward,reward_class,{masks,decrements}};
-    const auto landing=read_bytes(content/"landing-response-matrices.bin");
-    const auto finish_poses=state.complete_race?read_bytes(content/"race-finish-poses.bin"):std::vector<std::uint8_t>{};
-    const unirally::ZoomZooContent data{movement,coefficients,reflection,landing,finish_poses};
+    const auto landing=load("landing-response-matrices.bin");
+    const auto finish_poses=state.complete_race?load("race-finish-poses.bin"):std::vector<std::uint8_t>{};
+    const auto roll_poses=pack?load("roll-pose-table.bin"):std::vector<std::uint8_t>{};
+    const auto roll_directions=pack?load("roll-direction-table.bin"):std::vector<std::uint8_t>{};
+    const auto weights=pack?load("roll-reward-weights.bin"):std::vector<std::uint8_t>{};
+    const auto combinations=pack?load("trick-combinations.bin"):std::vector<std::uint8_t>{};
+    const unirally::ZoomZooContent data{movement,coefficients,reflection,landing,finish_poses,roll_poses,roll_directions,weights,combinations};
+    if(native_start)state=unirally::classic_crawler_zoom_zoo_start(data);
+    if(restart)unirally::restart_zoom_zoo(state,data);
+    unirally::validate_zoom_zoo_content_state(state,data);
     std::ifstream stream(inputs);
     if(!stream)throw std::runtime_error("cannot open ZOOM ZOO controller stream");
     emit(state);

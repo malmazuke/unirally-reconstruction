@@ -1,0 +1,18 @@
+{
+  "rom_sha256": "a1105819d48c04d680c8292bbfa9abbce05224f1bc231afd66af43b7e0a1fd4e",
+  "source": "Initializer $82DB87-DB94 copies ROM $82D7A4, 26 bytes to each learned-weight array; player consumption $81C11E-C13E; held roll $82946D/$8294FC.",
+  "entry": {
+    "id": "zoom.roll-reward-weights",
+    "source": {
+      "kind": "raw",
+      "pieces": [
+        {
+          "file_offset": 87972,
+          "length": 26
+        }
+      ]
+    },
+    "size": 26,
+    "sha256": "e27d32975fbc09805fa6bff958aaa3729167a1da354f7b6dfefa0bb838f104a2"
+  }
+}

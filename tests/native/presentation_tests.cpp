@@ -1,5 +1,6 @@
 #include "movement.hpp"
 #include "presentation.hpp"
+#include "zoom_zoo_movement.hpp"
 #include <stdexcept>
 #include <vector>
 namespace {
@@ -17,6 +18,99 @@ int main() {
   require(unirally::snes_add_colour(0x001f, 0x001f, false) == 0x001f);
   require(unirally::snes_add_colour(0x001f, 0x0001, true) == 0x0010);
   require(unirally::snes_add_colour(0x7c00, 0x03e0, false) == 0x7fe0);
+
+  // $0EFB against the lap the original's HUD shows one frame later, read off
+  // the frozen primary timeline's frames 1450, 1676, 3209 and 4841. Zero is a
+  // clamp only: once finished the HUD shows FINISH instead of a lap.
+  require(unirally::zoom_zoo_hud_lap(4) == 0);
+  require(unirally::zoom_zoo_hud_lap(3) == 1);
+  require(unirally::zoom_zoo_hud_lap(2) == 2);
+  require(unirally::zoom_zoo_hud_lap(1) == 3);
+  require(unirally::zoom_zoo_hud_lap(0) == 3);
+  {
+    unirally::ZoomZooState racing{};
+    racing.race.riders[0].laps_remaining = 2;
+    racing.movement.timer.seconds = 3;
+    racing.movement.timer.tenths = 2;
+    racing.movement.timer.subframe = 4;
+    auto hud = unirally::zoom_zoo_hud(racing);
+    require(hud.lap == "2/3" && hud.clock == "0:03.28" && hud.finish_time.empty() && hud.caption.empty());
+    racing.movement.countdown = 70;
+    require(unirally::zoom_zoo_hud(racing).caption == "READY");
+    racing.movement.countdown = 69;
+    require(unirally::zoom_zoo_hud(racing).caption == "GO");
+
+    // Win: the player finishes 1:38.02 while the opponent is still racing and
+    // its total is still the 60000 sentinel. A zeroed total must not turn the
+    // caption either, so the opponent's finished flag decides it.
+    unirally::ZoomZooState won{};
+    won.race.riders[0].finished = 1;
+    won.race.total_times = {9802, 60000};
+    require(unirally::zoom_zoo_hud(won).caption == "WINNER");
+    won.race.total_times = {9802, 0};
+    won.movement.timer.minutes = 1;
+    hud = unirally::zoom_zoo_hud(won);
+    require(hud.lap == "FINISH" && hud.clock.empty() && hud.finish_time == "1:38.02" && hud.caption == "WINNER");
+    won.race.riders[1].finished = 1;
+    won.race.total_times[1] = 9810;
+    require(unirally::zoom_zoo_hud(won).caption == "WINNER");
+
+    unirally::ZoomZooState lost{};
+    lost.race.riders[0].finished = 1;
+    lost.race.riders[1].finished = 1;
+    lost.race.total_times = {9818, 9810};
+    hud = unirally::zoom_zoo_hud(lost);
+    require(hud.finish_time == "1:38.18" && hud.caption == "LOSER");
+
+    // 10:00 time-out: finished with laps left and the no-time total. The
+    // original keeps the lap and the held clock and shows LOSER.
+    unirally::ZoomZooState timed_out{};
+    timed_out.race.riders[0].finished = 1;
+    timed_out.race.riders[0].laps_remaining = 2;
+    timed_out.race.riders[1].finished = 1;
+    timed_out.race.total_times = {60000, 9810};
+    timed_out.movement.timer.minutes = 9;
+    timed_out.movement.timer.tens_seconds = 5;
+    timed_out.movement.timer.seconds = 9;
+    timed_out.movement.timer.tenths = 9;
+    timed_out.movement.timer.subframe = 3;
+    hud = unirally::zoom_zoo_hud(timed_out);
+    require(hud.lap == "2/3" && hud.clock == "9:59.90" && hud.finish_time.empty() && hud.caption == "LOSER");
+  }
+
+  // Race palette cycle $82:D382-D496. Original $0B84 ends frame n at
+  // (n-1381)&15, including through pause, so frame n draws (n-1382)&15.
+  require(!unirally::zoom_zoo_palette_cycle_index(1381));
+  require(unirally::zoom_zoo_palette_cycle_index(1382) == 0U);
+  require(unirally::zoom_zoo_palette_cycle_index(1649) == 11U);
+  require(unirally::zoom_zoo_palette_cycle_index(3208) == 2U);
+  require(unirally::zoom_zoo_palette_cycle_index(6005) == 15U);
+  {
+    // Synthetic tables: word = table * 256 + index, so a copied word names
+    // both its source table and entry.
+    std::vector<std::uint8_t> tables(544);
+    for (std::size_t table = 0; table < 17; ++table)
+      for (std::size_t index = 0; index < 16; ++index) {
+        tables[table * 32 + index * 2] = static_cast<std::uint8_t>(index);
+        tables[table * 32 + index * 2 + 1] = static_cast<std::uint8_t>(table);
+      }
+    std::array<std::uint8_t, 512> cgram{};
+    cgram.fill(0xee);
+    unirally::apply_zoom_zoo_palette_cycle(cgram, tables, 1381);
+    require(cgram[0] == 0xee && cgram[192] == 0xee);
+    unirally::apply_zoom_zoo_palette_cycle(cgram, tables, 1382 + 16 + 5);
+    require(cgram[192] == 5 && cgram[193] == 0);    // colour 96, table 0
+    require(cgram[222] == 5 && cgram[223] == 15);   // colour 111, table 15
+    require(cgram[0] == 5 && cgram[1] == 16);       // colour 0, table 16
+    require(cgram[190] == 0xee && cgram[224] == 0xee); // colours 95 and 112 untouched
+    bool rejected = false;
+    try {
+      unirally::apply_zoom_zoo_palette_cycle(cgram, std::span<const std::uint8_t>(tables).first(543), 1400);
+    } catch (const std::invalid_argument &) {
+      rejected = true;
+    }
+    require(rejected);
+  }
 
   std::vector<std::uint8_t> track(33815);
   for (std::size_t x = 0; x < 30; ++x)

@@ -1,0 +1,18 @@
+{
+  "kind": "m4_16_visual_contract_v1",
+  "status": "frozen before scroll-origin correction; initial provisional renderer predates this visual contract and is not accepted",
+  "rom_sha256": "a1105819d48c04d680c8292bbfa9abbce05224f1bc231afd66af43b7e0a1fd4e",
+  "original_png_sha256": {
+    "1450": "73c9df2830de784b33c6b203bdb45b764215a2cbaf805aa9265e9d4b1a234c2c",
+    "3208": "f26c3e991c7b9f2a9da662b94867fa404f5b6e63f8ce96374b6fe6ad55f78212",
+    "6484": "d49cae5be4647dd66af27a6a8ac960a285d802f0d8e851418cf5baaa84394ff6",
+    "7000": "b18b82881d6a32f671d94668dcc2a6f87b0bf2cc6593ccccc9d596cd3e7b5921"
+  },
+  "race_criteria": [
+    "track geometry and background scroll derive from static track data and authenticated HDMA coordinate equations",
+    "both riders visible when on screen, current positions and jump travel retained; only art pose/reflection may use existing DRAGSTER fallback",
+    "HUD exposes lap count and race timer; result exposes correct winner, lap/total values and graph range",
+    "compare full-screen original and native at initialization, reversal, steep contact, lap, finish and result; no pixel-exact claim for authored HUD/result layout or unrecovered rider art"
+  ],
+  "pending": "Additional scene PNG captures, quantitative background checks and independent visual/live review still required."
+}

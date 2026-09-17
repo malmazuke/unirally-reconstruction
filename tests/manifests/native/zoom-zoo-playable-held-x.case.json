@@ -1,0 +1,22 @@
+{
+  "id": "m4-16-held-roll-release",
+  "changes": [
+    {
+      "from": 1683,
+      "to": 1699,
+      "buttons": [
+        "left",
+        "b",
+        "x"
+      ]
+    },
+    {
+      "from": 1700,
+      "to": 1720,
+      "buttons": [
+        "left",
+        "b"
+      ]
+    }
+  ]
+}

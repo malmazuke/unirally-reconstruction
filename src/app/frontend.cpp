@@ -1,4 +1,6 @@
 #include "frontend.hpp"
+#include "rider_object.hpp"
+#include "zoom_zoo_movement.hpp"
 
 #include <algorithm>
 #include <limits>
@@ -147,6 +149,34 @@ LiveFrame LivePresentation::render(const MovementState &state,
                    recovered_pair_.reflected[1]}};
   return {render_dragster_headless_with_rider_art(sample, content, rider_art),
           true};
+}
+
+void LivePresentation::observe_zoom_update(const ZoomZooState& previous,const ZoomZooState& updated,
+                                           const ClassicContentPack& pack) {
+  zoom_look_.observe_update(previous,updated,pack);
+}
+
+LiveFrame LivePresentation::render_zoom(const ZoomZooState& state,const ZoomZooState& previous_update,
+                                        const ClassicContentPack& pack) {
+  const auto& overlays=zoom_look_.on_screen();
+  if(state.result_updates)return {render_zoom_zoo(state,pack,&previous_update,&overlays),false};
+  const auto objects=rider_object_content(pack);
+  auto drawn=previous_update;
+  auto drawn_overlays=overlays;
+  bool fallback=false;
+  for(std::size_t rider=0;rider<2;++rider) {
+    auto& pose=drawn.movement.riders[rider].pose.pose_index;
+    try {
+      (void)compose_rider_object(objects,pose,drawn_overlays.pose[rider],RiderRowClip::none);
+      zoom_drawn_pose_[rider]=pose;
+    } catch(const std::invalid_argument&) {
+      if(!zoom_drawn_pose_[rider])throw;
+      pose=*zoom_drawn_pose_[rider];
+      drawn_overlays.pose[rider].reset();
+      fallback=true;
+    }
+  }
+  return {render_zoom_zoo(state,pack,&drawn,&drawn_overlays),fallback};
 }
 
 } // namespace unirally::app

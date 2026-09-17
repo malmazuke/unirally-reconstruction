@@ -1,0 +1,24 @@
+{
+  "kind": "m4_16_playable_freeze",
+  "frames": [
+    1376,
+    7600
+  ],
+  "state_bytes": 742,
+  "original_sha256": "c058af113d1d4544ac54c61f470549a562ae5cae1c0a0f1d458b2d65edb88ce1",
+  "rows_sha256": "3113fa666d37944c965e62aac3925504ecc844a1fdf4082e5d9f6985ff62efd1",
+  "events": {
+    "finish_frames": [
+      6483,
+      6488
+    ],
+    "loading_frame": 6724,
+    "first_visible": 6832,
+    "stable_result": 6838,
+    "outcome": "player_won"
+  },
+  "timeline_sha256": "15efc10c7375bf3139830c581fdb6ab2017bdb11bb486b950cb11a90d11fa01b",
+  "rom_sha256": "a1105819d48c04d680c8292bbfa9abbce05224f1bc231afd66af43b7e0a1fd4e",
+  "core_sha256": "e59bf88d4fc922c9fe3b5438e65ff3a6909d24e1628f0f87141c8de17699a91b",
+  "result_inventory": "Race bytes are original projections until loading; thereafter frozen archive is checked against surviving SRAM lap/totals. Graph extrema at SRAM106f/1071 and published totals618/61a are independently projected every frame. Load count is a semantic clock. Tour records excluded by fresh-scenario restart."
+}

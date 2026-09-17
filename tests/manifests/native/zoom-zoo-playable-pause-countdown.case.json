@@ -1,0 +1,37 @@
+{
+  "changes": [
+    {
+      "from": 1450,
+      "to": 1453,
+      "buttons": [
+        "right",
+        "start"
+      ]
+    },
+    {
+      "from": 1455,
+      "to": 1455,
+      "buttons": [
+        "right",
+        "down"
+      ]
+    },
+    {
+      "from": 1457,
+      "to": 1457,
+      "buttons": [
+        "right",
+        "up"
+      ]
+    },
+    {
+      "from": 1460,
+      "to": 1462,
+      "buttons": [
+        "right",
+        "start"
+      ]
+    }
+  ],
+  "id": "m4-16-pause-countdown"
+}

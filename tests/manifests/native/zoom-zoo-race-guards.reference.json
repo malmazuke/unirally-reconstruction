@@ -56,6 +56,31 @@
       "value": 0
     },
     {
+      "address": 1009,
+      "width": 2,
+      "value": 2
+    },
+    {
+      "address": 1011,
+      "width": 2,
+      "value": 65440
+    },
+    {
+      "address": 1013,
+      "width": 2,
+      "value": 100
+    },
+    {
+      "address": 1061,
+      "width": 2,
+      "value": 65340
+    },
+    {
+      "address": 1063,
+      "width": 2,
+      "value": 1024
+    },
+    {
       "address": 1067,
       "width": 2,
       "value": 0
@@ -156,6 +181,11 @@
       "value": 0
     },
     {
+      "address": 3349,
+      "width": 2,
+      "value": 4
+    },
+    {
       "address": 3369,
       "width": 2,
       "value": 0
@@ -202,6 +232,11 @@
     },
     {
       "address": 3417,
+      "width": 2,
+      "value": 0
+    },
+    {
+      "address": 3553,
       "width": 2,
       "value": 0
     },
@@ -381,40 +416,86 @@
       "value": 101
     },
     {
-      "address": 1009,
-      "width": 2,
-      "value": 2
-    },
-    {
-      "address": 1011,
-      "width": 2,
-      "value": 65440
-    },
-    {
-      "address": 1013,
-      "width": 2,
-      "value": 100
-    },
-    {
-      "address": 1061,
-      "width": 2,
-      "value": 65340
-    },
-    {
-      "address": 1063,
-      "width": 2,
-      "value": 1024
-    },
-    {
-      "address": 3553,
-      "width": 2,
+      "address": 8649,
+      "width": 1,
       "value": 0
     },
     {
-      "address": 3349,
-      "width": 2,
-      "value": 4
+      "address": 8650,
+      "width": 1,
+      "value": 0
+    },
+    {
+      "address": 8651,
+      "width": 1,
+      "value": 0
+    },
+    {
+      "address": 8652,
+      "width": 1,
+      "value": 0
+    },
+    {
+      "address": 8653,
+      "width": 1,
+      "value": 0
+    },
+    {
+      "address": 8654,
+      "width": 1,
+      "value": 0
+    },
+    {
+      "address": 8655,
+      "width": 1,
+      "value": 0
+    },
+    {
+      "address": 8656,
+      "width": 1,
+      "value": 0
+    },
+    {
+      "address": 8657,
+      "width": 1,
+      "value": 0
+    },
+    {
+      "address": 8658,
+      "width": 1,
+      "value": 0
+    },
+    {
+      "address": 8659,
+      "width": 1,
+      "value": 0
+    },
+    {
+      "address": 8660,
+      "width": 1,
+      "value": 0
+    },
+    {
+      "address": 8661,
+      "width": 1,
+      "value": 0
+    },
+    {
+      "address": 8662,
+      "width": 1,
+      "value": 0
+    },
+    {
+      "address": 8663,
+      "width": 1,
+      "value": 0
+    },
+    {
+      "address": 8664,
+      "width": 1,
+      "value": 0
     }
   ],
-  "first_finish_pose_queue_guard": "On the first finished-rider animation call ($828959), pending queue count is zero. Verify from the preceding end-state; later calls bypass the queue through the serialized active flag."
+  "first_finish_pose_queue_guard": "On the first finished-rider animation call ($828959), pending queue count is zero. Verify from the preceding end-state; later calls bypass the queue through the serialized active flag.",
+  "out_of_bank_reward_guard": "$7E21C9-$7E21D8 is where the opponent consumer $81C260 indexes when the queue holds a BRONSEN voice 200-215: event-1 runs past the 26-byte learned bank at $7E2102. The original publishes no reward there only because these bytes are zero. Observed zero on all 343,482 authenticated frames of the 53 reference captures; guarded so a future capture that reaches a nonzero value fails before native evaluation instead of being silently mismodelled."
 }

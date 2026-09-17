@@ -1,0 +1,21 @@
+{
+  "id": "m4-16-start-pause-resume",
+  "changes": [
+    {
+      "from": 6000,
+      "to": 6000,
+      "buttons": [
+        "right",
+        "start"
+      ]
+    },
+    {
+      "from": 6010,
+      "to": 6010,
+      "buttons": [
+        "right",
+        "start"
+      ]
+    }
+  ]
+}

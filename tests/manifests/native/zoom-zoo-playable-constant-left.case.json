@@ -1,0 +1,12 @@
+{
+  "id": "m4-16-constant-left",
+  "changes": [
+    {
+      "from": 1377,
+      "to": 7600,
+      "buttons": [
+        "left"
+      ]
+    }
+  ]
+}

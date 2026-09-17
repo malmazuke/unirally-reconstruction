@@ -1,0 +1,18 @@
+{
+  "rom_sha256": "a1105819d48c04d680c8292bbfa9abbce05224f1bc231afd66af43b7e0a1fd4e",
+  "source": "$829CA9-9D70 indexes $829DB6 using four landing counts in radix five; $829D35 tests sentinel FE.",
+  "entry": {
+    "id": "zoom.trick-combinations",
+    "source": {
+      "kind": "raw",
+      "pieces": [
+        {
+          "file_offset": 73142,
+          "length": 625
+        }
+      ]
+    },
+    "size": 625,
+    "sha256": "a6424f66bbd354883f3bfe128487d6cab92add5651adbf969976733a353f0217"
+  }
+}

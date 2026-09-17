@@ -1,0 +1,10 @@
+{
+  "id": "m4-16-review-early-compound-reverse",
+  "changes": [
+    {
+      "from": 1681,
+      "to": 1720,
+      "buttons": ["left", "b", "x", "r"]
+    }
+  ]
+}

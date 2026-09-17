@@ -1,0 +1,20 @@
+{
+  "kind": "m4_16_incomplete_original_inventory",
+  "acceptance": false,
+  "frames": [
+    1376,
+    7600
+  ],
+  "state_bytes": 742,
+  "original_sha256": "d9c3bc6c9150499a849183b6e99aa216563a0e6b7ddccd16ea497b7d0a5446f7",
+  "rows_sha256": "00b6defe7b1ed867d82c4aca79fad406201940ddc913c05b4300186b91950d36",
+  "events": {
+    "complete": false,
+    "finish_frames": [
+      null,
+      6488
+    ],
+    "scope": "Internal recovery experiment only; does not satisfy playable acceptance"
+  },
+  "reason": "No player finish through7600; internal recovery only."
+}

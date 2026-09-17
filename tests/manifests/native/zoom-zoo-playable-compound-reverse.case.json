@@ -1,0 +1,15 @@
+{
+  "id": "m4-16-compound-roll-reverse",
+  "changes": [
+    {
+      "from": 1683,
+      "to": 1720,
+      "buttons": [
+        "left",
+        "b",
+        "x",
+        "r"
+      ]
+    }
+  ]
+}

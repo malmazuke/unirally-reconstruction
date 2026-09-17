@@ -1,0 +1,24 @@
+{
+  "kind": "m4_16_additive_countdown_inventory",
+  "frames": [
+    1376,
+    6724
+  ],
+  "words": [
+    [
+      "fade_level",
+      4081
+    ],
+    [
+      "player_start_boost",
+      4705
+    ],
+    [
+      "opponent_start_boost",
+      4707
+    ]
+  ],
+  "rows_sha256": "dff8d36b5e6511eeae8ce8789a2540c15e801b22759371f3fd8a0ce5f6f2b766",
+  "source": "83CCC1-CCC9 saturates fade at30;83E59C-E7BD gates countdown and controls;82D894-D89A initializes start boosts384",
+  "reference": "zoom-zoo-playable-initial-inventory.reference.json"
+}

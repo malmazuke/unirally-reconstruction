@@ -7,6 +7,9 @@ import json
 import os
 from pathlib import Path
 import struct
+import subprocess
+import sys
+import tempfile
 from typing import Any
 
 from . import rnc
@@ -16,6 +19,9 @@ SCHEMA_VERSION = 1
 RULES_PATH = "tests/manifests/content/classic-crawler-dragster-pack.json"
 PROFILE_ID = "classic.pal.crawler.dragster.v1"
 START_STATE_ID = "classic.crawler.dragster.race-start.v1"
+TWO_TRACK_RULES_PATH = "tests/manifests/content/classic-crawler-two-tracks-pack.json"
+TWO_TRACK_PROFILE = "classic.pal.crawler.two-tracks.v7"
+TWO_TRACK_START = "classic.crawler.race-start.v2"
 
 
 def sha256(data: bytes) -> str:
@@ -26,8 +32,9 @@ def load_rules(path: Path) -> tuple[dict[str, Any], str]:
     raw = path.read_bytes()
     doc = json.loads(raw)
     if ((doc.get("schema_version"), doc.get("kind"), doc.get("profile_id"),
-         doc.get("start_state_id")) !=
-            (1, "classic_pack_rules", PROFILE_ID, START_STATE_ID)):
+         doc.get("start_state_id")) not in
+            ((1, "classic_pack_rules", PROFILE_ID, START_STATE_ID),
+             (1, "classic_pack_rules", TWO_TRACK_PROFILE, TWO_TRACK_START))):
         raise ValueError("unsupported Classic extraction rules identity")
     rom = doc.get("source_rom")
     if not isinstance(rom, dict) or type(rom.get("size")) is not int or not isinstance(rom.get("sha256"), str):
@@ -43,7 +50,7 @@ def load_rules(path: Path) -> tuple[dict[str, Any], str]:
         if type(entry.get("size")) is not int or entry["size"] < 0 or not isinstance(entry.get("sha256"), str):
             raise ValueError(f"Classic entry {entry['id']} lacks size/hash")
         source = entry.get("source")
-        if not isinstance(source, dict) or source.get("kind") not in ("raw", "rnc"):
+        if not isinstance(source, dict) or source.get("kind") not in ("raw", "rnc", "pre_race_matrix"):
             raise ValueError(f"Classic entry {entry['id']} has invalid extraction source")
     return doc, sha256(raw)
 
@@ -61,6 +68,17 @@ def decode_entry(rom: bytes, entry: dict[str, Any]) -> bytes:
                 raise ValueError(f"raw entry {entry['id']} has an out-of-range piece")
             out.extend(rom[offset:offset + length])
         return bytes(out)
+    if source["kind"] == "pre_race_matrix":
+        root=Path(__file__).resolve().parents[3]
+        (root/'artifacts').mkdir(exist_ok=True)
+        with tempfile.TemporaryDirectory(prefix='pack-static-',dir=root/'artifacts') as directory:
+            temporary=Path(directory)
+            rom_path=temporary/'input.sfc';rom_path.write_bytes(rom)
+            output=temporary/'coefficients.bin'
+            subprocess.run([sys.executable,'-m','tools.unirally_lab.content.landing_matrix',
+                            '--rom',str(rom_path),'--out',str(output)],cwd=root,
+                           check=True,capture_output=True,timeout=660)
+            return output.read_bytes()
     source_bank, source_address = source.get("bank"), source.get("address")
     if type(source_bank) is not int or type(source_address) is not int:
         raise ValueError(f"RNC entry {entry['id']} lacks a bank/address")

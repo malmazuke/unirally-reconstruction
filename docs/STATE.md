@@ -1,39 +1,46 @@
 # Project state
 
-Updated 14 September 2026: M4-15 is accepted at `8bc2e71`; main is unchanged
-gameplay plus this pointer. M4-16 remains **incomplete and unaccepted** on
-`codex/m4-16-playable-zoom-zoo`, now at `372822e`.
+Updated 17 September 2026: **M4-16 is reviewed and integrated**; acceptance is
+conditional on the final-tip CI and remote verification recorded in the ignored
+closeout `artifacts/m4-16-integration/closeout.json` in
+`.worktrees/m4-16-playable-zoom-zoo`. If that file is absent, recover the
+integration commit with `git log --first-parent main -- tasks/M4-16.md` and its
+run with `gh run list --workflow synthetic.yml --commit <commit>`. M4 as a
+milestone is **not** accepted and no milestone tag is due. No M4-17.
 
-The paused checkpoint this file previously described is superseded. The user
-moved M4-16 to Claude Opus 5 after GPT Astra and Fable 5.1 credits ran out;
-[D-0004](decisions/D-0004-model-and-usage-budget.md) records that authorized
-move, the fresh Opus 5 independent reviewer that replaces Sol/medium, and why
-shared weekly percentage telemetry no longer applies. Do not treat the old 94
-and 96 percent samples as current limits.
+M4-16 delivers playable native ZOOM ZOO in the desktop app: native
+initialization from the authenticated pack through countdown, a three-lap race,
+the original's 10:00 time limit, finish, result loading, the result screen and
+Race Again, with keyboard and gamepad. Pack `classic.pal.crawler.two-tracks.v7`
+(55 entries) is extracted from the user's ROM and reproduces byte for byte;
+serialized state is `URZZ000B` (742 bytes). Native play does not execute the
+original CPU. The work moved from GPT Astra to Claude Opus 5 under
+[D-0004](decisions/D-0004-model-and-usage-budget.md) when those credits ran out,
+with fresh Opus 5 independent reviewers.
 
-The open high-priority generic opponent reward finding is **closed**: the
-original consumer `$81C219-C2C9` is recovered from the ROM and from artificial
-original-only probes, and three independent review rounds ending at `0945ef2`
-rejected, then approved, then confirmed the corrections. Review found the first
-candidate's stated source fact wrong and it had already reached tracked
-evidence; both the code and the records are corrected.
+Evidence, on the reviewed implementation `75626f8` and the integration commit:
+exact original agreement over the primary start-to-result gate (6,225 states,
+757 fresh-process restores, full restart), six complete cases covering both
+outcomes, an idle late-start case (801 restores), seven reward and eight trick
+probes, the M4-15 race matrix and the M4-12-M4-14 and DRAGSTER historical
+matrix; four-preset tests; bootstrap, pack-only, wrong-ROM and bad-pack gates;
+denied-execution autonomy; live keyboard play (earlier candidates) and a live
+gamepad playtest with rider art (0 pose fallbacks) through a completed race,
+result and restart; and frozen visual scenes with rider art, HUD, fade and
+the start-line palette cycle matching the original. Review record:
+[M4-16-review](../tasks/M4-16-review.md); task record: [M4-16](../tasks/M4-16.md);
+research: [R-0035](research/R-0035-zoom-zoo-playable-recovery.md),
+[R-0036](research/R-0036-zoom-zoo-rider-objects.md).
 
-Currently passing on that branch: 21/21 focused tests; six complete cases at
-6225 states covering both outcomes; the primary gate at 6225 observations, 757
-fresh-process restores and a full fresh restart; nine probe events; 405
-synthetic checks on both app presets with no skips; 20 historical M4-12-M4-14
-and DRAGSTER commands on both lab presets; bootstrap, pack-only and rejected-ROM
-and rejected-pack gates, with fresh extraction reproducing the v5 pack byte for
-byte; and denied-execution autonomy with controls proving the denial held.
+Declared omissions: audio; the original's decorative objects and captions
+(start arrow and ring, hints, on-screen stunt names, opponent finish time,
+animated finish banner, off-screen arrows); original HUD and result pixel style;
+the two-update later result load after a time-out (audio handshake timing).
+Other tracks, riders, modes, menus and multiplayer remain outside the product.
 
-Still open, so M4-16 is not accepted: live controls through a complete race,
-result and restart, which is **blocked on a macOS Accessibility grant rather
-than on code**; the M4-15 race matrix and ZOOM ZOO trial differentials, whose
-reference captures that checkout does not hold; visual acceptance; result-load
-read classification; and reviewed merge with exact-tip CI. Main gameplay is
-unchanged and no milestone tag is due. See
-[NEXT_SESSION](../tasks/NEXT_SESSION.md) on that branch for the actual checkout
-and the ordered remaining work. No M4-17.
+Follow-ups started from M4-16 findings: DRAGSTER's start-line palette is the same
+race NMI cycle (task branch `task/dragster-palette-cycle`, evidence recorded, implementation next), and DRAGSTER ignores the 10:00 limit
+(not started). See [NEXT_SESSION](../tasks/NEXT_SESSION.md).
 
 ## Accepted product and evidence
 

@@ -1,0 +1,24 @@
+{
+  "kind": "m4_16_playable_freeze",
+  "frames": [
+    1376,
+    7600
+  ],
+  "state_bytes": 573,
+  "original_sha256": "c9fc6c48cf3cf38aae508c823637154dead61301c8e4bf7db2ad704918534a2f",
+  "rows_sha256": "1fdf0e17614ac4995ab383715f5889be539b8f4018f2977c6daedd2eeb05137f",
+  "events": {
+    "finish_frames": [
+      6484,
+      6488
+    ],
+    "loading_frame": 6725,
+    "first_visible": 6833,
+    "stable_result": 6839,
+    "outcome": "player_won"
+  },
+  "timeline_sha256": "33342e32eedf4add780bd156c71958f98d792033378c45e11052fbdfadef5e62",
+  "rom_sha256": "a1105819d48c04d680c8292bbfa9abbce05224f1bc231afd66af43b7e0a1fd4e",
+  "core_sha256": "e59bf88d4fc922c9fe3b5438e65ff3a6909d24e1628f0f87141c8de17699a91b",
+  "result_inventory": "Archived race plus semantic loading count; surviving SRAM lap/total slots checked every update. Tour progression excluded; Race Again selects the authenticated fresh scenario."
+}

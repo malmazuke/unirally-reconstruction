@@ -1,0 +1,22 @@
+{
+  "kind": "m4_16_result_boundary_inventory",
+  "source": "artifacts/m4-16/result-audit/authentication.json",
+  "primary_finish": 6484,
+  "first_loading": 6725,
+  "first_visible": 6833,
+  "stable_result": 6839,
+  "stable_updates_observed": 761,
+  "raw_result_words": [
+    [
+      "graph_minimum",
+      7802991
+    ],
+    [
+      "graph_maximum",
+      7802993
+    ]
+  ],
+  "original_semantics": "Race working memory is reused. Lap slots and totals remain in SRAM; result computes extrema over non-sentinel lap slots with minimum range200. Native result retains its final race state as an archive, not a projection of overwritten graphics memory.",
+  "restart": "Explicit fresh same-scenario initialization, not automatic next-tour progression.",
+  "pending": "Result state, both outcomes, visual contract and restart must pass independent validation before acceptance."
+}

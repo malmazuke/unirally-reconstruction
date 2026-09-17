@@ -138,8 +138,8 @@ accepted at `38c72e8`, but repeated the same section. The next
 from that seed: both finishes and 240 player post-finish updates, with independent
 review and debug/sanitizer gates. No fallback was used; `8bc2e71` is accepted
 with synchronization to the then-private origin and final-tip CI.
-[M4-16](../tasks/M4-16.md) is in progress and remains unaccepted; see
-[the current handoff](../tasks/NEXT_SESSION.md). Its target is a playable ZOOM ZOO outcome: native initialization, live controls, readable
+[M4-16](../tasks/M4-16.md) is reviewed and integrated, with acceptance recorded in
+[project state](STATE.md); see [the current handoff](../tasks/NEXT_SESSION.md). Its outcome is playable ZOOM ZOO: native initialization, live controls, readable
 track/riders/HUD, correct result and restart, plus clean extraction and pack-only
 relaunch. Recover all coupled dependencies inside this assignment; no seed-based
 or headless fallback. Audio and broader menus/modes remain outside scope. No

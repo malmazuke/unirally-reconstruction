@@ -64,7 +64,8 @@ exact-merge checks or final-tip CI. Never count missing evidence as a reused pas
 ## M4-16 product validation requirements
 
 [M4-16](../tasks/M4-16.md) assigns native initialization and live frontend/result
-validation; these new interfaces are not implemented merely by this preparation.
+validation. The task branch now has experimental native start/frontend/result
+interfaces; main remains the accepted M4-15 product until M4-16 acceptance.
 Extend the accepted race/visual tools deliberately. Keep validation source and
 binary immutable for an entire run and use the identity ledger to reject mixed
 results. Collect initial review findings before broad validation; supersede
@@ -443,3 +444,28 @@ from authentic end-1649. This does not add ZOOM ZOO frontend dispatch, native
 race-start initialization, subsequent result-screen loading, rendering or audio.
 Reviewers freeze their own successful race timelines before native evaluation
 and extend each horizon to include its own post-finish continuation.
+
+## M4-16 experimental task-branch commands
+
+Implemented in `codex/m4-16-playable-zoom-zoo`, not accepted gameplay on main:
+
+```sh
+python3 tools/project.py frontend run --track zoom-zoo --pack local/classic-crawler-two-tracks-v7.pack --preset app-debug --report artifacts/m4-16/FRESH-live.json
+build/app-debug/src/core/zoom_zoo_presentation_runner local/classic-crawler-two-tracks-v7.pack --timeline <native timeline> <frame> OUT.ppm
+python3 -m tools.unirally_lab.native.zoom_zoo_playable --help
+python3 -m tools.unirally_lab.native.zoom_zoo_playable_reference --help
+# idle variation: case JSON {"idle":{"from":F,"frames":N|null}} releases all buttons, then resumes the primary; horizon up to 40000
+```
+
+The first-launch frontend accepts `--rom` plus a fresh pack destination and
+extracts 55 validated static entries (pack v6 added the R-0036 rider object and
+look tables; v7 adds the race palette cycle tables); later pack-only launches do not open ROM. The `--timeline` render
+replays consecutive native states from initialization so rider look overlays
+are exact; the single-state runner form omits them.
+The ordinary `content pack` CLI still targets accepted DRAGSTER rules. V4 pack
+profile and URZZ000A serialization are unaccepted experiments. Historical
+URZZ0001/2/3 and DRAGSTER v1 remain supported. See [R-0035](research/R-0035-zoom-zoo-playable-recovery.md)
+for source/identity/domain limits and the exact original/native compare recipe.
+Warm extraction/smoke tests do not prove clean bootstrap, denied access, live
+input, representative visuals or full latest regressions. Start, bounce and
+other remaining guards preclude playable acceptance.
