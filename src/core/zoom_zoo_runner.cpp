@@ -104,7 +104,10 @@ int main(int argc,char** argv) try {
         if(!(row>>frame>>player>>opponent) || (row>>trailing))
             throw std::invalid_argument("malformed ZOOM ZOO controller row");
         if(frame!=state.movement.frame+1 || player>4095 || opponent!=0)throw std::invalid_argument("invalid ZOOM ZOO controller row");
-        try {unirally::update_zoom_zoo(state,buttons(static_cast<std::uint16_t>(player)),data);}
+        // DRAGSTER's gates and live play present what a SNES pad can publish.
+        auto pressed=buttons(static_cast<std::uint16_t>(player));
+        if(state.track==unirally::ClassicRaceTrack::Dragster)pressed=unirally::with_physical_dpad(pressed);
+        try {unirally::update_zoom_zoo(state,pressed,data);}
         catch(const std::exception& e){std::cerr << "frame " << frame << ": " << e.what() << '\n';return 1;}
         emit(state);
     }

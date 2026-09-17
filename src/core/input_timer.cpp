@@ -28,6 +28,12 @@ ControllerSample sample_controller(const ControllerButtons& buttons) {
     return result;
 }
 
+ControllerButtons with_physical_dpad(ControllerButtons buttons) {
+    if (buttons.up && buttons.down) buttons.up = buttons.down = false;
+    if (buttons.left && buttons.right) buttons.left = buttons.right = false;
+    return buttons;
+}
+
 bool advance_timer_digits(RaceTimerDigits& state, bool enabled) {
     validate(state);
     if (!enabled) return false;

@@ -18,6 +18,11 @@ struct ControllerSample {
     std::uint8_t horizontal{1}; // 0 left, 1 neutral, 2 right ($0319)
 };
 ControllerSample sample_controller(const ControllerButtons& buttons);
+// A SNES pad's rocker D-pad cannot report opposing directions, so the
+// controller shift register never publishes Up with Down or Left with Right.
+// Keyboards can hold both; this drops both, as the audited reference core's
+// gamepad does (bsnes sfc/controller/gamepad, `up & !down` per direction).
+ControllerButtons with_physical_dpad(ControllerButtons buttons);
 
 // Five original 16-bit digit words, in display-to-subframe order. In PAL,
 // five enabled updates make a tenth. This state excludes display/audio flags
