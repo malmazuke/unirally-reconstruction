@@ -35,8 +35,9 @@ routine's accesses (instruction PCs `$82:D384-$82:D493`):
 In the 3,000-frame capture the only writes are: race initialization
 `$82:D7F5` clears `$0B84` and `$0B92` at frame 1243, `$82:D861` and `$82:DC0A`
 set `$0B92 = 1` at 1243 and 1249, and `$82:D493` advances `$0B84` once per
-frame from 1334 (1,666 writes in 1,666 frames). The earlier `$80:D2CB/D2D1/D347`
-writes at 751 belong to the pre-race screen.
+frame from 1334 (1,666 writes in 1,666 frames). The only other writes,
+`$80:D2CB/D2D1/D347` at frame 751, come before race initialization and are
+overwritten by it; what that earlier screen is was not examined.
 
 **So DRAGSTER runs the same routine.** It starts at frame 1334 and stops at
 result loading (after 3454 in the winner capture, 3559 in the loser capture).
@@ -58,8 +59,10 @@ Composing colours 96-111 and colour 0 from the ROM tables (file offset
 The accepted DRAGSTER presentation frames fall on exactly those phases:
 1600, 2000 and 2400 on phase 10, and 3213 and 3453 on phase 7. The pose rule
 happened to separate those frames, so the frozen presentation contract could
-not expose it. Every other race frame draws one of those two phases instead of
-its own, so the checkered line is wrong on roughly fourteen frames in sixteen.
+not expose it. Colours 96-111 repeat every eight phases (phase 2 equals 10, 7
+equals 15), so the two fixed arrays can be right on at most two phases in
+eight, and only when the pose rule happens to pick the matching one; on the
+other six in eight the checkered line is drawn with the wrong phase.
 
 ## Consequences for native
 
