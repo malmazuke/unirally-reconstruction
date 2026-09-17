@@ -51,6 +51,8 @@ public:
   void disconnect(std::uint8_t port);
   void clear();
   std::array<std::uint16_t, 2> snapshot() const;
+  std::uint16_t keyboard_mask() const { return keyboard_mask_; }
+  std::uint16_t gamepad_mask(std::uint8_t port) const { return gamepad_masks_.at(port); }
 
 private:
   std::uint16_t keyboard_mask_{};
