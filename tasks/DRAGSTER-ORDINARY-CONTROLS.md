@@ -104,9 +104,49 @@ Mistakes:
 
 ## Handoff
 
-- Branch head and gates: see the final entry below.
+- **Candidate:** `task/dragster-ordinary-controls`, pushed. The gate candidate
+  is `6534241` (later commits are records only). Hosted CI on `6534241` passed
+  on macOS and Ubuntu GCC: run 35250987766.
+- **Gates**, all passed on a clean detached worktree
+  `.worktrees/dragster-ordinary-gates` at `6534241` with its own binaries;
+  reports in that worktree under
+  `artifacts/dragster-ordinary-controls/candidate-6534241/`:
+  - four presets built, four synthetic suites passed;
+  - DRAGSTER ordinary controls, every 742-byte row plus a second fresh run, a
+    restart from the stable result and fresh-process restores: primary 379
+    restores, reversal 327, random-1 567, random-2 527,
+    regression-countdown-actions-tie 179, regression-landing-held-roll 181,
+    random-3 493 (withheld until this run, untuned), primary again under the
+    sanitizer;
+  - ZOOM ZOO M4-16 final set: primary 757 restores (debug and sanitizer),
+    idle late start 801 restores (debug and sanitizer), six complete cases,
+    seven opponent reward probes, eight opponent trick probes;
+  - M4-15 race matrix: 8 runs, no failure; DRAGSTER historical matrix
+    (M4-12 compares, restores, finish, opponent-first, presentation): 20
+    commands, no failure.
+- **Fuzzing:** abort fuzz (`dragster_fuzz_runner`, the app's update, restart
+  and render calls) 3,000 seeds on `65696be`: 36,682,702 updates, 8,999
+  complete races, 94,740 pause restarts, 767,092 rendered pictures, 0 aborts
+  (`artifacts/dragster-ordinary-controls/fuzz/fuzz-65696be-seeds-1-3000.log`).
+  Differential fuzz (`dragster_diff_fuzz.py`): 150 seeds exposed the last
+  divergences; 150 fresh seeds on `65696be` match every compared row (610,658
+  rows), with 5 pause-menu retires and 15 result-screen exits reported as
+  outside the product.
+- **Probes:** `probe-6534241` (the task's 2,200-update probe) and
+  `probe-2600-6534241`: every mask exits 0 with no abort; at 2,600 updates
+  every riding mask reaches the stable result screen (phase 3, player wins),
+  Right with Y holds the brake at the line, and Left or neutral does not
+  finish. The launcher upgrades the DRAGSTER-only pack to the two-track pack
+  without opening the ROM; the app refuses the DRAGSTER-only pack before
+  gameplay with the extraction command.
+- **ZOOM ZOO sweep:** all 26 M4-16 originals match every projected row on both
+  `abc38e6` and the candidate (`zoom-zoo-sweep-pose.txt`).
 - Usage (account-wide, app telemetry): 10% 5-hour / 6% weekly at 15:00Z; 23% /
-  7% at 16:00Z; the 5-hour window reset at 16:20Z; 3% / 8% at 16:31Z.
-- Next: independent review of the final candidate; live play by the user with
-  keyboard and gamepad through result and Race Again (parked); then integration.
-  Not started: DRAGSTER 10:00 limit capture, ZOOM ZOO physical D-pad.
+  7% at 16:00Z; the 5-hour window reset at 16:20Z; 3% / 8% at 16:31Z; 12% /
+  10% at 16:56Z, with the final gates and fuzzing after that.
+- **Next:** independent review of `6534241` (or this head, which adds only
+  records); live play by the user with keyboard and gamepad through result and
+  Race Again, parked while the user is away; then integration. Not started:
+  the DRAGSTER 10:00 time limit (no case reaches it), the original's result
+  screen exit on other buttons, and ZOOM ZOO's physical D-pad (raised as a
+  separate suggestion).
