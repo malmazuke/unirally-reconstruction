@@ -852,8 +852,20 @@ static RgbFrame render_dragster(const PresentationSample &s,
   render_race_background(f, s, content, map);
   const auto player_pose = s.movement.riders[0].pose.pose_index;
   const auto opponent_pose = s.movement.riders[1].pose.pose_index;
+  // The GO and winner windows show colour 0 through colour math. Its race
+  // palette cycle is visible only there (R-0037): the accepted white and
+  // (98,98,255) are colour 0 at phases 10 and 7, where the frozen frames fall.
+  // Without the cycle tables (DRAGSTER v1 packs) keep those accepted colours.
+  const auto window_colour =
+      [&](std::array<std::uint8_t, 3> accepted) -> std::array<std::uint8_t, 3> {
+    if (content.race_palette_cycle.empty())
+      return accepted;
+    auto cgram = build_race_cgram(s, content.palette, false);
+    apply_dragster_palette_cycle(cgram, content.race_palette_cycle, s.movement);
+    return colour(cgram, 0);
+  };
   if (player_pose == 0x04f9 && opponent_pose == 0x0263)
-    render_window_xor(f, content.go_window, {255, 255, 255});
+    render_window_xor(f, content.go_window, window_colour({255, 255, 255}));
   const auto &t = s.movement.timer;
   const std::array<unsigned, 4> d{
       {t.minutes, t.tens_seconds, t.seconds, t.tenths}};
@@ -890,7 +902,7 @@ static RgbFrame render_dragster(const PresentationSample &s,
                    rider_index == 0 ? 0 : 136, rider_index == 0 ? 0x66 : 0x68);
   }
   if (player_pose == 0x04fe && opponent_pose == 0x037c)
-    render_window_xor(f, content.winner_window, {98, 98, 255});
+    render_window_xor(f, content.winner_window, window_colour({98, 98, 255}));
   return f;
 }
 
@@ -1005,12 +1017,14 @@ void apply_zoom_zoo_palette_cycle(std::array<std::uint8_t,512>& cgram,std::span<
 void apply_dragster_palette_cycle(std::array<std::uint8_t,512>& cgram,std::span<const std::uint8_t> tables,
                                   const MovementState& state) {
     if(tables.size()!=544)throw std::invalid_argument("DRAGSTER race palette cycle has the wrong size");
-    // $82:D382-D496 first runs at 1334. The race-crawler-dragster winner and
-    // loser originals match (frame-1334)&15 on every racing frame, and from the
-    // first loading frame (3454, 3559) hold that frame's colours 96-111 with a
-    // black colour 0 (R-0037).
+    // $82:D382-D496 first runs at 1334. Original DRAGSTER replays match
+    // (frame-1334)&15 on every racing frame. The routine still runs on loading
+    // update 1 (3454, 3559) and stops from update 2, so colours 96-111 hold
+    // that frame's phase, with a black colour 0, through at least update 75,
+    // until the result palettes load (R-0037).
     const auto& finish=state.finish;
     const bool loading=finish.phase==RacePhase::ResultLoading && finish.result_loading_updates;
+    if(loading && finish.result_loading_updates-1U>state.frame)return;
     const auto phase_frame=loading?state.frame-(finish.result_loading_updates-1U):state.frame;
     if(phase_frame<1334U)return;
     load_race_palette_phase(cgram,tables,(phase_frame-1334U)&15U,!loading);

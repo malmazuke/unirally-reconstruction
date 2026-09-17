@@ -59,10 +59,16 @@ Composing colours 96-111 and colour 0 from the ROM tables (file offset
 The accepted DRAGSTER presentation frames fall on exactly those phases:
 1600, 2000 and 2400 on phase 10, and 3213 and 3453 on phase 7. The pose rule
 happened to separate those frames, so the frozen presentation contract could
-not expose it. Colours 96-111 repeat every eight phases (phase 2 equals 10, 7
-equals 15), so the two fixed arrays can be right on at most two phases in
-eight, and only when the pose rule happens to pick the matching one; on the
-other six in eight the checkered line is drawn with the wrong phase.
+not expose it.
+
+**Correction (independent review `5d5cd7d`).** This section first claimed the
+fixed arrays draw DRAGSTER's checkered line with the wrong phase. That was
+wrong: the checkered line does not animate in DRAGSTER, and native draws
+nothing else from colours 96-111 that changes between phases (it uses only
+colours 101-103, equal in all sixteen). In the original the cycle is visible
+through **colour 0**, which colour math shows inside the GO and winner window
+shapes (and a small block by the start chevrons). The accepted native window
+colours, white and `(98,98,255)`, are exactly colour 0 at phases 10 and 7.
 
 ## Original CGRAM on every frame
 
@@ -82,18 +88,21 @@ are identical.
 
 Result loading starts at 3454 (winner) and 3559 (loser), exactly native's
 loading update 1 (225 and 242 updates before the published results at 3678
-and 3800), and exactly the routine's last call in the access captures. From
-that frame colours 96-111 hold that frame's phase and colour 0 is black
-(`$0000`). From loser loading update 76 (3634) the original writes the result
-screen's own palettes; those frames are outside this finding. Only 464 of the
+and 3800). The routine still runs on update 1 and stops from update 2 (review
+traces), so colours 96-111 hold that frame's phase and colour 0 is black
+(`$0000`); the review confirmed this through update 75 in both outcomes. From
+update 76 (loser 3634) the original writes the result screen's own palettes.
+The original screen is black throughout loading, so this rule has no visible
+effect there. Only 464 of the
 winner's 1,871 frames show either of the two fixed arrays.
 
 ## Native implementation
 
 `apply_dragster_palette_cycle` draws racing frame n with index `(n-1334)&15`,
 and during result loading freezes colours 96-111 at the loading start frame's
-index with colour 0 black. It is used by the DRAGSTER race background whenever
-the loaded pack carries the tables (`presentation.zoom.race-palette-cycle.v1`,
+index with colour 0 black (a loading counter larger than the frame, unreachable
+in play, leaves the palette unchanged). The GO and winner windows are filled
+with the cycled colour 0. Both apply whenever the loaded pack carries the tables (`presentation.zoom.race-palette-cycle.v1`,
 the same ROM bytes; the two-track pack v7 has them). DRAGSTER v1 packs, which
 do not, keep the accepted pose-keyed palette, so the accepted v1 contracts,
 fixtures and historical gates are untouched. No new pack version is added:
@@ -101,16 +110,26 @@ the two-track pack already carries every DRAGSTER entry and the tables. The
 result screen and rider palettes are unchanged.
 
 Verification:
+- Against original pictures, using the review's recaptured originals, native
+  states and original camera and scroll: on the 15 sampled frames where the
+  window colour changes, 61,239 of 75,015 changed pixels now equal the
+  original, against 0 for the fixed colours. Every one of the 5,001 winner
+  window pixels matches at 3452-3460, 3500 and 3528-3530 (phases 6, 8-14, 2-4).
+  The rest are shape and timing, not colour: at 3322 the original window
+  covers 2,810 pixels where native draws its fixed 5,001-pixel table, and at
+  3600 and 3677 the original screen is black during loading.
 - Accepted v1 presentation checks with the v1 pack: winner
   36/697/279/445/653/962/961 and loser 1,073, unchanged.
 - The same frozen cases rendered with pack v7 (cycle active) and scored with
   the checker's own comparison: identical counts, as the phases predict.
 - `presentation_tests` pins the rule to the observations above (1333 untouched,
   1600 phase 10, 3453 phase 7, winner loading 3454 and 3528 frozen at phase 8
-  with black colour 0, loser loading 3559 at phase 1). Shifting the start frame
-  by one fails it.
+  with black colour 0, loser loading 3559 at phase 1), and renders the winner
+  and GO windows: phases 7 and 10 give the accepted colours, 3452 gives the
+  original's `(121,38,255)`, and a v1 pack keeps `(98,98,255)`. Shifting the
+  start frame by one, or ignoring the tables for the windows, fails it.
 
-Not established: a pixel sweep of native DRAGSTER renders at non-frozen frames
-(the frozen presentation cases are the only native fixtures with original
-scroll values), the palette after loser loading update 75, and pause (native
-DRAGSTER has none).
+Not established: when the windows appear and their shape. Native still gates
+them on rider pose pairs and draws one frozen table each, which is a separate
+presentation heuristic outside this task. Also not established: the palette
+after loading update 75, and pause (native DRAGSTER has none).
