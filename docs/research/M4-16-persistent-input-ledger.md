@@ -80,14 +80,44 @@ through a complete second race. This conclusion does not extend to persisted
 records, different riders/tracks/lap settings, tutorial profiles, menu state or
 tour continuation.
 
-## Remaining evidence limits
+## Result-loading unresolved reads: classified
 
-The result access capture retains 11,738 unresolved reads before frame 6795,
-although none remain from fully visible frame 6839 through 7200 and there are
-zero unresolved stores. The inspected reached inputs above close the declared
-eight result publications and standalone restart dependency; they do not turn
-the aggregate unresolved count into a global producer-closure result. The
-remaining reached loading reads would need individual presentation,
-persistent-tour or future-state classification before a global closure claim,
-and representative frozen visual checks are still required. Exact original
+The result access capture (`artifacts/m4-16/result-audit/access.json`, frames
+6725-7200) retains 11,738 unresolved reads, all in frames 6729-6794, none from
+fully visible frame 6839 through 7200, and zero unresolved stores. "Unresolved"
+means an indirect access whose pointer bytes the trace could not know: the
+pointers are advanced by read-modify-write instructions (R-0007). All 11,738
+come from eight long-indirect instructions in two bank-`$82` routines:
+
+| Instruction | Unresolved | Routine and destination |
+| --- | ---: | --- |
+| `$82:80D1 LDA [$63]` | 7,277 | SPC700 IPL upload `$82:8082-8129`: data byte to `$2141`, counter `$69` handshaken on `$2140` |
+| `$82:82F0 LDA [$63],Y` | 4,073 | Sample upload `$82:82A9-831E`: word pairs to `$2143/$2142`, handshaken on `$2142` |
+| `$82:8141 ADC [$63]` | 362 | Block locator `$82:812A-814F`: sums a length-prefixed chain to reach block X |
+| `$82:82D4 LDA [$63],Y` | 16 | Sample upload: block length, loop count only |
+| `$82:809C`, `$82:80A5`, `$82:80B2`, `$82:80BA` `LDA [$63]` | 10 | IPL upload header: byte count (loop only), load address to `$2142/$2143` |
+
+Pointer provenance makes every effective address static ROM by construction:
+`$82:812D-812F` sets the bank `$65` to `#$10`, `$82:8138-813B` sets `$63` to
+`#$8000`, and thereafter the pointer only advances (`$82:8151-815F` `INC $63` /
+`ROR $63` / `INC $65`; `$82:82D6-82FE` `INY`, bumping `$65` and resetting Y to
+`$8000`). In LoROM, bank `$10` and above at `$8000-$FFFF` is ROM. The resolved
+reads made by the same eight instructions all land in ROM `$10:8000-$13:BA4F`.
+The values read flow only to APU ports `$2140-$2143` or to loop counters and
+the pointer itself. The routines' other RAM writes carry no value read through
+the pointer: constants from the IPL upload (`$82:810F` `$7E2004=$80`,
+`$82:811B/811F` `$7E2000/$7E2002=1`, audio-driver status after the transfer)
+and their own direct-page scratch (`$63-$69`, `$6F`).
+
+**Classification: audio.** These are the original's result-screen sound
+program and samples being uploaded to the SPC700. Audio is excluded from the
+M4-16 contract. None is a simulation input, result input, persistent/tour
+state or future-state dependency, so the eight result publications and the
+standalone Race Again closure above are unaffected. With this, every
+unresolved read in the result capture has an individual classification.
+
+Scope: this classifies the result-loading capture only. The initialization
+capture's 23,518 unresolved reads are not classified here; R-0007 attributes
+most race-window unresolved reads to the same `[$63]`/`$007C` pointer pattern,
+including `$83:F27E`/`$83:F286`, which are not in this capture. Exact original
 result rendering and alternate persistent defaults remain unsupported.

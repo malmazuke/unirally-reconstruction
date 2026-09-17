@@ -88,9 +88,11 @@ checkout; without it every historical command exits 2, missing prerequisite.
    reviewer's 247 recaptured frames in
    `.worktrees/m4-16-review/artifacts/m4-16-review/visual-06abab7/original-recapture`.
    Read HUD values off original frames, never from WRAM alone.
-5. **Result-loading read classification** against the durable
-   [persistent-input ledger](../docs/research/M4-16-persistent-input-ledger.md).
-   Zero unresolved stores is not zero unresolved reads.
+5. **Result-loading read classification — classified, review due.** All
+   11,738 unresolved reads in the result capture are static ROM audio data
+   uploaded to the SPC700 by `$82:8082-8129` and `$82:82A9-831E`; see the
+   [ledger](../docs/research/M4-16-persistent-input-ledger.md). The
+   initialization capture's 23,518 remain unclassified and are not claimed.
 6. **Final integration**: reviewed exact merge, hosted macOS/Linux CI on the
    exact tip, and synchronized private main. Hosted Linux is synthetic coverage,
    not private Linux differential execution. No M4-17 and no milestone tag.
