@@ -1392,17 +1392,19 @@ void update_zoom_checkpoint(ZoomZooState& state,unsigned index,const ZoomZooCont
 
 // $819FB0-A16D / $81A520-A53F; PAL one-player camera at 4x horizontal scale.
 // Positions are world units, signed velocity and lookahead are whole units.
-void update_zoom_camera(ZoomZooState& state,std::uint16_t position_mask) {
+void update_zoom_camera(ZoomZooState& state,const TrackGeometry& geometry) {
     auto& c=state.race.camera;const auto& rider=state.movement.riders[0];
     const auto target=1-(static_cast<std::int16_t>(rider.motion.velocity_x)>>3);
     auto look=static_cast<std::int16_t>(c.lookahead);
     if(look<target)++look;else if(look>target)--look;
     c.lookahead=static_cast<std::uint16_t>(look);
-    const auto center=static_cast<std::uint16_t>((c.x+c.lookahead+95U)&position_mask);
-    const auto delta=static_cast<std::int16_t>(static_cast<std::uint16_t>((rider.motion.x-center)*4U));
+    const auto center=static_cast<std::uint16_t>((c.x+c.lookahead+95U)&geometry.position_mask);
+    const auto delta=static_cast<std::int16_t>(static_cast<std::uint16_t>(
+        (static_cast<unsigned>(rider.motion.x)<<geometry.screen_shift)-(static_cast<unsigned>(center)<<geometry.screen_shift)));
     int vx{};
-    if(delta < -96 || delta>=100)vx=delta<0?-16:16;
-    else {const int distance=delta>>2;vx=distance<0?std::min(0,distance+8):std::max(0,distance-8);}
+    // Outside the window the $81:9FF8-A02B half-world test reduces to the sign of the wrapped difference.
+    if(delta < geometry.follow_window_low || delta>=geometry.follow_window_high)vx=delta<0?-16:16;
+    else {const int distance=delta>>geometry.screen_shift;vx=distance<0?std::min(0,distance+8):std::max(0,distance-8);}
     c.velocity_x=static_cast<std::uint16_t>(vx);
     int candidate=static_cast<std::int16_t>(c.y)+30;
     int vy=-16;
@@ -1410,15 +1412,15 @@ void update_zoom_camera(ZoomZooState& state,std::uint16_t position_mask) {
         candidate+=4;++vy;if(vy==0)candidate+=20;
     }
     c.velocity_y=static_cast<std::uint16_t>(vy);
-    c.x=static_cast<std::uint16_t>(c.x+vx)&position_mask;c.y=static_cast<std::uint16_t>(c.y+vy);
+    c.x=static_cast<std::uint16_t>(c.x+vx)&geometry.position_mask;c.y=static_cast<std::uint16_t>(c.y+vy);
 }
-void update_zoom_visibility(ZoomZooState& state) {
+void update_zoom_visibility(ZoomZooState& state,const TrackGeometry& geometry) {
     auto& c=state.race.camera;const auto& rider=state.movement.riders[0];
     // $82ACAE-AD7A. The previous frame's visibility feeds speed damping.
     const int dy=static_cast<std::int16_t>(rider.motion.y-c.y);
     const auto dx=static_cast<std::int16_t>(rider.motion.x-c.x);
-    const int scaled=static_cast<std::int16_t>(static_cast<std::uint16_t>(dx*4));
-    const bool outside=dy < -41 || dy>=225 || scaled < -196 || scaled>=1024;
+    const int scaled=static_cast<std::int16_t>(static_cast<std::uint16_t>(static_cast<unsigned>(static_cast<std::uint16_t>(dx))<<geometry.screen_shift));
+    const bool outside=dy < -41 || dy>=225 || scaled < geometry.visible_left || scaled>=geometry.visible_right;
     state.race.provisional_1225=(outside || scaled<0)?1:0;
     state.race.provisional_1227=0;
     c.screen_xy=outside?0x7070U:static_cast<std::uint16_t>((static_cast<unsigned>(dy)&255U)*256U+(static_cast<unsigned>(dx)&255U));
@@ -1469,10 +1471,14 @@ ClassicRaceScenario classic_race_scenario(ClassicRaceTrack track) {
     // DRAGSTER: end-1328 on the accepted menu path (R-0038), one lap; the
     // stable winner/loser screens follow load 226/242 (R-0012, R-0019).
     switch(track) {
-    case ClassicRaceTrack::ZoomZoo: return {track,1376,3,115,115,72,true};
-    case ClassicRaceTrack::Dragster: return {track,1328,1,226,242,96,false};
+    case ClassicRaceTrack::ZoomZoo: return {track,1376,3,115,115,true};
+    case ClassicRaceTrack::Dragster: return {track,1328,1,226,242,false};
     }
     throw std::invalid_argument("unknown classic race track");
+}
+
+std::uint16_t race_adjustment_limit(const ClassicRaceScenario& scenario) {
+    return scenario.tour_race?0x48:0x60;
 }
 
 TrackGeometry track_geometry(std::span<const std::uint8_t> decoded_track) {
@@ -1481,8 +1487,8 @@ TrackGeometry track_geometry(std::span<const std::uint8_t> decoded_track) {
     // $81:A445 (256 x 64). The other arms ($81:A388-A4BF) are not reached by
     // either supported track, so they are rejected rather than inferred.
     switch(decoded_track[13]) {
-    case 0x00: return {1024,0xffff};
-    case 0x40: return {256,0x3fff};
+    case 0x00: return {1024,0xffff,0,-0x18,0x19,-0x31,0x100}; // $81:A4C1-A4FD
+    case 0x40: return {256,0x3fff,2,-0x60,0x64,-0xc4,0x400};  // $81:A445-A481
     default: throw std::invalid_argument("track playfield shape is outside the recovered tracks");
     }
 }
@@ -2051,7 +2057,7 @@ void update_zoom_zoo(ZoomZooState& state,const ControllerButtons& requested_butt
         limit.pose_byte=index==1?next.opponent_retained_oam_x:static_cast<std::uint8_t>(next.race.camera.screen_xy);
         limit.drag=state.complete_race && (index==0?next.race.provisional_1225:next.race.provisional_1227);
         limit.start_override=rider.launch_override!=0;limit.player_progress=whole.riders[0].progress.transition_count;
-        limit.opponent_progress=whole.riders[1].progress.transition_count;limit.adjustment_limit=scenario.adjustment_limit;
+        limit.opponent_progress=whole.riders[1].progress.transition_count;limit.adjustment_limit=race_adjustment_limit(scenario);
         limit.player_base_cap=next.reflection[0].base_velocity_cap;limit.update_counter=whole.update_counter;
         limit.friction_mode=static_cast<std::uint16_t>(horizontal);
         limit_rider_speed(rider.motion.velocity_x,rider.motion.velocity_y,rider.speed,limit,content.movement.speed_decay);
@@ -2073,7 +2079,7 @@ void update_zoom_zoo(ZoomZooState& state,const ControllerButtons& requested_butt
     if(state.native_initialization)consume_zoom_player(next,content.movement);
     update_reward_queue(whole,reward,content.movement,
         state.native_initialization?std::span<std::uint8_t>{next.learned_weights[1]}:std::span<std::uint8_t>{});
-    if(state.complete_race)update_zoom_camera(next,track_geometry(content.movement.sampling.track).position_mask);
+    if(state.complete_race)update_zoom_camera(next,track_geometry(content.movement.sampling.track));
     for(unsigned index=0;index<2;++index) {
         auto& rider=whole.riders[index];
         const auto points=collision_points(content.movement.sampling,rider.pose.pose_index,rider.pose.reflected);
@@ -2090,7 +2096,7 @@ void update_zoom_zoo(ZoomZooState& state,const ControllerButtons& requested_butt
         if(state.native_initialization)next.rolls[index].support_count_mirror=rider.contact.unsupported_count;
         observe_track_markers(rider.progress,samples);
     }
-    if(state.complete_race)update_zoom_visibility(next);
+    if(state.complete_race)update_zoom_visibility(next,track_geometry(content.movement.sampling.track));
     if(state.native_initialization)update_zoom_hints(next);
     ++whole.frame;state=next;
 }

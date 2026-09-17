@@ -66,23 +66,28 @@ struct ClassicRaceScenario {
     // Result-loading updates until the result screen is stable:
     // player won, player lost.
     std::uint16_t stable_result_won{}, stable_result_lost{};
-    // `$1281`, the speed-limiter progress adjustment bound. `$83:CC59-CC7C`
-    // derives it once at race setup from scenario bytes `$77:0749-074B` and
-    // ROM table `$83:C8B3`, which the pack does not carry, so each supported
-    // scenario keeps the value its reference guard authenticates.
-    std::uint16_t adjustment_limit{};
-    // Race mode `$77:074B`: 1 for the ZOOM ZOO tour race, 0 for DRAGSTER. In
-    // the race update it selects only the final-lap announcement ($81:81AE)
-    // and the result screen: mode 1 publishes the lap graph extrema at load
-    // 106 ($83:904A-90F0); the mode-0 result screen publishes none.
+    // Race mode `$77:074B`: 1 for the ZOOM ZOO tour race, 0 for DRAGSTER.
+    // Besides the laps above it selects the speed-limiter progress adjustment
+    // bound `$1281` (72 or 96, see race_adjustment_limit), the final-lap
+    // announcement ($81:81AE) and the result screen: mode 1 publishes the lap
+    // graph extrema at load 106 ($83:904A-90F0); the mode-0 screen publishes none.
     bool tour_race{};
 };
+// $83:CC59-CC7C: 0x48 (mode 1) or 0x60 (mode 0) minus `$1283`, which is zero
+// on every authenticated frame of both tracks' references (guarded).
+std::uint16_t race_adjustment_limit(const ClassicRaceScenario& scenario);
 ClassicRaceScenario classic_race_scenario(ClassicRaceTrack track);
 // $81:A304-A51B: decoded track byte 13 selects one of the fixed playfields of
 // 16,384 64-unit coarse cells. Zero selects 1,024 columns (DRAGSTER) and 0x40
-// selects 256 (ZOOM ZOO); x wraps with `$0D4F`, columns * 64 - 1.
+// selects 256 (ZOOM ZOO); x wraps with `$0D4F`, columns * 64 - 1. The same arm
+// sets the camera and visibility scale: world x is shifted left by `$03F1`
+// before comparison with the follow window `$03F3/$03F5` ($81:9FB0-A05D) and
+// the visible span `$0425/$0427` ($82:AD0F-AD28).
 struct TrackGeometry {
     std::uint16_t coarse_columns{}, position_mask{};
+    unsigned screen_shift{};
+    std::int16_t follow_window_low{}, follow_window_high{};
+    std::int16_t visible_left{}, visible_right{};
 };
 TrackGeometry track_geometry(std::span<const std::uint8_t> decoded_track);
 
