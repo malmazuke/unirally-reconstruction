@@ -18,6 +18,14 @@ int main() {
   require(unirally::snes_add_colour(0x001f, 0x0001, true) == 0x0010);
   require(unirally::snes_add_colour(0x7c00, 0x03e0, false) == 0x7fe0);
 
+  // Original WRAM $0EFB against the lap shown in the original's HUD at frames
+  // 1450, 1700, 3208, 4840 and 6484 of the frozen primary timeline.
+  require(unirally::zoom_zoo_hud_lap(4) == 0);
+  require(unirally::zoom_zoo_hud_lap(3) == 1);
+  require(unirally::zoom_zoo_hud_lap(2) == 2);
+  require(unirally::zoom_zoo_hud_lap(1) == 3);
+  require(unirally::zoom_zoo_hud_lap(0) == 3);
+
   std::vector<std::uint8_t> track(33815);
   for (std::size_t x = 0; x < 30; ++x)
     for (std::size_t y = 0; y < 16; ++y) {

@@ -943,6 +943,9 @@ std::string race_time(unsigned value) {
     return {digit(value/6000),':',digit(value/1000%6),digit(value/100),'.',digit(value/10),digit(value)};
 }
 }
+unsigned zoom_zoo_hud_lap(unsigned laps_remaining) {
+    return std::min(3U,4U-std::min(4U,laps_remaining));
+}
 RgbFrame render_zoom_zoo(const ZoomZooState& state,const ClassicContentPack& pack,
                          const std::array<RiderArtPose,2>* rider_art) {
     RgbFrame frame{};
@@ -1024,7 +1027,7 @@ RgbFrame render_zoom_zoo(const ZoomZooState& state,const ClassicContentPack& pac
                      static_cast<int>(rider.motion.y)-camera_y,i?136:0,i?0x68:0x66);
     }
     rect(frame,0,0,256,12,{15,30,30});
-    ui_text(frame,5,3,std::to_string(3U-std::min(3U,unsigned(state.race.riders[0].laps_remaining)))+"/3");
+    ui_text(frame,5,3,std::to_string(zoom_zoo_hud_lap(state.race.riders[0].laps_remaining))+"/3");
     const auto& t=state.movement.timer;
     ui_text(frame,195,3,race_time(t.minutes*6000+t.tens_seconds*1000+t.seconds*100+t.tenths*10+t.subframe*2));
     if(state.movement.countdown>=70)ui_text(frame,110,35,"READY");

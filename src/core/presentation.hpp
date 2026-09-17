@@ -70,6 +70,9 @@ struct PresentationContent {
 };
 struct ZoomZooState;
 class ClassicContentPack;
+// Laps shown on the authored ZOOM ZOO HUD. The original counts laps_remaining
+// down 4,3,2,1,0 and displays 0/3,1/3,2/3,3/3,3/3 against it.
+unsigned zoom_zoo_hud_lap(unsigned laps_remaining);
 RgbFrame render_zoom_zoo(const ZoomZooState&,const ClassicContentPack&,
                          const std::array<RiderArtPose,2>* rider_art=nullptr);
 RgbFrame render_dragster_headless(const PresentationSample &,
