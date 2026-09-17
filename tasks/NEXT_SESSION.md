@@ -24,9 +24,12 @@ record UTC wall clock. No reset, purchase or provider change is authorized.
    confirm the deliberate product change: a DRAGSTER-only v1 pack no longer
    plays DRAGSTER (the app refuses it up front with the remedy; the launcher
    upgrades to or extracts a two-track pack).
-2. **ZOOM ZOO opposing-direction input, not started.** Raised by the controls
-   work: ZOOM ZOO still rejects the input that DRAGSTER now accepts. Capture
-   original ZOOM ZOO evidence before changing anything.
+2. **ZOOM ZOO opposing-direction input, only smoke-tested.** The controls work
+   listed this as untested, and an earlier version of this entry wrongly said
+   ZOOM ZOO rejects it. It does not: hidden 800-update runs on `6da0fa0` with
+   Left+Right, Left alone and Right alone all exit 0. What is still missing is
+   evidence that native matches the original for those inputs over a complete
+   race; capture original ZOOM ZOO timelines before claiming it.
 3. **DRAGSTER window timing and shape, not started.** DRAGSTER-PALETTE-CYCLE
    (integrated; R-0037) made the GO and winner windows take the cycled colour 0,
    matching the original where their shapes overlap. Native still draws each
