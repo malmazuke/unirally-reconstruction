@@ -89,11 +89,36 @@ gates; the new path is additive (state identity `URDG0001`).
   pressing X during the initial drop started a roll the original never starts
   (fuzz seed 1, original divergence at 1343). ZOOM ZOO references never press A
   or X there, so its gates are unaffected.
-- **Landing clears held rotations.** A landing's reward pass (`$829B69-9D97`)
-  clears held rotations on the update a released roll counts its hold, so the
-  original reaches hold 1 with 0 rotations (fuzz seed 31, frame 1623). The
-  M4-16 restore bound rejected that state; it now admits it only with zero
-  rotations while supported or with a landing response.
+- **Hold duration is not bounded by rotations.** A landing's reward pass
+  (`$829B69-9D97`) clears held rotations while a released roll keeps counting
+  its hold, also across a bounce: the original reaches hold 1 with 0 rotations
+  (fuzz seed 31, 1623) and hold 2 with 1 (seed 383, 3473). The M4-16 restore
+  bound (hold at most rotations) rejected these reachable states and is
+  removed; the elapsed-update bounds remain.
+- **Charge latch, `$82:9995-99EF` and `$82:99F1-9A49`.** With the brake held
+  and no reflection step, nonzero throttle sets the latch and zero throttle
+  leaves it; a step, the airborne, steep and neutral paths, and a brake release
+  clear it. Left with Y through the countdown carries throttle through zero
+  (seed 208, 1536), where native used to clear it.
+- **Roll bounce keeps velocity, `$82:A9B3/AA10`.** Both drive routines skip the
+  velocity update while the rider's bounce `$042B` is active but still
+  accumulate throttle (three differential-fuzz races holding B, X and Right).
+- **Moving brake uses the drive routines.** `$82:9909-9945` brakes a rider
+  moving at 16 or more through the opposite drive routine and clamps a velocity
+  that crosses zero, so a roll bounce keeps the velocity there too (seed 140),
+  and on an inverted tile the step follows the velocity sign.
+- **Supported orientation at target, `$83:F02D-F034`.** Without a landing
+  response, a supported rider whose target equals its orientation skips the
+  store, so a rotation input left over from the landing update is not applied;
+  a step toward a different target starts from the stored orientation (seed 135,
+  the update after an L-held landing).
+- **A zero roll step completes, `$82:959B`.** The direction flip turns step -1
+  into ~-1 = 0 (`$82:9439`), and the ordinary advance completes a zero step
+  without moving it (differential-fuzz seeds 53, 71, 78, 111).
+- **Idle wobble, `$82:A1F2-A1FF`.** A falling oscillator velocity below
+  reference 32 is applied unchanged; the shared helper reset it to -1 for
+  references 9-31 (seeds 66, 82). This helper is also the legacy DRAGSTER
+  path's; its historical compare and finish checks are unchanged.
 - **Physical D-pad.** The reference core's gamepad reports `up & !down` and
   `left & !right` (bsnes `sfc/controller/gamepad`): a SNES rocker cannot press
   both. random-1 held Up with Down at 2207 and the original saw neither.
@@ -131,6 +156,24 @@ task record). The regressions are the two fuzz races above.
 Originals, captures with frame images and the access records
 (`access-load`, `access-mixed1`, `access-fuzz-seed1`) stay private under
 `artifacts/dragster-ordinary-controls/` in the task worktree.
+
+## Fuzzing
+
+Two complementary fuzzers ran over complete races:
+
+- **Abort fuzz** (`dragster_fuzz_runner`): the app's update, restart and
+  render calls with three input styles (ordinary play, pause navigation with
+  opposing directions, 1,500 updates of button mashing then play), a
+  serialization round trip after every update, and every failing race written
+  as a capture case. It finds stops only.
+- **Differential fuzz** (`tools/unirally_lab/native/dragster_diff_fuzz.py`): seeded ordinary timelines with
+  pauses, opposing directions and every button, captured in the original and
+  compared natively with `dragster_playable explore`. It found the silent
+  divergences above. Out-of-domain originals are classified, not compared:
+  retiring from the pause menu (native offers RESTART RACE), leaving the result
+  screen with other buttons, and races finishing too late for the horizon.
+
+Counts per candidate are in the task record.
 
 ## Reproduction
 

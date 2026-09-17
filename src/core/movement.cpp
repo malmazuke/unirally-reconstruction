@@ -427,7 +427,12 @@ void update_pose(RiderMovementState& rider,std::uint8_t counter,std::uint8_t con
     auto orientation=static_cast<std::uint16_t>(rider.pose.orientation+rider.motion.response_b);
     if(rider.motion.response_a) {
         orientation=add_word(orientation,rider.motion.response_a);
-    } else if(rider.contact.unsupported_count<9 && rider.pose.target_orientation!=rider.pose.orientation) {
+    } else if(rider.contact.unsupported_count<9 && rider.pose.target_orientation==rider.pose.orientation) {
+        // $83:F02D-F034 skips the store: a supported rider already at its
+        // target keeps its orientation, so rotation input is not applied
+        // (DRAGSTER diff fuzz seed 135, the update after an L-held landing).
+        orientation=rider.pose.orientation;
+    } else if(rider.contact.unsupported_count<9) {
         const auto target=rider.pose.target_orientation;
         const bool increase=target>=32 ?
             (static_cast<std::int16_t>(target-rider.pose.orientation)>=1 &&
@@ -1045,13 +1050,30 @@ void update_zoom_ai(ZoomZooState& state) {
 void update_zoom_throttle(RiderMovementState& rider,ReflectionTransition& transition,unsigned horizontal,
                           int& animation_override,bool& throttle_target,std::uint16_t& charge_announced,bool leading_support=false,
                           bool bounce_active=false) {
+    // Velocity part of the drive routines $82:A9B3 (rightward, +24) and
+    // $82:AA10 (leftward, -24). On an inverted tile both move a nonzero
+    // velocity away from zero, and a roll bounce ($042B) stores nothing.
+    const auto drive_velocity=[&](bool rightward) {
+        if(bounce_active)return;
+        if(rider.contact.selected_word&0x8000U) {
+            if(rider.motion.velocity_x)rider.motion.velocity_x=add_word(rider.motion.velocity_x,
+                negative(rider.motion.velocity_x)?static_cast<std::uint16_t>(-24):24);
+        } else rider.motion.velocity_x=add_word(rider.motion.velocity_x,rightward?24:static_cast<std::uint16_t>(-24));
+    };
     const auto incoming_speed=static_cast<std::int16_t>(rider.motion.velocity_x);
     const bool braking=transition.brake_input && (incoming_speed>=16 || incoming_speed < -16);
     if(!leading_support && rider.contact.unsupported_count<2 &&
        rider.contact.surface_angle!=0xffe1U && rider.contact.surface_angle!=31 && braking) {
-        // $829909-9945 returns before the previous-brake latch publication.
-        rider.motion.velocity_x=static_cast<std::uint16_t>(incoming_speed>0?
-            std::max(0,incoming_speed-24):std::min(0,incoming_speed+24));
+        // $829909-9945 brakes through the opposite drive routine, clamps a
+        // velocity that crossed zero, and returns before the previous-brake
+        // latch publication. A bounce keeps the velocity (diff fuzz seed 140).
+        if(incoming_speed>0) {
+            drive_velocity(false);
+            if(negative(rider.motion.velocity_x))rider.motion.velocity_x=0;
+        } else {
+            drive_velocity(true);
+            if(!negative(rider.motion.velocity_x))rider.motion.velocity_x=0;
+        }
         rider.throttle=0;
         return;
     }
@@ -1068,13 +1090,9 @@ void update_zoom_throttle(RiderMovementState& rider,ReflectionTransition& transi
         // Both drive routines return before throttle accumulation when an
         // inverted tile has zero incoming velocity ($82A9CC / $82AA29).
         if(!(rider.contact.selected_word&0x8000U) || rider.motion.velocity_x!=0) {
-            // $82:AA42-AA49 / its mirror: a roll bounce ($042B) keeps the
-            // velocity; throttle still accumulates below.
-            if(bounce_active) {
-            } else if(rider.contact.selected_word&0x8000U) {
-                if(rider.motion.velocity_x)rider.motion.velocity_x=add_word(rider.motion.velocity_x,
-                    negative(rider.motion.velocity_x)?static_cast<std::uint16_t>(-24):24);
-            } else rider.motion.velocity_x=add_word(rider.motion.velocity_x,horizontal==2?24:static_cast<std::uint16_t>(-24));
+            // $82:AA42-AA49 / its mirror: a roll bounce keeps the velocity;
+            // throttle still accumulates below.
+            drive_velocity(horizontal==2);
             const auto cap=static_cast<std::uint16_t>(transition.base_velocity_cap+
                 std::max(0,static_cast<int>(static_cast<std::int16_t>(rider.speed.boost)))+rider.launch_override);
             const auto next=add_word(rider.throttle,horizontal==2?16:static_cast<std::uint16_t>(-16));
