@@ -454,6 +454,7 @@ python3 tools/project.py frontend run --track zoom-zoo --pack local/classic-craw
 build/app-debug/src/core/zoom_zoo_presentation_runner local/classic-crawler-two-tracks-v7.pack --timeline <native timeline> <frame> OUT.ppm
 python3 -m tools.unirally_lab.native.zoom_zoo_playable --help
 python3 -m tools.unirally_lab.native.zoom_zoo_playable_reference --help
+# idle variation: case JSON {"idle":{"from":F,"frames":N|null}} releases all buttons, then resumes the primary; horizon up to 40000
 ```
 
 The first-launch frontend accepts `--rom` plus a fresh pack destination and
