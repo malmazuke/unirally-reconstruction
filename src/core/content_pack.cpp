@@ -123,7 +123,7 @@ const std::array<RequiredEntry, 25> required{
      {"presentation.result.classic.palette-tail.v1", 128,
       "cd7b9fac3c3ec53d74450dcb28da0f53a09c927826ca3753ff047851c2b20641"}}};
 
-const std::array<RequiredEntry, 30> zoom_required{{
+const std::array<RequiredEntry, 31> zoom_required{{
     {"zoom.track-data", 50665, "db6770152e399f9d16fc6937b5d56588a8f67e825ae70d6578b77d36053fdd28"},
     {"zoom.collision-poses", 32768, "9d1754d38c20cb2900239557550211ab6fc23d9b0237e17b78fb29f3bf272c32"},
     {"zoom.collision-templates", 17249, "2f03a8cb985899436603ef36b233b28f7b4213e4ba106fca328a6b02cdb081c7"},
@@ -156,8 +156,11 @@ const std::array<RequiredEntry, 30> zoom_required{{
     // R-0036: $82:833B, $83:EC2E, $17:C606 and $17:C614 rider look tables.
     {"presentation.rider.look-tables.v1", 594, "3ea809fc62e175660f9bb98c10b44bb80fd79ab98c7378c547790e3b6b986029"},
     {"presentation.zoom.race-palette-cycle.v1", 544, "a82bb2726a4bdbfd74483aae5261fb11e325ae35e88681125d9d68ad14f7a57f"},
+    // R-0040: the channel-6 window HDMA family $15:8000-$15:D7CA, 25 tables
+    // of 899 bytes (898 data plus the run terminator) selected by $83:E55C.
+    {"presentation.effect.classic.window-tables.v1", 22475, "238ff3fc38357b359e99ae3da0647fdf61cb4a6a3680b83faa1b3a8a6a4a2cf0"},
 }};
-constexpr std::string_view two_track_rules_sha="5920a1301edaae061e530c8550758c90dae8b75d95e389f5c89fbea69308b236";
+constexpr std::string_view two_track_rules_sha="f1e9c2580ef0fe26213068ed3021bc326981b55ae2f6f533307577689446778b";
 
 std::array<std::uint8_t, 32> hex_digest(std::string_view text) {
   if (text.size() != 64)
@@ -280,8 +283,8 @@ ClassicContentPack::ClassicContentPack(const std::filesystem::path &path) {
         "Classic pack source ROM identity is unsupported");
   const auto profile=in.text();
   const auto start=in.text();
-  const bool two_tracks=profile=="classic.pal.crawler.two-tracks.v7";
-  if (profile != (two_tracks ? "classic.pal.crawler.two-tracks.v7" : "classic.pal.crawler.dragster.v1"))
+  const bool two_tracks=profile=="classic.pal.crawler.two-tracks.v8";
+  if (profile != (two_tracks ? "classic.pal.crawler.two-tracks.v8" : "classic.pal.crawler.dragster.v1"))
     throw std::invalid_argument("Classic pack profile is unsupported");
   if (start != (two_tracks ? "classic.crawler.race-start.v2" : "classic.crawler.dragster.race-start.v1"))
     throw std::invalid_argument("Classic pack start state is unsupported");

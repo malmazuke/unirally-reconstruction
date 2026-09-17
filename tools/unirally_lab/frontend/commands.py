@@ -90,7 +90,8 @@ def _finish(rep: reportmod.Report, report: Path | None, status: int) -> int:
     return status
 
 
-TWO_TRACK_PACK_NAMES = ("classic-crawler-two-tracks.pack", "classic-crawler-two-tracks-v7.pack")
+TWO_TRACK_PACK_NAMES = ("classic-crawler-two-tracks.pack", "classic-crawler-two-tracks-v8.pack",
+                        "classic-crawler-two-tracks-v7.pack")
 
 
 def _dragster_two_track_pack(rep: reportmod.Report, rom: Path | None) -> Path | int:

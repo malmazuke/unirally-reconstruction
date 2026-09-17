@@ -239,6 +239,7 @@ int main() {
                                               result_base_vram,
                                               result_palette,
                                               result_palette_tail,
+                                              {},
                                               {}};
   const auto first = unirally::render_dragster_headless({state, 0, 0, 0, 0, 0},
                                                         content),

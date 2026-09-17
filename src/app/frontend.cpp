@@ -169,7 +169,8 @@ PresentationContent dragster_presentation_content(const ClassicContentPack &pack
           pack.entry("presentation.result.classic.base-vram.v1"),
           pack.entry("presentation.result.classic.palette.v1"),
           pack.entry("presentation.result.classic.palette-tail.v1"),
-          pack.optional_entry("presentation.zoom.race-palette-cycle.v1")};
+          pack.optional_entry("presentation.zoom.race-palette-cycle.v1"),
+          pack.optional_entry("presentation.effect.classic.window-tables.v1")};
 }
 
 MovementState dragster_presentation_state(const ZoomZooState &race) {

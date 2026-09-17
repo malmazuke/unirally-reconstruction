@@ -86,7 +86,8 @@ int main(int argc, char **argv) try {
       pack.entry("presentation.result.classic.base-vram.v1"),
       pack.entry("presentation.result.classic.palette.v1"),
       pack.entry("presentation.result.classic.palette-tail.v1"),
-      pack.optional_entry("presentation.zoom.race-palette-cycle.v1")};
+      pack.optional_entry("presentation.zoom.race-palette-cycle.v1"),
+      pack.optional_entry("presentation.effect.classic.window-tables.v1")};
 
   unirally::app::LivePresentation fresh;
   const auto first = fresh.render(state, position, content);

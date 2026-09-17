@@ -191,7 +191,7 @@ int main() {
   const auto rendered = unirally::render_dragster_headless(
       {presentation_state, 0, -14, 208, -7, 104},
       {track, bg1, bg2, bg2_map, palette, font, rider_tiles, result_assets,
-       go, winner, result_vram, result_palette, result_tail, {}});
+       go, winner, result_vram, result_palette, result_tail, {}, {}});
   require(rendered.pixels.size() == 256U * 224U * 3U,
           "accepted native-resolution frame displayed");
   require(unirally::serialize_movement_state(presentation_state) == before,
@@ -206,7 +206,7 @@ int main() {
   const auto first_live = live.render(unsupported_one, first_position,
                                       {track, bg1, bg2, bg2_map, palette, font,
                                        rider_tiles, result_assets, go, winner,
-                                       result_vram, result_palette, result_tail, {}});
+                                       result_vram, result_palette, result_tail, {}, {}});
   require(first_live.used_pose_fallback, "unsupported pair uses rider fallback");
   const std::array<unirally::RiderArtPose, 2> opening_art{
       unirally::RiderArtPose{0x04f9, true},
@@ -215,7 +215,7 @@ int main() {
       {unsupported_one, first_position.camera_x, first_position.bg1_x,
        first_position.bg1_y, first_position.bg2_x, first_position.bg2_y},
       {track, bg1, bg2, bg2_map, palette, font, rider_tiles, result_assets,
-       go, winner, result_vram, result_palette, result_tail, {}},
+       go, winner, result_vram, result_palette, result_tail, {}, {}},
       opening_art);
   require(first_live.frame.pixels == direct_one.pixels,
           "fallback changes only rider art selection");
@@ -229,7 +229,7 @@ int main() {
   const auto second_live = live.render(unsupported_two, second_position,
                                        {track, bg1, bg2, bg2_map, palette, font,
                                         rider_tiles, result_assets, go, winner,
-                                        result_vram, result_palette, result_tail, {}});
+                                        result_vram, result_palette, result_tail, {}, {}});
   require(second_live.used_pose_fallback, "later unsupported pair uses fallback");
   require(first_live.frame.pixels != second_live.frame.pixels,
           "unsupported gameplay/camera/timer states produce fresh frames");
@@ -253,7 +253,7 @@ int main() {
   winner = active_window_table();
   const unirally::PresentationContent effect_content{
       track, bg1, bg2, bg2_map, palette, font, rider_tiles, result_assets,
-      go, winner, result_vram, result_palette, result_tail, {}};
+      go, winner, result_vram, result_palette, result_tail, {}, {}};
 
   LivePresentation rolling_history;
   auto rolling = presentation_state;

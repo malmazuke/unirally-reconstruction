@@ -859,7 +859,8 @@ static RgbFrame render_dragster(const PresentationSample &s,
       content.winner_window.size() != 898 ||
       content.result_base_vram.size() != 41536 ||
       content.result_palette.size() != 216 ||
-      content.result_palette_tail.size() != 128)
+      content.result_palette_tail.size() != 128 ||
+      (!content.window_tables.empty() && content.window_tables.size() != 22475))
     throw std::invalid_argument(
         "Classic presentation entry size is unsupported");
   // The original publishes the completed result at end-of-frame 3678. The
@@ -894,8 +895,19 @@ static RgbFrame render_dragster(const PresentationSample &s,
     apply_dragster_palette_cycle(cgram, content.race_palette_cycle, s.movement);
     return colour(cgram, 0);
   };
-  if (player_pose == 0x04f9 && opponent_pose == 0x0263)
-    render_window_xor(f, content.go_window, window_colour({255, 255, 255}));
+  // R-0040: with the recovered table family the pose pair is replaced by the
+  // original's own per-frame selection. A DRAGSTER v1 pack carries only the two
+  // frozen tables, so it keeps the accepted pose-keyed placement unchanged.
+  const auto window_index = content.window_tables.empty()
+                                ? std::optional<unsigned>{}
+                                : dragster_window_table_index(s.movement);
+  if (content.window_tables.empty()) {
+    if (player_pose == 0x04f9 && opponent_pose == 0x0263)
+      render_window_xor(f, content.go_window, window_colour({255, 255, 255}));
+  } else if (window_index && *window_index <= 6) {
+    render_window_xor(f, dragster_window_table(content.window_tables, *window_index),
+                      window_colour({255, 255, 255}));
+  }
   const auto &t = s.movement.timer;
   const std::array<unsigned, 4> d{
       {t.minutes, t.tens_seconds, t.seconds, t.tenths}};
@@ -931,8 +943,13 @@ static RgbFrame render_dragster(const PresentationSample &s,
       render_rider(f, rider_vram, rider_cgram, static_cast<int>(wide_x), y,
                    rider_index == 0 ? 0 : 136, rider_index == 0 ? 0x66 : 0x68);
   }
-  if (player_pose == 0x04fe && opponent_pose == 0x037c)
-    render_window_xor(f, content.winner_window, window_colour({98, 98, 255}));
+  if (content.window_tables.empty()) {
+    if (player_pose == 0x04fe && opponent_pose == 0x037c)
+      render_window_xor(f, content.winner_window, window_colour({98, 98, 255}));
+  } else if (window_index && *window_index >= 7) {
+    render_window_xor(f, dragster_window_table(content.window_tables, *window_index),
+                      window_colour({98, 98, 255}));
+  }
   return f;
 }
 
@@ -1060,6 +1077,96 @@ void apply_dragster_palette_cycle(std::array<std::uint8_t,512>& cgram,std::span<
     load_race_palette_phase(cgram,tables,(phase_frame-1334U)&15U,!loading);
     if(loading)cgram[0]=cgram[1]=0;
 }
+
+// The channel-6 window family: 25 tables of 899 bytes at $15:8000, addressed
+// through the 16-bit offsets of $83:E55C. The last byte of each is the HDMA
+// run terminator, which `render_window_xor` does not consume.
+static constexpr unsigned window_table_stride=899, window_table_body=898,
+                          window_table_count=25;
+// DRAGSTER's race vblank begins at $82:D7F5 + 6 updates, so the first frame the
+// channel-6 setup $80:868E publishes is initialization frame 1328 plus 6. The
+// countdown starts at $11C5 = 270 and the driver of frame n-1 chooses the table
+// frame n shows, so that table was chosen with $11C5 = 270 - (n - 1334).
+static constexpr std::uint32_t dragster_race_setup_frame=1334;
+static constexpr unsigned dragster_window_countdown_start=270;
+// $83:E759/E611/E663/E6C5 index 5 + $1229. $83:CC08 loads $1229 from $0BA7,
+// which is 1 in every captured DRAGSTER race, so the transitions draw index 6.
+static constexpr unsigned dragster_window_transition_index=6;
+// $83:EA19-$83:EA5B and its $0F05/$0F09 twin: indices 7..24, one step on every
+// frame whose $0300 parity flag is set, for the 360 frames of $0F07.
+static constexpr unsigned winner_window_first=7, winner_window_cycle=18,
+                          winner_window_frames=360;
+
+std::span<const std::uint8_t> dragster_window_table(
+    std::span<const std::uint8_t> tables, unsigned index) {
+    if(tables.size()!=window_table_count*window_table_stride)
+        throw std::invalid_argument("Classic window table family has the wrong size");
+    if(index>=window_table_count)
+        throw std::invalid_argument("Classic window table index is out of range");
+    const auto at=static_cast<std::size_t>(index)*window_table_stride;
+    if(tables[at+window_table_body]!=0)
+        throw std::invalid_argument("Classic window table lacks its run terminator");
+    return tables.subspan(at,window_table_body);
+}
+
+namespace {
+// Frames since the winning rider's finish, counted so that the finishing frame
+// itself is 0. `record_finish` stamps that frame; the banner's first displayed
+// frame is the next one.
+std::optional<std::uint32_t> frames_since_winner_finish(const RaceFinishState& finish) {
+    if(finish.outcome==RaceOutcome::PlayerWon) {
+        // The player owns the global finish delay, so its count is exact for
+        // the whole banner: 1..240 while it runs, then the loading updates.
+        if(finish.phase==RacePhase::FinishDelay)return finish.player_finish_delay;
+        if(finish.phase==RacePhase::ResultLoading && finish.result_loading_updates)
+            return 239U+finish.result_loading_updates;
+        return std::nullopt;
+    }
+    if(finish.outcome==RaceOutcome::PlayerLost) {
+        // The opponent's finish frame is only recoverable from the serialized
+        // state while its 120-update finish animation counter runs (R-0040
+        // records this bound and the cheapest way to lift it).
+        const auto remaining=finish.finish_animation_countdown[1];
+        if(remaining==0)return std::nullopt;
+        return 120U-remaining;
+    }
+    return std::nullopt;
+}
+} // namespace
+
+std::optional<unsigned> dragster_window_table_index(const MovementState& state) {
+    const auto frame=state.frame;
+    // The winner banner replaces the countdown family; the two never overlap in
+    // a race the countdown can hold at the line.
+    if(const auto since=frames_since_winner_finish(state.finish)) {
+        if(*since>=1U && *since<=winner_window_frames) {
+            const auto start=frame-*since;
+            // $0300 alternates every frame ($83:CCED), and the index advances
+            // only when it is set, so the step count is the number of odd
+            // logic frames from the finish through the frame before this one.
+            const auto steps=frame/2U-start/2U;
+            return winner_window_first+
+                   static_cast<unsigned>(steps%winner_window_cycle);
+        }
+        return std::nullopt;
+    }
+    if(frame<dragster_race_setup_frame)return std::nullopt;
+    const auto elapsed=frame-dragster_race_setup_frame;
+    if(elapsed>=dragster_window_countdown_start)return std::nullopt;
+    const auto countdown=dragster_window_countdown_start-elapsed;
+    // $83:E59C dispatches on $11C5 and, inside each digit, on its own
+    // threshold: above it the transition table, below it the digit's table.
+    if(countdown>=250U)return dragster_window_transition_index;
+    if(countdown>=221U)return 0U;
+    if(countdown>=190U)return dragster_window_transition_index;
+    if(countdown>=161U)return 1U;
+    if(countdown>=130U)return dragster_window_transition_index;
+    if(countdown>=101U)return 2U;
+    if(countdown>=70U)return dragster_window_transition_index;
+    // $83:E728 picks between the two GO tables on the same $0300 parity.
+    return (frame&1U)==0U?3U:4U;
+}
+
 unsigned zoom_zoo_hud_lap(unsigned laps_remaining) {
     return std::min(3U,4U-std::min(4U,laps_remaining));
 }

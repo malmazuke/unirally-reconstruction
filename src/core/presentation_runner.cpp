@@ -74,7 +74,8 @@ int main(int argc, char **argv) try {
       content.entry("presentation.result.classic.base-vram.v1"),
       content.entry("presentation.result.classic.palette.v1"),
       content.entry("presentation.result.classic.palette-tail.v1"),
-      content.optional_entry("presentation.zoom.race-palette-cycle.v1")};
+      content.optional_entry("presentation.zoom.race-palette-cycle.v1"),
+      content.optional_entry("presentation.effect.classic.window-tables.v1")};
   const auto frame = unirally::render_dragster_headless(
       {state, camera, sx, sy, bg2x, bg2y},
       assets);

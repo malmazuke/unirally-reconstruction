@@ -73,6 +73,10 @@ struct PresentationContent {
   // Race NMI palette tables ($80:82AB). Empty for DRAGSTER v1 packs, which keep
   // the accepted pose-keyed palette; the two-track pack carries them.
   std::span<const std::uint8_t> race_palette_cycle;
+  // Channel-6 window HDMA family $15:8000-$15:D7CA: 25 tables of 899 bytes
+  // (898 scanline bytes then the run terminator). Empty for DRAGSTER v1 packs,
+  // which keep the accepted pose-keyed GO and winner windows (R-0040).
+  std::span<const std::uint8_t> window_tables;
 };
 struct ZoomZooState;
 class ClassicContentPack;
@@ -86,6 +90,17 @@ void apply_zoom_zoo_palette_cycle(std::array<std::uint8_t,512>& cgram,std::span<
 // colours 96-111 then hold that frame's index and colour 0 is black.
 void apply_dragster_palette_cycle(std::array<std::uint8_t,512>& cgram,std::span<const std::uint8_t> tables,
                                   const MovementState& state);
+// R-0040: the original composes the countdown/GO and winner-banner shapes from
+// one channel-6 window HDMA table per frame. The countdown driver $83:E59C
+// selects it from $11C5, the winner driver $83:EA19 cycles indices 7-24 from
+// the winning rider's finish, and the vblank setup $80:868E-$80:8699 publishes
+// the selection made by the previous frame's logic. Returns the index into the
+// 25-table family for the frame `state` draws, or nothing when channel 6 is
+// disabled that frame. Indices 0-6 compose before the riders, 7-24 after them.
+std::optional<unsigned> dragster_window_table_index(const MovementState& state);
+// The 898 scanline bytes of one member of the family.
+std::span<const std::uint8_t> dragster_window_table(
+    std::span<const std::uint8_t> tables, unsigned index);
 // Lap shown for a laps_remaining value: 4,3,2,1,0 display as 0/3,1/3,2/3,3/3,3/3.
 unsigned zoom_zoo_hud_lap(unsigned laps_remaining);
 // Authored ZOOM ZOO HUD text. Callers pass the state from BEFORE the update
