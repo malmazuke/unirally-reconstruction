@@ -1597,8 +1597,12 @@ ZoomZooState deserialize_zoom_zoo(std::span<const std::uint8_t> bytes) {
                (pose.active ? (!pose.kind || !pose.locked) : (pose.kind || pose.locked || pose.selector)))
                 throw std::invalid_argument("ZOOM ZOO finish pose state invalid");
         }
+        // $81:C73E-C75B finishes both riders, laps or not, once the clock holds 9:59.9.
+        const auto& clock=state.movement.timer;
+        const bool clock_expired=native_initialization && clock.minutes==9 && clock.tens_seconds==5 && clock.seconds==9 && clock.tenths==9;
+        const bool timed_out=state.race.riders[0].finished && state.race.riders[1].finished && clock_expired;
         for(const auto& lap:state.race.riders) {
-            if((static_cast<bool>(lap.finished)!=(lap.laps_remaining==0)) || lap.time_digits[0]>9 || lap.time_digits[1]>5 ||
+            if((lap.finished ? lap.laps_remaining!=0 && !timed_out : lap.laps_remaining==0) || lap.time_digits[0]>9 || lap.time_digits[1]>5 ||
                lap.time_digits[2]>9 || lap.time_digits[3]>9 || lap.time_digits[4]>9)
                 throw std::invalid_argument("ZOOM ZOO lap time state invalid");
         }
@@ -1749,7 +1753,8 @@ ZoomZooState deserialize_zoom_zoo(std::span<const std::uint8_t> bytes) {
                     throw std::invalid_argument("inconsistent ZOOM ZOO completed lap slots");
                 if(slot<completed)sum=add_word(sum,lap);
             }
-            if(state.race.total_times[i]!=(state.race.riders[i].finished?sum:60000))
+            // A rider finished by the clock limit keeps the no-time sentinel.
+            if(state.race.total_times[i]!=(state.race.riders[i].finished && !state.race.riders[i].laps_remaining?sum:60000))
                 throw std::invalid_argument("inconsistent ZOOM ZOO total time");
         }
     }
@@ -1995,7 +2000,10 @@ void update_zoom_zoo(ZoomZooState& state,const ControllerButtons& requested_butt
         if(transition.pose_override)rider.pose.pose_index=transition.pose_override;
         if(index==active)advance_track_progress(rider.progress,content.movement.progress_transitions);
     }
-    (void)advance_timer_digits(whole.timer,whole.countdown<68);
+    // $81:C73E-C75B: when the race clock would reach 10:00 it holds 9:59.9 and
+    // marks both riders finished, whatever their laps.
+    if(advance_timer_digits(whole.timer,whole.countdown<68) && state.native_initialization)
+        for(auto& rider:next.race.riders)rider.finished=1;
     if(state.native_initialization)consume_zoom_player(next,content.movement);
     update_reward_queue(whole,reward,content.movement,
         state.native_initialization?std::span<std::uint8_t>{next.learned_weights[1]}:std::span<std::uint8_t>{});

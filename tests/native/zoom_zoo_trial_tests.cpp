@@ -118,6 +118,30 @@ int main() {
     result.result.graph_minimum=2800;result.result.graph_maximum=3000;result.result.published_totals.fill(9000);
     auto result_bytes=serialize_zoom_zoo(result);
     require(serialize_zoom_zoo(deserialize_zoom_zoo(result_bytes))==result_bytes);
+    {
+        // $81:C73E-C75B: at the 10:00 clock limit both riders are finished
+        // whatever their laps; an unfinished lap count keeps the no-time total.
+        auto timeout=result;timeout.movement.timer={9,5,9,9,2};
+        timeout.race.riders[0].laps_remaining=2;
+        for(unsigned lap=1;lap<3;++lap)timeout.race.lap_times[0][lap]=60000;
+        timeout.race.total_times[0]=60000;timeout.result.published_totals={60000,9000};
+        const auto timeout_bytes=serialize_zoom_zoo(timeout);
+        require(serialize_zoom_zoo(deserialize_zoom_zoo(timeout_bytes))==timeout_bytes);
+        auto early=timeout;early.movement.timer={9,5,9,8,4};
+        rejects([&]{(void)deserialize_zoom_zoo(serialize_zoom_zoo(early));});
+        // The limit finishes both riders on the same update, so a lap-short
+        // finish beside an unfinished rider is not reachable.
+        auto one_finished=timeout;one_finished.race.riders[1].finished=0;one_finished.race.riders[1].laps_remaining=1;
+        one_finished.race.lap_times[1][2]=60000;one_finished.race.total_times[1]=60000;
+        one_finished.result.published_totals={60000,60000};
+        rejects([&]{(void)deserialize_zoom_zoo(serialize_zoom_zoo(one_finished));});
+        auto lap_complete=one_finished;lap_complete.race.riders[0].laps_remaining=0;
+        lap_complete.race.lap_times[0][1]=lap_complete.race.lap_times[0][2]=3000;lap_complete.race.total_times[0]=9000;
+        lap_complete.result.published_totals={9000,60000};
+        require(serialize_zoom_zoo(deserialize_zoom_zoo(serialize_zoom_zoo(lap_complete)))==serialize_zoom_zoo(lap_complete));
+        auto timed_total=timeout;timed_total.race.total_times[0]=3000;
+        rejects([&]{(void)deserialize_zoom_zoo(serialize_zoom_zoo(timed_total));});
+    }
     for(unsigned value:{88U,199U,200U,215U,216U,255U}) {
         auto corrupt=result_bytes;corrupt[585]=static_cast<std::uint8_t>(value);
         rejects([&]{(void)deserialize_zoom_zoo(corrupt);});

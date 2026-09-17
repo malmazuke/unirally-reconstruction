@@ -169,3 +169,103 @@ Private evidence under `.worktrees/m4-16-rider-art/artifacts/m4-16-rider-art/`
   holds that rider's last drawn pose and counts a fallback frame.
 - `build_race_cgram` still switches the colour 96-111 cycle on DRAGSTER pose
   indices `$08D5`/`$04FE`, which ZOOM ZOO riders also use; not investigated here.
+
+## Look state and the idle-cycle latch
+
+Added 17 September 2026 at the coordinator's request: does gameplay depend on
+the look animation? Branch `codex/m4-16-rider-art`, based on integrated
+`8160392`.
+
+### Writes
+
+A linear disassembly of `$82:8337-$82:8926`, including `$82:87C9` and
+`$82:8927`, finds two gameplay-visible stores. Everything else goes to look
+words, scratch `$0200/$0202`, or direct page `$00-$06`.
+
+- `$82:857F` stores 0 into `$0D5B`, the **player's** idle-cycle latch (native
+  `riders[0].idle_pose.cycle_latched`). This happens when a player look update
+  finds no target, `$0D5B` set, the delay `$0D67` has just reached 0, and the
+  sequence cursor equals its end.
+- `$82:87AD` stores 0 into `$0D5D`, the **opponent's** latch, under the same
+  conditions using `$0D69/$0D61/$0D65`.
+
+No other gameplay code reads the look words. The idle routine copies each latch
+through `$0F7D` (`$82:8B13`/`$82:8E16` for the player, `$82:901B`/`$82:9304`
+for the opponent). The race loop calls the look step last (`$83:CDA6`), after
+`$8289C8` updates the riders, so a clear would be seen by the next update. The
+only other effect of the latch in gameplay is whether the idle counter keeps
+counting (`$82:A0F5`, `$82:A194-A1B2`); rider motion never reads it. The builder
+copies the latches into `$0EF7`, and ROM code never reads `$0EF7`.
+
+### Reachability in the one-player race
+
+- **Player.** Only the opponent's copy calls `$82:8927`, so the player's
+  sequence number `$0D6F`, cursor and end stay 0. The player's delay starts at
+  0, and a clear needs 65,536 decrements. Every no-target update that is
+  unlatched, or where the head is nonzero, resets it. Look updates run only in
+  race updates. The 10:00 race clock (`$81:C73E-C75B`) then finishes both riders.
+  About 205 countdown updates plus 30,000 clock updates plus the 240-update
+  finish delay allow at most about 15,220 player look updates. That is fewer
+  than 65,536, so the clear cannot happen.
+- **Opponent.** A sequence lasts at least 144 opponent look updates (the
+  smallest `$17:C614` delay sum). Its latch is only set while it idles. In every
+  capture that happens only in the countdown: latched at 1472, released at 1551
+  when the countdown brake starts at 100. Mid-race its AI always drives (horizontal
+  0 or 2). After its finish the finish-pose override keeps idle off. That leaves
+  at most about 40 opponent updates, so the clear cannot happen.
+
+### Original evidence (ordinary controller timelines, cold start, captured twice)
+
+Each case was captured twice from a cold start, and the two runs have identical
+per-frame video, WRAM and SRAM digests. The capture tool
+`zoom_zoo_playable_reference --case` gains `"idle": {"from", "frames"}`:
+release every button from a frame for a span, or to the horizon, then resume
+the primary controller stream.
+
+| Case | Controller | Result | Look and latch facts |
+| --- | --- | --- | --- |
+| `idle-late-start` | neutral 1650-2649, then the primary shifted by 1000 | player finishes 7418, opponent 6488; loading 7659, visible 7767 | player latched 1472-2649; delay 65535 down to 65012; cleared by moving off (idle code), not by `$82:857F` |
+| `idle-stop-timeout` | primary until 3240, then neutral to 32300 | player rolls to rest in the x≈12,618 basin; the clock limit finishes both at 31582; loading 31823, visible 31933 | player latched 1472-1649, 4448-4456 and 4544-31582; delay only down to 52542 (12,993 of 65,536); opponent latched 1472-1550 only; `$0D6F/$0D71` stay 0 |
+| existing `start-brake` a/b | Y+Right held 1450-1590 | primary result | opponent sequence 1 starts at 1526 (cursor 82, end 128, delay 5); the countdown releases its latch at 1551 mid-sequence; the sequence is abandoned at 1596 (selector stays 1) |
+
+The WRAM model (`wram-model/headsim.py`), checked in full against each update,
+covers heads, delays, cursors, ends, selectors, sequence targets and glance
+timers. It matches 6,282 updates on late-start, 30,446 on stop-timeout and
+5,348 on each start-brake run. It matches every overlay, and it never predicts
+a latch clear.
+
+### Decision
+
+Gameplay does not depend on look state in the one-player race, because neither
+clear can happen within the clock limit. The serialized state keeps
+`URZZ000B`; no look words are added.
+
+The same captures exposed a real gameplay gap. Native ignored the 10:00 limit.
+It now sets both finish flags when the clock caps, and restore validation
+accepts a finish with laps still remaining only when both riders are finished
+at the held 9:59.9 clock, with the no-time total. Two limits apply:
+
+- The limit is what bounds the player's look updates, so the latch argument
+  needs the fix. Without it native would race on past 10:00.
+- The time-out result loads two updates later in the original. Traced loading
+  (`artifacts/m4-16-idle/trace-*`) spends updates 5-7 in the `$82:8088-809A`
+  SPC700 reset wait (`CMP $2140` against `$BBAA`): 7,122 loop iterations against
+  292 in the primary. The graph extrema are published at load update 108 instead
+  of 106, totals at 109 instead of 107, and the picture becomes visible at
+  loading+110. Audio is excluded, so that case stays an incomplete inventory.
+  Native matches it from 1376 through the finish, the finish delay and loading
+  to 31927, then publishes two updates early.
+
+The opponent argument rests on the recovered AI. Mid-race its horizontal input
+is always 0 or 2, and `update_zoom_throttle` then sets the throttle target
+whenever displacement is below 4. The case not ruled out by code is a rider on
+a ±31 wall tile with no horizontal displacement. It is not observed: across
+nine timelines and the 30,000-update idle run, the opponent's idle counter
+never leaves 0 after 1650.
+
+Gates on `51c05f6` (pack v7): primary 6225 states with 757 restores and the
+fresh restart on app-debug and app-sanitize; idle-late-start 6725 states with
+801 restores and restart on both; M4-15 matrix 8/8; 30 existing
+original captures (24 complete, 6 incomplete) match every native row; four
+presets at 406/406; DRAGSTER winner and loser presentation unchanged; time-out
+case 13/13 fresh-process restores (app-sanitize) through 31927.
