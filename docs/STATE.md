@@ -46,6 +46,17 @@ completion, the hold/rotation restore bound) keep the ZOOM ZOO gates. The legacy
 DRAGSTER path and its historical gates are unchanged; live play needs the
 two-track pack. Live play by the user is still due.
 
+DRAGSTER's 10:00 race limit: candidate on `task/dragster-clock-limit`, not yet
+reviewed ([R-0039](research/R-0039-dragster-clock-limit.md)). The shared engine
+already applied `$81:C73E-C75B` for DRAGSTER, and native equals one original
+idle timeline on all 742 declared bytes for frames 1328-31881, including the
+9:59.9 hold, both riders finishing at 31534 with the 60000 no-time total and
+the start of result loading. What changed is the result screen: it refused to
+draw a timed-out result and now writes `MIKE ... NO TIME`, as the original
+does. Its result loading is two updates late behind the SPC700 reset handshake,
+as ZOOM ZOO's time-out already was, so the case is a declared incomplete
+inventory rather than an acceptance freeze.
+
 Declared omissions: audio; the original's decorative objects and captions
 (start arrow and ring, hints, on-screen stunt names, opponent finish time,
 animated finish banner, off-screen arrows); original HUD and result pixel style;

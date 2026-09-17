@@ -502,3 +502,25 @@ with the two-track pack. Frozen cases are
 contracts; DRAGSTER guard overrides are in
 `tests/manifests/native/dragster-race-guards.reference.json`. The fuzz reports
 aborts only; divergences need an original capture of the same timeline.
+
+## DRAGSTER 10:00 clock limit (task branch)
+
+Added in `task/dragster-clock-limit` for
+[DRAGSTER-CLOCK-LIMIT](../tasks/DRAGSTER-CLOCK-LIMIT.md), pending independent
+review; see [R-0039](research/R-0039-dragster-clock-limit.md). Two commands are
+new; every command above is unchanged.
+
+```sh
+# Declared incomplete original inventory, for a case freeze deliberately refuses.
+python3 -m tools.unirally_lab.native.dragster_playable inventory --reference artifacts/FRESH-idle-a --repeat artifacts/FRESH-idle-b --out artifacts/FRESH-idle.inventory.json
+# Native gate over the inventory's exact race and loading prefix, with a bounded restore set.
+python3 -m tools.unirally_lab.native.dragster_playable compare --prefix --reference artifacts/FRESH-idle-a --repeat artifacts/FRESH-idle-b --contract tests/manifests/native/dragster-clock-limit-idle-incomplete.inventory.json --binary build/app-debug/src/core/zoom_zoo_runner --pack local/classic-crawler-two-tracks-v7.pack --out artifacts/FRESH-idle-gate.json
+```
+
+The frozen case is `tests/manifests/native/dragster-clock-limit-idle.case.json`
+at horizon 32200, about ten minutes and 4 GB of raw memory per capture. `freeze`
+refuses it because its result loading waits two extra updates in the SPC700
+reset handshake; `inventory` records the same evidence with
+`acceptance: false`, the whole-capture rows hash and the exact prefix hash, and
+`compare --prefix` gates only that prefix. Ordinary DRAGSTER cases keep using
+`freeze` and `compare`.
