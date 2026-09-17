@@ -2,7 +2,7 @@
 
 ## Assignment
 
-- Status: implementation candidate, not yet independently reviewed or integrated
+- Status: reviewed and integrated (implementation approved at `c00dd5d`, review `7f391e1`); acceptance conditional on final-tip CI and remote verification. Closeout: ignored `artifacts/dragster-clock-limit-integration/closeout.json`
 - Milestone: follow-up to accepted DRAGSTER gameplay and to DRAGSTER-ORDINARY-CONTROLS; not an M4 milestone gate
 - Coordinator: Claude Opus 5 primary session (Claude Code desktop)
 - Task provider: Anthropic (Claude Opus 5), per D-0004
@@ -138,3 +138,33 @@ its glyph clock, the opponent's on-screen finish time and the loser window
 shape are recorded in R-0039 as original observations. Native's accepted
 DRAGSTER renderer draws none of them, exactly as before this task; the window
 follow-up in `tasks/NEXT_SESSION.md` owns that work.
+
+## Independent review and integration
+
+Fresh Claude Opus 5 reviewer, isolated checkout at `c00dd5d`, report
+`tasks/DRAGSTER-CLOCK-LIMIT-review.md` at `7f391e1` (pushed).
+**Verdict: approve.** It reproduced rather than read: two fresh ROM captures of
+the clock-limit case returned the frozen digests and an `inventory` byte
+identical to the tracked contract; its own comparison found the same 30,873
+rows with exactly two differing (31882-31883, the result totals from the
+SPC700 wait); it disassembled `$81:C6C5-C75B` and confirmed the arm has no
+track test and that native's `advance_timer_digits` matches it rollover for
+rollover; it probed the result relaxation fifteen ways; and it re-ran the four
+presets (409/409 synthetic, 23/23 ctest), the DRAGSTER historical matrix
+(20/20, both presentation contracts unchanged), the DRAGSTER primary freeze
+from its own capture, the M4-16 ZOOM ZOO primary and the new prefix gate on
+both app presets.
+
+| Finding | Severity | Disposition |
+| --- | --- | --- |
+| 1. The relaxation is a strict extension (a consistent time never reaches the sentinel, and the clock holds at 59990) | Note | No action. |
+| 2. The sentinel admission was not tied to the held clock, so a no-time total with an ordinary clock would silently draw NO TIME | Advisory | Fixed: `build_dragster_result_map` now requires the 9:59.9 clock, as `movement.cpp` and `zoom_zoo_hud` already do. The result test sets the held clock and a new case keeps the same totals rejected with an ordinary clock; dropping the conjunct fails it. |
+| 3. The player's five digits are unchecked in the sentinel branch (unused for drawing, no UB) | Advisory | Recorded, not changed: the digits are not read on that path, and the clock conjunct now bounds the branch. |
+| 4. Nits: a latent zero/negative-step edge in `prefix_restore_boundaries`; the prefix restart-check skip is undocumented; `rows_sha256` means different spans in prefix and inventory reports; the capture-time estimate is about ten times high | Advisory | Recorded for the next task in this area; none affects a result or a gate. |
+
+The reviewer also corrected a loose phrase in my handoff: the opponent finished
+ordinarily at 3214, not at the clock limit; R-0039 already says so.
+
+Not assessed by the reviewer: the other six frozen DRAGSTER originals (it
+re-ran `primary` from its own capture), the SPC700 handshake itself, whether a
+non-idle timeline reaches the limit, and live play.

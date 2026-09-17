@@ -45,7 +45,7 @@ The coordinator maintains the status registry below. Work orders further below d
 | DRAGSTER-PALETTE-CYCLE | reviewed and integrated (implementation `2c9dea3`, review `223cd0d`); accepted conditional on final-tip CI and remote verification | [DRAGSTER race palette cycle](DRAGSTER-PALETTE-CYCLE.md) |
 | DRAGSTER-ORDINARY-CONTROLS | reviewed and integrated (implementation `16b8daf`, review `f427098`); accepted conditional on final-tip CI and the user's live playtest | [Playable DRAGSTER controls](DRAGSTER-ORDINARY-CONTROLS.md) |
 | DRAGSTER window timing and shape | not started; follow-up from DRAGSTER-PALETTE-CYCLE | GO and winner windows still gated on rider poses with one frozen shape each |
-| DRAGSTER 10:00 race limit | not started; follow-up from M4-16 | Needs original DRAGSTER evidence |
+| DRAGSTER-CLOCK-LIMIT | reviewed and integrated (implementation `c00dd5d`, review `7f391e1`); accepted conditional on final-tip CI | [DRAGSTER 10:00 clock limit](DRAGSTER-CLOCK-LIMIT.md) |
 | M4-17 – M6 | unclaimed; outside this assignment | Do not automatically dispatch |
 
 ## M0 — repeatable laboratory

@@ -38,9 +38,12 @@ record UTC wall clock. No reset, purchase or provider change is authorized.
    shape covers 2,810 pixels against native's 5,001. Recover the original's
    window enable and HDMA table timing (`$2123-$2132`, channel 6) from original
    evidence.
-4. **DRAGSTER 10:00 race limit, not started.** ZOOM ZOO's `$81:C73E-C75B` finishes
-   both riders at 9:59.9; native DRAGSTER ignores the limit. Needs original
-   DRAGSTER evidence before any change.
+4. **Closed: DRAGSTER 10:00 race limit.** DRAGSTER inherited the limit with the
+   shared engine and needed no gameplay change: native matches the original for
+   30,554 consecutive updates, with only the two-update SPC700 result-loading
+   wait differing (as in ZOOM ZOO). The result screen now writes NO TIME for a
+   timed-out player, admitted only with the clock held at 9:59.9. See
+   [DRAGSTER-CLOCK-LIMIT](DRAGSTER-CLOCK-LIMIT.md) and R-0039.
 
 ## Launch recipe
 
