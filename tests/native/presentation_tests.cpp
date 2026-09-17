@@ -2,11 +2,15 @@
 #include "presentation.hpp"
 #include "zoom_zoo_movement.hpp"
 #include <stdexcept>
+#include <string>
 #include <vector>
 namespace {
+int require_count = 0;
 void require(bool v) {
+  ++require_count;
   if (!v)
-    throw std::runtime_error("presentation assertion failed");
+    throw std::runtime_error("presentation assertion failed at require #" +
+                             std::to_string(require_count));
 }
 } // namespace
 int main() {
@@ -482,6 +486,161 @@ int main() {
     require(window_pixel(go_state, 3452, go_content) == Rgb{121, 38, 255});
     // Without the tables (v1 packs) the accepted fixed colours stay.
     require(window_pixel(winner_state, 3452, visible_content) == Rgb{98, 98, 255});
+  }
+  {
+    // R-0040: the recovered channel-6 table selection. Every index below is the
+    // original's own $11FD pointer, read at $80:8691 in the DRAGSTER access
+    // captures of the continuous-right, release-3213 and opponent-won runs.
+    const auto index = [](std::uint32_t frame, unirally::RacePhase phase,
+                          unirally::RaceOutcome outcome, std::uint16_t delay,
+                          std::uint16_t loading, std::uint16_t opponent_animation) {
+      unirally::MovementState probe{};
+      probe.frame = frame;
+      probe.finish.phase = phase;
+      probe.finish.outcome = outcome;
+      probe.finish.player_finish_delay = delay;
+      probe.finish.result_loading_updates = loading;
+      probe.finish.finish_animation_countdown[1] = opponent_animation;
+      return unirally::dragster_window_table_index(probe);
+    };
+    const auto racing = [&](std::uint32_t frame) {
+      return index(frame, unirally::RacePhase::Racing,
+                   unirally::RaceOutcome::Pending, 0, 0, 0);
+    };
+    using Index = std::optional<unsigned>;
+    // The race vblank publishes nothing before initialization frame 1328 + 6.
+    require(racing(1333) == Index{});
+    // $11C5 runs 270 down to 1; each digit shows the transition table above its
+    // own threshold and its own table below it.
+    require(racing(1334) == Index{6} && racing(1354) == Index{6});
+    require(racing(1355) == Index{0} && racing(1383) == Index{0});
+    require(racing(1384) == Index{6} && racing(1414) == Index{6});
+    require(racing(1415) == Index{1} && racing(1443) == Index{1});
+    require(racing(1444) == Index{6} && racing(1474) == Index{6});
+    require(racing(1475) == Index{2} && racing(1503) == Index{2});
+    require(racing(1504) == Index{6} && racing(1534) == Index{6});
+    // GO alternates on the $0300 parity and stops when $11C5 reaches zero.
+    require(racing(1535) == Index{4} && racing(1536) == Index{3});
+    require(racing(1600) == Index{3} && racing(1603) == Index{4});
+    require(racing(1604) == Index{} && racing(2400) == Index{});
+    // The banner driver starts on the update after the finish and its choice
+    // reaches the screen one frame later, so 3215 is the first index 7.
+    const auto won = [&](std::uint32_t frame, std::uint16_t delay) {
+      return index(frame, unirally::RacePhase::FinishDelay,
+                   unirally::RaceOutcome::PlayerWon, delay, 0, 0);
+    };
+    require(won(3213, 0) == Index{} && won(3214, 1) == Index{});
+    require(won(3215, 2) == Index{7} && won(3216, 3) == Index{8});
+    require(won(3217, 4) == Index{8} && won(3218, 5) == Index{9});
+    require(won(3322, 109) == Index{7});
+    require(won(3450, 237) == Index{17} && won(3452, 239) == Index{18});
+    require(won(3453, 240) == Index{18});
+    // Result loading holds update 1's choice; the race vblank stops after it.
+    require(index(3454, unirally::RacePhase::ResultLoading,
+                  unirally::RaceOutcome::PlayerWon, 240, 1, 0) == Index{19});
+    require(index(3600, unirally::RacePhase::ResultLoading,
+                  unirally::RaceOutcome::PlayerWon, 240, 147, 0) == Index{19});
+    // An odd number of loading updates: without the freeze this frame would
+    // step the banner on, which the original no longer does.
+    require(index(3601, unirally::RacePhase::ResultLoading,
+                  unirally::RaceOutcome::PlayerWon, 240, 148, 0) == Index{19});
+    require(index(3679, unirally::RacePhase::ResultScreen,
+                  unirally::RaceOutcome::PlayerWon, 240, 226, 0) == Index{});
+    // The opponent-won banner, while its 120-update animation counter locates
+    // the finish: the opponent-won capture finishes at 3214 and shows 8 at 3216.
+    const auto lost = [&](std::uint32_t frame, std::uint16_t animation) {
+      return index(frame, unirally::RacePhase::Racing,
+                   unirally::RaceOutcome::PlayerLost, 0, 0, animation);
+    };
+    require(lost(3215, 119) == Index{} && lost(3216, 118) == Index{8});
+    require(lost(3217, 117) == Index{8} && lost(3218, 116) == Index{9});
+    require(lost(3333, 1) == Index{12});
+    // Beyond the counter the opponent's finish frame is not recoverable, and
+    // native stops drawing a banner the original still shows (index 13 here).
+    require(lost(3334, 0) == Index{});
+    // The banner lives for the 360 frames of $0F07 and then leaves.
+    require(won(3574, 361).has_value() && !won(3575, 362).has_value());
+
+    // The index chosen is the table actually drawn: mutating that member of the
+    // family changes the picture and mutating any other member does not.
+    std::vector<std::uint8_t> family(25 * 899, 0);
+    for (unsigned table = 0; table < 25; ++table) {
+      auto at = static_cast<std::size_t>(table) * 899;
+      for (const unsigned lines : {127U, 97U}) {
+        family[at++] = static_cast<std::uint8_t>(0x80U | lines);
+        for (unsigned line = 0; line < lines; ++line) {
+          family[at++] = 4;    // window 1 covers x 4..12
+          family[at++] = 12;
+          family[at++] = 128;  // window 2 is empty: left above right
+          family[at++] = 127;
+        }
+      }
+      require(at == static_cast<std::size_t>(table) * 899 + 898);
+    }
+    auto family_content = content;
+    family_content.window_tables = family;
+    auto banner_state = state;
+    banner_state.frame = 3215;
+    banner_state.finish.phase = unirally::RacePhase::FinishDelay;
+    banner_state.finish.outcome = unirally::RaceOutcome::PlayerWon;
+    banner_state.finish.player_finish_delay = 2;
+    const auto drawn = unirally::render_dragster_headless(
+        {banner_state, 0, 0, 0, 0, 0}, family_content);
+    for (const unsigned table : {0U, 6U, 7U, 8U, 18U}) {
+      auto mutated = family;
+      mutated[static_cast<std::size_t>(table) * 899 + 2] = 40;  // widen window 1
+      auto mutated_content = family_content;
+      mutated_content.window_tables = mutated;
+      const auto after = unirally::render_dragster_headless(
+          {banner_state, 0, 0, 0, 0, 0}, mutated_content);
+      require((after.pixels != drawn.pixels) == (table == 7U));
+    }
+    // A GO frame draws its own member, before the riders rather than after.
+    // The window is white here, so the frame takes the pose pair whose colour 0
+    // is not white; the pose no longer decides whether a window is drawn.
+    auto go_frame = state;
+    go_frame.riders[0].pose.pose_index = 0x04fe;
+    go_frame.riders[1].pose.pose_index = 0x037c;
+    for (const auto [frame, chosen] : {std::pair<std::uint32_t, unsigned>{1600, 3},
+                                       {1601, 4}, {1355, 0}}) {
+      go_frame.frame = frame;
+      const auto go_drawn = unirally::render_dragster_headless(
+          {go_frame, 0, 0, 0, 0, 0}, family_content);
+      for (const unsigned table : {0U, 3U, 4U, 7U}) {
+        auto mutated = family;
+        mutated[static_cast<std::size_t>(table) * 899 + 2] = 40;
+        auto mutated_content = family_content;
+        mutated_content.window_tables = mutated;
+        const auto after = unirally::render_dragster_headless(
+            {go_frame, 0, 0, 0, 0, 0}, mutated_content);
+        require((after.pixels != go_drawn.pixels) == (table == chosen));
+      }
+    }
+    // The family is rejected when it is the wrong length or loses a terminator.
+    rejected = false;
+    try {
+      (void)unirally::dragster_window_table(
+          std::span<const std::uint8_t>(family).first(25 * 899 - 1), 0);
+    } catch (const std::invalid_argument &) {
+      rejected = true;
+    }
+    require(rejected);
+    rejected = false;
+    try {
+      (void)unirally::dragster_window_table(family, 25);
+    } catch (const std::invalid_argument &) {
+      rejected = true;
+    }
+    require(rejected);
+    rejected = false;
+    auto unterminated = family;
+    unterminated[7 * 899 + 898] = 1;
+    try {
+      (void)unirally::dragster_window_table(unterminated, 7);
+    } catch (const std::invalid_argument &) {
+      rejected = true;
+    }
+    require(rejected);
   }
   auto invalid_window = winner_window;
   invalid_window[0] = 0;
