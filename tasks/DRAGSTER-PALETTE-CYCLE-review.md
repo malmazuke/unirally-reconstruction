@@ -676,7 +676,7 @@ For 2,146 updates with Right held (`--fixed-controller-mask 128`), it predicts:
   run **225**;
 - v7: **380** and **223**.
 
-The two differences are at 3453 and 3454. With v1, 3452→3453 and 3453→3454
+The two differences are at 3453 and 3454. With v1, 3452 to 3453 and 3453 to 3454
 are identical. With v7, 3452 (phase 6, window (121,38,255)) differs from 3453
 (phase 7), and 3453 differs from 3454 (loading, black window).
 
