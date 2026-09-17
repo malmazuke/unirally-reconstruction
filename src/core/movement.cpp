@@ -1286,7 +1286,9 @@ void update_zoom_roll(ZoomZooState& state,unsigned index,bool pressed,const Zoom
         if(negative(roll.step) && roll.step!=static_cast<std::uint16_t>(-5))++roll.step;
         roll.held_updates=add_word(roll.held_updates,1);roll.held_rotations=add_word(roll.held_rotations,1);
         step_index=negative(roll.step)?add_word(roll.step,9):roll.step;
-    } else {
+    } else if(roll.step) {
+        // $82:959B-95BD. A step the direction flip has just made zero
+        // (~-1, $82:9439) completes without moving (DRAGSTER diff fuzz 53).
         roll.step=add_word(roll.step,negative(roll.step)?1:static_cast<std::uint16_t>(-1));
         step_index=negative(roll.step)?add_word(roll.step,9):roll.step;
     }
