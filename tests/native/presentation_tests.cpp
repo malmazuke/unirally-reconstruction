@@ -61,6 +61,20 @@ int main() {
     lost.race.total_times = {9818, 9810};
     hud = unirally::zoom_zoo_hud(lost);
     require(hud.finish_time == "1:38.18" && hud.caption == "LOSER");
+
+    // 10:00 time-out: finished with laps left and the no-time total. The
+    // original keeps the lap and the held clock and shows LOSER.
+    unirally::ZoomZooState timed_out{};
+    timed_out.race.riders[0].finished = 1;
+    timed_out.race.riders[0].laps_remaining = 2;
+    timed_out.race.riders[1].finished = 1;
+    timed_out.race.total_times = {60000, 9810};
+    timed_out.movement.timer.minutes = 9;
+    timed_out.movement.timer.tens_seconds = 5;
+    timed_out.movement.timer.seconds = 9;
+    timed_out.movement.timer.tenths = 9;
+    hud = unirally::zoom_zoo_hud(timed_out);
+    require(hud.lap == "2/3" && hud.clock == "9:59.90" && hud.finish_time.empty() && hud.caption == "LOSER");
   }
 
   // Race palette cycle $82:D382-D496. Original $0B84 ends frame n at

@@ -943,9 +943,15 @@ void ui_text(RgbFrame& frame,int x,int y,std::string_view text,std::array<std::u
     for(char c:text) {const auto glyph=ui_glyph(c);for(int row=0;row<7;++row)for(int col=0;col<5;++col)
         if(glyph[static_cast<std::size_t>(row)]&(1U<<(4-col)))pixel(frame,x+col,y+row,ink);x+=6;}
 }
+// The result screen writes NO TIME for the 60000 no-time sentinel (stop-timeout
+// original result, frames 32000-32100).
+std::string result_time(unsigned value);
 std::string race_time(unsigned value) {
     const auto digit=[](unsigned v){return static_cast<char>('0'+v%10);};
     return {digit(value/6000),':',digit(value/1000%6),digit(value/100),'.',digit(value/10),digit(value)};
+}
+std::string result_time(unsigned value) {
+    return value>=60000U?"NO TIME":race_time(value);
 }
 }
 void ZoomZooRiderLookTracker::reset() {
@@ -986,7 +992,11 @@ unsigned zoom_zoo_hud_lap(unsigned laps_remaining) {
 ZoomZooHud zoom_zoo_hud(const ZoomZooState& previous_update) {
     const auto& race=previous_update.race;
     ZoomZooHud hud;
-    if(race.riders[0].finished) {
+    // At the 10:00 limit ($81:C73E-C75B) the player is finished with laps left.
+    // The original then keeps the lap and the held 9:59.9 clock and shows LOSER
+    // (stop-timeout original frames 31588-31596).
+    const bool timed_out=race.riders[0].finished && race.riders[0].laps_remaining!=0;
+    if(race.riders[0].finished && !timed_out) {
         const bool won=!race.riders[1].finished || race.total_times[0]<race.total_times[1];
         hud.lap="FINISH";
         hud.finish_time=race_time(race.total_times[0]);
@@ -997,7 +1007,8 @@ ZoomZooHud zoom_zoo_hud(const ZoomZooState& previous_update) {
     const auto& t=previous_update.movement.timer;
     hud.clock=race_time(t.minutes*6000+t.tens_seconds*1000+t.seconds*100+t.tenths*10+t.subframe*2);
     const auto countdown=previous_update.movement.countdown;
-    if(countdown>=70)hud.caption="READY";
+    if(timed_out)hud.caption="LOSER";
+    else if(countdown>=70)hud.caption="READY";
     else if(countdown)hud.caption="GO";
     return hud;
 }
@@ -1015,8 +1026,8 @@ RgbFrame render_zoom_zoo(const ZoomZooState& state,const ClassicContentPack& pac
             unsigned best=60000;
             for(auto lap:state.race.lap_times[i])if(lap<60000) {best=std::min(best,unsigned(lap));}
             ui_text(frame,12,45+int(i)*13,i?"BRONSEN":"MIKE");
-            ui_text(frame,90,45+int(i)*13,race_time(state.result.published_totals[i]));
-            ui_text(frame,156,45+int(i)*13,race_time(best));
+            ui_text(frame,90,45+int(i)*13,result_time(state.result.published_totals[i]));
+            ui_text(frame,156,45+int(i)*13,result_time(best));
         }
         // $83:905F-90ED excludes sentinels and enforces a 200cs graph range.
 
