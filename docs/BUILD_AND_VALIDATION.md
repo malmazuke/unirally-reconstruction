@@ -469,3 +469,36 @@ for source/identity/domain limits and the exact original/native compare recipe.
 Warm extraction/smoke tests do not prove clean bootstrap, denied access, live
 input, representative visuals or full latest regressions. Start, bounce and
 other remaining guards preclude playable acceptance.
+
+## DRAGSTER ordinary controls (task branch)
+
+Implemented in `task/dragster-ordinary-controls` for
+[DRAGSTER-ORDINARY-CONTROLS](../tasks/DRAGSTER-ORDINARY-CONTROLS.md), pending
+independent review. DRAGSTER now plays on the shared race engine from native
+initialization ([R-0038](research/R-0038-dragster-ordinary-controls.md)); the
+legacy `update_movement` path, its `URMV` formats and every historical DRAGSTER
+command above are unchanged.
+
+```sh
+# Original capture (private, cold start on the accepted DRAGSTER menu path); --frame-image adds PNGs.
+python3 -m tools.unirally_lab.native.dragster_playable_reference --core local/emulators/bsnes/bsnes/out/bsnes_libretro.dylib --case tests/manifests/native/dragster-ordinary-primary.case.json --horizon 3900 --out artifacts/FRESH-a
+# Freeze two identical captures, before evaluating native.
+python3 -m tools.unirally_lab.native.dragster_playable freeze --reference artifacts/FRESH-a --repeat artifacts/FRESH-b --out artifacts/FRESH.freeze.json
+# Native gate: 742-byte URDG0001 rows, second run, restart, fresh-process restores.
+python3 -m tools.unirally_lab.native.dragster_playable compare --reference artifacts/FRESH-a --repeat artifacts/FRESH-b --contract tests/manifests/native/dragster-ordinary-primary.freeze.json --binary build/app-debug/src/core/zoom_zoo_runner --pack local/classic-crawler-two-tracks-v7.pack --out artifacts/FRESH-compare.json
+# First divergence only, for exploration (no freeze needed).
+python3 -m tools.unirally_lab.native.dragster_playable explore --reference artifacts/FRESH-a --binary build/app-debug/src/core/zoom_zoo_runner --pack local/classic-crawler-two-tracks-v7.pack
+# Abort fuzz over complete races with the app's update, restart and render calls; failing races become capture cases.
+build/lab-release/src/app/dragster_fuzz_runner --content-pack local/classic-crawler-two-tracks-v7.pack --first-seed 1 --seeds 3000 --races 3 --max-updates 40000 --failure-cases artifacts/FRESH-failures
+# One DRAGSTER race state drawn as the app draws it.
+build/app-debug/src/app/dragster_race_picture_runner --content-pack local/classic-crawler-two-tracks-v7.pack --race-state STATE.bin --out OUT.ppm
+# Live play; a 25-entry DRAGSTER pack is upgraded to the two-track pack beside it, or one is extracted with --rom.
+python3 tools/project.py frontend run --track dragster --pack local/classic-crawler-two-tracks-v7.pack --preset app-debug
+```
+
+`zoom_zoo_runner --start classic.crawler.dragster` requires `--content-pack`
+with the two-track pack. Frozen cases are
+`tests/manifests/native/dragster-ordinary-*.case.json` with their `.freeze.json`
+contracts; DRAGSTER guard overrides are in
+`tests/manifests/native/dragster-race-guards.reference.json`. The fuzz reports
+aborts only; divergences need an original capture of the same timeline.

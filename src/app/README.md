@@ -20,6 +20,14 @@ Later launches need only the validated pack at
 python3 tools/project.py frontend run
 ```
 
+DRAGSTER plays on the shared race engine (R-0038), whose jump, brake,
+reversal, trick and finish tables only the two-track pack carries. With the
+25-entry DRAGSTER pack the launcher uses a valid
+`local/classic-crawler-two-tracks.pack` (or `-v7.pack`) beside it without
+opening the ROM, or extracts one when `--rom` is given; without either it
+reports a missing prerequisite. The app itself refuses the DRAGSTER-only pack
+before gameplay starts.
+
 Pass `--pack PATH` to use another pack location. An existing corrupt or
 incompatible pack is rejected and never silently replaced. The application
 reports SDL/window/renderer failures as failed launches. A `--report` path
@@ -33,6 +41,11 @@ for shell expansion or pass an absolute path.
 Keyboard controls are arrows, Z=B, X=Y, A=A, S=X, Q=L, W=R, Enter=Start and
 Backspace=Select. Standard gamepad buttons follow the equivalent SNES layout.
 The current recovered slice consumes controller port 0 only.
+
+DRAGSTER follows the original controls: B jumps, Y brakes, Left rides and
+turns back, A, X, L and R act in the air, and Start pauses (RESUME or RESTART
+RACE). Opposing directions held together on a keyboard are dropped, as a SNES
+pad cannot report them. Start on the stable result screen races again.
 
 Audio is intentionally not implemented in M3. Intermediate rider animation
 poses outside the five M3-02 recovered atlas pairs use the last supported rider

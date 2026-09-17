@@ -201,3 +201,16 @@ follows consecutive updates for the live frontend and the runner's
 `--timeline` mode. `rider_presentation_tests` pins the mapping with synthetic
 tables; private validation against eight original WRAM series is in R-0036.
 
+
+## Shared race engine for DRAGSTER
+
+`update_zoom_zoo` was recovered on ZOOM ZOO but is the original's race engine
+for both tracks (R-0038). `ClassicRaceScenario` names what differs between the
+supported one-player races: the original frame label at initialization, laps,
+the result-screen stable counts and race mode `$77:074B` (which also selects the
+speed-limiter bound, the final-lap announcement and the lap-graph result).
+`track_geometry` derives the playfield width, x wrap and camera/visibility scale
+from decoded track byte 13. `classic_crawler_dragster_race_start` and
+`dragster_race_content` (two-track pack) start DRAGSTER on this path; its state
+serializes as `URDG0001` in the 742-byte `URZZ000B` layout. The legacy DRAGSTER
+`update_movement` path and its `URMV` formats remain for the accepted gates.

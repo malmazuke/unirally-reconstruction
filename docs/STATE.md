@@ -32,11 +32,18 @@ the start-line palette cycle matching the original. Review record:
 research: [R-0035](research/R-0035-zoom-zoo-playable-recovery.md),
 [R-0036](research/R-0036-zoom-zoo-rider-objects.md).
 
-DRAGSTER control limit (found in live play on 18 September 2026 local time):
-native DRAGSTER only recovers riding right, releasing and its recorded inputs.
-Left, or SNES B (jump) held while riding, aborts with a fail-closed domain
-message, and Y (the original's brake) is ignored. Recovery is in progress in
-`task/dragster-ordinary-controls`.
+DRAGSTER ordinary controls (found in live play on 18 September 2026 local
+time: Left or B while riding aborted and Y was ignored): recovered on
+`task/dragster-ordinary-controls`, pending independent review and integration.
+DRAGSTER runs the shared race engine from native initialization with its own
+track content ([R-0038](research/R-0038-dragster-ordinary-controls.md)); seven
+frozen originals (win, loss, tie, reversal, pause, random input) match every
+742-byte state with fresh-process restores, and randomized ordinary-input
+fuzzing over complete races finds no abort. Shared-engine corrections found on
+the way (countdown A/X release, charge latch, roll bounce drive, zero-step roll
+completion, the hold/rotation restore bound) keep the ZOOM ZOO gates. The legacy
+DRAGSTER path and its historical gates are unchanged; live play needs the
+two-track pack. Live play by the user is still due.
 
 Declared omissions: audio; the original's decorative objects and captions
 (start arrow and ring, hints, on-screen stunt names, opponent finish time,
