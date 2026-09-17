@@ -77,8 +77,9 @@ class ClassicContentPack;
 unsigned zoom_zoo_hud_lap(unsigned laps_remaining);
 // Authored ZOOM ZOO HUD text. Callers pass the state from BEFORE the update
 // being drawn: the original's lap glyph changes one frame after $0EFB at every
-// crossing of the frozen primary timeline (1675, 3208, 4840, 6484), while the
-// scene itself matches the current update. Once the player has finished, the
+// crossing of the frozen primary timeline (1675, 3208, 4840, 6484). The rider
+// objects show that same earlier update (R-0036) and the BG scroll its camera.
+// Once the player has finished, the
 // original replaces the lap with FINISH, drops the running clock and shows the
 // finish time with WINNER or LOSER.
 struct ZoomZooHud {
