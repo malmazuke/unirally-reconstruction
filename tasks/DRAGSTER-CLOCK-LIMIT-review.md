@@ -359,5 +359,5 @@ Severity: advisory, `tools/unirally_lab/native/dragster_playable.py` only.
 
 ## Usage at stop
 
-5-hour window 11%, weekly 20% (limits: stop new work at 90% / 45%). Well
+5-hour window 14%, weekly 20% (limits: stop new work at 90% / 45%). Well
 inside budget; the review finished on evidence, not on quota.
