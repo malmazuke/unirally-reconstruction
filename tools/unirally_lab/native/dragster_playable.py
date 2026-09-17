@@ -56,7 +56,7 @@ def original(directory, *, allow_incomplete=False, collect_guards=False):
         raise ValueError('original memory inventory incomplete')
     rows = []; finish = [None, None]; loading = None; archive = None; charge_archive = None
     announcements_archive = roll_archive = weights_archive = pause_archive = None
-    paused_updates = 0; countdown_paused = 0; previous = None; guard_violations = {}; left_result = None
+    paused_updates = 0; countdown_paused = 0; previous = None; guard_violations = {}; left_result = None; projection_error = None
     guards = guard_items()
     with (directory/'memory.wram').open('rb') as ws, (directory/'memory.sram').open('rb') as ss:
         for frame in range(first, last+1):
@@ -92,7 +92,16 @@ def original(directory, *, allow_incomplete=False, collect_guards=False):
                             if not collect_guards:
                                 raise ValueError(f'new gameplay guard at {frame}: {at:04x}={value:#x}; recover before evaluating native')
                             guard_violations.setdefault(f'{at:04x}', dict(frame=frame, value=value, guarded=item['value']))
-                row = bytearray(project(w, s, frame)+w[0xff1:0xff3]+w[0x1261:0x1265]+b'\0\0')
+                try:
+                    projected = project(w, s, frame)
+                except ValueError as error:
+                    # Exploration only: an original that retires from the pause menu
+                    # reinitializes race memory outside the projected domain.
+                    if not allow_incomplete:
+                        raise
+                    projection_error = dict(frame=frame, error=str(error))
+                    break
+                row = bytearray(projected+w[0xff1:0xff3]+w[0x1261:0x1265]+b'\0\0')
                 row[:8] = MAGIC; archive = bytearray(row); charge_archive = w[0xd53:0xd57]
                 announcements_archive = (w[0xcc1:0xce1]+w[0xce7:0xce8]+w[0xce9:0xcea]+w[0xca5:0xca7]+s[0x7bb:0x7bd]+w[0x20e8:0x20e9]
                                          +w[0x12e3:0x12e5]+w[0x12eb:0x12ed]+w[0x12ef:0x12f1]+w[0x3ed:0x3ef])
@@ -123,11 +132,13 @@ def original(directory, *, allow_incomplete=False, collect_guards=False):
             previous = w
             row += s[0x106f:0x1073]+s[0x618:0x61c]+charge_archive+announcements_archive+roll_archive+weights_archive+pause_archive
             rows.append(row.hex())
-        if left_result is None and (ws.read(1) or ss.read(1)):
+        if left_result is None and projection_error is None and (ws.read(1) or ss.read(1)):
             raise ValueError('extra original memory')
     events = dict(finish_frames=finish, loading_frame=loading)
     if left_result is not None:
         events['left_result_frame'] = left_result
+    if projection_error is not None:
+        events['projection_error'] = projection_error
     if collect_guards:
         events['guard_violations'] = guard_violations
     if loading is None or any(f is None for f in finish):
