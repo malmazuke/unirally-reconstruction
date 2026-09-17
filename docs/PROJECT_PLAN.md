@@ -17,6 +17,10 @@ Both profiles use deterministic simulation. Higher-resolution visuals and smooth
 
 ### Human-readable source and community contributions
 
+External contributions are not currently accepted; see
+[the contribution policy](../CONTRIBUTING.md). The community goals below are
+future direction. Authorized internal development and review continue.
+
 Human-readable, maintainable source is an explicit goal from the first native routine. A contributor should be able to understand an update, locate its supporting evidence, and change it while running the relevant checks. Use descriptive domain names where meanings are established, small functions with explicit state/input/content dependencies, documented units and integer semantics, and comments explaining unusual original behavior with ROM addresses and research links. Keep uncertain meanings visibly provisional; do not turn a guess into an authoritative name.
 
 Preserve verified Classic arithmetic and update order while improving structure. Keep processor bookkeeping and extraction offsets out of the public simulation interface where possible. A literal register-level translation may be a useful research intermediate, but delivering it as production code requires a documented reason and reviewable boundaries. Refactor in small steps under frozen differential tests; do not defer basic readability to a future wholesale rewrite.
@@ -133,8 +137,9 @@ accepted at `38c72e8`, but repeated the same section. The next
 [M4-15](../tasks/M4-15.md) now demonstrates complete native race simulation
 from that seed: both finishes and 240 player post-finish updates, with independent
 review and debug/sanitizer gates. No fallback was used; `8bc2e71` is accepted
-with private sync and final-tip CI. [M4-16](../tasks/M4-16.md) is now ready/unclaimed
-for a playable ZOOM ZOO outcome: native initialization, live controls, readable
+with synchronization to the then-private origin and final-tip CI.
+[M4-16](../tasks/M4-16.md) is reviewed and integrated, with acceptance recorded in
+[project state](STATE.md); see [the current handoff](../tasks/NEXT_SESSION.md). Its outcome is playable ZOOM ZOO: native initialization, live controls, readable
 track/riders/HUD, correct result and restart, plus clean extraction and pack-only
 relaunch. Recover all coupled dependencies inside this assignment; no seed-based
 or headless fallback. Audio and broader menus/modes remain outside scope. No

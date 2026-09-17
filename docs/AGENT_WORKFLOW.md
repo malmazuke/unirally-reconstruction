@@ -115,7 +115,7 @@ At implementation start, initialize a local Git repository if none exists. Recor
 - Retain old reference artifacts by hash. A baseline change needs an explained correction and independent confirmation; never overwrite the previous result in place.
 - Use revert commits for accepted changes that later prove wrong. Preserve failed task attempts for diagnosis; avoid force-pushing shared history.
 - Add milestone tags only when the gate is met, and link the evidence report from project state.
-- For this project's existing private `origin`, an accepted integration is not
+- For this project's existing public `origin`, an accepted integration is not
   complete until the coordinator pushes `main` and verifies `HEAD` equals
   `origin/main`. Push an accepted milestone tag as part of the same completion
   flow. Push task branches when the task's declared remote review or CI requires
@@ -123,7 +123,7 @@ At implementation start, initialize a local Git repository if none exists. Recor
   describe an ahead-only local branch as fully complete. Never force-push or
   change remote configuration/visibility under this standing authority.
 
-A remote repository is optional for early work. If one is established, use the same task record in the PR description, require checks/review on `main`, and use CI as specified in [build and validation](BUILD_AND_VALIDATION.md). A local integration report provides the equivalent review trail before hosting is configured. Pushing ordinary commits and tags to this project's already-configured private remote is source-control synchronization; creating a public release, changing visibility or deploying remains separately authorized work.
+A remote repository is optional for early work. If one is established, use the same task record in the PR description, require checks/review on `main`, and use CI as specified in [build and validation](BUILD_AND_VALIDATION.md). A local integration report provides the equivalent review trail before hosting is configured. Pushing ordinary commits and tags to this project's already-configured public remote is authorized source-control synchronization and makes tracked source and documentation public; creating a public release, changing visibility or deploying remains separately authorized work.
 
 ### Consolidated closeout
 
@@ -133,7 +133,7 @@ final main push. Include actual local/review results, the tested code identity
 and the path/command for verifying pending remote CI. Mark remote acceptance
 conditional until those checks actually succeed; never preclaim a future pass.
 
-Run affected merge checks on the exact candidate, push once, verify the private
+Run affected merge checks on the exact candidate, push once, verify the configured
 remote ref and wait for that tip's CI. Write the actual final SHA, run URL/result,
 finish time and fresh usage in ignored `artifacts/<task>-integration/closeout.json`
 and the user completion report. The tracked handoff must point to that artifact

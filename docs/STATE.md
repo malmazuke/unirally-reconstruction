@@ -1,18 +1,46 @@
 # Project state
 
-Updated 14 September 2026: M4-15 is accepted at `8bc2e71`; private main ref and
-exact-tip macOS/Linux CI `34785933369` verified during M4-16 preparation.
-M4-16 is in progress and unaccepted in `.worktrees/m4-16-playable-zoom-zoo`.
-Latest behaviorca46025 uses experimental742-byte state and50-entry v5 pack.
-Debug/sanitizer builds and focused tests pass; five complete diagnostic cases
-match6225 states. Independent239ae83 compound case passed739 restores/restart,
-but latest bounce changes still require re-review. Generic opponent trick reward
-consumption is an open high-priority finding. The user requested a committed
-handover near94% weekly usage; no automatic continuation. Live/visual, clean
-bootstrap and final regression/integration gates remain incomplete. See
-[R-0035](research/R-0035-zoom-zoo-playable-recovery.md),
-[review](../tasks/M4-16-review.md) and [NEXT_SESSION](../tasks/NEXT_SESSION.md).
-No M4-17 dispatch or M4 milestone tag.
+Updated 17 September 2026: **M4-16 is reviewed and integrated**; acceptance is
+conditional on the final-tip CI and remote verification recorded in the ignored
+closeout `artifacts/m4-16-integration/closeout.json` in
+`.worktrees/m4-16-playable-zoom-zoo`. If that file is absent, recover the
+integration commit with `git log --first-parent main -- tasks/M4-16.md` and its
+run with `gh run list --workflow synthetic.yml --commit <commit>`. M4 as a
+milestone is **not** accepted and no milestone tag is due. No M4-17.
+
+M4-16 delivers playable native ZOOM ZOO in the desktop app: native
+initialization from the authenticated pack through countdown, a three-lap race,
+the original's 10:00 time limit, finish, result loading, the result screen and
+Race Again, with keyboard and gamepad. Pack `classic.pal.crawler.two-tracks.v7`
+(55 entries) is extracted from the user's ROM and reproduces byte for byte;
+serialized state is `URZZ000B` (742 bytes). Native play does not execute the
+original CPU. The work moved from GPT Astra to Claude Opus 5 under
+[D-0004](decisions/D-0004-model-and-usage-budget.md) when those credits ran out,
+with fresh Opus 5 independent reviewers.
+
+Evidence, on the reviewed implementation `75626f8` and the integration commit:
+exact original agreement over the primary start-to-result gate (6,225 states,
+757 fresh-process restores, full restart), six complete cases covering both
+outcomes, an idle late-start case (801 restores), seven reward and eight trick
+probes, the M4-15 race matrix and the M4-12-M4-14 and DRAGSTER historical
+matrix; four-preset tests; bootstrap, pack-only, wrong-ROM and bad-pack gates;
+denied-execution autonomy; live keyboard play (earlier candidates) and a live
+gamepad playtest with rider art (0 pose fallbacks) through a completed race,
+result and restart; and frozen visual scenes with rider art, HUD, fade and
+the start-line palette cycle matching the original. Review record:
+[M4-16-review](../tasks/M4-16-review.md); task record: [M4-16](../tasks/M4-16.md);
+research: [R-0035](research/R-0035-zoom-zoo-playable-recovery.md),
+[R-0036](research/R-0036-zoom-zoo-rider-objects.md).
+
+Declared omissions: audio; the original's decorative objects and captions
+(start arrow and ring, hints, on-screen stunt names, opponent finish time,
+animated finish banner, off-screen arrows); original HUD and result pixel style;
+the two-update later result load after a time-out (audio handshake timing).
+Other tracks, riders, modes, menus and multiplayer remain outside the product.
+
+Follow-ups started from M4-16 findings: DRAGSTER's start-line palette is the same
+race NMI cycle (task branch `task/dragster-palette-cycle`, evidence recorded, implementation next), and DRAGSTER ignores the 10:00 limit
+(not started). See [NEXT_SESSION](../tasks/NEXT_SESSION.md).
 
 ## Accepted product and evidence
 

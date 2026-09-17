@@ -1,4 +1,4 @@
-# <Task ID> — <reviewable outcome>
+# <Task ID> - <reviewable outcome>
 
 ## Assignment
 
@@ -73,6 +73,6 @@ Link concise evidence records and full local artifacts. Do not paste an entire t
 - Scope still unverified:
 
 Only the coordinator marks accepted after integration and evidence checks. When
-the existing private `origin` is configured, completion also requires pushing
+the existing public `origin` is configured, completion also requires pushing
 the accepted integration to `origin/main` (and any accepted milestone tag) and
 verifying the remote ref. A local `main` that is still ahead is not complete.

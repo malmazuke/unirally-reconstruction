@@ -1,112 +1,39 @@
-# Next session — resume incomplete M4-16
+# Next session
 
-**M4-16 is incomplete and unaccepted.** The open high-priority opponent reward
-finding is closed and independently approved, but the product acceptance items
-below are still open. Nothing is merged to `main` and no milestone tag is due.
+**M4-16 is reviewed and integrated on `main`.** Acceptance is conditional on the
+final-tip CI and remote verification in the ignored closeout
+`.worktrees/m4-16-playable-zoom-zoo/artifacts/m4-16-integration/closeout.json`.
+Confirm it first. If absent, find the integration commit with
+`git log --first-parent main -- tasks/M4-16.md` and its CI with
+`gh run list --workflow synthetic.yml --commit <commit>`. M4 is not accepted, no
+milestone tag is due, and M4-17 must not be dispatched automatically.
 
-## Resume location and identity
+## Provider and review
 
-Use `.worktrees/m4-16-playable-zoom-zoo`, branch
-`codex/m4-16-playable-zoom-zoo`, not main. Main retains accepted M4-15 gameplay
-and a documentation pointer at `80cd742`. Inspect actual `git status`/`git log`
-before resuming. Read [M4-16](M4-16.md), [review](M4-16-review.md),
-[STATE](../docs/STATE.md), AGENTS, AGENT_WORKFLOW, D-0004/D-0006 and
-[R-0035](../docs/research/R-0035-zoom-zoo-playable-recovery.md).
+Claude Opus 5 is the primary under [D-0004](../docs/decisions/D-0004-model-and-usage-budget.md);
+independent review is a fresh Opus 5 subagent in an isolated checkout at the
+exact candidate. There is no percentage usage telemetry under this provider;
+record UTC wall clock. No reset, purchase or provider change is authorized.
 
-Primary is now **Claude Opus 5** by explicit user instruction after GPT Astra
-and Fable 5.1 credits were exhausted; D-0004 records the authorized move and its
-two consequences. The independent reviewer is a fresh Claude Opus 5 subagent in
-`.worktrees/m4-16-review`, which holds four review commits ending at `0945ef2`.
-No reset, purchase, paid fallback or further provider change is authorized.
-Weekly percentage telemetry does not exist under this provider; record UTC wall
-clock instead of inventing a figure.
+## Ready follow-ups
 
-## What is done and approved
-
-Experimental state is **URZZ000B / 742 bytes** (the idle-latch work below may
-add a version); static pack is **v7 / 55 entries** (`b75539a0...`), and fresh
-extraction from the user's ROM reproduces it byte for byte. v5 and v6 packs are
-rejected; re-extract with `--rom`. The generic opponent reward consumer `$81C219-C2C9` is recovered
-and independently approved across three review rounds. Evidence and the exact
-commands are in [M4-16](M4-16.md); do not re-derive them.
-
-Passing on the current tip: 22/22 focused tests; six complete cases at 6225
-states each covering both outcomes; the primary gate at 6225 observations, 757
-fresh-process restores and a full fresh restart; seven reward probes plus the
-150 control; 405 synthetic checks on both app presets with no skips; 20
-historical M4-12-M4-14 and DRAGSTER commands on both lab presets; bootstrap,
-pack-only, wrong-ROM, truncated and corrupt-pack gates; and denied-execution
-autonomy with controls proving the denial was in force.
-
-`local/native/dragster-idle` was missing here and was restored from the main
-checkout; without it every historical command exits 2, missing prerequisite.
-
-## Remaining work, in order
-
-1. **Closed: the opponent multi-axis AI trick.** A live playthrough aborted with
-   `ZOOM ZOO multi-axis AI trick is unrecovered`. `$83E1CB-E21A` sets the
-   selector to `x & 7` on a sloped launch; bit 0 is the rotation, bit 1 the
-   opponent's A (`$031F`) and bit 2 its X (`$0323`). All six unrecovered values
-   are now recovered from original evidence and independently reviewed, and the
-   A-dependent rotation rate at `$82A49F-A5F9`, which had been keyed to the
-   player's button, now reads each rider's own A. Eight frozen probe cases match
-   742 bytes across 41 observations each; a live run then reported **85
-   multi-axis updates across selectors 2 and 7** with no abort. Nothing is
-   outstanding here; it is listed so the history is not re-derived.
-
-2. **Live controls — demonstrated, reviewed, and exercised on a gamepad.**
-   A complete three-lap race, the RUNNER UP result, the authored pause menu and
-   a clean restart were driven with real key events: 5,785 nonzero updates from
-   21 presses, PAL cadence measured at 10.16 s of race clock per 10 s wall. Use
-   the computer-use per-app approval flow
-   (https://code.claude.com/docs/en/computer-use), **not** hand-granted
-   Accessibility: Bash subprocesses run under `com.anthropic.claude-code`, a
-   different bundle from the granted desktop app, so `CGEvent.postToPid`
-   silently delivers nothing and `artifacts/m4-16/live-key` is a dead end. The
-   track is a **loop** — one held direction cannot finish it; the original
-   alternates direction thirteen times. Ride the whole race in one uninterrupted
-   sequence, since gaps let the rider coast and desync. Never substitute a fixed
-   mask, replay or terminal runner. The reviewer's independent live exercise is
-   done (`78c595d`/`0915e10`). The user exercised an Xbox controller live on
-   `aac6df0`: all 5,194 nonzero updates gamepad-only, pause, a restart,
-   disconnect/reconnect, and the first live focus-loss active clears (2).
-   The user confirmed the restart was Race Again from the results screen, so
-   the gamepad clause is closed. A removal while a button is held is covered
-   by `frontend_contract_tests` only. On macOS the Xbox button opens the Games
-   overlay, so disconnect a pad by turning Bluetooth off instead.
-3. **Closed: M4-15 race matrix.** The reference pairs were in the M4-15
-   worktrees, not missing. All eight `zoom_zoo_race` commands (primary, delayed
-   turns, early jump, lap-two jump on app-debug and app-sanitize) pass on clean
-   `787c549`; the script is recorded in [M4-16](M4-16.md). Re-run it on the
-   exact final tip before integration. Never edit tracked files while it runs:
-   the tool refuses the mixed run.
-4. **Visual acceptance — fixes landed, re-review due.** The first review
-   (`bfd41ed`) failed criteria 1 and 3. All six findings are now addressed: the
-   HUD lag, the post-finish clock and the 1 px track offset (`473dbc1`), and the
-   rider art D1-D3, recovered from the original's pose tables by a worker
-   (R-0036, merged `e65623a`; a live playtest had 0 pose fallbacks). Also
-   corrected since: the fade curve (`1d8a2c1`) and the start/finish line's
-   race palette cycle (`89a1a04`, pack v7). A fresh independent review of all
-   of this is due. Originals: `visual-original-a/b`, `brake-a`, the reviewer's
-   247 recaptured frames and the worker's `original-primary` sweep. Read HUD
-   values off original frames, never from WRAM alone. Still open:
-   **idle latch cleared by the end of a scripted glance (`$82:857F/$82:87AD`)**,
-   a serialized-state divergence reachable by stopping and waiting; the rider
-   worker (`codex/m4-16-rider-art`) is recovering it from original evidence.
-5. **Result-loading read classification — classified, review due.** All
-   11,738 unresolved reads in the result capture are static ROM audio data
-   uploaded to the SPC700 by `$82:8082-8129` and `$82:82A9-831E`; see the
-   [ledger](../docs/research/M4-16-persistent-input-ledger.md). The
-   initialization capture's 23,518 remain unclassified and are not claimed.
-6. **Final integration**: reviewed exact merge, hosted macOS/Linux CI on the
-   exact tip, and synchronized private main. Hosted Linux is synthetic coverage,
-   not private Linux differential execution. No M4-17 and no milestone tag.
+1. **DRAGSTER-PALETTE-CYCLE, in progress.** Branch
+   `task/dragster-palette-cycle` in `.worktrees/dragster-palette-cycle` holds the
+   verified finding (its `tasks/DRAGSTER-PALETTE-CYCLE.md` and R-0037): DRAGSTER's race runs the same `$82:D382-D496`
+   palette cycle, frame n drawing index `(n-1334)&15`, and its two fixed palette
+   arrays are exactly phases 10 and 7. Next: merge `main`, add the tables to an
+   additive DRAGSTER content version, draw the cycle, and show the accepted
+   presentation-check counts do not regress. Then independent review.
+2. **DRAGSTER 10:00 race limit, not started.** ZOOM ZOO's `$81:C73E-C75B` finishes
+   both riders at 9:59.9; native DRAGSTER ignores the limit. Needs original
+   DRAGSTER evidence before any change.
 
 ## Launch recipe
 
 ```sh
-python3 tools/project.py frontend run --track zoom-zoo --pack local/classic-crawler-two-tracks-v7.pack --preset app-debug --report artifacts/m4-16/FRESH-live.json
+python3 tools/project.py frontend run --track zoom-zoo --pack local/classic-crawler-two-tracks-v7.pack --preset app-debug --report artifacts/FRESH-live.json
 ```
 
 Add `--rom` with the private locator's ROM and a fresh pack path for a first
-extraction. This remains a prototype.
+extraction. v5 and v6 packs are rejected. On macOS, disconnect a gamepad by
+turning Bluetooth off; the Xbox button opens the Games overlay.
