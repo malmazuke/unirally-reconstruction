@@ -1,5 +1,4 @@
-#include "zoom_zoo_movement.hpp"
-#include "content_pack.hpp"
+#include "zoom_zoo_pack.hpp"
 #include <memory>
 
 #include <filesystem>
@@ -39,13 +38,16 @@ int main(int argc,char** argv) try {
     if(argc!=7)throw std::invalid_argument("usage: zoom_zoo_runner --seed FILE --content-dir DIR --inputs FILE");
     std::filesystem::path seed,content,inputs;
     bool native_start=false,restart=false;
+    unirally::ClassicRaceTrack race_track=unirally::ClassicRaceTrack::ZoomZoo;
     std::filesystem::path pack_path;
     for(int i=1;i<argc;i+=2) {
         const std::string option=argv[i];
         if(option=="--seed")seed=argv[i+1];
         else if(option=="--restart-from") {seed=argv[i+1];restart=true;}
         else if(option=="--start") {
-            if(std::string(argv[i+1])!="classic.crawler.zoom-zoo")throw std::invalid_argument("unknown scenario");
+            const std::string scenario=argv[i+1];
+            if(scenario=="classic.crawler.dragster")race_track=unirally::ClassicRaceTrack::Dragster;
+            else if(scenario!="classic.crawler.zoom-zoo")throw std::invalid_argument("unknown scenario");
             native_start=true;
         }
         else if(option=="--content-pack")pack_path=argv[i+1];
@@ -85,8 +87,11 @@ int main(int argc,char** argv) try {
     const auto roll_directions=pack?load("roll-direction-table.bin"):std::vector<std::uint8_t>{};
     const auto weights=pack?load("roll-reward-weights.bin"):std::vector<std::uint8_t>{};
     const auto combinations=pack?load("trick-combinations.bin"):std::vector<std::uint8_t>{};
-    const unirally::ZoomZooContent data{movement,coefficients,reflection,landing,finish_poses,roll_poses,roll_directions,weights,combinations};
-    if(native_start)state=unirally::classic_crawler_zoom_zoo_start(data);
+    const unirally::ZoomZooContent zoom_zoo_data{movement,coefficients,reflection,landing,finish_poses,roll_poses,roll_directions,weights,combinations};
+    if(!native_start)race_track=state.track;
+    if(race_track==unirally::ClassicRaceTrack::Dragster && !pack)throw std::invalid_argument("DRAGSTER race requires the two-track content pack");
+    const auto data=race_track==unirally::ClassicRaceTrack::Dragster?unirally::dragster_race_content(*pack):zoom_zoo_data;
+    if(native_start)state=unirally::classic_race_start(data,unirally::classic_race_scenario(race_track));
     if(restart)unirally::restart_zoom_zoo(state,data);
     unirally::validate_zoom_zoo_content_state(state,data);
     std::ifstream stream(inputs);

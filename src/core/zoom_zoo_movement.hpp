@@ -50,7 +50,44 @@ struct ZoomZooPause {
     std::uint16_t selection{}, released{}; // $0EF3: 0/racing, 1/resume, -1/authored restart (original Retire); $0EF5.
     std::uint32_t suspended_updates{}, suspended_countdown_updates{}; // Semantic update clocks.
 };
+// The race engine was first recovered on ZOOM ZOO, hence the ZoomZoo names.
+// DRAGSTER runs the same original routines with its own track content and
+// scenario (DRAGSTER-ORDINARY-CONTROLS, R-0038).
+enum class ClassicRaceTrack : std::uint8_t { ZoomZoo=0, Dragster=1 };
+struct ClassicRaceScenario {
+    ClassicRaceTrack track{};
+    // Original frame number at the race initialization boundary: the end of
+    // the frame before fade `$0FF1` first advances. It labels native updates
+    // so they align with original captures; menu timing sets it, not physics.
+    std::uint32_t initialization_frame{};
+    // One-player race length `$77:0744`; `$82:DBA6-DBB2` stores laps + 1 in
+    // `$0EFB/$0EFD`, the extra count being the initial start-line crossing.
+    std::uint16_t laps{};
+    // Result-loading updates until the result screen is stable:
+    // player won, player lost.
+    std::uint16_t stable_result_won{}, stable_result_lost{};
+    // `$1281`, the speed-limiter progress adjustment bound. `$83:CC59-CC7C`
+    // derives it once at race setup from scenario bytes `$77:0749-074B` and
+    // ROM table `$83:C8B3`, which the pack does not carry, so each supported
+    // scenario keeps the value its reference guard authenticates.
+    std::uint16_t adjustment_limit{};
+    // Race mode `$77:074B`: 1 for the ZOOM ZOO tour race, 0 for DRAGSTER. In
+    // the race update it selects only the final-lap announcement ($81:81AE)
+    // and the result screen: mode 1 publishes the lap graph extrema at load
+    // 106 ($83:904A-90F0); the mode-0 result screen publishes none.
+    bool tour_race{};
+};
+ClassicRaceScenario classic_race_scenario(ClassicRaceTrack track);
+// $81:A304-A51B: decoded track byte 13 selects one of the fixed playfields of
+// 16,384 64-unit coarse cells. Zero selects 1,024 columns (DRAGSTER) and 0x40
+// selects 256 (ZOOM ZOO); x wraps with `$0D4F`, columns * 64 - 1.
+struct TrackGeometry {
+    std::uint16_t coarse_columns{}, position_mask{};
+};
+TrackGeometry track_geometry(std::span<const std::uint8_t> decoded_track);
+
 struct ZoomZooState {
+    ClassicRaceTrack track{ClassicRaceTrack::ZoomZoo}; // Serialized as the state magic.
     ZoomZooPause pause;
     std::array<ZoomZooRoll,2> rolls{};
     std::array<std::array<std::uint8_t,25>,2> learned_weights{}; // Events2–26; event1 remains in each queue.
@@ -89,6 +126,14 @@ std::vector<std::uint8_t> serialize_zoom_zoo(const ZoomZooState& state);
 ZoomZooState deserialize_zoom_zoo(std::span<const std::uint8_t> bytes);
 // $82:D7C6-DBD6, authenticated track header and one-player three-lap scenario.
 ZoomZooState classic_crawler_zoom_zoo_start(const ZoomZooContent& content);
+// The same initializer for the one-player, one-lap CRAWLER/DRAGSTER race.
+ZoomZooState classic_crawler_dragster_race_start(const ZoomZooContent& content);
+ZoomZooState classic_race_start(const ZoomZooContent& content,const ClassicRaceScenario& scenario);
+// Identity of a DRAGSTER race state on the shared engine; same 742-byte layout as URZZ000B.
+inline constexpr std::array<std::uint8_t,8> dragster_race_state_magic{'U','R','D','G','0','0','0','1'};
+bool classic_race_player_won(const ZoomZooState& state);
+// Result-loading update at which the result screen is stable (restart allowed).
+std::uint16_t stable_result_updates(const ZoomZooState& state);
 // Race Again selects the same clean scenario after the stable result.
 void restart_zoom_zoo(ZoomZooState& state,const ZoomZooContent& content);
 // Validate content-dependent restore invariants before emitting or advancing a state.
