@@ -124,8 +124,24 @@ def cmd_run(args: argparse.Namespace) -> int:
         try:
             inspected = packmod.validate_pack(pack_path.read_bytes(), rules, rules_sha)
         except (ValueError, OSError) as exc:
-            rep.add_check("classic_pack", "failed", detail=f"existing pack is invalid and was not replaced: {exc}")
-            return _finish(rep, paths.report, EXIT_INVALID_INPUT)
+            inspected = None
+            # The two-track pack carries every DRAGSTER entry and the race palette
+            # tables (R-0037), so DRAGSTER also runs from it under its own rules.
+            if (getattr(args, "track", "dragster") == "dragster" and
+                    rules_path == _canonical_path(ROOT / packmod.RULES_PATH)):
+                two_track_rules_path = _canonical_path(ROOT / packmod.TWO_TRACK_RULES_PATH)
+                try:
+                    two_track_rules, two_track_sha = packmod.load_rules(two_track_rules_path)
+                    inspected = packmod.validate_pack(pack_path.read_bytes(), two_track_rules, two_track_sha)
+                    rep.add_input("two_track_extraction_rules", two_track_rules_path, two_track_sha)
+                except (FileNotFoundError, ValueError, json.JSONDecodeError, OSError) as two_track_exc:
+                    inspected = None
+                    # A two-track pack that fails its own checks gets that diagnosis.
+                    if "extraction-rules identity" not in str(two_track_exc):
+                        exc = two_track_exc
+            if inspected is None:
+                rep.add_check("classic_pack", "failed", detail=f"existing pack is invalid and was not replaced: {exc}")
+                return _finish(rep, paths.report, EXIT_INVALID_INPUT)
         rep.add_check("classic_pack", "passed", detail=f"validated existing pack {pack_path}; ROM was not opened")
         rep.add_input("classic_pack", pack_path, inspected["pack_sha256"], size=inspected["pack_size"])
         rep.data["first_launch_extraction"] = False

@@ -108,7 +108,13 @@ with the cycled colour 0. Both apply whenever the loaded pack carries the tables
 the same ROM bytes; the two-track pack v7 has them). DRAGSTER v1 packs, which
 do not, keep the accepted pose-keyed palette, so the accepted v1 contracts,
 fixtures and historical gates are untouched. No new pack version is added:
-the two-track pack already carries every DRAGSTER entry and the tables. The
+the two-track pack already carries every DRAGSTER entry and the tables. The app
+always accepted it for DRAGSTER, but `tools/project.py frontend run --track
+dragster` checked any existing pack against the DRAGSTER v1 rules and refused
+it (exit 3). The launcher now falls back to the two-track rules for an existing
+DRAGSTER pack that fails the v1 rules identity, so
+`frontend run --track dragster --pack local/classic-crawler-two-tracks-v7.pack`
+launches with the recovered palette. The
 result screen and rider palettes are unchanged.
 
 Verification:

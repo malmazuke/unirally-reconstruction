@@ -93,6 +93,36 @@ Integration fixes it requested, applied before merge:
 
 **My own correction while applying them:** R-0037 and attempt 5 had described the winner window as matching "at every sampled phase". Most of those frames are loading frames where both screens are black. The racing-phase evidence is 3452 and the overlap at 3322, and the records now say so.
 
+### Launcher gap found by the integration gates
+
+The affected gates on the integration candidate `829a7c9` passed everything
+except one hidden launch: `frontend run --track dragster --pack
+local/classic-crawler-two-tracks-v7.pack` exited 3, "extraction-rules identity
+is incompatible". The app binary accepts the two-track pack for DRAGSTER (exit
+0), but the launcher checked every existing DRAGSTER pack against the v1 rules.
+The approved change was therefore unreachable through the documented launcher,
+and my records' claim that launching DRAGSTER with the two-track pack gives the
+recovered palette was true only for the bare app. The reviewer's checks
+rendered headlessly and could not see this.
+
+Fix: when `--track dragster` uses the default DRAGSTER rules and an existing
+pack fails their identity, the launcher validates it against the two-track
+rules instead. If that also fails for a reason other than identity, it reports
+that more specific diagnosis. Launcher checks
+(`artifacts/dragster-palette-cycle/launcher-check.sh`):
+
+| Case | Result |
+| --- | --- |
+| DRAGSTER, v1 pack | exit 0 |
+| DRAGSTER, two-track v7 pack | exit 0 (was 3) |
+| ZOOM ZOO, v7 pack | exit 0 |
+| ZOOM ZOO, DRAGSTER v1 pack | exit 3, identity incompatible (unchanged) |
+| DRAGSTER, v7 pack with one byte flipped | exit 3, entry payload hash differs |
+| DRAGSTER, v1 pack with one byte flipped | exit 3, entry payload hash differs |
+
+This is a new change after approval, so it goes back to the reviewer before
+integration.
+
 **Decision (17 September 2026):** no new DRAGSTER pack version. The two-track
 pack v7 already carries every DRAGSTER entry and the cycle tables, so DRAGSTER
 draws the recovered cycle from it. DRAGSTER v1 packs keep the accepted

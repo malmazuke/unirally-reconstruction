@@ -35,6 +35,8 @@ record UTC wall clock. No reset, purchase or provider change is authorized.
 python3 tools/project.py frontend run --track zoom-zoo --pack local/classic-crawler-two-tracks-v7.pack --preset app-debug --report artifacts/FRESH-live.json
 ```
 
-Add `--rom` with the private locator's ROM and a fresh pack path for a first
-extraction. v5 and v6 packs are rejected. On macOS, disconnect a gamepad by
+DRAGSTER runs from the same pack with `--track dragster` and then draws the
+recovered race palette cycle (R-0037); the DRAGSTER-only v1 pack keeps the
+accepted colours. Add `--rom` with the private locator's ROM and a fresh pack
+path for a first extraction. v5 and v6 packs are rejected. On macOS, disconnect a gamepad by
 turning Bluetooth off; the Xbox button opens the Games overlay.
