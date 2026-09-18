@@ -202,21 +202,45 @@ and 2,810 of 2,810 pixels at 3215 and 4,034 of 4,034 at 3450. The accepted
 contract frames are untouched: at 3452 and 3453 both implementations draw
 member 18 and the rectangle mismatch stays at 653.
 
+## Established later: the opponent-won banner over its full length
+
+CLASSIC-PRESENTATION-UNIFICATION moved the selection onto the shared race
+state (`classic_window_table_index`). When the player won, `race.finish_delay`
+counts the whole banner as `player_finish_delay` did. When the opponent won,
+its finish frame is presentation history kept by `ClassicRaceHistoryTracker`
+(the frame on which `race.riders[1].finished` became set), like the rider look
+state; a single restored state without history recovers it once the player has
+also finished, from the two finish times: `finish_centiseconds` advances two
+per frame plus the frame parity, so `total[0] - total[1] = 2(fa - fb) + (fa &
+1) - (fb & 1)` has exactly one solution for `fb` given the player's finish
+frame `fa = frame - finish_delay` (during result loading, the delay last
+advanced on the frame before loading started). The relation holds on all four
+original races with both finishes (continuous-Right, primary-a, reversal-a,
+random-1-a).
+
+Checked against `lose-a` (opponent 3214, player 3318, loading 3559) with the
+runner's `--window-index` mode: with the history the member equals the
+original's `$80:868E` read on **2,226 of 2,226 frames from 1334 to 3559**,
+including the 226 banner frames beyond the legacy 120-update counter; without
+history the derivation agrees on every frame from the player's finish through
+loading and selects nothing on the 102 frames before it. The read on frame n is
+the table frame n shows (the driver of n-1 chose it); an earlier working note
+in the unification task had the alignment one frame off.
+
 ## Not established
 
-- **The opponent-won banner after its first 120 updates.** Native locates the
-  opponent's finish frame from `finish_animation_countdown[1]`, which runs out
-  after 120 updates, so from then on native draws no banner where the original
-  still shows one (in `lose-a`, display frames 3334-3559; an earlier draft said
-  3576, corrected by the review against both captures). The player-won case
-  has no such bound because `player_finish_delay` counts the whole banner. The
-  cheapest next experiment: both riders' finish times are already serialized, so
-  the gap between the finishes is `finish_time_centiseconds[0] -
-  finish_time_centiseconds[1]`, which the clock advances by two per frame plus
-  the `frame & 1` term of `finish_centiseconds`; derive the opponent's finish
-  frame from the player's and check it against an opponent-won native timeline
-  before trusting it. Adding the winner's finish frame to the serialized state
-  would also do it, at the cost of a state version.
+- **Whether `$1229` is ever anything but 1**, which would move the transition
+  member off 6. `$0BA7` was 1 in every captured DRAGSTER race; what sets it was
+  not examined.
+- **`$0FF1`**, the `>= 5` gate at `$83:E59E`, and `$77:0750`/`$77:074B`, which
+  the drivers read for the two-player and stop paths. One-player DRAGSTER always
+  took the paths above.
+- **ZOOM ZOO's own window content.** The mechanism is shared: the drivers,
+  the pointer and the family are not DRAGSTER-specific, and ZOOM ZOO's recorded
+  omissions (start ring, GO, hint text, finish banner) are the same channel-6
+  effect. Which members its countdown and banner select, and whether its other
+  captions use this path at all, was not captured. The unified renderer binds
+  no window family for ZOOM ZOO until that is measured.
 - **Whether `$1229` is ever anything but 1**, which would move the transition
   member off 6. `$0BA7` was 1 in every captured DRAGSTER race; what sets it was
   not examined.

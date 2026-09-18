@@ -2,12 +2,14 @@
 
 ## Assignment
 
-- Status: in progress (started 18 September 2026 from `main` at `ed504fb`, after the DRAGSTER window-effects review closed and integrated)
+- Status: review (implementation candidate on `task/classic-presentation-unification`, head: see `git log`; started 18 September 2026 from `main` at `ed504fb`, after the DRAGSTER window-effects review closed and integrated)
 - Milestone: follow-up to M4-16, DRAGSTER-ORDINARY-CONTROLS and DRAGSTER-WINDOW-EFFECTS
-- Coordinator: Claude Opus 5 primary session
-- Base commit: current `main`
+- Coordinator: main session
+- Task provider: Anthropic (unchanged)
+- Worker/session/runtime/model: Claude Code; Claude Opus 5 for measurements one to four, then Claude Fable 5.1 for the fifth measurement, the implementation and everything below (the model changed between sessions on 18 September 2026)
+- Base commit: `main` at `ed504fb`
 - Branch and isolated worktree: `task/classic-presentation-unification`, `.worktrees/classic-presentation-unification`
-- Reviewer: fresh Claude Opus 5 subagent at the exact candidate
+- Reviewer: fresh independent subagent in an isolated checkout at the exact candidate
 
 ## Why
 
@@ -352,12 +354,182 @@ unified renderer.
 | Recaptured frozen frames | new contract profile at the seven frames, shared state schema | native matches the original picture | manifest and capture |
 | Accepted v1 contracts | `native presentation-check` winner and loser, v1 pack | unchanged; the v1 path is untouched by this task | reports |
 
+## Fifth measurement - the frozen contract race does have inputs
+
+The fourth measurement said the contract "has no menu or replay manifest, only
+the seven states and their pictures", and concluded the frozen frames could
+not be reached on the shared state without a recapture. That was wrong, and
+it was checkable: the winner fixtures' states at 1600, 2000 and 2400 are byte
+for byte the release-3213 sweep's states, and the release-3213 case is a
+one-frame perturbation of the accepted continuous-Right replay
+(`race-crawler-dragster-12000-continuous-right-fields.json`: the menu path,
+Right 1500-11999, Up 2200-2259). The contract race is that replay, and the
+replay carries every input.
+
+Driving the shared engine from end-1328 with those inputs
+(`artifacts/unification-baseline/stage_b.py`) reproduces both riders' pose
+indices at 1600, 2000, 2400 and 3213 exactly. At 3453, 3678 and 3679 the
+legacy states hold poses 1278/892 where the shared engine holds 2637/2684:
+the M3 path never recovered the finish-pose cycle, the shared engine's cycle
+is byte-exact against the original on its own captures, and the pictures
+decide it below. So the recapture is not needed and the original acceptance
+row stands; the "Acceptance, amended" table is superseded by the results.
+
+## Implementation
+
+Four commits on the branch (`git log ed504fb..`):
+
+1. **One renderer.** `render_classic_race` (`src/core/presentation.cpp`)
+   replaces `render_zoom_zoo` and DRAGSTER's narrowing call path. It takes the
+   742-byte race state and a `ClassicRacePresentationContent` that
+   `classic_race_presentation_content(pack, track)` selects from the pack:
+   track content by track, the palette cycle, window family and rider object
+   tables shared, the scenario and playfield geometry from the engine.
+   Inside it, for both tracks: BG scroll from the previous update's camera
+   minus the track origin (the original publishes the same relation on
+   DRAGSTER: at 3453, camera 25266 against origin 832 gives BG1 24434 and BG2
+   12217), the world lookup by the track's column count, rider objects through
+   `project_rider_oam` with the track's `$81:A4C1`/`$81:A445` set, the fade
+   from the previous update's `$0FF1` instead of a frame formula, the palette
+   cycle and the channel-6 window selection from the scenario's setup frame
+   (initialization + 6: 1334 and 1382), the authored HUD with the scenario's
+   lap count, the pause menu. A track whose pack carries the recovered mode-0
+   result screen draws it through `classic_finish_view`; the tour race draws
+   the authored lap graph. The app, the fuzz runner and the presentation
+   runner (now `classic_race_presentation_runner`, either track, plus a
+   `--window-index` mode) draw through it; `dragster_race_picture_runner`,
+   `render_dragster_race`, `dragster_presentation_state`,
+   `race_picture_brightness` and `presentation_position` are gone. The M3 v1
+   renderer and its five-pair atlas stay only behind the frozen v1 contracts.
+2. **Neutral names.** `zoom_zoo_content` reads the eight duplicated engine
+   tables under `physics.*` for both tracks; `zoom_zoo_runner` binds pack
+   content through the accessors instead of a third entry list.
+3. **The opponent-won banner.** `ClassicRaceHistoryTracker` keeps the frame on
+   which the opponent finished, and `classic_opponent_finish_frame` recovers
+   it for a restored state from the two finish times (two centiseconds per
+   frame plus the frame parity; the relation holds on all four original races
+   with both finishes). R-0040 records the closure.
+4. **The launcher.** `frontend run` selects by profile: a typed `--pack` must
+   carry the supported profile and is refused otherwise, naming both profiles
+   and the remedy; without `--pack` the newest valid pack under `local/` is
+   used; a first extraction goes to a path named after the profile; `--rom`
+   over an incompatible pack replaces nothing unless `--replace-pack` moves it
+   aside; and the app's `--supported-profiles` (declared once, in the pack
+   reader) is compared with the rules before launch, so a stale build is
+   reported with the rebuild command. The hardcoded substitute list, the
+   v1-to-two-track upgrade and the per-track pack rewrite are deleted. All
+   four playtest defects above are closed; the fourth did not need a separate
+   task.
+
+## Measurements on the candidate
+
+All scripts and outputs are under ignored `artifacts/unification-baseline/`
+(`stage_c.py`, `stage_c/report.json`, `verify_banner.py`,
+`banner/banner-agreement.json`, the gate logs).
+
+**DRAGSTER frozen contract frames** (`stage_c.py` part A): the shared engine
+driven by the contract race's inputs, drawn by the unified renderer, against
+the fixture pictures on each case's rectangle, beside the accepted v1 renderer
+on the same frames:
+
+| frame | rect pixels | v1 renderer | unified | threshold |
+| --- | --- | --- | --- | --- |
+| 1600 | 26,656 | 36 | 36 | 533 |
+| 2000 | 50,176 | 697 | 358 | 1,003 |
+| 2400 | 50,176 | 279 | 279 | 1,003 |
+| 3213 | 50,176 | 445 | 322 | 1,505 |
+| 3453 | 50,176 | 653 | 777 | 1,505 |
+| 3678 | 57,344 | 962 | 962 | 8,601 |
+| 3679 | 57,344 | 961 | 961 | 8,601 |
+
+Every frame is inside its threshold; four are equal or better, 3453 is 124
+pixels worse (the shared engine's finish pose against the atlas captured at
+that frame) and still under half its threshold. Outside the rectangles the
+authored HUD band differs from the original HUD, as declared.
+
+**Release-3213 race against the original pictures** (part B): the 132 frames
+the window-effects measurement scored, rectangle (0, 28, 256, 196), previous
+renderer's v8 renders against the unified renderer, both against the same
+original captures:
+
+| segment | frames | previous mismatch | unified mismatch |
+| --- | --- | --- | --- |
+| countdown 1510-1534 | 2 | 4,433 | 408 |
+| GO 1535-1603 | 44 | 39,623 | 7,802 |
+| racing 1604-3213 | 24 | 27,687 | 10,538 |
+| winner banner 3214-3453 | 46 | 60,857 | 37,379 |
+| result loading 3454-3677 | 14 | 622,751 | 622,757 |
+| result 3678-3679 | 2 | 1,923 | 1,923 |
+| all 132 | 132 | 757,274 | 680,807 |
+
+114 frames improve, 14 are unchanged, 4 are worse: 3452 and 3453 by 124 (as
+above) and 3600 and 3677 by 3, inside the declared "native draws the race
+while the original fades in the result screen" difference. A further 51
+frames with originals but no previous render (1330-1339 initialization,
+1420-1436 and 1510-1532 countdown) score 0 to 490 each.
+
+**ZOOM ZOO scenes** (part C): the ten M4-16 scenes rendered by the new runner
+are pixel-identical to the before-change runner on every scene.
+
+**Rider art:** hidden app runs of 4,000 updates with Right held, both tracks:
+`rider-pose fallback frames: 0`; DRAGSTER reaches its stable result
+(phase 3, outcome 1, 3357/3358). The user's playtest run had 21 of 21.
+
+**Opponent-won banner** (`verify_banner.py`, the `lose-a` capture): with the
+tracked history the renderer's member equals the original's `$80:868E` read on
+2,226 of 2,226 frames from 1334 to 3559; without history, the derivation
+agrees on every frame from the player's finish (3318) through loading and
+selects nothing on the 102 frames before it.
+
+**Launcher, real runs** (`launch-*.json`): a typed DRAGSTER v1 pack is refused
+naming `classic.pal.crawler.dragster.v1`, `classic.pal.crawler.two-tracks.v8`
+and the remedy; no `--pack` selects the v8 pack by profile and the app reports
+the supported profile; a v7 pack under `--rom` without `--replace-pack` is
+refused with the remedy.
+
+## Gates on the candidate
+
+| Gate | Result |
+| --- | --- |
+| lab-debug ctest | 23/23 (new checks: shared-state palette phase, window index and finish view agree with the legacy functions; the finish-frame derivation on the reversal, random-1 and lose-a values; DRAGSTER OAM limits) |
+| tooling `tests.tooling.test_frontend` | 14/14 (profile refusal, selection under `local/`, `--replace-pack`, stale build) |
+| M4-16 ZOOM ZOO primary (`zoom_zoo_playable compare`, v8 pack) | passed at `cfb539d` |
+| DRAGSTER frozen originals primary, random-1, reversal | passed at `cfb539d` |
+| historical matrix (`hist.sh`, `hist2.sh`: 20 commands) | 20/20 at `cfb539d`; the v1 contracts report winner 36/697/279/445/653/962/961 and loser 1,073, identical to the accepted figures |
+| five presets, fuzz, differential gates at the final candidate | see the handoff |
+
+## Mistakes
+
+- The fourth measurement's claim that the frozen contract has no inputs was
+  recorded without checking the fixtures against the sweep states beside
+  them. Ten minutes of comparison would have found the replay manifest; the
+  claim instead sent the plan toward a recapture the task did not need.
+- The banner check first used the wrong alignment (the setup's read on frame
+  n taken as the table for n+1) and reported 248 disagreements; the script
+  had tried both shifts, and reading its own output found 0 at shift 0.
+- The finish-frame derivation was one frame late during result loading until
+  the same check showed 16 against 17 at 3559; the delay stops counting one
+  update before loading starts.
+- Ten historical-matrix commands failed twice for reasons that were not
+  regressions: the private `local/native` inputs are per worktree, and
+  `native compare` refuses a reused artifact directory. Both are recorded in
+  the gate logs.
+
 ## Handoff
 
-- Measurements one to four are done and recorded. The state is already shared
-  and discarded at the call site; the pack carries eight engine tables twice
-  under two vocabularies, the older of which is the neutral one; the recovered
-  renderer names its track inline; and the frozen contracts cannot drive it.
-- Next: recapture the seven DRAGSTER contract frames under the shared state
-  schema, then widen `LivePresentation::render_dragster_race` to pass the race
-  state through and select content by track rather than by literal name.
+- Branch `task/classic-presentation-unification`; base `ed504fb`; head: see
+  `git log`. Measurements one to four (Opus 5) and five onward (Fable 5.1)
+  are above; the code is the four commits listed under Implementation plus
+  this record.
+- Not done, by decision: ZOOM ZOO's own window content stays omitted (no
+  family bound for it) until its members are captured; the authored HUD and
+  result styles stay authored; the eight `zoom.*` aliases stay in the v8 pack
+  until a later profile drops them; renaming other accepted entries is not
+  permitted.
+- Next experiment if picked up cold: bind the window family for ZOOM ZOO in
+  `classic_race_presentation_content`, render scene 1450 and compare with the
+  original; if the countdown digits match, the same selection serves both
+  tracks and R-0040's ZOOM ZOO bullet closes.
+- Review: fresh independent reviewer in an isolated checkout at the
+  candidate, then integration, final-tip CI and the closeout under ignored
+  `artifacts/unification-integration/closeout.json`.

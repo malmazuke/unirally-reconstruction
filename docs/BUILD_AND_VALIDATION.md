@@ -174,7 +174,7 @@ of reimplementing a build system; rows still marked proposed are unavailable.
 | `native finish-check --manifest <full-race case> [--save-frame N ...]` | implemented (M3-01 accepted) | Run the full-race native producer twice, require the canonical `URMV0001` to `URMV0002` transition and exact frozen gameplay/finish/result state through the first stable result frame, and optionally require restored suffixes to equal uninterrupted execution |
 | `native opponent-first-check --manifest <case> --content-pack <pack> [--save-frame N ...]` | implemented (M3-04 accepted) | Run the neutral-after-1533 native producer twice using only the validated pack, compare the identity-bound full opponent x/y/velocity/pose plus player/timer/finish projection through frame 3999, and optionally require restored suffixes to equal uninterrupted execution |
 | `native presentation-check --manifest <presentation contract> --fixtures <ignored fixture directory> --content-pack <pack>` | implemented (M3-02 accepted) | Build the pack-only headless renderer, identity-check each private canonical state/reference PNG named by the tracked contract, render each case in a fresh process, and fail/report its exact regional pixel mismatch against the frozen threshold; fixtures must remain below ignored `local/` or `artifacts/` |
-| `frontend run [--pack <ignored pack>] [--rom <supported ROM>]` | implemented (M3-03 accepted) | Validate an existing Classic pack and launch the SDL3 app without opening a ROM; when the pack is absent, exact-gate the explicit ROM, atomically create and revalidate the pack, then launch. Existing corruption, cancelled/missing/wrong ROM, absent executable and failed/timed-out app launches are non-success outcomes. Audio is explicitly omitted. |
+| `frontend run [--track dragster\|zoom-zoo] [--pack <ignored pack>] [--rom <supported ROM>] [--replace-pack]` | implemented (M3-03 accepted; pack selection by profile since CLASSIC-PRESENTATION-UNIFICATION) | Launch the SDL3 app on a pack selected by the profile recorded inside it: a typed `--pack` must validate against the supported profile and is refused otherwise (naming both profiles and the remedy); without `--pack` the newest valid pack under `local/` is used; when none exists, exact-gate the explicit ROM, atomically create the pack at the profile's own path and revalidate it, then launch; `--rom --replace-pack` moves an incompatible existing pack aside first. Before launching, the app's `--supported-profiles` are compared with the rules' profile so a stale build is reported with the rebuild command. Existing corruption, cancelled/missing/wrong ROM, absent executable and failed/timed-out app launches are non-success outcomes. Audio is explicitly omitted. |
 | `verify --task <id>` | proposed | Run that task's declared checks, validate required artifacts and report eligibility for review |
 | `package --preset <name>` | proposed | Later: assemble a runnable build with dependency notices and no unintended local inputs |
 
@@ -451,7 +451,7 @@ Implemented in `codex/m4-16-playable-zoom-zoo`, not accepted gameplay on main:
 
 ```sh
 python3 tools/project.py frontend run --track zoom-zoo --pack local/classic-crawler-two-tracks-v8.pack --preset app-debug --report artifacts/m4-16/FRESH-live.json
-build/app-debug/src/core/zoom_zoo_presentation_runner local/classic-crawler-two-tracks-v8.pack --timeline <native timeline> <frame> OUT.ppm
+build/app-debug/src/core/classic_race_presentation_runner local/classic-crawler-two-tracks-v8.pack --timeline <native timeline> <frame> OUT.ppm
 python3 -m tools.unirally_lab.native.zoom_zoo_playable --help
 python3 -m tools.unirally_lab.native.zoom_zoo_playable_reference --help
 # idle variation: case JSON {"idle":{"from":F,"frames":N|null}} releases all buttons, then resumes the primary; horizon up to 40000
@@ -491,12 +491,18 @@ python3 -m tools.unirally_lab.native.dragster_playable compare --reference artif
 python3 -m tools.unirally_lab.native.dragster_playable explore --reference artifacts/FRESH-a --binary build/app-debug/src/core/zoom_zoo_runner --pack local/classic-crawler-two-tracks-v8.pack
 # Abort fuzz over complete races with the app's update, restart and render calls; failing races become capture cases.
 build/lab-release/src/app/dragster_fuzz_runner --content-pack local/classic-crawler-two-tracks-v8.pack --first-seed 1 --seeds 3000 --races 3 --max-updates 40000 --failure-cases artifacts/FRESH-failures
-# One DRAGSTER race state drawn as the app draws it.
-build/app-debug/src/app/dragster_race_picture_runner --content-pack local/classic-crawler-two-tracks-v8.pack --race-state STATE.bin --out OUT.ppm
+# One race state of either track drawn as the app draws it (CLASSIC-PRESENTATION-UNIFICATION: one renderer);
+# --timeline replays a native timeline so the rider look overlays and the opponent's finish frame are exact,
+# and --window-index prints the channel-6 window member per row for index-level checks against the original.
+build/app-debug/src/core/classic_race_presentation_runner local/classic-crawler-two-tracks-v8.pack STATE.bin OUT.ppm [PREVIOUS_STATE.bin]
+build/app-debug/src/core/classic_race_presentation_runner local/classic-crawler-two-tracks-v8.pack --timeline NATIVE_TIMELINE FRAME OUT.ppm
+build/app-debug/src/core/classic_race_presentation_runner local/classic-crawler-two-tracks-v8.pack --window-index NATIVE_TIMELINE
 # Extract the two-track pack (profile classic.pal.crawler.two-tracks.v8, 56 entries).
 python3 tools/project.py content pack --rules tests/manifests/content/classic-crawler-two-tracks-pack.json --out local/classic-crawler-two-tracks-v8.pack
-# Live play; a 25-entry DRAGSTER pack is upgraded to the two-track pack beside it, or one is extracted with --rom.
-python3 tools/project.py frontend run --track dragster --pack local/classic-crawler-two-tracks-v8.pack --preset app-debug
+# Live play. Without --pack the newest pack under local/ carrying the supported profile is used; a typed --pack
+# must carry it (a DRAGSTER v1 pack is refused, not substituted); --rom extracts when no such pack exists, and
+# --rom with --replace-pack moves an incompatible pack aside first. A stale build is reported before launch.
+python3 tools/project.py frontend run --track dragster --preset app-debug
 ```
 
 `zoom_zoo_runner --start classic.crawler.dragster` requires `--content-pack`

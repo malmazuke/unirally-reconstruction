@@ -196,10 +196,33 @@ PPU's vertical wrap. Unknown poses and references throw.
 
 `rider_look.hpp/.cpp` reproduces the presentation-only look animation
 (`$82:836D-$82:8926`) and overlay choice (`$83:EC8E`). The serialized race
-does not carry its state, so `ZoomZooRiderLookTracker` in `presentation.hpp`
+does not carry its state, so `ClassicRaceHistoryTracker` in `presentation.hpp`
 follows consecutive updates for the live frontend and the runner's
-`--timeline` mode. `rider_presentation_tests` pins the mapping with synthetic
+`--timeline` mode; it also keeps the frame on which the opponent finished,
+the winner banner's origin when the opponent won (R-0040).
+`rider_presentation_tests` pins the mapping with synthetic
 tables; private validation against eight original WRAM series is in R-0036.
+
+## One renderer for both tracks
+
+`render_classic_race` in `presentation.cpp` draws either track from the
+742-byte shared race state and a `ClassicRacePresentationContent`, which
+`classic_race_presentation_content(pack, track)` selects from the pack by
+track: the track data, BG tiles, maps and palette are the track's own entries;
+the race palette cycle, the channel-6 window family and the rider object
+tables are shared ROM content; the scenario (initialization frame, laps) and
+the playfield geometry come from the engine. The same code composes the BG
+scroll from the previous update's camera, the rider objects, the fade from
+`$0FF1`, the palette cycle and the window selection for both tracks; a track
+whose pack carries the recovered mode-0 result screen draws it, the tour race
+draws the authored lap graph. `classic_finish_view` derives the legacy finish
+phases the recovered result screen reads, for presentation only.
+`classic_race_presentation_runner` renders one state, a timeline frame, or
+the window member per row. The accepted M3 `render_dragster_headless` and its
+five-pair rider atlas remain only behind the frozen DRAGSTER v1 contracts; the
+app does not draw through them. The pack's eight track-independent engine
+tables are read under their neutral `physics.*` names for both tracks; their
+`zoom.*` aliases in the two-track pack are unread.
 
 
 ## Shared race engine for DRAGSTER
