@@ -227,7 +227,8 @@ including the 226 banner frames beyond the legacy 120-update counter; without
 history the derivation agrees on every frame from the player's finish through
 loading and selects nothing on the 102 frames before it. The read on frame n is
 the table frame n shows (the driver of n-1 chose it); an earlier working note
-in the unification task had the alignment one frame off.
+in the unification task had the alignment one frame off. The banner's life and
+its behaviour through a pause are corrected in the section after next.
 
 ## Not established
 
@@ -244,12 +245,36 @@ in the unification task had the alignment one frame off.
   captions use this path at all, was not captured. The unified renderer binds
   no window family for ZOOM ZOO until that is measured.
 
-## Bounds that are defensive, not observed
+## Established later: the banner's life, and windows through a pause
 
-`winner_window_frames` is 360, from `$0F07`'s `$0168`, but `deserialize_zoom_zoo`
-rejects a `player_finish_delay` above 240, so no restorable state reaches the
-bound, and for the parity the captured race takes the ROM driver leaves a frame
-earlier than 360 would. The presentation test therefore asserts only reachable
-states (review finding C). `frame + 1 - since` can wrap for hand-made states
-with tiny frame numbers; it is defined, bounds-checked and unreachable for real
-states (finding D).
+DRAGSTER-WINDOW-PAUSE corrected two readings above from originals captured
+with the user's ROM (a pause during the countdown, a pause during an
+opponent-won banner) and from the two accepted captures whose player finished
+long after the opponent (random-1, reversal). The pointer alignment is: frame
+n shows the `$11FD` value at the end of frame n-1 (the driver of n-1 chose it).
+
+- **The banner's life is 180 steps, not 360 driver updates.** `$0F07`'s
+  `$0168` was read as 360 updates; the channel is in fact disabled on the
+  181st odd driver update after a finish: random-1 (opponent 3214, first
+  driver update 3215 odd) loses the banner on 3576, reversal (opponent 3325,
+  first driver update 3326 even) on 3688. A finish while the banner is alive
+  restarts the life with no gap and the member phase continues (lose-a,
+  banner-pause, primary-a); a finish after expiry starts the driver on the
+  following update from the phase it stopped at (random-1: member 8 on 3638
+  for the player's finish at 3636), which after 180 steps is member 7 again.
+- **A pause disables channel 6 for every update the menu diverts**, from the
+  update that opens it through the update that resumes (countdown-pause: no
+  window on 1401-1502 for a pause opened on 1400 and resumed on 1501; the
+  digit returns on 1503), and the drivers do not run through it: the
+  countdown digit resumes where it stopped and the banner's steps do not
+  advance. `$0300` keeps alternating through the pause, so after a resume the
+  GO letters and the banner steps follow the frame parity again.
+- The frame-based selection is exact only when no pause diverted a driver
+  update; the live app and the runner's `--timeline` mode follow the drivers
+  update by update through `ClassicRaceHistoryTracker` and equal the
+  original's pointer on every frame of all five captures (2,267 + 2,319 +
+  2,119 + 2,544 + 3,200).
+
+`frame + 1 - since` can wrap for hand-made states with tiny frame numbers; it
+is defined, bounds-checked and unreachable for real states (review finding D
+of DRAGSTER-WINDOW-EFFECTS).

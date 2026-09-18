@@ -198,8 +198,12 @@ PPU's vertical wrap. Unknown poses and references throw.
 (`$82:836D-$82:8926`) and overlay choice (`$83:EC8E`). The serialized race
 does not carry its state, so `ClassicRaceHistoryTracker` in `presentation.hpp`
 follows consecutive updates for the live frontend and the runner's
-`--timeline` mode; it also keeps the frame on which the opponent finished,
-the winner banner's origin when the opponent won (R-0040).
+`--timeline` mode; it also keeps the channel-6 window pointer as the
+original's drivers choose it and the vblank publishes it (the countdown word
+before each update, the update parity, the banner's 180-step life from the
+latest finish; a paused update disables it), and the frame on which the
+opponent finished for the frame-based fallback a single restored state uses
+(R-0040, DRAGSTER-WINDOW-PAUSE).
 `rider_presentation_tests` pins the mapping with synthetic
 tables; private validation against eight original WRAM series is in R-0036.
 

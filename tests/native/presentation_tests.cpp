@@ -731,11 +731,12 @@ int main() {
     }
     // Winner banner from the player's finish: finish_delay counts as the
     // legacy player_finish_delay, and loading update 1 is the last change.
+    // (Only the player has finished: the legacy state knows one finish.)
     for (const std::uint32_t since : {0U, 1U, 2U, 3U, 40U, 41U, 240U}) {
       auto shared_state = race;
       shared_state.movement.frame = 3213 + since;
-      shared_state.race.riders[0].finished = shared_state.race.riders[1].finished = 1;
-      shared_state.race.total_times = {3357, 3358};
+      shared_state.race.riders[0].finished = 1;
+      shared_state.race.total_times = {3357, 60000};
       shared_state.race.finish_delay = static_cast<std::uint16_t>(since);
       unirally::MovementState legacy_movement{};
       legacy_movement.frame = shared_state.movement.frame;
@@ -784,7 +785,50 @@ int main() {
       shared_state.movement.frame = 4300;
       shared_state.race.finish_delay = 8;
       require(unirally::classic_opponent_finish_frame(shared_state) == 3325U);
-      require(!unirally::classic_window_table_index(shared_state, setup, std::nullopt)); // 975 frames after: the banner ended
+      // 975 frames after the opponent's finish its banner has run out, and the
+      // player's own finish 8 frames ago has just restarted it.
+      require(unirally::classic_window_table_index(shared_state, setup, std::nullopt).has_value());
+      shared_state.movement.frame = 4293;
+      shared_state.race.finish_delay = 1;
+      require(!unirally::classic_window_table_index(shared_state, setup, std::nullopt));  // the finish update selects nothing
+      // random-1 original: opponent 3214, expired at 3576; player 3636 restarts
+      // it from the phase it stopped at: member 8 at 3638, 9 at 3640.
+      auto restarted = race;
+      restarted.race.riders[0].finished = restarted.race.riders[1].finished = 1;
+      restarted.race.total_times = {4202, 3358};
+      for (const auto [frame, member] : {std::pair{3638U, 8U}, std::pair{3640U, 9U}, std::pair{3876U, 19U}}) {
+        restarted.movement.frame = frame;
+        restarted.race.finish_delay = static_cast<std::uint16_t>(frame - 3636U);
+        require(unirally::classic_window_table_index(restarted, setup, std::nullopt) == member);
+        require(unirally::classic_window_table_index(restarted, setup, 3214U) == member);
+      }
+      // The life is 180 steps: gone on the frame after the 181st odd driver
+      // update (random-1: 3576 for the finish at 3214; reversal: 3688 for 3325).
+      auto expired = race;
+      expired.race.riders[1].finished = 1;
+      expired.race.total_times = {60000, 3358};
+      expired.movement.frame = 3575;
+      require(unirally::classic_window_table_index(expired, setup, 3214U) == 7U);
+      expired.movement.frame = 3576;
+      require(!unirally::classic_window_table_index(expired, setup, 3214U));
+      expired.movement.frame = 3687;
+      require(unirally::classic_window_table_index(expired, setup, 3325U) == 7U);
+      expired.movement.frame = 3688;
+      require(!unirally::classic_window_table_index(expired, setup, 3325U));
+      expired.movement.frame = 3327;
+      require(unirally::classic_window_table_index(expired, setup, 3325U) == 7U);  // even first driver update: no step
+      expired.movement.frame = 3328;
+      require(unirally::classic_window_table_index(expired, setup, 3325U) == 8U);
+      // primary-a: player 3211, opponent 3214 while the banner is alive: no gap
+      // at the second finish (member 8 on 3215), the phase from the first.
+      auto both = race;
+      both.race.riders[0].finished = both.race.riders[1].finished = 1;
+      both.race.total_times = {3353, 3358};
+      for (const auto [frame, member] : {std::pair{3213U, 7U}, std::pair{3214U, 8U}, std::pair{3215U, 8U}, std::pair{3216U, 9U}}) {
+        both.movement.frame = frame;
+        both.race.finish_delay = static_cast<std::uint16_t>(frame - 3211U);
+        require(unirally::classic_window_table_index(both, setup, std::nullopt) == member);
+      }
       auto random_one = race;
       random_one.race.riders[0].finished = random_one.race.riders[1].finished = 1;
       random_one.race.total_times = {4202, 3358};
@@ -854,6 +898,32 @@ int main() {
       earlier.movement.frame = 7000;
       earlier.fade_level = 30;
       require(unirally::classic_race_prior_fade(restart, &earlier, scenario) == 0);  // a later frame is not a previous update
+    }
+    // The drivers' own selection per race update, from what they read
+    // (R-0040 and the countdown-pause and banner-pause originals).
+    {
+      using unirally::ClassicWindowDriverInput;
+      const auto choose = [](std::uint16_t countdown, bool parity) {
+        ClassicWindowDriverInput input;
+        input.countdown_before = countdown;
+        input.parity_set = parity;
+        return unirally::classic_window_driver_selection(input);
+      };
+      require(choose(270, false) == 6U && choose(250, true) == 6U && choose(249, false) == 0U && choose(221, false) == 0U);
+      require(choose(220, false) == 6U && choose(190, false) == 6U && choose(189, false) == 1U && choose(161, false) == 1U);
+      require(choose(160, false) == 6U && choose(130, false) == 6U && choose(129, false) == 2U && choose(101, false) == 2U);
+      require(choose(100, false) == 6U && choose(70, false) == 6U);
+      // GO: an odd driver update chooses member 3, shown on the even frame after it.
+      require(choose(69, true) == 3U && choose(69, false) == 4U && choose(1, true) == 3U && choose(1, false) == 4U);
+      require(!choose(0, false) && !choose(0, true));
+      const auto banner = [](bool alive, std::uint32_t steps) {
+        ClassicWindowDriverInput input;
+        input.banner_alive = alive;
+        input.banner_steps = steps;
+        return unirally::classic_window_driver_selection(input);
+      };
+      require(!banner(false, 0) && !banner(false, 5));
+      require(banner(true, 0) == 7U && banner(true, 1) == 8U && banner(true, 18) == 7U && banner(true, 181) == 8U);
     }
     // The result view derives the legacy phases from the shared counters.
     {
