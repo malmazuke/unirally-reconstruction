@@ -149,7 +149,10 @@ initialization frame `i` (1328 for DRAGSTER):
   finish_animation_countdown[1]` when the opponent did;
 - during result loading the frame used is the loading-start frame, because the
   race vblank runs for the last time on loading update 1, exactly as
-  `apply_dragster_palette_cycle` freezes the palette phase.
+  `apply_dragster_palette_cycle` freezes the palette phase. The review added the
+  part that makes this right rather than merely declared: `$420C` is never
+  rewritten after 3454, so the original keeps showing the member chosen on that
+  last vblank (member 19 in the primary capture) through the fade.
 
 **Content.** `presentation.effect.classic.window-tables.v1`, 22,475 bytes at
 file offset 688128, SHA-256
@@ -170,7 +173,9 @@ artifacts) and compared with the member `$80:8691` published in the `rel3213`
 capture at the same frame. **1,922 of 1,922 frames from 1533 to 3454 agree**,
 including every frame with no window; frame 3679 agrees that there is none. The
 224 differences are result-loading updates 2 and later, where the original's
-race vblank no longer runs and native holds update 1's member by design. The
+race vblank no longer runs and native holds update 1's member, which the
+review confirmed is what the original does, since `$420C` is untouched from
+3455 and channel 6 stays enabled with that table. The
 same rule, given each capture's own winner-finish frame, reproduces `win-a`
 (241 frames) and `lose-a` (345 frames) with no disagreement.
 
@@ -202,7 +207,8 @@ member 18 and the rectangle mismatch stays at 653.
 - **The opponent-won banner after its first 120 updates.** Native locates the
   opponent's finish frame from `finish_animation_countdown[1]`, which runs out
   after 120 updates, so from then on native draws no banner where the original
-  still shows one (in `lose-a`, display frames 3334-3576). The player-won case
+  still shows one (in `lose-a`, display frames 3334-3559; an earlier draft said
+  3576, corrected by the review against both captures). The player-won case
   has no such bound because `player_finish_delay` counts the whole banner. The
   cheapest next experiment: both riders' finish times are already serialized, so
   the gap between the finishes is `finish_time_centiseconds[0] -
@@ -223,3 +229,13 @@ member 18 and the rectangle mismatch stays at 653.
   effect. Which members its countdown and banner select, and whether its other
   captions use this path at all, was not captured; it is a follow-up, not part
   of this task.
+
+## Bounds that are defensive, not observed
+
+`winner_window_frames` is 360, from `$0F07`'s `$0168`, but `deserialize_zoom_zoo`
+rejects a `player_finish_delay` above 240, so no restorable state reaches the
+bound, and for the parity the captured race takes the ROM driver leaves a frame
+earlier than 360 would. The presentation test therefore asserts only reachable
+states (review finding C). `frame + 1 - since` can wrap for hand-made states
+with tiny frame numbers; it is defined, bounds-checked and unreachable for real
+states (finding D).

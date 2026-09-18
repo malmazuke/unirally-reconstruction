@@ -559,8 +559,12 @@ int main() {
     // Beyond the counter the opponent's finish frame is not recoverable, and
     // native stops drawing a banner the original still shows (index 13 here).
     require(lost(3334, 0) == Index{});
-    // The banner lives for the 360 frames of $0F07 and then leaves.
-    require(won(3574, 361).has_value() && !won(3575, 362).has_value());
+    // The 360-frame $0F07 life is a defensive bound, not observed behaviour:
+    // deserialize rejects a player_finish_delay above 240, so no restorable
+    // state reaches it, and for the parity the captured race takes the ROM
+    // driver leaves a frame earlier. Assert only what a reachable state shows
+    // (review finding C).
+    require(won(3453, 240).has_value());
 
     // The index chosen is the table actually drawn: mutating that member of the
     // family changes the picture and mutating any other member does not.
