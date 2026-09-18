@@ -512,6 +512,30 @@ contracts; DRAGSTER guard overrides are in
 `tests/manifests/native/dragster-race-guards.reference.json`. The fuzz reports
 aborts only; divergences need an original capture of the same timeline.
 
+## Local evidence layout
+
+Since REPO-LOCAL-STATE-CLEANUP (18 September 2026) the ignored evidence has one
+home per kind in the main checkout, and a task worktree holds only its
+checkout, `build/` and a copy of the private inputs it needs under `local/`:
+
+| Kind | Location | Examples |
+| --- | --- | --- |
+| original captures and other evidence a record cites | `local/evidence/<task-worktree>/` (the former `artifacts/` of that worktree, intact) | `local/evidence/dragster-ordinary-controls/dragster-ordinary-controls/originals/primary-a`, `local/evidence/m4-16-playable-zoom-zoo/m4-16/boundary-a` |
+| closeouts and the gate logs behind them | `artifacts/<task>-integration/closeout.json` | `artifacts/m4-16-integration/closeout.json`, `artifacts/window-pause-integration/closeout.json` |
+| recorded gate scripts | beside the closeout or under the task's evidence directory, with their input paths rewritten to `local/evidence/...`; their `cd .worktrees/<name>` lines name checkouts that no longer exist, so recreate one at the recorded commit with `git worktree add` before rerunning a script verbatim | `artifacts/dragster-ordinary-integration/gates-b452170/gates-frozen.sh` |
+| private inputs | `local/` (ROM locator, packs, toolchain, `native/dragster-idle`, the bsnes lab core) | `local/classic-crawler-two-tracks-v8.pack` |
+
+Point a gate at the evidence directly, from any checkout:
+
+```sh
+O="$(git rev-parse --show-toplevel)/local/evidence/dragster-ordinary-controls/dragster-ordinary-controls/originals"   # from the main checkout; from a worktree use the main checkout's absolute path
+python3 -m tools.unirally_lab.native.dragster_playable compare --reference "$O/primary-a" --repeat "$O/primary-b" --contract tests/manifests/native/dragster-ordinary-primary.freeze.json --binary build/app-debug/src/core/zoom_zoo_runner --pack local/classic-crawler-two-tracks-v8.pack --out artifacts/FRESH-compare.json
+```
+
+The retention rule a closing task follows is in `AGENTS.md`; the audit tables,
+moves and deletions of the cleanup itself are in
+[REPO-LOCAL-STATE-CLEANUP](../tasks/REPO-LOCAL-STATE-CLEANUP.md).
+
 ## DRAGSTER 10:00 clock limit (task branch)
 
 Added in `task/dragster-clock-limit` for

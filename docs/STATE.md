@@ -2,8 +2,8 @@
 
 Updated 17 September 2026: **M4-16 is reviewed and integrated**; acceptance is
 conditional on the final-tip CI and remote verification recorded in the ignored
-closeout `artifacts/m4-16-integration/closeout.json` in
-`.worktrees/m4-16-playable-zoom-zoo`. If that file is absent, recover the
+closeout `artifacts/m4-16-integration/closeout.json` in the main checkout
+(moved there by REPO-LOCAL-STATE-CLEANUP). If that file is absent, recover the
 integration commit with `git log --first-parent main -- tasks/M4-16.md` and its
 run with `gh run list --workflow synthetic.yml --commit <commit>`. M4 as a
 milestone is **not** accepted and no milestone tag is due. No M4-17.
@@ -68,8 +68,8 @@ Other tracks, riders, modes, menus and multiplayer remain outside the product.
 
 Follow-ups from M4-16 findings. [DRAGSTER-PALETTE-CYCLE](../tasks/DRAGSTER-PALETTE-CYCLE.md)
 is reviewed and integrated (acceptance conditional on its final-tip CI, closeout
-`artifacts/dragster-palette-cycle-integration/closeout.json` in
-`.worktrees/dragster-palette-cycle`): DRAGSTER's race runs the same NMI palette
+`artifacts/dragster-palette-cycle-integration/closeout.json` in the main
+checkout): DRAGSTER's race runs the same NMI palette
 cycle ([R-0037](research/R-0037-dragster-race-palette-cycle.md)), visible as colour
 0 in the GO and winner windows, which now take the cycled colour 0 when the pack
 carries the tables (the two-track pack), matching the original where their
@@ -89,16 +89,16 @@ the profile is now `classic.pal.crawler.two-tracks.v8` with 56 entries and
 DRAGSTER v1 packs keep the accepted pose-keyed placement, so the accepted v1
 contracts and the historical matrix are unchanged. That work is reviewed and
 integrated (acceptance conditional on its final-tip CI, closeout
-`artifacts/dragster-window-integration/closeout.json` in
-`.worktrees/dragster-window-effects`). The opponent-won banner beyond its
+`artifacts/dragster-window-integration/closeout.json` in the main
+checkout). The opponent-won banner beyond its
 120-update counter is recovered by CLASSIC-PRESENTATION-UNIFICATION below. See
 [NEXT_SESSION](../tasks/NEXT_SESSION.md).
 
 [CLASSIC-PRESENTATION-UNIFICATION](../tasks/CLASSIC-PRESENTATION-UNIFICATION.md)
 is reviewed and integrated (implementation `f8645d7`, rebased onto `main` as `e59744e`; review `a7f26c4`);
 acceptance conditional on the final-tip CI and remote verification recorded in
-the ignored closeout `artifacts/unification-integration/closeout.json` in
-`.worktrees/classic-presentation-unification`. Presentation now scales the way
+the ignored closeout `artifacts/unification-integration/closeout.json` in the
+main checkout. Presentation now scales the way
 the simulation does: one renderer (`render_classic_race`) draws both tracks
 from the 742-byte shared race state with track content selected by track from
 the pack; the DRAGSTER-only renderer, its held rider art, its approximate fade
@@ -122,8 +122,8 @@ four launcher defects from the 18 September playtest are closed.
 first play on that build, is reviewed and integrated (approved at `1d37c6a`,
 report `067dbfe`, after one returned review; the re-review's items applied on
 top); acceptance conditional on the final-tip CI in the ignored closeout
-`artifacts/window-pause-integration/closeout.json` in
-`.worktrees/dragster-window-pause`. The countdown and winner windows are now
+`artifacts/window-pause-integration/closeout.json` in the main checkout. The
+countdown and winner windows are now
 followed update by update the way the original's drivers keep `$11FD`
 (`ClassicWindowPointer`): a pause disables the window and freezes the
 countdown and the banner, and each rider's finish arms its own banner driver
@@ -133,16 +133,25 @@ an odd-length pause, two one-frame-apart finishes, the three accepted races),
 native equals the original's pointer on every frame. R-0040's 360-frame
 bound and "only the winner's driver runs" are corrected there.
 
-[REPO-LOCAL-STATE-CLEANUP](../tasks/REPO-LOCAL-STATE-CLEANUP.md) is registered
-and not started. A first safe pass on 18 September 2026 took the repository from
-151 GB to 141 GB by removing 76 build directories, 1,083 `__pycache__`
-directories and 868 empty scratch directories, and deleted 16 merged branches
-and 2 worktrees with `git branch -d` verifying mergedness. The original captures
-(5.7 GB, 52 files) and the 14 closeouts were verified untouched before and
-after. The remaining ~125 GB needs per-case triage, because the gates read
-original captures from inside other worktrees by absolute path: a worktree that
-looks abandoned can be a live gate input. Moving the originals to one stable
-location and repointing the gates is the fix that makes the rest mechanical.
+[REPO-LOCAL-STATE-CLEANUP](../tasks/REPO-LOCAL-STATE-CLEANUP.md) is done on
+`task/repo-local-state-cleanup` (18 September 2026 UTC), reviewed and
+integrated; acceptance conditional on its final-tip CI in the ignored closeout
+`artifacts/repo-local-state-cleanup-integration/closeout.json` in the main
+checkout. Local state now has one home per kind: every worktree's `artifacts/`
+moved intact to `local/evidence/<worktree>/` in the main checkout (115 GB,
+including the DRAGSTER originals and the M4-16, M4-15 and idle captures the
+gates read), the seven closeouts that lived in worktrees moved to
+`artifacts/<task>-integration/` beside the earlier ones, and every recorded
+gate script was repointed. All 94 registered worktrees and one unregistered
+clone were removed, and 105 local branches were deleted after a patch-id audit
+(eight with commits not represented on `main`, all review reports, were pushed
+to `origin` first; the two review reports the records cite but `main` lacked,
+CLASSIC-PRESENTATION-UNIFICATION's and DRAGSTER-WINDOW-PAUSE's, are now on
+`main`). Deleted: verified duplicate captures (7.6 GB), the M4-15 reviewer's
+uncited exploration captures (11 GB), build output, caches and run-report
+scratch. The repository went from 146 GB to about 117 GB; the DRAGSTER and
+M4-16 differential gates pass from the new location. AGENTS.md now carries the
+retention rule so a closing task leaves nothing behind in its worktree.
 
 ## Accepted product and evidence
 

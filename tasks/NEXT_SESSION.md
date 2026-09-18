@@ -1,19 +1,30 @@
 # Next session
 
-**Status on 18 September 2026 (after DRAGSTER-WINDOW-PAUSE): nothing is in
-progress and nothing is blocked.** Every started task is reviewed, integrated
-on `main` and accepted conditional only on its recorded final-tip CI, which
-was green at integration. The one registered, unstarted task is
-[REPO-LOCAL-STATE-CLEANUP](REPO-LOCAL-STATE-CLEANUP.md). The "not done"
-items listed under the closed follow-ups below are declared omissions kept
-as future work (ZOOM ZOO's own windows, authored HUD and result styles, the
-pack's alias entries), not unfinished parts of any task. A new session
-starts by picking the cleanup task or a new user request; it does not need
-to resume anything.
+**Status on 18 September 2026 UTC (after REPO-LOCAL-STATE-CLEANUP): nothing is
+in progress, nothing is blocked and no task is registered but unstarted.**
+Every started task is reviewed, integrated on `main` and accepted conditional
+only on its recorded final-tip CI, which was green at integration. The "not
+done" items listed under the closed follow-ups below are declared omissions
+kept as future work (ZOOM ZOO's own windows, authored HUD and result styles,
+the pack's alias entries), not unfinished parts of any task. A new session
+starts from a new user request; it does not need to resume anything.
+
+**Where local evidence lives now.** The cleanup moved every worktree's
+`artifacts/` to `local/evidence/<worktree>/` in the main checkout and every
+closeout to `artifacts/<task>-integration/closeout.json` there; `.worktrees/`
+holds only live task checkouts. The gate inputs are
+`local/evidence/dragster-ordinary-controls/dragster-ordinary-controls/originals`
+(DRAGSTER), `local/evidence/m4-16-playable-zoom-zoo/m4-16` (M4-16, including
+`boundary-a`/`boundary-b`), `local/evidence/m4-16-rider-art/m4-16-idle/captures`
+(idle late start) and `local/evidence/m4-15-race-completion/m4-15` with
+`local/evidence/m4-15-review/m4-15-review` (M4-15 matrix). The retention rule
+in AGENTS.md says what a closing task must do with its own state. See
+[REPO-LOCAL-STATE-CLEANUP](REPO-LOCAL-STATE-CLEANUP.md) for the audit tables
+and the deletion log.
 
 **M4-16 is reviewed and integrated on `main`.** Acceptance is conditional on the
 final-tip CI and remote verification in the ignored closeout
-`.worktrees/m4-16-playable-zoom-zoo/artifacts/m4-16-integration/closeout.json`.
+`artifacts/m4-16-integration/closeout.json` in the main checkout.
 Confirm it first. If absent, find the integration commit with
 `git log --first-parent main -- tasks/M4-16.md` and its CI with
 `gh run list --workflow synthetic.yml --commit <commit>`. M4 is not accepted, no

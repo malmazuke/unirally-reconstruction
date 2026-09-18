@@ -2,99 +2,175 @@
 
 ## Assignment
 
-- Status: registered 18 September 2026 at the user's request; not started
+- Status: reviewed and integrated; acceptance conditional on final-tip CI and
+  remote verification. Closeout: ignored
+  `artifacts/repo-local-state-cleanup-integration/closeout.json` in the main
+  checkout; if absent, `git log --first-parent main -- tasks/REPO-LOCAL-STATE-CLEANUP.md`
+  and `gh run list --workflow synthetic.yml --commit <commit>`
 - Milestone: housekeeping, independent of M4
-- Coordinator: Claude Opus 5 primary session
-- Base commit: `main` at `b1dd0a3`
+- Coordinator: Claude Fable 5.1 primary session (registered on 18 September 2026
+  by the Claude Opus 5 session at the user's request; started the same day at
+  21:37 UTC on the user's "Next task")
+- Task provider: Anthropic (unchanged)
+- Worker/session/runtime/model: Claude Fable 5.1, Claude Code desktop, one
+  session; no child worker
+- Provider quota (D-0004): at start 21:37 UTC five-hour 2%, weekly 38%, weekly
+  Fable 24%; the user set the stop rule "continue up to 50% weekly or 50% Fable,
+  whichever comes first"; no reset, purchase or provider change
+- Reviewer: fresh Claude Opus 5 subagent in an isolated checkout at the exact
+  candidate (see Review below)
+- Base commit: `main` at `a710388` (the record's `b1dd0a3` was superseded by the
+  window-pause integration before this task started)
 - Branch and isolated worktree: `task/repo-local-state-cleanup`,
   `.worktrees/repo-local-state-cleanup`
-- Reviewer: fresh Claude Opus 5 subagent at the exact candidate
+- Owned paths: `AGENTS.md` (retention rule), `docs/BUILD_AND_VALIDATION.md`
+  (evidence layout), `docs/STATE.md`, `tasks/NEXT_SESSION.md`, `tasks/README.md`,
+  this record, the closeout pointers in two task records, and the two review
+  reports `main` lacked (see Branches); ignored: `local/evidence/`,
+  `artifacts/*-integration/`, `artifacts/local-state-cleanup/`
 
 ## Why
 
 The user asked whether work can be called done while local state is floating
-about. Measured on 18 September 2026, it cannot:
-
-| | measured |
-| --- | --- |
-| repository total | 151 GB |
-| `.worktrees` | 150 GB, 93 directories (94 registered with git) |
-| `.git` | 45 MB |
-| `artifacts/` in the main checkout | 384 MB, 175 directories |
-| build output across worktrees | 9.9 GB in 77 `build/` directories |
-| `artifacts/` across worktrees | 131 GB |
-| original captures inside that | 5.7 GB |
-
-The largest single directory is
-`.worktrees/m4-16-playable-zoom-zoo/artifacts/m4-16` at 47 GB in 2,790 files:
-per-capture WRAM, SRAM and video, so a few very large files rather than many
-small ones. Many zero-byte hex-named scratch directories also sit in
-`artifacts/` in several checkouts.
-
-Branches, measured the same day: 64 fully merged into `main` and safe to
-delete, 49 with commits not on `main` and not on origin, 5 diverged from their
-pushed copy. The 49 are mostly `review/*` and `codex/*` branches from earlier
-milestones whose review records already live on `main` as `tasks/*-review.md`.
+about. Measured on 18 September 2026 (first pass, Opus 5 session), it could not:
+151 GB, 93 worktrees, 49 branches with commits not on `main`, and gates that
+read original captures from inside other worktrees by absolute path, so a
+directory that looked abandoned could be a live gate input.
 
 ## What is evidence and must not be deleted
 
-This is the whole risk, and a careless sweep would destroy reproducibility:
-
 - **Original captures** (`**/originals/**`, `baseline-*.wram`/`.sram`,
-  `reference.json`) are the project's evidence. Gates and differential compares
-  read them by absolute path across worktrees - DRAGSTER's gates read
-  `.worktrees/dragster-ordinary-controls/.../originals`, and the M4-16 compares
-  read `.worktrees/m4-16-playable-zoom-zoo/artifacts/m4-16/boundary-a`. They are
-  5.7 GB of the 131 GB and they stay.
-- **Closeouts** (`artifacts/*/closeout.json`) are ignored but are cited by
-  accepted task records as the acceptance evidence. Tiny; they stay.
-- **Gate logs and comparison reports** cited by task records or reviews. Small;
-  keep unless the citing record is itself superseded.
+  `reference.json`, the reference/repeat pairs behind every frozen contract in
+  `tests/manifests/native`). Reproducible only against the user's private ROM,
+  at minutes to hours per capture.
+- **Closeouts** (`artifacts/*-integration/closeout.json`) and the gate logs
+  beside them: cited by task records as the acceptance evidence.
+- **Anything a task, review or research record cites by path.**
 
-Regenerable without judgement: `build/` directories (9.9 GB), zero-byte scratch
-directories, and `__pycache__`.
+Regenerable without judgement: `build/`, `__pycache__`, empty directories and
+the 32-hex run-report scratch directories `tools/unirally_lab/report.py` makes.
 
-The remaining ~125 GB is intermediate capture and comparison output. Some is
-reproducible only by re-running a capture against the user's private ROM, which
-is expensive and needs the ROM, so "regenerable in principle" is not the same as
-"safe to delete". Each case needs a decision, not a glob.
+## What was done (18 September 2026, 21:37-22:01 UTC)
 
-## Outcome and boundaries
+Everything below is logged in the ignored `artifacts/local-state-cleanup/`:
+`worktree-table-2026-09-18.txt`, `branch-audit-2026-09-18.txt`,
+`branches-deleted-2026-09-18.log`, `worktrees-removed-2026-09-18.log`,
+`moves-2026-09-18.log`, `repointed-scripts-2026-09-18.log`,
+`deletions-2026-09-18.log` and `gates-e5d8f4b/`.
 
-A repository whose local state is either pushed, reproducible, or deliberately
-kept, with the rule written down so it does not recur.
+### Inventory first
 
-1. Branches: for each of the 49, decide with a patch-id comparison - not a
-   `git diff main..branch`, which mostly reports main's own progress in reverse
-   and produced a misleading 300-400 file count when first tried - whether its
-   commits are represented on `main`. Push what is not; delete what is, with the
-   user's agreement. Resolve the 5 diverged branches explicitly. Delete the 64
-   merged refs.
-2. Worktrees: remove those whose branch is merged and whose artifacts are not
-   cited. Keep the ones gates read from, or move their originals somewhere
-   stable first and repoint the gates - the cross-worktree absolute paths are
-   themselves a defect worth fixing while here.
-3. Artifacts: delete build output and scratch directories; triage the large
-   intermediate captures against the records that cite them.
-4. Write the retention rule into `AGENTS.md` so future tasks clean up as they
-   close rather than leaving this to accumulate.
+Measured again before touching anything (the first pass's numbers had moved):
 
-Out of scope: rewriting history, touching `.git` objects, or deleting anything
-the user has not agreed to.
+| | 21:37 UTC before | 21:47 UTC after |
+| --- | --- | --- |
+| repository total | 146 GB | 117 GB |
+| `.worktrees` | 145 GB, 94 registered worktrees plus one unregistered clone | 310 MB, one worktree (this task's) |
+| `.git` | 46 MB | 35 MB |
+| `artifacts/` (main checkout) | 384 MB | 667 MB (seven closeouts moved in) |
+| `local/` (main checkout) | 380 MB | 116 GB, of which `local/evidence` 115 GB |
+| build output in worktrees | 5 directories, 1.5 GB | 0 |
+
+Every worktree was checked for uncommitted or untracked-but-not-ignored work
+(`git status --porcelain`): none had any. No tracked code references
+`.worktrees/`; the cross-worktree coupling lived in ignored gate scripts
+(`O=`, `M16=`, `IDLE=`, `A=`, `R=` variables pointing into five worktrees) and in
+the main checkout's ignored `local/emulators/bsnes/lab-core.json`, whose
+`library` pointed at the bsnes core built inside `.worktrees/m4-02-second-track`
+(byte-identical, SHA-256 `e59bf88d...`, to the main checkout's own copy).
+
+### Branches: patch-id audit, then push or delete
+
+105 local branches besides `main`, audited with `git merge-base --is-ancestor`
+and `git cherry main <branch>` (patch-id), never `git diff main..branch`:
+
+| Class | Count | Action |
+| --- | --- | --- |
+| ancestor of `main` | 55 | `git branch -d` (four needed `-D` only because their `origin/` copy lagged behind `main`; each is an ancestor of `main`) |
+| every commit represented on `main` by patch-id | 41 | `git branch -D`, tips recorded in the audit |
+| commits not represented on `main` | 9 | pushed to `origin` first (eight new remote branches; `review/m4-16-c179765-result-restart` was already there), then deleted locally |
+
+The nine are all review work: the M4-16 reviewer's per-candidate reports
+(`review/m4-16-*`, `codex/m4-16-7c3e3b6-case-review`) whose text was merged into
+`tasks/M4-16-review.md` in edited form, and the two review reports the records
+cite but `main` never received: `review/classic-presentation-unification`
+(`59f25e4` return, `a7f26c4` approve) and `review/dragster-window-pause`
+(`55c33ea` return, `067dbfe` approve). Those four commits are cherry-picked onto
+this branch, so `tasks/CLASSIC-PRESENTATION-UNIFICATION-review.md` and
+`tasks/DRAGSTER-WINDOW-PAUSE-review.md` now exist on `main` as the registry
+already claimed. The diverged branch `task/classic-presentation-unification`
+(local 16 ahead / 11 behind its remote after the rebase integration) is an
+ancestor of `main` and every remote commit's patch is on `main`; the remote copy
+is left as it is. Remaining local branches: `main`, `task/repo-local-state-cleanup`.
+
+### Evidence moved to one place, gates repointed
+
+- `mv .worktrees/<wt>/artifacts local/evidence/<wt>` for all 75 worktrees that
+  had one (including the nested `m3-03-rereview` and the unregistered clone
+  `m2-01-sampling-review`): 115 GB, nothing altered inside. Relative citations
+  such as `artifacts/m4-16/boundary-a` in a task record now resolve under
+  `local/evidence/<that task's worktree>/`.
+- The seven closeouts that lived in worktrees moved to the main checkout's
+  `artifacts/<task>-integration/` beside the nine already there (16 in all):
+  unification, dragster-window, dragster-ordinary, m4-16, dragster-palette-cycle,
+  dragster-clock-limit, window-pause.
+- 12 recorded gate scripts had their absolute input paths rewritten from
+  `.worktrees/<wt>/artifacts/...` to `local/evidence/<wt>/...`; their
+  `cd .worktrees/<wt>` lines are left as a record of the checkout they ran in.
+- `local/emulators/bsnes/lab-core.json` now names the main checkout's own core
+  (hash verified equal before the change).
+
+### Deleted (log: `deletions-2026-09-18.log`)
+
+| What | Why safe | Size |
+| --- | --- | --- |
+| `dragster-clock-limit/.../regressions/{dragster-originals,boundary-a,boundary-b}` | `diff -rq` identical to the canonical DRAGSTER originals and M4-16 boundary captures | 7.6 GB |
+| `m4-15-review/*-explore.{wram,sram,json}` (eight exploration captures: delayed, early-jump, early-turns, jumps, lap-two-jump, mid-neutral, one-step, two-step; 24 files) | the reviewer's exploration runs used to choose cases; no record cites them; the frozen `*-a`/`*-b` pairs they led to are kept | 11.0 GB |
+| five `build/` directories, 74 `__pycache__`, 15 empty directories, 159 run-report scratch directories (772 KB) | regenerable | 1.5 GB |
+| 93 registered worktrees and the unregistered clone, with their per-worktree `local/` copies (toolchains, emulator builds) | branch pushed or represented on `main`; artifacts already moved; checkouts regenerable | about 12 GB |
+
+Kept deliberately, with the reason, so the next pass does not re-decide them:
+`m4-16-playable-zoom-zoo/m4-16` (48 GB: the M4-16 primary, the six complete
+cases, the reward and trick probes and the ordinary/held/continued-controls
+captures the M4-16 record cites), `m4-16-rider-art/m4-16-idle/captures`
+(10 GB, gate input), `m4-16-review` (11 GB, the reviewer's independent
+originals, cited 17 times), `dragster-clock-limit/{idle-a,idle-b}` (8.3 GB,
+the clock-limit inventory gate's inputs), `dragster-ordinary-controls` (8.3 GB:
+originals 5.9 GB plus `explore`/`fuzz` output that R-0038 and the task record
+cite), `m4-15-review` and `m4-15-race-completion` (11.5 GB, M4-15 matrix
+inputs), `dragster-controls-review` (3 GB, the reviewer's withheld originals),
+`dragster-window-pause/window-pause` (2.3 GB, the seven pause originals).
+These are original captures or cited outputs and are outside a mechanical
+sweep; per-capture triage against the records remains possible future work
+but nothing requires it.
 
 ## Acceptance
 
-| Criterion | Command or experiment | Expected result | Required artifact |
+| Criterion | Command or experiment | Result | Artifact |
 | --- | --- | --- | --- |
-| No unpushed work | branch audit by patch-id | every branch pushed or provably represented on `main` | audit table |
-| Evidence intact | re-run the DRAGSTER and M4-16 differential gates after cleanup | pass, reading the same originals | gate logs |
-| Footprint | `du -sh` before and after | recorded, with what was removed and why | measurement |
-| Rule recorded | `AGENTS.md` | retention rule stated | diff |
+| No unpushed work | patch-id audit of 105 branches; every worktree's `git status` | every branch an ancestor of `main`, represented by patch-id, or pushed; no dirty worktree | `branch-audit-2026-09-18.txt`, `branches-deleted-2026-09-18.log` |
+| Evidence intact | DRAGSTER primary and reversal `dragster_playable compare`, M4-16 primary and idle late-start `zoom_zoo_playable compare`, run from this worktree at `e5d8f4b` with `--reference`/`--repeat` under `local/evidence/` | all four pass, `status=passed`, restores equal to the records (DRAGSTER primary 379, reversal 327; M4-16 primary 757; idle late start 801); HEAD `e5d8f4b` clean before and after; 21:47-22:00 UTC | `artifacts/local-state-cleanup/gates-e5d8f4b/summary.txt` and the four JSON reports |
+| Footprint | `du -sh` before and after | 146 GB to 117 GB, itemised above | `deletions-2026-09-18.log`, `moves-2026-09-18.log` |
+| Rule recorded | `AGENTS.md` | retention rule stated; evidence layout in `docs/BUILD_AND_VALIDATION.md` | this branch's diff |
+
+## Review
+
+Pending at the candidate commit: a fresh Claude Opus 5 reviewer in `.worktrees/cleanup-review` (branch `review/repo-local-state-cleanup`) reproduces the branch audit, the review-file identity, the evidence layout and one differential gate. Its report is `tasks/REPO-LOCAL-STATE-CLEANUP-review.md`; the result is recorded here at integration.
 
 ## Handoff
 
-- Not started. The measurements above are from 18 September 2026 and should be
-  retaken first, since worktrees are still being created.
-- Do not delete anything before the evidence inventory exists: the gates'
-  absolute cross-worktree paths mean a directory that looks abandoned can be a
-  live gate input.
+- Candidate: `task/repo-local-state-cleanup` (docs and the four cherry-picked
+  review commits; no source change). Integration and closeout as recorded in
+  the Assignment.
+- Not done, by decision: per-capture triage of the kept 115 GB (listed above
+  with reasons); moving `local/evidence` off the workstation; any change to
+  `.git` objects or remote branches (nothing was force-pushed or deleted on
+  `origin`). The recorded gate scripts still `cd` into removed checkouts;
+  recreate one at the recorded commit with `git worktree add` before rerunning
+  a script verbatim (documented in BUILD_AND_VALIDATION).
+- Mistake to avoid: a `find ... -name build` sweep over `.worktrees` also deleted
+  this task's own fresh build (rebuilt, 2 minutes); exclude the live worktree.
+- Next experiment if the footprint matters again: the 48 GB M4-16 capture set
+  is 20 captures of 851 MB (raw WRAM per frame); a per-frame-sampled archive
+  format would cut it by an order of magnitude but is a tooling task, not
+  cleanup.

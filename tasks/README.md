@@ -46,7 +46,7 @@ The coordinator maintains the status registry below. Work orders further below d
 | DRAGSTER-ORDINARY-CONTROLS | reviewed and integrated (implementation `16b8daf`, review `f427098`); accepted conditional on final-tip CI and the user's live playtest | [Playable DRAGSTER controls](DRAGSTER-ORDINARY-CONTROLS.md) |
 | DRAGSTER-WINDOW-PAUSE | reviewed and integrated (approved at `1d37c6a`, review `067dbfe`; re-review items applied at `50777bc`); accepted conditional on final-tip CI and remote verification | [Windows through a pause, and the banner's life](DRAGSTER-WINDOW-PAUSE.md) |
 | CLASSIC-PRESENTATION-UNIFICATION | reviewed and integrated (implementation `f8645d7`, rebased onto `main` as `e59744e`; review `a7f26c4`; re-review findings applied at `bfd6389`); accepted conditional on final-tip CI and remote verification | [One renderer for both tracks](CLASSIC-PRESENTATION-UNIFICATION.md) |
-| REPO-LOCAL-STATE-CLEANUP | registered at the user's request; not started | [Branches, worktrees and ignored artifacts](REPO-LOCAL-STATE-CLEANUP.md) |
+| REPO-LOCAL-STATE-CLEANUP | reviewed and integrated; accepted conditional on final-tip CI and remote verification | [Branches, worktrees and ignored artifacts](REPO-LOCAL-STATE-CLEANUP.md) |
 | DRAGSTER-WINDOW-EFFECTS | accepted (implementation `788a877`, review `9b54c2a`, advisories `598564f`); integrated on `main` at `67b0f28` with green final-tip CI | [DRAGSTER window timing and shape](DRAGSTER-WINDOW-EFFECTS.md) |
 | DRAGSTER-CLOCK-LIMIT | reviewed and integrated (implementation `c00dd5d`, review `7f391e1`); accepted conditional on final-tip CI | [DRAGSTER 10:00 clock limit](DRAGSTER-CLOCK-LIMIT.md) |
 | M4-17 – M6 | unclaimed; outside this assignment | Do not automatically dispatch |
