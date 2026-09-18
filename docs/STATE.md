@@ -118,6 +118,21 @@ recorded inside them, never by file name or track, refuses a typed pack of
 another profile with the remedy, and reports a stale build before launch; the
 four launcher defects from the 18 September playtest are closed.
 
+[DRAGSTER-WINDOW-PAUSE](../tasks/DRAGSTER-WINDOW-PAUSE.md), from the user's
+first play on that build, is reviewed and integrated (approved at `1d37c6a`,
+report `067dbfe`, after one returned review; the re-review's items applied on
+top); acceptance conditional on the final-tip CI in the ignored closeout
+`artifacts/window-pause-integration/closeout.json` in
+`.worktrees/dragster-window-pause`. The countdown and winner windows are now
+followed update by update the way the original's drivers keep `$11FD`
+(`ClassicWindowPointer`): a pause disables the window and freezes the
+countdown and the banner, and each rider's finish arms its own banner driver
+with a 360-update life, the earliest-armed live driver owning the pointer.
+Measured against seven originals captured with the user's ROM (two pauses,
+an odd-length pause, two one-frame-apart finishes, the three accepted races),
+native equals the original's pointer on every frame. R-0040's 360-frame
+bound and "only the winner's driver runs" are corrected there.
+
 [REPO-LOCAL-STATE-CLEANUP](../tasks/REPO-LOCAL-STATE-CLEANUP.md) is registered
 and not started. A first safe pass on 18 September 2026 took the repository from
 151 GB to 141 GB by removing 76 build directories, 1,083 `__pycache__`

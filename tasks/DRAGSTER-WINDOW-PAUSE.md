@@ -2,7 +2,7 @@
 
 ## Assignment
 
-- Status: review (approved at `1d37c6a`, report `067dbfe`, after one returned review at `e00159a`; the re-review's two should-fix items applied on top; started 18 September 2026 from `main` at `db042ef`, from the user's live play on the integrated CLASSIC-PRESENTATION-UNIFICATION build)
+- Status: reviewed and integrated (approved at `1d37c6a`, report `067dbfe`, after one returned review at `e00159a`; the re-review's two should-fix items applied at `50777bc`); acceptance conditional on final-tip CI and remote verification. Closeout: ignored `artifacts/window-pause-integration/closeout.json` in `.worktrees/dragster-window-pause`; if absent, `git log --first-parent main -- tasks/DRAGSTER-WINDOW-PAUSE.md` and `gh run list --workflow synthetic.yml --commit <commit>` ( started 18 September 2026 from `main` at `db042ef`, from the user's live play on the integrated CLASSIC-PRESENTATION-UNIFICATION build)
 - Milestone: follow-up to CLASSIC-PRESENTATION-UNIFICATION and DRAGSTER-WINDOW-EFFECTS
 - Coordinator: main session
 - Task provider: Anthropic (unchanged)
@@ -193,8 +193,8 @@ the pause clearing or the index-zero rule fails a test, and reran the gates.
 
 ## Handoff
 
-- Candidate: see `git log` on `task/dragster-window-pause`. Review: fresh
-  independent reviewer in an isolated checkout; then integration, final-tip
-  CI and the closeout under ignored `artifacts/window-pause-integration/`.
+- Reviewed (approve at `1d37c6a`, report `067dbfe`) and integrated on
+  `main` by fast-forward; the final-tip CI and closeout are recorded under
+  ignored `artifacts/window-pause-integration/`.
 - Not done: ZOOM ZOO's own windows (still no family bound; the same tracker
   would drive them once its members are captured).

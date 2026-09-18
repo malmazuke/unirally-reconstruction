@@ -79,6 +79,15 @@ wall clock. No reset, purchase or provider change is authorized.
    `zoom_zoo_content` with the track's own overrides, presentation content
    through `classic_race_presentation_content(pack, track)`, and no new
    renderer or loader.
+6. **Closed: the countdown windows kept animating through a pause**, found by
+   the user playing that build. [DRAGSTER-WINDOW-PAUSE](DRAGSTER-WINDOW-PAUSE.md)
+   is reviewed and integrated (approved at `1d37c6a`, report `067dbfe`);
+   the windows now follow the original's drivers update by update, with the
+   banner's true two-driver rule recovered on the way (the reviewer's odd-length
+   pause capture decided it against a plausible wrong reading). To see it:
+   pause during the countdown, and the digit disappears until you resume and
+   then carries on where it stopped; lose a race and the banner runs from the
+   opponent's finish while you ride, which is what the original does.
 
 ## Launch recipe
 
