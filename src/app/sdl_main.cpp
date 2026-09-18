@@ -168,6 +168,7 @@ std::uint16_t parse_controller_mask(std::string_view value) {
 void print_help() {
   std::cout
       << "Usage: unirally --content-pack PATH [--track dragster|zoom-zoo] [--updates N] [--hidden]\n"
+      << "       unirally --supported-profiles   (print the pack profiles this build reads)\n"
       << "Runs the Classic CRAWLER / DRAGSTER native slice at PAL 50 Hz.\n"
       << "Keyboard: arrows, Z=B, X=Y, A=A, S=X, Q=L, W=R, Enter=Start.\n"
       << "Gamepad: D-pad, South=B, West=Y, East=A, North=X, shoulders=L/R, Start, Back=Select;\n"
@@ -186,6 +187,11 @@ std::optional<Options> options(int argc, char **argv) {
     if (option == "--hidden") {
       result.hidden = true;
       continue;
+    }
+    if (option == "--supported-profiles") {
+      for (const auto profile : unirally::supported_pack_profiles())
+        std::cout << profile << '\n';
+      return std::nullopt;
     }
     if (index + 1 >= argc)
       throw std::invalid_argument(std::string(option) + " requires a value");
