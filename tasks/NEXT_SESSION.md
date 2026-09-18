@@ -1,5 +1,16 @@
 # Next session
 
+**Status on 18 September 2026 (after DRAGSTER-WINDOW-PAUSE): nothing is in
+progress and nothing is blocked.** Every started task is reviewed, integrated
+on `main` and accepted conditional only on its recorded final-tip CI, which
+was green at integration. The one registered, unstarted task is
+[REPO-LOCAL-STATE-CLEANUP](REPO-LOCAL-STATE-CLEANUP.md). The "not done"
+items listed under the closed follow-ups below are declared omissions kept
+as future work (ZOOM ZOO's own windows, authored HUD and result styles, the
+pack's alias entries), not unfinished parts of any task. A new session
+starts by picking the cleanup task or a new user request; it does not need
+to resume anything.
+
 **M4-16 is reviewed and integrated on `main`.** Acceptance is conditional on the
 final-tip CI and remote verification in the ignored closeout
 `.worktrees/m4-16-playable-zoom-zoo/artifacts/m4-16-integration/closeout.json`.
