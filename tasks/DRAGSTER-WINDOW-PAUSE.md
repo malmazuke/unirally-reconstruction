@@ -118,6 +118,14 @@ The frame-based fallback (the runner's other two columns) disagrees only
 where it cannot know: through a pause, and before the player has finished
 when the opponent finished first (no history, no second finish time).
 
+## Live play by the user
+
+After integration (`bd96b0d`, report `artifacts/play-dragster-2.json`): 7,101
+presentation frames with the Xbox gamepad, 10 pause-menu openings, one
+restart from the pause menu and one from a result, and a lost race carried
+to its stable result (outcome 2, 3856 against 3360 centiseconds), with
+`rider-pose fallback frames: 0`. No defect reported.
+
 ## Gates
 
 `artifacts/window-pause/gates.sh` at `e9838ea` (`gates3/`; the code is that
