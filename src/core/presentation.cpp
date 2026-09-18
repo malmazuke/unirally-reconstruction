@@ -1084,9 +1084,11 @@ void ClassicWindowPointer::observe_update(const ZoomZooState& previous,const Zoo
     if(zoom_zoo_update_was_paused(previous,updated)) {chosen_.reset();return;}
     if(updated.result_updates>1U)return;
     // Drivers armed by the previous update's finish run from this update.
-    for(std::size_t i=0;i<pending_count_;++i)order_[ordered_++]=pending_[i];
+    // Each rider finishes once per race, so at most two are ever armed; a
+    // caller that observes a new race without reset() gets no third arming.
+    for(std::size_t i=0;i<pending_count_ && ordered_<order_.size();++i)order_[ordered_++]=pending_[i];
     pending_count_=0;
-    for(std::size_t rider=0;rider<2;++rider)
+    for(std::size_t rider=0;rider<2 && pending_count_<pending_.size();++rider)
         if(!previous.race.riders[rider].finished && updated.race.riders[rider].finished) {
             drivers_[rider]={};pending_[pending_count_++]=rider;
         }

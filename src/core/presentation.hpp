@@ -188,6 +188,8 @@ std::optional<unsigned> classic_countdown_window(std::uint16_t countdown_before,
 // banner the countdown driver selects. A diverted update publishes nothing.
 class ClassicWindowPointer {
 public:
+  // Reset it whenever the race state is replaced (a restart); one instance
+  // follows one race from its initialization.
   void reset();
   // Call once for every simulation update, with the state before and after it.
   void observe_update(const ZoomZooState& previous,const ZoomZooState& updated);

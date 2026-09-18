@@ -2,7 +2,7 @@
 
 ## Assignment
 
-- Status: review (candidate `fe0ddc7` after one returned review; started 18 September 2026 from `main` at `db042ef`, from the user's live play on the integrated CLASSIC-PRESENTATION-UNIFICATION build)
+- Status: review (approved at `1d37c6a`, report `067dbfe`, after one returned review at `e00159a`; the re-review's two should-fix items applied on top; started 18 September 2026 from `main` at `db042ef`, from the user's live play on the integrated CLASSIC-PRESENTATION-UNIFICATION build)
 - Milestone: follow-up to CLASSIC-PRESENTATION-UNIFICATION and DRAGSTER-WINDOW-EFFECTS
 - Coordinator: main session
 - Task provider: Anthropic (unchanged)
@@ -120,9 +120,9 @@ when the opponent finished first (no history, no second finish time).
 
 ## Gates
 
-`artifacts/window-pause/gates.sh` on the candidate's tree (the tracker fix
-for a second finish on the driver's starting update was re-measured after it,
-below):
+`artifacts/window-pause/gates.sh` at `e9838ea` (`gates3/`; the code is that
+of the approved tip, which differs by a renamed test local), and the
+capture check above at the same code:
 
 | Gate | Result |
 | --- | --- |
@@ -130,12 +130,12 @@ below):
 | `test --suite synthetic` (lab-debug) | passed |
 | v1 contracts, v1 pack | winner 36/697/279/445/653/962/961, loser 1,073 (unchanged) |
 | stage_c A (frozen contract frames, unified) | 36/358/279/322/777/962/961 (unchanged) |
-| stage_c B (release-3213, 132 frames) | 680,807 rectangle mismatch, 114 better / 4 worse (unchanged; a first draft published no banner on 3215 because the second rider finished on the update the driver starts on, which the timeline-driven frame 3215 caught: 3,314 against 504) |
+| stage_c B (release-3213, 132 frames) | 680,807 rectangle mismatch, 114 better / 4 worse (unchanged; the first tracker draft had published nothing on 3215, 3,314 against 504, which this measurement caught) |
 | stage_c C (ten M4-16 ZOOM ZOO scenes) | pixel-identical to the before-change renderer |
 | hidden app runs, both tracks, 4,000 updates | 0 rider-pose fallback frames |
 | `dragster_fuzz_runner` (lab-release), 40 seeds | 79 completed races, 1,242 pause restarts, 7,696 renders, 0 aborts |
-| capture agreement (table above) | 100% on all five captures after the fix |
-| hosted CI | the first push `5b21f38` failed on Ubuntu GCC (`-Werror=range-loop-construct` on two test loops), fixed with the second commit |
+| capture agreement (table above) | 100% on all seven captures |
+| hosted CI | `5b21f38` and `e9838ea` failed on Ubuntu GCC only (`-Werror=range-loop-construct`, then `-Wshadow` in the new tests); `e00159a` and `1d37c6a` (run 35334568731) succeeded on both platforms |
 
 ## Independent review
 
@@ -156,6 +156,23 @@ diverted updates, and continuous-right) and read the life counters
 | D. R-0040, the record and the source map stated the wrong life rule | should fix | Corrected in all three. |
 | E. `\|\|` inside `?:`, the driver frame computed before its bound, the countdown ladder in two functions, artifacts written into another task's evidence directories, no local GCC | advisory | The fallback is rewritten without those; the ladder lives in `classic_countdown_window` only; the script writes under `artifacts/window-pause/agreement/` and the stray files were removed; the tip is pushed for Ubuntu CI. |
 
+### Re-review
+
+The same reviewer re-reviewed `1d37c6a` (report `067dbfe`): **approve**.
+It reran the seven-capture agreement, drove `ClassicWindowPointer` over 800
+randomly generated races (random pauses, both finish orders, same-update
+finishes, one-finisher races) against its own counter-derived model with no
+disagreement, checked the fallback on ten hand-made configurations and the
+legacy index on all 2,147 sweep states, confirmed that mutating the life,
+the pause clearing or the index-zero rule fails a test, and reran the gates.
+
+| Finding | Severity | Disposition |
+| --- | --- | --- |
+| F. The arming order array had no bound: a pointer observing several races without `reset()` wrote past it | should fix | Bounded (at most two riders arm); the header states the reset requirement. |
+| G. The gate table was labelled from the earlier run and the CI row omitted the second Ubuntu failure | should fix | Relabelled above. |
+| H. Tiny-frame wraps in the fallback's comparisons | advisory | Defined and unreachable for real states, as in R-0040's earlier note. |
+| I. The Ubuntu job on the tip must be green | precondition | Run 35334568731 on `1d37c6a`: success on both platforms. |
+
 ## Mistakes
 
 - The "180 odd steps" reading was fitted to captures that could not tell it
@@ -170,9 +187,9 @@ diverted updates, and continuous-right) and read the life counters
   but the release-3213 picture measurement does (frame 3215), and the
   frame-based fallback already had it right. The pictures caught what the
   five index-level captures could not.
-- The structured-binding loops copied on GCC (`-Werror=range-loop-construct`),
-  which the local Clang build accepts; the project's memory note about
-  dispatching CI before integration exists for this and was still needed.
+- Two Ubuntu-only failures in a row (`-Werror=range-loop-construct`, then
+  `-Wshadow` on a lambda local), both in the new tests and both accepted by
+  the local Clang build; pushing before the review is what caught them.
 
 ## Handoff
 
