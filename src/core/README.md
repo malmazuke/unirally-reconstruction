@@ -199,9 +199,9 @@ PPU's vertical wrap. Unknown poses and references throw.
 does not carry its state, so `ClassicRaceHistoryTracker` in `presentation.hpp`
 follows consecutive updates for the live frontend and the runner's
 `--timeline` mode; it also keeps the channel-6 window pointer as the
-original's drivers choose it and the vblank publishes it (the countdown word
-before each update, the update parity, the banner's 180-step life from the
-latest finish; a paused update disables it), and the frame on which the
+original's drivers choose it and the vblank publishes it (`ClassicWindowPointer`:
+the countdown word before each update, the update parity, one banner driver
+per rider with a 360-update life; a paused update disables it), and the frame on which the
 opponent finished for the frame-based fallback a single restored state uses
 (R-0040, DRAGSTER-WINDOW-PAUSE).
 `rider_presentation_tests` pins the mapping with synthetic

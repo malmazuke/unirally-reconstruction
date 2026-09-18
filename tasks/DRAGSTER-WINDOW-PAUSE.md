@@ -57,37 +57,44 @@ frame of both captures, including the pauses). Findings:
    parity even across a pause** (the clock is sampled before the menu
    diverts the update, R-0038): an odd driver update chooses member 3,
    shown on the even frame after it.
-4. **The banner's life is 180 steps, not 360 updates.** R-0040 read `$0F07`'s
-   `$0168` as 360 driver updates; the two accepted captures with a late
-   player finish show the channel disabled on the 181st odd driver update
-   after the finish: random-1 (opponent 3214, first driver update 3215 odd)
-   loses the banner on 3576, reversal (opponent 3325, first driver update
-   3326 even) on 3688. A finish while the banner is alive restarts the life
-   with no gap and the member phase continues (lose-a, banner-pause and
-   primary-a, where the opponent finished three frames after the player); a
-   finish after expiry starts the driver on the following update from the
-   phase it stopped at (random-1: member 8 on 3638 for the player's finish
-   at 3636), which after 180 steps is member 7 again.
+4. **Two drivers, one per rider, each with a 360-update life.** Each
+   rider's finish arms that rider's driver (`$0F03`/`$0F07` and
+   `$0F05`/`$0F09`); it first runs on the next race update the menu does not
+   divert, and the earliest-armed live driver owns `$11FD`. Per run: with
+   its index still zero the life is set to 360; a life of zero stops the
+   driver for good and the next armed one runs in the same update; otherwise
+   the life counts down once per driver update of either parity and, on an
+   odd frame, the index steps 8..24 then 7..24 (member 7 for index zero).
+   So the banner ends 360 driver updates after the driver's first odd
+   update: random-1 (opponent 3214, first driver update 3215 odd) is blank
+   from 3576, reversal (opponent 3325, first driver update 3326 even) from
+   3688; a second finish restarts nothing (banner-pause: `$0F09` counts on
+   through the player's finish at 3411); the other rider's driver starts at
+   index zero once the first stops. This was the reviewer's reading, from
+   the counters themselves and from a capture with an odd number of diverted
+   updates (banner-pause-odd, 61): without a pause 360 updates are ten
+   member cycles, so my first reading, "180 odd steps from the latest finish
+   with the phase continuing", fitted six captures and failed that one on
+   15 frames (member 8 where the original steps back to 7 on 3637).
 
 ## Implementation
 
-- `ClassicRaceHistoryTracker` keeps the channel-6 pointer the way the
-  original does: `chosen_` is the drivers' selection on the latest race
-  update (from `ClassicWindowDriverInput`: the countdown word before the
-  update, the update's parity, and whether the banner is alive with its
-  phase), `published_` the selection the vblank put on screen, published
-  from initialization + 6 and for the last time on result-loading update 1.
-  A diverted (paused) update clears the selection. `ClassicRaceHistory`
-  carries `window_published` and `window_table`; the renderer draws that
-  member when the history has been observed, as the app and the runner's
-  `--timeline` mode do.
-- `classic_window_driver_selection` is the per-update rule; the frame-based
-  `classic_window_table_index` remains for a single restored state (exact
-  when no pause diverted a driver update after the first finish) and now
-  takes the first and the latest finish, with the 180-step life and the
-  restart semantics above. `classic_opponent_finish_frame` accepts either
-  finish order. The legacy `dragster_window_table_index` uses the same
-  helper with its single finish; the frozen v1 frames are unchanged.
+- `ClassicWindowPointer` (`presentation.hpp`) keeps the channel-6 pointer
+  the way the original does, from the shared race state alone and without a
+  pack: the two drivers above, the countdown driver
+  (`classic_countdown_window`, from the countdown word before the update and
+  the update's parity), the vblank publishing the previous update's choice
+  from initialization + 6 until result-loading update 1, and a diverted
+  update publishing nothing. `ClassicRaceHistoryTracker` composes it;
+  `ClassicRaceHistory` carries `window_published` and `window_table`, and
+  the renderer draws that member when the history has been observed, as the
+  app and the runner's `--timeline` mode do.
+- The frame-based `classic_window_table_index` remains for a single restored
+  state (exact when no pause diverted a race update since the first finish)
+  and follows the same two-driver rule from the first and the latest finish.
+  `classic_opponent_finish_frame` accepts either finish order. The legacy
+  `dragster_window_table_index` uses the same helper with its single finish;
+  the frozen v1 frames and the release-3213 sweep are unchanged.
 - `classic_race_presentation_runner --window-index` prints the published
   member beside the two frame-based selections.
 
@@ -97,17 +104,19 @@ frame of both captures, including the pauses). Findings:
 against the original's `$11FD` on every frame from initialization + 6 to
 loading update 1:
 
-| capture | frames | published (tracker) | frame-based, tracked finish | frame-based alone |
-| --- | --- | --- | --- | --- |
-| countdown-pause | 2,267 | 2,267 | 1,934 (the pause) | 1,934 |
-| banner-pause | 2,319 | 2,319 | 1,907 (the pause) | 2,186 |
-| primary-a | 2,119 | 2,119 | 2,119 | 2,119 |
-| random-1-a | 2,544 | 2,544 | 2,544 | 2,184 |
-| reversal-a | 3,200 | 3,200 | 3,200 | 2,839 |
+| capture | frames | published (`ClassicWindowPointer`) |
+| --- | --- | --- |
+| countdown-pause | 2,267 | 2,267 |
+| banner-pause | 2,319 | 2,319 |
+| banner-pause-odd (the reviewer's case, regenerated) | 2,318 | 2,318 |
+| continuous-right (the reviewer's case, regenerated) | 2,121 | 2,121 |
+| primary-a | 2,119 | 2,119 |
+| random-1-a | 2,544 | 2,544 |
+| reversal-a | 3,200 | 3,200 |
 
-The frame-based fallback disagrees only where it cannot know: through a
-pause, and before the player has finished when the opponent finished first
-(no history, no second finish time).
+The frame-based fallback (the runner's other two columns) disagrees only
+where it cannot know: through a pause, and before the player has finished
+when the opponent finished first (no history, no second finish time).
 
 ## Gates
 

@@ -108,12 +108,14 @@ std::optional<unsigned> dragster_window_table_index(const MovementState& state);
 // The 898 scanline bytes of one member of the family.
 std::span<const std::uint8_t> dragster_window_table(
     std::span<const std::uint8_t> tables, unsigned index);
-// The same selection from the shared race state: the banner's life restarts
-// at each rider's finish while its phase continues. The player's finish frame
-// comes from `race.finish_delay`; the opponent's is presentation history
+// The same selection from the shared race state for a single restored state
+// without history: the first finisher's driver runs 360 updates from its first
+// odd update, then the other rider's driver, if armed, from the later of that
+// stop and the update after its finish. The player's finish frame comes from
+// `race.finish_delay`; the opponent's is presentation history
 // (`ClassicRaceHistory`) or, once both have finished, is recovered from the
 // two finish times by `classic_opponent_finish_frame`. Exact when no pause
-// diverted a driver update after the first finish; the tracker is exact.
+// diverted a race update since the first finish; `ClassicWindowPointer` is.
 std::optional<unsigned> classic_window_table_index(const ZoomZooState& state,std::uint32_t setup_frame,
                                                    std::optional<std::uint32_t> opponent_finish_frame);
 // The frame on which the opponent finished, from a state in which both riders
@@ -168,19 +170,39 @@ struct ClassicRaceHistory {
   bool window_published{};
   std::optional<unsigned> window_table{};
 };
-// One channel-6 selection by the drivers of one race update (R-0040), from
-// the values they read: the countdown word `$11C5` before the update, the
-// update's `$0300` parity (the frame parity: the clock ticks through a pause,
-// the drivers do not run through one) and, while the winner banner is alive,
-// its member phase (one step per odd driver update, continuing across a later
-// finish and an expiry). Nothing while channel 6 is disabled.
-struct ClassicWindowDriverInput {
-  std::uint16_t countdown_before{};
-  bool parity_set{};
-  bool banner_alive{};
-  std::uint32_t banner_steps{};
+// The countdown driver's selection on one race update ($83:E59C, R-0040),
+// from the countdown word `$11C5` as the update read it (before its own
+// decrement) and the update's `$0300` parity, which is the frame parity: the
+// clock ticks through a pause, the drivers do not run through one. Nothing
+// once the word is zero.
+std::optional<unsigned> classic_countdown_window(std::uint16_t countdown_before,bool parity_set);
+// The channel-6 window pointer `$11FD` as the original keeps it (R-0040,
+// DRAGSTER-WINDOW-PAUSE), followed update by update from the shared race
+// state alone. Each rider's finish arms that rider's banner driver
+// ($0F03/$0F07 and $0F05/$0F09); a driver first runs on the next race update
+// the pause menu does not divert, and the earliest-armed live driver owns the
+// pointer. Per run: with its index still zero the life is set to 360; a life
+// of zero stops the driver for good (the next armed one runs in the same
+// update); otherwise the life counts down and, on an odd frame, the index
+// steps 8..24 then 7..24; the request is member 7 for index zero. Without a
+// banner the countdown driver selects. A diverted update publishes nothing.
+class ClassicWindowPointer {
+public:
+  void reset();
+  // Call once for every simulation update, with the state before and after it.
+  void observe_update(const ZoomZooState& previous,const ZoomZooState& updated);
+  // The member the vblank published for the picture of the latest observed
+  // state: nothing while the channel is disabled.
+  std::optional<unsigned> published() const {return published_;}
+  bool observed() const {return observed_;}
+private:
+  struct Driver { bool dead{}; unsigned index{}, life{}; };
+  std::array<Driver,2> drivers_{};
+  std::array<std::size_t,2> order_{}, pending_{};
+  std::size_t ordered_{}, pending_count_{};
+  std::optional<unsigned> chosen_{}, published_{};
+  bool observed_{};
 };
-std::optional<unsigned> classic_window_driver_selection(const ClassicWindowDriverInput& input);
 // Follows the rider look animation across consecutive race updates of either
 // track, beginning at the native race initialization, and keeps the history of
 // the update currently on screen. Reset it whenever the race state is replaced.
@@ -191,19 +213,13 @@ public:
   void observe_update(const ZoomZooState& previous,const ZoomZooState& updated,
                       const ClassicContentPack& pack);
   // History for the update that produced the `previous_update` being drawn.
-  ClassicRaceHistory on_screen() const {return {on_screen_,opponent_finish_frame_,observed_,published_};}
+  ClassicRaceHistory on_screen() const {return {on_screen_,opponent_finish_frame_,window_.observed(),window_.published()};}
   const RiderLookState& look() const {return look_;}
 private:
   RiderLookState look_{};
   ZoomZooRiderOverlays latest_{}, on_screen_{};
   std::optional<std::uint32_t> opponent_finish_frame_{};
-  // The channel-6 pointer as the original keeps it: `chosen_` is the drivers'
-  // latest selection, `published_` the one the vblank has put on screen. The
-  // banner's life is 180 steps from the latest finish; its phase continues.
-  std::optional<unsigned> chosen_{}, published_{};
-  bool banner_alive_{}, banner_starts_next_{};
-  std::uint32_t banner_life_steps_{}, banner_steps_{};
-  bool observed_{};
+  ClassicWindowPointer window_{};
 };
 // The content one track's race is drawn from, selected by track from the pack.
 // Every span is pack content; the scenario and geometry come from the engine.

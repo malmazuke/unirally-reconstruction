@@ -1051,22 +1051,65 @@ static constexpr unsigned dragster_window_countdown_start=270;
 // $83:E759/E611/E663/E6C5 index 5 + $1229. $83:CC08 loads $1229 from $0BA7,
 // which is 1 in every captured DRAGSTER race, so the transitions draw index 6.
 static constexpr unsigned dragster_window_transition_index=6;
-// $83:EA19-$83:EA5B and its $0F05/$0F09 twin: indices 7..24, one step on every
-// driver update whose $0300 parity flag is set. The banner's life ($0F07,
-// $0168) is 180 steps from a rider's finish: the 181st odd driver update
-// disables the channel (random-1: opponent 3214, first driver update 3215
-// odd, gone on 3576; reversal: opponent 3325, first driver update 3326 even,
-// gone on 3688). A finish while the banner is alive restarts the life with
-// no gap and the phase continues (lose-a, banner-pause, primary-a); a finish
-// after expiry starts the driver on the following update from the phase it
-// stopped at (random-1: member 8 on 3638 for the player's finish at 3636),
-// which after 180 steps is member 7 again.
+// $83:EA19-$83:EA5B and its twin, one driver per rider ($0F03/$0F07 and
+// $0F05/$0F09): members 7..24, the index stepping on every driver update
+// whose $0300 parity flag is set, for a life of 360 driver updates counted
+// from the driver's first odd update (random-1: opponent 3214, first driver
+// update 3215 odd, blank from 3576; reversal: opponent 3325, first driver
+// update 3326 even, blank from 3688). The other rider's driver, armed by its
+// finish, runs once the first stops and starts at index zero (banner-pause-odd
+// original: the opponent's driver dies on member 8 at 3636 after a 61-update
+// pause, the player's requests 7 on 3637). Without a pause 360 updates are
+// ten member cycles, which hid the second driver behind a phase that merely
+// looked continuous.
 static constexpr unsigned winner_window_first=7, winner_window_cycle=18,
-                          winner_window_life_steps=180;
+                          winner_window_life_updates=360;
+
+void ClassicWindowPointer::reset() {
+    drivers_={};order_={};pending_={};ordered_=pending_count_=0;
+    chosen_.reset();published_.reset();observed_=false;
+}
+void ClassicWindowPointer::observe_update(const ZoomZooState& previous,const ZoomZooState& updated) {
+    // R-0040: the vblank setup of frame N publishes the selection the drivers
+    // made in update N-1; the race vblank runs from initialization + 6 and
+    // for the last time on result-loading update 1.
+    const auto scenario=classic_race_scenario(updated.track);
+    observed_=true;
+    if(updated.movement.frame>=scenario.initialization_frame+6U && updated.result_updates<=1U)
+        published_=chosen_;
+    // The pause menu disables channel 6 for every update it diverts, from the
+    // update that opens it through the update that resumes (countdown-pause
+    // original: no window on 1401-1502 for a pause opened on 1400 and resumed
+    // on 1501); the drivers neither run nor age through it.
+    if(zoom_zoo_update_was_paused(previous,updated)) {chosen_.reset();return;}
+    if(updated.result_updates>1U)return;
+    // Drivers armed by the previous update's finish run from this update.
+    for(std::size_t i=0;i<pending_count_;++i)order_[ordered_++]=pending_[i];
+    pending_count_=0;
+    for(std::size_t rider=0;rider<2;++rider)
+        if(!previous.race.riders[rider].finished && updated.race.riders[rider].finished) {
+            drivers_[rider]={};pending_[pending_count_++]=rider;
+        }
+    const bool parity_set=(updated.movement.frame&1U)!=0U;
+    std::optional<unsigned> request;
+    for(std::size_t i=0;i<ordered_ && !request;++i) {
+        auto& driver=drivers_[order_[i]];
+        if(driver.dead)continue;
+        // $0F07/$0F09: set to 360 while the index is zero, counted down once
+        // per driver update of either parity (random-1: 359 after 3215, zero
+        // after 3574, blank from 3576; reversal: 359 after both 3326 and 3327
+        // as its first update is even), frozen through a pause.
+        if(driver.index==0U)driver.life=winner_window_life_updates;
+        if(driver.life==0U) {driver.dead=true;continue;}
+        --driver.life;
+        if(parity_set)driver.index=driver.index==0U?8U:driver.index==24U?7U:driver.index+1U;
+        request=driver.index==0U?winner_window_first:driver.index;
+    }
+    chosen_=request?request:classic_countdown_window(previous.movement.countdown,parity_set);
+}
 
 void ClassicRaceHistoryTracker::reset() {
-    look_={};latest_={};on_screen_={};opponent_finish_frame_.reset();
-    chosen_.reset();published_.reset();banner_alive_=banner_starts_next_=false;banner_life_steps_=banner_steps_=0;observed_=false;
+    look_={};latest_={};on_screen_={};opponent_finish_frame_.reset();window_.reset();
 }
 void ClassicRaceHistoryTracker::observe_update(const ZoomZooState& previous,const ZoomZooState& updated,
                                                const ClassicContentPack& pack) {
@@ -1075,51 +1118,8 @@ void ClassicRaceHistoryTracker::observe_update(const ZoomZooState& previous,cons
     on_screen_=latest_;
     if(!previous.race.riders[1].finished && updated.race.riders[1].finished)
         opponent_finish_frame_=updated.movement.frame;
-    // R-0040: the vblank setup of frame N publishes the selection the drivers
-    // made in update N-1; the race vblank runs from initialization + 6 and
-    // for the last time on result-loading update 1, and the drivers run only
-    // on updates the pause menu does not divert.
-    const auto scenario=classic_race_scenario(updated.track);
-    observed_=true;
-    if(updated.movement.frame>=scenario.initialization_frame+6U && updated.result_updates<=1U)
-        published_=chosen_;
-    // The pause menu disables channel 6 for every update it diverts, from the
-    // update that opens it through the update that resumes (original
-    // countdown-pause capture: no window on 1401-1502 for a pause opened on
-    // update 1400 and resumed on 1501); the drivers choose again from the
-    // first update after that.
-    const bool paused=zoom_zoo_update_was_paused(previous,updated);
-    if(paused)chosen_.reset();
-    if(!paused && updated.result_updates<=1U) {
-        ClassicWindowDriverInput input;
-        input.countdown_before=previous.movement.countdown;
-        input.parity_set=(updated.movement.frame&1U)!=0U;
-        const auto& race=updated.race;
-        const bool finish_recorded=(!previous.race.riders[0].finished && race.riders[0].finished) ||
-                                   (!previous.race.riders[1].finished && race.riders[1].finished);
-        // A finish restarts the banner's life; with the banner not alive the
-        // driver starts on the next update (even if that update records the
-        // other rider's finish: release-3213, finishes 3213 and 3214, member
-        // 7 on screen at 3215), otherwise it runs on without a gap. Each odd
-        // driver update steps the member before the driver selects (lose-a:
-        // finish 3214, member 8 on screen at 3216), and the 181st step ends
-        // the life instead.
-        if(banner_starts_next_) {
-            banner_alive_=true;banner_starts_next_=false;
-        }
-        if(finish_recorded) {
-            banner_life_steps_=0;
-            if(!banner_alive_)banner_starts_next_=true;
-        }
-        if(banner_alive_ && input.parity_set) {
-            if(banner_life_steps_>=winner_window_life_steps)banner_alive_=false;
-            else {++banner_life_steps_;++banner_steps_;}
-        }
-        input.banner_alive=banner_alive_;
-        input.banner_steps=banner_steps_;
-        chosen_=classic_window_driver_selection(input);
-    }
-    if(updated.result_updates || paused)return;
+    window_.observe_update(previous,updated);
+    if(updated.result_updates || zoom_zoo_update_was_paused(previous,updated))return;
     const auto tables=rider_look_tables(pack);
     const auto engine=updated.track==ClassicRaceTrack::Dragster?dragster_race_content(pack):zoom_zoo_content(pack);
     latest_.pose=rider_overlay_poses(look_,updated,tables);
@@ -1236,8 +1236,8 @@ std::uint32_t odd_frames(std::uint32_t from,std::uint32_t to) {
     return to<=from?0U:to/2U-from/2U;
 }
 // The selection on screen for `frame`, shared by both state forms, from the
-// frames of the first and the latest finish (equal when one rider finished).
-// Exact when no pause diverted a driver update after the first finish.
+// frames of the first and the latest finish (equal when one rider finished),
+// as `ClassicWindowPointer` would publish it without a diverted update.
 std::optional<unsigned> window_table_index_for(std::uint32_t frame,std::uint16_t loading_updates,
                                                std::optional<std::uint32_t> first_finish,
                                                std::optional<std::uint32_t> latest_finish,
@@ -1245,52 +1245,38 @@ std::optional<unsigned> window_table_index_for(std::uint32_t frame,std::uint16_t
     const auto shown=race_vblank_frame(frame,loading_updates);
     if(!shown)return std::nullopt;
     // The winner banner replaces the countdown family; the two never overlap in
-    // a race the countdown can hold at the line.
+    // a race the countdown can hold at the line. The picture shows the choice
+    // of driver frame shown - 1.
     if(first_finish) {
-        const auto first=*first_finish,latest=std::max(first,latest_finish.value_or(first));
-        // The picture shows the choice of driver frame d = shown - 1. $0300
-        // alternates every frame ($83:CCED) and the member steps only when it
-        // is set, so the steps from a finish through d are the odd frames in
-        // [finish + 1, d]; the 181st ends the life. With the first life still
-        // alive at the latest finish the driver runs on and the phase counts
-        // from the first finish; otherwise the driver starts on the update
-        // after the latest finish, its 180 expired steps being whole cycles.
+        const auto first=*first_finish;
+        if(*shown<first+2U)return std::nullopt; // the finish update selects nothing
         const auto driver=*shown-1U;
-        if(*shown<first+1U)return std::nullopt;
-        const bool alive_at_latest=latest>first && odd_frames(first+1U,latest)<=winner_window_life_steps;
-        if(driver==latest && !alive_at_latest)return std::nullopt;
-        if(odd_frames(latest+1U,*shown)>winner_window_life_steps)return std::nullopt;
-        if(driver<latest && odd_frames(first+1U,*shown)>winner_window_life_steps)return std::nullopt;
-        const auto steps=alive_at_latest || driver<latest?odd_frames(first+1U,*shown):odd_frames(latest+1U,*shown);
-        return winner_window_first+static_cast<unsigned>(steps%winner_window_cycle);
+        // The first driver's life runs from its first odd update; its phase
+        // is the odd updates since its first update.
+        const auto first_odd=((first+1U)&1U)!=0U?first+1U:first+2U;
+        if(driver<=first_odd+winner_window_life_updates-1U)
+            return winner_window_first+static_cast<unsigned>(odd_frames(first+1U,*shown)%winner_window_cycle);
+        // It stopped on the update after; the other rider's driver, if armed,
+        // runs from the later of that update and the update after its finish.
+        if(!latest_finish || *latest_finish<=first)return std::nullopt;
+        const auto second=std::max(first_odd+winner_window_life_updates,*latest_finish+1U);
+        const auto second_odd=(second&1U)!=0U?second:second+1U;
+        if(driver<second || driver>second_odd+winner_window_life_updates-1U)return std::nullopt;
+        return winner_window_first+static_cast<unsigned>(odd_frames(second,*shown)%winner_window_cycle);
     }
     if(*shown<setup_frame)return std::nullopt;
     const auto elapsed=*shown-setup_frame;
     if(elapsed>=dragster_window_countdown_start)return std::nullopt;
-    const auto countdown=dragster_window_countdown_start-elapsed;
-    // $83:E59C dispatches on $11C5 and, inside each digit, on its own
-    // threshold: above it the transition table, below it the digit's table.
-    if(countdown>=250U)return dragster_window_transition_index;
-    if(countdown>=221U)return 0U;
-    if(countdown>=190U)return dragster_window_transition_index;
-    if(countdown>=161U)return 1U;
-    if(countdown>=130U)return dragster_window_transition_index;
-    if(countdown>=101U)return 2U;
-    if(countdown>=70U)return dragster_window_transition_index;
-    // $83:E728 picks between the two GO tables on the same $0300 parity.
-    return (*shown&1U)==0U?3U:4U;
+    // The driver of frame shown - 1 read 270 - elapsed and its own parity.
+    return classic_countdown_window(static_cast<std::uint16_t>(dragster_window_countdown_start-elapsed),
+                                    ((*shown-1U)&1U)!=0U);
 }
 } // namespace
 
-std::optional<unsigned> classic_window_driver_selection(const ClassicWindowDriverInput& input) {
-    // The winner banner replaces the countdown family; the two never overlap in
-    // a race the countdown can hold at the line.
-    if(input.banner_alive)
-        return winner_window_first+static_cast<unsigned>(input.banner_steps%winner_window_cycle);
+std::optional<unsigned> classic_countdown_window(std::uint16_t countdown,bool parity_set) {
     // $83:E59C dispatches on $11C5 as the update read it, before its own
     // decrement, and inside each digit on the digit's own threshold: above it
     // the transition table, below it the digit's table.
-    const auto countdown=input.countdown_before;
     if(countdown==0U)return std::nullopt;
     if(countdown>=250U)return dragster_window_transition_index;
     if(countdown>=221U)return 0U;
@@ -1301,7 +1287,7 @@ std::optional<unsigned> classic_window_driver_selection(const ClassicWindowDrive
     if(countdown>=70U)return dragster_window_transition_index;
     // $83:E728 picks between the two GO tables on the $0300 parity: an odd
     // driver update's choice is member 3, on screen on the even frame after it.
-    return input.parity_set?3U:4U;
+    return parity_set?3U:4U;
 }
 
 std::optional<unsigned> dragster_window_table_index(const MovementState& state) {
@@ -1350,7 +1336,8 @@ std::optional<unsigned> classic_window_table_index(const ZoomZooState& state,std
     const auto& race=state.race;
     // The player's finish frame from its delay (0..240, held at 240 from the
     // update before result loading); the opponent's from the history or, once
-    // both have finished, from the two finish times.
+    // both have finished, from the two finish times. The first finisher's
+    // driver runs first; the other's follows once it stops.
     std::optional<std::uint32_t> player_finish,opponent_finish=opponent_finish_frame;
     if(race.riders[0].finished) {
         const auto counted=state.result_updates?state.movement.frame-std::min<std::uint32_t>(state.movement.frame,state.result_updates)
