@@ -2,7 +2,7 @@
 
 ## Assignment
 
-- Status: review (implementation candidate on `task/classic-presentation-unification`, head: see `git log`; started 18 September 2026 from `main` at `ed504fb`, after the DRAGSTER window-effects review closed and integrated)
+- Status: reviewed and integrated (implementation approved at `f8645d7` and rebased onto `main` as `e59744e`, an identical source diff over three record commits `main` had gained; review `a7f26c4`; the re-review's three findings applied at `bfd6389`); acceptance conditional on final-tip CI and remote verification. Closeout: ignored `artifacts/unification-integration/closeout.json` in `.worktrees/classic-presentation-unification`; if absent, `git log --first-parent main -- tasks/CLASSIC-PRESENTATION-UNIFICATION.md` and `gh run list --workflow synthetic.yml --commit <commit>`. Started 18 September 2026 from `main` at `ed504fb`, after the DRAGSTER window-effects review closed and integrated
 - Milestone: follow-up to M4-16, DRAGSTER-ORDINARY-CONTROLS and DRAGSTER-WINDOW-EFFECTS
 - Coordinator: main session
 - Task provider: Anthropic (unchanged)
@@ -588,6 +588,6 @@ after approval without another cycle at the reviewer's judgement:
   `classic_race_presentation_content`, render scene 1450 and compare with the
   original; if the countdown digits match, the same selection serves both
   tracks and R-0040's ZOOM ZOO bullet closes.
-- Review: fresh independent reviewer in an isolated checkout at the
-  candidate, then integration, final-tip CI and the closeout under ignored
-  `artifacts/unification-integration/closeout.json`.
+- Review: done (approve at `f8645d7`, report `a7f26c4`); its findings
+  applied at `bfd6389`; integrated on `main` by rebase, with the final-tip CI
+  and closeout recorded under ignored `artifacts/unification-integration/`.

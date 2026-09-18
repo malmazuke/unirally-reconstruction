@@ -90,27 +90,33 @@ DRAGSTER v1 packs keep the accepted pose-keyed placement, so the accepted v1
 contracts and the historical matrix are unchanged. That work is reviewed and
 integrated (acceptance conditional on its final-tip CI, closeout
 `artifacts/dragster-window-integration/closeout.json` in
-`.worktrees/dragster-window-effects`); the opponent-won banner
-beyond its 120-update counter is still unrecovered. See
+`.worktrees/dragster-window-effects`). The opponent-won banner beyond its
+120-update counter is recovered by CLASSIC-PRESENTATION-UNIFICATION below. See
 [NEXT_SESSION](../tasks/NEXT_SESSION.md).
 
-Current work. [CLASSIC-PRESENTATION-UNIFICATION](../tasks/CLASSIC-PRESENTATION-UNIFICATION.md)
-is in progress on `task/classic-presentation-unification` (pushed, tip
-`b43eae3`, branched from `main` at `ed504fb`): one renderer for both tracks,
-with track content as data. Measurement only so far and no renderer code
-changed, so it can be picked up cold. Four results are recorded in the task
-record, two of which correct claims recorded wrongly earlier in the same task:
-the shared 742-byte race state already reaches presentation and is discarded at
-the call site, so the fade and pause menu are re-added outside the renderer as
-approximations; the pack carries eight track-independent engine tables twice
-(50,828 bytes) under two vocabularies, the neutral `physics.*` one being the
-older; `render_zoom_zoo` names its track inline in five content lookups and the
-result-screen strings; and the frozen DRAGSTER presentation contracts cannot
-drive a state-driven renderer, because they captured the narrowed state and
-record no inputs, so the task's acceptance table is amended in place with the
-reasoning. Order of work: widen the state, select content by track, measure
-against the captures that carry timelines. The recapture of the seven frozen
-frames needs the user's ROM and is not a prerequisite.
+[CLASSIC-PRESENTATION-UNIFICATION](../tasks/CLASSIC-PRESENTATION-UNIFICATION.md)
+is reviewed and integrated (implementation `f8645d7`, rebased onto `main` as `e59744e`; review `a7f26c4`);
+acceptance conditional on the final-tip CI and remote verification recorded in
+the ignored closeout `artifacts/unification-integration/closeout.json` in
+`.worktrees/classic-presentation-unification`. Presentation now scales the way
+the simulation does: one renderer (`render_classic_race`) draws both tracks
+from the 742-byte shared race state with track content selected by track from
+the pack; the DRAGSTER-only renderer, its held rider art, its approximate fade
+and its narrowing call path are gone from live play, and the accepted M3 v1
+renderer remains only behind the frozen v1 contracts. The frozen DRAGSTER
+contract race turned out to be the continuous-Right replay, whose inputs are
+on record, so the shared engine reaches all seven frozen frames within their
+thresholds; against the release-3213 originals the rectangle mismatch on the
+132 window-effects frames falls from 757,274 to 680,807; the ten M4-16 ZOOM
+ZOO scenes are pixel-identical to before; hidden runs of both tracks report 0
+rider-pose fallback frames. The opponent-won winner banner is recovered over
+its full length (presentation history plus a finish-time derivation, equal to
+the original's `$80:868E` pointer on 2,226 of 2,226 frames of the opponent-won
+capture). The shared engine reads its eight track-independent tables under
+the neutral `physics.*` names. The launcher selects packs by the profile
+recorded inside them, never by file name or track, refuses a typed pack of
+another profile with the remedy, and reports a stale build before launch; the
+four launcher defects from the 18 September playtest are closed.
 
 [REPO-LOCAL-STATE-CLEANUP](../tasks/REPO-LOCAL-STATE-CLEANUP.md) is registered
 and not started. A first safe pass on 18 September 2026 took the repository from

@@ -54,68 +54,49 @@ wall clock. No reset, purchase or provider change is authorized.
    the new behaviour and the launcher accepts `-v8.pack` beside a v1 pack.
    Of the pixels the change touches, 584,534 of 604,051 now match the original
    against 70,885 before, and the accepted frames are untouched.
-   Still unrecovered: the opponent-won banner after its 120-update
-   finish-animation counter, whose cheapest next experiment is in R-0040 and in
-   the task record's handoff; the presentation unification task below is the
-   natural home for it. ZOOM ZOO's own window content shares the
-   mechanism and is a separate follow-up.
+   The opponent-won banner after its 120-update counter was recovered by
+   the presentation unification below (R-0040, "Established later"). ZOOM
+   ZOO's own window content shares the mechanism and is a separate follow-up.
 4. **Closed: DRAGSTER 10:00 race limit.** DRAGSTER inherited the limit with the
    shared engine and needed no gameplay change: native matches the original for
    30,554 consecutive updates, with only the two-update SPC700 result-loading
    wait differing (as in ZOOM ZOO). The result screen now writes NO TIME for a
    timed-out player, admitted only with the clock held at 9:59.9. See
    [DRAGSTER-CLOCK-LIMIT](DRAGSTER-CLOCK-LIMIT.md) and R-0039.
-5. **In progress: one renderer for both tracks, track content as data.**
-   [CLASSIC-PRESENTATION-UNIFICATION](CLASSIC-PRESENTATION-UNIFICATION.md),
-   approved by the user, started from `main` at `ed504fb`. Branch and worktree
-   `task/classic-presentation-unification` (pushed; tip `b43eae3`). Measurement
-   only so far - no renderer code has changed - and the task record carries the
-   detail, including two corrections of claims I recorded wrongly. Read it
-   before starting; the four results are:
+5. **Closed: one renderer for both tracks, track content as data.**
+   [CLASSIC-PRESENTATION-UNIFICATION](CLASSIC-PRESENTATION-UNIFICATION.md)
+   is reviewed (implementation `f8645d7`, rebased onto `main` as `e59744e`; review `a7f26c4`) and integrated;
+   acceptance conditional on the final-tip CI in the closeout named in
+   `docs/STATE.md`. Read the task record's fifth measurement before trusting
+   the fourth: the frozen contract race is the continuous-Right replay and
+   its inputs are on record, so no recapture was needed. What remains open
+   from it, as recorded in its handoff: ZOOM ZOO's own countdown and winner
+   windows (bind the family for ZOOM ZOO and compare scene 1450 with the
+   original), the authored HUD and result styles, and dropping the eight
+   `zoom.*` engine-table aliases in a later pack profile.
 
-   1. The shared race state already reaches presentation and is discarded.
-      `LivePresentation::render_dragster_race` receives the full 742-byte
-      `ZoomZooState` and narrows it to a `MovementState` at its first
-      statement, so the fade and pause menu are re-added outside the renderer,
-      the fade by an admitted approximation of the CGRAM scaling M4-16
-      recovered. This is a merge, not a rewrite.
-   2. The pack carries eight engine tables twice, 50,828 bytes, under two
-      vocabularies. The neutral `physics.*` names are the older ones, from the
-      DRAGSTER v1 pack; the `zoom.*` ones came with ZOOM ZOO's recovery and are
-      what the shared engine reads for both tracks.
-   3. `render_zoom_zoo` names its track inline: five ZOOM ZOO content entries by
-      literal name, plus result-screen strings. DRAGSTER's equivalents are
-      already in the same pack, so this is lookup-by-track, not recovery.
-   4. The frozen DRAGSTER contracts cannot drive a state-driven renderer. They
-      captured the narrowed state (333/369 bytes) and record no inputs, so the
-      race cannot be replayed; `primary-a` is a different driver on the same
-      scenario. The acceptance table is amended in the task record: measure
-      against the captures that carry timelines, and recapture the seven frames
-      additively later.
-
-   Order of work, in this order: widen `render_dragster_race` to pass the race
-   state through; select content by track instead of by literal name; measure
-   against `primary-a` and `reversal` and the M4-16 scenes. The recapture needs
-   the user's ROM and is not a prerequisite - do not start with it, as an
-   earlier version of this plan wrongly did.
+   For a new track or scenario the pattern is now: engine content through
+   `zoom_zoo_content` with the track's own overrides, presentation content
+   through `classic_race_presentation_content(pack, track)`, and no new
+   renderer or loader.
 
 ## Launch recipe
 
 ```sh
-python3 tools/project.py frontend run --track zoom-zoo --pack local/classic-crawler-two-tracks-v8.pack --preset app-debug --report artifacts/FRESH-live.json
+python3 tools/project.py frontend run --track zoom-zoo --preset app-debug --report artifacts/FRESH-live.json
 ```
 
-DRAGSTER runs from the same pack with `--track dragster` and then draws the
-recovered race palette cycle (R-0037) and, on a v8 pack, the recovered window
-effects (R-0040); the DRAGSTER-only v1 pack keeps the accepted colours and the
-accepted pose-keyed window placement. Add `--rom` with the private locator's ROM and a fresh pack
-path for a first extraction. v5, v6 and v7 packs are rejected, and note what
-that means after a profile bump: extraction only runs when the pack file does
-not exist, so `--rom` over a path already holding an older pack fails with
-"existing pack is invalid and was not replaced" and does not rebuild it. Move
-the old file aside, or extract to a new path. Do not tell the user to re-run
-the recipe over the old path; that was done on 18 September 2026 and left them
-stopped with no remedy in the message. Rebuild the preset after a profile bump
-too: the supported profile is compiled into the binary, so a build from before
-the bump rejects a correct new pack as "Classic pack profile is unsupported". On macOS, disconnect a gamepad by
-turning Bluetooth off; the Xbox button opens the Games overlay.
+Without `--pack` the launcher selects the newest pack under `local/` that
+carries the supported profile (`classic.pal.crawler.two-tracks.v8`), whatever
+its file name; `--track dragster` runs DRAGSTER from the same pack through the
+same renderer. A typed `--pack` must carry that profile: a DRAGSTER v1 pack or
+a v5-v7 pack is refused with both profiles and the remedy in the message, not
+substituted. For a first extraction add `--rom` with the private locator's
+ROM; it goes to `local/classic-pal-crawler-two-tracks-v8.pack` (a path named
+after the profile, so a later bump never finds an old file in its way). To
+rebuild over an incompatible pack pass `--rom PATH --replace-pack`, which
+moves the old file aside with its bytes intact. The launcher asks the built
+app for its supported profiles first, so a build from before a profile bump
+is reported as "the build is stale: run `python3 tools/project.py build
+--preset app-debug`" instead of as a bad pack. On macOS, disconnect a gamepad
+by turning Bluetooth off; the Xbox button opens the Games overlay.
