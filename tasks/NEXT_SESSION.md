@@ -87,5 +87,11 @@ DRAGSTER runs from the same pack with `--track dragster` and then draws the
 recovered race palette cycle (R-0037) and, on a v8 pack, the recovered window
 effects (R-0040); the DRAGSTER-only v1 pack keeps the accepted colours and the
 accepted pose-keyed window placement. Add `--rom` with the private locator's ROM and a fresh pack
-path for a first extraction. v5, v6 and v7 packs are rejected. On macOS, disconnect a gamepad by
+path for a first extraction. v5, v6 and v7 packs are rejected, and note what
+that means after a profile bump: extraction only runs when the pack file does
+not exist, so `--rom` over a path already holding an older pack fails with
+"existing pack is invalid and was not replaced" and does not rebuild it. Move
+the old file aside, or extract to a new path. Do not tell the user to re-run
+the recipe over the old path; that was done on 18 September 2026 and left them
+stopped with no remedy in the message. On macOS, disconnect a gamepad by
 turning Bluetooth off; the Xbox button opens the Games overlay.

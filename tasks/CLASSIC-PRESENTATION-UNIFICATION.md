@@ -95,6 +95,32 @@ frames - every frame held the last recovered rider art - which is the renderer
 gap this task exists to close, measured on a live DRAGSTER launch rather than
 on the frozen contract frames.
 
+**A third defect, from the same session: `--rom` cannot replace an
+incompatible pack.** Told to re-extract after the v8 bump, the user ran the
+documented recipe with `--rom` over a pack file holding v7 content and got:
+
+```
+[ failed] classic_pack (required): existing pack is invalid and was not replaced:
+          Classic pack extraction-rules identity is incompatible
+```
+
+Extraction is gated on `pack_path.exists()` being false, so an existing pack
+that fails validation is never rebuilt and `--rom` is ignored on that path. Not
+overwriting a pack without being asked is the right default and should stay.
+The defect is that the failure names no remedy, while the sibling check in
+`_dragster_two_track_pack` does ("pass `--rom PATH` once to create ..."), so
+the user is stopped with nothing to act on; the remedy is to move the file
+aside, which no message says. Either name it, or accept an explicit opt-in such
+as `--replace-pack` and say so in the message.
+
+All three defects share one cause worth stating plainly, because it is the
+same cause as the renderer split: pack identity is carried by filename and by
+argv rather than by the profile recorded inside the pack. The launcher asks
+"which file?" everywhere it should ask "which profile?", so it cannot tell a
+typed flag from a default, cannot find a substitute without a hardcoded list,
+and cannot tell a stale pack from a foreign one. Fixing the content model fixes
+all three; fixing them one message at a time does not.
+
 ## Acceptance
 
 | Criterion | Command or experiment | Expected result | Required artifact |
