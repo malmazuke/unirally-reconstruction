@@ -188,3 +188,23 @@ inside the checkout they pass with the accepted counts unchanged
 
 Still open: the user's live playtest, and their confirmation of the v1-pack
 product change.
+
+### Live playtest, keyboard (user witness)
+
+18 September 2026, main `9411e59`, two-track v7 pack, report
+`artifacts/live-dragster/keyboard.json` (ignored). The user played a full
+DRAGSTER race with the keyboard and **confirmed using jump, brake while moving
+and Left**, the inputs that aborted before this task.
+
+```
+Presentation frames: 3676; rider-pose fallback frames: 3542
+Live input: mapped key down/up 156/67; nonzero updates 2441; simultaneous updates 1599
+DRAGSTER result updates 0; restarts 2; stable results reached 1; restarts from result/pause 1/1
+Gamepad input: ... gamepad-only nonzero updates 0
+```
+
+No abort over 3,677 updates; one stable result reached, then Race Again from
+the result and a restart from the pause menu; input was keyboard-only. The
+3,542 held-art frames are the declared DRAGSTER rider-art limitation, which the
+presentation unification task below owns. The gamepad run and the user's
+decision on the v1-pack refusal are still open.
