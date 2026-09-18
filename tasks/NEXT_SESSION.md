@@ -65,17 +65,39 @@ wall clock. No reset, purchase or provider change is authorized.
    wait differing (as in ZOOM ZOO). The result screen now writes NO TIME for a
    timed-out player, admitted only with the clock held at 9:59.9. See
    [DRAGSTER-CLOCK-LIMIT](DRAGSTER-CLOCK-LIMIT.md) and R-0039.
-5. **Next task: one renderer for both tracks.**
-   [CLASSIC-PRESENTATION-UNIFICATION](CLASSIC-PRESENTATION-UNIFICATION.md) is
-   planned and approved by the user, to start from `main` at `67b0f28`. The
-   simulation scaled and the presentation did not: DRAGSTER runs the shared
-   recovered engine with track content as data, while presentation still has
-   two renderers, so each original routine shown to be track-independent has
-   been shared one at a time and reactively. It carries the opponent-won banner
-   gap from item 3, the launcher's pack substitution and the content-model
-   cleanups. Begin with the measurement its handoff names: what
-   `render_zoom_zoo` already reproduces for DRAGSTER's frozen frames when given
-   DRAGSTER content, and the first divergence.
+5. **In progress: one renderer for both tracks, track content as data.**
+   [CLASSIC-PRESENTATION-UNIFICATION](CLASSIC-PRESENTATION-UNIFICATION.md),
+   approved by the user, started from `main` at `ed504fb`. Branch and worktree
+   `task/classic-presentation-unification` (pushed; tip `b43eae3`). Measurement
+   only so far - no renderer code has changed - and the task record carries the
+   detail, including two corrections of claims I recorded wrongly. Read it
+   before starting; the four results are:
+
+   1. The shared race state already reaches presentation and is discarded.
+      `LivePresentation::render_dragster_race` receives the full 742-byte
+      `ZoomZooState` and narrows it to a `MovementState` at its first
+      statement, so the fade and pause menu are re-added outside the renderer,
+      the fade by an admitted approximation of the CGRAM scaling M4-16
+      recovered. This is a merge, not a rewrite.
+   2. The pack carries eight engine tables twice, 50,828 bytes, under two
+      vocabularies. The neutral `physics.*` names are the older ones, from the
+      DRAGSTER v1 pack; the `zoom.*` ones came with ZOOM ZOO's recovery and are
+      what the shared engine reads for both tracks.
+   3. `render_zoom_zoo` names its track inline: five ZOOM ZOO content entries by
+      literal name, plus result-screen strings. DRAGSTER's equivalents are
+      already in the same pack, so this is lookup-by-track, not recovery.
+   4. The frozen DRAGSTER contracts cannot drive a state-driven renderer. They
+      captured the narrowed state (333/369 bytes) and record no inputs, so the
+      race cannot be replayed; `primary-a` is a different driver on the same
+      scenario. The acceptance table is amended in the task record: measure
+      against the captures that carry timelines, and recapture the seven frames
+      additively later.
+
+   Order of work, in this order: widen `render_dragster_race` to pass the race
+   state through; select content by track instead of by literal name; measure
+   against `primary-a` and `reversal` and the M4-16 scenes. The recapture needs
+   the user's ROM and is not a prerequisite - do not start with it, as an
+   earlier version of this plan wrongly did.
 
 ## Launch recipe
 
