@@ -1227,9 +1227,14 @@ std::optional<std::uint32_t> classic_opponent_finish_frame(const ZoomZooState& s
     const auto& race=state.race;
     if(!race.riders[0].finished || !race.riders[1].finished)return std::nullopt;
     if(race.total_times[0]>=60000U || race.total_times[1]>=60000U)return std::nullopt;
-    const auto shown=race_vblank_frame(state.movement.frame,state.result_updates);
-    if(!shown || race.finish_delay>*shown)return std::nullopt;
-    const auto player_finish=*shown-race.finish_delay;
+    // The finish delay counts once per race update and holds at 240 from the
+    // update before result loading, so the frame it last advanced on is the
+    // loading start minus the loading count (lose-a: finish 3318, delay 240 at
+    // 3558, loading update 1 at 3559).
+    const auto counted=state.result_updates?state.movement.frame-std::min<std::uint32_t>(state.movement.frame,state.result_updates)
+                                          :state.movement.frame;
+    if(race.finish_delay>counted)return std::nullopt;
+    const auto player_finish=counted-race.finish_delay;
     // finish_centiseconds: two per frame plus the frame parity, so
     // total[0]-total[1] = 2(fa-fb)+(fa&1)-(fb&1); one parity of fb fits.
     const int difference=static_cast<int>(race.total_times[0])-static_cast<int>(race.total_times[1]);
