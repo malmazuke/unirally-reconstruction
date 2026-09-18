@@ -47,6 +47,34 @@ void write_frame(const char* path,const unirally::RgbFrame& frame) {
 } // namespace
 int main(int argc,char** argv) try {
     // One picture of either track's shared race state, drawn as the app draws it.
+    if(argc==4 && std::string_view(argv[2])=="--window-index") {
+        // Index-level check (R-0040): for every row of a native timeline, the
+        // channel-6 window member the renderer selects, with the tracked
+        // history and without it (as a single restored state would), or "-"
+        // when channel 6 is disabled for that frame.
+        unirally::ClassicContentPack pack(argv[1]);
+        std::ifstream input(argv[3]);
+        if(!input)throw std::invalid_argument("cannot read timeline");
+        unirally::ClassicRaceHistoryTracker history;
+        std::string line;
+        unsigned frame{};
+        if(!std::getline(input,line))throw std::invalid_argument("timeline is empty");
+        auto previous=parse_timeline_row(line,frame);
+        const auto setup=unirally::classic_race_scenario(previous.track).initialization_frame+6U;
+        const auto print=[&](const unirally::ZoomZooState& state) {
+            const auto tracked=unirally::classic_window_table_index(state,setup,history.on_screen().opponent_finish_frame);
+            const auto alone=unirally::classic_window_table_index(state,setup,std::nullopt);
+            std::cout<<state.movement.frame<<' '<<(tracked?std::to_string(*tracked):"-")<<' '<<(alone?std::to_string(*alone):"-")<<'\n';
+        };
+        print(previous);
+        while(std::getline(input,line)) {
+            auto state=parse_timeline_row(line,frame);
+            history.observe_update(previous,state,pack);
+            print(state);
+            previous=std::move(state);
+        }
+        return 0;
+    }
     if(argc==6 && std::string_view(argv[2])=="--timeline") {
         // Replays consecutive native states from the timeline's first row so the
         // rider look overlays (R-0036) and the opponent's finish frame (R-0040)
@@ -80,7 +108,8 @@ int main(int argc,char** argv) try {
     }
     if(argc!=4 && argc!=5)
         throw std::invalid_argument("usage: classic_race_presentation_runner PACK STATE OUT.ppm [PREVIOUS_STATE]\n"
-                                    "       classic_race_presentation_runner PACK --timeline NATIVE_TIMELINE FRAME OUT.ppm");
+                                    "       classic_race_presentation_runner PACK --timeline NATIVE_TIMELINE FRAME OUT.ppm\n"
+                                    "       classic_race_presentation_runner PACK --window-index NATIVE_TIMELINE");
     unirally::ClassicContentPack pack(argv[1]);
     const auto state=load_state(argv[2]);
     // The HUD and riders show the previous update; without PREVIOUS_STATE

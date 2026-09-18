@@ -803,6 +803,23 @@ int main() {
       require(unirally::classic_window_table_index(late, setup, std::nullopt) ==
               unirally::classic_window_table_index(late, setup, 3325U));
       require(unirally::classic_window_table_index(late, setup, std::nullopt).has_value());
+      // Through result loading the delay holds at 240 from the frame before
+      // loading starts (lose-a original: finishes 3214 and 3318, loading 3559).
+      auto loading = race;
+      loading.race.riders[0].finished = loading.race.riders[1].finished = 1;
+      loading.race.total_times = {3566, 3358};
+      loading.race.finish_delay = 240;
+      loading.movement.frame = 3558;
+      require(unirally::classic_opponent_finish_frame(loading) == 3214U);
+      const auto before_loading = unirally::classic_window_table_index(loading, setup, std::nullopt);
+      for (const std::uint16_t updates : {std::uint16_t{1}, std::uint16_t{2}, std::uint16_t{40}}) {
+        loading.movement.frame = 3558 + updates;
+        loading.result_updates = updates;
+        require(unirally::classic_opponent_finish_frame(loading) == 3214U);
+        require(unirally::classic_window_table_index(loading, setup, std::nullopt) ==
+                unirally::classic_window_table_index(loading, setup, 3214U));
+      }
+      require(before_loading.has_value());
     }
     // The result view derives the legacy phases from the shared counters.
     {
