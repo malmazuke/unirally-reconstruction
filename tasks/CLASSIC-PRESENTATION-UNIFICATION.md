@@ -2,7 +2,7 @@
 
 ## Assignment
 
-- Status: planned (queued 18 September 2026 at the user's request; start after the DRAGSTER window-effects review closes)
+- Status: in progress (started 18 September 2026 from `main` at `ed504fb`, after the DRAGSTER window-effects review closed and integrated)
 - Milestone: follow-up to M4-16, DRAGSTER-ORDINARY-CONTROLS and DRAGSTER-WINDOW-EFFECTS
 - Coordinator: Claude Opus 5 primary session
 - Base commit: current `main`
@@ -157,8 +157,47 @@ model is decided would fix the symptom in the wrong layer.
 | Gates | four presets, historical matrix, DRAGSTER and ZOOM ZOO differential gates | all pass | gate logs |
 | Review and CI | fresh reviewer; hosted CI on the exact tip | approve; green | review, closeout |
 
+## Opening measurement - the state is already shared; presentation discards it
+
+Before measuring pictures, the structure. DRAGSTER's live path already holds the
+full shared race state:
+
+`LivePresentation::render_dragster_race(const ZoomZooState &race, ...)` in
+`src/app/frontend.cpp` receives the same `ZoomZooState` ZOOM ZOO renders from -
+the 742-byte shared race state, whose `track` member is serialized as the state
+magic (`URDG0001` for DRAGSTER, `URZZ000B` for ZOOM ZOO). Its first statement is
+`dragster_presentation_state(race)`, which copies `race.movement`, back-fills
+four finish fields from `race.race`, and discards the rest: pause, result,
+fade_level, rolls, announcements, surface and reflection transitions. The old
+M3 renderer is then called with that narrowed `MovementState`.
+
+So the renderer split is not caused by DRAGSTER lacking state. Presentation
+takes a narrower input type than the engine already produces, and throws the
+difference away at the call site.
+
+The cost is visible in the next six lines of the same function. Because the
+narrowed renderer cannot fade or draw the pause menu, both are re-added outside
+it: `race_picture_brightness` scales the converted picture by `(b/15)^1.5`,
+carrying the comment "Approximation: the original scales CGRAM words before
+output; this scales the converted picture with the same 1.5 output curve", and
+`draw_race_pause_menu` is layered on afterwards. M4-16 recovered the correct
+form for ZOOM ZOO - scale the CGRAM words, then convert - and it cannot be
+reused here precisely because the narrowing removed the state it needs.
+
+That is the whole scaling failure, and it is one function wide: every capability
+that depends on the wider state must be re-implemented outside the renderer,
+approximately, for as long as the narrowing stands. It also explains the live
+symptom - `is_recovered_pose_pair` whitelists five pose pairs, so a DRAGSTER
+launch that matches none of them falls back on every frame (21 of 21 in the
+user's run).
+
+This makes the task a merge rather than a rewrite: the state to drive
+`render_zoom_zoo` for DRAGSTER is already at the call site, unused.
+
 ## Handoff
 
-- Not started. Begin by measuring what `render_zoom_zoo` already reproduces for
-  DRAGSTER's frozen frames when given DRAGSTER content, and record the first
-  divergence, as the controls task did for the engine.
+- Structural measurement above is done. Next: call `render_zoom_zoo` with the
+  DRAGSTER state and two-track content, measure against DRAGSTER's frozen
+  contract frames, and record the first divergence, as the controls task did for
+  the engine. The frozen M3 contracts are `PresentationSample` captures, so they
+  need a projection from the shared state; the live path does not.
