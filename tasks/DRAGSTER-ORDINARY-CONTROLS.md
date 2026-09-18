@@ -208,3 +208,26 @@ the result and a restart from the pause menu; input was keyboard-only. The
 3,542 held-art frames are the declared DRAGSTER rider-art limitation, which the
 presentation unification task below owns. The gamepad run and the user's
 decision on the v1-pack refusal are still open.
+
+### Live playtest, gamepad
+
+18 September 2026, main `9411e59`, two-track v7 pack, report
+`artifacts/live-dragster/gamepad.json` (ignored). Xbox controller.
+
+```
+Presentation frames: 3241; rider-pose fallback frames: 3092
+Live input: mapped key down/up 0/0; nonzero updates 2267; simultaneous updates 1647
+DRAGSTER result updates 0; restarts 2; stable results reached 1; restarts from result/pause 1/1
+Gamepad input: connections 1; port-0 button down/up 108/108; buttons pressed a x y start
+               rightshoulder dpdown dpleft dpright; gamepad-only nonzero updates 2267;
+               pause openings 1; gamepad-only restarts 2
+```
+
+No abort over 3,242 updates. Unlike the keyboard run, the log itself names the
+recovered inputs: SDL `a` is South (SNES B, jump), `x` is West (SNES Y, brake)
+and `dpleft` is Left - the three that aborted before this task - with `y` and a
+shoulder for tricks. One stable result reached, then Race Again from the result
+and a restart from the pause menu, both with gamepad-only input.
+
+**The live criterion is met on both keyboard and gamepad.** Remaining for this
+task: the user's decision on the v1-pack refusal.
