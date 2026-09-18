@@ -2,7 +2,10 @@
 
 ## Assignment
 
-- Status: review
+- Status: reviewed and integrated (implementation approved at `788a877`, review
+  `9b54c2a`; the review's four advisories dispositioned at `598564f`);
+  acceptance conditional on final-tip CI and remote verification. Closeout:
+  ignored `artifacts/dragster-window-integration/closeout.json`
 - Milestone: M4 follow-up (from the M4-16 findings, after DRAGSTER-PALETTE-CYCLE)
 - Coordinator: main session
 - Task provider: Anthropic (unchanged)

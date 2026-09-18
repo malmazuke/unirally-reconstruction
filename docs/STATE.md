@@ -72,8 +72,8 @@ is reviewed and integrated (acceptance conditional on its final-tip CI, closeout
 `.worktrees/dragster-palette-cycle`): DRAGSTER's race runs the same NMI palette
 cycle ([R-0037](research/R-0037-dragster-race-palette-cycle.md)), visible as colour
 0 in the GO and winner windows, which now take the cycled colour 0 when the pack
-carries the tables (two-track v7), matching the original where their shapes
-agree; DRAGSTER v1 packs keep the accepted colours.
+carries the tables (the two-track pack), matching the original where their
+shapes agree; DRAGSTER v1 packs keep the accepted colours.
 [DRAGSTER-WINDOW-EFFECTS](../tasks/DRAGSTER-WINDOW-EFFECTS.md) then recovered
 when those windows appear and what shape each frame uses
 ([R-0040](research/R-0040-dragster-window-effects.md)): the original picks one
@@ -87,8 +87,10 @@ on all 1,922 frames from 1533 to 3454 of a captured race. The family enters the
 two-track pack additively as `presentation.effect.classic.window-tables.v1`;
 the profile is now `classic.pal.crawler.two-tracks.v8` with 56 entries and
 DRAGSTER v1 packs keep the accepted pose-keyed placement, so the accepted v1
-contracts and the historical matrix are unchanged. That candidate is on
-`task/dragster-window-effects` and is not yet reviewed; the opponent-won banner
+contracts and the historical matrix are unchanged. That work is reviewed and
+integrated (acceptance conditional on its final-tip CI, closeout
+`artifacts/dragster-window-integration/closeout.json` in
+`.worktrees/dragster-window-effects`); the opponent-won banner
 beyond its 120-update counter is still unrecovered. See
 [NEXT_SESSION](../tasks/NEXT_SESSION.md).
 
