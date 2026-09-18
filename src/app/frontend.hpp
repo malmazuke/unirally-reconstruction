@@ -67,7 +67,6 @@ struct PresentationPosition {
   std::int32_t camera_x{};
   std::int16_t bg1_x{}, bg1_y{}, bg2_x{}, bg2_y{};
 };
-PresentationPosition presentation_position(std::uint16_t player_x);
 
 struct RiderPosePair {
   std::array<std::uint16_t, 2> pose_indices{};
@@ -76,49 +75,36 @@ struct RiderPosePair {
 
 bool is_recovered_pose_pair(const MovementState &state);
 
-// The accepted DRAGSTER presentation entries; the race palette cycle is
-// optional (DRAGSTER v1 packs keep the accepted colours).
-PresentationContent dragster_presentation_content(const ClassicContentPack &pack);
-
-// DRAGSTER plays on the shared race engine (R-0038) but is drawn by the
-// accepted M3 presentation, which reads the legacy finish and result phases.
-// Derive those from the shared race state: presentation only, never gameplay.
-MovementState dragster_presentation_state(const ZoomZooState &race);
-// Picture brightness 0-15 from the preceding update's race fade ($80:883F).
-unsigned race_picture_brightness(const ZoomZooState &race);
-
 struct LiveFrame {
   RgbFrame frame;
   bool used_pose_fallback{};
 };
 
-// Render the current gameplay/camera/HUD. Only the pose indices/reflection
-// consumed by the bounded M3-02 atlas are held when a pair is unrecovered.
+// Live race pictures for either track.
 class LivePresentation {
 public:
+  // The accepted M3 DRAGSTER v1 renderer, kept for the frozen v1 contracts:
+  // only the pose indices/reflection consumed by the bounded M3-02 atlas are
+  // held when a pair is unrecovered. The app does not draw through it.
   LiveFrame render(const MovementState &state,
                    const PresentationPosition &position,
                    const PresentationContent &content);
-  // DRAGSTER on the shared race engine: the accepted scene, faded in from
-  // black and overlaid by the pause menu while the race is paused.
-  LiveFrame render_dragster_race(const ZoomZooState &race,
-                                 const PresentationPosition &position,
-                                 const PresentationContent &content);
-  // ZOOM ZOO draws every packed pose (R-0036). Call observe_zoom_update once
-  // per simulation update so the rider look overlays follow the race.
-  void observe_zoom_update(const ZoomZooState& previous,const ZoomZooState& updated,
-                           const ClassicContentPack& pack);
+  // Both tracks draw every packed pose (R-0036). Call observe_update once per
+  // simulation update so the rider look overlays and the opponent's finish
+  // frame (R-0040) follow the race.
+  void observe_update(const ZoomZooState& previous,const ZoomZooState& updated,
+                      const ClassicContentPack& pack);
   // A rider pose outside the packed tables fails closed in the renderer; the
   // live frame then holds that rider's last drawn pose and reports the frame
   // as a fallback instead of ending the session.
-  LiveFrame render_zoom(const ZoomZooState& state,const ZoomZooState& previous_update,
-                        const ClassicContentPack& pack);
+  LiveFrame render_race(const ZoomZooState& state,const ZoomZooState& previous_update,
+                        const ClassicRacePresentationContent& content);
   RiderPosePair last_recovered_pose_pair() const { return recovered_pair_; }
 
 private:
   RiderPosePair recovered_pair_{{0x04f9, 0x0263}, {true, true}};
-  ZoomZooRiderLookTracker zoom_look_{};
-  std::array<std::optional<std::uint16_t>, 2> zoom_drawn_pose_{};
+  ClassicRaceHistoryTracker history_{};
+  std::array<std::optional<std::uint16_t>, 2> drawn_pose_{};
 };
 
 } // namespace unirally::app

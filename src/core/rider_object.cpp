@@ -149,11 +149,11 @@ RiderObjectPixels compose_rider_object(const RiderObjectContent &content,
 
 RiderOam project_rider_oam(std::uint16_t world_x, std::uint16_t world_y,
                            std::uint16_t camera_x, std::uint16_t camera_y,
-                           bool reflected) {
-  constexpr unsigned zoom_shift = 2;               // $03F1
-  constexpr std::uint16_t left_limit = 0xff3c;     // $0425
-  constexpr std::uint16_t right_limit = 0x0400;    // $0427
-  constexpr std::uint16_t world_mask = 0x3fff;     // $0D4F
+                           bool reflected, const TrackGeometry &geometry) {
+  const unsigned zoom_shift = geometry.screen_shift;                            // $03F1
+  const auto left_limit = static_cast<std::uint16_t>(geometry.visible_left);    // $0425
+  const auto right_limit = static_cast<std::uint16_t>(geometry.visible_right);  // $0427
+  const std::uint16_t world_mask = geometry.position_mask;                      // $0D4F
   RiderOam oam;
   oam.horizontal_flip = reflected; // $0BA7/$0BA9 sets attribute bit 6
   const auto screen_y = static_cast<std::uint16_t>(world_y - camera_y);

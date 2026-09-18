@@ -83,24 +83,6 @@ int main() {
   }
   require(rejected, "invalid display size rejected");
 
-  const auto camera = presentation_position(13'696);
-  require(camera.camera_x == 12'816 && camera.bg1_x == 12'802 &&
-              camera.bg1_y == 208 && camera.bg2_x == 6'401 &&
-              camera.bg2_y == 104,
-          "deterministic presentation-only follow rule");
-
-  // The follow rule floors the camera at 14 so BG1 never reads before the map
-  // (shared with the ZOOM ZOO live view). Early DRAGSTER frames sit there.
-  for (const std::uint16_t early : {std::uint16_t{0}, std::uint16_t{880},
-                                    std::uint16_t{893}}) {
-    const auto start = presentation_position(early);
-    require(start.camera_x == 14 && start.bg1_x == 0 && start.bg2_x == 0,
-            "camera floor holds before the rider passes the start area");
-  }
-  const auto first_moving = presentation_position(895);
-  require(first_moving.camera_x == 15 && first_moving.bg1_x == 1,
-          "the camera follows once the rider passes the floor");
-
   // Two display-poll cadences consume the same update-indexed live input
   // script. Every input snapshot advances exactly one canonical update.
   unirally::MovementState initial{};
@@ -319,50 +301,4 @@ int main() {
   require(unirally::serialize_movement_state(visible_unsupported) ==
               visible_before,
           "visible fallback leaves canonical state unchanged");
-
-  // DRAGSTER on the shared race engine is drawn through the legacy finish and
-  // result phases derived from its race state (R-0038).
-  unirally::ZoomZooState race{};
-  race.track = unirally::ClassicRaceTrack::Dragster;
-  race.native_initialization = race.complete_race = race.sustained = true;
-  race.movement.frame = 1328;
-  require(race_picture_brightness(race) == 0, "initialization picture is black");
-  race.movement.frame = 1345;
-  require(race_picture_brightness(race) == 1, "fade reaches brightness one at update 17");
-  race.movement.frame = 1400;
-  require(race_picture_brightness(race) == 15, "fade completes");
-  require(dragster_presentation_state(race).finish.phase == unirally::RacePhase::Racing,
-          "unfinished race is racing");
-  race.race.total_times = {60000, 3358};
-  race.race.riders[1].finished = 1;
-  race.race.riders[1].time_digits = {0, 3, 3, 5, 8};
-  auto shown = dragster_presentation_state(race);
-  require(shown.finish.rider_finished[1] && !shown.finish.rider_finished[0] &&
-              shown.finish.outcome == unirally::RaceOutcome::Pending &&
-              shown.finish.phase == unirally::RacePhase::Racing,
-          "opponent-first finish keeps the race live");
-  race.race.riders[0].finished = 1;
-  race.race.riders[0].time_digits = {0, 3, 3, 5, 7};
-  race.race.total_times = {3357, 3358};
-  race.race.finish_delay = 12;
-  shown = dragster_presentation_state(race);
-  require(shown.finish.phase == unirally::RacePhase::FinishDelay &&
-              shown.finish.outcome == unirally::RaceOutcome::PlayerWon &&
-              shown.finish.player_finish_delay == 12 &&
-              shown.finish.finish_time_centiseconds[0] == 3357,
-          "player finish enters the finish delay with the winner outcome");
-  race.race.finish_delay = 240;
-  race.result_updates = 225;
-  require(dragster_presentation_state(race).finish.phase == unirally::RacePhase::ResultLoading,
-          "result loads until the winner screen is stable");
-  race.result_updates = 226;
-  shown = dragster_presentation_state(race);
-  require(shown.finish.phase == unirally::RacePhase::ResultScreen &&
-              shown.finish.result_loading_updates == 226,
-          "stable winner result");
-  race.race.total_times = {3359, 3358};
-  race.result_updates = 241;
-  require(dragster_presentation_state(race).finish.outcome == unirally::RaceOutcome::PlayerLost &&
-              dragster_presentation_state(race).finish.phase == unirally::RacePhase::ResultLoading,
-          "the loser screen settles later");
 }

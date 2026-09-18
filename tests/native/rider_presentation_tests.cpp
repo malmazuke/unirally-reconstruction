@@ -141,13 +141,24 @@ void composition() {
 }
 
 void oam_projection() {
-  const auto at = [](int dx, int dy, bool reflected = false) {
+  // $81:A445 (ZOOM ZOO) and $81:A4C1 (DRAGSTER) playfield sets.
+  const TrackGeometry zoom{256, 0x3fff, 2, -0x60, 0x64, -0xc4, 0x400};
+  const TrackGeometry dragster{1024, 0xffff, 0, -0x18, 0x19, -0x31, 0x100};
+  const auto at = [&](int dx, int dy, bool reflected = false) {
     return project_rider_oam(static_cast<std::uint16_t>(1000 + dx), static_cast<std::uint16_t>(2000 + dy),
-                             1000, 2000, reflected);
+                             1000, 2000, reflected, zoom);
   };
+  const auto dragster_at = [&](int dx) {
+    return project_rider_oam(static_cast<std::uint16_t>(1000 + dx), 2000, 1000, 2000, false, dragster);
+  };
+  // DRAGSTER scales X by 1: visible from -49 through 255 ($0425/$0427).
+  require(dragster_at(-49).visible && dragster_at(-49).x == -49 && !dragster_at(-50).visible,
+          "DRAGSTER lower X limit $FFCF unscaled");
+  require(dragster_at(255).visible && dragster_at(255).x == 255 && !dragster_at(256).visible,
+          "DRAGSTER upper X limit $0100 unscaled");
   // Frame 1700 of the primary timeline: player 8576,1520 with camera 8440,1430
   // is OAM entry 98 X 136, Y 90, attribute $26 (no flip).
-  const auto observed = project_rider_oam(8576, 1520, 8440, 1430, false);
+  const auto observed = project_rider_oam(8576, 1520, 8440, 1430, false, zoom);
   require(observed.visible && observed.x == 136 && observed.y == 90 && !observed.horizontal_flip &&
               observed.clip == RiderRowClip::none,
           "observed primary OAM");

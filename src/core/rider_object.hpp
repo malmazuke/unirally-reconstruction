@@ -6,6 +6,8 @@
 // the NMI queue at $82:B8AA) and republishes its OAM entry ($82:ACAC-$82:AE5E).
 // These functions reproduce those two steps from static pack content and the
 // semantic rider fields; they own no state.
+#include "zoom_zoo_movement.hpp"
+
 #include <array>
 #include <cstdint>
 #include <optional>
@@ -66,11 +68,12 @@ struct RiderOam {
   RiderRowClip clip{};
 };
 // Positions and camera are the original 16-bit words. The projection limits
-// are the $81:A445 set selected by decoded track header byte $0D == $40
-// ($03F1 = 2, $0425 = $FF3C, $0427 = $0400, $0D4F = $3FFF).
+// are the track's playfield set ($81:A304-A51B, `track_geometry`): the screen
+// shift $03F1, the visible span $0425/$0427 and the x mask $0D4F ($81:A445 for
+// ZOOM ZOO, $81:A4C1 for DRAGSTER).
 RiderOam project_rider_oam(std::uint16_t world_x, std::uint16_t world_y,
                            std::uint16_t camera_x, std::uint16_t camera_y,
-                           bool reflected);
+                           bool reflected, const TrackGeometry &geometry);
 
 // Draws one OBJ into an RGB-indexed target: `plot(screen_x, screen_y,
 // colour_index)` receives only opaque pixels that fall on the 256-by-224

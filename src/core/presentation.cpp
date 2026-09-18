@@ -138,9 +138,7 @@ std::uint16_t apply_snes_brightness(std::uint16_t colour_value,
 }
 
 std::array<std::uint8_t, 512>
-build_race_cgram(const PresentationSample &sample,
-                 std::span<const std::uint8_t> packed_palette,
-                 bool dragster_late_finish = true) {
+build_race_cgram(std::span<const std::uint8_t> packed_palette, bool late_finish) {
   std::array<std::uint8_t, 512> cgram{};
   constexpr std::array<std::size_t, 6> targets{{0, 224, 256, 352, 480, 384}};
   constexpr std::array<std::size_t, 6> lengths{{192, 32, 32, 32, 32, 32}};
@@ -158,11 +156,6 @@ build_race_cgram(const PresentationSample &sample,
   static constexpr std::array<std::uint8_t, 32> finish_cycle{
       16, 66,  0,   0,   255, 127, 181, 86, 107, 45, 0,  0,  148, 82, 255, 127,
       81, 102, 122, 127, 81,  102, 106, 73, 164, 48, 65, 20, 164, 48, 106, 73};
-  // DRAGSTER's late-finish palette is keyed to its own finish poses.
-  const bool late_finish =
-      dragster_late_finish &&
-      (sample.movement.riders[1].pose.pose_index == 0x08d5 ||
-       sample.movement.riders[0].pose.pose_index == 0x04fe);
   const auto &cycle = late_finish ? finish_cycle : racing_cycle;
   std::copy(cycle.begin(), cycle.end(), cgram.begin() + 192);
   if (late_finish) {
@@ -173,6 +166,20 @@ build_race_cgram(const PresentationSample &sample,
     cgram[1] = 127;
   }
   return cgram;
+}
+
+// The accepted M3 DRAGSTER palette: its late-finish colours are keyed to its
+// own finish poses. The shared renderer never uses this keying; the race NMI
+// cycle (R-0037) supplies those colours from the pack instead.
+std::array<std::uint8_t, 512>
+build_race_cgram(const PresentationSample &sample,
+                 std::span<const std::uint8_t> packed_palette,
+                 bool dragster_late_finish = true) {
+  const bool late_finish =
+      dragster_late_finish &&
+      (sample.movement.riders[1].pose.pose_index == 0x08d5 ||
+       sample.movement.riders[0].pose.pose_index == 0x04fe);
+  return build_race_cgram(packed_palette, late_finish);
 }
 
 std::uint8_t tile_pixel(const std::array<std::uint8_t, 65536> &vram,
@@ -426,7 +433,7 @@ void write_result_text(std::array<std::uint8_t, 65536> &vram, int x, int y,
 }
 
 void build_result_map(std::array<std::uint8_t, 65536> &vram,
-                      const PresentationSample &sample,
+                      const RaceFinishState &finish, const RaceTimerDigits &clock,
                       std::span<const std::uint8_t> result_assets) {
   for (std::size_t entry = 0; entry < 1024; ++entry)
     set_map_word(vram, static_cast<int>(entry % 32),
@@ -440,7 +447,6 @@ void build_result_map(std::array<std::uint8_t, 65536> &vram,
   const std::string_view title(
       reinterpret_cast<const char *>(title_seed.data()),
       static_cast<std::size_t>(terminator - title_seed.begin()));
-  const auto &finish = sample.movement.finish;
   const bool observed_winner_publication =
       finish.outcome == RaceOutcome::PlayerWon &&
       ((finish.phase == RacePhase::ResultLoading &&
@@ -470,7 +476,6 @@ void build_result_map(std::array<std::uint8_t, 65536> &vram,
   // $81:C73E-C75B holds 9:59.9 when it finishes both riders, so a no-time
   // player total only belongs to that timed-out race (R-0039). A consistent
   // time never reaches the sentinel, so this stays a strict extension.
-  const auto &clock = sample.movement.timer;
   const bool clock_expired = clock.minutes == 9 && clock.tens_seconds == 5 &&
                              clock.seconds == 9 && clock.tenths == 9;
   const bool player_has_no_time =
@@ -575,8 +580,14 @@ result_bg2_pixel(const std::array<std::uint8_t, 65536> &vram, int x, int y) {
   return {palette, 0, priority, false};
 }
 
-void render_result_background(RgbFrame &frame, const PresentationSample &sample,
-                              const PresentationContent &content) {
+struct ClassicResultContent {
+  std::span<const std::uint8_t> palette, result_assets, result_base_vram;
+  std::span<const std::uint8_t> result_palette, result_palette_tail;
+};
+
+void render_result_background(RgbFrame &frame, const RaceFinishState &finish,
+                              const RaceTimerDigits &clock,
+                              const ClassicResultContent &content) {
   // These writes replay the observed $82:B296 copier sequence. Addresses are
   // VRAM byte addresses; the SNES VMADD register observed by the capture uses
   // word addresses. Later writes intentionally replace overlapping content.
@@ -593,9 +604,11 @@ void render_result_background(RgbFrame &frame, const PresentationSample &sample,
   copy_wrapping(vram, 0x7b00, content.result_assets.subspan(216, 1920));
   copy_wrapping(vram, 0xf400, content.result_assets.subspan(2136, 3072));
 
-  build_result_map(vram, sample, content.result_assets);
+  build_result_map(vram, finish, clock, content.result_assets);
 
-  auto cgram = build_race_cgram(sample, content.palette);
+  // The result palettes below replace every colour the pose-keyed race cycle
+  // could have set, so the neutral layout is byte-identical here.
+  auto cgram = build_race_cgram(content.palette, false);
   std::copy(content.result_palette.begin(), content.result_palette.end(),
             cgram.begin());
   // The seven-frame palette cycle's stable-frame phase is captured at frame
@@ -607,9 +620,8 @@ void render_result_background(RgbFrame &frame, const PresentationSample &sample,
   // rotation below; this is presentation state and does not alter gameplay.
   constexpr std::array<std::uint8_t, 8> loser_cycle{0x10, 0x42, 0xb5, 0x56,
                                                     0x52, 0x4a, 0x31, 0x46};
-  const auto &cycle = sample.movement.finish.outcome == RaceOutcome::PlayerLost
-                          ? loser_cycle
-                          : winner_cycle;
+  const auto &cycle = finish.outcome == RaceOutcome::PlayerLost ? loser_cycle
+                                                                : winner_cycle;
   std::copy(cycle.begin(), cycle.end(), cgram.begin() + 216);
 
   // Replay the observed CPU palette writers after the 216-byte DMA. Byte
@@ -728,7 +740,7 @@ std::array<std::uint16_t, 32 * 32>
 build_dragster_result_map(const MovementState &state,
                           std::span<const std::uint8_t> result_assets) {
   std::array<std::uint8_t, 65536> vram{};
-  build_result_map(vram, {state, 0, 0, 0, 0, 0}, result_assets);
+  build_result_map(vram, state.finish, state.timer, result_assets);
   std::array<std::uint16_t, 32 * 32> map{};
   for (std::size_t entry = 0; entry < map.size(); ++entry) {
     const auto at = 0x2000U + entry * 2U;
@@ -874,7 +886,10 @@ static RgbFrame render_dragster(const PresentationSample &s,
                                finish.result_loading_updates >= 225);
   if (result_visible) {
     RgbFrame result{};
-    render_result_background(result, s, content);
+    render_result_background(result, finish, s.movement.timer,
+                             {content.palette, content.result_assets,
+                              content.result_base_vram, content.result_palette,
+                              content.result_palette_tail});
     return result;
   }
   const auto map =
@@ -1022,18 +1037,21 @@ std::string result_time(unsigned value) {
     return value>=60000U?"NO TIME":race_time(value);
 }
 }
-void ZoomZooRiderLookTracker::reset() {
-    look_={};latest_={};on_screen_={};
+void ClassicRaceHistoryTracker::reset() {
+    look_={};latest_={};on_screen_={};opponent_finish_frame_.reset();
 }
-void ZoomZooRiderLookTracker::observe_update(const ZoomZooState& previous,const ZoomZooState& updated,
-                                             const ClassicContentPack& pack) {
+void ClassicRaceHistoryTracker::observe_update(const ZoomZooState& previous,const ZoomZooState& updated,
+                                               const ClassicContentPack& pack) {
     // R-0036: update N builds its objects with overlays chosen from the look
     // state before its own look step; picture N+1 shows them.
     on_screen_=latest_;
+    if(!previous.race.riders[1].finished && updated.race.riders[1].finished)
+        opponent_finish_frame_=updated.movement.frame;
     if(updated.result_updates || zoom_zoo_update_was_paused(previous,updated))return;
     const auto tables=rider_look_tables(pack);
+    const auto engine=updated.track==ClassicRaceTrack::Dragster?dragster_race_content(pack):zoom_zoo_content(pack);
     latest_.pose=rider_overlay_poses(look_,updated,tables);
-    advance_rider_look(look_,updated,zoom_zoo_content(pack),tables);
+    advance_rider_look(look_,updated,engine,tables);
 }
 std::optional<unsigned> zoom_zoo_palette_cycle_index(std::uint32_t frame) {
     // $82:D382-D496 runs from frame 1382 while $0B92 is set: it loads the
@@ -1053,6 +1071,38 @@ void load_race_palette_phase(std::array<std::uint8_t,512>& cgram,std::span<const
         cgram[destination]=tables[source];cgram[destination+1]=tables[source+1];
     }
 }
+// The frame whose race vblank selections are on screen: the race vblank, and
+// with it the palette routine and the channel-6 setup, runs for the last time
+// on result-loading update 1, so from update 2 the original keeps that update's
+// selection ($420C is never rewritten after it, R-0040).
+std::optional<std::uint32_t> race_vblank_frame(std::uint32_t frame,std::uint16_t loading_updates) {
+    if(loading_updates==0)return frame;
+    if(loading_updates-1U>frame)return std::nullopt;
+    return frame-(loading_updates-1U);
+}
+struct RacePalettePhase {
+    unsigned index;
+    bool colour_zero;
+};
+// $82:D382-D496 first runs on `setup_frame`. Racing frame n draws phase
+// (n-setup)&15 with colour 0; the loading freeze keeps colours 96-111 at the
+// last vblank's phase with a black colour 0, until the result palettes load.
+std::optional<RacePalettePhase> race_palette_phase(std::uint32_t frame,std::uint16_t loading_updates,
+                                                   std::uint32_t setup_frame) {
+    const auto shown=race_vblank_frame(frame,loading_updates);
+    if(!shown || *shown<setup_frame)return std::nullopt;
+    return RacePalettePhase{(*shown-setup_frame)&15U,loading_updates==0};
+}
+void apply_race_palette_phase(std::array<std::uint8_t,512>& cgram,std::span<const std::uint8_t> tables,
+                              std::optional<RacePalettePhase> phase) {
+    if(!phase)return;
+    load_race_palette_phase(cgram,tables,phase->index,phase->colour_zero);
+    if(!phase->colour_zero)cgram[0]=cgram[1]=0;
+}
+// The legacy finish struct's loading count, or zero while it is not loading.
+std::uint16_t legacy_loading_updates(const RaceFinishState& finish) {
+    return finish.phase==RacePhase::ResultLoading?finish.result_loading_updates:std::uint16_t{0};
+}
 }
 void apply_zoom_zoo_palette_cycle(std::array<std::uint8_t,512>& cgram,std::span<const std::uint8_t> tables,
                                   std::uint32_t frame) {
@@ -1064,18 +1114,15 @@ void apply_zoom_zoo_palette_cycle(std::array<std::uint8_t,512>& cgram,std::span<
 void apply_dragster_palette_cycle(std::array<std::uint8_t,512>& cgram,std::span<const std::uint8_t> tables,
                                   const MovementState& state) {
     if(tables.size()!=544)throw std::invalid_argument("DRAGSTER race palette cycle has the wrong size");
-    // $82:D382-D496 first runs at 1334. Original DRAGSTER replays match
-    // (frame-1334)&15 on every racing frame. The routine still runs on loading
-    // update 1 (3454, 3559) and stops from update 2, so colours 96-111 hold
-    // that frame's phase, with a black colour 0, through at least update 75,
-    // until the result palettes load (R-0037).
-    const auto& finish=state.finish;
-    const bool loading=finish.phase==RacePhase::ResultLoading && finish.result_loading_updates;
-    if(loading && finish.result_loading_updates-1U>state.frame)return;
-    const auto phase_frame=loading?state.frame-(finish.result_loading_updates-1U):state.frame;
-    if(phase_frame<1334U)return;
-    load_race_palette_phase(cgram,tables,(phase_frame-1334U)&15U,!loading);
-    if(loading)cgram[0]=cgram[1]=0;
+    // Original DRAGSTER replays match (frame-1334)&15 on every racing frame,
+    // and the phase holds from loading update 1 (3454, 3559) through at least
+    // update 75 (R-0037).
+    apply_race_palette_phase(cgram,tables,race_palette_phase(state.frame,legacy_loading_updates(state.finish),1334U));
+}
+void apply_classic_race_palette_cycle(std::array<std::uint8_t,512>& cgram,std::span<const std::uint8_t> tables,
+                                      const ZoomZooState& state,std::uint32_t setup_frame) {
+    if(tables.size()!=544)throw std::invalid_argument("race palette cycle has the wrong size");
+    apply_race_palette_phase(cgram,tables,race_palette_phase(state.movement.frame,state.result_updates,setup_frame));
 }
 
 // The channel-6 window family: 25 tables of 899 bytes at $15:8000, addressed
@@ -1123,47 +1170,38 @@ std::optional<std::uint32_t> updates_since_winner_finish(const RaceFinishState& 
         return std::nullopt;
     }
     if(finish.outcome==RaceOutcome::PlayerLost) {
-        // The opponent's finish frame is only recoverable from the serialized
-        // state while its 120-update finish animation counter runs (R-0040
-        // records this bound and the cheapest way to lift it).
+        // The opponent's finish frame is only recoverable from the legacy
+        // state while its 120-update finish animation counter runs (R-0040).
         const auto remaining=finish.finish_animation_countdown[1];
         if(remaining==0 || remaining>120U)return std::nullopt;
         return 120U-remaining;
     }
     return std::nullopt;
 }
-} // namespace
-
-std::optional<unsigned> dragster_window_table_index(const MovementState& state) {
-    // The race vblank, and with it the channel-6 setup, runs for the last time
-    // on result-loading update 1, so from update 2 the original keeps that
-    // update's selection. This is the frame whose selection is on screen, as
-    // `apply_dragster_palette_cycle` freezes the palette phase the same way.
-    const auto& loading_finish=state.finish;
-    const bool loading=loading_finish.phase==RacePhase::ResultLoading &&
-                       loading_finish.result_loading_updates!=0;
-    if(loading && loading_finish.result_loading_updates-1U>state.frame)
-        return std::nullopt;
-    const auto frame=loading?state.frame-(loading_finish.result_loading_updates-1U)
-                            :state.frame;
+// The selection on screen for `frame`, shared by both state forms.
+std::optional<unsigned> window_table_index_for(std::uint32_t frame,std::uint16_t loading_updates,
+                                               std::optional<std::uint32_t> since_winner_finish,
+                                               std::uint32_t setup_frame) {
+    const auto shown=race_vblank_frame(frame,loading_updates);
+    if(!shown)return std::nullopt;
     // The winner banner replaces the countdown family; the two never overlap in
     // a race the countdown can hold at the line.
-    if(const auto since=updates_since_winner_finish(state.finish)) {
+    if(since_winner_finish) {
         // The driver's first update is the one after the finish, and the
         // selection it makes is on screen on the following frame.
-        const auto first_driver_frame=frame+1U-*since;
-        if(*since>=2U && *since<=winner_window_frames+1U) {
+        const auto first_driver_frame=*shown+1U-*since_winner_finish;
+        if(*since_winner_finish>=2U && *since_winner_finish<=winner_window_frames+1U) {
             // $0300 alternates every frame ($83:CCED), and the index advances
             // only when it is set, so the step count is the number of odd
             // driver frames from its first through the frame before this one.
-            const auto steps=frame/2U-first_driver_frame/2U;
+            const auto steps=*shown/2U-first_driver_frame/2U;
             return winner_window_first+
                    static_cast<unsigned>(steps%winner_window_cycle);
         }
         return std::nullopt;
     }
-    if(frame<dragster_race_setup_frame)return std::nullopt;
-    const auto elapsed=frame-dragster_race_setup_frame;
+    if(*shown<setup_frame)return std::nullopt;
+    const auto elapsed=*shown-setup_frame;
     if(elapsed>=dragster_window_countdown_start)return std::nullopt;
     const auto countdown=dragster_window_countdown_start-elapsed;
     // $83:E59C dispatches on $11C5 and, inside each digit, on its own
@@ -1176,15 +1214,83 @@ std::optional<unsigned> dragster_window_table_index(const MovementState& state) 
     if(countdown>=101U)return 2U;
     if(countdown>=70U)return dragster_window_transition_index;
     // $83:E728 picks between the two GO tables on the same $0300 parity.
-    return (frame&1U)==0U?3U:4U;
+    return (*shown&1U)==0U?3U:4U;
+}
+} // namespace
+
+std::optional<unsigned> dragster_window_table_index(const MovementState& state) {
+    return window_table_index_for(state.frame,legacy_loading_updates(state.finish),
+                                  updates_since_winner_finish(state.finish),dragster_race_setup_frame);
 }
 
-unsigned zoom_zoo_hud_lap(unsigned laps_remaining) {
-    return std::min(3U,4U-std::min(4U,laps_remaining));
+std::optional<std::uint32_t> classic_opponent_finish_frame(const ZoomZooState& state) {
+    const auto& race=state.race;
+    if(!race.riders[0].finished || !race.riders[1].finished)return std::nullopt;
+    if(race.total_times[0]>=60000U || race.total_times[1]>=60000U)return std::nullopt;
+    const auto shown=race_vblank_frame(state.movement.frame,state.result_updates);
+    if(!shown || race.finish_delay>*shown)return std::nullopt;
+    const auto player_finish=*shown-race.finish_delay;
+    // finish_centiseconds: two per frame plus the frame parity, so
+    // total[0]-total[1] = 2(fa-fb)+(fa&1)-(fb&1); one parity of fb fits.
+    const int difference=static_cast<int>(race.total_times[0])-static_cast<int>(race.total_times[1]);
+    for(const unsigned parity:{0U,1U}) {
+        const int twice_gap=difference-static_cast<int>(player_finish&1U)+static_cast<int>(parity);
+        if(twice_gap%2!=0)continue;
+        const int gap=twice_gap/2;
+        if(gap<0 || static_cast<std::uint32_t>(gap)>player_finish)continue;
+        const auto opponent_finish=player_finish-static_cast<std::uint32_t>(gap);
+        if((opponent_finish&1U)==parity)return opponent_finish;
+    }
+    return std::nullopt;
 }
-ZoomZooHud zoom_zoo_hud(const ZoomZooState& previous_update) {
+
+std::optional<unsigned> classic_window_table_index(const ZoomZooState& state,std::uint32_t setup_frame,
+                                                   std::optional<std::uint32_t> opponent_finish_frame) {
+    const auto& race=state.race;
+    std::optional<std::uint32_t> since;
+    if(race.riders[0].finished && classic_race_player_won(state)) {
+        // The player owns the global finish delay: 0..240, held at 240 once
+        // result loading starts, the last update on which the driver runs.
+        since=race.finish_delay;
+    } else if(race.riders[1].finished) {
+        const auto shown=race_vblank_frame(state.movement.frame,state.result_updates);
+        auto finish=opponent_finish_frame;
+        if(!finish)finish=classic_opponent_finish_frame(state);
+        if(shown && finish && *finish<=*shown)since=*shown-*finish;
+    }
+    return window_table_index_for(state.movement.frame,state.result_updates,since,setup_frame);
+}
+
+RaceFinishState classic_finish_view(const ZoomZooState& race) {
+    RaceFinishState finish=race.movement.finish;
+    for(std::size_t rider=0;rider<2;++rider) {
+        const auto& lap=race.race.riders[rider];
+        finish.rider_finished[rider]=lap.finished!=0;
+        if(!lap.finished)continue;
+        // One lap: the recorded crossing digits and the total are the finish time.
+        finish.finish_time_digits[rider]=lap.time_digits;
+        finish.finish_time_centiseconds[rider]=race.race.total_times[rider];
+    }
+    finish.player_finish_delay=race.race.finish_delay;
+    finish.result_loading_updates=race.result_updates;
+    if(race.race.riders[0].finished)
+        finish.outcome=classic_race_player_won(race)?RaceOutcome::PlayerWon:RaceOutcome::PlayerLost;
+    if(race.result_updates && race.result_updates>=stable_result_updates(race))
+        finish.phase=RacePhase::ResultScreen;
+    else if(race.result_updates)
+        finish.phase=RacePhase::ResultLoading;
+    else if(race.race.riders[0].finished)
+        finish.phase=RacePhase::FinishDelay;
+    return finish;
+}
+
+unsigned classic_hud_lap(unsigned laps_remaining,unsigned laps) {
+    return std::min(laps,laps+1U-std::min(laps+1U,laps_remaining));
+}
+ClassicRaceHud classic_race_hud(const ZoomZooState& previous_update) {
     const auto& race=previous_update.race;
-    ZoomZooHud hud;
+    const auto laps=classic_race_scenario(previous_update.track).laps;
+    ClassicRaceHud hud;
     // At the 10:00 limit ($81:C73E-C75B) the player is finished with laps left.
     // The original then keeps the lap and the held 9:59.9 clock and shows LOSER
     // (stop-timeout original frames 31588-31596).
@@ -1196,21 +1302,61 @@ ZoomZooHud zoom_zoo_hud(const ZoomZooState& previous_update) {
         hud.caption=won?"WINNER":"LOSER";
         return hud;
     }
-    hud.lap=std::to_string(zoom_zoo_hud_lap(race.riders[0].laps_remaining))+"/3";
+    hud.lap=std::to_string(classic_hud_lap(race.riders[0].laps_remaining,laps))+"/"+std::to_string(laps);
     const auto& t=previous_update.movement.timer;
     // A timed-out clock holds 9:59.9; its subframe keeps cycling, so drop it.
     hud.clock=race_time(t.minutes*6000U+t.tens_seconds*1000U+t.seconds*100U+t.tenths*10U+(timed_out?0U:t.subframe*2U));
     const auto countdown=previous_update.movement.countdown;
     if(timed_out)hud.caption="LOSER";
-    else if(countdown>=70)hud.caption="READY";
-    else if(countdown)hud.caption="GO";
+    else if(countdown>=70) {hud.caption="READY";hud.countdown_caption=true;}
+    else if(countdown) {hud.caption="GO";hud.countdown_caption=true;}
     return hud;
 }
-RgbFrame render_zoom_zoo(const ZoomZooState& state,const ClassicContentPack& pack,
-                         const ZoomZooState* previous_update,
-                         const ZoomZooRiderOverlays* overlays) {
+
+ClassicRacePresentationContent classic_race_presentation_content(const ClassicContentPack& pack,ClassicRaceTrack track) {
+    ClassicRacePresentationContent content;
+    content.scenario=classic_race_scenario(track);
+    content.riders=rider_object_content(pack);
+    // One ROM table serves both tracks (R-0037); its accepted entry name
+    // predates DRAGSTER reading it and cannot be renamed.
+    content.race_palette_cycle=pack.entry("presentation.zoom.race-palette-cycle.v1");
+    switch(track) {
+    case ClassicRaceTrack::ZoomZoo:
+        content.track_name="ZOOM ZOO";
+        content.track=pack.entry("zoom.track-data");
+        content.bg1_tiles=pack.entry("zoom.bg1-tiles");
+        content.bg2_tiles=pack.entry("zoom.bg2-tiles");
+        content.bg2_map=pack.entry("zoom.bg2-map");
+        content.palette=pack.entry("zoom.palette");
+        // ZOOM ZOO's per-frame window selection is not recovered, so its
+        // countdown and winner windows stay omitted (no family bound).
+        break;
+    case ClassicRaceTrack::Dragster:
+        content.track_name="DRAGSTER";
+        content.track=pack.entry("physics.track.dragster.data");
+        content.bg1_tiles=pack.entry("presentation.track.dragster.bg1-tiles.v1");
+        content.bg2_tiles=pack.entry("presentation.track.dragster.bg2-tiles.v1");
+        content.bg2_map=pack.entry("presentation.track.dragster.bg2-map.v1");
+        content.palette=pack.entry("presentation.classic.palette.v1");
+        content.window_tables=pack.entry("presentation.effect.classic.window-tables.v1");
+        content.result_assets=pack.entry("presentation.result.classic.font-layout.v1");
+        content.result_base_vram=pack.entry("presentation.result.classic.base-vram.v1");
+        content.result_palette=pack.entry("presentation.result.classic.palette.v1");
+        content.result_palette_tail=pack.entry("presentation.result.classic.palette-tail.v1");
+        break;
+    }
+    content.geometry=track_geometry(content.track);
+    return content;
+}
+
+RgbFrame render_classic_race(const ZoomZooState& state,const ClassicRacePresentationContent& content,
+                             const ZoomZooState* previous_update,const ClassicRaceHistory* history) {
     RgbFrame frame{};
-    if(state.result_updates) {
+    const auto& scenario=content.scenario;
+    const bool recovered_result=!content.result_base_vram.empty();
+    if(state.result_updates && !recovered_result) {
+        // Authored tour result (M4-16): black until the original's first
+        // visible result frame, then the lap graph fades in.
         if(state.result_updates<=108)return frame;
         rect(frame,0,0,256,224,{34,42,48});
         ui_text(frame,70,12,state.race.total_times[0]<state.race.total_times[1]?"WINNER":"RUNNER UP");
@@ -1233,33 +1379,55 @@ RgbFrame render_zoom_zoo(const ZoomZooState& state,const ClassicContentPack& pac
             const int y=178-static_cast<int>((time-minimum)*90U/std::max(1U,maximum-minimum));
             rect(frame,76+int(lap)*55+int(i)*5,y-2,4,4,i?std::array<std::uint8_t,3>{255,190,70}:std::array<std::uint8_t,3>{255,80,90});
         }
-        ui_text(frame,70,190,"LAPS ON ZOOM ZOO");ui_text(frame,49,208,"ENTER TO RACE AGAIN");
+        ui_text(frame,70,190,std::string("LAPS ON ")+std::string(content.track_name));ui_text(frame,49,208,"ENTER TO RACE AGAIN");
         const unsigned brightness=std::min(14U,unsigned(state.result_updates-108U)*2U);
         for(auto& channel:frame.pixels)channel=static_cast<std::uint8_t>(unsigned(channel)*brightness/14U);
         return frame;
     }
-    const auto track=pack.entry("zoom.track-data");
+    if(state.result_updates) {
+        // The original publishes the completed result at end-of-frame 3678. The
+        // accepted gameplay state reaches ResultScreen on the following update,
+        // so presentation consumes the observed loading counter without
+        // altering the gameplay transition or its serialization.
+        const auto finish=classic_finish_view(state);
+        const bool result_visible=finish.phase==RacePhase::ResultScreen ||
+            (finish.phase==RacePhase::ResultLoading && finish.outcome==RaceOutcome::PlayerWon &&
+             finish.result_loading_updates>=225);
+        if(result_visible) {
+            render_result_background(frame,finish,state.movement.timer,
+                                     {content.palette,content.result_assets,content.result_base_vram,
+                                      content.result_palette,content.result_palette_tail});
+            return frame;
+        }
+        // Until then the race picture stays, with the palette phase and window
+        // selection of the last race vblank (R-0037, R-0040).
+    }
+    const auto track=content.track;
     std::array<std::uint8_t,65536> vram{};
-    const auto tiles=pack.entry("zoom.bg1-tiles");
+    // BG1 is 16-by-16 tiles: 128 bytes each, the lower row of 8-by-8 tiles
+    // 512 bytes above the upper. Both tracks' packs carry them in this order.
+    const auto tiles=content.bg1_tiles;
     for(std::size_t tile=0;tile<tiles.size()/128;++tile) {
         const auto destination=0x4000+(tile/8)*1024+(tile%8)*64;
         std::copy_n(tiles.begin()+static_cast<std::ptrdiff_t>(tile*128),64,vram.begin()+static_cast<std::ptrdiff_t>(destination));
         std::copy_n(tiles.begin()+static_cast<std::ptrdiff_t>(tile*128+64),64,vram.begin()+static_cast<std::ptrdiff_t>(destination+512));
     }
-    const auto bg=pack.entry("zoom.bg2-tiles"),map=pack.entry("zoom.bg2-map"),palette=pack.entry("zoom.palette");
-    std::copy(bg.begin(),bg.end(),vram.begin()+0x2000);std::copy(map.begin(),map.end(),vram.begin()+0xe000);
+    std::copy(content.bg2_tiles.begin(),content.bg2_tiles.end(),vram.begin()+0x2000);
+    std::copy(content.bg2_map.begin(),content.bg2_map.end(),vram.begin()+0xe000);
     // NMI $80883F-8849 writes INIDISP from the preceding update's $0FF1,
     // clamping (fade-15) at zero; $83CCC1-CCC9 increments $0FF1 once per race
     // update. The PPU scales each 5-bit channel before output conversion
     // (bsnes lightTable: luma*c+0.5), so brightness applies to CGRAM words, as
     // in the DRAGSTER result fade. Scaling converted pixels made mid-fade
     // frames too bright: green 15 at brightness 8 is 47 in the original, not 64.
-    const auto prior_fade=state.movement.frame<=1376U?0U:std::min(30U,state.movement.frame-1377U);
+    const bool previous_is_prior=previous_update && previous_update->movement.frame<=state.movement.frame;
+    const unsigned prior_fade=std::min(30U,previous_is_prior?unsigned(previous_update->fade_level)
+                                              :(state.fade_level?unsigned(state.fade_level)-1U:0U));
     const auto brightness=prior_fade>15U?prior_fade-15U:0U;
-    // Colours 96-111 and 0 are not DRAGSTER's pose-keyed late-finish palette
-    // here: the race NMI cycles them from ROM tables every frame.
-    auto cgram=build_race_cgram({state.movement,0,0,0,0,0},palette,false);
-    apply_zoom_zoo_palette_cycle(cgram,pack.entry("presentation.zoom.race-palette-cycle.v1"),state.movement.frame);
+    // Colours 96-111 and 0 are cycled by the race NMI from ROM tables every
+    // frame (R-0037); neither track keys them to rider poses here.
+    auto cgram=build_race_cgram(content.palette,false);
+    apply_classic_race_palette_cycle(cgram,content.race_palette_cycle,state,scenario.initialization_frame+6U);
     if(brightness<15U) {
         for(std::size_t at=0;at<cgram.size();at+=2) {
             const auto faded=apply_snes_brightness(static_cast<std::uint16_t>(cgram[at]|(unsigned(cgram[at+1])<<8U)),brightness);
@@ -1280,15 +1448,21 @@ RgbFrame render_zoom_zoo(const ZoomZooState& state,const ClassicContentPack& pac
     // Paused updates leave the camera still while velocity persists, so
     // camera - velocity is the previous camera only when the previous update
     // moved it: use the previous update's camera whenever it is available.
-    const bool previous_race=previous_update && !previous_update->result_updates;
-    const int background_x=previous_race?previous_update->race.camera.x&0x3fff
-        :(camera_x-static_cast<std::int16_t>(state.race.camera.velocity_x))&0x3fff;
-    const int background_y=previous_race?static_cast<std::int16_t>(previous_update->race.camera.y)
+    // DRAGSTER publishes the same relation (original 3453: camera 25266,
+    // BG1 24434, BG2 12217 against origin 832).
+    const auto& geometry=content.geometry;
+    const int background_x=previous_is_prior?previous_update->race.camera.x&geometry.position_mask
+        :(camera_x-static_cast<std::int16_t>(state.race.camera.velocity_x))&geometry.position_mask;
+    const int background_y=previous_is_prior?static_cast<std::int16_t>(previous_update->race.camera.y)
         :static_cast<std::int16_t>(static_cast<std::uint16_t>(camera_y-static_cast<std::int16_t>(state.race.camera.velocity_y)));
     const auto origin_x=static_cast<std::uint16_t>(((unsigned(word(track,3))<<4)-256U)&0xfff0U);
     const auto origin_y=static_cast<std::uint16_t>(((unsigned(word(track,5))<<4)-256U)&0xfff0U);
     const int bg_x=static_cast<std::uint16_t>(background_x-origin_x)>>1U;
     const int bg_y=static_cast<std::uint16_t>(background_y-origin_y)>>1U;
+    // $81:A304-A51B: the playfield is 16,384 coarse cells of 64 units in the
+    // track's column count (256 by 64 for ZOOM ZOO, 1,024 by 16 for DRAGSTER).
+    const int columns=geometry.coarse_columns;
+    const int world_width=columns*64,world_height=(16384/columns)*64;
     // BG1 map entries with bit 13 set are drawn above priority-2 OBJs.
     std::array<bool,256*224> bg1_above_objects{};
     for(int y=0;y<224;++y)for(int x=0;x<256;++x) {
@@ -1296,8 +1470,8 @@ RgbFrame render_zoom_zoo(const ZoomZooState& state,const ClassicContentPack& pac
         pixel(frame,x,y,colour(cgram,background));
         // Screen row 0 is scanline 1, as in background_pixel's vertical +1.
         const int world_x=background_x+x,world_y=background_y+y+1;
-        if(world_x<0 || world_y<0 || world_x>=16384 || world_y>=4096)continue;
-        const auto selector=word(track,15+static_cast<std::size_t>((world_y/64)*256+world_x/64)*2);
+        if(world_x<0 || world_y<0 || world_x>=world_width || world_y>=world_height)continue;
+        const auto selector=word(track,15+static_cast<std::size_t>((world_y/64)*columns+world_x/64)*2);
         const auto descriptor=word(track,0x800f+static_cast<std::size_t>(selector)*32+static_cast<std::size_t>((world_y%64)/16)*8+static_cast<std::size_t>((world_x%64)/16)*2);
         int px=world_x&15,py=world_y&15;
         if(descriptor&0x4000)px=15-px;
@@ -1309,33 +1483,46 @@ RgbFrame render_zoom_zoo(const ZoomZooState& state,const ClassicContentPack& pac
             bg1_above_objects[static_cast<std::size_t>(y)*256+static_cast<std::size_t>(x)]=(descriptor&0x2000)!=0;
         }
     }
+    // R-0040: the countdown and winner windows show colour 0 through colour
+    // math; indices 0-6 compose before the riders, 7-24 after them.
+    const auto window_index=content.window_tables.empty()?std::optional<unsigned>{}
+        :classic_window_table_index(state,scenario.initialization_frame+6U,
+                                    history?history->opponent_finish_frame:std::nullopt);
+    const auto window_colour=colour(cgram,0);
+    if(window_index && *window_index<=6U)
+        render_window_xor(frame,dragster_window_table(content.window_tables,*window_index),window_colour);
     // R-0036: picture N shows the OBJ tiles and OAM the original published in
     // update N-1, like the BG scroll above. Entry 98 (player, tile base 0,
     // palette 3) has priority over entry 99 (opponent, base $88, palette 4);
     // both use OBJ priority 2. Without a previous update the riders are drawn
     // from this state, one update ahead.
     const auto& rider_source=previous_update?*previous_update:state;
-    const auto objects=rider_object_content(pack);
     for(int rider=1;rider>=0;--rider) {
         const auto& source=rider_source.movement.riders[static_cast<std::size_t>(rider)];
         const auto oam=project_rider_oam(source.motion.x,source.motion.y,rider_source.race.camera.x,
-                                         rider_source.race.camera.y,source.pose.reflected);
+                                         rider_source.race.camera.y,source.pose.reflected,geometry);
         if(!oam.visible)continue;
-        const auto overlay=overlays?overlays->pose[static_cast<std::size_t>(rider)]:std::nullopt;
-        const auto pixels=compose_rider_object(objects,source.pose.pose_index,overlay,oam.clip);
+        const auto overlay=history?history->overlays.pose[static_cast<std::size_t>(rider)]:std::nullopt;
+        const auto pixels=compose_rider_object(content.riders,source.pose.pose_index,overlay,oam.clip);
         const unsigned object_palette=128U+(rider?4U:3U)*16U;
         draw_rider_object(pixels,oam,[&](int x,int y,std::uint8_t value) {
             if(!bg1_above_objects[static_cast<std::size_t>(y)*256+static_cast<std::size_t>(x)])
                 pixel(frame,x,y,colour(cgram,static_cast<std::uint8_t>(object_palette+value)));
         });
     }
+    if(window_index && *window_index>=7U)
+        render_window_xor(frame,dragster_window_table(content.window_tables,*window_index),window_colour);
     rect(frame,0,0,256,12,ui({15,30,30}));
-    const auto hud=zoom_zoo_hud(rider_source);
+    const auto hud=classic_race_hud(rider_source);
     const auto centred=[](const std::string& text){return 128-3*static_cast<int>(text.size());};
     ui_text(frame,5,3,hud.lap,ink);
     if(!hud.clock.empty())ui_text(frame,195,3,hud.clock,ink);
-    if(hud.finish_time.empty())ui_text(frame,centred(hud.caption),35,hud.caption,ink);
-    else {
+    // The authored READY/GO stand in for the countdown windows only where those
+    // are omitted.
+    const bool draw_caption=!(hud.countdown_caption && !content.window_tables.empty());
+    if(hud.finish_time.empty()) {
+        if(draw_caption)ui_text(frame,centred(hud.caption),35,hud.caption,ink);
+    } else {
         ui_text(frame,centred(hud.finish_time),35,hud.finish_time,ink);
         ui_text(frame,centred(hud.caption),48,hud.caption,ink);
     }
@@ -1351,6 +1538,24 @@ void draw_race_pause_menu(RgbFrame& frame,std::uint16_t selection,std::array<std
     ui_text(frame,73,101,selection==1?"> RESUME":"  RESUME",ink);
     ui_text(frame,73,115,selection==0xffffU?"> RESTART RACE":"  RESTART RACE",ink);
     ui_text(frame,68,135,"UP DOWN - ENTER",ink);
+}
+
+PresentationContent dragster_presentation_content(const ClassicContentPack& pack) {
+    return {pack.entry("physics.track.dragster.data"),
+            pack.entry("presentation.track.dragster.bg1-tiles.v1"),
+            pack.entry("presentation.track.dragster.bg2-tiles.v1"),
+            pack.entry("presentation.track.dragster.bg2-map.v1"),
+            pack.entry("presentation.classic.palette.v1"),
+            pack.entry("presentation.classic.font.v1"),
+            pack.entry("presentation.rider.mike.race-tiles.v1"),
+            pack.entry("presentation.result.classic.font-layout.v1"),
+            pack.entry("presentation.effect.go-window.v1"),
+            pack.entry("presentation.effect.winner-window.v1"),
+            pack.entry("presentation.result.classic.base-vram.v1"),
+            pack.entry("presentation.result.classic.palette.v1"),
+            pack.entry("presentation.result.classic.palette-tail.v1"),
+            pack.optional_entry("presentation.zoom.race-palette-cycle.v1"),
+            pack.optional_entry("presentation.effect.classic.window-tables.v1")};
 }
 
 } // namespace unirally
