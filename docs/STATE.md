@@ -94,6 +94,35 @@ integrated (acceptance conditional on its final-tip CI, closeout
 beyond its 120-update counter is still unrecovered. See
 [NEXT_SESSION](../tasks/NEXT_SESSION.md).
 
+Current work. [CLASSIC-PRESENTATION-UNIFICATION](../tasks/CLASSIC-PRESENTATION-UNIFICATION.md)
+is in progress on `task/classic-presentation-unification` (pushed, tip
+`b43eae3`, branched from `main` at `ed504fb`): one renderer for both tracks,
+with track content as data. Measurement only so far and no renderer code
+changed, so it can be picked up cold. Four results are recorded in the task
+record, two of which correct claims recorded wrongly earlier in the same task:
+the shared 742-byte race state already reaches presentation and is discarded at
+the call site, so the fade and pause menu are re-added outside the renderer as
+approximations; the pack carries eight track-independent engine tables twice
+(50,828 bytes) under two vocabularies, the neutral `physics.*` one being the
+older; `render_zoom_zoo` names its track inline in five content lookups and the
+result-screen strings; and the frozen DRAGSTER presentation contracts cannot
+drive a state-driven renderer, because they captured the narrowed state and
+record no inputs, so the task's acceptance table is amended in place with the
+reasoning. Order of work: widen the state, select content by track, measure
+against the captures that carry timelines. The recapture of the seven frozen
+frames needs the user's ROM and is not a prerequisite.
+
+[REPO-LOCAL-STATE-CLEANUP](../tasks/REPO-LOCAL-STATE-CLEANUP.md) is registered
+and not started. A first safe pass on 18 September 2026 took the repository from
+151 GB to 141 GB by removing 76 build directories, 1,083 `__pycache__`
+directories and 868 empty scratch directories, and deleted 16 merged branches
+and 2 worktrees with `git branch -d` verifying mergedness. The original captures
+(5.7 GB, 52 files) and the 14 closeouts were verified untouched before and
+after. The remaining ~125 GB needs per-case triage, because the gates read
+original captures from inside other worktrees by absolute path: a worktree that
+looks abandoned can be a live gate input. Moving the originals to one stable
+location and repointing the gates is the fix that makes the rest mechanical.
+
 ## Accepted product and evidence
 
 - Milestones M0–M3 are accepted; `m3` remains the latest milestone tag. The
