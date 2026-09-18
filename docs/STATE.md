@@ -11,8 +11,9 @@ milestone is **not** accepted and no milestone tag is due. No M4-17.
 M4-16 delivers playable native ZOOM ZOO in the desktop app: native
 initialization from the authenticated pack through countdown, a three-lap race,
 the original's 10:00 time limit, finish, result loading, the result screen and
-Race Again, with keyboard and gamepad. Pack `classic.pal.crawler.two-tracks.v7`
-(55 entries) is extracted from the user's ROM and reproduces byte for byte;
+Race Again, with keyboard and gamepad. Pack `classic.pal.crawler.two-tracks.v8`
+(56 entries; v5-v7 are refused) is extracted from the user's ROM and reproduces
+byte for byte;
 serialized state is `URZZ000B` (742 bytes). Native play does not execute the
 original CPU. The work moved from GPT Astra to Claude Opus 5 under
 [D-0004](decisions/D-0004-model-and-usage-budget.md) when those credits ran out,

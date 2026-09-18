@@ -194,3 +194,29 @@ the result screen" difference.
   extend `updates_since_winner_finish`; if it does not, record why and consider
   a state version that stores the winner's finish frame.
 - Remaining dependencies: none.
+
+## Independent review and integration
+
+Fresh Claude Opus 5 reviewer at `788a877`, report
+`tasks/DRAGSTER-WINDOW-EFFECTS-review.md` at `9b54c2a` (pushed).
+**Verdict: approve**, four advisory findings. It wrote its own disassembler and
+confirmed every cited routine, the 899 stride, members 0-24 terminated with
+`$00`, the family hashing to the new pack entry, members 3 and 18 matching the
+R-0015 freezes, the countdown thresholds and parity, the winner drivers' wrap,
+and that **no routine reads a pose**. From its own capture and probe it
+reproduced 1,922 of 1,922 frames, rebuilt the base renderer to score 13 frames
+of its choice (frames the old code left blank now match 100%, including
+2,810/2,810 at 3215 and 4,034/4,034 at 3450; 3452 and 3453 bit-identical), and
+re-ran the presets, historical matrix, accepted contracts, the M4-16 ZOOM ZOO
+primary and three DRAGSTER frozen originals, plus eight mutations of its own.
+
+| Finding | Severity | Disposition |
+| --- | --- | --- |
+| A. R-0040 said the opponent-won gap runs to display frame 3576; both captures end the banner at 3559 | Advisory | Corrected in R-0040. |
+| B. The result-loading justification was correct but incomplete | Advisory | Corrected: `$420C` is never rewritten after 3454, so the original keeps the member chosen on the last race vblank. That is what makes holding it right rather than declared. |
+| C. The 360-frame banner bound is unreachable (deserialize caps `player_finish_delay` at 240) and the test encoded behaviour the ROM does not have for the captured parity | Advisory | Fixed: the test asserts a reachable state, and R-0040 records the bound as defensive. |
+| D. `frame + 1 - since` wraps for hand-made states with tiny frames; defined, bounds-checked, unreachable | Advisory | Recorded in R-0040. |
+
+The reviewer judged the recorded opponent-banner gap correctly scoped and not
+blocking: it is not a regression, the boundary comes from the 742-byte state
+format rather than the recovered rule, and the next experiment is named.
