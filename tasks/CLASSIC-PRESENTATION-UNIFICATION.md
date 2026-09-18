@@ -477,6 +477,14 @@ are pixel-identical to the before-change runner on every scene.
 `rider-pose fallback frames: 0`; DRAGSTER reaches its stable result
 (phase 3, outcome 1, 3357/3358). The user's playtest run had 21 of 21.
 
+**Live play by the user** (18 September 2026, after integration at `b50dd83`,
+report `artifacts/play-dragster.json`): a full DRAGSTER race with the Xbox
+gamepad (A, B, X, Start, R, Left and Right; 94 button presses, 1,708 non-zero
+updates) through the stable result and Race Again, then the countdown of the
+second race: 2,545 presentation frames, `rider-pose fallback frames: 0`. The
+pack was selected by profile and the app reported the supported profile
+before launch. That meets the "DRAGSTER live and headless runs" criterion.
+
 **Opponent-won banner** (`verify_banner.py`, the `lose-a` capture): with the
 tracked history the renderer's member equals the original's `$80:868E` read on
 2,226 of 2,226 frames from 1334 to 3559; without history, the derivation

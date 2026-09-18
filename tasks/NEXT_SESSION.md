@@ -65,7 +65,7 @@ wall clock. No reset, purchase or provider change is authorized.
    [DRAGSTER-CLOCK-LIMIT](DRAGSTER-CLOCK-LIMIT.md) and R-0039.
 5. **Closed: one renderer for both tracks, track content as data.**
    [CLASSIC-PRESENTATION-UNIFICATION](CLASSIC-PRESENTATION-UNIFICATION.md)
-   is reviewed (implementation `f8645d7`, rebased onto `main` as `e59744e`; review `a7f26c4`) and integrated;
+   is reviewed (implementation `f8645d7`, rebased onto `main` as `e59744e`; review `a7f26c4`) and integrated, and the user played a full DRAGSTER race with the gamepad on it with 0 fallback frames (`artifacts/play-dragster.json`);
    acceptance conditional on the final-tip CI in the closeout named in
    `docs/STATE.md`. Read the task record's fifth measurement before trusting
    the fourth: the frozen contract race is the continuous-Right replay and
