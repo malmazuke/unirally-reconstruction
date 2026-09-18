@@ -60,10 +60,10 @@ int main(int argc,char** argv) try {
     if(native_start)state.complete_race=state.sustained=true;
     const auto pack=pack_path.empty()?nullptr:std::make_unique<unirally::ClassicContentPack>(pack_path);
     // A pack binds content through the shared accessors, by track. The loose
-    // content directory remains for the historical M4-12 to M4-15 cases.
+    // content directory remains for the historical M4-12 to M4-15 cases and
+    // is read only without a pack.
     const auto load=[&](const char* filename) {
-        if(pack)return std::vector<std::uint8_t>{};
-        return read_bytes(content/filename);
+        return pack?std::vector<std::uint8_t>{}:read_bytes(content/filename);
     };
     const auto track=load("track-data.bin");
     const auto poses=load("collision-poses.bin");

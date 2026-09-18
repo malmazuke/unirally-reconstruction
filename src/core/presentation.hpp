@@ -118,7 +118,9 @@ std::optional<unsigned> classic_window_table_index(const ZoomZooState& state,std
 // The frame on which the opponent finished, from a state in which both riders
 // have finished: `finish_centiseconds` advances two per frame plus the frame
 // parity, so total[0]-total[1] = 2(fa-fb)+(fa&1)-(fb&1) has one solution.
-// Nothing for a 10:00 time-out (the 60000 sentinel is not a finish time).
+// Nothing before the player finishes (a restored state then shows no
+// opponent-won banner; the live tracker does) and nothing for a 10:00 time-out
+// (the 60000 sentinel is not a finish time).
 std::optional<std::uint32_t> classic_opponent_finish_frame(const ZoomZooState& state);
 // The legacy finish and result phases (RaceFinishState) derived from the shared
 // race state, for the recovered mode-0 result screen (R-0012, R-0019).

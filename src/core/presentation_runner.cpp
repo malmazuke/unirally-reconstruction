@@ -60,22 +60,7 @@ int main(int argc, char **argv) try {
         "presentation runner requires --content-pack, --state and --out");
   unirally::ClassicContentPack content(pack);
   const auto state = unirally::deserialize_movement_state(read(state_path));
-  const unirally::PresentationContent assets{
-      content.entry("physics.track.dragster.data"),
-      content.entry("presentation.track.dragster.bg1-tiles.v1"),
-      content.entry("presentation.track.dragster.bg2-tiles.v1"),
-      content.entry("presentation.track.dragster.bg2-map.v1"),
-      content.entry("presentation.classic.palette.v1"),
-      content.entry("presentation.classic.font.v1"),
-      content.entry("presentation.rider.mike.race-tiles.v1"),
-      content.entry("presentation.result.classic.font-layout.v1"),
-      content.entry("presentation.effect.go-window.v1"),
-      content.entry("presentation.effect.winner-window.v1"),
-      content.entry("presentation.result.classic.base-vram.v1"),
-      content.entry("presentation.result.classic.palette.v1"),
-      content.entry("presentation.result.classic.palette-tail.v1"),
-      content.optional_entry("presentation.zoom.race-palette-cycle.v1"),
-      content.optional_entry("presentation.effect.classic.window-tables.v1")};
+  const auto assets = unirally::dragster_presentation_content(content);
   const auto frame = unirally::render_dragster_headless(
       {state, camera, sx, sy, bg2x, bg2y},
       assets);
