@@ -61,14 +61,15 @@ int main(int argc,char** argv) try {
         if(!std::getline(input,line))throw std::invalid_argument("timeline is empty");
         auto previous=parse_timeline_row(line,frame);
         const auto setup=unirally::classic_race_scenario(previous.track).initialization_frame+6U;
+        const auto transition=unirally::classic_race_presentation_content(pack,previous.track).window_transition_member;
         // Three columns after the frame: the member the tracker published for
         // the picture (as the app draws), the frame-based selection given the
         // tracked finish frame, and the frame-based selection alone.
         const auto print=[&](const unirally::ZoomZooState& state) {
             const auto on_screen=history.on_screen();
             const auto published=on_screen.window_published?on_screen.window_table:std::nullopt;
-            const auto tracked=unirally::classic_window_table_index(state,setup,on_screen.opponent_finish_frame);
-            const auto alone=unirally::classic_window_table_index(state,setup,std::nullopt);
+            const auto tracked=unirally::classic_window_table_index(state,setup,on_screen.opponent_finish_frame,transition);
+            const auto alone=unirally::classic_window_table_index(state,setup,std::nullopt,transition);
             const auto show=[](std::optional<unsigned> v){return v?std::to_string(*v):std::string("-");};
             std::cout<<state.movement.frame<<' '<<show(published)<<' '<<show(tracked)<<' '<<show(alone)<<'\n';
         };

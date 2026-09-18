@@ -247,11 +247,23 @@ void overlay_selection() {
 }
 
 void pause_updates() {
-  ZoomZooState racing, paused;
-  paused.pause.selection = 1;
+  // The engine's suspended-update clock advances on every diverted update:
+  // opening the menu, holding it open, resuming, and holding Start after the
+  // resume with the selection already zero (ZOOM ZOO pause-countdown original).
+  ZoomZooState racing, opened, held, resumed, start_held;
+  opened.pause.selection = 1;
+  opened.pause.suspended_updates = 1;
+  held = opened;
+  held.pause.suspended_updates = 2;
+  resumed.pause.suspended_updates = 3;
+  start_held.pause.suspended_updates = 4;
+  start_held.pause.released = 1;
   require(!zoom_zoo_update_was_paused(racing, racing), "racing update");
-  require(zoom_zoo_update_was_paused(racing, paused) && zoom_zoo_update_was_paused(paused, racing),
-          "entering and leaving the pause menu divert the update");
+  require(zoom_zoo_update_was_paused(racing, opened) && zoom_zoo_update_was_paused(opened, held) &&
+              zoom_zoo_update_was_paused(held, resumed),
+          "entering, holding and leaving the pause menu divert the update");
+  require(zoom_zoo_update_was_paused(resumed, start_held), "Start still held after the resume diverts the update");
+  require(!zoom_zoo_update_was_paused(start_held, start_held), "the first update after Start is released is not diverted");
 }
 
 } // namespace

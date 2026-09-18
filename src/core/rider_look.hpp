@@ -66,7 +66,9 @@ void advance_rider_look(RiderLookState &look, const ZoomZooState &updated,
                         const RiderLookTables &tables);
 
 // True when the update from `previous` to `updated` was diverted by the pause
-// menu, which does not run the look or overlay steps.
+// menu, which does not run the look, overlay or window-driver steps: the
+// engine's suspended-update clock advanced. That covers updates after the
+// resume on which Start is still held, where the selection is already zero.
 bool zoom_zoo_update_was_paused(const ZoomZooState &previous,
                                 const ZoomZooState &updated);
 

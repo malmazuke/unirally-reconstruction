@@ -117,7 +117,8 @@ std::span<const std::uint8_t> dragster_window_table(
 // two finish times by `classic_opponent_finish_frame`. Exact when no pause
 // diverted a race update since the first finish; `ClassicWindowPointer` is.
 std::optional<unsigned> classic_window_table_index(const ZoomZooState& state,std::uint32_t setup_frame,
-                                                   std::optional<std::uint32_t> opponent_finish_frame);
+                                                   std::optional<std::uint32_t> opponent_finish_frame,
+                                                   unsigned transition_member);
 // The frame on which the opponent finished, from a state in which both riders
 // have finished: `finish_centiseconds` advances two per frame plus the frame
 // parity, so total[0]-total[1] = 2(fa-fb)+(fa&1)-(fb&1) has one solution.
@@ -170,12 +171,19 @@ struct ClassicRaceHistory {
   bool window_published{};
   std::optional<unsigned> window_table{};
 };
+// The countdown's transition member for a track: 5 + `$1229`, which
+// $83:CC05-CC08 latches at race initialization from the player's reflection
+// word `$0BA7`, itself set from the track header (`classic_race_start`). It
+// stays fixed for the race however the player turns. Member 6 (DRAGSTER,
+// reflected start) and member 5 (ZOOM ZOO) are different shapes, not mirrors.
+unsigned classic_window_transition_member(std::span<const std::uint8_t> decoded_track);
 // The countdown driver's selection on one race update ($83:E59C, R-0040),
 // from the countdown word `$11C5` as the update read it (before its own
-// decrement) and the update's `$0300` parity, which is the frame parity: the
-// clock ticks through a pause, the drivers do not run through one. Nothing
-// once the word is zero.
-std::optional<unsigned> classic_countdown_window(std::uint16_t countdown_before,bool parity_set);
+// decrement), the update's `$0300` parity, which is the frame parity (the
+// clock ticks through a pause, the drivers do not run through one), and the
+// track's transition member above. Nothing once the word is zero.
+std::optional<unsigned> classic_countdown_window(std::uint16_t countdown_before,bool parity_set,
+                                                 unsigned transition_member);
 // The channel-6 window pointer `$11FD` as the original keeps it (R-0040,
 // DRAGSTER-WINDOW-PAUSE), followed update by update from the shared race
 // state alone. Each rider's finish arms that rider's banner driver
@@ -191,8 +199,9 @@ public:
   // Reset it whenever the race state is replaced (a restart); one instance
   // follows one race from its initialization.
   void reset();
-  // Call once for every simulation update, with the state before and after it.
-  void observe_update(const ZoomZooState& previous,const ZoomZooState& updated);
+  // Call once for every simulation update, with the state before and after it
+  // and the track's countdown transition member.
+  void observe_update(const ZoomZooState& previous,const ZoomZooState& updated,unsigned transition_member);
   // The member the vblank published for the picture of the latest observed
   // state: nothing while the channel is disabled.
   std::optional<unsigned> published() const {return published_;}
@@ -232,10 +241,16 @@ struct ClassicRacePresentationContent {
   std::span<const std::uint8_t> track, bg1_tiles, bg2_tiles, bg2_map, palette;
   // Race NMI palette tables ($80:82AB), one ROM table for both tracks.
   std::span<const std::uint8_t> race_palette_cycle;
-  // Channel-6 window HDMA family (R-0040). Empty when the track's per-frame
-  // selection is not recovered or the pack does not carry the family; the
-  // countdown and winner windows are then omitted.
+  // Channel-6 window HDMA family (R-0040), one ROM family for both tracks:
+  // the same drivers select the countdown digits, GO and the winner banner
+  // on ZOOM ZOO as on DRAGSTER (ZOOM-ZOO-WINDOW-EFFECTS). Empty only when the
+  // pack does not carry the family; the windows are then omitted.
   std::span<const std::uint8_t> window_tables;
+  // The countdown's transition member, 5 + `$1229`, which race initialization
+  // latches from the player's start reflection ($83:CC05-CC08): 6 on
+  // DRAGSTER, 5 on ZOOM ZOO. Derived from the track header like the engine's
+  // start state (`classic_window_transition_member`).
+  unsigned window_transition_member{};
   RiderObjectContent riders;
   // Recovered mode-0 result screen (R-0012, R-0019). Empty spans for a track
   // whose result is the authored tour screen.

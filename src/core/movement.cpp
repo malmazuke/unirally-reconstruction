@@ -1514,6 +1514,12 @@ std::uint16_t race_adjustment_limit(const ClassicRaceScenario& scenario) {
     return static_cast<std::uint16_t>(scenario.tour_race?0x48U:0x60U);
 }
 
+bool classic_race_start_reflected(std::span<const std::uint8_t> decoded_track,unsigned rider) {
+    if(rider>1U)throw std::invalid_argument("classic races have two riders");
+    if(decoded_track.size()<11)throw std::invalid_argument("ZOOM ZOO track header missing");
+    return (content_word(decoded_track,5+4*rider)&1U)==0;
+}
+
 TrackGeometry track_geometry(std::span<const std::uint8_t> decoded_track) {
     if(decoded_track.size()<14)throw std::invalid_argument("track header lacks its playfield shape");
     // $81:A304-A31C: byte 0 selects $81:A4C1 (1,024 x 16), 0x40 selects
@@ -1551,7 +1557,7 @@ ZoomZooState classic_race_start(const ZoomZooContent& content,const ClassicRaceS
         const auto y=content_word(track,5+4*i);
         rider.motion.x=static_cast<std::uint16_t>(content_word(track,3+4*i)<<4);
         rider.motion.y=static_cast<std::uint16_t>(y<<4);
-        rider.pose.reflected=(y&1U)==0;
+        rider.pose.reflected=classic_race_start_reflected(track,i);
         state.reflection[i].base_velocity_cap=448;
         state.race.riders[i].laps_remaining=static_cast<std::uint16_t>(scenario.laps+1U); // Plus the initial line crossing.
         state.race.lap_times[i].fill(60000);

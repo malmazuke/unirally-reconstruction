@@ -292,7 +292,12 @@ void advance_rider_look(RiderLookState &look, const ZoomZooState &updated,
 
 bool zoom_zoo_update_was_paused(const ZoomZooState &previous,
                                 const ZoomZooState &updated) {
-  return previous.pause.selection != 0 || updated.pause.selection != 0;
+  // The engine counts every update the menu diverts ($83:CD05-CD35): the one
+  // that opens it, those with it open, the one that resumes, and any after
+  // that on which Start is still held (the menu selection is already zero
+  // there; ZOOM ZOO pause-countdown original: Start held 1460-1462 after the
+  // resume on 1460, and the channel-6 window stays off through frame 1463).
+  return updated.pause.suspended_updates != previous.pause.suspended_updates;
 }
 
 } // namespace unirally

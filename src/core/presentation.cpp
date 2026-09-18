@@ -1049,7 +1049,9 @@ static constexpr unsigned window_table_stride=899, window_table_body=898,
 static constexpr std::uint32_t dragster_race_setup_frame=1334;
 static constexpr unsigned dragster_window_countdown_start=270;
 // $83:E759/E611/E663/E6C5 index 5 + $1229. $83:CC08 loads $1229 from $0BA7,
-// which is 1 in every captured DRAGSTER race, so the transitions draw index 6.
+// the player's start reflection, which is 1 on DRAGSTER, so the legacy v1
+// path's transitions draw index 6 (`classic_window_transition_member` derives
+// it from the track for the shared renderer: 5 on ZOOM ZOO).
 static constexpr unsigned dragster_window_transition_index=6;
 // $83:EA19-$83:EA5B and its twin, one driver per rider ($0F03/$0F07 and
 // $0F05/$0F09): members 7..24, the index stepping on every driver update
@@ -1069,7 +1071,8 @@ void ClassicWindowPointer::reset() {
     drivers_={};order_={};pending_={};ordered_=pending_count_=0;
     chosen_.reset();published_.reset();observed_=false;
 }
-void ClassicWindowPointer::observe_update(const ZoomZooState& previous,const ZoomZooState& updated) {
+void ClassicWindowPointer::observe_update(const ZoomZooState& previous,const ZoomZooState& updated,
+                                          unsigned transition_member) {
     // R-0040: the vblank setup of frame N publishes the selection the drivers
     // made in update N-1; the race vblank runs from initialization + 6 and
     // for the last time on result-loading update 1.
@@ -1080,7 +1083,9 @@ void ClassicWindowPointer::observe_update(const ZoomZooState& previous,const Zoo
     // The pause menu disables channel 6 for every update it diverts, from the
     // update that opens it through the update that resumes (countdown-pause
     // original: no window on 1401-1502 for a pause opened on 1400 and resumed
-    // on 1501); the drivers neither run nor age through it.
+    // on 1501) and any later update on which Start is still held (ZOOM ZOO
+    // pause-countdown original: held 1460-1462, no window through 1463); the
+    // drivers neither run nor age through it.
     if(zoom_zoo_update_was_paused(previous,updated)) {chosen_.reset();return;}
     if(updated.result_updates>1U)return;
     // Drivers armed by the previous update's finish run from this update.
@@ -1107,8 +1112,15 @@ void ClassicWindowPointer::observe_update(const ZoomZooState& previous,const Zoo
         if(parity_set)driver.index=driver.index==0U?8U:driver.index==24U?7U:driver.index+1U;
         request=driver.index==0U?winner_window_first:driver.index;
     }
-    chosen_=request?request:classic_countdown_window(previous.movement.countdown,parity_set);
+    chosen_=request?request:classic_countdown_window(previous.movement.countdown,parity_set,transition_member);
 }
+
+namespace {
+// The decoded track a race of either track runs on: the engine's own entry.
+std::span<const std::uint8_t> classic_track_data(const ClassicContentPack& pack,ClassicRaceTrack track) {
+    return pack.entry(track==ClassicRaceTrack::Dragster?"physics.track.dragster.data":"zoom.track-data");
+}
+} // namespace
 
 void ClassicRaceHistoryTracker::reset() {
     look_={};latest_={};on_screen_={};opponent_finish_frame_.reset();window_.reset();
@@ -1120,7 +1132,8 @@ void ClassicRaceHistoryTracker::observe_update(const ZoomZooState& previous,cons
     on_screen_=latest_;
     if(!previous.race.riders[1].finished && updated.race.riders[1].finished)
         opponent_finish_frame_=updated.movement.frame;
-    window_.observe_update(previous,updated);
+    window_.observe_update(previous,updated,
+                           classic_window_transition_member(classic_track_data(pack,updated.track)));
     if(updated.result_updates || zoom_zoo_update_was_paused(previous,updated))return;
     const auto tables=rider_look_tables(pack);
     const auto engine=updated.track==ClassicRaceTrack::Dragster?dragster_race_content(pack):zoom_zoo_content(pack);
@@ -1243,7 +1256,7 @@ std::uint32_t odd_frames(std::uint32_t from,std::uint32_t to) {
 std::optional<unsigned> window_table_index_for(std::uint32_t frame,std::uint16_t loading_updates,
                                                std::optional<std::uint32_t> first_finish,
                                                std::optional<std::uint32_t> latest_finish,
-                                               std::uint32_t setup_frame) {
+                                               std::uint32_t setup_frame,unsigned transition_member) {
     const auto shown=race_vblank_frame(frame,loading_updates);
     if(!shown)return std::nullopt;
     // The winner banner replaces the countdown family; the two never overlap in
@@ -1271,22 +1284,33 @@ std::optional<unsigned> window_table_index_for(std::uint32_t frame,std::uint16_t
     if(elapsed>=dragster_window_countdown_start)return std::nullopt;
     // The driver of frame shown - 1 read 270 - elapsed and its own parity.
     return classic_countdown_window(static_cast<std::uint16_t>(dragster_window_countdown_start-elapsed),
-                                    ((*shown-1U)&1U)!=0U);
+                                    ((*shown-1U)&1U)!=0U,transition_member);
 }
 } // namespace
 
-std::optional<unsigned> classic_countdown_window(std::uint16_t countdown,bool parity_set) {
+unsigned classic_window_transition_member(std::span<const std::uint8_t> decoded_track) {
+    // $83:CC05-CC08 (the race setup that also fixes `$1281`, R-0038) stores
+    // the player's reflection word `$0BA7` in `$1229`; the transition sites
+    // ($83:E611, E663, E6C5, E763) select member 5 + `$1229`. At that moment
+    // `$0BA7` is the start reflection the track header sets, so the member is
+    // 6 on DRAGSTER and 5 on ZOOM ZOO (both tracks' captures; the ZOOM ZOO
+    // originals show `$1229` = 0 throughout with member 5 on 1382-1402,
+    // 1432-1462, 1492-1522 and 1552-1582).
+    return 5U+(classic_race_start_reflected(decoded_track,0)?1U:0U);
+}
+
+std::optional<unsigned> classic_countdown_window(std::uint16_t countdown,bool parity_set,unsigned transition_member) {
     // $83:E59C dispatches on $11C5 as the update read it, before its own
     // decrement, and inside each digit on the digit's own threshold: above it
     // the transition table, below it the digit's table.
     if(countdown==0U)return std::nullopt;
-    if(countdown>=250U)return dragster_window_transition_index;
+    if(countdown>=250U)return transition_member;
     if(countdown>=221U)return 0U;
-    if(countdown>=190U)return dragster_window_transition_index;
+    if(countdown>=190U)return transition_member;
     if(countdown>=161U)return 1U;
-    if(countdown>=130U)return dragster_window_transition_index;
+    if(countdown>=130U)return transition_member;
     if(countdown>=101U)return 2U;
-    if(countdown>=70U)return dragster_window_transition_index;
+    if(countdown>=70U)return transition_member;
     // $83:E728 picks between the two GO tables on the $0300 parity: an odd
     // driver update's choice is member 3, on screen on the even frame after it.
     return parity_set?3U:4U;
@@ -1297,7 +1321,8 @@ std::optional<unsigned> dragster_window_table_index(const MovementState& state) 
     std::optional<std::uint32_t> finish;
     if(const auto since=updates_since_winner_finish(state.finish))
         if(const auto shown=race_vblank_frame(state.frame,loading))finish=*shown-*since;
-    return window_table_index_for(state.frame,loading,finish,finish,dragster_race_setup_frame);
+    return window_table_index_for(state.frame,loading,finish,finish,dragster_race_setup_frame,
+                                  dragster_window_transition_index);
 }
 
 std::optional<std::uint32_t> classic_opponent_finish_frame(const ZoomZooState& state) {
@@ -1334,7 +1359,8 @@ std::optional<std::uint32_t> classic_opponent_finish_frame(const ZoomZooState& s
 }
 
 std::optional<unsigned> classic_window_table_index(const ZoomZooState& state,std::uint32_t setup_frame,
-                                                   std::optional<std::uint32_t> opponent_finish_frame) {
+                                                   std::optional<std::uint32_t> opponent_finish_frame,
+                                                   unsigned transition_member) {
     const auto& race=state.race;
     // The player's finish frame from its delay (0..240, held at 240 from the
     // update before result loading); the opponent's from the history or, once
@@ -1353,7 +1379,7 @@ std::optional<unsigned> classic_window_table_index(const ZoomZooState& state,std
         first=first?std::min(*first,*finish):*finish;
         latest=latest?std::max(*latest,*finish):*finish;
     }
-    return window_table_index_for(state.movement.frame,state.result_updates,first,latest,setup_frame);
+    return window_table_index_for(state.movement.frame,state.result_updates,first,latest,setup_frame,transition_member);
 }
 
 unsigned classic_race_prior_fade(const ZoomZooState& state,const ZoomZooState* previous_update,
@@ -1427,25 +1453,25 @@ ClassicRacePresentationContent classic_race_presentation_content(const ClassicCo
     // One ROM table serves both tracks (R-0037); its accepted entry name
     // predates DRAGSTER reading it and cannot be renamed.
     content.race_palette_cycle=pack.entry("presentation.zoom.race-palette-cycle.v1");
+    // One ROM window family serves both tracks too (R-0040; ZOOM ZOO's
+    // selection measured in ZOOM-ZOO-WINDOW-EFFECTS).
+    content.window_tables=pack.entry("presentation.effect.classic.window-tables.v1");
+    content.track=classic_track_data(pack,track);
+    content.window_transition_member=classic_window_transition_member(content.track);
     switch(track) {
     case ClassicRaceTrack::ZoomZoo:
         content.track_name="ZOOM ZOO";
-        content.track=pack.entry("zoom.track-data");
         content.bg1_tiles=pack.entry("zoom.bg1-tiles");
         content.bg2_tiles=pack.entry("zoom.bg2-tiles");
         content.bg2_map=pack.entry("zoom.bg2-map");
         content.palette=pack.entry("zoom.palette");
-        // ZOOM ZOO's per-frame window selection is not recovered, so its
-        // countdown and winner windows stay omitted (no family bound).
         break;
     case ClassicRaceTrack::Dragster:
         content.track_name="DRAGSTER";
-        content.track=pack.entry("physics.track.dragster.data");
         content.bg1_tiles=pack.entry("presentation.track.dragster.bg1-tiles.v1");
         content.bg2_tiles=pack.entry("presentation.track.dragster.bg2-tiles.v1");
         content.bg2_map=pack.entry("presentation.track.dragster.bg2-map.v1");
         content.palette=pack.entry("presentation.classic.palette.v1");
-        content.window_tables=pack.entry("presentation.effect.classic.window-tables.v1");
         content.result_assets=pack.entry("presentation.result.classic.font-layout.v1");
         content.result_base_vram=pack.entry("presentation.result.classic.base-vram.v1");
         content.result_palette=pack.entry("presentation.result.classic.palette.v1");
@@ -1597,7 +1623,8 @@ RgbFrame render_classic_race(const ZoomZooState& state,const ClassicRacePresenta
     const auto window_index=content.window_tables.empty()?std::optional<unsigned>{}
         :history && history->window_published?history->window_table
         :classic_window_table_index(state,scenario.initialization_frame+6U,
-                                    history?history->opponent_finish_frame:std::nullopt);
+                                    history?history->opponent_finish_frame:std::nullopt,
+                                    content.window_transition_member);
     const auto window_colour=colour(cgram,0);
     if(window_index && *window_index<=6U)
         render_window_xor(frame,dragster_window_table(content.window_tables,*window_index),window_colour);

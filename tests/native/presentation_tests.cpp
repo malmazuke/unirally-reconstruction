@@ -686,6 +686,9 @@ int main() {
     race.native_initialization = race.complete_race = race.sustained = true;
     const auto setup = unirally::classic_race_scenario(ClassicRaceTrack::Dragster).initialization_frame + 6U;
     require(setup == 1334U);
+    // DRAGSTER's countdown transition member: 5 + $1229, the player's start
+    // reflection latched at initialization (ZOOM-ZOO-WINDOW-EFFECTS).
+    const unsigned transition = 6U;
     std::vector<std::uint8_t> phase_tables(544);
     for (std::size_t table = 0; table < 17; ++table)
       for (std::size_t index = 0; index < 16; ++index) {
@@ -726,7 +729,7 @@ int main() {
       shared_state.movement.frame = frame;
       unirally::MovementState legacy_movement{};
       legacy_movement.frame = frame;
-      require(unirally::classic_window_table_index(shared_state, setup, std::nullopt) ==
+      require(unirally::classic_window_table_index(shared_state, setup, std::nullopt, transition) ==
               unirally::dragster_window_table_index(legacy_movement));
     }
     // Winner banner from the player's finish: finish_delay counts as the
@@ -743,7 +746,7 @@ int main() {
       legacy_movement.finish.phase = RacePhase::FinishDelay;
       legacy_movement.finish.outcome = unirally::RaceOutcome::PlayerWon;
       legacy_movement.finish.player_finish_delay = static_cast<std::uint16_t>(since);
-      require(unirally::classic_window_table_index(shared_state, setup, std::nullopt) ==
+      require(unirally::classic_window_table_index(shared_state, setup, std::nullopt, transition) ==
               unirally::dragster_window_table_index(legacy_movement));
       if (since == 240U) {
         for (const std::uint16_t loading : {std::uint16_t{1}, std::uint16_t{2}, std::uint16_t{75}}) {
@@ -752,11 +755,11 @@ int main() {
           legacy_movement.frame = shared_state.movement.frame;
           legacy_movement.finish.phase = RacePhase::ResultLoading;
           legacy_movement.finish.result_loading_updates = loading;
-          const auto index = unirally::classic_window_table_index(shared_state, setup, std::nullopt);
+          const auto index = unirally::classic_window_table_index(shared_state, setup, std::nullopt, transition);
           require(index == unirally::dragster_window_table_index(legacy_movement));
           require(index == unirally::classic_window_table_index(
                                [&] { auto s = shared_state; s.movement.frame = 3454; s.result_updates = 1; return s; }(),
-                               setup, std::nullopt));
+                               setup, std::nullopt, transition));
         }
       }
     }
@@ -770,8 +773,8 @@ int main() {
       shared_state.race.total_times = {60000, 3363};
       shared_state.movement.frame = 3400;
       require(!unirally::classic_opponent_finish_frame(shared_state));
-      require(!unirally::classic_window_table_index(shared_state, setup, std::nullopt));
-      const auto tracked = unirally::classic_window_table_index(shared_state, setup, 3325U);
+      require(!unirally::classic_window_table_index(shared_state, setup, std::nullopt, transition));
+      const auto tracked = unirally::classic_window_table_index(shared_state, setup, 3325U, transition);
       unirally::MovementState legacy_movement{};
       legacy_movement.frame = 3400;
       legacy_movement.finish.outcome = unirally::RaceOutcome::PlayerLost;
@@ -779,7 +782,7 @@ int main() {
       require(tracked && tracked == unirally::dragster_window_table_index(legacy_movement));
       // Beyond the legacy 120-update counter the history still selects.
       shared_state.movement.frame = 3600;
-      require(unirally::classic_window_table_index(shared_state, setup, 3325U).has_value());
+      require(unirally::classic_window_table_index(shared_state, setup, 3325U, transition).has_value());
       shared_state.race.riders[0].finished = 1;
       shared_state.race.total_times = {5296, 3363};
       shared_state.movement.frame = 4300;
@@ -787,10 +790,10 @@ int main() {
       require(unirally::classic_opponent_finish_frame(shared_state) == 3325U);
       // 975 frames after the opponent's finish its banner has run out, and the
       // player's own finish 8 frames ago has just restarted it.
-      require(unirally::classic_window_table_index(shared_state, setup, std::nullopt).has_value());
+      require(unirally::classic_window_table_index(shared_state, setup, std::nullopt, transition).has_value());
       shared_state.movement.frame = 4293;
       shared_state.race.finish_delay = 1;
-      require(!unirally::classic_window_table_index(shared_state, setup, std::nullopt));  // the finish update selects nothing
+      require(!unirally::classic_window_table_index(shared_state, setup, std::nullopt, transition));  // the finish update selects nothing
       // random-1 original: opponent 3214, expired at 3576; player 3636 restarts
       // it from the phase it stopped at: member 8 at 3638, 9 at 3640.
       auto restarted = race;
@@ -799,8 +802,8 @@ int main() {
       for (const auto &[frame, member] : {std::pair{3638U, 8U}, std::pair{3640U, 9U}, std::pair{3876U, 19U}}) {
         restarted.movement.frame = frame;
         restarted.race.finish_delay = static_cast<std::uint16_t>(frame - 3636U);
-        require(unirally::classic_window_table_index(restarted, setup, std::nullopt) == member);
-        require(unirally::classic_window_table_index(restarted, setup, 3214U) == member);
+        require(unirally::classic_window_table_index(restarted, setup, std::nullopt, transition) == member);
+        require(unirally::classic_window_table_index(restarted, setup, 3214U, transition) == member);
       }
       // The life is 180 steps: gone on the frame after the 181st odd driver
       // update (random-1: 3576 for the finish at 3214; reversal: 3688 for 3325).
@@ -808,17 +811,17 @@ int main() {
       expired.race.riders[1].finished = 1;
       expired.race.total_times = {60000, 3358};
       expired.movement.frame = 3575;
-      require(unirally::classic_window_table_index(expired, setup, 3214U) == 7U);
+      require(unirally::classic_window_table_index(expired, setup, 3214U, transition) == 7U);
       expired.movement.frame = 3576;
-      require(!unirally::classic_window_table_index(expired, setup, 3214U));
+      require(!unirally::classic_window_table_index(expired, setup, 3214U, transition));
       expired.movement.frame = 3687;
-      require(unirally::classic_window_table_index(expired, setup, 3325U) == 7U);
+      require(unirally::classic_window_table_index(expired, setup, 3325U, transition) == 7U);
       expired.movement.frame = 3688;
-      require(!unirally::classic_window_table_index(expired, setup, 3325U));
+      require(!unirally::classic_window_table_index(expired, setup, 3325U, transition));
       expired.movement.frame = 3327;
-      require(unirally::classic_window_table_index(expired, setup, 3325U) == 7U);  // even first driver update: no step
+      require(unirally::classic_window_table_index(expired, setup, 3325U, transition) == 7U);  // even first driver update: no step
       expired.movement.frame = 3328;
-      require(unirally::classic_window_table_index(expired, setup, 3325U) == 8U);
+      require(unirally::classic_window_table_index(expired, setup, 3325U, transition) == 8U);
       // primary-a: player 3211, opponent 3214 while the banner is alive: no gap
       // at the second finish (member 8 on 3215), the phase from the first.
       auto both = race;
@@ -827,7 +830,7 @@ int main() {
       for (const auto &[frame, member] : {std::pair{3213U, 7U}, std::pair{3214U, 8U}, std::pair{3215U, 8U}, std::pair{3216U, 9U}}) {
         both.movement.frame = frame;
         both.race.finish_delay = static_cast<std::uint16_t>(frame - 3211U);
-        require(unirally::classic_window_table_index(both, setup, std::nullopt) == member);
+        require(unirally::classic_window_table_index(both, setup, std::nullopt, transition) == member);
       }
       auto random_one = race;
       random_one.race.riders[0].finished = random_one.race.riders[1].finished = 1;
@@ -844,9 +847,9 @@ int main() {
       late.movement.frame = 3430;
       late.race.finish_delay = 5;
       require(unirally::classic_opponent_finish_frame(late) == 3325U);
-      require(unirally::classic_window_table_index(late, setup, std::nullopt) ==
-              unirally::classic_window_table_index(late, setup, 3325U));
-      require(unirally::classic_window_table_index(late, setup, std::nullopt).has_value());
+      require(unirally::classic_window_table_index(late, setup, std::nullopt, transition) ==
+              unirally::classic_window_table_index(late, setup, 3325U, transition));
+      require(unirally::classic_window_table_index(late, setup, std::nullopt, transition).has_value());
       // Through result loading the delay holds at 240 from the frame before
       // loading starts (lose-a original: finishes 3214 and 3318, loading 3559).
       auto loading = race;
@@ -855,13 +858,13 @@ int main() {
       loading.race.finish_delay = 240;
       loading.movement.frame = 3558;
       require(unirally::classic_opponent_finish_frame(loading) == 3214U);
-      const auto before_loading = unirally::classic_window_table_index(loading, setup, std::nullopt);
+      const auto before_loading = unirally::classic_window_table_index(loading, setup, std::nullopt, transition);
       for (const std::uint16_t updates : {std::uint16_t{1}, std::uint16_t{2}, std::uint16_t{40}}) {
         loading.movement.frame = 3558 + updates;
         loading.result_updates = updates;
         require(unirally::classic_opponent_finish_frame(loading) == 3214U);
-        require(unirally::classic_window_table_index(loading, setup, std::nullopt) ==
-                unirally::classic_window_table_index(loading, setup, 3214U));
+        require(unirally::classic_window_table_index(loading, setup, std::nullopt, transition) ==
+                unirally::classic_window_table_index(loading, setup, 3214U, transition));
       }
       require(before_loading.has_value());
     }
@@ -902,7 +905,9 @@ int main() {
     // The countdown driver's selection from what it read (R-0040, the
     // countdown-pause original).
     {
-      const auto choose = unirally::classic_countdown_window;
+      const auto choose = [](std::uint16_t countdown, bool parity) {
+        return unirally::classic_countdown_window(countdown, parity, 6U);
+      };
       require(choose(270, false) == 6U && choose(250, true) == 6U && choose(249, false) == 0U && choose(221, false) == 0U);
       require(choose(220, false) == 6U && choose(190, false) == 6U && choose(189, false) == 1U && choose(161, false) == 1U);
       require(choose(160, false) == 6U && choose(130, false) == 6U && choose(129, false) == 2U && choose(101, false) == 2U);
@@ -910,6 +915,55 @@ int main() {
       // GO: an odd driver update chooses member 3, shown on the even frame after it.
       require(choose(69, true) == 3U && choose(69, false) == 4U && choose(1, true) == 3U && choose(1, false) == 4U);
       require(!choose(0, false) && !choose(0, true));
+      // Only the transition member follows the track; the digits and GO do not.
+      for (const unsigned countdown : {270U, 250U, 220U, 190U, 160U, 130U, 100U, 70U})
+        require(unirally::classic_countdown_window(static_cast<std::uint16_t>(countdown), false, 5U) == 5U);
+      for (const unsigned countdown : {249U, 221U, 189U, 161U, 129U, 101U, 69U, 1U})
+        require(unirally::classic_countdown_window(static_cast<std::uint16_t>(countdown), false, 5U) ==
+                choose(static_cast<std::uint16_t>(countdown), false));
+    }
+    // ZOOM ZOO (ZOOM-ZOO-WINDOW-EFFECTS): the same drivers with transition
+    // member 5 from setup frame 1382, as the M4-16 primary original's $11FD
+    // runs: 5 on 1382-1402, 0 on 1403-1431, 5, 1, 5, 2, 5 to 1582, then GO
+    // alternating 4/3 from 1583 to 1651 and nothing from 1652; the player's
+    // finish at 6484 shows member 8 from 6486 (its first driver update 6485
+    // is odd) and 9 from 6488.
+    {
+      // The transition member comes from the player's start y word in the
+      // track header, as the engine's start reflection does.
+      std::vector<std::uint8_t> header(16, 0);
+      header[5] = 0x5a; header[6] = 0x03;  // even y: reflected start (DRAGSTER's 0x035a)
+      require(unirally::classic_race_start_reflected(header, 0) && unirally::classic_window_transition_member(header) == 6U);
+      header[5] = 0x5b;                    // odd y: not reflected
+      require(!unirally::classic_race_start_reflected(header, 0) && unirally::classic_window_transition_member(header) == 5U);
+      header[9] = 0x02;                    // the opponent's word is 5-6 words later and does not move the member
+      require(unirally::classic_race_start_reflected(header, 1) && unirally::classic_window_transition_member(header) == 5U);
+      bool two_riders_only = false;
+      try { (void)unirally::classic_race_start_reflected(header, 2); } catch (const std::invalid_argument &) { two_riders_only = true; }
+      require(two_riders_only);
+
+      const auto zoom_setup = unirally::classic_race_scenario(ClassicRaceTrack::ZoomZoo).initialization_frame + 6U;
+      require(zoom_setup == 1382U);
+      auto zoom = race;
+      zoom.track = ClassicRaceTrack::ZoomZoo;
+      const auto at = [&](std::uint32_t frame) {
+        auto s = zoom;
+        s.movement.frame = frame;
+        return unirally::classic_window_table_index(s, zoom_setup, std::nullopt, 5U);
+      };
+      require(!at(1381) && at(1382) == 5U && at(1402) == 5U && at(1403) == 0U && at(1431) == 0U && at(1432) == 5U);
+      require(at(1462) == 5U && at(1463) == 1U && at(1491) == 1U && at(1492) == 5U && at(1523) == 2U && at(1551) == 2U);
+      require(at(1552) == 5U && at(1582) == 5U && at(1583) == 4U && at(1584) == 3U && at(1651) == 4U && !at(1652) && !at(3000));
+      const auto finished = [&](std::uint32_t frame, std::uint16_t delay) {
+        auto s = zoom;
+        s.movement.frame = frame;
+        s.race.riders[0].finished = 1;
+        s.race.total_times = {9802, 60000};
+        s.race.finish_delay = delay;
+        return unirally::classic_window_table_index(s, zoom_setup, std::nullopt, 5U);
+      };
+      require(!finished(6484, 0) && !finished(6485, 1) && finished(6486, 2) == 8U && finished(6487, 3) == 8U &&
+              finished(6488, 4) == 9U && finished(6489, 5) == 9U && finished(6490, 6) == 10U);
     }
     // The window pointer followed update by update (DRAGSTER-WINDOW-PAUSE):
     // a synthetic race whose countdown, pause and finish fields advance as
@@ -932,12 +986,13 @@ int main() {
           for (const auto &[open, close] : script.pauses)
             if (frame >= open && frame <= close) next.pause.selection = 1;
           const bool diverted = current.pause.selection || next.pause.selection;
+          if (diverted) ++next.pause.suspended_updates;  // the engine's clock of diverted updates
           // The countdown handler runs once the fade reaches 5, from update 1333.
           if (!diverted && frame >= 1333 && next.movement.countdown) --next.movement.countdown;
           if (script.player_finish && frame >= script.player_finish) next.race.riders[0].finished = 1;
           if (script.opponent_finish && frame >= script.opponent_finish) next.race.riders[1].finished = 1;
           if (script.loading && frame >= script.loading) next.result_updates = static_cast<std::uint16_t>(frame - script.loading + 1);
-          pointer.observe_update(current, next);
+          pointer.observe_update(current, next, transition);
           published[frame] = pointer.published();
           current = next;
         }
