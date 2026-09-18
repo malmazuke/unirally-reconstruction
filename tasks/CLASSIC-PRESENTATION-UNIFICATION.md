@@ -285,10 +285,79 @@ recovery. Together with the first measurement it sets the shape of the work:
 widen the input type from `MovementState` to the shared race state, and select
 content by track instead of by literal.
 
+## Fourth measurement - the frozen contracts cannot drive a state-driven renderer
+
+The plan was to run the shared engine to each frozen reference frame, check the
+movement it produced against the frozen capture, and then render both ways. The
+bridge does not exist, and the reason is worth recording before any code moves.
+
+The frozen contract states are 333 and 369 bytes; the shared race state is 742.
+The contracts captured the narrowed state, so the fields the recovered renderer
+reads were never recorded in them. The obvious repair - replay the race and take
+the wide state at those frames - needs the contract's own controller inputs, and
+the contract does not record any: it has no menu or replay manifest, only the
+seven states and their pictures.
+
+The nearest capture that does carry a timeline is `primary-a` from
+DRAGSTER-ORDINARY-CONTROLS. Running the shared engine over it and comparing at
+the seven contract frames (`artifacts/unification-baseline/stage_a.py`):
+
+| frame | contract player | native player | contract opp | native opp | camera delta |
+| --- | --- | --- | --- | --- | --- |
+| 1600 | 1273 | 2197 | 611 | 611 | +871 |
+| 2000 | 2133 | 313 | 2197 | 2197 | +757 |
+| 2400 | 2197 | 185 | 2197 | 2197 | +920 |
+| 3213 | 2133 | 2629 | 2261 | 2261 | +857 |
+| 3453 | 1278 | 2635 | 892 | 2684 | +833 |
+
+0 of 7 frames agree, but the disagreement is structured. The opponent's pose is
+identical at every racing frame and the player's never is, with the camera
+consistently 757-920 further along. The opponent is AI-driven from the same
+scenario start, so it replays identically until the player's finish perturbs the
+shared state, which is why the opponent also diverges from 3453 onward. Same
+track and scenario, a different driver. `primary-a` cannot stand in for the
+contract race, and no other capture in the tree can either.
+
+So the acceptance criterion "DRAGSTER frozen contracts: counts unchanged or
+lower at every frame" is not satisfiable by a renderer driven by the shared
+state, for a reason that has nothing to do with whether that renderer is
+correct. Three ways out, and only one is honest:
+
+- Fabricate the missing fields to widen the 333-byte states. Rejected: the
+  fade level, pause, result and lap state would be invented, and the contract
+  would then be checking numbers this task made up.
+- Keep the old renderer for the frozen contracts and the recovered one for live
+  play. Rejected: that is the split this task exists to remove, preserved under
+  a different name.
+- Recapture the seven frames under the shared state schema, additively, as a new
+  contract profile beside the accepted v1 one. The project has the capture
+  tooling and the ROM, the accepted contracts stay untouched and still checked,
+  and the new profile can be driven by the same state the live path uses.
+
+Recapture is the path. Until it lands, the unified renderer is measured against
+the original captures that do carry timelines - `primary-a` and `reversal` for
+DRAGSTER, the M4-16 scenes for ZOOM ZOO - which is the evidence the window
+effects and clock limit were accepted on.
+
+## Acceptance, amended
+
+The criteria below replace the DRAGSTER frozen-contract row of the table above,
+which the fourth measurement showed to be unsatisfiable as written. The v1
+contracts remain accepted and unchanged; what changes is what is asked of the
+unified renderer.
+
+| Criterion | Command or experiment | Expected result | Required artifact |
+| --- | --- | --- | --- |
+| DRAGSTER original agreement | shared engine over `primary-a` and `reversal`, rendered and compared to the original capture | no regression against the window-effects measurement | comparison report |
+| Recaptured frozen frames | new contract profile at the seven frames, shared state schema | native matches the original picture | manifest and capture |
+| Accepted v1 contracts | `native presentation-check` winner and loser, v1 pack | unchanged; the v1 path is untouched by this task | reports |
+
 ## Handoff
 
-- Structural measurement above is done. Next: call `render_zoom_zoo` with the
-  DRAGSTER state and two-track content, measure against DRAGSTER's frozen
-  contract frames, and record the first divergence, as the controls task did for
-  the engine. The frozen M3 contracts are `PresentationSample` captures, so they
-  need a projection from the shared state; the live path does not.
+- Measurements one to four are done and recorded. The state is already shared
+  and discarded at the call site; the pack carries eight engine tables twice
+  under two vocabularies, the older of which is the neutral one; the recovered
+  renderer names its track inline; and the frozen contracts cannot drive it.
+- Next: recapture the seven DRAGSTER contract frames under the shared state
+  schema, then widen `LivePresentation::render_dragster_race` to pass the race
+  state through and select content by track rather than by literal name.
