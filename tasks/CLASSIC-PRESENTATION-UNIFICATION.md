@@ -496,7 +496,12 @@ refused with the remedy.
 | M4-16 ZOOM ZOO primary (`zoom_zoo_playable compare`, v8 pack) | passed at `cfb539d` |
 | DRAGSTER frozen originals primary, random-1, reversal | passed at `cfb539d` |
 | historical matrix (`hist.sh`, `hist2.sh`: 20 commands) | 20/20 at `cfb539d`; the v1 contracts report winner 36/697/279/445/653/962/961 and loser 1,073, identical to the accepted figures |
-| five presets, fuzz, differential gates at the final candidate | see the handoff |
+| five presets at the candidate `f734b4e` (`final-gates.sh`) | lab-debug, lab-release, lab-sanitize, app-debug, app-sanitize: 23/23 each |
+| `test --suite synthetic` (lab-debug) at `f734b4e` | passed, 411 checks, 3 fresh-process repeatability runs |
+| M4-16 ZOOM ZOO primary and DRAGSTER primary, random-1, reversal at `f734b4e` | all passed (app-debug `zoom_zoo_runner`, v8 pack) |
+| `dragster_fuzz_runner` (lab-release) at `f734b4e` | 60 seeds, 549,051 updates, 119 completed races, 1,878 pause restarts, 11,170 renders, 0 aborts |
+| hidden app runs at `f734b4e`, both tracks, 4,000 updates | 0 rider-pose fallback frames each |
+| hosted CI on the pushed tip `f734b4e` | run 35309658396: success on ubuntu-24.04 and macos-15 |
 
 ## Mistakes
 
