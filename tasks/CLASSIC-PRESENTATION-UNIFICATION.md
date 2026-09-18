@@ -194,6 +194,66 @@ user's run).
 This makes the task a merge rather than a rewrite: the state to drive
 `render_zoom_zoo` for DRAGSTER is already at the call site, unused.
 
+## Second measurement - the pack carries eight engine tables twice
+
+Grouping the 56 v8 entries by content hash: 48 distinct hashes, 8 shared by two
+entries each, and every pair has both the same `sha256` and the same raw source
+offset and length, so these are provably the same ROM bytes and not merely
+same-sized ones.
+
+| bytes | neutral name | track-named duplicate |
+| --- | --- | --- |
+| 32768 | `physics.rider.collision-poses` | `zoom.collision-poses` |
+| 17249 | `physics.rider.collision-templates` | `zoom.collision-templates` |
+| 512 | `physics.rider.displacement-table` | `zoom.displacement-table` |
+| 128 | `physics.rider.pose-slopes` | `zoom.pose-slopes` |
+| 80 | `physics.track.progress-transitions` | `zoom.progress-transitions` |
+| 64 | `physics.rider.idle-pose-table` | `zoom.idle-pose-table` |
+| 18 | `physics.speed.decrements` | `zoom.speed-decrements` |
+| 9 | `physics.speed.masks` | `zoom.speed-masks` |
+
+50,828 bytes, 4.0% of the entry bytes, and the container stores each entry
+separately rather than deduplicating by hash: the entry sizes sum to 1,281,915
+against a 1,286,427-byte pack file. Every duplicated table is rider or physics
+content that is track-independent; none is ZOOM ZOO track content.
+
+The history is legible from the names. Engine tables were first captured while
+ZOOM ZOO was the only recovered track, so they took its name. When DRAGSTER
+moved onto the shared engine they were captured again under neutral
+`physics.*` names, and nothing removed the originals, because the accepted
+contracts and the v1 pack still reference them and entries are immutable once
+accepted. This is the same failure as the renderer split, in the content model:
+sharing was done by adding a second copy rather than by renaming one, so the
+cost of each new track is paid in duplication instead of reuse.
+
+That also bounds the naming cleanup the task lists. It is not only
+`presentation.zoom.race-palette-cycle.v1` being read by DRAGSTER: 26 of 56
+entries carry a `zoom.` prefix and only 6 of those are ZOOM ZOO track content
+(`zoom.track-data`, `zoom.bg1-tiles`, `zoom.bg2-tiles`, `zoom.bg2-map`,
+`zoom.palette`, and the tile tables). The rest name the engine after a track.
+
+Renaming accepted entries is not permitted, so the cleanup has to be additive
+in the other direction: the shared entries already exist under neutral names,
+so the work is to stop reading the `zoom.*` aliases, not to rename them, and to
+let a later profile drop the aliases once nothing reads them.
+
+## Third measurement - the recovered renderer hardcodes its track
+
+`render_zoom_zoo` reads six pack entries by literal name, five of which are
+ZOOM ZOO track content: `zoom.track-data`, `zoom.bg1-tiles`, `zoom.bg2-tiles`,
+`zoom.bg2-map`, `zoom.palette`, plus the already-shared
+`presentation.zoom.race-palette-cycle.v1` that DRAGSTER reads despite its name.
+The result screen also embeds track and rider strings as literals
+("LAPS ON ZOOM ZOO", "MIKE", "BRONSEN").
+
+So the renderer cannot draw DRAGSTER today for a reason unrelated to state: it
+names its track content inline. The DRAGSTER equivalents are present in the
+same pack under `presentation.track.dragster.*` and
+`physics.track.dragster.*`, so this is a lookup-by-track change, not a
+recovery. Together with the first measurement it sets the shape of the work:
+widen the input type from `MovementState` to the shared race state, and select
+content by track instead of by literal.
+
 ## Handoff
 
 - Structural measurement above is done. Next: call `render_zoom_zoo` with the
