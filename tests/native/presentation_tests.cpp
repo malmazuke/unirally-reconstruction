@@ -922,24 +922,24 @@ int main() {
       const auto publish = [&](const Script &script, std::uint32_t last) {
         std::vector<std::optional<unsigned>> published(last + 1);
         unirally::ClassicWindowPointer pointer;
-        auto state = race;
-        state.movement.frame = 1328;
-        state.movement.countdown = 270;
+        auto current = race;
+        current.movement.frame = 1328;
+        current.movement.countdown = 270;
         for (std::uint32_t frame = 1329; frame <= last; ++frame) {
-          auto next = state;
+          auto next = current;
           next.movement.frame = frame;
           next.pause.selection = 0;
           for (const auto &[open, close] : script.pauses)
             if (frame >= open && frame <= close) next.pause.selection = 1;
-          const bool diverted = state.pause.selection || next.pause.selection;
+          const bool diverted = current.pause.selection || next.pause.selection;
           // The countdown handler runs once the fade reaches 5, from update 1333.
           if (!diverted && frame >= 1333 && next.movement.countdown) --next.movement.countdown;
           if (script.player_finish && frame >= script.player_finish) next.race.riders[0].finished = 1;
           if (script.opponent_finish && frame >= script.opponent_finish) next.race.riders[1].finished = 1;
           if (script.loading && frame >= script.loading) next.result_updates = static_cast<std::uint16_t>(frame - script.loading + 1);
-          pointer.observe_update(state, next);
+          pointer.observe_update(current, next);
           published[frame] = pointer.published();
-          state = next;
+          current = next;
         }
         return published;
       };
