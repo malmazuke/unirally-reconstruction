@@ -47,10 +47,10 @@ turns back, A, X, L and R act in the air, and Start pauses (RESUME or RESTART
 RACE). Opposing directions held together on a keyboard are dropped, as a SNES
 pad cannot report them. Start on the stable result screen races again.
 
-Audio is intentionally not implemented in M3. Intermediate rider animation
-poses outside the five M3-02 recovered atlas pairs use the last supported rider
-art while the current track, camera, positions and HUD continue to render. The
-presentation-only rider-art override never changes canonical simulation state
-or the current state's palette/window effects. See
+Audio is intentionally not implemented in M3. Both tracks are drawn by the
+same renderer from the shared race state and their own track content: every
+packed rider pose is composed from the original's pose tables (R-0036); a pose
+outside the packed tables holds that rider's last drawn pose and is counted as
+a fallback frame. Presentation never changes canonical simulation state. See
 `docs/research/R-0016-minimal-frontend.md` for the exact scheduler, input,
 display, dependency and first-launch contracts.
