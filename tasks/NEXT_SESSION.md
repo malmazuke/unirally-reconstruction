@@ -30,7 +30,7 @@ record UTC wall clock. No reset, purchase or provider change is authorized.
    Left+Right, Left alone and Right alone all exit 0. What is still missing is
    evidence that native matches the original for those inputs over a complete
    race; capture original ZOOM ZOO timelines before claiming it.
-3. **DRAGSTER window timing and shape, candidate awaiting review.**
+3. **Closed: DRAGSTER window timing and shape** (implementation `788a877`, review `9b54c2a`, approve).
    DRAGSTER-WINDOW-EFFECTS on `task/dragster-window-effects` recovers the
    mechanism (R-0040) and draws the countdown, GO and winner windows from the
    original's own per-frame channel-6 table selection, with no pose-pair gate.
@@ -38,9 +38,12 @@ record UTC wall clock. No reset, purchase or provider change is authorized.
    from 1533 to 3454. It adds pack profile
    `classic.pal.crawler.two-tracks.v8` (56 entries); a v8 pack is required for
    the new behaviour and the launcher accepts `-v8.pack` beside a v1 pack.
+   Of the pixels the change touches, 584,534 of 604,051 now match the original
+   against 70,885 before, and the accepted frames are untouched.
    Still unrecovered: the opponent-won banner after its 120-update
    finish-animation counter, whose cheapest next experiment is in R-0040 and in
-   the task record's handoff. ZOOM ZOO's own window content shares the
+   the task record's handoff; the presentation unification task below is the
+   natural home for it. ZOOM ZOO's own window content shares the
    mechanism and is a separate follow-up.
 4. **Closed: DRAGSTER 10:00 race limit.** DRAGSTER inherited the limit with the
    shared engine and needed no gameplay change: native matches the original for
