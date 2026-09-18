@@ -1272,6 +1272,18 @@ std::optional<unsigned> classic_window_table_index(const ZoomZooState& state,std
     return window_table_index_for(state.movement.frame,state.result_updates,since,setup_frame);
 }
 
+unsigned classic_race_prior_fade(const ZoomZooState& state,const ZoomZooState* previous_update,
+                                 const ClassicRaceScenario& scenario) {
+    // $0FF1 grows by one per race update from initialization and holds at 30
+    // ($83:CCC1-CCC9); the single-state runner passes the state as its own
+    // previous, and after saturation the state alone cannot give the
+    // preceding level, so the accepted frame formula is used there.
+    if(previous_update && previous_update->movement.frame<state.movement.frame)
+        return std::min(30U,unsigned(previous_update->fade_level));
+    const auto first=scenario.initialization_frame;
+    return state.movement.frame<=first?0U:std::min(30U,state.movement.frame-first-1U);
+}
+
 RaceFinishState classic_finish_view(const ZoomZooState& race) {
     RaceFinishState finish=race.movement.finish;
     for(std::size_t rider=0;rider<2;++rider) {
@@ -1431,15 +1443,8 @@ RgbFrame render_classic_race(const ZoomZooState& state,const ClassicRacePresenta
     // (bsnes lightTable: luma*c+0.5), so brightness applies to CGRAM words, as
     // in the DRAGSTER result fade. Scaling converted pixels made mid-fade
     // frames too bright: green 15 at brightness 8 is 47 in the original, not 64.
-    // $0FF1 grows by one per race update from initialization and holds at 30,
-    // so a caller without an earlier update (the single-state runner passes the
-    // state as its own previous) cannot read the preceding level from the
-    // state once it has saturated; the accepted frame formula gives it.
-    const bool previous_is_earlier=previous_update && previous_update->movement.frame<state.movement.frame;
     const bool previous_is_prior=previous_update && previous_update->movement.frame<=state.movement.frame;
-    const auto first=scenario.initialization_frame;
-    const unsigned prior_fade=std::min(30U,previous_is_earlier?unsigned(previous_update->fade_level)
-                                              :(state.movement.frame<=first?0U:state.movement.frame-first-1U));
+    const unsigned prior_fade=classic_race_prior_fade(state,previous_update,scenario);
     const auto brightness=prior_fade>15U?prior_fade-15U:0U;
     // Colours 96-111 and 0 are cycled by the race NMI from ROM tables every
     // frame (R-0037); neither track keys them to rider poses here.

@@ -821,6 +821,40 @@ int main() {
       }
       require(before_loading.has_value());
     }
+    // The fade INIDISP is written from: the earlier update's $0FF1, else the
+    // accepted frame formula (a state passed as its own previous, after the
+    // level saturates at 30, cannot give the preceding level).
+    {
+      const auto scenario = unirally::classic_race_scenario(ClassicRaceTrack::Dragster);
+      auto now = race;
+      auto earlier = race;
+      now.movement.frame = 1328 + 16;
+      now.fade_level = 16;
+      earlier.movement.frame = 1328 + 15;
+      earlier.fade_level = 15;
+      require(unirally::classic_race_prior_fade(now, &earlier, scenario) == 15);
+      require(unirally::classic_race_prior_fade(now, nullptr, scenario) == 15);
+      require(unirally::classic_race_prior_fade(now, &now, scenario) == 15);  // not the state's own 16
+      now.movement.frame = 1328;
+      now.fade_level = 0;
+      require(unirally::classic_race_prior_fade(now, &now, scenario) == 0);
+      now.movement.frame = 1328 + 31;
+      now.fade_level = 30;
+      earlier.movement.frame = 1328 + 30;
+      earlier.fade_level = 30;
+      require(unirally::classic_race_prior_fade(now, &earlier, scenario) == 30);
+      require(unirally::classic_race_prior_fade(now, &now, scenario) == 30);
+      now.movement.frame = 1328 + 40;
+      require(unirally::classic_race_prior_fade(now, &now, scenario) == 30);  // saturated: not 29
+      now.movement.frame = 1328 + 31;
+      earlier.fade_level = 29;
+      require(unirally::classic_race_prior_fade(now, &earlier, scenario) == 29);
+      auto restart = race;
+      restart.movement.frame = 1328;
+      earlier.movement.frame = 7000;
+      earlier.fade_level = 30;
+      require(unirally::classic_race_prior_fade(restart, &earlier, scenario) == 0);  // a later frame is not a previous update
+    }
     // The result view derives the legacy phases from the shared counters.
     {
       auto shared_state = race;

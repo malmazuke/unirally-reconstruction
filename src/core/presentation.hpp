@@ -122,6 +122,13 @@ std::optional<unsigned> classic_window_table_index(const ZoomZooState& state,std
 // opponent-won banner; the live tracker does) and nothing for a 10:00 time-out
 // (the 60000 sentinel is not a finish time).
 std::optional<std::uint32_t> classic_opponent_finish_frame(const ZoomZooState& state);
+// The preceding update's race fade $0FF1 (0..30) that the NMI writes INIDISP
+// from: the previous update's level when that update is earlier than `state`;
+// otherwise the accepted frame formula (one per update from the scenario's
+// initialization frame), because $0FF1 holds at 30 and a saturated state
+// cannot say whether the preceding level was 29 or 30.
+unsigned classic_race_prior_fade(const ZoomZooState& state,const ZoomZooState* previous_update,
+                                 const ClassicRaceScenario& scenario);
 // The legacy finish and result phases (RaceFinishState) derived from the shared
 // race state, for the recovered mode-0 result screen (R-0012, R-0019).
 // Presentation only, never gameplay.

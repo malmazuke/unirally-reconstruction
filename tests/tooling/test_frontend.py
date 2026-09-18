@@ -209,6 +209,7 @@ class FrontendLaunchTests(unittest.TestCase):
         self.assertEqual(stale.read_bytes(), v1_payload)
         self.assertEqual(len(list(self.root.glob("stale.pack.stale-*"))), 1)
         self.assertIn("nothing was replaced", self.check(report, "supported_rom")["detail"])
+        self.assertEqual(self.check(report, "classic_pack")["outcome"], "failed")
 
     def test_stale_build_is_reported_before_launch(self):
         # The supported profile is compiled into the app. A build from before a

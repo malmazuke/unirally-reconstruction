@@ -502,12 +502,12 @@ refused with the remedy.
 | M4-16 ZOOM ZOO primary (`zoom_zoo_playable compare`, v8 pack) | passed at `cfb539d` |
 | DRAGSTER frozen originals primary, random-1, reversal | passed at `cfb539d` |
 | historical matrix (`hist.sh`, `hist2.sh`: 20 commands) | 20/20 at `cfb539d`; the v1 contracts report winner 36/697/279/445/653/962/961 and loser 1,073, identical to the accepted figures |
-| five presets at the candidate `f734b4e` (`final-gates.sh`) | lab-debug, lab-release, lab-sanitize, app-debug, app-sanitize: 23/23 each |
-| `test --suite synthetic` (lab-debug) at `f734b4e` | passed, 411 checks, 3 fresh-process repeatability runs (`final/synthetic.log`; the `final-gates.sh` tooling line is a wrong `unittest discover` invocation and is not a result) |
-| M4-16 ZOOM ZOO primary and DRAGSTER primary, random-1, reversal at `f734b4e` | all passed (app-debug `zoom_zoo_runner`, v8 pack) |
-| `dragster_fuzz_runner` (lab-release) at `f734b4e` | 60 seeds, 549,051 updates, 119 completed races, 1,878 pause restarts, 11,170 renders, 0 aborts |
-| hidden app runs at `f734b4e`, both tracks, 4,000 updates | 0 rider-pose fallback frames each |
-| hosted CI on the pushed tip `f734b4e` | run 35309658396: success on ubuntu-24.04 and macos-15 |
+| five presets at the corrected candidate `f8645d7` (`final-gates.sh`, `final2/`; the same at `f734b4e`) | lab-debug, lab-release, lab-sanitize, app-debug, app-sanitize: 23/23 each |
+| `test --suite synthetic` (lab-debug) at `f8645d7` and `f734b4e` | passed, 411 checks, 3 fresh-process repeatability runs (`final/synthetic.log`; the `final-gates.sh` tooling line is a wrong `unittest discover` invocation and is not a result) |
+| M4-16 ZOOM ZOO primary and DRAGSTER primary, random-1, reversal at `f8645d7` (and at `f734b4e`, `cfb539d`) | all passed (app-debug `zoom_zoo_runner`, v8 pack) |
+| `dragster_fuzz_runner` (lab-release) at `f8645d7` and `f734b4e` | 60 seeds, 549,051 updates, 119 completed races, 1,878 pause restarts, 11,170 renders, 0 aborts |
+| hidden app runs at `f8645d7` and `f734b4e`, both tracks, 4,000 updates | 0 rider-pose fallback frames each |
+| hosted CI on the pushed tips | `f734b4e` run 35309658396 and `f8645d7` run 35312333302: success on ubuntu-24.04 and macos-15 |
 
 ## Independent review
 
@@ -533,6 +533,24 @@ finding.
 | 7. `zoom_zoo_runner` built a discarded content aggregate in pack mode | advisory | The loose files are read only without a pack. |
 | 8. The `--rom` remedy named a flag already passed | advisory | The remedy names only `--replace-pack` when `--rom` was given. |
 | 9. `final-gates.sh` recorded the tooling suite as failed (a wrong `unittest discover` invocation) | advisory | Noted in the gate table; the suite passed through the project runner (411 checks). |
+
+### Re-review
+
+The same reviewer re-reviewed `f8645d7` (report updated at `a7f26c4`):
+**approve**. It rebuilt both presets, found the fade fix pixel-identical to the
+before-change renderer on 70 single-state and 76 timeline frames, confirmed
+`fade_level == min(30, frame - 1328)` on all 2,373 DRAGSTER contract-race
+frames, reran the four differential gates, the v1 contracts and the launcher
+tests, and measured the banner over its real 360 frames in all three
+opponent-won races (history 360/360 each; the derivation 0/360 in the two
+where the player finished after the banner). Remaining findings, applied
+after approval without another cycle at the reviewer's judgement:
+
+| Finding | Severity | Disposition |
+| --- | --- | --- |
+| R1. The fade rule had no automated guard: restoring the old expression left ctest green | should fix | `classic_race_prior_fade` is a named helper with assertions for the earlier-update, same-state, saturated and restart cases; the old expression and "level minus one" each fail it. |
+| R2. The gate table attributed the runs to `f734b4e` | advisory | Rows now name `f8645d7` (`final2/`), where the whole set was rerun and passed. |
+| R3. A failed `--replace-pack` recorded `classic_pack` as passed with a move that never happened; the widened except also covered the rename and write | advisory | The check is recorded when the move has happened; extraction, the move and the write are separate try blocks with their own failures. |
 
 ## Mistakes
 

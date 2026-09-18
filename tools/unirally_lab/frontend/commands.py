@@ -196,6 +196,7 @@ def cmd_run(args: argparse.Namespace) -> int:
 
     inspected = None
     replace_stale = None
+    replace_reason = ""
     if paths.pack is None:
         selected = _select_local_pack(rep, rules, rules_sha)
         if selected is not None:
@@ -215,10 +216,10 @@ def cmd_run(args: argparse.Namespace) -> int:
                         if recorded and recorded != profile else "")
             if paths.rom is not None and getattr(args, "replace_pack", False):
                 # The old pack is moved aside only once the new one has been
-                # extracted, so a failed extraction leaves it where it was.
+                # extracted, so a failed extraction leaves it where it was; the
+                # check is recorded when the move has happened.
                 replace_stale = pack_path.with_name(f"{pack_path.name}.stale-{time.strftime('%Y%m%dT%H%M%SZ', time.gmtime())}")
-                rep.add_check("classic_pack", "passed",
-                              detail=f"existing pack is invalid ({exc}{identity}); --replace-pack will move it to {replace_stale}")
+                replace_reason = f"{exc}{identity}"
             else:
                 remedy = ("pass --replace-pack to rebuild it" if paths.rom is not None
                           else "pass --rom PATH with --replace-pack to rebuild it")
@@ -246,13 +247,25 @@ def cmd_run(args: argparse.Namespace) -> int:
             rep.add_input("rom", rom_path, hashlib.sha256(rom).hexdigest(), size=len(rom))
             payload, rows = packmod.build_pack(rom, rules, rules_sha)
             rep.add_check("exact_rom_identity", "passed", detail=rules["source_rom"]["sha256"])
+        except (ValueError, subprocess.CalledProcessError) as exc:
+            if replace_stale is not None:
+                rep.add_check("classic_pack", "failed",
+                              detail=f"existing pack is invalid ({replace_reason}) and was not replaced: extraction failed")
+            rep.add_check("supported_rom", "failed", detail=f"extraction failed, nothing was replaced: {exc}")
+            return _finish(rep, paths.report, EXIT_INVALID_INPUT)
+        except OSError as exc:
+            rep.add_check("pack_creation", "failed", detail=str(exc))
+            return _finish(rep, paths.report, EXIT_FAILURE)
+        try:
             if replace_stale is not None:
                 pack_path.rename(replace_stale)
+                rep.add_check("classic_pack", "passed",
+                              detail=f"existing pack was invalid ({replace_reason}); --replace-pack moved it to {replace_stale}")
                 rep.add_artifact("replaced_pack", replace_stale)
             packmod.write_atomic(pack_path, payload)
             inspected = packmod.validate_pack(pack_path.read_bytes(), rules, rules_sha)
-        except (ValueError, subprocess.CalledProcessError) as exc:
-            rep.add_check("supported_rom", "failed", detail=f"extraction failed, nothing was replaced: {exc}")
+        except ValueError as exc:
+            rep.add_check("supported_rom", "failed", detail=f"the extracted pack failed validation: {exc}")
             return _finish(rep, paths.report, EXIT_INVALID_INPUT)
         except OSError as exc:
             rep.add_check("pack_creation", "failed", detail=str(exc))
