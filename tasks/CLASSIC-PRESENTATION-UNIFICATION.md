@@ -217,14 +217,38 @@ separately rather than deduplicating by hash: the entry sizes sum to 1,281,915
 against a 1,286,427-byte pack file. Every duplicated table is rider or physics
 content that is track-independent; none is ZOOM ZOO track content.
 
-The history is legible from the names. Engine tables were first captured while
-ZOOM ZOO was the only recovered track, so they took its name. When DRAGSTER
-moved onto the shared engine they were captured again under neutral
-`physics.*` names, and nothing removed the originals, because the accepted
-contracts and the v1 pack still reference them and entries are immutable once
-accepted. This is the same failure as the renderer split, in the content model:
-sharing was done by adding a second copy rather than by renaming one, so the
-cost of each new track is paid in duplication instead of reuse.
+**Correction to the first version of this section.** It said engine tables were
+first captured under `zoom.*` and captured again under neutral `physics.*`
+names when DRAGSTER moved onto the shared engine. That history is backwards,
+and I inferred it from the names instead of checking. The evidence:
+
+- The DRAGSTER v1 pack, `classic.pal.crawler.dragster.v1`, has 25 entries and
+  not one `zoom.*` among them. Its vocabulary is entirely neutral
+  (`physics.rider.collision-poses`, `physics.speed.masks`, ...), and it predates
+  ZOOM ZOO's recovery.
+- The neutral duplicates are read only by `src/core/movement_runner.cpp`, the
+  M3 DRAGSTER movement path, and by the pack registry.
+- The shared engine reads the track-named ones. `dragster_race_content` in
+  `src/core/zoom_zoo_pack.hpp` is `zoom_zoo_content(pack)` with three overrides
+  for DRAGSTER's own track, tile columns and tile flags; every other table it
+  takes under its `zoom.*` name, for DRAGSTER races as much as ZOOM ZOO ones.
+
+So the neutral names are the older ones and the track-named ones are newer. The
+project already had a correct vocabulary for track-independent tables, and the
+ZOOM ZOO recovery introduced a second, track-named one beside it rather than
+reusing it. The duplication is two vocabularies coexisting in one pack, because
+the pack must satisfy both the v1 DRAGSTER consumers and the shared engine.
+
+That makes the criticism sharper, not milder: this was a regression in naming
+introduced by the newer work, and the shared engine now reads a track's name
+for tables that have nothing to do with that track. It is the same failure as
+the renderer split - the newer recovery grew its own vocabulary instead of
+adopting the one already there.
+
+One design credit where it is due, since the first version implied otherwise:
+`dragster_race_content` is not a second content builder. It is the shared one
+plus three overrides, which is the right shape. The defect is the names it
+reads, not its structure.
 
 That also bounds the naming cleanup the task lists. It is not only
 `presentation.zoom.race-palette-cycle.v1` being read by DRAGSTER: 26 of 56
@@ -233,9 +257,16 @@ entries carry a `zoom.` prefix and only 6 of those are ZOOM ZOO track content
 `zoom.palette`, and the tile tables). The rest name the engine after a track.
 
 Renaming accepted entries is not permitted, so the cleanup has to be additive
-in the other direction: the shared entries already exist under neutral names,
-so the work is to stop reading the `zoom.*` aliases, not to rename them, and to
-let a later profile drop the aliases once nothing reads them.
+in the other direction, and the correction above tells us which direction that
+is: the neutral names already exist and already carry these bytes, so the work
+is to point `zoom_zoo_content` at them and stop reading the `zoom.*` aliases
+for track-independent tables. A later profile can then drop the aliases once
+nothing reads them, which removes the 50,828 duplicated bytes without renaming
+anything accepted.
+
+Six `zoom.*` entries are genuine ZOOM ZOO track content and stay: `track-data`,
+`bg1-tiles`, `bg2-tiles`, `bg2-map`, `palette` and the tile tables. Those want
+a track-selected lookup, not a neutral name.
 
 ## Third measurement - the recovered renderer hardcodes its track
 
