@@ -121,6 +121,31 @@ typed flag from a default, cannot find a substitute without a hardcoded list,
 and cannot tell a stale pack from a foreign one. Fixing the content model fixes
 all three; fixing them one message at a time does not.
 
+**A fourth defect: the supported profile is declared twice and never
+reconciled.** With a correct 56-entry v8 pack extracted, the launch still
+failed:
+
+```
+[ passed] atomic_pack_creation (required): 56 entries at local/classic-crawler-two-tracks-v8.pack
+[ failed] frontend_launch (required): Unirally launch failed: Classic pack profile is unsupported
+```
+
+The pack was right; the binary was stale. `build/app-debug` had been built at
+05:46 and the v8 merge landed at 10:40, so the only profile string in it was
+`classic.pal.crawler.two-tracks.v7`, while the Python side validated against
+the working tree's v8 manifest and passed. The supported profile lives both in
+`src/core/content_pack.cpp` and in
+`tests/manifests/content/classic-crawler-two-tracks-pack.json`, and nothing
+checks the two agree, so a stale build is diagnosed as a bad pack. The
+launcher knows the preset and could compare the binary's supported profile
+with the manifest's before launching, and say "rebuild" when they differ.
+
+Scope note: this one is about where the identity constant lives rather than
+about presentation, so it may belong in a separate tooling task. It is recorded
+here because it is the same root - one identity, declared in more than one
+place, reconciled nowhere - and because splitting it out before the content
+model is decided would fix the symptom in the wrong layer.
+
 ## Acceptance
 
 | Criterion | Command or experiment | Expected result | Required artifact |

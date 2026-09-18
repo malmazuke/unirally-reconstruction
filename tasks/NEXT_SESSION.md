@@ -93,5 +93,7 @@ not exist, so `--rom` over a path already holding an older pack fails with
 "existing pack is invalid and was not replaced" and does not rebuild it. Move
 the old file aside, or extract to a new path. Do not tell the user to re-run
 the recipe over the old path; that was done on 18 September 2026 and left them
-stopped with no remedy in the message. On macOS, disconnect a gamepad by
+stopped with no remedy in the message. Rebuild the preset after a profile bump
+too: the supported profile is compiled into the binary, so a build from before
+the bump rejects a correct new pack as "Classic pack profile is unsupported". On macOS, disconnect a gamepad by
 turning Bluetooth off; the Xbox button opens the Games overlay.
