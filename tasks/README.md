@@ -44,8 +44,8 @@ The coordinator maintains the status registry below. Work orders further below d
 | M4-16 | reviewed and integrated (implementation `75626f8`, review `c5f4566`); accepted conditional on final-tip CI and remote verification | [Playable ZOOM ZOO](M4-16.md) |
 | DRAGSTER-PALETTE-CYCLE | reviewed and integrated (implementation `2c9dea3`, review `223cd0d`); accepted conditional on final-tip CI and remote verification | [DRAGSTER race palette cycle](DRAGSTER-PALETTE-CYCLE.md) |
 | DRAGSTER-ORDINARY-CONTROLS | reviewed and integrated (implementation `16b8daf`, review `f427098`); accepted conditional on final-tip CI and the user's live playtest | [Playable DRAGSTER controls](DRAGSTER-ORDINARY-CONTROLS.md) |
-| CLASSIC-PRESENTATION-UNIFICATION | planned; queued at the user's request after the window-effects review | [One renderer for both tracks](CLASSIC-PRESENTATION-UNIFICATION.md) |
-| DRAGSTER-WINDOW-EFFECTS | reviewed and integrated (implementation `788a877`, review `9b54c2a`); accepted conditional on final-tip CI | [DRAGSTER window timing and shape](DRAGSTER-WINDOW-EFFECTS.md) |
+| CLASSIC-PRESENTATION-UNIFICATION | next; planned and approved by the user, starting from `main` at `67b0f28` | [One renderer for both tracks](CLASSIC-PRESENTATION-UNIFICATION.md) |
+| DRAGSTER-WINDOW-EFFECTS | accepted (implementation `788a877`, review `9b54c2a`, advisories `598564f`); integrated on `main` at `67b0f28` with green final-tip CI | [DRAGSTER window timing and shape](DRAGSTER-WINDOW-EFFECTS.md) |
 | DRAGSTER-CLOCK-LIMIT | reviewed and integrated (implementation `c00dd5d`, review `7f391e1`); accepted conditional on final-tip CI | [DRAGSTER 10:00 clock limit](DRAGSTER-CLOCK-LIMIT.md) |
 | M4-17 – M6 | unclaimed; outside this assignment | Do not automatically dispatch |
 

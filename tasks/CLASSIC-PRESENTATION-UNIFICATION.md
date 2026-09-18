@@ -47,6 +47,54 @@ Fold in the naming and content-model cleanups this exposed:
 
 Out of scope: audio, menus, other tracks and modes.
 
+## Finding from the 18 September 2026 playtest - the launcher substitutes packs
+
+The user ran DRAGSTER with the superseded v1 pack, expecting a refusal:
+
+```
+python3 tools/project.py frontend run --track dragster \
+  --pack local/classic-crawler-dragster.pack --preset app-debug --updates 20 --hidden
+```
+
+It did not refuse. It validated the named pack, decided that pack can no longer
+play DRAGSTER, searched `local/` for a substitute and ran
+`classic-crawler-two-tracks-v7.pack` instead, reporting the substitution as a
+passing check:
+
+```
+[ passed] classic_pack (required): validated existing pack .../classic-crawler-dragster.pack
+[ passed] dragster_two_track_pack (required): the DRAGSTER-only pack lacks the shared
+          race tables; using .../classic-crawler-two-tracks-v7.pack
+[ passed] frontend_launch (required): Classic pack validated: ".../classic-crawler-two-tracks-v7.pack"
+```
+
+The race that ran was not the pack that was asked for. Two separable defects,
+both in `tools/unirally_lab/frontend/commands.py`:
+
+**An explicit `--pack` cannot be distinguished from the default.** `--pack`
+defaults to `local/classic-crawler-dragster.pack`, the same path the user
+typed, so `_dragster_two_track_pack` cannot tell an upgrade of an unstated
+default from an override of a stated flag. Upgrading the default is the right
+behaviour and should stay; overriding a flag the user typed should be an error
+that names the profile the track needs. `default=None` separates the two cases.
+
+**Substitutes are found by filename, not by profile.** `TWO_TRACK_PACK_NAMES`
+is a hardcoded tuple of pack filenames, so every profile bump edits it - v8 was
+added to it in DRAGSTER-WINDOW-EFFECTS - and a name that no longer exists
+(`classic-crawler-two-tracks.pack`) sits in it unnoticed, as does the same
+stale name in the `zoom-zoo` rewrite at the top of the module. The profile is
+recorded inside each pack and is what `validate_pack` already checks; selecting
+by profile removes the list, and with it the per-bump edit and the staleness.
+
+This is the content-model defect this task already lists ("Content is siloed
+per track"), reached from the launcher rather than from the renderer, and it is
+in scope for the same reason: the track should select content, not the filename.
+
+The same run also showed `rider-pose fallback frames: 21` of 21 presentation
+frames - every frame held the last recovered rider art - which is the renderer
+gap this task exists to close, measured on a live DRAGSTER launch rather than
+on the frozen contract frames.
+
 ## Acceptance
 
 | Criterion | Command or experiment | Expected result | Required artifact |
