@@ -59,11 +59,11 @@ int main(int argc,char** argv) try {
     auto state=native_start?unirally::ZoomZooState{}:unirally::deserialize_zoom_zoo(read_bytes(seed));
     if(native_start)state.complete_race=state.sustained=true;
     const auto pack=pack_path.empty()?nullptr:std::make_unique<unirally::ClassicContentPack>(pack_path);
+    // A pack binds content through the shared accessors, by track. The loose
+    // content directory remains for the historical M4-12 to M4-15 cases.
     const auto load=[&](const char* filename) {
-        if(!pack)return read_bytes(content/filename);
-        auto name=std::string(filename);name.resize(name.size()-4);
-        const auto bytes=pack->entry("zoom."+name);
-        return std::vector<std::uint8_t>(bytes.begin(),bytes.end());
+        if(pack)return std::vector<std::uint8_t>{};
+        return read_bytes(content/filename);
     };
     const auto track=load("track-data.bin");
     const auto poses=load("collision-poses.bin");
@@ -90,7 +90,10 @@ int main(int argc,char** argv) try {
     const unirally::ZoomZooContent zoom_zoo_data{movement,coefficients,reflection,landing,finish_poses,roll_poses,roll_directions,weights,combinations};
     if(!native_start)race_track=state.track;
     if(race_track==unirally::ClassicRaceTrack::Dragster && !pack)throw std::invalid_argument("DRAGSTER race requires the two-track content pack");
-    const auto data=race_track==unirally::ClassicRaceTrack::Dragster?unirally::dragster_race_content(*pack):zoom_zoo_data;
+    if(pack && !(native_start || (state.complete_race && state.sustained)))
+        throw std::invalid_argument("a content pack binds the complete-race content; earlier seeds use --content-dir");
+    const auto data=!pack?zoom_zoo_data
+        :race_track==unirally::ClassicRaceTrack::Dragster?unirally::dragster_race_content(*pack):unirally::zoom_zoo_content(*pack);
     if(native_start)state=unirally::classic_race_start(data,unirally::classic_race_scenario(race_track));
     if(restart)unirally::restart_zoom_zoo(state,data);
     unirally::validate_zoom_zoo_content_state(state,data);
