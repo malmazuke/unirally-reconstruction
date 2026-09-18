@@ -4,10 +4,17 @@
 #include <filesystem>
 #include <span>
 #include <string>
+#include <string_view>
 #include <unordered_map>
 #include <vector>
 
 namespace unirally {
+
+// The pack profiles this build reads: the accepted DRAGSTER v1 profile and
+// the current two-track profile. The launcher asks the app for this list
+// before launching, so a build from before a profile bump is reported as a
+// stale build rather than as a bad pack.
+std::span<const std::string_view> supported_pack_profiles();
 
 // Schema-1 Classic pack view. The repository command verifies SHA-256 before
 // launching the native process; this reader independently enforces the binary

@@ -3,6 +3,7 @@ from __future__ import annotations
 import contextlib
 import hashlib
 import json
+import os
 import subprocess
 import sys
 import tempfile
@@ -47,7 +48,7 @@ class FrontendLaunchTests(unittest.TestCase):
         values = dict(pack=str(self.root / "classic.pack"), rom=None, preset="app-debug",
                       executable="/usr/bin/true", rules=str(self.rules_path), updates=1,
                       fixed_controller_mask=None, hidden=True, timeout=10,
-                      report=None, task="M3-03")
+                      report=None, task="M3-03", track="dragster", replace_pack=False)
         values.update(changed)
         return Namespace(**values)
 
@@ -81,68 +82,155 @@ class FrontendLaunchTests(unittest.TestCase):
         Path(self.args().pack).write_bytes(b"corrupt")
         self.assertEqual(commands.cmd_run(self.args(rom=str(self.rom_path))), EXIT_INVALID_INPUT)
 
-    def test_dragster_launch_accepts_a_valid_two_track_pack(self):
-        # DRAGSTER also runs from the two-track pack (R-0037). With the default
-        # DRAGSTER rules, an existing pack that fails them is validated against
-        # the two-track rules; an explicit other rules path gets no fallback.
+    def two_track_rules(self):
         two_track = dict(self.rules, profile_id=pack.TWO_TRACK_PROFILE,
                          start_state_id=pack.TWO_TRACK_START)
-        (self.root / "two-track-rules.json").write_text(json.dumps(two_track))
-        two_track_rules, two_track_sha = pack.load_rules(self.root / "two-track-rules.json")
-        payload, _ = pack.build_pack(self.rom, two_track_rules, two_track_sha)
+        path = self.root / "two-track-rules.json"
+        path.write_text(json.dumps(two_track))
+        rules, rules_sha = pack.load_rules(path)
+        return path, rules, rules_sha
+
+    def check(self, report, name):
+        return next(c for c in json.loads(Path(report).read_text())["checks"] if c["name"] == name)
+
+    def test_named_pack_must_carry_the_rules_profile(self):
+        # A pack is chosen by the profile recorded inside it. A typed --pack of
+        # another profile is refused, naming both profiles and the remedy; the
+        # launcher never substitutes a different file for the one it was given.
+        rules_path, rules, rules_sha = self.two_track_rules()
+        payload, _ = pack.build_pack(self.rom, rules, rules_sha)
         two_track_pack = self.root / "two-track.pack"
         two_track_pack.write_bytes(payload)
-        with mock.patch.object(commands, "ROOT", self.root), \
-             mock.patch.object(pack, "RULES_PATH", "rules.json"), \
-             mock.patch.object(pack, "TWO_TRACK_RULES_PATH", "two-track-rules.json"):
-            self.assertEqual(commands.cmd_run(self.args(track="dragster", pack=str(two_track_pack))), EXIT_OK)
-            self.assertEqual(commands.cmd_run(self.args(track="dragster")), EXIT_MISSING_PREREQUISITE)
-            other_rules = self.root / "copy-of-rules.json"
-            other_rules.write_text(self.rules_path.read_text())
-            self.assertEqual(commands.cmd_run(self.args(track="dragster", pack=str(two_track_pack),
-                                                        rules=str(other_rules))), EXIT_INVALID_INPUT)
-            corrupt = bytearray(payload)
-            corrupt[-1] ^= 0xFF
-            corrupt_pack = self.root / "corrupt-two-track.pack"
-            corrupt_pack.write_bytes(bytes(corrupt))
-            report = self.root / "corrupt-two-track.json"
-            self.assertEqual(commands.cmd_run(self.args(track="dragster", pack=str(corrupt_pack),
+        for track in ("dragster", "zoom-zoo"):
+            self.assertEqual(commands.cmd_run(self.args(track=track, pack=str(two_track_pack),
+                                                        rules=str(rules_path))), EXIT_OK)
+        report = self.root / "refused.json"
+        self.assertEqual(commands.cmd_run(self.args(track="dragster", pack=str(two_track_pack),
+                                                    report=str(report))), EXIT_INVALID_INPUT)
+        detail = self.check(report, "classic_pack")["detail"]
+        for expected in ("was not replaced", pack.TWO_TRACK_PROFILE, pack.PROFILE_ID, "--replace-pack"):
+            self.assertIn(expected, detail)
+        self.assertEqual(two_track_pack.read_bytes(), payload)
+        v1_payload, _ = pack.build_pack(self.rom, *pack.load_rules(self.rules_path))
+        v1_pack = self.root / "v1.pack"
+        v1_pack.write_bytes(v1_payload)
+        for track in ("dragster", "zoom-zoo"):
+            report = self.root / f"v1-{track}.json"
+            self.assertEqual(commands.cmd_run(self.args(track=track, pack=str(v1_pack), rules=str(rules_path),
                                                         report=str(report))), EXIT_INVALID_INPUT)
-            detail = next(c for c in json.loads(report.read_text())["checks"]
-                          if c["name"] == "classic_pack")["detail"]
-            self.assertNotIn("extraction-rules identity", detail)
+            self.assertIn(pack.PROFILE_ID, self.check(report, "classic_pack")["detail"])
+        corrupt = bytearray(payload)
+        corrupt[-1] ^= 0xFF
+        corrupt_pack = self.root / "corrupt-two-track.pack"
+        corrupt_pack.write_bytes(bytes(corrupt))
+        report = self.root / "corrupt-two-track.json"
+        self.assertEqual(commands.cmd_run(self.args(track="dragster", pack=str(corrupt_pack), rules=str(rules_path),
+                                                    report=str(report))), EXIT_INVALID_INPUT)
+        detail = self.check(report, "classic_pack")["detail"]
+        self.assertIn("was not replaced", detail)
+        self.assertNotIn("records profile", detail)  # same profile, so no identity clause
 
-    def test_dragster_only_pack_launches_with_the_two_track_pack(self):
-        # DRAGSTER's ordinary controls need the shared race tables (R-0038),
-        # which only the two-track pack carries. A valid DRAGSTER-only pack
-        # launches with a valid two-track pack beside it, or one extracted
-        # from --rom; without either it is a missing prerequisite.
-        two_track = dict(self.rules, profile_id=pack.TWO_TRACK_PROFILE,
-                         start_state_id=pack.TWO_TRACK_START)
-        (self.root / "two-track-rules.json").write_text(json.dumps(two_track))
-        dragster_pack = self.root / "classic.pack"
-        with mock.patch.object(commands, "ROOT", self.root), \
-             mock.patch.object(pack, "RULES_PATH", "rules.json"), \
-             mock.patch.object(pack, "TWO_TRACK_RULES_PATH", "two-track-rules.json"):
-            (self.root / "rules.json").write_text(self.rules_path.read_text())
-            rules = str(self.root / "rules.json")
-            report = self.root / "missing.json"
-            self.assertEqual(commands.cmd_run(self.args(rules=rules, rom=None, report=str(report))),
+    def test_default_pack_is_selected_by_profile_under_local(self):
+        # Without --pack the newest pack under local/ that validates against
+        # the rules is used, whatever its name; a first launch extracts to the
+        # profile's own path, so a profile bump never finds an old file in its way.
+        rules_path, rules, rules_sha = self.two_track_rules()
+        payload, _ = pack.build_pack(self.rom, rules, rules_sha)
+        v1_payload, _ = pack.build_pack(self.rom, *pack.load_rules(self.rules_path))
+        local = self.root / "local"
+        local.mkdir()
+        with mock.patch.object(commands, "ROOT", self.root):
+            default = commands.default_pack_path(rules)
+            self.assertEqual(default.parent, local.resolve())
+            self.assertIn("two-tracks", default.name)
+            report = self.root / "none.json"
+            self.assertEqual(commands.cmd_run(self.args(pack=None, rules=str(rules_path), report=str(report))),
                              EXIT_MISSING_PREREQUISITE)
-            self.assertFalse(dragster_pack.exists())
-            # First launch extracts the DRAGSTER pack and the two-track pack.
-            self.assertEqual(commands.cmd_run(self.args(rules=rules, rom=str(self.rom_path))), EXIT_OK)
-            upgraded = self.root / "local" / commands.TWO_TRACK_PACK_NAMES[0]
-            self.assertTrue(dragster_pack.is_file() and upgraded.is_file())
-            # Pack-only relaunch finds the two-track pack without the ROM.
+            detail = self.check(report, "supported_rom")["detail"]
+            self.assertIn(pack.TWO_TRACK_PROFILE, detail)
+            self.assertIn(str(default), detail)
+            self.assertEqual(commands.cmd_run(self.args(pack=None, rules=str(rules_path), rom=str(self.rom_path))),
+                             EXIT_OK)
+            self.assertTrue(default.is_file())
             self.rom_path.unlink()
-            report = self.root / "relaunch.json"
-            self.assertEqual(commands.cmd_run(self.args(rules=rules, rom=None, report=str(report))), EXIT_OK)
-            check = next(c for c in json.loads(report.read_text())["checks"] if c["name"] == "dragster_two_track_pack")
-            self.assertIn("ROM was not opened", check["detail"])
-            # Without a valid two-track pack and without --rom it cannot play.
-            upgraded.write_bytes(b"corrupt")
-            self.assertEqual(commands.cmd_run(self.args(rules=rules, rom=None)), EXIT_MISSING_PREREQUISITE)
+            now = default.stat().st_mtime
+            decoy = local / "zzz-newest.pack"
+            decoy.write_bytes(b"corrupt")
+            os.utime(decoy, (now + 100, now + 100))
+            other_profile = local / "aaa-other-profile.pack"
+            other_profile.write_bytes(v1_payload)
+            os.utime(other_profile, (now + 50, now + 50))
+            report = self.root / "selected.json"
+            self.assertEqual(commands.cmd_run(self.args(pack=None, rules=str(rules_path), report=str(report))),
+                             EXIT_OK)
+            detail = self.check(report, "classic_pack")["detail"]
+            for expected in (str(default), "ROM was not opened", "zzz-newest.pack", "aaa-other-profile.pack",
+                             pack.PROFILE_ID):
+                self.assertIn(expected, detail)
+            newer = local / "any-name-at-all.pack"
+            newer.write_bytes(payload)
+            os.utime(newer, (now + 200, now + 200))
+            report = self.root / "newer.json"
+            self.assertEqual(commands.cmd_run(self.args(pack=None, rules=str(rules_path), report=str(report))),
+                             EXIT_OK)
+            self.assertIn(str(newer.resolve()), self.check(report, "classic_pack")["detail"])
+
+    def test_replace_pack_moves_an_incompatible_pack_aside(self):
+        # --rom over an existing incompatible pack is refused with the remedy
+        # named; --replace-pack with --rom moves the old file aside, keeping
+        # its bytes, and extracts a fresh pack in its place.
+        rules_path, rules, rules_sha = self.two_track_rules()
+        v1_payload, _ = pack.build_pack(self.rom, *pack.load_rules(self.rules_path))
+        stale = self.root / "stale.pack"
+        stale.write_bytes(v1_payload)
+        report = self.root / "refused.json"
+        self.assertEqual(commands.cmd_run(self.args(pack=str(stale), rules=str(rules_path), rom=str(self.rom_path),
+                                                    report=str(report))), EXIT_INVALID_INPUT)
+        self.assertIn("--replace-pack", self.check(report, "classic_pack")["detail"])
+        self.assertEqual(stale.read_bytes(), v1_payload)
+        self.assertEqual(commands.cmd_run(self.args(pack=str(stale), rules=str(rules_path), rom=None,
+                                                    replace_pack=True)), EXIT_INVALID_INPUT)
+        self.assertEqual(stale.read_bytes(), v1_payload)
+        report = self.root / "replaced.json"
+        self.assertEqual(commands.cmd_run(self.args(pack=str(stale), rules=str(rules_path), rom=str(self.rom_path),
+                                                    replace_pack=True, report=str(report))), EXIT_OK)
+        moved = list(self.root.glob("stale.pack.stale-*"))
+        self.assertEqual(len(moved), 1)
+        self.assertEqual(moved[0].read_bytes(), v1_payload)
+        self.assertEqual(pack.validate_pack(stale.read_bytes(), rules, rules_sha)["profile_id"],
+                         pack.TWO_TRACK_PROFILE)
+        self.assertIn(str(moved[0]), self.check(report, "classic_pack")["detail"])
+
+    def test_stale_build_is_reported_before_launch(self):
+        # The supported profile is compiled into the app. A build from before a
+        # profile bump is diagnosed as a stale build with the rebuild command,
+        # not as a bad pack; an executable that reports nothing is recorded.
+        profiles = self.root / "profiles.txt"
+        child = self.root / "child"
+        child.write_text(
+            "#!/usr/bin/env python3\n"
+            "import sys\n"
+            "from pathlib import Path\n"
+            "if '--supported-profiles' in sys.argv:\n"
+            f"    sys.stdout.write(Path({str(profiles)!r}).read_text())\n"
+        )
+        child.chmod(0o755)
+        profiles.write_text("some.other.profile\n")
+        report = self.root / "stale.json"
+        self.assertEqual(commands.cmd_run(self.args(rom=str(self.rom_path), executable=str(child),
+                                                    report=str(report))), EXIT_MISSING_PREREQUISITE)
+        check = self.check(report, "supported_profile")
+        self.assertEqual(check["outcome"], "missing")
+        for expected in ("some.other.profile", pack.PROFILE_ID, "build --preset app-debug"):
+            self.assertIn(expected, check["detail"])
+        profiles.write_text(f"other.profile\n{pack.PROFILE_ID}\n")
+        report = self.root / "current.json"
+        self.assertEqual(commands.cmd_run(self.args(executable=str(child), report=str(report))), EXIT_OK)
+        self.assertEqual(self.check(report, "supported_profile")["outcome"], "passed")
+        profiles.write_text("")
+        report = self.root / "silent.json"
+        self.assertEqual(commands.cmd_run(self.args(executable=str(child), report=str(report))), EXIT_OK)
+        self.assertEqual(self.check(report, "supported_profile")["outcome"], "skipped")
 
     def test_frontend_failure_is_not_a_successful_launch(self):
         self.assertEqual(commands.cmd_run(self.args(rom=str(self.rom_path), executable="/usr/bin/false")), EXIT_FAILURE)

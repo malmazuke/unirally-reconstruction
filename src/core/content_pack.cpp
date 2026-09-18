@@ -260,6 +260,15 @@ std::array<std::uint8_t, 32> sha256(std::span<const std::uint8_t> source) {
 }
 } // namespace
 
+namespace {
+constexpr std::array<std::string_view, 2> supported_profiles{
+    "classic.pal.crawler.dragster.v1", "classic.pal.crawler.two-tracks.v8"};
+} // namespace
+
+std::span<const std::string_view> supported_pack_profiles() {
+  return supported_profiles;
+}
+
 ClassicContentPack::ClassicContentPack(const std::filesystem::path &path) {
   std::ifstream input(path, std::ios::binary);
   if (!input)
@@ -283,8 +292,8 @@ ClassicContentPack::ClassicContentPack(const std::filesystem::path &path) {
         "Classic pack source ROM identity is unsupported");
   const auto profile=in.text();
   const auto start=in.text();
-  const bool two_tracks=profile=="classic.pal.crawler.two-tracks.v8";
-  if (profile != (two_tracks ? "classic.pal.crawler.two-tracks.v8" : "classic.pal.crawler.dragster.v1"))
+  const bool two_tracks=profile==supported_profiles[1];
+  if (profile != supported_profiles[two_tracks ? 1 : 0])
     throw std::invalid_argument("Classic pack profile is unsupported");
   if (start != (two_tracks ? "classic.crawler.race-start.v2" : "classic.crawler.dragster.race-start.v1"))
     throw std::invalid_argument("Classic pack start state is unsupported");
