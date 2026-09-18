@@ -535,3 +535,200 @@ closer to the original than the one it replaces.
 Re-review scope: finding 2.1's frames 1392-1406 identical again in both runner
 modes, plus the record and R-0040 corrections. I do not need the other
 measurements re-run.
+
+---
+
+# Re-review at `f8645d7`
+
+- Corrected candidate: `f8645d75ed423f3d3dcb3a532a2a859f572cf63e`
+  ("Fix the single-state fade and the review's should-fix findings"), reached
+  through `cf17c20` (task record only). Reviewed by detaching this worktree at
+  `f8645d7`; this report stays on `review/classic-presentation-unification`.
+- Both presets rebuilt from scratch at the corrected candidate
+  (`lab-build-info.json`: commit `f8645d7`, `dirty: false`). The `ed504fb`
+  comparison binaries are the same ones I built for the first pass.
+- **Verdict: approve.** The blocking finding is fixed and I could not
+  reproduce it. Two advisories and one should-fix remain, none of them a
+  reason to hold integration.
+
+## Dispositions verified
+
+### Finding 2.1 (blocking) - fixed
+
+```cpp
+const bool previous_is_earlier = previous_update && previous_update->movement.frame < state.movement.frame;
+const bool previous_is_prior   = previous_update && previous_update->movement.frame <= state.movement.frame;
+const auto first = scenario.initialization_frame;
+const unsigned prior_fade = std::min(30U, previous_is_earlier ? unsigned(previous_update->fade_level)
+                                          : (state.movement.frame <= first ? 0U : state.movement.frame - first - 1U));
+```
+
+This is the narrow fix: `previous_is_earlier` gates the fade only,
+`previous_is_prior` still gates the BG scroll, so the background fallback I
+warned about did not move. The fallback is the accepted frame formula rather
+than `fade_level - 1`, and the commit's reason for that is right and worth
+recording: `$0FF1` saturates at 30, so from frame 1407 `fade_level - 1` would
+have been one step too *dark*. The formula has no such end.
+
+- **Single-state mode, ZOOM ZOO frames 1377-1439 plus 1500, 1700, 2501, 3208,
+  4840, 6484, 6700 - 70 frames, new against the `ed504fb` renderer: worst
+  mismatch 0.** The fifteen frames that differed by up to 54,345 pixels at
+  `f734b4e` (1392-1406) are now identical, and so are 1407-1439, which the
+  `fade_level - 1` alternative would have broken.
+- **`--timeline` mode unaffected, as claimed**: 76 ZOOM ZOO frames (1377-1439
+  plus 1450, 1500, 1649, 1700, 2000, 2501, 3000, 3208, 4840, 5000, 6000, 6484,
+  6700) all mismatch 0 against the `ed504fb` renderer.
+- `fade_level == min(30, frame - 1328)` on all 2,373 DRAGSTER frames of the
+  contract race, so the formula and the tracked level agree on that track too
+  and the DRAGSTER single-state path did not move either.
+
+### Finding 2.5 (should fix) - fixed
+
+Extraction now precedes the rename, and `subprocess.CalledProcessError` is
+caught. Real run, `--pack` an incompatible v7 pack, `--rom` the supported ROM,
+`--replace-pack`, with the landing-matrix extractor unavailable in this
+checkout:
+
+```
+[ failed] supported_rom (required): extraction failed, nothing was replaced: Command '[... landing_matrix ...]' returned non-zero exit status 1.
+status=failed   (exit 3, no traceback)
+```
+
+`artifacts/review2/incompatible.pack` is still in place and byte-identical to
+the v7 pack it was copied from, and no `.stale-*` file was created. The new
+`test_frontend` case pins the same behaviour with a mocked decompressor error;
+`tests.tooling.test_frontend` is **14/14**.
+
+### Finding 2.6 (advisory) - fixed, and the v1 contracts still hold
+
+`presentation_runner.cpp` and `live_presentation_runner.cpp` now build their
+`PresentationContent` through `dragster_presentation_content`, so the function
+has the callers its comment names. Re-running the frozen v1 contracts through
+those runners:
+
+- winner: **36 / 697 / 279 / 445 / 653 / 962 / 961**, status passed.
+- loser: **1,073**, status passed.
+
+Unchanged from the accepted figures.
+
+### Findings 2.2, 2.3, 2.4, 2.7, 2.8, 2.9 - fixed
+
+- R-0040's "Not established" now has three bullets, none duplicated.
+- The record's part-B prose names the 50 initialization/countdown frames at
+  0-490 and frame 3700 at 23,194 with its cause.
+- The derivation's bound is now stated in `presentation.hpp`,
+  `classic_opponent_finish_frame`'s body, the measurement and R-0040.
+  Re-measured at `f8645d7` over the banner's real length
+  (`winner_window_frames = 360`, not the 120-frame window I sampled first -
+  a correction to my own earlier text, with the same conclusion):
+
+  | case | gap (player - opponent) | band | tracked members | derived members |
+  | --- | --- | --- | --- | --- |
+  | random-1-a | 422 | 3216-3575 | 360 / 360 | **0 / 360** |
+  | reversal-a | 967 | 3327-3686 | 360 / 360 | **0 / 360** |
+  | primary-a | -3 (player won) | 3213-3572 | 360 / 360 | 360 / 360 |
+
+- `zoom_zoo_runner`'s `load()` says in one line that the loose files are read
+  only without a pack.
+- The `--rom` remedy now reads "pass `--replace-pack` to rebuild it" when
+  `--rom` was given, and keeps the full remedy when it was not. Both observed.
+- The gate table records the `test --suite synthetic` result and says the
+  `final-gates.sh` tooling line is a wrong invocation, not a result.
+
+## Checks re-run at `f8645d7`
+
+Clean tracked tree throughout (the gates recorded `source_diff_sha256 =
+e3b0c442...`, the empty-tree digest, against `source_commit f8645d75`).
+
+| Check | Result |
+| --- | --- |
+| `build --preset lab-debug` / `--preset app-debug` | passed |
+| `ctest --test-dir build/lab-debug` | 23/23 |
+| `ctest --test-dir build/app-debug` | 23/23 |
+| `test --suite synthetic --preset lab-debug` | passed, 411 checks, 0 failed |
+| `unittest discover -s tests/tooling -t tests/tooling` | 385 tests, OK |
+| `tests.tooling.test_frontend` | 14/14 |
+| stage_c part A | 36 / 358 / 279 / 322 / 777 / 962 / 961, all inside threshold - identical to `f734b4e` |
+| stage_c part B | 757,274 -> 680,807; 114 better, 4 worse - identical to `f734b4e` |
+| stage_c part C | all ten scenes `new_vs_before = 0` |
+| v1 winner / loser `presentation-check` | 36/697/279/445/653/962/961 and 1,073 |
+| `zoom_zoo_playable compare` m4-16-primary (app-debug binary) | passed |
+| `dragster_playable compare` primary / random-1 / reversal (app-debug binary, each case's own freeze contract) | passed, `acceptance: true` |
+| hidden app runs, both tracks, 4,000 updates | 0 rider-pose fallback frames; DRAGSTER phase 3, outcome 1, totals 3357/3358 |
+| launcher: typed v1 pack, no `--pack`, `--rom` without `--replace-pack` | refused / selected by profile / refused with the shorter remedy |
+
+## Remaining findings
+
+### R1. SHOULD FIX (not blocking) - the fade fix has no automated regression guard
+
+The defect that escaped the first candidate is still only covered by an ad-hoc
+picture sweep outside the test suites. I checked this by mutation: in a scratch
+copy of `f8645d7` I restored exactly the old expression -
+
+```cpp
+const unsigned prior_fade = std::min(30U, previous_is_prior ? unsigned(previous_update->fade_level)
+                                          : (state.fade_level ? unsigned(state.fade_level) - 1U : 0U));
+```
+
+- rebuilt `lab-debug` and ran `ctest`: **100% tests passed, 0 failed out of
+23**. `tests/native/` contains no assertion about the renderer's fade at all
+(`grep -rn fade tests/native tests/app` finds only state fields set in
+movement tests). So the same class of regression would escape again.
+
+Cheapest fix: lift the three-line selection into a named helper, e.g.
+`unsigned classic_race_prior_fade(const ZoomZooState& state, const ZoomZooState* previous_update, std::uint32_t initialization_frame)`,
+and assert it in `presentation_tests.cpp` for (a) an earlier previous update,
+(b) `previous == state` mid-fade, (c) `previous == nullptr` mid-fade, and
+(d) a saturated frame past 1406 where `fade_level - 1` would be wrong. Four
+assertions, and the mutation above then fails.
+
+This is not blocking because the behaviour is now correct and I verified it
+over 70 frames; it is the test debt the fix leaves behind.
+
+### R2. ADVISORY - the gate table attributes every row to `f734b4e`
+
+`f8645d7` changes `presentation.cpp`, `presentation_runner.cpp`,
+`live_presentation_runner.cpp`, `zoom_zoo_runner.cpp` and `commands.py`, so the
+gate rows and the hosted-CI row (run 35309658396) belong to the superseded
+candidate. I re-ran the suites, the four differential gates, the v1 contracts,
+the three picture measurements and both hidden app runs at `f8645d7` myself and
+they all pass, so nothing is in doubt - the table just needs each row's commit
+against it, and the consolidated closeout already requires CI on the final tip.
+
+### R3. ADVISORY - a failed `--replace-pack` still records `classic_pack` as passed
+
+In the real run above the report contains, before the failure:
+
+```
+[ passed] classic_pack (required): existing pack is invalid (...); --replace-pack will move it to .../inc.pack.stale-20260918T055216Z
+[ failed] supported_rom (required): extraction failed, nothing was replaced: ...
+```
+
+The passed check announces a move that did not happen, and names a timestamped
+path that never existed. The overall status is `failed` and the pack is intact,
+so nothing is misleading in outcome - but a reader of the JSON sees a passed
+`classic_pack` check for a launch in which the pack was neither replaced nor
+usable. Recording it as skipped, or adding the check only after the rename
+succeeds, would read truthfully.
+
+Related and narrower: the `except (ValueError, subprocess.CalledProcessError)`
+block now also covers `pack_path.rename(replace_stale)` and
+`write_atomic`/`validate_pack`. A `validate_pack` ValueError raised *after* a
+successful rename would be reported as "extraction failed, nothing was
+replaced" although the old pack had been moved. That needs a freshly built pack
+to fail its own validation, so it is remote; narrowing the `try` around
+`build_pack` would remove it.
+
+## Re-review verdict
+
+**Approve.** The blocking regression is fixed by the narrow change I suggested,
+with the right reason for choosing the frame formula over `fade_level - 1`, and
+70 single-state plus 76 timeline ZOOM ZOO frames are pixel-identical to the
+accepted renderer. Every should-fix and advisory item has a real disposition,
+not a note. All three picture measurements, both v1 contracts, four
+differential gates, both hidden app runs, 23/23 ctest on two presets, 411
+project-runner checks and 385 tooling tests reproduce at `f8645d7`.
+
+R1 (a regression test for the fade) is worth doing before or just after
+integration; R2 and R3 are record and report-shape items. None of them needs
+another review cycle.
