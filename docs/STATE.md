@@ -142,10 +142,10 @@ moved intact to `local/evidence/<worktree>/` in the main checkout (115 GB,
 including the DRAGSTER originals and the M4-16, M4-15 and idle captures the
 gates read), the seven closeouts that lived in worktrees moved to
 `artifacts/<task>-integration/` beside the earlier ones, and every recorded
-gate script was repointed. All 94 registered worktrees and one unregistered
+gate script was repointed. All 93 registered worktrees and one unregistered
 clone were removed, and 105 local branches were deleted after a patch-id audit
-(eight with commits not represented on `main`, all review reports, were pushed
-to `origin` first; the two review reports the records cite but `main` lacked,
+(nine with commits not represented on `main`, all review reports, were on
+`origin` first, eight of them newly pushed; the two review reports the records cite but `main` lacked,
 CLASSIC-PRESENTATION-UNIFICATION's and DRAGSTER-WINDOW-PAUSE's, are now on
 `main`). Deleted: verified duplicate captures (7.6 GB), the M4-15 reviewer's
 uncited exploration captures (11 GB), build output, caches and run-report

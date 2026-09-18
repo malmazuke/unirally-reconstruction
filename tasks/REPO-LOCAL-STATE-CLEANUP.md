@@ -81,7 +81,7 @@ the main checkout's ignored `local/emulators/bsnes/lab-core.json`, whose
 
 ### Branches: patch-id audit, then push or delete
 
-105 local branches besides `main`, audited with `git merge-base --is-ancestor`
+106 local branches besides `main` (105 plus this task's own), audited with `git merge-base --is-ancestor`
 and `git cherry main <branch>` (patch-id), never `git diff main..branch`:
 
 | Class | Count | Action |
@@ -114,9 +114,12 @@ is left as it is. Remaining local branches: `main`, `task/repo-local-state-clean
   `artifacts/<task>-integration/` beside the nine already there (16 in all):
   unification, dragster-window, dragster-ordinary, m4-16, dragster-palette-cycle,
   dragster-clock-limit, window-pause.
-- 12 recorded gate scripts had their absolute input paths rewritten from
+- 11 recorded gate scripts had their absolute input paths rewritten from
   `.worktrees/<wt>/artifacts/...` to `local/evidence/<wt>/...`; their
   `cd .worktrees/<wt>` lines are left as a record of the checkout they ran in.
+  A twelfth, `dragster-clock-limit/.../frozen-gates.sh`, used relative paths
+  into the duplicate `regressions/` copies and was repointed to the canonical
+  originals after the review found it.
 - `local/emulators/bsnes/lab-core.json` now names the main checkout's own core
   (hash verified equal before the change).
 
@@ -124,9 +127,9 @@ is left as it is. Remaining local branches: `main`, `task/repo-local-state-clean
 
 | What | Why safe | Size |
 | --- | --- | --- |
-| `dragster-clock-limit/.../regressions/{dragster-originals,boundary-a,boundary-b}` | `diff -rq` identical to the canonical DRAGSTER originals and M4-16 boundary captures | 7.6 GB |
+| `dragster-clock-limit/.../regressions/{dragster-originals,boundary-a,boundary-b}` (5.7 GB + 2 x 0.85 GB) | `diff -rq` identical to the canonical DRAGSTER originals and M4-16 boundary captures | 7.6 GB |
 | `m4-15-review/*-explore.{wram,sram,json}` (eight exploration captures: delayed, early-jump, early-turns, jumps, lap-two-jump, mid-neutral, one-step, two-step; 24 files) | the reviewer's exploration runs used to choose cases; no record cites them; the frozen `*-a`/`*-b` pairs they led to are kept | 11.0 GB |
-| five `build/` directories, 74 `__pycache__`, 15 empty directories, 159 run-report scratch directories (772 KB) | regenerable | 1.5 GB |
+| five `build/` directories, 74 `__pycache__`, 15 empty directories, 144 run-report scratch directories (772 KB; one more found by the review) | regenerable | 1.5 GB |
 | 93 registered worktrees and the unregistered clone, with their per-worktree `local/` copies (toolchains, emulator builds) | branch pushed or represented on `main`; artifacts already moved; checkouts regenerable | about 12 GB |
 
 Kept deliberately, with the reason, so the next pass does not re-decide them:
@@ -136,7 +139,7 @@ captures the M4-16 record cites), `m4-16-rider-art/m4-16-idle/captures`
 (10 GB, gate input), `m4-16-review` (11 GB, the reviewer's independent
 originals, cited 17 times), `dragster-clock-limit/{idle-a,idle-b}` (8.3 GB,
 the clock-limit inventory gate's inputs), `dragster-ordinary-controls` (8.3 GB:
-originals 5.9 GB plus `explore`/`fuzz` output that R-0038 and the task record
+originals 5.7 GB plus `explore`/`fuzz` output that R-0038 and the task record
 cite), `m4-15-review` and `m4-15-race-completion` (11.5 GB, M4-15 matrix
 inputs), `dragster-controls-review` (3 GB, the reviewer's withheld originals),
 `dragster-window-pause/window-pause` (2.3 GB, the seven pause originals).
@@ -155,7 +158,24 @@ but nothing requires it.
 
 ## Review
 
-Pending at the candidate commit: a fresh Claude Opus 5 reviewer in `.worktrees/cleanup-review` (branch `review/repo-local-state-cleanup`) reproduces the branch audit, the review-file identity, the evidence layout and one differential gate. Its report is `tasks/REPO-LOCAL-STATE-CLEANUP-review.md`; the result is recorded here at integration.
+Fresh Claude Opus 5 reviewer in the isolated `.worktrees/cleanup-review` (branch
+`review/repo-local-state-cleanup`) at the exact candidate `da3b512`: **approve**,
+report `2c6a418` ([REPO-LOCAL-STATE-CLEANUP-review](REPO-LOCAL-STATE-CLEANUP-review.md)),
+12.8 minutes. It reproduced all six items, widening the branch spot-check to
+all 105 recorded tips (every one still an object, every non-pushed one `+0`
+under `git cherry`), confirmed the two review files' blob SHAs against the
+origin branches, reproduced every `du` cell, and reran the DRAGSTER reversal
+compare from its own build against `local/evidence` with `rows_sha256` and
+`contract_sha256` identical to the recorded run. No blocking findings. Its
+should-fix items are applied in the integration commit: the clock-limit
+`frozen-gates.sh` still read the deleted duplicate copies by relative path
+(repointed); the AGENTS.md sentence overstated what the retained scripts do;
+the registered-worktree count (93 plus the clone) and the pushed-branch count
+(nine on origin, eight new); the scratch-directory and repointed-script counts;
+and the Assignment status is true only from integration on. Advisories
+(5.7 GB not 5.9; 106 audited, 105 deleted; the repointed-scripts log's
+closeout paths moved again; one surviving 4 KB scratch directory) are
+corrected or noted in the logs.
 
 ## Handoff
 
