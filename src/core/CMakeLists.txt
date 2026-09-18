@@ -28,5 +28,5 @@ target_link_libraries(presentation_runner PRIVATE unirally_presentation)
 add_executable(zoom_zoo_runner zoom_zoo_runner.cpp)
 target_link_libraries(zoom_zoo_runner PRIVATE unirally_movement)
 
-add_executable(zoom_zoo_presentation_runner zoom_zoo_presentation_runner.cpp)
-target_link_libraries(zoom_zoo_presentation_runner PRIVATE unirally_presentation)
+add_executable(classic_race_presentation_runner classic_race_presentation_runner.cpp)
+target_link_libraries(classic_race_presentation_runner PRIVATE unirally_presentation)

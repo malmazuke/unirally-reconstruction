@@ -46,28 +46,32 @@ void write_frame(const char* path,const unirally::RgbFrame& frame) {
 }
 } // namespace
 int main(int argc,char** argv) try {
+    // One picture of either track's shared race state, drawn as the app draws it.
     if(argc==6 && std::string_view(argv[2])=="--timeline") {
         // Replays consecutive native states from the timeline's first row so the
-        // rider look overlays (R-0036) follow the race, then draws FRAME.
+        // rider look overlays (R-0036) and the opponent's finish frame (R-0040)
+        // follow the race, then draws FRAME.
         unirally::ClassicContentPack pack(argv[1]);
         const auto target=parse_unsigned(argv[4],"frame");
         std::ifstream input(argv[3]);
         if(!input)throw std::invalid_argument("cannot read timeline");
-        unirally::ZoomZooRiderLookTracker look;
+        unirally::ClassicRaceHistoryTracker history;
         std::string line;
         unsigned frame{};
         if(!std::getline(input,line))throw std::invalid_argument("timeline is empty");
         auto previous=parse_timeline_row(line,frame);
-        if(!previous.native_initialization || frame!=1376U)
+        if(!previous.native_initialization || frame!=unirally::classic_race_scenario(previous.track).initialization_frame)
             throw std::invalid_argument("timeline must begin at the native race initialization");
         if(target<=frame)throw std::invalid_argument("frame must follow the timeline's first row");
+        const auto content=unirally::classic_race_presentation_content(pack,previous.track);
         while(std::getline(input,line)) {
             const auto previous_frame=frame;
             auto state=parse_timeline_row(line,frame);
             if(frame!=previous_frame+1U)throw std::invalid_argument("timeline rows must be consecutive");
-            look.observe_update(previous,state,pack);
+            history.observe_update(previous,state,pack);
             if(frame==target) {
-                write_frame(argv[5],unirally::render_zoom_zoo(state,pack,&previous,&look.on_screen()));
+                const auto on_screen=history.on_screen();
+                write_frame(argv[5],unirally::render_classic_race(state,content,&previous,&on_screen));
                 return 0;
             }
             previous=std::move(state);
@@ -75,14 +79,16 @@ int main(int argc,char** argv) try {
         throw std::invalid_argument("frame is beyond the timeline");
     }
     if(argc!=4 && argc!=5)
-        throw std::invalid_argument("usage: zoom_zoo_presentation_runner PACK STATE OUT.ppm [PREVIOUS_STATE]\n"
-                                    "       zoom_zoo_presentation_runner PACK --timeline NATIVE_TIMELINE FRAME OUT.ppm");
+        throw std::invalid_argument("usage: classic_race_presentation_runner PACK STATE OUT.ppm [PREVIOUS_STATE]\n"
+                                    "       classic_race_presentation_runner PACK --timeline NATIVE_TIMELINE FRAME OUT.ppm");
     unirally::ClassicContentPack pack(argv[1]);
     const auto state=load_state(argv[2]);
     // The HUD and riders show the previous update; without PREVIOUS_STATE
     // they are drawn one update ahead. A single state carries no rider look
-    // history, so the upper-body overlays are omitted here.
+    // history, so the upper-body overlays are omitted here, and an opponent-won
+    // banner is drawn only once both finish times are known.
     const auto previous=argc==5?load_state(argv[4]):state;
-    write_frame(argv[3],unirally::render_zoom_zoo(state,pack,&previous));
+    const auto content=unirally::classic_race_presentation_content(pack,state.track);
+    write_frame(argv[3],unirally::render_classic_race(state,content,&previous));
     return 0;
 } catch(const std::exception& e) {std::cerr<<e.what()<<'\n';return 1;}

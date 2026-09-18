@@ -27,23 +27,27 @@ int main() {
   // $0EFB against the lap the original's HUD shows one frame later, read off
   // the frozen primary timeline's frames 1450, 1676, 3209 and 4841. Zero is a
   // clamp only: once finished the HUD shows FINISH instead of a lap.
-  require(unirally::zoom_zoo_hud_lap(4) == 0);
-  require(unirally::zoom_zoo_hud_lap(3) == 1);
-  require(unirally::zoom_zoo_hud_lap(2) == 2);
-  require(unirally::zoom_zoo_hud_lap(1) == 3);
-  require(unirally::zoom_zoo_hud_lap(0) == 3);
+  require(unirally::classic_hud_lap(4, 3) == 0);
+  require(unirally::classic_hud_lap(3, 3) == 1);
+  require(unirally::classic_hud_lap(2, 3) == 2);
+  require(unirally::classic_hud_lap(1, 3) == 3);
+  require(unirally::classic_hud_lap(0, 3) == 3);
+  // DRAGSTER's one lap: the initial crossing, then the lap, which holds.
+  require(unirally::classic_hud_lap(2, 1) == 0);
+  require(unirally::classic_hud_lap(1, 1) == 1);
+  require(unirally::classic_hud_lap(0, 1) == 1);
   {
     unirally::ZoomZooState racing{};
     racing.race.riders[0].laps_remaining = 2;
     racing.movement.timer.seconds = 3;
     racing.movement.timer.tenths = 2;
     racing.movement.timer.subframe = 4;
-    auto hud = unirally::zoom_zoo_hud(racing);
+    auto hud = unirally::classic_race_hud(racing);
     require(hud.lap == "2/3" && hud.clock == "0:03.28" && hud.finish_time.empty() && hud.caption.empty());
     racing.movement.countdown = 70;
-    require(unirally::zoom_zoo_hud(racing).caption == "READY");
+    require(unirally::classic_race_hud(racing).caption == "READY");
     racing.movement.countdown = 69;
-    require(unirally::zoom_zoo_hud(racing).caption == "GO");
+    require(unirally::classic_race_hud(racing).caption == "GO");
 
     // Win: the player finishes 1:38.02 while the opponent is still racing and
     // its total is still the 60000 sentinel. A zeroed total must not turn the
@@ -51,20 +55,20 @@ int main() {
     unirally::ZoomZooState won{};
     won.race.riders[0].finished = 1;
     won.race.total_times = {9802, 60000};
-    require(unirally::zoom_zoo_hud(won).caption == "WINNER");
+    require(unirally::classic_race_hud(won).caption == "WINNER");
     won.race.total_times = {9802, 0};
     won.movement.timer.minutes = 1;
-    hud = unirally::zoom_zoo_hud(won);
+    hud = unirally::classic_race_hud(won);
     require(hud.lap == "FINISH" && hud.clock.empty() && hud.finish_time == "1:38.02" && hud.caption == "WINNER");
     won.race.riders[1].finished = 1;
     won.race.total_times[1] = 9810;
-    require(unirally::zoom_zoo_hud(won).caption == "WINNER");
+    require(unirally::classic_race_hud(won).caption == "WINNER");
 
     unirally::ZoomZooState lost{};
     lost.race.riders[0].finished = 1;
     lost.race.riders[1].finished = 1;
     lost.race.total_times = {9818, 9810};
-    hud = unirally::zoom_zoo_hud(lost);
+    hud = unirally::classic_race_hud(lost);
     require(hud.finish_time == "1:38.18" && hud.caption == "LOSER");
 
     // 10:00 time-out: finished with laps left and the no-time total. The
@@ -79,7 +83,7 @@ int main() {
     timed_out.movement.timer.seconds = 9;
     timed_out.movement.timer.tenths = 9;
     timed_out.movement.timer.subframe = 3;
-    hud = unirally::zoom_zoo_hud(timed_out);
+    hud = unirally::classic_race_hud(timed_out);
     require(hud.lap == "2/3" && hud.clock == "9:59.90" && hud.finish_time.empty() && hud.caption == "LOSER");
   }
 
@@ -671,4 +675,163 @@ int main() {
     rejected = true;
   }
   require(rejected);
+
+  {
+    // The shared race shared_state drives the same palette phase, window selection
+    // and result view as the legacy DRAGSTER finish struct (one renderer for
+    // both tracks; CLASSIC-PRESENTATION-UNIFICATION).
+    using unirally::ClassicRaceTrack;
+    unirally::ZoomZooState race{};
+    race.track = ClassicRaceTrack::Dragster;
+    race.native_initialization = race.complete_race = race.sustained = true;
+    const auto setup = unirally::classic_race_scenario(ClassicRaceTrack::Dragster).initialization_frame + 6U;
+    require(setup == 1334U);
+    std::vector<std::uint8_t> phase_tables(544);
+    for (std::size_t table = 0; table < 17; ++table)
+      for (std::size_t index = 0; index < 16; ++index) {
+        phase_tables[table * 32 + index * 2] = static_cast<std::uint8_t>(index);
+        phase_tables[table * 32 + index * 2 + 1] = static_cast<std::uint8_t>(table);
+      }
+    const auto shared = [&](std::uint32_t frame, std::uint16_t result_updates) {
+      auto shared_state = race;
+      shared_state.movement.frame = frame;
+      shared_state.result_updates = result_updates;
+      std::array<std::uint8_t, 512> cgram{};
+      cgram.fill(0xee);
+      unirally::apply_classic_race_palette_cycle(cgram, phase_tables, shared_state, setup);
+      return cgram;
+    };
+    const auto legacy = [&](std::uint32_t frame, unirally::RacePhase phase, std::uint16_t loading) {
+      unirally::MovementState shared_state{};
+      shared_state.frame = frame;
+      shared_state.finish.phase = phase;
+      shared_state.finish.result_loading_updates = loading;
+      std::array<std::uint8_t, 512> cgram{};
+      cgram.fill(0xee);
+      unirally::apply_dragster_palette_cycle(cgram, phase_tables, shared_state);
+      return cgram;
+    };
+    using unirally::RacePhase;
+    require(shared(1333, 0) == legacy(1333, RacePhase::Racing, 0));
+    require(shared(1600, 0) == legacy(1600, RacePhase::Racing, 0));
+    require(shared(3453, 0) == legacy(3453, RacePhase::FinishDelay, 0));
+    require(shared(3454, 1) == legacy(3454, RacePhase::ResultLoading, 1));
+    require(shared(3528, 75) == legacy(3528, RacePhase::ResultLoading, 75));
+    require(shared(10, 20) == legacy(10, RacePhase::ResultLoading, 20));
+    require(shared(3454, 1)[0] == 0 && shared(3454, 1)[192] == 8);
+
+    // Countdown and GO: no finish, the frame alone selects.
+    for (const std::uint32_t frame : {1333U, 1334U, 1353U, 1354U, 1383U, 1500U, 1534U, 1535U, 1536U, 1603U, 1604U}) {
+      auto shared_state = race;
+      shared_state.movement.frame = frame;
+      unirally::MovementState legacy_movement{};
+      legacy_movement.frame = frame;
+      require(unirally::classic_window_table_index(shared_state, setup, std::nullopt) ==
+              unirally::dragster_window_table_index(legacy_movement));
+    }
+    // Winner banner from the player's finish: finish_delay counts as the
+    // legacy player_finish_delay, and loading update 1 is the last change.
+    for (const std::uint32_t since : {0U, 1U, 2U, 3U, 40U, 41U, 240U}) {
+      auto shared_state = race;
+      shared_state.movement.frame = 3213 + since;
+      shared_state.race.riders[0].finished = shared_state.race.riders[1].finished = 1;
+      shared_state.race.total_times = {3357, 3358};
+      shared_state.race.finish_delay = static_cast<std::uint16_t>(since);
+      unirally::MovementState legacy_movement{};
+      legacy_movement.frame = shared_state.movement.frame;
+      legacy_movement.finish.phase = RacePhase::FinishDelay;
+      legacy_movement.finish.outcome = unirally::RaceOutcome::PlayerWon;
+      legacy_movement.finish.player_finish_delay = static_cast<std::uint16_t>(since);
+      require(unirally::classic_window_table_index(shared_state, setup, std::nullopt) ==
+              unirally::dragster_window_table_index(legacy_movement));
+      if (since == 240U) {
+        for (const std::uint16_t loading : {std::uint16_t{1}, std::uint16_t{2}, std::uint16_t{75}}) {
+          shared_state.movement.frame = 3453 + loading;
+          shared_state.result_updates = loading;
+          legacy_movement.frame = shared_state.movement.frame;
+          legacy_movement.finish.phase = RacePhase::ResultLoading;
+          legacy_movement.finish.result_loading_updates = loading;
+          const auto index = unirally::classic_window_table_index(shared_state, setup, std::nullopt);
+          require(index == unirally::dragster_window_table_index(legacy_movement));
+          require(index == unirally::classic_window_table_index(
+                               [&] { auto s = shared_state; s.movement.frame = 3454; s.result_updates = 1; return s; }(),
+                               setup, std::nullopt));
+        }
+      }
+    }
+    // Opponent won: its finish frame comes from the tracked history, or from
+    // the two finish times once the player has finished (reversal original:
+    // 3325 and 4292, totals 3363 and 5296; random-1: 3214 and 3636, 3358 and
+    // 4202; both parities of the gap).
+    {
+      auto shared_state = race;
+      shared_state.race.riders[1].finished = 1;
+      shared_state.race.total_times = {60000, 3363};
+      shared_state.movement.frame = 3400;
+      require(!unirally::classic_opponent_finish_frame(shared_state));
+      require(!unirally::classic_window_table_index(shared_state, setup, std::nullopt));
+      const auto tracked = unirally::classic_window_table_index(shared_state, setup, 3325U);
+      unirally::MovementState legacy_movement{};
+      legacy_movement.frame = 3400;
+      legacy_movement.finish.outcome = unirally::RaceOutcome::PlayerLost;
+      legacy_movement.finish.finish_animation_countdown[1] = static_cast<std::uint16_t>(120U - (3400U - 3325U));
+      require(tracked && tracked == unirally::dragster_window_table_index(legacy_movement));
+      // Beyond the legacy 120-update counter the history still selects.
+      shared_state.movement.frame = 3600;
+      require(unirally::classic_window_table_index(shared_state, setup, 3325U).has_value());
+      shared_state.race.riders[0].finished = 1;
+      shared_state.race.total_times = {5296, 3363};
+      shared_state.movement.frame = 4300;
+      shared_state.race.finish_delay = 8;
+      require(unirally::classic_opponent_finish_frame(shared_state) == 3325U);
+      require(!unirally::classic_window_table_index(shared_state, setup, std::nullopt)); // 975 frames after: the banner ended
+      auto random_one = race;
+      random_one.race.riders[0].finished = random_one.race.riders[1].finished = 1;
+      random_one.race.total_times = {4202, 3358};
+      random_one.movement.frame = 3640;
+      random_one.race.finish_delay = 4;
+      require(unirally::classic_opponent_finish_frame(random_one) == 3214U);
+      require(!unirally::classic_opponent_finish_frame([&] { auto s = random_one; s.race.total_times[0] = 60000; return s; }()));
+      // Player finished 100 frames after the opponent: the banner is still
+      // running, and both derivations select the same member.
+      auto late = race;
+      late.race.riders[0].finished = late.race.riders[1].finished = 1;
+      late.race.total_times = {3563, 3363}; // frames 3425 and 3325: 2*100 + (1-1)
+      late.movement.frame = 3430;
+      late.race.finish_delay = 5;
+      require(unirally::classic_opponent_finish_frame(late) == 3325U);
+      require(unirally::classic_window_table_index(late, setup, std::nullopt) ==
+              unirally::classic_window_table_index(late, setup, 3325U));
+      require(unirally::classic_window_table_index(late, setup, std::nullopt).has_value());
+    }
+    // The result view derives the legacy phases from the shared counters.
+    {
+      auto shared_state = race;
+      shared_state.movement.frame = 1400;
+      require(unirally::classic_finish_view(shared_state).phase == RacePhase::Racing);
+      shared_state.race.total_times = {60000, 3358};
+      shared_state.race.riders[1].finished = 1;
+      shared_state.race.riders[1].time_digits = {0, 3, 3, 5, 8};
+      auto view = unirally::classic_finish_view(shared_state);
+      require(view.rider_finished[1] && !view.rider_finished[0] &&
+              view.outcome == unirally::RaceOutcome::Pending && view.phase == RacePhase::Racing);
+      shared_state.race.riders[0].finished = 1;
+      shared_state.race.riders[0].time_digits = {0, 3, 3, 5, 7};
+      shared_state.race.total_times = {3357, 3358};
+      shared_state.race.finish_delay = 12;
+      view = unirally::classic_finish_view(shared_state);
+      require(view.phase == RacePhase::FinishDelay && view.outcome == unirally::RaceOutcome::PlayerWon &&
+              view.player_finish_delay == 12 && view.finish_time_centiseconds[0] == 3357);
+      shared_state.race.finish_delay = 240;
+      shared_state.result_updates = 225;
+      require(unirally::classic_finish_view(shared_state).phase == RacePhase::ResultLoading);
+      shared_state.result_updates = 226;
+      view = unirally::classic_finish_view(shared_state);
+      require(view.phase == RacePhase::ResultScreen && view.result_loading_updates == 226);
+      shared_state.race.total_times = {3359, 3358};
+      shared_state.result_updates = 241;
+      require(unirally::classic_finish_view(shared_state).outcome == unirally::RaceOutcome::PlayerLost &&
+              unirally::classic_finish_view(shared_state).phase == RacePhase::ResultLoading);
+    }
+  }
 }

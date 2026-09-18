@@ -5,8 +5,6 @@ add_executable(live_presentation_runner live_presentation_runner.cpp)
 target_link_libraries(live_presentation_runner PRIVATE unirally_frontend)
 add_executable(dragster_fuzz_runner dragster_fuzz_runner.cpp)
 target_link_libraries(dragster_fuzz_runner PRIVATE unirally_frontend)
-add_executable(dragster_race_picture_runner dragster_race_picture_runner.cpp)
-target_link_libraries(dragster_race_picture_runner PRIVATE unirally_frontend)
 
 if(LAB_BUILD_APP)
   include(FetchContent)

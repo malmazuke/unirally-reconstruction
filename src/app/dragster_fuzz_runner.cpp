@@ -94,18 +94,18 @@ int main(int argc, char **argv) try {
   if (pack_path.empty()) throw std::invalid_argument("--content-pack is required");
   const unirally::ClassicContentPack pack(pack_path);
   const auto content = unirally::dragster_race_content(pack);
-  const auto presentation = unirally::app::dragster_presentation_content(pack);
+  const auto presentation = unirally::classic_race_presentation_content(pack, unirally::ClassicRaceTrack::Dragster);
   unsigned aborts = 0, total_races = 0, total_updates = 0, total_renders = 0, pause_restarts = 0;
   for (unsigned seed = first_seed; seed < first_seed + seeds; ++seed) {
     const unsigned style = seed % 3U;
     Player player(seed, style);
     auto state = unirally::classic_crawler_dragster_race_start(content);
     unirally::app::LivePresentation live;
-    auto position = unirally::app::presentation_position(state.movement.riders[0].motion.x);
+    auto previous = state; // The update before the one drawn (R-0036).
     unsigned races = 0, updates = 0, renders = 0;
     std::string failure;
     std::vector<std::uint16_t> since_start; // Masks applied since the current race began.
-    auto previous_phase = unirally::app::dragster_presentation_state(state).finish.phase;
+    auto previous_phase = unirally::classic_finish_view(state).phase;
     try {
       for (; updates < maximum_updates && races < races_per_seed; ++updates) {
         const bool stable = state.result_updates && state.result_updates == unirally::stable_result_updates(state);
@@ -117,22 +117,23 @@ int main(int argc, char **argv) try {
         const auto buttons = unirally::with_physical_dpad(unirally::app::controller_buttons(mask));
         const auto result_before = state.result_updates;
         const auto frame_before = state.movement.frame;
+        previous = state;
         if (stable && buttons.start) {
           unirally::restart_zoom_zoo(state, content);
           ++races;
           live = {};
+          previous = state;
           since_start.clear();
         } else {
           since_start.push_back(mask);
           unirally::update_zoom_zoo(state, buttons, content);
-          if (state.movement.frame < frame_before) { ++pause_restarts; live = {}; since_start.clear(); }
+          if (state.movement.frame < frame_before) { ++pause_restarts; live = {}; previous = state; since_start.clear(); }
+          else live.observe_update(previous, state, pack);
         }
-        if (!state.race.riders[0].finished)
-          position = unirally::app::presentation_position(state.movement.riders[0].motion.x);
-        const auto phase = unirally::app::dragster_presentation_state(state).finish.phase;
+        const auto phase = unirally::classic_finish_view(state).phase;
         if (phase != previous_phase || updates % 64U == 0U ||
             (state.result_updates != result_before && state.result_updates >= 224)) {
-          (void)live.render_dragster_race(state, position, presentation);
+          (void)live.render_race(state, previous, presentation);
           ++renders;
         }
         previous_phase = phase;
