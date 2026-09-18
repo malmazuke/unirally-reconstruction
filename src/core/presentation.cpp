@@ -1098,15 +1098,18 @@ void ClassicRaceHistoryTracker::observe_update(const ZoomZooState& previous,cons
         const bool finish_recorded=(!previous.race.riders[0].finished && race.riders[0].finished) ||
                                    (!previous.race.riders[1].finished && race.riders[1].finished);
         // A finish restarts the banner's life; with the banner not alive the
-        // driver starts on the next update, otherwise it runs on without a
-        // gap. Each odd driver update steps the member before the driver
-        // selects (lose-a: finish 3214, member 8 on screen at 3216), and the
-        // 181st step ends the life instead.
+        // driver starts on the next update (even if that update records the
+        // other rider's finish: release-3213, finishes 3213 and 3214, member
+        // 7 on screen at 3215), otherwise it runs on without a gap. Each odd
+        // driver update steps the member before the driver selects (lose-a:
+        // finish 3214, member 8 on screen at 3216), and the 181st step ends
+        // the life instead.
+        if(banner_starts_next_) {
+            banner_alive_=true;banner_starts_next_=false;
+        }
         if(finish_recorded) {
             banner_life_steps_=0;
             if(!banner_alive_)banner_starts_next_=true;
-        } else if(banner_starts_next_) {
-            banner_alive_=true;banner_starts_next_=false;
         }
         if(banner_alive_ && input.parity_set) {
             if(banner_life_steps_>=winner_window_life_steps)banner_alive_=false;

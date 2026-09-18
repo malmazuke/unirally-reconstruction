@@ -796,7 +796,7 @@ int main() {
       auto restarted = race;
       restarted.race.riders[0].finished = restarted.race.riders[1].finished = 1;
       restarted.race.total_times = {4202, 3358};
-      for (const auto [frame, member] : {std::pair{3638U, 8U}, std::pair{3640U, 9U}, std::pair{3876U, 19U}}) {
+      for (const auto &[frame, member] : {std::pair{3638U, 8U}, std::pair{3640U, 9U}, std::pair{3876U, 19U}}) {
         restarted.movement.frame = frame;
         restarted.race.finish_delay = static_cast<std::uint16_t>(frame - 3636U);
         require(unirally::classic_window_table_index(restarted, setup, std::nullopt) == member);
@@ -824,7 +824,7 @@ int main() {
       auto both = race;
       both.race.riders[0].finished = both.race.riders[1].finished = 1;
       both.race.total_times = {3353, 3358};
-      for (const auto [frame, member] : {std::pair{3213U, 7U}, std::pair{3214U, 8U}, std::pair{3215U, 8U}, std::pair{3216U, 9U}}) {
+      for (const auto &[frame, member] : {std::pair{3213U, 7U}, std::pair{3214U, 8U}, std::pair{3215U, 8U}, std::pair{3216U, 9U}}) {
         both.movement.frame = frame;
         both.race.finish_delay = static_cast<std::uint16_t>(frame - 3211U);
         require(unirally::classic_window_table_index(both, setup, std::nullopt) == member);

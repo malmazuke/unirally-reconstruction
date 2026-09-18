@@ -111,8 +111,38 @@ pause, and before the player has finished when the opponent finished first
 
 ## Gates
 
-See the handoff.
+`artifacts/window-pause/gates.sh` on the candidate's tree (the tracker fix
+for a second finish on the driver's starting update was re-measured after it,
+below):
+
+| Gate | Result |
+| --- | --- |
+| five presets ctest | 23/23 each |
+| `test --suite synthetic` (lab-debug) | passed |
+| v1 contracts, v1 pack | winner 36/697/279/445/653/962/961, loser 1,073 (unchanged) |
+| stage_c A (frozen contract frames, unified) | 36/358/279/322/777/962/961 (unchanged) |
+| stage_c B (release-3213, 132 frames) | 680,807 rectangle mismatch, 114 better / 4 worse (unchanged; a first draft published no banner on 3215 because the second rider finished on the update the driver starts on, which the timeline-driven frame 3215 caught: 3,314 against 504) |
+| stage_c C (ten M4-16 ZOOM ZOO scenes) | pixel-identical to the before-change renderer |
+| hidden app runs, both tracks, 4,000 updates | 0 rider-pose fallback frames |
+| `dragster_fuzz_runner` (lab-release), 40 seeds | 79 completed races, 1,242 pause restarts, 7,696 renders, 0 aborts |
+| capture agreement (table above) | 100% on all five captures after the fix |
+| hosted CI | the first push `5b21f38` failed on Ubuntu GCC (`-Werror=range-loop-construct` on two test loops), fixed with the second commit |
+
+## Mistakes
+
+- The first tracker draft treated a second finish that lands on the very
+  update the driver would start on as "not started": no capture covers it,
+  but the release-3213 picture measurement does (frame 3215), and the
+  frame-based fallback already had it right. The pictures caught what the
+  five index-level captures could not.
+- The structured-binding loops copied on GCC (`-Werror=range-loop-construct`),
+  which the local Clang build accepts; the project's memory note about
+  dispatching CI before integration exists for this and was still needed.
 
 ## Handoff
 
-- In progress; see `git log`.
+- Candidate: see `git log` on `task/dragster-window-pause`. Review: fresh
+  independent reviewer in an isolated checkout; then integration, final-tip
+  CI and the closeout under ignored `artifacts/window-pause-integration/`.
+- Not done: ZOOM ZOO's own windows (still no family bound; the same tracker
+  would drive them once its members are captured).
