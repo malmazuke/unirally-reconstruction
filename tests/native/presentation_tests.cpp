@@ -899,16 +899,10 @@ int main() {
       earlier.fade_level = 30;
       require(unirally::classic_race_prior_fade(restart, &earlier, scenario) == 0);  // a later frame is not a previous update
     }
-    // The drivers' own selection per race update, from what they read
-    // (R-0040 and the countdown-pause and banner-pause originals).
+    // The countdown driver's selection from what it read (R-0040, the
+    // countdown-pause original).
     {
-      using unirally::ClassicWindowDriverInput;
-      const auto choose = [](std::uint16_t countdown, bool parity) {
-        ClassicWindowDriverInput input;
-        input.countdown_before = countdown;
-        input.parity_set = parity;
-        return unirally::classic_window_driver_selection(input);
-      };
+      const auto choose = unirally::classic_countdown_window;
       require(choose(270, false) == 6U && choose(250, true) == 6U && choose(249, false) == 0U && choose(221, false) == 0U);
       require(choose(220, false) == 6U && choose(190, false) == 6U && choose(189, false) == 1U && choose(161, false) == 1U);
       require(choose(160, false) == 6U && choose(130, false) == 6U && choose(129, false) == 2U && choose(101, false) == 2U);
@@ -916,14 +910,109 @@ int main() {
       // GO: an odd driver update chooses member 3, shown on the even frame after it.
       require(choose(69, true) == 3U && choose(69, false) == 4U && choose(1, true) == 3U && choose(1, false) == 4U);
       require(!choose(0, false) && !choose(0, true));
-      const auto banner = [](bool alive, std::uint32_t steps) {
-        ClassicWindowDriverInput input;
-        input.banner_alive = alive;
-        input.banner_steps = steps;
-        return unirally::classic_window_driver_selection(input);
+    }
+    // The window pointer followed update by update (DRAGSTER-WINDOW-PAUSE):
+    // a synthetic race whose countdown, pause and finish fields advance as
+    // the engine's do, checked against what the originals published.
+    {
+      struct Script {
+        std::vector<std::pair<std::uint32_t, std::uint32_t>> pauses; // states with the menu open
+        std::uint32_t player_finish{0}, opponent_finish{0}, loading{0};
       };
-      require(!banner(false, 0) && !banner(false, 5));
-      require(banner(true, 0) == 7U && banner(true, 1) == 8U && banner(true, 18) == 7U && banner(true, 181) == 8U);
+      const auto publish = [&](const Script &script, std::uint32_t last) {
+        std::vector<std::optional<unsigned>> published(last + 1);
+        unirally::ClassicWindowPointer pointer;
+        auto current = race;
+        current.movement.frame = 1328;
+        current.movement.countdown = 270;
+        for (std::uint32_t frame = 1329; frame <= last; ++frame) {
+          auto next = current;
+          next.movement.frame = frame;
+          next.pause.selection = 0;
+          for (const auto &[open, close] : script.pauses)
+            if (frame >= open && frame <= close) next.pause.selection = 1;
+          const bool diverted = current.pause.selection || next.pause.selection;
+          // The countdown handler runs once the fade reaches 5, from update 1333.
+          if (!diverted && frame >= 1333 && next.movement.countdown) --next.movement.countdown;
+          if (script.player_finish && frame >= script.player_finish) next.race.riders[0].finished = 1;
+          if (script.opponent_finish && frame >= script.opponent_finish) next.race.riders[1].finished = 1;
+          if (script.loading && frame >= script.loading) next.result_updates = static_cast<std::uint16_t>(frame - script.loading + 1);
+          pointer.observe_update(current, next);
+          published[frame] = pointer.published();
+          current = next;
+        }
+        return published;
+      };
+      // countdown-pause original: menu open on states 1400-1500 (resumed on
+      // 1501) and 1561-1600 (resumed on 1601): no window on 1401-1502 and
+      // 1562-1602, the digit resumes where it stopped, and GO follows the
+      // frame parity after the pauses (3 on even frames) until 1746.
+      {
+        Script script;
+        script.pauses = {{1400, 1500}, {1561, 1600}};
+        script.player_finish = 3359;
+        const auto p = publish(script, 1800);
+        require(!p[1333] && p[1334] == 6U && p[1400] == 6U);
+        for (std::uint32_t f = 1401; f <= 1502; ++f) require(!p[f]);
+        require(p[1503] == 6U && p[1560] == 6U && p[1561] == 6U);
+        for (std::uint32_t f = 1562; f <= 1602; ++f) require(!p[f]);
+        require(p[1603] == 6U && p[1636] == 2U && p[1704] == 3U && p[1705] == 4U && p[1746] == 3U && !p[1747]);
+      }
+      // banner-pause-odd original (reviewer's capture): opponent 3214, menu
+      // open on states 3240-3299 (61 diverted updates), player 3410: the
+      // opponent's driver dies on member 8 at 3636, the player's requests 7 on
+      // 3637 and steps from there.
+      {
+        Script script;
+        script.pauses = {{3240, 3299}};
+        script.opponent_finish = 3214;
+        script.player_finish = 3410;
+        script.loading = 3651;
+        const auto p = publish(script, 3660);
+        require(!p[3215] && p[3216] == 8U && p[3240] == 20U);
+        for (std::uint32_t f = 3241; f <= 3301; ++f) require(!p[f]);
+        require(p[3302] == 21U && p[3303] == 21U);
+        require(p[3410] == 21U && p[3411] == 21U && p[3412] == 22U); // no gap at the second finish
+        require(p[3636] == 8U && p[3637] == 7U && p[3638] == 8U && p[3639] == 8U && p[3640] == 9U);
+        require(p[3651] == 14U && p[3652] == 14U && p[3653] == 14U); // the last race vblank's member holds through loading
+      }
+      // random-1 original: opponent 3214, no pause: blank from 3576 until the
+      // player's finish at 3636 arms the second driver (member 8 on 3638).
+      {
+        Script script;
+        script.opponent_finish = 3214;
+        script.player_finish = 3636;
+        script.loading = 3877;
+        const auto p = publish(script, 3880);
+        require(p[3575] == 7U);
+        for (std::uint32_t f = 3576; f <= 3637; ++f) require(!p[f]);
+        require(p[3638] == 8U && p[3640] == 9U && p[3876] == 19U && p[3877] == 19U);
+      }
+      // reversal original: opponent 3325, first driver update even.
+      {
+        Script script;
+        script.opponent_finish = 3325;
+        script.player_finish = 4292;
+        script.loading = 4533;
+        const auto p = publish(script, 4540);
+        require(!p[3326] && p[3327] == 7U && p[3328] == 8U && p[3687] == 7U && !p[3688] && !p[4293] && p[4294] == 8U);
+      }
+      // primary-a (player 3211, opponent 3214) and continuous-right (3213,
+      // 3214): the first driver runs on; the second's finish leaves no gap.
+      {
+        Script script;
+        script.player_finish = 3211;
+        script.opponent_finish = 3214;
+        script.loading = 3452;
+        const auto p = publish(script, 3460);
+        require(!p[3212] && p[3213] == 7U && p[3214] == 8U && p[3215] == 8U && p[3216] == 9U);
+        Script script2;
+        script2.player_finish = 3213;
+        script2.opponent_finish = 3214;
+        script2.loading = 3454;
+        const auto q = publish(script2, 3460);
+        require(!p[3212] && !q[3214] && q[3215] == 7U && q[3216] == 8U);
+      }
     }
     // The result view derives the legacy phases from the shared counters.
     {

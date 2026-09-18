@@ -253,15 +253,26 @@ opponent-won banner) and from the two accepted captures whose player finished
 long after the opponent (random-1, reversal). The pointer alignment is: frame
 n shows the `$11FD` value at the end of frame n-1 (the driver of n-1 chose it).
 
-- **The banner's life is 180 steps, not 360 driver updates.** `$0F07`'s
-  `$0168` was read as 360 updates; the channel is in fact disabled on the
-  181st odd driver update after a finish: random-1 (opponent 3214, first
-  driver update 3215 odd) loses the banner on 3576, reversal (opponent 3325,
-  first driver update 3326 even) on 3688. A finish while the banner is alive
-  restarts the life with no gap and the member phase continues (lose-a,
-  banner-pause, primary-a); a finish after expiry starts the driver on the
-  following update from the phase it stopped at (random-1: member 8 on 3638
-  for the player's finish at 3636), which after 180 steps is member 7 again.
+- **Two drivers, one per rider, each with a 360-update life.** "Only the
+  winner's driver runs" above is wrong: each rider's finish arms that rider's
+  driver (`$0F03`/`$0F07` and `$0F05`/`$0F09`), which first runs on the next
+  race update the pause menu does not divert, and the earliest-armed live
+  driver owns `$11FD`. Per run: with its index still zero the life is set to
+  360 (`$0168`); a life of zero stops the driver for good and the next armed
+  one runs in the same update; otherwise the life counts down once per driver
+  update of either parity and, on an odd frame, the index steps 8..24 then
+  7..24, the request being member 7 for index zero. Read from the counters:
+  random-1 (opponent 3214) has `$0F09` at 359 after 3215 and zero after
+  3574, blank from 3576; reversal (opponent 3325, first driver update 3326
+  even) at 359 after both 3326 and 3327, blank from 3688; banner-pause keeps
+  `$0F09` counting through the player's finish at 3411 with `$0F07` still
+  zero, so a second finish restarts nothing. Without a pause 360 updates are
+  ten member cycles, so a second driver starting at index zero looks like a
+  continuation; a 61-update pause (the reviewer's banner-pause-odd capture)
+  separates them: the opponent's driver dies on member 8 at 3636 and the
+  player's requests 7 on 3637. A first reading of this task, "180 odd steps
+  from the latest finish with the phase continuing", fitted the other six
+  captures and failed that one on 15 frames.
 - **A pause disables channel 6 for every update the menu diverts**, from the
   update that opens it through the update that resumes (countdown-pause: no
   window on 1401-1502 for a pause opened on 1400 and resumed on 1501; the
@@ -269,11 +280,12 @@ n shows the `$11FD` value at the end of frame n-1 (the driver of n-1 chose it).
   countdown digit resumes where it stopped and the banner's steps do not
   advance. `$0300` keeps alternating through the pause, so after a resume the
   GO letters and the banner steps follow the frame parity again.
-- The frame-based selection is exact only when no pause diverted a driver
-  update; the live app and the runner's `--timeline` mode follow the drivers
-  update by update through `ClassicRaceHistoryTracker` and equal the
-  original's pointer on every frame of all five captures (2,267 + 2,319 +
-  2,119 + 2,544 + 3,200).
+- The frame-based selection is exact only when no pause diverted a race
+  update since the first finish; the live app and the runner's `--timeline`
+  mode follow the drivers update by update through `ClassicWindowPointer`
+  and equal the original's pointer on every frame of all seven captures
+  (countdown-pause 2,267, banner-pause 2,319, banner-pause-odd 2,318,
+  continuous-right 2,121, primary-a 2,119, random-1 2,544, reversal 3,200).
 
 `frame + 1 - since` can wrap for hand-made states with tiny frame numbers; it
 is defined, bounds-checked and unreachable for real states (review finding D
