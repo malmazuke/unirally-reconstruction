@@ -2,7 +2,7 @@
 
 ## Assignment
 
-- Status: in progress (started 18 September 2026 from `main` at `db042ef`, from the user's live play on the integrated CLASSIC-PRESENTATION-UNIFICATION build)
+- Status: review (candidate `fe0ddc7` after one returned review; started 18 September 2026 from `main` at `db042ef`, from the user's live play on the integrated CLASSIC-PRESENTATION-UNIFICATION build)
 - Milestone: follow-up to CLASSIC-PRESENTATION-UNIFICATION and DRAGSTER-WINDOW-EFFECTS
 - Coordinator: main session
 - Task provider: Anthropic (unchanged)
@@ -137,7 +137,33 @@ below):
 | capture agreement (table above) | 100% on all five captures after the fix |
 | hosted CI | the first push `5b21f38` failed on Ubuntu GCC (`-Werror=range-loop-construct` on two test loops), fixed with the second commit |
 
+## Independent review
+
+Fresh independent reviewer (Claude Opus 5) in an isolated checkout at
+`e00159a`, report `tasks/DRAGSTER-WINDOW-PAUSE-review.md` on
+`review/dragster-window-pause` (`55c33ea`). It reproduced the five-capture
+agreement, the v1 contracts and the release-3213 sweep identity, read the
+pointer alignment, the pause disabling and `$0300` from the WRAM series
+itself, captured two independent originals (banner-pause-odd, with 61
+diverted updates, and continuous-right) and read the life counters
+`$0F07`/`$0F09` directly. **Verdict: return.**
+
+| Finding | Severity | Disposition |
+| --- | --- | --- |
+| A. The banner's life is 360 driver updates of either parity, one driver per rider; a second finish restarts nothing; a driver after expiry starts at index zero. The "180 odd steps" reading fitted six captures and failed banner-pause-odd on 15 frames. | blocking | Fixed by porting the reviewer's two-driver model into `ClassicWindowPointer`; the two independent captures were regenerated into this task's artifacts and all seven agree on every frame. |
+| B. The frame-based fallback showed the banner on the finish update when the two finishes are one frame apart (continuous-right, 3214) | should fix | Fixed: the picture after a finish update selects nothing; the fallback follows the two-driver rule. |
+| C. No test constructed the tracker; deleting the pause rule left ctest green | should fix | `ClassicWindowPointer` is pack-free and the presentation tests drive it through scripted races asserting what the originals published, pauses included. |
+| D. R-0040, the record and the source map stated the wrong life rule | should fix | Corrected in all three. |
+| E. `\|\|` inside `?:`, the driver frame computed before its bound, the countdown ladder in two functions, artifacts written into another task's evidence directories, no local GCC | advisory | The fallback is rewritten without those; the ladder lives in `classic_countdown_window` only; the script writes under `artifacts/window-pause/agreement/` and the stray files were removed; the tip is pushed for Ubuntu CI. |
+
 ## Mistakes
+
+- The "180 odd steps" reading was fitted to captures that could not tell it
+  from the true rule (360 driver updates per driver): without a pause the
+  two coincide, and my one pause happened to divert an even number of
+  updates. The reviewer's odd-length pause capture and the counters
+  themselves decided it. Reading the counters (`$0F07`/`$0F09`) first would
+  have saved a round.
 
 - The first tracker draft treated a second finish that lands on the very
   update the driver would start on as "not started": no capture covers it,
