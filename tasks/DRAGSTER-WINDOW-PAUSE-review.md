@@ -294,3 +294,209 @@ probe `probe.cpp`, and `sweep_index.cpp` with its 2,147-row output. The two new
 WRAM captures were kept outside the repository and regenerate with
 `python3 -m tools.unirally_lab.native.dragster_playable_reference --core CORE
 --case artifacts/window-pause-review/<id>.case.json --horizon 3900 --out DIR`.
+
+---
+
+# Re-review at `1d37c6a`
+
+Same reviewer and checkout. Candidate: `1d37c6a` ("Rename a test lambda's local
+that shadowed an outer one on GCC"), three commits after the reviewed
+`e00159a`: `fe0ddc7` (the two-driver `ClassicWindowPointer`), `e9838ea` (the
+evidence corrections) and `1d37c6a` (a GCC `-Wshadow` fix in the new test, a
+pure rename). The candidate was not modified; four temporary mutations were
+applied for mutation testing and reverted, and the tree was clean afterwards.
+Nothing was written to the task worktree.
+
+**Verdict: approve**, with two should-fix items that are not reproducible
+failures of the behaviour and one standing precondition (the Ubuntu CI run on
+this exact tip).
+
+## Findings A to E from the first round
+
+| Finding | State |
+| --- | --- |
+| A (blocking) - the 180-step life | **Fixed.** `ClassicWindowPointer` is the two-driver model. |
+| B (should fix) - the banner one frame early with finishes one frame apart | **Fixed.** |
+| C (should fix) - no test drove the tracker | **Fixed.** |
+| D (should fix) - evidence stating the wrong rule | **Fixed.** |
+| E (advisory) - readability, stray artifacts, CI | **Fixed**, except that the hosted result on this tip is still pending. |
+
+Each was checked, not taken on report.
+
+### A - the pointer against the originals and against the review model
+
+`verify_pause.py` (my copy, output redirected) on all seven captures with a
+build of `1d37c6a`, published member against the original's `$11FD`:
+
+| capture | scored frames | published | frame-based with finish | frame-based alone |
+| --- | --- | --- | --- | --- |
+| countdown-pause | 2,267 | **2,267** | 1,934 | 1,934 |
+| banner-pause | 2,319 | **2,319** | 1,907 | 2,186 |
+| banner-pause-odd | 2,318 | **2,318** (was 2,303) | 1,907 | 1,943 |
+| continuous-right | 2,121 | **2,121** | 2,121 (was 2,120) | 2,121 (was 2,120) |
+| primary-a | 2,119 | **2,119** | 2,119 | 2,119 |
+| random-1-a | 2,544 | **2,544** | 2,544 | 2,184 |
+| reversal-a | 3,200 | **3,200** | 3,200 | 2,839 |
+
+The frame-based columns still disagree only through a pause and before the
+player has finished in an opponent-won race, which is the declared domain.
+
+Beyond the captures, `ClassicWindowPointer` was driven directly
+(`artifacts/window-pause-review/ptr_probe.cpp` reads a scripted timeline of
+`frame countdown pause finished0 finished1 result_updates`) and compared with
+my own model of the drivers over randomly generated races - random pause
+windows, both finish orders, both riders finishing on the same update,
+one-finisher races and result loading:
+
+```
+python3 artifacts/window-pause-review/differential.py [seed]
+200/200 synthetic races agree between the review model and ClassicWindowPointer   (seeds 20260918, 7, 99, 12345)
+```
+
+800 synthetic races, no disagreement. My model is the one derived independently
+from `$0F03`/`$0F05`/`$0F07`/`$0F09` in the first round, so this is two
+independent transcriptions of the counters agreeing, not a restatement.
+
+The regenerated captures in the task's artifacts are byte-identical to mine
+(`memory.wram` `08ac2cab5f981508` for banner-pause-odd, `7768eb5c1acce358` for
+continuous-right), and both of mine repeated byte-identically.
+
+### B - the fallback on hand-made states
+
+`artifacts/window-pause-review/fallback_probe.cpp` builds restored
+`ZoomZooState`s (finish times `2f + (f & 1)`, `finish_delay` saturating at 240,
+`result_updates` from the loading frame as the engine sets them) and
+`fallback_check.py` scores `classic_window_table_index` against the model over
+ten configurations, every frame from before the first finish to past loading:
+
+```
+OK  continuous-right: player 3213, opponent 3214 (one frame apart): 248/248
+OK  reversed: opponent 3213, player 3214: 247/247
+OK  same update: both 3214: 247/247
+OK  primary-a: player 3211, opponent 3214: 250/250
+OK  random-1: opponent 3214, player 3636 (expiry then restart): 255/255
+OK  reversal: opponent 3325, player 4292 (even first update): 249/249
+OK  player only, opponent times out: player 3300: 261/261
+OK  opponent 3214, player exactly at the expiry 3575: 256/256
+OK  opponent 3214, player one before the expiry 3574: 257/257
+OK  opponent 3214, player long after 4000: 261/261
+total disagreements: 0
+```
+
+scored from the player's finish onward; the earlier frames of an opponent-won
+race are the documented blind spot (a restored state cannot recover the
+opponent's finish frame until the player has also finished), and the probe
+reports them separately. The finish update itself now selects nothing in both
+orders.
+
+`dragster_window_table_index` is still byte-identical to the frozen
+DRAGSTER-WINDOW-EFFECTS record on all 2,147 release-3213 sweep states
+(`artifacts/window-pause-review/sweep-index-1d37c6a.txt`).
+
+### C - the suite now guards the rule
+
+Mutations of `src/core/presentation.cpp`, each built and run with
+`ctest --test-dir build/lab-debug` and the capture comparison, then reverted:
+
+| Mutation | ctest | captures |
+| --- | --- | --- |
+| `winner_window_life_updates` 360 -> 359 | **1 test failed** | banner-pause-odd 2,303/2,318 |
+| drop `chosen_.reset()` on a diverted update | **1 test failed** | countdown-pause 2,124/2,267, banner-pause-odd 2,257/2,318 |
+| set the life once instead of while the index is zero | **1 test failed** | (reversal is the case that shows it) |
+| drop `if(updated.result_updates>1U)return;` | 23/23 | 7/7 unchanged |
+
+The last is not a gap: with the publish gate already bounded by
+`result_updates<=1`, running the drivers during later loading updates changes
+no published member, only dead state.
+
+### Gates re-run on this tip
+
+| Gate | Result |
+| --- | --- |
+| ctest, lab-debug / lab-release / lab-sanitize / app-debug / app-sanitize | 23/23 each |
+| `test --suite synthetic` (lab-debug) | passed, 43s |
+| v1 winner contract, v1 pack | 36 / 697 / 279 / 445 / 653 / 962 / 961, passed |
+| v1 loser contract | 1,073, passed |
+| release-3213 sweep, legacy index | identical to the frozen record, 2,147 states |
+| `dragster_fuzz_runner` (lab-release), 40 seeds | 382,535 updates, 79 races, 1,242 pause restarts, 7,696 renders, **0 aborts** - the recorded numbers exactly |
+| hidden app runs, both tracks, 4,000 updates | rc=0, 0 rider-pose fallback frames each |
+
+Not re-run here: the `stage_c` picture measurements, which need the
+before-change binaries in another task's worktree. The index-level check on
+`continuous-right`, the same finish shape as release-3213 (3213 and 3214),
+agrees with the original on all 2,121 frames in all three columns, so the
+picture gate has no room to move at those frames.
+
+## Remaining findings
+
+### F. Should fix - `order_[ordered_++]` is unbounded
+
+```cpp
+std::array<std::size_t,2> order_{}, pending_{};
+std::size_t ordered_{}, pending_count_{};
+...
+for(std::size_t i=0;i<pending_count_;++i)order_[ordered_++]=pending_[i];
+```
+
+`ordered_` is never bounded and never cleared except by `reset()`. Two arms per
+race fill `order_`; a third writes past it. A race is armed twice, so any
+caller that keeps one pointer across a race restart overruns the array on the
+next race. `artifacts/window-pause-review/restart_probe.cpp` drives a
+heap-allocated pointer through N races without `reset()` and dumps its bytes
+(`sizeof(ClassicWindowPointer)` is 96; `order_` at +24, `pending_` at +40,
+`ordered_` at +56):
+
+```
+1 race:  order_ = [0, 1]  pending_ = [1, 0]  ordered_ = 2
+2 races: order_ = [0, 1]  pending_ = [1, 1]  ordered_ = 4   <- order_[2], order_[3] wrote pending_
+3 races: order_ = [1, 1]  pending_ = [1, 1]  ordered_ = 1   <- order_[4] wrote ordered_ itself
+```
+
+The writes are intra-object, so neither ASan nor UBSan reports them; the object
+silently corrupts its own fields. It is not reachable through any current
+caller: `sdl_main.cpp` and `dragster_fuzz_runner.cpp` both replace
+`LivePresentation` whenever the frame rewinds, and the 1,242 pause restarts in
+the fuzz gate go through that path. But `ClassicWindowPointer`'s own header
+comment says only "Call once for every simulation update" and does not require
+a reset, unlike `ClassicRaceHistoryTracker`'s ("Reset it whenever the race state
+is replaced"), and the runner's `--window-index` mode does not require
+consecutive frames, so a timeline containing a restart would reach it. A bound
+on the write (and the same sentence about resetting in the new class's comment)
+is one line; I would land it before integration rather than leave new
+undefined behaviour in a public class.
+
+### G. Should fix - the record's Gates table is from the pre-rewrite tree
+
+`tasks/DRAGSTER-WINDOW-PAUSE.md` still attributes its Gates table to
+`gates.sh` "on the candidate's tree" from before the two-driver rewrite: the
+capture row reads "100% on all five captures after the fix" although the
+Measurements table above it is now seven, and the hosted-CI row records only
+the `-Werror=range-loop-construct` failure on `5b21f38`, not the `-Wshadow`
+failure on `e9838ea` that `1d37c6a` exists to fix. The Mistakes section has the
+first GCC failure but not the second. Every row except `stage_c` reproduces on
+`1d37c6a` (above), so the fix is to say which commit each row was measured on
+and to record the second Ubuntu failure, not to re-measure.
+
+### H. Advisory - wrapping arithmetic for hand-made states
+
+`first_odd+winner_window_life_updates-1U` and `(*shown-1U)&1U` in
+`window_table_index_for` wrap for a state with a tiny frame number. Defined,
+used only in comparisons, and unreachable for real states, the same class as
+the note already carried at the end of R-0040.
+
+### I. Advisory - hosted CI is the standing precondition
+
+No GCC on this machine, so the `-Wshadow` fix could not be checked locally;
+Apple clang with `-Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion
+-Wshadow -Werror` builds all five presets clean. Two consecutive Ubuntu-only
+warning failures have now come out of this task, so the Ubuntu job on `1d37c6a`
+itself must be green before integration, as the project's own closeout rule
+requires.
+
+## Evidence added in this round
+
+In `artifacts/window-pause-review/`: `ptr_probe.cpp` and `differential.py` (the
+randomised model-versus-implementation test), `fallback_probe.cpp` and
+`fallback_check.py` (hand-made restored states), `restart_probe.cpp` (finding
+F), `sweep-index-1d37c6a.txt`, and the seven captures' regenerated
+`*-window-agreement.json` and `*-native-rows.txt` under `agreement/`.
