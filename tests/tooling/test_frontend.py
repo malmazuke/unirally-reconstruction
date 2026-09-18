@@ -200,6 +200,15 @@ class FrontendLaunchTests(unittest.TestCase):
         self.assertEqual(pack.validate_pack(stale.read_bytes(), rules, rules_sha)["profile_id"],
                          pack.TWO_TRACK_PROFILE)
         self.assertIn(str(moved[0]), self.check(report, "classic_pack")["detail"])
+        # A failed extraction leaves the incompatible pack where it was.
+        stale.write_bytes(v1_payload)
+        report = self.root / "failed-replace.json"
+        with mock.patch.object(pack, "build_pack", side_effect=subprocess.CalledProcessError(1, ["decompress"])):
+            self.assertEqual(commands.cmd_run(self.args(pack=str(stale), rules=str(rules_path), rom=str(self.rom_path),
+                                                        replace_pack=True, report=str(report))), EXIT_INVALID_INPUT)
+        self.assertEqual(stale.read_bytes(), v1_payload)
+        self.assertEqual(len(list(self.root.glob("stale.pack.stale-*"))), 1)
+        self.assertIn("nothing was replaced", self.check(report, "supported_rom")["detail"])
 
     def test_stale_build_is_reported_before_launch(self):
         # The supported profile is compiled into the app. A build from before a

@@ -210,7 +210,9 @@ counts the whole banner as `player_finish_delay` did. When the opponent won,
 its finish frame is presentation history kept by `ClassicRaceHistoryTracker`
 (the frame on which `race.riders[1].finished` became set), like the rider look
 state; a single restored state without history recovers it once the player has
-also finished, from the two finish times: `finish_centiseconds` advances two
+also finished, from the two finish times (so only the banner's remainder after
+the player's finish, which is nothing when the whole banner preceded it, as in
+random-1 and reversal): `finish_centiseconds` advances two
 per frame plus the frame parity, so `total[0] - total[1] = 2(fa - fb) + (fa &
 1) - (fb & 1)` has exactly one solution for `fb` given the player's finish
 frame `fa = frame - finish_delay` (during result loading, the delay last
@@ -241,18 +243,6 @@ in the unification task had the alignment one frame off.
   effect. Which members its countdown and banner select, and whether its other
   captions use this path at all, was not captured. The unified renderer binds
   no window family for ZOOM ZOO until that is measured.
-- **Whether `$1229` is ever anything but 1**, which would move the transition
-  member off 6. `$0BA7` was 1 in every captured DRAGSTER race; what sets it was
-  not examined.
-- **`$0FF1`**, the `>= 5` gate at `$83:E59E`, and `$77:0750`/`$77:074B`, which
-  the drivers read for the two-player and stop paths. One-player DRAGSTER always
-  took the paths above.
-- **ZOOM ZOO's own window content.** The mechanism is shared: the drivers,
-  the pointer and the family are not DRAGSTER-specific, and ZOOM ZOO's recorded
-  omissions (start ring, GO, hint text, finish banner) are the same channel-6
-  effect. Which members its countdown and banner select, and whether its other
-  captions use this path at all, was not captured; it is a follow-up, not part
-  of this task.
 
 ## Bounds that are defensive, not observed
 

@@ -465,8 +465,10 @@ original captures:
 114 frames improve, 14 are unchanged, 4 are worse: 3452 and 3453 by 124 (as
 above) and 3600 and 3677 by 3, inside the declared "native draws the race
 while the original fades in the result screen" difference. A further 51
-frames with originals but no previous render (1330-1339 initialization,
-1420-1436 and 1510-1532 countdown) score 0 to 490 each.
+frames have originals but no previous render: the 50 initialization and
+countdown frames (1330-1339, 1420-1436, 1510-1532) score 0 to 490 each, and
+frame 3700, the stable result, scores 23,194 (the original animates result
+objects the static screen does not draw; unchanged by this task).
 
 **ZOOM ZOO scenes** (part C): the ten M4-16 scenes rendered by the new runner
 are pixel-identical to the before-change runner on every scene.
@@ -479,7 +481,11 @@ are pixel-identical to the before-change runner on every scene.
 tracked history the renderer's member equals the original's `$80:868E` read on
 2,226 of 2,226 frames from 1334 to 3559; without history, the derivation
 agrees on every frame from the player's finish (3318) through loading and
-selects nothing on the 102 frames before it.
+selects nothing on the 102 frames before it. The derivation therefore serves
+a restored state only when the player finished inside the banner's 360
+frames; in random-1 (422 frames after the opponent) and reversal (967) the
+whole banner precedes the player's finish and a single restored state shows
+none of it, while live play, which has the history, shows all of it.
 
 **Launcher, real runs** (`launch-*.json`): a typed DRAGSTER v1 pack is refused
 naming `classic.pal.crawler.dragster.v1`, `classic.pal.crawler.two-tracks.v8`
@@ -497,11 +503,36 @@ refused with the remedy.
 | DRAGSTER frozen originals primary, random-1, reversal | passed at `cfb539d` |
 | historical matrix (`hist.sh`, `hist2.sh`: 20 commands) | 20/20 at `cfb539d`; the v1 contracts report winner 36/697/279/445/653/962/961 and loser 1,073, identical to the accepted figures |
 | five presets at the candidate `f734b4e` (`final-gates.sh`) | lab-debug, lab-release, lab-sanitize, app-debug, app-sanitize: 23/23 each |
-| `test --suite synthetic` (lab-debug) at `f734b4e` | passed, 411 checks, 3 fresh-process repeatability runs |
+| `test --suite synthetic` (lab-debug) at `f734b4e` | passed, 411 checks, 3 fresh-process repeatability runs (`final/synthetic.log`; the `final-gates.sh` tooling line is a wrong `unittest discover` invocation and is not a result) |
 | M4-16 ZOOM ZOO primary and DRAGSTER primary, random-1, reversal at `f734b4e` | all passed (app-debug `zoom_zoo_runner`, v8 pack) |
 | `dragster_fuzz_runner` (lab-release) at `f734b4e` | 60 seeds, 549,051 updates, 119 completed races, 1,878 pause restarts, 11,170 renders, 0 aborts |
 | hidden app runs at `f734b4e`, both tracks, 4,000 updates | 0 rider-pose fallback frames each |
 | hosted CI on the pushed tip `f734b4e` | run 35309658396: success on ubuntu-24.04 and macos-15 |
+
+## Independent review
+
+Fresh independent reviewer (Claude Opus 5) in an isolated checkout at
+`f734b4e`, report `tasks/CLASSIC-PRESENTATION-UNIFICATION-review.md` on
+`review/classic-presentation-unification` (`59f25e4`). It reproduced, with
+its own builds of both sides, the three picture measurements to the digit,
+the v1 contract figures, the 2,226/2,226 banner agreement, the byte identity
+of the eight aliases, four differential gates, and added 50 further
+pixel-identical ZOOM ZOO timeline frames, the BG scroll relation on five
+DRAGSTER frames, the finish-time identity on three more races and three
+mutations that each fail the suite. **Verdict: return**, with one blocking
+finding.
+
+| Finding | Severity | Disposition |
+| --- | --- | --- |
+| 1. The single-state runner path (previous = the state itself) took the fade from the state's own `$0FF1`, one step too bright on ZOOM ZOO 1392-1406 | blocking | Fixed: the previous update's level is used only when that update is earlier; otherwise the accepted frame formula (initialization + 6 offsets are the scenario's), because `$0FF1` saturates at 30 and "level minus one" is one step too dark from 1407. Check: 67 single-state ZOOM ZOO frames (1376-1439, 1500, 1600, 1700) pixel-identical to the before-change renderer; timeline mode was never affected (part C unchanged). |
+| 2. R-0040 "Not established" bullets duplicated | should fix | Fixed. |
+| 3. Part-B prose "51 frames score 0 to 490" contradicted `report.json` (frame 3700: 23,194) | should fix | Fixed in the prose: 50 countdown and initialization frames score 0 to 490; 3700 is the stable result with un-recovered object animation, unchanged by this task. |
+| 4. The finish-time derivation serves a restored state only when the player finished inside the banner (lose-a), never for random-1 or reversal | should fix | Recorded in the header comment, the measurement and R-0040; live play uses the history and shows the whole banner in every case. |
+| 5. `--replace-pack` renamed the pack before extracting, so an extraction error left the pack moved and an unhandled traceback | should fix | Fixed: extraction first, the old pack moved aside only on success; a decompressor error is a failed `supported_rom` check that replaces nothing; test added. |
+| 6. `dragster_presentation_content` had no caller | advisory | The two v1 runners now build their content through it (it was declared for exactly that). |
+| 7. `zoom_zoo_runner` built a discarded content aggregate in pack mode | advisory | The loose files are read only without a pack. |
+| 8. The `--rom` remedy named a flag already passed | advisory | The remedy names only `--replace-pack` when `--rom` was given. |
+| 9. `final-gates.sh` recorded the tooling suite as failed (a wrong `unittest discover` invocation) | advisory | Noted in the gate table; the suite passed through the project runner (411 checks). |
 
 ## Mistakes
 
@@ -509,6 +540,10 @@ refused with the remedy.
   recorded without checking the fixtures against the sweep states beside
   them. Ten minutes of comparison would have found the replay manifest; the
   claim instead sent the plan toward a recapture the task did not need.
+- The blocking review finding: the single-state fade was checked at 1376 only,
+  where the fade is zero, so a one-step-too-bright picture on the thirty
+  frames after it went unmeasured. The reviewer rendered them; the check now
+  covers 67 single-state frames.
 - The banner check first used the wrong alignment (the setup's read on frame
   n taken as the table for n+1) and reported 248 disagreements; the script
   had tried both shifts, and reading its own output found 0 at shift 0.

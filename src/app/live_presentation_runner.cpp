@@ -72,22 +72,7 @@ int main(int argc, char **argv) try {
   unirally::ClassicContentPack pack(pack_path);
   const auto state = unirally::deserialize_movement_state(read(state_path));
   const auto before = unirally::serialize_movement_state(state);
-  const unirally::PresentationContent content{
-      pack.entry("physics.track.dragster.data"),
-      pack.entry("presentation.track.dragster.bg1-tiles.v1"),
-      pack.entry("presentation.track.dragster.bg2-tiles.v1"),
-      pack.entry("presentation.track.dragster.bg2-map.v1"),
-      pack.entry("presentation.classic.palette.v1"),
-      pack.entry("presentation.classic.font.v1"),
-      pack.entry("presentation.rider.mike.race-tiles.v1"),
-      pack.entry("presentation.result.classic.font-layout.v1"),
-      pack.entry("presentation.effect.go-window.v1"),
-      pack.entry("presentation.effect.winner-window.v1"),
-      pack.entry("presentation.result.classic.base-vram.v1"),
-      pack.entry("presentation.result.classic.palette.v1"),
-      pack.entry("presentation.result.classic.palette-tail.v1"),
-      pack.optional_entry("presentation.zoom.race-palette-cycle.v1"),
-      pack.optional_entry("presentation.effect.classic.window-tables.v1")};
+  const auto content = unirally::dragster_presentation_content(pack);
 
   unirally::app::LivePresentation fresh;
   const auto first = fresh.render(state, position, content);
