@@ -1510,7 +1510,14 @@ void draw_classic_caption(RgbFrame& frame,const ZoomZooState& published,
     if(content.captions.empty() || font.size()!=2048)return;
     // `movement.rewards` is the opponent's queue ($0D11/$0D13 cursors); the
     // player's, the one the captions follow, is the announcements' own.
-    const auto& queue=published.player_announcements.queue;
+    const auto& announcements=published.player_announcements;
+    const auto& queue=announcements.queue;
+    // $81:BEA8-BEF1 blanks the caption when the queue runs dry, one cooldown
+    // after the last message, and `empty_display` is that state. Without this
+    // the last caption would stay up for the rest of the race: measured on
+    // ZOOM ZOO frames 3208, 4840 and 6484, where the read cursor still points
+    // at the last event and the original shows nothing.
+    if(announcements.empty_display)return;
     const unsigned event=queue.entries[queue.read_cursor];
     if(event==0 || event>255)return;
     const auto entry=content.captions.subspan((event-1U)*16U,16U);
