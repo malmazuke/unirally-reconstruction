@@ -46,8 +46,10 @@ is *no* direction.
 
 All three read the ROM through the audited core on the authenticated M4-15
 cold-start scenario. Scripts and reports are under
-`artifacts/zoom-zoo-opposing-input/` in the task worktree, and move to
-`local/evidence/zoom-zoo-opposing-input/zoom-zoo-opposing-input/` at closeout.
+`local/evidence/zoom-zoo-opposing-input/zoom-zoo-opposing-input/` in the main
+checkout. The "before" row of the native probe below needs a build of `c2de73e`,
+which is not retained: recreate it with `git worktree add --detach <dir> c2de73e`
+and run the probe against that build's runner.
 
 **1. The original's memory is identical to a released pad's**
 (`dpad_probe.py`, `dpad-probe.json`). Five runs share the primary timeline and

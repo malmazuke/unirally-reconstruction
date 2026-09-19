@@ -540,7 +540,9 @@ equal `zoom-zoo-playable-idle-late-start-v11.freeze.json` (`205d1705...`) and
 (`b4a34af7...`), each with a different `timeline_sha256`. That expectation lives
 here and in R-0041 rather than inside the case files: a capture stores the
 parsed variation and the freeze hashes it into `original_sha256`, so adding an
-annotation key to a case would stop a fresh capture matching its own contract. `ride` holds Left+Right for updates
+annotation key to a case would stop a fresh capture matching its own contract.
+
+`ride` holds Left+Right for updates
 1650-2649, `axes` holds both axes for 1650-2049, and `edges` holds Left+Right
 over the countdown 1377-1649 and Left+Right then Up+Down over the whole result
 screen 6725-7600. An opposing window spliced into the marker-guided riding

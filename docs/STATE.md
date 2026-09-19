@@ -184,7 +184,7 @@ byte-identical to a released pad's, and `$0311`/`$0313`/`$0315`/`$0319` read
 exactly neutral ([R-0041](research/R-0041-opposing-directions.md)). DRAGSTER
 already dropped opposing pairs at its call sites; ZOOM ZOO passed them to the
 engine and diverged from the first update of such a window, so a keyboard or an
-analog stick could drive its race with an input the console cannot produce. The
+analog stick could drive its race with an input no rocker pad can deliver. The
 shared race engine now applies the rocker once, for both tracks, after the
 historical recovered-domain guard, which still reads the requested buttons, so
 the M4-12 to M4-15 continuation domain and the legacy `update_movement` path are
@@ -195,7 +195,11 @@ matches every 742-byte row and every restore (801, 781 and 757). Two of them
 reproduce accepted contracts byte for byte although their delivered timelines
 differ: the idle late-start case (`205d1705...`) and the M4-16 primary
 (`b4a34af7...`). The accepted M4-16 and DRAGSTER gates keep their recorded restore
-counts. What this game's own branches would do with both bits set stays
+counts. Reviewed (approve, then confirm on re-review, no blocking finding in
+either round) and integrated by fast-forward; acceptance is conditional on the
+final-tip CI and remote verification recorded in the ignored closeout
+`artifacts/zoom-zoo-opposing-integration/closeout.json` in the main checkout.
+What this game's own branches would do with both bits set stays
 unrecovered: a standard rocker pad, through the audited core, cannot present it.
 The accepted M3 `update_movement` path keeps the contradictory-direction
 precedence recovered in `sample_controller` and is unchanged; the shared engine

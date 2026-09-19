@@ -1,14 +1,14 @@
 # Next session
 
-**Status on 19 September 2026 UTC: ZOOM-ZOO-OPPOSING-INPUT is reviewed
-(approve, no blocking finding) and its corrections are applied; integration and
-its closeout are the only work left in it. Nothing else is in progress, nothing
-is blocked and no task is registered but unstarted.** The last open follow-up
-below (opposing-direction input) is closed by that task, so every numbered item
-is now either closed or a declared omission.
-Every other started task is reviewed, integrated on `main` and accepted
-conditional only on its recorded final-tip CI; ZOOM-ZOO-WINDOW-EFFECTS' closeout
-is `artifacts/zoom-zoo-window-integration/closeout.json` in the main checkout.
+**Status on 19 September 2026 UTC (after ZOOM-ZOO-OPPOSING-INPUT): nothing is
+in progress, nothing is blocked and no task is registered but unstarted.** The
+last open follow-up below (opposing-direction input) is closed, so every
+numbered item is now either closed or a declared omission.
+Every started task is reviewed, integrated on `main` and accepted conditional
+only on its recorded final-tip CI; ZOOM-ZOO-OPPOSING-INPUT's closeout is
+`artifacts/zoom-zoo-opposing-integration/closeout.json` in the main checkout,
+and ZOOM-ZOO-WINDOW-EFFECTS' is
+`artifacts/zoom-zoo-window-integration/closeout.json`.
 The "not done" items listed under the closed follow-ups below are declared
 omissions kept as future work (authored HUD and result styles, the pack's
 alias entries, the register setup behind the window compose rule, the
@@ -24,9 +24,8 @@ holds only live task checkouts. The gate inputs are
 `boundary-a`/`boundary-b`), `local/evidence/m4-16-rider-art/m4-16-idle/captures`
 (idle late start), `local/evidence/m4-15-race-completion/m4-15` with
 `local/evidence/m4-15-review/m4-15-review` (M4-15 matrix). The three
-opposing-direction races move to
-`local/evidence/zoom-zoo-opposing-input/zoom-zoo-opposing-input/originals`
-when that task closes out; until then they are in its worktree. The retention rule
+opposing-direction races are at
+`local/evidence/zoom-zoo-opposing-input/zoom-zoo-opposing-input/originals`. The retention rule
 in AGENTS.md says what a closing task must do with its own state. See
 [REPO-LOCAL-STATE-CLEANUP](REPO-LOCAL-STATE-CLEANUP.md) for the audit tables
 and the deletion log.

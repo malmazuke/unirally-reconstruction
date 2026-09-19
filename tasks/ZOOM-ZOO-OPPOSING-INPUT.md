@@ -2,7 +2,7 @@
 
 ## Assignment
 
-- Status: reviewed (approve, no blocking finding) at `b477a0d`; corrections applied; integration pending. Started 19 September 2026 03:00 UTC from `main` at `8acee91`.
+- Status: reviewed and integrated (implementation `7b4ab4a`, corrections `024bf56`; review `48b2089` approve at `b477a0d`, re-review `2bde823` confirm at `024bf56`, no blocking finding in either round; the four residual items applied on top and integrated by fast-forward of `task/zoom-zoo-opposing-input` onto `main`); acceptance conditional on the final-tip CI and remote verification recorded in the ignored closeout `artifacts/zoom-zoo-opposing-integration/closeout.json` in the main checkout; if absent, `git log --first-parent main -- tasks/ZOOM-ZOO-OPPOSING-INPUT.md` and `gh run list --workflow synthetic.yml --commit <commit>`. Started 19 September 2026 03:00 UTC from `main` at `8acee91`.
 - Milestone: follow-up 2 in [NEXT_SESSION](NEXT_SESSION.md), the only open item left
   by DRAGSTER-ORDINARY-CONTROLS and CLASSIC-PRESENTATION-UNIFICATION
 - Coordinator: main session
@@ -68,7 +68,7 @@ input question - this task covers opposing directions only.
 | The original drops opposing directions | `python3 artifacts/zoom-zoo-opposing-input/dpad_probe.py` | Left+Right and Up+Down runs have per-frame WRAM identical to a neutral D-pad and different from one direction alone | `dpad-probe.json` |
 | Native ZOOM ZOO matches the original over a complete race with opposing directions | `zoom_zoo_playable freeze` on two captures, then `zoom_zoo_playable compare` | every 742-byte row and every restore agrees | `opposing-*.freeze.json` contracts and gate reports |
 | A withheld opposing case, chosen by the reviewer or after the fix | same commands on a case not used to develop the change | agreement without retuning | reviewer's report |
-| No accepted contract moves | M4-16 primary and idle gates, DRAGSTER primary/random-1/reversal gates, v1 presentation contracts | all `status=passed`, identical restore counts | gate logs |
+| No accepted contract moves | M4-16 primary and idle gates; the DRAGSTER primary, random-1, reversal, random-3, regression-landing-held-roll and regression-countdown-actions-tie gates (the last three added after review finding A3, being the accepted timelines that hold opposing pairs most densely); v1 presentation contracts | all `status=passed`, identical restore counts | gate logs |
 | Suites and fuzz | `ctest` on five presets, synthetic suite, hidden runs, `dragster_fuzz_runner` | all pass, 0 aborts | gate logs |
 | Hosted CI on the final tip | `gh run list --workflow synthetic.yml --commit <tip>` | both platforms success | closeout |
 
@@ -99,14 +99,14 @@ input question - this task covers opposing directions only.
 
 ## Evidence locations
 
-Ignored, in the task worktree until closeout, then
-`local/evidence/zoom-zoo-opposing-input/`:
+Ignored, moved to the main checkout at closeout:
 
-| What | Path |
+| What | Path under `local/evidence/zoom-zoo-opposing-input/zoom-zoo-opposing-input/` |
 | --- | --- |
-| probes and their reports | `artifacts/zoom-zoo-opposing-input/{dpad_probe.py,native_dpad_probe.py,port_words_probe.py,case_fit.py}` with `*-probe.json` |
-| original captures (6, about 5.1 GB) | `artifacts/zoom-zoo-opposing-input/originals/{ride,axes,edges}-{a,b}` |
-| gate scripts and logs | `artifacts/zoom-zoo-opposing-input/gates-{a,b}.sh`, `gates-{a,b}.log`, `gates/` |
+| probes and their reports | `dpad_probe.py`, `native_dpad_probe.py`, `port_words_probe.py`, `case_fit.py` with `dpad-probe.json`, `port-words-probe.json`, `native-dpad-probe-{before,after}.json` |
+| original captures (6, about 5.1 GB) | `originals/{ride,axes,edges}-{a,b}` |
+| gate scripts and logs | `gates-{a,b}.sh`, `gates-{a,b}.log`, `gates/` (the final tip) and `gates-b477a0d/` (the first candidate) |
+| the reviewer's own evidence (11 captures of its own, 12 gates, its withheld case) | `local/evidence/zoom-zoo-opposing-review/review/` |
 
 Tracked: the three cases and their `-v11.freeze.json` contracts under
 `tests/manifests/native/`.
@@ -172,10 +172,32 @@ Tracked: the three cases and their `-v11.freeze.json` contracts under
 | A4 | advisory | `requested` was not purely the request inside `update_zoom_zoo` | Renamed to `published`, with the comment saying the fade gate has already zeroed it and that the guard deliberately reads it before the rocker |
 | A5 | advisory | the three case manifests were inconsistently formatted and none named the contract its rows should equal | All three are now one compact line like the accepted idle case, with the parsed variation unchanged; the expected equalities are recorded in `docs/BUILD_AND_VALIDATION.md` and R-0041, with the reason a case file cannot carry them |
 
-- Exact merge candidate and required-check results: to be recorded with the integration commit.
-- Integrated commit and evidence location: pending.
-- Remote synchronization: pending.
-- Scope still unverified: what the game's branches would do with both bits set at the port,
-  which no path this project has to the ROM can present; the pause menu's vertical navigation
-  with an opposing pair is covered by the reviewer's saturated case and the ROM-free engine
-  tests, not by a primary-captured original of its own.
+- Re-review: the same reviewer, at `024bf56`, verdict **confirm**, report `f53f42b` appended to its
+  report, 33 minutes (99 minutes of review across both rounds). It re-derived the S2 "before"
+  measurement itself by checking out `c2de73e`, building it (a distinct runner SHA-256) and running
+  the corrected probe against that binary; exercised the A2 guard over ten held sets and confirmed
+  all six tracked cases still produce their contracts' `timeline_sha256`; and demonstrated A5's
+  justification by injecting an annotation key into a capture and watching `original_sha256` move.
+  On its own build at `024bf56`: five presets 23/23, synthetic, both v1 contracts, four hidden runs,
+  the fuzz, and four differential gates including its withheld case at 777 restores.
+- Its four residual items, applied in the final commit:
+
+| # | Class | Finding | Disposition |
+| --- | --- | --- | --- |
+| R1 | should-fix | `docs/STATE.md` still said "an input the console cannot produce", the same unmeasured hardware premise A1 removed elsewhere, in the summary a fresh agent reads first | Now "an input no rocker pad can deliver" |
+| R2 | advisory | the acceptance table listed the gate set without the three DRAGSTER contracts added for A3 | The table names all six DRAGSTER contracts and says why the last three are there |
+| R3 | advisory | `published` named the request *before* the rocker, while what the port publishes is `buttons`, after it | Renamed to `gated_request`, and the comment now says `buttons` is the publication and the guard deliberately reads the request. The rename is provably behaviour-neutral: compiling `movement.cpp` with `-O2 -g0` before and after gives byte-identical object code, SHA-256 `6fd8a490...`, so no gate result can move. The suites and three differential gates were rerun anyway |
+| R4 | advisory | the new `BUILD_AND_VALIDATION.md` paragraph ran into the pre-existing sentence | Split |
+
+- Exact merge candidate and required-check results: the merge candidate is the tip of
+  `task/zoom-zoo-opposing-input`. Its full matrix ran at `024bf56` (eleven differential gates, five
+  preset suites, synthetic, both v1 contracts, six hidden runs, fuzz); the only source change after
+  that is R3's rename, whose object code is identical, and the suites and the opposing-ride, M4-16
+  primary and DRAGSTER random-1 gates were rerun on the final tip to confirm it.
+- Integrated commit and evidence location: recorded in the integration commit and the ignored
+  closeout `artifacts/zoom-zoo-opposing-integration/closeout.json` in the main checkout.
+- Remote synchronization: recorded in the closeout.
+- Scope still unverified: what the game's branches would do with both bits set at the port, which no
+  path this project has to the ROM can present; the pause menu's vertical navigation with an opposing
+  pair is covered by the reviewer's saturated case and the ROM-free engine tests, not by a
+  primary-captured original of its own.
