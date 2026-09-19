@@ -1,10 +1,13 @@
 # Next session
 
-**Status on 19 September 2026 UTC (after ZOOM-ZOO-WINDOW-EFFECTS): nothing is
+**Status on 19 September 2026 UTC (after ZOOM-ZOO-OPPOSING-INPUT): nothing is
 in progress, nothing is blocked and no task is registered but unstarted.**
+The last open follow-up below (opposing-direction input) is closed, so every
+numbered item is now either closed or a declared omission.
 Every started task is reviewed, integrated on `main` and accepted conditional
-only on its recorded final-tip CI; ZOOM-ZOO-WINDOW-EFFECTS' closeout is
-`artifacts/zoom-zoo-window-integration/closeout.json` in the main checkout.
+only on its recorded final-tip CI; ZOOM-ZOO-OPPOSING-INPUT's closeout is
+`artifacts/zoom-zoo-opposing-integration/closeout.json` in the main checkout,
+and ZOOM-ZOO-WINDOW-EFFECTS' is `artifacts/zoom-zoo-window-integration/closeout.json`.
 The "not done" items listed under the closed follow-ups below are declared
 omissions kept as future work (authored HUD and result styles, the pack's
 alias entries, the register setup behind the window compose rule, the
@@ -18,8 +21,10 @@ holds only live task checkouts. The gate inputs are
 `local/evidence/dragster-ordinary-controls/dragster-ordinary-controls/originals`
 (DRAGSTER), `local/evidence/m4-16-playable-zoom-zoo/m4-16` (M4-16, including
 `boundary-a`/`boundary-b`), `local/evidence/m4-16-rider-art/m4-16-idle/captures`
-(idle late start) and `local/evidence/m4-15-race-completion/m4-15` with
-`local/evidence/m4-15-review/m4-15-review` (M4-15 matrix). The retention rule
+(idle late start), `local/evidence/m4-15-race-completion/m4-15` with
+`local/evidence/m4-15-review/m4-15-review` (M4-15 matrix) and
+`local/evidence/zoom-zoo-opposing-input/zoom-zoo-opposing-input/originals`
+(the three opposing-direction races). The retention rule
 in AGENTS.md says what a closing task must do with its own state. See
 [REPO-LOCAL-STATE-CLEANUP](REPO-LOCAL-STATE-CLEANUP.md) for the audit tables
 and the deletion log.
@@ -60,12 +65,21 @@ wall clock. No reset, purchase or provider change is authorized.
    they are the same path. Recorded with the fix in
    [CLASSIC-PRESENTATION-UNIFICATION](CLASSIC-PRESENTATION-UNIFICATION.md); do
    not restate the refusal claim without running the command.
-2. **ZOOM ZOO opposing-direction input, only smoke-tested.** The controls work
-   listed this as untested, and an earlier version of this entry wrongly said
-   ZOOM ZOO rejects it. It does not: hidden 800-update runs on `6da0fa0` with
-   Left+Right, Left alone and Right alone all exit 0. What is still missing is
-   evidence that native matches the original for those inputs over a complete
-   race; capture original ZOOM ZOO timelines before claiming it.
+2. **Closed: ZOOM ZOO opposing-direction input.** The original cannot publish
+   them at all: a SNES pad's rocker leaves the port reporting `left & !right`
+   and `up & !down`, and on the original, holding Left+Right or Up+Down leaves
+   WRAM byte-identical to a released pad. ZOOM ZOO's native path used to pass
+   both bits to the engine and diverge from the first update; DRAGSTER already
+   dropped them at its call sites. The shared engine now applies the rocker
+   once, for both tracks ([R-0041](../docs/research/R-0041-opposing-directions.md),
+   [ZOOM-ZOO-OPPOSING-INPUT](ZOOM-ZOO-OPPOSING-INPUT.md)). Three frozen ZOOM ZOO
+   originals hold opposing directions over complete races - a 1,000-update
+   riding window, both axes together, and the countdown plus the whole result
+   screen - and native matches every 742-byte row and restore. Two of them
+   reproduce accepted contracts byte for byte (the idle late-start case and the
+   M4-16 primary) although their timelines differ, which is the equivalence
+   itself. What the game's code would do with both bits set stays unrecovered:
+   the console cannot reach it.
 3. **Closed: DRAGSTER window timing and shape** (implementation `788a877`,
    review `9b54c2a` approve, four advisories dispositioned at `598564f`,
    integrated on `main` at `67b0f28` with green final-tip CI on both platforms).

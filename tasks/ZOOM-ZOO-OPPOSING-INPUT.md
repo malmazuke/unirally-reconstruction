@@ -2,7 +2,7 @@
 
 ## Assignment
 
-- Status: in_progress. Started 19 September 2026 03:00 UTC from `main` at `8acee91`.
+- Status: review. Candidate `7b4ab4a` (code and cases) with documentation on top; all local gates passed at `7b4ab4a`. Started 19 September 2026 03:00 UTC from `main` at `8acee91`.
 - Milestone: follow-up 2 in [NEXT_SESSION](NEXT_SESSION.md), the only open item left
   by DRAGSTER-ORDINARY-CONTROLS and CLASSIC-PRESENTATION-UNIFICATION
 - Coordinator: main session
@@ -25,8 +25,9 @@
 - Owned paths: `src/core/movement.cpp`, `src/core/zoom_zoo_movement.hpp`,
   `src/core/zoom_zoo_runner.cpp`, `src/app/sdl_main.cpp`, `src/app/dragster_fuzz_runner.cpp`,
   `tests/native/zoom_zoo_*`, `tests/native/dragster_race_tests.cpp`,
-  `tests/manifests/native/zoom-zoo-playable-opposing-*`, this record,
-  `docs/research/R-0041-*`, the coordinator records
+  `tests/manifests/native/zoom-zoo-playable-opposing-*`,
+  `tools/unirally_lab/native/zoom_zoo_playable_reference.py`, this record,
+  `docs/research/R-0041-opposing-directions.md`, the coordinator records
 - Claim/checkpoint: this record and ignored `artifacts/zoom-zoo-opposing-input/` in the
   worktree (moved to `local/evidence/zoom-zoo-opposing-input/` at closeout)
 
@@ -73,13 +74,16 @@ input question - this task covers opposing directions only.
 
 ## Capability and coverage checkpoint
 
-- Native capability delivered / still missing: to be recorded at the candidate.
+- Native capability delivered: both tracks answer opposing directions the way the console's
+  controller port does, measured against three frozen originals over complete races. Still
+  missing: nothing in this task's scope; the declared omissions in `docs/STATE.md` are unchanged.
 - Frozen exact-match interval, field set and reference/seed identity: the opposing cases'
   frames, 742-byte `URZZ000B` rows, ROM/core/manifest identities in each contract.
 - Dynamic captured inputs still consumed: zero (the controller timeline is the case's own).
 - Relevant branches/transitions exercised: countdown, riding, both directions, the pause
   menu's vertical navigation, finish and result.
-- First divergence and cheapest next discriminating experiment: recorded per attempt below.
+- First divergence and cheapest next discriminating experiment: the first divergence was native
+  ZOOM ZOO at update 1650 of the probe window (attempt 2); none remains.
 - Trial-wide usage baseline/current: in the Assignment block and the closeout.
 
 ## Evidence and attempts
@@ -88,17 +92,48 @@ input question - this task covers opposing directions only.
 | --- | --- | --- | --- | --- |
 | 1 (03:03-03:12Z) | The original cannot see opposing directions, so native ZOOM ZOO's pass-through is a divergence | `dpad_probe.py`: five bounded original runs (neutral, Left+Right, Up+Down, Left, unchanged) sharing the M4-15 primary timeline, window 1650-2400, per-frame WRAM digests | Left+Right and Up+Down are byte-identical to neutral on all 1,025 frames; Left alone and the unchanged timeline differ from frame 1650. The reference core's `sfc/controller/gamepad` publishes `left & !right` and `up & !down` with the comment that the D-pad physically prevents both | Measure native |
 | 2 (03:12-03:15Z) | Native DRAGSTER drops them and native ZOOM ZOO does not | `native_dpad_probe.py`: the same window through `zoom_zoo_runner` on both tracks | ZOOM ZOO diverges from neutral at 1650 for both Left+Right and Up+Down; DRAGSTER is identical to neutral, as `with_physical_dpad` at its call sites intends | Apply the rocker rule in the shared engine, then capture complete originals |
+| 3 (03:15-03:20Z) | The rule belongs in the engine, where no caller can forget it | `update_zoom_zoo` applies `with_physical_dpad` after the recovered-domain guard (which keeps reading the requested buttons); the runner, app and fuzz runner stop applying it; ROM-free engine tests for both tracks | The native probe now matches a released pad on both tracks; ctest 23/23 | Freeze complete originals |
+| 4 (03:15-03:17Z) | A mid-race opposing window still finishes the race | `case_fit.py` over the native engine: replace riding frames of the M4-15 marker-guided timeline with an opposing pair | Even a five-update window desynchronizes that scripted steering and the rider never finishes inside the horizon; the accepted `constant-left`/`constant-right` inventories are incomplete for the same reason | Hold the pair where the released-pad counterpart is an accepted complete race: the capture tool's `idle` window, and the primary's own neutral frames |
+| 5 (03:17-03:20Z) | The original cannot tell an opposing pair from a released pad over a complete race | Three cases captured twice each (`opposing-ride`, `opposing-axes`, `opposing-edges`), frozen with `zoom_zoo_playable freeze` | Each pair of captures is identical. `opposing-ride`'s rows equal the **accepted** idle late-start contract (`205d1705...`) and `opposing-edges`' equal the **accepted** M4-16 primary (`b4a34af7...`), although both timelines hold opposing directions and their timeline hashes differ | Gate native against them |
+| 6 (03:20-04:04Z) | Native reproduces those races byte for byte, and nothing accepted moves | `zoom_zoo_playable compare` on the three cases; the accepted M4-16 and DRAGSTER gates; five preset suites; synthetic; v1 contracts; hidden runs including masks 192 and 48; abort fuzz | All eight differential gates `status=passed` at `7b4ab4a` with an empty working diff: opposing 801/781/757 restores, M4-16 757/801, DRAGSTER 379/567/327 (each equal to its previously recorded count). ctest 23/23 on five presets, synthetic passed, both v1 contracts passed, hidden runs rc=0 with 0 pose fallbacks, fuzz 79 races 0 aborts | Record and send for independent review |
+
+## Evidence locations
+
+Ignored, in the task worktree until closeout, then
+`local/evidence/zoom-zoo-opposing-input/`:
+
+| What | Path |
+| --- | --- |
+| probes and their reports | `artifacts/zoom-zoo-opposing-input/{dpad_probe.py,native_dpad_probe.py,port_words_probe.py,case_fit.py}` with `*-probe.json` |
+| original captures (6, about 5.1 GB) | `artifacts/zoom-zoo-opposing-input/originals/{ride,axes,edges}-{a,b}` |
+| gate scripts and logs | `artifacts/zoom-zoo-opposing-input/gates-{a,b}.sh`, `gates-{a,b}.log`, `gates/` |
+
+Tracked: the three cases and their `-v11.freeze.json` contracts under
+`tests/manifests/native/`.
 
 ## Handoff
 
-- Current base/head commit and uncommitted state: recorded at each checkpoint below.
-- Verified findings: attempts 1 and 2 above.
-- Current hypothesis: the rule belongs in the shared engine, where every caller gets it, with
-  the historical recovered-domain guard still reading the requested buttons.
-- Commands executed, outcomes and report hashes: in `artifacts/zoom-zoo-opposing-input/`.
-- Unavailable/skipped checks: none so far.
-- Exact next experiment/command: capture the opposing cases twice each and freeze them.
+- Current base/head commit and uncommitted state: base `main` `8acee91`; code and cases at
+  `7b4ab4a`, documentation on top; no uncommitted tracked changes.
+- Verified findings: the six attempts above and [R-0041](../docs/research/R-0041-opposing-directions.md).
+- Current hypothesis and failed approaches: settled. The failed approach worth keeping is
+  attempt 4: opposing windows spliced into the marker-guided riding script never finish, so
+  riding coverage over a complete race comes from the `idle` window, not from `changes`.
+- Commands executed, outcomes and report hashes: `artifacts/zoom-zoo-opposing-input/gates-{a,b}.log`
+  and the per-gate reports listed above; every differential report pins `source_commit`
+  `7b4ab4a7` and an empty `source_diff_sha256`.
+- Unavailable/skipped checks: none. The pause menu's vertical navigation with Up+Down is covered
+  by the ROM-free engine tests only; no captured original presses both there.
+- Exact next experiment/command: none outstanding for this task. To re-run the gates from a fresh
+  checkout at this commit, `bash artifacts/zoom-zoo-opposing-input/gates-b.sh` then `gates-a.sh`
+  after `mkdir -p artifacts/zoom-zoo-opposing-input/gates` and copying the v1 fixtures to
+  `local/v1-fixtures` (the presentation check requires fixtures below `local/` or `artifacts/`).
 - Remaining dependencies: none.
+- Runtime needs: the private ROM through `local/rom-location.txt`, the audited bsnes core, the
+  v8 pack, about 6 GB of disk for the captures and roughly 45 minutes for the whole gate matrix.
+- Aggregate time and provider usage: task start 03:00 UTC (five-hour 0%, weekly 45%, weekly
+  Fable 36%); readings at the candidate and at integration are in the closeout.
+- Accepted outcome, review/fix rounds and next routing decision: pending independent review.
 
 ## Review and integration
 

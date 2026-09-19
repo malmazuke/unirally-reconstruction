@@ -455,6 +455,7 @@ build/app-debug/src/core/classic_race_presentation_runner local/classic-crawler-
 python3 -m tools.unirally_lab.native.zoom_zoo_playable --help
 python3 -m tools.unirally_lab.native.zoom_zoo_playable_reference --help
 # idle variation: case JSON {"idle":{"from":F,"frames":N|null}} releases all buttons, then resumes the primary; horizon up to 40000
+# optional "buttons" holds that set instead of releasing: the port publishes nothing for an opposing pair, so it is the same window (R-0041)
 ```
 
 The first-launch frontend accepts `--rom` plus a fresh pack destination and
@@ -511,6 +512,40 @@ with the two-track pack. Frozen cases are
 contracts; DRAGSTER guard overrides are in
 `tests/manifests/native/dragster-race-guards.reference.json`. The fuzz reports
 aborts only; divergences need an original capture of the same timeline.
+
+## Opposing directions (ZOOM-ZOO-OPPOSING-INPUT)
+
+Added in `task/zoom-zoo-opposing-input` for
+[ZOOM-ZOO-OPPOSING-INPUT](../tasks/ZOOM-ZOO-OPPOSING-INPUT.md); see
+[R-0041](research/R-0041-opposing-directions.md). No command is new: the three
+cases use the M4-16 capture, freeze and compare commands above, with the `idle`
+variation's optional held `buttons`.
+
+```sh
+CORE=local/emulators/bsnes/bsnes/out/bsnes_libretro.dylib
+# Left+Right over a 1,000-update riding window (horizon 8100); axes and edges use 7600.
+python3 -m tools.unirally_lab.native.zoom_zoo_playable_reference --core "$CORE" --case tests/manifests/native/zoom-zoo-playable-opposing-ride.case.json --horizon 8100 --out artifacts/FRESH-ride-a
+python3 -m tools.unirally_lab.native.zoom_zoo_playable freeze --reference artifacts/FRESH-ride-a --repeat artifacts/FRESH-ride-b --out artifacts/FRESH-ride.freeze.json
+python3 -m tools.unirally_lab.native.zoom_zoo_playable compare --reference artifacts/FRESH-ride-a --repeat artifacts/FRESH-ride-b --contract tests/manifests/native/zoom-zoo-playable-opposing-ride-v11.freeze.json --binary build/app-debug/src/core/zoom_zoo_runner --pack local/classic-crawler-two-tracks-v8.pack --out artifacts/FRESH-ride-compare.json
+# Hold an opposing pair through a hidden run: Left+Right is mask 192, Up+Down is 48.
+python3 tools/project.py frontend run --track zoom-zoo --pack local/classic-crawler-two-tracks-v8.pack --preset app-debug --updates 4000 --hidden --fixed-controller-mask 192 --report artifacts/FRESH-hidden.json
+```
+
+The three frozen cases are
+`tests/manifests/native/zoom-zoo-playable-opposing-{ride,axes,edges}.case.json`
+with their `-v11.freeze.json` contracts. `ride` holds Left+Right for updates
+1650-2649, `axes` holds both axes for 1650-2049, and `edges` holds Left+Right
+over the countdown 1377-1649 and Left+Right then Up+Down over the whole result
+screen 6725-7600. An opposing window spliced into the marker-guided riding
+script instead of the `idle` window desynchronizes that steering and never
+finishes, which is why the accepted `constant-left`/`constant-right` cases are
+declared incomplete inventories.
+
+The `native presentation-check` v1 contracts need their fixtures below `local/`
+or `artifacts/` in the checkout that runs them: copy
+`local/evidence/classic-presentation-unification/unification-baseline/{winner,loser}-fixtures`
+to `local/v1-fixtures/` first. An absolute path into another checkout is
+refused as an unauthorized fixture directory.
 
 ## Local evidence layout
 

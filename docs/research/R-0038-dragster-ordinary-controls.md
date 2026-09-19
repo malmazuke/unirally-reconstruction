@@ -126,6 +126,9 @@ gates; the new path is additive (state identity `URDG0001`).
   both. random-1 held Up with Down at 2207 and the original saw neither.
   DRAGSTER's runner and app drop opposing directions the same way
   (`with_physical_dpad`); ZOOM ZOO's accepted input path is unchanged.
+  **Established later.** [R-0041](R-0041-opposing-directions.md) measured the
+  same rule on ZOOM ZOO from the original and moved it into the shared race
+  engine, so both tracks now apply it in one place and no call site does.
 - **Result font.** The small result font is contiguous from `.` at `$A8`:
   digits `$A9-$B2`, then letters from `A` at `$B3` without `O`. Ordinary finish
   times reach every digit; 1, 2, 4 and 9 were missing and aborted the result

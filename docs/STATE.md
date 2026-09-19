@@ -174,6 +174,30 @@ approval at `3e2d30d`, report `255a2c0`) and integrated by fast-forward;
 acceptance conditional on the final-tip CI in the ignored closeout
 `artifacts/zoom-zoo-window-integration/closeout.json` in the main checkout.
 
+[ZOOM-ZOO-OPPOSING-INPUT](../tasks/ZOOM-ZOO-OPPOSING-INPUT.md) (19 September
+2026 UTC, `task/zoom-zoo-opposing-input`) closes the last open follow-up: what
+both tracks do when a player asks for both directions of one axis. A SNES pad's
+rocker cannot close both contacts and the controller port publishes
+`left & !right` and `up & !down`, so on the original such a pair is not "both
+directions" but no direction: over a bounded window its whole WRAM is
+byte-identical to a released pad's, and `$0311`/`$0313`/`$0315`/`$0319` read
+exactly neutral ([R-0041](research/R-0041-opposing-directions.md)). DRAGSTER
+already dropped opposing pairs at its call sites; ZOOM ZOO passed them to the
+engine and diverged from the first update of such a window, so a keyboard or an
+analog stick could drive its race with an input the console cannot produce. The
+shared race engine now applies the rocker once, for both tracks, after the
+historical recovered-domain guard, which still reads the requested buttons, so
+the M4-12 to M4-15 continuation domain and the legacy `update_movement` path are
+unchanged. Three ZOOM ZOO originals hold opposing directions over complete
+races - Left+Right for a 1,000-update riding window, both axes together, and the
+countdown plus the entire result screen including Race Again - and native
+matches every 742-byte row and every restore (801, 781 and 757). Two of them
+reproduce accepted contracts byte for byte although their delivered timelines
+differ: the idle late-start case (`205d1705...`) and the M4-16 primary
+(`b4a34af7...`). The accepted M4-16 and DRAGSTER gates keep their recorded restore
+counts. What the game's code would do with both bits set stays unrecovered,
+because the console cannot reach it.
+
 ## Accepted product and evidence
 
 - Milestones M0–M3 are accepted; `m3` remains the latest milestone tag. The
