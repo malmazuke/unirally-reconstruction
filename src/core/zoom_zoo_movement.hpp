@@ -150,6 +150,9 @@ void restart_zoom_zoo(ZoomZooState& state,const ZoomZooContent& content);
 // Validate content-dependent restore invariants before emitting or advancing a state.
 void validate_zoom_zoo_content_state(const ZoomZooState& state,const ZoomZooContent& content);
 // Historical continuation and native scenario share this update path.
-void update_zoom_zoo(ZoomZooState& state,const ControllerButtons& buttons,
+// `requested_buttons` is what a device asked for, not what a controller port
+// can publish: the update applies the D-pad rocker itself, so opposing
+// directions on one axis reach the race as neither (R-0041).
+void update_zoom_zoo(ZoomZooState& state,const ControllerButtons& requested_buttons,
                      const ZoomZooContent& content);
 } // namespace unirally

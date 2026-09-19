@@ -26,13 +26,20 @@ def case_timeline(raw, horizon, post_events, variation=None):
         # Ordinary controller pause in play: release every button from `from`
         # for `frames` updates (all remaining updates when null), then resume
         # the primary controller stream where it was left. Optional `buttons`
-        # are held instead of releasing; a rocker D-pad publishes nothing for
-        # opposing directions, so holding them is an idle window at the port,
-        # which is the equivalence ZOOM-ZOO-OPPOSING-INPUT measures.
+        # are held instead of releasing, and must be a set the controller port
+        # publishes as nothing - opposing directions only (R-0041). That keeps
+        # the window idle where it counts, which is what makes resuming the
+        # primary stream shifted by `frames` meaningful, and it is the
+        # equivalence ZOOM-ZOO-OPPOSING-INPUT measures. A held button the port
+        # would publish is refused rather than silently changing the race.
         first,count,held=idle.get('from'),idle.get('frames'),sorted(idle.get('buttons',[]))
+        survivors=set(held)
+        for axis in ({'up','down'},{'left','right'}):
+            if axis<=survivors:survivors-=axis
         if (type(first) is not int or not 1650<=first<=horizon or not set(idle)<={'from','frames','buttons'} or
                 not {'from','frames'}<=set(idle) or any(b not in BUTTONS for b in held) or
-                len(set(held))!=len(held) or (count is not None and (type(count) is not int or count<1))):
+                len(set(held))!=len(held) or survivors or
+                (count is not None and (type(count) is not int or count<1))):
             raise ValueError('invalid idle variation')
         primary=inputs
         inputs=[primary[f] if f<first else [list(held),[]] if count is None or f<first+count else [list(p) for p in primary[f-count]]

@@ -455,7 +455,7 @@ build/app-debug/src/core/classic_race_presentation_runner local/classic-crawler-
 python3 -m tools.unirally_lab.native.zoom_zoo_playable --help
 python3 -m tools.unirally_lab.native.zoom_zoo_playable_reference --help
 # idle variation: case JSON {"idle":{"from":F,"frames":N|null}} releases all buttons, then resumes the primary; horizon up to 40000
-# optional "buttons" holds that set instead of releasing: the port publishes nothing for an opposing pair, so it is the same window (R-0041)
+# optional "buttons" holds that set instead of releasing; it must be one the port publishes as nothing (opposing pairs only), so the window stays idle (R-0041)
 ```
 
 The first-launch frontend accepts `--rom` plus a fresh pack destination and
@@ -533,7 +533,14 @@ python3 tools/project.py frontend run --track zoom-zoo --pack local/classic-craw
 
 The three frozen cases are
 `tests/manifests/native/zoom-zoo-playable-opposing-{ride,axes,edges}.case.json`
-with their `-v11.freeze.json` contracts. `ride` holds Left+Right for updates
+with their `-v11.freeze.json` contracts. Two of them must reproduce an accepted
+contract's rows exactly, which is the equivalence itself: `opposing-ride` must
+equal `zoom-zoo-playable-idle-late-start-v11.freeze.json` (`205d1705...`) and
+`opposing-edges` must equal `zoom-zoo-playable-primary-v11.freeze.json`
+(`b4a34af7...`), each with a different `timeline_sha256`. That expectation lives
+here and in R-0041 rather than inside the case files: a capture stores the
+parsed variation and the freeze hashes it into `original_sha256`, so adding an
+annotation key to a case would stop a fresh capture matching its own contract. `ride` holds Left+Right for updates
 1650-2649, `axes` holds both axes for 1650-2049, and `edges` holds Left+Right
 over the countdown 1377-1649 and Left+Right then Up+Down over the whole result
 screen 6725-7600. An opposing window spliced into the marker-guided riding

@@ -46,7 +46,8 @@ is *no* direction.
 
 All three read the ROM through the audited core on the authenticated M4-15
 cold-start scenario. Scripts and reports are under
-`local/evidence/zoom-zoo-opposing-input/zoom-zoo-opposing-input/`.
+`artifacts/zoom-zoo-opposing-input/` in the task worktree, and move to
+`local/evidence/zoom-zoo-opposing-input/zoom-zoo-opposing-input/` at closeout.
 
 **1. The original's memory is identical to a released pad's**
 (`dpad_probe.py`, `dpad-probe.json`). Five runs share the primary timeline and
@@ -88,23 +89,58 @@ identical to that accepted one although the delivered timeline differs:
 
 Before this work, `update_zoom_zoo` received whatever the caller passed, and only
 DRAGSTER's call sites dropped opposing pairs. A bounded native probe over the
-same window (`native_dpad_probe.py`, `native-dpad-probe.json`) showed ZOOM ZOO
-diverging from a released pad at the first update of the window for both axes,
-while DRAGSTER stayed identical. A keyboard, an analog stick and the fuzz
-generator can all ask for both; the original's port cannot deliver them, so the
-behaviour native produced for them was not recovered from anything.
+same window (`native_dpad_probe.py`) measures both builds and names the binary
+it ran, its SHA-256 and the commit it came from:
+
+| Build | ZOOM ZOO Left+Right / Up+Down | DRAGSTER Left+Right / Up+Down | Left alone, either track |
+| --- | --- | --- | --- |
+| `c2de73e`, this task's base (`native-dpad-probe-before.json`) | differs from a released pad at 1650 | identical | differs at 1650 |
+| the candidate (`native-dpad-probe-after.json`) | identical | identical | differs at 1650 |
+
+A keyboard, an analog stick and the fuzz generator can all ask for both. The
+original's port cannot deliver them, so the behaviour native produced for them
+was not recovered from anything.
 
 The rule is a property of the controller port, not of one track, so the shared
 race engine now applies it once, for both tracks, after the historical
-recovered-domain guard (which still reads the requested buttons, so the M4-12 to
-M4-15 continuation domain is unchanged). The runner, the app and the fuzz runner
-pass on what the device reports.
+recovered-domain guard (which still reads the publication before the rocker, so
+the M4-12 to M4-15 continuation domain is unchanged). The runner, the app and
+the fuzz runner pass on what the device asked for.
+
+**The legacy path keeps its own answer, deliberately.** `sample_controller`
+(`src/core/input_timer.cpp`) carries a precedence recovered from the original's
+branches for contradictory directions: `up ? 0 : (down ? 2 : 1)` and
+`left ? 0 : (right ? 2 : 1)`, so Up wins over Down and Left over Right. That
+code is unchanged and still reachable through the accepted M3 path
+`update_movement`, which is frozen by its v1 contracts: an Up+Down request there
+resolves to Up, and a Left+Right request resolves to Left, which that path
+immediately rejects as "leftward movement is outside the recovered primary
+domain" (`src/core/movement.cpp:797`). Since this change, the shared race engine
+never presents the precedence with a pair at all: the rocker resolves the axis
+first, so it only ever sees a single direction. The two entry points therefore
+answer the same *request* differently, on purpose - the M3 path is an accepted
+frozen contract, is not re-derived here, and no original timeline or live caller
+delivers an opposing pair to it (only `movement_runner` and
+`tests/app/frontend_contract_tests.cpp` reach it). The precedence itself is not
+evidence about what the game does with both bits set at the port: it is what the
+branches do with the two flags the game derives, and the port never sets both.
 
 ## Domain and limits
 
-- This establishes what the *port* publishes, not what the game's code would do
-  with both bits set. That state is unreachable on the console and through the
-  audited core, so it remains unrecovered, and native must not invent it.
+- This establishes what the *port* publishes, not what this game's own branches
+  would do with both bits set. That state is unreachable through a standard
+  rocker pad and through the audited core, which is every path this project has
+  to the ROM, so it remains unrecovered and native must not invent it.
+- The probes cannot be independent of the core's controller model: its gamepad
+  is the only way to deliver input to the ROM, and that model already drops the
+  pairs, so measurement 1's byte-identical WRAM is close to a tautology. What
+  the measurements do establish is that nothing else in the emulated machine
+  leaks the raw request into the game's memory over a complete race, on any of
+  the frozen cases. That the physical pad behaves this way is the audited core's
+  own documented claim about the hardware ("the D-pad physically prevents
+  up+down and left+right from being pressed at the same time"), which this
+  project takes as given rather than having measured on a console. The
+  independent review of ZOOM-ZOO-OPPOSING-INPUT recorded the same caveat.
 - The evidence is PAL, one-player, on the CRAWLER scenario's two tracks. The
   three frozen cases hold opposing directions over the countdown, a 1,000-update
   riding window, a 400-update both-axes window and the entire result screen

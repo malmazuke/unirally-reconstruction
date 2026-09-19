@@ -1904,7 +1904,7 @@ void validate_zoom_zoo_content_state(const ZoomZooState& state,const ZoomZooCont
 void update_zoom_zoo(ZoomZooState& state,const ControllerButtons& requested_buttons,const ZoomZooContent& content) {
     // NMI $808642-865B skips controller publication through prior fade4;
     // first controller publication uses prior fade5 (native update1382).
-    const auto requested=state.native_initialization && state.fade_level<5?ControllerButtons{}:requested_buttons;
+    const auto published=state.native_initialization && state.fade_level<5?ControllerButtons{}:requested_buttons;
     validate_zoom_zoo_content_state(state,content);
     const auto scenario=classic_race_scenario(state.track);
     if(state.native_initialization && state.race.finish_delay==240) {
@@ -1916,19 +1916,21 @@ void update_zoom_zoo(ZoomZooState& state,const ControllerButtons& requested_butt
         ++state.movement.frame;
         return;
     }
-    if((requested.y && !state.native_initialization) || (requested.select && !state.native_initialization) || (requested.start && !state.native_initialization) || ((!state.native_initialization) && (requested.up || requested.down || requested.a)) ||
-       (!state.complete_race && requested.left) || (requested.x && !state.native_initialization) || ((!state.native_initialization) && (requested.left_shoulder || requested.right_shoulder)))
+    if((published.y && !state.native_initialization) || (published.select && !state.native_initialization) || (published.start && !state.native_initialization) || ((!state.native_initialization) && (published.up || published.down || published.a)) ||
+       (!state.complete_race && published.left) || (published.x && !state.native_initialization) || ((!state.native_initialization) && (published.left_shoulder || published.right_shoulder)))
         throw std::invalid_argument("ZOOM ZOO controller is outside the recovered domain");
     if(state.movement.frame<(state.native_initialization?scenario.initialization_frame:1649U) || (!state.native_initialization && state.movement.frame>=(state.sustained?9999U:1849U)))
         throw std::invalid_argument("ZOOM ZOO update is outside the declared trial horizon");
     // A SNES pad's rocker cannot close both contacts of one axis, and the
-    // controller port publishes `up & !down` and `left & !right` (the reference
+    // controller port publishes `up & !down` and `left & !right` (the audited
     // core's sfc/controller/gamepad says so in those terms). Measured on the
-    // original: opposing directions leave WRAM byte-identical to a neutral
-    // D-pad, so the engine never sees them and what the game would do with
-    // both is not recovered behaviour. Every caller passes what a device
-    // reports; the rocker is applied here, once, for both tracks.
-    const auto buttons=with_physical_dpad(requested);
+    // original: opposing directions leave WRAM byte-identical to a released
+    // D-pad, so the engine never sees them and what this game's own branches
+    // would do with both is not recovered behaviour (R-0041). Every caller
+    // passes what a device asked for; the rocker is applied here, once, for
+    // both tracks. The guard above deliberately reads the publication before
+    // the rocker, so the historical continuation domain is the accepted one.
+    const auto buttons=with_physical_dpad(published);
     auto next=state;auto& whole=next.movement;
     whole.player_input=sample_controller(buttons);
     whole.contact_phase=static_cast<std::uint8_t>(1U-whole.contact_phase);

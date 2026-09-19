@@ -195,8 +195,11 @@ matches every 742-byte row and every restore (801, 781 and 757). Two of them
 reproduce accepted contracts byte for byte although their delivered timelines
 differ: the idle late-start case (`205d1705...`) and the M4-16 primary
 (`b4a34af7...`). The accepted M4-16 and DRAGSTER gates keep their recorded restore
-counts. What the game's code would do with both bits set stays unrecovered,
-because the console cannot reach it.
+counts. What this game's own branches would do with both bits set stays
+unrecovered: a standard rocker pad, through the audited core, cannot present it.
+The accepted M3 `update_movement` path keeps the contradictory-direction
+precedence recovered in `sample_controller` and is unchanged; the shared engine
+never presents that precedence with a pair.
 
 ## Accepted product and evidence
 

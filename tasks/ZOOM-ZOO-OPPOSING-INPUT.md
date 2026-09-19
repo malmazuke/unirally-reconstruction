@@ -2,7 +2,7 @@
 
 ## Assignment
 
-- Status: review. Candidate `7b4ab4a` (code and cases) with documentation on top; all local gates passed at `7b4ab4a`. Started 19 September 2026 03:00 UTC from `main` at `8acee91`.
+- Status: reviewed (approve, no blocking finding) at `b477a0d`; corrections applied; integration pending. Started 19 September 2026 03:00 UTC from `main` at `8acee91`.
 - Milestone: follow-up 2 in [NEXT_SESSION](NEXT_SESSION.md), the only open item left
   by DRAGSTER-ORDINARY-CONTROLS and CLASSIC-PRESENTATION-UNIFICATION
 - Coordinator: main session
@@ -137,4 +137,45 @@ Tracked: the three cases and their `-v11.freeze.json` contracts under
 
 ## Review and integration
 
-To be completed by the primary after independent review.
+- Reviewer and independent reproduction: a fresh Claude Opus 5 subagent with no inherited
+  conversation, in the isolated checkout `.worktrees/zoom-zoo-opposing-review`
+  (branch `review/zoom-zoo-opposing-input`) at the exact candidate `b477a0d`, spawned by the
+  primary. Verdict **approve**, no blocking finding, report `f76a81e`, 66 minutes.
+  It recaptured all six originals from the ROM rather than reading the primary's, ran twelve
+  differential gates (the three opposing cases 801/781/757, M4-16 757/801, DRAGSTER
+  primary/random-1/reversal 379/567/327 and three further DRAGSTER contracts whose own
+  timelines hold opposing pairs, 493/181/179), reproduced all three probes, the five preset
+  suites at 23/23, the synthetic suite, both v1 contracts, six hidden runs and the fuzz, and
+  checked both row-equality claims offline from the tracked contracts alone.
+- Withheld case: `review-pause-opposing-saturated`, built from the accepted `pause-shifted`
+  race (a countdown pause with menu navigation, the branch this task's three cases never
+  reach) by adding the opposing pair to every axis-neutral frame from 1377 to 7600 - 6,222
+  vertical and 1,141 horizontal. It predicted offline that the port publication is unchanged,
+  then captured twice identically and froze: `rows_sha256 5d83cbdd...`, exactly the accepted
+  contract, with a different timeline. Native compare passed with 777 restores. A second probe
+  held Up+Down for 1,200 updates from 3240 against the same window released: identical 7,025-row
+  streams from different timelines, and neither finishes, confirming attempt 4 with no
+  counterexample.
+- Required changes and their disposition (no blocking finding; all five should-fix items and
+  every advisory are applied in the correction commit):
+
+| # | Class | Finding | Disposition |
+| --- | --- | --- | --- |
+| S1 | should-fix | `NEXT_SESSION.md` at the candidate already claimed the task was integrated with a closeout that does not exist | Corrected to the state at that commit; the integrated wording and the closeout path go in the integration commit, as the workflow's consolidated closeout intends |
+| S2 | should-fix | `native-dpad-probe.json` recorded post-fix results stamped with the pre-fix commit, so attempt 2's divergence was not reproducible from the artifact | The probe now takes the runner to measure and records its path, SHA-256 and the commit it was built from. Both builds are measured: `native-dpad-probe-before.json` from a build at `c2de73e` (ZOOM ZOO differs at 1650 on both axes) and `native-dpad-probe-after.json` from the candidate (identical on both tracks). R-0041 carries the table |
+| S3 | should-fix | the declaration of `update_zoom_zoo` did not say the engine applies the rocker itself | The header now names the parameter `requested_buttons` and says what the engine does with it |
+| S4 | should-fix | R-0041 said the both-bits behaviour is unrecovered while `sample_controller` carries a recovered contradictory-direction precedence, still live on `update_movement` | R-0041 now has "The legacy path keeps its own answer, deliberately": what that precedence does, why the two entry points differ, and why the precedence is not evidence about the port |
+| S5 | should-fix | records cited `local/evidence/zoom-zoo-opposing-input/...` as present fact before closeout | Both records now say the evidence is in the task worktree until closeout |
+| A1 | advisory | "unreachable on the console" overreaches | Reworded everywhere to a standard rocker pad through the audited core, and R-0041's limits now carry the reviewer's own caveat: the core's gamepad is the only path to the ROM and already drops the pairs, so measurement 1 is close to a tautology; what it establishes is that nothing else in the machine leaks the raw request |
+| A2 | advisory | the `idle` variation's held `buttons` were unconstrained, so `["left"]` would give a non-idle "idle" window | The variation now refuses any held set the port would publish: each axis must be both or neither, and nothing else may be held. Every tracked case, including the two accepted ones, still produces its contract's `timeline_sha256` |
+| A3 | advisory | the DRAGSTER contracts whose timelines hold opposing pairs most densely were not re-gated | Added to this task's gate set and run here as well as by the reviewer: `regression-landing-held-roll`, `random-3` and `regression-countdown-actions-tie` |
+| A4 | advisory | `requested` was not purely the request inside `update_zoom_zoo` | Renamed to `published`, with the comment saying the fade gate has already zeroed it and that the guard deliberately reads it before the rocker |
+| A5 | advisory | the three case manifests were inconsistently formatted and none named the contract its rows should equal | All three are now one compact line like the accepted idle case, with the parsed variation unchanged; the expected equalities are recorded in `docs/BUILD_AND_VALIDATION.md` and R-0041, with the reason a case file cannot carry them |
+
+- Exact merge candidate and required-check results: to be recorded with the integration commit.
+- Integrated commit and evidence location: pending.
+- Remote synchronization: pending.
+- Scope still unverified: what the game's branches would do with both bits set at the port,
+  which no path this project has to the ROM can present; the pause menu's vertical navigation
+  with an opposing pair is covered by the reviewer's saturated case and the ROM-free engine
+  tests, not by a primary-captured original of its own.
