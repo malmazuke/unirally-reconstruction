@@ -1489,57 +1489,71 @@ ClassicRacePresentationContent classic_race_presentation_content(const ClassicCo
 // only trigger: the event the read cursor points at indexes sixteen ASCII bytes
 // in the pack's caption table, and the update after the queue consumed it the
 // original writes two tilemap rows for it. Each glyph is eight pixels wide and
-// sixteen tall, its halves one font row apart, so the ASCII maps to a top tile
-// and the tile `$10` above it.
+// sixteen tall, its halves one font row apart, so a character maps to a top
+// tile and the tile `$10` above it.
 //
-// The caption is cleared by the queue, not by a timer: the table's gaps are
-// sixteen spaces and a hint sentence ends by publishing one.
-int classic_caption_tile(char glyph) {
-    if(glyph==' ')return -1;
-    if(glyph<'a' || glyph>'z')throw std::invalid_argument("unsupported Classic caption glyph");
-    const int n=glyph-'a';
-    if(n<5)return 0x0b+n;
-    if(n<21)return 0x20+n-5;
-    return 0x40+n-21;
+// Every byte of entries 1 to 255 is a space, `!`, `"`, `-` or a lowercase
+// letter; there is no `q` and no digit. The letters and the space are measured
+// against the original's own frames, and the three punctuation glyphs are read
+// from the pack's font sheet, where they are unmistakable; no original picture
+// in evidence shows one. The voice entries the engine can publish to the
+// player ($81:C0CE's 72-87) include three that hold `"`, so refusing them
+// would end a race the original plays through.
+std::optional<unsigned> classic_caption_tile(char glyph) {
+    if(glyph==' ')return std::nullopt;
+    if(glyph>='a' && glyph<='z') {
+        const unsigned n=static_cast<unsigned>(glyph-'a');
+        if(n<5)return 0x0bU+n;
+        if(n<21)return 0x20U+n-5U;
+        return 0x40U+n-21U;
+    }
+    switch(glyph) {
+    case '!':return 0x60U;
+    case '"':return 0x61U;   // the table spells an apostrophe this way
+    case '-':return 0x4dU;
+    default:break;
+    }
+    throw std::invalid_argument("unsupported Classic caption glyph");
 }
 
+namespace {
+// The caption is cleared by the queue, not by a timer: a hint sentence ends by
+// publishing an entry of sixteen spaces, and $81:BEA8-BEF1 blanks the display
+// when the queue runs dry, which the engine carries as `empty_display`.
 void draw_classic_caption(RgbFrame& frame,const ZoomZooState& published,
                           const ClassicRacePresentationContent& content,
                           std::array<std::uint8_t,3> ink) {
     const auto font=content.caption_font;
+    // A pack without the caption entry cannot reach here: the profile that
+    // carries this renderer requires it. The guard keeps the span contract
+    // explicit for a profile that ever makes it optional.
     if(content.captions.empty() || font.size()!=2048)return;
     // `movement.rewards` is the opponent's queue ($0D11/$0D13 cursors); the
     // player's, the one the captions follow, is the announcements' own.
     const auto& announcements=published.player_announcements;
     const auto& queue=announcements.queue;
-    // $81:BEA8-BEF1 blanks the caption when the queue runs dry, one cooldown
-    // after the last message, and `empty_display` is that state. Without this
-    // the last caption would stay up for the rest of the race: measured on
-    // ZOOM ZOO frames 3208, 4840 and 6484, where the read cursor still points
-    // at the last event and the original shows nothing.
     if(announcements.empty_display)return;
     const unsigned event=queue.entries[queue.read_cursor];
-    if(event==0 || event>255)return;
+    if(event==0)return;
     const auto entry=content.captions.subspan((event-1U)*16U,16U);
-    // Measured on the original's own frames: the caption occupies sixteen
-    // characters from x 64, with the top row at y 79 (the two tilemap rows the
-    // original writes are 32 words apart, one BG row of scroll above the
-    // nominal rows 10 and 11).
+    // Measured on the original's own frames: sixteen characters from x 64,
+    // the top row at y 79.
     for(unsigned column=0;column<16;++column) {
-        const int tile=classic_caption_tile(static_cast<char>(entry[column]));
-        if(tile<0)continue;
+        const auto tile=classic_caption_tile(static_cast<char>(entry[column]));
+        if(!tile)continue;
         for(unsigned half=0;half<2;++half) {
-            const auto at=static_cast<std::size_t>(tile+static_cast<int>(half)*0x10)*16U;
+            const auto at=static_cast<std::size_t>(*tile+half*0x10U)*16U;
             for(unsigned row=0;row<8;++row) {
                 const unsigned low=font[at+2U*row],high=font[at+2U*row+1U];
                 for(unsigned bit=0;bit<8;++bit) {
-                    const unsigned value=((low>>(7U-bit))&1U)|(((high>>(7U-bit))&1U)<<1U);
-                    if(value)pixel(frame,64+int(column)*8+int(bit),79+int(half)*8+int(row),ink);
+                    if(((low>>(7U-bit))&1U)|((high>>(7U-bit))&1U))
+                        pixel(frame,64+int(column)*8+int(bit),79+int(half)*8+int(row),ink);
                 }
             }
         }
     }
 }
+} // namespace
 
 RgbFrame render_classic_race(const ZoomZooState& state,const ClassicRacePresentationContent& content,
                              const ZoomZooState* previous_update,const ClassicRaceHistory* history) {
@@ -1712,15 +1726,20 @@ RgbFrame render_classic_race(const ZoomZooState& state,const ClassicRacePresenta
     // before the riders" came from DRAGSTER frames with no rider under those
     // members; on its release-3213 race the opponent sits under the digits on
     // 57 frames, all of which this order matches.
+    // The caption sits above the track and the riders and *below* the window
+    // members, which cover it as they cover everything else: inside a member
+    // the original shows the flat window colour and nothing else (R-0040,
+    // ZOOM-ZOO-WINDOW-EFFECTS). Drawing it after the window instead punched
+    // the glyphs through member 4 on the countdown frames and member 14
+    // mid-race. The ink is the race CGRAM colour the original draws the
+    // caption with, measured from its own frames; the attribute-to-CGRAM
+    // derivation behind that index is not recovered, and the race palette
+    // cycle does not reach it (it writes 96-111 and colour 0).
+    draw_classic_caption(frame,rider_source,content,colour(cgram,22));
     if(window_index)
         render_window_xor(frame,dragster_window_table(content.window_tables,*window_index),window_colour);
     rect(frame,0,0,256,12,ui({15,30,30}));
     const auto hud=classic_race_hud(rider_source);
-    // The caption sits above the track and the riders, as the original's own
-    // frames show, and below the authored HUD. Its ink is the race CGRAM
-    // colour the original draws it with, measured from those frames; the
-    // attribute-to-CGRAM derivation behind that index is not recovered.
-    draw_classic_caption(frame,rider_source,content,colour(cgram,22));
     const auto centred=[](const std::string& text){return 128-3*static_cast<int>(text.size());};
     ui_text(frame,5,3,hud.lap,ink);
     if(!hud.clock.empty())ui_text(frame,195,3,hud.clock,ink);

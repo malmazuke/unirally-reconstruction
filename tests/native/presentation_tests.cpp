@@ -1099,4 +1099,23 @@ int main() {
               unirally::classic_finish_view(shared_state).phase == RacePhase::ResultLoading);
     }
   }
+  // R-0042: every byte the caption table contains maps to a glyph, and the
+  // three runs are 16 apart because each glyph's halves are one font row
+  // apart. The voice entries the engine publishes to the player include `"`,
+  // so refusing it would end a race the original plays through (review B1).
+  require(!unirally::classic_caption_tile(' ').has_value());
+  const std::array<std::pair<char, unsigned>, 11> caption_glyphs{
+      {{'a', 0x0b}, {'e', 0x0f}, {'f', 0x20}, {'m', 0x27}, {'u', 0x2f},
+       {'v', 0x40}, {'z', 0x44}, {'!', 0x60}, {'"', 0x61}, {'-', 0x4d},
+       {'j', 0x24}}};
+  for (const auto &[glyph, tile] : caption_glyphs)
+    require(unirally::classic_caption_tile(glyph) == tile);
+  bool refused = false;
+  try {
+    (void)unirally::classic_caption_tile('A');
+  } catch (const std::invalid_argument &) {
+    refused = true;
+  }
+  require(refused);
+
 }

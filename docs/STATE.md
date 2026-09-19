@@ -11,7 +11,7 @@ milestone is **not** accepted and no milestone tag is due. No M4-17.
 M4-16 delivers playable native ZOOM ZOO in the desktop app: native
 initialization from the authenticated pack through countdown, a three-lap race,
 the original's 10:00 time limit, finish, result loading, the result screen and
-Race Again, with keyboard and gamepad. Pack `classic.pal.crawler.two-tracks.v8`
+Race Again, with keyboard and gamepad. Pack `classic.pal.crawler.two-tracks.v9`
 (56 entries; v5-v7 are refused) is extracted from the user's ROM and reproduces
 byte for byte;
 serialized state is `URZZ000B` (742 bytes). Native play does not execute the
@@ -87,7 +87,7 @@ their transitions, the alternating GO letters and the cycling winner banner
 with no rider pose-pair gate, and its member equals the original's own pointer
 on all 1,922 frames from 1533 to 3454 of a captured race. The family enters the
 two-track pack additively as `presentation.effect.classic.window-tables.v1`;
-the profile is now `classic.pal.crawler.two-tracks.v8` with 56 entries and
+the profile is now `classic.pal.crawler.two-tracks.v9` with 56 entries and
 DRAGSTER v1 packs keep the accepted pose-keyed placement, so the accepted v1
 contracts and the historical matrix are unchanged. That work is reviewed and
 integrated (acceptance conditional on its final-tip CI, closeout

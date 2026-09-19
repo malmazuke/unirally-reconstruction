@@ -450,8 +450,8 @@ and extend each horizon to include its own post-finish continuation.
 Implemented in `codex/m4-16-playable-zoom-zoo`, not accepted gameplay on main:
 
 ```sh
-python3 tools/project.py frontend run --track zoom-zoo --pack local/classic-crawler-two-tracks-v8.pack --preset app-debug --report artifacts/m4-16/FRESH-live.json
-build/app-debug/src/core/classic_race_presentation_runner local/classic-crawler-two-tracks-v8.pack --timeline <native timeline> <frame> OUT.ppm
+python3 tools/project.py frontend run --track zoom-zoo --pack local/classic-pal-crawler-two-tracks-v9.pack --preset app-debug --report artifacts/m4-16/FRESH-live.json
+build/app-debug/src/core/classic_race_presentation_runner local/classic-pal-crawler-two-tracks-v9.pack --timeline <native timeline> <frame> OUT.ppm
 python3 -m tools.unirally_lab.native.zoom_zoo_playable --help
 python3 -m tools.unirally_lab.native.zoom_zoo_playable_reference --help
 # idle variation: case JSON {"idle":{"from":F,"frames":N|null}} releases all buttons, then resumes the primary; horizon up to 40000
@@ -487,19 +487,20 @@ python3 -m tools.unirally_lab.native.dragster_playable_reference --core local/em
 # Freeze two identical captures, before evaluating native.
 python3 -m tools.unirally_lab.native.dragster_playable freeze --reference artifacts/FRESH-a --repeat artifacts/FRESH-b --out artifacts/FRESH.freeze.json
 # Native gate: 742-byte URDG0001 rows, second run, restart, fresh-process restores.
-python3 -m tools.unirally_lab.native.dragster_playable compare --reference artifacts/FRESH-a --repeat artifacts/FRESH-b --contract tests/manifests/native/dragster-ordinary-primary.freeze.json --binary build/app-debug/src/core/zoom_zoo_runner --pack local/classic-crawler-two-tracks-v8.pack --out artifacts/FRESH-compare.json
+python3 -m tools.unirally_lab.native.dragster_playable compare --reference artifacts/FRESH-a --repeat artifacts/FRESH-b --contract tests/manifests/native/dragster-ordinary-primary.freeze.json --binary build/app-debug/src/core/zoom_zoo_runner --pack local/classic-pal-crawler-two-tracks-v9.pack --out artifacts/FRESH-compare.json
 # First divergence only, for exploration (no freeze needed).
-python3 -m tools.unirally_lab.native.dragster_playable explore --reference artifacts/FRESH-a --binary build/app-debug/src/core/zoom_zoo_runner --pack local/classic-crawler-two-tracks-v8.pack
+python3 -m tools.unirally_lab.native.dragster_playable explore --reference artifacts/FRESH-a --binary build/app-debug/src/core/zoom_zoo_runner --pack local/classic-pal-crawler-two-tracks-v9.pack
 # Abort fuzz over complete races with the app's update, restart and render calls; failing races become capture cases.
-build/lab-release/src/app/dragster_fuzz_runner --content-pack local/classic-crawler-two-tracks-v8.pack --first-seed 1 --seeds 3000 --races 3 --max-updates 40000 --failure-cases artifacts/FRESH-failures
+build/lab-release/src/app/dragster_fuzz_runner --content-pack local/classic-pal-crawler-two-tracks-v9.pack --first-seed 1 --seeds 3000 --races 3 --max-updates 40000 --failure-cases artifacts/FRESH-failures
 # One race state of either track drawn as the app draws it (CLASSIC-PRESENTATION-UNIFICATION: one renderer);
 # --timeline replays a native timeline so the rider look overlays and the opponent's finish frame are exact,
 # and --window-index prints the channel-6 window member per row for index-level checks against the original.
-build/app-debug/src/core/classic_race_presentation_runner local/classic-crawler-two-tracks-v8.pack STATE.bin OUT.ppm [PREVIOUS_STATE.bin]
-build/app-debug/src/core/classic_race_presentation_runner local/classic-crawler-two-tracks-v8.pack --timeline NATIVE_TIMELINE FRAME OUT.ppm
-build/app-debug/src/core/classic_race_presentation_runner local/classic-crawler-two-tracks-v8.pack --window-index NATIVE_TIMELINE
-# Extract the two-track pack (profile classic.pal.crawler.two-tracks.v8, 56 entries).
-python3 tools/project.py content pack --rules tests/manifests/content/classic-crawler-two-tracks-pack.json --out local/classic-crawler-two-tracks-v8.pack
+build/app-debug/src/core/classic_race_presentation_runner local/classic-pal-crawler-two-tracks-v9.pack STATE.bin OUT.ppm [PREVIOUS_STATE.bin]
+build/app-debug/src/core/classic_race_presentation_runner local/classic-pal-crawler-two-tracks-v9.pack --timeline NATIVE_TIMELINE FRAME OUT.ppm
+build/app-debug/src/core/classic_race_presentation_runner local/classic-pal-crawler-two-tracks-v9.pack --window-index NATIVE_TIMELINE
+# Extract the two-track pack (profile classic.pal.crawler.two-tracks.v9, 57 entries; v9 adds the
+# caption table of R-0042 and is the only profile the current build accepts, so a v8 pack is refused).
+python3 tools/project.py content pack --rules tests/manifests/content/classic-crawler-two-tracks-pack.json --out local/classic-pal-crawler-two-tracks-v9.pack
 # Live play. Without --pack the newest pack under local/ carrying the supported profile is used; a typed --pack
 # must carry it (a DRAGSTER v1 pack is refused, not substituted); --rom extracts when no such pack exists, and
 # --rom with --replace-pack moves an incompatible pack aside first. A stale build is reported before launch.
@@ -526,9 +527,9 @@ CORE=local/emulators/bsnes/bsnes/out/bsnes_libretro.dylib
 # Left+Right over a 1,000-update riding window (horizon 8100); axes and edges use 7600.
 python3 -m tools.unirally_lab.native.zoom_zoo_playable_reference --core "$CORE" --case tests/manifests/native/zoom-zoo-playable-opposing-ride.case.json --horizon 8100 --out artifacts/FRESH-ride-a
 python3 -m tools.unirally_lab.native.zoom_zoo_playable freeze --reference artifacts/FRESH-ride-a --repeat artifacts/FRESH-ride-b --out artifacts/FRESH-ride.freeze.json
-python3 -m tools.unirally_lab.native.zoom_zoo_playable compare --reference artifacts/FRESH-ride-a --repeat artifacts/FRESH-ride-b --contract tests/manifests/native/zoom-zoo-playable-opposing-ride-v11.freeze.json --binary build/app-debug/src/core/zoom_zoo_runner --pack local/classic-crawler-two-tracks-v8.pack --out artifacts/FRESH-ride-compare.json
+python3 -m tools.unirally_lab.native.zoom_zoo_playable compare --reference artifacts/FRESH-ride-a --repeat artifacts/FRESH-ride-b --contract tests/manifests/native/zoom-zoo-playable-opposing-ride-v11.freeze.json --binary build/app-debug/src/core/zoom_zoo_runner --pack local/classic-pal-crawler-two-tracks-v9.pack --out artifacts/FRESH-ride-compare.json
 # Hold an opposing pair through a hidden run: Left+Right is mask 192, Up+Down is 48.
-python3 tools/project.py frontend run --track zoom-zoo --pack local/classic-crawler-two-tracks-v8.pack --preset app-debug --updates 4000 --hidden --fixed-controller-mask 192 --report artifacts/FRESH-hidden.json
+python3 tools/project.py frontend run --track zoom-zoo --pack local/classic-pal-crawler-two-tracks-v9.pack --preset app-debug --updates 4000 --hidden --fixed-controller-mask 192 --report artifacts/FRESH-hidden.json
 ```
 
 The three frozen cases are
@@ -567,13 +568,13 @@ checkout, `build/` and a copy of the private inputs it needs under `local/`:
 | original captures and other evidence a record cites | `local/evidence/<task-worktree>/` (the former `artifacts/` of that worktree, intact) | `local/evidence/dragster-ordinary-controls/dragster-ordinary-controls/originals/primary-a`, `local/evidence/m4-16-playable-zoom-zoo/m4-16/boundary-a` |
 | closeouts and the gate logs behind them | `artifacts/<task>-integration/closeout.json` | `artifacts/m4-16-integration/closeout.json`, `artifacts/window-pause-integration/closeout.json` |
 | recorded gate scripts | beside the closeout or under the task's evidence directory, with their input paths rewritten to `local/evidence/...`; their `cd .worktrees/<name>` lines name checkouts that no longer exist, so recreate one at the recorded commit with `git worktree add` before rerunning a script verbatim | `artifacts/dragster-ordinary-integration/gates-b452170/gates-frozen.sh` |
-| private inputs | `local/` (ROM locator, packs, toolchain, `native/dragster-idle`, the bsnes lab core) | `local/classic-crawler-two-tracks-v8.pack` |
+| private inputs | `local/` (ROM locator, packs, toolchain, `native/dragster-idle`, the bsnes lab core) | `local/classic-pal-crawler-two-tracks-v9.pack` |
 
 Point a gate at the evidence directly, from any checkout:
 
 ```sh
 O="$(git rev-parse --show-toplevel)/local/evidence/dragster-ordinary-controls/dragster-ordinary-controls/originals"   # from the main checkout; from a worktree use the main checkout's absolute path
-python3 -m tools.unirally_lab.native.dragster_playable compare --reference "$O/primary-a" --repeat "$O/primary-b" --contract tests/manifests/native/dragster-ordinary-primary.freeze.json --binary build/app-debug/src/core/zoom_zoo_runner --pack local/classic-crawler-two-tracks-v8.pack --out artifacts/FRESH-compare.json
+python3 -m tools.unirally_lab.native.dragster_playable compare --reference "$O/primary-a" --repeat "$O/primary-b" --contract tests/manifests/native/dragster-ordinary-primary.freeze.json --binary build/app-debug/src/core/zoom_zoo_runner --pack local/classic-pal-crawler-two-tracks-v9.pack --out artifacts/FRESH-compare.json
 ```
 
 The retention rule a closing task follows is in `AGENTS.md`; the audit tables,
@@ -591,7 +592,7 @@ new; every command above is unchanged.
 # Declared incomplete original inventory, for a case freeze deliberately refuses.
 python3 -m tools.unirally_lab.native.dragster_playable inventory --reference artifacts/FRESH-idle-a --repeat artifacts/FRESH-idle-b --out artifacts/FRESH-idle.inventory.json
 # Native gate over the inventory's exact race and loading prefix, with a bounded restore set.
-python3 -m tools.unirally_lab.native.dragster_playable compare --prefix --reference artifacts/FRESH-idle-a --repeat artifacts/FRESH-idle-b --contract tests/manifests/native/dragster-clock-limit-idle-incomplete.inventory.json --binary build/app-debug/src/core/zoom_zoo_runner --pack local/classic-crawler-two-tracks-v8.pack --out artifacts/FRESH-idle-gate.json
+python3 -m tools.unirally_lab.native.dragster_playable compare --prefix --reference artifacts/FRESH-idle-a --repeat artifacts/FRESH-idle-b --contract tests/manifests/native/dragster-clock-limit-idle-incomplete.inventory.json --binary build/app-debug/src/core/zoom_zoo_runner --pack local/classic-pal-crawler-two-tracks-v9.pack --out artifacts/FRESH-idle-gate.json
 ```
 
 The frozen case is `tests/manifests/native/dragster-clock-limit-idle.case.json`
