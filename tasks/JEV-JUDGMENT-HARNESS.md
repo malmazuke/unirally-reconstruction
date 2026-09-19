@@ -38,6 +38,9 @@
   `src/`, gates, manifests, the synthetic CI workflow.
 - Claim/checkpoint: this record and ignored `artifacts/jev-judgment-harness/`
   in the worktree, moved to `local/evidence/jev-judgment-harness/` at closeout
+- Registry note: [CI-FAST-PATH](CI-FAST-PATH.md) was registered on this branch
+  on 19 September 2026 at 22:55 UTC as the user's chosen task after this one,
+  for the same reason as the next item; it lands with this integration.
 - Registry note: the registration lives on the task branch, not `main`,
   because CLASSIC-STUNT-NAMES is being integrated by another session and
   `tasks/NEXT_SESSION.md` is its closeout surface; the coordinator records are

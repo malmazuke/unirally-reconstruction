@@ -53,6 +53,7 @@ The coordinator maintains the status registry below. Work orders further below d
 | ZOOM-ZOO-OPPOSING-INPUT | reviewed and integrated (implementation `7b4ab4a`, corrections `024bf56`; review `48b2089` approve, re-review `2bde823` confirm); accepted conditional on final-tip CI and remote verification | [Opposing directions on ZOOM ZOO](ZOOM-ZOO-OPPOSING-INPUT.md) |
 | CLASSIC-STUNT-NAMES | reviewed and integrated (approved at `bf16faf`, report `0003f3d7`, after three returns); accepted conditional on final-tip CI and remote verification | [The original's on-screen stunt names](CLASSIC-STUNT-NAMES.md) |
 | JEV-JUDGMENT-HARNESS | review confirmed on `task/jev-judgment-harness`, awaiting integration from `main` at `fd34209`, chosen by the user as the next task after CLASSIC-STUNT-NAMES | [Advisory Jev judgments as recorded harness checks](JEV-JUDGMENT-HARNESS.md) |
+| CI-FAST-PATH | planned; ready once JEV-JUDGMENT-HARNESS is integrated, chosen by the user as the task after it | [A docs-only fast path and one tooling-test run per CI job](CI-FAST-PATH.md) |
 | M4-17 – M6 | unclaimed; outside this assignment | Do not automatically dispatch |
 
 ## M0 — repeatable laboratory
