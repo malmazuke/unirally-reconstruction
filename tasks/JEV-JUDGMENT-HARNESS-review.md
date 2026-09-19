@@ -284,3 +284,201 @@ hold up under independent reproduction, but two reproducible defects in new code
 let the artifact path be taken from unvalidated input, so a run can silently
 overwrite one record's evidence or write it outside `--out` while the report
 claims otherwise.
+
+## Re-review at f391a3f
+
+Candidate `f391a3f22db58b5ab7374a610e5c49f4a13ac210` on
+`task/jev-judgment-harness`, history `ec64a17` (implementation), `b6e457b`
+(checkpoint), `12f3ba4` (the round-1 report, cherry-picked), `f391a3f`
+(corrections). Same reviewer, same isolated checkout, detached at the exact
+candidate; the implementation was not modified and nothing was pushed. Reports
+and artifacts from this round are under `artifacts/review2/` in the review
+worktree (ignored). The correction list supplied with the request was treated
+as a claim to test, not as evidence.
+
+### Suite at the candidate
+
+`python3 tools/project.py test --suite synthetic --preset lab-debug --artifacts
+artifacts/review2/test --report artifacts/review2/test.json`: exit 0,
+`status=passed`, 47.7 s, 441 checks passed and 0 failed, skipped, missing or
+timed out (434 before, so the seven new tests are additive). All 30
+`py:test_judgment.*` checks passed, including the seven new ones
+(`test_evidence_lint_refuses_duplicate_stems_and_private_records`,
+`test_ask_name_and_argument_validation`,
+`test_key_in_state_fails_with_a_report_and_no_artifact`,
+`test_non_object_answers_fail_with_a_report`,
+`test_malformed_key_is_refused_before_any_request`,
+`test_key_problem_and_invalid_sources`, `test_redact`). The report records
+`source.commit = f391a3f2...`, `dirty = false`,
+`source_changed_during_run = false`.
+
+I read the new assertions rather than only their names: they check exit codes,
+the failing check's name and detail text, the absence of `Traceback` in stderr,
+that no artifact was written on the refusing paths, that no request reached the
+stub, and that the rejected key value itself does not appear in the detail.
+
+### Per finding
+
+**Required correction 1 (duplicate record stems) - resolved.** Reran my own
+round-1 case: two synthetic `R-0001.md` records in `dupA/` and `dupB/` now give
+exit 3 with `records failed: <dupB path> and <dupA path> share the artifact name
+'R-0001'; lint them in separate runs`, no request reaches the stub, and the
+output tree holds only `report.json`. `judge_commands.py:246-252` keeps a
+name-to-path map and refuses the second occurrence before any call.
+
+**Required correction 2 (`--name` path traversal) - resolved.**
+`judge ask ... --name "../../escaped"` now exits 3 with `arguments failed:
+--name must be a plain file name ...`, no request is sent and no file is created
+anywhere. I probed the validator beyond the implementer's case: `sub/dir`,
+`..`, `.`, `.hidden` and the empty string are all rejected (exit 3), while
+`ok-name_1.v2` is accepted and writes `ok-name_1.v2.json` inside `--out`. Record
+stems go through the same `_valid_name` at `judge_commands.py:247`.
+
+**Should fix 1 (guard crashed without a report) - resolved.**
+`write_judgment` is now inside the `try` at `judge_commands.py:116-125`, with an
+added `except OSError`. My round-1 case (a state file containing the key) now
+gives exit 1, `judgment:ask failed: refusing to write an artifact that contains
+the API key`, a written report, no `ask.json`, and no traceback on stderr.
+
+**Should fix 2 (non-object answer crashed) - resolved.** `evaluate` rejects
+non-object answers at `judgment.py:325-327`. My stub returning
+`{"answers": {"check_named": "not-a-dict", ...}}` now gives exit 1,
+`judgment:ping failed: answers are not objects for: check_named,
+status_supported`, a written report, no artifact and no traceback. I also ran
+the same stub through `evidence-lint`, which the implementer's test does not
+cover, and it behaves the same way; `evidence_flags` is defensive as well
+(`judgment.py:451-453`).
+
+**Should fix 3 (broken table row) - resolved.** Counting unescaped pipes per
+row, `docs/BUILD_AND_VALIDATION.md:176-181` now each have exactly four, the
+`judge ask` row included.
+
+**Should fix 4 (unvalidated `--timeout`/`--attempts`) - resolved.** I ran all
+three subcommands against each of `--attempts 0`, `--timeout 0` and
+`--timeout -5`: nine runs, every one exit 3 with an `arguments` check. Spying on
+the curl invocation confirms the timeout is no longer truncated: `--timeout 0.5`
+writes `max-time = 0.500`, `1.25` writes `max-time = 1.250`, `30.0` writes
+`max-time = 30.000`, with the outer `run_bounded` bound at `timeout + 15` in
+each case.
+
+**Advisory 1 (D-0007 wording) - resolved.**
+`docs/decisions/D-0007-advisory-jev-judgments.md:27-34` now separates
+answer-derived checks, which are never required, from the single
+`judgment:<name>` check, which records only whether the call succeeded and
+decides only that command's exit code. That matches the code.
+
+**Advisory 2 (report not key-scanned) - resolved.** `_finish` now redacts
+(`judge_commands.py:53-60`). I exercised the real wiring rather than the unit
+test: building a report whose check detail contains a key, then calling
+`_finish` with that key, produces a written report with
+`<redacted-api-key>` in place of the value, the marker field `"redacted": "the
+API key appeared in report text and was replaced"`, and the exit status passed
+through unchanged. Because `key_problem` now refuses quotes, backslashes and
+control characters, the JSON round trip inside `redact` cannot miss an escaped
+form of the key.
+
+**Advisory 3 (key silently truncated) - resolved.** A key containing a quote
+gives exit 1, `typesafe_api_key failed: invalid (environment): the value
+contains whitespace, quotes, a backslash or a control character`, with no
+request sent and the offending value absent from the detail; a six-character key
+gives `the value is too short to be a key`. A well formed but wrong key still
+reaches the endpoint: `TYPESAFE_API_KEY=invalid-key-for-review judge ping`
+against the real endpoint is exit 1 with `judgment:ping failed: 401: the API key
+was rejected`, unchanged from round 1.
+
+**Advisory 4 (retry policy) - not resolved, accepted.** Left as is by the
+implementer. The exhausted-retry message uses the `attempts` parameter, which is
+the number tried, so the message is accurate; the `Judgment.attempts` field is
+only constructed on the success path. Nothing observable depends on it.
+
+**Advisory 5 (record and registry consistency) - resolved.** The Evidence table
+now runs 1 to 9 in order, with rows 8 and 9 recording this review round and the
+corrections; `tasks/README.md:55` says "in review". The recorded report
+SHA-256 prefixes still refer to the implementer's ignored local artifacts, which
+the record now says explicitly, with this report as the reproducible half. Row 9
+claims 30 judgment tests and a passing suite, which matches what I measured.
+
+**Advisory 6 (what is sent to a third party) - resolved.** D-0007 and the
+"Advisory judgments" section both state that only tracked records and authored
+state are sent, and `evidence-lint` refuses a record under `<root>/local/`
+(`judge_commands.py:230-236`). I checked both the direct case and a symlink in
+`docs/` pointing at a file under `local/`: both exit 3 with `records failed:
+... judge only tracked records`, because the comparison resolves the record
+path.
+
+### New findings
+
+**Should fix (residual) - a record named `evidence-lint.md` is overwritten by
+the run's own summary file.** `judge_commands.py:275` writes the summary to
+`out / "evidence-lint.json"` after the per-record loop, and nothing reserves
+that name against a record stem. A record whose stem is `evidence-lint` passes
+`_valid_name` and the duplicate-stem map, gets its judgment artifact written to
+the same path, and then has it overwritten by the summary.
+
+Reproduced against the stub with one record `records/evidence-lint.md`: exit 0,
+`status=passed`, a single file `evidence-lint.json` in `--out`, and the report
+listing two artifacts at that one path, the `judgment` entry with SHA-256
+`d926f8c4f033...` and the `evidence_lint_summary` entry with `7219402d4259...`,
+where the file on disk hashes to `7219402d4259...`. The call's own request,
+response, usage and state hash are gone, and a reader verifying the recorded
+judgment hash finds a mismatch with nothing explaining it.
+
+This is the last corner of the class behind Required correction 1, and it is far
+less reachable: no record in `docs/research/` or `tasks/` carries that name, so
+a caller must create one deliberately. Resolution: reserve the summary name
+(refuse a record stem of `evidence-lint`, or write the summary as
+`evidence-lint-summary.json`), and add it to the duplicate-name test.
+
+**Advisory - the `local/` refusal does not resolve its own boundary.**
+`judge_commands.py:226` builds `private = root / "local"` and compares it with
+`path.resolve()`. The record side is resolved, so a symlink into `local/` is
+caught, but `private` is not, so if `local` were itself a symlink the refusal
+would be bypassed. Reproduced in a synthetic root whose `local` is a symlink:
+the record was accepted (`records passed`) and the call was attempted. In this
+repository `local/` is a real directory, so nothing is exposed today; resolving
+`private` as well would close it.
+
+**Advisory - the redaction path has no end-to-end test.** `test_redact` covers
+`judgment.redact` as a function and `test_malformed_key_is_refused_before_any_request`
+covers the new key validation, but no test drives a report that actually
+contains the key through `_finish` and asserts the written file is redacted and
+carries the `redacted` marker. I verified that wiring myself (above) and it
+works; a small test would keep it working.
+
+### New withheld cases
+
+1. A record named `evidence-lint.md` (the new Should fix above), which is the
+   one artifact-name collision the corrections do not cover.
+2. The `--name` validator beyond the returned case: `sub/dir`, `..`, `.`,
+   `.hidden`, the empty string, and the accepted `ok-name_1.v2`.
+3. Invalid `--attempts` and `--timeout` on all three subcommands, nine runs, not
+   only on `ask`.
+4. Non-object answers driven through `evidence-lint` as well as `ping`.
+5. A symlink in `docs/` pointing at a file under `local/` (caught), and a root
+   whose `local` is itself a symlink (not caught).
+6. `_finish` with a report whose check detail carries the key, asserting the
+   written file and the `redacted` marker.
+7. Curl's `max-time` inspected directly for fractional, mixed and whole-second
+   timeouts.
+8. Real-endpoint regression pass at the candidate: `doctor` (optional
+   `typesafe_api_key`, `from .env`), `judge ping` (exit 0, `jev-1.13.0`, 421
+   input tokens, 0.78 s, full artifact), `judge evidence-lint` over two of my
+   round-1 records (exit 0, 12 `lint:*` checks all `"required": false`, 3
+   flagged, `status=passed`) and the 401 path (exit 1).
+
+### Unchanged conclusions
+
+The key grep is still clean: with the value read from `.env` into a shell
+variable, `grep -rlF -- "$TYPESAFE_API_KEY" artifacts/ tools/ tests/ docs/
+tasks/ AGENTS.md .env.example` returns zero files, as does a worktree-wide grep
+excluding `.git` and `.env`. `git diff fd34209 f391a3f -- .github/` is still
+empty, so CI is untouched and still needs no key. No en dash or em dash appears
+in any line the corrections added. The corrections stay inside the same owned
+paths.
+
+## Verdict
+
+confirm - every required and should-fix finding from round 1 is fixed in the
+code, covered by a new test and reproduced as fixed here, with the suite passing
+at the candidate; the one residual artifact-name collision and two advisories
+above are small enough to fold into integration rather than another round.
