@@ -103,6 +103,9 @@ mechanism, take it and say so; do not widen the task to the whole family by defa
 | 3 (07:30-07:40Z) | The phrase is held in WRAM where the drawing code can find it | `text_probe.py`: the WRAM bytes that change across all four caption starts | 64 scattered offsets, no run of four consecutive bytes. The text is not staged in WRAM at all, so it goes to VRAM from ROM | Find the ROM read instead |
 | 4 (07:40-07:50Z) | The phrase is in the ROM, and its letters constrain where | `string_search.py`: search the whole ROM for any byte run whose equal and unequal positions match a known phrase, at stride 1 and 2, encoding unknown | `BIGGER BOOSTS` has exactly two candidate sites in 2 MB, both plain lowercase ASCII (`bigger boosts`). The captions are stored as ASCII text, not as tile indices | Find the table's base and the code that reads it |
 | 5 (07:50-08:00Z) | The event id indexes fixed-size entries | `access capture` over frames 1590-1612 of the accepted DRAGSTER replay manifest, then the ROM read sites in bank `$17` | `$81:BFE9` reads exactly 16 bytes at `$17:CCB4`, once, on frame 1599 - the update that consumed event 44. So entries are 16 bytes and the base is `$17:CCB4 - 44*16` = **`$17:C9F4`** (file `$0BC9F4`). Decoding by index gives every caption: 1-22 the stunt names (`roll`, `double roll`, `treble roll`, `roll city`, the flip, twist and z flip families, `rollout`, `wipeout`, `last lap`, `head bounce`, `tabletop`, `wrong way`), 23-36 the cheat and mode messages, 37-39 `winner`/`draw`/`loser`, 40-71 the hint sentences, and beyond 71 the voice lines the consumer diverts. Entry 47 and other gaps are 16 spaces, which is how a one-line pause between sentence parts is spelled | Recover the display rule: layer, position, colour, duration, and how ASCII becomes tiles |
+| 6 (08:00-08:20Z) | The 16 bytes become tiles somewhere | Followed the accesses around the table read in the same access record | `$81:C019` stores one tile index per character at `$0EA7-$0EB6`, `$81:C034` sets the queue cooldown to 120 and `$81:C057` raises a redraw flag `$0EE7`. Reading the buffer out of the capture gives `80 80 27 29 2C 0F 80 2D 2E 2F 28 2E 2D 80 80 80` for `  more stunts   `, and the other three captions agree letter for letter. The encoding is three runs of consecutive tiles, 16 apart | Find what consumes the buffer |
+| 7 (08:20-08:30Z) | Something draws the buffer on a later update | The accesses that read `$0EA7-$0EB6` and the `$2116`/`$2118` writes around them | On the next update `$81:F322` and `$81:F33C` each read all 16 bytes and write a tilemap row: words 6472-6487 with `$3800 | tile`, then words 6504-6519 - 32 words further on - with `$3800 | (tile + $10)`, and `$81:F352` clears the redraw flag. So each glyph is 8x16, drawn as two rows whose tiles differ by exactly `$10`, which is also why the letter runs are 16 apart. With the tilemap based at word `$1800` that is rows 10 and 11, columns 8 to 23, palette 6 with priority: sixteen characters centred at y 80-95, where the pictures show them | Recovered enough to record; next the font glyphs and the blanking rule |
+| 8 (08:30-08:35Z) | Something counts the caption down | Read the table's gaps against the hint sequence | Entry 47 and the other gaps are sixteen spaces, and the hint sentence is published as consecutive ids 44, 45, 46, 47. The caption is cleared by publishing a blank entry, not by a timer | Nothing to time; the queue already carries it |
 
 ## Handoff
 
@@ -119,13 +122,15 @@ mechanism, take it and say so; do not widen the task to the whole family by defa
   involved in these captions; a statistical WRAM-diff hunt for "caption state" ranked bytes whose
   change counts merely happened to sit near consumptions ($15CE-$15D2 change constantly from 1329,
   before any race event), so read the original's code and pictures instead of ranking byte churn.
-- Exact next experiment/command: recover the display rule. `$81:BFE9` is the table read; follow
-  what the routine around it does with the 16 bytes (which layer and tilemap address, the glyph
-  mapping from ASCII, the colour and the number of updates the caption lasts). The access record
-  `artifacts/classic-stunt-names/access-1590` already covers frames 1590-1612 of the accepted
-  DRAGSTER replay manifest, with a caption on screen at 1606; regenerate or widen it with
-  `python3 tools/project.py access capture --manifest tests/manifests/replay/race-crawler-dragster-3000.json
-  --from-frame <a> --to-frame <b> --frame-image <n> --out <dir>`.
+- Exact next experiment/command: find the font's glyph tiles. The caption's tiles are BG character
+  indices, so the sheet is whatever the layer's character base points at; find the DMA or the ROM
+  region that fills it, add it to the pack additively, and render `  more stunts   ` with the
+  recovered mapping to compare against the original's own frame 1601. Then confirm the letters the
+  four captions do not contain (`a`, `f`, `l` and the digits first) against a picture, and measure
+  a ZOOM ZOO caption, since only DRAGSTER has been measured.
+- Recovered so far: [R-0042](../docs/research/R-0042-stunt-name-captions.md) holds the mechanism -
+  the trigger, the ASCII table at `$17:C9F4`, the tile buffer at `$0EA7`, the ASCII-to-tile
+  arithmetic, the two tilemap rows and the blank-entry rule.
 - Remaining dependencies: none; every prerequisite is integrated on `main`.
 - Runtime needs: the private ROM, the audited core, the v8 pack, disk for captures, and roughly an
   hour of machine time for a full gate matrix.
