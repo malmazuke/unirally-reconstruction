@@ -1,13 +1,14 @@
 # Next session
 
-**Status on 18 September 2026 UTC (after REPO-LOCAL-STATE-CLEANUP): nothing is
-in progress, nothing is blocked and no task is registered but unstarted.**
-Every started task is reviewed, integrated on `main` and accepted conditional
-only on its recorded final-tip CI, which was green at integration. The "not
-done" items listed under the closed follow-ups below are declared omissions
-kept as future work (ZOOM ZOO's own windows, authored HUD and result styles,
-the pack's alias entries), not unfinished parts of any task. A new session
-starts from a new user request; it does not need to resume anything.
+**Status on 19 September 2026 UTC: ZOOM-ZOO-WINDOW-EFFECTS is implemented on
+`task/zoom-zoo-window-effects` (`11d50f6`, `49bd26c`) with local gates passed
+and is with its independent reviewer; see its record and the registry for the
+outcome.** Every earlier task is reviewed, integrated on `main` and accepted
+conditional only on its recorded final-tip CI, which was green at
+integration. The "not done" items listed under the closed follow-ups below
+are declared omissions kept as future work (authored HUD and result styles,
+the pack's alias entries, the register setup behind the window compose rule),
+not unfinished parts of any task.
 
 **Where local evidence lives now.** The cleanup moved every worktree's
 `artifacts/` to `local/evidence/<worktree>/` in the main checkout and every
@@ -92,10 +93,9 @@ wall clock. No reset, purchase or provider change is authorized.
    `docs/STATE.md`. Read the task record's fifth measurement before trusting
    the fourth: the frozen contract race is the continuous-Right replay and
    its inputs are on record, so no recapture was needed. What remains open
-   from it, as recorded in its handoff: ZOOM ZOO's own countdown and winner
-   windows (bind the family for ZOOM ZOO and compare scene 1450 with the
-   original), the authored HUD and result styles, and dropping the eight
-   `zoom.*` engine-table aliases in a later pack profile.
+   from it, as recorded in its handoff: the authored HUD and result styles,
+   and dropping the eight `zoom.*` engine-table aliases in a later pack
+   profile. ZOOM ZOO's own countdown and winner windows are done by item 7.
 
    For a new track or scenario the pattern is now: engine content through
    `zoom_zoo_content` with the track's own overrides, presentation content
@@ -110,6 +110,19 @@ wall clock. No reset, purchase or provider change is authorized.
    pause during the countdown, and the digit disappears until you resume and
    then carries on where it stopped; lose a race and the banner runs from the
    opponent's finish while you ride, which is what the original does.
+7. **ZOOM ZOO's countdown, GO and winner windows.**
+   [ZOOM-ZOO-WINDOW-EFFECTS](ZOOM-ZOO-WINDOW-EFFECTS.md) binds the window
+   family for ZOOM ZOO: the original's `$11FD`, read from the existing M4-16
+   captures, runs the same members and drivers as DRAGSTER's with one
+   difference, the countdown transition member (5 on ZOOM ZOO, 6 on DRAGSTER,
+   from the player's start reflection latched at initialization). Found on
+   the way and fixed for both tracks: Start held after a pause resume keeps
+   the window off and the look still, and the countdown windows let the
+   player's object show through while covering the opponent's. To see it:
+   the ZOOM ZOO countdown now shows the original's start sign, digits and GO
+   letters instead of the authored READY/GO text, and the winner banner runs
+   from the first finish. Status, review and integration: the task record
+   and the registry.
 
 ## Launch recipe
 

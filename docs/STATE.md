@@ -60,9 +60,9 @@ inventory rather than an acceptance freeze.
 
 Declared omissions: audio; the original's decorative objects and captions
 (start arrow and ring, hints, on-screen stunt names, opponent finish time,
-animated finish banner, off-screen arrows) except DRAGSTER's own countdown and
-winner windows, recovered in R-0040; ZOOM ZOO's window content uses the same
-channel-6 mechanism and remains omitted; original HUD and result pixel style;
+WINNER caption, off-screen arrows) except both tracks' countdown, GO and
+winner windows, recovered in R-0040 and ZOOM-ZOO-WINDOW-EFFECTS; original
+HUD and result pixel style;
 the two-update later result load after a time-out (audio handshake timing).
 Other tracks, riders, modes, menus and multiplayer remain outside the product.
 
@@ -152,6 +152,24 @@ uncited exploration captures (11 GB), build output, caches and run-report
 scratch. The repository went from 146 GB to about 117 GB; the DRAGSTER and
 M4-16 differential gates pass from the new location. AGENTS.md now carries the
 retention rule so a closing task leaves nothing behind in its worktree.
+
+[ZOOM-ZOO-WINDOW-EFFECTS](../tasks/ZOOM-ZOO-WINDOW-EFFECTS.md) (18-19
+September 2026 UTC, `task/zoom-zoo-window-effects`) binds the channel-6
+window family for ZOOM ZOO, so its countdown digits, GO and winner banner now
+draw from the original's own per-frame selection like DRAGSTER's. Read from
+the existing M4-16 originals' WRAM, ZOOM ZOO's `$11FD` runs the same members
+on the same drivers; the one difference is the countdown transition member,
+`5 + $1229`, which race setup latches from the player's start reflection
+(member 6 on DRAGSTER, 5 on ZOOM ZOO; derived from the track header). Two
+shared corrections came with it: Start held after a pause resume keeps the
+window off and the look still (the predicate now reads the engine's
+suspended-update clock), and the countdown members let the player's object
+show through while covering the opponent's (the SNES colour-math exemption of
+OBJ palettes 0-3), which also fixes 57 DRAGSTER frames. Native's published
+member equals the original's pointer on every frame of seven ZOOM ZOO
+originals and the four DRAGSTER pause originals; every pixel the change
+touches on the frames with original pictures matches the original. Status
+and review: see the [registry](../tasks/README.md) and the task record.
 
 ## Accepted product and evidence
 

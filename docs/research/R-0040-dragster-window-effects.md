@@ -290,3 +290,59 @@ n shows the `$11FD` value at the end of frame n-1 (the driver of n-1 chose it).
 `frame + 1 - since` can wrap for hand-made states with tiny frame numbers; it
 is defined, bounds-checked and unreachable for real states (review finding D
 of DRAGSTER-WINDOW-EFFECTS).
+
+## Established later: ZOOM ZOO's windows, the transition member and the objects under a window
+
+ZOOM-ZOO-WINDOW-EFFECTS read `$11FD` from seven ZOOM ZOO originals captured
+with the user's ROM for M4-16 (the primary, a loss, two race pauses, two
+countdown pauses and the idle late start in which the opponent wins), and
+closes the "ZOOM ZOO's own window content" bullet above:
+
+- **The same family and drivers.** `$11FF` is `$15` and every value of
+  `$11FD` in every ZOOM ZOO race is a member of the 25-table family or the
+  `$DB4E` sentinel. The countdown thresholds, the GO parity, the banner
+  drivers' arming, stepping, 360-update life and two-driver order are as
+  recorded above and in the section before this one; the race vblank
+  publishes from ZOOM ZOO's setup frame 1382 (initialization 1376 + 6). On the
+  primary: members 5, 0, 5, 1, 5, 2, 5 on 1382-1582 at the thresholds of the
+  table above, GO alternating 4 and 3 on 1583-1651, nothing from 1652, and the
+  banner from 6486 (finish 6484, first driver update 6485 odd, so member 8
+  shows first) to loading at 6725. In the late start the opponent's driver
+  runs 6490-6849 and the player's 7420-7659.
+- **The transition member is `5 + $1229`, and `$1229` is the player's start
+  reflection.** `$83:CC05-CC08`, in the race setup that also fixes `$1281`,
+  stores `$0BA7` in `$1229` once on the initialization frame (DRAGSTER's goes
+  0 to 1 on 1328; ZOOM ZOO's stays 0). `$0BA7` is the player's reflection
+  word, at that moment the start reflection the track header sets (an even
+  start y word means reflected; `classic_race_start_reflected`): 1 on DRAGSTER,
+  0 on ZOOM ZOO. So DRAGSTER's transitions draw member 6 and ZOOM ZOO's member
+  5, different shapes (a small start sign at x 78-99, a large arrow at x
+  28-226), and the "not established" item on `$1229` above is closed. Native
+  derives the member from the track content (`classic_window_transition_member`).
+- **Start held after a resume keeps the channel off.** In the countdown-pause
+  original the menu opened on update 1450 and Start was held on 1460-1462 to
+  resume; the original shows no window on frames 1451-1463. The engine
+  already counted updates 1450-1462 as suspended (`$83:CD05-CD35` diverts
+  while Start is held after the selection returns to zero), so the diverted-
+  update predicate now reads that clock; the rider look does not run on those
+  updates either (the originals' `$0D49/$0D4B` and `$0D45/$0D47` equal the
+  native tracker on every race update of that capture, 10,696 checks, and the
+  selection-based predicate fails 263 of them).
+- **What a window covers.** With both riders at the line under the GO letters
+  (frame 1583), the original shows the player's object (OBJ palette 3) over
+  the window band and replaces the opponent's (palette 4) with the window
+  colour, the SNES colour-math rule that exempts OBJ palettes 0-3; the banner
+  members 7-24 cover both riders (the opponent-won banner over the riding
+  player, frames 6724-6800 of the countdown-pause original). "Indices 0-6
+  compose before the riders, 7-24 after them" above was a proxy for this
+  rule. The register setup that produces the two behaviours was not read.
+
+Agreement: native's published member equals the original's `$11FD` on every
+frame from 1382 to the loading frame on all seven captures (5,344 frames on
+the primary, 6,278 on the late start, 6,219 on each countdown pause) and the
+four DRAGSTER window-pause originals are unchanged. Of the pixels the change
+touches on the frames with original pictures, all match the original (32,373
+on the primary; 1,060 on 57 frames of DRAGSTER's release-3213 race, where the
+opponent sits under the countdown digits, with no frame worse). Frame 1450 of
+the primary falls from 9,822 mismatching pixels to 163 and the GO frame 1583
+from 9,066 to 341. Task record: `tasks/ZOOM-ZOO-WINDOW-EFFECTS.md`.

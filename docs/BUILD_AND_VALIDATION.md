@@ -557,3 +557,19 @@ reset handshake; `inventory` records the same evidence with
 `acceptance: false`, the whole-capture rows hash and the exact prefix hash, and
 `compare --prefix` gates only that prefix. Ordinary DRAGSTER cases keep using
 `freeze` and `compare`.
+
+## ZOOM ZOO window effects (task branch)
+
+[ZOOM-ZOO-WINDOW-EFFECTS](../tasks/ZOOM-ZOO-WINDOW-EFFECTS.md) binds the
+channel-6 window family for ZOOM ZOO in `classic_race_presentation_content`,
+so both tracks' countdown digits, GO and winner banner draw from the
+original's per-frame selection; the only track difference is the countdown
+transition member (`classic_window_transition_member`, from the player's
+start reflection in the track header). No new command: the runner's
+`--window-index` mode and `--timeline` mode above serve ZOOM ZOO timelines
+too. The original's pointer is read from any `zoom_zoo_playable_reference`
+capture's `memory.wram` (one 131072-byte image per frame from
+`reference.json["frames"][0]`; frame n shows the `$11FD` word at the end of
+frame n-1, member k at `$8000 + 899k`, `$DB4E` no window). The task's probe
+and picture scripts are kept with its evidence under
+`local/evidence/zoom-zoo-window-effects/`.
