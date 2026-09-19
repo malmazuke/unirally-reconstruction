@@ -114,7 +114,9 @@ int main(int argc, char **argv) try {
         if (stable && (updates & 15U) == 0U) mask = static_cast<std::uint16_t>(mask | bit(LogicalButton::Start));
         // Likewise a paused player soon confirms the highlighted pause entry.
         if (state.pause.selection && (updates & 31U) == 0U) mask = static_cast<std::uint16_t>(mask | bit(LogicalButton::Start));
-        const auto buttons = unirally::with_physical_dpad(unirally::app::controller_buttons(mask));
+        // Opposing directions stay in the generated masks; the engine drops
+        // them the way the controller port does.
+        const auto buttons = unirally::app::controller_buttons(mask);
         const auto result_before = state.result_updates;
         const auto frame_before = state.movement.frame;
         previous = state;

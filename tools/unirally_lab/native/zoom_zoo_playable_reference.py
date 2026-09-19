@@ -15,13 +15,8 @@ from ..reference.bsnes import BsnesCore, BUTTONS, frame_png
 from ..replay.manifest import derive_script
 
 
-def capture(core_path, out, horizon, post_events, variation=None):
-    if out.exists():
-        raise ValueError('fresh output directory required')
-    raw = (ROOT/'tests/manifests/replay/race-crawler-zoom-zoo-3300.json').read_bytes()
-    rom = Path((ROOT/'local/rom-location.txt').read_text().strip())
-    if (sha(raw), sha(core_path.read_bytes()), sha(rom.read_bytes())) != (PRIMARY_SHA, CORE_SHA, ROM_SHA):
-        raise ValueError('original identities differ')
+def case_timeline(raw, horizon, post_events, variation=None):
+    """The controller timeline a capture delivers, without running the core."""
     case = json.loads((ROOT/'tests/manifests/native/zoom-zoo-race-primary.case.json').read_text())
     inputs = timeline(case, horizon, derive_script(json.loads(raw)))
     for f in range(6725, horizon+1):
@@ -30,13 +25,17 @@ def capture(core_path, out, horizon, post_events, variation=None):
     if idle is not None:
         # Ordinary controller pause in play: release every button from `from`
         # for `frames` updates (all remaining updates when null), then resume
-        # the primary controller stream where it was left.
-        first,count=idle.get('from'),idle.get('frames')
-        if (type(first) is not int or not 1650<=first<=horizon or set(idle)!={'from','frames'} or
-                (count is not None and (type(count) is not int or count<1))):
+        # the primary controller stream where it was left. Optional `buttons`
+        # are held instead of releasing; a rocker D-pad publishes nothing for
+        # opposing directions, so holding them is an idle window at the port,
+        # which is the equivalence ZOOM-ZOO-OPPOSING-INPUT measures.
+        first,count,held=idle.get('from'),idle.get('frames'),sorted(idle.get('buttons',[]))
+        if (type(first) is not int or not 1650<=first<=horizon or not set(idle)<={'from','frames','buttons'} or
+                not {'from','frames'}<=set(idle) or any(b not in BUTTONS for b in held) or
+                len(set(held))!=len(held) or (count is not None and (type(count) is not int or count<1))):
             raise ValueError('invalid idle variation')
         primary=inputs
-        inputs=[primary[f] if f<first else [[],[]] if count is None or f<first+count else [list(p) for p in primary[f-count]]
+        inputs=[primary[f] if f<first else [list(held),[]] if count is None or f<first+count else [list(p) for p in primary[f-count]]
                 for f in range(horizon+1)]
     varied=set()
     for event in (variation or {}).get('changes',[]):
@@ -56,6 +55,17 @@ def capture(core_path, out, horizon, post_events, variation=None):
                 raise ValueError('overlapping post-result events')
             seen.add(f)
             inputs[f][0] = sorted(buttons)
+    return inputs
+
+
+def capture(core_path, out, horizon, post_events, variation=None):
+    if out.exists():
+        raise ValueError('fresh output directory required')
+    raw = (ROOT/'tests/manifests/replay/race-crawler-zoom-zoo-3300.json').read_bytes()
+    rom = Path((ROOT/'local/rom-location.txt').read_text().strip())
+    if (sha(raw), sha(core_path.read_bytes()), sha(rom.read_bytes())) != (PRIMARY_SHA, CORE_SHA, ROM_SHA):
+        raise ValueError('original identities differ')
+    inputs = case_timeline(raw, horizon, post_events, variation)
     out.mkdir(parents=True)
     hashes, cartridge_hashes, video = [], [], []
     with tempfile.TemporaryDirectory(dir=out) as directory:

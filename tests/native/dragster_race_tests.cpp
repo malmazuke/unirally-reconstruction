@@ -103,4 +103,21 @@ int main() {
     pressed={};pressed.left=pressed.right=true;pressed.down=true;
     physical=with_physical_dpad(pressed);
     require(!physical.left && !physical.right && physical.down);
+
+    // The shared race engine applies that rocker itself, so no caller can
+    // advance either track with a direction pair the port cannot publish. The
+    // paused update samples the controller into the state, so one update shows
+    // both axes; DRAGSTER's accepted behaviour is unchanged because its app and
+    // runner dropped the same pairs before the engine did.
+    auto held=start;held.fade_level=30;held.pause.selection=1;
+    auto opposed=held,steered=held,navigated=held;
+    ControllerButtons nothing{},both{},left_only{},down_only{};
+    both.left=both.right=both.up=both.down=true;left_only.left=true;down_only.down=true;
+    update_zoom_zoo(held,nothing,content);
+    update_zoom_zoo(opposed,both,content);
+    update_zoom_zoo(steered,left_only,content);
+    update_zoom_zoo(navigated,down_only,content);
+    require(serialize_zoom_zoo(opposed)==serialize_zoom_zoo(held) && opposed.pause.selection==1);
+    require(serialize_zoom_zoo(steered)!=serialize_zoom_zoo(held));
+    require(navigated.pause.selection==0xffffU);
 }

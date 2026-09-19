@@ -408,10 +408,9 @@ int main(int argc, char **argv) try {
         const bool at_stable_result=zoom_state.result_updates!=0 &&
             zoom_state.result_updates==unirally::stable_result_updates(zoom_state);
         zoom_hud_state=zoom_state;
-        auto buttons=unirally::app::controller_buttons(ports[0]);
-        // A SNES pad cannot report opposing directions; DRAGSTER's gates match
-        // the original with them dropped. ZOOM ZOO keeps its accepted mapping.
-        if(!parsed->zoom_zoo)buttons=unirally::with_physical_dpad(buttons);
+        // A keyboard and an analog stick can report opposing directions that a
+        // SNES pad's rocker cannot; update_zoom_zoo drops them for both tracks.
+        const auto buttons=unirally::app::controller_buttons(ports[0]);
         if(at_stable_result && buttons.start)
           unirally::restart_zoom_zoo(zoom_state,zoom_content);
         else unirally::update_zoom_zoo(zoom_state,buttons,zoom_content);

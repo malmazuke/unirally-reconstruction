@@ -83,6 +83,24 @@ int main() {
     require(serialize_zoom_zoo(paused)==initial_bytes);
     require(initial_bytes.size()==742);
     require(serialize_zoom_zoo(deserialize_zoom_zoo(initial_bytes))==initial_bytes);
+    // ZOOM-ZOO-OPPOSING-INPUT: a rocker D-pad publishes neither direction of an
+    // axis when both are asked for, and the original's memory over such a
+    // window is identical to a released D-pad's. The engine applies that rule
+    // itself, so a keyboard or an analog stick cannot drive the race outside
+    // the domain the originals cover. The paused update samples the controller
+    // and stores it, so one update shows both axes and the menu's navigation.
+    auto held=initial;held.fade_level=30;held.pause.selection=1;
+    auto opposed=held,steered=held,navigated=held;
+    ControllerButtons nothing{},both{},left_only{},down_only{};
+    both.left=both.right=both.up=both.down=true;left_only.left=true;down_only.down=true;
+    update_zoom_zoo(held,nothing,initial_content);
+    update_zoom_zoo(opposed,both,initial_content);
+    update_zoom_zoo(steered,left_only,initial_content);
+    update_zoom_zoo(navigated,down_only,initial_content);
+    require(serialize_zoom_zoo(opposed)==serialize_zoom_zoo(held));
+    require(opposed.pause.selection==1); // Neither direction, so the menu stays.
+    require(serialize_zoom_zoo(steered)!=serialize_zoom_zoo(held)); // Left alone still steers.
+    require(navigated.pause.selection==0xffffU); // Down alone still navigates.
     // $82DB87-DB94 copies one 26-byte $82D7A4 template into both learned
     // banks, so the opponent's event-one weight follows the static content
     // rather than a constant repeated in the initializer.

@@ -1,0 +1,29 @@
+{
+ "id": "opposing-edges",
+ "changes": [
+  {
+   "from": 1377,
+   "to": 1649,
+   "buttons": [
+    "left",
+    "right"
+   ]
+  },
+  {
+   "from": 6725,
+   "to": 7100,
+   "buttons": [
+    "left",
+    "right"
+   ]
+  },
+  {
+   "from": 7101,
+   "to": 7600,
+   "buttons": [
+    "up",
+    "down"
+   ]
+  }
+ ]
+}
