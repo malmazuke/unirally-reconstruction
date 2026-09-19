@@ -303,3 +303,110 @@ independent runs; the DRAGSTER side of claim 3 (members composing after the obje
 whose originals show a countdown or GO window over the player, costs 1085 pixels against the simpler
 rule, and is written into R-0040 and `docs/STATE.md` as a recovered fact about the original hardware.
 Fix B1 and the two should-fix items, re-measure, and this is an approve.
+
+## Re-review at 3e2d30d
+
+- Candidate: `3e2d30d` on `task/zoom-zoo-window-effects` (`83af471` code, `989b0e9` records, on top of the
+  returned `d69af67`). Reviewing model: Claude Opus 5, the same session that returned `d69af67`.
+- Checkout: `.worktrees/zoom-zoo-window-review` moved to `3e2d30d`, rebuilt there before measuring
+  (`python3 tools/project.py build --preset app-debug`, status=passed; binaries relinked).
+- Verdict: **approve**.
+
+### B1 re-verified
+
+`artifacts/review/compose_rule.py`, unchanged from the returning review, re-run against the new build:
+
+| Capture / frame | Member | Pixels the mask keeps | Pixels covered | Of those, the original shows the fill | Candidate rect mismatch | Covering both riders |
+| --- | --- | --- | --- | --- | --- | --- |
+| `boundary-a` 1450 | 5 | **0** | 9673 | 9673 | 67 | 67 |
+| `boundary-a` 1583 | 4 | **0** | 8986 | 8986 | 46 | 46 |
+| `boundary-a` 1649 | 4 | **0** | 8986 | 8986 | 394 | 394 |
+| `pause-countdown-a` 1583 | 5 | **0** | 9673 | 9673 | 67 | 67 |
+| `pause-countdown-a` 1649 | 4 | **0** | 8986 | 8986 | 76 | 76 |
+
+Nothing is preserved inside any window region, every pixel inside it is the flat fill in both the
+candidate and the original, and the candidate now equals the counterfactual exactly on all five frames
+- the finding is closed, not narrowed. Picture scores from this build (`artifacts/review/pictures.py`,
+rectangle (0, 28, 256, 196), "before" still the untouched `main` build at `6adcde8`):
+
+| Original frame | Rect mismatch before / after | Changed in rect | Now matching | Newly wrong |
+| --- | --- | --- | --- | --- |
+| `boundary-a` 1450 | 9822 / **67** | 9755 | 9755 | 0 |
+| `boundary-a` 1583 | 9066 / **46** | 9020 | 9020 | 0 |
+| `boundary-a` 1649 | 9414 / **394** | 9020 | 9020 | 0 |
+| `boundary-a` 6724 | 6095 / **827** | 5268 | 5268 | 0 |
+| `pause-countdown-a` 1583 | 9822 / **67** | 9755 | 9755 | 0 |
+| `pause-countdown-a` 1649 | 9096 / **76** | 9020 | 9020 | 0 |
+| `pause-countdown-a` 6724 / 6725 / 6800 | 3838 / **277**, 3838 / **277**, 3374 / **341** | 3561, 3561, 3033 | all | 0 |
+
+Every figure the coordinator reported reproduces. Frames without a window (`boundary-a` 1377, 1700,
+2501, 3208, 4840, 6484, 6725, 6800, 7000) remain pixel-identical to the `main` build, 0 changed pixels
+each; their rect mismatches against the originals (63 on 3208, 57 on 4840, 61 on 6484, 0 elsewhere)
+are unchanged before and after. DRAGSTER release-3213 (`artifacts/review/d3213.py`): 183 frames scored,
+**75 changed (1420-1602), 13,804 changed pixels, 13,804 now matching, 0 newly wrong, no frame worse** -
+18 more frames and 12,744 more pixels than the keep-mask version won, which is the expected shape of
+the fix (the mask had been suppressing the player wherever a DRAGSTER rider sat under a member too).
+
+### S1, S2, A1 as applied
+
+- **S1.** Item 4 and the picture table now read "pause-countdown 1583 (member 5, GO pushed back to
+  1596 by the pause)", and the 346-of-392 sentence now says those pixels were fill in the original
+  where native drew a rider, with both riders over the window at `11d50f6`. Both are correct against
+  my own measurements.
+- **S2.** `zoom_zoo_movement.hpp` now reads "bytes 5-6 for the player, 9-10 for the opponent; the x
+  words precede each", and the test comment "the opponent's start y word (bytes 9-10)". Both match
+  what `content_word(decoded_track, 5 + 4 * rider)` reads.
+- **A1.** `ClassicRaceHistoryTracker` caches `transition_member_` on the first update after a reset and
+  `reset()` clears it. I checked the staleness risk this introduces: the only live holder,
+  `LivePresentation::history_`, is wholly replaced on every restart (`sdl_main.cpp:346` and `:437`
+  assign a fresh `LivePresentation{}`), and the track is fixed for a session
+  (`classic_race_presentation_content` is taken once at `sdl_main.cpp:259`), so the cache cannot
+  outlive the race it was read for. Pointer agreement re-run on `pause-countdown-a` after the change:
+  **6219/6219**, state rows 6225/6225 - unaffected.
+- **A2** is moot as predicted: `render_window_xor` is back to three parameters and the 57 KB
+  `player_object` array is gone. **A3** is accepted as recorded; the register read stays the named
+  next experiment, and the rule now in the records is the one that was measured.
+
+### Records
+
+The exemption claim survives nowhere as a statement about the original. The only remaining mentions
+are explicit retractions: R-0040's bullet ends "(The task's first reading, a colour-math exemption of
+the player's object, was measured wrong by its reviewer.)"; the task record's item 4 says the first
+reading "was wrong and is recorded under Mistakes"; and the new Mistakes section names the crop-vs-
+measurement error. R-0040's "What a window covers" bullet now reads "everything", with the 8,691-pixel
+flat-colour measurement and the corrected 75-frame DRAGSTER figure; `docs/STATE.md` now says "every
+window member composes after both riders". The surviving "members 0-6 ... (before the riders)" at
+R-0040 line 135 describes the legacy v1 `render_dragster`, which this task deliberately leaves alone,
+so it is still accurate there. The review dispositions table in the task record matches what I measured
+on every row.
+
+One advisory, not a condition of approval: the handoff still reads "Failed approaches: none" while the
+new Mistakes section records one. Worth a word next time the record is touched.
+
+### Gates re-run on this build
+
+- `ctest --test-dir build/app-debug`: **23/23 passed**.
+- `zoom_zoo_playable compare`, M4-16 primary v11 freeze, this build's `zoom_zoo_runner` and this
+  checkout's pack: **passed, 757 restores** (`artifacts/review/compare-zoom-primary-rr.json`).
+- Pointer agreement, `pause-countdown-a`: 6219/6219 published, 6225/6225 state rows.
+- Legacy v1 DRAGSTER renderer still untouched: `render_window_xor`'s three v1 call sites and their
+  before/after-object ordering are unchanged by `83af471`, and `dragster_window_table_index` still
+  passes the constant 6.
+- No tracked file was edited while a compare was running.
+
+### Not done in the re-review
+
+Re-ran one frozen compare (the M4-16 primary) rather than all four, one preset's ctest rather than two,
+and one capture's pointer agreement rather than three; the code change is confined to the render step
+and the tracker's caching, both of which I exercised directly. I did not re-run the DRAGSTER frozen
+compares, the other presets, the v1 fixtures, the hidden app runs or the fuzz runner, and I did not
+rebuild R-0036's look harness at this candidate either.
+
+### Verdict
+
+**Approve.** The blocking finding is fully fixed rather than papered over: the keep mask is gone, the
+compose rule is now "every member covers both objects", and that is both what the originals show and a
+strictly better score on every frame that can test it, including 18 DRAGSTER frames the earlier version
+did not reach. S1, S2 and A1 are applied correctly, A1's new cache cannot go stale in any live path,
+the records no longer assert the retracted finding anywhere, and the gates I re-ran pass with the
+expected numbers.
