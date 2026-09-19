@@ -290,3 +290,128 @@ None.
   which is a stronger check of the contracts but says nothing about the files under
   `.worktrees/zoom-zoo-opposing-input/artifacts/`.
 - Everything `docs/STATE.md` lists as a declared omission is out of scope and untouched here.
+
+---
+
+# Re-review at `024bf56`
+
+- Correction commit: `024bf56` "Apply the independent review's findings", a single commit on
+  `task/zoom-zoo-opposing-input` on top of the reviewed candidate `b477a0d`.
+- Same reviewer session and checkout; this branch stays at `b477a0d` plus its review commits, so the
+  corrected tree was exercised from a detached `024bf56` in this worktree and the branch was restored
+  afterwards. Nothing on the implementation branch or in the primary's worktree was modified.
+- Verdict: **confirm**. All ten findings are addressed. Nothing regressed on my own build. Four
+  residual items below, one of them a small should-fix; none blocking, and none needs another round
+  before integration as long as they are dispositioned in the integration commit.
+
+The code delta is exactly what was described: a local rename, two comments, a header comment and
+parameter rename, the held-set guard in the capture tool, and one case file compacted.
+`git diff b477a0d..024bf56 -- src/ tools/ tests/` contains nothing else, and the only tests/manifests
+change is `opposing-edges.case.json` reflowed onto one line.
+
+## Verification on my own build at `024bf56`
+
+Five presets built and `ctest` **23/23 on each**. Synthetic suite `status=passed` (44.7 s). Both v1
+presentation contracts `status=passed`. Four hidden runs at masks 192 and 48 on both tracks `rc=0`
+with 0 rider-pose fallback frames. Fuzz 40 seeds: 382,535 updates, 79 races, **0 aborts**.
+
+Four differential gates, each pinning `source_commit 024bf56c…` and the empty-diff
+`source_diff_sha256 e3b0c442…`:
+
+| Gate | status | restores | unchanged from |
+| --- | --- | --- | --- |
+| my withheld `review-pause-opposing-saturated` | passed | 777 | my run at `b477a0d`, same `rows_sha256 5d83cbdd…` |
+| opposing-ride (my own originals) | passed | 801 | the contract and my `b477a0d` run |
+| M4-16 primary | passed | 757 | the recorded count |
+| DRAGSTER regression-landing-held-roll (117 opposing frames) | passed | 181 | the count recorded in DRAGSTER-CLOCK-LIMIT |
+
+I also read the primary's eleven gate reports at `024bf56`: all `passed` with empty diffs and the same
+counts, and the previous run is archived under `gates-b477a0d/` rather than overwritten.
+
+## Finding by finding
+
+- **S1 - closed.** `tasks/NEXT_SESSION.md` at `024bf56` states the state at that commit: reviewed,
+  corrections applied, integration and closeout the only work left, and the closeout path is no longer
+  claimed. The task record's Status line and its new "Review and integration" section say the same.
+- **S2 - closed, and reproduced independently.** The probe now takes the runner as `argv[1]`, the
+  report name as `argv[2]` and a build description as `argv[3]`, and records the binary path, its
+  SHA-256 and that description. I did not take the primary's "before" artifact on trust: I checked out
+  `c2de73e` in this worktree, built `app-debug` there (runner SHA-256 `fa849a4a…`, distinct from the
+  candidate's), and ran the corrected probe against it myself. Result, matching
+  `native-dpad-probe-before.json` row for row:
+
+  | Build I made | ZOOM ZOO Left+Right | ZOOM ZOO Up+Down | ZOOM ZOO Left | DRAGSTER pairs |
+  | --- | --- | --- | --- | --- |
+  | `c2de73e` | differs at 1650 | differs at 1650 | differs at 1650 | identical to released |
+  | `024bf56` | identical | identical | differs at 1650 | identical |
+
+  Attempt 2's divergence is now reproducible from the retained evidence, which is what the finding
+  asked for. The misleading single-report artifact is gone rather than left alongside the new pair.
+- **S3 - closed.** `src/core/zoom_zoo_movement.hpp` declares `requested_buttons` and says the update
+  applies the rocker itself and that opposing directions reach the race as neither.
+- **S4 - closed.** R-0041's new "The legacy path keeps its own answer, deliberately" states the
+  precedence, that Up+Down resolves to Up and Left+Right to Left which `update_movement` then rejects,
+  that only `movement_runner` and `tests/app/frontend_contract_tests.cpp` reach it, and why the
+  precedence is not evidence about the port. The `src/core/movement.cpp:797` citation is exact - that
+  is the `throw` line at `024bf56`. `docs/STATE.md` carries the short form.
+- **S5 - closed.** R-0041 and `tasks/NEXT_SESSION.md` both now say the captures are in the task
+  worktree until closeout.
+- **A1 - closed in substance, one clause left (R1).** R-0041's limits now carry the caveat in the
+  terms I asked for: the core's gamepad is the only path to the ROM and already drops the pairs, so
+  measurement 1 is close to a tautology; what the measurements establish is that nothing else in the
+  emulated machine leaks the raw request; and the hardware claim is the audited core's own, taken as
+  given rather than measured on a console. That is the right statement.
+- **A2 - closed, and I tested the guard myself.** The variation now removes each complete axis pair
+  from the held set and refuses anything that survives. Checked at `024bf56` without the ROM:
+  `[]`, `["left","right"]`, `["up","down"]` and `["up","down","left","right"]` are accepted;
+  `["left"]`, `["b"]`, `["start"]`, `["up","down","b"]`, `["up","down","left"]` and
+  `["right","up","down"]` are all refused. Every tracked case that parses through `case_timeline`
+  still produces its contract's `timeline_sha256` exactly - `opposing-ride` `3f6a61c6…`, `opposing-axes`
+  `7349d3f3…`, `opposing-edges` `7cb03075…`, the accepted `idle-late-start` `7be9a5b5…`,
+  `pause-shifted` `374274a0…` and `idle-stop-timeout` `cb43ec60…` - so neither the guard nor the
+  reflow of `opposing-edges.case.json` moved a parsed variation.
+- **A3 - closed in evidence, thin in the record (R2).** The three contracts are gated: the primary's
+  reports show `random-3` 493, `regression-landing-held-roll` 181 and
+  `regression-countdown-actions-tie` 179 at `024bf56`, and I re-ran the densest one myself.
+- **A4 - addressed, but the new name is inaccurate the other way (R3).**
+- **A5 - closed, and the stated reason checks out.** The three case files are one compact line each
+  with unchanged parsed variations (above), and the expected row equalities are in
+  `docs/BUILD_AND_VALIDATION.md` and R-0041. I verified the justification rather than accepting it:
+  `reference.json` does store the parsed `variation`, and `original_sha256` is the digest of that whole
+  document, so adding an annotation key to a case would change the freeze - injecting one into my
+  `ride-a` capture moves `original_sha256` from `fa6630e8b5f1f59f1c886721d4288c35…` (which is the
+  tracked contract's value, reproduced by my own capture) to `b259d2abef1df966499f0a8c25e75270…`.
+
+## Residual items
+
+- **R1 (should-fix, one clause).** The A1 disposition says "unreachable on the console" was "reworded
+  everywhere", but `docs/STATE.md:187` still reads "a keyboard or an analog stick could drive its race
+  with an input the console cannot produce" - the same unmeasured hardware premise, in the summary a
+  fresh agent reads first. Reproduce: `git grep -n "the console cannot" 024bf56 -- docs`. Reword to a
+  standard pad, or point at R-0041's limits where the premise is now stated as taken-as-given.
+- **R2 (advisory).** The task's acceptance table still lists the required gate set as "M4-16 primary
+  and idle gates, DRAGSTER primary/random-1/reversal gates, v1 presentation contracts". The three
+  added DRAGSTER contracts appear only in the A3 disposition row, so the row that defines what this
+  task must gate does not name them. One edit puts the record where the evidence already is.
+- **R3 (advisory, and my own A4 is partly to blame).** Renaming the local to `published` fixes the
+  half I complained about and breaks the other half: the value named `published` is the request gated
+  by the NMI publication window but *before* the rocker, while the value the controller port actually
+  publishes is `buttons`, after it. The new comment says the guard "deliberately reads the publication
+  before the rocker", which reads as a contradiction for the same reason. Physically the rocker comes
+  first and the publication window second. Something like `gated_request`, with "the guard reads the
+  request as the publication window gates it, before the rocker" would be accurate; it changes no
+  behaviour either way, because `with_physical_dpad({}) == {}` makes the two orders agree on `buttons`.
+- **R4 (advisory, cosmetic).** In `docs/BUILD_AND_VALIDATION.md` the inserted paragraph about the
+  expected row equalities runs into the pre-existing sentence on one long line ("…matching its own
+  contract. `ride` holds Left+Right for updates"). A line break restores the paragraph.
+- **Housekeeping.** `.worktrees/opposing-before`, the throwaway detached checkout at `c2de73e` used for
+  the S2 measurement, is still registered in `git worktree list`. AGENTS.md's retention rule expects a
+  closing session to remove the worktrees it created; worth adding to the closeout along with the
+  captures.
+
+## Still unverified after the corrections
+
+Unchanged from the first report: hosted CI on the final tip does not exist yet, so acceptance stays
+conditional on it; what a non-rocker pad would make the ROM do is not reachable with this project's
+inputs, and R-0041 now says so in those terms; and I verified the primary's `024bf56` gate reports by
+reading them, having reproduced four of the eleven on my own build rather than all of them.
