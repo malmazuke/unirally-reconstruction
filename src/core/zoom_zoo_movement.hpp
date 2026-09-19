@@ -91,9 +91,10 @@ struct TrackGeometry {
 };
 TrackGeometry track_geometry(std::span<const std::uint8_t> decoded_track);
 // Whether a rider starts the race reflected: the parity of its start y word in
-// the track header (words 3-4 for the player, 5-6 for the opponent), as
-// `classic_race_start` sets `pose.reflected` (`$0BA7`/`$0BA9`). Race setup
-// also latches the player's word into `$1229` for the countdown windows.
+// the track header (bytes 5-6 for the player, 9-10 for the opponent; the x
+// words precede each), as `classic_race_start` sets `pose.reflected`
+// (`$0BA7`/`$0BA9`). Race setup also latches the player's word into `$1229`
+// for the countdown windows.
 bool classic_race_start_reflected(std::span<const std::uint8_t> decoded_track,unsigned rider);
 
 struct ZoomZooState {

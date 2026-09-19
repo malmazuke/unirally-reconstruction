@@ -936,7 +936,7 @@ int main() {
       require(unirally::classic_race_start_reflected(header, 0) && unirally::classic_window_transition_member(header) == 6U);
       header[5] = 0x5b;                    // odd y: not reflected
       require(!unirally::classic_race_start_reflected(header, 0) && unirally::classic_window_transition_member(header) == 5U);
-      header[9] = 0x02;                    // the opponent's word is 5-6 words later and does not move the member
+      header[9] = 0x02;                    // the opponent's start y word (bytes 9-10) does not move the member
       require(unirally::classic_race_start_reflected(header, 1) && unirally::classic_window_transition_member(header) == 5U);
       bool two_riders_only = false;
       try { (void)unirally::classic_race_start_reflected(header, 2); } catch (const std::invalid_argument &) { two_riders_only = true; }

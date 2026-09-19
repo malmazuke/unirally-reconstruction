@@ -61,12 +61,9 @@ void rect(RgbFrame &f, int x, int y, int w, int h,
 }
 
 void render_window_xor(RgbFrame &frame, std::span<const std::uint8_t> table,
-                       std::array<std::uint8_t, 3> fixed_colour,
-                       const std::array<bool, 256 * 224> *keep = nullptr) {
+                       std::array<std::uint8_t, 3> fixed_colour) {
   // Channel 6 uses HDMA mode 4: each active line writes WH0..WH3 ($2126-$2129).
   // The race setup combines its two inclusive horizontal windows with XOR.
-  // Pixels flagged in `keep` show through the window unchanged (the player's
-  // object under the countdown members, see render_classic_race).
   std::size_t source = 0;
   int screen_y = 0;
   while (screen_y < 224) {
@@ -91,8 +88,7 @@ void render_window_xor(RgbFrame &frame, std::span<const std::uint8_t> table,
         const bool in_window2 = window2_left <= window2_right &&
                                 screen_x >= window2_left &&
                                 screen_x <= window2_right;
-        if (in_window1 != in_window2 &&
-            !(keep && (*keep)[static_cast<std::size_t>(screen_y) * 256 + static_cast<std::size_t>(screen_x)]))
+        if (in_window1 != in_window2)
           pixel(frame, screen_x, screen_y, fixed_colour);
       }
     }
@@ -1127,7 +1123,7 @@ std::span<const std::uint8_t> classic_track_data(const ClassicContentPack& pack,
 } // namespace
 
 void ClassicRaceHistoryTracker::reset() {
-    look_={};latest_={};on_screen_={};opponent_finish_frame_.reset();window_.reset();
+    look_={};latest_={};on_screen_={};opponent_finish_frame_.reset();window_.reset();transition_member_.reset();
 }
 void ClassicRaceHistoryTracker::observe_update(const ZoomZooState& previous,const ZoomZooState& updated,
                                                const ClassicContentPack& pack) {
@@ -1136,8 +1132,8 @@ void ClassicRaceHistoryTracker::observe_update(const ZoomZooState& previous,cons
     on_screen_=latest_;
     if(!previous.race.riders[1].finished && updated.race.riders[1].finished)
         opponent_finish_frame_=updated.movement.frame;
-    window_.observe_update(previous,updated,
-                           classic_window_transition_member(classic_track_data(pack,updated.track)));
+    if(!transition_member_)transition_member_=classic_window_transition_member(classic_track_data(pack,updated.track));
+    window_.observe_update(previous,updated,*transition_member_);
     if(updated.result_updates || zoom_zoo_update_was_paused(previous,updated))return;
     const auto tables=rider_look_tables(pack);
     const auto engine=updated.track==ClassicRaceTrack::Dragster?dragster_race_content(pack):zoom_zoo_content(pack);
@@ -1635,9 +1631,6 @@ RgbFrame render_classic_race(const ZoomZooState& state,const ClassicRacePresenta
     // both use OBJ priority 2. Without a previous update the riders are drawn
     // from this state, one update ahead.
     const auto& rider_source=previous_update?*previous_update:state;
-    // The pixels the player's object owns on this picture (drawn last, so it
-    // wins where the two objects overlap).
-    std::array<bool,256*224> player_object{};
     for(int rider=1;rider>=0;--rider) {
         const auto& source=rider_source.movement.riders[static_cast<std::size_t>(rider)];
         const auto oam=project_rider_oam(source.motion.x,source.motion.y,rider_source.race.camera.x,
@@ -1647,23 +1640,21 @@ RgbFrame render_classic_race(const ZoomZooState& state,const ClassicRacePresenta
         const auto pixels=compose_rider_object(content.riders,source.pose.pose_index,overlay,oam.clip);
         const unsigned object_palette=128U+(rider?4U:3U)*16U;
         draw_rider_object(pixels,oam,[&](int x,int y,std::uint8_t value) {
-            const auto at=static_cast<std::size_t>(y)*256+static_cast<std::size_t>(x);
-            if(bg1_above_objects[at])return;
-            pixel(frame,x,y,colour(cgram,static_cast<std::uint8_t>(object_palette+value)));
-            player_object[at]=rider==0;
+            if(!bg1_above_objects[static_cast<std::size_t>(y)*256+static_cast<std::size_t>(x)])
+                pixel(frame,x,y,colour(cgram,static_cast<std::uint8_t>(object_palette+value)));
         });
     }
-    // Measured on the ZOOM ZOO originals (ZOOM-ZOO-WINDOW-EFFECTS, start-line
-    // frame 1583 with both riders under the GO letters): the countdown members
-    // 0-6 replace the backgrounds and the opponent's object but leave the
-    // player's object showing, which is the SNES colour-math rule that exempts
-    // OBJ palettes 0-3 (the player is palette 3, the opponent palette 4); the
-    // banner members 7-24 cover both riders (opponent-won banner over the
-    // riding player, 6724-6800 of the countdown-pause original). The register
-    // setup behind the two behaviours was not read.
+    // Every member covers both objects as well as the backgrounds: inside the
+    // window the original shows the flat window colour and nothing else
+    // (ZOOM-ZOO-WINDOW-EFFECTS: start-line frames 1450, 1583 and 1649 of the
+    // M4-16 primary and countdown-pause originals with a rider under the
+    // countdown sign and the GO letters, and the opponent-won banner over the
+    // riding player on 6724-6800 of the countdown pause). R-0040's "0-6
+    // before the riders" came from DRAGSTER frames with no rider under those
+    // members; on its release-3213 race the opponent sits under the digits on
+    // 57 frames, all of which this order matches.
     if(window_index)
-        render_window_xor(frame,dragster_window_table(content.window_tables,*window_index),window_colour,
-                          *window_index<=6U?&player_object:nullptr);
+        render_window_xor(frame,dragster_window_table(content.window_tables,*window_index),window_colour);
     rect(frame,0,0,256,12,ui({15,30,30}));
     const auto hud=classic_race_hud(rider_source);
     const auto centred=[](const std::string& text){return 128-3*static_cast<int>(text.size());};

@@ -231,6 +231,9 @@ private:
   ZoomZooRiderOverlays latest_{}, on_screen_{};
   std::optional<std::uint32_t> opponent_finish_frame_{};
   ClassicWindowPointer window_{};
+  // The track's countdown transition member, a constant of the race read
+  // from the pack on the first update after a reset.
+  std::optional<unsigned> transition_member_{};
 };
 // The content one track's race is drawn from, selected by track from the pack.
 // Every span is pack content; the scenario and geometry come from the engine.
