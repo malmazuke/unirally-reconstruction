@@ -129,6 +129,21 @@ Tracked: the three cases and their `-v11.freeze.json` contracts under
   after `mkdir -p artifacts/zoom-zoo-opposing-input/gates` and copying the v1 fixtures to
   `local/v1-fixtures` (the presentation check requires fixtures below `local/` or `artifacts/`).
 - Remaining dependencies: none.
+- Closeout, as the retention rule in AGENTS.md requires. Moved into the main checkout:
+  this task's `artifacts/zoom-zoo-opposing-input/` to
+  `local/evidence/zoom-zoo-opposing-input/zoom-zoo-opposing-input/` (5.1 GB: the four probe
+  scripts and their reports, the six original captures, the three gate directories) and the
+  reviewer's `artifacts/review/` to `local/evidence/zoom-zoo-opposing-review/review/` (9.6 GB:
+  its eleven own captures, twelve gate reports and its withheld case). The two gate scripts
+  were repointed at that location and say how to recreate a checkout to run them. Deleted:
+  all three worktrees with their build output (`zoom-zoo-opposing-input`,
+  `zoom-zoo-opposing-review` and the throwaway `opposing-before` built at `c2de73e` for the
+  before measurement), and the local branches `task/zoom-zoo-opposing-input` and
+  `review/zoom-zoo-opposing-input` after a patch-id audit - `git cherry main
+  origin/<branch>` shows no `+` commit for either, and both are on `origin`. No capture any
+  record cites was deleted; the six captures this task made are all retained. The `c2de73e`
+  build behind `native-dpad-probe-before.json` is not retained and R-0041 says how to
+  recreate it.
 - Runtime needs: the private ROM through `local/rom-location.txt`, the audited bsnes core, the
   v8 pack, about 6 GB of disk for the captures and roughly 45 minutes for the whole gate matrix.
 - Aggregate time and provider usage: task start 03:00 UTC (five-hour 0%, weekly 45%, weekly
