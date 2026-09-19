@@ -2,7 +2,7 @@
 
 ## Assignment
 
-- Status: in_progress on `task/classic-stunt-names` from `fd34209`. Registered and started
+- Status: review. Candidate `9e2570e`; the full matrix passed on it. Started on `task/classic-stunt-names` from `fd34209`. Registered and started
   19 September 2026 07:00 UTC, chosen by the user as the next task after ZOOM-ZOO-OPPOSING-INPUT.
 - Milestone: follow-up to M4-16 and CLASSIC-PRESENTATION-UNIFICATION; takes the first item out of
   the "decorative objects and captions" declared omission in [docs/STATE.md](../docs/STATE.md)
@@ -14,7 +14,7 @@
   and the ROM, as R-0040 and R-0041 were
 - Provider quota window/baseline (D-0004): registration 07:00 UTC five-hour 33%, weekly all models
   49%, weekly Fable 36%; D-0004 reserve 20% of the weekly allowance, checkpoint after a 20-point
-  rise from the baseline recorded when work starts; no reset, purchase or provider change
+  rise. The user set this session's stop rule at **60% weekly**; no reset, purchase or provider change
 - Reviewer: fresh Claude Opus 5 subagent in an isolated checkout at the exact candidate, spawned by
   the primary, as D-0006 requires
 - Dependencies and evidence of acceptance: M4-16 (the reward events behind the names are recovered;
@@ -76,7 +76,7 @@ mechanism, take it and say so; do not widen the task to the whole family by defa
 | --- | --- | --- | --- |
 | The trigger is recovered | probe the original's WRAM across a trick-carrying capture, against the recovered reward events | a stated rule for when a caption starts, which name it carries and when it ends, with the addresses and the frames behind it | research record R-0042 |
 | The content is authenticated | extract whatever glyph or tile content the captions use from the ROM through the pack rules | byte-exact extraction, additive to the profile, v1 contracts unchanged | pack report |
-| Native matches the original where it draws | `classic_race_presentation_runner` pictures against the original's own frames on a trick-carrying race | every pixel the change touches matches the original on those frames; accepted frames untouched | picture scores |
+| Native matches the original where it draws | `caption_pictures.py` and `zoom_captions.py`: the caption band of native renders against the original's own frames, on both tracks | every pixel matches except where the start ring, a declared omission, occludes the caption | picture scores in the gate logs |
 | No accepted contract moves | the eleven differential gates, five preset suites, synthetic, v1 contracts, hidden runs, fuzz | all `status=passed`, restore counts unchanged | gate logs |
 | Independent review | fresh Opus 5 subagent in an isolated checkout at the candidate | approve, with its own withheld case | review report |
 | Hosted CI on the final tip | `gh run list --workflow synthetic.yml --commit <tip>` | both platforms success | closeout |
@@ -109,6 +109,8 @@ mechanism, take it and say so; do not widen the task to the whole family by defa
 | 9 (08:35-08:50Z) | The pack already carries the font | Rendered `presentation.classic.font.v1` as 2bpp and as 4bpp and looked at the tiles the captions call | 2bpp is right: the sheet is 128 tiles, and rendering `more stunts`, `bigger boosts`, `wipeout` and `flip city` with the recovered arithmetic spells them, including `a`, `c`, `f`, `l` and `y`, which no measured caption contains. Only values 0 and 3 occur in the sheet, so it is a one-bit font stored as 2bpp | Add only the text to the pack |
 | 10 (08:50-09:05Z) | The text belongs in the pack additively | New entry `presentation.classic.captions.v1`, entries 1 to 255 of the table; profile `classic.pal.crawler.two-tracks.v9`; native manifest, rules hash and supported profiles updated; pack re-extracted from the ROM | 57 logical entries, exact ROM identity, the app validates the v9 pack and reports it as supported; 23/23 ctest | Draw it |
 | 11 (09:05-09:20Z) | The renderer can derive the caption from the state alone | `draw_classic_caption` in the shared renderer: the event under the player's read cursor indexes the table, each glyph draws as two 8x8 tiles `$10` apart at x 64, y 79, in the race CGRAM's colour 22 | The first attempt drew nothing: `movement.rewards` is the *opponent's* queue ($0D11/$0D13), and the captions follow the player's, which is `player_announcements.queue`. With that corrected the caption appears | Compare against the original |
+| 13 (10:15-10:20Z) | ZOOM ZOO drives the same captions | `queue_probe.py` over the M4-16 primary original | 93 consumptions, events 14, 15, 37 and 44-59: the same consumer and the same table as DRAGSTER, reaching `last lap` and the longer hint sentences DRAGSTER's race never does | Compare its pictures too |
+| 14 (11:00-11:10Z) | The caption persists until the next message | Native against the six kept frames of the M4-16 original | Three disagreed: at 3208, 4840 and 6484 the read cursor still points at the last consumed event and the original shows nothing. `$81:BEA8-BEF1` blanks the display one cooldown after the queue empties, and the engine already carries that as `empty_display`, recovered in M4-16 and unused until now. Honouring it, every caption frame of both tracks matches except where the start ring occludes the caption. DRAGSTER's four frames could not have found this | Rerun the matrix on the corrected candidate |
 | 12 (09:20-09:30Z) | Native matches the original where it draws | Rendered the native timeline of the same DRAGSTER case at the four caption frames and compared the caption band (x 64-191, y 78-95) with the original's own frames | Frames 1637 `GIVE YOU`, 1652 `BIGGER BOOSTS` and 1685 `WIPEOUT`: **2304 of 2304 pixels identical**, with exactly the same ink pixels. Frame 1601 `MORE STUNTS`: 2188 of 2304, and every one of the 116 differing pixels is the original's pale pink - the start ring, a declared omission, which composes *above* the caption and occludes it | Gates, then review |
 
 ## Handoff

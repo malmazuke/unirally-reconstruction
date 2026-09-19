@@ -54,10 +54,19 @@ the tilemap based at word `$1800`, those are rows 10 and 11, columns 8 to 23:
 the caption occupies sixteen characters centred across the screen at y 80-95,
 which is where the pictures show it.
 
-**Blanking is an event, not a timer.** Entry 47 and the other gaps in the table
-are sixteen spaces. A hint sentence is published as consecutive ids - 44 `more
-stunts`, 45 `give you`, 46 `bigger boosts`, 47 blank - so the caption clears when
-the queue publishes the blank entry. Nothing counts the caption down.
+**Blanking has two halves.** Entry 47 and the other gaps in the table are sixteen
+spaces, and a hint sentence is published as consecutive ids - 44 `more stunts`,
+45 `give you`, 46 `bigger boosts`, 47 blank - so a sentence ends by publishing a
+blank entry. That is not the whole rule: `$81:BEA8-BEF1` also blanks the display
+when the queue runs dry. Reaching a read cursor equal to the write cursor, the
+consumer takes a ten-update cooldown and raises the engine's `empty_display`,
+and the caption area stays blank until the next message. Nothing counts the
+caption down in updates; both halves are the queue's own doing.
+
+An earlier version of this record claimed the blank entry was the only rule.
+DRAGSTER's four measured captions could not tell the difference; ZOOM ZOO's
+frames 3208, 4840 and 6484 did, where the read cursor still points at the last
+consumed event (14, then 15) and the original shows nothing.
 
 ## Measurements
 
@@ -69,18 +78,28 @@ the queue publishes the blank entry. Nothing counts the caption down.
 | the table | `string_search.py`, then the ROM read sites of an access record | `BIGGER BOOSTS` matches two sites in 2 MB, both ASCII; `$81:BFE9` reads 16 bytes at `$17:CCB4` on the consumption update |
 | the buffer and the encoding | the capture's own WRAM at `$0EA7` | `  more stunts   ` becomes `80 80 27 29 2C 0F 80 2D 2E 2F 28 2E 2D 80 80 80`, and the other three captions agree letter for letter |
 | the drawing | the access record's `$2116`/`$2118` writes | two rows 32 words apart, the second row's tiles exactly `$10` above the first |
+| the blanking | native against the M4-16 original's kept frames | at 3208, 4840 and 6484 the cursor points at the last event and the original is blank; honouring `empty_display` makes every frame agree |
+| both tracks | `queue_probe.py` over the M4-16 primary original | ZOOM ZOO consumes 93 events - 14, 15, 37 and 44-59 - through the same consumer and table, reaching entries DRAGSTER's race never does |
 
 ## Domain and limits
 
-- Measured on DRAGSTER through the accepted replay manifest and the accepted
-  `dragster-ordinary-primary` case. ZOOM ZOO runs the same engine and the same
-  consumer, but no ZOOM ZOO caption has been measured yet.
-- The letters observed are b, e, g, i, m, n, o, p, r, s, t, u, v, w, y and the
-  space. The rest of the alphabet follows from the three-run arithmetic above
-  and is **not yet confirmed against a picture**; `a`, `f`, `l` and the digits
-  are the first to check.
-- Where the font's glyph tiles come from in ROM, and which BG layer carries the
-  caption, are not yet established. The tilemap word addresses and the `$3800`
-  attribute are measured; the tilemap base of `$1800` is inferred from them.
+- Measured on both tracks: DRAGSTER through the accepted replay manifest and the
+  accepted `dragster-ordinary-primary` case, ZOOM ZOO through the M4-16 primary
+  original's own kept frames.
+- The original's start ring composes **above** the caption. On ZOOM ZOO 1649 and
+  DRAGSTER 1601 it crosses the caption band and occludes the glyphs under it, so
+  native, which omits the ring, draws caption pixels where the original draws
+  ring. Those are the only pixels of any measured caption frame that differ.
+- The letters measured against the original's own pictures are those of the six
+  captions compared (b, e, g, i, m, n, o, p, r, s, t, u, v, w, y, the space and
+  `last lap`'s a and l). The rest follow from the three-run arithmetic, and
+  rendering the pack's font with it spells every table entry legibly, but no
+  picture has exercised `j`, `k`, `q`, `x` or `z`.
+- The font sheet is `presentation.classic.font.v1`, already in the pack: 128
+  tiles, 2bpp, using only pixel values 0 and 3, so it is a one-bit font.
+- Which BG layer carries the caption is not established. The tilemap word
+  addresses and the `$3800` attribute are measured; the tilemap base of `$1800`
+  is inferred from them, and the ink is the race CGRAM colour measured from the
+  original's frames rather than derived from that attribute.
 - The voice lines above entry 71 take the consumer's other path. Whether they
   reach this display, and the audio that goes with them, are out of scope.
