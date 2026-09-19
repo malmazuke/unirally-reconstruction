@@ -249,6 +249,12 @@ struct ClassicRacePresentationContent {
   // on ZOOM ZOO as on DRAGSTER (ZOOM-ZOO-WINDOW-EFFECTS). Empty only when the
   // pack does not carry the family; the windows are then omitted.
   std::span<const std::uint8_t> window_tables;
+  // R-0042: the caption table, sixteen ASCII bytes per reward event, entries 1
+  // to 255 of `$17:C9F4`. Empty only when the pack does not carry it; the
+  // captions are then omitted, as they were before v9.
+  std::span<const std::uint8_t> captions;
+  // The 2bpp 128-tile sheet the captions are drawn with, already in the pack.
+  std::span<const std::uint8_t> caption_font;
   // The countdown's transition member, 5 + `$1229`, which race initialization
   // latches from the player's start reflection ($83:CC05-CC08): 6 on
   // DRAGSTER, 5 on ZOOM ZOO. Derived from the track header like the engine's

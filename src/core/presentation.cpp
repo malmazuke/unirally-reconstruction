@@ -1456,6 +1456,9 @@ ClassicRacePresentationContent classic_race_presentation_content(const ClassicCo
     // One ROM window family serves both tracks too (R-0040; ZOOM ZOO's
     // selection measured in ZOOM-ZOO-WINDOW-EFFECTS).
     content.window_tables=pack.entry("presentation.effect.classic.window-tables.v1");
+    // R-0042: the caption table, likewise one table for both tracks.
+    content.captions=pack.entry("presentation.classic.captions.v1");
+    content.caption_font=pack.entry("presentation.classic.font.v1");
     content.track=classic_track_data(pack,track);
     content.window_transition_member=classic_window_transition_member(content.track);
     switch(track) {
@@ -1480,6 +1483,55 @@ ClassicRacePresentationContent classic_race_presentation_content(const ClassicCo
     }
     content.geometry=track_geometry(content.track);
     return content;
+}
+
+// R-0042: the original's on-screen captions. The player's reward queue is the
+// only trigger: the event the read cursor points at indexes sixteen ASCII bytes
+// in the pack's caption table, and the update after the queue consumed it the
+// original writes two tilemap rows for it. Each glyph is eight pixels wide and
+// sixteen tall, its halves one font row apart, so the ASCII maps to a top tile
+// and the tile `$10` above it.
+//
+// The caption is cleared by the queue, not by a timer: the table's gaps are
+// sixteen spaces and a hint sentence ends by publishing one.
+int classic_caption_tile(char glyph) {
+    if(glyph==' ')return -1;
+    if(glyph<'a' || glyph>'z')throw std::invalid_argument("unsupported Classic caption glyph");
+    const int n=glyph-'a';
+    if(n<5)return 0x0b+n;
+    if(n<21)return 0x20+n-5;
+    return 0x40+n-21;
+}
+
+void draw_classic_caption(RgbFrame& frame,const ZoomZooState& published,
+                          const ClassicRacePresentationContent& content,
+                          std::array<std::uint8_t,3> ink) {
+    const auto font=content.caption_font;
+    if(content.captions.empty() || font.size()!=2048)return;
+    // `movement.rewards` is the opponent's queue ($0D11/$0D13 cursors); the
+    // player's, the one the captions follow, is the announcements' own.
+    const auto& queue=published.player_announcements.queue;
+    const unsigned event=queue.entries[queue.read_cursor];
+    if(event==0 || event>255)return;
+    const auto entry=content.captions.subspan((event-1U)*16U,16U);
+    // Measured on the original's own frames: the caption occupies sixteen
+    // characters from x 64, with the top row at y 79 (the two tilemap rows the
+    // original writes are 32 words apart, one BG row of scroll above the
+    // nominal rows 10 and 11).
+    for(unsigned column=0;column<16;++column) {
+        const int tile=classic_caption_tile(static_cast<char>(entry[column]));
+        if(tile<0)continue;
+        for(unsigned half=0;half<2;++half) {
+            const auto at=static_cast<std::size_t>(tile+static_cast<int>(half)*0x10)*16U;
+            for(unsigned row=0;row<8;++row) {
+                const unsigned low=font[at+2U*row],high=font[at+2U*row+1U];
+                for(unsigned bit=0;bit<8;++bit) {
+                    const unsigned value=((low>>(7U-bit))&1U)|(((high>>(7U-bit))&1U)<<1U);
+                    if(value)pixel(frame,64+int(column)*8+int(bit),79+int(half)*8+int(row),ink);
+                }
+            }
+        }
+    }
 }
 
 RgbFrame render_classic_race(const ZoomZooState& state,const ClassicRacePresentationContent& content,
@@ -1657,6 +1709,11 @@ RgbFrame render_classic_race(const ZoomZooState& state,const ClassicRacePresenta
         render_window_xor(frame,dragster_window_table(content.window_tables,*window_index),window_colour);
     rect(frame,0,0,256,12,ui({15,30,30}));
     const auto hud=classic_race_hud(rider_source);
+    // The caption sits above the track and the riders, as the original's own
+    // frames show, and below the authored HUD. Its ink is the race CGRAM
+    // colour the original draws it with, measured from those frames; the
+    // attribute-to-CGRAM derivation behind that index is not recovered.
+    draw_classic_caption(frame,rider_source,content,colour(cgram,22));
     const auto centred=[](const std::string& text){return 128-3*static_cast<int>(text.size());};
     ui_text(frame,5,3,hud.lap,ink);
     if(!hud.clock.empty())ui_text(frame,195,3,hud.clock,ink);
