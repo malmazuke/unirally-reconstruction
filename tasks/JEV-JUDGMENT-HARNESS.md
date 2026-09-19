@@ -2,7 +2,7 @@
 
 ## Assignment
 
-- Status: in_progress. Registered 19 September 2026 22:15 UTC from `main` at
+- Status: review. Registered 19 September 2026 22:15 UTC from `main` at
   `fd34209`, chosen by the user as the next task while CLASSIC-STUNT-NAMES
   runs in another session; started in the same session that registered it.
 - Milestone: harness, independent of M4. Introduces
@@ -119,18 +119,52 @@ doctor, bootstrap, build and test reports and logs).
 
 ## Handoff
 
-- Current base/head commit and uncommitted state: filled at checkpoint
-- Verified findings: see Evidence
-- Current hypothesis and failed approaches: none open
-- Commands executed, outcomes and report hashes: filled at checkpoint
-- Unavailable/skipped checks: hosted CI runs after the push
-- Exact next experiment/command: review
-- Remaining dependencies: none
-- Runtime needs: network to `api.typesafe.ai` for the two real-endpoint
-  criteria only; `curl`; the tooling suite needs the isolated toolchain and a
-  `lab-debug` build for its native part
-- Aggregate parent/child time, provider usage before/after: filled at checkpoint
-- Accepted outcome, review/fix rounds and next routing decision: filled at closeout
+- Current base/head commit and uncommitted state: implementation `ec64a17` on
+  `task/jev-judgment-harness` (base `main` at `fd34209`); this checkpoint
+  commit adds only this record; the tree is clean apart from the ignored
+  `.env`, `local/`, `build/` and `artifacts/`.
+- Verified findings: the endpoint answers a bearer-key request from this host
+  through curl in 0.66-1.00 s per record and rejects urllib from the python.org
+  Python for want of a CA bundle; `jev-latest` resolved to `jev-1.13.0` on
+  19 September 2026; all six evidence questions come back in one request per
+  record at 2.4k-5.9k input tokens; every flag is optional and the exit code
+  never depends on one.
+- Current hypothesis and failed approaches: none open. The one defect found on
+  the way (curl's timeout reported as `HTTP 0`) is fixed and covered by
+  `test_timeout_exit_code`.
+- Commands executed, outcomes and report hashes (SHA-256 prefixes; all under
+  `artifacts/jev-judgment-harness/` in the worktree, exit 0 unless stated):
+  `doctor` `377db1aebc2e0fc7` (`typesafe_api_key` optional, `from .env`);
+  `judge ping` report `a89b8c8e1d553b75`, artifact `ping.json`
+  `1409d40719c10d6a`; `judge evidence-lint` over R-0041, R-0001, R-0035 report
+  `69a042f8a371f22b`; the 46-record sweep report `ad13fdd1ece4653b`, summary
+  `evidence-lint.json` `2416dd166d052eaf`; `bootstrap`, `build --preset
+  lab-debug`, then `test --suite synthetic --preset lab-debug` on the committed
+  candidate `ec64a17`: report `test-candidate.json` `ec8812c0830d9261`, status
+  passed, 434 checks passed, none failed, skipped, missing or timed out, source
+  clean and unchanged during the run.
+- Key hygiene: `grep -rlF` of the key value over `artifacts/`, `tools/`,
+  `tests/`, `docs/`, `tasks/`, `AGENTS.md` and `.env.example` found 0 files;
+  `.env` is ignored and was never staged (checked before the commit).
+- Unavailable/skipped checks: hosted CI on the branch tip runs after the push
+  (recorded under Review and integration); no check was skipped locally.
+- Exact next experiment/command: independent review of `ec64a17` plus this
+  checkpoint; then integration.
+- Remaining dependencies: none.
+- Runtime needs: network to `api.typesafe.ai` and the key for the two
+  real-endpoint criteria; `curl`; the isolated toolchain and a `lab-debug`
+  build for the suite's native part (bootstrap from the shared wheel cache
+  took the ordinary route, `source=cache`).
+- Aggregate parent/child time, provider usage before/after: one session,
+  22:15 to 22:25 UTC to this checkpoint (about ten minutes of wall clock,
+  excluding the earlier conversation that chose the task); provider usage
+  five-hour 13% to 20%, weekly all models 55% to 56%, weekly Fable 37% to 39%;
+  TypeSafe usage for the task 246,437 input tokens across 50 requests (ping,
+  three-record lint, 46-record sweep), all recorded in the artifacts. No other
+  account work is excluded from those figures; the other session's stunt-names
+  work shares the same weekly windows.
+- Accepted outcome, review/fix rounds and next routing decision: pending
+  review.
 
 ## Review and integration
 
