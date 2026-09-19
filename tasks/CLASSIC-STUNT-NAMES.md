@@ -2,8 +2,8 @@
 
 ## Assignment
 
-- Status: ready. Registered 19 September 2026 07:00 UTC from `main` at `260334d`, chosen by the
-  user as the next task after ZOOM-ZOO-OPPOSING-INPUT.
+- Status: in_progress on `task/classic-stunt-names` from `fd34209`. Registered and started
+  19 September 2026 07:00 UTC, chosen by the user as the next task after ZOOM-ZOO-OPPOSING-INPUT.
 - Milestone: follow-up to M4-16 and CLASSIC-PRESENTATION-UNIFICATION; takes the first item out of
   the "decorative objects and captions" declared omission in [docs/STATE.md](../docs/STATE.md)
 - Coordinator: main session
@@ -98,19 +98,27 @@ mechanism, take it and say so; do not widen the task to the whole family by defa
 
 | Attempt | Hypothesis | Experiment | Observation | Next decision |
 | --- | --- | --- | --- | --- |
+| 1 (07:05-07:20Z) | The captions are driven by the reward queue the engine already publishes | `queue_probe.py` over the DRAGSTER primary capture: every update where the player's read cursor `$0CE7` advances, with the entry it consumed from `$0CC1` | 80 consumptions between 1599 and 3900, events 14, 37, 44, 45, 46 and 47 only. None is in the 72-199 voice range that `$81:C0CE-C18A` diverts, so that range is not what produces these captions | Look at what the original draws on those updates |
+| 2 (07:20-07:30Z) | Each consumed event selects a caption | Recaptured the same case with frame images around the first consumptions (`pictures-a`) and read them | The caption is a red phrase in the middle of the screen. 1599 event 44 shows `MORE STUNTS`; 1633 event 45 shows `GIVE YOU`; 1647 event 46 shows `BIGGER BOOSTS`; 1681 event 14 shows `WIPEOUT`. So consecutive event ids carry the parts of a hint sentence and a separate id names a stunt, and the text is selected by the event id rather than by a separate announcement system | Find the string table the event id indexes, and what draws it |
 
 ## Handoff
 
 - Current base/head commit and uncommitted state: registered at `260334d`; no work started.
-- Verified findings: none yet. What is already known, from M4-16: the reward events behind the
-  names are recovered and their text display is not; from ZOOM-ZOO-WINDOW-EFFECTS: these captions
-  are OBJ or BG content, because `$11FD` is only ever a channel-6 family member or the sentinel in
-  every capture examined.
-- Current hypothesis and failed approaches: none yet.
-- Exact next experiment/command: read `$11FD`'s neighbours and the OAM/BG3 writes across a
-  trick-carrying original (the DRAGSTER primary capture is the cheapest, since its timeline already
-  performs rolls and jumps) at the frames around a completed trick, and find what the original
-  writes when a name appears.
+- Verified findings: attempts 1 and 2. The captions are the on-screen half of the reward queue the
+  engine already runs: a consumed event id selects a phrase, drawn in red in the middle of the
+  screen. The hint sentence and the stunt name share one display. The recovered
+  `ZoomZooPlayerAnnouncements` fields (`hints_active`, `hint_updates`, `hint_group`,
+  `empty_display`) are the state behind it; the text and its drawing are what is missing.
+- Current hypothesis: an event id indexes a string table in ROM, and the phrase is drawn for a
+  bounded number of updates from the consumption. Failed approaches: the 72-199 voice range is not
+  involved in these captions; a statistical WRAM-diff hunt for "caption state" ranked bytes whose
+  change counts merely happened to sit near consumptions ($15CE-$15D2 change constantly from 1329,
+  before any race event), so read the original's code and pictures instead of ranking byte churn.
+- Exact next experiment/command: find the string table the event id indexes. Read
+  `$81:C0CE-C18A` (the player consumer) and follow where it stores the event for display, then find
+  the glyphs. `artifacts/classic-stunt-names/pictures-a` has the frames, captured with
+  `dragster_playable_reference --case tests/manifests/native/dragster-ordinary-primary.case.json
+  --horizon 3900 --frame-image <n>`.
 - Remaining dependencies: none; every prerequisite is integrated on `main`.
 - Runtime needs: the private ROM, the audited core, the v8 pack, disk for captures, and roughly an
   hour of machine time for a full gate matrix.
