@@ -254,7 +254,7 @@ int main(int argc, char **argv) try {
   if(!parsed->zoom_zoo && content.pack.optional_entry("zoom.landing-response-matrices").empty())
     throw std::invalid_argument("DRAGSTER needs the two-track content pack for jumps, brakes, reversal and tricks; "
                                 "create it from your ROM with: python3 tools/project.py frontend run --track dragster "
-                                "--pack local/classic-crawler-two-tracks-v8.pack --rom PATH");
+                                "--pack local/classic-crawler-two-tracks-v9.pack --rom PATH");
   const auto zoom_content=parsed->zoom_zoo?unirally::zoom_zoo_content(content.pack):unirally::dragster_race_content(content.pack);
   const auto race_presentation=unirally::classic_race_presentation_content(content.pack,track);
   auto zoom_state=parsed->zoom_zoo?unirally::classic_crawler_zoom_zoo_start(zoom_content)
