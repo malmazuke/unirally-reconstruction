@@ -1,0 +1,261 @@
+"""``judge`` subcommands: advisory Jev judgments recorded as evidence (D-0007).
+
+``judge ping`` proves the key and endpoint work; ``judge ask`` evaluates a
+caller's state and questions; ``judge evidence-lint`` asks the fixed
+questions in :mod:`unirally_lab.judgment` over one or more Markdown
+records. Every call writes its request and response under ``--out``
+(default ``artifacts/judge/<run-id>/``) and the report cites that file.
+
+Outcomes: a missing key or transport is ``missing`` (exit 2); a rejected key,
+invalid request or incomplete answer set is ``failed`` (exit 1); an unreadable
+input is invalid input (exit 3). Lint flags are optional checks, so a flagged
+record never fails the run: the judgment informs a reader, it does not gate.
+"""
+
+from __future__ import annotations
+
+import argparse
+import json
+import sys
+from pathlib import Path
+from typing import Any
+
+from . import EXIT_INVALID_INPUT, EXIT_MISSING_PREREQUISITE, EXIT_OK, EXIT_TIMEOUT
+from . import judgment
+from . import report as reportmod
+
+ROOT = reportmod.repo_root()
+
+PING_STATE = {
+    "record_status": "independently verified",
+    "independent_check": "Lack of a check is explicit.",
+}
+PING_QUESTIONS = {
+    "check_named": {
+        "type": "noul",
+        "instructions": "Does `independent_check` name who or what performed an independent check and its outcome?",
+        "criteria": {"true": "A specific checker and outcome are stated",
+                     "false": "No checker or outcome is stated, or the text is a template placeholder"},
+    },
+    "status_supported": {
+        "type": "choice",
+        "instructions": "Given `record_status` and `independent_check`, is the claimed status supported?",
+        "criteria": {"supported": None,
+                     "unsupported": "Status claims verification the text does not evidence",
+                     "not_checkable": None},
+    },
+}
+
+
+def _finish(rep: reportmod.Report, args: argparse.Namespace, status: int) -> int:
+    rep.finish("passed" if status == EXIT_OK else "failed")
+    rep.write(Path(args.report) if getattr(args, "report", None) else None)
+    reportmod.print_summary(rep)
+    return status
+
+
+def _out_dir(args: argparse.Namespace, rep: reportmod.Report, root: Path) -> Path:
+    out = Path(args.out) if args.out else root / "artifacts" / "judge" / rep.data["run_id"]
+    out = out.resolve()
+    out.mkdir(parents=True, exist_ok=True)
+    return out
+
+
+def _key(rep: reportmod.Report, root: Path) -> tuple[str | None, str]:
+    key, source = judgment.find_api_key(root)
+    if key:
+        rep.add_check("typesafe_api_key", "passed", detail=f"from {source}")
+    else:
+        rep.add_check("typesafe_api_key", "missing",
+                      detail=f"set {judgment.KEY_ENV} in the environment or in {root / '.env'} (see .env.example)")
+    return key, source
+
+
+def _exit_for(outcome: str) -> int:
+    if outcome == "missing":
+        return EXIT_MISSING_PREREQUISITE
+    if outcome == "timeout":
+        return EXIT_TIMEOUT
+    return 1
+
+
+def _evaluate(rep: reportmod.Report, args: argparse.Namespace, *, key: str, source: str,
+              state: Any, questions: dict[str, Any], out: Path, name: str) -> judgment.Judgment | None:
+    """One call plus its artifact; the ``judgment:<name>`` check carries the outcome."""
+    try:
+        result = judgment.evaluate(state, questions, key=key, key_source=source, model=args.model,
+                                   timeout=args.timeout, attempts=args.attempts)
+    except judgment.JudgmentError as exc:
+        rep.add_check(f"judgment:{name}", exc.outcome, detail=exc.detail)
+        return None
+    path = judgment.write_judgment(result, out / f"{name}.json", key)
+    rep.add_artifact("judgment", path)
+    usage = result.usage
+    rep.add_check(
+        f"judgment:{name}", "passed",
+        detail=f"{result.model} answered {len(result.answers)} questions in {result.elapsed:.2f}s "
+               f"({usage.get('input_tokens', '?')} input tokens, attempt {result.attempts}, {result.transport})",
+        model=result.model, elapsed=round(result.elapsed, 3), usage=usage, attempts=result.attempts,
+        state_sha256=result.state_sha256(), artifact=str(path),
+    )
+    return result
+
+
+def _status(rep: reportmod.Report) -> int:
+    outcomes = {c["outcome"] for c in rep.required_failures()}
+    if "timeout" in outcomes:
+        return EXIT_TIMEOUT
+    if "missing" in outcomes:
+        return EXIT_MISSING_PREREQUISITE
+    return 1 if outcomes else EXIT_OK
+
+
+# -------------------------------------------------------------------- ping
+
+
+def cmd_ping(args: argparse.Namespace) -> int:
+    rep = reportmod.Report(sys.argv, task_id=args.task)
+    root = Path(args.root).resolve()
+    key, source = _key(rep, root)
+    if not key:
+        return _finish(rep, args, EXIT_MISSING_PREREQUISITE)
+    out = _out_dir(args, rep, root)
+    result = _evaluate(rep, args, key=key, source=source, state=PING_STATE, questions=PING_QUESTIONS,
+                       out=out, name="ping")
+    if result is not None:
+        answers = result.answers
+        p = answers["check_named"].get("noul")
+        choice = answers["status_supported"].get("choice")
+        # The placeholder names no checker, so a calibrated model answers low
+        # and "unsupported". Anything else is reported, not failed: it is a
+        # property of the model, and D-0007 keeps judgments advisory.
+        expected = p is not None and p < 0.5 and choice == "unsupported"
+        rep.add_check("ping_answers_as_expected", "passed" if expected else "failed", required=False,
+                      detail=f"check_named noul={p}, status_supported={choice}")
+        print(json.dumps(answers, indent=2, sort_keys=True))
+    return _finish(rep, args, _status(rep))
+
+
+# --------------------------------------------------------------------- ask
+
+
+def _load_json_arg(label: str, value: str) -> Any:
+    """A JSON file path, or ``-`` for stdin."""
+    try:
+        text = sys.stdin.read() if value == "-" else Path(value).read_text(encoding="utf-8")
+    except OSError as exc:
+        raise ValueError(f"{label}: cannot read {value}: {exc}") from exc
+    try:
+        return json.loads(text)
+    except ValueError as exc:
+        raise ValueError(f"{label}: {value} is not valid JSON: {exc}") from exc
+
+
+def cmd_ask(args: argparse.Namespace) -> int:
+    rep = reportmod.Report(sys.argv, task_id=args.task)
+    root = Path(args.root).resolve()
+    if args.state == "-" and args.questions == "-":
+        rep.add_check("arguments", "failed", detail="only one of --state and --questions may read stdin")
+        return _finish(rep, args, EXIT_INVALID_INPUT)
+    try:
+        state = _load_json_arg("--state", args.state)
+        questions = _load_json_arg("--questions", args.questions)
+    except ValueError as exc:
+        rep.add_check("arguments", "failed", detail=str(exc))
+        return _finish(rep, args, EXIT_INVALID_INPUT)
+    problems = judgment.validate_questions(questions)
+    if problems:
+        rep.add_check("questions", "failed", detail="; ".join(problems))
+        return _finish(rep, args, EXIT_INVALID_INPUT)
+    rep.add_check("questions", "passed", detail=f"{len(questions)} questions")
+    key, source = _key(rep, root)
+    if not key:
+        return _finish(rep, args, EXIT_MISSING_PREREQUISITE)
+    out = _out_dir(args, rep, root)
+    result = _evaluate(rep, args, key=key, source=source, state=state, questions=questions,
+                       out=out, name=args.name)
+    if result is not None:
+        print(json.dumps(result.answers, indent=2, sort_keys=True))
+    return _finish(rep, args, _status(rep))
+
+
+# ------------------------------------------------------------ evidence-lint
+
+
+def cmd_evidence_lint(args: argparse.Namespace) -> int:
+    rep = reportmod.Report(sys.argv, task_id=args.task)
+    root = Path(args.root).resolve()
+    records: list[tuple[Path, str]] = []
+    for value in args.record:
+        path = Path(value)
+        try:
+            text = path.read_text(encoding="utf-8")
+        except OSError as exc:
+            rep.add_check("records", "failed", detail=f"cannot read {path}: {exc}")
+            return _finish(rep, args, EXIT_INVALID_INPUT)
+        if not text.strip():
+            rep.add_check("records", "failed", detail=f"{path} is empty")
+            return _finish(rep, args, EXIT_INVALID_INPUT)
+        records.append((path, text))
+        rep.add_input(f"record:{path.name}", path, reportmod.file_sha256(path), size=len(text))
+    rep.add_check("records", "passed", detail=f"{len(records)} record(s)")
+    key, source = _key(rep, root)
+    if not key:
+        return _finish(rep, args, EXIT_MISSING_PREREQUISITE)
+    out = _out_dir(args, rep, root)
+    summary: dict[str, Any] = {}
+    for path, text in records:
+        name = path.stem
+        state = judgment.record_state(path, text)
+        result = _evaluate(rep, args, key=key, source=source, state=state,
+                           questions=judgment.EVIDENCE_QUESTIONS, out=out, name=name)
+        if result is None:
+            continue
+        flags = judgment.evidence_flags(result.answers)
+        for flag in flags:
+            value = (f"noul={flag['noul']}" if "noul" in flag
+                     else f"choice={flag['choice']} confidence={flag['confidence']}")
+            rep.add_check(f"lint:{name}:{flag['question']}", "failed" if flag["flagged"] else "passed",
+                          required=False, detail=f"{value}; {flag['rule']}")
+        summary[str(path)] = {"model": result.model, "flags": flags, "artifact": f"{name}.json"}
+    if summary:
+        summary_path = out / "evidence-lint.json"
+        summary_path.write_text(json.dumps(summary, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+        rep.add_artifact("evidence_lint_summary", summary_path)
+        print(json.dumps(summary, indent=2, sort_keys=True))
+    return _finish(rep, args, _status(rep))
+
+
+# ---------------------------------------------------------------- register
+
+
+def _common(p: argparse.ArgumentParser) -> None:
+    p.add_argument("--report", help="write the JSON run report here")
+    p.add_argument("--task", help="task ID to record in the report")
+    p.add_argument("--root", default=str(ROOT), help="repository root (for .env and artifacts)")
+    p.add_argument("--out", help="directory for judgment artifacts (default artifacts/judge/<run-id>)")
+    p.add_argument("--model", default=judgment.DEFAULT_MODEL,
+                   help="model name or versioned id; the response's model is recorded either way")
+    p.add_argument("--timeout", type=float, default=30.0, help="seconds per request")
+    p.add_argument("--attempts", type=int, default=3, help="attempts on 429/529 with backoff")
+
+
+def register(sub: argparse._SubParsersAction) -> None:
+    judge = sub.add_parser("judge", help="advisory Jev judgments recorded as evidence (D-0007)")
+    js = judge.add_subparsers(dest="judge_command", required=True)
+
+    ping = js.add_parser("ping", help="one fixed request: proves the key, endpoint and answer shape")
+    _common(ping)
+    ping.set_defaults(func=cmd_ping)
+
+    ask = js.add_parser("ask", help="evaluate a JSON state against a JSON questions map")
+    _common(ask)
+    ask.add_argument("--state", required=True, help="JSON file with the state, or - for stdin")
+    ask.add_argument("--questions", required=True, help="JSON file with the questions map, or - for stdin")
+    ask.add_argument("--name", default="ask", help="artifact name (default ask)")
+    ask.set_defaults(func=cmd_ask)
+
+    lint = js.add_parser("evidence-lint", help="advisory evidence questions over Markdown records")
+    _common(lint)
+    lint.add_argument("--record", action="append", required=True, help="Markdown record; repeatable")
+    lint.set_defaults(func=cmd_evidence_lint)

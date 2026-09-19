@@ -22,6 +22,7 @@ from . import (
     EXIT_TIMEOUT,
 )
 from . import report as reportmod
+from . import judgment
 from . import toolchain
 from .procs import run_bounded
 
@@ -127,6 +128,11 @@ def cmd_doctor(args: argparse.Namespace) -> int:
 
     outcome, line = _version_line(shutil.which("docker"), "--version")
     rep.add_check("docker_cli", outcome, required=False, detail=line or "not installed; not required")
+
+    # Optional: only `judge` commands use it, and it is never required (D-0007).
+    key, source = judgment.find_api_key(root)
+    rep.add_check("typesafe_api_key", "passed" if key else "missing", required=False,
+                  detail=f"from {source}" if key else f"not set; {judgment.KEY_ENV} in the environment or .env enables `judge` (see .env.example)")
 
     return _finish(rep, args, _status_from_checks(rep))
 

@@ -175,12 +175,28 @@ of reimplementing a build system; rows still marked proposed are unavailable.
 | `native opponent-first-check --manifest <case> --content-pack <pack> [--save-frame N ...]` | implemented (M3-04 accepted) | Run the neutral-after-1533 native producer twice using only the validated pack, compare the identity-bound full opponent x/y/velocity/pose plus player/timer/finish projection through frame 3999, and optionally require restored suffixes to equal uninterrupted execution |
 | `native presentation-check --manifest <presentation contract> --fixtures <ignored fixture directory> --content-pack <pack>` | implemented (M3-02 accepted) | Build the pack-only headless renderer, identity-check each private canonical state/reference PNG named by the tracked contract, render each case in a fresh process, and fail/report its exact regional pixel mismatch against the frozen threshold; fixtures must remain below ignored `local/` or `artifacts/` |
 | `frontend run [--track dragster\|zoom-zoo] [--pack <ignored pack>] [--rom <supported ROM>] [--replace-pack]` | implemented (M3-03 accepted; pack selection by profile since CLASSIC-PRESENTATION-UNIFICATION) | Launch the SDL3 app on a pack selected by the profile recorded inside it: a typed `--pack` must validate against the supported profile and is refused otherwise (naming both profiles and the remedy); without `--pack` the newest valid pack under `local/` is used; when none exists, exact-gate the explicit ROM, atomically create the pack at the profile's own path and revalidate it, then launch; `--rom --replace-pack` moves an incompatible existing pack aside first. Before launching, the app's `--supported-profiles` are compared with the rules' profile so a stale build is reported with the rebuild command. Existing corruption, cancelled/missing/wrong ROM, absent executable and failed/timed-out app launches are non-success outcomes. Audio is explicitly omitted. |
+| `judge ping` | implemented (JEV-JUDGMENT-HARNESS) | One fixed request to TypeSafe's System One endpoint (`jev-latest` by default): proves the key (`TYPESAFE_API_KEY` or ignored `.env`), the transport and the answer shape; writes the request/response artifact under `artifacts/judge/<run-id>/` (or `--out`); no key is `missing` (exit 2), a rejected key or malformed answer set `failed`; whether the answers match the expected reading is an optional check (D-0007) |
+| `judge ask --state <json|-> --questions <json|->` | implemented (JEV-JUDGMENT-HARNESS) | Evaluate a caller's JSON state against a map of typed questions (`noul`, `choice`, `score`), print the answers and record the call as evidence; invalid JSON or an ill-formed question is invalid input (exit 3) before any request is sent |
+| `judge evidence-lint --record <md> [--record ...]` | implemented (JEV-JUDGMENT-HARNESS) | Ask the fixed evidence questions (independent check named, observation distinct from interpretation, reproducible, identity stated, falsifiable, status supported) over each Markdown record in one request per record; each flag is an optional `lint:<record>:<question>` check with its probability, so a flagged record never fails the run; per-record artifacts plus `evidence-lint.json` |
 | `verify --task <id>` | proposed | Run that task's declared checks, validate required artifacts and report eligibility for review |
 | `package --preset <name>` | proposed | Later: assemble a runnable build with dependency notices and no unintended local inputs |
 
 All commands must have bounded execution, useful help, noninteractive operation and a `--report <path>` option. Exit codes as implemented: 0 success, 1 check failure, 2 missing prerequisite, 3 invalid input, 4 timeout. Reports include individual passed/failed/skipped checks. A required skipped check prevents task acceptance even if unrelated checks pass. A bare zero exit status must never conceal missing ROM tests.
 
 Use an agreed JSON report schema containing run ID, task ID, source commit, dirty-diff digest if applicable, tool versions, input hashes, command, elapsed time, check outcomes and artifact hashes/locations. A check result applies only to the exact recorded source/input state. The schema is implemented in `tools/unirally_lab/report.py` (schema version 1): each check has an outcome of `passed`, `failed`, `skipped`, `missing` or `timeout` and a `required` flag; a run's `status` is `passed` only when every required check passed.
+
+## Advisory judgments (D-0007)
+
+`judge` commands call TypeSafe's Jev over HTTPS with the key from
+`TYPESAFE_API_KEY` or the ignored `.env` (copy `.env.example`); nothing else in
+the repository needs the key or the network, and the synthetic CI runs neither.
+A judgment is an optional check and an evidence artifact (full request,
+response, versioned model, usage, elapsed time, state hash), never a gate. The
+transport mirrors the toolchain downloader: curl through a private config file
+(the key is never on a command line), urllib only when curl is absent. Retries
+are bounded to `--attempts` on 429/529; `--timeout` bounds each request.
+`UNIRALLY_LAB_JUDGE_ENDPOINT` redirects the endpoint for the stub-server tests
+in `tests/tooling/test_judgment.py`; it is a testing hook, not for acceptance runs.
 
 ## Isolated native research modules
 
