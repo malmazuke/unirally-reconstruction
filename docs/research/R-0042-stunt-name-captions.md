@@ -45,6 +45,18 @@ sixteen tall: the font sheet holds every glyph's top half in one row of sixteen
 tiles and its bottom half in the next, so the bottom tile is always the top tile
 plus `$10`.
 
+**The caption's place in the composition.** It is drawn over the track and
+under both the rider objects and the channel-6 window members. A member covers
+it as it covers everything else (R-0040's "nothing else"). A rider does not: on
+the 35 pixels where a sprite lies under a glyph's ink on frame 2100 of the M4-16
+primary, and on frames 2120, 2340 and 2600, the original shows the sprite's own
+colour with `red = min(31, sprite_red + 13)` and green and blue untouched. That
+is colour-math arithmetic, so the caption contributes red to the sprite rather
+than being hidden by it or painted over it. Which PPU configuration produces the
+add is **not recovered**, and the added 13 is not half of the ink's own 5-bit 28,
+so the colour entering the arithmetic is not quite the one the glyphs are drawn
+with. The rule is measured, not derived.
+
 **Two tilemap rows.** On the following update `$81:F322` and `$81:F33C` each read
 all sixteen buffer bytes and write a row: `$81:F31D` points `$2116` at words
 6472-6487 and `$81:F327` writes `$3800 | tile`; `$81:F337` points at 6504-6519,
@@ -79,6 +91,7 @@ consumed event (14, then 15) and the original shows nothing.
 | the buffer and the encoding | the capture's own WRAM at `$0EA7` | `  more stunts   ` becomes `80 80 27 29 2C 0F 80 2D 2E 2F 28 2E 2D 80 80 80`, and the other three captions agree letter for letter |
 | the drawing | the access record's `$2116`/`$2118` writes | two rows 32 words apart, the second row's tiles exactly `$10` above the first |
 | the blanking | native against the M4-16 original's kept frames | at 3208, 4840 and 6484 the cursor points at the last event and the original is blank; honouring `empty_display` makes every frame agree |
+| the composition | a sweep of all 274 kept frames of the M4-16 primary, and the review's withheld DRAGSTER frames | every band exact once the caption is drawn below the window members and below the riders with the measured red add; worst mismatch 0 |
 | both tracks | `queue_probe.py` over the M4-16 primary original | ZOOM ZOO consumes 93 events - 14, 15, 37 and 44-59 - through the same consumer and table, reaching entries DRAGSTER's race never does |
 
 ## Domain and limits
@@ -86,10 +99,13 @@ consumed event (14, then 15) and the original shows nothing.
 - Measured on both tracks: DRAGSTER through the accepted replay manifest and the
   accepted `dragster-ordinary-primary` case, ZOOM ZOO through the M4-16 primary
   original's own kept frames.
-- The original's start ring composes **above** the caption. On ZOOM ZOO 1649 and
-  DRAGSTER 1601 it crosses the caption band and occludes the glyphs under it, so
-  native, which omits the ring, draws caption pixels where the original draws
-  ring. Those are the only pixels of any measured caption frame that differ.
+- **Corrected.** An earlier version of this record said the original's start
+  ring composes above the caption, and explained the 116 pixels that ZOOM ZOO
+  1649 and DRAGSTER 1601 then missed as that declared omission. That was wrong.
+  The independent review measured the window members instead and found native
+  painting 9,144 member pixels where the original paints 9,260: the difference
+  is exactly those 116, and the cause was the caption being composed above the
+  channel-6 members rather than below them. There is no start-ring rule here.
 - The letters measured against the original's own pictures are those of the six
   captions compared (b, e, g, i, m, n, o, p, r, s, t, u, v, w, y, the space and
   `last lap`'s a and l). The rest follow from the three-run arithmetic, and

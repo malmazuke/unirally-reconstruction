@@ -1118,4 +1118,25 @@ int main() {
   }
   require(refused);
 
+  // R-0042: the queue selects the caption, and blanks it two ways. Neither the
+  // blanking nor the entry lookup had a tracked check (re-review C6).
+  {
+    std::vector<std::uint8_t> table(4080, ' ');
+    for (int i = 0; i < 16; ++i)
+      table[static_cast<std::size_t>(13 * 16 + i)] = static_cast<std::uint8_t>("   wipeout      "[i]);
+    unirally::ZoomZooState published{};
+    auto &queue = published.player_announcements.queue;
+    require(!unirally::classic_caption_entry(published, table).has_value());
+    queue.read_cursor = 3;
+    queue.entries[3] = 14;
+    const auto shown = unirally::classic_caption_entry(published, table);
+    require(shown.has_value() && std::equal(shown->begin(), shown->end(),
+                                            std::string_view("   wipeout      ").begin()));
+    published.player_announcements.empty_display = 1;
+    require(!unirally::classic_caption_entry(published, table).has_value());
+    published.player_announcements.empty_display = 0;
+    queue.entries[3] = 0;
+    require(!unirally::classic_caption_entry(published, table).has_value());
+  }
+
 }

@@ -2,7 +2,7 @@
 
 ## Assignment
 
-- Status: review returned at `745c4b8` (two blocking, four should-fix, five advisory), all findings applied; re-review requested. Started on `task/classic-stunt-names` from `fd34209`. Registered and started
+- Status: re-review returned at `f2a4b1f` (one new blocking on the rider composition, one on the records, six others); all applied on top; a third review round is due. Started on `task/classic-stunt-names` from `fd34209`. Registered and started
   19 September 2026 07:00 UTC, chosen by the user as the next task after ZOOM-ZOO-OPPOSING-INPUT.
 - Milestone: follow-up to M4-16 and CLASSIC-PRESENTATION-UNIFICATION; takes the first item out of
   the "decorative objects and captions" declared omission in [docs/STATE.md](../docs/STATE.md)
@@ -76,7 +76,7 @@ mechanism, take it and say so; do not widen the task to the whole family by defa
 | --- | --- | --- | --- |
 | The trigger is recovered | probe the original's WRAM across a trick-carrying capture, against the recovered reward events | a stated rule for when a caption starts, which name it carries and when it ends, with the addresses and the frames behind it | research record R-0042 |
 | The content is authenticated | extract whatever glyph or tile content the captions use from the ROM through the pack rules | byte-exact extraction, additive to the profile, v1 contracts unchanged | pack report |
-| Native matches the original where it draws | `caption_pictures.py` and `zoom_captions.py`: the caption band of native renders against the original's own frames, on both tracks | every pixel matches except where the start ring, a declared omission, occludes the caption | picture scores in the gate logs |
+| Native matches the original where it draws | `caption_pictures.py`, `zoom_captions.py`, `trick_pictures.py` and `band_sweep.py`: the caption band of native renders against the original's own frames, on both tracks | every pixel matches, with no exception claimed | picture scores in the gate logs |
 | No accepted contract moves | the eleven differential gates, five preset suites, synthetic, v1 contracts, hidden runs, fuzz | all `status=passed`, restore counts unchanged | gate logs |
 | Independent review | fresh Opus 5 subagent in an isolated checkout at the candidate | approve, with its own withheld case | review report |
 | Hosted CI on the final tip | `gh run list --workflow synthetic.yml --commit <tip>` | both platforms success | closeout |
@@ -110,37 +110,42 @@ mechanism, take it and say so; do not widen the task to the whole family by defa
 | 10 (08:50-09:05Z) | The text belongs in the pack additively | New entry `presentation.classic.captions.v1`, entries 1 to 255 of the table; profile `classic.pal.crawler.two-tracks.v9`; native manifest, rules hash and supported profiles updated; pack re-extracted from the ROM | 57 logical entries, exact ROM identity, the app validates the v9 pack and reports it as supported; 23/23 ctest | Draw it |
 | 11 (09:05-09:20Z) | The renderer can derive the caption from the state alone | `draw_classic_caption` in the shared renderer: the event under the player's read cursor indexes the table, each glyph draws as two 8x8 tiles `$10` apart at x 64, y 79, in the race CGRAM's colour 22 | The first attempt drew nothing: `movement.rewards` is the *opponent's* queue ($0D11/$0D13), and the captions follow the player's, which is `player_announcements.queue`. With that corrected the caption appears | Compare against the original |
 | 13 (10:15-10:20Z) | ZOOM ZOO drives the same captions | `queue_probe.py` over the M4-16 primary original | 93 consumptions, events 14, 15, 37 and 44-59: the same consumer and the same table as DRAGSTER, reaching `last lap` and the longer hint sentences DRAGSTER's race never does | Compare its pictures too |
-| 12 (09:20-09:30Z) | Native matches the original where it draws | Rendered the native timeline of the same DRAGSTER case at the four caption frames and compared the caption band (x 64-191, y 78-95) with the original's own frames | Frames 1637 `GIVE YOU`, 1652 `BIGGER BOOSTS` and 1685 `WIPEOUT`: **2304 of 2304 pixels identical**, with exactly the same ink pixels. Frame 1601 `MORE STUNTS`: 2188 of 2304, and every one of the 116 differing pixels is the original's pale pink - the start ring, a declared omission, which composes *above* the caption and occludes it | Gates, then review |
-| 14 (11:00-11:10Z) | The caption persists until the next message | Native against the six kept frames of the M4-16 original | Three disagreed: at 3208, 4840 and 6484 the read cursor still points at the last consumed event and the original shows nothing. `$81:BEA8-BEF1` blanks the display one cooldown after the queue empties, and the engine already carries that as `empty_display`, recovered in M4-16 and unused until now. Honouring it, every caption frame of both tracks matches except where the start ring occludes the caption. DRAGSTER's four frames could not have found this | Rerun the matrix on the corrected candidate |
+| 12 (09:20-09:30Z) | Native matches the original where it draws | Rendered the native timeline of the same DRAGSTER case at the four caption frames and compared the caption band (x 64-191, y 78-95) with the original's own frames | Frames 1637 `GIVE YOU`, 1652 `BIGGER BOOSTS` and 1685 `WIPEOUT`: **2304 of 2304 pixels identical**, with exactly the same ink pixels. Frame 1601 `MORE STUNTS`: 2188 of 2304, and every one of the 116 differing pixels is the original's pale pink - the original's pale pink. **This attribution was wrong; see attempt 15.** | Gates, then review |
+| 14 (11:00-11:10Z) | The caption persists until the next message | Native against the six kept frames of the M4-16 original | Three disagreed: at 3208, 4840 and 6484 the read cursor still points at the last consumed event and the original shows nothing. `$81:BEA8-BEF1` blanks the display one cooldown after the queue empties, and the engine already carries that as `empty_display`, recovered in M4-16 and unused until now. Honouring it, every caption frame of both tracks matches except the two whose residual attempt 15 corrects. DRAGSTER's four frames could not have found this | Rerun the matrix on the corrected candidate |
 
 ## Handoff
 
-- Current base/head commit and uncommitted state: base `main` at `fd34209`; the returned review's
-  findings are applied on top of `745c4b8`. No uncommitted tracked changes at the candidate.
-- Verified findings: attempts 1 to 5. The captions are the on-screen half of the reward queue the
-  engine already runs: a consumed event id indexes a 16-byte ASCII entry in the table at
-  `$17:C9F4`, read by `$81:BFE9` on the consumption update, and the phrase is drawn in red in the
-  middle of the screen. The stunt names, the hint sentences and the winner/draw/loser captions are
-  all entries of that one table. The recovered `ZoomZooPlayerAnnouncements` fields
-  (`hints_active`, `hint_updates`, `hint_group`, `empty_display`) are the state behind which entry
-  is chosen; the text and its drawing are what is missing.
-- Current hypothesis: the phrase is drawn for a bounded number of updates from the consumption,
-  as a row of glyph tiles on a BG layer. Failed approaches: the 72-199 voice range is not
-  involved in these captions; a statistical WRAM-diff hunt for "caption state" ranked bytes whose
-  change counts merely happened to sit near consumptions ($15CE-$15D2 change constantly from 1329,
-  before any race event), so read the original's code and pictures instead of ranking byte churn.
-- Exact next experiment/command: find the font's glyph tiles. The caption's tiles are BG character
-  indices, so the sheet is whatever the layer's character base points at; find the DMA or the ROM
-  region that fills it, add it to the pack additively, and render `  more stunts   ` with the
-  recovered mapping to compare against the original's own frame 1601. Then confirm the letters the
-  four captions do not contain (`a`, `f`, `l` and the digits first) against a picture, and measure
-  a ZOOM ZOO caption, since only DRAGSTER has been measured.
-- Recovered so far: [R-0042](../docs/research/R-0042-stunt-name-captions.md) holds the mechanism -
-  the trigger, the ASCII table at `$17:C9F4`, the tile buffer at `$0EA7`, the ASCII-to-tile
-  arithmetic, the two tilemap rows and the blank-entry rule.
-- Remaining dependencies: none; every prerequisite is integrated on `main`.
-- Runtime needs: the private ROM, the audited core, the v8 pack, disk for captures, and roughly an
-  hour of machine time for a full gate matrix.
+- Current base/head commit and uncommitted state: base `main` at `fd34209`; the first review's
+  findings are applied at `f2a4b1f` and the re-review's at the commit this handoff is part of. No
+  uncommitted tracked changes at the candidate.
+- Verified findings: attempts 1 to 18, and [R-0042](../docs/research/R-0042-stunt-name-captions.md).
+  The mechanism is the reward queue, the ASCII table at `$17:C9F4`, the 16-byte tile buffer, the
+  two tilemap rows, both halves of the blanking rule, and the composition: over the track, under the
+  channel-6 window members, and under the riders with a measured red add where a sprite covers a
+  glyph.
+- Current hypothesis and failed approaches: settled. Two failed readings are worth keeping, both
+  corrected by independent review. The 116-pixel residual was attributed to the start ring, a
+  declared omission, when it was the caption composed above the window members (attempt 15); and
+  the caption was then thought to sit above the riders, when the original blends the two
+  (attempt 18). Both looked like evidence because a plausible culprit was available and the numbers
+  were small.
+- Commands executed, outcomes and report hashes: `artifacts/classic-stunt-names/gates-{a,b}.log`
+  and the per-gate reports; the caption scores are in `gates/caption-pictures*.log`,
+  `gates/caption-alphabet.log` and the 274-frame sweep.
+- Unavailable/skipped checks: no original capture displays a voice entry (72-87), so whether the
+  original shows that range at all is unmeasured, and the three punctuation tiles are read from the
+  font sheet rather than from a picture. The re-review judged an original capture unnecessary for
+  the tile identity and asked for the display question to be a declared limit, which R-0042 carries.
+- Exact next experiment/command: none outstanding. To rerun the caption evidence,
+  `python3 artifacts/classic-stunt-names/band_sweep.py` sweeps all 274 kept frames of the M4-16
+  primary, and `caption_pictures.py`, `zoom_captions.py` and `trick_pictures.py` score the DRAGSTER
+  and ZOOM ZOO frames; `gates-a.sh` runs them.
+- Remaining dependencies: none.
+- Runtime needs: the private ROM, the audited core, the v9 pack, about 6 GB of disk for the
+  captures and roughly 50 minutes for the full gate matrix.
+- Aggregate time and provider usage: registration 07:00 UTC 19 September; readings in the closeout.
+- Accepted outcome, review/fix rounds and next routing decision: two review rounds so far, both
+  returned; the second round's findings are applied here and a third round is due.
 
 ## Review and integration
 

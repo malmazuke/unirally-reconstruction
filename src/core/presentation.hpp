@@ -250,8 +250,9 @@ struct ClassicRacePresentationContent {
   // pack does not carry the family; the windows are then omitted.
   std::span<const std::uint8_t> window_tables;
   // R-0042: the caption table, sixteen ASCII bytes per reward event, entries 1
-  // to 255 of `$17:C9F4`. Empty only when the pack does not carry it; the
-  // captions are then omitted, as they were before v9.
+  // to 255 of `$17:C9F4`. The v9 profile requires it, so this span is never
+  // empty in a validated pack; the renderer's emptiness check is a span
+  // contract for a profile that ever makes it optional.
   std::span<const std::uint8_t> captions;
   // The 2bpp 128-tile sheet the captions are drawn with, already in the pack.
   std::span<const std::uint8_t> caption_font;
@@ -275,6 +276,12 @@ ClassicRacePresentationContent classic_race_presentation_content(const ClassicCo
 // of the caption table is a space, `!`, `"`, `-` or a lowercase letter; any
 // other byte is outside the recovered domain and throws.
 std::optional<unsigned> classic_caption_tile(char glyph);
+
+// R-0042: the sixteen bytes the caption shows for a published state, or nothing
+// when the queue has blanked the display ($81:BEA8-BEF1's `empty_display`) or
+// has published no event yet.
+std::optional<std::span<const std::uint8_t>>
+classic_caption_entry(const ZoomZooState& published,std::span<const std::uint8_t> captions);
 
 RgbFrame render_classic_race(const ZoomZooState& state,const ClassicRacePresentationContent& content,
                              const ZoomZooState* previous_update=nullptr,
