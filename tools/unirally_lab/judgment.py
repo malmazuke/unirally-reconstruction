@@ -70,21 +70,47 @@ def parse_dotenv(text: str) -> dict[str, str]:
     return values
 
 
+def key_problem(key: str) -> str | None:
+    """Why a key value cannot be sent, or None. Quotes, whitespace and control
+    characters would be mangled by curl's config quoting, so they are refused
+    before any request rather than silently truncated."""
+    if any(ch.isspace() or ord(ch) < 32 or ch in "\"'\\" for ch in key):
+        return "contains whitespace, quotes, a backslash or a control character"
+    if len(key) < 8:
+        return "is too short to be a key"
+    return None
+
+
 def find_api_key(root: Path, environ: dict[str, str] | None = None) -> tuple[str | None, str]:
-    """The key and where it came from: ``environment``, ``.env`` or ``none``."""
+    """The key and where it came from: ``environment``, ``.env``, ``none`` or
+    ``invalid (<source>): <problem>`` when a value was found but cannot be used."""
     env = os.environ if environ is None else environ
     key = (env.get(KEY_ENV) or "").strip()
-    if key:
-        return key, "environment"
-    dotenv = Path(root) / ".env"
-    if dotenv.is_file():
-        try:
-            key = parse_dotenv(dotenv.read_text(encoding="utf-8")).get(KEY_ENV, "").strip()
-        except OSError:
-            key = ""
-        if key:
-            return key, ".env"
-    return None, "none"
+    source = "environment"
+    if not key:
+        dotenv = Path(root) / ".env"
+        if dotenv.is_file():
+            try:
+                key = parse_dotenv(dotenv.read_text(encoding="utf-8")).get(KEY_ENV, "").strip()
+            except OSError:
+                key = ""
+            source = ".env"
+    if not key:
+        return None, "none"
+    problem = key_problem(key)
+    if problem:
+        return None, f"invalid ({source}): the value {problem}"
+    return key, source
+
+
+def redact(value: Any, key: str | None) -> Any:
+    """``value`` (JSON-compatible) with every occurrence of ``key`` replaced."""
+    if not key:
+        return value
+    text = json.dumps(value, ensure_ascii=False)
+    if key not in text:
+        return value
+    return json.loads(text.replace(key, "<redacted-api-key>"))
 
 
 def endpoint_url(environ: dict[str, str] | None = None) -> str:
@@ -140,7 +166,7 @@ def _curl_post(url: str, body: bytes, key: str, timeout: float) -> tuple[int, st
             f'data-binary = "@{req}"\n'
             f'output = "{out}"\n'
             'write-out = "%{http_code}"\n'
-            f'max-time = {int(timeout) or 1}\n'
+            f'max-time = {timeout:.3f}\n'
             "silent\nshow-error\n",
             encoding="utf-8",
         )
@@ -296,6 +322,9 @@ def evaluate(
     absent = sorted(set(questions) - set(answers))
     if absent:
         raise JudgmentError("failed", f"answers missing for: {', '.join(absent)}")
+    malformed = sorted(qid for qid in questions if not isinstance(answers[qid], dict))
+    if malformed:
+        raise JudgmentError("failed", f"answers are not objects for: {', '.join(malformed)}")
     return Judgment(
         request=request, response=response, http_status=status,
         model=response.get("model"), usage=response.get("usage") or {},
@@ -419,7 +448,9 @@ def evidence_flags(answers: dict[str, Any]) -> list[dict[str, Any]]:
     """Per question: the flag decision with the probability behind it."""
     flags: list[dict[str, Any]] = []
     for qid, question in EVIDENCE_QUESTIONS.items():
-        answer = answers.get(qid) or {}
+        answer = answers.get(qid)
+        if not isinstance(answer, dict):
+            answer = {}
         if question["type"] == "noul":
             p = answer.get("noul")
             flagged = p is not None and p < FLAG_BELOW

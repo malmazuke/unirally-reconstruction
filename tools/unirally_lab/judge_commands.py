@@ -20,11 +20,14 @@ import sys
 from pathlib import Path
 from typing import Any
 
+import re
+
 from . import EXIT_INVALID_INPUT, EXIT_MISSING_PREREQUISITE, EXIT_OK, EXIT_TIMEOUT
 from . import judgment
 from . import report as reportmod
 
 ROOT = reportmod.repo_root()
+ARTIFACT_NAME = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$")
 
 PING_STATE = {
     "record_status": "independently verified",
@@ -47,11 +50,37 @@ PING_QUESTIONS = {
 }
 
 
-def _finish(rep: reportmod.Report, args: argparse.Namespace, status: int) -> int:
+def _finish(rep: reportmod.Report, args: argparse.Namespace, status: int, key: str | None = None) -> int:
     rep.finish("passed" if status == EXIT_OK else "failed")
+    # A transport error message could in principle echo a header; the report
+    # is scanned for the key the same way the artifact is.
+    redacted = judgment.redact(rep.data, key)
+    if redacted is not rep.data:
+        rep.data = redacted
+        rep.data["redacted"] = "the API key appeared in report text and was replaced"
     rep.write(Path(args.report) if getattr(args, "report", None) else None)
     reportmod.print_summary(rep)
     return status
+
+
+def _valid_name(value: str) -> bool:
+    """A plain file name: no separators, no ``..``, bounded length."""
+    return bool(ARTIFACT_NAME.match(value)) and value not in (".", "..")
+
+
+def _check_arguments(rep: reportmod.Report, args: argparse.Namespace) -> bool:
+    problems = []
+    if args.timeout <= 0:
+        problems.append("--timeout must be positive")
+    if args.attempts < 1:
+        problems.append("--attempts must be at least 1")
+    name = getattr(args, "name", None)
+    if name is not None and not _valid_name(name):
+        problems.append("--name must be a plain file name (letters, digits, '.', '_', '-'; no separators or '..')")
+    if problems:
+        rep.add_check("arguments", "failed", detail="; ".join(problems))
+        return False
+    return True
 
 
 def _out_dir(args: argparse.Namespace, rep: reportmod.Report, root: Path) -> Path:
@@ -65,6 +94,8 @@ def _key(rep: reportmod.Report, root: Path) -> tuple[str | None, str]:
     key, source = judgment.find_api_key(root)
     if key:
         rep.add_check("typesafe_api_key", "passed", detail=f"from {source}")
+    elif source.startswith("invalid"):
+        rep.add_check("typesafe_api_key", "failed", detail=source)
     else:
         rep.add_check("typesafe_api_key", "missing",
                       detail=f"set {judgment.KEY_ENV} in the environment or in {root / '.env'} (see .env.example)")
@@ -85,10 +116,13 @@ def _evaluate(rep: reportmod.Report, args: argparse.Namespace, *, key: str, sour
     try:
         result = judgment.evaluate(state, questions, key=key, key_source=source, model=args.model,
                                    timeout=args.timeout, attempts=args.attempts)
+        path = judgment.write_judgment(result, out / f"{name}.json", key)
     except judgment.JudgmentError as exc:
         rep.add_check(f"judgment:{name}", exc.outcome, detail=exc.detail)
         return None
-    path = judgment.write_judgment(result, out / f"{name}.json", key)
+    except OSError as exc:
+        rep.add_check(f"judgment:{name}", "failed", detail=f"cannot write the artifact: {exc}")
+        return None
     rep.add_artifact("judgment", path)
     usage = result.usage
     rep.add_check(
@@ -116,9 +150,11 @@ def _status(rep: reportmod.Report) -> int:
 def cmd_ping(args: argparse.Namespace) -> int:
     rep = reportmod.Report(sys.argv, task_id=args.task)
     root = Path(args.root).resolve()
+    if not _check_arguments(rep, args):
+        return _finish(rep, args, EXIT_INVALID_INPUT)
     key, source = _key(rep, root)
     if not key:
-        return _finish(rep, args, EXIT_MISSING_PREREQUISITE)
+        return _finish(rep, args, _status(rep))
     out = _out_dir(args, rep, root)
     result = _evaluate(rep, args, key=key, source=source, state=PING_STATE, questions=PING_QUESTIONS,
                        out=out, name="ping")
@@ -133,7 +169,7 @@ def cmd_ping(args: argparse.Namespace) -> int:
         rep.add_check("ping_answers_as_expected", "passed" if expected else "failed", required=False,
                       detail=f"check_named noul={p}, status_supported={choice}")
         print(json.dumps(answers, indent=2, sort_keys=True))
-    return _finish(rep, args, _status(rep))
+    return _finish(rep, args, _status(rep), key)
 
 
 # --------------------------------------------------------------------- ask
@@ -154,6 +190,8 @@ def _load_json_arg(label: str, value: str) -> Any:
 def cmd_ask(args: argparse.Namespace) -> int:
     rep = reportmod.Report(sys.argv, task_id=args.task)
     root = Path(args.root).resolve()
+    if not _check_arguments(rep, args):
+        return _finish(rep, args, EXIT_INVALID_INPUT)
     if args.state == "-" and args.questions == "-":
         rep.add_check("arguments", "failed", detail="only one of --state and --questions may read stdin")
         return _finish(rep, args, EXIT_INVALID_INPUT)
@@ -170,13 +208,13 @@ def cmd_ask(args: argparse.Namespace) -> int:
     rep.add_check("questions", "passed", detail=f"{len(questions)} questions")
     key, source = _key(rep, root)
     if not key:
-        return _finish(rep, args, EXIT_MISSING_PREREQUISITE)
+        return _finish(rep, args, _status(rep))
     out = _out_dir(args, rep, root)
     result = _evaluate(rep, args, key=key, source=source, state=state, questions=questions,
                        out=out, name=args.name)
     if result is not None:
         print(json.dumps(result.answers, indent=2, sort_keys=True))
-    return _finish(rep, args, _status(rep))
+    return _finish(rep, args, _status(rep), key)
 
 
 # ------------------------------------------------------------ evidence-lint
@@ -185,10 +223,19 @@ def cmd_ask(args: argparse.Namespace) -> int:
 def cmd_evidence_lint(args: argparse.Namespace) -> int:
     rep = reportmod.Report(sys.argv, task_id=args.task)
     root = Path(args.root).resolve()
+    if not _check_arguments(rep, args):
+        return _finish(rep, args, EXIT_INVALID_INPUT)
+    private = root / "local"
     records: list[tuple[Path, str]] = []
+    names: dict[str, Path] = {}
     for value in args.record:
         path = Path(value)
         try:
+            if path.resolve().is_relative_to(private):
+                # Tracked records only: what is sent leaves the machine, and
+                # local/ holds ROM-derived captures and other private inputs.
+                rep.add_check("records", "failed", detail=f"{path} is under {private}; judge only tracked records")
+                return _finish(rep, args, EXIT_INVALID_INPUT)
             text = path.read_text(encoding="utf-8")
         except OSError as exc:
             rep.add_check("records", "failed", detail=f"cannot read {path}: {exc}")
@@ -196,12 +243,21 @@ def cmd_evidence_lint(args: argparse.Namespace) -> int:
         if not text.strip():
             rep.add_check("records", "failed", detail=f"{path} is empty")
             return _finish(rep, args, EXIT_INVALID_INPUT)
+        name = path.stem
+        if not _valid_name(name):
+            rep.add_check("records", "failed", detail=f"{path}: the file name cannot name an artifact")
+            return _finish(rep, args, EXIT_INVALID_INPUT)
+        if name in names:
+            rep.add_check("records", "failed",
+                          detail=f"{path} and {names[name]} share the artifact name {name!r}; lint them in separate runs")
+            return _finish(rep, args, EXIT_INVALID_INPUT)
+        names[name] = path
         records.append((path, text))
         rep.add_input(f"record:{path.name}", path, reportmod.file_sha256(path), size=len(text))
     rep.add_check("records", "passed", detail=f"{len(records)} record(s)")
     key, source = _key(rep, root)
     if not key:
-        return _finish(rep, args, EXIT_MISSING_PREREQUISITE)
+        return _finish(rep, args, _status(rep))
     out = _out_dir(args, rep, root)
     summary: dict[str, Any] = {}
     for path, text in records:
@@ -223,7 +279,7 @@ def cmd_evidence_lint(args: argparse.Namespace) -> int:
         summary_path.write_text(json.dumps(summary, indent=2, sort_keys=True) + "\n", encoding="utf-8")
         rep.add_artifact("evidence_lint_summary", summary_path)
         print(json.dumps(summary, indent=2, sort_keys=True))
-    return _finish(rep, args, _status(rep))
+    return _finish(rep, args, _status(rep), key)
 
 
 # ---------------------------------------------------------------- register
@@ -252,10 +308,11 @@ def register(sub: argparse._SubParsersAction) -> None:
     _common(ask)
     ask.add_argument("--state", required=True, help="JSON file with the state, or - for stdin")
     ask.add_argument("--questions", required=True, help="JSON file with the questions map, or - for stdin")
-    ask.add_argument("--name", default="ask", help="artifact name (default ask)")
+    ask.add_argument("--name", default="ask", help="artifact name: a plain file name without extension (default ask)")
     ask.set_defaults(func=cmd_ask)
 
     lint = js.add_parser("evidence-lint", help="advisory evidence questions over Markdown records")
     _common(lint)
-    lint.add_argument("--record", action="append", required=True, help="Markdown record; repeatable")
+    lint.add_argument("--record", action="append", required=True,
+                      help="tracked Markdown record (never under local/); repeatable; file names must be distinct")
     lint.set_defaults(func=cmd_evidence_lint)

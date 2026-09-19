@@ -24,10 +24,17 @@ accident.
 
 ## Decision
 
-- A Jev judgment is **advisory**. It is recorded as an optional check (never
-  `required`), so a flagged record or handoff informs the reader and never
-  changes a run's status or exit code. Promoting a judgment to a required check
-  needs a decision record with the labelled evaluation behind the threshold.
+- A Jev judgment is **advisory**. Every check derived from an answer (a lint
+  flag, an expected-answer check) is optional, never `required`, so a flagged
+  record or handoff informs the reader and never changes a run's status or
+  exit code. The one required check a `judge` command carries,
+  `judgment:<name>`, records only whether the call itself succeeded; it decides
+  that command's own exit code and nothing else consumes it. Promoting an
+  answer-derived check to required needs a decision record with the labelled
+  evaluation behind the threshold.
+- What is sent leaves the machine. Judge tracked records and authored state
+  only; never captures, dumps or anything under `local/`, which
+  `evidence-lint` refuses outright.
 - Every call is **evidence**: the full request (state, questions, model), the
   response, the versioned model that answered, token usage, elapsed time, the
   transport and a SHA-256 of the state are written under `artifacts/` and the

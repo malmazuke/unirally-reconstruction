@@ -109,7 +109,9 @@ class EvaluateTests(unittest.TestCase):
 
     def test_incomplete_or_malformed_answers_fail(self):
         partial = json.dumps({"model": "m", "answers": {"yes": {"type": "noul", "noul": 0.5}}})
-        for text, fragment in ((partial, "missing for: pick"), ("not json", "not JSON"), ('{"model": "m"}', "no answers")):
+        strings = json.dumps({"model": "m", "answers": {"yes": "no", "pick": ["a"]}})
+        for text, fragment in ((partial, "missing for: pick"), ("not json", "not JSON"), ('{"model": "m"}', "no answers"),
+                               (strings, "not objects for: pick, yes")):
             with self.subTest(text=text):
                 with self.assertRaises(judgment.JudgmentError) as cm:
                     judgment.evaluate("s", TWO_QUESTIONS, key=FAKE_KEY, transport=FakeTransport([(200, text)]))
@@ -142,10 +144,32 @@ class KeyTests(unittest.TestCase):
             self.assertEqual(judgment.find_api_key(root, {}), (None, "none"))
             (root / ".env").write_text(f"{judgment.KEY_ENV}={FAKE_KEY}\n")
             self.assertEqual(judgment.find_api_key(root, {}), (FAKE_KEY, ".env"))
-            self.assertEqual(judgment.find_api_key(root, {judgment.KEY_ENV: "env-key"}), ("env-key", "environment"))
+            self.assertEqual(judgment.find_api_key(root, {judgment.KEY_ENV: "env-key-0123456789"}), ("env-key-0123456789", "environment"))
             self.assertEqual(judgment.find_api_key(root, {judgment.KEY_ENV: "  "}), (FAKE_KEY, ".env"))
             (root / ".env").write_text(f"{judgment.KEY_ENV}=\n")
             self.assertEqual(judgment.find_api_key(root, {}), (None, "none"))
+
+    def test_key_problem_and_invalid_sources(self):
+        self.assertIsNone(judgment.key_problem(FAKE_KEY))
+        for bad in ('ts "quoted" key', "ts\nkey-0123456789", "ts key 0123456789", "ts\\key-0123456789", "short"):
+            with self.subTest(bad=bad):
+                self.assertIsNotNone(judgment.key_problem(bad))
+        with tempfile.TemporaryDirectory() as tmp:
+            key, source = judgment.find_api_key(Path(tmp), {judgment.KEY_ENV: 'ts "quoted" 0123456789'})
+            self.assertIsNone(key)
+            self.assertTrue(source.startswith("invalid (environment)"), source)
+            (Path(tmp) / ".env").write_text(f"{judgment.KEY_ENV}=has space 0123456789\n")
+            key, source = judgment.find_api_key(Path(tmp), {})
+            self.assertIsNone(key)
+            self.assertTrue(source.startswith("invalid (.env)"), source)
+
+    def test_redact(self):
+        data = {"checks": [{"detail": f"curl said Bearer {FAKE_KEY} twice {FAKE_KEY}"}], "n": 1}
+        out = judgment.redact(data, FAKE_KEY)
+        self.assertNotIn(FAKE_KEY, json.dumps(out))
+        self.assertIn("<redacted-api-key>", out["checks"][0]["detail"])
+        self.assertIs(judgment.redact(data, None), data)
+        self.assertEqual(judgment.redact({"a": 1}, FAKE_KEY), {"a": 1})
 
     def test_write_judgment_refuses_key_leak(self):
         j = judgment.evaluate({"leak": FAKE_KEY}, TWO_QUESTIONS, key=FAKE_KEY,
@@ -179,6 +203,8 @@ class EvidenceTests(unittest.TestCase):
         self.assertFalse(flags["status_supported"]["flagged"])
         self.assertFalse(flags["reproducible"]["flagged"])
         self.assertFalse(judgment.evidence_flags({})[0]["flagged"])  # no answer: not flagged
+        odd = {qid: "not an object" for qid in judgment.EVIDENCE_QUESTIONS}
+        self.assertFalse(any(f["flagged"] for f in judgment.evidence_flags(odd)))
 
 
 # ----------------------------------------------------------- stub server
@@ -360,6 +386,70 @@ class CliTests(unittest.TestCase):
         self.assertIn("record:R-9999-synthetic.md", rep["inputs"])
         summary = json.loads((self.out / "evidence-lint.json").read_text())
         self.assertEqual(summary[str(record)]["artifact"], "R-9999-synthetic.json")
+
+    def test_evidence_lint_refuses_duplicate_stems_and_private_records(self):
+        for d in ("dupA", "dupB", "local"):
+            (self.root / d).mkdir()
+            (self.root / d / "R-0001.md").write_text("# R-0001\n\nStatus: observed\n")
+        proc, rep = self.run_cli("evidence-lint", "--record", str(self.root / "dupA" / "R-0001.md"),
+                                 "--record", str(self.root / "dupB" / "R-0001.md"))
+        self.assertEqual(proc.returncode, EXIT_INVALID_INPUT)
+        self.assertIn("share the artifact name", self.checks(rep)["records"]["detail"])
+        proc, rep = self.run_cli("evidence-lint", "--record", str(self.root / "local" / "R-0001.md"))
+        self.assertEqual(proc.returncode, EXIT_INVALID_INPUT)
+        self.assertIn("judge only tracked records", self.checks(rep)["records"]["detail"])
+        self.assertEqual(StubHandler.requests, [])
+        self.assertFalse(self.out.exists())
+
+    def test_ask_name_and_argument_validation(self):
+        (self.root / "state.json").write_text('{"a": 1}')
+        (self.root / "q.json").write_text(json.dumps(TWO_QUESTIONS))
+        base = ("ask", "--state", str(self.root / "state.json"), "--questions", str(self.root / "q.json"))
+        proc, rep = self.run_cli(*base, "--name", "../../escaped")
+        self.assertEqual(proc.returncode, EXIT_INVALID_INPUT)
+        self.assertIn("--name", self.checks(rep)["arguments"]["detail"])
+        self.assertFalse((self.root.parent / "escaped.json").exists())
+        proc, rep = self.run_cli(*base, "--attempts", "0")
+        self.assertEqual(proc.returncode, EXIT_INVALID_INPUT)
+        self.assertIn("--attempts", self.checks(rep)["arguments"]["detail"])
+        proc, rep = self.run_cli(*base, timeout=-5)
+        self.assertEqual(proc.returncode, EXIT_INVALID_INPUT)
+        self.assertIn("--timeout", self.checks(rep)["arguments"]["detail"])
+        self.assertEqual(StubHandler.requests, [])
+        # A fractional timeout is passed through, not truncated to a whole second.
+        StubHandler.script = [(200, ok_body(TWO_QUESTIONS))]
+        proc, rep = self.run_cli(*base, "--name", "frac.tion-1", timeout=0.5)
+        self.assertEqual(proc.returncode, EXIT_OK, proc.stderr)
+        self.assertTrue((self.out / "frac.tion-1.json").is_file())
+
+    def test_key_in_state_fails_with_a_report_and_no_artifact(self):
+        (self.root / "state.json").write_text(json.dumps({"leak": FAKE_KEY}))
+        (self.root / "q.json").write_text(json.dumps(TWO_QUESTIONS))
+        StubHandler.script = [(200, ok_body(TWO_QUESTIONS))]
+        proc, rep = self.run_cli("ask", "--state", str(self.root / "state.json"), "--questions", str(self.root / "q.json"))
+        self.assertEqual(proc.returncode, EXIT_FAILURE, proc.stderr)
+        self.assertIsNotNone(rep)
+        self.assertIn("contains the API key", self.checks(rep)["judgment:ask"]["detail"])
+        self.assertFalse((self.out / "ask.json").exists())
+        self.assertNotIn(FAKE_KEY, (self.root / "report.json").read_text())
+        self.assertNotIn("Traceback", proc.stderr)
+
+    def test_non_object_answers_fail_with_a_report(self):
+        StubHandler.script = [(200, json.dumps({"model": "m", "answers": {"check_named": "x", "status_supported": "y"}}))]
+        proc, rep = self.run_cli("ping")
+        self.assertEqual(proc.returncode, EXIT_FAILURE, proc.stderr)
+        self.assertIn("not objects", self.checks(rep)["judgment:ping"]["detail"])
+        self.assertNotIn("Traceback", proc.stderr)
+        self.assertFalse((self.out / "ping.json").exists())
+
+    def test_malformed_key_is_refused_before_any_request(self):
+        proc, rep = self.run_cli("ping", key='ts "quoted" 0123456789')
+        self.assertEqual(proc.returncode, EXIT_FAILURE)
+        c = self.checks(rep)["typesafe_api_key"]
+        self.assertEqual(c["outcome"], "failed")
+        self.assertIn("invalid (environment)", c["detail"])
+        self.assertNotIn("quoted", c["detail"])
+        self.assertEqual(StubHandler.requests, [])
 
     def test_evidence_lint_unreadable_record(self):
         proc, rep = self.run_cli("evidence-lint", "--record", str(self.root / "nope.md"))

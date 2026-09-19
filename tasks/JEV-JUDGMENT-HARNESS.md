@@ -110,9 +110,11 @@ synthetic CI or how acceptance is decided.
 | 2 | Same request through curl | two-question smoke request (noul on a placeholder independent check, choice on status support) | HTTP 200 in 685 ms; `jev-1.13.0`; noul 0.04, choice `unsupported` at confidence 0.83; 421 input tokens | the shape is what the docs describe; build the client on it |
 | 3 | `judge ping` reproduces attempt 2 through the tooling | `judge ping --out artifacts/jev-judgment-harness/ping` | exit 0, `judgment:ping passed` in 0.69 s via curl, answers as expected, artifact without the key | keep the fixed ping state as the smoke contract |
 | 4 | The six evidence questions run over real records in one request each | `judge evidence-lint` over R-0041, R-0001, R-0035 | 0.66-0.83 s per record, 2.4k-5.9k input tokens; no flags; lowest readings `reproducible` 0.55-0.56 on R-0041 and R-0035, `independent_check_named` 0.64 on R-0041 | thresholds stay as starting points (D-0007); a labelled pass over more records is follow-up work |
+| 5 | curl's own timeout surfaces as the `timeout` outcome | stub server sleeping 3 s, `--timeout 1` | curl exit 28 with `000` was reported as `HTTP 0`, exit 1 | map curl exit 28 to `timeout` (exit 4); any other nonzero curl exit is `failed` with curl's stderr |
 | 6 | The thresholds behave sensibly across the whole research corpus | `judge evidence-lint` over all 46 `docs/research/R-*.md` in one run (`artifacts/jev-judgment-harness/lint-all/`) | 46 of 46 answered by `jev-1.13.0`, 237,302 input tokens, 36.6 s total, 1.00 s slowest; 31 optional flags on 24 records: 22 `reproducible` (lowest 0.07, R-0031 retrospective), 6 `independent_check_named`, 2 `identity_stated`, 1 `falsifiable`, 2 `status_supported` overclaimed (R-0025 at 0.87, R-0026 at 0.83); R-0025's own text carries "accepted" in its status line and "review pending fresh focused re-review" at line 191, so that flag reads a real inconsistency; exit 0 throughout because every flag is optional | thresholds unchanged; the record-by-record reading is follow-up work, not this task's |
 | 7 | The tooling suite passes with the new tests | `bootstrap`, `build --preset lab-debug`, `test --suite synthetic --preset lab-debug` in the worktree | all exit 0; 408 tooling tests (23 new) and 434 checks passed, none failed, skipped, missing or timed out; the report notes the source changed during the run because this record was being written, so the suite is rerun on the committed candidate below | rerun on the commit |
-| 5 | curl's own timeout surfaces as the `timeout` outcome | stub server sleeping 3 s, `--timeout 1` | curl exit 28 with `000` was reported as `HTTP 0`, exit 1 | map curl exit 28 to `timeout` (exit 4); any other nonzero curl exit is `failed` with curl's stderr |
+| 8 | Independent review of `b6e457b` | fresh Claude Opus 5 reviewer in `.worktrees/jev-judgment-harness-review`, report [JEV-JUDGMENT-HARNESS-review](JEV-JUDGMENT-HARNESS-review.md) (commit `8d11fe2`, cherry-picked here) | verdict return: two required corrections (duplicate `--record` stems silently overwrote one artifact and duplicated check names; `--name` accepted path syntax and wrote outside `--out`), four should-fix (artifact write outside the guarded block so the key-leak guard crashed without a report; a non-object answer crashed after the artifact was written; an unescaped pipe broke the `judge ask` table row; `--attempts 0` and negative or fractional `--timeout` unvalidated or truncated), six advisories; every claimed outcome reproduced | apply all required and should-fix items and the cheap advisories (D-0007 wording, report key redaction, malformed keys refused, records under `local/` refused, record ordering, README status) |
+| 9 | The corrections hold | seven new tests (duplicate stems and `local/` refused, `--name` and argument validation with a fractional timeout, key in state fails with a report and no artifact, non-object answers fail with a report, malformed key refused before any request, redaction) plus the full suite | 30 judgment tests and 415 tooling tests passed; suite `status=passed` (`artifacts/jev-judgment-harness/test-fixes.json`) | re-review |
 
 Artifacts: `artifacts/jev-judgment-harness/` in the worktree (ping, lint,
 doctor, bootstrap, build and test reports and logs).
@@ -148,8 +150,8 @@ doctor, bootstrap, build and test reports and logs).
   `.env` is ignored and was never staged (checked before the commit).
 - Unavailable/skipped checks: hosted CI on the branch tip runs after the push
   (recorded under Review and integration); no check was skipped locally.
-- Exact next experiment/command: independent review of `ec64a17` plus this
-  checkpoint; then integration.
+- Exact next experiment/command: re-review of the corrections commit (the
+  one after the cherry-picked review); then integration.
 - Remaining dependencies: none.
 - Runtime needs: network to `api.typesafe.ai` and the key for the two
   real-endpoint criteria; `curl`; the isolated toolchain and a `lab-debug`
@@ -168,7 +170,9 @@ doctor, bootstrap, build and test reports and logs).
 
 ## Review and integration
 
-- Reviewer and independent reproduction/withheld-case results: pending
+- Reviewer and independent reproduction/withheld-case results: round 1 at
+  `b6e457b` returned (report `8d11fe2`), every claimed outcome reproduced; the
+  withheld cases are in the report; re-review pending
 - Required changes or acceptance rationale: pending
 - Exact merge candidate and required-check results: pending
 - Integrated commit and evidence location: pending
