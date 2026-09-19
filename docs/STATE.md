@@ -168,8 +168,11 @@ suspended-update clock), and every window member composes after both riders
 frames where a rider sits under the digits or GO. Native's published
 member equals the original's pointer on every frame of seven ZOOM ZOO
 originals and the four DRAGSTER pause originals; every pixel the change
-touches on the frames with original pictures matches the original. Status
-and review: see the [registry](../tasks/README.md) and the task record.
+touches on the frames with original pictures matches the original. Reviewed
+(one returned review, whose blocking finding corrected the compose rule, then
+approval at `3e2d30d`, report `255a2c0`) and integrated by fast-forward;
+acceptance conditional on the final-tip CI in the ignored closeout
+`artifacts/zoom-zoo-window-integration/closeout.json` in the main checkout.
 
 ## Accepted product and evidence
 

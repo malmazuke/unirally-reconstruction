@@ -1,14 +1,15 @@
 # Next session
 
-**Status on 19 September 2026 UTC: ZOOM-ZOO-WINDOW-EFFECTS is implemented on
-`task/zoom-zoo-window-effects` (`11d50f6`, `49bd26c`) with local gates passed
-and is with its independent reviewer; see its record and the registry for the
-outcome.** Every earlier task is reviewed, integrated on `main` and accepted
-conditional only on its recorded final-tip CI, which was green at
-integration. The "not done" items listed under the closed follow-ups below
-are declared omissions kept as future work (authored HUD and result styles,
-the pack's alias entries, the register setup behind the window compose rule),
-not unfinished parts of any task.
+**Status on 19 September 2026 UTC (after ZOOM-ZOO-WINDOW-EFFECTS): nothing is
+in progress, nothing is blocked and no task is registered but unstarted.**
+Every started task is reviewed, integrated on `main` and accepted conditional
+only on its recorded final-tip CI; ZOOM-ZOO-WINDOW-EFFECTS' closeout is
+`artifacts/zoom-zoo-window-integration/closeout.json` in the main checkout.
+The "not done" items listed under the closed follow-ups below are declared
+omissions kept as future work (authored HUD and result styles, the pack's
+alias entries, the register setup behind the window compose rule, the
+decorative objects), not unfinished parts of any task. A new session starts
+from a new user request; it does not need to resume anything.
 
 **Where local evidence lives now.** The cleanup moved every worktree's
 `artifacts/` to `local/evidence/<worktree>/` in the main checkout and every
@@ -121,8 +122,10 @@ wall clock. No reset, purchase or provider change is authorized.
    riders (the countdown members were drawn under them). To see it:
    the ZOOM ZOO countdown now shows the original's start sign, digits and GO
    letters instead of the authored READY/GO text, and the winner banner runs
-   from the first finish. Status, review and integration: the task record
-   and the registry.
+   from the first finish. Reviewed (returned once: my first compose rule kept
+   the player's object under the countdown windows, which the originals
+   contradict; every member covers both riders) and integrated; acceptance
+   conditional on the final-tip CI in its closeout.
 
 ## Launch recipe
 

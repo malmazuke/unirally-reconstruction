@@ -49,7 +49,7 @@ The coordinator maintains the status registry below. Work orders further below d
 | REPO-LOCAL-STATE-CLEANUP | reviewed and integrated; accepted conditional on final-tip CI and remote verification | [Branches, worktrees and ignored artifacts](REPO-LOCAL-STATE-CLEANUP.md) |
 | DRAGSTER-WINDOW-EFFECTS | accepted (implementation `788a877`, review `9b54c2a`, advisories `598564f`); integrated on `main` at `67b0f28` with green final-tip CI | [DRAGSTER window timing and shape](DRAGSTER-WINDOW-EFFECTS.md) |
 | DRAGSTER-CLOCK-LIMIT | reviewed and integrated (implementation `c00dd5d`, review `7f391e1`); accepted conditional on final-tip CI | [DRAGSTER 10:00 clock limit](DRAGSTER-CLOCK-LIMIT.md) |
-| ZOOM-ZOO-WINDOW-EFFECTS | review (implementation `11d50f6`, `49bd26c`, `83af471`; first review returned at `d69af67`, findings applied; re-review pending) | [ZOOM ZOO's windows from the original's selection](ZOOM-ZOO-WINDOW-EFFECTS.md) |
+| ZOOM-ZOO-WINDOW-EFFECTS | reviewed and integrated (implementation `11d50f6`, `49bd26c`, `83af471`; review returned at `d69af67`, approved at `3e2d30d`, report `255a2c0`); accepted conditional on final-tip CI and remote verification | [ZOOM ZOO's windows from the original's selection](ZOOM-ZOO-WINDOW-EFFECTS.md) |
 | M4-17 – M6 | unclaimed; outside this assignment | Do not automatically dispatch |
 
 ## M0 — repeatable laboratory

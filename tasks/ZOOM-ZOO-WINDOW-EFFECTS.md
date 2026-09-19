@@ -2,7 +2,7 @@
 
 ## Assignment
 
-- Status: review (implementation `11d50f6`, `49bd26c` and, after the returned review, `83af471`; re-review pending; local gates rerun at the corrected candidate, see below). Started 18 September 2026 23:05 UTC from `main` at `6adcde8`, the cold-start experiment every prior handoff named.
+- Status: reviewed and integrated (implementation `11d50f6`, `49bd26c` and `83af471`; first review returned at `d69af67`, re-review approved at `3e2d30d`, report `255a2c0`; integrated by fast-forward of `task/zoom-zoo-window-effects` onto `main`); acceptance conditional on final-tip CI and remote verification, recorded in the ignored closeout `artifacts/zoom-zoo-window-integration/closeout.json` in the main checkout; if absent, `git log --first-parent main -- tasks/ZOOM-ZOO-WINDOW-EFFECTS.md` and `gh run list --workflow synthetic.yml --commit <commit>`. Started 18 September 2026 23:05 UTC from `main` at `6adcde8`, the cold-start experiment every prior handoff named.
 - Milestone: follow-up to CLASSIC-PRESENTATION-UNIFICATION, DRAGSTER-WINDOW-EFFECTS and DRAGSTER-WINDOW-PAUSE; closes R-0040's "ZOOM ZOO's own window content" bullet
 - Coordinator: main session
 - Task provider: Anthropic (unchanged)
@@ -183,12 +183,14 @@ frames: 0`.
 
 ## Gates on the candidate
 
-Run at `49bd26c` from this worktree with the ignored evidence under
-`local/evidence/` (logs `artifacts/zoom-zoo-window-effects/gates/`; the same
-set at `11d50f6` under `gates-11d50f6/`, where the synthetic suite's
+Run at `3e2d30d` (the approved code; the two later commits are the re-review
+report and this record) from this worktree with the ignored evidence under
+`local/evidence/`, 00:37-00:58 UTC (logs `artifacts/zoom-zoo-window-effects/gates/`;
+the same set at `11d50f6` and `49bd26c` under `gates-11d50f6/` and
+`gates-49bd26c/`, all passing except that at `11d50f6` the synthetic suite's
 `test_failure_and_timeout_are_distinguished` failed once with a second
 1-second probe timing out while the differential compares ran concurrently,
-and passed on rerun with 411 checks; at `49bd26c` the suites ran serially):
+and passed on rerun with 411 checks; the later runs were serial):
 
 | Gate | Result |
 | --- | --- |
@@ -223,7 +225,16 @@ frozen compares and two presets' ctest) and found:
 | A2. The keep mask's stack array and raw pointer parameter | advisory | Moot with B1. |
 | A3. The declared omissions are acceptable, but the compose rule was inferred from a score, which is what let B1 through | advisory | Accepted: the register read is the named next experiment, and the rule as now recorded is the measured one. |
 
-Re-review: pending at the corrected candidate.
+Re-review at `3e2d30d` (the corrected code with the records and the first
+report cherry-picked): **approve**, report appended at `255a2c0`, 7 minutes.
+From its own rebuild it found zero kept pixels in every window region and
+the candidate equal to its cover-both counterfactual on all five frames,
+reproduced the picture scores and the DRAGSTER sweep (75 frames, 13,804
+pixels, none worse), confirmed S1, S2 and A1 as applied (and that the cached
+transition member cannot outlive its race: the live history is replaced on
+every restart), re-ran app-debug ctest and the M4-16 primary compare, and
+checked that the exemption claim survives only as retractions. One advisory,
+applied above: the handoff's "Failed approaches" now names the keep mask.
 
 ## Mistakes
 
@@ -241,9 +252,11 @@ Re-review: pending at the corrected candidate.
 - Verified findings: the three recovered items above, with the captures and
   addresses named; probe outputs and picture scores under the ignored
   artifacts directory.
-- Failed approaches: none; the first hypothesis (the DRAGSTER rule with the
-  family bound) was right except for the transition member and the held Start,
-  both read straight from the captures.
+- Failed approaches: the keep mask for the player's object under members 0-6
+  (`49bd26c`, reverted by `83af471`; see Mistakes). The first hypothesis for
+  the selection (the DRAGSTER rule with the family bound) was right except
+  for the transition member and the held Start, both read straight from the
+  captures.
 - Not done, by decision: ZOOM ZOO's other decorative objects (start ring,
   hints, on-screen stunt names, the WINNER caption and opponent finish time,
   off-screen arrows) are OBJ or BG content, not channel-6 windows (the
