@@ -100,25 +100,32 @@ mechanism, take it and say so; do not widen the task to the whole family by defa
 | --- | --- | --- | --- | --- |
 | 1 (07:05-07:20Z) | The captions are driven by the reward queue the engine already publishes | `queue_probe.py` over the DRAGSTER primary capture: every update where the player's read cursor `$0CE7` advances, with the entry it consumed from `$0CC1` | 80 consumptions between 1599 and 3900, events 14, 37, 44, 45, 46 and 47 only. None is in the 72-199 voice range that `$81:C0CE-C18A` diverts, so that range is not what produces these captions | Look at what the original draws on those updates |
 | 2 (07:20-07:30Z) | Each consumed event selects a caption | Recaptured the same case with frame images around the first consumptions (`pictures-a`) and read them | The caption is a red phrase in the middle of the screen. 1599 event 44 shows `MORE STUNTS`; 1633 event 45 shows `GIVE YOU`; 1647 event 46 shows `BIGGER BOOSTS`; 1681 event 14 shows `WIPEOUT`. So consecutive event ids carry the parts of a hint sentence and a separate id names a stunt, and the text is selected by the event id rather than by a separate announcement system | Find the string table the event id indexes, and what draws it |
+| 3 (07:30-07:40Z) | The phrase is held in WRAM where the drawing code can find it | `text_probe.py`: the WRAM bytes that change across all four caption starts | 64 scattered offsets, no run of four consecutive bytes. The text is not staged in WRAM at all, so it goes to VRAM from ROM | Find the ROM read instead |
+| 4 (07:40-07:50Z) | The phrase is in the ROM, and its letters constrain where | `string_search.py`: search the whole ROM for any byte run whose equal and unequal positions match a known phrase, at stride 1 and 2, encoding unknown | `BIGGER BOOSTS` has exactly two candidate sites in 2 MB, both plain lowercase ASCII (`bigger boosts`). The captions are stored as ASCII text, not as tile indices | Find the table's base and the code that reads it |
+| 5 (07:50-08:00Z) | The event id indexes fixed-size entries | `access capture` over frames 1590-1612 of the accepted DRAGSTER replay manifest, then the ROM read sites in bank `$17` | `$81:BFE9` reads exactly 16 bytes at `$17:CCB4`, once, on frame 1599 - the update that consumed event 44. So entries are 16 bytes and the base is `$17:CCB4 - 44*16` = **`$17:C9F4`** (file `$0BC9F4`). Decoding by index gives every caption: 1-22 the stunt names (`roll`, `double roll`, `treble roll`, `roll city`, the flip, twist and z flip families, `rollout`, `wipeout`, `last lap`, `head bounce`, `tabletop`, `wrong way`), 23-36 the cheat and mode messages, 37-39 `winner`/`draw`/`loser`, 40-71 the hint sentences, and beyond 71 the voice lines the consumer diverts. Entry 47 and other gaps are 16 spaces, which is how a one-line pause between sentence parts is spelled | Recover the display rule: layer, position, colour, duration, and how ASCII becomes tiles |
 
 ## Handoff
 
 - Current base/head commit and uncommitted state: registered at `260334d`; no work started.
-- Verified findings: attempts 1 and 2. The captions are the on-screen half of the reward queue the
-  engine already runs: a consumed event id selects a phrase, drawn in red in the middle of the
-  screen. The hint sentence and the stunt name share one display. The recovered
-  `ZoomZooPlayerAnnouncements` fields (`hints_active`, `hint_updates`, `hint_group`,
-  `empty_display`) are the state behind it; the text and its drawing are what is missing.
-- Current hypothesis: an event id indexes a string table in ROM, and the phrase is drawn for a
-  bounded number of updates from the consumption. Failed approaches: the 72-199 voice range is not
+- Verified findings: attempts 1 to 5. The captions are the on-screen half of the reward queue the
+  engine already runs: a consumed event id indexes a 16-byte ASCII entry in the table at
+  `$17:C9F4`, read by `$81:BFE9` on the consumption update, and the phrase is drawn in red in the
+  middle of the screen. The stunt names, the hint sentences and the winner/draw/loser captions are
+  all entries of that one table. The recovered `ZoomZooPlayerAnnouncements` fields
+  (`hints_active`, `hint_updates`, `hint_group`, `empty_display`) are the state behind which entry
+  is chosen; the text and its drawing are what is missing.
+- Current hypothesis: the phrase is drawn for a bounded number of updates from the consumption,
+  as a row of glyph tiles on a BG layer. Failed approaches: the 72-199 voice range is not
   involved in these captions; a statistical WRAM-diff hunt for "caption state" ranked bytes whose
   change counts merely happened to sit near consumptions ($15CE-$15D2 change constantly from 1329,
   before any race event), so read the original's code and pictures instead of ranking byte churn.
-- Exact next experiment/command: find the string table the event id indexes. Read
-  `$81:C0CE-C18A` (the player consumer) and follow where it stores the event for display, then find
-  the glyphs. `artifacts/classic-stunt-names/pictures-a` has the frames, captured with
-  `dragster_playable_reference --case tests/manifests/native/dragster-ordinary-primary.case.json
-  --horizon 3900 --frame-image <n>`.
+- Exact next experiment/command: recover the display rule. `$81:BFE9` is the table read; follow
+  what the routine around it does with the 16 bytes (which layer and tilemap address, the glyph
+  mapping from ASCII, the colour and the number of updates the caption lasts). The access record
+  `artifacts/classic-stunt-names/access-1590` already covers frames 1590-1612 of the accepted
+  DRAGSTER replay manifest, with a caption on screen at 1606; regenerate or widen it with
+  `python3 tools/project.py access capture --manifest tests/manifests/replay/race-crawler-dragster-3000.json
+  --from-frame <a> --to-frame <b> --frame-image <n> --out <dir>`.
 - Remaining dependencies: none; every prerequisite is integrated on `main`.
 - Runtime needs: the private ROM, the audited core, the v8 pack, disk for captures, and roughly an
   hour of machine time for a full gate matrix.
