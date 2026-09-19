@@ -398,6 +398,10 @@ class CliTests(unittest.TestCase):
         proc, rep = self.run_cli("evidence-lint", "--record", str(self.root / "local" / "R-0001.md"))
         self.assertEqual(proc.returncode, EXIT_INVALID_INPUT)
         self.assertIn("judge only tracked records", self.checks(rep)["records"]["detail"])
+        (self.root / "evidence-lint.md").write_text("# reserved\n")
+        proc, rep = self.run_cli("evidence-lint", "--record", str(self.root / "evidence-lint.md"))
+        self.assertEqual(proc.returncode, EXIT_INVALID_INPUT)
+        self.assertIn("reserved", self.checks(rep)["records"]["detail"])
         self.assertEqual(StubHandler.requests, [])
         self.assertFalse(self.out.exists())
 
@@ -441,6 +445,18 @@ class CliTests(unittest.TestCase):
         self.assertIn("not objects", self.checks(rep)["judgment:ping"]["detail"])
         self.assertNotIn("Traceback", proc.stderr)
         self.assertFalse((self.out / "ping.json").exists())
+
+    def test_report_is_redacted_end_to_end(self):
+        # A server error whose body echoes the key lands in the check detail;
+        # the written report must not carry it.
+        StubHandler.script = [(500, json.dumps({"error": f"bad header Bearer {FAKE_KEY}"}))]
+        proc, rep = self.run_cli("ping")
+        self.assertEqual(proc.returncode, EXIT_FAILURE)
+        text = (self.root / "report.json").read_text()
+        self.assertNotIn(FAKE_KEY, text)
+        self.assertIn("<redacted-api-key>", self.checks(rep)["judgment:ping"]["detail"])
+        self.assertIn("redacted", rep)
+        self.assertNotIn(FAKE_KEY, proc.stderr)
 
     def test_malformed_key_is_refused_before_any_request(self):
         proc, rep = self.run_cli("ping", key='ts "quoted" 0123456789')

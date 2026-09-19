@@ -28,6 +28,7 @@ from . import report as reportmod
 
 ROOT = reportmod.repo_root()
 ARTIFACT_NAME = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$")
+LINT_SUMMARY = "evidence-lint"  # reserved: the per-run summary file in --out
 
 PING_STATE = {
     "record_status": "independently verified",
@@ -225,7 +226,7 @@ def cmd_evidence_lint(args: argparse.Namespace) -> int:
     root = Path(args.root).resolve()
     if not _check_arguments(rep, args):
         return _finish(rep, args, EXIT_INVALID_INPUT)
-    private = root / "local"
+    private = (root / "local").resolve()
     records: list[tuple[Path, str]] = []
     names: dict[str, Path] = {}
     for value in args.record:
@@ -244,8 +245,8 @@ def cmd_evidence_lint(args: argparse.Namespace) -> int:
             rep.add_check("records", "failed", detail=f"{path} is empty")
             return _finish(rep, args, EXIT_INVALID_INPUT)
         name = path.stem
-        if not _valid_name(name):
-            rep.add_check("records", "failed", detail=f"{path}: the file name cannot name an artifact")
+        if not _valid_name(name) or name == LINT_SUMMARY:
+            rep.add_check("records", "failed", detail=f"{path}: the file name cannot name an artifact ({LINT_SUMMARY!r} is reserved)")
             return _finish(rep, args, EXIT_INVALID_INPUT)
         if name in names:
             rep.add_check("records", "failed",
@@ -275,7 +276,7 @@ def cmd_evidence_lint(args: argparse.Namespace) -> int:
                           required=False, detail=f"{value}; {flag['rule']}")
         summary[str(path)] = {"model": result.model, "flags": flags, "artifact": f"{name}.json"}
     if summary:
-        summary_path = out / "evidence-lint.json"
+        summary_path = out / f"{LINT_SUMMARY}.json"
         summary_path.write_text(json.dumps(summary, indent=2, sort_keys=True) + "\n", encoding="utf-8")
         rep.add_artifact("evidence_lint_summary", summary_path)
         print(json.dumps(summary, indent=2, sort_keys=True))

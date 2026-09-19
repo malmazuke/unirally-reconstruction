@@ -2,7 +2,7 @@
 
 ## Assignment
 
-- Status: review. Registered 19 September 2026 22:15 UTC from `main` at
+- Status: review confirmed, awaiting integration. Registered 19 September 2026 22:15 UTC from `main` at
   `fd34209`, chosen by the user as the next task while CLASSIC-STUNT-NAMES
   runs in another session; started in the same session that registered it.
 - Milestone: harness, independent of M4. Introduces
@@ -115,6 +115,8 @@ synthetic CI or how acceptance is decided.
 | 7 | The tooling suite passes with the new tests | `bootstrap`, `build --preset lab-debug`, `test --suite synthetic --preset lab-debug` in the worktree | all exit 0; 408 tooling tests (23 new) and 434 checks passed, none failed, skipped, missing or timed out; the report notes the source changed during the run because this record was being written, so the suite is rerun on the committed candidate below | rerun on the commit |
 | 8 | Independent review of `b6e457b` | fresh Claude Opus 5 reviewer in `.worktrees/jev-judgment-harness-review`, report [JEV-JUDGMENT-HARNESS-review](JEV-JUDGMENT-HARNESS-review.md) (commit `8d11fe2`, cherry-picked here) | verdict return: two required corrections (duplicate `--record` stems silently overwrote one artifact and duplicated check names; `--name` accepted path syntax and wrote outside `--out`), four should-fix (artifact write outside the guarded block so the key-leak guard crashed without a report; a non-object answer crashed after the artifact was written; an unescaped pipe broke the `judge ask` table row; `--attempts 0` and negative or fractional `--timeout` unvalidated or truncated), six advisories; every claimed outcome reproduced | apply all required and should-fix items and the cheap advisories (D-0007 wording, report key redaction, malformed keys refused, records under `local/` refused, record ordering, README status) |
 | 9 | The corrections hold | seven new tests (duplicate stems and `local/` refused, `--name` and argument validation with a fractional timeout, key in state fails with a report and no artifact, non-object answers fail with a report, malformed key refused before any request, redaction) plus the full suite | 30 judgment tests and 415 tooling tests passed; suite `status=passed` (`artifacts/jev-judgment-harness/test-fixes.json`) | re-review |
+| 10 | Re-review of `f391a3f` | the same reviewer, moved to the exact candidate; section "Re-review at f391a3f" of the report (commit `a6eaf19`, cherry-picked here) | verdict confirm: every required, should-fix and advisory item resolved except the accepted advisory 4; suite at the candidate 441 checks passed; one residual should-fix (a record named `evidence-lint` collided with the summary file) and two advisories (the `local/` refusal compared an unresolved path; redaction was only unit-tested) | apply the three residual items |
+| 11 | The residual items hold | `evidence-lint` reserved as a record name, `local/` resolved before the comparison, an end-to-end test that plants the key in a 500 body and checks the written report; suite rerun | 31 judgment tests and 416 tooling tests passed; suite `status=passed` (`artifacts/jev-judgment-harness/test-residual.json`); hosted CI on `f391a3f` green on both runners (run 35473295813's successor, see the closeout) | integrate after CLASSIC-STUNT-NAMES lands on `main` |
 
 Artifacts: `artifacts/jev-judgment-harness/` in the worktree (ping, lint,
 doctor, bootstrap, build and test reports and logs).
@@ -150,8 +152,9 @@ doctor, bootstrap, build and test reports and logs).
   `.env` is ignored and was never staged (checked before the commit).
 - Unavailable/skipped checks: hosted CI on the branch tip runs after the push
   (recorded under Review and integration); no check was skipped locally.
-- Exact next experiment/command: re-review of the corrections commit (the
-  one after the cherry-picked review); then integration.
+- Exact next experiment/command: integration onto `main` once
+  CLASSIC-STUNT-NAMES has landed there, with the coordinator records
+  reconciled in that commit; CI on the final tip.
 - Remaining dependencies: none.
 - Runtime needs: network to `api.typesafe.ai` and the key for the two
   real-endpoint criteria; `curl`; the isolated toolchain and a `lab-debug`
@@ -160,7 +163,9 @@ doctor, bootstrap, build and test reports and logs).
 - Aggregate parent/child time, provider usage before/after: one session,
   22:15 to 22:25 UTC to this checkpoint (about ten minutes of wall clock,
   excluding the earlier conversation that chose the task); provider usage
-  five-hour 13% to 20%, weekly all models 55% to 56%, weekly Fable 37% to 39%;
+  five-hour 13% to 20% at the first checkpoint (22:25 UTC) and to the figure
+  in the closeout at integration; weekly all models 55% to 56%, weekly Fable
+  37% to 39% at that checkpoint;
   TypeSafe usage for the task 246,437 input tokens across 50 requests (ping,
   three-record lint, 46-record sweep), all recorded in the artifacts. No other
   account work is excluded from those figures; the other session's stunt-names
@@ -170,10 +175,15 @@ doctor, bootstrap, build and test reports and logs).
 
 ## Review and integration
 
-- Reviewer and independent reproduction/withheld-case results: round 1 at
-  `b6e457b` returned (report `8d11fe2`), every claimed outcome reproduced; the
-  withheld cases are in the report; re-review pending
-- Required changes or acceptance rationale: pending
+- Reviewer and independent reproduction/withheld-case results: a fresh
+  Claude Opus 5 subagent in `.worktrees/jev-judgment-harness-review`; round 1
+  at `b6e457b` returned (report `8d11fe2`, every claimed outcome reproduced,
+  10 minutes); re-review at `f391a3f` confirm (report `a6eaf19`, 6 minutes);
+  the withheld cases are in the report
+- Required changes or acceptance rationale: the two required and four
+  should-fix items applied at `f391a3f`; the re-review's residual should-fix
+  and two advisories applied in the commit after the cherry-picked re-review;
+  advisory 4 accepted as is
 - Exact merge candidate and required-check results: pending
 - Integrated commit and evidence location: pending
 - Remote synchronization: pending
