@@ -52,6 +52,7 @@ The coordinator maintains the status registry below. Work orders further below d
 | ZOOM-ZOO-WINDOW-EFFECTS | reviewed and integrated (implementation `11d50f6`, `49bd26c`, `83af471`; review returned at `d69af67`, approved at `3e2d30d`, report `255a2c0`); accepted conditional on final-tip CI and remote verification | [ZOOM ZOO's windows from the original's selection](ZOOM-ZOO-WINDOW-EFFECTS.md) |
 | ZOOM-ZOO-OPPOSING-INPUT | reviewed and integrated (implementation `7b4ab4a`, corrections `024bf56`; review `48b2089` approve, re-review `2bde823` confirm); accepted conditional on final-tip CI and remote verification | [Opposing directions on ZOOM ZOO](ZOOM-ZOO-OPPOSING-INPUT.md) |
 | CLASSIC-STUNT-NAMES | ready on `main` at `260334d`, chosen by the user as the next task | [The original's on-screen stunt names](CLASSIC-STUNT-NAMES.md) |
+| JEV-JUDGMENT-HARNESS | in progress on `task/jev-judgment-harness` from `main` at `fd34209`, chosen by the user as the next task after CLASSIC-STUNT-NAMES | [Advisory Jev judgments as recorded harness checks](JEV-JUDGMENT-HARNESS.md) |
 | M4-17 – M6 | unclaimed; outside this assignment | Do not automatically dispatch |
 
 ## M0 — repeatable laboratory
