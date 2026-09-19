@@ -181,6 +181,14 @@ over the window (`11d50f6`) and 163, 341 and 693 with the player kept
 Hidden 4,000-update app runs of both tracks exit 0 with `rider-pose fallback
 frames: 0`.
 
+**Live playtest by the user, 19 September 2026 01:40 UTC, on the integrated
+`main` at `4b76ee1`** (`frontend run --track zoom-zoo --preset app-debug`,
+report `artifacts/play-zoom-zoo.json` in the main checkout): a full ZOOM ZOO
+race with the keyboard through the stable result and one Race Again, 5,498
+updates, 5,496 presentation frames, 0 rider-pose fallback frames, no focus
+loss, ending in the next race's countdown at frame 1475. The user confirmed
+the countdown sign, digits, GO letters and winner banner looked right.
+
 ## Gates on the candidate
 
 Run at `3e2d30d` (the approved code; the two later commits are the re-review
