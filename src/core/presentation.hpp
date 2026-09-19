@@ -271,6 +271,11 @@ ClassicRacePresentationContent classic_race_presentation_content(const ClassicCo
 // that update (the BG scroll is derived from this state's prior camera);
 // without one they are drawn from state itself, one update ahead.
 // Throws std::invalid_argument for a rider pose outside the packed tables.
+// R-0042: the top tile of a caption glyph, or nothing for a space. Every byte
+// of the caption table is a space, `!`, `"`, `-` or a lowercase letter; any
+// other byte is outside the recovered domain and throws.
+std::optional<unsigned> classic_caption_tile(char glyph);
+
 RgbFrame render_classic_race(const ZoomZooState& state,const ClassicRacePresentationContent& content,
                              const ZoomZooState* previous_update=nullptr,
                              const ClassicRaceHistory* history=nullptr);

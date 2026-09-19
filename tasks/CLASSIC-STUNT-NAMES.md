@@ -2,7 +2,7 @@
 
 ## Assignment
 
-- Status: review. Candidate `9e2570e`; the full matrix passed on it. Started on `task/classic-stunt-names` from `fd34209`. Registered and started
+- Status: review returned at `745c4b8` (two blocking, four should-fix, five advisory), all findings applied; re-review requested. Started on `task/classic-stunt-names` from `fd34209`. Registered and started
   19 September 2026 07:00 UTC, chosen by the user as the next task after ZOOM-ZOO-OPPOSING-INPUT.
 - Milestone: follow-up to M4-16 and CLASSIC-PRESENTATION-UNIFICATION; takes the first item out of
   the "decorative objects and captions" declared omission in [docs/STATE.md](../docs/STATE.md)
@@ -110,12 +110,13 @@ mechanism, take it and say so; do not widen the task to the whole family by defa
 | 10 (08:50-09:05Z) | The text belongs in the pack additively | New entry `presentation.classic.captions.v1`, entries 1 to 255 of the table; profile `classic.pal.crawler.two-tracks.v9`; native manifest, rules hash and supported profiles updated; pack re-extracted from the ROM | 57 logical entries, exact ROM identity, the app validates the v9 pack and reports it as supported; 23/23 ctest | Draw it |
 | 11 (09:05-09:20Z) | The renderer can derive the caption from the state alone | `draw_classic_caption` in the shared renderer: the event under the player's read cursor indexes the table, each glyph draws as two 8x8 tiles `$10` apart at x 64, y 79, in the race CGRAM's colour 22 | The first attempt drew nothing: `movement.rewards` is the *opponent's* queue ($0D11/$0D13), and the captions follow the player's, which is `player_announcements.queue`. With that corrected the caption appears | Compare against the original |
 | 13 (10:15-10:20Z) | ZOOM ZOO drives the same captions | `queue_probe.py` over the M4-16 primary original | 93 consumptions, events 14, 15, 37 and 44-59: the same consumer and the same table as DRAGSTER, reaching `last lap` and the longer hint sentences DRAGSTER's race never does | Compare its pictures too |
-| 14 (11:00-11:10Z) | The caption persists until the next message | Native against the six kept frames of the M4-16 original | Three disagreed: at 3208, 4840 and 6484 the read cursor still points at the last consumed event and the original shows nothing. `$81:BEA8-BEF1` blanks the display one cooldown after the queue empties, and the engine already carries that as `empty_display`, recovered in M4-16 and unused until now. Honouring it, every caption frame of both tracks matches except where the start ring occludes the caption. DRAGSTER's four frames could not have found this | Rerun the matrix on the corrected candidate |
 | 12 (09:20-09:30Z) | Native matches the original where it draws | Rendered the native timeline of the same DRAGSTER case at the four caption frames and compared the caption band (x 64-191, y 78-95) with the original's own frames | Frames 1637 `GIVE YOU`, 1652 `BIGGER BOOSTS` and 1685 `WIPEOUT`: **2304 of 2304 pixels identical**, with exactly the same ink pixels. Frame 1601 `MORE STUNTS`: 2188 of 2304, and every one of the 116 differing pixels is the original's pale pink - the start ring, a declared omission, which composes *above* the caption and occludes it | Gates, then review |
+| 14 (11:00-11:10Z) | The caption persists until the next message | Native against the six kept frames of the M4-16 original | Three disagreed: at 3208, 4840 and 6484 the read cursor still points at the last consumed event and the original shows nothing. `$81:BEA8-BEF1` blanks the display one cooldown after the queue empties, and the engine already carries that as `empty_display`, recovered in M4-16 and unused until now. Honouring it, every caption frame of both tracks matches except where the start ring occludes the caption. DRAGSTER's four frames could not have found this | Rerun the matrix on the corrected candidate |
 
 ## Handoff
 
-- Current base/head commit and uncommitted state: registered at `260334d`; no work started.
+- Current base/head commit and uncommitted state: base `main` at `fd34209`; the returned review's
+  findings are applied on top of `745c4b8`. No uncommitted tracked changes at the candidate.
 - Verified findings: attempts 1 to 5. The captions are the on-screen half of the reward queue the
   engine already runs: a consumed event id indexes a 16-byte ASCII entry in the table at
   `$17:C9F4`, read by `$81:BFE9` on the consumption update, and the phrase is drawn in red in the
