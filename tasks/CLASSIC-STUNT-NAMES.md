@@ -2,7 +2,7 @@
 
 ## Assignment
 
-- Status: re-review returned at `f2a4b1f` (one new blocking on the rider composition, one on the records, six others); all applied on top; a third review round is due. Started on `task/classic-stunt-names` from `fd34209`. Registered and started
+- Status: matrix green at `6e0fad6` (274-frame sweep worst mismatch 0); a third review round is running. Re-review returned at `f2a4b1f` (one new blocking on the rider composition, one on the records, six others); all applied on top; a third review round is due. Started on `task/classic-stunt-names` from `fd34209`. Registered and started
   19 September 2026 07:00 UTC, chosen by the user as the next task after ZOOM-ZOO-OPPOSING-INPUT.
 - Milestone: follow-up to M4-16 and CLASSIC-PRESENTATION-UNIFICATION; takes the first item out of
   the "decorative objects and captions" declared omission in [docs/STATE.md](../docs/STATE.md)

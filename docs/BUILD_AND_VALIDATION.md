@@ -557,6 +557,32 @@ or `artifacts/` in the checkout that runs them: copy
 to `local/v1-fixtures/` first. An absolute path into another checkout is
 refused as an unauthorized fixture directory.
 
+## Citing the differential gates instead of re-running them
+
+Every differential compare drives `zoom_zoo_runner`, which links
+`unirally_movement` only and carries no presentation symbol, so a change that
+touches presentation alone cannot alter a row it emits. Rather than asserting
+that per change, prove it:
+
+```sh
+python3 -m tools.unirally_lab.native.gate_identity --since <commit whose gates passed> \
+    --reports artifacts/<task>/gates-<that commit> --ninja local/toolchain/ninja-1.13.2-darwin-arm64/ninja
+```
+
+It reads ninja's own record of which sources and headers built that binary - 13
+repository files at present - and compares each one's bytes between that commit
+and `HEAD`. Identical inputs mean the earlier reports still describe this tree
+and may be cited; any difference and the gates run. Do **not** compare the built
+binaries instead: a debug build embeds its absolute path, so the same sources in
+two checkouts hash differently.
+
+This licenses skipping the differential compares only. The picture scores, the
+preset suites, the synthetic suite, the v1 contracts, the hidden runs and the
+fuzz still run, since a presentation change is what those exist to catch.
+Toolchain and system headers are out of its scope; the preset pins the compiler
+and the reports pin the pack and contract hashes. Keep each run's reports under
+`gates-<commit>` so a later run has something to cite.
+
 ## Local evidence layout
 
 Since REPO-LOCAL-STATE-CLEANUP (18 September 2026) the ignored evidence has one
