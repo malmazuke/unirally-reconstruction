@@ -2,7 +2,7 @@
 
 ## Assignment
 
-- Status: review (implementation `11d50f6` and `49bd26c`, local gates passed; independent review pending). Started 18 September 2026 23:05 UTC from `main` at `6adcde8`, the cold-start experiment every prior handoff named.
+- Status: review (implementation `11d50f6`, `49bd26c` and, after the returned review, `83af471`; re-review pending; local gates rerun at the corrected candidate, see below). Started 18 September 2026 23:05 UTC from `main` at `6adcde8`, the cold-start experiment every prior handoff named.
 - Milestone: follow-up to CLASSIC-PRESENTATION-UNIFICATION, DRAGSTER-WINDOW-EFFECTS and DRAGSTER-WINDOW-PAUSE; closes R-0040's "ZOOM ZOO's own window content" bullet
 - Coordinator: main session
 - Task provider: Anthropic (unchanged)
@@ -68,21 +68,24 @@ ROM:
    defect DRAGSTER's originals did not reach (their Start presses were single
    frames); it affects the rider look overlays too.
 
-4. **The player's object shows through the countdown windows; the opponent's
-   does not.** Found by scoring the pictures: on frame 1583 of the primary and
-   of the countdown-pause capture, both riders stand at the line under the GO
-   letters, and the original shows the player (OBJ palette 3) over the window
-   band while the opponent (OBJ palette 4) is replaced by the window colour
-   inside it (346 of the 392 residual pixels on the primary's 1583 were the
-   window colour in the original where native drew the opponent). That is
-   the SNES colour-math rule exempting OBJ palettes 0-3. The banner members
-   7-24 cover both riders: the opponent-won banner over the still-riding
-   player on frames 6724, 6725 and 6800 of the countdown-pause original has
-   no residual pixel in either direction. R-0040's "0-6 compose before the
-   riders, 7-24 after them" was a proxy for this: DRAGSTER's release-3213
-   originals have 57 frames (1420-1570) where the opponent sits under the
-   countdown digits, and all 1,060 pixels that change there now match the
-   original. The register setup behind the two behaviours was not read.
+4. **Every window member covers both riders.** Found by scoring the pictures:
+   on frame 1583 of the primary both riders stand at the line under the GO
+   letters (member 4), and with the riders drawn over the window 346 of the
+   392 residual pixels were the window colour in the original where native
+   drew a rider. Inside a window the original shows nothing but the flat
+   window colour: on that frame all 8,691 pixels inside member 4's XOR region
+   are one colour in the original (the reviewer's measurement), and the same
+   holds for the transition sign over a rider (member 5 on 1450 of the
+   primary and on 1583 of the countdown-pause capture, whose pause pushed GO
+   back to 1596) and for the opponent-won banner over the still-riding player
+   (6724, 6725 and 6800 of the countdown-pause original). R-0040's "0-6
+   compose before the riders, 7-24 after them" came from DRAGSTER frames with
+   no rider under a countdown member; on DRAGSTER's release-3213 originals a
+   rider sits under the digits or the GO letters on 75 frames (1420-1602),
+   and all 13,804 pixels that change there now match the original. My first
+   reading of this (the player's object showing through members 0-6, the
+   SNES colour-math exemption of OBJ palettes 0-3) was wrong and is recorded
+   under Mistakes; the register setup behind the compose was not read.
 
 The ZOOM ZOO window timeline on the primary: members 5/0/5/1/5/2/5 on
 1382-1582 with the digit thresholds of R-0040, GO alternating 4 and 3 from
@@ -93,7 +96,7 @@ driver's first update 6485 is odd, so member 8 shows first) to loading at
 opponent's driver runs 6490-6849 and the player's 7420-7659 after its finish
 at 7418.
 
-## Implementation (`11d50f6`, compose rule `49bd26c`)
+## Implementation (`11d50f6`, compose order `49bd26c` corrected by `83af471`)
 
 - `classic_race_start_reflected(track, rider)` in the engine: the header rule
   `classic_race_start` already applied, exposed so presentation derives the
@@ -113,10 +116,10 @@ at 7418.
   capture (10,696 checks), the primary (10,696) and the race pause (10,714);
   the previous predicate fails 263 of the countdown-pause checks from update
   1572, so it was wrong for the look as well as for the window.
-- `render_classic_race` draws both objects first and applies members 0-6
-  with the player's pixels kept (`render_window_xor` takes an optional keep
-  mask); members 7-24 still cover both riders. The legacy v1 renderer's calls
-  are unchanged.
+- `render_classic_race` draws both objects first and then applies whichever
+  member the frame shows over everything (the corrected compose order, third
+  code commit); the legacy v1 renderer's calls are unchanged. The history
+  tracker reads the track's transition member once per race.
 - Tests: the transition member from a synthetic header (even and odd start y,
   the opponent's word not moving it, a third rider rejected); the digit and GO
   members unchanged under member 5; ZOOM ZOO's selection at the original's
@@ -155,23 +158,25 @@ in `--timeline` mode):
 
 | Original frame | Changed pixels | Of those matching the original, before / after | Rectangle mismatch before / after |
 | --- | --- | --- | --- |
-| primary 1450 (digit 1's transition, member 5) | 9,659 | 0 / 9,659 | 9,822 / 163 |
-| primary 1583 (first GO frame, member 4, both riders under it) | 8,725 | 0 / 8,725 | 9,066 / 341 |
-| primary 1649 (GO, member 4) | 8,721 | 0 / 8,721 | 9,414 / 693 |
+| primary 1450 (digit 1's transition, member 5, over a rider) | 9,755 | 0 / 9,755 | 9,822 / 67 |
+| primary 1583 (first GO frame, member 4, both riders under it) | 9,020 | 0 / 9,020 | 9,066 / 46 |
+| primary 1649 (GO, member 4) | 9,020 | 0 / 9,020 | 9,414 / 394 |
 | primary 6724 (banner member 19) | 5,268 | 0 / 5,268 | 6,095 / 827 |
-| pause-countdown 1583, 1649, 6724, 6725, 6800 (opponent-won banner) | 9,655 / 8,725 / 3,561 / 3,561 / 3,033 | 0 / all | 9,822 / 167; 9,096 / 371; 3,838 / 277; 3,838 / 277; 3,374 / 341 |
-| DRAGSTER release-3213, 183 frames with originals, 57 changed (1420-1570, opponent under the digits) | 1,060 | 0 / 1,060 | 716,160 / 715,100; no frame worse |
+| pause-countdown 1583 (member 5, GO pushed back to 1596 by the pause), 1649 (GO), 6724, 6725, 6800 (opponent-won banner over the riding player) | 9,755 / 9,020 / 3,561 / 3,561 / 3,033 | 0 / all | 9,822 / 67; 9,096 / 76; 3,838 / 277; 3,838 / 277; 3,374 / 341 |
+| DRAGSTER release-3213, 183 frames with originals, 75 changed (1420-1602, a rider under the digits or GO) | 13,804 | 0 / 13,804 | 716,160 / 702,356; no frame worse |
 
 Every pixel the change touches on those frames now matches the original
-(32,373 on the primary, 28,535 of 31,283 on the countdown-pause capture, the
+(33,063 on the primary, 28,930 of 31,678 on the countdown-pause capture, the
 remainder being its frame 1450, where the original's pause menu is compared
 with the authored overlay and the whole rectangle differs before and after,
 a declared omission). The residual mismatches are the rider overlays and
 authored HUD band declared by M4-16 and, on 6724, the original's WINNER
 caption object (a declared omission), unchanged by this task; frames without
 a window (1377, 1700, 2501, 3208, 4840, 6484, the result screens) are
-pixel-identical before and after. Before the compose rule (`11d50f6` alone)
-the primary's 1450 and 1583 scored 252 and 392.
+pixel-identical before and after. Before the compose order was corrected the
+primary's 1450, 1583 and 1649 scored 252, 392 and 693 with both riders drawn
+over the window (`11d50f6`) and 163, 341 and 693 with the player kept
+(`49bd26c`).
 
 Hidden 4,000-update app runs of both tracks exit 0 with `rider-pose fallback
 frames: 0`.
@@ -199,7 +204,36 @@ and passed on rerun with 411 checks; at `49bd26c` the suites ran serially):
 
 ## Independent review
 
-Pending.
+Fresh Claude Opus 5 subagent in the isolated checkout
+`.worktrees/zoom-zoo-window-review` (branch `review/zoom-zoo-window-effects`)
+at `d69af67`, 13 minutes, report `tasks/ZOOM-ZOO-WINDOW-EFFECTS-review.md`
+at `5a6a9af`. **Verdict: return.** It reproduced claims 1 and 2 to the frame
+from its own build (the `$1229` latch and `$83:CC08` as the sole writer by a
+byte search of the ROM, the header derivation on both tracks' real entries,
+pointer agreement 5,344/5,344, 6,219/6,219 and 2,267/2,267, the look words
+frozen across 1450-1462, every picture score and the DRAGSTER sweep, the
+frozen compares and two presets' ctest) and found:
+
+| Finding | Severity | Disposition |
+| --- | --- | --- |
+| B1. The keep mask preserves the player's object where the original shows the flat window colour: all 96/295/299/100/295 kept pixels on the five frames with a window over the player are fill in the original; covering both riders scores 67/46/394/67/76 against 163/341/693/167/371 | blocking | Fixed in the third code commit: every member composes after both objects; the keep mask, the player mask and the member-7 branch are gone. Re-scored: the table above, DRAGSTER 75 frames and 13,804 pixels all matching, none worse. Record, R-0040 and STATE corrected. |
+| S1. The record called the countdown-pause capture's 1583 a GO frame (it is member 5; GO starts at 1596 there) and its "346 of 392 ... where native drew the opponent" did not reconcile | should fix | Fixed in item 4 and the table: 346 of 392 were fill in the original where native drew a rider, with both riders drawn over the window. |
+| S2. Start-y word offsets in the new comments were given as words 3-4 / 5-6; they are bytes 5-6 / 9-10 | should fix | Fixed in `zoom_zoo_movement.hpp` and the test comment. |
+| A1. The transition member was recomputed on every update | advisory | Fixed: the tracker reads it once per race. |
+| A2. The keep mask's stack array and raw pointer parameter | advisory | Moot with B1. |
+| A3. The declared omissions are acceptable, but the compose rule was inferred from a score, which is what let B1 through | advisory | Accepted: the register read is the named next experiment, and the rule as now recorded is the measured one. |
+
+Re-review: pending at the corrected candidate.
+
+## Mistakes
+
+- I read a side-by-side crop of frame 1583 as showing the player's object
+  over the GO band and the opponent's hidden, and implemented and recorded a
+  colour-math palette exemption from it. The reviewer's pixel measurement
+  showed every kept pixel to be window fill in the original: the visible
+  rider was outside the XOR region, not exempt inside it. A crop is not a
+  measurement; the per-pixel classification I had already written would have
+  answered it.
 
 ## Handoff
 
@@ -214,12 +248,12 @@ Pending.
   hints, on-screen stunt names, the WINNER caption and opponent finish time,
   off-screen arrows) are OBJ or BG content, not channel-6 windows (the
   pointer is only ever a family member or the sentinel in these captures),
-  and remain declared omissions. The register setup that makes members 0-6
-  exempt the player's object and members 7-24 cover both was not read; the
-  rule is measured, not derived. No unit test renders the shared renderer's
-  window over an object because the tests have no rider content; the picture
-  scores above are the evidence for that rule.
+  and remain declared omissions. The register setup that makes every window
+  member cover both objects was not read; the rule is measured, not derived.
+  No unit test renders the shared renderer's window over an object because
+  the tests have no rider content; the picture scores above are the evidence
+  for that rule.
 - Exact next experiment if picked up cold: read CGWSEL/CGADSUB/WOBJSEL and
-  the TMW/TSW window masks the race setup and the banner drivers program
-  (access capture of `$83:E59C` and `$83:EA19` with the register mirrors),
-  to replace the measured compose rule with the mechanism.
+  the TMW/TSW window masks the race setup programs (access capture of
+  `$83:E59C` and `$83:EA19` with the register mirrors), to replace the
+  measured compose rule with the mechanism.

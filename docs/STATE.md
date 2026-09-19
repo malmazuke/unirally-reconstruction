@@ -163,9 +163,9 @@ on the same drivers; the one difference is the countdown transition member,
 (member 6 on DRAGSTER, 5 on ZOOM ZOO; derived from the track header). Two
 shared corrections came with it: Start held after a pause resume keeps the
 window off and the look still (the predicate now reads the engine's
-suspended-update clock), and the countdown members let the player's object
-show through while covering the opponent's (the SNES colour-math exemption of
-OBJ palettes 0-3), which also fixes 57 DRAGSTER frames. Native's published
+suspended-update clock), and every window member composes after both riders
+(the countdown members were drawn under them), which also fixes 75 DRAGSTER
+frames where a rider sits under the digits or GO. Native's published
 member equals the original's pointer on every frame of seven ZOOM ZOO
 originals and the four DRAGSTER pause originals; every pixel the change
 touches on the frames with original pictures matches the original. Status

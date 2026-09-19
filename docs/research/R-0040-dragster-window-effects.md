@@ -328,21 +328,25 @@ closes the "ZOOM ZOO's own window content" bullet above:
   updates either (the originals' `$0D49/$0D4B` and `$0D45/$0D47` equal the
   native tracker on every race update of that capture, 10,696 checks, and the
   selection-based predicate fails 263 of them).
-- **What a window covers.** With both riders at the line under the GO letters
-  (frame 1583), the original shows the player's object (OBJ palette 3) over
-  the window band and replaces the opponent's (palette 4) with the window
-  colour, the SNES colour-math rule that exempts OBJ palettes 0-3; the banner
-  members 7-24 cover both riders (the opponent-won banner over the riding
-  player, frames 6724-6800 of the countdown-pause original). "Indices 0-6
-  compose before the riders, 7-24 after them" above was a proxy for this
-  rule. The register setup that produces the two behaviours was not read.
+- **What a window covers: everything.** With both riders at the line under
+  the GO letters (frame 1583 of the M4-16 primary) the original shows one
+  flat colour on all 8,691 pixels inside member 4's XOR region; the same holds
+  for the transition sign over a rider (member 5 on 1450, and on 1583 of the
+  countdown-pause capture) and for the opponent-won banner over the riding
+  player (6724-6800 of that capture). Every member therefore composes after
+  both objects. "Indices 0-6 compose before the riders, 7-24 after them"
+  above came from DRAGSTER frames with no rider under a countdown member; on
+  DRAGSTER's release-3213 originals a rider sits under the digits or GO on 75
+  frames (1420-1602), all matched by the corrected order. The register setup
+  behind the compose was not read. (The task's first reading, a colour-math
+  exemption of the player's object, was measured wrong by its reviewer.)
 
 Agreement: native's published member equals the original's `$11FD` on every
 frame from 1382 to the loading frame on all seven captures (5,344 frames on
 the primary, 6,278 on the late start, 6,219 on each countdown pause) and the
 four DRAGSTER window-pause originals are unchanged. Of the pixels the change
-touches on the frames with original pictures, all match the original (32,373
-on the primary; 1,060 on 57 frames of DRAGSTER's release-3213 race, where the
-opponent sits under the countdown digits, with no frame worse). Frame 1450 of
-the primary falls from 9,822 mismatching pixels to 163 and the GO frame 1583
-from 9,066 to 341. Task record: `tasks/ZOOM-ZOO-WINDOW-EFFECTS.md`.
+touches on the frames with original pictures, all match the original (33,063
+on the primary; 13,804 on 75 frames of DRAGSTER's release-3213 race, with no
+frame worse). Frame 1450 of the primary falls from 9,822 mismatching pixels to
+67 and the GO frame 1583 from 9,066 to 46. Task record:
+`tasks/ZOOM-ZOO-WINDOW-EFFECTS.md`.

@@ -117,8 +117,8 @@ wall clock. No reset, purchase or provider change is authorized.
    difference, the countdown transition member (5 on ZOOM ZOO, 6 on DRAGSTER,
    from the player's start reflection latched at initialization). Found on
    the way and fixed for both tracks: Start held after a pause resume keeps
-   the window off and the look still, and the countdown windows let the
-   player's object show through while covering the opponent's. To see it:
+   the window off and the look still, and every window member covers both
+   riders (the countdown members were drawn under them). To see it:
    the ZOOM ZOO countdown now shows the original's start sign, digits and GO
    letters instead of the authored READY/GO text, and the winner banner runs
    from the first finish. Status, review and integration: the task record
