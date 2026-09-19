@@ -61,7 +61,9 @@ inventory rather than an acceptance freeze.
 Declared omissions: audio; the original's decorative objects and captions
 (start arrow and ring, hints, on-screen stunt names, opponent finish time,
 WINNER caption, off-screen arrows) except both tracks' countdown, GO and
-winner windows, recovered in R-0040 and ZOOM-ZOO-WINDOW-EFFECTS; original
+winner windows, recovered in R-0040 and ZOOM-ZOO-WINDOW-EFFECTS, and except the
+on-screen stunt names, which the user chose as the next task and
+[CLASSIC-STUNT-NAMES](../tasks/CLASSIC-STUNT-NAMES.md) now owns; original
 HUD and result pixel style;
 the two-update later result load after a time-out (audio handshake timing).
 Other tracks, riders, modes, menus and multiplayer remain outside the product.

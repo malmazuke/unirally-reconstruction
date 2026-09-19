@@ -1,9 +1,14 @@
 # Next session
 
-**Status on 19 September 2026 UTC (after ZOOM-ZOO-OPPOSING-INPUT): nothing is
-in progress, nothing is blocked and no task is registered but unstarted.** The
-last open follow-up below (opposing-direction input) is closed, so every
-numbered item is now either closed or a declared omission.
+**Status on 19 September 2026 UTC (after ZOOM-ZOO-OPPOSING-INPUT): the active
+task is [CLASSIC-STUNT-NAMES](CLASSIC-STUNT-NAMES.md), registered and ready on
+`main` at `260334d` and not yet started; nothing is blocked.** Every numbered
+follow-up below is closed, so the user chose the next task from the declared
+omissions in `docs/STATE.md`: the original's on-screen stunt names, which they
+first raised while playing M4-16. The rest of that omission (the start arrow and
+ring, the hints, the opponent finish time, the WINNER caption, the off-screen
+arrows, the finish banner and the result art) stays declared, and the stunt-name
+task takes a neighbour only if the recovery shows it is the same mechanism.
 Every started task is reviewed, integrated on `main` and accepted conditional
 only on its recorded final-tip CI; ZOOM-ZOO-OPPOSING-INPUT's closeout is
 `artifacts/zoom-zoo-opposing-integration/closeout.json` in the main checkout,
