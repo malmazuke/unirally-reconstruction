@@ -1,4 +1,6 @@
 #include "presentation.hpp"
+
+#include <bitset>
 #include "zoom_zoo_movement.hpp"
 #include "content_pack.hpp"
 #include "rider_object.hpp"
@@ -1535,7 +1537,7 @@ classic_caption_entry(const ZoomZooState& published,std::span<const std::uint8_t
 namespace {
 void draw_classic_caption(RgbFrame& frame,const ZoomZooState& published,
                           const ClassicRacePresentationContent& content,
-                          std::array<std::uint8_t,3> ink,std::array<bool,256*224>& inked) {
+                          std::array<std::uint8_t,3> ink,std::bitset<256*224>& inked) {
     const auto font=content.caption_font;
     if(font.size()!=2048)return;
     const auto selected=classic_caption_entry(published,content.captions);
@@ -1554,7 +1556,7 @@ void draw_classic_caption(RgbFrame& frame,const ZoomZooState& published,
                     if(((low>>(7U-bit))&1U)|((high>>(7U-bit))&1U)) {
                         const int x=64+int(column)*8+int(bit),y=79+int(half)*8+int(row);
                         pixel(frame,x,y,ink);
-                        inked[static_cast<std::size_t>(y)*256+static_cast<std::size_t>(x)]=true;
+                        inked.set(static_cast<std::size_t>(y)*256+static_cast<std::size_t>(x));
                     }
                 }
             }
@@ -1721,7 +1723,7 @@ RgbFrame render_classic_race(const ZoomZooState& state,const ClassicRacePresenta
     // not half of the ink's own 5-bit 28, are not recovered. Where no sprite
     // covers the ink the caption is the flat colour, which matches the
     // original on every other measured frame of both tracks.
-    std::array<bool,256*224> caption_ink{};
+    std::bitset<256*224> caption_ink;
     draw_classic_caption(frame,rider_source,content,colour(cgram,22),caption_ink);
     for(int rider=1;rider>=0;--rider) {
         const auto& source=rider_source.movement.riders[static_cast<std::size_t>(rider)];
@@ -1735,7 +1737,7 @@ RgbFrame render_classic_race(const ZoomZooState& state,const ClassicRacePresenta
             const auto at=static_cast<std::size_t>(y)*256+static_cast<std::size_t>(x);
             if(bg1_above_objects[at])return;
             const auto index=static_cast<std::uint8_t>(object_palette+value);
-            if(!caption_ink[at]) {pixel(frame,x,y,colour(cgram,index));return;}
+            if(!caption_ink.test(at)) {pixel(frame,x,y,colour(cgram,index));return;}
             const auto word=colour_word(cgram,index);
             const auto added=static_cast<std::uint16_t>(std::min<unsigned>(31U,(word&31U)+13U));
             pixel(frame,x,y,{channel8(added),channel8(static_cast<std::uint16_t>((word>>5U)&31U)),

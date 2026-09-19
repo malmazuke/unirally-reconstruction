@@ -40,7 +40,11 @@ tile index per character at `$0EA7-$0EB6`, `$81:C034` sets the queue cooldown to
 
 **ASCII to tile.** With `n = ascii - 'a'`, the top tile is `$0B + n` for `n < 5`,
 `$20 + n - 5` for `5 <= n < 21`, and `$40 + n - 21` for `n >= 21`; a space is
-`$80`. The three runs are 16 apart because each glyph is eight pixels wide and
+`$80`. The table holds three other characters, whose tiles are read from the
+font sheet: `!` is `$60`, `"` - which is how the table spells an apostrophe - is
+`$61`, and `-` is `$4D`. Entries 1 to 255 contain nothing else: 29 distinct
+bytes, with no `q` and no digit, although `q` has a tile at `$2B` and the
+arithmetic reaches it. The three runs are 16 apart because each glyph is eight pixels wide and
 sixteen tall: the font sheet holds every glyph's top half in one row of sixteen
 tiles and its bottom half in the next, so the bottom tile is always the top tile
 plus `$10`.
@@ -52,10 +56,13 @@ the 35 pixels where a sprite lies under a glyph's ink on frame 2100 of the M4-16
 primary, and on frames 2120, 2340 and 2600, the original shows the sprite's own
 colour with `red = min(31, sprite_red + 13)` and green and blue untouched. That
 is colour-math arithmetic, so the caption contributes red to the sprite rather
-than being hidden by it or painted over it. Which PPU configuration produces the
-add is **not recovered**, and the added 13 is not half of the ink's own 5-bit 28,
-so the colour entering the arithmetic is not quite the one the glyphs are drawn
-with. The rule is measured, not derived.
+than being hidden by it or painted over it. The third review round then identified the addend: 13 is exactly CGRAM 27
+(`$000d`) on both race palettes, which is the colour the caption's own recovered
+`$3800` attribute selects - palette 6, pixel 3. So the arithmetic adds the
+caption's attribute colour, and the two numbers that looked unrelated are the
+same layer seen two ways: the flat ink is CGRAM 22 and the contribution to a
+sprite is CGRAM 27. Which PPU configuration selects between them is still **not
+recovered**; the rule remains measured rather than derived.
 
 **Two tilemap rows.** On the following update `$81:F322` and `$81:F33C` each read
 all sixteen buffer bytes and write a row: `$81:F31D` points `$2116` at words
@@ -91,7 +98,8 @@ consumed event (14, then 15) and the original shows nothing.
 | the buffer and the encoding | the capture's own WRAM at `$0EA7` | `  more stunts   ` becomes `80 80 27 29 2C 0F 80 2D 2E 2F 28 2E 2D 80 80 80`, and the other three captions agree letter for letter |
 | the drawing | the access record's `$2116`/`$2118` writes | two rows 32 words apart, the second row's tiles exactly `$10` above the first |
 | the blanking | native against the M4-16 original's kept frames | at 3208, 4840 and 6484 the cursor points at the last event and the original is blank; honouring `empty_display` makes every frame agree |
-| the composition | a sweep of all 274 kept frames of the M4-16 primary, and the review's withheld DRAGSTER frames | every band exact once the caption is drawn below the window members and below the riders with the measured red add; worst mismatch 0 |
+| the composition | a sweep of all 274 kept frames of the M4-16 primary | every band exact once the caption is drawn below the window members and below the riders with the measured red add; worst mismatch 0 |
+| the add's domain | the third round's pixel census over 258 captioned frames | 16,843 caption-touched pixels: 16,784 flat ink over 66 distinct backgrounds, 59 `min(31, under_red + 13)` on rider sprites, none neither. The clamp is reached three times. **Every blend in evidence is on ZOOM ZOO**: the eight DRAGSTER trick frames carry 999 flat caption pixels and no blend, so the add is measured on one track only |
 | both tracks | `queue_probe.py` over the M4-16 primary original | ZOOM ZOO consumes 93 events - 14, 15, 37 and 44-59 - through the same consumer and table, reaching entries DRAGSTER's race never does |
 
 ## Domain and limits

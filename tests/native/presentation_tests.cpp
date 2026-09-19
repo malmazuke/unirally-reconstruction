@@ -1137,6 +1137,11 @@ int main() {
     published.player_announcements.empty_display = 0;
     queue.entries[3] = 0;
     require(!unirally::classic_caption_entry(published, table).has_value());
+    // A pack whose caption entry is the wrong size is refused rather than
+    // indexed (re-review E10: this mutation survived the first test).
+    queue.entries[3] = 14;
+    std::vector<std::uint8_t> short_table(4064, ' ');
+    require(!unirally::classic_caption_entry(published, short_table).has_value());
   }
 
 }

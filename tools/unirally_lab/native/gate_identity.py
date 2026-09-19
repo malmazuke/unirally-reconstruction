@@ -1,84 +1,135 @@
 """Decide whether the differential gates can be cited instead of re-run.
 
-Every differential compare drives one binary, `zoom_zoo_runner`. It links
-`unirally_movement` only and contains no presentation symbol, so a change that
-touches presentation alone cannot alter a single row it emits and the compares
-would replay exactly as they did.
+Every differential compare drives one binary, `zoom_zoo_runner`, which carries
+no presentation symbol, so a change that touches presentation alone cannot
+alter a row it emits and the compares would replay exactly as they did.
 
 This checks that rather than asserting it, and it checks the *inputs*: ninja
-records every source and header each object was compiled from, so the engine's
-own file set is known exactly. If each of those repository files is byte
-identical between the commit whose gate reports are being cited and this tree,
-the reports still describe this tree. Comparing the built binaries instead would
-be wrong across checkouts: a debug build embeds its absolute path, so the same
-sources in two worktrees produce two hashes.
+names every object linked into the binary and records every source and header
+each object was compiled from, so the engine's own file set is known exactly
+rather than guessed. If each of those repository files is byte identical
+between the commit whose gate reports are cited and this tree, those reports
+still describe this tree.
 
-Toolchain and system headers are deliberately out of scope here; the gate
-reports pin the pack and contract hashes, and the build preset pins the
-compiler.
+Two deliberate choices. It compares inputs, not the built binary: a debug build
+embeds its absolute path, so identical sources in two checkouts produce two
+hashes. And every query that fails, every report that does not match, and every
+uncommitted tracked change is a refusal, because a check that skips 35 minutes
+of replays has to fail closed - an earlier version of this tool derived the
+input set from three hardcoded objects, missed the contact, speed-limit and
+sampling engine, and reported "identical" across an edit to `track_sampling.cpp`
+that moved the gate's own rows hash (review E1).
+
+Out of scope, and not claimed: the toolchain, system headers, the CMake files
+and presets that decide how the binary is built. The build preset pins the
+compiler and each cited report pins its pack and contract hashes.
 """
 from __future__ import annotations
 import argparse, hashlib, json, subprocess, sys
 from pathlib import Path
 
-OBJECTS = ('src/core/CMakeFiles/unirally_movement.dir/movement.cpp.o',
-           'src/core/CMakeFiles/unirally_movement.dir/content_pack.cpp.o',
-           'src/core/CMakeFiles/zoom_zoo_runner.dir/zoom_zoo_runner.cpp.o')
+BINARY_TARGET = 'src/core/zoom_zoo_runner'
 
 
-def engine_files(build: Path, root: Path, ninja: str) -> list[str]:
-    """The repository files ninja recorded as inputs of the gate binary."""
+def sha(data: bytes) -> str:
+    return hashlib.sha256(data).hexdigest()
+
+
+def ninja(args: list[str], build: Path, tool: str) -> list[str]:
+    out = subprocess.run([tool, '-C', str(build), '-t', *args], capture_output=True, text=True)
+    if out.returncode:
+        raise RuntimeError(f'ninja -t {" ".join(args)} failed: {out.stderr.strip()[:200]}')
+    return out.stdout.splitlines()
+
+
+def engine_files(build: Path, root: Path, tool: str) -> list[str]:
+    objects = [line.strip() for line in ninja(['inputs', BINARY_TARGET], build, tool)
+               if line.strip().endswith('.o')]
+    if not objects:
+        raise RuntimeError(f'ninja named no objects for {BINARY_TARGET}')
     seen: set[str] = set()
-    for object_path in OBJECTS:
-        out = subprocess.run([ninja, '-C', str(build), '-t', 'deps', object_path],
-                             capture_output=True, text=True)
-        for line in out.stdout.splitlines():
+    for object_path in objects:
+        lines = ninja(['deps', object_path], build, tool)
+        if not any('#deps' in line and 'VALID' in line for line in lines):
+            raise RuntimeError(f'{object_path} has no valid recorded dependencies; rebuild the preset')
+        for line in lines:
             name = line.strip()
             if not name.startswith(str(root)):
                 continue
             relative = str(Path(name).relative_to(root))
-            if relative.startswith('build/'):
-                continue
-            seen.add(relative)
-    return sorted(seen)
-
-
-def at_commit(root: Path, commit: str, path: str) -> bytes | None:
-    out = subprocess.run(['git', 'show', f'{commit}:{path}'], cwd=root, capture_output=True)
-    return out.stdout if out.returncode == 0 else None
+            if not relative.startswith('build/'):
+                seen.add(relative)
+    return sorted(seen), objects
 
 
 def main() -> int:
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('--since', required=True, help='the commit whose gate reports would be cited')
-    p.add_argument('--reports', type=Path, help='that run\'s report directory, to name what is cited')
+    p.add_argument('--reports', type=Path, required=True, help='that run\'s report directory')
+    p.add_argument('--pack', type=Path, required=True)
     p.add_argument('--build', type=Path, default=Path('build/app-debug'))
     p.add_argument('--root', type=Path, default=Path('.'))
     p.add_argument('--ninja', default='ninja')
     a = p.parse_args()
     root = a.root.resolve()
 
-    files = engine_files(a.build, root, a.ninja)
-    if not files:
-        print('no recorded dependencies; build the preset first')
+    if subprocess.run(['git', 'diff', '--quiet', 'HEAD'], cwd=root).returncode:
+        print('refused: the working tree has uncommitted tracked changes, so it is not a commit')
         return 1
-    changed = [f for f in files if at_commit(root, a.since, f) != (root/f).read_bytes()]
-    head = subprocess.check_output(['git', 'rev-parse', '--short', 'HEAD'], cwd=root, text=True).strip()
-    print(f'{len(files)} repository files build zoom_zoo_runner; comparing {a.since} with {head}')
-    if changed:
-        print('the differential gates must run; these inputs differ:')
-        for f in changed:
-            print('  ' + f)
+    head = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=root, text=True).strip()
+    since = subprocess.check_output(['git', 'rev-parse', a.since], cwd=root, text=True).strip()
+
+    try:
+        files, objects = engine_files(a.build, root, a.ninja)
+    except RuntimeError as error:
+        print(f'refused: {error}')
         return 1
-    print('every input is byte identical, so the differential gates at that commit still hold')
-    if a.reports:
-        for report in sorted(a.reports.glob('*.json')):
-            text = report.read_text()
-            if 'restore_frames' not in text:
-                continue
-            d = json.loads(text)
-            print(f'  cite {report.stem:42s} {d["status"]}, {len(d["restore_frames"])} restores,'
-                  f' binary {d["binary_sha256"][:12]}')
+
+    changed, missing = [], []
+    for name in files:
+        recorded = subprocess.run(['git', 'show', f'{since}:{name}'], cwd=root, capture_output=True)
+        if recorded.returncode:
+            missing.append(name)
+        elif recorded.stdout != (root/name).read_bytes():
+            changed.append(name)
+    print(f'{len(objects)} objects, {len(files)} repository files build {BINARY_TARGET}')
+    print(f'comparing {since[:7]} with {head[:7]}')
+    if changed or missing:
+        print('refused: the differential gates must run')
+        for name in changed:
+            print(f'  changed since {since[:7]}: {name}')
+        for name in missing:
+            print(f'  absent at {since[:7]}, so new to this tree: {name}')
+        return 1
+
+    pack = sha(a.pack.read_bytes())
+    cited, problems = [], []
+    for report in sorted(a.reports.glob('*.json')):
+        text = report.read_text()
+        if 'restore_frames' not in text:
+            continue
+        d = json.loads(text)
+        name = report.stem
+        if d.get('status') != 'passed':
+            problems.append(f'{name}: status {d.get("status")}')
+        if d.get('source_commit') != since:
+            problems.append(f'{name}: ran at {d.get("source_commit", "?")[:7]}, not {since[:7]}')
+        if d.get('pack_sha256') != pack:
+            problems.append(f'{name}: ran against a different pack')
+        contracts = (root/'tests/manifests/native')
+        if not any(sha(c.read_bytes()) == d.get('contract_sha256') for c in contracts.glob('*.json')):
+            problems.append(f'{name}: its frozen contract is not in the tree unchanged')
+        cited.append((name, len(d.get('restore_frames', []))))
+    if not cited:
+        problems.append(f'no differential gate reports in {a.reports}')
+    if problems:
+        print('refused: the reports do not describe this tree')
+        for problem in problems:
+            print('  ' + problem)
+        return 1
+    print(f'every input is byte identical and every report matches; {len(cited)} gates may be cited:')
+    for name, restores in cited:
+        print(f'  {name:42s} passed, {restores} restores')
     return 0
 
 
