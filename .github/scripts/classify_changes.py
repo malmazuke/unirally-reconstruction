@@ -7,18 +7,28 @@ Run inside a checkout with full history. Reads the event name from
 ``HEAD`` for tests. Writes ``docs_only=true|false`` to ``GITHUB_OUTPUT`` when
 set, a JSON summary to ``CLASSIFY_OUT`` when set, and prints the decision.
 
-Documentation means paths under ``docs/`` or ``tasks/``, Markdown files at the
-repository root and ``.env.example``. Everything else, including this script
-and the workflow, takes the full path. So does any push whose base cannot be
-established: a new branch (all-zero ``before``), a base absent from the
-checkout, or a base that is not an ancestor of HEAD (a force push). The
-decision never fails the job; an error takes the full path and says why.
+Documentation means Markdown files under ``docs/`` or ``tasks/``, Markdown
+files at the repository root and ``.env.example``; a tracked data file under
+``docs/`` (the code maps are JSON) is not documentation. Everything else,
+including this script and the workflow, takes the full path. So does any push
+whose base cannot be established: a new branch (all-zero ``before``), a base
+absent from the checkout, or a base that is not an ancestor of HEAD (a force
+push). Renames are listed as a deletion plus an addition, so moving a source
+file under ``docs/`` is not documentation either.
+
+When ``CLASSIFY_REQUIRE_BASE_RUN`` names a workflow file, a docs-only result
+also requires that the base commit has a successful completed run of that
+workflow (read through ``gh api``); otherwise the fast path would inherit a
+cancelled or failed run's gap. Every reason a check cannot be made takes the
+full path and says why. A crash of this script fails the ``changes`` job,
+which leaves the lab job skipped and the run not green, never silently fast.
 """
 
 from __future__ import annotations
 
 import json
 import os
+import shutil
 import subprocess
 import sys
 from pathlib import Path
@@ -29,9 +39,35 @@ FULL_PATH_EVENTS = ("push", "pull_request")
 
 
 def is_documentation(path: str) -> bool:
-    if path.startswith(DOC_PREFIXES) or path in DOC_FILES:
+    if path in DOC_FILES:
         return True
-    return path.endswith(".md") and "/" not in path
+    if not path.endswith(".md"):
+        return False
+    return path.startswith(DOC_PREFIXES) or "/" not in path
+
+
+def base_has_successful_run(base: str) -> tuple[bool | None, str]:
+    """None when the check is not configured; otherwise whether the base commit
+    has a successful completed run of the named workflow, with the detail."""
+    workflow = os.environ.get("CLASSIFY_REQUIRE_BASE_RUN", "").strip()
+    if not workflow:
+        return None, "base-run check not configured"
+    repo = os.environ.get("GITHUB_REPOSITORY", "").strip()
+    gh = shutil.which("gh")
+    if not repo or not gh:
+        return False, "GITHUB_REPOSITORY or gh unavailable for the base-run check"
+    result = subprocess.run(
+        [gh, "api", f"repos/{repo}/actions/workflows/{workflow}/runs?head_sha={base}&per_page=50",
+         "--jq", '[.workflow_runs[] | select(.status == "completed" and .conclusion == "success")] | length'],
+        capture_output=True, text=True,
+    )
+    if result.returncode != 0:
+        return False, f"gh api failed: {result.stderr.strip()[-200:]}"
+    try:
+        count = int(result.stdout.strip())
+    except ValueError:
+        return False, f"unparseable gh api output: {result.stdout.strip()[:100]}"
+    return count > 0, f"{count} successful completed run(s) of {workflow} on base {base[:7]}"
 
 
 def _git(*args: str) -> str | None:
@@ -58,7 +94,7 @@ def classify(event: str, base: str, head: str) -> dict:
     if event == "push" and merge_base != _git("rev-parse", base):
         decision["reason"] = "base is not an ancestor of HEAD (force push)"
         return decision
-    listing = _git("diff", "--name-only", merge_base, head)
+    listing = _git("diff", "--name-only", "--no-renames", merge_base, head)
     if listing is None:
         decision["reason"] = "git diff failed"
         return decision
@@ -71,9 +107,14 @@ def classify(event: str, base: str, head: str) -> dict:
     code = [p for p in changed if not is_documentation(p)]
     if code:
         decision["reason"] = f"{len(code)} non-documentation path(s), first {code[0]}"
-    else:
-        decision["docs_only"] = True
-        decision["reason"] = f"all {len(changed)} changed path(s) are documentation"
+        return decision
+    ok, detail = base_has_successful_run(merge_base)
+    decision["base_run"] = detail
+    if ok is False:
+        decision["reason"] = f"all {len(changed)} changed path(s) are documentation, but {detail}"
+        return decision
+    decision["docs_only"] = True
+    decision["reason"] = f"all {len(changed)} changed path(s) are documentation; {detail}"
     return decision
 
 

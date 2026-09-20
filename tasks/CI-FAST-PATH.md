@@ -86,7 +86,7 @@ workflow-document change for the coordinator, not this task.
 | Code push takes the full path | push a commit that touches a file under `tools/` (a comment is enough) | both jobs `success`; every build and test step ran | run URL and jobs output |
 | Undeterminable base takes the full path | the first push of the new branch | every build and test step ran | run URL |
 | Tooling tests run once per job | the code push's uploaded reports | `python_tooling_tests` `passed` in `test-debug.json`; `skipped` and optional in `test-app-debug.json`, `test-sanitize.json`, `test-app-sanitize.json`; ctest checks present in all four | `artifacts/ci/*.json` from the run's `reports-*` artifact |
-| Nothing else changed | `git diff main -- tools tests src` | empty | the diff |
+| Nothing else changed | `git diff main --stat -- tools src tests` | empty apart from the new `tests/tooling/test_ci_fast_path.py` | the diff |
 | Docs say what CI proves | `docs/BUILD_AND_VALIDATION.md` "CI and release evidence" | names the fast path, its trigger rule and that a fast-path run is still the tip's green run | the diff |
 | Independent review | fresh Opus 5 reviewer in an isolated checkout | approve, or findings fixed and re-review confirm | `tasks/CI-FAST-PATH-review.md` |
 
@@ -109,6 +109,8 @@ workflow-document change for the coordinator, not this task.
 | 2 | A first push takes the full path | first push of `task/ci-fast-path` at `0c0e7a1` (workflow, classifier, docs, this record), run 35481483430 | the `changes` job succeeded with `no base commit (new branch or empty before sha)` and `docs_only=false` (artifact `changes.json`); both lab jobs ran doctor and bootstrap and were building when the next push cancelled the run under the workflow's `cancel-in-progress` rule | the cancelled run still evidences the classification; the full path is proven by attempt 3 |
 | 3 | A code push with a determinable base takes the full path and runs the tooling tests once per job | push of `628f7f9` (the test file only), run 35481505083 | success in 3.55 min; `changes` 6 s, `1 non-documentation path(s), first tests/tooling/test_ci_fast_path.py`; both lab jobs 180 s; every build and test step ran; in the uploaded reports `python_tooling_tests` is `passed` (429 py checks) in `test-debug.json` and `skipped` optional with 0 py checks in `test-app-debug.json`, `test-sanitize.json`, `test-app-sanitize.json`, each still with 23 ctest checks and the repeatability probe passed; macOS steps: lab-debug test 100 s, app-debug test under 5 s (was 80 s), SDL build 53 s; Linux sanitizers 61 s (was 134 s) | record and push this docs-only commit as attempt 4 |
 | 4 | A docs-only push takes the fast path and stays green | push of `2ccef4e` (this record only), run 35481706436 | success in 0.38 min (23 s): `changes` 7 s, lab macOS 6 s, lab Linux 5 s; on both lab jobs only checkout, `Docs-only fast path` and `Upload reports` ran and all eleven build and test steps were skipped; the `changes` artifact says `all 1 changed path(s) are documentation` | review |
+| 6 | The candidate's own push takes the fast path | push of `555a62b` (record only), run 35481755910 | success in under a minute on the fast path; the reviewer noted the run was missing from this record | recorded here |
+| 7 | Independent review of `555a62b` | fresh Claude Opus 5 reviewer in `.worktrees/ci-fast-path-review`, report [CI-FAST-PATH-review](CI-FAST-PATH-review.md) (commit `da745f6`, cherry-picked here) | verdict return: three required corrections (a rename hid its deleted source path because `git diff` folds renames; tracked JSON code maps under `docs/` counted as documentation although the suite checks them; the "still the tip's green run" claim did not hold after a cancelled run because the classifier only compared trees), two should-fix (a commit was judged by the classifier it introduced; the acceptance row about `git diff main` was wrong), five advisories; twelve withheld cases, every recorded outcome reproduced | apply: `--no-renames`; documentation defined as Markdown by extension plus `.env.example`; a base-run check through `gh api` requiring a successful completed run of the workflow on the base commit before the fast path, so a fast-path success differs from the last full success only in documentation by induction; the base revision's classifier copy; the workflow test enumerates every lab step; docstring, inventory row and record corrected; the 27 s of the `changes` job accepted |
 | 5 | The suite passes locally with the new test | `bootstrap`, `build --preset lab-debug`, `test --suite synthetic --preset lab-debug` in the worktree (`artifacts/ci-fast-path/test.json`) | `status=passed`, 10 `py:test_ci_fast_path.*` checks passed | none |
 
 ## Handoff
@@ -140,7 +142,7 @@ workflow-document change for the coordinator, not this task.
 - Runtime needs: GitHub Actions on `origin`; the local suite needs the
   isolated toolchain and a `lab-debug` build.
 - Aggregate parent/child time, provider usage before/after: 01:26 UTC to
-  01:45 UTC to this checkpoint; five-hour 66% at start, weekly 61%, Fable
+  01:34 UTC to this checkpoint (the earlier draft said 01:45 by mistake); five-hour 66% at start, weekly 61%, Fable
   42% (sampled again at closeout).
 - Accepted outcome, review/fix rounds and next routing decision: pending
   review.

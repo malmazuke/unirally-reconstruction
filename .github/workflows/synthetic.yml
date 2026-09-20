@@ -13,6 +13,7 @@ concurrency:
 
 permissions:
   contents: read
+  actions: read  # the changes job asks whether the base commit has a successful run
 
 jobs:
   # Decide once whether this push or pull request changed documentation only.
@@ -33,7 +34,19 @@ jobs:
         env:
           CLASSIFY_BASE: ${{ github.event.before || github.event.pull_request.base.sha }}
           CLASSIFY_OUT: artifacts/ci/changes.json
-        run: python3 .github/scripts/classify_changes.py
+          CLASSIFY_REQUIRE_BASE_RUN: synthetic.yml
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          # Judge the push by the base revision's classifier, so a commit cannot
+          # widen the rules it is judged by; the tree's copy serves only when
+          # the base has none (before this script existed).
+          script=.github/scripts/classify_changes.py
+          if [ -n "$CLASSIFY_BASE" ] && git cat-file -e "$CLASSIFY_BASE:$script" 2>/dev/null; then
+            git show "$CLASSIFY_BASE:$script" > "$RUNNER_TEMP/classify_changes.py"
+            script="$RUNNER_TEMP/classify_changes.py"
+            echo "classifier taken from base $CLASSIFY_BASE"
+          fi
+          python3 "$script"
 
       - name: Upload classification
         if: always()

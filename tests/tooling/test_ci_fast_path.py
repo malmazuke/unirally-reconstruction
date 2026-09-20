@@ -45,13 +45,25 @@ class Repo:
         git(self.path, "commit", "-q", "--allow-empty", "-m", message)
         return git(self.path, "rev-parse", "HEAD")
 
-    def classify(self, event: str, base: str, head: str | None = None) -> tuple[dict, str, str]:
+    def classify(self, event: str, base: str, head: str | None = None, base_runs: int | str | None = None) -> tuple[dict, str, str]:
+        """``base_runs``: None leaves the base-run check unconfigured; an int is the
+        count a stub ``gh`` reports; ``"fail"`` makes the stub exit 1."""
         out = self.path / "changes.json"
         gh_out = self.path / "gh_output"
         env = {**os.environ, "GITHUB_EVENT_NAME": event, "CLASSIFY_BASE": base,
                "CLASSIFY_OUT": str(out), "GITHUB_OUTPUT": str(gh_out)}
+        env.pop("CLASSIFY_REQUIRE_BASE_RUN", None)
         if head:
             env["CLASSIFY_HEAD"] = head
+        if base_runs is not None:
+            stub_dir = self.path / "stub-bin"
+            stub_dir.mkdir(exist_ok=True)
+            gh = stub_dir / "gh"
+            body = "#!/bin/sh\necho \"$@\" > \"$STUB_GH_ARGS\"\n" + ("exit 1\n" if base_runs == "fail" else f"echo {base_runs}\n")
+            gh.write_text(body)
+            gh.chmod(0o755)
+            env.update({"PATH": f"{stub_dir}:{env['PATH']}", "CLASSIFY_REQUIRE_BASE_RUN": "synthetic.yml",
+                        "GITHUB_REPOSITORY": "example/repo", "STUB_GH_ARGS": str(self.path / "gh_args")})
         proc = subprocess.run([sys.executable, str(SCRIPT)], cwd=self.path, capture_output=True, text=True, env=env, timeout=60)
         assert proc.returncode == 0, proc.stderr
         # GITHUB_OUTPUT is append-only, as on the runner; the last line is this call's.
@@ -86,6 +98,41 @@ class ClassifierTests(unittest.TestCase):
                 self.assertEqual(gh, "docs_only=false")
                 self.assertIn("non-documentation", d["reason"])
                 self.base = head
+
+    def test_rename_out_of_code_takes_full_path(self):
+        git(self.repo.path, "mv", "tools/x.py", "docs/moved.md")
+        head = self.repo.commit({}, "rename")
+        d, _, _ = self.repo.classify("push", self.base, head)
+        self.assertFalse(d["docs_only"], d)
+        self.assertEqual(d["changed"], ["docs/moved.md", "tools/x.py"])
+
+    def test_data_under_docs_is_not_documentation(self):
+        for rel in ("docs/map/boot.map.json", "docs/figure.png", "tasks/data.csv", "docs/README"):
+            with self.subTest(rel=rel):
+                head = self.repo.commit({rel: "x\n"})
+                d, _, _ = self.repo.classify("push", self.base, head)
+                self.assertFalse(d["docs_only"], d)
+                self.base = head
+
+    def test_base_run_check(self):
+        head = self.repo.commit({"docs/a.md": "b\n"})
+        d, _, _ = self.repo.classify("push", self.base, head, base_runs=2)
+        self.assertTrue(d["docs_only"], d)
+        self.assertIn("2 successful completed run(s)", d["base_run"])
+        args = (self.repo.path / "gh_args").read_text()
+        self.assertIn(f"repos/example/repo/actions/workflows/synthetic.yml/runs?head_sha={self.base}", args)
+        for base_runs, fragment in ((0, "0 successful completed run(s)"), ("fail", "gh api failed")):
+            with self.subTest(base_runs=base_runs):
+                d, gh, _ = self.repo.classify("push", self.base, head, base_runs=base_runs)
+                self.assertFalse(d["docs_only"], d)
+                self.assertIn("are documentation, but", d["reason"])
+                self.assertIn(fragment, d["reason"])
+                self.assertEqual(gh, "docs_only=false")
+        # A code push never consults the base-run check.
+        head = self.repo.commit({"tools/x.py": "9\n"})
+        d, _, _ = self.repo.classify("push", self.base, head, base_runs="fail")
+        self.assertFalse(d["docs_only"])
+        self.assertNotIn("base_run", d)
 
     def test_deleted_documentation_is_still_documentation(self):
         head = self.repo.commit({"docs/a.md": None})
@@ -133,17 +180,24 @@ class WorkflowTests(unittest.TestCase):
         lab = self.text[self.text.index("\n  lab:\n"):]
         self.steps = re.split(r"\n      - (?=name:|uses:)", lab)[1:]
 
-    def test_lab_needs_changes_and_heavy_steps_are_guarded(self):
+    def test_every_lab_step_is_accounted_for(self):
+        """Each step of the lab job is the checkout, the fast-path marker, the
+        always-on upload, or guarded by the docs-only output. A new step that
+        forgets the guard fails here."""
         self.assertIn("\n  lab:\n    needs: changes\n", self.text)
-        heavy = [s for s in self.steps if "tools/project.py" in s or "apt-get" in s or "--help" in s or "actions/cache" in s]
-        self.assertGreaterEqual(len(heavy), 10)
-        for step in heavy:
-            self.assertIn("needs.changes.outputs.docs_only != 'true'", step.splitlines()[0] + "\n" + "\n".join(step.splitlines()[1:3]), step.splitlines()[0])
-        fast = [s for s in self.steps if s.startswith("name: Docs-only fast path")]
-        self.assertEqual(len(fast), 1)
-        self.assertIn("needs.changes.outputs.docs_only == 'true'", fast[0])
-        upload = [s for s in self.steps if "upload-artifact" in s]
-        self.assertTrue(all("if: always()" in s for s in upload))
+        self.assertGreaterEqual(len(self.steps), 13)
+        for step in self.steps:
+            first = step.splitlines()[0]
+            head = "\n".join(step.splitlines()[:3])
+            if first.startswith("uses: actions/checkout"):
+                continue
+            if first.startswith("name: Docs-only fast path"):
+                self.assertIn("if: needs.changes.outputs.docs_only == 'true'", head)
+                continue
+            if first.startswith("name: Upload reports"):
+                self.assertIn("if: always()", head)
+                continue
+            self.assertIn("needs.changes.outputs.docs_only != 'true'", head, first)
 
     def test_python_tooling_tests_run_once_per_job(self):
         runs = re.findall(r"python3 tools/project\.py test [^\n]*", self.text)
@@ -159,8 +213,11 @@ class WorkflowTests(unittest.TestCase):
         changes = self.text[self.text.index("\n  changes:\n"):self.text.index("\n  lab:\n")]
         self.assertIn("fetch-depth: 0", changes)
         self.assertIn("CLASSIFY_BASE: ${{ github.event.before || github.event.pull_request.base.sha }}", changes)
-        self.assertIn("run: python3 .github/scripts/classify_changes.py", changes)
+        self.assertIn('git show "$CLASSIFY_BASE:$script" > "$RUNNER_TEMP/classify_changes.py"', changes)
+        self.assertIn("CLASSIFY_REQUIRE_BASE_RUN: synthetic.yml", changes)
+        self.assertIn("GH_TOKEN: ${{ github.token }}", changes)
         self.assertIn("docs_only: ${{ steps.classify.outputs.docs_only }}", changes)
+        self.assertIn("\n  actions: read", self.text[:self.text.index("jobs:")])
 
 
 if __name__ == "__main__":

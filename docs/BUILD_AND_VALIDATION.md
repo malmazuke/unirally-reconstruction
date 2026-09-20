@@ -157,7 +157,7 @@ of reimplementing a build system; rows still marked proposed are unavailable.
 | `bootstrap` | implemented (M0-02) | Prepare isolated dependencies from `tools/locks/toolchain.json`; safe to repeat; emit resolved-version manifest under ignored `local/toolchain/` |
 | `rom inspect --path <path>` | implemented (M0-01) | Hash original input, identify header/mapping/region candidates and emit manifest; do not silently normalize bytes; `--expect` rejects another revision |
 | `build --preset <name>` | implemented (M0-02) | Configure/build the specified CMake preset with the isolated toolchain and record exact configuration in `build/<preset>/lab-build-info.json` |
-| `test --suite synthetic` | implemented (M0-02) | Run ROM-free checks (Python tooling tests, ctest, fresh-process repeatability) and produce machine-readable results |
+| `test --suite synthetic` | implemented (M0-02) | Run ROM-free checks (Python tooling tests, ctest, fresh-process repeatability) and produce machine-readable results; `--no-python-tests` runs only the native part and records the tooling tests as a skipped optional check (the hosted CI uses it on every preset but `lab-debug`) |
 | `reference build|run|verify|restore-check` | implemented (M0-03) | Build the pinned core from `tools/locks/emulators.json`; run a reference script in a fresh worker process; repeat it in fresh processes; save, restore and compare the continuation (D-0001) |
 | `replay validate|run|compare --manifest <manifest>` | implemented (M0-04) | Validate a replay manifest (schema 1, ROM-free); reproduce its reference run in a fresh process; compare fresh-process runs of one manifest (or two manifests) on the declared fields and emit the first divergence with prior sample, inputs, field values, a work RAM localization and trace windows. Supersedes the proposed `reference capture --case` / `compare --case` for the reference side; native/reference comparison is added when native code exists (M2) |
 | `coverage capture --manifest <manifest> --out <dir> [--ring N] [--frame-image N ...]` | implemented (M1-01) | Run a replay manifest in a fresh worker process with the core's instruction trace ring drained once per frame (the pinned core and patch are unchanged); write `coverage.json` (per executed site: 24-bit pc, E/M/X mode, data bank, count, first frame; per consecutive site pair: count), the usual samples, optional PNG frame dumps, and check that the run's digests equal the manifest's, that no frame exceeded the ring, that the instruction totals agree and that the first instruction is the emulation reset vector target |
@@ -343,18 +343,24 @@ jump/control and remaining contact state are external inputs, and it does not
 add native ZOOM ZOO gameplay.
 
 The hosted `synthetic.yml` has a docs-only fast path (CI-FAST-PATH). A first
-job runs `.github/scripts/classify_changes.py` on a full-history checkout: a
-push or pull request whose changed paths all lie under `docs/` or `tasks/`,
-are Markdown files at the repository root, or are `.env.example` is
-`docs_only`, and the lab job then skips its doctor, bootstrap, build and test
-steps and reports success with `artifacts/ci/fast-path.json` in its uploaded
-reports. That run is still the tip's green run for the acceptance rule: the
-tree it covers differs from the last full run only in documentation. A push
-whose base cannot be established (a new branch, a base absent from the
-checkout, a force push) and any change to the workflow, the classifier,
-`tools/`, `tests/`, `src/`, the CMake files or `tools/locks/` takes the full
-path; `workflow_dispatch` always does. The `changes` artifact of every run
-records the base, the changed paths and the reason. Within a full run the
+job runs `.github/scripts/classify_changes.py` (the base revision's copy, so
+a commit is never judged by rules it introduces) on a full-history checkout: a
+push or pull request whose changed paths are all Markdown files under `docs/`
+or `tasks/`, Markdown files at the repository root, or `.env.example`, with
+renames listed as a deletion plus an addition, and whose base commit has a
+successful completed run of this workflow, is `docs_only`; the lab job then
+skips its doctor, bootstrap, build and test steps and reports success with
+`artifacts/ci/fast-path.json` in its uploaded reports. That run is the tip's
+green run for the acceptance rule because of the base condition: by
+induction, a fast-path success differs from the last full success only in
+documentation, and a cancelled or failed run on the base forces the next push
+onto the full path. A push whose base cannot be established (a new branch, a
+base absent from the checkout, a force push), any data file under `docs/`
+(the code maps are JSON checked by the suite), and any change to the
+workflow, the classifier, `tools/`, `tests/`, `src/`, the CMake files or
+`tools/locks/` takes the full path; `workflow_dispatch` always does. The
+`changes` artifact of every run records the base, the changed paths, the
+base-run check and the reason. Within a full run the
 Python tooling tests execute once per job, in the `lab-debug` step; the
 `app-debug` and sanitizer steps pass `--no-python-tests`, which the report
 records as a skipped optional check, and still run ctest and the
