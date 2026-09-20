@@ -1125,7 +1125,7 @@ std::span<const std::uint8_t> classic_track_data(const ClassicContentPack& pack,
 } // namespace
 
 void ClassicRaceHistoryTracker::reset() {
-    look_={};latest_={};on_screen_={};opponent_finish_frame_.reset();window_.reset();transition_member_.reset();
+    look_={};latest_={};on_screen_={};opponent_finish_frame_.reset();window_.reset();clock_.reset();transition_member_.reset();
 }
 void ClassicRaceHistoryTracker::observe_update(const ZoomZooState& previous,const ZoomZooState& updated,
                                                const ClassicContentPack& pack) {
@@ -1136,6 +1136,7 @@ void ClassicRaceHistoryTracker::observe_update(const ZoomZooState& previous,cons
         opponent_finish_frame_=updated.movement.frame;
     if(!transition_member_)transition_member_=classic_window_transition_member(classic_track_data(pack,updated.track));
     window_.observe_update(previous,updated,*transition_member_);
+    clock_.observe_update(previous,updated);
     if(updated.result_updates || zoom_zoo_update_was_paused(previous,updated))return;
     const auto tables=rider_look_tables(pack);
     const auto engine=updated.track==ClassicRaceTrack::Dragster?dragster_race_content(pack):zoom_zoo_content(pack);
@@ -1429,41 +1430,64 @@ std::string hud_time(unsigned centiseconds) {
     return {digit(centiseconds/6000),':',digit(centiseconds/1000%6),digit(centiseconds/100),
             ':',digit(centiseconds/10),digit(centiseconds)};
 }
+// $81:EB8E, and the race setup that wrote the field before it.
+ClassicHudField classic_hud_left_field(const ZoomZooState& published,const ClassicRaceScenario& scenario) {
+    const auto& race=published.race;
+    // At the 10:00 limit ($81:C73E-C75B) the player is finished with laps left,
+    // so `$0EFB` is not zero and the field keeps the lap (stop-timeout original
+    // frames 31578-31920 all read `2/3`).
+    if(race.riders[0].finished && race.riders[0].laps_remaining==0)return {"finish",1};
+    // The word wins over the lap count, so a DRAGSTER finish replaces `race`
+    // too, and $053F only suppresses the lap number.
+    if(!scenario.tour_race)return {"race",2};
+    // $81:EC61-$81:ECBC puts the lap's ones digit at column 2 and its tens at
+    // column 1, and $81:D68C-$81:D6E5 the total from column 4, so the count is
+    // right-aligned on column 2 and the total left-aligned on 4. Neither track
+    // of this product reaches a second digit in either.
+    const auto lap=classic_hud_lap(race.riders[0].laps_remaining,scenario.laps);
+    return {std::to_string(lap)+"/"+std::to_string(scenario.laps),lap>=10U?1U:2U};
+}
+std::string classic_hud_clock(const RaceTimerDigits& t) {
+    return {static_cast<char>('0'+t.minutes%10),':',static_cast<char>('0'+t.tens_seconds%10),
+            static_cast<char>('0'+t.seconds%10),':',static_cast<char>('0'+t.tenths%10)};
+}
+void ClassicRaceHudClock::observe_update(const ZoomZooState& previous,const ZoomZooState& updated) {
+    on_screen_=latest_;
+    const auto scenario=classic_race_scenario(updated.track);
+    // The left field goes first in the redraw queue, so an update that changes
+    // it spends the queue and the clock cells keep the digits they hold. The
+    // update that writes the changed field is the one after the state changed,
+    // which is why both sides of this comparison are the observed pair.
+    if(classic_hud_left_field(updated,scenario).text==classic_hud_left_field(previous,scenario).text)
+        latest_=classic_hud_clock(updated.movement.timer);
+}
 ClassicHudText classic_race_hud_text(const ZoomZooState& previous_update,
                                      const ClassicRaceScenario& scenario,
-                                     std::optional<std::uint32_t> opponent_finish_frame) {
+                                     std::optional<std::uint32_t> opponent_finish_frame,
+                                     const std::optional<std::string>& published_clock) {
     const auto& race=previous_update.race;
     ClassicHudText hud;
-    // At the 10:00 limit ($81:C73E-C75B) the player is finished with laps left.
-    // `$0EFB` is then not zero, so the original keeps the lap field and the held
-    // 9:59.9 clock, and none of the finish fields appears (stop-timeout original
-    // frames 31578-31920 all read `2/3` and `9:59:9`).
     const bool finished=race.riders[0].finished && race.riders[0].laps_remaining==0;
-    // $81:EB8E: the word wins over the lap count, so a DRAGSTER finish replaces
-    // `race` too, and $053F only suppresses the lap number.
-    if(finished) {hud.left="finish";hud.left_column=1;}
-    else if(scenario.tour_race) {
-        // $81:EC61-$81:ECBC puts the lap's ones digit at column 2 and its tens
-        // at column 1, and $81:D68C-$81:D6E5 the total from column 4, so the
-        // count is right-aligned on column 2 and the total left-aligned on 4.
-        // Neither track of this product reaches a second digit in either.
-        const auto lap=classic_hud_lap(race.riders[0].laps_remaining,scenario.laps);
-        hud.left=std::to_string(lap)+"/"+std::to_string(scenario.laps);
-        hud.left_column=lap>=10U?1U:2U;
-    } else {hud.left="race";hud.left_column=2;}
-    // The corner clock shows tenths, one digit per field, and the original
-    // blanks columns 24-30 of both rows on the second update after the finish
-    // ($81:ECCF through the one-field-per-update redraw queue).
-    const auto& t=previous_update.movement.timer;
-    if(!finished || race.finish_delay<2)
-        hud.clock={static_cast<char>('0'+t.minutes%10),':',static_cast<char>('0'+t.tens_seconds%10),
-                   static_cast<char>('0'+t.seconds%10),':',static_cast<char>('0'+t.tenths%10)};
-    // The queue reaches the player's own finish time on the update after that,
-    // and the opponent's two updates after the opponent finishes.
-    if(finished && race.finish_delay>=3)hud.player_time=hud_time(race.total_times[0]);
+    const auto left=classic_hud_left_field(previous_update,scenario);
+    hud.left=left.text;hud.left_column=left.column;
+    // The corner clock shows tenths, one digit per field. Every gate below is a
+    // *picture* number, not an update number: picture N is drawn from the state
+    // after update N-1, so a field the queue writes on update F shows in
+    // picture F and the state this function reads then has `finish_delay ==
+    // F - finish - 1`. The finish is update `finish`, `$81:ECCF` blanks the
+    // clock on `finish + 2`, and that picture reads delay 1 (review B1:
+    // measured against consecutive originals 6480-6500 of the M4-16 primary
+    // and 6465-6500 of compound-reverse, which the kept 20-frame pictures
+    // stepped straight over).
+    if(!finished || race.finish_delay<1)
+        hud.clock=published_clock?*published_clock:classic_hud_clock(previous_update.movement.timer);
+    // The player's own time is written on `finish + 3`, which reads delay 2,
+    // and the opponent's two updates after the opponent finishes, which is the
+    // picture one update after that frame.
+    if(finished && race.finish_delay>=2)hud.player_time=hud_time(race.total_times[0]);
     if(race.riders[1].finished && race.total_times[1]<60000U) {
         const auto opponent=opponent_finish_frame?opponent_finish_frame:classic_opponent_finish_frame(previous_update);
-        if(opponent && previous_update.movement.frame>=*opponent+2U)
+        if(opponent && previous_update.movement.frame>=*opponent+1U)
             hud.opponent_time=hud_time(race.total_times[1]);
     }
     return hud;
@@ -1609,10 +1633,11 @@ void draw_classic_caption(RgbFrame& frame,const ZoomZooState& published,
 void draw_classic_hud(RgbFrame& frame,const ZoomZooState& published,
                       const ClassicRacePresentationContent& content,
                       std::optional<std::uint32_t> opponent_finish_frame,
+                      const std::optional<std::string>& published_clock,
                       std::array<std::uint8_t,3> ink,std::bitset<256*224>& inked) {
     const auto font=content.caption_font;
     if(font.size()!=2048)return;
-    const auto hud=classic_race_hud_text(published,content.scenario,opponent_finish_frame);
+    const auto hud=classic_race_hud_text(published,content.scenario,opponent_finish_frame,published_clock);
     draw_bg3_text(frame,font,hud.left_column,2,hud.left,ink,inked);
     draw_bg3_text(frame,font,24,2,hud.clock,ink,inked);
     draw_bg3_text(frame,font,13,5,hud.player_time,ink,inked);
@@ -1784,7 +1809,7 @@ RgbFrame render_classic_race(const ZoomZooState& state,const ClassicRacePresenta
     // same way: over the track, under the riders with the measured red add, and
     // under the channel-6 window members.
     draw_classic_hud(frame,rider_source,content,history?history->opponent_finish_frame:std::nullopt,
-                     colour(cgram,22),caption_ink);
+                     history?history->published_clock:std::nullopt,colour(cgram,22),caption_ink);
     for(int rider=1;rider>=0;--rider) {
         const auto& source=rider_source.movement.riders[static_cast<std::size_t>(rider)];
         const auto oam=project_rider_oam(source.motion.x,source.motion.y,rider_source.race.camera.x,

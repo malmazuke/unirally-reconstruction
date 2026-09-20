@@ -64,31 +64,70 @@ int main() {
     hud = unirally::classic_race_hud_text(racing, dragster, std::nullopt);
     require(hud.left == "race" && hud.left_column == 2);
 
-    // The finish sequence, one field per update: the word on the first update
-    // after the player finishes, the blanked clock on the second, the player's
-    // own time on the third (ZOOM ZOO original pictures 6485, 6486 and 6487).
+    // The finish sequence, one field per update. These gates are *picture*
+    // numbers: picture N is drawn from the state after update N-1, so the state
+    // this function reads carries `finish_delay == N - finish - 1`. The first
+    // review returned the task because all three were one update late and the
+    // tests asserted delays without ever tying one to a picture (review B1).
+    // Measured on consecutive originals 6480-6500 of the M4-16 primary, whose
+    // player finishes on update 6484: picture 6485 `finish`, 6486 the clock
+    // blanked, 6487 the player's time, 6490 the opponent's.
     unirally::ZoomZooState won{};
     won.race.riders[0].finished = 1;
     won.race.total_times = {9802, 60000};
     won.movement.timer.minutes = 1;
-    won.race.finish_delay = 1;
+    won.race.finish_delay = 0;                  // picture 6485
     hud = unirally::classic_race_hud_text(won, zoom, std::nullopt);
     require(hud.left == "finish" && hud.left_column == 1 && hud.clock == "1:00:0" && hud.player_time.empty());
-    won.race.finish_delay = 2;
-    require(unirally::classic_race_hud_text(won, zoom, std::nullopt).clock.empty());
-    won.race.finish_delay = 3;
+    won.race.finish_delay = 1;                  // picture 6486
+    hud = unirally::classic_race_hud_text(won, zoom, std::nullopt);
+    require(hud.clock.empty() && hud.player_time.empty());
+    won.race.finish_delay = 2;                  // picture 6487
     hud = unirally::classic_race_hud_text(won, zoom, std::nullopt);
     require(hud.clock.empty() && hud.player_time == "1:38:02" && hud.opponent_time.empty());
 
-    // The opponent's own time follows two updates after its finish, and the
-    // 60000 no-time sentinel is not a finish time.
+    // The opponent's own time follows two updates after its finish, so it is in
+    // the picture one update after the frame the history recorded, and the
+    // 60000 no-time sentinel is never a finish time.
     won.race.riders[1].finished = 1;
-    won.movement.frame = 6489;
+    won.movement.frame = 6488;
     require(unirally::classic_race_hud_text(won, zoom, 6488).opponent_time.empty());
     won.race.total_times[1] = 9810;
     require(unirally::classic_race_hud_text(won, zoom, 6488).opponent_time.empty());
-    won.movement.frame = 6490;
+    won.movement.frame = 6489;                  // picture 6490
     require(unirally::classic_race_hud_text(won, zoom, 6488).opponent_time == "1:38:10");
+
+    // The clock cells hold what the redraw queue last wrote, and the left field
+    // goes first, so an update that changes the lap count spends that update
+    // and the digits stand for one more picture (review B2, measured on
+    // compound-reverse update 3212, which ticks the tenth and turns the lap
+    // together; picture 3213 keeps `0:32:5` and 3214 shows `0:32:6`).
+    {
+      unirally::ClassicRaceHudClock clock;
+      unirally::ZoomZooState a{}, b{}, c{};
+      a.race.riders[0].laps_remaining = 2;      // lap 2 of 3
+      a.movement.timer.tenths = 5;
+      a.movement.timer.tens_seconds = 3;
+      a.movement.timer.seconds = 2;
+      b = a;
+      b.race.riders[0].laps_remaining = 1;      // the lap turns and the tenth ticks
+      b.movement.timer.tenths = 6;
+      c = b;
+      clock.observe_update(a, a);
+      require(clock.published() == std::nullopt);   // nothing published for the first picture yet
+      clock.observe_update(a, b);
+      require(clock.published() == std::optional<std::string>("0:32:5"));
+      clock.observe_update(b, c);
+      require(clock.published() == std::optional<std::string>("0:32:5"));
+      unirally::ZoomZooState d = c;
+      d.movement.timer.tenths = 7;
+      clock.observe_update(c, d);
+      require(clock.published() == std::optional<std::string>("0:32:6"));
+      // With no history the digits come from the state itself, which is exact
+      // except on that one picture.
+      require(unirally::classic_race_hud_text(c, zoom, std::nullopt).clock == "0:32:6");
+      require(unirally::classic_race_hud_text(c, zoom, std::nullopt, std::string("0:32:5")).clock == "0:32:5");
+    }
 
     // 10:00 time-out ($81:C73E-C75B): finished with laps left, so `$0EFB` is
     // not zero. The original keeps the lap field and the held 9:59.9 clock and

@@ -113,6 +113,29 @@ Native reads them from `race.finish_delay`, which already counts updates since
 the player's finish, and from the opponent's finish frame the presentation
 history tracks (or `classic_opponent_finish_frame` derives).
 
+**Every one of those numbers is a picture, not a state.** Picture N is drawn
+from the state after update N-1, so a field the queue writes on update F shows
+in picture F and the state the renderer reads for it carries
+`finish_delay == F - finish - 1`. The first version of this work applied the
+update numbers to the state directly and drew the blanked clock and both finish
+times one picture late; the kept pictures step 20 frames apart and jump 6484 to
+6500, so the whole transition fell in the gap and the sweep could not see it.
+The independent review found it by recapturing the originals consecutively.
+
+**The clock cells hold what the queue last wrote.** Since the queue rewrites at
+most one field per update and the left field goes first, an update that changes
+the lap count or the finish word spends that update and the clock digits stand
+for one more picture. The discriminating case is not the finish: on
+`compound-reverse`, update **3212** ticks the tenth and turns the lap together,
+and the original's picture 3213 keeps `0:32:5` where the state already says
+`0:32:6`. (Searching the captures' own WRAM for updates that change both
+`$0E3B` and `$0EFB` finds exactly three: compound-reverse 3212 and 6477, and
+brake 6492 - the first of which is a plain mid-race lap change.) Native follows
+this with `ClassicRaceHudClock`, which publishes the digits on every observed
+update except one that changes the left field, and lags one update like the
+rider overlays. Without the history, the digits are derived from the drawn
+state, which is exact on every picture except the one after such an update.
+
 ## The 10:00 time-out
 
 At the limit (`$81:C73E-C75B`) the player is finished with laps left, so `$0EFB`

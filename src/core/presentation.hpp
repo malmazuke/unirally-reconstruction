@@ -147,9 +147,17 @@ unsigned classic_hud_lap(unsigned laps_remaining,unsigned laps);
 // crossing of the frozen primary timeline (1675, 3208, 4840, 6484). The rider
 // objects show that same earlier update (R-0036) and the BG scroll its camera.
 // An empty field is one the original is not showing.
+// The left field alone, which the redraw queue gives priority over the clock:
+// `$81:EB8E-$81:EC5E` writes `finish` from column 1 once the player's laps run
+// out, the lap count from column 2 on a tour race, and `race` from column 2
+// otherwise. An update that changes it is an update on which the clock is not
+// republished (R-0043).
+struct ClassicHudField {
+  std::string text;
+  unsigned column{};
+};
+ClassicHudField classic_hud_left_field(const ZoomZooState& published,const ClassicRaceScenario& scenario);
 struct ClassicHudText {
-  // `$81:EB8E-$81:EC5E`: `finish` from column 1 once the player's laps run out,
-  // the lap count from column 2 on a tour race, `race` from column 2 otherwise.
   std::string left;
   unsigned left_column{};
   // `$81:ED5C-$81:EDD9` at columns 24-29, blanked by `$81:ECCF` at the finish.
@@ -158,9 +166,32 @@ struct ClassicHudText {
   // at the same columns of rows 20-21 for the opponent.
   std::string player_time, opponent_time;
 };
+// `published_clock` is the six characters the original's clock cells are still
+// holding, followed update by update by `ClassicRaceHudClock`. Without it the
+// digits are derived from `previous_update` itself, which is exact except on
+// the one picture after an update that redrew the left field.
 ClassicHudText classic_race_hud_text(const ZoomZooState& previous_update,
                                      const ClassicRaceScenario& scenario,
-                                     std::optional<std::uint32_t> opponent_finish_frame);
+                                     std::optional<std::uint32_t> opponent_finish_frame,
+                                     const std::optional<std::string>& published_clock={});
+// The clock cells hold what the redraw queue last wrote. The queue rewrites at
+// most one field per update and the left field goes first ($81:EB86 returns
+// through $81:F357), so an update that changes the lap count or finishes the
+// race leaves the clock digits standing for one more picture. Measured on
+// compound-reverse, whose update 3212 changes the tenths and the lap counter
+// together: picture 3213 keeps the old tenth, and picture 3214 has caught up.
+class ClassicRaceHudClock {
+public:
+  void reset() {latest_.reset();on_screen_.reset();}
+  void observe_update(const ZoomZooState& previous,const ZoomZooState& updated);
+  // The digits the cells hold for the picture drawn from the earlier of the
+  // two states last observed, so this lags one update exactly as the rider
+  // overlays do: picture N is drawn from the state at N-1 and shows what the
+  // queue wrote on update N, which was derived from the state at N-1.
+  const std::optional<std::string>& published() const {return on_screen_;}
+private:
+  std::optional<std::string> latest_{},on_screen_{};
+};
 // Presentation-only $0D45/$0D47 upper-body overlay frames. The original
 // derives them from look state the serialized race does not carry (R-0036),
 // so a caller without that history draws the pose frames alone.
@@ -179,6 +210,7 @@ struct ClassicRaceHistory {
   std::optional<std::uint32_t> opponent_finish_frame{};
   bool window_published{};
   std::optional<unsigned> window_table{};
+  std::optional<std::string> published_clock{};
 };
 // The countdown's transition member for a track: 5 + `$1229`, which
 // $83:CC05-CC08 latches at race initialization from the player's reflection
@@ -233,13 +265,16 @@ public:
   void observe_update(const ZoomZooState& previous,const ZoomZooState& updated,
                       const ClassicContentPack& pack);
   // History for the update that produced the `previous_update` being drawn.
-  ClassicRaceHistory on_screen() const {return {on_screen_,opponent_finish_frame_,window_.observed(),window_.published()};}
+  ClassicRaceHistory on_screen() const {
+      return {on_screen_,opponent_finish_frame_,window_.observed(),window_.published(),clock_.published()};
+  }
   const RiderLookState& look() const {return look_;}
 private:
   RiderLookState look_{};
   ZoomZooRiderOverlays latest_{}, on_screen_{};
   std::optional<std::uint32_t> opponent_finish_frame_{};
   ClassicWindowPointer window_{};
+  ClassicRaceHudClock clock_{};
   // The track's countdown transition member, a constant of the race read
   // from the pack on the first update after a reset.
   std::optional<unsigned> transition_member_{};
