@@ -355,8 +355,9 @@ green run for the acceptance rule because of the base condition: by
 induction, a fast-path success differs from the last full success only in
 documentation, and a cancelled or failed run on the base forces the next push
 onto the full path. A push whose base cannot be established (a new branch, a
-base absent from the checkout, a force push), any data file under `docs/`
-(the code maps are JSON checked by the suite), and any change to the
+base absent from the checkout, a force push), anything under `docs/map/` or
+any non-Markdown or symlinked file under `docs/` or `tasks/` (the code maps
+and their summaries are checked by the suite), and any change to the
 workflow, the classifier, `tools/`, `tests/`, `src/`, the CMake files or
 `tools/locks/` takes the full path; `workflow_dispatch` always does. The
 `changes` artifact of every run records the base, the changed paths, the

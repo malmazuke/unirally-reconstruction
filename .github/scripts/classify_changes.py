@@ -9,7 +9,8 @@ set, a JSON summary to ``CLASSIFY_OUT`` when set, and prints the decision.
 
 Documentation means Markdown files under ``docs/`` or ``tasks/``, Markdown
 files at the repository root and ``.env.example``; a tracked data file under
-``docs/`` (the code maps are JSON) is not documentation. Everything else,
+``docs/`` (the code maps under ``docs/map/`` and their summaries, which the
+suite checks) is not documentation, and neither is a symlink. Everything else,
 including this script and the workflow, takes the full path. So does any push
 whose base cannot be established: a new branch (all-zero ``before``), a base
 absent from the checkout, or a base that is not an ancestor of HEAD (a force
@@ -35,15 +36,35 @@ from pathlib import Path
 
 DOC_PREFIXES = ("docs/", "tasks/")
 DOC_FILES = frozenset({".env.example"})
+DATA_PREFIXES = ("docs/map/",)  # tracked code maps and their summaries; the suite checks them
+SYMLINK_MODE = "120000"
 FULL_PATH_EVENTS = ("push", "pull_request")
 
 
-def is_documentation(path: str) -> bool:
+def is_documentation(path: str, symlink: bool = False) -> bool:
+    if symlink:
+        return False
     if path in DOC_FILES:
         return True
-    if not path.endswith(".md"):
+    if not path.endswith(".md") or path.startswith(DATA_PREFIXES):
         return False
     return path.startswith(DOC_PREFIXES) or "/" not in path
+
+
+def parse_raw_diff(raw: str) -> tuple[list[str], set[str]]:
+    """Changed paths and the subset that is a symlink on either side, from
+    ``git diff --raw --no-renames`` (``:srcmode dstmode srcsha dstsha status<TAB>path``)."""
+    changed: list[str] = []
+    symlinks: set[str] = set()
+    for line in raw.splitlines():
+        if not line.startswith(":") or "\t" not in line:
+            continue
+        meta, path = line.split("\t", 1)
+        fields = meta[1:].split()
+        changed.append(path)
+        if len(fields) >= 2 and SYMLINK_MODE in fields[:2]:
+            symlinks.add(path)
+    return sorted(changed), symlinks
 
 
 def base_has_successful_run(base: str) -> tuple[bool | None, str]:
@@ -94,17 +115,17 @@ def classify(event: str, base: str, head: str) -> dict:
     if event == "push" and merge_base != _git("rev-parse", base):
         decision["reason"] = "base is not an ancestor of HEAD (force push)"
         return decision
-    listing = _git("diff", "--name-only", "--no-renames", merge_base, head)
+    listing = _git("diff", "--raw", "--no-renames", merge_base, head)
     if listing is None:
         decision["reason"] = "git diff failed"
         return decision
-    changed = sorted(p for p in listing.splitlines() if p)
+    changed, symlinks = parse_raw_diff(listing)
     decision["changed"] = changed
     decision["merge_base"] = merge_base
     if not changed:
         decision["reason"] = "no changed paths; full path by default"
         return decision
-    code = [p for p in changed if not is_documentation(p)]
+    code = [p for p in changed if not is_documentation(p, symlink=p in symlinks)]
     if code:
         decision["reason"] = f"{len(code)} non-documentation path(s), first {code[0]}"
         return decision

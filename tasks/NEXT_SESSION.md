@@ -1,18 +1,24 @@
 # Next session
 
-**Status on 20 September 2026 UTC (after JEV-JUDGMENT-HARNESS): the active
-task is [CI-FAST-PATH](CI-FAST-PATH.md), ready on `main` at the commit that
-integrates JEV-JUDGMENT-HARNESS and not yet started; nothing is blocked.**
-CLASSIC-STUNT-NAMES and JEV-JUDGMENT-HARNESS are both reviewed and integrated;
-each is accepted conditional only on its recorded final-tip CI and remote
-verification. JEV-JUDGMENT-HARNESS's closeout is
-`artifacts/jev-judgment-harness-integration/closeout.json` in the main
-checkout; CLASSIC-STUNT-NAMES' closeout is wherever that session's handoff
-says. The harness can now ask TypeSafe's Jev a typed question and keep the
-answer as evidence (`python3 tools/project.py judge ping|ask|evidence-lint`,
-[D-0007](../docs/decisions/D-0007-advisory-jev-judgments.md)): every judgment
-is an optional check and an artifact, never a gate; the key lives in the
-ignored `.env` (copy `.env.example`) and `doctor` reports it as optional.
+**Status on 20 September 2026 UTC (after CI-FAST-PATH): no task is active;
+nothing is blocked. A new session starts from a new user request.**
+CLASSIC-STUNT-NAMES, JEV-JUDGMENT-HARNESS and CI-FAST-PATH are reviewed and
+integrated, each accepted conditional only on its recorded final-tip CI and
+remote verification; closeouts are
+`artifacts/jev-judgment-harness-integration/closeout.json` and
+`artifacts/ci-fast-path-integration/closeout.json` in the main checkout, and
+CLASSIC-STUNT-NAMES' wherever that session's handoff says. Two harness
+changes are now in force: `python3 tools/project.py judge ping|ask|evidence-lint`
+asks TypeSafe's Jev a typed question and keeps the answer as an optional check
+and an artifact ([D-0007](../docs/decisions/D-0007-advisory-jev-judgments.md);
+key in the ignored `.env`, `doctor` reports it as optional); and the hosted
+`synthetic.yml` takes a docs-only fast path (about 23 s, still a green run
+for the tip, gated on the base commit having a successful run) for pushes
+that change only Markdown under `docs/` or `tasks/`, root Markdown or
+`.env.example`, and runs the Python tooling tests once per job on the full
+path (about 3.3 min). Record-only commits are therefore cheap; code commits
+are not, so fold records into the commit they describe where the workflow
+allows.
 The stunt names took the hint
 sentences and the winner, draw and loser lines with them, because all three are
 entries of one table; what remains declared from that omission is the start

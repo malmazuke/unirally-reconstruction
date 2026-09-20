@@ -107,12 +107,24 @@ class ClassifierTests(unittest.TestCase):
         self.assertEqual(d["changed"], ["docs/moved.md", "tools/x.py"])
 
     def test_data_under_docs_is_not_documentation(self):
-        for rel in ("docs/map/boot.map.json", "docs/figure.png", "tasks/data.csv", "docs/README"):
+        for rel in ("docs/map/boot.map.json", "docs/map/boot-start-600.md", "docs/figure.png", "tasks/data.csv", "docs/README"):
             with self.subTest(rel=rel):
                 head = self.repo.commit({rel: "x\n"})
                 d, _, _ = self.repo.classify("push", self.base, head)
                 self.assertFalse(d["docs_only"], d)
                 self.base = head
+
+    def test_symlink_under_docs_takes_full_path(self):
+        (self.repo.path / "docs" / "link.md").symlink_to("../tools/x.py")
+        git(self.repo.path, "add", "docs/link.md")
+        head = self.repo.commit({}, "symlink")
+        d, _, _ = self.repo.classify("push", self.base, head)
+        self.assertFalse(d["docs_only"], d)
+        self.assertEqual(d["changed"], ["docs/link.md"])
+        git(self.repo.path, "rm", "-q", "docs/link.md")
+        head2 = self.repo.commit({}, "unlink")
+        d, _, _ = self.repo.classify("push", head, head2)
+        self.assertFalse(d["docs_only"], d)  # the deleted side was a symlink
 
     def test_base_run_check(self):
         head = self.repo.commit({"docs/a.md": "b\n"})

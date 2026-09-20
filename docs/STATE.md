@@ -1,5 +1,23 @@
 # Project state
 
+Updated 20 September 2026: **CI-FAST-PATH is reviewed and integrated**;
+acceptance is conditional on the final-tip CI and remote verification recorded
+in the ignored closeout `artifacts/ci-fast-path-integration/closeout.json` in
+the main checkout. The hosted `synthetic.yml` now classifies each push on a
+full-history checkout with the base revision's copy of
+`.github/scripts/classify_changes.py`: a push that changes only Markdown under
+`docs/` or `tasks/`, root Markdown or `.env.example` (renames, symlinks and
+`docs/map/` excluded), whose base commit has a successful completed run of the
+workflow, skips every build and test step and finishes green in about 23 s;
+everything else takes the full path, now about 3.3 min because the Python
+tooling tests run once per job. Measured on the task's own pushes: four
+fast-path runs of 23 to 26 s and two full runs of 3.3 to 3.6 min, against 3
+to 5 min for every push before. Review: one returned round (three required
+corrections: renames, data under `docs/`, and the green-tip claim after a
+cancelled run, now a base-run gate) and a confirming re-review with residuals
+applied; [CI-FAST-PATH-review](../tasks/CI-FAST-PATH-review.md). No task is
+dispatched next.
+
 Updated 20 September 2026: **JEV-JUDGMENT-HARNESS is reviewed and
 integrated**; acceptance is conditional on the final-tip CI and remote
 verification recorded in the ignored closeout
