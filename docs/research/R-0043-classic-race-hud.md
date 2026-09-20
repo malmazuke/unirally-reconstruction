@@ -108,10 +108,17 @@ opponent on 6488. The tilemap write of update N is in the picture of frame N.
 | 6490 | `$81:F0E6-$81:F1A0` to columns 13-19 of rows 20-21 | `1:38:10` appears |
 
 So the player's finish sequence is one field per update in the queue's order,
-and the opponent's own time follows two updates after the opponent finishes.
-Native reads them from `race.finish_delay`, which already counts updates since
-the player's finish, and from the opponent's finish frame the presentation
-history tracks (or `classic_opponent_finish_frame` derives).
+and the opponent's own time follows two updates after the opponent finishes -
+**in that race**. Those numbers are the queue's output only while nothing else
+wants it. When the opponent's counter steps on the update right after the
+player finishes, `$0D17` is set again while `$0EFB` is already zero, so the
+queue spends that update writing `finish` a second time and every field behind
+it waits: measured on two DRAGSTER races, the clock is still standing in the
+picture where the primary's fixed offsets had already blanked it, and both
+finish times follow a picture later (review 4). Native therefore follows the
+queue itself rather than counting from the finish: `ClassicRaceHudClock` keeps
+the pending set and services the first pending field each update, in the order
+the dispatcher reads them.
 
 **Every one of those numbers is a picture, not a state.** Picture N is drawn
 from the state after update N-1, so a field the queue writes on update F shows
@@ -181,7 +188,17 @@ inside the race proper and every one is a lap counter stepping
 (`queue_probe.py`); over the DRAGSTER captures the flag is sticky and the
 counters step four times a race, none of which the original holds
 (`dragster_probe.py`). A probe run on one track cannot establish a rule for
-both - that is how this was missed twice.
+both - that is how this was missed twice. The independent review then
+confirmed the rule from the ROM rather than from this record: `$81:818D` is
+the only instruction that sets `$0D17`, `$053F` has four writers and no
+clearer and never changes inside a race, and a frame-by-frame comparison of
+the ROM's own condition against native's predicate over 125 captures
+disagrees nowhere.
+
+A tour race therefore writes the left field seven or eight times, and a sprint
+twice - once at its first crossing, which is not held, and once at the finish.
+An earlier draft of this record said "at most four a tour race and one a
+sprint"; that was wrong in both halves.
 
 ## The 10:00 time-out
 

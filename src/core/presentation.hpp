@@ -166,15 +166,24 @@ struct ClassicHudText {
   // at the same columns of rows 20-21 for the opponent.
   std::string player_time, opponent_time;
 };
-// `published_clock` is the six characters the original's clock cells are still
-// holding, followed update by update by `ClassicRaceHudClock`. Without it the
-// digits are derived from `previous_update` itself, which is exact except on
-// the pictures after an update that **wrote** the left field - at most four a
-// tour race and one a sprint, and only where a tenth ticked on one of them.
+// What the original's HUD cells are holding: the clock digits the queue last
+// wrote, and whether it has reached each of the three fields the finish sets
+// going. `finish`'s own cells need no flag because the left field is derived
+// from the state directly and the queue writes it first.
+struct ClassicHudPublished {
+  std::optional<std::string> clock{};
+  bool clock_blanked{},player_time{},opponent_time{};
+  bool operator==(const ClassicHudPublished&) const = default;
+};
+// `published` is what the original's cells are holding, followed update by
+// update by `ClassicRaceHudClock`. Without it the clock digits are derived from
+// `previous_update` itself and the finish fields are placed at fixed offsets
+// from the finish, which is what the original does only while nothing else
+// wants the queue.
 ClassicHudText classic_race_hud_text(const ZoomZooState& previous_update,
                                      const ClassicRaceScenario& scenario,
                                      std::optional<std::uint32_t> opponent_finish_frame,
-                                     const std::optional<std::string>& published_clock={});
+                                     const std::optional<ClassicHudPublished>& published={});
 // The clock cells hold what the redraw queue last wrote. The queue rewrites at
 // most one field per update, the left field goes first, and an update that
 // **writes** it spends that update ($81:EC5E and $81:EB98 both end at
@@ -188,17 +197,30 @@ ClassicHudText classic_race_hud_text(const ZoomZooState& previous_update,
 // compound-reverse 3212 (player), ordinary-controls/down-a 3207-3208 (both
 // riders) and DRAGSTER's regression-landing-held-roll-a 1599, which the
 // original does not hold.
+// The redraw queue itself, followed update by update. Each update the original
+// services the **first** pending field and returns, so a field behind a busy
+// one waits: the left field ($0D17, set only by $81:818D, the lap-counter
+// decrement, for either rider), then the clock ($034D, negative to blank it),
+// then the player's finish time ($0349), then the opponent's. Placing the
+// finish sequence at fixed offsets from the finish instead reproduces the
+// queue only while nothing competes for it, and slides by an update when the
+// opponent's counter steps just after the player finishes - `$0D17` is set
+// again while `$0EFB` is already zero, so `finish` is written a second time
+// and everything behind it waits (review 4 B1, measured on two DRAGSTER races
+// at pictures 3215-3217).
 class ClassicRaceHudClock {
 public:
-  void reset() {latest_.reset();on_screen_.reset();}
+  void reset() {latest_={};on_screen_={};pending_={};}
   void observe_update(const ZoomZooState& previous,const ZoomZooState& updated);
-  // The digits the cells hold for the picture drawn from the earlier of the
-  // two states last observed, so this lags one update exactly as the rider
-  // overlays do: picture N is drawn from the state at N-1 and shows what the
-  // queue wrote on update N, which was derived from the state at N-1.
-  const std::optional<std::string>& published() const {return on_screen_;}
+  // The cells as the picture drawn from the earlier of the two states last
+  // observed shows them, so this lags one update exactly as the rider overlays
+  // do: picture N is drawn from the state at N-1 and shows what the queue
+  // wrote on update N, which it derived from the state at N-1.
+  const ClassicHudPublished& published() const {return on_screen_;}
 private:
-  std::optional<std::string> latest_{},on_screen_{};
+  struct Pending {bool left{},clock_blank{},player_time{},opponent_time{};};
+  ClassicHudPublished latest_{},on_screen_{};
+  Pending pending_{};
 };
 // Presentation-only $0D45/$0D47 upper-body overlay frames. The original
 // derives them from look state the serialized race does not carry (R-0036),
@@ -218,7 +240,7 @@ struct ClassicRaceHistory {
   std::optional<std::uint32_t> opponent_finish_frame{};
   bool window_published{};
   std::optional<unsigned> window_table{};
-  std::optional<std::string> published_clock{};
+  ClassicHudPublished published_hud{};
 };
 // The countdown's transition member for a track: 5 + `$1229`, which
 // $83:CC05-CC08 latches at race initialization from the player's reflection

@@ -1453,39 +1453,45 @@ std::string classic_hud_clock(const RaceTimerDigits& t) {
 }
 void ClassicRaceHudClock::observe_update(const ZoomZooState& previous,const ZoomZooState& updated) {
     on_screen_=latest_;
-    // The clock keeps the digits it holds only on an update where the left
-    // field is actually **written**, because only then does the queue return
-    // ($81:EC5E and $81:EB98 both end at $81:ECBC, which clears `$0D17` and
-    // jumps to $81:F357). Two paths write:
-    //
-    //   - a tour race whose dirty flag is set, which is either rider's lap
-    //     counter stepping - `$0EFB` for the player and `$0EFD` for the
-    //     opponent, whose crossing dirties the field without changing what it
-    //     shows (review 2 B1: on `ordinary-controls/down-a` the player crosses
-    //     on 3207 and the opponent on 3208, and picture 3209 still reads the
-    //     pre-tick digits);
-    //   - the player's laps reaching zero, which writes `finish` on either
-    //     track.
-    //
-    // A dirty flag is **not** enough on its own. When `$053F` is set - the
-    // mode-0 race, DRAGSTER, whose field is the fixed word `race` - $81:EB93
-    // falls through at $81:EB9B to the clock handler instead of returning, and
-    // nothing ever clears `$0D17`, so the flag stands set for the rest of the
-    // race while the clock goes on being republished every update. Holding on
-    // any counter step drew the tenths a picture late on three of DRAGSTER's
-    // four crossings (review 3 B1, measured on four accepted DRAGSTER
-    // originals, including a player crossing 1,600 updates before the finish).
     const auto stepped=[&](std::size_t rider) {
         return previous.race.riders[rider].laps_remaining!=updated.race.riders[rider].laps_remaining;
     };
-    const bool wrote_lap=classic_race_scenario(updated.track).tour_race && (stepped(0) || stepped(1));
-    const bool wrote_finish=previous.race.riders[0].laps_remaining!=0 && updated.race.riders[0].laps_remaining==0;
-    if(!wrote_lap && !wrote_finish)latest_=classic_hud_clock(updated.movement.timer);
+    // What this update asks the queue for. `$81:818D` is the only instruction
+    // in the ROM that sets `$0D17`, inside the lap-counter decrement, with the
+    // rider taken from `$0FF9` - so either rider's crossing dirties the left
+    // field. The player's last crossing also blanks the clock and arms its own
+    // finish time; the opponent's finish arms the opponent's.
+    if(stepped(0) || stepped(1))pending_.left=true;
+    if(previous.race.riders[0].laps_remaining!=0 && updated.race.riders[0].laps_remaining==0) {
+        pending_.clock_blank=true;pending_.player_time=true;
+    }
+    if(!previous.race.riders[1].finished && updated.race.riders[1].finished)pending_.opponent_time=true;
+    // Then service the first pending field and stop, as $81:F357 does.
+    const bool finished=updated.race.riders[0].laps_remaining==0;
+    if(pending_.left) {
+        // `$81:EB91` takes `finish` once the laps are gone and `$81:EB98`
+        // jumps to the lap-number writer on a tour race; both paths end at
+        // `$81:ECBC`, which clears the flag and returns through `$81:F357`.
+        // On a sprint mid-race neither runs: `$81:EB93` reads `$053F` and
+        // branches to `$81:EB9B`, whose `JMP` enters the clock handler and
+        // leaves `$0D17` set for the rest of the race.
+        if(finished || classic_race_scenario(updated.track).tour_race) {pending_.left=false;return;}
+    }
+    if(pending_.clock_blank) {latest_.clock_blanked=true;pending_.clock_blank=false;return;}
+    // `$034D` is positive while the digits the timer keeps differ from the ones
+    // the cells hold; the handler writes them and returns. Once blanked they
+    // are never rewritten, because the race clock has stopped.
+    if(!latest_.clock_blanked) {
+        auto digits=classic_hud_clock(updated.movement.timer);
+        if(latest_.clock!=digits) {latest_.clock=std::move(digits);return;}
+    }
+    if(pending_.player_time) {latest_.player_time=true;pending_.player_time=false;return;}
+    if(pending_.opponent_time) {latest_.opponent_time=true;pending_.opponent_time=false;return;}
 }
 ClassicHudText classic_race_hud_text(const ZoomZooState& previous_update,
                                      const ClassicRaceScenario& scenario,
                                      std::optional<std::uint32_t> opponent_finish_frame,
-                                     const std::optional<std::string>& published_clock) {
+                                     const std::optional<ClassicHudPublished>& published) {
     const auto& race=previous_update.race;
     ClassicHudText hud;
     const bool finished=race.riders[0].finished && race.riders[0].laps_remaining==0;
@@ -1500,8 +1506,20 @@ ClassicHudText classic_race_hud_text(const ZoomZooState& previous_update,
     // measured against consecutive originals 6480-6500 of the M4-16 primary
     // and 6465-6500 of compound-reverse, which the kept 20-frame pictures
     // stepped straight over).
+    // With the queue followed, every one of these is what it actually wrote;
+    // the offsets below are the fallback, and are the queue's own answer only
+    // while nothing competes for it.
+    if(published) {
+        if(!published->clock_blanked)
+            hud.clock=published->clock?*published->clock:classic_hud_clock(previous_update.movement.timer);
+        if(published->player_time && race.total_times[0]<60000U)
+            hud.player_time=hud_time(race.total_times[0]);
+        if(published->opponent_time && race.total_times[1]<60000U)
+            hud.opponent_time=hud_time(race.total_times[1]);
+        return hud;
+    }
     if(!finished || race.finish_delay<1)
-        hud.clock=published_clock?*published_clock:classic_hud_clock(previous_update.movement.timer);
+        hud.clock=classic_hud_clock(previous_update.movement.timer);
     // The player's own time is written on `finish + 3`, which reads delay 2,
     // and the opponent's two updates after the opponent finishes, which is the
     // picture one update after that frame.
@@ -1655,14 +1673,14 @@ void draw_classic_caption(RgbFrame& frame,const ZoomZooState& published,
 // same colour as the caption. The original's own tilemap rows and columns:
 // the left field and the clock on rows 2-3, the player's finish time on rows
 // 5-6 and the opponent's on rows 20-21, both from column 13.
-void draw_classic_hud(RgbFrame& frame,const ZoomZooState& published,
+void draw_classic_hud(RgbFrame& frame,const ZoomZooState& state,
                       const ClassicRacePresentationContent& content,
                       std::optional<std::uint32_t> opponent_finish_frame,
-                      const std::optional<std::string>& published_clock,
+                      const std::optional<ClassicHudPublished>& published,
                       std::array<std::uint8_t,3> ink,std::bitset<256*224>& inked) {
     const auto font=content.caption_font;
     if(font.size()!=2048)return;
-    const auto hud=classic_race_hud_text(published,content.scenario,opponent_finish_frame,published_clock);
+    const auto hud=classic_race_hud_text(state,content.scenario,opponent_finish_frame,published);
     draw_bg3_text(frame,font,hud.left_column,2,hud.left,ink,inked);
     draw_bg3_text(frame,font,24,2,hud.clock,ink,inked);
     draw_bg3_text(frame,font,13,5,hud.player_time,ink,inked);
@@ -1834,7 +1852,8 @@ RgbFrame render_classic_race(const ZoomZooState& state,const ClassicRacePresenta
     // same way: over the track, under the riders with the measured red add, and
     // under the channel-6 window members.
     draw_classic_hud(frame,rider_source,content,history?history->opponent_finish_frame:std::nullopt,
-                     history?history->published_clock:std::nullopt,colour(cgram,22),caption_ink);
+                     history?std::optional<ClassicHudPublished>(history->published_hud):std::nullopt,
+                     colour(cgram,22),caption_ink);
     for(int rider=1;rider>=0;--rider) {
         const auto& source=rider_source.movement.riders[static_cast<std::size_t>(rider)];
         const auto oam=project_rider_oam(source.motion.x,source.motion.y,rider_source.race.camera.x,
