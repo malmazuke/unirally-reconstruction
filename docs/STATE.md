@@ -207,6 +207,33 @@ The accepted M3 `update_movement` path keeps the contradictory-direction
 precedence recovered in `sample_controller` and is unchanged; the shared engine
 never presents that precedence with a pair.
 
+[CLASSIC-STUNT-NAMES](../tasks/CLASSIC-STUNT-NAMES.md) (19-20 September 2026)
+draws the original's on-screen captions: the stunt names, the hint sentences and
+the winner, draw and loser lines. They are the on-screen half of the reward
+queue the engine already runs
+([R-0042](research/R-0042-stunt-name-captions.md)): the event under the player's
+read cursor indexes sixteen ASCII bytes in the table at `$17:C9F4`, each
+character draws as two 8x16 font tiles `$10` apart on BG3 at word `$1800`, and
+the queue blanks the caption two ways - a sentence ends by publishing sixteen
+spaces, and `$81:BEA8-BEF1` blanks the display when the queue runs dry. The
+renderer needs no new state; the pack gains one additive entry, the caption
+table, under profile `classic.pal.crawler.two-tracks.v9`, and the font sheet was
+already in it. The caption composes over the track, under the channel-6 window
+members, and under the riders, where a sprite over a glyph shows
+`red = min(31, sprite_red + 13)` - the caption's own attribute colour added
+rather than either layer replacing the other. Every caption band measured
+matches the original exactly: 274 kept frames of the M4-16 primary at worst
+mismatch 0, the DRAGSTER and ZOOM ZOO frames, and eight frames naming a landed
+`roll` and `twist`. Approved after three returned rounds, which caught a compose
+order the primary had explained away as a declared omission, a throw on three
+voice entries that would have ended a race, and an unsound gate shortcut the
+primary had added; acceptance is conditional on the final-tip CI and remote
+verification in the ignored closeout
+`artifacts/classic-stunt-names-integration/closeout.json` in the main checkout.
+Declared limits: no capture displays a voice entry (72-87), every measured blend
+is on ZOOM ZOO, and the configuration selecting between the caption's two colour
+indices is unrecovered.
+
 ## Accepted product and evidence
 
 - Milestones M0–M3 are accepted; `m3` remains the latest milestone tag. The
