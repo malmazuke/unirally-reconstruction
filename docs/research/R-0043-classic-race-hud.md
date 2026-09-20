@@ -151,12 +151,20 @@ measured rather than asserted.
 | DRAGSTER, 12 race frames of the continuous-Right manifest | HUD rows | 3,994 | **0** |
 | | rows the bar covered | 36,864 | **0** |
 | | whole picture | 42,820 | 403 |
+| 10:00 time-out, 24 frames of the 9:59.9 hold | HUD rows | not run at the base | **0** |
+| | whole picture | not run at the base | 144 |
 
 DRAGSTER's frames 1400, 1500, 1601, 1800, 2000, 3000, 3213, 3400, 3450 and the
 finish frame 3453 are **pixel-identical over the whole picture**. The six frames
 from 3454 differ by about 50,000 pixels in both builds: the original has turned
 the screen off for result loading and native has not, which is the known
-transition timing and nothing to do with the HUD.
+transition timing and nothing to do with the HUD. The DRAGSTER row above is the
+twelve race frames, and the arithmetic is on the face of the sweep: its own
+totals cover all eighteen frames, each blank frame contributes the whole of both
+boxes (4,096 and 3,840 pixels), and 24,576 and 23,040 are exactly six of each,
+so the twelve race frames contribute nothing. The same holds for the time-out
+sweep, where the 35 frames are 24 of the 9:59.9 hold and 11 blank ones from
+31933, the two-update-late result load already declared in `docs/STATE.md`.
 
 Outside those four boxes the primary's residual is 36 pixels a frame from 1620
 on, and they are one shape: the red off-screen rider arrow at x 40-47, y
