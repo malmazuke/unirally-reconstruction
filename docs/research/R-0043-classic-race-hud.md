@@ -131,6 +131,47 @@ paint the flat window colour over everything inside them. Native draws the HUD
 into the same ink mask as the caption at the same point of the compose order, so
 one rule covers both.
 
+## Measurement
+
+`hud_compare.py` regenerates the native timeline from an original capture's own
+input timeline and renders every kept original frame; `hud_compare_manifest.py`
+does the same from a replay manifest's controller events. Four boxes are scored:
+the HUD's own rows (y 15-30), the rows the authored bar used to cover (y 0-14),
+and the two finish-time bands (x 104-159 at y 39-54 and y 159-174). The same
+sweep was run against a build of the base commit `92f46ba`, so the change is
+measured rather than asserted.
+
+| Sweep | Box | Base `92f46ba` | Candidate |
+| --- | --- | ---: | ---: |
+| M4-16 primary, 274 kept frames | HUD rows | 75,154 | **0** |
+| | rows the bar covered | 838,656 | **0** |
+| | whole picture | 938,565 | 18,601 |
+| brake (loser) race, 274 kept frames | HUD rows | 75,154 | **0** |
+| | rows the bar covered | 838,656 | **0** |
+| DRAGSTER, 12 race frames of the continuous-Right manifest | HUD rows | 3,994 | **0** |
+| | rows the bar covered | 36,864 | **0** |
+| | whole picture | 42,820 | 403 |
+
+DRAGSTER's frames 1400, 1500, 1601, 1800, 2000, 3000, 3213, 3400, 3450 and the
+finish frame 3453 are **pixel-identical over the whole picture**. The six frames
+from 3454 differ by about 50,000 pixels in both builds: the original has turned
+the screen off for result loading and native has not, which is the known
+transition timing and nothing to do with the HUD.
+
+Outside those four boxes the primary's residual is 36 pixels a frame from 1620
+on, and they are one shape: the red off-screen rider arrow at x 40-47, y
+112-126, which the M4-16 review already listed as a declared omission. The
+picture is therefore fully accounted for.
+
+What is left in the two finish-time bands mid-race is the original's own
+**signed split time**, which native has never drawn: `-0:00:1` at rows 20-21 on
+primary frame 3900 and a signed `0:01:3` at rows 5-6 on 2080, a sign glyph
+outside the caption alphabet followed by `M:SS:t`. Those same cells hold the
+finish times after the finish, where native matches the original exactly,
+including in the loser race where the opponent finishes first and its time
+stands alone. The split display is a separate mechanism and is **not** recovered
+here; before this task neither use of those cells was drawn at all.
+
 ## Domain and limits
 
 - Measured on both tracks: ZOOM ZOO through the M4-16 primary original's 275

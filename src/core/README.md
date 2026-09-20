@@ -221,6 +221,15 @@ scroll from the previous update's camera, the rider objects, the fade from
 whose pack carries the recovered mode-0 result screen draws it, the tour race
 draws the authored lap graph. `classic_finish_view` derives the legacy finish
 phases the recovered result screen reads, for presentation only.
+`draw_bg3_text` draws the one BG3 text layer both the caption (R-0042) and the
+HUD (R-0043) live on: a character is a tile and the tile `$10` above it, a cell
+is eight by sixteen, and tilemap row `r` shows at `y = 8r - 1`. The caption sits
+at row 10 column 8; `classic_race_hud_text` gives the HUD's four fields - the
+left field (the lap count, `race` or `finish`) and the clock on row 2, and the
+two finish times on rows 5 and 20 - from the published state, the scenario's
+race mode and the finish frames. Both draw into one ink mask before the riders,
+so the measured red add where a sprite covers a glyph and the channel-6 members
+that cover everything apply to both.
 `classic_race_presentation_runner` renders one state, a timeline frame, or
 the window member per row. The accepted M3 `render_dragster_headless` and its
 five-pair rider atlas remain only behind the frozen DRAGSTER v1 contracts; the

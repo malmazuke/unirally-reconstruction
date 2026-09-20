@@ -1443,9 +1443,13 @@ ClassicHudText classic_race_hud_text(const ZoomZooState& previous_update,
     // `race` too, and $053F only suppresses the lap number.
     if(finished) {hud.left="finish";hud.left_column=1;}
     else if(scenario.tour_race) {
-        hud.left=std::to_string(classic_hud_lap(race.riders[0].laps_remaining,scenario.laps))
-                 +"/"+std::to_string(scenario.laps);
-        hud.left_column=2;
+        // $81:EC61-$81:ECBC puts the lap's ones digit at column 2 and its tens
+        // at column 1, and $81:D68C-$81:D6E5 the total from column 4, so the
+        // count is right-aligned on column 2 and the total left-aligned on 4.
+        // Neither track of this product reaches a second digit in either.
+        const auto lap=classic_hud_lap(race.riders[0].laps_remaining,scenario.laps);
+        hud.left=std::to_string(lap)+"/"+std::to_string(scenario.laps);
+        hud.left_column=lap>=10U?1U:2U;
     } else {hud.left="race";hud.left_column=2;}
     // The corner clock shows tenths, one digit per field, and the original
     // blanks columns 24-30 of both rows on the second update after the finish

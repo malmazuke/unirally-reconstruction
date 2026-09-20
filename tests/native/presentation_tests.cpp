@@ -48,6 +48,16 @@ int main() {
     // The corner clock shows tenths and no more; the subframe never reaches it.
     require(hud.left == "2/3" && hud.left_column == 2 && hud.clock == "0:03:2");
     require(hud.player_time.empty() && hud.opponent_time.empty());
+    // The count is right-aligned on column 2, so a second digit takes column 1
+    // ($81:EC94-$81:ECBC). Neither track reaches one.
+    {
+      auto twelve = zoom;
+      twelve.laps = 12;
+      racing.race.riders[0].laps_remaining = 3;
+      const auto wide = unirally::classic_race_hud_text(racing, twelve, std::nullopt);
+      require(wide.left == "10/12" && wide.left_column == 1);
+      racing.race.riders[0].laps_remaining = 2;
+    }
     // A race whose mode is not the tour race shows the word instead of a count
     // ($81:D6E8, DRAGSTER originals 1380-3213).
     racing.track = unirally::ClassicRaceTrack::Dragster;
