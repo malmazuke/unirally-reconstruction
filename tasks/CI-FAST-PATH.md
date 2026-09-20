@@ -113,7 +113,7 @@ workflow-document change for the coordinator, not this task.
 | 7 | Independent review of `555a62b` | fresh Claude Opus 5 reviewer in `.worktrees/ci-fast-path-review`, report [CI-FAST-PATH-review](CI-FAST-PATH-review.md) (commit `da745f6`, cherry-picked here) | verdict return: three required corrections (a rename hid its deleted source path because `git diff` folds renames; tracked JSON code maps under `docs/` counted as documentation although the suite checks them; the "still the tip's green run" claim did not hold after a cancelled run because the classifier only compared trees), two should-fix (a commit was judged by the classifier it introduced; the acceptance row about `git diff main` was wrong), five advisories; twelve withheld cases, every recorded outcome reproduced | apply: `--no-renames`; documentation defined as Markdown by extension plus `.env.example`; a base-run check through `gh api` requiring a successful completed run of the workflow on the base commit before the fast path, so a fast-path success differs from the last full success only in documentation by induction; the base revision's classifier copy; the workflow test enumerates every lab step; docstring, inventory row and record corrected; the 27 s of the `changes` job accepted |
 | 8 | The corrections take the full path and are judged by the base's classifier | push of `139261d` (classifier, workflow, docs, tests, record), run 35482286606 | success in 3.28 min; the `changes` job logged `classifier taken from base 555a62b` and `docs_only=false: 3 non-documentation path(s), first .github/scripts/classify_changes.py`; both lab jobs about 180 s with every build and test step run | push a records-only commit so the new classifier and the base-run gate run on the hosted runner |
 | 9 | The suite passes on the corrections commit | `test --suite synthetic --preset lab-debug` in the worktree (`artifacts/ci-fast-path/test-corrections.json`) | `status=passed`, 458 checks, 13 `py:test_ci_fast_path.*`, source clean at `139261d` and unchanged during the run | none |
-| 10 | A records-only push after a successful full run takes the fast path through the new gate | push of this commit | filled after the run | re-review |
+| 10 | A records-only push after a successful full run takes the fast path through the new gate | push of `89edda0` (record only), run 35482420095 | success in 0.38 min: `changes` 5 s, both lab jobs 7 s with only checkout, `Docs-only fast path` and `Upload reports` run; the `changes` artifact reads `all 1 changed path(s) are documentation; 1 successful completed run(s) of synthetic.yml on base 139261d` | re-review |
 | 5 | The suite passes locally with the new test | `bootstrap`, `build --preset lab-debug`, `test --suite synthetic --preset lab-debug` in the worktree (`artifacts/ci-fast-path/test.json`) | `status=passed`, 10 `py:test_ci_fast_path.*` checks passed | none |
 
 ## Handoff
@@ -140,7 +140,7 @@ workflow-document change for the coordinator, not this task.
 - Unavailable/skipped checks: no pull-request event was exercised on the
   hosted runner (the repository takes no external pull requests); the
   pull-request base rule is covered by the classifier's unit test only.
-- Exact next experiment/command: independent review of this checkpoint.
+- Exact next experiment/command: re-review of the corrections; then integration.
 - Remaining dependencies: none.
 - Runtime needs: GitHub Actions on `origin`; the local suite needs the
   isolated toolchain and a `lab-debug` build.
@@ -152,8 +152,13 @@ workflow-document change for the coordinator, not this task.
 
 ## Review and integration
 
-- Reviewer and independent reproduction/withheld-case results: pending
-- Required changes or acceptance rationale: pending
+- Reviewer and independent reproduction/withheld-case results: a fresh
+  Claude Opus 5 subagent in `.worktrees/ci-fast-path-review`; round 1 at
+  `555a62b` returned (report `da745f6`, twelve withheld cases, every recorded
+  outcome reproduced except the acceptance row it corrected); re-review pending
+- Required changes or acceptance rationale: the three required and two
+  should-fix items and advisories 1, 2, 3 and 5 applied at `139261d`;
+  advisory 4 (the `changes` job's 27 s) accepted as the price of the gate
 - Exact merge candidate and required-check results: pending
 - Integrated commit and evidence location: pending
 - Remote synchronization: pending
