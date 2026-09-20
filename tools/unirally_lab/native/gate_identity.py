@@ -40,7 +40,10 @@ def sha(data: bytes) -> str:
 
 
 def ninja(args: list[str], build: Path, tool: str) -> list[str]:
-    out = subprocess.run([tool, '-C', str(build), '-t', *args], capture_output=True, text=True)
+    try:
+        out = subprocess.run([tool, '-C', str(build), '-t', *args], capture_output=True, text=True)
+    except OSError as error:                      # a missing ninja is a refusal, not a traceback
+        raise RuntimeError(f'cannot run {tool}: {error}') from error
     if out.returncode:
         raise RuntimeError(f'ninja -t {" ".join(args)} failed: {out.stderr.strip()[:200]}')
     return out.stdout.splitlines()
