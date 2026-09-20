@@ -151,6 +151,43 @@ int main() {
       unirally::ZoomZooState i = h;
       crossing.observe_update(h, i);
       require(crossing.published() == std::optional<std::string>("0:32:5"));  // picture 3210
+
+      // DRAGSTER does not hold on a crossing at all. Its `$053F` branch falls
+      // through at $81:EB9B to the clock instead of returning, and nothing
+      // clears `$0D17`, so the flag stands set for the rest of the race while
+      // the clock is republished every update; only the player's laps reaching
+      // zero writes the field. Holding on any counter step drew the tenths a
+      // picture late on three of DRAGSTER's four crossings (review 3 B1,
+      // measured at regression-landing-held-roll-a 1600 and random-1-a 3215).
+      unirally::ClassicRaceHudClock sprint;
+      unirally::ZoomZooState j{}, k{}, l{};
+      j.track = unirally::ClassicRaceTrack::Dragster;
+      j.race.riders[0].laps_remaining = 2;
+      j.race.riders[1].laps_remaining = 2;
+      j.movement.timer.tens_seconds = 3;
+      j.movement.timer.seconds = 3;
+      j.movement.timer.tenths = 5;
+      k = j;
+      k.race.riders[0].laps_remaining = 1;   // the player crosses and the tenth ticks
+      k.movement.timer.tenths = 6;
+      sprint.observe_update(j, j);
+      sprint.observe_update(j, k);
+      require(sprint.published() == std::optional<std::string>("0:33:5"));
+      l = k;
+      sprint.observe_update(k, l);
+      require(sprint.published() == std::optional<std::string>("0:33:6"));   // not held
+      // Its finish does write the field, so that one update holds.
+      unirally::ZoomZooState m = l, n;
+      m.movement.timer.tenths = 7;
+      n = m;
+      n.race.riders[0].laps_remaining = 0;
+      n.race.riders[0].finished = 1;
+      sprint.observe_update(l, m);
+      sprint.observe_update(m, n);
+      require(sprint.published() == std::optional<std::string>("0:33:7"));
+      unirally::ZoomZooState o = n;
+      sprint.observe_update(n, o);
+      require(sprint.published() == std::optional<std::string>("0:33:7"));   // held by `finish`
       // With no history the digits come from the state itself, which is exact
       // except on that one picture.
       require(unirally::classic_race_hud_text(c, zoom, std::nullopt).clock == "0:32:6");

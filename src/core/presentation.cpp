@@ -1453,20 +1453,34 @@ std::string classic_hud_clock(const RaceTimerDigits& t) {
 }
 void ClassicRaceHudClock::observe_update(const ZoomZooState& previous,const ZoomZooState& updated) {
     on_screen_=latest_;
-    // The left field goes first in the redraw queue, so an update that dirties
-    // it spends the queue and the clock cells keep the digits they hold. The
-    // flag is `$0D17`, and **either** rider's lap counter sets it: `$0EFB` for
-    // the player and `$0EFD` for the opponent, even though the opponent's never
-    // changes what the field shows. Holding only on the player's counter left
-    // the clock a picture early whenever the two cross on consecutive updates
-    // (review 2 B1: `ordinary-controls/down-a`, where the player crosses on
-    // 3207 and the opponent on 3208, `$0D17` stays pending across both and
-    // clears on 3209, and the original's picture 3209 still reads `0:32:4`).
-    const auto stepped=[](const ZoomZooState& before,const ZoomZooState& after,std::size_t rider) {
-        return before.race.riders[rider].laps_remaining!=after.race.riders[rider].laps_remaining;
+    // The clock keeps the digits it holds only on an update where the left
+    // field is actually **written**, because only then does the queue return
+    // ($81:EC5E and $81:EB98 both end at $81:ECBC, which clears `$0D17` and
+    // jumps to $81:F357). Two paths write:
+    //
+    //   - a tour race whose dirty flag is set, which is either rider's lap
+    //     counter stepping - `$0EFB` for the player and `$0EFD` for the
+    //     opponent, whose crossing dirties the field without changing what it
+    //     shows (review 2 B1: on `ordinary-controls/down-a` the player crosses
+    //     on 3207 and the opponent on 3208, and picture 3209 still reads the
+    //     pre-tick digits);
+    //   - the player's laps reaching zero, which writes `finish` on either
+    //     track.
+    //
+    // A dirty flag is **not** enough on its own. When `$053F` is set - the
+    // mode-0 race, DRAGSTER, whose field is the fixed word `race` - $81:EB93
+    // falls through at $81:EB9B to the clock handler instead of returning, and
+    // nothing ever clears `$0D17`, so the flag stands set for the rest of the
+    // race while the clock goes on being republished every update. Holding on
+    // any counter step drew the tenths a picture late on three of DRAGSTER's
+    // four crossings (review 3 B1, measured on four accepted DRAGSTER
+    // originals, including a player crossing 1,600 updates before the finish).
+    const auto stepped=[&](std::size_t rider) {
+        return previous.race.riders[rider].laps_remaining!=updated.race.riders[rider].laps_remaining;
     };
-    if(!stepped(previous,updated,0) && !stepped(previous,updated,1))
-        latest_=classic_hud_clock(updated.movement.timer);
+    const bool wrote_lap=classic_race_scenario(updated.track).tour_race && (stepped(0) || stepped(1));
+    const bool wrote_finish=previous.race.riders[0].laps_remaining!=0 && updated.race.riders[0].laps_remaining==0;
+    if(!wrote_lap && !wrote_finish)latest_=classic_hud_clock(updated.movement.timer);
 }
 ClassicHudText classic_race_hud_text(const ZoomZooState& previous_update,
                                      const ClassicRaceScenario& scenario,

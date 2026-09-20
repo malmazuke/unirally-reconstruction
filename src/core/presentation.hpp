@@ -169,22 +169,25 @@ struct ClassicHudText {
 // `published_clock` is the six characters the original's clock cells are still
 // holding, followed update by update by `ClassicRaceHudClock`. Without it the
 // digits are derived from `previous_update` itself, which is exact except on
-// the one picture after an update that redrew the left field.
+// the pictures after an update that **wrote** the left field - at most four a
+// tour race and one a sprint, and only where a tenth ticked on one of them.
 ClassicHudText classic_race_hud_text(const ZoomZooState& previous_update,
                                      const ClassicRaceScenario& scenario,
                                      std::optional<std::uint32_t> opponent_finish_frame,
                                      const std::optional<std::string>& published_clock={});
 // The clock cells hold what the redraw queue last wrote. The queue rewrites at
-// most one field per update and the left field goes first ($81:EB86 returns
-// through $81:F357), so an update that dirties it leaves the clock digits
-// standing for one more picture. The flag is `$0D17`, and **either** rider's
-// lap counter sets it - `$0EFB` for the player and `$0EFD` for the opponent,
-// whose crossing changes nothing the field shows. Measured twice: on
-// compound-reverse, whose update 3212 ticks the tenth and turns the player's
-// lap together, picture 3213 keeps the old tenth and 3214 has caught up; and
-// on ordinary-controls/down-a, where the player crosses on 3207 and the
-// opponent on 3208, the flag stays pending across both and picture 3209 still
-// reads the pre-tick digits.
+// most one field per update, the left field goes first, and an update that
+// **writes** it spends that update ($81:EC5E and $81:EB98 both end at
+// $81:ECBC, which clears `$0D17` and returns through $81:F357), so the clock
+// digits stand for one more picture. Two paths write: a tour race whose flag
+// `$0D17` is set - either rider's lap counter sets it, the opponent's without
+// changing what the field shows - and the player's laps reaching zero, which
+// writes `finish` on either track. A dirty flag alone is not enough: when
+// `$053F` is set, $81:EB93 falls through at $81:EB9B to the clock and nothing
+// clears the flag, so a sprint holds on none of its crossings. Measured on
+// compound-reverse 3212 (player), ordinary-controls/down-a 3207-3208 (both
+// riders) and DRAGSTER's regression-landing-held-roll-a 1599, which the
+// original does not hold.
 class ClassicRaceHudClock {
 public:
   void reset() {latest_.reset();on_screen_.reset();}

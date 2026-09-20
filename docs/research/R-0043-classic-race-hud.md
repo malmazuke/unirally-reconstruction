@@ -122,13 +122,27 @@ times one picture late; the kept pictures step 20 frames apart and jump 6484 to
 6500, so the whole transition fell in the gap and the sweep could not see it.
 The independent review found it by recapturing the originals consecutively.
 
-**The clock cells hold what the queue last wrote.** Since the queue rewrites at
-most one field per update and the left field goes first, an update that dirties
-the left field spends that update and the clock digits stand for one more
-picture. The flag is `$0D17`, and what sets it is **either rider's lap counter
-stepping**: `$0EFB` for the player and `$0EFD` for the opponent, whose crossing
-changes nothing the field displays. Both readings of that rule were measured,
-in that order, and the first was too narrow:
+**The clock cells hold what the queue last wrote.** The queue rewrites at most
+one field per update, the left field goes first, and an update on which the left
+field is **written** spends that update, so the clock digits stand for one more
+picture. Two paths write it, and only those two: a tour race whose dirty flag
+`$0D17` is set, and the player's laps reaching zero, which writes `finish` on
+either track. Both end at `$81:ECBC`, which clears the flag and returns through
+`$81:F357`.
+
+A dirty flag on its own is not enough, and that is the `$053F` branch this
+record describes above: on the mode-0 race, whose field is the fixed word
+`race`, `$81:EB93` falls through at `$81:EB9B` to the clock handler instead of
+returning, and nothing ever clears `$0D17`. Measured on DRAGSTER captures, the
+flag therefore stands set for **1,639 to 2,061 consecutive updates** from the
+first crossing while the clock goes on being republished every update, against
+seven or eight discrete sets in a whole ZOOM ZOO race.
+
+What sets the flag on a tour race is **either rider's lap counter stepping**:
+`$0EFB` for the player and `$0EFD` for the opponent, whose crossing dirties the
+field without changing what it displays. Three readings of this rule were
+measured, in this order, and the first two were wrong - each in a way the
+evidence then in hand could not see:
 
 - The discriminating case against "only at the finish" is `compound-reverse`
   update **3212**, which ticks the tenth and turns the player's lap together on
@@ -141,21 +155,33 @@ in that order, and the first was too narrow:
   while the state says `0:32:5`. Holding on the player's field alone drew that
   picture one tenth early; the independent review found it.
 
+- The discriminating case against "any counter step, on either track" is
+  DRAGSTER itself, where the original holds on none of them: at
+  `regression-landing-held-roll-a` update **1599** the player crosses the start
+  line and the tenth ticks together, 1,600 updates before the finish, and the
+  original's picture 1600 shows the **new** tenth. The independent review found
+  that as a regression against the previous candidate.
+
 Native follows this with `ClassicRaceHudClock`, which publishes the digits on
-every observed update except one on which either rider's lap counter stepped,
-and lags one update like the rider overlays. Without the history the digits are derived from the drawn state
-instead, which differs from the original on the pictures after those updates -
-six or seven per race, wherever a tenth ticks on one of them, and **not** "one
-picture" as an earlier draft of this record said. The only caller without the
+every observed update except one on which the left field was written, and lags
+one update like the rider overlays. Without the history the digits are derived from the drawn state
+instead, which differs from the original on the pictures after the updates that
+write the field - at most four a tour race and one a sprint, and only where a
+tenth ticks on one of them, which is none or one picture in most races and was
+two in the worst measured. Earlier drafts of this record said "one picture" and
+then "six or seven", and both were wrong. The only caller without the
 history is the single-state debug form of `classic_race_presentation_runner`,
 which already omits the rider overlays and the opponent-won banner for the same
 reason; the app and the `--timeline` form both keep the tracker.
 
-The rule was checked rather than fitted: over five ZOOM ZOO captures
-(`boundary-a`, `brake-a`, `down-a`, `compound-reverse-a`, `trick-long-a`),
-`$0D17` is set on six or seven updates inside the race proper and **every one
-of them is one of the two lap counters stepping** - there is no set this
-predicate fails to explain (`queue_probe.py`).
+The rule was checked on both tracks, after two rounds of checking it on one.
+Over five ZOOM ZOO captures (`boundary-a`, `brake-a`, `down-a`,
+`compound-reverse-a`, `trick-long-a`) `$0D17` is set on seven or eight updates
+inside the race proper and every one is a lap counter stepping
+(`queue_probe.py`); over the DRAGSTER captures the flag is sticky and the
+counters step four times a race, none of which the original holds
+(`dragster_probe.py`). A probe run on one track cannot establish a rule for
+both - that is how this was missed twice.
 
 ## The 10:00 time-out
 
