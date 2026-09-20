@@ -105,6 +105,11 @@ workflow-document change for the coordinator, not this task.
 
 | Attempt | Hypothesis | Experiment | Observation | Next decision |
 | --- | --- | --- | --- | --- |
+| 1 | The classifier reads real history correctly | `GITHUB_EVENT_NAME=push CLASSIFY_BASE=<main~1> python3 .github/scripts/classify_changes.py` in this checkout | `docs_only=true: all 6 changed path(s) are documentation` for the JEV-JUDGMENT-HARNESS integration commit; an empty range gives `docs_only=false: no changed paths` | keep the empty-range default as full path |
+| 2 | A first push takes the full path | first push of `task/ci-fast-path` at `0c0e7a1` (workflow, classifier, docs, this record), run 35481483430 | the `changes` job succeeded with `no base commit (new branch or empty before sha)` and `docs_only=false` (artifact `changes.json`); both lab jobs ran doctor and bootstrap and were building when the next push cancelled the run under the workflow's `cancel-in-progress` rule | the cancelled run still evidences the classification; the full path is proven by attempt 3 |
+| 3 | A code push with a determinable base takes the full path and runs the tooling tests once per job | push of `628f7f9` (the test file only), run 35481505083 | success in 3.55 min; `changes` 6 s, `1 non-documentation path(s), first tests/tooling/test_ci_fast_path.py`; both lab jobs 180 s; every build and test step ran; in the uploaded reports `python_tooling_tests` is `passed` (429 py checks) in `test-debug.json` and `skipped` optional with 0 py checks in `test-app-debug.json`, `test-sanitize.json`, `test-app-sanitize.json`, each still with 23 ctest checks and the repeatability probe passed; macOS steps: lab-debug test 100 s, app-debug test under 5 s (was 80 s), SDL build 53 s; Linux sanitizers 61 s (was 134 s) | record and push this docs-only commit as attempt 4 |
+| 4 | A docs-only push takes the fast path and stays green | push of this record only | filled after the run | review |
+| 5 | The suite passes locally with the new test | `bootstrap`, `build --preset lab-debug`, `test --suite synthetic --preset lab-debug` in the worktree (`artifacts/ci-fast-path/test.json`) | `status=passed`, 10 `py:test_ci_fast_path.*` checks passed | none |
 
 ## Handoff
 
