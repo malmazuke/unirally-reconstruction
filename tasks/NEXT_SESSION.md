@@ -1,5 +1,30 @@
 # Next session
 
+**Status on 20 September 2026 UTC (after CLASSIC-RACE-HUD): no task is active;
+nothing is blocked. A new session starts from a new user request.**
+CLASSIC-RACE-HUD draws the original's in-race HUD - the lap field (`race` on
+DRAGSTER, `finish` at the end), the corner clock and both centred finish times -
+on the caption's own BG3 layer, replacing the authored bar. No pack change: the
+glyphs were already in `presentation.classic.font.v1`, so the profile stays
+`classic.pal.crawler.two-tracks.v9`. Closeout
+`artifacts/classic-race-hud-integration/closeout.json` in the main checkout.
+
+**Two things from that task are worth carrying forward.** The original's redraw
+queue writes at most one HUD field per update, with the left field first, and
+every one of the four returned review rounds was about a consequence of it; the
+rule and its evidence are in [R-0043](../docs/research/R-0043-classic-race-hud.md).
+And the reason each was missed is the same: the kept original pictures step
+twenty frames apart, so a sweep over them can score 0 while the updates between
+them are wrong. **Capture consecutive originals across every transition a change
+recovers**, with `recapture.py`, and probe both tracks - a rule established on
+one track was wrong on the other twice.
+
+**Still open from it**, both declared: the off-screen rider arrow, and the
+original's **signed split time**, which occupies the two centred cells during
+the race (native draws them only at the finish, where they match exactly). The
+cheapest next experiment for the split time is an access capture over the
+updates on which `$0349` and the opponent's flag are set mid-race.
+
 **Status on 20 September 2026 UTC (after CI-FAST-PATH): no task is active;
 nothing is blocked. A new session starts from a new user request.**
 CLASSIC-STUNT-NAMES, JEV-JUDGMENT-HARNESS and CI-FAST-PATH are reviewed and

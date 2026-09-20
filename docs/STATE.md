@@ -1,5 +1,45 @@
 # Project state
 
+Updated 20 September 2026: **CLASSIC-RACE-HUD is reviewed and integrated**;
+acceptance is conditional on the final-tip CI and remote verification recorded
+in the ignored closeout `artifacts/classic-race-hud-integration/closeout.json`
+in the main checkout. The shared renderer now draws the original's in-race HUD
+instead of an authored bar: the left field (the lap count on a tour race, the
+word `race` otherwise, `finish` once the player's laps run out), the corner
+clock with the original's tenths, and the two centred finish times, all on the
+caption's own BG3 layer, in the caption's font sheet and colour, composed under
+the riders with the measured red add and under the channel-6 window members
+([R-0043](research/R-0043-classic-race-hud.md)). **No pack change**: every
+glyph was already in `presentation.classic.font.v1`, so the profile stays
+`classic.pal.crawler.two-tracks.v9`.
+
+Measured against the originals, the HUD rows and the rows the authored bar used
+to cover differ by **0 pixels on every frame on which the original is drawing a
+race**: 274 kept frames of the M4-16 primary, 274 of the loser race, 192 of
+trick-long, the 24 frames of the 9:59.9 time-out hold, DRAGSTER's twelve kept
+race frames, and six sets of consecutive frames covering every transition the
+change recovers. DRAGSTER 1400-3453 and its whole finish transition are
+pixel-identical over the whole picture. Against a build of the base commit the
+primary's whole-picture mismatch falls from 938,565 pixels to 18,601, and what
+remains is two declared omissions: the off-screen rider arrow, and the
+original's **signed split time**, which occupies the two centred cells during
+the race and is a separate unrecovered mechanism - this task draws those cells
+only at the finish, where they match exactly.
+
+The recovery took **five review rounds, four of them returned**, and the record
+keeps why. The HUD itself was right from the first candidate; every return was
+about the original's redraw queue, which writes at most one field per update
+with the left field first. In order: three fields drawn one picture late
+because the queue's update numbers were applied to the drawn state; the
+opponent's crossing also holding the clock; DRAGSTER holding on no crossing at
+all, because its `$053F` branch enters the clock handler without clearing
+`$0D17`; and the finish sequence placed at fixed offsets, which reproduce the
+queue only while nothing competes for it. Each was found by a case the evidence
+then in hand could not see, and the fourth round confirmed the final rule from
+the ROM rather than from the record. Native now follows the queue itself.
+Review records: [CLASSIC-RACE-HUD-review](../tasks/CLASSIC-RACE-HUD-review.md)
+and its rounds 2 to 5.
+
 Updated 20 September 2026: **CI-FAST-PATH is reviewed and integrated**;
 acceptance is conditional on the final-tip CI and remote verification recorded
 in the ignored closeout `artifacts/ci-fast-path-integration/closeout.json` in
@@ -101,8 +141,11 @@ Declared omissions: audio; the original's decorative objects and captions
 WINNER caption, off-screen arrows) except both tracks' countdown, GO and
 winner windows, recovered in R-0040 and ZOOM-ZOO-WINDOW-EFFECTS, and except the
 on-screen stunt names, which the user chose as the next task and
-[CLASSIC-STUNT-NAMES](../tasks/CLASSIC-STUNT-NAMES.md) now owns; original
-HUD and result pixel style;
+[CLASSIC-STUNT-NAMES](../tasks/CLASSIC-STUNT-NAMES.md) now owns; **the in-race
+HUD and both finish times are no longer omitted** - CLASSIC-RACE-HUD draws them
+from the original's own fields (R-0043), leaving the off-screen rider arrow and
+the signed split time those cells hold during the race; the result pixel
+style;
 the two-update later result load after a time-out (audio handshake timing).
 Other tracks, riders, modes, menus and multiplayer remain outside the product.
 
