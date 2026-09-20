@@ -123,6 +123,34 @@ int main() {
       d.movement.timer.tenths = 7;
       clock.observe_update(c, d);
       require(clock.published() == std::optional<std::string>("0:32:6"));
+      // `$0D17` is set by **either** rider's counter, so the opponent's
+      // crossing holds the clock too although it changes nothing the field
+      // shows. The second review returned the task for exactly this: on
+      // ordinary-controls/down-a the player crosses on 3207 and the opponent
+      // on 3208, and the original's picture 3209 still reads the old tenth.
+      unirally::ClassicRaceHudClock crossing;
+      unirally::ZoomZooState e{}, f{}, g{}, h{};
+      e.race.riders[0].laps_remaining = 3;
+      e.race.riders[1].laps_remaining = 3;
+      e.movement.timer.tens_seconds = 3;
+      e.movement.timer.seconds = 2;
+      e.movement.timer.tenths = 4;
+      f = e;
+      f.race.riders[0].laps_remaining = 2;   // the player crosses and the tenth ticks
+      f.movement.timer.tenths = 5;
+      g = f;
+      g.race.riders[1].laps_remaining = 2;   // the opponent crosses on the next update
+      h = g;
+      crossing.observe_update(e, e);
+      crossing.observe_update(e, f);
+      require(crossing.published() == std::optional<std::string>("0:32:4"));
+      crossing.observe_update(f, g);
+      require(crossing.published() == std::optional<std::string>("0:32:4"));
+      crossing.observe_update(g, h);
+      require(crossing.published() == std::optional<std::string>("0:32:4"));  // picture 3209
+      unirally::ZoomZooState i = h;
+      crossing.observe_update(h, i);
+      require(crossing.published() == std::optional<std::string>("0:32:5"));  // picture 3210
       // With no history the digits come from the state itself, which is exact
       // except on that one picture.
       require(unirally::classic_race_hud_text(c, zoom, std::nullopt).clock == "0:32:6");

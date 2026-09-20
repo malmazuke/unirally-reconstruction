@@ -176,10 +176,15 @@ ClassicHudText classic_race_hud_text(const ZoomZooState& previous_update,
                                      const std::optional<std::string>& published_clock={});
 // The clock cells hold what the redraw queue last wrote. The queue rewrites at
 // most one field per update and the left field goes first ($81:EB86 returns
-// through $81:F357), so an update that changes the lap count or finishes the
-// race leaves the clock digits standing for one more picture. Measured on
-// compound-reverse, whose update 3212 changes the tenths and the lap counter
-// together: picture 3213 keeps the old tenth, and picture 3214 has caught up.
+// through $81:F357), so an update that dirties it leaves the clock digits
+// standing for one more picture. The flag is `$0D17`, and **either** rider's
+// lap counter sets it - `$0EFB` for the player and `$0EFD` for the opponent,
+// whose crossing changes nothing the field shows. Measured twice: on
+// compound-reverse, whose update 3212 ticks the tenth and turns the player's
+// lap together, picture 3213 keeps the old tenth and 3214 has caught up; and
+// on ordinary-controls/down-a, where the player crosses on 3207 and the
+// opponent on 3208, the flag stays pending across both and picture 3209 still
+// reads the pre-tick digits.
 class ClassicRaceHudClock {
 public:
   void reset() {latest_.reset();on_screen_.reset();}

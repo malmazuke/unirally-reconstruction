@@ -123,22 +123,39 @@ times one picture late; the kept pictures step 20 frames apart and jump 6484 to
 The independent review found it by recapturing the originals consecutively.
 
 **The clock cells hold what the queue last wrote.** Since the queue rewrites at
-most one field per update and the left field goes first, an update that changes
-the lap count or the finish word spends that update and the clock digits stand
-for one more picture. The discriminating case is not the finish: on
-`compound-reverse`, update **3212** ticks the tenth and turns the lap together,
-and the original's picture 3213 keeps `0:32:5` where the state already says
-`0:32:6`. (Searching the captures' own WRAM for updates that change both
-`$0E3B` and `$0EFB` finds exactly three: compound-reverse 3212 and 6477, and
-brake 6492 - the first of which is a plain mid-race lap change.) Native follows
-this with `ClassicRaceHudClock`, which publishes the digits on every observed
-update except one that changes the left field, and lags one update like the
-rider overlays. Without the history, the digits are derived from the drawn
-state, which is exact on every picture except the one after such an update.
-The only caller without the history is the single-state debug form of
-`classic_race_presentation_runner`, which already omits the rider overlays and
-the opponent-won banner for the same reason; the app and the `--timeline` form
-both keep the tracker.
+most one field per update and the left field goes first, an update that dirties
+the left field spends that update and the clock digits stand for one more
+picture. The flag is `$0D17`, and what sets it is **either rider's lap counter
+stepping**: `$0EFB` for the player and `$0EFD` for the opponent, whose crossing
+changes nothing the field displays. Both readings of that rule were measured,
+in that order, and the first was too narrow:
+
+- The discriminating case against "only at the finish" is `compound-reverse`
+  update **3212**, which ticks the tenth and turns the player's lap together on
+  a plain mid-race lap change: the original's picture 3213 keeps `0:32:5` where
+  the state already says `0:32:6`, and 3214 has caught up.
+- The discriminating case against "only the player's counter" is
+  `ordinary-controls/down-a`, where the player crosses on update **3207** and
+  the opponent on **3208**. `$0D17` is set on both and clears only on 3209, so
+  the clock is held twice and the original's picture 3209 still reads `0:32:4`
+  while the state says `0:32:5`. Holding on the player's field alone drew that
+  picture one tenth early; the independent review found it.
+
+Native follows this with `ClassicRaceHudClock`, which publishes the digits on
+every observed update except one on which either rider's lap counter stepped,
+and lags one update like the rider overlays. Without the history the digits are derived from the drawn state
+instead, which differs from the original on the pictures after those updates -
+six or seven per race, wherever a tenth ticks on one of them, and **not** "one
+picture" as an earlier draft of this record said. The only caller without the
+history is the single-state debug form of `classic_race_presentation_runner`,
+which already omits the rider overlays and the opponent-won banner for the same
+reason; the app and the `--timeline` form both keep the tracker.
+
+The rule was checked rather than fitted: over five ZOOM ZOO captures
+(`boundary-a`, `brake-a`, `down-a`, `compound-reverse-a`, `trick-long-a`),
+`$0D17` is set on six or seven updates inside the race proper and **every one
+of them is one of the two lap counters stepping** - there is no set this
+predicate fails to explain (`queue_probe.py`).
 
 ## The 10:00 time-out
 

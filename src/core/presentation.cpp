@@ -1453,12 +1453,19 @@ std::string classic_hud_clock(const RaceTimerDigits& t) {
 }
 void ClassicRaceHudClock::observe_update(const ZoomZooState& previous,const ZoomZooState& updated) {
     on_screen_=latest_;
-    const auto scenario=classic_race_scenario(updated.track);
-    // The left field goes first in the redraw queue, so an update that changes
+    // The left field goes first in the redraw queue, so an update that dirties
     // it spends the queue and the clock cells keep the digits they hold. The
-    // update that writes the changed field is the one after the state changed,
-    // which is why both sides of this comparison are the observed pair.
-    if(classic_hud_left_field(updated,scenario).text==classic_hud_left_field(previous,scenario).text)
+    // flag is `$0D17`, and **either** rider's lap counter sets it: `$0EFB` for
+    // the player and `$0EFD` for the opponent, even though the opponent's never
+    // changes what the field shows. Holding only on the player's counter left
+    // the clock a picture early whenever the two cross on consecutive updates
+    // (review 2 B1: `ordinary-controls/down-a`, where the player crosses on
+    // 3207 and the opponent on 3208, `$0D17` stays pending across both and
+    // clears on 3209, and the original's picture 3209 still reads `0:32:4`).
+    const auto stepped=[](const ZoomZooState& before,const ZoomZooState& after,std::size_t rider) {
+        return before.race.riders[rider].laps_remaining!=after.race.riders[rider].laps_remaining;
+    };
+    if(!stepped(previous,updated,0) && !stepped(previous,updated,1))
         latest_=classic_hud_clock(updated.movement.timer);
 }
 ClassicHudText classic_race_hud_text(const ZoomZooState& previous_update,
@@ -1484,7 +1491,11 @@ ClassicHudText classic_race_hud_text(const ZoomZooState& previous_update,
     // The player's own time is written on `finish + 3`, which reads delay 2,
     // and the opponent's two updates after the opponent finishes, which is the
     // picture one update after that frame.
-    if(finished && race.finish_delay>=2)hud.player_time=hud_time(race.total_times[0]);
+    // The 60000 no-time sentinel is not a finish time on either side. A player
+    // who finishes all laps always has a real total, so this guard is belt and
+    // braces rather than a measured case (review 2 A8).
+    if(finished && race.finish_delay>=2 && race.total_times[0]<60000U)
+        hud.player_time=hud_time(race.total_times[0]);
     if(race.riders[1].finished && race.total_times[1]<60000U) {
         const auto opponent=opponent_finish_frame?opponent_finish_frame:classic_opponent_finish_frame(previous_update);
         if(opponent && previous_update.movement.frame>=*opponent+1U)
