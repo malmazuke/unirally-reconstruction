@@ -1,8 +1,19 @@
 # Next session
 
-**Status on 19 September 2026 UTC (after ZOOM-ZOO-OPPOSING-INPUT): the active
-task is [CLASSIC-STUNT-NAMES](CLASSIC-STUNT-NAMES.md), registered and ready on
-`main` at `260334d` and not yet started; nothing is blocked.** Every numbered follow-up below is closed. The stunt names took the hint
+**Status on 20 September 2026 UTC (after JEV-JUDGMENT-HARNESS): the active
+task is [CI-FAST-PATH](CI-FAST-PATH.md), ready on `main` at the commit that
+integrates JEV-JUDGMENT-HARNESS and not yet started; nothing is blocked.**
+CLASSIC-STUNT-NAMES and JEV-JUDGMENT-HARNESS are both reviewed and integrated;
+each is accepted conditional only on its recorded final-tip CI and remote
+verification. JEV-JUDGMENT-HARNESS's closeout is
+`artifacts/jev-judgment-harness-integration/closeout.json` in the main
+checkout; CLASSIC-STUNT-NAMES' closeout is wherever that session's handoff
+says. The harness can now ask TypeSafe's Jev a typed question and keep the
+answer as evidence (`python3 tools/project.py judge ping|ask|evidence-lint`,
+[D-0007](../docs/decisions/D-0007-advisory-jev-judgments.md)): every judgment
+is an optional check and an artifact, never a gate; the key lives in the
+ignored `.env` (copy `.env.example`) and `doctor` reports it as optional.
+The stunt names took the hint
 sentences and the winner, draw and loser lines with them, because all three are
 entries of one table; what remains declared from that omission is the start
 arrow and ring, the opponent finish time, the off-screen rider arrows, the

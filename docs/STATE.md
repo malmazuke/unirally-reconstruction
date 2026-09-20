@@ -1,5 +1,25 @@
 # Project state
 
+Updated 20 September 2026: **JEV-JUDGMENT-HARNESS is reviewed and
+integrated**; acceptance is conditional on the final-tip CI and remote
+verification recorded in the ignored closeout
+`artifacts/jev-judgment-harness-integration/closeout.json` in the main
+checkout. It adds `python3 tools/project.py judge ping|ask|evidence-lint`: a
+standard-library client for TypeSafe's Jev that records every call (request,
+response, versioned model, usage, elapsed time, state hash) as an artifact,
+with the rule in [D-0007](decisions/D-0007-advisory-jev-judgments.md) that
+every answer-derived check is optional and never a gate, that only tracked
+records and authored state are sent, and that the key stays in the ignored
+`.env`. The synthetic CI has no key and is unchanged. The evidence-lint
+sweep over all 46 research records (37 s, 237k input tokens) raised 31
+optional flags, one of which reads a real inconsistency in R-0025's status
+line; reading those record by record is follow-up work. Review: one returned
+round (two required corrections, four should-fix) and a confirming re-review;
+[JEV-JUDGMENT-HARNESS-review](../tasks/JEV-JUDGMENT-HARNESS-review.md). The
+next task is [CI-FAST-PATH](../tasks/CI-FAST-PATH.md), chosen by the user:
+a docs-only fast path that still yields a green run for a records-only tip,
+and one Python tooling-test run per CI job.
+
 Updated 17 September 2026: **M4-16 is reviewed and integrated**; acceptance is
 conditional on the final-tip CI and remote verification recorded in the ignored
 closeout `artifacts/m4-16-integration/closeout.json` in the main checkout

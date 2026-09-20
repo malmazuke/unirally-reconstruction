@@ -2,7 +2,11 @@
 
 ## Assignment
 
-- Status: review confirmed, awaiting integration. Registered 19 September 2026 22:15 UTC from `main` at
+- Status: reviewed and integrated; acceptance conditional on final-tip CI
+  and remote verification. Closeout: ignored
+  `artifacts/jev-judgment-harness-integration/closeout.json` in the main
+  checkout; if absent, `git log --first-parent main -- tasks/JEV-JUDGMENT-HARNESS.md`
+  and `gh run list --workflow synthetic.yml --commit <commit>`. Registered 19 September 2026 22:15 UTC from `main` at
   `fd34209`, chosen by the user as the next task while CLASSIC-STUNT-NAMES
   runs in another session; started in the same session that registered it.
 - Milestone: harness, independent of M4. Introduces
@@ -173,8 +177,35 @@ doctor, bootstrap, build and test reports and logs).
   three-record lint, 46-record sweep), all recorded in the artifacts. No other
   account work is excluded from those figures; the other session's stunt-names
   work shares the same weekly windows.
-- Accepted outcome, review/fix rounds and next routing decision: pending
-  review.
+- Accepted outcome, review/fix rounds and next routing decision: the
+  advisory judgment harness as specified, after one returned review and one
+  confirming re-review; next task CI-FAST-PATH, chosen by the user.
+- Integration and closeout moves (AGENTS.md retention rule): the branch was
+  rebased onto `main` at `2f952ab` (after CLASSIC-STUNT-NAMES) with the only
+  conflicts in `tasks/README.md` rows, resolved by keeping `main`'s rows and
+  this task's two rows; the suite on the rebased tip `141d67f` passed (445
+  checks, `test-rebased.json`) and `judge ping` still answered. Moved:
+  the worktree's `artifacts/jev-judgment-harness/` (2.0 MB: doctor, bootstrap,
+  build, five suite runs, ping, the three-record lint, the 46-record sweep,
+  CI watch logs) to `local/evidence/jev-judgment-harness/` in the main
+  checkout, and the review checkout's `artifacts/` (376 KB: the reviewer's
+  doctor, suite, ping, lint and withheld-case runs for both rounds) to
+  `local/evidence/jev-judgment-harness-review/`. Deleted: six run-id
+  directories the tooling tests left under the worktree's `artifacts/`,
+  which no record cites, and the worktree's `build/`. At closeout the session
+  removes `.worktrees/jev-judgment-harness` and
+  `.worktrees/jev-judgment-harness-review` and the local branches
+  `task/jev-judgment-harness` and `review/jev-judgment-harness`; both stay on
+  `origin`, and `git cherry main origin/review/jev-judgment-harness` shows
+  every review commit on `main` by cherry-pick. The closeout JSON records the
+  final `main` commit, the remote verification, the CI run and the usage.
+- Wall clock and usage: registration 22:15 UTC to the integration commit at
+  about 01:20 UTC on 20 September, of which 22:50 to 01:11 was waiting for
+  CLASSIC-STUNT-NAMES to land (the user chose to keep that order); about 55
+  minutes of work. Provider usage five-hour 13% to 63% (the window also
+  carried the other session), weekly all models 55% to 61%, weekly Fable 37%
+  to 41%. TypeSafe usage 246,858 input tokens over 51 requests by the
+  primary plus the reviewer's own runs, all in the artifacts.
 
 ## Review and integration
 
@@ -187,7 +218,14 @@ doctor, bootstrap, build and test reports and logs).
   should-fix items applied at `f391a3f`; the re-review's residual should-fix
   and two advisories applied in the commit after the cherry-picked re-review;
   advisory 4 accepted as is
-- Exact merge candidate and required-check results: pending
-- Integrated commit and evidence location: pending
-- Remote synchronization: pending
+- Exact merge candidate and required-check results: the rebased tip
+  `141d67f` plus this integration-records commit; suite passed at `141d67f`
+  (445 checks); hosted CI on the pre-rebase tips `f391a3f`, `39473ec` and
+  `ac0891b` green on both runners; the run on the integration tip is recorded
+  in the closeout.
+- Integrated commit and evidence location: fast-forward of
+  `task/jev-judgment-harness` onto `main`; evidence under
+  `local/evidence/jev-judgment-harness/` and
+  `local/evidence/jev-judgment-harness-review/` in the main checkout.
+- Remote synchronization: recorded in the closeout after the push of `main`.
 - Scope still unverified: the follow-up question sets named under boundaries

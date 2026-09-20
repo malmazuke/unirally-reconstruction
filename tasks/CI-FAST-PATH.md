@@ -2,8 +2,8 @@
 
 ## Assignment
 
-- Status: planned; becomes ready when JEV-JUDGMENT-HARNESS is integrated on
-  `main`. Registered 19 September 2026 22:55 UTC, chosen by the user as the
+- Status: ready on `main` at the JEV-JUDGMENT-HARNESS integration commit
+  (20 September 2026, about 01:20 UTC), not yet started. Registered 19 September 2026 22:55 UTC, chosen by the user as the
   task after JEV-JUDGMENT-HARNESS after asking why half the wall clock goes to
   waiting for CI on documentation changes.
 - Milestone: harness, independent of M4

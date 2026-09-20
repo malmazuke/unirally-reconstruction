@@ -1,8 +1,8 @@
 # D-0007 - Advisory Jev judgments in the harness
 
-Status: proposed 19 September 2026 with
-[JEV-JUDGMENT-HARNESS](../../tasks/JEV-JUDGMENT-HARNESS.md); accepted when that
-task is integrated. Revisit when a judgment is proposed as a required check, when
+Status: adopted 20 September 2026 with the integration of
+[JEV-JUDGMENT-HARNESS](../../tasks/JEV-JUDGMENT-HARNESS.md) (proposed 19
+September with that task). Revisit when a judgment is proposed as a required check, when
 the model behind `jev-latest` moves, or when the questions are tuned against
 labelled records.
 
