@@ -121,8 +121,12 @@ int main(int argc,char** argv) try {
     const auto state=load_state(argv[2]);
     // The HUD and riders show the previous update; without PREVIOUS_STATE
     // they are drawn one update ahead. A single state carries no rider look
-    // history, so the upper-body overlays are omitted here, and an opponent-won
-    // banner is drawn only once both finish times are known.
+    // history, so the upper-body overlays are omitted here, an opponent-won
+    // banner is drawn only once both finish times are known, and the clock
+    // digits are derived from the state rather than followed, which differs
+    // from the original on the one picture after an update that redrew the
+    // left field (R-0043). This debug form is the only caller without the
+    // history: the app and the --timeline form above both keep the tracker.
     const auto previous=argc==5?load_state(argv[4]):state;
     const auto content=unirally::classic_race_presentation_content(pack,state.track);
     write_frame(argv[3],unirally::render_classic_race(state,content,&previous));

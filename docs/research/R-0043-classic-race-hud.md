@@ -135,6 +135,10 @@ this with `ClassicRaceHudClock`, which publishes the digits on every observed
 update except one that changes the left field, and lags one update like the
 rider overlays. Without the history, the digits are derived from the drawn
 state, which is exact on every picture except the one after such an update.
+The only caller without the history is the single-state debug form of
+`classic_race_presentation_runner`, which already omits the rider overlays and
+the opponent-won banner for the same reason; the app and the `--timeline` form
+both keep the tracker.
 
 ## The 10:00 time-out
 
