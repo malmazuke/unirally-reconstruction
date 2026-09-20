@@ -2,7 +2,7 @@
 
 ## Assignment
 
-- Status: **approved** at `bf16faf` by the fourth review round (report `0003f3d7`), after three returns; its seven should-fix items are applied on top. Re-review returned at `f2a4b1f` (one new blocking on the rider composition, one on the records, six others); all applied on top; a third review round is due. Started on `task/classic-stunt-names` from `fd34209`. Registered and started
+- Status: reviewed and integrated. Approved at `bf16faf` by the fourth review round (report `0003f3d7`, cherry-picked onto this branch), after three returns; its seven should-fix items and the advisories worth taking are applied at `5f5484d`, `f6dfdbb` and `210be86`. Acceptance is conditional on the final-tip CI and remote verification recorded in the ignored closeout `artifacts/classic-stunt-names-integration/closeout.json` in the main checkout; if absent, `git log --first-parent main -- tasks/CLASSIC-STUNT-NAMES.md` and `gh run list --workflow synthetic.yml --commit <commit>`. Re-review returned at `f2a4b1f` (one new blocking on the rider composition, one on the records, six others); all applied on top; a third review round is due. Started on `task/classic-stunt-names` from `fd34209`. Registered and started
   19 September 2026 07:00 UTC, chosen by the user as the next task after ZOOM-ZOO-OPPOSING-INPUT.
 - Milestone: follow-up to M4-16 and CLASSIC-PRESENTATION-UNIFICATION; takes the first item out of
   the "decorative objects and captions" declared omission in [docs/STATE.md](../docs/STATE.md)
@@ -158,4 +158,29 @@ mechanism, take it and say so; do not widen the task to the whole family by defa
 
 ## Review and integration
 
-To be completed by the primary after independent review.
+- Reviewer: a fresh Claude Opus 5 subagent per round, each in its own isolated checkout at the exact
+  candidate, spawned by the primary. Four rounds:
+
+| Round | Candidate | Verdict | Report | What it found |
+| --- | --- | --- | --- | --- |
+| 1 | `745c4b8` | return | `cf21d4f` | The caption was composed above the channel-6 window members, and the 116 pixels the primary had written off as the start ring were that bug; the renderer threw on three voice entries the engine can publish, which would end a race |
+| 2 | `024bf56`/`f2a4b1f` | return | `c324d7f` | The caption is *below* the riders, and where a sprite covers a glyph the original adds red rather than either layer replacing the other; R-0042 still published the falsified start-ring rule |
+| 3 | `6cbef9d` | return | `4cc3966` | The caption work was sound, and its adversarial census of the blend rule confirmed it; the blocking finding was the primary's own gate shortcut, which missed six of nine translation units and passed an edit that moved the gate's rows hash |
+| 4 | `bf16faf` | **approve** | `0003f3d7` | No blocking finding. It attacked the rewritten shortcut with 18 probes and then ran all eleven differential gates itself anyway: identical in status, restore count and `rows_sha256` |
+
+- Independent verification behind the approval: 11 of 11 differential gates re-run at the candidate;
+  the bitset change pixel-neutral over 274 frames and 47,140,878 bytes a side; 5 of 6 mutations of
+  the caption code killed; all 4,080 bytes of all 255 table entries mapping with no throw and no
+  tile outside the sheet; the voice range 72-87 rendering; and the three punctuation tiles drawn out
+  of the pack's own font.
+- Exact merge candidate and required-check results: the tip of `task/classic-stunt-names`. At
+  `bf16faf` the eleven differential gates were cited through `gate_identity` and then re-run by the
+  reviewer; the suites, synthetic, v1 contracts, hidden runs, fuzz, both caption picture sets, the
+  274-frame sweep, the trick frames and the pack alphabet check all passed, and were re-run after
+  each correction. 23/23 ctest on five presets and 388 Python tests on the final tip.
+- Integrated commit, remote synchronization and evidence location: recorded in the closeout.
+- Scope still unverified, and declared: no capture in evidence displays a voice entry (ids 72-87),
+  so whether the original shows that range at all is unmeasured, and the three punctuation tiles are
+  read from the font sheet rather than from a picture; every measured blend is on ZOOM ZOO, since
+  the DRAGSTER trick frames carry 999 flat caption pixels and none; and the PPU configuration that
+  selects between the caption's two colour indices is unrecovered.
