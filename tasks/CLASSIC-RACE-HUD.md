@@ -93,16 +93,31 @@ the serialized state.
 
 ## Capability and coverage checkpoint
 
-- Native capability delivered / still missing: to be recorded at the candidate.
-- Frozen exact-match interval, field set and reference/seed identity: to be declared with the first
-  frozen case.
-- Dynamic captured inputs still consumed (must be zero for autonomy): expected zero; the HUD is
-  presentation, driven by the 742-byte state and the pack.
-- Relevant branches/transitions exercised, including independent variations: at least a countdown
-  frame, ordinary riding on both tracks, a lap change, the finish, and the 9:59.9 time-out hold.
-- First divergence and cheapest next discriminating experiment: recorded per attempt below.
-- Trial-wide usage baseline/current, reserve, reset authorization/outcome or none: in the Assignment
-  block and the closeout.
+- Native capability delivered: the original's in-race HUD on both tracks - the left field (the lap
+  count on a tour race, `race` otherwise, `finish` once the player's laps run out), the corner clock
+  with the original's tenths, its blanking at the finish, and the two centred finish times - drawn
+  on the caption's BG3 layer, in the caption's font and colour, composed under the riders with the
+  measured red add and under the channel-6 window members. Still missing: the original's **signed
+  split time**, which occupies the same two centred cells during the race and is a separate
+  mechanism (see below).
+- Frozen exact-match interval, field set and reference/seed identity: no new frozen contract. The
+  measurement is the picture score against existing frozen originals: all 274 kept frames of the
+  M4-16 primary (`boundary-a` timeline, `original-primary` pictures), all 274 of the brake loser
+  race, 35 frames of the 10:00 time-out original, and 18 DRAGSTER frames of the accepted
+  `race-crawler-dragster-12000-continuous-right-fields` manifest.
+- Dynamic captured inputs still consumed (must be zero for autonomy): zero. The HUD is presentation,
+  derived from the published 742-byte state, the scenario's race mode and the finish frames the
+  presentation history already tracks.
+- Relevant branches/transitions exercised, including independent variations: the countdown, ordinary
+  riding on both tracks, all three lap changes, the player's finish on both tracks, the loser race
+  where the **opponent finishes first** and its time stands alone, the winner banner covering the
+  HUD, and the 9:59.9 time-out hold.
+- First divergence and cheapest next discriminating experiment: none open for this task. The nearest
+  unrecovered thing is the signed split time; the cheapest experiment is an access capture over the
+  updates on which `$0349` and the opponent's flag are set mid-race.
+- Trial-wide usage baseline/current, reserve, reset authorization/outcome or none: weekly all-models
+  64% at 2026-09-20T09:27Z, 65% at 12:0xZ. Reserve floor 80%, not approached. No reset, purchase or
+  provider change.
 
 ## Evidence and attempts
 

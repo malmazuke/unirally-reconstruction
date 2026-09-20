@@ -599,7 +599,9 @@ The `native presentation-check` v1 contracts need their fixtures below `local/`
 or `artifacts/` in the checkout that runs them: copy
 `local/evidence/classic-presentation-unification/unification-baseline/{winner,loser}-fixtures`
 to `local/v1-fixtures/` first. An absolute path into another checkout is
-refused as an unauthorized fixture directory.
+refused as an unauthorized fixture directory, and so is a symlink to one: the
+path is resolved before it is authorized, so copy the two directories rather
+than linking them (CLASSIC-RACE-HUD).
 
 ## Citing the differential gates instead of re-running them
 
