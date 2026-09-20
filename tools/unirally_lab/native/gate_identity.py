@@ -21,7 +21,8 @@ sampling engine, and reported "identical" across an edit to `track_sampling.cpp`
 that moved the gate's own rows hash (review E1).
 
 Out of scope, and not claimed: the toolchain, system headers, the CMake files
-and presets that decide how the binary is built. The build preset pins the
+and presets that decide how the binary is built, and anything about the
+binary's *behaviour* beyond the bytes of its inputs. The build preset pins the
 compiler and each cited report pins its pack and contract hashes.
 """
 from __future__ import annotations
@@ -29,6 +30,9 @@ import argparse, hashlib, json, subprocess, sys
 from pathlib import Path
 
 BINARY_TARGET = 'src/core/zoom_zoo_runner'
+# sha256 of an empty `git diff HEAD`, which every compare records when its tree
+# was a commit.
+EMPTY_DIFF = 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855'
 
 
 def sha(data: bytes) -> str:
@@ -40,6 +44,14 @@ def ninja(args: list[str], build: Path, tool: str) -> list[str]:
     if out.returncode:
         raise RuntimeError(f'ninja -t {" ".join(args)} failed: {out.stderr.strip()[:200]}')
     return out.stdout.splitlines()
+
+
+def build_is_current(build: Path, tool: str) -> None:
+    out = subprocess.run([tool, '-C', str(build), '-n', BINARY_TARGET], capture_output=True, text=True)
+    if out.returncode:
+        raise RuntimeError(f'ninja -n failed: {out.stderr.strip()[:200]}')
+    if 'no work to do' not in out.stdout:
+        raise RuntimeError('the build is out of date, so its dependency record does not describe this tree')
 
 
 def engine_files(build: Path, root: Path, tool: str) -> list[str]:
@@ -66,6 +78,8 @@ def main() -> int:
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('--since', required=True, help='the commit whose gate reports would be cited')
     p.add_argument('--reports', type=Path, required=True, help='that run\'s report directory')
+    p.add_argument('--expect', type=int, required=True,
+                   help='how many differential gates must be cited; a thinned directory is a refusal')
     p.add_argument('--pack', type=Path, required=True)
     p.add_argument('--build', type=Path, default=Path('build/app-debug'))
     p.add_argument('--root', type=Path, default=Path('.'))
@@ -80,6 +94,7 @@ def main() -> int:
     since = subprocess.check_output(['git', 'rev-parse', a.since], cwd=root, text=True).strip()
 
     try:
+        build_is_current(a.build, a.ninja)
         files, objects = engine_files(a.build, root, a.ninja)
     except RuntimeError as error:
         print(f'refused: {error}')
@@ -90,6 +105,8 @@ def main() -> int:
         recorded = subprocess.run(['git', 'show', f'{since}:{name}'], cwd=root, capture_output=True)
         if recorded.returncode:
             missing.append(name)
+        elif not (root/name).exists():
+            missing.append(f'{name} (present at the cited commit, gone from this tree)')
         elif recorded.stdout != (root/name).read_bytes():
             changed.append(name)
     print(f'{len(objects)} objects, {len(files)} repository files build {BINARY_TARGET}')
@@ -116,12 +133,14 @@ def main() -> int:
             problems.append(f'{name}: ran at {d.get("source_commit", "?")[:7]}, not {since[:7]}')
         if d.get('pack_sha256') != pack:
             problems.append(f'{name}: ran against a different pack')
+        if d.get('source_diff_sha256') != EMPTY_DIFF:
+            problems.append(f'{name}: ran on a tree with uncommitted changes')
         contracts = (root/'tests/manifests/native')
         if not any(sha(c.read_bytes()) == d.get('contract_sha256') for c in contracts.glob('*.json')):
             problems.append(f'{name}: its frozen contract is not in the tree unchanged')
         cited.append((name, len(d.get('restore_frames', []))))
-    if not cited:
-        problems.append(f'no differential gate reports in {a.reports}')
+    if len(cited) != a.expect:
+        problems.append(f'{len(cited)} differential gate reports in {a.reports}, expected {a.expect}')
     if problems:
         print('refused: the reports do not describe this tree')
         for problem in problems:

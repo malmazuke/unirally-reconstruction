@@ -121,9 +121,11 @@ consumed event (14, then 15) and the original shows nothing.
   picture has exercised `j`, `k`, `q`, `x` or `z`.
 - The font sheet is `presentation.classic.font.v1`, already in the pack: 128
   tiles, 2bpp, using only pixel values 0 and 3, so it is a one-bit font.
-- Which BG layer carries the caption is not established. The tilemap word
-  addresses and the `$3800` attribute are measured; the tilemap base of `$1800`
-  is inferred from them, and the ink is the race CGRAM colour measured from the
-  original's frames rather than derived from that attribute.
+- The layer is measured, not inferred: the independent review read `$2109 = $18`
+  at `$82:DBF6`, so the caption is BG3 with its tilemap based at word `$1800`,
+  which is what the two row addresses imply. What remains unrecovered is the PPU
+  configuration that selects between the caption's two colour indices - the flat
+  ink at CGRAM 22 and the CGRAM 27 the attribute names, which is the colour the
+  add contributes.
 - The voice lines above entry 71 take the consumer's other path. Whether they
   reach this display, and the audio that goes with them, are out of scope.

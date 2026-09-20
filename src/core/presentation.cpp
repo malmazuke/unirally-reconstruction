@@ -1714,7 +1714,7 @@ RgbFrame render_classic_race(const ZoomZooState& state,const ClassicRacePresenta
     // both use OBJ priority 2. Without a previous update the riders are drawn
     // from this state, one update ahead.
     const auto& rider_source=previous_update?*previous_update:state;
-    // R-0042: the caption is behind the riders. Where a rider covers a glyph
+    // R-0042: the caption is drawn here, behind the riders. Where a rider covers a glyph
     // the original does not hide the ink and does not paint it either: it adds
     // red to the sprite, `red = min(31, sprite_red + 13)` with green and blue
     // untouched, measured over 35 such pixels on frame 2100 of the M4-16

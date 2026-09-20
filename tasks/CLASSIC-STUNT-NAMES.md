@@ -2,7 +2,7 @@
 
 ## Assignment
 
-- Status: matrix green at `6e0fad6` (274-frame sweep worst mismatch 0); a third review round is running. Re-review returned at `f2a4b1f` (one new blocking on the rider composition, one on the records, six others); all applied on top; a third review round is due. Started on `task/classic-stunt-names` from `fd34209`. Registered and started
+- Status: **approved** at `bf16faf` by the fourth review round (report `0003f3d7`), after three returns; its seven should-fix items are applied on top. Re-review returned at `f2a4b1f` (one new blocking on the rider composition, one on the records, six others); all applied on top; a third review round is due. Started on `task/classic-stunt-names` from `fd34209`. Registered and started
   19 September 2026 07:00 UTC, chosen by the user as the next task after ZOOM-ZOO-OPPOSING-INPUT.
 - Milestone: follow-up to M4-16 and CLASSIC-PRESENTATION-UNIFICATION; takes the first item out of
   the "decorative objects and captions" declared omission in [docs/STATE.md](../docs/STATE.md)
@@ -112,7 +112,6 @@ mechanism, take it and say so; do not widen the task to the whole family by defa
 | 12 (09:20-09:30Z) | Native matches the original where it draws | Rendered the native timeline of the same DRAGSTER case at the four caption frames and compared the caption band (x 64-191, y 78-95) with the original's own frames | Frames 1637 `GIVE YOU`, 1652 `BIGGER BOOSTS` and 1685 `WIPEOUT`: **2304 of 2304 pixels identical**, with exactly the same ink pixels. Frame 1601 `MORE STUNTS`: 2188 of 2304, and every one of the 116 differing pixels is the original's pale pink. **This attribution was wrong; see attempt 15.** | Gates, then review |
 | 13 (10:15-10:20Z) | ZOOM ZOO drives the same captions | `queue_probe.py` over the M4-16 primary original | 93 consumptions, events 14, 15, 37 and 44-59: the same consumer and the same table as DRAGSTER, reaching `last lap` and the longer hint sentences DRAGSTER's race never does | Compare its pictures too |
 | 14 (11:00-11:10Z) | The caption persists until the next message | Native against the six kept frames of the M4-16 original | Three disagreed: at 3208, 4840 and 6484 the read cursor still points at the last consumed event and the original shows nothing. `$81:BEA8-BEF1` blanks the display one cooldown after the queue empties, and the engine already carries that as `empty_display`, recovered in M4-16 and unused until now. Honouring it, every caption frame of both tracks matches except the two whose residual attempt 15 corrects. DRAGSTER's four frames could not have found this | Rerun the matrix on the corrected candidate |
-
 | 15 (12:20-12:35Z) | The start ring explains the 116 pixels the caption band misses | The returned review measured the window members instead: native paints 9,144 member pixels where the original paints 9,260 | It does not. Those pixels are channel-6 window member 4, which native draws itself, and the caption was composed *above* the member instead of below it. Moving the caption before `render_window_xor` makes all six measured frames 2304 of 2304. The earlier attribution to a declared omission was wrong, and wrong in a way that looked like evidence | Never explain a residual by an omission without measuring the thing that is drawn |
 | 16 (12:35-12:45Z) | The table's alphabet is the lowercase letters and the space | Counted the distinct bytes of entries 1-255 | 29 distinct bytes: the space, `!`, `"`, `-` and the lowercase letters, with no `q` and no digit. Three voice entries the engine publishes to the player (75, 79, 80) hold `"`, so the renderer's throw would end a race the original plays through. `!` is tile `$60`, `"` is `$61`, `-` is `$4D`, read from the font sheet | Map them and gate the whole table |
 | 17 (12:45-12:55Z) | A tracked test would have caught none of this | Added the glyph-domain test, and a gate that walks every byte of the pack's caption table | 23/23 with the test, which fails when the mapping is mutated; the table gate reports 255 entries, 29 distinct bytes, none outside the alphabet | Rerun the matrix, then re-review |
@@ -123,7 +122,7 @@ mechanism, take it and say so; do not widen the task to the whole family by defa
 - Current base/head commit and uncommitted state: base `main` at `fd34209`; the first review's
   findings are applied at `f2a4b1f` and the re-review's at the commit this handoff is part of. No
   uncommitted tracked changes at the candidate.
-- Verified findings: attempts 1 to 18, and [R-0042](../docs/research/R-0042-stunt-name-captions.md).
+- Verified findings: attempts 1 to 19, and [R-0042](../docs/research/R-0042-stunt-name-captions.md).
   The mechanism is the reward queue, the ASCII table at `$17:C9F4`, the 16-byte tile buffer, the
   two tilemap rows, both halves of the blanking rule, and the composition: over the track, under the
   channel-6 window members, and under the riders with a measured red add where a sprite covers a
@@ -134,6 +133,11 @@ mechanism, take it and say so; do not widen the task to the whole family by defa
   the caption was then thought to sit above the riders, when the original blends the two
   (attempt 18). Both looked like evidence because a plausible culprit was available and the numbers
   were small.
+- How the differential gates were evidenced at the final candidates: at `6e0fad6` all eleven ran
+  (`gates-6e0fad6/`); at `bf16faf` the primary **cited** them through `gate_identity` rather than
+  re-running, and the fourth reviewer then ran all eleven itself and found them identical in
+  status, restore count and `rows_sha256`, so acceptance rests on a measured run, not on the
+  citation.
 - Commands executed, outcomes and report hashes: `artifacts/classic-stunt-names/gates-{a,b}.log`
   and the per-gate reports; the caption scores are in `gates/caption-pictures*.log`,
   `gates/caption-alphabet.log` and the 274-frame sweep.

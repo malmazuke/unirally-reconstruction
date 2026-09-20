@@ -1142,6 +1142,8 @@ int main() {
     queue.entries[3] = 14;
     std::vector<std::uint8_t> short_table(4064, ' ');
     require(!unirally::classic_caption_entry(published, short_table).has_value());
+    std::vector<std::uint8_t> long_table(4096, ' ');
+    require(!unirally::classic_caption_entry(published, long_table).has_value());
   }
 
 }

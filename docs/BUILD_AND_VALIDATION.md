@@ -566,12 +566,18 @@ that per change, prove it:
 
 ```sh
 python3 -m tools.unirally_lab.native.gate_identity --since <commit whose gates passed> \
-    --reports artifacts/<task>/gates-<that commit> --ninja local/toolchain/ninja-1.13.2-darwin-arm64/ninja
+    --reports artifacts/<task>/gates-<that commit> --expect <how many gates that run holds> \
+    --pack local/classic-pal-crawler-two-tracks-v9.pack \
+    --ninja local/toolchain/ninja-1.13.2-darwin-arm64/ninja
 ```
 
-It reads ninja's own record of which sources and headers built that binary - 13
-repository files at present - and compares each one's bytes between that commit
-and `HEAD`. Identical inputs mean the earlier reports still describe this tree
+It asks ninja which objects the binary links and unions their recorded
+dependencies - nine objects and nineteen repository files at present - and
+compares each one's bytes between that commit and `HEAD`. It refuses on an
+out-of-date build, a failed query, a dependency record that is not valid, a file
+new to or missing from this tree, a dirty working tree, a cited set that is not
+the size the caller states, or a report whose status, commit, pack, contract or
+own working-tree digest does not match. Identical inputs mean the earlier reports still describe this tree
 and may be cited; any difference and the gates run. Do **not** compare the built
 binaries instead: a debug build embeds its absolute path, so the same sources in
 two checkouts hash differently.
