@@ -192,8 +192,8 @@ ClassicHudText classic_race_hud_text(const ZoomZooState& previous_update,
 // `$0D17` is set - either rider's lap counter sets it, the opponent's without
 // changing what the field shows - and the player's laps reaching zero, which
 // writes `finish` on either track. A dirty flag alone is not enough: when
-// `$053F` is set, $81:EB93 falls through at $81:EB9B to the clock and nothing
-// clears the flag, so a sprint holds on none of its crossings. Measured on
+// `$053F` is set, $81:EB93 branches to $81:EB9B, whose JMP enters the clock
+// handler, and nothing clears the flag, so a sprint holds on no crossing. Measured on
 // compound-reverse 3212 (player), ordinary-controls/down-a 3207-3208 (both
 // riders) and DRAGSTER's regression-landing-held-roll-a 1599, which the
 // original does not hold.

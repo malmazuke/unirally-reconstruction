@@ -139,8 +139,8 @@ either track. Both end at `$81:ECBC`, which clears the flag and returns through
 
 A dirty flag on its own is not enough, and that is the `$053F` branch this
 record describes above: on the mode-0 race, whose field is the fixed word
-`race`, `$81:EB93` falls through at `$81:EB9B` to the clock handler instead of
-returning, and nothing ever clears `$0D17`. Measured on DRAGSTER captures, the
+`race`, `$81:EB93` reads `$053F` and branches to `$81:EB9B`, whose `JMP` enters
+the clock handler instead of returning, and nothing ever clears `$0D17`. Measured on DRAGSTER captures, the
 flag therefore stands set for **1,639 to 2,061 consecutive updates** from the
 first crossing while the clock goes on being republished every update, against
 seven or eight discrete sets in a whole ZOOM ZOO race.
@@ -195,10 +195,13 @@ clearer and never changes inside a race, and a frame-by-frame comparison of
 the ROM's own condition against native's predicate over 125 captures
 disagrees nowhere.
 
-A tour race therefore writes the left field seven or eight times, and a sprint
-twice - once at its first crossing, which is not held, and once at the finish.
-An earlier draft of this record said "at most four a tour race and one a
-sprint"; that was wrong in both halves.
+A tour race therefore writes the left field seven or eight times; a sprint
+writes it **once**, at the finish, because its crossings never reach a writer -
+and twice only in the contended case, where the opponent's crossing lands after
+the player's laps have already run out and `finish` is written a second time.
+Two earlier drafts of this record had this wrong: "at most four a tour race and
+one a sprint", and then "a sprint twice - once at its first crossing, which is
+not held", which contradicted the mechanism stated four lines above it.
 
 ## The 10:00 time-out
 
