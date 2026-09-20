@@ -2,7 +2,7 @@
 
 ## Assignment
 
-- Status: in_progress since 20 September 2026 01:26 UTC. Registered 19 September 2026 22:55 UTC, chosen by the user as the
+- Status: review. Started 20 September 2026 01:26 UTC. Registered 19 September 2026 22:55 UTC, chosen by the user as the
   task after JEV-JUDGMENT-HARNESS after asking why half the wall clock goes to
   waiting for CI on documentation changes.
 - Milestone: harness, independent of M4
@@ -108,22 +108,42 @@ workflow-document change for the coordinator, not this task.
 | 1 | The classifier reads real history correctly | `GITHUB_EVENT_NAME=push CLASSIFY_BASE=<main~1> python3 .github/scripts/classify_changes.py` in this checkout | `docs_only=true: all 6 changed path(s) are documentation` for the JEV-JUDGMENT-HARNESS integration commit; an empty range gives `docs_only=false: no changed paths` | keep the empty-range default as full path |
 | 2 | A first push takes the full path | first push of `task/ci-fast-path` at `0c0e7a1` (workflow, classifier, docs, this record), run 35481483430 | the `changes` job succeeded with `no base commit (new branch or empty before sha)` and `docs_only=false` (artifact `changes.json`); both lab jobs ran doctor and bootstrap and were building when the next push cancelled the run under the workflow's `cancel-in-progress` rule | the cancelled run still evidences the classification; the full path is proven by attempt 3 |
 | 3 | A code push with a determinable base takes the full path and runs the tooling tests once per job | push of `628f7f9` (the test file only), run 35481505083 | success in 3.55 min; `changes` 6 s, `1 non-documentation path(s), first tests/tooling/test_ci_fast_path.py`; both lab jobs 180 s; every build and test step ran; in the uploaded reports `python_tooling_tests` is `passed` (429 py checks) in `test-debug.json` and `skipped` optional with 0 py checks in `test-app-debug.json`, `test-sanitize.json`, `test-app-sanitize.json`, each still with 23 ctest checks and the repeatability probe passed; macOS steps: lab-debug test 100 s, app-debug test under 5 s (was 80 s), SDL build 53 s; Linux sanitizers 61 s (was 134 s) | record and push this docs-only commit as attempt 4 |
-| 4 | A docs-only push takes the fast path and stays green | push of this record only | filled after the run | review |
+| 4 | A docs-only push takes the fast path and stays green | push of `2ccef4e` (this record only), run 35481706436 | success in 0.38 min (23 s): `changes` 7 s, lab macOS 6 s, lab Linux 5 s; on both lab jobs only checkout, `Docs-only fast path` and `Upload reports` ran and all eleven build and test steps were skipped; the `changes` artifact says `all 1 changed path(s) are documentation` | review |
 | 5 | The suite passes locally with the new test | `bootstrap`, `build --preset lab-debug`, `test --suite synthetic --preset lab-debug` in the worktree (`artifacts/ci-fast-path/test.json`) | `status=passed`, 10 `py:test_ci_fast_path.*` checks passed | none |
 
 ## Handoff
 
-- Current base/head commit and uncommitted state: not started
-- Verified findings: the timings under Why
-- Current hypothesis and failed approaches: none
-- Commands executed, outcomes and report hashes: none yet
-- Unavailable/skipped checks: none yet
-- Exact next experiment/command: create the worktree from `main` after the
-  JEV-JUDGMENT-HARNESS integration, edit the workflow, push, read the run
-- Remaining dependencies: JEV-JUDGMENT-HARNESS integration
-- Runtime needs: GitHub Actions on `origin`
-- Aggregate parent/child time, provider usage before/after: not started
-- Accepted outcome, review/fix rounds and next routing decision: not started
+- Current base/head commit and uncommitted state: base `main` at `b72b77d`;
+  commits `0c0e7a1` (workflow, classifier, docs), `628f7f9` (test),
+  `2ccef4e` (experiments 1-3), then this checkpoint; tree clean apart from
+  the ignored `local/`, `build/` and `artifacts/`.
+- Verified findings: see Evidence, attempts 1-5. Before: 3-5 minute runs for
+  every push. After: a docs-only push runs in 23 s with every build and test
+  step skipped and both jobs green; a code push runs in 3.55 min with the
+  Python tooling tests once per job (macOS app-debug test step 80 s to under
+  5 s; Linux sanitizer step 134 s to 61 s).
+- Current hypothesis and failed approaches: none open. The first push's run
+  was cancelled by the existing `cancel-in-progress` rule when the second
+  push followed 30 s later; its `changes` job had already classified the
+  new branch as full path, which is the evidence for that criterion.
+- Commands executed, outcomes and report hashes: local suite
+  `artifacts/ci-fast-path/test.json` status passed (10 new checks); hosted
+  runs 35481483430 (cancelled after classification), 35481505083 (full
+  path, success), 35481706436 (fast path, success); their `changes` and
+  `reports-*` artifacts are downloaded under `artifacts/ci-run1/` and
+  `artifacts/ci-run2/` in the worktree.
+- Unavailable/skipped checks: no pull-request event was exercised on the
+  hosted runner (the repository takes no external pull requests); the
+  pull-request base rule is covered by the classifier's unit test only.
+- Exact next experiment/command: independent review of this checkpoint.
+- Remaining dependencies: none.
+- Runtime needs: GitHub Actions on `origin`; the local suite needs the
+  isolated toolchain and a `lab-debug` build.
+- Aggregate parent/child time, provider usage before/after: 01:26 UTC to
+  01:45 UTC to this checkpoint; five-hour 66% at start, weekly 61%, Fable
+  42% (sampled again at closeout).
+- Accepted outcome, review/fix rounds and next routing decision: pending
+  review.
 
 ## Review and integration
 
