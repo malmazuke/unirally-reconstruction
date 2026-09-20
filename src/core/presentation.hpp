@@ -141,17 +141,26 @@ RaceFinishState classic_finish_view(const ZoomZooState& race);
 // count is the start-line crossing, and the last lap holds. Three laps show
 // 4,3,2,1,0 as 0,1,2,3,3.
 unsigned classic_hud_lap(unsigned laps_remaining,unsigned laps);
-// Authored HUD text. Callers pass the state from BEFORE the update being
+// R-0043: the text of the original's in-race HUD fields, as its own BG3
+// tilemap holds them. Callers pass the state from BEFORE the update being
 // drawn: the original's lap glyph changes one frame after $0EFB at every
 // crossing of the frozen primary timeline (1675, 3208, 4840, 6484). The rider
 // objects show that same earlier update (R-0036) and the BG scroll its camera.
-// Once the player has finished, the original replaces the lap with FINISH,
-// drops the running clock and shows the finish time with WINNER or LOSER.
-struct ClassicRaceHud {
-  std::string lap, clock, finish_time, caption;
-  bool countdown_caption{}; // READY/GO: authored stand-ins for the countdown windows.
+// An empty field is one the original is not showing.
+struct ClassicHudText {
+  // `$81:EB8E-$81:EC5E`: `finish` from column 1 once the player's laps run out,
+  // the lap count from column 2 on a tour race, `race` from column 2 otherwise.
+  std::string left;
+  unsigned left_column{};
+  // `$81:ED5C-$81:EDD9` at columns 24-29, blanked by `$81:ECCF` at the finish.
+  std::string clock;
+  // `$81:EE89-$81:EF49` at columns 13-19 of rows 5-6, and `$81:F0E6-$81:F1A0`
+  // at the same columns of rows 20-21 for the opponent.
+  std::string player_time, opponent_time;
 };
-ClassicRaceHud classic_race_hud(const ZoomZooState& previous_update);
+ClassicHudText classic_race_hud_text(const ZoomZooState& previous_update,
+                                     const ClassicRaceScenario& scenario,
+                                     std::optional<std::uint32_t> opponent_finish_frame);
 // Presentation-only $0D45/$0D47 upper-body overlay frames. The original
 // derives them from look state the serialized race does not carry (R-0036),
 // so a caller without that history draws the pose frames alone.
@@ -274,7 +283,10 @@ ClassicRacePresentationContent classic_race_presentation_content(const ClassicCo
 // Throws std::invalid_argument for a rider pose outside the packed tables.
 // R-0042: the top tile of a caption glyph, or nothing for a space. Every byte
 // of the caption table is a space, `!`, `"`, `-` or a lowercase letter; any
-// other byte is outside the recovered domain and throws.
+// other byte is outside the recovered domain and throws. R-0043 adds the HUD's
+// own characters, which come from the same sheet: the digits at `$01`-`$0a`,
+// `:` at `$45` and `/` at `$4e`, as the original's character table `$80:81F4`
+// indexes them.
 std::optional<unsigned> classic_caption_tile(char glyph);
 
 // R-0042: the sixteen bytes the caption shows for a published state, or nothing

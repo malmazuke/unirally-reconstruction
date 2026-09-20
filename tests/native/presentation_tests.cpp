@@ -37,54 +37,64 @@ int main() {
   require(unirally::classic_hud_lap(1, 1) == 1);
   require(unirally::classic_hud_lap(0, 1) == 1);
   {
+    const auto zoom = unirally::classic_race_scenario(unirally::ClassicRaceTrack::ZoomZoo);
+    const auto dragster = unirally::classic_race_scenario(unirally::ClassicRaceTrack::Dragster);
     unirally::ZoomZooState racing{};
     racing.race.riders[0].laps_remaining = 2;
     racing.movement.timer.seconds = 3;
     racing.movement.timer.tenths = 2;
     racing.movement.timer.subframe = 4;
-    auto hud = unirally::classic_race_hud(racing);
-    require(hud.lap == "2/3" && hud.clock == "0:03.28" && hud.finish_time.empty() && hud.caption.empty());
-    racing.movement.countdown = 70;
-    require(unirally::classic_race_hud(racing).caption == "READY");
-    racing.movement.countdown = 69;
-    require(unirally::classic_race_hud(racing).caption == "GO");
+    auto hud = unirally::classic_race_hud_text(racing, zoom, std::nullopt);
+    // The corner clock shows tenths and no more; the subframe never reaches it.
+    require(hud.left == "2/3" && hud.left_column == 2 && hud.clock == "0:03:2");
+    require(hud.player_time.empty() && hud.opponent_time.empty());
+    // A race whose mode is not the tour race shows the word instead of a count
+    // ($81:D6E8, DRAGSTER originals 1380-3213).
+    racing.track = unirally::ClassicRaceTrack::Dragster;
+    hud = unirally::classic_race_hud_text(racing, dragster, std::nullopt);
+    require(hud.left == "race" && hud.left_column == 2);
 
-    // Win: the player finishes 1:38.02 while the opponent is still racing and
-    // its total is still the 60000 sentinel. A zeroed total must not turn the
-    // caption either, so the opponent's finished flag decides it.
+    // The finish sequence, one field per update: the word on the first update
+    // after the player finishes, the blanked clock on the second, the player's
+    // own time on the third (ZOOM ZOO original pictures 6485, 6486 and 6487).
     unirally::ZoomZooState won{};
     won.race.riders[0].finished = 1;
     won.race.total_times = {9802, 60000};
-    require(unirally::classic_race_hud(won).caption == "WINNER");
-    won.race.total_times = {9802, 0};
     won.movement.timer.minutes = 1;
-    hud = unirally::classic_race_hud(won);
-    require(hud.lap == "FINISH" && hud.clock.empty() && hud.finish_time == "1:38.02" && hud.caption == "WINNER");
+    won.race.finish_delay = 1;
+    hud = unirally::classic_race_hud_text(won, zoom, std::nullopt);
+    require(hud.left == "finish" && hud.left_column == 1 && hud.clock == "1:00:0" && hud.player_time.empty());
+    won.race.finish_delay = 2;
+    require(unirally::classic_race_hud_text(won, zoom, std::nullopt).clock.empty());
+    won.race.finish_delay = 3;
+    hud = unirally::classic_race_hud_text(won, zoom, std::nullopt);
+    require(hud.clock.empty() && hud.player_time == "1:38:02" && hud.opponent_time.empty());
+
+    // The opponent's own time follows two updates after its finish, and the
+    // 60000 no-time sentinel is not a finish time.
     won.race.riders[1].finished = 1;
+    won.movement.frame = 6489;
+    require(unirally::classic_race_hud_text(won, zoom, 6488).opponent_time.empty());
     won.race.total_times[1] = 9810;
-    require(unirally::classic_race_hud(won).caption == "WINNER");
+    require(unirally::classic_race_hud_text(won, zoom, 6488).opponent_time.empty());
+    won.movement.frame = 6490;
+    require(unirally::classic_race_hud_text(won, zoom, 6488).opponent_time == "1:38:10");
 
-    unirally::ZoomZooState lost{};
-    lost.race.riders[0].finished = 1;
-    lost.race.riders[1].finished = 1;
-    lost.race.total_times = {9818, 9810};
-    hud = unirally::classic_race_hud(lost);
-    require(hud.finish_time == "1:38.18" && hud.caption == "LOSER");
-
-    // 10:00 time-out: finished with laps left and the no-time total. The
-    // original keeps the lap and the held clock and shows LOSER.
+    // 10:00 time-out ($81:C73E-C75B): finished with laps left, so `$0EFB` is
+    // not zero. The original keeps the lap field and the held 9:59.9 clock and
+    // shows none of the finish fields (stop-timeout original 31578-31920).
     unirally::ZoomZooState timed_out{};
     timed_out.race.riders[0].finished = 1;
     timed_out.race.riders[0].laps_remaining = 2;
-    timed_out.race.riders[1].finished = 1;
-    timed_out.race.total_times = {60000, 9810};
+    timed_out.race.finish_delay = 200;
+    timed_out.race.total_times = {60000, 60000};
     timed_out.movement.timer.minutes = 9;
     timed_out.movement.timer.tens_seconds = 5;
     timed_out.movement.timer.seconds = 9;
     timed_out.movement.timer.tenths = 9;
     timed_out.movement.timer.subframe = 3;
-    hud = unirally::classic_race_hud(timed_out);
-    require(hud.lap == "2/3" && hud.clock == "9:59.90" && hud.finish_time.empty() && hud.caption == "LOSER");
+    hud = unirally::classic_race_hud_text(timed_out, zoom, std::nullopt);
+    require(hud.left == "2/3" && hud.clock == "9:59:9" && hud.player_time.empty() && hud.opponent_time.empty());
   }
 
   // Race palette cycle $82:D382-D496. Original $0B84 ends frame n at
@@ -1109,6 +1119,13 @@ int main() {
        {'v', 0x40}, {'z', 0x44}, {'!', 0x60}, {'"', 0x61}, {'-', 0x4d},
        {'j', 0x24}}};
   for (const auto &[glyph, tile] : caption_glyphs)
+    require(unirally::classic_caption_tile(glyph) == tile);
+  // R-0043: the HUD's own characters come from the same sheet. The digits are
+  // read off the original's character table $80:81F4, where 0 follows 9, and
+  // `:` and `/` off the two cells the clock and the lap field publish.
+  const std::array<std::pair<char, unsigned>, 5> hud_glyphs{
+      {{'0', 0x0a}, {'1', 0x01}, {'9', 0x09}, {':', 0x45}, {'/', 0x4e}}};
+  for (const auto &[glyph, tile] : hud_glyphs)
     require(unirally::classic_caption_tile(glyph) == tile);
   bool refused = false;
   try {

@@ -1422,29 +1422,46 @@ RaceFinishState classic_finish_view(const ZoomZooState& race) {
 unsigned classic_hud_lap(unsigned laps_remaining,unsigned laps) {
     return std::min(laps,laps+1U-std::min(laps+1U,laps_remaining));
 }
-ClassicRaceHud classic_race_hud(const ZoomZooState& previous_update) {
+// R-0043: the finish time as the original's own two fields spell it, colons
+// between all three parts: `1:38:02` for 9,802 centiseconds.
+std::string hud_time(unsigned centiseconds) {
+    const auto digit=[](unsigned v){return static_cast<char>('0'+v%10);};
+    return {digit(centiseconds/6000),':',digit(centiseconds/1000%6),digit(centiseconds/100),
+            ':',digit(centiseconds/10),digit(centiseconds)};
+}
+ClassicHudText classic_race_hud_text(const ZoomZooState& previous_update,
+                                     const ClassicRaceScenario& scenario,
+                                     std::optional<std::uint32_t> opponent_finish_frame) {
     const auto& race=previous_update.race;
-    const auto laps=classic_race_scenario(previous_update.track).laps;
-    ClassicRaceHud hud;
+    ClassicHudText hud;
     // At the 10:00 limit ($81:C73E-C75B) the player is finished with laps left.
-    // The original then keeps the lap and the held 9:59.9 clock and shows LOSER
-    // (stop-timeout original frames 31588-31596).
-    const bool timed_out=race.riders[0].finished && race.riders[0].laps_remaining!=0;
-    if(race.riders[0].finished && !timed_out) {
-        const bool won=!race.riders[1].finished || race.total_times[0]<race.total_times[1];
-        hud.lap="FINISH";
-        hud.finish_time=race_time(race.total_times[0]);
-        hud.caption=won?"WINNER":"LOSER";
-        return hud;
-    }
-    hud.lap=std::to_string(classic_hud_lap(race.riders[0].laps_remaining,laps))+"/"+std::to_string(laps);
+    // `$0EFB` is then not zero, so the original keeps the lap field and the held
+    // 9:59.9 clock, and none of the finish fields appears (stop-timeout original
+    // frames 31578-31920 all read `2/3` and `9:59:9`).
+    const bool finished=race.riders[0].finished && race.riders[0].laps_remaining==0;
+    // $81:EB8E: the word wins over the lap count, so a DRAGSTER finish replaces
+    // `race` too, and $053F only suppresses the lap number.
+    if(finished) {hud.left="finish";hud.left_column=1;}
+    else if(scenario.tour_race) {
+        hud.left=std::to_string(classic_hud_lap(race.riders[0].laps_remaining,scenario.laps))
+                 +"/"+std::to_string(scenario.laps);
+        hud.left_column=2;
+    } else {hud.left="race";hud.left_column=2;}
+    // The corner clock shows tenths, one digit per field, and the original
+    // blanks columns 24-30 of both rows on the second update after the finish
+    // ($81:ECCF through the one-field-per-update redraw queue).
     const auto& t=previous_update.movement.timer;
-    // A timed-out clock holds 9:59.9; its subframe keeps cycling, so drop it.
-    hud.clock=race_time(t.minutes*6000U+t.tens_seconds*1000U+t.seconds*100U+t.tenths*10U+(timed_out?0U:t.subframe*2U));
-    const auto countdown=previous_update.movement.countdown;
-    if(timed_out)hud.caption="LOSER";
-    else if(countdown>=70) {hud.caption="READY";hud.countdown_caption=true;}
-    else if(countdown) {hud.caption="GO";hud.countdown_caption=true;}
+    if(!finished || race.finish_delay<2)
+        hud.clock={static_cast<char>('0'+t.minutes%10),':',static_cast<char>('0'+t.tens_seconds%10),
+                   static_cast<char>('0'+t.seconds%10),':',static_cast<char>('0'+t.tenths%10)};
+    // The queue reaches the player's own finish time on the update after that,
+    // and the opponent's two updates after the opponent finishes.
+    if(finished && race.finish_delay>=3)hud.player_time=hud_time(race.total_times[0]);
+    if(race.riders[1].finished && race.total_times[1]<60000U) {
+        const auto opponent=opponent_finish_frame?opponent_finish_frame:classic_opponent_finish_frame(previous_update);
+        if(opponent && previous_update.movement.frame>=*opponent+2U)
+            hud.opponent_time=hud_time(race.total_times[1]);
+    }
     return hud;
 }
 
@@ -1509,10 +1526,17 @@ std::optional<unsigned> classic_caption_tile(char glyph) {
         if(n<21)return 0x20U+n-5U;
         return 0x40U+n-21U;
     }
+    // R-0043: the HUD's characters, from the same sheet. The original's
+    // character table $80:81F4 runs 0-9 then a-z then the punctuation, and the
+    // sheet's own order is 16 glyph tops followed by their 16 bottoms, which is
+    // why the digits sit below `a` and `:` and `/` sit above `z`.
+    if(glyph>='0' && glyph<='9')return glyph=='0'?0x0aU:static_cast<unsigned>(glyph-'0');
     switch(glyph) {
     case '!':return 0x60U;
     case '"':return 0x61U;   // the table spells an apostrophe this way
     case '-':return 0x4dU;
+    case ':':return 0x45U;
+    case '/':return 0x4eU;
     default:break;
     }
     throw std::invalid_argument("unsupported Classic caption glyph");
@@ -1535,6 +1559,32 @@ classic_caption_entry(const ZoomZooState& published,std::span<const std::uint8_t
 }
 
 namespace {
+// One BG3 text cell of the race screen. A glyph is eight pixels wide and
+// sixteen tall, drawn as the tile the character names and the tile $10 above
+// it, so a field at tilemap row r covers rows r and r+1. BG3 scrolls by one
+// line, which is why the caption's row 10 shows at y 79 and the HUD's row 2
+// at y 15 (R-0042, R-0043).
+void draw_bg3_text(RgbFrame& frame,std::span<const std::uint8_t> font,unsigned column,unsigned row,
+                   std::string_view text,std::array<std::uint8_t,3> ink,std::bitset<256*224>& inked) {
+    for(std::size_t index=0;index<text.size();++index) {
+        const auto tile=classic_caption_tile(text[index]);
+        if(!tile)continue;
+        for(unsigned half=0;half<2;++half) {
+            const auto at=static_cast<std::size_t>(*tile+half*0x10U)*16U;
+            for(unsigned line=0;line<8;++line) {
+                const unsigned low=font[at+2U*line],high=font[at+2U*line+1U];
+                for(unsigned bit=0;bit<8;++bit) {
+                    if(((low>>(7U-bit))&1U)|((high>>(7U-bit))&1U)) {
+                        const int x=int(column+index)*8+int(bit),y=int(row)*8-1+int(half)*8+int(line);
+                        if(x<0 || x>=256 || y<0 || y>=224)continue;
+                        pixel(frame,x,y,ink);
+                        inked.set(static_cast<std::size_t>(y)*256+static_cast<std::size_t>(x));
+                    }
+                }
+            }
+        }
+    }
+}
 void draw_classic_caption(RgbFrame& frame,const ZoomZooState& published,
                           const ClassicRacePresentationContent& content,
                           std::array<std::uint8_t,3> ink,std::bitset<256*224>& inked) {
@@ -1543,25 +1593,26 @@ void draw_classic_caption(RgbFrame& frame,const ZoomZooState& published,
     const auto selected=classic_caption_entry(published,content.captions);
     if(!selected)return;
     const auto entry=*selected;
-    // Measured on the original's own frames: sixteen characters from x 64,
-    // the top row at y 79.
-    for(unsigned column=0;column<16;++column) {
-        const auto tile=classic_caption_tile(static_cast<char>(entry[column]));
-        if(!tile)continue;
-        for(unsigned half=0;half<2;++half) {
-            const auto at=static_cast<std::size_t>(*tile+half*0x10U)*16U;
-            for(unsigned row=0;row<8;++row) {
-                const unsigned low=font[at+2U*row],high=font[at+2U*row+1U];
-                for(unsigned bit=0;bit<8;++bit) {
-                    if(((low>>(7U-bit))&1U)|((high>>(7U-bit))&1U)) {
-                        const int x=64+int(column)*8+int(bit),y=79+int(half)*8+int(row);
-                        pixel(frame,x,y,ink);
-                        inked.set(static_cast<std::size_t>(y)*256+static_cast<std::size_t>(x));
-                    }
-                }
-            }
-        }
-    }
+    // $81:F322/$81:F33C write sixteen characters to columns 8-23 of rows 10-11.
+    std::string line;
+    for(unsigned column=0;column<16;++column)line.push_back(static_cast<char>(entry[column]));
+    draw_bg3_text(frame,font,8,10,line,ink,inked);
+}
+// R-0043: the HUD's four fields, on the same layer, in the same font and the
+// same colour as the caption. The original's own tilemap rows and columns:
+// the left field and the clock on rows 2-3, the player's finish time on rows
+// 5-6 and the opponent's on rows 20-21, both from column 13.
+void draw_classic_hud(RgbFrame& frame,const ZoomZooState& published,
+                      const ClassicRacePresentationContent& content,
+                      std::optional<std::uint32_t> opponent_finish_frame,
+                      std::array<std::uint8_t,3> ink,std::bitset<256*224>& inked) {
+    const auto font=content.caption_font;
+    if(font.size()!=2048)return;
+    const auto hud=classic_race_hud_text(published,content.scenario,opponent_finish_frame);
+    draw_bg3_text(frame,font,hud.left_column,2,hud.left,ink,inked);
+    draw_bg3_text(frame,font,24,2,hud.clock,ink,inked);
+    draw_bg3_text(frame,font,13,5,hud.player_time,ink,inked);
+    draw_bg3_text(frame,font,13,20,hud.opponent_time,ink,inked);
 }
 } // namespace
 
@@ -1725,6 +1776,11 @@ RgbFrame render_classic_race(const ZoomZooState& state,const ClassicRacePresenta
     // original on every other measured frame of both tracks.
     std::bitset<256*224> caption_ink;
     draw_classic_caption(frame,rider_source,content,colour(cgram,22),caption_ink);
+    // R-0043: the HUD is the same BG3 layer as the caption, so it composes the
+    // same way: over the track, under the riders with the measured red add, and
+    // under the channel-6 window members.
+    draw_classic_hud(frame,rider_source,content,history?history->opponent_finish_frame:std::nullopt,
+                     colour(cgram,22),caption_ink);
     for(int rider=1;rider>=0;--rider) {
         const auto& source=rider_source.movement.riders[static_cast<std::size_t>(rider)];
         const auto oam=project_rider_oam(source.motion.x,source.motion.y,rider_source.race.camera.x,
@@ -1755,20 +1811,6 @@ RgbFrame render_classic_race(const ZoomZooState& state,const ClassicRacePresenta
     // 57 frames, all of which this order matches.
     if(window_index)
         render_window_xor(frame,dragster_window_table(content.window_tables,*window_index),window_colour);
-    rect(frame,0,0,256,12,ui({15,30,30}));
-    const auto hud=classic_race_hud(rider_source);
-    const auto centred=[](const std::string& text){return 128-3*static_cast<int>(text.size());};
-    ui_text(frame,5,3,hud.lap,ink);
-    if(!hud.clock.empty())ui_text(frame,195,3,hud.clock,ink);
-    // The authored READY/GO stand in for the countdown windows only where those
-    // are omitted.
-    const bool draw_caption=!(hud.countdown_caption && !content.window_tables.empty());
-    if(hud.finish_time.empty()) {
-        if(draw_caption)ui_text(frame,centred(hud.caption),35,hud.caption,ink);
-    } else {
-        ui_text(frame,centred(hud.finish_time),35,hud.finish_time,ink);
-        ui_text(frame,centred(hud.caption),48,hud.caption,ink);
-    }
     if(state.pause.selection)draw_race_pause_menu(frame,state.pause.selection,ui({15,30,30}),ink);
     return frame;
 }
