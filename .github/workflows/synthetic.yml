@@ -15,7 +15,36 @@ permissions:
   contents: read
 
 jobs:
+  # Decide once whether this push or pull request changed documentation only.
+  # A docs-only tip still gets a green run (the acceptance rule cites one) but
+  # skips every build and test step; see docs/BUILD_AND_VALIDATION.md.
+  changes:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    outputs:
+      docs_only: ${{ steps.classify.outputs.docs_only }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Classify the changed paths
+        id: classify
+        env:
+          CLASSIFY_BASE: ${{ github.event.before || github.event.pull_request.base.sha }}
+          CLASSIFY_OUT: artifacts/ci/changes.json
+        run: python3 .github/scripts/classify_changes.py
+
+      - name: Upload classification
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: changes
+          path: artifacts/ci/changes.json
+          if-no-files-found: warn
+
   lab:
+    needs: changes
     strategy:
       fail-fast: false
       matrix:
@@ -25,19 +54,35 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Docs-only fast path
+        if: needs.changes.outputs.docs_only == 'true'
+        run: |
+          mkdir -p artifacts/ci
+          python3 - <<'EOF'
+          import json, os
+          json.dump({"fast_path": "docs-only", "commit": os.environ["GITHUB_SHA"],
+                     "skipped": "doctor, bootstrap, build and test steps; see the changes artifact for the classified paths"},
+                    open("artifacts/ci/fast-path.json", "w"), indent=2)
+          EOF
+          echo "docs-only change: build and test steps skipped"
+
       - name: Cache pinned toolchain wheels
+        if: needs.changes.outputs.docs_only != 'true'
         uses: actions/cache@v4
         with:
           path: local/cache/wheels
           key: wheels-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('tools/locks/toolchain.json') }}
 
       - name: Doctor
+        if: needs.changes.outputs.docs_only != 'true'
         run: python3 tools/project.py doctor --report artifacts/ci/doctor.json
 
       - name: Bootstrap (first run)
+        if: needs.changes.outputs.docs_only != 'true'
         run: python3 tools/project.py bootstrap --report artifacts/ci/bootstrap-1.json
 
       - name: Bootstrap (repeat must be idempotent)
+        if: needs.changes.outputs.docs_only != 'true'
         run: |
           python3 tools/project.py bootstrap --report artifacts/ci/bootstrap-2.json
           python3 - <<'EOF'
@@ -50,13 +95,15 @@ jobs:
           EOF
 
       - name: Build lab-debug
+        if: needs.changes.outputs.docs_only != 'true'
         run: python3 tools/project.py build --preset lab-debug --report artifacts/ci/build-debug.json
 
       - name: Test synthetic (lab-debug)
+        if: needs.changes.outputs.docs_only != 'true'
         run: python3 tools/project.py test --suite synthetic --preset lab-debug --artifacts artifacts/ci/test-debug --report artifacts/ci/test-debug.json
 
       - name: Prepare Ubuntu X11 development headers for pinned SDL
-        if: runner.os == 'Linux'
+        if: runner.os == 'Linux' && needs.changes.outputs.docs_only != 'true'
         run: |
           timeout 300 sudo apt-get update
           timeout 300 sudo apt-get install -y --no-install-recommends \
@@ -64,12 +111,15 @@ jobs:
             libxfixes-dev libxi-dev libxss-dev libxtst-dev libxkbcommon-dev
 
       - name: Build pinned SDL frontend (app-debug)
+        if: needs.changes.outputs.docs_only != 'true'
         run: python3 tools/project.py build --preset app-debug --timeout 600 --report artifacts/ci/build-app-debug.json
 
       - name: Test synthetic with pinned SDL frontend (app-debug)
-        run: python3 tools/project.py test --suite synthetic --preset app-debug --artifacts artifacts/ci/test-app-debug --report artifacts/ci/test-app-debug.json --timeout 600
+        if: needs.changes.outputs.docs_only != 'true'
+        run: python3 tools/project.py test --suite synthetic --preset app-debug --artifacts artifacts/ci/test-app-debug --report artifacts/ci/test-app-debug.json --timeout 600 --no-python-tests
 
       - name: Check frontend runtime link and help
+        if: needs.changes.outputs.docs_only != 'true'
         run: |
           if [[ "$RUNNER_OS" == "macOS" ]]; then
             build/app-debug/src/app/unirally.app/Contents/MacOS/unirally --help
@@ -78,12 +128,12 @@ jobs:
           fi
 
       - name: Build and test with sanitizers (Linux)
-        if: runner.os == 'Linux'
+        if: runner.os == 'Linux' && needs.changes.outputs.docs_only != 'true'
         run: |
           python3 tools/project.py build --preset lab-sanitize --report artifacts/ci/build-sanitize.json
-          python3 tools/project.py test --suite synthetic --preset lab-sanitize --artifacts artifacts/ci/test-sanitize --report artifacts/ci/test-sanitize.json
+          python3 tools/project.py test --suite synthetic --preset lab-sanitize --artifacts artifacts/ci/test-sanitize --report artifacts/ci/test-sanitize.json --no-python-tests
           python3 tools/project.py build --preset app-sanitize --timeout 600 --report artifacts/ci/build-app-sanitize.json
-          python3 tools/project.py test --suite synthetic --preset app-sanitize --artifacts artifacts/ci/test-app-sanitize --report artifacts/ci/test-app-sanitize.json --timeout 600
+          python3 tools/project.py test --suite synthetic --preset app-sanitize --artifacts artifacts/ci/test-app-sanitize --report artifacts/ci/test-app-sanitize.json --timeout 600 --no-python-tests
           build/app-sanitize/src/app/unirally --help
 
       - name: Upload reports

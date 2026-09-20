@@ -2,8 +2,7 @@
 
 ## Assignment
 
-- Status: ready on `main` at the JEV-JUDGMENT-HARNESS integration commit
-  (20 September 2026, about 01:20 UTC), not yet started. Registered 19 September 2026 22:55 UTC, chosen by the user as the
+- Status: in_progress since 20 September 2026 01:26 UTC. Registered 19 September 2026 22:55 UTC, chosen by the user as the
   task after JEV-JUDGMENT-HARNESS after asking why half the wall clock goes to
   waiting for CI on documentation changes.
 - Milestone: harness, independent of M4
@@ -14,7 +13,8 @@
   question: Fable 5.1 as the session's model; no frontier consultation - this
   is workflow configuration with a measurable outcome
 - Provider quota window/baseline (D-0004): at registration 22:55 UTC five-hour
-  32%, weekly all models 57%, weekly Fable 40%; D-0004 reserve 20% of the
+  32%, weekly all models 57%, weekly Fable 40%; at start 01:26 UTC five-hour
+  66%, weekly 61%, Fable 42%; D-0004 reserve 20% of the
   weekly allowance; no reset, purchase or provider change. Sample fresh when
   the task starts.
 - Reviewer: fresh Claude Opus 5 subagent in an isolated checkout at the exact
@@ -22,10 +22,12 @@
 - Dependencies and evidence of acceptance: JEV-JUDGMENT-HARNESS integrated
   (only so the two tasks do not both edit the coordinator records); hosted
   GitHub Actions on the existing public `origin`
-- Base commit: `main` after the JEV-JUDGMENT-HARNESS integration (record the
-  exact commit when the task starts)
+- Base commit: `main` at `b72b77d` (the JEV-JUDGMENT-HARNESS integration)
 - Branch and isolated worktree: `task/ci-fast-path`, `.worktrees/ci-fast-path`
-- Owned paths: `.github/workflows/synthetic.yml`, the "CI and release
+- Owned paths: `.github/workflows/synthetic.yml`, the new
+  `.github/scripts/classify_changes.py` and its ROM-free test
+  `tests/tooling/test_ci_fast_path.py` (the boundary moved at start so the
+  classifier is testable in the suite rather than inline shell), the "CI and release
   evidence" section and the `test --suite synthetic` row of
   `docs/BUILD_AND_VALIDATION.md`, the final-tip CI wording in
   `docs/AGENT_WORKFLOW.md` if it needs to name the fast path, this record,

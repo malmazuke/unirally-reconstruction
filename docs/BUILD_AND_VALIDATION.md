@@ -342,6 +342,24 @@ bounded reference-analysis surface: horizontal velocity, pose/reflection,
 jump/control and remaining contact state are external inputs, and it does not
 add native ZOOM ZOO gameplay.
 
+The hosted `synthetic.yml` has a docs-only fast path (CI-FAST-PATH). A first
+job runs `.github/scripts/classify_changes.py` on a full-history checkout: a
+push or pull request whose changed paths all lie under `docs/` or `tasks/`,
+are Markdown files at the repository root, or are `.env.example` is
+`docs_only`, and the lab job then skips its doctor, bootstrap, build and test
+steps and reports success with `artifacts/ci/fast-path.json` in its uploaded
+reports. That run is still the tip's green run for the acceptance rule: the
+tree it covers differs from the last full run only in documentation. A push
+whose base cannot be established (a new branch, a base absent from the
+checkout, a force push) and any change to the workflow, the classifier,
+`tools/`, `tests/`, `src/`, the CMake files or `tools/locks/` takes the full
+path; `workflow_dispatch` always does. The `changes` artifact of every run
+records the base, the changed paths and the reason. Within a full run the
+Python tooling tests execute once per job, in the `lab-debug` step; the
+`app-debug` and sanitizer steps pass `--no-python-tests`, which the report
+records as a skipped optional check, and still run ctest and the
+repeatability probe.
+
 If no remote or CI host exists, use the same scripts locally and record their results. Do not describe hosted CI as running until it exists. Integration reruns affected checks on the actual merge candidate; milestones require the broader declared suite. Use sanitizers where supported to expose memory/undefined-behavior defects, alongside replay checks in the release configuration.
 
 Before an unattended run is considered reliable, demonstrate restart after interruption, a failed check reported accurately, and a task resumed from its persisted record. Build success is necessary but cannot substitute for reference comparison.
