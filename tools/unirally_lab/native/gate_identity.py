@@ -46,12 +46,22 @@ def ninja(args: list[str], build: Path, tool: str) -> list[str]:
     return out.stdout.splitlines()
 
 
-def build_is_current(build: Path, tool: str) -> None:
-    out = subprocess.run([tool, '-C', str(build), '-n', BINARY_TARGET], capture_output=True, text=True)
-    if out.returncode:
-        raise RuntimeError(f'ninja -n failed: {out.stderr.strip()[:200]}')
-    if 'no work to do' not in out.stdout:
-        raise RuntimeError('the build is out of date, so its dependency record does not describe this tree')
+def object_is_current(build: Path, root: Path, object_path: str, inputs: list[str]) -> None:
+    """Refuse a dependency record that predates the files it claims to describe.
+
+    `ninja -n` cannot answer this here: the project's CMake globs re-check on
+    every invocation, so it always reports work to do. Comparing modification
+    times answers the question directly - an input newer than the object that
+    recorded it means the record describes an older tree (review F1).
+    """
+    built = (build/object_path)
+    if not built.exists():
+        raise RuntimeError(f'{object_path} has not been built; build the preset')
+    stamp = built.stat().st_mtime
+    stale = [name for name in inputs if (root/name).exists() and (root/name).stat().st_mtime > stamp]
+    if stale:
+        raise RuntimeError(f'{object_path} is older than {len(stale)} of its inputs '
+                           f'({stale[0]}); build the preset')
 
 
 def engine_files(build: Path, root: Path, tool: str) -> list[str]:
@@ -64,13 +74,16 @@ def engine_files(build: Path, root: Path, tool: str) -> list[str]:
         lines = ninja(['deps', object_path], build, tool)
         if not any('#deps' in line and 'VALID' in line for line in lines):
             raise RuntimeError(f'{object_path} has no valid recorded dependencies; rebuild the preset')
+        own: list[str] = []
         for line in lines:
             name = line.strip()
             if not name.startswith(str(root)):
                 continue
             relative = str(Path(name).relative_to(root))
             if not relative.startswith('build/'):
-                seen.add(relative)
+                own.append(relative)
+        object_is_current(build, root, object_path, own)
+        seen.update(own)
     return sorted(seen), objects
 
 
@@ -94,7 +107,6 @@ def main() -> int:
     since = subprocess.check_output(['git', 'rev-parse', a.since], cwd=root, text=True).strip()
 
     try:
-        build_is_current(a.build, a.ninja)
         files, objects = engine_files(a.build, root, a.ninja)
     except RuntimeError as error:
         print(f'refused: {error}')
