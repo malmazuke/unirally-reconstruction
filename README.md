@@ -12,9 +12,11 @@ Development is also an experiment in agent-driven engineering: agents recover
 behavior, implement it, and independently review changes, with the evidence and
 handoffs kept in this repository.
 
-![Unirally gameplay with a red unicycle above a striped track](docs/images/unirally.png)
+![A ZOOM ZOO race in the native build: the countdown clears, the rider sets off and lands two rolls, each named in the game's own caption row](docs/images/race-intro.webp)
 
-*Gameplay screenshot supplied by the maintainer. See below for the project's accepted capabilities and current limitations.*
+*Recorded from the native C++ build - countdown, launch and two landed rolls, with the
+recovered in-race HUD. See below for the project's accepted capabilities and current
+limitations.*
 
 ## What works today
 
@@ -30,6 +32,12 @@ handoffs kept in this repository.
   initialization through countdown, three laps, result and Race Again, with the
   original's rider art, HUD values and start-line animation (M4-16; see project
   state for its acceptance record and declared omissions).
+
+![Side-by-side of the same race frame from the native renderer and from original hardware, with a difference panel reading zero pixels](docs/images/native-vs-original.png)
+
+*The same frame rendered natively and captured from the original, with a per-pixel
+difference. Frames like this one are how the project's changes are accepted; see
+[build and validation](docs/BUILD_AND_VALIDATION.md) for how the comparisons are run.*
 
 This is a prototype with limited game coverage. Audio, complete DRAGSTER rider
 artwork, other playable tracks and modes, menus and progression, multiplayer, and public
