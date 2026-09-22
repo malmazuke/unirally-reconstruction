@@ -53,6 +53,13 @@ verified, so it makes no claim to show an accepted native build or particular
 track. This explicitly requested presentation image is separate from private
 reference captures, ROMs, extracted asset packs and acceptance evidence.
 
+Superseded as the README's displayed image on 21 September 2026 by
+`docs/images/race-intro.webp`, a recorded capture of the native build, and
+`docs/images/native-vs-original.png`. `docs/images/unirally.png` is kept in the
+repository because this record describes it as supplied and included unchanged,
+but it is no longer shown: it predates CLASSIC-RACE-HUD and still carries the
+authored HUD bar that task replaced.
+
 ## Independent review corrections
 
 Sol/medium reviewed `328b560` and requested two wording corrections: the remaining
