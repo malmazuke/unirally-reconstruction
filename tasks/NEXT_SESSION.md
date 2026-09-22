@@ -1,5 +1,24 @@
 # Next session
 
+**Status on 22 September 2026 UTC (after CLASSIC-SPLIT-TIME): no task is
+active; STATIC-CODE-MAP is next under D-0008, after the weekly reset on 24
+September 08:00Z or an explicit user override.** CLASSIC-SPLIT-TIME is
+reviewed and integrated (REVIEW-TBD); closeout
+`artifacts/classic-split-time-integration/closeout.json` in the main checkout.
+The centred HUD fields now show crossing times and signed splits as the
+original does ([R-0044](../docs/research/R-0044-classic-split-time.md)); the
+only declared omission left on an ordinary race frame is the off-screen rider
+arrow. Two things to carry forward: **the split reads the clock before the
+update's own tick**, which is invisible on four updates in five and was
+settled by checking every capture's WRAM (`split_probe.py`) before writing
+code; and **this host's ASan runtime hangs at startup since the macOS 27.0 /
+Xcode 26.1.1 update**, so `lab-sanitize` and `app-sanitize` are unavailable
+locally until a one-line ASan program runs again - record them as unavailable,
+never as passed, and cite the hosted Linux job. Usage: the task ran from 80%
+to about 88% weekly all-models (account-wide, another session was writing
+D-0008's records at the same time); the reserve floor was crossed on the
+user's instruction, recorded in the task record.
+
 **Status on 22 September 2026 UTC: no task is active; CLASSIC-SPLIT-TIME is
 ready and deliberately not started.** This session (Claude Fable 5.1, a
 within-provider model change from the Opus 5 sessions before it) came to pick

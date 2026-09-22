@@ -1,5 +1,31 @@
 # Project state
 
+Updated 22 September 2026 (integration): **CLASSIC-SPLIT-TIME is reviewed
+and integrated**; acceptance is conditional on the final-tip CI and remote
+verification recorded in the ignored closeout
+`artifacts/classic-split-time-integration/closeout.json` in the main checkout.
+The two centred HUD fields are now drawn as the original draws them all race
+long, not only at the finish ([R-0044](research/R-0044-classic-split-time.md)):
+each rider's crossing time after a lap and at the finish, and at a checkpoint
+the other rider has already passed the signed split against the first rider
+through, `+M:SS:t` for the player and, by the original's own constant, always
+`-` for the opponent; the first rider through a slot draws nothing, and the
+cells blank 118 updates after each crossing unless the rider has finished. The
+request is made after the lap routine and before the clock ticks, so the split
+reads the previous update's clock (509 of 509 splits across 77 captures' WRAM,
+against 448 for the current one). Native's engine already kept everything but
+the first rider's stored clock, which is presentation history in
+`ClassicRaceHudClock`. Measured: **0 differing pixels in both centred bands on
+every frame of every set** - the primary's 274 kept frames (whole picture
+18,601 -> 2,374, the rest the off-screen arrow), the brake race's 274,
+trick-long's 192, 79 plus 60 consecutive primary frames across every kind of
+transition, the lap-change, crossing and finish consecutive sets, and 34
+consecutive DRAGSTER frames across its checkpoint, blank and finish. No pack
+or state change; review tier 2 under D-0008 (REVIEW-TBD). Found on the way:
+this host's ASan runtime now hangs before `main` (macOS 27.0, Xcode 26.1.1),
+so the two sanitizer presets are unavailable locally and the Linux CI job is
+their evidence.
+
 Updated 22 September 2026: **no task is active; CLASSIC-SPLIT-TIME is ready.**
 The session that came to dispatch it (Claude Fable 5.1, same provider) sampled
 weekly usage at 79% against D-0004's 80% reserve floor, one point short of the

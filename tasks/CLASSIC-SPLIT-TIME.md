@@ -129,21 +129,33 @@ a finding to record and a reason to stop and report, not a licence to widen the 
 
 ## Capability and coverage checkpoint
 
-- Native capability delivered / still missing: nothing delivered yet. Missing: the split time
-  itself, and separately the off-screen rider arrow.
-- Frozen exact-match interval, field set and reference/seed identity: none new expected; the
-  measurement is the picture score against existing frozen originals and consecutive recaptures.
-- Dynamic captured inputs still consumed (must be zero for autonomy): zero; presentation only.
-- Relevant branches/transitions exercised, including independent variations: to be recorded. At
-  minimum each split publication and blanking on both tracks, a split that changes sign, the
-  opponent-first race, and the finish sequence after a standing split.
-- First divergence and cheapest next discriminating experiment: the two measured pictures, 2080
-  (rows 5-6) and 3900 (rows 20-21). Cheapest first experiment: `queue_probe.py` over the primary's
-  WRAM for every update on which `$0349` or the opponent's finish-time flag is set before the
-  finish, to learn the publishing event before capturing anything.
-- Trial-wide usage baseline/current, reserve, reset authorization/outcome or none: preparation at
-  79% weekly all-models (2026-09-22T10:13Z); implementation baseline to be sampled at claim.
-  Reserve floor 80%. No reset, purchase or provider change.
+- Native capability delivered / still missing: delivered - both centred fields as the original
+  draws them through the race: each rider's crossing time (`M:SS:th`) after a lap and at the
+  finish, the signed split (`+M:SS:t`, the opponent's always `-`) at a checkpoint the other rider
+  has already passed, nothing for the first rider through a slot, the opponent's first-seen cut,
+  and the blank 118 updates after each crossing unless the rider has finished, all through the
+  one-field-per-update redraw queue (R-0044). Still missing on an ordinary race frame: the
+  off-screen rider arrow only.
+- Frozen exact-match interval, field set and reference/seed identity: no new frozen contract; the
+  measurement is the picture score against frozen originals and consecutive recaptures asserted
+  against the frozen digests (R-0044's table).
+- Dynamic captured inputs still consumed (must be zero for autonomy): zero; presentation only,
+  derived from the published 742-byte state and the queue's own history.
+- Relevant branches/transitions exercised, including independent variations: the opponent first
+  through a slot (cut), the player first (nothing drawn), the player's split with the clock's
+  tick in the same update, the opponent's split with the constant `-`, the blank at 118, a lap
+  change with both riders' crossing times, the finish sequence, the 10:00 time-out hold, and
+  DRAGSTER's checkpoint 2, blank and finish. Not exercised: a negative split (unreachable with
+  one shared clock, see R-0044), a split with a minute digit above nine, and the queue's
+  behaviour on a mid-race restore without slot history (declared).
+- First divergence and cheapest next discriminating experiment: none open for this task. The
+  off-screen rider arrow is the nearest unrecovered thing; its sprite writes would show in an
+  access capture over a window where a rider leaves the screen.
+- Trial-wide usage baseline/current, reserve, reset authorization/outcome or none: weekly
+  all-models 79% at preparation (10:13Z), 80% at claim (10:44Z), 82% at 11:06Z, 86% at 11:41Z
+  (account-wide, with the D-0008 session writing records concurrently). The 80% reserve floor was
+  crossed on the user's instruction ("Sorry, you can continue"); no reset, purchase or provider
+  change.
 
 ## Evidence and attempts
 
@@ -164,39 +176,50 @@ a finding to record and a reason to stop and report, not a licence to widen the 
 
 ## Handoff
 
-- Current base/head commit and uncommitted state: no branch or worktree exists yet. Create
-  `task/classic-split-time` from the `main` tip at claim.
-- Verified findings: only R-0043's two measured pictures and its naming of `$0349` as the player's
-  finish-time dirty flag, both from CLASSIC-RACE-HUD. Nothing about the split's publishing event,
-  operands or lifetime is verified.
-- Current hypothesis and failed approaches: none tried. Provisional reading, to be rejected
-  cheaply: each field shows the difference between the two riders' times at the last crossing of a
-  lap or checkpoint, signed from the viewer's side, written through the same finish-time dirty flag
-  the finish uses, which would make the finish time the last "split" the field receives. Treat this
-  as a guess until the flag probe and the access capture say otherwise.
-- Commands executed, outcomes and report hashes: none for this task. The usage sample is the only
-  measurement.
-- Unavailable/skipped checks: none yet.
-- Exact next experiment/command: from a claimed worktree with `local/` symlinks in place and `E`
-  the main checkout's `local/evidence`:
+- Current base/head commit and uncommitted state: base `main` at `9e423a5` (rebased from
+  `ee5c132` after D-0008's two records-only commits; the code diff is byte-identical to the
+  reviewed candidate `c3fe841`, which the reviewer's worktree holds). Implementation `2db997a`
+  and `7ce8558` (originally `708af4c` and `33e12a8`); records on top.
+- Verified findings: attempts 1 to 10 and [R-0044](../docs/research/R-0044-classic-split-time.md).
+- Current hypothesis and failed approaches: settled. Two of my own errors are worth keeping: a
+  crossing recognised by "the countdown became 120" misses the opponent's first-seen crossing,
+  which the engine sets to 120 and cuts to 2 within one update (found by my own test, fixed by
+  recognising the next-checkpoint step); and the opponent's constant `-`, read in the
+  disassembly at attempt 2 and not applied until the kept-frame sweep showed the same 14 pixels
+  on every frame with an opponent split. Also: two sweep chains killed mid-loop went on writing
+  the same files, so every sweep was re-run once, serially (`sweeps.sh`).
+- Commands executed, outcomes and report hashes. Scripts under
+  `local/evidence/classic-split-time/classic-split-time/` after integration; run from a checkout
+  of this branch with its `local/` inputs in place. `E` is the main checkout's `local/evidence`.
 
   ```sh
-  cp "$E/classic-race-hud/classic-race-hud/queue_probe.py" artifacts/classic-split-time/split_probe.py
-  # edit it to scan $0349 and the opponent's finish-time flag instead of $0D17, then
-  python3 artifacts/classic-split-time/split_probe.py "$E/m4-16-playable-zoom-zoo/m4-16/boundary-a"
-  # then an access capture over a window it reports, for the $2116/$2118 writers, e.g.
-  python3 tools/project.py access capture --manifest <accepted manifest> --out OUT \
-      --from-frame <first set - 2> --to-frame <first set + 6>
+  # the WRAM check of the rule over every capture (list in captures.txt)
+  tr '\n' '\0' < artifacts/classic-split-time/captures.txt | xargs -0 python3 artifacts/classic-split-time/split_probe.py
+  # consecutive originals across the split transitions, asserted against the frozen digests
+  PYTHONPATH=. python3 artifacts/classic-split-time/recapture.py "$E/m4-16-playable-zoom-zoo/m4-16/boundary-a" \
+      artifacts/classic-split-time/orig-primary-splits 2004-2012,2075-2082,2193-2198,3873-3886,4631-4642,6275-6285
+  PYTHONPATH=. python3 artifacts/classic-split-time/recapture.py \
+      "$E/dragster-ordinary-controls/dragster-ordinary-controls/originals/primary-a" \
+      artifacts/classic-split-time/orig-dragster-splits 2378-2392,2496-2502,3205-3216
+  # every picture sweep, serially, on the app-debug build
+  ./artifacts/classic-split-time/sweeps.sh
+  # everything a presentation change must run (sanitizers recorded unavailable on this host)
+  ./artifacts/classic-split-time/gates.sh
   ```
 
-- Remaining dependencies: none outside this task; the usage reset is a resource condition, not a
-  dependency.
+  Outcomes: `split-probe.log`, `compare-*.txt`, `gates-c3fe841/`, `gates-run.log`.
+- Unavailable/skipped checks: `lab-sanitize` and `app-sanitize` are unavailable on this host
+  (attempt 9; the hosted Linux job builds and tests both). The eleven differential compares are
+  cited through `gate_identity`, not re-run. No live playtest in this task.
+- Exact next experiment/command: none open. For the off-screen arrow, an access capture over a
+  window where a rider leaves the screen, for the OAM writes.
+- Remaining dependencies: none.
 - Runtime needs (network, build time, fixtures, memory): the private ROM through the locator, the
-  audited bsnes core, the v9 pack, about 25 s for an app-debug build, about 4 minutes for the whole
-  gate script, about 8 minutes per 274-frame picture sweep, and `gh` for the final-tip CI.
-- Aggregate parent/child time, provider usage before/after (or unknown), other-account-work caveat:
-  preparation about 30 minutes on Fable 5.1, 79% before; implementation to be recorded.
-- Accepted outcome, review/fix rounds and next routing decision: none yet.
+  audited bsnes core, the v9 pack, about 25 s for an app-debug build, about 4 minutes for the gate
+  script without the sanitizers, about 90 s per 274-frame sweep on this host, and `gh` for CI.
+- Aggregate parent/child time, provider usage before/after (or unknown), other-account-work
+  caveat: in the closeout.
+- Accepted outcome, review/fix rounds and next routing decision: REVIEW-TBD.
 
 ## Review and integration
 

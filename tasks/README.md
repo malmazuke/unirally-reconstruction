@@ -57,7 +57,7 @@ The coordinator maintains the status registry below. Work orders further below d
 | STATIC-CODE-MAP | ready; prepared 22 September 2026 under D-0008 at 84% weekly usage, claim after the 24 September 08:00Z reset or an explicit user override; **next after CLASSIC-SPLIT-TIME** | [A static, annotated code map of the code banks](STATIC-CODE-MAP.md) |
 | TRACK-BREADTH | planned; ready when STATIC-CODE-MAP is integrated (or earlier with a recorded reason); the 45-stream inventory is in the record | [Every track through the shared engine, measured against the original](TRACK-BREADTH.md) |
 | CLASSIC-RACE-HUD | reviewed and integrated (four returned rounds, approved at the fifth); accepted conditional on final-tip CI and remote verification | [The original's in-race HUD](CLASSIC-RACE-HUD.md) |
-| CLASSIC-SPLIT-TIME | ready; prepared 22 September 2026 at 79% weekly usage against the 80% reserve, claim after the 24 September 08:00Z reset or an explicit user override | [The original's signed split time during the race](CLASSIC-SPLIT-TIME.md) |
+| CLASSIC-SPLIT-TIME | reviewed and integrated (implementation `2db997a`/`7ce8558`, candidate `c3fe841` rebased onto `main`; REVIEW-TBD); accepted conditional on final-tip CI and remote verification | [The original's centred HUD fields: crossing times and signed splits](CLASSIC-SPLIT-TIME.md) |
 | M4-17 – M6 | unclaimed; outside this assignment | Do not automatically dispatch |
 
 ## M0 — repeatable laboratory
