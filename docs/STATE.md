@@ -1,5 +1,29 @@
 # Project state
 
+Updated 22 September 2026 (later): **no task is active; the next task is
+STATIC-CODE-MAP, then TRACK-BREADTH, under [D-0008](decisions/D-0008-static-map-track-breadth-review-tiers.md).**
+The user asked how much of the game is reconstructed and why progress is slow.
+Measured against the ROM: the union of the four coverage maps executes 41,778
+bytes, 2.0% of the ROM and 32% of the code banks `$80`-`$83`; the records cite
+64% of that observed code; two tracks are playable out of **45 RNC streams**
+found contiguous in banks `$98`-`$9F` (DRAGSTER first, ZOOM ZOO second). By
+features it is on the order of an eighth of the game. The causes recorded in
+D-0008 are dynamic-only discovery with no static disassembly, review cost that
+does not scale with risk, and tasks scoped to the smallest gain. The user
+rejected running original code inside the product for any screen (goal, legal
+risk, modding) and adopted the other three remedies: a static annotated code map
+of the code banks seeded by the dynamic maps ([STATIC-CODE-MAP](../tasks/STATIC-CODE-MAP.md),
+tier 2, ready), a per-track matrix of the whole track set through the shared
+engine ([TRACK-BREADTH](../tasks/TRACK-BREADTH.md), planned behind it), and
+review tiers by risk (now in AGENTS.md and the workflow). Weekly usage was 84%
+at 11:20Z, above the reserve, so this session prepared records only; claim
+after the reset on 24 September 08:00Z or on an explicit user override.
+CLASSIC-SPLIT-TIME stays ready behind them.
+
+Breadth lines (D-0008): **tracks matched against the original: 2 of 45
+inventoried streams.** **Code banks by class: 41,778 observed of 131,072;
+inferred, data and unknown not yet measured** (STATIC-CODE-MAP).
+
 Updated 22 September 2026: **no task is active; CLASSIC-SPLIT-TIME is ready.**
 The session that came to dispatch it (Claude Fable 5.1, same provider) sampled
 weekly usage at 79% against D-0004's 80% reserve floor, one point short of the

@@ -71,6 +71,20 @@ Never make the user start, monitor or relay review. No self-approval fallback.
 The primary can do integration preparation while review runs, but must not change
 the reviewer's candidate. Use [validation by stage](BUILD_AND_VALIDATION.md#validation-by-stage).
 
+### Review tiers (D-0008)
+
+The process above is the tier 1 process and applies in full to any change to simulation
+state, integer arithmetic, ordering or timing in `src/core`, the serialized state, pack
+rules or format, differential gates or reference baselines. Tier 2 (presentation on
+recovered layers, extraction with existing decoders, laboratory tooling and CI) gets one
+independent review round by a fresh subagent on the exact candidate against the reviewer
+checklist, with no preregistered inventory; the frozen gates and pixel sweeps are its
+evidence, and a returned finding gets one re-review. Tier 3 (records, and maps regenerated
+by tracked tools with unchanged inputs) gets no independent review and the docs-only CI fast
+path. The primary records the tier and its reason in the task record at claim; a reviewer
+who finds a tier 2 diff touching tier 1 scope escalates it and says so. See
+[D-0008](decisions/D-0008-static-map-track-breadth-review-tiers.md).
+
 ## Worker loop
 
 1. Read project state, the task, relevant decisions and evidence. Inspect the actual branch and working tree; do not assume they match the handoff.
