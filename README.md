@@ -14,8 +14,7 @@ handoffs kept in this repository.
 
 ![A ZOOM ZOO race in the native build: the countdown clears, the rider sets off and lands two rolls, each named in the game's own caption row](docs/images/race-intro.webp)
 
-*Recorded from the native C++ build - countdown, launch and two landed rolls, with the
-recovered in-race HUD. See below for the project's accepted capabilities and current
+*Recorded from the native C++ build. See below for the project's accepted capabilities and current
 limitations.*
 
 ## What works today
