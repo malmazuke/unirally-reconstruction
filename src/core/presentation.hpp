@@ -162,9 +162,12 @@ struct ClassicHudText {
   unsigned left_column{};
   // `$81:ED5C-$81:EDD9` at columns 24-29, blanked by `$81:ECCF` at the finish.
   std::string clock;
-  // `$81:EE89-$81:EF49` at columns 13-19 of rows 5-6, and `$81:F0E6-$81:F1A0`
-  // at the same columns of rows 20-21 for the opponent.
-  std::string player_time, opponent_time;
+  // The two centred seven-cell fields at columns 13-19 of rows 5-6 (player)
+  // and 20-21 (opponent): each rider's crossing time in `M:SS:th` after a
+  // lap or the finish (`$81:EE89-$81:EF49`, `$81:F0E6-$81:F1A0`) and its
+  // signed split against the first rider through the same checkpoint in
+  // `+M:SS:t` (`$81:EF5E-$81:F030`, `$81:F1B5-$81:F288`; R-0044).
+  std::string player_cells, opponent_cells;
 };
 // What the original's HUD cells are holding: the clock digits the queue last
 // wrote, and whether it has reached each of the three fields the finish sets
@@ -172,8 +175,28 @@ struct ClassicHudText {
 // from the state directly and the queue writes it first.
 struct ClassicHudPublished {
   std::optional<std::string> clock{};
-  bool clock_blanked{},player_time{},opponent_time{};
+  bool clock_blanked{};
+  // What the two centred fields hold, nothing while blank.
+  std::optional<std::string> player_cells{},opponent_cells{};
   bool operator==(const ClassicHudPublished&) const = default;
+};
+// R-0044: the centred fields' content. A crossing publishes the crossing
+// clock digits `$0E43,y..` (native `time_digits`) as `M:SS:th`. A checkpoint
+// the other rider has already passed publishes the difference between the
+// clock as this update read it and the time the first rider through stored,
+// digit by digit with borrows ($81:C94F-CA36): non-negative as `+M:SS:t`,
+// negative through the ten's complement the original takes (`5-T`, `9-s`,
+// `10-t` with ten shown as zero, the minute as its one's complement) as
+// `-M:SS:t`. Clock and stored digits are minutes, tens, seconds, tenths.
+std::string classic_hud_crossing_text(const std::array<std::uint16_t,5>& time_digits);
+std::array<std::uint8_t,4> classic_hud_clock_digits(const RaceTimerDigits& timer);
+std::string classic_hud_split_text(const std::array<std::uint8_t,4>& clock,
+                                   const std::array<std::uint8_t,4>& stored);
+// One centred field's pending request, as `$0349`/`$034B` hold it: nothing,
+// a positive draw of `text`, or a negative blank.
+struct ClassicHudCellRequest {
+  enum class Kind {None,Draw,Blank} kind{};
+  std::string text;
 };
 // `published` is what the original's cells are holding, followed update by
 // update by `ClassicRaceHudClock`. Without it the clock digits are derived from
@@ -208,9 +231,22 @@ ClassicHudText classic_race_hud_text(const ZoomZooState& previous_update,
 // again while `$0EFB` is already zero, so `finish` is written a second time
 // and everything behind it waits (review 4 B1, measured on two DRAGSTER races
 // at pictures 3215-3217).
+// The centred fields (R-0044) are requested by `$81:C910-CB23`, which runs
+// after the lap routine and before the clock ticks, on the update a rider's
+// display countdown `$0FFF,y` is set to 120 (every crossing but the initial
+// one, recognised here by the next-checkpoint step with a nonzero countdown)
+// and, negatively, on the update it reaches 2. A lap or finish crossing
+// draws the crossing digits; a checkpoint draws the split against the first
+// rider through that slot of that lap, or, for the first rider, stores that
+// clock in the shared slot and clears its own request ($81:CA38-CA61: it
+// draws nothing, and the opponent's countdown is cut to 2 so its cells are
+// blanked at once). The slot times are presentation history the serialized
+// race does not carry, so a queue that did not observe the first crossing of
+// a slot leaves the cells as they are. A finished rider's blank is skipped
+// without spending the update ($81:EDE9, $81:F040).
 class ClassicRaceHudClock {
 public:
-  void reset() {latest_={};on_screen_={};pending_={};}
+  void reset() {latest_={};on_screen_={};pending_={};slot_times_={};}
   void observe_update(const ZoomZooState& previous,const ZoomZooState& updated);
   // The cells as the picture drawn from the earlier of the two states last
   // observed shows them, so this lags one update exactly as the rider overlays
@@ -218,9 +254,12 @@ public:
   // wrote on update N, which it derived from the state at N-1.
   const ClassicHudPublished& published() const {return on_screen_;}
 private:
-  struct Pending {bool left{},clock_blank{},player_time{},opponent_time{};};
+  struct Pending {bool left{},clock_blank{};std::array<ClassicHudCellRequest,2> cells{};};
   ClassicHudPublished latest_{},on_screen_{};
   Pending pending_{};
+  // `$100D` + 16 * laps remaining + 4 * checkpoint: the clock the first rider
+  // through each slot stored, minutes, tens, seconds, tenths.
+  std::array<std::optional<std::array<std::uint8_t,4>>,20> slot_times_{};
 };
 // Presentation-only $0D45/$0D47 upper-body overlay frames. The original
 // derives them from look state the serialized race does not carry (R-0036),
