@@ -21,7 +21,7 @@ every frame of every set** - the primary's 274 kept frames (whole picture
 trick-long's 192, 79 plus 60 consecutive primary frames across every kind of
 transition, the lap-change, crossing and finish consecutive sets, and 34
 consecutive DRAGSTER frames across its checkpoint, blank and finish. No pack
-or state change; review tier 2 under D-0008 (REVIEW-TBD). Found on the way:
+or state change; review tier 2 under D-0008: approved at the first round, report `a7cfc6b` on `review/classic-split-time`, five should-fix items applied at `e225bfd`, with the reviewer's own withheld consecutive recaptures on five more originals of both tracks at 0 in both bands. Found on the way:
 this host's ASan runtime now hangs before `main` (macOS 27.0, Xcode 26.1.1),
 so the two sanitizer presets are unavailable locally and the Linux CI job is
 their evidence.

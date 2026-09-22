@@ -3,7 +3,7 @@
 **Status on 22 September 2026 UTC (after CLASSIC-SPLIT-TIME): no task is
 active; STATIC-CODE-MAP is next under D-0008, after the weekly reset on 24
 September 08:00Z or an explicit user override.** CLASSIC-SPLIT-TIME is
-reviewed and integrated (REVIEW-TBD); closeout
+reviewed and integrated (approved at the first round, report `a7cfc6b` on `review/classic-split-time`, five should-fix items applied at `e225bfd`); closeout
 `artifacts/classic-split-time-integration/closeout.json` in the main checkout.
 The centred HUD fields now show crossing times and signed splits as the
 original does ([R-0044](../docs/research/R-0044-classic-split-time.md)); the
