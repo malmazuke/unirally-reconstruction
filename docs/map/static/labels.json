@@ -1,0 +1,6313 @@
+[
+ {
+  "address": "$80:8000",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_808000",
+  "source_records": [
+   "docs/research/R-0045-static-code-map.md",
+   "tasks/STATIC-CODE-MAP.md"
+  ]
+ },
+ {
+  "address": "$80:8004",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_808004",
+  "source_records": [
+   "docs/research/R-0009-m1-acceptance.md"
+  ]
+ },
+ {
+  "address": "$80:8008",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_808008",
+  "source_records": [
+   "docs/research/R-0011-motion.md"
+  ]
+ },
+ {
+  "address": "$80:8020",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_808020",
+  "source_records": [
+   "docs/research/R-0009-m1-acceptance.md"
+  ]
+ },
+ {
+  "address": "$80:81F4",
+  "class": "data",
+  "comment": "data",
+  "label": "dat_8081F4",
+  "source_records": [
+   "docs/research/R-0043-classic-race-hud.md",
+   "docs/research/R-0044-classic-split-time.md",
+   "tasks/CLASSIC-RACE-HUD.md"
+  ]
+ },
+ {
+  "address": "$80:8200",
+  "class": "data",
+  "comment": "data",
+  "label": "dat_808200",
+  "source_records": [
+   "tasks/CLASSIC-RACE-HUD.md"
+  ]
+ },
+ {
+  "address": "$80:821F",
+  "class": "data",
+  "comment": "data",
+  "label": "dat_80821F",
+  "source_records": [
+   "docs/research/R-0044-classic-split-time.md"
+  ]
+ },
+ {
+  "address": "$80:8220",
+  "class": "data",
+  "comment": "data",
+  "label": "dat_808220",
+  "source_records": [
+   "docs/research/R-0044-classic-split-time.md",
+   "tasks/CLASSIC-SPLIT-TIME.md"
+  ]
+ },
+ {
+  "address": "$80:822B",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80822B",
+  "source_records": [
+   "docs/inventory/M4-07-reflected-vertical.md",
+   "docs/research/R-0010-native-movement.md",
+   "docs/research/R-0011-contact.md",
+   "docs/research/R-0024-zoom-zoo-vertical-contact.md",
+   "docs/research/R-0025-zoom-zoo-reflected-vertical-contact.md",
+   "tasks/M4-06-review.md"
+  ]
+ },
+ {
+  "address": "$80:822C",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80822C",
+  "source_records": [
+   "docs/research/R-0023-zoom-zoo-contact.md"
+  ]
+ },
+ {
+  "address": "$80:824B",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80824B",
+  "source_records": [
+   "docs/inventory/M4-07-reflected-vertical.md",
+   "docs/research/R-0011-contact.md",
+   "docs/research/R-0024-zoom-zoo-vertical-contact.md",
+   "docs/research/R-0025-zoom-zoo-reflected-vertical-contact.md",
+   "tasks/M4-06-review.md"
+  ]
+ },
+ {
+  "address": "$80:824C",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80824C",
+  "source_records": [
+   "docs/research/R-0023-zoom-zoo-contact.md"
+  ]
+ },
+ {
+  "address": "$80:826B",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80826B",
+  "source_records": [
+   "docs/inventory/M4-07-reflected-vertical.md"
+  ]
+ },
+ {
+  "address": "$80:828B",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80828B",
+  "source_records": [
+   "docs/inventory/M4-07-reflected-vertical.md"
+  ]
+ },
+ {
+  "address": "$80:82AB",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_8082AB",
+  "source_records": [
+   "docs/research/R-0035-zoom-zoo-playable-recovery.md",
+   "docs/research/R-0037-dragster-race-palette-cycle.md",
+   "tasks/DRAGSTER-PALETTE-CYCLE-review.md",
+   "tasks/M4-16-review.md"
+  ]
+ },
+ {
+  "address": "$80:84AB",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_8084AB",
+  "source_records": [
+   "docs/research/R-0035-zoom-zoo-playable-recovery.md",
+   "tasks/DRAGSTER-PALETTE-CYCLE-review.md",
+   "tasks/M4-16-review.md"
+  ]
+ },
+ {
+  "address": "$80:84CB",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_8084CB",
+  "source_records": [
+   "docs/research/R-0010-native-movement.md"
+  ]
+ },
+ {
+  "address": "$80:84DB",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_8084DB",
+  "source_records": [
+   "docs/research/R-0010-native-movement.md"
+  ]
+ },
+ {
+  "address": "$80:84EB",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_8084EB",
+  "source_records": [
+   "docs/research/R-0010-native-movement.md",
+   "docs/research/R-0045-static-code-map.md"
+  ]
+ },
+ {
+  "address": "$80:84FB",
+  "class": "data",
+  "comment": "data",
+  "label": "dat_8084FB",
+  "source_records": [
+   "docs/research/R-0010-native-movement.md"
+  ]
+ },
+ {
+  "address": "$80:857F",
+  "class": "inferred",
+  "comment": "routine start",
+  "label": "sub_80857F",
+  "source_records": [
+   "docs/research/R-0006-observed-code-map.md"
+  ]
+ },
+ {
+  "address": "$80:8583",
+  "class": "inferred",
+  "comment": "routine start",
+  "label": "sub_808583",
+  "source_records": [
+   "docs/research/R-0006-observed-code-map.md"
+  ]
+ },
+ {
+  "address": "$80:8587",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_808587",
+  "source_records": [
+   "docs/research/R-0006-observed-code-map.md",
+   "docs/research/R-0009-m1-acceptance.md",
+   "tasks/M1-01.md"
+  ]
+ },
+ {
+  "address": "$80:8589",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_808589",
+  "source_records": [
+   "docs/research/R-0006-observed-code-map.md"
+  ]
+ },
+ {
+  "address": "$80:868E",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80868E",
+  "source_records": [
+   "docs/research/R-0040-dragster-window-effects.md",
+   "tasks/CLASSIC-PRESENTATION-UNIFICATION-review.md",
+   "tasks/CLASSIC-PRESENTATION-UNIFICATION.md",
+   "tasks/DRAGSTER-WINDOW-EFFECTS-review.md",
+   "tasks/DRAGSTER-WINDOW-EFFECTS.md",
+   "tasks/DRAGSTER-WINDOW-PAUSE.md",
+   "tasks/ZOOM-ZOO-WINDOW-EFFECTS.md"
+  ]
+ },
+ {
+  "address": "$80:8691",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_808691",
+  "source_records": [
+   "docs/research/R-0015-native-presentation.md",
+   "docs/research/R-0040-dragster-window-effects.md",
+   "tasks/DRAGSTER-WINDOW-EFFECTS-review.md",
+   "tasks/DRAGSTER-WINDOW-EFFECTS.md"
+  ]
+ },
+ {
+  "address": "$80:8694",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_808694",
+  "source_records": [
+   "tasks/DRAGSTER-WINDOW-EFFECTS-review.md"
+  ]
+ },
+ {
+  "address": "$80:8696",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_808696",
+  "source_records": [
+   "docs/research/R-0040-dragster-window-effects.md",
+   "tasks/DRAGSTER-WINDOW-EFFECTS-review.md"
+  ]
+ },
+ {
+  "address": "$80:8699",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_808699",
+  "source_records": [
+   "docs/research/R-0040-dragster-window-effects.md",
+   "tasks/DRAGSTER-WINDOW-EFFECTS-review.md"
+  ]
+ },
+ {
+  "address": "$80:86E9",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_8086E9",
+  "source_records": [
+   "docs/research/R-0040-dragster-window-effects.md",
+   "tasks/DRAGSTER-WINDOW-EFFECTS-review.md"
+  ]
+ },
+ {
+  "address": "$80:86EC",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_8086EC",
+  "source_records": [
+   "tasks/DRAGSTER-WINDOW-EFFECTS-review.md"
+  ]
+ },
+ {
+  "address": "$80:86EF",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_8086EF",
+  "source_records": [
+   "tasks/DRAGSTER-WINDOW-EFFECTS-review.md"
+  ]
+ },
+ {
+  "address": "$80:86F3",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_8086F3",
+  "source_records": [
+   "docs/research/R-0040-dragster-window-effects.md",
+   "tasks/DRAGSTER-WINDOW-EFFECTS-review.md"
+  ]
+ },
+ {
+  "address": "$80:86FA",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_8086FA",
+  "source_records": [
+   "docs/research/R-0040-dragster-window-effects.md",
+   "tasks/DRAGSTER-WINDOW-EFFECTS-review.md"
+  ]
+ },
+ {
+  "address": "$80:86FD",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_8086FD",
+  "source_records": [
+   "docs/research/R-0040-dragster-window-effects.md"
+  ]
+ },
+ {
+  "address": "$80:8702",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_808702",
+  "source_records": [
+   "docs/research/R-0040-dragster-window-effects.md",
+   "tasks/DRAGSTER-WINDOW-EFFECTS-review.md"
+  ]
+ },
+ {
+  "address": "$80:8786",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_808786",
+  "source_records": [
+   "docs/research/R-0040-dragster-window-effects.md",
+   "tasks/DRAGSTER-WINDOW-EFFECTS-review.md"
+  ]
+ },
+ {
+  "address": "$80:8790",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_808790",
+  "source_records": [
+   "docs/research/R-0040-dragster-window-effects.md"
+  ]
+ },
+ {
+  "address": "$80:8796",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_808796",
+  "source_records": [
+   "docs/research/R-0040-dragster-window-effects.md"
+  ]
+ },
+ {
+  "address": "$80:8799",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_808799",
+  "source_records": [
+   "docs/research/R-0040-dragster-window-effects.md"
+  ]
+ },
+ {
+  "address": "$80:879E",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80879E",
+  "source_records": [
+   "docs/research/R-0040-dragster-window-effects.md"
+  ]
+ },
+ {
+  "address": "$80:87A2",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_8087A2",
+  "source_records": [
+   "tasks/DRAGSTER-WINDOW-EFFECTS-review.md"
+  ]
+ },
+ {
+  "address": "$80:87A7",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_8087A7",
+  "source_records": [
+   "tasks/DRAGSTER-WINDOW-EFFECTS-review.md"
+  ]
+ },
+ {
+  "address": "$80:87A9",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_8087A9",
+  "source_records": [
+   "docs/research/R-0040-dragster-window-effects.md",
+   "tasks/DRAGSTER-WINDOW-EFFECTS-review.md"
+  ]
+ },
+ {
+  "address": "$80:87E9",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_8087E9",
+  "source_records": [
+   "docs/research/R-0007-player-state.md",
+   "docs/research/R-0010-input-timer.md",
+   "tasks/M1-02.md"
+  ]
+ },
+ {
+  "address": "$80:87EC",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_8087EC",
+  "source_records": [
+   "docs/research/R-0007-player-state.md",
+   "docs/research/R-0009-m1-acceptance.md",
+   "docs/research/R-0020-zoom-zoo-reference.md",
+   "docs/research/R-0022-zoom-zoo-riding-reference.md",
+   "tasks/M1-02.md"
+  ]
+ },
+ {
+  "address": "$80:87EF",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_8087EF",
+  "source_records": [
+   "docs/research/R-0007-player-state.md",
+   "tasks/M1-02.md"
+  ]
+ },
+ {
+  "address": "$80:87F2",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_8087F2",
+  "source_records": [
+   "docs/research/R-0007-player-state.md",
+   "docs/research/R-0009-m1-acceptance.md",
+   "docs/research/R-0020-zoom-zoo-reference.md",
+   "docs/research/R-0022-zoom-zoo-riding-reference.md",
+   "tasks/M1-02.md",
+   "tasks/M1-04.md",
+   "tasks/M4-02-review.md"
+  ]
+ },
+ {
+  "address": "$80:883F",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80883F",
+  "source_records": [
+   "tasks/CLASSIC-PRESENTATION-UNIFICATION-review.md",
+   "tasks/M4-16-review.md"
+  ]
+ },
+ {
+  "address": "$80:8858",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_808858",
+  "source_records": [
+   "docs/research/R-0006-observed-code-map.md",
+   "tasks/M1-01.md"
+  ]
+ },
+ {
+  "address": "$80:91D1",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_8091D1",
+  "source_records": [
+   "docs/research/R-0006-observed-code-map.md"
+  ]
+ },
+ {
+  "address": "$80:91D2",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_8091D2",
+  "source_records": [
+   "docs/research/R-0006-observed-code-map.md"
+  ]
+ },
+ {
+  "address": "$80:9338",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_809338",
+  "source_records": [
+   "docs/research/R-0008-track-decode.md"
+  ]
+ },
+ {
+  "address": "$80:AD79",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80AD79",
+  "source_records": [
+   "docs/research/R-0006-observed-code-map.md"
+  ]
+ },
+ {
+  "address": "$80:C3C0",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80C3C0",
+  "source_records": [
+   "docs/research/R-0006-observed-code-map.md"
+  ]
+ },
+ {
+  "address": "$80:C431",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80C431",
+  "source_records": [
+   "docs/research/R-0015-native-presentation.md",
+   "docs/research/R-0019-dragster-loser-result.md",
+   "tasks/M3-02.md"
+  ]
+ },
+ {
+  "address": "$80:D2CB",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80D2CB",
+  "source_records": [
+   "docs/research/R-0037-dragster-race-palette-cycle.md"
+  ]
+ },
+ {
+  "address": "$80:F553",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80F553",
+  "source_records": [
+   "tasks/M3-02.md"
+  ]
+ },
+ {
+  "address": "$80:F63E",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80F63E",
+  "source_records": [
+   "tasks/M3-02.md"
+  ]
+ },
+ {
+  "address": "$80:F88D",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_80F88D",
+  "source_records": [
+   "docs/research/R-0038-dragster-ordinary-controls.md",
+   "docs/research/R-0039-dragster-clock-limit.md"
+  ]
+ },
+ {
+  "address": "$80:FBC3",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80FBC3",
+  "source_records": [
+   "docs/research/R-0006-observed-code-map.md"
+  ]
+ },
+ {
+  "address": "$80:FFC0",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80FFC0",
+  "source_records": [
+   "docs/research/R-0001-rom-identity.md",
+   "docs/research/R-0045-static-code-map.md"
+  ]
+ },
+ {
+  "address": "$81:8050",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_818050",
+  "source_records": [
+   "docs/research/R-0038-dragster-ordinary-controls.md",
+   "docs/research/R-0044-classic-split-time.md",
+   "tasks/CLASSIC-SPLIT-TIME.md"
+  ]
+ },
+ {
+  "address": "$81:80C1",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_8180C1",
+  "source_records": [
+   "docs/research/R-0013-native-finish-reference-freeze.md",
+   "docs/research/R-0038-dragster-ordinary-controls.md"
+  ]
+ },
+ {
+  "address": "$81:8139",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_818139",
+  "source_records": [
+   "docs/research/R-0038-dragster-ordinary-controls.md",
+   "tasks/DRAGSTER-ORDINARY-CONTROLS-review.md"
+  ]
+ },
+ {
+  "address": "$81:814A",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_81814A",
+  "source_records": [
+   "docs/research/R-0013-native-finish-reference-freeze.md"
+  ]
+ },
+ {
+  "address": "$81:8183",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_818183",
+  "source_records": [
+   "docs/research/R-0013-native-finish-reference-freeze.md"
+  ]
+ },
+ {
+  "address": "$81:818D",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_81818D",
+  "source_records": [
+   "docs/research/R-0043-classic-race-hud.md",
+   "tasks/CLASSIC-RACE-HUD.md"
+  ]
+ },
+ {
+  "address": "$81:81AE",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_8181AE",
+  "source_records": [
+   "docs/research/R-0038-dragster-ordinary-controls.md"
+  ]
+ },
+ {
+  "address": "$81:81E3",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_8181E3",
+  "source_records": [
+   "docs/research/R-0013-native-finish-reference-freeze.md"
+  ]
+ },
+ {
+  "address": "$81:81E9",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_8181E9",
+  "source_records": [
+   "docs/research/R-0013-native-finish-reference-freeze.md"
+  ]
+ },
+ {
+  "address": "$81:823B",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_81823B",
+  "source_records": [
+   "docs/research/R-0012-complete-race-evidence.md",
+   "docs/research/R-0013-native-finish-reference-freeze.md",
+   "docs/research/R-0017-opponent-first-audit.md",
+   "tasks/M3-00.md"
+  ]
+ },
+ {
+  "address": "$81:8251",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_818251",
+  "source_records": [
+   "docs/research/R-0044-classic-split-time.md"
+  ]
+ },
+ {
+  "address": "$81:8288",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_818288",
+  "source_records": [
+   "docs/research/R-0044-classic-split-time.md"
+  ]
+ },
+ {
+  "address": "$81:82D9",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_8182D9",
+  "source_records": [
+   "docs/content/dragster-segment.md",
+   "docs/research/R-0008-track-decode.md"
+  ]
+ },
+ {
+  "address": "$81:84EC",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_8184EC",
+  "source_records": [
+   "docs/research/R-0033-sustained-traversal.md",
+   "tasks/M4-14.md"
+  ]
+ },
+ {
+  "address": "$81:8592",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_818592",
+  "source_records": [
+   "docs/research/R-0011-motion.md",
+   "docs/research/R-0033-sustained-traversal.md"
+  ]
+ },
+ {
+  "address": "$81:8625",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_818625",
+  "source_records": [
+   "docs/research/R-0011-motion.md",
+   "tasks/M2-01-movement.md"
+  ]
+ },
+ {
+  "address": "$81:8672",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_818672",
+  "source_records": [
+   "docs/research/R-0011-motion.md",
+   "tasks/M2-01-movement.md"
+  ]
+ },
+ {
+  "address": "$81:8681",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_818681",
+  "source_records": [
+   "docs/research/R-0030-zoom-zoo-native-trial.md"
+  ]
+ },
+ {
+  "address": "$81:86EF",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_8186EF",
+  "source_records": [
+   "docs/research/R-0044-classic-split-time.md"
+  ]
+ },
+ {
+  "address": "$81:8A2A",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_818A2A",
+  "source_records": [
+   "docs/research/R-0010-native-movement.md"
+  ]
+ },
+ {
+  "address": "$81:8AA1",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_818AA1",
+  "source_records": [
+   "docs/content/dragster-segment.md",
+   "docs/research/R-0012-complete-race-evidence.md",
+   "docs/research/R-0021-zoom-zoo-content-contract.md",
+   "docs/research/R-0022-zoom-zoo-riding-reference.md",
+   "tasks/M1-03.md",
+   "tasks/M4-03.md",
+   "tasks/M4-04-review.md"
+  ]
+ },
+ {
+  "address": "$81:8AAA",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_818AAA",
+  "source_records": [
+   "docs/research/R-0012-complete-race-evidence.md"
+  ]
+ },
+ {
+  "address": "$81:8AB7",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_818AB7",
+  "source_records": [
+   "docs/research/R-0012-complete-race-evidence.md"
+  ]
+ },
+ {
+  "address": "$81:8AC0",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_818AC0",
+  "source_records": [
+   "docs/content/dragster-segment.md",
+   "docs/research/R-0012-complete-race-evidence.md",
+   "docs/research/R-0021-zoom-zoo-content-contract.md",
+   "docs/research/R-0022-zoom-zoo-riding-reference.md",
+   "tasks/M1-03.md",
+   "tasks/M4-03.md",
+   "tasks/M4-04-review.md"
+  ]
+ },
+ {
+  "address": "$81:8B05",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_818B05",
+  "source_records": [
+   "tasks/M4-09-review.md"
+  ]
+ },
+ {
+  "address": "$81:8B66",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_818B66",
+  "source_records": [
+   "docs/content/dragster-segment.md",
+   "docs/research/R-0010-native-movement.md",
+   "docs/research/R-0012-complete-race-evidence.md",
+   "docs/research/R-0021-zoom-zoo-content-contract.md",
+   "docs/research/R-0022-zoom-zoo-riding-reference.md",
+   "tasks/M4-03.md"
+  ]
+ },
+ {
+  "address": "$81:8B6A",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_818B6A",
+  "source_records": [
+   "docs/research/R-0010-native-movement.md",
+   "docs/research/R-0022-zoom-zoo-riding-reference.md",
+   "tasks/M4-03-review.md",
+   "tasks/M4-03.md"
+  ]
+ },
+ {
+  "address": "$81:8B75",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_818B75",
+  "source_records": [
+   "docs/research/R-0010-native-movement.md",
+   "docs/research/R-0011-contact.md",
+   "tasks/M4-07.md"
+  ]
+ },
+ {
+  "address": "$81:8BB5",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_818BB5",
+  "source_records": [
+   "docs/research/R-0010-native-movement.md"
+  ]
+ },
+ {
+  "address": "$81:8BC6",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_818BC6",
+  "source_records": [
+   "docs/research/R-0010-native-movement.md"
+  ]
+ },
+ {
+  "address": "$81:8BE3",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_818BE3",
+  "source_records": [
+   "docs/inventory/M4-07-reflected-vertical.md",
+   "docs/research/R-0025-zoom-zoo-reflected-vertical-contact.md",
+   "docs/research/R-0033-sustained-traversal.md",
+   "tasks/M4-07-rereview.md",
+   "tasks/M4-07-review.md"
+  ]
+ },
+ {
+  "address": "$81:8BE6",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_818BE6",
+  "source_records": [
+   "tasks/M4-07-rereview.md",
+   "tasks/M4-07-review.md"
+  ]
+ },
+ {
+  "address": "$81:8BE9",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_818BE9",
+  "source_records": [
+   "docs/research/R-0025-zoom-zoo-reflected-vertical-contact.md",
+   "tasks/M4-07-rereview.md",
+   "tasks/M4-07-review.md",
+   "tasks/M4-07.md"
+  ]
+ },
+ {
+  "address": "$81:8BEB",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_818BEB",
+  "source_records": [
+   "docs/inventory/M4-07-reflected-vertical.md",
+   "docs/research/R-0025-zoom-zoo-reflected-vertical-contact.md",
+   "tasks/M4-07-rereview.md",
+   "tasks/M4-07-review.md",
+   "tasks/M4-07.md"
+  ]
+ },
+ {
+  "address": "$81:8BEE",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_818BEE",
+  "source_records": [
+   "tasks/M4-07-rereview.md",
+   "tasks/M4-07-review.md"
+  ]
+ },
+ {
+  "address": "$81:8C0C",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_818C0C",
+  "source_records": [
+   "docs/content/dragster-segment.md",
+   "docs/research/R-0008-track-decode.md"
+  ]
+ },
+ {
+  "address": "$81:8C2A",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_818C2A",
+  "source_records": [
+   "docs/research/R-0025-zoom-zoo-reflected-vertical-contact.md",
+   "tasks/M4-07-rereview.md",
+   "tasks/M4-07.md"
+  ]
+ },
+ {
+  "address": "$81:8C2C",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_818C2C",
+  "source_records": [
+   "docs/inventory/M4-07-reflected-vertical.md",
+   "docs/research/R-0025-zoom-zoo-reflected-vertical-contact.md",
+   "tasks/M4-07-rereview.md",
+   "tasks/M4-07-review.md",
+   "tasks/M4-07.md"
+  ]
+ },
+ {
+  "address": "$81:8C2D",
+  "class": "observed",
+  "comment": "inside the instruction at $81:8C2C",
+  "label": "mid_818C2D",
+  "source_records": [
+   "tasks/M4-07-rereview.md",
+   "tasks/M4-07-review.md",
+   "tasks/M4-07.md"
+  ]
+ },
+ {
+  "address": "$81:8C2E",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_818C2E",
+  "source_records": [
+   "tasks/M4-07-rereview.md"
+  ]
+ },
+ {
+  "address": "$81:8C31",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_818C31",
+  "source_records": [
+   "tasks/M4-07-rereview.md"
+  ]
+ },
+ {
+  "address": "$81:8C34",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_818C34",
+  "source_records": [
+   "tasks/M4-07-rereview.md"
+  ]
+ },
+ {
+  "address": "$81:8C35",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_818C35",
+  "source_records": [
+   "tasks/M4-07-rereview.md"
+  ]
+ },
+ {
+  "address": "$81:8C38",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_818C38",
+  "source_records": [
+   "tasks/M4-07-rereview.md"
+  ]
+ },
+ {
+  "address": "$81:8C3A",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_818C3A",
+  "source_records": [
+   "tasks/M4-07-rereview.md"
+  ]
+ },
+ {
+  "address": "$81:8C3C",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_818C3C",
+  "source_records": [
+   "docs/research/R-0025-zoom-zoo-reflected-vertical-contact.md",
+   "tasks/M4-07-rereview.md",
+   "tasks/M4-07.md"
+  ]
+ },
+ {
+  "address": "$81:8C3D",
+  "class": "observed",
+  "comment": "inside the instruction at $81:8C3C",
+  "label": "mid_818C3D",
+  "source_records": [
+   "tasks/M4-07-review.md"
+  ]
+ },
+ {
+  "address": "$81:8C3E",
+  "class": "observed",
+  "comment": "inside the instruction at $81:8C3C",
+  "label": "mid_818C3E",
+  "source_records": [
+   "docs/research/R-0025-zoom-zoo-reflected-vertical-contact.md",
+   "tasks/M4-07-rereview.md"
+  ]
+ },
+ {
+  "address": "$81:8C3F",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_818C3F",
+  "source_records": [
+   "docs/research/R-0025-zoom-zoo-reflected-vertical-contact.md",
+   "tasks/M4-07-rereview.md",
+   "tasks/M4-07.md"
+  ]
+ },
+ {
+  "address": "$81:8C9E",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_818C9E",
+  "source_records": [
+   "docs/inventory/M4-07-reflected-vertical.md",
+   "docs/research/R-0025-zoom-zoo-reflected-vertical-contact.md",
+   "tasks/M4-07-review.md"
+  ]
+ },
+ {
+  "address": "$81:8CA9",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_818CA9",
+  "source_records": [
+   "tasks/M4-07-review.md"
+  ]
+ },
+ {
+  "address": "$81:8CBB",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_818CBB",
+  "source_records": [
+   "docs/content/dragster-segment.md",
+   "docs/inventory/M4-07-reflected-vertical.md",
+   "docs/research/R-0008-track-decode.md",
+   "docs/research/R-0009-m1-acceptance.md",
+   "docs/research/R-0021-zoom-zoo-content-contract.md",
+   "docs/research/R-0025-zoom-zoo-reflected-vertical-contact.md",
+   "tasks/M1-03.md",
+   "tasks/M4-03.md",
+   "tasks/M4-07-review.md"
+  ]
+ },
+ {
+  "address": "$81:8CBF",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_818CBF",
+  "source_records": [
+   "docs/research/R-0008-track-decode.md"
+  ]
+ },
+ {
+  "address": "$81:8CCC",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_818CCC",
+  "source_records": [
+   "docs/research/R-0025-zoom-zoo-reflected-vertical-contact.md"
+  ]
+ },
+ {
+  "address": "$81:8CD3",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_818CD3",
+  "source_records": [
+   "tasks/M4-07-review.md"
+  ]
+ },
+ {
+  "address": "$81:8CDD",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_818CDD",
+  "source_records": [
+   "docs/content/dragster-segment.md",
+   "docs/inventory/M4-07-reflected-vertical.md",
+   "docs/research/R-0008-track-decode.md",
+   "docs/research/R-0009-m1-acceptance.md",
+   "docs/research/R-0021-zoom-zoo-content-contract.md",
+   "docs/research/R-0025-zoom-zoo-reflected-vertical-contact.md",
+   "tasks/M1-03.md",
+   "tasks/M4-03.md",
+   "tasks/M4-07-review.md"
+  ]
+ },
+ {
+  "address": "$81:8CE6",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_818CE6",
+  "source_records": [
+   "docs/research/R-0025-zoom-zoo-reflected-vertical-contact.md",
+   "tasks/M4-07-review.md"
+  ]
+ },
+ {
+  "address": "$81:8CE8",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_818CE8",
+  "source_records": [
+   "tasks/M4-07-review.md"
+  ]
+ },
+ {
+  "address": "$81:8CF4",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_818CF4",
+  "source_records": [
+   "docs/research/R-0011-motion.md"
+  ]
+ },
+ {
+  "address": "$81:8CF8",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_818CF8",
+  "source_records": [
+   "docs/research/R-0011-contact.md"
+  ]
+ },
+ {
+  "address": "$81:8D0F",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_818D0F",
+  "source_records": [
+   "docs/research/R-0021-zoom-zoo-content-contract.md"
+  ]
+ },
+ {
+  "address": "$81:8D12",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_818D12",
+  "source_records": [
+   "docs/research/R-0022-zoom-zoo-riding-reference.md"
+  ]
+ },
+ {
+  "address": "$81:8D15",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_818D15",
+  "source_records": [
+   "docs/research/R-0021-zoom-zoo-content-contract.md"
+  ]
+ },
+ {
+  "address": "$81:8D97",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_818D97",
+  "source_records": [
+   "docs/research/R-0010-native-movement.md",
+   "docs/research/R-0021-zoom-zoo-content-contract.md",
+   "tasks/M4-03.md"
+  ]
+ },
+ {
+  "address": "$81:8D9C",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_818D9C",
+  "source_records": [
+   "docs/research/R-0021-zoom-zoo-content-contract.md",
+   "tasks/M4-03.md"
+  ]
+ },
+ {
+  "address": "$81:8DB6",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_818DB6",
+  "source_records": [
+   "docs/research/R-0010-native-movement.md"
+  ]
+ },
+ {
+  "address": "$81:8DB9",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_818DB9",
+  "source_records": [
+   "docs/research/R-0010-native-movement.md"
+  ]
+ },
+ {
+  "address": "$81:8DBC",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_818DBC",
+  "source_records": [
+   "docs/research/R-0010-native-movement.md",
+   "docs/research/R-0011-contact.md"
+  ]
+ },
+ {
+  "address": "$81:8DDC",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_818DDC",
+  "source_records": [
+   "docs/research/R-0033-sustained-traversal.md",
+   "tasks/M4-14.md"
+  ]
+ },
+ {
+  "address": "$81:8E17",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_818E17",
+  "source_records": [
+   "docs/research/R-0010-native-movement.md",
+   "docs/research/R-0011-contact.md",
+   "docs/research/R-0022-zoom-zoo-riding-reference.md"
+  ]
+ },
+ {
+  "address": "$81:8E22",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_818E22",
+  "source_records": [
+   "docs/research/R-0010-native-movement.md"
+  ]
+ },
+ {
+  "address": "$81:8E28",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_818E28",
+  "source_records": [
+   "docs/inventory/M4-11-vertical-velocity.md",
+   "tasks/M4-11.md"
+  ]
+ },
+ {
+  "address": "$81:8E69",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_818E69",
+  "source_records": [
+   "docs/research/R-0021-zoom-zoo-content-contract.md"
+  ]
+ },
+ {
+  "address": "$81:8E6C",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_818E6C",
+  "source_records": [
+   "docs/research/R-0022-zoom-zoo-riding-reference.md"
+  ]
+ },
+ {
+  "address": "$81:8E6F",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_818E6F",
+  "source_records": [
+   "docs/research/R-0021-zoom-zoo-content-contract.md"
+  ]
+ },
+ {
+  "address": "$81:8EF1",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_818EF1",
+  "source_records": [
+   "docs/research/R-0010-native-movement.md",
+   "docs/research/R-0021-zoom-zoo-content-contract.md",
+   "tasks/M4-03.md"
+  ]
+ },
+ {
+  "address": "$81:8EF6",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_818EF6",
+  "source_records": [
+   "docs/research/R-0021-zoom-zoo-content-contract.md",
+   "tasks/M4-03.md"
+  ]
+ },
+ {
+  "address": "$81:8F0A",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_818F0A",
+  "source_records": [
+   "docs/research/R-0010-native-movement.md"
+  ]
+ },
+ {
+  "address": "$81:8F10",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_818F10",
+  "source_records": [
+   "docs/research/R-0011-contact.md"
+  ]
+ },
+ {
+  "address": "$81:8F6B",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_818F6B",
+  "source_records": [
+   "docs/research/R-0011-contact.md",
+   "docs/research/R-0017-opponent-first-audit.md",
+   "docs/research/R-0022-zoom-zoo-riding-reference.md"
+  ]
+ },
+ {
+  "address": "$81:8F70",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_818F70",
+  "source_records": [
+   "docs/research/R-0017-opponent-first-audit.md"
+  ]
+ },
+ {
+  "address": "$81:8F7C",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_818F7C",
+  "source_records": [
+   "docs/inventory/M4-11-vertical-velocity.md",
+   "tasks/M4-11.md"
+  ]
+ },
+ {
+  "address": "$81:8F98",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_818F98",
+  "source_records": [
+   "docs/research/R-0010-native-movement.md",
+   "docs/research/R-0022-zoom-zoo-riding-reference.md",
+   "tasks/M2-01.md",
+   "tasks/M2-01A.md"
+  ]
+ },
+ {
+  "address": "$81:8F9A",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_818F9A",
+  "source_records": [
+   "docs/research/R-0011-contact.md"
+  ]
+ },
+ {
+  "address": "$81:8F9D",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_818F9D",
+  "source_records": [
+   "tasks/M4-09-review.md"
+  ]
+ },
+ {
+  "address": "$81:8FEF",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_818FEF",
+  "source_records": [
+   "docs/research/R-0032-player-landing-recovery.md",
+   "docs/research/R-0033-sustained-traversal.md"
+  ]
+ },
+ {
+  "address": "$81:90BE",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_8190BE",
+  "source_records": [
+   "tasks/M4-06-review.md",
+   "tasks/M4-07-review.md"
+  ]
+ },
+ {
+  "address": "$81:90EB",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_8190EB",
+  "source_records": [
+   "tasks/M4-06-review.md",
+   "tasks/M4-07-review.md"
+  ]
+ },
+ {
+  "address": "$81:917C",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_81917C",
+  "source_records": [
+   "docs/research/R-0011-contact.md"
+  ]
+ },
+ {
+  "address": "$81:921F",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_81921F",
+  "source_records": [
+   "docs/research/R-0011-contact.md"
+  ]
+ },
+ {
+  "address": "$81:9235",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_819235",
+  "source_records": [
+   "docs/research/R-0011-contact.md",
+   "docs/research/R-0022-zoom-zoo-riding-reference.md"
+  ]
+ },
+ {
+  "address": "$81:9248",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_819248",
+  "source_records": [
+   "docs/research/R-0010-native-movement.md"
+  ]
+ },
+ {
+  "address": "$81:924E",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_81924E",
+  "source_records": [
+   "docs/research/R-0011-contact.md",
+   "docs/research/R-0033-sustained-traversal.md"
+  ]
+ },
+ {
+  "address": "$81:9278",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_819278",
+  "source_records": [
+   "docs/research/R-0033-sustained-traversal.md"
+  ]
+ },
+ {
+  "address": "$81:92D3",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_8192D3",
+  "source_records": [
+   "docs/research/R-0011-contact.md"
+  ]
+ },
+ {
+  "address": "$81:92FE",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_8192FE",
+  "source_records": [
+   "tasks/M4-14-review.md"
+  ]
+ },
+ {
+  "address": "$81:931C",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_81931C",
+  "source_records": [
+   "docs/research/R-0033-sustained-traversal.md"
+  ]
+ },
+ {
+  "address": "$81:935B",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_81935B",
+  "source_records": [
+   "docs/research/R-0032-player-landing-recovery.md"
+  ]
+ },
+ {
+  "address": "$81:93F9",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_8193F9",
+  "source_records": [
+   "docs/research/R-0011-contact.md"
+  ]
+ },
+ {
+  "address": "$81:9474",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_819474",
+  "source_records": [
+   "docs/research/R-0011-contact.md"
+  ]
+ },
+ {
+  "address": "$81:94A8",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_8194A8",
+  "source_records": [
+   "docs/research/R-0011-contact.md"
+  ]
+ },
+ {
+  "address": "$81:94AF",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_8194AF",
+  "source_records": [
+   "docs/research/R-0011-contact.md"
+  ]
+ },
+ {
+  "address": "$81:94B4",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_8194B4",
+  "source_records": [
+   "docs/research/R-0011-contact.md"
+  ]
+ },
+ {
+  "address": "$81:94B9",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_8194B9",
+  "source_records": [
+   "docs/research/R-0011-contact.md",
+   "docs/research/R-0032-player-landing-recovery.md"
+  ]
+ },
+ {
+  "address": "$81:94C7",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_8194C7",
+  "source_records": [
+   "docs/research/R-0011-contact.md"
+  ]
+ },
+ {
+  "address": "$81:94CA",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_8194CA",
+  "source_records": [
+   "docs/research/R-0010-native-movement.md"
+  ]
+ },
+ {
+  "address": "$81:950C",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_81950C",
+  "source_records": [
+   "docs/research/R-0011-contact.md"
+  ]
+ },
+ {
+  "address": "$81:95FB",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_8195FB",
+  "source_records": [
+   "docs/research/R-0010-native-movement.md"
+  ]
+ },
+ {
+  "address": "$81:9610",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_819610",
+  "source_records": [
+   "docs/research/R-0011-contact.md"
+  ]
+ },
+ {
+  "address": "$81:9696",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_819696",
+  "source_records": [
+   "tasks/M4-06-review.md"
+  ]
+ },
+ {
+  "address": "$81:9697",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_819697",
+  "source_records": [
+   "docs/research/R-0033-sustained-traversal.md"
+  ]
+ },
+ {
+  "address": "$81:96AC",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_8196AC",
+  "source_records": [
+   "docs/research/R-0010-native-movement.md"
+  ]
+ },
+ {
+  "address": "$81:96B6",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_8196B6",
+  "source_records": [
+   "tasks/M4-06-review.md"
+  ]
+ },
+ {
+  "address": "$81:96CD",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_8196CD",
+  "source_records": [
+   "tasks/M4-06-review.md"
+  ]
+ },
+ {
+  "address": "$81:970B",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_81970B",
+  "source_records": [
+   "docs/research/R-0010-native-movement.md",
+   "docs/research/R-0011-contact.md",
+   "docs/research/R-0029-zoom-zoo-vertical-velocity.md",
+   "tasks/M4-06-review.md",
+   "tasks/M4-07.md",
+   "tasks/M4-11-rereview.md",
+   "tasks/M4-11-review.md",
+   "tasks/M4-11.md"
+  ]
+ },
+ {
+  "address": "$81:973D",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_81973D",
+  "source_records": [
+   "docs/inventory/M4-07-reflected-vertical.md",
+   "docs/research/R-0025-zoom-zoo-reflected-vertical-contact.md",
+   "tasks/M4-07-review.md"
+  ]
+ },
+ {
+  "address": "$81:9749",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_819749",
+  "source_records": [
+   "docs/inventory/M4-07-reflected-vertical.md",
+   "docs/research/R-0025-zoom-zoo-reflected-vertical-contact.md",
+   "tasks/M4-07-review.md"
+  ]
+ },
+ {
+  "address": "$81:9763",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_819763",
+  "source_records": [
+   "docs/inventory/M4-07-reflected-vertical.md",
+   "docs/research/R-0025-zoom-zoo-reflected-vertical-contact.md",
+   "tasks/M4-07-review.md"
+  ]
+ },
+ {
+  "address": "$81:9774",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_819774",
+  "source_records": [
+   "docs/inventory/M4-07-reflected-vertical.md",
+   "docs/research/R-0025-zoom-zoo-reflected-vertical-contact.md"
+  ]
+ },
+ {
+  "address": "$81:977E",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_81977E",
+  "source_records": [
+   "tasks/M4-07-review.md"
+  ]
+ },
+ {
+  "address": "$81:97B7",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_8197B7",
+  "source_records": [
+   "docs/inventory/M4-07-reflected-vertical.md",
+   "docs/research/R-0025-zoom-zoo-reflected-vertical-contact.md",
+   "tasks/M4-07-review.md"
+  ]
+ },
+ {
+  "address": "$81:97CA",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_8197CA",
+  "source_records": [
+   "tasks/M4-06-review.md"
+  ]
+ },
+ {
+  "address": "$81:97DB",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_8197DB",
+  "source_records": [
+   "docs/inventory/M4-07-reflected-vertical.md",
+   "docs/research/R-0025-zoom-zoo-reflected-vertical-contact.md",
+   "tasks/M4-07-review.md"
+  ]
+ },
+ {
+  "address": "$81:97E1",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_8197E1",
+  "source_records": [
+   "docs/research/R-0010-native-movement.md",
+   "tasks/M4-06-review.md",
+   "tasks/M4-07.md"
+  ]
+ },
+ {
+  "address": "$81:97E4",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_8197E4",
+  "source_records": [
+   "docs/research/R-0011-contact.md",
+   "docs/research/R-0033-sustained-traversal.md"
+  ]
+ },
+ {
+  "address": "$81:97FD",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_8197FD",
+  "source_records": [
+   "tasks/M4-06-review.md",
+   "tasks/M4-07-review.md"
+  ]
+ },
+ {
+  "address": "$81:980C",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_81980C",
+  "source_records": [
+   "docs/research/R-0010-native-movement.md",
+   "tasks/M4-06-review.md",
+   "tasks/M4-07-review.md"
+  ]
+ },
+ {
+  "address": "$81:9810",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_819810",
+  "source_records": [
+   "tasks/M4-06-review.md"
+  ]
+ },
+ {
+  "address": "$81:982B",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_81982B",
+  "source_records": [
+   "docs/research/R-0011-contact.md",
+   "docs/research/R-0022-zoom-zoo-riding-reference.md"
+  ]
+ },
+ {
+  "address": "$81:982C",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_81982C",
+  "source_records": [
+   "docs/research/R-0010-native-movement.md",
+   "docs/research/R-0011-contact.md",
+   "docs/research/R-0032-player-landing-recovery.md"
+  ]
+ },
+ {
+  "address": "$81:984D",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_81984D",
+  "source_records": [
+   "tasks/M4-13-review.md"
+  ]
+ },
+ {
+  "address": "$81:992B",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_81992B",
+  "source_records": [
+   "docs/research/R-0033-sustained-traversal.md"
+  ]
+ },
+ {
+  "address": "$81:996F",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_81996F",
+  "source_records": [
+   "docs/research/R-0032-player-landing-recovery.md"
+  ]
+ },
+ {
+  "address": "$81:9A4D",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_819A4D",
+  "source_records": [
+   "docs/research/R-0030-zoom-zoo-native-trial.md"
+  ]
+ },
+ {
+  "address": "$81:9E1B",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_819E1B",
+  "source_records": [
+   "docs/research/R-0010-native-movement.md",
+   "docs/research/R-0011-contact.md"
+  ]
+ },
+ {
+  "address": "$81:9E42",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_819E42",
+  "source_records": [
+   "docs/research/R-0008-track-decode.md"
+  ]
+ },
+ {
+  "address": "$81:9E54",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_819E54",
+  "source_records": [
+   "docs/research/R-0008-track-decode.md"
+  ]
+ },
+ {
+  "address": "$81:9E7B",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_819E7B",
+  "source_records": [
+   "docs/research/R-0008-track-decode.md"
+  ]
+ },
+ {
+  "address": "$81:9EEA",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_819EEA",
+  "source_records": [
+   "docs/research/R-0008-track-decode.md"
+  ]
+ },
+ {
+  "address": "$81:9FA6",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_819FA6",
+  "source_records": [
+   "docs/research/R-0036-zoom-zoo-rider-objects.md"
+  ]
+ },
+ {
+  "address": "$81:9FB0",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_819FB0",
+  "source_records": [
+   "docs/research/R-0038-dragster-ordinary-controls.md"
+  ]
+ },
+ {
+  "address": "$81:9FCA",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_819FCA",
+  "source_records": [
+   "docs/research/R-0045-static-code-map.md",
+   "tasks/STATIC-CODE-MAP.md"
+  ]
+ },
+ {
+  "address": "$81:A304",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_81A304",
+  "source_records": [
+   "docs/research/R-0038-dragster-ordinary-controls.md",
+   "tasks/CLASSIC-PRESENTATION-UNIFICATION-review.md",
+   "tasks/DRAGSTER-ORDINARY-CONTROLS-review.md",
+   "tasks/DRAGSTER-ORDINARY-CONTROLS.md"
+  ]
+ },
+ {
+  "address": "$81:A445",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_81A445",
+  "source_records": [
+   "docs/research/R-0036-zoom-zoo-rider-objects.md",
+   "docs/research/R-0038-dragster-ordinary-controls.md",
+   "tasks/CLASSIC-PRESENTATION-UNIFICATION-review.md",
+   "tasks/CLASSIC-PRESENTATION-UNIFICATION.md",
+   "tasks/M4-16.md"
+  ]
+ },
+ {
+  "address": "$81:A4C1",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_81A4C1",
+  "source_records": [
+   "docs/research/R-0038-dragster-ordinary-controls.md",
+   "tasks/CLASSIC-PRESENTATION-UNIFICATION-review.md",
+   "tasks/CLASSIC-PRESENTATION-UNIFICATION.md"
+  ]
+ },
+ {
+  "address": "$81:AD95",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_81AD95",
+  "source_records": [
+   "docs/content/dragster-segment.md",
+   "docs/research/R-0012-complete-race-evidence.md",
+   "tasks/M1-03.md"
+  ]
+ },
+ {
+  "address": "$81:AE87",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_81AE87",
+  "source_records": [
+   "docs/research/R-0007-player-state.md",
+   "docs/research/R-0009-m1-acceptance.md",
+   "tasks/M1-02.md"
+  ]
+ },
+ {
+  "address": "$81:B270",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_81B270",
+  "source_records": [
+   "docs/research/R-0015-native-presentation.md",
+   "docs/research/R-0021-zoom-zoo-content-contract.md",
+   "tasks/M3-02.md",
+   "tasks/M4-03.md"
+  ]
+ },
+ {
+  "address": "$81:B31C",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_81B31C",
+  "source_records": [
+   "docs/content/dragster-segment.md",
+   "docs/research/R-0008-track-decode.md",
+   "docs/research/R-0009-m1-acceptance.md",
+   "docs/research/R-0015-native-presentation.md",
+   "tasks/M1-03.md",
+   "tasks/M3-02.md",
+   "tasks/M4-03.md"
+  ]
+ },
+ {
+  "address": "$81:B366",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_81B366",
+  "source_records": [
+   "docs/research/R-0015-native-presentation.md",
+   "docs/research/R-0021-zoom-zoo-content-contract.md",
+   "tasks/M4-03.md"
+  ]
+ },
+ {
+  "address": "$81:B3CF",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_81B3CF",
+  "source_records": [
+   "docs/research/R-0012-complete-race-evidence.md",
+   "docs/research/R-0015-native-presentation.md",
+   "docs/research/R-0021-zoom-zoo-content-contract.md",
+   "tasks/M1-03.md",
+   "tasks/M4-03.md"
+  ]
+ },
+ {
+  "address": "$81:B3D3",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_81B3D3",
+  "source_records": [
+   "docs/content/dragster-segment.md",
+   "docs/research/R-0008-track-decode.md",
+   "docs/research/R-0015-native-presentation.md",
+   "docs/research/R-0021-zoom-zoo-content-contract.md",
+   "tasks/M1-03.md",
+   "tasks/M4-03.md"
+  ]
+ },
+ {
+  "address": "$81:B3E3",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_81B3E3",
+  "source_records": [
+   "docs/research/R-0007-player-state.md"
+  ]
+ },
+ {
+  "address": "$81:B764",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_81B764",
+  "source_records": [
+   "docs/research/R-0011-motion.md"
+  ]
+ },
+ {
+  "address": "$81:B7BE",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_81B7BE",
+  "source_records": [
+   "docs/research/R-0011-motion.md"
+  ]
+ },
+ {
+  "address": "$81:B8E2",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_81B8E2",
+  "source_records": [
+   "docs/content/dragster-segment.md",
+   "docs/research/R-0008-track-decode.md",
+   "docs/research/R-0009-m1-acceptance.md",
+   "docs/research/R-0020-zoom-zoo-reference.md",
+   "tasks/M1-03.md"
+  ]
+ },
+ {
+  "address": "$81:B974",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_81B974",
+  "source_records": [
+   "tasks/M1-03.md"
+  ]
+ },
+ {
+  "address": "$81:B97F",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_81B97F",
+  "source_records": [
+   "tasks/M1-03.md"
+  ]
+ },
+ {
+  "address": "$81:B9C4",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_81B9C4",
+  "source_records": [
+   "docs/research/R-0007-player-state.md"
+  ]
+ },
+ {
+  "address": "$81:BA4B",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_81BA4B",
+  "source_records": [
+   "docs/research/R-0008-track-decode.md",
+   "tasks/M1-03.md"
+  ]
+ },
+ {
+  "address": "$81:BB79",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_81BB79",
+  "source_records": [
+   "tasks/M1-03.md"
+  ]
+ },
+ {
+  "address": "$81:BEA8",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_81BEA8",
+  "source_records": [
+   "docs/research/R-0042-stunt-name-captions.md",
+   "tasks/CLASSIC-STUNT-NAMES.md"
+  ]
+ },
+ {
+  "address": "$81:BFE9",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_81BFE9",
+  "source_records": [
+   "docs/research/R-0042-stunt-name-captions.md",
+   "tasks/CLASSIC-STUNT-NAMES-review.md",
+   "tasks/CLASSIC-STUNT-NAMES.md"
+  ]
+ },
+ {
+  "address": "$81:C019",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_81C019",
+  "source_records": [
+   "docs/research/R-0042-stunt-name-captions.md",
+   "tasks/CLASSIC-STUNT-NAMES-review.md",
+   "tasks/CLASSIC-STUNT-NAMES.md"
+  ]
+ },
+ {
+  "address": "$81:C034",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_81C034",
+  "source_records": [
+   "docs/research/R-0042-stunt-name-captions.md",
+   "tasks/CLASSIC-STUNT-NAMES.md"
+  ]
+ },
+ {
+  "address": "$81:C057",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_81C057",
+  "source_records": [
+   "docs/research/R-0042-stunt-name-captions.md",
+   "tasks/CLASSIC-STUNT-NAMES-review.md",
+   "tasks/CLASSIC-STUNT-NAMES.md"
+  ]
+ },
+ {
+  "address": "$81:C0CE",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_81C0CE",
+  "source_records": [
+   "docs/research/R-0042-stunt-name-captions.md",
+   "tasks/CLASSIC-STUNT-NAMES-review.md",
+   "tasks/CLASSIC-STUNT-NAMES.md"
+  ]
+ },
+ {
+  "address": "$81:C219",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_81C219",
+  "source_records": [
+   "docs/research/R-0011-motion.md"
+  ]
+ },
+ {
+  "address": "$81:C241",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_81C241",
+  "source_records": [
+   "docs/research/R-0033-sustained-traversal.md"
+  ]
+ },
+ {
+  "address": "$81:C260",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_81C260",
+  "source_records": [
+   "docs/research/R-0022-zoom-zoo-riding-reference.md"
+  ]
+ },
+ {
+  "address": "$81:C274",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_81C274",
+  "source_records": [
+   "docs/research/R-0022-zoom-zoo-riding-reference.md"
+  ]
+ },
+ {
+  "address": "$81:C280",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_81C280",
+  "source_records": [
+   "docs/research/R-0022-zoom-zoo-riding-reference.md"
+  ]
+ },
+ {
+  "address": "$81:C286",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_81C286",
+  "source_records": [
+   "docs/research/R-0011-motion.md"
+  ]
+ },
+ {
+  "address": "$81:C493",
+  "class": "data",
+  "comment": "data",
+  "label": "dat_81C493",
+  "source_records": [
+   "docs/research/R-0011-motion.md"
+  ]
+ },
+ {
+  "address": "$81:C50A",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_81C50A",
+  "source_records": [
+   "docs/research/R-0011-motion.md"
+  ]
+ },
+ {
+  "address": "$81:C694",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_81C694",
+  "source_records": [
+   "docs/research/R-0010-input-timer.md"
+  ]
+ },
+ {
+  "address": "$81:C6A0",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_81C6A0",
+  "source_records": [
+   "docs/research/R-0010-input-timer.md"
+  ]
+ },
+ {
+  "address": "$81:C6C0",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_81C6C0",
+  "source_records": [
+   "docs/research/R-0010-input-timer.md"
+  ]
+ },
+ {
+  "address": "$81:C6C5",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_81C6C5",
+  "source_records": [
+   "docs/research/R-0010-input-timer.md",
+   "tasks/DRAGSTER-CLOCK-LIMIT-review.md",
+   "tasks/DRAGSTER-CLOCK-LIMIT.md"
+  ]
+ },
+ {
+  "address": "$81:C6C9",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_81C6C9",
+  "source_records": [
+   "docs/research/R-0007-player-state.md",
+   "docs/research/R-0020-zoom-zoo-reference.md",
+   "docs/research/R-0022-zoom-zoo-riding-reference.md",
+   "tasks/M1-02.md",
+   "tasks/M4-02-review.md"
+  ]
+ },
+ {
+  "address": "$81:C6ED",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_81C6ED",
+  "source_records": [
+   "docs/research/R-0007-player-state.md",
+   "docs/research/R-0020-zoom-zoo-reference.md",
+   "docs/research/R-0022-zoom-zoo-riding-reference.md",
+   "tasks/M1-02.md",
+   "tasks/M4-02-review.md"
+  ]
+ },
+ {
+  "address": "$81:C6FB",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_81C6FB",
+  "source_records": [
+   "tasks/DRAGSTER-CLOCK-LIMIT-review.md"
+  ]
+ },
+ {
+  "address": "$81:C6FF",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_81C6FF",
+  "source_records": [
+   "tasks/M1-02.md"
+  ]
+ },
+ {
+  "address": "$81:C710",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_81C710",
+  "source_records": [
+   "tasks/DRAGSTER-CLOCK-LIMIT-review.md"
+  ]
+ },
+ {
+  "address": "$81:C725",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_81C725",
+  "source_records": [
+   "tasks/DRAGSTER-CLOCK-LIMIT-review.md"
+  ]
+ },
+ {
+  "address": "$81:C737",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_81C737",
+  "source_records": [
+   "tasks/DRAGSTER-CLOCK-LIMIT-review.md"
+  ]
+ },
+ {
+  "address": "$81:C73E",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_81C73E",
+  "source_records": [
+   "docs/research/R-0036-zoom-zoo-rider-objects.md",
+   "docs/research/R-0039-dragster-clock-limit.md",
+   "docs/research/R-0043-classic-race-hud.md",
+   "tasks/DRAGSTER-CLOCK-LIMIT-review.md",
+   "tasks/DRAGSTER-CLOCK-LIMIT.md",
+   "tasks/M4-16-review.md",
+   "tasks/M4-16.md"
+  ]
+ },
+ {
+  "address": "$81:C741",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_81C741",
+  "source_records": [
+   "tasks/DRAGSTER-CLOCK-LIMIT-review.md"
+  ]
+ },
+ {
+  "address": "$81:C743",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_81C743",
+  "source_records": [
+   "tasks/DRAGSTER-CLOCK-LIMIT-review.md"
+  ]
+ },
+ {
+  "address": "$81:C74F",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_81C74F",
+  "source_records": [
+   "tasks/DRAGSTER-CLOCK-LIMIT-review.md"
+  ]
+ },
+ {
+  "address": "$81:C755",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_81C755",
+  "source_records": [
+   "tasks/DRAGSTER-CLOCK-LIMIT-review.md"
+  ]
+ },
+ {
+  "address": "$81:C758",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_81C758",
+  "source_records": [
+   "tasks/DRAGSTER-CLOCK-LIMIT-review.md"
+  ]
+ },
+ {
+  "address": "$81:C75B",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_81C75B",
+  "source_records": [
+   "tasks/DRAGSTER-CLOCK-LIMIT-review.md"
+  ]
+ },
+ {
+  "address": "$81:C75E",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_81C75E",
+  "source_records": [
+   "tasks/M4-16-review.md"
+  ]
+ },
+ {
+  "address": "$81:C900",
+  "class": "observed",
+  "comment": "inside the instruction at $81:C8FF",
+  "label": "mid_81C900",
+  "source_records": [
+   "tasks/CLASSIC-SPLIT-TIME.md"
+  ]
+ },
+ {
+  "address": "$81:C910",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_81C910",
+  "source_records": [
+   "docs/research/R-0044-classic-split-time.md",
+   "tasks/CLASSIC-SPLIT-TIME.md"
+  ]
+ },
+ {
+  "address": "$81:C94F",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_81C94F",
+  "source_records": [
+   "docs/research/R-0044-classic-split-time.md"
+  ]
+ },
+ {
+  "address": "$81:C9F4",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_81C9F4",
+  "source_records": [
+   "docs/research/R-0044-classic-split-time.md"
+  ]
+ },
+ {
+  "address": "$81:CA13",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_81CA13",
+  "source_records": [
+   "docs/research/R-0044-classic-split-time.md"
+  ]
+ },
+ {
+  "address": "$81:CA38",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_81CA38",
+  "source_records": [
+   "docs/research/R-0044-classic-split-time.md"
+  ]
+ },
+ {
+  "address": "$81:CAAD",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_81CAAD",
+  "source_records": [
+   "docs/research/R-0044-classic-split-time.md"
+  ]
+ },
+ {
+  "address": "$81:CB13",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_81CB13",
+  "source_records": [
+   "docs/research/R-0044-classic-split-time.md",
+   "tasks/CLASSIC-SPLIT-TIME.md"
+  ]
+ },
+ {
+  "address": "$81:CFF6",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_81CFF6",
+  "source_records": [
+   "docs/research/R-0043-classic-race-hud.md",
+   "tasks/CLASSIC-RACE-HUD.md"
+  ]
+ },
+ {
+  "address": "$81:D1B2",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_81D1B2",
+  "source_records": [
+   "docs/research/R-0043-classic-race-hud.md"
+  ]
+ },
+ {
+  "address": "$81:D30C",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_81D30C",
+  "source_records": [
+   "docs/research/R-0043-classic-race-hud.md"
+  ]
+ },
+ {
+  "address": "$81:D620",
+  "class": "observed",
+  "comment": "inside the instruction at $81:D61E",
+  "label": "mid_81D620",
+  "source_records": [
+   "docs/research/R-0043-classic-race-hud.md",
+   "tasks/CLASSIC-RACE-HUD.md"
+  ]
+ },
+ {
+  "address": "$81:D670",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_81D670",
+  "source_records": [
+   "tasks/DRAGSTER-ORDINARY-CONTROLS-review.md"
+  ]
+ },
+ {
+  "address": "$81:D673",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_81D673",
+  "source_records": [
+   "docs/research/R-0038-dragster-ordinary-controls.md",
+   "tasks/DRAGSTER-ORDINARY-CONTROLS-review.md"
+  ]
+ },
+ {
+  "address": "$81:D6B4",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_81D6B4",
+  "source_records": [
+   "docs/research/R-0043-classic-race-hud.md"
+  ]
+ },
+ {
+  "address": "$81:D6E5",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_81D6E5",
+  "source_records": [
+   "docs/research/R-0043-classic-race-hud.md"
+  ]
+ },
+ {
+  "address": "$81:D6E8",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_81D6E8",
+  "source_records": [
+   "docs/research/R-0043-classic-race-hud.md",
+   "tasks/CLASSIC-RACE-HUD.md"
+  ]
+ },
+ {
+  "address": "$81:D76E",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_81D76E",
+  "source_records": [
+   "docs/research/R-0043-classic-race-hud.md"
+  ]
+ },
+ {
+  "address": "$81:E11C",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_81E11C",
+  "source_records": [
+   "tasks/CLASSIC-RACE-HUD.md"
+  ]
+ },
+ {
+  "address": "$81:E263",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_81E263",
+  "source_records": [
+   "tasks/CLASSIC-RACE-HUD.md"
+  ]
+ },
+ {
+  "address": "$81:E471",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_81E471",
+  "source_records": [
+   "tasks/CLASSIC-RACE-HUD.md"
+  ]
+ },
+ {
+  "address": "$81:EB40",
+  "class": "inferred",
+  "comment": "inside the instruction at $81:EB3F",
+  "label": "mid_81EB40",
+  "source_records": [
+   "tasks/CLASSIC-RACE-HUD.md"
+  ]
+ },
+ {
+  "address": "$81:EB44",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_81EB44",
+  "source_records": [
+   "docs/research/R-0043-classic-race-hud.md"
+  ]
+ },
+ {
+  "address": "$81:EB83",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_81EB83",
+  "source_records": [
+   "docs/research/R-0043-classic-race-hud.md"
+  ]
+ },
+ {
+  "address": "$81:EB86",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_81EB86",
+  "source_records": [
+   "docs/research/R-0043-classic-race-hud.md"
+  ]
+ },
+ {
+  "address": "$81:EB8E",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_81EB8E",
+  "source_records": [
+   "docs/research/R-0043-classic-race-hud.md"
+  ]
+ },
+ {
+  "address": "$81:EB91",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_81EB91",
+  "source_records": [
+   "tasks/CLASSIC-RACE-HUD.md"
+  ]
+ },
+ {
+  "address": "$81:EB93",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_81EB93",
+  "source_records": [
+   "docs/research/R-0043-classic-race-hud.md",
+   "tasks/CLASSIC-RACE-HUD.md"
+  ]
+ },
+ {
+  "address": "$81:EB98",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_81EB98",
+  "source_records": [
+   "tasks/CLASSIC-RACE-HUD.md"
+  ]
+ },
+ {
+  "address": "$81:EB9B",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_81EB9B",
+  "source_records": [
+   "docs/research/R-0043-classic-race-hud.md",
+   "tasks/CLASSIC-RACE-HUD.md"
+  ]
+ },
+ {
+  "address": "$81:EBAB",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_81EBAB",
+  "source_records": [
+   "docs/research/R-0043-classic-race-hud.md"
+  ]
+ },
+ {
+  "address": "$81:EC58",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_81EC58",
+  "source_records": [
+   "docs/research/R-0043-classic-race-hud.md"
+  ]
+ },
+ {
+  "address": "$81:EC5E",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_81EC5E",
+  "source_records": [
+   "docs/research/R-0043-classic-race-hud.md",
+   "tasks/CLASSIC-RACE-HUD.md"
+  ]
+ },
+ {
+  "address": "$81:EC94",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_81EC94",
+  "source_records": [
+   "docs/research/R-0043-classic-race-hud.md"
+  ]
+ },
+ {
+  "address": "$81:ECBC",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_81ECBC",
+  "source_records": [
+   "docs/research/R-0043-classic-race-hud.md",
+   "tasks/CLASSIC-RACE-HUD.md"
+  ]
+ },
+ {
+  "address": "$81:ECC2",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_81ECC2",
+  "source_records": [
+   "docs/research/R-0043-classic-race-hud.md"
+  ]
+ },
+ {
+  "address": "$81:ECCF",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_81ECCF",
+  "source_records": [
+   "docs/research/R-0043-classic-race-hud.md"
+  ]
+ },
+ {
+  "address": "$81:ECD8",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_81ECD8",
+  "source_records": [
+   "docs/research/R-0043-classic-race-hud.md"
+  ]
+ },
+ {
+  "address": "$81:ED4D",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_81ED4D",
+  "source_records": [
+   "docs/research/R-0043-classic-race-hud.md"
+  ]
+ },
+ {
+  "address": "$81:ED52",
+  "class": "observed",
+  "comment": "inside the instruction at $81:ED50",
+  "label": "mid_81ED52",
+  "source_records": [
+   "docs/research/R-0043-classic-race-hud.md"
+  ]
+ },
+ {
+  "address": "$81:ED5C",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_81ED5C",
+  "source_records": [
+   "docs/research/R-0043-classic-race-hud.md",
+   "tasks/CLASSIC-RACE-HUD.md"
+  ]
+ },
+ {
+  "address": "$81:EDD9",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_81EDD9",
+  "source_records": [
+   "docs/research/R-0043-classic-race-hud.md",
+   "tasks/CLASSIC-RACE-HUD.md"
+  ]
+ },
+ {
+  "address": "$81:EDDC",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_81EDDC",
+  "source_records": [
+   "docs/research/R-0043-classic-race-hud.md",
+   "docs/research/R-0044-classic-split-time.md",
+   "tasks/CLASSIC-SPLIT-TIME.md"
+  ]
+ },
+ {
+  "address": "$81:EDE0",
+  "class": "observed",
+  "comment": "inside the instruction at $81:EDDF",
+  "label": "mid_81EDE0",
+  "source_records": [
+   "tasks/CLASSIC-RACE-HUD.md"
+  ]
+ },
+ {
+  "address": "$81:EDE9",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_81EDE9",
+  "source_records": [
+   "docs/research/R-0044-classic-split-time.md"
+  ]
+ },
+ {
+  "address": "$81:EDF1",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_81EDF1",
+  "source_records": [
+   "docs/research/R-0043-classic-race-hud.md"
+  ]
+ },
+ {
+  "address": "$81:EE72",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_81EE72",
+  "source_records": [
+   "docs/research/R-0043-classic-race-hud.md"
+  ]
+ },
+ {
+  "address": "$81:EE89",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_81EE89",
+  "source_records": [
+   "docs/research/R-0043-classic-race-hud.md",
+   "docs/research/R-0044-classic-split-time.md"
+  ]
+ },
+ {
+  "address": "$81:EE8F",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_81EE8F",
+  "source_records": [
+   "docs/research/R-0043-classic-race-hud.md"
+  ]
+ },
+ {
+  "address": "$81:EF49",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_81EF49",
+  "source_records": [
+   "docs/research/R-0043-classic-race-hud.md"
+  ]
+ },
+ {
+  "address": "$81:EF5E",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_81EF5E",
+  "source_records": [
+   "docs/research/R-0044-classic-split-time.md"
+  ]
+ },
+ {
+  "address": "$81:F033",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_81F033",
+  "source_records": [
+   "docs/research/R-0043-classic-race-hud.md",
+   "docs/research/R-0044-classic-split-time.md",
+   "tasks/CLASSIC-SPLIT-TIME.md"
+  ]
+ },
+ {
+  "address": "$81:F040",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_81F040",
+  "source_records": [
+   "docs/research/R-0044-classic-split-time.md"
+  ]
+ },
+ {
+  "address": "$81:F0E6",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_81F0E6",
+  "source_records": [
+   "docs/research/R-0043-classic-race-hud.md"
+  ]
+ },
+ {
+  "address": "$81:F1A0",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_81F1A0",
+  "source_records": [
+   "docs/research/R-0043-classic-race-hud.md"
+  ]
+ },
+ {
+  "address": "$81:F1B5",
+  "class": "inferred",
+  "comment": "routine start",
+  "label": "sub_81F1B5",
+  "source_records": [
+   "docs/research/R-0044-classic-split-time.md"
+  ]
+ },
+ {
+  "address": "$81:F30C",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_81F30C",
+  "source_records": [
+   "tasks/CLASSIC-STUNT-NAMES-review.md"
+  ]
+ },
+ {
+  "address": "$81:F31D",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_81F31D",
+  "source_records": [
+   "docs/research/R-0042-stunt-name-captions.md",
+   "docs/research/R-0043-classic-race-hud.md",
+   "tasks/CLASSIC-STUNT-NAMES-review.md"
+  ]
+ },
+ {
+  "address": "$81:F322",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_81F322",
+  "source_records": [
+   "docs/research/R-0042-stunt-name-captions.md",
+   "tasks/CLASSIC-RACE-HUD.md",
+   "tasks/CLASSIC-STUNT-NAMES.md"
+  ]
+ },
+ {
+  "address": "$81:F327",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_81F327",
+  "source_records": [
+   "docs/research/R-0042-stunt-name-captions.md",
+   "tasks/CLASSIC-STUNT-NAMES-review.md"
+  ]
+ },
+ {
+  "address": "$81:F337",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_81F337",
+  "source_records": [
+   "docs/research/R-0042-stunt-name-captions.md",
+   "docs/research/R-0043-classic-race-hud.md",
+   "tasks/CLASSIC-STUNT-NAMES-review.md"
+  ]
+ },
+ {
+  "address": "$81:F33C",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_81F33C",
+  "source_records": [
+   "docs/research/R-0042-stunt-name-captions.md",
+   "tasks/CLASSIC-STUNT-NAMES.md"
+  ]
+ },
+ {
+  "address": "$81:F345",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_81F345",
+  "source_records": [
+   "docs/research/R-0042-stunt-name-captions.md",
+   "tasks/CLASSIC-STUNT-NAMES-review.md"
+  ]
+ },
+ {
+  "address": "$81:F352",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_81F352",
+  "source_records": [
+   "docs/research/R-0042-stunt-name-captions.md",
+   "tasks/CLASSIC-STUNT-NAMES-review.md",
+   "tasks/CLASSIC-STUNT-NAMES.md"
+  ]
+ },
+ {
+  "address": "$81:F357",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_81F357",
+  "source_records": [
+   "docs/research/R-0043-classic-race-hud.md",
+   "tasks/CLASSIC-RACE-HUD.md"
+  ]
+ },
+ {
+  "address": "$82:8038",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_828038",
+  "source_records": [
+   "docs/research/R-0006-observed-code-map.md"
+  ]
+ },
+ {
+  "address": "$82:8039",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_828039",
+  "source_records": [
+   "docs/research/R-0006-observed-code-map.md"
+  ]
+ },
+ {
+  "address": "$82:803A",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82803A",
+  "source_records": [
+   "docs/research/R-0006-observed-code-map.md"
+  ]
+ },
+ {
+  "address": "$82:803C",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82803C",
+  "source_records": [
+   "docs/research/R-0006-observed-code-map.md"
+  ]
+ },
+ {
+  "address": "$82:803F",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82803F",
+  "source_records": [
+   "docs/research/R-0006-observed-code-map.md"
+  ]
+ },
+ {
+  "address": "$82:8043",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_828043",
+  "source_records": [
+   "docs/research/R-0006-observed-code-map.md"
+  ]
+ },
+ {
+  "address": "$82:8082",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_828082",
+  "source_records": [
+   "docs/research/M4-16-persistent-input-ledger.md",
+   "tasks/M4-16-review.md",
+   "tasks/M4-16.md"
+  ]
+ },
+ {
+  "address": "$82:8088",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_828088",
+  "source_records": [
+   "docs/research/R-0036-zoom-zoo-rider-objects.md",
+   "docs/research/R-0039-dragster-clock-limit.md",
+   "tasks/DRAGSTER-CLOCK-LIMIT-review.md",
+   "tasks/M4-16-review.md",
+   "tasks/M4-16.md"
+  ]
+ },
+ {
+  "address": "$82:809C",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82809C",
+  "source_records": [
+   "docs/research/M4-16-persistent-input-ledger.md"
+  ]
+ },
+ {
+  "address": "$82:80A5",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_8280A5",
+  "source_records": [
+   "docs/research/M4-16-persistent-input-ledger.md"
+  ]
+ },
+ {
+  "address": "$82:80B2",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_8280B2",
+  "source_records": [
+   "docs/research/M4-16-persistent-input-ledger.md"
+  ]
+ },
+ {
+  "address": "$82:80BA",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_8280BA",
+  "source_records": [
+   "docs/research/M4-16-persistent-input-ledger.md"
+  ]
+ },
+ {
+  "address": "$82:80D1",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_8280D1",
+  "source_records": [
+   "docs/research/M4-16-persistent-input-ledger.md",
+   "docs/research/R-0007-player-state.md"
+  ]
+ },
+ {
+  "address": "$82:810F",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82810F",
+  "source_records": [
+   "docs/research/M4-16-persistent-input-ledger.md"
+  ]
+ },
+ {
+  "address": "$82:811B",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82811B",
+  "source_records": [
+   "docs/research/M4-16-persistent-input-ledger.md"
+  ]
+ },
+ {
+  "address": "$82:812A",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_82812A",
+  "source_records": [
+   "docs/research/M4-16-persistent-input-ledger.md",
+   "tasks/M4-16-review.md",
+   "tasks/M4-16.md"
+  ]
+ },
+ {
+  "address": "$82:812D",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82812D",
+  "source_records": [
+   "docs/research/M4-16-persistent-input-ledger.md"
+  ]
+ },
+ {
+  "address": "$82:8138",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_828138",
+  "source_records": [
+   "docs/research/M4-16-persistent-input-ledger.md"
+  ]
+ },
+ {
+  "address": "$82:8141",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_828141",
+  "source_records": [
+   "docs/research/M4-16-persistent-input-ledger.md",
+   "docs/research/R-0007-player-state.md"
+  ]
+ },
+ {
+  "address": "$82:8151",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_828151",
+  "source_records": [
+   "docs/research/M4-16-persistent-input-ledger.md",
+   "tasks/M4-16-review.md"
+  ]
+ },
+ {
+  "address": "$82:82A9",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_8282A9",
+  "source_records": [
+   "docs/research/M4-16-persistent-input-ledger.md",
+   "tasks/M4-16-review.md",
+   "tasks/M4-16.md"
+  ]
+ },
+ {
+  "address": "$82:82D4",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_8282D4",
+  "source_records": [
+   "docs/research/M4-16-persistent-input-ledger.md"
+  ]
+ },
+ {
+  "address": "$82:82D6",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_8282D6",
+  "source_records": [
+   "docs/research/M4-16-persistent-input-ledger.md"
+  ]
+ },
+ {
+  "address": "$82:82F0",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_8282F0",
+  "source_records": [
+   "docs/research/M4-16-persistent-input-ledger.md",
+   "docs/research/R-0007-player-state.md"
+  ]
+ },
+ {
+  "address": "$82:8337",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_828337",
+  "source_records": [
+   "docs/research/R-0036-zoom-zoo-rider-objects.md",
+   "tasks/M4-16.md"
+  ]
+ },
+ {
+  "address": "$82:833B",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_82833B",
+  "source_records": [
+   "docs/research/R-0036-zoom-zoo-rider-objects.md",
+   "docs/research/R-0045-static-code-map.md"
+  ]
+ },
+ {
+  "address": "$82:834B",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_82834B",
+  "source_records": [
+   "docs/research/R-0036-zoom-zoo-rider-objects.md"
+  ]
+ },
+ {
+  "address": "$82:835B",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_82835B",
+  "source_records": [
+   "docs/research/R-0036-zoom-zoo-rider-objects.md",
+   "docs/research/R-0045-static-code-map.md"
+  ]
+ },
+ {
+  "address": "$82:836D",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_82836D",
+  "source_records": [
+   "docs/research/R-0036-zoom-zoo-rider-objects.md",
+   "tasks/M4-16.md"
+  ]
+ },
+ {
+  "address": "$82:857F",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_82857F",
+  "source_records": [
+   "docs/research/R-0036-zoom-zoo-rider-objects.md",
+   "tasks/M4-16-review.md",
+   "tasks/M4-16.md"
+  ]
+ },
+ {
+  "address": "$82:8768",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_828768",
+  "source_records": [
+   "tasks/M4-16-review.md"
+  ]
+ },
+ {
+  "address": "$82:87AD",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_8287AD",
+  "source_records": [
+   "docs/research/R-0036-zoom-zoo-rider-objects.md",
+   "tasks/M4-16-review.md",
+   "tasks/M4-16.md"
+  ]
+ },
+ {
+  "address": "$82:87C9",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_8287C9",
+  "source_records": [
+   "docs/research/R-0036-zoom-zoo-rider-objects.md"
+  ]
+ },
+ {
+  "address": "$82:8926",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_828926",
+  "source_records": [
+   "docs/research/R-0036-zoom-zoo-rider-objects.md",
+   "tasks/M4-16.md"
+  ]
+ },
+ {
+  "address": "$82:8927",
+  "class": "inferred",
+  "comment": "routine start",
+  "label": "sub_828927",
+  "source_records": [
+   "docs/research/R-0036-zoom-zoo-rider-objects.md",
+   "tasks/M4-16.md"
+  ]
+ },
+ {
+  "address": "$82:8953",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_828953",
+  "source_records": [
+   "docs/research/R-0017-m3-acceptance.md",
+   "tasks/M3-04.md"
+  ]
+ },
+ {
+  "address": "$82:89C2",
+  "class": "observed",
+  "comment": "inside the instruction at $82:89C1",
+  "label": "mid_8289C2",
+  "source_records": [
+   "docs/research/R-0017-m3-acceptance.md",
+   "tasks/M3-04.md"
+  ]
+ },
+ {
+  "address": "$82:8AB1",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_828AB1",
+  "source_records": [
+   "docs/research/R-0007-player-state.md",
+   "docs/research/R-0009-m1-acceptance.md",
+   "docs/research/R-0010-native-movement.md",
+   "tasks/M1-02.md",
+   "tasks/M2-01.md"
+  ]
+ },
+ {
+  "address": "$82:8ABC",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_828ABC",
+  "source_records": [
+   "docs/research/R-0007-player-state.md"
+  ]
+ },
+ {
+  "address": "$82:8AE0",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_828AE0",
+  "source_records": [
+   "tasks/M2-01-movement-handoff.md"
+  ]
+ },
+ {
+  "address": "$82:8AF5",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_828AF5",
+  "source_records": [
+   "docs/research/R-0007-player-state.md"
+  ]
+ },
+ {
+  "address": "$82:8B13",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_828B13",
+  "source_records": [
+   "docs/research/R-0036-zoom-zoo-rider-objects.md"
+  ]
+ },
+ {
+  "address": "$82:8B28",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_828B28",
+  "source_records": [
+   "tasks/M2-01-movement-handoff.md"
+  ]
+ },
+ {
+  "address": "$82:8B97",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_828B97",
+  "source_records": [
+   "docs/research/R-0010-native-movement.md"
+  ]
+ },
+ {
+  "address": "$82:8BB5",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_828BB5",
+  "source_records": [
+   "docs/research/R-0011-speed.md"
+  ]
+ },
+ {
+  "address": "$82:8C3A",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_828C3A",
+  "source_records": [
+   "docs/research/R-0010-native-movement.md"
+  ]
+ },
+ {
+  "address": "$82:8C4E",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_828C4E",
+  "source_records": [
+   "docs/research/R-0010-native-movement.md"
+  ]
+ },
+ {
+  "address": "$82:8D07",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_828D07",
+  "source_records": [
+   "docs/research/R-0011-speed.md"
+  ]
+ },
+ {
+  "address": "$82:8D0D",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_828D0D",
+  "source_records": [
+   "docs/research/R-0011-speed.md"
+  ]
+ },
+ {
+  "address": "$82:8DB7",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_828DB7",
+  "source_records": [
+   "docs/research/R-0010-native-movement.md"
+  ]
+ },
+ {
+  "address": "$82:8DB9",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_828DB9",
+  "source_records": [
+   "docs/research/R-0007-player-state.md",
+   "docs/research/R-0020-zoom-zoo-reference.md",
+   "docs/research/R-0022-zoom-zoo-riding-reference.md",
+   "tasks/M1-02.md",
+   "tasks/M4-02-review.md"
+  ]
+ },
+ {
+  "address": "$82:8DBF",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_828DBF",
+  "source_records": [
+   "docs/research/R-0007-player-state.md",
+   "docs/research/R-0020-zoom-zoo-reference.md",
+   "tasks/M1-02.md",
+   "tasks/M4-02-review.md"
+  ]
+ },
+ {
+  "address": "$82:8DE0",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_828DE0",
+  "source_records": [
+   "tasks/M2-01-movement-handoff.md"
+  ]
+ },
+ {
+  "address": "$82:8DF8",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_828DF8",
+  "source_records": [
+   "docs/research/R-0007-player-state.md",
+   "docs/research/R-0009-m1-acceptance.md",
+   "docs/research/R-0020-zoom-zoo-reference.md",
+   "tasks/M1-02.md",
+   "tasks/M2-01.md"
+  ]
+ },
+ {
+  "address": "$82:8E16",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_828E16",
+  "source_records": [
+   "docs/research/R-0036-zoom-zoo-rider-objects.md",
+   "tasks/M4-16-review.md"
+  ]
+ },
+ {
+  "address": "$82:8E28",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_828E28",
+  "source_records": [
+   "tasks/M2-01-movement-handoff.md"
+  ]
+ },
+ {
+  "address": "$82:8E97",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_828E97",
+  "source_records": [
+   "docs/research/R-0010-native-movement.md"
+  ]
+ },
+ {
+  "address": "$82:8E9A",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_828E9A",
+  "source_records": [
+   "docs/research/R-0007-player-state.md",
+   "docs/research/R-0020-zoom-zoo-reference.md",
+   "tasks/M1-02.md",
+   "tasks/M2-01.md",
+   "tasks/M4-02-review.md"
+  ]
+ },
+ {
+  "address": "$82:8FE8",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_828FE8",
+  "source_records": [
+   "tasks/M2-01-movement-handoff.md"
+  ]
+ },
+ {
+  "address": "$82:901B",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82901B",
+  "source_records": [
+   "docs/research/R-0036-zoom-zoo-rider-objects.md"
+  ]
+ },
+ {
+  "address": "$82:91DD",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_8291DD",
+  "source_records": [
+   "docs/research/R-0010-native-movement.md"
+  ]
+ },
+ {
+  "address": "$82:92A2",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_8292A2",
+  "source_records": [
+   "docs/research/R-0017-opponent-first-audit.md"
+  ]
+ },
+ {
+  "address": "$82:92A7",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_8292A7",
+  "source_records": [
+   "docs/research/R-0007-player-state.md",
+   "docs/research/R-0017-opponent-first-audit.md",
+   "docs/research/R-0020-zoom-zoo-reference.md",
+   "tasks/M1-02.md"
+  ]
+ },
+ {
+  "address": "$82:92CE",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_8292CE",
+  "source_records": [
+   "tasks/M2-01-movement-handoff.md"
+  ]
+ },
+ {
+  "address": "$82:9304",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_829304",
+  "source_records": [
+   "docs/research/R-0036-zoom-zoo-rider-objects.md",
+   "tasks/M4-16-review.md"
+  ]
+ },
+ {
+  "address": "$82:931C",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82931C",
+  "source_records": [
+   "docs/research/R-0017-opponent-first-audit.md"
+  ]
+ },
+ {
+  "address": "$82:9388",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_829388",
+  "source_records": [
+   "docs/research/R-0017-opponent-first-audit.md"
+  ]
+ },
+ {
+  "address": "$82:9439",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_829439",
+  "source_records": [
+   "docs/research/R-0038-dragster-ordinary-controls.md",
+   "tasks/DRAGSTER-ORDINARY-CONTROLS-review.md"
+  ]
+ },
+ {
+  "address": "$82:959B",
+  "class": "inferred",
+  "comment": "routine start",
+  "label": "sub_82959B",
+  "source_records": [
+   "docs/research/R-0038-dragster-ordinary-controls.md",
+   "tasks/DRAGSTER-ORDINARY-CONTROLS-review.md",
+   "tasks/DRAGSTER-ORDINARY-CONTROLS.md"
+  ]
+ },
+ {
+  "address": "$82:9715",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_829715",
+  "source_records": [
+   "tasks/M4-12-review.md"
+  ]
+ },
+ {
+  "address": "$82:971A",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82971A",
+  "source_records": [
+   "docs/research/R-0030-zoom-zoo-native-trial.md",
+   "tasks/M4-12-review.md"
+  ]
+ },
+ {
+  "address": "$82:9725",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_829725",
+  "source_records": [
+   "tasks/M4-12-review.md"
+  ]
+ },
+ {
+  "address": "$82:9751",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_829751",
+  "source_records": [
+   "docs/research/R-0038-dragster-ordinary-controls.md"
+  ]
+ },
+ {
+  "address": "$82:979A",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_82979A",
+  "source_records": [
+   "docs/research/R-0010-native-movement.md",
+   "tasks/M4-12-review.md"
+  ]
+ },
+ {
+  "address": "$82:979D",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82979D",
+  "source_records": [
+   "tasks/M4-12-review.md"
+  ]
+ },
+ {
+  "address": "$82:9805",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_829805",
+  "source_records": [
+   "docs/research/R-0010-native-movement.md"
+  ]
+ },
+ {
+  "address": "$82:98CF",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_8298CF",
+  "source_records": [
+   "docs/research/R-0011-motion.md"
+  ]
+ },
+ {
+  "address": "$82:98E4",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_8298E4",
+  "source_records": [
+   "docs/research/R-0022-zoom-zoo-riding-reference.md"
+  ]
+ },
+ {
+  "address": "$82:9909",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_829909",
+  "source_records": [
+   "docs/research/R-0038-dragster-ordinary-controls.md",
+   "tasks/DRAGSTER-ORDINARY-CONTROLS-review.md"
+  ]
+ },
+ {
+  "address": "$82:9995",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_829995",
+  "source_records": [
+   "docs/research/R-0038-dragster-ordinary-controls.md",
+   "tasks/DRAGSTER-ORDINARY-CONTROLS-review.md",
+   "tasks/DRAGSTER-ORDINARY-CONTROLS.md"
+  ]
+ },
+ {
+  "address": "$82:99F1",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_8299F1",
+  "source_records": [
+   "docs/research/R-0011-motion.md",
+   "docs/research/R-0038-dragster-ordinary-controls.md",
+   "tasks/DRAGSTER-ORDINARY-CONTROLS-review.md"
+  ]
+ },
+ {
+  "address": "$82:99FC",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_8299FC",
+  "source_records": [
+   "docs/research/R-0011-motion.md"
+  ]
+ },
+ {
+  "address": "$82:9A4F",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_829A4F",
+  "source_records": [
+   "docs/research/R-0011-motion.md",
+   "docs/research/R-0022-zoom-zoo-riding-reference.md"
+  ]
+ },
+ {
+  "address": "$82:9A53",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_829A53",
+  "source_records": [
+   "docs/research/R-0011-motion.md"
+  ]
+ },
+ {
+  "address": "$82:9B87",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_829B87",
+  "source_records": [
+   "docs/research/R-0033-sustained-traversal.md"
+  ]
+ },
+ {
+  "address": "$82:9CF8",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_829CF8",
+  "source_records": [
+   "docs/research/R-0011-motion.md"
+  ]
+ },
+ {
+  "address": "$82:9D7F",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_829D7F",
+  "source_records": [
+   "docs/research/R-0030-zoom-zoo-native-trial.md"
+  ]
+ },
+ {
+  "address": "$82:9DB6",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_829DB6",
+  "source_records": [
+   "docs/research/R-0011-motion.md"
+  ]
+ },
+ {
+  "address": "$82:A027",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_82A027",
+  "source_records": [
+   "docs/research/R-0011-motion.md"
+  ]
+ },
+ {
+  "address": "$82:A069",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_82A069",
+  "source_records": [
+   "docs/research/R-0011-motion.md"
+  ]
+ },
+ {
+  "address": "$82:A0B7",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_82A0B7",
+  "source_records": [
+   "docs/research/R-0011-motion.md",
+   "tasks/M2-01-movement-handoff.md",
+   "tasks/M2-01-movement.md"
+  ]
+ },
+ {
+  "address": "$82:A0F5",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82A0F5",
+  "source_records": [
+   "docs/research/R-0036-zoom-zoo-rider-objects.md"
+  ]
+ },
+ {
+  "address": "$82:A194",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82A194",
+  "source_records": [
+   "docs/research/R-0036-zoom-zoo-rider-objects.md"
+  ]
+ },
+ {
+  "address": "$82:A1F2",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82A1F2",
+  "source_records": [
+   "docs/research/R-0038-dragster-ordinary-controls.md",
+   "tasks/DRAGSTER-ORDINARY-CONTROLS-review.md",
+   "tasks/DRAGSTER-ORDINARY-CONTROLS.md"
+  ]
+ },
+ {
+  "address": "$82:A201",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_82A201",
+  "source_records": [
+   "tasks/M2-01-movement.md",
+   "tasks/M2-01.md"
+  ]
+ },
+ {
+  "address": "$82:A236",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_82A236",
+  "source_records": [
+   "docs/research/R-0011-motion.md",
+   "tasks/M2-01-movement.md"
+  ]
+ },
+ {
+  "address": "$82:A237",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_82A237",
+  "source_records": [
+   "docs/research/R-0011-motion.md",
+   "docs/research/R-0030-zoom-zoo-native-trial.md"
+  ]
+ },
+ {
+  "address": "$82:A288",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_82A288",
+  "source_records": [
+   "docs/research/R-0011-motion.md",
+   "docs/research/R-0033-sustained-traversal.md"
+  ]
+ },
+ {
+  "address": "$82:A2DB",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_82A2DB",
+  "source_records": [
+   "docs/research/R-0030-zoom-zoo-native-trial.md"
+  ]
+ },
+ {
+  "address": "$82:A35B",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_82A35B",
+  "source_records": [
+   "docs/research/R-0011-motion.md",
+   "docs/research/R-0030-zoom-zoo-native-trial.md"
+  ]
+ },
+ {
+  "address": "$82:A3B3",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82A3B3",
+  "source_records": [
+   "docs/research/R-0030-zoom-zoo-native-trial.md"
+  ]
+ },
+ {
+  "address": "$82:A447",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82A447",
+  "source_records": [
+   "docs/research/R-0030-zoom-zoo-native-trial.md"
+  ]
+ },
+ {
+  "address": "$82:A49F",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_82A49F",
+  "source_records": [
+   "docs/inventory/M4-10-response-b.md",
+   "docs/research/R-0011-motion.md",
+   "docs/research/R-0028-zoom-zoo-response-b.md",
+   "tasks/M4-10-review.md",
+   "tasks/M4-10.md"
+  ]
+ },
+ {
+  "address": "$82:A507",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82A507",
+  "source_records": [
+   "docs/research/R-0028-zoom-zoo-response-b.md"
+  ]
+ },
+ {
+  "address": "$82:A50D",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82A50D",
+  "source_records": [
+   "docs/research/R-0011-motion.md"
+  ]
+ },
+ {
+  "address": "$82:A562",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82A562",
+  "source_records": [
+   "docs/research/R-0028-zoom-zoo-response-b.md"
+  ]
+ },
+ {
+  "address": "$82:A568",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82A568",
+  "source_records": [
+   "tasks/M4-10-review.md"
+  ]
+ },
+ {
+  "address": "$82:A5B4",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_82A5B4",
+  "source_records": [
+   "docs/research/R-0028-zoom-zoo-response-b.md"
+  ]
+ },
+ {
+  "address": "$82:A5B9",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82A5B9",
+  "source_records": [
+   "tasks/M4-10-review.md"
+  ]
+ },
+ {
+  "address": "$82:A5FA",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_82A5FA",
+  "source_records": [
+   "tasks/M2-01-movement-handoff.md",
+   "tasks/M2-01-movement.md"
+  ]
+ },
+ {
+  "address": "$82:A61F",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_82A61F",
+  "source_records": [
+   "docs/inventory/M4-09-composition.md"
+  ]
+ },
+ {
+  "address": "$82:A627",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82A627",
+  "source_records": [
+   "docs/inventory/M4-08-position.md",
+   "docs/research/R-0011-motion.md",
+   "docs/research/R-0022-zoom-zoo-riding-reference.md",
+   "docs/research/R-0026-zoom-zoo-position.md",
+   "tasks/M4-08.md",
+   "tasks/M4-09-review.md",
+   "tasks/STATIC-CODE-MAP.md"
+  ]
+ },
+ {
+  "address": "$82:A69B",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82A69B",
+  "source_records": [
+   "docs/inventory/M4-08-position.md",
+   "docs/research/R-0026-zoom-zoo-position.md",
+   "tasks/M4-08-review.md",
+   "tasks/M4-08.md"
+  ]
+ },
+ {
+  "address": "$82:A6B9",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82A6B9",
+  "source_records": [
+   "docs/inventory/M4-08-position.md",
+   "docs/research/R-0026-zoom-zoo-position.md",
+   "tasks/M4-08-review.md",
+   "tasks/M4-08.md"
+  ]
+ },
+ {
+  "address": "$82:A6DC",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82A6DC",
+  "source_records": [
+   "docs/research/R-0033-sustained-traversal.md"
+  ]
+ },
+ {
+  "address": "$82:A6E5",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82A6E5",
+  "source_records": [
+   "tasks/M4-08-review.md"
+  ]
+ },
+ {
+  "address": "$82:A6E9",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82A6E9",
+  "source_records": [
+   "docs/inventory/M4-08-position.md",
+   "docs/research/R-0026-zoom-zoo-position.md",
+   "tasks/M4-08-review.md",
+   "tasks/M4-08.md"
+  ]
+ },
+ {
+  "address": "$82:A6EB",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82A6EB",
+  "source_records": [
+   "docs/inventory/M4-08-position.md",
+   "docs/research/R-0026-zoom-zoo-position.md",
+   "tasks/M4-08-review.md",
+   "tasks/M4-08.md"
+  ]
+ },
+ {
+  "address": "$82:A6F5",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82A6F5",
+  "source_records": [
+   "tasks/M4-08.md"
+  ]
+ },
+ {
+  "address": "$82:A6F7",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82A6F7",
+  "source_records": [
+   "docs/research/R-0022-zoom-zoo-riding-reference.md"
+  ]
+ },
+ {
+  "address": "$82:A6F8",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_82A6F8",
+  "source_records": [
+   "docs/research/R-0011-speed.md",
+   "tasks/M2-01A.md"
+  ]
+ },
+ {
+  "address": "$82:A6FD",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82A6FD",
+  "source_records": [
+   "docs/research/R-0011-speed.md"
+  ]
+ },
+ {
+  "address": "$82:A772",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82A772",
+  "source_records": [
+   "docs/research/R-0011-speed.md"
+  ]
+ },
+ {
+  "address": "$82:A7BA",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82A7BA",
+  "source_records": [
+   "docs/research/R-0010-native-movement.md"
+  ]
+ },
+ {
+  "address": "$82:A7BE",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82A7BE",
+  "source_records": [
+   "docs/research/R-0010-native-movement.md"
+  ]
+ },
+ {
+  "address": "$82:A7CE",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82A7CE",
+  "source_records": [
+   "docs/research/R-0010-native-movement.md"
+  ]
+ },
+ {
+  "address": "$82:A7E3",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82A7E3",
+  "source_records": [
+   "docs/research/R-0010-native-movement.md"
+  ]
+ },
+ {
+  "address": "$82:A7F8",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82A7F8",
+  "source_records": [
+   "docs/research/R-0011-speed.md"
+  ]
+ },
+ {
+  "address": "$82:A81A",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82A81A",
+  "source_records": [
+   "docs/inventory/M4-11-vertical-velocity.md",
+   "docs/research/R-0011-speed.md",
+   "docs/research/R-0029-zoom-zoo-vertical-velocity.md",
+   "tasks/M4-11-review.md",
+   "tasks/M4-11.md"
+  ]
+ },
+ {
+  "address": "$82:A875",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82A875",
+  "source_records": [
+   "docs/research/R-0011-speed.md"
+  ]
+ },
+ {
+  "address": "$82:A8A7",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82A8A7",
+  "source_records": [
+   "docs/research/R-0011-speed.md",
+   "tasks/M2-01-movement-handoff.md",
+   "tasks/M2-01-movement.md"
+  ]
+ },
+ {
+  "address": "$82:A8C9",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_82A8C9",
+  "source_records": [
+   "docs/research/R-0029-zoom-zoo-vertical-velocity.md",
+   "tasks/M4-11-review.md"
+  ]
+ },
+ {
+  "address": "$82:A8E0",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82A8E0",
+  "source_records": [
+   "tasks/M4-11.md"
+  ]
+ },
+ {
+  "address": "$82:A914",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82A914",
+  "source_records": [
+   "docs/research/R-0010-native-movement.md",
+   "tasks/M2-01A.md"
+  ]
+ },
+ {
+  "address": "$82:A921",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82A921",
+  "source_records": [
+   "docs/research/R-0010-native-movement.md"
+  ]
+ },
+ {
+  "address": "$82:A92D",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82A92D",
+  "source_records": [
+   "docs/research/R-0010-native-movement.md"
+  ]
+ },
+ {
+  "address": "$82:A935",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82A935",
+  "source_records": [
+   "docs/research/R-0010-native-movement.md"
+  ]
+ },
+ {
+  "address": "$82:A96E",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_82A96E",
+  "source_records": [
+   "docs/inventory/M4-11-vertical-velocity.md"
+  ]
+ },
+ {
+  "address": "$82:A96F",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_82A96F",
+  "source_records": [
+   "docs/inventory/M4-09-composition.md",
+   "docs/inventory/M4-11-vertical-velocity.md",
+   "docs/research/R-0011-motion.md",
+   "docs/research/R-0027-zoom-zoo-position-contact.md",
+   "docs/research/R-0029-zoom-zoo-vertical-velocity.md",
+   "tasks/M4-09.md",
+   "tasks/M4-11-review.md",
+   "tasks/M4-11.md"
+  ]
+ },
+ {
+  "address": "$82:A971",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82A971",
+  "source_records": [
+   "tasks/M4-09-review.md"
+  ]
+ },
+ {
+  "address": "$82:A9AA",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82A9AA",
+  "source_records": [
+   "tasks/M4-11-review.md"
+  ]
+ },
+ {
+  "address": "$82:A9AD",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82A9AD",
+  "source_records": [
+   "docs/inventory/M4-09-composition.md"
+  ]
+ },
+ {
+  "address": "$82:A9B0",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82A9B0",
+  "source_records": [
+   "tasks/M4-09-review.md",
+   "tasks/M4-09.md"
+  ]
+ },
+ {
+  "address": "$82:A9B3",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_82A9B3",
+  "source_records": [
+   "docs/research/R-0038-dragster-ordinary-controls.md",
+   "tasks/DRAGSTER-ORDINARY-CONTROLS-review.md",
+   "tasks/DRAGSTER-ORDINARY-CONTROLS.md"
+  ]
+ },
+ {
+  "address": "$82:A9C1",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82A9C1",
+  "source_records": [
+   "docs/research/R-0033-sustained-traversal.md"
+  ]
+ },
+ {
+  "address": "$82:A9EC",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82A9EC",
+  "source_records": [
+   "docs/research/R-0010-native-movement.md"
+  ]
+ },
+ {
+  "address": "$82:AA42",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82AA42",
+  "source_records": [
+   "tasks/DRAGSTER-ORDINARY-CONTROLS-review.md"
+  ]
+ },
+ {
+  "address": "$82:AAA4",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82AAA4",
+  "source_records": [
+   "docs/research/R-0007-player-state.md",
+   "tasks/ZOOM-ZOO-OPPOSING-INPUT-review.md"
+  ]
+ },
+ {
+  "address": "$82:AADF",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82AADF",
+  "source_records": [
+   "docs/research/R-0007-player-state.md",
+   "docs/research/R-0009-m1-acceptance.md",
+   "tasks/M1-02.md",
+   "tasks/M1-04.md"
+  ]
+ },
+ {
+  "address": "$82:AAE2",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82AAE2",
+  "source_records": [
+   "docs/research/R-0032-player-landing-recovery.md",
+   "tasks/DRAGSTER-ORDINARY-CONTROLS-review.md",
+   "tasks/DRAGSTER-ORDINARY-CONTROLS.md"
+  ]
+ },
+ {
+  "address": "$82:AB1A",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82AB1A",
+  "source_records": [
+   "docs/research/R-0010-input-timer.md"
+  ]
+ },
+ {
+  "address": "$82:AB20",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82AB20",
+  "source_records": [
+   "docs/research/R-0007-player-state.md",
+   "tasks/M1-02.md"
+  ]
+ },
+ {
+  "address": "$82:AB36",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82AB36",
+  "source_records": [
+   "docs/research/R-0007-player-state.md",
+   "docs/research/R-0020-zoom-zoo-reference.md",
+   "docs/research/R-0022-zoom-zoo-riding-reference.md",
+   "tasks/M1-02.md"
+  ]
+ },
+ {
+  "address": "$82:AB52",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82AB52",
+  "source_records": [
+   "docs/research/R-0007-player-state.md",
+   "docs/research/R-0020-zoom-zoo-reference.md",
+   "docs/research/R-0022-zoom-zoo-riding-reference.md",
+   "tasks/M1-02.md"
+  ]
+ },
+ {
+  "address": "$82:AB59",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82AB59",
+  "source_records": [
+   "docs/research/R-0007-player-state.md",
+   "docs/research/R-0020-zoom-zoo-reference.md",
+   "tasks/M1-02.md"
+  ]
+ },
+ {
+  "address": "$82:ACA8",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_82ACA8",
+  "source_records": [
+   "docs/research/R-0036-zoom-zoo-rider-objects.md"
+  ]
+ },
+ {
+  "address": "$82:ACAC",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_82ACAC",
+  "source_records": [
+   "docs/research/R-0036-zoom-zoo-rider-objects.md",
+   "tasks/M4-16-review.md",
+   "tasks/M4-16.md"
+  ]
+ },
+ {
+  "address": "$82:AD0F",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82AD0F",
+  "source_records": [
+   "docs/research/R-0038-dragster-ordinary-controls.md"
+  ]
+ },
+ {
+  "address": "$82:AD91",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82AD91",
+  "source_records": [
+   "docs/research/R-0036-zoom-zoo-rider-objects.md"
+  ]
+ },
+ {
+  "address": "$82:ADAB",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_82ADAB",
+  "source_records": [
+   "docs/research/R-0036-zoom-zoo-rider-objects.md"
+  ]
+ },
+ {
+  "address": "$82:AE5E",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82AE5E",
+  "source_records": [
+   "docs/research/R-0036-zoom-zoo-rider-objects.md"
+  ]
+ },
+ {
+  "address": "$82:B154",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_82B154",
+  "source_records": [
+   "docs/research/R-0036-zoom-zoo-rider-objects.md"
+  ]
+ },
+ {
+  "address": "$82:B183",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_82B183",
+  "source_records": [
+   "docs/content/dragster-segment.md",
+   "docs/research/R-0008-track-decode.md"
+  ]
+ },
+ {
+  "address": "$82:B18A",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82B18A",
+  "source_records": [
+   "docs/research/R-0015-native-presentation.md",
+   "tasks/M3-02.md"
+  ]
+ },
+ {
+  "address": "$82:B19D",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82B19D",
+  "source_records": [
+   "docs/research/R-0015-native-presentation.md",
+   "tasks/M1-03.md"
+  ]
+ },
+ {
+  "address": "$82:B1A3",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82B1A3",
+  "source_records": [
+   "docs/research/R-0015-native-presentation.md",
+   "tasks/M1-03.md"
+  ]
+ },
+ {
+  "address": "$82:B1DB",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_82B1DB",
+  "source_records": [
+   "docs/content/dragster-segment.md",
+   "docs/research/R-0008-track-decode.md"
+  ]
+ },
+ {
+  "address": "$82:B1E0",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82B1E0",
+  "source_records": [
+   "docs/research/R-0015-native-presentation.md",
+   "tasks/M1-03.md"
+  ]
+ },
+ {
+  "address": "$82:B1F8",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82B1F8",
+  "source_records": [
+   "tasks/M1-03.md"
+  ]
+ },
+ {
+  "address": "$82:B1FF",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82B1FF",
+  "source_records": [
+   "tasks/M1-03.md"
+  ]
+ },
+ {
+  "address": "$82:B296",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_82B296",
+  "source_records": [
+   "docs/content/dragster-segment.md",
+   "docs/research/R-0008-track-decode.md",
+   "docs/research/R-0015-native-presentation.md",
+   "docs/research/R-0019-dragster-loser-result.md",
+   "tasks/M1-03.md",
+   "tasks/M3-02.md"
+  ]
+ },
+ {
+  "address": "$82:B2DD",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_82B2DD",
+  "source_records": [
+   "docs/content/dragster-segment.md",
+   "docs/research/R-0008-track-decode.md",
+   "docs/research/R-0020-zoom-zoo-reference.md"
+  ]
+ },
+ {
+  "address": "$82:B323",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82B323",
+  "source_records": [
+   "docs/content/dragster-segment.md",
+   "docs/research/R-0008-track-decode.md"
+  ]
+ },
+ {
+  "address": "$82:B332",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_82B332",
+  "source_records": [
+   "docs/content/dragster-segment.md",
+   "docs/research/R-0008-track-decode.md",
+   "tasks/M1-03.md"
+  ]
+ },
+ {
+  "address": "$82:B7DD",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_82B7DD",
+  "source_records": [
+   "docs/content/dragster-segment.md",
+   "docs/research/R-0008-track-decode.md",
+   "docs/research/R-0021-zoom-zoo-content-contract.md",
+   "tasks/M1-03.md",
+   "tasks/M4-03.md"
+  ]
+ },
+ {
+  "address": "$82:B8AA",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_82B8AA",
+  "source_records": [
+   "docs/research/R-0036-zoom-zoo-rider-objects.md"
+  ]
+ },
+ {
+  "address": "$82:B907",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82B907",
+  "source_records": [
+   "docs/content/dragster-segment.md",
+   "docs/research/R-0008-track-decode.md",
+   "tasks/M1-03.md"
+  ]
+ },
+ {
+  "address": "$82:BDC0",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82BDC0",
+  "source_records": [
+   "docs/content/dragster-segment.md",
+   "docs/research/R-0008-track-decode.md",
+   "tasks/M1-03.md"
+  ]
+ },
+ {
+  "address": "$82:D195",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_82D195",
+  "source_records": [
+   "docs/research/R-0036-zoom-zoo-rider-objects.md"
+  ]
+ },
+ {
+  "address": "$82:D37A",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82D37A",
+  "source_records": [
+   "docs/research/R-0008-track-decode.md"
+  ]
+ },
+ {
+  "address": "$82:D37E",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_82D37E",
+  "source_records": [
+   "tasks/DRAGSTER-PALETTE-CYCLE-review.md"
+  ]
+ },
+ {
+  "address": "$82:D382",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_82D382",
+  "source_records": [
+   "docs/research/R-0035-zoom-zoo-playable-recovery.md",
+   "docs/research/R-0037-dragster-race-palette-cycle.md",
+   "tasks/CLASSIC-PRESENTATION-UNIFICATION-review.md",
+   "tasks/DRAGSTER-PALETTE-CYCLE-review.md",
+   "tasks/DRAGSTER-PALETTE-CYCLE.md",
+   "tasks/M4-16-review.md",
+   "tasks/M4-16.md"
+  ]
+ },
+ {
+  "address": "$82:D384",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82D384",
+  "source_records": [
+   "docs/research/R-0037-dragster-race-palette-cycle.md"
+  ]
+ },
+ {
+  "address": "$82:D38E",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82D38E",
+  "source_records": [
+   "docs/content/dragster-segment.md",
+   "tasks/M1-03.md"
+  ]
+ },
+ {
+  "address": "$82:D398",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82D398",
+  "source_records": [
+   "tasks/DRAGSTER-PALETTE-CYCLE-review.md"
+  ]
+ },
+ {
+  "address": "$82:D48A",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82D48A",
+  "source_records": [
+   "docs/content/dragster-segment.md",
+   "tasks/M1-03.md"
+  ]
+ },
+ {
+  "address": "$82:D48D",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82D48D",
+  "source_records": [
+   "docs/research/R-0035-zoom-zoo-playable-recovery.md"
+  ]
+ },
+ {
+  "address": "$82:D493",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82D493",
+  "source_records": [
+   "docs/research/R-0037-dragster-race-palette-cycle.md"
+  ]
+ },
+ {
+  "address": "$82:D496",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_82D496",
+  "source_records": [
+   "docs/research/R-0035-zoom-zoo-playable-recovery.md",
+   "docs/research/R-0037-dragster-race-palette-cycle.md",
+   "tasks/DRAGSTER-PALETTE-CYCLE-review.md",
+   "tasks/M4-16.md"
+  ]
+ },
+ {
+  "address": "$82:D4B8",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82D4B8",
+  "source_records": [
+   "docs/research/R-0008-track-decode.md",
+   "tasks/M1-03.md"
+  ]
+ },
+ {
+  "address": "$82:D4C7",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82D4C7",
+  "source_records": [
+   "docs/research/R-0008-track-decode.md"
+  ]
+ },
+ {
+  "address": "$82:D4D0",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82D4D0",
+  "source_records": [
+   "docs/research/R-0008-track-decode.md"
+  ]
+ },
+ {
+  "address": "$82:D56B",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82D56B",
+  "source_records": [
+   "tasks/DRAGSTER-WINDOW-EFFECTS-review.md"
+  ]
+ },
+ {
+  "address": "$82:D570",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82D570",
+  "source_records": [
+   "tasks/DRAGSTER-WINDOW-EFFECTS-review.md"
+  ]
+ },
+ {
+  "address": "$82:D572",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82D572",
+  "source_records": [
+   "docs/research/R-0015-native-presentation.md",
+   "docs/research/R-0040-dragster-window-effects.md",
+   "tasks/DRAGSTER-WINDOW-EFFECTS-review.md",
+   "tasks/M3-02.md"
+  ]
+ },
+ {
+  "address": "$82:D7F5",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82D7F5",
+  "source_records": [
+   "docs/research/R-0037-dragster-race-palette-cycle.md"
+  ]
+ },
+ {
+  "address": "$82:D841",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82D841",
+  "source_records": [
+   "docs/research/R-0040-dragster-window-effects.md",
+   "tasks/DRAGSTER-WINDOW-EFFECTS-review.md"
+  ]
+ },
+ {
+  "address": "$82:D861",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82D861",
+  "source_records": [
+   "docs/research/R-0037-dragster-race-palette-cycle.md"
+  ]
+ },
+ {
+  "address": "$82:DB96",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82DB96",
+  "source_records": [
+   "docs/research/R-0038-dragster-ordinary-controls.md",
+   "tasks/DRAGSTER-ORDINARY-CONTROLS-review.md"
+  ]
+ },
+ {
+  "address": "$82:DBF6",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82DBF6",
+  "source_records": [
+   "docs/research/R-0042-stunt-name-captions.md",
+   "tasks/CLASSIC-STUNT-NAMES-review.md"
+  ]
+ },
+ {
+  "address": "$82:DC0A",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82DC0A",
+  "source_records": [
+   "docs/research/R-0037-dragster-race-palette-cycle.md"
+  ]
+ },
+ {
+  "address": "$82:E12B",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_82E12B",
+  "source_records": [
+   "docs/content/dragster-segment.md",
+   "docs/research/R-0008-track-decode.md",
+   "docs/research/R-0020-zoom-zoo-reference.md",
+   "tasks/M1-03.md"
+  ]
+ },
+ {
+  "address": "$82:E1A1",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82E1A1",
+  "source_records": [
+   "docs/research/R-0021-zoom-zoo-content-contract.md"
+  ]
+ },
+ {
+  "address": "$82:E1A7",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82E1A7",
+  "source_records": [
+   "docs/research/R-0008-track-decode.md",
+   "docs/research/R-0021-zoom-zoo-content-contract.md",
+   "tasks/M1-03.md",
+   "tasks/M4-03.md"
+  ]
+ },
+ {
+  "address": "$82:E1AD",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82E1AD",
+  "source_records": [
+   "docs/research/R-0021-zoom-zoo-content-contract.md"
+  ]
+ },
+ {
+  "address": "$82:E2CD",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82E2CD",
+  "source_records": [
+   "docs/content/dragster-segment.md",
+   "tasks/M4-03.md"
+  ]
+ },
+ {
+  "address": "$82:E30C",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82E30C",
+  "source_records": [
+   "docs/content/dragster-segment.md"
+  ]
+ },
+ {
+  "address": "$82:E30E",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82E30E",
+  "source_records": [
+   "docs/content/dragster-segment.md"
+  ]
+ },
+ {
+  "address": "$82:E346",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82E346",
+  "source_records": [
+   "docs/content/dragster-segment.md",
+   "tasks/M4-03.md"
+  ]
+ },
+ {
+  "address": "$83:8535",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_838535",
+  "source_records": [
+   "docs/research/R-0045-static-code-map.md",
+   "tasks/STATIC-CODE-MAP.md"
+  ]
+ },
+ {
+  "address": "$83:8B7D",
+  "class": "observed",
+  "comment": "inside the instruction at $83:8B7C",
+  "label": "mid_838B7D",
+  "source_records": [
+   "docs/research/R-0015-native-presentation.md"
+  ]
+ },
+ {
+  "address": "$83:8B85",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_838B85",
+  "source_records": [
+   "docs/research/R-0015-native-presentation.md",
+   "tasks/M3-02.md"
+  ]
+ },
+ {
+  "address": "$83:904A",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_83904A",
+  "source_records": [
+   "docs/research/R-0038-dragster-ordinary-controls.md"
+  ]
+ },
+ {
+  "address": "$83:96FB",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_8396FB",
+  "source_records": [
+   "docs/research/R-0006-observed-code-map.md"
+  ]
+ },
+ {
+  "address": "$83:A1DA",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_83A1DA",
+  "source_records": [
+   "docs/research/R-0008-track-decode.md"
+  ]
+ },
+ {
+  "address": "$83:CC05",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83CC05",
+  "source_records": [
+   "docs/research/R-0040-dragster-window-effects.md",
+   "tasks/ZOOM-ZOO-WINDOW-EFFECTS-review.md",
+   "tasks/ZOOM-ZOO-WINDOW-EFFECTS.md"
+  ]
+ },
+ {
+  "address": "$83:CC08",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83CC08",
+  "source_records": [
+   "docs/research/R-0040-dragster-window-effects.md",
+   "tasks/ZOOM-ZOO-WINDOW-EFFECTS-review.md",
+   "tasks/ZOOM-ZOO-WINDOW-EFFECTS.md"
+  ]
+ },
+ {
+  "address": "$83:CC20",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_83CC20",
+  "source_records": [
+   "tasks/ZOOM-ZOO-WINDOW-EFFECTS-review.md"
+  ]
+ },
+ {
+  "address": "$83:CC59",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83CC59",
+  "source_records": [
+   "docs/research/R-0038-dragster-ordinary-controls.md",
+   "tasks/DRAGSTER-ORDINARY-CONTROLS-review.md"
+  ]
+ },
+ {
+  "address": "$83:CCB8",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83CCB8",
+  "source_records": [
+   "docs/research/R-0010-native-movement.md",
+   "docs/research/R-0011-motion.md"
+  ]
+ },
+ {
+  "address": "$83:CCC1",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83CCC1",
+  "source_records": [
+   "tasks/M4-16-review.md"
+  ]
+ },
+ {
+  "address": "$83:CCDE",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83CCDE",
+  "source_records": [
+   "docs/research/R-0011-speed.md"
+  ]
+ },
+ {
+  "address": "$83:CCE7",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83CCE7",
+  "source_records": [
+   "docs/research/R-0011-speed.md",
+   "tasks/DRAGSTER-WINDOW-EFFECTS-review.md"
+  ]
+ },
+ {
+  "address": "$83:CCED",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83CCED",
+  "source_records": [
+   "docs/research/R-0011-contact.md",
+   "docs/research/R-0040-dragster-window-effects.md",
+   "tasks/DRAGSTER-WINDOW-EFFECTS-review.md",
+   "tasks/DRAGSTER-WINDOW-EFFECTS.md"
+  ]
+ },
+ {
+  "address": "$83:CD05",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83CD05",
+  "source_records": [
+   "docs/research/R-0040-dragster-window-effects.md",
+   "tasks/ZOOM-ZOO-WINDOW-EFFECTS.md"
+  ]
+ },
+ {
+  "address": "$83:CD66",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83CD66",
+  "source_records": [
+   "docs/research/R-0040-dragster-window-effects.md",
+   "tasks/DRAGSTER-WINDOW-EFFECTS-review.md"
+  ]
+ },
+ {
+  "address": "$83:CD6B",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83CD6B",
+  "source_records": [
+   "docs/research/R-0040-dragster-window-effects.md",
+   "tasks/DRAGSTER-WINDOW-EFFECTS-review.md"
+  ]
+ },
+ {
+  "address": "$83:CD8B",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83CD8B",
+  "source_records": [
+   "docs/research/R-0011-motion.md"
+  ]
+ },
+ {
+  "address": "$83:CD8E",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83CD8E",
+  "source_records": [
+   "docs/research/R-0022-zoom-zoo-riding-reference.md"
+  ]
+ },
+ {
+  "address": "$83:CD94",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83CD94",
+  "source_records": [
+   "docs/research/R-0017-opponent-first-audit.md"
+  ]
+ },
+ {
+  "address": "$83:CDA6",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83CDA6",
+  "source_records": [
+   "docs/research/R-0036-zoom-zoo-rider-objects.md"
+  ]
+ },
+ {
+  "address": "$83:E082",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_83E082",
+  "source_records": [
+   "docs/research/R-0030-zoom-zoo-native-trial.md"
+  ]
+ },
+ {
+  "address": "$83:E114",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83E114",
+  "source_records": [
+   "docs/research/R-0011-motion.md"
+  ]
+ },
+ {
+  "address": "$83:E122",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83E122",
+  "source_records": [
+   "docs/research/R-0010-native-movement.md",
+   "tasks/M2-01A.md"
+  ]
+ },
+ {
+  "address": "$83:E21F",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83E21F",
+  "source_records": [
+   "docs/research/R-0010-native-movement.md",
+   "tasks/M2-01A.md"
+  ]
+ },
+ {
+  "address": "$83:E228",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83E228",
+  "source_records": [
+   "tasks/M4-11-review.md"
+  ]
+ },
+ {
+  "address": "$83:E55C",
+  "class": "data",
+  "comment": "data",
+  "label": "dat_83E55C",
+  "source_records": [
+   "docs/research/R-0040-dragster-window-effects.md",
+   "tasks/DRAGSTER-WINDOW-EFFECTS-review.md",
+   "tasks/DRAGSTER-WINDOW-EFFECTS.md"
+  ]
+ },
+ {
+  "address": "$83:E59C",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_83E59C",
+  "source_records": [
+   "docs/research/R-0040-dragster-window-effects.md",
+   "tasks/CLASSIC-PRESENTATION-UNIFICATION-review.md",
+   "tasks/DRAGSTER-WINDOW-EFFECTS-review.md",
+   "tasks/ZOOM-ZOO-WINDOW-EFFECTS.md"
+  ]
+ },
+ {
+  "address": "$83:E59E",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83E59E",
+  "source_records": [
+   "docs/research/R-0040-dragster-window-effects.md",
+   "tasks/DRAGSTER-WINDOW-EFFECTS-review.md"
+  ]
+ },
+ {
+  "address": "$83:E5AC",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83E5AC",
+  "source_records": [
+   "docs/research/R-0040-dragster-window-effects.md"
+  ]
+ },
+ {
+  "address": "$83:E5D8",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83E5D8",
+  "source_records": [
+   "docs/research/R-0038-dragster-ordinary-controls.md"
+  ]
+ },
+ {
+  "address": "$83:E5FE",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83E5FE",
+  "source_records": [
+   "docs/research/R-0040-dragster-window-effects.md"
+  ]
+ },
+ {
+  "address": "$83:E60D",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83E60D",
+  "source_records": [
+   "docs/research/R-0040-dragster-window-effects.md"
+  ]
+ },
+ {
+  "address": "$83:E60F",
+  "class": "observed",
+  "comment": "inside the instruction at $83:E60D",
+  "label": "mid_83E60F",
+  "source_records": [
+   "tasks/ZOOM-ZOO-WINDOW-EFFECTS-review.md"
+  ]
+ },
+ {
+  "address": "$83:E611",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83E611",
+  "source_records": [
+   "docs/research/R-0040-dragster-window-effects.md"
+  ]
+ },
+ {
+  "address": "$83:E612",
+  "class": "observed",
+  "comment": "inside the instruction at $83:E611",
+  "label": "mid_83E612",
+  "source_records": [
+   "tasks/ZOOM-ZOO-WINDOW-EFFECTS-review.md"
+  ]
+ },
+ {
+  "address": "$83:E616",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83E616",
+  "source_records": [
+   "tasks/ZOOM-ZOO-WINDOW-EFFECTS-review.md"
+  ]
+ },
+ {
+  "address": "$83:E61B",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83E61B",
+  "source_records": [
+   "tasks/ZOOM-ZOO-WINDOW-EFFECTS-review.md"
+  ]
+ },
+ {
+  "address": "$83:E61E",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83E61E",
+  "source_records": [
+   "tasks/ZOOM-ZOO-WINDOW-EFFECTS-review.md"
+  ]
+ },
+ {
+  "address": "$83:E650",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83E650",
+  "source_records": [
+   "docs/research/R-0040-dragster-window-effects.md"
+  ]
+ },
+ {
+  "address": "$83:E65F",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83E65F",
+  "source_records": [
+   "docs/research/R-0040-dragster-window-effects.md"
+  ]
+ },
+ {
+  "address": "$83:E661",
+  "class": "observed",
+  "comment": "inside the instruction at $83:E65F",
+  "label": "mid_83E661",
+  "source_records": [
+   "tasks/ZOOM-ZOO-WINDOW-EFFECTS-review.md"
+  ]
+ },
+ {
+  "address": "$83:E6A2",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83E6A2",
+  "source_records": [
+   "docs/research/R-0040-dragster-window-effects.md"
+  ]
+ },
+ {
+  "address": "$83:E6C1",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83E6C1",
+  "source_records": [
+   "docs/research/R-0040-dragster-window-effects.md"
+  ]
+ },
+ {
+  "address": "$83:E6C3",
+  "class": "observed",
+  "comment": "inside the instruction at $83:E6C1",
+  "label": "mid_83E6C3",
+  "source_records": [
+   "tasks/ZOOM-ZOO-WINDOW-EFFECTS-review.md"
+  ]
+ },
+ {
+  "address": "$83:E6ED",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83E6ED",
+  "source_records": [
+   "docs/research/R-0011-motion.md"
+  ]
+ },
+ {
+  "address": "$83:E728",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83E728",
+  "source_records": [
+   "docs/research/R-0040-dragster-window-effects.md",
+   "tasks/CLASSIC-PRESENTATION-UNIFICATION-review.md"
+  ]
+ },
+ {
+  "address": "$83:E759",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83E759",
+  "source_records": [
+   "docs/research/R-0040-dragster-window-effects.md"
+  ]
+ },
+ {
+  "address": "$83:E761",
+  "class": "observed",
+  "comment": "inside the instruction at $83:E75F",
+  "label": "mid_83E761",
+  "source_records": [
+   "tasks/ZOOM-ZOO-WINDOW-EFFECTS-review.md"
+  ]
+ },
+ {
+  "address": "$83:E789",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83E789",
+  "source_records": [
+   "docs/research/R-0040-dragster-window-effects.md"
+  ]
+ },
+ {
+  "address": "$83:E78C",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_83E78C",
+  "source_records": [
+   "docs/research/R-0040-dragster-window-effects.md"
+  ]
+ },
+ {
+  "address": "$83:E794",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83E794",
+  "source_records": [
+   "docs/research/R-0007-player-state.md"
+  ]
+ },
+ {
+  "address": "$83:E7A2",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83E7A2",
+  "source_records": [
+   "docs/research/R-0038-dragster-ordinary-controls.md",
+   "tasks/DRAGSTER-ORDINARY-CONTROLS-review.md",
+   "tasks/DRAGSTER-ORDINARY-CONTROLS.md"
+  ]
+ },
+ {
+  "address": "$83:E808",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83E808",
+  "source_records": [
+   "docs/research/R-0038-dragster-ordinary-controls.md"
+  ]
+ },
+ {
+  "address": "$83:E81D",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83E81D",
+  "source_records": [
+   "docs/research/R-0012-complete-race-evidence.md",
+   "docs/research/R-0013-native-finish-reference-freeze.md",
+   "tasks/M3-00.md"
+  ]
+ },
+ {
+  "address": "$83:E8F8",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83E8F8",
+  "source_records": [
+   "docs/research/R-0012-complete-race-evidence.md",
+   "tasks/M3-00.md"
+  ]
+ },
+ {
+  "address": "$83:E908",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83E908",
+  "source_records": [
+   "docs/research/R-0012-complete-race-evidence.md",
+   "tasks/M3-00.md"
+  ]
+ },
+ {
+  "address": "$83:E90D",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83E90D",
+  "source_records": [
+   "docs/research/R-0013-native-finish-reference-freeze.md",
+   "tasks/M3-01-review.md",
+   "tasks/M3-01.md"
+  ]
+ },
+ {
+  "address": "$83:E91A",
+  "class": "observed",
+  "comment": "inside the instruction at $83:E918",
+  "label": "mid_83E91A",
+  "source_records": [
+   "tasks/M3-01-review.md"
+  ]
+ },
+ {
+  "address": "$83:E932",
+  "class": "observed",
+  "comment": "inside the instruction at $83:E931",
+  "label": "mid_83E932",
+  "source_records": [
+   "docs/research/R-0013-native-finish-reference-freeze.md",
+   "tasks/M3-01-review.md",
+   "tasks/M3-01.md"
+  ]
+ },
+ {
+  "address": "$83:EA19",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83EA19",
+  "source_records": [
+   "docs/research/R-0040-dragster-window-effects.md",
+   "tasks/DRAGSTER-WINDOW-EFFECTS-review.md",
+   "tasks/ZOOM-ZOO-WINDOW-EFFECTS.md"
+  ]
+ },
+ {
+  "address": "$83:EA42",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83EA42",
+  "source_records": [
+   "docs/research/R-0040-dragster-window-effects.md"
+  ]
+ },
+ {
+  "address": "$83:EA58",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83EA58",
+  "source_records": [
+   "tasks/DRAGSTER-WINDOW-EFFECTS-review.md"
+  ]
+ },
+ {
+  "address": "$83:EA5B",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83EA5B",
+  "source_records": [
+   "docs/research/R-0040-dragster-window-effects.md"
+  ]
+ },
+ {
+  "address": "$83:EA5D",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_83EA5D",
+  "source_records": [
+   "docs/research/R-0040-dragster-window-effects.md"
+  ]
+ },
+ {
+  "address": "$83:EA72",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_83EA72",
+  "source_records": [
+   "docs/research/R-0017-m3-acceptance.md",
+   "docs/research/R-0017-opponent-first-audit.md",
+   "tasks/M3-04.md"
+  ]
+ },
+ {
+  "address": "$83:EA8A",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83EA8A",
+  "source_records": [
+   "docs/research/R-0017-opponent-first-audit.md"
+  ]
+ },
+ {
+  "address": "$83:EA8F",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83EA8F",
+  "source_records": [
+   "docs/research/R-0017-opponent-first-audit.md"
+  ]
+ },
+ {
+  "address": "$83:EA9A",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83EA9A",
+  "source_records": [
+   "docs/research/R-0017-opponent-first-audit.md"
+  ]
+ },
+ {
+  "address": "$83:EA9F",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83EA9F",
+  "source_records": [
+   "docs/research/R-0017-opponent-first-audit.md"
+  ]
+ },
+ {
+  "address": "$83:EAAA",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83EAAA",
+  "source_records": [
+   "docs/research/R-0017-opponent-first-audit.md"
+  ]
+ },
+ {
+  "address": "$83:EAC3",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83EAC3",
+  "source_records": [
+   "docs/research/R-0017-m3-acceptance.md",
+   "tasks/M3-04.md"
+  ]
+ },
+ {
+  "address": "$83:EBA3",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_83EBA3",
+  "source_records": [
+   "docs/research/R-0017-opponent-first-audit.md"
+  ]
+ },
+ {
+  "address": "$83:EBB0",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_83EBB0",
+  "source_records": [
+   "docs/research/R-0040-dragster-window-effects.md",
+   "tasks/DRAGSTER-WINDOW-EFFECTS-review.md"
+  ]
+ },
+ {
+  "address": "$83:EBCB",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_83EBCB",
+  "source_records": [
+   "docs/research/R-0017-opponent-first-audit.md",
+   "docs/research/R-0040-dragster-window-effects.md"
+  ]
+ },
+ {
+  "address": "$83:EC13",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_83EC13",
+  "source_records": [
+   "docs/research/R-0040-dragster-window-effects.md"
+  ]
+ },
+ {
+  "address": "$83:EC2E",
+  "class": "data",
+  "comment": "data",
+  "label": "dat_83EC2E",
+  "source_records": [
+   "docs/research/R-0036-zoom-zoo-rider-objects.md"
+  ]
+ },
+ {
+  "address": "$83:EC8E",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_83EC8E",
+  "source_records": [
+   "docs/research/R-0036-zoom-zoo-rider-objects.md",
+   "tasks/M4-16.md"
+  ]
+ },
+ {
+  "address": "$83:ED76",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83ED76",
+  "source_records": [
+   "docs/research/R-0036-zoom-zoo-rider-objects.md"
+  ]
+ },
+ {
+  "address": "$83:ED77",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_83ED77",
+  "source_records": [
+   "docs/research/R-0011-motion.md"
+  ]
+ },
+ {
+  "address": "$83:ED7B",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_83ED7B",
+  "source_records": [
+   "docs/research/R-0010-native-movement.md",
+   "docs/research/R-0011-motion.md"
+  ]
+ },
+ {
+  "address": "$83:EE43",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83EE43",
+  "source_records": [
+   "docs/research/R-0011-motion.md"
+  ]
+ },
+ {
+  "address": "$83:EED2",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83EED2",
+  "source_records": [
+   "docs/research/R-0032-player-landing-recovery.md"
+  ]
+ },
+ {
+  "address": "$83:EF54",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_83EF54",
+  "source_records": [
+   "docs/inventory/M4-10-response-b.md",
+   "docs/research/R-0010-native-movement.md",
+   "docs/research/R-0011-motion.md"
+  ]
+ },
+ {
+  "address": "$83:EF67",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83EF67",
+  "source_records": [
+   "docs/research/R-0033-sustained-traversal.md"
+  ]
+ },
+ {
+  "address": "$83:F00D",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83F00D",
+  "source_records": [
+   "docs/research/R-0028-zoom-zoo-response-b.md",
+   "docs/research/R-0029-zoom-zoo-vertical-velocity.md",
+   "tasks/M4-10-review.md",
+   "tasks/M4-11-rereview.md",
+   "tasks/M4-11-review.md",
+   "tasks/M4-11.md"
+  ]
+ },
+ {
+  "address": "$83:F02D",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83F02D",
+  "source_records": [
+   "docs/research/R-0038-dragster-ordinary-controls.md",
+   "tasks/DRAGSTER-ORDINARY-CONTROLS-review.md",
+   "tasks/DRAGSTER-ORDINARY-CONTROLS.md"
+  ]
+ },
+ {
+  "address": "$83:F09E",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_83F09E",
+  "source_records": [
+   "docs/research/R-0011-motion.md"
+  ]
+ },
+ {
+  "address": "$83:F0F7",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83F0F7",
+  "source_records": [
+   "docs/research/R-0011-motion.md"
+  ]
+ },
+ {
+  "address": "$83:F0FB",
+  "class": "inferred",
+  "comment": "routine start",
+  "label": "sub_83F0FB",
+  "source_records": [
+   "docs/research/R-0036-zoom-zoo-rider-objects.md"
+  ]
+ },
+ {
+  "address": "$83:F0FF",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_83F0FF",
+  "source_records": [
+   "docs/research/R-0036-zoom-zoo-rider-objects.md",
+   "tasks/M4-16-review.md",
+   "tasks/M4-16.md"
+  ]
+ },
+ {
+  "address": "$83:F1F2",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_83F1F2",
+  "source_records": [
+   "docs/research/R-0036-zoom-zoo-rider-objects.md"
+  ]
+ },
+ {
+  "address": "$83:F237",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83F237",
+  "source_records": [
+   "docs/research/R-0007-player-state.md",
+   "tasks/M4-16-review.md"
+  ]
+ },
+ {
+  "address": "$83:F239",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83F239",
+  "source_records": [
+   "docs/research/R-0007-player-state.md"
+  ]
+ },
+ {
+  "address": "$83:F23B",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83F23B",
+  "source_records": [
+   "docs/research/R-0007-player-state.md"
+  ]
+ },
+ {
+  "address": "$83:F24D",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83F24D",
+  "source_records": [
+   "docs/research/R-0007-player-state.md",
+   "tasks/M1-02.md"
+  ]
+ },
+ {
+  "address": "$83:F253",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83F253",
+  "source_records": [
+   "docs/research/R-0036-zoom-zoo-rider-objects.md",
+   "tasks/M4-16-review.md"
+  ]
+ },
+ {
+  "address": "$83:F26B",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83F26B",
+  "source_records": [
+   "docs/research/R-0036-zoom-zoo-rider-objects.md"
+  ]
+ },
+ {
+  "address": "$83:F27E",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83F27E",
+  "source_records": [
+   "docs/research/M4-16-persistent-input-ledger.md",
+   "docs/research/R-0007-player-state.md",
+   "tasks/M1-02.md"
+  ]
+ },
+ {
+  "address": "$83:F286",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83F286",
+  "source_records": [
+   "docs/research/M4-16-persistent-input-ledger.md",
+   "docs/research/R-0007-player-state.md",
+   "tasks/M1-02.md"
+  ]
+ },
+ {
+  "address": "$83:F29C",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83F29C",
+  "source_records": [
+   "tasks/M4-16-review.md"
+  ]
+ },
+ {
+  "address": "$83:F2C3",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83F2C3",
+  "source_records": [
+   "docs/research/R-0036-zoom-zoo-rider-objects.md"
+  ]
+ },
+ {
+  "address": "$83:F2D9",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83F2D9",
+  "source_records": [
+   "docs/research/R-0036-zoom-zoo-rider-objects.md"
+  ]
+ },
+ {
+  "address": "$83:F2DA",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_83F2DA",
+  "source_records": [
+   "docs/research/R-0036-zoom-zoo-rider-objects.md"
+  ]
+ },
+ {
+  "address": "$83:F2F1",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83F2F1",
+  "source_records": [
+   "docs/research/R-0008-track-decode.md"
+  ]
+ },
+ {
+  "address": "$83:F2FB",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83F2FB",
+  "source_records": [
+   "docs/research/R-0008-track-decode.md"
+  ]
+ },
+ {
+  "address": "$83:F2FF",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_83F2FF",
+  "source_records": [
+   "docs/research/R-0036-zoom-zoo-rider-objects.md",
+   "tasks/M4-16-review.md"
+  ]
+ },
+ {
+  "address": "$83:F311",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_83F311",
+  "source_records": [
+   "docs/research/R-0036-zoom-zoo-rider-objects.md"
+  ]
+ },
+ {
+  "address": "$83:F3E9",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83F3E9",
+  "source_records": [
+   "docs/research/R-0036-zoom-zoo-rider-objects.md"
+  ]
+ },
+ {
+  "address": "$83:F3F8",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83F3F8",
+  "source_records": [
+   "docs/research/R-0036-zoom-zoo-rider-objects.md"
+  ]
+ },
+ {
+  "address": "$83:F40C",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83F40C",
+  "source_records": [
+   "tasks/M4-16-review.md"
+  ]
+ },
+ {
+  "address": "$83:F412",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83F412",
+  "source_records": [
+   "docs/research/R-0036-zoom-zoo-rider-objects.md"
+  ]
+ }
+]

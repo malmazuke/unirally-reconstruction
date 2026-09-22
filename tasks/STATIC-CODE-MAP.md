@@ -2,21 +2,24 @@
 
 ## Assignment
 
-- Status: ready (prepared 22 September 2026 UTC under [D-0008](../docs/decisions/D-0008-static-map-track-breadth-review-tiers.md);
-  claim after the weekly reset on 2026-09-24T08:00Z or on an explicit user override)
+- Status: implemented, in review (claimed 22 September 2026 23:41Z on the user's explicit
+  override of the reset boundary: "keep going until either the task is complete, or the limit
+  is reached"; prepared under [D-0008](../docs/decisions/D-0008-static-map-track-breadth-review-tiers.md))
 - Milestone: M1 extension that enables M4 breadth; not an M4 acceptance gate
 - Coordinator: the preparing session (Claude Fable 5.1, Claude Code desktop, 22 September
   2026 UTC); the claiming session is coordinator, primary and integrator once it claims this record
 - Task provider (fixed for all children; record any user-initiated platform change): Anthropic
-- Worker/session/runtime/model: to be recorded at claim
+- Worker/session/runtime/model: Claude Opus 5.5 (`claude-opus-5-5`), Claude Code desktop, one
+  session as coordinator, primary and integrator; the review subagent is recorded below
 - Actual model/reasoning effort, routing rationale and frontier escalation question (if any):
   the claiming session's model at default effort. Review tier under D-0008: **tier 2**
   (tooling). No frontier escalation question is open.
 - Provider quota window/baseline timestamp, used/remaining or unknown, reserve and session
   allowance (D-0004): at preparation, weekly all-models **84%** at 2026-09-22T11:20Z (five-hour
   38%, per-model Fable 56%; weekly resets 2026-09-24T08:00Z). Above the 80% floor, which is
-  why this is prepared and not started. Sample fresh usage at claim and record it here; the
-  discretionary allowance is 20 points from that baseline and the floor is 80%.
+  why this is prepared and not started. **At claim: weekly all-models 89% (2026-09-22T23:40Z;
+  five-hour 0%, Fable 65%), already above the 80% floor; the user lifted the boundary for this
+  task until it completes or the weekly limit is reached.** Mid-implementation sample: 89%.
 - Reviewer (primary automatically spawns fresh model/effort, isolated checkout; no user
   trigger): one round by a fresh Anthropic subagent in a separate checkout at the candidate,
   against the reviewer checklist; it must regenerate the listing from its own ROM path and
@@ -113,20 +116,49 @@ targets for dynamic capture.
 | Attempt | Hypothesis | Experiment | Observation | Next decision |
 | --- | --- | --- | --- | --- |
 | 0 (preparation, 22 September 2026) | The code lives in the first four banks | Per-bank entropy and JSR/RTS/JSL/RTL byte density over the ROM | `$80`-`$83` profile as code (26-80 such bytes per KiB); every other bank profiles as data, including `$97`, whose apparent density is the space character in text tables | Scope the map to `$80`-`$83` |
+| 1 | Tracked ranges plus REP/SEP propagation fix the observed boundaries | Tile each range with its instruction count; check against the four raw captures (`check_sites`) | 50 of 2,020 ranges ambiguous or untileable; about 800 sites per race capture undecoded; one wrong length at `$81:9FCA` from a unique but propagated tiling | Tile without propagation, keep only shared instructions (R-0045 obs. 3) |
+| 2 | Shared tilings suffice | Same check | 0 wrong lengths, but 462 ranges have several tilings and 6,179 instructions stay unresolved (2,051 undecoded sites on the ZOOM ZOO capture) | Take observed boundaries from the raw sites behind the maps (digest-matched); keep the tiling as the cross-check (R-0045 obs. 2) |
+| 3 | Descent plus a plausibility gap sweep | Listing inspection | 0 disagreements over 53,062 sites; but the gap sweep and descent from it decode tables as code (`$80:8000` bit table, `$83:8535` pointer table) | Transactional descent that rejects a whole routine on an implausible instruction; gap-sweep results become unclassified candidates (R-0045 obs. 4) |
+| 4 | Final | `coverage disassemble` and `coverage static-map`, twice each | observed 41,778, inferred 35,134, data 61, unknown 54,099 (41.3%); 0 disagreements; byte-identical regenerations | D-0008 trigger met (unknown above a quarter): recorded, no more heuristics; review |
 
 ## Handoff
 
-- Current base/head commit and uncommitted state: not claimed.
-- Verified findings: the preparation measurements in D-0008.
-- Current hypothesis and failed approaches: none yet.
-- Commands executed, outcomes and report hashes: none yet.
-- Unavailable/skipped checks: none yet.
-- Exact next experiment/command: at claim, sample usage, then implement the seed loader
-  and run descent from the observed sites alone; the first report is the agreement check,
-  which must be 0 disagreements before any inference is added.
+- Current base/head commit and uncommitted state: base `bdfd82e`; implementation on
+  `task/static-code-map` (see Review and integration for the candidate).
+- Verified findings: [R-0045](../docs/research/R-0045-static-code-map.md). Every one of the
+  53,062 recorded sites decodes at its recorded length (0 disagreements); the 42,700
+  instructions shared by every tiling of the 2,020 ranges all match sites. Classes: observed
+  41,778, inferred 35,134, data 61, unknown 54,099 (**41.3%**, above D-0008's trigger).
+  Of 643 cited addresses: 106 routine starts, 484 instruction starts, 17 inside an
+  instruction, 8 data, 28 unknown (listed in the summary).
+- Deviation from this record, with reason: observed boundaries come from the raw coverage
+  files behind the tracked maps (`--coverage`, matched by digest), because the tracked maps
+  alone leave 6,179 instructions unresolved; without them the tools fall back to shared
+  tilings (49.3% unknown) and report the per-site check as skipped. Gap-sweep decodings are
+  candidates that stay `unknown`, because the sweep accepted tables.
+- Failed approaches: REP/SEP propagation inside observed ranges (excluded the true tiling at
+  `$81:9FCA`); a classifying gap sweep (decoded pointer and bit tables as code).
+- Commands executed (raw coverage: `local/evidence/m1-01/m1-01/cap1`, `.../race-cap1`,
+  `local/evidence/m3-00-finish-evidence/m3-00-coverage/capture`,
+  `local/evidence/m4-02-second-track/m4-02/coverage/capture-1`, each `coverage.json`):
+  `coverage disassemble --out artifacts/static-map --rom <ROM> --coverage ...` twice (second
+  into a scratch directory, `cmp` identical, then deleted), and `coverage static-map` twice,
+  all `status=passed`, about 17 s each. Final tracked digests (two regenerations identical,
+  after the records were final, since `labels.json` reads the records' citations):
+  `code-banks.map.json` `bb35bb0b9a68f1b1...`, `code-banks.md` `91b237f1dc5e737a...`,
+  `labels.json` `55312c4326e596af...`. Listing digests in
+  `artifacts/static-map/listing-digests.txt`.
+  `python3 tools/project.py test --suite synthetic` (after `bootstrap` and
+  `build --preset lab-debug` in the new worktree): `status=passed`, 444 Python tooling tests
+  (433 before plus the 11 in `test_static_map.py`), 0 failed, every ctest passed.
+- Unavailable/skipped checks: none of the acceptance checks. Sanitizer presets are not part of
+  this tooling-only change.
+- Exact next experiment/command: the unknown regions are dynamic-capture targets; the
+  cheapest resolution of the largest block would be the data bank at each indexed or
+  absolute read, which the access captures already record (not used here).
 - Remaining dependencies: none.
 - Runtime needs (network, build time, fixtures, memory): the ROM and Python; no build.
-- Aggregate parent/child time, provider usage before/after (or unknown), other-account-work caveat: to be recorded.
+- Aggregate parent/child time, provider usage before/after (or unknown), other-account-work caveat: weekly all-models 89% at claim; after: recorded under Review and integration.
 - Accepted outcome, review/fix rounds and next routing decision: to be recorded.
 
 ## Review and integration

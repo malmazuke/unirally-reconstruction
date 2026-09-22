@@ -1,0 +1,12104 @@
+{
+ "banks": [
+  {
+   "bank": "$80",
+   "data": 25,
+   "inferred": 3279,
+   "observed": 8394,
+   "unknown": 21070
+  },
+  {
+   "bank": "$81",
+   "data": 4,
+   "inferred": 11513,
+   "observed": 13202,
+   "unknown": 8049
+  },
+  {
+   "bank": "$82",
+   "data": 0,
+   "inferred": 9504,
+   "observed": 13109,
+   "unknown": 10155
+  },
+  {
+   "bank": "$83",
+   "data": 32,
+   "inferred": 10838,
+   "observed": 7073,
+   "unknown": 14825
+  }
+ ],
+ "classes": {
+  "data": "named by an operand or a jump-table walk, never decoded as code",
+  "inferred": "decoded statically by descent from observed code, the vectors or a jump table",
+  "observed": "executed in a tracked map",
+  "unknown": "none of these (gap-sweep candidates stay unknown)"
+ },
+ "conflicts": [],
+ "data_references_into_code": [],
+ "inputs": {
+  "maps": [
+   {
+    "coverage_sha256": "1e6c02747d7c1003df42567e7a3e16f65c58f6ea853f59c9c7c6b6142adb8ca6",
+    "path": "docs/map/boot-start-600.map.json",
+    "scenario_id": "boot-start-600"
+   },
+   {
+    "coverage_sha256": "7654ac204a7a130f66a0dfe8228cf367dd88a35ffc7b2eec5a16ac3f3839337e",
+    "path": "docs/map/race-crawler-dragster-12000-continuous-right-fields.map.json",
+    "scenario_id": "race-crawler-dragster-12000-continuous-right-fields"
+   },
+   {
+    "coverage_sha256": "a075220e58ecd3550c7700b13ca42b7b8792e2101dfb65d61c1d90ad8bf813d1",
+    "path": "docs/map/race-crawler-dragster-3000.map.json",
+    "scenario_id": "race-crawler-dragster-3000"
+   },
+   {
+    "coverage_sha256": "476de96fa13b2cff31166037d654c5724634d280de0945ae4baf10e1d9ccd41d",
+    "path": "docs/map/race-crawler-zoom-zoo-3300.map.json",
+    "scenario_id": "race-crawler-zoom-zoo-3300"
+   }
+  ],
+  "observed_boundaries_from": "raw coverage sites",
+  "raw_coverage_sha256": [
+   "1e6c02747d7c1003df42567e7a3e16f65c58f6ea853f59c9c7c6b6142adb8ca6",
+   "476de96fa13b2cff31166037d654c5724634d280de0945ae4baf10e1d9ccd41d",
+   "7654ac204a7a130f66a0dfe8228cf367dd88a35ffc7b2eec5a16ac3f3839337e",
+   "a075220e58ecd3550c7700b13ca42b7b8792e2101dfb65d61c1d90ad8bf813d1"
+  ]
+ },
+ "jump_tables": [
+  {
+   "dispatch": "$81:82F0",
+   "entries": 0,
+   "table": "$81:82F5"
+  },
+  {
+   "dispatch": "$83:CA1E",
+   "entries": 6,
+   "table": "$83:CA21"
+  }
+ ],
+ "kind": "static_code_map",
+ "mode_ambiguities": [
+  {
+   "address": "$80:93CB",
+   "modes": [
+    "NMX",
+    "NMx",
+    "NmX",
+    "Nmx"
+   ],
+   "reason": "gap sweep: decodes differently under different modes"
+  },
+  {
+   "address": "$80:E7C4",
+   "modes": [
+    "NMX",
+    "NMx",
+    "NmX",
+    "Nmx"
+   ],
+   "reason": "gap sweep: decodes differently under different modes"
+  },
+  {
+   "address": "$82:B225",
+   "modes": [
+    "NMX",
+    "NMx",
+    "NmX",
+    "Nmx"
+   ],
+   "reason": "gap sweep: decodes differently under different modes"
+  },
+  {
+   "address": "$83:8000",
+   "modes": [
+    "NMX",
+    "NMx",
+    "NmX",
+    "Nmx"
+   ],
+   "reason": "gap sweep: decodes differently under different modes"
+  },
+  {
+   "address": "$83:96B1",
+   "modes": [
+    "NMX",
+    "NMx",
+    "NmX",
+    "Nmx"
+   ],
+   "reason": "gap sweep: decodes differently under different modes"
+  },
+  {
+   "address": "$83:9F96",
+   "modes": [
+    "NMX",
+    "NMx",
+    "NmX",
+    "Nmx"
+   ],
+   "reason": "gap sweep: decodes differently under different modes"
+  },
+  {
+   "address": "$83:EDAB",
+   "modes": [
+    "NMX",
+    "NMx"
+   ],
+   "reason": "gap sweep: decodes differently under different modes"
+  }
+ ],
+ "observed_agreement": {
+  "maps": [
+   {
+    "disagreements": 0,
+    "instructions_not_fixed_by_tiling": 320,
+    "no_tiling": 0,
+    "one_tiling": 51,
+    "ranges": 75,
+    "scenario_id": "boot-start-600",
+    "several_tilings": 24,
+    "shared_instructions_checked_against_sites": 1765
+   },
+   {
+    "disagreements": 0,
+    "instructions_not_fixed_by_tiling": 2003,
+    "no_tiling": 0,
+    "one_tiling": 525,
+    "ranges": 679,
+    "scenario_id": "race-crawler-dragster-12000-continuous-right-fields",
+    "several_tilings": 154,
+    "shared_instructions_checked_against_sites": 14113
+   },
+   {
+    "disagreements": 0,
+    "instructions_not_fixed_by_tiling": 1739,
+    "no_tiling": 0,
+    "one_tiling": 538,
+    "ranges": 675,
+    "scenario_id": "race-crawler-dragster-3000",
+    "several_tilings": 137,
+    "shared_instructions_checked_against_sites": 12988
+   },
+   {
+    "disagreements": 0,
+    "instructions_not_fixed_by_tiling": 2117,
+    "no_tiling": 0,
+    "one_tiling": 444,
+    "ranges": 591,
+    "scenario_id": "race-crawler-zoom-zoo-3300",
+    "several_tilings": 147,
+    "shared_instructions_checked_against_sites": 13834
+   }
+  ],
+  "source": "raw coverage sites"
+ },
+ "regeneration_command": "python3 tools/project.py coverage static-map --out docs/map/static/code-banks.map.json --summary docs/map/static/code-banks.md --labels docs/map/static/labels.json --coverage <each tracked map's raw coverage.json>",
+ "rom": {
+  "sha256": "a1105819d48c04d680c8292bbfa9abbce05224f1bc231afd66af43b7e0a1fd4e",
+  "size": 2097152
+ },
+ "routines": [
+  {
+   "bytes": 4,
+   "callers": [],
+   "class": "inferred",
+   "end": "$80:8582",
+   "mode_at_entry": [
+    "NMX",
+    "NMx",
+    "NmX",
+    "Nmx"
+   ],
+   "observed_entries": {},
+   "start": "$80:857F",
+   "static_entries": {},
+   "vectors": [
+    "native_brk"
+   ]
+  },
+  {
+   "bytes": 3,
+   "callers": [],
+   "class": "inferred",
+   "end": "$80:8585",
+   "mode_at_entry": [
+    "NMX",
+    "NMx",
+    "NmX",
+    "Nmx"
+   ],
+   "observed_entries": {},
+   "start": "$80:8583",
+   "static_entries": {},
+   "vectors": [
+    "emu_irq_brk",
+    "native_irq"
+   ]
+  },
+  {
+   "bytes": 20,
+   "callers": [],
+   "class": "observed",
+   "end": "$80:859A",
+   "mode_at_entry": [
+    "NMX",
+    "NmX",
+    "Nmx"
+   ],
+   "observed_entries": {},
+   "start": "$80:8587",
+   "static_entries": {},
+   "vectors": [
+    "native_nmi"
+   ]
+  },
+  {
+   "bytes": 127,
+   "callers": [
+    "$80:86F5",
+    "$80:8704"
+   ],
+   "class": "observed",
+   "end": "$80:881E",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$80:87A0",
+   "static_entries": {
+    "JMP": 2
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 57,
+   "callers": [
+    "$80:864D",
+    "$80:8658"
+   ],
+   "class": "observed",
+   "end": "$80:8857",
+   "mode_at_entry": [
+    "NmX",
+    "Nmx"
+   ],
+   "observed_entries": {},
+   "start": "$80:881F",
+   "static_entries": {
+    "JMP": 2
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 3,
+   "callers": [
+    "$83:ADFD"
+   ],
+   "class": "observed",
+   "end": "$80:885A",
+   "mode_at_entry": [
+    "Emx"
+   ],
+   "observed_entries": {},
+   "start": "$80:8858",
+   "static_entries": {
+    "JML": 1
+   },
+   "vectors": [
+    "emu_reset"
+   ]
+  },
+  {
+   "bytes": 83,
+   "callers": [
+    "$80:9311"
+   ],
+   "class": "observed",
+   "end": "$80:88AD",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$80:885B",
+   "static_entries": {
+    "JMP": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 58,
+   "callers": [
+    "$80:BC59"
+   ],
+   "class": "observed",
+   "end": "$80:8916",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$80:88DD",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 13,
+   "callers": [
+    "$80:C4DC"
+   ],
+   "class": "observed",
+   "end": "$80:8C4D",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$80:8C41",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 125,
+   "callers": [
+    "$80:8871"
+   ],
+   "class": "observed",
+   "end": "$80:8CCA",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$80:8C4E",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 11,
+   "callers": [
+    "$80:8858"
+   ],
+   "class": "observed",
+   "end": "$80:91DB",
+   "mode_at_entry": [
+    "Emx"
+   ],
+   "observed_entries": {},
+   "start": "$80:91D1",
+   "static_entries": {
+    "JMP": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 312,
+   "callers": [
+    "$80:91D8"
+   ],
+   "class": "observed",
+   "end": "$80:9313",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$80:91DC",
+   "static_entries": {
+    "JML": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 4,
+   "callers": [
+    "$83:A901",
+    "$83:AD63"
+   ],
+   "class": "inferred",
+   "end": "$80:9317",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$80:9314",
+   "static_entries": {
+    "JSL": 2
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 36,
+   "callers": [
+    "$80:9314",
+    "$80:97D9",
+    "$80:9871",
+    "$80:988F",
+    "$80:A84F",
+    "$80:A85B",
+    "$80:A86A",
+    "$80:A89B",
+    "$80:A8AB",
+    "$80:B3E5",
+    "$80:CB11",
+    "$80:CB22",
+    "$80:D1EC",
+    "$80:D372",
+    "$80:E258",
+    "$80:E335",
+    "$80:E56A",
+    "$80:E59B",
+    "$80:E87B",
+    "$80:E929",
+    "$80:EA0D",
+    "$80:EAF2",
+    "$80:F0E4",
+    "$80:F4D2",
+    "$80:F4F5",
+    "$80:F4FB"
+   ],
+   "class": "observed",
+   "end": "$80:933B",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$80:9318",
+   "static_entries": {
+    "JSR": 26
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 34,
+   "callers": [
+    "$80:B597"
+   ],
+   "class": "observed",
+   "end": "$80:935D",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$80:933C",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 29,
+   "callers": [
+    "$80:B600"
+   ],
+   "class": "inferred",
+   "end": "$80:937A",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$80:935E",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 38,
+   "callers": [
+    "$80:ACFA",
+    "$80:B429",
+    "$80:CB25",
+    "$80:E56D",
+    "$80:E92C",
+    "$80:EF78"
+   ],
+   "class": "observed",
+   "end": "$80:93A0",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$80:937B",
+   "static_entries": {
+    "JSR": 6
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 4,
+   "callers": [
+    "$83:A837",
+    "$83:AD2F"
+   ],
+   "class": "inferred",
+   "end": "$80:93A4",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$80:93A1",
+   "static_entries": {
+    "JSL": 2
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 38,
+   "callers": [
+    "$80:890A",
+    "$80:93A1",
+    "$80:9585",
+    "$80:CC17",
+    "$80:E5A2",
+    "$80:EAF9"
+   ],
+   "class": "observed",
+   "end": "$80:93CA",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$80:93A5",
+   "static_entries": {
+    "JSR": 6
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 137,
+   "callers": [
+    "$80:BC5E"
+   ],
+   "class": "observed",
+   "end": "$80:95A4",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$80:951C",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 115,
+   "callers": [
+    "$80:CB14"
+   ],
+   "class": "observed",
+   "end": "$80:961D",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$80:95AB",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 216,
+   "callers": [
+    "$80:CB5A"
+   ],
+   "class": "observed",
+   "end": "$80:96FC",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$80:9625",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 4,
+   "callers": [
+    "$83:8948",
+    "$83:99A4",
+    "$83:EE57"
+   ],
+   "class": "observed",
+   "end": "$80:9700",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$80:96FD",
+   "static_entries": {
+    "JSL": 3
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 24,
+   "callers": [
+    "$80:96FD",
+    "$80:E9AE"
+   ],
+   "class": "observed",
+   "end": "$80:9718",
+   "mode_at_entry": [
+    "NMX",
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$80:9701",
+   "static_entries": {
+    "JSR": 2
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 146,
+   "callers": [
+    "$80:E5AD"
+   ],
+   "class": "observed",
+   "end": "$80:97DC",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$80:974B",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 96,
+   "callers": [
+    "$80:BC68"
+   ],
+   "class": "inferred",
+   "end": "$80:9864",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$80:9805",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 4,
+   "callers": [
+    "$83:FB28"
+   ],
+   "class": "inferred",
+   "end": "$80:9868",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$80:9865",
+   "static_entries": {
+    "JSL": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 24,
+   "callers": [
+    "$80:887B",
+    "$80:890D",
+    "$80:9593",
+    "$80:9865",
+    "$80:B0CC",
+    "$80:F5BD"
+   ],
+   "class": "observed",
+   "end": "$80:9880",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$80:9869",
+   "static_entries": {
+    "JSR": 6
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 4,
+   "callers": [
+    "$83:FB3B"
+   ],
+   "class": "inferred",
+   "end": "$80:9884",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$80:9881",
+   "static_entries": {
+    "JSL": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 31,
+   "callers": [
+    "$80:9881",
+    "$80:B0D8",
+    "$80:BC53",
+    "$80:F614"
+   ],
+   "class": "observed",
+   "end": "$80:98A3",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$80:9885",
+   "static_entries": {
+    "JSR": 4
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 15,
+   "callers": [
+    "$80:9A43",
+    "$80:BBBB",
+    "$80:CB28",
+    "$80:F0DB"
+   ],
+   "class": "observed",
+   "end": "$80:98B2",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$80:98A4",
+   "static_entries": {
+    "JSR": 4
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 205,
+   "callers": [
+    "$80:BC61"
+   ],
+   "class": "inferred",
+   "end": "$80:997F",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$80:98B3",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 31,
+   "callers": [
+    "$80:991C",
+    "$80:9929"
+   ],
+   "class": "inferred",
+   "end": "$80:999E",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$80:9980",
+   "static_entries": {
+    "JSR": 2
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 270,
+   "callers": [
+    "$80:BC56"
+   ],
+   "class": "observed",
+   "end": "$80:9AB1",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$80:99A4",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 38,
+   "callers": [
+    "$80:B582",
+    "$80:C603"
+   ],
+   "class": "observed",
+   "end": "$80:9B54",
+   "mode_at_entry": [
+    "NMX",
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$80:9B2F",
+   "static_entries": {
+    "JSR": 2
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 36,
+   "callers": [
+    "$80:B285",
+    "$80:C658"
+   ],
+   "class": "observed",
+   "end": "$80:9B78",
+   "mode_at_entry": [
+    "NMX",
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$80:9B55",
+   "static_entries": {
+    "JSR": 2
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 36,
+   "callers": [
+    "$80:E8D1"
+   ],
+   "class": "observed",
+   "end": "$80:9BC3",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$80:9BA0",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 208,
+   "callers": [
+    "$80:885E",
+    "$80:9A37"
+   ],
+   "class": "observed",
+   "end": "$80:A169",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$80:A09A",
+   "static_entries": {
+    "JSR": 2
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 136,
+   "callers": [
+    "$80:8864",
+    "$80:D219"
+   ],
+   "class": "observed",
+   "end": "$80:A1F1",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$80:A16A",
+   "static_entries": {
+    "JSR": 2
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 38,
+   "callers": [
+    "$80:CC14"
+   ],
+   "class": "observed",
+   "end": "$80:A72A",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$80:A705",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 45,
+   "callers": [
+    "$80:9A46",
+    "$80:BBFA"
+   ],
+   "class": "observed",
+   "end": "$80:A857",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$80:A82B",
+   "static_entries": {
+    "JSR": 2
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 31,
+   "callers": [
+    "$80:9A49",
+    "$80:B197",
+    "$80:BBF7",
+    "$80:BC7B",
+    "$80:E73B"
+   ],
+   "class": "observed",
+   "end": "$80:A876",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$80:A858",
+   "static_entries": {
+    "JSR": 5
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 45,
+   "callers": [
+    "$80:AD15"
+   ],
+   "class": "observed",
+   "end": "$80:A8A3",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$80:A877",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 44,
+   "callers": [
+    "$80:AD12",
+    "$80:B091",
+    "$80:D211"
+   ],
+   "class": "observed",
+   "end": "$80:A8D3",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$80:A8A8",
+   "static_entries": {
+    "JSR": 3
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 269,
+   "callers": [
+    "$80:889A"
+   ],
+   "class": "observed",
+   "end": "$80:ACD4",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$80:ABC8",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 74,
+   "callers": [
+    "$80:8878",
+    "$80:8881"
+   ],
+   "class": "observed",
+   "end": "$80:AD1E",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$80:ACD5",
+   "static_entries": {
+    "JSR": 2
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 4,
+   "callers": [
+    "$83:940F"
+   ],
+   "class": "observed",
+   "end": "$80:AD46",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$80:AD43",
+   "static_entries": {
+    "JSL": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 156,
+   "callers": [
+    "$80:AD43"
+   ],
+   "class": "observed",
+   "end": "$80:ADE2",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$80:AD47",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 80,
+   "callers": [
+    "$80:8861"
+   ],
+   "class": "observed",
+   "end": "$80:B0DB",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$80:B08C",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 10,
+   "callers": [
+    "$80:8854",
+    "$80:FAC9"
+   ],
+   "class": "observed",
+   "end": "$80:B0F9",
+   "mode_at_entry": [
+    "NmX",
+    "Nmx"
+   ],
+   "observed_entries": {},
+   "start": "$80:B0F0",
+   "static_entries": {
+    "JML": 2
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 21,
+   "callers": [
+    "$80:9596",
+    "$80:EB02"
+   ],
+   "class": "observed",
+   "end": "$80:B123",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$80:B10F",
+   "static_entries": {
+    "JSR": 2
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 21,
+   "callers": [
+    "$80:B4A0",
+    "$80:B4B1",
+    "$80:BBB8",
+    "$80:E595",
+    "$80:F60D"
+   ],
+   "class": "observed",
+   "end": "$80:B138",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$80:B124",
+   "static_entries": {
+    "JSR": 5
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 21,
+   "callers": [
+    "$80:E233",
+    "$80:E2D5"
+   ],
+   "class": "observed",
+   "end": "$80:B14D",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$80:B139",
+   "static_entries": {
+    "JSR": 2
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 21,
+   "callers": [
+    "$80:E27E"
+   ],
+   "class": "inferred",
+   "end": "$80:B162",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$80:B14E",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 21,
+   "callers": [
+    "$80:AC3F",
+    "$80:AC89",
+    "$80:B4DE",
+    "$80:B4F1",
+    "$80:B9B1",
+    "$80:BA13",
+    "$80:BAE3",
+    "$80:BB45",
+    "$80:CC5E",
+    "$80:CC7F",
+    "$80:CCA1",
+    "$80:CCE1",
+    "$80:E654",
+    "$80:E669",
+    "$80:E683",
+    "$80:E69D",
+    "$80:E6AB"
+   ],
+   "class": "observed",
+   "end": "$80:B18C",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$80:B178",
+   "static_entries": {
+    "JSR": 17
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 114,
+   "callers": [
+    "$80:BC45"
+   ],
+   "class": "observed",
+   "end": "$80:B1FE",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$80:B18D",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 148,
+   "callers": [
+    "$80:B2CD",
+    "$80:B2E7",
+    "$80:B308",
+    "$80:B36F",
+    "$80:B3A5"
+   ],
+   "class": "observed",
+   "end": "$80:B611",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$80:B57E",
+   "static_entries": {
+    "JSR": 5
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 20,
+   "callers": [
+    "$80:885B"
+   ],
+   "class": "observed",
+   "end": "$80:B625",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$80:B612",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 4,
+   "callers": [
+    "$83:AC29",
+    "$83:ADE5",
+    "$83:AFFB"
+   ],
+   "class": "inferred",
+   "end": "$80:B6D2",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$80:B6CF",
+   "static_entries": {
+    "JSL": 3
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 37,
+   "callers": [
+    "$80:9976",
+    "$80:B6CF"
+   ],
+   "class": "inferred",
+   "end": "$80:B6F7",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$80:B6D3",
+   "static_entries": {
+    "JSR": 2
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 45,
+   "callers": [
+    "$80:AC18",
+    "$80:B487",
+    "$80:B988",
+    "$80:BAB4",
+    "$80:CD14",
+    "$80:E62A"
+   ],
+   "class": "observed",
+   "end": "$80:B749",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$80:B71D",
+   "static_entries": {
+    "JSR": 6
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 37,
+   "callers": [
+    "$80:A9D1",
+    "$80:B482",
+    "$80:B983",
+    "$80:BAAF",
+    "$80:BC12",
+    "$80:BC1D",
+    "$80:BC48",
+    "$80:BC81",
+    "$80:CD19",
+    "$80:CD3B",
+    "$80:E632",
+    "$80:E9D1"
+   ],
+   "class": "observed",
+   "end": "$80:B76E",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$80:B74A",
+   "static_entries": {
+    "JSR": 12
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 37,
+   "callers": [
+    "$80:AC25",
+    "$80:B997",
+    "$80:BAC9",
+    "$80:E614"
+   ],
+   "class": "observed",
+   "end": "$80:B793",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$80:B76F",
+   "static_entries": {
+    "JSR": 4
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 37,
+   "callers": [
+    "$80:AC20",
+    "$80:B992",
+    "$80:BAC4",
+    "$80:E61F"
+   ],
+   "class": "observed",
+   "end": "$80:B7B8",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$80:B794",
+   "static_entries": {
+    "JSR": 4
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 37,
+   "callers": [
+    "$80:B476",
+    "$80:CC52",
+    "$80:E60A"
+   ],
+   "class": "observed",
+   "end": "$80:B7DD",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$80:B7B9",
+   "static_entries": {
+    "JSR": 3
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 37,
+   "callers": [
+    "$80:B471",
+    "$80:CC73",
+    "$80:E60F"
+   ],
+   "class": "observed",
+   "end": "$80:B802",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$80:B7DE",
+   "static_entries": {
+    "JSR": 3
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 45,
+   "callers": [
+    "$80:CC92"
+   ],
+   "class": "observed",
+   "end": "$80:B82F",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$80:B803",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 37,
+   "callers": [
+    "$80:CCD2"
+   ],
+   "class": "observed",
+   "end": "$80:B854",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$80:B830",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 37,
+   "callers": [
+    "$80:B47B"
+   ],
+   "class": "observed",
+   "end": "$80:B915",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$80:B8F1",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 302,
+   "callers": [
+    "$80:A9CA"
+   ],
+   "class": "inferred",
+   "end": "$80:BA69",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$80:B93C",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 58,
+   "callers": [
+    "$80:E9CE"
+   ],
+   "class": "observed",
+   "end": "$80:BAA3",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$80:BA6A",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 523,
+   "callers": [
+    "$80:E9DF"
+   ],
+   "class": "observed",
+   "end": "$80:BCAE",
+   "mode_at_entry": [
+    "NMX",
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$80:BAA4",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 23,
+   "callers": [
+    "$80:E5FA",
+    "$80:E63A",
+    "$80:E6A6",
+    "$80:E6BB"
+   ],
+   "class": "observed",
+   "end": "$80:C201",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$80:C1EB",
+   "static_entries": {
+    "JSR": 4
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 4,
+   "callers": [
+    "$83:997D",
+    "$83:ABF9"
+   ],
+   "class": "inferred",
+   "end": "$80:C205",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$80:C202",
+   "static_entries": {
+    "JSL": 2
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 70,
+   "callers": [
+    "$80:C202"
+   ],
+   "class": "inferred",
+   "end": "$80:C24B",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$80:C206",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 29,
+   "callers": [
+    "$80:95A1"
+   ],
+   "class": "observed",
+   "end": "$80:C268",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$80:C24C",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 32,
+   "callers": [
+    "$80:95DD",
+    "$80:9608",
+    "$80:ACF4",
+    "$80:B1CE",
+    "$80:B28B",
+    "$80:B2B9",
+    "$80:B2D7",
+    "$80:B2DD",
+    "$80:B2F1",
+    "$80:B312",
+    "$80:B318",
+    "$80:B379",
+    "$80:B38B",
+    "$80:B393",
+    "$80:B3D1",
+    "$80:B3D7",
+    "$80:C619",
+    "$80:C66E",
+    "$80:C6CE",
+    "$80:CB1C",
+    "$80:D0EC",
+    "$80:D0F9",
+    "$80:E760",
+    "$80:E766",
+    "$80:E76C",
+    "$80:E793",
+    "$80:E8D7",
+    "$80:E8FB",
+    "$80:E913",
+    "$80:E91B",
+    "$80:E923",
+    "$80:EADC",
+    "$80:EAE4",
+    "$80:EAEC",
+    "$80:EF6B"
+   ],
+   "class": "observed",
+   "end": "$80:C3DB",
+   "mode_at_entry": [
+    "NMX",
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$80:C3BC",
+   "static_entries": {
+    "JSR": 35
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 56,
+   "callers": [
+    "$80:BC6E"
+   ],
+   "class": "inferred",
+   "end": "$80:C7BD",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$80:C786",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 579,
+   "callers": [
+    "$80:BBAC"
+   ],
+   "class": "observed",
+   "end": "$80:CD46",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$80:CB04",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 24,
+   "callers": [
+    "$80:CFF6",
+    "$80:D061",
+    "$80:D082",
+    "$80:D0A9",
+    "$80:D0D0"
+   ],
+   "class": "observed",
+   "end": "$80:D17A",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$80:D163",
+   "static_entries": {
+    "JSR": 5
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 4,
+   "callers": [
+    "$83:87B0",
+    "$83:AC25",
+    "$83:ADE1",
+    "$83:AFB6",
+    "$83:B06E"
+   ],
+   "class": "inferred",
+   "end": "$80:D1EB",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$80:D1E8",
+   "static_entries": {
+    "JSL": 5
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 14,
+   "callers": [
+    "$80:9971",
+    "$80:ABE6",
+    "$80:B46E",
+    "$80:B980",
+    "$80:BAAC",
+    "$80:C20F",
+    "$80:C225",
+    "$80:C255",
+    "$80:CC11",
+    "$80:D1E8",
+    "$80:E603",
+    "$80:F5CD"
+   ],
+   "class": "observed",
+   "end": "$80:D1F9",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$80:D1EC",
+   "static_entries": {
+    "JSR": 12
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 16,
+   "callers": [
+    "$80:ACE2",
+    "$80:ACEE"
+   ],
+   "class": "observed",
+   "end": "$80:D209",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$80:D1FA",
+   "static_entries": {
+    "JSR": 2
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 179,
+   "callers": [
+    "$80:886A",
+    "$80:9A3A"
+   ],
+   "class": "observed",
+   "end": "$80:D2C0",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$80:D20E",
+   "static_entries": {
+    "JSR": 2
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 186,
+   "callers": [
+    "$80:F4F2"
+   ],
+   "class": "observed",
+   "end": "$80:D37A",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$80:D2C1",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 40,
+   "callers": [
+    "$80:B4A3",
+    "$80:B4B4"
+   ],
+   "class": "observed",
+   "end": "$80:D447",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$80:D420",
+   "static_entries": {
+    "JSR": 2
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 34,
+   "callers": [
+    "$80:8897"
+   ],
+   "class": "inferred",
+   "end": "$80:D524",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$80:D503",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 75,
+   "callers": [
+    "$80:B42C",
+    "$80:CB4D",
+    "$80:E576",
+    "$80:E93A",
+    "$80:EF85"
+   ],
+   "class": "observed",
+   "end": "$80:E27D",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$80:E233",
+   "static_entries": {
+    "JSR": 5
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 30,
+   "callers": [
+    "$80:AD0A",
+    "$80:CB48",
+    "$80:E57B",
+    "$80:E935",
+    "$80:EF81"
+   ],
+   "class": "inferred",
+   "end": "$80:E29B",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$80:E27E",
+   "static_entries": {
+    "JSR": 5
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 4,
+   "callers": [
+    "$83:ABD4",
+    "$83:ABF5",
+    "$83:AC1B"
+   ],
+   "class": "inferred",
+   "end": "$80:E2D2",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$80:E2CF",
+   "static_entries": {
+    "JSL": 3
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 168,
+   "callers": [
+    "$80:E2CF"
+   ],
+   "class": "inferred",
+   "end": "$80:E37A",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$80:E2D3",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 4,
+   "callers": [
+    "$83:88CD"
+   ],
+   "class": "inferred",
+   "end": "$80:E54F",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$80:E54C",
+   "static_entries": {
+    "JSL": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 397,
+   "callers": [
+    "$80:BC0B",
+    "$80:E54C"
+   ],
+   "class": "observed",
+   "end": "$80:E6DC",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$80:E550",
+   "static_entries": {
+    "JSR": 2
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 43,
+   "callers": [
+    "$80:E5FD"
+   ],
+   "class": "observed",
+   "end": "$80:E707",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$80:E6DD",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 113,
+   "callers": [
+    "$80:E564",
+    "$80:E592"
+   ],
+   "class": "observed",
+   "end": "$80:E7A0",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$80:E730",
+   "static_entries": {
+    "JSR": 2
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 35,
+   "callers": [
+    "$80:E662",
+    "$80:E67C",
+    "$80:E696",
+    "$80:E746"
+   ],
+   "class": "observed",
+   "end": "$80:E7C3",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$80:E7A1",
+   "static_entries": {
+    "JSR": 4
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 483,
+   "callers": [
+    "$80:BC1A",
+    "$80:BC7E"
+   ],
+   "class": "observed",
+   "end": "$80:EA30",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$80:E84E",
+   "static_entries": {
+    "JSR": 2
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 119,
+   "callers": [
+    "$80:E9DC"
+   ],
+   "class": "inferred",
+   "end": "$80:EB05",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$80:EA8F",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 62,
+   "callers": [
+    "$80:B97A",
+    "$80:BAA6"
+   ],
+   "class": "observed",
+   "end": "$80:EB60",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$80:EB23",
+   "static_entries": {
+    "JSR": 2
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 60,
+   "callers": [
+    "$80:A9C7"
+   ],
+   "class": "inferred",
+   "end": "$80:EF88",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$80:EF4D",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 87,
+   "callers": [
+    "$80:AD8D"
+   ],
+   "class": "observed",
+   "end": "$80:F02A",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$80:EFD4",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 108,
+   "callers": [
+    "$80:CF51"
+   ],
+   "class": "observed",
+   "end": "$80:F0ED",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$80:F082",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 49,
+   "callers": [
+    "$80:BC6B"
+   ],
+   "class": "inferred",
+   "end": "$80:F4E8",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$80:F4B8",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 50,
+   "callers": [
+    "$80:BBF4",
+    "$80:BCA1"
+   ],
+   "class": "observed",
+   "end": "$80:F51A",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$80:F4E9",
+   "static_entries": {
+    "JSR": 2
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 16,
+   "callers": [
+    "$80:BB9E",
+    "$80:F0D8"
+   ],
+   "class": "observed",
+   "end": "$80:F52A",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$80:F51B",
+   "static_entries": {
+    "JSR": 2
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 16,
+   "callers": [
+    "$80:AD0F"
+   ],
+   "class": "observed",
+   "end": "$80:F53A",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$80:F52B",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 4,
+   "callers": [
+    "$83:A905"
+   ],
+   "class": "inferred",
+   "end": "$80:F53E",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$80:F53B",
+   "static_entries": {
+    "JSL": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 28,
+   "callers": [
+    "$80:8907",
+    "$80:9555",
+    "$80:F53B"
+   ],
+   "class": "observed",
+   "end": "$80:F55A",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$80:F53F",
+   "static_entries": {
+    "JSR": 3
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 185,
+   "callers": [
+    "$80:8867"
+   ],
+   "class": "observed",
+   "end": "$80:F617",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$80:F55F",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 4,
+   "callers": [
+    "$83:AD7A",
+    "$83:AD8F",
+    "$83:ADD5",
+    "$83:AFCD",
+    "$83:B06A",
+    "$83:B0F2"
+   ],
+   "class": "inferred",
+   "end": "$80:F817",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$80:F814",
+   "static_entries": {
+    "JSL": 6
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 87,
+   "callers": [
+    "$80:CB3F",
+    "$80:CC4F",
+    "$80:F814"
+   ],
+   "class": "observed",
+   "end": "$80:F86E",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$80:F818",
+   "static_entries": {
+    "JSR": 3
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 30,
+   "callers": [
+    "$80:F827",
+    "$80:F839",
+    "$80:F84B",
+    "$80:F85D"
+   ],
+   "class": "observed",
+   "end": "$80:F88C",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$80:F86F",
+   "static_entries": {
+    "JSR": 4
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 44,
+   "callers": [
+    "$80:D151",
+    "$80:D15F"
+   ],
+   "class": "observed",
+   "end": "$80:F8B8",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$80:F88D",
+   "static_entries": {
+    "JSR": 2
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 46,
+   "callers": [
+    "$80:C612",
+    "$80:C667"
+   ],
+   "class": "observed",
+   "end": "$80:F8E6",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$80:F8B9",
+   "static_entries": {
+    "JSR": 2
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 109,
+   "callers": [
+    "$80:F644"
+   ],
+   "class": "observed",
+   "end": "$80:FACC",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$80:FA60",
+   "static_entries": {
+    "JML": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 4,
+   "callers": [
+    "$83:94D3",
+    "$83:9502",
+    "$83:FB34"
+   ],
+   "class": "observed",
+   "end": "$80:FADE",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$80:FADB",
+   "static_entries": {
+    "JSL": 3
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 22,
+   "callers": [
+    "$80:887E",
+    "$80:8900",
+    "$80:9761",
+    "$80:977F",
+    "$80:97D6",
+    "$80:986E",
+    "$80:988C",
+    "$80:996E",
+    "$80:A84C",
+    "$80:A858",
+    "$80:A867",
+    "$80:A898",
+    "$80:A8A8",
+    "$80:ABE3",
+    "$80:ACF7",
+    "$80:B08E",
+    "$80:B0D2",
+    "$80:B3E2",
+    "$80:B3FC",
+    "$80:B46B",
+    "$80:B97D",
+    "$80:BAA9",
+    "$80:C20C",
+    "$80:C222",
+    "$80:C252",
+    "$80:CB0E",
+    "$80:CB1F",
+    "$80:CB37",
+    "$80:CC09",
+    "$80:CF56",
+    "$80:D110",
+    "$80:D20E",
+    "$80:D36F",
+    "$80:E255",
+    "$80:E322",
+    "$80:E332",
+    "$80:E369",
+    "$80:E567",
+    "$80:E598",
+    "$80:E600",
+    "$80:E878",
+    "$80:E926",
+    "$80:EA0A",
+    "$80:EAEF",
+    "$80:EF75",
+    "$80:F0E1",
+    "$80:F4CF",
+    "$80:F4EF",
+    "$80:F4F8",
+    "$80:F5CA",
+    "$80:FADB",
+    "$83:8B9E"
+   ],
+   "class": "observed",
+   "end": "$80:FAF4",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$80:FADF",
+   "static_entries": {
+    "JSL": 1,
+    "JSR": 51
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 208,
+   "callers": [
+    "$80:FAF1"
+   ],
+   "class": "observed",
+   "end": "$80:FBC4",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$80:FAF5",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 208,
+   "callers": [
+    "$81:8143",
+    "$81:817C"
+   ],
+   "class": "observed",
+   "end": "$81:8256",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$81:8187",
+   "static_entries": {
+    "JMP": 2
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 15,
+   "callers": [
+    "$81:81A3"
+   ],
+   "class": "observed",
+   "end": "$81:8265",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$81:8257",
+   "static_entries": {
+    "JMP": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 80,
+   "callers": [
+    "$81:80A7"
+   ],
+   "class": "observed",
+   "end": "$81:82B5",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$81:8266",
+   "static_entries": {
+    "JMP": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 1,
+   "callers": [
+    "$81:805A",
+    "$81:80AF"
+   ],
+   "class": "observed",
+   "end": "$81:82B6",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$81:82B6",
+   "static_entries": {
+    "JMP": 2
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 4,
+   "callers": [
+    "$82:8C45",
+    "$82:912F"
+   ],
+   "class": "observed",
+   "end": "$81:82BA",
+   "mode_at_entry": [
+    "NMx"
+   ],
+   "observed_entries": {},
+   "start": "$81:82B7",
+   "static_entries": {
+    "JSL": 2
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 58,
+   "callers": [
+    "$81:82B7"
+   ],
+   "class": "observed",
+   "end": "$81:82F4",
+   "mode_at_entry": [
+    "NMx"
+   ],
+   "observed_entries": {},
+   "start": "$81:82BB",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 3,
+   "callers": [
+    "$81:82E8"
+   ],
+   "class": "observed",
+   "end": "$81:8315",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$81:8313",
+   "static_entries": {
+    "JMP": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 4,
+   "callers": [
+    "$82:8C3A",
+    "$82:9124"
+   ],
+   "class": "observed",
+   "end": "$81:8591",
+   "mode_at_entry": [
+    "NMx"
+   ],
+   "observed_entries": {},
+   "start": "$81:858E",
+   "static_entries": {
+    "JSL": 2
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 458,
+   "callers": [
+    "$81:858E"
+   ],
+   "class": "observed",
+   "end": "$81:875B",
+   "mode_at_entry": [
+    "NMx"
+   ],
+   "observed_entries": {},
+   "start": "$81:8592",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 331,
+   "callers": [
+    "$81:8B75"
+   ],
+   "class": "observed",
+   "end": "$81:8B74",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$81:8A2A",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 33,
+   "callers": [
+    "$81:8DB9",
+    "$81:8F0D"
+   ],
+   "class": "observed",
+   "end": "$81:8B95",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$81:8B75",
+   "static_entries": {
+    "JSR": 2
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 327,
+   "callers": [
+    "$81:8CF0"
+   ],
+   "class": "observed",
+   "end": "$81:8CDC",
+   "mode_at_entry": [
+    "NMX",
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$81:8B96",
+   "static_entries": {
+    "JMP": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 23,
+   "callers": [
+    "$81:8BD6",
+    "$81:8BE0"
+   ],
+   "class": "observed",
+   "end": "$81:8CF3",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$81:8CDD",
+   "static_entries": {
+    "JMP": 2
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 4,
+   "callers": [
+    "$83:CD97"
+   ],
+   "class": "observed",
+   "end": "$81:8CF7",
+   "mode_at_entry": [
+    "NMX",
+    "NMx"
+   ],
+   "observed_entries": {},
+   "start": "$81:8CF4",
+   "static_entries": {
+    "JSL": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 331,
+   "callers": [
+    "$81:8CF4"
+   ],
+   "class": "observed",
+   "end": "$81:8E42",
+   "mode_at_entry": [
+    "NMX",
+    "NMx"
+   ],
+   "observed_entries": {},
+   "start": "$81:8CF8",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 340,
+   "callers": [
+    "$81:8D01",
+    "$81:8D09"
+   ],
+   "class": "observed",
+   "end": "$81:8F96",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$81:8E43",
+   "static_entries": {
+    "JMP": 2
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 1,
+   "callers": [
+    "$81:8E48",
+    "$81:8E50",
+    "$81:8E5D"
+   ],
+   "class": "observed",
+   "end": "$81:8F97",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$81:8F97",
+   "static_entries": {
+    "JMP": 3
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 194,
+   "callers": [
+    "$81:8DBC",
+    "$81:8F10"
+   ],
+   "class": "observed",
+   "end": "$81:9059",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$81:8F98",
+   "static_entries": {
+    "JSR": 2
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 100,
+   "callers": [
+    "$81:912F"
+   ],
+   "class": "observed",
+   "end": "$81:90BD",
+   "mode_at_entry": [
+    "Nmx"
+   ],
+   "observed_entries": {},
+   "start": "$81:905A",
+   "static_entries": {
+    "JMP": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 109,
+   "callers": [
+    "$81:90A5",
+    "$81:90B1"
+   ],
+   "class": "observed",
+   "end": "$81:912A",
+   "mode_at_entry": [
+    "Nmx"
+   ],
+   "observed_entries": {},
+   "start": "$81:90BE",
+   "static_entries": {
+    "JMP": 2
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 831,
+   "callers": [
+    "$81:906F",
+    "$81:907B",
+    "$81:9088"
+   ],
+   "class": "observed",
+   "end": "$81:9469",
+   "mode_at_entry": [
+    "Nmx"
+   ],
+   "observed_entries": {},
+   "start": "$81:912B",
+   "static_entries": {
+    "JMP": 3
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 28,
+   "callers": [
+    "$81:9387",
+    "$81:938E"
+   ],
+   "class": "observed",
+   "end": "$81:9494",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$81:9479",
+   "static_entries": {
+    "JMP": 2
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 379,
+   "callers": [
+    "$81:940C"
+   ],
+   "class": "observed",
+   "end": "$81:960F",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$81:9495",
+   "static_entries": {
+    "JMP": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 28,
+   "callers": [
+    "$81:92C5",
+    "$81:92D0"
+   ],
+   "class": "observed",
+   "end": "$81:962B",
+   "mode_at_entry": [
+    "NMx"
+   ],
+   "observed_entries": {},
+   "start": "$81:9610",
+   "static_entries": {
+    "JMP": 2
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 169,
+   "callers": [
+    "$81:965E",
+    "$81:966C"
+   ],
+   "class": "observed",
+   "end": "$81:97B6",
+   "mode_at_entry": [
+    "NMX",
+    "NMx"
+   ],
+   "observed_entries": {},
+   "start": "$81:970E",
+   "static_entries": {
+    "JMP": 2
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 45,
+   "callers": [
+    "$81:971E"
+   ],
+   "class": "observed",
+   "end": "$81:97E3",
+   "mode_at_entry": [
+    "NMX",
+    "NMx"
+   ],
+   "observed_entries": {},
+   "start": "$81:97B7",
+   "static_entries": {
+    "JMP": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 69,
+   "callers": [
+    "$81:924B",
+    "$81:92AA",
+    "$81:92F0",
+    "$81:9309",
+    "$81:94CD",
+    "$81:960D",
+    "$81:9682",
+    "$81:968A",
+    "$81:9690",
+    "$81:9726",
+    "$81:979D"
+   ],
+   "class": "observed",
+   "end": "$81:9828",
+   "mode_at_entry": [
+    "NMX",
+    "NMx"
+   ],
+   "observed_entries": {},
+   "start": "$81:97E4",
+   "static_entries": {
+    "JMP": 11
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 3,
+   "callers": [
+    "$81:920C"
+   ],
+   "class": "observed",
+   "end": "$81:982B",
+   "mode_at_entry": [
+    "NMx",
+    "Nmx"
+   ],
+   "observed_entries": {},
+   "start": "$81:9829",
+   "static_entries": {
+    "JMP": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 311,
+   "callers": [
+    "$81:930C"
+   ],
+   "class": "observed",
+   "end": "$81:9962",
+   "mode_at_entry": [
+    "NMx"
+   ],
+   "observed_entries": {},
+   "start": "$81:982C",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 4,
+   "callers": [
+    "$82:DBC7"
+   ],
+   "class": "observed",
+   "end": "$81:99CA",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$81:99C7",
+   "static_entries": {
+    "JSL": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 13,
+   "callers": [
+    "$81:99C7"
+   ],
+   "class": "observed",
+   "end": "$81:9A57",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$81:9A4B",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 222,
+   "callers": [
+    "$81:9E02",
+    "$81:9E17"
+   ],
+   "class": "observed",
+   "end": "$81:9B35",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$81:9A58",
+   "static_entries": {
+    "JMP": 2
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 314,
+   "callers": [
+    "$81:9A60"
+   ],
+   "class": "observed",
+   "end": "$81:9C6F",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$81:9B36",
+   "static_entries": {
+    "JMP": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 427,
+   "callers": [
+    "$81:9B33"
+   ],
+   "class": "observed",
+   "end": "$81:9E1A",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$81:9C70",
+   "static_entries": {
+    "JMP": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 405,
+   "callers": [
+    "$81:8DB6",
+    "$81:8F0A"
+   ],
+   "class": "observed",
+   "end": "$81:9FAF",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$81:9E1B",
+   "static_entries": {
+    "JSR": 2
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 445,
+   "callers": [
+    "$81:A522"
+   ],
+   "class": "observed",
+   "end": "$81:A16C",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$81:9FB0",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 361,
+   "callers": [
+    "$81:A0D1"
+   ],
+   "class": "observed",
+   "end": "$81:A2D5",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$81:A16D",
+   "static_entries": {
+    "JMP": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 42,
+   "callers": [
+    "$81:9FBA",
+    "$81:A177"
+   ],
+   "class": "observed",
+   "end": "$81:A2FF",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$81:A2D6",
+   "static_entries": {
+    "JSR": 2
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 4,
+   "callers": [
+    "$82:DBC3"
+   ],
+   "class": "observed",
+   "end": "$81:A303",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$81:A300",
+   "static_entries": {
+    "JSL": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 30,
+   "callers": [
+    "$81:A300"
+   ],
+   "class": "observed",
+   "end": "$81:A321",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$81:A304",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 62,
+   "callers": [
+    "$81:A31F"
+   ],
+   "class": "observed",
+   "end": "$81:A482",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$81:A445",
+   "static_entries": {
+    "JMP": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 62,
+   "callers": [
+    "$81:A317"
+   ],
+   "class": "inferred",
+   "end": "$81:A4C0",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$81:A483",
+   "static_entries": {
+    "JMP": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 91,
+   "callers": [
+    "$81:A30F"
+   ],
+   "class": "observed",
+   "end": "$81:A51B",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$81:A4C1",
+   "static_entries": {
+    "JMP": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 4,
+   "callers": [
+    "$83:CD79"
+   ],
+   "class": "observed",
+   "end": "$81:A51F",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$81:A51C",
+   "static_entries": {
+    "JSL": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 111,
+   "callers": [
+    "$81:A51C"
+   ],
+   "class": "observed",
+   "end": "$81:A58E",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$81:A520",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 535,
+   "callers": [
+    "$81:A588"
+   ],
+   "class": "observed",
+   "end": "$81:A7A5",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$81:A58F",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 1,
+   "callers": [
+    "$81:A6A9"
+   ],
+   "class": "observed",
+   "end": "$81:A7A6",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$81:A7A6",
+   "static_entries": {
+    "JMP": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 296,
+   "callers": [
+    "$81:A58B"
+   ],
+   "class": "observed",
+   "end": "$81:ACA0",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$81:AB79",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 1,
+   "callers": [
+    "$81:AC0D"
+   ],
+   "class": "observed",
+   "end": "$81:ACA1",
+   "mode_at_entry": [
+    "NMX",
+    "Nmx"
+   ],
+   "observed_entries": {},
+   "start": "$81:ACA1",
+   "static_entries": {
+    "JMP": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 74,
+   "callers": [
+    "$81:AB9C",
+    "$81:ABBF",
+    "$81:ABE2",
+    "$81:AC05",
+    "$81:AC35",
+    "$81:AC58",
+    "$81:AC7B",
+    "$81:AC9E"
+   ],
+   "class": "observed",
+   "end": "$81:ACEB",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$81:ACA2",
+   "static_entries": {
+    "JSR": 8
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 49,
+   "callers": [
+    "$81:A5E2",
+    "$81:A61F",
+    "$81:A66A",
+    "$81:A694",
+    "$81:A6E4",
+    "$81:A721",
+    "$81:A76C",
+    "$81:A796"
+   ],
+   "class": "observed",
+   "end": "$81:AD1C",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$81:ACEC",
+   "static_entries": {
+    "JSR": 8
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 78,
+   "callers": [
+    "$81:AD19"
+   ],
+   "class": "observed",
+   "end": "$81:AD6A",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$81:AD1D",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 60,
+   "callers": [
+    "$81:AD14"
+   ],
+   "class": "observed",
+   "end": "$81:ADA6",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$81:AD6B",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 67,
+   "callers": [
+    "$81:A5D6",
+    "$81:A613",
+    "$81:A65E",
+    "$81:A688",
+    "$81:A6D8",
+    "$81:A715",
+    "$81:A760",
+    "$81:A78A"
+   ],
+   "class": "observed",
+   "end": "$81:ADE9",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$81:ADA7",
+   "static_entries": {
+    "JSR": 8
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 362,
+   "callers": [
+    "$81:A5A2"
+   ],
+   "class": "observed",
+   "end": "$81:AFB3",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$81:AE4A",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 700,
+   "callers": [
+    "$81:A5AD"
+   ],
+   "class": "inferred",
+   "end": "$81:B26F",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$81:AFB4",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 246,
+   "callers": [
+    "$81:A5FF",
+    "$81:A63C",
+    "$81:A677",
+    "$81:A6A1",
+    "$81:A701",
+    "$81:A73E",
+    "$81:A779",
+    "$81:A7A3"
+   ],
+   "class": "observed",
+   "end": "$81:B365",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$81:B270",
+   "static_entries": {
+    "JSR": 8
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 105,
+   "callers": [
+    "$81:B2F0",
+    "$81:B306",
+    "$81:B32F",
+    "$81:B345",
+    "$81:B362"
+   ],
+   "class": "observed",
+   "end": "$81:B3CE",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$81:B366",
+   "static_entries": {
+    "JSR": 5
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 33,
+   "callers": [
+    "$81:B3E7"
+   ],
+   "class": "observed",
+   "end": "$81:B3EF",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$81:B3CF",
+   "static_entries": {
+    "JMP": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 4,
+   "callers": [
+    "$81:8A59"
+   ],
+   "class": "observed",
+   "end": "$81:B658",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$81:B655",
+   "static_entries": {
+    "JSL": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 35,
+   "callers": [
+    "$81:A502",
+    "$81:ACF4",
+    "$81:B655"
+   ],
+   "class": "observed",
+   "end": "$81:B67B",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$81:B659",
+   "static_entries": {
+    "JSR": 3
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 4,
+   "callers": [
+    "$81:9585",
+    "$81:95A2",
+    "$81:95C3",
+    "$81:95E0"
+   ],
+   "class": "observed",
+   "end": "$81:B67F",
+   "mode_at_entry": [
+    "NMx"
+   ],
+   "observed_entries": {},
+   "start": "$81:B67C",
+   "static_entries": {
+    "JSL": 4
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 33,
+   "callers": [
+    "$81:B67C"
+   ],
+   "class": "observed",
+   "end": "$81:B6A0",
+   "mode_at_entry": [
+    "NMx"
+   ],
+   "observed_entries": {},
+   "start": "$81:B680",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 4,
+   "callers": [
+    "$81:9C83",
+    "$81:9C9F",
+    "$81:9CCD",
+    "$81:9CE9",
+    "$81:9D24",
+    "$81:9D34",
+    "$81:9D62",
+    "$81:9D72"
+   ],
+   "class": "observed",
+   "end": "$81:B6B4",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$81:B6B1",
+   "static_entries": {
+    "JSL": 8
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 79,
+   "callers": [
+    "$81:B6B1"
+   ],
+   "class": "observed",
+   "end": "$81:B703",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$81:B6B5",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 6,
+   "callers": [
+    "$82:D7C8"
+   ],
+   "class": "observed",
+   "end": "$81:B763",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$81:B75E",
+   "static_entries": {
+    "JSL": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 4,
+   "callers": [
+    "$83:EE26"
+   ],
+   "class": "observed",
+   "end": "$81:B767",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$81:B764",
+   "static_entries": {
+    "JSL": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 41,
+   "callers": [
+    "$81:B764"
+   ],
+   "class": "observed",
+   "end": "$81:B794",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$81:B76C",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 47,
+   "callers": [
+    "$81:B792"
+   ],
+   "class": "observed",
+   "end": "$81:B7EC",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$81:B7BE",
+   "static_entries": {
+    "JMP": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 76,
+   "callers": [
+    "$82:B325"
+   ],
+   "class": "observed",
+   "end": "$81:B92D",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$81:B8E2",
+   "static_entries": {
+    "JSL": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 29,
+   "callers": [
+    "$81:BA12"
+   ],
+   "class": "observed",
+   "end": "$81:B94A",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$81:B92E",
+   "static_entries": {
+    "JMP": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 75,
+   "callers": [
+    "$81:BA0B"
+   ],
+   "class": "observed",
+   "end": "$81:B995",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$81:B94B",
+   "static_entries": {
+    "JMP": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 113,
+   "callers": [
+    "$81:B948"
+   ],
+   "class": "observed",
+   "end": "$81:BA06",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$81:B996",
+   "static_entries": {
+    "JMP": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 16,
+   "callers": [
+    "$81:B99F"
+   ],
+   "class": "observed",
+   "end": "$81:BA16",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$81:BA07",
+   "static_entries": {
+    "JMP": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 52,
+   "callers": [
+    "$81:B94E",
+    "$81:B95D",
+    "$81:B999"
+   ],
+   "class": "observed",
+   "end": "$81:BA4A",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$81:BA17",
+   "static_entries": {
+    "JSR": 3
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 64,
+   "callers": [
+    "$81:B92B",
+    "$81:B943",
+    "$81:BA32",
+    "$81:BA42",
+    "$81:BAD2",
+    "$81:BAE2"
+   ],
+   "class": "observed",
+   "end": "$81:BAAA",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$81:BA6B",
+   "static_entries": {
+    "JSR": 6
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 147,
+   "callers": [
+    "$81:B931",
+    "$81:B937",
+    "$81:B93D"
+   ],
+   "class": "observed",
+   "end": "$81:BB5F",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$81:BACD",
+   "static_entries": {
+    "JSR": 3
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 26,
+   "callers": [
+    "$81:B921",
+    "$81:B9ED",
+    "$81:BA9C"
+   ],
+   "class": "observed",
+   "end": "$81:BB79",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$81:BB60",
+   "static_entries": {
+    "JSR": 3
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 68,
+   "callers": [
+    "$82:B219"
+   ],
+   "class": "inferred",
+   "end": "$81:BBBD",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$81:BB7A",
+   "static_entries": {
+    "JSL": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 29,
+   "callers": [
+    "$81:BD34"
+   ],
+   "class": "inferred",
+   "end": "$81:BBDA",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$81:BBBE",
+   "static_entries": {
+    "JMP": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 30,
+   "callers": [
+    "$81:BD2D"
+   ],
+   "class": "inferred",
+   "end": "$81:BBF8",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$81:BBDB",
+   "static_entries": {
+    "JMP": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 142,
+   "callers": [
+    "$81:BC84"
+   ],
+   "class": "inferred",
+   "end": "$81:BC86",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$81:BBF9",
+   "static_entries": {
+    "JMP": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 162,
+   "callers": [
+    "$81:BBD8"
+   ],
+   "class": "inferred",
+   "end": "$81:BD28",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$81:BC87",
+   "static_entries": {
+    "JMP": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 16,
+   "callers": [
+    "$81:BC90"
+   ],
+   "class": "inferred",
+   "end": "$81:BD38",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$81:BD29",
+   "static_entries": {
+    "JMP": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 55,
+   "callers": [
+    "$81:BBDE",
+    "$81:BBF1",
+    "$81:BC8A"
+   ],
+   "class": "inferred",
+   "end": "$81:BD6F",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$81:BD39",
+   "static_entries": {
+    "JSR": 3
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 64,
+   "callers": [
+    "$81:BBB4",
+    "$81:BBD3",
+    "$81:BD57",
+    "$81:BD67",
+    "$81:BDF7",
+    "$81:BE07"
+   ],
+   "class": "inferred",
+   "end": "$81:BDCF",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$81:BD90",
+   "static_entries": {
+    "JSR": 6
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 152,
+   "callers": [
+    "$81:BBC1",
+    "$81:BBC7",
+    "$81:BBCD"
+   ],
+   "class": "inferred",
+   "end": "$81:BE89",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$81:BDF2",
+   "static_entries": {
+    "JSR": 3
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 26,
+   "callers": [
+    "$81:BBAA",
+    "$81:BD0F",
+    "$81:BDC1"
+   ],
+   "class": "inferred",
+   "end": "$81:BEA3",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$81:BE8A",
+   "static_entries": {
+    "JSR": 3
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 4,
+   "callers": [
+    "$83:CD85"
+   ],
+   "class": "observed",
+   "end": "$81:BEA7",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$81:BEA4",
+   "static_entries": {
+    "JSL": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 138,
+   "callers": [
+    "$81:BEA4"
+   ],
+   "class": "observed",
+   "end": "$81:BF31",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$81:BEA8",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 135,
+   "callers": [
+    "$81:BEE0",
+    "$81:BF20"
+   ],
+   "class": "observed",
+   "end": "$81:BFB8",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$81:BF32",
+   "static_entries": {
+    "JSR": 2
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 26,
+   "callers": [
+    "$81:BF38"
+   ],
+   "class": "observed",
+   "end": "$81:BFD2",
+   "mode_at_entry": [
+    "Nmx"
+   ],
+   "observed_entries": {},
+   "start": "$81:BFB9",
+   "static_entries": {
+    "JMP": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 1,
+   "callers": [
+    "$81:BF40"
+   ],
+   "class": "observed",
+   "end": "$81:BFD3",
+   "mode_at_entry": [
+    "Nmx"
+   ],
+   "observed_entries": {},
+   "start": "$81:BFD3",
+   "static_entries": {
+    "JMP": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 250,
+   "callers": [
+    "$81:BEC9",
+    "$81:BF10"
+   ],
+   "class": "observed",
+   "end": "$81:C0CD",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$81:BFD4",
+   "static_entries": {
+    "JSR": 2
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 190,
+   "callers": [
+    "$81:BEB3",
+    "$81:BEFA"
+   ],
+   "class": "observed",
+   "end": "$81:C18B",
+   "mode_at_entry": [
+    "Nmx"
+   ],
+   "observed_entries": {},
+   "start": "$81:C0CE",
+   "static_entries": {
+    "JSR": 2
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 5,
+   "callers": [
+    "$81:C0E4"
+   ],
+   "class": "observed",
+   "end": "$81:C190",
+   "mode_at_entry": [
+    "Nmx"
+   ],
+   "observed_entries": {},
+   "start": "$81:C18C",
+   "static_entries": {
+    "JMP": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 136,
+   "callers": [
+    "$81:C109",
+    "$81:C124"
+   ],
+   "class": "observed",
+   "end": "$81:C218",
+   "mode_at_entry": [
+    "Nmx"
+   ],
+   "observed_entries": {},
+   "start": "$81:C191",
+   "static_entries": {
+    "JMP": 2
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 178,
+   "callers": [
+    "$81:C0D6"
+   ],
+   "class": "observed",
+   "end": "$81:C2CA",
+   "mode_at_entry": [
+    "Nmx"
+   ],
+   "observed_entries": {},
+   "start": "$81:C219",
+   "static_entries": {
+    "JMP": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 5,
+   "callers": [
+    "$81:C226"
+   ],
+   "class": "observed",
+   "end": "$81:C2CF",
+   "mode_at_entry": [
+    "Nmx"
+   ],
+   "observed_entries": {},
+   "start": "$81:C2CB",
+   "static_entries": {
+    "JMP": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 135,
+   "callers": [
+    "$81:C24B",
+    "$81:C266"
+   ],
+   "class": "observed",
+   "end": "$81:C356",
+   "mode_at_entry": [
+    "Nmx"
+   ],
+   "observed_entries": {},
+   "start": "$81:C2D0",
+   "static_entries": {
+    "JMP": 2
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 231,
+   "callers": [
+    "$81:C0FA",
+    "$81:C18E",
+    "$81:C195",
+    "$81:C1B2",
+    "$81:C216",
+    "$81:C23C",
+    "$81:C2CD",
+    "$81:C2D4",
+    "$81:C2F3"
+   ],
+   "class": "observed",
+   "end": "$81:C43D",
+   "mode_at_entry": [
+    "NMx",
+    "Nmx"
+   ],
+   "observed_entries": {},
+   "start": "$81:C357",
+   "static_entries": {
+    "JMP": 9
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 3,
+   "callers": [
+    "$81:C365"
+   ],
+   "class": "observed",
+   "end": "$81:C440",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$81:C43E",
+   "static_entries": {
+    "JMP": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 4,
+   "callers": [
+    "$83:CEF9",
+    "$83:CF0D",
+    "$83:CF4F",
+    "$83:CF8B",
+    "$83:CFCD",
+    "$83:D00F",
+    "$83:D051",
+    "$83:D093",
+    "$83:D0D5",
+    "$83:D2BA",
+    "$83:D2F6",
+    "$83:D373",
+    "$83:D435",
+    "$83:D498",
+    "$83:D4D2",
+    "$83:D50C"
+   ],
+   "class": "inferred",
+   "end": "$81:C55E",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$81:C55B",
+   "static_entries": {
+    "JSL": 16
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 57,
+   "callers": [
+    "$81:C55B"
+   ],
+   "class": "inferred",
+   "end": "$81:C597",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$81:C55F",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 4,
+   "callers": [
+    "$82:94A0",
+    "$82:9762",
+    "$82:9792",
+    "$82:9BAE",
+    "$82:9C6D",
+    "$82:9CA3",
+    "$82:9CEA",
+    "$82:9CF8",
+    "$82:9D06",
+    "$82:9D14",
+    "$82:9D64",
+    "$82:9D70",
+    "$83:CDEE",
+    "$83:CE00",
+    "$83:CE12",
+    "$83:CE24",
+    "$83:CE73",
+    "$83:CE85",
+    "$83:CE97",
+    "$83:CEA9",
+    "$83:E9AA",
+    "$83:E9D9",
+    "$83:E9F2",
+    "$83:EB3C",
+    "$83:EB6B",
+    "$83:EB84"
+   ],
+   "class": "observed",
+   "end": "$81:C59B",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$81:C598",
+   "static_entries": {
+    "JSL": 26
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 82,
+   "callers": [
+    "$81:81BA",
+    "$81:C598"
+   ],
+   "class": "observed",
+   "end": "$81:C5ED",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$81:C59C",
+   "static_entries": {
+    "JSR": 2
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 4,
+   "callers": [
+    "$82:DBCB"
+   ],
+   "class": "observed",
+   "end": "$81:C5F1",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$81:C5EE",
+   "static_entries": {
+    "JSL": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 43,
+   "callers": [
+    "$81:C5EE"
+   ],
+   "class": "observed",
+   "end": "$81:C61C",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$81:C5F2",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 4,
+   "callers": [
+    "$82:895E"
+   ],
+   "class": "observed",
+   "end": "$81:C63A",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$81:C637",
+   "static_entries": {
+    "JSL": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 73,
+   "callers": [
+    "$81:C03C",
+    "$81:C0B5",
+    "$81:C637"
+   ],
+   "class": "observed",
+   "end": "$81:C683",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$81:C63B",
+   "static_entries": {
+    "JSR": 3
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 4,
+   "callers": [
+    "$83:CD81"
+   ],
+   "class": "observed",
+   "end": "$81:C687",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$81:C684",
+   "static_entries": {
+    "JSL": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 9,
+   "callers": [
+    "$81:C684"
+   ],
+   "class": "observed",
+   "end": "$81:C690",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$81:C688",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 3,
+   "callers": [
+    "$81:C6B3"
+   ],
+   "class": "observed",
+   "end": "$81:C6BB",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$81:C6B9",
+   "static_entries": {
+    "JMP": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 3,
+   "callers": [
+    "$81:C69D"
+   ],
+   "class": "inferred",
+   "end": "$81:C6BE",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$81:C6BC",
+   "static_entries": {
+    "JMP": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 1,
+   "callers": [
+    "$81:C6B9"
+   ],
+   "class": "observed",
+   "end": "$81:C6BF",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$81:C6BF",
+   "static_entries": {
+    "JMP": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 202,
+   "callers": [
+    "$81:C6B6"
+   ],
+   "class": "observed",
+   "end": "$81:C789",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$81:C6C0",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 45,
+   "callers": [
+    "$81:C71C"
+   ],
+   "class": "observed",
+   "end": "$81:C7B6",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$81:C78A",
+   "static_entries": {
+    "JMP": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 22,
+   "callers": [
+    "$81:C707"
+   ],
+   "class": "observed",
+   "end": "$81:C7CC",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$81:C7B7",
+   "static_entries": {
+    "JMP": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 1,
+   "callers": [
+    "$81:C6D6",
+    "$81:C6DF",
+    "$81:C6E7"
+   ],
+   "class": "observed",
+   "end": "$81:C7CD",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$81:C7CD",
+   "static_entries": {
+    "JMP": 3
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 210,
+   "callers": [
+    "$81:C6BC"
+   ],
+   "class": "inferred",
+   "end": "$81:C89F",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$81:C7CE",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 27,
+   "callers": [
+    "$81:C80F"
+   ],
+   "class": "inferred",
+   "end": "$81:C8BA",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$81:C8A0",
+   "static_entries": {
+    "JMP": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 54,
+   "callers": [
+    "$81:C7FD"
+   ],
+   "class": "inferred",
+   "end": "$81:C8F0",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$81:C8BB",
+   "static_entries": {
+    "JMP": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 3,
+   "callers": [
+    "$81:C7E3",
+    "$81:C86F",
+    "$81:C88A",
+    "$81:C8A5"
+   ],
+   "class": "inferred",
+   "end": "$81:C8F3",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$81:C8F1",
+   "static_entries": {
+    "JMP": 4
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 28,
+   "callers": [
+    "$81:C68C"
+   ],
+   "class": "observed",
+   "end": "$81:C90F",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$81:C8F4",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 296,
+   "callers": [
+    "$81:CB20"
+   ],
+   "class": "observed",
+   "end": "$81:CA37",
+   "mode_at_entry": [
+    "NMX",
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$81:C910",
+   "static_entries": {
+    "JMP": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 117,
+   "callers": [
+    "$81:C94C"
+   ],
+   "class": "observed",
+   "end": "$81:CAAC",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$81:CA38",
+   "static_entries": {
+    "JMP": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 102,
+   "callers": [
+    "$81:C936"
+   ],
+   "class": "observed",
+   "end": "$81:CB12",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$81:CAAD",
+   "static_entries": {
+    "JMP": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 17,
+   "callers": [
+    "$81:C90D",
+    "$81:C925",
+    "$81:C9F1",
+    "$81:CAAA"
+   ],
+   "class": "observed",
+   "end": "$81:CB23",
+   "mode_at_entry": [
+    "NMX",
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$81:CB13",
+   "static_entries": {
+    "JMP": 4
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 4,
+   "callers": [
+    "$82:DBD2"
+   ],
+   "class": "observed",
+   "end": "$81:CCD6",
+   "mode_at_entry": [
+    "Nmx"
+   ],
+   "observed_entries": {},
+   "start": "$81:CCD3",
+   "static_entries": {
+    "JSL": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 376,
+   "callers": [
+    "$81:CCD3"
+   ],
+   "class": "observed",
+   "end": "$81:CE6B",
+   "mode_at_entry": [
+    "Nmx"
+   ],
+   "observed_entries": {},
+   "start": "$81:CCF4",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 648,
+   "callers": [
+    "$81:CD3E",
+    "$81:CD4A"
+   ],
+   "class": "observed",
+   "end": "$81:D0F3",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$81:CE6C",
+   "static_entries": {
+    "JMP": 2
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 158,
+   "callers": [
+    "$81:D026"
+   ],
+   "class": "inferred",
+   "end": "$81:D191",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$81:D0F4",
+   "static_entries": {
+    "JMP": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 253,
+   "callers": [
+    "$81:D0F1"
+   ],
+   "class": "inferred",
+   "end": "$81:D28E",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$81:D192",
+   "static_entries": {
+    "JMP": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 265,
+   "callers": [
+    "$81:D20A"
+   ],
+   "class": "inferred",
+   "end": "$81:D397",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$81:D28F",
+   "static_entries": {
+    "JMP": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 326,
+   "callers": [
+    "$81:D20F"
+   ],
+   "class": "inferred",
+   "end": "$81:D4DD",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$81:D398",
+   "static_entries": {
+    "JMP": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 73,
+   "callers": [
+    "$81:D28C",
+    "$81:D395"
+   ],
+   "class": "inferred",
+   "end": "$81:D526",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$81:D4DE",
+   "static_entries": {
+    "JMP": 2
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 265,
+   "callers": [
+    "$81:CE75"
+   ],
+   "class": "observed",
+   "end": "$81:D62F",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$81:D527",
+   "static_entries": {
+    "JMP": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 184,
+   "callers": [
+    "$81:D5D7"
+   ],
+   "class": "observed",
+   "end": "$81:D6E7",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$81:D630",
+   "static_entries": {
+    "JMP": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 137,
+   "callers": [
+    "$81:D684"
+   ],
+   "class": "observed",
+   "end": "$81:D770",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$81:D6E8",
+   "static_entries": {
+    "JMP": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 166,
+   "callers": [
+    "$81:D689"
+   ],
+   "class": "inferred",
+   "end": "$81:D816",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$81:D771",
+   "static_entries": {
+    "JMP": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 46,
+   "callers": [
+    "$81:D6BD",
+    "$81:D6E5",
+    "$81:D76E"
+   ],
+   "class": "observed",
+   "end": "$81:D844",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$81:D817",
+   "static_entries": {
+    "JMP": 3
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 14,
+   "callers": [
+    "$81:D524"
+   ],
+   "class": "observed",
+   "end": "$81:D852",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$81:D845",
+   "static_entries": {
+    "JMP": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 134,
+   "callers": [
+    "$80:8808"
+   ],
+   "class": "inferred",
+   "end": "$81:D8D8",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$81:D853",
+   "static_entries": {
+    "JSL": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 93,
+   "callers": [
+    "$81:D88A"
+   ],
+   "class": "inferred",
+   "end": "$81:D935",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$81:D8D9",
+   "static_entries": {
+    "JMP": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 281,
+   "callers": [
+    "$81:D885",
+    "$81:D8B3"
+   ],
+   "class": "inferred",
+   "end": "$81:DA4E",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$81:D936",
+   "static_entries": {
+    "JMP": 2
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 193,
+   "callers": [
+    "$81:D97D"
+   ],
+   "class": "inferred",
+   "end": "$81:DB0F",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$81:DA4F",
+   "static_entries": {
+    "JMP": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 96,
+   "callers": [
+    "$81:D877",
+    "$81:D96D",
+    "$81:D975",
+    "$81:D993",
+    "$81:D9E5",
+    "$81:D9F6",
+    "$81:DA4C",
+    "$81:DA62",
+    "$81:DAC4"
+   ],
+   "class": "inferred",
+   "end": "$81:DB6F",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$81:DB10",
+   "static_entries": {
+    "JMP": 9
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 93,
+   "callers": [
+    "$81:DB20"
+   ],
+   "class": "inferred",
+   "end": "$81:DBCC",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$81:DB70",
+   "static_entries": {
+    "JMP": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 281,
+   "callers": [
+    "$81:DB1B",
+    "$81:DB49",
+    "$81:DB6D"
+   ],
+   "class": "inferred",
+   "end": "$81:DCE5",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$81:DBCD",
+   "static_entries": {
+    "JMP": 3
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 193,
+   "callers": [
+    "$81:DC14"
+   ],
+   "class": "inferred",
+   "end": "$81:DDA6",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$81:DCE6",
+   "static_entries": {
+    "JMP": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 226,
+   "callers": [
+    "$81:DC04",
+    "$81:DC0C",
+    "$81:DC2A",
+    "$81:DC7C",
+    "$81:DC8D",
+    "$81:DCE3",
+    "$81:DCF9",
+    "$81:DD5B"
+   ],
+   "class": "inferred",
+   "end": "$81:DE88",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$81:DDA7",
+   "static_entries": {
+    "JMP": 8
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 84,
+   "callers": [
+    "$81:DDC3"
+   ],
+   "class": "inferred",
+   "end": "$81:DEDC",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$81:DE89",
+   "static_entries": {
+    "JMP": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 214,
+   "callers": [
+    "$81:DDB9",
+    "$81:DE86"
+   ],
+   "class": "inferred",
+   "end": "$81:DFB2",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$81:DEDD",
+   "static_entries": {
+    "JMP": 2
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 91,
+   "callers": [
+    "$81:DEE7"
+   ],
+   "class": "inferred",
+   "end": "$81:E00D",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$81:DFB3",
+   "static_entries": {
+    "JMP": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 6,
+   "callers": [
+    "$81:DEEA"
+   ],
+   "class": "inferred",
+   "end": "$81:E013",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$81:E00E",
+   "static_entries": {
+    "JMP": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 154,
+   "callers": [
+    "$81:DDAC"
+   ],
+   "class": "inferred",
+   "end": "$81:E0AD",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$81:E014",
+   "static_entries": {
+    "JMP": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 128,
+   "callers": [
+    "$81:E01E"
+   ],
+   "class": "inferred",
+   "end": "$81:E12D",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$81:E0AE",
+   "static_entries": {
+    "JMP": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 154,
+   "callers": [
+    "$81:E019"
+   ],
+   "class": "inferred",
+   "end": "$81:E1C7",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$81:E12E",
+   "static_entries": {
+    "JMP": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 128,
+   "callers": [
+    "$81:E138"
+   ],
+   "class": "inferred",
+   "end": "$81:E247",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$81:E1C8",
+   "static_entries": {
+    "JMP": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 165,
+   "callers": [
+    "$81:E133"
+   ],
+   "class": "inferred",
+   "end": "$81:E2EC",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$81:E248",
+   "static_entries": {
+    "JMP": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 221,
+   "callers": [
+    "$81:E252"
+   ],
+   "class": "inferred",
+   "end": "$81:E3C9",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$81:E2ED",
+   "static_entries": {
+    "JMP": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 213,
+   "callers": [
+    "$81:E2F2"
+   ],
+   "class": "inferred",
+   "end": "$81:E49E",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$81:E3CA",
+   "static_entries": {
+    "JMP": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 165,
+   "callers": [
+    "$81:E24D",
+    "$81:E25A"
+   ],
+   "class": "inferred",
+   "end": "$81:E543",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$81:E49F",
+   "static_entries": {
+    "JMP": 2
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 221,
+   "callers": [
+    "$81:E4A9"
+   ],
+   "class": "inferred",
+   "end": "$81:E620",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$81:E544",
+   "static_entries": {
+    "JMP": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 213,
+   "callers": [
+    "$81:E549"
+   ],
+   "class": "inferred",
+   "end": "$81:E6F5",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$81:E621",
+   "static_entries": {
+    "JMP": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 165,
+   "callers": [
+    "$81:E4A4",
+    "$81:E4B1"
+   ],
+   "class": "inferred",
+   "end": "$81:E79A",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$81:E6F6",
+   "static_entries": {
+    "JMP": 2
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 150,
+   "callers": [
+    "$81:E70A"
+   ],
+   "class": "inferred",
+   "end": "$81:E830",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$81:E79B",
+   "static_entries": {
+    "JMP": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 151,
+   "callers": [
+    "$81:E702",
+    "$81:E7A0"
+   ],
+   "class": "inferred",
+   "end": "$81:E8C7",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$81:E831",
+   "static_entries": {
+    "JMP": 2
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 1,
+   "callers": [
+    "$81:DFB0",
+    "$81:E011",
+    "$81:E0AB",
+    "$81:E12B",
+    "$81:E1C5",
+    "$81:E245",
+    "$81:E2EA",
+    "$81:E3C7",
+    "$81:E49C",
+    "$81:E541",
+    "$81:E61E",
+    "$81:E6F3",
+    "$81:E798",
+    "$81:E82E"
+   ],
+   "class": "inferred",
+   "end": "$81:E8C8",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$81:E8C8",
+   "static_entries": {
+    "JMP": 14
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 134,
+   "callers": [
+    "$80:880E"
+   ],
+   "class": "observed",
+   "end": "$81:E94E",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$81:E8C9",
+   "static_entries": {
+    "JSL": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 93,
+   "callers": [
+    "$81:E900"
+   ],
+   "class": "inferred",
+   "end": "$81:E9AB",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$81:E94F",
+   "static_entries": {
+    "JMP": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 281,
+   "callers": [
+    "$81:E8FB",
+    "$81:E929"
+   ],
+   "class": "observed",
+   "end": "$81:EAC4",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$81:E9AC",
+   "static_entries": {
+    "JMP": 2
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 193,
+   "callers": [
+    "$81:E9F3"
+   ],
+   "class": "observed",
+   "end": "$81:EB85",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$81:EAC5",
+   "static_entries": {
+    "JMP": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 219,
+   "callers": [
+    "$81:E8ED",
+    "$81:E9E3",
+    "$81:E9EB",
+    "$81:EA09",
+    "$81:EA5B",
+    "$81:EA6C",
+    "$81:EAC2",
+    "$81:EAD8",
+    "$81:EB3A"
+   ],
+   "class": "observed",
+   "end": "$81:EC60",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$81:EB86",
+   "static_entries": {
+    "JMP": 9
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 91,
+   "callers": [
+    "$81:EB98"
+   ],
+   "class": "observed",
+   "end": "$81:ECBB",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$81:EC61",
+   "static_entries": {
+    "JMP": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 6,
+   "callers": [
+    "$81:EC5E"
+   ],
+   "class": "observed",
+   "end": "$81:ECC1",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$81:ECBC",
+   "static_entries": {
+    "JMP": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 154,
+   "callers": [
+    "$81:EB8B",
+    "$81:EB9B"
+   ],
+   "class": "observed",
+   "end": "$81:ED5B",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$81:ECC2",
+   "static_entries": {
+    "JMP": 2
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 128,
+   "callers": [
+    "$81:ECCC"
+   ],
+   "class": "observed",
+   "end": "$81:EDDB",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$81:ED5C",
+   "static_entries": {
+    "JMP": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 165,
+   "callers": [
+    "$81:ECC7"
+   ],
+   "class": "observed",
+   "end": "$81:EE80",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$81:EDDC",
+   "static_entries": {
+    "JMP": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 221,
+   "callers": [
+    "$81:EDE6"
+   ],
+   "class": "observed",
+   "end": "$81:EF5D",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$81:EE81",
+   "static_entries": {
+    "JMP": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 213,
+   "callers": [
+    "$81:EE86"
+   ],
+   "class": "observed",
+   "end": "$81:F032",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$81:EF5E",
+   "static_entries": {
+    "JMP": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 165,
+   "callers": [
+    "$81:EDE1",
+    "$81:EDEE"
+   ],
+   "class": "observed",
+   "end": "$81:F0D7",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$81:F033",
+   "static_entries": {
+    "JMP": 2
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 221,
+   "callers": [
+    "$81:F03D"
+   ],
+   "class": "observed",
+   "end": "$81:F1B4",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$81:F0D8",
+   "static_entries": {
+    "JMP": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 214,
+   "callers": [
+    "$81:F0DD"
+   ],
+   "class": "inferred",
+   "end": "$81:F28A",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$81:F1B5",
+   "static_entries": {
+    "JMP": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 204,
+   "callers": [
+    "$81:F038",
+    "$81:F045"
+   ],
+   "class": "observed",
+   "end": "$81:F356",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$81:F28B",
+   "static_entries": {
+    "JMP": 2
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 1,
+   "callers": [
+    "$81:ECBF",
+    "$81:ED59",
+    "$81:EDD9",
+    "$81:EE7E",
+    "$81:EF5B",
+    "$81:F030",
+    "$81:F0D5",
+    "$81:F1B2",
+    "$81:F288",
+    "$81:F303"
+   ],
+   "class": "observed",
+   "end": "$81:F357",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$81:F357",
+   "static_entries": {
+    "JMP": 10
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 53,
+   "callers": [
+    "$80:99BA",
+    "$80:A11C",
+    "$80:A123",
+    "$80:A12A",
+    "$80:B116",
+    "$80:B11D",
+    "$80:B12B",
+    "$80:B132",
+    "$80:B140",
+    "$80:B147",
+    "$80:B155",
+    "$80:B15C",
+    "$80:B17F",
+    "$80:B186",
+    "$81:82A2",
+    "$81:82AB",
+    "$81:82B2",
+    "$81:86A9",
+    "$81:9447",
+    "$81:C1AE",
+    "$81:C1BD",
+    "$81:C1CF",
+    "$81:C1DA",
+    "$81:C1EC",
+    "$81:C1F7",
+    "$81:C20B",
+    "$81:C212",
+    "$81:C2EF",
+    "$81:C2FE",
+    "$81:C310",
+    "$81:C31B",
+    "$81:C32D",
+    "$81:C338",
+    "$81:C34C",
+    "$81:C353",
+    "$81:C79D",
+    "$81:C8ED",
+    "$82:99AA",
+    "$82:99B1",
+    "$82:99DE",
+    "$82:99E5",
+    "$82:9A18",
+    "$82:9A1F",
+    "$82:9A3B",
+    "$82:9A42",
+    "$82:A3F4",
+    "$82:A522",
+    "$82:A529",
+    "$82:A545",
+    "$82:A54C",
+    "$82:A57D",
+    "$82:A584",
+    "$82:A59F",
+    "$82:A5A6",
+    "$82:A5CF",
+    "$82:A5D6",
+    "$82:A5EC",
+    "$82:A5F3",
+    "$82:D84A",
+    "$82:DED0",
+    "$82:DED7",
+    "$82:DEDE",
+    "$82:E0BC",
+    "$83:A28D",
+    "$83:A294",
+    "$83:A647",
+    "$83:A64E",
+    "$83:A655",
+    "$83:A761",
+    "$83:A768",
+    "$83:A76F",
+    "$83:CA52",
+    "$83:CA59",
+    "$83:CA97",
+    "$83:CA9E",
+    "$83:CADC",
+    "$83:CAE3",
+    "$83:CB21",
+    "$83:CB28",
+    "$83:CB66",
+    "$83:CB6D",
+    "$83:CBAB",
+    "$83:CBB2",
+    "$83:CBDE",
+    "$83:CF1C",
+    "$83:CF58",
+    "$83:CF9A",
+    "$83:CFDC",
+    "$83:D01E",
+    "$83:D060",
+    "$83:D0A2",
+    "$83:D0E4",
+    "$83:E26A",
+    "$83:E5F4",
+    "$83:E646",
+    "$83:E698",
+    "$83:E6FA",
+    "$83:E7F5",
+    "$83:E828",
+    "$83:F686",
+    "$83:F933"
+   ],
+   "class": "observed",
+   "end": "$82:8034",
+   "mode_at_entry": [
+    "NMX",
+    "NMx"
+   ],
+   "observed_entries": {},
+   "start": "$82:8000",
+   "static_entries": {
+    "JSL": 101
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 73,
+   "callers": [
+    "$80:99BE",
+    "$80:FADF",
+    "$80:FAE8",
+    "$82:DEE2",
+    "$82:DEE6",
+    "$82:DEEA",
+    "$82:DEEE",
+    "$82:DEF2",
+    "$82:DEF6",
+    "$82:DEFA",
+    "$82:DEFE",
+    "$82:E099",
+    "$82:E09D",
+    "$82:E0A1",
+    "$82:E0A5",
+    "$82:E0A9",
+    "$82:E0AD",
+    "$82:E0B1",
+    "$82:E0B5",
+    "$82:E0C2",
+    "$82:E0C6",
+    "$82:E0CA",
+    "$82:E0CE",
+    "$82:E0D2",
+    "$82:E0D6",
+    "$82:E0DA",
+    "$82:E0DE",
+    "$82:E0E2",
+    "$82:E0E6",
+    "$82:E0EA",
+    "$82:E0EE",
+    "$82:E0F2",
+    "$82:E0F6",
+    "$82:E0FA",
+    "$82:E0FE",
+    "$83:A659",
+    "$83:A65D",
+    "$83:A661",
+    "$83:A665",
+    "$83:A669",
+    "$83:A926",
+    "$83:A92F",
+    "$83:CBE2",
+    "$83:CBE6",
+    "$83:CBEA",
+    "$83:CBEE",
+    "$83:CD6E",
+    "$83:CD9F",
+    "$83:E26E",
+    "$83:E272",
+    "$83:E739",
+    "$83:E74F",
+    "$83:E785",
+    "$83:E7F9",
+    "$83:E7FD",
+    "$83:E82C",
+    "$83:E830",
+    "$83:F65E",
+    "$83:F662",
+    "$83:F666",
+    "$83:F66A",
+    "$83:F66E",
+    "$83:F672",
+    "$83:F676",
+    "$83:F67A",
+    "$83:F68A",
+    "$83:F68E",
+    "$83:F937",
+    "$83:F93B"
+   ],
+   "class": "observed",
+   "end": "$82:807D",
+   "mode_at_entry": [
+    "NMX",
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$82:8035",
+   "static_entries": {
+    "JSL": 69
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 4,
+   "callers": [
+    "$80:A0FC",
+    "$80:A105",
+    "$80:A10E",
+    "$82:E07C",
+    "$82:E085",
+    "$82:E08E",
+    "$83:A627",
+    "$83:A630",
+    "$83:A639",
+    "$83:A741",
+    "$83:A74A",
+    "$83:A753",
+    "$83:CA32",
+    "$83:CA3B",
+    "$83:CA44",
+    "$83:CA77",
+    "$83:CA80",
+    "$83:CA89",
+    "$83:CABC",
+    "$83:CAC5",
+    "$83:CACE",
+    "$83:CB01",
+    "$83:CB0A",
+    "$83:CB13",
+    "$83:CB46",
+    "$83:CB4F",
+    "$83:CB58",
+    "$83:CB8B",
+    "$83:CB94",
+    "$83:CB9D"
+   ],
+   "class": "observed",
+   "end": "$82:8081",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$82:807E",
+   "static_entries": {
+    "JSL": 30
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 168,
+   "callers": [
+    "$82:807E"
+   ],
+   "class": "observed",
+   "end": "$82:8129",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$82:8082",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 39,
+   "callers": [
+    "$82:808F",
+    "$82:82C9"
+   ],
+   "class": "observed",
+   "end": "$82:8150",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$82:812A",
+   "static_entries": {
+    "JSR": 2
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 16,
+   "callers": [
+    "$82:809F",
+    "$82:80A2",
+    "$82:80A8",
+    "$82:80AB",
+    "$82:80B7",
+    "$82:80CE"
+   ],
+   "class": "observed",
+   "end": "$82:8160",
+   "mode_at_entry": [
+    "NMX",
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$82:8151",
+   "static_entries": {
+    "JSR": 6
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 4,
+   "callers": [
+    "$82:E071",
+    "$83:C9D9"
+   ],
+   "class": "observed",
+   "end": "$82:8297",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$82:8294",
+   "static_entries": {
+    "JSL": 2
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 13,
+   "callers": [
+    "$82:8294"
+   ],
+   "class": "observed",
+   "end": "$82:82A4",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$82:8298",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 4,
+   "callers": [
+    "$80:A115",
+    "$82:E095",
+    "$83:A640",
+    "$83:A75A",
+    "$83:CA4B",
+    "$83:CA90",
+    "$83:CAD5",
+    "$83:CB1A",
+    "$83:CB5F",
+    "$83:CBA4"
+   ],
+   "class": "observed",
+   "end": "$82:82A8",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$82:82A5",
+   "static_entries": {
+    "JSL": 10
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 127,
+   "callers": [
+    "$82:82A5"
+   ],
+   "class": "observed",
+   "end": "$82:8327",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$82:82A9",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 15,
+   "callers": [
+    "$82:82BD"
+   ],
+   "class": "observed",
+   "end": "$82:8336",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$82:8328",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 4,
+   "callers": [
+    "$83:CDA6"
+   ],
+   "class": "observed",
+   "end": "$82:833A",
+   "mode_at_entry": [
+    "NMx"
+   ],
+   "observed_entries": {},
+   "start": "$82:8337",
+   "static_entries": {
+    "JSL": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 138,
+   "callers": [
+    "$82:8337"
+   ],
+   "class": "observed",
+   "end": "$82:83F6",
+   "mode_at_entry": [
+    "NMx"
+   ],
+   "observed_entries": {},
+   "start": "$82:836D",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 112,
+   "callers": [
+    "$82:8492"
+   ],
+   "class": "observed",
+   "end": "$82:8466",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$82:83F7",
+   "static_entries": {
+    "JMP": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 46,
+   "callers": [
+    "$82:83C6"
+   ],
+   "class": "observed",
+   "end": "$82:8494",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$82:8467",
+   "static_entries": {
+    "JMP": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 124,
+   "callers": [
+    "$82:83CF"
+   ],
+   "class": "observed",
+   "end": "$82:8510",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$82:8495",
+   "static_entries": {
+    "JMP": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 12,
+   "callers": [
+    "$82:83B1",
+    "$82:83BE",
+    "$82:83EF",
+    "$82:8428",
+    "$82:845E",
+    "$82:848A"
+   ],
+   "class": "observed",
+   "end": "$82:851C",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$82:8511",
+   "static_entries": {
+    "JMP": 6
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 119,
+   "callers": [
+    "$82:842E",
+    "$82:8464"
+   ],
+   "class": "observed",
+   "end": "$82:8593",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$82:851D",
+   "static_entries": {
+    "JMP": 2
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 6,
+   "callers": [
+    "$82:854C"
+   ],
+   "class": "observed",
+   "end": "$82:8599",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$82:8594",
+   "static_entries": {
+    "JMP": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 136,
+   "callers": [
+    "$82:8374",
+    "$82:8528"
+   ],
+   "class": "observed",
+   "end": "$82:8621",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$82:859A",
+   "static_entries": {
+    "JMP": 2
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 112,
+   "callers": [
+    "$82:86BD"
+   ],
+   "class": "observed",
+   "end": "$82:8691",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$82:8622",
+   "static_entries": {
+    "JMP": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 46,
+   "callers": [
+    "$82:85F1"
+   ],
+   "class": "observed",
+   "end": "$82:86BF",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$82:8692",
+   "static_entries": {
+    "JMP": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 124,
+   "callers": [
+    "$82:85FA"
+   ],
+   "class": "observed",
+   "end": "$82:873B",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$82:86C0",
+   "static_entries": {
+    "JMP": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 12,
+   "callers": [
+    "$82:85DC",
+    "$82:85E9",
+    "$82:861A",
+    "$82:8653",
+    "$82:8689",
+    "$82:86B5"
+   ],
+   "class": "observed",
+   "end": "$82:8747",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$82:873C",
+   "static_entries": {
+    "JMP": 6
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 122,
+   "callers": [
+    "$82:8659",
+    "$82:868F"
+   ],
+   "class": "observed",
+   "end": "$82:87C1",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$82:8748",
+   "static_entries": {
+    "JMP": 2
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 6,
+   "callers": [
+    "$82:877A"
+   ],
+   "class": "observed",
+   "end": "$82:87C7",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$82:87C2",
+   "static_entries": {
+    "JMP": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 1,
+   "callers": [
+    "$82:859F",
+    "$82:8753"
+   ],
+   "class": "observed",
+   "end": "$82:87C8",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$82:87C8",
+   "static_entries": {
+    "JMP": 2
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 318,
+   "callers": [
+    "$82:8525",
+    "$82:8597",
+    "$82:8750",
+    "$82:87C5"
+   ],
+   "class": "observed",
+   "end": "$82:8906",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$82:87C9",
+   "static_entries": {
+    "JSR": 4
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 11,
+   "callers": [
+    "$82:87F0",
+    "$82:8817",
+    "$82:883C",
+    "$82:8851",
+    "$82:8864",
+    "$82:8872"
+   ],
+   "class": "observed",
+   "end": "$82:8911",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$82:8907",
+   "static_entries": {
+    "JMP": 6
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 9,
+   "callers": [
+    "$82:87F3",
+    "$82:8839",
+    "$82:884E"
+   ],
+   "class": "observed",
+   "end": "$82:891A",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$82:8912",
+   "static_entries": {
+    "JMP": 3
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 12,
+   "callers": [
+    "$82:87EB",
+    "$82:87FE",
+    "$82:8809",
+    "$82:8814",
+    "$82:8834",
+    "$82:8849",
+    "$82:8861",
+    "$82:886F",
+    "$82:888F"
+   ],
+   "class": "observed",
+   "end": "$82:8926",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$82:891B",
+   "static_entries": {
+    "JMP": 9
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 40,
+   "callers": [
+    "$82:8768"
+   ],
+   "class": "inferred",
+   "end": "$82:894E",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$82:8927",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 4,
+   "callers": [
+    "$83:EA0D",
+    "$83:EB9F"
+   ],
+   "class": "observed",
+   "end": "$82:8952",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$82:894F",
+   "static_entries": {
+    "JSL": 2
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 117,
+   "callers": [
+    "$82:894F"
+   ],
+   "class": "observed",
+   "end": "$82:89C7",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$82:8953",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 4,
+   "callers": [
+    "$83:CD72"
+   ],
+   "class": "observed",
+   "end": "$82:89CB",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$82:89C8",
+   "static_entries": {
+    "JSL": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 2507,
+   "callers": [
+    "$82:89C8"
+   ],
+   "class": "observed",
+   "end": "$82:9396",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$82:89CC",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 1,
+   "callers": [
+    "$82:8EB5"
+   ],
+   "class": "observed",
+   "end": "$82:9397",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$82:9397",
+   "static_entries": {
+    "JMP": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 138,
+   "callers": [
+    "$82:8C53",
+    "$82:913A"
+   ],
+   "class": "observed",
+   "end": "$82:9421",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$82:9398",
+   "static_entries": {
+    "JSR": 2
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 317,
+   "callers": [
+    "$82:93AD"
+   ],
+   "class": "inferred",
+   "end": "$82:955E",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$82:9422",
+   "static_entries": {
+    "JMP": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 60,
+   "callers": [
+    "$82:94D4"
+   ],
+   "class": "inferred",
+   "end": "$82:959A",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$82:955F",
+   "static_entries": {
+    "JMP": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 36,
+   "callers": [
+    "$82:94DC"
+   ],
+   "class": "inferred",
+   "end": "$82:95BE",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$82:959B",
+   "static_entries": {
+    "JMP": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 119,
+   "callers": [
+    "$82:953A",
+    "$82:954A",
+    "$82:9598"
+   ],
+   "class": "inferred",
+   "end": "$82:9635",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$82:95BF",
+   "static_entries": {
+    "JMP": 3
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 40,
+   "callers": [
+    "$82:95A0",
+    "$82:95AB",
+    "$82:95B6"
+   ],
+   "class": "inferred",
+   "end": "$82:965D",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$82:9636",
+   "static_entries": {
+    "JMP": 3
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 101,
+   "callers": [
+    "$82:93A5"
+   ],
+   "class": "inferred",
+   "end": "$82:96C2",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$82:965E",
+   "static_entries": {
+    "JMP": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 81,
+   "callers": [
+    "$82:963E"
+   ],
+   "class": "inferred",
+   "end": "$82:9713",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$82:96C3",
+   "static_entries": {
+    "JMP": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 1,
+   "callers": [
+    "$82:93B5",
+    "$82:93C0",
+    "$82:93CB",
+    "$82:93D3",
+    "$82:955C",
+    "$82:9633",
+    "$82:965B"
+   ],
+   "class": "observed",
+   "end": "$82:9714",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$82:9714",
+   "static_entries": {
+    "JMP": 7
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 133,
+   "callers": [
+    "$82:8C6B",
+    "$82:9152"
+   ],
+   "class": "observed",
+   "end": "$82:9799",
+   "mode_at_entry": [
+    "NMX",
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$82:9715",
+   "static_entries": {
+    "JSR": 2
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 83,
+   "callers": [
+    "$82:972F"
+   ],
+   "class": "observed",
+   "end": "$82:97EC",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$82:979A",
+   "static_entries": {
+    "JMP": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 4,
+   "callers": [
+    "$83:CD7D"
+   ],
+   "class": "observed",
+   "end": "$82:9821",
+   "mode_at_entry": [
+    "NMX",
+    "Nmx"
+   ],
+   "observed_entries": {},
+   "start": "$82:981E",
+   "static_entries": {
+    "JSL": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 173,
+   "callers": [
+    "$82:981E"
+   ],
+   "class": "observed",
+   "end": "$82:98CE",
+   "mode_at_entry": [
+    "NMX",
+    "Nmx"
+   ],
+   "observed_entries": {},
+   "start": "$82:9822",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 203,
+   "callers": [
+    "$82:8C7B",
+    "$82:9165"
+   ],
+   "class": "observed",
+   "end": "$82:9999",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$82:98CF",
+   "static_entries": {
+    "JSR": 2
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 145,
+   "callers": [
+    "$82:98EF"
+   ],
+   "class": "observed",
+   "end": "$82:9A2A",
+   "mode_at_entry": [
+    "NMx"
+   ],
+   "observed_entries": {},
+   "start": "$82:999A",
+   "static_entries": {
+    "JMP": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 33,
+   "callers": [
+    "$82:994F"
+   ],
+   "class": "observed",
+   "end": "$82:9A4B",
+   "mode_at_entry": [
+    "NMx"
+   ],
+   "observed_entries": {},
+   "start": "$82:9A2B",
+   "static_entries": {
+    "JMP": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 6,
+   "callers": [
+    "$82:999F",
+    "$82:99BB",
+    "$82:99C3",
+    "$82:99CB",
+    "$82:99D3"
+   ],
+   "class": "observed",
+   "end": "$82:9A51",
+   "mode_at_entry": [
+    "NMX",
+    "NMx"
+   ],
+   "observed_entries": {},
+   "start": "$82:9A4C",
+   "static_entries": {
+    "JMP": 5
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 1,
+   "callers": [
+    "$82:98DB",
+    "$82:9920",
+    "$82:9929",
+    "$82:993C",
+    "$82:9945"
+   ],
+   "class": "observed",
+   "end": "$82:9A52",
+   "mode_at_entry": [
+    "NMX",
+    "NMx"
+   ],
+   "observed_entries": {},
+   "start": "$82:9A52",
+   "static_entries": {
+    "JMP": 5
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 147,
+   "callers": [
+    "$82:8C56",
+    "$82:8C75",
+    "$82:913D",
+    "$82:915C"
+   ],
+   "class": "observed",
+   "end": "$82:9AE5",
+   "mode_at_entry": [
+    "NMX",
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$82:9A53",
+   "static_entries": {
+    "JSR": 4
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 131,
+   "callers": [
+    "$82:9A7E"
+   ],
+   "class": "observed",
+   "end": "$82:9B68",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$82:9AE6",
+   "static_entries": {
+    "JMP": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 523,
+   "callers": [
+    "$82:9A6E",
+    "$82:9A79"
+   ],
+   "class": "observed",
+   "end": "$82:9D73",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$82:9B69",
+   "static_entries": {
+    "JMP": 2
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 35,
+   "callers": [
+    "$82:9BA0",
+    "$82:9BBD"
+   ],
+   "class": "observed",
+   "end": "$82:9D96",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$82:9D74",
+   "static_entries": {
+    "JMP": 2
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 1,
+   "callers": [
+    "$82:9ABA",
+    "$82:9B66"
+   ],
+   "class": "observed",
+   "end": "$82:9D97",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$82:9D97",
+   "static_entries": {
+    "JMP": 2
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 66,
+   "callers": [
+    "$82:8C59",
+    "$82:9140"
+   ],
+   "class": "observed",
+   "end": "$82:A068",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$82:A027",
+   "static_entries": {
+    "JSR": 2
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 78,
+   "callers": [
+    "$82:8C5C",
+    "$82:9143"
+   ],
+   "class": "observed",
+   "end": "$82:A0B6",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$82:A069",
+   "static_entries": {
+    "JSR": 2
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 38,
+   "callers": [
+    "$82:8C7E",
+    "$82:9168"
+   ],
+   "class": "observed",
+   "end": "$82:A0DC",
+   "mode_at_entry": [
+    "NMX",
+    "NMx"
+   ],
+   "observed_entries": {},
+   "start": "$82:A0B7",
+   "static_entries": {
+    "JSR": 2
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 345,
+   "callers": [
+    "$82:A0BE"
+   ],
+   "class": "observed",
+   "end": "$82:A235",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$82:A0DD",
+   "static_entries": {
+    "JMP": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 1,
+   "callers": [
+    "$82:A0F2"
+   ],
+   "class": "observed",
+   "end": "$82:A236",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$82:A236",
+   "static_entries": {
+    "JMP": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 81,
+   "callers": [
+    "$82:8C65",
+    "$82:914C"
+   ],
+   "class": "observed",
+   "end": "$82:A287",
+   "mode_at_entry": [
+    "NMx"
+   ],
+   "observed_entries": {},
+   "start": "$82:A237",
+   "static_entries": {
+    "JSR": 2
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 83,
+   "callers": [
+    "$82:8C78",
+    "$82:915F"
+   ],
+   "class": "observed",
+   "end": "$82:A2DA",
+   "mode_at_entry": [
+    "NMX",
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$82:A288",
+   "static_entries": {
+    "JSR": 2
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 59,
+   "callers": [
+    "$82:8C49",
+    "$82:9162"
+   ],
+   "class": "observed",
+   "end": "$82:A395",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$82:A35B",
+   "static_entries": {
+    "JSR": 2
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 245,
+   "callers": [
+    "$82:A385"
+   ],
+   "class": "observed",
+   "end": "$82:A48A",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$82:A396",
+   "static_entries": {
+    "JMP": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 1,
+   "callers": [
+    "$82:A362",
+    "$82:A37A",
+    "$82:A393",
+    "$82:A3A8",
+    "$82:A3B0",
+    "$82:A3C0",
+    "$82:A3CA",
+    "$82:A3D4",
+    "$82:A408",
+    "$82:A410"
+   ],
+   "class": "observed",
+   "end": "$82:A49E",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$82:A49E",
+   "static_entries": {
+    "JMP": 10
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 96,
+   "callers": [
+    "$82:8C68",
+    "$82:914F"
+   ],
+   "class": "observed",
+   "end": "$82:A4FE",
+   "mode_at_entry": [
+    "NMx"
+   ],
+   "observed_entries": {},
+   "start": "$82:A49F",
+   "static_entries": {
+    "JSR": 2
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 92,
+   "callers": [
+    "$82:A4F1"
+   ],
+   "class": "observed",
+   "end": "$82:A55A",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$82:A4FF",
+   "static_entries": {
+    "JMP": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 89,
+   "callers": [
+    "$82:A4F9"
+   ],
+   "class": "observed",
+   "end": "$82:A5B3",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$82:A55B",
+   "static_entries": {
+    "JMP": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 69,
+   "callers": [
+    "$82:A4AB",
+    "$82:A4C7",
+    "$82:A4D1",
+    "$82:A4D9",
+    "$82:A4FC",
+    "$82:A504"
+   ],
+   "class": "observed",
+   "end": "$82:A5F8",
+   "mode_at_entry": [
+    "NMX",
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$82:A5B4",
+   "static_entries": {
+    "JMP": 6
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 1,
+   "callers": [
+    "$82:A4E1",
+    "$82:A4E9",
+    "$82:A51A",
+    "$82:A535",
+    "$82:A53D",
+    "$82:A558",
+    "$82:A575",
+    "$82:A597"
+   ],
+   "class": "observed",
+   "end": "$82:A5F9",
+   "mode_at_entry": [
+    "NMX",
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$82:A5F9",
+   "static_entries": {
+    "JMP": 8
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 37,
+   "callers": [
+    "$82:8C62",
+    "$82:9149"
+   ],
+   "class": "observed",
+   "end": "$82:A61E",
+   "mode_at_entry": [
+    "NMx"
+   ],
+   "observed_entries": {},
+   "start": "$82:A5FA",
+   "static_entries": {
+    "JSR": 2
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 217,
+   "callers": [
+    "$82:8C84",
+    "$82:916E"
+   ],
+   "class": "observed",
+   "end": "$82:A6F7",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$82:A61F",
+   "static_entries": {
+    "JSR": 2
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 163,
+   "callers": [
+    "$82:A61F"
+   ],
+   "class": "observed",
+   "end": "$82:A79A",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$82:A6F8",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 1,
+   "callers": [
+    "$82:A702"
+   ],
+   "class": "observed",
+   "end": "$82:A8C8",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$82:A8C8",
+   "static_entries": {
+    "JMP": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 165,
+   "callers": [
+    "$82:8C5F",
+    "$82:9146"
+   ],
+   "class": "observed",
+   "end": "$82:A96D",
+   "mode_at_entry": [
+    "NMx"
+   ],
+   "observed_entries": {},
+   "start": "$82:A8C9",
+   "static_entries": {
+    "JSR": 2
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 1,
+   "callers": [
+    "$82:A8D5",
+    "$82:A8DD",
+    "$82:A8E5"
+   ],
+   "class": "observed",
+   "end": "$82:A96E",
+   "mode_at_entry": [
+    "NMx"
+   ],
+   "observed_entries": {},
+   "start": "$82:A96E",
+   "static_entries": {
+    "JMP": 3
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 68,
+   "callers": [
+    "$82:8C81",
+    "$82:916B"
+   ],
+   "class": "observed",
+   "end": "$82:A9B2",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$82:A96F",
+   "static_entries": {
+    "JSR": 2
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 93,
+   "callers": [
+    "$82:9931",
+    "$82:9959"
+   ],
+   "class": "observed",
+   "end": "$82:AA0F",
+   "mode_at_entry": [
+    "NMx"
+   ],
+   "observed_entries": {},
+   "start": "$82:A9B3",
+   "static_entries": {
+    "JSR": 2
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 97,
+   "callers": [
+    "$82:9915",
+    "$82:9954"
+   ],
+   "class": "observed",
+   "end": "$82:AA70",
+   "mode_at_entry": [
+    "NMx"
+   ],
+   "observed_entries": {},
+   "start": "$82:AA10",
+   "static_entries": {
+    "JSR": 2
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 4,
+   "callers": [
+    "$82:DE0A",
+    "$83:CCA5"
+   ],
+   "class": "observed",
+   "end": "$82:AA74",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$82:AA71",
+   "static_entries": {
+    "JSL": 2
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 231,
+   "callers": [
+    "$82:AA71"
+   ],
+   "class": "observed",
+   "end": "$82:AB5B",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$82:AA75",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 19,
+   "callers": [
+    "$82:AAA1"
+   ],
+   "class": "observed",
+   "end": "$82:AB6E",
+   "mode_at_entry": [
+    "Nmx"
+   ],
+   "observed_entries": {},
+   "start": "$82:AB5C",
+   "static_entries": {
+    "JMP": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 235,
+   "callers": [
+    "$82:AB67"
+   ],
+   "class": "observed",
+   "end": "$82:AC59",
+   "mode_at_entry": [
+    "Nmx"
+   ],
+   "observed_entries": {},
+   "start": "$82:AB6F",
+   "static_entries": {
+    "JMP": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 78,
+   "callers": [
+    "$82:AB8E"
+   ],
+   "class": "observed",
+   "end": "$82:ACA7",
+   "mode_at_entry": [
+    "Nmx"
+   ],
+   "observed_entries": {},
+   "start": "$82:AC5A",
+   "static_entries": {
+    "JMP": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 4,
+   "callers": [
+    "$83:CD9B"
+   ],
+   "class": "observed",
+   "end": "$82:ACAB",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$82:ACA8",
+   "static_entries": {
+    "JSL": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 194,
+   "callers": [
+    "$82:ACA8"
+   ],
+   "class": "observed",
+   "end": "$82:AD6D",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$82:ACAC",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 243,
+   "callers": [
+    "$82:ACE3",
+    "$82:ACEB"
+   ],
+   "class": "observed",
+   "end": "$82:AE60",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$82:AD6E",
+   "static_entries": {
+    "JMP": 2
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 29,
+   "callers": [
+    "$82:ADB3"
+   ],
+   "class": "inferred",
+   "end": "$82:AE7D",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$82:AE61",
+   "static_entries": {
+    "JMP": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 357,
+   "callers": [
+    "$82:AE6F",
+    "$82:AE77",
+    "$82:AEB3",
+    "$82:AEBB"
+   ],
+   "class": "inferred",
+   "end": "$82:B059",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$82:AEF5",
+   "static_entries": {
+    "JMP": 4
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 250,
+   "callers": [
+    "$82:ADBB",
+    "$82:AE5E",
+    "$82:AF35"
+   ],
+   "class": "observed",
+   "end": "$82:B153",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$82:B05A",
+   "static_entries": {
+    "JMP": 3
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 47,
+   "callers": [
+    "$82:B066",
+    "$82:B071"
+   ],
+   "class": "observed",
+   "end": "$82:B182",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$82:B154",
+   "static_entries": {
+    "JMP": 2
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 43,
+   "callers": [
+    "$80:952C",
+    "$80:953A",
+    "$80:9769",
+    "$80:9772",
+    "$80:977B",
+    "$80:A0DC",
+    "$80:A863",
+    "$80:A872",
+    "$80:B0AC",
+    "$80:B3F8",
+    "$80:B40F",
+    "$80:B425",
+    "$80:D118",
+    "$80:D121",
+    "$80:D12A",
+    "$80:D174",
+    "$80:D25F",
+    "$80:D26D",
+    "$80:E88D",
+    "$80:E8A1",
+    "$80:F4DE",
+    "$80:F507",
+    "$80:F510",
+    "$80:F5A2",
+    "$82:DC73",
+    "$82:DC82",
+    "$82:DC8C",
+    "$82:DC96",
+    "$82:DCA0",
+    "$82:DCAA",
+    "$82:DCB4",
+    "$82:DCD2",
+    "$82:DCDC",
+    "$82:DCE6",
+    "$82:DCF0",
+    "$82:DCFA",
+    "$82:DD04",
+    "$82:DD10",
+    "$82:DD1A",
+    "$82:DD24",
+    "$82:DD2E",
+    "$82:DD38",
+    "$82:DD42",
+    "$82:DD4E",
+    "$82:DD58",
+    "$82:DD62",
+    "$82:DD6C",
+    "$82:DD76",
+    "$82:DD80",
+    "$82:DD9A",
+    "$82:DDAA",
+    "$82:DDBC",
+    "$82:DDC5",
+    "$82:E024",
+    "$82:E02E",
+    "$82:E040",
+    "$82:E054",
+    "$82:E068",
+    "$83:9210",
+    "$83:9223",
+    "$83:A712",
+    "$83:A71C",
+    "$83:A7C0",
+    "$83:A7CD",
+    "$83:A7D7",
+    "$83:A7E1",
+    "$83:ABBE",
+    "$83:ABDF",
+    "$83:AC05",
+    "$83:AC88",
+    "$83:AC92",
+    "$83:ACE2",
+    "$83:ACEB",
+    "$83:ACF4",
+    "$83:ACFD",
+    "$83:AD06",
+    "$83:AD0F",
+    "$83:AD18",
+    "$83:AD21",
+    "$83:AF22",
+    "$83:AF30",
+    "$83:AF77",
+    "$83:AF89",
+    "$83:FB09"
+   ],
+   "class": "observed",
+   "end": "$82:B1AD",
+   "mode_at_entry": [
+    "NMX",
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$82:B183",
+   "static_entries": {
+    "JSL": 84
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 45,
+   "callers": [
+    "$83:AF3E",
+    "$83:AF65"
+   ],
+   "class": "inferred",
+   "end": "$82:B1DA",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$82:B1AE",
+   "static_entries": {
+    "JSL": 2
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 74,
+   "callers": [
+    "$80:A0E5",
+    "$80:B0B5",
+    "$80:B0BE",
+    "$80:D277",
+    "$80:D281",
+    "$80:D28B",
+    "$80:D295",
+    "$80:D29F",
+    "$80:D2A9",
+    "$80:F5AB",
+    "$80:F5B4",
+    "$82:DC57",
+    "$82:DC65",
+    "$82:DD8A",
+    "$82:DFFC",
+    "$82:E006",
+    "$82:E010",
+    "$82:E01A",
+    "$83:A7EB",
+    "$83:A7F5",
+    "$83:A7FF",
+    "$83:A809",
+    "$83:A813",
+    "$83:A81D",
+    "$83:A827",
+    "$83:ABC7",
+    "$83:ABD0",
+    "$83:ABE8",
+    "$83:ABF1",
+    "$83:AC0E",
+    "$83:AC17",
+    "$83:AC9C",
+    "$83:ACA6",
+    "$83:ACB0",
+    "$83:ACBA",
+    "$83:ACC4",
+    "$83:ACCE",
+    "$83:ACD9",
+    "$83:AF47",
+    "$83:AF50",
+    "$83:AF6E",
+    "$83:AF92",
+    "$83:FB13",
+    "$83:FB1D"
+   ],
+   "class": "observed",
+   "end": "$82:B224",
+   "mode_at_entry": [
+    "NMX",
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$82:B1DB",
+   "static_entries": {
+    "JSL": 44
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 22,
+   "callers": [
+    "$82:B19A",
+    "$82:B1A0",
+    "$82:B1C2",
+    "$82:B1C9",
+    "$82:B1F5",
+    "$82:B1FC",
+    "$82:B317"
+   ],
+   "class": "observed",
+   "end": "$82:B2AB",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$82:B296",
+   "static_entries": {
+    "JSR": 7
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 4,
+   "callers": [
+    "$82:E1BB"
+   ],
+   "class": "observed",
+   "end": "$82:B2AF",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$82:B2AC",
+   "static_entries": {
+    "JSL": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 45,
+   "callers": [
+    "$82:B18E",
+    "$82:B1B4",
+    "$82:B1E3",
+    "$82:B2AC",
+    "$82:B2E5"
+   ],
+   "class": "observed",
+   "end": "$82:B2DC",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$82:B2B0",
+   "static_entries": {
+    "JSR": 5
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 85,
+   "callers": [
+    "$82:E152"
+   ],
+   "class": "observed",
+   "end": "$82:B331",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$82:B2DD",
+   "static_entries": {
+    "JSL": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 4,
+   "callers": [
+    "$80:865F"
+   ],
+   "class": "observed",
+   "end": "$82:B8AD",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$82:B8AA",
+   "static_entries": {
+    "JSL": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 3215,
+   "callers": [
+    "$82:B8AA"
+   ],
+   "class": "observed",
+   "end": "$82:C53C",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$82:B8AE",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 3160,
+   "callers": [
+    "$82:B8DF"
+   ],
+   "class": "inferred",
+   "end": "$82:D194",
+   "mode_at_entry": [
+    "NMx"
+   ],
+   "observed_entries": {},
+   "start": "$82:C53D",
+   "static_entries": {
+    "JMP": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 4,
+   "callers": [
+    "$82:B8EB",
+    "$82:B912",
+    "$82:B939",
+    "$82:B960",
+    "$82:B987",
+    "$82:B9AE",
+    "$82:B9D5",
+    "$82:B9FC",
+    "$82:BA23",
+    "$82:BA4A",
+    "$82:BA71",
+    "$82:BA98",
+    "$82:BABF",
+    "$82:BAE6",
+    "$82:BB0D",
+    "$82:BB34",
+    "$82:BB5B",
+    "$82:BB82",
+    "$82:BBA9",
+    "$82:BBD0",
+    "$82:BBF7",
+    "$82:BC1E",
+    "$82:BC45",
+    "$82:BC6C",
+    "$82:BC93",
+    "$82:BCBA",
+    "$82:BCE1",
+    "$82:BD08",
+    "$82:BD2F",
+    "$82:BD56",
+    "$82:BD7D",
+    "$82:BDA4",
+    "$82:BDCB",
+    "$82:BDF2",
+    "$82:BE19",
+    "$82:BE40",
+    "$82:BE67",
+    "$82:BE8E",
+    "$82:BEB5",
+    "$82:BEDC",
+    "$82:BF03",
+    "$82:BF2A",
+    "$82:BF51",
+    "$82:BF78",
+    "$82:BF9F",
+    "$82:BFC6",
+    "$82:BFED",
+    "$82:C014",
+    "$82:C03B",
+    "$82:C062",
+    "$82:C089",
+    "$82:C0B0",
+    "$82:C0D7",
+    "$82:C0FE",
+    "$82:C125",
+    "$82:C14C",
+    "$82:C173",
+    "$82:C19A",
+    "$82:C1C1",
+    "$82:C1E8",
+    "$82:C20F",
+    "$82:C236",
+    "$82:C25D",
+    "$82:C284",
+    "$82:C2AB",
+    "$82:C2D2",
+    "$82:C2F9",
+    "$82:C320",
+    "$82:C347",
+    "$82:C36E",
+    "$82:C395",
+    "$82:C3BC",
+    "$82:C3E3",
+    "$82:C40A",
+    "$82:C431",
+    "$82:C458",
+    "$82:C47F",
+    "$82:C4A6",
+    "$82:C4CD",
+    "$82:C4F4",
+    "$82:C51B",
+    "$82:C53A",
+    "$82:C546",
+    "$82:C56D",
+    "$82:C594",
+    "$82:C5BB",
+    "$82:C5E2",
+    "$82:C609",
+    "$82:C630",
+    "$82:C657",
+    "$82:C67E",
+    "$82:C6A5",
+    "$82:C6CC",
+    "$82:C6F3",
+    "$82:C71A",
+    "$82:C741",
+    "$82:C768",
+    "$82:C78F",
+    "$82:C7B6",
+    "$82:C7DD",
+    "$82:C804",
+    "$82:C82B",
+    "$82:C852",
+    "$82:C879",
+    "$82:C8A0",
+    "$82:C8C7",
+    "$82:C8EE",
+    "$82:C915",
+    "$82:C93C",
+    "$82:C963",
+    "$82:C98A",
+    "$82:C9B1",
+    "$82:C9D8",
+    "$82:C9FF",
+    "$82:CA26",
+    "$82:CA4D",
+    "$82:CA74",
+    "$82:CA9B",
+    "$82:CAC2",
+    "$82:CAE9",
+    "$82:CB10",
+    "$82:CB37",
+    "$82:CB5E",
+    "$82:CB85",
+    "$82:CBAC",
+    "$82:CBD3",
+    "$82:CBFA",
+    "$82:CC21",
+    "$82:CC48",
+    "$82:CC6F",
+    "$82:CC96",
+    "$82:CCBD",
+    "$82:CCE4",
+    "$82:CD0B",
+    "$82:CD32",
+    "$82:CD59",
+    "$82:CD80",
+    "$82:CDA7",
+    "$82:CDCE",
+    "$82:CDF5",
+    "$82:CE1C",
+    "$82:CE43",
+    "$82:CE6A",
+    "$82:CE91",
+    "$82:CEB8",
+    "$82:CEDF",
+    "$82:CF06",
+    "$82:CF2D",
+    "$82:CF54",
+    "$82:CF7B",
+    "$82:CFA2",
+    "$82:CFC9",
+    "$82:CFF0",
+    "$82:D017",
+    "$82:D03E",
+    "$82:D065",
+    "$82:D08C",
+    "$82:D0B3",
+    "$82:D0DA",
+    "$82:D101",
+    "$82:D128",
+    "$82:D14F",
+    "$82:D176"
+   ],
+   "class": "observed",
+   "end": "$82:D198",
+   "mode_at_entry": [
+    "NMx"
+   ],
+   "observed_entries": {},
+   "start": "$82:D195",
+   "static_entries": {
+    "JMP": 163
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 1,
+   "callers": [
+    "$82:B8B7"
+   ],
+   "class": "observed",
+   "end": "$82:D199",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$82:D199",
+   "static_entries": {
+    "JMP": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 4,
+   "callers": [
+    "$80:87E1"
+   ],
+   "class": "observed",
+   "end": "$82:D19D",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$82:D19A",
+   "static_entries": {
+    "JSL": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 170,
+   "callers": [
+    "$82:D19A"
+   ],
+   "class": "observed",
+   "end": "$82:D247",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$82:D19E",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 143,
+   "callers": [
+    "$82:D1B9"
+   ],
+   "class": "observed",
+   "end": "$82:D2D6",
+   "mode_at_entry": [
+    "NMx"
+   ],
+   "observed_entries": {},
+   "start": "$82:D248",
+   "static_entries": {
+    "JMP": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 4,
+   "callers": [
+    "$80:865B"
+   ],
+   "class": "observed",
+   "end": "$82:D2DA",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$82:D2D7",
+   "static_entries": {
+    "JSL": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 123,
+   "callers": [
+    "$82:D2D7"
+   ],
+   "class": "observed",
+   "end": "$82:D355",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$82:D2DB",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 4,
+   "callers": [
+    "$80:8652"
+   ],
+   "class": "observed",
+   "end": "$82:D359",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$82:D356",
+   "static_entries": {
+    "JSL": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 36,
+   "callers": [
+    "$82:D356"
+   ],
+   "class": "observed",
+   "end": "$82:D37D",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$82:D35A",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 4,
+   "callers": [
+    "$80:881B"
+   ],
+   "class": "observed",
+   "end": "$82:D381",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$82:D37E",
+   "static_entries": {
+    "JSL": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 276,
+   "callers": [
+    "$82:D37E"
+   ],
+   "class": "observed",
+   "end": "$82:D495",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$82:D382",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 1,
+   "callers": [
+    "$82:D389"
+   ],
+   "class": "observed",
+   "end": "$82:D496",
+   "mode_at_entry": [
+    "Nmx"
+   ],
+   "observed_entries": {},
+   "start": "$82:D496",
+   "static_entries": {
+    "JMP": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 4,
+   "callers": [
+    "$82:DE06",
+    "$83:CC88"
+   ],
+   "class": "observed",
+   "end": "$82:D49A",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$82:D497",
+   "static_entries": {
+    "JSL": 2
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 13,
+   "callers": [
+    "$82:D497"
+   ],
+   "class": "observed",
+   "end": "$82:D4A7",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$82:D49B",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 4,
+   "callers": [
+    "$82:D716"
+   ],
+   "class": "observed",
+   "end": "$82:D4AB",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$82:D4A8",
+   "static_entries": {
+    "JSL": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 20,
+   "callers": [
+    "$82:D4A8"
+   ],
+   "class": "observed",
+   "end": "$82:D4BF",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$82:D4AC",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 4,
+   "callers": [
+    "$82:D71A"
+   ],
+   "class": "observed",
+   "end": "$82:D4C3",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$82:D4C0",
+   "static_entries": {
+    "JSL": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 20,
+   "callers": [
+    "$82:D4C0"
+   ],
+   "class": "observed",
+   "end": "$82:D4D7",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$82:D4C4",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 4,
+   "callers": [
+    "$83:CC7F"
+   ],
+   "class": "observed",
+   "end": "$82:D4DB",
+   "mode_at_entry": [
+    "Nmx"
+   ],
+   "observed_entries": {},
+   "start": "$82:D4D8",
+   "static_entries": {
+    "JSL": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 455,
+   "callers": [
+    "$82:D4D8"
+   ],
+   "class": "observed",
+   "end": "$82:D6E2",
+   "mode_at_entry": [
+    "Nmx"
+   ],
+   "observed_entries": {},
+   "start": "$82:D51C",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 4,
+   "callers": [
+    "$83:C99A"
+   ],
+   "class": "observed",
+   "end": "$82:D6E6",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$82:D6E3",
+   "static_entries": {
+    "JSL": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 56,
+   "callers": [
+    "$82:D6E3"
+   ],
+   "class": "observed",
+   "end": "$82:D71E",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$82:D6E7",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 133,
+   "callers": [
+    "$82:DBC0",
+    "$82:DDF1"
+   ],
+   "class": "observed",
+   "end": "$82:D7A3",
+   "mode_at_entry": [
+    "NMx"
+   ],
+   "observed_entries": {},
+   "start": "$82:D71F",
+   "static_entries": {
+    "JSR": 2
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 4,
+   "callers": [
+    "$83:C9D3"
+   ],
+   "class": "observed",
+   "end": "$82:D7C1",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$82:D7BE",
+   "static_entries": {
+    "JSL": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 4,
+   "callers": [
+    "$82:DDED",
+    "$83:C901",
+    "$83:C9CF"
+   ],
+   "class": "observed",
+   "end": "$82:D7C5",
+   "mode_at_entry": [
+    "NMX",
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$82:D7C2",
+   "static_entries": {
+    "JSL": 3
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 53,
+   "callers": [
+    "$82:D7C2"
+   ],
+   "class": "observed",
+   "end": "$82:D7FA",
+   "mode_at_entry": [
+    "NMX",
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$82:D7C6",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 988,
+   "callers": [
+    "$82:D7BE"
+   ],
+   "class": "observed",
+   "end": "$82:DBD6",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$82:D7FB",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 55,
+   "callers": [
+    "$82:DBCF"
+   ],
+   "class": "observed",
+   "end": "$82:DC0D",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$82:DBD7",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 4,
+   "callers": [
+    "$83:C9CB"
+   ],
+   "class": "observed",
+   "end": "$82:DC11",
+   "mode_at_entry": [
+    "Nmx"
+   ],
+   "observed_entries": {},
+   "start": "$82:DC0E",
+   "static_entries": {
+    "JSL": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 356,
+   "callers": [
+    "$82:DC0E"
+   ],
+   "class": "observed",
+   "end": "$82:DD83",
+   "mode_at_entry": [
+    "Nmx"
+   ],
+   "observed_entries": {},
+   "start": "$82:DC20",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 73,
+   "callers": [
+    "$82:DCB8"
+   ],
+   "class": "observed",
+   "end": "$82:DDCC",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$82:DD84",
+   "static_entries": {
+    "JMP": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 4,
+   "callers": [
+    "$83:C9C1"
+   ],
+   "class": "inferred",
+   "end": "$82:DDD0",
+   "mode_at_entry": [
+    "Nmx"
+   ],
+   "observed_entries": {},
+   "start": "$82:DDCD",
+   "static_entries": {
+    "JSL": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 53,
+   "callers": [
+    "$82:DDCD"
+   ],
+   "class": "inferred",
+   "end": "$82:DE05",
+   "mode_at_entry": [
+    "Nmx"
+   ],
+   "observed_entries": {},
+   "start": "$82:DDD1",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 255,
+   "callers": [
+    "$82:DF02"
+   ],
+   "class": "inferred",
+   "end": "$82:DF04",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$82:DE06",
+   "static_entries": {
+    "JMP": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 1,
+   "callers": [
+    "$82:DDE7",
+    "$82:DE45",
+    "$82:DE50",
+    "$82:DE5B"
+   ],
+   "class": "inferred",
+   "end": "$82:DF05",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$82:DF05",
+   "static_entries": {
+    "JMP": 4
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 152,
+   "callers": [
+    "$82:DE5E"
+   ],
+   "class": "inferred",
+   "end": "$82:DF9D",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$82:DF06",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 86,
+   "callers": [
+    "$82:DDF4"
+   ],
+   "class": "inferred",
+   "end": "$82:DFF3",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$82:DF9E",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 123,
+   "callers": [
+    "$82:DDEA"
+   ],
+   "class": "inferred",
+   "end": "$82:E06E",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$82:DFF4",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 148,
+   "callers": [
+    "$82:DDFA"
+   ],
+   "class": "inferred",
+   "end": "$82:E102",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$82:E06F",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 40,
+   "callers": [
+    "$82:DDF7"
+   ],
+   "class": "inferred",
+   "end": "$82:E12A",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$82:E103",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 114,
+   "callers": [
+    "$82:DDC9"
+   ],
+   "class": "observed",
+   "end": "$82:E19C",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$82:E12B",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 61,
+   "callers": [
+    "$82:E34B"
+   ],
+   "class": "observed",
+   "end": "$82:E1DB",
+   "mode_at_entry": [
+    "NMX",
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$82:E19F",
+   "static_entries": {
+    "JMP": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 370,
+   "callers": [
+    "$82:E2BD"
+   ],
+   "class": "observed",
+   "end": "$82:E34D",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$82:E1DC",
+   "static_entries": {
+    "JMP": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 14,
+   "callers": [
+    "$82:E1B5",
+    "$82:E2CA"
+   ],
+   "class": "observed",
+   "end": "$82:E35B",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$82:E34E",
+   "static_entries": {
+    "JMP": 2
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 85,
+   "callers": [
+    "$83:8EC5"
+   ],
+   "class": "observed",
+   "end": "$83:84D8",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$83:8484",
+   "static_entries": {
+    "JSL": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 56,
+   "callers": [
+    "$80:BC77"
+   ],
+   "class": "inferred",
+   "end": "$83:87D1",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$83:879A",
+   "static_entries": {
+    "JSL": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 4,
+   "callers": [
+    "$80:E733"
+   ],
+   "class": "observed",
+   "end": "$83:893F",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$83:893C",
+   "static_entries": {
+    "JSL": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 23,
+   "callers": [
+    "$83:8820",
+    "$83:893C"
+   ],
+   "class": "observed",
+   "end": "$83:8956",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$83:8940",
+   "static_entries": {
+    "JSR": 2
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 4,
+   "callers": [
+    "$80:BC30",
+    "$80:BC94"
+   ],
+   "class": "inferred",
+   "end": "$83:895A",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$83:8957",
+   "static_entries": {
+    "JSL": 2
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 22,
+   "callers": [
+    "$83:881D",
+    "$83:8957"
+   ],
+   "class": "inferred",
+   "end": "$83:8970",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$83:895B",
+   "static_entries": {
+    "JSR": 2
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 31,
+   "callers": [
+    "$80:9A4C"
+   ],
+   "class": "observed",
+   "end": "$83:89D8",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$83:89BA",
+   "static_entries": {
+    "JSL": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 44,
+   "callers": [
+    "$80:886D"
+   ],
+   "class": "observed",
+   "end": "$83:8B22",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$83:8AF7",
+   "static_entries": {
+    "JSL": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 46,
+   "callers": [
+    "$80:8874"
+   ],
+   "class": "observed",
+   "end": "$83:8B50",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$83:8B23",
+   "static_entries": {
+    "JSL": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 76,
+   "callers": [
+    "$80:88FC",
+    "$80:8C53",
+    "$80:955A",
+    "$80:95B6",
+    "$80:B1C7",
+    "$80:D204",
+    "$80:E740",
+    "$80:E880",
+    "$80:EF57",
+    "$83:A6B3",
+    "$83:A82F",
+    "$83:AC37"
+   ],
+   "class": "observed",
+   "end": "$83:8B9C",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$83:8B51",
+   "static_entries": {
+    "JSL": 12
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 44,
+   "callers": [
+    "$83:8B69",
+    "$83:8B74",
+    "$83:8B99"
+   ],
+   "class": "inferred",
+   "end": "$83:8BC8",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$83:8B9D",
+   "static_entries": {
+    "JSR": 3
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 4,
+   "callers": [
+    "$80:B235",
+    "$80:B243",
+    "$80:B26C",
+    "$80:B3BC",
+    "$80:B3C8",
+    "$80:B5DF",
+    "$83:8C8F",
+    "$83:8CA2"
+   ],
+   "class": "observed",
+   "end": "$83:8BCC",
+   "mode_at_entry": [
+    "NMX",
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$83:8BC9",
+   "static_entries": {
+    "JSL": 8
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 26,
+   "callers": [
+    "$83:8BC9"
+   ],
+   "class": "observed",
+   "end": "$83:8BE6",
+   "mode_at_entry": [
+    "NMX",
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$83:8BCD",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 148,
+   "callers": [
+    "$80:B5F2"
+   ],
+   "class": "inferred",
+   "end": "$83:8C7A",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$83:8BE7",
+   "static_entries": {
+    "JSL": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 4,
+   "callers": [
+    "$80:B5D8",
+    "$80:C6C5"
+   ],
+   "class": "observed",
+   "end": "$83:8C7E",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$83:8C7B",
+   "static_entries": {
+    "JSL": 2
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 222,
+   "callers": [
+    "$83:8C7B"
+   ],
+   "class": "observed",
+   "end": "$83:8D5C",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$83:8C7F",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 131,
+   "callers": [
+    "$80:B293",
+    "$80:E781",
+    "$80:E79B",
+    "$80:E8B8"
+   ],
+   "class": "observed",
+   "end": "$83:8E11",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$83:8D8F",
+   "static_entries": {
+    "JSL": 4
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 196,
+   "callers": [
+    "$80:CB33",
+    "$80:CC05",
+    "$83:AD71",
+    "$83:AD86",
+    "$83:ADAE",
+    "$83:ADC9",
+    "$83:AFC4",
+    "$83:B026"
+   ],
+   "class": "observed",
+   "end": "$83:8EFD",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$83:8E3A",
+   "static_entries": {
+    "JSL": 8
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 4,
+   "callers": [
+    "$80:8CC2",
+    "$80:F8B4",
+    "$83:88C9"
+   ],
+   "class": "observed",
+   "end": "$83:90F7",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$83:90F4",
+   "static_entries": {
+    "JSL": 3
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 212,
+   "callers": [
+    "$83:90F4"
+   ],
+   "class": "observed",
+   "end": "$83:91CB",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$83:90F8",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 4,
+   "callers": [
+    "$80:D263",
+    "$80:F4D5",
+    "$80:F4FE"
+   ],
+   "class": "observed",
+   "end": "$83:91FA",
+   "mode_at_entry": [
+    "NMX",
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$83:91F7",
+   "static_entries": {
+    "JSL": 3
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 46,
+   "callers": [
+    "$83:91F7",
+    "$83:A7C4"
+   ],
+   "class": "observed",
+   "end": "$83:9228",
+   "mode_at_entry": [
+    "NMX",
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$83:91FB",
+   "static_entries": {
+    "JSR": 2
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 23,
+   "callers": [
+    "$80:8C84"
+   ],
+   "class": "observed",
+   "end": "$83:92E2",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$83:92CC",
+   "static_entries": {
+    "JSL": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 23,
+   "callers": [
+    "$80:8C88"
+   ],
+   "class": "observed",
+   "end": "$83:92F9",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$83:92E3",
+   "static_entries": {
+    "JSL": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 23,
+   "callers": [
+    "$80:8C8C"
+   ],
+   "class": "observed",
+   "end": "$83:9310",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$83:92FA",
+   "static_entries": {
+    "JSL": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 23,
+   "callers": [
+    "$80:8C90"
+   ],
+   "class": "observed",
+   "end": "$83:9327",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$83:9311",
+   "static_entries": {
+    "JSL": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 24,
+   "callers": [
+    "$80:8C94"
+   ],
+   "class": "observed",
+   "end": "$83:933F",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$83:9328",
+   "static_entries": {
+    "JSL": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 46,
+   "callers": [
+    "$80:8CBA"
+   ],
+   "class": "observed",
+   "end": "$83:936D",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$83:9340",
+   "static_entries": {
+    "JSL": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 106,
+   "callers": [
+    "$80:8C98"
+   ],
+   "class": "observed",
+   "end": "$83:93D7",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$83:936E",
+   "static_entries": {
+    "JSL": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 29,
+   "callers": [
+    "$80:8C9C"
+   ],
+   "class": "observed",
+   "end": "$83:93F4",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$83:93D8",
+   "static_entries": {
+    "JSL": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 145,
+   "callers": [
+    "$80:8CA9"
+   ],
+   "class": "observed",
+   "end": "$83:9485",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$83:93F5",
+   "static_entries": {
+    "JSL": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 31,
+   "callers": [
+    "$80:8CB6"
+   ],
+   "class": "observed",
+   "end": "$83:94A4",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$83:9486",
+   "static_entries": {
+    "JSL": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 43,
+   "callers": [
+    "$80:8CBE"
+   ],
+   "class": "observed",
+   "end": "$83:94CF",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$83:94A5",
+   "static_entries": {
+    "JSL": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 47,
+   "callers": [
+    "$80:951E",
+    "$80:E737",
+    "$80:EA10"
+   ],
+   "class": "observed",
+   "end": "$83:94FE",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$83:94D0",
+   "static_entries": {
+    "JSL": 3
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 47,
+   "callers": [
+    "$80:E884"
+   ],
+   "class": "observed",
+   "end": "$83:952D",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$83:94FF",
+   "static_entries": {
+    "JSL": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 21,
+   "callers": [
+    "$80:BBA5"
+   ],
+   "class": "observed",
+   "end": "$83:9557",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$83:9543",
+   "static_entries": {
+    "JSL": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 21,
+   "callers": [
+    "$80:ABC8",
+    "$80:BCA4"
+   ],
+   "class": "observed",
+   "end": "$83:956C",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$83:9558",
+   "static_entries": {
+    "JSL": 2
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 30,
+   "callers": [
+    "$80:9796",
+    "$80:97C7",
+    "$80:E98F"
+   ],
+   "class": "observed",
+   "end": "$83:963B",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$83:961E",
+   "static_entries": {
+    "JSL": 3
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 64,
+   "callers": [
+    "$80:AD4F"
+   ],
+   "class": "observed",
+   "end": "$83:967B",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$83:963C",
+   "static_entries": {
+    "JSL": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 18,
+   "callers": [
+    "$83:9675"
+   ],
+   "class": "observed",
+   "end": "$83:96B0",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$83:969F",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 66,
+   "callers": [
+    "$80:AD90"
+   ],
+   "class": "observed",
+   "end": "$83:96FF",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$83:96BE",
+   "static_entries": {
+    "JSL": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 23,
+   "callers": [
+    "$80:9A3F"
+   ],
+   "class": "observed",
+   "end": "$83:9893",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$83:987D",
+   "static_entries": {
+    "JSL": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 23,
+   "callers": [
+    "$80:9A27"
+   ],
+   "class": "observed",
+   "end": "$83:98AA",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$83:9894",
+   "static_entries": {
+    "JSL": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 17,
+   "callers": [
+    "$80:BC64"
+   ],
+   "class": "inferred",
+   "end": "$83:9982",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$83:9972",
+   "static_entries": {
+    "JSL": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 4,
+   "callers": [
+    "$80:8C80",
+    "$80:B18D",
+    "$80:E74F",
+    "$80:E9F8"
+   ],
+   "class": "observed",
+   "end": "$83:9986",
+   "mode_at_entry": [
+    "NMX",
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$83:9983",
+   "static_entries": {
+    "JSL": 4
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 59,
+   "callers": [
+    "$83:9983"
+   ],
+   "class": "observed",
+   "end": "$83:99C1",
+   "mode_at_entry": [
+    "NMX",
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$83:9987",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 4,
+   "callers": [
+    "$80:B094",
+    "$80:D307",
+    "$83:A891"
+   ],
+   "class": "observed",
+   "end": "$83:99F9",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$83:99F6",
+   "static_entries": {
+    "JSL": 3
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 36,
+   "callers": [
+    "$83:99F6"
+   ],
+   "class": "observed",
+   "end": "$83:9A1D",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$83:99FA",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 219,
+   "callers": [
+    "$80:958F",
+    "$80:98D6",
+    "$80:B467",
+    "$80:C212",
+    "$80:C228",
+    "$80:C258",
+    "$80:E251",
+    "$80:E606"
+   ],
+   "class": "observed",
+   "end": "$83:9AF8",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$83:9A1E",
+   "static_entries": {
+    "JSL": 8
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 14,
+   "callers": [
+    "$80:CF15",
+    "$80:D085",
+    "$80:D0AC",
+    "$80:D0D3"
+   ],
+   "class": "observed",
+   "end": "$83:9E39",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$83:9E2C",
+   "static_entries": {
+    "JSL": 4
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 13,
+   "callers": [
+    "$80:B39A",
+    "$80:D072",
+    "$80:D099",
+    "$80:D0C0"
+   ],
+   "class": "observed",
+   "end": "$83:9E46",
+   "mode_at_entry": [
+    "NMX",
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$83:9E3A",
+   "static_entries": {
+    "JSL": 4
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 56,
+   "callers": [
+    "$80:B5C2",
+    "$80:CFAB",
+    "$80:D016"
+   ],
+   "class": "observed",
+   "end": "$83:9E7E",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$83:9E47",
+   "static_entries": {
+    "JSL": 3
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 20,
+   "callers": [
+    "$80:97B1",
+    "$80:B336",
+    "$80:BC22",
+    "$80:BC86",
+    "$80:E6CD",
+    "$80:E85D",
+    "$80:EAB8",
+    "$83:8823",
+    "$83:9EEF",
+    "$83:AF14",
+    "$83:AF7B"
+   ],
+   "class": "observed",
+   "end": "$83:9EC7",
+   "mode_at_entry": [
+    "NMX",
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$83:9EB4",
+   "static_entries": {
+    "JSL": 11
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 22,
+   "callers": [
+    "$80:E976",
+    "$80:E9C3",
+    "$80:EA9B",
+    "$83:8960"
+   ],
+   "class": "observed",
+   "end": "$83:9EEA",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$83:9ED5",
+   "static_entries": {
+    "JSL": 4
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 41,
+   "callers": [
+    "$80:99ED",
+    "$80:B380"
+   ],
+   "class": "observed",
+   "end": "$83:9F13",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$83:9EEB",
+   "static_entries": {
+    "JSL": 2
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 53,
+   "callers": [
+    "$80:9788",
+    "$80:E55B",
+    "$80:E753",
+    "$80:E788",
+    "$80:E7AD",
+    "$83:8855",
+    "$83:8DA4"
+   ],
+   "class": "observed",
+   "end": "$83:9F48",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$83:9F14",
+   "static_entries": {
+    "JSL": 7
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 21,
+   "callers": [
+    "$80:E560",
+    "$80:E588",
+    "$83:8899",
+    "$83:88AD",
+    "$83:88C1"
+   ],
+   "class": "inferred",
+   "end": "$83:9F5D",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$83:9F49",
+   "static_entries": {
+    "JSL": 5
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 35,
+   "callers": [
+    "$80:E553",
+    "$80:E580"
+   ],
+   "class": "observed",
+   "end": "$83:9F80",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$83:9F5E",
+   "static_entries": {
+    "JSL": 2
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 21,
+   "callers": [
+    "$80:E58E",
+    "$83:889D",
+    "$83:88B1",
+    "$83:88C5"
+   ],
+   "class": "inferred",
+   "end": "$83:9F95",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$83:9F81",
+   "static_entries": {
+    "JSL": 4
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 21,
+   "callers": [
+    "$83:B03A"
+   ],
+   "class": "inferred",
+   "end": "$83:A29A",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$83:A286",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 23,
+   "callers": [
+    "$83:AD93",
+    "$83:AFE3",
+    "$83:B11C"
+   ],
+   "class": "inferred",
+   "end": "$83:A4E8",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$83:A4D2",
+   "static_entries": {
+    "JSR": 3
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 30,
+   "callers": [
+    "$83:AB9C",
+    "$83:ABFD",
+    "$83:AC32",
+    "$83:ADFA",
+    "$83:AEF8",
+    "$83:B116"
+   ],
+   "class": "inferred",
+   "end": "$83:A506",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$83:A4E9",
+   "static_entries": {
+    "JSR": 6
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 269,
+   "callers": [
+    "$83:AEFB"
+   ],
+   "class": "inferred",
+   "end": "$83:A720",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$83:A614",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 494,
+   "callers": [
+    "$83:B119"
+   ],
+   "class": "inferred",
+   "end": "$83:A90E",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$83:A721",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 23,
+   "callers": [
+    "$83:87AD",
+    "$83:A4DA",
+    "$83:A4F3",
+    "$83:A67F",
+    "$83:AC22",
+    "$83:ADCD",
+    "$83:AFF8",
+    "$83:B004",
+    "$83:B062",
+    "$83:B09B",
+    "$83:B0C4",
+    "$83:B10B"
+   ],
+   "class": "inferred",
+   "end": "$83:A939",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$83:A923",
+   "static_entries": {
+    "JSR": 12
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 37,
+   "callers": [
+    "$83:AD2C"
+   ],
+   "class": "inferred",
+   "end": "$83:A95E",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$83:A93A",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 87,
+   "callers": [
+    "$83:ADDE"
+   ],
+   "class": "inferred",
+   "end": "$83:AB7B",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$83:AB25",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 30,
+   "callers": [
+    "$83:AB34",
+    "$83:AB46",
+    "$83:AB58",
+    "$83:AB6A"
+   ],
+   "class": "inferred",
+   "end": "$83:AB99",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$83:AB7C",
+   "static_entries": {
+    "JSR": 4
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 615,
+   "callers": [
+    "$80:F0EA"
+   ],
+   "class": "inferred",
+   "end": "$83:AE00",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$83:AB9A",
+   "static_entries": {
+    "JML": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 554,
+   "callers": [
+    "$83:8838"
+   ],
+   "class": "inferred",
+   "end": "$83:B11F",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$83:AEF6",
+   "static_entries": {
+    "JSL": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 184,
+   "callers": [
+    "$80:9A2B"
+   ],
+   "class": "observed",
+   "end": "$83:C997",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$83:C8E0",
+   "static_entries": {
+    "JSL": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 137,
+   "callers": [
+    "$83:C90F"
+   ],
+   "class": "observed",
+   "end": "$83:CA20",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$83:C998",
+   "static_entries": {
+    "JMP": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 69,
+   "callers": [
+    "$83:CA1E"
+   ],
+   "class": "inferred",
+   "end": "$83:CA71",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$83:CA2D",
+   "static_entries": {
+    "table": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 69,
+   "callers": [
+    "$83:CA1E"
+   ],
+   "class": "observed",
+   "end": "$83:CAB6",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$83:CA72",
+   "static_entries": {
+    "table": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 69,
+   "callers": [
+    "$83:CA1E"
+   ],
+   "class": "inferred",
+   "end": "$83:CAFB",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$83:CAB7",
+   "static_entries": {
+    "table": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 69,
+   "callers": [
+    "$83:CA1E"
+   ],
+   "class": "inferred",
+   "end": "$83:CB40",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$83:CAFC",
+   "static_entries": {
+    "table": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 69,
+   "callers": [
+    "$83:CA1E"
+   ],
+   "class": "inferred",
+   "end": "$83:CB85",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$83:CB41",
+   "static_entries": {
+    "table": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 66,
+   "callers": [
+    "$83:CA1E"
+   ],
+   "class": "inferred",
+   "end": "$83:CBC7",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$83:CB86",
+   "static_entries": {
+    "table": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 42,
+   "callers": [
+    "$83:CA6F",
+    "$83:CAB4",
+    "$83:CAF9",
+    "$83:CB3E",
+    "$83:CB83"
+   ],
+   "class": "observed",
+   "end": "$83:CBF1",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$83:CBC8",
+   "static_entries": {
+    "JMP": 5
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 150,
+   "callers": [
+    "$83:CA05"
+   ],
+   "class": "observed",
+   "end": "$83:CC87",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$83:CBF2",
+   "static_entries": {
+    "JMP": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 162,
+   "callers": [
+    "$83:CDB9"
+   ],
+   "class": "observed",
+   "end": "$83:CD29",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$83:CC88",
+   "static_entries": {
+    "JMP": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 128,
+   "callers": [
+    "$83:CD25"
+   ],
+   "class": "observed",
+   "end": "$83:CDA9",
+   "mode_at_entry": [
+    "Nmx"
+   ],
+   "observed_entries": {},
+   "start": "$83:CD2A",
+   "static_entries": {
+    "JMP": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 13,
+   "callers": [
+    "$83:CCA2"
+   ],
+   "class": "observed",
+   "end": "$83:CDB6",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$83:CDAA",
+   "static_entries": {
+    "JMP": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 5,
+   "callers": [
+    "$83:CD35"
+   ],
+   "class": "observed",
+   "end": "$83:CDBB",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$83:CDB7",
+   "static_entries": {
+    "JMP": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 112,
+   "callers": [
+    "$83:CDB4"
+   ],
+   "class": "observed",
+   "end": "$83:CE2B",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$83:CDBC",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 23,
+   "callers": [
+    "$83:CDC3"
+   ],
+   "class": "inferred",
+   "end": "$83:CE42",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$83:CE2C",
+   "static_entries": {
+    "JMP": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 110,
+   "callers": [
+    "$83:CDD2"
+   ],
+   "class": "observed",
+   "end": "$83:CEB0",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$83:CE43",
+   "static_entries": {
+    "JMP": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 23,
+   "callers": [
+    "$83:CE48"
+   ],
+   "class": "observed",
+   "end": "$83:CEC7",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$83:CEB1",
+   "static_entries": {
+    "JMP": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 1,
+   "callers": [
+    "$83:CE57"
+   ],
+   "class": "observed",
+   "end": "$83:CEC8",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$83:CEC8",
+   "static_entries": {
+    "JMP": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 570,
+   "callers": [
+    "$83:CDB1"
+   ],
+   "class": "inferred",
+   "end": "$83:D102",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$83:CEC9",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 1,
+   "callers": [
+    "$83:CED3",
+    "$83:CF38",
+    "$83:CF74",
+    "$83:CFB6",
+    "$83:CFF8",
+    "$83:D03A",
+    "$83:D07C",
+    "$83:D0BE",
+    "$83:D100"
+   ],
+   "class": "inferred",
+   "end": "$83:D103",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$83:D103",
+   "static_entries": {
+    "JMP": 9
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 190,
+   "callers": [
+    "$83:CED6"
+   ],
+   "class": "inferred",
+   "end": "$83:D1C1",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$83:D104",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 1,
+   "callers": [
+    "$83:D10E",
+    "$83:D116",
+    "$83:D11E",
+    "$83:D137"
+   ],
+   "class": "inferred",
+   "end": "$83:D1C2",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$83:D1C2",
+   "static_entries": {
+    "JMP": 4
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 170,
+   "callers": [
+    "$83:CED0"
+   ],
+   "class": "inferred",
+   "end": "$83:D273",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$83:D1CA",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 1,
+   "callers": [
+    "$83:D1D9"
+   ],
+   "class": "inferred",
+   "end": "$83:D274",
+   "mode_at_entry": [
+    "Nmx"
+   ],
+   "observed_entries": {},
+   "start": "$83:D274",
+   "static_entries": {
+    "JMP": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 21,
+   "callers": [
+    "$83:D2BE",
+    "$83:D2FA",
+    "$83:D377",
+    "$83:D439",
+    "$83:D49C",
+    "$83:D4D6",
+    "$83:D510"
+   ],
+   "class": "inferred",
+   "end": "$83:D289",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$83:D275",
+   "static_entries": {
+    "JSR": 7
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 63,
+   "callers": [
+    "$83:D0FD"
+   ],
+   "class": "inferred",
+   "end": "$83:D2C8",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$83:D28A",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 128,
+   "callers": [
+    "$83:CF35"
+   ],
+   "class": "inferred",
+   "end": "$83:D348",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$83:D2C9",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 115,
+   "callers": [
+    "$83:D0BB"
+   ],
+   "class": "inferred",
+   "end": "$83:D3BB",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$83:D349",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 120,
+   "callers": [
+    "$83:D079"
+   ],
+   "class": "inferred",
+   "end": "$83:D473",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$83:D3FC",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 58,
+   "callers": [
+    "$83:D037"
+   ],
+   "class": "inferred",
+   "end": "$83:D4AD",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$83:D474",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 58,
+   "callers": [
+    "$83:CFF5"
+   ],
+   "class": "inferred",
+   "end": "$83:D4E7",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$83:D4AE",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 72,
+   "callers": [
+    "$83:CFB3"
+   ],
+   "class": "inferred",
+   "end": "$83:D52F",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$83:D4E8",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 81,
+   "callers": [
+    "$83:CF71"
+   ],
+   "class": "inferred",
+   "end": "$83:D580",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$83:D530",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 1394,
+   "callers": [
+    "$83:D345"
+   ],
+   "class": "inferred",
+   "end": "$83:DAF2",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$83:D581",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 1372,
+   "callers": [
+    "$83:D591"
+   ],
+   "class": "inferred",
+   "end": "$83:E04E",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$83:DAF3",
+   "static_entries": {
+    "JMP": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 51,
+   "callers": [
+    "$83:DAF0"
+   ],
+   "class": "inferred",
+   "end": "$83:E081",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$83:E04F",
+   "static_entries": {
+    "JMP": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 373,
+   "callers": [
+    "$83:CD5E"
+   ],
+   "class": "observed",
+   "end": "$83:E1F6",
+   "mode_at_entry": [
+    "Nmx"
+   ],
+   "observed_entries": {},
+   "start": "$83:E082",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 37,
+   "callers": [
+    "$83:E12A"
+   ],
+   "class": "observed",
+   "end": "$83:E21B",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$83:E1F7",
+   "static_entries": {
+    "JMP": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 6,
+   "callers": [
+    "$83:E11C",
+    "$83:E158",
+    "$83:E160",
+    "$83:E194",
+    "$83:E1A5",
+    "$83:E1C8"
+   ],
+   "class": "observed",
+   "end": "$83:E221",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$83:E21C",
+   "static_entries": {
+    "JMP": 6
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 49,
+   "callers": [
+    "$83:E13D",
+    "$83:E146",
+    "$83:E155"
+   ],
+   "class": "observed",
+   "end": "$83:E252",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$83:E222",
+   "static_entries": {
+    "JMP": 3
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 1,
+   "callers": [
+    "$83:E089",
+    "$83:E0AF",
+    "$83:E0DA",
+    "$83:E111"
+   ],
+   "class": "observed",
+   "end": "$83:E253",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$83:E253",
+   "static_entries": {
+    "JMP": 4
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 359,
+   "callers": [
+    "$83:CD56"
+   ],
+   "class": "inferred",
+   "end": "$83:E3BA",
+   "mode_at_entry": [
+    "Nmx"
+   ],
+   "observed_entries": {},
+   "start": "$83:E254",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 37,
+   "callers": [
+    "$83:E36B"
+   ],
+   "class": "inferred",
+   "end": "$83:E3DF",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$83:E3BB",
+   "static_entries": {
+    "JMP": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 6,
+   "callers": [
+    "$83:E35D",
+    "$83:E37E"
+   ],
+   "class": "inferred",
+   "end": "$83:E3E5",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$83:E3E0",
+   "static_entries": {
+    "JMP": 2
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 49,
+   "callers": [
+    "$83:E376"
+   ],
+   "class": "inferred",
+   "end": "$83:E416",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$83:E3E6",
+   "static_entries": {
+    "JMP": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 232,
+   "callers": [
+    "$83:E2F0",
+    "$83:E31B",
+    "$83:E352"
+   ],
+   "class": "inferred",
+   "end": "$83:E4FE",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$83:E417",
+   "static_entries": {
+    "JMP": 3
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 37,
+   "callers": [
+    "$83:E4AF"
+   ],
+   "class": "inferred",
+   "end": "$83:E523",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$83:E4FF",
+   "static_entries": {
+    "JMP": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 6,
+   "callers": [
+    "$83:E4A1",
+    "$83:E4C2"
+   ],
+   "class": "inferred",
+   "end": "$83:E529",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$83:E524",
+   "static_entries": {
+    "JMP": 2
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 49,
+   "callers": [
+    "$83:E4BA"
+   ],
+   "class": "inferred",
+   "end": "$83:E55A",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$83:E52A",
+   "static_entries": {
+    "JMP": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 1,
+   "callers": [
+    "$83:E2C1",
+    "$83:E434",
+    "$83:E45F",
+    "$83:E496"
+   ],
+   "class": "inferred",
+   "end": "$83:E55B",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$83:E55B",
+   "static_entries": {
+    "JMP": 4
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 142,
+   "callers": [
+    "$83:CD6B"
+   ],
+   "class": "observed",
+   "end": "$83:E629",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$83:E59C",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 82,
+   "callers": [
+    "$83:E5C7"
+   ],
+   "class": "observed",
+   "end": "$83:E67B",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$83:E62A",
+   "static_entries": {
+    "JMP": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 98,
+   "callers": [
+    "$83:E5D2"
+   ],
+   "class": "observed",
+   "end": "$83:E6DD",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$83:E67C",
+   "static_entries": {
+    "JMP": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 167,
+   "callers": [
+    "$83:E5D5"
+   ],
+   "class": "observed",
+   "end": "$83:E784",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$83:E6DE",
+   "static_entries": {
+    "JMP": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 7,
+   "callers": [
+    "$83:E60A",
+    "$83:E627",
+    "$83:E65C",
+    "$83:E679",
+    "$83:E6BE",
+    "$83:E6DB",
+    "$83:E782"
+   ],
+   "class": "observed",
+   "end": "$83:E78B",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$83:E785",
+   "static_entries": {
+    "JMP": 7
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 52,
+   "callers": [
+    "$83:E5A6"
+   ],
+   "class": "observed",
+   "end": "$83:E7BF",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$83:E78C",
+   "static_entries": {
+    "JMP": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 1,
+   "callers": [
+    "$83:E740",
+    "$83:E756"
+   ],
+   "class": "observed",
+   "end": "$83:E7C0",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$83:E7C0",
+   "static_entries": {
+    "JMP": 2
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 37,
+   "callers": [
+    "$83:CD61"
+   ],
+   "class": "observed",
+   "end": "$83:E7E5",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$83:E7C1",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 250,
+   "callers": [
+    "$83:E7DE"
+   ],
+   "class": "inferred",
+   "end": "$83:E8DF",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$83:E7E6",
+   "static_entries": {
+    "JMP": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 257,
+   "callers": [
+    "$83:E849"
+   ],
+   "class": "observed",
+   "end": "$83:E9E0",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$83:E8E0",
+   "static_entries": {
+    "JMP": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 48,
+   "callers": [
+    "$83:E955",
+    "$83:E964"
+   ],
+   "class": "observed",
+   "end": "$83:EA10",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$83:E9E1",
+   "static_entries": {
+    "JMP": 2
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 97,
+   "callers": [
+    "$83:E915"
+   ],
+   "class": "observed",
+   "end": "$83:EA71",
+   "mode_at_entry": [
+    "NMX",
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$83:EA11",
+   "static_entries": {
+    "JMP": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 257,
+   "callers": [
+    "$83:E8E5"
+   ],
+   "class": "observed",
+   "end": "$83:EB72",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$83:EA72",
+   "static_entries": {
+    "JMP": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 48,
+   "callers": [
+    "$83:EAE7",
+    "$83:EAF6"
+   ],
+   "class": "inferred",
+   "end": "$83:EBA2",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$83:EB73",
+   "static_entries": {
+    "JMP": 2
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 112,
+   "callers": [
+    "$83:EAA7"
+   ],
+   "class": "observed",
+   "end": "$83:EC12",
+   "mode_at_entry": [
+    "NMX",
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$83:EBA3",
+   "static_entries": {
+    "JMP": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 1,
+   "callers": [
+    "$83:E88D",
+    "$83:E895",
+    "$83:E8A8",
+    "$83:E8B3",
+    "$83:E8C8",
+    "$83:E8D7",
+    "$83:E8DD",
+    "$83:EA77"
+   ],
+   "class": "observed",
+   "end": "$83:EC13",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$83:EC13",
+   "static_entries": {
+    "JMP": 8
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 233,
+   "callers": [
+    "$83:CD76"
+   ],
+   "class": "observed",
+   "end": "$83:ED76",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$83:EC8E",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 4,
+   "callers": [
+    "$82:8C87",
+    "$82:9171"
+   ],
+   "class": "observed",
+   "end": "$83:ED7A",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$83:ED77",
+   "static_entries": {
+    "JSL": 2
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 48,
+   "callers": [
+    "$83:ED77"
+   ],
+   "class": "observed",
+   "end": "$83:EDAA",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$83:ED7B",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 138,
+   "callers": [
+    "$83:EDA1"
+   ],
+   "class": "observed",
+   "end": "$83:EE82",
+   "mode_at_entry": [
+    "NMx"
+   ],
+   "observed_entries": {},
+   "start": "$83:EDF9",
+   "static_entries": {
+    "JMP": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 209,
+   "callers": [
+    "$83:EDF6"
+   ],
+   "class": "observed",
+   "end": "$83:EF53",
+   "mode_at_entry": [
+    "NMx"
+   ],
+   "observed_entries": {},
+   "start": "$83:EE83",
+   "static_entries": {
+    "JMP": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 180,
+   "callers": [
+    "$83:ED7B"
+   ],
+   "class": "observed",
+   "end": "$83:F007",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$83:EF54",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 144,
+   "callers": [
+    "$83:EF64"
+   ],
+   "class": "observed",
+   "end": "$83:F097",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$83:F008",
+   "static_entries": {
+    "JMP": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 6,
+   "callers": [
+    "$83:F01F",
+    "$83:F02A"
+   ],
+   "class": "observed",
+   "end": "$83:F09D",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$83:F098",
+   "static_entries": {
+    "JMP": 2
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 93,
+   "callers": [
+    "$83:F034"
+   ],
+   "class": "observed",
+   "end": "$83:F0FA",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$83:F09E",
+   "static_entries": {
+    "JMP": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 4,
+   "callers": [
+    "$82:DE61"
+   ],
+   "class": "inferred",
+   "end": "$83:F0FE",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$83:F0FB",
+   "static_entries": {
+    "JSL": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 243,
+   "callers": [
+    "$83:CDA3",
+    "$83:F0FB"
+   ],
+   "class": "observed",
+   "end": "$83:F1F1",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$83:F0FF",
+   "static_entries": {
+    "JSR": 2
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 47,
+   "callers": [
+    "$83:F2C3"
+   ],
+   "class": "observed",
+   "end": "$83:F220",
+   "mode_at_entry": [
+    "NMx"
+   ],
+   "observed_entries": {},
+   "start": "$83:F1F2",
+   "static_entries": {
+    "JMP": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 165,
+   "callers": [
+    "$83:F2B9"
+   ],
+   "class": "observed",
+   "end": "$83:F2C5",
+   "mode_at_entry": [
+    "NMx"
+   ],
+   "observed_entries": {},
+   "start": "$83:F221",
+   "static_entries": {
+    "JMP": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 20,
+   "callers": [
+    "$83:F1FF"
+   ],
+   "class": "observed",
+   "end": "$83:F2D9",
+   "mode_at_entry": [
+    "NMx"
+   ],
+   "observed_entries": {},
+   "start": "$83:F2C6",
+   "static_entries": {
+    "JMP": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 37,
+   "callers": [
+    "$83:F13A",
+    "$83:F144",
+    "$83:F14E",
+    "$83:F158"
+   ],
+   "class": "observed",
+   "end": "$83:F2FE",
+   "mode_at_entry": [
+    "NMx"
+   ],
+   "observed_entries": {},
+   "start": "$83:F2DA",
+   "static_entries": {
+    "JSR": 4
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 535,
+   "callers": [
+    "$83:F16A"
+   ],
+   "class": "observed",
+   "end": "$83:F515",
+   "mode_at_entry": [
+    "NMx"
+   ],
+   "observed_entries": {},
+   "start": "$83:F2FF",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 342,
+   "callers": [
+    "$83:CD2A"
+   ],
+   "class": "observed",
+   "end": "$83:F793",
+   "mode_at_entry": [
+    "Nmx"
+   ],
+   "observed_entries": {},
+   "start": "$83:F63E",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 278,
+   "callers": [
+    "$83:F706",
+    "$83:F70E",
+    "$83:F716",
+    "$83:F71E"
+   ],
+   "class": "inferred",
+   "end": "$83:F8A9",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$83:F794",
+   "static_entries": {
+    "JMP": 4
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 184,
+   "callers": [
+    "$83:F791"
+   ],
+   "class": "inferred",
+   "end": "$83:F961",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$83:F8AA",
+   "static_entries": {
+    "JMP": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 26,
+   "callers": [
+    "$83:F8BA",
+    "$83:F8C2"
+   ],
+   "class": "inferred",
+   "end": "$83:F97B",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$83:F962",
+   "static_entries": {
+    "JMP": 2
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 351,
+   "callers": [
+    "$83:C9C5",
+    "$83:CCF7",
+    "$83:F64A",
+    "$83:F8E8",
+    "$83:F8F9",
+    "$83:F908",
+    "$83:F912"
+   ],
+   "class": "observed",
+   "end": "$83:FADA",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$83:F97C",
+   "static_entries": {
+    "JMP": 5,
+    "JSR": 2
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 1,
+   "callers": [
+    "$83:F659",
+    "$83:F95F",
+    "$83:F979"
+   ],
+   "class": "observed",
+   "end": "$83:FADB",
+   "mode_at_entry": [
+    "NMx"
+   ],
+   "observed_entries": {},
+   "start": "$83:FADB",
+   "static_entries": {
+    "JMP": 3
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 4,
+   "callers": [
+    "$82:DDE3"
+   ],
+   "class": "inferred",
+   "end": "$83:FADF",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$83:FADC",
+   "static_entries": {
+    "JSL": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 97,
+   "callers": [
+    "$83:FADC"
+   ],
+   "class": "inferred",
+   "end": "$83:FB40",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$83:FAE0",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 4,
+   "callers": [
+    "$80:8C74"
+   ],
+   "class": "observed",
+   "end": "$83:FB44",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$83:FB41",
+   "static_entries": {
+    "JSL": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 17,
+   "callers": [
+    "$83:FB41"
+   ],
+   "class": "observed",
+   "end": "$83:FB55",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$83:FB45",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 107,
+   "callers": [
+    "$83:C99E"
+   ],
+   "class": "observed",
+   "end": "$83:FBF4",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$83:FB8A",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  }
+ ],
+ "schema_version": 1,
+ "scope": "ROM offsets $00000-$1FFFF: banks $80-$83 (mirrored at $00-$03)",
+ "totals": {
+  "absolute_operands_with_unknown_data_bank": 4083,
+  "assumptions_used": {
+   "call returns in the calling mode": 1259
+  },
+  "bytes": 131072,
+  "cited_addresses": 643,
+  "cited_by_class": {
+   "data": 8,
+   "inferred": 49,
+   "observed": 558,
+   "unknown": 28
+  },
+  "cited_by_position": {
+   "dat": 8,
+   "loc": 484,
+   "mid": 17,
+   "sub": 106,
+   "unk": 28
+  },
+  "conflicts": 0,
+  "data": 61,
+  "data_references_into_code": 0,
+  "descent_stops": {
+   "implausible opcode": 3
+  },
+  "gap_sweep_candidate_bytes": 6385,
+  "gap_sweep_candidate_instructions": 2835,
+  "inferred": 35134,
+  "instructions": {
+   "descent": 13910,
+   "observed": 17569,
+   "table": 109
+  },
+  "jump_tables": 2,
+  "mode_ambiguities": 7,
+  "observed": 41778,
+  "routines": 618,
+  "unknown": 54099,
+  "unknown_share": 0.4127
+ }
+}

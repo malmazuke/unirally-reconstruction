@@ -1,5 +1,6 @@
 """``coverage`` subcommands (M1-01): capture instruction coverage of a replay
-manifest in a fresh worker process, and derive the tracked code map.
+manifest in a fresh worker process, and derive the tracked code map; and
+(STATIC-CODE-MAP) the static listing and map of the code banks.
 
 Exit codes follow the repository convention: 0 success, 1 failed check
 (digest mismatch, ring overflow, inconsistent totals), 2 missing
@@ -20,7 +21,7 @@ from .. import rom as rommod
 from ..reference import commands as refcmd
 from ..replay import commands as replaycmd
 from ..replay import manifest as mf
-from . import derive, drain
+from . import derive, drain, static_map
 
 ROOT = reportmod.repo_root()
 DEFAULT_RING = 262144
@@ -269,6 +270,143 @@ def cmd_map(args: argparse.Namespace) -> int:
     return _finish(rep, args, replaycmd._status_from_checks(rep))
 
 
+# ---------------------------------------------------------- static map
+
+
+def _static_analysis(rep: reportmod.Report, args: argparse.Namespace):
+    """Load the ROM, the tracked maps and any raw coverage files, and run the static analysis."""
+    map_paths = sorted(Path(args.maps).glob("*.map.json"))
+    if not map_paths:
+        rep.add_check("maps_available", "missing", detail=f"no *.map.json under {args.maps}")
+        return EXIT_MISSING_PREREQUISITE, None
+    maps = static_map.load_maps(map_paths)
+    rep.add_check("maps_available", "passed", detail=", ".join(m["scenario_id"] for m in maps))
+    rom_path = Path(args.rom).expanduser() if args.rom else refcmd._default_rom_path()
+    if rom_path is None or not rom_path.is_file():
+        rep.add_check("rom_available", "missing", detail=f"{rom_path or 'no --rom and no local/rom-location.txt'}")
+        return EXIT_MISSING_PREREQUISITE, None
+    try:
+        observed = rommod.inspect_rom(rom_path)
+    except rommod.RomError as exc:
+        rep.add_check("rom_available", "failed", detail=str(exc))
+        return EXIT_INVALID_INPUT, None
+    rep.add_input("rom", rom_path, observed["file"]["sha256"], size=observed["file"]["size"])
+    want = {m["rom"]["sha256"] for m in maps}
+    if want != {observed["file"]["sha256"]} or observed["copier_header"]["present"]:
+        rep.add_check("rom_matches_maps", "failed", detail=f"ROM {observed['file']['sha256']} (header {observed['copier_header']['present']}); maps want {sorted(want)}")
+        return EXIT_INVALID_INPUT, None
+    rep.add_check("rom_matches_maps", "passed", detail=observed["file"]["sha256"])
+    rom = rom_path.read_bytes()
+    analysis = static_map.Analysis(rom, maps)
+    digests = []
+    if args.coverage:
+        wanted = {m["coverage"]["sha256"]: m["scenario_id"] for m in maps}
+        coverages = {}
+        for path in map(Path, args.coverage):
+            if not path.is_file():
+                rep.add_check("coverage_available", "missing", detail=f"{path} not found")
+                return EXIT_MISSING_PREREQUISITE, None
+            sha = refcmd.sha256_file(path)
+            if sha not in wanted:
+                rep.add_check("coverage_available", "failed", detail=f"{path} ({sha}) is not the coverage of any tracked map")
+                return EXIT_INVALID_INPUT, None
+            rep.add_input("coverage", path, sha, scenario_id=wanted[sha])
+            coverages[sha] = json.loads(path.read_text(encoding="utf-8"))
+        missing = sorted(wanted[s] for s in set(wanted) - set(coverages))
+        if missing:
+            rep.add_check("coverage_available", "failed", detail=f"no raw coverage for {', '.join(missing)}; pass one for every tracked map or none")
+            return EXIT_INVALID_INPUT, None
+        rep.add_check("coverage_available", "passed", detail=f"{len(coverages)} raw coverage file(s), one per tracked map")
+        analysis.load_sites([coverages[s] for s in sorted(coverages)])
+        digests = sorted(coverages)
+    else:
+        rep.add_check("coverage_available", "skipped", required=False,
+                      detail="no --coverage: observed boundaries come from range tiling alone, and the per-site agreement check is not run")
+    analysis.run()
+    cls = analysis.classes()
+    return EXIT_OK, (analysis, cls, map_paths, digests, [coverages[s] for s in digests] if digests else [])
+
+
+def _agreement_checks(rep: reportmod.Report, analysis: static_map.Analysis, coverages: list[dict[str, Any]]) -> dict[str, Any]:
+    tiled = analysis.tiling["maps"]
+    no_tiling = sum(m["no_tiling"] for m in tiled)
+    against = sum(m["disagreements"] for m in tiled)
+    per_site = [static_map.check_sites(analysis, c) for c in coverages]
+    checked = sum(p["sites_checked"] for p in per_site)
+    bad = sum(p["disagreements"] for p in per_site)
+    rep.add_check("observed_ranges_tile", "passed" if no_tiling == 0 and against == 0 else "failed",
+                  detail=f"{sum(m['ranges'] for m in tiled)} ranges; {no_tiling} without a tiling; "
+                         f"{sum(m['shared_instructions_checked_against_sites'] for m in tiled)} shared instructions checked against sites, {against} disagreements")
+    if coverages:
+        rep.add_check("every_site_decodes", "passed" if bad == 0 else "failed",
+                      detail=f"{checked} sites over {len(per_site)} captures decode at the same address and length under their mode; {bad} disagreements")
+    else:
+        rep.add_check("every_site_decodes", "skipped", required=False, detail="needs --coverage")
+    return {"tiling": analysis.tiling, "sites": [{"scenario_id": c.get("scenario_id"), **p} for c, p in zip(coverages, per_site)],
+            "sites_checked": checked, "disagreements": bad + against + no_tiling}
+
+
+def cmd_disassemble(args: argparse.Namespace) -> int:
+    rep = reportmod.Report(sys.argv, task_id=args.task)
+    status, result = _static_analysis(rep, args)
+    if status != EXIT_OK:
+        return _finish(rep, args, status)
+    analysis, cls, map_paths, digests, coverages = result
+    out = Path(args.out)
+    out.mkdir(parents=True, exist_ok=True)
+    agreement = _agreement_checks(rep, analysis, coverages)
+    (out / "agreement.json").write_text(static_map.dump(agreement), encoding="utf-8")
+    rep.add_artifact("agreement", out / "agreement.json")
+    doc, labs = static_map.build(analysis, cls, ROOT, map_paths, digests)
+    names_by_offset = {static_map.offset_of(static_map.parse(l["address"])): l["label"] for l in labs}
+    for r in doc["routines"]:
+        names_by_offset.setdefault(static_map.offset_of(static_map.parse(r["start"])), "sub_" + r["start"][1:].replace(":", ""))
+    xrefs = {}
+    for target, callers in analysis.callers.items():
+        xrefs[target] = [f"{static_map.addr(o)} {k}" for o, k in sorted(callers)]
+    for b in range(4):
+        path = out / f"bank-{0x80 + b:02X}.lst"
+        path.write_text(static_map.listing(analysis, cls, b, names_by_offset, xrefs), encoding="utf-8")
+        rep.add_artifact(f"listing_{0x80 + b:02X}", path)
+    detail = {"note": "ignored artifact: carries ROM bytes and mnemonics", "map": doc,
+              "instructions": [{"address": static_map.addr(o), "length": i.length, "modes": static_map.names(i.modes), "source": i.source,
+                                "mnemonic": static_map.TABLE[analysis.byte(o)][0], "operand": static_map.operand_text(analysis, o, i.length)}
+                               for o, i in sorted(analysis.ins.items())],
+              "data": [{"address": static_map.addr(o), "reasons": sorted(r)} for o, r in sorted(analysis.data.items())]}
+    (out / "static-map.json").write_text(static_map.dump(detail), encoding="utf-8")
+    rep.add_artifact("detail", out / "static-map.json")
+    _partition_check(rep, cls, doc)
+    return _finish(rep, args, replaycmd._status_from_checks(rep))
+
+
+def _partition_check(rep: reportmod.Report, cls: list[str], doc: dict[str, Any]) -> None:
+    t = doc["totals"]
+    ok = len(cls) == static_map.SPAN and sum(t[k] for k in static_map.CLASSES) == static_map.SPAN
+    rep.add_check("classes_partition_the_banks", "passed" if ok else "failed",
+                  detail=", ".join(f"{k} {t[k]}" for k in static_map.CLASSES) + f"; unknown share {t['unknown_share']:.1%}")
+    rep.data["totals"] = t
+
+
+def cmd_static_map(args: argparse.Namespace) -> int:
+    rep = reportmod.Report(sys.argv, task_id=args.task)
+    status, result = _static_analysis(rep, args)
+    if status != EXIT_OK:
+        return _finish(rep, args, status)
+    analysis, cls, map_paths, digests, coverages = result
+    _agreement_checks(rep, analysis, coverages)
+    rel = [p.resolve().relative_to(ROOT) if p.resolve().is_relative_to(ROOT) else p for p in map_paths]
+    doc, labs = static_map.build(analysis, cls, ROOT, rel, digests)
+    _partition_check(rep, cls, doc)
+    for path, text in ((Path(args.out), static_map.dump(doc)), (Path(args.labels), static_map.dump(labs)),
+                       (Path(args.summary), static_map.summary_markdown(doc, labs))):
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(text, encoding="utf-8")
+        rep.add_artifact(path.name, path)
+    size_ok = Path(args.out).stat().st_size <= (1 << 20)
+    rep.add_check("map_written", "passed" if size_ok else "failed", detail=f"{args.out} ({Path(args.out).stat().st_size} bytes, limit 1 MiB)")
+    return _finish(rep, args, replaycmd._status_from_checks(rep))
+
+
 # --------------------------------------------------------------- parser
 
 
@@ -301,3 +439,19 @@ def register(sub: argparse._SubParsersAction) -> None:
     mp.add_argument("--report", help="write the JSON run report here")
     mp.add_argument("--task", help="task ID to record in the report")
     mp.set_defaults(func=cmd_map)
+
+    maps_default = str(ROOT / "docs" / "map")
+    dis = csub.add_parser("disassemble", help="static listing of banks $80-$83 from the ROM and the tracked maps (ignored output)")
+    dis.add_argument("--out", required=True, help="directory for bank-80.lst..bank-83.lst, static-map.json and agreement.json")
+    static = csub.add_parser("static-map", help="derive the tracked static code map, summary and labels of banks $80-$83")
+    static.add_argument("--out", required=True, help="tracked map JSON (docs/map/static/code-banks.map.json)")
+    static.add_argument("--summary", required=True, help="Markdown summary (docs/map/static/code-banks.md)")
+    static.add_argument("--labels", required=True, help="labels JSON (docs/map/static/labels.json)")
+    for p in (dis, static):
+        p.add_argument("--maps", default=maps_default, help="directory of tracked *.map.json (default docs/map)")
+        p.add_argument("--coverage", action="append", help="raw coverage.json behind a tracked map (repeatable; one per map or none)")
+        p.add_argument("--rom", help="ROM file; defaults to the path in local/rom-location.txt")
+        p.add_argument("--report", help="write the JSON run report here")
+        p.add_argument("--task", help="task ID to record in the report")
+    dis.set_defaults(func=cmd_disassemble)
+    static.set_defaults(func=cmd_static_map)

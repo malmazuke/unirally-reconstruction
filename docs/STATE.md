@@ -61,8 +61,10 @@ other work; claim STATIC-CODE-MAP when CLASSIC-SPLIT-TIME is integrated, after
 the reset on 24 September 08:00Z or on an explicit user override.
 
 Breadth lines (D-0008): **tracks matched against the original: 2 of 45
-inventoried streams.** **Code banks by class: 41,778 observed of 131,072;
-inferred, data and unknown not yet measured** (STATIC-CODE-MAP).
+inventoried streams.** **Code banks by class (STATIC-CODE-MAP, R-0045): of
+131,072 bytes, 41,778 observed, 35,134 inferred, 61 data, 54,099 unknown
+(41.3%, above D-0008's one-quarter trigger; the unknown regions are
+dynamic-capture targets).**
 
 Updated 20 September 2026: **CLASSIC-RACE-HUD is reviewed and integrated**;
 acceptance is conditional on the final-tip CI and remote verification recorded
