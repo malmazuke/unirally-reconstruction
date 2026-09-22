@@ -37,6 +37,16 @@
   a fresh Anthropic subagent (the claiming session's model) in a separate checkout at the candidate
   commit, spawned by the primary. It must recapture consecutive originals across at least one
   split-time transition the primary did not use, on both tracks if the mechanism runs on both.
+- Review tier ([D-0008](../docs/decisions/D-0008-static-map-track-breadth-review-tiers.md),
+  recorded at the 11:15Z checkpoint; the decision landed on `main` at `0e5440b`/`9e423a5` while
+  this task ran): **tier 2**, presentation on the recovered BG3 layer. The diff touches
+  `src/core/presentation.{hpp,cpp}`, the presentation tests and records only; no simulation
+  state, arithmetic, ordering, serialization, pack rule, gate or baseline changes (the split
+  arithmetic reproduced is display arithmetic on published digits). So one independent review
+  round by a fresh subagent on the exact candidate, the frozen gates and pixel sweeps as the
+  evidence, and one re-review if a finding is returned. The reviewer may escalate the tier if the
+  diff touches something this classification does not admit. The D-0008 session also sampled
+  weekly all-models usage at 84% at 11:20Z, account-wide (its own records work included).
 - Dependencies and evidence of acceptance: CLASSIC-RACE-HUD (the two centred cells, the redraw
   queue and `ClassicRaceHudClock`, which this task extends; R-0043), CLASSIC-STUNT-NAMES (the BG3
   font sheet and `draw_bg3_text`; R-0042), M4-16 and DRAGSTER-ORDINARY-CONTROLS (the kept originals
@@ -147,7 +157,8 @@ a finding to record and a reason to stop and report, not a licence to widen the 
 | 5 (10:55-10:58Z) | The rule holds on every capture, both tracks | `split_probe.py` over 77 captures with whole WRAM (M4-16, idle, opposing-input, DRAGSTER originals) | 1,145 requests; 509 splits all from the previous update's clock (448 from the current), 0 negative; 260 first-seen stores all the previous clock; 376 lap or finish displays all the crossing digits; 1,145 blanks all at countdown 2. DRAGSTER runs it with one checkpoint | Implement in `ClassicRaceHudClock` |
 | 6 (10:58-11:02Z) | The queue can carry the fields as requests | `ClassicRaceHudClock` keeps a request per field and the slot times; crossing text and split arithmetic as free functions; `+` added to the glyph map; the finish tests driven through the crossing | Builds; two test errors of my own (a first-seen crossing recognised by the countdown alone misses the opponent's cut-to-2 case, so crossings are recognised by the next-checkpoint step; and my expected negative-path strings were not the original's ten's complement). 23/23 ctest on app-debug at `708af4c` | Measure |
 | 7 (11:02-11:04Z) | Native matches the original where it draws | `hud_compare.py` over the primary's 274 kept frames and three consecutive sets from the previous task | Player band 6,347 -> 0; opponent band 9,880 -> 476, **14 pixels on every frame on which the opponent's split shows**: the `+`/`-` glyph difference. The opponent's writer reads the constant `-`, which attempt 2 had noted and the implementation had not applied. Consecutive lap change, crossing and finish sets 0 in all four bands | Apply the constant, with a test from the primary's 3881 |
-| 8 (11:05Z-) | The constant closes the band | Rebuilt at `33e12a8`; one serial sweep chain over every set (an earlier pair of chains had been killed mid-loop and their shells went on writing the same files, so all sweeps were re-run once, serially) | to be recorded from `compare-*.txt` | Gates, then review |
+| 8 (11:05-11:10Z) | The constant closes the band | Rebuilt at `33e12a8`; one serial sweep chain over every set (an earlier pair of chains had been killed mid-loop and their shells went on writing the same files, so all sweeps were re-run once, serially, `sweeps.sh`) | **0 differing pixels in all four bands on every frame of every set**: the primary's 274 kept frames (whole picture 18,601 -> 2,374), the brake race's 274, trick-long's 192, the 79 primary consecutive frames, the 60 new consecutive frames across six split transitions, compound-reverse-a's lap change (18) and finish (36), down-a's crossing (17) and DRAGSTER primary-a's 34 across its checkpoint, blank and finish. R-0044's table has the per-set numbers | Gates, then review |
+| 9 (11:10-11:35Z) | The gate script runs as it did two days ago | `gates.sh` on `2298dc6` (code identical to `33e12a8`) | lab-debug and lab-release 23/23, then **every lab-sanitize test timed out at 30 s and the next spun at 99% CPU for 19 minutes**. Sampled: the process never reaches `main`; it loops in ASan's own `InitializeShadowMemory -> get_dyld_hdr`. The host changed under this session (Darwin 24.6 at its start, macOS 27.0 build 26A428 with Xcode 26.1.1 by now), and a one-line hello-world built with `-fsanitize=address` hangs the same way while the plain build runs. Not a property of the candidate | Record lab-sanitize and app-sanitize as **unavailable on this host** (not passed, not failed); the hosted Linux job builds and tests both; rerun the remaining gates |
 
 ## Handoff
 
