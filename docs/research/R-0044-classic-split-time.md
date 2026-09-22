@@ -109,17 +109,25 @@ pictures in four boxes: the HUD rows (y 15-30), the rows the authored bar once
 covered (y 0-14), and the two centred bands (x 104-159, y 39-54 and y 159-174).
 Numbers are differing pixels; "before" is the CLASSIC-RACE-HUD tip `0ead6d3`.
 
-| Pictures | Frames | player band before -> after | opponent band before -> after | HUD rows | whole picture |
+| Pictures | Frames | player band before -> after | opponent band before -> after | HUD rows and bar rows | whole picture before -> after |
 | --- | --- | --- | --- | --- | --- |
-| M4-16 primary, kept every 20 | 274 | 6,347 -> TBM | 9,880 -> TBM | 0 | 18,601 -> TBM |
-| brake (loser) race, kept | 274 | TBM | TBM | 0 | TBM |
-| trick-long, kept | 192 | TBM | TBM | 0 | TBM |
-| primary consecutive 1670-1690, 3200-3215, 4835-4850, 6475-6500 | 79 | TBM | TBM | 0 | TBM |
-| primary consecutive 2004-2012 (opponent first, cut), 2075-2082 (split with a tick), 2193-2198 (blank), 3873-3886 (player first, opponent's `-0:00:1`), 4631-4642, 6275-6285 (first with a tick) | 60 | TBM | TBM | 0 | TBM |
-| compound-reverse-a lap change 3205-3222 (both riders' lap times) | 18 | TBM | TBM | 0 | TBM |
-| compound-reverse-a finish 6465-6500 | 36 | TBM | TBM | 0 | TBM |
-| down-a crossing 3200-3216 | 17 | TBM | TBM | 0 | TBM |
-| DRAGSTER primary-a consecutive 2378-2392 (checkpoint 2: player first, opponent's split), 2496-2502 (blank), 3205-3216 (finish) | 34 | TBM | TBM | TBM | TBM |
+| M4-16 primary, kept every 20 | 274 | 6,347 -> **0** | 9,880 -> **0** | 0 | 18,601 -> 2,374 |
+| brake (loser) race, kept | 274 | -> **0** | -> **0** | 0 | 2,374 |
+| trick-long, kept | 192 | -> **0** | -> **0** | 0 | 4,180 |
+| primary consecutive 1670-1690, 3200-3215, 4835-4850, 6475-6500 | 79 | **0** | **0** | 0 | 1,593 |
+| primary consecutive 2004-2012 (opponent first, cut), 2075-2082 (split with a tick), 2193-2198 (blank), 3873-3886 (player first, then the opponent's `-0:00:1`), 4631-4642, 6275-6285 (first with a tick) | 60 | **0** | **0** | 0 | 1,504 |
+| compound-reverse-a lap change 3205-3222 (both riders' lap times, 3208 and 3212) | 18 | **0** | **0** | 0 | 36 |
+| compound-reverse-a finish 6465-6500 | 36 | **0** | **0** | 0 | 55 |
+| down-a crossing 3200-3216 | 17 | **0** | **0** | 0 | 0 |
+| DRAGSTER primary-a consecutive 2378-2392 (checkpoint 2: player first, opponent's split), 2496-2502 (blank), 3205-3216 (finish) | 34 | **0** | **0** | 0 | 103 |
+| 10:00 time-out hold (stop-timeout-a) | 35 | see below | see below | 0 | see below |
+
+The kept-frame "before" figures are CLASSIC-RACE-HUD's own measurement on the
+same frames (its `compare-primary.txt`); its brake and trick-long sweeps did
+not score the bands. Every band is zero on every frame of every set above; the
+whole-picture residual outside the bands is the declared off-screen rider
+arrow. All sweeps ran serially on the app-debug build of `33e12a8`
+(`sweeps.sh`).
 
 Before the opponent's constant `-` was applied, every kept primary frame on
 which the opponent's split shows differed by exactly 14 pixels, the
