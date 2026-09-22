@@ -2,8 +2,10 @@
 
 ## Assignment
 
-- Status: in_progress (claimed 22 September 2026 about 10:45Z by the preparing session on the
-  user's instruction, see the quota line below)
+- Status: reviewed and integrated on `main` at `8752f95` (claimed 22 September 2026 about
+  10:45Z by the preparing session on the user's instruction, see the quota line below); accepted
+  conditional on the final-tip CI and remote verification recorded in the ignored closeout
+  `artifacts/classic-split-time-integration/closeout.json` in the main checkout
 - Milestone: M4 presentation (declared-omission closure), not an M4 acceptance gate
 - Coordinator: the preparing session (Claude Fable 5.1, Claude Code desktop session,
   22 September 2026 UTC); the implementing session is coordinator, primary and integrator under
@@ -226,10 +228,33 @@ a finding to record and a reason to stop and report, not a licence to widen the 
 
 ## Review and integration
 
-- Reviewer and independent reproduction/withheld-case results: to be recorded.
-- Required changes or acceptance rationale: to be recorded.
-- Exact merge candidate and required-check results: to be recorded.
-- Integrated commit and evidence location: to be recorded.
+- Reviewer and independent reproduction/withheld-case results: one fresh Claude Fable 5.1 subagent
+  (D-0008 tier 2, one round) in `.worktrees/classic-split-time-review` at the exact candidate
+  `c3fe841`, about 20 minutes: **approve** at `a7cfc6b` (report
+  [CLASSIC-SPLIT-TIME-review](CLASSIC-SPLIT-TIME-review.md) on `review/classic-split-time`, pushed
+  to `origin`). It rebuilt and tested the candidate, read the routines from the ROM, re-ran the
+  WRAM probe on five captures, re-ran `gate_identity`, and recaptured five withheld originals
+  (trick-long-a 63 frames, brake-a 31, DRAGSTER reversal-a 44, the DRAGSTER finish tie 31,
+  random-1-a 8) - 0 differing pixels in both centred bands on every frame; it drove the queue
+  directly for late service, a blank over a pending draw and restart.
+- Required changes or acceptance rationale: no blocking finding; five should-fix items, all applied
+  at `e225bfd` (attempt 12): the same-update slot tie, the record's false DRAGSTER claim, the
+  caption residual named as a follow-up, the time-out numbers and a comment.
+- Exact merge candidate and required-check results: `8752f95` (the rebased branch, code identical
+  to the reviewed `c3fe841` plus the tie correction); `gates.sh` on it: lab-debug, lab-release and
+  app-debug 23/23, synthetic passed, both v1 contracts passed, hidden runs 0 fallback frames, fuzz
+  40 seeds / 79 races / 0 aborts, the eleven differential gates citable; every sweep re-run at 0
+  in the bands; the two sanitizer presets unavailable on this host (attempt 9), covered by the
+  hosted Linux job.
+- Integrated commit and evidence location: `8752f95` by fast-forward of `main` from `9e423a5`.
+  Task evidence at `local/evidence/classic-split-time/classic-split-time/` (scripts, logs,
+  `gates-8752f95/`, the consecutive originals), the review's at
+  `local/evidence/classic-split-time-review/classic-split-time-review/`; closeout as above. Both
+  worktrees removed with their build output, both local branches deleted.
 - Remote synchronization: pushed ref(s), verified local/remote commit IDs, or exact push failure:
-  to be recorded.
-- Scope still unverified: to be recorded.
+  `refs/heads/main` at `8752f95f6e1ed408bdea8eaee0c142936e728311`, verified equal to local;
+  `review/classic-split-time` at `a7cfc6b` on `origin`. Final-tip CI: in the closeout.
+- Scope still unverified: the off-screen rider arrow; the caption's one-picture wait behind the
+  centred fields (R-0044, a caption-model follow-up); the negative split path and a same-update
+  slot tie, implemented from the ROM and unit-tested but shown by no capture; a mid-race restore
+  without slot history (declared).
