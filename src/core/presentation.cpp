@@ -1527,8 +1527,12 @@ void ClassicRaceHudClock::observe_update(const ZoomZooState& previous,const Zoom
             } else {
                 const std::size_t slot=static_cast<std::size_t>(after.laps_remaining)*4U+after.checkpoint;
                 const auto clock=classic_hud_clock_digits(previous.movement.timer);
+                // $81:CB13 runs the player before the opponent within one
+                // update, so a slot the player has just stored is seen by the
+                // opponent's crossing of the same update (review should-fix 1).
                 const bool first=slot<previous.race.checkpoint_seen.size() &&
-                                 (previous.race.checkpoint_seen[slot]&0x80U)!=0;
+                                 (previous.race.checkpoint_seen[slot]&0x80U)!=0 &&
+                                 !(slot<slot_times_.size() && slot_times_[slot]);
                 if(first) {
                     // $81:CA38-CA61: store the clock, draw nothing.
                     if(slot<slot_times_.size())slot_times_[slot]=clock;

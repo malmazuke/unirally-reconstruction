@@ -120,14 +120,23 @@ Numbers are differing pixels; "before" is the CLASSIC-RACE-HUD tip `0ead6d3`.
 | compound-reverse-a finish 6465-6500 | 36 | **0** | **0** | 0 | 55 |
 | down-a crossing 3200-3216 | 17 | **0** | **0** | 0 | 0 |
 | DRAGSTER primary-a consecutive 2378-2392 (checkpoint 2: player first, opponent's split), 2496-2502 (blank), 3205-3216 (finish) | 34 | **0** | **0** | 0 | 103 |
-| 10:00 time-out hold (stop-timeout-a) | 35 | see below | see below | 0 | see below |
+| 10:00 time-out hold (stop-timeout-a) | 35 | 24 hold frames 0; 11 result-screen frames from 31933 differ | same | 0 on the 24 | 630,928, all on the 11 result-screen frames (57,344 each), byte-identical to CLASSIC-RACE-HUD's run |
 
 The kept-frame "before" figures are CLASSIC-RACE-HUD's own measurement on the
 same frames (its `compare-primary.txt`); its brake and trick-long sweeps did
 not score the bands. Every band is zero on every frame of every set above; the
 whole-picture residual outside the bands is the declared off-screen rider
-arrow. All sweeps ran serially on the app-debug build of `33e12a8`
-(`sweeps.sh`).
+arrow on every ZOOM ZOO frame and on most DRAGSTER frames; on DRAGSTER a
+second residual sits in the caption rows (y 83-93) on the picture after a
+checkpoint crossing that coincides with a caption change (`orig-dragster-splits`
+3215/3216 at 55 and 48 pixels, the review's `reversal-a` 3329 at 417): the
+original's caption is serviced after the two centred fields and so changes one
+picture later than native's, whose caption (R-0042) does not wait for the
+queue. Not a regression of this change, since the caption never waited, but
+visible now that the fields are written mid-race; a follow-up for the caption
+model. All sweeps ran serially on the app-debug build of `33e12a8`
+(`sweeps.sh`); the review re-scored the primary's sets and its own from
+`c3fe841` and the tie correction below changes no measured frame.
 
 Before the opponent's constant `-` was applied, every kept primary frame on
 which the opponent's split shows differed by exactly 14 pixels, the
@@ -145,8 +154,11 @@ finish.
 ## Domain and limits
 
 - Measured on both tracks with the ROM and core above. DRAGSTER's single
-  checkpoint is crossed by the player first in every original; no DRAGSTER
-  original shows the player's own split.
+  checkpoint (2) is crossed by the player first in `primary-a`, whose
+  opponent's split reads `+0:00:0`, and by the opponent first in `random-1/2/3`,
+  `reversal` and `regression-countdown-actions-tie`, whose player's splits
+  (`+0:06:7`, `+0:20:8`, `+0:00:1`) the review measured at 0 differing pixels
+  on consecutive originals.
 - **The negative split path is implemented as read, not measured.** With one
   shared clock and the first rider through a slot storing the earlier time, a
   later rider's difference cannot be negative, and no capture shows one
@@ -162,6 +174,11 @@ finish.
 - The slot store is presentation history: a frozen scene or a restore that
   begins after the first crossing of a slot cannot show that slot's split. The
   finish sequence and the mode-0 displays need no history.
+- Both riders through one unseen slot on the same update: `$81:CB13` runs the
+  player first, so the opponent's request finds the slot seen and publishes
+  `-0:00:0`. Native does the same (a slot stored in the current update counts
+  as seen for the opponent), from the ROM's order and a unit test; no capture
+  shows the case.
 - Still declared: the off-screen rider arrow, which accounts for the
   whole-picture residual outside the bands.
 

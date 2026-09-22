@@ -259,8 +259,10 @@ private:
   struct Pending {bool left{},clock_blank{};std::array<ClassicHudCellRequest,2> cells{};};
   ClassicHudPublished latest_{},on_screen_{};
   Pending pending_{};
-  // `$100D` + 16 * laps remaining + 4 * checkpoint: the clock the first rider
-  // through each slot stored, minutes, tens, seconds, tenths.
+  // The clock the first rider through each slot stored, minutes, tens,
+  // seconds, tenths. Indexed like `checkpoint_seen`, laps remaining * 4 +
+  // checkpoint; the original keeps four bytes a slot at `$100D` + 16 * laps
+  // remaining + 4 * checkpoint.
   std::array<std::optional<std::array<std::uint8_t,4>>,20> slot_times_{};
 };
 // Presentation-only $0D45/$0D47 upper-body overlay frames. The original

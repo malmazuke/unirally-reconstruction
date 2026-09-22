@@ -252,6 +252,24 @@ int main() {
       run(behind, opponent_second, opponent_second);
       require(run(behind, opponent_second, opponent_second).opponent_cells ==
               std::optional<std::string>("-0:00:1"));
+      // Both riders through an unseen slot on one update: $81:CB13 runs the
+      // player first, who stores the clock and draws nothing, then the
+      // opponent, who finds the slot seen and publishes a zero split with the
+      // constant minus (review should-fix 1; no capture shows it).
+      unirally::ClassicRaceHudClock tie;
+      auto together = second_lap;
+      prime(tie, together);
+      auto both = together;
+      for (auto rider : {0, 1}) {
+        both.race.riders[static_cast<std::size_t>(rider)].checkpoint = 2;
+        both.race.riders[static_cast<std::size_t>(rider)].next_checkpoint = 3;
+        both.race.riders[static_cast<std::size_t>(rider)].checkpoint_display_countdown = 120;
+      }
+      both.race.checkpoint_seen[2 * 4 + 2] = 0;
+      run(tie, together, both);
+      run(tie, both, both);
+      auto tied = run(tie, both, both);
+      require(!tied.player_cells && tied.opponent_cells == std::optional<std::string>("-0:00:0"));
       // 118 updates later the countdown reaches 2 and the cells are blanked.
       auto expiring = player_crosses;
       expiring.race.riders[0].checkpoint_display_countdown = 2;
