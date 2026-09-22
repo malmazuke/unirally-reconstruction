@@ -215,6 +215,43 @@ int main() {
       require(!shown.player_cells && shown.clock == std::optional<std::string>("0:09:9"));
       shown = run(split, player_crosses, player_crosses);              // 2079: the split
       require(shown.player_cells == std::optional<std::string>("+0:01:3"));
+      // The opponent's field, second through a slot, shows the minus glyph
+      // whatever the sign: on the primary the opponent reaches checkpoint 2
+      // of lap 2 on 3881 with the clock at 0:45.9 against the player's stored
+      // 0:45.8, and the original's rows 20-21 read `-0:00:1` (R-0043's own
+      // reading of picture 3900), where the player's field would read `+`.
+      unirally::ClassicRaceHudClock behind;
+      unirally::ZoomZooState second_lap{};
+      second_lap.race.riders[0].laps_remaining = 2;
+      second_lap.race.riders[1].laps_remaining = 2;
+      second_lap.race.riders[0].checkpoint = 1;
+      second_lap.race.riders[0].next_checkpoint = 2;
+      second_lap.race.riders[1].checkpoint = 1;
+      second_lap.race.riders[1].next_checkpoint = 2;
+      second_lap.race.checkpoint_seen.fill(255);
+      second_lap.movement.timer.tens_seconds = 4;
+      second_lap.movement.timer.seconds = 5;
+      second_lap.movement.timer.tenths = 8;
+      prime(behind, second_lap);
+      auto player_first = second_lap;
+      player_first.race.riders[0].checkpoint = 2;
+      player_first.race.riders[0].next_checkpoint = 3;
+      player_first.race.riders[0].checkpoint_display_countdown = 120;
+      player_first.race.checkpoint_seen[2 * 4 + 2] = 0;
+      run(behind, second_lap, player_first);
+      run(behind, player_first, player_first);
+      require(!run(behind, player_first, player_first).player_cells);
+      auto ticked = player_first;
+      ticked.movement.timer.tenths = 9;
+      run(behind, player_first, ticked);
+      auto opponent_second = ticked;
+      opponent_second.race.riders[1].checkpoint = 2;
+      opponent_second.race.riders[1].next_checkpoint = 3;
+      opponent_second.race.riders[1].checkpoint_display_countdown = 120;
+      run(behind, ticked, opponent_second);
+      run(behind, opponent_second, opponent_second);
+      require(run(behind, opponent_second, opponent_second).opponent_cells ==
+              std::optional<std::string>("-0:00:1"));
       // 118 updates later the countdown reaches 2 and the cells are blanked.
       auto expiring = player_crosses;
       expiring.race.riders[0].checkpoint_display_countdown = 2;

@@ -1535,6 +1535,13 @@ void ClassicRaceHudClock::observe_update(const ZoomZooState& previous,const Zoom
                     cell={};
                 } else if(slot<slot_times_.size() && slot_times_[slot]) {
                     cell={ClassicHudCellRequest::Kind::Draw,classic_hud_split_text(clock,*slot_times_[slot])};
+                    // The opponent's writer ($81:F1B5-F1C6) takes its first
+                    // cell from the constant $80:8220, the minus glyph, and
+                    // never reads the sign byte `$11BD`; the player's
+                    // ($81:EF5E-EF6E) reads `$11BB`. Measured on every
+                    // opponent split of the M4-16 primary: 14 pixels a frame
+                    // until this was applied, the two glyphs' difference.
+                    if(rider==1)cell.text[0]='-';
                 } else {
                     cell={}; // no history of the slot: leave the cells
                 }

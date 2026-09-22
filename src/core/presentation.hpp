@@ -188,6 +188,8 @@ struct ClassicHudPublished {
 // negative through the ten's complement the original takes (`5-T`, `9-s`,
 // `10-t` with ten shown as zero, the minute as its one's complement) as
 // `-M:SS:t`. Clock and stored digits are minutes, tens, seconds, tenths.
+// The opponent's field shows the minus glyph whatever the sign ($81:F1C0
+// reads the constant $80:8220 where the player's writer reads `$11BB`).
 std::string classic_hud_crossing_text(const std::array<std::uint16_t,5>& time_digits);
 std::array<std::uint8_t,4> classic_hud_clock_digits(const RaceTimerDigits& timer);
 std::string classic_hud_split_text(const std::array<std::uint8_t,4>& clock,
