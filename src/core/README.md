@@ -226,8 +226,11 @@ HUD (R-0043) live on: a character is a tile and the tile `$10` above it, a cell
 is eight by sixteen, and tilemap row `r` shows at `y = 8r - 1`. The caption sits
 at row 10 column 8; `classic_race_hud_text` gives the HUD's four fields - the
 left field (the lap count, `race` or `finish`) and the clock on row 2, and the
-two finish times on rows 5 and 20 - from the published state, the scenario's
-race mode and the finish frames. Both draw into one ink mask before the riders,
+two centred fields on rows 5 and 20, each rider's crossing time after a lap or
+the finish and its signed split at a checkpoint the other rider has passed
+(R-0044) - from what `ClassicRaceHudClock` has followed the original's redraw
+queue writing, including the clock the first rider through each checkpoint
+stored, which the serialized race does not carry. Both draw into one ink mask before the riders,
 so the measured red add where a sprite covers a glyph and the channel-6 members
 that cover everything apply to both.
 `classic_race_presentation_runner` renders one state, a timeline frame, or
