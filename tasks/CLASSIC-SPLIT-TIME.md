@@ -2,16 +2,17 @@
 
 ## Assignment
 
-- Status: ready (prepared 22 September 2026 UTC; implementation deferred to the weekly usage
-  reset, see the quota line below)
+- Status: in_progress (claimed 22 September 2026 about 10:45Z by the preparing session on the
+  user's instruction, see the quota line below)
 - Milestone: M4 presentation (declared-omission closure), not an M4 acceptance gate
 - Coordinator: the preparing session (Claude Fable 5.1, Claude Code desktop session,
   22 September 2026 UTC); the implementing session is coordinator, primary and integrator under
   D-0006 once it claims this record
 - Task provider (fixed for all children; record any user-initiated platform change): Anthropic
-- Worker/session/runtime/model: to be recorded at claim. The provider is unchanged from
-  CLASSIC-RACE-HUD; the preparing session ran on Claude Fable 5.1 rather than Opus 5, which is a
-  within-provider model change and autonomous under D-0004. Record the actual model at claim.
+- Worker/session/runtime/model: Claude Fable 5.1 (`claude-fable-5-1`), Claude Code desktop
+  session, 22 September 2026 UTC, the same session that prepared the record. The provider is
+  unchanged from CLASSIC-RACE-HUD; Fable 5.1 rather than Opus 5 is a within-provider model change,
+  autonomous under D-0004.
 - Actual model/reasoning effort, routing rationale and frontier escalation question (if any):
   the claiming session's model at default effort, following the provider and review rule in
   `tasks/NEXT_SESSION.md`: an Anthropic primary and a fresh Anthropic independent reviewer in an
@@ -26,9 +27,12 @@
   not started: CLASSIC-RACE-HUD cost eleven points including four returned review rounds, and
   starting this task would have breached the reserve on its first experiment. **Claim it after the
   weekly reset, or on an explicit user instruction to ignore the boundary** (as recorded once for
-  M4-16 in D-0004). Sample fresh usage at claim and record it here; the discretionary allowance is
-  20 points from that baseline, the floor is 80%, and no reset, purchase or provider change is
-  authorized.
+  M4-16 in D-0004). **Claimed on the user's instruction**: after the preparation report, which
+  said the task waited for the reset or an explicit instruction, the user wrote "Sorry, you can
+  continue"; read as that instruction and recorded here as the override, with the same limits as
+  M4-16's (no reset, purchase or provider change; a genuine usage block stops the work). Fresh
+  sample at claim: weekly all-models **80%** at 10:44Z, five-hour 4%; **82%** at 11:06Z after the
+  implementation, the WRAM probe and the first sweeps, five-hour 22%.
 - Reviewer (primary automatically spawns fresh model/effort, isolated checkout; no user trigger):
   a fresh Anthropic subagent (the claiming session's model) in a separate checkout at the candidate
   commit, spawned by the primary. It must recapture consecutive originals across at least one
@@ -136,6 +140,14 @@ a finding to record and a reason to stop and report, not a licence to widen the 
 | Attempt | Hypothesis | Experiment | Observation | Next decision |
 | --- | --- | --- | --- | --- |
 | 0 (preparation, 22 Sep 10:00-10:30Z) | The task can start now | Sampled usage before dispatch, as D-0004 requires | Weekly all-models 79% against the 80% reserve floor; the previous task cost eleven points | Prepare the record, defer the claim to the weekly reset (2026-09-24T08:00Z) or an explicit user override |
+| 1 (10:45-10:48Z) | The two flags R-0043 names are set on identifiable updates mid-race | `flag_probe.py` over the primary's WRAM for every change in `$0340-$0351` | `$0349` goes to 1 on 2077, 2306, 3014, 3208, 4840 and to -1 118 updates after each; `$034B` likewise; 3208 is the lap crossing. So the fields are requested on crossings and blanked 118 updates later | Disassemble the two handlers |
+| 2 (10:48-10:50Z) | One routine draws the split and the finish time | `disasm.py` over `$81:EDDC-F033` and `$81:F033-F28B` | Each field has two writers selected by `$119F,y`: the finish layout from `$11BB/$11AB/$11AF/$11B3/$11B7` and a split layout with the colons moved, whose first cell is `$11BB` for the player and the constant `$80:8220` for the opponent. A negative request blanks unless `$0EFF,y` is set | Find who sets the digit bytes and `$119F` |
+| 3 (10:50-10:53Z) | The lap routine computes the split | ROM-wide search for the writers (indexed stores included), then `$81:C900-CB23` and `$81:8050-82B6` disassembled | `$119F,y` is the checkpoint mode from the lap routine; `$81:C910` requests the field when the countdown `$0FFF,y` reads 120 and blanks it at 2, and computes the split digit by digit from the clock `$0E19..$0E25` against the slot store `$100D[16 laps + 4 cp]`, the first rider through a slot storing its clock and clearing its own request. Native's engine already keeps the countdown, mode, digits and the shared first-seen flags; only the slot store is missing | Verify the arithmetic against WRAM before writing code |
+| 4 (10:53-10:55Z) | The split reads the clock after the update's tick | `split_probe.py` over the primary | `+0:01:3` on 2077 is 0:09.8 minus 0:08.5, and the clock reads 0:09.9 after that update: the request runs before the tick. 9 of 9 splits and 6 of 6 first-seen stores match the previous update's clock; 8 and 4 the current one | Use the previous update's clock; run the probe over every capture |
+| 5 (10:55-10:58Z) | The rule holds on every capture, both tracks | `split_probe.py` over 77 captures with whole WRAM (M4-16, idle, opposing-input, DRAGSTER originals) | 1,145 requests; 509 splits all from the previous update's clock (448 from the current), 0 negative; 260 first-seen stores all the previous clock; 376 lap or finish displays all the crossing digits; 1,145 blanks all at countdown 2. DRAGSTER runs it with one checkpoint | Implement in `ClassicRaceHudClock` |
+| 6 (10:58-11:02Z) | The queue can carry the fields as requests | `ClassicRaceHudClock` keeps a request per field and the slot times; crossing text and split arithmetic as free functions; `+` added to the glyph map; the finish tests driven through the crossing | Builds; two test errors of my own (a first-seen crossing recognised by the countdown alone misses the opponent's cut-to-2 case, so crossings are recognised by the next-checkpoint step; and my expected negative-path strings were not the original's ten's complement). 23/23 ctest on app-debug at `708af4c` | Measure |
+| 7 (11:02-11:04Z) | Native matches the original where it draws | `hud_compare.py` over the primary's 274 kept frames and three consecutive sets from the previous task | Player band 6,347 -> 0; opponent band 9,880 -> 476, **14 pixels on every frame on which the opponent's split shows**: the `+`/`-` glyph difference. The opponent's writer reads the constant `-`, which attempt 2 had noted and the implementation had not applied. Consecutive lap change, crossing and finish sets 0 in all four bands | Apply the constant, with a test from the primary's 3881 |
+| 8 (11:05Z-) | The constant closes the band | Rebuilt at `33e12a8`; one serial sweep chain over every set (an earlier pair of chains had been killed mid-loop and their shells went on writing the same files, so all sweeps were re-run once, serially) | to be recorded from `compare-*.txt` | Gates, then review |
 
 ## Handoff
 
