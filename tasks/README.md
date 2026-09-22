@@ -54,10 +54,10 @@ The coordinator maintains the status registry below. Work orders further below d
 | CLASSIC-STUNT-NAMES | reviewed and integrated (approved at `bf16faf`, report `0003f3d7`, after three returns); accepted conditional on final-tip CI and remote verification | [The original's on-screen stunt names](CLASSIC-STUNT-NAMES.md) |
 | JEV-JUDGMENT-HARNESS | reviewed and integrated (implementation `ec64a17`, review returned `8d11fe2`, corrections `f391a3f`, re-review confirm `a6eaf19`, residuals `39473ec`; rebased onto `main` after CLASSIC-STUNT-NAMES); accepted conditional on final-tip CI and remote verification | [Advisory Jev judgments as recorded harness checks](JEV-JUDGMENT-HARNESS.md) |
 | CI-FAST-PATH | reviewed and integrated (implementation `0c0e7a1`/`628f7f9`, review returned `da745f6`, corrections `139261d`, re-review confirm `147b685`); accepted conditional on final-tip CI and remote verification | [A docs-only fast path and one tooling-test run per CI job](CI-FAST-PATH.md) |
-| CLASSIC-RACE-HUD | reviewed and integrated (four returned rounds, approved at the fifth); accepted conditional on final-tip CI and remote verification | [The original's in-race HUD](CLASSIC-RACE-HUD.md) |
-| STATIC-CODE-MAP | ready; prepared 22 September 2026 under D-0008 at 84% weekly usage, claim after the 24 September 08:00Z reset or an explicit user override; **first in order** | [A static, annotated code map of the code banks](STATIC-CODE-MAP.md) |
+| STATIC-CODE-MAP | ready; prepared 22 September 2026 under D-0008 at 84% weekly usage, claim after the 24 September 08:00Z reset or an explicit user override; **next after CLASSIC-SPLIT-TIME** | [A static, annotated code map of the code banks](STATIC-CODE-MAP.md) |
 | TRACK-BREADTH | planned; ready when STATIC-CODE-MAP is integrated (or earlier with a recorded reason); the 45-stream inventory is in the record | [Every track through the shared engine, measured against the original](TRACK-BREADTH.md) |
-| CLASSIC-SPLIT-TIME | ready; prepared 22 September 2026 at 79% weekly usage against the 80% reserve; reordered behind STATIC-CODE-MAP and TRACK-BREADTH by D-0008 | [The original's signed split time during the race](CLASSIC-SPLIT-TIME.md) |
+| CLASSIC-RACE-HUD | reviewed and integrated (four returned rounds, approved at the fifth); accepted conditional on final-tip CI and remote verification | [The original's in-race HUD](CLASSIC-RACE-HUD.md) |
+| CLASSIC-SPLIT-TIME | ready; prepared 22 September 2026 at 79% weekly usage against the 80% reserve, claim after the 24 September 08:00Z reset or an explicit user override | [The original's signed split time during the race](CLASSIC-SPLIT-TIME.md) |
 | M4-17 – M6 | unclaimed; outside this assignment | Do not automatically dispatch |
 
 ## M0 — repeatable laboratory

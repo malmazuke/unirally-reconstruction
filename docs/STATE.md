@@ -1,7 +1,21 @@
 # Project state
 
-Updated 22 September 2026 (later): **no task is active; the next task is
-STATIC-CODE-MAP, then TRACK-BREADTH, under [D-0008](decisions/D-0008-static-map-track-breadth-review-tiers.md).**
+Updated 22 September 2026: **no task is active; CLASSIC-SPLIT-TIME is ready.**
+The session that came to dispatch it (Claude Fable 5.1, same provider) sampled
+weekly usage at 79% against D-0004's 80% reserve floor, one point short of the
+rule's stop, and prepared the task record instead of starting it:
+[CLASSIC-SPLIT-TIME](../tasks/CLASSIC-SPLIT-TIME.md) recovers the original's
+signed split time, which occupies the two centred HUD cells during the race
+(R-0043 measured `-0:00:1` and a signed `0:01:3`; native draws those cells only
+at the finish). Claim it after the weekly reset on 24 September 08:00Z or on an
+explicit user override. CLASSIC-RACE-HUD's acceptance conditions are verified in
+its closeout (final-tip run 35517040155 green on both platforms, remote
+matching), and its record now says so.
+
+Updated 22 September 2026 (later): **CLASSIC-SPLIT-TIME is in progress in
+`.worktrees/classic-split-time` (claimed about 10:45Z on the user's instruction,
+its own session owns its row and closeout); after it, STATIC-CODE-MAP, then
+TRACK-BREADTH, under [D-0008](decisions/D-0008-static-map-track-breadth-review-tiers.md).**
 The user asked how much of the game is reconstructed and why progress is slow.
 Measured against the ROM: the union of the four coverage maps executes 41,778
 bytes, 2.0% of the ROM and 32% of the code banks `$80`-`$83`; the records cite
@@ -16,25 +30,13 @@ of the code banks seeded by the dynamic maps ([STATIC-CODE-MAP](../tasks/STATIC-
 tier 2, ready), a per-track matrix of the whole track set through the shared
 engine ([TRACK-BREADTH](../tasks/TRACK-BREADTH.md), planned behind it), and
 review tiers by risk (now in AGENTS.md and the workflow). Weekly usage was 84%
-at 11:20Z, above the reserve, so this session prepared records only; claim
-after the reset on 24 September 08:00Z or on an explicit user override.
-CLASSIC-SPLIT-TIME stays ready behind them.
+at 11:20Z, above the reserve, so this session prepared records only and did no
+other work; claim STATIC-CODE-MAP when CLASSIC-SPLIT-TIME is integrated, after
+the reset on 24 September 08:00Z or on an explicit user override.
 
 Breadth lines (D-0008): **tracks matched against the original: 2 of 45
 inventoried streams.** **Code banks by class: 41,778 observed of 131,072;
 inferred, data and unknown not yet measured** (STATIC-CODE-MAP).
-
-Updated 22 September 2026: **no task is active; CLASSIC-SPLIT-TIME is ready.**
-The session that came to dispatch it (Claude Fable 5.1, same provider) sampled
-weekly usage at 79% against D-0004's 80% reserve floor, one point short of the
-rule's stop, and prepared the task record instead of starting it:
-[CLASSIC-SPLIT-TIME](../tasks/CLASSIC-SPLIT-TIME.md) recovers the original's
-signed split time, which occupies the two centred HUD cells during the race
-(R-0043 measured `-0:00:1` and a signed `0:01:3`; native draws those cells only
-at the finish). Claim it after the weekly reset on 24 September 08:00Z or on an
-explicit user override. CLASSIC-RACE-HUD's acceptance conditions are verified in
-its closeout (final-tip run 35517040155 green on both platforms, remote
-matching), and its record now says so.
 
 Updated 20 September 2026: **CLASSIC-RACE-HUD is reviewed and integrated**;
 acceptance is conditional on the final-tip CI and remote verification recorded

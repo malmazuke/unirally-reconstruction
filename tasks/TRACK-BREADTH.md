@@ -36,10 +36,10 @@
   extraction), a new pack rules file and profile constant (`classic.pal.all-tracks.v10` or
   as bumped), `src/core/content_pack.cpp` and the loaders for track selection by id,
   `src/app/` for `--track <id>`, tests under `tests/`, replay manifests per track under
-  `tests/manifests/replay/`, `docs/research/R-0045-track-breadth-matrix.md`, this record,
+  `tests/manifests/replay/`, `docs/research/R-0046-track-breadth-matrix.md`, this record,
   `docs/STATE.md`, `tasks/README.md`, `tasks/NEXT_SESSION.md`. The 742-byte state is
   read-only unless a divergence proves a missing field, which is a tier 1 change.
-- Claim/lease/heartbeat/checkpoint location: the matrix in R-0045 is the checkpoint; local
+- Claim/lease/heartbeat/checkpoint location: the matrix in R-0046 is the checkpoint; local
   artifacts under `artifacts/track-breadth/<track>/`, moved to `local/evidence/track-breadth/`
   at integration.
 - Session time limit, concurrency allocation and actual spend authorization if relevant: one
@@ -107,17 +107,17 @@ originals across race start; the sampled-frames rule from CLASSIC-RACE-HUD appli
 | Inventory | `python3 tools/project.py content rnc-inventory --report ...` | 45 streams with the digests of their unpacked bytes; byte-identical on two runs | tracked stream manifest, report |
 | All-tracks pack | `content pack --rules <all-tracks rules>` then `content pack-inspect` | Every stream decodes and extracts; the pack validates; v9 tests and gates unchanged | pack digest, report |
 | Loads and runs | For each track, a headless idle race of N updates (N declared before the run, at least a countdown and 600 updates of riding) | Rows: loads yes/no, abort or first fault | `artifacts/track-breadth/<track>/run.json` |
-| Reference | One frozen replay manifest per track through the original menu, two fresh processes identical | NOW PLAYING text, tour, opponent recorded per track | manifests, R-0045 |
-| Match | Differential comparison of the 742-byte state from race start for M updates (M declared) | Rows: exact updates, first divergence address and field, named mechanism | R-0045 matrix, comparison reports |
+| Reference | One frozen replay manifest per track through the original menu, two fresh processes identical | NOW PLAYING text, tour, opponent recorded per track | manifests, R-0046 |
+| Match | Differential comparison of the 742-byte state from race start for M updates (M declared) | Rows: exact updates, first divergence address and field, named mechanism | R-0046 matrix, comparison reports |
 | Native selection | `frontend run --track <id>` for at least two tracks beyond the current pair | Starts, draws, plays with keyboard | live report |
-| Declared | The matrix names every track that loads but is not accepted and why | No row is blank | R-0045 |
+| Declared | The matrix names every track that loads but is not accepted and why | No row is blank | R-0046 |
 | Breadth line | `docs/STATE.md` | "tracks matched / inventoried" updated | STATE |
 | Review | Tier 2 one round, tier 1 full process for any engine change | Reviewer's withheld track re-captured and compared | review record |
 
 ## Capability and coverage checkpoint
 
 - Native capability delivered / still missing: to be filled per row.
-- Frozen exact-match interval, field set and reference/seed identity: per track, in R-0045.
+- Frozen exact-match interval, field set and reference/seed identity: per track, in R-0046.
 - Dynamic captured inputs still consumed (must be zero for autonomy): the `pre_race_matrix`
   entry and any other capture-derived entry, per track; the target is zero.
 - Relevant branches/transitions exercised, including independent variations: race start,

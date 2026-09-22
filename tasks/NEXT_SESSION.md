@@ -1,24 +1,5 @@
 # Next session
 
-**Status on 22 September 2026 UTC (later session): no task is active; claim
-[STATIC-CODE-MAP](STATIC-CODE-MAP.md) first, after the weekly reset on
-2026-09-24T08:00Z or on an explicit user override.** This session (Claude Fable
-5.1) answered the user's question about how much of the game is reconstructed
-(measurements in [D-0008](../docs/decisions/D-0008-static-map-track-breadth-review-tiers.md)
-and `docs/STATE.md`) and, on the user's direction, recorded the pivot: a static
-annotated code map of banks `$80`-`$83` seeded by the tracked coverage maps
-(STATIC-CODE-MAP, tier 2, ready), then a matrix of every track through the
-shared engine ([TRACK-BREADTH](TRACK-BREADTH.md), planned; the ROM holds
-exactly 45 RNC streams, contiguous in banks `$98`-`$9F`, DRAGSTER first and
-ZOOM ZOO second, inventory and regeneration script in the record), and review
-tiers by risk (AGENTS.md, `docs/AGENT_WORKFLOW.md`). The user rejected any
-execution of original code inside the product; do not re-propose it.
-CLASSIC-SPLIT-TIME stays ready behind the two new tasks. Weekly usage sampled
-**84%** at 11:20Z, above the 80% floor, so nothing was started. At claim:
-sample usage, record the tier, and begin with the agreement check in the
-STATIC-CODE-MAP record (every observed site must decode identically before any
-static inference is added).
-
 **Status on 22 September 2026 UTC: no task is active; CLASSIC-SPLIT-TIME is
 ready and deliberately not started.** This session (Claude Fable 5.1, a
 within-provider model change from the Opus 5 sessions before it) came to pick
@@ -37,6 +18,27 @@ Also done this session: the user's records-only commit `60f8f5c` was pushed
 (main had been one ahead of origin) and CLASSIC-RACE-HUD's record status and
 integration section were rolled forward from its closeout, which the record had
 still listed as "to be recorded".
+
+**Status on 22 September 2026 UTC (later session): CLASSIC-SPLIT-TIME is in
+progress in `.worktrees/classic-split-time` (claimed about 10:45Z on the user's
+instruction; that session owns its record, registry row and closeout). After
+it is integrated, claim [STATIC-CODE-MAP](STATIC-CODE-MAP.md), after the weekly
+reset on 2026-09-24T08:00Z or on an explicit user override.** This session (Claude Fable
+5.1) answered the user's question about how much of the game is reconstructed
+(measurements in [D-0008](../docs/decisions/D-0008-static-map-track-breadth-review-tiers.md)
+and `docs/STATE.md`) and, on the user's direction, recorded the pivot: a static
+annotated code map of banks `$80`-`$83` seeded by the tracked coverage maps
+(STATIC-CODE-MAP, tier 2, ready), then a matrix of every track through the
+shared engine ([TRACK-BREADTH](TRACK-BREADTH.md), planned; the ROM holds
+exactly 45 RNC streams, contiguous in banks `$98`-`$9F`, DRAGSTER first and
+ZOOM ZOO second, inventory and regeneration script in the record), and review
+tiers by risk (AGENTS.md, `docs/AGENT_WORKFLOW.md`). The user rejected any
+execution of original code inside the product; do not re-propose it.
+Weekly usage sampled **84%** at 11:20Z, above the 80% floor, so this session
+claimed nothing and did no task work; its only commits are records on `main`. At claim:
+sample usage, record the tier, and begin with the agreement check in the
+STATIC-CODE-MAP record (every observed site must decode identically before any
+static inference is added).
 
 **Status on 20 September 2026 UTC (after CLASSIC-RACE-HUD): no task is active;
 nothing is blocked. A new session starts from a new user request.**

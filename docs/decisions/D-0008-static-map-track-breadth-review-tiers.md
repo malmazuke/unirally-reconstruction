@@ -5,7 +5,7 @@
   (Claude Fable 5.1 session, Claude Code desktop)
 - Related milestone/tasks: M4 breadth; [STATIC-CODE-MAP](../../tasks/STATIC-CODE-MAP.md),
   [TRACK-BREADTH](../../tasks/TRACK-BREADTH.md); [CLASSIC-SPLIT-TIME](../../tasks/CLASSIC-SPLIT-TIME.md)
-  stays ready and is reordered behind them
+  was already claimed and in progress when this was written and finishes first
 - Evidence records: [R-0006](../research/R-0006-observed-code-map.md) (the dynamic maps and
   their rule that nothing is inferred statically), [R-0018](../research/R-0018-m4-feature-inventory.md)
   (the feature matrix), [R-0021](../research/R-0021-zoom-zoo-content-contract.md) (the RNC
@@ -117,9 +117,9 @@ full to tier 1, as one round to tier 2 and not at all to tier 3.
 
 ### Ordering and budget
 
-STATIC-CODE-MAP first (tier 2 tooling, the enabler), TRACK-BREADTH next (tier 2 extraction
-with tier 1 engine changes), CLASSIC-SPLIT-TIME after them or whenever the static map makes
-it a short read. All of them start after the weekly reset on 24 September 2026 08:00Z or on
+CLASSIC-SPLIT-TIME finishes first (it was claimed at about 10:45Z on the user's
+instruction, before this decision), then STATIC-CODE-MAP (tier 2 tooling, the enabler), then
+TRACK-BREADTH (tier 2 extraction with tier 1 engine changes). The new tasks start after the weekly reset on 24 September 2026 08:00Z or on
 an explicit user override: this session sampled weekly all-models usage at **84%** at
 11:20Z, above the reserve floor, and prepared records only.
 

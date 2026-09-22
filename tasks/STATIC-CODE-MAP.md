@@ -30,7 +30,7 @@
 - Owned paths and shared interfaces: a new `tools/unirally_lab/coverage/static_map.py` (or a
   sibling module), `tools/unirally_lab/coverage/commands.py` for the two subcommands,
   `tests/tooling/test_coverage.py` or a new `test_static_map.py`, `docs/map/static/`,
-  `docs/research/R-0044-static-code-map.md`, the command inventory in
+  `docs/research/R-0045-static-code-map.md`, the command inventory in
   `docs/BUILD_AND_VALIDATION.md`, this record, `docs/STATE.md`, `tasks/README.md`,
   `tasks/NEXT_SESSION.md`. No game code, pack rules or gates change.
 - Claim/lease/heartbeat/checkpoint location: this record's Evidence and attempts table;
