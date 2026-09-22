@@ -1,5 +1,17 @@
 # Project state
 
+Updated 22 September 2026: **no task is active; CLASSIC-SPLIT-TIME is ready.**
+The session that came to dispatch it (Claude Fable 5.1, same provider) sampled
+weekly usage at 79% against D-0004's 80% reserve floor, one point short of the
+rule's stop, and prepared the task record instead of starting it:
+[CLASSIC-SPLIT-TIME](../tasks/CLASSIC-SPLIT-TIME.md) recovers the original's
+signed split time, which occupies the two centred HUD cells during the race
+(R-0043 measured `-0:00:1` and a signed `0:01:3`; native draws those cells only
+at the finish). Claim it after the weekly reset on 24 September 08:00Z or on an
+explicit user override. CLASSIC-RACE-HUD's acceptance conditions are verified in
+its closeout (final-tip run 35517040155 green on both platforms, remote
+matching), and its record now says so.
+
 Updated 20 September 2026: **CLASSIC-RACE-HUD is reviewed and integrated**;
 acceptance is conditional on the final-tip CI and remote verification recorded
 in the ignored closeout `artifacts/classic-race-hud-integration/closeout.json`

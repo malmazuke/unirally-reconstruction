@@ -1,5 +1,24 @@
 # Next session
 
+**Status on 22 September 2026 UTC: no task is active; CLASSIC-SPLIT-TIME is
+ready and deliberately not started.** This session (Claude Fable 5.1, a
+within-provider model change from the Opus 5 sessions before it) came to pick
+the next task and sampled usage first, as D-0004 requires: weekly all-models
+**79%** at 10:13Z against the 80% review/recovery reserve, resetting
+**2026-09-24T08:00Z**. CLASSIC-RACE-HUD cost eleven points with four returned
+review rounds, so starting a task on the last point would have breached the
+reserve at its first experiment. The next session claims
+[CLASSIC-SPLIT-TIME](CLASSIC-SPLIT-TIME.md) - the original's signed split time
+in the two centred cells during the race, the larger of the two omissions
+CLASSIC-RACE-HUD declared - **after the reset, or on an explicit user
+instruction to ignore the boundary** (as D-0004 records once for M4-16). The
+record carries the scope, the acceptance table, the scripts to reuse and the
+exact first command; sample fresh usage at claim and write it into the record.
+Also done this session: the user's records-only commit `60f8f5c` was pushed
+(main had been one ahead of origin) and CLASSIC-RACE-HUD's record status and
+integration section were rolled forward from its closeout, which the record had
+still listed as "to be recorded".
+
 **Status on 20 September 2026 UTC (after CLASSIC-RACE-HUD): no task is active;
 nothing is blocked. A new session starts from a new user request.**
 CLASSIC-RACE-HUD draws the original's in-race HUD - the lap field (`race` on

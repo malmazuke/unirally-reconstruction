@@ -2,7 +2,8 @@
 
 ## Assignment
 
-- Status: in_progress
+- Status: reviewed and integrated; accepted conditional on the final-tip CI and remote verification
+  recorded in `artifacts/classic-race-hud-integration/closeout.json`, both of which passed
 - Milestone: M4 presentation (declared-omission closure), not an M4 acceptance gate
 - Coordinator: this session (Claude Opus 5, primary and integrator under D-0006)
 - Task provider (fixed for all children; record any user-initiated platform change): Anthropic
@@ -228,10 +229,28 @@ the serialized state.
 
 ## Review and integration
 
-- Reviewer and independent reproduction/withheld-case results: to be recorded.
-- Required changes or acceptance rationale: to be recorded.
-- Exact merge candidate and required-check results: to be recorded.
-- Integrated commit and evidence location: to be recorded.
+Rolled forward on 22 September 2026 from the ignored closeout
+`artifacts/classic-race-hud-integration/closeout.json` in the main checkout (written
+2026-09-20T14:40:58Z); recover it from git and `gh run view 35517040155` if absent.
+
+- Reviewer and independent reproduction/withheld-case results: five fresh Opus 5 rounds in isolated
+  checkouts, four returned (attempts 17, 20, 23 and 26) and the fifth approving at `0ead6d3`
+  (attempt 30) after its own consecutive recapture of `regression-landing-held-roll-a`, 19 frames
+  pixel-identical over the whole picture; reports on `review/classic-race-hud` to
+  `review/classic-race-hud-5`, pushed to `origin`, and evidence under
+  `local/evidence/classic-race-hud-review{,2,3,4,5}/`.
+- Required changes or acceptance rationale: the four returned findings, each fixed and re-measured
+  against consecutive originals (attempts 18, 21, 24 and 27); the fifth round's two record
+  corrections applied at `0ead6d3`.
+- Exact merge candidate and required-check results: `0ead6d3` on `main` (base `92f46ba`); the gate
+  script passed on `547fbfa` and the record commits on top are documentation only.
+- Integrated commit and evidence location: `0ead6d3`; task evidence under
+  `local/evidence/classic-race-hud/classic-race-hud/`, closeout as above; worktrees and six local
+  branches removed.
 - Remote synchronization: pushed ref(s), verified local/remote commit IDs, or exact push failure:
-  to be recorded.
-- Scope still unverified: to be recorded.
+  `refs/heads/main` at `0ead6d34e0ba7b278303d8199fe5b7a03b935c41`, matching local; final-tip CI run
+  35517040155 completed with success on `changes`, `lab (ubuntu-24.04)` and `lab (macos-15)`
+  (full path, 2026-09-20T14:37Z to 14:40Z).
+- Scope still unverified: the off-screen rider arrow and the signed split time (now
+  [CLASSIC-SPLIT-TIME](CLASSIC-SPLIT-TIME.md)); live play did not reach the finish sequence, which
+  the frozen and consecutive originals cover.
