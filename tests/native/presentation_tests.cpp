@@ -47,7 +47,7 @@ int main() {
     auto hud = unirally::classic_race_hud_text(racing, zoom, std::nullopt);
     // The corner clock shows tenths and no more; the subframe never reaches it.
     require(hud.left == "2/3" && hud.left_column == 2 && hud.clock == "0:03:2");
-    require(hud.player_time.empty() && hud.opponent_time.empty());
+    require(hud.player_cells.empty() && hud.opponent_cells.empty());
     // The count is right-aligned on column 2, so a second digit takes column 1
     // ($81:EC94-$81:ECBC). Neither track reaches one.
     {
@@ -100,6 +100,11 @@ int main() {
       finishing.race.riders[0].laps_remaining = 0;      // update 6484
       finishing.race.riders[0].finished = 1;
       finishing.race.total_times = {9802, 60000};
+      // The crossing sets the display countdown and stores the crossing
+      // digits, which is what requests the centred field (R-0044).
+      finishing.race.riders[0].checkpoint_display_countdown = 120;
+      finishing.race.riders[0].next_checkpoint = 1;
+      finishing.race.riders[0].time_digits = {1, 3, 8, 0, 2};
       // `published()` reports the picture for the update before the pair just
       // observed, so each call below names the picture it returns.
       auto picture = run(queue, lap, finishing);        // 6484
@@ -107,16 +112,29 @@ int main() {
       picture = run(queue, finishing, finishing);       // 6485: `finish`, clock intact
       require(picture.clock == std::optional<std::string>("1:38:0") && !picture.clock_blanked);
       picture = run(queue, finishing, finishing);       // 6486: the clock is blanked
-      require(picture.clock_blanked && !picture.player_time);
+      require(picture.clock_blanked && !picture.player_cells);
       picture = run(queue, finishing, finishing);       // 6487: the player's time
-      require(picture.player_time && !picture.opponent_time);
+      require(picture.player_cells == std::optional<std::string>("1:38:02") && !picture.opponent_cells);
       auto opponent = finishing;
       opponent.race.riders[1].laps_remaining = 0;       // the opponent finishes
       opponent.race.riders[1].finished = 1;
       opponent.race.total_times[1] = 9810;
-      require(!run(queue, finishing, opponent).opponent_time);   // 6488
-      require(!run(queue, opponent, opponent).opponent_time);    // 6489: `finish` again
-      require(run(queue, opponent, opponent).opponent_time);     // 6490
+      opponent.race.riders[1].checkpoint_display_countdown = 120;
+      opponent.race.riders[1].next_checkpoint = 1;
+      opponent.race.riders[1].time_digits = {1, 3, 8, 1, 0};
+      require(!run(queue, finishing, opponent).opponent_cells);   // 6488
+      require(!run(queue, opponent, opponent).opponent_cells);    // 6489: `finish` again
+      require(run(queue, opponent, opponent).opponent_cells == std::optional<std::string>("1:38:10")); // 6490
+      // 118 updates after the finish the countdown reaches 2 and asks for a
+      // blank, which a finished rider's handler skips without spending the
+      // update ($81:EDE9): the finish time stands.
+      auto late = opponent;
+      late.race.riders[0].checkpoint_display_countdown = 2;
+      late.race.riders[1].checkpoint_display_countdown = 2;
+      run(queue, opponent, late);
+      picture = run(queue, late, late);
+      require(picture.player_cells == std::optional<std::string>("1:38:02") &&
+              picture.opponent_cells == std::optional<std::string>("1:38:10"));
 
       // The same sequence with the opponent's counter stepping on the update
       // right after the player finishes: `$0D17` is set again while `$0EFB` is
@@ -136,11 +154,17 @@ int main() {
       done.race.riders[0].laps_remaining = 0;
       done.race.riders[0].finished = 1;
       done.race.total_times = {3350, 60000};
+      done.race.riders[0].checkpoint_display_countdown = 120;
+      done.race.riders[0].next_checkpoint = 1;
+      done.race.riders[0].time_digits = {0, 3, 3, 5, 0};
       require(run(competing, sprint, done).clock == std::optional<std::string>("0:33:5"));
       auto crossed = done;
       crossed.race.riders[1].laps_remaining = 0;   // the opponent crosses here
       crossed.race.riders[1].finished = 1;
       crossed.race.total_times[1] = 3358;
+      crossed.race.riders[1].checkpoint_display_countdown = 120;
+      crossed.race.riders[1].next_checkpoint = 1;
+      crossed.race.riders[1].time_digits = {0, 3, 3, 5, 8};
       // `finish` is written twice, so the clock stands one picture longer than
       // it would with nothing competing for the queue, and each field behind
       // it follows one picture later.
@@ -149,8 +173,72 @@ int main() {
       still = run(competing, crossed, crossed);
       require(!still.clock_blanked);
       require(run(competing, crossed, crossed).clock_blanked);
-      require(run(competing, crossed, crossed).player_time);
-      require(run(competing, crossed, crossed).opponent_time);
+      require(run(competing, crossed, crossed).player_cells == std::optional<std::string>("0:33:50"));
+      require(run(competing, crossed, crossed).opponent_cells == std::optional<std::string>("0:33:58"));
+
+      // R-0044: the same fields mid-race. On the M4-16 primary the opponent is
+      // first through checkpoint 1 of lap 1 on update 2008 at 0:08.5 (its
+      // own cells are cut to a blank at once), and the player reaches it on
+      // 2077 with the clock at 0:09.8 before that update's tick to 0:09.9:
+      // the original publishes `+0:01:3`, not `+0:01:4`. The clock's tick
+      // takes the queue first, so the split shows two pictures later.
+      unirally::ClassicRaceHudClock split;
+      unirally::ZoomZooState riding{};
+      riding.race.riders[0].laps_remaining = 3;
+      riding.race.riders[1].laps_remaining = 3;
+      riding.race.checkpoint_seen.fill(255);
+      riding.movement.timer.seconds = 8;
+      riding.movement.timer.tenths = 5;
+      prime(split, riding);
+      auto opponent_first = riding;
+      opponent_first.race.riders[1].checkpoint = 1;
+      opponent_first.race.riders[1].next_checkpoint = 2;
+      opponent_first.race.riders[1].checkpoint_display_countdown = 2;  // cut by $81:CA6E
+      opponent_first.race.checkpoint_seen[3 * 4 + 1] = 0;
+      require(!run(split, riding, opponent_first).opponent_cells);
+      require(!run(split, opponent_first, opponent_first).opponent_cells);
+      auto before_player = opponent_first;
+      before_player.race.riders[1].checkpoint_display_countdown = 0;
+      before_player.movement.timer.seconds = 9;
+      before_player.movement.timer.tenths = 8;
+      run(split, opponent_first, before_player);
+      run(split, before_player, before_player);
+      require(split.published().clock == std::optional<std::string>("0:09:8"));
+      auto player_crosses = before_player;
+      player_crosses.race.riders[0].checkpoint = 1;
+      player_crosses.race.riders[0].next_checkpoint = 2;
+      player_crosses.race.riders[0].checkpoint_display_countdown = 120;
+      player_crosses.movement.timer.tenths = 9;      // the tick of the same update
+      auto shown = run(split, before_player, player_crosses);          // 2077
+      require(!shown.player_cells && shown.clock == std::optional<std::string>("0:09:8"));
+      shown = run(split, player_crosses, player_crosses);              // 2078: the clock
+      require(!shown.player_cells && shown.clock == std::optional<std::string>("0:09:9"));
+      shown = run(split, player_crosses, player_crosses);              // 2079: the split
+      require(shown.player_cells == std::optional<std::string>("+0:01:3"));
+      // 118 updates later the countdown reaches 2 and the cells are blanked.
+      auto expiring = player_crosses;
+      expiring.race.riders[0].checkpoint_display_countdown = 2;
+      run(split, player_crosses, expiring);
+      require(!run(split, expiring, expiring).player_cells);
+      // A rider first through a slot draws nothing for it, and a queue that
+      // never saw the first crossing of a slot leaves the cells alone.
+      unirally::ClassicRaceHudClock blind;
+      prime(blind, before_player);
+      run(blind, before_player, player_crosses);
+      run(blind, player_crosses, player_crosses);
+      require(!run(blind, player_crosses, player_crosses).player_cells);
+      // The crossing text and the split arithmetic themselves.
+      require(unirally::classic_hud_crossing_text({1, 3, 8, 0, 2}) == "1:38:02");
+      require(unirally::classic_hud_split_text({0, 0, 9, 8}, {0, 0, 8, 5}) == "+0:01:3");
+      require(unirally::classic_hud_split_text({0, 4, 5, 9}, {0, 4, 5, 8}) == "+0:00:1");
+      require(unirally::classic_hud_split_text({1, 0, 1, 1}, {0, 5, 9, 9}) == "+0:01:2");
+      require(unirally::classic_hud_split_text({0, 4, 5, 8}, {0, 4, 5, 8}) == "+0:00:0");
+      // The unmeasured negative path, as $81:C9F4-CA33 spells it: the ten's
+      // complement of the borrowed digits, exact for 8.5 against 9.8, and one
+      // second short when the tenths come out at ten (8.5 against 10.5 is two
+      // seconds, shown as one).
+      require(unirally::classic_hud_split_text({0, 0, 8, 5}, {0, 0, 9, 8}) == "-0:01:3");
+      require(unirally::classic_hud_split_text({0, 0, 8, 5}, {0, 1, 0, 5}) == "-0:01:0");
 
       // A tour race holds the clock on either rider's crossing, because both
       // dirty the field and the lap-number path writes it. A sprint holds on
@@ -198,7 +286,7 @@ int main() {
     timed_out.movement.timer.tenths = 9;
     timed_out.movement.timer.subframe = 3;
     hud = unirally::classic_race_hud_text(timed_out, zoom, std::nullopt);
-    require(hud.left == "2/3" && hud.clock == "9:59:9" && hud.player_time.empty() && hud.opponent_time.empty());
+    require(hud.left == "2/3" && hud.clock == "9:59:9" && hud.player_cells.empty() && hud.opponent_cells.empty());
   }
 
   // Race palette cycle $82:D382-D496. Original $0B84 ends frame n at

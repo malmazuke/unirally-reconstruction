@@ -1451,6 +1451,49 @@ std::string classic_hud_clock(const RaceTimerDigits& t) {
     return {static_cast<char>('0'+t.minutes%10),':',static_cast<char>('0'+t.tens_seconds%10),
             static_cast<char>('0'+t.seconds%10),':',static_cast<char>('0'+t.tenths%10)};
 }
+namespace {
+// The original looks each value up in the character table $80:81F4, whose
+// first ten entries are the digits; a value past nine would name a letter,
+// which no measured race reaches, so it is refused rather than invented.
+char classic_hud_digit(unsigned value) {
+    if(value>9)throw std::invalid_argument("Classic HUD digit is outside its supported domain");
+    return static_cast<char>('0'+value);
+}
+} // namespace
+// $81:CAAD-CB10: minutes, tens, seconds, tenths and hundredths of the crossing.
+std::string classic_hud_crossing_text(const std::array<std::uint16_t,5>& d) {
+    return {classic_hud_digit(d[0]),':',classic_hud_digit(d[1]),classic_hud_digit(d[2]),':',
+            classic_hud_digit(d[3]),classic_hud_digit(d[4])};
+}
+std::array<std::uint8_t,4> classic_hud_clock_digits(const RaceTimerDigits& t) {
+    return {static_cast<std::uint8_t>(t.minutes),static_cast<std::uint8_t>(t.tens_seconds),
+            static_cast<std::uint8_t>(t.seconds),static_cast<std::uint8_t>(t.tenths)};
+}
+// $81:C94F-CA36, digit by digit from the tenths up, each borrow carried into
+// the stored digit above it ($02, $01, $00 in the original's scratch).
+std::string classic_hud_split_text(const std::array<std::uint8_t,4>& clock,
+                                   const std::array<std::uint8_t,4>& stored) {
+    int stored_minutes=stored[0],stored_tens=stored[1],stored_seconds=stored[2];
+    int tenths=int(clock[3])-int(stored[3]);
+    if(tenths<0) {tenths+=10;++stored_seconds;}
+    int seconds=int(clock[2])-stored_seconds;
+    if(seconds<0) {seconds+=10;++stored_tens;}
+    int tens=int(clock[1])-stored_tens;
+    if(tens<0) {tens+=6;++stored_minutes;}
+    int minutes=int(clock[0])-stored_minutes;
+    const bool negative=minutes<0;
+    // `EOR #$FF` on the 8-bit minute: the one's complement, not the negation.
+    if(negative)minutes=(~minutes)&0xff;
+    if(!negative)
+        return {'+',classic_hud_digit(unsigned(minutes)),':',classic_hud_digit(unsigned(tens)),
+                classic_hud_digit(unsigned(seconds)),':',classic_hud_digit(unsigned(tenths))};
+    // $81:C9F4-CA33: the lower digits are taken from 5, 9 and 10, and ten
+    // shows as zero without a carry, so a whole-second deficit reads one
+    // second short. No measured race reaches this path (R-0044).
+    const int ten_tenths=10-tenths;
+    return {'-',classic_hud_digit(unsigned(minutes)),':',classic_hud_digit(unsigned(5-tens)),
+            classic_hud_digit(unsigned(9-seconds)),':',classic_hud_digit(unsigned(ten_tenths==10?0:ten_tenths))};
+}
 void ClassicRaceHudClock::observe_update(const ZoomZooState& previous,const ZoomZooState& updated) {
     on_screen_=latest_;
     const auto stepped=[&](std::size_t rider) {
@@ -1462,10 +1505,44 @@ void ClassicRaceHudClock::observe_update(const ZoomZooState& previous,const Zoom
     // field. The player's last crossing also blanks the clock and arms its own
     // finish time; the opponent's finish arms the opponent's.
     if(stepped(0) || stepped(1))pending_.left=true;
-    if(previous.race.riders[0].laps_remaining!=0 && updated.race.riders[0].laps_remaining==0) {
-        pending_.clock_blank=true;pending_.player_time=true;
+    if(previous.race.riders[0].laps_remaining!=0 && updated.race.riders[0].laps_remaining==0)
+        pending_.clock_blank=true;
+    // The centred fields (R-0044). `$81:C910` reads the countdown after the
+    // lap routine set it and before the clock ticks, so the clock a split is
+    // taken from is the previous update's; the crossing digits are the lap
+    // routine's own copy. Native's engine keeps the countdown, the checkpoint,
+    // the crossing digits and the shared first-seen flags; the first rider's
+    // stored clock is kept here.
+    for(std::size_t rider=0;rider<2;++rider) {
+        const auto& before=previous.race.riders[rider];const auto& after=updated.race.riders[rider];
+        auto& cell=pending_.cells[rider];
+        // Every accepted crossing but the initial one steps the rider's next
+        // checkpoint and sets the countdown, to 120 or, for the opponent
+        // first through a slot, straight on to 2 within the same update
+        // ($81:CA6E), so the countdown alone cannot name that crossing.
+        const bool crossing=after.next_checkpoint!=before.next_checkpoint && after.checkpoint_display_countdown!=0;
+        if(crossing) {
+            if(after.checkpoint==0) {
+                cell={ClassicHudCellRequest::Kind::Draw,classic_hud_crossing_text(after.time_digits)};
+            } else {
+                const std::size_t slot=static_cast<std::size_t>(after.laps_remaining)*4U+after.checkpoint;
+                const auto clock=classic_hud_clock_digits(previous.movement.timer);
+                const bool first=slot<previous.race.checkpoint_seen.size() &&
+                                 (previous.race.checkpoint_seen[slot]&0x80U)!=0;
+                if(first) {
+                    // $81:CA38-CA61: store the clock, draw nothing.
+                    if(slot<slot_times_.size())slot_times_[slot]=clock;
+                    cell={};
+                } else if(slot<slot_times_.size() && slot_times_[slot]) {
+                    cell={ClassicHudCellRequest::Kind::Draw,classic_hud_split_text(clock,*slot_times_[slot])};
+                } else {
+                    cell={}; // no history of the slot: leave the cells
+                }
+            }
+        }
+        // $81:C91A-C922, and the opponent's first-seen cut to 2 at $81:CA6E.
+        if(after.checkpoint_display_countdown==2)cell={ClassicHudCellRequest::Kind::Blank,{}};
     }
-    if(!previous.race.riders[1].finished && updated.race.riders[1].finished)pending_.opponent_time=true;
     // Then service the first pending field and stop, as $81:F357 does.
     const bool finished=updated.race.riders[0].laps_remaining==0;
     if(pending_.left) {
@@ -1485,8 +1562,17 @@ void ClassicRaceHudClock::observe_update(const ZoomZooState& previous,const Zoom
         auto digits=classic_hud_clock(updated.movement.timer);
         if(latest_.clock!=digits) {latest_.clock=std::move(digits);return;}
     }
-    if(pending_.player_time) {latest_.player_time=true;pending_.player_time=false;return;}
-    if(pending_.opponent_time) {latest_.opponent_time=true;pending_.opponent_time=false;return;}
+    for(std::size_t rider=0;rider<2;++rider) {
+        auto& cell=pending_.cells[rider];
+        auto& held=rider==0?latest_.player_cells:latest_.opponent_cells;
+        if(cell.kind==ClassicHudCellRequest::Kind::Draw) {held=cell.text;cell={};return;}
+        if(cell.kind==ClassicHudCellRequest::Kind::Blank) {
+            cell={};
+            // A finished rider's cells are never blanked, and the handler
+            // goes on to the next field without spending the update.
+            if(!updated.race.riders[rider].finished) {held.reset();return;}
+        }
+    }
 }
 ClassicHudText classic_race_hud_text(const ZoomZooState& previous_update,
                                      const ClassicRaceScenario& scenario,
@@ -1512,10 +1598,8 @@ ClassicHudText classic_race_hud_text(const ZoomZooState& previous_update,
     if(published) {
         if(!published->clock_blanked)
             hud.clock=published->clock?*published->clock:classic_hud_clock(previous_update.movement.timer);
-        if(published->player_time && race.total_times[0]<60000U)
-            hud.player_time=hud_time(race.total_times[0]);
-        if(published->opponent_time && race.total_times[1]<60000U)
-            hud.opponent_time=hud_time(race.total_times[1]);
+        hud.player_cells=published->player_cells.value_or("");
+        hud.opponent_cells=published->opponent_cells.value_or("");
         return hud;
     }
     if(!finished || race.finish_delay<1)
@@ -1527,11 +1611,11 @@ ClassicHudText classic_race_hud_text(const ZoomZooState& previous_update,
     // who finishes all laps always has a real total, so this guard is belt and
     // braces rather than a measured case (review 2 A8).
     if(finished && race.finish_delay>=2 && race.total_times[0]<60000U)
-        hud.player_time=hud_time(race.total_times[0]);
+        hud.player_cells=hud_time(race.total_times[0]);
     if(race.riders[1].finished && race.total_times[1]<60000U) {
         const auto opponent=opponent_finish_frame?opponent_finish_frame:classic_opponent_finish_frame(previous_update);
         if(opponent && previous_update.movement.frame>=*opponent+1U)
-            hud.opponent_time=hud_time(race.total_times[1]);
+            hud.opponent_cells=hud_time(race.total_times[1]);
     }
     return hud;
 }
@@ -1605,6 +1689,7 @@ std::optional<unsigned> classic_caption_tile(char glyph) {
     switch(glyph) {
     case '!':return 0x60U;
     case '"':return 0x61U;   // the table spells an apostrophe this way
+    case '+':return 0x4cU;   // R-0044: the split's sign, $80:821F
     case '-':return 0x4dU;
     case ':':return 0x45U;
     case '/':return 0x4eU;
@@ -1683,8 +1768,8 @@ void draw_classic_hud(RgbFrame& frame,const ZoomZooState& state,
     const auto hud=classic_race_hud_text(state,content.scenario,opponent_finish_frame,published);
     draw_bg3_text(frame,font,hud.left_column,2,hud.left,ink,inked);
     draw_bg3_text(frame,font,24,2,hud.clock,ink,inked);
-    draw_bg3_text(frame,font,13,5,hud.player_time,ink,inked);
-    draw_bg3_text(frame,font,13,20,hud.opponent_time,ink,inked);
+    draw_bg3_text(frame,font,13,5,hud.player_cells,ink,inked);
+    draw_bg3_text(frame,font,13,20,hud.opponent_cells,ink,inked);
 }
 } // namespace
 
