@@ -20,8 +20,10 @@ WARIO PAINT at the special tile, HYBRID at `inverted AI marker is unrecovered`).
 race, the result screen and Race Again on each, with no stop. CROCK, WARIO PAINT and
 HYBRID stop later in a race even with the controller released. The user saw two
 faults in that play. The LOOPER one is fixed (the BG1 picture did not wrap past the
-playfield's right edge, R-0046 observation 17). Still open: the result screen names
-DRAGSTER on every one-run track (it reuses DRAGSTER's captured base VRAM), and the
+playfield's right edge, R-0046 observation 17), and so is the result title, which now
+names the track (observation 18; checked on EAST's and FLAT FUN's original results;
+b, h, i, j, k, q, v, w, x, y, z and the digits follow the font's layout, not yet
+compared). Still open: the
 hint caption's display timing: every 60 updates native's caption differs from the
 original's for one frame (LOOPER from update 1,172, HYBRID 1,352). Next, in order of
 reach: the special-tile response (7 of 16 compared races stop there inside their
