@@ -75,19 +75,27 @@ TrackSamples sample_track(const SamplingContent& content,
                           const CollisionPoints& points,
                           std::uint16_t position_x, std::uint16_t position_y,
                           std::uint16_t coarse_width) {
-    const unsigned column = static_cast<unsigned>(position_x) >> coarse_cell_shift;
-    const unsigned row = static_cast<unsigned>(position_y) >> coarse_cell_shift;
-    if (coarse_width == 0 || column + 1 >= coarse_width || position_y >= 0x8000U) {
-        throw std::out_of_range("unrecovered coarse-grid edge branch");
+    unsigned column = static_cast<unsigned>(position_x) >> coarse_cell_shift;
+    unsigned row = static_cast<unsigned>(position_y) >> coarse_cell_shift;
+    // $81:8A2C-8A3B: a negative y ($A7 bit 15) with $0FF7 clear, as every
+    // shape track_geometry accepts leaves it, samples coarse cell (0, 0); the
+    // fine offsets below still use the position (TRACK-BREADTH part 3).
+    if (position_y >= 0x8000U) column = row = 0;
+    if (coarse_width == 0 || column >= coarse_width) {
+        throw std::out_of_range("coarse column outside the playfield");
     }
     // $81:8A53–8AC4. Multiplication and shifts wrap at 16 bits.
     const unsigned row_words = (row * coarse_width) & 0xFFFFU;
+    const unsigned row_start = (row_words * 2) & 0xFFFFU;
     const unsigned upper_left = ((row_words + column) * 2) & 0xFFFFU;
     const unsigned stride = (static_cast<unsigned>(coarse_width) * 2) & 0xFFFFU;
+    // $81:8A60-8A99: in the last column the right-hand neighbours are column 0
+    // of the same two rows, so the playfield wraps horizontally.
+    const unsigned right = column + 1 == coarse_width ? row_start : (upper_left + 2) & 0xFFFFU;
     std::array<unsigned, 4> blocks{};
     const std::array<unsigned, 4> addresses = {
-        upper_left, (upper_left + 2) & 0xFFFFU,
-        (upper_left + stride) & 0xFFFFU, (upper_left + stride + 2) & 0xFFFFU};
+        upper_left, right,
+        (upper_left + stride) & 0xFFFFU, (right + stride) & 0xFFFFU};
     for (std::size_t i = 0; i < blocks.size(); ++i) {
         // The header is 15 bytes ($7F:000F); each fine-cell block is 32 bytes.
         blocks[i] = (static_cast<unsigned>(word(content.track, coarse_map_offset + addresses[i])) * block_bytes) & 0xFFFFU;
