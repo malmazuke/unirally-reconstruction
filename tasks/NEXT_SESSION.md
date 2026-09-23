@@ -5,6 +5,16 @@ push the task branch, open a pull request from the template, merge with
 `gh pr merge --merge` once its checks are green and the review is done. `main`
 refuses direct pushes. The checks run on pull requests only.
 
+**Status on 23 September 2026 UTC (end of the TRACK-BREADTH session): TRACK-BREADTH is
+accepted; claim [SPECIAL-TILE-RESPONSE](SPECIAL-TILE-RESPONSE.md) next, after the weekly
+reset on 2026-09-24T08:00Z or on an explicit user override** (weekly usage was 96%). Its
+record has the scope, the stops to recover, the inputs and the exact first command. The other
+follow-ups are listed in TRACK-BREADTH's handoff; each is its own task.
+
+Before any build in the main checkout, pull and rebuild `app-debug`: live play needs the v10
+pack (`local/classic-pal-crawler-tracks-v10.pack`, already there), and a stale build refuses
+it. The paragraphs below are the history of this session's parts.
+
 **Status on 23 September 2026 UTC (after TRACK-BREADTH part 3): TRACK-BREADTH
 is in progress; continue it.** Part 3 is reviewed and merged by pull request
 (closeout `artifacts/track-breadth-part3-integration/closeout.json` in the main

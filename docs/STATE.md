@@ -1,5 +1,18 @@
 # Project state
 
+Updated 23 September 2026 (TRACK-BREADTH accepted): **TRACK-BREADTH is accepted for the 20
+tracks a cold start reaches, and [SPECIAL-TILE-RESPONSE](../tasks/SPECIAL-TILE-RESPONSE.md) is
+ready.** After part 3, the user played EAST and LOOPER live and found two faults, both now
+fixed:
+- LOOPER's track picture did not wrap past the playfield's right edge (#13, R-0046
+  observation 17).
+- One-run tracks' result screens showed DRAGSTER's name (#14, observation 18). EAST's and FLAT
+  FUN's results now match the original's title exactly.
+
+The follow-ups, each its own task, are listed in TRACK-BREADTH's handoff. Weekly usage was 96%
+when this was written; the next session starts after the reset on 24 September 08:00Z unless the
+user overrides again.
+
 Updated 23 September 2026 (TRACK-BREADTH part 3): **all 16 race tracks a cold
 start reaches now start natively, chosen by id** (`frontend run --track NN`), from
 pack profile **v10** (`local/classic-pal-crawler-tracks-v10.pack`; a v9 pack is
