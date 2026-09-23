@@ -285,8 +285,8 @@ the two accepted tracks carry.
 - **Live play of a new track can still abort.** The exact windows end about 1,500
   updates in, and native guards lie beyond them on some tracks. With the controller
   released, CROCK stops at update 1,731 and WARIO PAINT at 1,719 (special tile), and
-  HYBRID at 2,053 on `inverted AI marker is unrecovered`, a guard the matrix does not
-  yet list (part 3 re-review). Under a held button for 4,000 updates, EAST, LOOPER and
+  HYBRID at 2,053 on `inverted AI marker is unrecovered`, listed as next experiment 3
+  (part 3 re-review). Under a held button for 4,000 updates, EAST, LOOPER and
   FLAT FUN run clean in the app. Any track with a special-tile stop can abort until that
   response is recovered (next experiment 2).
 - **The 470-pixel frame at update 272** is on every track checked, DRAGSTER and ZOOM
@@ -314,7 +314,7 @@ the two accepted tracks carry.
    windows: CROCK and WARIO PAINT also reach it just after theirs, at updates 1,731
    and 1,719. It also ends 19 of the 45 idle runs. A watch capture on SWITCHER at update 384 names the flag and the branch.
 3. **Done in part 3**: the sampler edges (observation 16). **HYBRID's `inverted AI
-   marker is unrecovered`** guard, reached at update 2,053 just after its exact window,
+   marker is unrecovered`** guard, reached at update 2,053, some 540 updates after its exact window,
    is a separate unrecovered branch of the opponent's steering; capture HYBRID past
    update 2,053 and compare the opponent's marker words.
 4. **PINGPONG's `opponent.response_b`** at update 1,068: the first arithmetic

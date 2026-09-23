@@ -172,6 +172,7 @@ originals across race start; the sampled-frames rule from CLASSIC-RACE-HUD appli
 | 26 (04:30Z, review round 1) | - | Tier 1 review of `775e7ba` returned: R1 the GO letters swap on odd-boundary tracks (the window drivers took `$0300`'s parity from the absolute frame); R2 the records overclaimed | Confirmed; the review's six sampled frames had missed the window | Fix R1 at the three parity sites, correct the records |
 | 27 (04:45Z) | `$0300` counts from the boundary | Parity from `frame - initialization frame` in the countdown driver, the restored-state selection and the opponent-finish inference; 111 consecutive frames of updates 190-300 on CROCK, LOOPER, EAST, FLAT FUN, ZOOM ZOO | All five show ZOOM ZOO's profile (36 or 0 pixels, 470 at update 272 on all); recompare unchanged | Gates, re-review |
 | 28 (05:15Z, re-review) | - | Tier 1 re-review of `5bab77e`: R1 confirmed fixed on MONSTER, PINGPONG, HAIRPIN HILL, SHORT CUT and DRAGSTER (the old code reproduced the fault), parity logic correct on every path, gates complete; **returned** R3: the suggested acceptance play named CROCK, which aborts at update 1,731 with the controller released | Records only: EAST and LOOPER named instead; the later stops (CROCK 1,731, WARIO PAINT 1,719, HYBRID 2,053 on `inverted AI marker is unrecovered`) and the update-272 residue recorded | Third round |
+| 29 (05:40Z, rounds 3-4) | - | Round 3 (fresh Opus 5.5) on `93c9a01`: R3 fixed, EAST and LOOPER confirmed clean over 4,000 held-input updates, the stops confirmed, `gate_identity` passed; **returned** R4 (HYBRID's guard on no follow-up list). Round 4 on `ccef821`: **approved**, three minor advisories applied before merge | Merge |
 | 10 (01:55Z) | The name table follows the track index | Relative-text search, then the table at `$83:9FFA` | 45 names in lowercase ASCII, then five `unavailable` and nine tour names; names 0 and 1 agree with the verified indices | R-0046 observation 5 (static) |
 
 ## Handoff
@@ -304,7 +305,9 @@ Part 3 (checkpoint; the task is not accepted):
   five tracks, with the old code reproducing the fault; **returned** R3 (records named CROCK
   for the acceptance play, which aborts at update 1,731) and five advisories (A9-A13). All
   addressed in records, comments and the gate script; no gate-binary input changed
-  (`gate_identity` against `gates-5bab77e`). A third round checks them.
+  (`gate_identity` against `gates-5bab77e`). Round 3 of `93c9a01` confirmed R3 and returned
+  R4 (HYBRID's guard on no follow-up list), fixed in `ccef821`; round 4 **approved**
+  `ccef821` with three minor advisories on wording, applied before the merge.
 - Merge candidate and checks: the pull request head after re-review, with `changes` and both
   `lab` jobs green on it and the gate script run on it.
 - Integrated commit and evidence: the merge commit of
