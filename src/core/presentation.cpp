@@ -6,6 +6,7 @@
 #include "rider_object.hpp"
 #include "zoom_zoo_pack.hpp"
 #include <string>
+#include <cctype>
 #include <algorithm>
 #include <cmath>
 #include <limits>
@@ -1118,9 +1119,27 @@ void ClassicWindowPointer::observe_update(const ZoomZooState& previous,const Zoo
 }
 
 namespace {
-// The decoded track a race of either track runs on: the engine's own entry.
+// The decoded track a race runs on: the engine's own entry.
 std::span<const std::uint8_t> classic_track_data(const ClassicContentPack& pack,ClassicRaceTrack track) {
-    return pack.entry(track==ClassicRaceTrack::Dragster?"physics.track.dragster.data":"zoom.track-data");
+    return classic_race_content(pack,track).movement.sampling.track;
+}
+// A track's name from the ROM's name table (`$83:9FFA`, TRACK-BREADTH): the
+// index-th `$FF`-terminated lowercase string, shown in capitals with spaces
+// for underscores, as the menu screens show it.
+std::string classic_track_name(const ClassicContentPack& pack,ClassicRaceTrack track) {
+    const auto table=pack.entry("presentation.classic.track-names.v1");
+    std::size_t at=0;
+    for(unsigned skipped=0;skipped<track.index;++skipped) {
+        while(at<table.size() && table[at]!=0xffU)++at;
+        if(at==table.size())throw std::invalid_argument("track name table is shorter than the track index");
+        ++at;
+    }
+    std::string name;
+    for(;at<table.size() && table[at]!=0xffU;++at) {
+        const char c=static_cast<char>(table[at]);
+        name.push_back(c=='_'?' ':static_cast<char>(std::toupper(static_cast<unsigned char>(c))));
+    }
+    return name;
 }
 } // namespace
 
@@ -1139,7 +1158,7 @@ void ClassicRaceHistoryTracker::observe_update(const ZoomZooState& previous,cons
     clock_.observe_update(previous,updated);
     if(updated.result_updates || zoom_zoo_update_was_paused(previous,updated))return;
     const auto tables=rider_look_tables(pack);
-    const auto engine=updated.track==ClassicRaceTrack::Dragster?dragster_race_content(pack):zoom_zoo_content(pack);
+    const auto engine=classic_race_content(pack,updated.track);
     latest_.pose=rider_overlay_poses(look_,updated,tables);
     advance_rider_look(look_,updated,engine,tables);
 }
@@ -1646,15 +1665,37 @@ ClassicRacePresentationContent classic_race_presentation_content(const ClassicCo
     content.caption_font=pack.entry("presentation.classic.font.v1");
     content.track=classic_track_data(pack,track);
     content.window_transition_member=classic_window_transition_member(content.track);
-    switch(track) {
-    case ClassicRaceTrack::ZoomZoo:
+    if(track!=ClassicRaceTrack::ZoomZoo && track!=ClassicRaceTrack::Dragster) {
+        // TRACK-BREADTH part 3: the track's own BG1 tiles and its scenery's BG2
+        // tiles, map and race palette (scenery = track mod 14, $82:DC20-DD84).
+        // The result screen follows the race mode's accepted track (the
+        // DRAGSTER assets for a one-run race), a hypothesis until a new
+        // track's result is captured.
+        const auto scenery=track.index%14U;
+        const auto name=std::string("scenery.")+char('0'+scenery/10U)+char('0'+scenery%10U)+'.';
+        content.track_name=classic_track_name(pack,track);
+        content.bg1_tiles=pack.entry(classic_track_entry(track,"bg1-tiles"));
+        content.bg2_tiles=pack.entry(name+"bg2-tiles");
+        content.bg2_map=pack.entry(name+"bg2-map");
+        content.palette=pack.entry(name+"palette");
+        if(!content.scenario.tour_race) {
+            content.result_assets=pack.entry("presentation.result.classic.font-layout.v1");
+            content.result_base_vram=pack.entry("presentation.result.classic.base-vram.v1");
+            content.result_palette=pack.entry("presentation.result.classic.palette.v1");
+            content.result_palette_tail=pack.entry("presentation.result.classic.palette-tail.v1");
+        }
+        content.geometry=track_geometry(content.track);
+        return content;
+    }
+    switch(track.index) {
+    case ClassicRaceTrack::ZoomZoo.index:
         content.track_name="ZOOM ZOO";
         content.bg1_tiles=pack.entry("zoom.bg1-tiles");
         content.bg2_tiles=pack.entry("zoom.bg2-tiles");
         content.bg2_map=pack.entry("zoom.bg2-map");
         content.palette=pack.entry("zoom.palette");
         break;
-    case ClassicRaceTrack::Dragster:
+    case ClassicRaceTrack::Dragster.index:
         content.track_name="DRAGSTER";
         content.bg1_tiles=pack.entry("presentation.track.dragster.bg1-tiles.v1");
         content.bg2_tiles=pack.entry("presentation.track.dragster.bg2-tiles.v1");
@@ -1808,11 +1849,13 @@ RgbFrame render_classic_race(const ZoomZooState& state,const ClassicRacePresenta
 
         rect(frame,45,83,1,96,{180,180,100});rect(frame,45,178,170,1,{180,180,100});
         ui_text(frame,3,83,race_time(maximum));ui_text(frame,3,169,race_time(minimum));
-        for(unsigned i=0;i<2;++i)for(unsigned lap=0;lap<3;++lap) {
+        const unsigned laps=std::clamp<unsigned>(scenario.laps,1U,10U);
+        const int lap_step=165/static_cast<int>(laps); // 55 for three laps.
+        for(unsigned i=0;i<2;++i)for(unsigned lap=0;lap<laps;++lap) {
             const auto time=state.race.lap_times[i][lap];
             if(time>=60000)continue;
             const int y=178-static_cast<int>((time-minimum)*90U/std::max(1U,maximum-minimum));
-            rect(frame,76+int(lap)*55+int(i)*5,y-2,4,4,i?std::array<std::uint8_t,3>{255,190,70}:std::array<std::uint8_t,3>{255,80,90});
+            rect(frame,76+int(lap)*lap_step+int(i)*5,y-2,4,4,i?std::array<std::uint8_t,3>{255,190,70}:std::array<std::uint8_t,3>{255,80,90});
         }
         ui_text(frame,70,190,std::string("LAPS ON ")+std::string(content.track_name));ui_text(frame,49,208,"ENTER TO RACE AGAIN");
         const unsigned brightness=std::min(14U,unsigned(state.result_updates-108U)*2U);

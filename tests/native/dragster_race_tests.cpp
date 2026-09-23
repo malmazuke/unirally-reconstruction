@@ -68,6 +68,30 @@ int main() {
     auto early=bytes;early[8]=0x2f;rejects([&]{(void)deserialize_zoom_zoo(early);}); // Frame 1327.
     auto legacy=start;legacy.native_initialization=false;rejects([&]{(void)serialize_zoom_zoo(legacy);});
 
+    // TRACK-BREADTH part 3: the other cold-start race tracks. FLAT FUN (13) is a
+    // one-run race like DRAGSTER, INFINITY (14) a seven-lap race; the stunt
+    // events (2) and the tracks no cold start reaches (37) have no scenario.
+    const ClassicRaceTrack flat_fun{13},infinity{14};
+    const auto flat=classic_race_scenario(flat_fun),seven=classic_race_scenario(infinity);
+    require(flat.initialization_frame==1392 && flat.laps==1 && !flat.tour_race && flat.stable_result_won==226);
+    require(seven.initialization_frame==1376 && seven.laps==7 && seven.tour_race && seven.stable_result_won==115);
+    require(classic_race_has_scenario(flat_fun) && !classic_race_has_scenario(ClassicRaceTrack{2}) &&
+            !classic_race_has_scenario(ClassicRaceTrack{37}));
+    rejects([&]{(void)classic_race_scenario(ClassicRaceTrack{2});});
+    // Its state carries its own identity, URTR13 01, and round-trips.
+    auto flat_start=classic_race_start(content,flat);
+    require(flat_start.track==flat_fun && flat_start.movement.frame==1392);
+    const auto flat_bytes=serialize_zoom_zoo(flat_start);
+    const std::array<std::uint8_t,8> flat_magic{'U','R','T','R','1','3','0','1'};
+    require(classic_race_state_magic(flat_fun)==flat_magic && std::equal(flat_magic.begin(),flat_magic.end(),flat_bytes.begin()));
+    const auto flat_restored=deserialize_zoom_zoo(flat_bytes);
+    require(flat_restored.track==flat_fun && serialize_zoom_zoo(flat_restored)==flat_bytes);
+    // An identity naming DRAGSTER, ZOOM ZOO or a track without a scenario is refused.
+    for(const auto digits:{std::array<std::uint8_t,2>{'0','0'},std::array<std::uint8_t,2>{'0','2'},std::array<std::uint8_t,2>{'3','7'}}) {
+        auto renamed=flat_bytes;renamed[4]=digits[0];renamed[5]=digits[1];
+        rejects([&]{(void)deserialize_zoom_zoo(renamed);});
+    }
+
     // One lap: a finished rider has no laps left and its single slot is its total.
     auto finished=start;finished.movement.countdown=0;finished.fade_level=30;
     finished.movement.frame=1328+2000;

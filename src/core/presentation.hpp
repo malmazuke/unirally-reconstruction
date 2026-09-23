@@ -357,7 +357,7 @@ private:
 struct ClassicRacePresentationContent {
   ClassicRaceScenario scenario{};
   TrackGeometry geometry{};
-  std::string_view track_name; // Authored result screen only.
+  std::string track_name; // Authored result screen only.
   std::span<const std::uint8_t> track, bg1_tiles, bg2_tiles, bg2_map, palette;
   // Race NMI palette tables ($80:82AB), one ROM table for both tracks.
   std::span<const std::uint8_t> race_palette_cycle;

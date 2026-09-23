@@ -1,4 +1,5 @@
 #include "zoom_zoo_pack.hpp"
+#include <cctype>
 #include <memory>
 
 #include <filesystem>
@@ -46,7 +47,14 @@ int main(int argc,char** argv) try {
         else if(option=="--restart-from") {seed=argv[i+1];restart=true;}
         else if(option=="--start") {
             const std::string scenario=argv[i+1];
+            // classic.crawler.dragster, classic.crawler.zoom-zoo, or classic.track.NN
+            // for any race track with a recovered scenario (TRACK-BREADTH part 3).
             if(scenario=="classic.crawler.dragster")race_track=unirally::ClassicRaceTrack::Dragster;
+            else if(scenario.size()==16 && scenario.starts_with("classic.track.") &&
+                    std::isdigit(static_cast<unsigned char>(scenario[14])) && std::isdigit(static_cast<unsigned char>(scenario[15]))) {
+                race_track=unirally::ClassicRaceTrack{static_cast<std::uint8_t>((scenario[14]-'0')*10+(scenario[15]-'0'))};
+                if(!unirally::classic_race_has_scenario(race_track))throw std::invalid_argument("track has no recovered scenario");
+            }
             else if(scenario!="classic.crawler.zoom-zoo")throw std::invalid_argument("unknown scenario");
             native_start=true;
         }
@@ -94,7 +102,7 @@ int main(int argc,char** argv) try {
     const auto combinations=pack?load("trick-combinations.bin"):std::vector<std::uint8_t>{};
     const unirally::ZoomZooContent zoom_zoo_data{movement,coefficients,reflection,landing,finish_poses,roll_poses,roll_directions,weights,combinations};
     if(!native_start)race_track=state.track;
-    if(race_track==unirally::ClassicRaceTrack::Dragster && !pack)throw std::invalid_argument("DRAGSTER race requires the two-track content pack");
+    if(race_track!=unirally::ClassicRaceTrack::ZoomZoo && !pack)throw std::invalid_argument("a race on any track but ZOOM ZOO requires the content pack");
     if(pack && !(native_start || (state.complete_race && state.sustained)))
         throw std::invalid_argument("a content pack binds the complete-race content; earlier seeds use --content-dir");
     if(!track_override.empty() && !(pack && native_start))throw std::invalid_argument("--track-override needs --content-pack and --start");
@@ -102,7 +110,7 @@ int main(int argc,char** argv) try {
     const auto override_columns=track_override.empty()?std::vector<std::uint8_t>{}:read_bytes(track_override/"tile-tables.bin");
     const auto override_flags=track_override.empty()?std::vector<std::uint8_t>{}:read_bytes(track_override/"tile-flags.bin");
     auto data=!pack?zoom_zoo_data
-        :race_track==unirally::ClassicRaceTrack::Dragster?unirally::dragster_race_content(*pack):unirally::zoom_zoo_content(*pack);
+        :unirally::classic_race_content(*pack,race_track);
     if(!track_override.empty()) {
         data.movement.sampling.track=override_track;
         data.movement.flat_contact={override_columns,override_flags};

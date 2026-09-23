@@ -164,7 +164,104 @@ const std::array<RequiredEntry, 32> zoom_required{{
     // pack carries entries 1 to 255.
     {"presentation.classic.captions.v1", 4080, "1d5530ca0737ee3e87fdcc2ea26f020caac9d420cd824f29532c426b52ab6f28"},
 }};
-constexpr std::string_view two_track_rules_sha="67e47e33144fbec0706791b0535d22b132d0efe3a38fd7c0dc5736ed304b17ac";
+// TRACK-BREADTH part 3 (profile v10): the other race tracks a cold start reaches.
+// track.NN.* is track NN's decoded data, tile columns, tile flags and BG1 tiles
+// (R-0046 observations 1-2); scenery.SS.* the BG2 tiles, BG2 map and race palette
+// of scenery SS = track mod 14 ($82:DC20-DD84); and the track name table
+// ($83:9FFA). Generated from the rules file (tracks.py v10_new_entries).
+const std::array<RequiredEntry, 90> tracks_required{{
+    {"track.03.data", 63013, "ca5b470dea72bb2aa5c77ef5a5af62e06a5e90cb16401db329c412e10167ed1a"},
+    {"track.03.tile-columns", 4800, "0b4188a23020d8e5079e123c909a068d5fabb6e985bd56b73b4db4e04ed785d5"},
+    {"track.03.tile-flags", 150, "121fd0f557dd5e37285cfeccd078e0b42769e606fa9c858215d6cdd19a784399"},
+    {"track.03.bg1-tiles", 19200, "3a2b1e9f1215bfc24fe84df2cd5b0de023f0fbd98384c8755ffcb9726ea52c23"},
+    {"track.04.data", 52234, "4c05e160bf29160650eea327edfec640de42604b67208db798f4fbaef9a36cbb"},
+    {"track.04.tile-columns", 6368, "8b09264dbe82613421ce4acf443f141d253b4bfdc4ac31e3f76ac7d7b673f304"},
+    {"track.04.tile-flags", 199, "cc3faa9dcb83f163281354700c809f917a94443c00de9827a12aefac004838ce"},
+    {"track.04.bg1-tiles", 25472, "500127487e9f3cef609d18296021a602a69b899ef53a9ea04dc4449f42c6824d"},
+    {"track.10.data", 63397, "ac7a8c483c1db8201c241afde90497a58dcddf1cb084e3203ee127fa41efe239"},
+    {"track.10.tile-columns", 5984, "8efe43a8c51936a1cbb68a144097bf5dc0bdc792f10fed6685d03eb60bc1398a"},
+    {"track.10.tile-flags", 187, "c8ddb2e891c21f9cf7d17bbb580f70342a2a9bbafc2dbe6f00589d0c82255d60"},
+    {"track.10.bg1-tiles", 23936, "8333764c348fed0b980654888023deaa89456f4c22c9c6f621eb795834d47c37"},
+    {"track.11.data", 45899, "9eb49c560717454a9ece3a8cd4f1e5a07ac13a00b9d98fe18f77b0e6f9aa49ff"},
+    {"track.11.tile-columns", 6560, "f4e2e8f77ed9b71e4f5cce22f90a479f4c44746dc8ebc3e8571689df3b99a347"},
+    {"track.11.tile-flags", 205, "743f1ea85bd4d076efa033bfcb516d2a8139b9cbc07766f6d677c7f48d76dc0f"},
+    {"track.11.bg1-tiles", 26240, "fd4e262f179e6e46d419e420f8e815013b5da6136f071aa80f1d89f686ad1c14"},
+    {"track.13.data", 49156, "733690266fec100076f38b14dfb5814e74afbd360c3c18b489e489628be7027b"},
+    {"track.13.tile-columns", 5856, "8baa3a1125d643c6f86ae584e061e8c5140bde91b401f99d896e5315528208d9"},
+    {"track.13.tile-flags", 183, "946216b9dc997dd288ca3804d92a8acf64eca3ed23e0382bdcfc361fe625e007"},
+    {"track.13.bg1-tiles", 23424, "d693c1e13964378853f68aca4c7d0fe4d18b3c550b21111755ab0eca11e86fd8"},
+    {"track.14.data", 38219, "88e1a5b683e173659dab30791263bda1fb99c6125942d46d31c7ae2c3bac9f36"},
+    {"track.14.tile-columns", 6528, "563e8e517ceef6446ee77a3fcb473cc2dacff94b22514c98c66c84031c6aeb95"},
+    {"track.14.tile-flags", 204, "2d3a1800f1afc423d966d03a69c2a8a896706a6f59dcf5675a281aad5dbf181b"},
+    {"track.14.bg1-tiles", 26112, "0b01421e918212ec4ed10bcfe27fdcc6bf5e1e4b461825c514e874b1d8be4b96"},
+    {"track.20.data", 42663, "ecc4e63b0802aff3a364cdec9c1b32577dadbd1f5855e9d112d365d4f6dd71c9"},
+    {"track.20.tile-columns", 6432, "b13510c422cd024f6db848fe2e098bcd2f798df29cb67b74bf08d5373f40e1ee"},
+    {"track.20.tile-flags", 201, "b5b32197e5db375e863e27024e60e745b77f2cfc50d593ebb88dc96454b367e9"},
+    {"track.20.bg1-tiles", 25728, "5125292eb60ad5680ce3160c2684779a91a1b0b8d1103cc1107245c3662848f7"},
+    {"track.21.data", 46893, "eff789427c19a4b5694c23b53f10c29c5de4ef026091267ab7127f3e485ca5c7"},
+    {"track.21.tile-columns", 7008, "1c632e46015ed05299144be3183d56609fee3a583664e35b5eac9da247a1613a"},
+    {"track.21.tile-flags", 219, "f2b84cd44c07b2f1dc07df2cf098fa78eecddd7df951b1ab51ac508ffd81ecf8"},
+    {"track.21.bg1-tiles", 28032, "d75be08f3f936ec0592ab31d380b7edc4e76c6f7325175d844b13ec4bd9b7c60"},
+    {"track.23.data", 47906, "c2a4ab9d80e8e0011ec46077848187d14da8bd9928aa62c81842a19c73a1f8d3"},
+    {"track.23.tile-columns", 5696, "4e30516a79b2383bdfe4b44c269c3a7d13139ccff2a750b78d8f14020bd7e38f"},
+    {"track.23.tile-flags", 178, "6edd1d3d35147dc49f77ee91f18a2658f204652c023d0b99a996c516a0506dc7"},
+    {"track.23.bg1-tiles", 22784, "4430cec00d03c40ddace0eba3b83430b74c4a29880e64a2d6bfed1ac4145b43d"},
+    {"track.24.data", 47078, "75caf67770db9698ae055baa02a83f32e75ed2f69431e3505f6c203bc96b7b40"},
+    {"track.24.tile-columns", 6176, "2ecec38b34f92bf8c607f27e80e06d5af811ec89c55de3548f46c54044aae4a2"},
+    {"track.24.tile-flags", 193, "1df7c37f597afe316670cd0925a088a64ed50635f8bca39223d6a783a41ae4f4"},
+    {"track.24.bg1-tiles", 24704, "3beee9b9bb5a9362d3c8e323c0da9eeccd9e8dcd2b59d4ed8c567e388b0035e3"},
+    {"track.30.data", 49932, "ff2863f48ce66f06a62b0f754da836220aab164658d38ee9516aa2c4d819a451"},
+    {"track.30.tile-columns", 6912, "c79464f14c7f8e85b997c6e31bd27ff71af2d348a10b9c2d85f4f6c282f4392b"},
+    {"track.30.tile-flags", 216, "baa4e5e8ce5200be2a682d94a53eeb3bb05f74e7a7259b651eef01cfc5a5f151"},
+    {"track.30.bg1-tiles", 27648, "55a8f0e0990828161d5a10a74979862013d88d8d1fc30c11ca25f594c2ea0b98"},
+    {"track.31.data", 52171, "5d039870a8c51150cd7d0d0abbcf398fec99fd4039d5f151657e19c5cfa3ccf7"},
+    {"track.31.tile-columns", 6592, "1ffe8e43a00de777aedf75d8ff63524534f7d2d71d16b6aebf31c589951ebe42"},
+    {"track.31.tile-flags", 206, "c7e7d432408657ff4aea5e47204968bf965e8c9f11605405cfa5df6b685bbf77"},
+    {"track.31.bg1-tiles", 26368, "dd13c2a83549f4c8de7c1b6098940559fbf8597abfe570644bd05dcfa07dee99"},
+    {"track.33.data", 48099, "7d111873717e65cd94afb5713414ee25960d62fd4c0f0ea51b9f4f36474a40e9"},
+    {"track.33.tile-columns", 4608, "04809281c4f27fbc7544f6a0416f1a46f423913145b1697f2c88182d63634f79"},
+    {"track.33.tile-flags", 144, "a15e8c2e02833e9c07acd42dba72756164e55bf24fd068fe5b88e83d1168256c"},
+    {"track.33.bg1-tiles", 18432, "e28cdc2228bfe146119973074881e2210ef2ae58f123ac3f4f2d27cbef73452a"},
+    {"track.34.data", 43340, "09cfc8d7d4ad01a6e8296c844336956683c7e27b1acc47b675da7f71d1a09c91"},
+    {"track.34.tile-columns", 6976, "ddf4d98f88e4aafdd5a95e50eeb996653c9606e1e2aaa18bd75c7943aa6f634d"},
+    {"track.34.tile-flags", 218, "2a7e72a7581e29429ff79e1f153bfde4d3aeac2f63713bb00c2b0c3b2d0bb576"},
+    {"track.34.bg1-tiles", 27904, "59ccf2f01f748d9335baa8168da3a5a6158b54ba523121b0a458fd496a27cc9e"},
+    {"scenery.00.bg2-tiles", 992, "d50aaa4efde3d4b5eec805a69470faa368596087f5588d7d8940c95226bcb8a2"},
+    {"scenery.00.bg2-map", 8192, "574a44e71c96b210f5613f9b42e2de80e69e1aa64aaf59b8a3b3952f5f30d6b5"},
+    {"scenery.00.palette", 352, "d98f7dfd1f0cd056aca52f2317a80609854738cc7b7e1c1e10f69ccdfea150ac"},
+    {"scenery.02.bg2-tiles", 448, "d8ff1c6a7327c0ce71ec8775584a98de8a693801e1f8d07d7c6051ceb047d5e5"},
+    {"scenery.02.bg2-map", 8192, "b4bab348fde46f1facddd4e0473e6f1111d9cad077b53569ba6c21171d6696de"},
+    {"scenery.02.palette", 352, "af5bcf763dc663b104dda16d24142ed8a2e1d1d199ec351d25ee6eef9f8d2b5b"},
+    {"scenery.03.bg2-tiles", 576, "36143cec13c6c0245193c3f26c82239ce88cd57582c8851af95c96f78d75b3e9"},
+    {"scenery.03.bg2-map", 8192, "01aa2c918c07392929f4431dd90cb2f34b052b0a1bbacaa16bf89e7002615551"},
+    {"scenery.03.palette", 352, "dac9e732180990b52215a285507d5959873fc7c4b354afa70b6bc36da1b2a8da"},
+    {"scenery.04.bg2-tiles", 896, "e2a64d3e256e1717cffa1c5b834c0aa0a1ea57722c0c7b7457ef8515b6f5d1d6"},
+    {"scenery.04.bg2-map", 8192, "20b749cb6524d1f35f52d8410026f964891d33d7e3e50b993e3257463e6538b5"},
+    {"scenery.04.palette", 352, "76a94fa96c09600faa5f345f6a1447d4511cfb510eb38932461654dba37e03dd"},
+    {"scenery.05.bg2-tiles", 1088, "2731c6b238c574dce14a93dc06cc8f0274abf66805a2dd6ad3e3820a5e1ec848"},
+    {"scenery.05.bg2-map", 8192, "10f227026900d8fd9c3651aad43c66837b4239aee9987d2a3bac7af1a4af532c"},
+    {"scenery.05.palette", 352, "2c0e3e015ddaf77ad5f69b777974e1b5e6f71187e76db7f34dbad3c1a18d74ae"},
+    {"scenery.06.bg2-tiles", 1408, "20ee2b87b5586c75672730d3ffea75907a6ff843bbc65e1eab600a0569861895"},
+    {"scenery.06.bg2-map", 8192, "139eb0eac3cc23d411fc4f125bf68159e8c68102af94a54315789e1a1ed64ba8"},
+    {"scenery.06.palette", 352, "8424da4771f280f18241353a97b7d88bd68ed91e7697b794c2c5f56c8136ffad"},
+    {"scenery.07.bg2-tiles", 544, "dbace4d8148e4d60eff46a3169123f25448c797906caa1314f5cb9fdc0b36a09"},
+    {"scenery.07.bg2-map", 8192, "a222e8b779063bc133e32aabf771a0fee6577114bf3ec7e06ca742b93cd2ba40"},
+    {"scenery.07.palette", 352, "1f48cd833cfde7ad3afd315769b4ce16c13bcacc78ea585d2e187287892bf1d6"},
+    {"scenery.09.bg2-tiles", 576, "64aa3ad7a7af40c5a24ef9cfe648737f40b34599432ab09828dc24894a02f1d7"},
+    {"scenery.09.bg2-map", 8192, "1a0f3b9613a6d728c3bd959772ee21c3f5cefb1025be1e310b0a11e2ddaac3b7"},
+    {"scenery.09.palette", 352, "31d312b66be7dac0a43226944f2703cb9ec9e85d94c139aa7f2f9360bf407cf0"},
+    {"scenery.10.bg2-tiles", 480, "765720adc364b5afe39c76ddc42db5f245832e78af049f454038a04bd06b0e54"},
+    {"scenery.10.bg2-map", 8192, "64d36cc386bb70fafe0d63cf33da441f739e8e40c65539301d930cbf8c30afe3"},
+    {"scenery.10.palette", 352, "2b40a219bb2a080a7c41eab9572b43243953e5027716113ed39eee5cbf462c0d"},
+    {"scenery.11.bg2-tiles", 1696, "09e6c0193a6ce4402bd5f845deef9c948961a18d65246150781fdbfbe49582d6"},
+    {"scenery.11.bg2-map", 8192, "25103f7ddd6e4eec973903fd0c2e48e9406232b5d06912588abd4b45baf3db9b"},
+    {"scenery.11.palette", 352, "9347a75485520c6741dab1b479ed79cec308eb2ea0f893aef28f22a49f0b2f4b"},
+    {"scenery.13.bg2-tiles", 960, "cd6f467d454dd743fa4e960867a4a3fb1c3ee2330459048886bbf5f044a8be0b"},
+    {"scenery.13.bg2-map", 8192, "aca84d66d574097846db40bb0a5b5ef4a07a96e05717b249a0da65d571d1cae1"},
+    {"scenery.13.palette", 352, "c98592fd78dba9ab9a13e4b0586722103625f1dd4279202e02887cde17140186"},
+    {"presentation.classic.track-names.v1", 382, "4557672dceff27e910ea76b428623162c0e807831d8a2c537088e7f6c62277bb"},
+}};
+constexpr std::string_view two_track_rules_sha="936d0a76ec193c072fe1a8ea18d56fef12916b9f9a0a386256f6883872a550f0";
 
 std::array<std::uint8_t, 32> hex_digest(std::string_view text) {
   if (text.size() != 64)
@@ -266,7 +363,7 @@ std::array<std::uint8_t, 32> sha256(std::span<const std::uint8_t> source) {
 
 namespace {
 constexpr std::array<std::string_view, 2> supported_profiles{
-    "classic.pal.crawler.dragster.v1", "classic.pal.crawler.two-tracks.v9"};
+    "classic.pal.crawler.dragster.v1", "classic.pal.crawler.tracks.v10"};
 } // namespace
 
 std::span<const std::string_view> supported_pack_profiles() {
@@ -305,7 +402,10 @@ ClassicContentPack::ClassicContentPack(const std::filesystem::path &path) {
       "70712c470db436ad95b02d3a6d51f737be7bb5b27689ca0d99a8297bac31d768"))
     throw std::invalid_argument("Classic pack extraction-rules identity is unsupported");
   std::vector<RequiredEntry> selected_required(required.begin(),required.end());
-  if(two_tracks)selected_required.insert(selected_required.end(),zoom_required.begin(),zoom_required.end());
+  if(two_tracks) {
+    selected_required.insert(selected_required.end(),zoom_required.begin(),zoom_required.end());
+    selected_required.insert(selected_required.end(),tracks_required.begin(),tracks_required.end());
+  }
   const auto count = in.u16();
   struct Row {
     std::string id;
