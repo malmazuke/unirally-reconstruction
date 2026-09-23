@@ -108,11 +108,11 @@ def capture(core_path, out, track, horizon, frame_images=(), tour_row=0):
                     video.append(result.video)
         finally:
             core.unload()
-    report = dict(kind='track_breadth_original', track=track, frames=[FIRST_RECORDED_FRAME, horizon],
+    report = dict(kind='track_breadth_original', position=track, frames=[FIRST_RECORDED_FRAME, horizon],
                   initialization_frame=boundary, tour_row=tour_row, menu_events=menu_events(track, tour_row), rom_sha256=ROM_SHA, core_sha256=CORE_SHA,
                   timeline_sha256=digest(inputs), timeline=inputs, wram_sha256=hashes, sram_sha256=cartridge_hashes, video=video)
     (out/'reference.json').write_text(json.dumps(report, separators=(',', ':'))+'\n')
-    return dict(track=track, initialization_frame=boundary, wram=digest(hashes), sram=digest(cartridge_hashes), video=digest(video))
+    return dict(position=track, tour_row=tour_row, initialization_frame=boundary, wram=digest(hashes), sram=digest(cartridge_hashes), video=digest(video))
 
 
 def original_rows(directory):
@@ -138,6 +138,11 @@ def original_rows(directory):
             if any(int.from_bytes(w[0xeff+2*r:0xf01+2*r], 'little') for r in (0, 1)):
                 error = dict(frame=frame, error='a rider finished; result projection is outside this exploration')
                 break
+            # $82:AAA4-AAB4 publish the player's A, X and Start; the timeline must agree
+            # (the accepted original() checks the same, from its guard frame on).
+            for at, button in ((0x31d, 'a'), (0x321, 'x'), (0x339, 'start')):
+                if frame >= boundary + GUARD_OFFSET and int.from_bytes(w[at:at+2], 'little') != int(button in document['timeline'][frame][0]):
+                    raise ValueError(f'player {button} publication differs from the controller timeline at {frame}')
             if frame >= boundary + GUARD_OFFSET:
                 for item in guards:
                     at = item['address']
@@ -200,7 +205,7 @@ def explore(reference, binary, pack, scenario):
                               fields=describe(a[:8]+b[8:12]+a[12:], b))
             break
     exact = divergence['update'] if divergence else min(len(actual), len(rows))
-    return dict(track=track, name=None, initialization_frame=document['initialization_frame'], native_scenario=scenario,
+    return dict(track=track, initialization_frame=document['initialization_frame'], native_scenario=scenario,
                 native_initialization_frame=native_start, original_rows=len(rows), native_rows=len(actual),
                 native_exit=code, native_error=error, exact_updates_from_boundary=exact, first_divergence=divergence, **events)
 

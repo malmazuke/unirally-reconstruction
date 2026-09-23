@@ -114,12 +114,23 @@ observation 6 confirms for the 20 reachable tracks.
    ZOOM ZOO, FLAT FUN, WARIO PAINT, CROCK and EAST. Seven match exactly until a native
    guard stops (special-tile: SWITCHER 384, MONSTER 361, MEGAJUMP 531, SHORT CUT 1,483;
    edge: LOOPER 360, DRAGRACE 453, HYBRID 1,326). PINGPONG matches 1,068 updates and
-   then differs in `opponent.response_b`, the only divergence in engine arithmetic so
-   far. INFINITY (7 laps) and HAIRPIN HILL (5 laps) differ from update 0 only in the
+   then differs in `opponent.response_b`; it is the only compared race in which a
+   state field differs before a native guard stops (native later stops at the
+   special-tile guard after 1,260 rows). INFINITY (7 laps) and HAIRPIN HILL (5 laps) differ from update 0 only in the
    two `laps_remaining` fields: with those masked, HAIRPIN HILL matches all 302 native
    updates and INFINITY matches until its first lap crossing at update 379, where the
    lap count's consequence (`checkpoint_seen13`) follows. The four stunt events are not
-   compared.
+   compared. Counts are rows from the boundary row inclusive, so "exact 384" is the
+   boundary state and 383 updates, the same stop the idle column gives as "after 383
+   updates".
+
+   The original also leaves the accepted ZOOM ZOO guard domain on new tracks, and the
+   sweep records where (`guard_violations`). Most are the shape and mode constants, or
+   special-tile state one update after a native guard fires, which supports those
+   stops. Two fall inside windows reported exact: the opponent's X press (`$0323`) on
+   HYBRID from row 348, and its A press (`$031F`) on SHORT CUT from row 953. The
+   accepted guard inventory held both at 0 on every frame, so these matches are the
+   first time native's opponent A/X path meets the original (part 2 review).
 10. **Three static arms are now observed.** The captured `$03F1`, `$03F3`, `$03F5`,
     `$0425`, `$0427` and `$0D4F` equal the part 1 constants on MONSTER (`$20`, 128 x
     128), LOOPER (`$10`, 64 x 256) and FLAT FUN (`$80`, 512 x 32), and those tracks
@@ -167,7 +178,7 @@ observation 6 confirms for the 20 reachable tracks.
 | 31 | CROCK (observed) | HOPPER 2 (observed) | $9D:9405 | 52,171 | 256x64 | completes | captured, boundary 1397; race (laps), 3 laps | **exact, 1,504 of 1,504 updates** |
 | 32 | DOWNER (observed) | HOPPER 3 (observed) | $9D:B1DA | 34,497 | 64x256 | edge guard after 459 updates | captured, boundary 1349; stunt | not compared: no native stunt event |
 | 33 | EAST (observed) | HOPPER 4 (observed) | $9D:B5D4 | 48,099 | 1024x16 | completes | captured, boundary 1403; race (one run) | **exact, 1,498 of 1,498 updates** |
-| 34 | HAIRPIN HILL (observed) | HOPPER 5 (observed) | $9D:CD3F | 43,340 | 256x64 | special-tile guard after 301 updates | captured, boundary 1407; race (laps), 5 laps | lap count only from update 0 (native assumes 3) |
+| 34 | HAIRPIN HILL (observed) | HOPPER 5 (observed) | $9D:CD3F | 43,340 | 256x64 | special-tile guard after 301 updates | captured, boundary 1407; race (laps), 5 laps | lap count only from update 0 (native assumes 3), over the 302 rows before native's special-tile guard |
 | 35 | VERTICAL | SPRINTER 1 (hypothesis) | $9D:DE54 | 57,267 | 64x256 | edge guard after 438 updates | not reachable from a cold start | - |
 | 36 | FLASH | SPRINTER 2 (hypothesis) | $9E:8241 | 41,512 | 128x128 | completes | not reachable from a cold start | - |
 | 37 | LITTLE DIPPER | SPRINTER 3 (hypothesis) | $9E:907B | 35,364 | 16x1024 | refused in its first update: shape | not reachable from a cold start | - |
@@ -216,8 +227,9 @@ the two accepted tracks carry.
    INFINITY and HAIRPIN HILL divergences and is the prerequisite for selecting a track
    by id in the pack and the app.
 2. **The special-tile response** (vertical contact with a tile flag outside {0, 2, 6,
-   7, 18, 20}): the most common stop, on 5 of the 16 compared races and 19 of 45 idle
-   runs. A watch capture on SWITCHER at update 384 names the flag and the branch.
+   7, 18, 20}): the most common stop. It ends native's run on 6 of the 16 compared
+   races: first on five, and on PINGPONG after its divergence. It also ends 19 of the 45
+   idle runs. A watch capture on SWITCHER at update 384 names the flag and the branch.
 3. **The sampler edge** (LOOPER 360, DRAGRACE 453, HYBRID 1,326): the right column edge
    or a negative row; the listing's clamp at `$81:8A31-8A3B` is the first reading.
 4. **PINGPONG's `opponent.response_b`** at update 1,068: the first arithmetic
