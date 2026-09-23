@@ -1,6 +1,7 @@
 #include "movement.hpp"
 
 #include <algorithm>
+#include <optional>
 #include <stdexcept>
 
 namespace unirally {
