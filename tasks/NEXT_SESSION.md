@@ -5,6 +5,18 @@ push the task branch, open a pull request from the template, merge with
 `gh pr merge --merge` once its checks are green and the review is done. `main`
 refuses direct pushes. The checks run on pull requests only.
 
+**Status on 23 September 2026 UTC (after TRACK-BREADTH part 3): TRACK-BREADTH
+is in progress; continue it.** Part 3 is reviewed and merged by pull request
+(closeout `artifacts/track-breadth-part3-integration/closeout.json` in the main
+checkout). Pack profile **v10** carries the 16 cold-start race tracks, and native
+starts any of them by id (`--start classic.track.NN`, `frontend run --track NN`)
+on its own scenario. **Live play needs the v10 pack**:
+`local/classic-pal-crawler-tracks-v10.pack` is in the main checkout. The one
+acceptance item left to the user is a keyboard play of two new tracks, for example
+`frontend run --track 13` (FLAT FUN) and `--track 31` (CROCK). Next, in order of
+reach: the special-tile response (stops 7 of 16 races), INFINITY's checkpoint guard, PINGPONG's `opponent.response_b`, then the five locked
+tours.
+
 **Status on 23 September 2026 UTC (after TRACK-BREADTH part 2): TRACK-BREADTH
 is in progress; continue it.** Part 2 is reviewed and merged by pull request
 (closeout `artifacts/track-breadth-part2-integration/closeout.json` in the main

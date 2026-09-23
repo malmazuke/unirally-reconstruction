@@ -4,8 +4,11 @@
 
 - Status: in progress. Part 1 (inventory, per-track producers, playfield shapes, native idle
   matrix) is reviewed and integrated by pull request #9. Part 2 (references for the 20 tracks
-  a cold start reaches and the match column) is reviewed and integrated by pull request as the
-  second checkpoint; native selection by track id is next. Claimed 23 September 2026 at about 01:05Z on the user's explicit override
+  a cold start reaches and the match column) is reviewed and integrated by pull request #10.
+  Part 3 (native selection of the cold-start race tracks by id, pack profile v10; tier 1) is
+  reviewed and integrated by pull request as the third checkpoint. The live keyboard play the
+  acceptance table asks for is the user's; everything else in the table is met for the 20
+  reachable tracks (see Review and integration). Claimed 23 September 2026 at about 01:05Z on the user's explicit override
   of the reset boundary ("you may work past the 80% reserve until the task is complete or the
   weekly limit is reached"). Prepared 22 September 2026 under
   [D-0008](../docs/decisions/D-0008-static-map-track-breadth-review-tiers.md).
@@ -158,6 +161,14 @@ originals across race start; the sampled-frames rule from CLASSIC-RACE-HUD appli
 | 15 (02:40Z) | Other tours are locked on a cold start | PICK TOUR picture, one Down | Four tours offered (CRAWLER, SHUFFLER, WALKER, HOPPER); SHUFFLER lists tracks 10-14 | Sweep all 20 |
 | 16 (02:45-03:00Z) | - | `sweep` over the 20, each captured twice | First run compared the menu position instead of `$77:074A` on rows 1-3 (bug, fixed, run discarded as `sweep-position-bug`). Second run: all repeats identical; indices 10 x row + position; 6 exact over about 1,500 updates, 7 exact until a native guard, PINGPONG 1,068 then `opponent.response_b`, 2 lap-count only, 4 stunt | R-0046 part 2 |
 | 17 (03:05Z) | The landing matrices vary by track | WRAM `$0572-$0B59` at each boundary against the pack entry | Identical on all 20 | Records |
+| 18 (03:10Z, part 3) | The scenery comes from the track index | Listing of `$82:DC20-DD84`, asset directory `$70`-`$B5` | s = track mod 14; BG2 tiles `$70+s`, map `$82+s`, palette row `$93+s`, class block by `$82:DC12+s`; the generated pieces equal both accepted tracks' v9 entries | Pack v10 |
+| 19 (03:20Z) | The v9 per-track entries come from general producers | `tracks.track_pack_entries`/`scenery_pack_entries` for tracks 0 and 1 against the v9 rules | All 14 source lists and digests equal | Generate v10 (147 entries) |
+| 20 (03:40Z) | A track index replaces the two-track enum | `ClassicRaceTrack{index}`, scenario table, `URTR<NN>01`, `classic_race_content`, per-track presentation, runner and app | Three presets build, ctest 23/23, new native checks pass | Per-track comparison |
+| 21 (03:50Z) | Each track's own scenario matches | `track_reference recompare --per-track` on the part 2 captures, v10 pack, no override | FLAT FUN, WARIO PAINT, CROCK, EAST exact; HAIRPIN HILL 302 rows exact to its guard; INFINITY 379 rows then `race checkpoint index invalid`; the rest unchanged | Pictures |
+| 22 (03:55Z) | New tracks draw as the original | Native frames against original frames, six race frames each | 0-36 differing pixels on FLAT FUN, WARIO PAINT, CROCK; 0-72 on the ZOOM ZOO baseline | Gates |
+| 23 (04:05Z) | New tracks play under input | Gate script's hidden app runs, 4,000 updates with a held button, tracks 13 and 30 | Both abort at `unrecovered coarse-grid edge branch` | Recover the edge inside this part (small, and live play needs it) |
+| 24 (04:15Z) | The listing's edge paths are the original's | `$81:8A2C-8A3B` (negative y to cell 0, 0) and `$81:8A60-8A99` (last column wraps to column 0), then recompare | LOOPER and HYBRID (opponent in the last column) exact to the end, 1,484 and 1,515; DRAGRACE (opponent y `$FFFB`) 1,353, 900 past its stop | Gates, review |
+| 25 (03:07-03:47Z) | Nothing accepted moves | `artifacts/track-breadth-3/gates.sh` on `fa62939`, v10 pack: presets and ctest, synthetic, v1 contracts, hidden app runs (DRAGSTER, ZOOM ZOO, 13, 30), fuzz, all eleven differential gates, `rnc-inventory --expect` | ctest 23/23 x3; synthetic, v1 winner and loser passed; hidden DRAGSTER, ZOOM ZOO and FLAT FUN 0 fallback frames over 4,000 held-input updates; **WARIO PAINT aborts at the special-tile guard under held input** (declared, the next follow-up); fuzz 0 aborts; all eleven gates passed with the same row digests and restore counts as `1f554fb`; inventory passed. Sanitizers unavailable on this host | Records, review |
 | 10 (01:55Z) | The name table follows the track index | Relative-text search, then the table at `$83:9FFA` | 45 names in lowercase ASCII, then five `unavailable` and nine tour names; names 0 and 1 agree with the verified indices | R-0046 observation 5 (static) |
 
 ## Handoff
@@ -184,7 +195,13 @@ originals across race start; the sampled-frames rule from CLASSIC-RACE-HUD appli
 - Part 2: `tools/unirally_lab/native/track_reference.py` (lab only) and its tests (the menu
   path only; no ROM-free test covers the boundary finder or the comparison); the sweep
   and captures are in `local/evidence/track-breadth/track-breadth-2/` after integration.
-- Exact next experiment/command (after part 2): make the race scenario data (mode, laps,
+- Part 3: native selection by id is in (R-0046 observations 12-15). Evidence in
+  `local/evidence/track-breadth/track-breadth-3/` after integration (recompare, pictures,
+  gates). The sampler edges were recovered inside this part (small; live play of the new
+  tracks aborted without them). Next: the special-tile response, INFINITY's checkpoint guard,
+  PINGPONG's `opponent.response_b`, then the locked tours and a captured finish and result
+  on a new track (the result timing and assets follow the race mode as a hypothesis).
+- Former next experiment (after part 2, done in part 3): make the race scenario data (mode, laps,
   initialization frame per track, from R-0046 observations 7-8), add the reachable tracks'
   per-track entries to a new pack profile and select a track by id in the runner and the app;
   then re-run `track_reference sweep` on the native scenario per track. The part 1 plan below

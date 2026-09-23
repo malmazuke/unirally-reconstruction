@@ -1,5 +1,17 @@
 # Project state
 
+Updated 23 September 2026 (TRACK-BREADTH part 3): **all 16 race tracks a cold
+start reaches now run natively, chosen by id** (`frontend run --track NN`), from
+pack profile **v10** (`local/classic-pal-crawler-tracks-v10.pack`; a v9 pack is
+refused, rebuild with `content pack --rules
+tests/manifests/content/classic-crawler-tracks-pack.json`). Each uses its own race
+mode, lap count and content from the ROM. LOOPER, FLAT FUN, HYBRID, WARIO PAINT, CROCK and EAST
+match the original exactly over about 1,500 released-controller updates, as DRAGSTER
+and ZOOM ZOO do; the sampler's playfield edges were recovered on the way. New-track
+pictures match to within the accepted tracks' own residue. The others stop at named
+unrecovered branches ([R-0046](research/R-0046-track-breadth-matrix.md)
+observations 12-16).
+
 Updated 23 September 2026 (TRACK-BREADTH part 2): **the 20 tracks a cold start
 reaches (tours CRAWLER, SHUFFLER, WALKER, HOPPER) are captured through the
 original menu and compared with native; four new tracks match exactly** (FLAT
@@ -111,8 +123,9 @@ other work; claim STATIC-CODE-MAP when CLASSIC-SPLIT-TIME is integrated, after
 the reset on 24 September 08:00Z or on an explicit user override.
 
 Breadth lines (D-0008): **tracks matched against the original: 2 of 45
-inventoried streams accepted by frozen gates; 6 of 45 exact over about 1,500
-released-controller updates in the TRACK-BREADTH laboratory comparison** (20 of
+inventoried streams accepted by frozen gates; 8 of 45 exact over about 1,500
+released-controller updates in the TRACK-BREADTH laboratory comparison, 16 of 45
+selectable natively by id (part 3)** (20 of
 45 reachable from a cold start and captured, 16 of them races; 45 of 45 decode
 and derive their tile content). **Code banks by class (STATIC-CODE-MAP, R-0045): of
 131,072 bytes, 41,778 observed, 36,321 inferred, 92 data, 52,881 unknown

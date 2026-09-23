@@ -1,12 +1,13 @@
 # R-0046 - Every track through the shared engine: the matrix
 
 Status: part 1 (inventory, producers, playfield shapes and the native idle matrix) and
-part 2 (references for the 20 tracks a cold start reaches, and the match column), 23
-September 2026, [TRACK-BREADTH](../../tasks/TRACK-BREADTH.md). PAL ROM
+part 2 (references for the 20 tracks a cold start reaches, and the match column) and
+part 3 (native selection of those race tracks by id, pack profile v10), 23 September 2026, [TRACK-BREADTH](../../tasks/TRACK-BREADTH.md). PAL ROM
 `a1105819d48c04d680c8292bbfa9abbce05224f1bc231afd66af43b7e0a1fd4e`. Four tracks beyond
 the two accepted ones match the original exactly over about 1,500 updates with the
 controller released; that is a laboratory measurement, not the frozen-gate acceptance
-the two accepted tracks carry, and none of the four is playable natively yet. Static readings come from the
+the two accepted tracks carry. Since part 3, the fourteen cold-start race tracks beyond
+the first two start natively by id, from the pack, on their own scenario. Static readings come from the
 [R-0045](R-0045-static-code-map.md) listing and are labelled as such under
 [D-0008](../decisions/D-0008-static-map-track-breadth-review-tiers.md).
 
@@ -140,6 +141,56 @@ observation 6 confirms for the 20 reachable tracks.
     WRAM `$0572-$0B59` at the boundary equals the pack's
     `zoom.landing-response-matrices` on all 20 captures, stunt events included.
 
+### Part 3: native selection by track id
+
+12. **The loader's scenery producer reproduces the accepted presentation entries.**
+    `$82:DC20-DD84` takes scenery s = track mod 14 (tracks 40 and above, and track 42,
+    have extra cases not used here). BG2 tiles are asset `$70 + s` (VRAM `$1000`), the
+    BG2 map `$82 + s` (VRAM `$7000`), and a palette row `$93 + s` (CGRAM `$70`). A
+    six-row palette block follows, chosen by the class byte at `$82:DC12 + s`:
+    class 0 is assets `$A4-$A9` (observed), class 2 is `$AA-$AF` (observed), and
+    class 1 is `$B0-$B5` (a static reading). Four fixed rows complete the palette.
+    Generated as pack pieces, these give byte for byte the v9 entries of DRAGSTER (s
+    0, class 0) and ZOOM ZOO (s 1, class 2): BG2 tiles, map and the 352-byte palette.
+    With observation 2, all seven per-track presentation and engine entries of both
+    accepted tracks now come from general producers.
+13. **Pack profile v10** (`classic.pal.crawler.tracks.v10`, 147 entries). It keeps
+    v9's 57 entries unchanged and adds, for each of the fourteen other cold-start race
+    tracks, `track.NN.data`, `.tile-columns`, `.tile-flags` and `.bg1-tiles`. It adds
+    `scenery.SS.bg2-tiles`, `.bg2-map` and `.palette` for the eleven sceneries those
+    tracks use, and the name table (`$83:9FFA`). `tracks.v10_new_entries` generates
+    the added entries, and a unit test holds the loader's compiled table equal to the
+    rules file.
+14. **Each track's own scenario matches the original, from the pack.** Native starts
+    any of the fourteen with `classic.track.NN` (runner) or `--track NN` (app). It
+    uses the observed race mode, lap count and initialization frame, and takes the
+    track's content from the pack with no laboratory override.
+    `track_reference recompare --per-track` on the part 2 captures gives:
+    - FLAT FUN, WARIO PAINT, CROCK and EAST stay exact over their whole windows.
+    - HAIRPIN HILL (5 laps) is now exact for all 302 rows before its special-tile guard.
+    - INFINITY (7 laps) is exact for 379 rows. At its first lap crossing native stops
+      at a new guard, `race checkpoint index invalid`: a checkpoint layout the two
+      accepted tracks never showed.
+    - Every other row is unchanged from observation 9.
+15. **Pictures.** Native frames rendered by `classic_race_presentation_runner
+    --timeline` were compared with the original's frames at six race frames (updates
+    20 to 900). Over the whole 256 x 224 picture they differ by 0 to 36 pixels on FLAT
+    FUN, WARIO PAINT and CROCK, and by 0 to 72 on the accepted ZOOM ZOO baseline under
+    the same check. The differences sit below the HUD rows on both accepted and new
+    tracks, so they are not specific to the new content.
+16. **The sampler's playfield edges are recovered** (`$81:8A2A-8AC4`, read from the
+    listing, confirmed against the original). With `$0FF7` clear, a negative y samples
+    coarse cell (0, 0). In the last column the right-hand neighbours are column 0 of
+    the same two rows, so the playfield wraps horizontally. Both replace the native
+    guard `unrecovered coarse-grid edge branch`, and each is exercised:
+    - LOOPER and HYBRID (opponent in the last column, 63 of 64 and 255 of 256) now
+      match to the end of their windows: 1,484 and 1,515 rows.
+    - DRAGRACE (opponent y `$FFFB`) matches 1,353 rows, 900 past its old stop, then
+      reaches the special-tile guard.
+
+    **Eight tracks now match the original over the whole captured window**: DRAGSTER,
+    ZOOM ZOO, LOOPER, FLAT FUN, HYBRID, WARIO PAINT, CROCK and EAST.
+
 ## The matrix
 
 | Track | Name | Tour | Stream | Unpacked | Shape | Idle 1,200 updates (native) | Reference (NOW PLAYING kind, laps) | Match with the original, controller released |
@@ -158,7 +209,7 @@ observation 6 confirms for the 20 reachable tracks.
 | 11 | MEGAJUMP (observed) | SHUFFLER 2 (observed) | $9A:81D9 | 45,899 | 256x64 | special-tile guard after 530 updates | captured, boundary 1368; race (laps), 3 laps | exact 531 updates, then native special-tile guard |
 | 12 | JUMPS (observed) | SHUFFLER 3 (observed) | $9A:96AC | 38,625 | 128x128 | completes | captured, boundary 1343; stunt | not compared: no native stunt event |
 | 13 | FLAT FUN (observed) | SHUFFLER 4 (observed) | $9A:A206 | 49,156 | 512x32 | completes | captured, boundary 1392; race (one run) | **exact, 1,509 of 1,509 updates** |
-| 14 | INFINITY (observed) | SHUFFLER 5 (observed) | $9A:BBEC | 38,219 | 256x64 | completes | captured, boundary 1376; race (laps), 7 laps | lap count only from update 0 (native assumes 3) |
+| 14 | INFINITY (observed) | SHUFFLER 5 (observed) | $9A:BBEC | 38,219 | 256x64 | completes | captured, boundary 1376; race (laps), 7 laps | on its own scenario (part 3): exact 379 rows, then native guard `race checkpoint index invalid` at the first lap crossing |
 | 15 | LAST ONE | BOUNDER 1 (hypothesis) | $9A:C3FC | 54,382 | 256x64 | edge guard after 461 updates | not reachable from a cold start | - |
 | 16 | MARATHON | BOUNDER 2 (hypothesis) | $9A:E545 | 53,331 | 256x64 | special-tile guard after 403 updates | not reachable from a cold start | - |
 | 17 | CIRCLE | BOUNDER 3 (hypothesis) | $9B:838B | 34,490 | 256x64 | special-tile guard after 220 updates | not reachable from a cold start | - |
@@ -178,7 +229,7 @@ observation 6 confirms for the 20 reachable tracks.
 | 31 | CROCK (observed) | HOPPER 2 (observed) | $9D:9405 | 52,171 | 256x64 | completes | captured, boundary 1397; race (laps), 3 laps | **exact, 1,504 of 1,504 updates** |
 | 32 | DOWNER (observed) | HOPPER 3 (observed) | $9D:B1DA | 34,497 | 64x256 | edge guard after 459 updates | captured, boundary 1349; stunt | not compared: no native stunt event |
 | 33 | EAST (observed) | HOPPER 4 (observed) | $9D:B5D4 | 48,099 | 1024x16 | completes | captured, boundary 1403; race (one run) | **exact, 1,498 of 1,498 updates** |
-| 34 | HAIRPIN HILL (observed) | HOPPER 5 (observed) | $9D:CD3F | 43,340 | 256x64 | special-tile guard after 301 updates | captured, boundary 1407; race (laps), 5 laps | lap count only from update 0 (native assumes 3), over the 302 rows before native's special-tile guard |
+| 34 | HAIRPIN HILL (observed) | HOPPER 5 (observed) | $9D:CD3F | 43,340 | 256x64 | special-tile guard after 301 updates | captured, boundary 1407; race (laps), 5 laps | on its own scenario (part 3): exact 302 rows, then native special-tile guard |
 | 35 | VERTICAL | SPRINTER 1 (hypothesis) | $9D:DE54 | 57,267 | 64x256 | edge guard after 438 updates | not reachable from a cold start | - |
 | 36 | FLASH | SPRINTER 2 (hypothesis) | $9E:8241 | 41,512 | 128x128 | completes | not reachable from a cold start | - |
 | 37 | LITTLE DIPPER | SPRINTER 3 (hypothesis) | $9E:907B | 35,364 | 16x1024 | refused in its first update: shape | not reachable from a cold start | - |
@@ -217,18 +268,22 @@ the two accepted tracks carry.
 - The landing-response matrices remain a captured input (observation 11 shows they
   do not vary across the 20 reachable tracks; a ROM producer for `$81:9A4D-9E12`
   would remove the capture).
+- **Live play of a new track can still abort.** Under a held button for 4,000
+  updates, FLAT FUN runs clean in the app, but WARIO PAINT reaches the special-tile
+  guard and the app stops. Any of the seven tracks with that stop can do the same
+  until the response is recovered (next experiment 2).
 - The match column holds for a released controller only. Riding inputs, finishes and
   the result screen of the new tracks are not compared.
 
 ## Next experiments
 
-1. **Native scenario per track**: the race mode, lap count and initialization frame
-   observed above, as data rather than two hard-coded scenarios. That removes the
-   INFINITY and HAIRPIN HILL divergences and is the prerequisite for selecting a track
-   by id in the pack and the app.
+1. **Done in part 3**: a native scenario per track and selection by id (observations
+   12-15). **INFINITY's checkpoint guard** is the new stop it exposed: capture the
+   first lap crossing at row 379 and compare the checkpoint words.
 2. **The special-tile response** (vertical contact with a tile flag outside {0, 2, 6,
-   7, 18, 20}): the most common stop. It ends native's run on 6 of the 16 compared
-   races: first on five, and on PINGPONG after its divergence. It also ends 19 of the 45
+   7, 18, 20}): the most common stop. It ends native's run on 7 of the 16 compared
+   races since part 3: first on six (DRAGRACE joined once its edge was recovered), and
+   on PINGPONG after its divergence. It also ends 19 of the 45
    idle runs. A watch capture on SWITCHER at update 384 names the flag and the branch.
 3. **The sampler edge** (LOOPER 360, DRAGRACE 453, HYBRID 1,326): the right column edge
    or a negative row; the listing's clamp at `$81:8A31-8A3B` is the first reading.
@@ -245,6 +300,8 @@ the two accepted tracks carry.
 python3 tools/project.py content rnc-inventory --expect tests/manifests/content/track-streams.json
 python3 tools/project.py build --preset lab-debug
 python3 tools/project.py content track-idle-matrix --out artifacts/track-breadth/idle-1200 --updates 1200
+python3 -m tools.unirally_lab.native.track_reference recompare --per-track --sweep <sweep dir> \
+    --binary build/lab-debug/src/core/zoom_zoo_runner --pack local/classic-pal-crawler-tracks-v10.pack --out <json>
 python3 -m tools.unirally_lab.native.track_reference sweep --core <pinned bsnes core> \
     --out artifacts/track-breadth-2/sweep --binary build/lab-debug/src/core/zoom_zoo_runner \
     --pack local/classic-pal-crawler-two-tracks-v9.pack --horizon 2900

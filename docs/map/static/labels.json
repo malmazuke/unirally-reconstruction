@@ -841,7 +841,8 @@
   "comment": "routine start",
   "label": "sub_818A2A",
   "source_records": [
-   "docs/research/R-0010-native-movement.md"
+   "docs/research/R-0010-native-movement.md",
+   "docs/research/R-0046-track-breadth-matrix.md"
   ]
  },
  {
@@ -850,7 +851,8 @@
   "comment": "instruction start",
   "label": "loc_818A2C",
   "source_records": [
-   "docs/research/R-0046-track-breadth-matrix.md"
+   "docs/research/R-0046-track-breadth-matrix.md",
+   "tasks/TRACK-BREADTH.md"
   ]
  },
  {
@@ -860,6 +862,15 @@
   "label": "loc_818A31",
   "source_records": [
    "docs/research/R-0046-track-breadth-matrix.md"
+  ]
+ },
+ {
+  "address": "$81:8A60",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_818A60",
+  "source_records": [
+   "tasks/TRACK-BREADTH.md"
   ]
  },
  {
@@ -5296,6 +5307,26 @@
   "label": "loc_82DC0A",
   "source_records": [
    "docs/research/R-0037-dragster-race-palette-cycle.md"
+  ]
+ },
+ {
+  "address": "$82:DC12",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_82DC12",
+  "source_records": [
+   "docs/research/R-0046-track-breadth-matrix.md",
+   "tasks/TRACK-BREADTH.md"
+  ]
+ },
+ {
+  "address": "$82:DC20",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_82DC20",
+  "source_records": [
+   "docs/research/R-0046-track-breadth-matrix.md",
+   "tasks/TRACK-BREADTH.md"
   ]
  },
  {
