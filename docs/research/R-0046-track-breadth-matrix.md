@@ -204,6 +204,25 @@ FLAT FUN's pictures, observation 15).
 
     **Eight tracks now match the original over the whole captured window**: DRAGSTER,
     ZOOM ZOO, LOOPER, FLAT FUN, HYBRID, WARIO PAINT, CROCK and EAST.
+17. **The BG1 picture wraps horizontally, as the sampler does** (found by the user
+    in live play on LOOPER: near the end of a race the track seemed to vanish below
+    the rider).
+    - **Setup.** Captured LOOPER holding Right from frame 1,688 (race update 271).
+      Native matches the original on all 1,284 rows to frame 2,700. The player rides
+      to x = 4,086 on the 4,096-unit-wide playfield, and the camera to about 3,900.
+    - **Before the fix.** Native drew nothing past the playfield's right edge. At
+      frame 2,617 it differed from the original by 1,790 pixels, 1,718 of them in
+      screen columns 176-255, where the original continues the floor from column 0.
+      The original's map fetch masks the column with `$0D51` (`$81:AD05`).
+    - **The fix.** Native now masks BG1's world x with the playfield mask. Over 200
+      consecutive frames at the edge (updates 1,083-1,282), 198 frames differ by 0,
+      36, 72 or 108 pixels: the declared off-screen rider arrow. Two differ by 549,
+      where native shows the hint caption "TO PULL A STUNT" and the original does not
+      (updates 1,172 and 1,232, 60 apart). The caption state is the engine's, which
+      matches, so its display timing is an open presentation question.
+    - **Scope.** Rows off the playfield stay blank, as the original's fetch blanks them
+      with `$0FF7` clear. DRAGSTER and ZOOM ZOO, whose cameras never reach an edge in
+      the accepted races, are unchanged: the v1 contracts and hidden runs pass.
 
 ## The matrix
 

@@ -62,21 +62,29 @@ def menu_events(position, tour_row=0):
     return events
 
 
-def timeline(position, horizon, tour_row=0):
+def timeline(position, horizon, tour_row=0, hold=None):
+    """The menu inputs, then a released controller, or ``hold`` = (first frame, buttons)
+    held from that frame to the horizon."""
     rows = [[[], []] for _ in range(horizon + 1)]
     for first, last, button in menu_events(position, tour_row):
         for frame in range(first, last + 1):
             rows[frame][0] = [button]
+    if hold is not None:
+        first, buttons = hold
+        if first <= max(e[1] for e in menu_events(position, tour_row)):
+            raise ValueError('a held input must start after the menu')
+        for frame in range(first, horizon + 1):
+            rows[frame][0] = sorted(buttons)
     return rows
 
 
-def capture(core_path, out, track, horizon, frame_images=(), tour_row=0):
+def capture(core_path, out, track, horizon, frame_images=(), tour_row=0, hold=None):
     if out.exists():
         raise ValueError('fresh output directory required')
     rom = Path((ROOT/'local/rom-location.txt').read_text().strip())
     if (sha(core_path.read_bytes()), sha(rom.read_bytes())) != (CORE_SHA, ROM_SHA):
         raise ValueError('original identities differ')
-    inputs = timeline(track, horizon, tour_row)
+    inputs = timeline(track, horizon, tour_row, hold)
     out.mkdir(parents=True)
     hashes, cartridge_hashes, video = [], [], []
     boundary = None
@@ -109,7 +117,7 @@ def capture(core_path, out, track, horizon, frame_images=(), tour_row=0):
         finally:
             core.unload()
     report = dict(kind='track_breadth_original', position=track, frames=[FIRST_RECORDED_FRAME, horizon],
-                  initialization_frame=boundary, tour_row=tour_row, menu_events=menu_events(track, tour_row), rom_sha256=ROM_SHA, core_sha256=CORE_SHA,
+                  initialization_frame=boundary, tour_row=tour_row, hold=hold, menu_events=menu_events(track, tour_row), rom_sha256=ROM_SHA, core_sha256=CORE_SHA,
                   timeline_sha256=digest(inputs), timeline=inputs, wram_sha256=hashes, sram_sha256=cartridge_hashes, video=video)
     (out/'reference.json').write_text(json.dumps(report, separators=(',', ':'))+'\n')
     return dict(position=track, tour_row=tour_row, initialization_frame=boundary, wram=digest(hashes), sram=digest(cartridge_hashes), video=digest(video))
@@ -289,6 +297,7 @@ def main():
     c.add_argument('--out', type=Path, required=True)
     c.add_argument('--horizon', type=int, required=True)
     c.add_argument('--frame-image', type=int, action='append', default=[])
+    c.add_argument('--hold', nargs='+', metavar=('FRAME', 'BUTTON'), help='hold BUTTONs from FRAME to the horizon')
     e = sub.add_parser('explore')
     e.add_argument('--reference', type=Path, required=True)
     e.add_argument('--binary', type=Path, required=True)
@@ -314,7 +323,8 @@ def main():
         a.out.mkdir(parents=True)
         sweep(a.core.resolve(), a.out, a.binary, a.pack, a.horizon)
     elif a.command == 'capture':
-        print(json.dumps(capture(a.core.resolve(), a.out, a.track, a.horizon, set(a.frame_image), a.tour_row)))
+        print(json.dumps(capture(a.core.resolve(), a.out, a.track, a.horizon, set(a.frame_image), a.tour_row,
+                                    (int(a.hold[0]), a.hold[1:]) if a.hold else None)))
     else:
         result = explore(a.reference, a.binary, a.pack, a.scenario)
         a.out.write_text(json.dumps(result, indent=1, default=list)+'\n')

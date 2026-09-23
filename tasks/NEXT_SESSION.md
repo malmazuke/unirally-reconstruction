@@ -19,10 +19,11 @@ WARIO PAINT at the special tile, HYBRID at `inverted AI marker is unrecovered`).
 (`--track 33`) and LOOPER (`--track 10`) live with a gamepad after the merge: a full
 race, the result screen and Race Again on each, with no stop. CROCK, WARIO PAINT and
 HYBRID stop later in a race even with the controller released. The user saw two
-faults in that play, both follow-ups: the result screen names DRAGSTER on every
-one-run track (the result reuses DRAGSTER's captured base VRAM), and on LOOPER the
-track seemed to vanish below the rider at moments near the end of a race (cause
-unknown; capture consecutive original frames late in a LOOPER race first). Next, in order of
+faults in that play. The LOOPER one is fixed (the BG1 picture did not wrap past the
+playfield's right edge, R-0046 observation 17). Still open: the result screen names
+DRAGSTER on every one-run track (it reuses DRAGSTER's captured base VRAM), and a hint
+caption native shows for one frame where the original does not (LOOPER updates
+1,172 and 1,232). Next, in order of
 reach: the special-tile response (7 of 16 compared races stop there inside their
 windows, and CROCK and WARIO PAINT just after), HYBRID's `inverted AI marker is
 unrecovered` guard at update 2,053, INFINITY's checkpoint guard, PINGPONG's
