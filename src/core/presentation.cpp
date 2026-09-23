@@ -316,40 +316,35 @@ void set_map_word(std::array<std::uint8_t, 65536> &vram, int x, int y,
   vram[at + 1] = static_cast<std::uint8_t>(value >> 8U);
 }
 
+// Title glyphs are 2 x 2 tiles of the result font. The letters of "dragster"
+// and "complete" were observed (a 14, c 18, d 1A, e 1C, g 20, l 2A, m 2C,
+// o 00, p 30, r 34, s 36, t 38); they fit one layout, which gives the other
+// letters and the digits (TRACK-BREADTH): digits 0-9 at 2 x digit, so "o"
+// shares the zero; a-n from $14 in steps of two; p-z two tiles lower, since
+// "o" has no glyph of its own. The letters outside the observed twelve are
+// that layout's reading, checked against the original only on EAST and LOOPER,
+// whose names use observed letters alone.
 std::uint16_t result_title_tile(char glyph) {
-  switch (glyph) {
-  case 'a':
-    return 0x14;
-  case 'c':
-    return 0x18;
-  case 'd':
-    return 0x1a;
-  case 'e':
-    return 0x1c;
-  case 'g':
-    return 0x20;
-  case 'l':
-    return 0x2a;
-  case 'm':
-    return 0x2c;
-  case 'o':
+  if (glyph >= '0' && glyph <= '9')
+    return static_cast<std::uint16_t>((glyph - '0') * 2);
+  if (glyph == 'o')
     return 0x00;
-  case 'p':
-    return 0x30;
-  case 'r':
-    return 0x34;
-  case 's':
-    return 0x36;
-  case 't':
-    return 0x38;
-  default:
-    throw std::invalid_argument("unsupported Classic result title glyph");
-  }
+  if (glyph >= 'a' && glyph <= 'n')
+    return static_cast<std::uint16_t>(0x14 + (glyph - 'a') * 2);
+  if (glyph >= 'p' && glyph <= 'z')
+    return static_cast<std::uint16_t>(0x14 + (glyph - 'a') * 2 - 2);
+  throw std::invalid_argument("unsupported Classic result title glyph");
 }
 
 void write_result_title(std::array<std::uint8_t, 65536> &vram, int x, int y,
                         std::string_view text) {
   for (const char glyph : text) {
+    // A name's underscore is its space: the cell stays as filled (not yet
+    // compared with the original on a name that has one).
+    if (glyph == '_') {
+      x += 2;
+      continue;
+    }
     const auto tile = result_title_tile(glyph);
     set_map_word(vram, x, y, static_cast<std::uint16_t>(0x3c00U | tile));
     set_map_word(vram, x + 1, y,
@@ -437,12 +432,17 @@ void write_result_text(std::array<std::uint8_t, 65536> &vram, int x, int y,
 
 void build_result_map(std::array<std::uint8_t, 65536> &vram,
                       const RaceFinishState &finish, const RaceTimerDigits &clock,
-                      std::span<const std::uint8_t> result_assets) {
+                      std::span<const std::uint8_t> result_assets,
+                      std::span<const std::uint8_t> track_name = {}) {
   for (std::size_t entry = 0; entry < 1024; ++entry)
     set_map_word(vram, static_cast<int>(entry % 32),
                  static_cast<int>(entry / 32), 0x004c);
 
-  const auto title_seed = result_assets.subspan(5208, 16);
+  // The title is the track's name, `$FF`-terminated lowercase ASCII from the
+  // name table (`$83:9FFA`, track order). The DRAGSTER assets carry the
+  // table's first name, DRAGSTER's own; another one-run track passes its own
+  // (TRACK-BREADTH, found in the user's live play of EAST and LOOPER).
+  const auto title_seed = track_name.empty() ? result_assets.subspan(5208, 16) : track_name;
   const auto terminator =
       std::find(title_seed.begin(), title_seed.end(), std::uint8_t{0xff});
   if (terminator == title_seed.end())
@@ -498,8 +498,7 @@ void build_result_map(std::array<std::uint8_t, 65536> &vram,
            finish.finish_time_centiseconds[1]) ||
       (finish.outcome == RaceOutcome::PlayerLost &&
        finish.finish_time_centiseconds[0] > finish.finish_time_centiseconds[1]);
-  if (title != "dragster" ||
-      (!observed_winner_publication && !observed_loser_publication) ||
+  if ((!observed_winner_publication && !observed_loser_publication) ||
       !times_are_consistent ||
       !outcome_is_consistent)
     throw std::invalid_argument("unsupported Classic result composition");
@@ -507,7 +506,9 @@ void build_result_map(std::array<std::uint8_t, 65536> &vram,
   // $80:C431 first fills the map, then writes these semantic fields in this
   // order. Each small-font glyph is a vertical tile pair; title glyphs are
   // two-by-two. The result state carries the observed five timer digits.
-  write_result_title(vram, 8, 2, title);
+  // Centred on the 32-cell row: DRAGSTER's eight 2-cell glyphs start at cell 8,
+  // EAST's four at cell 12 (the original's EAST result, TRACK-BREADTH).
+  write_result_title(vram, 16 - static_cast<int>(title.size()), 2, title);
   write_result_title(vram, 8, 5, "complete");
   write_result_text(vram, 7, 8, "PLAYER     TIME");
   const auto &digits = finish.finish_time_digits[0];
@@ -586,6 +587,7 @@ result_bg2_pixel(const std::array<std::uint8_t, 65536> &vram, int x, int y) {
 struct ClassicResultContent {
   std::span<const std::uint8_t> palette, result_assets, result_base_vram;
   std::span<const std::uint8_t> result_palette, result_palette_tail;
+  std::span<const std::uint8_t> track_name; // Empty: the assets' own title.
 };
 
 void render_result_background(RgbFrame &frame, const RaceFinishState &finish,
@@ -607,7 +609,7 @@ void render_result_background(RgbFrame &frame, const RaceFinishState &finish,
   copy_wrapping(vram, 0x7b00, content.result_assets.subspan(216, 1920));
   copy_wrapping(vram, 0xf400, content.result_assets.subspan(2136, 3072));
 
-  build_result_map(vram, finish, clock, content.result_assets);
+  build_result_map(vram, finish, clock, content.result_assets, content.track_name);
 
   // The result palettes below replace every colour the pose-keyed race cycle
   // could have set, so the neutral layout is byte-identical here.
@@ -892,7 +894,7 @@ static RgbFrame render_dragster(const PresentationSample &s,
     render_result_background(result, finish, s.movement.timer,
                              {content.palette, content.result_assets,
                               content.result_base_vram, content.result_palette,
-                              content.result_palette_tail});
+                              content.result_palette_tail, {}});
     return result;
   }
   const auto map =
@@ -1125,6 +1127,20 @@ namespace {
 // The decoded track a race runs on: the engine's own entry.
 std::span<const std::uint8_t> classic_track_data(const ClassicContentPack& pack,ClassicRaceTrack track) {
     return classic_race_content(pack,track).movement.sampling.track;
+}
+// A track's entry in the ROM's name table (`$83:9FFA`), with its `$FF`.
+std::span<const std::uint8_t> classic_track_name_entry(const ClassicContentPack& pack,ClassicRaceTrack track) {
+    const auto table=pack.entry("presentation.classic.track-names.v1");
+    std::size_t at=0;
+    for(unsigned skipped=0;skipped<track.index;++skipped) {
+        while(at<table.size() && table[at]!=0xffU)++at;
+        if(at==table.size())throw std::invalid_argument("track name table is shorter than the track index");
+        ++at;
+    }
+    std::size_t end=at;
+    while(end<table.size() && table[end]!=0xffU)++end;
+    if(end==table.size())throw std::invalid_argument("track name lacks its terminator");
+    return table.subspan(at,end-at+1);
 }
 // A track's name from the ROM's name table (`$83:9FFA`, TRACK-BREADTH): the
 // index-th `$FF`-terminated lowercase string, shown in capitals with spaces
@@ -1698,6 +1714,7 @@ ClassicRacePresentationContent classic_race_presentation_content(const ClassicCo
             content.result_base_vram=pack.entry("presentation.result.classic.base-vram.v1");
             content.result_palette=pack.entry("presentation.result.classic.palette.v1");
             content.result_palette_tail=pack.entry("presentation.result.classic.palette-tail.v1");
+            content.result_track_name=classic_track_name_entry(pack,track);
         }
         content.geometry=track_geometry(content.track);
         return content;
@@ -1891,7 +1908,7 @@ RgbFrame render_classic_race(const ZoomZooState& state,const ClassicRacePresenta
         if(result_visible) {
             render_result_background(frame,finish,state.movement.timer,
                                      {content.palette,content.result_assets,content.result_base_vram,
-                                      content.result_palette,content.result_palette_tail});
+                                      content.result_palette,content.result_palette_tail,content.result_track_name});
             return frame;
         }
         // Until then the race picture stays, with the palette phase and window

@@ -384,6 +384,9 @@ struct ClassicRacePresentationContent {
   // Recovered mode-0 result screen (R-0012, R-0019). Empty spans for a track
   // whose result is the authored tour screen.
   std::span<const std::uint8_t> result_assets, result_base_vram, result_palette, result_palette_tail;
+  // The result title's name bytes for a one-run track beyond DRAGSTER (its
+  // name-table entry with the `$FF`); empty for the two accepted tracks.
+  std::span<const std::uint8_t> result_track_name;
 };
 ClassicRacePresentationContent classic_race_presentation_content(const ClassicContentPack& pack,ClassicRaceTrack track);
 // One renderer for both tracks. previous_update is the state before the update

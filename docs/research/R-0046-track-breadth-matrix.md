@@ -231,6 +231,29 @@ FLAT FUN's pictures, observation 15).
       against the playfield height whichever way the camera scrolls; no capture
       reaches that case. DRAGSTER and ZOOM ZOO, whose cameras never reach an edge in
       the accepted races, are unchanged: the v1 contracts and hidden runs pass.
+18. **A one-run track's result title is its own name, centred** (found by the user
+    in live play: EAST and LOOPER showed DRAGSTER).
+    - **The cause.** The result title came from the 16 bytes the DRAGSTER result
+      assets carry at `$83:9FFA`, the first entry of the name table.
+    - **The fix.** Native now takes the track's own entry from the pack's name table,
+      and centres it: start cell = 16 - name length. DRAGSTER's 8 letters give cell 8,
+      as before.
+    - **Setup.** Captured EAST holding Right from race update 271. The player finishes
+      at frame 5,581 and wins, and native matches the original on all 4,178 rows to
+      that finish.
+    - **Result.** On the stable result screen (frames 6,200, 6,400 and 6,598) the
+      title reads EAST at the original's position, and no title-glyph pixel differs.
+      The remaining 26,500 or so differing pixels are the checkerboard shading and the
+      result sprites (1P arrow, unicycles, medals). DRAGSTER's accepted result screen
+      shows the same residue under the same check: 26,244-26,376 pixels, 4,417 in the
+      title rows against EAST's 4,746.
+    - **The title font.** Its layout is recovered from the 12 letters observed in
+      "dragster" and "complete": digits 0-9 at 2 x digit, "o" sharing the zero,
+      a-n from `$14` and p-z two tiles lower. The other letters are that layout's
+      reading, not yet compared on a name that uses them.
+    - **Still unverified.** An underscore is drawn as a blank cell, also unverified.
+      The original's title writer is the text interpreter at `$80:C3C0`, whose
+      big-font table is not yet located. The table at `$80:C709` drives the small font.
 
 ## The matrix
 
