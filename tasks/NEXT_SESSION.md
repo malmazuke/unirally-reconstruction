@@ -5,6 +5,20 @@ push the task branch, open a pull request from the template, merge with
 `gh pr merge --merge` once its checks are green and the review is done. `main`
 refuses direct pushes. The checks run on pull requests only.
 
+**Status on 23 September 2026 UTC (after TRACK-BREADTH part 1): TRACK-BREADTH
+is in progress; continue it.** Part 1 is reviewed and merged by pull request
+(closeout `artifacts/track-breadth-part1-integration/closeout.json` in the main
+checkout): the 45-stream inventory, the general tile producer, four more
+playfield shapes and the native idle matrix
+([R-0046](../docs/research/R-0046-track-breadth-matrix.md)). Next is the
+reference side: capture track 2 through the menu (Down twice on PICK TRACK),
+write a generic 742-byte projection, and fill the match column; the exact
+command is in the record's handoff. Carry forward: **"completes 1,200 updates"
+is not a match**, every track so far runs on ZOOM ZOO's scenario; and the four
+new shapes are static readings until a capture executes them. Usage: claimed at
+90% weekly on the user's override; later sessions start after the reset on 24
+September 08:00Z unless the user overrides again.
+
 **Status on 23 September 2026 UTC (after STATIC-CODE-MAP): no task is
 active; TRACK-BREADTH is ready and next, after the weekly reset on 24
 September 08:00Z or an explicit user override.** STATIC-CODE-MAP is reviewed

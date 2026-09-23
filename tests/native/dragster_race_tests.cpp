@@ -13,7 +13,9 @@ template<class F> static void rejects(F action) {
 int main() {
     using namespace unirally;
     // $81:A304-A51B: byte 13 = 0 takes the 1,024 x 16 arm ($81:A4C1), 0x40 the
-    // 256 x 64 arm ($81:A445). Other arms are unreached and rejected.
+    // 256 x 64 arm ($81:A445); 0x80, 0x20, 0x10 and 0x08 the arms read from the
+    // listing (TRACK-BREADTH). 0x04 also sets $0FF7 and is rejected, as is any
+    // value without an arm.
     std::array<std::uint8_t,14> header{};
     header[3]=0x44;header[5]=0x32;header[7]=0x44;header[9]=0x32; // DRAGSTER cells 68,50
     const auto dragster=track_geometry(header);
@@ -25,7 +27,16 @@ int main() {
     require(zoom.coarse_columns==256 && zoom.position_mask==0x3fff && zoom.screen_shift==2);
     require(zoom.follow_window_low==-96 && zoom.follow_window_high==100);
     require(zoom.visible_left==-196 && zoom.visible_right==1024);
-    for(unsigned shape:{0x80U,0x20U,0x10U,0x08U,0x01U}) {auto other=header;other[13]=static_cast<std::uint8_t>(shape);rejects([&]{(void)track_geometry(other);});}
+    struct Arm {std::uint8_t shape;std::uint16_t columns,mask;unsigned shift;std::int16_t low,high,left,right;};
+    for(const Arm arm:{Arm{0x80,512,0x7fff,1,-0x30,0x32,-0x62,0x200},Arm{0x20,128,0x1fff,3,-0xc0,0xc8,-0x188,0x800},
+                       Arm{0x10,64,0x0fff,4,-0x180,0x190,-0x310,0x1000},Arm{0x08,32,0x07ff,5,-0x300,0x320,-0x620,0x2000}}) {
+        auto other=header;other[13]=arm.shape;
+        const auto g=track_geometry(other);
+        require(g.coarse_columns==arm.columns && g.position_mask==arm.mask && g.screen_shift==arm.shift);
+        require(g.follow_window_low==arm.low && g.follow_window_high==arm.high && g.visible_left==arm.left && g.visible_right==arm.right);
+        require(g.coarse_columns/4U==(arm.shape==0 ? 256U : arm.shape) && (g.coarse_columns*64U-1U)==g.position_mask);
+    }
+    for(unsigned shape:{0x04U,0x01U,0x02U,0xC0U}) {auto other=header;other[13]=static_cast<std::uint8_t>(shape);rejects([&]{(void)track_geometry(other);});}
     rejects([&]{(void)track_geometry(std::span<const std::uint8_t>(header.data(),13));});
 
     // Scenario: DRAGSTER initializes 48 frames before ZOOM ZOO on the accepted

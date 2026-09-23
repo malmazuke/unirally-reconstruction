@@ -41,7 +41,7 @@ The four classes partition all 131,072 bytes. **Unknown share: 40.4%** - above D
 
 ## Cited addresses
 
-649 distinct code-bank ROM addresses cited by the research, task, inventory and content records (`labels.json`). By position: dat 9, loc 483, mid 17, sub 112, unk 28 (sub routine start, loc instruction start, mid inside an instruction, dat data, unk unknown). By class: data 9, inferred 53, observed 559, unknown 28.
+661 distinct code-bank ROM addresses cited by the research, task, inventory and content records (`labels.json`). By position: dat 9, loc 487, mid 17, sub 114, unk 34 (sub routine start, loc instruction start, mid inside an instruction, dat data, unk unknown). By class: data 9, inferred 54, observed 564, unknown 34.
 
 Cited addresses in `unknown` bytes:
 
@@ -63,6 +63,11 @@ Cited addresses in `unknown` bytes:
 | $80:84DB | docs/research/R-0010-native-movement.md |
 | $80:84EB | docs/research/R-0010-native-movement.md, docs/research/R-0045-static-code-map.md |
 | $80:FFC0 | docs/research/R-0001-rom-identity.md, docs/research/R-0045-static-code-map.md |
+| $81:A342 | docs/research/R-0046-track-breadth-matrix.md |
+| $81:A343 | docs/research/R-0046-track-breadth-matrix.md |
+| $81:A388 | docs/research/R-0046-track-breadth-matrix.md |
+| $81:A3C7 | docs/research/R-0046-track-breadth-matrix.md |
+| $81:A406 | docs/research/R-0046-track-breadth-matrix.md |
 | $81:BA4B | docs/research/R-0008-track-decode.md, tasks/M1-03.md |
 | $81:C50A | docs/research/R-0011-motion.md |
 | $82:833B | docs/research/R-0036-zoom-zoo-rider-objects.md, docs/research/R-0045-static-code-map.md |
@@ -70,8 +75,9 @@ Cited addresses in `unknown` bytes:
 | $82:835B | docs/research/R-0036-zoom-zoo-rider-objects.md, docs/research/R-0045-static-code-map.md |
 | $82:9DB6 | docs/research/R-0011-motion.md |
 | $82:A2DB | docs/research/R-0030-zoom-zoo-native-trial.md |
-| $82:B332 | docs/content/dragster-segment.md, docs/research/R-0008-track-decode.md, tasks/M1-03.md |
-| $82:B7DD | docs/content/dragster-segment.md, docs/research/R-0008-track-decode.md, docs/research/R-0021-zoom-zoo-content-contract.md, tasks/M1-03.md, tasks/M4-03.md |
+| $82:B332 | docs/content/dragster-segment.md, docs/research/R-0008-track-decode.md, docs/research/R-0046-track-breadth-matrix.md, tasks/M1-03.md, tasks/TRACK-BREADTH.md |
+| $82:B7DD | docs/content/dragster-segment.md, docs/research/R-0008-track-decode.md, docs/research/R-0021-zoom-zoo-content-contract.md, docs/research/R-0046-track-breadth-matrix.md, tasks/M1-03.md, tasks/M4-03.md |
 | $83:8535 | docs/research/R-0045-static-code-map.md, tasks/STATIC-CODE-MAP.md |
 | $83:904A | docs/research/R-0038-dragster-ordinary-controls.md |
+| $83:9FFA | docs/research/R-0046-track-breadth-matrix.md, tasks/TRACK-BREADTH.md |
 | $83:A1DA | docs/research/R-0008-track-decode.md |

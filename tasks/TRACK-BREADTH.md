@@ -2,25 +2,29 @@
 
 ## Assignment
 
-- Status: ready (prepared 22 September 2026 UTC under
-  [D-0008](../docs/decisions/D-0008-static-map-track-breadth-review-tiers.md);
-  [STATIC-CODE-MAP](STATIC-CODE-MAP.md) integrated 23 September 2026: read
-  `docs/map/static/code-banks.md` and the ignored listing from `coverage disassemble` before
-  designing a capture). Claim after the weekly reset on 2026-09-24T08:00Z (89% weekly at
-  STATIC-CODE-MAP's integration) or on an explicit user override
+- Status: in progress. Part 1 (inventory, per-track producers, playfield shapes, native idle
+  matrix) is reviewed and integrated by pull request as a checkpoint; the reference and match
+  columns are next. Claimed 23 September 2026 at about 01:05Z on the user's explicit override
+  of the reset boundary ("you may work past the 80% reserve until the task is complete or the
+  weekly limit is reached"). Prepared 22 September 2026 under
+  [D-0008](../docs/decisions/D-0008-static-map-track-breadth-review-tiers.md).
 - Milestone: M4 breadth (remaining tracks); the matrix, not any one track, is the outcome
 - Coordinator: the preparing session (Claude Fable 5.1, Claude Code desktop, 22 September
   2026 UTC); the claiming session is coordinator, primary and integrator once it claims this record
 - Task provider (fixed for all children; record any user-initiated platform change): Anthropic
-- Worker/session/runtime/model: to be recorded at claim
+- Worker/session/runtime/model: Claude Opus 5.5 (`claude-opus-5-5`), Claude Code desktop, one
+  session from 01:05Z on 23 September 2026; coordinator, primary and integrator
 - Actual model/reasoning effort, routing rationale and frontier escalation question (if any):
   the claiming session's model at default effort. Review tier under D-0008: **tier 2** for
   the inventory, extraction and pack profile; **tier 1** for any change to `src/core`
   arithmetic, the 742-byte state or the gates, which the primary must call out in the
   candidate so the reviewer applies the full D-0006 process to that part.
 - Provider quota window/baseline timestamp, used/remaining or unknown, reserve and session
-  allowance (D-0004): at preparation, weekly all-models 84% at 2026-09-22T11:20Z; sample
-  fresh at claim. The matrix is expected to span sessions; checkpoint each track's row.
+  allowance (D-0004): at preparation, weekly all-models 84% at 2026-09-22T11:20Z. At claim,
+  2026-09-23T01:07Z: weekly all-models **90%**, five-hour 10%, resetting 2026-09-24T08:00Z;
+  the reserve floor is crossed on the user's instruction. Part 1 as a separately merged
+  checkpoint is the response to that: the weekly limit can end the session, and each part
+  keeps its own review. The matrix is expected to span sessions; checkpoint each track's row.
 - Reviewer (primary automatically spawns fresh model/effort, isolated checkout; no user
   trigger): a fresh Anthropic subagent in a separate checkout at the candidate. Withheld
   case: at least one track the primary did not name as matching, re-captured and compared by
@@ -118,41 +122,99 @@ originals across race start; the sampled-frames rule from CLASSIC-RACE-HUD appli
 
 ## Capability and coverage checkpoint
 
-- Native capability delivered / still missing: to be filled per row.
-- Frozen exact-match interval, field set and reference/seed identity: per track, in R-0046.
-- Dynamic captured inputs still consumed (must be zero for autonomy): the `pre_race_matrix`
-  entry and any other capture-derived entry, per track; the target is zero.
+- Native capability delivered / still missing: every track's content is located and
+  derivable from the ROM (inventory, tile producer); the engine takes four more playfield shapes;
+  16 of 45 tracks complete 1,200 idle updates natively. Missing: native selection by track id in
+  the pack and app, each track's own scenario, the two guarded branches, the `$04` shape.
+- Frozen exact-match interval, field set and reference/seed identity: none new yet (DRAGSTER and
+  ZOOM ZOO keep theirs).
+- Dynamic captured inputs still consumed (must be zero for autonomy): the landing-response
+  matrices, as before; the per-track tile content now has a ROM producer.
 - Relevant branches/transitions exercised, including independent variations: race start,
-  countdown, riding, per track.
-- First divergence and cheapest next discriminating experiment: per row.
-- Trial-wide usage baseline/current, reserve, reset authorization/outcome or none: to be sampled.
+  countdown and 930 updates of riding with the controller released, native only.
+- First divergence and cheapest next discriminating experiment: R-0046, "Next experiments".
+- Trial-wide usage baseline/current, reserve, reset authorization/outcome or none: 90% weekly at
+  claim, user override of the reserve; no reset.
 
 ## Evidence and attempts
 
 | Attempt | Hypothesis | Experiment | Observation | Next decision |
 | --- | --- | --- | --- | --- |
 | 0 (preparation) | The ROM's track set is a contiguous run of RNC streams | Header scan above | 45 streams in `$98`-`$9F`; DRAGSTER and ZOOM ZOO are the first two | Inventory command first; directory from the static map |
+| 1 (01:10Z) | The loader selects the stream by track index | Listing of `$82:E12B-E152`; the asset directory at `$82:B332` dumped for `$B8`-`$FF` | Track *i* is asset `$C2 + i` (index from SRAM `$77:074A`); `$C2`-`$EE` point in order at the 45 streams, the only compressed run | Decode all 45 through the directory |
+| 2 (01:12Z) | Every stream decodes with the existing port | `rnc.decompress` on all 45 (0.6 s) | All decode to their header length and consume exactly their directory length; 0 and 1 equal the pack's digests | Header fields |
+| 3 (01:14Z) | The header's byte 13 is the playfield shape | Headers of all 45; listing of `$81:A304-A51B`, the four unknown arms decoded by hand | Six values; byte 13 = columns / 4; seven arms, each 16,384 cells; `$04` also sets `$0FF7` | Generalize the tile producer |
+| 4 (01:20Z) | The R-0008 tile-set rule is general | `tracks.tile_content` against the pack | All 8 per-track entries of both accepted tracks byte for byte | Run every track natively |
+| 5 (01:30Z) | The engine runs other tracks with their own content | Loose `--content-dir` runs | Refused: the loose path lacks the trick tables | Lab-only `--track-override` on a pack |
+| 6 (01:35Z) | Override is neutral | ZOOM ZOO's own bytes through `--track-override`, 1,200 idle updates | Identical to the plain pack run | Matrix |
+| 7 (01:40Z) | - | Idle matrix, N = 1,200 declared before the run | 13 complete, 13 special-tile guard, 1 edge guard, 18 refused by shape in their first update | Add the four non-`$04` arms |
+| 8 (01:45Z) | The static arms let the refused tracks run | Same matrix after `track_geometry` gains `$80/$20/$10/$08` | 16 complete, 19 special-tile, 9 edge, 1 refused in its first update (track 37) | Commit, gates, review |
+| 9 (01:18-01:50Z) | DRAGSTER and ZOOM ZOO cannot move | `artifacts/track-breadth/gates.sh` on code commit `1f554fb`: three presets and ctest, synthetic, both v1 contracts, hidden runs, fuzz, and **all eleven differential gates run** (the change reaches the gate binary, so `gate_identity` could not cite them) | ctest 23/23 on lab-debug, lab-release and app-debug; synthetic passed; v1 winner and loser passed; hidden DRAGSTER and ZOOM ZOO 0 fallback frames; fuzz 40 seeds, 79 races, 0 aborts; all eleven gates passed with the same row digests and restore counts as the `6e0fad6` run. `lab-sanitize` and `app-sanitize` unavailable on this host | Records, pull request, review |
+| 10 (01:55Z) | The name table follows the track index | Relative-text search, then the table at `$83:9FFA` | 45 names in lowercase ASCII, then five `unavailable` and nine tour names; names 0 and 1 agree with the verified indices | R-0046 observation 5 (static) |
 
 ## Handoff
 
-- Current base/head commit and uncommitted state: not claimed.
-- Verified findings: the inventory observation above (preparation, not independently checked).
-- Current hypothesis and failed approaches: none yet.
-- Commands executed, outcomes and report hashes: none yet.
-- Unavailable/skipped checks: none yet.
-- Exact next experiment/command: at claim, implement `content rnc-inventory`, decode all 45
-  streams, and compare the first two against the pack's recorded digests before anything else.
-- Remaining dependencies: STATIC-CODE-MAP for the directory and loader reading.
-- Runtime needs (network, build time, fixtures, memory): ROM, the pinned core for captures,
-  an app-debug build (about 25 s), the gate scripts (minutes per track).
-- Aggregate parent/child time, provider usage before/after (or unknown), other-account-work caveat: to be recorded.
-- Accepted outcome, review/fix rounds and next routing decision: to be recorded.
+- Current base/head commit and uncommitted state: part 1 is merged (see the pull request named
+  in `artifacts/track-breadth-part1-integration/closeout.json` in the main checkout); the task
+  continues from the `main` tip in a new `task/track-breadth-2` branch and worktree.
+- Verified findings: [R-0046](../docs/research/R-0046-track-breadth-matrix.md) observations
+  1-4. The tracked manifest is `tests/manifests/content/track-streams.json`.
+- Current hypothesis and failed approaches: nine tours of five tracks, index = 5 x tour +
+  position (R-0046, unverified). A loose `--content-dir` cannot start a complete race (no trick
+  tables), which is why the lab override sits on a pack.
+- Commands executed, outcomes and report hashes: `content rnc-inventory` twice (identical,
+  `--expect` passes); `content track-idle-matrix --updates 1200` twice (identical rows);
+  `artifacts/track-breadth/gates.sh` on the code commit (see Review and integration).
+- Unavailable/skipped checks: `lab-sanitize` and `app-sanitize` (the host's ASan runtime hangs
+  before `main` since the macOS 27 update; recorded unavailable, the hosted Linux job covers
+  them). No reference capture of a new track yet.
+- Gate addition from the part 1 review: run `content rnc-inventory --expect
+  tests/manifests/content/track-streams.json` in every gate run of this task (CI has no ROM,
+  so nothing hosted checks the manifest's values), and the runner's option check
+  (`zoom_zoo_runner.cpp:38` accepts any four options) is tightened with the next change that
+  already reruns the differential gates.
+- Exact next experiment/command: capture track 2 (Crawler, Down twice on PICK TRACK from the
+  ZOOM ZOO manifest's path) with the controller released and consecutive frames across race
+  start, record NOW PLAYING, and write a generic 742-byte projection so the match column can
+  be measured; then track 3 and 4. In parallel, a watch capture on track 2 names the tile flag
+  behind its special-tile stop at update 7.
+- Remaining dependencies: none outside the project. Tours other than Crawler may be locked on a
+  cold start; if so, record how the original unlocks them before choosing a capture method.
+- Runtime needs (network, build time, fixtures, memory): ROM, the pinned core for captures, a
+  lab-debug build (seconds), about 25 minutes for the gate script.
+- Aggregate parent/child time, provider usage before/after (or unknown), other-account-work
+  caveat: part 1 ran from 01:05Z; usage at claim 90% weekly, the rest in the closeout.
+- Accepted outcome, review/fix rounds and next routing decision: part 1 checkpoint; the task
+  is not accepted until the reference and match columns are filled.
 
 ## Review and integration
 
-- Reviewer and independent reproduction/withheld-case results:
-- Required changes or acceptance rationale:
-- Exact merge candidate and required-check results:
-- Integrated commit and evidence location:
-- Remote synchronization: pushed ref(s), verified local/remote commit IDs, or exact push failure:
-- Scope still unverified:
+Part 1 (checkpoint; the task is not accepted):
+
+- Reviewer and independent reproduction/withheld-case results: a fresh Claude Opus 5.5
+  subagent in the detached checkout `.worktrees/track-breadth-review` at `bf27e45`, tier 1 for
+  the geometry arms and the runner option, tier 2 for the rest. It decoded `$81:A304-A51B` from
+  the ROM by hand and matched every constant of the four new arms; scanned the ROM and the
+  directory itself; decoded withheld tracks 8, 17, 30 and 40 against the manifest; reproduced
+  the inventory, the matrix row for row, the override neutrality for ZOOM ZOO and DRAGSTER;
+  re-ran `dragster-random-1` and `opposing-axes` with the same digests and restore counts; 25
+  unit tests and ctest 23/23. **Approved**, no required findings, seven advisories
+  ([review](https://github.com/malmazuke/unirally-reconstruction/pull/9#pullrequestreview-5286077171)).
+- Required changes or acceptance rationale: none required. Advisories 1, 2, 4, 5, 6 and 7 are
+  applied in the records (the `$0FF7` persistence limit in R-0046, fault positions as updates
+  completed, the STATE wording, the manifest description, the static/verified split, the
+  `--expect` check in the gate script and the handoff). Advisory 3 (the runner accepts any four
+  options) is deferred to the next change that reruns the differential gates, because fixing it
+  alone changes the gate binary; it is in the handoff. The CI fix `6a329f5` (the ROM-gated unit
+  test removed, since the synthetic suite counts a skip as a failure) and the advisory commit
+  touch no file the gate binary links; `gate_identity` against `gates-1f554fb` proves it.
+- Exact merge candidate and required-check results: the pull request head; `changes`, `lab
+  (ubuntu-24.04)` and `lab (macos-15)` green on it before merging (run IDs in the closeout).
+- Integrated commit and evidence location: the merge commit of
+  [#9](https://github.com/malmazuke/unirally-reconstruction/pull/9);
+  `artifacts/track-breadth-part1-integration/closeout.json` and
+  `local/evidence/track-breadth/` in the main checkout.
+- Remote synchronization: through the pull request; local `main` fast-forwarded and compared
+  with `origin/main` after the merge (closeout).
+- Scope still unverified: every new track against the original; the four static arms under
+  capture; the tour hypothesis; the `$0FF7` persistence.

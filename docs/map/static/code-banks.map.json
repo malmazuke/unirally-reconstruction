@@ -12382,19 +12382,19 @@
    "call returns in the calling mode": 1262
   },
   "bytes": 131072,
-  "cited_addresses": 649,
+  "cited_addresses": 661,
   "cited_by_class": {
    "data": 9,
-   "inferred": 53,
-   "observed": 559,
-   "unknown": 28
+   "inferred": 54,
+   "observed": 564,
+   "unknown": 34
   },
   "cited_by_position": {
    "dat": 9,
-   "loc": 483,
+   "loc": 487,
    "mid": 17,
-   "sub": 112,
-   "unk": 28
+   "sub": 114,
+   "unk": 34
   },
   "conflicts": 0,
   "data": 92,

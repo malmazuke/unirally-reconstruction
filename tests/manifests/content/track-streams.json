@@ -1,0 +1,3240 @@
+{
+ "asset_directory": "$82B332",
+ "first_track_asset": "$C2",
+ "kind": "track_stream_inventory",
+ "rom_sha256": "a1105819d48c04d680c8292bbfa9abbce05224f1bc231afd66af43b7e0a1fd4e",
+ "schema_version": 1,
+ "streams": [
+  {
+   "address": "$98:8000",
+   "asset": "$C2",
+   "chunks": 4,
+   "consumed_length": 387,
+   "derived": {
+    "bg1_tiles": {
+     "length": 2560,
+     "sha256": "5a45c158da5565b8f05872a2f23a9e5dcaa59a5a19d461700b624df67a2eff38"
+    },
+    "tile_columns": {
+     "length": 640,
+     "sha256": "bb95427aa2a307c9874b6140b145dce5a4e279112d57a5efcae77eb444951a72"
+    },
+    "tile_flags": {
+     "length": 20,
+     "sha256": "590e52f2640bb1b70f602622aa07285ed51d7c4b84707b4d77c5cc33fc230846"
+    }
+   },
+   "directory_length": 387,
+   "file_offset": 786432,
+   "header": {
+    "opponent_start": [
+     68,
+     50
+    ],
+    "player_start": [
+     68,
+     50
+    ],
+    "shape": {
+     "arm": "$81:A4C1",
+     "byte": 0,
+     "columns": 1024,
+     "rows": 16
+    },
+    "tile_set_ids": [
+     1,
+     2,
+     20,
+     36,
+     22,
+     24
+    ],
+    "tile_set_list_offset": 33807,
+    "unnamed_bytes": {
+     "0-2": "000000",
+     "14": 4
+    }
+   },
+   "index": 0,
+   "packed_length": 369,
+   "unpacked_length": 33815,
+   "unpacked_sha256": "8f5cef67dc57977af8ff614b8178514a26e9fe0059e02ed27aad5978185580d4"
+  },
+  {
+   "address": "$98:8183",
+   "asset": "$C3",
+   "chunks": 5,
+   "consumed_length": 6599,
+   "derived": {
+    "bg1_tiles": {
+     "length": 25984,
+     "sha256": "e7be1f6ab6b4d1a10e4c4a730c030dd6234328b07c31514da9e9a6152fe49117"
+    },
+    "tile_columns": {
+     "length": 6496,
+     "sha256": "649b96ff43ef467fe57bac16eb876f96a1ebc6f0307a5270f97a7ce1f63a84c7"
+    },
+    "tile_flags": {
+     "length": 203,
+     "sha256": "11aa211a148bced17e6c1b63a19e6e9c71ff1f8fed83954613f2ea62b15069c4"
+    }
+   },
+   "directory_length": 6599,
+   "file_offset": 786819,
+   "header": {
+    "opponent_start": [
+     575,
+     93
+    ],
+    "player_start": [
+     575,
+     93
+    ],
+    "shape": {
+     "arm": "$81:A445",
+     "byte": 64,
+     "columns": 256,
+     "rows": 64
+    },
+    "tile_set_ids": [
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     9,
+     10,
+     11,
+     18,
+     30,
+     13,
+     15,
+     14,
+     16,
+     22,
+     24,
+     20,
+     13,
+     36,
+     29,
+     17
+    ],
+    "tile_set_list_offset": 50639,
+    "unnamed_bytes": {
+     "0-2": "000000",
+     "14": 16
+    }
+   },
+   "index": 1,
+   "packed_length": 6581,
+   "unpacked_length": 50665,
+   "unpacked_sha256": "db6770152e399f9d16fc6937b5d56588a8f67e825ae70d6578b77d36053fdd28"
+  },
+  {
+   "address": "$98:9B4A",
+   "asset": "$C4",
+   "chunks": 4,
+   "consumed_length": 1332,
+   "derived": {
+    "bg1_tiles": {
+     "length": 21504,
+     "sha256": "048c38fc3e68406dfbce48b485f39dfe9dee67e478fbe9e075f3032fc43a79dc"
+    },
+    "tile_columns": {
+     "length": 5376,
+     "sha256": "b78080f9a2f227693c2da4abd2644344a9a38cfbd459c8eb8a3fb8e2fa10fb59"
+    },
+    "tile_flags": {
+     "length": 168,
+     "sha256": "00ac674895f31af95d9ba97aa143ee4e5603f8b7b101249df290291ad33104fd"
+    }
+   },
+   "directory_length": 1332,
+   "file_offset": 793418,
+   "header": {
+    "opponent_start": [
+     323,
+     90
+    ],
+    "player_start": [
+     361,
+     89
+    ],
+    "shape": {
+     "arm": "$81:A445",
+     "byte": 64,
+     "columns": 256,
+     "rows": 64
+    },
+    "tile_set_ids": [
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     9,
+     10,
+     11,
+     18,
+     19,
+     34,
+     25,
+     29,
+     13
+    ],
+    "tile_set_list_offset": 35791,
+    "unnamed_bytes": {
+     "0-2": "00002d",
+     "14": 16
+    }
+   },
+   "index": 2,
+   "packed_length": 1314,
+   "unpacked_length": 35810,
+   "unpacked_sha256": "09b580858db72b03da0a54203b51383215efcad95dbffc408a8b8620446c8400"
+  },
+  {
+   "address": "$98:A07E",
+   "asset": "$C5",
+   "chunks": 6,
+   "consumed_length": 9872,
+   "derived": {
+    "bg1_tiles": {
+     "length": 19200,
+     "sha256": "3a2b1e9f1215bfc24fe84df2cd5b0de023f0fbd98384c8755ffcb9726ea52c23"
+    },
+    "tile_columns": {
+     "length": 4800,
+     "sha256": "0b4188a23020d8e5079e123c909a068d5fabb6e985bd56b73b4db4e04ed785d5"
+    },
+    "tile_flags": {
+     "length": 150,
+     "sha256": "121fd0f557dd5e37285cfeccd078e0b42769e606fa9c858215d6cdd19a784399"
+    }
+   },
+   "directory_length": 9872,
+   "file_offset": 794750,
+   "header": {
+    "opponent_start": [
+     99,
+     34
+    ],
+    "player_start": [
+     99,
+     22
+    ],
+    "shape": {
+     "arm": "$81:A4C1",
+     "byte": 0,
+     "columns": 1024,
+     "rows": 16
+    },
+    "tile_set_ids": [
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     9,
+     10,
+     11,
+     13,
+     15,
+     14,
+     22,
+     24,
+     23,
+     26,
+     20,
+     36
+    ],
+    "tile_set_list_offset": 62991,
+    "unnamed_bytes": {
+     "0-2": "000000",
+     "14": 4
+    }
+   },
+   "index": 3,
+   "packed_length": 9854,
+   "unpacked_length": 63013,
+   "unpacked_sha256": "ca5b470dea72bb2aa5c77ef5a5af62e06a5e90cb16401db329c412e10167ed1a"
+  },
+  {
+   "address": "$98:C70E",
+   "asset": "$C6",
+   "chunks": 5,
+   "consumed_length": 7968,
+   "derived": {
+    "bg1_tiles": {
+     "length": 25472,
+     "sha256": "500127487e9f3cef609d18296021a602a69b899ef53a9ea04dc4449f42c6824d"
+    },
+    "tile_columns": {
+     "length": 6368,
+     "sha256": "8b09264dbe82613421ce4acf443f141d253b4bfdc4ac31e3f76ac7d7b673f304"
+    },
+    "tile_flags": {
+     "length": 199,
+     "sha256": "cc3faa9dcb83f163281354700c809f917a94443c00de9827a12aefac004838ce"
+    }
+   },
+   "directory_length": 7968,
+   "file_offset": 804622,
+   "header": {
+    "opponent_start": [
+     290,
+     28
+    ],
+    "player_start": [
+     290,
+     26
+    ],
+    "shape": {
+     "arm": "$81:A406",
+     "byte": 32,
+     "columns": 128,
+     "rows": 128
+    },
+    "tile_set_ids": [
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     9,
+     10,
+     11,
+     18,
+     30,
+     15,
+     22,
+     24,
+     25,
+     19,
+     29,
+     17,
+     13,
+     36,
+     20,
+     12,
+     34
+    ],
+    "tile_set_list_offset": 52207,
+    "unnamed_bytes": {
+     "0-2": "000000",
+     "14": 32
+    }
+   },
+   "index": 4,
+   "packed_length": 7950,
+   "unpacked_length": 52234,
+   "unpacked_sha256": "4c05e160bf29160650eea327edfec640de42604b67208db798f4fbaef9a36cbb"
+  },
+  {
+   "address": "$98:E62E",
+   "asset": "$C7",
+   "chunks": 4,
+   "consumed_length": 6317,
+   "derived": {
+    "bg1_tiles": {
+     "length": 18432,
+     "sha256": "74eda420a56801bcfdc03a1dde9f72a19a5c7d6cd358f44de8f53290b8243c59"
+    },
+    "tile_columns": {
+     "length": 4608,
+     "sha256": "1ff764587690707a29d88811970122a0bab1db23cbfdd914a06d93b20a002bf3"
+    },
+    "tile_flags": {
+     "length": 144,
+     "sha256": "a15e8c2e02833e9c07acd42dba72756164e55bf24fd068fe5b88e83d1168256c"
+    }
+   },
+   "directory_length": 6317,
+   "file_offset": 812590,
+   "header": {
+    "opponent_start": [
+     142,
+     30
+    ],
+    "player_start": [
+     142,
+     32
+    ],
+    "shape": {
+     "arm": "$81:A3C7",
+     "byte": 16,
+     "columns": 64,
+     "rows": 256
+    },
+    "tile_set_ids": [
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     9,
+     10,
+     11,
+     22,
+     24,
+     13,
+     14,
+     16,
+     20,
+     36
+    ],
+    "tile_set_list_offset": 47599,
+    "unnamed_bytes": {
+     "0-2": "000000",
+     "14": 64
+    }
+   },
+   "index": 5,
+   "packed_length": 6299,
+   "unpacked_length": 47619,
+   "unpacked_sha256": "24d5b6163c456da21a8027f6cbd3fbcf87ad54726b96d4159cf180d215431924"
+  },
+  {
+   "address": "$98:FEDB",
+   "asset": "$C8",
+   "chunks": 4,
+   "consumed_length": 6305,
+   "derived": {
+    "bg1_tiles": {
+     "length": 25472,
+     "sha256": "6676554cdf399836de7387df9c0e0eafec3316e02a1bbc2d3385ad50e22e027b"
+    },
+    "tile_columns": {
+     "length": 6368,
+     "sha256": "d78eada280eef6ae013e1276c2fd421be4d8cbd10538ddc15bd0eabe979e9067"
+    },
+    "tile_flags": {
+     "length": 199,
+     "sha256": "29da001bc2ffc18cb8fde098a2f54ad8d3288f8bc7a43dcdf6aa1c6fc4d4a390"
+    }
+   },
+   "directory_length": 6305,
+   "file_offset": 818907,
+   "header": {
+    "opponent_start": [
+     445,
+     243
+    ],
+    "player_start": [
+     445,
+     244
+    ],
+    "shape": {
+     "arm": "$81:A445",
+     "byte": 64,
+     "columns": 256,
+     "rows": 64
+    },
+    "tile_set_ids": [
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     9,
+     10,
+     11,
+     12,
+     18,
+     22,
+     24,
+     20,
+     36,
+     13,
+     15,
+     16,
+     30,
+     29,
+     34
+    ],
+    "tile_set_list_offset": 48143,
+    "unnamed_bytes": {
+     "0-2": "000000",
+     "14": 16
+    }
+   },
+   "index": 6,
+   "packed_length": 6287,
+   "unpacked_length": 48168,
+   "unpacked_sha256": "b783de52aac4591ab7d5a20df19a6f6760cf9b6b348099fa9df64b2f2313c5a8"
+  },
+  {
+   "address": "$99:977C",
+   "asset": "$C9",
+   "chunks": 4,
+   "consumed_length": 1367,
+   "derived": {
+    "bg1_tiles": {
+     "length": 22656,
+     "sha256": "bea9ab77774d702bcbae9881e1a3eedcb490c90119f0923b2c80bd96b6dc57be"
+    },
+    "tile_columns": {
+     "length": 5664,
+     "sha256": "2ad8bb02dfd2304ed7ebbe201c44d45c5a69836af50a54e382961feb14ae451f"
+    },
+    "tile_flags": {
+     "length": 177,
+     "sha256": "26cdebdbb3b400f3351c7b5b1fa2e6915cf31227d8920fdd3deb5541e5e104ee"
+    }
+   },
+   "directory_length": 1367,
+   "file_offset": 825212,
+   "header": {
+    "opponent_start": [
+     8,
+     22
+    ],
+    "player_start": [
+     8,
+     22
+    ],
+    "shape": {
+     "arm": "$81:A406",
+     "byte": 32,
+     "columns": 128,
+     "rows": 128
+    },
+    "tile_set_ids": [
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     9,
+     10,
+     11,
+     16,
+     18,
+     37,
+     22,
+     24
+    ],
+    "tile_set_list_offset": 35599,
+    "unnamed_bytes": {
+     "0-2": "00002d",
+     "14": 32
+    }
+   },
+   "index": 7,
+   "packed_length": 1349,
+   "unpacked_length": 35617,
+   "unpacked_sha256": "49e5b593705325a5f66685f9b743eec790533556019f9fb94632a95a5b081024"
+  },
+  {
+   "address": "$99:9CD3",
+   "asset": "$CA",
+   "chunks": 5,
+   "consumed_length": 9484,
+   "derived": {
+    "bg1_tiles": {
+     "length": 27648,
+     "sha256": "a73daaea1c194dadd5b1383daf8c3efff987d3df91ac1178ba71935b061b59e7"
+    },
+    "tile_columns": {
+     "length": 6912,
+     "sha256": "d2974b9780bf7591953a31f8c0f8b65a33c42ec070ae0d4b87c4a93280655e3c"
+    },
+    "tile_flags": {
+     "length": 216,
+     "sha256": "18ecd22b62eb06b937cf3b87f5411db1c65dd5b35069437abb2857128dd817b6"
+    }
+   },
+   "directory_length": 9484,
+   "file_offset": 826579,
+   "header": {
+    "opponent_start": [
+     36,
+     104
+    ],
+    "player_start": [
+     36,
+     104
+    ],
+    "shape": {
+     "arm": "$81:A483",
+     "byte": 128,
+     "columns": 512,
+     "rows": 32
+    },
+    "tile_set_ids": [
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     9,
+     10,
+     11,
+     12,
+     17,
+     18,
+     19,
+     25,
+     29,
+     34,
+     22,
+     24,
+     30,
+     13,
+     20,
+     36,
+     13,
+     34,
+     34,
+     34,
+     20,
+     20,
+     20,
+     34,
+     34,
+     34,
+     34
+    ],
+    "tile_set_list_offset": 56335,
+    "unnamed_bytes": {
+     "0-2": "000000",
+     "14": 8
+    }
+   },
+   "index": 8,
+   "packed_length": 9466,
+   "unpacked_length": 56372,
+   "unpacked_sha256": "2919362dfaaf0759f3fe3e3caba448579c6b3e65997274ba0d672723bbdbb376"
+  },
+  {
+   "address": "$99:C1DF",
+   "asset": "$CB",
+   "chunks": 4,
+   "consumed_length": 4392,
+   "derived": {
+    "bg1_tiles": {
+     "length": 27648,
+     "sha256": "35c5cf80049a6c3f6348e3429e8642c8fed20361a7128591f2b2225d8a27a1bb"
+    },
+    "tile_columns": {
+     "length": 6912,
+     "sha256": "7cd75c0d8476eb5916c6e06f61548df8dc5f89b678629e259724eefdf80dd13e"
+    },
+    "tile_flags": {
+     "length": 216,
+     "sha256": "a823334c96e825d7df57f04e3270b6653b98aeb0899acc9e7a14fdc9cb216ece"
+    }
+   },
+   "directory_length": 4392,
+   "file_offset": 836063,
+   "header": {
+    "opponent_start": [
+     481,
+     190
+    ],
+    "player_start": [
+     481,
+     190
+    ],
+    "shape": {
+     "arm": "$81:A445",
+     "byte": 64,
+     "columns": 256,
+     "rows": 64
+    },
+    "tile_set_ids": [
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     9,
+     10,
+     11,
+     18,
+     30,
+     13,
+     15,
+     14,
+     16,
+     20,
+     29,
+     25,
+     19,
+     22,
+     24,
+     23,
+     26,
+     36,
+     34
+    ],
+    "tile_set_list_offset": 45007,
+    "unnamed_bytes": {
+     "0-2": "000000",
+     "14": 16
+    }
+   },
+   "index": 9,
+   "packed_length": 4374,
+   "unpacked_length": 45036,
+   "unpacked_sha256": "52b7a307264af08c5b3b1972e5ecc79773c0a02360d0fd6dfddc6da47baca11f"
+  },
+  {
+   "address": "$99:D307",
+   "asset": "$CC",
+   "chunks": 6,
+   "consumed_length": 11986,
+   "derived": {
+    "bg1_tiles": {
+     "length": 23936,
+     "sha256": "8333764c348fed0b980654888023deaa89456f4c22c9c6f621eb795834d47c37"
+    },
+    "tile_columns": {
+     "length": 5984,
+     "sha256": "8efe43a8c51936a1cbb68a144097bf5dc0bdc792f10fed6685d03eb60bc1398a"
+    },
+    "tile_flags": {
+     "length": 187,
+     "sha256": "c8ddb2e891c21f9cf7d17bbb580f70342a2a9bbafc2dbe6f00589d0c82255d60"
+    }
+   },
+   "directory_length": 11986,
+   "file_offset": 840455,
+   "header": {
+    "opponent_start": [
+     111,
+     38
+    ],
+    "player_start": [
+     111,
+     40
+    ],
+    "shape": {
+     "arm": "$81:A3C7",
+     "byte": 16,
+     "columns": 64,
+     "rows": 256
+    },
+    "tile_set_ids": [
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     9,
+     10,
+     11,
+     18,
+     13,
+     22,
+     24,
+     14,
+     15,
+     29,
+     20,
+     36
+    ],
+    "tile_set_list_offset": 63375,
+    "unnamed_bytes": {
+     "0-2": "000000",
+     "14": 64
+    }
+   },
+   "index": 10,
+   "packed_length": 11968,
+   "unpacked_length": 63397,
+   "unpacked_sha256": "ac7a8c483c1db8201c241afde90497a58dcddf1cb084e3203ee127fa41efe239"
+  },
+  {
+   "address": "$9A:81D9",
+   "asset": "$CD",
+   "chunks": 4,
+   "consumed_length": 5331,
+   "derived": {
+    "bg1_tiles": {
+     "length": 26240,
+     "sha256": "fd4e262f179e6e46d419e420f8e815013b5da6136f071aa80f1d89f686ad1c14"
+    },
+    "tile_columns": {
+     "length": 6560,
+     "sha256": "f4e2e8f77ed9b71e4f5cce22f90a479f4c44746dc8ebc3e8571689df3b99a347"
+    },
+    "tile_flags": {
+     "length": 205,
+     "sha256": "743f1ea85bd4d076efa033bfcb516d2a8139b9cbc07766f6d677c7f48d76dc0f"
+    }
+   },
+   "directory_length": 5331,
+   "file_offset": 852441,
+   "header": {
+    "opponent_start": [
+     593,
+     202
+    ],
+    "player_start": [
+     593,
+     202
+    ],
+    "shape": {
+     "arm": "$81:A445",
+     "byte": 64,
+     "columns": 256,
+     "rows": 64
+    },
+    "tile_set_ids": [
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     9,
+     10,
+     11,
+     12,
+     13,
+     18,
+     25,
+     19,
+     29,
+     20,
+     36,
+     22,
+     24,
+     30,
+     16,
+     17,
+     15,
+     34
+    ],
+    "tile_set_list_offset": 45871,
+    "unnamed_bytes": {
+     "0-2": "000000",
+     "14": 16
+    }
+   },
+   "index": 11,
+   "packed_length": 5313,
+   "unpacked_length": 45899,
+   "unpacked_sha256": "9eb49c560717454a9ece3a8cd4f1e5a07ac13a00b9d98fe18f77b0e6f9aa49ff"
+  },
+  {
+   "address": "$9A:96AC",
+   "asset": "$CE",
+   "chunks": 4,
+   "consumed_length": 2906,
+   "derived": {
+    "bg1_tiles": {
+     "length": 21376,
+     "sha256": "ccf716cd6d1f4e9d80c4558c85182fb8d2c848f1f8416d6a295c6ea0e6760e97"
+    },
+    "tile_columns": {
+     "length": 5344,
+     "sha256": "d28539fc45a99434a5b2c610a5eb972cf3e78515945e62f31a8ea7c0d2f8c788"
+    },
+    "tile_flags": {
+     "length": 167,
+     "sha256": "d02dc75e4d0061d0894daa4f0e45f478e6af091184afbd7779676c2a04fa0c26"
+    }
+   },
+   "directory_length": 2906,
+   "file_offset": 857772,
+   "header": {
+    "opponent_start": [
+     137,
+     394
+    ],
+    "player_start": [
+     262,
+     393
+    ],
+    "shape": {
+     "arm": "$81:A406",
+     "byte": 32,
+     "columns": 128,
+     "rows": 128
+    },
+    "tile_set_ids": [
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     9,
+     10,
+     11,
+     18,
+     17,
+     29,
+     14,
+     13
+    ],
+    "tile_set_list_offset": 38607,
+    "unnamed_bytes": {
+     "0-2": "00002d",
+     "14": 32
+    }
+   },
+   "index": 12,
+   "packed_length": 2888,
+   "unpacked_length": 38625,
+   "unpacked_sha256": "71d1842a55e19dd51f35410215ab35ecabc46f7798a07fd781c836b43e80ab53"
+  },
+  {
+   "address": "$9A:A206",
+   "asset": "$CF",
+   "chunks": 5,
+   "consumed_length": 6630,
+   "derived": {
+    "bg1_tiles": {
+     "length": 23424,
+     "sha256": "d693c1e13964378853f68aca4c7d0fe4d18b3c550b21111755ab0eca11e86fd8"
+    },
+    "tile_columns": {
+     "length": 5856,
+     "sha256": "8baa3a1125d643c6f86ae584e061e8c5140bde91b401f99d896e5315528208d9"
+    },
+    "tile_flags": {
+     "length": 183,
+     "sha256": "946216b9dc997dd288ca3804d92a8acf64eca3ed23e0382bdcfc361fe625e007"
+    }
+   },
+   "directory_length": 6630,
+   "file_offset": 860678,
+   "header": {
+    "opponent_start": [
+     137,
+     4
+    ],
+    "player_start": [
+     137,
+     2
+    ],
+    "shape": {
+     "arm": "$81:A483",
+     "byte": 128,
+     "columns": 512,
+     "rows": 32
+    },
+    "tile_set_ids": [
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     9,
+     10,
+     11,
+     22,
+     24,
+     15,
+     18,
+     29,
+     13,
+     20,
+     36
+    ],
+    "tile_set_list_offset": 49135,
+    "unnamed_bytes": {
+     "0-2": "000000",
+     "14": 8
+    }
+   },
+   "index": 13,
+   "packed_length": 6612,
+   "unpacked_length": 49156,
+   "unpacked_sha256": "733690266fec100076f38b14dfb5814e74afbd360c3c18b489e489628be7027b"
+  },
+  {
+   "address": "$9A:BBEC",
+   "asset": "$D0",
+   "chunks": 4,
+   "consumed_length": 2064,
+   "derived": {
+    "bg1_tiles": {
+     "length": 26112,
+     "sha256": "0b01421e918212ec4ed10bcfe27fdcc6bf5e1e4b461825c514e874b1d8be4b96"
+    },
+    "tile_columns": {
+     "length": 6528,
+     "sha256": "563e8e517ceef6446ee77a3fcb473cc2dacff94b22514c98c66c84031c6aeb95"
+    },
+    "tile_flags": {
+     "length": 204,
+     "sha256": "2d3a1800f1afc423d966d03a69c2a8a896706a6f59dcf5675a281aad5dbf181b"
+    }
+   },
+   "directory_length": 2064,
+   "file_offset": 867308,
+   "header": {
+    "opponent_start": [
+     45,
+     81
+    ],
+    "player_start": [
+     45,
+     81
+    ],
+    "shape": {
+     "arm": "$81:A445",
+     "byte": 64,
+     "columns": 256,
+     "rows": 64
+    },
+    "tile_set_ids": [
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     9,
+     10,
+     11,
+     12,
+     13,
+     14,
+     15,
+     16,
+     17,
+     18,
+     22,
+     24,
+     20,
+     32,
+     29,
+     36,
+     34,
+     37
+    ],
+    "tile_set_list_offset": 38191,
+    "unnamed_bytes": {
+     "0-2": "000000",
+     "14": 16
+    }
+   },
+   "index": 14,
+   "packed_length": 2046,
+   "unpacked_length": 38219,
+   "unpacked_sha256": "88e1a5b683e173659dab30791263bda1fb99c6125942d46d31c7ae2c3bac9f36"
+  },
+  {
+   "address": "$9A:C3FC",
+   "asset": "$D1",
+   "chunks": 5,
+   "consumed_length": 8521,
+   "derived": {
+    "bg1_tiles": {
+     "length": 28672,
+     "sha256": "3c64d644b052304cfd8647a2352d6ac97d51cfb3aa04af80d53ed80ac35391ee"
+    },
+    "tile_columns": {
+     "length": 7168,
+     "sha256": "6b04948b316d1cf0624139a2d2bd34f793bc5e5d7ca8d365566b35db4efdce90"
+    },
+    "tile_flags": {
+     "length": 224,
+     "sha256": "dbdc139a40ef6c1e0a26c937c2a8945f8cf4713eb92ba80e8077fd6cef9d8090"
+    }
+   },
+   "directory_length": 8521,
+   "file_offset": 869372,
+   "header": {
+    "opponent_start": [
+     1013,
+     3
+    ],
+    "player_start": [
+     1013,
+     3
+    ],
+    "shape": {
+     "arm": "$81:A445",
+     "byte": 64,
+     "columns": 256,
+     "rows": 64
+    },
+    "tile_set_ids": [
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     9,
+     10,
+     11,
+     12,
+     20,
+     36,
+     18,
+     19,
+     34,
+     25,
+     29,
+     22,
+     24,
+     15,
+     30,
+     38,
+     39,
+     13,
+     37,
+     17,
+     40
+    ],
+    "tile_set_list_offset": 54351,
+    "unnamed_bytes": {
+     "0-2": "000000",
+     "14": 16
+    }
+   },
+   "index": 15,
+   "packed_length": 8503,
+   "unpacked_length": 54382,
+   "unpacked_sha256": "ae55f88b7b248e0e2334f9807c42e6b7d716574eaf4a688990508edfed281314"
+  },
+  {
+   "address": "$9A:E545",
+   "asset": "$D2",
+   "chunks": 5,
+   "consumed_length": 7750,
+   "derived": {
+    "bg1_tiles": {
+     "length": 31744,
+     "sha256": "507ac3f6ecac8c4557cd6377bb6da23d4f972481e9fc67aa494dff98bf9ee0cf"
+    },
+    "tile_columns": {
+     "length": 7936,
+     "sha256": "3cf63fad4573cceac6d1d010e277340753dc7634d6255509af4b62a129cb467d"
+    },
+    "tile_flags": {
+     "length": 248,
+     "sha256": "c957d488fcdcf19b757d8ba4860707f8374f905a7c115b689c93114e851e94f4"
+    }
+   },
+   "directory_length": 7750,
+   "file_offset": 877893,
+   "header": {
+    "opponent_start": [
+     312,
+     44
+    ],
+    "player_start": [
+     312,
+     44
+    ],
+    "shape": {
+     "arm": "$81:A445",
+     "byte": 64,
+     "columns": 256,
+     "rows": 64
+    },
+    "tile_set_ids": [
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     9,
+     10,
+     11,
+     12,
+     13,
+     14,
+     15,
+     16,
+     17,
+     18,
+     19,
+     20,
+     23,
+     26,
+     30,
+     25,
+     29,
+     22,
+     24,
+     31,
+     36,
+     20,
+     20,
+     20,
+     20,
+     34
+    ],
+    "tile_set_list_offset": 53295,
+    "unnamed_bytes": {
+     "0-2": "000000",
+     "14": 16
+    }
+   },
+   "index": 16,
+   "packed_length": 7732,
+   "unpacked_length": 53331,
+   "unpacked_sha256": "d27621f9bfa8f0dca0fff18dcf90ed32caa14cf7e99a85fad39fde2c171081fd"
+  },
+  {
+   "address": "$9B:838B",
+   "asset": "$D3",
+   "chunks": 4,
+   "consumed_length": 733,
+   "derived": {
+    "bg1_tiles": {
+     "length": 7552,
+     "sha256": "54592a7365bf99d95760ea047848dff4e2c91b8b609f024933e3dcbcfb9b2ed4"
+    },
+    "tile_columns": {
+     "length": 1888,
+     "sha256": "73b00979619eba39f193824f398d2468efdb4fa142467e8fec1bbb445fbd011c"
+    },
+    "tile_flags": {
+     "length": 59,
+     "sha256": "9204261213e848b67439754d242c43246f114a44385c862fc8b350cf6cc8d4c8"
+    }
+   },
+   "directory_length": 733,
+   "file_offset": 885643,
+   "header": {
+    "opponent_start": [
+     157,
+     113
+    ],
+    "player_start": [
+     154,
+     113
+    ],
+    "shape": {
+     "arm": "$81:A445",
+     "byte": 64,
+     "columns": 256,
+     "rows": 64
+    },
+    "tile_set_ids": [
+     1,
+     18,
+     2,
+     29,
+     34,
+     19,
+     25,
+     22,
+     24
+    ],
+    "tile_set_list_offset": 34479,
+    "unnamed_bytes": {
+     "0-2": "00002d",
+     "14": 16
+    }
+   },
+   "index": 17,
+   "packed_length": 715,
+   "unpacked_length": 34490,
+   "unpacked_sha256": "4d5542b633c69cf54c718e36ec2ba05550fb1b3fe9ad71a7c779cf34baa8569c"
+  },
+  {
+   "address": "$9B:8668",
+   "asset": "$D4",
+   "chunks": 5,
+   "consumed_length": 6317,
+   "derived": {
+    "bg1_tiles": {
+     "length": 27904,
+     "sha256": "e4f851b47a7936497fa42ef386c71e31c182aac25a417738ba90ed672b9028cb"
+    },
+    "tile_columns": {
+     "length": 6976,
+     "sha256": "f0e7c2c31f021253f968f7052f1b51a9351d74a4568f5079bceef37ca7c78e4a"
+    },
+    "tile_flags": {
+     "length": 218,
+     "sha256": "be2f048ad3825a5f2cd5c39f3f1074946d89f6f13609090b4f6716af047d3ef2"
+    }
+   },
+   "directory_length": 6317,
+   "file_offset": 886376,
+   "header": {
+    "opponent_start": [
+     2,
+     2
+    ],
+    "player_start": [
+     2,
+     2
+    ],
+    "shape": {
+     "arm": "$81:A406",
+     "byte": 32,
+     "columns": 128,
+     "rows": 128
+    },
+    "tile_set_ids": [
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     9,
+     10,
+     11,
+     18,
+     30,
+     13,
+     15,
+     14,
+     16,
+     22,
+     24,
+     30,
+     20,
+     36,
+     29,
+     23,
+     26
+    ],
+    "tile_set_list_offset": 49231,
+    "unnamed_bytes": {
+     "0-2": "000000",
+     "14": 32
+    }
+   },
+   "index": 18,
+   "packed_length": 6299,
+   "unpacked_length": 49258,
+   "unpacked_sha256": "31c75fee7b265c5af2d7190b39a7350ad835466ed154516ff204f27db74430df"
+  },
+  {
+   "address": "$9B:9F15",
+   "asset": "$D5",
+   "chunks": 5,
+   "consumed_length": 7640,
+   "derived": {
+    "bg1_tiles": {
+     "length": 30848,
+     "sha256": "25b13af1caf67f192ed4580515ca240de61d5eecadf96ed28bd7eff7a9eeb442"
+    },
+    "tile_columns": {
+     "length": 7712,
+     "sha256": "068dd6fd62d932518193bb709540e0656389bdea62f23b073183be63b3dc00e5"
+    },
+    "tile_flags": {
+     "length": 241,
+     "sha256": "5cfb1aecc76a0414278875bc40cfa680d4166c186d9f7bad72b27888f04de7a7"
+    }
+   },
+   "directory_length": 7640,
+   "file_offset": 892693,
+   "header": {
+    "opponent_start": [
+     51,
+     28
+    ],
+    "player_start": [
+     51,
+     28
+    ],
+    "shape": {
+     "arm": "$81:A445",
+     "byte": 64,
+     "columns": 256,
+     "rows": 64
+    },
+    "tile_set_ids": [
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     9,
+     10,
+     11,
+     12,
+     13,
+     14,
+     15,
+     16,
+     17,
+     18,
+     19,
+     20,
+     21,
+     22,
+     23,
+     24,
+     25,
+     26,
+     31,
+     22,
+     24,
+     29,
+     36,
+     30,
+     34
+    ],
+    "tile_set_list_offset": 52143,
+    "unnamed_bytes": {
+     "0-2": "000000",
+     "14": 16
+    }
+   },
+   "index": 19,
+   "packed_length": 7622,
+   "unpacked_length": 52178,
+   "unpacked_sha256": "d107bcbfdfd76e795e5eacd297f19fb0c95454260f87e444261cf8018b976ebb"
+  },
+  {
+   "address": "$9B:BCED",
+   "asset": "$D6",
+   "chunks": 4,
+   "consumed_length": 4318,
+   "derived": {
+    "bg1_tiles": {
+     "length": 25728,
+     "sha256": "5125292eb60ad5680ce3160c2684779a91a1b0b8d1103cc1107245c3662848f7"
+    },
+    "tile_columns": {
+     "length": 6432,
+     "sha256": "b13510c422cd024f6db848fe2e098bcd2f798df29cb67b74bf08d5373f40e1ee"
+    },
+    "tile_flags": {
+     "length": 201,
+     "sha256": "b5b32197e5db375e863e27024e60e745b77f2cfc50d593ebb88dc96454b367e9"
+    }
+   },
+   "directory_length": 4318,
+   "file_offset": 900333,
+   "header": {
+    "opponent_start": [
+     204,
+     22
+    ],
+    "player_start": [
+     204,
+     20
+    ],
+    "shape": {
+     "arm": "$81:A483",
+     "byte": 128,
+     "columns": 512,
+     "rows": 32
+    },
+    "tile_set_ids": [
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     9,
+     10,
+     11,
+     18,
+     30,
+     36,
+     20,
+     22,
+     24,
+     29,
+     13,
+     23,
+     26,
+     14
+    ],
+    "tile_set_list_offset": 42639,
+    "unnamed_bytes": {
+     "0-2": "000000",
+     "14": 8
+    }
+   },
+   "index": 20,
+   "packed_length": 4300,
+   "unpacked_length": 42663,
+   "unpacked_sha256": "ecc4e63b0802aff3a364cdec9c1b32577dadbd1f5855e9d112d365d4f6dd71c9"
+  },
+  {
+   "address": "$9B:CDCB",
+   "asset": "$D7",
+   "chunks": 4,
+   "consumed_length": 5570,
+   "derived": {
+    "bg1_tiles": {
+     "length": 28032,
+     "sha256": "d75be08f3f936ec0592ab31d380b7edc4e76c6f7325175d844b13ec4bd9b7c60"
+    },
+    "tile_columns": {
+     "length": 7008,
+     "sha256": "1c632e46015ed05299144be3183d56609fee3a583664e35b5eac9da247a1613a"
+    },
+    "tile_flags": {
+     "length": 219,
+     "sha256": "f2b84cd44c07b2f1dc07df2cf098fa78eecddd7df951b1ab51ac508ffd81ecf8"
+    }
+   },
+   "directory_length": 5570,
+   "file_offset": 904651,
+   "header": {
+    "opponent_start": [
+     495,
+     92
+    ],
+    "player_start": [
+     495,
+     92
+    ],
+    "shape": {
+     "arm": "$81:A445",
+     "byte": 64,
+     "columns": 256,
+     "rows": 64
+    },
+    "tile_set_ids": [
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     9,
+     10,
+     11,
+     18,
+     30,
+     13,
+     15,
+     14,
+     16,
+     29,
+     22,
+     24,
+     20,
+     23,
+     26,
+     37,
+     17,
+     2,
+     36,
+     34
+    ],
+    "tile_set_list_offset": 46863,
+    "unnamed_bytes": {
+     "0-2": "000000",
+     "14": 16
+    }
+   },
+   "index": 21,
+   "packed_length": 5552,
+   "unpacked_length": 46893,
+   "unpacked_sha256": "eff789427c19a4b5694c23b53f10c29c5de4ef026091267ab7127f3e485ca5c7"
+  },
+  {
+   "address": "$9B:E38D",
+   "asset": "$D8",
+   "chunks": 3,
+   "consumed_length": 915,
+   "derived": {
+    "bg1_tiles": {
+     "length": 15360,
+     "sha256": "aa0bd77d50d8eedace4ac0e581995e63da6081baf4218588e6094b08fb0245be"
+    },
+    "tile_columns": {
+     "length": 3840,
+     "sha256": "dfb2cfb1c1652676520b9922bd449be38de26e139f39ea148c7ab5587500e3c2"
+    },
+    "tile_flags": {
+     "length": 120,
+     "sha256": "d9d554c0cc5da4fcf5f9273cf25c2fd4f0de1126b5cb8a063ae2716c543b9656"
+    }
+   },
+   "directory_length": 915,
+   "file_offset": 910221,
+   "header": {
+    "opponent_start": [
+     0,
+     60
+    ],
+    "player_start": [
+     0,
+     60
+    ],
+    "shape": {
+     "arm": "$81:A406",
+     "byte": 32,
+     "columns": 128,
+     "rows": 128
+    },
+    "tile_set_ids": [
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     9,
+     10,
+     11,
+     22,
+     24
+    ],
+    "tile_set_list_offset": 34607,
+    "unnamed_bytes": {
+     "0-2": "00002d",
+     "14": 32
+    }
+   },
+   "index": 22,
+   "packed_length": 897,
+   "unpacked_length": 34622,
+   "unpacked_sha256": "24092404332793733e9ed93a058b6e0283c23eea0b67c045e5e5f98ef4729d66"
+  },
+  {
+   "address": "$9B:E720",
+   "asset": "$D9",
+   "chunks": 4,
+   "consumed_length": 6113,
+   "derived": {
+    "bg1_tiles": {
+     "length": 22784,
+     "sha256": "4430cec00d03c40ddace0eba3b83430b74c4a29880e64a2d6bfed1ac4145b43d"
+    },
+    "tile_columns": {
+     "length": 5696,
+     "sha256": "4e30516a79b2383bdfe4b44c269c3a7d13139ccff2a750b78d8f14020bd7e38f"
+    },
+    "tile_flags": {
+     "length": 178,
+     "sha256": "6edd1d3d35147dc49f77ee91f18a2658f204652c023d0b99a996c516a0506dc7"
+    }
+   },
+   "directory_length": 6113,
+   "file_offset": 911136,
+   "header": {
+    "opponent_start": [
+     7,
+     8
+    ],
+    "player_start": [
+     7,
+     8
+    ],
+    "shape": {
+     "arm": "$81:A445",
+     "byte": 64,
+     "columns": 256,
+     "rows": 64
+    },
+    "tile_set_ids": [
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     9,
+     10,
+     11,
+     12,
+     13,
+     15,
+     18,
+     20,
+     36
+    ],
+    "tile_set_list_offset": 47887,
+    "unnamed_bytes": {
+     "0-2": "000000",
+     "14": 16
+    }
+   },
+   "index": 23,
+   "packed_length": 6095,
+   "unpacked_length": 47906,
+   "unpacked_sha256": "c2a4ab9d80e8e0011ec46077848187d14da8bd9928aa62c81842a19c73a1f8d3"
+  },
+  {
+   "address": "$9B:FF01",
+   "asset": "$DA",
+   "chunks": 4,
+   "consumed_length": 5459,
+   "derived": {
+    "bg1_tiles": {
+     "length": 24704,
+     "sha256": "3beee9b9bb5a9362d3c8e323c0da9eeccd9e8dcd2b59d4ed8c567e388b0035e3"
+    },
+    "tile_columns": {
+     "length": 6176,
+     "sha256": "2ecec38b34f92bf8c607f27e80e06d5af811ec89c55de3548f46c54044aae4a2"
+    },
+    "tile_flags": {
+     "length": 193,
+     "sha256": "1df7c37f597afe316670cd0925a088a64ed50635f8bca39223d6a783a41ae4f4"
+    }
+   },
+   "directory_length": 5459,
+   "file_offset": 917249,
+   "header": {
+    "opponent_start": [
+     496,
+     159
+    ],
+    "player_start": [
+     496,
+     159
+    ],
+    "shape": {
+     "arm": "$81:A445",
+     "byte": 64,
+     "columns": 256,
+     "rows": 64
+    },
+    "tile_set_ids": [
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     9,
+     10,
+     11,
+     13,
+     22,
+     24,
+     30,
+     18,
+     14,
+     20,
+     36,
+     29,
+     34
+    ],
+    "tile_set_list_offset": 47055,
+    "unnamed_bytes": {
+     "0-2": "000000",
+     "14": 16
+    }
+   },
+   "index": 24,
+   "packed_length": 5441,
+   "unpacked_length": 47078,
+   "unpacked_sha256": "75caf67770db9698ae055baa02a83f32e75ed2f69431e3505f6c203bc96b7b40"
+  },
+  {
+   "address": "$9C:9454",
+   "asset": "$DB",
+   "chunks": 5,
+   "consumed_length": 6922,
+   "derived": {
+    "bg1_tiles": {
+     "length": 28416,
+     "sha256": "18e45e85911fad306759335f7ce7942770a871c1400d6ad239c7b060f95e54e7"
+    },
+    "tile_columns": {
+     "length": 7104,
+     "sha256": "a11572bf5ec4906b2f387dc80ab629889d5c5c22384a31e844e252738c60c721"
+    },
+    "tile_flags": {
+     "length": 222,
+     "sha256": "85f5a7ac55c6383a72b1ec27216f0b35c41b6ed9ea1fa2349ae96558f9f25812"
+    }
+   },
+   "directory_length": 6922,
+   "file_offset": 922708,
+   "header": {
+    "opponent_start": [
+     42,
+     62
+    ],
+    "player_start": [
+     42,
+     62
+    ],
+    "shape": {
+     "arm": "$81:A406",
+     "byte": 32,
+     "columns": 128,
+     "rows": 128
+    },
+    "tile_set_ids": [
+     1,
+     2,
+     18,
+     29,
+     30,
+     37,
+     38,
+     39,
+     20,
+     36,
+     22,
+     24,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     13,
+     9,
+     10,
+     11,
+     25,
+     19,
+     15,
+     40,
+     34
+    ],
+    "tile_set_list_offset": 50735,
+    "unnamed_bytes": {
+     "0-2": "000000",
+     "14": 32
+    }
+   },
+   "index": 25,
+   "packed_length": 6904,
+   "unpacked_length": 50764,
+   "unpacked_sha256": "7733352ca34f904c40a18c7be997ed0afbb5e58cac03dff5d4125a8b0ffb3ae6"
+  },
+  {
+   "address": "$9C:AF5E",
+   "asset": "$DC",
+   "chunks": 5,
+   "consumed_length": 5722,
+   "derived": {
+    "bg1_tiles": {
+     "length": 27392,
+     "sha256": "e62d31606a9fd9fe8ec385aed8517efd219439d999a41f2f62c8280422b8c939"
+    },
+    "tile_columns": {
+     "length": 6848,
+     "sha256": "aed9591c58cc4e67c760cd1ebf29dc0518891a678925feb9dc8fa9d08346a0da"
+    },
+    "tile_flags": {
+     "length": 214,
+     "sha256": "c73ea107665158c170f807dc06f7f45946cf43c8a672d867b4fa6a79513ef997"
+    }
+   },
+   "directory_length": 5722,
+   "file_offset": 929630,
+   "header": {
+    "opponent_start": [
+     79,
+     30
+    ],
+    "player_start": [
+     79,
+     30
+    ],
+    "shape": {
+     "arm": "$81:A406",
+     "byte": 32,
+     "columns": 128,
+     "rows": 128
+    },
+    "tile_set_ids": [
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     9,
+     10,
+     11,
+     18,
+     19,
+     34,
+     25,
+     29,
+     15,
+     15,
+     17,
+     14,
+     13,
+     11,
+     16,
+     14,
+     13,
+     12,
+     20,
+     36,
+     22,
+     24
+    ],
+    "tile_set_list_offset": 47183,
+    "unnamed_bytes": {
+     "0-2": "000000",
+     "14": 32
+    }
+   },
+   "index": 26,
+   "packed_length": 5704,
+   "unpacked_length": 47215,
+   "unpacked_sha256": "3cc9fae1426f3d8cf5c82ff8f0292775786124c61a4a9474c490de797647b18e"
+  },
+  {
+   "address": "$9C:C5B8",
+   "asset": "$DD",
+   "chunks": 4,
+   "consumed_length": 2848,
+   "derived": {
+    "bg1_tiles": {
+     "length": 21632,
+     "sha256": "33c15d239af63551191c89e2ebc4fac59c7bcf3fe3634206c177ab299a9bc9e6"
+    },
+    "tile_columns": {
+     "length": 5408,
+     "sha256": "f922bebc2fd338a040bbc016deba339b7e8506646012c9b8af03f7970b6f238e"
+    },
+    "tile_flags": {
+     "length": 169,
+     "sha256": "484f6dd3ab0ab7784e8ba1120e5cc9a8ab48a0464f7f107919efd44862f99974"
+    }
+   },
+   "directory_length": 2848,
+   "file_offset": 935352,
+   "header": {
+    "opponent_start": [
+     128,
+     64
+    ],
+    "player_start": [
+     128,
+     64
+    ],
+    "shape": {
+     "arm": "$81:A445",
+     "byte": 64,
+     "columns": 256,
+     "rows": 64
+    },
+    "tile_set_ids": [
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     9,
+     10,
+     11,
+     18,
+     25,
+     19,
+     13,
+     29,
+     17,
+     34
+    ],
+    "tile_set_list_offset": 39247,
+    "unnamed_bytes": {
+     "0-2": "00002d",
+     "14": 16
+    }
+   },
+   "index": 27,
+   "packed_length": 2830,
+   "unpacked_length": 39267,
+   "unpacked_sha256": "840f8ded32239c3588a6db101081b09f46e1f2b1b8f6c2963822fed6a5f38683"
+  },
+  {
+   "address": "$9C:D0D8",
+   "asset": "$DE",
+   "chunks": 5,
+   "consumed_length": 7273,
+   "derived": {
+    "bg1_tiles": {
+     "length": 26880,
+     "sha256": "a2976093e84785e673cf2e722385241215ccad8d5e6c7b5a2b03541d663bc268"
+    },
+    "tile_columns": {
+     "length": 6720,
+     "sha256": "3215a3369b510fdb8b0d56f1ff8677fe3f0c5fd0970ca0bf1546945f6856622c"
+    },
+    "tile_flags": {
+     "length": 210,
+     "sha256": "0f0888aba037dcd862bb689c76dcf7037771af748a7b0e90028362324f0d8ada"
+    }
+   },
+   "directory_length": 7273,
+   "file_offset": 938200,
+   "header": {
+    "opponent_start": [
+     10,
+     2
+    ],
+    "player_start": [
+     10,
+     2
+    ],
+    "shape": {
+     "arm": "$81:A406",
+     "byte": 32,
+     "columns": 128,
+     "rows": 128
+    },
+    "tile_set_ids": [
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     9,
+     10,
+     11,
+     18,
+     30,
+     13,
+     15,
+     14,
+     16,
+     29,
+     22,
+     24,
+     20,
+     36,
+     23,
+     26
+    ],
+    "tile_set_list_offset": 52975,
+    "unnamed_bytes": {
+     "0-2": "000000",
+     "14": 32
+    }
+   },
+   "index": 28,
+   "packed_length": 7255,
+   "unpacked_length": 53001,
+   "unpacked_sha256": "c072d1604facbd01f48ffb380849bbfbe33dd36cf56c08bab15b0ee5d701ad42"
+  },
+  {
+   "address": "$9C:ED41",
+   "asset": "$DF",
+   "chunks": 4,
+   "consumed_length": 3618,
+   "derived": {
+    "bg1_tiles": {
+     "length": 23296,
+     "sha256": "6c898432f52a7c78dfe7a383d04664d19ff3ec390314634830ae269337047413"
+    },
+    "tile_columns": {
+     "length": 5824,
+     "sha256": "57f139275d7e899e37421d6bdd84697b321a833b3b844589e4081b34f13b8677"
+    },
+    "tile_flags": {
+     "length": 182,
+     "sha256": "03fdc6f586abc5f273dc543c1b49837dc8c97a0b7d35523761d6faedcaac0e5b"
+    }
+   },
+   "directory_length": 3618,
+   "file_offset": 945473,
+   "header": {
+    "opponent_start": [
+     110,
+     24
+    ],
+    "player_start": [
+     110,
+     28
+    ],
+    "shape": {
+     "arm": "$81:A445",
+     "byte": 64,
+     "columns": 256,
+     "rows": 64
+    },
+    "tile_set_ids": [
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     9,
+     10,
+     11,
+     15,
+     18,
+     13,
+     22,
+     24,
+     36,
+     20
+    ],
+    "tile_set_list_offset": 44463,
+    "unnamed_bytes": {
+     "0-2": "000000",
+     "14": 16
+    }
+   },
+   "index": 29,
+   "packed_length": 3600,
+   "unpacked_length": 44483,
+   "unpacked_sha256": "7c27db5e9793287f142a633f8658f8a9c3f5a0a672779a1ff71e2900a3beeceb"
+  },
+  {
+   "address": "$9C:FB63",
+   "asset": "$E0",
+   "chunks": 5,
+   "consumed_length": 6306,
+   "derived": {
+    "bg1_tiles": {
+     "length": 27648,
+     "sha256": "55a8f0e0990828161d5a10a74979862013d88d8d1fc30c11ca25f594c2ea0b98"
+    },
+    "tile_columns": {
+     "length": 6912,
+     "sha256": "c79464f14c7f8e85b997c6e31bd27ff71af2d348a10b9c2d85f4f6c282f4392b"
+    },
+    "tile_flags": {
+     "length": 216,
+     "sha256": "baa4e5e8ce5200be2a682d94a53eeb3bb05f74e7a7259b651eef01cfc5a5f151"
+    }
+   },
+   "directory_length": 6306,
+   "file_offset": 949091,
+   "header": {
+    "opponent_start": [
+     88,
+     2
+    ],
+    "player_start": [
+     88,
+     2
+    ],
+    "shape": {
+     "arm": "$81:A4C1",
+     "byte": 0,
+     "columns": 1024,
+     "rows": 16
+    },
+    "tile_set_ids": [
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     9,
+     10,
+     11,
+     18,
+     30,
+     13,
+     15,
+     14,
+     16,
+     22,
+     24,
+     23,
+     26,
+     29,
+     25,
+     19,
+     20,
+     36,
+     34
+    ],
+    "tile_set_list_offset": 49903,
+    "unnamed_bytes": {
+     "0-2": "000000",
+     "14": 4
+    }
+   },
+   "index": 30,
+   "packed_length": 6288,
+   "unpacked_length": 49932,
+   "unpacked_sha256": "ff2863f48ce66f06a62b0f754da836220aab164658d38ee9516aa2c4d819a451"
+  },
+  {
+   "address": "$9D:9405",
+   "asset": "$E1",
+   "chunks": 5,
+   "consumed_length": 7637,
+   "derived": {
+    "bg1_tiles": {
+     "length": 26368,
+     "sha256": "dd13c2a83549f4c8de7c1b6098940559fbf8597abfe570644bd05dcfa07dee99"
+    },
+    "tile_columns": {
+     "length": 6592,
+     "sha256": "1ffe8e43a00de777aedf75d8ff63524534f7d2d71d16b6aebf31c589951ebe42"
+    },
+    "tile_flags": {
+     "length": 206,
+     "sha256": "c7e7d432408657ff4aea5e47204968bf965e8c9f11605405cfa5df6b685bbf77"
+    }
+   },
+   "directory_length": 7637,
+   "file_offset": 955397,
+   "header": {
+    "opponent_start": [
+     556,
+     90
+    ],
+    "player_start": [
+     556,
+     90
+    ],
+    "shape": {
+     "arm": "$81:A445",
+     "byte": 64,
+     "columns": 256,
+     "rows": 64
+    },
+    "tile_set_ids": [
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     9,
+     10,
+     11,
+     18,
+     29,
+     22,
+     24,
+     25,
+     19,
+     17,
+     13,
+     15,
+     14,
+     16,
+     20,
+     36,
+     37,
+     34
+    ],
+    "tile_set_list_offset": 52143,
+    "unnamed_bytes": {
+     "0-2": "000000",
+     "14": 16
+    }
+   },
+   "index": 31,
+   "packed_length": 7619,
+   "unpacked_length": 52171,
+   "unpacked_sha256": "5d039870a8c51150cd7d0d0abbcf398fec99fd4039d5f151657e19c5cfa3ccf7"
+  },
+  {
+   "address": "$9D:B1DA",
+   "asset": "$E2",
+   "chunks": 4,
+   "consumed_length": 1018,
+   "derived": {
+    "bg1_tiles": {
+     "length": 16768,
+     "sha256": "24c43c712b3ee456c3da0ce7c72b013e70c9b386a3b17c92f08d41856df15ab8"
+    },
+    "tile_columns": {
+     "length": 4192,
+     "sha256": "ee0f81e93b8bcfdc8219539218d629ae233139c961059a739405bfd851c058a1"
+    },
+    "tile_flags": {
+     "length": 131,
+     "sha256": "5db5dce4e199b3675f58396bccbe6176447a9c65ccf9a1b8035bea2ecd47d091"
+    }
+   },
+   "directory_length": 1018,
+   "file_offset": 963034,
+   "header": {
+    "opponent_start": [
+     29,
+     6
+    ],
+    "player_start": [
+     29,
+     6
+    ],
+    "shape": {
+     "arm": "$81:A3C7",
+     "byte": 16,
+     "columns": 64,
+     "rows": 256
+    },
+    "tile_set_ids": [
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     9,
+     10,
+     11,
+     12,
+     16,
+     22,
+     24,
+     20
+    ],
+    "tile_set_list_offset": 34479,
+    "unnamed_bytes": {
+     "0-2": "00002d",
+     "14": 64
+    }
+   },
+   "index": 32,
+   "packed_length": 1000,
+   "unpacked_length": 34497,
+   "unpacked_sha256": "67a6f31f05f0554730838f8ab2aec5f1809e68133340337a599527dad916deb0"
+  },
+  {
+   "address": "$9D:B5D4",
+   "asset": "$E3",
+   "chunks": 4,
+   "consumed_length": 5995,
+   "derived": {
+    "bg1_tiles": {
+     "length": 18432,
+     "sha256": "e28cdc2228bfe146119973074881e2210ef2ae58f123ac3f4f2d27cbef73452a"
+    },
+    "tile_columns": {
+     "length": 4608,
+     "sha256": "04809281c4f27fbc7544f6a0416f1a46f423913145b1697f2c88182d63634f79"
+    },
+    "tile_flags": {
+     "length": 144,
+     "sha256": "a15e8c2e02833e9c07acd42dba72756164e55bf24fd068fe5b88e83d1168256c"
+    }
+   },
+   "directory_length": 5995,
+   "file_offset": 964052,
+   "header": {
+    "opponent_start": [
+     193,
+     28
+    ],
+    "player_start": [
+     193,
+     26
+    ],
+    "shape": {
+     "arm": "$81:A4C1",
+     "byte": 0,
+     "columns": 1024,
+     "rows": 16
+    },
+    "tile_set_ids": [
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     9,
+     10,
+     11,
+     22,
+     24,
+     14,
+     13,
+     16,
+     20,
+     36
+    ],
+    "tile_set_list_offset": 48079,
+    "unnamed_bytes": {
+     "0-2": "000000",
+     "14": 4
+    }
+   },
+   "index": 33,
+   "packed_length": 5977,
+   "unpacked_length": 48099,
+   "unpacked_sha256": "7d111873717e65cd94afb5713414ee25960d62fd4c0f0ea51b9f4f36474a40e9"
+  },
+  {
+   "address": "$9D:CD3F",
+   "asset": "$E4",
+   "chunks": 4,
+   "consumed_length": 4373,
+   "derived": {
+    "bg1_tiles": {
+     "length": 27904,
+     "sha256": "59ccf2f01f748d9335baa8168da3a5a6158b54ba523121b0a458fd496a27cc9e"
+    },
+    "tile_columns": {
+     "length": 6976,
+     "sha256": "ddf4d98f88e4aafdd5a95e50eeb996653c9606e1e2aaa18bd75c7943aa6f634d"
+    },
+    "tile_flags": {
+     "length": 218,
+     "sha256": "2a7e72a7581e29429ff79e1f153bfde4d3aeac2f63713bb00c2b0c3b2d0bb576"
+    }
+   },
+   "directory_length": 4373,
+   "file_offset": 970047,
+   "header": {
+    "opponent_start": [
+     498,
+     173
+    ],
+    "player_start": [
+     498,
+     175
+    ],
+    "shape": {
+     "arm": "$81:A445",
+     "byte": 64,
+     "columns": 256,
+     "rows": 64
+    },
+    "tile_set_ids": [
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     9,
+     10,
+     11,
+     18,
+     30,
+     13,
+     15,
+     14,
+     16,
+     20,
+     22,
+     24,
+     29,
+     17,
+     23,
+     26,
+     37,
+     36,
+     34
+    ],
+    "tile_set_list_offset": 43311,
+    "unnamed_bytes": {
+     "0-2": "000000",
+     "14": 16
+    }
+   },
+   "index": 34,
+   "packed_length": 4355,
+   "unpacked_length": 43340,
+   "unpacked_sha256": "09cfc8d7d4ad01a6e8296c844336956683c7e27b1acc47b675da7f71d1a09c91"
+  },
+  {
+   "address": "$9D:DE54",
+   "asset": "$E5",
+   "chunks": 6,
+   "consumed_length": 9197,
+   "derived": {
+    "bg1_tiles": {
+     "length": 30720,
+     "sha256": "a07ac9690e5f861b36dc32e98e968d797fd14f14259c51fece3e2652fb0986ef"
+    },
+    "tile_columns": {
+     "length": 7680,
+     "sha256": "4f542d6d1bb53c7e85c59af8b57dc76aeb93f6b474a75227042d0b966be558bb"
+    },
+    "tile_flags": {
+     "length": 240,
+     "sha256": "d945b356b22b1f058f72822c7a31a51b7937e8d936b63181ec1ae4c350f26a38"
+    }
+   },
+   "directory_length": 9197,
+   "file_offset": 974420,
+   "header": {
+    "opponent_start": [
+     36,
+     1008
+    ],
+    "player_start": [
+     36,
+     1008
+    ],
+    "shape": {
+     "arm": "$81:A3C7",
+     "byte": 16,
+     "columns": 64,
+     "rows": 256
+    },
+    "tile_set_ids": [
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     9,
+     10,
+     11,
+     12,
+     20,
+     36,
+     18,
+     29,
+     13,
+     13,
+     16,
+     14,
+     15,
+     17,
+     22,
+     24,
+     37,
+     38,
+     39,
+     14,
+     19,
+     25,
+     30,
+     34,
+     40,
+     34
+    ],
+    "tile_set_list_offset": 57231,
+    "unnamed_bytes": {
+     "0-2": "000000",
+     "14": 64
+    }
+   },
+   "index": 35,
+   "packed_length": 9179,
+   "unpacked_length": 57267,
+   "unpacked_sha256": "5c5a441facd11576ccb2037b920c886dc789f6f733327f7df1f22d727db59e8a"
+  },
+  {
+   "address": "$9E:8241",
+   "asset": "$E6",
+   "chunks": 4,
+   "consumed_length": 3642,
+   "derived": {
+    "bg1_tiles": {
+     "length": 24704,
+     "sha256": "1c1aa22eecf3558232b2137d42f15a34afe3acb4bf4cf13fa76382035ea0f799"
+    },
+    "tile_columns": {
+     "length": 6176,
+     "sha256": "840720a5a680dde625beeadbec685085e506a8b4e826aa53bb377704a847f5fc"
+    },
+    "tile_flags": {
+     "length": 193,
+     "sha256": "951f7eec193436227ecc42a63ba7ce5e9622abd26fb6ef0f95e7df45b924244a"
+    }
+   },
+   "directory_length": 3642,
+   "file_offset": 983617,
+   "header": {
+    "opponent_start": [
+     340,
+     181
+    ],
+    "player_start": [
+     340,
+     181
+    ],
+    "shape": {
+     "arm": "$81:A406",
+     "byte": 32,
+     "columns": 128,
+     "rows": 128
+    },
+    "tile_set_ids": [
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     9,
+     10,
+     11,
+     22,
+     24,
+     18,
+     29,
+     13,
+     36,
+     20,
+     17,
+     16,
+     25,
+     34,
+     19
+    ],
+    "tile_set_list_offset": 41487,
+    "unnamed_bytes": {
+     "0-2": "000000",
+     "14": 32
+    }
+   },
+   "index": 36,
+   "packed_length": 3624,
+   "unpacked_length": 41512,
+   "unpacked_sha256": "f2cbc9e4cb64f994801435a07b591b6b4012de8d00fd36345c7d88b3f44e61f3"
+  },
+  {
+   "address": "$9E:907B",
+   "asset": "$E7",
+   "chunks": 3,
+   "consumed_length": 1202,
+   "derived": {
+    "bg1_tiles": {
+     "length": 22400,
+     "sha256": "376523cb08a04a8713b3cd873dcf8f0a1acf06b3f8e6134a53ef65bace726613"
+    },
+    "tile_columns": {
+     "length": 5600,
+     "sha256": "ef845c567855e29d29f63583f3e39e5611361e310adab4d6cbfdb518a9450b22"
+    },
+    "tile_flags": {
+     "length": 175,
+     "sha256": "f9cf614d284501eb6e746d0f52cdc2139c7668c52b9d41b53a9a895ddc8a07f8"
+    }
+   },
+   "directory_length": 1202,
+   "file_offset": 987259,
+   "header": {
+    "opponent_start": [
+     33,
+     499
+    ],
+    "player_start": [
+     30,
+     499
+    ],
+    "shape": {
+     "arm": "$81:A343",
+     "byte": 4,
+     "columns": 16,
+     "rows": 1024
+    },
+    "tile_set_ids": [
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     9,
+     10,
+     11,
+     16,
+     18,
+     34,
+     29,
+     19,
+     17,
+     25,
+     13
+    ],
+    "tile_set_list_offset": 35343,
+    "unnamed_bytes": {
+     "0-2": "00002d",
+     "14": 0
+    }
+   },
+   "index": 37,
+   "packed_length": 1184,
+   "unpacked_length": 35364,
+   "unpacked_sha256": "f5866b4ff3bdb54d924d1ae5227c8ad4be2685a8491e8bf4efc35331d49f636d"
+  },
+  {
+   "address": "$9E:952D",
+   "asset": "$E8",
+   "chunks": 5,
+   "consumed_length": 5568,
+   "derived": {
+    "bg1_tiles": {
+     "length": 27008,
+     "sha256": "50fc2d0eac5b043191c810124646a6d75c690d7344af3625aadc3a84cd9eaaad"
+    },
+    "tile_columns": {
+     "length": 6752,
+     "sha256": "ef8d66022f0357815ace0318a653ab6a1412fbe16684451890071fff5f15730e"
+    },
+    "tile_flags": {
+     "length": 211,
+     "sha256": "262dcaa402e5a24ccae6a4e6d54253a55799f1450de022810b314fc8794d29fb"
+    }
+   },
+   "directory_length": 5568,
+   "file_offset": 988461,
+   "header": {
+    "opponent_start": [
+     22,
+     2
+    ],
+    "player_start": [
+     22,
+     2
+    ],
+    "shape": {
+     "arm": "$81:A445",
+     "byte": 64,
+     "columns": 256,
+     "rows": 64
+    },
+    "tile_set_ids": [
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     9,
+     10,
+     11,
+     18,
+     30,
+     13,
+     15,
+     14,
+     16,
+     22,
+     24,
+     29,
+     23,
+     26,
+     20,
+     36,
+     17
+    ],
+    "tile_set_list_offset": 47215,
+    "unnamed_bytes": {
+     "0-2": "000000",
+     "14": 16
+    }
+   },
+   "index": 38,
+   "packed_length": 5550,
+   "unpacked_length": 47242,
+   "unpacked_sha256": "75d377e405bd2c580c3559a403409e033d849aa78100d5d3491c78b16e998932"
+  },
+  {
+   "address": "$9E:AAED",
+   "asset": "$E9",
+   "chunks": 5,
+   "consumed_length": 7273,
+   "derived": {
+    "bg1_tiles": {
+     "length": 25088,
+     "sha256": "4a3e9cea90a55865b7f945cb7c862a838ceea4a0bfa25a52f1447fed470304d1"
+    },
+    "tile_columns": {
+     "length": 6272,
+     "sha256": "520b504f6f5c7f41b437b35eb27824973cce0e52677e56ce16bca7d14817ee0a"
+    },
+    "tile_flags": {
+     "length": 196,
+     "sha256": "d618ec25196316ed594260d55e2c76854e27833e8a5a39b92ed847cb350840f8"
+    }
+   },
+   "directory_length": 7273,
+   "file_offset": 994029,
+   "header": {
+    "opponent_start": [
+     144,
+     58
+    ],
+    "player_start": [
+     144,
+     58
+    ],
+    "shape": {
+     "arm": "$81:A445",
+     "byte": 64,
+     "columns": 256,
+     "rows": 64
+    },
+    "tile_set_ids": [
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     9,
+     10,
+     11,
+     12,
+     13,
+     16,
+     17,
+     18,
+     20,
+     22,
+     24,
+     29,
+     36,
+     19,
+     37,
+     34
+    ],
+    "tile_set_list_offset": 51247,
+    "unnamed_bytes": {
+     "0-2": "000000",
+     "14": 16
+    }
+   },
+   "index": 39,
+   "packed_length": 7255,
+   "unpacked_length": 51273,
+   "unpacked_sha256": "95c3f44fc1c92869c9af12b1aa2b711c9bdab99452c35e384f8c23641c57f9cd"
+  },
+  {
+   "address": "$9E:C756",
+   "asset": "$EA",
+   "chunks": 6,
+   "consumed_length": 13526,
+   "derived": {
+    "bg1_tiles": {
+     "length": 26112,
+     "sha256": "b5ddea1680adacdf86cb5b74b20df68e526d48bbe7e1010a2705a60ba2fec4c5"
+    },
+    "tile_columns": {
+     "length": 6528,
+     "sha256": "fb41b136b69898d1ad761a52fa4dcb0e4d4ddcd09dfb916e9769524edd5eb848"
+    },
+    "tile_flags": {
+     "length": 204,
+     "sha256": "d9518a088fbe3f203a3b7bb830600bc28b567797cb57220a384b912b1ef9b1d5"
+    }
+   },
+   "directory_length": 13526,
+   "file_offset": 1001302,
+   "header": {
+    "opponent_start": [
+     135,
+     9
+    ],
+    "player_start": [
+     135,
+     11
+    ],
+    "shape": {
+     "arm": "$81:A406",
+     "byte": 32,
+     "columns": 128,
+     "rows": 128
+    },
+    "tile_set_ids": [
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     9,
+     10,
+     11,
+     18,
+     20,
+     36,
+     30,
+     22,
+     24,
+     37,
+     14,
+     15,
+     29,
+     13,
+     17,
+     19,
+     34
+    ],
+    "tile_set_list_offset": 65327,
+    "unnamed_bytes": {
+     "0-2": "000000",
+     "14": 32
+    }
+   },
+   "index": 40,
+   "packed_length": 13508,
+   "unpacked_length": 65354,
+   "unpacked_sha256": "47ae70fab8eafcbce52de0776dc0c0805a09d253661a901ab823715f94e9b435"
+  },
+  {
+   "address": "$9E:FC2C",
+   "asset": "$EB",
+   "chunks": 4,
+   "consumed_length": 4265,
+   "derived": {
+    "bg1_tiles": {
+     "length": 18816,
+     "sha256": "997c1767f5ef9775bd17cb76bbd3122c1b23030383026cb3ec18d3370b3bd729"
+    },
+    "tile_columns": {
+     "length": 4704,
+     "sha256": "533c4adc2f9c490009875235b73b8573f240d59af7578db46c5abc976628ea04"
+    },
+    "tile_flags": {
+     "length": 147,
+     "sha256": "ce9af875fd8b8f0ed10f44efc6646ef8e89b9c0c7b5c9f9d0a27f8465572c651"
+    }
+   },
+   "directory_length": 4265,
+   "file_offset": 1014828,
+   "header": {
+    "opponent_start": [
+     97,
+     96
+    ],
+    "player_start": [
+     97,
+     96
+    ],
+    "shape": {
+     "arm": "$81:A445",
+     "byte": 64,
+     "columns": 256,
+     "rows": 64
+    },
+    "tile_set_ids": [
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     18,
+     29,
+     22,
+     24,
+     15,
+     17,
+     13,
+     14,
+     20,
+     36,
+     30,
+     25,
+     19,
+     13
+    ],
+    "tile_set_list_offset": 43439,
+    "unnamed_bytes": {
+     "0-2": "000000",
+     "14": 16
+    }
+   },
+   "index": 41,
+   "packed_length": 4247,
+   "unpacked_length": 43463,
+   "unpacked_sha256": "7b586e0badf8f2668ca480f1a238cb137a7b93a6b8cfb631083ea18fdf4b4626"
+  },
+  {
+   "address": "$9F:8CD5",
+   "asset": "$EC",
+   "chunks": 5,
+   "consumed_length": 5059,
+   "derived": {
+    "bg1_tiles": {
+     "length": 22656,
+     "sha256": "a8c0086e3abdd3609bdd36ead0a5fc9fffd83b10780abf0c1acc443c96d664bd"
+    },
+    "tile_columns": {
+     "length": 5664,
+     "sha256": "b31b6b1b60044ad0a3bb9143eee5dd6fdbcab563385ca1ef3232e13170047ed3"
+    },
+    "tile_flags": {
+     "length": 177,
+     "sha256": "50536e203a232808ac81df056854cd0d42ac6fa70f18c85d4e0b1a16e48c831b"
+    }
+   },
+   "directory_length": 5059,
+   "file_offset": 1019093,
+   "header": {
+    "opponent_start": [
+     356,
+     168
+    ],
+    "player_start": [
+     356,
+     168
+    ],
+    "shape": {
+     "arm": "$81:A445",
+     "byte": 64,
+     "columns": 256,
+     "rows": 64
+    },
+    "tile_set_ids": [
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     9,
+     10,
+     11,
+     18,
+     25,
+     19,
+     13,
+     29,
+     17,
+     34,
+     14,
+     20
+    ],
+    "tile_set_list_offset": 48431,
+    "unnamed_bytes": {
+     "0-2": "00002d",
+     "14": 16
+    }
+   },
+   "index": 42,
+   "packed_length": 5041,
+   "unpacked_length": 48453,
+   "unpacked_sha256": "f64852b8e307f4f47a4b185ead39a5d477677f49a7eee0f148291305faf5fbd2"
+  },
+  {
+   "address": "$9F:A098",
+   "asset": "$ED",
+   "chunks": 5,
+   "consumed_length": 6836,
+   "derived": {
+    "bg1_tiles": {
+     "length": 25728,
+     "sha256": "d06d0c554244b5b48fd2b33a95dc4c1df79f1f2db96bcdd8a4abf61800983910"
+    },
+    "tile_columns": {
+     "length": 6432,
+     "sha256": "bd91ba2d25dd5876a4b5d3325dd2b9575ff1428005fda9cb3fa76f873ce49685"
+    },
+    "tile_flags": {
+     "length": 201,
+     "sha256": "86fcb15076fb4e04010d8c6fa60f67c2a455a7ed1129f570c919da0cc1b8835e"
+    }
+   },
+   "directory_length": 6836,
+   "file_offset": 1024152,
+   "header": {
+    "opponent_start": [
+     24,
+     0
+    ],
+    "player_start": [
+     24,
+     0
+    ],
+    "shape": {
+     "arm": "$81:A406",
+     "byte": 32,
+     "columns": 128,
+     "rows": 128
+    },
+    "tile_set_ids": [
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     9,
+     10,
+     11,
+     18,
+     30,
+     13,
+     15,
+     14,
+     16,
+     29,
+     22,
+     24,
+     20,
+     36
+    ],
+    "tile_set_list_offset": 49583,
+    "unnamed_bytes": {
+     "0-2": "000000",
+     "14": 32
+    }
+   },
+   "index": 43,
+   "packed_length": 6818,
+   "unpacked_length": 49607,
+   "unpacked_sha256": "2b58ac1c4a4cfd4920fbce8a7f63e86da3397619bf38ffc23e2fb9909659aec7"
+  },
+  {
+   "address": "$9F:BB4C",
+   "asset": "$EE",
+   "chunks": 4,
+   "consumed_length": 4050,
+   "derived": {
+    "bg1_tiles": {
+     "length": 30336,
+     "sha256": "689ec66a8e941864f1533483ba4f7f5244ef6d5f178494ae270ef1b47f70ade8"
+    },
+    "tile_columns": {
+     "length": 7584,
+     "sha256": "0c3961d122c11480450ba3ea9eee5b07d1c0e0ee840afaa3e825a00f03a18a85"
+    },
+    "tile_flags": {
+     "length": 237,
+     "sha256": "3e18d8f508f007242baaf04f9e42f987d8d6fee274b1fd459113400146beaded"
+    }
+   },
+   "directory_length": 4050,
+   "file_offset": 1030988,
+   "header": {
+    "opponent_start": [
+     198,
+     156
+    ],
+    "player_start": [
+     198,
+     156
+    ],
+    "shape": {
+     "arm": "$81:A445",
+     "byte": 64,
+     "columns": 256,
+     "rows": 64
+    },
+    "tile_set_ids": [
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     9,
+     10,
+     11,
+     12,
+     13,
+     14,
+     15,
+     16,
+     17,
+     18,
+     19,
+     20,
+     21,
+     22,
+     23,
+     24,
+     25,
+     26,
+     27,
+     28,
+     29,
+     34,
+     36
+    ],
+    "tile_set_list_offset": 44559,
+    "unnamed_bytes": {
+     "0-2": "000000",
+     "14": 16
+    }
+   },
+   "index": 44,
+   "packed_length": 4032,
+   "unpacked_length": 44592,
+   "unpacked_sha256": "10ec4e242dc63546fb5dd07b29401f3528ff9e8411775d85696cdba4995b71cf"
+  }
+ ],
+ "track_count": 45
+}
