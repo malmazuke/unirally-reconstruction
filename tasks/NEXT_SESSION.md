@@ -5,6 +5,18 @@ push the task branch, open a pull request from the template, merge with
 `gh pr merge --merge` once its checks are green and the review is done. `main`
 refuses direct pushes. The checks run on pull requests only.
 
+**Status on 23 September 2026 UTC (after TRACK-BREADTH part 2): TRACK-BREADTH
+is in progress; continue it.** Part 2 is reviewed and merged by pull request
+(closeout `artifacts/track-breadth-part2-integration/closeout.json` in the main
+checkout): `track_reference sweep` captures the 20 cold-start tracks through the
+menu and compares them with native; 6 match exactly over about 1,500
+released-controller updates ([R-0046](../docs/research/R-0046-track-breadth-matrix.md)
+observations 6-11 and the matrix). Next: make the race scenario data (mode, laps,
+initialization frame per track), a pack profile with the reachable tracks' entries,
+and `--track <id>` in the runner and app; then the special-tile response, the most
+common stop. Carry forward: the match column is for a released controller only, and
+five tours are not on the cold-start menu.
+
 **Status on 23 September 2026 UTC (after TRACK-BREADTH part 1): TRACK-BREADTH
 is in progress; continue it.** Part 1 is reviewed and merged by pull request
 (closeout `artifacts/track-breadth-part1-integration/closeout.json` in the main

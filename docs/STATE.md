@@ -1,5 +1,16 @@
 # Project state
 
+Updated 23 September 2026 (TRACK-BREADTH part 2): **the 20 tracks a cold start
+reaches (tours CRAWLER, SHUFFLER, WALKER, HOPPER) are captured through the
+original menu and compared with native; four new tracks match exactly** (FLAT
+FUN, WARIO PAINT, CROCK, EAST) over about 1,500 updates with the controller
+released, beside DRAGSTER and ZOOM ZOO. Seven more match until a native guard on
+an unrecovered branch, PINGPONG diverges in `opponent.response_b` after 1,068
+updates, two differ only in their lap count (5 and 7), and four are stunt events,
+a separate solo mode. The static playfield arms `$80`, `$20` and `$10` are now
+observed. See [R-0046](research/R-0046-track-breadth-matrix.md); the task stays in
+progress with native selection by track id next.
+
 Updated 23 September 2026 (TRACK-BREADTH part 1): **every track in the ROM is
 located and unpacked, and each is started natively; the per-track matrix is in
 [R-0046](research/R-0046-track-breadth-matrix.md).** Track *i* is asset `$C2 +
@@ -100,8 +111,10 @@ other work; claim STATIC-CODE-MAP when CLASSIC-SPLIT-TIME is integrated, after
 the reset on 24 September 08:00Z or on an explicit user override.
 
 Breadth lines (D-0008): **tracks matched against the original: 2 of 45
-inventoried streams** (TRACK-BREADTH part 1: 45 of 45 decode and derive their
-tile content; 16 of 45 complete 1,200 idle updates natively, not yet compared). **Code banks by class (STATIC-CODE-MAP, R-0045): of
+inventoried streams accepted by frozen gates; 6 of 45 exact over about 1,500
+released-controller updates in the TRACK-BREADTH laboratory comparison** (20 of
+45 reachable from a cold start and captured, 16 of them races; 45 of 45 decode
+and derive their tile content). **Code banks by class (STATIC-CODE-MAP, R-0045): of
 131,072 bytes, 41,778 observed, 36,321 inferred, 92 data, 52,881 unknown
 (40.4%, above D-0008's one-quarter trigger; the unknown regions are
 dynamic-capture targets).**
