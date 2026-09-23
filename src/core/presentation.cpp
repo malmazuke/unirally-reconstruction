@@ -1966,7 +1966,8 @@ RgbFrame render_classic_race(const ZoomZooState& state,const ClassicRacePresenta
         // The BG1 map wraps horizontally: the original's map fetch masks the
         // column with `$0D51` ($81:AD05), so past the playfield's right edge
         // the picture continues from column 0, as the sampler's contact does
-        // (TRACK-BREADTH, LOOPER). Rows off the playfield stay blank.
+        // (TRACK-BREADTH, LOOPER). Rows off the playfield are left blank, which is
+        // not yet checked against the original's row test at $81:AD22-AD2C.
         const int world_x=(background_x+x)&geometry.position_mask,world_y=background_y+y+1;
         if(world_y<0 || world_y>=world_height)continue;
         const auto selector=word(track,15+static_cast<std::size_t>((world_y/64)*columns+world_x/64)*2);

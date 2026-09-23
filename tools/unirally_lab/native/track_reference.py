@@ -29,7 +29,8 @@ from .zoom_zoo_race_reference import project
 from .zoom_zoo_playable import ROLL_WORDS
 from .classic_race_layout import describe
 from ..content.commands import write_track_override
-from ..reference.bsnes import BsnesCore, frame_png
+from ..reference.bsnes import BsnesCore, BUTTONS, frame_png
+from .zoom_zoo_trial import BUTTONS as RUNNER_BUTTONS  # the runner's controller-row bit order
 
 FIRST_RECORDED_FRAME = 1100
 MENU_STARTS = ((300, 305), (620, 625), (750, 755), (900, 905))
@@ -81,6 +82,8 @@ def timeline(position, horizon, tour_row=0, hold=None):
 def capture(core_path, out, track, horizon, frame_images=(), tour_row=0, hold=None):
     if out.exists():
         raise ValueError('fresh output directory required')
+    if hold is not None and (not hold[1] or any(b not in BUTTONS for b in hold[1])):
+        raise ValueError(f'a held input needs one or more of {BUTTONS}')
     rom = Path((ROOT/'local/rom-location.txt').read_text().strip())
     if (sha(core_path.read_bytes()), sha(rom.read_bytes())) != (CORE_SHA, ROM_SHA):
         raise ValueError('original identities differ')
@@ -186,7 +189,7 @@ def original_rows(directory):
     return document, rows, dict(guard_violations=violations, projection_stop=error, scenario=scenario)
 
 
-def native_rows(binary, pack, track, count, scenario):
+def native_rows(binary, pack, track, count, scenario, hold=None):
     rom = Path((ROOT/'local/rom-location.txt').read_text().strip()).read_bytes()
     with tempfile.TemporaryDirectory(prefix='track-native-') as directory:
         root = Path(directory)
@@ -195,7 +198,13 @@ def native_rows(binary, pack, track, count, scenario):
         base = [str(binary), '--start', scenario, '--content-pack', str(pack)]
         start = int(subprocess.run(base+['--inputs', str(empty)], capture_output=True, text=True, timeout=60).stdout.split()[0])
         inputs = root/'inputs.txt'
-        inputs.write_text(''.join(f'{start+k} 0 0\n' for k in range(1, count)))
+        # The capture's held input, if any, by update (it starts that many updates
+        # after the original's boundary, whatever native's frame label).
+        mask, first = 0, None
+        if hold is not None:
+            first, buttons = hold
+            mask = sum(1 << RUNNER_BUTTONS.index(b) for b in buttons)
+        inputs.write_text(''.join(f'{start+k} {mask if first is not None and k >= first else 0} 0\n' for k in range(1, count)))
         # A per-track scenario (classic.track.NN, pack profile v10) takes the
         # track's content from the pack itself; a race-mode scenario takes it
         # from the laboratory override.
@@ -208,7 +217,9 @@ def explore(reference, binary, pack, scenario):
     document, rows, events = original_rows(reference)
     # The track the original loaded (SRAM $77:074A at the boundary), not the menu position.
     track = events['scenario']['track_074a']
-    actual, code, error, native_start = native_rows(binary.resolve(), pack.resolve(), track, len(rows), scenario)
+    hold = document.get('hold')
+    held = None if hold is None else (hold[0] - document['initialization_frame'], hold[1])
+    actual, code, error, native_start = native_rows(binary.resolve(), pack.resolve(), track, len(rows), scenario, held)
     divergence = None
     for i, (x, y) in enumerate(zip(actual, rows)):
         a, b = bytes.fromhex(x), bytes.fromhex(y)

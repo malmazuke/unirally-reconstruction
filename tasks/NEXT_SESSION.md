@@ -21,9 +21,9 @@ race, the result screen and Race Again on each, with no stop. CROCK, WARIO PAINT
 HYBRID stop later in a race even with the controller released. The user saw two
 faults in that play. The LOOPER one is fixed (the BG1 picture did not wrap past the
 playfield's right edge, R-0046 observation 17). Still open: the result screen names
-DRAGSTER on every one-run track (it reuses DRAGSTER's captured base VRAM), and a hint
-caption native shows for one frame where the original does not (LOOPER updates
-1,172 and 1,232). Next, in order of
+DRAGSTER on every one-run track (it reuses DRAGSTER's captured base VRAM), and the
+hint caption's display timing: every 60 updates native's caption differs from the
+original's for one frame (LOOPER from update 1,172, HYBRID 1,352). Next, in order of
 reach: the special-tile response (7 of 16 compared races stop there inside their
 windows, and CROCK and WARIO PAINT just after), HYBRID's `inverted AI marker is
 unrecovered` guard at update 2,053, INFINITY's checkpoint guard, PINGPONG's

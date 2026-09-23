@@ -217,11 +217,19 @@ FLAT FUN's pictures, observation 15).
     - **The fix.** Native now masks BG1's world x with the playfield mask. Over 200
       consecutive frames at the edge (updates 1,083-1,282), 198 frames differ by 0,
       36, 72 or 108 pixels: the declared off-screen rider arrow. Two differ by 549,
-      where native shows the hint caption "TO PULL A STUNT" and the original does not
-      (updates 1,172 and 1,232, 60 apart). The caption state is the engine's, which
-      matches, so its display timing is an open presentation question.
-    - **Scope.** Rows off the playfield stay blank, as the original's fetch blanks them
-      with `$0FF7` clear. DRAGSTER and ZOOM ZOO, whose cameras never reach an edge in
+      where native's hint caption differs from the original's for one frame. The
+      review found this repeats every 60 updates (LOOPER 1,172, 1,232, 1,292 and on,
+      and HYBRID 1,352), and is sometimes the next hint sentence one frame early
+      rather than a caption the original lacks. The caption state is the engine's,
+      which matches, so its display timing is an open presentation question that
+      predates this fix.
+    - **A second track.** The review withheld HYBRID (256 x 64). With Right held its
+      player wraps from x 16,172 to 36, and native matches all 1,385 rows. Frames
+      2,720-2,736 differed by up to 3,486 pixels before the fix and by 0 after.
+    - **Scope.** The vertical rule is unchanged: native blanks rows off the playfield.
+      The original's row fetch (`$81:AD22-AD2C`) tests the screen's bottom row
+      against the playfield height whichever way the camera scrolls; no capture
+      reaches that case. DRAGSTER and ZOOM ZOO, whose cameras never reach an edge in
       the accepted races, are unchanged: the v1 contracts and hidden runs pass.
 
 ## The matrix
