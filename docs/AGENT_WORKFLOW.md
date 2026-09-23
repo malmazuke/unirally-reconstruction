@@ -142,7 +142,8 @@ At implementation start, initialize a local Git repository if none exists. Recor
   `.github/pull_request_template.md` when the candidate is ready for review
   (a draft earlier if hosted CI is wanted sooner), address review and CI on
   the branch, then `gh pr merge --merge` once the checks are green and the
-  review tier is satisfied. If `main` moved, update the branch and let the
+  review tier is satisfied. If `main` moved, bring the branch up to date with
+  `gh pr update-branch` (a merge, never a rebase or force-push) and let the
   checks rerun. The merge commit takes the pull request's title and
   description. An accepted integration is complete when the pull request is
   merged and the local `main`, fast-forwarded, equals `origin/main`. Push an
@@ -150,9 +151,13 @@ At implementation start, initialize a local Git repository if none exists. Recor
   reported as such. Never push to `main` directly, force-push, or change
   remote configuration or visibility under this standing authority.
 - Pull request descriptions are written for a person who has not read the
-  task record: what changed, why (linked), three to six evidence bullets with
+  task record: what changed, why (with absolute links, since relative links
+  in a pull request body do not resolve), three to six evidence bullets with
   numbers, the review verdict and what changed in response, and what is not
   covered. About 30 lines, plain sentences; the task record holds the detail.
+  The description becomes the merge commit message: bring its Review section
+  up to date before merging, and finish the task records in the branch, since
+  nothing is committed after the merge.
 
 The task record remains the full trail; the pull request is its readable summary and the place CI runs. CI is specified in [build and validation](BUILD_AND_VALIDATION.md). Pushing task branches and tags, and opening and merging the project's own pull requests on this already-configured public remote, is authorized source-control synchronization and makes tracked source and documentation public; creating a public release, changing visibility or deploying remains separately authorized work.
 

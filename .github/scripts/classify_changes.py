@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
-"""Decide whether a push or pull request changed documentation only.
+"""Decide whether a pull request changed documentation only.
+
+The workflow runs on pull requests only; the push handling below is kept for
+completeness and its tests, and ``main`` refuses direct pushes anyway.
 
 Run inside a checkout with full history. Reads the event name from
 ``GITHUB_EVENT_NAME`` and the base commit from ``CLASSIFY_BASE`` (the push's
@@ -23,8 +26,8 @@ workflow (read through ``gh api``); otherwise the fast path would inherit a
 cancelled or failed run's gap. Since changes reach ``main`` only by pull
 request, a ``main`` commit is a merge commit that never gets a run of its
 own; such a base counts when its second parent (the merged pull request's
-head) has one, because ``main`` requires a branch to be up to date before it
-merges, so that run tested the merge's tree. Every reason a check cannot be made takes the
+head) has one and the merge's tree equals that head's tree, which ``main``'s
+up-to-date requirement guarantees for its own merges. Every reason a check cannot be made takes the
 full path and says why. A crash of this script fails the ``changes`` job,
 which leaves the lab job skipped and the run not green, never silently fast.
 """
@@ -104,6 +107,10 @@ def base_has_successful_run(base: str) -> tuple[bool | None, str]:
     merged = _git("rev-parse", "--verify", "--quiet", f"{base}^2")
     if not merged:
         return False, detail
+    if _git("rev-parse", f"{base}^{{tree}}") != _git("rev-parse", f"{merged}^{{tree}}"):
+        # Only a merge whose tree is its merged head's tree inherits that head's run;
+        # otherwise a branch could merge any green commit to borrow its run.
+        return False, f"{detail}; merge tree differs from its second parent {merged[:7]}"
     count, error = successes(merged)
     if count is None:
         return False, f"{detail}; {error}"

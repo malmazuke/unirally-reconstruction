@@ -2,7 +2,8 @@
 
 ## Assignment
 
-- Status: in review (requested by the user on 23 September 2026 after STATIC-CODE-MAP:
+- Status: reviewed (approve with should-fix items, all applied) and integrated by
+  [pull request #6](https://github.com/malmazuke/unirally-reconstruction/pull/6) (requested by the user on 23 September 2026 after STATIC-CODE-MAP:
   "start using PRs instead of just pushing straight to `main`", checks on pull requests
   rather than on `main`, and pull request descriptions a human can read)
 - Coordinator, primary and integrator: Claude Opus 5.5 (`claude-opus-5-5`), Claude Code desktop
@@ -40,11 +41,24 @@ task-branch commit IDs, which squash and rebase would drop from `main`.
 | Attempt | Hypothesis | Experiment | Observation | Next decision |
 | --- | --- | --- | --- | --- |
 | 1 | The fast path needs a new base rule without runs on `main` | Read `classify_changes.py`: a docs-only result needs a successful run on the base commit | Under merge commits no `main` commit would ever have one, so every pull request would take the full 3-minute path | Count a merge-commit base through its second parent; test both outcomes and the non-merge case |
+| 2 (review F1, F2) | The second-parent rule is safe | Reviewer's reproduction: broken code, `git merge main`, then a docs commit; the workflow compared against `github.event.before`, the pull request's own previous head | `docs_only=true`: the merge borrowed `main`'s run and all three checks went green | Classify against the pull request's base only, and accept a second parent's run only when its tree equals the merge's; the reproduction is now a test (17 tests pass) |
 
 ## Handoff
 
-- Commands: `python3 -m unittest tests/tooling/test_ci_fast_path.py` (15 tests, OK); the
-  full synthetic suite and the pull request's own checks are recorded in the pull request.
+- Commands: `python3 -m unittest tests/tooling/test_ci_fast_path.py` (17 tests, OK). The full
+  suite ran as the pull request's checks (`changes`, both `lab` jobs, full path) on the
+  reviewed head `c4cafb8` and again on the head that merged; it was not run locally, since the
+  change touches no native or lab code outside the classifier.
+- Review: one fresh Claude Opus 5.5 subagent in `.worktrees/review-pr-workflow` at `c4cafb8`,
+  **approve with should-fix items** (report `66da907` on `review/pr-workflow`, pushed). F1 (a
+  merge could borrow another commit's run) and F2 (the classifier base was the pull request's
+  previous head) fixed as above; F3 (authority sentences moved back into their bullet), F4
+  (absolute links; update the Review section before merging), F5 (records final before the
+  merge), F6 (push-era wording, `gh pr update-branch`) and F7 (a failing second lookup, now
+  tested) applied. The reviewer noted the ruleset field
+  `require_extra_approval_for_unattributed_changes: true`, which is a default.
+- Cleanup at merge: remove `.worktrees/pr-workflow` and `.worktrees/review-pr-workflow` and both
+  local branches after checking `task/pr-workflow` and `review/pr-workflow` on `origin`.
 - This pull request is the first under the new flow; its own run exercises the new triggers.
   Its classification uses the base revision's classifier, as designed.
 - Next: nothing further is required. The old memory note about dispatching CI for `codex/*`

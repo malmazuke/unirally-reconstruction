@@ -61,7 +61,7 @@ relevant identities match and its evidence is available; explain documentation-o
 source differences. Invalidate affected entries after changes. No cache service
 or general orchestration framework is required. This does not eliminate fresh
 independent review/references, withheld replacements, sanitizer runs, required
-exact-merge checks or final-tip CI. Never count missing evidence as a reused pass.
+exact-merge checks or the pull request's checks. Never count missing evidence as a reused pass.
 
 ## M4-16 product validation requirements
 
@@ -363,8 +363,8 @@ skips its doctor, bootstrap, build and test steps and reports success with
 green run for the acceptance rule because of the base condition: by
 induction, a fast-path success differs from the last full success only in
 documentation, and a cancelled or failed run on the base forces the next push
-onto the full path. A push whose base cannot be established (a new branch, a
-base absent from the checkout, a force push), anything under `docs/map/` or
+onto the full path. A pull request whose base cannot be established (a base
+absent from the checkout, or no history shared with it), anything under `docs/map/` or
 any non-Markdown or symlinked file under `docs/` or `tasks/` (the code maps
 and their summaries are checked by the suite), and any change to the
 workflow, the classifier, `tools/`, `tests/`, `src/`, the CMake files or

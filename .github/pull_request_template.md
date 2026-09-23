@@ -11,7 +11,7 @@ Delete a section only if it genuinely has nothing to say.
 
 ## Why
 
-<!-- The task record and decision it serves, as links, plus one sentence if needed. -->
+<!-- The task record and decision it serves, as absolute https://github.com/... links (relative links break in a PR body), plus one sentence if needed. -->
 
 ## Evidence
 
