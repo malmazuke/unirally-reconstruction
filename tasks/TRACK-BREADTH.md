@@ -181,7 +181,8 @@ originals across race start; the sampled-frames rule from CLASSIC-RACE-HUD appli
   so nothing hosted checks the manifest's values), and the runner's option check
   (`zoom_zoo_runner.cpp:38` accepts any four options) is tightened with the next change that
   already reruns the differential gates.
-- Part 2: `tools/unirally_lab/native/track_reference.py` (lab only) and its tests; the sweep
+- Part 2: `tools/unirally_lab/native/track_reference.py` (lab only) and its tests (the menu
+  path only; no ROM-free test covers the boundary finder or the comparison); the sweep
   and captures are in `local/evidence/track-breadth/track-breadth-2/` after integration.
 - Exact next experiment/command (after part 2): make the race scenario data (mode, laps,
   initialization frame per track, from R-0046 observations 7-8), add the reachable tracks'
@@ -233,3 +234,27 @@ Part 1 (checkpoint; the task is not accepted):
   with `origin/main` after the merge (closeout).
 - Scope still unverified: every new track against the original; the four static arms under
   capture; the tour hypothesis; the `$0FF7` persistence.
+
+Part 2 (checkpoint; the task is not accepted):
+
+- Reviewer: a fresh Claude Opus 5.5 subagent in the detached checkout
+  `.worktrees/track-breadth-2-review` at `933b68c`, tier 2 (laboratory tooling and records).
+  It captured PINGPONG and FLAT FUN (withheld) and ZOOM ZOO itself, and reproduced their rows
+  and pictures; checked the boundary rule on the M4-16 idle original and the byte-identity over
+  frames 1207-2649; compared `original_rows` with the accepted `original()`; checked every
+  R-0046 count against `sweep.json`, the masked lap comparison and the landing matrices; unit
+  tests and the synthetic suite (484 checks). **Approved**, no required findings, six
+  advisories ([review](https://github.com/malmazuke/unirally-reconstruction/pull/10#pullrequestreview-5286304245)).
+- Changes in response (`a775f5d`): the guard departures inside exact windows (opponent X on
+  HYBRID from row 348, A on SHORT CUT from row 953) and HAIRPIN HILL's native stop are
+  recorded; rows versus updates defined; the player A/X/Start timeline check restored (all 16
+  comparisons unchanged); the capture's menu position named as such. Declined: a ROM-free test
+  of the comparison logic (it needs emulator memory; the gap stays open in the handoff).
+- Merge candidate and checks: the pull request head, with `changes` and both `lab` jobs green
+  on it; `gate_identity --since 1f554fb` passes (no gate-binary input changed).
+- Integrated commit and evidence: the merge commit of
+  [#10](https://github.com/malmazuke/unirally-reconstruction/pull/10);
+  `artifacts/track-breadth-part2-integration/closeout.json`, and the sweep and captures in
+  `local/evidence/track-breadth/track-breadth-2/`, in the main checkout.
+- Scope still unverified: riding inputs, finishes and results on the new tracks; the five tours
+  not offered on a cold start; stunt events.
