@@ -4,12 +4,15 @@ The analysis reads the ROM and the tracked observed maps (``docs/map/*.map.json`
 map schema 1) and assigns every byte of ROM offsets $00000-$1FFFF (banks
 $80-$83; banks $00-$03 mirror them) exactly one class:
 
-* ``observed``: executed in a tracked map. The instruction boundaries inside
-  each observed range are recovered by tiling the range under the recorded
-  modes (propagated through REP/SEP) so that it holds exactly the recorded
-  number of instructions, with every recorded entry point on a boundary.
-* ``inferred``: decoded statically, by recursive descent from the observed
-  code, the vectors and jump tables, then by a gap sweep.
+* ``observed``: executed in a tracked map. With the raw coverage behind the
+  maps the instructions are the recorded sites; without it, the instructions
+  that every tiling of a range shares (the range tiled under its recorded
+  modes, without propagation, into exactly its recorded instruction count
+  with every recorded entry point on a boundary). The tiling is also the
+  independent cross-check of the sites.
+* ``inferred``: decoded statically by transactional descent from the observed
+  code, the vectors and jump tables. Gap-sweep decodings are listed as
+  candidates and stay ``unknown``.
 * ``data``: named by an operand (a recorded static reference, a long operand
   of inferred code) or a jump-table walk, and never decoded as code.
 * ``unknown``: everything else.
@@ -17,7 +20,9 @@ $80-$83; banks $00-$03 mirror them) exactly one class:
 Processor state is a set of candidate 3-bit modes (``opcodes.MODE_*``). REP and
 SEP narrow it; PLP, RTI and XCE widen it to all native modes. An instruction
 whose length differs between the candidates is not decoded: it is recorded as
-a mode ambiguity and descent stops there. Two assumptions are named and
+a mode ambiguity and descent stops there. An address reached along several
+paths keeps the modes of the first path that decoded it, so the listing's
+mode column can understate the modes it is reached in. Two assumptions are named and
 counted rather than hidden: a JSR/JSL returns to the next instruction, and it
 returns in the mode it was called in.
 
@@ -452,6 +457,11 @@ class Analysis:
                 if e + 2 > self.bank_end(table) or e in self.owner or e + 1 in self.owner:
                     break
                 target = int.from_bytes(self.rom[e:e + 2], "little")
+                if target == 0x0000 and n == 0:   # a placeholder index 0 (as at $81:82F5): table bytes, no target
+                    for b in (e, e + 1):
+                        self.data.setdefault(b, set()).add("jump table")
+                    n += 1
+                    continue
                 if target < 0x8000:
                     break
                 t = (off & ~0x7FFF) | (target & 0x7FFF)

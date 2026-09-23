@@ -530,6 +530,15 @@
   ]
  },
  {
+  "address": "$80:98B3",
+  "class": "inferred",
+  "comment": "routine start",
+  "label": "sub_8098B3",
+  "source_records": [
+   "tasks/STATIC-CODE-MAP.md"
+  ]
+ },
+ {
   "address": "$80:AD79",
   "class": "observed",
   "comment": "instruction start",
@@ -617,8 +626,8 @@
  {
   "address": "$81:8050",
   "class": "observed",
-  "comment": "instruction start",
-  "label": "loc_818050",
+  "comment": "routine start",
+  "label": "sub_818050",
   "source_records": [
    "docs/research/R-0038-dragster-ordinary-controls.md",
    "docs/research/R-0044-classic-split-time.md",
@@ -741,10 +750,29 @@
   ]
  },
  {
-  "address": "$81:84EC",
+  "address": "$81:82F0",
   "class": "observed",
   "comment": "instruction start",
-  "label": "loc_8184EC",
+  "label": "loc_8182F0",
+  "source_records": [
+   "docs/research/R-0045-static-code-map.md"
+  ]
+ },
+ {
+  "address": "$81:82F5",
+  "class": "data",
+  "comment": "data",
+  "label": "dat_8182F5",
+  "source_records": [
+   "docs/research/R-0045-static-code-map.md",
+   "tasks/STATIC-CODE-MAP.md"
+  ]
+ },
+ {
+  "address": "$81:84EC",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_8184EC",
   "source_records": [
    "docs/research/R-0033-sustained-traversal.md",
    "tasks/M4-14.md"
@@ -2726,6 +2754,15 @@
   ]
  },
  {
+  "address": "$81:D936",
+  "class": "inferred",
+  "comment": "routine start",
+  "label": "sub_81D936",
+  "source_records": [
+   "tasks/STATIC-CODE-MAP.md"
+  ]
+ },
+ {
   "address": "$81:E11C",
   "class": "inferred",
   "comment": "instruction start",
@@ -4255,6 +4292,7 @@
    "docs/research/R-0011-motion.md",
    "docs/research/R-0022-zoom-zoo-riding-reference.md",
    "docs/research/R-0026-zoom-zoo-position.md",
+   "docs/research/R-0045-static-code-map.md",
    "tasks/M4-08.md",
    "tasks/M4-09-review.md",
    "tasks/STATIC-CODE-MAP.md"
@@ -4747,6 +4785,15 @@
   "label": "loc_82AE5E",
   "source_records": [
    "docs/research/R-0036-zoom-zoo-rider-objects.md"
+  ]
+ },
+ {
+  "address": "$82:AEF5",
+  "class": "inferred",
+  "comment": "routine start",
+  "label": "sub_82AEF5",
+  "source_records": [
+   "tasks/STATIC-CODE-MAP.md"
   ]
  },
  {
@@ -5442,6 +5489,15 @@
   "label": "loc_83CDA6",
   "source_records": [
    "docs/research/R-0036-zoom-zoo-rider-objects.md"
+  ]
+ },
+ {
+  "address": "$83:D581",
+  "class": "inferred",
+  "comment": "routine start",
+  "label": "sub_83D581",
+  "source_records": [
+   "tasks/STATIC-CODE-MAP.md"
   ]
  },
  {

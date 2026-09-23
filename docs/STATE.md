@@ -1,5 +1,22 @@
 # Project state
 
+Updated 23 September 2026 (integration): **STATIC-CODE-MAP is reviewed and
+integrated** (tier 2, approved with should-fix items, all applied; claimed on
+the user's explicit override of the reset boundary at 89% weekly usage).
+`python3 tools/project.py coverage disassemble` writes an ignored listing of
+banks `$80`-`$83`, and `coverage static-map` writes the tracked
+[docs/map/static/](map/static/code-banks.md). Every recorded site decodes at
+its recorded length, and every byte has one class: 41,778 observed, 36,321
+inferred, 92 data, **52,881 unknown (40.4%)**
+([R-0045](research/R-0045-static-code-map.md)). That is above D-0008's
+one-quarter trigger, so no more heuristics were added; the unknown regions
+are targets for dynamic capture. Reproducing the tracked files needs the four
+raw coverage captures behind the tracked maps, not only the ROM. Next:
+[TRACK-BREADTH](../tasks/TRACK-BREADTH.md), now ready, after the weekly reset on
+24 September 08:00Z or on a user override. Acceptance is conditional on the
+final-tip CI in `artifacts/static-code-map-integration/closeout.json` in the
+main checkout.
+
 Updated 22 September 2026 (integration): **CLASSIC-SPLIT-TIME is reviewed
 and integrated**; acceptance is conditional on the final-tip CI and remote
 verification recorded in the ignored closeout
@@ -62,8 +79,8 @@ the reset on 24 September 08:00Z or on an explicit user override.
 
 Breadth lines (D-0008): **tracks matched against the original: 2 of 45
 inventoried streams.** **Code banks by class (STATIC-CODE-MAP, R-0045): of
-131,072 bytes, 41,778 observed, 35,134 inferred, 61 data, 54,099 unknown
-(41.3%, above D-0008's one-quarter trigger; the unknown regions are
+131,072 bytes, 41,778 observed, 36,321 inferred, 92 data, 52,881 unknown
+(40.4%, above D-0008's one-quarter trigger; the unknown regions are
 dynamic-capture targets).**
 
 Updated 20 September 2026: **CLASSIC-RACE-HUD is reviewed and integrated**;

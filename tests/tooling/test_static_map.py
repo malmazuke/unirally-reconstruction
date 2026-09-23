@@ -111,6 +111,22 @@ class GapAndDataTests(unittest.TestCase):
         self.assertEqual((cls[0x0200], cls[0x0300]), ("data", "data"))
         self.assertEqual(sum(cls.count(c) for c in sm.CLASSES), sm.SPAN)
 
+    def test_jump_table_walk_skips_a_zero_placeholder(self) -> None:
+        # Observed JMP ($8100,X); table: $0000 placeholder, $8200, $8203; each target RTS-terminated.
+        rom = image({0x0000: bytes([0x7C, 0x00, 0x81]), 0x0100: bytes([0x00, 0x00, 0x00, 0x82, 0x03, 0x82]),
+                     0x0200: bytes([0x18, 0x60, 0x60, 0x38, 0x60])})
+        a = analyse(rom, doc([(0x0000, 0x0002, 1, ["Nmx"])]), sites=[(0x0000, NMX8)])
+        self.assertEqual(a.tables[0]["entries"], 3)
+        self.assertIn(0x0200, a.ins)
+        self.assertIn(0x0203, a.ins)
+        self.assertEqual(a.classes()[0x0100:0x0106], ["data"] * 6)
+
+    def test_cited_addresses_are_rom_code_bank_addresses_only(self) -> None:
+        cited = sm.cited_addresses(ROOT)
+        self.assertTrue(cited)
+        self.assertTrue(all(0 <= o < sm.SPAN for o in cited))
+        self.assertTrue(all(r for r in cited.values()))
+
 
 class AgreementTests(unittest.TestCase):
     def test_range_tiling_fixes_boundaries_the_sites_confirm(self) -> None:

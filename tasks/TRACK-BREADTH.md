@@ -2,10 +2,12 @@
 
 ## Assignment
 
-- Status: planned (prepared 22 September 2026 UTC under
-  [D-0008](../docs/decisions/D-0008-static-map-track-breadth-review-tiers.md); becomes ready
-  when [STATIC-CODE-MAP](STATIC-CODE-MAP.md) is integrated, or earlier if the claiming
-  session records why the track directory can be found without it)
+- Status: ready (prepared 22 September 2026 UTC under
+  [D-0008](../docs/decisions/D-0008-static-map-track-breadth-review-tiers.md);
+  [STATIC-CODE-MAP](STATIC-CODE-MAP.md) integrated 23 September 2026: read
+  `docs/map/static/code-banks.md` and the ignored listing from `coverage disassemble` before
+  designing a capture). Claim after the weekly reset on 2026-09-24T08:00Z (89% weekly at
+  STATIC-CODE-MAP's integration) or on an explicit user override
 - Milestone: M4 breadth (remaining tracks); the matrix, not any one track, is the outcome
 - Coordinator: the preparing session (Claude Fable 5.1, Claude Code desktop, 22 September
   2026 UTC); the claiming session is coordinator, primary and integrator once it claims this record

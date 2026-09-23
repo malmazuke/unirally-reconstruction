@@ -2,7 +2,7 @@
 
 ## Assignment
 
-- Status: implemented, in review (claimed 22 September 2026 23:41Z on the user's explicit
+- Status: reviewed (approve with should-fix items, all applied) and integrated (claimed 22 September 2026 23:41Z on the user's explicit
   override of the reset boundary: "keep going until either the task is complete, or the limit
   is reached"; prepared under [D-0008](../docs/decisions/D-0008-static-map-track-breadth-review-tiers.md))
 - Milestone: M1 extension that enables M4 breadth; not an M4 acceptance gate
@@ -120,6 +120,7 @@ targets for dynamic capture.
 | 2 | Shared tilings suffice | Same check | 0 wrong lengths, but 462 ranges have several tilings and 6,179 instructions stay unresolved (2,051 undecoded sites on the ZOOM ZOO capture) | Take observed boundaries from the raw sites behind the maps (digest-matched); keep the tiling as the cross-check (R-0045 obs. 2) |
 | 3 | Descent plus a plausibility gap sweep | Listing inspection | 0 disagreements over 53,062 sites; but the gap sweep and descent from it decode tables as code (`$80:8000` bit table, `$83:8535` pointer table) | Transactional descent that rejects a whole routine on an implausible instruction; gap-sweep results become unclassified candidates (R-0045 obs. 4) |
 | 4 | Final | `coverage disassemble` and `coverage static-map`, twice each | observed 41,778, inferred 35,134, data 61, unknown 54,099 (41.3%); 0 disagreements; byte-identical regenerations | D-0008 trigger met (unknown above a quarter): recorded, no more heuristics; review |
+| 5 (review S1) | A `$0000` first entry is a table placeholder | Walk `$81:82F5` past it | 15 entries walked; inferred 36,321, data 92, unknown 52,881 (**40.4%**) | Apply; the conclusion is unchanged |
 
 ## Handoff
 
@@ -128,13 +129,14 @@ targets for dynamic capture.
 - Verified findings: [R-0045](../docs/research/R-0045-static-code-map.md). Every one of the
   53,062 recorded sites decodes at its recorded length (0 disagreements); the 42,700
   instructions shared by every tiling of the 2,020 ranges all match sites. Classes: observed
-  41,778, inferred 35,134, data 61, unknown 54,099 (**41.3%**, above D-0008's trigger).
-  Of 643 cited addresses: 106 routine starts, 484 instruction starts, 17 inside an
-  instruction, 8 data, 28 unknown (listed in the summary).
+  41,778, inferred 36,321, data 92, unknown 52,881 (**40.4%**, above D-0008's trigger; after
+  review S1).
+  Of 649 cited addresses (at integration): 112 routine starts, 483 instruction starts, 17
+  inside an instruction, 9 data, 28 unknown (listed in the summary).
 - Deviation from this record, with reason: observed boundaries come from the raw coverage
   files behind the tracked maps (`--coverage`, matched by digest), because the tracked maps
   alone leave 6,179 instructions unresolved; without them the tools fall back to shared
-  tilings (49.3% unknown) and report the per-site check as skipped. Gap-sweep decodings are
+  tilings (48.4% unknown) and report the per-site check as skipped. Gap-sweep decodings are
   candidates that stay `unknown`, because the sweep accepted tables.
 - Failed approaches: REP/SEP propagation inside observed ranges (excluded the true tiling at
   `$81:9FCA`); a classifying gap sweep (decoded pointer and bit tables as code).
@@ -158,14 +160,46 @@ targets for dynamic capture.
   absolute read, which the access captures already record (not used here).
 - Remaining dependencies: none.
 - Runtime needs (network, build time, fixtures, memory): the ROM and Python; no build.
-- Aggregate parent/child time, provider usage before/after (or unknown), other-account-work caveat: weekly all-models 89% at claim; after: recorded under Review and integration.
+- Aggregate parent/child time, provider usage before/after (or unknown), other-account-work caveat: weekly all-models 89% at claim and 89% after the review and fixes (2026-09-23T00:12Z,
+  five-hour 5%); the task fit inside the one weekly point the displayed figure resolves. Wall
+  clock from claim (23:41Z) to integration about an hour and a half, the review subagent about 12
+  minutes of it.
 - Accepted outcome, review/fix rounds and next routing decision: to be recorded.
 
 ## Review and integration
 
-- Reviewer and independent reproduction/withheld-case results:
-- Required changes or acceptance rationale:
-- Exact merge candidate and required-check results:
-- Integrated commit and evidence location:
+- Reviewer and independent reproduction/withheld-case results: one fresh Claude Opus 5.5
+  subagent (D-0008 tier 2, one round) in `.worktrees/review-static-code-map` at the exact
+  candidate `d287845`, about 12 minutes: **approve with should-fix items** at `a17e77a`
+  (report [STATIC-CODE-MAP-review](STATIC-CODE-MAP-review.md) on `review/static-code-map`,
+  pushed to `origin`). It checked that the four raw coverage files' digests equal the maps',
+  regenerated the tracked files on its own ROM path (byte-identical: `bb35bb0b...`,
+  `91b237f1...`, `55312c43...`), ran `disassemble`, and walked four inferred routines against
+  the ROM with its own decoder (`$80:98B3`, `$81:D936`, `$82:AEF5`, `$83:D581`: boundaries and
+  REP/SEP modes match, all read as code). Its own script over all four raw files gave 53,062
+  sites, 17,569 distinct, none overlapping and none with two lengths, equal to the observed
+  instructions and 41,778 bytes.
+- Required changes or acceptance rationale: no blocking finding. S1, a correctness bug: a
+  `$0000` first entry ended the jump-table walk, which left the `$81:82F5` table unwalked. Fixed
+  (a placeholder at index 0 only, since a rule for any zero entry ran on through zero filler in
+  the new test) and tested (attempt 5). S2 (the per-site check largely re-reads its own input),
+  S4 (a fresh host needs the raw captures), S5 (80 of 682 observed calls return in another mode),
+  S6 (first-path modes), S7 (a stale docstring), S9 (paths leaving ROM end silently) and S10
+  (ranges label only their start): the records and the docstring now say so. S3 (`labels.json`
+  follows the records): recorded in R-0045, and the tracked files are regenerated last. S8:
+  tests added for the jump-table walk and the cited-address scan. The remaining nits about test
+  breadth are left as they are.
+- Exact merge candidate and required-check results: the tip of `task/static-code-map` after
+  the should-fix commit, containing the reviewed `d287845`. On it: `test --suite synthetic`
+  `status=passed` (446 Python tooling tests, 0 failed; every ctest passed), and two identical
+  regenerations of the tracked files (`code-banks.map.json` `e7576089356dbba5...`,
+  `code-banks.md` `46469f1ff1403e4b...`, `labels.json` `347508273ffb19e2...`). Hosted CI on `d287845`: run
+  35799810644, success.
+- Integrated commit and evidence location: by fast-forward of `main` from `bdfd82e`; the ignored
+  listing, agreement, reports and logs at `local/evidence/static-code-map/static-map/`, the closeout
+  at `artifacts/static-code-map-integration/closeout.json` in the main checkout.
 - Remote synchronization: pushed ref(s), verified local/remote commit IDs, or exact push failure:
-- Scope still unverified:
+  in the closeout (main, `task/static-code-map`, `review/static-code-map`).
+- Scope still unverified: every `inferred` routine is a static reading that no capture has
+  executed. The unknown 40.4% is not resolved. The data bank at indexed and absolute reads,
+  which the access captures record, is the next discriminating input.

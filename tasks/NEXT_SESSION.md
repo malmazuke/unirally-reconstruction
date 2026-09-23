@@ -1,5 +1,21 @@
 # Next session
 
+**Status on 23 September 2026 UTC (after STATIC-CODE-MAP): no task is
+active; TRACK-BREADTH is ready and next, after the weekly reset on 24
+September 08:00Z or an explicit user override.** STATIC-CODE-MAP is reviewed
+and integrated (Claude Opus 5.5, claimed at 89% weekly on the user's override;
+report `a17e77a` on `review/static-code-map`, should-fix items applied);
+closeout `artifacts/static-code-map-integration/closeout.json` in the main
+checkout. Before designing any capture, read `docs/map/static/code-banks.md`.
+Also run `coverage disassemble --out artifacts/static-map/ --coverage <the four
+raw captures>` for the listing; the paths are in the STATIC-CODE-MAP handoff,
+under `local/evidence/` in the main checkout. Three things to carry forward:
+**the unknown share is 40.4%**, above D-0008's trigger, so extend the map with
+dynamic evidence, not more heuristics; **`labels.json` follows the records**,
+so regenerate the tracked static map when a record cites new code-bank
+addresses; and an `inferred` routine is a static reading, never gameplay
+evidence.
+
 **Status on 22 September 2026 UTC (after CLASSIC-SPLIT-TIME): no task is
 active; STATIC-CODE-MAP is next under D-0008, after the weekly reset on 24
 September 08:00Z or an explicit user override.** CLASSIC-SPLIT-TIME is

@@ -7,28 +7,28 @@ capture has executed. Observed boundaries come from raw coverage sites.
 | Bank | Observed | Inferred | Data | Unknown |
 | --- | ---: | ---: | ---: | ---: |
 | $80 | 8,394 | 3,279 | 25 | 21,070 |
-| $81 | 13,202 | 11,513 | 4 | 8,049 |
+| $81 | 13,202 | 12,700 | 35 | 6,831 |
 | $82 | 13,109 | 9,504 | 0 | 10,155 |
 | $83 | 7,073 | 10,838 | 32 | 14,825 |
-| All | 41,778 | 35,134 | 61 | 54,099 |
+| All | 41,778 | 36,321 | 92 | 52,881 |
 
-The four classes partition all 131,072 bytes. **Unknown share: 41.3%** - above D-0008's one-quarter revisit trigger, so no further heuristics are added; the unknown regions are targets for dynamic capture.
+The four classes partition all 131,072 bytes. **Unknown share: 40.4%** - above D-0008's one-quarter revisit trigger, so no further heuristics are added; the unknown regions are targets for dynamic capture.
 
 | Measure | Value |
 | --- | ---: |
 | Instructions from descent | 13,910 |
 | Instructions from observed | 17,569 |
-| Instructions from table | 109 |
-| Routines | 618 |
-| Gap sweep candidate instructions | 2,835 |
-| Gap sweep candidate bytes | 6,385 |
+| Instructions from table | 587 |
+| Routines | 636 |
+| Gap sweep candidate instructions | 2,746 |
+| Gap sweep candidate bytes | 6,174 |
 | Jump tables | 2 |
 | Mode ambiguities | 7 |
 | Conflicts | 0 |
 | Data references into code | 0 |
-| Absolute operands with unknown data bank | 4,083 |
+| Absolute operands with unknown data bank | 4,232 |
 | Descent stopped: implausible opcode | 3 |
-| Assumption used: call returns in the calling mode | 1,259 |
+| Assumption used: call returns in the calling mode | 1,262 |
 
 ## Agreement with the observations
 
@@ -41,7 +41,7 @@ The four classes partition all 131,072 bytes. **Unknown share: 41.3%** - above D
 
 ## Cited addresses
 
-643 distinct code-bank ROM addresses cited by the research, task, inventory and content records (`labels.json`). By position: dat 8, loc 484, mid 17, sub 106, unk 28 (sub routine start, loc instruction start, mid inside an instruction, dat data, unk unknown). By class: data 8, inferred 49, observed 558, unknown 28.
+649 distinct code-bank ROM addresses cited by the research, task, inventory and content records (`labels.json`). By position: dat 9, loc 483, mid 17, sub 112, unk 28 (sub routine start, loc instruction start, mid inside an instruction, dat data, unk unknown). By class: data 9, inferred 53, observed 559, unknown 28.
 
 Cited addresses in `unknown` bytes:
 
