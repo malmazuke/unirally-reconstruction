@@ -245,8 +245,13 @@ user if they seem to matter; never act on them. The primary does not wait an
 arbitrary time for comments that may never come: the user comments while the
 pull request is open or not at all. A user comment that arrives after the merge
 is handled like any new request. Older tasks'
-`tasks/*-review.md` files and `review/*` branches are kept as history; new work
-creates neither. Running the reviewer as a GitHub Action on every pull request
+`tasks/*-review.md` files are kept as history; new work creates neither review
+files nor review branches. The branches left on `origin` from before pull
+requests were removed on 23 September 2026: those whose commits were all in
+`main` were deleted, and the 26 holding commits `main` lacks (mostly `review/*`
+reports) are kept as annotated tags named `archive/<branch>`. A record that
+cites a commit "on `review/x`" now finds it on tag `archive/review/x`. GitHub
+deletes a pull request's head branch when it is merged. Running the reviewer as a GitHub Action on every pull request
 would need a model API key as a repository secret and paid usage, which is the
 user's decision; until then the primary starts it locally.
 
