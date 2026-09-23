@@ -254,8 +254,9 @@ FLAT FUN's pictures, observation 15).
       from frame 1,663, then Left from 3,760; native exact on all 4,269 rows to the
       finish). Its result confirmed f, u and n, and showed that an underscore is a
       one-tile space. After that fix FLAT FUN's title rows differ by 0 pixels on the
-      frames where the checkerboard is in phase (6,200 and 6,480). The letters no
-      reachable name uses remain the layout's reading.
+      frames where the checkerboard is in phase (6,200 and 6,480). Letters b, h, i,
+      j, k, q, v, w, x, y and z, and the digits, remain the layout's reading, never
+      compared with the original. SWITCHER, HYBRID and WARIO PAINT use some of them.
     - **Still unverified.**
       The original's title writer is the text interpreter at `$80:C3C0`, whose
       big-font table is not yet located. The table at `$80:C709` drives the small font.
