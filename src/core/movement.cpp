@@ -1522,12 +1522,21 @@ bool classic_race_start_reflected(std::span<const std::uint8_t> decoded_track,un
 
 TrackGeometry track_geometry(std::span<const std::uint8_t> decoded_track) {
     if(decoded_track.size()<14)throw std::invalid_argument("track header lacks its playfield shape");
-    // $81:A304-A31C: byte 0 selects $81:A4C1 (1,024 x 16), 0x40 selects
-    // $81:A445 (256 x 64). The other arms ($81:A388-A4BF) are not reached by
-    // either supported track, so they are rejected rather than inferred.
+    // $81:A304-A342 switches on byte 13, a quarter of the column count, into
+    // one arm per shape; every arm covers 16,384 cells. The 0x00 and 0x40 arms
+    // are observed (DRAGSTER, ZOOM ZOO); the 0x80, 0x20, 0x10 and 0x08 arms
+    // store the same fields with the same progression and are read from the
+    // static listing (TRACK-BREADTH, R-0046) until a capture executes them.
+    // The 0x04 arm also sets $0FF7, which changes the sampler ($81:8A2C) and
+    // the BG1 map fetch ($81:AD1D-ADA7); that is not recovered, so it is
+    // rejected, as is any other value (the original falls into BRK at $A342).
     switch(decoded_track[13]) {
-    case 0x00: return {1024,0xffff,0,-0x18,0x19,-0x31,0x100}; // $81:A4C1-A4FD
-    case 0x40: return {256,0x3fff,2,-0x60,0x64,-0xc4,0x400};  // $81:A445-A481
+    case 0x00: return {1024,0xffff,0,-0x18,0x19,-0x31,0x100};      // $81:A4C1-A4FD, 1,024 x 16
+    case 0x80: return {512,0x7fff,1,-0x30,0x32,-0x62,0x200};       // $81:A483-A4BF, 512 x 32
+    case 0x40: return {256,0x3fff,2,-0x60,0x64,-0xc4,0x400};       // $81:A445-A481, 256 x 64
+    case 0x20: return {128,0x1fff,3,-0xc0,0xc8,-0x188,0x800};      // $81:A406-A444, 128 x 128
+    case 0x10: return {64,0x0fff,4,-0x180,0x190,-0x310,0x1000};    // $81:A3C7-A405, 64 x 256
+    case 0x08: return {32,0x07ff,5,-0x300,0x320,-0x620,0x2000};    // $81:A388-A3C6, 32 x 512
     default: throw std::invalid_argument("track playfield shape is outside the recovered tracks");
     }
 }

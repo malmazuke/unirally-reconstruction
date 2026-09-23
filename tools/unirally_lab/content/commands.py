@@ -12,6 +12,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import subprocess
 import sys
 from pathlib import Path
 from typing import Any
@@ -22,7 +23,7 @@ from ..access import commands as accesscmd
 from ..access import derive as accderive
 from ..reference import commands as refcmd
 from . import pack as packmod
-from . import ppu, provenance, rnc, zoom_zoo_contract
+from . import ppu, provenance, rnc, tracks, zoom_zoo_contract
 
 ROOT = reportmod.repo_root()
 MANIFEST_SCHEMA_VERSION = 1
@@ -553,6 +554,105 @@ def cmd_compare(args: argparse.Namespace) -> int:
 # --------------------------------------------------------------- parser
 
 
+# --------------------------------------------------------------- tracks (TRACK-BREADTH)
+
+
+def cmd_rnc_inventory(args: argparse.Namespace) -> int:
+    rep = reportmod.Report(sys.argv, task_id=args.task)
+    rom = _load_rom(rep, args, None)
+    if rom is None:
+        return _finish(rep, args, EXIT_MISSING_PREREQUISITE)
+    try:
+        inv = tracks.inventory(rom)
+    except (tracks.TrackError, ValueError, IndexError) as exc:
+        rep.add_check("track_streams", "failed", detail=str(exc))
+        return _finish(rep, args, EXIT_FAILURE)
+    streams = inv["streams"]
+    scanned = [i for i in range(len(rom) - 3) if rom[i:i + 4] == b"RNC\x01"]
+    rep.add_check("directory_matches_scan", "passed" if scanned == [s["file_offset"] for s in streams] else "failed",
+                  detail=f"{len(streams)} compressed assets from {inv['first_track_asset']}; {len(scanned)} RNC method-1 headers in the ROM")
+    short = [s["index"] for s in streams if s["consumed_length"] != s["directory_length"]]
+    rep.add_check("consumed_equals_directory_length", "passed" if not short else "failed",
+                  detail="every stream consumes exactly its directory length" if not short else f"tracks {short} differ")
+    text = json.dumps(inv, indent=1, sort_keys=True) + "\n"
+    if args.out:
+        out = Path(args.out)
+        out.parent.mkdir(parents=True, exist_ok=True)
+        out.write_text(text, encoding="utf-8")
+        rep.add_artifact("track_streams", out)
+    if args.expect:
+        expected = Path(args.expect).read_text(encoding="utf-8")
+        rep.add_check("matches_tracked_manifest", "passed" if expected == text else "failed",
+                      detail=f"{args.expect} {'identical' if expected == text else 'differs'}")
+    rep.data["track_count"] = inv["track_count"]
+    rep.data["inventory_sha256"] = hashlib.sha256(text.encode()).hexdigest()
+    return _finish(rep, args, _status(rep))
+
+
+def write_track_override(rom: bytes, index: int, out: Path) -> dict[str, Any]:
+    """The three files `zoom_zoo_runner --track-override` reads, for track ``index``."""
+    decoded, _ = tracks.decode_track(rom, index)
+    header = tracks.parse_header(decoded)
+    derived = tracks.tile_content(rom, header["tile_set_ids"])
+    out.mkdir(parents=True, exist_ok=True)
+    (out / "track-data.bin").write_bytes(decoded)
+    (out / "tile-tables.bin").write_bytes(derived["tile_columns"])
+    (out / "tile-flags.bin").write_bytes(derived["tile_flags"])
+    return header
+
+
+def cmd_track_idle_matrix(args: argparse.Namespace) -> int:
+    """Every track from native race start with a released controller for a declared number of updates."""
+    rep = reportmod.Report(sys.argv, task_id=args.task)
+    out = Path(args.out)
+    if out.exists():
+        rep.add_check("fresh_output", "failed", detail=f"{out} exists; the matrix requires a fresh directory")
+        return _finish(rep, args, EXIT_INVALID_INPUT)
+    runner, pack_path = Path(args.runner), Path(args.pack)
+    for label, path in (("runner", runner), ("pack", pack_path)):
+        if not path.is_file():
+            rep.add_check(f"{label}_available", "missing", detail=f"{path} not found")
+            return _finish(rep, args, EXIT_MISSING_PREREQUISITE)
+        rep.add_input(label, path, refcmd.sha256_file(path))
+    rom = _load_rom(rep, args, None)
+    if rom is None:
+        return _finish(rep, args, EXIT_MISSING_PREREQUISITE)
+    out.mkdir(parents=True)
+    base = [str(runner), "--start", args.scenario, "--content-pack", str(pack_path)]
+    empty = out / "no-inputs.txt"
+    empty.write_text("")
+    first = subprocess.run(base + ["--inputs", str(empty)], capture_output=True, text=True, timeout=60)
+    if first.returncode != 0 or not first.stdout:
+        rep.add_check("scenario_start", "failed", detail=first.stderr.strip()[:200])
+        return _finish(rep, args, EXIT_FAILURE)
+    start_frame = int(first.stdout.split()[0])
+    inputs = out / "idle-inputs.txt"
+    inputs.write_text("".join(f"{start_frame + k} 0 0\n" for k in range(1, args.updates + 1)))
+    only = args.track or list(range(tracks.track_count(rom)))
+    rows = []
+    for index in only:
+        directory = out / f"{index:02d}"
+        header = write_track_override(rom, index, directory / "content")
+        run = subprocess.run(base + ["--track-override", str(directory / "content"), "--inputs", str(inputs)],
+                             capture_output=True, text=True, timeout=600)
+        lines = run.stdout.splitlines()
+        (directory / "states.txt").write_text(run.stdout)
+        row = {"track": index, "shape": f"0x{header['shape']['byte']:02X}", "exit": run.returncode,
+               "updates": max(len(lines) - 1, 0), "completed": run.returncode == 0 and len(lines) - 1 == args.updates,
+               "fault": run.stderr.strip()[:200], "states_sha256": hashlib.sha256(run.stdout.encode()).hexdigest()}
+        (directory / "run.json").write_text(json.dumps(row, indent=1, sort_keys=True) + "\n")
+        rows.append(row)
+    matrix = {"schema_version": 1, "kind": "track_idle_matrix", "scenario": args.scenario, "start_frame": start_frame,
+              "updates": args.updates, "rows": rows}
+    (out / "matrix.json").write_text(json.dumps(matrix, indent=1, sort_keys=True) + "\n")
+    rep.add_artifact("matrix", out / "matrix.json")
+    completed = sum(r["completed"] for r in rows)
+    rep.add_check("matrix_written", "passed", detail=f"{completed} of {len(rows)} tracks completed {args.updates} updates")
+    rep.data["completed"] = completed
+    rep.data["faults"] = {r["track"]: r["fault"] for r in rows if not r["completed"]}
+    return _finish(rep, args, _status(rep))
+
+
 def register(sub: argparse._SubParsersAction) -> None:
     content = sub.add_parser("content", help="content provenance, decode and runtime comparison (M1-03)")
     csub = content.add_subparsers(dest="content_command", required=True)
@@ -598,6 +698,26 @@ def register(sub: argparse._SubParsersAction) -> None:
     inspect.add_argument("--report")
     inspect.add_argument("--task", default="M3-02A")
     inspect.set_defaults(func=cmd_pack_inspect)
+
+    inv = csub.add_parser("rnc-inventory", help="locate, unpack and digest every track stream through the asset directory (TRACK-BREADTH)")
+    inv.add_argument("--rom", help="ROM file; defaults to local/rom-location.txt")
+    inv.add_argument("--out", help="write the stream manifest (locations, sizes, header fields, digests; no bytes) here")
+    inv.add_argument("--expect", help="tracked manifest the inventory must equal byte for byte")
+    inv.add_argument("--report")
+    inv.add_argument("--task", default="TRACK-BREADTH")
+    inv.set_defaults(func=cmd_rnc_inventory)
+
+    idle = csub.add_parser("track-idle-matrix", help="run every track headless from native race start with a released controller (TRACK-BREADTH)")
+    idle.add_argument("--out", required=True, help="fresh directory for per-track content, states and matrix.json")
+    idle.add_argument("--updates", required=True, type=int, help="updates per track, declared before the run")
+    idle.add_argument("--track", type=int, action="append", help="track index (repeatable; default all)")
+    idle.add_argument("--scenario", default="classic.crawler.zoom-zoo", help="scenario the runner's --start names")
+    idle.add_argument("--runner", default="build/lab-debug/src/core/zoom_zoo_runner")
+    idle.add_argument("--pack", default="local/classic-pal-crawler-two-tracks-v9.pack")
+    idle.add_argument("--rom")
+    idle.add_argument("--report")
+    idle.add_argument("--task", default="TRACK-BREADTH")
+    idle.set_defaults(func=cmd_track_idle_matrix)
 
     cmp_ = csub.add_parser("compare", help="render the decoded content as the original had it at a frame and compare with the frame image")
     cmp_.add_argument("--manifest", required=True)
