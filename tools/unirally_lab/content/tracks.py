@@ -160,7 +160,7 @@ def tile_content(rom: bytes, tile_set_ids: list[int]) -> dict[str, bytes]:
 
 
 def inventory(rom: bytes) -> dict[str, Any]:
-    """The track stream manifest: locations, sizes and digests, no bytes."""
+    """The track stream manifest: locations, sizes, header field values (with the tile-set ids) and digests."""
     count = track_count(rom)
     streams = []
     for index in range(count):

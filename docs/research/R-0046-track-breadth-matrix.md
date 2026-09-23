@@ -8,7 +8,11 @@ claimed to match the original. Static readings come from the
 [R-0045](R-0045-static-code-map.md) listing and are labelled as such under
 [D-0008](../decisions/D-0008-static-map-track-breadth-review-tiers.md).
 
-## Verified observations
+## Observations
+
+Observations 1, 2 and 4 are verified by execution; 3 is verified for the header
+values and the `$00`/`$40` arms and is a static reading for the other arms; 5 is a
+static reading.
 
 1. **Track *i* is asset `$C2 + i`.** `$82:E140-E152` loads the byte at SRAM
    `$77:074A`, adds `$C2` and calls `$82:B2DD` with it (observed in the race
@@ -43,7 +47,8 @@ claimed to match the original. Static readings come from the
    | `$08` | `$81:A388` | 32 x 512 | 0 | no |
    | `$04` | `$81:A343` | 16 x 1,024 | 1 (track 37) | no |
 
-   Every arm stores the same fields with a regular progression (`$0D4F` =
+   Header byte 14 is a quarter of the row count (mod 256) on all 45 tracks, which
+   agrees with the table. Every arm stores the same fields with a regular progression (`$0D4F` =
    columns x 64 - 1, `$03F1` the screen shift 0-6, `$03F3/$03F5` the follow window
    and `$0425/$0427` the visible span doubling per step). The five arms other
    than `$00` and `$40` are **static readings**: the static map left four of
@@ -62,9 +67,9 @@ claimed to match the original. Static readings come from the
    | Result | Tracks |
    | --- | --- |
    | completes 1,200 updates (16) | 0, 1, 12, 13, 14, 19, 21, 23, 24, 29, 30, 31, 33, 36, 41, 44 |
-   | stops at `vertical contact reaches a special response tile` (19) | 2 (update 7), 3 (383), 4 (360), 6 (760), 9 (700), 11 (530), 16 (403), 17 (220), 18 (525), 25 (451), 26 (444), 27 (301), 28 (560), 34 (301), 38 (604), 39 (1,168), 40 (243), 42 (17), 43 (525) |
-   | stops at `unrecovered coarse-grid edge branch` (9) | 5 (330), 7 (738), 8 (562), 10 (359), 15 (461), 20 (452), 22 (776), 32 (459), 35 (438) |
-   | refused at start: shape `$04` (1) | 37 |
+   | stops at `vertical contact reaches a special response tile` (19); in parentheses the updates completed before the stop | 2 (7), 3 (383), 4 (360), 6 (760), 9 (700), 11 (530), 16 (403), 17 (220), 18 (525), 25 (451), 26 (444), 27 (301), 28 (560), 34 (301), 38 (604), 39 (1,168), 40 (243), 42 (17), 43 (525) |
+   | stops at `unrecovered coarse-grid edge branch` (9); updates completed as above | 5 (330), 7 (738), 8 (562), 10 (359), 15 (461), 20 (452), 22 (776), 32 (459), 35 (438) |
+   | refused in its first update: shape `$04` (1) | 37 |
 
    Both stops are native guards on branches no accepted track reached: the
    response to a tile flag outside {0, 2, 6, 7, 18, 20} in vertical contact
@@ -89,48 +94,48 @@ claimed to match the original. Static readings come from the
 | ---: | --- | --- | --- | ---: | --- | --- | --- | --- |
 | 0 | DRAGSTER | CRAWLER 1 | $98:8000 | 33,815 | 1024x16 | completes | DRAGSTER-ORDINARY-CONTROLS originals | exact (six frozen gates) |
 | 1 | ZOOM ZOO | CRAWLER 2 | $98:8183 | 50,665 | 256x64 | completes | M4-16 and opposing-input originals | exact (five frozen gates) |
-| 2 | BOWL | CRAWLER 3 | $98:9B4A | 35,810 | 256x64 | special-tile guard at update 7 | not yet | not yet |
-| 3 | SWITCHER | CRAWLER 4 | $98:A07E | 63,013 | 1024x16 | special-tile guard at update 383 | not yet | not yet |
-| 4 | MONSTER | CRAWLER 5 | $98:C70E | 52,234 | 128x128 | special-tile guard at update 360 | not yet | not yet |
-| 5 | WOBBLE | JUMPER 1 | $98:E62E | 47,619 | 64x256 | edge guard at update 330 | not yet | not yet |
-| 6 | TWINPEAK | JUMPER 2 | $98:FEDB | 48,168 | 256x64 | special-tile guard at update 760 | not yet | not yet |
-| 7 | SKIER | JUMPER 3 | $99:977C | 35,617 | 128x128 | edge guard at update 738 | not yet | not yet |
-| 8 | LOOPBACK | JUMPER 4 | $99:9CD3 | 56,372 | 512x32 | edge guard at update 562 | not yet | not yet |
-| 9 | SMALL CUT | JUMPER 5 | $99:C1DF | 45,036 | 256x64 | special-tile guard at update 700 | not yet | not yet |
-| 10 | LOOPER | SHUFFLER 1 | $99:D307 | 63,397 | 64x256 | edge guard at update 359 | not yet | not yet |
-| 11 | MEGAJUMP | SHUFFLER 2 | $9A:81D9 | 45,899 | 256x64 | special-tile guard at update 530 | not yet | not yet |
+| 2 | BOWL | CRAWLER 3 | $98:9B4A | 35,810 | 256x64 | special-tile guard after 7 updates | not yet | not yet |
+| 3 | SWITCHER | CRAWLER 4 | $98:A07E | 63,013 | 1024x16 | special-tile guard after 383 updates | not yet | not yet |
+| 4 | MONSTER | CRAWLER 5 | $98:C70E | 52,234 | 128x128 | special-tile guard after 360 updates | not yet | not yet |
+| 5 | WOBBLE | JUMPER 1 | $98:E62E | 47,619 | 64x256 | edge guard after 330 updates | not yet | not yet |
+| 6 | TWINPEAK | JUMPER 2 | $98:FEDB | 48,168 | 256x64 | special-tile guard after 760 updates | not yet | not yet |
+| 7 | SKIER | JUMPER 3 | $99:977C | 35,617 | 128x128 | edge guard after 738 updates | not yet | not yet |
+| 8 | LOOPBACK | JUMPER 4 | $99:9CD3 | 56,372 | 512x32 | edge guard after 562 updates | not yet | not yet |
+| 9 | SMALL CUT | JUMPER 5 | $99:C1DF | 45,036 | 256x64 | special-tile guard after 700 updates | not yet | not yet |
+| 10 | LOOPER | SHUFFLER 1 | $99:D307 | 63,397 | 64x256 | edge guard after 359 updates | not yet | not yet |
+| 11 | MEGAJUMP | SHUFFLER 2 | $9A:81D9 | 45,899 | 256x64 | special-tile guard after 530 updates | not yet | not yet |
 | 12 | JUMPS | SHUFFLER 3 | $9A:96AC | 38,625 | 128x128 | completes | not yet | not yet |
 | 13 | FLAT FUN | SHUFFLER 4 | $9A:A206 | 49,156 | 512x32 | completes | not yet | not yet |
 | 14 | INFINITY | SHUFFLER 5 | $9A:BBEC | 38,219 | 256x64 | completes | not yet | not yet |
-| 15 | LAST ONE | BOUNDER 1 | $9A:C3FC | 54,382 | 256x64 | edge guard at update 461 | not yet | not yet |
-| 16 | MARATHON | BOUNDER 2 | $9A:E545 | 53,331 | 256x64 | special-tile guard at update 403 | not yet | not yet |
-| 17 | CIRCLE | BOUNDER 3 | $9B:838B | 34,490 | 256x64 | special-tile guard at update 220 | not yet | not yet |
-| 18 | PLINKEY | BOUNDER 4 | $9B:8668 | 49,258 | 128x128 | special-tile guard at update 525 | not yet | not yet |
+| 15 | LAST ONE | BOUNDER 1 | $9A:C3FC | 54,382 | 256x64 | edge guard after 461 updates | not yet | not yet |
+| 16 | MARATHON | BOUNDER 2 | $9A:E545 | 53,331 | 256x64 | special-tile guard after 403 updates | not yet | not yet |
+| 17 | CIRCLE | BOUNDER 3 | $9B:838B | 34,490 | 256x64 | special-tile guard after 220 updates | not yet | not yet |
+| 18 | PLINKEY | BOUNDER 4 | $9B:8668 | 49,258 | 128x128 | special-tile guard after 525 updates | not yet | not yet |
 | 19 | JUMPOVER | BOUNDER 5 | $9B:9F15 | 52,178 | 256x64 | completes | not yet | not yet |
-| 20 | DRAGRACE | WALKER 1 | $9B:BCED | 42,663 | 512x32 | edge guard at update 452 | not yet | not yet |
+| 20 | DRAGRACE | WALKER 1 | $9B:BCED | 42,663 | 512x32 | edge guard after 452 updates | not yet | not yet |
 | 21 | PINGPONG | WALKER 2 | $9B:CDCB | 46,893 | 256x64 | completes | not yet | not yet |
-| 22 | HILL CLIMB | WALKER 3 | $9B:E38D | 34,622 | 128x128 | edge guard at update 776 | not yet | not yet |
+| 22 | HILL CLIMB | WALKER 3 | $9B:E38D | 34,622 | 128x128 | edge guard after 776 updates | not yet | not yet |
 | 23 | HYBRID | WALKER 4 | $9B:E720 | 47,906 | 256x64 | completes | not yet | not yet |
 | 24 | SHORT CUT | WALKER 5 | $9B:FF01 | 47,078 | 256x64 | completes | not yet | not yet |
-| 25 | DOWN+UP | RUNNER 1 | $9C:9454 | 50,764 | 128x128 | special-tile guard at update 451 | not yet | not yet |
-| 26 | HIGHROAD | RUNNER 2 | $9C:AF5E | 47,215 | 128x128 | special-tile guard at update 444 | not yet | not yet |
-| 27 | SPINE | RUNNER 3 | $9C:C5B8 | 39,267 | 256x64 | special-tile guard at update 301 | not yet | not yet |
-| 28 | BOO! | RUNNER 4 | $9C:D0D8 | 53,001 | 128x128 | special-tile guard at update 560 | not yet | not yet |
+| 25 | DOWN+UP | RUNNER 1 | $9C:9454 | 50,764 | 128x128 | special-tile guard after 451 updates | not yet | not yet |
+| 26 | HIGHROAD | RUNNER 2 | $9C:AF5E | 47,215 | 128x128 | special-tile guard after 444 updates | not yet | not yet |
+| 27 | SPINE | RUNNER 3 | $9C:C5B8 | 39,267 | 256x64 | special-tile guard after 301 updates | not yet | not yet |
+| 28 | BOO! | RUNNER 4 | $9C:D0D8 | 53,001 | 128x128 | special-tile guard after 560 updates | not yet | not yet |
 | 29 | FIRE ESCAPE | RUNNER 5 | $9C:ED41 | 44,483 | 256x64 | completes | not yet | not yet |
 | 30 | WARIO PAINT | HOPPER 1 | $9C:FB63 | 49,932 | 1024x16 | completes | not yet | not yet |
 | 31 | CROCK | HOPPER 2 | $9D:9405 | 52,171 | 256x64 | completes | not yet | not yet |
-| 32 | DOWNER | HOPPER 3 | $9D:B1DA | 34,497 | 64x256 | edge guard at update 459 | not yet | not yet |
+| 32 | DOWNER | HOPPER 3 | $9D:B1DA | 34,497 | 64x256 | edge guard after 459 updates | not yet | not yet |
 | 33 | EAST | HOPPER 4 | $9D:B5D4 | 48,099 | 1024x16 | completes | not yet | not yet |
-| 34 | HAIRPIN HILL | HOPPER 5 | $9D:CD3F | 43,340 | 256x64 | special-tile guard at update 301 | not yet | not yet |
-| 35 | VERTICAL | SPRINTER 1 | $9D:DE54 | 57,267 | 64x256 | edge guard at update 438 | not yet | not yet |
+| 34 | HAIRPIN HILL | HOPPER 5 | $9D:CD3F | 43,340 | 256x64 | special-tile guard after 301 updates | not yet | not yet |
+| 35 | VERTICAL | SPRINTER 1 | $9D:DE54 | 57,267 | 64x256 | edge guard after 438 updates | not yet | not yet |
 | 36 | FLASH | SPRINTER 2 | $9E:8241 | 41,512 | 128x128 | completes | not yet | not yet |
-| 37 | LITTLE DIPPER | SPRINTER 3 | $9E:907B | 35,364 | 16x1024 | refused: shape | not yet | not yet |
-| 38 | FRUITBAT | SPRINTER 4 | $9E:952D | 47,242 | 256x64 | special-tile guard at update 604 | not yet | not yet |
-| 39 | 123 JUMP | SPRINTER 5 | $9E:AAED | 51,273 | 256x64 | special-tile guard at update 1168 | not yet | not yet |
-| 40 | GRILLER | HUNTER 1 | $9E:C756 | 65,354 | 128x128 | special-tile guard at update 243 | not yet | not yet |
+| 37 | LITTLE DIPPER | SPRINTER 3 | $9E:907B | 35,364 | 16x1024 | refused in its first update: shape | not yet | not yet |
+| 38 | FRUITBAT | SPRINTER 4 | $9E:952D | 47,242 | 256x64 | special-tile guard after 604 updates | not yet | not yet |
+| 39 | 123 JUMP | SPRINTER 5 | $9E:AAED | 51,273 | 256x64 | special-tile guard after 1168 updates | not yet | not yet |
+| 40 | GRILLER | HUNTER 1 | $9E:C756 | 65,354 | 128x128 | special-tile guard after 243 updates | not yet | not yet |
 | 41 | TWO LOOPS | HUNTER 2 | $9E:FC2C | 43,463 | 256x64 | completes | not yet | not yet |
-| 42 | NEON | HUNTER 3 | $9F:8CD5 | 48,453 | 256x64 | special-tile guard at update 17 | not yet | not yet |
-| 43 | HAMSTER | HUNTER 4 | $9F:A098 | 49,607 | 128x128 | special-tile guard at update 525 | not yet | not yet |
+| 42 | NEON | HUNTER 3 | $9F:8CD5 | 48,453 | 256x64 | special-tile guard after 17 updates | not yet | not yet |
+| 43 | HAMSTER | HUNTER 4 | $9F:A098 | 49,607 | 128x128 | special-tile guard after 525 updates | not yet | not yet |
 | 44 | TO AND FRO' | HUNTER 5 | $9F:BB4C | 44,592 | 256x64 | completes | not yet | not yet |
 
 "Completes" means only that no native guard fired with the controller released
@@ -143,6 +148,11 @@ on ZOOM ZOO's scenario; it is not a comparison with the original.
   names nine tours. That fits nine tours of five tracks, index = 5 x tour +
   position, with a different kind of track third in each tour. Not verified:
   confirm with NOW PLAYING per track.
+- **`$0FF7` may outlive track 37.** In banks `$80`-`$83` its only writer besides the
+  power-on clear (`$80:92F7`) is the `$04` arm, which stores 1. If no race setup
+  clears it, every track raced after LITTLE DIPPER in the same power-on session
+  skips the negative-row clamp at `$81:8A31`, and the engine's six arms (which
+  assume 0) would not describe it. Not yet checked; found by the part 1 review.
 - "Completes 1,200 updates" means only that no native guard fired with the
   controller released. It is **not** a match with the original. The scenario
   (laps, race mode, initialization frame) is ZOOM ZOO's for every track, which

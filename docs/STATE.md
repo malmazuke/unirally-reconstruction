@@ -1,7 +1,7 @@
 # Project state
 
 Updated 23 September 2026 (TRACK-BREADTH part 1): **every track in the ROM is
-located, unpacked and run natively; the per-track matrix is in
+located and unpacked, and each is started natively; the per-track matrix is in
 [R-0046](research/R-0046-track-breadth-matrix.md).** Track *i* is asset `$C2 +
 i` in the loader's directory at `$82:B332`; all 45 streams decode, and
 `content rnc-inventory` writes the tracked manifest
@@ -9,7 +9,8 @@ i` in the loader's directory at `$82:B332`; all 45 streams decode, and
 reproduces both accepted tracks' per-track pack entries byte for byte, and
 `track_geometry` takes four more playfield shapes read from the listing. With
 the controller released for 1,200 updates, 16 tracks complete, 28 stop on one of
-two named unrecovered branches and one shape is refused. No new track is
+two named unrecovered branches and one (LITTLE DIPPER) is refused for its
+shape. No new track is
 compared with the original yet. The task stays in progress
 ([TRACK-BREADTH](../tasks/TRACK-BREADTH.md)); part 1 was merged as a checkpoint
 because the session started at 90% weekly usage on the user's override.

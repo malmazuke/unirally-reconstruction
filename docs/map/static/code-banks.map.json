@@ -12382,16 +12382,16 @@
    "call returns in the calling mode": 1262
   },
   "bytes": 131072,
-  "cited_addresses": 660,
+  "cited_addresses": 661,
   "cited_by_class": {
    "data": 9,
    "inferred": 54,
-   "observed": 563,
+   "observed": 564,
    "unknown": 34
   },
   "cited_by_position": {
    "dat": 9,
-   "loc": 486,
+   "loc": 487,
    "mid": 17,
    "sub": 114,
    "unk": 34

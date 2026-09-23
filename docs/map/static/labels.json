@@ -521,6 +521,15 @@
   ]
  },
  {
+  "address": "$80:92F7",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_8092F7",
+  "source_records": [
+   "docs/research/R-0046-track-breadth-matrix.md"
+  ]
+ },
+ {
   "address": "$80:9338",
   "class": "observed",
   "comment": "instruction start",
