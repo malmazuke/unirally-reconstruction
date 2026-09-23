@@ -562,7 +562,8 @@
   "comment": "instruction start",
   "label": "loc_80C3C0",
   "source_records": [
-   "docs/research/R-0006-observed-code-map.md"
+   "docs/research/R-0006-observed-code-map.md",
+   "docs/research/R-0046-track-breadth-matrix.md"
   ]
  },
  {
@@ -574,6 +575,15 @@
    "docs/research/R-0015-native-presentation.md",
    "docs/research/R-0019-dragster-loser-result.md",
    "tasks/M3-02.md"
+  ]
+ },
+ {
+  "address": "$80:C709",
+  "class": "data",
+  "comment": "data",
+  "label": "dat_80C709",
+  "source_records": [
+   "docs/research/R-0046-track-breadth-matrix.md"
   ]
  },
  {
@@ -2202,6 +2212,15 @@
   "class": "observed",
   "comment": "routine start",
   "label": "sub_81AD1D",
+  "source_records": [
+   "docs/research/R-0046-track-breadth-matrix.md"
+  ]
+ },
+ {
+  "address": "$81:AD22",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_81AD22",
   "source_records": [
    "docs/research/R-0046-track-breadth-matrix.md"
   ]
