@@ -18,7 +18,11 @@ WARIO PAINT at the special tile, HYBRID at `inverted AI marker is unrecovered`).
 `app-debug` after pulling, since a stale build refuses it. The user played EAST
 (`--track 33`) and LOOPER (`--track 10`) live with a gamepad after the merge: a full
 race, the result screen and Race Again on each, with no stop. CROCK, WARIO PAINT and
-HYBRID stop later in a race even with the controller released. Next, in order of
+HYBRID stop later in a race even with the controller released. The user saw two
+faults in that play, both follow-ups: the result screen names DRAGSTER on every
+one-run track (the result reuses DRAGSTER's captured base VRAM), and on LOOPER the
+track seemed to vanish below the rider at moments near the end of a race (cause
+unknown; capture consecutive original frames late in a LOOPER race first). Next, in order of
 reach: the special-tile response (7 of 16 compared races stop there inside their
 windows, and CROCK and WARIO PAINT just after), HYBRID's `inverted AI marker is
 unrecovered` guard at update 2,053, INFINITY's checkpoint guard, PINGPONG's
