@@ -21,7 +21,7 @@ Delete a section only if it genuinely has nothing to say.
 
 ## Review
 
-<!-- Reviewer and verdict, what changed in response, link to the report. "Not required (tier 3)" if so. -->
+<!-- Reviewer and verdict, what changed in response; the report is a review comment on this pull request. "Not required (tier 3)" if so. -->
 
 ## Not covered
 

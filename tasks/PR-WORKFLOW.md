@@ -50,15 +50,20 @@ task-branch commit IDs, which squash and rebase would drop from `main`.
   reviewed head `c4cafb8` and again on the head that merged; it was not run locally, since the
   change touches no native or lab code outside the classifier.
 - Review: one fresh Claude Opus 5.5 subagent in `.worktrees/review-pr-workflow` at `c4cafb8`,
-  **approve with should-fix items** (report `66da907` on `review/pr-workflow`, pushed). F1 (a
+  **approve with should-fix items**, posted as a
+  [review comment on the pull request](https://github.com/malmazuke/unirally-reconstruction/pull/6#pullrequestreview-5285623131). F1 (a
   merge could borrow another commit's run) and F2 (the classifier base was the pull request's
   previous head) fixed as above; F3 (authority sentences moved back into their bullet), F4
   (absolute links; update the Review section before merging), F5 (records final before the
   merge), F6 (push-era wording, `gh pr update-branch`) and F7 (a failing second lookup, now
   tested) applied. The reviewer noted the ruleset field
   `require_extra_approval_for_unattributed_changes: true`, which is a default.
+- Reviews now go on the pull request (user's suggestion during this task): the workflow's "Where
+  the review goes" replaces `tasks/*-review.md` files and `review/*` branches for new work. This
+  review was first written as a file on `review/pr-workflow`; it was posted to the pull request,
+  and that branch deleted.
 - Cleanup at merge: remove `.worktrees/pr-workflow` and `.worktrees/review-pr-workflow` and both
-  local branches after checking `task/pr-workflow` and `review/pr-workflow` on `origin`.
+  local branches after checking `task/pr-workflow` on `origin`.
 - This pull request is the first under the new flow; its own run exercises the new triggers.
   Its classification uses the base revision's classifier, as designed.
 - Next: nothing further is required. The old memory note about dispatching CI for `codex/*`

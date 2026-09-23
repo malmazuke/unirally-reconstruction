@@ -9,7 +9,7 @@ This protocol is intended for humans and agents using different models or runtim
 | Coordinator/integrator | Select ready work, allocate scope, resolve dependencies, accept results and maintain project state | Canonical task registry, integration branch, milestone status |
 | Research worker | Recover one bounded behavior, format or routine with evidence | Assigned research/experiment paths on its own branch |
 | Implementation worker | Implement a defined contract and its checks | Assigned code/test paths on its own branch |
-| Reviewer | Reproduce the claim, inspect evidence, exercise independent cases and identify regressions | Review report; no silent edits to the implementation being reviewed |
+| Reviewer | Reproduce the claim, inspect evidence, exercise independent cases and identify regressions | Review posted on the pull request; no silent edits to the implementation being reviewed |
 
 Roles do not require four simultaneous agents. For the D-0006 M4-12 through M4-16 trials, the primary is both investigator/implementer and coordinator; it works on a task branch and automatically dispatches fresh Sol/medium independent review before integration. The applicable trial exception in D-0004 takes precedence over the general defaults here. For OpenAI tasks, default to a Sol coordinator and one Sol worker, with explicit model/effort settings. Review uses a fresh sequential session. A second child requires the independent-scope and quota justification in D-0004. A model switch does not change the task's acceptance criteria.
 
@@ -207,6 +207,22 @@ Keep model name/version/runtime in execution metadata for reproducibility, but d
 ### Reviewer checklist
 
 Confirm the claimed behavior against the frozen reference and inspect whether the implementation covers the task's domain. Check that tests exercised the new code and did not use an emulator fallback for supposedly native logic. Run an independent boundary/withheld case where appropriate. Check for changed baselines, weakened comparisons, masked skips, undefined arithmetic and accidental content commits. Review readability as well: meaningful names, explicit units and state dependencies, navigable evidence, and a justified boundary for any literal register-level translation (D-0003). Approve or return a specific reproducible failure; a second model's agreement alone is not validation.
+
+### Where the review goes
+
+The reviewer posts its report on the pull request, not as a file or branch: one
+`gh pr review <n> --comment --body-file <report>` naming the reviewed head
+commit, the verdict, the commands run with their results, and each finding
+with `file:line` and a concrete failure scenario, most severe first. It uses
+`--comment`, because agents act as the owner, who cannot approve or request
+changes on their own pull request. The reviewer still works in its own
+checkout and never pushes. The primary answers each finding on the pull request
+(fixed in a named commit, or declined with a reason) and links the review from
+the task record. A re-review is a new comment on the new head. Older tasks'
+`tasks/*-review.md` files and `review/*` branches are kept as history; new work
+creates neither. Running the reviewer as a GitHub Action on every pull request
+would need a model API key as a repository secret and paid usage, which is the
+user's decision; until then the primary starts it locally.
 
 ## Durable records with minimal bureaucracy
 
