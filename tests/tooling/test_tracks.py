@@ -1,14 +1,12 @@
-"""Tests of the track stream inventory (TRACK-BREADTH): header parsing, the shape table and
-the tile-set producer on a synthetic ROM, and, when the supported ROM is present, the
-tracked stream manifest. The ROM case reports a skip when the ROM is absent; it is never
-counted as a pass."""
+"""ROM-free tests of the track stream inventory (TRACK-BREADTH): header parsing, the shape
+table, the tile-set producer on a synthetic ROM, and the tracked manifest's shape. The
+manifest's values need the ROM: `content rnc-inventory --expect
+tests/manifests/content/track-streams.json` checks them, outside this suite."""
 
 from __future__ import annotations
 
 import json
-import subprocess
 import sys
-import tempfile
 import unittest
 from pathlib import Path
 
@@ -17,7 +15,6 @@ sys.path.insert(0, str(ROOT / "tools"))
 
 from unirally_lab.content import provenance, tracks  # noqa: E402
 
-PROJECT = ROOT / "tools" / "project.py"
 MANIFEST = ROOT / "tests" / "manifests" / "content" / "track-streams.json"
 
 
@@ -83,24 +80,7 @@ class TileContentTests(unittest.TestCase):
         self.assertEqual(derived["bg1_tiles"][8 * 128:], tile_bytes[1024:1088] + tile_bytes[1088:1152])
 
 
-def _rom_path() -> Path | None:
-    location = ROOT / "local" / "rom-location.txt"
-    if not location.is_file():
-        return None
-    path = Path(location.read_text(encoding="utf-8").strip()).expanduser()
-    return path if path.is_file() else None
-
-
 class TrackedManifestTests(unittest.TestCase):
-    @unittest.skipIf(_rom_path() is None, "supported ROM absent (local/rom-location.txt): tracked manifest not checked")
-    def test_inventory_equals_tracked_manifest(self) -> None:
-        with tempfile.TemporaryDirectory() as tmp:
-            report = Path(tmp) / "report.json"
-            run = subprocess.run([sys.executable, str(PROJECT), "content", "rnc-inventory", "--expect", str(MANIFEST),
-                                  "--report", str(report)], capture_output=True, text=True, cwd=ROOT, timeout=120)
-            self.assertEqual(run.returncode, 0, run.stdout + run.stderr)
-            self.assertEqual(json.loads(report.read_text())["track_count"], 45)
-
     def test_manifest_carries_no_payload_bytes(self) -> None:
         manifest = json.loads(MANIFEST.read_text(encoding="utf-8"))
         self.assertEqual(manifest["track_count"], len(manifest["streams"]))
