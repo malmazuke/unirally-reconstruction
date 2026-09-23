@@ -23,8 +23,9 @@ CollisionPoints collision_points(const SamplingContent& content,
                                  std::uint16_t pose_index, bool reflected);
 
 // Coarse cells are 64x64 position units, with four 16x16 cells per axis.
-// This recovered branch requires nonnegative y and a right-hand neighbour
-// inside the coarse grid. It rejects the still-unrecovered edge branch.
+// A negative y samples coarse cell (0, 0), and the last column's right-hand
+// neighbours are column 0 of the same rows ($81:8A2A-8AC4, TRACK-BREADTH
+// part 3). A zero width or a column outside the playfield is rejected.
 TrackSamples sample_track(const SamplingContent& content,
                           const CollisionPoints& points,
                           std::uint16_t position_x, std::uint16_t position_y,

@@ -169,6 +169,8 @@ originals across race start; the sampled-frames rule from CLASSIC-RACE-HUD appli
 | 23 (04:05Z) | New tracks play under input | Gate script's hidden app runs, 4,000 updates with a held button, tracks 13 and 30 | Both abort at `unrecovered coarse-grid edge branch` | Recover the edge inside this part (small, and live play needs it) |
 | 24 (04:15Z) | The listing's edge paths are the original's | `$81:8A2C-8A3B` (negative y to cell 0, 0) and `$81:8A60-8A99` (last column wraps to column 0), then recompare | LOOPER and HYBRID (opponent in the last column) exact to the end, 1,484 and 1,515; DRAGRACE (opponent y `$FFFB`) 1,353, 900 past its stop | Gates, review |
 | 25 (03:07-03:47Z) | Nothing accepted moves | `artifacts/track-breadth-3/gates.sh` on `fa62939`, v10 pack: presets and ctest, synthetic, v1 contracts, hidden app runs (DRAGSTER, ZOOM ZOO, 13, 30), fuzz, all eleven differential gates, `rnc-inventory --expect` | ctest 23/23 x3; synthetic, v1 winner and loser passed; hidden DRAGSTER, ZOOM ZOO and FLAT FUN 0 fallback frames over 4,000 held-input updates; **WARIO PAINT aborts at the special-tile guard under held input** (declared, the next follow-up); fuzz 0 aborts; all eleven gates passed with the same row digests and restore counts as `1f554fb`; inventory passed. Sanitizers unavailable on this host | Records, review |
+| 26 (04:30Z, review round 1) | - | Tier 1 review of `775e7ba` returned: R1 the GO letters swap on odd-boundary tracks (the window drivers took `$0300`'s parity from the absolute frame); R2 the records overclaimed | Confirmed; the review's six sampled frames had missed the window | Fix R1 at the three parity sites, correct the records |
+| 27 (04:45Z) | `$0300` counts from the boundary | Parity from `frame - initialization frame` in the countdown driver, the restored-state selection and the opponent-finish inference; 111 consecutive frames of updates 190-300 on CROCK, LOOPER, EAST, FLAT FUN, ZOOM ZOO | All five show ZOOM ZOO's profile (36 or 0 pixels, 470 at update 272 on all); recompare unchanged | Gates, re-review |
 | 10 (01:55Z) | The name table follows the track index | Relative-text search, then the table at `$83:9FFA` | 45 names in lowercase ASCII, then five `unavailable` and nine tour names; names 0 and 1 agree with the verified indices | R-0046 observation 5 (static) |
 
 ## Handoff
@@ -275,3 +277,32 @@ Part 2 (checkpoint; the task is not accepted):
   `local/evidence/track-breadth/track-breadth-2/`, in the main checkout.
 - Scope still unverified: riding inputs, finishes and results on the new tracks; the five tours
   not offered on a cold start; stunt events.
+
+Part 3 (checkpoint; the task is not accepted):
+
+- Reviewer: a fresh Claude Opus 5.5 subagent in the detached checkout
+  `.worktrees/track-breadth-3-review` at `775e7ba`, tier 1. It extracted pack v10 itself
+  (identical; v9's 57 entries unchanged; the compiled table equals the rules), derived
+  sceneries 5, 6, 9 and 13 from the listing (withheld), decoded `$81:8A2A-8AC7` and matched
+  the new sampler, reproduced the recompare row for row and each edge case at the former
+  stops, round-tripped a CROCK state, checked the 14 scenarios against the sweep, re-ran
+  `opposing-axes` and `dragster-random-1` (same digests), picture-checked LOOPER, CROCK and
+  EAST itself (withheld), and ran the unit tests, ctest and the synthetic suite.
+  **Returned** with two required findings and eight advisories
+  ([review](https://github.com/malmazuke/unirally-reconstruction/pull/11#pullrequestreview-5286795353)).
+- Changes in response: R1 (the GO letters swapped on the six odd-boundary tracks; `$0300`
+  counts from race start) fixed at the three parity sites and verified on 111 consecutive
+  frames of five tracks; R2 (overclaims in STATE, R-0046 observation 15, stale matrix rows)
+  corrected. Advisories: A2 (runner options) tightened; A3, A4, A5 and A7 corrected in code
+  comments and R-0046; A1 (the finish slowdown's absolute frame modulo 3) recorded as an
+  open question for a new-track finish capture; A6 (compare the frame label too) declined,
+  since the labels already agree on all 16; A8 answered by this entry. Re-review requested
+  on the new head.
+- Merge candidate and checks: the pull request head after re-review, with `changes` and both
+  `lab` jobs green on it and the gate script run on it.
+- Integrated commit and evidence: the merge commit of
+  [#11](https://github.com/malmazuke/unirally-reconstruction/pull/11);
+  `artifacts/track-breadth-part3-integration/closeout.json` and
+  `local/evidence/track-breadth/track-breadth-3/` in the main checkout.
+- Scope still unverified: a new track's finish, winner banner and result screen; the special-
+  tile response and INFINITY's checkpoint guard (play can abort there); the five locked tours.

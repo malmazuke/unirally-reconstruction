@@ -10,7 +10,9 @@ is in progress; continue it.** Part 3 is reviewed and merged by pull request
 (closeout `artifacts/track-breadth-part3-integration/closeout.json` in the main
 checkout). Pack profile **v10** carries the 16 cold-start race tracks, and native
 starts any of them by id (`--start classic.track.NN`, `frontend run --track NN`)
-on its own scenario. **Live play needs the v10 pack**:
+on its own scenario. Eight match the original over about 1,500 released-controller
+updates; the others stop at native guards, and play can abort there (WARIO PAINT
+does under held input). **Live play needs the v10 pack**:
 `local/classic-pal-crawler-tracks-v10.pack` is in the main checkout. The one
 acceptance item left to the user is a keyboard play of two new tracks, for example
 `frontend run --track 13` (FLAT FUN) and `--track 31` (CROCK). Next, in order of

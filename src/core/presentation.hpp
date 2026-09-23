@@ -293,8 +293,10 @@ struct ClassicRaceHistory {
 unsigned classic_window_transition_member(std::span<const std::uint8_t> decoded_track);
 // The countdown driver's selection on one race update ($83:E59C, R-0040),
 // from the countdown word `$11C5` as the update read it (before its own
-// decrement), the update's `$0300` parity, which is the frame parity (the
-// clock ticks through a pause, the drivers do not run through one), and the
+// decrement), the update's `$0300` parity, which is the parity of the frames
+// since the initialization boundary (the frame parity on the even boundaries of
+// DRAGSTER and ZOOM ZOO; the clock ticks through a pause, the drivers do not
+// run through one), and the
 // track's transition member above. Nothing once the word is zero.
 std::optional<unsigned> classic_countdown_window(std::uint16_t countdown_before,bool parity_set,
                                                  unsigned transition_member);

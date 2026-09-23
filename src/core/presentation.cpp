@@ -1100,7 +1100,10 @@ void ClassicWindowPointer::observe_update(const ZoomZooState& previous,const Zoo
         if(!previous.race.riders[rider].finished && updated.race.riders[rider].finished) {
             drivers_[rider]={};pending_[pending_count_++]=rider;
         }
-    const bool parity_set=(updated.movement.frame&1U)!=0U;
+    // $0300 counts from race start: 0 at the initialization boundary. Its
+    // parity is the frame's only when that boundary is even, as on DRAGSTER
+    // and ZOOM ZOO; six cold-start tracks start on an odd frame (part 3 review).
+    const bool parity_set=((updated.movement.frame-scenario.initialization_frame)&1U)!=0U;
     std::optional<unsigned> request;
     for(std::size_t i=0;i<ordered_ && !request;++i) {
         auto& driver=drivers_[order_[i]];
@@ -1279,6 +1282,14 @@ std::optional<unsigned> window_table_index_for(std::uint32_t frame,std::uint16_t
                                                std::optional<std::uint32_t> first_finish,
                                                std::optional<std::uint32_t> latest_finish,
                                                std::uint32_t setup_frame,unsigned transition_member) {
+    // The drivers' parity is `$0300`'s, which counts from the initialization
+    // boundary (setup_frame - 6). Shifting every frame by the boundary's own
+    // parity makes the frame parities below `$0300`'s; on the even boundaries
+    // of DRAGSTER and ZOOM ZOO the shift is zero.
+    const std::uint32_t boundary_parity=(setup_frame-6U)&1U;
+    frame-=boundary_parity;setup_frame-=boundary_parity;
+    if(first_finish)*first_finish-=boundary_parity;
+    if(latest_finish)*latest_finish-=boundary_parity;
     const auto shown=race_vblank_frame(frame,loading_updates);
     if(!shown)return std::nullopt;
     // The winner banner replaces the countdown family; the two never overlap in
@@ -1365,17 +1376,20 @@ std::optional<std::uint32_t> classic_opponent_finish_frame(const ZoomZooState& s
                                           :state.movement.frame;
     if(race.finish_delay>counted)return std::nullopt;
     const auto player_finish=counted-race.finish_delay;
+    // The clock's parity term is `contact_phase`, 0 at the initialization
+    // boundary, so a finish frame's parity is taken relative to it.
+    const auto boundary=classic_race_scenario(state.track).initialization_frame;
     // finish_centiseconds: two per frame plus the frame parity, so
     // total[0]-total[1] = 2(fa-fb)+(fa&1)-(fb&1); one parity of fb fits, in
     // either finish order.
     const int difference=static_cast<int>(race.total_times[0])-static_cast<int>(race.total_times[1]);
     for(const unsigned parity:{0U,1U}) {
-        const int twice_gap=difference-static_cast<int>(player_finish&1U)+static_cast<int>(parity);
+        const int twice_gap=difference-static_cast<int>((player_finish-boundary)&1U)+static_cast<int>(parity);
         if(twice_gap%2!=0)continue;
         const int gap=twice_gap/2;
         if(gap>static_cast<int>(player_finish))continue;
         const auto opponent_finish=static_cast<std::uint32_t>(static_cast<int>(player_finish)-gap);
-        if((opponent_finish&1U)==parity)return opponent_finish;
+        if(((opponent_finish-boundary)&1U)==parity)return opponent_finish;
     }
     return std::nullopt;
 }
@@ -1850,7 +1864,9 @@ RgbFrame render_classic_race(const ZoomZooState& state,const ClassicRacePresenta
         rect(frame,45,83,1,96,{180,180,100});rect(frame,45,178,170,1,{180,180,100});
         ui_text(frame,3,83,race_time(maximum));ui_text(frame,3,169,race_time(minimum));
         const unsigned laps=std::clamp<unsigned>(scenario.laps,1U,10U);
-        const int lap_step=165/static_cast<int>(laps); // 55 for three laps.
+        // Authored layout, not recovered: three laps sit 55 pixels apart as
+        // before, and other counts share the same 165-pixel span.
+        const int lap_step=165/static_cast<int>(laps);
         for(unsigned i=0;i<2;++i)for(unsigned lap=0;lap<laps;++lap) {
             const auto time=state.race.lap_times[i][lap];
             if(time>=60000)continue;

@@ -1,6 +1,7 @@
 #include "zoom_zoo_pack.hpp"
 #include <cctype>
 #include <memory>
+#include <set>
 
 #include <filesystem>
 #include <fstream>
@@ -41,8 +42,10 @@ int main(int argc,char** argv) try {
     bool native_start=false,restart=false;
     unirally::ClassicRaceTrack race_track=unirally::ClassicRaceTrack::ZoomZoo;
     std::filesystem::path pack_path,track_override;
+    std::set<std::string> seen;
     for(int i=1;i<argc;i+=2) {
         const std::string option=argv[i];
+        if(!seen.insert(option).second)throw std::invalid_argument("repeated ZOOM ZOO runner option: "+option);
         if(option=="--seed")seed=argv[i+1];
         else if(option=="--restart-from") {seed=argv[i+1];restart=true;}
         else if(option=="--start") {
@@ -68,6 +71,11 @@ int main(int argc,char** argv) try {
         else if(option=="--track-override")track_override=argv[i+1];
         else throw std::invalid_argument("unknown ZOOM ZOO runner option");
     }
+    // One origin (a seed, a restart seed or a native start) and one content
+    // source (a pack or a loose directory).
+    if(seen.count("--seed")+seen.count("--restart-from")+seen.count("--start")!=1 ||
+       seen.count("--content-pack")+seen.count("--content-dir")!=1)
+        throw std::invalid_argument("ZOOM ZOO runner needs one of --seed/--restart-from/--start and one of --content-pack/--content-dir");
     if((seed.empty()&&!native_start)||(content.empty()&&pack_path.empty())||inputs.empty())throw std::invalid_argument("missing ZOOM ZOO runner option");
     auto state=native_start?unirally::ZoomZooState{}:unirally::deserialize_zoom_zoo(read_bytes(seed));
     if(native_start)state.complete_race=state.sustained=true;
