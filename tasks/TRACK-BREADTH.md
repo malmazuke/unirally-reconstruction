@@ -3,8 +3,9 @@
 ## Assignment
 
 - Status: in progress. Part 1 (inventory, per-track producers, playfield shapes, native idle
-  matrix) is reviewed and integrated by pull request as a checkpoint; the reference and match
-  columns are next. Claimed 23 September 2026 at about 01:05Z on the user's explicit override
+  matrix) is reviewed and integrated by pull request #9. Part 2 (references for the 20 tracks
+  a cold start reaches and the match column) is reviewed and integrated by pull request as the
+  second checkpoint; native selection by track id is next. Claimed 23 September 2026 at about 01:05Z on the user's explicit override
   of the reset boundary ("you may work past the 80% reserve until the task is complete or the
   weekly limit is reached"). Prepared 22 September 2026 under
   [D-0008](../docs/decisions/D-0008-static-map-track-breadth-review-tiers.md).
@@ -150,6 +151,13 @@ originals across race start; the sampled-frames rule from CLASSIC-RACE-HUD appli
 | 7 (01:40Z) | - | Idle matrix, N = 1,200 declared before the run | 13 complete, 13 special-tile guard, 1 edge guard, 18 refused by shape in their first update | Add the four non-`$04` arms |
 | 8 (01:45Z) | The static arms let the refused tracks run | Same matrix after `track_geometry` gains `$80/$20/$10/$08` | 16 complete, 19 special-tile, 9 edge, 1 refused in its first update (track 37) | Commit, gates, review |
 | 9 (01:18-01:50Z) | DRAGSTER and ZOOM ZOO cannot move | `artifacts/track-breadth/gates.sh` on code commit `1f554fb`: three presets and ctest, synthetic, both v1 contracts, hidden runs, fuzz, and **all eleven differential gates run** (the change reaches the gate binary, so `gate_identity` could not cite them) | ctest 23/23 on lab-debug, lab-release and app-debug; synthetic passed; v1 winner and loser passed; hidden DRAGSTER and ZOOM ZOO 0 fallback frames; fuzz 40 seeds, 79 races, 0 aborts; all eleven gates passed with the same row digests and restore counts as the `6e0fad6` run. `lab-sanitize` and `app-sanitize` unavailable on this host | Records, pull request, review |
+| 11 (02:20Z, part 2) | A generic menu path reaches any Crawler track | `track_reference capture` for ZOOM ZOO, compared with the M4-16 idle original | Byte-identical WRAM and SRAM over frames 1207-2649 | Boundary rule |
+| 12 (02:25Z) | The boundary is the first frame with countdown 270 | Same capture | Wrong: 1,291; the countdown reads 270 for 85 frames. The M4-16 rule (the frame before `$0FF1` first advances) gives 1,328 and 1,376 | Compare |
+| 13 (02:30Z) | Native matches the accepted tracks from the found boundary | `explore` on DRAGSTER (DRAGSTER scenario) and ZOOM ZOO | Exact, 1,322 and 1,274 rows to horizon frame 2,650 | New tracks |
+| 14 (02:35Z) | Crawler 2-4 are ordinary races | NOW PLAYING pictures | BOWL is a stunt event; SWITCHER one run; MONSTER 3 laps. SWITCHER exact 384 and MONSTER exact 361 updates, then the special-tile guard; MONSTER's memory holds the `$20` arm's constants | Other tours |
+| 15 (02:40Z) | Other tours are locked on a cold start | PICK TOUR picture, one Down | Four tours offered (CRAWLER, SHUFFLER, WALKER, HOPPER); SHUFFLER lists tracks 10-14 | Sweep all 20 |
+| 16 (02:45-03:00Z) | - | `sweep` over the 20, each captured twice | First run compared the menu position instead of `$77:074A` on rows 1-3 (bug, fixed, run discarded as `sweep-position-bug`). Second run: all repeats identical; indices 10 x row + position; 6 exact over about 1,500 updates, 7 exact until a native guard, PINGPONG 1,068 then `opponent.response_b`, 2 lap-count only, 4 stunt | R-0046 part 2 |
+| 17 (03:05Z) | The landing matrices vary by track | WRAM `$0572-$0B59` at each boundary against the pack entry | Identical on all 20 | Records |
 | 10 (01:55Z) | The name table follows the track index | Relative-text search, then the table at `$83:9FFA` | 45 names in lowercase ASCII, then five `unavailable` and nine tour names; names 0 and 1 agree with the verified indices | R-0046 observation 5 (static) |
 
 ## Handoff
@@ -173,7 +181,15 @@ originals across race start; the sampled-frames rule from CLASSIC-RACE-HUD appli
   so nothing hosted checks the manifest's values), and the runner's option check
   (`zoom_zoo_runner.cpp:38` accepts any four options) is tightened with the next change that
   already reruns the differential gates.
-- Exact next experiment/command: capture track 2 (Crawler, Down twice on PICK TRACK from the
+- Part 2: `tools/unirally_lab/native/track_reference.py` (lab only) and its tests (the menu
+  path only; no ROM-free test covers the boundary finder or the comparison); the sweep
+  and captures are in `local/evidence/track-breadth/track-breadth-2/` after integration.
+- Exact next experiment/command (after part 2): make the race scenario data (mode, laps,
+  initialization frame per track, from R-0046 observations 7-8), add the reachable tracks'
+  per-track entries to a new pack profile and select a track by id in the runner and the app;
+  then re-run `track_reference sweep` on the native scenario per track. The part 1 plan below
+  is done.
+- Former next experiment (part 1, done in part 2): capture track 2 (Crawler, Down twice on PICK TRACK from the
   ZOOM ZOO manifest's path) with the controller released and consecutive frames across race
   start, record NOW PLAYING, and write a generic 742-byte projection so the match column can
   be measured; then track 3 and 4. In parallel, a watch capture on track 2 names the tile flag
@@ -218,3 +234,27 @@ Part 1 (checkpoint; the task is not accepted):
   with `origin/main` after the merge (closeout).
 - Scope still unverified: every new track against the original; the four static arms under
   capture; the tour hypothesis; the `$0FF7` persistence.
+
+Part 2 (checkpoint; the task is not accepted):
+
+- Reviewer: a fresh Claude Opus 5.5 subagent in the detached checkout
+  `.worktrees/track-breadth-2-review` at `933b68c`, tier 2 (laboratory tooling and records).
+  It captured PINGPONG and FLAT FUN (withheld) and ZOOM ZOO itself, and reproduced their rows
+  and pictures; checked the boundary rule on the M4-16 idle original and the byte-identity over
+  frames 1207-2649; compared `original_rows` with the accepted `original()`; checked every
+  R-0046 count against `sweep.json`, the masked lap comparison and the landing matrices; unit
+  tests and the synthetic suite (484 checks). **Approved**, no required findings, six
+  advisories ([review](https://github.com/malmazuke/unirally-reconstruction/pull/10#pullrequestreview-5286304245)).
+- Changes in response (`a775f5d`): the guard departures inside exact windows (opponent X on
+  HYBRID from row 348, A on SHORT CUT from row 953) and HAIRPIN HILL's native stop are
+  recorded; rows versus updates defined; the player A/X/Start timeline check restored (all 16
+  comparisons unchanged); the capture's menu position named as such. Declined: a ROM-free test
+  of the comparison logic (it needs emulator memory; the gap stays open in the handoff).
+- Merge candidate and checks: the pull request head, with `changes` and both `lab` jobs green
+  on it; `gate_identity --since 1f554fb` passes (no gate-binary input changed).
+- Integrated commit and evidence: the merge commit of
+  [#10](https://github.com/malmazuke/unirally-reconstruction/pull/10);
+  `artifacts/track-breadth-part2-integration/closeout.json`, and the sweep and captures in
+  `local/evidence/track-breadth/track-breadth-2/`, in the main checkout.
+- Scope still unverified: riding inputs, finishes and results on the new tracks; the five tours
+  not offered on a cold start; stunt events.
