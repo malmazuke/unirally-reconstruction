@@ -6,9 +6,10 @@
   matrix) is reviewed and integrated by pull request #9. Part 2 (references for the 20 tracks
   a cold start reaches and the match column) is reviewed and integrated by pull request #10.
   Part 3 (native selection of the cold-start race tracks by id, pack profile v10; tier 1) is
-  reviewed and integrated by pull request as the third checkpoint. The live keyboard play the
-  acceptance table asks for is the user's; everything else in the table is met for the 20
-  reachable tracks (see Review and integration). Claimed 23 September 2026 at about 01:05Z on the user's explicit override
+  reviewed and integrated by pull request #11. The live play the acceptance table asks for was
+  done by the user after the merge, on EAST and LOOPER with a gamepad rather than the keyboard
+  (attempt 30); everything else in the table is met for the 20 reachable tracks (see Review and
+  integration). Claimed 23 September 2026 at about 01:05Z on the user's explicit override
   of the reset boundary ("you may work past the 80% reserve until the task is complete or the
   weekly limit is reached"). Prepared 22 September 2026 under
   [D-0008](../docs/decisions/D-0008-static-map-track-breadth-review-tiers.md).
@@ -173,6 +174,7 @@ originals across race start; the sampled-frames rule from CLASSIC-RACE-HUD appli
 | 27 (04:45Z) | `$0300` counts from the boundary | Parity from `frame - initialization frame` in the countdown driver, the restored-state selection and the opponent-finish inference; 111 consecutive frames of updates 190-300 on CROCK, LOOPER, EAST, FLAT FUN, ZOOM ZOO | All five show ZOOM ZOO's profile (36 or 0 pixels, 470 at update 272 on all); recompare unchanged | Gates, re-review |
 | 28 (05:15Z, re-review) | - | Tier 1 re-review of `5bab77e`: R1 confirmed fixed on MONSTER, PINGPONG, HAIRPIN HILL, SHORT CUT and DRAGSTER (the old code reproduced the fault), parity logic correct on every path, gates complete; **returned** R3: the suggested acceptance play named CROCK, which aborts at update 1,731 with the controller released | Records only: EAST and LOOPER named instead; the later stops (CROCK 1,731, WARIO PAINT 1,719, HYBRID 2,053 on `inverted AI marker is unrecovered`) and the update-272 residue recorded | Third round |
 | 29 (05:40Z, rounds 3-4) | - | Round 3 (fresh Opus 5.5) on `93c9a01`: R3 fixed, EAST and LOOPER confirmed clean over 4,000 held-input updates, the stops confirmed, `gate_identity` passed; **returned** R4 (HYBRID's guard on no follow-up list). Round 4 on `ccef821`: **approved**, three minor advisories applied before merge | Merge |
+| 30 (06:55Z, after the merge) | New tracks play live | The user ran `frontend run --track 33` and `--track 10` (app-debug at `a9e80f2`, v10 pack) with an Xbox Series X controller on port 0; the main checkout's app build was stale at first and was rebuilt | EAST: 4,736 updates, one finished race, stable result reached, Race Again from it, 0 rider-pose fallback frames, no guard stop; LOOPER: 4,330 updates, the same outcome. Gamepad only (no mapped keys); buttons A, B, X, Start, shoulders and the D-pad | Live criterion met with the gamepad. The user reported two faults: (1) the result screen of both shows DRAGSTER's name; a one-run race reuses DRAGSTER's result assets, including its captured base VRAM (R-0046 observation 13's result-by-mode hypothesis), so the result screen's track name is not recovered; (2) on LOOPER, near the end of a race, the track seemed to vanish below the rider at moments; cause unknown (a first suspect is BG1 row streaming on the 64 x 256 playfield, where the original's map fetch reads `$0D4D`, which native does not model); no frame of a late LOOPER race has been compared |
 | 10 (01:55Z) | The name table follows the track index | Relative-text search, then the table at `$83:9FFA` | 45 names in lowercase ASCII, then five `unavailable` and nine tour names; names 0 and 1 agree with the verified indices | R-0046 observation 5 (static) |
 
 ## Handoff
