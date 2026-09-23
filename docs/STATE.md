@@ -1,5 +1,19 @@
 # Project state
 
+Updated 23 September 2026 (TRACK-BREADTH part 1): **every track in the ROM is
+located, unpacked and run natively; the per-track matrix is in
+[R-0046](research/R-0046-track-breadth-matrix.md).** Track *i* is asset `$C2 +
+i` in the loader's directory at `$82:B332`; all 45 streams decode, and
+`content rnc-inventory` writes the tracked manifest
+`tests/manifests/content/track-streams.json`. A general tile producer
+reproduces both accepted tracks' per-track pack entries byte for byte, and
+`track_geometry` takes four more playfield shapes read from the listing. With
+the controller released for 1,200 updates, 16 tracks complete, 28 stop on one of
+two named unrecovered branches and one shape is refused. No new track is
+compared with the original yet. The task stays in progress
+([TRACK-BREADTH](../tasks/TRACK-BREADTH.md)); part 1 was merged as a checkpoint
+because the session started at 90% weekly usage on the user's override.
+
 Updated 23 September 2026 (PR-WORKFLOW): **changes now reach `main` only
 through pull requests.** Hosted CI runs on pull requests, `main` requires its
 checks on an up-to-date branch and accepts merge commits only, and pull request
@@ -85,7 +99,8 @@ other work; claim STATIC-CODE-MAP when CLASSIC-SPLIT-TIME is integrated, after
 the reset on 24 September 08:00Z or on an explicit user override.
 
 Breadth lines (D-0008): **tracks matched against the original: 2 of 45
-inventoried streams.** **Code banks by class (STATIC-CODE-MAP, R-0045): of
+inventoried streams** (TRACK-BREADTH part 1: 45 of 45 decode and derive their
+tile content; 16 of 45 complete 1,200 idle updates natively, not yet compared). **Code banks by class (STATIC-CODE-MAP, R-0045): of
 131,072 bytes, 41,778 observed, 36,321 inferred, 92 data, 52,881 unknown
 (40.4%, above D-0008's one-quarter trigger; the unknown regions are
 dynamic-capture targets).**

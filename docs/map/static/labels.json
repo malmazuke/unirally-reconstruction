@@ -836,6 +836,24 @@
   ]
  },
  {
+  "address": "$81:8A2C",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_818A2C",
+  "source_records": [
+   "docs/research/R-0046-track-breadth-matrix.md"
+  ]
+ },
+ {
+  "address": "$81:8A31",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_818A31",
+  "source_records": [
+   "docs/research/R-0046-track-breadth-matrix.md"
+  ]
+ },
+ {
   "address": "$81:8AA1",
   "class": "observed",
   "comment": "instruction start",
@@ -1976,7 +1994,8 @@
   "comment": "instruction start",
   "label": "loc_819A4D",
   "source_records": [
-   "docs/research/R-0030-zoom-zoo-native-trial.md"
+   "docs/research/R-0030-zoom-zoo-native-trial.md",
+   "docs/research/R-0046-track-breadth-matrix.md"
   ]
  },
  {
@@ -2060,9 +2079,56 @@
   "label": "sub_81A304",
   "source_records": [
    "docs/research/R-0038-dragster-ordinary-controls.md",
+   "docs/research/R-0046-track-breadth-matrix.md",
    "tasks/CLASSIC-PRESENTATION-UNIFICATION-review.md",
    "tasks/DRAGSTER-ORDINARY-CONTROLS-review.md",
-   "tasks/DRAGSTER-ORDINARY-CONTROLS.md"
+   "tasks/DRAGSTER-ORDINARY-CONTROLS.md",
+   "tasks/TRACK-BREADTH.md"
+  ]
+ },
+ {
+  "address": "$81:A342",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_81A342",
+  "source_records": [
+   "docs/research/R-0046-track-breadth-matrix.md"
+  ]
+ },
+ {
+  "address": "$81:A343",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_81A343",
+  "source_records": [
+   "docs/research/R-0046-track-breadth-matrix.md"
+  ]
+ },
+ {
+  "address": "$81:A388",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_81A388",
+  "source_records": [
+   "docs/research/R-0046-track-breadth-matrix.md"
+  ]
+ },
+ {
+  "address": "$81:A3C7",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_81A3C7",
+  "source_records": [
+   "docs/research/R-0046-track-breadth-matrix.md"
+  ]
+ },
+ {
+  "address": "$81:A406",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_81A406",
+  "source_records": [
+   "docs/research/R-0046-track-breadth-matrix.md"
   ]
  },
  {
@@ -2073,9 +2139,19 @@
   "source_records": [
    "docs/research/R-0036-zoom-zoo-rider-objects.md",
    "docs/research/R-0038-dragster-ordinary-controls.md",
+   "docs/research/R-0046-track-breadth-matrix.md",
    "tasks/CLASSIC-PRESENTATION-UNIFICATION-review.md",
    "tasks/CLASSIC-PRESENTATION-UNIFICATION.md",
    "tasks/M4-16.md"
+  ]
+ },
+ {
+  "address": "$81:A483",
+  "class": "inferred",
+  "comment": "routine start",
+  "label": "sub_81A483",
+  "source_records": [
+   "docs/research/R-0046-track-breadth-matrix.md"
   ]
  },
  {
@@ -2085,8 +2161,18 @@
   "label": "sub_81A4C1",
   "source_records": [
    "docs/research/R-0038-dragster-ordinary-controls.md",
+   "docs/research/R-0046-track-breadth-matrix.md",
    "tasks/CLASSIC-PRESENTATION-UNIFICATION-review.md",
    "tasks/CLASSIC-PRESENTATION-UNIFICATION.md"
+  ]
+ },
+ {
+  "address": "$81:AD1D",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_81AD1D",
+  "source_records": [
+   "docs/research/R-0046-track-breadth-matrix.md"
   ]
  },
  {
@@ -2213,6 +2299,7 @@
    "docs/research/R-0008-track-decode.md",
    "docs/research/R-0009-m1-acceptance.md",
    "docs/research/R-0020-zoom-zoo-reference.md",
+   "docs/research/R-0046-track-breadth-matrix.md",
    "tasks/M1-03.md"
   ]
  },
@@ -4905,7 +4992,8 @@
   "source_records": [
    "docs/content/dragster-segment.md",
    "docs/research/R-0008-track-decode.md",
-   "docs/research/R-0020-zoom-zoo-reference.md"
+   "docs/research/R-0020-zoom-zoo-reference.md",
+   "docs/research/R-0046-track-breadth-matrix.md"
   ]
  },
  {
@@ -4926,7 +5014,9 @@
   "source_records": [
    "docs/content/dragster-segment.md",
    "docs/research/R-0008-track-decode.md",
-   "tasks/M1-03.md"
+   "docs/research/R-0046-track-breadth-matrix.md",
+   "tasks/M1-03.md",
+   "tasks/TRACK-BREADTH.md"
   ]
  },
  {
@@ -4938,6 +5028,7 @@
    "docs/content/dragster-segment.md",
    "docs/research/R-0008-track-decode.md",
    "docs/research/R-0021-zoom-zoo-content-contract.md",
+   "docs/research/R-0046-track-breadth-matrix.md",
    "tasks/M1-03.md",
    "tasks/M4-03.md"
   ]
@@ -5207,7 +5298,17 @@
    "docs/content/dragster-segment.md",
    "docs/research/R-0008-track-decode.md",
    "docs/research/R-0020-zoom-zoo-reference.md",
-   "tasks/M1-03.md"
+   "tasks/M1-03.md",
+   "tasks/TRACK-BREADTH.md"
+  ]
+ },
+ {
+  "address": "$82:E140",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82E140",
+  "source_records": [
+   "docs/research/R-0046-track-breadth-matrix.md"
   ]
  },
  {
@@ -5323,6 +5424,16 @@
   "label": "loc_8396FB",
   "source_records": [
    "docs/research/R-0006-observed-code-map.md"
+  ]
+ },
+ {
+  "address": "$83:9FFA",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_839FFA",
+  "source_records": [
+   "docs/research/R-0046-track-breadth-matrix.md",
+   "tasks/TRACK-BREADTH.md"
   ]
  },
  {
