@@ -31,4 +31,19 @@ inline ZoomZooContent dragster_race_content(const ClassicContentPack& pack) {
                                    pack.entry("physics.track.dragster.tile-flags")};
     return content;
 }
+// Any race track's engine content (TRACK-BREADTH part 3): the shared content
+// with the track's own decoded data, tile columns and tile flags, which pack
+// profile v10 carries as `track.NN.*` for the tracks beyond the first two.
+inline std::string classic_track_entry(ClassicRaceTrack track,const char* part) {
+    return std::string("track.")+char('0'+track.index/10U)+char('0'+track.index%10U)+'.'+part;
+}
+inline ZoomZooContent classic_race_content(const ClassicContentPack& pack,ClassicRaceTrack track) {
+    if(track==ClassicRaceTrack::ZoomZoo)return zoom_zoo_content(pack);
+    if(track==ClassicRaceTrack::Dragster)return dragster_race_content(pack);
+    auto content=zoom_zoo_content(pack);
+    content.movement.sampling.track=pack.entry(classic_track_entry(track,"data"));
+    content.movement.flat_contact={pack.entry(classic_track_entry(track,"tile-columns")),
+                                   pack.entry(classic_track_entry(track,"tile-flags"))};
+    return content;
+}
 }

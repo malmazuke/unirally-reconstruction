@@ -47,11 +47,21 @@ int main(int argc, char** argv) {
             points[0] = {192,0};
             const auto wrapped = unirally::sample_track({track, {}, {}}, points, 0, 0, 2);
             require(wrapped[0] == 0);
+            // $81:8A60-8A99: in the last column (1 of 2) the right-hand
+            // neighbours are column 0 of the same rows: block 1 on the left,
+            // block 0 on the right, blocks 3 and 2 below.
+            points[0] = {8,8}; points[1] = {72,8}; points[2] = {8,72}; points[3] = {72,72};
+            const auto last = unirally::sample_track({track, {}, {}}, points, 64, 0, 2);
+            require(last[0] / 100 == 1 && last[1] / 100 == 0 && last[2] / 100 == 3 && last[3] / 100 == 2);
+            // $81:8A2C-8A3B: a negative y samples coarse cell (0, 0) whatever x is.
+            const auto negative = unirally::sample_track({track, {}, {}}, points, 64, 0xFFC0, 2);
+            require(negative[0] / 100 == 0 && negative[1] / 100 == 1 && negative[2] / 100 == 2 && negative[3] / 100 == 3);
         } else if (name == "bounds") {
             bool missing = false, edge = false;
             try { (void)unirally::collision_points({{}, {}, {}}, 0, false); }
             catch (const std::out_of_range&) { missing = true; }
-            try { (void)unirally::sample_track({{}, {}, {}}, {}, 64, 0, 2); }
+            // A coarse width of zero has no playfield.
+            try { (void)unirally::sample_track({{}, {}, {}}, {}, 64, 0, 0); }
             catch (const std::out_of_range&) { edge = true; }
             require(missing && edge);
         } else return 3;

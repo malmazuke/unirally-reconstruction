@@ -142,7 +142,7 @@ struct Options {
   std::uint32_t maximum_updates{};
   std::optional<std::uint16_t> fixed_controller_mask;
   bool hidden{};
-  bool zoom_zoo{};
+  unirally::ClassicRaceTrack track{unirally::ClassicRaceTrack::Dragster};
 };
 
 std::uint32_t parse_updates(std::string_view value) {
@@ -167,7 +167,8 @@ std::uint16_t parse_controller_mask(std::string_view value) {
 
 void print_help() {
   std::cout
-      << "Usage: unirally --content-pack PATH [--track dragster|zoom-zoo] [--updates N] [--hidden]\n"
+      << "Usage: unirally --content-pack PATH [--track dragster|zoom-zoo|NN] [--updates N] [--hidden]\n"
+      << "       NN: a race track's number (its index in the ROM) with a recovered scenario\n"
       << "       unirally --supported-profiles   (print the pack profiles this build reads)\n"
       << "Runs the Classic CRAWLER / DRAGSTER native slice at PAL 50 Hz.\n"
       << "Keyboard: arrows, Z=B, X=Y, A=A, S=X, Q=L, W=R, Enter=Start.\n"
@@ -197,8 +198,16 @@ std::optional<Options> options(int argc, char **argv) {
       throw std::invalid_argument(std::string(option) + " requires a value");
     const std::string_view value(argv[++index]);
     if (option == "--track") {
-      if(value!="dragster" && value!="zoom-zoo")throw std::invalid_argument("unknown track");
-      result.zoom_zoo=value=="zoom-zoo";
+      if(value=="dragster")result.track=unirally::ClassicRaceTrack::Dragster;
+      else if(value=="zoom-zoo")result.track=unirally::ClassicRaceTrack::ZoomZoo;
+      else {
+        unsigned track_index{};
+        const auto parsed_index=std::from_chars(value.data(),value.data()+value.size(),track_index);
+        if(parsed_index.ec!=std::errc{} || parsed_index.ptr!=value.data()+value.size() || track_index>44U ||
+           !unirally::classic_race_has_scenario(unirally::ClassicRaceTrack{static_cast<std::uint8_t>(track_index)}))
+          throw std::invalid_argument("unknown track: use dragster, zoom-zoo or the number of a race track with a recovered scenario");
+        result.track=unirally::ClassicRaceTrack{static_cast<std::uint8_t>(track_index)};
+      }
     } else if (option == "--content-pack")
       result.pack = value;
     else if (option == "--updates")
@@ -246,19 +255,19 @@ int main(int argc, char **argv) try {
   if (!parsed)
     return 0;
   RuntimeContent content(parsed->pack); // validate before SDL or gameplay
-  const auto track=parsed->zoom_zoo?unirally::ClassicRaceTrack::ZoomZoo:unirally::ClassicRaceTrack::Dragster;
+  const auto track=parsed->track;
+  const bool zoom_zoo=track==unirally::ClassicRaceTrack::ZoomZoo;
   // Both tracks run the shared race engine (R-0038) and are drawn by the shared
   // renderer from their own track content. DRAGSTER's trick, landing, reversal
   // and finish tables are track-independent ROM tables that only the two-track
   // pack carries; the 25-entry DRAGSTER pack cannot play them.
-  if(!parsed->zoom_zoo && content.pack.optional_entry("zoom.landing-response-matrices").empty())
-    throw std::invalid_argument("DRAGSTER needs the two-track content pack for jumps, brakes, reversal and tricks; "
+  if(!zoom_zoo && content.pack.optional_entry("zoom.landing-response-matrices").empty())
+    throw std::invalid_argument("DRAGSTER and the other tracks need the full content pack for jumps, brakes, reversal and tricks; "
                                 "create it from your ROM with: python3 tools/project.py frontend run --track dragster "
-                                "--pack local/classic-pal-crawler-two-tracks-v9.pack --rom PATH");
-  const auto zoom_content=parsed->zoom_zoo?unirally::zoom_zoo_content(content.pack):unirally::dragster_race_content(content.pack);
+                                "--pack local/classic-pal-crawler-tracks-v10.pack --rom PATH");
+  const auto zoom_content=unirally::classic_race_content(content.pack,track);
   const auto race_presentation=unirally::classic_race_presentation_content(content.pack,track);
-  auto zoom_state=parsed->zoom_zoo?unirally::classic_crawler_zoom_zoo_start(zoom_content)
-                                  :unirally::classic_crawler_dragster_race_start(zoom_content);
+  auto zoom_state=unirally::classic_race_start(zoom_content,unirally::classic_race_scenario(track));
   auto& state=zoom_state.movement;
   auto zoom_hud_state=zoom_state; // State before the latest update, for the HUD.
   unsigned restarts=0;
@@ -271,7 +280,8 @@ int main(int argc, char **argv) try {
   SdlQuitter quit;
   const auto flags = SDL_WINDOW_RESIZABLE |
                      (parsed->hidden ? SDL_WINDOW_HIDDEN : 0U);
-  Window window(SDL_CreateWindow(parsed->zoom_zoo?"Unirally — Classic CRAWLER / ZOOM ZOO":"Unirally — Classic CRAWLER / DRAGSTER",
+  const std::string window_title="Unirally — Classic / "+race_presentation.track_name;
+  Window window(SDL_CreateWindow(window_title.c_str(),
                                  768, 672, flags));
   if (!window)
     throw sdl_error("window creation failed");
@@ -504,16 +514,16 @@ int main(int argc, char **argv) try {
             << state.frame << "; controller-0 mask " << last_ports[0]
             << "; player x " << state.riders[0].motion.x << "; velocity x "
             << state.riders[0].motion.velocity_x << '\n';
-  if(!parsed->zoom_zoo) {
+  if(!zoom_zoo) {
     const auto shown=unirally::classic_finish_view(zoom_state);
-    std::cout<<"DRAGSTER race phase "<<static_cast<unsigned>(shown.phase)
+    std::cout<<race_presentation.track_name<<" race phase "<<static_cast<unsigned>(shown.phase)
       <<"; outcome "<<static_cast<unsigned>(shown.outcome)<<'\n';
   }
-  std::cout<<(parsed->zoom_zoo?"ZOOM ZOO":"DRAGSTER")<<" result updates "<<zoom_state.result_updates<<"; restarts "<<restarts
+  std::cout<<race_presentation.track_name<<" result updates "<<zoom_state.result_updates<<"; restarts "<<restarts
       <<"; totals "<<zoom_state.race.total_times[0]<<'/'<<zoom_state.race.total_times[1]
       <<"; stable results reached "<<results_reached<<"; restarts from result/pause "
       <<result_restarts<<'/'<<pause_restarts<<'\n';
-  if(parsed->zoom_zoo) {
+  if(zoom_zoo) {
     std::cout<<"Opponent tricks: updates "<<opponent_trick_updates<<"; multi-axis updates "
              <<opponent_multi_axis_updates<<"; selectors seen";
     if(!seen_selectors)std::cout<<" none";

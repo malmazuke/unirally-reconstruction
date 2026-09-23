@@ -1,6 +1,7 @@
 #include "movement.hpp"
 
 #include <algorithm>
+#include <optional>
 #include <stdexcept>
 
 namespace unirally {
@@ -1503,11 +1504,37 @@ ClassicRaceScenario classic_race_scenario(ClassicRaceTrack track) {
     // ZOOM ZOO: M4-16 primary, end-1376, three laps, result stable at load 115.
     // DRAGSTER: end-1328 on the accepted menu path (R-0038), one lap; the
     // stable winner/loser screens follow load 226/242 (R-0012, R-0019).
-    switch(track) {
-    case ClassicRaceTrack::ZoomZoo: return {track,1376,3,115,115,true};
-    case ClassicRaceTrack::Dragster: return {track,1328,1,226,242,false};
-    }
-    throw std::invalid_argument("unknown classic race track");
+    if(track==ClassicRaceTrack::ZoomZoo)return {track,1376,3,115,115,true};
+    if(track==ClassicRaceTrack::Dragster)return {track,1328,1,226,242,false};
+    // TRACK-BREADTH part 2 (R-0046 observations 6-8): the other race tracks a
+    // cold start reaches, as the original sets them up. The race mode ($77:074B)
+    // and lap count ($77:0744) are read at each track's initialization boundary;
+    // a one-run race stores 0 laps and races one, as DRAGSTER does. The frame is
+    // the boundary on the laboratory's menu path (`track_reference`), a label
+    // only. The stable result updates follow the race mode's accepted track
+    // (DRAGSTER for mode 0, ZOOM ZOO for mode 1): a hypothesis, since no new
+    // track's result screen has been captured.
+    struct Observed {std::uint8_t index;std::uint16_t initialization_frame,laps;bool lap_race;};
+    static constexpr std::array<Observed,14> observed{{
+        {3,1418,1,false},{4,1419,3,true},{10,1417,1,false},{11,1368,3,true},{13,1392,1,false},{14,1376,7,true},
+        {20,1360,1,false},{21,1367,3,true},{23,1386,1,false},{24,1402,3,true},{30,1390,1,false},{31,1397,3,true},
+        {33,1403,1,false},{34,1407,5,true}}};
+    for(const auto& o:observed)
+        if(o.index==track.index)
+            return o.lap_race?ClassicRaceScenario{track,o.initialization_frame,o.laps,115,115,true}
+                             :ClassicRaceScenario{track,o.initialization_frame,o.laps,226,242,false};
+    throw std::invalid_argument("classic race track has no recovered scenario");
+}
+
+bool classic_race_has_scenario(ClassicRaceTrack track) {
+    try {(void)classic_race_scenario(track);return true;}
+    catch(const std::invalid_argument&) {return false;}
+}
+
+std::array<std::uint8_t,8> classic_race_state_magic(ClassicRaceTrack track) {
+    if(track==ClassicRaceTrack::Dragster)return dragster_race_state_magic;
+    if(track==ClassicRaceTrack::ZoomZoo)return {'U','R','Z','Z','0','0','0','B'};
+    return {'U','R','T','R',static_cast<std::uint8_t>('0'+track.index/10U),static_cast<std::uint8_t>('0'+track.index%10U),'0','1'};
 }
 
 std::uint16_t race_adjustment_limit(const ClassicRaceScenario& scenario) {
@@ -1657,10 +1684,11 @@ std::vector<std::uint8_t> serialize_zoom_zoo(const ZoomZooState& state) {
         put32(bytes,state.pause.suspended_updates);put32(bytes,state.pause.suspended_countdown_updates);
     }
     if(state.track!=ClassicRaceTrack::ZoomZoo) {
-        // DRAGSTER on the shared engine: the URZZ000B layout under its own
-        // identity, so a restore can never run one track's state on the other.
-        if(!state.native_initialization)throw std::invalid_argument("DRAGSTER race state requires native initialization");
-        std::copy(dragster_race_state_magic.begin(),dragster_race_state_magic.end(),bytes.begin());
+        // Another track on the shared engine: the URZZ000B layout under its own
+        // identity, so a restore can never run one track's state on another.
+        if(!state.native_initialization)throw std::invalid_argument("a race state of any track but ZOOM ZOO requires native initialization");
+        const auto identity=classic_race_state_magic(state.track);
+        std::copy(identity.begin(),identity.end(),bytes.begin());
     }
     return bytes;
 }
@@ -1887,11 +1915,22 @@ static ZoomZooState deserialize_classic_race(std::span<const std::uint8_t> bytes
     return state;
 }
 ZoomZooState deserialize_zoom_zoo(std::span<const std::uint8_t> bytes) {
-    if(bytes.size()==742 && std::equal(dragster_race_state_magic.begin(),dragster_race_state_magic.end(),bytes.begin())) {
+    // Any track but ZOOM ZOO carries its own identity over the URZZ000B layout.
+    std::optional<ClassicRaceTrack> other;
+    if(bytes.size()==742 && std::equal(dragster_race_state_magic.begin(),dragster_race_state_magic.end(),bytes.begin()))
+        other=ClassicRaceTrack::Dragster;
+    else if(bytes.size()==742 && bytes[0]=='U' && bytes[1]=='R' && bytes[2]=='T' && bytes[3]=='R' &&
+            bytes[4]>='0' && bytes[4]<='9' && bytes[5]>='0' && bytes[5]<='9' && bytes[6]=='0' && bytes[7]=='1') {
+        const ClassicRaceTrack track{static_cast<std::uint8_t>((bytes[4]-'0')*10+(bytes[5]-'0'))};
+        if(track==ClassicRaceTrack::Dragster || track==ClassicRaceTrack::ZoomZoo || !classic_race_has_scenario(track))
+            throw std::invalid_argument("classic race state names a track without its own identity");
+        other=track;
+    }
+    if(other) {
         std::vector<std::uint8_t> shared(bytes.begin(),bytes.end());
-        const std::array<std::uint8_t,8> zoom_zoo_magic{'U','R','Z','Z','0','0','0','B'};
+        const auto zoom_zoo_magic=classic_race_state_magic(ClassicRaceTrack::ZoomZoo);
         std::copy(zoom_zoo_magic.begin(),zoom_zoo_magic.end(),shared.begin());
-        return deserialize_classic_race(shared,ClassicRaceTrack::Dragster);
+        return deserialize_classic_race(shared,*other);
     }
     return deserialize_classic_race(bytes,ClassicRaceTrack::ZoomZoo);
 }

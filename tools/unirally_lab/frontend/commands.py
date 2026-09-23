@@ -96,6 +96,12 @@ def _finish(rep: reportmod.Report, report: Path | None, status: int) -> int:
     return status
 
 
+def _track_choice(value: str) -> str:
+    if value in ("dragster", "zoom-zoo") or (value.isdigit() and 0 <= int(value) <= 44):
+        return value
+    raise argparse.ArgumentTypeError("use dragster, zoom-zoo or a track number 0-44")
+
+
 def default_pack_path(rules: dict) -> Path:
     """Where a pack of the rules' profile is extracted when no pack is named.
 
@@ -282,8 +288,9 @@ def cmd_run(args: argparse.Namespace) -> int:
     if stale_build is not None:
         return _finish(rep, paths.report, stale_build)
     command = [str(executable), "--content-pack", str(pack_path)]
-    if getattr(args, "track", "dragster") == "zoom-zoo":
-        command.extend(["--track", "zoom-zoo"])
+    track = getattr(args, "track", "dragster")
+    if track != "dragster":
+        command.extend(["--track", track])
     if args.hidden:
         command.append("--hidden")
     if args.updates is not None:
@@ -315,7 +322,8 @@ def register(sub: argparse._SubParsersAction) -> None:
                                          "Audio is intentionally not implemented in M3.")
     run.add_argument("--pack", default=None,
                      help="one pack to validate and launch; omit it to select a pack by profile under local/")
-    run.add_argument("--track", choices=["dragster", "zoom-zoo"], default="dragster")
+    run.add_argument("--track", type=_track_choice, default="dragster",
+                     help="dragster, zoom-zoo, or the number of a race track with a recovered scenario (TRACK-BREADTH)")
     run.add_argument("--rom", help="supported PAL ROM for first launch only; omission means selection was cancelled")
     run.add_argument("--replace-pack", action="store_true",
                      help="with --rom, move an incompatible existing pack aside and extract a new one in its place")

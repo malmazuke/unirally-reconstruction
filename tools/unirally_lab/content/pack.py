@@ -19,8 +19,10 @@ SCHEMA_VERSION = 1
 RULES_PATH = "tests/manifests/content/classic-crawler-dragster-pack.json"
 PROFILE_ID = "classic.pal.crawler.dragster.v1"
 START_STATE_ID = "classic.crawler.dragster.race-start.v1"
-TWO_TRACK_RULES_PATH = "tests/manifests/content/classic-crawler-two-tracks-pack.json"
-TWO_TRACK_PROFILE = "classic.pal.crawler.two-tracks.v9"
+# The current Classic pack: DRAGSTER, ZOOM ZOO and, from v10 (TRACK-BREADTH part 3), the other
+# race tracks a cold start reaches. The names keep their two-track origin.
+TWO_TRACK_RULES_PATH = "tests/manifests/content/classic-crawler-tracks-pack.json"
+TWO_TRACK_PROFILE = "classic.pal.crawler.tracks.v10"
 TWO_TRACK_START = "classic.crawler.race-start.v2"
 
 

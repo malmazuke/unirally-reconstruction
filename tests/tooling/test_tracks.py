@@ -80,6 +80,30 @@ class TileContentTests(unittest.TestCase):
         self.assertEqual(derived["bg1_tiles"][8 * 128:], tile_bytes[1024:1088] + tile_bytes[1088:1152])
 
 
+class PackProfileTests(unittest.TestCase):
+    """Profile v10's added entries: the rules file and the loader's compiled table agree."""
+
+    def test_rules_and_compiled_table_agree(self) -> None:
+        import hashlib
+        import re
+        rules_path = ROOT / "tests" / "manifests" / "content" / "classic-crawler-tracks-pack.json"
+        rules = json.loads(rules_path.read_text(encoding="utf-8"))
+        added = [e for e in rules["entries"] if e["id"].startswith(("track.", "scenery.")) or e["id"] == "presentation.classic.track-names.v1"]
+        source = (ROOT / "src" / "core" / "content_pack.cpp").read_text(encoding="utf-8")
+        table = source[source.index("tracks_required{{"):]
+        table = table[:table.index("}};")]
+        compiled = [(i, int(n), d) for i, n, d in re.findall(r'\{"([^"]+)", (\d+), "([0-9a-f]{64})"\}', table)]
+        self.assertEqual(compiled, [(e["id"], e["size"], e["sha256"]) for e in added])
+        self.assertIn(hashlib.sha256(rules_path.read_bytes()).hexdigest(), source)
+        self.assertEqual(rules["profile_id"], "classic.pal.crawler.tracks.v10")
+        ids = {e["id"] for e in added}
+        for index in tracks.NEW_RACE_TRACKS:
+            for part in ("data", "tile-columns", "tile-flags", "bg1-tiles"):
+                self.assertIn(f"track.{index:02d}.{part}", ids)
+            for part in ("bg2-tiles", "bg2-map", "palette"):
+                self.assertIn(f"scenery.{tracks.scenery(index):02d}.{part}", ids)
+
+
 class TrackedManifestTests(unittest.TestCase):
     def test_manifest_carries_no_payload_bytes(self) -> None:
         manifest = json.loads(MANIFEST.read_text(encoding="utf-8"))

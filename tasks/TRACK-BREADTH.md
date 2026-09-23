@@ -4,8 +4,11 @@
 
 - Status: in progress. Part 1 (inventory, per-track producers, playfield shapes, native idle
   matrix) is reviewed and integrated by pull request #9. Part 2 (references for the 20 tracks
-  a cold start reaches and the match column) is reviewed and integrated by pull request as the
-  second checkpoint; native selection by track id is next. Claimed 23 September 2026 at about 01:05Z on the user's explicit override
+  a cold start reaches and the match column) is reviewed and integrated by pull request #10.
+  Part 3 (native selection of the cold-start race tracks by id, pack profile v10; tier 1) is
+  reviewed and integrated by pull request as the third checkpoint. The live keyboard play the
+  acceptance table asks for is the user's; everything else in the table is met for the 20
+  reachable tracks (see Review and integration). Claimed 23 September 2026 at about 01:05Z on the user's explicit override
   of the reset boundary ("you may work past the 80% reserve until the task is complete or the
   weekly limit is reached"). Prepared 22 September 2026 under
   [D-0008](../docs/decisions/D-0008-static-map-track-breadth-review-tiers.md).
@@ -158,6 +161,18 @@ originals across race start; the sampled-frames rule from CLASSIC-RACE-HUD appli
 | 15 (02:40Z) | Other tours are locked on a cold start | PICK TOUR picture, one Down | Four tours offered (CRAWLER, SHUFFLER, WALKER, HOPPER); SHUFFLER lists tracks 10-14 | Sweep all 20 |
 | 16 (02:45-03:00Z) | - | `sweep` over the 20, each captured twice | First run compared the menu position instead of `$77:074A` on rows 1-3 (bug, fixed, run discarded as `sweep-position-bug`). Second run: all repeats identical; indices 10 x row + position; 6 exact over about 1,500 updates, 7 exact until a native guard, PINGPONG 1,068 then `opponent.response_b`, 2 lap-count only, 4 stunt | R-0046 part 2 |
 | 17 (03:05Z) | The landing matrices vary by track | WRAM `$0572-$0B59` at each boundary against the pack entry | Identical on all 20 | Records |
+| 18 (03:10Z, part 3) | The scenery comes from the track index | Listing of `$82:DC20-DD84`, asset directory `$70`-`$B5` | s = track mod 14; BG2 tiles `$70+s`, map `$82+s`, palette row `$93+s`, class block by `$82:DC12+s`; the generated pieces equal both accepted tracks' v9 entries | Pack v10 |
+| 19 (03:20Z) | The v9 per-track entries come from general producers | `tracks.track_pack_entries`/`scenery_pack_entries` for tracks 0 and 1 against the v9 rules | All 14 source lists and digests equal | Generate v10 (147 entries) |
+| 20 (03:40Z) | A track index replaces the two-track enum | `ClassicRaceTrack{index}`, scenario table, `URTR<NN>01`, `classic_race_content`, per-track presentation, runner and app | Three presets build, ctest 23/23, new native checks pass | Per-track comparison |
+| 21 (03:50Z) | Each track's own scenario matches | `track_reference recompare --per-track` on the part 2 captures, v10 pack, no override | FLAT FUN, WARIO PAINT, CROCK, EAST exact; HAIRPIN HILL 302 rows exact to its guard; INFINITY 379 rows then `race checkpoint index invalid`; the rest unchanged | Pictures |
+| 22 (03:55Z) | New tracks draw as the original | Native frames against original frames, six race frames each | 0-36 differing pixels on FLAT FUN, WARIO PAINT, CROCK; 0-72 on the ZOOM ZOO baseline | Gates |
+| 23 (04:05Z) | New tracks play under input | Gate script's hidden app runs, 4,000 updates with a held button, tracks 13 and 30 | Both abort at `unrecovered coarse-grid edge branch` | Recover the edge inside this part (small, and live play needs it) |
+| 24 (04:15Z) | The listing's edge paths are the original's | `$81:8A2C-8A3B` (negative y to cell 0, 0) and `$81:8A60-8A99` (last column wraps to column 0), then recompare | LOOPER and HYBRID (opponent in the last column) exact to the end, 1,484 and 1,515; DRAGRACE (opponent y `$FFFB`) 1,353, 900 past its stop | Gates, review |
+| 25 (03:07-03:47Z) | Nothing accepted moves | `artifacts/track-breadth-3/gates.sh` on `fa62939`, v10 pack: presets and ctest, synthetic, v1 contracts, hidden app runs (DRAGSTER, ZOOM ZOO, 13, 30), fuzz, all eleven differential gates, `rnc-inventory --expect` | ctest 23/23 x3; synthetic, v1 winner and loser passed; hidden DRAGSTER, ZOOM ZOO and FLAT FUN 0 fallback frames over 4,000 held-input updates; **WARIO PAINT aborts at the special-tile guard under held input** (declared, the next follow-up); fuzz 0 aborts; all eleven gates passed with the same row digests and restore counts as `1f554fb`; inventory passed. Sanitizers unavailable on this host | Records, review |
+| 26 (04:30Z, review round 1) | - | Tier 1 review of `775e7ba` returned: R1 the GO letters swap on odd-boundary tracks (the window drivers took `$0300`'s parity from the absolute frame); R2 the records overclaimed | Confirmed; the review's six sampled frames had missed the window | Fix R1 at the three parity sites, correct the records |
+| 27 (04:45Z) | `$0300` counts from the boundary | Parity from `frame - initialization frame` in the countdown driver, the restored-state selection and the opponent-finish inference; 111 consecutive frames of updates 190-300 on CROCK, LOOPER, EAST, FLAT FUN, ZOOM ZOO | All five show ZOOM ZOO's profile (36 or 0 pixels, 470 at update 272 on all); recompare unchanged | Gates, re-review |
+| 28 (05:15Z, re-review) | - | Tier 1 re-review of `5bab77e`: R1 confirmed fixed on MONSTER, PINGPONG, HAIRPIN HILL, SHORT CUT and DRAGSTER (the old code reproduced the fault), parity logic correct on every path, gates complete; **returned** R3: the suggested acceptance play named CROCK, which aborts at update 1,731 with the controller released | Records only: EAST and LOOPER named instead; the later stops (CROCK 1,731, WARIO PAINT 1,719, HYBRID 2,053 on `inverted AI marker is unrecovered`) and the update-272 residue recorded | Third round |
+| 29 (05:40Z, rounds 3-4) | - | Round 3 (fresh Opus 5.5) on `93c9a01`: R3 fixed, EAST and LOOPER confirmed clean over 4,000 held-input updates, the stops confirmed, `gate_identity` passed; **returned** R4 (HYBRID's guard on no follow-up list). Round 4 on `ccef821`: **approved**, three minor advisories applied before merge | Merge |
 | 10 (01:55Z) | The name table follows the track index | Relative-text search, then the table at `$83:9FFA` | 45 names in lowercase ASCII, then five `unavailable` and nine tour names; names 0 and 1 agree with the verified indices | R-0046 observation 5 (static) |
 
 ## Handoff
@@ -184,7 +199,14 @@ originals across race start; the sampled-frames rule from CLASSIC-RACE-HUD appli
 - Part 2: `tools/unirally_lab/native/track_reference.py` (lab only) and its tests (the menu
   path only; no ROM-free test covers the boundary finder or the comparison); the sweep
   and captures are in `local/evidence/track-breadth/track-breadth-2/` after integration.
-- Exact next experiment/command (after part 2): make the race scenario data (mode, laps,
+- Part 3: native selection by id is in (R-0046 observations 12-15). Evidence in
+  `local/evidence/track-breadth/track-breadth-3/` after integration (recompare, pictures,
+  gates). The sampler edges were recovered inside this part (small; live play of the new
+  tracks aborted without them). Next: the special-tile response, HYBRID's `inverted AI
+  marker is unrecovered` guard (update 2,053), INFINITY's checkpoint guard, PINGPONG's
+  `opponent.response_b`, then the locked tours and a captured finish and result
+  on a new track (the result timing and assets follow the race mode as a hypothesis).
+- Former next experiment (after part 2, done in part 3): make the race scenario data (mode, laps,
   initialization frame per track, from R-0046 observations 7-8), add the reachable tracks'
   per-track entries to a new pack profile and select a track by id in the runner and the app;
   then re-run `track_reference sweep` on the native scenario per track. The part 1 plan below
@@ -258,3 +280,41 @@ Part 2 (checkpoint; the task is not accepted):
   `local/evidence/track-breadth/track-breadth-2/`, in the main checkout.
 - Scope still unverified: riding inputs, finishes and results on the new tracks; the five tours
   not offered on a cold start; stunt events.
+
+Part 3 (checkpoint; the task is not accepted):
+
+- Reviewer: a fresh Claude Opus 5.5 subagent in the detached checkout
+  `.worktrees/track-breadth-3-review` at `775e7ba`, tier 1. It extracted pack v10 itself
+  (identical; v9's 57 entries unchanged; the compiled table equals the rules), derived
+  sceneries 5, 6, 9 and 13 from the listing (withheld), decoded `$81:8A2A-8AC7` and matched
+  the new sampler, reproduced the recompare row for row and each edge case at the former
+  stops, round-tripped a CROCK state, checked the 14 scenarios against the sweep, re-ran
+  `opposing-axes` and `dragster-random-1` (same digests), picture-checked LOOPER, CROCK and
+  EAST itself (withheld), and ran the unit tests, ctest and the synthetic suite.
+  **Returned** with two required findings and eight advisories
+  ([review](https://github.com/malmazuke/unirally-reconstruction/pull/11#pullrequestreview-5286795353)).
+- Changes in response: R1 (the GO letters swapped on the six odd-boundary tracks; `$0300`
+  counts from race start) fixed at the three parity sites and verified on 111 consecutive
+  frames of five tracks; R2 (overclaims in STATE, R-0046 observation 15, stale matrix rows)
+  corrected. Advisories: A2 (runner options) tightened; A3, A4, A5 and A7 corrected in code
+  comments and R-0046; A1 (the finish slowdown's absolute frame modulo 3) recorded as an
+  open question for a new-track finish capture; A6 (compare the frame label too) declined,
+  since the labels already agree on all 16; A8 answered by this entry. Re-review requested
+  on the new head.
+- Re-review of `5bab77e` (fresh Claude Opus 5.5): R1 fixed and verified independently on
+  five tracks, with the old code reproducing the fault; **returned** R3 (records named CROCK
+  for the acceptance play, which aborts at update 1,731) and five advisories (A9-A13). All
+  addressed in records, comments and the gate script; no gate-binary input changed
+  (`gate_identity` against `gates-5bab77e`). Round 3 of `93c9a01` confirmed R3 and returned
+  R4 (HYBRID's guard on no follow-up list), fixed in `ccef821`; round 4 **approved**
+  `ccef821` with three minor advisories on wording, applied before the merge.
+- Merge candidate and checks: the pull request head after re-review, with `changes` and both
+  `lab` jobs green on it and the gate script run on it.
+- Integrated commit and evidence: the merge commit of
+  [#11](https://github.com/malmazuke/unirally-reconstruction/pull/11);
+  `artifacts/track-breadth-part3-integration/closeout.json` and
+  `local/evidence/track-breadth/track-breadth-3/` in the main checkout.
+- Scope still unverified: a new track's finish, winner banner and result screen; the special-
+  tile response, HYBRID's inverted-AI-marker guard and INFINITY's checkpoint guard (play can
+  abort there, including after the exact windows: CROCK at update 1,731, WARIO PAINT at
+  1,719, HYBRID at 2,053, all with the controller released); the five locked tours.

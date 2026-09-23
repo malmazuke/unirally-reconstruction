@@ -188,7 +188,11 @@ def native_rows(binary, pack, track, count, scenario):
         start = int(subprocess.run(base+['--inputs', str(empty)], capture_output=True, text=True, timeout=60).stdout.split()[0])
         inputs = root/'inputs.txt'
         inputs.write_text(''.join(f'{start+k} 0 0\n' for k in range(1, count)))
-        run = subprocess.run(base+['--track-override', str(root/'content'), '--inputs', str(inputs)], capture_output=True, text=True, timeout=600)
+        # A per-track scenario (classic.track.NN, pack profile v10) takes the
+        # track's content from the pack itself; a race-mode scenario takes it
+        # from the laboratory override.
+        override = [] if scenario.startswith('classic.track.') else ['--track-override', str(root/'content')]
+        run = subprocess.run(base+override+['--inputs', str(inputs)], capture_output=True, text=True, timeout=600)
         return [line.split()[1] for line in run.stdout.splitlines()], run.returncode, run.stderr.strip(), start
 
 
@@ -246,6 +250,35 @@ def sweep(core_path, out, binary, pack, horizon, tour_rows=range(4), positions=r
     return rows
 
 
+def native_scenario(track, mode, per_track):
+    """The native scenario to compare a captured race with: the track's own
+    (TRACK-BREADTH part 3) or the accepted track of the same race mode."""
+    if mode not in SCENARIO_FOR_MODE:
+        return None
+    if per_track and track not in (0, 1):
+        return f'classic.track.{track:02d}'
+    return SCENARIO_FOR_MODE[mode]
+
+
+def recompare(sweep_dir, binary, pack, per_track, out):
+    """Compare an earlier sweep's captures with native again, without recapturing."""
+    rows = []
+    for row in json.loads((sweep_dir/'sweep.json').read_text())['rows']:
+        scenario = native_scenario(row['track_074a'], row['race_mode_074b'], per_track)
+        result = dict(track=row['track_074a'], race_mode=row['race_mode_074b'], laps=row['laps_0744'], native_scenario=scenario)
+        if scenario is not None:
+            r = explore(sweep_dir/row['capture'], binary, pack, scenario)
+            result.update({k: r[k] for k in ('original_rows', 'native_rows', 'native_exit', 'native_error',
+                                             'exact_updates_from_boundary', 'first_divergence', 'native_initialization_frame',
+                                             'initialization_frame')})
+        rows.append(result)
+        print(json.dumps({k: result.get(k) for k in ('track', 'native_scenario', 'exact_updates_from_boundary', 'native_rows',
+                                                    'original_rows', 'native_error')}), flush=True)
+    out.write_text(json.dumps(dict(kind='track_breadth_recompare', sweep=str(sweep_dir), per_track=per_track, rows=rows),
+                              indent=1, default=list)+'\n')
+    return rows
+
+
 def main():
     p = argparse.ArgumentParser(description=__doc__)
     sub = p.add_subparsers(dest='command', required=True)
@@ -268,8 +301,16 @@ def main():
     w.add_argument('--binary', type=Path, required=True)
     w.add_argument('--pack', type=Path, required=True)
     w.add_argument('--horizon', type=int, required=True)
+    r = sub.add_parser('recompare')
+    r.add_argument('--sweep', type=Path, required=True, help='directory holding an earlier sweep.json and its captures')
+    r.add_argument('--binary', type=Path, required=True)
+    r.add_argument('--pack', type=Path, required=True)
+    r.add_argument('--per-track', action='store_true', help="compare on each track's own scenario (classic.track.NN)")
+    r.add_argument('--out', type=Path, required=True)
     a = p.parse_args()
-    if a.command == 'sweep':
+    if a.command == 'recompare':
+        recompare(a.sweep, a.binary, a.pack, a.per_track, a.out)
+    elif a.command == 'sweep':
         a.out.mkdir(parents=True)
         sweep(a.core.resolve(), a.out, a.binary, a.pack, a.horizon)
     elif a.command == 'capture':

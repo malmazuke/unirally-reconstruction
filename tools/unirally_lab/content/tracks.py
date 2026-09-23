@@ -184,3 +184,117 @@ def inventory(rom: bytes) -> dict[str, Any]:
     return {"schema_version": 1, "kind": "track_stream_inventory", "rom_sha256": sha256(rom),
             "asset_directory": f"${ASSET_DIRECTORY_BUS:06X}", "first_track_asset": f"${FIRST_TRACK_ASSET:02X}",
             "track_count": count, "streams": streams}
+
+
+# ------------------------------------------------------------- pack entries (TRACK-BREADTH part 3)
+
+# The race tracks a cold start reaches, beyond DRAGSTER (0) and ZOOM ZOO (1), whose
+# scenario (race mode, laps, initialization frame) is observed (R-0046 observations
+# 6-8). The stunt events (2, 12, 22, 32) are a separate mode and are not listed.
+NEW_RACE_TRACKS = (3, 4, 10, 11, 13, 14, 20, 21, 23, 24, 30, 31, 33, 34)
+SCENERY_COUNT = 14
+# `$82:DC20-DD84`: BG2 tiles asset `$70 + s`, map `$82 + s`, palette row `$93 + s`
+# for scenery s = track mod 14 (track 42, NEON, has an extra case not listed here),
+# then a six-row palette block chosen by the class byte `$82:DC12 + s`.
+SCENERY_CLASS_TABLE_BUS = 0x82DC12
+CLASS_PALETTE_ASSETS = {0: 0xA4, 1: 0xB0, 2: 0xAA}
+# The four palette rows both accepted tracks load after the scenery (`$82:DD84-DDCC`);
+# the loader picks them by the rider selection (`$77:0748`/`$0749`), MIKE throughout.
+FIXED_PALETTE_PIECES = ((0x07B9A0, 32), (0x020180, 32), (0x020380, 32), (0x0203A0, 32))
+
+
+def _asset_piece(rom: bytes, asset: int) -> tuple[int, int]:
+    e = asset_entry(rom, asset)
+    if e["compressed"]:
+        raise TrackError(f"asset ${asset:02X} is compressed")
+    return provenance.rom_file_offset(((e["bank"] | 0x80) << 16) | e["address"], len(rom)), e["length"]
+
+
+def _merge(pieces: list[tuple[int, int]]) -> list[tuple[int, int]]:
+    merged: list[tuple[int, int]] = []
+    for offset, length in pieces:
+        if merged and merged[-1][0] + merged[-1][1] == offset:
+            merged[-1] = (merged[-1][0], merged[-1][1] + length)
+        else:
+            merged.append((offset, length))
+    return merged
+
+
+def tile_pieces(rom: bytes, tile_set_ids: list[int]) -> dict[str, list[tuple[int, int]]]:
+    """The ROM pieces of ``tile_content``'s three outputs, in the same order."""
+    tiles, columns, flags = [], [], []
+    for identifier in tile_set_ids:
+        directory = _rom(rom, TILE_DIRECTORY_BUS + 5 * identifier, 5)
+        tile_bus = (directory[0] << 16) | _u16(directory, 1)
+        tile_bytes = _u16(directory, 3)
+        tile_count = tile_bytes // 128
+        table = _rom(rom, TABLE_DIRECTORY_BUS + 4 * identifier, 4)
+        table_pointer = _u16(table, 0)
+        columns.append((provenance.rom_file_offset((table[2] << 16) | table_pointer, len(rom)), tile_bytes // 4))
+        flags.append((provenance.rom_file_offset(FLAGS_BASE_BUS + (table_pointer - 0xA0A4) // 32, len(rom)), tile_count))
+        base = provenance.rom_file_offset(tile_bus, len(rom))
+        for group_start in range(0, tile_count, 8):
+            group = min(8, tile_count - group_start)
+            for within in range(group):
+                top = base + group_start * 128 + within * 64
+                tiles += [(top, 64), (top + group * 64, 64)]
+    return {"bg1_tiles": tiles, "tile_columns": columns, "tile_flags": flags}
+
+
+def scenery(track: int) -> int:
+    return track % SCENERY_COUNT
+
+
+def scenery_pieces(rom: bytes, s: int) -> dict[str, list[tuple[int, int]]]:
+    """BG2 tiles, BG2 map and the 352-byte race palette of scenery ``s``."""
+    klass = _rom(rom, SCENERY_CLASS_TABLE_BUS + s, 1)[0]
+    block = [_asset_piece(rom, CLASS_PALETTE_ASSETS[klass] + k) for k in range(6)]
+    palette = _merge(block) + [_asset_piece(rom, 0x93 + s)] + list(FIXED_PALETTE_PIECES)
+    return {"bg2_tiles": [_asset_piece(rom, 0x70 + s)], "bg2_map": [_asset_piece(rom, 0x82 + s)], "palette": palette}
+
+
+def _raw(entry_id: str, rom: bytes, pieces: list[tuple[int, int]]) -> dict[str, Any]:
+    data = b"".join(rom[o:o + n] for o, n in pieces)
+    return {"id": entry_id, "source": {"kind": "raw", "pieces": [{"file_offset": o, "length": n} for o, n in pieces]},
+            "size": len(data), "sha256": sha256(data)}
+
+
+def track_pack_entries(rom: bytes, index: int) -> list[dict[str, Any]]:
+    decoded, entry = decode_track(rom, index)
+    pieces = tile_pieces(rom, parse_header(decoded)["tile_set_ids"])
+    name = f"track.{index:02d}"
+    return [{"id": f"{name}.data", "source": {"kind": "rnc", "bank": entry["bank"], "address": entry["address"]},
+             "size": len(decoded), "sha256": sha256(decoded)},
+            _raw(f"{name}.tile-columns", rom, pieces["tile_columns"]),
+            _raw(f"{name}.tile-flags", rom, pieces["tile_flags"]),
+            _raw(f"{name}.bg1-tiles", rom, pieces["bg1_tiles"])]
+
+
+def scenery_pack_entries(rom: bytes, s: int) -> list[dict[str, Any]]:
+    pieces = scenery_pieces(rom, s)
+    name = f"scenery.{s:02d}"
+    return [_raw(f"{name}.bg2-tiles", rom, pieces["bg2_tiles"]), _raw(f"{name}.bg2-map", rom, pieces["bg2_map"]),
+            _raw(f"{name}.palette", rom, pieces["palette"])]
+
+
+# The track names, `$FF`-terminated lowercase ASCII from `$83:9FFA` in track order
+# (R-0046 observation 5; observed for the 20 cold-start tracks).
+TRACK_NAMES_BUS = 0x839FFA
+
+
+def track_names_entry(rom: bytes, count: int = 45) -> dict[str, Any]:
+    start = provenance.rom_file_offset(TRACK_NAMES_BUS, len(rom))
+    end = start
+    for _ in range(count):
+        end = rom.index(b"\xff", end) + 1
+    return _raw("presentation.classic.track-names.v1", rom, [(start, end - start)])
+
+
+def v10_new_entries(rom: bytes) -> list[dict[str, Any]]:
+    """The entries profile v10 adds to v9, in pack order."""
+    entries = []
+    for index in NEW_RACE_TRACKS:
+        entries += track_pack_entries(rom, index)
+    for s in sorted({scenery(index) for index in NEW_RACE_TRACKS}):
+        entries += scenery_pack_entries(rom, s)
+    return entries + [track_names_entry(rom)]
