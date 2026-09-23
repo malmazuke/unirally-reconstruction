@@ -201,8 +201,9 @@ originals across race start; the sampled-frames rule from CLASSIC-RACE-HUD appli
 - Part 3: native selection by id is in (R-0046 observations 12-15). Evidence in
   `local/evidence/track-breadth/track-breadth-3/` after integration (recompare, pictures,
   gates). The sampler edges were recovered inside this part (small; live play of the new
-  tracks aborted without them). Next: the special-tile response, INFINITY's checkpoint guard,
-  PINGPONG's `opponent.response_b`, then the locked tours and a captured finish and result
+  tracks aborted without them). Next: the special-tile response, HYBRID's `inverted AI
+  marker is unrecovered` guard (update 2,053), INFINITY's checkpoint guard, PINGPONG's
+  `opponent.response_b`, then the locked tours and a captured finish and result
   on a new track (the result timing and assets follow the race mode as a hypothesis).
 - Former next experiment (after part 2, done in part 3): make the race scenario data (mode, laps,
   initialization frame per track, from R-0046 observations 7-8), add the reachable tracks'
@@ -311,4 +312,6 @@ Part 3 (checkpoint; the task is not accepted):
   `artifacts/track-breadth-part3-integration/closeout.json` and
   `local/evidence/track-breadth/track-breadth-3/` in the main checkout.
 - Scope still unverified: a new track's finish, winner banner and result screen; the special-
-  tile response and INFINITY's checkpoint guard (play can abort there); the five locked tours.
+  tile response, HYBRID's inverted-AI-marker guard and INFINITY's checkpoint guard (play can
+  abort there, including after the exact windows: CROCK at update 1,731, WARIO PAINT at
+  1,719, HYBRID at 2,053, all with the controller released); the five locked tours.

@@ -310,9 +310,13 @@ the two accepted tracks carry.
 2. **The special-tile response** (vertical contact with a tile flag outside {0, 2, 6,
    7, 18, 20}): the most common stop. It ends native's run on 7 of the 16 compared
    races since part 3: first on six (DRAGRACE joined once its edge was recovered), and
-   on PINGPONG after its divergence. It also ends 19 of the 45
-   idle runs. A watch capture on SWITCHER at update 384 names the flag and the branch.
-3. **Done in part 3**: the sampler edges (observation 16).
+   on PINGPONG after its divergence. That counts only stops inside the compared
+   windows: CROCK and WARIO PAINT also reach it just after theirs, at updates 1,731
+   and 1,719. It also ends 19 of the 45 idle runs. A watch capture on SWITCHER at update 384 names the flag and the branch.
+3. **Done in part 3**: the sampler edges (observation 16). **HYBRID's `inverted AI
+   marker is unrecovered`** guard, reached at update 2,053 just after its exact window,
+   is a separate unrecovered branch of the opponent's steering; capture HYBRID past
+   update 2,053 and compare the opponent's marker words.
 4. **PINGPONG's `opponent.response_b`** at update 1,068: the first arithmetic
    divergence on a new track.
 5. **The five locked tours**: find how the original unlocks them before choosing a

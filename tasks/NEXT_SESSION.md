@@ -11,15 +11,18 @@ is in progress; continue it.** Part 3 is reviewed and merged by pull request
 checkout). Pack profile **v10** carries the 16 cold-start race tracks, and native
 starts any of them by id (`--start classic.track.NN`, `frontend run --track NN`)
 on its own scenario. Eight match the original over about 1,500 released-controller
-updates; the others stop at native guards, and play can abort there (WARIO PAINT
-does under held input). **Live play needs the v10 pack**:
+updates. Of the other eight, seven stop at a native guard and PINGPONG diverges first;
+some exact tracks also reach a guard later in a race, so play can abort (CROCK and
+WARIO PAINT at the special tile, HYBRID at `inverted AI marker is unrecovered`). **Live play needs the v10 pack**:
 `local/classic-pal-crawler-tracks-v10.pack` is in the main checkout. The one
 acceptance item left to the user is a keyboard play of two new tracks, for example
 `frontend run --track 33` (EAST) and `--track 10` (LOOPER), the two that ran 4,000
 held-input updates in the app without a stop (FLAT FUN ran them too; CROCK, WARIO
 PAINT and HYBRID stop later in a race even with the controller released). Next, in order of
-reach: the special-tile response (stops 7 of 16 races), INFINITY's checkpoint guard, PINGPONG's `opponent.response_b`, then the five locked
-tours.
+reach: the special-tile response (7 of 16 compared races stop there inside their
+windows, and CROCK and WARIO PAINT just after), HYBRID's `inverted AI marker is
+unrecovered` guard at update 2,053, INFINITY's checkpoint guard, PINGPONG's
+`opponent.response_b`, then the five locked tours.
 
 **Status on 23 September 2026 UTC (after TRACK-BREADTH part 2): TRACK-BREADTH
 is in progress; continue it.** Part 2 is reviewed and merged by pull request
