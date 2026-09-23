@@ -21,8 +21,8 @@ race, the result screen and Race Again on each, with no stop. CROCK, WARIO PAINT
 HYBRID stop later in a race even with the controller released. The user saw two
 faults in that play. The LOOPER one is fixed (the BG1 picture did not wrap past the
 playfield's right edge, R-0046 observation 17), and so is the result title, which now
-names the track (observation 18; the letters beyond those in DRAGSTER and COMPLETE
-follow the font's layout, not yet compared). Still open: the
+names the track (observation 18; checked on EAST's and FLAT FUN's original results,
+and the letters no reachable name uses follow the font's layout). Still open: the
 hint caption's display timing: every 60 updates native's caption differs from the
 original's for one frame (LOOPER from update 1,172, HYBRID 1,352). Next, in order of
 reach: the special-tile response (7 of 16 compared races stop there inside their

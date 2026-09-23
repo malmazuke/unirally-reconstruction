@@ -236,8 +236,9 @@ FLAT FUN's pictures, observation 15).
     - **The cause.** The result title came from the 16 bytes the DRAGSTER result
       assets carry at `$83:9FFA`, the first entry of the name table.
     - **The fix.** Native now takes the track's own entry from the pack's name table,
-      and centres it: start cell = 16 - name length. DRAGSTER's 8 letters give cell 8,
-      as before.
+      and centres it by its width in tiles (two per letter, one per underscore):
+      start tile = 16 - width / 2. That gives DRAGSTER tile 8 as before, EAST 12 and
+      FLAT FUN 9. The rule is fitted to those three names.
     - **Setup.** Captured EAST holding Right from race update 271. The player finishes
       at frame 5,581 and wins, and native matches the original on all 4,178 rows to
       that finish.
@@ -249,9 +250,13 @@ FLAT FUN's pictures, observation 15).
       title rows against EAST's 4,746.
     - **The title font.** Its layout is recovered from the 12 letters observed in
       "dragster" and "complete": digits 0-9 at 2 x digit, "o" sharing the zero,
-      a-n from `$14` and p-z two tiles lower. The other letters are that layout's
-      reading, not yet compared on a name that uses them.
-    - **Still unverified.** An underscore is drawn as a blank cell, also unverified.
+      a-n from `$14` and p-z two tiles lower. The review withheld FLAT FUN (Right
+      from frame 1,663, then Left from 3,760; native exact on all 4,269 rows to the
+      finish). Its result confirmed f, u and n, and showed that an underscore is a
+      one-tile space. After that fix FLAT FUN's title rows differ by 0 pixels on the
+      frames where the checkerboard is in phase (6,200 and 6,480). The letters no
+      reachable name uses remain the layout's reading.
+    - **Still unverified.**
       The original's title writer is the text interpreter at `$80:C3C0`, whose
       big-font table is not yet located. The table at `$80:C709` drives the small font.
 

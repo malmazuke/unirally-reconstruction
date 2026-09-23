@@ -321,9 +321,9 @@ void set_map_word(std::array<std::uint8_t, 65536> &vram, int x, int y,
 // o 00, p 30, r 34, s 36, t 38); they fit one layout, which gives the other
 // letters and the digits (TRACK-BREADTH): digits 0-9 at 2 x digit, so "o"
 // shares the zero; a-n from $14 in steps of two; p-z two tiles lower, since
-// "o" has no glyph of its own. The letters outside the observed twelve are
-// that layout's reading, checked against the original only on EAST and LOOPER,
-// whose names use observed letters alone.
+// "o" has no glyph of its own. f, u and n are confirmed on FLAT FUN's original
+// result; the other letters outside the observed twelve are the layout's
+// reading.
 std::uint16_t result_title_tile(char glyph) {
   if (glyph >= '0' && glyph <= '9')
     return static_cast<std::uint16_t>((glyph - '0') * 2);
@@ -339,10 +339,10 @@ std::uint16_t result_title_tile(char glyph) {
 void write_result_title(std::array<std::uint8_t, 65536> &vram, int x, int y,
                         std::string_view text) {
   for (const char glyph : text) {
-    // A name's underscore is its space: the cell stays as filled (not yet
-    // compared with the original on a name that has one).
+    // A name's underscore is its space, one tile wide (FLAT FUN's original
+    // result, part of the review of TRACK-BREADTH's result title).
     if (glyph == '_') {
-      x += 2;
+      x += 1;
       continue;
     }
     const auto tile = result_title_tile(glyph);
@@ -506,9 +506,14 @@ void build_result_map(std::array<std::uint8_t, 65536> &vram,
   // $80:C431 first fills the map, then writes these semantic fields in this
   // order. Each small-font glyph is a vertical tile pair; title glyphs are
   // two-by-two. The result state carries the observed five timer digits.
-  // Centred on the 32-cell row: DRAGSTER's eight 2-cell glyphs start at cell 8,
-  // EAST's four at cell 12 (the original's EAST result, TRACK-BREADTH).
-  write_result_title(vram, 16 - static_cast<int>(title.size()), 2, title);
+  // Centred on the 32-tile row by its width in tiles, two per letter and one
+  // per space: DRAGSTER starts at tile 8, EAST at 12 and FLAT FUN at 9, as in
+  // the original's results (TRACK-BREADTH). The rule is fitted to those three.
+  const auto spaces = static_cast<int>(std::count(title.begin(), title.end(), '_'));
+  const int width = 2 * (static_cast<int>(title.size()) - spaces) + spaces;
+  if (width > 32)
+    throw std::invalid_argument("Classic result title is wider than the screen");
+  write_result_title(vram, 16 - width / 2, 2, title);
   write_result_title(vram, 8, 5, "complete");
   write_result_text(vram, 7, 8, "PLAYER     TIME");
   const auto &digits = finish.finish_time_digits[0];
@@ -1700,8 +1705,8 @@ ClassicRacePresentationContent classic_race_presentation_content(const ClassicCo
         // TRACK-BREADTH part 3: the track's own BG1 tiles and its scenery's BG2
         // tiles, map and race palette (scenery = track mod 14, $82:DC20-DD84).
         // The result screen follows the race mode's accepted track (the
-        // DRAGSTER assets for a one-run race), a hypothesis until a new
-        // track's result is captured.
+        // DRAGSTER assets for a one-run race, titled with the track's own
+        // name); EAST's and FLAT FUN's results were compared with the original.
         const auto scenery=track.index%14U;
         const auto name=std::string("scenery.")+char('0'+scenery/10U)+char('0'+scenery%10U)+'.';
         content.track_name=classic_track_name(pack,track);
@@ -1715,6 +1720,10 @@ ClassicRacePresentationContent classic_race_presentation_content(const ClassicCo
             content.result_palette=pack.entry("presentation.result.classic.palette.v1");
             content.result_palette_tail=pack.entry("presentation.result.classic.palette-tail.v1");
             content.result_track_name=classic_track_name_entry(pack,track);
+            // Refuse a name the title font cannot draw when the content loads,
+            // not at the first result frame.
+            for(const auto byte:content.result_track_name.first(content.result_track_name.size()-1U))
+                if(byte!='_')(void)result_title_tile(static_cast<char>(byte));
         }
         content.geometry=track_geometry(content.track);
         return content;
