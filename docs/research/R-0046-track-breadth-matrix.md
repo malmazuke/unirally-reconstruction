@@ -282,10 +282,16 @@ the two accepted tracks carry.
 - The landing-response matrices remain a captured input (observation 11 shows they
   do not vary across the 20 reachable tracks; a ROM producer for `$81:9A4D-9E12`
   would remove the capture).
-- **Live play of a new track can still abort.** Under a held button for 4,000
-  updates, FLAT FUN runs clean in the app, but WARIO PAINT reaches the special-tile
-  guard and the app stops. Any of the seven tracks with that stop can do the same
-  until the response is recovered (next experiment 2).
+- **Live play of a new track can still abort.** The exact windows end about 1,500
+  updates in, and native guards lie beyond them on some tracks. With the controller
+  released, CROCK stops at update 1,731 and WARIO PAINT at 1,719 (special tile), and
+  HYBRID at 2,053 on `inverted AI marker is unrecovered`, a guard the matrix does not
+  yet list (part 3 re-review). Under a held button for 4,000 updates, EAST, LOOPER and
+  FLAT FUN run clean in the app. Any track with a special-tile stop can abort until that
+  response is recovered (next experiment 2).
+- **The 470-pixel frame at update 272** is on every track checked, DRAGSTER and ZOOM
+  ZOO included, and predates this task. It sits in the GO letters' area. It is
+  unexplained and open.
 - **A new track's finish is not yet compared.** The finish slowdown in
   `movement.cpp` counts the absolute frame modulo 3. Both accepted tracks start on a
   frame congruent to 2 (mod 3), but 9 of the 14 new tracks do not. If the original

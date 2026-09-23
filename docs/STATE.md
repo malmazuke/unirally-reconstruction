@@ -7,12 +7,15 @@ refused, rebuild with `content pack --rules
 tests/manifests/content/classic-crawler-tracks-pack.json`). Each uses its own race
 mode, lap count and content from the ROM. LOOPER, FLAT FUN, HYBRID, WARIO PAINT, CROCK and EAST
 match the original exactly over about 1,500 released-controller updates, as DRAGSTER
-and ZOOM ZOO do; the sampler's playfield edges were recovered on the way. Through the
-countdown and race, new-track pictures show the same residue as ZOOM ZOO's, checked on
-consecutive frames after the review found and fixed a parity fault on odd-boundary
-tracks. The other eight stop at native guards on unrecovered branches, so a new track can
-still abort in play: WARIO PAINT does under held input. No new-track finish or result
-is compared yet ([R-0046](research/R-0046-track-breadth-matrix.md) observations 12-16).
+and ZOOM ZOO do; the sampler's playfield edges were recovered on the way. Their pictures
+show ZOOM ZOO's residue on consecutive frames of the countdown and GO window (updates
+190-300, after the review found and fixed a parity fault on odd-boundary tracks) and at
+sampled race frames beyond. Native still stops at a guard on an unrecovered branch on
+seven of the other eight (PINGPONG first diverges, at update 1,068), and some exact tracks
+reach one later in a race: CROCK at update 1,731 and WARIO PAINT at 1,719 even with the
+controller released, HYBRID at 2,053 (`inverted AI marker is unrecovered`). So a new track
+can still abort in play; EAST and LOOPER ran 4,000 held-input updates without one. No
+new-track finish or result is compared yet ([R-0046](research/R-0046-track-breadth-matrix.md) observations 12-16).
 
 Updated 23 September 2026 (TRACK-BREADTH part 2): **the 20 tracks a cold start
 reaches (tours CRAWLER, SHUFFLER, WALKER, HOPPER) are captured through the

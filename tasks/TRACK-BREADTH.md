@@ -171,6 +171,7 @@ originals across race start; the sampled-frames rule from CLASSIC-RACE-HUD appli
 | 25 (03:07-03:47Z) | Nothing accepted moves | `artifacts/track-breadth-3/gates.sh` on `fa62939`, v10 pack: presets and ctest, synthetic, v1 contracts, hidden app runs (DRAGSTER, ZOOM ZOO, 13, 30), fuzz, all eleven differential gates, `rnc-inventory --expect` | ctest 23/23 x3; synthetic, v1 winner and loser passed; hidden DRAGSTER, ZOOM ZOO and FLAT FUN 0 fallback frames over 4,000 held-input updates; **WARIO PAINT aborts at the special-tile guard under held input** (declared, the next follow-up); fuzz 0 aborts; all eleven gates passed with the same row digests and restore counts as `1f554fb`; inventory passed. Sanitizers unavailable on this host | Records, review |
 | 26 (04:30Z, review round 1) | - | Tier 1 review of `775e7ba` returned: R1 the GO letters swap on odd-boundary tracks (the window drivers took `$0300`'s parity from the absolute frame); R2 the records overclaimed | Confirmed; the review's six sampled frames had missed the window | Fix R1 at the three parity sites, correct the records |
 | 27 (04:45Z) | `$0300` counts from the boundary | Parity from `frame - initialization frame` in the countdown driver, the restored-state selection and the opponent-finish inference; 111 consecutive frames of updates 190-300 on CROCK, LOOPER, EAST, FLAT FUN, ZOOM ZOO | All five show ZOOM ZOO's profile (36 or 0 pixels, 470 at update 272 on all); recompare unchanged | Gates, re-review |
+| 28 (05:15Z, re-review) | - | Tier 1 re-review of `5bab77e`: R1 confirmed fixed on MONSTER, PINGPONG, HAIRPIN HILL, SHORT CUT and DRAGSTER (the old code reproduced the fault), parity logic correct on every path, gates complete; **returned** R3: the suggested acceptance play named CROCK, which aborts at update 1,731 with the controller released | Records only: EAST and LOOPER named instead; the later stops (CROCK 1,731, WARIO PAINT 1,719, HYBRID 2,053 on `inverted AI marker is unrecovered`) and the update-272 residue recorded | Third round |
 | 10 (01:55Z) | The name table follows the track index | Relative-text search, then the table at `$83:9FFA` | 45 names in lowercase ASCII, then five `unavailable` and nine tour names; names 0 and 1 agree with the verified indices | R-0046 observation 5 (static) |
 
 ## Handoff
@@ -298,6 +299,11 @@ Part 3 (checkpoint; the task is not accepted):
   open question for a new-track finish capture; A6 (compare the frame label too) declined,
   since the labels already agree on all 16; A8 answered by this entry. Re-review requested
   on the new head.
+- Re-review of `5bab77e` (fresh Claude Opus 5.5): R1 fixed and verified independently on
+  five tracks, with the old code reproducing the fault; **returned** R3 (records named CROCK
+  for the acceptance play, which aborts at update 1,731) and five advisories (A9-A13). All
+  addressed in records, comments and the gate script; no gate-binary input changed
+  (`gate_identity` against `gates-5bab77e`). A third round checks them.
 - Merge candidate and checks: the pull request head after re-review, with `changes` and both
   `lab` jobs green on it and the gate script run on it.
 - Integrated commit and evidence: the merge commit of

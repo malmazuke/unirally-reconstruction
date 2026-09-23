@@ -194,11 +194,12 @@ def inventory(rom: bytes) -> dict[str, Any]:
 NEW_RACE_TRACKS = (3, 4, 10, 11, 13, 14, 20, 21, 23, 24, 30, 31, 33, 34)
 SCENERY_COUNT = 14
 # `$82:DC20-DD84`: BG2 tiles asset `$70 + s`, map `$82 + s`, palette row `$93 + s`
-# for scenery s = track mod 14 (tracks 42 and above 40 have extra cases not listed
-# here), then a six-row palette block chosen by the class byte `$82:DC12 + s`.
+# for scenery s = track mod 14 (track 42, NEON, has an extra case not listed here),
+# then a six-row palette block chosen by the class byte `$82:DC12 + s`.
 SCENERY_CLASS_TABLE_BUS = 0x82DC12
 CLASS_PALETTE_ASSETS = {0: 0xA4, 1: 0xB0, 2: 0xAA}
-# The four palette rows both accepted tracks load after the scenery (`$82:DD84-DDCC`).
+# The four palette rows both accepted tracks load after the scenery (`$82:DD84-DDCC`);
+# the loader picks them by the rider selection (`$77:0748`/`$0749`), MIKE throughout.
 FIXED_PALETTE_PIECES = ((0x07B9A0, 32), (0x020180, 32), (0x020380, 32), (0x0203A0, 32))
 
 

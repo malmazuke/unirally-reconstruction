@@ -1285,7 +1285,8 @@ std::optional<unsigned> window_table_index_for(std::uint32_t frame,std::uint16_t
     // The drivers' parity is `$0300`'s, which counts from the initialization
     // boundary (setup_frame - 6). Shifting every frame by the boundary's own
     // parity makes the frame parities below `$0300`'s; on the even boundaries
-    // of DRAGSTER and ZOOM ZOO the shift is zero.
+    // of DRAGSTER and ZOOM ZOO the shift is zero. Precondition: setup_frame is
+    // the race vblank's first frame, initialization + 6, as every caller passes.
     const std::uint32_t boundary_parity=(setup_frame-6U)&1U;
     frame-=boundary_parity;setup_frame-=boundary_parity;
     if(first_finish)*first_finish-=boundary_parity;
