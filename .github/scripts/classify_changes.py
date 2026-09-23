@@ -20,7 +20,11 @@ file under ``docs/`` is not documentation either.
 When ``CLASSIFY_REQUIRE_BASE_RUN`` names a workflow file, a docs-only result
 also requires that the base commit has a successful completed run of that
 workflow (read through ``gh api``); otherwise the fast path would inherit a
-cancelled or failed run's gap. Every reason a check cannot be made takes the
+cancelled or failed run's gap. Since changes reach ``main`` only by pull
+request, a ``main`` commit is a merge commit that never gets a run of its
+own; such a base counts when its second parent (the merged pull request's
+head) has one, because ``main`` requires a branch to be up to date before it
+merges, so that run tested the merge's tree. Every reason a check cannot be made takes the
 full path and says why. A crash of this script fails the ``changes`` job,
 which leaves the lab job skipped and the run not green, never silently fast.
 """
@@ -77,18 +81,33 @@ def base_has_successful_run(base: str) -> tuple[bool | None, str]:
     gh = shutil.which("gh")
     if not repo or not gh:
         return False, "GITHUB_REPOSITORY or gh unavailable for the base-run check"
-    result = subprocess.run(
-        [gh, "api", f"repos/{repo}/actions/workflows/{workflow}/runs?head_sha={base}&per_page=50",
-         "--jq", '[.workflow_runs[] | select(.status == "completed" and .conclusion == "success")] | length'],
-        capture_output=True, text=True,
-    )
-    if result.returncode != 0:
-        return False, f"gh api failed: {result.stderr.strip()[-200:]}"
-    try:
-        count = int(result.stdout.strip())
-    except ValueError:
-        return False, f"unparseable gh api output: {result.stdout.strip()[:100]}"
-    return count > 0, f"{count} successful completed run(s) of {workflow} on base {base[:7]}"
+
+    def successes(sha: str) -> tuple[int | None, str]:
+        result = subprocess.run(
+            [gh, "api", f"repos/{repo}/actions/workflows/{workflow}/runs?head_sha={sha}&per_page=50",
+             "--jq", '[.workflow_runs[] | select(.status == "completed" and .conclusion == "success")] | length'],
+            capture_output=True, text=True,
+        )
+        if result.returncode != 0:
+            return None, f"gh api failed: {result.stderr.strip()[-200:]}"
+        try:
+            return int(result.stdout.strip()), ""
+        except ValueError:
+            return None, f"unparseable gh api output: {result.stdout.strip()[:100]}"
+
+    count, error = successes(base)
+    if count is None:
+        return False, error
+    detail = f"{count} successful completed run(s) of {workflow} on base {base[:7]}"
+    if count > 0:
+        return True, detail
+    merged = _git("rev-parse", "--verify", "--quiet", f"{base}^2")
+    if not merged:
+        return False, detail
+    count, error = successes(merged)
+    if count is None:
+        return False, f"{detail}; {error}"
+    return count > 0, f"{detail}; {count} on its merged pull request head {merged[:7]}"
 
 
 def _git(*args: str) -> str | None:

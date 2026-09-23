@@ -45,9 +45,11 @@ class Repo:
         git(self.path, "commit", "-q", "--allow-empty", "-m", message)
         return git(self.path, "rev-parse", "HEAD")
 
-    def classify(self, event: str, base: str, head: str | None = None, base_runs: int | str | None = None) -> tuple[dict, str, str]:
+    def classify(self, event: str, base: str, head: str | None = None, base_runs: int | str | None = None,
+                 runs_only_for: str | None = None) -> tuple[dict, str, str]:
         """``base_runs``: None leaves the base-run check unconfigured; an int is the
-        count a stub ``gh`` reports; ``"fail"`` makes the stub exit 1."""
+        count a stub ``gh`` reports; ``"fail"`` makes the stub exit 1. With
+        ``runs_only_for`` the stub reports that count for that commit and 0 for any other."""
         out = self.path / "changes.json"
         gh_out = self.path / "gh_output"
         env = {**os.environ, "GITHUB_EVENT_NAME": event, "CLASSIFY_BASE": base,
@@ -59,7 +61,13 @@ class Repo:
             stub_dir = self.path / "stub-bin"
             stub_dir.mkdir(exist_ok=True)
             gh = stub_dir / "gh"
-            body = "#!/bin/sh\necho \"$@\" > \"$STUB_GH_ARGS\"\n" + ("exit 1\n" if base_runs == "fail" else f"echo {base_runs}\n")
+            body = "#!/bin/sh\necho \"$@\" >> \"$STUB_GH_ARGS\"\n"
+            if base_runs == "fail":
+                body += "exit 1\n"
+            elif runs_only_for:
+                body += f'case "$*" in *head_sha={runs_only_for}*) echo {base_runs};; *) echo 0;; esac\n'
+            else:
+                body += f"echo {base_runs}\n"
             gh.write_text(body)
             gh.chmod(0o755)
             env.update({"PATH": f"{stub_dir}:{env['PATH']}", "CLASSIFY_REQUIRE_BASE_RUN": "synthetic.yml",
@@ -145,6 +153,27 @@ class ClassifierTests(unittest.TestCase):
         d, _, _ = self.repo.classify("push", self.base, head, base_runs="fail")
         self.assertFalse(d["docs_only"])
         self.assertNotIn("base_run", d)
+
+    def test_merge_commit_base_counts_its_merged_head(self):
+        # main is a merge commit of a pull request whose head has the run; main itself has none.
+        git(self.repo.path, "checkout", "-q", "-b", "pr")
+        pr_head = self.repo.commit({"tools/x.py": "2\n"}, "pr")
+        git(self.repo.path, "checkout", "-q", "main")
+        git(self.repo.path, "merge", "-q", "--no-ff", "-m", "merge", "pr")
+        merge = git(self.repo.path, "rev-parse", "HEAD")
+        git(self.repo.path, "checkout", "-q", "-b", "docs")
+        head = self.repo.commit({"docs/a.md": "b\n"})
+        d, _, _ = self.repo.classify("pull_request", merge, head, base_runs=1, runs_only_for=pr_head)
+        self.assertTrue(d["docs_only"], d)
+        self.assertIn(f"1 on its merged pull request head {pr_head[:7]}", d["base_run"])
+        d, _, _ = self.repo.classify("pull_request", merge, head, base_runs=1, runs_only_for="f" * 40)
+        self.assertFalse(d["docs_only"], d)
+        # A base that is not a merge commit has no second parent to fall back on.
+        git(self.repo.path, "checkout", "-q", "-b", "plain", self.base)
+        d, _, _ = self.repo.classify("pull_request", self.base, self.repo.commit({"docs/a.md": "c\n"}),
+                                     base_runs=1, runs_only_for="f" * 40)
+        self.assertFalse(d["docs_only"], d)
+        self.assertNotIn("merged pull request head", d["base_run"])
 
     def test_deleted_documentation_is_still_documentation(self):
         head = self.repo.commit({"docs/a.md": None})
