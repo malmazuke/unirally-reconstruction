@@ -204,6 +204,33 @@ FLAT FUN's pictures, observation 15).
 
     **Eight tracks now match the original over the whole captured window**: DRAGSTER,
     ZOOM ZOO, LOOPER, FLAT FUN, HYBRID, WARIO PAINT, CROCK and EAST.
+17. **The BG1 picture wraps horizontally, as the sampler does** (found by the user
+    in live play on LOOPER: near the end of a race the track seemed to vanish below
+    the rider).
+    - **Setup.** Captured LOOPER holding Right from frame 1,688 (race update 271).
+      Native matches the original on all 1,284 rows to frame 2,700. The player rides
+      to x = 4,086 on the 4,096-unit-wide playfield, and the camera to about 3,900.
+    - **Before the fix.** Native drew nothing past the playfield's right edge. At
+      frame 2,617 it differed from the original by 1,790 pixels, 1,718 of them in
+      screen columns 176-255, where the original continues the floor from column 0.
+      The original's map fetch masks the column with `$0D51` (`$81:AD05`).
+    - **The fix.** Native now masks BG1's world x with the playfield mask. Over 200
+      consecutive frames at the edge (updates 1,083-1,282), 198 frames differ by 0,
+      36, 72 or 108 pixels: the declared off-screen rider arrow. Two differ by 549,
+      where native's hint caption differs from the original's for one frame. The
+      review found this repeats every 60 updates (LOOPER 1,172, 1,232, 1,292 and on,
+      and HYBRID 1,352), and is sometimes the next hint sentence one frame early
+      rather than a caption the original lacks. The caption state is the engine's,
+      which matches, so its display timing is an open presentation question that
+      predates this fix.
+    - **A second track.** The review withheld HYBRID (256 x 64). With Right held its
+      player wraps from x 16,172 to 36, and native matches all 1,385 rows. Frames
+      2,720-2,736 differed by up to 3,486 pixels before the fix and by 0 after.
+    - **Scope.** The vertical rule is unchanged: native blanks rows off the playfield.
+      The original's row fetch (`$81:AD22-AD2C`) tests the screen's bottom row
+      against the playfield height whichever way the camera scrolls; no capture
+      reaches that case. DRAGSTER and ZOOM ZOO, whose cameras never reach an edge in
+      the accepted races, are unchanged: the v1 contracts and hidden runs pass.
 
 ## The matrix
 

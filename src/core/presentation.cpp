@@ -1956,15 +1956,20 @@ RgbFrame render_classic_race(const ZoomZooState& state,const ClassicRacePresenta
     // $81:A304-A51B: the playfield is 16,384 coarse cells of 64 units in the
     // track's column count (256 by 64 for ZOOM ZOO, 1,024 by 16 for DRAGSTER).
     const int columns=geometry.coarse_columns;
-    const int world_width=columns*64,world_height=(16384/columns)*64;
+    const int world_height=(16384/columns)*64;
     // BG1 map entries with bit 13 set are drawn above priority-2 OBJs.
     std::array<bool,256*224> bg1_above_objects{};
     for(int y=0;y<224;++y)for(int x=0;x<256;++x) {
         const auto background=background_pixel(vram,0xe000,true,true,0x2000,false,static_cast<std::int16_t>(bg_x),static_cast<std::int16_t>(bg_y),x,y);
         pixel(frame,x,y,colour(cgram,background));
         // Screen row 0 is scanline 1, as in background_pixel's vertical +1.
-        const int world_x=background_x+x,world_y=background_y+y+1;
-        if(world_x<0 || world_y<0 || world_x>=world_width || world_y>=world_height)continue;
+        // The BG1 map wraps horizontally: the original's map fetch masks the
+        // column with `$0D51` ($81:AD05), so past the playfield's right edge
+        // the picture continues from column 0, as the sampler's contact does
+        // (TRACK-BREADTH, LOOPER). Rows off the playfield are left blank, which is
+        // not yet checked against the original's row test at $81:AD22-AD2C.
+        const int world_x=(background_x+x)&geometry.position_mask,world_y=background_y+y+1;
+        if(world_y<0 || world_y>=world_height)continue;
         const auto selector=word(track,15+static_cast<std::size_t>((world_y/64)*columns+world_x/64)*2);
         const auto descriptor=word(track,0x800f+static_cast<std::size_t>(selector)*32+static_cast<std::size_t>((world_y%64)/16)*8+static_cast<std::size_t>((world_x%64)/16)*2);
         int px=world_x&15,py=world_y&15;
