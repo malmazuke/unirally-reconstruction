@@ -1,9 +1,9 @@
 name: synthetic
 
 # ROM-free laboratory checks. This workflow never has access to game data.
+# Changes reach main only through pull requests, and main requires these
+# checks on an up-to-date branch, so pushes (to main or anywhere) run nothing.
 on:
-  push:
-    branches: ["main", "task/**"]
   pull_request:
   workflow_dispatch:
 
@@ -32,12 +32,12 @@ jobs:
       - name: Classify the changed paths
         id: classify
         env:
-          CLASSIFY_BASE: ${{ github.event.before || github.event.pull_request.base.sha }}
+          CLASSIFY_BASE: ${{ github.event.pull_request.base.sha }}
           CLASSIFY_OUT: artifacts/ci/changes.json
           CLASSIFY_REQUIRE_BASE_RUN: synthetic.yml
           GH_TOKEN: ${{ github.token }}
         run: |
-          # Judge the push by the base revision's classifier, so a commit cannot
+          # Judge the pull request by its base revision's classifier, so a commit cannot
           # widen the rules it is judged by; the tree's copy serves only when
           # the base has none (before this script existed).
           script=.github/scripts/classify_changes.py

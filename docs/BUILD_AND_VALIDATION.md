@@ -18,16 +18,18 @@ what constitutes evidence. Historical frozen expectations and acceptance remain.
 For M4-13 through M4-16, send the focused passing candidate for initial review before running
 the broad matrix. Resolve its findings, then run broad validation on the corrected
 candidate alongside focused re-review where useful. Later source changes still
-require revalidation. Existing CI triggers are unchanged: pushes (including docs)
-run CI automatically; avoid optional preliminary task-branch pushes unless the
-task's declared remote review/CI workflow needs them. Final integration CI remains
-required. Synthetic Linux CI does not prove private ROM differential execution
+require revalidation. Hosted CI runs on pull requests (and `workflow_dispatch`),
+not on pushes; `main` accepts a change only when the pull request's checks pass
+on a branch that is up to date with it, which makes those checks the final
+integration CI. Synthetic Linux CI does not prove private ROM differential execution
 on Linux; report these domains separately.
 
 Use [consolidated closeout](AGENT_WORKFLOW.md#consolidated-closeout): prepare the
-handoff before the final main push, then record final remote/CI evidence in the
-ignored closeout report. One final-tip CI is the target, not permission to skip
-checks after a substantive correction. Docs-only pushes still trigger CI.
+handoff before the pull request merges, then record the pull request, merge
+commit and check evidence in the ignored closeout report. One green check run on
+the merging head is the target, not permission to skip checks after a
+substantive correction. Documentation-only pull requests still run the checks,
+on the fast path below.
 
 The primary owns integration checks; do not ask both worker and coordinator to
 repeat identical broad suites without a changed candidate or a specific concern.
@@ -59,7 +61,7 @@ relevant identities match and its evidence is available; explain documentation-o
 source differences. Invalidate affected entries after changes. No cache service
 or general orchestration framework is required. This does not eliminate fresh
 independent review/references, withheld replacements, sanitizer runs, required
-exact-merge checks or final-tip CI. Never count missing evidence as a reused pass.
+exact-merge checks or the pull request's checks. Never count missing evidence as a reused pass.
 
 ## M4-16 product validation requirements
 
@@ -344,20 +346,25 @@ bounded reference-analysis surface: horizontal velocity, pose/reflection,
 jump/control and remaining contact state are external inputs, and it does not
 add native ZOOM ZOO gameplay.
 
-The hosted `synthetic.yml` has a docs-only fast path (CI-FAST-PATH). A first
+The hosted `synthetic.yml` runs on pull requests and `workflow_dispatch` only
+(PR-WORKFLOW); `main` requires its `changes` and both `lab` checks on an
+up-to-date branch before a merge. It has a docs-only fast path (CI-FAST-PATH). A first
 job runs `.github/scripts/classify_changes.py` (the base revision's copy, so
 a commit is never judged by rules it introduces) on a full-history checkout: a
-push or pull request whose changed paths are all Markdown files under `docs/`
+pull request whose changed paths are all Markdown files under `docs/`
 or `tasks/`, Markdown files at the repository root, or `.env.example`, with
 renames listed as a deletion plus an addition, and whose base commit has a
-successful completed run of this workflow, is `docs_only`; the lab job then
+successful completed run of this workflow, is `docs_only`. A `main` commit is
+a merge commit with no run of its own, so it counts through its second parent,
+the merged pull request's head, whose run tested the same tree because the
+branch had to be up to date; the lab job then
 skips its doctor, bootstrap, build and test steps and reports success with
 `artifacts/ci/fast-path.json` in its uploaded reports. That run is the tip's
 green run for the acceptance rule because of the base condition: by
 induction, a fast-path success differs from the last full success only in
 documentation, and a cancelled or failed run on the base forces the next push
-onto the full path. A push whose base cannot be established (a new branch, a
-base absent from the checkout, a force push), anything under `docs/map/` or
+onto the full path. A pull request whose base cannot be established (a base
+absent from the checkout, or no history shared with it), anything under `docs/map/` or
 any non-Markdown or symlinked file under `docs/` or `tasks/` (the code maps
 and their summaries are checked by the suite), and any change to the
 workflow, the classifier, `tools/`, `tests/`, `src/`, the CMake files or

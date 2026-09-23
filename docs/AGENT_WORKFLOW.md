@@ -9,7 +9,7 @@ This protocol is intended for humans and agents using different models or runtim
 | Coordinator/integrator | Select ready work, allocate scope, resolve dependencies, accept results and maintain project state | Canonical task registry, integration branch, milestone status |
 | Research worker | Recover one bounded behavior, format or routine with evidence | Assigned research/experiment paths on its own branch |
 | Implementation worker | Implement a defined contract and its checks | Assigned code/test paths on its own branch |
-| Reviewer | Reproduce the claim, inspect evidence, exercise independent cases and identify regressions | Review report; no silent edits to the implementation being reviewed |
+| Reviewer | Reproduce the claim, inspect evidence, exercise independent cases and identify regressions | Review posted on the pull request; no silent edits to the implementation being reviewed |
 
 Roles do not require four simultaneous agents. For the D-0006 M4-12 through M4-16 trials, the primary is both investigator/implementer and coordinator; it works on a task branch and automatically dispatches fresh Sol/medium independent review before integration. The applicable trial exception in D-0004 takes precedence over the general defaults here. For OpenAI tasks, default to a Sol coordinator and one Sol worker, with explicit model/effort settings. Review uses a fresh sequential session. A second child requires the independent-scope and quota justification in D-0004. A model switch does not change the task's acceptance criteria.
 
@@ -129,38 +129,62 @@ At implementation start, initialize a local Git repository if none exists. Recor
 - Retain old reference artifacts by hash. A baseline change needs an explained correction and independent confirmation; never overwrite the previous result in place.
 - Use revert commits for accepted changes that later prove wrong. Preserve failed task attempts for diagnosis; avoid force-pushing shared history.
 - Add milestone tags only when the gate is met, and link the evidence report from project state.
-- For this project's existing public `origin`, an accepted integration is not
-  complete until the coordinator pushes `main` and verifies `HEAD` equals
-  `origin/main`. Push an accepted milestone tag as part of the same completion
-  flow. Push task branches when the task's declared remote review or CI requires
-  them. A push failure is a reported synchronization failure, not permission to
-  describe an ahead-only local branch as fully complete. Never force-push or
-  change remote configuration/visibility under this standing authority.
+- For this project's public `origin`, **changes reach `main` only through pull
+  requests.** `main` has a ruleset: a pull request is required, the
+  `synthetic` checks (`changes`, `lab (ubuntu-24.04)`, `lab (macos-15)`) must
+  pass on a branch that is up to date with `main`, merges are merge commits
+  (squash and rebase are off, so the commit IDs records cite stay on `main`),
+  and force-pushes and deletion are blocked for everyone. No approval is
+  required, because agents act as the repository owner, who cannot approve
+  their own pull request; the independent review this workflow requires is
+  linked from the pull request instead.
+- The integration flow: push the task branch, open the pull request from
+  `.github/pull_request_template.md` when the candidate is ready for review
+  (a draft earlier if hosted CI is wanted sooner), address review and CI on
+  the branch, then `gh pr merge --merge` once the checks are green and the
+  review tier is satisfied. If `main` moved, bring the branch up to date with
+  `gh pr update-branch` (a merge, never a rebase or force-push) and let the
+  checks rerun. The merge commit takes the pull request's title and
+  description. An accepted integration is complete when the pull request is
+  merged and the local `main`, fast-forwarded, equals `origin/main`. Push an
+  accepted milestone tag as part of the same flow. A push or merge failure is
+  reported as such. Never push to `main` directly, force-push, or change
+  remote configuration or visibility under this standing authority.
+- Pull request descriptions are written for a person who has not read the
+  task record: what changed, why (with absolute links, since relative links
+  in a pull request body do not resolve), three to six evidence bullets with
+  numbers, the review verdict and what changed in response, and what is not
+  covered. About 30 lines, plain sentences; the task record holds the detail.
+  The description becomes the merge commit message: bring its Review section
+  up to date before merging, and finish the task records in the branch, since
+  nothing is committed after the merge.
 
-A remote repository is optional for early work. If one is established, use the same task record in the PR description, require checks/review on `main`, and use CI as specified in [build and validation](BUILD_AND_VALIDATION.md). A local integration report provides the equivalent review trail before hosting is configured. Pushing ordinary commits and tags to this project's already-configured public remote is authorized source-control synchronization and makes tracked source and documentation public; creating a public release, changing visibility or deploying remains separately authorized work.
+The task record remains the full trail; the pull request is its readable summary and the place CI runs. CI is specified in [build and validation](BUILD_AND_VALIDATION.md). Pushing task branches and tags, and opening and merging the project's own pull requests on this already-configured public remote, is authorized source-control synchronization and makes tracked source and documentation public; creating a public release, changing visibility or deploying remains separately authorized work.
 
 ### Consolidated closeout
 
 For M4-14 and subsequent explicitly assigned capability work, finish the reviewed
 source, reviewed corrections and acceptance/handoff documentation before the
-final main push. Include actual local/review results, the tested code identity
-and the path/command for verifying pending remote CI. Mark remote acceptance
-conditional until those checks actually succeed; never preclaim a future pass.
+pull request is merged, including the cleanup the closing session will do.
+Include actual local/review results and the tested code identity. Never
+preclaim a future pass.
 
-Run affected merge checks on the exact candidate, push once, verify the configured
-remote ref and wait for that tip's CI. Write the actual final SHA, run URL/result,
-finish time and fresh usage in ignored `artifacts/<task>-integration/closeout.json`
-and the user completion report. The tracked handoff must point to that artifact
-and explain how to recover status from git/GitHub if it is absent. Registry may
-say "reviewed/local gates passed; acceptance conditional on final-tip CI and
-remote verification"; those recorded conditions plus verified closeout establish
-acceptance without another documentation commit. On future unrelated updates,
+Run affected merge checks on the exact candidate, push it, and wait for the
+pull request's checks on that head. Merge only when they are green. Write the
+pull request URL, the merged head SHA, the merge commit, the check run
+URL/result, finish time and fresh usage in ignored
+`artifacts/<task>-integration/closeout.json` and the user completion report. The tracked handoff must point to that artifact
+and name the pull request, so status can be recovered from GitHub if the
+artifact is absent. Because the checks pass before the merge, the records can
+say "reviewed and integrated by pull request" with no pending condition, and no
+documentation commit follows the merge. On future unrelated updates,
 roll that historical status forward normally.
 
-Do not create a post-success documentation-only commit merely to repeat the CI
-result or insert its own hash. If a real source/evidence/documentation correction
-is needed, commit it and run the relevant checks, including new final-tip CI;
-consolidation does not excuse stale or false evidence. CI triggers are unchanged.
+Do not open a follow-up pull request merely to record the merge commit or the
+check result; the closeout and the pull request hold them. If a real
+source/evidence/documentation correction is needed after merging, it goes
+through its own pull request and checks; consolidation does not excuse stale
+or false evidence.
 
 ## Handoff and model switching
 
@@ -183,6 +207,22 @@ Keep model name/version/runtime in execution metadata for reproducibility, but d
 ### Reviewer checklist
 
 Confirm the claimed behavior against the frozen reference and inspect whether the implementation covers the task's domain. Check that tests exercised the new code and did not use an emulator fallback for supposedly native logic. Run an independent boundary/withheld case where appropriate. Check for changed baselines, weakened comparisons, masked skips, undefined arithmetic and accidental content commits. Review readability as well: meaningful names, explicit units and state dependencies, navigable evidence, and a justified boundary for any literal register-level translation (D-0003). Approve or return a specific reproducible failure; a second model's agreement alone is not validation.
+
+### Where the review goes
+
+The reviewer posts its report on the pull request, not as a file or branch: one
+`gh pr review <n> --comment --body-file <report>` naming the reviewed head
+commit, the verdict, the commands run with their results, and each finding
+with `file:line` and a concrete failure scenario, most severe first. It uses
+`--comment`, because agents act as the owner, who cannot approve or request
+changes on their own pull request. The reviewer still works in its own
+checkout and never pushes. The primary answers each finding on the pull request
+(fixed in a named commit, or declined with a reason) and links the review from
+the task record. A re-review is a new comment on the new head. Older tasks'
+`tasks/*-review.md` files and `review/*` branches are kept as history; new work
+creates neither. Running the reviewer as a GitHub Action on every pull request
+would need a model API key as a repository secret and paid usage, which is the
+user's decision; until then the primary starts it locally.
 
 ## Durable records with minimal bureaucracy
 

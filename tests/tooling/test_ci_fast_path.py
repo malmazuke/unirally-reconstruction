@@ -45,9 +45,11 @@ class Repo:
         git(self.path, "commit", "-q", "--allow-empty", "-m", message)
         return git(self.path, "rev-parse", "HEAD")
 
-    def classify(self, event: str, base: str, head: str | None = None, base_runs: int | str | None = None) -> tuple[dict, str, str]:
+    def classify(self, event: str, base: str, head: str | None = None, base_runs: int | str | None = None,
+                 runs_only_for: str | None = None) -> tuple[dict, str, str]:
         """``base_runs``: None leaves the base-run check unconfigured; an int is the
-        count a stub ``gh`` reports; ``"fail"`` makes the stub exit 1."""
+        count a stub ``gh`` reports; ``"fail"`` makes the stub exit 1. With
+        ``runs_only_for`` the stub reports that count for that commit and 0 for any other."""
         out = self.path / "changes.json"
         gh_out = self.path / "gh_output"
         env = {**os.environ, "GITHUB_EVENT_NAME": event, "CLASSIFY_BASE": base,
@@ -59,7 +61,13 @@ class Repo:
             stub_dir = self.path / "stub-bin"
             stub_dir.mkdir(exist_ok=True)
             gh = stub_dir / "gh"
-            body = "#!/bin/sh\necho \"$@\" > \"$STUB_GH_ARGS\"\n" + ("exit 1\n" if base_runs == "fail" else f"echo {base_runs}\n")
+            body = "#!/bin/sh\necho \"$@\" >> \"$STUB_GH_ARGS\"\n"
+            if base_runs == "fail":
+                body += "exit 1\n"
+            elif runs_only_for:
+                body += f'case "$*" in *head_sha={runs_only_for}*) echo {base_runs};; *) echo 0;; esac\n'
+            else:
+                body += f"echo {base_runs}\n"
             gh.write_text(body)
             gh.chmod(0o755)
             env.update({"PATH": f"{stub_dir}:{env['PATH']}", "CLASSIFY_REQUIRE_BASE_RUN": "synthetic.yml",
@@ -146,6 +154,61 @@ class ClassifierTests(unittest.TestCase):
         self.assertFalse(d["docs_only"])
         self.assertNotIn("base_run", d)
 
+    def test_merge_commit_base_counts_its_merged_head(self):
+        # main is a merge commit of a pull request whose head has the run; main itself has none.
+        git(self.repo.path, "checkout", "-q", "-b", "pr")
+        pr_head = self.repo.commit({"tools/x.py": "2\n"}, "pr")
+        git(self.repo.path, "checkout", "-q", "main")
+        git(self.repo.path, "merge", "-q", "--no-ff", "-m", "merge", "pr")
+        merge = git(self.repo.path, "rev-parse", "HEAD")
+        git(self.repo.path, "checkout", "-q", "-b", "docs")
+        head = self.repo.commit({"docs/a.md": "b\n"})
+        d, _, _ = self.repo.classify("pull_request", merge, head, base_runs=1, runs_only_for=pr_head)
+        self.assertTrue(d["docs_only"], d)
+        self.assertIn(f"1 on its merged pull request head {pr_head[:7]}", d["base_run"])
+        d, _, _ = self.repo.classify("pull_request", merge, head, base_runs=1, runs_only_for="f" * 40)
+        self.assertFalse(d["docs_only"], d)
+        # A base that is not a merge commit has no second parent to fall back on.
+        git(self.repo.path, "checkout", "-q", "-b", "plain", self.base)
+        d, _, _ = self.repo.classify("pull_request", self.base, self.repo.commit({"docs/a.md": "c\n"}),
+                                     base_runs=1, runs_only_for="f" * 40)
+        self.assertFalse(d["docs_only"], d)
+        self.assertNotIn("merged pull request head", d["base_run"])
+
+    def test_a_merge_cannot_borrow_another_commits_run(self):
+        # F1: broken code on a branch, then main (which has a run) merged in, then docs.
+        # The merge's tree is not its second parent's tree, so main's run proves nothing about it.
+        main_tip = self.repo.commit({"docs/a.md": "m\n"}, "main tip")
+        git(self.repo.path, "checkout", "-q", "-b", "broken", self.base)
+        self.repo.commit({"tools/x.py": "broken\n"}, "broken code")
+        git(self.repo.path, "merge", "-q", "--no-ff", "-m", "merge main", "main")
+        merge = git(self.repo.path, "rev-parse", "HEAD")
+        head = self.repo.commit({"docs/a.md": "later\n"})
+        d, _, _ = self.repo.classify("pull_request", merge, head, base_runs=1, runs_only_for=main_tip)
+        self.assertFalse(d["docs_only"], d)
+        self.assertIn("merge tree differs from its second parent", d["base_run"])
+
+    def test_second_lookup_failure_takes_full_path(self):
+        git(self.repo.path, "checkout", "-q", "-b", "pr")
+        self.repo.commit({"tools/x.py": "2\n"}, "pr")
+        git(self.repo.path, "checkout", "-q", "main")
+        git(self.repo.path, "merge", "-q", "--no-ff", "-m", "merge", "pr")
+        merge = git(self.repo.path, "rev-parse", "HEAD")
+        head = self.repo.commit({"docs/a.md": "b\n"})
+        stub = self.repo.path / "stub-bin"
+        stub.mkdir(exist_ok=True)
+        # First lookup (the merge) answers 0; the second (its head) fails.
+        (stub / "gh").write_text('#!/bin/sh\ncase "$*" in *head_sha=' + merge + '*) echo 0;; *) exit 1;; esac\n')
+        (stub / "gh").chmod(0o755)
+        env = {**os.environ, "GITHUB_EVENT_NAME": "pull_request", "CLASSIFY_BASE": merge, "CLASSIFY_HEAD": head,
+               "CLASSIFY_OUT": str(self.repo.path / "c.json"), "PATH": f"{stub}:{os.environ['PATH']}",
+               "CLASSIFY_REQUIRE_BASE_RUN": "synthetic.yml", "GITHUB_REPOSITORY": "example/repo"}
+        env.pop("GITHUB_OUTPUT", None)
+        subprocess.run([sys.executable, str(SCRIPT)], cwd=self.repo.path, env=env, check=True, capture_output=True, timeout=60)
+        d = json.loads((self.repo.path / "c.json").read_text())
+        self.assertFalse(d["docs_only"], d)
+        self.assertIn("gh api failed", d["base_run"])
+
     def test_deleted_documentation_is_still_documentation(self):
         head = self.repo.commit({"docs/a.md": None})
         d, _, _ = self.repo.classify("push", self.base, head)
@@ -224,7 +287,10 @@ class WorkflowTests(unittest.TestCase):
     def test_changes_job_shape(self):
         changes = self.text[self.text.index("\n  changes:\n"):self.text.index("\n  lab:\n")]
         self.assertIn("fetch-depth: 0", changes)
-        self.assertIn("CLASSIFY_BASE: ${{ github.event.before || github.event.pull_request.base.sha }}", changes)
+        # The pull request's base, never its previous head: a pull request must not be judged by
+        # a classifier or a merge from its own earlier commits.
+        self.assertIn("CLASSIFY_BASE: ${{ github.event.pull_request.base.sha }}\n", changes)
+        self.assertNotIn("github.event.before", changes)
         self.assertIn('git show "$CLASSIFY_BASE:$script" > "$RUNNER_TEMP/classify_changes.py"', changes)
         self.assertIn("CLASSIFY_REQUIRE_BASE_RUN: synthetic.yml", changes)
         self.assertIn("GH_TOKEN: ${{ github.token }}", changes)

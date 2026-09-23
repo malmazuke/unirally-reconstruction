@@ -1,5 +1,12 @@
 # Project state
 
+Updated 23 September 2026 (PR-WORKFLOW): **changes now reach `main` only
+through pull requests.** Hosted CI runs on pull requests, `main` requires its
+checks on an up-to-date branch and accepts merge commits only, and pull request
+descriptions follow `.github/pull_request_template.md`. See
+[PR-WORKFLOW](../tasks/PR-WORKFLOW.md) and the source-control section of
+[the workflow](AGENT_WORKFLOW.md#source-control-and-integration).
+
 Updated 23 September 2026 (integration): **STATIC-CODE-MAP is reviewed and
 integrated** (tier 2, approved with should-fix items, all applied; claimed on
 the user's explicit override of the reset boundary at 89% weekly usage).

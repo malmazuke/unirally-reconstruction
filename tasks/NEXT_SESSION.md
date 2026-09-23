@@ -1,5 +1,10 @@
 # Next session
 
+**From 23 September 2026, integrate through a pull request** (PR-WORKFLOW):
+push the task branch, open a pull request from the template, merge with
+`gh pr merge --merge` once its checks are green and the review is done. `main`
+refuses direct pushes. The checks run on pull requests only.
+
 **Status on 23 September 2026 UTC (after STATIC-CODE-MAP): no task is
 active; TRACK-BREADTH is ready and next, after the weekly reset on 24
 September 08:00Z or an explicit user override.** STATIC-CODE-MAP is reviewed
