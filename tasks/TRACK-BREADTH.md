@@ -2,16 +2,15 @@
 
 ## Assignment
 
-- Status: in progress. Part 1 (inventory, per-track producers, playfield shapes, native idle
-  matrix) is reviewed and integrated by pull request #9. Part 2 (references for the 20 tracks
-  a cold start reaches and the match column) is reviewed and integrated by pull request #10.
-  Part 3 (native selection of the cold-start race tracks by id, pack profile v10; tier 1) is
-  reviewed and integrated by pull request #11. The live play the acceptance table asks for was
-  done by the user after the merge, on EAST and LOOPER with a gamepad rather than the keyboard
-  (attempt 30); everything else in the table is met for the 20 reachable tracks (see Review and
-  integration). Claimed 23 September 2026 at about 01:05Z on the user's explicit override
-  of the reset boundary ("you may work past the 80% reserve until the task is complete or the
-  weekly limit is reached"). Prepared 22 September 2026 under
+- Status: **accepted** for the 20 tracks a cold start reaches (23 September 2026, by the
+  coordinating session under D-0008: the matrix is the outcome, and each mechanism a row names
+  becomes its own task). Parts 1-3 were integrated by pull requests #9, #10 and #11. The user
+  played EAST and LOOPER live, and the two faults found there were fixed by #13 (the BG1 wrap)
+  and #14 (the result title). Declared and not covered: the 25 tracks of the five tours a cold
+  start does not offer, the stunt events, and the guarded branches listed in the handoff.
+  Claimed 23 September 2026 at about 01:05Z on the user's explicit override of the reset boundary
+  ("you may work past the 80% reserve until the task is complete or the weekly limit is
+  reached"; later "we can go to 100%"). Prepared 22 September 2026 under
   [D-0008](../docs/decisions/D-0008-static-map-track-breadth-review-tiers.md).
 - Milestone: M4 breadth (remaining tracks); the matrix, not any one track, is the outcome
 - Coordinator: the preparing session (Claude Fable 5.1, Claude Code desktop, 22 September
@@ -181,53 +180,48 @@ originals across race start; the sampled-frames rule from CLASSIC-RACE-HUD appli
 
 ## Handoff
 
-- Current base/head commit and uncommitted state: part 1 is merged (see the pull request named
-  in `artifacts/track-breadth-part1-integration/closeout.json` in the main checkout); the task
-  continues from the `main` tip in a new `task/track-breadth-2` branch and worktree.
-- Verified findings: [R-0046](../docs/research/R-0046-track-breadth-matrix.md) observations
-  1-4. The tracked manifest is `tests/manifests/content/track-streams.json`.
-- Current hypothesis and failed approaches: nine tours of five tracks, index = 5 x tour +
-  position (R-0046, unverified). A loose `--content-dir` cannot start a complete race (no trick
-  tables), which is why the lab override sits on a pack.
-- Commands executed, outcomes and report hashes: `content rnc-inventory` twice (identical,
-  `--expect` passes); `content track-idle-matrix --updates 1200` twice (identical rows);
-  `artifacts/track-breadth/gates.sh` on the code commit (see Review and integration).
-- Unavailable/skipped checks: `lab-sanitize` and `app-sanitize` (the host's ASan runtime hangs
-  before `main` since the macOS 27 update; recorded unavailable, the hosted Linux job covers
-  them). No reference capture of a new track yet.
-- Gate addition from the part 1 review: run `content rnc-inventory --expect
-  tests/manifests/content/track-streams.json` in every gate run of this task (CI has no ROM,
-  so nothing hosted checks the manifest's values), and the runner's option check
-  (`zoom_zoo_runner.cpp:38` accepts any four options) is tightened with the next change that
-  already reruns the differential gates.
-- Part 2: `tools/unirally_lab/native/track_reference.py` (lab only) and its tests (the menu
-  path only; no ROM-free test covers the boundary finder or the comparison); the sweep
-  and captures are in `local/evidence/track-breadth/track-breadth-2/` after integration.
-- Part 3: native selection by id is in (R-0046 observations 12-15). Evidence in
-  `local/evidence/track-breadth/track-breadth-3/` after integration (recompare, pictures,
-  gates). The sampler edges were recovered inside this part (small; live play of the new
-  tracks aborted without them). Next: the special-tile response, HYBRID's `inverted AI
-  marker is unrecovered` guard (update 2,053), INFINITY's checkpoint guard, PINGPONG's
-  `opponent.response_b`, then the locked tours and a captured finish and result
-  on a new track (the result timing and assets follow the race mode as a hypothesis).
-- Former next experiment (after part 2, done in part 3): make the race scenario data (mode, laps,
-  initialization frame per track, from R-0046 observations 7-8), add the reachable tracks'
-  per-track entries to a new pack profile and select a track by id in the runner and the app;
-  then re-run `track_reference sweep` on the native scenario per track. The part 1 plan below
-  is done.
-- Former next experiment (part 1, done in part 2): capture track 2 (Crawler, Down twice on PICK TRACK from the
-  ZOOM ZOO manifest's path) with the controller released and consecutive frames across race
-  start, record NOW PLAYING, and write a generic 742-byte projection so the match column can
-  be measured; then track 3 and 4. In parallel, a watch capture on track 2 names the tile flag
-  behind its special-tile stop at update 7.
-- Remaining dependencies: none outside the project. Tours other than Crawler may be locked on a
-  cold start; if so, record how the original unlocks them before choosing a capture method.
-- Runtime needs (network, build time, fixtures, memory): ROM, the pinned core for captures, a
-  lab-debug build (seconds), about 25 minutes for the gate script.
-- Aggregate parent/child time, provider usage before/after (or unknown), other-account-work
-  caveat: part 1 ran from 01:05Z; usage at claim 90% weekly, the rest in the closeout.
-- Accepted outcome, review/fix rounds and next routing decision: part 1 checkpoint; the task
-  is not accepted until the reference and match columns are filled.
+Current as of the merge of #14 (`665ea33`); nothing is uncommitted and no task branch remains.
+
+- **Delivered:**
+  - All 45 track streams are inventoried and derivable from the ROM.
+  - Pack profile v10 carries the 16 cold-start race tracks, and native starts any of them by id
+    (`--start classic.track.NN`, `frontend run --track NN`).
+  - Eight match the original over about 1,500 released-controller updates: DRAGSTER, ZOOM ZOO,
+    LOOPER, FLAT FUN, HYBRID, WARIO PAINT, CROCK and EAST.
+  - Two exact matches under held input: LOOPER (1,284 rows) and HYBRID (1,385 rows).
+  - EAST's and FLAT FUN's results were compared exactly to the finish (4,178 and 4,269 rows).
+  - Result titles and new-track pictures match to within the residue the accepted tracks
+    already carry.
+  - The full per-track matrix and every measurement are in
+    [R-0046](../docs/research/R-0046-track-breadth-matrix.md).
+- **Follow-ups, in order of reach:** each is its own task, and R-0046 "Next experiments" gives
+  the first experiment for each.
+  1. [SPECIAL-TILE-RESPONSE](SPECIAL-TILE-RESPONSE.md) (ready).
+  2. HYBRID's `inverted AI marker is unrecovered` guard (update 2,053).
+  3. INFINITY's checkpoint guard (row 379).
+  4. PINGPONG's `opponent.response_b` (update 1,068).
+  5. The hint caption's one-frame display timing, every 60 updates.
+  6. How the original unlocks the five other tours.
+  7. The stunt events.
+  8. A new track's lap-race result screen, and the finish slowdown's absolute frame modulo 3
+     (R-0046 "Hypotheses and limits").
+- **Tools a successor uses:**
+  - `content rnc-inventory --expect tests/manifests/content/track-streams.json`: run it in
+    every gate run, since CI has no ROM.
+  - `content track-idle-matrix`.
+  - `python3 -m tools.unirally_lab.native.track_reference capture|explore|sweep|recompare`.
+    `capture` takes `--hold FRAME BUTTON`, and `explore` honours it.
+- **Evidence:** everything is in the main checkout under `local/evidence/track-breadth/`.
+  - `track-breadth-2/sweep` holds the 20 captures with memory.
+  - `track-breadth-3/` holds the gate logs; `gates-5bab77e` is the last full set of the eleven
+    differential gates, and `gate_identity` cites it for presentation-only changes.
+  - `looper-bg1-wrap/` and `result-title/` hold the evidence for the two fixes.
+  - The closeouts are `artifacts/track-breadth-part{1,2,3}-integration/closeout.json`.
+- **Unavailable checks:** `lab-sanitize` and `app-sanitize` on this host (the ASan hang since
+  macOS 27); the hosted Linux job covers them.
+- **Usage:** weekly all-models usage went from 90% at claim to 96% at the end, on the user's
+  override. The next session starts after the reset on 2026-09-24T08:00Z unless the user
+  overrides again.
 
 ## Review and integration
 
