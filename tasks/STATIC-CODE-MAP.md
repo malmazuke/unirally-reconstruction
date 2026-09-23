@@ -199,7 +199,15 @@ targets for dynamic capture.
   listing, agreement, reports and logs at `local/evidence/static-code-map/static-map/`, the closeout
   at `artifacts/static-code-map-integration/closeout.json` in the main checkout.
 - Remote synchronization: pushed ref(s), verified local/remote commit IDs, or exact push failure:
-  in the closeout (main, `task/static-code-map`, `review/static-code-map`).
+  `refs/heads/main` and `refs/heads/task/static-code-map` at `1af38f05e471a4495b575de2554c9e2edda17855`,
+  `refs/heads/review/static-code-map` at `a17e77a`, each verified equal to local before the local
+  branch was deleted. Final-tip CI on `main` at `1af38f0`: run 35801187607, success (candidate
+  run 35799810644 on `d287845`, success).
+- Cleanup: moved the worktree's `artifacts/static-map/` (listing, agreement, run reports, suite and
+  build logs, digests) to `local/evidence/static-code-map/static-map/`; deleted
+  `.worktrees/static-code-map` with its `build/` (54 MB), its bootstrapped `local/` toolchain
+  (167 MB) and the synthetic suite's unreferenced scratch directories, deleted
+  `.worktrees/review-static-code-map`, and deleted both local branches.
 - Scope still unverified: every `inferred` routine is a static reading that no capture has
   executed. The unknown 40.4% is not resolved. The data bank at indexed and absolute reads,
   which the access captures record, is the next discriminating input.
