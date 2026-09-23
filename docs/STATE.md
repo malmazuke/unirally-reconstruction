@@ -60,7 +60,7 @@ every frame of every set** - the primary's 274 kept frames (whole picture
 trick-long's 192, 79 plus 60 consecutive primary frames across every kind of
 transition, the lap-change, crossing and finish consecutive sets, and 34
 consecutive DRAGSTER frames across its checkpoint, blank and finish. No pack
-or state change; review tier 2 under D-0008: approved at the first round, report `a7cfc6b` on `review/classic-split-time`, five should-fix items applied at `e225bfd`, with the reviewer's own withheld consecutive recaptures on five more originals of both tracks at 0 in both bands. Found on the way:
+or state change; review tier 2 under D-0008: approved at the first round, report `a7cfc6b` on tag `archive/review/classic-split-time`, five should-fix items applied at `e225bfd`, with the reviewer's own withheld consecutive recaptures on five more originals of both tracks at 0 in both bands. Found on the way:
 this host's ASan runtime now hangs before `main` (macOS 27.0, Xcode 26.1.1),
 so the two sanitizer presets are unavailable locally and the Linux CI job is
 their evidence.
@@ -143,8 +143,9 @@ all, because its `$053F` branch enters the clock handler without clearing
 queue only while nothing competes for it. Each was found by a case the evidence
 then in hand could not see, and the fourth round confirmed the final rule from
 the ROM rather than from the record. Native now follows the queue itself.
-Review records: [CLASSIC-RACE-HUD-review](../tasks/CLASSIC-RACE-HUD-review.md)
-and its rounds 2 to 5.
+Review records: [CLASSIC-RACE-HUD-review](https://github.com/malmazuke/unirally-reconstruction/blob/archive/review/classic-race-hud/tasks/CLASSIC-RACE-HUD-review.md)
+on tag `archive/review/classic-race-hud`, and its rounds 2 to 5 on tags
+`archive/review/classic-race-hud-2` to `-5` ([round 5, the approval](https://github.com/malmazuke/unirally-reconstruction/blob/archive/review/classic-race-hud-5/tasks/CLASSIC-RACE-HUD-review5.md)).
 
 Updated 20 September 2026: **CI-FAST-PATH is reviewed and integrated**;
 acceptance is conditional on the final-tip CI and remote verification recorded
