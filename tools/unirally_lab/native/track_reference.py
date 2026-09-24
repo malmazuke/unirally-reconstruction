@@ -97,16 +97,18 @@ def timeline(position, horizon, tour_row=0, hold=None, tour_column=0):
 
 
 # LOCKED-TOURS: a nonzero $77:1000 lists all nine tours on PICK TOUR, but choosing a locked
-# tour also needs bytes in $77:10C0-$10FF; with $77:1000-$1FFF all $FF every tour opens.
-# A capture of a locked tour preloads that (original side only, recorded in the reference).
-UNLOCK_TOURS_SRAM = range(0x1000, 0x2000)
+# tour also needs bytes in both $77:10C0-$10DF and $10E0-$10FF; with $1000 and $10C0-$10FF all
+# $FF every tour opens. (Filling the whole $1000-$1FFF also reaches the SRAM graph extrema at
+# $106F and the tutorial hints, so the preload is kept to those bytes.) A capture of a locked
+# tour preloads them (original side only, recorded in the reference).
+UNLOCK_TOURS_SRAM = [0x1000, *range(0x10c0, 0x1100)]
 
 
 def unlocked_sram(core_path, rom):
     """Cartridge RAM for a locked-tour capture: a fresh power-on's RAM (all $FF) is formatted by
     the menu (frames 403-405, after the first Start), which would clear the unlock, so boot once
     through the cold menu to frame 600, after the format and before any choice, take the
-    formatted RAM, and fill $77:1000-$1FFF with $FF."""
+    formatted RAM, and set $77:1000 and $10C0-$10FF to $FF."""
     with tempfile.TemporaryDirectory() as directory:
         core = BsnesCore(core_path, Path(directory), {})
         try:
@@ -119,7 +121,7 @@ def unlocked_sram(core_path, rom):
             image = bytearray(core.cartridge_ram())
         finally:
             core.unload()
-    if image[UNLOCK_TOURS_SRAM.start] != 0:
+    if image[UNLOCK_TOURS_SRAM[0]] != 0:
         raise ValueError('the cold menu left cartridge RAM unformatted')
     for address in UNLOCK_TOURS_SRAM:
         image[address] = 0xff
@@ -411,7 +413,7 @@ def main():
     c.add_argument('--track', type=int, required=True, help='position on the PICK TRACK screen, 0-4')
     c.add_argument('--tour-row', type=int, default=0, help='row on the PICK TOUR screen, 0-4')
     c.add_argument('--tour-column', type=int, default=0, help='column on the PICK TOUR screen, 0-1')
-    c.add_argument('--unlock-tours', action='store_true', help='preload cartridge RAM with $77:1000-$1FFF = $FF (all nine tours)')
+    c.add_argument('--unlock-tours', action='store_true', help='preload cartridge RAM $77:1000 and $10C0-$10FF with $FF (all nine tours)')
     c.add_argument('--out', type=Path, required=True)
     c.add_argument('--horizon', type=int, required=True)
     c.add_argument('--frame-image', type=int, action='append', default=[])

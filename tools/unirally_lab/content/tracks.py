@@ -192,6 +192,9 @@ def inventory(rom: bytes) -> dict[str, Any]:
 # scenario (race mode, laps, initialization frame) is observed (R-0046 observations
 # 6-8). The stunt events (2, 12, 22, 32) are a separate mode and are not listed.
 NEW_RACE_TRACKS = (3, 4, 10, 11, 13, 14, 20, 21, 23, 24, 30, 31, 33, 34)
+# LOCKED-TOURS: the race tracks of JUMPER, BOUNDER, RUNNER, SPRINTER and HUNTER (the stunt
+# events 7, 17, 27, 37 and 42 excluded), observed through an unlocked PICK TOUR.
+LOCKED_RACE_TRACKS = (5, 6, 8, 9, 15, 16, 18, 19, 25, 26, 28, 29, 35, 36, 38, 39, 40, 41, 43, 44)
 SCENERY_COUNT = 14
 # `$82:DC20-DD84`: BG2 tiles asset `$70 + s`, map `$82 + s`, palette row `$93 + s`
 # for scenery s = track mod 14 (track 42, NEON, has an extra case not listed here),
@@ -298,3 +301,14 @@ def v10_new_entries(rom: bytes) -> list[dict[str, Any]]:
     for s in sorted({scenery(index) for index in NEW_RACE_TRACKS}):
         entries += scenery_pack_entries(rom, s)
     return entries + [track_names_entry(rom)]
+
+
+def v12_new_entries(rom: bytes) -> list[dict[str, Any]]:
+    """The entries profile v12 adds to v11 (LOCKED-TOURS), in pack order: the locked race tracks'
+    content and the sceneries none of the earlier tracks use."""
+    entries = []
+    for index in LOCKED_RACE_TRACKS:
+        entries += track_pack_entries(rom, index)
+    for s in sorted({scenery(index) for index in LOCKED_RACE_TRACKS} - {scenery(index) for index in NEW_RACE_TRACKS}):
+        entries += scenery_pack_entries(rom, s)
+    return entries

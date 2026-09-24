@@ -266,7 +266,100 @@ const std::array<RequiredEntry, 90> tracks_required{{
 const std::array<RequiredEntry, 1> special_tiles_required{{
     {"zoom.corkscrew-heights", 96, "4529c691946c40e5d14b00445ed4d888e5d34fbf94283b874e3536cb9a90a7b0"},
 }};
-constexpr std::string_view two_track_rules_sha="9fceaa93731c37b1741a5a9530df8f29a483d82a8e79c04cdb8538ba7799ec7b";
+// LOCKED-TOURS (profile v12): the race tracks of the five tours a cold start does not
+// list, and sceneries 1, 8 and 12. Generated from the rules file (tracks.py v12_new_entries).
+const std::array<RequiredEntry, 89> locked_tracks_required{{
+    {"track.05.data", 47619, "24d5b6163c456da21a8027f6cbd3fbcf87ad54726b96d4159cf180d215431924"},
+    {"track.05.tile-columns", 4608, "1ff764587690707a29d88811970122a0bab1db23cbfdd914a06d93b20a002bf3"},
+    {"track.05.tile-flags", 144, "a15e8c2e02833e9c07acd42dba72756164e55bf24fd068fe5b88e83d1168256c"},
+    {"track.05.bg1-tiles", 18432, "74eda420a56801bcfdc03a1dde9f72a19a5c7d6cd358f44de8f53290b8243c59"},
+    {"track.06.data", 48168, "b783de52aac4591ab7d5a20df19a6f6760cf9b6b348099fa9df64b2f2313c5a8"},
+    {"track.06.tile-columns", 6368, "d78eada280eef6ae013e1276c2fd421be4d8cbd10538ddc15bd0eabe979e9067"},
+    {"track.06.tile-flags", 199, "29da001bc2ffc18cb8fde098a2f54ad8d3288f8bc7a43dcdf6aa1c6fc4d4a390"},
+    {"track.06.bg1-tiles", 25472, "6676554cdf399836de7387df9c0e0eafec3316e02a1bbc2d3385ad50e22e027b"},
+    {"track.08.data", 56372, "2919362dfaaf0759f3fe3e3caba448579c6b3e65997274ba0d672723bbdbb376"},
+    {"track.08.tile-columns", 6912, "d2974b9780bf7591953a31f8c0f8b65a33c42ec070ae0d4b87c4a93280655e3c"},
+    {"track.08.tile-flags", 216, "18ecd22b62eb06b937cf3b87f5411db1c65dd5b35069437abb2857128dd817b6"},
+    {"track.08.bg1-tiles", 27648, "a73daaea1c194dadd5b1383daf8c3efff987d3df91ac1178ba71935b061b59e7"},
+    {"track.09.data", 45036, "52b7a307264af08c5b3b1972e5ecc79773c0a02360d0fd6dfddc6da47baca11f"},
+    {"track.09.tile-columns", 6912, "7cd75c0d8476eb5916c6e06f61548df8dc5f89b678629e259724eefdf80dd13e"},
+    {"track.09.tile-flags", 216, "a823334c96e825d7df57f04e3270b6653b98aeb0899acc9e7a14fdc9cb216ece"},
+    {"track.09.bg1-tiles", 27648, "35c5cf80049a6c3f6348e3429e8642c8fed20361a7128591f2b2225d8a27a1bb"},
+    {"track.15.data", 54382, "ae55f88b7b248e0e2334f9807c42e6b7d716574eaf4a688990508edfed281314"},
+    {"track.15.tile-columns", 7168, "6b04948b316d1cf0624139a2d2bd34f793bc5e5d7ca8d365566b35db4efdce90"},
+    {"track.15.tile-flags", 224, "dbdc139a40ef6c1e0a26c937c2a8945f8cf4713eb92ba80e8077fd6cef9d8090"},
+    {"track.15.bg1-tiles", 28672, "3c64d644b052304cfd8647a2352d6ac97d51cfb3aa04af80d53ed80ac35391ee"},
+    {"track.16.data", 53331, "d27621f9bfa8f0dca0fff18dcf90ed32caa14cf7e99a85fad39fde2c171081fd"},
+    {"track.16.tile-columns", 7936, "3cf63fad4573cceac6d1d010e277340753dc7634d6255509af4b62a129cb467d"},
+    {"track.16.tile-flags", 248, "c957d488fcdcf19b757d8ba4860707f8374f905a7c115b689c93114e851e94f4"},
+    {"track.16.bg1-tiles", 31744, "507ac3f6ecac8c4557cd6377bb6da23d4f972481e9fc67aa494dff98bf9ee0cf"},
+    {"track.18.data", 49258, "31c75fee7b265c5af2d7190b39a7350ad835466ed154516ff204f27db74430df"},
+    {"track.18.tile-columns", 6976, "f0e7c2c31f021253f968f7052f1b51a9351d74a4568f5079bceef37ca7c78e4a"},
+    {"track.18.tile-flags", 218, "be2f048ad3825a5f2cd5c39f3f1074946d89f6f13609090b4f6716af047d3ef2"},
+    {"track.18.bg1-tiles", 27904, "e4f851b47a7936497fa42ef386c71e31c182aac25a417738ba90ed672b9028cb"},
+    {"track.19.data", 52178, "d107bcbfdfd76e795e5eacd297f19fb0c95454260f87e444261cf8018b976ebb"},
+    {"track.19.tile-columns", 7712, "068dd6fd62d932518193bb709540e0656389bdea62f23b073183be63b3dc00e5"},
+    {"track.19.tile-flags", 241, "5cfb1aecc76a0414278875bc40cfa680d4166c186d9f7bad72b27888f04de7a7"},
+    {"track.19.bg1-tiles", 30848, "25b13af1caf67f192ed4580515ca240de61d5eecadf96ed28bd7eff7a9eeb442"},
+    {"track.25.data", 50764, "7733352ca34f904c40a18c7be997ed0afbb5e58cac03dff5d4125a8b0ffb3ae6"},
+    {"track.25.tile-columns", 7104, "a11572bf5ec4906b2f387dc80ab629889d5c5c22384a31e844e252738c60c721"},
+    {"track.25.tile-flags", 222, "85f5a7ac55c6383a72b1ec27216f0b35c41b6ed9ea1fa2349ae96558f9f25812"},
+    {"track.25.bg1-tiles", 28416, "18e45e85911fad306759335f7ce7942770a871c1400d6ad239c7b060f95e54e7"},
+    {"track.26.data", 47215, "3cc9fae1426f3d8cf5c82ff8f0292775786124c61a4a9474c490de797647b18e"},
+    {"track.26.tile-columns", 6848, "aed9591c58cc4e67c760cd1ebf29dc0518891a678925feb9dc8fa9d08346a0da"},
+    {"track.26.tile-flags", 214, "c73ea107665158c170f807dc06f7f45946cf43c8a672d867b4fa6a79513ef997"},
+    {"track.26.bg1-tiles", 27392, "e62d31606a9fd9fe8ec385aed8517efd219439d999a41f2f62c8280422b8c939"},
+    {"track.28.data", 53001, "c072d1604facbd01f48ffb380849bbfbe33dd36cf56c08bab15b0ee5d701ad42"},
+    {"track.28.tile-columns", 6720, "3215a3369b510fdb8b0d56f1ff8677fe3f0c5fd0970ca0bf1546945f6856622c"},
+    {"track.28.tile-flags", 210, "0f0888aba037dcd862bb689c76dcf7037771af748a7b0e90028362324f0d8ada"},
+    {"track.28.bg1-tiles", 26880, "a2976093e84785e673cf2e722385241215ccad8d5e6c7b5a2b03541d663bc268"},
+    {"track.29.data", 44483, "7c27db5e9793287f142a633f8658f8a9c3f5a0a672779a1ff71e2900a3beeceb"},
+    {"track.29.tile-columns", 5824, "57f139275d7e899e37421d6bdd84697b321a833b3b844589e4081b34f13b8677"},
+    {"track.29.tile-flags", 182, "03fdc6f586abc5f273dc543c1b49837dc8c97a0b7d35523761d6faedcaac0e5b"},
+    {"track.29.bg1-tiles", 23296, "6c898432f52a7c78dfe7a383d04664d19ff3ec390314634830ae269337047413"},
+    {"track.35.data", 57267, "5c5a441facd11576ccb2037b920c886dc789f6f733327f7df1f22d727db59e8a"},
+    {"track.35.tile-columns", 7680, "4f542d6d1bb53c7e85c59af8b57dc76aeb93f6b474a75227042d0b966be558bb"},
+    {"track.35.tile-flags", 240, "d945b356b22b1f058f72822c7a31a51b7937e8d936b63181ec1ae4c350f26a38"},
+    {"track.35.bg1-tiles", 30720, "a07ac9690e5f861b36dc32e98e968d797fd14f14259c51fece3e2652fb0986ef"},
+    {"track.36.data", 41512, "f2cbc9e4cb64f994801435a07b591b6b4012de8d00fd36345c7d88b3f44e61f3"},
+    {"track.36.tile-columns", 6176, "840720a5a680dde625beeadbec685085e506a8b4e826aa53bb377704a847f5fc"},
+    {"track.36.tile-flags", 193, "951f7eec193436227ecc42a63ba7ce5e9622abd26fb6ef0f95e7df45b924244a"},
+    {"track.36.bg1-tiles", 24704, "1c1aa22eecf3558232b2137d42f15a34afe3acb4bf4cf13fa76382035ea0f799"},
+    {"track.38.data", 47242, "75d377e405bd2c580c3559a403409e033d849aa78100d5d3491c78b16e998932"},
+    {"track.38.tile-columns", 6752, "ef8d66022f0357815ace0318a653ab6a1412fbe16684451890071fff5f15730e"},
+    {"track.38.tile-flags", 211, "262dcaa402e5a24ccae6a4e6d54253a55799f1450de022810b314fc8794d29fb"},
+    {"track.38.bg1-tiles", 27008, "50fc2d0eac5b043191c810124646a6d75c690d7344af3625aadc3a84cd9eaaad"},
+    {"track.39.data", 51273, "95c3f44fc1c92869c9af12b1aa2b711c9bdab99452c35e384f8c23641c57f9cd"},
+    {"track.39.tile-columns", 6272, "520b504f6f5c7f41b437b35eb27824973cce0e52677e56ce16bca7d14817ee0a"},
+    {"track.39.tile-flags", 196, "d618ec25196316ed594260d55e2c76854e27833e8a5a39b92ed847cb350840f8"},
+    {"track.39.bg1-tiles", 25088, "4a3e9cea90a55865b7f945cb7c862a838ceea4a0bfa25a52f1447fed470304d1"},
+    {"track.40.data", 65354, "47ae70fab8eafcbce52de0776dc0c0805a09d253661a901ab823715f94e9b435"},
+    {"track.40.tile-columns", 6528, "fb41b136b69898d1ad761a52fa4dcb0e4d4ddcd09dfb916e9769524edd5eb848"},
+    {"track.40.tile-flags", 204, "d9518a088fbe3f203a3b7bb830600bc28b567797cb57220a384b912b1ef9b1d5"},
+    {"track.40.bg1-tiles", 26112, "b5ddea1680adacdf86cb5b74b20df68e526d48bbe7e1010a2705a60ba2fec4c5"},
+    {"track.41.data", 43463, "7b586e0badf8f2668ca480f1a238cb137a7b93a6b8cfb631083ea18fdf4b4626"},
+    {"track.41.tile-columns", 4704, "533c4adc2f9c490009875235b73b8573f240d59af7578db46c5abc976628ea04"},
+    {"track.41.tile-flags", 147, "ce9af875fd8b8f0ed10f44efc6646ef8e89b9c0c7b5c9f9d0a27f8465572c651"},
+    {"track.41.bg1-tiles", 18816, "997c1767f5ef9775bd17cb76bbd3122c1b23030383026cb3ec18d3370b3bd729"},
+    {"track.43.data", 49607, "2b58ac1c4a4cfd4920fbce8a7f63e86da3397619bf38ffc23e2fb9909659aec7"},
+    {"track.43.tile-columns", 6432, "bd91ba2d25dd5876a4b5d3325dd2b9575ff1428005fda9cb3fa76f873ce49685"},
+    {"track.43.tile-flags", 201, "86fcb15076fb4e04010d8c6fa60f67c2a455a7ed1129f570c919da0cc1b8835e"},
+    {"track.43.bg1-tiles", 25728, "d06d0c554244b5b48fd2b33a95dc4c1df79f1f2db96bcdd8a4abf61800983910"},
+    {"track.44.data", 44592, "10ec4e242dc63546fb5dd07b29401f3528ff9e8411775d85696cdba4995b71cf"},
+    {"track.44.tile-columns", 7584, "0c3961d122c11480450ba3ea9eee5b07d1c0e0ee840afaa3e825a00f03a18a85"},
+    {"track.44.tile-flags", 237, "3e18d8f508f007242baaf04f9e42f987d8d6fee274b1fd459113400146beaded"},
+    {"track.44.bg1-tiles", 30336, "689ec66a8e941864f1533483ba4f7f5244ef6d5f178494ae270ef1b47f70ade8"},
+    {"scenery.01.bg2-tiles", 672, "ebb6921ca08d48bd76c02879a92647521524eb87d4ab4d4209fd7add1f37d949"},
+    {"scenery.01.bg2-map", 8192, "a47ec4ddf2128d1126c299a8dea5fde497c326b01d6bd0ccc97483bf0fb904a6"},
+    {"scenery.01.palette", 352, "874033ba4d54a86a3706e7ba92a17019d6df2ea1a9a3178de2b675ed8f6a7de6"},
+    {"scenery.08.bg2-tiles", 1056, "c1b3f928ea4204463b56128688a135e336777555933e111c8942acfe0130d9c2"},
+    {"scenery.08.bg2-map", 8192, "a08bfaadfa15bfe42283809a829f8e764f5d29d26164aa43ffc79185abececb8"},
+    {"scenery.08.palette", 352, "f55d4fe22370c5c3e72226ce44c3c2a273b69bd9a59d3b703fb521fb47be8e0c"},
+    {"scenery.12.bg2-tiles", 736, "a544ae70df6b263760b3dbe29054414c47130233ff321fca46f1eca2647372eb"},
+    {"scenery.12.bg2-map", 8192, "a9ad06f9426d4971d276a31bc87ca024a3c7ef21efee51037aafbd41a7a148c0"},
+    {"scenery.12.palette", 352, "b2a9aefe13c1dc68454cf0a5c2bedb086c6e162dbea1df1f2ef108347d89ab63"},
+}};
+constexpr std::string_view two_track_rules_sha="5344209a04c26d24956dc8660bfc9080598433d019be90b1973f01ea36cff723";
 
 std::array<std::uint8_t, 32> hex_digest(std::string_view text) {
   if (text.size() != 64)
@@ -368,7 +461,7 @@ std::array<std::uint8_t, 32> sha256(std::span<const std::uint8_t> source) {
 
 namespace {
 constexpr std::array<std::string_view, 2> supported_profiles{
-    "classic.pal.crawler.dragster.v1", "classic.pal.crawler.tracks.v11"};
+    "classic.pal.crawler.dragster.v1", "classic.pal.crawler.tracks.v12"};
 } // namespace
 
 std::span<const std::string_view> supported_pack_profiles() {
@@ -411,6 +504,7 @@ ClassicContentPack::ClassicContentPack(const std::filesystem::path &path) {
     selected_required.insert(selected_required.end(),zoom_required.begin(),zoom_required.end());
     selected_required.insert(selected_required.end(),tracks_required.begin(),tracks_required.end());
     selected_required.insert(selected_required.end(),special_tiles_required.begin(),special_tiles_required.end());
+    selected_required.insert(selected_required.end(),locked_tracks_required.begin(),locked_tracks_required.end());
   }
   const auto count = in.u16();
   struct Row {

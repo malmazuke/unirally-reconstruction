@@ -81,23 +81,30 @@ only, so decide it explicitly and record it. The product never executes original
 | 6 (16:40Z) | A preload of `$1000` = 1 survives to the race | Captures; SRAM traces | Fresh RAM is `$FF` and the menu formats it at frames 403-405; the core loads RAM from `<save dir>/<rom>.srm` at power-on (a memory write before Strict's reset is lost); with `$1000` alone the menu lists the tours but still loads CRAWLER's track | Find what selection needs |
 | 7 (16:50Z) | Selection needs more bytes | Bisection with `$1000` = `$FF` | Bytes in both `$10C0-$10DF` and `$10E0-$10FF` are needed, no single pair found; `$1000-$1FFF` = `$FF` on the formatted cold image works | Method: preload that image (`track_reference capture --unlock-tours`) |
 | 8 (16:58Z) | - | 25 captures (`captures.sh`), released, horizon 2,900 | Tracks 5-9, 15-19, 25-29, 35-39, 40-44 = 5 x tour + position; stunt events at position 2 (7, 17, 27, 37, 42); laps 2, 3 or 5 | Scenarios and pack entries for the 20 race tracks |
+| 9 (17:05Z) | - | Pack v12 (`tracks.v12_new_entries`: 20 tracks and sceneries 1, 8, 12); 20 scenarios; recompare on the `$1000-$1FFF` preload | All differ at update 0 in the SRAM graph extrema (`$106F`) and `hints_active`: the fill reached them | Preload only `$1000` and `$10C0-$10FF` |
+| 10 (17:10Z) | - | Recapture (same tracks, modes, laps) and recompare (`recompare-2.json`) | **13 of 20 exact over their windows** (5, 6, 8, 9, 16, 18, 28, 29, 35, 36, 38, 39 and... see JSON); LAST ONE and DOWN+UP stop at pair 26; JUMPOVER (551, opponent) and HIGHROAD (741, opponent jump) diverge; HUNTER 40, 43, 44 differ in `ai.suppression_counter` (30 vs 60) and 41 in `progress_adjustment` | `$1275`/`$1283` per track |
+| 11 (17:12Z) | HUNTER is a higher tier | `$1275`, `$1283`, `$1281` at every boundary | 1, 0 on every track but HUNTER's 40, 41, 43, 44: 3, 64; `$1281` 96 even on HUNTER's lap races (72 elsewhere) | Recover `$83:E16B`'s other arms and `$83:CC59`'s bound; add the tier to the scenario |
 
 ## Handoff
 
-- Current base/head commit and uncommitted state: not claimed; prepared on
-  `task/race-finish-breadth`.
-- Verified findings: none yet.
-- Current hypothesis and failed approaches: tours unlock by progression that SRAM records.
-- Commands executed, outcomes and report hashes: none yet.
-- Unavailable/skipped checks: the ASan presets are unavailable on this host.
-- Exact next experiment/command: find the PICK TOUR screen's list builder in the static map
-  (`docs/map/static/code-banks.md`; the listing is `artifacts/static-map/` in the main
-  checkout). Look for reads of the tour names in `$83:9FFA` and of SRAM `$77:07xx` near the
-  menu, and diff SRAM between a cold start and a capture after a won CRAWLER race.
+- Current base/head commit and uncommitted state: base `07fdb87`; on `task/locked-tours`,
+  commits through the scenario table and pack v12 (see `git log`).
+- Verified findings: the unlock preload and menu path (attempts 4-8); 13 of 20 locked race
+  tracks exact with the v12 content and scenarios (attempt 10).
+- Current hypothesis and failed approaches: a `$1000`-only preload (attempt 6) and a whole
+  `$1000-$1FFF` fill (attempt 9) both fail, for different reasons.
+- Commands executed, outcomes and report hashes: `local/evidence/locked-tours/captures.sh`,
+  `sweep/sweep.json`, `recompare-1.json` (wide fill) and `recompare-2.json` (narrow preload).
+- Unavailable/skipped checks: the ASan presets (host).
+- Exact next experiment/command: read `$83:E16B-E1CB` (the `$1275` three-way: below 2 is
+  native's arm; one of the others sets `$1277` = 60) and `$83:CC59-CC7C` (`$1281` from race
+  mode and `$1283`), add `$1275` and `$1283` to `ClassicRaceScenario` (3 and 64 for tracks
+  40, 41, 43, 44; 1 and 0 elsewhere), and rerun the recompare. Then JUMPOVER at 551 and
+  HIGHROAD at 741; pair 26 (LAST ONE, DOWN+UP) is its own follow-up unless it is small.
 - Remaining dependencies: none outside the project.
-- Runtime needs (network, build time, fixtures, memory): as RACE-FINISH-BREADTH.
+- Runtime needs (network, build time, fixtures, memory): captures about 12 s each.
 - Aggregate parent/child time, provider usage before/after (or unknown), other-account-work
-  caveat: to be recorded.
+  caveat: primary from 16:10Z.
 - Accepted outcome, review/fix rounds and next routing decision: to be recorded.
 
 ## Review and integration

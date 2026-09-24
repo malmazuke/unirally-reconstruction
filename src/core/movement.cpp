@@ -1545,10 +1545,17 @@ ClassicRaceScenario classic_race_scenario(ClassicRaceTrack track) {
     // (DRAGSTER for mode 0, ZOOM ZOO for mode 1); the new tracks' results
     // compared since agree: one-run won and lost, and a lap race (R-0049).
     struct Observed {std::uint8_t index;std::uint16_t initialization_frame,laps;bool lap_race;};
-    static constexpr std::array<Observed,14> observed{{
+    // LOCKED-TOURS: the race tracks of the five tours a cold start does not
+    // list, observed through PICK TOUR unlocked by a preloaded cartridge RAM
+    // (track_reference capture --unlock-tours); their frames label that path.
+    static constexpr std::array<Observed,34> observed{{
         {3,1418,1,false},{4,1419,3,true},{10,1417,1,false},{11,1368,3,true},{13,1392,1,false},{14,1376,7,true},
         {20,1360,1,false},{21,1367,3,true},{23,1386,1,false},{24,1402,3,true},{30,1390,1,false},{31,1397,3,true},
-        {33,1403,1,false},{34,1407,5,true}}};
+        {33,1403,1,false},{34,1407,5,true},
+        {5,1377,1,false},{6,1374,3,true},{8,1411,1,false},{9,1395,5,true},{15,1389,1,false},{16,1382,3,true},
+        {18,1386,1,false},{19,1415,5,true},{25,1394,1,false},{26,1384,3,true},{28,1411,1,false},{29,1404,3,true},
+        {35,1432,1,false},{36,1388,5,true},{38,1419,1,false},{39,1451,2,true},{40,1464,1,false},{41,1391,5,true},
+        {43,1428,1,false},{44,1428,3,true}}};
     for(const auto& o:observed)
         if(o.index==track.index)
             return o.lap_race?ClassicRaceScenario{track,o.initialization_frame,o.laps,115,115,true}
