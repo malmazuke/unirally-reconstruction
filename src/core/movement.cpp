@@ -1022,6 +1022,23 @@ bool update_zoom_ai(ZoomZooState& state) {
     // ($0C6F) and suppression ($1277) keep their values (R-0048).
     if(marker&0x8000U) {state.opponent_horizontal=1;return true;}
     state.opponent_horizontal=(marker&0x4000U)?0:2;
+    // $83:E0C5-E0DA: while the turnaround counter $0C73 runs the opponent
+    // rides against the marker, without jumping (LOCKED-TOURS).
+    if(state.opponent_turnaround) {
+        state.opponent_horizontal=static_cast<std::uint8_t>(2U-state.opponent_horizontal);
+        --state.opponent_turnaround;return false;
+    }
+    // $83:E0DD-E111: stalled (previous x displacement below 3) in surface mode
+    // on a slope of 26 or more against the marker's direction, it starts a
+    // 30-update turnaround.
+    if(state.surface[1].mode) {
+        const auto angle=static_cast<std::int16_t>(rider.contact.surface_angle);
+        const bool against=angle<0?(state.opponent_horizontal==2 && angle<-26):(state.opponent_horizontal==0 && angle>=26);
+        if(against && static_cast<std::int16_t>(rider.motion.previous_x_displacement)<3) {
+            state.opponent_turnaround=30;return false;
+        }
+    }
+    bool keep_jump=false;
     if(marker&0x2000U) {
         input.jump_input=1;
         if(ai.impulse_countdown) {
@@ -1030,13 +1047,15 @@ bool update_zoom_ai(ZoomZooState& state) {
         }
         if(rider.contact.unsupported_count>=4 && negative(rider.motion.velocity_y)) {
             ai.impulse_countdown=static_cast<std::uint16_t>(-static_cast<std::int16_t>(rider.motion.velocity_y)/2);
-            if(whole.rewards.feature_total==0 || static_cast<std::int16_t>(whole.riders[0].progress.transition_count-rider.progress.transition_count)>=3) {
-                ai.suppression_counter=30;
-                // $83E16B compares $1275 with 2 in a three-way structure; only
-                // the below-two arm is modelled here. $1275 is a reference
-                // guard held at 1 on every authenticated frame, so the equal
-                // and above arms, one of which sets suppression to 60, are
-                // unreachable in this scenario rather than ignored.
+            // $83E16B compares the AI level $1275 with 2: below it ($83:E1A8)
+            // the launch needs no feature total or a lead of three progress
+            // transitions and suppresses for 30; above it (the HUNTER tour,
+            // level 3) it always launches and suppresses for 60 (LOCKED-TOURS).
+            // Level 2 is on no observed track and stays unrecovered.
+            const auto level=classic_race_scenario(state.track).ai_level;
+            if(level==2)throw std::invalid_argument("AI level 2 is unrecovered");
+            if(level>2 || whole.rewards.feature_total==0 || static_cast<std::int16_t>(whole.riders[0].progress.transition_count-rider.progress.transition_count)>=3) {
+                ai.suppression_counter=level>2?60:30;
                 // $83E1CB-E21A. A flat launch only picks a rotation from the
                 // velocity sign; a sloped one takes x&7, whose three bits drive
                 // three independent inputs -- bit 0 the rotation at
@@ -1051,11 +1070,15 @@ bool update_zoom_ai(ZoomZooState& state) {
             }
             ai.suppression_counter=0;
         } else if(rider.contact.unsupported_count<4 &&
-                  (whole.rewards.feature_total==0 || static_cast<std::int16_t>(whole.riders[0].progress.transition_count-rider.progress.transition_count)>=3)) {
-            ai.trick_selector=0;ai.impulse_countdown=0;return false;
+                  // $83:E135-E13D: an AI level other than 1 (HUNTER's 3) takes
+                  // the $83:E222 path at once, keeping the jump (LOCKED-TOURS).
+                  (classic_race_scenario(state.track).ai_level!=1 ||
+                   whole.rewards.feature_total==0 || static_cast<std::int16_t>(whole.riders[0].progress.transition_count-rider.progress.transition_count)>=3)) {
+            // $83:E222: the jump stays set; the rotation check follows.
+            keep_jump=true;
         }
     }
-    input.jump_input=whole.contact_phase;
+    if(!keep_jump)input.jump_input=whole.contact_phase; // $83:E21C
     ai.trick_selector=0;ai.impulse_countdown=0;
     if(!negative(rider.motion.velocity_y) && ai.suppression_counter>0 &&
        rider.pose.reflected_orientation>=16 && rider.pose.reflected_orientation<48) {
@@ -1545,14 +1568,29 @@ ClassicRaceScenario classic_race_scenario(ClassicRaceTrack track) {
     // (DRAGSTER for mode 0, ZOOM ZOO for mode 1); the new tracks' results
     // compared since agree: one-run won and lost, and a lap race (R-0049).
     struct Observed {std::uint8_t index;std::uint16_t initialization_frame,laps;bool lap_race;};
-    static constexpr std::array<Observed,14> observed{{
+    // The HUNTER tour's tracks: $83:CC0B-CC29 sets $1283 = $40, $1281 = $60 and
+    // $1275 = 3 directly when $131F is nonzero (1 on all five HUNTER captures, 0
+    // on the other 40) and skips $83:CC59. Every other race track has level 1.
+    const bool hunter=track.index>=40 && track.index<=44;
+    // LOCKED-TOURS: the race tracks of the five tours a cold start does not
+    // list, observed through PICK TOUR unlocked by a preloaded cartridge RAM
+    // (track_reference capture --unlock-tours); their frames label that path.
+    static constexpr std::array<Observed,34> observed{{
         {3,1418,1,false},{4,1419,3,true},{10,1417,1,false},{11,1368,3,true},{13,1392,1,false},{14,1376,7,true},
         {20,1360,1,false},{21,1367,3,true},{23,1386,1,false},{24,1402,3,true},{30,1390,1,false},{31,1397,3,true},
-        {33,1403,1,false},{34,1407,5,true}}};
+        {33,1403,1,false},{34,1407,5,true},
+        {5,1377,1,false},{6,1374,3,true},{8,1411,1,false},{9,1395,5,true},{15,1389,1,false},{16,1382,3,true},
+        {18,1386,1,false},{19,1415,5,true},{25,1394,1,false},{26,1384,3,true},{28,1411,1,false},{29,1404,3,true},
+        {35,1432,1,false},{36,1388,5,true},{38,1419,1,false},{39,1451,2,true},{40,1464,1,false},{41,1391,5,true},
+        {43,1428,1,false},{44,1428,3,true}}};
     for(const auto& o:observed)
         if(o.index==track.index)
-            return o.lap_race?ClassicRaceScenario{track,o.initialization_frame,o.laps,115,115,true}
-                             :ClassicRaceScenario{track,o.initialization_frame,o.laps,226,242,false};
+            return o.lap_race?ClassicRaceScenario{track,o.initialization_frame,o.laps,115,115,true,
+                                                  static_cast<std::uint16_t>(hunter?3:1),static_cast<std::uint16_t>(hunter?96:0),
+                                                  static_cast<std::uint16_t>(hunter?64:0)}
+                             :ClassicRaceScenario{track,o.initialization_frame,o.laps,226,242,false,
+                                                  static_cast<std::uint16_t>(hunter?3:1),static_cast<std::uint16_t>(hunter?96:0),
+                                                  static_cast<std::uint16_t>(hunter?64:0)};
     throw std::invalid_argument("classic race track has no recovered scenario");
 }
 
@@ -1564,10 +1602,11 @@ bool classic_race_has_scenario(ClassicRaceTrack track) {
 std::array<std::uint8_t,8> classic_race_state_magic(ClassicRaceTrack track) {
     if(track==ClassicRaceTrack::Dragster)return dragster_race_state_magic;
     if(track==ClassicRaceTrack::ZoomZoo)return {'U','R','Z','Z','0','0','0','B'};
-    return {'U','R','T','R',static_cast<std::uint8_t>('0'+track.index/10U),static_cast<std::uint8_t>('0'+track.index%10U),'0','3'};
+    return {'U','R','T','R',static_cast<std::uint8_t>('0'+track.index/10U),static_cast<std::uint8_t>('0'+track.index%10U),'0','4'};
 }
 
 std::uint16_t race_adjustment_limit(const ClassicRaceScenario& scenario) {
+    if(scenario.adjustment_limit)return scenario.adjustment_limit;
     return static_cast<std::uint16_t>(scenario.tour_race?0x48U:0x60U);
 }
 
@@ -1714,19 +1753,20 @@ std::vector<std::uint8_t> serialize_zoom_zoo(const ZoomZooState& state) {
         put32(bytes,state.pause.suspended_updates);put32(bytes,state.pause.suspended_countdown_updates);
     }
     // R-0047: the special-tile words follow the shared 742 bytes in the other
-    // tracks' layout (URTRnn03), and in DRAGSTER's and ZOOM ZOO's only while
-    // one is live (URDG0002, URZZ000C): no accepted race reaches a special
+    // tracks' layout (URTRnn04), and in DRAGSTER's and ZOOM ZOO's only while
+    // one is live (URDG0003, URZZ000D): no accepted race reaches a special
     // tile, so their frozen 742-byte states are unchanged, but ZOOM ZOO's own
     // tile table holds the corkscrew (pair 10).
     const bool other_track=state.track!=ClassicRaceTrack::ZoomZoo && state.track!=ClassicRaceTrack::Dragster;
-    const bool special_tiles_live=state.special_tiles!=std::array<SpecialTileRider,2>{};
+    const bool special_tiles_live=state.special_tiles!=std::array<SpecialTileRider,2>{} || state.opponent_turnaround;
     if(other_track || special_tiles_live) {
         if(!state.native_initialization)throw std::invalid_argument("special-tile words require a natively initialized race");
         for(const auto& r:state.special_tiles)
             for(auto v:{r.mud_cooldown,r.mud_exit_pending,r.corkscrew_latch,r.corkscrew_step,
                         r.corkscrew_float,r.physics_hold,r.reflection_lock,r.raised_priority})put16(bytes,v);
         put16(bytes,state.drive_target_latch);
-        if(state.track==ClassicRaceTrack::ZoomZoo)bytes[7]='C';
+        put16(bytes,state.opponent_turnaround);
+        if(state.track==ClassicRaceTrack::ZoomZoo)bytes[7]='D';
     }
     // R-0048: the other tracks' layout also carries the last 60 first-seen
     // flags. DRAGSTER's one lap and ZOOM ZOO's three index at most flag 19,
@@ -1739,7 +1779,7 @@ std::vector<std::uint8_t> serialize_zoom_zoo(const ZoomZooState& state) {
         if(!state.native_initialization)throw std::invalid_argument("a race state of any track but ZOOM ZOO requires native initialization");
         const auto identity=classic_race_state_magic(state.track);
         std::copy(identity.begin(),identity.end(),bytes.begin());
-        if(state.track==ClassicRaceTrack::Dragster && special_tiles_live)bytes[7]='2';
+        if(state.track==ClassicRaceTrack::Dragster && special_tiles_live)bytes[7]='3';
     }
     return bytes;
 }
@@ -1968,22 +2008,22 @@ static ZoomZooState deserialize_classic_race(std::span<const std::uint8_t> bytes
 }
 ZoomZooState deserialize_zoom_zoo(std::span<const std::uint8_t> bytes) {
     // Any track but ZOOM ZOO carries its own identity over the URZZ000B layout;
-    // a 776-byte DRAGSTER or ZOOM ZOO state appends the special-tile words
-    // (R-0047), and an 836-byte URTRnn03 state those and the last 60
-    // checkpoint flags (R-0048).
+    // a 778-byte DRAGSTER or ZOOM ZOO state (URDG0003, URZZ000D) appends the
+    // special-tile words, $0E7B and $0C73 (R-0047, R-0050), and an 838-byte
+    // URTRnn04 state those and the last 60 checkpoint flags (R-0048).
     const auto magic_is=[&](std::string_view text){return std::equal(text.begin(),text.end(),bytes.begin());};
     std::optional<ClassicRaceTrack> track;
     bool extended=false;
     if(bytes.size()==742) {
         if(std::equal(dragster_race_state_magic.begin(),dragster_race_state_magic.end(),bytes.begin()))track=ClassicRaceTrack::Dragster;
-    } else if(bytes.size()==776) {
+    } else if(bytes.size()==778) {
         extended=true;
-        if(magic_is("URZZ000C"))track=ClassicRaceTrack::ZoomZoo;
-        else if(magic_is("URDG0002"))track=ClassicRaceTrack::Dragster;
+        if(magic_is("URZZ000D"))track=ClassicRaceTrack::ZoomZoo;
+        else if(magic_is("URDG0003"))track=ClassicRaceTrack::Dragster;
         else throw std::invalid_argument("classic race state identity/width differs");
-    } else if(bytes.size()==836) {
+    } else if(bytes.size()==838) {
         extended=true;
-        if(magic_is("URTR") && bytes[4]>='0' && bytes[4]<='9' && bytes[5]>='0' && bytes[5]<='9' && bytes[6]=='0' && bytes[7]=='3') {
+        if(magic_is("URTR") && bytes[4]>='0' && bytes[4]<='9' && bytes[5]>='0' && bytes[5]<='9' && bytes[6]=='0' && bytes[7]=='4') {
             const ClassicRaceTrack other{static_cast<std::uint8_t>((bytes[4]-'0')*10+(bytes[5]-'0'))};
             if(other==ClassicRaceTrack::Dragster || other==ClassicRaceTrack::ZoomZoo || !classic_race_has_scenario(other))
                 throw std::invalid_argument("classic race state names a track without its own identity");
@@ -1996,7 +2036,7 @@ ZoomZooState deserialize_zoom_zoo(std::span<const std::uint8_t> bytes) {
     std::copy(zoom_zoo_magic.begin(),zoom_zoo_magic.end(),shared.begin());
     auto state=deserialize_classic_race(shared,*track);
     if(extended) {
-        Reader in{bytes.subspan(742,34)};
+        Reader in{bytes.subspan(742,36)};
         for(auto& r:state.special_tiles) {
             for(auto* v:{&r.mud_cooldown,&r.mud_exit_pending,&r.corkscrew_latch,&r.corkscrew_step,
                          &r.corkscrew_float,&r.physics_hold,&r.reflection_lock,&r.raised_priority})*v=in.u16();
@@ -2007,15 +2047,17 @@ ZoomZooState deserialize_zoom_zoo(std::span<const std::uint8_t> bytes) {
         }
         state.drive_target_latch=in.u16();
         if(state.drive_target_latch>1)throw std::invalid_argument("classic race drive target latch is invalid");
+        state.opponent_turnaround=in.u16();
+        if(state.opponent_turnaround>30)throw std::invalid_argument("classic race opponent turnaround is invalid");
         in.require_end();
-        if(bytes.size()==836) {
-            std::copy(bytes.begin()+776,bytes.end(),state.race.checkpoint_seen.begin()+20);
+        if(bytes.size()==838) {
+            std::copy(bytes.begin()+778,bytes.end(),state.race.checkpoint_seen.begin()+20);
             for(auto seen:state.race.checkpoint_seen)if(seen!=0 && seen!=255)
                 throw std::invalid_argument("classic race checkpoint-seen flag is invalid");
         }
         // DRAGSTER and ZOOM ZOO take the extended layout only while a word is live.
         if((*track==ClassicRaceTrack::ZoomZoo || *track==ClassicRaceTrack::Dragster) &&
-           state.special_tiles==std::array<SpecialTileRider,2>{})
+           state.special_tiles==std::array<SpecialTileRider,2>{} && !state.opponent_turnaround)
             throw std::invalid_argument("an extended DRAGSTER or ZOOM ZOO state carries no special-tile word");
     }
     return state;
@@ -2403,6 +2445,9 @@ void update_zoom_zoo(ZoomZooState& state,const ControllerButtons& requested_butt
         limit.drag=state.complete_race && (index==0?next.race.provisional_1225:next.race.provisional_1227);
         limit.start_override=rider.launch_override!=0;limit.player_progress=whole.riders[0].progress.transition_count;
         limit.opponent_progress=whole.riders[1].progress.transition_count;limit.adjustment_limit=race_adjustment_limit(scenario);
+        // $82:A77E-A797: the opponent's cap rises by $1283 * 2 while the player
+        // leads; $1283 is 64 on the HUNTER tour and 0 elsewhere (LOCKED-TOURS).
+        limit.ai_adjustment=scenario.ai_adjustment;
         limit.player_base_cap=next.reflection[0].base_velocity_cap;limit.update_counter=whole.update_counter;
         limit.friction_mode=static_cast<std::uint16_t>(horizontal);
         // $82:A6FD: and the speed limiter.

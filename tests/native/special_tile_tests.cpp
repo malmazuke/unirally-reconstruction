@@ -142,8 +142,9 @@ int main() {
                     update_corkscrew_tile(r2,t2,surface,tr2,u,std::span<const std::uint8_t>{});});
     }
 
-    // Layout: any track but DRAGSTER and ZOOM ZOO is URTRnn03, 836 bytes, the
-    // special-tile words after the shared 742, then 60 checkpoint flags.
+    // Layout: any track but DRAGSTER and ZOOM ZOO is URTRnn04, 838 bytes: the
+    // special-tile words, $0E7B and $0C73 after the shared 742, then 60
+    // checkpoint flags.
     {
         std::array<std::uint8_t,14> header{};header[3]=0x44;header[5]=0x32;header[7]=0x44;header[9]=0x32;header[13]=0x40;
         ZoomZooContent content{};content.movement.sampling.track=header;
@@ -151,38 +152,48 @@ int main() {
         auto state=classic_race_start(content,classic_race_scenario(ClassicRaceTrack{11}));
         state.special_tiles[1]={4,4,1,0x12,1,8,0,1};state.drive_target_latch=1;
         const auto bytes=serialize_zoom_zoo(state);
-        const std::array<std::uint8_t,8> magic{'U','R','T','R','1','1','0','3'};
-        require(bytes.size()==836 && std::equal(magic.begin(),magic.end(),bytes.begin()));
+        const std::array<std::uint8_t,8> magic{'U','R','T','R','1','1','0','4'};
+        require(bytes.size()==838 && std::equal(magic.begin(),magic.end(),bytes.begin()));
         require(bytes[758]==4 && bytes[762]==1 && bytes[764]==0x12 && bytes[768]==8 && bytes[772]==1 && bytes[774]==1);
         const auto restored=deserialize_zoom_zoo(bytes);
         require(restored.special_tiles==state.special_tiles && restored.drive_target_latch==1 && serialize_zoom_zoo(restored)==bytes);
         // Out-of-domain words are refused.
         for(const unsigned at:{742U,752U,764U,772U,774U}) {auto bad=bytes;bad[at]=0x40;rejects([&]{(void)deserialize_zoom_zoo(bad);});}
-        auto short_state=bytes;short_state.resize(776);rejects([&]{(void)deserialize_zoom_zoo(short_state);});
-        auto old_version=bytes;old_version[7]='2';rejects([&]{(void)deserialize_zoom_zoo(old_version);});
+        auto short_state=bytes;short_state.resize(778);rejects([&]{(void)deserialize_zoom_zoo(short_state);});
+        auto old_version=bytes;old_version[7]='3';rejects([&]{(void)deserialize_zoom_zoo(old_version);});
+        // LOCKED-TOURS: the opponent's turnaround counter travels at 776, 0-30.
+        auto turning=state;turning.opponent_turnaround=12;
+        const auto turning_bytes=serialize_zoom_zoo(turning);
+        require(turning_bytes[776]==12 && deserialize_zoom_zoo(turning_bytes).opponent_turnaround==12);
+        auto bad_turn=turning_bytes;bad_turn[776]=31;rejects([&]{(void)deserialize_zoom_zoo(bad_turn);});
         // R-0048: the last 60 checkpoint flags travel with it, $FF or 0 only.
         auto seven=state;seven.race.checkpoint_seen[35]=0;
         const auto seven_bytes=serialize_zoom_zoo(seven);
-        require(seven_bytes[776+15]==0 && deserialize_zoom_zoo(seven_bytes).race.checkpoint_seen[35]==0);
-        auto bad_flag=seven_bytes;bad_flag[800]=0x40;rejects([&]{(void)deserialize_zoom_zoo(bad_flag);});
+        require(seven_bytes[778+15]==0 && deserialize_zoom_zoo(seven_bytes).race.checkpoint_seen[35]==0);
+        auto bad_flag=seven_bytes;bad_flag[802]=0x40;rejects([&]{(void)deserialize_zoom_zoo(bad_flag);});
         // DRAGSTER and ZOOM ZOO keep 742 bytes until a special-tile word is live,
-        // then take the extended layout under URDG0002 / URZZ000C.
+        // then take the extended layout under URDG0003 / URZZ000D.
         auto dragster=classic_crawler_dragster_race_start(content);
         require(serialize_zoom_zoo(dragster).size()==742);
         dragster.special_tiles[0].physics_hold=1;
         const auto live=serialize_zoom_zoo(dragster);
-        const std::array<std::uint8_t,8> dragster_live{'U','R','D','G','0','0','0','2'};
-        require(live.size()==776 && std::equal(dragster_live.begin(),dragster_live.end(),live.begin()));
+        const std::array<std::uint8_t,8> dragster_live{'U','R','D','G','0','0','0','3'};
+        require(live.size()==778 && std::equal(dragster_live.begin(),dragster_live.end(),live.begin()));
         require(deserialize_zoom_zoo(live).special_tiles==dragster.special_tiles && serialize_zoom_zoo(deserialize_zoom_zoo(live))==live);
         auto zoom=classic_crawler_zoom_zoo_start(content);
         require(serialize_zoom_zoo(zoom).size()==742);
         zoom.special_tiles[1].corkscrew_step=5;zoom.special_tiles[1].corkscrew_latch=1;
         const auto zoom_live=serialize_zoom_zoo(zoom);
-        const std::array<std::uint8_t,8> zoom_magic{'U','R','Z','Z','0','0','0','C'};
-        require(zoom_live.size()==776 && std::equal(zoom_magic.begin(),zoom_magic.end(),zoom_live.begin()));
+        const std::array<std::uint8_t,8> zoom_magic{'U','R','Z','Z','0','0','0','D'};
+        require(zoom_live.size()==778 && std::equal(zoom_magic.begin(),zoom_magic.end(),zoom_live.begin()));
         require(deserialize_zoom_zoo(zoom_live).track==ClassicRaceTrack::ZoomZoo && serialize_zoom_zoo(deserialize_zoom_zoo(zoom_live))==zoom_live);
+        // The opponent's turnaround alone also makes the state extended (LOCKED-TOURS).
+        auto turning_zoom=classic_crawler_zoom_zoo_start(content);turning_zoom.opponent_turnaround=5;
+        const auto turning_zoom_bytes=serialize_zoom_zoo(turning_zoom);
+        require(turning_zoom_bytes.size()==778 && turning_zoom_bytes[776]==5 &&
+                serialize_zoom_zoo(deserialize_zoom_zoo(turning_zoom_bytes))==turning_zoom_bytes);
         // The extended layout with every word zero is not canonical and is refused.
-        auto idle=zoom_live;for(unsigned at=742;at<776;++at)idle[at]=0;
+        auto idle=zoom_live;for(unsigned at=742;at<778;++at)idle[at]=0;
         rejects([&]{(void)deserialize_zoom_zoo(idle);});
     }
     return 0;

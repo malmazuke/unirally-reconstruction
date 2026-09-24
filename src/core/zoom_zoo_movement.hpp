@@ -13,8 +13,8 @@ struct SurfaceTransition {
 };
 // R-0047: per-rider words of the special tiles (mud, flag pair 14; corkscrew,
 // pair 10), which no accepted DRAGSTER or ZOOM ZOO race reaches. The other
-// tracks' state (URTRnn03) always carries them; DRAGSTER's and ZOOM ZOO's carry
-// them only while one is live (URDG0002, URZZ000C), so their 742-byte states
+// tracks' state (URTRnn04) always carries them; DRAGSTER's and ZOOM ZOO's carry
+// them only while one is live (URDG0003, URZZ000D), so their 742-byte states
 // are unchanged. Words keep the original bit patterns; signed where noted.
 struct SpecialTileRider {
     // $0BCB/$0BCD ($0F45): 4 on each update a mud tile holds the rider, then
@@ -58,7 +58,7 @@ struct ZoomZooRaceState {
     // $114D-$119C: 80 first-seen flags, laps remaining * 4 + checkpoint
     // ($81:CD25-CD2E fills them with $FF). The shared 742-byte layout holds the
     // first 20, all a race of up to four laps reaches; the other tracks' layout
-    // (URTRnn03) holds all 80 (R-0048).
+    // (URTRnn04) holds all 80 (R-0048).
     std::array<std::uint8_t,80> checkpoint_seen{};
     std::array<ZoomZooRaceRider,2> riders;
     std::array<std::array<std::uint16_t,10>,2> lap_times;
@@ -118,9 +118,17 @@ struct ClassicRaceScenario {
     // announcement ($81:81AE) and the result screen: mode 1 publishes the lap
     // graph extrema at load 106 ($83:904A-90F0); the mode-0 screen publishes none.
     bool tour_race{};
+    // The HUNTER tour's tier, which $83:CC0B-CC29 sets at setup when $131F is
+    // nonzero (skipping $83:CC59): AI level $1275 (3; 1 elsewhere), the
+    // opponent's catch-up term $1283 (64; 0 elsewhere) and, when nonzero, the
+    // progress adjustment bound $1281 (96) in place of the race-mode default.
+    std::uint16_t ai_level{1};
+    std::uint16_t adjustment_limit{};
+    std::uint16_t ai_adjustment{};
 };
 // $83:CC59-CC7C: 0x48 (mode 1) or 0x60 (mode 0) minus `$1283`, which is zero
-// on every authenticated frame of both tracks' references (guarded).
+// on every track but HUNTER's; HUNTER's scenario carries its bound (96),
+// which $83:CC0B-CC29 sets directly (LOCKED-TOURS).
 std::uint16_t race_adjustment_limit(const ClassicRaceScenario& scenario);
 // The scenario of a race track; throws for a track without a recovered one.
 ClassicRaceScenario classic_race_scenario(ClassicRaceTrack track);
@@ -173,6 +181,9 @@ struct ZoomZooState {
     // with the special-tile words; while none is live no drive is suspended,
     // so each rider rewrites it before reading it.
     std::uint16_t drive_target_latch{};
+    // $0C73: updates left of the opponent's turnaround on a steep slope
+    // ($83:E0C5-E111, LOCKED-TOURS); serialized with the special-tile words.
+    std::uint16_t opponent_turnaround{};
 };
 struct ZoomZooContent {
     MovementContent movement;
@@ -219,11 +230,11 @@ ZoomZooState classic_crawler_zoom_zoo_start(const ZoomZooContent& content);
 ZoomZooState classic_crawler_dragster_race_start(const ZoomZooContent& content);
 ZoomZooState classic_race_start(const ZoomZooContent& content,const ClassicRaceScenario& scenario);
 // Identity of a DRAGSTER race state on the shared engine; same 742-byte layout as
-// URZZ000B (URDG0002 and 776 bytes while a special-tile word is live, R-0047).
+// URZZ000B (URDG0003 and 778 bytes while a special-tile word is live, R-0047).
 inline constexpr std::array<std::uint8_t,8> dragster_race_state_magic{'U','R','D','G','0','0','0','1'};
 // Identity of any other track's race state: `URTR`, the two-digit track index,
-// `03`; the 742-byte layout followed by the special-tile words and the last 60
-// checkpoint-seen flags (836 bytes).
+// `04`; the 742-byte layout followed by the special-tile words with $0E7B and
+// $0C73 (36 bytes) and the last 60 checkpoint-seen flags (838 bytes).
 std::array<std::uint8_t,8> classic_race_state_magic(ClassicRaceTrack track);
 bool classic_race_player_won(const ZoomZooState& state);
 // Result-loading update at which the result screen is stable (restart allowed).

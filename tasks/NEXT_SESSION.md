@@ -5,6 +5,10 @@ push the task branch, open a pull request from the template, merge with
 `gh pr merge --merge` once its checks are green and the review is done. `main`
 refuses direct pushes. The checks run on pull requests only.
 
+**Status on 24 September 2026 UTC (end of LOCKED-TOURS): LOCKED-TOURS is accepted; claim
+[TILE-PAIRS-8-12-26](TILE-PAIRS-8-12-26.md) next.** Every track is reachable in the laboratory
+(`capture --unlock-tours`); pack v12; other tracks' states are `URTRnn04`. Live play needs pack v12.
+
 **Status on 24 September 2026 UTC (end of RACE-FINISH-BREADTH): RACE-FINISH-BREADTH is
 accepted; claim [LOCKED-TOURS](LOCKED-TOURS.md) next.** New tracks now match the original
 through their finishes and one-run results; `track_reference` compares through the result

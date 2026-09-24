@@ -1,5 +1,19 @@
 # Project state
 
+Updated 24 September 2026 (LOCKED-TOURS): **all 45 tracks are now reachable in the laboratory,
+and 15 of the 20 locked race tracks match the original.**
+- The five locked tours (JUMPER, BOUNDER, RUNNER, SPRINTER, HUNTER) open with a preloaded
+  cartridge RAM (`track_reference capture --unlock-tours`; the product never runs original
+  code).
+- Pack profile **v12** carries their tracks, and each has a native scenario.
+- The HUNTER tour runs at AI level 3. Every tour's opponent can turn around on steep slopes
+  (`$0C73`), which is new state: other tracks' states are `URTRnn04`.
+- Four locked tracks stop at tile pairs 8, 12 or 26, and TWO LOOPS differs at update 1,252
+  ([R-0050](research/R-0050-locked-tours.md)).
+
+Live play needs pack v12 (`content pack --rules tests/manifests/content/classic-crawler-tracks-pack.json
+--out local/classic-pal-crawler-tracks-v12.pack`, then rebuild app-debug).
+
 Updated 24 September 2026 (RACE-FINISH-BREADTH): **new tracks' finishes and one-run results
 match the original.** The finish slowdown skips every third update by a counter that starts
 at race setup (`$0304`), not by the absolute frame. Native used the frame, and so was wrong

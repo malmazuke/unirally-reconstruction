@@ -566,6 +566,15 @@
   ]
  },
  {
+  "address": "$80:9B55",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_809B55",
+  "source_records": [
+   "tasks/LOCKED-TOURS.md"
+  ]
+ },
+ {
   "address": "$80:AD79",
   "class": "observed",
   "comment": "instruction start",
@@ -602,6 +611,15 @@
   "label": "dat_80C709",
   "source_records": [
    "docs/research/R-0046-track-breadth-matrix.md"
+  ]
+ },
+ {
+  "address": "$80:C950",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80C950",
+  "source_records": [
+   "tasks/LOCKED-TOURS.md"
   ]
  },
  {
@@ -815,7 +833,8 @@
    "docs/research/R-0045-static-code-map.md",
    "docs/research/R-0047-special-tiles.md",
    "tasks/SPECIAL-TILE-RESPONSE.md",
-   "tasks/STATIC-CODE-MAP.md"
+   "tasks/STATIC-CODE-MAP.md",
+   "tasks/TILE-PAIRS-8-12-26.md"
   ]
  },
  {
@@ -833,7 +852,8 @@
   "comment": "routine start",
   "label": "sub_81837E",
   "source_records": [
-   "docs/research/R-0047-special-tiles.md"
+   "docs/research/R-0047-special-tiles.md",
+   "tasks/TILE-PAIRS-8-12-26.md"
   ]
  },
  {
@@ -871,7 +891,8 @@
   "comment": "routine start",
   "label": "sub_818554",
   "source_records": [
-   "docs/research/R-0047-special-tiles.md"
+   "docs/research/R-0047-special-tiles.md",
+   "tasks/TILE-PAIRS-8-12-26.md"
   ]
  },
  {
@@ -992,7 +1013,8 @@
   "comment": "routine start",
   "label": "sub_818950",
   "source_records": [
-   "docs/research/R-0047-special-tiles.md"
+   "docs/research/R-0047-special-tiles.md",
+   "tasks/TILE-PAIRS-8-12-26.md"
   ]
  },
  {
@@ -1787,7 +1809,8 @@
   "label": "loc_819185",
   "source_records": [
    "docs/research/R-0047-special-tiles.md",
-   "tasks/SPECIAL-TILE-RESPONSE.md"
+   "tasks/SPECIAL-TILE-RESPONSE.md",
+   "tasks/TILE-PAIRS-8-12-26.md"
   ]
  },
  {
@@ -5922,6 +5945,15 @@
   ]
  },
  {
+  "address": "$83:9F96",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_839F96",
+  "source_records": [
+   "tasks/LOCKED-TOURS.md"
+  ]
+ },
+ {
   "address": "$83:9FFA",
   "class": "unknown",
   "comment": "unknown",
@@ -5979,7 +6011,9 @@
   "label": "loc_83CC59",
   "source_records": [
    "docs/research/R-0038-dragster-ordinary-controls.md",
-   "tasks/DRAGSTER-ORDINARY-CONTROLS-review.md"
+   "docs/research/R-0050-locked-tours.md",
+   "tasks/DRAGSTER-ORDINARY-CONTROLS-review.md",
+   "tasks/LOCKED-TOURS.md"
   ]
  },
  {
@@ -6147,6 +6181,16 @@
   ]
  },
  {
+  "address": "$83:E0C5",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83E0C5",
+  "source_records": [
+   "docs/research/R-0050-locked-tours.md",
+   "tasks/LOCKED-TOURS.md"
+  ]
+ },
+ {
   "address": "$83:E114",
   "class": "observed",
   "comment": "instruction start",
@@ -6166,6 +6210,44 @@
   ]
  },
  {
+  "address": "$83:E135",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83E135",
+  "source_records": [
+   "docs/research/R-0050-locked-tours.md",
+   "tasks/LOCKED-TOURS.md"
+  ]
+ },
+ {
+  "address": "$83:E140",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83E140",
+  "source_records": [
+   "tasks/LOCKED-TOURS.md"
+  ]
+ },
+ {
+  "address": "$83:E16B",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83E16B",
+  "source_records": [
+   "docs/research/R-0050-locked-tours.md",
+   "tasks/LOCKED-TOURS.md"
+  ]
+ },
+ {
+  "address": "$83:E1A8",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83E1A8",
+  "source_records": [
+   "docs/research/R-0050-locked-tours.md"
+  ]
+ },
+ {
   "address": "$83:E21F",
   "class": "observed",
   "comment": "instruction start",
@@ -6173,6 +6255,16 @@
   "source_records": [
    "docs/research/R-0010-native-movement.md",
    "tasks/M2-01A.md"
+  ]
+ },
+ {
+  "address": "$83:E222",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_83E222",
+  "source_records": [
+   "docs/research/R-0050-locked-tours.md",
+   "tasks/LOCKED-TOURS.md"
   ]
  },
  {
@@ -7022,6 +7114,15 @@
   "label": "loc_83F412",
   "source_records": [
    "docs/research/R-0036-zoom-zoo-rider-objects.md"
+  ]
+ },
+ {
+  "address": "$83:FAAE",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_83FAAE",
+  "source_records": [
+   "tasks/LOCKED-TOURS.md"
   ]
  }
 ]

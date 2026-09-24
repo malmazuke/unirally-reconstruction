@@ -372,8 +372,8 @@ the two accepted tracks carry.
    inverted AI marker (R-0048).
 4. **Done in SPECIAL-TILE-RESPONSE**: PINGPONG's `opponent.response_b` at update
    1,068 was the rotation clearing its step under surface mode (R-0047).
-5. **The five locked tours**: find how the original unlocks them before choosing a
-   capture method for the 25 tracks they hold.
+5. **Done in LOCKED-TOURS** ([R-0050](R-0050-locked-tours.md)): the locked tours open in the
+   laboratory with a preloaded cartridge RAM; 15 of their 20 race tracks match.
 6. **Stunt events**: a separate mode (solo, qualifying score), out of this task's race
    scope.
 
