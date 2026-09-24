@@ -77,6 +77,10 @@ only, so decide it explicitly and record it. The product never executes original
 | 2 (16:14Z) | Winning a race records progression in SRAM | SRAM diff over `race-finish-breadth/east-right` (EAST won) | After the race: `$0825` 0 to 4, `$07D5` 0 to 1, `$07D7` 0 to 4, `$1118` 0 to 2, plus times at `$0618`, `$073C`, `$0755`-`$07D4`, `$086B`, `$0E69`. The AI reads `$77:0825` (`$83:E140`) | Find the reader of these near the PICK TOUR builder |
 | 3 (16:20Z) | `$1118` is read by the menu | ROM scan for long accesses | Only written (ORA/STA at `$83:FAAE`-`FAD4`); the menu code near `$80:C950` is unclassified | Empirical: preload SRAM |
 | 4 (16:25Z) | Some SRAM byte unlocks tours | Lab probe (`local/evidence/locked-tours/probe.py`): power on with patched cartridge RAM, walk to PICK TOUR, picture | `$1000-$1FFF` = `$FF` lists all nine tours; bisection: `$77:1000` alone; any nonzero value (1, 2, 3, 4, 5, 8, 9, `$10`) unlocks all five | Capture method: preload `$77:1000` = 1; find the cursor order |
+| 5 (16:30Z) | Down and Right walk PICK TOUR | Probe pictures after k Downs / Right | Down walks CRAWLER, SHUFFLER, WALKER, HOPPER, HUNTER; Right takes JUMPER, BOUNDER, RUNNER, SPRINTER | `menu_events(position, row, column)` |
+| 6 (16:40Z) | A preload of `$1000` = 1 survives to the race | Captures; SRAM traces | Fresh RAM is `$FF` and the menu formats it at frames 403-405; the core loads RAM from `<save dir>/<rom>.srm` at power-on (a memory write before Strict's reset is lost); with `$1000` alone the menu lists the tours but still loads CRAWLER's track | Find what selection needs |
+| 7 (16:50Z) | Selection needs more bytes | Bisection with `$1000` = `$FF` | Bytes in both `$10C0-$10DF` and `$10E0-$10FF` are needed, no single pair found; `$1000-$1FFF` = `$FF` on the formatted cold image works | Method: preload that image (`track_reference capture --unlock-tours`) |
+| 8 (16:58Z) | - | 25 captures (`captures.sh`), released, horizon 2,900 | Tracks 5-9, 15-19, 25-29, 35-39, 40-44 = 5 x tour + position; stunt events at position 2 (7, 17, 27, 37, 42); laps 2, 3 or 5 | Scenarios and pack entries for the 20 race tracks |
 
 ## Handoff
 

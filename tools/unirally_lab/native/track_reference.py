@@ -44,16 +44,19 @@ GUARDS_PATH = 'tests/manifests/native/zoom-zoo-race-guards.reference.json'
 GUARD_OFFSET = 1649 - 1376
 
 
-def menu_events(position, tour_row=0):
+def menu_events(position, tour_row=0, tour_column=0):
     """(from, to, button) for the track at ``position`` (0-4) on the PICK TRACK screen of the
-    tour at ``tour_row`` of PICK TOUR (0 = CRAWLER, the default highlight)."""
-    if not 0 <= position <= 4 or not 0 <= tour_row <= 3:
-        raise ValueError('a track position is 0-4 and a PICK TOUR row 0-3')
+    tour at ``tour_row`` and ``tour_column`` of PICK TOUR (row 0, column 0 = CRAWLER, the default
+    highlight). Down walks the left column (CRAWLER, SHUFFLER, WALKER, HOPPER, then HUNTER once
+    the locked tours are open); Right takes the right column (JUMPER, BOUNDER, RUNNER, SPRINTER)."""
+    if not 0 <= position <= 4 or not 0 <= tour_row <= 4 or tour_column not in (0, 1) or \
+            (tour_column == 1 and tour_row == 4):
+        raise ValueError('a track position is 0-4, a PICK TOUR row 0-4 and a column 0-1 (row 4 has no column 1)')
     events = [(a, b, 'start') for a, b in MENU_STARTS[:3]]
     shift = 0
-    for k in range(tour_row):
+    for k in range(tour_row + tour_column):
         at = FIRST_TOUR_DOWN + DOWN_SPACING * k
-        events.append((at, at + 5, 'down'))
+        events.append((at, at + 5, 'down' if k < tour_row else 'right'))
         shift = max(shift, at + 5 + DOWN_SPACING - MENU_STARTS[3][0])
     events.append((MENU_STARTS[3][0] + shift, MENU_STARTS[3][1] + shift, 'start'))
     last = FIRST_DOWN + shift - DOWN_SPACING
@@ -74,17 +77,18 @@ def segments(hold):
     return sorted((int(first), list(buttons)) for first, buttons in hold)
 
 
-def timeline(position, horizon, tour_row=0, hold=None):
+def timeline(position, horizon, tour_row=0, hold=None, tour_column=0):
     """The menu inputs, then a released controller, or ``hold``: (first frame, buttons) held
     from that frame to the horizon, or several such segments, each held until the next
     begins (an empty button list releases the controller)."""
     rows = [[[], []] for _ in range(horizon + 1)]
-    for first, last, button in menu_events(position, tour_row):
+    events = menu_events(position, tour_row, tour_column)
+    for first, last, button in events:
         for frame in range(first, last + 1):
             rows[frame][0] = [button]
     held = segments(hold)
     for i, (first, buttons) in enumerate(held):
-        if first <= max(e[1] for e in menu_events(position, tour_row)):
+        if first <= max(e[1] for e in events):
             raise ValueError('a held input must start after the menu')
         end = held[i+1][0] if i+1 < len(held) else horizon + 1
         for frame in range(first, end):
@@ -92,7 +96,37 @@ def timeline(position, horizon, tour_row=0, hold=None):
     return rows
 
 
-def capture(core_path, out, track, horizon, frame_images=(), tour_row=0, hold=None):
+# LOCKED-TOURS: a nonzero $77:1000 lists all nine tours on PICK TOUR, but choosing a locked
+# tour also needs bytes in $77:10C0-$10FF; with $77:1000-$1FFF all $FF every tour opens.
+# A capture of a locked tour preloads that (original side only, recorded in the reference).
+UNLOCK_TOURS_SRAM = range(0x1000, 0x2000)
+
+
+def unlocked_sram(core_path, rom):
+    """Cartridge RAM for a locked-tour capture: a fresh power-on's RAM (all $FF) is formatted by
+    the menu (frames 403-405, after the first Start), which would clear the unlock, so boot once
+    through the cold menu to frame 600, after the format and before any choice, take the
+    formatted RAM, and fill $77:1000-$1FFF with $FF."""
+    with tempfile.TemporaryDirectory() as directory:
+        core = BsnesCore(core_path, Path(directory), {})
+        try:
+            core.load(rom)
+            core.set_serialization_method('Strict')
+            rows = timeline(0, 1400, 0)
+            for frame in range(601):
+                core.set_inputs(0, set(rows[frame][0])); core.set_inputs(1, set())
+                core.run_frame()
+            image = bytearray(core.cartridge_ram())
+        finally:
+            core.unload()
+    if image[UNLOCK_TOURS_SRAM.start] != 0:
+        raise ValueError('the cold menu left cartridge RAM unformatted')
+    for address in UNLOCK_TOURS_SRAM:
+        image[address] = 0xff
+    return bytes(image)
+
+
+def capture(core_path, out, track, horizon, frame_images=(), tour_row=0, hold=None, tour_column=0, unlock_tours=False):
     if out.exists():
         raise ValueError('fresh output directory required')
     if any(b not in BUTTONS for _, buttons in segments(hold) for b in buttons):
@@ -100,12 +134,20 @@ def capture(core_path, out, track, horizon, frame_images=(), tour_row=0, hold=No
     rom = Path((ROOT/'local/rom-location.txt').read_text().strip())
     if (sha(core_path.read_bytes()), sha(rom.read_bytes())) != (CORE_SHA, ROM_SHA):
         raise ValueError('original identities differ')
-    inputs = timeline(track, horizon, tour_row, hold)
+    if (tour_column or tour_row == 4) and not unlock_tours:
+        raise ValueError('a locked tour needs --unlock-tours')
+    preload = unlocked_sram(core_path, rom) if unlock_tours else None
+    inputs = timeline(track, horizon, tour_row, hold, tour_column)
     out.mkdir(parents=True)
     hashes, cartridge_hashes, video = [], [], []
     boundary = None
     held = None  # last recorded frame with $0FF1 = 0 and $11C5 = 270
     with tempfile.TemporaryDirectory(dir=out) as directory:
+        if preload is not None:
+            # The core loads cartridge RAM from its save directory at power-on, as a
+            # console loads its battery RAM; a write into memory after load is lost to the
+            # reset the Strict serialization method performs.
+            (Path(directory)/(rom.stem+'.srm')).write_bytes(preload)
         core = BsnesCore(core_path, Path(directory), {})
         try:
             core.load(rom)
@@ -133,7 +175,9 @@ def capture(core_path, out, track, horizon, frame_images=(), tour_row=0, hold=No
         finally:
             core.unload()
     report = dict(kind='track_breadth_original', position=track, frames=[FIRST_RECORDED_FRAME, horizon],
-                  initialization_frame=boundary, tour_row=tour_row, hold=hold, menu_events=menu_events(track, tour_row), rom_sha256=ROM_SHA, core_sha256=CORE_SHA,
+                  initialization_frame=boundary, tour_row=tour_row, tour_column=tour_column, unlock_tours=unlock_tours,
+                  preload_sram_sha256=sha(preload) if preload is not None else None,
+                  hold=hold, menu_events=menu_events(track, tour_row, tour_column), rom_sha256=ROM_SHA, core_sha256=CORE_SHA,
                   timeline_sha256=digest(inputs), timeline=inputs, wram_sha256=hashes, sram_sha256=cartridge_hashes, video=video)
     (out/'reference.json').write_text(json.dumps(report, separators=(',', ':'))+'\n')
     return dict(position=track, tour_row=tour_row, initialization_frame=boundary, wram=digest(hashes), sram=digest(cartridge_hashes), video=digest(video))
@@ -365,7 +409,9 @@ def main():
     c = sub.add_parser('capture')
     c.add_argument('--core', type=Path, required=True)
     c.add_argument('--track', type=int, required=True, help='position on the PICK TRACK screen, 0-4')
-    c.add_argument('--tour-row', type=int, default=0, help='row on the PICK TOUR screen, 0-3')
+    c.add_argument('--tour-row', type=int, default=0, help='row on the PICK TOUR screen, 0-4')
+    c.add_argument('--tour-column', type=int, default=0, help='column on the PICK TOUR screen, 0-1')
+    c.add_argument('--unlock-tours', action='store_true', help='preload cartridge RAM with $77:1000-$1FFF = $FF (all nine tours)')
     c.add_argument('--out', type=Path, required=True)
     c.add_argument('--horizon', type=int, required=True)
     c.add_argument('--frame-image', type=int, action='append', default=[])
@@ -400,7 +446,8 @@ def main():
         hold = [(int(h[0]), h[1:]) for h in a.hold] if a.hold else None
         if hold is not None and len(hold) == 1:
             hold = hold[0]
-        print(json.dumps(capture(a.core.resolve(), a.out, a.track, a.horizon, set(a.frame_image), a.tour_row, hold)))
+        print(json.dumps(capture(a.core.resolve(), a.out, a.track, a.horizon, set(a.frame_image), a.tour_row, hold,
+                                 a.tour_column, a.unlock_tours)))
     else:
         result = explore(a.reference, a.binary, a.pack, a.scenario)
         a.out.write_text(json.dumps(result, indent=1, default=list)+'\n')

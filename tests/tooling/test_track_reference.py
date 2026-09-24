@@ -56,9 +56,20 @@ class MenuPathTests(unittest.TestCase):
             track_reference.timeline(3, 2000, 0, (100, ["right"]))  # inside the menu
 
     def test_rejects_positions_outside_the_screens(self) -> None:
-        for position, tour_row in ((5, 0), (-1, 0), (0, 4)):
+        for position, tour_row in ((5, 0), (-1, 0), (0, 5)):
             with self.assertRaises(ValueError):
                 track_reference.menu_events(position, tour_row)
+        for tour_row, tour_column in ((4, 1), (0, 2)):
+            with self.assertRaises(ValueError):
+                track_reference.menu_events(0, tour_row, tour_column)
+
+    def test_locked_tours_take_right_for_the_second_column(self) -> None:
+        # LOCKED-TOURS: JUMPER, BOUNDER, RUNNER and SPRINTER sit right of CRAWLER, SHUFFLER,
+        # WALKER and HOPPER; HUNTER is a fifth row below HOPPER.
+        events = track_reference.menu_events(2, 3, 1)
+        tour = [e[2] for e in sorted(events) if e[2] in ("down", "right") and e[0] < track_reference.FIRST_DOWN]
+        self.assertEqual(tour, ["down", "down", "down", "right"])
+        self.assertEqual([e[2] for e in events].count("start"), 6)
 
 
 if __name__ == "__main__":
