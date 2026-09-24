@@ -45,12 +45,17 @@ data, tile columns, tile flags and BG1 tiles, and sceneries 1, 8 and 12
 - **The HUNTER tier.** On every track but HUNTER's, the AI level `$1275` is 1 and `$1283` is 0.
   On 40, 41, 43 and 44 they are 3 and 64, and the progress adjustment bound `$1281` is 96 even
   on the lap races (72 elsewhere).
-  - `$83:CC59` derives `$1281` at setup from `$1283`, but the value it reads there is not
-    captured, so the scenario carries the observed bound.
+  - `$83:CC0B-CC29` sets `$1283` = `$40`, `$1281` = `$60` and `$1275` = 3 directly when `$131F`
+    is nonzero, skipping `$83:CC59`. `$131F` is 1 on all five HUNTER captures and 0 on the other
+    40 (the review found this).
+  - `$82:A77E-A797` raises the opponent's speed cap by `$1283` x 2 while the player leads.
+    Native had no term for it; the review's withheld HUNTER 44 capture with Right held diverged
+    at update 259, exactly where the player first leads.
   - At `$83:E16B` a level above 2 always launches and suppresses for 60 (`$1277`). Below 2
     (`$83:E1A8`) it keeps native's conditions and 30.
   - At `$83:E135`, with fewer than four unsupported updates, a level other than 1 takes
-    `$83:E222` at once, keeping the marker's jump.
+    `$83:E222` at once, keeping the marker's jump. The rotation check at `$83:E228-E250`
+    follows, as on the `$83:E21C` path.
   - Level 2 is on no observed track and stays guarded.
 - **The turnaround.** Native lacked `$83:E0C5-E111`, a branch on every tour.
   - In surface mode, on a slope of 26 or more against the marker's direction, with a previous
@@ -76,10 +81,17 @@ The steps: 12 exact with content and scenarios alone, 13 with the HUNTER level, 
 level-3 jump. The turnaround moved JUMPOVER from 551 and HIGHROAD from 741 to their tile
 guards. The cold-start recompare is unchanged.
 
+The review's withheld captures, each through the unlocked menu with a held input the primary
+did not use: HUNTER 40 (Right from 1,500, released at 2,600) exact over 2,537 updates, JUMPER 9
+(Right) 2,606, and SPRINTER 36 2,613. HUNTER 44 with Right held diverged at 259, the catch-up
+term above; after the fix it is exact to update 1,620, where the player's announcement queue
+differs (event 62 against 30), as on TWO LOOPS.
+
 ## Limits
 
 - The unlock bytes' meaning, and the progression that sets them in play, are not recovered.
-- TWO LOOPS' announcement at 1,252 (native queues event 57, the original 31) is open.
+- On HUNTER tracks the player's announcement queue can differ: TWO LOOPS at 1,252 (event 57
+  against 31) and HUNTER 44 with Right held at 1,620 (62 against 30). Open.
 - Tile flag pairs 8, 12 and 26 are unrecovered, so four locked tracks still stop.
 - The five stunt events are not compared (no native stunt event).
 - The locked tracks' boundaries label this menu path and the unlocked RAM, not a natural

@@ -254,6 +254,6 @@ from decoded track byte 13. `classic_crawler_dragster_race_start` and
 serializes as `URDG0001` in the 742-byte `URZZ000B` layout. Every other race track's
 state is `URTRnn03`: that layout followed by the 34 special-tile bytes of R-0047 and the
 last 60 checkpoint-seen flags of R-0048 (836 bytes). The special-tile bytes
-DRAGSTER and ZOOM ZOO also append, as `URDG0002` and `URZZ000C`, only while one of those
+DRAGSTER and ZOOM ZOO also append, as `URDG0003` and `URZZ000D`, only while one of those
 words is live. The legacy DRAGSTER
 `update_movement` path and its `URMV` formats remain for the accepted gates.

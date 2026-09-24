@@ -34,7 +34,8 @@ Four locked race tracks stop at unrecovered tile flag pairs (R-0050):
 Recover each pair the captures reach, in contact (`$81:9185-91D1`: pair 26 clears probe
 penetrations when `$0355,y` = 9; pair 8 sets `$1349` and changes the correction) and in movement
 (the table at `$81:82F5`: pair 8 at `$81:8554`, 12 at `$81:8950`, 26 at `$81:837E`). Also
-TWO LOOPS' announcement difference at update 1,252 (event 57 against 31), if it is related.
+the HUNTER tracks' announcement differences (TWO LOOPS at 1,252, event 57 against 31; HUNTER 44
+with Right held at 1,620, 62 against 30; R-0050).
 Out of scope: stunt events.
 
 ## Inputs and prerequisites

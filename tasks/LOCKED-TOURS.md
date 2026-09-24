@@ -92,12 +92,15 @@ only, so decide it explicitly and record it. The product never executes original
 
 - Current base/head commit and uncommitted state: base `07fdb87`; on `task/locked-tours`,
   commits through the scenario table and pack v12 (see `git log`).
-- Verified findings: the unlock preload and menu path (attempts 4-8); 13 of 20 locked race
-  tracks exact with the v12 content and scenarios (attempt 10).
+- Verified findings: [R-0050](../docs/research/R-0050-locked-tours.md). The unlock preload and
+  menu path (attempts 4-8); 12 of 20 exact with content and scenarios (attempt 10), 15 with
+  the AI level, the jump and the turnaround (attempts 12-14, `recompare-5.json`, unchanged by
+  the review fix in `recompare-6.json`).
 - Current hypothesis and failed approaches: a `$1000`-only preload (attempt 6) and a whole
   `$1000-$1FFF` fill (attempt 9) both fail, for different reasons.
 - Commands executed, outcomes and report hashes: `local/evidence/locked-tours/captures.sh`,
-  `sweep/sweep.json`, `recompare-1.json` (wide fill) and `recompare-2.json` (narrow preload).
+  `sweep/sweep.json`, `recompare-1.json` (wide fill), `recompare-2.json` (narrow preload) to
+  `recompare-6.json` (after the review fix).
 - Unavailable/skipped checks: the ASan presets (host).
 - Exact next experiment/command: none for this task; [TILE-PAIRS-8-12-26](TILE-PAIRS-8-12-26.md)
   is next (the four tile stops and TWO LOOPS' announcement).

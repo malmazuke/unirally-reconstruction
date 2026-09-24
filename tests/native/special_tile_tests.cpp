@@ -172,7 +172,7 @@ int main() {
         require(seven_bytes[778+15]==0 && deserialize_zoom_zoo(seven_bytes).race.checkpoint_seen[35]==0);
         auto bad_flag=seven_bytes;bad_flag[802]=0x40;rejects([&]{(void)deserialize_zoom_zoo(bad_flag);});
         // DRAGSTER and ZOOM ZOO keep 742 bytes until a special-tile word is live,
-        // then take the extended layout under URDG0002 / URZZ000C.
+        // then take the extended layout under URDG0003 / URZZ000D.
         auto dragster=classic_crawler_dragster_race_start(content);
         require(serialize_zoom_zoo(dragster).size()==742);
         dragster.special_tiles[0].physics_hold=1;
@@ -187,6 +187,11 @@ int main() {
         const std::array<std::uint8_t,8> zoom_magic{'U','R','Z','Z','0','0','0','D'};
         require(zoom_live.size()==778 && std::equal(zoom_magic.begin(),zoom_magic.end(),zoom_live.begin()));
         require(deserialize_zoom_zoo(zoom_live).track==ClassicRaceTrack::ZoomZoo && serialize_zoom_zoo(deserialize_zoom_zoo(zoom_live))==zoom_live);
+        // The opponent's turnaround alone also makes the state extended (LOCKED-TOURS).
+        auto turning_zoom=classic_crawler_zoom_zoo_start(content);turning_zoom.opponent_turnaround=5;
+        const auto turning_zoom_bytes=serialize_zoom_zoo(turning_zoom);
+        require(turning_zoom_bytes.size()==778 && turning_zoom_bytes[776]==5 &&
+                serialize_zoom_zoo(deserialize_zoom_zoo(turning_zoom_bytes))==turning_zoom_bytes);
         // The extended layout with every word zero is not canonical and is refused.
         auto idle=zoom_live;for(unsigned at=742;at<778;++at)idle[at]=0;
         rejects([&]{(void)deserialize_zoom_zoo(idle);});

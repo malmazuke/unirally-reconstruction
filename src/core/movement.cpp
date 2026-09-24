@@ -1038,6 +1038,7 @@ bool update_zoom_ai(ZoomZooState& state) {
             state.opponent_turnaround=30;return false;
         }
     }
+    bool keep_jump=false;
     if(marker&0x2000U) {
         input.jump_input=1;
         if(ai.impulse_countdown) {
@@ -1073,10 +1074,11 @@ bool update_zoom_ai(ZoomZooState& state) {
                   // the $83:E222 path at once, keeping the jump (LOCKED-TOURS).
                   (classic_race_scenario(state.track).ai_level!=1 ||
                    whole.rewards.feature_total==0 || static_cast<std::int16_t>(whole.riders[0].progress.transition_count-rider.progress.transition_count)>=3)) {
-            ai.trick_selector=0;ai.impulse_countdown=0;return false;
+            // $83:E222: the jump stays set; the rotation check follows.
+            keep_jump=true;
         }
     }
-    input.jump_input=whole.contact_phase;
+    if(!keep_jump)input.jump_input=whole.contact_phase; // $83:E21C
     ai.trick_selector=0;ai.impulse_countdown=0;
     if(!negative(rider.motion.velocity_y) && ai.suppression_counter>0 &&
        rider.pose.reflected_orientation>=16 && rider.pose.reflected_orientation<48) {
@@ -1566,10 +1568,9 @@ ClassicRaceScenario classic_race_scenario(ClassicRaceTrack track) {
     // (DRAGSTER for mode 0, ZOOM ZOO for mode 1); the new tracks' results
     // compared since agree: one-run won and lost, and a lap race (R-0049).
     struct Observed {std::uint8_t index;std::uint16_t initialization_frame,laps;bool lap_race;};
-    // The HUNTER tour's tracks run at AI level $1275 = 3 with the progress
-    // adjustment bound $1281 = 96 on every race, as observed at their
-    // boundaries ($83:CC59 derives it at setup from $1283; the value it reads
-    // there is not captured). Every other race track has level 1.
+    // The HUNTER tour's tracks: $83:CC0B-CC29 sets $1283 = $40, $1281 = $60 and
+    // $1275 = 3 directly when $131F is nonzero (1 on all five HUNTER captures, 0
+    // on the other 40) and skips $83:CC59. Every other race track has level 1.
     const bool hunter=track.index>=40 && track.index<=44;
     // LOCKED-TOURS: the race tracks of the five tours a cold start does not
     // list, observed through PICK TOUR unlocked by a preloaded cartridge RAM
@@ -1585,9 +1586,11 @@ ClassicRaceScenario classic_race_scenario(ClassicRaceTrack track) {
     for(const auto& o:observed)
         if(o.index==track.index)
             return o.lap_race?ClassicRaceScenario{track,o.initialization_frame,o.laps,115,115,true,
-                                                  static_cast<std::uint16_t>(hunter?3:1),static_cast<std::uint16_t>(hunter?96:0)}
+                                                  static_cast<std::uint16_t>(hunter?3:1),static_cast<std::uint16_t>(hunter?96:0),
+                                                  static_cast<std::uint16_t>(hunter?64:0)}
                              :ClassicRaceScenario{track,o.initialization_frame,o.laps,226,242,false,
-                                                  static_cast<std::uint16_t>(hunter?3:1),static_cast<std::uint16_t>(hunter?96:0)};
+                                                  static_cast<std::uint16_t>(hunter?3:1),static_cast<std::uint16_t>(hunter?96:0),
+                                                  static_cast<std::uint16_t>(hunter?64:0)};
     throw std::invalid_argument("classic race track has no recovered scenario");
 }
 
@@ -1751,7 +1754,7 @@ std::vector<std::uint8_t> serialize_zoom_zoo(const ZoomZooState& state) {
     }
     // R-0047: the special-tile words follow the shared 742 bytes in the other
     // tracks' layout (URTRnn03), and in DRAGSTER's and ZOOM ZOO's only while
-    // one is live (URDG0002, URZZ000C): no accepted race reaches a special
+    // one is live (URDG0003, URZZ000D): no accepted race reaches a special
     // tile, so their frozen 742-byte states are unchanged, but ZOOM ZOO's own
     // tile table holds the corkscrew (pair 10).
     const bool other_track=state.track!=ClassicRaceTrack::ZoomZoo && state.track!=ClassicRaceTrack::Dragster;
@@ -2005,9 +2008,9 @@ static ZoomZooState deserialize_classic_race(std::span<const std::uint8_t> bytes
 }
 ZoomZooState deserialize_zoom_zoo(std::span<const std::uint8_t> bytes) {
     // Any track but ZOOM ZOO carries its own identity over the URZZ000B layout;
-    // a 776-byte DRAGSTER or ZOOM ZOO state appends the special-tile words
-    // (R-0047), and an 836-byte URTRnn03 state those and the last 60
-    // checkpoint flags (R-0048).
+    // a 778-byte DRAGSTER or ZOOM ZOO state (URDG0003, URZZ000D) appends the
+    // special-tile words, $0E7B and $0C73 (R-0047, R-0050), and an 838-byte
+    // URTRnn04 state those and the last 60 checkpoint flags (R-0048).
     const auto magic_is=[&](std::string_view text){return std::equal(text.begin(),text.end(),bytes.begin());};
     std::optional<ClassicRaceTrack> track;
     bool extended=false;
@@ -2442,6 +2445,9 @@ void update_zoom_zoo(ZoomZooState& state,const ControllerButtons& requested_butt
         limit.drag=state.complete_race && (index==0?next.race.provisional_1225:next.race.provisional_1227);
         limit.start_override=rider.launch_override!=0;limit.player_progress=whole.riders[0].progress.transition_count;
         limit.opponent_progress=whole.riders[1].progress.transition_count;limit.adjustment_limit=race_adjustment_limit(scenario);
+        // $82:A77E-A797: the opponent's cap rises by $1283 * 2 while the player
+        // leads; $1283 is 64 on the HUNTER tour and 0 elsewhere (LOCKED-TOURS).
+        limit.ai_adjustment=scenario.ai_adjustment;
         limit.player_base_cap=next.reflection[0].base_velocity_cap;limit.update_counter=whole.update_counter;
         limit.friction_mode=static_cast<std::uint16_t>(horizontal);
         // $82:A6FD: and the speed limiter.

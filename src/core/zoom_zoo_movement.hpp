@@ -14,7 +14,7 @@ struct SurfaceTransition {
 // R-0047: per-rider words of the special tiles (mud, flag pair 14; corkscrew,
 // pair 10), which no accepted DRAGSTER or ZOOM ZOO race reaches. The other
 // tracks' state (URTRnn03) always carries them; DRAGSTER's and ZOOM ZOO's carry
-// them only while one is live (URDG0002, URZZ000C), so their 742-byte states
+// them only while one is live (URDG0003, URZZ000D), so their 742-byte states
 // are unchanged. Words keep the original bit patterns; signed where noted.
 struct SpecialTileRider {
     // $0BCB/$0BCD ($0F45): 4 on each update a mud tile holds the rider, then
@@ -118,10 +118,13 @@ struct ClassicRaceScenario {
     // announcement ($81:81AE) and the result screen: mode 1 publishes the lap
     // graph extrema at load 106 ($83:904A-90F0); the mode-0 screen publishes none.
     bool tour_race{};
-    // AI level $1275 (1; 3 on the HUNTER tour) and, when nonzero, the observed
-    // progress adjustment bound $1281 in place of the race-mode default.
+    // The HUNTER tour's tier, which $83:CC0B-CC29 sets at setup when $131F is
+    // nonzero (skipping $83:CC59): AI level $1275 (3; 1 elsewhere), the
+    // opponent's catch-up term $1283 (64; 0 elsewhere) and, when nonzero, the
+    // progress adjustment bound $1281 (96) in place of the race-mode default.
     std::uint16_t ai_level{1};
     std::uint16_t adjustment_limit{};
+    std::uint16_t ai_adjustment{};
 };
 // $83:CC59-CC7C: 0x48 (mode 1) or 0x60 (mode 0) minus `$1283`, which is zero
 // on every authenticated frame of both tracks' references (guarded).
@@ -226,7 +229,7 @@ ZoomZooState classic_crawler_zoom_zoo_start(const ZoomZooContent& content);
 ZoomZooState classic_crawler_dragster_race_start(const ZoomZooContent& content);
 ZoomZooState classic_race_start(const ZoomZooContent& content,const ClassicRaceScenario& scenario);
 // Identity of a DRAGSTER race state on the shared engine; same 742-byte layout as
-// URZZ000B (URDG0002 and 776 bytes while a special-tile word is live, R-0047).
+// URZZ000B (URDG0003 and 778 bytes while a special-tile word is live, R-0047).
 inline constexpr std::array<std::uint8_t,8> dragster_race_state_magic{'U','R','D','G','0','0','0','1'};
 // Identity of any other track's race state: `URTR`, the two-digit track index,
 // `03`; the 742-byte layout followed by the special-tile words and the last 60
