@@ -2,7 +2,7 @@
 
 ## Assignment
 
-- Status: review. Claimed 24 September 2026 about 16:10Z by the session that closed RACE-FINISH-BREADTH.
+- Status: accepted (reviewed and integrated by pull request #19). Claimed 24 September 2026 about 16:10Z by the session that closed RACE-FINISH-BREADTH.
 - Milestone: M4 breadth (R-0046 next experiment 5)
 - Coordinator: the claiming session is coordinator, primary and integrator
 - Task provider (fixed for all children; record any user-initiated platform change): Anthropic
@@ -108,13 +108,39 @@ only, so decide it explicitly and record it. The product never executes original
 - Runtime needs (network, build time, fixtures, memory): captures about 12 s each.
 - Aggregate parent/child time, provider usage before/after (or unknown), other-account-work
   caveat: primary from 16:10Z.
-- Accepted outcome, review/fix rounds and next routing decision: to be recorded.
+- Accepted outcome, review/fix rounds and next routing decision: accepted after one returned
+  round; next is [TILE-PAIRS-8-12-26](TILE-PAIRS-8-12-26.md).
+- Cleanup by the closing session: captures, sweeps, recompares and gate logs under
+  `local/evidence/locked-tours/`; the worktree's `artifacts/` gate directories moved there;
+  pack v12 copied to the main checkout's `local/`; both worktrees and the local branch
+  deleted; bootstrap and app-debug rerun in the main checkout.
 
 ## Review and integration
 
-- Reviewer and independent reproduction/withheld-case results:
+- Reviewer and independent reproduction/withheld-case results: a fresh Claude Opus 5.5
+  subagent in `.worktrees/locked-tours-review`, tier 1.
+  - At `9b6b416` it reproduced both sweeps and pack v12, and made four withheld captures.
+    HUNTER 44 with Right held diverged at update 259.
+  - **Returned**: the HUNTER catch-up term `$1283` x 2 (`$82:A77E-A797`) was missing (must-fix).
+    Should-fix items: the tier comes from `$83:CC0B-CC29` when `$131F` is set; the `$83:E222`
+    path skipped the rotation check; records claimed acceptance early.
+  - At `bd6f811`, **approved**: HUNTER 44 exact to 1,620, and a new withheld HUNTER 43 (player
+    leading) exact over 2,573. The sweeps are unchanged and the gates pass.
+  - Reviews:
+    [first](https://github.com/malmazuke/unirally-reconstruction/pull/19#pullrequestreview-5307972732),
+    [re-review](https://github.com/malmazuke/unirally-reconstruction/pull/19#pullrequestreview-5308657685).
 - Required changes or acceptance rationale:
-- Exact merge candidate and required-check results:
-- Integrated commit and evidence location:
-- Remote synchronization: pushed ref(s), verified local/remote commit IDs, or exact push failure:
-- Scope still unverified:
+  - The must-fix and the should-fix items were fixed in `bd6f811`, and the full gates were
+    rerun (all eleven identical).
+  - The re-review's advisories (stale layout comments, this section) were fixed in the final
+    records commit, comments only.
+  - Declined, with the reviewer's agreement: native unit tests for the turnaround and level-3
+    branches, and explore's HUNTER guard reports.
+- Exact merge candidate and required-check results: the pull request head; checks green before
+  merging (closeout).
+- Integrated commit and evidence location: the merge commit of
+  [#19](https://github.com/malmazuke/unirally-reconstruction/pull/19);
+  `artifacts/locked-tours-integration/closeout.json` and `local/evidence/locked-tours/`.
+- Remote synchronization: through the pull request; local `main` compared with `origin/main`.
+- Scope still unverified: the unlock bytes' meaning; the HUNTER announcements; tile pairs 8, 12
+  and 26; stunt events.

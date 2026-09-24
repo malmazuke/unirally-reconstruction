@@ -1753,7 +1753,7 @@ std::vector<std::uint8_t> serialize_zoom_zoo(const ZoomZooState& state) {
         put32(bytes,state.pause.suspended_updates);put32(bytes,state.pause.suspended_countdown_updates);
     }
     // R-0047: the special-tile words follow the shared 742 bytes in the other
-    // tracks' layout (URTRnn03), and in DRAGSTER's and ZOOM ZOO's only while
+    // tracks' layout (URTRnn04), and in DRAGSTER's and ZOOM ZOO's only while
     // one is live (URDG0003, URZZ000D): no accepted race reaches a special
     // tile, so their frozen 742-byte states are unchanged, but ZOOM ZOO's own
     // tile table holds the corkscrew (pair 10).

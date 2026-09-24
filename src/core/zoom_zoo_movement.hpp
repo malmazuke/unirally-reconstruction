@@ -13,7 +13,7 @@ struct SurfaceTransition {
 };
 // R-0047: per-rider words of the special tiles (mud, flag pair 14; corkscrew,
 // pair 10), which no accepted DRAGSTER or ZOOM ZOO race reaches. The other
-// tracks' state (URTRnn03) always carries them; DRAGSTER's and ZOOM ZOO's carry
+// tracks' state (URTRnn04) always carries them; DRAGSTER's and ZOOM ZOO's carry
 // them only while one is live (URDG0003, URZZ000D), so their 742-byte states
 // are unchanged. Words keep the original bit patterns; signed where noted.
 struct SpecialTileRider {
@@ -58,7 +58,7 @@ struct ZoomZooRaceState {
     // $114D-$119C: 80 first-seen flags, laps remaining * 4 + checkpoint
     // ($81:CD25-CD2E fills them with $FF). The shared 742-byte layout holds the
     // first 20, all a race of up to four laps reaches; the other tracks' layout
-    // (URTRnn03) holds all 80 (R-0048).
+    // (URTRnn04) holds all 80 (R-0048).
     std::array<std::uint8_t,80> checkpoint_seen{};
     std::array<ZoomZooRaceRider,2> riders;
     std::array<std::array<std::uint16_t,10>,2> lap_times;
@@ -127,7 +127,8 @@ struct ClassicRaceScenario {
     std::uint16_t ai_adjustment{};
 };
 // $83:CC59-CC7C: 0x48 (mode 1) or 0x60 (mode 0) minus `$1283`, which is zero
-// on every authenticated frame of both tracks' references (guarded).
+// on every track but HUNTER's; HUNTER's scenario carries its bound (96),
+// which $83:CC0B-CC29 sets directly (LOCKED-TOURS).
 std::uint16_t race_adjustment_limit(const ClassicRaceScenario& scenario);
 // The scenario of a race track; throws for a track without a recovered one.
 ClassicRaceScenario classic_race_scenario(ClassicRaceTrack track);
@@ -232,8 +233,8 @@ ZoomZooState classic_race_start(const ZoomZooContent& content,const ClassicRaceS
 // URZZ000B (URDG0003 and 778 bytes while a special-tile word is live, R-0047).
 inline constexpr std::array<std::uint8_t,8> dragster_race_state_magic{'U','R','D','G','0','0','0','1'};
 // Identity of any other track's race state: `URTR`, the two-digit track index,
-// `03`; the 742-byte layout followed by the special-tile words and the last 60
-// checkpoint-seen flags (836 bytes).
+// `04`; the 742-byte layout followed by the special-tile words with $0E7B and
+// $0C73 (36 bytes) and the last 60 checkpoint-seen flags (838 bytes).
 std::array<std::uint8_t,8> classic_race_state_magic(ClassicRaceTrack track);
 bool classic_race_player_won(const ZoomZooState& state);
 // Result-loading update at which the result screen is stable (restart allowed).
