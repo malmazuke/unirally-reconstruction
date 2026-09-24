@@ -2,13 +2,13 @@
 
 ## Assignment
 
-- Status: ready (prepared 23 September 2026 by the TRACK-BREADTH session). Claim after the
-  weekly reset on 2026-09-24T08:00Z, or on an explicit user override; weekly all-models usage
-  was 96% when this record was written.
+- Status: in progress. Claimed 24 September 2026 about 08:25Z, after the weekly reset (prepared
+  23 September 2026 by the TRACK-BREADTH session).
 - Milestone: M4 breadth (the follow-up TRACK-BREADTH's matrix names first)
 - Coordinator: the claiming session is coordinator, primary and integrator
 - Task provider (fixed for all children; record any user-initiated platform change): Anthropic
-- Worker/session/runtime/model: to be recorded at claim
+- Worker/session/runtime/model: Claude Opus 5.5 (`claude-opus-5-5`), Claude Code desktop, one
+  session as coordinator, primary and integrator
 - Actual model/reasoning effort, routing rationale and frontier escalation question (if any):
   the claiming session's model at default effort. Review tier under D-0008: **tier 1**
   (simulation state and arithmetic in `src/core/vertical_contact.cpp`), so the full D-0006
@@ -16,7 +16,9 @@
   rounds until approval, and all eleven differential gates actually run (the change reaches the
   gate binary, so `gate_identity` cannot cite them).
 - Provider quota window/baseline timestamp, used/remaining or unknown, reserve and session
-  allowance (D-0004): sample at claim and record here.
+  allowance (D-0004): at claim (08:25Z) weekly all-models 0% and five-hour 0%; at 08:50Z 1% and
+  7%. The user asked for work to continue task after task until 50% weekly or the five-hour
+  limit; the 80% review reserve is far off.
 - Reviewer (primary automatically spawns fresh model/effort, isolated checkout; no user
   trigger): a fresh Anthropic subagent at the exact candidate. Withheld case: a stop the primary
   did not use as evidence (see the table below), re-compared by the reviewer.

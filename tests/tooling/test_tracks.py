@@ -81,7 +81,7 @@ class TileContentTests(unittest.TestCase):
 
 
 class PackProfileTests(unittest.TestCase):
-    """Profile v10's added entries: the rules file and the loader's compiled table agree."""
+    """Profile v10's added entries (still in v11): the rules file and the loader's compiled table agree."""
 
     def test_rules_and_compiled_table_agree(self) -> None:
         import hashlib
@@ -95,13 +95,29 @@ class PackProfileTests(unittest.TestCase):
         compiled = [(i, int(n), d) for i, n, d in re.findall(r'\{"([^"]+)", (\d+), "([0-9a-f]{64})"\}', table)]
         self.assertEqual(compiled, [(e["id"], e["size"], e["sha256"]) for e in added])
         self.assertIn(hashlib.sha256(rules_path.read_bytes()).hexdigest(), source)
-        self.assertEqual(rules["profile_id"], "classic.pal.crawler.tracks.v10")
+        self.assertEqual(rules["profile_id"], "classic.pal.crawler.tracks.v11")
         ids = {e["id"] for e in added}
         for index in tracks.NEW_RACE_TRACKS:
             for part in ("data", "tile-columns", "tile-flags", "bg1-tiles"):
                 self.assertIn(f"track.{index:02d}.{part}", ids)
             for part in ("bg2-tiles", "bg2-map", "palette"):
                 self.assertIn(f"scenery.{tracks.scenery(index):02d}.{part}", ids)
+
+
+class SpecialTileEntryTests(unittest.TestCase):
+    """Profile v11's added entry (R-0047): the corkscrew heights at $00:8088, both tables."""
+
+    def test_rules_and_compiled_table_agree(self) -> None:
+        import re
+        rules = json.loads((ROOT / "tests" / "manifests" / "content" / "classic-crawler-tracks-pack.json").read_text(encoding="utf-8"))
+        entry = rules["entries"][-1]
+        self.assertEqual(entry["id"], "zoom.corkscrew-heights")
+        self.assertEqual(entry["source"], {"kind": "raw", "pieces": [{"file_offset": 0x88, "length": 96}]})
+        source = (ROOT / "src" / "core" / "content_pack.cpp").read_text(encoding="utf-8")
+        table = source[source.index("special_tiles_required{{"):]
+        table = table[:table.index("}};")]
+        compiled = re.findall(r'\{"([^"]+)", (\d+), "([0-9a-f]{64})"\}', table)
+        self.assertEqual(compiled, [(entry["id"], str(entry["size"]), entry["sha256"])])
 
 
 class TrackedManifestTests(unittest.TestCase):
