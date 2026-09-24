@@ -554,7 +554,7 @@ build/lab-release/src/app/dragster_fuzz_runner --content-pack local/classic-pal-
 build/app-debug/src/core/classic_race_presentation_runner local/classic-pal-crawler-tracks-v12.pack STATE.bin OUT.ppm [PREVIOUS_STATE.bin]
 build/app-debug/src/core/classic_race_presentation_runner local/classic-pal-crawler-tracks-v12.pack --timeline NATIVE_TIMELINE FRAME OUT.ppm
 build/app-debug/src/core/classic_race_presentation_runner local/classic-pal-crawler-tracks-v12.pack --window-index NATIVE_TIMELINE
-# Extract the Classic pack (profile classic.pal.crawler.tracks.v12, 148 rules entries: v10's, which added the
+# Extract the Classic pack (profile classic.pal.crawler.tracks.v12, 237 rules entries: v11's 148 and LOCKED-TOURS' 89; v10 added the
 # fourteen other cold-start race tracks and their sceneries in TRACK-BREADTH part 3, and the corkscrew heights of
 # SPECIAL-TILE-RESPONSE). It is the only profile the current build accepts beside the DRAGSTER v1 pack, so a v10
 # pack is refused.

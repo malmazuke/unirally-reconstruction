@@ -2,7 +2,7 @@
 
 ## Assignment
 
-- Status: in progress. Claimed 24 September 2026 about 16:10Z by the session that closed RACE-FINISH-BREADTH.
+- Status: review. Claimed 24 September 2026 about 16:10Z by the session that closed RACE-FINISH-BREADTH.
 - Milestone: M4 breadth (R-0046 next experiment 5)
 - Coordinator: the claiming session is coordinator, primary and integrator
 - Task provider (fixed for all children; record any user-initiated platform change): Anthropic
@@ -99,15 +99,8 @@ only, so decide it explicitly and record it. The product never executes original
 - Commands executed, outcomes and report hashes: `local/evidence/locked-tours/captures.sh`,
   `sweep/sweep.json`, `recompare-1.json` (wide fill) and `recompare-2.json` (narrow preload).
 - Unavailable/skipped checks: the ASan presets (host).
-- Exact next experiment/command:
-  1. Done: the unit tests take the new sizes and a turnaround case (ctest 24/24).
-  2. Done: level 3's jump (attempt 14). Remaining divergence: TWO LOOPS (41) at update 1,252,
-     `player_queue.entry14` native 57 vs original 31 (an announcement event; 31 may be a
-     level-dependent reward), after the player queue's read cursor 14 vs 13.
-  3. Then the records (a research record R-0050 for the unlock, the menu path, the 20 tracks,
-     the AI level and the turnaround), docs for pack v12, gates, the PR and review as for
-     RACE-GUARDS. Pairs 8, 12 and 26 (LAST ONE, DOWN+UP, JUMPOVER, HIGHROAD) and the level-3
-     jump (if not solved) become their own follow-up.
+- Exact next experiment/command: none for this task; [TILE-PAIRS-8-12-26](TILE-PAIRS-8-12-26.md)
+  is next (the four tile stops and TWO LOOPS' announcement).
 - Remaining dependencies: none outside the project.
 - Runtime needs (network, build time, fixtures, memory): captures about 12 s each.
 - Aggregate parent/child time, provider usage before/after (or unknown), other-account-work
