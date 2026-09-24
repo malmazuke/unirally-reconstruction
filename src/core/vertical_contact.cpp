@@ -119,10 +119,13 @@ void resolve_vertical_contact(RiderContactState& rider,ContactMotion& motion,
     // $81:9185-91D1 dispatches on the selected tile's flag pair (flag & $FE)
     // before the auxiliary and support tests. Pair 24 clears the unsupported
     // count $0F33 and duration $0FBF as whole words, after $81:8F9A has
-    // snapshotted the incoming count. Pairs 8 and 16 set $1349, which the
-    // continued-contact path reads at $81:9685, and pair 26 can clear probe
-    // penetrations $28/$2C; neither is recovered. Every other pair takes no
-    // branch here (R-0047).
+    // snapshotted the incoming count. Pairs 8 and 16 set $1349, read only at
+    // $81:9685 on a path ($81:966F-9690) that continued contact enters only
+    // for a magnitude of 31 or more, which the response has already taken
+    // ($81:9286); no capture executes it, so for pair 16 it is inert. Pair 8
+    // also changes the correction ($81:92D9, $81:96FF, $81:97E6) and pair 26
+    // can clear probe penetrations $28/$2C; both stay unrecovered. Every other
+    // pair takes no branch here (R-0047).
     const auto flag_pair=static_cast<unsigned>(summary.tile_flags&0xfeU);
     require(flag_pair!=26,"vertical contact reaches unrecovered tile flag pair 26");
     auto incoming=rider;
@@ -148,7 +151,7 @@ void resolve_vertical_contact(RiderContactState& rider,ContactMotion& motion,
     } else {
         const auto magnitude=static_cast<unsigned>(std::abs(static_cast<int>(summary.angle)));
         require(magnitude<shifts.size(),"vertical response angle outside recovered coefficients");
-        require(flag_pair!=8 && flag_pair!=16,"vertical contact reaches unrecovered tile flag pair 8 or 16");
+        require(flag_pair!=8,"vertical contact reaches unrecovered tile flag pair 8");
         // $81:924E–9275 removes motion into the inverted contact face.
         if(signed_word(moved.velocity_y)<0 && (summary.selected_high&0x80U) &&
            ((summary.selected_high&0x40U)?signed_word(moved.velocity_x)<0:signed_word(moved.velocity_x)>=0))moved.velocity_x=0;

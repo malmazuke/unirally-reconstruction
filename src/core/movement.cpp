@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <optional>
 #include <stdexcept>
+#include <string>
 
 namespace unirally {
 namespace {
@@ -2214,8 +2215,8 @@ void update_zoom_zoo(ZoomZooState& state,const ControllerButtons& requested_butt
         // are a bare RTS ($81:84AC); pair 20 is the checkpoint tile, which
         // update_zoom_checkpoint runs. The remaining pairs are unrecovered.
         const auto tile_behavior=rider.contact.auxiliary_flag?0U:unsigned(content.movement.flat_contact.flags[tile]&0xfeU);
-        if(tile_behavior==4 || tile_behavior==8 || tile_behavior==12 || tile_behavior==16 || tile_behavior>=26)
-            throw std::invalid_argument("ZOOM ZOO movement reaches an unrecovered tile flag pair");
+        if(tile_behavior==4 || tile_behavior==8 || tile_behavior==12 || tile_behavior>=26)
+            throw std::invalid_argument("movement reaches unrecovered tile flag pair "+std::to_string(tile_behavior));
         if(tile_behavior==6) {
             const auto angle=static_cast<std::int16_t>(rider.contact.surface_angle);
             if(std::abs(angle)>=31) {
@@ -2239,6 +2240,13 @@ void update_zoom_zoo(ZoomZooState& state,const ControllerButtons& requested_butt
             surface.tile_pose=1;surface.tile_pose_enabled=1;
         }
         if(tile_behavior==14)update_mud_tile(rider,tiles,surface,special);
+        if(tile_behavior==16) {
+            // $81:89F7-8A29: with jump held the tile pushes velocity x by 4
+            // the way the D-pad points; otherwise it only sets the tile pose.
+            if(transition.jump_input) {
+                if(horizontal!=1)rider.motion.velocity_x=static_cast<std::uint16_t>(rider.motion.velocity_x+(horizontal==0?0xfffcU:4U));
+            } else surface.tile_pose=1;
+        }
         if(tile_behavior==10) {
             update_corkscrew_tile(rider,tiles,surface,transition,special,content.corkscrew_heights);
             // Each step ends with $81:8949 storing 1 at $0EA3 by absolute
