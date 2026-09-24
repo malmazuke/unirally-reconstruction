@@ -118,6 +118,10 @@ struct ClassicRaceScenario {
     // announcement ($81:81AE) and the result screen: mode 1 publishes the lap
     // graph extrema at load 106 ($83:904A-90F0); the mode-0 screen publishes none.
     bool tour_race{};
+    // AI level $1275 (1; 3 on the HUNTER tour) and, when nonzero, the observed
+    // progress adjustment bound $1281 in place of the race-mode default.
+    std::uint16_t ai_level{1};
+    std::uint16_t adjustment_limit{};
 };
 // $83:CC59-CC7C: 0x48 (mode 1) or 0x60 (mode 0) minus `$1283`, which is zero
 // on every authenticated frame of both tracks' references (guarded).

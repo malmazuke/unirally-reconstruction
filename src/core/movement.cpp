@@ -1030,13 +1030,15 @@ bool update_zoom_ai(ZoomZooState& state) {
         }
         if(rider.contact.unsupported_count>=4 && negative(rider.motion.velocity_y)) {
             ai.impulse_countdown=static_cast<std::uint16_t>(-static_cast<std::int16_t>(rider.motion.velocity_y)/2);
-            if(whole.rewards.feature_total==0 || static_cast<std::int16_t>(whole.riders[0].progress.transition_count-rider.progress.transition_count)>=3) {
-                ai.suppression_counter=30;
-                // $83E16B compares $1275 with 2 in a three-way structure; only
-                // the below-two arm is modelled here. $1275 is a reference
-                // guard held at 1 on every authenticated frame, so the equal
-                // and above arms, one of which sets suppression to 60, are
-                // unreachable in this scenario rather than ignored.
+            // $83E16B compares the AI level $1275 with 2: below it ($83:E1A8)
+            // the launch needs no feature total or a lead of three progress
+            // transitions and suppresses for 30; above it (the HUNTER tour,
+            // level 3) it always launches and suppresses for 60 (LOCKED-TOURS).
+            // Level 2 is on no observed track and stays unrecovered.
+            const auto level=classic_race_scenario(state.track).ai_level;
+            if(level==2)throw std::invalid_argument("AI level 2 is unrecovered");
+            if(level>2 || whole.rewards.feature_total==0 || static_cast<std::int16_t>(whole.riders[0].progress.transition_count-rider.progress.transition_count)>=3) {
+                ai.suppression_counter=level>2?60:30;
                 // $83E1CB-E21A. A flat launch only picks a rotation from the
                 // velocity sign; a sloped one takes x&7, whose three bits drive
                 // three independent inputs -- bit 0 the rotation at
@@ -1545,6 +1547,11 @@ ClassicRaceScenario classic_race_scenario(ClassicRaceTrack track) {
     // (DRAGSTER for mode 0, ZOOM ZOO for mode 1); the new tracks' results
     // compared since agree: one-run won and lost, and a lap race (R-0049).
     struct Observed {std::uint8_t index;std::uint16_t initialization_frame,laps;bool lap_race;};
+    // The HUNTER tour's tracks run at AI level $1275 = 3 with the progress
+    // adjustment bound $1281 = 96 on every race, as observed at their
+    // boundaries ($83:CC59 derives it at setup from $1283; the value it reads
+    // there is not captured). Every other race track has level 1.
+    const bool hunter=track.index>=40 && track.index<=44;
     // LOCKED-TOURS: the race tracks of the five tours a cold start does not
     // list, observed through PICK TOUR unlocked by a preloaded cartridge RAM
     // (track_reference capture --unlock-tours); their frames label that path.
@@ -1558,8 +1565,10 @@ ClassicRaceScenario classic_race_scenario(ClassicRaceTrack track) {
         {43,1428,1,false},{44,1428,3,true}}};
     for(const auto& o:observed)
         if(o.index==track.index)
-            return o.lap_race?ClassicRaceScenario{track,o.initialization_frame,o.laps,115,115,true}
-                             :ClassicRaceScenario{track,o.initialization_frame,o.laps,226,242,false};
+            return o.lap_race?ClassicRaceScenario{track,o.initialization_frame,o.laps,115,115,true,
+                                                  static_cast<std::uint16_t>(hunter?3:1),static_cast<std::uint16_t>(hunter?96:0)}
+                             :ClassicRaceScenario{track,o.initialization_frame,o.laps,226,242,false,
+                                                  static_cast<std::uint16_t>(hunter?3:1),static_cast<std::uint16_t>(hunter?96:0)};
     throw std::invalid_argument("classic race track has no recovered scenario");
 }
 
@@ -1575,6 +1584,7 @@ std::array<std::uint8_t,8> classic_race_state_magic(ClassicRaceTrack track) {
 }
 
 std::uint16_t race_adjustment_limit(const ClassicRaceScenario& scenario) {
+    if(scenario.adjustment_limit)return scenario.adjustment_limit;
     return static_cast<std::uint16_t>(scenario.tour_race?0x48U:0x60U);
 }
 
