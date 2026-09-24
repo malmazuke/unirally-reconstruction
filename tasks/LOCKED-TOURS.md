@@ -2,16 +2,16 @@
 
 ## Assignment
 
-- Status: ready (prepared 24 September 2026 by the RACE-FINISH-BREADTH session).
+- Status: in progress. Claimed 24 September 2026 about 16:10Z by the session that closed RACE-FINISH-BREADTH.
 - Milestone: M4 breadth (R-0046 next experiment 5)
 - Coordinator: the claiming session is coordinator, primary and integrator
 - Task provider (fixed for all children; record any user-initiated platform change): Anthropic
-- Worker/session/runtime/model: to be recorded at claim
+- Worker/session/runtime/model: Claude Opus 5.5 (`claude-opus-5-5`), Claude Code desktop, coordinator, primary and integrator
 - Actual model/reasoning effort, routing rationale and frontier escalation question (if any):
   the claiming session's model at default effort. Review tier under D-0008: tier 1 if race
   state or the pack format changes (new scenarios and pack entries are expected), else tier 2.
 - Provider quota window/baseline timestamp, used/remaining or unknown, reserve and session
-  allowance (D-0004): sample at claim and record here.
+  allowance (D-0004): weekly all-models 6% and five-hour 20% at claim (16:10Z).
 - Reviewer (primary automatically spawns fresh model/effort, isolated checkout; no user
   trigger): a fresh Anthropic subagent at the exact candidate, with a withheld track.
 - Dependencies and evidence of acceptance: RACE-FINISH-BREADTH (accepted); R-0046 to R-0049.
@@ -73,6 +73,8 @@ only, so decide it explicitly and record it. The product never executes original
 
 | Attempt | Hypothesis | Experiment | Observation | Next decision |
 | --- | --- | --- | --- | --- |
+| 1 (16:12Z) | The names are printed through a table | Listing | `$80:9B55` prints name *n* through the pointer table `$83:9F96` (entries for `$83:9FFA` on) | Find the PICK TOUR caller later; try SRAM first |
+| 2 (16:14Z) | Winning a race records progression in SRAM | SRAM diff over `race-finish-breadth/east-right` (EAST won) | After the race: `$0825` 0 to 4, `$07D5` 0 to 1, `$07D7` 0 to 4, `$1118` 0 to 2, plus times at `$0618`, `$073C`, `$0755`-`$07D4`, `$086B`, `$0E69`. The AI reads `$77:0825` (`$83:E140`) | Find the reader of these near the PICK TOUR builder |
 
 ## Handoff
 
