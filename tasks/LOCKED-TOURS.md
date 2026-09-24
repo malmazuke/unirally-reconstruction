@@ -75,6 +75,8 @@ only, so decide it explicitly and record it. The product never executes original
 | --- | --- | --- | --- | --- |
 | 1 (16:12Z) | The names are printed through a table | Listing | `$80:9B55` prints name *n* through the pointer table `$83:9F96` (entries for `$83:9FFA` on) | Find the PICK TOUR caller later; try SRAM first |
 | 2 (16:14Z) | Winning a race records progression in SRAM | SRAM diff over `race-finish-breadth/east-right` (EAST won) | After the race: `$0825` 0 to 4, `$07D5` 0 to 1, `$07D7` 0 to 4, `$1118` 0 to 2, plus times at `$0618`, `$073C`, `$0755`-`$07D4`, `$086B`, `$0E69`. The AI reads `$77:0825` (`$83:E140`) | Find the reader of these near the PICK TOUR builder |
+| 3 (16:20Z) | `$1118` is read by the menu | ROM scan for long accesses | Only written (ORA/STA at `$83:FAAE`-`FAD4`); the menu code near `$80:C950` is unclassified | Empirical: preload SRAM |
+| 4 (16:25Z) | Some SRAM byte unlocks tours | Lab probe (`local/evidence/locked-tours/probe.py`): power on with patched cartridge RAM, walk to PICK TOUR, picture | `$1000-$1FFF` = `$FF` lists all nine tours; bisection: `$77:1000` alone; any nonzero value (1, 2, 3, 4, 5, 8, 9, `$10`) unlocks all five | Capture method: preload `$77:1000` = 1; find the cursor order |
 
 ## Handoff
 
