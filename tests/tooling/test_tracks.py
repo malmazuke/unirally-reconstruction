@@ -97,7 +97,7 @@ class PackProfileTests(unittest.TestCase):
             compiled += [(i, int(n), d) for i, n, d in re.findall(r'\{"([^"]+)", (\d+), "([0-9a-f]{64})"\}', table)]
         self.assertEqual(compiled, [(e["id"], e["size"], e["sha256"]) for e in added])
         self.assertIn(hashlib.sha256(rules_path.read_bytes()).hexdigest(), source)
-        self.assertEqual(rules["profile_id"], "classic.pal.crawler.tracks.v12")
+        self.assertEqual(rules["profile_id"], "classic.pal.crawler.tracks.v13")
         ids = {e["id"] for e in added}
         for index in tracks.NEW_RACE_TRACKS + tracks.LOCKED_RACE_TRACKS:
             for part in ("data", "tile-columns", "tile-flags", "bg1-tiles"):
@@ -116,6 +116,22 @@ class SpecialTileEntryTests(unittest.TestCase):
         self.assertEqual(entry["source"], {"kind": "raw", "pieces": [{"file_offset": 0x88, "length": 96}]})
         source = (ROOT / "src" / "core" / "content_pack.cpp").read_text(encoding="utf-8")
         table = source[source.index("special_tiles_required{{"):]
+        table = table[:table.index("}};")]
+        compiled = re.findall(r'\{"([^"]+)", (\d+), "([0-9a-f]{64})"\}', table)
+        self.assertEqual(compiled, [(entry["id"], str(entry["size"]), entry["sha256"])])
+
+
+class LoopEntryTests(unittest.TestCase):
+    """Profile v13's added entry (R-0051): the loop's 17 signed x steps at $81:834C."""
+
+    def test_rules_and_compiled_table_agree(self) -> None:
+        import re
+        rules = json.loads((ROOT / "tests" / "manifests" / "content" / "classic-crawler-tracks-pack.json").read_text(encoding="utf-8"))
+        self.assertEqual(rules["entries"][-1]["id"], "zoom.loop-offsets")
+        entry = rules["entries"][-1]
+        self.assertEqual(entry["source"], {"kind": "raw", "pieces": [{"file_offset": 0x834C, "length": 34}]})
+        source = (ROOT / "src" / "core" / "content_pack.cpp").read_text(encoding="utf-8")
+        table = source[source.index("loop_required{{"):]
         table = table[:table.index("}};")]
         compiled = re.findall(r'\{"([^"]+)", (\d+), "([0-9a-f]{64})"\}', table)
         self.assertEqual(compiled, [(entry["id"], str(entry["size"]), entry["sha256"])])

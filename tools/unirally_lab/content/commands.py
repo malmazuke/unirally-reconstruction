@@ -713,7 +713,7 @@ def register(sub: argparse._SubParsersAction) -> None:
     idle.add_argument("--track", type=int, action="append", help="track index (repeatable; default all)")
     idle.add_argument("--scenario", default="classic.crawler.zoom-zoo", help="scenario the runner's --start names")
     idle.add_argument("--runner", default="build/lab-debug/src/core/zoom_zoo_runner")
-    idle.add_argument("--pack", default="local/classic-pal-crawler-tracks-v12.pack")
+    idle.add_argument("--pack", default="local/classic-pal-crawler-tracks-v13.pack")
     idle.add_argument("--rom")
     idle.add_argument("--report")
     idle.add_argument("--task", default="TRACK-BREADTH")

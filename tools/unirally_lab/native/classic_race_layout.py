@@ -1,6 +1,6 @@
 """Named byte layout of the 742-byte shared race state (URZZ000B / URDG0001), and
-of the 34 special-tile bytes and 60 checkpoint flags the other tracks' state (URTRnn03)
-appends (R-0047, R-0048).
+of the 52 special-tile bytes and 60 checkpoint flags the other tracks' state (URTRnn05)
+appends (R-0047, R-0048, R-0051).
 
 Diagnostic only: names follow the native serializer order so a first
 divergence can be reported as a field instead of a bare offset.
@@ -81,30 +81,35 @@ def layout():
 
 
 # R-0047: per rider, then $0E7B. Original words: $0BCB, $0D57, $0DF7, $0DF3,
-# $0DFF, $0547, $0BE7 (+2 for the opponent) and bit 4 of $1516 / $151A.
+# $0DFF, $0547, $0BE7 (+2 for the opponent) and bit 4 of $1516 / $151A, then
+# (R-0051) the loop's $0351, $0355, $0359 and flag pair 8's $0D3D.
 SPECIAL_TILE_RIDER = [(n, 2) for n in ('mud_cooldown', 'mud_exit_pending', 'corkscrew_latch', 'corkscrew_step',
-                      'corkscrew_float', 'physics_hold', 'reflection_lock', 'raised_priority')]
+                      'corkscrew_float', 'physics_hold', 'reflection_lock', 'raised_priority',
+                      'loop_direction', 'loop_step', 'loop_cooldown', 'slow_counter')]
 SPECIAL_TILE_WORDS = [0xbcb, 0xd57, 0xdf7, 0xdf3, 0xdff, 0x547, 0xbe7]
+LOOP_WORDS = [0x351, 0x355, 0x359, 0xd3d]
 
 
 def special_tile_bytes(wram: bytes) -> bytes:
-    """The 36 bytes URTRnn04 appends first (special tiles, $0E7B, $0C73), from original WRAM."""
+    """The 52 bytes URTRnn05 appends first (special tiles, $0E7B, $0C73), from original WRAM."""
     out = bytearray()
     for rider in (0, 1):
         for address in SPECIAL_TILE_WORDS:
             out += wram[address+2*rider:address+2*rider+2]
         out += ((wram[0x1516 if rider == 0 else 0x151a] >> 4) & 1).to_bytes(2, 'little')
+        for address in LOOP_WORDS:
+            out += wram[address+2*rider:address+2*rider+2]
     return bytes(out+wram[0xe7b:0xe7d]+wram[0xc73:0xc75])  # $0E7B, then $0C73 (LOCKED-TOURS)
 
 
 def checkpoint_tail_bytes(wram: bytes) -> bytes:
-    """The last 60 first-seen flags ($1161-$119C) URTRnn03 appends after them (R-0048)."""
+    """The last 60 first-seen flags ($1161-$119C) URTRnn05 appends after them (R-0048)."""
     return bytes(wram[0x1161:0x119d])
 
 
-LAYOUT = layout() + [(742+16*r+2*i, 2, f'{("player", "opponent")[r]}.{n}')
-                     for r in (0, 1) for i, (n, _) in enumerate(SPECIAL_TILE_RIDER)] + [(774, 2, 'drive_target_latch'), (776, 2, 'opponent_turnaround')] \
-    + [(778+i, 1, f'checkpoint_seen{20+i}') for i in range(60)]
+LAYOUT = layout() + [(742+24*r+2*i, 2, f'{("player", "opponent")[r]}.{n}')
+                     for r in (0, 1) for i, (n, _) in enumerate(SPECIAL_TILE_RIDER)] + [(790, 2, 'drive_target_latch'), (792, 2, 'opponent_turnaround')] \
+    + [(794+i, 1, f'checkpoint_seen{20+i}') for i in range(60)]
 
 
 def describe(left: bytes, right: bytes, limit=24):
