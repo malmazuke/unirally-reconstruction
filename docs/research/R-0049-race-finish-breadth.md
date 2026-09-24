@@ -8,10 +8,11 @@ audited bsnes core `e59bf88d4fc922c9fe3b5438e65ff3a6909d24e1628f0f87141c8de17699
 
 After a rider finishes, `$83:E8E0-EA72` brakes it by 10 on two updates of every three. It
 skips the third while bit 0 of `$0304` is set (`$83:E90D-E915` for the player, `$83:EA9F` for
-the opponent). `$0304` counts 0, 1, 2 once per race update (`$83:CCAB-CCB5`), and nothing
-resets it at race setup. On all 20 part 2 captures it is 0 at the initialization boundary
-and 1, 2, 0 on the next three updates. So it is the update's number from the boundary, mod
-3.
+the opponent). `$0304` counts 0, 1, 2 once per race update (`$83:CCAB-CCB5`). No instruction
+in the listing stores to it directly, but race setup clears it: on all 20 part 2 captures it holds other
+values (1-15) while the track loads, becomes 0 85 or 86 frames before the boundary (the
+review found this), is 0 at the boundary and 1, 2, 0 on the next three updates. So it is the
+update's number from the boundary, mod 3.
 
 Native read `(frame + 1) mod 3` from the absolute frame. That agrees only when the boundary
 frame is 2 mod 3, as it is for DRAGSTER (1,328) and ZOOM ZOO (1,376), but not for 9 of the 14
@@ -19,9 +20,8 @@ other cold-start tracks (R-0046). Native now takes the phase from the scenario's
 initialization frame (`race_update_phase`). DRAGSTER's legacy path keeps its frame-based form,
 which its boundary makes equal.
 
-Limit: `$0304` also runs through a whole session, so a race that is not the first after power-on
-may start at another phase. Native's Race Again restarts the same clean scenario at phase 0,
-as it did before (the M4-16 restart scope).
+Because setup clears it, every race starts at phase 0, including a later race in the same
+session; native's Race Again restarts at 0 too.
 
 ## Comparing through the result
 
@@ -49,8 +49,13 @@ Captures under `local/evidence/race-finish-breadth/`, compared with `explore`:
 | SHORT CUT (1), lap race | Right | opponent 6,939 | - | **6,599 of 6,599** | diverges at 6,941 |
 | DRAGRACE (1) | Right | opponent 3,965 | - | **6,641 of 6,641** | - |
 | WARIO PAINT (1) | Right | opponent 5,141 | - | **6,611 of 6,611** | - |
+| DRAGRACE (1) | the review's 6-segment schedule | player 4,116, opponent 3,965 | 4,357, visible 4,465; lost | **3,461 of 3,461** | diverges at 3,966 (review) |
+| MEGAJUMP (0), lap race | the review's 16-segment schedule | player 9,043, opponent 6,050 | 9,284, visible 9,392; lost, 115 | **8,383 of 8,383** | diverges at 6,051 (review) |
 
-"Old rule" is the same native with the frame-based phase restored for the run. Each first
+"Old rule" is the same native with the frame-based phase restored for the run. The last two
+rows are the independent review's withheld cases: it found the schedules by searching
+native, captured the original, and got the same counts; they were then recaptured into this
+task's evidence from the review's recorded schedules (`captures.sh`). Each first
 visible result is load + 108, as on the accepted tracks. The part 2 recompare is unchanged
 (all 16 exact over their windows); none of its windows reaches a finish. In the app, a hidden
 7,000-update run on WARIO PAINT with Right and B reaches a stable result (242 load updates) with
@@ -58,14 +63,14 @@ visible result is load + 108, as on the accepted tracks. The part 2 recompare is
 
 ## Limits
 
-- No new lap race's player finish or result is captured. With simple held inputs (Right,
-  Left, with or without jump) the player does not complete three laps on MONSTER, MEGAJUMP,
-  SHORT CUT, HAIRPIN HILL or HYBRID in 9,000 updates of native search. The lap result load
-  is the accepted ZOOM ZOO path, and its phase is the one recovered here.
+- One new lap race's player finish and result is compared (MEGAJUMP, the review's schedule).
+  Simple held inputs do not finish a new lap race; the schedule came from a native search.
 - The result screens' pictures are outside this comparison: lap races keep their authored
   result screen (declared), and one-run results were checked for EAST and FLAT FUN in R-0046
   observation 18.
-- A session's later races may start at another `$0304` phase (above).
+- `track_reference explore` stops with an error if Start is pressed after the player finishes
+  (the original stops publishing Start then) and does not itself assert the load + 108 rule;
+  both are loud or reported, never a false pass (review advisories).
 
 ## Reproduction
 

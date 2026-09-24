@@ -1542,8 +1542,8 @@ ClassicRaceScenario classic_race_scenario(ClassicRaceTrack track) {
     // a one-run race stores 0 laps and races one, as DRAGSTER does. The frame is
     // the boundary on the laboratory's menu path (`track_reference`), a label
     // only. The stable result updates follow the race mode's accepted track
-    // (DRAGSTER for mode 0, ZOOM ZOO for mode 1): a hypothesis, since no new
-    // track's result screen has been captured.
+    // (DRAGSTER for mode 0, ZOOM ZOO for mode 1); the new tracks' results
+    // compared since agree: one-run won and lost, and a lap race (R-0049).
     struct Observed {std::uint8_t index;std::uint16_t initialization_frame,laps;bool lap_race;};
     static constexpr std::array<Observed,14> observed{{
         {3,1418,1,false},{4,1419,3,true},{10,1417,1,false},{11,1368,3,true},{13,1392,1,false},{14,1376,7,true},
