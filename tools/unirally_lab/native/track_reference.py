@@ -65,18 +65,29 @@ def menu_events(position, tour_row=0):
     return events
 
 
+def segments(hold):
+    """``hold`` as a list of (first frame, buttons): one pair, or a list of them."""
+    if hold is None:
+        return []
+    if isinstance(hold[0], int):
+        hold = [hold]
+    return sorted((int(first), list(buttons)) for first, buttons in hold)
+
+
 def timeline(position, horizon, tour_row=0, hold=None):
-    """The menu inputs, then a released controller, or ``hold`` = (first frame, buttons)
-    held from that frame to the horizon."""
+    """The menu inputs, then a released controller, or ``hold``: (first frame, buttons) held
+    from that frame to the horizon, or several such segments, each held until the next
+    begins (an empty button list releases the controller)."""
     rows = [[[], []] for _ in range(horizon + 1)]
     for first, last, button in menu_events(position, tour_row):
         for frame in range(first, last + 1):
             rows[frame][0] = [button]
-    if hold is not None:
-        first, buttons = hold
+    held = segments(hold)
+    for i, (first, buttons) in enumerate(held):
         if first <= max(e[1] for e in menu_events(position, tour_row)):
             raise ValueError('a held input must start after the menu')
-        for frame in range(first, horizon + 1):
+        end = held[i+1][0] if i+1 < len(held) else horizon + 1
+        for frame in range(first, end):
             rows[frame][0] = sorted(buttons)
     return rows
 
@@ -84,8 +95,8 @@ def timeline(position, horizon, tour_row=0, hold=None):
 def capture(core_path, out, track, horizon, frame_images=(), tour_row=0, hold=None):
     if out.exists():
         raise ValueError('fresh output directory required')
-    if hold is not None and (not hold[1] or any(b not in BUTTONS for b in hold[1])):
-        raise ValueError(f'a held input needs one or more of {BUTTONS}')
+    if any(b not in BUTTONS for _, buttons in segments(hold) for b in buttons):
+        raise ValueError(f'a held input names buttons from {BUTTONS}')
     rom = Path((ROOT/'local/rom-location.txt').read_text().strip())
     if (sha(core_path.read_bytes()), sha(rom.read_bytes())) != (CORE_SHA, ROM_SHA):
         raise ValueError('original identities differ')
@@ -128,8 +139,17 @@ def capture(core_path, out, track, horizon, frame_images=(), tour_row=0, hold=No
     return dict(position=track, tour_row=tour_row, initialization_frame=boundary, wram=digest(hashes), sram=digest(cartridge_hashes), video=digest(video))
 
 
+# Result-loading updates until the result screen is stable, by race mode $77:074B and outcome:
+# a lap race's (ZOOM ZOO, M4-16) and a one-run race's (DRAGSTER, R-0012/R-0019), as native's
+# scenario table uses them.
+STABLE_RESULT = {1: dict(player_won=115, player_lost=115), 0: dict(player_won=226, player_lost=242)}
+
+
 def original_rows(directory):
-    """Race-phase projections from the boundary, with guard violations; stops at the first projection error."""
+    """Projections from the boundary through both finishes and the result load, with guard
+    violations; stops at the first projection error. Once result loading begins the original
+    reuses race WRAM, so the last race row is archived and only the result clock, the graph
+    extrema and published totals (SRAM) advance, as in `zoom_zoo_playable` (R-0049)."""
     document = json.loads((directory/'reference.json').read_text())
     if (document['rom_sha256'], document['core_sha256']) != (ROM_SHA, CORE_SHA):
         raise ValueError('original identity differs')
@@ -141,6 +161,8 @@ def original_rows(directory):
     rows, violations, error = [], {}, None
     paused_updates = countdown_paused = 0
     previous = None
+    finish, loading, archive, extras_archive, tail_archive = [None, None], None, None, None, b''
+    mode = None
     with (directory/'memory.wram').open('rb') as ws, (directory/'memory.sram').open('rb') as ss:
         for frame in range(first, last+1):
             w, s = ws.read(131072), ss.read(8192)
@@ -148,9 +170,25 @@ def original_rows(directory):
                 raise ValueError(f'original memory differs at {frame}')
             if frame < boundary:
                 continue
-            if any(int.from_bytes(w[0xeff+2*r:0xf01+2*r], 'little') for r in (0, 1)):
-                error = dict(frame=frame, error='a rider finished; result projection is outside this exploration')
-                break
+            if mode is None:
+                mode = s[0x74b]
+            if loading is None:
+                for r in (0, 1):
+                    if finish[r] is None and int.from_bytes(w[0xeff+2*r:0xf01+2*r], 'little'):
+                        finish[r] = frame
+                if archive is not None and int.from_bytes(archive[515:517], 'little') == 240:
+                    loading = frame
+            if loading is not None:
+                # $83:904A-90F0 and $80:F88D publish the graph extrema and totals to SRAM;
+                # the laps and totals of both riders survive there unchanged.
+                row = bytearray(archive); row[8:12] = frame.to_bytes(4, 'little')
+                stable = STABLE_RESULT[mode]['player_won' if finish[0] <= finish[1] else 'player_lost']
+                row[-2:] = min(stable, frame-loading+1).to_bytes(2, 'little')
+                if row[467:511] != s[0x755:0x769]+s[0x7bf:0x7d3]+s[0x769:0x76b]+s[0x7d3:0x7d5]:
+                    error = dict(frame=frame, error='result lap/total archive differs from original (left the result screen?)')
+                    break
+                rows.append((row+s[0x106f:0x1073]+s[0x618:0x61c]+extras_archive+tail_archive).hex())
+                continue
             # $82:AAA4-AAB4 publish the player's A, X and Start; the timeline must agree
             # (the accepted original() checks the same, from its guard frame on).
             for at, button in ((0x31d, 'a'), (0x321, 'x'), (0x339, 'start')):
@@ -170,6 +208,7 @@ def original_rows(directory):
                 error = dict(frame=frame, error=str(exc))
                 break
             row = bytearray(projected+w[0xff1:0xff3]+w[0x1261:0x1265]+b'\0\0')
+            archive = bytearray(row)
             charge = w[0xd53:0xd57]
             announcements = (w[0xcc1:0xce1]+w[0xce7:0xce8]+w[0xce9:0xcea]+w[0xca5:0xca7]+s[0x7bb:0x7bd]+w[0x20e8:0x20e9]
                              +w[0x12e3:0x12e5]+w[0x12eb:0x12ed]+w[0x12ef:0x12f1]+w[0x3ed:0x3ef])
@@ -180,11 +219,13 @@ def original_rows(directory):
                 if int.from_bytes(w[0xff1:0xff3], 'little') >= 5 and int.from_bytes(previous[0x11c5:0x11c7], 'little'):
                     countdown_paused += 1
             pause = w[0xef3:0xef7]+paused_updates.to_bytes(4, 'little')+countdown_paused.to_bytes(4, 'little')
-            row += s[0x106f:0x1073]+s[0x618:0x61c]+charge+announcements+roll+weights+pause
+            extras_archive = charge+announcements+roll+weights+pause
+            row += s[0x106f:0x1073]+s[0x618:0x61c]+extras_archive
             # Any track but DRAGSTER and ZOOM ZOO: its state (URTRnn03) appends
-            # the special-tile words (R-0047).
+            # the special-tile words (R-0047) and the last checkpoint flags (R-0048).
             if s[0x74a] not in (0, 1):
-                row += special_tile_bytes(w)+checkpoint_tail_bytes(w)
+                tail_archive = special_tile_bytes(w)+checkpoint_tail_bytes(w)
+                row += tail_archive
             rows.append(row.hex())
             previous = w
     scenario = {'laps_0744': None, 'race_mode_074b': None, 'track_074a': None}
@@ -192,10 +233,18 @@ def original_rows(directory):
         ss.seek((boundary-first)*8192)
         s = ss.read(8192)
         scenario = {'track_074a': s[0x74a], 'race_mode_074b': s[0x74b], 'laps_0744': s[0x744]}
-    return document, rows, dict(guard_violations=violations, projection_stop=error, scenario=scenario)
+    events = dict(finish_frames=finish, loading_frame=loading)
+    if loading is not None:
+        # As zoom_zoo_playable: the result is black through loading + 75, and the accepted
+        # tracks' first visible picture is loading + 108.
+        video = document['video']
+        if loading+75 <= last:
+            black = video[loading+75-first]
+            events['first_visible_result'] = next((f for f in range(loading+76, last+1) if video[f-first] != black), None)
+    return document, rows, dict(guard_violations=violations, projection_stop=error, scenario=scenario, **events)
 
 
-def native_rows(binary, pack, track, count, scenario, hold=None):
+def native_rows(binary, pack, track, count, scenario, hold=None, controller=None):
     rom = Path((ROOT/'local/rom-location.txt').read_text().strip()).read_bytes()
     with tempfile.TemporaryDirectory(prefix='track-native-') as directory:
         root = Path(directory)
@@ -210,7 +259,12 @@ def native_rows(binary, pack, track, count, scenario, hold=None):
         if hold is not None:
             first, buttons = hold
             mask = sum(1 << RUNNER_BUTTONS.index(b) for b in buttons)
-        inputs.write_text(''.join(f'{start+k} {mask if first is not None and k >= first else 0} 0\n' for k in range(1, count)))
+        if controller is not None:
+            # The original's own controller, update k being frame boundary + k.
+            masks = [sum(1 << RUNNER_BUTTONS.index(b) for b in buttons if b in RUNNER_BUTTONS) for buttons in controller]
+            inputs.write_text(''.join(f'{start+k} {masks[k-1]} 0\n' for k in range(1, count)))
+        else:
+            inputs.write_text(''.join(f'{start+k} {mask if first is not None and k >= first else 0} 0\n' for k in range(1, count)))
         # A per-track scenario (classic.track.NN, pack profile v10) takes the
         # track's content from the pack itself; a race-mode scenario takes it
         # from the laboratory override.
@@ -223,9 +277,10 @@ def explore(reference, binary, pack, scenario):
     document, rows, events = original_rows(reference)
     # The track the original loaded (SRAM $77:074A at the boundary), not the menu position.
     track = events['scenario']['track_074a']
-    hold = document.get('hold')
-    held = None if hold is None else (hold[0] - document['initialization_frame'], hold[1])
-    actual, code, error, native_start = native_rows(binary.resolve(), pack.resolve(), track, len(rows), scenario, held)
+    boundary = document['initialization_frame']
+    controller = [document['timeline'][boundary+k][0] for k in range(1, len(rows))]
+    actual, code, error, native_start = native_rows(binary.resolve(), pack.resolve(), track, len(rows), scenario,
+                                                    controller=controller)
     divergence = None
     for i, (x, y) in enumerate(zip(actual, rows)):
         a, b = bytes.fromhex(x), bytes.fromhex(y)
@@ -314,7 +369,9 @@ def main():
     c.add_argument('--out', type=Path, required=True)
     c.add_argument('--horizon', type=int, required=True)
     c.add_argument('--frame-image', type=int, action='append', default=[])
-    c.add_argument('--hold', nargs='+', metavar=('FRAME', 'BUTTON'), help='hold BUTTONs from FRAME to the horizon')
+    c.add_argument('--hold', nargs='+', action='append', metavar=('FRAME', 'BUTTON'),
+                   help='hold BUTTONs from FRAME until the next --hold or the horizon; repeatable, '
+                        'and a FRAME alone releases the controller')
     e = sub.add_parser('explore')
     e.add_argument('--reference', type=Path, required=True)
     e.add_argument('--binary', type=Path, required=True)
@@ -340,8 +397,10 @@ def main():
         a.out.mkdir(parents=True)
         sweep(a.core.resolve(), a.out, a.binary, a.pack, a.horizon)
     elif a.command == 'capture':
-        print(json.dumps(capture(a.core.resolve(), a.out, a.track, a.horizon, set(a.frame_image), a.tour_row,
-                                    (int(a.hold[0]), a.hold[1:]) if a.hold else None)))
+        hold = [(int(h[0]), h[1:]) for h in a.hold] if a.hold else None
+        if hold is not None and len(hold) == 1:
+            hold = hold[0]
+        print(json.dumps(capture(a.core.resolve(), a.out, a.track, a.horizon, set(a.frame_image), a.tour_row, hold)))
     else:
         result = explore(a.reference, a.binary, a.pack, a.scenario)
         a.out.write_text(json.dumps(result, indent=1, default=list)+'\n')

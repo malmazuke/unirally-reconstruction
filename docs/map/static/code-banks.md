@@ -41,7 +41,7 @@ The four classes partition all 131,072 bytes. **Unknown share: 40.4%** - above D
 
 ## Cited addresses
 
-714 distinct code-bank ROM addresses cited by the research, task, inventory and content records (`labels.json`). By position: dat 10, loc 518, mid 17, sub 131, unk 38 (sub routine start, loc instruction start, mid inside an instruction, dat data, unk unknown). By class: data 10, inferred 67, observed 599, unknown 38.
+717 distinct code-bank ROM addresses cited by the research, task, inventory and content records (`labels.json`). By position: dat 10, loc 520, mid 17, sub 132, unk 38 (sub routine start, loc instruction start, mid inside an instruction, dat data, unk unknown). By class: data 10, inferred 67, observed 602, unknown 38.
 
 Cited addresses in `unknown` bytes:
 
@@ -83,5 +83,5 @@ Cited addresses in `unknown` bytes:
 | $82:DC12 | docs/research/R-0046-track-breadth-matrix.md, tasks/TRACK-BREADTH.md |
 | $83:8535 | docs/research/R-0045-static-code-map.md, tasks/STATIC-CODE-MAP.md |
 | $83:904A | docs/research/R-0038-dragster-ordinary-controls.md |
-| $83:9FFA | docs/research/R-0046-track-breadth-matrix.md, tasks/TRACK-BREADTH.md |
+| $83:9FFA | docs/research/R-0046-track-breadth-matrix.md, tasks/LOCKED-TOURS.md, tasks/TRACK-BREADTH.md |
 | $83:A1DA | docs/research/R-0008-track-decode.md |
