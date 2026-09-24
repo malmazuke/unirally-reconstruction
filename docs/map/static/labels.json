@@ -37,6 +37,24 @@
   ]
  },
  {
+  "address": "$80:8088",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_808088",
+  "source_records": [
+   "docs/research/R-0047-special-tiles.md"
+  ]
+ },
+ {
+  "address": "$80:80B8",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_8080B8",
+  "source_records": [
+   "docs/research/R-0047-special-tiles.md"
+  ]
+ },
+ {
   "address": "$80:81F4",
   "class": "data",
   "comment": "data",
@@ -650,7 +668,9 @@
   "source_records": [
    "docs/research/R-0038-dragster-ordinary-controls.md",
    "docs/research/R-0044-classic-split-time.md",
-   "tasks/CLASSIC-SPLIT-TIME.md"
+   "docs/research/R-0047-special-tiles.md",
+   "tasks/CLASSIC-SPLIT-TIME.md",
+   "tasks/RACE-GUARDS.md"
   ]
  },
  {
@@ -759,6 +779,15 @@
   ]
  },
  {
+  "address": "$81:82B7",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_8182B7",
+  "source_records": [
+   "docs/research/R-0047-special-tiles.md"
+  ]
+ },
+ {
   "address": "$81:82D9",
   "class": "observed",
   "comment": "instruction start",
@@ -784,7 +813,45 @@
   "label": "dat_8182F5",
   "source_records": [
    "docs/research/R-0045-static-code-map.md",
+   "docs/research/R-0047-special-tiles.md",
+   "tasks/SPECIAL-TILE-RESPONSE.md",
    "tasks/STATIC-CODE-MAP.md"
+  ]
+ },
+ {
+  "address": "$81:8316",
+  "class": "inferred",
+  "comment": "routine start",
+  "label": "sub_818316",
+  "source_records": [
+   "docs/research/R-0047-special-tiles.md"
+  ]
+ },
+ {
+  "address": "$81:837E",
+  "class": "inferred",
+  "comment": "routine start",
+  "label": "sub_81837E",
+  "source_records": [
+   "docs/research/R-0047-special-tiles.md"
+  ]
+ },
+ {
+  "address": "$81:84AC",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_8184AC",
+  "source_records": [
+   "docs/research/R-0047-special-tiles.md"
+  ]
+ },
+ {
+  "address": "$81:84B2",
+  "class": "inferred",
+  "comment": "routine start",
+  "label": "sub_8184B2",
+  "source_records": [
+   "docs/research/R-0047-special-tiles.md"
   ]
  },
  {
@@ -794,7 +861,27 @@
   "label": "sub_8184EC",
   "source_records": [
    "docs/research/R-0033-sustained-traversal.md",
+   "docs/research/R-0047-special-tiles.md",
    "tasks/M4-14.md"
+  ]
+ },
+ {
+  "address": "$81:8554",
+  "class": "inferred",
+  "comment": "routine start",
+  "label": "sub_818554",
+  "source_records": [
+   "docs/research/R-0047-special-tiles.md"
+  ]
+ },
+ {
+  "address": "$81:858E",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_81858E",
+  "source_records": [
+   "docs/research/R-0047-special-tiles.md",
+   "tasks/SPECIAL-TILE-RESPONSE.md"
   ]
  },
  {
@@ -805,6 +892,24 @@
   "source_records": [
    "docs/research/R-0011-motion.md",
    "docs/research/R-0033-sustained-traversal.md"
+  ]
+ },
+ {
+  "address": "$81:859D",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_81859D",
+  "source_records": [
+   "docs/research/R-0047-special-tiles.md"
+  ]
+ },
+ {
+  "address": "$81:8622",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_818622",
+  "source_records": [
+   "docs/research/R-0047-special-tiles.md"
   ]
  },
  {
@@ -843,6 +948,69 @@
   "label": "loc_8186EF",
   "source_records": [
    "docs/research/R-0044-classic-split-time.md"
+  ]
+ },
+ {
+  "address": "$81:871C",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_81871C",
+  "source_records": [
+   "docs/research/R-0047-special-tiles.md"
+  ]
+ },
+ {
+  "address": "$81:875C",
+  "class": "inferred",
+  "comment": "routine start",
+  "label": "sub_81875C",
+  "source_records": [
+   "docs/research/R-0047-special-tiles.md"
+  ]
+ },
+ {
+  "address": "$81:87C2",
+  "class": "inferred",
+  "comment": "routine start",
+  "label": "sub_8187C2",
+  "source_records": [
+   "docs/research/R-0047-special-tiles.md"
+  ]
+ },
+ {
+  "address": "$81:8949",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_818949",
+  "source_records": [
+   "docs/research/R-0047-special-tiles.md"
+  ]
+ },
+ {
+  "address": "$81:8950",
+  "class": "inferred",
+  "comment": "routine start",
+  "label": "sub_818950",
+  "source_records": [
+   "docs/research/R-0047-special-tiles.md"
+  ]
+ },
+ {
+  "address": "$81:8999",
+  "class": "inferred",
+  "comment": "routine start",
+  "label": "sub_818999",
+  "source_records": [
+   "docs/research/R-0047-special-tiles.md"
+  ]
+ },
+ {
+  "address": "$81:89F7",
+  "class": "inferred",
+  "comment": "routine start",
+  "label": "sub_8189F7",
+  "source_records": [
+   "docs/research/R-0047-special-tiles.md"
   ]
  },
  {
@@ -1313,6 +1481,15 @@
   ]
  },
  {
+  "address": "$81:8CFC",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_818CFC",
+  "source_records": [
+   "docs/research/R-0047-special-tiles.md"
+  ]
+ },
+ {
   "address": "$81:8D0F",
   "class": "observed",
   "comment": "instruction start",
@@ -1429,6 +1606,15 @@
   ]
  },
  {
+  "address": "$81:8E43",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_818E43",
+  "source_records": [
+   "docs/research/R-0047-special-tiles.md"
+  ]
+ },
+ {
   "address": "$81:8E69",
   "class": "observed",
   "comment": "instruction start",
@@ -1542,7 +1728,8 @@
   "comment": "instruction start",
   "label": "loc_818F9A",
   "source_records": [
-   "docs/research/R-0011-contact.md"
+   "docs/research/R-0011-contact.md",
+   "docs/research/R-0047-special-tiles.md"
   ]
  },
  {
@@ -1594,6 +1781,16 @@
   ]
  },
  {
+  "address": "$81:9185",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_819185",
+  "source_records": [
+   "docs/research/R-0047-special-tiles.md",
+   "tasks/SPECIAL-TILE-RESPONSE.md"
+  ]
+ },
+ {
   "address": "$81:921F",
   "class": "observed",
   "comment": "instruction start",
@@ -1642,12 +1839,48 @@
   ]
  },
  {
+  "address": "$81:9286",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_819286",
+  "source_records": [
+   "docs/research/R-0047-special-tiles.md"
+  ]
+ },
+ {
+  "address": "$81:92C5",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_8192C5",
+  "source_records": [
+   "docs/research/R-0047-special-tiles.md"
+  ]
+ },
+ {
+  "address": "$81:92D0",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_8192D0",
+  "source_records": [
+   "docs/research/R-0047-special-tiles.md"
+  ]
+ },
+ {
   "address": "$81:92D3",
   "class": "observed",
   "comment": "instruction start",
   "label": "loc_8192D3",
   "source_records": [
    "docs/research/R-0011-contact.md"
+  ]
+ },
+ {
+  "address": "$81:92D9",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_8192D9",
+  "source_records": [
+   "docs/research/R-0047-special-tiles.md"
   ]
  },
  {
@@ -1774,7 +2007,27 @@
   "comment": "routine start",
   "label": "sub_819610",
   "source_records": [
-   "docs/research/R-0011-contact.md"
+   "docs/research/R-0011-contact.md",
+   "docs/research/R-0047-special-tiles.md",
+   "tasks/SPECIAL-TILE-RESPONSE.md"
+  ]
+ },
+ {
+  "address": "$81:966F",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_81966F",
+  "source_records": [
+   "docs/research/R-0047-special-tiles.md"
+  ]
+ },
+ {
+  "address": "$81:9685",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_819685",
+  "source_records": [
+   "docs/research/R-0047-special-tiles.md"
   ]
  },
  {
@@ -1820,6 +2073,15 @@
   "label": "loc_8196CD",
   "source_records": [
    "tasks/M4-06-review.md"
+  ]
+ },
+ {
+  "address": "$81:96FF",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_8196FF",
+  "source_records": [
+   "docs/research/R-0047-special-tiles.md"
   ]
  },
  {
@@ -1943,6 +2205,15 @@
   ]
  },
  {
+  "address": "$81:97E6",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_8197E6",
+  "source_records": [
+   "docs/research/R-0047-special-tiles.md"
+  ]
+ },
+ {
   "address": "$81:97FD",
   "class": "observed",
   "comment": "instruction start",
@@ -2009,6 +2280,15 @@
   "label": "loc_81992B",
   "source_records": [
    "docs/research/R-0033-sustained-traversal.md"
+  ]
+ },
+ {
+  "address": "$81:9930",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_819930",
+  "source_records": [
+   "docs/research/R-0047-special-tiles.md"
   ]
  },
  {
@@ -3791,6 +4071,15 @@
   ]
  },
  {
+  "address": "$82:8C45",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_828C45",
+  "source_records": [
+   "docs/research/R-0047-special-tiles.md"
+  ]
+ },
+ {
   "address": "$82:8C4E",
   "class": "observed",
   "comment": "instruction start",
@@ -3930,6 +4219,15 @@
   "label": "loc_82901B",
   "source_records": [
    "docs/research/R-0036-zoom-zoo-rider-objects.md"
+  ]
+ },
+ {
+  "address": "$82:912F",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82912F",
+  "source_records": [
+   "docs/research/R-0047-special-tiles.md"
   ]
  },
  {
@@ -4095,6 +4393,15 @@
   ]
  },
  {
+  "address": "$82:98D6",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_8298D6",
+  "source_records": [
+   "docs/research/R-0047-special-tiles.md"
+  ]
+ },
+ {
   "address": "$82:98E4",
   "class": "observed",
   "comment": "instruction start",
@@ -4111,6 +4418,15 @@
   "source_records": [
    "docs/research/R-0038-dragster-ordinary-controls.md",
    "tasks/DRAGSTER-ORDINARY-CONTROLS-review.md"
+  ]
+ },
+ {
+  "address": "$82:998B",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82998B",
+  "source_records": [
+   "docs/research/R-0047-special-tiles.md"
   ]
  },
  {
@@ -4288,6 +4604,15 @@
   ]
  },
  {
+  "address": "$82:A241",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82A241",
+  "source_records": [
+   "docs/research/R-0047-special-tiles.md"
+  ]
+ },
+ {
   "address": "$82:A288",
   "class": "observed",
   "comment": "routine start",
@@ -4317,12 +4642,30 @@
   ]
  },
  {
+  "address": "$82:A35D",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82A35D",
+  "source_records": [
+   "docs/research/R-0047-special-tiles.md"
+  ]
+ },
+ {
   "address": "$82:A3B3",
   "class": "observed",
   "comment": "instruction start",
   "label": "loc_82A3B3",
   "source_records": [
    "docs/research/R-0030-zoom-zoo-native-trial.md"
+  ]
+ },
+ {
+  "address": "$82:A40B",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82A40B",
+  "source_records": [
+   "docs/research/R-0047-special-tiles.md"
   ]
  },
  {
@@ -4343,8 +4686,37 @@
    "docs/inventory/M4-10-response-b.md",
    "docs/research/R-0011-motion.md",
    "docs/research/R-0028-zoom-zoo-response-b.md",
+   "docs/research/R-0047-special-tiles.md",
    "tasks/M4-10-review.md",
-   "tasks/M4-10.md"
+   "tasks/M4-10.md",
+   "tasks/SPECIAL-TILE-RESPONSE.md"
+  ]
+ },
+ {
+  "address": "$82:A4CC",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82A4CC",
+  "source_records": [
+   "docs/research/R-0047-special-tiles.md"
+  ]
+ },
+ {
+  "address": "$82:A4DC",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82A4DC",
+  "source_records": [
+   "docs/research/R-0047-special-tiles.md"
+  ]
+ },
+ {
+  "address": "$82:A4E4",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82A4E4",
+  "source_records": [
+   "docs/research/R-0047-special-tiles.md"
   ]
  },
  {
@@ -4407,6 +4779,7 @@
   "comment": "routine start",
   "label": "sub_82A5FA",
   "source_records": [
+   "docs/research/R-0047-special-tiles.md",
    "tasks/M2-01-movement-handoff.md",
    "tasks/M2-01-movement.md"
   ]
@@ -4536,7 +4909,8 @@
   "comment": "instruction start",
   "label": "loc_82A6FD",
   "source_records": [
-   "docs/research/R-0011-speed.md"
+   "docs/research/R-0011-speed.md",
+   "docs/research/R-0047-special-tiles.md"
   ]
  },
  {
@@ -4713,6 +5087,7 @@
   "comment": "instruction start",
   "label": "loc_82A971",
   "source_records": [
+   "docs/research/R-0047-special-tiles.md",
    "tasks/M4-09-review.md"
   ]
  },
@@ -4751,6 +5126,7 @@
   "label": "sub_82A9B3",
   "source_records": [
    "docs/research/R-0038-dragster-ordinary-controls.md",
+   "docs/research/R-0047-special-tiles.md",
    "tasks/DRAGSTER-ORDINARY-CONTROLS-review.md",
    "tasks/DRAGSTER-ORDINARY-CONTROLS.md"
   ]
@@ -4771,6 +5147,15 @@
   "label": "loc_82A9EC",
   "source_records": [
    "docs/research/R-0010-native-movement.md"
+  ]
+ },
+ {
+  "address": "$82:AA10",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_82AA10",
+  "source_records": [
+   "docs/research/R-0047-special-tiles.md"
   ]
  },
  {
@@ -6286,6 +6671,15 @@
   "label": "loc_83EF67",
   "source_records": [
    "docs/research/R-0033-sustained-traversal.md"
+  ]
+ },
+ {
+  "address": "$83:EFAD",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83EFAD",
+  "source_records": [
+   "docs/research/R-0047-special-tiles.md"
   ]
  },
  {

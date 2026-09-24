@@ -268,15 +268,15 @@ FLAT FUN's pictures, observation 15).
 | 0 | DRAGSTER (observed) | CRAWLER 1 (observed) | $98:8000 | 33,815 | 1024x16 | completes | captured, boundary 1328; race (one run) | **exact, 1,573 of 1,573 updates** |
 | 1 | ZOOM ZOO (observed) | CRAWLER 2 (observed) | $98:8183 | 50,665 | 256x64 | completes | captured, boundary 1376; race (laps), 3 laps | **exact, 1,525 of 1,525 updates** |
 | 2 | BOWL (observed) | CRAWLER 3 (observed) | $98:9B4A | 35,810 | 256x64 | special-tile guard after 7 updates | captured, boundary 1335; stunt | not compared: no native stunt event |
-| 3 | SWITCHER (observed) | CRAWLER 4 (observed) | $98:A07E | 63,013 | 1024x16 | special-tile guard after 383 updates | captured, boundary 1418; race (one run) | exact 384 updates, then native special-tile guard |
-| 4 | MONSTER (observed) | CRAWLER 5 (observed) | $98:C70E | 52,234 | 128x128 | special-tile guard after 360 updates | captured, boundary 1419; race (laps), 3 laps | exact 361 updates, then native special-tile guard |
+| 3 | SWITCHER (observed) | CRAWLER 4 (observed) | $98:A07E | 63,013 | 1024x16 | special-tile guard after 383 updates | captured, boundary 1418; race (one run) | **exact, 1,483 of 1,483 updates** since the special tiles (R-0047); exact 384 before |
+| 4 | MONSTER (observed) | CRAWLER 5 (observed) | $98:C70E | 52,234 | 128x128 | special-tile guard after 360 updates | captured, boundary 1419; race (laps), 3 laps | exact 809 updates since the special tiles (R-0047), then native guard `inverted AI marker is unrecovered`; exact 361 before |
 | 5 | WOBBLE | JUMPER 1 (hypothesis) | $98:E62E | 47,619 | 64x256 | edge guard after 330 updates | not reachable from a cold start | - |
 | 6 | TWINPEAK | JUMPER 2 (hypothesis) | $98:FEDB | 48,168 | 256x64 | special-tile guard after 760 updates | not reachable from a cold start | - |
 | 7 | SKIER | JUMPER 3 (hypothesis) | $99:977C | 35,617 | 128x128 | edge guard after 738 updates | not reachable from a cold start | - |
 | 8 | LOOPBACK | JUMPER 4 (hypothesis) | $99:9CD3 | 56,372 | 512x32 | edge guard after 562 updates | not reachable from a cold start | - |
 | 9 | SMALL CUT | JUMPER 5 (hypothesis) | $99:C1DF | 45,036 | 256x64 | special-tile guard after 700 updates | not reachable from a cold start | - |
 | 10 | LOOPER (observed) | SHUFFLER 1 (observed) | $99:D307 | 63,397 | 64x256 | edge guard after 359 updates | captured, boundary 1417; race (one run) | **exact, 1,484 of 1,484 updates** since the edge recovery (part 3, observation 16) |
-| 11 | MEGAJUMP (observed) | SHUFFLER 2 (observed) | $9A:81D9 | 45,899 | 256x64 | special-tile guard after 530 updates | captured, boundary 1368; race (laps), 3 laps | exact 531 updates, then native special-tile guard |
+| 11 | MEGAJUMP (observed) | SHUFFLER 2 (observed) | $9A:81D9 | 45,899 | 256x64 | special-tile guard after 530 updates | captured, boundary 1368; race (laps), 3 laps | **exact, 1,533 of 1,533 updates** since the special tiles (R-0047); exact 531 before |
 | 12 | JUMPS (observed) | SHUFFLER 3 (observed) | $9A:96AC | 38,625 | 128x128 | completes | captured, boundary 1343; stunt | not compared: no native stunt event |
 | 13 | FLAT FUN (observed) | SHUFFLER 4 (observed) | $9A:A206 | 49,156 | 512x32 | completes | captured, boundary 1392; race (one run) | **exact, 1,509 of 1,509 updates** |
 | 14 | INFINITY (observed) | SHUFFLER 5 (observed) | $9A:BBEC | 38,219 | 256x64 | completes | captured, boundary 1376; race (laps), 7 laps | on its own scenario (part 3): exact 379 rows, then native guard `race checkpoint index invalid` at the first lap crossing |
@@ -285,11 +285,11 @@ FLAT FUN's pictures, observation 15).
 | 17 | CIRCLE | BOUNDER 3 (hypothesis) | $9B:838B | 34,490 | 256x64 | special-tile guard after 220 updates | not reachable from a cold start | - |
 | 18 | PLINKEY | BOUNDER 4 (hypothesis) | $9B:8668 | 49,258 | 128x128 | special-tile guard after 525 updates | not reachable from a cold start | - |
 | 19 | JUMPOVER | BOUNDER 5 (hypothesis) | $9B:9F15 | 52,178 | 256x64 | completes | not reachable from a cold start | - |
-| 20 | DRAGRACE (observed) | WALKER 1 (observed) | $9B:BCED | 42,663 | 512x32 | edge guard after 452 updates | captured, boundary 1360; race (one run) | exact 1,353 updates since the edge recovery (part 3), then native special-tile guard |
-| 21 | PINGPONG (observed) | WALKER 2 (observed) | $9B:CDCB | 46,893 | 256x64 | completes | captured, boundary 1367; race (laps), 3 laps | exact 1,068 updates, then `opponent.response_b` differs |
+| 20 | DRAGRACE (observed) | WALKER 1 (observed) | $9B:BCED | 42,663 | 512x32 | edge guard after 452 updates | captured, boundary 1360; race (one run) | **exact, 1,541 of 1,541 updates** since the special tiles (R-0047); 1,353 before |
+| 21 | PINGPONG (observed) | WALKER 2 (observed) | $9B:CDCB | 46,893 | 256x64 | completes | captured, boundary 1367; race (laps), 3 laps | **exact, 1,534 of 1,534 updates** since the rotation fix of R-0047; 1,068 before |
 | 22 | HILL CLIMB (observed) | WALKER 3 (observed) | $9B:E38D | 34,622 | 128x128 | edge guard after 776 updates | captured, boundary 1331; stunt | not compared: no native stunt event |
 | 23 | HYBRID (observed) | WALKER 4 (observed) | $9B:E720 | 47,906 | 256x64 | completes | captured, boundary 1386; race (one run) | **exact, 1,515 of 1,515 updates** since the edge recovery (part 3) |
-| 24 | SHORT CUT (observed) | WALKER 5 (observed) | $9B:FF01 | 47,078 | 256x64 | completes | captured, boundary 1402; race (laps), 3 laps | exact 1,483 updates, then native special-tile guard |
+| 24 | SHORT CUT (observed) | WALKER 5 (observed) | $9B:FF01 | 47,078 | 256x64 | completes | captured, boundary 1402; race (laps), 3 laps | **exact, 1,499 of 1,499 updates** since the special tiles (R-0047); 1,483 before |
 | 25 | DOWN+UP | RUNNER 1 (hypothesis) | $9C:9454 | 50,764 | 128x128 | special-tile guard after 451 updates | not reachable from a cold start | - |
 | 26 | HIGHROAD | RUNNER 2 (hypothesis) | $9C:AF5E | 47,215 | 128x128 | special-tile guard after 444 updates | not reachable from a cold start | - |
 | 27 | SPINE | RUNNER 3 (hypothesis) | $9C:C5B8 | 39,267 | 256x64 | special-tile guard after 301 updates | not reachable from a cold start | - |
@@ -299,7 +299,7 @@ FLAT FUN's pictures, observation 15).
 | 31 | CROCK (observed) | HOPPER 2 (observed) | $9D:9405 | 52,171 | 256x64 | completes | captured, boundary 1397; race (laps), 3 laps | **exact, 1,504 of 1,504 updates** |
 | 32 | DOWNER (observed) | HOPPER 3 (observed) | $9D:B1DA | 34,497 | 64x256 | edge guard after 459 updates | captured, boundary 1349; stunt | not compared: no native stunt event |
 | 33 | EAST (observed) | HOPPER 4 (observed) | $9D:B5D4 | 48,099 | 1024x16 | completes | captured, boundary 1403; race (one run) | **exact, 1,498 of 1,498 updates** |
-| 34 | HAIRPIN HILL (observed) | HOPPER 5 (observed) | $9D:CD3F | 43,340 | 256x64 | special-tile guard after 301 updates | captured, boundary 1407; race (laps), 5 laps | on its own scenario (part 3): exact 302 rows, then native special-tile guard |
+| 34 | HAIRPIN HILL (observed) | HOPPER 5 (observed) | $9D:CD3F | 43,340 | 256x64 | special-tile guard after 301 updates | captured, boundary 1407; race (laps), 5 laps | on its own scenario: exact 531 rows since the special tiles (R-0047), then native guard `race checkpoint index invalid`; 302 before |
 | 35 | VERTICAL | SPRINTER 1 (hypothesis) | $9D:DE54 | 57,267 | 64x256 | edge guard after 438 updates | not reachable from a cold start | - |
 | 36 | FLASH | SPRINTER 2 (hypothesis) | $9E:8241 | 41,512 | 128x128 | completes | not reachable from a cold start | - |
 | 37 | LITTLE DIPPER | SPRINTER 3 (hypothesis) | $9E:907B | 35,364 | 16x1024 | refused in its first update: shape | not reachable from a cold start | - |
@@ -312,8 +312,8 @@ FLAT FUN's pictures, observation 15).
 | 44 | TO AND FRO' | HUNTER 5 (hypothesis) | $9F:BB4C | 44,592 | 256x64 | completes | not reachable from a cold start | - |
 
 "Completes" in the idle column means only that no native guard fired on ZOOM ZOO's scenario. The
-match column compares the 742-byte state from the original's own initialization boundary, update
-by update, on the native scenario of the same race mode (DRAGSTER's for one-run races, ZOOM ZOO's
+match column compares the 742-byte state (776 bytes for any track but DRAGSTER and ZOOM ZOO since
+R-0047) from the original's own initialization boundary, update by update, on the native scenario of the same race mode (DRAGSTER's for one-run races, ZOOM ZOO's
 for lap races), with the controller released after the menu (part 2, `track_reference sweep`,
 horizon frame 2,900 declared before the run). Bytes 0-11 (state magic and frame label) are
 excluded, since native labels frames from its own scenario. It is not the frozen-gate acceptance
@@ -339,12 +339,13 @@ the two accepted tracks carry.
   do not vary across the 20 reachable tracks; a ROM producer for `$81:9A4D-9E12`
   would remove the capture).
 - **Live play of a new track can still abort.** The exact windows end about 1,500
-  updates in, and native guards lie beyond them on some tracks. With the controller
-  released, CROCK stops at update 1,731 and WARIO PAINT at 1,719 (special tile), and
-  HYBRID at 2,053 on `inverted AI marker is unrecovered`, listed as next experiment 3
-  (part 3 re-review). Under a held button for 4,000 updates, EAST, LOOPER and
-  FLAT FUN run clean in the app. Any track with a special-tile stop can abort until that
-  response is recovered (next experiment 2).
+  updates in, and native guards lie beyond them on some tracks: HYBRID at 2,053 and
+  MONSTER at 809 on `inverted AI marker is unrecovered` (next experiment 3), INFINITY
+  and HAIRPIN HILL on `race checkpoint index invalid` (next experiment 1). The special
+  tiles no longer stop any capture (R-0047): CROCK and WARIO PAINT match 3,004 and 3,011
+  updates, and under a held button for 4,000 updates EAST, LOOPER, FLAT FUN, WARIO
+  PAINT, CROCK, SWITCHER, MEGAJUMP, DRAGRACE, PINGPONG and SHORT CUT run clean in the
+  app. Tile flag pairs 4, 8, 12, 26 and 28 remain guarded (R-0047).
 - **The 470-pixel frame at update 272** is on every track checked, DRAGSTER and ZOOM
   ZOO included, and predates this task. It sits in the GO letters' area. It is
   unexplained and open.
@@ -363,18 +364,16 @@ the two accepted tracks carry.
 1. **Done in part 3**: a native scenario per track and selection by id (observations
    12-15). **INFINITY's checkpoint guard** is the new stop it exposed: capture the
    first lap crossing at row 379 and compare the checkpoint words.
-2. **The special-tile response** (vertical contact with a tile flag outside {0, 2, 6,
-   7, 18, 20}): the most common stop. It ends native's run on 7 of the 16 compared
-   races since part 3: first on six (DRAGRACE joined once its edge was recovered), and
-   on PINGPONG after its divergence. That counts only stops inside the compared
-   windows: CROCK and WARIO PAINT also reach it just after theirs, at updates 1,731
-   and 1,719. It also ends 19 of the 45 idle runs. A watch capture on SWITCHER at update 384 names the flag and the branch.
+2. **Done in SPECIAL-TILE-RESPONSE** ([R-0047](R-0047-special-tiles.md)): the lift,
+   mud, corkscrew and jump-driven tiles (flag pairs 24, 14, 10 and 16). Every
+   compared race now runs past its old special-tile stop; pairs 4, 8, 12, 26 and 28
+   stay guarded, since no capture touches them.
 3. **Done in part 3**: the sampler edges (observation 16). **HYBRID's `inverted AI
    marker is unrecovered`** guard, reached at update 2,053, some 540 updates after its exact window,
    is a separate unrecovered branch of the opponent's steering; capture HYBRID past
    update 2,053 and compare the opponent's marker words.
-4. **PINGPONG's `opponent.response_b`** at update 1,068: the first arithmetic
-   divergence on a new track.
+4. **Done in SPECIAL-TILE-RESPONSE**: PINGPONG's `opponent.response_b` at update
+   1,068 was the rotation clearing its step under surface mode (R-0047).
 5. **The five locked tours**: find how the original unlocks them before choosing a
    capture method for the 25 tracks they hold.
 6. **Stunt events**: a separate mode (solo, qualifying score), out of this task's race
@@ -387,7 +386,7 @@ python3 tools/project.py content rnc-inventory --expect tests/manifests/content/
 python3 tools/project.py build --preset lab-debug
 python3 tools/project.py content track-idle-matrix --out artifacts/track-breadth/idle-1200 --updates 1200
 python3 -m tools.unirally_lab.native.track_reference recompare --per-track --sweep <sweep dir> \
-    --binary build/lab-debug/src/core/zoom_zoo_runner --pack local/classic-pal-crawler-tracks-v10.pack --out <json>
+    --binary build/lab-debug/src/core/zoom_zoo_runner --pack local/classic-pal-crawler-tracks-v11.pack --out <json>
 python3 -m tools.unirally_lab.native.track_reference sweep --core <pinned bsnes core> \
     --out artifacts/track-breadth-2/sweep --binary build/lab-debug/src/core/zoom_zoo_runner \
     --pack local/classic-pal-crawler-two-tracks-v9.pack --horizon 2900

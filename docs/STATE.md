@@ -1,5 +1,25 @@
 # Project state
 
+Updated 24 September 2026 (SPECIAL-TILE-RESPONSE): **the special tiles no longer stop any
+captured race.** The original dispatches a rider's selected tile by flag pair in vertical
+contact and again in movement; native now reproduces the lift (flag 25), mud (14), the
+corkscrew (10) and the jump-driven tile (16), with every routine their state reaches
+([R-0047](research/R-0047-special-tiles.md)). With the release capture:
+- SWITCHER, MEGAJUMP, DRAGRACE, PINGPONG and SHORT CUT are exact over their whole windows;
+  **13 of the 16 compared races now match the original to the end**.
+- CROCK and WARIO PAINT are exact over 3,004 and 3,011 updates.
+- Held-input captures put the player on mud and through a whole corkscrew, and match.
+- The corkscrew raises the rider's sprite priority: 16 pictures through it match to the pixel.
+
+Other tracks' states are now `URTRnn02` (776 bytes); DRAGSTER and ZOOM ZOO keep their
+742-byte layouts, and no frozen gate moved. **Live play needs pack v11**
+(`classic.pal.crawler.tracks.v11`: v10 plus the corkscrew heights). Rebuild it with `content
+pack --rules tests/manifests/content/classic-crawler-tracks-pack.json --out
+local/classic-pal-crawler-tracks-v11.pack`, then rebuild `app-debug`. Still stopping: MONSTER
+and HYBRID at `inverted AI marker is unrecovered`, INFINITY and HAIRPIN HILL at `race checkpoint
+index invalid`. Both are [RACE-GUARDS](../tasks/RACE-GUARDS.md), ready next. Tile flag pairs 4,
+8, 12, 26 and 28 stay guarded.
+
 Updated 23 September 2026 (TRACK-BREADTH accepted): **TRACK-BREADTH is accepted for the 20
 tracks a cold start reaches, and [SPECIAL-TILE-RESPONSE](../tasks/SPECIAL-TILE-RESPONSE.md) is
 ready.** After part 3, the user played EAST and LOOPER live and found two faults, both now
