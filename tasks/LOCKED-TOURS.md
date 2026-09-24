@@ -86,6 +86,7 @@ only, so decide it explicitly and record it. The product never executes original
 | 11 (17:12Z) | HUNTER is a higher tier | `$1275`, `$1283`, `$1281` at every boundary | 1, 0 on every track but HUNTER's 40, 41, 43, 44: 3, 64; `$1281` 96 even on HUNTER's lap races (72 elsewhere) | Recover `$83:E16B`'s other arms and `$83:CC59`'s bound; add the tier to the scenario |
 | 12 (17:25Z) | Level 3 launches always and suppresses for 60 | `ClassicRaceScenario::ai_level` / `adjustment_limit` (3 and 96 for tracks 40-44); recompare-3 | **13 of 20 exact** (40 joins); 41, 43, 44 now differ in the opponent's jump input, as HIGHROAD (26) does at level 1, and JUMPOVER (19) in its direction | The AI turnaround `$83:E0C5-E111` (`$0C73`), unmodelled |
 | 13 (17:40Z) | The turnaround explains HIGHROAD and JUMPOVER | `opponent_turnaround` (`$0C73`) in `update_zoom_ai`; extension grows to 36 bytes (URTRnn04 838, URZZ000D/URDG0003 778 while live); projection appends `$0C73`; recompare-4 | JUMPOVER now runs to update 773 (movement pair 12, unrecovered) and HIGHROAD to 898 (contact pair 8 or 26); still 13 exact; HUNTER 41, 43, 44 differ in the opponent's jump (native 0, original 1) at level 3 | Level 3's jump; update the unit tests to the new sizes |
+| 14 (17:50Z) | Level 3 skips the jump override | `$83:E135`: a level other than 1 takes `$83:E222` at once; native's count-below-4 branch now does too; recompare-5 | **15 of 20 exact** (43, 44 join); TWO LOOPS (41) exact to 1,252, then `player_queue.entry14` (57 vs 31); LAST ONE, DOWN+UP, JUMPOVER, HIGHROAD stop at pairs 26, 26, 12 and 8/26 | TWO LOOPS' announcement, then records |
 
 ## Handoff
 
@@ -100,9 +101,9 @@ only, so decide it explicitly and record it. The product never executes original
 - Unavailable/skipped checks: the ASan presets (host).
 - Exact next experiment/command:
   1. Done: the unit tests take the new sizes and a turnaround case (ctest 24/24).
-  2. HUNTER's level-3 jump: compare `update_zoom_ai` with `$83:E114-E253` for `$1275` = 3 on
-     track 43 at update 328 (native jump 0, original 1); read the original's `$0333`, `$0C6F`,
-     `$0FC7` there.
+  2. Done: level 3's jump (attempt 14). Remaining divergence: TWO LOOPS (41) at update 1,252,
+     `player_queue.entry14` native 57 vs original 31 (an announcement event; 31 may be a
+     level-dependent reward), after the player queue's read cursor 14 vs 13.
   3. Then the records (a research record R-0050 for the unlock, the menu path, the 20 tracks,
      the AI level and the turnaround), docs for pack v12, gates, the PR and review as for
      RACE-GUARDS. Pairs 8, 12 and 26 (LAST ONE, DOWN+UP, JUMPOVER, HIGHROAD) and the level-3

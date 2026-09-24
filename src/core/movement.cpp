@@ -1069,7 +1069,10 @@ bool update_zoom_ai(ZoomZooState& state) {
             }
             ai.suppression_counter=0;
         } else if(rider.contact.unsupported_count<4 &&
-                  (whole.rewards.feature_total==0 || static_cast<std::int16_t>(whole.riders[0].progress.transition_count-rider.progress.transition_count)>=3)) {
+                  // $83:E135-E13D: an AI level other than 1 (HUNTER's 3) takes
+                  // the $83:E222 path at once, keeping the jump (LOCKED-TOURS).
+                  (classic_race_scenario(state.track).ai_level!=1 ||
+                   whole.rewards.feature_total==0 || static_cast<std::int16_t>(whole.riders[0].progress.transition_count-rider.progress.transition_count)>=3)) {
             ai.trick_selector=0;ai.impulse_countdown=0;return false;
         }
     }
