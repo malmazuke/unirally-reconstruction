@@ -5,6 +5,11 @@ push the task branch, open a pull request from the template, merge with
 `gh pr merge --merge` once its checks are green and the review is done. `main`
 refuses direct pushes. The checks run on pull requests only.
 
+**Status on 24 September 2026 UTC (end of RACE-FINISH-BREADTH): RACE-FINISH-BREADTH is
+accepted; claim [LOCKED-TOURS](LOCKED-TOURS.md) next.** New tracks now match the original
+through their finishes and one-run results; `track_reference` compares through the result
+load and `capture --hold` takes a schedule.
+
 **Status on 24 September 2026 UTC (end of RACE-GUARDS): RACE-GUARDS is accepted; claim
 [RACE-FINISH-BREADTH](RACE-FINISH-BREADTH.md) next.** All 16 cold-start race tracks now
 play without a native guard; their finishes and result loads are the next comparison.

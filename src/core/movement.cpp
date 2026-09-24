@@ -1346,6 +1346,12 @@ void update_zoom_roll(ZoomZooState& state,unsigned index,bool pressed,const Zoom
     turn.pose_override=static_cast<std::uint16_t>((entry&0x3fffU)+step_index+0x9a0U);
 }
 
+// $0304 during the update that produces frame whole.frame + 1: the update's
+// number counted from the race's initialization boundary, mod 3.
+unsigned race_update_phase(const ZoomZooState& state) {
+    const auto boundary=classic_race_scenario(state.track).initialization_frame;
+    return (state.movement.frame+1U-boundary)%3U;
+}
 // $83E8E0-EC13 and $828953-89C2. Finish animation is a collision-pose input.
 void update_zoom_finish(ZoomZooState& state,const ZoomZooContent& content) {
     auto& whole=state.movement;
@@ -1358,7 +1364,12 @@ void update_zoom_finish(ZoomZooState& state,const ZoomZooContent& content) {
         auto& input=state.reflection[index];input.brake_input=1;
         input.jump_input=input.rotate_negative_input=input.rotate_positive_input=0;
         if(index==0)whole.player_input.horizontal=1;else state.opponent_horizontal=1;
-        if((whole.frame+1U)%3U==0)continue;
+        // $83:E90D-E915 (and $83:EA9F for the opponent) skip the rest while
+        // bit 0 of $0304 is set. $0304 counts race updates 0, 1, 2
+        // ($83:CCAB-CCB5) and is 0 at every captured boundary, so it is the
+        // update's number from initialization mod 3 (R-0049); DRAGSTER and ZOOM
+        // ZOO, whose boundaries are 2 mod 3, once read it from the frame.
+        if(race_update_phase(state)==1U)continue;
         apply_finish_slowdown(whole.riders[index]);
         const auto own=state.race.total_times[index],other=state.race.total_times[1-index];
         const bool won=own!=0xea60U && (other==0xea60U || own<other);
@@ -1531,8 +1542,8 @@ ClassicRaceScenario classic_race_scenario(ClassicRaceTrack track) {
     // a one-run race stores 0 laps and races one, as DRAGSTER does. The frame is
     // the boundary on the laboratory's menu path (`track_reference`), a label
     // only. The stable result updates follow the race mode's accepted track
-    // (DRAGSTER for mode 0, ZOOM ZOO for mode 1): a hypothesis, since no new
-    // track's result screen has been captured.
+    // (DRAGSTER for mode 0, ZOOM ZOO for mode 1); the new tracks' results
+    // compared since agree: one-run won and lost, and a lap race (R-0049).
     struct Observed {std::uint8_t index;std::uint16_t initialization_frame,laps;bool lap_race;};
     static constexpr std::array<Observed,14> observed{{
         {3,1418,1,false},{4,1419,3,true},{10,1417,1,false},{11,1368,3,true},{13,1392,1,false},{14,1376,7,true},

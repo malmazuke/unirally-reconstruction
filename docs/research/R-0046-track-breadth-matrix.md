@@ -348,8 +348,9 @@ the two accepted tracks carry.
 - **The 470-pixel frame at update 272** is on every track checked, DRAGSTER and ZOOM
   ZOO included, and predates this task. It sits in the GO letters' area. It is
   unexplained and open.
-- **A new track's finish is not yet compared.** The finish slowdown in
-  `movement.cpp` counts the absolute frame modulo 3. Both accepted tracks start on a
+- **Done in RACE-FINISH-BREADTH** ([R-0049](R-0049-race-finish-breadth.md)): the finish
+  phase counts race updates, and new tracks' finishes and one-run results match. Before it:
+  the finish slowdown in `movement.cpp` counted the absolute frame modulo 3. Both accepted tracks start on a
   frame congruent to 2 (mod 3), but 9 of the 14 new tracks do not. If the original
   counts from race start there, as `$0300` does, those finishes will be out of phase.
   Capturing a new-track finish decides it (part 3 review).

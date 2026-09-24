@@ -1,5 +1,14 @@
 # Project state
 
+Updated 24 September 2026 (RACE-FINISH-BREADTH): **new tracks' finishes and one-run results
+match the original.** The finish slowdown skips every third update by a counter that starts
+at race setup (`$0304`), not by the absolute frame. Native used the frame, and so was wrong
+after the first finish on 9 of the 14 new tracks. Captures on boundaries 0, 1 and 2 (mod 3)
+are now exact through both finishes. WARIO PAINT and DRAGRACE (lost), FLAT FUN (won) and the
+lap race MEGAJUMP (lost) are exact through the result load to the stable result
+([R-0049](research/R-0049-race-finish-breadth.md)). Next: [LOCKED-TOURS](../tasks/LOCKED-TOURS.md), the
+25 tracks in the five tours a cold start does not offer.
+
 Updated 24 September 2026 (RACE-GUARDS): **no cold-start race stops at a native guard any
 more.** All 16 race tracks match the original over their compared windows. Longer captures
 to frame 4,400 of INFINITY, HAIRPIN HILL, MONSTER and HYBRID, released and with Right held,

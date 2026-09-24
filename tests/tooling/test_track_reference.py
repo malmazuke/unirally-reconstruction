@@ -41,6 +41,20 @@ class MenuPathTests(unittest.TestCase):
         self.assertTrue(all(row == [[], []] for row in rows[last + 1:]))
         self.assertEqual(rows[track_reference.FIRST_TOUR_DOWN][0], ["down"])
 
+    def test_hold_segments_follow_one_another(self) -> None:
+        # One (frame, buttons) pair holds to the horizon; several are held in turn, and a
+        # segment without buttons releases the controller (RACE-FINISH-BREADTH).
+        single = track_reference.timeline(3, 2000, 0, (1500, ["right"]))
+        self.assertEqual(single[1499][0], [])
+        self.assertTrue(all(row[0] == ["right"] for row in single[1500:]))
+        rows = track_reference.timeline(3, 2000, 0, [(1700, ["left"]), (1500, ["right", "b"]), (1900, [])])
+        self.assertEqual(rows[1500][0], ["b", "right"])
+        self.assertEqual(rows[1699][0], ["b", "right"])
+        self.assertEqual(rows[1700][0], ["left"])
+        self.assertTrue(all(row[0] == [] for row in rows[1900:]))
+        with self.assertRaises(ValueError):
+            track_reference.timeline(3, 2000, 0, (100, ["right"]))  # inside the menu
+
     def test_rejects_positions_outside_the_screens(self) -> None:
         for position, tour_row in ((5, 0), (-1, 0), (0, 4)):
             with self.assertRaises(ValueError):

@@ -5928,6 +5928,7 @@
   "label": "unk_839FFA",
   "source_records": [
    "docs/research/R-0046-track-breadth-matrix.md",
+   "tasks/LOCKED-TOURS.md",
    "tasks/TRACK-BREADTH.md"
   ]
  },
@@ -5979,6 +5980,16 @@
   "source_records": [
    "docs/research/R-0038-dragster-ordinary-controls.md",
    "tasks/DRAGSTER-ORDINARY-CONTROLS-review.md"
+  ]
+ },
+ {
+  "address": "$83:CCAB",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83CCAB",
+  "source_records": [
+   "docs/research/R-0049-race-finish-breadth.md",
+   "tasks/RACE-FINISH-BREADTH.md"
   ]
  },
  {
@@ -6113,6 +6124,15 @@
   "label": "sub_83E082",
   "source_records": [
    "docs/research/R-0030-zoom-zoo-native-trial.md",
+   "docs/research/R-0048-race-guards.md"
+  ]
+ },
+ {
+  "address": "$83:E08C",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83E08C",
+  "source_records": [
    "docs/research/R-0048-race-guards.md"
   ]
  },
@@ -6437,6 +6457,15 @@
   ]
  },
  {
+  "address": "$83:E8E0",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_83E8E0",
+  "source_records": [
+   "docs/research/R-0049-race-finish-breadth.md"
+  ]
+ },
+ {
   "address": "$83:E8F8",
   "class": "observed",
   "comment": "instruction start",
@@ -6463,6 +6492,7 @@
   "label": "loc_83E90D",
   "source_records": [
    "docs/research/R-0013-native-finish-reference-freeze.md",
+   "docs/research/R-0049-race-finish-breadth.md",
    "tasks/M3-01-review.md",
    "tasks/M3-01.md",
    "tasks/RACE-FINISH-BREADTH.md"
@@ -6579,7 +6609,8 @@
   "comment": "instruction start",
   "label": "loc_83EA9F",
   "source_records": [
-   "docs/research/R-0017-opponent-first-audit.md"
+   "docs/research/R-0017-opponent-first-audit.md",
+   "docs/research/R-0049-race-finish-breadth.md"
   ]
  },
  {

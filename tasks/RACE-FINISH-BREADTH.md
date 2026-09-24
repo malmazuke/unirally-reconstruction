@@ -2,17 +2,18 @@
 
 ## Assignment
 
-- Status: ready (prepared 24 September 2026 by the RACE-GUARDS session).
+- Status: accepted (reviewed and integrated by pull request #18). Claimed 24 September 2026 about 14:52Z by the session that closed RACE-GUARDS.
 - Milestone: M4 breadth
 - Coordinator: the claiming session is coordinator, primary and integrator
 - Task provider (fixed for all children; record any user-initiated platform change): Anthropic
-- Worker/session/runtime/model: to be recorded at claim
+- Worker/session/runtime/model: Claude Opus 5.5 (`claude-opus-5-5`), Claude Code desktop, coordinator, primary and integrator
 - Actual model/reasoning effort, routing rationale and frontier escalation question (if any):
   the claiming session's model at default effort. Review tier under D-0008: **tier 1** if the
   finish slowdown or result state in `src/core/movement.cpp` changes (expected), otherwise
   tier 2 for the laboratory tooling alone.
 - Provider quota window/baseline timestamp, used/remaining or unknown, reserve and session
-  allowance (D-0004): sample at claim and record here.
+  allowance (D-0004): weekly all-models 5% and five-hour 12% at claim (14:52Z). Tier 1: the
+  finish phase is race state.
 - Reviewer (primary automatically spawns fresh model/effort, isolated checkout; no user
   trigger): a fresh Anthropic subagent at the exact candidate, with a withheld finish of its own.
 - Dependencies and evidence of acceptance: RACE-GUARDS (accepted); R-0046, R-0047, R-0048;
@@ -66,10 +67,10 @@ events, locked tours, audio.
 
 ## Capability and coverage checkpoint
 
-- Native capability delivered / still missing: to be filled.
+- Native capability delivered / still missing: the finish phase from race start; comparison through finishes and the result load. A new lap race's player finish is covered by the review's MEGAJUMP case.
 - Frozen exact-match interval, field set and reference/seed identity: new captures.
 - Dynamic captured inputs still consumed (must be zero for autonomy): the landing matrices.
-- Relevant branches/transitions exercised, including independent variations: to be filled.
+- Relevant branches/transitions exercised, including independent variations: boundaries 0, 1 and 2 mod 3; player won and lost; one-run and lap races (opponent finishes); the old rule as a control.
 - First divergence and cheapest next discriminating experiment: see the handoff.
 - Trial-wide usage baseline/current, reserve, reset authorization/outcome or none: at claim.
 
@@ -77,32 +78,65 @@ events, locked tours, audio.
 
 | Attempt | Hypothesis | Experiment | Observation | Next decision |
 | --- | --- | --- | --- | --- |
+| 1 (14:53Z) | The finish slowdown's third-update skip is not the absolute frame | Listing `$83:E90D`, `$83:CCAB`; `$0304` at the 20 boundaries | `$0304` counts race updates from 0 at every boundary | Phase from the boundary |
+| 2 (14:57Z) | - | HYBRID's opponent finish with the new projection; old rule restored as a control | New exact 3,015; old diverges at 3,705 | Captures with finishes |
+| 3 (15:01Z) | Right held finishes | Six captures to frame 8,000 | All exact; only EAST's player finishes | Native search for finishing inputs |
+| 4 (15:10Z) | - | Search (Right, Left, jump patterns) on eight tracks | WARIO PAINT Right+B finishes; no lap race does | Capture WARIO PAINT and FLAT FUN (R-0046 input) |
+| 5 (15:15Z) | - | Both through the result; old rule on all | Both exact through the stable result; old rule diverges after each first finish on every boundary not 2 mod 3 | Records, gates |
 
 ## Handoff
 
-- Current base/head commit and uncommitted state: not claimed; prepared on `task/race-guards`.
-- Verified findings: none yet.
-- Current hypothesis and failed approaches: the finish slowdown's modulo-3 counter is race
-  relative (like `$0300`), not the absolute frame.
-- Commands executed, outcomes and report hashes: none yet.
-- Unavailable/skipped checks: the ASan presets are unavailable on this host.
-- Exact next experiment/command: capture EAST with Right held to frame 7,000 (tour row 3,
-  position 3, `--hold 1415 right`) and read `$0300` and the finish slowdown's inputs in WRAM
-  around the player's finish at 5,581; then read the listing at `$83:E90D`.
-- Remaining dependencies: none outside the project.
-- Runtime needs (network, build time, fixtures, memory): about 45 minutes for the gates. Put
-  the gate directory under the worktree's `artifacts/` (`presentation-check` refuses others),
-  and copy `local/toolchain` into the worktree rather than linking it (a linked toolchain
-  lets the worktree's bootstrap rewrite the main checkout's manifest).
+- Current base/head commit and uncommitted state: base `522a1ac` (`main` after #17); on
+  `task/race-finish-breadth`.
+- Verified findings: [R-0049](../docs/research/R-0049-race-finish-breadth.md).
+- Current hypothesis and failed approaches: simple held inputs do not finish a new lap race.
+- Commands executed, outcomes and report hashes: `captures.sh` and `explore` reports under
+  `local/evidence/race-finish-breadth/`; recompare unchanged; tool tests 5/5; hidden 7,000-update
+  WARIO PAINT run to a stable result. `gates.sh` on `daefd0d` (15:12-15:56Z,
+  `gates-daefd0d.out`): ctest 24/24 on three presets, synthetic suite, both v1 contracts,
+  hidden runs (DRAGSTER, ZOOM ZOO, FLAT FUN, HYBRID, WARIO PAINT; 0 fallback frames), fuzz 0
+  aborts, **all eleven differential gates identical to the accepted set**, inventory passed.
+- Unavailable/skipped checks: the ASan presets (host); the hosted Linux job covers them.
+- Exact next experiment/command: none; [LOCKED-TOURS](LOCKED-TOURS.md) is next.
+- Remaining dependencies: none.
+- Runtime needs (network, build time, fixtures, memory): the 8,000-frame captures are about
+  0.9 GB each.
 - Aggregate parent/child time, provider usage before/after (or unknown), other-account-work
-  caveat: to be recorded.
-- Accepted outcome, review/fix rounds and next routing decision: to be recorded.
+  caveat: primary from 14:52Z; figures in the closeout.
+- Accepted outcome, review/fix rounds and next routing decision: accepted at the first round;
+  next is [LOCKED-TOURS](LOCKED-TOURS.md).
+- Cleanup by the closing session: captures, explore reports and gate logs under
+  `local/evidence/race-finish-breadth/` in the main checkout (the worktree's `artifacts/`
+  gate directory moved there); both worktrees and the local branch deleted; bootstrap and
+  app-debug rerun in the main checkout.
 
 ## Review and integration
 
-- Reviewer and independent reproduction/withheld-case results:
+- Reviewer and independent reproduction/withheld-case results: a fresh Claude Opus 5.5
+  subagent in the detached checkout `.worktrees/race-finish-breadth-review` at `daefd0d`,
+  tier 1. It extracted pack v11 itself and reproduced all eight explore reports and the
+  recompare. It rebuilt the old rule as a control, and made withheld captures from
+  native-searched schedules: DRAGRACE (player loses, 3,461 rows) and the lap race MEGAJUMP
+  (player finishes, 8,383 rows), both exact through the stable result. It also checked the
+  listing and `$0304` on all 20 boundaries and reran one gate (same digest). **Approved**, two
+  should-fix and three advisories
+  ([review](https://github.com/malmazuke/unirally-reconstruction/pull/18#pullrequestreview-5306923478)).
 - Required changes or acceptance rationale:
-- Exact merge candidate and required-check results:
-- Integrated commit and evidence location:
-- Remote synchronization: pushed ref(s), verified local/remote commit IDs, or exact push failure:
-- Scope still unverified:
+  - The should-fix findings were fixed in the final records commit: `$0304` is cleared by race
+    setup (the "later race" limit is withdrawn), and a stale comment in the scenario table was
+    corrected.
+  - The advisories were applied: the MEGAJUMP and DRAGRACE cases were recaptured from the
+    review's schedules into this task's evidence (both exact), and the explore tool's two
+    known stops are recorded in R-0049.
+  - The code change after the gates is one comment, so the compiled code is unchanged and it
+    needs no re-review.
+- Exact merge candidate and required-check results: the pull request head; `changes`, `lab
+  (ubuntu-24.04)` and `lab (macos-15)` green on it before merging (run IDs in the closeout).
+- Integrated commit and evidence location: the merge commit of
+  [#18](https://github.com/malmazuke/unirally-reconstruction/pull/18);
+  `artifacts/race-finish-breadth-integration/closeout.json` and
+  `local/evidence/race-finish-breadth/` in the main checkout.
+- Remote synchronization: through the pull request; local `main` compared with `origin/main`
+  after the merge (closeout).
+- Scope still unverified: result pictures of lap races (authored, declared); explore with
+  Start pressed after a finish.
