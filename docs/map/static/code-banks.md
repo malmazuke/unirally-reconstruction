@@ -41,7 +41,7 @@ The four classes partition all 131,072 bytes. **Unknown share: 40.4%** - above D
 
 ## Cited addresses
 
-709 distinct code-bank ROM addresses cited by the research, task, inventory and content records (`labels.json`). By position: dat 10, loc 515, mid 17, sub 130, unk 37 (sub routine start, loc instruction start, mid inside an instruction, dat data, unk unknown). By class: data 10, inferred 67, observed 595, unknown 37.
+714 distinct code-bank ROM addresses cited by the research, task, inventory and content records (`labels.json`). By position: dat 10, loc 518, mid 17, sub 131, unk 38 (sub routine start, loc instruction start, mid inside an instruction, dat data, unk unknown). By class: data 10, inferred 67, observed 599, unknown 38.
 
 Cited addresses in `unknown` bytes:
 
@@ -72,6 +72,7 @@ Cited addresses in `unknown` bytes:
 | $81:A406 | docs/research/R-0046-track-breadth-matrix.md |
 | $81:BA4B | docs/research/R-0008-track-decode.md, tasks/M1-03.md |
 | $81:C50A | docs/research/R-0011-motion.md |
+| $81:CC17 | docs/research/R-0048-race-guards.md |
 | $82:833B | docs/research/R-0036-zoom-zoo-rider-objects.md, docs/research/R-0045-static-code-map.md |
 | $82:834B | docs/research/R-0036-zoom-zoo-rider-objects.md |
 | $82:835B | docs/research/R-0036-zoom-zoo-rider-objects.md, docs/research/R-0045-static-code-map.md |

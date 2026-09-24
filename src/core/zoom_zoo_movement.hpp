@@ -13,7 +13,7 @@ struct SurfaceTransition {
 };
 // R-0047: per-rider words of the special tiles (mud, flag pair 14; corkscrew,
 // pair 10), which no accepted DRAGSTER or ZOOM ZOO race reaches. The other
-// tracks' state (URTRnn02) always carries them; DRAGSTER's and ZOOM ZOO's carry
+// tracks' state (URTRnn03) always carries them; DRAGSTER's and ZOOM ZOO's carry
 // them only while one is live (URDG0002, URZZ000C), so their 742-byte states
 // are unchanged. Words keep the original bit patterns; signed where noted.
 struct SpecialTileRider {

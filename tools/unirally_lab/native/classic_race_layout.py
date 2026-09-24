@@ -1,5 +1,6 @@
 """Named byte layout of the 742-byte shared race state (URZZ000B / URDG0001), and
-of the 34 special-tile bytes the other tracks' state (URTRnn02) appends (R-0047).
+of the 34 special-tile bytes and 60 checkpoint flags the other tracks' state (URTRnn03)
+appends (R-0047, R-0048).
 
 Diagnostic only: names follow the native serializer order so a first
 divergence can be reported as a field instead of a bare offset.

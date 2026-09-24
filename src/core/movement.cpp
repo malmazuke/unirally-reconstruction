@@ -1703,7 +1703,7 @@ std::vector<std::uint8_t> serialize_zoom_zoo(const ZoomZooState& state) {
         put32(bytes,state.pause.suspended_updates);put32(bytes,state.pause.suspended_countdown_updates);
     }
     // R-0047: the special-tile words follow the shared 742 bytes in the other
-    // tracks' layout (URTRnn02), and in DRAGSTER's and ZOOM ZOO's only while
+    // tracks' layout (URTRnn03), and in DRAGSTER's and ZOOM ZOO's only while
     // one is live (URDG0002, URZZ000C): no accepted race reaches a special
     // tile, so their frozen 742-byte states are unchanged, but ZOOM ZOO's own
     // tile table holds the corkscrew (pair 10).
@@ -1957,7 +1957,9 @@ static ZoomZooState deserialize_classic_race(std::span<const std::uint8_t> bytes
 }
 ZoomZooState deserialize_zoom_zoo(std::span<const std::uint8_t> bytes) {
     // Any track but ZOOM ZOO carries its own identity over the URZZ000B layout;
-    // a 776-byte state appends the special-tile words (R-0047).
+    // a 776-byte DRAGSTER or ZOOM ZOO state appends the special-tile words
+    // (R-0047), and an 836-byte URTRnn03 state those and the last 60
+    // checkpoint flags (R-0048).
     const auto magic_is=[&](std::string_view text){return std::equal(text.begin(),text.end(),bytes.begin());};
     std::optional<ClassicRaceTrack> track;
     bool extended=false;

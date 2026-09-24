@@ -2,17 +2,18 @@
 
 ## Assignment
 
-- Status: ready (prepared 24 September 2026 by the SPECIAL-TILE-RESPONSE session).
+- Status: review. Claimed 24 September 2026 about 13:40Z by the session that closed SPECIAL-TILE-RESPONSE.
 - Milestone: M4 breadth (R-0046 next experiments 1 and 3)
 - Coordinator: the claiming session is coordinator, primary and integrator
 - Task provider (fixed for all children; record any user-initiated platform change): Anthropic
-- Worker/session/runtime/model: to be recorded at claim
+- Worker/session/runtime/model: Claude Opus 5.5 (`claude-opus-5-5`), Claude Code desktop, one session as coordinator, primary and integrator
 - Actual model/reasoning effort, routing rationale and frontier escalation question (if any):
   the claiming session's model at default effort. Review tier under D-0008: **tier 1** (race
   state and opponent steering in `src/core/movement.cpp`): a fresh independent reviewer in an
   isolated checkout with a withheld case, and all eleven differential gates actually run.
 - Provider quota window/baseline timestamp, used/remaining or unknown, reserve and session
-  allowance (D-0004): sample at claim and record here.
+  allowance (D-0004): weekly all-models 4% and five-hour 3% at claim (13:41Z); the user's stop
+  is 50% weekly or the five-hour limit.
 - Reviewer (primary automatically spawns fresh model/effort, isolated checkout; no user
   trigger): a fresh Anthropic subagent at the exact candidate. Withheld case: a held-input
   capture of one of the four tracks that the primary did not compare.
@@ -70,41 +71,43 @@ locked tours, new-track finishes and result screens.
 
 ## Capability and coverage checkpoint
 
-- Native capability delivered / still missing: to be filled.
+- Native capability delivered / still missing: all 80 checkpoint-seen flags and the inverted-marker return; nothing left at a guard in the 16 cold-start races.
 - Frozen exact-match interval, field set and reference/seed identity: the part 2 sweep and new
   captures; no new freeze.
 - Dynamic captured inputs still consumed (must be zero for autonomy): the landing matrices.
-- Relevant branches/transitions exercised, including independent variations: to be filled.
+- Relevant branches/transitions exercised, including independent variations: flags 21-31 (INFINITY) and 22 (HAIRPIN HILL); 14 inverted-marker updates on three tracks; each track released and with Right held.
 - First divergence and cheapest next discriminating experiment: see the handoff.
-- Trial-wide usage baseline/current, reserve, reset authorization/outcome or none: to be
-  sampled at claim.
+- Trial-wide usage baseline/current, reserve, reset authorization/outcome or none: 4% weekly at
+  claim; no reset authorization needed.
 
 ## Evidence and attempts
 
 | Attempt | Hypothesis | Experiment | Observation | Next decision |
 | --- | --- | --- | --- | --- |
+| 1 (13:42Z) | The checkpoint array is longer than 20 bytes | INFINITY's WRAM `$114D-$1190` per update; boundary fill; listing `$81:CD25` | Flags past `$1160` clear like the first 20; setup fills 80 | Carry 80 flags in URTRnn03 |
+| 2 (13:44Z) | The inverted marker just returns | Listing `$83:E0A7`; implemented as a return keeping the direction | INFINITY and HAIRPIN HILL exact; MONSTER differs at 809 in `opponent_horizontal` (original 1) | Find the other writer of `$031B` |
+| 3 (13:46Z) | The port-2 reader resets AI inputs first | Listing `$82:AB6F-AB8B` | All inputs released, direction 1, X released, before the AI runs | Neutral direction, A and X masked |
+| 4 (13:47Z) | - | recompare; eight new captures to frame 4,400 | All 16 exact to their windows; all eight captures exact to their ends or a finish | Records, gates |
 
 ## Handoff
 
-- Current base/head commit and uncommitted state: not claimed; prepared on
-  `task/special-tile-response`.
-- Verified findings: the two stops above (R-0047 evidence table and R-0046 matrix).
-- Current hypothesis and failed approaches: the checkpoint index overflows the 20-byte array
-  on races of more than 3 laps (`laps_remaining` starts at laps + 1).
-- Commands executed, outcomes and report hashes: none yet.
-- Unavailable/skipped checks: `lab-sanitize` and `app-sanitize` are unavailable on this host
-  (the ASan runtime hangs before `main`, rechecked 24 September 2026); the hosted Linux job
-  covers them.
-- Exact next experiment/command: dump WRAM `$114D-$1180` on the INFINITY capture
-  (`row1-pos4`) at rows 370-390, and read the listing around `$81:8050-82B6` for the store
-  that uses `$114D`.
-- Remaining dependencies: none outside the project.
-- Runtime needs (network, build time, fixtures, memory): as for SPECIAL-TILE-RESPONSE; its
-  `local/evidence/special-tile-response/gates.sh` is the gate script to adapt (put the gate
-  directory under the worktree's `artifacts/`: `native presentation-check` refuses any other).
+- Current base/head commit and uncommitted state: base `b287670` (`main` after #16);
+  implementation `7ea1eee` on `task/race-guards`, records after it.
+- Verified findings: [R-0048](../docs/research/R-0048-race-guards.md).
+- Current hypothesis and failed approaches: keeping the opponent's direction on an inverted
+  marker (attempt 2) failed at MONSTER 809.
+- Commands executed, outcomes and report hashes: recompare (all 16 exact); `captures.sh` and
+  eight `explore` reports under `local/evidence/race-guards/`; hidden 4,000-update held runs on
+  MONSTER, INFINITY, HYBRID and HAIRPIN HILL (0 fallback frames); idle matrix 41 of 45; ctest
+  24/24 on lab-debug. Gates: see the closing section.
+- Unavailable/skipped checks: `lab-sanitize` and `app-sanitize` (ASan hangs on this host); the
+  hosted Linux job covers them.
+- Exact next experiment/command: none; [RACE-FINISH-BREADTH](RACE-FINISH-BREADTH.md) is next.
+- Remaining dependencies: none.
+- Runtime needs (network, build time, fixtures, memory): as SPECIAL-TILE-RESPONSE.
 - Aggregate parent/child time, provider usage before/after (or unknown), other-account-work
-  caveat: to be recorded.
-- Accepted outcome, review/fix rounds and next routing decision: to be recorded.
+  caveat: primary from 13:40Z; figures in the closeout.
+- Accepted outcome, review/fix rounds and next routing decision: see Review and integration.
 
 ## Review and integration
 

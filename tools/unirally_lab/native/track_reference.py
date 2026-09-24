@@ -181,7 +181,7 @@ def original_rows(directory):
                     countdown_paused += 1
             pause = w[0xef3:0xef7]+paused_updates.to_bytes(4, 'little')+countdown_paused.to_bytes(4, 'little')
             row += s[0x106f:0x1073]+s[0x618:0x61c]+charge+announcements+roll+weights+pause
-            # Any track but DRAGSTER and ZOOM ZOO: its state (URTRnn02) appends
+            # Any track but DRAGSTER and ZOOM ZOO: its state (URTRnn03) appends
             # the special-tile words (R-0047).
             if s[0x74a] not in (0, 1):
                 row += special_tile_bytes(w)+checkpoint_tail_bytes(w)

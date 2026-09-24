@@ -5,6 +5,11 @@ push the task branch, open a pull request from the template, merge with
 `gh pr merge --merge` once its checks are green and the review is done. `main`
 refuses direct pushes. The checks run on pull requests only.
 
+**Status on 24 September 2026 UTC (end of RACE-GUARDS): RACE-GUARDS is accepted; claim
+[RACE-FINISH-BREADTH](RACE-FINISH-BREADTH.md) next.** All 16 cold-start race tracks now
+play without a native guard; their finishes and result loads are the next comparison.
+Other tracks' states are `URTRnn03` (836 bytes); pack v11 is unchanged.
+
 **Status on 24 September 2026 UTC (end of SPECIAL-TILE-RESPONSE): SPECIAL-TILE-RESPONSE is
 accepted; claim [RACE-GUARDS](RACE-GUARDS.md) next.** Its record has the scope, the stops
 and the first command. **Live play needs pack v11** (`local/classic-pal-crawler-tracks-v11.pack`
