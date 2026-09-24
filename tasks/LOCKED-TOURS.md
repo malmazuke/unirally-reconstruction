@@ -99,11 +99,7 @@ only, so decide it explicitly and record it. The product never executes original
   `sweep/sweep.json`, `recompare-1.json` (wide fill) and `recompare-2.json` (narrow preload).
 - Unavailable/skipped checks: the ASan presets (host).
 - Exact next experiment/command:
-  1. **Unit tests are stale** after attempt 13: `tests/native/special_tile_tests.cpp` and
-     `dragster_race_tests.cpp` still expect 776/836 bytes, `URZZ000C`/`URDG0002`/`URTRnn03`
-     and offsets up to 774; the new sizes are 778/838, `URZZ000D`/`URDG0003`/`URTRnn04`, with
-     `opponent_turnaround` at 776 and the checkpoint tail from 778. Update them and add a turnaround
-     case.
+  1. Done: the unit tests take the new sizes and a turnaround case (ctest 24/24).
   2. HUNTER's level-3 jump: compare `update_zoom_ai` with `$83:E114-E253` for `$1275` = 3 on
      track 43 at update 328 (native jump 0, original 1); read the original's `$0333`, `$0C6F`,
      `$0FC7` there.
