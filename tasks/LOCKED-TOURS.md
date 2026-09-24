@@ -85,6 +85,7 @@ only, so decide it explicitly and record it. The product never executes original
 | 10 (17:10Z) | - | Recapture (same tracks, modes, laps) and recompare (`recompare-2.json`) | **12 of 20 exact over their windows** (5, 6, 8, 9, 16, 18, 28, 29, 35, 36, 38, 39); LAST ONE and DOWN+UP stop at pair 26; JUMPOVER (551, opponent) and HIGHROAD (741, opponent jump) diverge; HUNTER 40, 43, 44 differ in `ai.suppression_counter` (30 vs 60) and 41 in `progress_adjustment` | `$1275`/`$1283` per track |
 | 11 (17:12Z) | HUNTER is a higher tier | `$1275`, `$1283`, `$1281` at every boundary | 1, 0 on every track but HUNTER's 40, 41, 43, 44: 3, 64; `$1281` 96 even on HUNTER's lap races (72 elsewhere) | Recover `$83:E16B`'s other arms and `$83:CC59`'s bound; add the tier to the scenario |
 | 12 (17:25Z) | Level 3 launches always and suppresses for 60 | `ClassicRaceScenario::ai_level` / `adjustment_limit` (3 and 96 for tracks 40-44); recompare-3 | **13 of 20 exact** (40 joins); 41, 43, 44 now differ in the opponent's jump input, as HIGHROAD (26) does at level 1, and JUMPOVER (19) in its direction | The AI turnaround `$83:E0C5-E111` (`$0C73`), unmodelled |
+| 13 (17:40Z) | The turnaround explains HIGHROAD and JUMPOVER | `opponent_turnaround` (`$0C73`) in `update_zoom_ai`; extension grows to 36 bytes (URTRnn04 838, URZZ000D/URDG0003 778 while live); projection appends `$0C73`; recompare-4 | JUMPOVER now runs to update 773 (movement pair 12, unrecovered) and HIGHROAD to 898 (contact pair 8 or 26); still 13 exact; HUNTER 41, 43, 44 differ in the opponent's jump (native 0, original 1) at level 3 | Level 3's jump; update the unit tests to the new sizes |
 
 ## Handoff
 
@@ -97,15 +98,19 @@ only, so decide it explicitly and record it. The product never executes original
 - Commands executed, outcomes and report hashes: `local/evidence/locked-tours/captures.sh`,
   `sweep/sweep.json`, `recompare-1.json` (wide fill) and `recompare-2.json` (narrow preload).
 - Unavailable/skipped checks: the ASan presets (host).
-- Exact next experiment/command: recover the AI turnaround in `update_zoom_ai`. At
-  `$83:E0C5`, while `$0C73` is nonzero the AI reverses the direction (`$031B` = 2 - direction),
-  decrements `$0C73`, releases jump and returns. At `$83:E0DD-E111`, with the opponent's
-  surface mode (`$0B95`) set, an angle (`$0B70`) of 26 or more against the direction
-  (-26 or less going right), and a previous x displacement (`$0BBD`) below 3, it sets
-  `$0C73` = 30, releases jump and returns. `$0C73` is new per-opponent state: add it to
-  `URTRnn03`'s tail (bump to 04), to the projection and to the layout. Then rerun
-  recompare-4 and look at JUMPOVER 551, HIGHROAD 741 and HUNTER 41/43/44. Pair 26 (LAST ONE,
-  DOWN+UP) stays a follow-up. Then records, gates, PR and review as for RACE-GUARDS.
+- Exact next experiment/command:
+  1. **Unit tests are stale** after attempt 13: `tests/native/special_tile_tests.cpp` and
+     `dragster_race_tests.cpp` still expect 776/836 bytes, `URZZ000C`/`URDG0002`/`URTRnn03`
+     and offsets up to 774; the new sizes are 778/838, `URZZ000D`/`URDG0003`/`URTRnn04`, with
+     `opponent_turnaround` at 776 and the checkpoint tail from 778. Update them and add a turnaround
+     case.
+  2. HUNTER's level-3 jump: compare `update_zoom_ai` with `$83:E114-E253` for `$1275` = 3 on
+     track 43 at update 328 (native jump 0, original 1); read the original's `$0333`, `$0C6F`,
+     `$0FC7` there.
+  3. Then the records (a research record R-0050 for the unlock, the menu path, the 20 tracks,
+     the AI level and the turnaround), docs for pack v12, gates, the PR and review as for
+     RACE-GUARDS. Pairs 8, 12 and 26 (LAST ONE, DOWN+UP, JUMPOVER, HIGHROAD) and the level-3
+     jump (if not solved) become their own follow-up.
 - Remaining dependencies: none outside the project.
 - Runtime needs (network, build time, fixtures, memory): captures about 12 s each.
 - Aggregate parent/child time, provider usage before/after (or unknown), other-account-work

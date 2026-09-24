@@ -177,6 +177,9 @@ struct ZoomZooState {
     // with the special-tile words; while none is live no drive is suspended,
     // so each rider rewrites it before reading it.
     std::uint16_t drive_target_latch{};
+    // $0C73: updates left of the opponent's turnaround on a steep slope
+    // ($83:E0C5-E111, LOCKED-TOURS); serialized with the special-tile words.
+    std::uint16_t opponent_turnaround{};
 };
 struct ZoomZooContent {
     MovementContent movement;
