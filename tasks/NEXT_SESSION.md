@@ -5,6 +5,12 @@ push the task branch, open a pull request from the template, merge with
 `gh pr merge --merge` once its checks are green and the review is done. `main`
 refuses direct pushes. The checks run on pull requests only.
 
+**Status on 25 September 2026 UTC (end of TILE-PAIRS-8-12-26): TILE-PAIRS-8-12-26 is
+accepted; claim [HUNTER-EFFECTS](HUNTER-EFFECTS.md) next.** The loop and tile pairs 8, 12 and
+28 are recovered; 35 of 36 race tracks match. Pack v13; other tracks' states are `URTRnn05`.
+Live play needs pack v13. `coverage static-map` needs the four raw coverage files STATIC-CODE-MAP
+names, each after its own `--coverage`, from the main checkout's `local/evidence/`.
+
 **Status on 24 September 2026 UTC (end of LOCKED-TOURS): LOCKED-TOURS is accepted; claim
 [TILE-PAIRS-8-12-26](TILE-PAIRS-8-12-26.md) next.** Every track is reachable in the laboratory
 (`capture --unlock-tours`); pack v12; other tracks' states are `URTRnn04`. Live play needs pack v12.

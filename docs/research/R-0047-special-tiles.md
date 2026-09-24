@@ -244,6 +244,9 @@ table is not a pair a rider touches.
 | 12 | MARATHON, JUMPOVER (not reachable) | guarded |
 | 4 | TO AND FRO' (not reachable) | guarded |
 
+Pairs 8, 12, 26 and 28 were recovered later, in TILE-PAIRS-8-12-26
+([R-0051](R-0051-loop-and-tile-pairs.md)); only pair 4 stays guarded.
+
 ## Limits
 
 - Audio is a declared omission: the sounds `$0212`, `$0213` and `$021B` are not played.

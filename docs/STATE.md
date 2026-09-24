@@ -1,5 +1,22 @@
 # Project state
 
+Updated 25 September 2026 (TILE-PAIRS-8-12-26): **35 of the 36 race tracks now match the
+original over their whole compared windows.**
+- Native now reproduces the loop (tile flag pair 26), in movement and at the loop's top in
+  contact, plus pairs 8, 12 and 28 ([R-0051](research/R-0051-loop-and-tile-pairs.md)).
+- LAST ONE, JUMPOVER, DOWN+UP and HIGHROAD, which stopped, match to the end, released and
+  with Right held. On DOWN+UP the player rides the loop.
+- The loop's words and pair 8's counter are new state, so other tracks' states are now
+  `URTRnn05` (854 bytes). No frozen gate moved.
+- The one difference left is TWO LOOPS from update 1,252. It is the HUNTER tour's tag effects
+  (`$83:CEC9`): when the riders touch, one of eight timed effects starts with its own
+  announcement. Next: [HUNTER-EFFECTS](../tasks/HUNTER-EFFECTS.md). Pair 4 stays guarded
+  (never reached).
+
+**Live play needs pack v13** (`classic.pal.crawler.tracks.v13`: v12 plus the loop's x steps).
+Build it with `content pack --rules tests/manifests/content/classic-crawler-tracks-pack.json
+--out local/classic-pal-crawler-tracks-v13.pack`, then rebuild app-debug.
+
 Updated 24 September 2026 (LOCKED-TOURS): **all 45 tracks are now reachable in the laboratory,
 and 15 of the 20 locked race tracks match the original.**
 - The five locked tours (JUMPER, BOUNDER, RUNNER, SPRINTER, HUNTER) open with a preloaded

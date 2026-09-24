@@ -54,9 +54,51 @@ The locked-tour captures under `local/evidence/locked-tours/sweep/` (`sweep.json
 | Nothing accepted moves | Gates, v1 contracts, hidden runs, fuzz, ctest, synthetic | Unchanged digests | gate logs |
 | Review | Tier 1 | Approved with a withheld capture | review on the pull request |
 
+## Capability and coverage checkpoint
+
+- Native capability delivered / still missing: the loop (pair 26) in movement and contact, pair
+  8 in movement and contact, pairs 12 and 28 in movement; pair 4 and the HUNTER tag effects
+  (`$83:CEC9`, now [HUNTER-EFFECTS](HUNTER-EFFECTS.md)) are still missing.
+- Frozen exact-match interval, field set and reference/seed identity: the 838-byte projection
+  grows to 854 (`URTRnn05`); the locked and cold-start sweeps as captured.
+- Dynamic captured inputs still consumed (must be zero for autonomy): none new; the loop's x
+  steps are pack content (`zoom.loop-offsets`).
+- Relevant branches/transitions exercised, including independent variations: the opponent's
+  loops on LAST ONE (twice) and DOWN+UP, the player's loop on DOWN+UP with Right held, pair 8
+  once on HIGHROAD, pair 12 for 24 updates on JUMPOVER, pair 28 on DOWN+UP.
+- First divergence and cheapest next discriminating experiment: TWO LOOPS at 1,252, the first
+  HUNTER tag (HUNTER-EFFECTS' handoff).
+- Trial-wide usage baseline/current, reserve, reset authorization/outcome or none: 7% (5-hour)
+  and 9% (weekly) at claim.
+
+## Evidence and attempts
+
+| Attempt | Hypothesis | Experiment | Observation | Next decision |
+| --- | --- | --- | --- | --- |
+| 1 | - | `recompare --per-track` on the locked sweep at `0de428f` (`recompare-0.json`) | Unchanged from R-0050: 15, 25 stop at contact pair 26 (808, 519), 19 at movement pair 12 (773), 26 at contact pair 8 (898) | Read the handlers |
+| 2 | Contact pair 26 reads movement pair 26's state | Listing `$81:837E-84AB`, `$81:85AB-8622`; WRAM `$0351-$035B` on LAST ONE (`wram.py`) | Movement pair 26 is a loop: `$0355` counts 1 to `$10`, x steps from the table at `$81:834C`, velocity y `$1CE`, pose `$0610+n`; `$0359` a 3-update cooldown. The opponent loops twice (809-842). Contact clears `$28`/`$2C` at step 9 | Implement with the table in the pack (v13) |
+| 3 | Pair 8 and 12 are small | Listing `$81:8554`, `$81:8950`, `$81:92D9`, `$81:96FF`, consumers of `$0F2D`, `$0F3B`, `$0F3D`, `$0FB1` | Pair 8: counter `$0D3D`, tile mode, `$0F2D` (slope nudge, pose target); re-contact goes straight to correction; keeps vy under surface mode. Pair 12: drive step 1, animation delta +-2, mud's brake path | Implement; state words into the special-tile block (`URTRnn05`) |
+| 4 | - | Explore the four tracks with the new build | LAST ONE, JUMPOVER, HIGHROAD exact to the end; DOWN+UP stops at movement pair 28 (546) | Recover pair 28 (`$81:8316`) |
+| 5 | - | Pair 28 (push `$20`/8 unless the reflection is locked) | DOWN+UP exact to the end | Regression and held captures |
+| 6 | - | Recompare both sweeps (`recompare-locked.json`, `recompare-cold.json`) | Locked: 19 of 20 exact over the whole window, 41 TWO LOOPS exact to 1,252; cold start 16 of 16, unchanged | TWO LOOPS |
+| 7 | TWO LOOPS is an announcement fault | WRAM `$0CC1-$0CE9` at 1,252; the writers of `$0CE7` | The original pushes event 31 to the front (`$81:C55B`), called from the HUNTER-only routine `$83:CEC9`: eight timed tag effects chosen by the player's x when the riders touch | Out of this task's size: HUNTER-EFFECTS |
+| 8 | - | Captures with Right held from 1,500, released at 2,600 (`captures.sh`, `right/`) | All four exact over their whole windows; on DOWN+UP the player rides the loop (steps 1-16) | Records and gates |
+
 ## Handoff
 
-- Exact next experiment/command: `python3 -m tools.unirally_lab.native.track_reference recompare
-  --per-track --sweep local/evidence/locked-tours/sweep --binary
-  build/lab-debug/src/core/zoom_zoo_runner --pack local/classic-pal-crawler-tracks-v12.pack --out
-  <json>`, then read the original's `$0355,y`, `$1349` and `$0DE7` at each stop.
+- Current base/head commit and uncommitted state: base `0de428f`; on `task/tile-pairs`.
+- Verified findings: [R-0051](../docs/research/R-0051-loop-and-tile-pairs.md).
+- Current hypothesis and failed approaches: none failed; the announcement difference was not
+  a queue fault (attempt 7).
+- Commands executed, outcomes and report hashes: `local/evidence/tile-pairs/` holds
+  `recompare-0.json`, `explore-*.json`, `recompare-locked.json`, `recompare-cold.json`, the
+  Right-held captures and their explores, `wram.py`, `explore.sh`, `captures.sh` and the
+  `$83:CEC9` extract.
+- Unavailable/skipped checks: the ASan presets (host).
+- Exact next experiment/command: none for this task; [HUNTER-EFFECTS](HUNTER-EFFECTS.md) is
+  next.
+- Remaining dependencies: none outside the project.
+- Runtime needs (network, build time, fixtures, memory): captures about 15 s each.
+- Aggregate parent/child time, provider usage before/after (or unknown), other-account-work
+  caveat: primary from about 21:30Z (24 September UTC).
+- Accepted outcome, review/fix rounds and next routing decision: pending review.
