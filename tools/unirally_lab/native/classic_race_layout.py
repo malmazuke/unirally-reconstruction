@@ -87,7 +87,7 @@ SPECIAL_TILE_WORDS = [0xbcb, 0xd57, 0xdf7, 0xdf3, 0xdff, 0x547, 0xbe7]
 
 
 def special_tile_bytes(wram: bytes) -> bytes:
-    """The 34 bytes URTRnn02 appends, projected from original WRAM."""
+    """The 34 special-tile bytes URTRnn03 appends, projected from original WRAM."""
     out = bytearray()
     for rider in (0, 1):
         for address in SPECIAL_TILE_WORDS:
@@ -96,8 +96,14 @@ def special_tile_bytes(wram: bytes) -> bytes:
     return bytes(out+wram[0xe7b:0xe7d])
 
 
+def checkpoint_tail_bytes(wram: bytes) -> bytes:
+    """The last 60 first-seen flags ($1161-$119C) URTRnn03 appends after them (R-0048)."""
+    return bytes(wram[0x1161:0x119d])
+
+
 LAYOUT = layout() + [(742+16*r+2*i, 2, f'{("player", "opponent")[r]}.{n}')
-                     for r in (0, 1) for i, (n, _) in enumerate(SPECIAL_TILE_RIDER)] + [(774, 2, 'drive_target_latch')]
+                     for r in (0, 1) for i, (n, _) in enumerate(SPECIAL_TILE_RIDER)] + [(774, 2, 'drive_target_latch')] \
+    + [(776+i, 1, f'checkpoint_seen{20+i}') for i in range(60)]
 
 
 def describe(left: bytes, right: bytes, limit=24):

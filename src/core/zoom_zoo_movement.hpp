@@ -55,7 +55,11 @@ struct ZoomZooCamera {
 struct ZoomZooRaceState {
     ZoomZooCamera camera;
     std::array<ZoomZooFinishPose,2> finish_pose;
-    std::array<std::uint8_t,20> checkpoint_seen{};
+    // $114D-$119C: 80 first-seen flags, laps remaining * 4 + checkpoint
+    // ($81:CD25-CD2E fills them with $FF). The shared 742-byte layout holds the
+    // first 20, all a race of up to four laps reaches; the other tracks' layout
+    // (URTRnn03) holds all 80 (R-0048).
+    std::array<std::uint8_t,80> checkpoint_seen{};
     std::array<ZoomZooRaceRider,2> riders;
     std::array<std::array<std::uint16_t,10>,2> lap_times;
     std::array<std::uint16_t,2> total_times{};
@@ -218,7 +222,8 @@ ZoomZooState classic_race_start(const ZoomZooContent& content,const ClassicRaceS
 // URZZ000B (URDG0002 and 776 bytes while a special-tile word is live, R-0047).
 inline constexpr std::array<std::uint8_t,8> dragster_race_state_magic{'U','R','D','G','0','0','0','1'};
 // Identity of any other track's race state: `URTR`, the two-digit track index,
-// `02`; the 742-byte layout followed by the special-tile words (776 bytes).
+// `03`; the 742-byte layout followed by the special-tile words and the last 60
+// checkpoint-seen flags (836 bytes).
 std::array<std::uint8_t,8> classic_race_state_magic(ClassicRaceTrack track);
 bool classic_race_player_won(const ZoomZooState& state);
 // Result-loading update at which the result screen is stable (restart allowed).

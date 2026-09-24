@@ -142,8 +142,8 @@ int main() {
                     update_corkscrew_tile(r2,t2,surface,tr2,u,std::span<const std::uint8_t>{});});
     }
 
-    // Layout: any track but DRAGSTER and ZOOM ZOO is URTRnn02, 776 bytes, the
-    // special-tile words after the shared 742.
+    // Layout: any track but DRAGSTER and ZOOM ZOO is URTRnn03, 836 bytes, the
+    // special-tile words after the shared 742, then 60 checkpoint flags.
     {
         std::array<std::uint8_t,14> header{};header[3]=0x44;header[5]=0x32;header[7]=0x44;header[9]=0x32;header[13]=0x40;
         ZoomZooContent content{};content.movement.sampling.track=header;
@@ -151,15 +151,20 @@ int main() {
         auto state=classic_race_start(content,classic_race_scenario(ClassicRaceTrack{11}));
         state.special_tiles[1]={4,4,1,0x12,1,8,0,1};state.drive_target_latch=1;
         const auto bytes=serialize_zoom_zoo(state);
-        const std::array<std::uint8_t,8> magic{'U','R','T','R','1','1','0','2'};
-        require(bytes.size()==776 && std::equal(magic.begin(),magic.end(),bytes.begin()));
+        const std::array<std::uint8_t,8> magic{'U','R','T','R','1','1','0','3'};
+        require(bytes.size()==836 && std::equal(magic.begin(),magic.end(),bytes.begin()));
         require(bytes[758]==4 && bytes[762]==1 && bytes[764]==0x12 && bytes[768]==8 && bytes[772]==1 && bytes[774]==1);
         const auto restored=deserialize_zoom_zoo(bytes);
         require(restored.special_tiles==state.special_tiles && restored.drive_target_latch==1 && serialize_zoom_zoo(restored)==bytes);
         // Out-of-domain words are refused.
         for(const unsigned at:{742U,752U,764U,772U,774U}) {auto bad=bytes;bad[at]=0x40;rejects([&]{(void)deserialize_zoom_zoo(bad);});}
-        auto short_state=bytes;short_state.resize(742);rejects([&]{(void)deserialize_zoom_zoo(short_state);});
-        auto old_version=bytes;old_version[7]='1';rejects([&]{(void)deserialize_zoom_zoo(old_version);});
+        auto short_state=bytes;short_state.resize(776);rejects([&]{(void)deserialize_zoom_zoo(short_state);});
+        auto old_version=bytes;old_version[7]='2';rejects([&]{(void)deserialize_zoom_zoo(old_version);});
+        // R-0048: the last 60 checkpoint flags travel with it, $FF or 0 only.
+        auto seven=state;seven.race.checkpoint_seen[35]=0;
+        const auto seven_bytes=serialize_zoom_zoo(seven);
+        require(seven_bytes[776+15]==0 && deserialize_zoom_zoo(seven_bytes).race.checkpoint_seen[35]==0);
+        auto bad_flag=seven_bytes;bad_flag[800]=0x40;rejects([&]{(void)deserialize_zoom_zoo(bad_flag);});
         // DRAGSTER and ZOOM ZOO keep 742 bytes until a special-tile word is live,
         // then take the extended layout under URDG0002 / URZZ000C.
         auto dragster=classic_crawler_dragster_race_start(content);
