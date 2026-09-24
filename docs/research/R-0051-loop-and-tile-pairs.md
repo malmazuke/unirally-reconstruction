@@ -126,6 +126,22 @@ LAST ONE, JUMPOVER, DOWN+UP and HIGHROAD moved from 808, 773, 519 and 898 to the
 the player rides the loop, steps 1-16. Pair 8 is reached only by the opponent, once, on
 HIGHROAD.
 
+**The app.** Hidden `frontend run` with Right held: LAST ONE 2,000 updates, and JUMPOVER and
+HIGHROAD 4,000 each, all clean with no rider-pose fallback frames.
+
+**Pictures.** On DOWN+UP with Right held, 17 native frames from 1,920 to 1,952 (the player's
+first loop) match the original with 0 differing pixels. For most of them the rider is inside the
+tube and hidden; it reappears at 1,952. The render needed a local build with the result-title
+check below relaxed; that change was not committed.
+
+**A presentation defect found here.** The result-title font (`result_title_tile`) covers
+0-9 and a-z. Three track names use other characters: `down+up` (25), `boo!` (28) and
+`to_and_fro'` (44). For a one-run race (25 and 28) the native presentation checks the name when
+it loads the track's content and refuses it. So since LOCKED-TOURS the app cannot start
+DOWN+UP or BOO!, though their simulation is exact. The font's slots after z hold a blob, two
+arrows and two unclear shapes (`local/evidence/tile-pairs/glyphs.py`); which tile the original
+draws for `+` and `!` is not known yet ([RESULT-TITLE-GLYPHS](../../tasks/RESULT-TITLE-GLYPHS.md)).
+
 ## Limits
 
 - Pair 4 is unrecovered; no capture reaches it.
@@ -134,6 +150,8 @@ HIGHROAD.
 - The HUNTER tag effects are unimplemented (HUNTER-EFFECTS), so HUNTER races diverge after the
   first tag.
 - The stunt events are not compared.
+- The app refuses DOWN+UP and BOO! at load: their names' `+` and `!` have no known title glyph
+  (RESULT-TITLE-GLYPHS).
 
 ## Reproduction
 

@@ -83,6 +83,9 @@ The locked-tour captures under `local/evidence/locked-tours/sweep/` (`sweep.json
 | 6 | - | Recompare both sweeps (`recompare-locked.json`, `recompare-cold.json`) | Locked: 19 of 20 exact over the whole window, 41 TWO LOOPS exact to 1,252; cold start 16 of 16, unchanged | TWO LOOPS |
 | 7 | TWO LOOPS is an announcement fault | WRAM `$0CC1-$0CE9` at 1,252; the writers of `$0CE7` | The original pushes event 31 to the front (`$81:C55B`), called from the HUNTER-only routine `$83:CEC9`: eight timed tag effects chosen by the player's x when the riders touch | Out of this task's size: HUNTER-EFFECTS |
 | 8 | - | Captures with Right held from 1,500, released at 2,600 (`captures.sh`, `right/`) | All four exact over their whole windows; on DOWN+UP the player rides the loop (steps 1-16) | Records and gates |
+| 9 | - | Gates at `ee5e372` (`gates.sh`) | All eleven differential gates identical to LOCKED-TOURS'; v1 contracts, hidden runs, fuzz, ctest (3 presets), synthetic, RNC inventory pass | Pictures |
+| 10 | The loop draws as the original | DOWN+UP with Right held, 17 frame images 1,920-1,952; native `--timeline` renders (`pictures.py`) | The app-debug renderer refuses the track: `unsupported Classic result title glyph` (the `+` in `down+up`) | Probe build with the name check relaxed (not committed) |
+| 11 | - | Same, probe build | 17 of 17 frames 0 differing pixels (rider inside the tube, back in view at 1,952) | Record the title-glyph defect as RESULT-TITLE-GLYPHS; review |
 
 ## Handoff
 
