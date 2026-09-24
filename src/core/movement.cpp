@@ -3,6 +3,8 @@
 #include <algorithm>
 #include <optional>
 #include <stdexcept>
+#include <string>
+#include <string_view>
 
 namespace unirally {
 namespace {
@@ -405,7 +407,7 @@ void update_rolling_mode(RiderMovementState& rider,bool surface_mode=false) {
 
 void update_pose(RiderMovementState& rider,std::uint8_t counter,std::uint8_t contact_phase,
                  const MovementContent& content,int animation_override,bool use_throttle_target,
-                 int surface_angle_offset=0) {
+                 int surface_angle_offset=0,std::uint16_t mud_velocity=0) {
     if(content.pose_slopes.size()!=128 || content.displacement_table.size()!=512) {
         throw std::invalid_argument("movement pose tables have the wrong size");
     }
@@ -415,8 +417,10 @@ void update_pose(RiderMovementState& rider,std::uint8_t counter,std::uint8_t con
             target_signed = static_cast<std::int16_t>(rider.contact.surface_angle) +
                             (rider.pose.reflected ? 23 : -23);
         } else {
+            // $83:EF97-EFB2: throttle after a small-displacement drive,
+            // otherwise mud's braked velocity ($0F3F) or velocity x.
             const auto target_source=static_cast<std::int16_t>(
-                use_throttle_target?rider.throttle:rider.motion.velocity_x);
+                use_throttle_target?rider.throttle:mud_velocity?mud_velocity:rider.motion.velocity_x);
             target_signed=target_source>>5;
         }
         if(rider.contact.selected_high&0x80U)target_signed=0;
@@ -971,9 +975,12 @@ void read_reflection(Reader& in,ReflectionTransition& r) {
                  &r.rotate_negative_input,&r.rotate_positive_input,&r.jump_input,&r.wrong_direction_counter})*v=in.u16();
 }
 void update_reflection_transition(RiderMovementState& rider,ReflectionTransition& transition,
-                                  unsigned horizontal,bool inactive_phase,std::span<const std::uint8_t> table,bool manual=false) {
+                                  unsigned horizontal,bool inactive_phase,std::span<const std::uint8_t> table,bool manual=false,
+                                  const SpecialTileRider& tiles={}) {
     // $82:A35B-A49E: A permits a direction-selected turn while airborne,
     // including a turn toward the current facing. Contact A halves velocity.
+    // $82:A35D-A362: the corkscrew's reflection lock skips it all.
+    if(tiles.reflection_lock)return;
     const bool manual_airborne=rider.contact.unsupported_count==9 && !transition.step &&
         !(rider.contact.selected_high&0x80U) && manual && horizontal!=1;
     if (!(rider.contact.unsupported_count==9 && transition.step) && !manual_airborne && !rider.contact.recontact && !inactive_phase)return;
@@ -985,7 +992,8 @@ void update_reflection_transition(RiderMovementState& rider,ReflectionTransition
         transition.air_turns=0;
     }
     if (!transition.step) {
-        if(transition.pose_override)return;
+        // $82:A403-A410: a pose override or the corkscrew latch holds the facing.
+        if(transition.pose_override || tiles.corkscrew_latch)return;
         if(rider.pose.reflected) {
             rider.pose.reflected_orientation=static_cast<std::uint16_t>(64-rider.pose.reflected_orientation)&63U;
             rider.pose.reflected=false;transition.step=9;transition.end=16;
@@ -1050,16 +1058,18 @@ void update_zoom_ai(ZoomZooState& state) {
 }
 void update_zoom_throttle(RiderMovementState& rider,ReflectionTransition& transition,unsigned horizontal,
                           int& animation_override,bool& throttle_target,std::uint16_t& charge_announced,bool leading_support=false,
-                          bool bounce_active=false) {
+                          bool bounce_active=false,std::uint16_t drive_step=24,bool on_mud=false) {
     // Velocity part of the drive routines $82:A9B3 (rightward, +24) and
-    // $82:AA10 (leftward, -24). On an inverted tile both move a nonzero
-    // velocity away from zero, and a roll bounce ($042B) stores nothing.
+    // $82:AA10 (leftward, -24); on mud the step is 4 ($0F3B, R-0047). On an
+    // inverted tile both move a nonzero velocity away from zero, and a roll
+    // bounce ($042B) stores nothing.
     const auto drive_velocity=[&](bool rightward) {
         if(bounce_active)return;
+        const auto back=static_cast<std::uint16_t>(0U-drive_step);
         if(rider.contact.selected_word&0x8000U) {
             if(rider.motion.velocity_x)rider.motion.velocity_x=add_word(rider.motion.velocity_x,
-                negative(rider.motion.velocity_x)?static_cast<std::uint16_t>(-24):24);
-        } else rider.motion.velocity_x=add_word(rider.motion.velocity_x,rightward?24:static_cast<std::uint16_t>(-24));
+                negative(rider.motion.velocity_x)?back:drive_step);
+        } else rider.motion.velocity_x=add_word(rider.motion.velocity_x,rightward?drive_step:back);
     };
     const auto incoming_speed=static_cast<std::int16_t>(rider.motion.velocity_x);
     const bool braking=transition.brake_input && (incoming_speed>=16 || incoming_speed < -16);
@@ -1110,8 +1120,10 @@ void update_zoom_throttle(RiderMovementState& rider,ReflectionTransition& transi
             // preserves accumulated throttle ($0F5F); nonzero throttle sets
             // it; zero throttle leaves it as it was (Left and Y through the
             // countdown carry throttle through zero, DRAGSTER fuzz seed 208).
-            // $0FB1/$0F45 clear throttle separately and remain zero here.
-            if(transition.step)charge_announced=0;
+            // $82:998B-9993: after mud ($0F45) braking also drops the
+            // throttle and the announcement ($0FB1 is the unrecovered pair 12's).
+            if(on_mud) {rider.throttle=0;charge_announced=0;}
+            else if(transition.step)charge_announced=0;
             else if(rider.throttle)charge_announced=1;
         }
         else {
@@ -1534,7 +1546,7 @@ bool classic_race_has_scenario(ClassicRaceTrack track) {
 std::array<std::uint8_t,8> classic_race_state_magic(ClassicRaceTrack track) {
     if(track==ClassicRaceTrack::Dragster)return dragster_race_state_magic;
     if(track==ClassicRaceTrack::ZoomZoo)return {'U','R','Z','Z','0','0','0','B'};
-    return {'U','R','T','R',static_cast<std::uint8_t>('0'+track.index/10U),static_cast<std::uint8_t>('0'+track.index%10U),'0','1'};
+    return {'U','R','T','R',static_cast<std::uint8_t>('0'+track.index/10U),static_cast<std::uint8_t>('0'+track.index%10U),'0','2'};
 }
 
 std::uint16_t race_adjustment_limit(const ClassicRaceScenario& scenario) {
@@ -1683,12 +1695,28 @@ std::vector<std::uint8_t> serialize_zoom_zoo(const ZoomZooState& state) {
         put16(bytes,state.pause.selection);put16(bytes,state.pause.released);
         put32(bytes,state.pause.suspended_updates);put32(bytes,state.pause.suspended_countdown_updates);
     }
+    // R-0047: the special-tile words follow the shared 742 bytes in the other
+    // tracks' layout (URTRnn02), and in DRAGSTER's and ZOOM ZOO's only while
+    // one is live (URDG0002, URZZ000C): no accepted race reaches a special
+    // tile, so their frozen 742-byte states are unchanged, but ZOOM ZOO's own
+    // tile table holds the corkscrew (pair 10).
+    const bool other_track=state.track!=ClassicRaceTrack::ZoomZoo && state.track!=ClassicRaceTrack::Dragster;
+    const bool special_tiles_live=state.special_tiles!=std::array<SpecialTileRider,2>{};
+    if(other_track || special_tiles_live) {
+        if(!state.native_initialization)throw std::invalid_argument("special-tile words require a natively initialized race");
+        for(const auto& r:state.special_tiles)
+            for(auto v:{r.mud_cooldown,r.mud_exit_pending,r.corkscrew_latch,r.corkscrew_step,
+                        r.corkscrew_float,r.physics_hold,r.reflection_lock,r.raised_priority})put16(bytes,v);
+        put16(bytes,state.drive_target_latch);
+        if(state.track==ClassicRaceTrack::ZoomZoo)bytes[7]='C';
+    }
     if(state.track!=ClassicRaceTrack::ZoomZoo) {
         // Another track on the shared engine: the URZZ000B layout under its own
         // identity, so a restore can never run one track's state on another.
         if(!state.native_initialization)throw std::invalid_argument("a race state of any track but ZOOM ZOO requires native initialization");
         const auto identity=classic_race_state_magic(state.track);
         std::copy(identity.begin(),identity.end(),bytes.begin());
+        if(state.track==ClassicRaceTrack::Dragster && special_tiles_live)bytes[7]='2';
     }
     return bytes;
 }
@@ -1915,24 +1943,48 @@ static ZoomZooState deserialize_classic_race(std::span<const std::uint8_t> bytes
     return state;
 }
 ZoomZooState deserialize_zoom_zoo(std::span<const std::uint8_t> bytes) {
-    // Any track but ZOOM ZOO carries its own identity over the URZZ000B layout.
-    std::optional<ClassicRaceTrack> other;
-    if(bytes.size()==742 && std::equal(dragster_race_state_magic.begin(),dragster_race_state_magic.end(),bytes.begin()))
-        other=ClassicRaceTrack::Dragster;
-    else if(bytes.size()==742 && bytes[0]=='U' && bytes[1]=='R' && bytes[2]=='T' && bytes[3]=='R' &&
-            bytes[4]>='0' && bytes[4]<='9' && bytes[5]>='0' && bytes[5]<='9' && bytes[6]=='0' && bytes[7]=='1') {
-        const ClassicRaceTrack track{static_cast<std::uint8_t>((bytes[4]-'0')*10+(bytes[5]-'0'))};
-        if(track==ClassicRaceTrack::Dragster || track==ClassicRaceTrack::ZoomZoo || !classic_race_has_scenario(track))
-            throw std::invalid_argument("classic race state names a track without its own identity");
-        other=track;
+    // Any track but ZOOM ZOO carries its own identity over the URZZ000B layout;
+    // a 776-byte state appends the special-tile words (R-0047).
+    const auto magic_is=[&](std::string_view text){return std::equal(text.begin(),text.end(),bytes.begin());};
+    std::optional<ClassicRaceTrack> track;
+    bool extended=false;
+    if(bytes.size()==742) {
+        if(std::equal(dragster_race_state_magic.begin(),dragster_race_state_magic.end(),bytes.begin()))track=ClassicRaceTrack::Dragster;
+    } else if(bytes.size()==776) {
+        extended=true;
+        if(magic_is("URZZ000C"))track=ClassicRaceTrack::ZoomZoo;
+        else if(magic_is("URDG0002"))track=ClassicRaceTrack::Dragster;
+        else if(magic_is("URTR") && bytes[4]>='0' && bytes[4]<='9' && bytes[5]>='0' && bytes[5]<='9' && bytes[6]=='0' && bytes[7]=='2') {
+            const ClassicRaceTrack other{static_cast<std::uint8_t>((bytes[4]-'0')*10+(bytes[5]-'0'))};
+            if(other==ClassicRaceTrack::Dragster || other==ClassicRaceTrack::ZoomZoo || !classic_race_has_scenario(other))
+                throw std::invalid_argument("classic race state names a track without its own identity");
+            track=other;
+        } else throw std::invalid_argument("classic race state identity/width differs");
     }
-    if(other) {
-        std::vector<std::uint8_t> shared(bytes.begin(),bytes.end());
-        const auto zoom_zoo_magic=classic_race_state_magic(ClassicRaceTrack::ZoomZoo);
-        std::copy(zoom_zoo_magic.begin(),zoom_zoo_magic.end(),shared.begin());
-        return deserialize_classic_race(shared,*other);
+    if(!track)return deserialize_classic_race(bytes,ClassicRaceTrack::ZoomZoo);
+    std::vector<std::uint8_t> shared(bytes.begin(),bytes.begin()+742);
+    const auto zoom_zoo_magic=classic_race_state_magic(ClassicRaceTrack::ZoomZoo);
+    std::copy(zoom_zoo_magic.begin(),zoom_zoo_magic.end(),shared.begin());
+    auto state=deserialize_classic_race(shared,*track);
+    if(extended) {
+        Reader in{bytes.subspan(742)};
+        for(auto& r:state.special_tiles) {
+            for(auto* v:{&r.mud_cooldown,&r.mud_exit_pending,&r.corkscrew_latch,&r.corkscrew_step,
+                         &r.corkscrew_float,&r.physics_hold,&r.reflection_lock,&r.raised_priority})*v=in.u16();
+            if(r.mud_cooldown>4 || r.mud_exit_pending>4 || r.corkscrew_float>1 || r.physics_hold>8 ||
+               r.reflection_lock>6 || r.raised_priority>1 || (r.corkscrew_step>0x31 && r.corkscrew_step!=0xffff) ||
+               !(r.corkscrew_latch<=1 || r.corkscrew_latch>=0xfffc))
+                throw std::invalid_argument("classic race special-tile state is invalid");
+        }
+        state.drive_target_latch=in.u16();
+        if(state.drive_target_latch>1)throw std::invalid_argument("classic race drive target latch is invalid");
+        in.require_end();
+        // DRAGSTER and ZOOM ZOO take the extended layout only while a word is live.
+        if((*track==ClassicRaceTrack::ZoomZoo || *track==ClassicRaceTrack::Dragster) &&
+           state.special_tiles==std::array<SpecialTileRider,2>{})
+            throw std::invalid_argument("an extended DRAGSTER or ZOOM ZOO state carries no special-tile word");
     }
-    return deserialize_classic_race(bytes,ClassicRaceTrack::ZoomZoo);
+    return state;
 }
 void validate_zoom_zoo_content_state(const ZoomZooState& state,const ZoomZooContent& content) {
     if(!state.native_initialization)return;
@@ -1948,6 +2000,107 @@ void validate_zoom_zoo_content_state(const ZoomZooState& state,const ZoomZooCont
            state.learned_weights[i].end(),content.reward_weights.begin()+1))
             throw std::invalid_argument("ZOOM ZOO initial reward weights differ from static content");
     }
+}
+// $81:8690-86FE, the special-tile part of the per-update reset that runs
+// before the tile dispatch ($81:858E from $82:8C3A / $82:9119).
+void update_special_tile_counters(SpecialTileRider& tiles,ReflectionTransition& transition,std::uint8_t selected_high) {
+    if(tiles.mud_cooldown)--tiles.mud_cooldown;
+    else if(tiles.mud_exit_pending)tiles.mud_exit_pending=0; // and sound $0213
+    // With no corkscrew in the previous update the step, the corkscrew's
+    // $0600-$060F poses and, off an inverted contact, the float all end.
+    if(!tiles.corkscrew_latch) {
+        tiles.corkscrew_step=0;
+        if(transition.pose_override>=0x600 && transition.pose_override<0x610)transition.pose_override=0;
+        if(!(selected_high&0x80U))tiles.corkscrew_float=0;
+    }
+    tiles.corkscrew_latch=negative(tiles.corkscrew_latch)?static_cast<std::uint16_t>(tiles.corkscrew_latch+1U):0;
+    if(tiles.physics_hold)--tiles.physics_hold;
+}
+// $81:871C-875B, the boost tile (flag pair 2); the corkscrew's ejection adds
+// `extra` ($0DED) to the push. Leading support bypasses the push and the pose flag.
+void apply_boost_tile(RiderMovementState& rider,SurfaceTransition& surface,std::uint16_t extra) {
+    rider.motion.velocity_y=0;
+    if(!surface.leading_support) {
+        rider.launch_override=80;
+        const auto push=static_cast<std::uint16_t>(extra+0x80U);
+        rider.motion.velocity_x=add_word(rider.motion.velocity_x,(rider.contact.selected_word&0x4000U)?static_cast<std::uint16_t>(0U-push):push);
+        surface.tile_pose=1;
+    }
+    surface.tile_pose_enabled=1;
+}
+// $81:8999-89F6, flag pair 14 (mud). Entering halves velocity x with an
+// arithmetic shift and stops vertical motion (the original also queues sound
+// $0212); every update on it holds both counters at 4 and brakes by 5 unless
+// velocity x is already within 48 of zero ($FFD0-$002F, N-flag compares).
+void update_mud_tile(RiderMovementState& rider,SpecialTileRider& tiles,SurfaceTransition& surface,SpecialTileUpdate& special) {
+    auto& velocity=rider.motion.velocity_x;
+    if(!tiles.mud_cooldown) {
+        velocity=static_cast<std::uint16_t>((velocity>>1U)|(velocity&0x8000U));
+        rider.motion.velocity_y=0;
+    }
+    tiles.mud_cooldown=4;tiles.mud_exit_pending=4;surface.tile_mode=1;
+    if(!negative(velocity)) {
+        if(negative(static_cast<std::uint16_t>(velocity-0x30U)))return;
+        velocity=static_cast<std::uint16_t>(velocity-5U);
+    } else {
+        if(!negative(static_cast<std::uint16_t>(velocity-0xffd0U)))return;
+        velocity=static_cast<std::uint16_t>(velocity+5U);
+    }
+    special.mud_velocity=velocity;special.mud_drive_step=4;
+}
+// $81:87C2-894F, flag pair 10 (corkscrew). A rider that enters it facing the
+// descriptor's way, on the ground and not mid-reflection is carried through
+// 48 steps at a fixed speed: poses $0600-$060F, y from the height table, the
+// object priority toggled four times, gravity and the drive suspended. Step
+// $30 leaves it inverted and reflected; any other entry ejects it with a boost.
+void update_corkscrew_tile(RiderMovementState& rider,SpecialTileRider& tiles,SurfaceTransition& surface,
+                           ReflectionTransition& transition,SpecialTileUpdate& special,
+                           std::span<const std::uint8_t> heights) {
+    const auto eject=[&] {
+        // $81:87D1-87F5; a first ejection also queues sound $021B.
+        tiles.corkscrew_latch=0xfffc;
+        apply_boost_tile(rider,surface,0x40);
+        tiles.corkscrew_step=0xffff;
+    };
+    if(negative(tiles.corkscrew_latch)) {eject();return;}
+    tiles.corkscrew_latch=1;
+    const auto word=rider.contact.selected_word;
+    const auto velocity=rider.motion.velocity_x;
+    // $81:87F8-882E: the entry conditions, all against the descriptor's facing.
+    if(transition.step || (word&0x8000U) || static_cast<std::int16_t>(rider.contact.previous_unsupported_count)>=3 ||
+       (rider.pose.reflected ? (negative(velocity) || !(word&0x4000U))
+                             : ((velocity && !negative(velocity)) || (word&0x4000U)))) {eject();return;}
+    if(!tiles.corkscrew_step) {
+        if(transition.pose_override)return;
+        tiles.raised_priority=0; // $0FAF = $26
+        rider.motion.response_a=0;rider.motion.response_b=0;
+    }
+    rider.launch_override=80;
+    if(tiles.corkscrew_step==0x31)return;
+    if(tiles.corkscrew_step==0x30) {
+        // $81:885F-88B2: leave facing the other way, upside down.
+        rider.pose.orientation=rider.pose.reflected?0x15:0x2b;
+        rider.pose.reflected=!rider.pose.reflected;
+        tiles.corkscrew_step=0x31;
+        transition.pose_override=0;surface.tile_pose_enabled=0;
+        if(special.contact_skip)--special.contact_skip;
+        rider.contact.selected_high=0x80;tiles.reflection_lock=6;surface.mode=1;
+        return;
+    }
+    const auto step=tiles.corkscrew_step;
+    if(step==1 || step==0x12 || step==0x20 || step==0x2f)tiles.raised_priority^=1U;
+    tiles.corkscrew_float=1;special.contact_skip=1;surface.tile_pose_enabled=1;
+    rider.motion.velocity_x=rider.pose.reflected?0x01ce:0xfe32;
+    rider.motion.velocity_y=0;
+    tiles.physics_hold=8;
+    tiles.corkscrew_step=static_cast<std::uint16_t>(step+1U);
+    auto pose=static_cast<unsigned>(tiles.corkscrew_step>>1U);
+    if(pose>=0x10)pose-=0x10;
+    transition.pose_override=static_cast<std::uint16_t>(0x600U+pose);
+    if(heights.size()!=96)throw std::invalid_argument("corkscrew heights are missing");
+    const auto height=heights[(rider.pose.rolling?48U:0U)+((tiles.corkscrew_step-1U)&0xffU)];
+    rider.motion.y=static_cast<std::uint16_t>(rider.motion.y+(height<128?height:height-256));
+    special.corkscrew_stepped=true;
 }
 void update_zoom_zoo(ZoomZooState& state,const ControllerButtons& requested_buttons,const ZoomZooContent& content) {
     // NMI $808642-865B skips controller publication through prior fade4;
@@ -2054,20 +2207,34 @@ void update_zoom_zoo(ZoomZooState& state,const ControllerButtons& requested_butt
         cooldown=cooldown>2?static_cast<std::uint16_t>(cooldown-2U):0;
     }
     whole.rewards.cooldown=whole.rewards.cooldown>2?static_cast<std::uint16_t>(whole.rewards.cooldown-2U):0;
+    std::array<std::uint16_t,2> contact_skip{};
     for(unsigned index=0;index<2;++index) {
         auto& rider=whole.riders[index];auto& transition=next.reflection[index];
         auto& surface=next.surface[index];
         if(state.complete_race)update_zoom_checkpoint(next,index,content);
         surface.tile_mode=0;surface.animation_delta=0;surface.tile_pose=0;surface.tile_pose_enabled=0;
         const unsigned horizontal=index==0?whole.player_input.horizontal:next.opponent_horizontal;
+        auto& tiles=next.special_tiles[index];
+        // $81:859D-85A8: the reflection lock counts down while the previous
+        // update left surface mode clear.
+        if(!surface.mode && tiles.reflection_lock)--tiles.reflection_lock;
         decay_idle_wobble(rider,surface.mode!=0);
         surface.mode=0;
         rider.launch_override=0;
+        update_special_tile_counters(tiles,transition,rider.contact.selected_high);
+        // Transient words of this update: $0F3B and $0F3F (mud), $0F5B (corkscrew).
+        SpecialTileUpdate special{};
         const auto descriptor=rider.contact.selected_word;
         const auto tile=((descriptor&0x3f0U)>>2U)+((descriptor&15U)>>1U);
         if(tile>=content.movement.flat_contact.flags.size())throw std::out_of_range("ZOOM ZOO tile flag is missing");
-        const auto tile_behavior=content.movement.flat_contact.flags[tile]&0xfeU;
-        if(!rider.contact.auxiliary_flag && tile_behavior==6) {
+        // $81:82BB-82F3 dispatches the selected tile's flag pair through the
+        // table at $81:82F5 unless the auxiliary flag is set. Pairs 18 and 22
+        // are a bare RTS ($81:84AC); pair 20 is the checkpoint tile, which
+        // update_zoom_checkpoint runs. The remaining pairs are unrecovered.
+        const auto tile_behavior=rider.contact.auxiliary_flag?0U:unsigned(content.movement.flat_contact.flags[tile]&0xfeU);
+        if(tile_behavior==4 || tile_behavior==8 || tile_behavior==12 || tile_behavior>=26)
+            throw std::invalid_argument("movement reaches unrecovered tile flag pair "+std::to_string(tile_behavior));
+        if(tile_behavior==6) {
             const auto angle=static_cast<std::int16_t>(rider.contact.surface_angle);
             if(std::abs(angle)>=31) {
                 const auto vx=static_cast<std::int16_t>(rider.motion.velocity_x);
@@ -2077,19 +2244,37 @@ void update_zoom_zoo(ZoomZooState& state,const ControllerButtons& requested_butt
             }
             surface.mode=1;surface.angle=rider.contact.surface_angle;
         }
-        const bool boost_tile=!rider.contact.auxiliary_flag && (content.movement.flat_contact.flags[tile]&0xfeU)==2;
-        if(boost_tile) {
-            // $81871C-875B always clears vertical velocity/enables tile mode,
-            // but leading support bypasses the horizontal boost and pose flag.
-            surface.tile_pose_enabled=1;rider.motion.velocity_y=0;
-            if(!surface.leading_support) {
-                surface.tile_pose=1;rider.launch_override=80;
-                rider.motion.velocity_x=add_word(rider.motion.velocity_x,(descriptor&0x4000U)?static_cast<std::uint16_t>(-128):128);
-            }
+        if(tile_behavior==2)apply_boost_tile(rider,surface,0);
+        if(tile_behavior==24 && !surface.leading_support) {
+            // $81:84B2-84EB: away from leading support, the tile carries the
+            // rider one unit along the descriptor's facing and raises it:
+            // velocity y falls by $40 but not below -$220 (an N-flag compare).
+            rider.launch_override=80;
+            rider.motion.x=static_cast<std::uint16_t>(rider.motion.x+((descriptor&0x4000U)?0xffffU:1U));
+            auto raised=static_cast<std::uint16_t>(rider.motion.velocity_y-0x40U);
+            if(negative(static_cast<std::uint16_t>(raised-0xfde0U)))raised=0xfde0U;
+            rider.motion.velocity_y=raised;
+            surface.tile_pose=1;surface.tile_pose_enabled=1;
         }
-        if(transition.pose_override>=0x600 && transition.pose_override<0x610)transition.pose_override=0;
+        if(tile_behavior==14)update_mud_tile(rider,tiles,surface,special);
+        if(tile_behavior==16) {
+            // $81:89F7-8A29: with jump held the tile pushes velocity x by 4
+            // the way the D-pad points; otherwise it only sets the tile pose.
+            if(transition.jump_input) {
+                if(horizontal!=1)rider.motion.velocity_x=static_cast<std::uint16_t>(rider.motion.velocity_x+(horizontal==0?0xfffcU:4U));
+            } else surface.tile_pose=1;
+        }
+        if(tile_behavior==10) {
+            update_corkscrew_tile(rider,tiles,surface,transition,special,content.corkscrew_heights);
+            // Each step ends with $81:8949 storing 1 at $0EA3 by absolute
+            // address, the player's rolling flag: the player's own update
+            // stores its flag back over it, but the opponent's corkscrew
+            // sets the player's flag after the player's update has run.
+            if(index==1 && special.corkscrew_stepped)whole.riders[0].pose.rolling=true;
+        }
+        contact_skip[index]=special.contact_skip;
         int animation_override=0;bool throttle_target=false;
-        if(index==0)update_reflection_transition(rider,transition,horizontal,index!=active,content.reflection_pose_table,state.native_initialization && player_a);
+        if(index==0)update_reflection_transition(rider,transition,horizontal,index!=active,content.reflection_pose_table,state.native_initialization && player_a,tiles);
         // The opponent's X comes from trick selector bit 2 ($0323) rather than
         // from a controller; the selector is retained state, so it re-derives
         // each update for as long as the impulse holds.
@@ -2111,24 +2296,32 @@ void update_zoom_zoo(ZoomZooState& state,const ControllerButtons& requested_butt
                (negative(rider.motion.velocity_x)?horizontal!=0:horizontal!=2))transition.direction_latch=0xffff;
             else if(negative(transition.direction_latch) && ((negative(rider.motion.velocity_x)&&horizontal==0)||(!negative(rider.motion.velocity_x)&&horizontal==2)))transition.direction_latch=48;
             animation_override=stationary_animation_override(rider,static_cast<std::uint8_t>(horizontal));
-            // $82A8E0-A8EE rejects leading or inverted contact before
-            // consuming pending/previous input. Common reset clears $0F41.
-            if(!boost_tile && !surface.leading_support &&
+            // $82A8D8-A8EE rejects a tile-enabled pose ($0F41), leading or
+            // inverted contact before consuming pending/previous input.
+            if(!surface.tile_pose_enabled && !surface.leading_support &&
                !(rider.contact.selected_high&0x80U))
                 update_jump(rider,transition.jump_input!=0);
-            update_active_low_speed_damping(rider);
+            // $82:A5FC: mud's drive step replaces the low-speed damping.
+            if(!special.mud_drive_step)update_active_low_speed_damping(rider);
             transition.drive_pose_enabled=0;
-            if(transition.completed) {
+            // $82:A241: the corkscrew latch skips the completed-turn hold.
+            if(transition.completed && !tiles.corkscrew_latch) {
                 if(static_cast<std::int16_t>(rider.motion.previous_x_displacement)<2)transition.completed=0;
                 else {
                     transition.hold=30;
                     if(rider.contact.unsupported_count!=9 && horizontal!=1)transition.drive_pose_enabled=1;
                 }
             }
-            const bool clear=(transition.rotate_negative_input && transition.rotate_positive_input) ||
-                (std::abs(static_cast<std::int16_t>(rider.contact.surface_angle))<30 && rider.contact.unsupported_count<9) ||
-                (!transition.rotate_negative_input && !transition.rotate_positive_input);
+            // $82:A49F-A4F9 in the original's order: both rotations, a
+            // shallow supported contact or the corkscrew latch ($82:A4CC)
+            // clear the rotation; surface mode and leading support then
+            // return with it unchanged ($82:A4DC-A4E9, R-0047); no rotation
+            // clears it. `$0F89` ($0E6F) is guarded zero.
+            const bool clear=tiles.corkscrew_latch || (transition.rotate_negative_input && transition.rotate_positive_input) ||
+                (std::abs(static_cast<std::int16_t>(rider.contact.surface_angle))<30 && rider.contact.unsupported_count<9);
             if(clear)rider.motion.response_b=0;
+            else if(surface.mode || surface.leading_support) {}
+            else if(!transition.rotate_negative_input && !transition.rotate_positive_input)rider.motion.response_b=0;
             else {
                 // $82A49F-A5F9 halves the rotation step while A is held. The
                 // rate was keyed to the player's button, so the opponent always
@@ -2151,12 +2344,19 @@ void update_zoom_zoo(ZoomZooState& state,const ControllerButtons& requested_butt
         }
         update_rolling_mode(rider,surface.mode!=0);
         if(index==1)update_reflection_transition(rider,transition,horizontal,index!=active,content.reflection_pose_table,
-            state.native_initialization && (opponent_trick&2U)!=0);
-        update_zoom_throttle(rider,transition,horizontal,animation_override,throttle_target,next.charge_announced[index],surface.leading_support!=0,
-                             state.native_initialization && next.rolls[index].bounce_active!=0);
-        update_idle_pose(rider,!throttle_target && !surface.leading_support && transition.pose_override==0,index==1,whole.animation_counter,content.movement.idle_pose_table);
+            state.native_initialization && (opponent_trick&2U)!=0,tiles);
+        // $82:98D6: the corkscrew's physics hold skips the whole drive routine,
+        // brake latch included, and leaves $0E7B as the other rider set it.
+        if(!tiles.physics_hold) {
+            update_zoom_throttle(rider,transition,horizontal,animation_override,throttle_target,next.charge_announced[index],surface.leading_support!=0,
+                                 state.native_initialization && next.rolls[index].bounce_active!=0,
+                                 special.mud_drive_step?special.mud_drive_step:24,tiles.mud_cooldown!=0);
+            next.drive_target_latch=throttle_target?0:1;
+        }
+        update_idle_pose(rider,next.drive_target_latch && !surface.leading_support && transition.pose_override==0,index==1,whole.animation_counter,content.movement.idle_pose_table);
         if(rider.idle_pose.active)surface.tile_mode=1;
-        update_gravity(rider);
+        // $82:A971-A97C: the corkscrew's float or physics hold suspends gravity.
+        if(!tiles.corkscrew_float && !tiles.physics_hold)update_gravity(rider);
         SpeedLimitContext limit{};limit.opponent=index==1;limit.ai_enabled=true;
         // $150B has no writer in the declared continuation: preserve its seed
         // byte. Player boost below 16 makes the optional subtraction inert.
@@ -2168,7 +2368,8 @@ void update_zoom_zoo(ZoomZooState& state,const ControllerButtons& requested_butt
         limit.opponent_progress=whole.riders[1].progress.transition_count;limit.adjustment_limit=race_adjustment_limit(scenario);
         limit.player_base_cap=next.reflection[0].base_velocity_cap;limit.update_counter=whole.update_counter;
         limit.friction_mode=static_cast<std::uint16_t>(horizontal);
-        limit_rider_speed(rider.motion.velocity_x,rider.motion.velocity_y,rider.speed,limit,content.movement.speed_decay);
+        // $82:A6FD: and the speed limiter.
+        if(!tiles.physics_hold)limit_rider_speed(rider.motion.velocity_x,rider.motion.velocity_y,rider.speed,limit,content.movement.speed_decay);
         integrate_zoom_axis(rider.motion.x,rider.motion.velocity_x,rider.residue_x);
         rider.motion.x&=track_geometry(content.movement.sampling.track).position_mask;
         integrate_zoom_axis(rider.motion.y,rider.motion.velocity_y,rider.residue_y);
@@ -2176,7 +2377,8 @@ void update_zoom_zoo(ZoomZooState& state,const ControllerButtons& requested_butt
             rider.motion.y=static_cast<std::uint16_t>(static_cast<int>(rider.motion.y)+(negative(rider.motion.velocity_y)?-1:(surface.mode?1:4)));
         }
         surface.animation_delta=static_cast<std::uint16_t>(animation_override);
-        update_pose(rider,whole.animation_counter,whole.contact_phase,content.movement,animation_override,throttle_target,surface.mode?static_cast<std::int16_t>(surface.angle):0);
+        update_pose(rider,whole.animation_counter,whole.contact_phase,content.movement,animation_override,next.drive_target_latch==0,surface.mode?static_cast<std::int16_t>(surface.angle):0,
+                    special.mud_velocity);
         if(transition.pose_override)rider.pose.pose_index=transition.pose_override;
         if(index==active)advance_track_progress(rider.progress,content.movement.progress_transitions);
     }
@@ -2189,6 +2391,9 @@ void update_zoom_zoo(ZoomZooState& state,const ControllerButtons& requested_butt
         state.native_initialization?std::span<std::uint8_t>{next.learned_weights[1]}:std::span<std::uint8_t>{});
     if(state.complete_race)update_zoom_camera(next,track_geometry(content.movement.sampling.track));
     for(unsigned index=0;index<2;++index) {
+        // $81:8CFC / $81:8E43: while the corkscrew carries a rider its whole
+        // contact update is skipped ($0DFB/$0DFD).
+        if(contact_skip[index])continue;
         auto& rider=whole.riders[index];
         const auto points=collision_points(content.movement.sampling,rider.pose.pose_index,rider.pose.reflected);
         const auto samples=sample_track(content.movement.sampling,points,rider.motion.x,rider.motion.y,

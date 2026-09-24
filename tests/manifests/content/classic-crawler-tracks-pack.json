@@ -1,12 +1,12 @@
 {
   "schema_version": 1,
   "kind": "classic_pack_rules",
-  "profile_id": "classic.pal.crawler.tracks.v10",
+  "profile_id": "classic.pal.crawler.tracks.v11",
   "source_rom": {
     "size": 2097152,
     "sha256": "a1105819d48c04d680c8292bbfa9abbce05224f1bc231afd66af43b7e0a1fd4e"
   },
-  "rules_id": "classic-crawler-tracks-extraction-v10",
+  "rules_id": "classic-crawler-tracks-extraction-v11",
   "start_state_id": "classic.crawler.race-start.v2",
   "entries": [
     {
@@ -28878,7 +28878,21 @@
       },
       "size": 382,
       "sha256": "4557672dceff27e910ea76b428623162c0e807831d8a2c537088e7f6c62277bb"
+    },
+    {
+      "id": "zoom.corkscrew-heights",
+      "source": {
+        "kind": "raw",
+        "pieces": [
+          {
+            "file_offset": 136,
+            "length": 96
+          }
+        ]
+      },
+      "size": 96,
+      "sha256": "4529c691946c40e5d14b00445ed4d888e5d34fbf94283b874e3536cb9a90a7b0"
     }
   ],
-  "description": "Classic content for DRAGSTER and ZOOM ZOO (the v9 entries, unchanged) and, from TRACK-BREADTH part 3, the fourteen other race tracks a cold start reaches: per track its decoded data, tile columns, tile flags and BG1 tiles (track.NN.*, R-0046 observations 1-2), per scenery (track mod 14) its BG2 tiles, BG2 map and race palette (scenery.SS.*, `$82:DC20-DD84`), and the track name table (`$83:9FFA`). Every new entry is ROM content located by the loader's own directories; tools/unirally_lab/content/tracks.py v10_new_entries generates them."
+  "description": "Classic content for DRAGSTER and ZOOM ZOO (the v9 entries, unchanged) and, from TRACK-BREADTH part 3, the fourteen other race tracks a cold start reaches: per track its decoded data, tile columns, tile flags and BG1 tiles (track.NN.*, R-0046 observations 1-2), per scenery (track mod 14) its BG2 tiles, BG2 map and race palette (scenery.SS.*, `$82:DC20-DD84`), and the track name table (`$83:9FFA`). Every new entry is ROM content located by the loader's own directories; tools/unirally_lab/content/tracks.py v10_new_entries generates them. From SPECIAL-TILE-RESPONSE (v11): the two 48-byte signed height tables the corkscrew tile steps through ($00:8088 and, for a rolling rider, $00:80B8; R-0047)."
 }

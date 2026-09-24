@@ -11,6 +11,36 @@ struct ReflectionTransition {
 struct SurfaceTransition {
     std::uint16_t mode{}, angle{}, tile_mode{}, leading_support{}, tile_pose{}, animation_delta{}, tile_pose_enabled{};
 };
+// R-0047: per-rider words of the special tiles (mud, flag pair 14; corkscrew,
+// pair 10), which no accepted DRAGSTER or ZOOM ZOO race reaches. The other
+// tracks' state (URTRnn02) always carries them; DRAGSTER's and ZOOM ZOO's carry
+// them only while one is live (URDG0002, URZZ000C), so their 742-byte states
+// are unchanged. Words keep the original bit patterns; signed where noted.
+struct SpecialTileRider {
+    // $0BCB/$0BCD ($0F45): 4 on each update a mud tile holds the rider, then
+    // counts down one per update.
+    std::uint16_t mud_cooldown{};
+    // $0D57/$0D59 ($0F47): 4 on mud; cleared on the first update the
+    // cooldown has already run out (the original also queues sound $0213).
+    std::uint16_t mud_exit_pending{};
+    // $0DF7/$0DF9 ($0F49), signed: 1 after an update the corkscrew held the
+    // rider, -4 after an ejection counting up to 0, otherwise 0.
+    std::uint16_t corkscrew_latch{};
+    // $0DF3/$0DF5 ($0FA7): the corkscrew step, 1 to $31; $FFFF after an ejection.
+    std::uint16_t corkscrew_step{};
+    // $0DFF/$0E01 ($0F4B): gravity is suspended while set.
+    std::uint16_t corkscrew_float{};
+    // $0547/$0549: updates left with the drive, speed limit and gravity
+    // routines suspended; 8 on each corkscrew step.
+    std::uint16_t physics_hold{};
+    // $0BE7/$0BE9 ($0F2F): updates left with the reflection transition
+    // locked; counts down only while surface mode is clear.
+    std::uint16_t reflection_lock{};
+    // $1516/$151A bit 4 ($0FAF): the rider object at OBJ priority 3 instead of
+    // 2, so no BG1 tile covers it; toggled through the corkscrew.
+    std::uint16_t raised_priority{};
+    bool operator==(const SpecialTileRider&) const = default;
+};
 struct ZoomZooFinishPose {
     std::uint16_t selector{}, kind{}, locked{}, active{};
 };
@@ -131,6 +161,14 @@ struct ZoomZooState {
     std::array<ReflectionTransition,2> reflection;
     std::uint8_t opponent_horizontal{};
     std::uint8_t opponent_retained_oam_x{};
+    std::array<SpecialTileRider,2> special_tiles{};
+    // $0E7B, one word for both riders: clear when the latest drive routine
+    // ($82:98CF) took the small-displacement path, so the pose and idle
+    // routines follow throttle rather than velocity. A rider whose drive is
+    // suspended (physics_hold) reads the other rider's value. It is serialized
+    // with the special-tile words; while none is live no drive is suspended,
+    // so each rider rewrites it before reading it.
+    std::uint16_t drive_target_latch{};
 };
 struct ZoomZooContent {
     MovementContent movement;
@@ -142,11 +180,33 @@ struct ZoomZooContent {
     std::span<const std::uint8_t> roll_directions;
     std::span<const std::uint8_t> reward_weights;
     std::span<const std::uint8_t> trick_combinations;
+    // $00:8088 and $00:80B8, 48 signed bytes each: the corkscrew's y step by
+    // step, the second for a rider whose rolling flag is set (R-0047).
+    std::span<const std::uint8_t> corkscrew_heights;
 };
 // $82:9715–979D: count active updates opposing the track direction, with
 // original wrapped word comparisons at velocities -16 and +16 (1/32 units).
 std::uint16_t next_wrong_direction_counter(std::uint16_t previous,
     std::uint16_t velocity_x,std::uint16_t marker,unsigned horizontal,bool native_rewards=false);
+// R-0047: the special tiles' parts of one rider's movement update, in the
+// order update_zoom_zoo runs them. Words the tiles set for the rest of one
+// update only:
+struct SpecialTileUpdate {
+    std::uint16_t mud_drive_step{}; // $0F3B: replaces the drive routines' 24
+    std::uint16_t mud_velocity{};   // $0F3F: the pose target's velocity source
+    std::uint16_t contact_skip{};   // $0F5B/$0DFB: skips this update's vertical contact
+    bool corkscrew_stepped{};       // $81:8949 stored 1 at $0EA3 (the player's rolling flag)
+};
+// $81:8690-86FE: the counters' part of the reset before the tile dispatch.
+void update_special_tile_counters(SpecialTileRider& tiles,ReflectionTransition& transition,std::uint8_t selected_high);
+// $81:871C-875B: the boost tile (flag pair 2), pushing by $80 plus `extra`.
+void apply_boost_tile(RiderMovementState& rider,SurfaceTransition& surface,std::uint16_t extra);
+// $81:8999-89F6: mud (flag pair 14).
+void update_mud_tile(RiderMovementState& rider,SpecialTileRider& tiles,SurfaceTransition& surface,SpecialTileUpdate& special);
+// $81:87C2-894F: the corkscrew (flag pair 10); `heights` is zoom.corkscrew-heights.
+void update_corkscrew_tile(RiderMovementState& rider,SpecialTileRider& tiles,SurfaceTransition& surface,
+                           ReflectionTransition& transition,SpecialTileUpdate& special,
+                           std::span<const std::uint8_t> heights);
 std::vector<std::uint8_t> serialize_zoom_zoo(const ZoomZooState& state);
 ZoomZooState deserialize_zoom_zoo(std::span<const std::uint8_t> bytes);
 // $82:D7C6-DBD6, authenticated track header and one-player three-lap scenario.
@@ -154,10 +214,11 @@ ZoomZooState classic_crawler_zoom_zoo_start(const ZoomZooContent& content);
 // The same initializer for the one-player, one-lap CRAWLER/DRAGSTER race.
 ZoomZooState classic_crawler_dragster_race_start(const ZoomZooContent& content);
 ZoomZooState classic_race_start(const ZoomZooContent& content,const ClassicRaceScenario& scenario);
-// Identity of a DRAGSTER race state on the shared engine; same 742-byte layout as URZZ000B.
+// Identity of a DRAGSTER race state on the shared engine; same 742-byte layout as
+// URZZ000B (URDG0002 and 776 bytes while a special-tile word is live, R-0047).
 inline constexpr std::array<std::uint8_t,8> dragster_race_state_magic{'U','R','D','G','0','0','0','1'};
 // Identity of any other track's race state: `URTR`, the two-digit track index,
-// `01`; the same 742-byte layout.
+// `02`; the 742-byte layout followed by the special-tile words (776 bytes).
 std::array<std::uint8_t,8> classic_race_state_magic(ClassicRaceTrack track);
 bool classic_race_player_won(const ZoomZooState& state);
 // Result-loading update at which the result screen is stable (restart allowed).

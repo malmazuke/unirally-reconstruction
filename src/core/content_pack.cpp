@@ -261,7 +261,12 @@ const std::array<RequiredEntry, 90> tracks_required{{
     {"scenery.13.palette", 352, "c98592fd78dba9ab9a13e4b0586722103625f1dd4279202e02887cde17140186"},
     {"presentation.classic.track-names.v1", 382, "4557672dceff27e910ea76b428623162c0e807831d8a2c537088e7f6c62277bb"},
 }};
-constexpr std::string_view two_track_rules_sha="936d0a76ec193c072fe1a8ea18d56fef12916b9f9a0a386256f6883872a550f0";
+// SPECIAL-TILE-RESPONSE (profile v11): the corkscrew tile's two signed height
+// tables, $00:8088 and $00:80B8, 48 bytes each ($81:891A-8947, R-0047).
+const std::array<RequiredEntry, 1> special_tiles_required{{
+    {"zoom.corkscrew-heights", 96, "4529c691946c40e5d14b00445ed4d888e5d34fbf94283b874e3536cb9a90a7b0"},
+}};
+constexpr std::string_view two_track_rules_sha="9fceaa93731c37b1741a5a9530df8f29a483d82a8e79c04cdb8538ba7799ec7b";
 
 std::array<std::uint8_t, 32> hex_digest(std::string_view text) {
   if (text.size() != 64)
@@ -363,7 +368,7 @@ std::array<std::uint8_t, 32> sha256(std::span<const std::uint8_t> source) {
 
 namespace {
 constexpr std::array<std::string_view, 2> supported_profiles{
-    "classic.pal.crawler.dragster.v1", "classic.pal.crawler.tracks.v10"};
+    "classic.pal.crawler.dragster.v1", "classic.pal.crawler.tracks.v11"};
 } // namespace
 
 std::span<const std::string_view> supported_pack_profiles() {
@@ -405,6 +410,7 @@ ClassicContentPack::ClassicContentPack(const std::filesystem::path &path) {
   if(two_tracks) {
     selected_required.insert(selected_required.end(),zoom_required.begin(),zoom_required.end());
     selected_required.insert(selected_required.end(),tracks_required.begin(),tracks_required.end());
+    selected_required.insert(selected_required.end(),special_tiles_required.begin(),special_tiles_required.end());
   }
   const auto count = in.u16();
   struct Row {

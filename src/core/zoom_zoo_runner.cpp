@@ -108,7 +108,7 @@ int main(int argc,char** argv) try {
     const auto roll_directions=pack?load("roll-direction-table.bin"):std::vector<std::uint8_t>{};
     const auto weights=pack?load("roll-reward-weights.bin"):std::vector<std::uint8_t>{};
     const auto combinations=pack?load("trick-combinations.bin"):std::vector<std::uint8_t>{};
-    const unirally::ZoomZooContent zoom_zoo_data{movement,coefficients,reflection,landing,finish_poses,roll_poses,roll_directions,weights,combinations};
+    const unirally::ZoomZooContent zoom_zoo_data{movement,coefficients,reflection,landing,finish_poses,roll_poses,roll_directions,weights,combinations,{}};
     if(!native_start)race_track=state.track;
     if(race_track!=unirally::ClassicRaceTrack::ZoomZoo && !pack)throw std::invalid_argument("a race on any track but ZOOM ZOO requires the content pack");
     if(pack && !(native_start || (state.complete_race && state.sustained)))

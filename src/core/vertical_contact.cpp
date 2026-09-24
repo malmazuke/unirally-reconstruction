@@ -116,7 +116,21 @@ void resolve_vertical_contact(RiderContactState& rider,ContactMotion& motion,
     require(context.phase<=1 && context.mode<=1,"unsupported vertical contact phase/mode");
     require(rider.unsupported_count<=9 && summary.penetration<128,"unsupported vertical contact state");
 
-    auto next=rider; auto moved=motion;
+    // $81:9185-91D1 dispatches on the selected tile's flag pair (flag & $FE)
+    // before the auxiliary and support tests. Pair 24 clears the unsupported
+    // count $0F33 and duration $0FBF as whole words, after $81:8F9A has
+    // snapshotted the incoming count. Pairs 8 and 16 set $1349, read only at
+    // $81:9685 on a path ($81:966F-9690) that continued contact enters only
+    // for a magnitude of 31 or more, which the response has already taken
+    // ($81:9286); no capture executes it, so for pair 16 it is inert. Pair 8
+    // also changes the correction ($81:92D9, $81:96FF, $81:97E6) and pair 26
+    // can clear probe penetrations $28/$2C; both stay unrecovered. Every other
+    // pair takes no branch here (R-0047).
+    const auto flag_pair=static_cast<unsigned>(summary.tile_flags&0xfeU);
+    require(flag_pair!=26,"vertical contact reaches unrecovered tile flag pair 26");
+    auto incoming=rider;
+    if(flag_pair==24) {incoming.unsupported_count=0; incoming.unsupported_duration=0;}
+    auto next=incoming; auto moved=motion;
     next.previous_unsupported_count=rider.unsupported_count;
     next.selected_word=summary.selected_word;
     next.selected_high=summary.selected_high;
@@ -125,20 +139,19 @@ void resolve_vertical_contact(RiderContactState& rider,ContactMotion& motion,
     if(!summary.any_nonnegative_probe)next.auxiliary_flag=0;
     if(summary.boundary_marker)next.auxiliary_flag=1;
     if(next.auxiliary_flag==1) {
-        next.unsupported_duration=static_cast<std::uint16_t>((rider.unsupported_duration&0xff00U)|static_cast<std::uint8_t>(rider.unsupported_duration+1U));
-        next.unsupported_count=std::min<std::uint16_t>(9,static_cast<std::uint16_t>(rider.unsupported_count+1U));
+        next.unsupported_duration=static_cast<std::uint16_t>((incoming.unsupported_duration&0xff00U)|static_cast<std::uint8_t>(incoming.unsupported_duration+1U));
+        next.unsupported_count=std::min<std::uint16_t>(9,static_cast<std::uint16_t>(incoming.unsupported_count+1U));
         rider=next;return;
     }
     if (!summary.supported) {
-        next.unsupported_count=std::min<std::uint16_t>(9,static_cast<std::uint16_t>(rider.unsupported_count+1U));
-        next.unsupported_duration=static_cast<std::uint16_t>(rider.unsupported_duration+1U);
+        next.unsupported_count=std::min<std::uint16_t>(9,static_cast<std::uint16_t>(incoming.unsupported_count+1U));
+        next.unsupported_duration=static_cast<std::uint16_t>(incoming.unsupported_duration+1U);
         next.angle_unspecified=true;
         next.auxiliary_flag=0;
     } else {
         const auto magnitude=static_cast<unsigned>(std::abs(static_cast<int>(summary.angle)));
         require(magnitude<shifts.size(),"vertical response angle outside recovered coefficients");
-        require(summary.tile_flags==0 || summary.tile_flags==2 || summary.tile_flags==6 || summary.tile_flags==7 || summary.tile_flags==18 || summary.tile_flags==20,
-                "vertical contact reaches a special response tile");
+        require(flag_pair!=8,"vertical contact reaches unrecovered tile flag pair 8");
         // $81:924E–9275 removes motion into the inverted contact face.
         if(signed_word(moved.velocity_y)<0 && (summary.selected_high&0x80U) &&
            ((summary.selected_high&0x40U)?signed_word(moved.velocity_x)<0:signed_word(moved.velocity_x)>=0))moved.velocity_x=0;
@@ -147,20 +160,20 @@ void resolve_vertical_contact(RiderContactState& rider,ContactMotion& motion,
         next.unsupported_count=0; next.unsupported_duration=0;
         if(magnitude>=31) {
             moved.velocity_x=arithmetic_shift(moved.velocity_x,2);
-            next.unsupported_count=std::min<std::uint16_t>(9,static_cast<std::uint16_t>(rider.unsupported_count+1U));
-            next.unsupported_duration=static_cast<std::uint16_t>(rider.unsupported_duration+1U);
-        } else if (rider.unsupported_count>=9 || (summary.leading_support && rider.unsupported_count>=2)) {
+            next.unsupported_count=std::min<std::uint16_t>(9,static_cast<std::uint16_t>(incoming.unsupported_count+1U));
+            next.unsupported_duration=static_cast<std::uint16_t>(incoming.unsupported_duration+1U);
+        } else if (incoming.unsupported_count>=9 || (summary.leading_support && incoming.unsupported_count>=2)) {
 
             if(magnitude<28) {
             // R-0025: signed displacement quadrant and coarse-angle sentinel.
-            const auto dx=std::abs(signed_word(static_cast<std::uint16_t>(motion.x-rider.previous_uncorrected_x)));
-            const auto half_dy=std::abs(signed_word(static_cast<std::uint16_t>(motion.y-rider.previous_uncorrected_y)))/2;
+            const auto dx=std::abs(signed_word(static_cast<std::uint16_t>(motion.x-incoming.previous_uncorrected_x)));
+            const auto half_dy=std::abs(signed_word(static_cast<std::uint16_t>(motion.y-incoming.previous_uncorrected_y)))/2;
             // $81:984D-98A8 uses bounded subtraction, not division. A zero
             // subtrahend still terminates at the angle endpoint (4 or 31).
             const int magnitude_angle=dx>=half_dy ?
                 (half_dy==0 ? 4 : std::max(4,16-4*(dx/half_dy))) :
                 (dx==0 ? 31 : std::min(31,16+4*(half_dy/dx)));
-            const int coarse=signed_word(static_cast<std::uint16_t>(motion.x-rider.previous_uncorrected_x))<0 ? -magnitude_angle : magnitude_angle;
+            const int coarse=signed_word(static_cast<std::uint16_t>(motion.x-incoming.previous_uncorrected_x))<0 ? -magnitude_angle : magnitude_angle;
             require((context.cartridge_options&8U)==0, "unrecovered landing option");
             // M4-13 authenticates $132B == 0 throughout the domain; player
             // selection alone does not replace the matrix ($81:94A8-94C3).
@@ -170,8 +183,8 @@ void resolve_vertical_contact(RiderContactState& rider,ContactMotion& motion,
             int pose_direction=static_cast<int>(pose_index&63U);
             if(reflected && pose_direction)pose_direction=64-pose_direction;
             const int surface_direction=summary.angle<0 ? 62+summary.angle : summary.angle;
-            const bool negative_dx=signed_word(static_cast<std::uint16_t>(motion.x-rider.previous_uncorrected_x))<0;
-            const bool negative_dy=signed_word(static_cast<std::uint16_t>(motion.y-rider.previous_uncorrected_y))<0;
+            const bool negative_dx=signed_word(static_cast<std::uint16_t>(motion.x-incoming.previous_uncorrected_x))<0;
+            const bool negative_dy=signed_word(static_cast<std::uint16_t>(motion.y-incoming.previous_uncorrected_y))<0;
             int orientation_angle=(negative_dx!=negative_dy)?-coarse:coarse;
             orientation_angle=(!negative_dx && !negative_dy) ?
                 std::max(orientation_angle,static_cast<int>(summary.angle)) :
@@ -196,7 +209,7 @@ void resolve_vertical_contact(RiderContactState& rider,ContactMotion& motion,
                         const auto impulse=static_cast<std::uint16_t>((motion.previous_x_displacement>>2U)+1U);
                         moved.orientation_impulse=response<0?static_cast<std::uint16_t>(0U-impulse):impulse;
                     }
-                    if(context.mode==0 && summary.angle<30 && summary.angle>=-30 && rider.unsupported_duration>=120 && pose_direction>=32) {
+                    if(context.mode==0 && summary.angle<30 && summary.angle>=-30 && incoming.unsupported_duration>=120 && pose_direction>=32) {
                         moved.response_a=static_cast<std::uint16_t>(response<0?1:-1);
                         force_long_airtime_matrix=true;
                     } else moved.response_a=0;
@@ -248,7 +261,7 @@ void resolve_vertical_contact(RiderContactState& rider,ContactMotion& motion,
         }
         // $81:92FE–9309 sends a full steep landing straight to correction.
         // The vertical-to-horizontal conversion belongs only to continued contact.
-        if(magnitude==28 && !summary.leading_support && rider.unsupported_count<9) {
+        if(magnitude==28 && !summary.leading_support && incoming.unsupported_count<9) {
             const auto shifted=arithmetic_shift(moved.velocity_y,byte(shifts,magnitude));
             auto velocity=static_cast<std::uint16_t>(static_cast<unsigned>(shifted)*byte(multipliers,magnitude));
             if(summary.angle<0)velocity=static_cast<std::uint16_t>(1U-velocity);

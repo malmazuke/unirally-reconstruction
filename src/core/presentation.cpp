@@ -2021,7 +2021,7 @@ RgbFrame render_classic_race(const ZoomZooState& state,const ClassicRacePresenta
     // R-0036: picture N shows the OBJ tiles and OAM the original published in
     // update N-1, like the BG scroll above. Entry 98 (player, tile base 0,
     // palette 3) has priority over entry 99 (opponent, base $88, palette 4);
-    // both use OBJ priority 2. Without a previous update the riders are drawn
+    // both use OBJ priority 2 outside a corkscrew. Without a previous update the riders are drawn
     // from this state, one update ahead.
     const auto& rider_source=previous_update?*previous_update:state;
     // R-0042: the caption is drawn here, behind the riders. Where a rider covers a glyph
@@ -2049,9 +2049,12 @@ RgbFrame render_classic_race(const ZoomZooState& state,const ClassicRacePresenta
         const auto overlay=history?history->overlays.pose[static_cast<std::size_t>(rider)]:std::nullopt;
         const auto pixels=compose_rider_object(content.riders,source.pose.pose_index,overlay,oam.clip);
         const unsigned object_palette=128U+(rider?4U:3U)*16U;
+        // R-0047: through the corkscrew the object's priority is toggled to 3
+        // ($1516/$151A bit 4), above every BG1 tile.
+        const bool raised=rider_source.special_tiles[static_cast<std::size_t>(rider)].raised_priority!=0;
         draw_rider_object(pixels,oam,[&](int x,int y,std::uint8_t value) {
             const auto at=static_cast<std::size_t>(y)*256+static_cast<std::size_t>(x);
-            if(bg1_above_objects[at])return;
+            if(bg1_above_objects[at] && !raised)return;
             const auto index=static_cast<std::uint8_t>(object_palette+value);
             if(!caption_ink.test(at)) {pixel(frame,x,y,colour(cgram,index));return;}
             const auto word=colour_word(cgram,index);

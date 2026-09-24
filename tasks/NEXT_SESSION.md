@@ -5,6 +5,14 @@ push the task branch, open a pull request from the template, merge with
 `gh pr merge --merge` once its checks are green and the review is done. `main`
 refuses direct pushes. The checks run on pull requests only.
 
+**Status on 24 September 2026 UTC (end of SPECIAL-TILE-RESPONSE): SPECIAL-TILE-RESPONSE is
+accepted; claim [RACE-GUARDS](RACE-GUARDS.md) next.** Its record has the scope, the stops
+and the first command. **Live play needs pack v11** (`local/classic-pal-crawler-tracks-v11.pack`
+in the main checkout); rebuild `app-debug` after pulling, since a stale build refuses it. The
+user asked (24 September) for tasks to follow one another, each closed out fully through its
+pull request, until 50% weekly usage or the five-hour limit; the goal is a fully playable
+native Unirally (all tracks, stunt mode, menus).
+
 **Status on 23 September 2026 UTC (end of the TRACK-BREADTH session): TRACK-BREADTH is
 accepted; claim [SPECIAL-TILE-RESPONSE](SPECIAL-TILE-RESPONSE.md) next, after the weekly
 reset on 2026-09-24T08:00Z or on an explicit user override** (weekly usage was 96%). Its
