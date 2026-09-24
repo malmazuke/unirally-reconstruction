@@ -2,7 +2,7 @@
 
 ## Assignment
 
-- Status: review. Claimed 24 September 2026 about 13:40Z by the session that closed SPECIAL-TILE-RESPONSE.
+- Status: accepted (reviewed and integrated by pull request #17). Claimed 24 September 2026 about 13:40Z by the session that closed SPECIAL-TILE-RESPONSE.
 - Milestone: M4 breadth (R-0046 next experiments 1 and 3)
 - Coordinator: the claiming session is coordinator, primary and integrator
 - Task provider (fixed for all children; record any user-initiated platform change): Anthropic
@@ -99,7 +99,10 @@ locked tours, new-track finishes and result screens.
 - Commands executed, outcomes and report hashes: recompare (all 16 exact); `captures.sh` and
   eight `explore` reports under `local/evidence/race-guards/`; hidden 4,000-update held runs on
   MONSTER, INFINITY, HYBRID and HAIRPIN HILL (0 fallback frames); idle matrix 41 of 45; ctest
-  24/24 on lab-debug. Gates: see the closing section.
+  24/24 on lab-debug. `gates.sh` on `eacd23e` (13:57-14:43Z, `gates-eacd23e.out`): ctest 24/24
+  on three presets, synthetic suite, both v1 contracts, hidden runs on DRAGSTER, ZOOM ZOO,
+  FLAT FUN and the four tracks (0 fallback frames), fuzz 0 aborts, **all eleven differential
+  gates identical to the accepted set**, `rnc-inventory` passed.
 - Unavailable/skipped checks: `lab-sanitize` and `app-sanitize` (ASan hangs on this host); the
   hosted Linux job covers them.
 - Exact next experiment/command: none; [RACE-FINISH-BREADTH](RACE-FINISH-BREADTH.md) is next.
@@ -107,13 +110,35 @@ locked tours, new-track finishes and result screens.
 - Runtime needs (network, build time, fixtures, memory): as SPECIAL-TILE-RESPONSE.
 - Aggregate parent/child time, provider usage before/after (or unknown), other-account-work
   caveat: primary from 13:40Z; figures in the closeout.
-- Accepted outcome, review/fix rounds and next routing decision: see Review and integration.
+- Accepted outcome, review/fix rounds and next routing decision: accepted at the first round;
+  next is [RACE-FINISH-BREADTH](RACE-FINISH-BREADTH.md).
+- Cleanup by the closing session: the captures and gate logs are under
+  `local/evidence/race-guards/` in the main checkout (the worktree's `artifacts/race-guards/`
+  gate and idle-matrix directories are moved there); both worktrees (`race-guards`,
+  `race-guards-review`) and the local task branch are deleted; bootstrap and app-debug are
+  rerun in the main checkout.
 
 ## Review and integration
 
-- Reviewer and independent reproduction/withheld-case results:
-- Required changes or acceptance rationale:
-- Exact merge candidate and required-check results:
-- Integrated commit and evidence location:
-- Remote synchronization: pushed ref(s), verified local/remote commit IDs, or exact push failure:
-- Scope still unverified:
+- Reviewer and independent reproduction/withheld-case results: a fresh Claude Opus 5.5
+  subagent in the detached checkout `.worktrees/race-guards-review` at `eacd23e`, tier 1. It
+  extracted pack v11 itself, reproduced the recompare (all 16 exact) and four of the primary's
+  captures, made four withheld captures (MONSTER Left, HAIRPIN HILL Right+B, INFINITY Right+A,
+  HYBRID Left; all exact to their ends, exercising flags 21-31 and 14 inverted-marker
+  updates), restored 836-byte states mid-race byte-identically, checked every listing claim,
+  and reran one gate after the primary's run (same digest). **Approved**, no must-fix
+  ([review](https://github.com/malmazuke/unirally-reconstruction/pull/17)).
+- Required changes or acceptance rationale: two should-fix items and three advisories, all
+  record wording (the marker's run lengths, the laps' highest index, the AI's first stores,
+  the A/X mask resting on the listing, this section), applied in the final records commit with
+  no code change, so no re-review.
+- Exact merge candidate and required-check results: the pull request head; `changes`, `lab
+  (ubuntu-24.04)` and `lab (macos-15)` green on it before merging (run IDs in the closeout).
+- Integrated commit and evidence location: the merge commit of
+  [#17](https://github.com/malmazuke/unirally-reconstruction/pull/17);
+  `artifacts/race-guards-integration/closeout.json` and `local/evidence/race-guards/` in the
+  main checkout.
+- Remote synchronization: through the pull request; local `main` compared with `origin/main`
+  after the merge (closeout).
+- Scope still unverified: the A/X masking's effect (the selector was 0 on every
+  inverted-marker update seen); races of more than 19 laps; new tracks' finishes (next task).

@@ -15,8 +15,9 @@ races, at two guards:
 
 A rider crossing checkpoint *c* with *l* laps remaining indexes the shared first-seen flags at
 `l * 4 + c`. Native held 20 flags, from the 742-byte state's `checkpoint_seen` at `$114D`. A
-race of *n* laps starts with `n + 1` laps remaining, so five and seven laps index up to 27
-and 35.
+race of *n* laps starts with `n + 1` laps remaining, but a flag is written only after the
+first start-line crossing, so five and seven laps index up to 23 and 31 (INFINITY's
+highest observed is 31).
 
 - **Observed.** On INFINITY's capture, `$116A`, `$116B` and `$116C` clear at updates 379,
   481 and 588, then `$1166-$1168` and `$1162-$1164`, exactly like the first twenty flags.
@@ -33,12 +34,13 @@ bytes): the 742-byte layout, R-0047's 34 special-tile bytes, then flags 20-79. T
 store widens to 80 slots to match. `track_reference` appends `$1161-$119C` to the original's
 projection, so the flags are compared.
 
-## An inverted marker returns before the AI sets any input
+## An inverted marker returns before the AI steers
 
-The opponent's AI (`$83:E082-E253`) reads the marker `$0FC7` and on bit 15 returns at once
-(`$83:E0A7-E0AF`). Native refused that case. The first attempt kept the opponent's direction
-from the previous update; MONSTER then differed at update 809, where the original's direction
-`$031B` was 1, neutral. The port-2 reader explains it: with the AI enabled (`$0C6D`), every
+The opponent's AI (`$83:E082-E253`) first sets `$0317` and `$0C71` and releases the brake,
+jump, rotations and A (`$83:E08C-E0A4`), then reads the marker `$0FC7` and on bit 15 returns
+(`$83:E0A7-E0AF`) before choosing a direction or any action. Native refused that case. The
+first attempt kept the opponent's direction from the previous update; MONSTER then differed
+at update 809, where the original's direction `$031B` was 1, neutral. The port-2 reader explains it: with the AI enabled (`$0C6D`), every
 update `$82:AB6F-AB8B` releases all the opponent's inputs, A (`$031F`) and X (`$0323`)
 included, and sets `$031B` = 1, before the AI runs. So after an inverted marker the opponent
 has every input released and its direction neutral for that update. The selector `$0C75`,
@@ -58,9 +60,15 @@ New captures (`local/evidence/race-guards/`), each compared with `explore`:
 | Track | Released to frame 4,400 | Right held to frame 4,400 | Path exercised |
 | --- | --- | --- | --- |
 | INFINITY | exact 3,025 of 3,025 | exact 3,025 of 3,025 | flags 21-31 cleared |
-| HAIRPIN HILL | exact 2,994 of 2,994 | exact 2,994 of 2,994 | flag 22 cleared; 10 inverted-marker updates |
-| MONSTER | exact 2,982 of 2,982 | exact 2,982 of 2,982 | 3 inverted-marker updates |
+| HAIRPIN HILL | exact 2,994 of 2,994 | exact 2,994 of 2,994 | flag 22 cleared; 10 inverted-marker updates in runs of 3, 4 and 3 |
+| MONSTER | exact 2,982 of 2,982 | exact 2,982 of 2,982 | 3 inverted-marker updates, runs of 2 and 1 |
 | HYBRID | exact 2,317 rows, to the opponent's finish | exact 2,317 rows, likewise | 1 inverted-marker update (2,053) |
+
+The independent review made four withheld captures, all exact to their ends: MONSTER with
+Left held (2,982 rows), HAIRPIN HILL with Right and B (2,994), INFINITY with Right and A
+(3,025, flags 21-31) and HYBRID with Left (2,317, to the opponent's finish). It also
+restored 836-byte states mid-race on INFINITY and HAIRPIN HILL, with late flags cleared, and
+they continued byte-identically.
 
 Hidden 4,000-update runs with Right held complete with 0 fallback frames on all four. With
 R-0047's runs, **every one of the 16 cold-start race tracks** now does. The idle matrix
@@ -70,8 +78,11 @@ tracks. The four stops are BOWL (pair 8), LAST ONE and DOWN+UP (pair 26) and LIT
 
 ## Limits
 
-- An inverted marker lasts one update in these captures: 1, 3 or 10 updates in all.
-  Longer runs of it follow the same code, but no capture shows one.
+- An inverted marker lasts 1 to 4 consecutive updates in these captures: runs of 2 and 1 on
+  MONSTER, 3, 4 and 3 on HAIRPIN HILL, 1 on HYBRID.
+- The A and X masking rests on the listing alone: the selector `$0C75` is 0 on every
+  inverted-marker update of these captures and the review's, so masking changes no compared
+  value yet.
 - The opponent's HUD split for flags past 19 is covered only through the flags themselves.
   No picture of a long race's split has been compared.
 - Races of more than 19 laps would index past the 80 flags. None exists among the tracks
