@@ -127,7 +127,7 @@ locked tours, new-track finishes and result screens.
   HYBRID Left; all exact to their ends, exercising flags 21-31 and 14 inverted-marker
   updates), restored 836-byte states mid-race byte-identically, checked every listing claim,
   and reran one gate after the primary's run (same digest). **Approved**, no must-fix
-  ([review](https://github.com/malmazuke/unirally-reconstruction/pull/17)).
+  ([review](https://github.com/malmazuke/unirally-reconstruction/pull/17#pullrequestreview-5306072733)).
 - Required changes or acceptance rationale: two should-fix items and three advisories, all
   record wording (the marker's run lengths, the laps' highest index, the AI's first stores,
   the A/X mask resting on the listing, this section), applied in the final records commit with
