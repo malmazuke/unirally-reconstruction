@@ -28,7 +28,7 @@
 - Branch and isolated worktree: `task/special-tile-response` in `.worktrees/special-tile-response`.
 - Owned paths and shared interfaces: `src/core/vertical_contact.cpp`/`.hpp` and whatever the
   response reaches in `src/core/movement.cpp`; native tests under `tests/native/`; a new
-  research record `docs/research/R-0047-special-tile-response.md`; this record,
+  research record `docs/research/R-0047-special-tiles.md`; this record,
   `docs/STATE.md`, `tasks/README.md`, `tasks/NEXT_SESSION.md`, R-0046's matrix rows. The
   742-byte state is read-only unless a divergence proves a missing field.
 - Claim/lease/heartbeat/checkpoint location: this record.

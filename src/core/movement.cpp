@@ -4,6 +4,7 @@
 #include <optional>
 #include <stdexcept>
 #include <string>
+#include <string_view>
 
 namespace unirally {
 namespace {
@@ -1694,21 +1695,28 @@ std::vector<std::uint8_t> serialize_zoom_zoo(const ZoomZooState& state) {
         put16(bytes,state.pause.selection);put16(bytes,state.pause.released);
         put32(bytes,state.pause.suspended_updates);put32(bytes,state.pause.suspended_countdown_updates);
     }
-    const bool special_tile_layout=state.track!=ClassicRaceTrack::ZoomZoo && state.track!=ClassicRaceTrack::Dragster;
-    if(special_tile_layout) {
-        // R-0047: the other tracks' layout appends the special-tile words.
+    // R-0047: the special-tile words follow the shared 742 bytes in the other
+    // tracks' layout (URTRnn02), and in DRAGSTER's and ZOOM ZOO's only while
+    // one is live (URDG0002, URZZ000C): no accepted race reaches a special
+    // tile, so their frozen 742-byte states are unchanged, but ZOOM ZOO's own
+    // tile table holds the corkscrew (pair 10).
+    const bool other_track=state.track!=ClassicRaceTrack::ZoomZoo && state.track!=ClassicRaceTrack::Dragster;
+    const bool special_tiles_live=state.special_tiles!=std::array<SpecialTileRider,2>{};
+    if(other_track || special_tiles_live) {
+        if(!state.native_initialization)throw std::invalid_argument("special-tile words require a natively initialized race");
         for(const auto& r:state.special_tiles)
             for(auto v:{r.mud_cooldown,r.mud_exit_pending,r.corkscrew_latch,r.corkscrew_step,
                         r.corkscrew_float,r.physics_hold,r.reflection_lock,r.raised_priority})put16(bytes,v);
         put16(bytes,state.drive_target_latch);
-    } else if(state.special_tiles!=std::array<SpecialTileRider,2>{})
-        throw std::invalid_argument("a ZOOM ZOO or DRAGSTER state cannot carry special-tile words");
+        if(state.track==ClassicRaceTrack::ZoomZoo)bytes[7]='C';
+    }
     if(state.track!=ClassicRaceTrack::ZoomZoo) {
         // Another track on the shared engine: the URZZ000B layout under its own
         // identity, so a restore can never run one track's state on another.
         if(!state.native_initialization)throw std::invalid_argument("a race state of any track but ZOOM ZOO requires native initialization");
         const auto identity=classic_race_state_magic(state.track);
         std::copy(identity.begin(),identity.end(),bytes.begin());
+        if(state.track==ClassicRaceTrack::Dragster && special_tiles_live)bytes[7]='2';
     }
     return bytes;
 }
@@ -1935,39 +1943,48 @@ static ZoomZooState deserialize_classic_race(std::span<const std::uint8_t> bytes
     return state;
 }
 ZoomZooState deserialize_zoom_zoo(std::span<const std::uint8_t> bytes) {
-    // Any track but ZOOM ZOO carries its own identity over the URZZ000B layout.
-    std::optional<ClassicRaceTrack> other;
-    if(bytes.size()==742 && std::equal(dragster_race_state_magic.begin(),dragster_race_state_magic.end(),bytes.begin()))
-        other=ClassicRaceTrack::Dragster;
-    else if(bytes.size()==776 && bytes[0]=='U' && bytes[1]=='R' && bytes[2]=='T' && bytes[3]=='R' &&
-            bytes[4]>='0' && bytes[4]<='9' && bytes[5]>='0' && bytes[5]<='9' && bytes[6]=='0' && bytes[7]=='2') {
-        const ClassicRaceTrack track{static_cast<std::uint8_t>((bytes[4]-'0')*10+(bytes[5]-'0'))};
-        if(track==ClassicRaceTrack::Dragster || track==ClassicRaceTrack::ZoomZoo || !classic_race_has_scenario(track))
-            throw std::invalid_argument("classic race state names a track without its own identity");
-        other=track;
+    // Any track but ZOOM ZOO carries its own identity over the URZZ000B layout;
+    // a 776-byte state appends the special-tile words (R-0047).
+    const auto magic_is=[&](std::string_view text){return std::equal(text.begin(),text.end(),bytes.begin());};
+    std::optional<ClassicRaceTrack> track;
+    bool extended=false;
+    if(bytes.size()==742) {
+        if(std::equal(dragster_race_state_magic.begin(),dragster_race_state_magic.end(),bytes.begin()))track=ClassicRaceTrack::Dragster;
+    } else if(bytes.size()==776) {
+        extended=true;
+        if(magic_is("URZZ000C"))track=ClassicRaceTrack::ZoomZoo;
+        else if(magic_is("URDG0002"))track=ClassicRaceTrack::Dragster;
+        else if(magic_is("URTR") && bytes[4]>='0' && bytes[4]<='9' && bytes[5]>='0' && bytes[5]<='9' && bytes[6]=='0' && bytes[7]=='2') {
+            const ClassicRaceTrack other{static_cast<std::uint8_t>((bytes[4]-'0')*10+(bytes[5]-'0'))};
+            if(other==ClassicRaceTrack::Dragster || other==ClassicRaceTrack::ZoomZoo || !classic_race_has_scenario(other))
+                throw std::invalid_argument("classic race state names a track without its own identity");
+            track=other;
+        } else throw std::invalid_argument("classic race state identity/width differs");
     }
-    if(other) {
-        std::vector<std::uint8_t> shared(bytes.begin(),bytes.begin()+742);
-        const auto zoom_zoo_magic=classic_race_state_magic(ClassicRaceTrack::ZoomZoo);
-        std::copy(zoom_zoo_magic.begin(),zoom_zoo_magic.end(),shared.begin());
-        auto state=deserialize_classic_race(shared,*other);
-        if(bytes.size()==776) {
-            Reader in{bytes.subspan(742)};
-            for(auto& r:state.special_tiles) {
-                for(auto* v:{&r.mud_cooldown,&r.mud_exit_pending,&r.corkscrew_latch,&r.corkscrew_step,
-                             &r.corkscrew_float,&r.physics_hold,&r.reflection_lock,&r.raised_priority})*v=in.u16();
-                if(r.mud_cooldown>4 || r.mud_exit_pending>4 || r.corkscrew_float>1 || r.physics_hold>8 ||
-                   r.reflection_lock>6 || r.raised_priority>1 || (r.corkscrew_step>0x31 && r.corkscrew_step!=0xffff) ||
-                   !(r.corkscrew_latch<=1 || r.corkscrew_latch>=0xfffc))
-                    throw std::invalid_argument("classic race special-tile state is invalid");
-            }
-            state.drive_target_latch=in.u16();
-            if(state.drive_target_latch>1)throw std::invalid_argument("classic race drive target latch is invalid");
-            in.require_end();
+    if(!track)return deserialize_classic_race(bytes,ClassicRaceTrack::ZoomZoo);
+    std::vector<std::uint8_t> shared(bytes.begin(),bytes.begin()+742);
+    const auto zoom_zoo_magic=classic_race_state_magic(ClassicRaceTrack::ZoomZoo);
+    std::copy(zoom_zoo_magic.begin(),zoom_zoo_magic.end(),shared.begin());
+    auto state=deserialize_classic_race(shared,*track);
+    if(extended) {
+        Reader in{bytes.subspan(742)};
+        for(auto& r:state.special_tiles) {
+            for(auto* v:{&r.mud_cooldown,&r.mud_exit_pending,&r.corkscrew_latch,&r.corkscrew_step,
+                         &r.corkscrew_float,&r.physics_hold,&r.reflection_lock,&r.raised_priority})*v=in.u16();
+            if(r.mud_cooldown>4 || r.mud_exit_pending>4 || r.corkscrew_float>1 || r.physics_hold>8 ||
+               r.reflection_lock>6 || r.raised_priority>1 || (r.corkscrew_step>0x31 && r.corkscrew_step!=0xffff) ||
+               !(r.corkscrew_latch<=1 || r.corkscrew_latch>=0xfffc))
+                throw std::invalid_argument("classic race special-tile state is invalid");
         }
-        return state;
+        state.drive_target_latch=in.u16();
+        if(state.drive_target_latch>1)throw std::invalid_argument("classic race drive target latch is invalid");
+        in.require_end();
+        // DRAGSTER and ZOOM ZOO take the extended layout only while a word is live.
+        if((*track==ClassicRaceTrack::ZoomZoo || *track==ClassicRaceTrack::Dragster) &&
+           state.special_tiles==std::array<SpecialTileRider,2>{})
+            throw std::invalid_argument("an extended DRAGSTER or ZOOM ZOO state carries no special-tile word");
     }
-    return deserialize_classic_race(bytes,ClassicRaceTrack::ZoomZoo);
+    return state;
 }
 void validate_zoom_zoo_content_state(const ZoomZooState& state,const ZoomZooContent& content) {
     if(!state.native_initialization)return;

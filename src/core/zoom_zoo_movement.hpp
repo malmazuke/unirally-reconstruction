@@ -11,10 +11,11 @@ struct ReflectionTransition {
 struct SurfaceTransition {
     std::uint16_t mode{}, angle{}, tile_mode{}, leading_support{}, tile_pose{}, animation_delta{}, tile_pose_enabled{};
 };
-// R-0047: per-rider words of the special tiles that neither DRAGSTER nor ZOOM
-// ZOO reaches (mud, flag pair 14; corkscrew, pair 10). Only the other tracks'
-// state layout (URTRnn02) carries them; a ZOOM ZOO or DRAGSTER state requires
-// them zero. Words keep the original bit patterns; signed where noted.
+// R-0047: per-rider words of the special tiles (mud, flag pair 14; corkscrew,
+// pair 10), which no accepted DRAGSTER or ZOOM ZOO race reaches. The other
+// tracks' state (URTRnn02) always carries them; DRAGSTER's and ZOOM ZOO's carry
+// them only while one is live (URDG0002, URZZ000C), so their 742-byte states
+// are unchanged. Words keep the original bit patterns; signed where noted.
 struct SpecialTileRider {
     // $0BCB/$0BCD ($0F45): 4 on each update a mud tile holds the rider, then
     // counts down one per update.
@@ -164,9 +165,9 @@ struct ZoomZooState {
     // $0E7B, one word for both riders: clear when the latest drive routine
     // ($82:98CF) took the small-displacement path, so the pose and idle
     // routines follow throttle rather than velocity. A rider whose drive is
-    // suspended (physics_hold) reads the other rider's value. Only the other
-    // tracks' layout carries it; on ZOOM ZOO and DRAGSTER no drive is ever
-    // suspended, so each rider rewrites it before reading it.
+    // suspended (physics_hold) reads the other rider's value. It is serialized
+    // with the special-tile words; while none is live no drive is suspended,
+    // so each rider rewrites it before reading it.
     std::uint16_t drive_target_latch{};
 };
 struct ZoomZooContent {

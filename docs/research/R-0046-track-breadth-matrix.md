@@ -76,6 +76,9 @@ FLAT FUN's pictures, observation 15).
    | stops at `unrecovered coarse-grid edge branch` (9); updates completed as above | 5 (330), 7 (738), 8 (562), 10 (359), 15 (461), 20 (452), 22 (776), 32 (459), 35 (438) |
    | refused in its first update: shape `$04` (1) | 37 |
 
+   Since R-0047 (sampler edges and special tiles recovered) the same matrix completes on
+   39 of the 45 tracks; the six stops are listed there.
+
    Both stops are native guards on branches no accepted track reached: the
    response to a tile flag outside {0, 2, 6, 7, 18, 20} in vertical contact
    (`src/core/vertical_contact.cpp`), and the sampler at the right column edge or a

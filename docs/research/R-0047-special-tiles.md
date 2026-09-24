@@ -72,7 +72,7 @@ the selected tile (`$0DE7`, the flag byte of the tile named by the selected word
    | 24 | `$81:84B2` lift | **recovered here** |
    | 26 | `$81:837E` | guarded |
    | 28 | `$81:8316` | guarded |
-   | 30 and up | beyond the table (`CPX #$3C`) | guarded |
+   | 30-58 | through the bytes after the table (`CPX #$3C; BPL` skips only 60 and up) | guarded |
 
    Native used to handle pairs 2 and 6 and silently ignore every other pair here;
    it now throws on the guarded ones, naming the pair.
@@ -165,11 +165,15 @@ x moves 4 the way the D-pad points (none when neutral); otherwise `$0F39` = 1.
   pair 16 inline, and each consumer above.
 - **State.** `SpecialTileRider` per rider (`$0BCB`, `$0D57`, `$0DF7`, `$0DF3`, `$0DFF`,
   `$0547`, `$0BE7` and bit 4 of `$1516`/`$151A`) and `drive_target_latch` (`$0E7B`).
-  Only the other tracks' state carries them: `URTRnn02`, the 742-byte layout plus
-  34 bytes (776). DRAGSTER (`URDG0001`) and ZOOM ZOO (`URZZ000B`) keep 742 bytes and
-  refuse to serialize nonzero special-tile words, so no frozen contract moves.
-  `$0E7B` is not in their layout: without a physics hold each rider's drive
-  rewrites it before it is read. The words the tiles set for one update only
+  The other tracks' state always carries them: `URTRnn02`, the 742-byte layout plus
+  34 bytes (776). DRAGSTER and ZOOM ZOO keep their 742-byte layouts (`URDG0001`,
+  `URZZ000B`) while every special-tile word is zero, and take the same 776-byte
+  extension (`URDG0002`, `URZZ000C`) only while one is live; the extension with every
+  word zero is refused as non-canonical. No accepted race reaches a special tile, so
+  no frozen contract moves, but ZOOM ZOO's own tile table holds the corkscrew (pair
+  10) and a live race there must not abort when its state is saved (review finding
+  1: the first candidate refused such a state). `$0E7B` travels with the extension:
+  without a physics hold each rider's drive rewrites it before it is read. The words the tiles set for one update only
   (`$0F3B`, `$0F3F`, `$0F5B`) are locals.
 - **Pack profile v11** (`classic.pal.crawler.tracks.v11`, 148 entries) adds
   `zoom.corkscrew-heights`, the 96 bytes `$00:8088-80E7`.
@@ -197,6 +201,8 @@ All compared with `track_reference` (`recompare --per-track` on the part 2 sweep
 | SWITCHER | new, Right held from frame 1,430 | - | **exact 1,983 of 1,983**, both riders on mud |
 | SHORT CUT | new, Right held from frame 1,414 | - | **exact 1,999 of 1,999**, the player ejected from a corkscrew |
 | MEGAJUMP | new, Right held from frame 1,380 | - | **exact 2,033 of 2,033**, the player through a whole corkscrew |
+| WARIO PAINT | new, Right held from frame 1,402 | - | **exact 3,011 of 3,011**; the player's corkscrew uses the second height table |
+| WARIO PAINT | new, Right and B (jump) held from frame 1,402 | - | **exact 3,011 of 3,011**; the player on pair 16 with jump held for 43 updates |
 
 The other nine compared tracks are unchanged (exact over their windows, or stopped at
 the same out-of-scope guard). The WRAM of these captures agrees with the new state
@@ -207,6 +213,18 @@ player's corkscrew) match the original with 0 differing pixels. With the priorit
 ignored, 6 of 8 of those frames differ by 3 to 160 pixels, the rider hidden behind the
 tube. On MONSTER (opponent's corkscrew) and SHORT CUT the only differences are the
 declared off-screen rider arrow (36 to 108 pixels).
+
+The independent review re-ran the recompare and made four captures of its own, none
+used here as evidence before: WARIO PAINT with Right held and with Right and jump held,
+CROCK with Right held and DRAGRACE with Right held. All four are exact to their ends
+(3,011, 3,011, 3,004 and 2,605 rows). The two WARIO PAINT cases were then recaptured
+into this task's evidence directory: they are the table's last two rows.
+
+**Idle matrix.** `content track-idle-matrix --updates 1200` (every track on ZOOM ZOO's
+scenario, controller released) now completes on 39 of the 45 tracks, against 16 in R-0046
+observation 4. It stops on BOWL (pair 8 in contact, update 7), LAST
+ONE and DOWN+UP (pair 26 in contact, 807 and 518), MONSTER and HAIRPIN HILL (the AI-marker
+guard, 808 and 773, on this scenario), and LITTLE DIPPER (its shape).
 
 **Live.** Hidden 4,000-update runs with Right held (`frontend run --hidden
 --fixed-controller-mask 128`) complete with 0 fallback frames on WARIO PAINT, CROCK,
@@ -229,9 +247,7 @@ table is not a pair a rider touches.
 ## Limits
 
 - Audio is a declared omission: the sounds `$0212`, `$0213` and `$021B` are not played.
-- The corkscrew's ejection and pair 16's jump push are exercised only as far as the
-  captures above go: an ejection on SHORT CUT (player, Right held) and pair 16 with
-  jump released on WARIO PAINT. Pair 16 with jump held is a static reading.
+- The corkscrew's ejection is exercised once, on SHORT CUT (player, Right held).
 - Pairs 4, 8, 12, 26 and 28 in movement, and 8 and 26 in contact, stay guarded: a
   track that touches one still aborts, with the pair named.
 - The static reading that `$81:966F-9690` is unreachable rests on the listing and on

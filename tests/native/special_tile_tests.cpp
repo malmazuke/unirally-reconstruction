@@ -143,7 +143,7 @@ int main() {
     }
 
     // Layout: any track but DRAGSTER and ZOOM ZOO is URTRnn02, 776 bytes, the
-    // special-tile words after the shared 742; DRAGSTER keeps 742 and refuses them.
+    // special-tile words after the shared 742.
     {
         std::array<std::uint8_t,14> header{};header[3]=0x44;header[5]=0x32;header[7]=0x44;header[9]=0x32;header[13]=0x40;
         ZoomZooContent content{};content.movement.sampling.track=header;
@@ -160,10 +160,25 @@ int main() {
         for(const unsigned at:{742U,752U,764U,772U,774U}) {auto bad=bytes;bad[at]=0x40;rejects([&]{(void)deserialize_zoom_zoo(bad);});}
         auto short_state=bytes;short_state.resize(742);rejects([&]{(void)deserialize_zoom_zoo(short_state);});
         auto old_version=bytes;old_version[7]='1';rejects([&]{(void)deserialize_zoom_zoo(old_version);});
+        // DRAGSTER and ZOOM ZOO keep 742 bytes until a special-tile word is live,
+        // then take the extended layout under URDG0002 / URZZ000C.
         auto dragster=classic_crawler_dragster_race_start(content);
         require(serialize_zoom_zoo(dragster).size()==742);
         dragster.special_tiles[0].physics_hold=1;
-        rejects([&]{(void)serialize_zoom_zoo(dragster);});
+        const auto live=serialize_zoom_zoo(dragster);
+        const std::array<std::uint8_t,8> dragster_live{'U','R','D','G','0','0','0','2'};
+        require(live.size()==776 && std::equal(dragster_live.begin(),dragster_live.end(),live.begin()));
+        require(deserialize_zoom_zoo(live).special_tiles==dragster.special_tiles && serialize_zoom_zoo(deserialize_zoom_zoo(live))==live);
+        auto zoom=classic_crawler_zoom_zoo_start(content);
+        require(serialize_zoom_zoo(zoom).size()==742);
+        zoom.special_tiles[1].corkscrew_step=5;zoom.special_tiles[1].corkscrew_latch=1;
+        const auto zoom_live=serialize_zoom_zoo(zoom);
+        const std::array<std::uint8_t,8> zoom_magic{'U','R','Z','Z','0','0','0','C'};
+        require(zoom_live.size()==776 && std::equal(zoom_magic.begin(),zoom_magic.end(),zoom_live.begin()));
+        require(deserialize_zoom_zoo(zoom_live).track==ClassicRaceTrack::ZoomZoo && serialize_zoom_zoo(deserialize_zoom_zoo(zoom_live))==zoom_live);
+        // The extended layout with every word zero is not canonical and is refused.
+        auto idle=zoom_live;for(unsigned at=742;at<776;++at)idle[at]=0;
+        rejects([&]{(void)deserialize_zoom_zoo(idle);});
     }
     return 0;
 }
