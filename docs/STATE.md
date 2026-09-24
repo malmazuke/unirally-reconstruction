@@ -1,5 +1,19 @@
 # Project state
 
+Updated 24 September 2026 (RACE-GUARDS): **no cold-start race stops at a native guard any
+more.** All 16 race tracks match the original over their compared windows. Longer captures
+to frame 4,400 of INFINITY, HAIRPIN HILL, MONSTER and HYBRID, released and with Right held,
+match to their ends or to a finish. Every track runs 4,000 held-input updates clean in the
+app ([R-0048](research/R-0048-race-guards.md)). Two recoveries did it:
+- The checkpoint-seen flags are 80 bytes, not 20, so five- and seven-lap races index past the
+  twentieth. Other tracks' states are now `URTRnn03` (836 bytes); DRAGSTER and ZOOM ZOO are
+  unchanged.
+- An inverted AI marker leaves the opponent with every input released and its direction
+  neutral, as the port-2 reader sets it before the AI runs.
+
+Next: [RACE-FINISH-BREADTH](../tasks/RACE-FINISH-BREADTH.md). No new track's finish or result
+load is compared yet.
+
 Updated 24 September 2026 (SPECIAL-TILE-RESPONSE): **the special tiles no longer stop any
 captured race.** The original dispatches a rider's selected tile by flag pair in vertical
 contact and again in movement; native now reproduces the lift (flag 25), mud (14), the

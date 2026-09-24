@@ -2018,7 +2018,8 @@
   "comment": "instruction start",
   "label": "loc_81966F",
   "source_records": [
-   "docs/research/R-0047-special-tiles.md"
+   "docs/research/R-0047-special-tiles.md",
+   "tasks/SPECIAL-TILE-RESPONSE.md"
   ]
  },
  {
@@ -3059,6 +3060,15 @@
   ]
  },
  {
+  "address": "$81:CA3C",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_81CA3C",
+  "source_records": [
+   "docs/research/R-0048-race-guards.md"
+  ]
+ },
+ {
   "address": "$81:CAAD",
   "class": "observed",
   "comment": "routine start",
@@ -3075,6 +3085,25 @@
   "source_records": [
    "docs/research/R-0044-classic-split-time.md",
    "tasks/CLASSIC-SPLIT-TIME.md"
+  ]
+ },
+ {
+  "address": "$81:CC17",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_81CC17",
+  "source_records": [
+   "docs/research/R-0048-race-guards.md"
+  ]
+ },
+ {
+  "address": "$81:CD25",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_81CD25",
+  "source_records": [
+   "docs/research/R-0048-race-guards.md",
+   "tasks/RACE-GUARDS.md"
   ]
  },
  {
@@ -5255,6 +5284,16 @@
   ]
  },
  {
+  "address": "$82:AB6F",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_82AB6F",
+  "source_records": [
+   "docs/research/R-0048-race-guards.md",
+   "tasks/RACE-GUARDS.md"
+  ]
+ },
+ {
   "address": "$82:ACA8",
   "class": "observed",
   "comment": "routine start",
@@ -6073,7 +6112,18 @@
   "comment": "routine start",
   "label": "sub_83E082",
   "source_records": [
-   "docs/research/R-0030-zoom-zoo-native-trial.md"
+   "docs/research/R-0030-zoom-zoo-native-trial.md",
+   "docs/research/R-0048-race-guards.md"
+  ]
+ },
+ {
+  "address": "$83:E0A7",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83E0A7",
+  "source_records": [
+   "docs/research/R-0048-race-guards.md",
+   "tasks/RACE-GUARDS.md"
   ]
  },
  {
@@ -6414,7 +6464,8 @@
   "source_records": [
    "docs/research/R-0013-native-finish-reference-freeze.md",
    "tasks/M3-01-review.md",
-   "tasks/M3-01.md"
+   "tasks/M3-01.md",
+   "tasks/RACE-FINISH-BREADTH.md"
   ]
  },
  {

@@ -1,6 +1,7 @@
 """TRACK-BREADTH laboratory: capture any Crawler track through the original menu with the
 controller released, and compare the original's race projection (742 bytes, and for any track but
-DRAGSTER and ZOOM ZOO the 34 special-tile bytes of R-0047) with native.
+DRAGSTER and ZOOM ZOO the 34 special-tile bytes of R-0047 and the 60 checkpoint bytes of
+R-0048) with native.
 
 Original only on the capture side; never a native runtime input. The menu path is the
 accepted ZOOM ZOO prefix of `tests/manifests/replay/race-crawler-zoom-zoo-3300.json`
@@ -28,7 +29,7 @@ import tempfile
 from .zoom_zoo_trial_reference import ROOT, ROM_SHA, CORE_SHA, sha, digest
 from .zoom_zoo_race_reference import project
 from .zoom_zoo_playable import ROLL_WORDS
-from .classic_race_layout import describe, special_tile_bytes
+from .classic_race_layout import describe, special_tile_bytes, checkpoint_tail_bytes
 from ..content.commands import write_track_override
 from ..reference.bsnes import BsnesCore, BUTTONS, frame_png
 from .zoom_zoo_trial import BUTTONS as RUNNER_BUTTONS  # the runner's controller-row bit order
@@ -180,10 +181,10 @@ def original_rows(directory):
                     countdown_paused += 1
             pause = w[0xef3:0xef7]+paused_updates.to_bytes(4, 'little')+countdown_paused.to_bytes(4, 'little')
             row += s[0x106f:0x1073]+s[0x618:0x61c]+charge+announcements+roll+weights+pause
-            # Any track but DRAGSTER and ZOOM ZOO: its state (URTRnn02) appends
+            # Any track but DRAGSTER and ZOOM ZOO: its state (URTRnn03) appends
             # the special-tile words (R-0047).
             if s[0x74a] not in (0, 1):
-                row += special_tile_bytes(w)
+                row += special_tile_bytes(w)+checkpoint_tail_bytes(w)
             rows.append(row.hex())
             previous = w
     scenario = {'laps_0744': None, 'race_mode_074b': None, 'track_074a': None}

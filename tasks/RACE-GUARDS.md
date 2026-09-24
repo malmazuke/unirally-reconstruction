@@ -2,17 +2,18 @@
 
 ## Assignment
 
-- Status: ready (prepared 24 September 2026 by the SPECIAL-TILE-RESPONSE session).
+- Status: accepted (reviewed and integrated by pull request #17). Claimed 24 September 2026 about 13:40Z by the session that closed SPECIAL-TILE-RESPONSE.
 - Milestone: M4 breadth (R-0046 next experiments 1 and 3)
 - Coordinator: the claiming session is coordinator, primary and integrator
 - Task provider (fixed for all children; record any user-initiated platform change): Anthropic
-- Worker/session/runtime/model: to be recorded at claim
+- Worker/session/runtime/model: Claude Opus 5.5 (`claude-opus-5-5`), Claude Code desktop, one session as coordinator, primary and integrator
 - Actual model/reasoning effort, routing rationale and frontier escalation question (if any):
   the claiming session's model at default effort. Review tier under D-0008: **tier 1** (race
   state and opponent steering in `src/core/movement.cpp`): a fresh independent reviewer in an
   isolated checkout with a withheld case, and all eleven differential gates actually run.
 - Provider quota window/baseline timestamp, used/remaining or unknown, reserve and session
-  allowance (D-0004): sample at claim and record here.
+  allowance (D-0004): weekly all-models 4% and five-hour 3% at claim (13:41Z); the user's stop
+  is 50% weekly or the five-hour limit.
 - Reviewer (primary automatically spawns fresh model/effort, isolated checkout; no user
   trigger): a fresh Anthropic subagent at the exact candidate. Withheld case: a held-input
   capture of one of the four tracks that the primary did not compare.
@@ -70,47 +71,74 @@ locked tours, new-track finishes and result screens.
 
 ## Capability and coverage checkpoint
 
-- Native capability delivered / still missing: to be filled.
+- Native capability delivered / still missing: all 80 checkpoint-seen flags and the inverted-marker return; nothing left at a guard in the 16 cold-start races.
 - Frozen exact-match interval, field set and reference/seed identity: the part 2 sweep and new
   captures; no new freeze.
 - Dynamic captured inputs still consumed (must be zero for autonomy): the landing matrices.
-- Relevant branches/transitions exercised, including independent variations: to be filled.
+- Relevant branches/transitions exercised, including independent variations: flags 21-31 (INFINITY) and 22 (HAIRPIN HILL); 14 inverted-marker updates on three tracks; each track released and with Right held.
 - First divergence and cheapest next discriminating experiment: see the handoff.
-- Trial-wide usage baseline/current, reserve, reset authorization/outcome or none: to be
-  sampled at claim.
+- Trial-wide usage baseline/current, reserve, reset authorization/outcome or none: 4% weekly at
+  claim; no reset authorization needed.
 
 ## Evidence and attempts
 
 | Attempt | Hypothesis | Experiment | Observation | Next decision |
 | --- | --- | --- | --- | --- |
+| 1 (13:42Z) | The checkpoint array is longer than 20 bytes | INFINITY's WRAM `$114D-$1190` per update; boundary fill; listing `$81:CD25` | Flags past `$1160` clear like the first 20; setup fills 80 | Carry 80 flags in URTRnn03 |
+| 2 (13:44Z) | The inverted marker just returns | Listing `$83:E0A7`; implemented as a return keeping the direction | INFINITY and HAIRPIN HILL exact; MONSTER differs at 809 in `opponent_horizontal` (original 1) | Find the other writer of `$031B` |
+| 3 (13:46Z) | The port-2 reader resets AI inputs first | Listing `$82:AB6F-AB8B` | All inputs released, direction 1, X released, before the AI runs | Neutral direction, A and X masked |
+| 4 (13:47Z) | - | recompare; eight new captures to frame 4,400 | All 16 exact to their windows; all eight captures exact to their ends or a finish | Records, gates |
 
 ## Handoff
 
-- Current base/head commit and uncommitted state: not claimed; prepared on
-  `task/special-tile-response`.
-- Verified findings: the two stops above (R-0047 evidence table and R-0046 matrix).
-- Current hypothesis and failed approaches: the checkpoint index overflows the 20-byte array
-  on races of more than 3 laps (`laps_remaining` starts at laps + 1).
-- Commands executed, outcomes and report hashes: none yet.
-- Unavailable/skipped checks: `lab-sanitize` and `app-sanitize` are unavailable on this host
-  (the ASan runtime hangs before `main`, rechecked 24 September 2026); the hosted Linux job
-  covers them.
-- Exact next experiment/command: dump WRAM `$114D-$1180` on the INFINITY capture
-  (`row1-pos4`) at rows 370-390, and read the listing around `$81:8050-82B6` for the store
-  that uses `$114D`.
-- Remaining dependencies: none outside the project.
-- Runtime needs (network, build time, fixtures, memory): as for SPECIAL-TILE-RESPONSE; its
-  `local/evidence/special-tile-response/gates.sh` is the gate script to adapt (put the gate
-  directory under the worktree's `artifacts/`: `native presentation-check` refuses any other).
+- Current base/head commit and uncommitted state: base `b287670` (`main` after #16);
+  implementation `7ea1eee` on `task/race-guards`, records after it.
+- Verified findings: [R-0048](../docs/research/R-0048-race-guards.md).
+- Current hypothesis and failed approaches: keeping the opponent's direction on an inverted
+  marker (attempt 2) failed at MONSTER 809.
+- Commands executed, outcomes and report hashes: recompare (all 16 exact); `captures.sh` and
+  eight `explore` reports under `local/evidence/race-guards/`; hidden 4,000-update held runs on
+  MONSTER, INFINITY, HYBRID and HAIRPIN HILL (0 fallback frames); idle matrix 41 of 45; ctest
+  24/24 on lab-debug. `gates.sh` on `eacd23e` (13:57-14:43Z, `gates-eacd23e.out`): ctest 24/24
+  on three presets, synthetic suite, both v1 contracts, hidden runs on DRAGSTER, ZOOM ZOO,
+  FLAT FUN and the four tracks (0 fallback frames), fuzz 0 aborts, **all eleven differential
+  gates identical to the accepted set**, `rnc-inventory` passed.
+- Unavailable/skipped checks: `lab-sanitize` and `app-sanitize` (ASan hangs on this host); the
+  hosted Linux job covers them.
+- Exact next experiment/command: none; [RACE-FINISH-BREADTH](RACE-FINISH-BREADTH.md) is next.
+- Remaining dependencies: none.
+- Runtime needs (network, build time, fixtures, memory): as SPECIAL-TILE-RESPONSE.
 - Aggregate parent/child time, provider usage before/after (or unknown), other-account-work
-  caveat: to be recorded.
-- Accepted outcome, review/fix rounds and next routing decision: to be recorded.
+  caveat: primary from 13:40Z; figures in the closeout.
+- Accepted outcome, review/fix rounds and next routing decision: accepted at the first round;
+  next is [RACE-FINISH-BREADTH](RACE-FINISH-BREADTH.md).
+- Cleanup by the closing session: the captures and gate logs are under
+  `local/evidence/race-guards/` in the main checkout (the worktree's `artifacts/race-guards/`
+  gate and idle-matrix directories are moved there); both worktrees (`race-guards`,
+  `race-guards-review`) and the local task branch are deleted; bootstrap and app-debug are
+  rerun in the main checkout.
 
 ## Review and integration
 
-- Reviewer and independent reproduction/withheld-case results:
-- Required changes or acceptance rationale:
-- Exact merge candidate and required-check results:
-- Integrated commit and evidence location:
-- Remote synchronization: pushed ref(s), verified local/remote commit IDs, or exact push failure:
-- Scope still unverified:
+- Reviewer and independent reproduction/withheld-case results: a fresh Claude Opus 5.5
+  subagent in the detached checkout `.worktrees/race-guards-review` at `eacd23e`, tier 1. It
+  extracted pack v11 itself, reproduced the recompare (all 16 exact) and four of the primary's
+  captures, made four withheld captures (MONSTER Left, HAIRPIN HILL Right+B, INFINITY Right+A,
+  HYBRID Left; all exact to their ends, exercising flags 21-31 and 14 inverted-marker
+  updates), restored 836-byte states mid-race byte-identically, checked every listing claim,
+  and reran one gate after the primary's run (same digest). **Approved**, no must-fix
+  ([review](https://github.com/malmazuke/unirally-reconstruction/pull/17#pullrequestreview-5306072733)).
+- Required changes or acceptance rationale: two should-fix items and three advisories, all
+  record wording (the marker's run lengths, the laps' highest index, the AI's first stores,
+  the A/X mask resting on the listing, this section), applied in the final records commit with
+  no code change, so no re-review.
+- Exact merge candidate and required-check results: the pull request head; `changes`, `lab
+  (ubuntu-24.04)` and `lab (macos-15)` green on it before merging (run IDs in the closeout).
+- Integrated commit and evidence location: the merge commit of
+  [#17](https://github.com/malmazuke/unirally-reconstruction/pull/17);
+  `artifacts/race-guards-integration/closeout.json` and `local/evidence/race-guards/` in the
+  main checkout.
+- Remote synchronization: through the pull request; local `main` compared with `origin/main`
+  after the merge (closeout).
+- Scope still unverified: the A/X masking's effect (the selector was 0 on every
+  inverted-marker update seen); races of more than 19 laps; new tracks' finishes (next task).

@@ -78,13 +78,14 @@ int main() {
     require(classic_race_has_scenario(flat_fun) && !classic_race_has_scenario(ClassicRaceTrack{2}) &&
             !classic_race_has_scenario(ClassicRaceTrack{37}));
     rejects([&]{(void)classic_race_scenario(ClassicRaceTrack{2});});
-    // Its state carries its own identity, URTR13 02 (the 742-byte layout and
-    // the special-tile words, R-0047), and round-trips.
+    // Its state carries its own identity, URTR13 03 (the 742-byte layout, the
+    // special-tile words of R-0047 and the checkpoint flags of R-0048), and
+    // round-trips.
     auto flat_start=classic_race_start(content,flat);
     require(flat_start.track==flat_fun && flat_start.movement.frame==1392);
     const auto flat_bytes=serialize_zoom_zoo(flat_start);
-    const std::array<std::uint8_t,8> flat_magic{'U','R','T','R','1','3','0','2'};
-    require(flat_bytes.size()==776 && classic_race_state_magic(flat_fun)==flat_magic && std::equal(flat_magic.begin(),flat_magic.end(),flat_bytes.begin()));
+    const std::array<std::uint8_t,8> flat_magic{'U','R','T','R','1','3','0','3'};
+    require(flat_bytes.size()==836 && classic_race_state_magic(flat_fun)==flat_magic && std::equal(flat_magic.begin(),flat_magic.end(),flat_bytes.begin()));
     const auto flat_restored=deserialize_zoom_zoo(flat_bytes);
     require(flat_restored.track==flat_fun && serialize_zoom_zoo(flat_restored)==flat_bytes);
     // An identity naming DRAGSTER, ZOOM ZOO or a track without a scenario is refused.
