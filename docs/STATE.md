@@ -11,8 +11,9 @@ corkscrew (10) and the jump-driven tile (16), with every routine their state rea
 - Held-input captures put the player on mud and through a whole corkscrew, and match.
 - The corkscrew raises the rider's sprite priority: 16 pictures through it match to the pixel.
 
-Other tracks' states are now `URTRnn02` (776 bytes); DRAGSTER and ZOOM ZOO keep their
-742-byte layouts, and no frozen gate moved. **Live play needs pack v11**
+Other tracks' states are now `URTRnn02` (776 bytes). DRAGSTER and ZOOM ZOO keep their
+742-byte layouts, and take the same 776-byte extension (`URDG0002`, `URZZ000C`) only while a
+special-tile word is live; no frozen gate moved. **Live play needs pack v11**
 (`classic.pal.crawler.tracks.v11`: v10 plus the corkscrew heights). Rebuild it with `content
 pack --rules tests/manifests/content/classic-crawler-tracks-pack.json --out
 local/classic-pal-crawler-tracks-v11.pack`, then rebuild `app-debug`. Still stopping: MONSTER

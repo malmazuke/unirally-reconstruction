@@ -214,7 +214,8 @@ ZoomZooState classic_crawler_zoom_zoo_start(const ZoomZooContent& content);
 // The same initializer for the one-player, one-lap CRAWLER/DRAGSTER race.
 ZoomZooState classic_crawler_dragster_race_start(const ZoomZooContent& content);
 ZoomZooState classic_race_start(const ZoomZooContent& content,const ClassicRaceScenario& scenario);
-// Identity of a DRAGSTER race state on the shared engine; same 742-byte layout as URZZ000B.
+// Identity of a DRAGSTER race state on the shared engine; same 742-byte layout as
+// URZZ000B (URDG0002 and 776 bytes while a special-tile word is live, R-0047).
 inline constexpr std::array<std::uint8_t,8> dragster_race_state_magic{'U','R','D','G','0','0','0','1'};
 // Identity of any other track's race state: `URTR`, the two-digit track index,
 // `02`; the 742-byte layout followed by the special-tile words (776 bytes).

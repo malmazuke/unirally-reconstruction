@@ -2,7 +2,7 @@
 
 ## Assignment
 
-- Status: review. Claimed 24 September 2026 about 08:25Z, after the weekly reset (prepared
+- Status: accepted (reviewed and integrated by pull request #16). Claimed 24 September 2026 about 08:25Z, after the weekly reset (prepared
   23 September 2026 by the TRACK-BREADTH session).
 - Milestone: M4 breadth (the follow-up TRACK-BREADTH's matrix names first)
 - Coordinator: the claiming session is coordinator, primary and integrator
@@ -138,7 +138,8 @@ tours and the stunt events. Each has its own row in R-0046's "Next experiments".
 ## Handoff
 
 - Current base/head commit and uncommitted state: base `4c45eb1` (`main` after #15);
-  implementation `f1501d6` and `0cfdf0c` on `task/special-tile-response`, records after it.
+  implementation `f1501d6` and `0cfdf0c`, review fix `76ae927`, records after it, on
+  `task/special-tile-response`; merged by #16.
 - Verified findings: [R-0047](../docs/research/R-0047-special-tiles.md). The two dispatches
   by flag pair; the lift, mud, corkscrew and jump-driven tile with their consumers; the
   opponent's corkscrew writing the player's rolling flag; the rotation's surface-mode return
@@ -163,6 +164,9 @@ tours and the stunt events. Each has its own row in R-0046's "Next experiments".
     (`hidden-special/`); MONSTER and HAIRPIN HILL stop at their out-of-scope guards.
   - `coverage static-map` twice, identical: 709 cited addresses (42 new), unknown share
     unchanged at 40.4%.
+  - After the review fix, `gates.sh` on `76ae927` (12:44-13:30Z, `gates-76ae927.out`): the
+    same results in full, the v1 contracts included, and the eleven gates again identical to
+    TRACK-BREADTH's. `content track-idle-matrix --updates 1200`: 39 of 45 complete (R-0047).
 - Unavailable/skipped checks: `lab-sanitize` and `app-sanitize`, unavailable on this host (a
   one-line ASan program still hangs before `main`, rechecked 24 September on macOS 27.0
   26A428); the hosted Linux job covers them.
@@ -171,14 +175,46 @@ tours and the stunt events. Each has its own row in R-0046's "Next experiments".
 - Runtime needs (network, build time, fixtures, memory): ROM, core, pack v11; the gates take
   about 45 minutes.
 - Aggregate parent/child time, provider usage before/after (or unknown), other-account-work
-  caveat: primary 08:25-10:00Z; usage in the closeout.
-- Accepted outcome, review/fix rounds and next routing decision: see Review and integration.
+  caveat: primary 08:25-10:00Z and 12:40-13:45Z; reviewer 09:55-10:17Z and 13:30-13:35Z (22 and
+  5 minutes by the harness). Weekly all-models 0% at claim, 3% at 13:30Z; final figures in
+  the closeout.
+- Accepted outcome, review/fix rounds and next routing decision: accepted after one fix
+  round; next is [RACE-GUARDS](RACE-GUARDS.md).
+- Cleanup by the closing session: the captures, gate logs, recompare reports and pictures
+  are already under `local/evidence/special-tile-response/` in the main checkout (the v1 and
+  gate directories under the worktree's `artifacts/` are moved there too); copy pack v11 to
+  the main checkout's `local/`; delete both worktrees (`special-tile-response`,
+  `special-tile-response-review`) with their build output, and the local task branch once
+  `main` holds it; the closeout lists what was moved and deleted.
 
 ## Review and integration
 
-- Reviewer and independent reproduction/withheld-case results:
-- Required changes or acceptance rationale:
-- Exact merge candidate and required-check results:
-- Integrated commit and evidence location:
-- Remote synchronization: pushed ref(s), verified local/remote commit IDs, or exact push failure:
-- Scope still unverified:
+- Reviewer and independent reproduction/withheld-case results: a fresh Claude Opus 5.5
+  subagent in the detached checkout `.worktrees/special-tile-response-review`, tier 1. At
+  `0c94e8d` it extracted pack v11 itself, reproduced the recompare on all 20 tracks and native
+  on the six captures, and made four withheld captures: WARIO PAINT with Right held and with
+  Right and jump held, CROCK and DRAGRACE with Right held. All four were exact to their ends
+  (3,011, 3,011, 3,004 and 2,605 rows). It also read every handler against the code, checked
+  that `$81:966F` is unreachable, and reran two gates (same digests). **Approved** with one
+  should-fix and four advisories
+  ([review](https://github.com/malmazuke/unirally-reconstruction/pull/16#pullrequestreview-5303028744)).
+  At `76ae927` it checked the serializer (including 66 restored live-tile WARIO PAINT states
+  continuing byte-identically in fresh processes), the idle matrix (39 of 45) and one gate:
+  **approved**, one records advisory
+  ([re-review](https://github.com/malmazuke/unirally-reconstruction/pull/16#pullrequestreview-5305169261)).
+- Required changes or acceptance rationale: the should-fix (a live special tile could not be
+  saved on DRAGSTER or ZOOM ZOO, whose own table holds the corkscrew) is fixed in `76ae927`
+  by the live-only extension, with the full gates rerun. Advisories 2, 3 and 5 are fixed in
+  the same commit; 4 (pair 28 aborts) is kept as a named guard, since no capture reaches it.
+  The re-review's advisory (three stale layout descriptions) is fixed in the final records
+  commit: comments and prose only, so it needs no re-review.
+- Exact merge candidate and required-check results: the pull request head; `changes`, `lab
+  (ubuntu-24.04)` and `lab (macos-15)` green on it before merging (run IDs in the closeout).
+- Integrated commit and evidence location: the merge commit of
+  [#16](https://github.com/malmazuke/unirally-reconstruction/pull/16);
+  `artifacts/special-tile-response-integration/closeout.json` and
+  `local/evidence/special-tile-response/` in the main checkout.
+- Remote synchronization: through the pull request; local `main` fast-forwarded and compared
+  with `origin/main` after the merge (closeout).
+- Scope still unverified: tile pairs 4, 8, 12, 26 and 28; the corkscrew ejection beyond one
+  case; the tiles' sounds; new-track finishes and results (outside this task).
