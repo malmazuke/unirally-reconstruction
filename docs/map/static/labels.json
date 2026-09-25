@@ -3442,7 +3442,6 @@
   "comment": "instruction start",
   "label": "loc_81C238",
   "native": [
-   "src/core/race_state_io.cpp:deserialize_classic_race",
    "src/core/reward_queue.cpp:takes_reward_path",
    "src/core/reward_queue.cpp:update_opponent_announcements"
   ],
@@ -3506,7 +3505,7 @@
   "comment": "instruction start",
   "label": "loc_81C280",
   "native": [
-   "src/core/race_state_io.cpp:deserialize_classic_race",
+   "src/core/race_state_io.cpp:check_opponent_queue",
    "src/core/reward_queue.cpp:update_opponent_announcements"
   ],
   "source_records": [
@@ -3701,7 +3700,7 @@
    "src/core/input_timer.cpp:advance_timer_digits",
    "src/core/presentation.cpp:build_result_map",
    "src/core/presentation.cpp:classic_hud_left_field",
-   "src/core/race_state_io.cpp:deserialize_classic_race",
+   "src/core/race_state_io.cpp:check_lap_clocks",
    "src/core/race_update.cpp:update_zoom_zoo"
   ],
   "source_records": [
@@ -3723,7 +3722,7 @@
    "src/core/input_timer.cpp:advance_timer_digits",
    "src/core/presentation.cpp:build_result_map",
    "src/core/presentation.cpp:classic_hud_left_field",
-   "src/core/race_state_io.cpp:deserialize_classic_race",
+   "src/core/race_state_io.cpp:check_lap_clocks",
    "src/core/race_update.cpp:update_zoom_zoo"
   ],
   "source_records": [
@@ -3739,7 +3738,7 @@
    "src/core/input_timer.cpp:advance_timer_digits",
    "src/core/presentation.cpp:build_result_map",
    "src/core/presentation.cpp:classic_hud_left_field",
-   "src/core/race_state_io.cpp:deserialize_classic_race",
+   "src/core/race_state_io.cpp:check_lap_clocks",
    "src/core/race_update.cpp:update_zoom_zoo"
   ],
   "source_records": [
@@ -3755,7 +3754,7 @@
    "src/core/input_timer.cpp:advance_timer_digits",
    "src/core/presentation.cpp:build_result_map",
    "src/core/presentation.cpp:classic_hud_left_field",
-   "src/core/race_state_io.cpp:deserialize_classic_race",
+   "src/core/race_state_io.cpp:check_lap_clocks",
    "src/core/race_update.cpp:update_zoom_zoo"
   ],
   "source_records": [
@@ -3771,7 +3770,7 @@
    "src/core/input_timer.cpp:advance_timer_digits",
    "src/core/presentation.cpp:build_result_map",
    "src/core/presentation.cpp:classic_hud_left_field",
-   "src/core/race_state_io.cpp:deserialize_classic_race",
+   "src/core/race_state_io.cpp:check_lap_clocks",
    "src/core/race_update.cpp:update_zoom_zoo"
   ],
   "source_records": [
@@ -3787,7 +3786,7 @@
    "src/core/input_timer.cpp:advance_timer_digits",
    "src/core/presentation.cpp:build_result_map",
    "src/core/presentation.cpp:classic_hud_left_field",
-   "src/core/race_state_io.cpp:deserialize_classic_race",
+   "src/core/race_state_io.cpp:check_lap_clocks",
    "src/core/race_update.cpp:update_zoom_zoo"
   ],
   "source_records": [
@@ -3803,7 +3802,7 @@
    "src/core/input_timer.cpp:advance_timer_digits",
    "src/core/presentation.cpp:build_result_map",
    "src/core/presentation.cpp:classic_hud_left_field",
-   "src/core/race_state_io.cpp:deserialize_classic_race",
+   "src/core/race_state_io.cpp:check_lap_clocks",
    "src/core/race_update.cpp:update_zoom_zoo"
   ],
   "source_records": [
@@ -5639,7 +5638,7 @@
   "comment": "instruction start",
   "label": "loc_829B87",
   "native": [
-   "src/core/race_state_io.cpp:deserialize_classic_race",
+   "src/core/race_state_io.cpp:check_rolls",
    "src/core/reward_queue.cpp:announce_landing_tricks"
   ],
   "source_records": [
@@ -5652,7 +5651,7 @@
   "comment": "instruction start",
   "label": "loc_829CF8",
   "native": [
-   "src/core/race_state_io.cpp:deserialize_classic_race",
+   "src/core/race_state_io.cpp:check_rolls",
    "src/core/reward_queue.cpp:announce_landing_tricks"
   ],
   "source_records": [
@@ -5665,7 +5664,7 @@
   "comment": "instruction start",
   "label": "loc_829D3A",
   "native": [
-   "src/core/race_state_io.cpp:deserialize_classic_race",
+   "src/core/race_state_io.cpp:check_rolls",
    "src/core/reward_queue.cpp:announce_combination",
    "src/core/reward_queue.cpp:announce_landing_tricks"
   ],
@@ -5679,7 +5678,7 @@
   "comment": "instruction start",
   "label": "loc_829D7F",
   "native": [
-   "src/core/race_state_io.cpp:deserialize_classic_race",
+   "src/core/race_state_io.cpp:check_rolls",
    "src/core/reward_queue.cpp:announce_landing_tricks"
   ],
   "source_records": [

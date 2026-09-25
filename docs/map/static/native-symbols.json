@@ -1219,7 +1219,6 @@
   {
    "address": "$81:C238",
    "native": [
-    "src/core/race_state_io.cpp:deserialize_classic_race",
     "src/core/reward_queue.cpp:takes_reward_path"
    ],
    "region": "rom"
@@ -1241,7 +1240,7 @@
   {
    "address": "$81:C27B",
    "native": [
-    "src/core/race_state_io.cpp:deserialize_classic_race"
+    "src/core/race_state_io.cpp:check_opponent_queue"
    ],
    "range_ends": [
     "$81:C280"
@@ -1261,7 +1260,7 @@
   {
    "address": "$81:C2CC",
    "native": [
-    "src/core/race_state_io.cpp:deserialize_classic_race"
+    "src/core/race_state_io.cpp:last_queue_slot"
    ],
    "range_ends": [
     "$81:C2D0"
@@ -1282,7 +1281,7 @@
   {
    "address": "$81:C598",
    "native": [
-    "src/core/race_state_io.cpp:deserialize_classic_race",
+    "src/core/race_state_io.cpp:check_queued_events",
     "src/core/reward_queue.cpp:queue_player_announcement"
    ],
    "range_ends": [
@@ -1315,7 +1314,7 @@
    "native": [
     "src/core/presentation.cpp:build_result_map",
     "src/core/presentation.cpp:classic_hud_left_field",
-    "src/core/race_state_io.cpp:deserialize_classic_race",
+    "src/core/race_state_io.cpp:check_lap_clocks",
     "src/core/race_update.cpp:update_zoom_zoo"
    ],
    "range_ends": [
@@ -1809,7 +1808,7 @@
   {
    "address": "$82:95D5",
    "native": [
-    "src/core/race_state_io.cpp:deserialize_classic_race"
+    "src/core/race_state_io.cpp:check_rolls"
    ],
    "range_ends": [
     "$82:95F6"
@@ -1829,7 +1828,7 @@
   {
    "address": "$82:9641",
    "native": [
-    "src/core/race_state_io.cpp:deserialize_classic_race"
+    "src/core/race_state_io.cpp:read_rolls"
    ],
    "range_ends": [
     "$82:9649"
@@ -1839,7 +1838,7 @@
   {
    "address": "$82:965E",
    "native": [
-    "src/core/race_state_io.cpp:deserialize_classic_race",
+    "src/core/race_state_io.cpp:read_rolls",
     "src/core/trick_roll.cpp:bounce_charge, highest_bounce",
     "src/core/trick_roll.cpp:release_bounce"
    ],
@@ -1999,7 +1998,7 @@
   {
    "address": "$82:9B69",
    "native": [
-    "src/core/race_state_io.cpp:deserialize_classic_race",
+    "src/core/race_state_io.cpp:check_rolls",
     "src/core/reward_queue.cpp:announce_landing_tricks"
    ],
    "range_ends": [
@@ -2020,7 +2019,10 @@
   {
    "address": "$82:9D47",
    "native": [
-    "src/core/race_state_io.cpp:deserialize_classic_race"
+    "src/core/race_state_io.cpp:check_queued_events"
+   ],
+   "range_ends": [
+    "$82:9D5B"
    ],
    "region": "rom"
   },
@@ -2428,7 +2430,7 @@
    "address": "$82:D7A4",
    "native": [
     "src/core/race_setup.cpp:classic_race_start",
-    "src/core/race_state_io.cpp:deserialize_classic_race"
+    "src/core/race_state_io.cpp:reachable_event_one_weight"
    ],
    "region": "rom"
   },
@@ -2482,7 +2484,7 @@
    "address": "$82:DB87",
    "native": [
     "src/core/race_setup.cpp:classic_race_start",
-    "src/core/race_state_io.cpp:deserialize_classic_race"
+    "src/core/race_state_io.cpp:check_opponent_queue"
    ],
    "range_ends": [
     "$82:DB94"
@@ -2907,7 +2909,8 @@
   {
    "address": "$83:E1F1",
    "native": [
-    "src/core/race_state_io.cpp:deserialize_classic_race"
+    "src/core/race_state_io.cpp:check_opponent_queue",
+    "src/core/race_state_io.cpp:spin_steps"
    ],
    "region": "rom"
   },
@@ -3683,7 +3686,7 @@
   {
    "address": "$0C6D",
    "native": [
-    "src/core/race_state_io.cpp:deserialize_classic_race"
+    "src/core/race_state_io.cpp:read_rolls"
    ],
    "region": "wram"
   },
@@ -3698,7 +3701,6 @@
    "address": "$0C73",
    "native": [
     "src/core/opponent_ai.cpp:update_opponent_controller",
-    "src/core/race_state_io.cpp:deserialize_zoom_zoo",
     "src/core/zoom_zoo_movement.hpp:ZoomZooState::opponent_turnaround",
     "src/core/zoom_zoo_movement.hpp:classic_race_state_magic"
    ],
@@ -3965,7 +3967,6 @@
   {
    "address": "$0E7B",
    "native": [
-    "src/core/race_state_io.cpp:deserialize_zoom_zoo",
     "src/core/race_update.cpp:update_zoom_zoo",
     "src/core/zoom_zoo_movement.hpp:ZoomZooState::drive_target_latch",
     "src/core/zoom_zoo_movement.hpp:classic_race_state_magic"
@@ -4292,7 +4293,6 @@
    "address": "$0FF9",
    "native": [
     "src/core/presentation.cpp:ClassicRaceHudClock::observe_update",
-    "src/core/race_state_io.cpp:deserialize_classic_race",
     "src/core/rider_pose.cpp:update_idle_velocity"
    ],
    "region": "wram"
@@ -4301,13 +4301,6 @@
    "address": "$0FFF",
    "native": [
     "src/core/presentation.hpp:ClassicRaceHudClock"
-   ],
-   "region": "wram"
-  },
-  {
-   "address": "$1007",
-   "native": [
-    "src/core/race_state_io.cpp:deserialize_classic_race"
    ],
    "region": "wram"
   },
@@ -5702,32 +5695,52 @@
     "$0FF7"
    ]
   },
-  "src/core/race_state_io.cpp:deserialize_classic_race": {
+  "src/core/race_state_io.cpp:check_lap_clocks": {
    "rom": [
-    "$81:C238",
-    "$81:C27B",
-    "$81:C2CC",
-    "$81:C598",
-    "$81:C73E",
-    "$82:95D5",
-    "$82:9641",
-    "$82:965E",
-    "$82:9B69",
-    "$82:9D47",
-    "$82:D7A4",
-    "$82:DB87",
-    "$83:E1F1"
-   ],
-   "wram": [
-    "$0C6D",
-    "$0FF9",
-    "$1007"
+    "$81:C73E"
    ]
   },
-  "src/core/race_state_io.cpp:deserialize_zoom_zoo": {
+  "src/core/race_state_io.cpp:check_opponent_queue": {
+   "rom": [
+    "$81:C27B",
+    "$82:DB87",
+    "$83:E1F1"
+   ]
+  },
+  "src/core/race_state_io.cpp:check_queued_events": {
+   "rom": [
+    "$81:C598",
+    "$82:9D47"
+   ]
+  },
+  "src/core/race_state_io.cpp:check_rolls": {
+   "rom": [
+    "$82:95D5",
+    "$82:9B69"
+   ]
+  },
+  "src/core/race_state_io.cpp:last_queue_slot": {
+   "rom": [
+    "$81:C2CC"
+   ]
+  },
+  "src/core/race_state_io.cpp:reachable_event_one_weight": {
+   "rom": [
+    "$82:D7A4"
+   ]
+  },
+  "src/core/race_state_io.cpp:read_rolls": {
+   "rom": [
+    "$82:9641",
+    "$82:965E"
+   ],
    "wram": [
-    "$0C73",
-    "$0E7B"
+    "$0C6D"
+   ]
+  },
+  "src/core/race_state_io.cpp:spin_steps": {
+   "rom": [
+    "$83:E1F1"
    ]
   },
   "src/core/race_state_io.cpp:validate_zoom_zoo_content_state": {
@@ -6947,11 +6960,11 @@
   }
  },
  "totals": {
-  "addresses": 565,
+  "addresses": 564,
   "io_addresses": 14,
-  "native_symbols": 285,
+  "native_symbols": 291,
   "rom_addresses": 351,
   "sram_addresses": 6,
-  "wram_addresses": 194
+  "wram_addresses": 193
  }
 }

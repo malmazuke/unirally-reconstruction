@@ -4807,7 +4807,7 @@
     "Nmx"
    ],
    "native": [
-    "src/core/race_state_io.cpp:deserialize_classic_race",
+    "src/core/race_state_io.cpp:check_opponent_queue",
     "src/core/reward_queue.cpp:opponent_reward_weight",
     "src/core/reward_queue.cpp:reward_opponent",
     "src/core/reward_queue.cpp:takes_reward_path",
@@ -4831,7 +4831,7 @@
     "Nmx"
    ],
    "native": [
-    "src/core/race_state_io.cpp:deserialize_classic_race"
+    "src/core/race_state_io.cpp:last_queue_slot"
    ],
    "observed_entries": {},
    "start": "$81:C2CB",
@@ -4852,7 +4852,7 @@
     "Nmx"
    ],
    "native": [
-    "src/core/race_state_io.cpp:deserialize_classic_race"
+    "src/core/race_state_io.cpp:last_queue_slot"
    ],
    "observed_entries": {},
    "start": "$81:C2D0",
@@ -4997,7 +4997,7 @@
     "NMX"
    ],
    "native": [
-    "src/core/race_state_io.cpp:deserialize_classic_race",
+    "src/core/race_state_io.cpp:check_queued_events",
     "src/core/reward_queue.cpp:queue_player_announcement"
    ],
    "observed_entries": {},
@@ -5019,7 +5019,7 @@
     "NMX"
    ],
    "native": [
-    "src/core/race_state_io.cpp:deserialize_classic_race",
+    "src/core/race_state_io.cpp:check_queued_events",
     "src/core/reward_queue.cpp:queue_player_announcement"
    ],
    "observed_entries": {},
@@ -5201,7 +5201,7 @@
     "src/core/input_timer.cpp:advance_timer_digits",
     "src/core/presentation.cpp:build_result_map",
     "src/core/presentation.cpp:classic_hud_left_field",
-    "src/core/race_state_io.cpp:deserialize_classic_race",
+    "src/core/race_state_io.cpp:check_lap_clocks",
     "src/core/race_update.cpp:update_zoom_zoo"
    ],
    "observed_entries": {},
@@ -7613,7 +7613,7 @@
     "NMX"
    ],
    "native": [
-    "src/core/race_state_io.cpp:deserialize_classic_race",
+    "src/core/race_state_io.cpp:check_rolls",
     "src/core/trick_roll.cpp:(file)",
     "src/core/trick_roll.cpp:update_z_flip",
     "src/core/zoom_zoo_movement.hpp:ZoomZooRoll::input_latched, ZoomZooRoll::prior_orientation, ZoomZooRoll::prior_reflection, ZoomZooRoll::pose_base"
@@ -7638,7 +7638,7 @@
     "NMX"
    ],
    "native": [
-    "src/core/race_state_io.cpp:deserialize_classic_race",
+    "src/core/race_state_io.cpp:read_rolls",
     "src/core/trick_roll.cpp:(file)",
     "src/core/trick_roll.cpp:update_z_flip",
     "src/core/zoom_zoo_movement.hpp:ZoomZooRoll::input_latched, ZoomZooRoll::prior_orientation, ZoomZooRoll::prior_reflection, ZoomZooRoll::pose_base"
@@ -7661,7 +7661,7 @@
     "NMX"
    ],
    "native": [
-    "src/core/race_state_io.cpp:deserialize_classic_race",
+    "src/core/race_state_io.cpp:read_rolls",
     "src/core/trick_roll.cpp:(file)",
     "src/core/trick_roll.cpp:bounce_charge, highest_bounce",
     "src/core/trick_roll.cpp:release_bounce",
@@ -7686,7 +7686,7 @@
     "NMX"
    ],
    "native": [
-    "src/core/race_state_io.cpp:deserialize_classic_race",
+    "src/core/race_state_io.cpp:read_rolls",
     "src/core/trick_roll.cpp:(file)",
     "src/core/trick_roll.cpp:bounce_charge, highest_bounce",
     "src/core/trick_roll.cpp:complete_z_flip",
@@ -7989,7 +7989,8 @@
     "NMX"
    ],
    "native": [
-    "src/core/race_state_io.cpp:deserialize_classic_race",
+    "src/core/race_state_io.cpp:check_queued_events",
+    "src/core/race_state_io.cpp:check_rolls",
     "src/core/reward_queue.cpp:announce_combination",
     "src/core/reward_queue.cpp:announce_landing_tricks"
    ],
@@ -8012,7 +8013,7 @@
     "NMX"
    ],
    "native": [
-    "src/core/race_state_io.cpp:deserialize_classic_race",
+    "src/core/race_state_io.cpp:check_rolls",
     "src/core/reward_queue.cpp:announce_landing_tricks"
    ],
    "observed_entries": {},
@@ -8034,7 +8035,7 @@
     "NMX"
    ],
    "native": [
-    "src/core/race_state_io.cpp:deserialize_classic_race",
+    "src/core/race_state_io.cpp:check_rolls",
     "src/core/reward_queue.cpp:announce_landing_tricks"
    ],
    "observed_entries": {},
@@ -9760,7 +9761,7 @@
    "native": [
     "src/core/race_setup.cpp:classic_crawler_zoom_zoo_start",
     "src/core/race_setup.cpp:classic_race_start",
-    "src/core/race_state_io.cpp:deserialize_classic_race",
+    "src/core/race_state_io.cpp:check_opponent_queue",
     "src/core/zoom_zoo_movement.hpp:ClassicRaceScenario::laps",
     "src/core/zoom_zoo_movement.hpp:classic_crawler_zoom_zoo_start"
    ],
@@ -12215,7 +12216,8 @@
     "src/core/opponent_ai.cpp:stalled_against_slope",
     "src/core/opponent_ai.cpp:steep_slope, stalled_displacement",
     "src/core/opponent_ai.cpp:update_opponent_controller",
-    "src/core/race_state_io.cpp:deserialize_classic_race",
+    "src/core/race_state_io.cpp:check_opponent_queue",
+    "src/core/race_state_io.cpp:spin_steps",
     "src/core/zoom_zoo_movement.hpp:ZoomZooState::opponent_turnaround"
    ],
    "observed_entries": {},
