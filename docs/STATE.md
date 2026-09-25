@@ -1,5 +1,18 @@
 # Project state
 
+Updated 25 September 2026 (NATIVE-READABILITY part 3, task accepted): **no function in
+`src/core` exceeds 80 lines, and the presentation reads by concern.**
+- `presentation.cpp` is split into the SNES picture's parts, the result screen, the legacy
+  DRAGSTER picture, the window and palette timeline, and the HUD. The split is a verified pure
+  move of 114 units. `render_classic_race` reads as the picture's layers in order.
+- The HUD's text queue, the result map, the rider look and the three runners' `main` are small
+  named steps.
+- Every address the code cites resolves to a function, member or constant.
+- Pictures and behaviour are unchanged: see the task record for the gates, the equivalence
+  sweep's pictures, 1,592 HUNTER frames and 243 legacy DRAGSTER frames.
+- Next: [RESULT-TITLE-GLYPHS](../tasks/RESULT-TITLE-GLYPHS.md). See
+  [NATIVE-READABILITY](../tasks/NATIVE-READABILITY.md).
+
 Updated 25 September 2026 (NATIVE-READABILITY part 2): **the race engine reads by game system,
 and no simulation function exceeds 80 lines.**
 - `movement.cpp` is split into one file per system, as a verified pure move: 82 of 82 functions
