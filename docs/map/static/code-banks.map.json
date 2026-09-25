@@ -7806,8 +7806,11 @@
     "NMX"
    ],
    "native": [
-    "src/core/opponent_ai.cpp:update_zoom_throttle",
     "src/core/race_update.cpp:update_zoom_zoo",
+    "src/core/rider_motion.cpp:brake",
+    "src/core/rider_motion.cpp:braking_speed",
+    "src/core/rider_motion.cpp:hold_brake",
+    "src/core/rider_motion.cpp:update_drive",
     "src/core/zoom_zoo_movement.hpp:ZoomZooState::drive_target_latch"
    ],
    "observed_entries": {},
@@ -7828,7 +7831,9 @@
     "NMx"
    ],
    "native": [
-    "src/core/opponent_ai.cpp:update_zoom_throttle",
+    "src/core/rider_motion.cpp:hold_brake",
+    "src/core/rider_motion.cpp:release_brake",
+    "src/core/rider_motion.cpp:update_drive",
     "src/core/zoom_zoo_movement.hpp:ZoomZooState::drive_target_latch"
    ],
    "observed_entries": {},
@@ -7849,7 +7854,8 @@
     "NMx"
    ],
    "native": [
-    "src/core/opponent_ai.cpp:update_zoom_throttle",
+    "src/core/rider_motion.cpp:release_brake",
+    "src/core/rider_motion.cpp:update_drive",
     "src/core/zoom_zoo_movement.hpp:ZoomZooState::drive_target_latch"
    ],
    "observed_entries": {},
@@ -7875,7 +7881,7 @@
     "NMx"
    ],
    "native": [
-    "src/core/opponent_ai.cpp:update_zoom_throttle",
+    "src/core/rider_motion.cpp:update_drive",
     "src/core/zoom_zoo_movement.hpp:ZoomZooState::drive_target_latch"
    ],
    "observed_entries": {},
@@ -7901,7 +7907,7 @@
     "NMx"
    ],
    "native": [
-    "src/core/opponent_ai.cpp:update_zoom_throttle",
+    "src/core/rider_motion.cpp:update_drive",
     "src/core/zoom_zoo_movement.hpp:ZoomZooState::drive_target_latch"
    ],
    "observed_entries": {},
@@ -8504,7 +8510,8 @@
     "NMx"
    ],
    "native": [
-    "src/core/opponent_ai.cpp:update_zoom_throttle"
+    "src/core/rider_motion.cpp:drive_velocity",
+    "src/core/rider_motion.cpp:update_drive"
    ],
    "observed_entries": {},
    "start": "$82:A9B3",
@@ -8525,7 +8532,8 @@
     "NMx"
    ],
    "native": [
-    "src/core/opponent_ai.cpp:update_zoom_throttle"
+    "src/core/rider_motion.cpp:drive_velocity",
+    "src/core/rider_motion.cpp:update_drive"
    ],
    "observed_entries": {},
    "start": "$82:AA10",
@@ -8604,7 +8612,7 @@
     "Nmx"
    ],
    "native": [
-    "src/core/opponent_ai.cpp:update_zoom_ai"
+    "src/core/opponent_ai.cpp:update_opponent_controller"
    ],
    "observed_entries": {},
    "start": "$82:AB6F",
@@ -12176,7 +12184,12 @@
     "Nmx"
    ],
    "native": [
-    "src/core/opponent_ai.cpp:update_zoom_ai",
+    "src/core/opponent_ai.cpp:(file)",
+    "src/core/opponent_ai.cpp:jump_at_marker",
+    "src/core/opponent_ai.cpp:launch_trick",
+    "src/core/opponent_ai.cpp:stalled_against_slope",
+    "src/core/opponent_ai.cpp:steep_slope, stalled_displacement",
+    "src/core/opponent_ai.cpp:update_opponent_controller",
     "src/core/race_state_io.cpp:deserialize_classic_race",
     "src/core/zoom_zoo_movement.hpp:ZoomZooState::opponent_turnaround"
    ],
@@ -12198,7 +12211,9 @@
     "NMX"
    ],
    "native": [
-    "src/core/opponent_ai.cpp:update_zoom_ai"
+    "src/core/opponent_ai.cpp:(file)",
+    "src/core/opponent_ai.cpp:launch_trick",
+    "src/core/opponent_ai.cpp:update_opponent_controller"
    ],
    "observed_entries": {},
    "start": "$83:E1F7",
@@ -12223,7 +12238,8 @@
     "NMX"
    ],
    "native": [
-    "src/core/opponent_ai.cpp:update_zoom_ai"
+    "src/core/opponent_ai.cpp:(file)",
+    "src/core/opponent_ai.cpp:update_opponent_controller"
    ],
    "observed_entries": {},
    "start": "$83:E21C",
@@ -12245,7 +12261,8 @@
     "NMX"
    ],
    "native": [
-    "src/core/opponent_ai.cpp:update_zoom_ai"
+    "src/core/opponent_ai.cpp:jump_at_marker",
+    "src/core/opponent_ai.cpp:update_opponent_controller"
    ],
    "observed_entries": {},
    "start": "$83:E222",

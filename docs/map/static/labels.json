@@ -5482,7 +5482,7 @@
   "comment": "routine start",
   "label": "sub_8298CF",
   "native": [
-   "src/core/opponent_ai.cpp:update_zoom_throttle",
+   "src/core/rider_motion.cpp:update_drive",
    "src/core/zoom_zoo_movement.hpp:ZoomZooState::drive_target_latch"
   ],
   "source_records": [
@@ -5495,8 +5495,8 @@
   "comment": "instruction start",
   "label": "loc_8298D6",
   "native": [
-   "src/core/opponent_ai.cpp:update_zoom_throttle",
    "src/core/race_update.cpp:update_zoom_zoo",
+   "src/core/rider_motion.cpp:update_drive",
    "src/core/zoom_zoo_movement.hpp:ZoomZooState::drive_target_latch"
   ],
   "source_records": [
@@ -5509,7 +5509,7 @@
   "comment": "instruction start",
   "label": "loc_8298E4",
   "native": [
-   "src/core/opponent_ai.cpp:update_zoom_throttle",
+   "src/core/rider_motion.cpp:update_drive",
    "src/core/zoom_zoo_movement.hpp:ZoomZooState::drive_target_latch"
   ],
   "source_records": [
@@ -5522,7 +5522,9 @@
   "comment": "instruction start",
   "label": "loc_829909",
   "native": [
-   "src/core/opponent_ai.cpp:update_zoom_throttle",
+   "src/core/rider_motion.cpp:brake",
+   "src/core/rider_motion.cpp:braking_speed",
+   "src/core/rider_motion.cpp:update_drive",
    "src/core/zoom_zoo_movement.hpp:ZoomZooState::drive_target_latch"
   ],
   "source_records": [
@@ -5536,7 +5538,8 @@
   "comment": "instruction start",
   "label": "loc_829981",
   "native": [
-   "src/core/opponent_ai.cpp:update_zoom_throttle",
+   "src/core/rider_motion.cpp:hold_brake",
+   "src/core/rider_motion.cpp:update_drive",
    "src/core/zoom_zoo_movement.hpp:ZoomZooState::drive_target_latch"
   ],
   "source_records": [
@@ -5549,7 +5552,8 @@
   "comment": "instruction start",
   "label": "loc_82998B",
   "native": [
-   "src/core/opponent_ai.cpp:update_zoom_throttle",
+   "src/core/rider_motion.cpp:hold_brake",
+   "src/core/rider_motion.cpp:update_drive",
    "src/core/zoom_zoo_movement.hpp:ZoomZooState::drive_target_latch"
   ],
   "source_records": [
@@ -5562,7 +5566,8 @@
   "comment": "instruction start",
   "label": "loc_829995",
   "native": [
-   "src/core/opponent_ai.cpp:update_zoom_throttle",
+   "src/core/rider_motion.cpp:hold_brake",
+   "src/core/rider_motion.cpp:update_drive",
    "src/core/zoom_zoo_movement.hpp:ZoomZooState::drive_target_latch"
   ],
   "source_records": [
@@ -5577,7 +5582,8 @@
   "comment": "instruction start",
   "label": "loc_8299F1",
   "native": [
-   "src/core/opponent_ai.cpp:update_zoom_throttle",
+   "src/core/rider_motion.cpp:release_brake",
+   "src/core/rider_motion.cpp:update_drive",
    "src/core/zoom_zoo_movement.hpp:ZoomZooState::drive_target_latch"
   ],
   "source_records": [
@@ -5592,7 +5598,8 @@
   "comment": "instruction start",
   "label": "loc_8299FC",
   "native": [
-   "src/core/opponent_ai.cpp:update_zoom_throttle",
+   "src/core/rider_motion.cpp:release_brake",
+   "src/core/rider_motion.cpp:update_drive",
    "src/core/zoom_zoo_movement.hpp:ZoomZooState::drive_target_latch"
   ],
   "source_records": [
@@ -5605,7 +5612,7 @@
   "comment": "instruction start",
   "label": "loc_829A4F",
   "native": [
-   "src/core/opponent_ai.cpp:update_zoom_throttle",
+   "src/core/rider_motion.cpp:update_drive",
    "src/core/zoom_zoo_movement.hpp:ZoomZooState::drive_target_latch"
   ],
   "source_records": [
@@ -6464,7 +6471,7 @@
   "comment": "routine start",
   "label": "sub_82A9B3",
   "native": [
-   "src/core/opponent_ai.cpp:update_zoom_throttle"
+   "src/core/rider_motion.cpp:drive_velocity"
   ],
   "source_records": [
    "docs/research/R-0038-dragster-ordinary-controls.md",
@@ -6479,7 +6486,7 @@
   "comment": "instruction start",
   "label": "loc_82A9C1",
   "native": [
-   "src/core/opponent_ai.cpp:update_zoom_throttle"
+   "src/core/rider_motion.cpp:update_drive"
   ],
   "source_records": [
    "docs/research/R-0033-sustained-traversal.md"
@@ -6500,7 +6507,7 @@
   "comment": "routine start",
   "label": "sub_82AA10",
   "native": [
-   "src/core/opponent_ai.cpp:update_zoom_throttle"
+   "src/core/rider_motion.cpp:drive_velocity"
   ],
   "source_records": [
    "docs/research/R-0047-special-tiles.md"
@@ -6512,7 +6519,7 @@
   "comment": "instruction start",
   "label": "loc_82AA42",
   "native": [
-   "src/core/opponent_ai.cpp:update_zoom_throttle"
+   "src/core/rider_motion.cpp:update_drive"
   ],
   "source_records": [
    "tasks/DRAGSTER-ORDINARY-CONTROLS-review.md"
@@ -6636,7 +6643,7 @@
   "comment": "routine start",
   "label": "sub_82AB6F",
   "native": [
-   "src/core/opponent_ai.cpp:update_zoom_ai"
+   "src/core/opponent_ai.cpp:update_opponent_controller"
   ],
   "source_records": [
    "docs/research/R-0048-race-guards.md",
@@ -8009,7 +8016,8 @@
   "comment": "instruction start",
   "label": "loc_83E0A7",
   "native": [
-   "src/core/opponent_ai.cpp:update_zoom_ai"
+   "src/core/opponent_ai.cpp:(file)",
+   "src/core/opponent_ai.cpp:update_opponent_controller"
   ],
   "source_records": [
    "docs/research/R-0048-race-guards.md",
@@ -8022,7 +8030,8 @@
   "comment": "instruction start",
   "label": "loc_83E0C5",
   "native": [
-   "src/core/opponent_ai.cpp:update_zoom_ai",
+   "src/core/opponent_ai.cpp:(file)",
+   "src/core/opponent_ai.cpp:update_opponent_controller",
    "src/core/zoom_zoo_movement.hpp:ZoomZooState::opponent_turnaround"
   ],
   "source_records": [
@@ -8035,6 +8044,10 @@
   "class": "observed",
   "comment": "instruction start",
   "label": "loc_83E114",
+  "native": [
+   "src/core/opponent_ai.cpp:(file)",
+   "src/core/opponent_ai.cpp:update_opponent_controller"
+  ],
   "source_records": [
    "docs/research/R-0011-motion.md"
   ]
@@ -8044,6 +8057,10 @@
   "class": "observed",
   "comment": "instruction start",
   "label": "loc_83E122",
+  "native": [
+   "src/core/opponent_ai.cpp:(file)",
+   "src/core/opponent_ai.cpp:update_opponent_controller"
+  ],
   "source_records": [
    "docs/research/R-0010-native-movement.md",
    "tasks/M2-01A.md"
@@ -8055,7 +8072,9 @@
   "comment": "instruction start",
   "label": "loc_83E135",
   "native": [
-   "src/core/opponent_ai.cpp:update_zoom_ai"
+   "src/core/opponent_ai.cpp:(file)",
+   "src/core/opponent_ai.cpp:jump_at_marker",
+   "src/core/opponent_ai.cpp:update_opponent_controller"
   ],
   "source_records": [
    "docs/research/R-0050-locked-tours.md",
@@ -8067,6 +8086,10 @@
   "class": "observed",
   "comment": "instruction start",
   "label": "loc_83E140",
+  "native": [
+   "src/core/opponent_ai.cpp:(file)",
+   "src/core/opponent_ai.cpp:update_opponent_controller"
+  ],
   "source_records": [
    "tasks/LOCKED-TOURS.md"
   ]
@@ -8077,7 +8100,9 @@
   "comment": "instruction start",
   "label": "loc_83E16B",
   "native": [
-   "src/core/opponent_ai.cpp:update_zoom_ai"
+   "src/core/opponent_ai.cpp:(file)",
+   "src/core/opponent_ai.cpp:jump_at_marker",
+   "src/core/opponent_ai.cpp:update_opponent_controller"
   ],
   "source_records": [
    "docs/research/R-0050-locked-tours.md",
@@ -8090,7 +8115,9 @@
   "comment": "instruction start",
   "label": "loc_83E1A8",
   "native": [
-   "src/core/opponent_ai.cpp:update_zoom_ai"
+   "src/core/opponent_ai.cpp:(file)",
+   "src/core/opponent_ai.cpp:jump_at_marker",
+   "src/core/opponent_ai.cpp:update_opponent_controller"
   ],
   "source_records": [
    "docs/research/R-0050-locked-tours.md"
@@ -8102,7 +8129,8 @@
   "comment": "routine start",
   "label": "sub_83E21C",
   "native": [
-   "src/core/opponent_ai.cpp:update_zoom_ai"
+   "src/core/opponent_ai.cpp:(file)",
+   "src/core/opponent_ai.cpp:update_opponent_controller"
   ],
   "source_records": [
    "docs/research/R-0050-locked-tours.md"
@@ -8124,7 +8152,8 @@
   "comment": "routine start",
   "label": "sub_83E222",
   "native": [
-   "src/core/opponent_ai.cpp:update_zoom_ai"
+   "src/core/opponent_ai.cpp:jump_at_marker",
+   "src/core/opponent_ai.cpp:update_opponent_controller"
   ],
   "source_records": [
    "docs/research/R-0050-locked-tours.md",

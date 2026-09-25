@@ -1914,7 +1914,7 @@
   {
    "address": "$82:98CF",
    "native": [
-    "src/core/opponent_ai.cpp:update_zoom_throttle",
+    "src/core/rider_motion.cpp:update_drive",
     "src/core/zoom_zoo_movement.hpp:ZoomZooState::drive_target_latch"
    ],
    "range_ends": [
@@ -1932,7 +1932,8 @@
   {
    "address": "$82:9909",
    "native": [
-    "src/core/opponent_ai.cpp:update_zoom_throttle"
+    "src/core/rider_motion.cpp:brake",
+    "src/core/rider_motion.cpp:braking_speed"
    ],
    "range_ends": [
     "$82:9945"
@@ -1942,7 +1943,7 @@
   {
    "address": "$82:9981",
    "native": [
-    "src/core/opponent_ai.cpp:update_zoom_throttle"
+    "src/core/rider_motion.cpp:hold_brake"
    ],
    "range_ends": [
     "$82:9993"
@@ -1952,7 +1953,7 @@
   {
    "address": "$82:9995",
    "native": [
-    "src/core/opponent_ai.cpp:update_zoom_throttle"
+    "src/core/rider_motion.cpp:hold_brake"
    ],
    "range_ends": [
     "$82:99EF"
@@ -1962,14 +1963,14 @@
   {
    "address": "$82:999A",
    "native": [
-    "src/core/opponent_ai.cpp:update_zoom_throttle"
+    "src/core/rider_motion.cpp:update_drive"
    ],
    "region": "rom"
   },
   {
    "address": "$82:99F1",
    "native": [
-    "src/core/opponent_ai.cpp:update_zoom_throttle"
+    "src/core/rider_motion.cpp:release_brake"
    ],
    "range_ends": [
     "$82:9A49"
@@ -1979,7 +1980,7 @@
   {
    "address": "$82:9A2B",
    "native": [
-    "src/core/opponent_ai.cpp:update_zoom_throttle"
+    "src/core/rider_motion.cpp:update_drive"
    ],
    "region": "rom"
   },
@@ -2227,14 +2228,14 @@
   {
    "address": "$82:A9B3",
    "native": [
-    "src/core/opponent_ai.cpp:update_zoom_throttle"
+    "src/core/rider_motion.cpp:drive_velocity"
    ],
    "region": "rom"
   },
   {
    "address": "$82:A9C1",
    "native": [
-    "src/core/opponent_ai.cpp:update_zoom_throttle"
+    "src/core/rider_motion.cpp:update_drive"
    ],
    "range_ends": [
     "$82:A9E0"
@@ -2244,21 +2245,21 @@
   {
    "address": "$82:A9CC",
    "native": [
-    "src/core/opponent_ai.cpp:update_zoom_throttle"
+    "src/core/rider_motion.cpp:update_drive"
    ],
    "region": "rom"
   },
   {
    "address": "$82:AA10",
    "native": [
-    "src/core/opponent_ai.cpp:update_zoom_throttle"
+    "src/core/rider_motion.cpp:drive_velocity"
    ],
    "region": "rom"
   },
   {
    "address": "$82:AA1E",
    "native": [
-    "src/core/opponent_ai.cpp:update_zoom_throttle"
+    "src/core/rider_motion.cpp:update_drive"
    ],
    "range_ends": [
     "$82:AA3D"
@@ -2268,14 +2269,14 @@
   {
    "address": "$82:AA29",
    "native": [
-    "src/core/opponent_ai.cpp:update_zoom_throttle"
+    "src/core/rider_motion.cpp:update_drive"
    ],
    "region": "rom"
   },
   {
    "address": "$82:AA42",
    "native": [
-    "src/core/opponent_ai.cpp:update_zoom_throttle"
+    "src/core/rider_motion.cpp:update_drive"
    ],
    "range_ends": [
     "$82:AA49"
@@ -2312,7 +2313,7 @@
   {
    "address": "$82:AB6F",
    "native": [
-    "src/core/opponent_ai.cpp:update_zoom_ai"
+    "src/core/opponent_ai.cpp:update_opponent_controller"
    ],
    "range_ends": [
     "$82:AB8B"
@@ -2830,17 +2831,19 @@
   {
    "address": "$83:E0A7",
    "native": [
-    "src/core/opponent_ai.cpp:update_zoom_ai"
+    "src/core/opponent_ai.cpp:(file)",
+    "src/core/opponent_ai.cpp:update_opponent_controller"
    ],
    "range_ends": [
-    "$83:E0AF"
+    "$83:E0AF",
+    "$83:E21C"
    ],
    "region": "rom"
   },
   {
    "address": "$83:E0C5",
    "native": [
-    "src/core/opponent_ai.cpp:update_zoom_ai",
+    "src/core/opponent_ai.cpp:update_opponent_controller",
     "src/core/zoom_zoo_movement.hpp:ZoomZooState::opponent_turnaround"
    ],
    "range_ends": [
@@ -2852,7 +2855,8 @@
   {
    "address": "$83:E0DD",
    "native": [
-    "src/core/opponent_ai.cpp:update_zoom_ai"
+    "src/core/opponent_ai.cpp:stalled_against_slope",
+    "src/core/opponent_ai.cpp:steep_slope, stalled_displacement"
    ],
    "range_ends": [
     "$83:E111"
@@ -2862,7 +2866,7 @@
   {
    "address": "$83:E135",
    "native": [
-    "src/core/opponent_ai.cpp:update_zoom_ai"
+    "src/core/opponent_ai.cpp:jump_at_marker"
    ],
    "range_ends": [
     "$83:E13D"
@@ -2872,21 +2876,21 @@
   {
    "address": "$83:E16B",
    "native": [
-    "src/core/opponent_ai.cpp:update_zoom_ai"
+    "src/core/opponent_ai.cpp:jump_at_marker"
    ],
    "region": "rom"
   },
   {
    "address": "$83:E1A8",
    "native": [
-    "src/core/opponent_ai.cpp:update_zoom_ai"
+    "src/core/opponent_ai.cpp:jump_at_marker"
    ],
    "region": "rom"
   },
   {
    "address": "$83:E1CB",
    "native": [
-    "src/core/opponent_ai.cpp:update_zoom_ai"
+    "src/core/opponent_ai.cpp:launch_trick"
    ],
    "range_ends": [
     "$83:E21A"
@@ -2903,14 +2907,15 @@
   {
    "address": "$83:E21C",
    "native": [
-    "src/core/opponent_ai.cpp:update_zoom_ai"
+    "src/core/opponent_ai.cpp:update_opponent_controller"
    ],
    "region": "rom"
   },
   {
    "address": "$83:E222",
    "native": [
-    "src/core/opponent_ai.cpp:update_zoom_ai"
+    "src/core/opponent_ai.cpp:jump_at_marker",
+    "src/core/opponent_ai.cpp:update_opponent_controller"
    ],
    "region": "rom"
   },
@@ -3292,7 +3297,7 @@
   {
    "address": "$031B",
    "native": [
-    "src/core/opponent_ai.cpp:update_zoom_ai"
+    "src/core/opponent_ai.cpp:update_opponent_controller"
    ],
    "region": "wram"
   },
@@ -3306,7 +3311,8 @@
   {
    "address": "$031F",
    "native": [
-    "src/core/opponent_ai.cpp:update_zoom_ai",
+    "src/core/opponent_ai.cpp:launch_trick",
+    "src/core/opponent_ai.cpp:update_opponent_controller",
     "src/core/race_update.cpp:update_zoom_zoo"
    ],
    "region": "wram"
@@ -3321,7 +3327,8 @@
   {
    "address": "$0323",
    "native": [
-    "src/core/opponent_ai.cpp:update_zoom_ai",
+    "src/core/opponent_ai.cpp:launch_trick",
+    "src/core/opponent_ai.cpp:update_opponent_controller",
     "src/core/race_update.cpp:update_zoom_zoo"
    ],
    "region": "wram"
@@ -3336,14 +3343,14 @@
   {
    "address": "$032B",
    "native": [
-    "src/core/opponent_ai.cpp:update_zoom_ai"
+    "src/core/opponent_ai.cpp:launch_trick"
    ],
    "region": "wram"
   },
   {
    "address": "$032F",
    "native": [
-    "src/core/opponent_ai.cpp:update_zoom_ai"
+    "src/core/opponent_ai.cpp:launch_trick"
    ],
    "region": "wram"
   },
@@ -3465,7 +3472,7 @@
   {
    "address": "$042B",
    "native": [
-    "src/core/opponent_ai.cpp:update_zoom_throttle"
+    "src/core/rider_motion.cpp:drive_velocity"
    ],
    "region": "wram"
   },
@@ -3676,14 +3683,14 @@
   {
    "address": "$0C6F",
    "native": [
-    "src/core/opponent_ai.cpp:update_zoom_ai"
+    "src/core/opponent_ai.cpp:update_opponent_controller"
    ],
    "region": "wram"
   },
   {
    "address": "$0C73",
    "native": [
-    "src/core/opponent_ai.cpp:update_zoom_ai",
+    "src/core/opponent_ai.cpp:update_opponent_controller",
     "src/core/race_state_io.cpp:deserialize_zoom_zoo",
     "src/core/zoom_zoo_movement.hpp:ZoomZooState::opponent_turnaround",
     "src/core/zoom_zoo_movement.hpp:classic_race_state_magic"
@@ -3693,7 +3700,7 @@
   {
    "address": "$0C75",
    "native": [
-    "src/core/opponent_ai.cpp:update_zoom_ai"
+    "src/core/opponent_ai.cpp:update_opponent_controller"
    ],
    "region": "wram"
   },
@@ -3804,7 +3811,7 @@
   {
    "address": "$0D53",
    "native": [
-    "src/core/opponent_ai.cpp:update_zoom_throttle",
+    "src/core/rider_motion.cpp:update_drive",
     "src/core/zoom_zoo_movement.hpp:ZoomZooState::charge_announced"
    ],
    "region": "wram"
@@ -3812,7 +3819,7 @@
   {
    "address": "$0D55",
    "native": [
-    "src/core/opponent_ai.cpp:update_zoom_throttle",
+    "src/core/rider_motion.cpp:update_drive",
     "src/core/zoom_zoo_movement.hpp:ZoomZooState::charge_announced"
    ],
    "region": "wram"
@@ -4081,7 +4088,6 @@
   {
    "address": "$0F3B",
    "native": [
-    "src/core/opponent_ai.cpp:update_zoom_throttle",
     "src/core/race_update.cpp:update_zoom_zoo",
     "src/core/zoom_zoo_movement.hpp:SpecialTileUpdate::drive_step"
    ],
@@ -4114,7 +4120,7 @@
   {
    "address": "$0F45",
    "native": [
-    "src/core/opponent_ai.cpp:update_zoom_throttle",
+    "src/core/rider_motion.cpp:hold_brake",
     "src/core/zoom_zoo_movement.hpp:SpecialTileRider::mud_cooldown"
    ],
    "region": "wram"
@@ -4173,14 +4179,14 @@
   {
    "address": "$0F5F",
    "native": [
-    "src/core/opponent_ai.cpp:update_zoom_throttle"
+    "src/core/rider_motion.cpp:hold_brake"
    ],
    "region": "wram"
   },
   {
    "address": "$0F63",
    "native": [
-    "src/core/opponent_ai.cpp:update_zoom_throttle"
+    "src/core/rider_motion.cpp:update_drive"
    ],
    "region": "wram"
   },
@@ -4216,8 +4222,8 @@
   {
    "address": "$0FB1",
    "native": [
-    "src/core/opponent_ai.cpp:update_zoom_throttle",
     "src/core/race_update.cpp:update_zoom_zoo",
+    "src/core/rider_motion.cpp:hold_brake",
     "src/core/zoom_zoo_movement.hpp:SpecialTileUpdate::crank_brake"
    ],
    "region": "wram"
@@ -4435,7 +4441,7 @@
   {
    "address": "$1275",
    "native": [
-    "src/core/opponent_ai.cpp:update_zoom_ai",
+    "src/core/opponent_ai.cpp:jump_at_marker",
     "src/core/race_setup.cpp:classic_race_scenario",
     "src/core/zoom_zoo_movement.hpp:ClassicRaceScenario::ai_level"
    ],
@@ -4444,7 +4450,7 @@
   {
    "address": "$1277",
    "native": [
-    "src/core/opponent_ai.cpp:update_zoom_ai"
+    "src/core/opponent_ai.cpp:update_opponent_controller"
    ],
    "region": "wram"
   },
@@ -5087,16 +5093,48 @@
     "$83:E90D"
    ]
   },
-  "src/core/opponent_ai.cpp:update_zoom_ai": {
+  "src/core/opponent_ai.cpp:(file)": {
+   "rom": [
+    "$83:E0A7"
+   ]
+  },
+  "src/core/opponent_ai.cpp:jump_at_marker": {
+   "rom": [
+    "$83:E135",
+    "$83:E16B",
+    "$83:E1A8",
+    "$83:E222"
+   ],
+   "wram": [
+    "$1275"
+   ]
+  },
+  "src/core/opponent_ai.cpp:launch_trick": {
+   "rom": [
+    "$83:E1CB"
+   ],
+   "wram": [
+    "$031F",
+    "$0323",
+    "$032B",
+    "$032F"
+   ]
+  },
+  "src/core/opponent_ai.cpp:stalled_against_slope": {
+   "rom": [
+    "$83:E0DD"
+   ]
+  },
+  "src/core/opponent_ai.cpp:steep_slope, stalled_displacement": {
+   "rom": [
+    "$83:E0DD"
+   ]
+  },
+  "src/core/opponent_ai.cpp:update_opponent_controller": {
    "rom": [
     "$82:AB6F",
     "$83:E0A7",
     "$83:E0C5",
-    "$83:E0DD",
-    "$83:E135",
-    "$83:E16B",
-    "$83:E1A8",
-    "$83:E1CB",
     "$83:E21C",
     "$83:E222"
    ],
@@ -5104,41 +5142,10 @@
     "$031B",
     "$031F",
     "$0323",
-    "$032B",
-    "$032F",
     "$0C6F",
     "$0C73",
     "$0C75",
-    "$1275",
     "$1277"
-   ]
-  },
-  "src/core/opponent_ai.cpp:update_zoom_throttle": {
-   "rom": [
-    "$82:98CF",
-    "$82:9909",
-    "$82:9981",
-    "$82:9995",
-    "$82:999A",
-    "$82:99F1",
-    "$82:9A2B",
-    "$82:A9B3",
-    "$82:A9C1",
-    "$82:A9CC",
-    "$82:AA10",
-    "$82:AA1E",
-    "$82:AA29",
-    "$82:AA42"
-   ],
-   "wram": [
-    "$042B",
-    "$0D53",
-    "$0D55",
-    "$0F3B",
-    "$0F45",
-    "$0F5F",
-    "$0F63",
-    "$0FB1"
    ]
   },
   "src/core/presentation.cpp:ClassicRaceHudClock::observe_update": {
@@ -6042,9 +6049,61 @@
     "$83:E90D"
    ]
   },
+  "src/core/rider_motion.cpp:brake": {
+   "rom": [
+    "$82:9909"
+   ]
+  },
+  "src/core/rider_motion.cpp:braking_speed": {
+   "rom": [
+    "$82:9909"
+   ]
+  },
+  "src/core/rider_motion.cpp:drive_velocity": {
+   "rom": [
+    "$82:A9B3",
+    "$82:AA10"
+   ],
+   "wram": [
+    "$042B"
+   ]
+  },
+  "src/core/rider_motion.cpp:hold_brake": {
+   "rom": [
+    "$82:9981",
+    "$82:9995"
+   ],
+   "wram": [
+    "$0F45",
+    "$0F5F",
+    "$0FB1"
+   ]
+  },
+  "src/core/rider_motion.cpp:release_brake": {
+   "rom": [
+    "$82:99F1"
+   ]
+  },
   "src/core/rider_motion.cpp:update_active_low_speed_damping": {
    "rom": [
     "$82:A5FA"
+   ]
+  },
+  "src/core/rider_motion.cpp:update_drive": {
+   "rom": [
+    "$82:98CF",
+    "$82:999A",
+    "$82:9A2B",
+    "$82:A9C1",
+    "$82:A9CC",
+    "$82:AA1E",
+    "$82:AA29",
+    "$82:AA42"
+   ],
+   "wram": [
+    "$0D53",
+    "$0D55",
+    "$0F63"
    ]
   },
   "src/core/rider_motion.cpp:update_horizontal": {
@@ -6839,7 +6898,7 @@
  "totals": {
   "addresses": 565,
   "io_addresses": 14,
-  "native_symbols": 264,
+  "native_symbols": 274,
   "rom_addresses": 351,
   "sram_addresses": 6,
   "wram_addresses": 194

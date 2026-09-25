@@ -224,7 +224,7 @@ void update_zoom_zoo(ZoomZooState& state, const ControllerButtons& requested_but
     }
     if (state.native_initialization && next.pause.released && !buttons.start)
         next.pause.released = 0;
-    const bool inverted_marker = update_zoom_ai(next);
+    const bool inverted_marker = update_opponent_controller(next);
     // $83:E7A2-E7BF also releases both riders' A ($031D/$031F) and X
     // ($0321/$0323) publications while the countdown holds the brakes.
     bool countdown_releases_actions = false;
@@ -505,12 +505,11 @@ void update_zoom_zoo(ZoomZooState& state, const ControllerButtons& requested_but
         // $82:98D6: the corkscrew's physics hold skips the whole drive routine,
         // brake latch included, and leaves $0E7B as the other rider set it.
         if (!tiles.physics_hold) {
-            update_zoom_throttle(rider, transition, horizontal, animation_override, throttle_target,
-                                 next.charge_announced[index], surface.leading_support != 0,
-                                 state.native_initialization
-                                     && next.rolls[index].bounce_active != 0,
-                                 special.drive_step ? special.drive_step : 24,
-                                 tiles.mud_cooldown != 0 || special.crank_brake);
+            update_drive(rider, transition, horizontal, animation_override, throttle_target,
+                         next.charge_announced[index], surface.leading_support != 0,
+                         state.native_initialization && next.rolls[index].bounce_active != 0,
+                         special.drive_step ? special.drive_step : 24,
+                         tiles.mud_cooldown != 0 || special.crank_brake);
             next.drive_target_latch = throttle_target ? 0 : 1;
         }
         update_idle_pose(rider,
