@@ -172,7 +172,8 @@ void print_help() {
       << "       NN: a race track's number (its index in the ROM) with a recovered scenario\n"
       << "       unirally --supported-profiles   (print the pack profiles this build reads)\n"
       << "Without --track it starts at power-on: the Nintendo screen, the title and the main menu;\n"
-      << "1P starts DRAGSTER. With --track it starts in that race. PAL 50 Hz.\n"
+      << "1P leads to PICK YOUR UNI; MIKE starts DRAGSTER. With --track it starts in that race.\n"
+      << "PAL 50 Hz.\n"
       << "Keyboard: arrows, Z=B, X=Y, A=A, S=X, Q=L, W=R, Enter=Start.\n"
       << "Gamepad: D-pad, South=B, West=Y, East=A, North=X, shoulders=L/R, Start, Back=Select;\n"
       << "the analog stick is not mapped. Two gamepads are tracked; this slice consumes port 0 only.\n"
@@ -333,7 +334,7 @@ int main(int argc, char **argv) try {
   std::array<std::uint16_t, 2> last_ports{};
   unirally::app::LivePresentation live_presentation;
   bool reported_held_frame{};
-  // Without --track the session starts at power-on; 1P on the main menu starts the race.
+  // Without --track the session starts at power-on; MIKE on 1P's rider menu starts the race.
   std::optional<unirally::app::FrontEndSession> front_end;
   if (!parsed->track_given) front_end.emplace(content.pack);
   while (running) {
@@ -420,7 +421,7 @@ int main(int argc, char **argv) try {
       }
       if (front_end) {
         if (front_end->update(ports)) {
-          std::cout << "Front end: 1P chosen after " << front_end->frames() << " frames\n";
+          std::cout << "Front end: MIKE chosen after " << front_end->frames() << " frames\n";
           front_end.reset();
           input.clear();
         }
@@ -514,7 +515,7 @@ int main(int argc, char **argv) try {
   if (front_end)
     std::cout << "Front end: frames " << front_end->frames() << "; notices "
               << front_end->notices() << "; returns to the main menu "
-              << front_end->returns_to_menu() << "; 1P not chosen\n";
+              << front_end->returns_to_menu() << "; MIKE not chosen\n";
   std::cout << "Presentation frames: " << rendered_frames
             << "; rider-pose fallback frames: " << pose_fallback_frames
             << "; identical consecutive redraws: " << identical_redraws

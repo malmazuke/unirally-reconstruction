@@ -289,7 +289,7 @@ def cmd_run(args: argparse.Namespace) -> int:
         return _finish(rep, paths.report, stale_build)
     command = [str(executable), "--content-pack", str(pack_path)]
     # A named track starts in that race; without one the app starts at power-on (the front end,
-    # FRONT-END-MAIN-MENU), where 1P starts DRAGSTER.
+    # FRONT-END-MAIN-MENU), where 1P leads to the rider menu and MIKE starts DRAGSTER.
     track = getattr(args, "track", None)
     if track is not None:
         command.extend(["--track", track])

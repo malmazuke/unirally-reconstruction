@@ -201,7 +201,7 @@ bool FrontEndSession::update(const std::array<std::uint16_t, 2> &ports) {
     main_menu_ = state_;
   if (!state_.mode_chosen)
     return false;
-  if (state_.mode == FrontEndMode::one_player)
+  if (state_.mode == FrontEndMode::one_player && state_.rider_menu.rider == 0)
     return true;
   // Two seconds of notice at 50 Hz.
   notice_mode_ = state_.mode;
@@ -216,9 +216,12 @@ RgbFrame FrontEndSession::frame() const {
   static constexpr std::array<const char *, 8> names{
       "1P", "2P", "VS", "LEAGUE", "OPTIONS", "THE DEMO", "WIPE RAM", "THIS CODE"};
   RgbFrame frame{};
+  // 1P reaches a notice only for a rider the race scenarios do not have.
   const std::string line =
-      std::string(names[static_cast<std::size_t>(notice_mode_)]) +
-      " IS NOT NATIVE YET";
+      notice_mode_ == FrontEndMode::one_player
+          ? std::string("ONLY MIKE RACES NATIVELY YET")
+          : std::string(names[static_cast<std::size_t>(notice_mode_)]) +
+                " IS NOT NATIVE YET";
   ui_text(frame, 128 - static_cast<int>(line.size()) * 3, 108, line);
   return frame;
 }

@@ -108,14 +108,16 @@ private:
   std::array<std::optional<std::uint16_t>, 2> drawn_pose_{};
 };
 
-// The app's front end: power-on to the main menu (R-0054). Until the other
-// modes are native, choosing 2P, VS, LEAGUE, OPTIONS or reaching the demo shows
-// a short notice and returns to the main menu as it first appeared.
+// The app's front end: power-on to the main menu (R-0054) and 1P's rider menu
+// (R-0055). Until the other modes and screens are native, choosing 2P, VS,
+// LEAGUE, OPTIONS, reaching the demo or choosing a rider other than MIKE (the
+// race scenarios' rider) shows a short notice and returns to the main menu as
+// it first appeared.
 class FrontEndSession {
 public:
   explicit FrontEndSession(const ClassicContentPack &pack);
-  // One PAL frame from the two ports' masks (`button_mask` bits). True once 1P
-  // is chosen.
+  // One PAL frame from the two ports' masks (`button_mask` bits). True once
+  // MIKE is chosen on the rider menu.
   bool update(const std::array<std::uint16_t, 2> &ports);
   RgbFrame frame() const;
   std::uint32_t frames() const { return frames_; }

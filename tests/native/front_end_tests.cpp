@@ -1,6 +1,7 @@
-// FRONT-END-MAIN-MENU (R-0054): the text printer, the SNES screen and the main
-// menu's rules, on synthetic content (no ROM). The captures' frame-by-frame
-// agreement is the laboratory's.
+// FRONT-END-MAIN-MENU (R-0054) and FRONT-END-1P-SETUP (R-0055): the text
+// printer, the SNES screen, the main menu's and the rider menu's rules, on
+// synthetic content (no ROM). The captures' frame-by-frame agreement is the
+// laboratory's.
 #include "front_end.hpp"
 #include "snes_screen.hpp"
 #include "text_printer.hpp"
@@ -126,6 +127,15 @@ void snes_screen_tests() {
   registers.colour_select = 0xc2;
   frame = unirally::render_snes_screen(memory, registers);
   require(frame.pixels[0] == 0 && frame.pixels[1] == 0 && frame.pixels[2] == 255);
+  // A colour written during the picture shows from its row on: the object
+  // (drawn on row 0) turns red for a write on row 0, not for one on row 1.
+  const std::array<unirally::SnesLineColour, 1> later{{{1, 129, 0x001f}}};
+  frame = unirally::render_snes_screen(memory, registers, later);
+  require(frame.pixels[0] == 0 && frame.pixels[2] == 255);
+  const std::array<unirally::SnesLineColour, 1> first{{{0, 129, 0x001f}}};
+  frame = unirally::render_snes_screen(memory, registers, first);
+  require(frame.pixels[0] == 255 && frame.pixels[2] == 0);
+  require(memory.cgram[129 * 2] == 0); // the memory itself is not changed
 }
 
 unirally::FrontEndContent
@@ -148,6 +158,29 @@ synthetic_content(std::vector<std::vector<std::uint8_t>> &storage) {
   storage.push_back({10, 10, 10, 6, 5});
   content.menu_arrow_columns = storage.back();
   content.cycle_colours = keep(14);
+  // The rider menu: palettes (rider r's colour 1 is r + 1), 22 names "r" and
+  // their 0xFF, a title, the animator's tables and blank uni pictures (every
+  // picture at $23:8000, an empty mask; the blank tile at $27:8000).
+  for (unsigned id = 6; id <= 21; ++id) {
+    storage.emplace_back(32, 0);
+    storage.back()[2] = static_cast<std::uint8_t>(id - 5);
+    content.assets[id] = storage.back();
+  }
+  storage.emplace_back(22 * 16, 0);
+  for (std::size_t r = 0; r < 22; ++r) {
+    storage.back()[r * 16] = 'A';
+    storage.back()[r * 16 + 1] = 0xff;
+  }
+  content.rider_names = storage.back();
+  storage.push_back({0xfc, 0x01, 'A', 0xff});
+  content.rider_menu_title = storage.back();
+  content.decoration_frames = keep(76);
+  storage.emplace_back(0x1321 * 3, 0);
+  for (std::size_t k = 0; k < 0x1321; ++k)
+    storage.back()[k * 3 + 1] = 0x80;
+  content.uni_pictures.pose_pointers = storage.back();
+  content.uni_pictures.pose_frames = keep(4);
+  content.uni_pictures.object_tiles = keep(32);
   return content;
 }
 
@@ -190,10 +223,10 @@ void main_menu_tests() {
   run(state, content, 1);
   run(state, content, 1, {0x2000, 0});
   require(state.menu.selection == 0 && state.arrow.target_y == 0x0580);
-  // Controller 2's A chooses the selected mode.
+  // Controller 2's A chooses the selected mode: 1P opens the rider menu.
   run(state, content, 1, {0, 0x0080});
-  require(state.mode_chosen &&
-          state.mode == unirally::FrontEndMode::one_player);
+  require(!state.mode_chosen &&
+          state.screen == unirally::FrontEndScreen::rider_menu_entry);
   // Left alone, the main menu starts the demo after 481 of its frames.
   auto idle = unirally::start_front_end();
   run(idle, content, 900);
@@ -203,12 +236,71 @@ void main_menu_tests() {
           idle.frame == 901);
 }
 
+void rider_menu_tests() {
+  using unirally::FrontEndScreen;
+  std::vector<std::vector<std::uint8_t>> storage;
+  const auto content = synthetic_content(storage);
+  auto state = unirally::start_front_end();
+  run(state, content, 430);
+  run(state, content, 1, {0x1000, 0}); // 1P
+  // The names slide in over 42 frames; the logo has slid up; the arrow aims at
+  // MIKE, the last rider chosen (none yet).
+  run(state, content, 41);
+  require(state.screen == FrontEndScreen::rider_menu_entry);
+  run(state, content, 1);
+  require(state.screen == FrontEndScreen::rider_menu);
+  require(state.slide.scroll == 256 && state.slide.shown_half == 0x1400);
+  require(state.logo.offset == 0x52 && state.registers.bg[0].vofs == 0x52);
+  require(state.arrow.target_x == 0x0680 && state.arrow.target_y == 0x0290);
+  require(state.text.words[4 * 32 + 5] != 0x004c); // MIKE's name
+  // Each frame of the menu splits the palettes: colour 0, then 128 rows.
+  run(state, content, 1);
+  require(state.line_colours.size() == 129 &&
+          state.line_colours[1].row == 64 && state.line_colours[1].index == 0x80);
+  // Controller 2 is not read; Down moves once a press and stops at row 7.
+  run(state, content, 1, {0, 0x0400});
+  require(state.rider_menu.row == 0);
+  for (int k = 0; k < 9; ++k) {
+    run(state, content, 1, {0x0400, 0});
+    run(state, content, 1);
+  }
+  require(state.rider_menu.row == 7 && state.arrow.target_y == 0x0290 + 7 * 0x0180);
+  // Up at row 0 stays; Right changes column (and the arrow's mirror and palette).
+  for (int k = 0; k < 8; ++k) {
+    run(state, content, 1, {0x0800, 0});
+    run(state, content, 1);
+  }
+  require(state.rider_menu.row == 0);
+  run(state, content, 1, {0x0100, 0});
+  require(state.arrow.target_x == 0x0780 && (state.oam_buffer[119 * 4 + 3] & 0x40) == 0);
+  run(state, content, 1, {0x0400, 0});
+  run(state, content, 1);
+  // Y goes back: three frames out, then 42 to the main menu, on 1P again.
+  run(state, content, 1, {0x4000, 0});
+  require(state.screen == FrontEndScreen::rider_menu_exit && state.line_colours.empty());
+  run(state, content, 3);
+  require(state.screen == FrontEndScreen::main_menu_return);
+  run(state, content, 42);
+  require(state.screen == FrontEndScreen::main_menu && state.menu.selection == 0 &&
+          state.menu.idle == 480 && state.slide.scroll == 0 && !state.mode_chosen);
+  // Choosing again starts on MIKE; B chooses the rider under the arrow.
+  run(state, content, 1, {0x1000, 0});
+  run(state, content, 43);
+  run(state, content, 1, {0x0100, 0});
+  run(state, content, 1, {0x8000, 0});
+  require(state.screen == FrontEndScreen::rider_menu_exit && !state.mode_chosen);
+  run(state, content, 3);
+  require(state.mode_chosen && state.mode == unirally::FrontEndMode::one_player &&
+          state.rider_menu.rider == 1);
+}
+
 } // namespace
 
 int main() try {
   text_printer_tests();
   snes_screen_tests();
   main_menu_tests();
+  rider_menu_tests();
   return 0;
 } catch (const std::exception &error) {
   std::fprintf(stderr, "%s\n", error.what());
