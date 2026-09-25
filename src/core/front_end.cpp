@@ -518,6 +518,15 @@ FrontEndContent front_end_content(const ClassicContentPack& pack) {
     content.rider_menu_title = pack.entry("front-end.pick-rider-title");
     content.decoration_frames = pack.entry("front-end.decoration-frames");
     content.uni_pictures = rider_object_content(pack);
+    for (unsigned id = 32; id <= 36; ++id) content.assets[id] = pack.entry(asset_name(id));
+    content.medal_tiles = pack.entry("front-end.medal-tiles");
+    content.tour_menu_text = pack.entry("front-end.tour-menu-text");
+    content.tour_badge_places = pack.entry("front-end.tour-badge-places");
+    content.tour_levels = pack.entry("front-end.tour-levels");
+    content.tour_arrow_targets = pack.entry("front-end.tour-arrow-targets");
+    content.tour_badge_pictures = pack.entry("front-end.tour-badge-pictures");
+    content.medal_places = pack.entry("front-end.medal-places");
+    content.medal_attributes = pack.entry("front-end.medal-attributes");
     return content;
 }
 
@@ -546,6 +555,8 @@ void update_front_end(FrontEndState& state, const FrontEndContent& content, Fron
     case FrontEndScreen::rider_menu: rider_menu_frame(state, content, physical); break;
     case FrontEndScreen::rider_menu_exit: rider_menu_exit_frame(state, content); break;
     case FrontEndScreen::main_menu_return: main_menu_return_frame(state, content); break;
+    case FrontEndScreen::tour_menu_entry: tour_menu_entry_frame(state, content); break;
+    case FrontEndScreen::tour_menu: tour_menu_frame(state, content, physical); break;
     }
     if (state.screen != screen) state.script_frame = 0;
     ++state.frame;

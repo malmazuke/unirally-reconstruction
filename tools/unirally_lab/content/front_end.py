@@ -88,3 +88,44 @@ def v16_new_entries(rom: bytes) -> list[dict[str, Any]]:
     check_rider_palettes(rom)
     entries = [_raw(f"front-end.asset.{asset:03d}", rom, [_asset_piece(rom, asset)]) for asset in RIDER_MENU_ASSETS]
     return entries + [table_entry(rom, *table) for table in RIDER_MENU_TABLES]
+
+
+# Profile v17 (FRONT-END-1P-SETUP part 2, R-0056): PICK TOUR. The medal palettes (assets 32-34, at
+# colours 0x80-0xA0, `$80:9764`) and the base palette's halves (35 at 0, 36 at 0x40, `$80:A858`).
+# `$80:A82B` DMAs `$84:A378`, asset 68's last 1,920 bytes, so it needs no entry of its own.
+TOUR_MENU_ASSETS = (32, 33, 34, 35, 36)
+TOUR_MENU_TABLES = (
+    # The medal object tiles `$83:94D0` DMAs to VRAM word 0x7A00.
+    ("front-end.medal-tiles", 0x87D5D8, 0xC00),
+    # The four text streams `$80:E730` prints: the title and the left column (`$80:E7C4`), then
+    # jumper and bounder, runner and sprinter, hunter.
+    ("front-end.tour-menu-text", 0x80E7C4, 0x6A),
+    # The badges' places in the text map (byte offsets, `$80:E82E`, hunter's at `$80:E83E`).
+    ("front-end.tour-badge-places", 0x80E82E, 0x12),
+    # The level each tour needs (`$80:E842`, as `$83:8E12`).
+    ("front-end.tour-levels", 0x80E842, 10),
+    # The arrow's targets by cursor, x and y words (`$80:E708`).
+    ("front-end.tour-arrow-targets", 0x80E708, 40),
+    # `$83:8D8F`'s badge pictures: palette by picture (`$83:8E1C`), then tile base words (`$83:8E26`).
+    ("front-end.tour-badge-pictures", 0x838E1C, 30),
+    # The medal objects' places, x, y and two unused bytes by tour (`$80:97DD`), then the attribute
+    # by medal (`$80:9801`).
+    ("front-end.medal-places", 0x8097DD, 36),
+    ("front-end.medal-attributes", 0x809801, 4),
+)
+TOUR_BADGE_TILES = 0x84A378  # `$80:A82B`'s source: asset 68's tail
+
+
+def check_tour_badge_tiles(rom: bytes) -> None:
+    """`$80:A82B` sends the end of asset 68 again (R-0056), so native reads the asset."""
+    offset, length = _asset_piece(rom, 68)
+    source = provenance.rom_file_offset(TOUR_BADGE_TILES, len(rom))
+    if rom[source:source + 0x780] != rom[offset + length - 0x780:offset + length]:
+        raise ValueError("$84:A378 is not asset 68's last 1,920 bytes")
+
+
+def v17_new_entries(rom: bytes) -> list[dict[str, Any]]:
+    """The entries profile v17 adds to v16 (FRONT-END-1P-SETUP part 2), in pack order."""
+    check_tour_badge_tiles(rom)
+    entries = [_raw(f"front-end.asset.{asset:03d}", rom, [_asset_piece(rom, asset)]) for asset in TOUR_MENU_ASSETS]
+    return entries + [table_entry(rom, *table) for table in TOUR_MENU_TABLES]

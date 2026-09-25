@@ -1,7 +1,7 @@
 #pragma once
 // The front end from power-on to the choice of a mode (R-0054) and, for 1P, the rider menu PICK
-// YOUR UNI (R-0055): the Nintendo screen, the title, the main menu and the rider menu, frame by
-// frame as the original shows them. The state mirrors the original's where it is observable (the
+// YOUR UNI (R-0055) and the tour menu PICK TOUR (R-0056): frame by frame as the original shows
+// them. The state mirrors the original's where it is observable (the
 // arrow, the palette cycle, the menus' words, the OAM buffer, the text map) so it can be compared
 // with captures.
 #include "presentation.hpp"
@@ -27,6 +27,10 @@ struct FrontEndContent {
     // animator's tables and the uni pictures (the race riders' pose frames and tiles).
     std::span<const std::uint8_t> rider_names, rider_menu_title, decoration_frames;
     RiderObjectContent uni_pictures;
+    // The tour menu (profile v17).
+    std::span<const std::uint8_t> medal_tiles, tour_menu_text, tour_badge_places, tour_levels;
+    std::span<const std::uint8_t> tour_arrow_targets, tour_badge_pictures, medal_places;
+    std::span<const std::uint8_t> medal_attributes;
 };
 FrontEndContent front_end_content(const ClassicContentPack& pack);
 
@@ -86,17 +90,39 @@ struct MenuDecorations {
     std::uint8_t sway{};                // $0192: entries 100-103's columns, 19 down to 0
 };
 
+// The rider and tour menus' Up and Down latches ($008F bits 3 and 2): the button is held since
+// it last moved the arrow. The rider menu clears them on entry; the tour menu keeps them.
+struct MenuLatches {
+    bool up{}, down{};
+};
+
 // PICK YOUR UNI ($80:CB04): 16 riders in two columns of eight, rider r at row r / 2, column
 // r % 2. The column is the arrow's x target's.
 struct RiderMenu {
     std::uint8_t rider{};     // $017D: the rider chosen last; the arrow starts on it
     std::uint8_t row{};       // $000E
-    bool up_latched{};        // $008F bit 3: Up held since it last moved the arrow
-    bool down_latched{};      // $008F bit 2
     std::uint16_t intro{};    // $0076: the uni's build-up, picture intro / 2; 0 once it loops
     std::uint8_t idle_step{}; // $0190: the loop's step, 39 down to 0
     std::uint16_t picture{};  // the uni picture built for the next frame ($83:8E3A)
     bool back{};              // left with Y or X rather than chosen
+    bool returning{};         // entered back from PICK TOUR ($00AC != 2): slides back in
+};
+
+// The one-player records the menus read from SRAM. A cold start clears SRAM (`$83:FB41`), so all
+// are 0 until races are won, which is later work (R-0056).
+struct OnePlayerRecords {
+    std::array<std::uint8_t, 16> tour_levels{}; // $77:10D3 + rider: 0-3, the tours open
+    std::array<std::uint8_t, 160> medals{};     // $77:069C + 16 * tour + rider: 0, or 1-3
+};
+
+// PICK TOUR ($80:E550): the tours in two columns of four, HUNTER below. The cursor is 2 * row +
+// column; 8 is HUNTER, 9 HUNTER reached from the right column.
+struct TourMenu {
+    std::uint8_t tour{};   // $00D0: the tour chosen last; the arrow starts on it
+    std::uint8_t cursor{}; // $009B
+    std::uint8_t track{};  // $00CE: the first track of the tour the menu was entered with
+    std::uint8_t medal{};  // $77:10D1: the rider's medal on the chosen tour
+    bool back{};           // left with Y or X
 };
 
 struct MainMenu {
@@ -114,6 +140,8 @@ enum class FrontEndScreen : std::uint8_t {
     rider_menu,       // $80:CBC8's loop: PICK YOUR UNI
     rider_menu_exit,  // $80:F4E9, after a choice or Y
     main_menu_return, // $80:ACD5 with $00A7 set: the main menu slid back in
+    tour_menu_entry,  // $80:A858, $80:A82B and $80:E550's set-up: the tours slid in
+    tour_menu,        // $80:E5B4's loop: PICK TOUR
 };
 
 struct FrontEndState {
@@ -133,9 +161,12 @@ struct FrontEndState {
     ScreenSlide slide{};
     MenuDecorations decorations{};
     MainMenu menu{};
+    MenuLatches latches{};
     RiderMenu rider_menu{};
+    OnePlayerRecords records{};
+    TourMenu tour_menu{};
     bool mode_chosen{};
-    FrontEndMode mode{}; // for 1P, once PICK YOUR UNI has a rider (`rider_menu.rider`)
+    FrontEndMode mode{}; // for 1P, once PICK TOUR has a tour (`rider_menu.rider`, `tour_menu.tour`)
 };
 
 // Controller words as the auto-joypad read gives them (`$4218`, `$421A`): B 0x8000, Y 0x4000,
@@ -146,8 +177,8 @@ struct FrontEndPads {
 };
 
 FrontEndState start_front_end();
-// One frame: its vblank's work, in the original's order. Once a mode is chosen (for 1P, a rider)
-// the state stops.
+// One frame: its vblank's work, in the original's order. Once a mode is chosen (for 1P, a rider
+// and a tour) the state stops.
 void update_front_end(FrontEndState& state, const FrontEndContent& content, FrontEndPads pads);
 // The frame the last update produced.
 RgbFrame render_front_end(const FrontEndState& state);

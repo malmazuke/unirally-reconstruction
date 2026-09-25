@@ -103,8 +103,11 @@ void print_screens(const unirally::FrontEndState& state) {
               << " cycle=" << unsigned(d.pair_cycle) << " trio=" << unsigned(d.trio_step)
               << " wave_delay=" << unsigned(d.wave_delay) << " wave=" << hex(d.wave)
               << " sway=" << unsigned(d.sway) << " rider=" << unsigned(r.rider)
-              << " row=" << unsigned(r.row) << " up=" << r.up_latched << " down=" << r.down_latched
-              << " intro=" << r.intro << " idle_step=" << unsigned(r.idle_step) << " text=";
+              << " row=" << unsigned(r.row) << " up=" << state.latches.up
+              << " down=" << state.latches.down << " tour=" << unsigned(state.tour_menu.tour)
+              << " cursor=" << unsigned(state.tour_menu.cursor)
+              << " track=" << unsigned(state.tour_menu.track) << " intro=" << r.intro
+              << " idle_step=" << unsigned(r.idle_step) << " text=";
     std::array<std::uint8_t, 2048> text{};
     for (std::size_t k = 0; k < state.text.words.size(); ++k) {
         text[k * 2] = static_cast<std::uint8_t>(state.text.words[k]);

@@ -18,10 +18,6 @@ constexpr unsigned first_rider_palette = 6;
 // asset 2 after Y, at colour 0xF0; assets 28 and 5 at 0xD0 and 0xE0.
 constexpr unsigned no_rider_palette = 2, menu_text_palette = 28, early_palette = 5;
 
-// The slide ($80:E233, $80:E27E): 39 passes; the speed rises by 1 while the countdown is 31 or
-// more and falls by 1 below 7, so the passes add up to 256 pixels.
-constexpr std::int8_t slide_passes = 38, accelerate_from = 31, decelerate_below = 7;
-
 // The rider menu's text ($80:95AB): each name at column 5 (even riders) or 19 (odd), text row
 // 4 + 3 * row; then the title.
 constexpr std::uint8_t left_name_column = 5, right_name_column = 19, first_name_row = 4,
@@ -54,82 +50,6 @@ constexpr std::uint16_t up = 0x0800, down = 0x0400, left = 0x0200, right = 0x010
 // The HDMA of $80:CC1A-CC47: colour 0 black from the top; from row 64 one colour a row through
 // colours 0x80-0xFF, so that palette p holds rider p + 8's colours on rows 64 + 16p on.
 constexpr std::uint8_t split_row = 64;
-
-// The decoration animator's tables inside `front-end.decoration-frames` ($83:9AF9 on).
-constexpr std::size_t pair_tiles = 0x00, cycle_tiles = 0x08, left_sway = 0x10, right_sway = 0x1a,
-                      trio_tiles = 0x2e, wave_tiles = 0x38;
-constexpr std::uint8_t pair_steps = 8, wave_steps = 20;
-
-// A count that steps down and wraps from below 0 to `last`, as the animator's DEC/BPL pairs do.
-bool step_down(std::uint8_t& counter, std::uint8_t last) {
-    --counter;
-    if ((counter & 0x80U) == 0) return false;
-    counter = last;
-    return true;
-}
-
-std::uint8_t& oam_byte(FrontEndState& state, unsigned entry, unsigned field) {
-    return state.oam_buffer[entry * 4 + field];
-}
-
-// $83:9A1E: every third pass the tiles of entries 96-99 and 112-114 step; every other pass the
-// tiles of entries 104-111 and the columns of entries 100-103.
-void step_decorations(FrontEndState& state, const FrontEndContent& content) {
-    auto& d = state.decorations;
-    const auto frames = content.decoration_frames;
-    if (step_down(d.delay, 2)) {
-        if (step_down(d.pair_step, pair_steps - 1)) step_down(d.pair_cycle, pair_steps - 1);
-        oam_byte(state, 98, 2) = oam_byte(state, 99, 2) = frames[cycle_tiles + d.pair_cycle];
-        oam_byte(state, 96, 2) = oam_byte(state, 97, 2) = frames[pair_tiles + d.pair_step];
-        step_down(d.trio_step, pair_steps - 1);
-        for (unsigned k = 0; k < 3; ++k)
-            oam_byte(state, 112 + k, 2) = frames[trio_tiles + d.trio_step + k];
-    }
-    if (!step_down(d.wave_delay, 1)) return;
-    for (unsigned k = 8; k-- > 0;) {
-        step_down(d.wave[k], wave_steps - 1);
-        oam_byte(state, 104 + k, 2) = frames[wave_tiles + d.wave[k]];
-    }
-    step_down(d.sway, wave_steps - 1);
-    const auto sway_left = frames[left_sway + d.sway], sway_right = frames[right_sway + d.sway];
-    oam_byte(state, 100, 0) = static_cast<std::uint8_t>(0x08 + sway_left);
-    oam_byte(state, 101, 0) = static_cast<std::uint8_t>(0x08 + sway_right);
-    oam_byte(state, 102, 0) = static_cast<std::uint8_t>(0x18 + sway_left);
-    oam_byte(state, 103, 0) = static_cast<std::uint8_t>(0x18 + sway_right);
-}
-
-void step_slide_speed(ScreenSlide& slide) {
-    if (slide.countdown >= accelerate_from)
-        ++slide.speed;
-    else if (slide.countdown < decelerate_below)
-        --slide.speed;
-}
-
-// The first pass's work before its frame wait.
-void start_slide(FrontEndState& state, const FrontEndContent& content, bool back) {
-    auto& slide = state.slide;
-    slide.back = back;
-    slide.countdown = slide_passes;
-    slide.speed = 0;
-    step_slide_speed(slide);
-    if (!back) step_decorations(state, content); // `JMP ($0056)`: only the forward slide
-}
-
-// A pass after its frame wait, then the next pass's work. True once the halves have swapped.
-bool slide_frame(FrontEndState& state, const FrontEndContent& content) {
-    auto& slide = state.slide;
-    copy_oam(state);
-    slide.scroll = static_cast<std::uint16_t>(slide.back ? slide.scroll - slide.speed
-                                                         : slide.scroll + slide.speed);
-    state.registers.bg[1].hofs = slide.scroll;
-    if (--slide.countdown >= 0) {
-        step_slide_speed(slide);
-        if (!slide.back) step_decorations(state, content);
-        return false;
-    }
-    std::swap(slide.hidden_half, slide.shown_half);
-    return true;
-}
 
 // $80:95AB, then the title: the names of the records in the text map, in the printer's current
 // attribute (the main menu's).
@@ -264,6 +184,7 @@ void move_arrow_row(FrontEndState& state, int step) {
 // Returns true when a rider is chosen or Y or X pressed.
 bool read_rider_menu_pad(FrontEndState& state, std::uint16_t pad) {
     auto& menu = state.rider_menu;
+    auto& latches = state.latches;
     auto& attributes = arrow_attribute(state);
     if ((pad & left) && !(attributes & arrow_mirror)) {
         attributes = static_cast<std::uint8_t>((attributes | arrow_mirror) & 0xfdU);
@@ -275,9 +196,9 @@ bool read_rider_menu_pad(FrontEndState& state, std::uint16_t pad) {
     }
     bool moved_up = false;
     if (!(pad & up)) {
-        menu.up_latched = false;
-    } else if (!menu.up_latched) {
-        menu.up_latched = true;
+        latches.up = false;
+    } else if (!latches.up) {
+        latches.up = true;
         if (menu.row > 0) {
             move_arrow_row(state, -1);
             moved_up = true;
@@ -285,9 +206,9 @@ bool read_rider_menu_pad(FrontEndState& state, std::uint16_t pad) {
     }
     if (!moved_up) {
         if (!(pad & down)) {
-            menu.down_latched = false;
-        } else if (!menu.down_latched) {
-            menu.down_latched = true;
+            latches.down = false;
+        } else if (!latches.down) {
+            latches.down = true;
             if (menu.row < riders / 2 - 1) {
                 move_arrow_row(state, 1);
                 return false;
@@ -303,15 +224,26 @@ bool read_rider_menu_pad(FrontEndState& state, std::uint16_t pad) {
     return true;
 }
 
+// $80:CB04's first lines, before its first frame wait.
+void open_rider_menu_entry(FrontEndState& state) {
+    state.menu.selection = state.rider_menu.rider; // $80:CB07
+    state.menu.move_latched = false;               // $80:CB0C clears $008F
+    state.latches = {};
+    state.screen = FrontEndScreen::rider_menu_entry;
+}
+
 } // namespace
 
 void enter_rider_menu(FrontEndState& state) {
-    state.logo.raised = true;                      // $80:F51B
-    state.menu.selection = state.rider_menu.rider; // $80:CB07
-    state.menu.move_latched = false;               // $80:CB0C clears $008F
-    state.rider_menu.up_latched = state.rider_menu.down_latched = false;
+    state.logo.raised = true;                                             // $80:F51B
     state.decorations.delay = static_cast<std::uint8_t>(state.menu.idle); // the shared $0089
-    state.screen = FrontEndScreen::rider_menu_entry;
+    state.rider_menu.returning = false;
+    open_rider_menu_entry(state);
+}
+
+void return_to_rider_menu(FrontEndState& state) {
+    state.rider_menu.returning = true;
+    open_rider_menu_entry(state);
 }
 
 void rider_menu_entry_frame(FrontEndState& state, const FrontEndContent& content) {
@@ -330,7 +262,7 @@ void rider_menu_entry_frame(FrontEndState& state, const FrontEndContent& content
         return;
     case 3:
         upload_uni(state, content);
-        start_slide(state, content, false);
+        start_slide(state, content, state.rider_menu.returning);
         return;
     default:
         if (!slide_frame(state, content)) return;
@@ -377,8 +309,7 @@ void rider_menu_exit_frame(FrontEndState& state, const FrontEndContent& content)
     load_cgram(state, asset(content, early_palette), 0xe0);
     state.registers.obsel = 0x63;
     if (!back) {
-        state.mode_chosen = true;
-        state.mode = FrontEndMode::one_player;
+        enter_tour_menu(state);
         return;
     }
     print_main_menu(state, content);

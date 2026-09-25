@@ -15,6 +15,10 @@ inline constexpr unsigned arrow_entry = 119, shadow_entry = 127;
 // The word a cleared text map holds ($80:D1FA, $83:8B51).
 inline constexpr std::uint16_t cleared_text = 0x004c;
 
+inline std::uint8_t& oam_byte(FrontEndState& state, unsigned entry, unsigned field) {
+    return state.oam_buffer[entry * 4 + field];
+}
+
 std::span<const std::uint8_t> asset(const FrontEndContent& content, unsigned id);
 // The VRAM copier `$82:B1DB` from word address `word`; CGRAM `$82:B183` from colour `colour`.
 void load_vram(FrontEndState& state, std::span<const std::uint8_t> data, unsigned word);
@@ -33,11 +37,30 @@ void reload_menu_palette(FrontEndState& state, const FrontEndContent& content); 
 void reload_menu_text_tiles(FrontEndState& state, const FrontEndContent& content); // $80:A877
 void start_main_menu(FrontEndState& state);                                        // $80:ABC8
 
-// rider_menu.cpp: 1P chosen on the main menu (`$80:BB9C`), then a frame of each script.
+// screen_slide.cpp. A count that steps down and wraps from below 0 to `last`, as the original's
+// DEC/BPL pairs do; true when it wrapped.
+bool step_down(std::uint8_t& counter, std::uint8_t last);
+// $83:9A1E: every third pass the tiles of entries 96-99 and 112-114 step; every other pass the
+// tiles of entries 104-111 and the columns of entries 100-103.
+void step_decorations(FrontEndState& state, const FrontEndContent& content);
+// A slide's first pass, before its frame wait; then each pass after its wait, with the next
+// pass's work. `slide_frame` is true once the halves have swapped.
+void start_slide(FrontEndState& state, const FrontEndContent& content, bool back);
+bool slide_frame(FrontEndState& state, const FrontEndContent& content);
+
+// rider_menu.cpp: 1P chosen on the main menu (`$80:BB9C`), or Y or X on PICK TOUR (`$80:BBA3`,
+// which slides the rider menu back in); then a frame of each script.
 void enter_rider_menu(FrontEndState& state);
+void return_to_rider_menu(FrontEndState& state);
 void rider_menu_entry_frame(FrontEndState& state, const FrontEndContent& content);
 void rider_menu_frame(FrontEndState& state, const FrontEndContent& content, FrontEndPads pads);
 void rider_menu_exit_frame(FrontEndState& state, const FrontEndContent& content);
 void main_menu_return_frame(FrontEndState& state, const FrontEndContent& content);
+
+// tour_menu.cpp: PICK TOUR after a rider is chosen (`$80:BBF7-BC0B`), a frame of its set-up and
+// of its loop.
+void enter_tour_menu(FrontEndState& state);
+void tour_menu_entry_frame(FrontEndState& state, const FrontEndContent& content);
+void tour_menu_frame(FrontEndState& state, const FrontEndContent& content, FrontEndPads pads);
 
 } // namespace unirally::front_end_screens
