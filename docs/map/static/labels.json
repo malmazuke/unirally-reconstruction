@@ -316,7 +316,7 @@
   "comment": "instruction start",
   "label": "loc_808638",
   "native": [
-   "src/core/presentation.cpp:render_classic_race"
+   "src/core/presentation.cpp:race_scroll"
   ],
   "source_records": [
    "docs/research/R-0052-hunter-effects.md",
@@ -624,7 +624,7 @@
   "label": "loc_808821",
   "native": [
    "src/core/hunter_effects.cpp:count_hunter_mosaic",
-   "src/core/presentation.cpp:render_classic_race",
+   "src/core/presentation.cpp:race_scroll",
    "src/core/zoom_zoo_movement.hpp:HunterEffects::mosaic_counter"
   ],
   "source_records": [
@@ -3006,7 +3006,7 @@
   "comment": "routine start",
   "label": "sub_81A304",
   "native": [
-   "src/core/presentation.cpp:render_classic_race",
+   "src/core/presentation.cpp:draw_race_backgrounds",
    "src/core/race_setup.cpp:track_geometry",
    "src/core/rider_object.hpp:project_rider_oam",
    "src/core/zoom_zoo_movement.hpp:TrackGeometry"
@@ -3026,7 +3026,7 @@
   "comment": "unknown",
   "label": "unk_81A342",
   "native": [
-   "src/core/presentation.cpp:render_classic_race",
+   "src/core/presentation.cpp:draw_race_backgrounds",
    "src/core/race_setup.cpp:track_geometry",
    "src/core/rider_object.hpp:project_rider_oam",
    "src/core/zoom_zoo_movement.hpp:TrackGeometry"
@@ -3041,7 +3041,7 @@
   "comment": "unknown",
   "label": "unk_81A343",
   "native": [
-   "src/core/presentation.cpp:render_classic_race",
+   "src/core/presentation.cpp:draw_race_backgrounds",
    "src/core/race_setup.cpp:track_geometry",
    "src/core/rider_object.hpp:project_rider_oam",
    "src/core/zoom_zoo_movement.hpp:TrackGeometry"
@@ -3056,7 +3056,7 @@
   "comment": "unknown",
   "label": "unk_81A388",
   "native": [
-   "src/core/presentation.cpp:render_classic_race",
+   "src/core/presentation.cpp:draw_race_backgrounds",
    "src/core/race_setup.cpp:track_geometry",
    "src/core/rider_object.hpp:project_rider_oam",
    "src/core/zoom_zoo_movement.hpp:TrackGeometry"
@@ -3071,7 +3071,7 @@
   "comment": "unknown",
   "label": "unk_81A3C7",
   "native": [
-   "src/core/presentation.cpp:render_classic_race",
+   "src/core/presentation.cpp:draw_race_backgrounds",
    "src/core/race_setup.cpp:track_geometry",
    "src/core/rider_object.hpp:project_rider_oam",
    "src/core/zoom_zoo_movement.hpp:TrackGeometry"
@@ -3086,7 +3086,7 @@
   "comment": "unknown",
   "label": "unk_81A406",
   "native": [
-   "src/core/presentation.cpp:render_classic_race",
+   "src/core/presentation.cpp:draw_race_backgrounds",
    "src/core/race_setup.cpp:track_geometry",
    "src/core/rider_object.hpp:project_rider_oam",
    "src/core/zoom_zoo_movement.hpp:TrackGeometry"
@@ -3101,7 +3101,7 @@
   "comment": "routine start",
   "label": "sub_81A445",
   "native": [
-   "src/core/presentation.cpp:render_classic_race",
+   "src/core/presentation.cpp:draw_race_backgrounds",
    "src/core/race_setup.cpp:track_geometry",
    "src/core/rider_object.hpp:project_rider_oam",
    "src/core/zoom_zoo_movement.hpp:TrackGeometry"
@@ -3121,7 +3121,7 @@
   "comment": "routine start",
   "label": "sub_81A483",
   "native": [
-   "src/core/presentation.cpp:render_classic_race",
+   "src/core/presentation.cpp:draw_race_backgrounds",
    "src/core/race_setup.cpp:track_geometry",
    "src/core/rider_object.hpp:project_rider_oam",
    "src/core/zoom_zoo_movement.hpp:TrackGeometry"
@@ -3136,7 +3136,7 @@
   "comment": "routine start",
   "label": "sub_81A4C1",
   "native": [
-   "src/core/presentation.cpp:render_classic_race",
+   "src/core/presentation.cpp:draw_race_backgrounds",
    "src/core/race_setup.cpp:track_geometry",
    "src/core/rider_object.hpp:project_rider_oam",
    "src/core/zoom_zoo_movement.hpp:TrackGeometry"
@@ -3154,7 +3154,7 @@
   "comment": "instruction start",
   "label": "loc_81AD05",
   "native": [
-   "src/core/presentation.cpp:render_classic_race"
+   "src/core/presentation.cpp:draw_race_backgrounds"
   ],
   "source_records": [
    "docs/research/R-0046-track-breadth-matrix.md",
@@ -3179,7 +3179,7 @@
   "comment": "instruction start",
   "label": "loc_81AD22",
   "native": [
-   "src/core/presentation.cpp:render_classic_race",
+   "src/core/presentation.cpp:draw_race_backgrounds",
    "src/core/race_setup.cpp:track_geometry"
   ],
   "source_records": [
@@ -3217,7 +3217,7 @@
   "comment": "instruction start",
   "label": "loc_81AE90",
   "native": [
-   "src/core/presentation.cpp:render_classic_race",
+   "src/core/presentation.cpp:race_scroll",
    "src/core/presentation.hpp:ClassicRaceHistory::hunter_barf"
   ],
   "source_records": [
@@ -7442,7 +7442,7 @@
   "label": "loc_82DDB0",
   "native": [
    "src/core/content_pack.cpp:hunter_required",
-   "src/core/presentation.cpp:render_classic_race"
+   "src/core/presentation.cpp:race_cgram"
   ],
   "source_records": [
    "docs/research/R-0052-hunter-effects.md"
@@ -8138,7 +8138,7 @@
   "native": [
    "src/core/hunter_effects.cpp:run_screen_flip",
    "src/core/hunter_effects.cpp:update_hunter_effects",
-   "src/core/presentation.cpp:render_classic_race",
+   "src/core/presentation.cpp:race_scroll",
    "src/core/zoom_zoo_movement.hpp:ClassicRaceScenario::hunter_tour",
    "src/core/zoom_zoo_movement.hpp:HunterEffects",
    "src/core/zoom_zoo_movement.hpp:update_hunter_effects"
@@ -8155,7 +8155,7 @@
   "label": "sub_83E04F",
   "native": [
    "src/core/hunter_effects.cpp:run_screen_flip",
-   "src/core/presentation.cpp:render_classic_race",
+   "src/core/presentation.cpp:race_scroll",
    "src/core/rider_object.hpp:RiderOam::vertical_flip"
   ],
   "source_records": [

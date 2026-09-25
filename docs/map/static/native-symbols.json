@@ -185,7 +185,7 @@
   {
    "address": "$80:8638",
    "native": [
-    "src/core/presentation.cpp:render_classic_race"
+    "src/core/presentation.cpp:race_scroll"
    ],
    "region": "rom"
   },
@@ -233,7 +233,7 @@
    "address": "$80:8821",
    "native": [
     "src/core/hunter_effects.cpp:count_hunter_mosaic",
-    "src/core/presentation.cpp:render_classic_race",
+    "src/core/presentation.cpp:race_scroll",
     "src/core/zoom_zoo_movement.hpp:HunterEffects::mosaic_counter"
    ],
    "range_ends": [
@@ -1020,7 +1020,7 @@
   {
    "address": "$81:A304",
    "native": [
-    "src/core/presentation.cpp:render_classic_race",
+    "src/core/presentation.cpp:draw_race_backgrounds",
     "src/core/race_setup.cpp:track_geometry",
     "src/core/rider_object.hpp:project_rider_oam",
     "src/core/zoom_zoo_movement.hpp:TrackGeometry"
@@ -1106,7 +1106,7 @@
   {
    "address": "$81:AD05",
    "native": [
-    "src/core/presentation.cpp:render_classic_race"
+    "src/core/presentation.cpp:draw_race_backgrounds"
    ],
    "region": "rom"
   },
@@ -1123,7 +1123,7 @@
   {
    "address": "$81:AD22",
    "native": [
-    "src/core/presentation.cpp:render_classic_race"
+    "src/core/presentation.cpp:draw_race_backgrounds"
    ],
    "range_ends": [
     "$81:AD2C"
@@ -1133,7 +1133,7 @@
   {
    "address": "$81:AE90",
    "native": [
-    "src/core/presentation.cpp:render_classic_race",
+    "src/core/presentation.cpp:race_scroll",
     "src/core/presentation.hpp:ClassicRaceHistory::hunter_barf"
    ],
    "region": "rom"
@@ -2531,7 +2531,7 @@
    "address": "$82:DDB0",
    "native": [
     "src/core/content_pack.cpp:hunter_required",
-    "src/core/presentation.cpp:render_classic_race"
+    "src/core/presentation.cpp:race_cgram"
    ],
    "range_ends": [
     "$82:DDBC"
@@ -2562,7 +2562,7 @@
   {
    "address": "$83:905F",
    "native": [
-    "src/core/presentation.cpp:render_classic_race"
+    "src/core/presentation.cpp:render_authored_result"
    ],
    "range_ends": [
     "$83:90ED"
@@ -2838,7 +2838,7 @@
    "address": "$83:D581",
    "native": [
     "src/core/hunter_effects.cpp:run_screen_flip",
-    "src/core/presentation.cpp:render_classic_race"
+    "src/core/presentation.cpp:race_scroll"
    ],
    "range_ends": [
     "$83:E081"
@@ -3782,7 +3782,7 @@
   {
    "address": "$0D51",
    "native": [
-    "src/core/presentation.cpp:render_classic_race"
+    "src/core/presentation.cpp:draw_race_backgrounds"
    ],
    "region": "wram"
   },
@@ -4606,7 +4606,7 @@
   {
    "address": "$1516",
    "native": [
-    "src/core/presentation.cpp:render_classic_race",
+    "src/core/presentation.cpp:draw_race_riders",
     "src/core/zoom_zoo_movement.hpp:SpecialTileRider::raised_priority"
    ],
    "region": "wram"
@@ -4614,7 +4614,7 @@
   {
    "address": "$151A",
    "native": [
-    "src/core/presentation.cpp:render_classic_race",
+    "src/core/presentation.cpp:draw_race_riders",
     "src/core/zoom_zoo_movement.hpp:SpecialTileRider::raised_priority"
    ],
    "region": "wram"
@@ -4706,7 +4706,7 @@
   {
    "address": "$77:0749",
    "native": [
-    "src/core/presentation.cpp:render_classic_race",
+    "src/core/presentation.cpp:race_cgram",
     "src/core/zoom_zoo_movement.hpp:ClassicRaceScenario::opponent_character"
    ],
    "region": "sram"
@@ -5287,9 +5287,33 @@
     "$81:F33C"
    ]
   },
+  "src/core/presentation.cpp:draw_race_backgrounds": {
+   "rom": [
+    "$81:A304",
+    "$81:AD05",
+    "$81:AD22"
+   ],
+   "wram": [
+    "$0D51"
+   ]
+  },
+  "src/core/presentation.cpp:draw_race_riders": {
+   "wram": [
+    "$1516",
+    "$151A"
+   ]
+  },
   "src/core/presentation.cpp:load_race_palette_phase": {
    "rom": [
     "$80:82AB"
+   ]
+  },
+  "src/core/presentation.cpp:race_cgram": {
+   "rom": [
+    "$82:DDB0"
+   ],
+   "sram": [
+    "$77:0749"
    ]
   },
   "src/core/presentation.cpp:race_palette_phase": {
@@ -5297,33 +5321,31 @@
     "$82:D382"
    ]
   },
+  "src/core/presentation.cpp:race_scroll": {
+   "rom": [
+    "$80:8638",
+    "$80:8821",
+    "$81:AE90",
+    "$83:D581"
+   ]
+  },
   "src/core/presentation.cpp:race_vblank_frame": {
    "io": [
     "$00:420C"
    ]
   },
+  "src/core/presentation.cpp:render_authored_result": {
+   "rom": [
+    "$83:905F"
+   ]
+  },
   "src/core/presentation.cpp:render_classic_race": {
    "rom": [
-    "$80:8638",
-    "$80:8821",
     "$80:883F",
-    "$81:A304",
-    "$81:AD05",
-    "$81:AD22",
-    "$81:AE90",
-    "$82:DDB0",
-    "$83:905F",
-    "$83:CCC1",
-    "$83:D581"
-   ],
-   "sram": [
-    "$77:0749"
+    "$83:CCC1"
    ],
    "wram": [
-    "$0D51",
-    "$0FF1",
-    "$1516",
-    "$151A"
+    "$0FF1"
    ]
   },
   "src/core/presentation.cpp:render_result_background": {
@@ -7126,7 +7148,7 @@
  "totals": {
   "addresses": 560,
   "io_addresses": 11,
-  "native_symbols": 329,
+  "native_symbols": 334,
   "rom_addresses": 351,
   "sram_addresses": 7,
   "wram_addresses": 191

@@ -293,6 +293,7 @@
    ],
    "native": [
     "src/core/hunter_effects.cpp:count_hunter_mosaic",
+    "src/core/presentation.cpp:race_scroll",
     "src/core/presentation.cpp:render_classic_race",
     "src/core/zoom_zoo_movement.hpp:HunterEffects::mosaic_counter"
    ],
@@ -3689,7 +3690,7 @@
     "NMX"
    ],
    "native": [
-    "src/core/presentation.cpp:render_classic_race",
+    "src/core/presentation.cpp:draw_race_backgrounds",
     "src/core/race_setup.cpp:track_geometry",
     "src/core/rider_object.hpp:project_rider_oam",
     "src/core/zoom_zoo_movement.hpp:TrackGeometry"
@@ -3712,7 +3713,7 @@
     "NMX"
    ],
    "native": [
-    "src/core/presentation.cpp:render_classic_race",
+    "src/core/presentation.cpp:draw_race_backgrounds",
     "src/core/race_setup.cpp:track_geometry",
     "src/core/rider_object.hpp:project_rider_oam",
     "src/core/zoom_zoo_movement.hpp:TrackGeometry"
@@ -3735,7 +3736,7 @@
     "NMX"
    ],
    "native": [
-    "src/core/presentation.cpp:render_classic_race",
+    "src/core/presentation.cpp:draw_race_backgrounds",
     "src/core/race_setup.cpp:track_geometry",
     "src/core/rider_object.hpp:project_rider_oam",
     "src/core/zoom_zoo_movement.hpp:TrackGeometry"
@@ -3758,7 +3759,7 @@
     "NMX"
    ],
    "native": [
-    "src/core/presentation.cpp:render_classic_race",
+    "src/core/presentation.cpp:draw_race_backgrounds",
     "src/core/race_setup.cpp:track_geometry",
     "src/core/rider_object.hpp:project_rider_oam",
     "src/core/zoom_zoo_movement.hpp:TrackGeometry"
@@ -3918,7 +3919,7 @@
     "NMX"
    ],
    "native": [
-    "src/core/presentation.cpp:render_classic_race"
+    "src/core/presentation.cpp:draw_race_backgrounds"
    ],
    "observed_entries": {},
    "start": "$81:ACEC",
@@ -3938,7 +3939,7 @@
     "NMX"
    ],
    "native": [
-    "src/core/presentation.cpp:render_classic_race",
+    "src/core/presentation.cpp:draw_race_backgrounds",
     "src/core/race_setup.cpp:track_geometry"
    ],
    "observed_entries": {},
@@ -4006,7 +4007,7 @@
     "NMX"
    ],
    "native": [
-    "src/core/presentation.cpp:render_classic_race",
+    "src/core/presentation.cpp:race_scroll",
     "src/core/presentation.hpp:ClassicRaceHistory::hunter_barf"
    ],
    "observed_entries": {},
@@ -9858,7 +9859,7 @@
     "src/core/content_pack.cpp:hunter_required",
     "src/core/content_pack.cpp:tracks_required",
     "src/core/presentation.cpp:classic_race_presentation_content",
-    "src/core/presentation.cpp:render_classic_race"
+    "src/core/presentation.cpp:race_cgram"
    ],
    "observed_entries": {},
    "start": "$82:DD84",
@@ -12163,7 +12164,7 @@
    "native": [
     "src/core/hunter_effects.cpp:run_screen_flip",
     "src/core/hunter_effects.cpp:update_hunter_effects",
-    "src/core/presentation.cpp:render_classic_race",
+    "src/core/presentation.cpp:race_scroll",
     "src/core/zoom_zoo_movement.hpp:ClassicRaceScenario::hunter_tour",
     "src/core/zoom_zoo_movement.hpp:HunterEffects",
     "src/core/zoom_zoo_movement.hpp:update_hunter_effects"
@@ -12187,7 +12188,7 @@
    ],
    "native": [
     "src/core/hunter_effects.cpp:run_screen_flip",
-    "src/core/presentation.cpp:render_classic_race"
+    "src/core/presentation.cpp:race_scroll"
    ],
    "observed_entries": {},
    "start": "$83:DAF3",
@@ -12208,7 +12209,7 @@
    ],
    "native": [
     "src/core/hunter_effects.cpp:run_screen_flip",
-    "src/core/presentation.cpp:render_classic_race",
+    "src/core/presentation.cpp:race_scroll",
     "src/core/rider_object.hpp:RiderOam::vertical_flip"
    ],
    "observed_entries": {},
