@@ -252,9 +252,9 @@ speed-limiter bound, the final-lap announcement and the lap-graph result).
 from decoded track byte 13. `classic_crawler_dragster_race_start` and
 `dragster_race_content` (two-track pack) start DRAGSTER on this path; its state
 serializes as `URDG0001` in the 742-byte `URZZ000B` layout. Every other race track's
-state is `URTRnn05`: that layout followed by the 52 special-tile bytes (R-0047, with the
-turnaround `$0C73` of R-0050 and the loop's and flag pair 8's words of R-0051) and the
-last 60 checkpoint-seen flags of R-0048 (854 bytes). The special-tile bytes
+state is `URTRnn06`: that layout followed by the 52 special-tile bytes (R-0047, with the
+turnaround `$0C73` of R-0050 and the loop's and flag pair 8's words of R-0051), the
+last 60 checkpoint-seen flags of R-0048 and the HUNTER effects' 62 bytes of R-0052 (916 bytes). The special-tile bytes
 DRAGSTER and ZOOM ZOO also append, as `URDG0004` and `URZZ000E`, only while one of those
 words is live. The legacy DRAGSTER
 `update_movement` path and its `URMV` formats remain for the accepted gates.

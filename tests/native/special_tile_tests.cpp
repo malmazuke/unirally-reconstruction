@@ -144,9 +144,9 @@ int main() {
                     update_corkscrew_tile(r2,t2,surface,tr2,u,std::span<const std::uint8_t>{});});
     }
 
-    // Layout: any track but DRAGSTER and ZOOM ZOO is URTRnn06, 912 bytes: the
+    // Layout: any track but DRAGSTER and ZOOM ZOO is URTRnn06, 916 bytes: the
     // special-tile words (12 per rider), $0E7B and $0C73 after the shared 742,
-    // then 60 checkpoint flags and the HUNTER effects' 29 words.
+    // then 60 checkpoint flags and the HUNTER effects' 31 words.
     {
         std::array<std::uint8_t,14> header{};header[3]=0x44;header[5]=0x32;header[7]=0x44;header[9]=0x32;header[13]=0x40;
         ZoomZooContent content{};content.movement.sampling.track=header;
@@ -155,7 +155,7 @@ int main() {
         state.special_tiles[1]={4,4,1,0x12,1,8,0,1};state.drive_target_latch=1;
         const auto bytes=serialize_zoom_zoo(state);
         const std::array<std::uint8_t,8> magic{'U','R','T','R','1','1','0','6'};
-        require(bytes.size()==912 && std::equal(magic.begin(),magic.end(),bytes.begin()));
+        require(bytes.size()==916 && std::equal(magic.begin(),magic.end(),bytes.begin()));
         require(bytes[766]==4 && bytes[770]==1 && bytes[772]==0x12 && bytes[776]==8 && bytes[780]==1 && bytes[790]==1);
         // R-0051: the loop's three words and flag pair 8's counter follow each rider's eight.
         auto looping=state;looping.special_tiles[0].loop_direction=1;looping.special_tiles[0].loop_step=9;

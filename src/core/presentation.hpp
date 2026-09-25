@@ -284,6 +284,13 @@ struct ClassicRaceHistory {
   bool window_published{};
   std::optional<unsigned> window_table{};
   ClassicHudPublished published_hud{};
+  // R-0052: HUNTER effect 0 as the BG scroll routine of the update on screen
+  // read it ($81:AE90, before that update's own effect routine ran).
+  bool hunter_barf{};
+  // R-0052: HUNTER effect 3's blink at the end of the update before the one on
+  // screen. The riders' OAM vertical-flip bit outlives the blink by an update:
+  // the NMI resets the attributes ($80:876C) only after its OAM transfer.
+  bool hunter_flip_prior{};
 };
 // The countdown's transition member for a track: 5 + `$1229`, which
 // $83:CC05-CC08 latches at race initialization from the player's reflection
@@ -341,12 +348,13 @@ public:
                       const ClassicContentPack& pack);
   // History for the update that produced the `previous_update` being drawn.
   ClassicRaceHistory on_screen() const {
-      return {on_screen_,opponent_finish_frame_,window_.observed(),window_.published(),clock_.published()};
+      return {on_screen_,opponent_finish_frame_,window_.observed(),window_.published(),clock_.published(),on_screen_barf_,on_screen_flip_prior_};
   }
   const RiderLookState& look() const {return look_;}
 private:
   RiderLookState look_{};
   ZoomZooRiderOverlays latest_{}, on_screen_{};
+  bool latest_barf_{}, on_screen_barf_{}, latest_flip_prior_{}, on_screen_flip_prior_{};
   std::optional<std::uint32_t> opponent_finish_frame_{};
   ClassicWindowPointer window_{};
   ClassicRaceHudClock clock_{};
@@ -387,6 +395,9 @@ struct ClassicRacePresentationContent {
   // The result title's name bytes for a one-run track beyond DRAGSTER (its
   // name-table entry with the `$FF`); empty for the two accepted tracks.
   std::span<const std::uint8_t> result_track_name;
+  // R-0052: on the HUNTER tour, the opponent's sprite palette (character 20's,
+  // OBJ palette 4); empty elsewhere.
+  std::span<const std::uint8_t> hunter_opponent_palette;
 };
 ClassicRacePresentationContent classic_race_presentation_content(const ClassicContentPack& pack,ClassicRaceTrack track);
 // One renderer for both tracks. previous_update is the state before the update

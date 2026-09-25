@@ -85,7 +85,7 @@ int main() {
     require(flat_start.track==flat_fun && flat_start.movement.frame==1392);
     const auto flat_bytes=serialize_zoom_zoo(flat_start);
     const std::array<std::uint8_t,8> flat_magic{'U','R','T','R','1','3','0','6'};
-    require(flat_bytes.size()==912 && classic_race_state_magic(flat_fun)==flat_magic && std::equal(flat_magic.begin(),flat_magic.end(),flat_bytes.begin()));
+    require(flat_bytes.size()==916 && classic_race_state_magic(flat_fun)==flat_magic && std::equal(flat_magic.begin(),flat_magic.end(),flat_bytes.begin()));
     const auto flat_restored=deserialize_zoom_zoo(flat_bytes);
     require(flat_restored.track==flat_fun && serialize_zoom_zoo(flat_restored)==flat_bytes);
     // An identity naming DRAGSTER, ZOOM ZOO or a track without a scenario is refused.

@@ -273,8 +273,11 @@ const std::array<RequiredEntry, 1> loop_required{{
 }};
 // HUNTER-EFFECTS (profile v14): the HUNTER tag effects' blink pattern, 64
 // bytes at $83:D3BC ($83:D316, $83:D395, $83:D44D, R-0052).
-const std::array<RequiredEntry, 1> hunter_required{{
+// And the HUNTER opponent's sprite palette: asset 26 (character 20 + 6), which
+// $82:DDB0-DDBC loads at OBJ palette 4 where the other tours load asset 23.
+const std::array<RequiredEntry, 2> hunter_required{{
     {"zoom.hunter-blink", 64, "b4adbefef0d7b71c40b0a806002a5cf5598a79b5e14992030c3d498f6955c93f"},
+    {"presentation.classic.hunter-opponent-palette.v1", 32, "a8d2de3b96ccc5a277cb3ffecaa92006913197e0887ccb76f27a7a25d41d6d8e"},
 }};
 // LOCKED-TOURS (profile v12): the race tracks of the five tours a cold start does not
 // list, and sceneries 1, 8 and 12. Generated from the rules file (tracks.py v12_new_entries).
@@ -369,7 +372,7 @@ const std::array<RequiredEntry, 89> locked_tracks_required{{
     {"scenery.12.bg2-map", 8192, "a9ad06f9426d4971d276a31bc87ca024a3c7ef21efee51037aafbd41a7a148c0"},
     {"scenery.12.palette", 352, "b2a9aefe13c1dc68454cf0a5c2bedb086c6e162dbea1df1f2ef108347d89ab63"},
 }};
-constexpr std::string_view two_track_rules_sha="9918a684e11b7180e4ba7eb2f4187b92ceb185ae9c6dd14a91dd082fcbc73571";
+constexpr std::string_view two_track_rules_sha="d975455eaa8b24bb80b67987f6dd995df113dd52e1b153b89e8e1aa43269ebc6";
 
 std::array<std::uint8_t, 32> hex_digest(std::string_view text) {
   if (text.size() != 64)

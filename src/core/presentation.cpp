@@ -1168,13 +1168,18 @@ std::string classic_track_name(const ClassicContentPack& pack,ClassicRaceTrack t
 } // namespace
 
 void ClassicRaceHistoryTracker::reset() {
-    look_={};latest_={};on_screen_={};opponent_finish_frame_.reset();window_.reset();clock_.reset();transition_member_.reset();
+    look_={};latest_={};on_screen_={};latest_barf_=on_screen_barf_=latest_flip_prior_=on_screen_flip_prior_=false;opponent_finish_frame_.reset();window_.reset();clock_.reset();transition_member_.reset();
 }
 void ClassicRaceHistoryTracker::observe_update(const ZoomZooState& previous,const ZoomZooState& updated,
                                                const ClassicContentPack& pack) {
     // R-0036: update N builds its objects with overlays chosen from the look
     // state before its own look step; picture N+1 shows them.
     on_screen_=latest_;
+    on_screen_barf_=latest_barf_;
+    on_screen_flip_prior_=latest_flip_prior_;
+    latest_flip_prior_=previous.hunter.blink!=0;
+    // A skipped update runs no BG scroll routine, so it keeps the last one's.
+    if(!previous.hunter.skip_update)latest_barf_=previous.hunter.effect[0]!=0;
     if(!previous.race.riders[1].finished && updated.race.riders[1].finished)
         opponent_finish_frame_=updated.movement.frame;
     if(!transition_member_)transition_member_=classic_window_transition_member(classic_track_data(pack,updated.track));
@@ -1710,6 +1715,7 @@ ClassicRacePresentationContent classic_race_presentation_content(const ClassicCo
         const auto scenery=track.index%14U;
         const auto name=std::string("scenery.")+char('0'+scenery/10U)+char('0'+scenery%10U)+'.';
         content.track_name=classic_track_name(pack,track);
+        if(content.scenario.hunter_tour)content.hunter_opponent_palette=pack.entry("presentation.classic.hunter-opponent-palette.v1");
         content.bg1_tiles=pack.entry(classic_track_entry(track,"bg1-tiles"));
         content.bg2_tiles=pack.entry(name+"bg2-tiles");
         content.bg2_map=pack.entry(name+"bg2-map");
@@ -1797,6 +1803,14 @@ std::optional<unsigned> classic_caption_tile(char glyph) {
 std::optional<std::span<const std::uint8_t>>
 classic_caption_entry(const ZoomZooState& published,std::span<const std::uint8_t> captions) {
     if(captions.size()!=4080)return std::nullopt;
+    // R-0052: on the HUNTER tour the row is carried, since a front-of-queue
+    // announcement overwrites the slot it was drawn from, and a dry queue
+    // shows the HUD message buffer there.
+    if(classic_race_scenario(published.track).hunter_tour) {
+        const unsigned row=published.hunter.caption;
+        if(!row)return std::nullopt;
+        return captions.subspan((row-1U)*16U,16U);
+    }
     const auto& announcements=published.player_announcements;
     if(announcements.empty_display)return std::nullopt;
     // `movement.rewards` is the opponent's queue ($0D11/$0D13 cursors); the
@@ -1947,6 +1961,10 @@ RgbFrame render_classic_race(const ZoomZooState& state,const ClassicRacePresenta
     // Colours 96-111 and 0 are cycled by the race NMI from ROM tables every
     // frame (R-0037); neither track keys them to rider poses here.
     auto cgram=build_race_cgram(content.palette,false);
+    // $82:DDB0-DDBC: OBJ palette 4 is the opponent character's (asset 6 +
+    // $77:0749); the scenery palette carries the other tours' (R-0052).
+    if(content.hunter_opponent_palette.size()==32)
+        std::copy(content.hunter_opponent_palette.begin(),content.hunter_opponent_palette.end(),cgram.begin()+384);
     apply_classic_race_palette_cycle(cgram,content.race_palette_cycle,state,scenario.initialization_frame+6U);
     if(brightness<15U) {
         for(std::size_t at=0;at<cgram.size();at+=2) {
@@ -1977,8 +1995,24 @@ RgbFrame render_classic_race(const ZoomZooState& state,const ClassicRacePresenta
         :static_cast<std::int16_t>(static_cast<std::uint16_t>(camera_y-static_cast<std::int16_t>(state.race.camera.velocity_y)));
     const auto origin_x=static_cast<std::uint16_t>(((unsigned(word(track,3))<<4)-256U)&0xfff0U);
     const auto origin_y=static_cast<std::uint16_t>(((unsigned(word(track,5))<<4)-256U)&0xfff0U);
-    const int bg_x=static_cast<std::uint16_t>(background_x-origin_x)>>1U;
-    const int bg_y=static_cast<std::uint16_t>(background_y-origin_y)>>1U;
+    int bg_x=static_cast<std::uint16_t>(background_x-origin_x)>>1U;
+    int bg_y=static_cast<std::uint16_t>(background_y-origin_y)>>1U;
+    // R-0052, the HUNTER effects the vblank that opened this picture set up
+    // from the update before it: effect 0 ($81:AE90) scrolls BG2 by the
+    // camera's full y horizontally and its full x vertically; effect 4
+    // ($80:8638) takes BG1 off the main screen; effect 6 ($80:8821) turns on
+    // the BG1 and BG2 mosaic, its size the NMI counter's low three bits.
+    const auto* effects=previous_update?&previous_update->hunter:nullptr;
+    const bool barf=history?history->hunter_barf:(effects && effects->effect[0]);
+    if(barf) {
+        bg_x=static_cast<std::uint16_t>(background_y-origin_y);
+        bg_y=static_cast<std::uint16_t>(background_x-origin_x);
+    }
+    const bool hide_track=effects && effects->hide_track;
+    // Effect 3 ($83:D581-E081): a per-line BG1 scroll table shows the
+    // playfield upside down, and the riders' objects are turned over.
+    const bool flip=effects && effects->blink;
+    const int mosaic=effects && effects->mosaic?static_cast<int>(state.hunter.mosaic_counter&7U)+1:1;
     // $81:A304-A51B: the playfield is 16,384 coarse cells of 64 units in the
     // track's column count (256 by 64 for ZOOM ZOO, 1,024 by 16 for DRAGSTER).
     const int columns=geometry.coarse_columns;
@@ -1986,15 +2020,18 @@ RgbFrame render_classic_race(const ZoomZooState& state,const ClassicRacePresenta
     // BG1 map entries with bit 13 set are drawn above priority-2 OBJs.
     std::array<bool,256*224> bg1_above_objects{};
     for(int y=0;y<224;++y)for(int x=0;x<256;++x) {
-        const auto background=background_pixel(vram,0xe000,true,true,0x2000,false,static_cast<std::int16_t>(bg_x),static_cast<std::int16_t>(bg_y),x,y);
+        // A mosaic block repeats its top-left pixel.
+        const int mx=x-x%mosaic,my=y-y%mosaic;
+        const auto background=background_pixel(vram,0xe000,true,true,0x2000,false,static_cast<std::int16_t>(bg_x),static_cast<std::int16_t>(bg_y),mx,my);
         pixel(frame,x,y,colour(cgram,background));
+        if(hide_track)continue;
         // Screen row 0 is scanline 1, as in background_pixel's vertical +1.
         // The BG1 map wraps horizontally: the original's map fetch masks the
         // column with `$0D51` ($81:AD05), so past the playfield's right edge
         // the picture continues from column 0, as the sampler's contact does
         // (TRACK-BREADTH, LOOPER). Rows off the playfield are left blank, which is
         // not yet checked against the original's row test at $81:AD22-AD2C.
-        const int world_x=(background_x+x)&geometry.position_mask,world_y=background_y+y+1;
+        const int world_x=(background_x+mx)&geometry.position_mask,world_y=flip?background_y+224-my:background_y+my+1;
         if(world_y<0 || world_y>=world_height)continue;
         const auto selector=word(track,15+static_cast<std::size_t>((world_y/64)*columns+world_x/64)*2);
         const auto descriptor=word(track,0x800f+static_cast<std::size_t>(selector)*32+static_cast<std::size_t>((world_y%64)/16)*8+static_cast<std::size_t>((world_x%64)/16)*2);
@@ -2043,8 +2080,10 @@ RgbFrame render_classic_race(const ZoomZooState& state,const ClassicRacePresenta
                      colour(cgram,22),caption_ink);
     for(int rider=1;rider>=0;--rider) {
         const auto& source=rider_source.movement.riders[static_cast<std::size_t>(rider)];
-        const auto oam=project_rider_oam(source.motion.x,source.motion.y,rider_source.race.camera.x,
-                                         rider_source.race.camera.y,source.pose.reflected,geometry);
+        auto oam=project_rider_oam(source.motion.x,source.motion.y,rider_source.race.camera.x,
+                                   rider_source.race.camera.y,source.pose.reflected,geometry);
+        if(flip)oam.y=static_cast<std::uint8_t>(0xe0U-static_cast<std::uint8_t>(oam.y+0x40U));
+        oam.vertical_flip=flip || (history && history->hunter_flip_prior);
         if(!oam.visible)continue;
         const auto overlay=history?history->overlays.pose[static_cast<std::size_t>(rider)]:std::nullopt;
         const auto pixels=compose_rider_object(content.riders,source.pose.pose_index,overlay,oam.clip);

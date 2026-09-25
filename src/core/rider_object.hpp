@@ -66,6 +66,8 @@ struct RiderOam {
   std::uint8_t y{};
   bool horizontal_flip{};
   RiderRowClip clip{};
+  // R-0052: HUNTER effect 3 sets the OAM vertical-flip bit ($83:E04F).
+  bool vertical_flip{};
 };
 // Positions and camera are the original 16-bit words. The projection limits
 // are the track's playfield set ($81:A304-A51B, `track_geometry`): the screen
@@ -95,8 +97,11 @@ void draw_rider_object(const RiderObjectPixels &pixels, const RiderOam &oam,
       const int source_x = oam.horizontal_flip
                                ? static_cast<int>(rider_object_size) - 1 - object_x
                                : object_x;
+      const int source_y = oam.vertical_flip
+                               ? static_cast<int>(rider_object_size) - 1 - object_y
+                               : object_y;
       const auto value =
-          pixels[static_cast<std::size_t>(object_y) * rider_object_size +
+          pixels[static_cast<std::size_t>(source_y) * rider_object_size +
                  static_cast<std::size_t>(source_x)];
       if (value != 0)
         plot(screen_x, screen_y, value);

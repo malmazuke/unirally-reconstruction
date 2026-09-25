@@ -208,7 +208,7 @@ def original_rows(directory):
     paused_updates = countdown_paused = 0
     previous = None
     finish, loading, archive, extras_archive, tail_archive = [None, None], None, None, None, b''
-    captions = None
+    captions = caption_rows = None
     mode = None
     with (directory/'memory.wram').open('rb') as ws, (directory/'memory.sram').open('rb') as ss:
         for frame in range(first, last+1):
@@ -278,8 +278,9 @@ def original_rows(directory):
             # the special-tile words (R-0047) and the last checkpoint flags (R-0048).
             if s[0x74a] not in (0, 1):
                 if captions is None:
-                    captions = hud_captions(Path((ROOT/'local/rom-location.txt').read_text().strip()).read_bytes())
-                tail_archive = special_tile_bytes(w)+checkpoint_tail_bytes(w)+hunter_bytes(w, captions)
+                    rom = Path((ROOT/'local/rom-location.txt').read_text().strip()).read_bytes()
+                    captions, caption_rows = hud_captions(rom), hud_captions(rom, range(1, 256))
+                tail_archive = special_tile_bytes(w)+checkpoint_tail_bytes(w)+hunter_bytes(w, captions, caption_rows)
                 row += tail_archive
             rows.append(row.hex())
             previous = w

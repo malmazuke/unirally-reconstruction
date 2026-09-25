@@ -1234,7 +1234,17 @@ void update_zoom_landing_rewards(ZoomZooState& state,unsigned index,const ZoomZo
 
 // $81BEA8-BEF1, $81C0CE-C18A and $81C02A-C054. This queue is
 // gameplay state: an earlier message delays publication of a trick boost.
-void consume_zoom_player(ZoomZooState& state,const MovementContent& content) {
+// R-0052: a caption row's identity, the smallest event whose caption has the
+// same sixteen characters, or 0 for a blank row.
+std::uint16_t canonical_caption(std::span<const std::uint8_t> captions,unsigned event) {
+    if(captions.size()!=4080)throw std::invalid_argument("HUNTER caption table is missing");
+    const auto text=captions.subspan((event-1U)*16U,16U);
+    if(std::all_of(text.begin(),text.end(),[](auto c){return c==' ';}))return 0;
+    for(unsigned other=1;other<event;++other)
+        if(std::equal(text.begin(),text.end(),captions.begin()+(other-1U)*16U))return static_cast<std::uint16_t>(other);
+    return static_cast<std::uint16_t>(event);
+}
+void consume_zoom_player(ZoomZooState& state,const MovementContent& content,std::span<const std::uint8_t> captions) {
     auto& a=state.player_announcements;auto& q=a.queue;
     if(q.cooldown)return;
     const auto cursor=static_cast<std::uint8_t>((q.read_cursor+1U)&31U);
@@ -1250,14 +1260,15 @@ void consume_zoom_player(ZoomZooState& state,const MovementContent& content) {
                 if(state.hunter.message) {
                     state.hunter.hud_event=state.hunter.message==0x23?0:state.hunter.message;state.hunter.message=0;
                 }
+                state.hunter.caption=state.hunter.hud_event;
             }
             q.cooldown=10;a.empty_display=1;
         }
         return;
     }
     q.read_cursor=cursor;
-    if(hunter)state.hunter.shown=1;
     const auto event=q.entries[cursor];
+    if(hunter && event) {state.hunter.shown=1;state.hunter.caption=canonical_caption(captions,event);}
     if(!event || (event<72 && event>content.rotation_class.size()))throw std::invalid_argument("player announcement event is outside static inventory");
     if(event<72 && content.rotation_class[event-1]!=255) {
         if(event>26)throw std::invalid_argument("player reward class is outside learned inventory");
@@ -1403,6 +1414,11 @@ void update_hunter_effects(ZoomZooState& state,std::span<const std::uint8_t> bli
 }
 
 namespace {
+// $80:8821-882A: the race NMI that opens each update counts $0563 while the
+// effect 6 mosaic the previous update left is on (R-0052).
+void count_hunter_mosaic(ZoomZooState& state) {
+    if(state.hunter.mosaic)state.hunter.mosaic_counter=static_cast<std::uint16_t>((state.hunter.mosaic_counter+1U)&0xffU);
+}
 // $83CDBC-CE43: four messages every300 updates while the selected hint
 // remains enabled. The race initializer explicitly sets the initial count30.
 void update_zoom_hints(ZoomZooState& state) {
@@ -1924,7 +1940,7 @@ std::vector<std::uint8_t> serialize_zoom_zoo(const ZoomZooState& state) {
         put16(bytes,h.latched);put16(bytes,h.active);
         for(auto v:h.effect)put16(bytes,v);
         for(auto v:h.timer)put16(bytes,v);
-        for(auto v:{h.pulse,h.pulse_shrinking,h.pulse_length,h.blink,h.wave_phase,h.hide_track,h.mosaic,h.skip_update,h.message,h.shown,h.hud_event})put16(bytes,v);
+        for(auto v:{h.pulse,h.pulse_shrinking,h.pulse_length,h.blink,h.wave_phase,h.hide_track,h.mosaic,h.skip_update,h.message,h.shown,h.hud_event,h.caption,h.mosaic_counter})put16(bytes,v);
     } else if(state.hunter!=HunterEffects{})throw std::invalid_argument("HUNTER effects run only on the HUNTER tour");
     if(state.track!=ClassicRaceTrack::ZoomZoo) {
         // Another track on the shared engine: the URZZ000B layout under its own
@@ -2166,8 +2182,8 @@ ZoomZooState deserialize_zoom_zoo(std::span<const std::uint8_t> bytes) {
     // Any track but ZOOM ZOO carries its own identity over the URZZ000B layout;
     // a 794-byte DRAGSTER or ZOOM ZOO state (URDG0004, URZZ000E) appends the
     // special-tile words, $0E7B and $0C73 (R-0047, R-0050, R-0051), and a
-    // 912-byte URTRnn06 state those, the last 60 checkpoint flags (R-0048) and
-    // the HUNTER effects' 29 words (R-0052).
+    // 916-byte URTRnn06 state those, the last 60 checkpoint flags (R-0048) and
+    // the HUNTER effects' 31 words (R-0052).
     const auto magic_is=[&](std::string_view text){return std::equal(text.begin(),text.end(),bytes.begin());};
     std::optional<ClassicRaceTrack> track;
     bool extended=false;
@@ -2178,7 +2194,7 @@ ZoomZooState deserialize_zoom_zoo(std::span<const std::uint8_t> bytes) {
         if(magic_is("URZZ000E"))track=ClassicRaceTrack::ZoomZoo;
         else if(magic_is("URDG0004"))track=ClassicRaceTrack::Dragster;
         else throw std::invalid_argument("classic race state identity/width differs");
-    } else if(bytes.size()==912) {
+    } else if(bytes.size()==916) {
         extended=true;
         if(magic_is("URTR") && bytes[4]>='0' && bytes[4]<='9' && bytes[5]>='0' && bytes[5]<='9' && bytes[6]=='0' && bytes[7]=='6') {
             const ClassicRaceTrack other{static_cast<std::uint8_t>((bytes[4]-'0')*10+(bytes[5]-'0'))};
@@ -2209,17 +2225,17 @@ ZoomZooState deserialize_zoom_zoo(std::span<const std::uint8_t> bytes) {
         state.opponent_turnaround=in.u16();
         if(state.opponent_turnaround>30)throw std::invalid_argument("classic race opponent turnaround is invalid");
         in.require_end();
-        if(bytes.size()==912) {
+        if(bytes.size()==916) {
             std::copy(bytes.begin()+794,bytes.begin()+854,state.race.checkpoint_seen.begin()+20);
-            Reader hunter{bytes.subspan(854,58)};
+            Reader hunter{bytes.subspan(854,62)};
             auto& h=state.hunter;
             h.latched=hunter.u16();h.active=hunter.u16();
             for(auto& v:h.effect)v=hunter.u16();
             for(auto& v:h.timer)v=hunter.u16();
-            for(auto* v:{&h.pulse,&h.pulse_shrinking,&h.pulse_length,&h.blink,&h.wave_phase,&h.hide_track,&h.mosaic,&h.skip_update,&h.message,&h.shown,&h.hud_event})*v=hunter.u16();
+            for(auto* v:{&h.pulse,&h.pulse_shrinking,&h.pulse_length,&h.blink,&h.wave_phase,&h.hide_track,&h.mosaic,&h.skip_update,&h.message,&h.shown,&h.hud_event,&h.caption,&h.mosaic_counter})*v=hunter.u16();
             hunter.require_end();
             const auto valid_event=[](std::uint16_t e){return !e || (e>=0x1b && e<=0x24);};
-            const bool message_valid=valid_event(h.message) && valid_event(h.hud_event) && h.hud_event!=0x23 && h.shown<=1;
+            const bool message_valid=valid_event(h.message) && valid_event(h.hud_event) && h.hud_event!=0x23 && h.shown<=1 && h.caption<=255 && h.mosaic_counter<=255;
             if(h.latched>1 || h.active>1 || h.pulse>20 || h.pulse_shrinking>1 || h.pulse_length>20 || h.blink>1 ||
                h.wave_phase>1 || h.hide_track>1 || h.mosaic>1 || h.skip_update>1 || !message_valid || h.timer[1] ||
                std::any_of(h.effect.begin(),h.effect.end(),[](auto v){return v>2;}) ||
@@ -2441,6 +2457,7 @@ void update_zoom_zoo(ZoomZooState& state,const ControllerButtons& requested_butt
     // domain is exactly the accepted one.
     const auto buttons=with_physical_dpad(gated_request);
     auto next=state;auto& whole=next.movement;
+    count_hunter_mosaic(next);
     // $83:CC9A-CCA2: an update the HUNTER effects skip ($128B, R-0052) runs
     // only the effects themselves and the hints ($83:CDAA); the race, its
     // clocks, the controller reader and the pause menu wait.
@@ -2754,7 +2771,7 @@ void update_zoom_zoo(ZoomZooState& state,const ControllerButtons& requested_butt
     // marks both riders finished, whatever their laps.
     if(advance_timer_digits(whole.timer,whole.countdown<68) && state.native_initialization)
         for(auto& rider:next.race.riders)rider.finished=1;
-    if(state.native_initialization)consume_zoom_player(next,content.movement);
+    if(state.native_initialization)consume_zoom_player(next,content.movement,content.captions);
     update_reward_queue(whole,reward,content.movement,
         state.native_initialization?std::span<std::uint8_t>{next.learned_weights[1]}:std::span<std::uint8_t>{});
     if(state.complete_race)update_zoom_camera(next,track_geometry(content.movement.sampling.track));

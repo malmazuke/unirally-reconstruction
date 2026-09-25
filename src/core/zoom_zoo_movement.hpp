@@ -199,6 +199,14 @@ struct HunterEffects {
     // $128D-$129C: the event whose caption the HUD message buffer holds (0
     // blank); the empty announcement row shows it ($81:BF32-BFB7).
     std::uint16_t hud_event{};
+    // $0EA7-$0EB6: the caption row on screen, as the smallest event whose
+    // caption has its text (0 blank). On the HUNTER tour a front-of-queue
+    // announcement overwrites the queue slot the row was drawn from, so the
+    // row is carried rather than read back from the queue (R-0052).
+    std::uint16_t caption{};
+    // $0563 (byte): the race NMI counts it while effect 6 runs ($80:8821-8835);
+    // its low three bits are the mosaic size of the next picture.
+    std::uint16_t mosaic_counter{};
     bool operator==(const HunterEffects&) const = default;
 };
 struct ZoomZooState {
@@ -252,6 +260,9 @@ struct ZoomZooContent {
     // $83:D3BC, 64 bytes: the HUNTER effects' blink pattern for their first
     // and last 50 (60) updates (R-0052).
     std::span<const std::uint8_t> hunter_blink;
+    // presentation.classic.captions.v1 (`$17:CA04`), sixteen characters per
+    // event 1-255: the HUNTER caption row's identity is its text.
+    std::span<const std::uint8_t> captions;
 };
 // $82:9715–979D: count active updates opposing the track direction, with
 // original wrapped word comparisons at velocities -16 and +16 (1/32 units).

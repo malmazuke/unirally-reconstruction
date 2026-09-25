@@ -109,15 +109,16 @@ HUNTER_BYTES = [0x1285, 0x1287, 0x1289]
 HUNTER_TAIL = [0x2054, 0x26be, 0x55d, 0x55f, 0x128b, 0x12af]
 
 
-def hud_captions(rom: bytes) -> dict[bytes, int]:
-    """The HUD message buffer ($128D-$129C) each HUNTER event's caption fills, keyed by its bytes:
-    `$81:BFD4-C019` reads 16 characters at `$17:CA04 + 16 * (event - 1)` and maps them through
-    `$80:81FE` (letters), `$80:8223`/`$8224` (`!`, `"`) and `$80` (space). Blank buffers (zeros,
-    or `$80`s after an effect ends, `$83:D275`) are event 0."""
+def hud_captions(rom: bytes, events=range(0x1b, 0x25)) -> dict[bytes, int]:
+    """The tile bytes each event's caption puts in a text row (the HUD message buffer
+    `$128D-$129C` or the caption row `$0EA7-$0EB6`), keyed by those bytes: `$81:BFD4-C019` reads 16
+    characters at `$17:CA04 + 16 * (event - 1)` and maps them through `$80:81FE` (letters),
+    `$80:8223`/`$8224` (`!`, `"`) and `$80` (space). An event maps to the smallest event with the
+    same text, the identity native carries (R-0052). Blank rows (zeros, or `$80`s) are event 0."""
     def lorom(address: int) -> int:
         return ((address >> 16) & 0x7f) * 0x8000 + (address & 0x7fff)
     table = {bytes(16): 0, bytes([0x80] * 16): 0}
-    for event in range(0x1b, 0x25):
+    for event in events:
         out = bytearray()
         for i in range(16):
             c = rom[lorom(0x17ca04 + 16 * (event - 1) + i)]
@@ -131,8 +132,9 @@ def hud_captions(rom: bytes) -> dict[bytes, int]:
     return table
 
 
-def hunter_bytes(wram: bytes, captions: dict[bytes, int] | None = None) -> bytes:
-    """The 58 bytes URTRnn06 appends last (the HUNTER effects), from original WRAM. `$11C1`
+def hunter_bytes(wram: bytes, captions: dict[bytes, int] | None = None,
+                 rows: dict[bytes, int] | None = None) -> bytes:
+    """The 62 bytes URTRnn06 appends last (the HUNTER effects), from original WRAM. `$11C1`
     projects only on the HUNTER tour (`$131F`), the only one that reads it; the HUD buffer
     projects as its event (`hud_captions`), $FFFF if it matches none."""
     out = bytearray()
@@ -146,6 +148,10 @@ def hunter_bytes(wram: bytes, captions: dict[bytes, int] | None = None) -> bytes
     out += (wram[0x11c1:0x11c3] if hunter else b'\0\0')
     event = (captions or {}).get(bytes(wram[0x128d:0x129d]), 0xffff) if hunter else 0
     out += event.to_bytes(2, 'little')
+    # The caption row on screen ($0EA7-$0EB6), HUNTER only, by the same identity.
+    row = (rows or {}).get(bytes(wram[0xea7:0xeb7]), 0xffff) if hunter else 0
+    out += row.to_bytes(2, 'little')
+    out += bytes([wram[0x563], 0])  # the effect 6 mosaic counter, a byte
     return bytes(out)
 
 
@@ -159,7 +165,7 @@ LAYOUT = layout() + [(742+24*r+2*i, 2, f'{("player", "opponent")[r]}.{n}')
     + [(794+i, 1, f'checkpoint_seen{20+i}') for i in range(60)] \
     + [(854+2*i, 2, f'hunter.{n}') for i, n in enumerate(
         ['latched', 'active', *(f'effect{k}' for k in range(8)), *(f'timer{k}' for k in range(8)),
-         'pulse', 'pulse_shrinking', 'pulse_length', 'blink', 'wave_phase', 'hide_track', 'mosaic', 'skip_update', 'message', 'shown', 'hud_event'])]
+         'pulse', 'pulse_shrinking', 'pulse_length', 'blink', 'wave_phase', 'hide_track', 'mosaic', 'skip_update', 'message', 'shown', 'hud_event', 'caption', 'mosaic_counter'])]
 
 
 def describe(left: bytes, right: bytes, limit=24):
