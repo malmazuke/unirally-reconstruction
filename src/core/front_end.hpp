@@ -1,24 +1,32 @@
 #pragma once
-// The front end from power-on to the choice of a mode (R-0054): the Nintendo screen, the title
-// and the main menu, frame by frame as the original shows them. The state mirrors the original's
-// where it is observable (the arrow, the palette cycle, the menu selection and idle count, the
-// OAM buffer) so it can be compared with captures.
+// The front end from power-on to the choice of a mode (R-0054) and, for 1P, the rider menu PICK
+// YOUR UNI (R-0055): the Nintendo screen, the title, the main menu and the rider menu, frame by
+// frame as the original shows them. The state mirrors the original's where it is observable (the
+// arrow, the palette cycle, the menus' words, the OAM buffer, the text map) so it can be compared
+// with captures.
 #include "presentation.hpp"
+#include "rider_object.hpp"
 #include "snes_screen.hpp"
+#include "text_printer.hpp"
 
 #include <array>
 #include <cstdint>
 #include <span>
+#include <vector>
 
 namespace unirally {
 
 class ClassicContentPack;
 
-// Pack content of the front end (profile v15).
+// Pack content of the front end (profiles v15 and v16).
 struct FrontEndContent {
     std::array<std::span<const std::uint8_t>, 256> assets{}; // by asset id; empty if not packed
     std::span<const std::uint8_t> base_palette, character_table, main_menu_text, arrow_frames;
     std::span<const std::uint8_t> menu_arrow_columns, cycle_colours;
+    // The rider menu: the riders' name records (16 bytes each), its title, the decoration
+    // animator's tables and the uni pictures (the race riders' pose frames and tiles).
+    std::span<const std::uint8_t> rider_names, rider_menu_title, decoration_frames;
+    RiderObjectContent uni_pictures;
 };
 FrontEndContent front_end_content(const ClassicContentPack& pack);
 
@@ -49,23 +57,85 @@ struct PaletteCycle {
     bool running{};      // the NMI hook is installed and NMIs are enabled
 };
 
+// The NMI hook `$80:F622` slides the main menu's logo (BG1) up while a screen is on top of it
+// and back down after.
+struct LogoScroll {
+    std::uint8_t offset{}; // $00AD: BG1's vertical offset, 0 to 0x52 in steps of 2
+    bool raised{};         // $77:0742 bit 1: slide up (set) or down
+};
+
+// The slide between two screens' texts ($80:E233 forward, $80:E27E back): BG2's map is two
+// 32-column halves; the new text is copied into the hidden half, which scrolls into view.
+struct ScreenSlide {
+    std::int8_t countdown{-1}; // $0076: passes left, 38 down to 0, then -1
+    std::uint8_t speed{};      // $00A1: pixels a pass, 1 up to 8 and back down (256 in all)
+    bool back{};
+    std::uint16_t scroll{}; // $0090: BG2's horizontal offset (R-0055)
+    std::uint16_t hidden_half{0x1400}, shown_half{0x1000}; // $00A8, $00AA: VRAM words
+};
+
+// The main menu's decoration animator ($83:9A1E), which a forward slide runs once a pass. Its
+// objects (entries 96-114) are all hidden then, so only the OAM buffer shows it.
+struct MenuDecorations {
+    std::uint8_t delay{};      // $0089's low byte (the main menu's idle count): 2 down to 0
+    std::uint8_t pair_step{};  // $0193: entries 96-97's tile, 7 down to 0
+    std::uint8_t pair_cycle{}; // $0194: entries 98-99's tile, a step each time $0193 wraps
+    std::uint8_t trio_step{};  // $0191: entries 112-114's tiles, 7 down to 0
+    std::uint8_t wave_delay{}; // $008B: 1 down to 0
+    std::array<std::uint8_t, 8> wave{}; // $0187-$018E: entries 104-111's tiles, 19 down to 0
+    std::uint8_t sway{};                // $0192: entries 100-103's columns, 19 down to 0
+};
+
+// PICK YOUR UNI ($80:CB04): 16 riders in two columns of eight, rider r at row r / 2, column
+// r % 2. The column is the arrow's x target's.
+struct RiderMenu {
+    std::uint8_t rider{};     // $017D: the rider chosen last; the arrow starts on it
+    std::uint8_t row{};       // $000E
+    bool up_latched{};        // $008F bit 3: Up held since it last moved the arrow
+    bool down_latched{};      // $008F bit 2
+    std::uint16_t intro{};    // $0076: the uni's build-up, picture intro / 2; 0 once it loops
+    std::uint8_t idle_step{}; // $0190: the loop's step, 39 down to 0
+    std::uint16_t picture{};  // the uni picture built for the next frame ($83:8E3A)
+    bool back{};              // left with Y or X rather than chosen
+};
+
 struct MainMenu {
     std::uint8_t selection{}; // $009B
     std::int16_t idle{};      // $0089: frames left before the demo
     bool move_latched{};      // $008F: Up or Down still held since the last move
 };
 
+// Where the front end is. The boot, the steps between screens and the way back to the main menu
+// are scripts of fixed frames, counted by `FrontEndState::script_frame`.
+enum class FrontEndScreen : std::uint8_t {
+    boot,             // power-on to the main menu (R-0054)
+    main_menu,        // $80:ABC8's loop
+    rider_menu_entry, // $80:BB9C and $80:CB04's set-up: the names printed and slid in
+    rider_menu,       // $80:CBC8's loop: PICK YOUR UNI
+    rider_menu_exit,  // $80:F4E9, after a choice or Y
+    main_menu_return, // $80:ACD5 with $00A7 set: the main menu slid back in
+};
+
 struct FrontEndState {
     std::uint32_t frame{}; // frames since power-on; the next update is this frame
+    FrontEndScreen screen{};
+    std::uint32_t script_frame{}; // frames since the current script began
     SnesVideoMemory video{};
     SnesVideoRegisters registers{};
+    // The colours HDMA writes during this frame's picture; they stay in CGRAM after it.
+    std::vector<SnesLineColour> line_colours;
     std::array<std::uint8_t, 544> oam_buffer{}; // $0A00, copied to OAM by DMA
+    TextMap text{};                             // $0200, copied to BG2's map
+    TextCursor printer{};                       // $009F and $00B0, kept between prints
     MenuArrow arrow{};
     PaletteCycle cycle{};
+    LogoScroll logo{};
+    ScreenSlide slide{};
+    MenuDecorations decorations{};
     MainMenu menu{};
-    bool in_main_menu{};
+    RiderMenu rider_menu{};
     bool mode_chosen{};
-    FrontEndMode mode{};
+    FrontEndMode mode{}; // for 1P, once PICK YOUR UNI has a rider (`rider_menu.rider`)
 };
 
 // Controller words as the auto-joypad read gives them (`$4218`, `$421A`): B 0x8000, Y 0x4000,
@@ -76,7 +146,8 @@ struct FrontEndPads {
 };
 
 FrontEndState start_front_end();
-// One frame: its vblank's work, in the original's order. Once a mode is chosen the state stops.
+// One frame: its vblank's work, in the original's order. Once a mode is chosen (for 1P, a rider)
+// the state stops.
 void update_front_end(FrontEndState& state, const FrontEndContent& content, FrontEndPads pads);
 // The frame the last update produced.
 RgbFrame render_front_end(const FrontEndState& state);

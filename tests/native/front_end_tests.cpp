@@ -163,7 +163,7 @@ void main_menu_tests() {
   const auto content = synthetic_content(storage);
   auto state = unirally::start_front_end();
   run(state, content, 420);
-  require(state.in_main_menu && !state.mode_chosen);
+  require(state.screen == unirally::FrontEndScreen::main_menu && !state.mode_chosen);
   require(state.menu.idle == 480 && state.menu.selection == 0);
   // The arrow flies in and settles three sixteenths short of its x target
   // (R-0054).

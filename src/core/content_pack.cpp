@@ -409,6 +409,33 @@ const std::array<RequiredEntry, 23> front_end_required{{
     {"front-end.cycle-colours", 14,
      "7c6f09ee6029f31598b51a183b9f0f1927dc014108098c1c71c5d2060c31cb43"},
 }};
+// FRONT-END-1P-SETUP (profile v16): the rider menu's content: the riders' sprite palettes
+// (assets 6-21), their name records, the menu's title and the decoration animator's tables
+// (tools/unirally_lab/content/front_end.py v16_new_entries, R-0055).
+const std::array<RequiredEntry, 19> rider_menu_required{{
+    {"front-end.asset.006", 32, "36d2c1daa25deffe45c2f856b738b936e99f5e623b6639c6d4bf810eb3abc0b8"},
+    {"front-end.asset.007", 32, "346e7faeeb6c4e2ad101d22f464e9fe9077e0ba349da87e6b7efee4c1a04793b"},
+    {"front-end.asset.008", 32, "2b1984513a60c382e74f917d1f1a6ea5a093dbc0f3bc8a704384beab1933d8aa"},
+    {"front-end.asset.009", 32, "3f0535a59be05d3c3fd6de204f5350409235f3248c151b10bcbb3a2c5d670af6"},
+    {"front-end.asset.010", 32, "402291ffc3dcdf0857609ea3baa58069e04c4fc0bca3a752708bf16f50a6e770"},
+    {"front-end.asset.011", 32, "7c11b2ccfaa2f6de0457aba9745439222426998799c33d5cd21ab0779006ec38"},
+    {"front-end.asset.012", 32, "e798b3d6b4c50fd93990c05286e9ed46ce3fb467e101f26222d0cd82d17fe146"},
+    {"front-end.asset.013", 32, "72fd819f4f61d2c472455e0b23fac0e1af6548cd16e097340ee7047fbce99511"},
+    {"front-end.asset.014", 32, "f4ea7911d64d4aa17d21b788c5f9ce00b259a6d48eadec99c4da80691adb8e9d"},
+    {"front-end.asset.015", 32, "11852e42eb52de1c32b8df636a7c9d0054aae3bb19099d49652bc98039356fd8"},
+    {"front-end.asset.016", 32, "598eb272c223e159a28e91418b38045ad21779b4d0873e894d5b17f970a09e01"},
+    {"front-end.asset.017", 32, "ccff0947e4a7f12d19709fd817f658dc530fd59a587d2aa546f322d51e447892"},
+    {"front-end.asset.018", 32, "ed56ebd993dc549e71a5ba6aec24ef03098c7353b9eaf10655df2601b797dc9e"},
+    {"front-end.asset.019", 32, "bba899c079335e75073b4503f5a60a6f01ebeaee829e1b789c0f9a8405437a6a"},
+    {"front-end.asset.020", 32, "923886495d22f626c8ad2b3a534657a6ef2162a8c77efa4fb24857e560eea452"},
+    {"front-end.asset.021", 32, "e6b7ccb29d361d8c402a5f10d5d03cca91656faba474a61e03ff03656426a229"},
+    {"front-end.rider-names", 352,
+     "8151e9a13f8d35e31de85d4efad1dbdedb28a4eaad3cc492f7207eff1b2c66c4"},
+    {"front-end.pick-rider-title", 16,
+     "18cdaafcec07a48d95ac5a666d882c1419259c5bca93854485ac9d17f0c18e97"},
+    {"front-end.decoration-frames", 76,
+     "91dd4557d6f9b28a69d69720e2ea4c1e5aaf71247bd7ba4d439d834802785c3d"},
+}};
 // LOCKED-TOURS (profile v12): the race tracks of the five tours a cold start does not
 // list, and sceneries 1, 8 and 12. Generated from the rules file (tracks.py v12_new_entries).
 const std::array<RequiredEntry, 89> locked_tracks_required{{
@@ -569,7 +596,7 @@ const std::array<RequiredEntry, 89> locked_tracks_required{{
     {"scenery.12.palette", 352, "b2a9aefe13c1dc68454cf0a5c2bedb086c6e162dbea1df1f2ef108347d89ab63"},
 }};
 constexpr std::string_view two_track_rules_sha =
-    "b303087213da4c7dd572537d509ec41db7e1b044260ee0cb68fe3cdbe6e568a2";
+    "8988e9c75ddc7a4e641e7dcb0028c3517eee36daf8dad1da9f864d5f44b2e6c0";
 
 std::array<std::uint8_t, 32> hex_digest(std::string_view text) {
     if (text.size() != 64) throw std::logic_error("invalid compiled Classic SHA-256");
@@ -659,7 +686,7 @@ std::array<std::uint8_t, 32> sha256(std::span<const std::uint8_t> source) {
 
 namespace {
 constexpr std::array<std::string_view, 2> supported_profiles{"classic.pal.crawler.dragster.v1",
-                                                             "classic.pal.crawler.tracks.v15"};
+                                                             "classic.pal.crawler.tracks.v16"};
 } // namespace
 
 std::span<const std::string_view> supported_pack_profiles() {
@@ -718,7 +745,8 @@ std::vector<RequiredEntry> required_entries(bool tracks) {
                              std::span<const RequiredEntry>(locked_tracks_required),
                              std::span<const RequiredEntry>(loop_required),
                              std::span<const RequiredEntry>(hunter_required),
-                             std::span<const RequiredEntry>(front_end_required)})
+                             std::span<const RequiredEntry>(front_end_required),
+                             std::span<const RequiredEntry>(rider_menu_required)})
         out.insert(out.end(), table.begin(), table.end());
     return out;
 }

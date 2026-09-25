@@ -197,7 +197,7 @@ bool FrontEndSession::update(const std::array<std::uint16_t, 2> &ports) {
   }
   update_front_end(state_, content_,
                    {snes_pad_word(ports[0]), snes_pad_word(ports[1])});
-  if (state_.in_main_menu && !main_menu_)
+  if (state_.screen == FrontEndScreen::main_menu && !main_menu_)
     main_menu_ = state_;
   if (!state_.mode_chosen)
     return false;

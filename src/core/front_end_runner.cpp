@@ -9,6 +9,7 @@
 #include "content_pack.hpp"
 #include "front_end.hpp"
 
+#include <array>
 #include <cstdint>
 #include <cstdio>
 #include <filesystem>
@@ -89,6 +90,29 @@ std::string hex(const std::array<std::uint8_t, N>& bytes) {
     return out;
 }
 
+// The state after the main menu (R-0055), as `key=value` fields.
+void print_screens(const unirally::FrontEndState& state) {
+    const auto& slide = state.slide;
+    const auto& d = state.decorations;
+    const auto& r = state.rider_menu;
+    std::cout << "screen=" << unsigned(state.screen) << " script=" << state.script_frame
+              << " logo=" << unsigned(state.logo.offset) << " countdown=" << int(slide.countdown)
+              << " speed=" << unsigned(slide.speed) << " scroll=" << slide.scroll
+              << " hidden=" << slide.hidden_half << " shown=" << slide.shown_half
+              << " delay=" << unsigned(d.delay) << " pair=" << unsigned(d.pair_step)
+              << " cycle=" << unsigned(d.pair_cycle) << " trio=" << unsigned(d.trio_step)
+              << " wave_delay=" << unsigned(d.wave_delay) << " wave=" << hex(d.wave)
+              << " sway=" << unsigned(d.sway) << " rider=" << unsigned(r.rider)
+              << " row=" << unsigned(r.row) << " up=" << r.up_latched << " down=" << r.down_latched
+              << " intro=" << r.intro << " idle_step=" << unsigned(r.idle_step) << " text=";
+    std::array<std::uint8_t, 2048> text{};
+    for (std::size_t k = 0; k < state.text.words.size(); ++k) {
+        text[k * 2] = static_cast<std::uint8_t>(state.text.words[k]);
+        text[k * 2 + 1] = static_cast<std::uint8_t>(state.text.words[k] >> 8U);
+    }
+    std::cout << hex(text);
+}
+
 } // namespace
 
 int main(int argc, char** argv) try {
@@ -106,7 +130,9 @@ int main(int argc, char** argv) try {
                   << a.y << ' ' << a.target_y << ' ' << state.menu.idle << ' '
                   << unsigned(state.menu.selection) << ' ' << state.menu.move_latched << ' '
                   << int(state.cycle.delay) << ' ' << int(state.cycle.phase) << ' '
-                  << hex(state.oam_buffer) << ' ' << hex(state.video.cgram) << '\n';
+                  << hex(state.oam_buffer) << ' ' << hex(state.video.cgram) << ' ';
+        print_screens(state);
+        std::cout << '\n';
         if (const auto picture = options.pictures.find(frame); picture != options.pictures.end())
             write_ppm(picture->second, unirally::render_front_end(state));
     }
