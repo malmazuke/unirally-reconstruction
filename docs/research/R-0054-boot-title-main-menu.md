@@ -89,3 +89,32 @@ The menu's assets 77, 70, 68, 69 are the result screen's base VRAM pieces (same 
   (64x64; the WRAM tilemap `$0200` built by the text printer is its first page), tiles at word
   0x2000; OBJ base word 0x6000 (OBSEL 0x63: 16x16 and 32x32). TS = OBJ, CGWSEL 2 (subscreen),
   CGADSUB 0x7F (add, half, all layers): the arrow's shadow on the subscreen.
+
+## Frame model (cold start; image f shows what frame f's vblank wrote)
+
+- Frame waits (`$80:FADF`, each runs the arrow update `$80:FAF5`): 98, 99, 104-228, 251-377,
+  403, and every frame from 407. `$C6` at 97 is 0.
+- The NMI hook (`$53` -> `$80:F622`, installed by `$80:A16A`) runs from frame 250 (NMITIMEN 0x81
+  at `$80:F5B8`) on every frame, loads included: the palette cycle `$80:FA60`: `$C8 -= 1`; when
+  negative `$C8 = 6`, `$C9 -= 1` (wrap to 3), and CGRAM 111, 110, 109, 108 take the words at
+  `$80:FACD + 2*$C9 + 0, 2, 4, 6`. `$80:A16A` zeroes `$C8`/`$C9` at 228 and 377.
+- INIDISP: fade in `$80:9869` (2, 4, ..., 14, one per frame wait) at 104-110, 251-257, 410-416;
+  fade out `$80:9885` (13, 11, ..., 1, then 0x80) at 222-228, 369-375. Force blank also at 99
+  ($80:B09A), 228 ($80:F561), 377 ($80:D216).
+- Screens hold 111 frame waits (`LDY #$6E`): Nintendo 111-221, title 258-368.
+- The arrow is parked by `$83:99F6` (position and target 0xFD00, 0x700; steps 0) at 99 and 402;
+  `$80:A16A` (228, 377) and the main menu (`$80:ABDA`, 419) set the targets 0x4FD, 0x580, so it
+  flies in from 251 (invisible on the title, TM = BG1) and again from 420.
+- CGRAM DMA of the base palette to 0-107 (`$80:A8A8`): 99, 377, 408, 418. VRAM DMA of asset
+  69's first 1,920 bytes to 0x3D80 (`$80:A877`): 409, 419. WRAM map `$0200` to VRAM 0x1000
+  (`$80:939D`): 407; complete from 406.
+- The main menu loop (`$80:ABE3`) from 419: frame wait; `$80:D1EC` (OAM DMA, joypad into `$72`,
+  `$74`); the codes; `$89 - 1`, when negative the demo (`$9B = 5`); choose (`$80:B71D`: B,
+  Start or A, 0x9080, either pad); Down (`$80:B794`: Down or Select, 0x2400); Up (`$80:B76F`:
+  0x0800); with neither, `$8F = 0`. A move needs `$8F = 0`, plays sounds 0x087F and 0x0203
+  (`$80:B178`), sets `$8F = 1` and `$89 = 1500`, steps `$9B` with the wrap (Down past 4: 0 and
+  target y 0x400; Up past 0: 4 and 0xD00), then target x = `$80:88BE[$9B] << 7` and target y
+  +- 0x180. The demo starts at frame 900 (481 loops).
+- Codes: title (`$80:F5D3`, while holding): `$72` against Up, Left, Up, R, A (`$80:F618`); the
+  main menu: `$72`/`$74` = 0x02B0 (Left, A, L, R) -> `$80:A9B4`, 0x8430 (B, Down, L, R) ->
+  `$80:F0D6`. Not yet read.
