@@ -1,7 +1,8 @@
 # Project state
 
 Updated 25 September 2026 (HUNTER-EFFECTS): **all 36 race tracks now match the original over
-their whole compared windows.**
+their whole compared windows on the sweep captures** (one review input on TWO LOOPS still differs:
+[ROLLING-CONTACT](../tasks/ROLLING-CONTACT.md)).
 - The HUNTER tour's tag effects are native ([R-0052](research/R-0052-hunter-effects.md)): when
   the hunter touches the player, one of eight timed effects starts, announced at the front of
   the queue.
