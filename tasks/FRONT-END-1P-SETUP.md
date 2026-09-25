@@ -55,9 +55,24 @@ unlocked tours of a cold start, audio.
 
 ## Handoff
 
-- Exact next experiment/command: capture 1P from power-on with a frame image on every frame and
-  per-frame work RAM (FRONT-END-MAIN-MENU's `compare.py` pattern), read `$80:BB9C` and what it
-  calls, and list the screens' loads with `access capture` register logs at `$82:B2DD`,
-  `$82:B1DB` and `$82:B183`. Check each screen's register writes for HDMA (`$420C`),
-  windows and mosaic: `snes_screen` does not model them, so a screen that uses one needs them
-  added (or its `unmodelled_features` set, which refuses it). 2P turns HDMA on (R-0054).
+- Current base/head commit and uncommitted state: `task/front-end-1p-setup` from `a76961e`; claim
+  commit only.
+- Findings so far (listing, not yet captured in detail):
+  - The 1P handler `$80:BB9C` chains the screens, each with a back path:
+    1. `$80:CB04` with the table `$80:BCAF`: PICK YOUR UNI (a result of 0x10 or more means
+       exit, to `$80:BC9B`).
+    2. It stores the rider in `$017D`/`$00CA`, the opponent 0x10 in `$017F`, clears SRAM
+       `$77:1075-10A6`, sets `$77:1073 = 3` and `$77:10AD = 1`, and runs `$80:F4E9`,
+       `$80:A858` and `$80:A82B`.
+    3. `$80:E550`: PICK TOUR (`$000A = $00D0`); back (`$80:B74A`) returns to step 1.
+    4. `$80:E84E`: PICK TRACK; back returns to step 3 (`$83:9EB4`, SRAM `$77:069C` against
+       `$77:10D1`, `$83:8957`).
+    5. `$80:B18D`: NOW PLAYING; back returns to step 4.
+    6. The fade out (`$80:9885`), then `$80:99A4`, the race.
+  - Evidence so far: `local/evidence/front-end-1p-setup/` `defaults.json`, with frame images
+    600-1399 and per-frame work RAM, and `NOTES.md` (the four screens).
+  - The screens show SRAM content (records, medals, "?" badges). Consider splitting this task
+    by screen: PICK YOUR UNI first.
+- Exact next experiment/command: register-log captures of the loads (`access capture
+  --watch-pc 0x82B2DD --watch-pc 0x82B1DB --watch-pc 0x82B183`) and every PPU write (the
+  `accesses` list) over frames 600-800; then read `$80:CB04` and its table `$80:BCAF`.
