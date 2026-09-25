@@ -5,6 +5,12 @@ push the task branch, open a pull request from the template, merge with
 `gh pr merge --merge` once its checks are green and the review is done. `main`
 refuses direct pushes. The checks run on pull requests only.
 
+**Status on 25 September 2026 UTC (after HUNTER-EFFECTS, user request): claim
+[NATIVE-READABILITY](NATIVE-READABILITY.md) next, before RESULT-TITLE-GLYPHS.** The user found
+the recovered C++ reads as annotated assembly; D-0003 is updated with measurable rules. Three
+parts, one pull request each: rules, `.clang-format` and the address-to-native-symbol index
+(tier 2); the simulation (tier 1); presentation (tier 2). No behaviour or format change.
+
 **Status on 25 September 2026 UTC (end of HUNTER-EFFECTS): HUNTER-EFFECTS is accepted; claim
 [RESULT-TITLE-GLYPHS](RESULT-TITLE-GLYPHS.md) next.** All 36 race tracks match the original; the
 HUNTER tag effects are simulated and drawn. Pack v14; other tracks' states are `URTRnn06`. Live

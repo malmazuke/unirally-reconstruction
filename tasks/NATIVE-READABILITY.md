@@ -2,8 +2,8 @@
 
 ## Assignment
 
-- Status: ready (prepared 25 September 2026 at the user's request; claim it after
-  HUNTER-EFFECTS is integrated, before RESULT-TITLE-GLYPHS).
+- Status: ready (prepared 25 September 2026 at the user's request; claim it next, now that
+  HUNTER-EFFECTS is integrated (#21), before RESULT-TITLE-GLYPHS).
 - Milestone: M4 breadth (a quality task on the recovered engine; no new mechanics)
 - Coordinator: the claiming session is coordinator, primary and integrator
 - Task provider (fixed for all children; record any user-initiated platform change): Anthropic
