@@ -66,7 +66,7 @@ The coordinator maintains the status registry below. Work orders further below d
 | RESULT-TITLE-GLYPHS | accepted (tier 2, #26): the title prints through the original text printer's table; DOWN+UP and BOO! start in the app | [The result-title glyphs for `+` and `!` (DOWN+UP and BOO! cannot start in the app)](RESULT-TITLE-GLYPHS.md) |
 | COVERAGE-ROADMAP | accepted (tier 3, #27): the game's modes mapped by capture; the queue toward the whole game natively | [From the race engine to the whole game](COVERAGE-ROADMAP.md) |
 | FRONT-END-MAIN-MENU | accepted (tier 2, #28): the app starts at power-on; the Nintendo screen, the title and the main menu match the original frame for frame; pack v15 | [The app boots to the title and the main menu](FRONT-END-MAIN-MENU.md) |
-| FRONT-END-1P-SETUP | accepted (tier 2): PICK YOUR UNI, PICK TOUR, PICK TRACK and NOW PLAYING match the original frame for frame; Race starts the chosen race; packs v16 and v17 | [The one-player setup screens](FRONT-END-1P-SETUP.md) |
+| FRONT-END-1P-SETUP | accepted (tier 2, #29): PICK YOUR UNI, PICK TOUR, PICK TRACK and NOW PLAYING match the original frame for frame; Race starts the chosen race; packs v16 and v17 | [The one-player setup screens](FRONT-END-1P-SETUP.md) |
 | FRONT-END-1P-CONTINUATION | ready | [After a one-player race](FRONT-END-1P-CONTINUATION.md) |
 | ROLLING-CONTACT | ready | [A rolling rider's second contact after a long shoulder rotation (HUNTER-EFFECTS review)](ROLLING-CONTACT.md) |
 | PR-WORKFLOW | integrated by pull request #6 (tier 2, approved with should-fix items, all applied); changes reach `main` only through pull requests (user request, 23 September 2026) | [Changes reach main through pull requests](PR-WORKFLOW.md) |

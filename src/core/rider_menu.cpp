@@ -99,7 +99,7 @@ void lay_out_icons(FrontEndState& state) {
                                            {0x40, 0x20, 0xd0, 48},
                                            {0x42, 0x10, 0xe0, 48},
                                            {0x44, 0x00, 0xf0, 48}}};
-    constexpr std::uint8_t icon_attributes = 0x31; // priority 3, the second name table
+    constexpr std::uint8_t icon_attributes = 0x31;    // priority 3, the second name table
     constexpr std::uint8_t second_object_size = 0x63; // OBSEL: 16 x 16 and 32 x 32
     for (unsigned entry = 0; entry < riders * pieces.size(); entry += 4)
         high_bits(state, entry) = four_shown;
@@ -113,8 +113,9 @@ void lay_out_icons(FrontEndState& state) {
             oam_byte(state, entry, 0) = left_column ? piece.left_x : piece.right_x;
             oam_byte(state, entry, 1) = static_cast<std::uint8_t>(24 * row + piece.y);
             oam_byte(state, entry, 2) = piece.tile;
-            oam_byte(state, entry, 3) = static_cast<std::uint8_t>(
-                icon_attributes | ((rider & 7U) << 1U) | (left_column ? arrow_mirror : 0));
+            oam_byte(state, entry, 3) =
+                static_cast<std::uint8_t>(icon_attributes | ((rider & 7U) << 1U)
+                                          | (left_column ? unsigned{arrow_mirror} : 0U));
         }
         high_bits(state, first) |= large_bit(first); // the first piece is the large one
     }
@@ -131,7 +132,8 @@ void set_arrow_palette(FrontEndState& state) {
     const unsigned rider =
         state.rider_menu.row * 2U + (state.arrow.target_x == right_column_x ? 1U : 0U);
     auto& attributes = arrow_attribute(state);
-    attributes = static_cast<std::uint8_t>((attributes & ~arrow_palette_bits) | ((rider & 7U) << 1U));
+    attributes = static_cast<std::uint8_t>((attributes & ~static_cast<unsigned>(arrow_palette_bits))
+                                           | ((rider & 7U) << 1U));
 }
 
 // $80:CB50-CBC6, at the end of the slide: the icons, and the arrow on the last rider chosen.
@@ -142,7 +144,7 @@ void open_rider_menu(FrontEndState& state) {
     const bool right_column = (menu.rider & 1U) != 0;
     // The attribute is written as a word here, so entry 120's x becomes 0.
     arrow_attribute(state) = static_cast<std::uint8_t>(
-        arrow_priority | (right_column ? 0 : arrow_mirror) | ((menu.rider & 7U) << 1U));
+        arrow_priority | (right_column ? 0U : unsigned{arrow_mirror}) | ((menu.rider & 7U) << 1U));
     oam_byte(state, arrow_entry + 1, 0) = 0;
     state.arrow.target_x = right_column ? right_column_x : left_column_x;
     menu.row = static_cast<std::uint8_t>(menu.rider >> 1U);
