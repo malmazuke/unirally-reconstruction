@@ -1151,8 +1151,8 @@ void update_zoom_throttle(RiderMovementState& rider,ReflectionTransition& transi
             // preserves accumulated throttle ($0F5F); nonzero throttle sets
             // it; zero throttle leaves it as it was (Left and Y through the
             // countdown carry throttle through zero, DRAGSTER fuzz seed 208).
-            // $82:998B-9993: after mud ($0F45) braking also drops the
-            // throttle and the announcement ($0FB1 is the unrecovered pair 12's).
+            // $82:9981-9993: on flag pair 12 ($0FB1) or after mud ($0F45)
+            // braking also drops the throttle and the announcement.
             if(on_mud) {rider.throttle=0;charge_announced=0;}
             else if(transition.step)charge_announced=0;
             else if(rider.throttle)charge_announced=1;

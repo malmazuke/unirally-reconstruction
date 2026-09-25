@@ -125,7 +125,8 @@ void resolve_vertical_contact(RiderContactState& rider,ContactMotion& motion,
     // ($81:9286); no capture executes it, so it is inert. Pair 8 changes the
     // response below ($81:92D9, $81:96FF, $81:97E6). Pair 26 (the loop) clears
     // both probe penetrations, $28 and $2C, at the loop's top (step 9), so
-    // neither the boundary test nor the correction moves the rider (R-0051).
+    // neither the boundary test ($81:91E3, which reads both) nor the
+    // correction moves the rider (R-0051).
     // Every other pair takes no branch here (R-0047).
     auto summary=probed;
     const auto flag_pair=static_cast<unsigned>(summary.tile_flags&0xfeU);

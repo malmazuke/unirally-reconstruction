@@ -123,8 +123,10 @@ reading.
 LAST ONE, JUMPOVER, DOWN+UP and HIGHROAD moved from 808, 773, 519 and 898 to their whole windows
 (1,512, 1,486, 1,507, 1,517). New captures with Right held from frame 1,500 and released at
 2,600 (`local/evidence/tile-pairs/right`) are exact over their whole windows too. On DOWN+UP
-the player rides the loop, steps 1-16. Pair 8 is reached only by the opponent, once, on
-HIGHROAD.
+the player rides the loop, steps 1-16. The opponent is on pair 8 once on HIGHROAD and for 17
+updates (1,155-1,171) on DOWN+UP; the review's withheld HIGHROAD capture puts the player on it
+(updates 1,186 and 1,188), and its JUMPOVER capture puts the player on pair 12 for 148 updates
+in both directions.
 
 **The app.** Hidden `frontend run` with Right held: LAST ONE 2,000 updates, and JUMPOVER and
 HIGHROAD 4,000 each, all clean with no rider-pose fallback frames.
@@ -145,8 +147,9 @@ draws for `+` and `!` is not known yet ([RESULT-TITLE-GLYPHS](../../tasks/RESULT
 ## Limits
 
 - Pair 4 is unrecovered; no capture reaches it.
-- Pair 12 has been met by the opponent only (JUMPOVER, 24 updates). Pair 8's counter is never
-  seen above 1.
+- Pair 8's counter is never seen above 1, so its clamp at 8 is unexercised; no capture shows
+  whether contact's pair 8 branches (`$81:92D9`, `$81:96FF`) ran.
+- No capture has a refused loop entry (step `$FFFE`).
 - The HUNTER tag effects are unimplemented (HUNTER-EFFECTS), so HUNTER races diverge after the
   first tag.
 - The stunt events are not compared.
