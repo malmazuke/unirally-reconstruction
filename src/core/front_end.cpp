@@ -393,8 +393,8 @@ void run_main_menu(FrontEndState& state, const FrontEndContent& content, FrontEn
     copy_oam(state); // $80:D1EC
     // The codes come first, as exact words on either pad, the WIPE RAM code before the other
     // (`$80:ABEB-AC0A`).
-    for (const auto [code, mode] : {std::pair{wipe_ram_code, FrontEndMode::wipe_ram_code},
-                                    std::pair{unread_code, FrontEndMode::unread_code}}) {
+    for (const auto& [code, mode] : {std::pair{wipe_ram_code, FrontEndMode::wipe_ram_code},
+                                     std::pair{unread_code, FrontEndMode::unread_code}}) {
         if (pads.one == code || pads.two == code) {
             state.mode_chosen = true;
             state.mode = mode;
