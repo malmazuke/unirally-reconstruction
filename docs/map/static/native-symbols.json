@@ -718,7 +718,7 @@
   {
    "address": "$81:8F9A",
    "native": [
-    "src/core/vertical_contact.cpp:resolve_vertical_contact"
+    "src/core/vertical_contact.cpp:apply_tile_pair"
    ],
    "region": "rom"
   },
@@ -745,7 +745,7 @@
   {
    "address": "$81:9185",
    "native": [
-    "src/core/vertical_contact.cpp:resolve_vertical_contact"
+    "src/core/vertical_contact.cpp:apply_tile_pair"
    ],
    "range_ends": [
     "$81:91D1"
@@ -755,7 +755,7 @@
   {
    "address": "$81:91E3",
    "native": [
-    "src/core/vertical_contact.cpp:resolve_vertical_contact"
+    "src/core/vertical_contact.cpp:apply_tile_pair"
    ],
    "region": "rom"
   },
@@ -772,7 +772,7 @@
   {
    "address": "$81:924E",
    "native": [
-    "src/core/vertical_contact.cpp:resolve_vertical_contact"
+    "src/core/vertical_contact.cpp:support"
    ],
    "range_ends": [
     "$81:9275"
@@ -782,14 +782,15 @@
   {
    "address": "$81:9286",
    "native": [
-    "src/core/vertical_contact.cpp:resolve_vertical_contact"
+    "src/core/vertical_contact.cpp:apply_tile_pair"
    ],
    "region": "rom"
   },
   {
    "address": "$81:92D9",
    "native": [
-    "src/core/vertical_contact.cpp:resolve_vertical_contact"
+    "src/core/vertical_contact.cpp:apply_tile_pair",
+    "src/core/vertical_contact.cpp:land"
    ],
    "range_ends": [
     "$81:92F0"
@@ -799,7 +800,7 @@
   {
    "address": "$81:92FE",
    "native": [
-    "src/core/vertical_contact.cpp:resolve_vertical_contact"
+    "src/core/vertical_contact.cpp:convert_steep_contact"
    ],
    "range_ends": [
     "$81:9309"
@@ -809,7 +810,7 @@
   {
    "address": "$81:931C",
    "native": [
-    "src/core/vertical_contact.cpp:resolve_vertical_contact"
+    "src/core/vertical_contact.cpp:landing_rotation"
    ],
    "range_ends": [
     "$81:9358"
@@ -840,7 +841,7 @@
   {
    "address": "$81:94A8",
    "native": [
-    "src/core/vertical_contact.cpp:resolve_vertical_contact"
+    "src/core/vertical_contact.cpp:apply_landing_matrix"
    ],
    "range_ends": [
     "$81:94C3"
@@ -867,7 +868,7 @@
   {
    "address": "$81:966F",
    "native": [
-    "src/core/vertical_contact.cpp:resolve_vertical_contact"
+    "src/core/vertical_contact.cpp:apply_tile_pair"
    ],
    "range_ends": [
     "$81:9690"
@@ -877,14 +878,14 @@
   {
    "address": "$81:9685",
    "native": [
-    "src/core/vertical_contact.cpp:resolve_vertical_contact"
+    "src/core/vertical_contact.cpp:apply_tile_pair"
    ],
    "region": "rom"
   },
   {
    "address": "$81:96FA",
    "native": [
-    "src/core/vertical_contact.cpp:resolve_vertical_contact"
+    "src/core/vertical_contact.cpp:follow_slope"
    ],
    "range_ends": [
     "$81:970B"
@@ -894,14 +895,14 @@
   {
    "address": "$81:96FF",
    "native": [
-    "src/core/vertical_contact.cpp:resolve_vertical_contact"
+    "src/core/vertical_contact.cpp:apply_tile_pair"
    ],
    "region": "rom"
   },
   {
    "address": "$81:97E6",
    "native": [
-    "src/core/vertical_contact.cpp:resolve_vertical_contact"
+    "src/core/vertical_contact.cpp:apply_tile_pair"
    ],
    "region": "rom"
   },
@@ -932,7 +933,7 @@
   {
    "address": "$81:984D",
    "native": [
-    "src/core/vertical_contact.cpp:resolve_vertical_contact"
+    "src/core/vertical_contact.cpp:coarse_landing_angle"
    ],
    "range_ends": [
     "$81:98A8"
@@ -3577,14 +3578,14 @@
   {
    "address": "$0566",
    "native": [
-    "src/core/vertical_contact.cpp:resolve_vertical_contact"
+    "src/core/vertical_contact.cpp:apply_landing_matrix"
    ],
    "region": "wram"
   },
   {
    "address": "$0572",
    "native": [
-    "src/core/vertical_contact.cpp:resolve_vertical_contact"
+    "src/core/vertical_contact.cpp:apply_landing_matrix"
    ],
    "region": "wram"
   },
@@ -4099,7 +4100,7 @@
   {
    "address": "$0F33",
    "native": [
-    "src/core/vertical_contact.cpp:resolve_vertical_contact"
+    "src/core/vertical_contact.cpp:apply_tile_pair"
    ],
    "region": "wram"
   },
@@ -4284,7 +4285,7 @@
   {
    "address": "$0FBF",
    "native": [
-    "src/core/vertical_contact.cpp:resolve_vertical_contact"
+    "src/core/vertical_contact.cpp:apply_tile_pair"
    ],
    "region": "wram"
   },
@@ -4625,14 +4626,14 @@
    "address": "$132B",
    "native": [
     "src/core/flat_contact.hpp:ContactContext::landing_matrix_zero",
-    "src/core/vertical_contact.cpp:resolve_vertical_contact"
+    "src/core/vertical_contact.cpp:land"
    ],
    "region": "wram"
   },
   {
    "address": "$1349",
    "native": [
-    "src/core/vertical_contact.cpp:resolve_vertical_contact"
+    "src/core/vertical_contact.cpp:apply_tile_pair"
    ],
    "region": "wram"
   },
@@ -6640,31 +6641,59 @@
     "$82:9636"
    ]
   },
-  "src/core/vertical_contact.cpp:resolve_vertical_contact": {
+  "src/core/vertical_contact.cpp:apply_landing_matrix": {
+   "rom": [
+    "$81:94A8"
+   ],
+   "wram": [
+    "$0566",
+    "$0572"
+   ]
+  },
+  "src/core/vertical_contact.cpp:apply_tile_pair": {
    "rom": [
     "$81:8F9A",
     "$81:9185",
     "$81:91E3",
-    "$81:924E",
     "$81:9286",
     "$81:92D9",
-    "$81:92FE",
-    "$81:931C",
-    "$81:94A8",
     "$81:966F",
     "$81:9685",
-    "$81:96FA",
     "$81:96FF",
-    "$81:97E6",
-    "$81:984D"
+    "$81:97E6"
    ],
    "wram": [
-    "$0566",
-    "$0572",
     "$0F33",
     "$0FBF",
-    "$132B",
     "$1349"
+   ]
+  },
+  "src/core/vertical_contact.cpp:coarse_landing_angle": {
+   "rom": [
+    "$81:984D"
+   ]
+  },
+  "src/core/vertical_contact.cpp:convert_steep_contact": {
+   "rom": [
+    "$81:92FE"
+   ]
+  },
+  "src/core/vertical_contact.cpp:follow_slope": {
+   "rom": [
+    "$81:96FA"
+   ]
+  },
+  "src/core/vertical_contact.cpp:land": {
+   "rom": [
+    "$81:92D9"
+   ],
+   "wram": [
+    "$132B"
+   ]
+  },
+  "src/core/vertical_contact.cpp:landing_rotation": {
+   "rom": [
+    "$81:931C"
    ]
   },
   "src/core/vertical_contact.cpp:summarize_vertical_contact": {
@@ -6673,6 +6702,11 @@
    ],
    "wram": [
     "$0F5D"
+   ]
+  },
+  "src/core/vertical_contact.cpp:support": {
+   "rom": [
+    "$81:924E"
    ]
   },
   "src/core/vertical_contact.hpp:VerticalContactSummary::leading_support": {
@@ -7113,7 +7147,7 @@
  "totals": {
   "addresses": 567,
   "io_addresses": 11,
-  "native_symbols": 313,
+  "native_symbols": 320,
   "rom_addresses": 351,
   "sram_addresses": 7,
   "wram_addresses": 198

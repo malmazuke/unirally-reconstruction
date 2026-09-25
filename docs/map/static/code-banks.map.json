@@ -3247,7 +3247,7 @@
     "NmX"
    ],
    "native": [
-    "src/core/vertical_contact.cpp:resolve_vertical_contact",
+    "src/core/vertical_contact.cpp:apply_tile_pair",
     "src/core/vertical_contact.cpp:summarize_vertical_contact"
    ],
    "observed_entries": {},
@@ -3308,7 +3308,11 @@
     "src/core/flat_contact.cpp:resolve_recontact",
     "src/core/flat_contact.cpp:tile_index",
     "src/core/race_update.cpp:update_rider_contact",
-    "src/core/vertical_contact.cpp:resolve_vertical_contact"
+    "src/core/vertical_contact.cpp:apply_tile_pair",
+    "src/core/vertical_contact.cpp:convert_steep_contact",
+    "src/core/vertical_contact.cpp:land",
+    "src/core/vertical_contact.cpp:landing_rotation",
+    "src/core/vertical_contact.cpp:support"
    ],
    "observed_entries": {},
    "start": "$81:912B",
@@ -3348,7 +3352,7 @@
    "native": [
     "src/core/flat_contact.cpp:resolve_recontact",
     "src/core/flat_contact.hpp:ContactContext::landing_matrix_zero",
-    "src/core/vertical_contact.cpp:resolve_vertical_contact"
+    "src/core/vertical_contact.cpp:apply_landing_matrix"
    ],
    "observed_entries": {},
    "start": "$81:9495",
@@ -3435,7 +3439,7 @@
    ],
    "native": [
     "src/core/flat_contact.cpp:resolve_flat_contact",
-    "src/core/vertical_contact.cpp:resolve_vertical_contact"
+    "src/core/vertical_contact.cpp:apply_tile_pair"
    ],
    "observed_entries": {},
    "start": "$81:97E4",
@@ -3475,7 +3479,7 @@
    "native": [
     "src/core/flat_contact.cpp:coarse_landing_angle",
     "src/core/flat_contact.cpp:resolve_recontact",
-    "src/core/vertical_contact.cpp:resolve_vertical_contact"
+    "src/core/vertical_contact.cpp:coarse_landing_angle"
    ],
    "observed_entries": {},
    "start": "$81:982C",

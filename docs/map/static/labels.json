@@ -2150,7 +2150,7 @@
   "comment": "instruction start",
   "label": "loc_818F9A",
   "native": [
-   "src/core/vertical_contact.cpp:resolve_vertical_contact"
+   "src/core/vertical_contact.cpp:apply_tile_pair"
   ],
   "source_records": [
    "docs/research/R-0011-contact.md",
@@ -2214,7 +2214,7 @@
   "comment": "instruction start",
   "label": "loc_819185",
   "native": [
-   "src/core/vertical_contact.cpp:resolve_vertical_contact"
+   "src/core/vertical_contact.cpp:apply_tile_pair"
   ],
   "source_records": [
    "docs/research/R-0047-special-tiles.md",
@@ -2228,7 +2228,7 @@
   "comment": "instruction start",
   "label": "loc_81919E",
   "native": [
-   "src/core/vertical_contact.cpp:resolve_vertical_contact"
+   "src/core/vertical_contact.cpp:apply_tile_pair"
   ],
   "source_records": [
    "docs/research/R-0051-loop-and-tile-pairs.md"
@@ -2240,7 +2240,7 @@
   "comment": "instruction start",
   "label": "loc_8191E3",
   "native": [
-   "src/core/vertical_contact.cpp:resolve_vertical_contact"
+   "src/core/vertical_contact.cpp:apply_tile_pair"
   ],
   "source_records": [
    "docs/research/R-0051-loop-and-tile-pairs.md"
@@ -2280,7 +2280,7 @@
   "comment": "instruction start",
   "label": "loc_81924E",
   "native": [
-   "src/core/vertical_contact.cpp:resolve_vertical_contact"
+   "src/core/vertical_contact.cpp:support"
   ],
   "source_records": [
    "docs/research/R-0011-contact.md",
@@ -2303,7 +2303,7 @@
   "comment": "instruction start",
   "label": "loc_819286",
   "native": [
-   "src/core/vertical_contact.cpp:resolve_vertical_contact"
+   "src/core/vertical_contact.cpp:apply_tile_pair"
   ],
   "source_records": [
    "docs/research/R-0047-special-tiles.md"
@@ -2342,7 +2342,8 @@
   "comment": "instruction start",
   "label": "loc_8192D9",
   "native": [
-   "src/core/vertical_contact.cpp:resolve_vertical_contact"
+   "src/core/vertical_contact.cpp:apply_tile_pair",
+   "src/core/vertical_contact.cpp:land"
   ],
   "source_records": [
    "docs/research/R-0047-special-tiles.md",
@@ -2356,7 +2357,7 @@
   "comment": "instruction start",
   "label": "loc_8192FE",
   "native": [
-   "src/core/vertical_contact.cpp:resolve_vertical_contact"
+   "src/core/vertical_contact.cpp:convert_steep_contact"
   ],
   "source_records": [
    "tasks/M4-14-review.md"
@@ -2368,7 +2369,7 @@
   "comment": "instruction start",
   "label": "loc_81931C",
   "native": [
-   "src/core/vertical_contact.cpp:resolve_vertical_contact"
+   "src/core/vertical_contact.cpp:landing_rotation"
   ],
   "source_records": [
    "docs/research/R-0033-sustained-traversal.md"
@@ -2413,7 +2414,7 @@
   "comment": "instruction start",
   "label": "loc_8194A8",
   "native": [
-   "src/core/vertical_contact.cpp:resolve_vertical_contact"
+   "src/core/vertical_contact.cpp:apply_landing_matrix"
   ],
   "source_records": [
    "docs/research/R-0011-contact.md"
@@ -2425,7 +2426,7 @@
   "comment": "instruction start",
   "label": "loc_8194AF",
   "native": [
-   "src/core/vertical_contact.cpp:resolve_vertical_contact"
+   "src/core/vertical_contact.cpp:apply_landing_matrix"
   ],
   "source_records": [
    "docs/research/R-0011-contact.md"
@@ -2437,7 +2438,7 @@
   "comment": "instruction start",
   "label": "loc_8194B4",
   "native": [
-   "src/core/vertical_contact.cpp:resolve_vertical_contact"
+   "src/core/vertical_contact.cpp:apply_landing_matrix"
   ],
   "source_records": [
    "docs/research/R-0011-contact.md"
@@ -2450,7 +2451,7 @@
   "label": "loc_8194B9",
   "native": [
    "src/core/flat_contact.hpp:ContactContext::landing_matrix_zero",
-   "src/core/vertical_contact.cpp:resolve_vertical_contact"
+   "src/core/vertical_contact.cpp:apply_landing_matrix"
   ],
   "source_records": [
    "docs/research/R-0011-contact.md",
@@ -2518,7 +2519,7 @@
   "comment": "instruction start",
   "label": "loc_81966F",
   "native": [
-   "src/core/vertical_contact.cpp:resolve_vertical_contact"
+   "src/core/vertical_contact.cpp:apply_tile_pair"
   ],
   "source_records": [
    "docs/research/R-0047-special-tiles.md",
@@ -2531,7 +2532,7 @@
   "comment": "instruction start",
   "label": "loc_819685",
   "native": [
-   "src/core/vertical_contact.cpp:resolve_vertical_contact"
+   "src/core/vertical_contact.cpp:apply_tile_pair"
   ],
   "source_records": [
    "docs/research/R-0047-special-tiles.md"
@@ -2588,7 +2589,7 @@
   "comment": "instruction start",
   "label": "loc_8196FA",
   "native": [
-   "src/core/vertical_contact.cpp:resolve_vertical_contact"
+   "src/core/vertical_contact.cpp:follow_slope"
   ],
   "source_records": [
    "docs/research/R-0051-loop-and-tile-pairs.md"
@@ -2600,7 +2601,8 @@
   "comment": "instruction start",
   "label": "loc_8196FF",
   "native": [
-   "src/core/vertical_contact.cpp:resolve_vertical_contact"
+   "src/core/vertical_contact.cpp:apply_tile_pair",
+   "src/core/vertical_contact.cpp:follow_slope"
   ],
   "source_records": [
    "docs/research/R-0047-special-tiles.md",
@@ -2614,7 +2616,7 @@
   "comment": "instruction start",
   "label": "loc_81970B",
   "native": [
-   "src/core/vertical_contact.cpp:resolve_vertical_contact"
+   "src/core/vertical_contact.cpp:follow_slope"
   ],
   "source_records": [
    "docs/research/R-0010-native-movement.md",
@@ -2738,7 +2740,7 @@
   "comment": "instruction start",
   "label": "loc_8197E6",
   "native": [
-   "src/core/vertical_contact.cpp:resolve_vertical_contact"
+   "src/core/vertical_contact.cpp:apply_tile_pair"
   ],
   "source_records": [
    "docs/research/R-0047-special-tiles.md",
@@ -2812,7 +2814,7 @@
   "label": "loc_81984D",
   "native": [
    "src/core/flat_contact.cpp:coarse_landing_angle",
-   "src/core/vertical_contact.cpp:resolve_vertical_contact"
+   "src/core/vertical_contact.cpp:coarse_landing_angle"
   ],
   "source_records": [
    "tasks/M4-13-review.md"
