@@ -2,8 +2,8 @@
 
 ## Assignment
 
-- Status: claimed 25 September 2026 by the Claude Code desktop session that ran
-  TILE-PAIRS-8-12-26, base `47708b4`.
+- Status: **accepted** 25 September 2026 (tier 1, PR #21). Claimed the same day by the Claude
+  Code desktop session that ran TILE-PAIRS-8-12-26, base `47708b4`.
 - Milestone: M4 breadth
 - Coordinator: the claiming session is coordinator, primary and integrator
 - Task provider (fixed for all children; record any user-initiated platform change): Anthropic
@@ -108,6 +108,35 @@ to reach more effects (the player's x at the tag picks the effect).
 - Unavailable/skipped checks: the ASan presets (host).
 - Exact next experiment/command: none for this task; [RESULT-TITLE-GLYPHS](RESULT-TITLE-GLYPHS.md)
   is next.
-- Accepted outcome, review/fix rounds and next routing decision: returned once
-  ([review](https://github.com/malmazuke/unirally-reconstruction/pull/21#pullrequestreview-5312888186));
-  fixes in the following commit; re-review pending.
+- Accepted outcome, review/fix rounds and next routing decision: accepted after one returned
+  round; next is [RESULT-TITLE-GLYPHS](RESULT-TITLE-GLYPHS.md), with
+  [ROLLING-CONTACT](ROLLING-CONTACT.md) also ready. The user asked the session to stop after
+  this task's closeout.
+- Cleanup by the closing session: evidence under `local/evidence/hunter-effects/` (moved to the
+  main checkout, with the reviewer's `local/review/` and gate logs); pack v14 copied to the main
+  checkout's `local/`; both worktrees and the local branch deleted; bootstrap and app-debug
+  rerun in the main checkout.
+
+## Review and integration
+
+- Reviewer and independent reproduction/withheld-case results: a fresh Claude Opus 5.5
+  subagent in `.worktrees/hunter-effects-review`, tier 1.
+  - At `a3a4701` it **returned**
+    ([review](https://github.com/malmazuke/unirally-reconstruction/pull/21#pullrequestreview-5312888186)):
+    - M1: a skipped update must still take the NMI's pad images;
+    - M2: the HUNTER guard range was off by one;
+    - S1: `track_reference` refused captures with buttons under effects 5 and 7;
+    - S2: the caption-transfer limit is a class of frames;
+    - S3: `w-rev-buttons` diverges at 1,737 in shared contact code.
+  - At `661fcd3` it **approved**
+    ([re-review](https://github.com/malmazuke/unirally-reconstruction/pull/21#pullrequestreview-5313658405)).
+    Four new withheld captures press buttons during effects 1, 5 and 7, all exact. Both
+    sweeps reproduced, and the gates were identical.
+- Required changes or acceptance rationale:
+  - M1, M2 and S1 were fixed in `661fcd3`, and the full gates rerun (all eleven identical).
+  - S2 is recorded in R-0052, and S3 as ROLLING-CONTACT.
+  - Advisories kept as records: the loader accepts HUNTER combinations the game never produces;
+    tracks 40 and 43 never tag in the captures; the original rewrites the whole sprite attribute
+    byte; no capture reaches a HUNTER finish.
+- Exact merge candidate and required-check results: the pull request head; checks green before
+  merging.
