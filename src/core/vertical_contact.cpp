@@ -109,12 +109,12 @@ VerticalContactSummary summarize_vertical_contact(const FlatContactContent& cont
 }
 
 void resolve_vertical_contact(RiderContactState& rider,ContactMotion& motion,
-                              const VerticalContactSummary& summary,const ContactContext& context,
+                              const VerticalContactSummary& probed,const ContactContext& context,
                               std::span<const std::uint8_t> shifts,
                               std::span<const std::uint8_t> multipliers,
                               std::span<const std::uint8_t> landing_matrices,unsigned horizontal, unsigned pose_index,bool reflected) {
     require(context.phase<=1 && context.mode<=1,"unsupported vertical contact phase/mode");
-    require(rider.unsupported_count<=9 && summary.penetration<128,"unsupported vertical contact state");
+    require(rider.unsupported_count<=9 && probed.penetration<128,"unsupported vertical contact state");
 
     // $81:9185-91D1 dispatches on the selected tile's flag pair (flag & $FE)
     // before the auxiliary and support tests. Pair 24 clears the unsupported
@@ -122,12 +122,17 @@ void resolve_vertical_contact(RiderContactState& rider,ContactMotion& motion,
     // snapshotted the incoming count. Pairs 8 and 16 set $1349, read only at
     // $81:9685 on a path ($81:966F-9690) that continued contact enters only
     // for a magnitude of 31 or more, which the response has already taken
-    // ($81:9286); no capture executes it, so for pair 16 it is inert. Pair 8
-    // also changes the correction ($81:92D9, $81:96FF, $81:97E6) and pair 26
-    // can clear probe penetrations $28/$2C; both stay unrecovered. Every other
-    // pair takes no branch here (R-0047).
+    // ($81:9286); no capture executes it, so it is inert. Pair 8 changes the
+    // response below ($81:92D9, $81:96FF, $81:97E6). Pair 26 (the loop) clears
+    // both probe penetrations, $28 and $2C, at the loop's top (step 9), so
+    // neither the boundary test ($81:91E3, which reads both) nor the
+    // correction moves the rider (R-0051).
+    // Every other pair takes no branch here (R-0047).
+    auto summary=probed;
     const auto flag_pair=static_cast<unsigned>(summary.tile_flags&0xfeU);
-    require(flag_pair!=26,"vertical contact reaches unrecovered tile flag pair 26");
+    if(flag_pair==26 && context.loop_top) {
+        summary.penetration=0;summary.horizontal_penetration=0;summary.boundary_marker=false;
+    }
     auto incoming=rider;
     if(flag_pair==24) {incoming.unsupported_count=0; incoming.unsupported_duration=0;}
     auto next=incoming; auto moved=motion;
@@ -151,7 +156,6 @@ void resolve_vertical_contact(RiderContactState& rider,ContactMotion& motion,
     } else {
         const auto magnitude=static_cast<unsigned>(std::abs(static_cast<int>(summary.angle)));
         require(magnitude<shifts.size(),"vertical response angle outside recovered coefficients");
-        require(flag_pair!=8,"vertical contact reaches unrecovered tile flag pair 8");
         // $81:924E–9275 removes motion into the inverted contact face.
         if(signed_word(moved.velocity_y)<0 && (summary.selected_high&0x80U) &&
            ((summary.selected_high&0x40U)?signed_word(moved.velocity_x)<0:signed_word(moved.velocity_x)>=0))moved.velocity_x=0;
@@ -163,8 +167,9 @@ void resolve_vertical_contact(RiderContactState& rider,ContactMotion& motion,
             next.unsupported_count=std::min<std::uint16_t>(9,static_cast<std::uint16_t>(incoming.unsupported_count+1U));
             next.unsupported_duration=static_cast<std::uint16_t>(incoming.unsupported_duration+1U);
         } else if (incoming.unsupported_count>=9 || (summary.leading_support && incoming.unsupported_count>=2)) {
-
-            if(magnitude<28) {
+            // $81:92D9-92F0: pair 8 re-contacts as a steep surface does,
+            // straight to the correction with the counters cleared.
+            if(magnitude<28 && flag_pair!=8) {
             // R-0025: signed displacement quadrant and coarse-angle sentinel.
             const auto dx=std::abs(signed_word(static_cast<std::uint16_t>(motion.x-incoming.previous_uncorrected_x)));
             const auto half_dy=std::abs(signed_word(static_cast<std::uint16_t>(motion.y-incoming.previous_uncorrected_y)))/2;
@@ -252,7 +257,8 @@ void resolve_vertical_contact(RiderContactState& rider,ContactMotion& motion,
             if (!summary.leading_support && context.phase==0) {moved.response_a=0; moved.response_b=0;}
             const auto shifted=arithmetic_shift(motion.velocity_x,byte(shifts,magnitude));
             const auto product=static_cast<std::uint16_t>(static_cast<unsigned>(shifted)*byte(multipliers,magnitude));
-            if(!summary.leading_support && magnitude<26) {
+            // $81:96FA-970B: under surface mode pair 8 keeps velocity y.
+            if(!summary.leading_support && magnitude<26 && !(context.mode && flag_pair==8)) {
                 moved.velocity_y=summary.angle<0 ? static_cast<std::uint16_t>(1U-product) : product;
                 if(summary.selected_high&0x80U)moved.velocity_y=static_cast<std::uint16_t>(0U-moved.velocity_y);
             }

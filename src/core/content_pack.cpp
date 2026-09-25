@@ -266,6 +266,11 @@ const std::array<RequiredEntry, 90> tracks_required{{
 const std::array<RequiredEntry, 1> special_tiles_required{{
     {"zoom.corkscrew-heights", 96, "4529c691946c40e5d14b00445ed4d888e5d34fbf94283b874e3536cb9a90a7b0"},
 }};
+// TILE-PAIRS-8-12-26 (profile v13): the loop tile's x step by loop step,
+// 17 signed words at $81:834C ($81:8462/$81:8476, R-0051).
+const std::array<RequiredEntry, 1> loop_required{{
+    {"zoom.loop-offsets", 34, "aeeccf997e22c9ea317e86148e330dda9d30a89c188c48d5420c1c55db71fb86"},
+}};
 // LOCKED-TOURS (profile v12): the race tracks of the five tours a cold start does not
 // list, and sceneries 1, 8 and 12. Generated from the rules file (tracks.py v12_new_entries).
 const std::array<RequiredEntry, 89> locked_tracks_required{{
@@ -359,7 +364,7 @@ const std::array<RequiredEntry, 89> locked_tracks_required{{
     {"scenery.12.bg2-map", 8192, "a9ad06f9426d4971d276a31bc87ca024a3c7ef21efee51037aafbd41a7a148c0"},
     {"scenery.12.palette", 352, "b2a9aefe13c1dc68454cf0a5c2bedb086c6e162dbea1df1f2ef108347d89ab63"},
 }};
-constexpr std::string_view two_track_rules_sha="5344209a04c26d24956dc8660bfc9080598433d019be90b1973f01ea36cff723";
+constexpr std::string_view two_track_rules_sha="c6dba752e2a6f42717f5aac296193c161808b27bf595a032081295e737773404";
 
 std::array<std::uint8_t, 32> hex_digest(std::string_view text) {
   if (text.size() != 64)
@@ -461,7 +466,7 @@ std::array<std::uint8_t, 32> sha256(std::span<const std::uint8_t> source) {
 
 namespace {
 constexpr std::array<std::string_view, 2> supported_profiles{
-    "classic.pal.crawler.dragster.v1", "classic.pal.crawler.tracks.v12"};
+    "classic.pal.crawler.dragster.v1", "classic.pal.crawler.tracks.v13"};
 } // namespace
 
 std::span<const std::string_view> supported_pack_profiles() {
@@ -505,6 +510,7 @@ ClassicContentPack::ClassicContentPack(const std::filesystem::path &path) {
     selected_required.insert(selected_required.end(),tracks_required.begin(),tracks_required.end());
     selected_required.insert(selected_required.end(),special_tiles_required.begin(),special_tiles_required.end());
     selected_required.insert(selected_required.end(),locked_tracks_required.begin(),locked_tracks_required.end());
+    selected_required.insert(selected_required.end(),loop_required.begin(),loop_required.end());
   }
   const auto count = in.u16();
   struct Row {

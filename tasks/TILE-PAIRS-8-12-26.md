@@ -2,16 +2,18 @@
 
 ## Assignment
 
-- Status: ready (prepared 24 September 2026 by the LOCKED-TOURS session).
+- Status: **accepted** 25 September 2026 (tier 1, PR #20). Claimed the same day by the Claude
+  Code desktop session that ran LOCKED-TOURS (after a context compaction), base `0de428f`.
 - Milestone: M4 breadth
 - Coordinator: the claiming session is coordinator, primary and integrator
 - Task provider (fixed for all children; record any user-initiated platform change): Anthropic
-- Worker/session/runtime/model: to be recorded at claim
+- Worker/session/runtime/model: Claude Code desktop app, Claude Opus 5.5 (`claude-opus-5-5`)
 - Actual model/reasoning effort, routing rationale and frontier escalation question (if any):
   the claiming session's model at default effort; **tier 1** (simulation state in
   `src/core/movement.cpp` and `vertical_contact.cpp`).
 - Provider quota window/baseline timestamp, used/remaining or unknown, reserve and session
-  allowance (D-0004): sample at claim.
+  allowance (D-0004): at claim (25 September 2026) the 5-hour window was 7% used and the weekly
+  window 9%; the user's stop point is 50% weekly.
 - Reviewer (primary automatically spawns fresh model/effort, isolated checkout; no user
   trigger): a fresh Anthropic subagent with a withheld capture.
 - Dependencies and evidence of acceptance: LOCKED-TOURS (accepted); R-0047, R-0050; pack v12.
@@ -52,9 +54,84 @@ The locked-tour captures under `local/evidence/locked-tours/sweep/` (`sweep.json
 | Nothing accepted moves | Gates, v1 contracts, hidden runs, fuzz, ctest, synthetic | Unchanged digests | gate logs |
 | Review | Tier 1 | Approved with a withheld capture | review on the pull request |
 
+## Capability and coverage checkpoint
+
+- Native capability delivered / still missing: the loop (pair 26) in movement and contact, pair
+  8 in movement and contact, pairs 12 and 28 in movement; pair 4 and the HUNTER tag effects
+  (`$83:CEC9`, now [HUNTER-EFFECTS](HUNTER-EFFECTS.md)) are still missing.
+- Frozen exact-match interval, field set and reference/seed identity: the 838-byte projection
+  grows to 854 (`URTRnn05`); the locked and cold-start sweeps as captured.
+- Dynamic captured inputs still consumed (must be zero for autonomy): none new; the loop's x
+  steps are pack content (`zoom.loop-offsets`).
+- Relevant branches/transitions exercised, including independent variations: the opponent's
+  loops on LAST ONE (twice, direction 0) and DOWN+UP (direction 1), the player's loop on DOWN+UP
+  with Right held, the opponent on pair 8 once on HIGHROAD and for 17 updates on DOWN+UP, pair 12
+  for 24 updates on JUMPOVER, pair 28 on DOWN+UP; the review's withheld captures add the player
+  on pairs 8 and 12. No refused loop entry is captured.
+- First divergence and cheapest next discriminating experiment: TWO LOOPS at 1,252, the first
+  HUNTER tag (HUNTER-EFFECTS' handoff).
+- Trial-wide usage baseline/current, reserve, reset authorization/outcome or none: 7% (5-hour)
+  and 9% (weekly) at claim.
+
+## Evidence and attempts
+
+| Attempt | Hypothesis | Experiment | Observation | Next decision |
+| --- | --- | --- | --- | --- |
+| 1 | - | `recompare --per-track` on the locked sweep at `0de428f` (`recompare-0.json`) | Unchanged from R-0050: 15, 25 stop at contact pair 26 (808, 519), 19 at movement pair 12 (773), 26 at contact pair 8 (898) | Read the handlers |
+| 2 | Contact pair 26 reads movement pair 26's state | Listing `$81:837E-84AB`, `$81:85AB-8622`; WRAM `$0351-$035B` on LAST ONE (`wram.py`) | Movement pair 26 is a loop: `$0355` counts 1 to `$10`, x steps from the table at `$81:834C`, velocity y `$1CE`, pose `$0610+n`; `$0359` a 3-update cooldown. The opponent loops twice (809-842). Contact clears `$28`/`$2C` at step 9 | Implement with the table in the pack (v13) |
+| 3 | Pair 8 and 12 are small | Listing `$81:8554`, `$81:8950`, `$81:92D9`, `$81:96FF`, consumers of `$0F2D`, `$0F3B`, `$0F3D`, `$0FB1` | Pair 8: counter `$0D3D`, tile mode, `$0F2D` (slope nudge, pose target); re-contact goes straight to correction; keeps vy under surface mode. Pair 12: drive step 1, animation delta +-2, mud's brake path | Implement; state words into the special-tile block (`URTRnn05`) |
+| 4 | - | Explore the four tracks with the new build | LAST ONE, JUMPOVER, HIGHROAD exact to the end; DOWN+UP stops at movement pair 28 (546) | Recover pair 28 (`$81:8316`) |
+| 5 | - | Pair 28 (push `$20`/8 unless the reflection is locked) | DOWN+UP exact to the end | Regression and held captures |
+| 6 | - | Recompare both sweeps (`recompare-locked.json`, `recompare-cold.json`) | Locked: 19 of 20 exact over the whole window, 41 TWO LOOPS exact to 1,252; cold start 16 of 16, unchanged | TWO LOOPS |
+| 7 | TWO LOOPS is an announcement fault | WRAM `$0CC1-$0CE9` at 1,252; the writers of `$0CE7` | The original pushes event 31 to the front (`$81:C55B`), called from the HUNTER-only routine `$83:CEC9`: eight timed tag effects chosen by the player's x when the riders touch | Out of this task's size: HUNTER-EFFECTS |
+| 8 | - | Captures with Right held from 1,500, released at 2,600 (`captures.sh`, `right/`) | All four exact over their whole windows; on DOWN+UP the player rides the loop (steps 1-16) | Records and gates |
+| 9 | - | Gates at `ee5e372` (`gates.sh`) | All eleven differential gates identical to LOCKED-TOURS'; v1 contracts, hidden runs, fuzz, ctest (3 presets), synthetic, RNC inventory pass | Pictures |
+| 10 | The loop draws as the original | DOWN+UP with Right held, 17 frame images 1,920-1,952; native `--timeline` renders (`pictures.py`) | The app-debug renderer refuses the track: `unsupported Classic result title glyph` (the `+` in `down+up`) | Probe build with the name check relaxed (not committed) |
+| 11 | - | Same, probe build | 17 of 17 frames 0 differing pixels (rider inside the tube, back in view at 1,952) | Record the title-glyph defect as RESULT-TITLE-GLYPHS; review |
+
 ## Handoff
 
-- Exact next experiment/command: `python3 -m tools.unirally_lab.native.track_reference recompare
-  --per-track --sweep local/evidence/locked-tours/sweep --binary
-  build/lab-debug/src/core/zoom_zoo_runner --pack local/classic-pal-crawler-tracks-v12.pack --out
-  <json>`, then read the original's `$0355,y`, `$1349` and `$0DE7` at each stop.
+- Current base/head commit and uncommitted state: base `0de428f`; on `task/tile-pairs`.
+- Verified findings: [R-0051](../docs/research/R-0051-loop-and-tile-pairs.md).
+- Current hypothesis and failed approaches: none failed; the announcement difference was not
+  a queue fault (attempt 7).
+- Commands executed, outcomes and report hashes: `local/evidence/tile-pairs/` holds
+  `recompare-0.json`, `explore-*.json`, `recompare-locked.json`, `recompare-cold.json`, the
+  Right-held captures and their explores, `wram.py`, `explore.sh`, `captures.sh` and the
+  `$83:CEC9` extract.
+- Unavailable/skipped checks: the ASan presets (host).
+- Exact next experiment/command: none for this task; [HUNTER-EFFECTS](HUNTER-EFFECTS.md) is
+  next.
+- Remaining dependencies: none outside the project.
+- Runtime needs (network, build time, fixtures, memory): captures about 15 s each.
+- Aggregate parent/child time, provider usage before/after (or unknown), other-account-work
+  caveat: primary from about 21:30Z (24 September UTC).
+- Accepted outcome, review/fix rounds and next routing decision: accepted after one review
+  round (approved, no must-fix); next is [HUNTER-EFFECTS](HUNTER-EFFECTS.md), with
+  [RESULT-TITLE-GLYPHS](RESULT-TITLE-GLYPHS.md) also ready.
+- Cleanup by the closing session: evidence under `local/evidence/tile-pairs/` (moved to the
+  main checkout); the gate directory moved there from `artifacts/`; pack v13 copied to the main
+  checkout's `local/`; both worktrees and the local branch deleted; bootstrap and app-debug
+  rerun in the main checkout.
+
+## Review and integration
+
+- Reviewer and independent reproduction/withheld-case results: a fresh Claude Opus 5.5
+  subagent in `.worktrees/tile-pairs-review`, tier 1, at `768a542`.
+  - It checked every claimed behaviour against the listings, instruction by instruction, and
+    rebuilt pack v13 with the same sha.
+  - Both sweeps reproduced: 19 of 20 and 16 of 16.
+  - Withheld captures, all exact to the end: JUMPOVER with B pressed every 24 frames (the
+    player on pair 12 for 148 updates, both ways), HIGHROAD with a run-up and timed jump (the
+    player on pair 8), DOWN+UP with Left from 1,910 (the player's loop at other timings).
+  - All eleven gates were identical to `gates-ee5e372.out`, run once, serially.
+  - **Approved**, no must-fix:
+    [review](https://github.com/malmazuke/unirally-reconstruction/pull/20#pullrequestreview-5311734865).
+- Required changes or acceptance rationale:
+  - S1 (the records understated pair 8's coverage: DOWN+UP's opponent is on it for 17 updates)
+    is fixed in R-0051 and this record.
+  - Advisories A1 (no refused loop entry captured) are recorded in R-0051's limits, and A2 (a
+    stale pair 12 comment) and A3 (the boundary test reads both penetrations) are fixed as
+    comments only.
+- Exact merge candidate and required-check results: the pull request head; checks green before
+  merging.

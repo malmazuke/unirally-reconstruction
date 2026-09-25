@@ -832,6 +832,7 @@
   "source_records": [
    "docs/research/R-0045-static-code-map.md",
    "docs/research/R-0047-special-tiles.md",
+   "docs/research/R-0051-loop-and-tile-pairs.md",
    "tasks/SPECIAL-TILE-RESPONSE.md",
    "tasks/STATIC-CODE-MAP.md",
    "tasks/TILE-PAIRS-8-12-26.md"
@@ -843,7 +844,17 @@
   "comment": "routine start",
   "label": "sub_818316",
   "source_records": [
-   "docs/research/R-0047-special-tiles.md"
+   "docs/research/R-0047-special-tiles.md",
+   "docs/research/R-0051-loop-and-tile-pairs.md"
+  ]
+ },
+ {
+  "address": "$81:834C",
+  "class": "data",
+  "comment": "data",
+  "label": "dat_81834C",
+  "source_records": [
+   "docs/research/R-0051-loop-and-tile-pairs.md"
   ]
  },
  {
@@ -853,6 +864,7 @@
   "label": "sub_81837E",
   "source_records": [
    "docs/research/R-0047-special-tiles.md",
+   "docs/research/R-0051-loop-and-tile-pairs.md",
    "tasks/TILE-PAIRS-8-12-26.md"
   ]
  },
@@ -892,6 +904,7 @@
   "label": "sub_818554",
   "source_records": [
    "docs/research/R-0047-special-tiles.md",
+   "docs/research/R-0051-loop-and-tile-pairs.md",
    "tasks/TILE-PAIRS-8-12-26.md"
   ]
  },
@@ -916,12 +929,39 @@
   ]
  },
  {
+  "address": "$81:8594",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_818594",
+  "source_records": [
+   "docs/research/R-0051-loop-and-tile-pairs.md"
+  ]
+ },
+ {
   "address": "$81:859D",
   "class": "observed",
   "comment": "instruction start",
   "label": "loc_81859D",
   "source_records": [
    "docs/research/R-0047-special-tiles.md"
+  ]
+ },
+ {
+  "address": "$81:85AE",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_8185AE",
+  "source_records": [
+   "docs/research/R-0051-loop-and-tile-pairs.md"
+  ]
+ },
+ {
+  "address": "$81:85B9",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_8185B9",
+  "source_records": [
+   "docs/research/R-0051-loop-and-tile-pairs.md"
   ]
  },
  {
@@ -986,7 +1026,8 @@
   "comment": "routine start",
   "label": "sub_81875C",
   "source_records": [
-   "docs/research/R-0047-special-tiles.md"
+   "docs/research/R-0047-special-tiles.md",
+   "docs/research/R-0051-loop-and-tile-pairs.md"
   ]
  },
  {
@@ -1014,6 +1055,7 @@
   "label": "sub_818950",
   "source_records": [
    "docs/research/R-0047-special-tiles.md",
+   "docs/research/R-0051-loop-and-tile-pairs.md",
    "tasks/TILE-PAIRS-8-12-26.md"
   ]
  },
@@ -1814,6 +1856,24 @@
   ]
  },
  {
+  "address": "$81:919E",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_81919E",
+  "source_records": [
+   "docs/research/R-0051-loop-and-tile-pairs.md"
+  ]
+ },
+ {
+  "address": "$81:91E3",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_8191E3",
+  "source_records": [
+   "docs/research/R-0051-loop-and-tile-pairs.md"
+  ]
+ },
+ {
   "address": "$81:921F",
   "class": "observed",
   "comment": "instruction start",
@@ -1903,7 +1963,8 @@
   "comment": "instruction start",
   "label": "loc_8192D9",
   "source_records": [
-   "docs/research/R-0047-special-tiles.md"
+   "docs/research/R-0047-special-tiles.md",
+   "docs/research/R-0051-loop-and-tile-pairs.md"
   ]
  },
  {
@@ -2100,6 +2161,15 @@
   ]
  },
  {
+  "address": "$81:96FA",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_8196FA",
+  "source_records": [
+   "docs/research/R-0051-loop-and-tile-pairs.md"
+  ]
+ },
+ {
   "address": "$81:96FF",
   "class": "observed",
   "comment": "instruction start",
@@ -2225,7 +2295,8 @@
   "label": "sub_8197E4",
   "source_records": [
    "docs/research/R-0011-contact.md",
-   "docs/research/R-0033-sustained-traversal.md"
+   "docs/research/R-0033-sustained-traversal.md",
+   "docs/research/R-0051-loop-and-tile-pairs.md"
   ]
  },
  {
@@ -2234,7 +2305,8 @@
   "comment": "instruction start",
   "label": "loc_8197E6",
   "source_records": [
-   "docs/research/R-0047-special-tiles.md"
+   "docs/research/R-0047-special-tiles.md",
+   "docs/research/R-0051-loop-and-tile-pairs.md"
   ]
  },
  {
@@ -2838,6 +2910,16 @@
   "label": "unk_81C50A",
   "source_records": [
    "docs/research/R-0011-motion.md"
+  ]
+ },
+ {
+  "address": "$81:C55B",
+  "class": "inferred",
+  "comment": "routine start",
+  "label": "sub_81C55B",
+  "source_records": [
+   "docs/research/R-0051-loop-and-tile-pairs.md",
+   "tasks/HUNTER-EFFECTS.md"
   ]
  },
  {
@@ -4038,6 +4120,15 @@
   ]
  },
  {
+  "address": "$82:8A0D",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_828A0D",
+  "source_records": [
+   "docs/research/R-0051-loop-and-tile-pairs.md"
+  ]
+ },
+ {
   "address": "$82:8AB1",
   "class": "observed",
   "comment": "instruction start",
@@ -4138,6 +4229,15 @@
   "label": "loc_828C4E",
   "source_records": [
    "docs/research/R-0010-native-movement.md"
+  ]
+ },
+ {
+  "address": "$82:8C99",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_828C99",
+  "source_records": [
+   "docs/research/R-0051-loop-and-tile-pairs.md"
   ]
  },
  {
@@ -4280,6 +4380,15 @@
   "label": "loc_82912F",
   "source_records": [
    "docs/research/R-0047-special-tiles.md"
+  ]
+ },
+ {
+  "address": "$82:9187",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_829187",
+  "source_records": [
+   "docs/research/R-0051-loop-and-tile-pairs.md"
   ]
  },
  {
@@ -4473,6 +4582,15 @@
   ]
  },
  {
+  "address": "$82:9981",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_829981",
+  "source_records": [
+   "docs/research/R-0051-loop-and-tile-pairs.md"
+  ]
+ },
+ {
   "address": "$82:998B",
   "class": "observed",
   "comment": "instruction start",
@@ -4582,7 +4700,8 @@
   "comment": "routine start",
   "label": "sub_82A069",
   "source_records": [
-   "docs/research/R-0011-motion.md"
+   "docs/research/R-0011-motion.md",
+   "docs/research/R-0051-loop-and-tile-pairs.md"
   ]
  },
  {
@@ -4837,6 +4956,15 @@
   ]
  },
  {
+  "address": "$82:A5FC",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82A5FC",
+  "source_records": [
+   "docs/research/R-0051-loop-and-tile-pairs.md"
+  ]
+ },
+ {
   "address": "$82:A61F",
   "class": "observed",
   "comment": "routine start",
@@ -4883,6 +5011,15 @@
    "docs/research/R-0026-zoom-zoo-position.md",
    "tasks/M4-08-review.md",
    "tasks/M4-08.md"
+  ]
+ },
+ {
+  "address": "$82:A6C0",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82A6C0",
+  "source_records": [
+   "docs/research/R-0051-loop-and-tile-pairs.md"
   ]
  },
  {
@@ -4975,6 +5112,16 @@
   ]
  },
  {
+  "address": "$82:A77E",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82A77E",
+  "source_records": [
+   "docs/research/R-0050-locked-tours.md",
+   "tasks/LOCKED-TOURS.md"
+  ]
+ },
+ {
   "address": "$82:A7BA",
   "class": "observed",
   "comment": "instruction start",
@@ -5060,6 +5207,15 @@
   "source_records": [
    "docs/research/R-0029-zoom-zoo-vertical-velocity.md",
    "tasks/M4-11-review.md"
+  ]
+ },
+ {
+  "address": "$82:A8CD",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82A8CD",
+  "source_records": [
+   "docs/research/R-0051-loop-and-tile-pairs.md"
   ]
  },
  {
@@ -5996,6 +6152,16 @@
   ]
  },
  {
+  "address": "$83:CC0B",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83CC0B",
+  "source_records": [
+   "docs/research/R-0050-locked-tours.md",
+   "tasks/LOCKED-TOURS.md"
+  ]
+ },
+ {
   "address": "$83:CC20",
   "class": "inferred",
   "comment": "instruction start",
@@ -6143,6 +6309,134 @@
   ]
  },
  {
+  "address": "$83:CDB1",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_83CDB1",
+  "source_records": [
+   "tasks/HUNTER-EFFECTS.md"
+  ]
+ },
+ {
+  "address": "$83:CEC9",
+  "class": "inferred",
+  "comment": "routine start",
+  "label": "sub_83CEC9",
+  "source_records": [
+   "docs/research/R-0051-loop-and-tile-pairs.md",
+   "tasks/HUNTER-EFFECTS.md"
+  ]
+ },
+ {
+  "address": "$83:D104",
+  "class": "inferred",
+  "comment": "routine start",
+  "label": "sub_83D104",
+  "source_records": [
+   "docs/research/R-0051-loop-and-tile-pairs.md",
+   "tasks/HUNTER-EFFECTS.md"
+  ]
+ },
+ {
+  "address": "$83:D1CA",
+  "class": "inferred",
+  "comment": "routine start",
+  "label": "sub_83D1CA",
+  "source_records": [
+   "tasks/HUNTER-EFFECTS.md"
+  ]
+ },
+ {
+  "address": "$83:D275",
+  "class": "inferred",
+  "comment": "routine start",
+  "label": "sub_83D275",
+  "source_records": [
+   "tasks/HUNTER-EFFECTS.md"
+  ]
+ },
+ {
+  "address": "$83:D28A",
+  "class": "inferred",
+  "comment": "routine start",
+  "label": "sub_83D28A",
+  "source_records": [
+   "tasks/HUNTER-EFFECTS.md"
+  ]
+ },
+ {
+  "address": "$83:D2C9",
+  "class": "inferred",
+  "comment": "routine start",
+  "label": "sub_83D2C9",
+  "source_records": [
+   "tasks/HUNTER-EFFECTS.md"
+  ]
+ },
+ {
+  "address": "$83:D349",
+  "class": "inferred",
+  "comment": "routine start",
+  "label": "sub_83D349",
+  "source_records": [
+   "tasks/HUNTER-EFFECTS.md"
+  ]
+ },
+ {
+  "address": "$83:D3BC",
+  "class": "data",
+  "comment": "data",
+  "label": "dat_83D3BC",
+  "source_records": [
+   "tasks/HUNTER-EFFECTS.md"
+  ]
+ },
+ {
+  "address": "$83:D3FC",
+  "class": "inferred",
+  "comment": "routine start",
+  "label": "sub_83D3FC",
+  "source_records": [
+   "tasks/HUNTER-EFFECTS.md"
+  ]
+ },
+ {
+  "address": "$83:D474",
+  "class": "inferred",
+  "comment": "routine start",
+  "label": "sub_83D474",
+  "source_records": [
+   "tasks/HUNTER-EFFECTS.md"
+  ]
+ },
+ {
+  "address": "$83:D4AE",
+  "class": "inferred",
+  "comment": "routine start",
+  "label": "sub_83D4AE",
+  "source_records": [
+   "tasks/HUNTER-EFFECTS.md"
+  ]
+ },
+ {
+  "address": "$83:D4E8",
+  "class": "inferred",
+  "comment": "routine start",
+  "label": "sub_83D4E8",
+  "source_records": [
+   "tasks/HUNTER-EFFECTS.md"
+  ]
+ },
+ {
+  "address": "$83:D530",
+  "class": "inferred",
+  "comment": "routine start",
+  "label": "sub_83D530",
+  "source_records": [
+   "tasks/HUNTER-EFFECTS.md"
+  ]
+ },
+ {
   "address": "$83:D581",
   "class": "inferred",
   "comment": "routine start",
@@ -6248,6 +6542,15 @@
   ]
  },
  {
+  "address": "$83:E21C",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_83E21C",
+  "source_records": [
+   "docs/research/R-0050-locked-tours.md"
+  ]
+ },
+ {
   "address": "$83:E21F",
   "class": "observed",
   "comment": "instruction start",
@@ -6273,6 +6576,7 @@
   "comment": "instruction start",
   "label": "loc_83E228",
   "source_records": [
+   "docs/research/R-0050-locked-tours.md",
    "tasks/M4-11-review.md"
   ]
  },
@@ -6845,6 +7149,15 @@
   "label": "loc_83EF67",
   "source_records": [
    "docs/research/R-0033-sustained-traversal.md"
+  ]
+ },
+ {
+  "address": "$83:EFA1",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83EFA1",
+  "source_records": [
+   "docs/research/R-0051-loop-and-tile-pairs.md"
   ]
  },
  {

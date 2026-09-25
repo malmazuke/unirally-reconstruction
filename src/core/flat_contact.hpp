@@ -56,6 +56,7 @@ struct ContactContext {
     bool opponent{};
     std::uint16_t mode{};
     std::uint16_t cartridge_options{}; // $77:0750, only bit 3 is tested here
+    bool loop_top{}; // the rider's loop step `$0355,y` is 9 (vertical contact, flag pair 26)
 };
 
 FlatContactSummary summarize_flat_contact(const FlatContactContent& content,

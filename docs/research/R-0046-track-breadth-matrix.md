@@ -373,7 +373,9 @@ the two accepted tracks carry.
 4. **Done in SPECIAL-TILE-RESPONSE**: PINGPONG's `opponent.response_b` at update
    1,068 was the rotation clearing its step under surface mode (R-0047).
 5. **Done in LOCKED-TOURS** ([R-0050](R-0050-locked-tours.md)): the locked tours open in the
-   laboratory with a preloaded cartridge RAM; 15 of their 20 race tracks match.
+   laboratory with a preloaded cartridge RAM; 15 of their 20 race tracks match. TILE-PAIRS-8-12-26
+   ([R-0051](R-0051-loop-and-tile-pairs.md)) recovered the tile pairs that stopped four more;
+   TWO LOOPS waits on the HUNTER tag effects (HUNTER-EFFECTS).
 6. **Stunt events**: a separate mode (solo, qualifying score), out of this task's race
    scope.
 
