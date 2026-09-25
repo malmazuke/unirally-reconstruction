@@ -384,6 +384,9 @@
    "mode_at_entry": [
     "NmX"
    ],
+   "native": [
+    "src/core/front_end.hpp:OnePlayerRecords"
+   ],
    "observed_entries": {},
    "start": "$80:8C4E",
    "static_entries": {
@@ -479,7 +482,7 @@
     "NmX"
    ],
    "native": [
-    "src/core/front_end.cpp:copy_oam"
+    "src/core/front_end_screens.hpp:copy_oam"
    ],
    "observed_entries": {},
    "start": "$80:9318",
@@ -497,6 +500,9 @@
    "end": "$80:935D",
    "mode_at_entry": [
     "NmX"
+   ],
+   "native": [
+    "src/core/now_playing.cpp:name_line"
    ],
    "observed_entries": {},
    "start": "$80:933C",
@@ -536,6 +542,9 @@
    "end": "$80:93A0",
    "mode_at_entry": [
     "NmX"
+   ],
+   "native": [
+    "src/core/front_end_screens.hpp:load_text"
    ],
    "observed_entries": {},
    "start": "$80:937B",
@@ -577,6 +586,9 @@
    "mode_at_entry": [
     "NmX"
    ],
+   "native": [
+    "src/core/rider_menu.cpp:rider_menu_frame"
+   ],
    "observed_entries": {},
    "start": "$80:93A5",
    "static_entries": {
@@ -611,6 +623,10 @@
    "mode_at_entry": [
     "NmX"
    ],
+   "native": [
+    "src/core/rider_menu.cpp:left_name_column, right_name_column, first_name_row, name_rows",
+    "src/core/rider_menu.cpp:print_rider_menu"
+   ],
    "observed_entries": {},
    "start": "$80:95AB",
    "static_entries": {
@@ -627,6 +643,9 @@
    "end": "$80:96FC",
    "mode_at_entry": [
     "NmX"
+   ],
+   "native": [
+    "src/core/rider_menu.cpp:lay_out_icons"
    ],
    "observed_entries": {},
    "start": "$80:9625",
@@ -682,6 +701,12 @@
    "end": "$80:97DC",
    "mode_at_entry": [
     "NmX"
+   ],
+   "native": [
+    "src/core/tour_menu.cpp:(file)",
+    "src/core/tour_menu.cpp:base_palette_low, base_palette_high, first_medal_palette",
+    "src/core/tour_menu.cpp:lay_out_medals",
+    "src/core/tour_menu.cpp:tour_menu_entry_frame"
    ],
    "observed_entries": {},
    "start": "$80:974B",
@@ -780,7 +805,9 @@
     "NmX"
    ],
    "native": [
-    "src/core/front_end.cpp:fade_frames"
+    "src/core/front_end.cpp:fade_frames",
+    "src/core/front_end.hpp:FrontEndScreen",
+    "src/core/now_playing.cpp:(file)"
    ],
    "observed_entries": {},
    "start": "$80:9885",
@@ -801,6 +828,9 @@
    "end": "$80:98B2",
    "mode_at_entry": [
     "NmX"
+   ],
+   "native": [
+    "src/core/rider_menu.cpp:off_screen_x, off_screen_y"
    ],
    "observed_entries": {},
    "start": "$80:98A4",
@@ -895,6 +925,9 @@
     "NMX",
     "NmX"
    ],
+   "native": [
+    "src/core/text_printer.cpp:name_of"
+   ],
    "observed_entries": {},
    "start": "$80:9B55",
    "static_entries": {
@@ -911,6 +944,9 @@
    "end": "$80:9BC3",
    "mode_at_entry": [
     "NmX"
+   ],
+   "native": [
+    "src/core/track_menu.cpp:print_track_menu"
    ],
    "observed_entries": {},
    "start": "$80:9BA0",
@@ -976,6 +1012,9 @@
    "mode_at_entry": [
     "NmX"
    ],
+   "native": [
+    "src/core/rider_menu.cpp:load_rider_palettes"
+   ],
    "observed_entries": {},
    "start": "$80:A705",
    "static_entries": {
@@ -993,6 +1032,12 @@
    "end": "$80:A857",
    "mode_at_entry": [
     "NmX"
+   ],
+   "native": [
+    "src/core/front_end.hpp:FrontEndScreen",
+    "src/core/tour_menu.cpp:base_palette_low, base_palette_high, first_medal_palette",
+    "src/core/tour_menu.cpp:return_to_tour_menu",
+    "src/core/tour_menu.cpp:tour_menu_entry_frame"
    ],
    "observed_entries": {},
    "start": "$80:A82B",
@@ -1015,6 +1060,12 @@
    "mode_at_entry": [
     "NmX"
    ],
+   "native": [
+    "src/core/front_end.hpp:FrontEndScreen",
+    "src/core/tour_menu.cpp:base_palette_low, base_palette_high, first_medal_palette",
+    "src/core/tour_menu.cpp:return_to_tour_menu",
+    "src/core/tour_menu.cpp:tour_menu_entry_frame"
+   ],
    "observed_entries": {},
    "start": "$80:A858",
    "static_entries": {
@@ -1033,7 +1084,8 @@
     "NmX"
    ],
    "native": [
-    "src/core/front_end.cpp:menu_text_tiles_dma"
+    "src/core/front_end.cpp:menu_text_tiles_dma",
+    "src/core/front_end_screens.hpp:reload_menu_text_tiles"
    ],
    "observed_entries": {},
    "start": "$80:A877",
@@ -1057,7 +1109,8 @@
    "native": [
     "src/core/front_end.cpp:boot_frame_waits",
     "src/core/front_end.cpp:load_main_menu",
-    "src/core/front_end.cpp:load_nintendo_screen"
+    "src/core/front_end.cpp:load_nintendo_screen",
+    "src/core/front_end_screens.hpp:reload_menu_palette"
    ],
    "observed_entries": {},
    "start": "$80:A8A8",
@@ -1078,7 +1131,9 @@
    ],
    "native": [
     "src/core/front_end.cpp:first_idle, idle_after_move",
-    "src/core/front_end.cpp:run_main_menu"
+    "src/core/front_end.cpp:run_main_menu",
+    "src/core/front_end.hpp:FrontEndScreen",
+    "src/core/front_end_screens.hpp:start_main_menu"
    ],
    "observed_entries": {},
    "start": "$80:ABC8",
@@ -1100,7 +1155,11 @@
    ],
    "native": [
     "src/core/front_end.cpp:boot_frame_waits",
-    "src/core/front_end.cpp:main_menu_text"
+    "src/core/front_end.cpp:copy_menu_text",
+    "src/core/front_end.hpp:FrontEndScreen",
+    "src/core/front_end_screens.hpp:print_main_menu",
+    "src/core/now_playing.cpp:now_playing_frame",
+    "src/core/rider_menu.cpp:(file)"
    ],
    "observed_entries": {},
    "start": "$80:ACD5",
@@ -1301,6 +1360,12 @@
    "mode_at_entry": [
     "NmX"
    ],
+   "native": [
+    "src/core/front_end.hpp:FrontEndScreen",
+    "src/core/front_end.hpp:NowPlayingChoice",
+    "src/core/now_playing.cpp:(file)",
+    "src/core/now_playing.cpp:print_now_playing"
+   ],
    "observed_entries": {},
    "start": "$80:B18D",
    "static_entries": {
@@ -1321,6 +1386,9 @@
    "end": "$80:B611",
    "mode_at_entry": [
     "NmX"
+   ],
+   "native": [
+    "src/core/now_playing.cpp:name_line"
    ],
    "observed_entries": {},
    "start": "$80:B57E",
@@ -1398,6 +1466,9 @@
    "mode_at_entry": [
     "NmX"
    ],
+   "native": [
+    "src/core/rider_menu.cpp:choose_buttons, back_buttons"
+   ],
    "observed_entries": {},
    "start": "$80:B71D",
    "static_entries": {
@@ -1425,6 +1496,9 @@
    "end": "$80:B76E",
    "mode_at_entry": [
     "NmX"
+   ],
+   "native": [
+    "src/core/rider_menu.cpp:choose_buttons, back_buttons"
    ],
    "observed_entries": {},
    "start": "$80:B74A",
@@ -1465,6 +1539,10 @@
    "end": "$80:B7B8",
    "mode_at_entry": [
     "NmX"
+   ],
+   "native": [
+    "src/core/tour_menu.cpp:left, right, up, down_or_select",
+    "src/core/track_menu.cpp:up, down_or_select"
    ],
    "observed_entries": {},
    "start": "$80:B794",
@@ -1555,6 +1633,9 @@
    "mode_at_entry": [
     "NmX"
    ],
+   "native": [
+    "src/core/now_playing.cpp:right, left, select"
+   ],
    "observed_entries": {},
    "start": "$80:B8F1",
    "static_entries": {
@@ -1589,6 +1670,10 @@
    "mode_at_entry": [
     "NmX"
    ],
+   "native": [
+    "src/core/track_menu.cpp:open_track_menu",
+    "src/core/track_menu.cpp:row_spacing, wrap_top_y"
+   ],
    "observed_entries": {},
    "start": "$80:BA6A",
    "static_entries": {
@@ -1606,6 +1691,20 @@
    "mode_at_entry": [
     "NMX",
     "NmX"
+   ],
+   "native": [
+    "src/core/front_end.hpp:FrontEndScreen",
+    "src/core/front_end_screens.hpp:enter_rider_menu",
+    "src/core/front_end_screens.hpp:enter_tour_menu",
+    "src/core/front_end_screens.hpp:enter_track_menu",
+    "src/core/rider_menu.cpp:(file)",
+    "src/core/rider_menu.cpp:rider_menu_frame",
+    "src/core/tour_menu.cpp:(file)",
+    "src/core/tour_menu.cpp:return_to_tour_menu",
+    "src/core/tour_menu.cpp:tour_menu_frame",
+    "src/core/track_menu.cpp:(file)",
+    "src/core/track_menu.cpp:move_track_cursor",
+    "src/core/track_menu.cpp:track_menu_exit_frame"
    ],
    "observed_entries": {},
    "start": "$80:BAA4",
@@ -1626,6 +1725,9 @@
    "end": "$80:C201",
    "mode_at_entry": [
     "NmX"
+   ],
+   "native": [
+    "src/core/tour_menu.cpp:shadow_attribute_entry"
    ],
    "observed_entries": {},
    "start": "$80:C1EB",
@@ -1732,8 +1834,9 @@
     "NmX"
    ],
    "native": [
+    "src/core/front_end_screens.hpp:print_main_menu",
     "src/core/result_screen.cpp:(file)",
-    "src/core/text_printer.cpp:end_of_text, position, centre, nothing, attribute, skip_pair, first_control",
+    "src/core/text_printer.cpp:end_of_text, position, number, centre, nothing, attribute, track_name, place_object, first_control",
     "src/core/text_printer.hpp:(file)"
    ],
    "observed_entries": {},
@@ -1769,6 +1872,17 @@
    "end": "$80:CD46",
    "mode_at_entry": [
     "NmX"
+   ],
+   "native": [
+    "src/core/front_end.hpp:FrontEndScreen",
+    "src/core/front_end.hpp:RiderMenu",
+    "src/core/rider_menu.cpp:(file)",
+    "src/core/rider_menu.cpp:choose_next_picture",
+    "src/core/rider_menu.cpp:left_column_x, right_column_x",
+    "src/core/rider_menu.cpp:open_rider_menu",
+    "src/core/rider_menu.cpp:open_rider_menu_entry",
+    "src/core/rider_menu.cpp:read_rider_menu_pad",
+    "src/core/rider_menu.cpp:split_row"
    ],
    "observed_entries": {},
    "start": "$80:CB04",
@@ -1842,7 +1956,11 @@
    ],
    "native": [
     "src/core/front_end.cpp:boot_frame",
-    "src/core/front_end.cpp:run_main_menu"
+    "src/core/front_end.cpp:run_main_menu",
+    "src/core/now_playing.cpp:now_playing_frame",
+    "src/core/rider_menu.cpp:rider_menu_frame",
+    "src/core/tour_menu.cpp:tour_menu_frame",
+    "src/core/track_menu.cpp:track_menu_frame"
    ],
    "observed_entries": {},
    "start": "$80:D1EC",
@@ -1861,6 +1979,10 @@
    "end": "$80:D209",
    "mode_at_entry": [
     "NmX"
+   ],
+   "native": [
+    "src/core/front_end_screens.hpp:cleared_text",
+    "src/core/front_end_screens.hpp:print_main_menu"
    ],
    "observed_entries": {},
    "start": "$80:D1FA",
@@ -1905,7 +2027,8 @@
    "native": [
     "src/core/front_end.cpp:boot_frame",
     "src/core/front_end.cpp:boot_frame_waits",
-    "src/core/front_end.cpp:lay_out_menu_objects"
+    "src/core/front_end.cpp:lay_out_menu_objects",
+    "src/core/front_end_screens.hpp:lay_out_menu_objects"
    ],
    "observed_entries": {},
    "start": "$80:D2C1",
@@ -1924,6 +2047,9 @@
    "end": "$80:D447",
    "mode_at_entry": [
     "NmX"
+   ],
+   "native": [
+    "src/core/now_playing.cpp:hide_icons"
    ],
    "observed_entries": {},
    "start": "$80:D420",
@@ -1963,6 +2089,12 @@
    "mode_at_entry": [
     "NmX"
    ],
+   "native": [
+    "src/core/front_end.hpp:ScreenSlide",
+    "src/core/rider_menu.cpp:(file)",
+    "src/core/screen_slide.cpp:(file)",
+    "src/core/screen_slide.cpp:slide_passes, accelerate_from, decelerate_below"
+   ],
    "observed_entries": {},
    "start": "$80:E233",
    "static_entries": {
@@ -1983,6 +2115,12 @@
    "end": "$80:E29B",
    "mode_at_entry": [
     "NmX"
+   ],
+   "native": [
+    "src/core/front_end.hpp:ScreenSlide",
+    "src/core/rider_menu.cpp:(file)",
+    "src/core/screen_slide.cpp:(file)",
+    "src/core/screen_slide.cpp:slide_passes, accelerate_from, decelerate_below"
    ],
    "observed_entries": {},
    "start": "$80:E27E",
@@ -2055,6 +2193,15 @@
    "mode_at_entry": [
     "NmX"
    ],
+   "native": [
+    "src/core/front_end.hpp:FrontEndScreen",
+    "src/core/front_end.hpp:TourMenu",
+    "src/core/tour_menu.cpp:(file)",
+    "src/core/tour_menu.cpp:aim_tour_arrow",
+    "src/core/tour_menu.cpp:move_tour_cursor",
+    "src/core/tour_menu.cpp:return_to_tour_menu",
+    "src/core/tour_menu.cpp:tour_menu_frame"
+   ],
    "observed_entries": {},
    "start": "$80:E550",
    "static_entries": {
@@ -2090,6 +2237,10 @@
    "mode_at_entry": [
     "NmX"
    ],
+   "native": [
+    "src/core/tour_menu.cpp:(file)",
+    "src/core/tour_menu.cpp:print_tour_menu"
+   ],
    "observed_entries": {},
    "start": "$80:E730",
    "static_entries": {
@@ -2110,6 +2261,9 @@
    "mode_at_entry": [
     "NmX"
    ],
+   "native": [
+    "src/core/front_end_screens.hpp:tour_open"
+   ],
    "observed_entries": {},
    "start": "$80:E7A1",
    "static_entries": {
@@ -2128,6 +2282,18 @@
    "mode_at_entry": [
     "NmX"
    ],
+   "native": [
+    "src/core/front_end.hpp:FrontEndScreen",
+    "src/core/front_end.hpp:TrackMenu",
+    "src/core/track_menu.cpp:(file)",
+    "src/core/track_menu.cpp:enter_track_menu",
+    "src/core/track_menu.cpp:first_marker",
+    "src/core/track_menu.cpp:lay_out_markers",
+    "src/core/track_menu.cpp:open_track_menu",
+    "src/core/track_menu.cpp:print_medal",
+    "src/core/track_menu.cpp:print_track_menu",
+    "src/core/track_menu.cpp:track_menu_frame"
+   ],
    "observed_entries": {},
    "start": "$80:E84E",
    "static_entries": {
@@ -2144,6 +2310,11 @@
    "end": "$80:EB05",
    "mode_at_entry": [
     "NmX"
+   ],
+   "native": [
+    "src/core/front_end.hpp:TrackMenu::medal_stepped",
+    "src/core/track_menu.cpp:step_medal",
+    "src/core/track_menu.cpp:track_menu_frame"
    ],
    "observed_entries": {},
    "start": "$80:EA8F",
@@ -2162,6 +2333,9 @@
    "end": "$80:EB60",
    "mode_at_entry": [
     "NmX"
+   ],
+   "native": [
+    "src/core/track_menu.cpp:turn_markers"
    ],
    "observed_entries": {},
    "start": "$80:EB23",
@@ -2252,6 +2426,12 @@
    "mode_at_entry": [
     "NmX"
    ],
+   "native": [
+    "src/core/front_end.hpp:FrontEndScreen",
+    "src/core/rider_menu.cpp:(file)",
+    "src/core/rider_menu.cpp:no_rider_palette, menu_text_palette, early_palette",
+    "src/core/rider_menu.cpp:rider_menu_frame"
+   ],
    "observed_entries": {},
    "start": "$80:F4E9",
    "static_entries": {
@@ -2270,6 +2450,9 @@
    "mode_at_entry": [
     "NmX"
    ],
+   "native": [
+    "src/core/rider_menu.cpp:enter_rider_menu"
+   ],
    "observed_entries": {},
    "start": "$80:F51B",
    "static_entries": {
@@ -2286,6 +2469,9 @@
    "end": "$80:F53A",
    "mode_at_entry": [
     "NmX"
+   ],
+   "native": [
+    "src/core/rider_menu.cpp:main_menu_return_frame"
    ],
    "observed_entries": {},
    "start": "$80:F52B",
@@ -2385,6 +2571,10 @@
    "end": "$80:F86E",
    "mode_at_entry": [
     "NmX"
+   ],
+   "native": [
+    "src/core/rider_menu.cpp:uni_tiles_word, uni_row_words, tile_words",
+    "src/core/rider_menu.cpp:upload_uni"
    ],
    "observed_entries": {},
    "start": "$80:F818",
@@ -9005,7 +9195,7 @@
     "NmX"
    ],
    "native": [
-    "src/core/front_end.cpp:load_vram"
+    "src/core/front_end_screens.hpp:load_vram"
    ],
    "observed_entries": {},
    "start": "$82:B183",
@@ -9087,7 +9277,7 @@
     "NmX"
    ],
    "native": [
-    "src/core/front_end.cpp:load_vram"
+    "src/core/front_end_screens.hpp:load_vram"
    ],
    "observed_entries": {},
    "start": "$82:B1DB",
@@ -10236,6 +10426,9 @@
    "mode_at_entry": [
     "NmX"
    ],
+   "native": [
+    "src/core/tour_menu.cpp:return_to_tour_menu"
+   ],
    "observed_entries": {},
    "start": "$83:893C",
    "static_entries": {
@@ -10369,6 +10562,12 @@
    "mode_at_entry": [
     "NmX"
    ],
+   "native": [
+    "src/core/front_end_screens.hpp:cleared_text",
+    "src/core/rider_menu.cpp:print_rider_menu",
+    "src/core/tour_menu.cpp:print_tour_menu",
+    "src/core/track_menu.cpp:track_menu_entry_frame"
+   ],
    "observed_entries": {},
    "start": "$83:8B51",
    "static_entries": {
@@ -10448,6 +10647,10 @@
    "mode_at_entry": [
     "NMX"
    ],
+   "native": [
+    "src/core/now_playing.cpp:name_line",
+    "src/core/text_printer.hpp:five_digit_text"
+   ],
    "observed_entries": {},
    "start": "$83:8BE7",
    "static_entries": {
@@ -10465,6 +10668,9 @@
    "end": "$83:8C7E",
    "mode_at_entry": [
     "NMX"
+   ],
+   "native": [
+    "src/core/now_playing.cpp:time_text"
    ],
    "observed_entries": {},
    "start": "$83:8C7B",
@@ -10503,6 +10709,10 @@
    "mode_at_entry": [
     "NmX"
    ],
+   "native": [
+    "src/core/front_end_screens.hpp:draw_tour_picture",
+    "src/core/tour_menu.cpp:badge_size, badge_row_tiles, locked_picture"
+   ],
    "observed_entries": {},
    "start": "$83:8D8F",
    "static_entries": {
@@ -10526,6 +10736,11 @@
    "end": "$83:8EFD",
    "mode_at_entry": [
     "NmX"
+   ],
+   "native": [
+    "src/core/front_end.hpp:RiderMenu::picture",
+    "src/core/rider_menu.cpp:uni_tiles_word, uni_row_words, tile_words",
+    "src/core/rider_object.hpp:pose_frame_rows, pose_frame_columns"
    ],
    "observed_entries": {},
    "start": "$83:8E3A",
@@ -10584,7 +10799,8 @@
     "NmX"
    ],
    "native": [
-    "src/core/front_end.cpp:load_main_menu"
+    "src/core/front_end.cpp:load_main_menu",
+    "src/core/rider_menu.cpp:no_rider_palette, menu_text_palette, early_palette"
    ],
    "observed_entries": {},
    "start": "$83:91F7",
@@ -10707,6 +10923,9 @@
    "mode_at_entry": [
     "NMX"
    ],
+   "native": [
+    "src/core/front_end.hpp:OnePlayerRecords"
+   ],
    "observed_entries": {},
    "start": "$83:9340",
    "static_entries": {
@@ -10740,6 +10959,9 @@
    "end": "$83:93F4",
    "mode_at_entry": [
     "NMX"
+   ],
+   "native": [
+    "src/core/front_end.hpp:OnePlayerRecords"
    ],
    "observed_entries": {},
    "start": "$83:93D8",
@@ -10811,6 +11033,11 @@
    "mode_at_entry": [
     "NmX"
    ],
+   "native": [
+    "src/core/tour_menu.cpp:medal_tiles_word",
+    "src/core/track_menu.cpp:object_tiles_word",
+    "src/core/track_menu.cpp:track_menu_exit_frame"
+   ],
    "observed_entries": {},
    "start": "$83:94D0",
    "static_entries": {
@@ -10828,6 +11055,10 @@
    "mode_at_entry": [
     "NmX"
    ],
+   "native": [
+    "src/core/track_menu.cpp:object_tiles_word",
+    "src/core/track_menu.cpp:track_menu_entry_frame"
+   ],
    "observed_entries": {},
    "start": "$83:94FF",
    "static_entries": {
@@ -10844,6 +11075,9 @@
    "end": "$83:9557",
    "mode_at_entry": [
     "NmX"
+   ],
+   "native": [
+    "src/core/rider_menu.cpp:choose_buttons, back_buttons"
    ],
    "observed_entries": {},
    "start": "$83:9543",
@@ -10881,6 +11115,9 @@
    "end": "$83:963B",
    "mode_at_entry": [
     "NmX"
+   ],
+   "native": [
+    "src/core/tour_menu.cpp:hide_object"
    ],
    "observed_entries": {},
    "start": "$83:961E",
@@ -11005,6 +11242,11 @@
     "NMX",
     "NmX"
    ],
+   "native": [
+    "src/core/now_playing.cpp:race_kind",
+    "src/core/tour_menu.cpp:print_tour_menu",
+    "src/core/track_menu.cpp:choose_track"
+   ],
    "observed_entries": {},
    "start": "$83:9983",
    "static_entries": {
@@ -11043,7 +11285,7 @@
     "NmX"
    ],
    "native": [
-    "src/core/front_end.cpp:boot_frame",
+    "src/core/front_end.cpp:lay_out_menu_objects",
     "src/core/front_end.cpp:load_nintendo_screen"
    ],
    "observed_entries": {},
@@ -11064,8 +11306,8 @@
     "NmX"
    ],
    "native": [
-    "src/core/front_end.cpp:park_arrow",
-    "src/core/front_end.cpp:parked_x, parked_y"
+    "src/core/front_end.cpp:parked_x, parked_y",
+    "src/core/front_end_screens.hpp:park_arrow"
    ],
    "observed_entries": {},
    "start": "$83:99FA",
@@ -11090,6 +11332,11 @@
    "end": "$83:9AF8",
    "mode_at_entry": [
     "NmX"
+   ],
+   "native": [
+    "src/core/front_end.hpp:MenuDecorations",
+    "src/core/front_end_screens.hpp:step_decorations",
+    "src/core/screen_slide.cpp:(file)"
    ],
    "observed_entries": {},
    "start": "$83:9A1E",
@@ -11217,6 +11464,9 @@
    "mode_at_entry": [
     "NMX"
    ],
+   "native": [
+    "src/core/now_playing.cpp:print_now_playing"
+   ],
    "observed_entries": {},
    "start": "$83:9EEB",
    "static_entries": {
@@ -11239,6 +11489,9 @@
    "end": "$83:9F48",
    "mode_at_entry": [
     "NmX"
+   ],
+   "native": [
+    "src/core/tour_menu.cpp:tour_level"
    ],
    "observed_entries": {},
    "start": "$83:9F14",
@@ -13500,19 +13753,19 @@
    "call returns in the calling mode": 1262
   },
   "bytes": 131072,
-  "cited_addresses": 863,
+  "cited_addresses": 1008,
   "cited_by_class": {
-   "data": 13,
-   "inferred": 90,
-   "observed": 704,
-   "unknown": 56
+   "data": 15,
+   "inferred": 103,
+   "observed": 799,
+   "unknown": 91
   },
   "cited_by_position": {
-   "dat": 13,
-   "loc": 590,
+   "dat": 15,
+   "loc": 638,
    "mid": 18,
-   "sub": 186,
-   "unk": 56
+   "sub": 246,
+   "unk": 91
   },
   "conflicts": 0,
   "data": 92,
@@ -13531,9 +13784,9 @@
   "jump_tables": 2,
   "mode_ambiguities": 7,
   "observed": 41778,
-  "routine_bytes_cited_by_native_code": 35384,
+  "routine_bytes_cited_by_native_code": 40533,
   "routines": 636,
-  "routines_cited_by_native_code": 243,
+  "routines_cited_by_native_code": 296,
   "unknown": 52881,
   "unknown_share": 0.4035
  }

@@ -22,8 +22,8 @@ The four classes partition all 131,072 bytes. **Unknown share: 40.4%** - above D
 | Instructions from observed | 17,569 |
 | Instructions from table | 587 |
 | Routines | 636 |
-| Routines cited by native code | 243 |
-| Routine bytes cited by native code | 35,384 |
+| Routines cited by native code | 296 |
+| Routine bytes cited by native code | 40,533 |
 | Gap sweep candidate instructions | 2,746 |
 | Gap sweep candidate bytes | 6,174 |
 | Jump tables | 2 |
@@ -45,7 +45,7 @@ The four classes partition all 131,072 bytes. **Unknown share: 40.4%** - above D
 
 ## Cited addresses
 
-863 distinct code-bank ROM addresses cited by the research, task, inventory and content records (`labels.json`). By position: dat 13, loc 590, mid 18, sub 186, unk 56 (sub routine start, loc instruction start, mid inside an instruction, dat data, unk unknown). By class: data 13, inferred 90, observed 704, unknown 56.
+1008 distinct code-bank ROM addresses cited by the research, task, inventory and content records (`labels.json`). By position: dat 15, loc 638, mid 18, sub 246, unk 91 (sub routine start, loc instruction start, mid inside an instruction, dat data, unk unknown). By class: data 15, inferred 103, observed 799, unknown 91.
 
 Cited addresses in `unknown` bytes:
 
@@ -71,20 +71,45 @@ Cited addresses in `unknown` bytes:
 | $80:88B2 | tasks/COVERAGE-ROADMAP.md |
 | $80:88BE | docs/research/R-0054-boot-title-main-menu.md |
 | $80:93FB | tasks/COVERAGE-ROADMAP.md |
+| $80:97DD | docs/research/R-0056-tour-track-now-playing.md |
+| $80:9801 | docs/research/R-0056-tour-track-now-playing.md |
+| $80:9D0B | docs/research/R-0055-rider-menu.md |
+| $80:A72B | docs/research/R-0055-rider-menu.md |
 | $80:A8D4 | docs/research/R-0054-boot-title-main-menu.md |
 | $80:A9FA | docs/research/R-0054-boot-title-main-menu.md |
 | $80:AD1F | docs/research/R-0054-boot-title-main-menu.md, tasks/FRONT-END-MAIN-MENU.md |
+| $80:B205 | docs/research/R-0056-tour-track-now-playing.md |
+| $80:B4F6 | docs/research/R-0056-tour-track-now-playing.md |
+| $80:B53D | docs/research/R-0056-tour-track-now-playing.md |
 | $80:B626 | tasks/COVERAGE-ROADMAP.md |
+| $80:BCAF | docs/research/R-0055-rider-menu.md, tasks/FRONT-END-1P-SETUP.md |
 | $80:BCBF | tasks/COVERAGE-ROADMAP.md |
 | $80:BDD4 | tasks/COVERAGE-ROADMAP.md |
 | $80:BF49 | tasks/COVERAGE-ROADMAP.md |
 | $80:C3DC | docs/research/R-0053-result-title-printer.md |
+| $80:C456 | docs/research/R-0056-tour-track-now-playing.md |
 | $80:C950 | tasks/LOCKED-TOURS.md |
+| $80:CD47 | docs/research/R-0055-rider-menu.md |
+| $80:CD5C | docs/research/R-0055-rider-menu.md |
+| $80:CD84 | docs/research/R-0055-rider-menu.md |
 | $80:D187 | docs/research/R-0053-result-title-printer.md, tasks/RESULT-TITLE-GLYPHS.md |
+| $80:D37B | docs/research/R-0055-rider-menu.md |
 | $80:D383 | docs/research/R-0054-boot-title-main-menu.md |
+| $80:E708 | docs/research/R-0056-tour-track-now-playing.md |
+| $80:E7C4 | docs/research/R-0056-tour-track-now-playing.md |
+| $80:E7FB | docs/research/R-0056-tour-track-now-playing.md |
+| $80:E80F | docs/research/R-0056-tour-track-now-playing.md |
+| $80:E824 | docs/research/R-0056-tour-track-now-playing.md |
+| $80:E82E | docs/research/R-0056-tour-track-now-playing.md |
+| $80:E83E | docs/research/R-0056-tour-track-now-playing.md |
+| $80:E842 | docs/research/R-0056-tour-track-now-playing.md |
+| $80:EA40 | docs/research/R-0056-tour-track-now-playing.md |
+| $80:EA58 | docs/research/R-0056-tour-track-now-playing.md |
+| $80:EB61 | docs/research/R-0056-tour-track-now-playing.md |
 | $80:F618 | docs/research/R-0054-boot-title-main-menu.md |
 | $80:FACD | docs/research/R-0054-boot-title-main-menu.md |
 | $80:FBC5 | docs/research/R-0054-boot-title-main-menu.md |
+| $80:FC5C | docs/research/R-0056-tour-track-now-playing.md |
 | $80:FFC0 | docs/research/R-0001-rom-identity.md, docs/research/R-0045-static-code-map.md |
 | $81:A342 | docs/research/R-0046-track-breadth-matrix.md |
 | $81:A343 | docs/research/R-0046-track-breadth-matrix.md |
@@ -102,8 +127,18 @@ Cited addresses in `unknown` bytes:
 | $82:B332 | docs/content/dragster-segment.md, docs/research/R-0008-track-decode.md, docs/research/R-0046-track-breadth-matrix.md, docs/research/R-0054-boot-title-main-menu.md, tasks/M1-03.md, tasks/TRACK-BREADTH.md |
 | $82:B7DD | docs/content/dragster-segment.md, docs/research/R-0008-track-decode.md, docs/research/R-0021-zoom-zoo-content-contract.md, docs/research/R-0046-track-breadth-matrix.md, tasks/M1-03.md, tasks/M4-03.md |
 | $82:DC12 | docs/research/R-0046-track-breadth-matrix.md, tasks/TRACK-BREADTH.md |
+| $83:800C | docs/research/R-0055-rider-menu.md |
 | $83:8535 | docs/research/R-0045-static-code-map.md, tasks/STATIC-CODE-MAP.md |
+| $83:8E1C | docs/research/R-0056-tour-track-now-playing.md |
+| $83:8E26 | docs/research/R-0056-tour-track-now-playing.md |
 | $83:904A | docs/research/R-0038-dragster-ordinary-controls.md |
+| $83:9AF9 | docs/research/R-0055-rider-menu.md |
+| $83:9B01 | docs/research/R-0055-rider-menu.md |
+| $83:9B09 | docs/research/R-0055-rider-menu.md |
+| $83:9B13 | docs/research/R-0055-rider-menu.md |
+| $83:9B27 | docs/research/R-0055-rider-menu.md, docs/research/R-0056-tour-track-now-playing.md |
 | $83:9F96 | docs/research/R-0053-result-title-printer.md, tasks/LOCKED-TOURS.md |
 | $83:9FFA | docs/research/R-0046-track-breadth-matrix.md, docs/research/R-0053-result-title-printer.md, tasks/LOCKED-TOURS.md, tasks/TRACK-BREADTH.md |
+| $83:A1B4 | docs/research/R-0056-tour-track-now-playing.md |
 | $83:A1DA | docs/research/R-0008-track-decode.md |
+| $83:A254 | docs/research/R-0056-tour-track-now-playing.md |

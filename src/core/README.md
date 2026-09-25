@@ -103,7 +103,11 @@ the public interface; `front_end_screens.hpp` is internal to the front end.
 | `snes_screen.cpp` | The SNES picture as bsnes' fast PPU draws it, with colours written during it (HDMA) |
 | `text_printer.cpp` | The game's text printer `$80:C3BC` into a 32 x 32 text map (R-0053) |
 | `front_end.cpp` | Power-on, the title and the main menu (R-0054), the loads and objects the screens share, and the frame's dispatch |
-| `rider_menu.cpp` | PICK YOUR UNI (R-0055): the slides between screens, the decoration animator, the menu and the way back |
+| `screen_slide.cpp` | The slides between the menus' texts and the main menu's decoration animator (R-0055) |
+| `rider_menu.cpp` | PICK YOUR UNI (R-0055): the menu, its HDMA palette split, and the way back to the main menu |
+| `tour_menu.cpp` | PICK TOUR (R-0056): the badges, the medals and the moves between open tours |
+| `track_menu.cpp` | PICK TRACK (R-0056): the tour's tracks, the medal line and the done-track markers |
+| `now_playing.cpp` | NOW PLAYING (R-0056): the match, the race line, the record, Race's fade and Exit |
 | `front_end_runner.cpp` | The laboratory runner: the state by frame and pictures, for comparison with captures |
 
 ## Track sampling

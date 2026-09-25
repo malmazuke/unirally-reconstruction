@@ -183,7 +183,7 @@ void move_track_cursor(FrontEndState& state, const FrontEndContent& content, std
     state.arrow.target_x = item_x(content, cursor);
 }
 
-// $80:9983: the race the track sets (laps and kind are read from the track by the screens).
+// $83:9983: the race the track sets (laps and kind are read from the track by the screens).
 void choose_track(FrontEndState& state) {
     state.tour_menu.track =
         static_cast<std::uint8_t>(tour_of(state) * tracks_per_tour + state.track_menu.cursor);

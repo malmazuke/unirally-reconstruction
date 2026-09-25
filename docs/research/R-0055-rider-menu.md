@@ -10,8 +10,8 @@ R-0054 (the boot and the main menu) and R-0053 (the text printer).
 - the red arrow on the rider chosen last.
 
 The d-pad moves the arrow. B, Start or A chooses; Y or X goes back to the main menu. Native
-now does the same, frame for frame (`src/core/rider_menu.cpp`), as far as the choice. What
-follows a choice (PICK TOUR) is the task's next part.
+now does the same, frame for frame (`src/core/rider_menu.cpp`). What follows a choice (PICK TOUR,
+PICK TRACK and NOW PLAYING) is R-0056.
 
 ## Timeline
 
@@ -145,7 +145,7 @@ Both then run `$80:F4E9`:
 - **c + 3**: OAM copied, then CGRAM 0xF0 is loaded (`$83:91F7`): the chosen rider's asset
   6 + rider, or asset 2 after Y. Then asset 28 at 0xD0 and asset 5 at 0xE0 (`$80:F502`).
 
-After a choice, PICK TOUR follows (the next part). After Y, `$83:9558` lets both pads count
+After a choice, PICK TOUR follows (R-0056). After Y, `$83:9558` lets both pads count
 again, and the main loop's `$80:ACD5` runs with `$00A7` set:
 - **c + 3**: `$80:D1FA` clears the map and the main menu is printed.
 - **c + 4**: the map goes to the hidden half; `$009B` = 0; the slide back `$80:E27E` starts.
@@ -192,18 +192,16 @@ The uni pictures come from the race's pose tables (`presentation.rider.*`).
   - the OAM buffer and the text map `$0200-$09FF`;
   - and the pictures.
 - **Results**: every compared word, the OAM buffer and the text map are equal on every frame of
-  the four captures, each to the frame the native state stops (the choice's c + 3):
-  - `held`: 467 frames;
-  - `moves`: 1,004 frames;
-  - `back`: 984 frames;
-  - `defaults`: 754 frames.
+  the four captures, which run on into PICK TOUR (R-0056):
+  - `held`: 700 frames;
+  - `moves`: 1,100 frames;
+  - `back`: 1,200 frames;
+  - `defaults`: 1,208 frames, to the race.
 
-  Pictures: 67, 604, 584 and 154, all 0 differing pixels.
+  Pictures: 300, 700, 800 and 608, all 0 differing pixels.
 
 ## Paths the captures do not take
 
-- **Re-entry from PICK TOUR** (`$80:BC17` to `$80:BBA3`) stores `$00AC` != 2 and slides back in
-  (`$80:E27E`). This is for the next part.
 - **The 2P handler** re-enters the loop at `$80:CBC3`, with `$0076` = 0, so it skips the intro
   (inferred).
 - **`$0010` bit 0**: its setters are in untraced code at `$80:9D0B-9E07`.

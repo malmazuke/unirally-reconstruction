@@ -2,8 +2,10 @@
 
 ## Assignment
 
-- Status: **in progress**. Claimed 26 September 2026 at 16:25Z by the Claude Code desktop
-  session that ran FRONT-END-MAIN-MENU, on base `a76961e`.
+- Status: **review** (tier 2). Claimed 26 September 2026 at 16:25Z by the Claude Code desktop
+  session that ran FRONT-END-MAIN-MENU, on base `a76961e`. Done in two parts on two branches, one
+  pull request: part 1 (PICK YOUR UNI) on `task/front-end-1p-setup`, part 2 (PICK TOUR, PICK
+  TRACK, NOW PLAYING, the race start) on `task/front-end-1p-setup-2`, which carries part 1.
 - Milestone: M4 (original game coverage: menus)
 - Coordinator: the claiming session is coordinator, primary and integrator
 - Task provider (fixed for all children; record any user-initiated platform change): Anthropic
@@ -53,26 +55,70 @@ unlocked tours of a cold start, audio.
 | Playable | The app from power-on to a race of a chosen track | Reaches the race | report |
 | Nothing moves | ctest, the synthetic suite, the v1 contracts, hidden runs, the differential gates, the equivalence sweep, the main menu's comparisons | Unchanged | logs |
 
+## Result
+
+The app now runs the whole one-player setup from the main menu to the race, frame for frame
+against the original ([R-0055](../docs/research/R-0055-rider-menu.md),
+[R-0056](../docs/research/R-0056-tour-track-now-playing.md)).
+
+- **PICK YOUR UNI** (`src/core/rider_menu.cpp`):
+  - the logo slides up; the names slide in (`screen_slide.cpp`, with the main menu's decoration
+    animator);
+  - 16 riders with an animated unicycle icon each, the arrow on the last rider chosen;
+  - an HDMA palette split gives 16 riders their colours from 8 object palettes. The SNES screen
+    now applies colours written during the picture (`SnesLineColour`).
+- **PICK TOUR** (`tour_menu.cpp`):
+  - the badges ("?" for a locked tour) and the medals;
+  - moves limited to the open tours, and the arrow's mirroring.
+- **PICK TRACK** (`track_menu.cpp`):
+  - twelve pictures of the tour and the five tracks;
+  - the medal line, which steps the medal to race for;
+  - the done-track markers;
+  - the generic list menu's wrap.
+- **NOW PLAYING** (`now_playing.cpp`):
+  - the rider's and the opponent's lines with their icons and times;
+  - "racing on", "over N laps on" or "doing stunts on" with the qualifying score;
+  - the record line; Race and Exit.
+- **Paths back**:
+  - Y or X on every screen slides the one before back in;
+  - Y on PICK YOUR UNI and Exit on NOW PLAYING slide the main menu back in.
+- **The text printer** gains F7 (a track's name), FD (a five-digit number) and EF (an object at the
+  cursor).
+- **The app**: NOW PLAYING's Race starts the chosen race where a race scenario has it: MIKE
+  against BRONSEN, not a stunt event. Other choices show a notice and return to the main menu.
+- **Packs**: v16 adds the rider menu's content, v17 the other three screens'. All raw ROM.
+
+Decisions and deviations, with reasons:
+
+- **One pull request for both parts.** Part 2 was ready while part 1's gates ran, so the gates,
+  the review and CI run once, on the whole task.
+- **The race scenarios decide what the app races.** They are MIKE against BRONSEN. Another rider,
+  a stunt event, or a medal above bronze (unreachable on a cold start) shows a notice, as the
+  task's boundary asks.
+- **`$008F` is one byte.** Every menu shares it: whole-byte writes in three menus, bits 3 and 2
+  in two. Modelling it as one struct keeps the carried-over latches exact between screens.
+- **Scratch words are compared as the original means them.** `$0076` is a slide's countdown in
+  one screen and an intro counter in another. `$0090` gains 0x4C00 a pass that cancels in the
+  scroll. The comparison checks each by its meaning.
+- **The title's unlock code is not modelled.** On a cold start the SRAM set-up clears it right
+  after the title. Unlocked tours need persistence, which is out of scope.
+
+## Evidence and attempts
+
+| Attempt | Hypothesis | Experiment | Observation | Next decision |
+| --- | --- | --- | --- | --- |
+| 1 | - | `defaults`: every-frame images 600-1399, per-frame work RAM, loads and PPU writes | Four screens; CGRAM loads only; BG1 and BG2 scrolls; HDMA on PICK YOUR UNI | Read the handler |
+| 2 | - | A read of `$80:BB9C`-`$80:CD46` (subagent, `pick-your-uni.md`) | The slide, the icons, the HDMA split, the pad rules, the back path | Captures |
+| 3 | - | `moves`, `back`, `held` | Pad 1 only; the edges clamp; Y back to the main menu at c + 45 | Native |
+| 4 | Native matches | `compare.py` on the four captures | 0 differences in every word, the OAM buffer, the text map and 1,255 pictures, first run | Part 2 |
+| 5 | - | Reads of PICK TOUR, PICK TRACK and NOW PLAYING (subagents); `tour-moves`, `tour-back`, `tour-code`, `track-moves`, `track-race` | The title code is cleared by the SRAM set-up; `$008F` is shared; NOW PLAYING's Exit returns to the main menu at c + 42 | Native |
+| 6 | Native matches | `compare.py` on all nine captures | `$009B` is each screen's own cursor; the race's first frame's work RAM is the race's. Otherwise 0 differences, 6,166 pictures equal | App |
+| 7 | - | The app, hidden, Start held | DRAGSTER chosen after 613 frames, then the race | Gates |
+
 ## Handoff
 
-- Current base/head commit and uncommitted state: `task/front-end-1p-setup` from `a76961e`; claim
-  commit only.
-- Findings so far (listing, not yet captured in detail):
-  - The 1P handler `$80:BB9C` chains the screens, each with a back path:
-    1. `$80:CB04` with the table `$80:BCAF`: PICK YOUR UNI (a result of 0x10 or more means
-       exit, to `$80:BC9B`).
-    2. It stores the rider in `$017D`/`$00CA`, the opponent 0x10 in `$017F`, clears SRAM
-       `$77:1075-10A6`, sets `$77:1073 = 3` and `$77:10AD = 1`, and runs `$80:F4E9`,
-       `$80:A858` and `$80:A82B`.
-    3. `$80:E550`: PICK TOUR (`$000A = $00D0`); back (`$80:B74A`) returns to step 1.
-    4. `$80:E84E`: PICK TRACK; back returns to step 3 (`$83:9EB4`, SRAM `$77:069C` against
-       `$77:10D1`, `$83:8957`).
-    5. `$80:B18D`: NOW PLAYING; back returns to step 4.
-    6. The fade out (`$80:9885`), then `$80:99A4`, the race.
-  - Evidence so far: `local/evidence/front-end-1p-setup/` `defaults.json`, with frame images
-    600-1399 and per-frame work RAM, and `NOTES.md` (the four screens).
-  - The screens show SRAM content (records, medals, "?" badges). Consider splitting this task
-    by screen: PICK YOUR UNI first.
-- Exact next experiment/command: register-log captures of the loads (`access capture
-  --watch-pc 0x82B2DD --watch-pc 0x82B1DB --watch-pc 0x82B183`) and every PPU write (the
-  `accesses` list) over frames 600-800; then read `$80:CB04` and its table `$80:BCAF`.
+- Current head: `task/front-end-1p-setup-2`; the gate results and the review below.
+- Next task: FRONT-END-1P-CONTINUATION (COVERAGE-ROADMAP step 3): after the race, the result's
+  way back into the tour, the next track, the tour's end, unlocks and saving them. It needs the
+  race's result handed back to the front end (`$80:BC59-BC98`, `$83:879A`), and captures of the
+  races after this task's menus.

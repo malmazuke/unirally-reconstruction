@@ -5,6 +5,13 @@ push the task branch, open a pull request from the template, merge with
 `gh pr merge --merge` once its checks are green and the review is done. `main`
 refuses direct pushes. The checks run on pull requests only.
 
+**Status on 26 September 2026 UTC (FRONT-END-1P-SETUP accepted): start
+[FRONT-END-1P-CONTINUATION](FRONT-END-1P-CONTINUATION.md).** 1P now runs from power-on through
+the four setup screens to the race, frame-exact. Next is what follows a race: the result's way back
+into the tour, the next track, the tour's end and unlocks. The method is the same: every-frame
+captures and per-frame work RAM, then `local/evidence/front-end-1p-setup/compare.py` against
+`front_end_runner`. Rebuild the pack as v17 (`docs/STATE.md`).
+
 **Status on 26 September 2026 UTC (FRONT-END-MAIN-MENU accepted): start
 [FRONT-END-1P-SETUP](FRONT-END-1P-SETUP.md).** The app starts at power-on and matches the
 original to the main menu's choice. The 1P screens come next, then the continuation after a

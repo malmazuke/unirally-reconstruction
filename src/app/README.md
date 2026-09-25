@@ -21,11 +21,11 @@ python3 tools/project.py frontend run
 ```
 
 The app starts at power-on, as the original does (R-0054): the Nintendo screen, the title
-and the main menu. 1P leads to the rider menu PICK YOUR UNI (R-0055), where Y or X goes back to
-the main menu; choosing MIKE starts DRAGSTER, the race the one-player screens' defaults lead
-to (the tour and track screens are not native yet). 2P, VS, LEAGUE, OPTIONS, the demo and the
-other riders are not native yet: choosing one, or leaving the menu idle for the demo, shows a
-notice and returns to the main menu. `--track dragster|zoom-zoo|NN` starts directly in that
+and the main menu. 1P runs the one-player setup (R-0055, R-0056): PICK YOUR UNI, PICK TOUR, PICK TRACK and NOW
+PLAYING, where Race starts the chosen race. The race scenarios are MIKE's against BRONSEN, so
+another rider or a stunt event shows a notice. 2P, VS, LEAGUE, OPTIONS and the demo are not
+native yet: choosing one, or leaving the menu idle for the demo, shows a notice and returns to
+the main menu. `--track dragster|zoom-zoo|NN` starts directly in that
 race instead.
 
 DRAGSTER plays on the shared race engine (R-0038), whose jump, brake,
