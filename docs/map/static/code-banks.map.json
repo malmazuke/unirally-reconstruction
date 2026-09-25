@@ -1688,7 +1688,7 @@
     "NmX"
    ],
    "native": [
-    "src/core/result_screen.cpp:result_title_glyph"
+    "src/core/result_screen.cpp:(file)"
    ],
    "observed_entries": {},
    "start": "$80:C3BC",
@@ -2379,7 +2379,7 @@
     "NMX"
    ],
    "native": [
-    "src/core/result_screen.cpp:result_title_glyph"
+    "src/core/result_screen.cpp:(file)"
    ],
    "observed_entries": {},
    "start": "$80:F8B9",

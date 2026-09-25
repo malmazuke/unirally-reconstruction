@@ -255,7 +255,7 @@
   {
    "address": "$80:C3BC",
    "native": [
-    "src/core/result_screen.cpp:result_title_glyph"
+    "src/core/result_screen.cpp:(file)"
    ],
    "region": "rom"
   },
@@ -272,9 +272,19 @@
    "region": "rom"
   },
   {
+   "address": "$80:C4B8",
+   "native": [
+    "src/core/result_screen.cpp:build_result_map"
+   ],
+   "range_ends": [
+    "$80:C4FD"
+   ],
+   "region": "rom"
+  },
+  {
    "address": "$80:C579",
    "native": [
-    "src/core/result_screen.cpp:result_title_glyph"
+    "src/core/result_screen.cpp:small_glyph_tile"
    ],
    "range_ends": [
     "$80:C58A"
@@ -294,6 +304,7 @@
   {
    "address": "$80:C709",
    "native": [
+    "src/core/result_screen.cpp:(file)",
     "src/core/result_screen.cpp:result_title_glyph"
    ],
    "region": "rom"
@@ -301,7 +312,7 @@
   {
    "address": "$80:D187",
    "native": [
-    "src/core/result_screen.cpp:result_title_glyph"
+    "src/core/result_screen.cpp:(file)"
    ],
    "region": "rom"
   },
@@ -319,7 +330,7 @@
   {
    "address": "$80:F8B9",
    "native": [
-    "src/core/result_screen.cpp:result_title_glyph"
+    "src/core/result_screen.cpp:(file)"
    ],
    "region": "rom"
   },
@@ -5963,9 +5974,18 @@
     "$0B92"
    ]
   },
+  "src/core/result_screen.cpp:(file)": {
+   "rom": [
+    "$80:C3BC",
+    "$80:C709",
+    "$80:D187",
+    "$80:F8B9"
+   ]
+  },
   "src/core/result_screen.cpp:build_result_map": {
    "rom": [
-    "$80:C431"
+    "$80:C431",
+    "$80:C4B8"
    ]
   },
   "src/core/result_screen.cpp:check_result_composition": {
@@ -5985,11 +6005,12 @@
   },
   "src/core/result_screen.cpp:result_title_glyph": {
    "rom": [
-    "$80:C3BC",
-    "$80:C579",
-    "$80:C709",
-    "$80:D187",
-    "$80:F8B9"
+    "$80:C709"
+   ]
+  },
+  "src/core/result_screen.cpp:small_glyph_tile": {
+   "rom": [
+    "$80:C579"
    ]
   },
   "src/core/result_screen.cpp:write_result_title": {
@@ -7177,10 +7198,10 @@
   }
  },
  "totals": {
-  "addresses": 558,
+  "addresses": 559,
   "io_addresses": 4,
-  "native_symbols": 343,
-  "rom_addresses": 357,
+  "native_symbols": 345,
+  "rom_addresses": 358,
   "sram_addresses": 7,
   "wram_addresses": 190
  }

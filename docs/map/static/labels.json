@@ -735,7 +735,7 @@
   "comment": "routine start",
   "label": "sub_80C3BC",
   "native": [
-   "src/core/result_screen.cpp:result_title_glyph"
+   "src/core/result_screen.cpp:(file)"
   ],
   "source_records": [
    "docs/research/R-0053-result-title-printer.md",
@@ -800,6 +800,9 @@
   "class": "observed",
   "comment": "instruction start",
   "label": "loc_80C4B8",
+  "native": [
+   "src/core/result_screen.cpp:build_result_map"
+  ],
   "source_records": [
    "docs/research/R-0053-result-title-printer.md"
   ]
@@ -819,7 +822,7 @@
   "comment": "instruction start",
   "label": "loc_80C57C",
   "native": [
-   "src/core/result_screen.cpp:result_title_glyph"
+   "src/core/result_screen.cpp:small_glyph_tile"
   ],
   "source_records": [
    "docs/research/R-0053-result-title-printer.md"
@@ -850,6 +853,7 @@
   "comment": "data",
   "label": "dat_80C709",
   "native": [
+   "src/core/result_screen.cpp:(file)",
    "src/core/result_screen.cpp:result_title_glyph"
   ],
   "source_records": [
@@ -873,7 +877,7 @@
   "comment": "unknown",
   "label": "unk_80D187",
   "native": [
-   "src/core/result_screen.cpp:result_title_glyph"
+   "src/core/result_screen.cpp:(file)"
   ],
   "source_records": [
    "docs/research/R-0053-result-title-printer.md",
@@ -927,7 +931,7 @@
   "comment": "routine start",
   "label": "sub_80F8B9",
   "native": [
-   "src/core/result_screen.cpp:result_title_glyph"
+   "src/core/result_screen.cpp:(file)"
   ],
   "source_records": [
    "docs/research/R-0053-result-title-printer.md",

@@ -596,6 +596,21 @@ int main() {
     loser_refused = true;
   }
   require(loser_refused);
+  // Review of #26 (S1): a no-time player is never a winner while the opponent
+  // rides; the timed-out race ends with both riders finished (R-0039).
+  auto no_time_winner_opponent_riding = winner_opponent_riding;
+  no_time_winner_opponent_riding.finish.finish_time_centiseconds[0] = 60000;
+  no_time_winner_opponent_riding.timer.minutes = 9;
+  no_time_winner_opponent_riding.timer.tens_seconds = 5;
+  no_time_winner_opponent_riding.timer.seconds = 9;
+  no_time_winner_opponent_riding.timer.tenths = 9;
+  bool no_time_winner_refused = false;
+  try {
+    (void)unirally::build_dragster_result_map(no_time_winner_opponent_riding, result);
+  } catch (const std::invalid_argument &) {
+    no_time_winner_refused = true;
+  }
+  require(no_time_winner_refused);
   const auto loser_result =
       unirally::render_dragster_headless({loser_state, 0, 0, 0, 0, 0}, content);
   require(loser_result.pixels.size() == split_result.pixels.size());

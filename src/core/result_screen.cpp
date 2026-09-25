@@ -24,6 +24,16 @@ namespace unirally {
 // two; p-z two tiles lower, since "o" has no glyph of its own. The table gives these for all
 // 36 (the letters of "dragster", "complete", "east" and "flat fun" were also seen on the
 // original's results, TRACK-BREADTH).
+namespace {
+
+// A small glyph's first tile: the table entry less its small-font bit, plus 0x9F
+// ($80:C579-C58A).
+std::uint16_t small_glyph_tile(std::uint8_t entry) {
+    return static_cast<std::uint16_t>((entry & 0x7fU) + 0x9fU);
+}
+
+} // namespace
+
 ResultTitleGlyph result_title_glyph(char glyph) {
     if (glyph >= '0' && glyph <= '9') return {static_cast<std::uint16_t>((glyph - '0') * 2), true};
     if (glyph == 'o') return {0x00, true};
@@ -31,13 +41,12 @@ ResultTitleGlyph result_title_glyph(char glyph) {
         return {static_cast<std::uint16_t>(0x14 + (glyph - 'a') * 2), true};
     if (glyph >= 'p' && glyph <= 'z')
         return {static_cast<std::uint16_t>(0x14 + (glyph - 'a') * 2 - 2), true};
-    // The small glyphs of the other bytes the name table uses: the table's entry, less its
-    // small-font bit, plus 0x9F ($80:C579-C58A). The underscore is the small font's space.
+    // The other bytes the name table uses take the small font, by their `$80:C709` entry.
     switch (glyph) {
-    case '_': return {0xce, false};  // entry 0xAF
-    case '!': return {0xa0, false};  // entry 0x81, BOO!
-    case '\'': return {0xa3, false}; // entry 0x84
-    case '+': return {0xa5, false};  // entry 0x86, DOWN+UP
+    case '_': return {small_glyph_tile(0xaf), false}; // the small font's space
+    case '!': return {small_glyph_tile(0x81), false}; // BOO!
+    case '\'': return {small_glyph_tile(0x84), false};
+    case '+': return {small_glyph_tile(0x86), false}; // DOWN+UP
     default: throw std::invalid_argument("unsupported Classic result title glyph");
     }
 }
@@ -160,8 +169,10 @@ bool check_result_composition(const RaceFinishState& finish, const RaceTimerDigi
     const bool clock_expired =
         clock.minutes == 9 && clock.tens_seconds == 5 && clock.seconds == 9 && clock.tenths == 9;
     const bool player_has_no_time = finish.finish_time_centiseconds[0] >= no_time && clock_expired;
-    const bool opponent_riding =
-        finish.outcome == RaceOutcome::PlayerWon && !finish.rider_finished[1];
+    // The timed-out race of R-0039 ends with both riders finished, so a no-time player never
+    // wins while the opponent rides.
+    const bool opponent_riding = finish.outcome == RaceOutcome::PlayerWon
+                              && !finish.rider_finished[1] && !player_has_no_time;
     const bool times_are_consistent =
         finish.rider_finished[0] && (finish.rider_finished[1] || opponent_riding)
         && (player_has_no_time
@@ -191,9 +202,10 @@ bool result_screen_visible(const RaceFinishState& finish) {
 
 // $80:C431 first fills the map, then writes these fields in this order. Each small-font glyph
 // is a vertical tile pair; title glyphs are two-by-two. The result state carries the observed
-// five timer digits. The title is centred on the 32-tile row by its width in tiles, two per
-// letter and one per space: DRAGSTER starts at tile 8, EAST at 12 and FLAT FUN at 9, as in the
-// original's results (TRACK-BREADTH); the rule is fitted to those three.
+// five timer digits. The title is centred on the 32-tile row by its width in tiles, two per big
+// glyph and one per small: `FC 02` starts it at (33 - width) / 2, which is 16 - width / 2
+// ($80:C4B8-C4FD; R-0053). DRAGSTER starts at tile 8, EAST at 12 and FLAT FUN at 9, as in the
+// original's results (TRACK-BREADTH).
 void build_result_map(std::array<std::uint8_t, 65536>& vram, const RaceFinishState& finish,
                       const RaceTimerDigits& clock, std::span<const std::uint8_t> result_assets,
                       std::span<const std::uint8_t> track_name) {

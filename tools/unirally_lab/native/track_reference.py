@@ -231,7 +231,9 @@ def original_rows(directory):
                 row = bytearray(archive); row[8:12] = frame.to_bytes(4, 'little')
                 # A rider still riding when the result loads finishes last (RESULT-TITLE-GLYPHS:
                 # the DOWN+UP winner's result loads before the opponent's finish).
-                won = finish[1] is None or (finish[0] is not None and finish[0] <= finish[1])
+                if finish[0] is None:
+                    raise ValueError(f'result loading at {frame} without the player\'s finish')
+                won = finish[1] is None or finish[0] <= finish[1]
                 stable = STABLE_RESULT[mode]['player_won' if won else 'player_lost']
                 row[-2:] = min(stable, frame-loading+1).to_bytes(2, 'little')
                 if row[467:511] != s[0x755:0x769]+s[0x7bf:0x7d3]+s[0x769:0x76b]+s[0x7d3:0x7d5]:

@@ -82,7 +82,8 @@ Decisions and deviations, with reasons:
   runner, which is exact on both tracks, found schedules on which the player wins. The original
   then played them exactly (`explore`), which is what makes the native search valid.
 - **The rest of the frame is not this task's.** On the phase-matched frames about 1,000 pixels
-  differ, all in the icons beside the rows (tile columns 2-6, 15-16 and 25-29): the `1P` arrow,
+  differ, all in the icons beside the rows (tile rows 11-21; columns 2-6, 15-16 and 25-29 on
+  BOO!, 1-5 for the arrow on DOWN+UP): the `1P` arrow,
   the unicycles and the award icons. Native's result screen does not draw them, a declared
   omission since R-0038. The other frames also differ in the result palette's phase, about
   26,000 pixels, the title's colours among them; their shapes match.
@@ -126,4 +127,24 @@ Decisions and deviations, with reasons:
 
 ## Review and integration
 
-- Tier 2: pending.
+- Tier 2: a fresh Claude Opus 5.5 subagent in `.worktrees/result-title-glyphs-review`.
+  - At `dbee053` it **approved**
+    ([review](https://github.com/malmazuke/unirally-reconstruction/pull/26#pullrequestreview-5318285480)),
+    with no must-fix findings.
+  - **Its independent checks**:
+    - its own reading of the printer, the table and `$80:D187`, which agrees with R-0053,
+      including the centring rule for every width;
+    - three presets 25/25, the synthetic suite 516/516;
+    - the pictures on its own build: 0 title pixels on the phase-matched frames, shapes on
+      all 26, and its own control (`+` and `!` swapped: 29 pixels);
+    - the underscore on WARIO PAINT, base against candidate: 115 of 115 result frames
+      identical;
+    - the gate log, confirming 0 state differences behind the sweep's `failed`.
+  - **Findings, fixed after the review**:
+    - S1: the guard accepted a no-time winner with the opponent riding. It now refuses it,
+      with a test.
+    - S2: the centring comment cites the recovered rule (`$80:C4B8-C4FD`).
+    - S3: `track_reference` raises when the result loads without the player's finish.
+    - S4: the icon columns are corrected, and `small_glyph_tile` states the small-glyph rule
+      once.
+  - After the fixes: three presets 25/25; the title pictures and FLAT FUN's are unchanged.
