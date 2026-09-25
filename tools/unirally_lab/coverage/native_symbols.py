@@ -47,12 +47,17 @@ HEX = "0-9A-Fa-f"
 # A long address, colon optional, then an optional range end in the same bank. A
 # leading hex digit, ':' or '#' means we are inside another token or an immediate.
 LONG = re.compile(rf"(?<![{HEX}:#\w])\$([{HEX}]{{2}}):?([{HEX}]{{4}})(?![{HEX}])"
-                  rf"(?:\s*[-–]\s*(?:\$([{HEX}]{{2}}):?)?([{HEX}]{{4}})(?![{HEX}]))?")
+                  rf"(?:[-–](?:\$([{HEX}]{{2}}):?)?([{HEX}]{{4}})(?![{HEX}])"
+                  rf"|\s+[-–]\s+\$([{HEX}]{{2}}):?([{HEX}]{{4}})(?![{HEX}]))?")
 # More addresses in the same bank after a long one, written without the bank:
-# "$80:84CB/84DB", "$83:E611, E663", "$82:A9C1-A9E0 / AA1E-AA3D".
-MORE = re.compile(rf"\s*([/,])\s*([{HEX}]{{4}})(?![{HEX}\w])(?:\s*[-–]\s*([{HEX}]{{4}})(?![{HEX}\w]))?")
+# "$80:84CB/84DB", "$83:E611, E663", "$82:A9C1-A9E0 / AA1E-AA3D". A range's dash takes
+# no spaces unless its end has a "$", so "$0C73 - 1000 frames" is not a range.
+MORE = re.compile(rf"\s*([/,])\s*([{HEX}]{{4}})(?![{HEX}\w])(?:[-–]([{HEX}]{{4}})(?![{HEX}\w]))?")
+# A comma continuation must end its list item, so "$83:CEC9, 9000 updates" stops.
+ITEM_END = re.compile(r"\s*(?:$|[,);:.\]/])")
 # A bank-less address, with an optional range end: "$0C73", "$114D-$119C".
-SHORT = re.compile(rf"(?<![{HEX}:#\w$])\$([{HEX}]{{4}})(?![{HEX}])(?:\s*[-–]\s*\$?([{HEX}]{{4}})(?![{HEX}]))?")
+SHORT = re.compile(rf"(?<![{HEX}:#\w$])\$([{HEX}]{{4}})(?![{HEX}])"
+                   rf"(?:[-–]\$?([{HEX}]{{4}})(?![{HEX}])|\s+[-–]\s+\$([{HEX}]{{4}})(?![{HEX}]))?")
 REGIONS = ("rom", "wram", "sram", "io")
 KEYWORDS = {"if", "for", "while", "switch", "catch", "return", "sizeof", "decltype", "alignas",
             "static_assert", "alignof", "noexcept", "requires"}
@@ -102,15 +107,19 @@ def cites(text: str) -> list[Cite]:
         if ":" not in m.group(0)[:4] and not (bank < 0x04 or 0x80 <= bank <= 0x83 or 0x70 <= bank <= 0x7F):
             continue            # $BBAAAA without a colon is only read for code, SRAM and WRAM banks
         end = None
-        if m.group(4) and (not m.group(3) or int(m.group(3), 16) == bank):
-            end = int(m.group(4), 16)
+        end_bank, end_off = (m.group(3), m.group(4)) if m.group(4) else (m.group(5), m.group(6))
+        if end_off and (not end_bank or int(end_bank, 16) == bank):
+            end = int(end_off, 16)
         out.append(_cite(bank, off, end))
         stop = m.end()
         # Bank-less continuations. A comma continuation must be a code-bank ROM address
         # ($8000 or above), so "$83:CEC9, 1252 updates" does not read 1252 as an address.
         while (more := MORE.match(text, stop)):
             follow = int(more.group(2), 16)
-            if more.group(1) == "," and not (region(bank, follow) == "rom" and follow >= 0x8000):
+            rom_bank = region(bank, 0x8000) == "rom"
+            if rom_bank and follow < 0x8000:
+                break           # not a code address: a number after the citation
+            if more.group(1) == "," and (not rom_bank or not ITEM_END.match(text, more.end())):
                 break
             out.append(_cite(bank, follow, int(more.group(3), 16) if more.group(3) else None))
             stop = more.end()
@@ -120,7 +129,8 @@ def cites(text: str) -> list[Cite]:
             continue
         off = int(m.group(1), 16)
         if off < 0x8000:        # $8000 and above without a bank is a value, not an address
-            out.append(_cite(None if off < 0x2000 else 0x00, off, int(m.group(2), 16) if m.group(2) else None))
+            end = m.group(2) or m.group(3)
+            out.append(_cite(None if off < 0x2000 else 0x00, off, int(end, 16) if end else None))
     return out
 
 
@@ -171,7 +181,8 @@ def split_code_and_comments(text: str) -> list[tuple[str, str]]:
             block = True
             i += 2
             continue
-        if c == "'" and i and text[i - 1].isalnum() and i + 1 < n and text[i + 1].isalnum():
+        if c == "'" and i and text[i - 1].isalnum() and i + 1 < n and text[i + 1].isalnum() \
+                and re.search(r"(?<![\w'])\d[\w']*$", text[max(0, i - 40):i]):
             code.append(c)      # a digit separator (1'000), not a character literal
             i += 1
             continue
@@ -232,7 +243,7 @@ def _strip_template(prefix: str) -> str:
     return s
 
 
-OPERATOR = re.compile(r"\boperator\s*(\(\)|\[\]|[^\s\w(]+|new|delete)\s*\(")
+OPERATOR = re.compile(r"\boperator\s*(\(\)|\[\]|[^\s\w(]+|[A-Za-z_][\w:]*(?:\s*[*&]+)?)\s*\(")
 
 
 def function_name(prefix: str) -> str | None:
@@ -246,7 +257,9 @@ def function_name(prefix: str) -> str | None:
         if "=" in head.replace("==", "").replace("<=", "").replace(">=", "").replace("!=", ""):
             return None
         m = re.search(r"((?:~?[A-Za-z_]\w*::)*)$", head.rstrip())
-        return (m.group(1) if m else "") + "operator" + op.group(1)
+        symbol = op.group(1)
+        spaced = " " if symbol[0].isalpha() else ""     # operator bool, operator new
+        return (m.group(1) if m else "") + "operator" + spaced + re.sub(r"\s+", "", symbol)
     paren = -1
     depth = 0
     for i, c in enumerate(s):

@@ -18,10 +18,8 @@ from unirally_lab.coverage import native_symbols as ns  # noqa: E402
 
 # ROM addresses src/core cites that no research, task, inventory or content record
 # cites (directly or inside a cited range). NATIVE-READABILITY part 2 brings this to
-# zero; lower it as citations gain records. It rose from 8 to 9 only once, when the
-# index learned bank-less continuations ("$80:84CB/.../850B"), which made one more
-# existing citation visible.
-ROM_WITHOUT_RECORD_LIMIT = 9
+# zero; lower it as citations gain records, never raise it.
+ROM_WITHOUT_RECORD_LIMIT = 8
 
 
 def symbols(text: str) -> dict[str, list[str]]:
@@ -55,6 +53,11 @@ class CitationTests(unittest.TestCase):
             ("$80:84CB", None), ("$80:84DB", None), ("$82:974B", None), ("$82:977B", None),
             ("$83:E611", None), ("$83:E663", None), ("$82:A9C1", "$82:A9E0"), ("$82:AA1E", "$82:AA3D"),
             ("$83:CEC9", None)])
+
+    def test_numbers_after_a_citation_are_not_addresses(self) -> None:
+        got = ns.cites("$0C73 - 1000 frames; $83:CEC9, 9000 updates; $81:C238/1000; $83:F09E - $83:F0B9")
+        self.assertEqual([(c.address, c.end) for c in got], [
+            ("$83:CEC9", None), ("$81:C238", None), ("$83:F09E", "$83:F0B9"), ("$0C73", None)])
 
     def test_short_ranges_and_registers(self) -> None:
         got = ns.cites("$114D-$119C, $1259-1273, $7E:0C73-0C80, $2100, $8000")
@@ -108,6 +111,13 @@ class ScannerTests(unittest.TestCase):
                "void f() {\n    int x = 1'000; // $81:9001\n}\n")
         self.assertEqual(symbols(src), {"$1275": ["S::operator<"], "$1277": ["S::b"],
                                         "$81:9000": ["operator<<"], "$81:9001": ["f"]})
+
+    def test_prefixed_character_literal_and_conversion_operator(self) -> None:
+        src = ("struct S {\n    // $1275\n    explicit operator bool() const { return true; }\n};\n"
+               "void f() {\n    char32_t c = U'x';\n    // $81:9001\n}\n")
+        self.assertEqual(symbols(src), {"$1275": ["S::operator bool"], "$81:9001": ["f"]})
+        fs, lines = ns.scan("x.cpp", src)
+        self.assertEqual(len(lines), src.count("\n") + 1)
 
     def test_comment_inside_a_wrapped_signature(self) -> None:
         src = "void f(int a,\n       int b, // $0D57\n       int c) {\n}\n"
