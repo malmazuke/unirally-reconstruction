@@ -2,16 +2,18 @@
 
 ## Assignment
 
-- Status: ready (prepared 25 September 2026 by the TILE-PAIRS-8-12-26 session).
+- Status: claimed 25 September 2026 by the Claude Code desktop session that ran
+  TILE-PAIRS-8-12-26, base `47708b4`.
 - Milestone: M4 breadth
 - Coordinator: the claiming session is coordinator, primary and integrator
 - Task provider (fixed for all children; record any user-initiated platform change): Anthropic
-- Worker/session/runtime/model: to be recorded at claim
+- Worker/session/runtime/model: Claude Code desktop app, Claude Opus 5.5 (`claude-opus-5-5`)
 - Actual model/reasoning effort, routing rationale and frontier escalation question (if any):
   the claiming session's model at default effort; **tier 1** (simulation state in
   `src/core/movement.cpp` and the announcement queue).
 - Provider quota window/baseline timestamp, used/remaining or unknown, reserve and session
-  allowance (D-0004): sample at claim.
+  allowance (D-0004): at claim the 5-hour window was 7% used and the weekly window 12%; the
+  user's stop point is 50% weekly.
 - Reviewer (primary automatically spawns fresh model/effort, isolated checkout; no user
   trigger): a fresh Anthropic subagent with a withheld HUNTER capture.
 - Dependencies and evidence of acceptance: TILE-PAIRS-8-12-26 (accepted); R-0050, R-0051;
