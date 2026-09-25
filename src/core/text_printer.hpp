@@ -19,11 +19,15 @@ struct TextCursor {
     std::uint16_t attribute{};
 };
 
-// The codes that read the game's state (R-0056): F7 prints the name of the track a direct-page
-// word holds, FD the word as a five-digit number, EF puts object 104 + n at the cursor.
+// The codes that read the game's state (R-0056, R-0057): F7 prints the name of the track a
+// direct-page word holds, F8 the name record of the rider it holds, FD the word as a five-digit
+// number, F1 as a race time, EF puts object 104 + n at the cursor. An EE after F7 or F8 prints
+// the name in capitals, digits in the big font (`$80:F8B9`).
 struct TextVariables {
     std::function<std::uint16_t(std::uint16_t address)> word; // the direct-page word at address
     std::span<const std::uint8_t> track_names;                // FF-terminated, by track
+    std::span<const std::uint8_t> rider_names;                // 16-byte records, by rider
+    std::span<const std::uint8_t> time_words;                 // `_quit___`, `_no_time` (FF each)
     std::function<void(unsigned object, unsigned position)> place_object;
 };
 
