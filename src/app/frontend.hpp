@@ -1,5 +1,6 @@
 #pragma once
 
+#include "front_end.hpp"
 #include "input_timer.hpp"
 #include "presentation.hpp"
 
@@ -27,17 +28,48 @@ private:
 };
 
 enum class LogicalButton : std::uint8_t {
-  B, Y, Select, Start, Up, Down, Left, Right, A, X, LeftShoulder,
+  B,
+  Y,
+  Select,
+  Start,
+  Up,
+  Down,
+  Left,
+  Right,
+  A,
+  X,
+  LeftShoulder,
   RightShoulder
 };
 
 enum class KeyboardKey : std::uint8_t {
-  Z, X, Backspace, Return, Up, Down, Left, Right, A, S, Q, W
+  Z,
+  X,
+  Backspace,
+  Return,
+  Up,
+  Down,
+  Left,
+  Right,
+  A,
+  S,
+  Q,
+  W
 };
 
 enum class GamepadButton : std::uint8_t {
-  South, West, Back, Start, DpadUp, DpadDown, DpadLeft, DpadRight,
-  East, North, LeftShoulder, RightShoulder
+  South,
+  West,
+  Back,
+  Start,
+  DpadUp,
+  DpadDown,
+  DpadLeft,
+  DpadRight,
+  East,
+  North,
+  LeftShoulder,
+  RightShoulder
 };
 
 std::uint16_t button_mask(LogicalButton button);
@@ -53,14 +85,18 @@ public:
   void clear();
   std::array<std::uint16_t, 2> snapshot() const;
   std::uint16_t keyboard_mask() const { return keyboard_mask_; }
-  std::uint16_t gamepad_mask(std::uint8_t port) const { return gamepad_masks_.at(port); }
+  std::uint16_t gamepad_mask(std::uint8_t port) const {
+    return gamepad_masks_.at(port);
+  }
 
 private:
   std::uint16_t keyboard_mask_{};
   std::array<std::uint16_t, 2> gamepad_masks_{};
 };
 
-struct Viewport { int x{}, y{}, width{}, height{}, scale{}; };
+struct Viewport {
+  int x{}, y{}, width{}, height{}, scale{};
+};
 Viewport integer_viewport(int output_width, int output_height);
 
 struct PresentationPosition {
@@ -92,13 +128,14 @@ public:
   // Both tracks draw every packed pose (R-0036). Call observe_update once per
   // simulation update so the rider look overlays and the opponent's finish
   // frame (R-0040) follow the race.
-  void observe_update(const ZoomZooState& previous,const ZoomZooState& updated,
-                      const ClassicContentPack& pack);
+  void observe_update(const ZoomZooState &previous, const ZoomZooState &updated,
+                      const ClassicContentPack &pack);
   // A rider pose outside the packed tables fails closed in the renderer; the
   // live frame then holds that rider's last drawn pose and reports the frame
   // as a fallback instead of ending the session.
-  LiveFrame render_race(const ZoomZooState& state,const ZoomZooState& previous_update,
-                        const ClassicRacePresentationContent& content);
+  LiveFrame render_race(const ZoomZooState &state,
+                        const ZoomZooState &previous_update,
+                        const ClassicRacePresentationContent &content);
   RiderPosePair last_recovered_pose_pair() const { return recovered_pair_; }
 
 private:
@@ -106,5 +143,29 @@ private:
   ClassicRaceHistoryTracker history_{};
   std::array<std::optional<std::uint16_t>, 2> drawn_pose_{};
 };
+
+// The app's front end: power-on to the main menu (R-0054). Until the other
+// modes are native, choosing 2P, VS, LEAGUE, OPTIONS or reaching the demo shows
+// a short notice and returns to the main menu as it first appeared.
+class FrontEndSession {
+public:
+  explicit FrontEndSession(const ClassicContentPack &pack);
+  // One PAL frame from the two ports' masks (`button_mask` bits). True once 1P
+  // is chosen.
+  bool update(const std::array<std::uint16_t, 2> &ports);
+  RgbFrame frame() const;
+  std::uint32_t frames() const { return frames_; }
+
+private:
+  FrontEndContent content_;
+  FrontEndState state_ = start_front_end();
+  std::optional<FrontEndState> main_menu_;
+  std::uint32_t notice_frames_{}, frames_{};
+  FrontEndMode notice_mode_{};
+};
+
+// A port's mask as the SNES reads the pad (`$4218`: B in bit 15 ... R in bit
+// 4).
+std::uint16_t snes_pad_word(std::uint16_t mask);
 
 } // namespace unirally::app

@@ -143,6 +143,7 @@ struct Options {
   std::optional<std::uint16_t> fixed_controller_mask;
   bool hidden{};
   unirally::ClassicRaceTrack track{unirally::ClassicRaceTrack::Dragster};
+  bool track_given{}; // without --track the app starts at power-on (the front end)
 };
 
 std::uint32_t parse_updates(std::string_view value) {
@@ -170,7 +171,8 @@ void print_help() {
       << "Usage: unirally --content-pack PATH [--track dragster|zoom-zoo|NN] [--updates N] [--hidden]\n"
       << "       NN: a race track's number (its index in the ROM) with a recovered scenario\n"
       << "       unirally --supported-profiles   (print the pack profiles this build reads)\n"
-      << "Runs the Classic CRAWLER / DRAGSTER native slice at PAL 50 Hz.\n"
+      << "Without --track it starts at power-on: the Nintendo screen, the title and the main menu;\n"
+      << "1P starts DRAGSTER. With --track it starts in that race. PAL 50 Hz.\n"
       << "Keyboard: arrows, Z=B, X=Y, A=A, S=X, Q=L, W=R, Enter=Start.\n"
       << "Gamepad: D-pad, South=B, West=Y, East=A, North=X, shoulders=L/R, Start, Back=Select;\n"
       << "the analog stick is not mapped. Two gamepads are tracked; this slice consumes port 0 only.\n"
@@ -198,6 +200,7 @@ std::optional<Options> options(int argc, char **argv) {
       throw std::invalid_argument(std::string(option) + " requires a value");
     const std::string_view value(argv[++index]);
     if (option == "--track") {
+      result.track_given = true;
       if(value=="dragster")result.track=unirally::ClassicRaceTrack::Dragster;
       else if(value=="zoom-zoo")result.track=unirally::ClassicRaceTrack::ZoomZoo;
       else {
@@ -330,6 +333,9 @@ int main(int argc, char **argv) try {
   std::array<std::uint16_t, 2> last_ports{};
   unirally::app::LivePresentation live_presentation;
   bool reported_held_frame{};
+  // Without --track the session starts at power-on; 1P on the main menu starts the race.
+  std::optional<unirally::app::FrontEndSession> front_end;
+  if (!parsed->track_given) front_end.emplace(content.pack);
   while (running) {
     SDL_Event event{};
     while (SDL_PollEvent(&event)) {
@@ -412,7 +418,13 @@ int main(int argc, char **argv) try {
       } else if (observed_nonzero_input) {
         ++neutral_updates_after_input;
       }
-      {
+      if (front_end) {
+        if (front_end->update(ports)) {
+          std::cout << "Front end: 1P chosen after " << front_end->frames() << " frames\n";
+          front_end.reset();
+          input.clear();
+        }
+      } else {
         const auto previous_simulation_frame=zoom_state.movement.frame;
         const bool was_paused=zoom_state.pause.selection!=0;
         const bool at_stable_result=zoom_state.result_updates!=0 &&
@@ -455,6 +467,10 @@ int main(int argc, char **argv) try {
         running = false;
         break;
       }
+    }
+    if (redraw && front_end) {
+      draw(renderer.get(), texture.get(), front_end->frame());
+      redraw = false;
     }
     if (redraw) {
       const auto canonical_before = unirally::serialize_zoom_zoo(zoom_state);
