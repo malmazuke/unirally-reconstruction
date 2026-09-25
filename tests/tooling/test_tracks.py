@@ -97,7 +97,7 @@ class PackProfileTests(unittest.TestCase):
             compiled += [(i, int(n), d) for i, n, d in re.findall(r'\{"([^"]+)",\s*(\d+),\s*"([0-9a-f]{64})"\}', table)]
         self.assertEqual(compiled, [(e["id"], e["size"], e["sha256"]) for e in added])
         self.assertIn(hashlib.sha256(rules_path.read_bytes()).hexdigest(), source)
-        self.assertEqual(rules["profile_id"], "classic.pal.crawler.tracks.v14")
+        self.assertEqual(rules["profile_id"], "classic.pal.crawler.tracks.v15")
         ids = {e["id"] for e in added}
         for index in tracks.NEW_RACE_TRACKS + tracks.LOCKED_RACE_TRACKS:
             for part in ("data", "tile-columns", "tile-flags", "bg1-tiles"):
@@ -142,7 +142,8 @@ class HunterEntryTests(unittest.TestCase):
     def test_rules_and_compiled_table_agree(self) -> None:
         import re
         rules = json.loads((ROOT / "tests" / "manifests" / "content" / "classic-crawler-tracks-pack.json").read_text(encoding="utf-8"))
-        blink, palette = rules["entries"][-2:]
+        by_id = {e["id"]: e for e in rules["entries"]}
+        blink, palette = by_id["zoom.hunter-blink"], by_id["presentation.classic.hunter-opponent-palette.v1"]
         self.assertEqual(blink["id"], "zoom.hunter-blink")
         self.assertEqual(blink["source"], {"kind": "raw", "pieces": [{"file_offset": 0x1D3BC, "length": 64}]})
         self.assertEqual(palette["id"], "presentation.classic.hunter-opponent-palette.v1")
@@ -152,6 +153,28 @@ class HunterEntryTests(unittest.TestCase):
         table = table[:table.index("}};")]
         compiled = re.findall(r'\{"([^"]+)",\s*(\d+),\s*"([0-9a-f]{64})"\}', table)
         self.assertEqual(compiled, [(e["id"], str(e["size"]), e["sha256"]) for e in (blink, palette)])
+
+
+class FrontEndEntryTests(unittest.TestCase):
+    """Profile v15's added entries (R-0054): the boot screens', the title's and the main menu's
+    assets and tables, last in the rules and compiled in the same order."""
+
+    def test_rules_and_compiled_table_agree(self) -> None:
+        import re
+        from tools.unirally_lab.content import front_end
+        rules = json.loads((ROOT / "tests" / "manifests" / "content" / "classic-crawler-tracks-pack.json").read_text(encoding="utf-8"))
+        added = [e for e in rules["entries"] if e["id"].startswith("front-end.")]
+        expected = [f"front-end.asset.{asset:03d}" for asset in front_end.FRONT_END_ASSETS]
+        expected += [table[0] for table in front_end.FRONT_END_TABLES]
+        self.assertEqual([e["id"] for e in added], expected)
+        self.assertEqual(rules["entries"][-len(added):], added)
+        source = (ROOT / "src" / "core" / "content_pack.cpp").read_text(encoding="utf-8")
+        table = source[source.index("front_end_required{{"):]
+        table = table[:table.index("}};")]
+        compiled = re.findall(r'\{"([^"]+)",\s*(\d+),\s*"([0-9a-f]{64})"\}', table)
+        self.assertEqual(compiled, [(e["id"], str(e["size"]), e["sha256"]) for e in added])
+        for entry in added:
+            self.assertEqual(entry["source"]["kind"], "raw")
 
 
 class TrackedManifestTests(unittest.TestCase):

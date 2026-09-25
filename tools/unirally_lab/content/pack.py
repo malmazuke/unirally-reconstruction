@@ -24,7 +24,7 @@ START_STATE_ID = "classic.crawler.dragster.race-start.v1"
 # v12 (LOCKED-TOURS) the locked tours' race tracks, v13 (TILE-PAIRS-8-12-26) the loop's x steps, v14 (HUNTER-EFFECTS) the HUNTER blink pattern. The
 # names keep their two-track origin.
 TWO_TRACK_RULES_PATH = "tests/manifests/content/classic-crawler-tracks-pack.json"
-TWO_TRACK_PROFILE = "classic.pal.crawler.tracks.v14"
+TWO_TRACK_PROFILE = "classic.pal.crawler.tracks.v15"
 TWO_TRACK_START = "classic.crawler.race-start.v2"
 
 
