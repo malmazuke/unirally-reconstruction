@@ -83,7 +83,7 @@ Fades: `$80:9869` sets INIDISP to 2, 4, ..., 14 on seven frame waits, and `$80:9
 Image f shows what frame f's vblank wrote.
 
 - **The frame wait** (`$80:FADF`) runs the arrow update `$80:FAF5` each time. It runs on frames 98,
-  99, 104-228, 251-377 and 403, and on every frame from 407. `$80:D1EC` copies OAM (`$80:9318`)
+  99, 104-228, 251-377 and 403 (`$80:D36F`), and on every frame from 407. `$80:D1EC` copies OAM (`$80:9318`)
   and reads both pads into `$72`/`$74`.
 - **The NMI hook** (`$53` = `$80:F622`, installed by `$80:A16A`) runs from frame 250, once
   NMITIMEN is 0x81 (`$80:F5B8`). It runs on every frame from then on, loads included.
@@ -144,7 +144,8 @@ Image f shows what frame f's vblank wrote.
 - **The codes**:
   - On the title, while it holds, `$72` is compared with Up, Left, Up, R, A (`$80:F618`). A
     match saves `$77:10D3-10E2` and sets `$77:10D0`.
-  - On the main menu, Left+A+L+R (0x02B0) opens a two-entry menu, WIPE RAM and MAIN MENU
+  - On the main menu the codes are tested first, as exact pad words on either pad, WIPE RAM's
+    first (`$80:ABEB-AC0A`). Left+A+L+R (0x02B0) opens a two-entry menu, WIPE RAM and MAIN MENU
     (`$80:A9B4`, text at `$80:A9FA`).
   - B+Down+L+R (0x8430) waits 31 frames and jumps to `$83:AB9A` (`$80:F0D6`). This is not read
     yet.

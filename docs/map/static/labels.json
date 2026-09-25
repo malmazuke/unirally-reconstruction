@@ -948,6 +948,18 @@
   ]
  },
  {
+  "address": "$80:ABEB",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80ABEB",
+  "native": [
+   "src/core/front_end.cpp:run_main_menu"
+  ],
+  "source_records": [
+   "docs/research/R-0054-boot-title-main-menu.md"
+  ]
+ },
+ {
   "address": "$80:AC0F",
   "class": "observed",
   "comment": "instruction start",
@@ -1341,6 +1353,18 @@
   ],
   "source_records": [
    "docs/research/R-0037-dragster-race-palette-cycle.md"
+  ]
+ },
+ {
+  "address": "$80:D36F",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80D36F",
+  "native": [
+   "src/core/front_end.cpp:boot_frame_waits"
+  ],
+  "source_records": [
+   "docs/research/R-0054-boot-title-main-menu.md"
   ]
  },
  {

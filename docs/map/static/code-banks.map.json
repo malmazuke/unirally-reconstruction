@@ -13500,16 +13500,16 @@
    "call returns in the calling mode": 1262
   },
   "bytes": 131072,
-  "cited_addresses": 861,
+  "cited_addresses": 863,
   "cited_by_class": {
    "data": 13,
    "inferred": 90,
-   "observed": 702,
+   "observed": 704,
    "unknown": 56
   },
   "cited_by_position": {
    "dat": 13,
-   "loc": 588,
+   "loc": 590,
    "mid": 18,
    "sub": 186,
    "unk": 56
