@@ -1,5 +1,6 @@
 #include "movement.hpp"
 #include "presentation.hpp"
+#include "result_screen.hpp"
 #include "zoom_zoo_movement.hpp"
 #include <stdexcept>
 #include <string>
@@ -580,6 +581,21 @@ int main() {
                             entry == 12 * 32 + 23 || entry == 12 * 32 + 24;
     require(time_glyph || winner_map[entry] == loser_map[entry]);
   }
+  // RESULT-TITLE-GLYPHS: a winner's result loads whether or not the opponent
+  // has finished (DOWN+UP's original) and shows only the player's time, so the
+  // map is the winner's. A loser's result still needs the opponent's finish.
+  auto winner_opponent_riding = result_state;
+  winner_opponent_riding.finish.rider_finished[1] = false;
+  require(unirally::build_dragster_result_map(winner_opponent_riding, result) == winner_map);
+  auto loser_opponent_riding = loser_state;
+  loser_opponent_riding.finish.rider_finished[1] = false;
+  bool loser_refused = false;
+  try {
+    (void)unirally::build_dragster_result_map(loser_opponent_riding, result);
+  } catch (const std::invalid_argument &) {
+    loser_refused = true;
+  }
+  require(loser_refused);
   const auto loser_result =
       unirally::render_dragster_headless({loser_state, 0, 0, 0, 0, 0}, content);
   require(loser_result.pixels.size() == split_result.pixels.size());
@@ -1356,6 +1372,31 @@ int main() {
               unirally::classic_finish_view(shared_state).phase == RacePhase::ResultLoading);
     }
   }
+  // RESULT-TITLE-GLYPHS: the printer's table $80:C709 after `EE` gives letters
+  // and digits a big 2 x 2 glyph and the name table's other bytes a small one,
+  // one tile wide ($80:C56C): DOWN+UP's `+` and BOO!'s `!` as in the
+  // original's results, and the underscore as the small font's space.
+  require(unirally::result_title_glyph('a').tile == 0x14 &&
+          unirally::result_title_glyph('a').big);
+  require(unirally::result_title_glyph('o').tile == 0x00 &&
+          unirally::result_title_glyph('p').tile == 0x30 &&
+          unirally::result_title_glyph('z').tile == 0x44 &&
+          unirally::result_title_glyph('3').tile == 0x06);
+  const std::array<std::pair<char, unsigned>, 4> small_title_glyphs{
+      {{'_', 0xce}, {'!', 0xa0}, {'\'', 0xa3}, {'+', 0xa5}}};
+  for (const auto &[glyph, tile] : small_title_glyphs)
+    require(unirally::result_title_glyph(glyph).tile == tile &&
+            !unirally::result_title_glyph(glyph).big);
+  require(unirally::result_title_width("down+up") == 13 &&
+          unirally::result_title_width("boo!") == 7 &&
+          unirally::result_title_width("flat_fun") == 15);
+  bool title_refused = false;
+  try {
+    (void)unirally::result_title_glyph('#');
+  } catch (const std::invalid_argument &) {
+    title_refused = true;
+  }
+  require(title_refused);
   // R-0042: every byte the caption table contains maps to a glyph, and the
   // three runs are 16 apart because each glyph's halves are one font row
   // apart. The voice entries the engine publishes to the player include `"`,

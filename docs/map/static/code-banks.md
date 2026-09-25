@@ -22,8 +22,8 @@ The four classes partition all 131,072 bytes. **Unknown share: 40.4%** - above D
 | Instructions from observed | 17,569 |
 | Instructions from table | 587 |
 | Routines | 636 |
-| Routines cited by native code | 217 |
-| Routine bytes cited by native code | 33,149 |
+| Routines cited by native code | 219 |
+| Routine bytes cited by native code | 33,227 |
 | Gap sweep candidate instructions | 2,746 |
 | Gap sweep candidate bytes | 6,174 |
 | Jump tables | 2 |
@@ -45,7 +45,7 @@ The four classes partition all 131,072 bytes. **Unknown share: 40.4%** - above D
 
 ## Cited addresses
 
-788 distinct code-bank ROM addresses cited by the research, task, inventory and content records (`labels.json`). By position: dat 13, loc 564, mid 17, sub 154, unk 40 (sub routine start, loc instruction start, mid inside an instruction, dat data, unk unknown). By class: data 13, inferred 86, observed 649, unknown 40.
+800 distinct code-bank ROM addresses cited by the research, task, inventory and content records (`labels.json`). By position: dat 13, loc 571, mid 17, sub 157, unk 42 (sub routine start, loc instruction start, mid inside an instruction, dat data, unk unknown). By class: data 13, inferred 86, observed 659, unknown 42.
 
 Cited addresses in `unknown` bytes:
 
@@ -68,7 +68,9 @@ Cited addresses in `unknown` bytes:
 | $80:84CB | docs/research/R-0010-native-movement.md, tasks/NATIVE-READABILITY.md |
 | $80:84DB | docs/research/R-0010-native-movement.md |
 | $80:84EB | docs/research/R-0010-native-movement.md, docs/research/R-0045-static-code-map.md |
+| $80:C3DC | docs/research/R-0053-result-title-printer.md |
 | $80:C950 | tasks/LOCKED-TOURS.md |
+| $80:D187 | docs/research/R-0053-result-title-printer.md |
 | $80:FFC0 | docs/research/R-0001-rom-identity.md, docs/research/R-0045-static-code-map.md |
 | $81:A342 | docs/research/R-0046-track-breadth-matrix.md |
 | $81:A343 | docs/research/R-0046-track-breadth-matrix.md |
@@ -88,6 +90,6 @@ Cited addresses in `unknown` bytes:
 | $82:DC12 | docs/research/R-0046-track-breadth-matrix.md, tasks/TRACK-BREADTH.md |
 | $83:8535 | docs/research/R-0045-static-code-map.md, tasks/STATIC-CODE-MAP.md |
 | $83:904A | docs/research/R-0038-dragster-ordinary-controls.md |
-| $83:9F96 | tasks/LOCKED-TOURS.md |
-| $83:9FFA | docs/research/R-0046-track-breadth-matrix.md, tasks/LOCKED-TOURS.md, tasks/TRACK-BREADTH.md |
+| $83:9F96 | docs/research/R-0053-result-title-printer.md, tasks/LOCKED-TOURS.md |
+| $83:9FFA | docs/research/R-0046-track-breadth-matrix.md, docs/research/R-0053-result-title-printer.md, tasks/LOCKED-TOURS.md, tasks/TRACK-BREADTH.md |
 | $83:A1DA | docs/research/R-0008-track-decode.md |

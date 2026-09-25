@@ -656,6 +656,15 @@
   ]
  },
  {
+  "address": "$80:8C41",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_808C41",
+  "source_records": [
+   "docs/research/R-0053-result-title-printer.md"
+  ]
+ },
+ {
   "address": "$80:91D1",
   "class": "observed",
   "comment": "routine start",
@@ -706,6 +715,7 @@
   "comment": "routine start",
   "label": "sub_809B55",
   "source_records": [
+   "docs/research/R-0053-result-title-printer.md",
    "tasks/LOCKED-TOURS.md",
    "tasks/RESULT-TITLE-GLYPHS.md"
   ]
@@ -720,6 +730,18 @@
   ]
  },
  {
+  "address": "$80:C3BC",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_80C3BC",
+  "native": [
+   "src/core/result_screen.cpp:result_title_glyph"
+  ],
+  "source_records": [
+   "docs/research/R-0053-result-title-printer.md"
+  ]
+ },
+ {
   "address": "$80:C3C0",
   "class": "observed",
   "comment": "instruction start",
@@ -730,13 +752,41 @@
   ]
  },
  {
+  "address": "$80:C3DC",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80C3DC",
+  "source_records": [
+   "docs/research/R-0053-result-title-printer.md"
+  ]
+ },
+ {
+  "address": "$80:C414",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80C414",
+  "source_records": [
+   "docs/research/R-0053-result-title-printer.md"
+  ]
+ },
+ {
+  "address": "$80:C41E",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80C41E",
+  "source_records": [
+   "docs/research/R-0053-result-title-printer.md"
+  ]
+ },
+ {
   "address": "$80:C431",
   "class": "observed",
   "comment": "instruction start",
   "label": "loc_80C431",
   "native": [
    "src/core/presentation.hpp:build_dragster_result_map",
-   "src/core/result_screen.cpp:build_result_map"
+   "src/core/result_screen.cpp:build_result_map",
+   "src/core/result_screen.cpp:write_result_title"
   ],
   "source_records": [
    "docs/research/R-0015-native-presentation.md",
@@ -745,12 +795,64 @@
   ]
  },
  {
+  "address": "$80:C4B8",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80C4B8",
+  "source_records": [
+   "docs/research/R-0053-result-title-printer.md"
+  ]
+ },
+ {
+  "address": "$80:C56C",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80C56C",
+  "source_records": [
+   "docs/research/R-0053-result-title-printer.md"
+  ]
+ },
+ {
+  "address": "$80:C57C",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80C57C",
+  "native": [
+   "src/core/result_screen.cpp:result_title_glyph"
+  ],
+  "source_records": [
+   "docs/research/R-0053-result-title-printer.md"
+  ]
+ },
+ {
+  "address": "$80:C628",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80C628",
+  "source_records": [
+   "docs/research/R-0053-result-title-printer.md"
+  ]
+ },
+ {
+  "address": "$80:C661",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80C661",
+  "source_records": [
+   "docs/research/R-0053-result-title-printer.md"
+  ]
+ },
+ {
   "address": "$80:C709",
   "class": "data",
   "comment": "data",
   "label": "dat_80C709",
+  "native": [
+   "src/core/result_screen.cpp:result_title_glyph"
+  ],
   "source_records": [
-   "docs/research/R-0046-track-breadth-matrix.md"
+   "docs/research/R-0046-track-breadth-matrix.md",
+   "docs/research/R-0053-result-title-printer.md"
   ]
  },
  {
@@ -760,6 +862,18 @@
   "label": "unk_80C950",
   "source_records": [
    "tasks/LOCKED-TOURS.md"
+  ]
+ },
+ {
+  "address": "$80:D187",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80D187",
+  "native": [
+   "src/core/result_screen.cpp:result_title_glyph"
+  ],
+  "source_records": [
+   "docs/research/R-0053-result-title-printer.md"
   ]
  },
  {
@@ -801,6 +915,18 @@
   "source_records": [
    "docs/research/R-0038-dragster-ordinary-controls.md",
    "docs/research/R-0039-dragster-clock-limit.md"
+  ]
+ },
+ {
+  "address": "$80:F8B9",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_80F8B9",
+  "native": [
+   "src/core/result_screen.cpp:result_title_glyph"
+  ],
+  "source_records": [
+   "docs/research/R-0053-result-title-printer.md"
   ]
  },
  {
@@ -7598,6 +7724,7 @@
   "comment": "unknown",
   "label": "unk_839F96",
   "source_records": [
+   "docs/research/R-0053-result-title-printer.md",
    "tasks/LOCKED-TOURS.md"
   ]
  },
@@ -7614,6 +7741,7 @@
   ],
   "source_records": [
    "docs/research/R-0046-track-breadth-matrix.md",
+   "docs/research/R-0053-result-title-printer.md",
    "tasks/LOCKED-TOURS.md",
    "tasks/TRACK-BREADTH.md"
   ]

@@ -26,7 +26,14 @@ struct ClassicResultContent {
     std::span<const std::uint8_t> track_name; // Empty: the assets' own title.
 };
 
-std::uint16_t result_title_tile(char glyph);
+// A result title byte's glyph: a big 2 x 2 glyph from its first tile, or a small one tile wide.
+struct ResultTitleGlyph {
+    std::uint16_t tile{};
+    bool big{};
+};
+ResultTitleGlyph result_title_glyph(char glyph);
+// The title's width in tiles, which centres it: two per big glyph, one per small.
+int result_title_width(std::string_view title);
 void build_result_map(std::array<std::uint8_t, 65536>& vram, const RaceFinishState& finish,
                       const RaceTimerDigits& clock, std::span<const std::uint8_t> result_assets,
                       std::span<const std::uint8_t> track_name = {});

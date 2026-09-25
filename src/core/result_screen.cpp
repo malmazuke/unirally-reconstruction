@@ -14,36 +14,54 @@
 // The result screen: its title, times, text and backgrounds.
 namespace unirally {
 
-// Title glyphs are 2 x 2 tiles of the result font. The letters of "dragster"
-// and "complete" were observed (a 14, c 18, d 1A, e 1C, g 20, l 2A, m 2C,
-// o 00, p 30, r 34, s 36, t 38); they fit one layout, which gives the other
-// letters and the digits (TRACK-BREADTH): digits 0-9 at 2 x digit, so "o"
-// shares the zero; a-n from 0x14 in steps of two; p-z two tiles lower, since
-// "o" has no glyph of its own. f, u and n are confirmed on FLAT FUN's original
-// result; the other letters outside the observed twelve are the layout's
-// reading.
-std::uint16_t result_title_tile(char glyph) {
-    if (glyph >= '0' && glyph <= '9') return static_cast<std::uint16_t>((glyph - '0') * 2);
-    if (glyph == 'o') return 0x00;
-    if (glyph >= 'a' && glyph <= 'n') return static_cast<std::uint16_t>(0x14 + (glyph - 'a') * 2);
+// The result title is the track's name through the text printer `$80:C3BC`: the stream at
+// `$80:D187` prints it centred on row 2 (`FC 02`) after `EE` (`$80:F8B9`) has made its letters
+// uppercase and its digits the big font's (RESULT-TITLE-GLYPHS). The printer's table
+// `$80:C709` then gives a letter or digit a big 2 x 2 glyph and any other byte a small one,
+// one tile wide (R-0053).
+//
+// The big glyphs: digits 0-9 at 2 x digit, so "o" shares the zero; a-n from 0x14 in steps of
+// two; p-z two tiles lower, since "o" has no glyph of its own. The table gives these for all
+// 36 (the letters of "dragster", "complete", "east" and "flat fun" were also seen on the
+// original's results, TRACK-BREADTH).
+ResultTitleGlyph result_title_glyph(char glyph) {
+    if (glyph >= '0' && glyph <= '9') return {static_cast<std::uint16_t>((glyph - '0') * 2), true};
+    if (glyph == 'o') return {0x00, true};
+    if (glyph >= 'a' && glyph <= 'n')
+        return {static_cast<std::uint16_t>(0x14 + (glyph - 'a') * 2), true};
     if (glyph >= 'p' && glyph <= 'z')
-        return static_cast<std::uint16_t>(0x14 + (glyph - 'a') * 2 - 2);
-    throw std::invalid_argument("unsupported Classic result title glyph");
+        return {static_cast<std::uint16_t>(0x14 + (glyph - 'a') * 2 - 2), true};
+    // The small glyphs of the other bytes the name table uses: the table's entry, less its
+    // small-font bit, plus 0x9F ($80:C579-C58A). The underscore is the small font's space.
+    switch (glyph) {
+    case '_': return {0xce, false};  // entry 0xAF
+    case '!': return {0xa0, false};  // entry 0x81, BOO!
+    case '\'': return {0xa3, false}; // entry 0x84
+    case '+': return {0xa5, false};  // entry 0x86, DOWN+UP
+    default: throw std::invalid_argument("unsupported Classic result title glyph");
+    }
+}
+
+int result_title_width(std::string_view title) {
+    int width = 0;
+    for (const char glyph : title) width += result_title_glyph(glyph).big ? 2 : 1;
+    return width;
 }
 
 namespace {
 
+// A big glyph is its tile, the next, and the pair 0x50 further on ($80:C431-C440); a small
+// one is its tile over the tile 0x3C further on ($80:C58F-C596).
 void write_result_title(std::array<std::uint8_t, 65536>& vram, int x, int y,
                         std::string_view text) {
     for (const char glyph : text) {
-        // A name's underscore is its space, one tile wide (FLAT FUN's original
-        // result, part of the review of TRACK-BREADTH's result title).
-        if (glyph == '_') {
+        const auto [tile, big] = result_title_glyph(glyph);
+        set_map_word(vram, x, y, static_cast<std::uint16_t>(0x3c00U | tile));
+        if (!big) {
+            set_map_word(vram, x, y + 1, static_cast<std::uint16_t>(0x3c00U | (tile + 0x3cU)));
             x += 1;
             continue;
         }
-        const auto tile = result_title_tile(glyph);
-        set_map_word(vram, x, y, static_cast<std::uint16_t>(0x3c00U | tile));
         set_map_word(vram, x + 1, y, static_cast<std::uint16_t>(0x3c00U | (tile + 1U)));
         set_map_word(vram, x, y + 1, static_cast<std::uint16_t>(0x3c00U | (tile + 0x50U)));
         set_map_word(vram, x + 1, y + 1, static_cast<std::uint16_t>(0x3c00U | (tile + 0x51U)));
@@ -120,8 +138,10 @@ bool time_is_consistent(const std::array<std::uint16_t, 5>& digits, std::uint16_
 }
 
 // Only the result compositions the original was observed to publish are drawn: the winner's
-// at loading 225 or 226, the loser's at 242, with both riders' times consistent and the
-// outcome matching them. Returns whether the player's row reads NO TIME: $81:C73E-C75B ends
+// at loading 225 or 226, the loser's at 242, with the finished riders' times consistent and
+// the outcome matching them. A winner's result loads whether or not the opponent has finished
+// (DOWN+UP's original, RESULT-TITLE-GLYPHS: the opponent still rides at the load); the screen
+// shows only the player's time. Returns whether the player's row reads NO TIME: $81:C73E-C75B ends
 // the race at 10:00 with both riders finished and the lap-short player's total left at the
 // 60000 no-time sentinel, and holds 9:59.9 when it does, so a no-time player total belongs
 // only to that timed-out race (R-0039; clock-limit original, stable result 32016-32200).
@@ -140,14 +160,19 @@ bool check_result_composition(const RaceFinishState& finish, const RaceTimerDigi
     const bool clock_expired =
         clock.minutes == 9 && clock.tens_seconds == 5 && clock.seconds == 9 && clock.tenths == 9;
     const bool player_has_no_time = finish.finish_time_centiseconds[0] >= no_time && clock_expired;
+    const bool opponent_riding =
+        finish.outcome == RaceOutcome::PlayerWon && !finish.rider_finished[1];
     const bool times_are_consistent =
-        finish.rider_finished[0] && finish.rider_finished[1]
+        finish.rider_finished[0] && (finish.rider_finished[1] || opponent_riding)
         && (player_has_no_time
             || time_is_consistent(finish.finish_time_digits[0], finish.finish_time_centiseconds[0]))
-        && time_is_consistent(finish.finish_time_digits[1], finish.finish_time_centiseconds[1]);
+        && (opponent_riding
+            || time_is_consistent(finish.finish_time_digits[1],
+                                  finish.finish_time_centiseconds[1]));
     const bool outcome_is_consistent =
         (finish.outcome == RaceOutcome::PlayerWon
-         && finish.finish_time_centiseconds[0] <= finish.finish_time_centiseconds[1])
+         && (opponent_riding
+             || finish.finish_time_centiseconds[0] <= finish.finish_time_centiseconds[1]))
         || (finish.outcome == RaceOutcome::PlayerLost
             && finish.finish_time_centiseconds[0] > finish.finish_time_centiseconds[1]);
     if ((!observed_winner_publication && !observed_loser_publication) || !times_are_consistent
@@ -176,8 +201,7 @@ void build_result_map(std::array<std::uint8_t, 65536>& vram, const RaceFinishSta
         set_map_word(vram, static_cast<int>(entry % 32), static_cast<int>(entry / 32), 0x004c);
     const auto title = result_title(result_assets, track_name);
     const bool player_has_no_time = check_result_composition(finish, clock);
-    const auto spaces = static_cast<int>(std::count(title.begin(), title.end(), '_'));
-    const int width = 2 * (static_cast<int>(title.size()) - spaces) + spaces;
+    const int width = result_title_width(title);
     if (width > 32) throw std::invalid_argument("Classic result title is wider than the screen");
     write_result_title(vram, 16 - width / 2, 2, title);
     write_result_title(vram, 8, 5, "complete");
