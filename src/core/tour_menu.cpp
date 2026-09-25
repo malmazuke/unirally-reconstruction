@@ -75,7 +75,6 @@ void print_tour_menu(FrontEndState& state, const FrontEndContent& content) {
     }
 }
 
-
 // $80:9782-97D2: a medal beside each badge, in its colours; none without a medal. A hidden entry
 // keeps the attribute it had.
 void lay_out_medals(FrontEndState& state, const FrontEndContent& content) {
@@ -201,6 +200,8 @@ void tour_menu_entry_frame(FrontEndState& state, const FrontEndContent& content)
     case 3: {
         copy_oam(state);
         const auto tiles = asset(content, badge_tiles_asset);
+        if (tiles.size() < badge_tiles_bytes)
+            throw std::invalid_argument("front-end asset 68 is shorter than its badge tiles");
         load_vram(state, tiles.last(badge_tiles_bytes), badge_tiles_word); // $80:A82B
         menu.track = static_cast<std::uint8_t>(menu.track / tracks_per_tour * tracks_per_tour);
         return;

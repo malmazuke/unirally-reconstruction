@@ -212,7 +212,7 @@ synthetic_content(std::vector<std::vector<std::uint8_t>> &storage) {
   };
   for (const unsigned id : {1U, 2U, 5U, 27U, 28U, 31U, 68U, 69U, 70U, 72U, 74U,
                             77U, 78U, 80U, 88U, 89U, 91U})
-    content.assets[id] = keep(id == 69 ? 13568 : 64);
+    content.assets[id] = keep(id == 69 ? 13568 : id == 68 ? 8000 : 64);
   content.base_palette = keep(216);
   storage.emplace_back(256, 0);
   storage.back()['A'] = 10;
