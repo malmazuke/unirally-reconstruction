@@ -49,6 +49,7 @@
   {
    "address": "$17:CA04",
    "native": [
+    "src/core/announcements.hpp:(file)",
     "src/core/zoom_zoo_movement.hpp:ZoomZooContent::captions"
    ],
    "region": "rom"
@@ -1156,7 +1157,7 @@
    "native": [
     "src/core/presentation.cpp:classic_caption_entry",
     "src/core/presentation.hpp:classic_caption_entry",
-    "src/core/reward_queue.cpp:canonical_caption"
+    "src/core/reward_queue.cpp:show_next_player_announcement"
    ],
    "range_ends": [
     "$81:BEF1"
@@ -1166,7 +1167,7 @@
   {
    "address": "$81:BF32",
    "native": [
-    "src/core/reward_queue.cpp:consume_zoom_player",
+    "src/core/reward_queue.cpp:show_hunter_message",
     "src/core/zoom_zoo_movement.hpp:HunterEffects::hud_event"
    ],
    "range_ends": [
@@ -1177,7 +1178,8 @@
   {
    "address": "$81:C02A",
    "native": [
-    "src/core/reward_queue.cpp:canonical_caption"
+    "src/core/reward_queue.cpp:longest_display, display_saved_per_waiting, shortest_display",
+    "src/core/reward_queue.cpp:show_next_player_announcement"
    ],
    "range_ends": [
     "$81:C054"
@@ -1188,8 +1190,8 @@
    "address": "$81:C0CE",
    "native": [
     "src/core/presentation.cpp:classic_caption_tile",
-    "src/core/reward_queue.cpp:canonical_caption",
-    "src/core/reward_queue.cpp:update_reward_queue"
+    "src/core/reward_queue.cpp:show_next_player_announcement",
+    "src/core/reward_queue.cpp:update_opponent_announcements"
    ],
    "range_ends": [
     "$81:C18A"
@@ -1199,14 +1201,15 @@
   {
    "address": "$81:C169",
    "native": [
-    "src/core/reward_queue.cpp:update_reward_queue"
+    "src/core/reward_queue.cpp:reward_opponent",
+    "src/core/reward_queue.cpp:reward_player"
    ],
    "region": "rom"
   },
   {
    "address": "$81:C219",
    "native": [
-    "src/core/reward_queue.cpp:update_reward_queue"
+    "src/core/reward_queue.cpp:update_opponent_announcements"
    ],
    "range_ends": [
     "$81:C2C9"
@@ -1217,21 +1220,21 @@
    "address": "$81:C238",
    "native": [
     "src/core/race_state_io.cpp:deserialize_classic_race",
-    "src/core/reward_queue.cpp:update_reward_queue"
+    "src/core/reward_queue.cpp:takes_reward_path"
    ],
    "region": "rom"
   },
   {
    "address": "$81:C241",
    "native": [
-    "src/core/reward_queue.cpp:update_reward_queue"
+    "src/core/reward_queue.cpp:opponent_reward_weight"
    ],
    "region": "rom"
   },
   {
    "address": "$81:C260",
    "native": [
-    "src/core/reward_queue.cpp:update_reward_queue"
+    "src/core/reward_queue.cpp:opponent_reward_weight"
    ],
    "region": "rom"
   },
@@ -1248,7 +1251,7 @@
   {
    "address": "$81:C2A5",
    "native": [
-    "src/core/reward_queue.cpp:update_reward_queue"
+    "src/core/reward_queue.cpp:reward_opponent"
    ],
    "range_ends": [
     "$81:C2AD"
@@ -1269,7 +1272,7 @@
    "address": "$81:C55B",
    "native": [
     "src/core/hunter_effects.cpp:update_hunter_effects",
-    "src/core/reward_queue.cpp:push_front_zoom_player"
+    "src/core/reward_queue.cpp:push_front_player_announcement"
    ],
    "range_ends": [
     "$81:C597"
@@ -1280,7 +1283,7 @@
    "address": "$81:C598",
    "native": [
     "src/core/race_state_io.cpp:deserialize_classic_race",
-    "src/core/reward_queue.cpp:enqueue_zoom_player"
+    "src/core/reward_queue.cpp:queue_player_announcement"
    ],
    "range_ends": [
     "$81:C5C8"
@@ -1991,7 +1994,7 @@
    "address": "$82:9B69",
    "native": [
     "src/core/race_state_io.cpp:deserialize_classic_race",
-    "src/core/reward_queue.cpp:update_zoom_landing_rewards"
+    "src/core/reward_queue.cpp:announce_landing_tricks"
    ],
    "range_ends": [
     "$82:9D97"
@@ -2001,7 +2004,7 @@
   {
    "address": "$82:9D3A",
    "native": [
-    "src/core/reward_queue.cpp:update_zoom_landing_rewards"
+    "src/core/reward_queue.cpp:announce_combination"
    ],
    "range_ends": [
     "$82:9D70"
@@ -2657,7 +2660,8 @@
   {
    "address": "$83:CDBC",
    "native": [
-    "src/core/reward_queue.cpp:update_zoom_hints"
+    "src/core/reward_queue.cpp:hint_interval",
+    "src/core/reward_queue.cpp:update_tutorial_hints"
    ],
    "range_ends": [
     "$83:CE43"
@@ -3708,25 +3712,16 @@
    "region": "wram"
   },
   {
-   "address": "$0CEB",
-   "native": [
-    "src/core/reward_queue.cpp:update_reward_queue"
-   ],
-   "region": "wram"
-  },
-  {
    "address": "$0D11",
    "native": [
-    "src/core/presentation.cpp:classic_caption_entry",
-    "src/core/reward_queue.cpp:update_reward_queue"
+    "src/core/presentation.cpp:classic_caption_entry"
    ],
    "region": "wram"
   },
   {
    "address": "$0D13",
    "native": [
-    "src/core/presentation.cpp:classic_caption_entry",
-    "src/core/reward_queue.cpp:update_reward_queue"
+    "src/core/presentation.cpp:classic_caption_entry"
    ],
    "region": "wram"
   },
@@ -4363,20 +4358,6 @@
    "region": "wram"
   },
   {
-   "address": "$11DB",
-   "native": [
-    "src/core/reward_queue.cpp:update_reward_queue"
-   ],
-   "region": "wram"
-  },
-  {
-   "address": "$11E1",
-   "native": [
-    "src/core/reward_queue.cpp:update_reward_queue"
-   ],
-   "region": "wram"
-  },
-  {
    "address": "$11E7",
    "native": [
     "src/core/movement.hpp:RaceFinishState::opponent_finish_pose_selector"
@@ -4664,13 +4645,6 @@
    "region": "wram"
   },
   {
-   "address": "$7E:2102",
-   "native": [
-    "src/core/reward_queue.cpp:update_reward_queue"
-   ],
-   "region": "wram"
-  },
-  {
    "address": "$7E:2112",
    "native": [
     "src/core/trick_roll.cpp:update_zoom_roll"
@@ -4680,7 +4654,7 @@
   {
    "address": "$7E:21C9",
    "native": [
-    "src/core/reward_queue.cpp:update_reward_queue"
+    "src/core/reward_queue.cpp:opponent_reward_weight"
    ],
    "range_ends": [
     "$7E:21D8"
@@ -4690,7 +4664,7 @@
   {
    "address": "$7E:21E9",
    "native": [
-    "src/core/reward_queue.cpp:update_reward_queue"
+    "src/core/reward_queue.cpp:opponent_reward_weight"
    ],
    "range_ends": [
     "$7E:21F8"
@@ -4722,7 +4696,6 @@
   {
    "address": "$77:0748",
    "native": [
-    "src/core/reward_queue.cpp:update_zoom_landing_rewards",
     "src/core/zoom_zoo_movement.hpp:ClassicRaceScenario::opponent_character"
    ],
    "region": "sram"
@@ -4755,13 +4728,6 @@
    "address": "$77:0750",
    "native": [
     "src/core/flat_contact.hpp:ContactContext::cartridge_options"
-   ],
-   "region": "sram"
-  },
-  {
-   "address": "$77:0825",
-   "native": [
-    "src/core/reward_queue.cpp:update_reward_queue"
    ],
    "region": "sram"
   },
@@ -4872,6 +4838,11 @@
  "regeneration_command": "python3 tools/project.py coverage native-symbols --out docs/map/static/native-symbols.json",
  "schema_version": 1,
  "symbols": {
+  "src/core/announcements.hpp:(file)": {
+   "rom": [
+    "$17:CA04"
+   ]
+  },
   "src/core/content_pack.cpp:hunter_required": {
    "rom": [
     "$82:DDB0",
@@ -5801,64 +5772,83 @@
     "$150B"
    ]
   },
-  "src/core/reward_queue.cpp:canonical_caption": {
+  "src/core/reward_queue.cpp:announce_combination": {
+   "rom": [
+    "$82:9D3A"
+   ]
+  },
+  "src/core/reward_queue.cpp:announce_landing_tricks": {
+   "rom": [
+    "$82:9B69"
+   ]
+  },
+  "src/core/reward_queue.cpp:hint_interval": {
+   "rom": [
+    "$83:CDBC"
+   ]
+  },
+  "src/core/reward_queue.cpp:longest_display, display_saved_per_waiting, shortest_display": {
+   "rom": [
+    "$81:C02A"
+   ]
+  },
+  "src/core/reward_queue.cpp:opponent_reward_weight": {
+   "rom": [
+    "$81:C241",
+    "$81:C260"
+   ],
+   "wram": [
+    "$7E:21C9",
+    "$7E:21E9"
+   ]
+  },
+  "src/core/reward_queue.cpp:push_front_player_announcement": {
+   "rom": [
+    "$81:C55B"
+   ]
+  },
+  "src/core/reward_queue.cpp:queue_player_announcement": {
+   "rom": [
+    "$81:C598"
+   ]
+  },
+  "src/core/reward_queue.cpp:reward_opponent": {
+   "rom": [
+    "$81:C169",
+    "$81:C2A5"
+   ]
+  },
+  "src/core/reward_queue.cpp:reward_player": {
+   "rom": [
+    "$81:C169"
+   ]
+  },
+  "src/core/reward_queue.cpp:show_hunter_message": {
+   "rom": [
+    "$81:BF32"
+   ]
+  },
+  "src/core/reward_queue.cpp:show_next_player_announcement": {
    "rom": [
     "$81:BEA8",
     "$81:C02A",
     "$81:C0CE"
    ]
   },
-  "src/core/reward_queue.cpp:consume_zoom_player": {
+  "src/core/reward_queue.cpp:takes_reward_path": {
    "rom": [
-    "$81:BF32"
+    "$81:C238"
    ]
   },
-  "src/core/reward_queue.cpp:enqueue_zoom_player": {
-   "rom": [
-    "$81:C598"
-   ]
-  },
-  "src/core/reward_queue.cpp:push_front_zoom_player": {
-   "rom": [
-    "$81:C55B"
-   ]
-  },
-  "src/core/reward_queue.cpp:update_reward_queue": {
+  "src/core/reward_queue.cpp:update_opponent_announcements": {
    "rom": [
     "$81:C0CE",
-    "$81:C169",
-    "$81:C219",
-    "$81:C238",
-    "$81:C241",
-    "$81:C260",
-    "$81:C2A5"
-   ],
-   "sram": [
-    "$77:0825"
-   ],
-   "wram": [
-    "$0CEB",
-    "$0D11",
-    "$0D13",
-    "$11DB",
-    "$11E1",
-    "$7E:2102",
-    "$7E:21C9",
-    "$7E:21E9"
+    "$81:C219"
    ]
   },
-  "src/core/reward_queue.cpp:update_zoom_hints": {
+  "src/core/reward_queue.cpp:update_tutorial_hints": {
    "rom": [
     "$83:CDBC"
-   ]
-  },
-  "src/core/reward_queue.cpp:update_zoom_landing_rewards": {
-   "rom": [
-    "$82:9B69",
-    "$82:9D3A"
-   ],
-   "sram": [
-    "$77:0748"
    ]
   },
   "src/core/rider_look.cpp:forward_distance_table": {
@@ -6811,11 +6801,11 @@
   }
  },
  "totals": {
-  "addresses": 570,
+  "addresses": 565,
   "io_addresses": 14,
-  "native_symbols": 247,
+  "native_symbols": 255,
   "rom_addresses": 351,
-  "sram_addresses": 7,
-  "wram_addresses": 198
+  "sram_addresses": 6,
+  "wram_addresses": 194
  }
 }

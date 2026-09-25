@@ -2,6 +2,7 @@
 
 #include "trick_roll.hpp"
 
+#include "announcements.hpp"
 #include "reward_queue.hpp"
 #include "word_arithmetic.hpp"
 #include "zoom_zoo_movement.hpp"
@@ -86,9 +87,9 @@ void update_zoom_roll(ZoomZooState& state, unsigned index, bool pressed,
         if (quarters.forward_turns + quarters.reverse_turns + roll.held_rotations
             + turn.air_turns) {
             if (index == 0)
-                enqueue_zoom_player(state, 14);
+                queue_player_announcement(state, announcement::wipeout);
             else
-                enqueue_zoom_opponent(state.movement, 14);
+                queue_opponent_announcement(state.movement, announcement::wipeout);
         }
         quarters.previous_quadrant = quarters.forward_turns = quarters.reverse_turns = 0;
         quarters.forward_quarters = quarters.reverse_quarters = 0;

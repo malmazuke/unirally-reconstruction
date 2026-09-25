@@ -455,7 +455,7 @@ void update_movement(MovementState& state, const ControllerButtons& player_butto
         }
     }
     (void)advance_timer_digits(state.timer, timer_enabled);
-    update_reward_queue(state, opponent_event_one, content, {});
+    update_opponent_announcements(state, opponent_event_one, content, {});
     std::array<TrackSamples, 2> samples{};
     for (std::size_t rider = 0; rider < state.riders.size(); ++rider) {
         const auto& movement = state.riders[rider];

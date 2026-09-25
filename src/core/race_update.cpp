@@ -1,5 +1,6 @@
 // One race update: the order in which every system runs.
 
+#include "announcements.hpp"
 #include "hunter_effects.hpp"
 #include "opponent_ai.hpp"
 #include "race_camera.hpp"
@@ -158,7 +159,7 @@ void update_zoom_zoo(ZoomZooState& state, const ControllerButtons& requested_but
         whole.player_input.low_image = pad.low_image;
         whole.player_input.high_image = pad.high_image;
         update_hunter_effects(next, content.hunter_blink);
-        if (state.native_initialization) update_zoom_hints(next);
+        if (state.native_initialization) update_tutorial_hints(next);
         ++whole.frame;
         state = next;
         return;
@@ -411,7 +412,7 @@ void update_zoom_zoo(ZoomZooState& state, const ControllerButtons& requested_but
                              content);
         if (index == active || surface.leading_support) {
             if (state.native_initialization)
-                update_zoom_landing_rewards(next, index, content);
+                announce_landing_tricks(next, index, content);
             else {
                 const bool landed = rider.motion.response_a || rider.contact.unsupported_count < 2;
                 const auto event =
@@ -491,9 +492,9 @@ void update_zoom_zoo(ZoomZooState& state, const ControllerButtons& requested_but
                 && transition.wrong_direction_counter == 120) {
                 // $829751-9762 / $829781-9792: fixed one-player scenario $77074B=1.
                 if (index == 0)
-                    enqueue_zoom_player(next, 22);
+                    queue_player_announcement(next, announcement::wrong_way);
                 else
-                    enqueue_zoom_opponent(whole, 22);
+                    queue_opponent_announcement(whole, announcement::wrong_way);
             }
         }
         update_rolling_mode(rider, surface.mode != 0);
@@ -567,11 +568,12 @@ void update_zoom_zoo(ZoomZooState& state, const ControllerButtons& requested_but
     // marks both riders finished, whatever their laps.
     if (advance_timer_digits(whole.timer, whole.countdown < 68) && state.native_initialization)
         for (auto& rider : next.race.riders) rider.finished = 1;
-    if (state.native_initialization) consume_zoom_player(next, content.movement, content.captions);
-    update_reward_queue(whole, reward, content.movement,
-                        state.native_initialization
-                            ? std::span<std::uint8_t>{next.learned_weights[1]}
-                            : std::span<std::uint8_t>{});
+    if (state.native_initialization)
+        show_next_player_announcement(next, content.movement, content.captions);
+    update_opponent_announcements(whole, reward, content.movement,
+                                  state.native_initialization
+                                      ? std::span<std::uint8_t>{next.learned_weights[1]}
+                                      : std::span<std::uint8_t>{});
     if (state.complete_race)
         update_zoom_camera(next, track_geometry(content.movement.sampling.track));
     for (unsigned index = 0; index < 2; ++index) {
@@ -610,7 +612,7 @@ void update_zoom_zoo(ZoomZooState& state, const ControllerButtons& requested_but
     if (state.complete_race)
         update_zoom_visibility(next, track_geometry(content.movement.sampling.track));
     update_hunter_effects(next, content.hunter_blink);
-    if (state.native_initialization) update_zoom_hints(next);
+    if (state.native_initialization) update_tutorial_hints(next);
     ++whole.frame;
     state = next;
 }

@@ -2,6 +2,7 @@
 
 #include "race_progress.hpp"
 
+#include "announcements.hpp"
 #include "reward_queue.hpp"
 #include "rider_motion.hpp"
 #include "word_arithmetic.hpp"
@@ -54,9 +55,13 @@ void update_zoom_finish(ZoomZooState& state, const ZoomZooContent& content) {
         auto& pose = state.race.finish_pose[index];
         if (pose.active) {
             if (index == 1)
-                enqueue_zoom_opponent(whole, tied ? 38U : won ? 37U : 39U);
+                queue_opponent_announcement(whole, tied  ? announcement::draw
+                                                   : won ? announcement::winner
+                                                         : announcement::loser);
             else
-                enqueue_zoom_player(state, tied ? 38U : won ? 37U : 39U);
+                queue_player_announcement(state, tied  ? announcement::draw
+                                                 : won ? announcement::winner
+                                                       : announcement::loser);
         }
         const auto& queue = index == 1 ? whole.rewards : state.player_announcements.queue;
         if (!pose.active && (index == 1 || state.native_initialization)
@@ -126,9 +131,9 @@ void update_zoom_checkpoint(ZoomZooState& state, unsigned index, const ZoomZooCo
         if (!initial_crossing && lap.laps_remaining == 1
             && classic_race_scenario(state.track).tour_race) {
             if (index == 1)
-                enqueue_zoom_opponent(state.movement, 15);
+                queue_opponent_announcement(state.movement, announcement::last_lap);
             else
-                enqueue_zoom_player(state, 15);
+                queue_player_announcement(state, announcement::last_lap);
         }
         if (!initial_crossing) {
             if (lap.laps_remaining == 0) {

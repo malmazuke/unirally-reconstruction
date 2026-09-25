@@ -3327,7 +3327,7 @@
   "native": [
    "src/core/presentation.cpp:classic_caption_entry",
    "src/core/presentation.hpp:classic_caption_entry",
-   "src/core/reward_queue.cpp:canonical_caption"
+   "src/core/reward_queue.cpp:show_next_player_announcement"
   ],
   "source_records": [
    "docs/research/R-0042-stunt-name-captions.md",
@@ -3341,7 +3341,7 @@
   "comment": "routine start",
   "label": "sub_81BF32",
   "native": [
-   "src/core/reward_queue.cpp:consume_zoom_player",
+   "src/core/reward_queue.cpp:show_hunter_message",
    "src/core/zoom_zoo_movement.hpp:HunterEffects::hud_event"
   ],
   "source_records": [
@@ -3354,7 +3354,7 @@
   "comment": "instruction start",
   "label": "loc_81BF46",
   "native": [
-   "src/core/reward_queue.cpp:consume_zoom_player",
+   "src/core/reward_queue.cpp:show_hunter_message",
    "src/core/zoom_zoo_movement.hpp:HunterEffects::hud_event"
   ],
   "source_records": [
@@ -3389,7 +3389,8 @@
   "comment": "instruction start",
   "label": "loc_81C034",
   "native": [
-   "src/core/reward_queue.cpp:canonical_caption"
+   "src/core/reward_queue.cpp:longest_display, display_saved_per_waiting, shortest_display",
+   "src/core/reward_queue.cpp:show_next_player_announcement"
   ],
   "source_records": [
    "docs/research/R-0042-stunt-name-captions.md",
@@ -3414,8 +3415,8 @@
   "label": "sub_81C0CE",
   "native": [
    "src/core/presentation.cpp:classic_caption_tile",
-   "src/core/reward_queue.cpp:canonical_caption",
-   "src/core/reward_queue.cpp:update_reward_queue"
+   "src/core/reward_queue.cpp:show_next_player_announcement",
+   "src/core/reward_queue.cpp:update_opponent_announcements"
   ],
   "source_records": [
    "docs/research/R-0042-stunt-name-captions.md",
@@ -3429,7 +3430,7 @@
   "comment": "routine start",
   "label": "sub_81C219",
   "native": [
-   "src/core/reward_queue.cpp:update_reward_queue"
+   "src/core/reward_queue.cpp:update_opponent_announcements"
   ],
   "source_records": [
    "docs/research/R-0011-motion.md"
@@ -3442,7 +3443,8 @@
   "label": "loc_81C238",
   "native": [
    "src/core/race_state_io.cpp:deserialize_classic_race",
-   "src/core/reward_queue.cpp:update_reward_queue"
+   "src/core/reward_queue.cpp:takes_reward_path",
+   "src/core/reward_queue.cpp:update_opponent_announcements"
   ],
   "source_records": [
    "tasks/NATIVE-READABILITY.md"
@@ -3454,7 +3456,8 @@
   "comment": "instruction start",
   "label": "loc_81C241",
   "native": [
-   "src/core/reward_queue.cpp:update_reward_queue"
+   "src/core/reward_queue.cpp:opponent_reward_weight",
+   "src/core/reward_queue.cpp:update_opponent_announcements"
   ],
   "source_records": [
    "docs/research/R-0033-sustained-traversal.md"
@@ -3466,7 +3469,7 @@
   "comment": "instruction start",
   "label": "loc_81C25C",
   "native": [
-   "src/core/reward_queue.cpp:update_reward_queue"
+   "src/core/reward_queue.cpp:update_opponent_announcements"
   ],
   "source_records": [
    "docs/research/R-0052-hunter-effects.md"
@@ -3478,7 +3481,8 @@
   "comment": "instruction start",
   "label": "loc_81C260",
   "native": [
-   "src/core/reward_queue.cpp:update_reward_queue"
+   "src/core/reward_queue.cpp:opponent_reward_weight",
+   "src/core/reward_queue.cpp:update_opponent_announcements"
   ],
   "source_records": [
    "docs/research/R-0022-zoom-zoo-riding-reference.md"
@@ -3490,7 +3494,7 @@
   "comment": "instruction start",
   "label": "loc_81C274",
   "native": [
-   "src/core/reward_queue.cpp:update_reward_queue"
+   "src/core/reward_queue.cpp:update_opponent_announcements"
   ],
   "source_records": [
    "docs/research/R-0022-zoom-zoo-riding-reference.md"
@@ -3503,7 +3507,7 @@
   "label": "loc_81C280",
   "native": [
    "src/core/race_state_io.cpp:deserialize_classic_race",
-   "src/core/reward_queue.cpp:update_reward_queue"
+   "src/core/reward_queue.cpp:update_opponent_announcements"
   ],
   "source_records": [
    "docs/research/R-0022-zoom-zoo-riding-reference.md"
@@ -3515,7 +3519,7 @@
   "comment": "instruction start",
   "label": "loc_81C286",
   "native": [
-   "src/core/reward_queue.cpp:update_reward_queue"
+   "src/core/reward_queue.cpp:update_opponent_announcements"
   ],
   "source_records": [
    "docs/research/R-0011-motion.md"
@@ -3546,7 +3550,7 @@
   "label": "sub_81C55B",
   "native": [
    "src/core/hunter_effects.cpp:update_hunter_effects",
-   "src/core/reward_queue.cpp:push_front_zoom_player"
+   "src/core/reward_queue.cpp:push_front_player_announcement"
   ],
   "source_records": [
    "docs/research/R-0051-loop-and-tile-pairs.md",
@@ -5625,7 +5629,7 @@
   "label": "loc_829B87",
   "native": [
    "src/core/race_state_io.cpp:deserialize_classic_race",
-   "src/core/reward_queue.cpp:update_zoom_landing_rewards"
+   "src/core/reward_queue.cpp:announce_landing_tricks"
   ],
   "source_records": [
    "docs/research/R-0033-sustained-traversal.md"
@@ -5638,7 +5642,7 @@
   "label": "loc_829CF8",
   "native": [
    "src/core/race_state_io.cpp:deserialize_classic_race",
-   "src/core/reward_queue.cpp:update_zoom_landing_rewards"
+   "src/core/reward_queue.cpp:announce_landing_tricks"
   ],
   "source_records": [
    "docs/research/R-0011-motion.md"
@@ -5651,7 +5655,8 @@
   "label": "loc_829D3A",
   "native": [
    "src/core/race_state_io.cpp:deserialize_classic_race",
-   "src/core/reward_queue.cpp:update_zoom_landing_rewards"
+   "src/core/reward_queue.cpp:announce_combination",
+   "src/core/reward_queue.cpp:announce_landing_tricks"
   ],
   "source_records": [
    "docs/research/R-0052-hunter-effects.md"
@@ -5664,7 +5669,7 @@
   "label": "loc_829D7F",
   "native": [
    "src/core/race_state_io.cpp:deserialize_classic_race",
-   "src/core/reward_queue.cpp:update_zoom_landing_rewards"
+   "src/core/reward_queue.cpp:announce_landing_tricks"
   ],
   "source_records": [
    "docs/research/R-0030-zoom-zoo-native-trial.md"
@@ -7706,7 +7711,8 @@
   "comment": "routine start",
   "label": "sub_83CDBC",
   "native": [
-   "src/core/reward_queue.cpp:update_zoom_hints"
+   "src/core/reward_queue.cpp:hint_interval",
+   "src/core/reward_queue.cpp:update_tutorial_hints"
   ],
   "source_records": [
    "docs/research/R-0052-hunter-effects.md"

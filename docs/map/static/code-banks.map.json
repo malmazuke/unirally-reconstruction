@@ -4649,7 +4649,7 @@
    "native": [
     "src/core/presentation.cpp:classic_caption_entry",
     "src/core/presentation.hpp:classic_caption_entry",
-    "src/core/reward_queue.cpp:canonical_caption"
+    "src/core/reward_queue.cpp:show_next_player_announcement"
    ],
    "observed_entries": {},
    "start": "$81:BEA8",
@@ -4670,7 +4670,7 @@
     "NMX"
    ],
    "native": [
-    "src/core/reward_queue.cpp:consume_zoom_player",
+    "src/core/reward_queue.cpp:show_hunter_message",
     "src/core/zoom_zoo_movement.hpp:HunterEffects::hud_event"
    ],
    "observed_entries": {},
@@ -4726,7 +4726,8 @@
     "NMX"
    ],
    "native": [
-    "src/core/reward_queue.cpp:canonical_caption"
+    "src/core/reward_queue.cpp:longest_display, display_saved_per_waiting, shortest_display",
+    "src/core/reward_queue.cpp:show_next_player_announcement"
    ],
    "observed_entries": {},
    "start": "$81:BFD4",
@@ -4748,8 +4749,10 @@
    ],
    "native": [
     "src/core/presentation.cpp:classic_caption_tile",
-    "src/core/reward_queue.cpp:canonical_caption",
-    "src/core/reward_queue.cpp:update_reward_queue"
+    "src/core/reward_queue.cpp:reward_opponent",
+    "src/core/reward_queue.cpp:reward_player",
+    "src/core/reward_queue.cpp:show_next_player_announcement",
+    "src/core/reward_queue.cpp:update_opponent_announcements"
    ],
    "observed_entries": {},
    "start": "$81:C0CE",
@@ -4805,7 +4808,10 @@
    ],
    "native": [
     "src/core/race_state_io.cpp:deserialize_classic_race",
-    "src/core/reward_queue.cpp:update_reward_queue"
+    "src/core/reward_queue.cpp:opponent_reward_weight",
+    "src/core/reward_queue.cpp:reward_opponent",
+    "src/core/reward_queue.cpp:takes_reward_path",
+    "src/core/reward_queue.cpp:update_opponent_announcements"
    ],
    "observed_entries": {},
    "start": "$81:C219",
@@ -4925,7 +4931,7 @@
    ],
    "native": [
     "src/core/hunter_effects.cpp:update_hunter_effects",
-    "src/core/reward_queue.cpp:push_front_zoom_player"
+    "src/core/reward_queue.cpp:push_front_player_announcement"
    ],
    "observed_entries": {},
    "start": "$81:C55B",
@@ -4946,7 +4952,7 @@
    ],
    "native": [
     "src/core/hunter_effects.cpp:update_hunter_effects",
-    "src/core/reward_queue.cpp:push_front_zoom_player"
+    "src/core/reward_queue.cpp:push_front_player_announcement"
    ],
    "observed_entries": {},
    "start": "$81:C55F",
@@ -4992,7 +4998,7 @@
    ],
    "native": [
     "src/core/race_state_io.cpp:deserialize_classic_race",
-    "src/core/reward_queue.cpp:enqueue_zoom_player"
+    "src/core/reward_queue.cpp:queue_player_announcement"
    ],
    "observed_entries": {},
    "start": "$81:C598",
@@ -5014,7 +5020,7 @@
    ],
    "native": [
     "src/core/race_state_io.cpp:deserialize_classic_race",
-    "src/core/reward_queue.cpp:enqueue_zoom_player"
+    "src/core/reward_queue.cpp:queue_player_announcement"
    ],
    "observed_entries": {},
    "start": "$81:C59C",
@@ -7959,7 +7965,8 @@
    ],
    "native": [
     "src/core/race_state_io.cpp:deserialize_classic_race",
-    "src/core/reward_queue.cpp:update_zoom_landing_rewards"
+    "src/core/reward_queue.cpp:announce_combination",
+    "src/core/reward_queue.cpp:announce_landing_tricks"
    ],
    "observed_entries": {},
    "start": "$82:9B69",
@@ -7981,7 +7988,7 @@
    ],
    "native": [
     "src/core/race_state_io.cpp:deserialize_classic_race",
-    "src/core/reward_queue.cpp:update_zoom_landing_rewards"
+    "src/core/reward_queue.cpp:announce_landing_tricks"
    ],
    "observed_entries": {},
    "start": "$82:9D74",
@@ -8003,7 +8010,7 @@
    ],
    "native": [
     "src/core/race_state_io.cpp:deserialize_classic_race",
-    "src/core/reward_queue.cpp:update_zoom_landing_rewards"
+    "src/core/reward_queue.cpp:announce_landing_tricks"
    ],
    "observed_entries": {},
    "start": "$82:9D97",
@@ -11627,7 +11634,8 @@
     "NmX"
    ],
    "native": [
-    "src/core/reward_queue.cpp:update_zoom_hints"
+    "src/core/reward_queue.cpp:hint_interval",
+    "src/core/reward_queue.cpp:update_tutorial_hints"
    ],
    "observed_entries": {},
    "start": "$83:CDBC",
@@ -11647,7 +11655,8 @@
     "NMX"
    ],
    "native": [
-    "src/core/reward_queue.cpp:update_zoom_hints"
+    "src/core/reward_queue.cpp:hint_interval",
+    "src/core/reward_queue.cpp:update_tutorial_hints"
    ],
    "observed_entries": {},
    "start": "$83:CE2C",
@@ -11667,7 +11676,8 @@
     "NMX"
    ],
    "native": [
-    "src/core/reward_queue.cpp:update_zoom_hints"
+    "src/core/reward_queue.cpp:hint_interval",
+    "src/core/reward_queue.cpp:update_tutorial_hints"
    ],
    "observed_entries": {},
    "start": "$83:CE43",

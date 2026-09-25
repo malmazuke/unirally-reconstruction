@@ -421,7 +421,7 @@ static ZoomZooState deserialize_classic_race(std::span<const std::uint8_t> bytes
         // beyond the bank; only these produced values are admitted here.
         for (auto event : q.entries)
             if (event >= 88) throw std::invalid_argument("invalid ZOOM ZOO player voice event");
-        // This clause is what keeps update_reward_queue's other rejections
+        // This clause is what keeps update_opponent_announcements's other rejections
         // unreachable and its learned-bank guards sufficient: the opponent's
         // sixteen voices follow its character (200-215, or 232-247 on the
         // HUNTER tour, R-0052); widening the admitted range means widening

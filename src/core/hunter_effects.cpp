@@ -2,6 +2,7 @@
 
 #include "hunter_effects.hpp"
 
+#include "announcements.hpp"
 #include "reward_queue.hpp"
 #include "word_arithmetic.hpp"
 #include "zoom_zoo_movement.hpp"
@@ -57,8 +58,8 @@ void update_hunter_effects(ZoomZooState& state, std::span<const std::uint8_t> bl
     const auto finish = [&](unsigned k) {
         // The effect's end: event $23 and its message, and the HUD's message
         // buffers reset ($83:D275).
-        h.message = 0x23;
-        push_front_zoom_player(state, 0x23);
+        h.message = announcement::effect_over;
+        push_front_player_announcement(state, announcement::effect_over);
         h.hud_event = 0;
         h.effect[k] = 0;
         h.active = 0;
@@ -74,7 +75,7 @@ void update_hunter_effects(ZoomZooState& state, std::span<const std::uint8_t> bl
         if (!h.effect[k]) continue;
         if (h.effect[k] == 1) {
             h.effect[k] = 2;
-            push_front_zoom_player(state, event[k]);
+            push_front_player_announcement(state, event[k]);
             if (k != 1) h.message = event[k];
         }
         for (unsigned other = 0; other < 8; ++other)
