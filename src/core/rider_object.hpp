@@ -47,6 +47,17 @@ RiderObjectPixels compose_rider_object(const RiderObjectContent& content, std::u
                                        std::optional<std::uint16_t> overlay_pose,
                                        RiderRowClip clip);
 
+// A pose frame's cells as `$83:8E3A` walks them for the front end's pictures (R-0055): rows 0-4
+// by columns 0-5, each its tile reference word, or 0 (the blank tile $27:8000) where the frame's
+// mask is clear. Throws std::invalid_argument like `compose_rider_object`.
+inline constexpr std::size_t pose_frame_rows = 5, pose_frame_columns = 6;
+using PoseFrameCells = std::array<std::uint16_t, pose_frame_rows * pose_frame_columns>;
+PoseFrameCells pose_frame_cells(const RiderObjectContent& content, std::uint16_t pose_index);
+
+// The 32 bytes of the SNES 4bpp tile a reference word names.
+std::span<const std::uint8_t> rider_tile_bytes(const RiderObjectContent& content,
+                                               std::uint16_t word);
+
 // Decoded tile reference word ($83:F253-$83:F26B): the low byte's bits 7..2
 // select bank 0x27 + n, and bits 1..0 with the high byte select one of 1024
 // 32-byte tiles in that bank.

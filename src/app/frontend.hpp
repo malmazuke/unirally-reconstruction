@@ -108,19 +108,29 @@ private:
   std::array<std::optional<std::uint16_t>, 2> drawn_pose_{};
 };
 
-// The app's front end: power-on to the main menu (R-0054). Until the other
-// modes are native, choosing 2P, VS, LEAGUE, OPTIONS or reaching the demo shows
-// a short notice and returns to the main menu as it first appeared.
+// The app's front end: power-on to the main menu (R-0054) and 1P's setup
+// screens to the race (R-0055, R-0056). Until the other modes are native,
+// choosing 2P, VS, LEAGUE, OPTIONS, reaching the demo, or a 1P race the race
+// scenarios do not have (another rider than MIKE, a stunt event) shows a short
+// notice and returns to the main menu as it first appeared.
 class FrontEndSession {
 public:
   explicit FrontEndSession(const ClassicContentPack &pack);
-  // One PAL frame from the two ports' masks (`button_mask` bits). True once 1P
-  // is chosen.
+  // One PAL frame from the two ports' masks (`button_mask` bits). True once a
+  // race with a native scenario is chosen: `race_track()`.
   bool update(const std::array<std::uint16_t, 2> &ports);
+  // The same with the pads as the SNES reads them (`$4218`, `$421A`), as the
+  // laboratory's input scripts give them.
+  bool update(FrontEndPads pads);
+  // The front end's own frame since power-on (notices do not count).
+  std::uint32_t front_end_frame() const { return state_.frame; }
   RgbFrame frame() const;
   std::uint32_t frames() const { return frames_; }
   std::uint32_t notices() const { return notices_; }
   std::uint32_t returns_to_menu() const { return returns_; }
+  ClassicRaceTrack race_track() const {
+    return ClassicRaceTrack{state_.tour_menu.track};
+  }
 
 private:
   FrontEndContent content_;
@@ -129,6 +139,10 @@ private:
   std::uint32_t notice_frames_{}, frames_{}, notices_{}, returns_{};
   FrontEndMode notice_mode_{};
 };
+
+// 1P's race is native when a race scenario has it (R-0046, R-0050): MIKE
+// against BRONSEN, on a track with a scenario (not a stunt event).
+bool native_one_player_race(const FrontEndState &state);
 
 // A port's mask as the SNES reads the pad (`$4218`: B in bit 15 ... R in bit
 // 4).

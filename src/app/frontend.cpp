@@ -186,7 +186,18 @@ std::uint16_t snes_pad_word(std::uint16_t mask) {
 FrontEndSession::FrontEndSession(const ClassicContentPack &pack)
     : content_(front_end_content(pack)) {}
 
+bool native_one_player_race(const FrontEndState &state) {
+  constexpr std::uint8_t mike = 0, bronsen = 0x11;
+  return state.mode_chosen && state.mode == FrontEndMode::one_player &&
+         state.rider_menu.rider == mike && state.now_playing.opponent == bronsen &&
+         classic_race_has_scenario(ClassicRaceTrack{state.tour_menu.track});
+}
+
 bool FrontEndSession::update(const std::array<std::uint16_t, 2> &ports) {
+  return update(FrontEndPads{snes_pad_word(ports[0]), snes_pad_word(ports[1])});
+}
+
+bool FrontEndSession::update(FrontEndPads pads) {
   ++frames_;
   if (notice_frames_) {
     if (--notice_frames_ == 0) {
@@ -195,13 +206,12 @@ bool FrontEndSession::update(const std::array<std::uint16_t, 2> &ports) {
     }
     return false;
   }
-  update_front_end(state_, content_,
-                   {snes_pad_word(ports[0]), snes_pad_word(ports[1])});
-  if (state_.in_main_menu && !main_menu_)
+  update_front_end(state_, content_, pads);
+  if (state_.screen == FrontEndScreen::main_menu && !main_menu_)
     main_menu_ = state_;
   if (!state_.mode_chosen)
     return false;
-  if (state_.mode == FrontEndMode::one_player)
+  if (native_one_player_race(state_))
     return true;
   // Two seconds of notice at 50 Hz.
   notice_mode_ = state_.mode;
@@ -216,9 +226,12 @@ RgbFrame FrontEndSession::frame() const {
   static constexpr std::array<const char *, 8> names{
       "1P", "2P", "VS", "LEAGUE", "OPTIONS", "THE DEMO", "WIPE RAM", "THIS CODE"};
   RgbFrame frame{};
+  // 1P reaches a notice only for a race the race scenarios do not have.
   const std::string line =
-      std::string(names[static_cast<std::size_t>(notice_mode_)]) +
-      " IS NOT NATIVE YET";
+      notice_mode_ == FrontEndMode::one_player
+          ? std::string("THIS RACE IS NOT NATIVE YET")
+          : std::string(names[static_cast<std::size_t>(notice_mode_)]) +
+                " IS NOT NATIVE YET";
   ui_text(frame, 128 - static_cast<int>(line.size()) * 3, 108, line);
   return frame;
 }

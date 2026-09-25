@@ -349,7 +349,9 @@ std::uint16_t combine(const SnesVideoRegisters& registers, Pixel above, const Pi
 
 } // namespace
 
-RgbFrame render_snes_screen(const SnesVideoMemory& memory, const SnesVideoRegisters& registers) {
+RgbFrame render_snes_screen(const SnesVideoMemory& screen_memory,
+                            const SnesVideoRegisters& registers,
+                            std::span<const SnesLineColour> line_colours) {
     RgbFrame frame{};
     if (registers.force_blank) return frame;
     if (registers.unmodelled_features)
@@ -359,7 +361,16 @@ RgbFrame render_snes_screen(const SnesVideoMemory& memory, const SnesVideoRegist
     if ((clip_mask == 1 || clip_mask == 2) || (prevent_mask == 1 || prevent_mask == 2))
         throw std::invalid_argument("SNES colour window regions are not modelled");
     const auto layout = mode_layout(registers);
+    // bsnes caches CGRAM per line (`PPU::Line::cache`), so a colour changed during the picture
+    // shows from the next line on: the picture is drawn from a copy whose CGRAM changes by row.
+    SnesVideoMemory memory = screen_memory;
+    auto next_colour = line_colours.begin();
     for (int row = 0; row < 224; ++row) {
+        for (; next_colour != line_colours.end() && next_colour->row <= row; ++next_colour) {
+            memory.cgram[next_colour->index * 2U] = static_cast<std::uint8_t>(next_colour->colour);
+            memory.cgram[next_colour->index * 2U + 1] =
+                static_cast<std::uint8_t>(next_colour->colour >> 8U);
+        }
         // Screen row 0 is scanline 1, as in `background_pixel`.
         const auto y = static_cast<unsigned>(row + 1);
         Line line;

@@ -289,7 +289,7 @@ def cmd_run(args: argparse.Namespace) -> int:
         return _finish(rep, paths.report, stale_build)
     command = [str(executable), "--content-pack", str(pack_path)]
     # A named track starts in that race; without one the app starts at power-on (the front end,
-    # FRONT-END-MAIN-MENU), where 1P starts DRAGSTER.
+    # FRONT-END-MAIN-MENU), where 1P leads to the rider menu and MIKE starts DRAGSTER.
     track = getattr(args, "track", None)
     if track is not None:
         command.extend(["--track", track])
@@ -299,6 +299,8 @@ def cmd_run(args: argparse.Namespace) -> int:
         command.extend(["--updates", str(args.updates)])
     if args.fixed_controller_mask is not None:
         command.extend(["--fixed-controller-mask", str(args.fixed_controller_mask)])
+    if getattr(args, "front_end_inputs", None):
+        command.extend(["--front-end-inputs", str(Path(args.front_end_inputs).resolve())])
     launched = run_bounded(command, timeout=args.timeout, cwd=ROOT)
     detail = launched.tail(2000)
     if launched.outcome == "timeout":
@@ -335,6 +337,8 @@ def register(sub: argparse._SubParsersAction) -> None:
     run.add_argument("--rules", default=str(ROOT / packmod.TWO_TRACK_RULES_PATH), help=argparse.SUPPRESS)
     run.add_argument("--updates", type=int, help="exit after this many updates (smoke-test aid)")
     run.add_argument("--fixed-controller-mask", type=int, choices=range(0, 65536), help=argparse.SUPPRESS)
+    # The front end's pads by frame, "frame pad1 pad2" in hex SNES words (smoke-test aid).
+    run.add_argument("--front-end-inputs", help=argparse.SUPPRESS)
     run.add_argument("--hidden", action="store_true", help="create a hidden window (smoke-test aid)")
     run.add_argument("--timeout", type=float, default=86400)
     run.add_argument("--report")

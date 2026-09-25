@@ -80,11 +80,7 @@ std::uint16_t next_word(const RiderObjectContent& content, FrameStream& frame) {
 
 void copy_tile(const RiderObjectContent& content, std::uint16_t word, RiderObjectPixels& pixels,
                std::size_t row, std::size_t column) {
-    const auto reference = decode_rider_tile_reference(word);
-    const auto start = banked_offset(reference.bank, reference.address, first_tile_bank);
-    if (start + tile_bytes > content.object_tiles.size())
-        throw std::invalid_argument("rider tile reference is outside the packed tiles");
-    const auto tile = content.object_tiles.subspan(start, tile_bytes);
+    const auto tile = rider_tile_bytes(content, word);
     for (std::size_t y = 0; y < 8; ++y)
         for (std::size_t x = 0; x < 8; ++x) {
             const auto bit = 7U - x;
@@ -141,6 +137,25 @@ RiderObjectPixels compose_rider_object(const RiderObjectContent& content, std::u
             // by the previous update, so it is always transparent.
         }
     return pixels;
+}
+
+PoseFrameCells pose_frame_cells(const RiderObjectContent& content, std::uint16_t pose_index) {
+    auto frame = open_frame(content, pose_index, RiderRowClip::none);
+    PoseFrameCells cells{};
+    for (std::size_t row = 0; row < pose_frame_rows; ++row)
+        for (std::size_t column = 0; column < pose_frame_columns; ++column)
+            if (frame.row_masks[row] & (0x80U >> column))
+                cells[row * pose_frame_columns + column] = next_word(content, frame);
+    return cells;
+}
+
+std::span<const std::uint8_t> rider_tile_bytes(const RiderObjectContent& content,
+                                               std::uint16_t word) {
+    const auto reference = decode_rider_tile_reference(word);
+    const auto start = banked_offset(reference.bank, reference.address, first_tile_bank);
+    if (start + tile_bytes > content.object_tiles.size())
+        throw std::invalid_argument("rider tile reference is outside the packed tiles");
+    return content.object_tiles.subspan(start, tile_bytes);
 }
 
 RiderOam project_rider_oam(std::uint16_t world_x, std::uint16_t world_y, std::uint16_t camera_x,

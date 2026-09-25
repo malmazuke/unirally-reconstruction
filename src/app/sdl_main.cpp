@@ -11,7 +11,9 @@
 #include <charconv>
 #include <cstdint>
 #include <filesystem>
+#include <fstream>
 #include <iostream>
+#include <map>
 #include <memory>
 #include <optional>
 #include <stdexcept>
@@ -144,7 +146,22 @@ struct Options {
   bool hidden{};
   unirally::ClassicRaceTrack track{unirally::ClassicRaceTrack::Dragster};
   bool track_given{}; // without --track the app starts at power-on (the front end)
+  // The front end's pads by its frame, from a laboratory input script (smoke-test aid).
+  std::map<std::uint32_t, unirally::FrontEndPads> front_end_inputs;
 };
+
+// "frame pad1 pad2" rows, the pads as hex SNES words, as `front_end_runner` reads them.
+std::map<std::uint32_t, unirally::FrontEndPads> read_front_end_inputs(const std::filesystem::path& path) {
+  std::ifstream in(path);
+  if (!in) throw std::invalid_argument("cannot open --front-end-inputs");
+  std::map<std::uint32_t, unirally::FrontEndPads> rows;
+  std::uint32_t frame{};
+  std::string one, two;
+  while (in >> frame >> one >> two)
+    rows[frame] = {static_cast<std::uint16_t>(std::stoul(one, nullptr, 16)),
+                   static_cast<std::uint16_t>(std::stoul(two, nullptr, 16))};
+  return rows;
+}
 
 std::uint32_t parse_updates(std::string_view value) {
   std::uint32_t parsed{};
@@ -172,7 +189,8 @@ void print_help() {
       << "       NN: a race track's number (its index in the ROM) with a recovered scenario\n"
       << "       unirally --supported-profiles   (print the pack profiles this build reads)\n"
       << "Without --track it starts at power-on: the Nintendo screen, the title and the main menu;\n"
-      << "1P starts DRAGSTER. With --track it starts in that race. PAL 50 Hz.\n"
+      << "1P leads to the one-player screens and the race chosen there. With --track it starts in\n"
+      << "that race. PAL 50 Hz.\n"
       << "Keyboard: arrows, Z=B, X=Y, A=A, S=X, Q=L, W=R, Enter=Start.\n"
       << "Gamepad: D-pad, South=B, West=Y, East=A, North=X, shoulders=L/R, Start, Back=Select;\n"
       << "the analog stick is not mapped. Two gamepads are tracked; this slice consumes port 0 only.\n"
@@ -217,12 +235,18 @@ std::optional<Options> options(int argc, char **argv) {
       result.maximum_updates = parse_updates(value);
     else if (option == "--fixed-controller-mask")
       result.fixed_controller_mask = parse_controller_mask(value);
+    else if (option == "--front-end-inputs")
+      result.front_end_inputs = read_front_end_inputs(value);
     else
       throw std::invalid_argument("unknown option: " + std::string(option));
   }
   if (result.pack.empty())
     throw std::invalid_argument("--content-pack is required; use `project.py frontend run` for first-launch extraction");
   return result;
+}
+
+std::string window_title(const std::string& track_name) {
+  return "Unirally \u2014 Classic / "+track_name;
 }
 
 struct RuntimeContent {
@@ -258,7 +282,7 @@ int main(int argc, char **argv) try {
   if (!parsed)
     return 0;
   RuntimeContent content(parsed->pack); // validate before SDL or gameplay
-  const auto track=parsed->track;
+  auto track=parsed->track; // NOW PLAYING can choose another race
   const bool zoom_zoo=track==unirally::ClassicRaceTrack::ZoomZoo;
   // Both tracks run the shared race engine (R-0038) and are drawn by the shared
   // renderer from their own track content. DRAGSTER's trick, landing, reversal
@@ -267,9 +291,9 @@ int main(int argc, char **argv) try {
   if(!zoom_zoo && content.pack.optional_entry("zoom.landing-response-matrices").empty())
     throw std::invalid_argument("DRAGSTER and the other tracks need the full content pack for jumps, brakes, reversal and tricks; "
                                 "create it from your ROM with: python3 tools/project.py frontend run --track dragster "
-                                "--pack local/classic-pal-crawler-tracks-v15.pack --rom PATH");
-  const auto zoom_content=unirally::classic_race_content(content.pack,track);
-  const auto race_presentation=unirally::classic_race_presentation_content(content.pack,track);
+                                "--pack local/classic-pal-crawler-tracks-v17.pack --rom PATH");
+  auto zoom_content=unirally::classic_race_content(content.pack,track);
+  auto race_presentation=unirally::classic_race_presentation_content(content.pack,track);
   auto zoom_state=unirally::classic_race_start(zoom_content,unirally::classic_race_scenario(track));
   auto& state=zoom_state.movement;
   auto zoom_hud_state=zoom_state; // State before the latest update, for the HUD.
@@ -283,8 +307,7 @@ int main(int argc, char **argv) try {
   SdlQuitter quit;
   const auto flags = SDL_WINDOW_RESIZABLE |
                      (parsed->hidden ? SDL_WINDOW_HIDDEN : 0U);
-  const std::string window_title="Unirally — Classic / "+race_presentation.track_name;
-  Window window(SDL_CreateWindow(window_title.c_str(),
+  Window window(SDL_CreateWindow(window_title(race_presentation.track_name).c_str(),
                                  768, 672, flags));
   if (!window)
     throw sdl_error("window creation failed");
@@ -333,7 +356,7 @@ int main(int argc, char **argv) try {
   std::array<std::uint16_t, 2> last_ports{};
   unirally::app::LivePresentation live_presentation;
   bool reported_held_frame{};
-  // Without --track the session starts at power-on; 1P on the main menu starts the race.
+  // Without --track the session starts at power-on; NOW PLAYING's Race starts the race.
   std::optional<unirally::app::FrontEndSession> front_end;
   if (!parsed->track_given) front_end.emplace(content.pack);
   while (running) {
@@ -418,9 +441,29 @@ int main(int argc, char **argv) try {
       } else if (observed_nonzero_input) {
         ++neutral_updates_after_input;
       }
+      bool race_chosen = false;
+      if (front_end && !parsed->front_end_inputs.empty()) {
+        const auto row = parsed->front_end_inputs.find(front_end->front_end_frame());
+        race_chosen = front_end->update(row == parsed->front_end_inputs.end()
+                                            ? unirally::FrontEndPads{}
+                                            : row->second);
+      } else if (front_end) {
+        race_chosen = front_end->update(ports);
+      }
       if (front_end) {
-        if (front_end->update(ports)) {
-          std::cout << "Front end: 1P chosen after " << front_end->frames() << " frames\n";
+        if (race_chosen) {
+          // The race NOW PLAYING chose, if it is not the one the app started with.
+          const auto chosen=front_end->race_track();
+          std::cout << "Front end: race " << unsigned(chosen.index) << " chosen after " << front_end->frames()
+                    << " frames\n";
+          if(!(chosen==track)) {
+            track=chosen;
+            zoom_content=unirally::classic_race_content(content.pack,chosen);
+            race_presentation=unirally::classic_race_presentation_content(content.pack,chosen);
+            zoom_state=unirally::classic_race_start(zoom_content,unirally::classic_race_scenario(chosen));
+            zoom_hud_state=zoom_state;
+            SDL_SetWindowTitle(window.get(),window_title(race_presentation.track_name).c_str());
+          }
           front_end.reset();
           input.clear();
         }
@@ -514,7 +557,7 @@ int main(int argc, char **argv) try {
   if (front_end)
     std::cout << "Front end: frames " << front_end->frames() << "; notices "
               << front_end->notices() << "; returns to the main menu "
-              << front_end->returns_to_menu() << "; 1P not chosen\n";
+              << front_end->returns_to_menu() << "; no race chosen\n";
   std::cout << "Presentation frames: " << rendered_frames
             << "; rider-pose fallback frames: " << pose_fallback_frames
             << "; identical consecutive redraws: " << identical_redraws
@@ -534,7 +577,7 @@ int main(int argc, char **argv) try {
             << state.frame << "; controller-0 mask " << last_ports[0]
             << "; player x " << state.riders[0].motion.x << "; velocity x "
             << state.riders[0].motion.velocity_x << '\n';
-  if(!zoom_zoo) {
+  if(!(track==unirally::ClassicRaceTrack::ZoomZoo)) {
     const auto shown=unirally::classic_finish_view(zoom_state);
     std::cout<<race_presentation.track_name<<" race phase "<<static_cast<unsigned>(shown.phase)
       <<"; outcome "<<static_cast<unsigned>(shown.outcome)<<'\n';
@@ -543,7 +586,7 @@ int main(int argc, char **argv) try {
       <<"; totals "<<zoom_state.race.total_times[0]<<'/'<<zoom_state.race.total_times[1]
       <<"; stable results reached "<<results_reached<<"; restarts from result/pause "
       <<result_restarts<<'/'<<pause_restarts<<'\n';
-  if(zoom_zoo) {
+  if(track==unirally::ClassicRaceTrack::ZoomZoo) {
     std::cout<<"Opponent tricks: updates "<<opponent_trick_updates<<"; multi-axis updates "
              <<opponent_multi_axis_updates<<"; selectors seen";
     if(!seen_selectors)std::cout<<" none";

@@ -97,7 +97,7 @@ class PackProfileTests(unittest.TestCase):
             compiled += [(i, int(n), d) for i, n, d in re.findall(r'\{"([^"]+)",\s*(\d+),\s*"([0-9a-f]{64})"\}', table)]
         self.assertEqual(compiled, [(e["id"], e["size"], e["sha256"]) for e in added])
         self.assertIn(hashlib.sha256(rules_path.read_bytes()).hexdigest(), source)
-        self.assertEqual(rules["profile_id"], "classic.pal.crawler.tracks.v15")
+        self.assertEqual(rules["profile_id"], "classic.pal.crawler.tracks.v17")
         ids = {e["id"] for e in added}
         for index in tracks.NEW_RACE_TRACKS + tracks.LOCKED_RACE_TRACKS:
             for part in ("data", "tile-columns", "tile-flags", "bg1-tiles"):
@@ -163,13 +163,58 @@ class FrontEndEntryTests(unittest.TestCase):
         import re
         from tools.unirally_lab.content import front_end
         rules = json.loads((ROOT / "tests" / "manifests" / "content" / "classic-crawler-tracks-pack.json").read_text(encoding="utf-8"))
-        added = [e for e in rules["entries"] if e["id"].startswith("front-end.")]
         expected = [f"front-end.asset.{asset:03d}" for asset in front_end.FRONT_END_ASSETS]
         expected += [table[0] for table in front_end.FRONT_END_TABLES]
-        self.assertEqual([e["id"] for e in added], expected)
-        self.assertEqual(rules["entries"][-len(added):], added)
+        by_id = {e["id"]: e for e in rules["entries"]}
+        added = [by_id[entry_id] for entry_id in expected]
+        later = len(front_end.RIDER_MENU_ASSETS) + len(front_end.RIDER_MENU_TABLES)
+        later += len(front_end.TOUR_MENU_ASSETS) + len(front_end.TOUR_MENU_TABLES)
+        self.assertEqual(rules["entries"][-len(added) - later:-later], added)
         source = (ROOT / "src" / "core" / "content_pack.cpp").read_text(encoding="utf-8")
         table = source[source.index("front_end_required{{"):]
+        table = table[:table.index("}};")]
+        compiled = re.findall(r'\{"([^"]+)",\s*(\d+),\s*"([0-9a-f]{64})"\}', table)
+        self.assertEqual(compiled, [(e["id"], str(e["size"]), e["sha256"]) for e in added])
+        for entry in added:
+            self.assertEqual(entry["source"]["kind"], "raw")
+
+
+class RiderMenuEntryTests(unittest.TestCase):
+    """Profile v16's added entries (R-0055): the rider menu's palettes, names, title and the
+    decoration animator's tables, last in the rules and compiled in the same order."""
+
+    def test_rules_and_compiled_table_agree(self) -> None:
+        import re
+        from tools.unirally_lab.content import front_end
+        rules = json.loads((ROOT / "tests" / "manifests" / "content" / "classic-crawler-tracks-pack.json").read_text(encoding="utf-8"))
+        expected = [f"front-end.asset.{asset:03d}" for asset in front_end.RIDER_MENU_ASSETS]
+        expected += [table[0] for table in front_end.RIDER_MENU_TABLES]
+        tour_menu = len(front_end.TOUR_MENU_ASSETS) + len(front_end.TOUR_MENU_TABLES)
+        added = rules["entries"][-len(expected) - tour_menu:-tour_menu]
+        self.assertEqual([e["id"] for e in added], expected)
+        source = (ROOT / "src" / "core" / "content_pack.cpp").read_text(encoding="utf-8")
+        table = source[source.index("rider_menu_required{{"):]
+        table = table[:table.index("}};")]
+        compiled = re.findall(r'\{"([^"]+)",\s*(\d+),\s*"([0-9a-f]{64})"\}', table)
+        self.assertEqual(compiled, [(e["id"], str(e["size"]), e["sha256"]) for e in added])
+        for entry in added:
+            self.assertEqual(entry["source"]["kind"], "raw")
+
+
+class TourMenuEntryTests(unittest.TestCase):
+    """Profile v17's added entries (R-0056): PICK TOUR's, PICK TRACK's and NOW PLAYING's content,
+    last in the rules and compiled in the same order."""
+
+    def test_rules_and_compiled_table_agree(self) -> None:
+        import re
+        from tools.unirally_lab.content import front_end
+        rules = json.loads((ROOT / "tests" / "manifests" / "content" / "classic-crawler-tracks-pack.json").read_text(encoding="utf-8"))
+        expected = [f"front-end.asset.{asset:03d}" for asset in front_end.TOUR_MENU_ASSETS]
+        expected += [table[0] for table in front_end.TOUR_MENU_TABLES]
+        added = rules["entries"][-len(expected):]
+        self.assertEqual([e["id"] for e in added], expected)
+        source = (ROOT / "src" / "core" / "content_pack.cpp").read_text(encoding="utf-8")
+        table = source[source.index("one_player_screens_required{{"):]
         table = table[:table.index("}};")]
         compiled = re.findall(r'\{"([^"]+)",\s*(\d+),\s*"([0-9a-f]{64})"\}', table)
         self.assertEqual(compiled, [(e["id"], str(e["size"]), e["sha256"]) for e in added])

@@ -9,6 +9,7 @@
 #include "content_pack.hpp"
 #include "front_end.hpp"
 
+#include <array>
 #include <cstdint>
 #include <cstdio>
 #include <filesystem>
@@ -89,6 +90,40 @@ std::string hex(const std::array<std::uint8_t, N>& bytes) {
     return out;
 }
 
+// $008F as the original holds it.
+unsigned latch_byte(const unirally::MenuLatches& latches) {
+    return (latches.moved ? 1U : 0U) | (latches.up ? 8U : 0U) | (latches.down ? 4U : 0U);
+}
+
+// The state after the main menu (R-0055), as `key=value` fields.
+void print_screens(const unirally::FrontEndState& state) {
+    const auto& slide = state.slide;
+    const auto& d = state.decorations;
+    const auto& r = state.rider_menu;
+    std::cout << "screen=" << unsigned(state.screen) << " script=" << state.script_frame
+              << " logo=" << unsigned(state.logo.offset) << " countdown=" << int(slide.countdown)
+              << " speed=" << unsigned(slide.speed) << " scroll=" << slide.scroll
+              << " hidden=" << slide.hidden_half << " shown=" << slide.shown_half
+              << " delay=" << unsigned(d.delay) << " pair=" << unsigned(d.pair_step)
+              << " cycle=" << unsigned(d.pair_cycle) << " trio=" << unsigned(d.trio_step)
+              << " wave_delay=" << unsigned(d.wave_delay) << " wave=" << hex(d.wave)
+              << " sway=" << unsigned(d.sway) << " rider=" << unsigned(r.rider)
+              << " row=" << unsigned(r.row) << " up=" << state.latches.up
+              << " down=" << state.latches.down << " tour=" << unsigned(state.tour_menu.tour)
+              << " cursor=" << unsigned(state.tour_menu.cursor)
+              << " track=" << unsigned(state.tour_menu.track)
+              << " track_cursor=" << unsigned(state.track_menu.cursor)
+              << " opponent=" << unsigned(state.now_playing.opponent)
+              << " holder=" << unsigned(state.now_playing.record_holder) << " intro=" << r.intro
+              << " idle_step=" << unsigned(r.idle_step) << " text=";
+    std::array<std::uint8_t, 2048> text{};
+    for (std::size_t k = 0; k < state.text.words.size(); ++k) {
+        text[k * 2] = static_cast<std::uint8_t>(state.text.words[k]);
+        text[k * 2 + 1] = static_cast<std::uint8_t>(state.text.words[k] >> 8U);
+    }
+    std::cout << hex(text);
+}
+
 } // namespace
 
 int main(int argc, char** argv) try {
@@ -104,13 +139,19 @@ int main(int argc, char** argv) try {
         const auto& a = state.arrow;
         std::cout << frame << ' ' << unsigned(a.spin) << ' ' << a.x << ' ' << a.target_x << ' '
                   << a.y << ' ' << a.target_y << ' ' << state.menu.idle << ' '
-                  << unsigned(state.menu.selection) << ' ' << state.menu.move_latched << ' '
+                  << unsigned(state.menu.selection) << ' ' << latch_byte(state.latches) << ' '
                   << int(state.cycle.delay) << ' ' << int(state.cycle.phase) << ' '
-                  << hex(state.oam_buffer) << ' ' << hex(state.video.cgram) << '\n';
+                  << hex(state.oam_buffer) << ' ' << hex(state.video.cgram) << ' ';
+        print_screens(state);
+        std::cout << '\n';
         if (const auto picture = options.pictures.find(frame); picture != options.pictures.end())
             write_ppm(picture->second, unirally::render_front_end(state));
     }
-    if (state.mode_chosen) std::cout << "mode " << unsigned(state.mode) << '\n';
+    // A mode chosen; for 1P the race NOW PLAYING chose.
+    if (state.mode_chosen)
+        std::cout << "mode " << unsigned(state.mode) << " race " << unsigned(state.tour_menu.track)
+                  << " rider " << unsigned(state.rider_menu.rider) << " opponent "
+                  << unsigned(state.now_playing.opponent) << '\n';
     return 0;
 } catch (const std::exception& error) {
     std::cerr << error.what() << '\n';

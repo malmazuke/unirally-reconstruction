@@ -15,7 +15,30 @@ void require(bool condition, const char *message) {
 }
 }
 
+// FRONT-END-1P-SETUP: 1P races natively where a race scenario has the race.
+void one_player_race_rule() {
+  auto state = unirally::start_front_end();
+  state.mode_chosen = true;
+  state.mode = unirally::FrontEndMode::one_player;
+  state.rider_menu.rider = 0;          // MIKE
+  state.now_playing.opponent = 0x11;   // BRONSEN
+  state.tour_menu.track = 13;          // FLAT FUN
+  require(unirally::app::native_one_player_race(state), "MIKE against BRONSEN races");
+  state.tour_menu.track = 2;           // BOWL, a stunt event
+  require(!unirally::app::native_one_player_race(state), "a stunt event is refused");
+  state.tour_menu.track = 13;
+  state.rider_menu.rider = 1;          // ANDREW
+  require(!unirally::app::native_one_player_race(state), "another rider is refused");
+  state.rider_menu.rider = 0;
+  state.now_playing.opponent = 0x12;   // SILVIA
+  require(!unirally::app::native_one_player_race(state), "another opponent is refused");
+  state.now_playing.opponent = 0x11;
+  state.mode = unirally::FrontEndMode::two_player;
+  require(!unirally::app::native_one_player_race(state), "2P is refused");
+}
+
 int main() {
+  one_player_race_rule();
   using namespace unirally::app;
   PalScheduler scheduler(1'000);
   require(scheduler.updates_due(20'000'999) == 0, "no early update");

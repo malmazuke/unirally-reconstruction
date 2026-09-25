@@ -1,5 +1,22 @@
 # Project state
 
+Updated 26 September 2026 (FRONT-END-1P-SETUP): **1P runs the original's four setup screens
+to the race.**
+- PICK YOUR UNI, PICK TOUR, PICK TRACK and NOW PLAYING slide in and out as in the original, with
+  every back path, and NOW PLAYING's Race starts the chosen race.
+- The race scenarios are MIKE's against BRONSEN. Another rider or a stunt event shows a notice.
+- Against nine captures of the original, every frame matches: 0 differing pixels in 6,166
+  pictures, and equal menu state, OAM buffer and text map. The captures cover moves, locked
+  tours, the medal line, laps and stunt texts, and Exit.
+- The SNES screen now applies colours written during the picture (the rider menu's HDMA palette
+  split), and the text printer prints track names, numbers and objects
+  ([R-0055](research/R-0055-rider-menu.md), [R-0056](research/R-0056-tour-track-now-playing.md)).
+- Pack profile **v17** adds the four screens' content; live play needs it (`content pack --rules
+  tests/manifests/content/classic-crawler-tracks-pack.json --out
+  local/classic-pal-crawler-tracks-v17.pack`).
+- Next: [FRONT-END-1P-CONTINUATION](../tasks/FRONT-END-1P-CONTINUATION.md). See
+  [FRONT-END-1P-SETUP](../tasks/FRONT-END-1P-SETUP.md).
+
 Updated 26 September 2026 (FRONT-END-MAIN-MENU): **the app starts at power-on, as the original
 does.**
 - It shows the Nintendo screen, the title and the main menu (1P, 2P, VS, LEAGUE, OPTIONS), with
