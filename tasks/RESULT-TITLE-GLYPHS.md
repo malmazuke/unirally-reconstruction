@@ -99,7 +99,7 @@ Decisions and deviations, with reasons:
 | 6 | The pictures would catch a wrong tile | `+` and `!` as the small space, then as the neighbouring tiles | 24 / 28 and 44 / 58 title pixels differ | Underscore |
 | 7 | The underscore's change is invisible | `flatfun.py`: TRACK-BREADTH's FLAT FUN capture, base `a2169c3` against the candidate | Pictures identical on all 9 frames | Gates |
 | 8 | - | The app, hidden, 4,000 updates with Right held, on 25 and 28 | Both start and run; 0 rider-pose fallback frames | Gates |
-| 9 | - | Gates at `309890e` (below) | GATES_PENDING | Review |
+| 9 | - | Gates at `309890e` (`gates-309890e.out`) | ctest 25/25 on three presets; synthetic and both v1 contracts pass; eight hidden app runs (DRAGSTER, ZOOM ZOO, 13, 5, 40, 43, 25, 28) pass with 0 fallback frames; equivalence against `a2169c3`: 360 runs, 0 state or restart differences, 108 picture differences, all on tracks 25 and 28 where the base refused every picture (the sweep reports these as `failed`; `gates-309890e-equivalence-summary.txt`); recompare identical to the accepted run on both sweeps | Review |
 
 ## Handoff
 
