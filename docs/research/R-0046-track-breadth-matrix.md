@@ -375,7 +375,8 @@ the two accepted tracks carry.
 5. **Done in LOCKED-TOURS** ([R-0050](R-0050-locked-tours.md)): the locked tours open in the
    laboratory with a preloaded cartridge RAM; 15 of their 20 race tracks match. TILE-PAIRS-8-12-26
    ([R-0051](R-0051-loop-and-tile-pairs.md)) recovered the tile pairs that stopped four more;
-   TWO LOOPS waits on the HUNTER tag effects (HUNTER-EFFECTS).
+   TWO LOOPS waits on the HUNTER tag effects, recovered in HUNTER-EFFECTS
+   ([R-0052](R-0052-hunter-effects.md)): all 36 race tracks now match.
 6. **Stunt events**: a separate mode (solo, qualifying score), out of this task's race
    scope.
 

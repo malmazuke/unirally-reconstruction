@@ -5,6 +5,11 @@ push the task branch, open a pull request from the template, merge with
 `gh pr merge --merge` once its checks are green and the review is done. `main`
 refuses direct pushes. The checks run on pull requests only.
 
+**Status on 25 September 2026 UTC (end of HUNTER-EFFECTS): HUNTER-EFFECTS is accepted; claim
+[RESULT-TITLE-GLYPHS](RESULT-TITLE-GLYPHS.md) next.** All 36 race tracks match the original; the
+HUNTER tag effects are simulated and drawn. Pack v14; other tracks' states are `URTRnn06`. Live
+play needs pack v14.
+
 **Status on 25 September 2026 UTC (end of TILE-PAIRS-8-12-26): TILE-PAIRS-8-12-26 is
 accepted; claim [HUNTER-EFFECTS](HUNTER-EFFECTS.md) next.** The loop and tile pairs 8, 12 and
 28 are recovered; 35 of 36 race tracks match. Pack v13; other tracks' states are `URTRnn05`.

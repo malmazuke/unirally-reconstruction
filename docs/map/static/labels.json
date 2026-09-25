@@ -255,6 +255,16 @@
   ]
  },
  {
+  "address": "$80:8638",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_808638",
+  "source_records": [
+   "docs/research/R-0052-hunter-effects.md",
+   "tasks/HUNTER-EFFECTS.md"
+  ]
+ },
+ {
   "address": "$80:868E",
   "class": "observed",
   "comment": "instruction start",
@@ -375,6 +385,15 @@
   "source_records": [
    "docs/research/R-0040-dragster-window-effects.md",
    "tasks/DRAGSTER-WINDOW-EFFECTS-review.md"
+  ]
+ },
+ {
+  "address": "$80:876C",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80876C",
+  "source_records": [
+   "tasks/HUNTER-EFFECTS.md"
   ]
  },
  {
@@ -501,6 +520,16 @@
   ]
  },
  {
+  "address": "$80:8821",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_808821",
+  "source_records": [
+   "docs/research/R-0052-hunter-effects.md",
+   "tasks/HUNTER-EFFECTS.md"
+  ]
+ },
+ {
   "address": "$80:883F",
   "class": "observed",
   "comment": "instruction start",
@@ -571,7 +600,8 @@
   "comment": "routine start",
   "label": "sub_809B55",
   "source_records": [
-   "tasks/LOCKED-TOURS.md"
+   "tasks/LOCKED-TOURS.md",
+   "tasks/RESULT-TITLE-GLYPHS.md"
   ]
  },
  {
@@ -845,7 +875,8 @@
   "label": "sub_818316",
   "source_records": [
    "docs/research/R-0047-special-tiles.md",
-   "docs/research/R-0051-loop-and-tile-pairs.md"
+   "docs/research/R-0051-loop-and-tile-pairs.md",
+   "tasks/TILE-PAIRS-8-12-26.md"
   ]
  },
  {
@@ -854,7 +885,8 @@
   "comment": "data",
   "label": "dat_81834C",
   "source_records": [
-   "docs/research/R-0051-loop-and-tile-pairs.md"
+   "docs/research/R-0051-loop-and-tile-pairs.md",
+   "tasks/TILE-PAIRS-8-12-26.md"
   ]
  },
  {
@@ -944,6 +976,15 @@
   "label": "loc_81859D",
   "source_records": [
    "docs/research/R-0047-special-tiles.md"
+  ]
+ },
+ {
+  "address": "$81:85AB",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_8185AB",
+  "source_records": [
+   "tasks/TILE-PAIRS-8-12-26.md"
   ]
  },
  {
@@ -1964,7 +2005,8 @@
   "label": "loc_8192D9",
   "source_records": [
    "docs/research/R-0047-special-tiles.md",
-   "docs/research/R-0051-loop-and-tile-pairs.md"
+   "docs/research/R-0051-loop-and-tile-pairs.md",
+   "tasks/TILE-PAIRS-8-12-26.md"
   ]
  },
  {
@@ -2046,7 +2088,9 @@
   "label": "loc_8194B9",
   "source_records": [
    "docs/research/R-0011-contact.md",
-   "docs/research/R-0032-player-landing-recovery.md"
+   "docs/research/R-0032-player-landing-recovery.md",
+   "docs/research/R-0052-hunter-effects.md",
+   "tasks/HUNTER-EFFECTS.md"
   ]
  },
  {
@@ -2175,7 +2219,9 @@
   "comment": "instruction start",
   "label": "loc_8196FF",
   "source_records": [
-   "docs/research/R-0047-special-tiles.md"
+   "docs/research/R-0047-special-tiles.md",
+   "docs/research/R-0051-loop-and-tile-pairs.md",
+   "tasks/TILE-PAIRS-8-12-26.md"
   ]
  },
  {
@@ -2625,6 +2671,16 @@
   ]
  },
  {
+  "address": "$81:AE90",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_81AE90",
+  "source_records": [
+   "docs/research/R-0052-hunter-effects.md",
+   "tasks/HUNTER-EFFECTS.md"
+  ]
+ },
+ {
   "address": "$81:B270",
   "class": "observed",
   "comment": "routine start",
@@ -2783,7 +2839,26 @@
   "label": "sub_81BEA8",
   "source_records": [
    "docs/research/R-0042-stunt-name-captions.md",
+   "docs/research/R-0052-hunter-effects.md",
    "tasks/CLASSIC-STUNT-NAMES.md"
+  ]
+ },
+ {
+  "address": "$81:BF32",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_81BF32",
+  "source_records": [
+   "docs/research/R-0052-hunter-effects.md"
+  ]
+ },
+ {
+  "address": "$81:BF46",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_81BF46",
+  "source_records": [
+   "tasks/HUNTER-EFFECTS.md"
   ]
  },
  {
@@ -2864,7 +2939,8 @@
   "comment": "instruction start",
   "label": "loc_81C260",
   "source_records": [
-   "docs/research/R-0022-zoom-zoo-riding-reference.md"
+   "docs/research/R-0022-zoom-zoo-riding-reference.md",
+   "docs/research/R-0052-hunter-effects.md"
   ]
  },
  {
@@ -2919,7 +2995,9 @@
   "label": "sub_81C55B",
   "source_records": [
    "docs/research/R-0051-loop-and-tile-pairs.md",
-   "tasks/HUNTER-EFFECTS.md"
+   "docs/research/R-0052-hunter-effects.md",
+   "tasks/HUNTER-EFFECTS.md",
+   "tasks/TILE-PAIRS-8-12-26.md"
   ]
  },
  {
@@ -3673,7 +3751,9 @@
   "comment": "instruction start",
   "label": "loc_81F30C",
   "source_records": [
-   "tasks/CLASSIC-STUNT-NAMES-review.md"
+   "docs/research/R-0052-hunter-effects.md",
+   "tasks/CLASSIC-STUNT-NAMES-review.md",
+   "tasks/HUNTER-EFFECTS.md"
   ]
  },
  {
@@ -4668,6 +4748,15 @@
   ]
  },
  {
+  "address": "$82:9D3A",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_829D3A",
+  "source_records": [
+   "docs/research/R-0052-hunter-effects.md"
+  ]
+ },
+ {
   "address": "$82:9D7F",
   "class": "observed",
   "comment": "instruction start",
@@ -5473,6 +5562,24 @@
   ]
  },
  {
+  "address": "$82:AC5A",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_82AC5A",
+  "source_records": [
+   "docs/research/R-0052-hunter-effects.md"
+  ]
+ },
+ {
+  "address": "$82:AC5C",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82AC5C",
+  "source_records": [
+   "tasks/HUNTER-EFFECTS.md"
+  ]
+ },
+ {
   "address": "$82:ACA8",
   "class": "observed",
   "comment": "routine start",
@@ -5544,6 +5651,15 @@
   "label": "sub_82B154",
   "source_records": [
    "docs/research/R-0036-zoom-zoo-rider-objects.md"
+  ]
+ },
+ {
+  "address": "$82:B15E",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_82B15E",
+  "source_records": [
+   "docs/research/R-0052-hunter-effects.md"
   ]
  },
  {
@@ -5964,6 +6080,15 @@
   ]
  },
  {
+  "address": "$82:DDB0",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82DDB0",
+  "source_records": [
+   "docs/research/R-0052-hunter-effects.md"
+  ]
+ },
+ {
   "address": "$82:E12B",
   "class": "observed",
   "comment": "routine start",
@@ -6183,6 +6308,16 @@
   ]
  },
  {
+  "address": "$83:CC9A",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83CC9A",
+  "source_records": [
+   "docs/research/R-0052-hunter-effects.md",
+   "tasks/HUNTER-EFFECTS.md"
+  ]
+ },
+ {
   "address": "$83:CCAB",
   "class": "observed",
   "comment": "instruction start",
@@ -6309,6 +6444,15 @@
   ]
  },
  {
+  "address": "$83:CDAA",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_83CDAA",
+  "source_records": [
+   "docs/research/R-0052-hunter-effects.md"
+  ]
+ },
+ {
   "address": "$83:CDB1",
   "class": "inferred",
   "comment": "instruction start",
@@ -6318,13 +6462,33 @@
   ]
  },
  {
+  "address": "$83:CDBC",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_83CDBC",
+  "source_records": [
+   "docs/research/R-0052-hunter-effects.md"
+  ]
+ },
+ {
   "address": "$83:CEC9",
   "class": "inferred",
   "comment": "routine start",
   "label": "sub_83CEC9",
   "source_records": [
    "docs/research/R-0051-loop-and-tile-pairs.md",
-   "tasks/HUNTER-EFFECTS.md"
+   "docs/research/R-0052-hunter-effects.md",
+   "tasks/HUNTER-EFFECTS.md",
+   "tasks/TILE-PAIRS-8-12-26.md"
+  ]
+ },
+ {
+  "address": "$83:CED9",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_83CED9",
+  "source_records": [
+   "docs/research/R-0052-hunter-effects.md"
   ]
  },
  {
@@ -6334,6 +6498,7 @@
   "label": "sub_83D104",
   "source_records": [
    "docs/research/R-0051-loop-and-tile-pairs.md",
+   "docs/research/R-0052-hunter-effects.md",
    "tasks/HUNTER-EFFECTS.md"
   ]
  },
@@ -6343,6 +6508,7 @@
   "comment": "routine start",
   "label": "sub_83D1CA",
   "source_records": [
+   "docs/research/R-0052-hunter-effects.md",
    "tasks/HUNTER-EFFECTS.md"
   ]
  },
@@ -6352,6 +6518,7 @@
   "comment": "routine start",
   "label": "sub_83D275",
   "source_records": [
+   "docs/research/R-0052-hunter-effects.md",
    "tasks/HUNTER-EFFECTS.md"
   ]
  },
@@ -6370,6 +6537,7 @@
   "comment": "routine start",
   "label": "sub_83D2C9",
   "source_records": [
+   "docs/research/R-0052-hunter-effects.md",
    "tasks/HUNTER-EFFECTS.md"
   ]
  },
@@ -6388,6 +6556,7 @@
   "comment": "data",
   "label": "dat_83D3BC",
   "source_records": [
+   "docs/research/R-0052-hunter-effects.md",
    "tasks/HUNTER-EFFECTS.md"
   ]
  },
@@ -6424,6 +6593,7 @@
   "comment": "routine start",
   "label": "sub_83D4E8",
   "source_records": [
+   "docs/research/R-0052-hunter-effects.md",
    "tasks/HUNTER-EFFECTS.md"
   ]
  },
@@ -6433,6 +6603,7 @@
   "comment": "routine start",
   "label": "sub_83D530",
   "source_records": [
+   "docs/research/R-0052-hunter-effects.md",
    "tasks/HUNTER-EFFECTS.md"
   ]
  },
@@ -6442,7 +6613,17 @@
   "comment": "routine start",
   "label": "sub_83D581",
   "source_records": [
+   "docs/research/R-0052-hunter-effects.md",
    "tasks/STATIC-CODE-MAP.md"
+  ]
+ },
+ {
+  "address": "$83:E04F",
+  "class": "inferred",
+  "comment": "routine start",
+  "label": "sub_83E04F",
+  "source_records": [
+   "tasks/HUNTER-EFFECTS.md"
   ]
  },
  {

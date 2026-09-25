@@ -1,5 +1,24 @@
 # Project state
 
+Updated 25 September 2026 (HUNTER-EFFECTS): **all 36 race tracks now match the original over
+their whole compared windows.**
+- The HUNTER tour's tag effects are native ([R-0052](research/R-0052-hunter-effects.md)): when
+  the hunter touches the player, one of eight timed effects starts, announced at the front of
+  the queue.
+  - The effects are barf mode, hedgehog speed, power bounce, screen flip, invisible track,
+    slow motion, wobble mode and control reversed.
+  - Effects 1 and 5 skip whole race updates; effect 2 changes the player's landings; effect 7
+    reverses the controls.
+  - The others change the picture. All eight are drawn, matching the original's pictures to
+    the pixel apart from the declared off-screen arrow.
+- The HUNTER opponent is character 20: its own palette and voices.
+- Other tracks' states are now `URTRnn06` (916 bytes), and pack profile **v14** adds the effects'
+  blink table and the opponent palette. Live play needs pack v14 (`content pack --rules
+  tests/manifests/content/classic-crawler-tracks-pack.json --out
+  local/classic-pal-crawler-tracks-v14.pack`, then rebuild app-debug).
+- Next: [RESULT-TITLE-GLYPHS](../tasks/RESULT-TITLE-GLYPHS.md) (DOWN+UP and BOO! cannot start in
+  the app), then the stunt events.
+
 Updated 25 September 2026 (TILE-PAIRS-8-12-26): **35 of the 36 race tracks now match the
 original over their whole compared windows.**
 - Native now reproduces the loop (tile flag pair 26), in movement and at the loop's top in
