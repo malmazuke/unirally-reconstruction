@@ -27,7 +27,9 @@ public:
     std::span<const std::uint8_t> optional_entry(const std::string& logical_id) const;
 
 private:
-    struct Entry { std::size_t offset{}, size{}; };
+    struct Entry {
+        std::size_t offset{}, size{};
+    };
     std::vector<std::uint8_t> bytes_;
     std::unordered_map<std::string, Entry> entries_;
 };

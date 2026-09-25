@@ -28,7 +28,7 @@ struct SpeedLimitContext {
     std::uint8_t cartridge_mode{};
 };
 struct SpeedDecayContent {
-    std::span<const std::uint8_t> masks; // 9 bytes from PAL ROM file 0x051B
+    std::span<const std::uint8_t> masks;      // 9 bytes from PAL ROM file 0x051B
     std::span<const std::uint8_t> decrements; // 9 little-endian words at 0x0524
 };
 

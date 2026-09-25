@@ -12,91 +12,85 @@
 #include <vector>
 namespace unirally {
 struct PresentationSample {
-  const MovementState &movement;
-  std::int32_t camera_x{};
-  std::int16_t bg1_scroll_x{}, bg1_scroll_y{}, bg2_scroll_x{}, bg2_scroll_y{};
+    const MovementState& movement;
+    std::int32_t camera_x{};
+    std::int16_t bg1_scroll_x{}, bg1_scroll_y{}, bg2_scroll_x{}, bg2_scroll_y{};
 };
 enum class RiderFrameId : std::uint8_t {
-  LeanForward,
-  CoastForward,
-  RollingForward,
-  RollingReflected,
-  FinishForward,
-  FinishReflected,
-  SettledForward,
-  SettledReflected
+    LeanForward,
+    CoastForward,
+    RollingForward,
+    RollingReflected,
+    FinishForward,
+    FinishReflected,
+    SettledForward,
+    SettledReflected
 };
 struct RiderFrameSelection {
-  RiderFrameId id;
-  std::string_view logical_id;
-  bool reflected;
+    RiderFrameId id;
+    std::string_view logical_id;
+    bool reflected;
 };
 struct RiderArtPose {
-  std::uint16_t pose_index{};
-  bool reflected{};
+    std::uint16_t pose_index{};
+    bool reflected{};
 };
-RiderFrameSelection rider_frame_for_pose(std::uint16_t pose_index,
-                                         bool reflected);
+RiderFrameSelection rider_frame_for_pose(std::uint16_t pose_index, bool reflected);
 // Exact $81:B3CF/$81:B3D3 decoded-track gather: $000F+X, then X += stride.
 std::vector<std::uint16_t> gather_dragster_bg1(std::span<const std::uint8_t>,
-                                               std::uint16_t source_x,
-                                               std::uint16_t stride_bytes,
+                                               std::uint16_t source_x, std::uint16_t stride_bytes,
                                                std::size_t word_count);
 // Rejected diagnostic interpretation retained for its bounded gather test.
-std::array<std::uint16_t, 30 * 16>
-    expand_dragster_bg1(std::span<const std::uint8_t>);
+std::array<std::uint16_t, 30 * 16> expand_dragster_bg1(std::span<const std::uint8_t>);
 // Stateless form of the observed rolling $81:B270 map construction. Scroll
 // units are pixels; each selector covers a 64 by 64 pixel metatile.
 std::array<std::uint16_t, 32 * 32>
-build_dragster_bg1_map(std::span<const std::uint8_t>, std::int16_t scroll_x,
-                       std::int16_t scroll_y);
+build_dragster_bg1_map(std::span<const std::uint8_t>, std::int16_t scroll_x, std::int16_t scroll_y);
 // Semantic 32-by-32 result map recovered at $80:C431. The returned words are
 // in row-major order and retain the original tile attributes. R-0019 freezes
 // the player-loss time glyphs independently of the whole-frame visual gate.
 std::array<std::uint16_t, 32 * 32>
-build_dragster_result_map(const MovementState &,
-                          std::span<const std::uint8_t> result_assets);
+build_dragster_result_map(const MovementState&, std::span<const std::uint8_t> result_assets);
 struct RgbFrame {
-  static constexpr std::size_t width = 256, height = 224;
-  std::array<std::uint8_t, width * height * 3> pixels{};
+    static constexpr std::size_t width = 256, height = 224;
+    std::array<std::uint8_t, width * height * 3> pixels{};
 };
 // Exact 15-bit SNES colour operations used by the frozen mode-3 result case.
 // `palette_group` is the three-bit tilemap palette field.
-std::uint16_t snes_direct_colour(std::uint8_t palette_colour,
-                                 std::uint8_t palette_group);
-std::uint16_t snes_add_colour(std::uint16_t main_colour,
-                              std::uint16_t sub_colour, bool halve);
+std::uint16_t snes_direct_colour(std::uint8_t palette_colour, std::uint8_t palette_group);
+std::uint16_t snes_add_colour(std::uint16_t main_colour, std::uint16_t sub_colour, bool halve);
 struct PresentationContent {
-  std::span<const std::uint8_t> track, bg1_tiles, bg2_tiles, bg2_map;
-  std::span<const std::uint8_t> palette, font, rider_tiles, result_assets;
-  std::span<const std::uint8_t> go_window, winner_window;
-  std::span<const std::uint8_t> result_base_vram, result_palette;
-  std::span<const std::uint8_t> result_palette_tail;
-  // Race NMI palette tables ($80:82AB). Empty for DRAGSTER v1 packs, which keep
-  // the accepted pose-keyed palette; the two-track pack carries them.
-  std::span<const std::uint8_t> race_palette_cycle;
-  // Channel-6 window HDMA family $15:8000-$15:D7CA: 25 tables of 899 bytes
-  // (898 scanline bytes then the run terminator). Empty for DRAGSTER v1 packs,
-  // which keep the accepted pose-keyed GO and winner windows (R-0040).
-  std::span<const std::uint8_t> window_tables;
+    std::span<const std::uint8_t> track, bg1_tiles, bg2_tiles, bg2_map;
+    std::span<const std::uint8_t> palette, font, rider_tiles, result_assets;
+    std::span<const std::uint8_t> go_window, winner_window;
+    std::span<const std::uint8_t> result_base_vram, result_palette;
+    std::span<const std::uint8_t> result_palette_tail;
+    // Race NMI palette tables ($80:82AB). Empty for DRAGSTER v1 packs, which keep
+    // the accepted pose-keyed palette; the two-track pack carries them.
+    std::span<const std::uint8_t> race_palette_cycle;
+    // Channel-6 window HDMA family $15:8000-$15:D7CA: 25 tables of 899 bytes
+    // (898 scanline bytes then the run terminator). Empty for DRAGSTER v1 packs,
+    // which keep the accepted pose-keyed GO and winner windows (R-0040).
+    std::span<const std::uint8_t> window_tables;
 };
 class ClassicContentPack;
 // Race palette cycle ($82:D382-D496): the table index a frame draws, if the
 // cycle has started, and its application to colours 96-111 and 0.
 std::optional<unsigned> zoom_zoo_palette_cycle_index(std::uint32_t frame);
-void apply_zoom_zoo_palette_cycle(std::array<std::uint8_t,512>& cgram,std::span<const std::uint8_t> tables,
-                                  std::uint32_t frame);
+void apply_zoom_zoo_palette_cycle(std::array<std::uint8_t, 512>& cgram,
+                                  std::span<const std::uint8_t> tables, std::uint32_t frame);
 // DRAGSTER runs the same cycle from frame 1334 (R-0037): racing frame n draws
 // index (n-1334)&15. The routine runs for the last time on loading update 1, so
 // colours 96-111 then hold that frame's index and colour 0 is black.
-void apply_dragster_palette_cycle(std::array<std::uint8_t,512>& cgram,std::span<const std::uint8_t> tables,
-                                  const MovementState& state);
+void apply_dragster_palette_cycle(std::array<std::uint8_t, 512>& cgram,
+                                  std::span<const std::uint8_t> tables, const MovementState& state);
 // The same cycle for the shared race state of either track. `setup_frame` is
 // the first frame the race vblank publishes: the scenario's initialization
 // frame plus 6 (1334 for DRAGSTER, 1382 for ZOOM ZOO). Result loading freezes
 // the phase and blackens colour 0 as above.
-void apply_classic_race_palette_cycle(std::array<std::uint8_t,512>& cgram,std::span<const std::uint8_t> tables,
-                                      const ZoomZooState& state,std::uint32_t setup_frame);
+void apply_classic_race_palette_cycle(std::array<std::uint8_t, 512>& cgram,
+                                      std::span<const std::uint8_t> tables,
+                                      const ZoomZooState& state, std::uint32_t setup_frame);
 // R-0040: the original composes the countdown/GO and winner-banner shapes from
 // one channel-6 window HDMA table per frame. The countdown driver $83:E59C
 // selects it from $11C5, the winner driver $83:EA19 cycles indices 7-24 from
@@ -106,8 +100,8 @@ void apply_classic_race_palette_cycle(std::array<std::uint8_t,512>& cgram,std::s
 // disabled that frame. Indices 0-6 compose before the riders, 7-24 after them.
 std::optional<unsigned> dragster_window_table_index(const MovementState& state);
 // The 898 scanline bytes of one member of the family.
-std::span<const std::uint8_t> dragster_window_table(
-    std::span<const std::uint8_t> tables, unsigned index);
+std::span<const std::uint8_t> dragster_window_table(std::span<const std::uint8_t> tables,
+                                                    unsigned index);
 // The same selection from the shared race state for a single restored state
 // without history: the first finisher's driver runs 360 updates from its first
 // odd update, then the other rider's driver, if armed, from the later of that
@@ -116,9 +110,10 @@ std::span<const std::uint8_t> dragster_window_table(
 // (`ClassicRaceHistory`) or, once both have finished, is recovered from the
 // two finish times by `classic_opponent_finish_frame`. Exact when no pause
 // diverted a race update since the first finish; `ClassicWindowPointer` is.
-std::optional<unsigned> classic_window_table_index(const ZoomZooState& state,std::uint32_t setup_frame,
-                                                   std::optional<std::uint32_t> opponent_finish_frame,
-                                                   unsigned transition_member);
+std::optional<unsigned>
+classic_window_table_index(const ZoomZooState& state, std::uint32_t setup_frame,
+                           std::optional<std::uint32_t> opponent_finish_frame,
+                           unsigned transition_member);
 // The frame on which the opponent finished, from a state in which both riders
 // have finished: `finish_centiseconds` advances two per frame plus the frame
 // parity, so total[0]-total[1] = 2(fa-fb)+(fa&1)-(fb&1) has one solution.
@@ -131,7 +126,7 @@ std::optional<std::uint32_t> classic_opponent_finish_frame(const ZoomZooState& s
 // otherwise the accepted frame formula (one per update from the scenario's
 // initialization frame), because $0FF1 holds at 30 and a saturated state
 // cannot say whether the preceding level was 29 or 30.
-unsigned classic_race_prior_fade(const ZoomZooState& state,const ZoomZooState* previous_update,
+unsigned classic_race_prior_fade(const ZoomZooState& state, const ZoomZooState* previous_update,
                                  const ClassicRaceScenario& scenario);
 // The legacy finish and result phases (RaceFinishState) derived from the shared
 // race state, for the recovered mode-0 result screen (R-0012, R-0019).
@@ -140,7 +135,7 @@ RaceFinishState classic_finish_view(const ZoomZooState& race);
 // Lap shown for a laps_remaining value in a `laps`-lap race: the extra initial
 // count is the start-line crossing, and the last lap holds. Three laps show
 // 4,3,2,1,0 as 0,1,2,3,3.
-unsigned classic_hud_lap(unsigned laps_remaining,unsigned laps);
+unsigned classic_hud_lap(unsigned laps_remaining, unsigned laps);
 // R-0043: the text of the original's in-race HUD fields, as its own BG3
 // tilemap holds them. Callers pass the state from BEFORE the update being
 // drawn: the original's lap glyph changes one frame after $0EFB at every
@@ -153,32 +148,33 @@ unsigned classic_hud_lap(unsigned laps_remaining,unsigned laps);
 // otherwise. An update that changes it is an update on which the clock is not
 // republished (R-0043).
 struct ClassicHudField {
-  std::string text;
-  unsigned column{};
+    std::string text;
+    unsigned column{};
 };
-ClassicHudField classic_hud_left_field(const ZoomZooState& published,const ClassicRaceScenario& scenario);
+ClassicHudField classic_hud_left_field(const ZoomZooState& published,
+                                       const ClassicRaceScenario& scenario);
 struct ClassicHudText {
-  std::string left;
-  unsigned left_column{};
-  // `$81:ED5C-$81:EDD9` at columns 24-29, blanked by `$81:ECCF` at the finish.
-  std::string clock;
-  // The two centred seven-cell fields at columns 13-19 of rows 5-6 (player)
-  // and 20-21 (opponent): each rider's crossing time in `M:SS:th` after a
-  // lap or the finish (`$81:EE89-$81:EF49`, `$81:F0E6-$81:F1A0`) and its
-  // signed split against the first rider through the same checkpoint in
-  // `+M:SS:t` (`$81:EF5E-$81:F030`, `$81:F1B5-$81:F288`; R-0044).
-  std::string player_cells, opponent_cells;
+    std::string left;
+    unsigned left_column{};
+    // `$81:ED5C-$81:EDD9` at columns 24-29, blanked by `$81:ECCF` at the finish.
+    std::string clock;
+    // The two centred seven-cell fields at columns 13-19 of rows 5-6 (player)
+    // and 20-21 (opponent): each rider's crossing time in `M:SS:th` after a
+    // lap or the finish (`$81:EE89-$81:EF49`, `$81:F0E6-$81:F1A0`) and its
+    // signed split against the first rider through the same checkpoint in
+    // `+M:SS:t` (`$81:EF5E-$81:F030`, `$81:F1B5-$81:F288`; R-0044).
+    std::string player_cells, opponent_cells;
 };
 // What the original's HUD cells are holding: the clock digits the queue last
 // wrote, and whether it has reached each of the three fields the finish sets
 // going. `finish`'s own cells need no flag because the left field is derived
 // from the state directly and the queue writes it first.
 struct ClassicHudPublished {
-  std::optional<std::string> clock{};
-  bool clock_blanked{};
-  // What the two centred fields hold, nothing while blank.
-  std::optional<std::string> player_cells{},opponent_cells{};
-  bool operator==(const ClassicHudPublished&) const = default;
+    std::optional<std::string> clock{};
+    bool clock_blanked{};
+    // What the two centred fields hold, nothing while blank.
+    std::optional<std::string> player_cells{}, opponent_cells{};
+    bool operator==(const ClassicHudPublished&) const = default;
 };
 // R-0044: the centred fields' content. A crossing publishes the crossing
 // clock digits `$0E43,y..` (native `time_digits`) as `M:SS:th`. A checkpoint
@@ -190,15 +186,15 @@ struct ClassicHudPublished {
 // `-M:SS:t`. Clock and stored digits are minutes, tens, seconds, tenths.
 // The opponent's field shows the minus glyph whatever the sign ($81:F1C0
 // reads the constant $80:8220 where the player's writer reads `$11BB`).
-std::string classic_hud_crossing_text(const std::array<std::uint16_t,5>& time_digits);
-std::array<std::uint8_t,4> classic_hud_clock_digits(const RaceTimerDigits& timer);
-std::string classic_hud_split_text(const std::array<std::uint8_t,4>& clock,
-                                   const std::array<std::uint8_t,4>& stored);
+std::string classic_hud_crossing_text(const std::array<std::uint16_t, 5>& time_digits);
+std::array<std::uint8_t, 4> classic_hud_clock_digits(const RaceTimerDigits& timer);
+std::string classic_hud_split_text(const std::array<std::uint8_t, 4>& clock,
+                                   const std::array<std::uint8_t, 4>& stored);
 // One centred field's pending request, as `$0349`/`$034B` hold it: nothing,
 // a positive draw of `text`, or a negative blank.
 struct ClassicHudCellRequest {
-  enum class Kind {None,Draw,Blank} kind{};
-  std::string text;
+    enum class Kind { None, Draw, Blank } kind{};
+    std::string text;
 };
 // `published` is what the original's cells are holding, followed update by
 // update by `ClassicRaceHudClock`. Without it the clock digits are derived from
@@ -208,7 +204,7 @@ struct ClassicHudCellRequest {
 ClassicHudText classic_race_hud_text(const ZoomZooState& previous_update,
                                      const ClassicRaceScenario& scenario,
                                      std::optional<std::uint32_t> opponent_finish_frame,
-                                     const std::optional<ClassicHudPublished>& published={});
+                                     const std::optional<ClassicHudPublished>& published = {});
 // The clock cells hold what the redraw queue last wrote. The queue rewrites at
 // most one field per update, the left field goes first, and an update that
 // **writes** it spends that update ($81:EC5E and $81:EB98 both end at
@@ -248,29 +244,38 @@ ClassicHudText classic_race_hud_text(const ZoomZooState& previous_update,
 // without spending the update ($81:EDE9, $81:F040).
 class ClassicRaceHudClock {
 public:
-  void reset() {latest_={};on_screen_={};pending_={};slot_times_={};}
-  void observe_update(const ZoomZooState& previous,const ZoomZooState& updated);
-  // The cells as the picture drawn from the earlier of the two states last
-  // observed shows them, so this lags one update exactly as the rider overlays
-  // do: picture N is drawn from the state at N-1 and shows what the queue
-  // wrote on update N, which it derived from the state at N-1.
-  const ClassicHudPublished& published() const {return on_screen_;}
+    void reset() {
+        latest_ = {};
+        on_screen_ = {};
+        pending_ = {};
+        slot_times_ = {};
+    }
+    void observe_update(const ZoomZooState& previous, const ZoomZooState& updated);
+    // The cells as the picture drawn from the earlier of the two states last
+    // observed shows them, so this lags one update exactly as the rider overlays
+    // do: picture N is drawn from the state at N-1 and shows what the queue
+    // wrote on update N, which it derived from the state at N-1.
+    const ClassicHudPublished& published() const { return on_screen_; }
+
 private:
-  struct Pending {bool left{},clock_blank{};std::array<ClassicHudCellRequest,2> cells{};};
-  ClassicHudPublished latest_{},on_screen_{};
-  Pending pending_{};
-  // The clock the first rider through each slot stored, minutes, tens,
-  // seconds, tenths. Indexed like `checkpoint_seen`, laps remaining * 4 +
-  // checkpoint; the original keeps four bytes a slot at `$100D` + 16 * laps
-  // remaining + 4 * checkpoint: 80 slots, `$100D-$114C` (R-0048).
-  std::array<std::optional<std::array<std::uint8_t,4>>,80> slot_times_{};
+    struct Pending {
+        bool left{}, clock_blank{};
+        std::array<ClassicHudCellRequest, 2> cells{};
+    };
+    ClassicHudPublished latest_{}, on_screen_{};
+    Pending pending_{};
+    // The clock the first rider through each slot stored, minutes, tens,
+    // seconds, tenths. Indexed like `checkpoint_seen`, laps remaining * 4 +
+    // checkpoint; the original keeps four bytes a slot at `$100D` + 16 * laps
+    // remaining + 4 * checkpoint: 80 slots, `$100D-$114C` (R-0048).
+    std::array<std::optional<std::array<std::uint8_t, 4>>, 80> slot_times_{};
 };
 // Presentation-only $0D45/$0D47 upper-body overlay frames. The original
 // derives them from look state the serialized race does not carry (R-0036),
 // so a caller without that history draws the pose frames alone.
 struct ZoomZooRiderOverlays {
-  std::array<std::optional<std::uint16_t>,2> pose{};
-  bool operator==(const ZoomZooRiderOverlays&) const = default;
+    std::array<std::optional<std::uint16_t>, 2> pose{};
+    bool operator==(const ZoomZooRiderOverlays&) const = default;
 };
 // Presentation history the serialized race does not carry: the rider look
 // overlays of the update on screen, the frame on which the opponent finished
@@ -279,18 +284,18 @@ struct ZoomZooRiderOverlays {
 // screen, followed update by update as the original's drivers choose it
 // (`window_published` is false for a caller without that history).
 struct ClassicRaceHistory {
-  ZoomZooRiderOverlays overlays{};
-  std::optional<std::uint32_t> opponent_finish_frame{};
-  bool window_published{};
-  std::optional<unsigned> window_table{};
-  ClassicHudPublished published_hud{};
-  // R-0052: HUNTER effect 0 as the BG scroll routine of the update on screen
-  // read it ($81:AE90, before that update's own effect routine ran).
-  bool hunter_barf{};
-  // R-0052: HUNTER effect 3's blink at the end of the update before the one on
-  // screen. The riders' OAM vertical-flip bit outlives the blink by an update:
-  // the NMI resets the attributes ($80:876C) only after its OAM transfer.
-  bool hunter_flip_prior{};
+    ZoomZooRiderOverlays overlays{};
+    std::optional<std::uint32_t> opponent_finish_frame{};
+    bool window_published{};
+    std::optional<unsigned> window_table{};
+    ClassicHudPublished published_hud{};
+    // R-0052: HUNTER effect 0 as the BG scroll routine of the update on screen
+    // read it ($81:AE90, before that update's own effect routine ran).
+    bool hunter_barf{};
+    // R-0052: HUNTER effect 3's blink at the end of the update before the one on
+    // screen. The riders' OAM vertical-flip bit outlives the blink by an update:
+    // the NMI resets the attributes ($80:876C) only after its OAM transfer.
+    bool hunter_flip_prior{};
 };
 // The countdown's transition member for a track: 5 + `$1229`, which
 // $83:CC05-CC08 latches at race initialization from the player's reflection
@@ -305,7 +310,7 @@ unsigned classic_window_transition_member(std::span<const std::uint8_t> decoded_
 // DRAGSTER and ZOOM ZOO; the clock ticks through a pause, the drivers do not
 // run through one), and the
 // track's transition member above. Nothing once the word is zero.
-std::optional<unsigned> classic_countdown_window(std::uint16_t countdown_before,bool parity_set,
+std::optional<unsigned> classic_countdown_window(std::uint16_t countdown_before, bool parity_set,
                                                  unsigned transition_member);
 // The channel-6 window pointer `$11FD` as the original keeps it (R-0040,
 // DRAGSTER-WINDOW-PAUSE), followed update by update from the shared race
@@ -319,87 +324,97 @@ std::optional<unsigned> classic_countdown_window(std::uint16_t countdown_before,
 // banner the countdown driver selects. A diverted update publishes nothing.
 class ClassicWindowPointer {
 public:
-  // Reset it whenever the race state is replaced (a restart); one instance
-  // follows one race from its initialization.
-  void reset();
-  // Call once for every simulation update, with the state before and after it
-  // and the track's countdown transition member.
-  void observe_update(const ZoomZooState& previous,const ZoomZooState& updated,unsigned transition_member);
-  // The member the vblank published for the picture of the latest observed
-  // state: nothing while the channel is disabled.
-  std::optional<unsigned> published() const {return published_;}
-  bool observed() const {return observed_;}
+    // Reset it whenever the race state is replaced (a restart); one instance
+    // follows one race from its initialization.
+    void reset();
+    // Call once for every simulation update, with the state before and after it
+    // and the track's countdown transition member.
+    void observe_update(const ZoomZooState& previous, const ZoomZooState& updated,
+                        unsigned transition_member);
+    // The member the vblank published for the picture of the latest observed
+    // state: nothing while the channel is disabled.
+    std::optional<unsigned> published() const { return published_; }
+    bool observed() const { return observed_; }
+
 private:
-  struct Driver { bool dead{}; unsigned index{}, life{}; };
-  std::array<Driver,2> drivers_{};
-  std::array<std::size_t,2> order_{}, pending_{};
-  std::size_t ordered_{}, pending_count_{};
-  std::optional<unsigned> chosen_{}, published_{};
-  bool observed_{};
+    struct Driver {
+        bool dead{};
+        unsigned index{}, life{};
+    };
+    std::array<Driver, 2> drivers_{};
+    std::array<std::size_t, 2> order_{}, pending_{};
+    std::size_t ordered_{}, pending_count_{};
+    std::optional<unsigned> chosen_{}, published_{};
+    bool observed_{};
 };
 // Follows the rider look animation across consecutive race updates of either
 // track, beginning at the native race initialization, and keeps the history of
 // the update currently on screen. Reset it whenever the race state is replaced.
 class ClassicRaceHistoryTracker {
 public:
-  void reset();
-  // Call once for every simulation update, with the state before and after it.
-  void observe_update(const ZoomZooState& previous,const ZoomZooState& updated,
-                      const ClassicContentPack& pack);
-  // History for the update that produced the `previous_update` being drawn.
-  ClassicRaceHistory on_screen() const {
-      return {on_screen_,opponent_finish_frame_,window_.observed(),window_.published(),clock_.published(),on_screen_barf_,on_screen_flip_prior_};
-  }
-  const RiderLookState& look() const {return look_;}
+    void reset();
+    // Call once for every simulation update, with the state before and after it.
+    void observe_update(const ZoomZooState& previous, const ZoomZooState& updated,
+                        const ClassicContentPack& pack);
+    // History for the update that produced the `previous_update` being drawn.
+    ClassicRaceHistory on_screen() const {
+        return {on_screen_,           opponent_finish_frame_, window_.observed(),
+                window_.published(),  clock_.published(),     on_screen_barf_,
+                on_screen_flip_prior_};
+    }
+    const RiderLookState& look() const { return look_; }
+
 private:
-  RiderLookState look_{};
-  ZoomZooRiderOverlays latest_{}, on_screen_{};
-  bool latest_barf_{}, on_screen_barf_{}, latest_flip_prior_{}, on_screen_flip_prior_{};
-  std::optional<std::uint32_t> opponent_finish_frame_{};
-  ClassicWindowPointer window_{};
-  ClassicRaceHudClock clock_{};
-  // The track's countdown transition member, a constant of the race read
-  // from the pack on the first update after a reset.
-  std::optional<unsigned> transition_member_{};
+    RiderLookState look_{};
+    ZoomZooRiderOverlays latest_{}, on_screen_{};
+    bool latest_barf_{}, on_screen_barf_{}, latest_flip_prior_{}, on_screen_flip_prior_{};
+    std::optional<std::uint32_t> opponent_finish_frame_{};
+    ClassicWindowPointer window_{};
+    ClassicRaceHudClock clock_{};
+    // The track's countdown transition member, a constant of the race read
+    // from the pack on the first update after a reset.
+    std::optional<unsigned> transition_member_{};
 };
 // The content one track's race is drawn from, selected by track from the pack.
 // Every span is pack content; the scenario and geometry come from the engine.
 struct ClassicRacePresentationContent {
-  ClassicRaceScenario scenario{};
-  TrackGeometry geometry{};
-  std::string track_name; // Authored result screen only.
-  std::span<const std::uint8_t> track, bg1_tiles, bg2_tiles, bg2_map, palette;
-  // Race NMI palette tables ($80:82AB), one ROM table for both tracks.
-  std::span<const std::uint8_t> race_palette_cycle;
-  // Channel-6 window HDMA family (R-0040), one ROM family for both tracks:
-  // the same drivers select the countdown digits, GO and the winner banner
-  // on ZOOM ZOO as on DRAGSTER (ZOOM-ZOO-WINDOW-EFFECTS). Empty only when the
-  // pack does not carry the family; the windows are then omitted.
-  std::span<const std::uint8_t> window_tables;
-  // R-0042: the caption table, sixteen ASCII bytes per reward event, entries 1
-  // to 255 of `$17:C9F4`. The v9 profile requires it, so this span is never
-  // empty in a validated pack; the renderer's emptiness check is a span
-  // contract for a profile that ever makes it optional.
-  std::span<const std::uint8_t> captions;
-  // The 2bpp 128-tile sheet the captions are drawn with, already in the pack.
-  std::span<const std::uint8_t> caption_font;
-  // The countdown's transition member, 5 + `$1229`, which race initialization
-  // latches from the player's start reflection ($83:CC05-CC08): 6 on
-  // DRAGSTER, 5 on ZOOM ZOO. Derived from the track header like the engine's
-  // start state (`classic_window_transition_member`).
-  unsigned window_transition_member{};
-  RiderObjectContent riders;
-  // Recovered mode-0 result screen (R-0012, R-0019). Empty spans for a track
-  // whose result is the authored tour screen.
-  std::span<const std::uint8_t> result_assets, result_base_vram, result_palette, result_palette_tail;
-  // The result title's name bytes for a one-run track beyond DRAGSTER (its
-  // name-table entry with the `$FF`); empty for the two accepted tracks.
-  std::span<const std::uint8_t> result_track_name;
-  // R-0052: on the HUNTER tour, the opponent's sprite palette (character 20's,
-  // OBJ palette 4); empty elsewhere.
-  std::span<const std::uint8_t> hunter_opponent_palette;
+    ClassicRaceScenario scenario{};
+    TrackGeometry geometry{};
+    std::string track_name; // Authored result screen only.
+    std::span<const std::uint8_t> track, bg1_tiles, bg2_tiles, bg2_map, palette;
+    // Race NMI palette tables ($80:82AB), one ROM table for both tracks.
+    std::span<const std::uint8_t> race_palette_cycle;
+    // Channel-6 window HDMA family (R-0040), one ROM family for both tracks:
+    // the same drivers select the countdown digits, GO and the winner banner
+    // on ZOOM ZOO as on DRAGSTER (ZOOM-ZOO-WINDOW-EFFECTS). Empty only when the
+    // pack does not carry the family; the windows are then omitted.
+    std::span<const std::uint8_t> window_tables;
+    // R-0042: the caption table, sixteen ASCII bytes per reward event, entries 1
+    // to 255 of `$17:C9F4`. The v9 profile requires it, so this span is never
+    // empty in a validated pack; the renderer's emptiness check is a span
+    // contract for a profile that ever makes it optional.
+    std::span<const std::uint8_t> captions;
+    // The 2bpp 128-tile sheet the captions are drawn with, already in the pack.
+    std::span<const std::uint8_t> caption_font;
+    // The countdown's transition member, 5 + `$1229`, which race initialization
+    // latches from the player's start reflection ($83:CC05-CC08): 6 on
+    // DRAGSTER, 5 on ZOOM ZOO. Derived from the track header like the engine's
+    // start state (`classic_window_transition_member`).
+    unsigned window_transition_member{};
+    RiderObjectContent riders;
+    // Recovered mode-0 result screen (R-0012, R-0019). Empty spans for a track
+    // whose result is the authored tour screen.
+    std::span<const std::uint8_t> result_assets, result_base_vram, result_palette,
+        result_palette_tail;
+    // The result title's name bytes for a one-run track beyond DRAGSTER (its
+    // name-table entry with the `$FF`); empty for the two accepted tracks.
+    std::span<const std::uint8_t> result_track_name;
+    // R-0052: on the HUNTER tour, the opponent's sprite palette (character 20's,
+    // OBJ palette 4); empty elsewhere.
+    std::span<const std::uint8_t> hunter_opponent_palette;
 };
-ClassicRacePresentationContent classic_race_presentation_content(const ClassicContentPack& pack,ClassicRaceTrack track);
+ClassicRacePresentationContent classic_race_presentation_content(const ClassicContentPack& pack,
+                                                                 ClassicRaceTrack track);
 // One renderer for both tracks. previous_update is the state before the update
 // being drawn. The original picture shows the HUD and both rider objects from
 // that update (the BG scroll is derived from this state's prior camera);
@@ -417,26 +432,25 @@ std::optional<unsigned> classic_caption_tile(char glyph);
 // when the queue has blanked the display ($81:BEA8-BEF1's `empty_display`) or
 // has published no event yet.
 std::optional<std::span<const std::uint8_t>>
-classic_caption_entry(const ZoomZooState& published,std::span<const std::uint8_t> captions);
+classic_caption_entry(const ZoomZooState& published, std::span<const std::uint8_t> captions);
 
-RgbFrame render_classic_race(const ZoomZooState& state,const ClassicRacePresentationContent& content,
-                             const ZoomZooState* previous_update=nullptr,
-                             const ClassicRaceHistory* history=nullptr);
+RgbFrame render_classic_race(const ZoomZooState& state,
+                             const ClassicRacePresentationContent& content,
+                             const ZoomZooState* previous_update = nullptr,
+                             const ClassicRaceHistory* history = nullptr);
 // Authored standalone pause menu over a race picture (M4-16): the picture is
 // halved, then RESUME / RESTART RACE is drawn with the selection marker.
-void draw_race_pause_menu(RgbFrame& frame,std::uint16_t selection,std::array<std::uint8_t,3> panel,
-                          std::array<std::uint8_t,3> ink);
+void draw_race_pause_menu(RgbFrame& frame, std::uint16_t selection,
+                          std::array<std::uint8_t, 3> panel, std::array<std::uint8_t, 3> ink);
 // The accepted DRAGSTER v1 presentation entries (M3-02, M4-01); the race
 // palette cycle and window family are optional (DRAGSTER v1 packs keep the
 // accepted pose-keyed colours and windows). Only the frozen v1 contracts and
 // their runners draw through this content; live play uses the renderer above.
 PresentationContent dragster_presentation_content(const ClassicContentPack& pack);
-RgbFrame render_dragster_headless(const PresentationSample &,
-                                  const PresentationContent &);
+RgbFrame render_dragster_headless(const PresentationSample&, const PresentationContent&);
 // Presentation-only rider atlas override. Gameplay state still controls the
 // scene palette, window effects, positions, camera and HUD.
-RgbFrame
-render_dragster_headless_with_rider_art(const PresentationSample &,
-                                        const PresentationContent &,
-                                        const std::array<RiderArtPose, 2> &);
+RgbFrame render_dragster_headless_with_rider_art(const PresentationSample&,
+                                                 const PresentationContent&,
+                                                 const std::array<RiderArtPose, 2>&);
 } // namespace unirally

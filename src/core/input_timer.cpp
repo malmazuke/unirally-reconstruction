@@ -4,8 +4,8 @@
 namespace unirally {
 namespace {
 void validate(const RaceTimerDigits& state) {
-    if (state.minutes > 9 || state.tens_seconds > 5 || state.seconds > 9 ||
-        state.tenths > 9 || state.subframe > 4) {
+    if (state.minutes > 9 || state.tens_seconds > 5 || state.seconds > 9 || state.tenths > 9
+        || state.subframe > 4) {
         throw std::invalid_argument("timer digits are outside their supported domain");
     }
 }
@@ -14,14 +14,13 @@ void validate(const RaceTimerDigits& state) {
 ControllerSample sample_controller(const ControllerButtons& buttons) {
     ControllerSample result;
     // $80:87E9–87F2 copies the register bytes. $82:AAA4–AB59 decodes them.
-    result.low_image = static_cast<std::uint8_t>(
-        (buttons.a ? 0x80 : 0) | (buttons.x ? 0x40 : 0) |
-        (buttons.left_shoulder ? 0x20 : 0) | (buttons.right_shoulder ? 0x10 : 0));
+    result.low_image = static_cast<std::uint8_t>((buttons.a ? 0x80 : 0) | (buttons.x ? 0x40 : 0)
+                                                 | (buttons.left_shoulder ? 0x20 : 0)
+                                                 | (buttons.right_shoulder ? 0x10 : 0));
     result.high_image = static_cast<std::uint8_t>(
-        (buttons.b ? 0x80 : 0) | (buttons.y ? 0x40 : 0) |
-        (buttons.select ? 0x20 : 0) | (buttons.start ? 0x10 : 0) |
-        (buttons.up ? 0x08 : 0) | (buttons.down ? 0x04 : 0) |
-        (buttons.left ? 0x02 : 0) | (buttons.right ? 0x01 : 0));
+        (buttons.b ? 0x80 : 0) | (buttons.y ? 0x40 : 0) | (buttons.select ? 0x20 : 0)
+        | (buttons.start ? 0x10 : 0) | (buttons.up ? 0x08 : 0) | (buttons.down ? 0x04 : 0)
+        | (buttons.left ? 0x02 : 0) | (buttons.right ? 0x01 : 0));
     // The original branches establish precedence for contradictory directions.
     result.vertical = buttons.up ? 0 : (buttons.down ? 2 : 1);
     result.horizontal = buttons.left ? 0 : (buttons.right ? 2 : 1);
@@ -58,8 +57,8 @@ bool advance_timer_digits(RaceTimerDigits& state, bool enabled) {
 
 TimerBytes serialize_timer(const RaceTimerDigits& state) {
     validate(state);
-    const std::array words{state.minutes, state.tens_seconds, state.seconds,
-                           state.tenths, state.subframe};
+    const std::array words{state.minutes, state.tens_seconds, state.seconds, state.tenths,
+                           state.subframe};
     TimerBytes bytes{};
     for (std::size_t index = 0; index < words.size(); ++index) {
         bytes[index * 2] = static_cast<std::uint8_t>(words[index] & 0xFFU);
@@ -73,9 +72,9 @@ RaceTimerDigits deserialize_timer(std::span<const std::uint8_t> bytes) {
     }
     std::array<std::uint16_t, 5> words{};
     for (std::size_t index = 0; index < words.size(); ++index) {
-        words[index] = static_cast<std::uint16_t>(
-            static_cast<unsigned>(bytes[index * 2]) |
-            (static_cast<unsigned>(bytes[index * 2 + 1]) << 8U));
+        words[index] =
+            static_cast<std::uint16_t>(static_cast<unsigned>(bytes[index * 2])
+                                       | (static_cast<unsigned>(bytes[index * 2 + 1]) << 8U));
     }
     RaceTimerDigits state{words[0], words[1], words[2], words[3], words[4]};
     validate(state);

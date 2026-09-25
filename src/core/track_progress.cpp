@@ -4,15 +4,14 @@
 
 namespace unirally {
 namespace {
-constexpr unsigned sample_tile_mask = 0x03FF; // operand at ROM file 0x008BB6
-constexpr unsigned progress_tag_mask = 0x1C00; // operand at ROM file 0x0197A4
-constexpr unsigned progress_tag_shift = 9; // XBA then LSR, $82:97A6–97A7
+constexpr unsigned sample_tile_mask = 0x03FF;    // operand at ROM file 0x008BB6
+constexpr unsigned progress_tag_mask = 0x1C00;   // operand at ROM file 0x0197A4
+constexpr unsigned progress_tag_shift = 9;       // XBA then LSR, $82:97A6–97A7
 constexpr unsigned transition_table_stride = 16; // $80:84CB/84DB/84EB/84FB/850B
 constexpr std::array<int, 4> transition_steps = {1, 2, -1, -2};
 }
 
-void advance_track_progress(TrackProgress& state,
-                            std::span<const std::uint8_t> transition_tables) {
+void advance_track_progress(TrackProgress& state, std::span<const std::uint8_t> transition_tables) {
     const unsigned tag = (state.marker_word & progress_tag_mask) >> progress_tag_shift;
     if (state.previous_tag != 0 && state.previous_tag != tag) {
         // Read in original order; a negative table entry stops the search.
@@ -24,11 +23,12 @@ void advance_track_progress(TrackProgress& state,
             if (offset >= transition_tables.size() || transition_tables.size() - offset < 2) {
                 throw std::out_of_range("progress transition table is unavailable");
             }
-            const unsigned candidate = transition_tables[offset] |
-                (static_cast<unsigned>(transition_tables[offset + 1]) << 8);
+            const unsigned candidate = transition_tables[offset]
+                                     | (static_cast<unsigned>(transition_tables[offset + 1]) << 8);
             if ((candidate & 0x8000U) != 0) break;
             if (candidate == tag) {
-                const int changed = static_cast<int>(state.transition_count) + transition_steps[table];
+                const int changed =
+                    static_cast<int>(state.transition_count) + transition_steps[table];
                 state.transition_count = static_cast<std::uint16_t>(changed);
                 accepted = true;
                 break;
@@ -55,8 +55,7 @@ void observe_track_markers(TrackProgress& state, const TrackSamples& samples) {
 } // namespace unirally
 
 namespace unirally {
-void update_track_progress(ProgressUpdateState& state,
-                           const std::array<TrackSamples, 2>& samples,
+void update_track_progress(ProgressUpdateState& state, const std::array<TrackSamples, 2>& samples,
                            std::span<const std::uint8_t> transition_tables) {
     if (state.phase > 1) throw std::invalid_argument("progress phase is not binary");
     // $83:CCB8–CCBE: SEC; 1 minus the previous $0302 byte. The staging
@@ -86,12 +85,14 @@ ProgressBytes serialize_progress(const ProgressUpdateState& state) {
 }
 
 ProgressUpdateState deserialize_progress(std::span<const std::uint8_t> bytes) {
-    if (bytes.size() != ProgressBytes{}.size()) throw std::invalid_argument("progress state must contain 15 bytes");
+    if (bytes.size() != ProgressBytes{}.size())
+        throw std::invalid_argument("progress state must contain 15 bytes");
     ProgressUpdateState state{};
     std::size_t offset = 0;
     for (auto& rider : state.riders) {
         for (auto* value : {&rider.marker_word, &rider.previous_tag, &rider.transition_count}) {
-            *value = static_cast<std::uint16_t>(bytes[offset] | (static_cast<unsigned>(bytes[offset + 1]) << 8));
+            *value = static_cast<std::uint16_t>(bytes[offset]
+                                                | (static_cast<unsigned>(bytes[offset + 1]) << 8));
             offset += 2;
         }
         if (bytes[offset] > 1) throw std::invalid_argument("progress rejection flag is not binary");

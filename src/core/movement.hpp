@@ -60,13 +60,18 @@ struct RewardQueueState {
     std::uint16_t cooldown{}, feature_total{};
     std::uint8_t event_one_weight{};
 };
-enum class RacePhase : std::uint8_t { Racing=0, FinishDelay=1, ResultLoading=2, ResultScreen=3 };
-enum class RaceOutcome : std::uint8_t { Pending=0, PlayerWon=1, PlayerLost=2 };
+enum class RacePhase : std::uint8_t {
+    Racing = 0,
+    FinishDelay = 1,
+    ResultLoading = 2,
+    ResultScreen = 3
+};
+enum class RaceOutcome : std::uint8_t { Pending = 0, PlayerWon = 1, PlayerLost = 2 };
 struct RaceFinishState {
-    std::array<bool,2> rider_finished{};
-    std::array<std::uint16_t,2> finish_time_centiseconds{};
-    std::array<std::array<std::uint16_t,5>,2> finish_time_digits{};
-    std::array<std::uint16_t,2> finish_animation_countdown{};
+    std::array<bool, 2> rider_finished{};
+    std::array<std::uint16_t, 2> finish_time_centiseconds{};
+    std::array<std::array<std::uint16_t, 5>, 2> finish_time_digits{};
+    std::array<std::uint16_t, 2> finish_animation_countdown{};
     // $11E7 table selector for the opponent's $17:C7D6 finish-pose cycle.
     // Value 48 names the negative-sentinel entry; that call resets it to zero.
     std::uint16_t opponent_finish_pose_selector{};
@@ -98,12 +103,12 @@ struct MovementContent {
     SpeedDecayContent speed_decay{};
 };
 
-inline constexpr std::array<std::uint8_t, 8> movement_state_magic{
-    'U', 'R', 'M', 'V', '0', '0', '0', '1'};
-inline constexpr std::array<std::uint8_t, 8> movement_state_magic_v2{
-    'U', 'R', 'M', 'V', '0', '0', '0', '2'};
-inline constexpr std::array<std::uint8_t, 8> movement_state_magic_v3{
-    'U', 'R', 'M', 'V', '0', '0', '0', '3'};
+inline constexpr std::array<std::uint8_t, 8> movement_state_magic{'U', 'R', 'M', 'V',
+                                                                  '0', '0', '0', '1'};
+inline constexpr std::array<std::uint8_t, 8> movement_state_magic_v2{'U', 'R', 'M', 'V',
+                                                                     '0', '0', '0', '2'};
+inline constexpr std::array<std::uint8_t, 8> movement_state_magic_v3{'U', 'R', 'M', 'V',
+                                                                     '0', '0', '0', '3'};
 
 // $83:E90D-$83:E932 non-crossing finish-display velocity adjustment.
 // Input/output are signed 16-bit bit patterns in 1/32 units per update.

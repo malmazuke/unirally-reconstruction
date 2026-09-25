@@ -31,8 +31,8 @@ struct Probe {
     std::uint16_t descriptor{};
 };
 
-Probe preprocess(const FlatContactContent& content, SamplePoint point,
-                 std::uint16_t descriptor, std::uint16_t x, std::uint16_t y) {
+Probe preprocess(const FlatContactContent& content, SamplePoint point, std::uint16_t descriptor,
+                 std::uint16_t x, std::uint16_t y) {
     // Marker-only words supply no collision descriptor. Marker progression
     // is observed separately from the raw TrackSamples by track_progress.
     if ((descriptor & 0x03FFU) == 0) return {};
@@ -78,8 +78,7 @@ unsigned coarse_landing_angle(unsigned dx, unsigned half_dy) {
 }
 
 void resolve_recontact(RiderContactState& rider, ContactMotion& motion,
-                       const FlatContactSummary& summary,
-                       const ContactContext& context) {
+                       const FlatContactSummary& summary, const ContactContext& context) {
     const auto dx = static_cast<std::uint16_t>(motion.x - rider.previous_uncorrected_x);
     const auto dy = static_cast<std::uint16_t>(motion.y - rider.previous_uncorrected_y);
     require(dx < 0x8000U && dy < 0x8000U, "unrecovered landing displacement quadrant");
@@ -97,7 +96,8 @@ void resolve_recontact(RiderContactState& rider, ContactMotion& motion,
             "unrecovered player or option-dependent landing response");
     // The temporary response A computed at $81:93F9 is cleared by $81:9474
     // for this mode/duration. $81:9428 publishes this impulse for next motion.
-    motion.orientation_impulse = static_cast<std::uint16_t>((motion.previous_x_displacement >> 2) + 1U);
+    motion.orientation_impulse =
+        static_cast<std::uint16_t>((motion.previous_x_displacement >> 2) + 1U);
     motion.response_a = 0;
     rider.recontact = true;
     // Sentinel branch ($81:94C7–94CD) preserves both velocities and response B.
@@ -106,9 +106,9 @@ void resolve_recontact(RiderContactState& rider, ContactMotion& motion,
 } // namespace
 
 FlatContactSummary summarize_flat_contact(const FlatContactContent& content,
-                                         const CollisionPoints& points,
-                                         const TrackSamples& samples,
-                                         std::uint16_t x, std::uint16_t y) {
+                                          const CollisionPoints& points,
+                                          const TrackSamples& samples, std::uint16_t x,
+                                          std::uint16_t y) {
     std::array<Probe, 10> probes{};
     for (std::size_t i = 0; i < probes.size(); ++i) {
         probes[i] = preprocess(content, points[i], samples[i], x, y);
@@ -141,8 +141,7 @@ FlatContactSummary summarize_flat_contact(const FlatContactContent& content,
 }
 
 void resolve_flat_contact(RiderContactState& rider, ContactMotion& motion,
-                          const FlatContactSummary& summary,
-                          const ContactContext& context) {
+                          const FlatContactSummary& summary, const ContactContext& context) {
     require(context.phase <= 1 && context.mode == 0, "unrecovered contact phase or mode");
     require(rider.unsupported_count <= 9 && rider.auxiliary_flag == 0,
             "unrecovered incoming contact state");
@@ -150,8 +149,9 @@ void resolve_flat_contact(RiderContactState& rider, ContactMotion& motion,
             "unrecovered contact tile flags");
     require((summary.selected_word & 0xC001U) == 0 && (summary.selected_high & 0xC0U) == 0,
             "unrecovered contact summary direction or special descriptor");
-    require(summary.penetration < 0x80U &&
-                (summary.supported ? summary.angle == 0 : summary.angle == -32 && summary.penetration == 0),
+    require(summary.penetration < 0x80U
+                && (summary.supported ? summary.angle == 0
+                                      : summary.angle == -32 && summary.penetration == 0),
             "inconsistent flat contact summary");
     // Compute transactionally so a newly reached branch cannot half-update a
     // rider before the caller reports the missing behavior.
@@ -163,8 +163,10 @@ void resolve_flat_contact(RiderContactState& rider, ContactMotion& motion,
     next_rider.recontact = false;
     next_rider.angle_unspecified = !summary.supported;
     if (!summary.supported) {
-        next_rider.unsupported_count = std::min<std::uint16_t>(9, static_cast<std::uint16_t>(rider.unsupported_count + 1U));
-        next_rider.unsupported_duration = static_cast<std::uint16_t>(rider.unsupported_duration + 1U);
+        next_rider.unsupported_count =
+            std::min<std::uint16_t>(9, static_cast<std::uint16_t>(rider.unsupported_count + 1U));
+        next_rider.unsupported_duration =
+            static_cast<std::uint16_t>(rider.unsupported_duration + 1U);
         next_rider.auxiliary_flag = 0;
     } else {
         require(motion.velocity_y < 0x8000U, "unrecovered supported upward velocity");
