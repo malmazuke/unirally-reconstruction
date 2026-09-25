@@ -1319,7 +1319,7 @@
   {
    "address": "$81:C73E",
    "native": [
-    "src/core/presentation.cpp:build_result_map",
+    "src/core/presentation.cpp:check_result_composition",
     "src/core/presentation.cpp:classic_hud_left_field",
     "src/core/race_state_io.cpp:check_lap_clocks",
     "src/core/race_update.cpp:finish_update"
@@ -2573,9 +2573,9 @@
    "address": "$83:9FFA",
    "native": [
     "src/core/content_pack.cpp:tracks_required",
-    "src/core/presentation.cpp:build_result_map",
     "src/core/presentation.cpp:classic_track_name",
-    "src/core/presentation.cpp:classic_track_name_entry"
+    "src/core/presentation.cpp:classic_track_name_entry",
+    "src/core/presentation.cpp:result_title"
    ],
    "region": "rom"
   },
@@ -5172,9 +5172,12 @@
   },
   "src/core/presentation.cpp:build_result_map": {
    "rom": [
-    "$80:C431",
-    "$81:C73E",
-    "$83:9FFA"
+    "$80:C431"
+   ]
+  },
+  "src/core/presentation.cpp:check_result_composition": {
+   "rom": [
+    "$81:C73E"
    ]
   },
   "src/core/presentation.cpp:classic_caption_entry": {
@@ -5382,6 +5385,11 @@
   "src/core/presentation.cpp:render_window_xor": {
    "io": [
     "$00:2126"
+   ]
+  },
+  "src/core/presentation.cpp:result_title": {
+   "rom": [
+    "$83:9FFA"
    ]
   },
   "src/core/presentation.cpp:window_table_index_for": {
@@ -7162,7 +7170,7 @@
  "totals": {
   "addresses": 560,
   "io_addresses": 11,
-  "native_symbols": 336,
+  "native_symbols": 338,
   "rom_addresses": 351,
   "sram_addresses": 7,
   "wram_addresses": 191

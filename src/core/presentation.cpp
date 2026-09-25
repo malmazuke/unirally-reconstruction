@@ -346,22 +346,39 @@ void write_result_text(std::array<std::uint8_t, 65536>& vram, int x, int y, std:
     }
 }
 
-void build_result_map(std::array<std::uint8_t, 65536>& vram, const RaceFinishState& finish,
-                      const RaceTimerDigits& clock, std::span<const std::uint8_t> result_assets,
-                      std::span<const std::uint8_t> track_name = {}) {
-    for (std::size_t entry = 0; entry < 1024; ++entry)
-        set_map_word(vram, static_cast<int>(entry % 32), static_cast<int>(entry / 32), 0x004c);
-
-    // The title is the track's name, `$FF`-terminated lowercase ASCII from the
-    // name table (`$83:9FFA`, track order). The DRAGSTER assets carry the
-    // table's first name, DRAGSTER's own; another one-run track passes its own
-    // (TRACK-BREADTH, found in the user's live play of EAST and LOOPER).
+// The title is the track's name, 0xFF-terminated lowercase ASCII from the name table
+// (`$83:9FFA`, track order). The DRAGSTER assets carry the table's first name, DRAGSTER's own;
+// another one-run track passes its own (TRACK-BREADTH, found in the user's live play of EAST
+// and LOOPER).
+std::string_view result_title(std::span<const std::uint8_t> result_assets,
+                              std::span<const std::uint8_t> track_name) {
     const auto title_seed = track_name.empty() ? result_assets.subspan(5208, 16) : track_name;
     const auto terminator = std::find(title_seed.begin(), title_seed.end(), std::uint8_t{0xff});
     if (terminator == title_seed.end())
         throw std::invalid_argument("Classic result title seed lacks terminator");
-    const std::string_view title(reinterpret_cast<const char*>(title_seed.data()),
-                                 static_cast<std::size_t>(terminator - title_seed.begin()));
+    return {reinterpret_cast<const char*>(title_seed.data()),
+            static_cast<std::size_t>(terminator - title_seed.begin())};
+}
+
+bool time_is_consistent(const std::array<std::uint16_t, 5>& digits, std::uint16_t centiseconds) {
+    if (digits[0] > 9 || digits[1] > 5 || digits[2] > 9 || digits[3] > 9 || digits[4] > 9)
+        return false;
+    const auto displayed = static_cast<unsigned>(digits[0]) * 6000U
+                         + static_cast<unsigned>(digits[1]) * 1000U
+                         + static_cast<unsigned>(digits[2]) * 100U
+                         + static_cast<unsigned>(digits[3]) * 10U + digits[4];
+    return displayed == centiseconds;
+}
+
+// Only the result compositions the original was observed to publish are drawn: the winner's
+// at loading 225 or 226, the loser's at 242, with both riders' times consistent and the
+// outcome matching them. Returns whether the player's row reads NO TIME: $81:C73E-C75B ends
+// the race at 10:00 with both riders finished and the lap-short player's total left at the
+// 60000 no-time sentinel, and holds 9:59.9 when it does, so a no-time player total belongs
+// only to that timed-out race (R-0039; clock-limit original, stable result 32016-32200).
+// Equal times mean both riders crossed on one update; the player's crossing is processed
+// first, so the race counts it as won (R-0038 tie original).
+bool check_result_composition(const RaceFinishState& finish, const RaceTimerDigits& clock) {
     const bool observed_winner_publication =
         finish.outcome == RaceOutcome::PlayerWon
         && ((finish.phase == RacePhase::ResultLoading && finish.result_loading_updates == 225)
@@ -369,24 +386,6 @@ void build_result_map(std::array<std::uint8_t, 65536>& vram, const RaceFinishSta
     const bool observed_loser_publication = finish.outcome == RaceOutcome::PlayerLost
                                          && finish.phase == RacePhase::ResultScreen
                                          && finish.result_loading_updates == 242;
-    const auto time_is_consistent = [](const std::array<std::uint16_t, 5>& digits,
-                                       std::uint16_t centiseconds) {
-        if (digits[0] > 9 || digits[1] > 5 || digits[2] > 9 || digits[3] > 9 || digits[4] > 9)
-            return false;
-        const auto displayed = static_cast<unsigned>(digits[0]) * 6000U
-                             + static_cast<unsigned>(digits[1]) * 1000U
-                             + static_cast<unsigned>(digits[2]) * 100U
-                             + static_cast<unsigned>(digits[3]) * 10U + digits[4];
-        return displayed == centiseconds;
-    };
-    // $81:C73E-C75B ends the race at 10:00 with both riders finished and the
-    // lap-short player's total left at the 60000 no-time sentinel. Its crossing
-    // digits still hold the start-line crossing, so they do not describe the
-    // total and the original writes NO TIME in the player row instead
-    // (clock-limit original, stable result 32016-32200).
-    // $81:C73E-C75B holds 9:59.9 when it finishes both riders, so a no-time
-    // player total only belongs to that timed-out race (R-0039). A consistent
-    // time never reaches the sentinel, so this stays a strict extension.
     const bool clock_expired =
         clock.minutes == 9 && clock.tens_seconds == 5 && clock.seconds == 9 && clock.tenths == 9;
     const bool player_has_no_time = finish.finish_time_centiseconds[0] >= 60000 && clock_expired;
@@ -395,8 +394,6 @@ void build_result_map(std::array<std::uint8_t, 65536>& vram, const RaceFinishSta
         && (player_has_no_time
             || time_is_consistent(finish.finish_time_digits[0], finish.finish_time_centiseconds[0]))
         && time_is_consistent(finish.finish_time_digits[1], finish.finish_time_centiseconds[1]);
-    // Equal times mean both riders crossed on one update; the player's crossing
-    // is processed first, so the race counts it as won (R-0038 tie original).
     const bool outcome_is_consistent =
         (finish.outcome == RaceOutcome::PlayerWon
          && finish.finish_time_centiseconds[0] <= finish.finish_time_centiseconds[1])
@@ -405,13 +402,21 @@ void build_result_map(std::array<std::uint8_t, 65536>& vram, const RaceFinishSta
     if ((!observed_winner_publication && !observed_loser_publication) || !times_are_consistent
         || !outcome_is_consistent)
         throw std::invalid_argument("unsupported Classic result composition");
+    return player_has_no_time;
+}
 
-    // $80:C431 first fills the map, then writes these semantic fields in this
-    // order. Each small-font glyph is a vertical tile pair; title glyphs are
-    // two-by-two. The result state carries the observed five timer digits.
-    // Centred on the 32-tile row by its width in tiles, two per letter and one
-    // per space: DRAGSTER starts at tile 8, EAST at 12 and FLAT FUN at 9, as in
-    // the original's results (TRACK-BREADTH). The rule is fitted to those three.
+// $80:C431 first fills the map, then writes these fields in this order. Each small-font glyph
+// is a vertical tile pair; title glyphs are two-by-two. The result state carries the observed
+// five timer digits. The title is centred on the 32-tile row by its width in tiles, two per
+// letter and one per space: DRAGSTER starts at tile 8, EAST at 12 and FLAT FUN at 9, as in the
+// original's results (TRACK-BREADTH); the rule is fitted to those three.
+void build_result_map(std::array<std::uint8_t, 65536>& vram, const RaceFinishState& finish,
+                      const RaceTimerDigits& clock, std::span<const std::uint8_t> result_assets,
+                      std::span<const std::uint8_t> track_name = {}) {
+    for (std::size_t entry = 0; entry < 1024; ++entry)
+        set_map_word(vram, static_cast<int>(entry % 32), static_cast<int>(entry / 32), 0x004c);
+    const auto title = result_title(result_assets, track_name);
+    const bool player_has_no_time = check_result_composition(finish, clock);
     const auto spaces = static_cast<int>(std::count(title.begin(), title.end(), '_'));
     const int width = 2 * (static_cast<int>(title.size()) - spaces) + spaces;
     if (width > 32) throw std::invalid_argument("Classic result title is wider than the screen");

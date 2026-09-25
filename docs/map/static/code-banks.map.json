@@ -5209,7 +5209,7 @@
    ],
    "native": [
     "src/core/input_timer.cpp:advance_timer_digits",
-    "src/core/presentation.cpp:build_result_map",
+    "src/core/presentation.cpp:check_result_composition",
     "src/core/presentation.cpp:classic_hud_left_field",
     "src/core/race_state_io.cpp:check_lap_clocks",
     "src/core/race_update.cpp:finish_update"

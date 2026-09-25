@@ -3774,7 +3774,7 @@
   "label": "loc_81C73E",
   "native": [
    "src/core/input_timer.cpp:advance_timer_digits",
-   "src/core/presentation.cpp:build_result_map",
+   "src/core/presentation.cpp:check_result_composition",
    "src/core/presentation.cpp:classic_hud_left_field",
    "src/core/race_state_io.cpp:check_lap_clocks",
    "src/core/race_update.cpp:finish_update"
@@ -3796,7 +3796,7 @@
   "label": "loc_81C741",
   "native": [
    "src/core/input_timer.cpp:advance_timer_digits",
-   "src/core/presentation.cpp:build_result_map",
+   "src/core/presentation.cpp:check_result_composition",
    "src/core/presentation.cpp:classic_hud_left_field",
    "src/core/race_state_io.cpp:check_lap_clocks",
    "src/core/race_update.cpp:finish_update"
@@ -3812,7 +3812,7 @@
   "label": "loc_81C743",
   "native": [
    "src/core/input_timer.cpp:advance_timer_digits",
-   "src/core/presentation.cpp:build_result_map",
+   "src/core/presentation.cpp:check_result_composition",
    "src/core/presentation.cpp:classic_hud_left_field",
    "src/core/race_state_io.cpp:check_lap_clocks",
    "src/core/race_update.cpp:finish_update"
@@ -3828,7 +3828,7 @@
   "label": "loc_81C74F",
   "native": [
    "src/core/input_timer.cpp:advance_timer_digits",
-   "src/core/presentation.cpp:build_result_map",
+   "src/core/presentation.cpp:check_result_composition",
    "src/core/presentation.cpp:classic_hud_left_field",
    "src/core/race_state_io.cpp:check_lap_clocks",
    "src/core/race_update.cpp:finish_update"
@@ -3844,7 +3844,7 @@
   "label": "loc_81C755",
   "native": [
    "src/core/input_timer.cpp:advance_timer_digits",
-   "src/core/presentation.cpp:build_result_map",
+   "src/core/presentation.cpp:check_result_composition",
    "src/core/presentation.cpp:classic_hud_left_field",
    "src/core/race_state_io.cpp:check_lap_clocks",
    "src/core/race_update.cpp:finish_update"
@@ -3860,7 +3860,7 @@
   "label": "loc_81C758",
   "native": [
    "src/core/input_timer.cpp:advance_timer_digits",
-   "src/core/presentation.cpp:build_result_map",
+   "src/core/presentation.cpp:check_result_composition",
    "src/core/presentation.cpp:classic_hud_left_field",
    "src/core/race_state_io.cpp:check_lap_clocks",
    "src/core/race_update.cpp:finish_update"
@@ -3876,7 +3876,7 @@
   "label": "loc_81C75B",
   "native": [
    "src/core/input_timer.cpp:advance_timer_digits",
-   "src/core/presentation.cpp:build_result_map",
+   "src/core/presentation.cpp:check_result_composition",
    "src/core/presentation.cpp:classic_hud_left_field",
    "src/core/race_state_io.cpp:check_lap_clocks",
    "src/core/race_update.cpp:finish_update"
@@ -7611,9 +7611,9 @@
   "label": "unk_839FFA",
   "native": [
    "src/core/content_pack.cpp:tracks_required",
-   "src/core/presentation.cpp:build_result_map",
    "src/core/presentation.cpp:classic_track_name",
-   "src/core/presentation.cpp:classic_track_name_entry"
+   "src/core/presentation.cpp:classic_track_name_entry",
+   "src/core/presentation.cpp:result_title"
   ],
   "source_records": [
    "docs/research/R-0046-track-breadth-matrix.md",
