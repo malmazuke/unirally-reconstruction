@@ -13,8 +13,7 @@ struct TrackProgress {
     bool transition_rejected{};
 };
 
-void advance_track_progress(TrackProgress& state,
-                            std::span<const std::uint8_t> transition_tables);
+void advance_track_progress(TrackProgress& state, std::span<const std::uint8_t> transition_tables);
 void observe_track_markers(TrackProgress& state, const TrackSamples& samples);
 
 } // namespace unirally
@@ -27,7 +26,6 @@ struct ProgressUpdateState {
 using ProgressBytes = std::array<std::uint8_t, 15>;
 ProgressBytes serialize_progress(const ProgressUpdateState& state);
 ProgressUpdateState deserialize_progress(std::span<const std::uint8_t> bytes);
-void update_track_progress(ProgressUpdateState& state,
-                           const std::array<TrackSamples, 2>& samples,
+void update_track_progress(ProgressUpdateState& state, const std::array<TrackSamples, 2>& samples,
                            std::span<const std::uint8_t> transition_tables);
 } // namespace unirally

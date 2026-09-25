@@ -13,8 +13,8 @@ struct FlatContactContent {
 
 struct FlatContactSummary {
     bool supported{};
-    std::uint8_t penetration{}; // position units, subtracted from y
-    std::int16_t angle{-32};    // zero on this supported branch; -32 when empty
+    std::uint8_t penetration{};    // position units, subtracted from y
+    std::int16_t angle{-32};       // zero on this supported branch; -32 when empty
     std::uint16_t selected_word{}; // first eligible descriptor, not deepest
     std::uint8_t selected_high{};  // last winning probe's descriptor high byte
     std::uint8_t tile_flags{};
@@ -61,16 +61,15 @@ struct ContactContext {
 };
 
 FlatContactSummary summarize_flat_contact(const FlatContactContent& content,
-                                         const CollisionPoints& points,
-                                         const TrackSamples& samples,
-                                         std::uint16_t x, std::uint16_t y);
+                                          const CollisionPoints& points,
+                                          const TrackSamples& samples, std::uint16_t x,
+                                          std::uint16_t y);
 
 // Throws std::invalid_argument for an unrecovered branch and std::out_of_range
 // for missing content. On rejection, rider and motion remain unchanged.
 // Both riders call this every frame after sampling. Captured inputs are used
 // only by the isolated research probe; this function has no reference oracle.
 void resolve_flat_contact(RiderContactState& rider, ContactMotion& motion,
-                          const FlatContactSummary& summary,
-                          const ContactContext& context);
+                          const FlatContactSummary& summary, const ContactContext& context);
 
 } // namespace unirally

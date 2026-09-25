@@ -5,6 +5,13 @@ push the task branch, open a pull request from the template, merge with
 `gh pr merge --merge` once its checks are green and the review is done. `main`
 refuses direct pushes. The checks run on pull requests only.
 
+**Status on 25 September 2026 UTC (NATIVE-READABILITY part 1): continue
+[NATIVE-READABILITY](NATIVE-READABILITY.md) with part 2 (tier 1, the simulation).** Part 1
+(rules, `src/core/.clang-format`, the native-symbol index) is reviewed and integrated by pull
+request #23. The record's handoff has the first step (the reward queue) and the checks
+(`local/evidence/native-readability/equivalence.py` against the frozen base binaries, then
+`gates.sh`). RESULT-TITLE-GLYPHS stays next after this task.
+
 **Status on 25 September 2026 UTC (after HUNTER-EFFECTS, user request): claim
 [NATIVE-READABILITY](NATIVE-READABILITY.md) next, before RESULT-TITLE-GLYPHS.** The user found
 the recovered C++ reads as annotated assembly; D-0003 is updated with measurable rules. Three

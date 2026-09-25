@@ -10,7 +10,9 @@ std::uint16_t add(std::uint16_t left, std::uint16_t right) {
 std::uint16_t subtract(std::uint16_t left, std::uint16_t right) {
     return static_cast<std::uint16_t>(static_cast<std::uint32_t>(left) - right);
 }
-bool negative(std::uint16_t value) { return (value & 0x8000U) != 0; }
+bool negative(std::uint16_t value) {
+    return (value & 0x8000U) != 0;
+}
 void subtract_if_nonnegative(std::uint16_t& value, std::uint16_t amount) {
     const auto candidate = subtract(value, amount);
     if (!negative(candidate)) value = candidate;
@@ -27,7 +29,9 @@ std::uint16_t cap_velocity(std::uint16_t velocity, std::uint16_t cap) {
 std::uint16_t progress_contribution(SpeedModifiers& state, const SpeedLimitContext& context) {
     if (context.ai_enabled && context.opponent) {
         const auto difference = subtract(context.player_progress, context.opponent_progress);
-        return difference != 0 && !negative(difference) ? add(context.ai_adjustment, context.ai_adjustment) : 0;
+        return difference != 0 && !negative(difference)
+                 ? add(context.ai_adjustment, context.ai_adjustment)
+                 : 0;
     }
     const auto own = context.opponent ? context.opponent_progress : context.player_progress;
     const auto other = context.opponent ? context.player_progress : context.opponent_progress;
@@ -38,7 +42,8 @@ std::uint16_t progress_contribution(SpeedModifiers& state, const SpeedLimitConte
         state.progress_adjustment = candidate;
     } else if (difference != 0) {
         const auto candidate = add(state.progress_adjustment, 1);
-        if (negative(subtract(candidate, context.adjustment_limit))) state.progress_adjustment = candidate;
+        if (negative(subtract(candidate, context.adjustment_limit)))
+            state.progress_adjustment = candidate;
     }
     return state.progress_adjustment;
 }
@@ -76,7 +81,8 @@ void limit_rider_speed(std::uint16_t& velocity_x, std::uint16_t& velocity_y,
         extra = add(state.boost, progress_contribution(state, context));
         extra = negative(extra) ? 0 : std::min<std::uint16_t>(extra, 384);
     }
-    horizontal = cap_velocity(horizontal, add(static_cast<std::uint16_t>(extra >> 1U), context.player_base_cap));
+    horizontal = cap_velocity(
+        horizontal, add(static_cast<std::uint16_t>(extra >> 1U), context.player_base_cap));
     // Ordinary cartridge mode; 768 is the immediate at PAL file 0x12830.
     vertical = cap_velocity(vertical, add(static_cast<std::uint16_t>(extra >> 1U), 768));
     subtract_if_nonnegative(state.vertical_boost, 1);
@@ -86,8 +92,8 @@ void limit_rider_speed(std::uint16_t& velocity_x, std::uint16_t& velocity_y,
     const auto mask = content.masks[bucket];
     if ((context.update_counter & mask) == mask) {
         const auto decrement = static_cast<std::uint16_t>(
-            static_cast<unsigned>(content.decrements[bucket * 2]) |
-            (static_cast<unsigned>(content.decrements[bucket * 2 + 1]) << 8U));
+            static_cast<unsigned>(content.decrements[bucket * 2])
+            | (static_cast<unsigned>(content.decrements[bucket * 2 + 1]) << 8U));
         subtract_if_nonnegative(state.boost, decrement);
     }
     if (context.friction_mode == 1) {
