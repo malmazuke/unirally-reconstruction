@@ -11,6 +11,15 @@
 
 namespace unirally {
 
+// The loading count at which the original publishes each result: the winner's at 225, still in
+// ResultLoading (end-of-frame 3678, one update before the phase changes; R-0037), the loser's
+// at 242, once ResultScreen has begun.
+constexpr std::uint16_t winner_result_loading = 225, loser_result_loading = 242;
+
+// Whether the result screen is on screen: from ResultScreen on, and from loading 225 for a
+// winner, whose result the original publishes one update before the phase changes.
+bool result_screen_visible(const RaceFinishState& finish);
+
 struct ClassicResultContent {
     std::span<const std::uint8_t> palette, result_assets, result_base_vram;
     std::span<const std::uint8_t> result_palette, result_palette_tail;

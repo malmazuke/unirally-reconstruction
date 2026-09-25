@@ -24,6 +24,11 @@ namespace unirally {
 
 namespace {
 
+// The caption and HUD (BG3) ink is CGRAM colour 22; where a rider covers it the original adds
+// 13 to the sprite's red (draw_race_riders, R-0042).
+constexpr std::uint8_t bg3_ink_colour = 22;
+constexpr unsigned ink_red_add = 13;
+
 // The decoded track a race runs on: the engine's own entry.
 std::span<const std::uint8_t> classic_track_data(const ClassicContentPack& pack,
                                                  ClassicRaceTrack track) {
@@ -48,7 +53,7 @@ std::span<const std::uint8_t> classic_track_name_entry(const ClassicContentPack&
 }
 
 // A track's name from the ROM's name table (`$83:9FFA`, TRACK-BREADTH): the
-// index-th `$FF`-terminated lowercase string, shown in capitals with spaces
+// index-th 0xFF-terminated lowercase string, shown in capitals with spaces
 // for underscores, as the menu screens show it.
 std::string classic_track_name(const ClassicContentPack& pack, ClassicRaceTrack track) {
     const auto table = pack.entry("presentation.classic.track-names.v1");
@@ -180,21 +185,24 @@ ClassicRacePresentationContent classic_race_presentation_content(const ClassicCo
 
 namespace {
 
+// The original's first visible result frame, counted in result updates (M4-16).
+constexpr std::uint16_t authored_result_first_frame = 108;
+
 // The authored tour result (M4-16), where no recovered result assets exist: black until the
-// original's first visible result frame (108), then the lap graph fades in.
+// original's first visible result frame, then the lap graph fades in.
 RgbFrame render_authored_result(const ZoomZooState& state,
                                 const ClassicRacePresentationContent& content) {
     RgbFrame frame{};
-    if (state.result_updates <= 108) return frame;
+    if (state.result_updates <= authored_result_first_frame) return frame;
     rect(frame, 0, 0, 256, 224, {34, 42, 48});
     ui_text(frame, 70, 12,
             state.race.total_times[0] < state.race.total_times[1] ? "WINNER" : "RUNNER UP");
     ui_text(frame, 12, 32, "PLAYER       TOTAL    BEST LAP");
     const unsigned minimum = state.result.graph_minimum, maximum = state.result.graph_maximum;
     for (unsigned i = 0; i < 2; ++i) {
-        unsigned best = 60000;
+        unsigned best = no_time;
         for (auto lap : state.race.lap_times[i])
-            if (lap < 60000) {
+            if (lap < no_time) {
                 best = std::min(best, unsigned(lap));
             }
         ui_text(frame, 12, 45 + int(i) * 13, i ? "BRONSEN" : "MIKE");
@@ -214,7 +222,7 @@ RgbFrame render_authored_result(const ZoomZooState& state,
     for (unsigned i = 0; i < 2; ++i)
         for (unsigned lap = 0; lap < laps; ++lap) {
             const auto time = state.race.lap_times[i][lap];
-            if (time >= 60000) continue;
+            if (time >= no_time) continue;
             const int y =
                 178 - static_cast<int>((time - minimum) * 90U / std::max(1U, maximum - minimum));
             rect(frame, 76 + int(lap) * lap_step + int(i) * 5, y - 2, 4, 4,
@@ -386,12 +394,12 @@ std::array<bool, 256 * 224> draw_race_backgrounds(RgbFrame& frame,
 
 // R-0036: the riders, opponent first, from the OBJ tiles and OAM the original published in
 // the previous update. Entry 98 (player, tile base 0, palette 3) has priority over entry 99
-// (opponent, base $88, palette 4); both use OBJ priority 2 outside a corkscrew. Where a rider
+// (opponent, base 0x88, palette 4); both use OBJ priority 2 outside a corkscrew. Where a rider
 // covers caption or HUD ink (R-0042) the original adds red to the sprite, red = min(31,
 // sprite_red + 13), green and blue untouched, measured over 35 such pixels on frame 2100 of
-// the M4-16 primary and the same on 2120, 2340 and 2600. That is colour-math arithmetic;
-// which PPU configuration produces it, and why the added 13 is not half of the ink's own
-// 5-bit 28, are not recovered.
+// the M4-16 primary and the same on 2120, 2340 and 2600. The 13 is the red of CGRAM 27, the
+// colour the caption's attribute names, on both race palettes; which PPU configuration adds
+// it is not recovered, so the measured value is kept.
 void draw_race_riders(RgbFrame& frame, const ZoomZooState& rider_source,
                       const ClassicRacePresentationContent& content,
                       const ClassicRaceHistory* history, const std::array<std::uint8_t, 512>& cgram,
@@ -425,7 +433,7 @@ void draw_race_riders(RgbFrame& frame, const ZoomZooState& rider_source,
             }
             const auto word = colour_word(cgram, index);
             const auto added =
-                static_cast<std::uint16_t>(std::min<unsigned>(31U, (word & 31U) + 13U));
+                static_cast<std::uint16_t>(std::min<unsigned>(31U, (word & 31U) + ink_red_add));
             pixel(frame, x, y,
                   {channel8(added), channel8(static_cast<std::uint16_t>((word >> 5U) & 31U)),
                    channel8(static_cast<std::uint16_t>((word >> 10U) & 31U))});
@@ -453,11 +461,7 @@ RgbFrame render_classic_race(const ZoomZooState& state,
         // its serialization. Until then the race picture stays, with the palette phase and
         // window selection of the last race vblank (R-0037, R-0040).
         const auto finish = classic_finish_view(state);
-        const bool result_visible =
-            finish.phase == RacePhase::ResultScreen
-            || (finish.phase == RacePhase::ResultLoading && finish.outcome == RaceOutcome::PlayerWon
-                && finish.result_loading_updates >= 225);
-        if (result_visible) {
+        if (result_screen_visible(finish)) {
             render_result_background(frame, finish, state.movement.timer,
                                      {content.palette, content.result_assets,
                                       content.result_base_vram, content.result_palette,
@@ -499,11 +503,11 @@ RgbFrame render_classic_race(const ZoomZooState& state,
     // ink it is the flat colour, which matches the original on every other measured frame.
     const auto& rider_source = previous_update ? *previous_update : state;
     std::bitset<256 * 224> caption_ink;
-    draw_classic_caption(frame, rider_source, content, colour(cgram, 22), caption_ink);
+    draw_classic_caption(frame, rider_source, content, colour(cgram, bg3_ink_colour), caption_ink);
     draw_classic_hud(
         frame, rider_source, content, history ? history->opponent_finish_frame : std::nullopt,
         history ? std::optional<ClassicHudPublished>(history->published_hud) : std::nullopt,
-        colour(cgram, 22), caption_ink);
+        colour(cgram, bg3_ink_colour), caption_ink);
     draw_race_riders(frame, rider_source, content, history, cgram, scroll.flip, bg1_above_objects,
                      caption_ink);
     // Every member covers both objects as well as the backgrounds: inside the window the

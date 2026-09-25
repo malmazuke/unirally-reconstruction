@@ -5484,7 +5484,7 @@
     "Nmx"
    ],
    "native": [
-    "src/core/race_setup.cpp:start_countdown, base_speed_cap, no_time",
+    "src/core/race_setup.cpp:start_countdown, base_speed_cap",
     "src/core/zoom_zoo_movement.hpp:ZoomZooRaceState::checkpoint_seen"
    ],
    "observed_entries": {},
@@ -7318,6 +7318,7 @@
     "NMX"
    ],
    "native": [
+    "src/core/rider_look.cpp:arc_b, arc_c, arc_d",
     "src/core/rider_look.hpp:advance_rider_look",
     "src/core/rider_look.hpp:step_rider_head"
    ],
@@ -7344,6 +7345,7 @@
     "NMX"
    ],
    "native": [
+    "src/core/rider_look.cpp:arc_b, arc_c, arc_d",
     "src/core/rider_look.hpp:advance_rider_look",
     "src/core/rider_look.hpp:step_rider_head"
    ],
@@ -7367,6 +7369,7 @@
     "NMX"
    ],
    "native": [
+    "src/core/rider_look.cpp:arc_b, arc_c, arc_d",
     "src/core/rider_look.hpp:advance_rider_look",
     "src/core/rider_look.hpp:step_rider_head"
    ],
@@ -7396,6 +7399,7 @@
     "NMX"
    ],
    "native": [
+    "src/core/rider_look.cpp:arc_b, arc_c, arc_d",
     "src/core/rider_look.hpp:advance_rider_look",
     "src/core/rider_look.hpp:step_rider_head"
    ],
@@ -9695,7 +9699,7 @@
     "NMx"
    ],
    "native": [
-    "src/core/race_setup.cpp:start_countdown, base_speed_cap, no_time"
+    "src/core/race_setup.cpp:start_countdown, base_speed_cap"
    ],
    "observed_entries": {},
    "start": "$82:D71F",
@@ -9754,7 +9758,7 @@
    ],
    "native": [
     "src/core/race_setup.cpp:classic_crawler_zoom_zoo_start",
-    "src/core/race_setup.cpp:start_countdown, base_speed_cap, no_time",
+    "src/core/race_setup.cpp:start_countdown, base_speed_cap",
     "src/core/race_windows.cpp:dragster_race_setup_frame",
     "src/core/zoom_zoo_movement.hpp:classic_crawler_zoom_zoo_start"
    ],
@@ -9778,7 +9782,7 @@
    "native": [
     "src/core/race_setup.cpp:classic_crawler_zoom_zoo_start",
     "src/core/race_setup.cpp:classic_race_start",
-    "src/core/race_setup.cpp:start_countdown, base_speed_cap, no_time",
+    "src/core/race_setup.cpp:start_countdown, base_speed_cap",
     "src/core/race_state_io.cpp:check_opponent_queue",
     "src/core/zoom_zoo_movement.hpp:ClassicRaceScenario::laps",
     "src/core/zoom_zoo_movement.hpp:classic_crawler_zoom_zoo_start"

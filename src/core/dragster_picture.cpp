@@ -252,11 +252,7 @@ static RgbFrame render_dragster(const PresentationSample& s, const PresentationC
     // presentation consumes the observed loading counter without altering the
     // gameplay transition or its serialization.
     const auto& finish = s.movement.finish;
-    const bool result_visible =
-        finish.phase == RacePhase::ResultScreen
-        || (finish.phase == RacePhase::ResultLoading && finish.outcome == RaceOutcome::PlayerWon
-            && finish.result_loading_updates >= 225);
-    if (result_visible) {
+    if (result_screen_visible(finish)) {
         RgbFrame result{};
         render_result_background(result, finish, s.movement.timer,
                                  {content.palette,

@@ -1419,7 +1419,7 @@
   {
    "address": "$81:CD2A",
    "native": [
-    "src/core/race_setup.cpp:start_countdown, base_speed_cap, no_time"
+    "src/core/race_setup.cpp:start_countdown, base_speed_cap"
    ],
    "region": "rom"
   },
@@ -1714,6 +1714,7 @@
   {
    "address": "$82:87C9",
    "native": [
+    "src/core/rider_look.cpp:arc_b, arc_c, arc_d",
     "src/core/rider_look.hpp:step_rider_head"
    ],
    "range_ends": [
@@ -2422,7 +2423,7 @@
   {
    "address": "$82:D724",
    "native": [
-    "src/core/race_setup.cpp:start_countdown, base_speed_cap, no_time"
+    "src/core/race_setup.cpp:start_countdown, base_speed_cap"
    ],
    "range_ends": [
     "$82:D731"
@@ -2432,7 +2433,7 @@
   {
    "address": "$82:D76D",
    "native": [
-    "src/core/race_setup.cpp:start_countdown, base_speed_cap, no_time"
+    "src/core/race_setup.cpp:start_countdown, base_speed_cap"
    ],
    "range_ends": [
     "$82:D76F"
@@ -2451,7 +2452,7 @@
    "address": "$82:D7C6",
    "native": [
     "src/core/race_setup.cpp:classic_crawler_zoom_zoo_start",
-    "src/core/race_setup.cpp:start_countdown, base_speed_cap, no_time",
+    "src/core/race_setup.cpp:start_countdown, base_speed_cap",
     "src/core/zoom_zoo_movement.hpp:classic_crawler_zoom_zoo_start"
    ],
    "range_ends": [
@@ -2470,7 +2471,7 @@
   {
    "address": "$82:D841",
    "native": [
-    "src/core/race_setup.cpp:start_countdown, base_speed_cap, no_time"
+    "src/core/race_setup.cpp:start_countdown, base_speed_cap"
    ],
    "range_ends": [
     "$82:D844"
@@ -2487,7 +2488,7 @@
   {
    "address": "$82:D972",
    "native": [
-    "src/core/race_setup.cpp:start_countdown, base_speed_cap, no_time"
+    "src/core/race_setup.cpp:start_countdown, base_speed_cap"
    ],
    "range_ends": [
     "$82:D975"
@@ -5517,7 +5518,7 @@
     "$83:CC0B"
    ]
   },
-  "src/core/race_setup.cpp:start_countdown, base_speed_cap, no_time": {
+  "src/core/race_setup.cpp:start_countdown, base_speed_cap": {
    "rom": [
     "$81:CD2A",
     "$82:D724",
@@ -6018,6 +6019,11 @@
   "src/core/reward_queue.cpp:update_tutorial_hints": {
    "rom": [
     "$83:CDBC"
+   ]
+  },
+  "src/core/rider_look.cpp:arc_b, arc_c, arc_d": {
+   "rom": [
+    "$82:87C9"
    ]
   },
   "src/core/rider_look.cpp:forward_distance_table": {
@@ -7106,7 +7112,7 @@
  "totals": {
   "addresses": 552,
   "io_addresses": 4,
-  "native_symbols": 340,
+  "native_symbols": 341,
   "rom_addresses": 351,
   "sram_addresses": 7,
   "wram_addresses": 190

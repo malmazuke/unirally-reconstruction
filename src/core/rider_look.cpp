@@ -19,6 +19,12 @@ constexpr std::size_t sequence_bytes = 158;         // $17:C614
 constexpr std::size_t look_table_bytes = 594;
 
 constexpr std::uint16_t neutral_head = 9;
+// The head frames lie on four arcs ($82:87C9-$82:8926): arc A is frames 1-17 through the
+// neutral 9; arcs B, C and D start at 18, 26 and 34 and join arc A at 9, 2 and 7. The head
+// steps one frame a look update, along its arc toward the target, and changes arc only
+// through the junction.
+constexpr std::uint16_t arc_b = 18, arc_c = 26, arc_d = 34;
+constexpr std::uint16_t arc_b_joins = neutral_head, arc_c_joins = 2, arc_d_joins = 7;
 
 std::uint16_t table_word(const RiderLookTables& tables, std::size_t offset) {
     if (tables.bytes.size() != look_table_bytes || offset + 2 > tables.bytes.size())
@@ -48,36 +54,39 @@ void step_rider_head(RiderLook& look) {
         return head == goal ? head : (compares_negative(head, goal) ? up : down);
     };
     std::uint16_t next{};
-    if (compares_negative(target, 0x12)) {
-        if (compares_negative(head, 0x12))
+    if (compares_negative(target, arc_b)) {
+        if (compares_negative(head, arc_b))
             next = toward(target);
         else
-            next = head == 0x12 ? 9 : head == 0x1a ? 2 : head == 0x22 ? 7 : down;
-    } else if (compares_negative(target, 0x1a)) {
-        if (compares_negative(head, 0x12))
-            next = head == 9 ? 0x12 : toward(9);
-        else if (compares_negative(head, 0x1a))
+            next = head == arc_b ? arc_b_joins
+                 : head == arc_c ? arc_c_joins
+                 : head == arc_d ? arc_d_joins
+                                 : down;
+    } else if (compares_negative(target, arc_c)) {
+        if (compares_negative(head, arc_b))
+            next = head == arc_b_joins ? arc_b : toward(arc_b_joins);
+        else if (compares_negative(head, arc_c))
             next = toward(raw_target);
-        else if (compares_negative(head, 0x22))
-            next = head == 0x1a ? 2 : down;
+        else if (compares_negative(head, arc_d))
+            next = head == arc_c ? arc_c_joins : down;
         else
-            next = head == 0x22 ? 7 : down;
-    } else if (compares_negative(target, 0x22)) {
-        if (compares_negative(head, 0x12))
-            next = head == 2 ? 0x1a : toward(2);
-        else if (compares_negative(head, 0x1a))
-            next = head == 0x12 ? 9 : down;
-        else if (compares_negative(head, 0x22))
+            next = head == arc_d ? arc_d_joins : down;
+    } else if (compares_negative(target, arc_d)) {
+        if (compares_negative(head, arc_b))
+            next = head == arc_c_joins ? arc_c : toward(arc_c_joins);
+        else if (compares_negative(head, arc_c))
+            next = head == arc_b ? arc_b_joins : down;
+        else if (compares_negative(head, arc_d))
             next = toward(raw_target);
         else
-            next = head == 0x22 ? 7 : down;
+            next = head == arc_d ? arc_d_joins : down;
     } else {
-        if (compares_negative(head, 0x12))
-            next = head == 7 ? 0x22 : toward(7);
-        else if (compares_negative(head, 0x1a))
-            next = head == 0x12 ? 9 : down;
-        else if (compares_negative(head, 0x22))
-            next = head == 0x1a ? 2 : down;
+        if (compares_negative(head, arc_b))
+            next = head == arc_d_joins ? arc_d : toward(arc_d_joins);
+        else if (compares_negative(head, arc_c))
+            next = head == arc_b ? arc_b_joins : down;
+        else if (compares_negative(head, arc_d))
+            next = head == arc_c ? arc_c_joins : down;
         else
             next = toward(raw_target);
     }

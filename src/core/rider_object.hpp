@@ -48,7 +48,7 @@ RiderObjectPixels compose_rider_object(const RiderObjectContent& content, std::u
                                        RiderRowClip clip);
 
 // Decoded tile reference word ($83:F253-$83:F26B): the low byte's bits 7..2
-// select bank $27 + n, and bits 1..0 with the high byte select one of 1024
+// select bank 0x27 + n, and bits 1..0 with the high byte select one of 1024
 // 32-byte tiles in that bank.
 struct RiderTileReference {
     std::uint8_t bank{};

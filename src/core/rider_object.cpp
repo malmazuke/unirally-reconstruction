@@ -153,7 +153,7 @@ RiderOam project_rider_oam(std::uint16_t world_x, std::uint16_t world_y, std::ui
     oam.horizontal_flip = reflected; // $0BA7/$0BA9 sets attribute bit 6
     const auto screen_y = static_cast<std::uint16_t>(world_y - camera_y);
     if (bit_below(screen_y, 0xffd7) || !bit_below(screen_y, 0x00e1))
-        return oam; // hidden at X/Y $70 with the ninth X bit set
+        return oam; // hidden at X/Y 0x70 with the ninth X bit set
     // $82:AD91-$82:ADAB, evaluated only for a published Y.
     if (bit_below(screen_y, 0xffe0))
         oam.clip = RiderRowClip::top_row;

@@ -53,7 +53,6 @@ constexpr std::uint16_t checkpoints_per_lap = 4, longest_checkpoint_display = 12
 constexpr std::uint16_t finish_display_updates = 240, fastest_camera = 16;
 constexpr std::uint16_t zoom_zoo_camera_x_limit = 0x3fff;
 constexpr unsigned last_finish_pose_one = 48, last_finish_pose_two = 88;
-constexpr std::uint16_t no_time = 60000; // a lap slot or total not yet run
 constexpr unsigned lap_slots = 10;
 // The native start: 30 fade updates, a 4-update delay, a 270-update countdown, start boosts
 // of 384 until it reaches 128; the tutorial hints every 300 updates from 30, eight groups.

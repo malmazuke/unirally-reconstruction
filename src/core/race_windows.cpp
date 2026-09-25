@@ -350,7 +350,7 @@ std::optional<std::uint32_t> classic_opponent_finish_frame(const ZoomZooState& s
     // it; the history tracker records the opponent's finish as it happens.
     const auto& race = state.race;
     if (!race.riders[0].finished || !race.riders[1].finished) return std::nullopt;
-    if (race.total_times[0] >= 60000U || race.total_times[1] >= 60000U) return std::nullopt;
+    if (race.total_times[0] >= no_time || race.total_times[1] >= no_time) return std::nullopt;
     // The finish delay counts once per race update and holds at 240 from the
     // update before result loading, so the frame it last advanced on is the
     // loading start minus the loading count (lose-a: finish 3318, delay 240 at

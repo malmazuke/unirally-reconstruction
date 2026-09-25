@@ -18,7 +18,7 @@ namespace unirally {
 // and "complete" were observed (a 14, c 18, d 1A, e 1C, g 20, l 2A, m 2C,
 // o 00, p 30, r 34, s 36, t 38); they fit one layout, which gives the other
 // letters and the digits (TRACK-BREADTH): digits 0-9 at 2 x digit, so "o"
-// shares the zero; a-n from $14 in steps of two; p-z two tiles lower, since
+// shares the zero; a-n from 0x14 in steps of two; p-z two tiles lower, since
 // "o" has no glyph of its own. f, u and n are confirmed on FLAT FUN's original
 // result; the other letters outside the observed twelve are the layout's
 // reading.
@@ -57,7 +57,7 @@ std::uint16_t result_text_tile(char glyph) {
     case '.': return 0xa8;
     case ':': return 0xcc;
     // The small result font is contiguous from '.' at $A8: digits 0-9 are
-    // $A9-$B2 and letters follow from 'A' at $B3 without 'O', which reuses
+    // 0xA9-0xB2 and letters follow from 'A' at 0xB3 without 'O', which reuses
     // '0'. Ordinary finish times reach every digit (R-0038 frame 3860 shows 9).
     case '0': return 0xa9;
     case '1': return 0xaa;
@@ -130,14 +130,16 @@ bool time_is_consistent(const std::array<std::uint16_t, 5>& digits, std::uint16_
 bool check_result_composition(const RaceFinishState& finish, const RaceTimerDigits& clock) {
     const bool observed_winner_publication =
         finish.outcome == RaceOutcome::PlayerWon
-        && ((finish.phase == RacePhase::ResultLoading && finish.result_loading_updates == 225)
-            || (finish.phase == RacePhase::ResultScreen && finish.result_loading_updates == 226));
+        && ((finish.phase == RacePhase::ResultLoading
+             && finish.result_loading_updates == winner_result_loading)
+            || (finish.phase == RacePhase::ResultScreen
+                && finish.result_loading_updates == winner_result_loading + 1));
     const bool observed_loser_publication = finish.outcome == RaceOutcome::PlayerLost
                                          && finish.phase == RacePhase::ResultScreen
-                                         && finish.result_loading_updates == 242;
+                                         && finish.result_loading_updates == loser_result_loading;
     const bool clock_expired =
         clock.minutes == 9 && clock.tens_seconds == 5 && clock.seconds == 9 && clock.tenths == 9;
-    const bool player_has_no_time = finish.finish_time_centiseconds[0] >= 60000 && clock_expired;
+    const bool player_has_no_time = finish.finish_time_centiseconds[0] >= no_time && clock_expired;
     const bool times_are_consistent =
         finish.rider_finished[0] && finish.rider_finished[1]
         && (player_has_no_time
@@ -155,6 +157,12 @@ bool check_result_composition(const RaceFinishState& finish, const RaceTimerDigi
 }
 
 } // namespace
+
+bool result_screen_visible(const RaceFinishState& finish) {
+    return finish.phase == RacePhase::ResultScreen
+        || (finish.phase == RacePhase::ResultLoading && finish.outcome == RaceOutcome::PlayerWon
+            && finish.result_loading_updates >= winner_result_loading);
+}
 
 // $80:C431 first fills the map, then writes these fields in this order. Each small-font glyph
 // is a vertical tile pair; title glyphs are two-by-two. The result state carries the observed
@@ -213,7 +221,7 @@ ResultBackgroundPixel result_bg1_pixel(const std::array<std::uint8_t, 65536>& vr
     const auto value = tile_pixel_8bpp(vram, 0x6000, entry & 0x3ffU, tile_x, tile_y);
     const auto priority = static_cast<std::uint8_t>(value == 0 ? 0 : (entry & 0x2000U ? 7 : 3));
     const auto palette_group = static_cast<std::uint8_t>((entry >> 10U) & 7U);
-    // CGWSEL=$02 selects subscreen blending (bit 1). Direct colour is bit 0 and
+    // CGWSEL=0x02 selects subscreen blending (bit 1). Direct colour is bit 0 and
     // is disabled in the captured result state, so BG1 still indexes CGRAM.
     return {value, palette_group, priority, false};
 }
@@ -393,7 +401,7 @@ std::string race_time(unsigned value) {
 }
 
 std::string result_time(unsigned value) {
-    return value >= 60000U ? "NO TIME" : race_time(value);
+    return value >= no_time ? "NO TIME" : race_time(value);
 }
 
 } // namespace unirally

@@ -81,7 +81,7 @@ std::array<std::uint8_t, 4> classic_hud_clock_digits(const RaceTimerDigits& t) {
 }
 
 // $81:C94F-CA36, digit by digit from the tenths up, each borrow carried into
-// the stored digit above it ($02, $01, $00 in the original's scratch).
+// the stored digit above it (the original's direct-page scratch bytes 2, 1 and 0).
 std::string classic_hud_split_text(const std::array<std::uint8_t, 4>& clock,
                                    const std::array<std::uint8_t, 4>& stored) {
     int stored_minutes = stored[0], stored_tens = stored[1], stored_seconds = stored[2];
@@ -102,7 +102,7 @@ std::string classic_hud_split_text(const std::array<std::uint8_t, 4>& clock,
     }
     int minutes = int(clock[0]) - stored_minutes;
     const bool negative = minutes < 0;
-    // `EOR #$FF` on the 8-bit minute: the one's complement, not the negation.
+    // `EOR` with 0xFF on the 8-bit minute: the one's complement, not the negation.
     if (negative) minutes = (~minutes) & 0xff;
     if (!negative)
         return {'+',
@@ -188,9 +188,9 @@ ClassicHudCellRequest ClassicRaceHudClock::crossing_cell(const ZoomZooState& pre
     const std::size_t slot = static_cast<std::size_t>(after.laps_remaining) * 4U + after.checkpoint;
     const auto clock = classic_hud_clock_digits(previous.movement.timer);
     const bool stored = slot < slot_times_.size() && slot_times_[slot];
-    const bool first = slot < previous.race.checkpoint_seen.size()
-                    && (previous.race.checkpoint_seen[slot] & 0x80U) != 0 && !stored;
-    if (first) {
+    const bool first_through = slot < previous.race.checkpoint_seen.size()
+                            && slot_not_yet_crossed(previous.race.checkpoint_seen[slot]) && !stored;
+    if (first_through) {
         if (slot < slot_times_.size()) slot_times_[slot] = clock;
         return {};
     }
@@ -289,9 +289,9 @@ ClassicHudText classic_race_hud_text(const ZoomZooState& previous_update,
     // The 60000 no-time sentinel is not a finish time on either side. A player
     // who finishes all laps always has a real total, so this guard is belt and
     // braces rather than a measured case (review 2 A8).
-    if (finished && race.finish_delay >= 2 && race.total_times[0] < 60000U)
+    if (finished && race.finish_delay >= 2 && race.total_times[0] < no_time)
         hud.player_cells = hud_time(race.total_times[0]);
-    if (race.riders[1].finished && race.total_times[1] < 60000U) {
+    if (race.riders[1].finished && race.total_times[1] < no_time) {
         const auto opponent = opponent_finish_frame
                                 ? opponent_finish_frame
                                 : classic_opponent_finish_frame(previous_update);
@@ -306,7 +306,7 @@ ClassicHudText classic_race_hud_text(const ZoomZooState& previous_update,
 // in the pack's caption table, and the update after the queue consumed it the
 // original writes two tilemap rows for it. Each glyph is eight pixels wide and
 // sixteen tall, its halves one font row apart, so a character maps to a top
-// tile and the tile `$10` above it.
+// tile and the tile 0x10 above it.
 //
 // Every byte of entries 1 to 255 is a space, `!`, `"`, `-` or a lowercase
 // letter; there is no `q` and no digit. The letters and the space are measured
@@ -368,7 +368,7 @@ classic_caption_entry(const ZoomZooState& published, std::span<const std::uint8_
 namespace {
 
 // One BG3 text cell of the race screen. A glyph is eight pixels wide and
-// sixteen tall, drawn as the tile the character names and the tile $10 above
+// sixteen tall, drawn as the tile the character names and the tile 0x10 above
 // it, so a field at tilemap row r covers rows r and r+1. BG3 scrolls by one
 // line, which is why the caption's row 10 shows at y 79 and the HUD's row 2
 // at y 15 (R-0042, R-0043).

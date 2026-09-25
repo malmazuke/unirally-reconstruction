@@ -28,7 +28,7 @@ constexpr std::uint8_t first_hunter_track = 40, last_hunter_track = 44;
 // the rider sprites off screen (0xE0E0; $82:D724-D731), the opponent's HUD OAM x 0x65
 // ($82:D76D-D76F), start boosts of 384, the first hint phase 30 ($82:D972-D975) and every
 // checkpoint unseen (0xFF; $81:CD2A).
-constexpr std::uint16_t start_countdown = 270, base_speed_cap = 448, no_time = 60000;
+constexpr std::uint16_t start_countdown = 270, base_speed_cap = 448;
 constexpr unsigned camera_margin = 256, camera_cell_mask = 0xfff0;
 constexpr std::uint16_t sprites_off_screen = 0xe0e0, start_boost = 384, first_hint_phase = 30;
 constexpr std::uint8_t opponent_hud_oam_x = 0x65, checkpoint_unseen = 0xff;

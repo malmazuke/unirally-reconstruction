@@ -5037,6 +5037,7 @@
   "comment": "routine start",
   "label": "sub_8287C9",
   "native": [
+   "src/core/rider_look.cpp:arc_b, arc_c, arc_d",
    "src/core/rider_look.hpp:advance_rider_look",
    "src/core/rider_look.hpp:step_rider_head"
   ],
@@ -5050,6 +5051,7 @@
   "comment": "instruction start",
   "label": "loc_828926",
   "native": [
+   "src/core/rider_look.cpp:arc_b, arc_c, arc_d",
    "src/core/rider_look.hpp:advance_rider_look",
    "src/core/rider_look.hpp:step_rider_head"
   ],
@@ -7311,7 +7313,7 @@
   "comment": "instruction start",
   "label": "loc_82D724",
   "native": [
-   "src/core/race_setup.cpp:start_countdown, base_speed_cap, no_time"
+   "src/core/race_setup.cpp:start_countdown, base_speed_cap"
   ],
   "source_records": [
    "docs/research/R-0035-zoom-zoo-playable-recovery.md"
@@ -7324,7 +7326,7 @@
   "label": "loc_82D7F5",
   "native": [
    "src/core/race_setup.cpp:classic_crawler_zoom_zoo_start",
-   "src/core/race_setup.cpp:start_countdown, base_speed_cap, no_time",
+   "src/core/race_setup.cpp:start_countdown, base_speed_cap",
    "src/core/race_windows.cpp:dragster_race_setup_frame",
    "src/core/zoom_zoo_movement.hpp:classic_crawler_zoom_zoo_start"
   ],
@@ -7339,7 +7341,7 @@
   "label": "loc_82D841",
   "native": [
    "src/core/race_setup.cpp:classic_crawler_zoom_zoo_start",
-   "src/core/race_setup.cpp:start_countdown, base_speed_cap, no_time",
+   "src/core/race_setup.cpp:start_countdown, base_speed_cap",
    "src/core/zoom_zoo_movement.hpp:classic_crawler_zoom_zoo_start"
   ],
   "source_records": [
@@ -7354,7 +7356,7 @@
   "label": "loc_82D861",
   "native": [
    "src/core/race_setup.cpp:classic_crawler_zoom_zoo_start",
-   "src/core/race_setup.cpp:start_countdown, base_speed_cap, no_time",
+   "src/core/race_setup.cpp:start_countdown, base_speed_cap",
    "src/core/zoom_zoo_movement.hpp:classic_crawler_zoom_zoo_start"
   ],
   "source_records": [
@@ -7368,7 +7370,7 @@
   "label": "loc_82D972",
   "native": [
    "src/core/race_setup.cpp:classic_crawler_zoom_zoo_start",
-   "src/core/race_setup.cpp:start_countdown, base_speed_cap, no_time",
+   "src/core/race_setup.cpp:start_countdown, base_speed_cap",
    "src/core/zoom_zoo_movement.hpp:classic_crawler_zoom_zoo_start"
   ],
   "source_records": [
@@ -7382,7 +7384,7 @@
   "label": "loc_82DB96",
   "native": [
    "src/core/race_setup.cpp:classic_crawler_zoom_zoo_start",
-   "src/core/race_setup.cpp:start_countdown, base_speed_cap, no_time",
+   "src/core/race_setup.cpp:start_countdown, base_speed_cap",
    "src/core/zoom_zoo_movement.hpp:classic_crawler_zoom_zoo_start"
   ],
   "source_records": [

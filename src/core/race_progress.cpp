@@ -20,8 +20,6 @@
 namespace unirally {
 namespace {
 
-// A lap slot or total not run holds 60000 (0xEA60), as the cartridge's records do.
-constexpr std::uint16_t no_time = 0xea60;
 constexpr std::uint16_t finish_display_updates = 240, checkpoint_display_updates = 120;
 constexpr unsigned checkpoint_tile_pair = 20, checkpoints_per_lap = 4, lap_slots = 10;
 // The checkpoint tile's number is the descriptor's bits 10-12; 0 is the start line and
@@ -170,7 +168,7 @@ void pass_checkpoint(ZoomZooState& state, unsigned index, unsigned checkpoint) {
     if (seen_index >= state.race.checkpoint_seen.size())
         throw std::invalid_argument("race checkpoint index invalid");
     auto& seen = state.race.checkpoint_seen[seen_index];
-    if (seen & 0x80U) {
+    if (slot_not_yet_crossed(seen)) {
         seen = 0;
         if (index == 1) lap.checkpoint_display_countdown = 2;
     }
