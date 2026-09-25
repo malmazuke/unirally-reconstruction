@@ -187,11 +187,10 @@ Part 1 is rules, formatting and the index. No behaviour change is intended, and 
     address, or a cited range holding it.
   - `coverage static-map` now names the native symbols beside each routine and label, in the
     tracked map, the labels and the ignored listing.
-  - `tests/tooling/test_native_symbols.py` has 22 tests after review. They cover:
+  - `tests/tooling/test_native_symbols.py` has 24 tests after review. They cover:
     - the scanner on authored snippets;
     - the tracked index, and the static map's `native` fields, against `src/core`;
-    - a limit of 9 on cited ROM addresses with no record (8 before review M1). Part 2 brings
-      that limit to 0.
+    - a limit of 8 on cited ROM addresses with no record. Part 2 brings that limit to 0.
 - **Equivalence sweep** (new evidence tool, `local/evidence/native-readability/equivalence.py`):
   - It runs every race scenario through a base and a candidate `zoom_zoo_runner`, under six
     controller schedules for 6,000 updates each:
@@ -260,6 +259,15 @@ Decisions and deviations, with reasons:
   - schedules pressing X, L, R and Select;
   - pictures on every schedule, not only Right;
   - `movement_runner`, the legacy DRAGSTER path.
+- Values the index still reads as addresses, to rewrite under rule 5 in parts 2 and 3 (re-review
+  S4):
+  - `$0000`: a VRAM address in `presentation.cpp`, indexed as WRAM;
+  - `$62A8`, `$62AC`, `$62AD`: frame positions in `movement.cpp`, indexed as io;
+  - `$3D80`, `$7A00`, `$7B00`: VRAM words or bytes;
+  - `$4A52`, `$4631`, `$56B5` and the `$4210` beside them: colours, in `presentation.cpp`;
+  - `$0213`, `$021F`: sound numbers;
+  - not indexed but written with `$`: velocities `$1CE`, `$220`, `$FFD0-$002F` and poses
+    `$0610-$061F`.
 - Exact next experiment/command: part 2, starting with the reward queue in `movement.cpp`
   (`update_reward_queue`: `takes_reward_path(event)`, a guard helper, named constants for 72,
   200-215, 232-247, 26, 31 and 40). Then split `movement.cpp` along its systems. After each
@@ -288,7 +296,8 @@ Decisions and deviations, with reasons:
 
       The index grew from 558 to 570 addresses (351 ROM, 198 WRAM, 7 SRAM, 14 io). One more
       ROM address became visible without a record (`$80:850B`, a fifth transition table that
-      R-0010 does not list), so the limit is 9. `$1CE` and `$220` are velocity values, not
+      R-0010 does not list), so the limit was 9. This record now cites it, so the limit is back
+      to 8 (re-review S2). `$1CE` and `$220` are velocity values, not
       addresses: rule 5 has part 2 rewrite them in decimal.
     - **S1**: a test now checks the static map's `native` fields against the index.
     - **S2**: `operator<` and `operator<<`, digit separators and comments inside a wrapped
@@ -302,3 +311,18 @@ Decisions and deviations, with reasons:
       Recorded here; such an edit is rare, and the failure message names the address.
     - **S7** (the sweep's gaps for part 2): taken into part 2's plan in the handoff.
     - **S8**: the README now names the app-debug build for the size command.
+  - At `fe918d6` it **approved**
+    ([review](https://github.com/malmazuke/unirally-reconstruction/pull/23#pullrequestreview-5314803988)).
+    It confirmed M1 on every lookup that failed before and on all 24 new addresses, and found
+    0 wrong attributions on 312 in-body citation lines. Its non-blocking findings were fixed
+    in `53f067c`, which is tooling only and covered by tests, so there was no further
+    review:
+    - **S1**: the static map was regenerated after the final records.
+    - **S2**: the limit is 8, the actual count.
+    - **S3**: the citation rules and the scanner are tightened, with tests:
+      - a spaced dash needs a `$` range end;
+      - a comma continuation must end its list item;
+      - a continuation in a code bank must be `$8000` or above;
+      - digit separators only inside numbers, so `U'x'` is read correctly;
+      - `operator bool` is named correctly.
+    - **S4**: the non-address entries are listed in the handoff for parts 2 and 3.

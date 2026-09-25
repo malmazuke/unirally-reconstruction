@@ -219,7 +219,8 @@
    "src/core/track_progress.cpp:transition_table_stride"
   ],
   "source_records": [
-   "docs/research/R-0010-native-movement.md"
+   "docs/research/R-0010-native-movement.md",
+   "tasks/NATIVE-READABILITY.md"
   ]
  },
  {
@@ -257,6 +258,18 @@
   ],
   "source_records": [
    "docs/research/R-0010-native-movement.md"
+  ]
+ },
+ {
+  "address": "$80:850B",
+  "class": "data",
+  "comment": "data",
+  "label": "dat_80850B",
+  "native": [
+   "src/core/track_progress.cpp:transition_table_stride"
+  ],
+  "source_records": [
+   "tasks/NATIVE-READABILITY.md"
   ]
  },
  {
@@ -8248,7 +8261,8 @@
    "src/core/presentation.hpp:dragster_window_table_index"
   ],
   "source_records": [
-   "docs/research/R-0040-dragster-window-effects.md"
+   "docs/research/R-0040-dragster-window-effects.md",
+   "tasks/NATIVE-READABILITY.md"
   ]
  },
  {

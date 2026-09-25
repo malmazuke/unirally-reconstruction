@@ -45,7 +45,7 @@ The four classes partition all 131,072 bytes. **Unknown share: 40.4%** - above D
 
 ## Cited addresses
 
-779 distinct code-bank ROM addresses cited by the research, task, inventory and content records (`labels.json`). By position: dat 12, loc 557, mid 17, sub 153, unk 40 (sub routine start, loc instruction start, mid inside an instruction, dat data, unk unknown). By class: data 12, inferred 86, observed 641, unknown 40.
+780 distinct code-bank ROM addresses cited by the research, task, inventory and content records (`labels.json`). By position: dat 13, loc 557, mid 17, sub 153, unk 40 (sub routine start, loc instruction start, mid inside an instruction, dat data, unk unknown). By class: data 13, inferred 86, observed 641, unknown 40.
 
 Cited addresses in `unknown` bytes:
 
@@ -65,7 +65,7 @@ Cited addresses in `unknown` bytes:
 | $80:828B | docs/inventory/M4-07-reflected-vertical.md |
 | $80:82AB | docs/research/R-0035-zoom-zoo-playable-recovery.md, docs/research/R-0037-dragster-race-palette-cycle.md, tasks/DRAGSTER-PALETTE-CYCLE-review.md, tasks/M4-16-review.md |
 | $80:84AB | docs/research/R-0035-zoom-zoo-playable-recovery.md, tasks/DRAGSTER-PALETTE-CYCLE-review.md, tasks/M4-16-review.md |
-| $80:84CB | docs/research/R-0010-native-movement.md |
+| $80:84CB | docs/research/R-0010-native-movement.md, tasks/NATIVE-READABILITY.md |
 | $80:84DB | docs/research/R-0010-native-movement.md |
 | $80:84EB | docs/research/R-0010-native-movement.md, docs/research/R-0045-static-code-map.md |
 | $80:C950 | tasks/LOCKED-TOURS.md |

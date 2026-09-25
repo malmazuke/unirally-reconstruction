@@ -13309,15 +13309,15 @@
    "call returns in the calling mode": 1262
   },
   "bytes": 131072,
-  "cited_addresses": 779,
+  "cited_addresses": 780,
   "cited_by_class": {
-   "data": 12,
+   "data": 13,
    "inferred": 86,
    "observed": 641,
    "unknown": 40
   },
   "cited_by_position": {
-   "dat": 12,
+   "dat": 13,
    "loc": 557,
    "mid": 17,
    "sub": 153,
