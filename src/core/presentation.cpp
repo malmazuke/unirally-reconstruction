@@ -721,8 +721,8 @@ std::array<std::uint16_t, 1024> build_dragster_bg1_map(std::span<const std::uint
     }
     return map;
 }
-static RgbFrame render_dragster(const PresentationSample& s, const PresentationContent& content,
-                                const std::array<RiderArtPose, 2>* rider_art) {
+// The DRAGSTER v1 pack's entry sizes; a v1 pack carries no window table family.
+static void check_dragster_content(const PresentationContent& content) {
     if (content.bg1_tiles.size() != 2560 || content.bg2_tiles.size() != 992
         || content.bg2_map.size() != 8192 || content.palette.size() != 352
         || content.font.size() != 2048 || content.rider_tiles.size() != 3456
@@ -731,6 +731,52 @@ static RgbFrame render_dragster(const PresentationSample& s, const PresentationC
         || content.result_palette.size() != 216 || content.result_palette_tail.size() != 128
         || (!content.window_tables.empty() && content.window_tables.size() != 22475))
         throw std::invalid_argument("Classic presentation entry size is unsupported");
+}
+
+// The accepted DRAGSTER picture's timer marks: one bar per digit, its width by the digit.
+static void draw_dragster_timer_marks(RgbFrame& f, const RaceTimerDigits& t) {
+    const std::array<unsigned, 4> d{{t.minutes, t.tens_seconds, t.seconds, t.tenths}};
+    for (std::size_t i = 0; i < 4; ++i)
+        rect(f, 8 + static_cast<int>(i) * 9, 8, 3 + static_cast<int>(d[i] % 5), 10,
+             {238, 238, 224});
+}
+
+// The two riders' objects, from this state's poses or, when given, the rider art's.
+// A 64-pixel object wholly outside the 256-pixel screen cannot contribute.
+static void draw_dragster_riders(RgbFrame& f, const PresentationSample& s,
+                                 const PresentationContent& content,
+                                 const std::array<RiderArtPose, 2>* rider_art) {
+    std::array<std::uint8_t, 65536> rider_vram{};
+    auto art_state = s.movement;
+    if (rider_art != nullptr) {
+        for (std::size_t rider = 0; rider < rider_art->size(); ++rider) {
+            art_state.riders[rider].pose.pose_index = (*rider_art)[rider].pose_index;
+            art_state.riders[rider].pose.reflected = (*rider_art)[rider].reflected;
+        }
+    }
+    const PresentationSample art_sample{art_state,      s.camera_x,     s.bg1_scroll_x,
+                                        s.bg1_scroll_y, s.bg2_scroll_x, s.bg2_scroll_y};
+    load_rider_tiles(rider_vram, art_sample, content.rider_tiles);
+    const auto rider_cgram = build_race_cgram(s, content.palette);
+    for (std::size_t rider_index = 0; rider_index < 2; ++rider_index) {
+        const auto& rider = s.movement.riders[rider_index];
+        const auto art_pose = rider_art == nullptr
+                                ? RiderArtPose{rider.pose.pose_index, rider.pose.reflected}
+                                : (*rider_art)[rider_index];
+        (void)rider_frame_for_pose(art_pose.pose_index, art_pose.reflected);
+        const std::int64_t wide_x =
+            static_cast<std::int16_t>(rider.motion.x) - static_cast<std::int64_t>(s.camera_x) - 832;
+        const int y = static_cast<std::int16_t>(rider.motion.y) - 752;
+        // Narrow only coordinates in the renderer's small, representable domain.
+        if (wide_x > -64 && wide_x < 256)
+            render_rider(f, rider_vram, rider_cgram, static_cast<int>(wide_x), y,
+                         rider_index == 0 ? 0 : 136, rider_index == 0 ? 0x66 : 0x68);
+    }
+}
+
+static RgbFrame render_dragster(const PresentationSample& s, const PresentationContent& content,
+                                const std::array<RiderArtPose, 2>* rider_art) {
+    check_dragster_content(content);
     // The original publishes the completed result at end-of-frame 3678. The
     // accepted gameplay state reaches ResultScreen on the following update, so
     // presentation consumes the observed loading counter without altering the
@@ -780,38 +826,8 @@ static RgbFrame render_dragster(const PresentationSample& s, const PresentationC
         render_window_xor(f, dragster_window_table(content.window_tables, *window_index),
                           window_colour({255, 255, 255}));
     }
-    const auto& t = s.movement.timer;
-    const std::array<unsigned, 4> d{{t.minutes, t.tens_seconds, t.seconds, t.tenths}};
-    for (std::size_t i = 0; i < 4; ++i)
-        rect(f, 8 + static_cast<int>(i) * 9, 8, 3 + static_cast<int>(d[i] % 5), 10,
-             {238, 238, 224});
-    std::array<std::uint8_t, 65536> rider_vram{};
-    auto art_state = s.movement;
-    if (rider_art != nullptr) {
-        for (std::size_t rider = 0; rider < rider_art->size(); ++rider) {
-            art_state.riders[rider].pose.pose_index = (*rider_art)[rider].pose_index;
-            art_state.riders[rider].pose.reflected = (*rider_art)[rider].reflected;
-        }
-    }
-    const PresentationSample art_sample{art_state,      s.camera_x,     s.bg1_scroll_x,
-                                        s.bg1_scroll_y, s.bg2_scroll_x, s.bg2_scroll_y};
-    load_rider_tiles(rider_vram, art_sample, content.rider_tiles);
-    const auto rider_cgram = build_race_cgram(s, content.palette);
-    for (std::size_t rider_index = 0; rider_index < 2; ++rider_index) {
-        const auto& rider = s.movement.riders[rider_index];
-        const auto art_pose = rider_art == nullptr
-                                ? RiderArtPose{rider.pose.pose_index, rider.pose.reflected}
-                                : (*rider_art)[rider_index];
-        (void)rider_frame_for_pose(art_pose.pose_index, art_pose.reflected);
-        const std::int64_t wide_x =
-            static_cast<std::int16_t>(rider.motion.x) - static_cast<std::int64_t>(s.camera_x) - 832;
-        const int y = static_cast<std::int16_t>(rider.motion.y) - 752;
-        // A 64-pixel object wholly outside the 256-pixel screen cannot contribute.
-        // Narrow only coordinates in the renderer's small, representable domain.
-        if (wide_x > -64 && wide_x < 256)
-            render_rider(f, rider_vram, rider_cgram, static_cast<int>(wide_x), y,
-                         rider_index == 0 ? 0 : 136, rider_index == 0 ? 0x66 : 0x68);
-    }
+    draw_dragster_timer_marks(f, s.movement.timer);
+    draw_dragster_riders(f, s, content, rider_art);
     if (content.window_tables.empty()) {
         if (player_pose == 0x04fe && opponent_pose == 0x037c)
             render_window_xor(f, content.winner_window, window_colour({98, 98, 255}));
