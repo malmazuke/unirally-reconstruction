@@ -8,7 +8,7 @@ the original does.**
 - The statistics, the top three records, the personal bests, the done tracks and the loss flag
   are updated as the original's cartridge RAM has them. There is no game over in the original.
 - Against a won and a lost DRAGSTER, every frame matches from the race's return to the next race:
-  0 differing pixels in 2,697 pictures, equal menu state, OAM buffer and text map, and equal
+  0 differing pixels in 2,577 pictures, equal menu state, OAM buffer and text map, and equal
   records ([R-0057](research/R-0057-one-run-result.md)).
 - Pack profile **v18** adds the result's stream and icons (`content pack --rules
   tests/manifests/content/classic-crawler-tracks-pack.json --out

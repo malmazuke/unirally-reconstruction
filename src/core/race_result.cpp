@@ -13,10 +13,11 @@ namespace unirally::front_end_screens {
 namespace {
 
 // The race's return, frames from the race's last frame (r, `$80:A09A`, NMI off): the sound
-// program's upload takes 74 frames; `$80:D20E` then as at the boot (377-403); the text tiles,
-// the palettes, and the result's build (R-0057's timeline).
-constexpr std::uint32_t menu_screen_frame = 75, objects_frame = 100, restore_frame = 101,
-                        tiles_frame = 102, palette_low_frame = 103, palette_high_frame = 104;
+// program's upload takes 74 frames; `$80:D20E` then as at the boot (377-403, from
+// `menu_screen_frame`); the text tiles, the palettes, and the result's build (R-0057's
+// timeline). `restore_frame` is in front_end_screens.hpp.
+constexpr std::uint32_t objects_frame = 100, tiles_frame = 102, palette_low_frame = 103,
+                        palette_high_frame = 104;
 constexpr unsigned early_palette = 5, early_objects = 88; // $80:A09A
 constexpr unsigned badge_tiles_asset = 68, badge_tiles_word = 0x3d80;
 constexpr std::size_t badge_tiles_bytes = 0x780;
@@ -35,7 +36,17 @@ struct Row {
     std::uint16_t time;
 };
 constexpr std::uint16_t no_row = 0xea62; // sorts after every time
-constexpr std::uint8_t someone = 0x10;
+
+// The result's objects (`$80:951C`, `$80:CE90`): the two riders' large marks (entries 30 and 31);
+// the row icons (104-108); the new-best markers (96-99); the 1P mark (100, 102) and the 2P mark
+// (101, 103), which moves to its row: 24 lines a row from line 0x58.
+constexpr std::uint8_t rider_mark_tile = 0xc0, rider_mark_attributes = 0x21,
+                       opponent_mark_attributes = 0x23, rider_marks_high = 0xf5;
+constexpr std::uint8_t icon_column = 0x78, marker_column = 0xdb, marker_attributes = 0x1b;
+constexpr std::uint8_t first_row_line = 0x58, row_lines = 24, player_mark_attributes = 0x11;
+constexpr std::uint8_t off_screen_line = 0xef;
+// The high-table bits `$80:CFB9` clears for the player's new-best markers, entries 96 and 98.
+constexpr std::uint8_t player_best_markers = 0xee;
 
 // Pads that leave the result: any button on either pad (`$80:C206`).
 bool pressed(FrontEndPads pads) {
@@ -120,12 +131,13 @@ void print_rows(FrontEndState& state, const FrontEndContent& content,
             auto& best = records.best[rider * 50U + track];
             if (row.time < best) {
                 best = row.time;
-                high_bits(state, 96) &= 0xee; // the new-best markers, entries 96 and 98
+                high_bits(state, 96) &= player_best_markers;
             }
-            const auto y = static_cast<std::uint8_t>(6 * printed * 4 + 0x58);
+            const auto y = static_cast<std::uint8_t>(first_row_line + row_lines * printed);
             for (const unsigned entry : {96U, 98U, 100U, 102U}) oam_byte(state, entry, 1) = y;
             for (const unsigned entry : {100U, 102U})
-                oam_byte(state, entry, 3) = static_cast<std::uint8_t>(0x11 | (printed * 2));
+                oam_byte(state, entry, 3) =
+                    static_cast<std::uint8_t>(player_mark_attributes | (printed * 2));
             break;
         }
         default:
@@ -141,17 +153,20 @@ void print_rows(FrontEndState& state, const FrontEndContent& content,
     }
 }
 
-// $80:951C-9555 and $80:CE90-CF4E, on the result's first frame.
+// $80:951C-9555 and $80:CE90-CF4E, on the result's first frame. In one-player play the opponent
+// is a computer's (0x11 on); a rider opponent's row and 2P mark (`$80:D007`) are not recovered.
 void start_result(FrontEndState& state, const FrontEndContent& content) {
+    if (state.now_playing.opponent < someone)
+        throw std::logic_error("a rider opponent's result row ($80:D007) is not recovered");
     load_vram(state, content.medal_tiles, swapped_object_tiles_word); // $83:94D0
     load_cgram(state, asset(content, first_rider_palette + state.rider_menu.rider),
                first_rider_palette_colour);
     load_cgram(state, asset(content, first_rider_palette + state.now_playing.opponent),
                opponent_palette_colour);
-    for (const unsigned entry : {30U, 31U}) oam_byte(state, entry, 2) = 0xc0;
-    oam_byte(state, 30, 3) = 0x21;
-    oam_byte(state, 31, 3) = 0x23;
-    high_bits(state, 28) = 0xf5;
+    for (const unsigned entry : {30U, 31U}) oam_byte(state, entry, 2) = rider_mark_tile;
+    oam_byte(state, 30, 3) = rider_mark_attributes;
+    oam_byte(state, 31, 3) = opponent_mark_attributes;
+    high_bits(state, 28) = rider_marks_high;
     // $80:F53F: the logo held up.
     state.logo.raised = true;
     state.logo.offset = 0x52;
@@ -160,14 +175,14 @@ void start_result(FrontEndState& state, const FrontEndContent& content) {
     // The icons beside the rows, entries 104-108, and the new-best markers 96-99 (hidden).
     constexpr std::array<std::uint8_t, 5> icon_rows{0x57, 0x6f, 0x87, 0x9f, 0xb7};
     for (unsigned k = 0; k < icon_rows.size(); ++k) {
-        oam_byte(state, 104 + k, 0) = 0x78;
+        oam_byte(state, 104 + k, 0) = icon_column;
         oam_byte(state, 104 + k, 1) = icon_rows[k];
     }
     high_bits(state, 104) = four_shown;
     high_bits(state, 108) = static_cast<std::uint8_t>(four_hidden & ~hidden_bit(108));
     for (unsigned entry = 96; entry < 100; ++entry) {
-        oam_byte(state, entry, 0) = 0xdb;
-        oam_byte(state, entry, 3) = 0x1b;
+        oam_byte(state, entry, 0) = marker_column;
+        oam_byte(state, entry, 3) = marker_attributes;
     }
     high_bits(state, 96) = four_hidden;
 }
@@ -187,7 +202,7 @@ void print_result(FrontEndState& state, const FrontEndContent& content) {
     print_text(state.text, state.printer, content.result_text, content.character_table, &variables);
     // A computer opponent has no row: the 2P mark and entries 108-111 go (`$80:D0FE`).
     high_bits(state, 108) = four_hidden;
-    for (const unsigned entry : {101U, 103U}) oam_byte(state, entry, 1) = 0xef;
+    for (const unsigned entry : {101U, 103U}) oam_byte(state, entry, 1) = off_screen_line;
     high_bits(state, 100) = four_shown;
 }
 
@@ -206,6 +221,9 @@ void show_icons(FrontEndState& state, const FrontEndContent& content) {
 // $80:C236-C245, `$80:9805` and `$80:F4B8`'s first half, on the press's second frame.
 void hide_result_objects(FrontEndState& state) {
     high_bits(state, 32) = four_hidden;
+    // `$80:C236`: entries 30 and 31 hidden and small. `$80:9805` then hides 0-31 as well, but only
+    // while `$77:0742` bit 8 is clear, which native does not keep: after a one-run race it always
+    // is. The lap result's `$80:98CB` is the bit's other writer (FRONT-END-LAP-RESULT).
     high_bits(state, 28) = static_cast<std::uint8_t>((high_bits(state, 28) & 0x0fU) | 0x50U);
     for (unsigned entry = 0; entry < 30; ++entry)
         oam_byte(state, entry, 0) = oam_byte(state, entry, 1) = 1;
@@ -281,7 +299,8 @@ void score_race(FrontEndState& state) {
         return;
     }
     const auto track = track_of(state);
-    records.tracks_done[track & 0x3fU] = 1;
+    constexpr unsigned track_bits = 0x3f; // $83:9EC8
+    records.tracks_done[track & track_bits] = 1;
     const auto first = track / tracks_per_tour * tracks_per_tour;
     if (std::all_of(records.tracks_done.begin() + first,
                     records.tracks_done.begin() + first + tracks_per_tour,
@@ -300,8 +319,7 @@ void race_return_frame(FrontEndState& state, const FrontEndContent& content) {
         copy_oam(state); // $80:D372; NMI on (`$80:D377`)
         state.cycle.running = true;
         restore_menus(state);
-        state.arrow.target_x = 0xfd00; // $80:98A4
-        state.arrow.target_y = 0x0700;
+        send_arrow_off(state);
         return;
     case tiles_frame: {
         copy_oam(state);
@@ -316,7 +334,8 @@ void race_return_frame(FrontEndState& state, const FrontEndContent& content) {
     case palette_high_frame:
         copy_oam(state);
         load_cgram(state, asset(content, base_palette_high), 0x40);
-        // $83:89BA: the text halves and BG2's offsets back to the start; `$77:0742` restored.
+        // $83:89BA: the text halves and BG2's offsets back to the start. `$80:9AAC` restores
+        // `$77:0742`, whose bit 1 (the logo held up, `$80:F53F`) was set before the race.
         state.slide.hidden_half = 0x1400;
         state.slide.shown_half = 0x1000;
         state.slide.scroll = 0;
@@ -365,7 +384,7 @@ void race_result_frame(FrontEndState& state, const FrontEndContent& content, Fro
 }
 
 void race_result_exit_frame(FrontEndState& state, const FrontEndContent& content) {
-    constexpr std::uint32_t leave_frame = 1, scoring_frame = 2, palette_low = 4, palette_high = 5;
+    constexpr std::uint32_t leave_frame = 1, palette_low = 4, palette_high = 5;
     constexpr unsigned menu_text_palette = 28;
     switch (state.script_frame) {
     case leave_frame: // $80:F4B8's wait, then `$80:C786` and `$77:1073`
@@ -376,7 +395,7 @@ void race_result_exit_frame(FrontEndState& state, const FrontEndContent& content
         update_records(state);
         state.records.tries = 3;
         return;
-    case scoring_frame: // $83:879A: a wait without the arrow, then the scoring
+    case scoring_frame: // $83:879A: frame waits without the arrow (to `scoring_wait_frame`)
         score_race(state);
         return;
     case palette_low:

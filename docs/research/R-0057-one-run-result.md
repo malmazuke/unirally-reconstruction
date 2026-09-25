@@ -28,7 +28,7 @@ counted from r, and both captures (a win and a loss) agree on every one.
 | r + 75 to r + 100 | `$80:D20E` | The main menu's screen, as at boot frames 377-403; the objects' layout `$80:D2C1` in r + 100 |
 | r + 101 | `$80:D372`, `$80:D377`, `$83:987D`, `$80:98A4` | The OAM copy and NMI on; the menus' words restored; the arrow's targets off the left edge (0xFD00, 0x0700) |
 | r + 102 | `$80:A82B` | Asset 68's last 1,920 bytes to VRAM 0x3D80 |
-| r + 103, r + 104 | `$80:A858` | Assets 35 and 36 at CGRAM 0 and 0x40; `$83:89BA` resets the text halves and BG2's scroll |
+| r + 103, r + 104 | `$80:A858` | Assets 35 and 36 at CGRAM 0 and 0x40; `$83:89BA` resets the text halves and BG2's scroll; `$80:9AAC` puts back `$77:0742` as it was before the race (the logo held up) |
 
 - **What is restored.** `$83:9894` (`$80:9A27`) saves work RAM `$0000-$019D` to `$77:0E6B`
   before the race, and `$83:987D` copies it back. Native keeps the same words (`SavedMenus`):
@@ -123,7 +123,7 @@ fade: PICK TRACK slides in over the result at brightness 14.
     or a tie).
 - **Scoring** (`$83:879A`). A win needs the player's total strictly below the opponent's: a tie
   is a loss.
-  - A win marks the track done (`$77:1075 + track`). The tour's fifth done track completes it (not
+  - A win marks the track done (`$77:1075 + track`, the track's low six bits, `$83:9EC8`). The tour's fifth done track completes it (not
     recovered; native refuses it).
   - A loss sets `$77:0742` bit 12. PICK TRACK's exit (`$80:EA14`) clears it and takes one from
     `$77:1073`.
@@ -135,9 +135,20 @@ fade: PICK TRACK slides in over the result at brightness 14.
 
 ## One player
 
-`$77:10AD` says whether the menus are in one-player play, which `$83:91F7` uses to choose the
-object palette: set when PICK YOUR UNI's choice leads on to PICK TOUR (`$80:BBEE`), cleared by
-the main menu (`$80:AD18`).
+`$77:10AD` is the menus' mode, which `$83:91F7` tests for one-player play (1) to choose the
+object palette. PICK YOUR UNI's choice sets it to 1 (`$80:BBEE`), and its Y clears it
+(`$80:BC9B`), as the main menu does (`$80:AD18`). The other modes store 2 to 5 (`$80:BD1F`,
+`$80:BE3F`, `$80:BF9F`, `$80:99B2`); native keeps only whether it is 1.
+
+## A new run
+
+Choosing a rider on PICK YOUR UNI starts a new run (`$80:BBC3-BBE5`):
+- the opponent `$017F` = 0x10;
+- `$77:0742` bit 3 is cleared;
+- all fifty done-track bytes `$77:1075-10A6` are cleared, and `$77:1073` = 3 (`$80:BBD6-BBE5`).
+
+So after backing out to PICK YOUR UNI and choosing again, PICK TRACK starts on the tour's first
+track. Native does the same (the review found it missing).
 
 ## The cold start's medals
 
@@ -199,7 +210,8 @@ front-end frame 4808, as the runner's.
 - **The stunt result** (`$80:F0EE-F2E9`) and the stunt events themselves (STUNT-EVENTS).
 - **The tour's completion**: the medal award (`$83:AEF6`), the endings (`$83:88FD`), the unlock
   levels (`$77:10D3`, `$77:10FD`) and PICK TOUR's reveal, and the forced completion (pad 1 exactly
-  Select + X + R on `$83:879A`'s frame). Native refuses a fifth done track.
+  Select + X + R on `$83:879A`'s frame, which native scores as an ordinary race without a
+  word). Native refuses a fifth done track.
 - **Quit and restart** (0xEA61, 0xEA62 from the race's pause menu): `$80:9A50`'s quit scoring
   and `$80:88DD`'s restart to NOW PLAYING. The native race's pause menu restarts the race
   itself.

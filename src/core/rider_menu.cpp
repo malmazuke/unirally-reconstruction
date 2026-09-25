@@ -33,7 +33,6 @@ constexpr std::uint8_t last_idle_step = 0x27;
 // The arrow's targets: x by column, y (24 * row + 41) * 16 ($80:CB62-CBBB).
 constexpr std::uint16_t left_column_x = 0x0680, right_column_x = 0x0780;
 constexpr std::uint16_t row_spacing = 0x0180, first_row_y = 0x0290;
-constexpr std::uint16_t off_screen_x = 0xfd00, off_screen_y = 0x0700; // $80:98A4
 // The arrow's attributes ($0BDF): priority 3, palette rider & 7 (bits 3-1), mirrored in the
 // left column so that it points at the name.
 constexpr std::uint8_t arrow_priority = 0x30, arrow_mirror = 0x40, arrow_palette_bits = 0x0e;
@@ -257,8 +256,7 @@ void rider_menu_entry_frame(FrontEndState& state, const FrontEndContent& content
     case 2:
         copy_oam(state);
         load_text(state, state.slide.hidden_half);
-        state.arrow.target_x = off_screen_x;
-        state.arrow.target_y = off_screen_y;
+        send_arrow_off(state);
         state.rider_menu.picture = first_picture;
         return;
     case 3:
@@ -284,12 +282,15 @@ void rider_menu_frame(FrontEndState& state, const FrontEndContent& content, Fron
         choose_next_picture(state.rider_menu);
         return;
     }
-    // $80:BBB8-BBC1 for a choice ($80:BC9B for Y), then $80:F4E9, which stops the HDMA at once.
+    // $80:BBB8-BBEE for a choice ($80:BC9B for Y), then $80:F4E9, which stops the HDMA at once.
     state.one_player = !state.rider_menu.back; // $80:BBEE, $80:BC9B: $77:10AD
     if (!state.rider_menu.back) {
-        state.arrow.target_x = off_screen_x;
-        state.arrow.target_y = off_screen_y;
+        send_arrow_off(state);
         state.rider_menu.rider = state.menu.selection;
+        state.now_playing.opponent = someone; // $80:BBC3
+        // $80:BBD6-BBE5: a new run, no track done, three tries (R-0057).
+        state.records.tracks_done.fill(0);
+        state.records.tries = 3;
     }
     state.line_colours.clear();
     state.screen = FrontEndScreen::rider_menu_exit;

@@ -196,12 +196,11 @@ bool waits_for_frame(const FrontEndState& state) {
     // After a race NMI is off until `$80:D377` (R-0057) but for the sound upload's last frame and
     // `$80:D20E`'s first; then from the OAM copy on. `$83:879A`'s frame waits (`$83:A923`) leave
     // the arrow alone.
-    if (state.screen == FrontEndScreen::race_return) {
-        const auto next = state.script_frame + 1;
-        return next == 74 || next == 75 || next >= 101;
-    }
+    const auto next = state.script_frame + 1;
+    if (state.screen == FrontEndScreen::race_return)
+        return next == upload_last_frame || next == menu_screen_frame || next >= restore_frame;
     if (state.screen == FrontEndScreen::race_result_exit)
-        return state.script_frame + 1 != 2 && state.script_frame + 1 != 3;
+        return next != scoring_frame && next != scoring_wait_frame;
     // Every other screen after the boot waits for each frame.
     if (state.screen != FrontEndScreen::boot) return true;
     const auto frame = state.frame;
@@ -394,6 +393,11 @@ void load_main_menu_screen(FrontEndState& state, const FrontEndContent& content)
     load_vram(state, asset(content, menu_bg1_tiles_high), 0x3d80);
 }
 
+void send_arrow_off(FrontEndState& state) {
+    state.arrow.target_x = parked_x;
+    state.arrow.target_y = parked_y;
+}
+
 std::span<const std::uint8_t> asset(const FrontEndContent& content, unsigned id) {
     const auto data = content.assets[id];
     if (data.empty()) throw std::invalid_argument("front-end asset is not in the pack");
@@ -580,7 +584,7 @@ FrontEndContent front_end_content(const ClassicContentPack& pack) {
 OnePlayerRecords cold_start_records() {
     OnePlayerRecords records;
     constexpr std::uint16_t cold_best = 0xea5f, no_record_time = 0xea60; // 9:59.99, no time
-    constexpr std::uint8_t stunt_place = 2, someone = 0x10;
+    constexpr std::uint8_t stunt_place = 2;
     for (std::size_t k = 0; k < records.best.size(); ++k)
         records.best[k] = k % 5 == stunt_place ? 0 : cold_best;
     for (auto& holders : records.record_holders) holders.fill(someone);

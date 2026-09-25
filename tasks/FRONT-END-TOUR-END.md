@@ -2,7 +2,7 @@
 
 ## Assignment
 
-- Status: **ready**. Queued 26 September 2026 by FRONT-END-1P-CONTINUATION.
+- Status: **ready**. Queued 25 September 2026 (UTC) by FRONT-END-1P-CONTINUATION.
 - Milestone: M4 (original game coverage: menus)
 - Coordinator: the claiming session is coordinator, primary and integrator
 - Task provider (fixed for all children; record any user-initiated platform change): Anthropic
@@ -54,6 +54,9 @@ Out of scope: the stunt events (STUNT-EVENTS); the endings' music (audio).
 
 ## Handoff
 
-- Exact next experiment/command: `cont-win`'s inputs (`local/evidence/front-end-1p-continuation`)
-  with pad 1 holding exactly Select + X + R through the press that leaves the result (3799-3801).
-  Capture with work RAM every frame to the award screen and PICK TOUR's reveal.
+- Native scores a forced completion as an ordinary race today, silently.
+- Exact next experiment/command: `cont-win`'s inputs (`local/evidence/front-end-1p-continuation`).
+  Pad 1 holds exactly Select + X + R from 3799 through at least 3805: the test reads `$72` after
+  `$83:879A`'s frame wait, at q + 2 or q + 3 (3803-3804). Confirm `$72` = 0x2050 on the scoring
+  frame in the capture. Capture with work RAM every frame to the award screen and PICK TOUR's
+  reveal.

@@ -116,9 +116,10 @@ struct RiderMenu {
 };
 
 // The one-player records the menus read from SRAM, as a cold start leaves them (`$80:8C4E`):
-// no levels or done tracks, no medals but HUNTER's 2 for every rider (`$83:9464`), every rider's best 9:59.99 on the races (0 on the stunt
-// events, `$83:9340`), no record times (`$83:936E`) and SOMEONE holding every record
-// (`$83:93D8`). The result screen and the scoring change them (R-0057).
+// no levels or done tracks, no medals but HUNTER's 2 for every rider (`$83:9464`), every
+// rider's best 9:59.99 on the races (0 on the stunt events, `$83:9340`), no record times
+// (`$83:936E`) and SOMEONE holding every record (`$83:93D8`). The result screen and the scoring
+// change them (R-0057).
 struct OnePlayerRecords {
     std::array<std::uint8_t, 16> tour_levels{}; // $77:10D3 + rider: 0-3, the tours open
     std::array<std::uint8_t, 160> medals{};     // $77:069C + 16 * tour + rider: 0, or 1-3

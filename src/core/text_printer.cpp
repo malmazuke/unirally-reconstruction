@@ -110,7 +110,8 @@ std::span<const std::uint8_t> record_name(std::span<const std::uint8_t> records,
     return name.first(end);
 }
 
-// $80:F8B9: small letters become capitals, digits the big font's (0x16-0x1F).
+// $80:F8B9: small letters become capitals, digits the big font's (0x16-0x1F). The original
+// converts its whole buffer `$00DC-$00FB`, the FC or F2 look-ahead bytes at its start included.
 void in_capitals(std::vector<std::uint8_t>& text) {
     for (auto& character : text) {
         if (character >= 'a' && character <= 'z')

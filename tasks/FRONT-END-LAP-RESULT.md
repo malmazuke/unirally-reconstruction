@@ -2,7 +2,7 @@
 
 ## Assignment
 
-- Status: **ready**. Queued 26 September 2026 by FRONT-END-1P-CONTINUATION.
+- Status: **ready**. Queued 25 September 2026 (UTC) by FRONT-END-1P-CONTINUATION.
 - Milestone: M4 (original game coverage: menus)
 - Coordinator: the claiming session is coordinator, primary and integrator
 - Task provider (fixed for all children; record any user-initiated platform change): Anthropic
@@ -55,5 +55,16 @@ Out of scope: the stunt events (STUNT-EVENTS) and the tour's end (FRONT-END-TOUR
 - The native race's loading time between NOW PLAYING's fade and its initialization is known for
   DRAGSTER only (121 frames on the laboratory's path). `front_end_runner` times no other track.
   Measure ZOOM ZOO's from a capture (the first frame `$0FF1` moves).
-- Exact next experiment/command: a capture from the defaults with Down on PICK TRACK (ZOOM ZOO),
-  racing three laps, then the result and a press, with work RAM every frame.
+- `$77:0742` bit 8 matters here. `$80:9805` parks entries 0-29 (and `$0CF0`, `$0DE0`) and sets
+  the bit only while it is clear. Only the lap result's `$80:98CB` clears it, and the bit
+  persists across races in `$0742`. Native keeps neither the bit nor those tables and always
+  parks: right after a one-run race, but not necessarily after a lap race. The lap graph uses
+  entries 0-19.
+- Holding Right alone never finishes ZOOM ZOO: `lap-explore` circles the loop at 0 of 3 laps.
+- The capture exists: `local/evidence/front-end-lap-result/lap-won` (8,400 frames). It uses
+  M4-16 boundary-a's inputs, which drive three laps to 6724: MIKE 1:38.02 against BRONSEN
+  1:38.10, a win. Start at 7600 leaves the lap result, and PICK TRACK shows ZOOM ZOO done with
+  the cursor on BOWL. It has work RAM every frame and pictures 6700-8399.
+- Exact next experiment/command: run the native race between the menus for ZOOM ZOO in
+  `front_end_runner` (measure its loading frames from the capture), then compare with a copy of
+  the continuation's `compare.py`.

@@ -2,15 +2,20 @@
 
 ## Assignment
 
-- Status: **in progress**. Claimed 26 September 2026 at 20:55Z by the Claude Code desktop session
-  that ran FRONT-END-1P-SETUP, on base `7d92810`.
+- Status: **in review**. Claimed 25 September 2026 at 20:53Z (26 September, 06:53 AEST) by the
+  Claude Code desktop session that ran FRONT-END-1P-SETUP, on base `7d92810`. Re-scoped to the
+  one-run race on 25 September (see "Outcome and boundaries").
 - Milestone: M4 (original game coverage: menus)
 - Coordinator: the claiming session is coordinator, primary and integrator
 - Task provider (fixed for all children; record any user-initiated platform change): Anthropic
 - Worker/session/runtime/model: Claude Code desktop app, Claude Opus 5.5 (`claude-opus-5-5`)
 - Actual model/reasoning effort, routing rationale and frontier escalation question (if any):
   **tier 2** for the screens; **tier 1** for anything that changes how a race is scored or
-  started.
+  started. Kept at tier 2: the race engine's scoring and start are unchanged (the differential
+  gates, the equivalence sweep and both recompares are identical). The menus' scoring and records
+  (`update_records`, `score_race`) are new front-end code, checked against the listing by the
+  worker and again by the reviewer, and against the original's cartridge RAM after a win and a
+  loss (`sram.py`).
 - Provider quota window/baseline timestamp, used/remaining or unknown, reserve and session
   allowance (D-0004): at claim the 5-hour window was 6% used and the weekly window 34%. The
   user's allowance: continue until the weekly window reaches 50%.
@@ -43,6 +48,19 @@ Make native do the same from the native race's result:
 - the tour's end: the pending reveal on PICK TOUR (`$77:10FD`);
 - the game over after the tries run out.
 
+**Re-scoped (25 September 2026).** The listing report (`local/evidence/front-end-1p-continuation/
+post-race.md`) shows three result screens, and the tour's end has its own award, endings and
+reveal. This task delivers the one-run race (race mode 0):
+- the race's return;
+- the result screen and its waits;
+- the statistics, records, bests, done tracks and the loss flag;
+- PICK TRACK again, and the app handing a one-run race back to the menus.
+
+There is **no game over** in the original: nothing reads `$77:1073` (R-0057). The rest moved to
+two queued tasks:
+- the lap result, and quit and restart: [FRONT-END-LAP-RESULT](FRONT-END-LAP-RESULT.md);
+- the tour's completion, medals, levels and reveal: [FRONT-END-TOUR-END](FRONT-END-TOUR-END.md).
+
 Out of scope:
 - saving the records across power cycles (SRAM persistence), unless the task finds it small;
 - the stunt events' own rules (STUNT-EVENTS);
@@ -58,11 +76,26 @@ Out of scope:
 | Playable | The app from power-on through a tour's races | The menus follow each race as the original's do | report |
 | Nothing moves | ctest, the synthetic suite, the v1 contracts, hidden runs, the differential gates, the equivalence sweep, the front end's comparisons | Unchanged | logs |
 
+## Evidence
+
+Commits `7b006e2` (the printer's codes), `d6115e4` (the result, records, app and R-0057) and the
+review's answers after them. Evidence in `local/evidence/front-end-1p-continuation/`
+(`NOTES.md`, `post-race.md`, `compare.py`, `sram.py`, `gates.sh`).
+
+| Criterion | Result |
+| --- | --- |
+| Pictures and state | `cont-win`, `cont-loss` and their `-early` companions: the native race returns on the original's frame (3454, 4135); no difference in the menus' words, OAM buffer or text map on any frame from r + 101 to the next race; 2,577 distinct pictures equal (R-0057) |
+| Records | `sram.py`: the kept cartridge RAM words equal the original's at cont-win 3808 and 4700, cont-loss 5008, 5210 and 5356. The words native does not keep are listed in R-0057 |
+| Playable | Met for one-run races: the hidden app with cont-win's and cont-loss's pads returns the race at front-end frame 3455 and chooses the next race at 4808 and 5358. A lap race still ends on the race's own result (FRONT-END-LAP-RESULT); a stunt event is not native |
+| Nothing moves | Gates on `d6115e4` (`gates-d6115e4.out`): three presets build, ctest 26 of 26; the synthetic suite; both v1 contracts; the hidden runs; the eleven differential gates (the same rows digests); the equivalence sweep, 351 runs with 0 differences; both recompares identical; the main menu's and the one-player screens' comparisons (the setup `compare.py` now knows the race screens); 0 functions over 80 lines; the address index current |
+
+Review (tier 2): `review-d6115e4.md`, changes required with one must-fix (the rider choice starts
+a new run, `$80:BBD6-BBE5`), all findings answered on the pull request.
+
 ## Handoff
 
-- Findings so far (listing only): R-0056's "What follows a race" notes and the PICK TRACK report
-  (section 4.4: the scoring by race kind, the forced completion with Select + X + R after a
-  race).
-- Exact next experiment/command: a capture of the original racing DRAGSTER from the defaults and
-  finishing (win and loss), with per-frame work RAM and bank `$77` accesses, over the race's end
-  and the return to PICK TRACK.
+- Findings: R-0057 (the one-run result, the records, no game over) and the listing report
+  `post-race.md` (the lap and stunt results, the tour's completion, the quirks).
+- Next: [FRONT-END-LAP-RESULT](FRONT-END-LAP-RESULT.md). A capture of the original winning ZOOM
+  ZOO and leaving the lap result to PICK TRACK already exists: `local/evidence/front-end-lap-result/
+  lap-won` (M4-16 boundary-a's inputs, then Start at 7600).

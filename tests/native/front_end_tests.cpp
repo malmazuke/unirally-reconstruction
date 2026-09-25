@@ -615,7 +615,9 @@ void race_result_tests() {
   run(tied, content, 2, {0x8000, 0});
   require(run_to(tied, content, FrontEndScreen::track_menu_entry, {}, 5));
   require(tied.records.race_lost && tied.records.statistics[0][1] == 1 &&
-          tied.records.player_wins == 1 && tied.records.opponent_wins == 0);
+          tied.records.player_wins == 1 && tied.records.opponent_wins == 0 &&
+          tied.records.record_times[0][0] == 4000 &&
+          tied.records.record_holders[0][0] == 0);
   // No time: a loss without one, and no record.
   auto timeless = to_race();
   unirally::return_from_race(timeless, content, 5000, {0xea60, 4000});
@@ -626,6 +628,69 @@ void race_result_tests() {
   require(timeless.records.statistics[0][2] == 1 &&
           timeless.records.record_times[0][0] == 0xea60 &&
           timeless.records.record_holders[0][0] == 0x10);
+  // A full top three: the new time takes second place, the others move down.
+  const auto finish = [&](unirally::FrontEndState &state,
+                          unirally::RaceTotals totals) {
+    unirally::return_from_race(state, content, 5000, totals);
+    require(run_to(state, content, FrontEndScreen::race_result, {}, 104));
+    run(state, content, 12);
+    run(state, content, 2, {0x8000, 0});
+    return run_to(state, content, FrontEndScreen::track_menu_entry, {}, 5);
+  };
+  auto full = to_race();
+  for (unsigned place = 0; place < 3; ++place) {
+    full.records.record_times[place][0] =
+        static_cast<std::uint16_t>(3000 + 200 * place);
+    full.records.record_holders[place][0] =
+        static_cast<std::uint8_t>(5 + place);
+  }
+  require(finish(full, {3100, 4000}));
+  require(full.records.record_times[0][0] == 3000 &&
+          full.records.record_times[1][0] == 3100 &&
+          full.records.record_times[2][0] == 3200 &&
+          full.records.record_holders[0][0] == 5 &&
+          full.records.record_holders[1][0] == 0 &&
+          full.records.record_holders[2][0] == 6);
+  // A time equal to a record: `$80:F082` keeps the player's row first (the 1P
+  // mark on the first row), and the insert, strictly less, puts it second.
+  auto equal = to_race();
+  equal.records.record_times[0][0] = 3357;
+  equal.records.record_holders[0][0] = 5;
+  unirally::return_from_race(equal, content, 5000, {3357, 4000});
+  require(run_to(equal, content, FrontEndScreen::race_result, {}, 104));
+  run(equal, content, 2);
+  require(equal.oam_buffer[100 * 4 + 1] == 0x58);
+  run(equal, content, 10);
+  run(equal, content, 2, {0x8000, 0});
+  require(run_to(equal, content, FrontEndScreen::track_menu_entry, {}, 5));
+  require(equal.records.record_times[0][0] == 3357 &&
+          equal.records.record_holders[0][0] == 5 &&
+          equal.records.record_times[1][0] == 3357 &&
+          equal.records.record_holders[1][0] == 0);
+  // The tour's fifth done track is refused (FRONT-END-TOUR-END).
+  auto fifth = to_race();
+  for (unsigned track = 1; track < 5; ++track)
+    fifth.records.tracks_done[track] = 1;
+  require(throws_logic([&] { finish(fifth, {3000, 4000}); }));
+  // A second race in the session: PICK TRACK comes back on the next undone
+  // track, which NOW PLAYING then races.
+  require(run_to(won, content, FrontEndScreen::track_menu));
+  require(won.track_menu.cursor == 1);
+  require(run_to(won, content, FrontEndScreen::now_playing, {0x1000, 0}));
+  require(run_to(won, content, FrontEndScreen::race, {0x1000, 0}));
+  require(won.tour_menu.track == 1 && won.mode_chosen);
+  // Choosing a rider starts a new run (`$80:BBD6-BBE5`): no track done, three
+  // tries, and PICK TRACK on the tour's first track again.
+  auto again = to_race();
+  require(finish(again, {3000, 4000}));
+  require(run_to(again, content, FrontEndScreen::track_menu));
+  require(again.records.tracks_done[0] == 1);
+  require(run_to(again, content, FrontEndScreen::tour_menu, {0x4000, 0}));
+  require(run_to(again, content, FrontEndScreen::rider_menu, {0x4000, 0}));
+  require(run_to(again, content, FrontEndScreen::tour_menu, {0x8000, 0}));
+  require(again.records.tracks_done[0] == 0 && again.records.tries == 3);
+  require(run_to(again, content, FrontEndScreen::track_menu, {0x1000, 0}));
+  require(again.track_menu.cursor == 0);
 }
 
 } // namespace

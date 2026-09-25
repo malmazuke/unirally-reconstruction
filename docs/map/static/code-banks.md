@@ -45,7 +45,7 @@ The four classes partition all 131,072 bytes. **Unknown share: 40.4%** - above D
 
 ## Cited addresses
 
-1069 distinct code-bank ROM addresses cited by the research, task, inventory and content records (`labels.json`). By position: dat 16, loc 663, mid 18, sub 262, unk 110 (sub routine start, loc instruction start, mid inside an instruction, dat data, unk unknown). By class: data 16, inferred 115, observed 828, unknown 110.
+1087 distinct code-bank ROM addresses cited by the research, task, inventory and content records (`labels.json`). By position: dat 16, loc 674, mid 18, sub 263, unk 116 (sub routine start, loc instruction start, mid inside an instruction, dat data, unk unknown). By class: data 16, inferred 117, observed 838, unknown 116.
 
 Cited addresses in `unknown` bytes:
 
@@ -89,13 +89,19 @@ Cited addresses in `unknown` bytes:
 | $80:B626 | tasks/COVERAGE-ROADMAP.md |
 | $80:BCAF | docs/research/R-0055-rider-menu.md |
 | $80:BCBF | tasks/COVERAGE-ROADMAP.md |
+| $80:BD1F | docs/research/R-0057-one-run-result.md |
 | $80:BDD4 | tasks/COVERAGE-ROADMAP.md |
+| $80:BE3F | docs/research/R-0057-one-run-result.md |
 | $80:BF49 | tasks/COVERAGE-ROADMAP.md |
+| $80:BF9F | docs/research/R-0057-one-run-result.md |
 | $80:C3DC | docs/research/R-0053-result-title-printer.md |
 | $80:C456 | docs/research/R-0056-tour-track-now-playing.md |
 | $80:C7C4 | docs/research/R-0057-one-run-result.md |
+| $80:C7EE | docs/research/R-0057-one-run-result.md |
 | $80:C800 | docs/research/R-0057-one-run-result.md |
 | $80:C81C | docs/research/R-0057-one-run-result.md |
+| $80:C82F | docs/research/R-0057-one-run-result.md |
+| $80:C850 | docs/research/R-0057-one-run-result.md |
 | $80:C950 | tasks/LOCKED-TOURS.md |
 | $80:C9D7 | docs/research/R-0057-one-run-result.md |
 | $80:CA74 | docs/research/R-0057-one-run-result.md |

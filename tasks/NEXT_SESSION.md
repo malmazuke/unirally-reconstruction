@@ -5,7 +5,7 @@ push the task branch, open a pull request from the template, merge with
 `gh pr merge --merge` once its checks are green and the review is done. `main`
 refuses direct pushes. The checks run on pull requests only.
 
-**Status on 26 September 2026 UTC (FRONT-END-1P-CONTINUATION): start
+**Status on 25 September 2026 UTC (FRONT-END-1P-CONTINUATION): start
 [FRONT-END-LAP-RESULT](FRONT-END-LAP-RESULT.md).** After a one-run race the menus take over,
 frame-exact, and the records match the original's cartridge RAM (R-0057). Next is the lap race's
 result (`$80:8D6E`, the lap graph), so that a whole tour's races come back to PICK TRACK, then
