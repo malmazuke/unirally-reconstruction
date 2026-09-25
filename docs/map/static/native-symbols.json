@@ -154,6 +154,34 @@
    "region": "rom"
   },
   {
+   "address": "$80:84DB",
+   "native": [
+    "src/core/track_progress.cpp:transition_table_stride"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:84EB",
+   "native": [
+    "src/core/track_progress.cpp:transition_table_stride"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:84FB",
+   "native": [
+    "src/core/track_progress.cpp:transition_table_stride"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:850B",
+   "native": [
+    "src/core/track_progress.cpp:transition_table_stride"
+   ],
+   "region": "rom"
+  },
+  {
    "address": "$80:8638",
    "native": [
     "src/core/presentation.cpp:render_classic_race"
@@ -628,6 +656,13 @@
   },
   {
    "address": "$81:8B4B",
+   "native": [
+    "src/core/track_sampling.cpp:fine_cell_shift"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$81:8B58",
    "native": [
     "src/core/track_sampling.cpp:fine_cell_shift"
    ],
@@ -1847,6 +1882,13 @@
    "region": "rom"
   },
   {
+   "address": "$82:977B",
+   "native": [
+    "src/core/movement.cpp:next_wrong_direction_counter"
+   ],
+   "region": "rom"
+  },
+  {
    "address": "$82:9781",
    "native": [
     "src/core/movement.cpp:update_zoom_zoo"
@@ -2207,6 +2249,16 @@
    "address": "$82:AA10",
    "native": [
     "src/core/movement.cpp:update_zoom_throttle"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$82:AA1E",
+   "native": [
+    "src/core/movement.cpp:update_zoom_throttle"
+   ],
+   "range_ends": [
+    "$82:AA3D"
    ],
    "region": "rom"
   },
@@ -2882,7 +2934,24 @@
   {
    "address": "$83:E611",
    "native": [
-    "src/core/presentation.cpp:classic_window_transition_member"
+    "src/core/presentation.cpp:classic_window_transition_member",
+    "src/core/presentation.cpp:dragster_window_transition_index"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:E663",
+   "native": [
+    "src/core/presentation.cpp:classic_window_transition_member",
+    "src/core/presentation.cpp:dragster_window_transition_index"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:E6C5",
+   "native": [
+    "src/core/presentation.cpp:classic_window_transition_member",
+    "src/core/presentation.cpp:dragster_window_transition_index"
    ],
    "region": "rom"
   },
@@ -2897,6 +2966,13 @@
    "address": "$83:E759",
    "native": [
     "src/core/presentation.cpp:dragster_window_transition_index"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:E763",
+   "native": [
+    "src/core/presentation.cpp:classic_window_transition_member"
    ],
    "region": "rom"
   },
@@ -3120,13 +3196,6 @@
    "region": "wram"
   },
   {
-   "address": "$002F",
-   "native": [
-    "src/core/movement.cpp:update_mud_tile"
-   ],
-   "region": "wram"
-  },
-  {
    "address": "$0212",
    "native": [
     "src/core/movement.cpp:update_mud_tile"
@@ -3190,19 +3259,15 @@
     "src/core/input_timer.hpp:ControllerSample::low_image",
     "src/core/movement.cpp:update_zoom_zoo"
    ],
+   "range_ends": [
+    "$0314"
+   ],
    "region": "wram"
   },
   {
    "address": "$0313",
    "native": [
     "src/core/input_timer.hpp:ControllerSample::high_image"
-   ],
-   "region": "wram"
-  },
-  {
-   "address": "$0314",
-   "native": [
-    "src/core/movement.cpp:update_zoom_zoo"
    ],
    "region": "wram"
   },
@@ -3500,13 +3565,8 @@
     "src/core/movement.cpp:update_corkscrew_tile",
     "src/core/movement.cpp:update_special_tile_counters"
    ],
-   "region": "wram"
-  },
-  {
-   "address": "$060F",
-   "native": [
-    "src/core/movement.cpp:update_corkscrew_tile",
-    "src/core/movement.cpp:update_special_tile_counters"
+   "range_ends": [
+    "$060F"
    ],
    "region": "wram"
   },
@@ -3522,12 +3582,8 @@
    "native": [
     "src/core/movement.cpp:update_loop_tile"
    ],
-   "region": "wram"
-  },
-  {
-   "address": "$061F",
-   "native": [
-    "src/core/movement.cpp:update_loop_tile"
+   "range_ends": [
+    "$061F"
    ],
    "region": "wram"
   },
@@ -3786,6 +3842,9 @@
     "src/core/rider_look.hpp:(file)",
     "src/core/rider_look.hpp:RiderLook::sequence_cursor"
    ],
+   "range_ends": [
+    "$0D71"
+   ],
    "region": "wram"
   },
   {
@@ -3806,13 +3865,6 @@
    "address": "$0D6F",
    "native": [
     "src/core/rider_look.hpp:RiderLook::sequence_number"
-   ],
-   "region": "wram"
-  },
-  {
-   "address": "$0D71",
-   "native": [
-    "src/core/rider_look.hpp:(file)"
    ],
    "region": "wram"
   },
@@ -3924,12 +3976,8 @@
    "native": [
     "src/core/zoom_zoo_movement.hpp:HunterEffects::caption"
    ],
-   "region": "wram"
-  },
-  {
-   "address": "$0EB6",
-   "native": [
-    "src/core/zoom_zoo_movement.hpp:HunterEffects::caption"
+   "range_ends": [
+    "$0EB6"
    ],
    "region": "wram"
   },
@@ -4260,12 +4308,8 @@
    "native": [
     "src/core/presentation.hpp:ClassicRaceHudClock::slot_times_"
    ],
-   "region": "wram"
-  },
-  {
-   "address": "$114C",
-   "native": [
-    "src/core/presentation.hpp:ClassicRaceHudClock::slot_times_"
+   "range_ends": [
+    "$114C"
    ],
    "region": "wram"
   },
@@ -4274,12 +4318,8 @@
    "native": [
     "src/core/zoom_zoo_movement.hpp:ZoomZooRaceState::checkpoint_seen"
    ],
-   "region": "wram"
-  },
-  {
-   "address": "$119C",
-   "native": [
-    "src/core/zoom_zoo_movement.hpp:ZoomZooRaceState::checkpoint_seen"
+   "range_ends": [
+    "$119C"
    ],
    "region": "wram"
   },
@@ -4367,6 +4407,9 @@
     "src/core/rider_look.hpp:(file)",
     "src/core/rider_look.hpp:RiderLook::target"
    ],
+   "range_ends": [
+    "$1273"
+   ],
    "region": "wram"
   },
   {
@@ -4381,12 +4424,8 @@
    "native": [
     "src/core/rider_look.cpp:head_point"
    ],
-   "region": "wram"
-  },
-  {
-   "address": "$1268",
-   "native": [
-    "src/core/rider_look.cpp:head_point"
+   "range_ends": [
+    "$1268"
    ],
    "region": "wram"
   },
@@ -4409,13 +4448,6 @@
    "address": "$1271",
    "native": [
     "src/core/rider_look.hpp:RiderLook::glance_timer"
-   ],
-   "region": "wram"
-  },
-  {
-   "address": "$1273",
-   "native": [
-    "src/core/rider_look.hpp:(file)"
    ],
    "region": "wram"
   },
@@ -4490,12 +4522,8 @@
    "native": [
     "src/core/zoom_zoo_movement.hpp:HunterEffects::hud_event"
    ],
-   "region": "wram"
-  },
-  {
-   "address": "$129C",
-   "native": [
-    "src/core/zoom_zoo_movement.hpp:HunterEffects::hud_event"
+   "range_ends": [
+    "$129C"
    ],
    "region": "wram"
   },
@@ -4563,6 +4591,9 @@
    "native": [
     "src/core/zoom_zoo_movement.hpp:HunterEffects::effect"
    ],
+   "range_ends": [
+    "$1335"
+   ],
    "region": "wram"
   },
   {
@@ -4570,13 +4601,6 @@
    "native": [
     "src/core/flat_contact.hpp:ContactContext::landing_matrix_zero",
     "src/core/vertical_contact.cpp:resolve_vertical_contact"
-   ],
-   "region": "wram"
-  },
-  {
-   "address": "$1335",
-   "native": [
-    "src/core/zoom_zoo_movement.hpp:HunterEffects::effect"
    ],
    "region": "wram"
   },
@@ -4740,6 +4764,107 @@
     "src/core/movement.cpp:update_reward_queue"
    ],
    "region": "sram"
+  },
+  {
+   "address": "$00:2126",
+   "native": [
+    "src/core/presentation.cpp:render_window_xor"
+   ],
+   "range_ends": [
+    "$00:2129"
+   ],
+   "region": "io"
+  },
+  {
+   "address": "$00:3D80",
+   "native": [
+    "src/core/presentation.cpp:render_result_background"
+   ],
+   "region": "io"
+  },
+  {
+   "address": "$00:420C",
+   "native": [
+    "src/core/presentation.cpp:race_vblank_frame"
+   ],
+   "region": "io"
+  },
+  {
+   "address": "$00:4210",
+   "native": [
+    "src/core/presentation.cpp:render_result_background"
+   ],
+   "region": "io"
+  },
+  {
+   "address": "$00:4218",
+   "native": [
+    "src/core/input_timer.hpp:ControllerSample::low_image"
+   ],
+   "region": "io"
+  },
+  {
+   "address": "$00:4219",
+   "native": [
+    "src/core/input_timer.hpp:ControllerSample::high_image"
+   ],
+   "region": "io"
+  },
+  {
+   "address": "$00:4631",
+   "native": [
+    "src/core/presentation.cpp:render_result_background"
+   ],
+   "region": "io"
+  },
+  {
+   "address": "$00:4A52",
+   "native": [
+    "src/core/presentation.cpp:render_result_background"
+   ],
+   "region": "io"
+  },
+  {
+   "address": "$00:56B5",
+   "native": [
+    "src/core/presentation.cpp:render_result_background"
+   ],
+   "region": "io"
+  },
+  {
+   "address": "$00:62A8",
+   "native": [
+    "src/core/movement.cpp:update_movement"
+   ],
+   "region": "io"
+  },
+  {
+   "address": "$00:62AC",
+   "native": [
+    "src/core/movement.cpp:update_movement"
+   ],
+   "region": "io"
+  },
+  {
+   "address": "$00:62AD",
+   "native": [
+    "src/core/movement.cpp:update_movement"
+   ],
+   "region": "io"
+  },
+  {
+   "address": "$00:7A00",
+   "native": [
+    "src/core/presentation.cpp:render_result_background"
+   ],
+   "region": "io"
+  },
+  {
+   "address": "$00:7B00",
+   "native": [
+    "src/core/presentation.cpp:render_result_background"
+   ],
+   "region": "io"
   }
  ],
  "kind": "native_symbol_index",
@@ -4857,6 +4982,9 @@
    ]
   },
   "src/core/input_timer.hpp:ControllerSample::high_image": {
+   "io": [
+    "$00:4219"
+   ],
    "wram": [
     "$0313"
    ]
@@ -4867,6 +4995,9 @@
    ]
   },
   "src/core/input_timer.hpp:ControllerSample::low_image": {
+   "io": [
+    "$00:4218"
+   ],
    "wram": [
     "$0311"
    ]
@@ -4999,7 +5130,8 @@
   },
   "src/core/movement.cpp:next_wrong_direction_counter": {
    "rom": [
-    "$82:974B"
+    "$82:974B",
+    "$82:977B"
    ]
   },
   "src/core/movement.cpp:push_front_zoom_player": {
@@ -5043,7 +5175,6 @@
    "wram": [
     "$021B",
     "$0600",
-    "$060F",
     "$0FAF"
    ]
   },
@@ -5103,11 +5234,15 @@
    ],
    "wram": [
     "$0610",
-    "$0611",
-    "$061F"
+    "$0611"
    ]
   },
   "src/core/movement.cpp:update_movement": {
+   "io": [
+    "$00:62A8",
+    "$00:62AC",
+    "$00:62AD"
+   ],
    "rom": [
     "$83:EA72"
    ]
@@ -5117,7 +5252,6 @@
     "$81:8999"
    ],
    "wram": [
-    "$002F",
     "$0212"
    ]
   },
@@ -5191,8 +5325,7 @@
    ],
    "wram": [
     "$0213",
-    "$0600",
-    "$060F"
+    "$0600"
    ]
   },
   "src/core/movement.cpp:update_zoom_ai": {
@@ -5293,6 +5426,7 @@
     "$82:A9C1",
     "$82:A9CC",
     "$82:AA10",
+    "$82:AA1E",
     "$82:AA29",
     "$82:AA42"
    ],
@@ -5361,7 +5495,6 @@
    ],
    "wram": [
     "$0311",
-    "$0314",
     "$031D",
     "$031F",
     "$0321",
@@ -5542,7 +5675,10 @@
   "src/core/presentation.cpp:classic_window_transition_member": {
    "rom": [
     "$83:CC05",
-    "$83:E611"
+    "$83:E611",
+    "$83:E663",
+    "$83:E6C5",
+    "$83:E763"
    ],
    "wram": [
     "$0BA7",
@@ -5562,6 +5698,9 @@
   "src/core/presentation.cpp:dragster_window_transition_index": {
    "rom": [
     "$83:CC08",
+    "$83:E611",
+    "$83:E663",
+    "$83:E6C5",
     "$83:E759"
    ],
    "wram": [
@@ -5583,6 +5722,11 @@
   "src/core/presentation.cpp:race_palette_phase": {
    "rom": [
     "$82:D382"
+   ]
+  },
+  "src/core/presentation.cpp:race_vblank_frame": {
+   "io": [
+    "$00:420C"
    ]
   },
   "src/core/presentation.cpp:render_classic_race": {
@@ -5610,11 +5754,25 @@
    ]
   },
   "src/core/presentation.cpp:render_result_background": {
+   "io": [
+    "$00:3D80",
+    "$00:4210",
+    "$00:4631",
+    "$00:4A52",
+    "$00:56B5",
+    "$00:7A00",
+    "$00:7B00"
+   ],
    "rom": [
     "$82:B296"
    ],
    "wram": [
     "$0000"
+   ]
+  },
+  "src/core/presentation.cpp:render_window_xor": {
+   "io": [
+    "$00:2126"
    ]
   },
   "src/core/presentation.cpp:window_table_index_for": {
@@ -5712,8 +5870,7 @@
   },
   "src/core/presentation.hpp:ClassicRaceHudClock::slot_times_": {
    "wram": [
-    "$100D",
-    "$114C"
+    "$100D"
    ]
   },
   "src/core/presentation.hpp:ClassicRacePresentationContent::captions": {
@@ -5852,8 +6009,7 @@
     "$81:9FA6"
    ],
    "wram": [
-    "$1265",
-    "$1268"
+    "$1265"
    ]
   },
   "src/core/rider_look.cpp:height_step_table": {
@@ -5912,9 +6068,7 @@
     "$0D49",
     "$0D4B",
     "$0D5F",
-    "$0D71",
-    "$1259",
-    "$1273"
+    "$1259"
    ]
   },
   "src/core/rider_look.hpp:RiderLook::distance_step": {
@@ -6110,7 +6264,11 @@
   },
   "src/core/track_progress.cpp:transition_table_stride": {
    "rom": [
-    "$80:84CB"
+    "$80:84CB",
+    "$80:84DB",
+    "$80:84EB",
+    "$80:84FB",
+    "$80:850B"
    ]
   },
   "src/core/track_progress.cpp:update_track_progress": {
@@ -6152,7 +6310,8 @@
   },
   "src/core/track_sampling.cpp:fine_cell_shift": {
    "rom": [
-    "$81:8B4B"
+    "$81:8B4B",
+    "$81:8B58"
    ]
   },
   "src/core/track_sampling.cpp:pose_record_bytes": {
@@ -6307,14 +6466,12 @@
   },
   "src/core/zoom_zoo_movement.hpp:HunterEffects::caption": {
    "wram": [
-    "$0EA7",
-    "$0EB6"
+    "$0EA7"
    ]
   },
   "src/core/zoom_zoo_movement.hpp:HunterEffects::effect": {
    "wram": [
-    "$1327",
-    "$1335"
+    "$1327"
    ]
   },
   "src/core/zoom_zoo_movement.hpp:HunterEffects::hide_track": {
@@ -6327,8 +6484,7 @@
     "$81:BF32"
    ],
    "wram": [
-    "$128D",
-    "$129C"
+    "$128D"
    ]
   },
   "src/core/zoom_zoo_movement.hpp:HunterEffects::latched": {
@@ -6556,8 +6712,7 @@
     "$81:CD25"
    ],
    "wram": [
-    "$114D",
-    "$119C"
+    "$114D"
    ]
   },
   "src/core/zoom_zoo_movement.hpp:ZoomZooRoll::input_latched, ZoomZooRoll::prior_orientation, ZoomZooRoll::prior_reflection, ZoomZooRoll::pose_base": {
@@ -6656,11 +6811,11 @@
   }
  },
  "totals": {
-  "addresses": 558,
-  "io_addresses": 0,
-  "native_symbols": 245,
-  "rom_addresses": 341,
+  "addresses": 570,
+  "io_addresses": 14,
+  "native_symbols": 247,
+  "rom_addresses": 351,
   "sram_addresses": 7,
-  "wram_addresses": 210
+  "wram_addresses": 198
  }
 }

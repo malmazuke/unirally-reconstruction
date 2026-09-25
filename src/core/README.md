@@ -41,8 +41,8 @@ serialized bytes stay those of the original.
 9. **Format.** Run `clang-format -i` (version 19; `src/core/.clang-format`) on changed
    files. Formatting-only changes go in their own commit.
 
-Measure the size rule with `clang-tidy -p build/app-debug src/core/*.cpp` (LLVM 19; any
-preset's `compile_commands.json`).
+Measure the size rule with `clang-tidy -p build/app-debug src/core/*.cpp` (LLVM 19, after an
+app-debug build).
 
 **Accepted exceptions to the size rule:** none yet. After the format commit of part 1, 22
 functions exceed 80 lines; NATIVE-READABILITY parts 2 and 3 split them or list them here with

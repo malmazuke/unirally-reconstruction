@@ -16,13 +16,18 @@ brace-initialised data, which is all ``src/core`` uses.
 
 Citation forms (the style rules in ``src/core/README.md``):
 
-- ROM: ``$BB:AAAA`` or ``$BBAAAA``; a range ``$BB:AAAA-AAAA`` or ``$BB:AAAA-$BB:AAAA``.
+- ROM: ``$BB:AAAA`` or ``$BBAAAA``; a range ``$BB:AAAA-AAAA`` or ``$BB:AAAA-$BB:AAAA``;
+  more addresses in the same bank without it, ``$80:84CB/84DB`` or ``$83:E611, E663``.
   The code banks' low mirrors ``$00``-``$03`` are normalised to ``$80``-``$83``.
 - WRAM: ``$AAAA`` below ``$2000`` (the low-WRAM mirror every bank sees), or
-  ``$7E:AAAA``/``$7F:AAAA``; ``$7E:0000``-``$7E:1FFF`` is keyed as ``$0000``-``$1FFF``.
-  SRAM is ``$70``-``$77``.
+  ``$7E:AAAA``/``$7F:AAAA``; ``$7E:0000``-``$7E:1FFF`` is keyed as ``$0000``-``$1FFF``;
+  a range ``$114D-$119C``. SRAM is ``$70``-``$77``.
+- ``io``: a bank-less ``$2000``-``$7FFF``, keyed ``$00:AAAA``. That is an I/O register
+  (``$4210``) or, in comments older than the rules, a VRAM word or colour written with ``$``.
 - ``$`` marks an address. A value written ``$0213`` is read as WRAM ``$0213``, which
-  is why the rules ask for values in decimal or ``0x``.
+  is why the rules ask for values in decimal or ``0x``; ``$8000`` and above without a
+  bank is taken as a value and skipped. A C++ form the scanner does not read (a
+  requires-clause) raises ``UnsupportedShape`` rather than guess.
 """
 
 from __future__ import annotations
@@ -43,7 +48,11 @@ HEX = "0-9A-Fa-f"
 # leading hex digit, ':' or '#' means we are inside another token or an immediate.
 LONG = re.compile(rf"(?<![{HEX}:#\w])\$([{HEX}]{{2}}):?([{HEX}]{{4}})(?![{HEX}])"
                   rf"(?:\s*[-–]\s*(?:\$([{HEX}]{{2}}):?)?([{HEX}]{{4}})(?![{HEX}]))?")
-SHORT = re.compile(rf"(?<![{HEX}:#\w$])\$([{HEX}]{{4}})(?![{HEX}])")
+# More addresses in the same bank after a long one, written without the bank:
+# "$80:84CB/84DB", "$83:E611, E663", "$82:A9C1-A9E0 / AA1E-AA3D".
+MORE = re.compile(rf"\s*([/,])\s*([{HEX}]{{4}})(?![{HEX}\w])(?:\s*[-–]\s*([{HEX}]{{4}})(?![{HEX}\w]))?")
+# A bank-less address, with an optional range end: "$0C73", "$114D-$119C".
+SHORT = re.compile(rf"(?<![{HEX}:#\w$])\$([{HEX}]{{4}})(?![{HEX}])(?:\s*[-–]\s*\$?([{HEX}]{{4}})(?![{HEX}]))?")
 REGIONS = ("rom", "wram", "sram", "io")
 KEYWORDS = {"if", "for", "while", "switch", "catch", "return", "sizeof", "decltype", "alignas",
             "static_assert", "alignof", "noexcept", "requires"}
@@ -62,9 +71,12 @@ def region(bank: int, offset: int) -> str:
     return "rom"
 
 
-def rom_key(bank: int, offset: int) -> str:
-    if bank < 0x04:
-        bank |= 0x80
+def key(bank: int | None, offset: int) -> str:
+    """The index's spelling of an address. `bank` None is a bank-less (low-page) address."""
+    if bank is None or (bank < 0x40 or bank == 0x7E) and offset < 0x2000:
+        return f"${offset:04X}"         # low WRAM: $7E:0C73 and $0C73 are the same byte
+    if region(bank, offset) == "rom" and bank < 0x04:
+        bank |= 0x80                    # the code banks' low mirror
     return f"${bank:02X}:{offset:04X}"
 
 
@@ -75,35 +87,40 @@ class Cite:
     end: str | None      # the range end in the same form, if cited as a range
 
 
-def cites(text: str, short_form: bool = True) -> list[Cite]:
+def _cite(bank: int | None, offset: int, end: int | None) -> Cite:
+    reg = region(0x00 if bank is None else bank, offset)
+    last = key(bank, end) if end is not None and end >= offset else None
+    return Cite(reg, key(bank, offset), last)
+
+
+def cites(text: str) -> list[Cite]:
+    """Every address a comment cites, in the forms of the module docstring."""
     out: list[Cite] = []
     taken: list[tuple[int, int]] = []
     for m in LONG.finditer(text):
         bank, off = int(m.group(1), 16), int(m.group(2), 16)
         if ":" not in m.group(0)[:4] and not (bank < 0x04 or 0x80 <= bank <= 0x83 or 0x70 <= bank <= 0x7F):
             continue            # $BBAAAA without a colon is only read for code, SRAM and WRAM banks
-        reg = region(bank, off)
         end = None
-        if m.group(4):
-            end_bank = int(m.group(3), 16) if m.group(3) else bank
-            end_off = int(m.group(4), 16)
-            if end_bank == bank and end_off >= off:
-                end = rom_key(bank, end_off) if reg == "rom" else f"${end_bank:02X}:{end_off:04X}"
-        if reg == "rom":
-            address = rom_key(bank, off)
-        elif reg == "wram" and (bank < 0x40 or bank == 0x7E) and off < 0x2000:
-            address = f"${off:04X}"         # low WRAM: $7E:0C73 and $0C73 are the same byte
-        else:
-            address = f"${bank:02X}:{off:04X}"
-        out.append(Cite(reg, address, end))
-        taken.append(m.span())
-    if short_form:
-        for m in SHORT.finditer(text):
-            if any(a <= m.start() < b for a, b in taken):
-                continue
-            off = int(m.group(1), 16)
-            if off < 0x2000:
-                out.append(Cite("wram", f"${off:04X}", None))
+        if m.group(4) and (not m.group(3) or int(m.group(3), 16) == bank):
+            end = int(m.group(4), 16)
+        out.append(_cite(bank, off, end))
+        stop = m.end()
+        # Bank-less continuations. A comma continuation must be a code-bank ROM address
+        # ($8000 or above), so "$83:CEC9, 1252 updates" does not read 1252 as an address.
+        while (more := MORE.match(text, stop)):
+            follow = int(more.group(2), 16)
+            if more.group(1) == "," and not (region(bank, follow) == "rom" and follow >= 0x8000):
+                break
+            out.append(_cite(bank, follow, int(more.group(3), 16) if more.group(3) else None))
+            stop = more.end()
+        taken.append((m.start(), stop))
+    for m in SHORT.finditer(text):
+        if any(a <= m.start() < b for a, b in taken):
+            continue
+        off = int(m.group(1), 16)
+        if off < 0x8000:        # $8000 and above without a bank is a value, not an address
+            out.append(_cite(None if off < 0x2000 else 0x00, off, int(m.group(2), 16) if m.group(2) else None))
     return out
 
 
@@ -153,6 +170,10 @@ def split_code_and_comments(text: str) -> list[tuple[str, str]]:
         if text.startswith("/*", i):
             block = True
             i += 2
+            continue
+        if c == "'" and i and text[i - 1].isalnum() and i + 1 < n and text[i + 1].isalnum():
+            code.append(c)      # a digit separator (1'000), not a character literal
+            i += 1
             continue
         if c in "\"'":
             j = i + 1
@@ -211,9 +232,21 @@ def _strip_template(prefix: str) -> str:
     return s
 
 
+OPERATOR = re.compile(r"\boperator\s*(\(\)|\[\]|[^\s\w(]+|new|delete)\s*\(")
+
+
 def function_name(prefix: str) -> str | None:
     """The name of the function whose definition `prefix` begins, or None."""
     s = _strip_template(prefix)
+    op = OPERATOR.search(s)
+    if op:
+        # An operator's symbol ("<", "<<", "==", "()") must not count as a bracket or
+        # an initialiser; the name is the qualified operator itself.
+        head = s[:op.start()]
+        if "=" in head.replace("==", "").replace("<=", "").replace(">=", "").replace("!=", ""):
+            return None
+        m = re.search(r"((?:~?[A-Za-z_]\w*::)*)$", head.rstrip())
+        return (m.group(1) if m else "") + "operator" + op.group(1)
     paren = -1
     depth = 0
     for i, c in enumerate(s):
@@ -221,17 +254,17 @@ def function_name(prefix: str) -> str | None:
             depth += 1
         elif c == ">":
             depth = max(0, depth - 1)
-        elif c == "=" and depth == 0 and not s.startswith("operator", max(0, i - 9)) and "operator" not in s[:i]:
-            return None     # an initializer, not a definition
+        elif c == "=" and depth == 0:
+            return None     # an initialiser, not a definition
         elif c == "(" and depth == 0:
             paren = i
             break
     if paren < 0:
         return None
-    m = re.search(r"((?:~?[A-Za-z_]\w*::)*(?:operator\s*[^\s(]+|~?[A-Za-z_]\w*))\s*$", s[:paren])
+    m = re.search(r"((?:~?[A-Za-z_]\w*::)*~?[A-Za-z_]\w*)\s*$", s[:paren])
     if not m or m.group(1).split("::")[-1] in KEYWORDS:
         return None
-    return re.sub(r"\s+", "", m.group(1))
+    return m.group(1)
 
 
 def declared_names(statement: str) -> list[str]:
@@ -333,7 +366,8 @@ def scan(path: str, text: str) -> tuple[FileScan, list[tuple[str, str]]]:
                     fs.decls.append(Decl(start, -1, [name], opens_scope=True))
                 stack.append(Scope(kind, name, start))
                 if kind == "function":
-                    fs.inside[ln] = name
+                    for line in range(start, ln + 1):   # a signature wrapped over several lines
+                        fs.inside[line] = name
                 pending, pending_start = [], None
             elif c == "}":
                 closed = stack.pop() if stack else None
@@ -362,8 +396,14 @@ def scan(path: str, text: str) -> tuple[FileScan, list[tuple[str, str]]]:
     return fs, lines
 
 
+class UnsupportedShape(ValueError):
+    """A C++ form the scanner does not read; refusing beats a wrong attribution."""
+
+
 def classify(prefix: str) -> tuple[str, str]:
     s = prefix.strip()
+    if re.search(r"\brequires\b", s):
+        raise UnsupportedShape(f"a requires-clause is not read by the native-symbol scanner: {s[:80]}")
     if re.search(r"\bnamespace\b", s) or s.startswith('extern "'):
         return "namespace", ""
     if not s:
@@ -502,13 +542,12 @@ def lookup(index: dict[str, Any], root: Path, query: str) -> dict[str, Any]:
     found = cites(query)
     links = records_for(index, root)
     if found:
-        key = found[0].address
-        rows = [r for r in index["addresses"] if r["address"] == key]
-        if found[0].region == "rom":
-            k = parse_key(key)
-            rows += [r for r in index["addresses"] if r["region"] == "rom" and r["address"] != key
-                     and parse_key(r["address"]) <= k <= max([parse_key(r["address"])] + [parse_key(e) for e in r.get("range_ends", ())])]
-        return {"query": key, "addresses": [{**r, "records": links[r["address"]]} for r in rows]}
+        address = found[0].address
+        k = parse_key(address)
+        rows = [r for r in index["addresses"] if r["address"] == address]
+        rows += [r for r in index["addresses"] if r["region"] == found[0].region and r["address"] != address
+                 and parse_key(r["address"]) <= k <= max([parse_key(r["address"])] + [parse_key(e) for e in r.get("range_ends", ())])]
+        return {"query": address, "addresses": [{**r, "records": links[r["address"]]} for r in rows]}
     return {"query": query, "symbols": {s: v for s, v in index["symbols"].items() if query in s}}
 
 

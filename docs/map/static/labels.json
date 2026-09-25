@@ -227,6 +227,9 @@
   "class": "unknown",
   "comment": "unknown",
   "label": "unk_8084DB",
+  "native": [
+   "src/core/track_progress.cpp:transition_table_stride"
+  ],
   "source_records": [
    "docs/research/R-0010-native-movement.md"
   ]
@@ -236,6 +239,9 @@
   "class": "unknown",
   "comment": "unknown",
   "label": "unk_8084EB",
+  "native": [
+   "src/core/track_progress.cpp:transition_table_stride"
+  ],
   "source_records": [
    "docs/research/R-0010-native-movement.md",
    "docs/research/R-0045-static-code-map.md"
@@ -246,6 +252,9 @@
   "class": "data",
   "comment": "data",
   "label": "dat_8084FB",
+  "native": [
+   "src/core/track_progress.cpp:transition_table_stride"
+  ],
   "source_records": [
    "docs/research/R-0010-native-movement.md"
   ]
@@ -8234,6 +8243,7 @@
    "src/core/movement.cpp:update_zoom_zoo",
    "src/core/presentation.cpp:classic_countdown_window",
    "src/core/presentation.cpp:classic_window_transition_member",
+   "src/core/presentation.cpp:dragster_window_transition_index",
    "src/core/presentation.hpp:classic_countdown_window",
    "src/core/presentation.hpp:dragster_window_table_index"
   ],

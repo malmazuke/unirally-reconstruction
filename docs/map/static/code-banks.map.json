@@ -12425,6 +12425,7 @@
     "src/core/movement.cpp:update_zoom_zoo",
     "src/core/presentation.cpp:classic_countdown_window",
     "src/core/presentation.cpp:classic_window_transition_member",
+    "src/core/presentation.cpp:dragster_window_transition_index",
     "src/core/presentation.hpp:classic_countdown_window",
     "src/core/presentation.hpp:dragster_window_table_index"
    ],
@@ -12448,6 +12449,8 @@
    "native": [
     "src/core/movement.cpp:update_zoom_zoo",
     "src/core/presentation.cpp:classic_countdown_window",
+    "src/core/presentation.cpp:classic_window_transition_member",
+    "src/core/presentation.cpp:dragster_window_transition_index",
     "src/core/presentation.hpp:classic_countdown_window",
     "src/core/presentation.hpp:dragster_window_table_index"
    ],
@@ -12471,6 +12474,8 @@
    "native": [
     "src/core/movement.cpp:update_zoom_zoo",
     "src/core/presentation.cpp:classic_countdown_window",
+    "src/core/presentation.cpp:classic_window_transition_member",
+    "src/core/presentation.cpp:dragster_window_transition_index",
     "src/core/presentation.hpp:classic_countdown_window",
     "src/core/presentation.hpp:dragster_window_table_index"
    ],
@@ -12494,6 +12499,7 @@
    "native": [
     "src/core/movement.cpp:update_zoom_zoo",
     "src/core/presentation.cpp:classic_countdown_window",
+    "src/core/presentation.cpp:classic_window_transition_member",
     "src/core/presentation.cpp:dragster_window_transition_index",
     "src/core/presentation.hpp:classic_countdown_window",
     "src/core/presentation.hpp:dragster_window_table_index"

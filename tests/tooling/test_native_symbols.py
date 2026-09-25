@@ -18,8 +18,10 @@ from unirally_lab.coverage import native_symbols as ns  # noqa: E402
 
 # ROM addresses src/core cites that no research, task, inventory or content record
 # cites (directly or inside a cited range). NATIVE-READABILITY part 2 brings this to
-# zero; lower it as citations gain records, never raise it.
-ROM_WITHOUT_RECORD_LIMIT = 8
+# zero; lower it as citations gain records. It rose from 8 to 9 only once, when the
+# index learned bank-less continuations ("$80:84CB/.../850B"), which made one more
+# existing citation visible.
+ROM_WITHOUT_RECORD_LIMIT = 9
 
 
 def symbols(text: str) -> dict[str, list[str]]:
@@ -46,6 +48,19 @@ class CitationTests(unittest.TestCase):
 
     def test_colonless_long_form_only_for_code_and_wram_banks(self) -> None:
         self.assertEqual(ns.cites("$17C7D6"), [])
+
+    def test_bankless_continuations(self) -> None:
+        got = ns.cites("$80:84CB/84DB, $82974B/977B; ($83:E611, E663) $82:A9C1-A9E0 / AA1E-AA3D; $83:CEC9, 1252 updates")
+        self.assertEqual([(c.address, c.end) for c in got], [
+            ("$80:84CB", None), ("$80:84DB", None), ("$82:974B", None), ("$82:977B", None),
+            ("$83:E611", None), ("$83:E663", None), ("$82:A9C1", "$82:A9E0"), ("$82:AA1E", "$82:AA3D"),
+            ("$83:CEC9", None)])
+
+    def test_short_ranges_and_registers(self) -> None:
+        got = ns.cites("$114D-$119C, $1259-1273, $7E:0C73-0C80, $2100, $8000")
+        self.assertEqual([(c.region, c.address, c.end) for c in got], [
+            ("wram", "$0C73", "$0C80"), ("wram", "$114D", "$119C"), ("wram", "$1259", "$1273"),
+            ("io", "$00:2100", None)])
 
 
 class ScannerTests(unittest.TestCase):
@@ -86,6 +101,27 @@ class ScannerTests(unittest.TestCase):
         src = 'void f() {\n    const char* s = "{ $81:9000 }";\n    // $81:9001\n}\n'
         self.assertEqual(symbols(src), {"$81:9001": ["f"]})
 
+    def test_operators_and_digit_separators(self) -> None:
+        src = ("struct S {\n    // $1275\n    bool operator<(const S& o) const { return a < o.a; }\n"
+               "    // $1277\n    int b{};\n};\n"
+               "std::ostream& operator<<(std::ostream& o, const S& s) {\n    // $81:9000\n    return o;\n}\n"
+               "void f() {\n    int x = 1'000; // $81:9001\n}\n")
+        self.assertEqual(symbols(src), {"$1275": ["S::operator<"], "$1277": ["S::b"],
+                                        "$81:9000": ["operator<<"], "$81:9001": ["f"]})
+
+    def test_comment_inside_a_wrapped_signature(self) -> None:
+        src = "void f(int a,\n       int b, // $0D57\n       int c) {\n}\n"
+        self.assertEqual(symbols(src), {"$0D57": ["f"]})
+
+    def test_requires_clause_is_refused(self) -> None:
+        with self.assertRaises(ns.UnsupportedShape):
+            symbols("template <typename T>\nvoid f(T t) requires true {\n}\n")
+
+    def test_lookup_in_a_wram_range(self) -> None:
+        index = {"addresses": [{"address": "$7E:21E9", "region": "wram", "native": ["a.cpp:f"], "range_ends": ["$7E:21F8"]}],
+                 "symbols": {"a.cpp:f": {"wram": ["$7E:21E9"]}}}
+        self.assertEqual([r["address"] for r in ns.lookup(index, ROOT, "$7E:21F0")["addresses"]], ["$7E:21E9"])
+
     def test_lookup_finds_a_range_holding_the_address(self) -> None:
         index = {"addresses": [{"address": "$81:C219", "region": "rom", "native": ["a.cpp:f"], "range_ends": ["$81:C2C9"]}],
                  "symbols": {"a.cpp:f": {"rom": ["$81:C219"]}}}
@@ -113,10 +149,20 @@ class TrackedIndexTests(unittest.TestCase):
                              f"ROM addresses cited in src/core by no record: {missing}; cite the record in "
                              "the comment's evidence line, or add the address to the record that recovered it")
 
-    def test_static_map_names_native_symbols(self) -> None:
+    def test_static_map_names_the_current_native_symbols(self) -> None:
+        # The tracked map's `native` fields must follow the index, so a rename that
+        # regenerates only the index is caught (`coverage static-map` needs the ROM).
         doc = json.loads((ROOT / "docs/map/static/code-banks.map.json").read_text(encoding="utf-8"))
         self.assertEqual(doc["inputs"]["native_symbols"], ns.OUT)
-        self.assertGreater(doc["totals"]["routines_cited_by_native_code"], 0)
+        span = ns.native_by_rom_span(self.index)
+        for r in doc["routines"]:
+            want = ns.symbols_in(span, ns.parse_key(r["start"]), ns.parse_key(r["end"]))
+            self.assertEqual(r.get("native", []), want, f"routine {r['start']}: regenerate the static map")
+        self.assertEqual(doc["totals"]["routines_cited_by_native_code"], sum(1 for r in doc["routines"] if "native" in r))
+        labels = json.loads((ROOT / "docs/map/static/labels.json").read_text(encoding="utf-8"))
+        for lab in labels:
+            k = ns.parse_key(lab["address"])
+            self.assertEqual(lab.get("native", []), ns.symbols_in(span, k, k), f"label {lab['address']}: regenerate the static map")
 
 
 if __name__ == "__main__":
