@@ -192,7 +192,7 @@
   {
    "address": "$80:8642",
    "native": [
-    "src/core/race_update.cpp:update_zoom_zoo"
+    "src/core/race_update.cpp:brightest_fade, first_published_fade"
    ],
    "range_ends": [
     "$80:865B"
@@ -221,7 +221,7 @@
    "address": "$80:87E9",
    "native": [
     "src/core/input_timer.cpp:sample_controller",
-    "src/core/race_update.cpp:update_zoom_zoo"
+    "src/core/race_update.cpp:run_skipped_update"
    ],
    "range_ends": [
     "$80:87F2",
@@ -318,7 +318,8 @@
   {
    "address": "$81:82BB",
    "native": [
-    "src/core/race_update.cpp:update_zoom_zoo"
+    "src/core/race_update.cpp:(file)",
+    "src/core/race_update.cpp:tile_behavior_under"
    ],
    "range_ends": [
     "$81:82F3"
@@ -328,14 +329,14 @@
   {
    "address": "$81:82F5",
    "native": [
-    "src/core/race_update.cpp:update_zoom_zoo"
+    "src/core/race_update.cpp:tile_behavior_under"
    ],
    "region": "rom"
   },
   {
    "address": "$81:8316",
    "native": [
-    "src/core/race_update.cpp:update_zoom_zoo"
+    "src/core/race_update.cpp:run_push_tile"
    ],
    "range_ends": [
     "$81:834B"
@@ -386,16 +387,9 @@
    "region": "rom"
   },
   {
-   "address": "$81:84AC",
-   "native": [
-    "src/core/race_update.cpp:update_zoom_zoo"
-   ],
-   "region": "rom"
-  },
-  {
    "address": "$81:84B2",
    "native": [
-    "src/core/race_update.cpp:update_zoom_zoo"
+    "src/core/race_update.cpp:run_lift_tile"
    ],
    "range_ends": [
     "$81:84EB"
@@ -405,7 +399,7 @@
   {
    "address": "$81:8554",
    "native": [
-    "src/core/race_update.cpp:update_zoom_zoo"
+    "src/core/race_update.cpp:run_slow_tile"
    ],
    "range_ends": [
     "$81:858D"
@@ -415,14 +409,18 @@
   {
    "address": "$81:858E",
    "native": [
+    "src/core/race_update.cpp:begin_rider_update",
     "src/core/special_tiles.cpp:update_special_tile_counters"
+   ],
+   "range_ends": [
+    "$81:871B"
    ],
    "region": "rom"
   },
   {
    "address": "$81:8592",
    "native": [
-    "src/core/race_update.cpp:update_zoom_zoo",
+    "src/core/race_update.cpp:begin_rider_update",
     "src/core/rider_motion.cpp:update_horizontal"
    ],
    "range_ends": [
@@ -440,7 +438,7 @@
   {
    "address": "$81:859D",
    "native": [
-    "src/core/race_update.cpp:update_zoom_zoo"
+    "src/core/race_update.cpp:begin_rider_update"
    ],
    "range_ends": [
     "$81:85A8"
@@ -498,13 +496,6 @@
    "region": "rom"
   },
   {
-   "address": "$81:875C",
-   "native": [
-    "src/core/race_update.cpp:update_zoom_zoo"
-   ],
-   "region": "rom"
-  },
-  {
    "address": "$81:87C2",
    "native": [
     "src/core/special_tiles.cpp:update_corkscrew_tile",
@@ -558,7 +549,7 @@
   {
    "address": "$81:8949",
    "native": [
-    "src/core/race_update.cpp:update_zoom_zoo",
+    "src/core/race_update.cpp:run_tile",
     "src/core/zoom_zoo_movement.hpp:SpecialTileUpdate::corkscrew_stepped"
    ],
    "region": "rom"
@@ -566,7 +557,7 @@
   {
    "address": "$81:8950",
    "native": [
-    "src/core/race_update.cpp:update_zoom_zoo"
+    "src/core/race_update.cpp:run_slow_drive_tile"
    ],
    "range_ends": [
     "$81:8998"
@@ -587,7 +578,7 @@
   {
    "address": "$81:89F7",
    "native": [
-    "src/core/race_update.cpp:update_zoom_zoo"
+    "src/core/race_update.cpp:run_jump_driven_tile"
    ],
    "range_ends": [
     "$81:8A29"
@@ -699,14 +690,14 @@
   {
    "address": "$81:8CFC",
    "native": [
-    "src/core/race_update.cpp:update_zoom_zoo"
+    "src/core/race_update.cpp:update_rider_contact"
    ],
    "region": "rom"
   },
   {
    "address": "$81:8E43",
    "native": [
-    "src/core/race_update.cpp:update_zoom_zoo"
+    "src/core/race_update.cpp:update_rider_contact"
    ],
    "region": "rom"
   },
@@ -757,7 +748,7 @@
   {
    "address": "$81:91F4",
    "native": [
-    "src/core/race_update.cpp:update_zoom_zoo"
+    "src/core/race_update.cpp:update_rider_contact"
    ],
    "range_ends": [
     "$81:920C"
@@ -1315,7 +1306,7 @@
     "src/core/presentation.cpp:build_result_map",
     "src/core/presentation.cpp:classic_hud_left_field",
     "src/core/race_state_io.cpp:check_lap_clocks",
-    "src/core/race_update.cpp:update_zoom_zoo"
+    "src/core/race_update.cpp:finish_update"
    ],
    "range_ends": [
     "$81:C75B"
@@ -1871,14 +1862,15 @@
   {
    "address": "$82:974B",
    "native": [
-    "src/core/race_update.cpp:next_wrong_direction_counter"
+    "src/core/race_update.cpp:next_wrong_direction_counter",
+    "src/core/race_update.cpp:wrong_way_warning, wrong_way_repeat"
    ],
    "region": "rom"
   },
   {
    "address": "$82:9751",
    "native": [
-    "src/core/race_update.cpp:update_zoom_zoo"
+    "src/core/race_update.cpp:run_active_controls"
    ],
    "range_ends": [
     "$82:9762"
@@ -1888,14 +1880,15 @@
   {
    "address": "$82:977B",
    "native": [
-    "src/core/race_update.cpp:next_wrong_direction_counter"
+    "src/core/race_update.cpp:next_wrong_direction_counter",
+    "src/core/race_update.cpp:wrong_way_warning, wrong_way_repeat"
    ],
    "region": "rom"
   },
   {
    "address": "$82:9781",
    "native": [
-    "src/core/race_update.cpp:update_zoom_zoo"
+    "src/core/race_update.cpp:run_active_controls"
    ],
    "range_ends": [
     "$82:9792"
@@ -1926,7 +1919,7 @@
   {
    "address": "$82:98D6",
    "native": [
-    "src/core/race_update.cpp:update_zoom_zoo"
+    "src/core/race_update.cpp:update_rider"
    ],
    "region": "rom"
   },
@@ -2029,7 +2022,7 @@
   {
    "address": "$82:A027",
    "native": [
-    "src/core/race_update.cpp:update_zoom_zoo"
+    "src/core/race_update.cpp:run_active_controls"
    ],
    "range_ends": [
     "$82:A068"
@@ -2039,7 +2032,7 @@
   {
    "address": "$82:A069",
    "native": [
-    "src/core/race_update.cpp:update_zoom_zoo"
+    "src/core/race_update.cpp:run_active_controls"
    ],
    "range_ends": [
     "$82:A0B6"
@@ -2071,7 +2064,7 @@
   {
    "address": "$82:A241",
    "native": [
-    "src/core/race_update.cpp:update_zoom_zoo"
+    "src/core/race_update.cpp:run_active_controls"
    ],
    "region": "rom"
   },
@@ -2108,7 +2101,7 @@
   {
    "address": "$82:A49F",
    "native": [
-    "src/core/race_update.cpp:update_zoom_zoo"
+    "src/core/race_update.cpp:update_rotation"
    ],
    "range_ends": [
     "$82:A4F9",
@@ -2119,14 +2112,14 @@
   {
    "address": "$82:A4CC",
    "native": [
-    "src/core/race_update.cpp:update_zoom_zoo"
+    "src/core/race_update.cpp:update_rotation"
    ],
    "region": "rom"
   },
   {
    "address": "$82:A4DC",
    "native": [
-    "src/core/race_update.cpp:update_zoom_zoo"
+    "src/core/race_update.cpp:update_rotation"
    ],
    "range_ends": [
     "$82:A4E9"
@@ -2146,14 +2139,14 @@
   {
    "address": "$82:A5FC",
    "native": [
-    "src/core/race_update.cpp:update_zoom_zoo"
+    "src/core/race_update.cpp:run_active_controls"
    ],
    "region": "rom"
   },
   {
    "address": "$82:A6BB",
    "native": [
-    "src/core/race_update.cpp:update_zoom_zoo"
+    "src/core/race_update.cpp:run_physics"
    ],
    "range_ends": [
     "$82:A6F5"
@@ -2163,7 +2156,7 @@
   {
    "address": "$82:A6FD",
    "native": [
-    "src/core/race_update.cpp:update_zoom_zoo"
+    "src/core/race_update.cpp:run_physics"
    ],
    "region": "rom"
   },
@@ -2190,7 +2183,7 @@
   {
    "address": "$82:A77E",
    "native": [
-    "src/core/race_update.cpp:update_zoom_zoo"
+    "src/core/race_update.cpp:speed_limit_context"
    ],
    "range_ends": [
     "$82:A797"
@@ -2210,7 +2203,7 @@
   {
    "address": "$82:A8CD",
    "native": [
-    "src/core/race_update.cpp:update_zoom_zoo"
+    "src/core/race_update.cpp:run_active_controls"
    ],
    "range_ends": [
     "$82:A8EE"
@@ -2227,7 +2220,7 @@
   {
    "address": "$82:A971",
    "native": [
-    "src/core/race_update.cpp:update_zoom_zoo"
+    "src/core/race_update.cpp:run_physics"
    ],
    "range_ends": [
     "$82:A97C"
@@ -2295,7 +2288,7 @@
   {
    "address": "$82:AA71",
    "native": [
-    "src/core/race_update.cpp:update_zoom_zoo"
+    "src/core/race_update.cpp:run_skipped_update"
    ],
    "region": "rom"
   },
@@ -2312,7 +2305,7 @@
   {
    "address": "$82:AAE2",
    "native": [
-    "src/core/race_update.cpp:update_zoom_zoo"
+    "src/core/race_update.cpp:read_player_buttons"
    ],
    "range_ends": [
     "$82:AAFB"
@@ -2332,7 +2325,7 @@
   {
    "address": "$82:AC5A",
    "native": [
-    "src/core/race_update.cpp:update_zoom_zoo"
+    "src/core/race_update.cpp:read_player_buttons"
    ],
    "range_ends": [
     "$82:ACA7"
@@ -2610,7 +2603,7 @@
   {
    "address": "$83:CC9A",
    "native": [
-    "src/core/race_update.cpp:update_zoom_zoo"
+    "src/core/race_update.cpp:run_skipped_update"
    ],
    "range_ends": [
     "$83:CCA2"
@@ -2651,7 +2644,7 @@
   {
    "address": "$83:CD05",
    "native": [
-    "src/core/race_update.cpp:update_zoom_zoo",
+    "src/core/race_update.cpp:run_pause_menu",
     "src/core/rider_look.cpp:zoom_zoo_update_was_paused"
    ],
    "range_ends": [
@@ -2663,7 +2656,7 @@
    "address": "$83:CDAA",
    "native": [
     "src/core/hunter_effects.cpp:update_hunter_effects",
-    "src/core/race_update.cpp:update_zoom_zoo"
+    "src/core/race_update.cpp:run_skipped_update"
    ],
    "region": "rom"
   },
@@ -2943,7 +2936,7 @@
     "src/core/presentation.cpp:classic_countdown_window",
     "src/core/presentation.hpp:classic_countdown_window",
     "src/core/presentation.hpp:dragster_window_table_index",
-    "src/core/race_update.cpp:update_zoom_zoo"
+    "src/core/race_update.cpp:run_countdown"
    ],
    "range_ends": [
     "$83:E7BD"
@@ -2998,7 +2991,7 @@
   {
    "address": "$83:E7A2",
    "native": [
-    "src/core/race_update.cpp:update_zoom_zoo"
+    "src/core/race_update.cpp:run_countdown"
    ],
    "range_ends": [
     "$83:E7BF"
@@ -3276,7 +3269,7 @@
    "address": "$0311",
    "native": [
     "src/core/input_timer.hpp:ControllerSample::low_image",
-    "src/core/race_update.cpp:update_zoom_zoo"
+    "src/core/race_update.cpp:run_skipped_update"
    ],
    "range_ends": [
     "$0314"
@@ -3312,25 +3305,10 @@
    "region": "wram"
   },
   {
-   "address": "$031D",
-   "native": [
-    "src/core/race_update.cpp:update_zoom_zoo"
-   ],
-   "region": "wram"
-  },
-  {
    "address": "$031F",
    "native": [
     "src/core/opponent_ai.cpp:launch_trick",
-    "src/core/opponent_ai.cpp:update_opponent_controller",
-    "src/core/race_update.cpp:update_zoom_zoo"
-   ],
-   "region": "wram"
-  },
-  {
-   "address": "$0321",
-   "native": [
-    "src/core/race_update.cpp:update_zoom_zoo"
+    "src/core/opponent_ai.cpp:update_opponent_controller"
    ],
    "region": "wram"
   },
@@ -3339,14 +3317,14 @@
    "native": [
     "src/core/opponent_ai.cpp:launch_trick",
     "src/core/opponent_ai.cpp:update_opponent_controller",
-    "src/core/race_update.cpp:update_zoom_zoo"
+    "src/core/race_update.cpp:run_tricks_and_landing"
    ],
    "region": "wram"
   },
   {
    "address": "$0325",
    "native": [
-    "src/core/race_update.cpp:update_zoom_zoo"
+    "src/core/race_update.cpp:read_player_buttons"
    ],
    "region": "wram"
   },
@@ -3367,7 +3345,7 @@
   {
    "address": "$0331",
    "native": [
-    "src/core/race_update.cpp:update_zoom_zoo"
+    "src/core/race_update.cpp:read_player_buttons"
    ],
    "region": "wram"
   },
@@ -3426,7 +3404,7 @@
   {
    "address": "$0359",
    "native": [
-    "src/core/race_update.cpp:update_zoom_zoo",
+    "src/core/race_update.cpp:run_active_controls",
     "src/core/zoom_zoo_movement.hpp:SpecialTileRider::loop_cooldown"
    ],
    "region": "wram"
@@ -3924,7 +3902,7 @@
   {
    "address": "$0DFB",
    "native": [
-    "src/core/race_update.cpp:update_zoom_zoo",
+    "src/core/race_update.cpp:update_rider_contact",
     "src/core/zoom_zoo_movement.hpp:SpecialTileUpdate::contact_skip"
    ],
    "region": "wram"
@@ -3932,7 +3910,7 @@
   {
    "address": "$0DFD",
    "native": [
-    "src/core/race_update.cpp:update_zoom_zoo"
+    "src/core/race_update.cpp:update_rider_contact"
    ],
    "region": "wram"
   },
@@ -3960,14 +3938,14 @@
   {
    "address": "$0E6F",
    "native": [
-    "src/core/race_update.cpp:update_zoom_zoo"
+    "src/core/race_update.cpp:update_rotation"
    ],
    "region": "wram"
   },
   {
    "address": "$0E7B",
    "native": [
-    "src/core/race_update.cpp:update_zoom_zoo",
+    "src/core/race_update.cpp:update_rider",
     "src/core/zoom_zoo_movement.hpp:ZoomZooState::drive_target_latch",
     "src/core/zoom_zoo_movement.hpp:classic_race_state_magic"
    ],
@@ -3976,7 +3954,7 @@
   {
    "address": "$0EA3",
    "native": [
-    "src/core/race_update.cpp:update_zoom_zoo",
+    "src/core/race_update.cpp:run_tile",
     "src/core/zoom_zoo_movement.hpp:SpecialTileUpdate::corkscrew_stepped"
    ],
    "region": "wram"
@@ -4066,7 +4044,7 @@
   {
    "address": "$0F2D",
    "native": [
-    "src/core/race_update.cpp:update_zoom_zoo",
+    "src/core/race_update.cpp:run_physics",
     "src/core/rider_pose.cpp:update_target_orientation",
     "src/core/zoom_zoo_movement.hpp:SpecialTileUpdate::slow_tile"
    ],
@@ -4096,7 +4074,7 @@
   {
    "address": "$0F3B",
    "native": [
-    "src/core/race_update.cpp:update_zoom_zoo",
+    "src/core/race_update.cpp:update_rider",
     "src/core/zoom_zoo_movement.hpp:SpecialTileUpdate::drive_step"
    ],
    "region": "wram"
@@ -4104,14 +4082,14 @@
   {
    "address": "$0F3D",
    "native": [
-    "src/core/race_update.cpp:update_zoom_zoo"
+    "src/core/race_update.cpp:run_slow_drive_tile"
    ],
    "region": "wram"
   },
   {
    "address": "$0F3F",
    "native": [
-    "src/core/race_update.cpp:update_zoom_zoo",
+    "src/core/race_update.cpp:update_rider",
     "src/core/rider_pose.cpp:update_target_orientation",
     "src/core/zoom_zoo_movement.hpp:SpecialTileUpdate::mud_velocity"
    ],
@@ -4120,7 +4098,7 @@
   {
    "address": "$0F41",
    "native": [
-    "src/core/race_update.cpp:update_zoom_zoo",
+    "src/core/race_update.cpp:run_active_controls",
     "src/core/special_tiles.cpp:update_loop_cooldown"
    ],
    "region": "wram"
@@ -4171,7 +4149,7 @@
   {
    "address": "$0F5B",
    "native": [
-    "src/core/race_update.cpp:update_zoom_zoo",
+    "src/core/race_update.cpp:update_rider",
     "src/core/zoom_zoo_movement.hpp:SpecialTileUpdate::contact_skip"
    ],
    "region": "wram"
@@ -4208,7 +4186,7 @@
   {
    "address": "$0F89",
    "native": [
-    "src/core/race_update.cpp:update_zoom_zoo"
+    "src/core/race_update.cpp:update_rotation"
    ],
    "region": "wram"
   },
@@ -4230,7 +4208,7 @@
   {
    "address": "$0FB1",
    "native": [
-    "src/core/race_update.cpp:update_zoom_zoo",
+    "src/core/race_update.cpp:run_slow_drive_tile",
     "src/core/rider_motion.cpp:hold_brake",
     "src/core/zoom_zoo_movement.hpp:SpecialTileUpdate::crank_brake"
    ],
@@ -4468,7 +4446,7 @@
    "address": "$1283",
    "native": [
     "src/core/race_setup.cpp:classic_race_scenario",
-    "src/core/race_update.cpp:update_zoom_zoo",
+    "src/core/race_update.cpp:speed_limit_context",
     "src/core/zoom_zoo_movement.hpp:ClassicRaceScenario::ai_level",
     "src/core/zoom_zoo_movement.hpp:race_adjustment_limit"
    ],
@@ -4498,7 +4476,7 @@
   {
    "address": "$128B",
    "native": [
-    "src/core/race_update.cpp:update_zoom_zoo",
+    "src/core/race_update.cpp:run_skipped_update",
     "src/core/rider_look.cpp:zoom_zoo_update_was_paused",
     "src/core/zoom_zoo_movement.hpp:HunterEffects::skip_update"
    ],
@@ -4601,7 +4579,7 @@
   {
    "address": "$150B",
    "native": [
-    "src/core/race_update.cpp:update_zoom_zoo",
+    "src/core/race_update.cpp:speed_limit_context",
     "src/core/speed_limits.hpp:SpeedLimitContext::pose_byte"
    ],
    "region": "wram"
@@ -4725,7 +4703,7 @@
    "address": "$77:074B",
    "native": [
     "src/core/race_setup.cpp:classic_race_scenario",
-    "src/core/race_update.cpp:update_zoom_zoo",
+    "src/core/race_update.cpp:run_active_controls",
     "src/core/zoom_zoo_movement.hpp:ClassicRaceScenario::tour_race"
    ],
    "region": "sram"
@@ -5748,10 +5726,150 @@
     "$82:93E5"
    ]
   },
+  "src/core/race_update.cpp:(file)": {
+   "rom": [
+    "$81:82BB"
+   ]
+  },
+  "src/core/race_update.cpp:begin_rider_update": {
+   "rom": [
+    "$81:858E",
+    "$81:8592",
+    "$81:859D"
+   ]
+  },
+  "src/core/race_update.cpp:brightest_fade, first_published_fade": {
+   "rom": [
+    "$80:8642"
+   ]
+  },
+  "src/core/race_update.cpp:finish_update": {
+   "rom": [
+    "$81:C73E"
+   ]
+  },
   "src/core/race_update.cpp:next_wrong_direction_counter": {
    "rom": [
     "$82:974B",
     "$82:977B"
+   ]
+  },
+  "src/core/race_update.cpp:read_player_buttons": {
+   "rom": [
+    "$82:AAE2",
+    "$82:AC5A"
+   ],
+   "wram": [
+    "$0325",
+    "$0331"
+   ]
+  },
+  "src/core/race_update.cpp:run_active_controls": {
+   "rom": [
+    "$82:9751",
+    "$82:9781",
+    "$82:A027",
+    "$82:A069",
+    "$82:A241",
+    "$82:A5FC",
+    "$82:A8CD"
+   ],
+   "sram": [
+    "$77:074B"
+   ],
+   "wram": [
+    "$0359",
+    "$0F41"
+   ]
+  },
+  "src/core/race_update.cpp:run_countdown": {
+   "rom": [
+    "$83:E59C",
+    "$83:E7A2"
+   ]
+  },
+  "src/core/race_update.cpp:run_jump_driven_tile": {
+   "rom": [
+    "$81:89F7"
+   ]
+  },
+  "src/core/race_update.cpp:run_lift_tile": {
+   "rom": [
+    "$81:84B2"
+   ]
+  },
+  "src/core/race_update.cpp:run_pause_menu": {
+   "rom": [
+    "$83:CD05"
+   ]
+  },
+  "src/core/race_update.cpp:run_physics": {
+   "rom": [
+    "$82:A6BB",
+    "$82:A6FD",
+    "$82:A971"
+   ],
+   "wram": [
+    "$0F2D"
+   ]
+  },
+  "src/core/race_update.cpp:run_push_tile": {
+   "rom": [
+    "$81:8316"
+   ]
+  },
+  "src/core/race_update.cpp:run_skipped_update": {
+   "rom": [
+    "$80:87E9",
+    "$82:AA71",
+    "$83:CC9A",
+    "$83:CDAA"
+   ],
+   "wram": [
+    "$0311",
+    "$128B"
+   ]
+  },
+  "src/core/race_update.cpp:run_slow_drive_tile": {
+   "rom": [
+    "$81:8950"
+   ],
+   "wram": [
+    "$0F3D",
+    "$0FB1"
+   ]
+  },
+  "src/core/race_update.cpp:run_slow_tile": {
+   "rom": [
+    "$81:8554"
+   ]
+  },
+  "src/core/race_update.cpp:run_tile": {
+   "rom": [
+    "$81:8949"
+   ],
+   "wram": [
+    "$0EA3"
+   ]
+  },
+  "src/core/race_update.cpp:run_tricks_and_landing": {
+   "wram": [
+    "$0323"
+   ]
+  },
+  "src/core/race_update.cpp:speed_limit_context": {
+   "rom": [
+    "$82:A77E"
+   ],
+   "wram": [
+    "$1283",
+    "$150B"
+   ]
+  },
+  "src/core/race_update.cpp:tile_behavior_under": {
+   "rom": [
+    "$81:82BB",
+    "$81:82F5"
    ]
   },
   "src/core/race_update.cpp:update_reflection_transition": {
@@ -5761,78 +5879,43 @@
     "$82:A403"
    ]
   },
-  "src/core/race_update.cpp:update_zoom_zoo": {
+  "src/core/race_update.cpp:update_rider": {
    "rom": [
-    "$80:8642",
-    "$80:87E9",
-    "$81:82BB",
-    "$81:82F5",
-    "$81:8316",
-    "$81:84AC",
-    "$81:84B2",
-    "$81:8554",
-    "$81:8592",
-    "$81:859D",
-    "$81:875C",
-    "$81:8949",
-    "$81:8950",
-    "$81:89F7",
-    "$81:8CFC",
-    "$81:8E43",
-    "$81:91F4",
-    "$81:C73E",
-    "$82:9751",
-    "$82:9781",
-    "$82:98D6",
-    "$82:A027",
-    "$82:A069",
-    "$82:A241",
-    "$82:A49F",
-    "$82:A4CC",
-    "$82:A4DC",
-    "$82:A5FC",
-    "$82:A6BB",
-    "$82:A6FD",
-    "$82:A77E",
-    "$82:A8CD",
-    "$82:A971",
-    "$82:AA71",
-    "$82:AAE2",
-    "$82:AC5A",
-    "$83:CC9A",
-    "$83:CD05",
-    "$83:CDAA",
-    "$83:E59C",
-    "$83:E7A2"
-   ],
-   "sram": [
-    "$77:074B"
+    "$82:98D6"
    ],
    "wram": [
-    "$0311",
-    "$031D",
-    "$031F",
-    "$0321",
-    "$0323",
-    "$0325",
-    "$0331",
-    "$0359",
-    "$0DFB",
-    "$0DFD",
-    "$0E6F",
     "$0E7B",
-    "$0EA3",
-    "$0F2D",
     "$0F3B",
-    "$0F3D",
     "$0F3F",
-    "$0F41",
-    "$0F5B",
-    "$0F89",
-    "$0FB1",
-    "$1283",
-    "$128B",
-    "$150B"
+    "$0F5B"
+   ]
+  },
+  "src/core/race_update.cpp:update_rider_contact": {
+   "rom": [
+    "$81:8CFC",
+    "$81:8E43",
+    "$81:91F4"
+   ],
+   "wram": [
+    "$0DFB",
+    "$0DFD"
+   ]
+  },
+  "src/core/race_update.cpp:update_rotation": {
+   "rom": [
+    "$82:A49F",
+    "$82:A4CC",
+    "$82:A4DC"
+   ],
+   "wram": [
+    "$0E6F",
+    "$0F89"
+   ]
+  },
+  "src/core/race_update.cpp:wrong_way_warning, wrong_way_repeat": {
+   "rom": [
+    "$82:974B",
+    "$82:977B"
    ]
   },
   "src/core/reward_queue.cpp:announce_combination": {
@@ -6960,11 +7043,11 @@
   }
  },
  "totals": {
-  "addresses": 564,
+  "addresses": 560,
   "io_addresses": 14,
-  "native_symbols": 291,
-  "rom_addresses": 351,
+  "native_symbols": 313,
+  "rom_addresses": 349,
   "sram_addresses": 6,
-  "wram_addresses": 193
+  "wram_addresses": 191
  }
 }

@@ -270,7 +270,7 @@
    ],
    "native": [
     "src/core/input_timer.cpp:sample_controller",
-    "src/core/race_update.cpp:update_zoom_zoo"
+    "src/core/race_update.cpp:run_skipped_update"
    ],
    "observed_entries": {},
    "start": "$80:87A0",
@@ -2636,7 +2636,8 @@
     "NMx"
    ],
    "native": [
-    "src/core/race_update.cpp:update_zoom_zoo"
+    "src/core/race_update.cpp:(file)",
+    "src/core/race_update.cpp:tile_behavior_under"
    ],
    "observed_entries": {},
    "start": "$81:82BB",
@@ -2673,7 +2674,7 @@
     "NMX"
    ],
    "native": [
-    "src/core/race_update.cpp:update_zoom_zoo"
+    "src/core/race_update.cpp:run_push_tile"
    ],
    "observed_entries": {},
    "start": "$81:8316",
@@ -2801,9 +2802,6 @@
    "mode_at_entry": [
     "NMX"
    ],
-   "native": [
-    "src/core/race_update.cpp:update_zoom_zoo"
-   ],
    "observed_entries": {},
    "start": "$81:84AC",
    "static_entries": {
@@ -2822,7 +2820,7 @@
     "NMX"
    ],
    "native": [
-    "src/core/race_update.cpp:update_zoom_zoo"
+    "src/core/race_update.cpp:run_lift_tile"
    ],
    "observed_entries": {},
    "start": "$81:84B2",
@@ -2859,7 +2857,7 @@
     "NMX"
    ],
    "native": [
-    "src/core/race_update.cpp:update_zoom_zoo"
+    "src/core/race_update.cpp:run_slow_tile"
    ],
    "observed_entries": {},
    "start": "$81:8554",
@@ -2880,6 +2878,7 @@
     "NMx"
    ],
    "native": [
+    "src/core/race_update.cpp:begin_rider_update",
     "src/core/special_tiles.cpp:update_special_tile_counters"
    ],
    "observed_entries": {},
@@ -2900,7 +2899,7 @@
     "NMx"
    ],
    "native": [
-    "src/core/race_update.cpp:update_zoom_zoo",
+    "src/core/race_update.cpp:begin_rider_update",
     "src/core/rider_motion.cpp:update_horizontal",
     "src/core/rider_pose.cpp:decay_idle_wobble",
     "src/core/special_tiles.cpp:update_loop_cooldown",
@@ -2949,9 +2948,6 @@
    "mode_at_entry": [
     "NMX"
    ],
-   "native": [
-    "src/core/race_update.cpp:update_zoom_zoo"
-   ],
    "observed_entries": {},
    "start": "$81:875C",
    "static_entries": {
@@ -2971,7 +2967,7 @@
    ],
    "native": [
     "src/core/content_pack.cpp:special_tiles_required",
-    "src/core/race_update.cpp:update_zoom_zoo",
+    "src/core/race_update.cpp:run_tile",
     "src/core/special_tiles.cpp:update_corkscrew_tile",
     "src/core/zoom_zoo_movement.hpp:SpecialTileUpdate::corkscrew_stepped",
     "src/core/zoom_zoo_movement.hpp:update_corkscrew_tile"
@@ -3018,7 +3014,7 @@
     "NMX"
    ],
    "native": [
-    "src/core/race_update.cpp:update_zoom_zoo"
+    "src/core/race_update.cpp:run_slow_drive_tile"
    ],
    "observed_entries": {},
    "start": "$81:8950",
@@ -3059,7 +3055,7 @@
     "NMX"
    ],
    "native": [
-    "src/core/race_update.cpp:update_zoom_zoo"
+    "src/core/race_update.cpp:run_jump_driven_tile"
    ],
    "observed_entries": {},
    "start": "$81:89F7",
@@ -3184,7 +3180,7 @@
     "NMx"
    ],
    "native": [
-    "src/core/race_update.cpp:update_zoom_zoo"
+    "src/core/race_update.cpp:update_rider_contact"
    ],
    "observed_entries": {},
    "start": "$81:8CF8",
@@ -3205,7 +3201,7 @@
     "NMX"
    ],
    "native": [
-    "src/core/race_update.cpp:update_zoom_zoo"
+    "src/core/race_update.cpp:update_rider_contact"
    ],
    "observed_entries": {},
    "start": "$81:8E43",
@@ -3305,7 +3301,7 @@
    "native": [
     "src/core/flat_contact.cpp:resolve_recontact",
     "src/core/flat_contact.cpp:tile_index",
-    "src/core/race_update.cpp:update_zoom_zoo",
+    "src/core/race_update.cpp:update_rider_contact",
     "src/core/vertical_contact.cpp:resolve_vertical_contact"
    ],
    "observed_entries": {},
@@ -5202,7 +5198,7 @@
     "src/core/presentation.cpp:build_result_map",
     "src/core/presentation.cpp:classic_hud_left_field",
     "src/core/race_state_io.cpp:check_lap_clocks",
-    "src/core/race_update.cpp:update_zoom_zoo"
+    "src/core/race_update.cpp:finish_update"
    ],
    "observed_entries": {},
    "start": "$81:C6C0",
@@ -7743,7 +7739,8 @@
    ],
    "native": [
     "src/core/race_update.cpp:next_wrong_direction_counter",
-    "src/core/race_update.cpp:update_zoom_zoo",
+    "src/core/race_update.cpp:run_active_controls",
+    "src/core/race_update.cpp:wrong_way_warning, wrong_way_repeat",
     "src/core/zoom_zoo_movement.hpp:next_wrong_direction_counter"
    ],
    "observed_entries": {},
@@ -7822,7 +7819,7 @@
     "NMX"
    ],
    "native": [
-    "src/core/race_update.cpp:update_zoom_zoo",
+    "src/core/race_update.cpp:update_rider",
     "src/core/rider_motion.cpp:brake",
     "src/core/rider_motion.cpp:braking_speed",
     "src/core/rider_motion.cpp:hold_brake",
@@ -8057,7 +8054,7 @@
     "NMX"
    ],
    "native": [
-    "src/core/race_update.cpp:update_zoom_zoo"
+    "src/core/race_update.cpp:run_active_controls"
    ],
    "observed_entries": {},
    "start": "$82:A027",
@@ -8078,7 +8075,7 @@
     "NMX"
    ],
    "native": [
-    "src/core/race_update.cpp:update_zoom_zoo"
+    "src/core/race_update.cpp:run_active_controls"
    ],
    "observed_entries": {},
    "start": "$82:A069",
@@ -8168,7 +8165,7 @@
     "NMx"
    ],
    "native": [
-    "src/core/race_update.cpp:update_zoom_zoo"
+    "src/core/race_update.cpp:run_active_controls"
    ],
    "observed_entries": {},
    "start": "$82:A237",
@@ -8278,7 +8275,7 @@
     "NMx"
    ],
    "native": [
-    "src/core/race_update.cpp:update_zoom_zoo"
+    "src/core/race_update.cpp:update_rotation"
    ],
    "observed_entries": {},
    "start": "$82:A49F",
@@ -8298,7 +8295,7 @@
     "NmX"
    ],
    "native": [
-    "src/core/race_update.cpp:update_zoom_zoo"
+    "src/core/race_update.cpp:update_rotation"
    ],
    "observed_entries": {},
    "start": "$82:A4FF",
@@ -8318,7 +8315,7 @@
     "NmX"
    ],
    "native": [
-    "src/core/race_update.cpp:update_zoom_zoo"
+    "src/core/race_update.cpp:update_rotation"
    ],
    "observed_entries": {},
    "start": "$82:A55B",
@@ -8344,7 +8341,7 @@
     "NmX"
    ],
    "native": [
-    "src/core/race_update.cpp:update_zoom_zoo"
+    "src/core/race_update.cpp:update_rotation"
    ],
    "observed_entries": {},
    "start": "$82:A5B4",
@@ -8372,7 +8369,7 @@
     "NmX"
    ],
    "native": [
-    "src/core/race_update.cpp:update_zoom_zoo"
+    "src/core/race_update.cpp:update_rotation"
    ],
    "observed_entries": {},
    "start": "$82:A5F9",
@@ -8393,7 +8390,7 @@
     "NMx"
    ],
    "native": [
-    "src/core/race_update.cpp:update_zoom_zoo",
+    "src/core/race_update.cpp:run_active_controls",
     "src/core/rider_motion.cpp:update_active_low_speed_damping"
    ],
    "observed_entries": {},
@@ -8415,7 +8412,7 @@
     "NMX"
    ],
    "native": [
-    "src/core/race_update.cpp:update_zoom_zoo"
+    "src/core/race_update.cpp:run_physics"
    ],
    "observed_entries": {},
    "start": "$82:A61F",
@@ -8435,7 +8432,8 @@
     "NMX"
    ],
    "native": [
-    "src/core/race_update.cpp:update_zoom_zoo",
+    "src/core/race_update.cpp:run_physics",
+    "src/core/race_update.cpp:speed_limit_context",
     "src/core/speed_limits.cpp:limit_rider_speed"
    ],
    "observed_entries": {},
@@ -8474,7 +8472,7 @@
     "NMx"
    ],
    "native": [
-    "src/core/race_update.cpp:update_zoom_zoo",
+    "src/core/race_update.cpp:run_active_controls",
     "src/core/zoom_zoo_movement.hpp:SpecialTileRider::loop_cooldown"
    ],
    "observed_entries": {},
@@ -8515,7 +8513,7 @@
     "NMX"
    ],
    "native": [
-    "src/core/race_update.cpp:update_zoom_zoo"
+    "src/core/race_update.cpp:run_physics"
    ],
    "observed_entries": {},
    "start": "$82:A96F",
@@ -8580,7 +8578,7 @@
     "NmX"
    ],
    "native": [
-    "src/core/race_update.cpp:update_zoom_zoo"
+    "src/core/race_update.cpp:run_skipped_update"
    ],
    "observed_entries": {},
    "start": "$82:AA71",
@@ -8601,7 +8599,7 @@
    ],
    "native": [
     "src/core/input_timer.cpp:sample_controller",
-    "src/core/race_update.cpp:update_zoom_zoo"
+    "src/core/race_update.cpp:read_player_buttons"
    ],
    "observed_entries": {},
    "start": "$82:AA75",
@@ -8658,7 +8656,7 @@
     "Nmx"
    ],
    "native": [
-    "src/core/race_update.cpp:update_zoom_zoo"
+    "src/core/race_update.cpp:read_player_buttons"
    ],
    "observed_entries": {},
    "start": "$82:AC5A",
@@ -11587,7 +11585,8 @@
     "src/core/presentation.cpp:classic_race_prior_fade",
     "src/core/presentation.cpp:render_classic_race",
     "src/core/race_progress.cpp:update_zoom_finish",
-    "src/core/race_update.cpp:update_zoom_zoo",
+    "src/core/race_update.cpp:run_pause_menu",
+    "src/core/race_update.cpp:run_skipped_update",
     "src/core/rider_look.cpp:zoom_zoo_update_was_paused",
     "src/core/track_progress.cpp:update_track_progress"
    ],
@@ -11609,7 +11608,7 @@
     "Nmx"
    ],
    "native": [
-    "src/core/race_update.cpp:update_zoom_zoo",
+    "src/core/race_update.cpp:run_pause_menu",
     "src/core/rider_look.cpp:zoom_zoo_update_was_paused"
    ],
    "observed_entries": {},
@@ -11631,7 +11630,7 @@
    ],
    "native": [
     "src/core/hunter_effects.cpp:update_hunter_effects",
-    "src/core/race_update.cpp:update_zoom_zoo"
+    "src/core/race_update.cpp:run_skipped_update"
    ],
    "observed_entries": {},
    "start": "$83:CDAA",
@@ -12494,7 +12493,7 @@
     "src/core/presentation.cpp:dragster_window_transition_index",
     "src/core/presentation.hpp:classic_countdown_window",
     "src/core/presentation.hpp:dragster_window_table_index",
-    "src/core/race_update.cpp:update_zoom_zoo"
+    "src/core/race_update.cpp:run_countdown"
    ],
    "observed_entries": {},
    "start": "$83:E59C",
@@ -12519,7 +12518,7 @@
     "src/core/presentation.cpp:dragster_window_transition_index",
     "src/core/presentation.hpp:classic_countdown_window",
     "src/core/presentation.hpp:dragster_window_table_index",
-    "src/core/race_update.cpp:update_zoom_zoo"
+    "src/core/race_update.cpp:run_countdown"
    ],
    "observed_entries": {},
    "start": "$83:E62A",
@@ -12544,7 +12543,7 @@
     "src/core/presentation.cpp:dragster_window_transition_index",
     "src/core/presentation.hpp:classic_countdown_window",
     "src/core/presentation.hpp:dragster_window_table_index",
-    "src/core/race_update.cpp:update_zoom_zoo"
+    "src/core/race_update.cpp:run_countdown"
    ],
    "observed_entries": {},
    "start": "$83:E67C",
@@ -12569,7 +12568,7 @@
     "src/core/presentation.cpp:dragster_window_transition_index",
     "src/core/presentation.hpp:classic_countdown_window",
     "src/core/presentation.hpp:dragster_window_table_index",
-    "src/core/race_update.cpp:update_zoom_zoo"
+    "src/core/race_update.cpp:run_countdown"
    ],
    "observed_entries": {},
    "start": "$83:E6DE",
@@ -12598,7 +12597,7 @@
     "src/core/presentation.cpp:classic_countdown_window",
     "src/core/presentation.hpp:classic_countdown_window",
     "src/core/presentation.hpp:dragster_window_table_index",
-    "src/core/race_update.cpp:update_zoom_zoo"
+    "src/core/race_update.cpp:run_countdown"
    ],
    "observed_entries": {},
    "start": "$83:E785",
@@ -12621,7 +12620,7 @@
     "src/core/presentation.cpp:classic_countdown_window",
     "src/core/presentation.hpp:classic_countdown_window",
     "src/core/presentation.hpp:dragster_window_table_index",
-    "src/core/race_update.cpp:update_zoom_zoo"
+    "src/core/race_update.cpp:run_countdown"
    ],
    "observed_entries": {},
    "start": "$83:E78C",
@@ -13407,9 +13406,9 @@
   "jump_tables": 2,
   "mode_ambiguities": 7,
   "observed": 41778,
-  "routine_bytes_cited_by_native_code": 33149,
+  "routine_bytes_cited_by_native_code": 33049,
   "routines": 636,
-  "routines_cited_by_native_code": 217,
+  "routines_cited_by_native_code": 215,
   "unknown": 52881,
   "unknown_share": 0.4035
  }

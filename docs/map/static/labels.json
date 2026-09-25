@@ -559,7 +559,7 @@
   "label": "loc_8087E9",
   "native": [
    "src/core/input_timer.cpp:sample_controller",
-   "src/core/race_update.cpp:update_zoom_zoo"
+   "src/core/race_update.cpp:run_skipped_update"
   ],
   "source_records": [
    "docs/research/R-0007-player-state.md",
@@ -574,7 +574,7 @@
   "label": "loc_8087EC",
   "native": [
    "src/core/input_timer.cpp:sample_controller",
-   "src/core/race_update.cpp:update_zoom_zoo"
+   "src/core/race_update.cpp:run_skipped_update"
   ],
   "source_records": [
    "docs/research/R-0007-player-state.md",
@@ -591,7 +591,7 @@
   "label": "loc_8087EF",
   "native": [
    "src/core/input_timer.cpp:sample_controller",
-   "src/core/race_update.cpp:update_zoom_zoo"
+   "src/core/race_update.cpp:run_skipped_update"
   ],
   "source_records": [
    "docs/research/R-0007-player-state.md",
@@ -605,7 +605,7 @@
   "label": "loc_8087F2",
   "native": [
    "src/core/input_timer.cpp:sample_controller",
-   "src/core/race_update.cpp:update_zoom_zoo"
+   "src/core/race_update.cpp:run_skipped_update"
   ],
   "source_records": [
    "docs/research/R-0007-player-state.md",
@@ -993,7 +993,8 @@
   "comment": "instruction start",
   "label": "loc_8182D9",
   "native": [
-   "src/core/race_update.cpp:update_zoom_zoo"
+   "src/core/race_update.cpp:(file)",
+   "src/core/race_update.cpp:tile_behavior_under"
   ],
   "source_records": [
    "docs/content/dragster-segment.md",
@@ -1006,7 +1007,8 @@
   "comment": "instruction start",
   "label": "loc_8182F0",
   "native": [
-   "src/core/race_update.cpp:update_zoom_zoo"
+   "src/core/race_update.cpp:(file)",
+   "src/core/race_update.cpp:tile_behavior_under"
   ],
   "source_records": [
    "docs/research/R-0045-static-code-map.md"
@@ -1018,7 +1020,7 @@
   "comment": "data",
   "label": "dat_8182F5",
   "native": [
-   "src/core/race_update.cpp:update_zoom_zoo"
+   "src/core/race_update.cpp:tile_behavior_under"
   ],
   "source_records": [
    "docs/research/R-0045-static-code-map.md",
@@ -1035,7 +1037,7 @@
   "comment": "routine start",
   "label": "sub_818316",
   "native": [
-   "src/core/race_update.cpp:update_zoom_zoo"
+   "src/core/race_update.cpp:run_push_tile"
   ],
   "source_records": [
    "docs/research/R-0047-special-tiles.md",
@@ -1077,9 +1079,6 @@
   "class": "observed",
   "comment": "routine start",
   "label": "sub_8184AC",
-  "native": [
-   "src/core/race_update.cpp:update_zoom_zoo"
-  ],
   "source_records": [
    "docs/research/R-0047-special-tiles.md"
   ]
@@ -1090,7 +1089,7 @@
   "comment": "routine start",
   "label": "sub_8184B2",
   "native": [
-   "src/core/race_update.cpp:update_zoom_zoo"
+   "src/core/race_update.cpp:run_lift_tile"
   ],
   "source_records": [
    "docs/research/R-0047-special-tiles.md"
@@ -1113,7 +1112,7 @@
   "comment": "routine start",
   "label": "sub_818554",
   "native": [
-   "src/core/race_update.cpp:update_zoom_zoo"
+   "src/core/race_update.cpp:run_slow_tile"
   ],
   "source_records": [
    "docs/research/R-0047-special-tiles.md",
@@ -1127,6 +1126,7 @@
   "comment": "routine start",
   "label": "sub_81858E",
   "native": [
+   "src/core/race_update.cpp:begin_rider_update",
    "src/core/special_tiles.cpp:update_special_tile_counters"
   ],
   "source_records": [
@@ -1140,8 +1140,9 @@
   "comment": "routine start",
   "label": "sub_818592",
   "native": [
-   "src/core/race_update.cpp:update_zoom_zoo",
-   "src/core/rider_motion.cpp:update_horizontal"
+   "src/core/race_update.cpp:begin_rider_update",
+   "src/core/rider_motion.cpp:update_horizontal",
+   "src/core/special_tiles.cpp:update_special_tile_counters"
   ],
   "source_records": [
    "docs/research/R-0011-motion.md",
@@ -1154,8 +1155,9 @@
   "comment": "instruction start",
   "label": "loc_818594",
   "native": [
-   "src/core/race_update.cpp:update_zoom_zoo",
+   "src/core/race_update.cpp:begin_rider_update",
    "src/core/rider_motion.cpp:update_horizontal",
+   "src/core/special_tiles.cpp:update_special_tile_counters",
    "src/core/zoom_zoo_movement.hpp:SpecialTileRider::slow_counter"
   ],
   "source_records": [
@@ -1168,7 +1170,8 @@
   "comment": "instruction start",
   "label": "loc_81859D",
   "native": [
-   "src/core/race_update.cpp:update_zoom_zoo"
+   "src/core/race_update.cpp:begin_rider_update",
+   "src/core/special_tiles.cpp:update_special_tile_counters"
   ],
   "source_records": [
    "docs/research/R-0047-special-tiles.md"
@@ -1180,7 +1183,9 @@
   "comment": "instruction start",
   "label": "loc_8185AB",
   "native": [
+   "src/core/race_update.cpp:begin_rider_update",
    "src/core/special_tiles.cpp:update_loop_cooldown",
+   "src/core/special_tiles.cpp:update_special_tile_counters",
    "src/core/zoom_zoo_movement.hpp:update_loop_cooldown"
   ],
   "source_records": [
@@ -1193,7 +1198,9 @@
   "comment": "instruction start",
   "label": "loc_8185AE",
   "native": [
+   "src/core/race_update.cpp:begin_rider_update",
    "src/core/special_tiles.cpp:update_loop_cooldown",
+   "src/core/special_tiles.cpp:update_special_tile_counters",
    "src/core/zoom_zoo_movement.hpp:update_loop_cooldown"
   ],
   "source_records": [
@@ -1206,7 +1213,9 @@
   "comment": "instruction start",
   "label": "loc_8185B9",
   "native": [
+   "src/core/race_update.cpp:begin_rider_update",
    "src/core/special_tiles.cpp:update_loop_cooldown",
+   "src/core/special_tiles.cpp:update_special_tile_counters",
    "src/core/zoom_zoo_movement.hpp:update_loop_cooldown"
   ],
   "source_records": [
@@ -1219,7 +1228,9 @@
   "comment": "instruction start",
   "label": "loc_818622",
   "native": [
+   "src/core/race_update.cpp:begin_rider_update",
    "src/core/special_tiles.cpp:update_loop_cooldown",
+   "src/core/special_tiles.cpp:update_special_tile_counters",
    "src/core/zoom_zoo_movement.hpp:update_loop_cooldown"
   ],
   "source_records": [
@@ -1232,7 +1243,9 @@
   "comment": "instruction start",
   "label": "loc_818625",
   "native": [
-   "src/core/rider_pose.cpp:decay_idle_wobble"
+   "src/core/race_update.cpp:begin_rider_update",
+   "src/core/rider_pose.cpp:decay_idle_wobble",
+   "src/core/special_tiles.cpp:update_special_tile_counters"
   ],
   "source_records": [
    "docs/research/R-0011-motion.md",
@@ -1245,7 +1258,9 @@
   "comment": "instruction start",
   "label": "loc_818672",
   "native": [
-   "src/core/rider_pose.cpp:decay_idle_wobble"
+   "src/core/race_update.cpp:begin_rider_update",
+   "src/core/rider_pose.cpp:decay_idle_wobble",
+   "src/core/special_tiles.cpp:update_special_tile_counters"
   ],
   "source_records": [
    "docs/research/R-0011-motion.md",
@@ -1257,6 +1272,10 @@
   "class": "observed",
   "comment": "instruction start",
   "label": "loc_818681",
+  "native": [
+   "src/core/race_update.cpp:begin_rider_update",
+   "src/core/special_tiles.cpp:update_special_tile_counters"
+  ],
   "source_records": [
    "docs/research/R-0030-zoom-zoo-native-trial.md"
   ]
@@ -1267,6 +1286,7 @@
   "comment": "instruction start",
   "label": "loc_8186EF",
   "native": [
+   "src/core/race_update.cpp:begin_rider_update",
    "src/core/special_tiles.cpp:update_special_tile_counters",
    "src/core/zoom_zoo_movement.hpp:update_special_tile_counters"
   ],
@@ -1292,9 +1312,6 @@
   "class": "inferred",
   "comment": "routine start",
   "label": "sub_81875C",
-  "native": [
-   "src/core/race_update.cpp:update_zoom_zoo"
-  ],
   "source_records": [
    "docs/research/R-0047-special-tiles.md",
    "docs/research/R-0051-loop-and-tile-pairs.md"
@@ -1319,7 +1336,7 @@
   "comment": "instruction start",
   "label": "loc_818949",
   "native": [
-   "src/core/race_update.cpp:update_zoom_zoo",
+   "src/core/race_update.cpp:run_tile",
    "src/core/special_tiles.cpp:update_corkscrew_tile",
    "src/core/zoom_zoo_movement.hpp:SpecialTileUpdate::corkscrew_stepped",
    "src/core/zoom_zoo_movement.hpp:update_corkscrew_tile"
@@ -1334,7 +1351,7 @@
   "comment": "routine start",
   "label": "sub_818950",
   "native": [
-   "src/core/race_update.cpp:update_zoom_zoo"
+   "src/core/race_update.cpp:run_slow_drive_tile"
   ],
   "source_records": [
    "docs/research/R-0047-special-tiles.md",
@@ -1361,7 +1378,7 @@
   "comment": "routine start",
   "label": "sub_8189F7",
   "native": [
-   "src/core/race_update.cpp:update_zoom_zoo"
+   "src/core/race_update.cpp:run_jump_driven_tile"
   ],
   "source_records": [
    "docs/research/R-0047-special-tiles.md"
@@ -1879,7 +1896,7 @@
   "comment": "instruction start",
   "label": "loc_818CFC",
   "native": [
-   "src/core/race_update.cpp:update_zoom_zoo"
+   "src/core/race_update.cpp:update_rider_contact"
   ],
   "source_records": [
    "docs/research/R-0047-special-tiles.md"
@@ -2007,7 +2024,7 @@
   "comment": "routine start",
   "label": "sub_818E43",
   "native": [
-   "src/core/race_update.cpp:update_zoom_zoo"
+   "src/core/race_update.cpp:update_rider_contact"
   ],
   "source_records": [
    "docs/research/R-0047-special-tiles.md"
@@ -3701,7 +3718,7 @@
    "src/core/presentation.cpp:build_result_map",
    "src/core/presentation.cpp:classic_hud_left_field",
    "src/core/race_state_io.cpp:check_lap_clocks",
-   "src/core/race_update.cpp:update_zoom_zoo"
+   "src/core/race_update.cpp:finish_update"
   ],
   "source_records": [
    "docs/research/R-0036-zoom-zoo-rider-objects.md",
@@ -3723,7 +3740,7 @@
    "src/core/presentation.cpp:build_result_map",
    "src/core/presentation.cpp:classic_hud_left_field",
    "src/core/race_state_io.cpp:check_lap_clocks",
-   "src/core/race_update.cpp:update_zoom_zoo"
+   "src/core/race_update.cpp:finish_update"
   ],
   "source_records": [
    "tasks/DRAGSTER-CLOCK-LIMIT-review.md"
@@ -3739,7 +3756,7 @@
    "src/core/presentation.cpp:build_result_map",
    "src/core/presentation.cpp:classic_hud_left_field",
    "src/core/race_state_io.cpp:check_lap_clocks",
-   "src/core/race_update.cpp:update_zoom_zoo"
+   "src/core/race_update.cpp:finish_update"
   ],
   "source_records": [
    "tasks/DRAGSTER-CLOCK-LIMIT-review.md"
@@ -3755,7 +3772,7 @@
    "src/core/presentation.cpp:build_result_map",
    "src/core/presentation.cpp:classic_hud_left_field",
    "src/core/race_state_io.cpp:check_lap_clocks",
-   "src/core/race_update.cpp:update_zoom_zoo"
+   "src/core/race_update.cpp:finish_update"
   ],
   "source_records": [
    "tasks/DRAGSTER-CLOCK-LIMIT-review.md"
@@ -3771,7 +3788,7 @@
    "src/core/presentation.cpp:build_result_map",
    "src/core/presentation.cpp:classic_hud_left_field",
    "src/core/race_state_io.cpp:check_lap_clocks",
-   "src/core/race_update.cpp:update_zoom_zoo"
+   "src/core/race_update.cpp:finish_update"
   ],
   "source_records": [
    "tasks/DRAGSTER-CLOCK-LIMIT-review.md"
@@ -3787,7 +3804,7 @@
    "src/core/presentation.cpp:build_result_map",
    "src/core/presentation.cpp:classic_hud_left_field",
    "src/core/race_state_io.cpp:check_lap_clocks",
-   "src/core/race_update.cpp:update_zoom_zoo"
+   "src/core/race_update.cpp:finish_update"
   ],
   "source_records": [
    "tasks/DRAGSTER-CLOCK-LIMIT-review.md"
@@ -3803,7 +3820,7 @@
    "src/core/presentation.cpp:build_result_map",
    "src/core/presentation.cpp:classic_hud_left_field",
    "src/core/race_state_io.cpp:check_lap_clocks",
-   "src/core/race_update.cpp:update_zoom_zoo"
+   "src/core/race_update.cpp:finish_update"
   ],
   "source_records": [
    "tasks/DRAGSTER-CLOCK-LIMIT-review.md"
@@ -5438,7 +5455,7 @@
   "comment": "instruction start",
   "label": "loc_829751",
   "native": [
-   "src/core/race_update.cpp:update_zoom_zoo",
+   "src/core/race_update.cpp:run_active_controls",
    "src/core/zoom_zoo_movement.hpp:next_wrong_direction_counter"
   ],
   "source_records": [
@@ -5498,7 +5515,7 @@
   "comment": "instruction start",
   "label": "loc_8298D6",
   "native": [
-   "src/core/race_update.cpp:update_zoom_zoo",
+   "src/core/race_update.cpp:update_rider",
    "src/core/rider_motion.cpp:update_drive",
    "src/core/zoom_zoo_movement.hpp:ZoomZooState::drive_target_latch"
   ],
@@ -5700,7 +5717,7 @@
   "comment": "routine start",
   "label": "sub_82A027",
   "native": [
-   "src/core/race_update.cpp:update_zoom_zoo"
+   "src/core/race_update.cpp:run_active_controls"
   ],
   "source_records": [
    "docs/research/R-0011-motion.md"
@@ -5712,7 +5729,7 @@
   "comment": "routine start",
   "label": "sub_82A069",
   "native": [
-   "src/core/race_update.cpp:update_zoom_zoo"
+   "src/core/race_update.cpp:run_active_controls"
   ],
   "source_records": [
    "docs/research/R-0011-motion.md",
@@ -5826,7 +5843,7 @@
   "comment": "instruction start",
   "label": "loc_82A241",
   "native": [
-   "src/core/race_update.cpp:update_zoom_zoo"
+   "src/core/race_update.cpp:run_active_controls"
   ],
   "source_records": [
    "docs/research/R-0047-special-tiles.md"
@@ -5918,7 +5935,7 @@
   "comment": "routine start",
   "label": "sub_82A49F",
   "native": [
-   "src/core/race_update.cpp:update_zoom_zoo"
+   "src/core/race_update.cpp:update_rotation"
   ],
   "source_records": [
    "docs/inventory/M4-10-response-b.md",
@@ -5936,7 +5953,7 @@
   "comment": "instruction start",
   "label": "loc_82A4CC",
   "native": [
-   "src/core/race_update.cpp:update_zoom_zoo"
+   "src/core/race_update.cpp:update_rotation"
   ],
   "source_records": [
    "docs/research/R-0047-special-tiles.md"
@@ -5948,7 +5965,7 @@
   "comment": "instruction start",
   "label": "loc_82A4DC",
   "native": [
-   "src/core/race_update.cpp:update_zoom_zoo"
+   "src/core/race_update.cpp:update_rotation"
   ],
   "source_records": [
    "docs/research/R-0047-special-tiles.md"
@@ -5960,7 +5977,7 @@
   "comment": "instruction start",
   "label": "loc_82A4E4",
   "native": [
-   "src/core/race_update.cpp:update_zoom_zoo"
+   "src/core/race_update.cpp:update_rotation"
   ],
   "source_records": [
    "docs/research/R-0047-special-tiles.md"
@@ -5972,7 +5989,7 @@
   "comment": "instruction start",
   "label": "loc_82A507",
   "native": [
-   "src/core/race_update.cpp:update_zoom_zoo"
+   "src/core/race_update.cpp:update_rotation"
   ],
   "source_records": [
    "docs/research/R-0028-zoom-zoo-response-b.md"
@@ -5984,7 +6001,7 @@
   "comment": "instruction start",
   "label": "loc_82A50D",
   "native": [
-   "src/core/race_update.cpp:update_zoom_zoo"
+   "src/core/race_update.cpp:update_rotation"
   ],
   "source_records": [
    "docs/research/R-0011-motion.md"
@@ -5996,7 +6013,7 @@
   "comment": "instruction start",
   "label": "loc_82A562",
   "native": [
-   "src/core/race_update.cpp:update_zoom_zoo"
+   "src/core/race_update.cpp:update_rotation"
   ],
   "source_records": [
    "docs/research/R-0028-zoom-zoo-response-b.md"
@@ -6008,7 +6025,7 @@
   "comment": "instruction start",
   "label": "loc_82A568",
   "native": [
-   "src/core/race_update.cpp:update_zoom_zoo"
+   "src/core/race_update.cpp:update_rotation"
   ],
   "source_records": [
    "tasks/M4-10-review.md"
@@ -6020,7 +6037,7 @@
   "comment": "routine start",
   "label": "sub_82A5B4",
   "native": [
-   "src/core/race_update.cpp:update_zoom_zoo"
+   "src/core/race_update.cpp:update_rotation"
   ],
   "source_records": [
    "docs/research/R-0028-zoom-zoo-response-b.md"
@@ -6032,7 +6049,7 @@
   "comment": "instruction start",
   "label": "loc_82A5B9",
   "native": [
-   "src/core/race_update.cpp:update_zoom_zoo"
+   "src/core/race_update.cpp:update_rotation"
   ],
   "source_records": [
    "tasks/M4-10-review.md"
@@ -6058,7 +6075,7 @@
   "comment": "instruction start",
   "label": "loc_82A5FC",
   "native": [
-   "src/core/race_update.cpp:update_zoom_zoo",
+   "src/core/race_update.cpp:run_active_controls",
    "src/core/rider_motion.cpp:update_active_low_speed_damping"
   ],
   "source_records": [
@@ -6120,7 +6137,7 @@
   "comment": "instruction start",
   "label": "loc_82A6C0",
   "native": [
-   "src/core/race_update.cpp:update_zoom_zoo"
+   "src/core/race_update.cpp:run_physics"
   ],
   "source_records": [
    "docs/research/R-0051-loop-and-tile-pairs.md"
@@ -6132,7 +6149,7 @@
   "comment": "instruction start",
   "label": "loc_82A6DC",
   "native": [
-   "src/core/race_update.cpp:update_zoom_zoo"
+   "src/core/race_update.cpp:run_physics"
   ],
   "source_records": [
    "docs/research/R-0033-sustained-traversal.md"
@@ -6144,7 +6161,7 @@
   "comment": "instruction start",
   "label": "loc_82A6E5",
   "native": [
-   "src/core/race_update.cpp:update_zoom_zoo"
+   "src/core/race_update.cpp:run_physics"
   ],
   "source_records": [
    "tasks/M4-08-review.md"
@@ -6156,7 +6173,7 @@
   "comment": "instruction start",
   "label": "loc_82A6E9",
   "native": [
-   "src/core/race_update.cpp:update_zoom_zoo"
+   "src/core/race_update.cpp:run_physics"
   ],
   "source_records": [
    "docs/inventory/M4-08-position.md",
@@ -6171,7 +6188,7 @@
   "comment": "instruction start",
   "label": "loc_82A6EB",
   "native": [
-   "src/core/race_update.cpp:update_zoom_zoo"
+   "src/core/race_update.cpp:run_physics"
   ],
   "source_records": [
    "docs/inventory/M4-08-position.md",
@@ -6186,7 +6203,7 @@
   "comment": "instruction start",
   "label": "loc_82A6F5",
   "native": [
-   "src/core/race_update.cpp:update_zoom_zoo"
+   "src/core/race_update.cpp:run_physics"
   ],
   "source_records": [
    "tasks/M4-08.md"
@@ -6217,7 +6234,7 @@
   "comment": "instruction start",
   "label": "loc_82A6FD",
   "native": [
-   "src/core/race_update.cpp:update_zoom_zoo"
+   "src/core/race_update.cpp:run_physics"
   ],
   "source_records": [
    "docs/research/R-0011-speed.md",
@@ -6239,7 +6256,7 @@
   "comment": "instruction start",
   "label": "loc_82A77E",
   "native": [
-   "src/core/race_update.cpp:update_zoom_zoo",
+   "src/core/race_update.cpp:speed_limit_context",
    "src/core/speed_limits.cpp:limit_rider_speed"
   ],
   "source_records": [
@@ -6359,7 +6376,7 @@
   "comment": "instruction start",
   "label": "loc_82A8CD",
   "native": [
-   "src/core/race_update.cpp:update_zoom_zoo"
+   "src/core/race_update.cpp:run_active_controls"
   ],
   "source_records": [
    "docs/research/R-0051-loop-and-tile-pairs.md"
@@ -6371,7 +6388,7 @@
   "comment": "instruction start",
   "label": "loc_82A8E0",
   "native": [
-   "src/core/race_update.cpp:update_zoom_zoo"
+   "src/core/race_update.cpp:run_active_controls"
   ],
   "source_records": [
    "tasks/M4-11.md"
@@ -6445,7 +6462,7 @@
   "comment": "instruction start",
   "label": "loc_82A971",
   "native": [
-   "src/core/race_update.cpp:update_zoom_zoo"
+   "src/core/race_update.cpp:run_physics"
   ],
   "source_records": [
    "docs/research/R-0047-special-tiles.md",
@@ -6575,7 +6592,7 @@
   "label": "loc_82AAE2",
   "native": [
    "src/core/input_timer.cpp:sample_controller",
-   "src/core/race_update.cpp:update_zoom_zoo"
+   "src/core/race_update.cpp:read_player_buttons"
   ],
   "source_records": [
    "docs/research/R-0032-player-landing-recovery.md",
@@ -6671,7 +6688,7 @@
   "comment": "routine start",
   "label": "sub_82AC5A",
   "native": [
-   "src/core/race_update.cpp:update_zoom_zoo"
+   "src/core/race_update.cpp:read_player_buttons"
   ],
   "source_records": [
    "docs/research/R-0052-hunter-effects.md"
@@ -6683,7 +6700,7 @@
   "comment": "instruction start",
   "label": "loc_82AC5C",
   "native": [
-   "src/core/race_update.cpp:update_zoom_zoo"
+   "src/core/race_update.cpp:read_player_buttons"
   ],
   "source_records": [
    "tasks/HUNTER-EFFECTS.md"
@@ -7558,7 +7575,7 @@
   "comment": "instruction start",
   "label": "loc_83CC9A",
   "native": [
-   "src/core/race_update.cpp:update_zoom_zoo"
+   "src/core/race_update.cpp:run_skipped_update"
   ],
   "source_records": [
    "docs/research/R-0052-hunter-effects.md",
@@ -7641,7 +7658,7 @@
   "comment": "instruction start",
   "label": "loc_83CD05",
   "native": [
-   "src/core/race_update.cpp:update_zoom_zoo",
+   "src/core/race_update.cpp:run_pause_menu",
    "src/core/rider_look.cpp:zoom_zoo_update_was_paused"
   ],
   "source_records": [
@@ -7712,7 +7729,7 @@
   "label": "sub_83CDAA",
   "native": [
    "src/core/hunter_effects.cpp:update_hunter_effects",
-   "src/core/race_update.cpp:update_zoom_zoo"
+   "src/core/race_update.cpp:run_skipped_update"
   ],
   "source_records": [
    "docs/research/R-0052-hunter-effects.md"
@@ -8209,7 +8226,7 @@
    "src/core/presentation.cpp:classic_countdown_window",
    "src/core/presentation.hpp:classic_countdown_window",
    "src/core/presentation.hpp:dragster_window_table_index",
-   "src/core/race_update.cpp:update_zoom_zoo"
+   "src/core/race_update.cpp:run_countdown"
   ],
   "source_records": [
    "docs/research/R-0040-dragster-window-effects.md",
@@ -8227,7 +8244,7 @@
    "src/core/presentation.cpp:classic_countdown_window",
    "src/core/presentation.hpp:classic_countdown_window",
    "src/core/presentation.hpp:dragster_window_table_index",
-   "src/core/race_update.cpp:update_zoom_zoo"
+   "src/core/race_update.cpp:run_countdown"
   ],
   "source_records": [
    "docs/research/R-0040-dragster-window-effects.md",
@@ -8243,7 +8260,7 @@
    "src/core/presentation.cpp:classic_countdown_window",
    "src/core/presentation.hpp:classic_countdown_window",
    "src/core/presentation.hpp:dragster_window_table_index",
-   "src/core/race_update.cpp:update_zoom_zoo"
+   "src/core/race_update.cpp:run_countdown"
   ],
   "source_records": [
    "docs/research/R-0040-dragster-window-effects.md"
@@ -8258,7 +8275,7 @@
    "src/core/presentation.cpp:classic_countdown_window",
    "src/core/presentation.hpp:classic_countdown_window",
    "src/core/presentation.hpp:dragster_window_table_index",
-   "src/core/race_update.cpp:update_zoom_zoo"
+   "src/core/race_update.cpp:run_countdown"
   ],
   "source_records": [
    "docs/research/R-0038-dragster-ordinary-controls.md"
@@ -8273,7 +8290,7 @@
    "src/core/presentation.cpp:classic_countdown_window",
    "src/core/presentation.hpp:classic_countdown_window",
    "src/core/presentation.hpp:dragster_window_table_index",
-   "src/core/race_update.cpp:update_zoom_zoo"
+   "src/core/race_update.cpp:run_countdown"
   ],
   "source_records": [
    "docs/research/R-0040-dragster-window-effects.md"
@@ -8288,7 +8305,7 @@
    "src/core/presentation.cpp:classic_countdown_window",
    "src/core/presentation.hpp:classic_countdown_window",
    "src/core/presentation.hpp:dragster_window_table_index",
-   "src/core/race_update.cpp:update_zoom_zoo"
+   "src/core/race_update.cpp:run_countdown"
   ],
   "source_records": [
    "docs/research/R-0040-dragster-window-effects.md"
@@ -8303,7 +8320,7 @@
    "src/core/presentation.cpp:classic_countdown_window",
    "src/core/presentation.hpp:classic_countdown_window",
    "src/core/presentation.hpp:dragster_window_table_index",
-   "src/core/race_update.cpp:update_zoom_zoo"
+   "src/core/race_update.cpp:run_countdown"
   ],
   "source_records": [
    "tasks/ZOOM-ZOO-WINDOW-EFFECTS-review.md"
@@ -8320,7 +8337,7 @@
    "src/core/presentation.cpp:dragster_window_transition_index",
    "src/core/presentation.hpp:classic_countdown_window",
    "src/core/presentation.hpp:dragster_window_table_index",
-   "src/core/race_update.cpp:update_zoom_zoo"
+   "src/core/race_update.cpp:run_countdown"
   ],
   "source_records": [
    "docs/research/R-0040-dragster-window-effects.md",
@@ -8336,7 +8353,7 @@
    "src/core/presentation.cpp:classic_countdown_window",
    "src/core/presentation.hpp:classic_countdown_window",
    "src/core/presentation.hpp:dragster_window_table_index",
-   "src/core/race_update.cpp:update_zoom_zoo"
+   "src/core/race_update.cpp:run_countdown"
   ],
   "source_records": [
    "tasks/ZOOM-ZOO-WINDOW-EFFECTS-review.md"
@@ -8351,7 +8368,7 @@
    "src/core/presentation.cpp:classic_countdown_window",
    "src/core/presentation.hpp:classic_countdown_window",
    "src/core/presentation.hpp:dragster_window_table_index",
-   "src/core/race_update.cpp:update_zoom_zoo"
+   "src/core/race_update.cpp:run_countdown"
   ],
   "source_records": [
    "tasks/ZOOM-ZOO-WINDOW-EFFECTS-review.md"
@@ -8366,7 +8383,7 @@
    "src/core/presentation.cpp:classic_countdown_window",
    "src/core/presentation.hpp:classic_countdown_window",
    "src/core/presentation.hpp:dragster_window_table_index",
-   "src/core/race_update.cpp:update_zoom_zoo"
+   "src/core/race_update.cpp:run_countdown"
   ],
   "source_records": [
    "tasks/ZOOM-ZOO-WINDOW-EFFECTS-review.md"
@@ -8381,7 +8398,7 @@
    "src/core/presentation.cpp:classic_countdown_window",
    "src/core/presentation.hpp:classic_countdown_window",
    "src/core/presentation.hpp:dragster_window_table_index",
-   "src/core/race_update.cpp:update_zoom_zoo"
+   "src/core/race_update.cpp:run_countdown"
   ],
   "source_records": [
    "tasks/ZOOM-ZOO-WINDOW-EFFECTS-review.md"
@@ -8396,7 +8413,7 @@
    "src/core/presentation.cpp:classic_countdown_window",
    "src/core/presentation.hpp:classic_countdown_window",
    "src/core/presentation.hpp:dragster_window_table_index",
-   "src/core/race_update.cpp:update_zoom_zoo"
+   "src/core/race_update.cpp:run_countdown"
   ],
   "source_records": [
    "docs/research/R-0040-dragster-window-effects.md"
@@ -8411,7 +8428,7 @@
    "src/core/presentation.cpp:classic_countdown_window",
    "src/core/presentation.hpp:classic_countdown_window",
    "src/core/presentation.hpp:dragster_window_table_index",
-   "src/core/race_update.cpp:update_zoom_zoo"
+   "src/core/race_update.cpp:run_countdown"
   ],
   "source_records": [
    "docs/research/R-0040-dragster-window-effects.md"
@@ -8426,7 +8443,7 @@
    "src/core/presentation.cpp:classic_countdown_window",
    "src/core/presentation.hpp:classic_countdown_window",
    "src/core/presentation.hpp:dragster_window_table_index",
-   "src/core/race_update.cpp:update_zoom_zoo"
+   "src/core/race_update.cpp:run_countdown"
   ],
   "source_records": [
    "tasks/ZOOM-ZOO-WINDOW-EFFECTS-review.md"
@@ -8441,7 +8458,7 @@
    "src/core/presentation.cpp:classic_countdown_window",
    "src/core/presentation.hpp:classic_countdown_window",
    "src/core/presentation.hpp:dragster_window_table_index",
-   "src/core/race_update.cpp:update_zoom_zoo"
+   "src/core/race_update.cpp:run_countdown"
   ],
   "source_records": [
    "docs/research/R-0040-dragster-window-effects.md"
@@ -8456,7 +8473,7 @@
    "src/core/presentation.cpp:classic_countdown_window",
    "src/core/presentation.hpp:classic_countdown_window",
    "src/core/presentation.hpp:dragster_window_table_index",
-   "src/core/race_update.cpp:update_zoom_zoo"
+   "src/core/race_update.cpp:run_countdown"
   ],
   "source_records": [
    "docs/research/R-0040-dragster-window-effects.md"
@@ -8471,7 +8488,7 @@
    "src/core/presentation.cpp:classic_countdown_window",
    "src/core/presentation.hpp:classic_countdown_window",
    "src/core/presentation.hpp:dragster_window_table_index",
-   "src/core/race_update.cpp:update_zoom_zoo"
+   "src/core/race_update.cpp:run_countdown"
   ],
   "source_records": [
    "tasks/ZOOM-ZOO-WINDOW-EFFECTS-review.md"
@@ -8486,7 +8503,7 @@
    "src/core/presentation.cpp:classic_countdown_window",
    "src/core/presentation.hpp:classic_countdown_window",
    "src/core/presentation.hpp:dragster_window_table_index",
-   "src/core/race_update.cpp:update_zoom_zoo"
+   "src/core/race_update.cpp:run_countdown"
   ],
   "source_records": [
    "docs/research/R-0011-motion.md"
@@ -8501,7 +8518,7 @@
    "src/core/presentation.cpp:classic_countdown_window",
    "src/core/presentation.hpp:classic_countdown_window",
    "src/core/presentation.hpp:dragster_window_table_index",
-   "src/core/race_update.cpp:update_zoom_zoo"
+   "src/core/race_update.cpp:run_countdown"
   ],
   "source_records": [
    "docs/research/R-0040-dragster-window-effects.md",
@@ -8518,7 +8535,7 @@
    "src/core/presentation.cpp:dragster_window_transition_index",
    "src/core/presentation.hpp:classic_countdown_window",
    "src/core/presentation.hpp:dragster_window_table_index",
-   "src/core/race_update.cpp:update_zoom_zoo"
+   "src/core/race_update.cpp:run_countdown"
   ],
   "source_records": [
    "docs/research/R-0040-dragster-window-effects.md"
@@ -8533,7 +8550,7 @@
    "src/core/presentation.cpp:classic_countdown_window",
    "src/core/presentation.hpp:classic_countdown_window",
    "src/core/presentation.hpp:dragster_window_table_index",
-   "src/core/race_update.cpp:update_zoom_zoo"
+   "src/core/race_update.cpp:run_countdown"
   ],
   "source_records": [
    "tasks/ZOOM-ZOO-WINDOW-EFFECTS-review.md"
@@ -8548,7 +8565,7 @@
    "src/core/presentation.cpp:classic_countdown_window",
    "src/core/presentation.hpp:classic_countdown_window",
    "src/core/presentation.hpp:dragster_window_table_index",
-   "src/core/race_update.cpp:update_zoom_zoo"
+   "src/core/race_update.cpp:run_countdown"
   ],
   "source_records": [
    "docs/research/R-0040-dragster-window-effects.md"
@@ -8563,7 +8580,7 @@
    "src/core/presentation.cpp:classic_countdown_window",
    "src/core/presentation.hpp:classic_countdown_window",
    "src/core/presentation.hpp:dragster_window_table_index",
-   "src/core/race_update.cpp:update_zoom_zoo"
+   "src/core/race_update.cpp:run_countdown"
   ],
   "source_records": [
    "docs/research/R-0040-dragster-window-effects.md"
@@ -8578,7 +8595,7 @@
    "src/core/presentation.cpp:classic_countdown_window",
    "src/core/presentation.hpp:classic_countdown_window",
    "src/core/presentation.hpp:dragster_window_table_index",
-   "src/core/race_update.cpp:update_zoom_zoo"
+   "src/core/race_update.cpp:run_countdown"
   ],
   "source_records": [
    "docs/research/R-0007-player-state.md"
@@ -8593,7 +8610,7 @@
    "src/core/presentation.cpp:classic_countdown_window",
    "src/core/presentation.hpp:classic_countdown_window",
    "src/core/presentation.hpp:dragster_window_table_index",
-   "src/core/race_update.cpp:update_zoom_zoo"
+   "src/core/race_update.cpp:run_countdown"
   ],
   "source_records": [
    "docs/research/R-0038-dragster-ordinary-controls.md",
