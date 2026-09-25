@@ -197,8 +197,9 @@ void print_state(std::uint32_t frame, const unirally::FrontEndState& state) {
 }
 
 // A one-player race between the menus: the native race from its initialization frame, the
-// front end resuming when the race's result load begins (R-0057). DRAGSTER initializes 121
-// frames after NOW PLAYING's fade ends, as on the laboratory's menu path (1207, 1328).
+// front end resuming when the race's result load begins (R-0057). A race initializes some frames
+// after NOW PLAYING's fade ends, its track's loading: DRAGSTER 121 on the laboratory's menu path
+// (1207, 1328), ZOOM ZOO 169 (1207, 1376).
 struct RaceBetweenMenus {
     std::optional<unirally::ZoomZooContent> content;
     unirally::ZoomZooState state{};
@@ -209,12 +210,17 @@ struct RaceBetweenMenus {
 bool start_race(RaceBetweenMenus& race, const unirally::ClassicContentPack& pack,
                 const unirally::FrontEndState& front_end) {
     const unirally::ClassicRaceTrack track{front_end.tour_menu.track};
-    if (!(track == unirally::ClassicRaceTrack::Dragster)) return false;
-    constexpr std::uint32_t dragster_loading_frames = 121;
+    std::uint32_t loading_frames{};
+    if (track == unirally::ClassicRaceTrack::Dragster)
+        loading_frames = 121;
+    else if (track == unirally::ClassicRaceTrack::ZoomZoo)
+        loading_frames = 169;
+    else
+        return false;
     race.content = unirally::classic_race_content(pack, track);
     race.state =
         unirally::classic_race_start(*race.content, unirally::classic_race_scenario(track));
-    race.initialization_frame = front_end.frame - 1 + dragster_loading_frames;
+    race.initialization_frame = front_end.frame - 1 + loading_frames;
     race.state.movement.frame = race.initialization_frame;
     return true;
 }
