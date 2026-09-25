@@ -158,8 +158,11 @@ Image f shows what frame f's vblank wrote.
 reference emulator's fast PPU does (`sfc/ppu-fast`). It covers the backgrounds in modes 0, 1
 and 3, the objects with their 32-per-line and 34-tile limits, colour math and the brightness.
 Screen row 0 is scanline 1, as in native's race backgrounds, and an object is drawn one line
-after its OAM y, as bsnes stores it. Windows, mosaic, hires, mode 7 and offset-per-tile are
-refused.
+after its OAM y, as bsnes stores it. Windows, mosaic, HDMA (per-line register changes), OAM
+priority rotation, hires, mode 7 and offset-per-tile are not modelled: a screen that uses one
+must set `SnesVideoRegisters::unmodelled_features`, and is then refused. The original turns
+HDMA on at frame 743 of the `buttons` capture, once 2P is chosen, so the 2P screens will need
+it.
 
 ## Evidence
 

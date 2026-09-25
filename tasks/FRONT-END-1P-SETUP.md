@@ -57,4 +57,6 @@ unlocked tours of a cold start, audio.
 - Exact next experiment/command: capture 1P from power-on with a frame image on every frame and
   per-frame work RAM (FRONT-END-MAIN-MENU's `compare.py` pattern), read `$80:BB9C` and what it
   calls, and list the screens' loads with `access capture` register logs at `$82:B2DD`,
-  `$82:B1DB` and `$82:B183`.
+  `$82:B1DB` and `$82:B183`. Check each screen's register writes for HDMA (`$420C`),
+  windows and mosaic: `snes_screen` does not model them, so a screen that uses one needs them
+  added (or its `unmodelled_features` set, which refuses it). 2P turns HDMA on (R-0054).

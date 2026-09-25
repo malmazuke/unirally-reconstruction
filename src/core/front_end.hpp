@@ -44,15 +44,15 @@ struct MenuArrow {
 
 // The palette cycle the NMI runs from the title on ($80:FA60).
 struct PaletteCycle {
-    std::int8_t delay{}; // $C8: frames to the next step, 6 down to 0
-    std::int8_t phase{}; // $C9: 3 down to 0
+    std::int8_t delay{}; // $00C8: frames to the next step, 6 down to 0
+    std::int8_t phase{}; // $00C9: 3 down to 0
     bool running{};      // the NMI hook is installed and NMIs are enabled
 };
 
 struct MainMenu {
     std::uint8_t selection{}; // $009B
-    std::int16_t idle{};      // $89: frames left before the demo
-    bool move_latched{};      // $8F: Up or Down still held since the last move
+    std::int16_t idle{};      // $0089: frames left before the demo
+    bool move_latched{};      // $008F: Up or Down still held since the last move
 };
 
 struct FrontEndState {

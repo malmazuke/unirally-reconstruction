@@ -3611,6 +3611,20 @@
    "region": "wram"
   },
   {
+   "address": "$0089",
+   "native": [
+    "src/core/front_end.hpp:MainMenu::idle"
+   ],
+   "region": "wram"
+  },
+  {
+   "address": "$008F",
+   "native": [
+    "src/core/front_end.hpp:MainMenu::move_latched"
+   ],
+   "region": "wram"
+  },
+  {
    "address": "$009B",
    "native": [
     "src/core/front_end.hpp:FrontEndMode",
@@ -3636,6 +3650,20 @@
    "address": "$00C6",
    "native": [
     "src/core/front_end.hpp:MenuArrow::spin"
+   ],
+   "region": "wram"
+  },
+  {
+   "address": "$00C8",
+   "native": [
+    "src/core/front_end.hpp:PaletteCycle::delay"
+   ],
+   "region": "wram"
+  },
+  {
+   "address": "$00C9",
+   "native": [
+    "src/core/front_end.hpp:PaletteCycle::phase"
    ],
    "region": "wram"
   },
@@ -5539,6 +5567,16 @@
     "$0A00"
    ]
   },
+  "src/core/front_end.hpp:MainMenu::idle": {
+   "wram": [
+    "$0089"
+   ]
+  },
+  "src/core/front_end.hpp:MainMenu::move_latched": {
+   "wram": [
+    "$008F"
+   ]
+  },
   "src/core/front_end.hpp:MainMenu::selection": {
    "wram": [
     "$009B"
@@ -5565,6 +5603,16 @@
   "src/core/front_end.hpp:PaletteCycle": {
    "rom": [
     "$80:FA60"
+   ]
+  },
+  "src/core/front_end.hpp:PaletteCycle::delay": {
+   "wram": [
+    "$00C8"
+   ]
+  },
+  "src/core/front_end.hpp:PaletteCycle::phase": {
+   "wram": [
+    "$00C9"
    ]
   },
   "src/core/front_end_runner.cpp:(file)": {
@@ -7888,11 +7936,11 @@
   }
  },
  "totals": {
-  "addresses": 611,
+  "addresses": 615,
   "io_addresses": 5,
-  "native_symbols": 391,
+  "native_symbols": 395,
   "rom_addresses": 398,
   "sram_addresses": 7,
-  "wram_addresses": 201
+  "wram_addresses": 205
  }
 }

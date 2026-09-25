@@ -140,4 +140,50 @@ Decisions and deviations, with reasons:
 
 ## Review and integration
 
-- Tier 2: pending.
+- Tier 2: a fresh Claude Opus 5.5 subagent in `.worktrees/front-end-main-menu-review`.
+  - At `5247f01` it **returned** the PR
+    ([review](https://github.com/malmazuke/unirally-reconstruction/pull/28#pullrequestreview-5319175965)).
+    The reason was M1: the Linux CI build failed on GCC's `-Wsign-conversion` in
+    `snes_screen.cpp`.
+  - **Its independent checks**, all equal or passing:
+    - ctest 26/26 on three presets, the synthetic suite 518/518;
+    - `compare.py` on the three captures with its build;
+    - two withheld captures of its own. The first ran 2,200 frames: buttons on the boot screens,
+      Up held through the load, frame-by-frame alternation, pad 2, opposing directions and the
+      idle demo. All 2,182 frames and pictures match. The second held B across the menu's first
+      frame;
+    - the listing's menu, arrow, cycle and setup code against native's logic;
+    - the pack's 23 entries against their ROM ranges;
+    - the app with and without `--track`.
+  - **Findings, fixed** in `b23b34f`, `cb916d6` and `46ccd7c`:
+    - M1: explicit unsigned operands.
+    - S1: no halving under clip-to-black-always.
+    - S2: HDMA and OAM rotation refused.
+    - S3: the v15 pack in the command docs.
+    - S4: the main menu's codes are their own outcomes.
+    - S5: the cold start's untaken paths recorded.
+    - S6: the 14-byte cycle table.
+    - S7: named frame waits and layout, four-digit direct-page addresses, `src/app`'s own
+      formatting.
+    - S8: the app's front-end summary.
+  - A second GCC error (`-Wrange-loop-construct`) in the new code loop was fixed in `46ccd7c`.
+    CI is green on `46ccd7c`.
+  - Its note on equal row hashes (opposing-ride and m4-16-idle both `205d1705...`, and
+    opposing-edges and m4-16-primary both `b4a34af7...`): `rows_sha256` is the hash of the
+    reference rows a gate must reproduce. The opposing-input captures hold opposing
+    directions, which the pad's rocker cancels, so they reproduce the idle and primary
+    captures' rows. Every accepted gate run since HUNTER-EFFECTS (for example `gates-661fcd3`)
+    shows the same pairs.
+- Re-review: a fresh Claude Opus 5.5 subagent.
+  - At `46ccd7c` it **approved**
+    ([review](https://github.com/malmazuke/unirally-reconstruction/pull/28#pullrequestreview-5319435009)),
+    with no must-fix findings.
+  - It confirmed the fixes on both heads:
+    - clip-to-black: grey before, white now, as bsnes;
+    - the codes on either pad, with WIPE RAM first, and near misses still choosing 1P;
+    - the 14-byte table;
+    - green CI with the Linux sanitizer job.
+  - It reran all three captures' pictures, with 0 differing pixels.
+  - Its two should-fix items are fixed after it: R-0054 and FRONT-END-1P-SETUP's handoff now
+    name the HDMA and OAM-rotation refusal (the 2P screens need HDMA), and the last four
+    two-digit addresses in `front_end.hpp` comments have four digits.
