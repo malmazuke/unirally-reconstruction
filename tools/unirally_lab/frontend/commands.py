@@ -288,8 +288,10 @@ def cmd_run(args: argparse.Namespace) -> int:
     if stale_build is not None:
         return _finish(rep, paths.report, stale_build)
     command = [str(executable), "--content-pack", str(pack_path)]
-    track = getattr(args, "track", "dragster")
-    if track != "dragster":
+    # A named track starts in that race; without one the app starts at power-on (the front end,
+    # FRONT-END-MAIN-MENU), where 1P starts DRAGSTER.
+    track = getattr(args, "track", None)
+    if track is not None:
         command.extend(["--track", track])
     if args.hidden:
         command.append("--hidden")
@@ -322,8 +324,9 @@ def register(sub: argparse._SubParsersAction) -> None:
                                          "Audio is intentionally not implemented in M3.")
     run.add_argument("--pack", default=None,
                      help="one pack to validate and launch; omit it to select a pack by profile under local/")
-    run.add_argument("--track", type=_track_choice, default="dragster",
-                     help="dragster, zoom-zoo, or the number of a race track with a recovered scenario (TRACK-BREADTH)")
+    run.add_argument("--track", type=_track_choice, default=None,
+                     help="start in this race: dragster, zoom-zoo, or the number of a race track with a recovered "
+                          "scenario (TRACK-BREADTH); without it the app starts at power-on (the title and main menu)")
     run.add_argument("--rom", help="supported PAL ROM for first launch only; omission means selection was cancelled")
     run.add_argument("--replace-pack", action="store_true",
                      help="with --rom, move an incompatible existing pack aside and extract a new one in its place")

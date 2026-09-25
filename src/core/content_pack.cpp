@@ -363,6 +363,52 @@ const std::array<RequiredEntry, 2> hunter_required{{
     {"presentation.classic.hunter-opponent-palette.v1", 32,
      "a8d2de3b96ccc5a277cb3ffecaa92006913197e0887ccb76f27a7a25d41d6d8e"},
 }};
+// FRONT-END-MAIN-MENU (profile v15): the boot screens', the title's and the main menu's
+// content: seventeen assets of the directory at $82:B332 and the tables the front-end code
+// reads in place (tools/unirally_lab/content/front_end.py, R-0054).
+const std::array<RequiredEntry, 23> front_end_required{{
+    {"front-end.asset.001", 32, "73c8f16cc7220c5806654becfe758100ffef69564fa33de10fe7ba88c1bdbd6a"},
+    {"front-end.asset.002", 32, "fabc24409856be6df45a345a13bc87dc2b0359456143bc11f31a9d91f4fff73d"},
+    {"front-end.asset.005", 32, "5cf20ec26943ebf74b9c97cc7051a344febb879d2ea29d8763a8988377cc334a"},
+    {"front-end.asset.027", 512,
+     "23e5ec214c22a7acedbaabff18b45bf10ed0a644d3c3aecff18a82041988005f"},
+    {"front-end.asset.028", 32, "4260f86adc609268c4819fe36eaad1e112e2a9234f31986eb1a0dbbb9ad40e8e"},
+    {"front-end.asset.031", 32, "d7410a2f53e08ecc998efde57354c2151c68e78bb0296434a20ab0c69ac34a67"},
+    {"front-end.asset.068", 8000,
+     "62109e5b77150a412bb6361fe3653e39fdc1184c5aed27161f90549bd3ed4799"},
+    {"front-end.asset.069", 13568,
+     "2c8fe1823f71d2affad5fc345926c6ddbc300635b43fc5525718e9882c31a2a5"},
+    {"front-end.asset.070", 8960,
+     "9f153a74089ead31e5c84fbe0a69c3ab4d0abe0cdfb06f60ece0a3a48cd15a5f"},
+    {"front-end.asset.072", 36672,
+     "ec64d417090f8f489caee5fed2fe347bbd004e9f902bb8921c8c35e0c1420d9b"},
+    {"front-end.asset.074", 5120,
+     "dac866b120f40dbc9fea643f7520a96ea333aa2d7f6892c19959711adc808310"},
+    {"front-end.asset.077", 2816,
+     "5d4d58fe0ac75520a1a86d28026ebb608b630ca9b58c3e458c48f3507f6fe218"},
+    {"front-end.asset.078", 1856,
+     "a97c2988f00f8ef70a249f82c96c126f9f6721bdcde6a7bff554bc48a5e4d575"},
+    {"front-end.asset.080", 1920,
+     "123014b49256f0458741778d48f1fb962036f793310a2250f5ed15c487345119"},
+    {"front-end.asset.088", 8192,
+     "9c229230f22ad540c88de56aadc78f7a7bf967561ccbf28f74a468d374497a47"},
+    {"front-end.asset.089", 8192,
+     "e90bb1d27b1fd30d53bc697fe2750777e7e367ccff5c49e3789a6df0f7042ba7"},
+    {"front-end.asset.091", 3072,
+     "37eb293068522399f2bfcbff576eb3b5cbd3d58e15acaa4683cc696016e8f51e"},
+    {"front-end.base-palette", 216,
+     "a933e35522e24c7a08daca7caa10305cd7635521850ef3450dfad00124f36251"},
+    {"front-end.character-table", 256,
+     "73159dcad6d673d652b68229518cb4166aaa1f0a26d6e90643973bcf653a110b"},
+    {"front-end.main-menu-text", 36,
+     "b6c620d85b9abbb5b4901af81153edf8c07e3ae9b83847f2d94dcf910c504ced"},
+    {"front-end.arrow-frames", 16,
+     "2d4174c62a9a7e66cdb3f59cd4738609510ea84469b4fea53a1feb44fd696cd0"},
+    {"front-end.menu-arrow-columns", 5,
+     "ba56be3883c239ca143d7c41fe5150b4bc3549b193742dcbe15dab7157f00880"},
+    {"front-end.cycle-colours", 14,
+     "7c6f09ee6029f31598b51a183b9f0f1927dc014108098c1c71c5d2060c31cb43"},
+}};
 // LOCKED-TOURS (profile v12): the race tracks of the five tours a cold start does not
 // list, and sceneries 1, 8 and 12. Generated from the rules file (tracks.py v12_new_entries).
 const std::array<RequiredEntry, 89> locked_tracks_required{{
@@ -523,7 +569,7 @@ const std::array<RequiredEntry, 89> locked_tracks_required{{
     {"scenery.12.palette", 352, "b2a9aefe13c1dc68454cf0a5c2bedb086c6e162dbea1df1f2ef108347d89ab63"},
 }};
 constexpr std::string_view two_track_rules_sha =
-    "d975455eaa8b24bb80b67987f6dd995df113dd52e1b153b89e8e1aa43269ebc6";
+    "b303087213da4c7dd572537d509ec41db7e1b044260ee0cb68fe3cdbe6e568a2";
 
 std::array<std::uint8_t, 32> hex_digest(std::string_view text) {
     if (text.size() != 64) throw std::logic_error("invalid compiled Classic SHA-256");
@@ -613,7 +659,7 @@ std::array<std::uint8_t, 32> sha256(std::span<const std::uint8_t> source) {
 
 namespace {
 constexpr std::array<std::string_view, 2> supported_profiles{"classic.pal.crawler.dragster.v1",
-                                                             "classic.pal.crawler.tracks.v14"};
+                                                             "classic.pal.crawler.tracks.v15"};
 } // namespace
 
 std::span<const std::string_view> supported_pack_profiles() {
@@ -671,7 +717,8 @@ std::vector<RequiredEntry> required_entries(bool tracks) {
                              std::span<const RequiredEntry>(special_tiles_required),
                              std::span<const RequiredEntry>(locked_tracks_required),
                              std::span<const RequiredEntry>(loop_required),
-                             std::span<const RequiredEntry>(hunter_required)})
+                             std::span<const RequiredEntry>(hunter_required),
+                             std::span<const RequiredEntry>(front_end_required)})
         out.insert(out.end(), table.begin(), table.end());
     return out;
 }

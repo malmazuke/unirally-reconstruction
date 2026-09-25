@@ -253,9 +253,168 @@
    "region": "rom"
   },
   {
+   "address": "$80:9318",
+   "native": [
+    "src/core/front_end.cpp:copy_oam"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:9869",
+   "native": [
+    "src/core/front_end.cpp:fade_frames"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:9885",
+   "native": [
+    "src/core/front_end.cpp:fade_frames"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:9B31",
+   "native": [
+    "src/core/front_end.cpp:lay_out_menu_objects"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:A09A",
+   "native": [
+    "src/core/front_end.cpp:clear_oam_buffer",
+    "src/core/front_end.cpp:early_objects, early_palette",
+    "src/core/front_end.cpp:set_nintendo_registers"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:A16A",
+   "native": [
+    "src/core/front_end.cpp:load_main_menu",
+    "src/core/front_end.cpp:load_title",
+    "src/core/front_end.cpp:parked_x, parked_y",
+    "src/core/front_end.cpp:reset_screen_state"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:A877",
+   "native": [
+    "src/core/front_end.cpp:menu_text_tiles_dma"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:A8A8",
+   "native": [
+    "src/core/front_end.cpp:boot_frame_waits",
+    "src/core/front_end.cpp:load_main_menu",
+    "src/core/front_end.cpp:load_nintendo_screen"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:A9B4",
+   "native": [
+    "src/core/front_end.hpp:FrontEndMode"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:ABC8",
+   "native": [
+    "src/core/front_end.cpp:first_idle, idle_after_move"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:ABE3",
+   "native": [
+    "src/core/front_end.cpp:run_main_menu"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:ABEB",
+   "native": [
+    "src/core/front_end.cpp:run_main_menu"
+   ],
+   "range_ends": [
+    "$80:AC0A"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:AC0F",
+   "native": [
+    "src/core/front_end.cpp:run_main_menu"
+   ],
+   "range_ends": [
+    "$80:AC14"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:ACD5",
+   "native": [
+    "src/core/front_end.cpp:boot_frame_waits",
+    "src/core/front_end.cpp:main_menu_text"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:B08C",
+   "native": [
+    "src/core/front_end.cpp:boot_frame_waits",
+    "src/core/front_end.cpp:nintendo_palette, nintendo_map, nintendo_tiles",
+    "src/core/front_end.cpp:set_nintendo_registers"
+   ],
+   "region": "rom"
+  },
+  {
    "address": "$80:C3BC",
    "native": [
-    "src/core/result_screen.cpp:(file)"
+    "src/core/result_screen.cpp:(file)",
+    "src/core/text_printer.hpp:(file)"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:C3C6",
+   "native": [
+    "src/core/text_printer.cpp:end_of_text, position, centre, nothing, attribute, skip_pair, first_control"
+   ],
+   "range_ends": [
+    "$80:C3D9"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:C3DC",
+   "native": [
+    "src/core/text_printer.cpp:end_of_text, position, centre, nothing, attribute, skip_pair, first_control"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:C3FE",
+   "native": [
+    "src/core/text_printer.cpp:table_entry"
+   ],
+   "range_ends": [
+    "$80:C40C"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:C41E",
+   "native": [
+    "src/core/text_printer.cpp:print_big"
+   ],
+   "range_ends": [
+    "$80:C443"
    ],
    "region": "rom"
   },
@@ -274,7 +433,8 @@
   {
    "address": "$80:C4B8",
    "native": [
-    "src/core/result_screen.cpp:build_result_map"
+    "src/core/result_screen.cpp:build_result_map",
+    "src/core/text_printer.cpp:centre_on"
    ],
    "range_ends": [
     "$80:C4FD"
@@ -282,12 +442,24 @@
    "region": "rom"
   },
   {
-   "address": "$80:C579",
+   "address": "$80:C56C",
    "native": [
-    "src/core/result_screen.cpp:small_glyph_tile"
+    "src/core/text_printer.cpp:print_small"
    ],
    "range_ends": [
-    "$80:C58A"
+    "$80:C5C3"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:C579",
+   "native": [
+    "src/core/result_screen.cpp:small_glyph_tile",
+    "src/core/text_printer.cpp:small_tile_base, small_lower_row"
+   ],
+   "range_ends": [
+    "$80:C58A",
+    "$80:C596"
    ],
    "region": "rom"
   },
@@ -302,10 +474,25 @@
    "region": "rom"
   },
   {
+   "address": "$80:C59B",
+   "native": [
+    "src/core/text_printer.cpp:small_tile_base, small_lower_row"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:C5B2",
+   "native": [
+    "src/core/text_printer.cpp:small_tile_base, small_lower_row"
+   ],
+   "region": "rom"
+  },
+  {
    "address": "$80:C709",
    "native": [
     "src/core/result_screen.cpp:(file)",
-    "src/core/result_screen.cpp:result_title_glyph"
+    "src/core/result_screen.cpp:result_title_glyph",
+    "src/core/text_printer.hpp:print_text"
    ],
    "region": "rom"
   },
@@ -313,6 +500,76 @@
    "address": "$80:D187",
    "native": [
     "src/core/result_screen.cpp:(file)"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:D1EC",
+   "native": [
+    "src/core/front_end.cpp:boot_frame",
+    "src/core/front_end.cpp:run_main_menu"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:D20E",
+   "native": [
+    "src/core/front_end.cpp:boot_frame_waits",
+    "src/core/front_end.cpp:load_main_menu",
+    "src/core/front_end.cpp:menu_objects, menu_objects_high, menu_map, menu_bg2_tiles, menu_bg1_tiles, menu_bg1_tiles_high"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:D2C3",
+   "native": [
+    "src/core/front_end.cpp:lay_out_menu_objects"
+   ],
+   "range_ends": [
+    "$80:D36C"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:D36F",
+   "native": [
+    "src/core/front_end.cpp:boot_frame_waits"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:D372",
+   "native": [
+    "src/core/front_end.cpp:boot_frame"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:D383",
+   "native": [
+    "src/core/front_end.cpp:lay_out_menu_objects"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:F0D6",
+   "native": [
+    "src/core/front_end.hpp:FrontEndMode"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:F55F",
+   "native": [
+    "src/core/front_end.cpp:load_title",
+    "src/core/front_end.cpp:title_palette, title_map, title_tiles"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:F5B8",
+   "native": [
+    "src/core/front_end.cpp:update_front_end"
    ],
    "region": "rom"
   },
@@ -331,6 +588,29 @@
    "address": "$80:F8B9",
    "native": [
     "src/core/result_screen.cpp:(file)"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:FA60",
+   "native": [
+    "src/core/front_end.cpp:step_palette_cycle",
+    "src/core/front_end.hpp:PaletteCycle"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:FADF",
+   "native": [
+    "src/core/front_end.cpp:FrameWaits"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:FAF5",
+   "native": [
+    "src/core/front_end.cpp:quarter_step",
+    "src/core/front_end.hpp:MenuArrow"
    ],
    "region": "rom"
   },
@@ -2458,9 +2738,31 @@
    "region": "rom"
   },
   {
+   "address": "$82:B183",
+   "native": [
+    "src/core/front_end.cpp:load_vram"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$82:B1DB",
+   "native": [
+    "src/core/front_end.cpp:load_vram"
+   ],
+   "region": "rom"
+  },
+  {
    "address": "$82:B296",
    "native": [
     "src/core/result_screen.cpp:render_result_background"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$82:B332",
+   "native": [
+    "src/core/content_pack.cpp:front_end_required",
+    "src/core/front_end.cpp:early_objects, early_palette"
    ],
    "region": "rom"
   },
@@ -2629,6 +2931,29 @@
    ],
    "range_ends": [
     "$83:90ED"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:91F7",
+   "native": [
+    "src/core/front_end.cpp:load_main_menu"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:99F6",
+   "native": [
+    "src/core/front_end.cpp:boot_frame",
+    "src/core/front_end.cpp:load_nintendo_screen"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:99FA",
+   "native": [
+    "src/core/front_end.cpp:park_arrow",
+    "src/core/front_end.cpp:parked_x, parked_y"
    ],
    "region": "rom"
   },
@@ -3286,6 +3611,71 @@
    "region": "wram"
   },
   {
+   "address": "$0089",
+   "native": [
+    "src/core/front_end.hpp:MainMenu::idle"
+   ],
+   "region": "wram"
+  },
+  {
+   "address": "$008F",
+   "native": [
+    "src/core/front_end.hpp:MainMenu::move_latched"
+   ],
+   "region": "wram"
+  },
+  {
+   "address": "$009B",
+   "native": [
+    "src/core/front_end.hpp:FrontEndMode",
+    "src/core/front_end.hpp:MainMenu::selection"
+   ],
+   "region": "wram"
+  },
+  {
+   "address": "$009F",
+   "native": [
+    "src/core/text_printer.hpp:TextCursor"
+   ],
+   "region": "wram"
+  },
+  {
+   "address": "$00B0",
+   "native": [
+    "src/core/text_printer.hpp:TextCursor"
+   ],
+   "region": "wram"
+  },
+  {
+   "address": "$00C6",
+   "native": [
+    "src/core/front_end.hpp:MenuArrow::spin"
+   ],
+   "region": "wram"
+  },
+  {
+   "address": "$00C8",
+   "native": [
+    "src/core/front_end.hpp:PaletteCycle::delay"
+   ],
+   "region": "wram"
+  },
+  {
+   "address": "$00C9",
+   "native": [
+    "src/core/front_end.hpp:PaletteCycle::phase"
+   ],
+   "region": "wram"
+  },
+  {
+   "address": "$0200",
+   "native": [
+    "src/core/front_end.cpp:main_menu_text",
+    "src/core/text_printer.hpp:(file)"
+   ],
+   "region": "wram"
+  },
+  {
    "address": "$0300",
    "native": [
     "src/core/flat_contact.hpp:ContactContext::phase",
@@ -3624,6 +4014,15 @@
    "region": "wram"
   },
   {
+   "address": "$0A00",
+   "native": [
+    "src/core/front_end.cpp:oam_high_table",
+    "src/core/front_end.hpp:FrontEndState::oam_buffer",
+    "src/core/front_end_runner.cpp:(file)"
+   ],
+   "region": "wram"
+  },
+  {
    "address": "$0A45",
    "native": [
     "src/core/movement.cpp:update_opponent_finish_pose"
@@ -3695,6 +4094,41 @@
    "address": "$0BE9",
    "native": [
     "src/core/zoom_zoo_movement.hpp:SpecialTileRider::reflection_lock"
+   ],
+   "region": "wram"
+  },
+  {
+   "address": "$0C00",
+   "native": [
+    "src/core/front_end.cpp:oam_high_table"
+   ],
+   "region": "wram"
+  },
+  {
+   "address": "$0C60",
+   "native": [
+    "src/core/front_end.hpp:MenuArrow::x, MenuArrow::target_x, MenuArrow::y, MenuArrow::target_y"
+   ],
+   "region": "wram"
+  },
+  {
+   "address": "$0C62",
+   "native": [
+    "src/core/front_end.hpp:MenuArrow::x, MenuArrow::target_x, MenuArrow::y, MenuArrow::target_y"
+   ],
+   "region": "wram"
+  },
+  {
+   "address": "$0C68",
+   "native": [
+    "src/core/front_end.hpp:MenuArrow::x, MenuArrow::target_x, MenuArrow::y, MenuArrow::target_y"
+   ],
+   "region": "wram"
+  },
+  {
+   "address": "$0C6A",
+   "native": [
+    "src/core/front_end.hpp:MenuArrow::x, MenuArrow::target_x, MenuArrow::y, MenuArrow::target_y"
    ],
    "region": "wram"
   },
@@ -4818,6 +5252,8 @@
   {
    "address": "$00:4218",
    "native": [
+    "src/core/front_end.hpp:FrontEndPads",
+    "src/core/front_end_runner.cpp:(file)",
     "src/core/input_timer.hpp:ControllerSample::low_image"
    ],
    "region": "io"
@@ -4826,6 +5262,14 @@
    "address": "$00:4219",
    "native": [
     "src/core/input_timer.hpp:ControllerSample::high_image"
+   ],
+   "region": "io"
+  },
+  {
+   "address": "$00:421A",
+   "native": [
+    "src/core/front_end.hpp:FrontEndPads",
+    "src/core/front_end_runner.cpp:(file)"
    ],
    "region": "io"
   }
@@ -4838,6 +5282,11 @@
   "src/core/announcements.hpp:(file)": {
    "rom": [
     "$17:CA04"
+   ]
+  },
+  "src/core/content_pack.cpp:front_end_required": {
+   "rom": [
+    "$82:B332"
    ]
   },
   "src/core/content_pack.cpp:hunter_required": {
@@ -4936,6 +5385,243 @@
    "wram": [
     "$0300",
     "$0302"
+   ]
+  },
+  "src/core/front_end.cpp:FrameWaits": {
+   "rom": [
+    "$80:FADF"
+   ]
+  },
+  "src/core/front_end.cpp:boot_frame": {
+   "rom": [
+    "$80:D1EC",
+    "$80:D372",
+    "$83:99F6"
+   ]
+  },
+  "src/core/front_end.cpp:boot_frame_waits": {
+   "rom": [
+    "$80:A8A8",
+    "$80:ACD5",
+    "$80:B08C",
+    "$80:D20E",
+    "$80:D36F"
+   ]
+  },
+  "src/core/front_end.cpp:clear_oam_buffer": {
+   "rom": [
+    "$80:A09A"
+   ]
+  },
+  "src/core/front_end.cpp:copy_oam": {
+   "rom": [
+    "$80:9318"
+   ]
+  },
+  "src/core/front_end.cpp:early_objects, early_palette": {
+   "rom": [
+    "$80:A09A",
+    "$82:B332"
+   ]
+  },
+  "src/core/front_end.cpp:fade_frames": {
+   "rom": [
+    "$80:9869",
+    "$80:9885"
+   ]
+  },
+  "src/core/front_end.cpp:first_idle, idle_after_move": {
+   "rom": [
+    "$80:ABC8"
+   ]
+  },
+  "src/core/front_end.cpp:lay_out_menu_objects": {
+   "rom": [
+    "$80:9B31",
+    "$80:D2C3",
+    "$80:D383"
+   ]
+  },
+  "src/core/front_end.cpp:load_main_menu": {
+   "rom": [
+    "$80:A16A",
+    "$80:A8A8",
+    "$80:D20E",
+    "$83:91F7"
+   ]
+  },
+  "src/core/front_end.cpp:load_nintendo_screen": {
+   "rom": [
+    "$80:A8A8",
+    "$83:99F6"
+   ]
+  },
+  "src/core/front_end.cpp:load_title": {
+   "rom": [
+    "$80:A16A",
+    "$80:F55F"
+   ]
+  },
+  "src/core/front_end.cpp:load_vram": {
+   "rom": [
+    "$82:B183",
+    "$82:B1DB"
+   ]
+  },
+  "src/core/front_end.cpp:main_menu_text": {
+   "rom": [
+    "$80:ACD5"
+   ],
+   "wram": [
+    "$0200"
+   ]
+  },
+  "src/core/front_end.cpp:menu_objects, menu_objects_high, menu_map, menu_bg2_tiles, menu_bg1_tiles, menu_bg1_tiles_high": {
+   "rom": [
+    "$80:D20E"
+   ]
+  },
+  "src/core/front_end.cpp:menu_text_tiles_dma": {
+   "rom": [
+    "$80:A877"
+   ]
+  },
+  "src/core/front_end.cpp:nintendo_palette, nintendo_map, nintendo_tiles": {
+   "rom": [
+    "$80:B08C"
+   ]
+  },
+  "src/core/front_end.cpp:oam_high_table": {
+   "wram": [
+    "$0A00",
+    "$0C00"
+   ]
+  },
+  "src/core/front_end.cpp:park_arrow": {
+   "rom": [
+    "$83:99FA"
+   ]
+  },
+  "src/core/front_end.cpp:parked_x, parked_y": {
+   "rom": [
+    "$80:A16A",
+    "$83:99FA"
+   ]
+  },
+  "src/core/front_end.cpp:quarter_step": {
+   "rom": [
+    "$80:FAF5"
+   ]
+  },
+  "src/core/front_end.cpp:reset_screen_state": {
+   "rom": [
+    "$80:A16A"
+   ]
+  },
+  "src/core/front_end.cpp:run_main_menu": {
+   "rom": [
+    "$80:ABE3",
+    "$80:ABEB",
+    "$80:AC0F",
+    "$80:D1EC"
+   ]
+  },
+  "src/core/front_end.cpp:set_nintendo_registers": {
+   "rom": [
+    "$80:A09A",
+    "$80:B08C"
+   ]
+  },
+  "src/core/front_end.cpp:step_palette_cycle": {
+   "rom": [
+    "$80:FA60"
+   ]
+  },
+  "src/core/front_end.cpp:title_palette, title_map, title_tiles": {
+   "rom": [
+    "$80:F55F"
+   ]
+  },
+  "src/core/front_end.cpp:update_front_end": {
+   "rom": [
+    "$80:F5B8"
+   ]
+  },
+  "src/core/front_end.hpp:FrontEndMode": {
+   "rom": [
+    "$80:A9B4",
+    "$80:F0D6"
+   ],
+   "wram": [
+    "$009B"
+   ]
+  },
+  "src/core/front_end.hpp:FrontEndPads": {
+   "io": [
+    "$00:4218",
+    "$00:421A"
+   ]
+  },
+  "src/core/front_end.hpp:FrontEndState::oam_buffer": {
+   "wram": [
+    "$0A00"
+   ]
+  },
+  "src/core/front_end.hpp:MainMenu::idle": {
+   "wram": [
+    "$0089"
+   ]
+  },
+  "src/core/front_end.hpp:MainMenu::move_latched": {
+   "wram": [
+    "$008F"
+   ]
+  },
+  "src/core/front_end.hpp:MainMenu::selection": {
+   "wram": [
+    "$009B"
+   ]
+  },
+  "src/core/front_end.hpp:MenuArrow": {
+   "rom": [
+    "$80:FAF5"
+   ]
+  },
+  "src/core/front_end.hpp:MenuArrow::spin": {
+   "wram": [
+    "$00C6"
+   ]
+  },
+  "src/core/front_end.hpp:MenuArrow::x, MenuArrow::target_x, MenuArrow::y, MenuArrow::target_y": {
+   "wram": [
+    "$0C60",
+    "$0C62",
+    "$0C68",
+    "$0C6A"
+   ]
+  },
+  "src/core/front_end.hpp:PaletteCycle": {
+   "rom": [
+    "$80:FA60"
+   ]
+  },
+  "src/core/front_end.hpp:PaletteCycle::delay": {
+   "wram": [
+    "$00C8"
+   ]
+  },
+  "src/core/front_end.hpp:PaletteCycle::phase": {
+   "wram": [
+    "$00C9"
+   ]
+  },
+  "src/core/front_end_runner.cpp:(file)": {
+   "io": [
+    "$00:4218",
+    "$00:421A"
+   ],
+   "wram": [
+    "$0A00"
    ]
   },
   "src/core/hunter_effects.cpp:count_hunter_mosaic": {
@@ -6568,6 +7254,58 @@
     "$1513"
    ]
   },
+  "src/core/text_printer.cpp:centre_on": {
+   "rom": [
+    "$80:C4B8"
+   ]
+  },
+  "src/core/text_printer.cpp:end_of_text, position, centre, nothing, attribute, skip_pair, first_control": {
+   "rom": [
+    "$80:C3C6",
+    "$80:C3DC"
+   ]
+  },
+  "src/core/text_printer.cpp:print_big": {
+   "rom": [
+    "$80:C41E"
+   ]
+  },
+  "src/core/text_printer.cpp:print_small": {
+   "rom": [
+    "$80:C56C"
+   ]
+  },
+  "src/core/text_printer.cpp:small_tile_base, small_lower_row": {
+   "rom": [
+    "$80:C579",
+    "$80:C59B",
+    "$80:C5B2"
+   ]
+  },
+  "src/core/text_printer.cpp:table_entry": {
+   "rom": [
+    "$80:C3FE"
+   ]
+  },
+  "src/core/text_printer.hpp:(file)": {
+   "rom": [
+    "$80:C3BC"
+   ],
+   "wram": [
+    "$0200"
+   ]
+  },
+  "src/core/text_printer.hpp:TextCursor": {
+   "wram": [
+    "$009F",
+    "$00B0"
+   ]
+  },
+  "src/core/text_printer.hpp:print_text": {
+   "rom": [
+    "$80:C709"
+   ]
+  },
   "src/core/track_progress.cpp:observe_track_markers": {
    "rom": [
     "$81:8B93"
@@ -7198,11 +7936,11 @@
   }
  },
  "totals": {
-  "addresses": 559,
-  "io_addresses": 4,
-  "native_symbols": 345,
-  "rom_addresses": 358,
+  "addresses": 615,
+  "io_addresses": 5,
+  "native_symbols": 395,
+  "rom_addresses": 398,
   "sram_addresses": 7,
-  "wram_addresses": 190
+  "wram_addresses": 205
  }
 }

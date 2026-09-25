@@ -53,6 +53,6 @@ HUNTER-EFFECTS' closeout), pack v14, the listings under `artifacts/static-map/`.
 
 - Exact next experiment/command: `python3 -m tools.unirally_lab.native.track_reference explore
   --reference local/evidence/hunter-effects/review-withheld/w-rev-buttons --binary
-  build/lab-debug/src/core/zoom_zoo_runner --pack local/classic-pal-crawler-tracks-v14.pack
+  build/lab-debug/src/core/zoom_zoo_runner --pack local/classic-pal-crawler-tracks-v15.pack
   --scenario classic.track.41 --out <json>`, then read the contact words (`$0F33`, `$0F2B`,
   `$0F55`, `$0F57`, `$0FAB`) on frames 3,120-3,128.

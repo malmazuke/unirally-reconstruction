@@ -1,5 +1,21 @@
 # Project state
 
+Updated 26 September 2026 (FRONT-END-MAIN-MENU): **the app starts at power-on, as the original
+does.**
+- It shows the Nintendo screen, the title and the main menu (1P, 2P, VS, LEAGUE, OPTIONS), with
+  the arrow, its easing and the palette cycle. 1P starts DRAGSTER; the other choices and the idle
+  demo show a notice and return to the menu.
+- Against three captures of the original, every frame matches: 0 differing pixels, and equal
+  menu state and OAM buffer.
+- The front end's pieces serve every later screen: a general SNES screen renderer (as the
+  reference emulator's PPU draws), the game's text printer, and a frame model of the boot
+  ([R-0054](research/R-0054-boot-title-main-menu.md)). Pack profile **v15** adds the front
+  end's content; live play needs it (`content pack --rules
+  tests/manifests/content/classic-crawler-tracks-pack.json --out
+  local/classic-pal-crawler-tracks-v15.pack`).
+- Next: [FRONT-END-1P-SETUP](../tasks/FRONT-END-1P-SETUP.md). See
+  [FRONT-END-MAIN-MENU](../tasks/FRONT-END-MAIN-MENU.md).
+
 Updated 25 September 2026 (COVERAGE-ROADMAP): **the path from the race engine to the whole game
 is mapped and queued.**
 - All game code runs in banks `$80-$83`: 636 routines, 219 cited by native code, almost all in

@@ -1,12 +1,12 @@
 {
   "schema_version": 1,
   "kind": "classic_pack_rules",
-  "profile_id": "classic.pal.crawler.tracks.v14",
+  "profile_id": "classic.pal.crawler.tracks.v15",
   "source_rom": {
     "size": 2097152,
     "sha256": "a1105819d48c04d680c8292bbfa9abbce05224f1bc231afd66af43b7e0a1fd4e"
   },
-  "rules_id": "classic-crawler-tracks-extraction-v14",
+  "rules_id": "classic-crawler-tracks-extraction-v15",
   "start_state_id": "classic.crawler.race-start.v2",
   "entries": [
     {
@@ -67456,7 +67456,329 @@
       },
       "size": 32,
       "sha256": "a8d2de3b96ccc5a277cb3ffecaa92006913197e0887ccb76f27a7a25d41d6d8e"
+    },
+    {
+      "id": "front-end.asset.001",
+      "source": {
+        "kind": "raw",
+        "pieces": [
+          {
+            "file_offset": 131296,
+            "length": 32
+          }
+        ]
+      },
+      "size": 32,
+      "sha256": "73c8f16cc7220c5806654becfe758100ffef69564fa33de10fe7ba88c1bdbd6a"
+    },
+    {
+      "id": "front-end.asset.002",
+      "source": {
+        "kind": "raw",
+        "pieces": [
+          {
+            "file_offset": 131328,
+            "length": 32
+          }
+        ]
+      },
+      "size": 32,
+      "sha256": "fabc24409856be6df45a345a13bc87dc2b0359456143bc11f31a9d91f4fff73d"
+    },
+    {
+      "id": "front-end.asset.005",
+      "source": {
+        "kind": "raw",
+        "pieces": [
+          {
+            "file_offset": 131424,
+            "length": 32
+          }
+        ]
+      },
+      "size": 32,
+      "sha256": "5cf20ec26943ebf74b9c97cc7051a344febb879d2ea29d8763a8988377cc334a"
+    },
+    {
+      "id": "front-end.asset.027",
+      "source": {
+        "kind": "raw",
+        "pieces": [
+          {
+            "file_offset": 132128,
+            "length": 512
+          }
+        ]
+      },
+      "size": 512,
+      "sha256": "23e5ec214c22a7acedbaabff18b45bf10ed0a644d3c3aecff18a82041988005f"
+    },
+    {
+      "id": "front-end.asset.028",
+      "source": {
+        "kind": "raw",
+        "pieces": [
+          {
+            "file_offset": 132640,
+            "length": 32
+          }
+        ]
+      },
+      "size": 32,
+      "sha256": "4260f86adc609268c4819fe36eaad1e112e2a9234f31986eb1a0dbbb9ad40e8e"
+    },
+    {
+      "id": "front-end.asset.031",
+      "source": {
+        "kind": "raw",
+        "pieces": [
+          {
+            "file_offset": 132736,
+            "length": 32
+          }
+        ]
+      },
+      "size": 32,
+      "sha256": "d7410a2f53e08ecc998efde57354c2151c68e78bb0296434a20ab0c69ac34a67"
+    },
+    {
+      "id": "front-end.asset.068",
+      "source": {
+        "kind": "raw",
+        "pieces": [
+          {
+            "file_offset": 134072,
+            "length": 8000
+          }
+        ]
+      },
+      "size": 8000,
+      "sha256": "62109e5b77150a412bb6361fe3653e39fdc1184c5aed27161f90549bd3ed4799"
+    },
+    {
+      "id": "front-end.asset.069",
+      "source": {
+        "kind": "raw",
+        "pieces": [
+          {
+            "file_offset": 142072,
+            "length": 13568
+          }
+        ]
+      },
+      "size": 13568,
+      "sha256": "2c8fe1823f71d2affad5fc345926c6ddbc300635b43fc5525718e9882c31a2a5"
+    },
+    {
+      "id": "front-end.asset.070",
+      "source": {
+        "kind": "raw",
+        "pieces": [
+          {
+            "file_offset": 155640,
+            "length": 8960
+          }
+        ]
+      },
+      "size": 8960,
+      "sha256": "9f153a74089ead31e5c84fbe0a69c3ab4d0abe0cdfb06f60ece0a3a48cd15a5f"
+    },
+    {
+      "id": "front-end.asset.072",
+      "source": {
+        "kind": "raw",
+        "pieces": [
+          {
+            "file_offset": 164856,
+            "length": 36672
+          }
+        ]
+      },
+      "size": 36672,
+      "sha256": "ec64d417090f8f489caee5fed2fe347bbd004e9f902bb8921c8c35e0c1420d9b"
+    },
+    {
+      "id": "front-end.asset.074",
+      "source": {
+        "kind": "raw",
+        "pieces": [
+          {
+            "file_offset": 208568,
+            "length": 5120
+          }
+        ]
+      },
+      "size": 5120,
+      "sha256": "dac866b120f40dbc9fea643f7520a96ea333aa2d7f6892c19959711adc808310"
+    },
+    {
+      "id": "front-end.asset.077",
+      "source": {
+        "kind": "raw",
+        "pieces": [
+          {
+            "file_offset": 216248,
+            "length": 2816
+          }
+        ]
+      },
+      "size": 2816,
+      "sha256": "5d4d58fe0ac75520a1a86d28026ebb608b630ca9b58c3e458c48f3507f6fe218"
+    },
+    {
+      "id": "front-end.asset.078",
+      "source": {
+        "kind": "raw",
+        "pieces": [
+          {
+            "file_offset": 219064,
+            "length": 1856
+          }
+        ]
+      },
+      "size": 1856,
+      "sha256": "a97c2988f00f8ef70a249f82c96c126f9f6721bdcde6a7bff554bc48a5e4d575"
+    },
+    {
+      "id": "front-end.asset.080",
+      "source": {
+        "kind": "raw",
+        "pieces": [
+          {
+            "file_offset": 222968,
+            "length": 1920
+          }
+        ]
+      },
+      "size": 1920,
+      "sha256": "123014b49256f0458741778d48f1fb962036f793310a2250f5ed15c487345119"
+    },
+    {
+      "id": "front-end.asset.088",
+      "source": {
+        "kind": "raw",
+        "pieces": [
+          {
+            "file_offset": 231896,
+            "length": 8192
+          }
+        ]
+      },
+      "size": 8192,
+      "sha256": "9c229230f22ad540c88de56aadc78f7a7bf967561ccbf28f74a468d374497a47"
+    },
+    {
+      "id": "front-end.asset.089",
+      "source": {
+        "kind": "raw",
+        "pieces": [
+          {
+            "file_offset": 240088,
+            "length": 8192
+          }
+        ]
+      },
+      "size": 8192,
+      "sha256": "e90bb1d27b1fd30d53bc697fe2750777e7e367ccff5c49e3789a6df0f7042ba7"
+    },
+    {
+      "id": "front-end.asset.091",
+      "source": {
+        "kind": "raw",
+        "pieces": [
+          {
+            "file_offset": 251352,
+            "length": 3072
+          }
+        ]
+      },
+      "size": 3072,
+      "sha256": "37eb293068522399f2bfcbff576eb3b5cbd3d58e15acaa4683cc696016e8f51e"
+    },
+    {
+      "id": "front-end.base-palette",
+      "source": {
+        "kind": "raw",
+        "pieces": [
+          {
+            "file_offset": 10452,
+            "length": 216
+          }
+        ]
+      },
+      "size": 216,
+      "sha256": "a933e35522e24c7a08daca7caa10305cd7635521850ef3450dfad00124f36251"
+    },
+    {
+      "id": "front-end.character-table",
+      "source": {
+        "kind": "raw",
+        "pieces": [
+          {
+            "file_offset": 18185,
+            "length": 256
+          }
+        ]
+      },
+      "size": 256,
+      "sha256": "73159dcad6d673d652b68229518cb4166aaa1f0a26d6e90643973bcf653a110b"
+    },
+    {
+      "id": "front-end.main-menu-text",
+      "source": {
+        "kind": "raw",
+        "pieces": [
+          {
+            "file_offset": 11551,
+            "length": 36
+          }
+        ]
+      },
+      "size": 36,
+      "sha256": "b6c620d85b9abbb5b4901af81153edf8c07e3ae9b83847f2d94dcf910c504ced"
+    },
+    {
+      "id": "front-end.arrow-frames",
+      "source": {
+        "kind": "raw",
+        "pieces": [
+          {
+            "file_offset": 31685,
+            "length": 16
+          }
+        ]
+      },
+      "size": 16,
+      "sha256": "2d4174c62a9a7e66cdb3f59cd4738609510ea84469b4fea53a1feb44fd696cd0"
+    },
+    {
+      "id": "front-end.menu-arrow-columns",
+      "source": {
+        "kind": "raw",
+        "pieces": [
+          {
+            "file_offset": 2238,
+            "length": 5
+          }
+        ]
+      },
+      "size": 5,
+      "sha256": "ba56be3883c239ca143d7c41fe5150b4bc3549b193742dcbe15dab7157f00880"
+    },
+    {
+      "id": "front-end.cycle-colours",
+      "source": {
+        "kind": "raw",
+        "pieces": [
+          {
+            "file_offset": 31437,
+            "length": 14
+          }
+        ]
+      },
+      "size": 14,
+      "sha256": "7c6f09ee6029f31598b51a183b9f0f1927dc014108098c1c71c5d2060c31cb43"
     }
   ],
-  "description": "Classic content for DRAGSTER and ZOOM ZOO (the v9 entries, unchanged) and, from TRACK-BREADTH part 3, the fourteen other race tracks a cold start reaches: per track its decoded data, tile columns, tile flags and BG1 tiles (track.NN.*, R-0046 observations 1-2), per scenery (track mod 14) its BG2 tiles, BG2 map and race palette (scenery.SS.*, `$82:DC20-DD84`), and the track name table (`$83:9FFA`). Every new entry is ROM content located by the loader's own directories; tools/unirally_lab/content/tracks.py v10_new_entries generates them. From SPECIAL-TILE-RESPONSE (v11): the two 48-byte signed height tables the corkscrew tile steps through ($00:8088 and, for a rolling rider, $00:80B8; R-0047). From LOCKED-TOURS (v12): the twenty race tracks of the five tours a cold start does not list (track.NN.* for 5, 6, 8, 9, 15, 16, 18, 19, 25, 26, 28, 29, 35, 36, 38, 39, 40, 41, 43, 44) and sceneries 1, 8 and 12 (tracks.v12_new_entries). From TILE-PAIRS-8-12-26 (v13): the loop tile's 17 signed x steps by loop step ($81:834C; R-0051). From HUNTER-EFFECTS (v14): the HUNTER tag effects' blink pattern ($83:D3BC) and the HUNTER opponent's sprite palette (asset 26, character 20 + 6, `$82:DDB0-DDBC`; R-0052)."
+  "description": "Classic content for DRAGSTER and ZOOM ZOO (the v9 entries, unchanged) and, from TRACK-BREADTH part 3, the fourteen other race tracks a cold start reaches: per track its decoded data, tile columns, tile flags and BG1 tiles (track.NN.*, R-0046 observations 1-2), per scenery (track mod 14) its BG2 tiles, BG2 map and race palette (scenery.SS.*, `$82:DC20-DD84`), and the track name table (`$83:9FFA`). Every new entry is ROM content located by the loader's own directories; tools/unirally_lab/content/tracks.py v10_new_entries generates them. From SPECIAL-TILE-RESPONSE (v11): the two 48-byte signed height tables the corkscrew tile steps through ($00:8088 and, for a rolling rider, $00:80B8; R-0047). From LOCKED-TOURS (v12): the twenty race tracks of the five tours a cold start does not list (track.NN.* for 5, 6, 8, 9, 15, 16, 18, 19, 25, 26, 28, 29, 35, 36, 38, 39, 40, 41, 43, 44) and sceneries 1, 8 and 12 (tracks.v12_new_entries). From TILE-PAIRS-8-12-26 (v13): the loop tile's 17 signed x steps by loop step ($81:834C; R-0051). From HUNTER-EFFECTS (v14): the HUNTER tag effects' blink pattern ($83:D3BC) and the HUNTER opponent's sprite palette (asset 26, character 20 + 6, `$82:DDB0-DDBC`; R-0052). From FRONT-END-MAIN-MENU (v15): the content of the boot screens, the title and the main menu: seventeen assets of the directory at `$82:B332` (front-end.asset.NNN) and the tables the front-end code reads in place: the base palette, the text printer's character table, the main menu's text, the arrow's spin frames and columns, and the palette cycle's colours (tools/unirally_lab/content/front_end.py v15_new_entries; R-0054)."
 }

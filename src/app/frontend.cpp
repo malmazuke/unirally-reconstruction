@@ -1,11 +1,13 @@
 #include "frontend.hpp"
 #include "content_pack.hpp"
+#include "result_screen.hpp"
 #include "rider_object.hpp"
 #include "zoom_zoo_movement.hpp"
 
 #include <algorithm>
 #include <limits>
 #include <stdexcept>
+#include <string>
 
 namespace unirally::app {
 
@@ -171,6 +173,54 @@ LiveFrame LivePresentation::render_race(const ZoomZooState& state,const ZoomZooS
     }
   }
   return {render_classic_race(state,content,&drawn,&history),fallback};
+}
+
+std::uint16_t snes_pad_word(std::uint16_t mask) {
+  std::uint16_t word = 0;
+  for (unsigned bit = 0; bit < 12; ++bit)
+    if (mask & (1U << bit))
+      word = static_cast<std::uint16_t>(word | (0x8000U >> bit));
+  return word;
+}
+
+FrontEndSession::FrontEndSession(const ClassicContentPack &pack)
+    : content_(front_end_content(pack)) {}
+
+bool FrontEndSession::update(const std::array<std::uint16_t, 2> &ports) {
+  ++frames_;
+  if (notice_frames_) {
+    if (--notice_frames_ == 0) {
+      state_ = *main_menu_;
+      ++returns_;
+    }
+    return false;
+  }
+  update_front_end(state_, content_,
+                   {snes_pad_word(ports[0]), snes_pad_word(ports[1])});
+  if (state_.in_main_menu && !main_menu_)
+    main_menu_ = state_;
+  if (!state_.mode_chosen)
+    return false;
+  if (state_.mode == FrontEndMode::one_player)
+    return true;
+  // Two seconds of notice at 50 Hz.
+  notice_mode_ = state_.mode;
+  notice_frames_ = 100;
+  ++notices_;
+  return false;
+}
+
+RgbFrame FrontEndSession::frame() const {
+  if (!notice_frames_)
+    return render_front_end(state_);
+  static constexpr std::array<const char *, 8> names{
+      "1P", "2P", "VS", "LEAGUE", "OPTIONS", "THE DEMO", "WIPE RAM", "THIS CODE"};
+  RgbFrame frame{};
+  const std::string line =
+      std::string(names[static_cast<std::size_t>(notice_mode_)]) +
+      " IS NOT NATIVE YET";
+  ui_text(frame, 128 - static_cast<int>(line.size()) * 3, 108, line);
+  return frame;
 }
 
 } // namespace unirally::app

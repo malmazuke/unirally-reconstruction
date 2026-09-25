@@ -478,6 +478,9 @@
    "mode_at_entry": [
     "NmX"
    ],
+   "native": [
+    "src/core/front_end.cpp:copy_oam"
+   ],
    "observed_entries": {},
    "start": "$80:9318",
    "static_entries": {
@@ -736,6 +739,9 @@
    "mode_at_entry": [
     "NmX"
    ],
+   "native": [
+    "src/core/front_end.cpp:fade_frames"
+   ],
    "observed_entries": {},
    "start": "$80:9869",
    "static_entries": {
@@ -772,6 +778,9 @@
    "end": "$80:98A3",
    "mode_at_entry": [
     "NmX"
+   ],
+   "native": [
+    "src/core/front_end.cpp:fade_frames"
    ],
    "observed_entries": {},
    "start": "$80:9885",
@@ -864,6 +873,9 @@
     "NMX",
     "NmX"
    ],
+   "native": [
+    "src/core/front_end.cpp:lay_out_menu_objects"
+   ],
    "observed_entries": {},
    "start": "$80:9B2F",
    "static_entries": {
@@ -918,6 +930,11 @@
    "mode_at_entry": [
     "NmX"
    ],
+   "native": [
+    "src/core/front_end.cpp:clear_oam_buffer",
+    "src/core/front_end.cpp:early_objects, early_palette",
+    "src/core/front_end.cpp:set_nintendo_registers"
+   ],
    "observed_entries": {},
    "start": "$80:A09A",
    "static_entries": {
@@ -935,6 +952,12 @@
    "end": "$80:A1F1",
    "mode_at_entry": [
     "NmX"
+   ],
+   "native": [
+    "src/core/front_end.cpp:load_main_menu",
+    "src/core/front_end.cpp:load_title",
+    "src/core/front_end.cpp:parked_x, parked_y",
+    "src/core/front_end.cpp:reset_screen_state"
    ],
    "observed_entries": {},
    "start": "$80:A16A",
@@ -1009,6 +1032,9 @@
    "mode_at_entry": [
     "NmX"
    ],
+   "native": [
+    "src/core/front_end.cpp:menu_text_tiles_dma"
+   ],
    "observed_entries": {},
    "start": "$80:A877",
    "static_entries": {
@@ -1028,6 +1054,11 @@
    "mode_at_entry": [
     "NmX"
    ],
+   "native": [
+    "src/core/front_end.cpp:boot_frame_waits",
+    "src/core/front_end.cpp:load_main_menu",
+    "src/core/front_end.cpp:load_nintendo_screen"
+   ],
    "observed_entries": {},
    "start": "$80:A8A8",
    "static_entries": {
@@ -1044,6 +1075,10 @@
    "end": "$80:ACD4",
    "mode_at_entry": [
     "NmX"
+   ],
+   "native": [
+    "src/core/front_end.cpp:first_idle, idle_after_move",
+    "src/core/front_end.cpp:run_main_menu"
    ],
    "observed_entries": {},
    "start": "$80:ABC8",
@@ -1062,6 +1097,10 @@
    "end": "$80:AD1E",
    "mode_at_entry": [
     "NmX"
+   ],
+   "native": [
+    "src/core/front_end.cpp:boot_frame_waits",
+    "src/core/front_end.cpp:main_menu_text"
    ],
    "observed_entries": {},
    "start": "$80:ACD5",
@@ -1113,6 +1152,11 @@
    "end": "$80:B0DB",
    "mode_at_entry": [
     "NmX"
+   ],
+   "native": [
+    "src/core/front_end.cpp:boot_frame_waits",
+    "src/core/front_end.cpp:nintendo_palette, nintendo_map, nintendo_tiles",
+    "src/core/front_end.cpp:set_nintendo_registers"
    ],
    "observed_entries": {},
    "start": "$80:B08C",
@@ -1688,7 +1732,9 @@
     "NmX"
    ],
    "native": [
-    "src/core/result_screen.cpp:(file)"
+    "src/core/result_screen.cpp:(file)",
+    "src/core/text_printer.cpp:end_of_text, position, centre, nothing, attribute, skip_pair, first_control",
+    "src/core/text_printer.hpp:(file)"
    ],
    "observed_entries": {},
    "start": "$80:C3BC",
@@ -1794,6 +1840,10 @@
    "mode_at_entry": [
     "NmX"
    ],
+   "native": [
+    "src/core/front_end.cpp:boot_frame",
+    "src/core/front_end.cpp:run_main_menu"
+   ],
    "observed_entries": {},
    "start": "$80:D1EC",
    "static_entries": {
@@ -1830,6 +1880,11 @@
    "mode_at_entry": [
     "NmX"
    ],
+   "native": [
+    "src/core/front_end.cpp:boot_frame_waits",
+    "src/core/front_end.cpp:load_main_menu",
+    "src/core/front_end.cpp:menu_objects, menu_objects_high, menu_map, menu_bg2_tiles, menu_bg1_tiles, menu_bg1_tiles_high"
+   ],
    "observed_entries": {},
    "start": "$80:D20E",
    "static_entries": {
@@ -1846,6 +1901,11 @@
    "end": "$80:D37A",
    "mode_at_entry": [
     "NmX"
+   ],
+   "native": [
+    "src/core/front_end.cpp:boot_frame",
+    "src/core/front_end.cpp:boot_frame_waits",
+    "src/core/front_end.cpp:lay_out_menu_objects"
    ],
    "observed_entries": {},
    "start": "$80:D2C1",
@@ -2154,6 +2214,9 @@
    "mode_at_entry": [
     "NMX"
    ],
+   "native": [
+    "src/core/front_end.hpp:FrontEndMode"
+   ],
    "observed_entries": {},
    "start": "$80:F082",
    "static_entries": {
@@ -2277,6 +2340,11 @@
    "mode_at_entry": [
     "NmX"
    ],
+   "native": [
+    "src/core/front_end.cpp:load_title",
+    "src/core/front_end.cpp:title_palette, title_map, title_tiles",
+    "src/core/front_end.cpp:update_front_end"
+   ],
    "observed_entries": {},
    "start": "$80:F55F",
    "static_entries": {
@@ -2398,6 +2466,10 @@
    "mode_at_entry": [
     "NmX"
    ],
+   "native": [
+    "src/core/front_end.cpp:step_palette_cycle",
+    "src/core/front_end.hpp:PaletteCycle"
+   ],
    "observed_entries": {},
    "start": "$80:FA60",
    "static_entries": {
@@ -2485,6 +2557,9 @@
    "mode_at_entry": [
     "NmX"
    ],
+   "native": [
+    "src/core/front_end.cpp:FrameWaits"
+   ],
    "observed_entries": {},
    "start": "$80:FADF",
    "static_entries": {
@@ -2502,6 +2577,10 @@
    "end": "$80:FBC4",
    "mode_at_entry": [
     "NmX"
+   ],
+   "native": [
+    "src/core/front_end.cpp:quarter_step",
+    "src/core/front_end.hpp:MenuArrow"
    ],
    "observed_entries": {},
    "start": "$80:FAF5",
@@ -8925,6 +9004,9 @@
     "NMX",
     "NmX"
    ],
+   "native": [
+    "src/core/front_end.cpp:load_vram"
+   ],
    "observed_entries": {},
    "start": "$82:B183",
    "static_entries": {
@@ -9003,6 +9085,9 @@
    "mode_at_entry": [
     "NMX",
     "NmX"
+   ],
+   "native": [
+    "src/core/front_end.cpp:load_vram"
    ],
    "observed_entries": {},
    "start": "$82:B1DB",
@@ -10498,6 +10583,9 @@
     "NMX",
     "NmX"
    ],
+   "native": [
+    "src/core/front_end.cpp:load_main_menu"
+   ],
    "observed_entries": {},
    "start": "$83:91F7",
    "static_entries": {
@@ -10954,6 +11042,10 @@
    "mode_at_entry": [
     "NmX"
    ],
+   "native": [
+    "src/core/front_end.cpp:boot_frame",
+    "src/core/front_end.cpp:load_nintendo_screen"
+   ],
    "observed_entries": {},
    "start": "$83:99F6",
    "static_entries": {
@@ -10970,6 +11062,10 @@
    "end": "$83:9A1D",
    "mode_at_entry": [
     "NmX"
+   ],
+   "native": [
+    "src/core/front_end.cpp:park_arrow",
+    "src/core/front_end.cpp:parked_x, parked_y"
    ],
    "observed_entries": {},
    "start": "$83:99FA",
@@ -13404,19 +13500,19 @@
    "call returns in the calling mode": 1262
   },
   "bytes": 131072,
-  "cited_addresses": 811,
+  "cited_addresses": 863,
   "cited_by_class": {
    "data": 13,
-   "inferred": 88,
-   "observed": 662,
-   "unknown": 48
+   "inferred": 90,
+   "observed": 704,
+   "unknown": 56
   },
   "cited_by_position": {
    "dat": 13,
-   "loc": 575,
-   "mid": 17,
-   "sub": 158,
-   "unk": 48
+   "loc": 590,
+   "mid": 18,
+   "sub": 186,
+   "unk": 56
   },
   "conflicts": 0,
   "data": 92,
@@ -13435,9 +13531,9 @@
   "jump_tables": 2,
   "mode_ambiguities": 7,
   "observed": 41778,
-  "routine_bytes_cited_by_native_code": 33227,
+  "routine_bytes_cited_by_native_code": 35384,
   "routines": 636,
-  "routines_cited_by_native_code": 219,
+  "routines_cited_by_native_code": 243,
   "unknown": 52881,
   "unknown_share": 0.4035
  }

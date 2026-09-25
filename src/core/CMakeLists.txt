@@ -23,7 +23,8 @@ target_link_libraries(unirally_movement PUBLIC unirally_contact unirally_input_t
 add_executable(movement_runner movement_runner.cpp)
 target_link_libraries(movement_runner PRIVATE unirally_movement)
 add_library(unirally_presentation STATIC presentation.cpp picture.cpp result_screen.cpp dragster_picture.cpp
-            race_windows.cpp race_hud.cpp rider_object.cpp rider_look.cpp)
+            race_windows.cpp race_hud.cpp rider_object.cpp rider_look.cpp snes_screen.cpp
+            text_printer.cpp front_end.cpp)
 target_include_directories(unirally_presentation PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(unirally_presentation PUBLIC unirally_movement lab_options)
 add_executable(presentation_runner presentation_runner.cpp)
@@ -32,5 +33,7 @@ target_link_libraries(presentation_runner PRIVATE unirally_presentation)
 add_executable(zoom_zoo_runner zoom_zoo_runner.cpp)
 target_link_libraries(zoom_zoo_runner PRIVATE unirally_movement)
 
+add_executable(front_end_runner front_end_runner.cpp)
+target_link_libraries(front_end_runner PRIVATE unirally_presentation)
 add_executable(classic_race_presentation_runner classic_race_presentation_runner.cpp)
 target_link_libraries(classic_race_presentation_runner PRIVATE unirally_presentation)
