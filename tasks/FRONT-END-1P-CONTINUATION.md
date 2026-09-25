@@ -2,16 +2,18 @@
 
 ## Assignment
 
-- Status: **ready**. Queued 26 September 2026 by FRONT-END-1P-SETUP's session.
+- Status: **in progress**. Claimed 26 September 2026 at 20:55Z by the Claude Code desktop session
+  that ran FRONT-END-1P-SETUP, on base `7d92810`.
 - Milestone: M4 (original game coverage: menus)
 - Coordinator: the claiming session is coordinator, primary and integrator
 - Task provider (fixed for all children; record any user-initiated platform change): Anthropic
-- Worker/session/runtime/model: set at claim
+- Worker/session/runtime/model: Claude Code desktop app, Claude Opus 5.5 (`claude-opus-5-5`)
 - Actual model/reasoning effort, routing rationale and frontier escalation question (if any):
   **tier 2** for the screens; **tier 1** for anything that changes how a race is scored or
   started.
 - Provider quota window/baseline timestamp, used/remaining or unknown, reserve and session
-  allowance (D-0004): set at claim.
+  allowance (D-0004): at claim the 5-hour window was 6% used and the weekly window 34%. The
+  user's allowance: continue until the weekly window reaches 50%.
 - Reviewer (primary automatically spawns fresh model/effort, isolated checkout; no user
   trigger): a fresh Anthropic subagent.
 - Dependencies and evidence of acceptance: FRONT-END-1P-SETUP (the one-player screens, R-0055,
