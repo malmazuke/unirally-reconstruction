@@ -229,7 +229,12 @@ def original_rows(directory):
                 # $83:904A-90F0 and $80:F88D publish the graph extrema and totals to SRAM;
                 # the laps and totals of both riders survive there unchanged.
                 row = bytearray(archive); row[8:12] = frame.to_bytes(4, 'little')
-                stable = STABLE_RESULT[mode]['player_won' if finish[0] <= finish[1] else 'player_lost']
+                # A rider still riding when the result loads finishes last (RESULT-TITLE-GLYPHS:
+                # the DOWN+UP winner's result loads before the opponent's finish).
+                if finish[0] is None:
+                    raise ValueError(f'result loading at {frame} without the player\'s finish')
+                won = finish[1] is None or finish[0] <= finish[1]
+                stable = STABLE_RESULT[mode]['player_won' if won else 'player_lost']
                 row[-2:] = min(stable, frame-loading+1).to_bytes(2, 'little')
                 if row[467:511] != s[0x755:0x769]+s[0x7bf:0x7d3]+s[0x769:0x76b]+s[0x7d3:0x7d5]:
                     error = dict(frame=frame, error='result lap/total archive differs from original (left the result screen?)')

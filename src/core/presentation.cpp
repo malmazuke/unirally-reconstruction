@@ -154,7 +154,7 @@ ClassicRacePresentationContent classic_race_presentation_content(const ClassicCo
             // not at the first result frame.
             for (const auto byte :
                  content.result_track_name.first(content.result_track_name.size() - 1U))
-                if (byte != '_') (void)result_title_tile(static_cast<char>(byte));
+                (void)result_title_glyph(static_cast<char>(byte));
         }
         content.geometry = track_geometry(content.track);
         return content;

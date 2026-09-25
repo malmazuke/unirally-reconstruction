@@ -1687,6 +1687,9 @@
     "NMX",
     "NmX"
    ],
+   "native": [
+    "src/core/result_screen.cpp:(file)"
+   ],
    "observed_entries": {},
    "start": "$80:C3BC",
    "static_entries": {
@@ -2374,6 +2377,9 @@
    "end": "$80:F8E6",
    "mode_at_entry": [
     "NMX"
+   ],
+   "native": [
+    "src/core/result_screen.cpp:(file)"
    ],
    "observed_entries": {},
    "start": "$80:F8B9",
@@ -13398,19 +13404,19 @@
    "call returns in the calling mode": 1262
   },
   "bytes": 131072,
-  "cited_addresses": 788,
+  "cited_addresses": 800,
   "cited_by_class": {
    "data": 13,
    "inferred": 86,
-   "observed": 649,
-   "unknown": 40
+   "observed": 659,
+   "unknown": 42
   },
   "cited_by_position": {
    "dat": 13,
-   "loc": 564,
+   "loc": 571,
    "mid": 17,
-   "sub": 154,
-   "unk": 40
+   "sub": 157,
+   "unk": 42
   },
   "conflicts": 0,
   "data": 92,
@@ -13429,9 +13435,9 @@
   "jump_tables": 2,
   "mode_ambiguities": 7,
   "observed": 41778,
-  "routine_bytes_cited_by_native_code": 33149,
+  "routine_bytes_cited_by_native_code": 33227,
   "routines": 636,
-  "routines_cited_by_native_code": 217,
+  "routines_cited_by_native_code": 219,
   "unknown": 52881,
   "unknown_share": 0.4035
  }

@@ -1,5 +1,17 @@
 # Project state
 
+Updated 25 September 2026 (RESULT-TITLE-GLYPHS): **DOWN+UP and BOO! start in the app, and every
+result title follows the original's text printer.**
+- The original prints the title through its general text printer. Letters and digits get the
+  big font. Any other byte of a track's name gets a small glyph one tile wide: `+`, `!`, `'`,
+  and `_` as the small space ([R-0053](research/R-0053-result-title-printer.md)).
+- The titles of both tracks match the original's shapes on every captured result frame, and
+  match to the pixel on frames in native's palette phase.
+- A winner's result now also draws while the opponent is still riding, as the original does.
+- The user's stated goal (25 September 2026) is the whole game natively, menus and all. Next is
+  a coverage roadmap that inventories the systems not yet recovered and queues their tasks. See
+  [RESULT-TITLE-GLYPHS](../tasks/RESULT-TITLE-GLYPHS.md).
+
 Updated 25 September 2026 (NATIVE-READABILITY part 3, task accepted): **no function in
 `src/core` exceeds 80 lines, and the presentation reads by concern.**
 - `presentation.cpp` is split into the SNES picture's parts, the result screen, the legacy

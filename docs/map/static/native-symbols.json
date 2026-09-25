@@ -253,10 +253,66 @@
    "region": "rom"
   },
   {
+   "address": "$80:C3BC",
+   "native": [
+    "src/core/result_screen.cpp:(file)"
+   ],
+   "region": "rom"
+  },
+  {
    "address": "$80:C431",
    "native": [
     "src/core/presentation.hpp:build_dragster_result_map",
+    "src/core/result_screen.cpp:build_result_map",
+    "src/core/result_screen.cpp:write_result_title"
+   ],
+   "range_ends": [
+    "$80:C440"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:C4B8",
+   "native": [
     "src/core/result_screen.cpp:build_result_map"
+   ],
+   "range_ends": [
+    "$80:C4FD"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:C579",
+   "native": [
+    "src/core/result_screen.cpp:small_glyph_tile"
+   ],
+   "range_ends": [
+    "$80:C58A"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:C58F",
+   "native": [
+    "src/core/result_screen.cpp:write_result_title"
+   ],
+   "range_ends": [
+    "$80:C596"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:C709",
+   "native": [
+    "src/core/result_screen.cpp:(file)",
+    "src/core/result_screen.cpp:result_title_glyph"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:D187",
+   "native": [
+    "src/core/result_screen.cpp:(file)"
    ],
    "region": "rom"
   },
@@ -268,6 +324,13 @@
    ],
    "range_ends": [
     "$80:F8A5"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:F8B9",
+   "native": [
+    "src/core/result_screen.cpp:(file)"
    ],
    "region": "rom"
   },
@@ -5911,9 +5974,18 @@
     "$0B92"
    ]
   },
+  "src/core/result_screen.cpp:(file)": {
+   "rom": [
+    "$80:C3BC",
+    "$80:C709",
+    "$80:D187",
+    "$80:F8B9"
+   ]
+  },
   "src/core/result_screen.cpp:build_result_map": {
    "rom": [
-    "$80:C431"
+    "$80:C431",
+    "$80:C4B8"
    ]
   },
   "src/core/result_screen.cpp:check_result_composition": {
@@ -5929,6 +6001,22 @@
   "src/core/result_screen.cpp:result_title": {
    "rom": [
     "$83:9FFA"
+   ]
+  },
+  "src/core/result_screen.cpp:result_title_glyph": {
+   "rom": [
+    "$80:C709"
+   ]
+  },
+  "src/core/result_screen.cpp:small_glyph_tile": {
+   "rom": [
+    "$80:C579"
+   ]
+  },
+  "src/core/result_screen.cpp:write_result_title": {
+   "rom": [
+    "$80:C431",
+    "$80:C58F"
    ]
   },
   "src/core/reward_queue.cpp:announce_combination": {
@@ -7110,10 +7198,10 @@
   }
  },
  "totals": {
-  "addresses": 552,
+  "addresses": 559,
   "io_addresses": 4,
-  "native_symbols": 341,
-  "rom_addresses": 351,
+  "native_symbols": 345,
+  "rom_addresses": 358,
   "sram_addresses": 7,
   "wram_addresses": 190
  }
