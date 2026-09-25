@@ -51,76 +51,94 @@ void emit(const unirally::MovementState& state) {
     }
     std::cout << std::dec << '\n';
 }
-}
 
-int main(int argc, char** argv) try {
+struct Options {
     std::filesystem::path seed, content, pack_path, inputs;
     std::string start_state;
+};
+
+// One seed or start state, one content directory or pack, and the controller stream.
+Options parse_options(int argc, char** argv) {
+    Options options;
     for (int index = 1; index < argc; index += 2) {
         if (index + 1 >= argc)
             throw std::invalid_argument("movement runner requires option values");
         const std::string option = argv[index];
         if (option == "--seed")
-            seed = argv[index + 1];
+            options.seed = argv[index + 1];
         else if (option == "--content-dir")
-            content = argv[index + 1];
+            options.content = argv[index + 1];
         else if (option == "--content-pack")
-            pack_path = argv[index + 1];
+            options.pack_path = argv[index + 1];
         else if (option == "--start-state")
-            start_state = argv[index + 1];
+            options.start_state = argv[index + 1];
         else if (option == "--inputs")
-            inputs = argv[index + 1];
+            options.inputs = argv[index + 1];
         else
             throw std::invalid_argument("unknown movement runner option: " + option);
     }
-    if (inputs.empty() || (seed.empty() == start_state.empty())
-        || (content.empty() == pack_path.empty())) {
+    if (options.inputs.empty() || (options.seed.empty() == options.start_state.empty())
+        || (options.content.empty() == options.pack_path.empty())) {
         throw std::invalid_argument("movement runner requires exactly one seed/start state, one "
                                     "content directory/pack, and inputs");
     }
-    auto state = seed.empty() ? unirally::classic_crawler_dragster_start()
-                              : unirally::deserialize_movement_state(read_bytes(seed));
-    if (!start_state.empty() && start_state != "classic.crawler.dragster.race-start.v1")
-        throw std::invalid_argument("unsupported semantic start-state ID");
+    return options;
+}
+
+// The movement content, from the pack or a loose directory; it owns the loose bytes the
+// content's spans point into.
+struct BoundContent {
     std::unique_ptr<unirally::ClassicContentPack> pack;
     std::vector<std::uint8_t> masks, decrements, track, poses, templates, transitions, columns,
         flags, slopes, displacement, idle_pose, reward, reward_class;
-    if (!pack_path.empty()) pack = std::make_unique<unirally::ClassicContentPack>(pack_path);
-    const auto load = [&](const char* filename,
-                          const char* logical_id) -> std::vector<std::uint8_t> {
-        (void)logical_id;
-        if (pack) return {};
-        return read_bytes(content / filename);
-    };
-    masks = load("speed-masks.bin", "physics.speed.masks");
-    decrements = load("speed-decrements.bin", "physics.speed.decrements");
-    track = load("track-data.bin", "physics.track.dragster.data");
-    poses = load("collision-poses.bin", "physics.rider.collision-poses");
-    templates = load("collision-templates.bin", "physics.rider.collision-templates");
-    transitions = load("progress-transitions.bin", "physics.track.progress-transitions");
-    columns = load("tile-tables.bin", "physics.track.dragster.tile-columns");
-    flags = load("tile-flags.bin", "physics.track.dragster.tile-flags");
-    slopes = load("pose-slopes.bin", "physics.rider.pose-slopes");
-    displacement = load("displacement-table.bin", "physics.rider.displacement-table");
-    idle_pose = load("idle-pose-table.bin", "physics.rider.idle-pose-table");
-    reward = load("rotation-reward.bin", "physics.reward.rotation-value");
-    reward_class = load("rotation-class.bin", "physics.reward.rotation-class");
-    const auto bytes = [&](const std::vector<std::uint8_t>& loose,
-                           const char* logical_id) -> std::span<const std::uint8_t> {
+
+    std::span<const std::uint8_t> bytes(const std::vector<std::uint8_t>& loose,
+                                        const char* logical_id) const {
         return pack ? pack->entry(logical_id) : std::span<const std::uint8_t>(loose);
+    }
+    unirally::MovementContent movement() const {
+        return {
+            {bytes(track, "physics.track.dragster.data"),
+             bytes(poses, "physics.rider.collision-poses"),
+             bytes(templates, "physics.rider.collision-templates")},
+            {bytes(columns, "physics.track.dragster.tile-columns"),
+             bytes(flags, "physics.track.dragster.tile-flags")},
+            bytes(transitions, "physics.track.progress-transitions"),
+            bytes(slopes, "physics.rider.pose-slopes"),
+            bytes(displacement, "physics.rider.displacement-table"),
+            bytes(idle_pose, "physics.rider.idle-pose-table"),
+            bytes(reward, "physics.reward.rotation-value"),
+            bytes(reward_class, "physics.reward.rotation-class"),
+            {bytes(masks, "physics.speed.masks"), bytes(decrements, "physics.speed.decrements")}};
+    }
+};
+
+void bind_content(BoundContent& c, const Options& options) {
+    if (!options.pack_path.empty())
+        c.pack = std::make_unique<unirally::ClassicContentPack>(options.pack_path);
+    const auto load = [&](const char* filename) -> std::vector<std::uint8_t> {
+        if (c.pack) return {};
+        return read_bytes(options.content / filename);
     };
-    const unirally::MovementContent movement_content{
-        {bytes(track, "physics.track.dragster.data"), bytes(poses, "physics.rider.collision-poses"),
-         bytes(templates, "physics.rider.collision-templates")},
-        {bytes(columns, "physics.track.dragster.tile-columns"),
-         bytes(flags, "physics.track.dragster.tile-flags")},
-        bytes(transitions, "physics.track.progress-transitions"),
-        bytes(slopes, "physics.rider.pose-slopes"),
-        bytes(displacement, "physics.rider.displacement-table"),
-        bytes(idle_pose, "physics.rider.idle-pose-table"),
-        bytes(reward, "physics.reward.rotation-value"),
-        bytes(reward_class, "physics.reward.rotation-class"),
-        {bytes(masks, "physics.speed.masks"), bytes(decrements, "physics.speed.decrements")}};
+    c.masks = load("speed-masks.bin");
+    c.decrements = load("speed-decrements.bin");
+    c.track = load("track-data.bin");
+    c.poses = load("collision-poses.bin");
+    c.templates = load("collision-templates.bin");
+    c.transitions = load("progress-transitions.bin");
+    c.columns = load("tile-tables.bin");
+    c.flags = load("tile-flags.bin");
+    c.slopes = load("pose-slopes.bin");
+    c.displacement = load("displacement-table.bin");
+    c.idle_pose = load("idle-pose-table.bin");
+    c.reward = load("rotation-reward.bin");
+    c.reward_class = load("rotation-class.bin");
+}
+
+// The controller stream ("frame player opponent"), each state printed after its update;
+// port 1 (the opponent) must stay released.
+int run_controller_stream(unirally::MovementState& state, const unirally::MovementContent& content,
+                          const std::filesystem::path& inputs) {
     std::ifstream stream(inputs);
     if (!stream) throw std::runtime_error("cannot open controller input stream");
     std::cout << "unirally-movement-v1\n";
@@ -133,12 +151,27 @@ int main(int argc, char** argv) try {
         }
         if (opponent_mask != 0)
             throw std::invalid_argument("controller port 1 is outside the recovered domain");
-        unirally::update_movement(state, buttons(static_cast<std::uint16_t>(player_mask)),
-                                  movement_content);
+        unirally::update_movement(state, buttons(static_cast<std::uint16_t>(player_mask)), content);
         emit(state);
     }
     if (!stream.eof()) throw std::invalid_argument("malformed controller input stream");
     return 0;
+}
+
+} // namespace
+
+int main(int argc, char** argv) try {
+    const auto options = parse_options(argc, argv);
+    auto state = options.seed.empty()
+                   ? unirally::classic_crawler_dragster_start()
+                   : unirally::deserialize_movement_state(read_bytes(options.seed));
+    if (!options.start_state.empty()
+        && options.start_state != "classic.crawler.dragster.race-start.v1")
+        throw std::invalid_argument("unsupported semantic start-state ID");
+    BoundContent content;
+    bind_content(content, options);
+    const auto movement = content.movement();
+    return run_controller_stream(state, movement, options.inputs);
 } catch (const std::exception& error) {
     std::cerr << error.what() << '\n';
     return 1;
