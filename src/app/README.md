@@ -20,6 +20,11 @@ Later launches need only the validated pack at
 python3 tools/project.py frontend run
 ```
 
+The app starts at power-on, as the original does (R-0054): the Nintendo screen, the title
+and the main menu. 1P starts DRAGSTER. 2P, VS, LEAGUE, OPTIONS and the demo are not native
+yet: choosing one, or leaving the menu idle for the demo, shows a notice and returns to the
+main menu. `--track dragster|zoom-zoo|NN` starts directly in that race instead.
+
 DRAGSTER plays on the shared race engine (R-0038), whose jump, brake,
 reversal, trick and finish tables only the two-track pack carries. With the
 25-entry DRAGSTER pack the launcher uses a valid
