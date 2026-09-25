@@ -263,7 +263,8 @@
   {
    "address": "$80:F88D",
    "native": [
-    "src/core/race_progress.cpp:zoom_result_fields"
+    "src/core/race_progress.cpp:graph_update, totals_update, dragster_totals_update",
+    "src/core/race_progress.cpp:result_fields"
    ],
    "range_ends": [
     "$80:F8A5"
@@ -273,7 +274,7 @@
   {
    "address": "$81:8050",
    "native": [
-    "src/core/race_progress.cpp:update_zoom_checkpoint"
+    "src/core/race_progress.cpp:update_checkpoints"
    ],
    "range_ends": [
     "$81:82B6"
@@ -283,7 +284,7 @@
   {
    "address": "$81:8139",
    "native": [
-    "src/core/race_progress.cpp:update_zoom_checkpoint"
+    "src/core/race_progress.cpp:cross_start_line"
    ],
    "range_ends": [
     "$81:814A"
@@ -301,7 +302,7 @@
   {
    "address": "$81:8197",
    "native": [
-    "src/core/race_progress.cpp:update_zoom_checkpoint"
+    "src/core/race_progress.cpp:cross_start_line"
    ],
    "range_ends": [
     "$81:81A3"
@@ -997,7 +998,7 @@
   {
    "address": "$81:9FB0",
    "native": [
-    "src/core/race_camera.cpp:update_zoom_camera",
+    "src/core/race_camera.cpp:update_camera",
     "src/core/zoom_zoo_movement.hpp:TrackGeometry"
    ],
    "range_ends": [
@@ -1009,7 +1010,7 @@
   {
    "address": "$81:9FF8",
    "native": [
-    "src/core/race_camera.cpp:update_zoom_camera"
+    "src/core/race_camera.cpp:update_camera"
    ],
    "range_ends": [
     "$81:A02B"
@@ -1095,7 +1096,7 @@
   {
    "address": "$81:A520",
    "native": [
-    "src/core/race_camera.cpp:update_zoom_camera"
+    "src/core/race_camera.cpp:update_camera"
    ],
    "range_ends": [
     "$81:A53F"
@@ -1418,14 +1419,14 @@
   {
    "address": "$81:CD2A",
    "native": [
-    "src/core/race_setup.cpp:classic_race_start"
+    "src/core/race_setup.cpp:start_countdown, base_speed_cap, no_time"
    ],
    "region": "rom"
   },
   {
    "address": "$81:D673",
    "native": [
-    "src/core/race_progress.cpp:update_zoom_checkpoint"
+    "src/core/race_progress.cpp:cross_start_line"
    ],
    "region": "rom"
   },
@@ -1731,7 +1732,8 @@
    "address": "$82:8953",
    "native": [
     "src/core/movement.cpp:update_opponent_finish_pose",
-    "src/core/race_progress.cpp:update_zoom_finish"
+    "src/core/race_progress.cpp:step_finish_pose",
+    "src/core/race_progress.cpp:update_finish"
    ],
    "range_ends": [
     "$82:89C2"
@@ -1741,7 +1743,7 @@
   {
    "address": "$82:8959",
    "native": [
-    "src/core/race_progress.cpp:update_zoom_finish"
+    "src/core/race_progress.cpp:finish_rider"
    ],
    "range_ends": [
     "$82:8965"
@@ -2171,14 +2173,18 @@
   {
    "address": "$82:A6FD",
    "native": [
-    "src/core/race_update.cpp:run_physics"
+    "src/core/race_update.cpp:run_physics",
+    "src/core/speed_limits.cpp:limit_rider_speed"
+   ],
+   "range_ends": [
+    "$82:A8A4"
    ],
    "region": "rom"
   },
   {
    "address": "$82:A705",
    "native": [
-    "src/core/speed_limits.cpp:limit_rider_speed"
+    "src/core/speed_limits.cpp:drag_step, fast_boost_decay"
    ],
    "range_ends": [
     "$82:A76F"
@@ -2188,7 +2194,7 @@
   {
    "address": "$82:A774",
    "native": [
-    "src/core/speed_limits.cpp:limit_rider_speed"
+    "src/core/speed_limits.cpp:launch_extra, most_extra, vertical_base_cap"
    ],
    "range_ends": [
     "$82:A7F8"
@@ -2208,7 +2214,7 @@
   {
    "address": "$82:A875",
    "native": [
-    "src/core/speed_limits.cpp:limit_rider_speed"
+    "src/core/speed_limits.cpp:decay_buckets"
    ],
    "range_ends": [
     "$82:A8A4"
@@ -2361,7 +2367,7 @@
   {
    "address": "$82:ACAE",
    "native": [
-    "src/core/race_camera.cpp:update_zoom_visibility"
+    "src/core/race_camera.cpp:update_visibility"
    ],
    "range_ends": [
     "$82:AD7A"
@@ -2417,7 +2423,7 @@
   {
    "address": "$82:D724",
    "native": [
-    "src/core/race_setup.cpp:classic_race_start"
+    "src/core/race_setup.cpp:start_countdown, base_speed_cap, no_time"
    ],
    "range_ends": [
     "$82:D731"
@@ -2427,7 +2433,7 @@
   {
    "address": "$82:D76D",
    "native": [
-    "src/core/race_setup.cpp:classic_race_start"
+    "src/core/race_setup.cpp:start_countdown, base_speed_cap, no_time"
    ],
    "range_ends": [
     "$82:D76F"
@@ -2446,6 +2452,7 @@
    "address": "$82:D7C6",
    "native": [
     "src/core/race_setup.cpp:classic_crawler_zoom_zoo_start",
+    "src/core/race_setup.cpp:start_countdown, base_speed_cap, no_time",
     "src/core/zoom_zoo_movement.hpp:classic_crawler_zoom_zoo_start"
    ],
    "range_ends": [
@@ -2464,7 +2471,7 @@
   {
    "address": "$82:D841",
    "native": [
-    "src/core/race_setup.cpp:classic_race_start"
+    "src/core/race_setup.cpp:start_countdown, base_speed_cap, no_time"
    ],
    "range_ends": [
     "$82:D844"
@@ -2481,7 +2488,7 @@
   {
    "address": "$82:D972",
    "native": [
-    "src/core/race_setup.cpp:classic_race_start"
+    "src/core/race_setup.cpp:start_countdown, base_speed_cap, no_time"
    ],
    "range_ends": [
     "$82:D975"
@@ -2544,7 +2551,7 @@
   {
    "address": "$83:904A",
    "native": [
-    "src/core/race_progress.cpp:zoom_result_fields",
+    "src/core/race_progress.cpp:graph_update, totals_update, dragster_totals_update",
     "src/core/zoom_zoo_movement.hpp:ClassicRaceScenario::tour_race"
    ],
    "range_ends": [
@@ -2595,6 +2602,7 @@
    "address": "$83:CC0B",
    "native": [
     "src/core/race_setup.cpp:classic_race_scenario",
+    "src/core/race_setup.cpp:hunter_ai_level, ai_level",
     "src/core/zoom_zoo_movement.hpp:ClassicRaceScenario::ai_level",
     "src/core/zoom_zoo_movement.hpp:race_adjustment_limit"
    ],
@@ -2628,7 +2636,7 @@
   {
    "address": "$83:CCAB",
    "native": [
-    "src/core/race_progress.cpp:update_zoom_finish"
+    "src/core/race_progress.cpp:finish_rider"
    ],
    "range_ends": [
     "$83:CCB5"
@@ -3017,7 +3025,7 @@
    "address": "$83:E8E0",
    "native": [
     "src/core/race_progress.cpp:classic_race_player_won",
-    "src/core/race_progress.cpp:update_zoom_finish"
+    "src/core/race_progress.cpp:update_finish"
    ],
    "range_ends": [
     "$83:EC13"
@@ -3028,7 +3036,7 @@
    "address": "$83:E90D",
    "native": [
     "src/core/movement.hpp:finish_speed_toward_zero",
-    "src/core/race_progress.cpp:update_zoom_finish",
+    "src/core/race_progress.cpp:finish_rider",
     "src/core/rider_motion.cpp:apply_finish_slowdown"
    ],
    "range_ends": [
@@ -3061,7 +3069,7 @@
   {
    "address": "$83:EA9F",
    "native": [
-    "src/core/race_progress.cpp:update_zoom_finish"
+    "src/core/race_progress.cpp:finish_rider"
    ],
    "region": "rom"
   },
@@ -3223,13 +3231,6 @@
    "region": "wram"
   },
   {
-   "address": "$0212",
-   "native": [
-    "src/core/special_tiles.cpp:update_mud_tile"
-   ],
-   "region": "wram"
-  },
-  {
    "address": "$0300",
    "native": [
     "src/core/flat_contact.hpp:ContactContext::phase",
@@ -3253,8 +3254,8 @@
   {
    "address": "$0304",
    "native": [
-    "src/core/race_progress.cpp:race_update_phase",
-    "src/core/race_progress.cpp:update_zoom_finish"
+    "src/core/race_progress.cpp:finish_rider",
+    "src/core/race_progress.cpp:race_update_phase"
    ],
    "region": "wram"
   },
@@ -3712,7 +3713,7 @@
   {
    "address": "$0D15",
    "native": [
-    "src/core/race_progress.cpp:update_zoom_checkpoint"
+    "src/core/race_progress.cpp:cross_start_line"
    ],
    "region": "wram"
   },
@@ -5569,14 +5570,14 @@
     "$82:D382"
    ]
   },
-  "src/core/race_camera.cpp:update_zoom_camera": {
+  "src/core/race_camera.cpp:update_camera": {
    "rom": [
     "$81:9FB0",
     "$81:9FF8",
     "$81:A520"
    ]
   },
-  "src/core/race_camera.cpp:update_zoom_visibility": {
+  "src/core/race_camera.cpp:update_visibility": {
    "rom": [
     "$82:ACAE"
    ]
@@ -5586,14 +5587,8 @@
     "$83:E8E0"
    ]
   },
-  "src/core/race_progress.cpp:race_update_phase": {
-   "wram": [
-    "$0304"
-   ]
-  },
-  "src/core/race_progress.cpp:update_zoom_checkpoint": {
+  "src/core/race_progress.cpp:cross_start_line": {
    "rom": [
-    "$81:8050",
     "$81:8139",
     "$81:8197",
     "$81:D673"
@@ -5602,12 +5597,10 @@
     "$0D15"
    ]
   },
-  "src/core/race_progress.cpp:update_zoom_finish": {
+  "src/core/race_progress.cpp:finish_rider": {
    "rom": [
-    "$82:8953",
     "$82:8959",
     "$83:CCAB",
-    "$83:E8E0",
     "$83:E90D",
     "$83:EA9F"
    ],
@@ -5615,10 +5608,36 @@
     "$0304"
    ]
   },
-  "src/core/race_progress.cpp:zoom_result_fields": {
+  "src/core/race_progress.cpp:graph_update, totals_update, dragster_totals_update": {
    "rom": [
     "$80:F88D",
     "$83:904A"
+   ]
+  },
+  "src/core/race_progress.cpp:race_update_phase": {
+   "wram": [
+    "$0304"
+   ]
+  },
+  "src/core/race_progress.cpp:result_fields": {
+   "rom": [
+    "$80:F88D"
+   ]
+  },
+  "src/core/race_progress.cpp:step_finish_pose": {
+   "rom": [
+    "$82:8953"
+   ]
+  },
+  "src/core/race_progress.cpp:update_checkpoints": {
+   "rom": [
+    "$81:8050"
+   ]
+  },
+  "src/core/race_progress.cpp:update_finish": {
+   "rom": [
+    "$82:8953",
+    "$83:E8E0"
    ]
   },
   "src/core/race_setup.cpp:classic_crawler_zoom_zoo_start": {
@@ -5645,14 +5664,24 @@
   "src/core/race_setup.cpp:classic_race_start": {
    "rom": [
     "$81:C615",
+    "$82:D7A4",
+    "$82:D95C",
+    "$82:DB87"
+   ]
+  },
+  "src/core/race_setup.cpp:hunter_ai_level, ai_level": {
+   "rom": [
+    "$83:CC0B"
+   ]
+  },
+  "src/core/race_setup.cpp:start_countdown, base_speed_cap, no_time": {
+   "rom": [
     "$81:CD2A",
     "$82:D724",
     "$82:D76D",
-    "$82:D7A4",
+    "$82:D7C6",
     "$82:D841",
-    "$82:D95C",
-    "$82:D972",
-    "$82:DB87"
+    "$82:D972"
    ]
   },
   "src/core/race_setup.cpp:track_geometry": {
@@ -6422,9 +6451,6 @@
   "src/core/special_tiles.cpp:update_mud_tile": {
    "rom": [
     "$81:8999"
-   ],
-   "wram": [
-    "$0212"
    ]
   },
   "src/core/special_tiles.cpp:update_special_tile_counters": {
@@ -6435,11 +6461,24 @@
     "$82:9124"
    ]
   },
+  "src/core/speed_limits.cpp:decay_buckets": {
+   "rom": [
+    "$82:A875"
+   ]
+  },
+  "src/core/speed_limits.cpp:drag_step, fast_boost_decay": {
+   "rom": [
+    "$82:A705"
+   ]
+  },
+  "src/core/speed_limits.cpp:launch_extra, most_extra, vertical_base_cap": {
+   "rom": [
+    "$82:A774"
+   ]
+  },
   "src/core/speed_limits.cpp:limit_rider_speed": {
    "rom": [
-    "$82:A705",
-    "$82:A774",
-    "$82:A875"
+    "$82:A6FD"
    ]
   },
   "src/core/speed_limits.hpp:SpeedLimitContext::player_base_cap": {
@@ -7083,11 +7122,11 @@
   }
  },
  "totals": {
-  "addresses": 561,
+  "addresses": 560,
   "io_addresses": 11,
-  "native_symbols": 320,
+  "native_symbols": 329,
   "rom_addresses": 351,
   "sram_addresses": 7,
-  "wram_addresses": 192
+  "wram_addresses": 191
  }
 }

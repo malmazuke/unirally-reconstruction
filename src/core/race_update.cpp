@@ -84,7 +84,7 @@ ControllerButtons gate_controller(const ZoomZooState& state, const ControllerBut
 // black updates, then seven brightness steps. The final race stays as the archive.
 void advance_result_screen(ZoomZooState& state, const ClassicRaceScenario& scenario) {
     if (state.result_updates < stable_result_updates(state)) ++state.result_updates;
-    state.result = zoom_result_fields(state.race, state.result_updates, scenario.tour_race);
+    state.result = result_fields(state.race, state.result_updates, scenario.tour_race);
     ++state.movement.frame;
 }
 
@@ -305,7 +305,7 @@ void begin_rider_update(ZoomZooState& next, unsigned index, const ZoomZooContent
     auto& transition = next.reflection[index];
     auto& surface = next.surface[index];
     auto& tiles = next.special_tiles[index];
-    if (next.complete_race) update_zoom_checkpoint(next, index, content);
+    if (next.complete_race) update_checkpoints(next, index, content);
     surface.tile_mode = 0;
     surface.animation_delta = 0;
     surface.tile_pose = 0;
@@ -730,12 +730,11 @@ void finish_update(const ZoomZooState& state, ZoomZooState& next,
                                   state.native_initialization
                                       ? std::span<std::uint8_t>{next.learned_weights[1]}
                                       : std::span<std::uint8_t>{});
-    if (state.complete_race)
-        update_zoom_camera(next, track_geometry(content.movement.sampling.track));
+    if (state.complete_race) update_camera(next, track_geometry(content.movement.sampling.track));
     for (unsigned index = 0; index < 2; ++index)
         if (!outcomes[index].contact_skip) update_rider_contact(state, next, index, content);
     if (state.complete_race)
-        update_zoom_visibility(next, track_geometry(content.movement.sampling.track));
+        update_visibility(next, track_geometry(content.movement.sampling.track));
     update_hunter_effects(next, content.hunter_blink);
     if (state.native_initialization) update_tutorial_hints(next);
     ++whole.frame;
@@ -801,7 +800,7 @@ void update_zoom_zoo(ZoomZooState& state, const ControllerButtons& requested_but
     const TrickButtons trick_buttons{
         pressed_a && !countdown_holds, buttons.x && !countdown_holds,
         countdown_holds ? 0U : (unsigned(whole.opponent_ai.trick_selector) & (ai_off ? ~6U : ~0U))};
-    if (state.complete_race) update_zoom_finish(next, content);
+    if (state.complete_race) update_finish(next, content);
     const unsigned active = whole.progress_phase ? 0U : 1U;
     if (state.native_initialization) {
         auto& cooldown = next.player_announcements.queue.cooldown;

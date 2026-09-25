@@ -2353,7 +2353,8 @@
     "NMX"
    ],
    "native": [
-    "src/core/race_progress.cpp:zoom_result_fields"
+    "src/core/race_progress.cpp:graph_update, totals_update, dragster_totals_update",
+    "src/core/race_progress.cpp:result_fields"
    ],
    "observed_entries": {},
    "start": "$80:F88D",
@@ -2513,7 +2514,8 @@
     "NMX"
    ],
    "native": [
-    "src/core/race_progress.cpp:update_zoom_checkpoint"
+    "src/core/race_progress.cpp:cross_start_line",
+    "src/core/race_progress.cpp:update_checkpoints"
    ],
    "observed_entries": {},
    "start": "$81:8050",
@@ -2536,7 +2538,8 @@
    "native": [
     "src/core/presentation.cpp:ClassicRaceHudClock::observe_update",
     "src/core/presentation.hpp:ClassicRaceHudClock",
-    "src/core/race_progress.cpp:update_zoom_checkpoint",
+    "src/core/race_progress.cpp:cross_start_line",
+    "src/core/race_progress.cpp:update_checkpoints",
     "src/core/zoom_zoo_movement.hpp:ClassicRaceScenario::tour_race"
    ],
    "observed_entries": {},
@@ -2557,7 +2560,7 @@
     "NMX"
    ],
    "native": [
-    "src/core/race_progress.cpp:update_zoom_checkpoint"
+    "src/core/race_progress.cpp:update_checkpoints"
    ],
    "observed_entries": {},
    "start": "$81:8257",
@@ -2577,7 +2580,7 @@
     "NMX"
    ],
    "native": [
-    "src/core/race_progress.cpp:update_zoom_checkpoint"
+    "src/core/race_progress.cpp:update_checkpoints"
    ],
    "observed_entries": {},
    "start": "$81:8266",
@@ -2598,7 +2601,7 @@
     "NMX"
    ],
    "native": [
-    "src/core/race_progress.cpp:update_zoom_checkpoint"
+    "src/core/race_progress.cpp:update_checkpoints"
    ],
    "observed_entries": {},
    "start": "$81:82B6",
@@ -3609,7 +3612,7 @@
     "NMX"
    ],
    "native": [
-    "src/core/race_camera.cpp:update_zoom_camera",
+    "src/core/race_camera.cpp:update_camera",
     "src/core/zoom_zoo_movement.hpp:TrackGeometry"
    ],
    "observed_entries": {},
@@ -3630,7 +3633,7 @@
     "NMX"
    ],
    "native": [
-    "src/core/race_camera.cpp:update_zoom_camera",
+    "src/core/race_camera.cpp:update_camera",
     "src/core/zoom_zoo_movement.hpp:TrackGeometry"
    ],
    "observed_entries": {},
@@ -3795,7 +3798,7 @@
     "NMX"
    ],
    "native": [
-    "src/core/race_camera.cpp:update_zoom_camera"
+    "src/core/race_camera.cpp:update_camera"
    ],
    "observed_entries": {},
    "start": "$81:A520",
@@ -5478,7 +5481,7 @@
     "Nmx"
    ],
    "native": [
-    "src/core/race_setup.cpp:classic_race_start",
+    "src/core/race_setup.cpp:start_countdown, base_speed_cap, no_time",
     "src/core/zoom_zoo_movement.hpp:ZoomZooRaceState::checkpoint_seen"
    ],
    "observed_entries": {},
@@ -5621,7 +5624,7 @@
    ],
    "native": [
     "src/core/presentation.cpp:classic_hud_left_field",
-    "src/core/race_progress.cpp:update_zoom_checkpoint"
+    "src/core/race_progress.cpp:cross_start_line"
    ],
    "observed_entries": {},
    "start": "$81:D630",
@@ -7450,7 +7453,9 @@
    ],
    "native": [
     "src/core/movement.cpp:update_opponent_finish_pose",
-    "src/core/race_progress.cpp:update_zoom_finish"
+    "src/core/race_progress.cpp:finish_rider",
+    "src/core/race_progress.cpp:step_finish_pose",
+    "src/core/race_progress.cpp:update_finish"
    ],
    "observed_entries": {},
    "start": "$82:8953",
@@ -8444,6 +8449,8 @@
    "native": [
     "src/core/race_update.cpp:run_physics",
     "src/core/race_update.cpp:speed_limit_context",
+    "src/core/speed_limits.cpp:drag_step, fast_boost_decay",
+    "src/core/speed_limits.cpp:launch_extra, most_extra, vertical_base_cap",
     "src/core/speed_limits.cpp:limit_rider_speed"
    ],
    "observed_entries": {},
@@ -8703,7 +8710,7 @@
     "NMX"
    ],
    "native": [
-    "src/core/race_camera.cpp:update_zoom_visibility",
+    "src/core/race_camera.cpp:update_visibility",
     "src/core/rider_object.hpp:(file)",
     "src/core/rider_object.hpp:RiderOam",
     "src/core/zoom_zoo_movement.hpp:TrackGeometry"
@@ -8727,7 +8734,7 @@
     "NMX"
    ],
    "native": [
-    "src/core/race_camera.cpp:update_zoom_visibility",
+    "src/core/race_camera.cpp:update_visibility",
     "src/core/rider_object.cpp:project_rider_oam",
     "src/core/rider_object.hpp:(file)",
     "src/core/rider_object.hpp:RiderOam"
@@ -9687,7 +9694,7 @@
     "NMx"
    ],
    "native": [
-    "src/core/race_setup.cpp:classic_race_start"
+    "src/core/race_setup.cpp:start_countdown, base_speed_cap, no_time"
    ],
    "observed_entries": {},
    "start": "$82:D71F",
@@ -9747,6 +9754,7 @@
    "native": [
     "src/core/presentation.cpp:dragster_race_setup_frame",
     "src/core/race_setup.cpp:classic_crawler_zoom_zoo_start",
+    "src/core/race_setup.cpp:start_countdown, base_speed_cap, no_time",
     "src/core/zoom_zoo_movement.hpp:classic_crawler_zoom_zoo_start"
    ],
    "observed_entries": {},
@@ -9769,6 +9777,7 @@
    "native": [
     "src/core/race_setup.cpp:classic_crawler_zoom_zoo_start",
     "src/core/race_setup.cpp:classic_race_start",
+    "src/core/race_setup.cpp:start_countdown, base_speed_cap, no_time",
     "src/core/race_state_io.cpp:check_opponent_queue",
     "src/core/zoom_zoo_movement.hpp:ClassicRaceScenario::laps",
     "src/core/zoom_zoo_movement.hpp:classic_crawler_zoom_zoo_start"
@@ -11571,6 +11580,7 @@
     "src/core/presentation.hpp:ClassicRacePresentationContent::window_transition_member",
     "src/core/presentation.hpp:classic_window_transition_member",
     "src/core/race_setup.cpp:classic_race_scenario",
+    "src/core/race_setup.cpp:hunter_ai_level, ai_level",
     "src/core/zoom_zoo_movement.hpp:ClassicRaceScenario::ai_level",
     "src/core/zoom_zoo_movement.hpp:race_adjustment_limit"
    ],
@@ -11594,7 +11604,7 @@
    "native": [
     "src/core/presentation.cpp:classic_race_prior_fade",
     "src/core/presentation.cpp:render_classic_race",
-    "src/core/race_progress.cpp:update_zoom_finish",
+    "src/core/race_progress.cpp:finish_rider",
     "src/core/race_update.cpp:run_pause_menu",
     "src/core/race_update.cpp:run_skipped_update",
     "src/core/rider_look.cpp:zoom_zoo_update_was_paused",
@@ -12704,7 +12714,8 @@
    "native": [
     "src/core/movement.hpp:finish_speed_toward_zero",
     "src/core/race_progress.cpp:classic_race_player_won",
-    "src/core/race_progress.cpp:update_zoom_finish",
+    "src/core/race_progress.cpp:finish_rider",
+    "src/core/race_progress.cpp:update_finish",
     "src/core/rider_motion.cpp:apply_finish_slowdown"
    ],
    "observed_entries": {},
@@ -12727,7 +12738,7 @@
    ],
    "native": [
     "src/core/race_progress.cpp:classic_race_player_won",
-    "src/core/race_progress.cpp:update_zoom_finish"
+    "src/core/race_progress.cpp:update_finish"
    ],
    "observed_entries": {},
    "start": "$83:E9E1",
@@ -12751,7 +12762,7 @@
     "src/core/presentation.cpp:winner_window_first, winner_window_cycle, winner_window_life_updates",
     "src/core/presentation.hpp:dragster_window_table_index",
     "src/core/race_progress.cpp:classic_race_player_won",
-    "src/core/race_progress.cpp:update_zoom_finish"
+    "src/core/race_progress.cpp:update_finish"
    ],
    "observed_entries": {},
    "start": "$83:EA11",
@@ -12773,7 +12784,8 @@
    "native": [
     "src/core/movement.cpp:update_movement",
     "src/core/race_progress.cpp:classic_race_player_won",
-    "src/core/race_progress.cpp:update_zoom_finish"
+    "src/core/race_progress.cpp:finish_rider",
+    "src/core/race_progress.cpp:update_finish"
    ],
    "observed_entries": {},
    "start": "$83:EA72",
@@ -12795,7 +12807,7 @@
    ],
    "native": [
     "src/core/race_progress.cpp:classic_race_player_won",
-    "src/core/race_progress.cpp:update_zoom_finish"
+    "src/core/race_progress.cpp:update_finish"
    ],
    "observed_entries": {},
    "start": "$83:EB73",
@@ -12817,7 +12829,7 @@
    ],
    "native": [
     "src/core/race_progress.cpp:classic_race_player_won",
-    "src/core/race_progress.cpp:update_zoom_finish"
+    "src/core/race_progress.cpp:update_finish"
    ],
    "observed_entries": {},
    "start": "$83:EBA3",
@@ -12845,7 +12857,7 @@
    ],
    "native": [
     "src/core/race_progress.cpp:classic_race_player_won",
-    "src/core/race_progress.cpp:update_zoom_finish"
+    "src/core/race_progress.cpp:update_finish"
    ],
    "observed_entries": {},
    "start": "$83:EC13",

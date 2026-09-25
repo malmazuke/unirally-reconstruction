@@ -10,13 +10,58 @@
 #include <stdexcept>
 
 namespace unirally {
+namespace {
+
+// The result is stable at load 115 after a lap race (ZOOM ZOO's), and after a one-run race
+// at 226 when the player won and 242 when it lost (DRAGSTER's; R-0012, R-0019).
+constexpr std::uint16_t lap_race_stable_result = 115;
+constexpr std::uint16_t one_run_stable_won = 226, one_run_stable_lost = 242;
+// The HUNTER tour's tier ($83:CC0B-CC29): AI level 3 (1 elsewhere), a progress adjustment
+// bound of 0x60, the opponent's catch-up term 0x40 (0 elsewhere), and its opponent,
+// character 20 (17, BRONSEN, elsewhere).
+constexpr std::uint16_t hunter_ai_level = 3, ai_level = 1;
+constexpr std::uint16_t hunter_adjustment_limit = 0x60, hunter_ai_adjustment = 0x40;
+constexpr std::uint16_t hunter_opponent = 20, bronsen = 17;
+constexpr std::uint8_t first_hunter_track = 40, last_hunter_track = 44;
+// The race start ($82:D7C6-DBD6): a 270-update countdown ($82:D841-D844), a base speed cap
+// of 448, no times (60000), the camera 256 above and left of the player in 16-unit cells,
+// the rider sprites off screen (0xE0E0; $82:D724-D731), the opponent's HUD OAM x 0x65
+// ($82:D76D-D76F), start boosts of 384, the first hint phase 30 ($82:D972-D975) and every
+// checkpoint unseen (0xFF; $81:CD2A).
+constexpr std::uint16_t start_countdown = 270, base_speed_cap = 448, no_time = 60000;
+constexpr unsigned camera_margin = 256, camera_cell_mask = 0xfff0;
+constexpr std::uint16_t sprites_off_screen = 0xe0e0, start_boost = 384, first_hint_phase = 30;
+constexpr std::uint8_t opponent_hud_oam_x = 0x65, checkpoint_unseen = 0xff;
+constexpr std::size_t reward_weight_count = 26;
+
+// A scenario the original sets up for `track`: a lap race or a one-run race, and the
+// HUNTER tour's tier on its tracks.
+ClassicRaceScenario observed_scenario(ClassicRaceTrack track, std::uint32_t initialization_frame,
+                                      std::uint16_t laps, bool lap_race) {
+    const bool hunter = track.index >= first_hunter_track && track.index <= last_hunter_track;
+    return {track,
+            initialization_frame,
+            laps,
+            lap_race ? lap_race_stable_result : one_run_stable_won,
+            lap_race ? lap_race_stable_result : one_run_stable_lost,
+            lap_race,
+            hunter ? hunter_ai_level : ai_level,
+            static_cast<std::uint16_t>(hunter ? hunter_adjustment_limit : 0),
+            static_cast<std::uint16_t>(hunter ? hunter_ai_adjustment : 0),
+            hunter,
+            hunter ? hunter_opponent : bronsen};
+}
+
+} // namespace
 
 ClassicRaceScenario classic_race_scenario(ClassicRaceTrack track) {
     // ZOOM ZOO: M4-16 primary, end-1376, three laps, result stable at load 115.
     // DRAGSTER: end-1328 on the accepted menu path (R-0038), one lap; the
     // stable winner/loser screens follow load 226/242 (R-0012, R-0019).
-    if (track == ClassicRaceTrack::ZoomZoo) return {track, 1376, 3, 115, 115, true};
-    if (track == ClassicRaceTrack::Dragster) return {track, 1328, 1, 226, 242, false};
+    if (track == ClassicRaceTrack::ZoomZoo)
+        return {track, 1376, 3, lap_race_stable_result, lap_race_stable_result, true};
+    if (track == ClassicRaceTrack::Dragster)
+        return {track, 1328, 1, one_run_stable_won, one_run_stable_lost, false};
     // TRACK-BREADTH part 2 (R-0046 observations 6-8): the other race tracks a
     // cold start reaches, as the original sets them up. The race mode ($77:074B)
     // and lap count ($77:0744) are read at each track's initialization boundary;
@@ -33,7 +78,6 @@ ClassicRaceScenario classic_race_scenario(ClassicRaceTrack track) {
     // The HUNTER tour's tracks: $83:CC0B-CC29 sets $1283 = 0x40, $1281 = 0x60 and
     // $1275 = 3 directly when $131F is nonzero (1 on all five HUNTER captures, 0
     // on the other 40) and skips $83:CC59. Every other race track has level 1.
-    const bool hunter = track.index >= 40 && track.index <= 44;
     // LOCKED-TOURS: the race tracks of the five tours a cold start does not
     // list, observed through PICK TOUR unlocked by a preloaded cartridge RAM
     // (track_reference capture --unlock-tours); their frames label that path.
@@ -49,28 +93,7 @@ ClassicRaceScenario classic_race_scenario(ClassicRaceTrack track) {
          {43, 1428, 1, false}, {44, 1428, 3, true}}};
     for (const auto& o : observed)
         if (o.index == track.index)
-            return o.lap_race ? ClassicRaceScenario{track,
-                                                    o.initialization_frame,
-                                                    o.laps,
-                                                    115,
-                                                    115,
-                                                    true,
-                                                    static_cast<std::uint16_t>(hunter ? 3 : 1),
-                                                    static_cast<std::uint16_t>(hunter ? 96 : 0),
-                                                    static_cast<std::uint16_t>(hunter ? 64 : 0),
-                                                    hunter,
-                                                    static_cast<std::uint16_t>(hunter ? 20 : 17)}
-                              : ClassicRaceScenario{track,
-                                                    o.initialization_frame,
-                                                    o.laps,
-                                                    226,
-                                                    242,
-                                                    false,
-                                                    static_cast<std::uint16_t>(hunter ? 3 : 1),
-                                                    static_cast<std::uint16_t>(hunter ? 96 : 0),
-                                                    static_cast<std::uint16_t>(hunter ? 64 : 0),
-                                                    hunter,
-                                                    static_cast<std::uint16_t>(hunter ? 20 : 17)};
+            return observed_scenario(track, o.initialization_frame, o.laps, o.lap_race);
     throw std::invalid_argument("classic race track has no recovered scenario");
 }
 
@@ -136,30 +159,30 @@ ZoomZooState classic_race_start(const ZoomZooContent& content,
     state.native_initialization = state.complete_race = state.sustained = true;
     auto& movement = state.movement;
     movement.frame = scenario.initialization_frame;
-    movement.player_input.vertical = movement.player_input.horizontal = 1;
-    movement.countdown = 270; // $82:D841-D844; timer begins below 68 after countdown publication.
-    movement.rewards.write_cursor = 1; // $81:C615-C619.
+    movement.player_input.vertical = movement.player_input.horizontal = direction::neutral;
+    movement.countdown = start_countdown; // the timer begins below 68
+    movement.rewards.write_cursor = 1;    // $81:C615-C619
     for (unsigned i = 0; i < 2; ++i) {
         auto& rider = movement.riders[i];
         const auto y = content_word(track, 5 + 4 * i);
         rider.motion.x = static_cast<std::uint16_t>(content_word(track, 3 + 4 * i) << 4);
         rider.motion.y = static_cast<std::uint16_t>(y << 4);
         rider.pose.reflected = classic_race_start_reflected(track, i);
-        state.reflection[i].base_velocity_cap = 448;
+        state.reflection[i].base_velocity_cap = base_speed_cap;
         state.race.riders[i].laps_remaining =
             static_cast<std::uint16_t>(scenario.laps + 1U); // Plus the initial line crossing.
-        state.race.lap_times[i].fill(60000);
-        state.race.total_times[i] = 60000;
+        state.race.lap_times[i].fill(no_time);
+        state.race.total_times[i] = no_time;
     }
-    state.race.camera.x =
-        static_cast<std::uint16_t>((movement.riders[0].motion.x - 256U) & 0xfff0U);
-    state.race.camera.y =
-        static_cast<std::uint16_t>((movement.riders[0].motion.y - 256U) & 0xfff0U);
-    state.race.camera.screen_xy = 0xe0e0; // $82:D724-D731 OAM initialization.
-    state.opponent_retained_oam_x = 0x65; // Explicit $82:D76D-D76F HUD OAM default.
-    state.start_boost.fill(384);
+    state.race.camera.x = static_cast<std::uint16_t>((movement.riders[0].motion.x - camera_margin)
+                                                     & camera_cell_mask);
+    state.race.camera.y = static_cast<std::uint16_t>((movement.riders[0].motion.y - camera_margin)
+                                                     & camera_cell_mask);
+    state.race.camera.screen_xy = sprites_off_screen;
+    state.opponent_retained_oam_x = opponent_hud_oam_x;
+    state.start_boost.fill(start_boost);
     state.player_announcements.queue.write_cursor = 1;
-    if (content.reward_weights.size() != 26)
+    if (content.reward_weights.size() != reward_weight_count)
         throw std::invalid_argument("ZOOM ZOO reward-weight table is missing");
     // $82DB87-DB94 copies the same 26-byte $82D7A4 template into both banks,
     // so the opponent's event-one weight is that content byte too rather than
@@ -169,9 +192,9 @@ ZoomZooState classic_race_start(const ZoomZooContent& content,
     for (auto& weights : state.learned_weights)
         std::copy(content.reward_weights.begin() + 1, content.reward_weights.end(),
                   weights.begin());
-    state.player_announcements.hints_active = 1;  // $82D95C fresh scenario tutorial bit.
-    state.player_announcements.hint_updates = 30; // $82D972-D975.
-    state.race.checkpoint_seen.fill(255);         // $81:CD2A.
+    state.player_announcements.hints_active = 1; // $82D95C fresh scenario tutorial bit.
+    state.player_announcements.hint_updates = first_hint_phase;
+    state.race.checkpoint_seen.fill(checkpoint_unseen);
     return state;
 }
 

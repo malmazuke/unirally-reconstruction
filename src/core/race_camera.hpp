@@ -6,7 +6,7 @@
 
 namespace unirally {
 
-void update_zoom_camera(ZoomZooState& state, const TrackGeometry& geometry);
-void update_zoom_visibility(ZoomZooState& state, const TrackGeometry& geometry);
+void update_camera(ZoomZooState& state, const TrackGeometry& geometry);
+void update_visibility(ZoomZooState& state, const TrackGeometry& geometry);
 
 } // namespace unirally

@@ -323,7 +323,7 @@ void check_start_and_result(const ZoomZooState& state, const ClassicRaceScenario
                         || state.result_updates)),
                   "ZOOM ZOO finish/result conflicts with start phase");
     refuse_unless(state.result
-                      == zoom_result_fields(state.race, state.result_updates, scenario.tour_race),
+                      == result_fields(state.race, state.result_updates, scenario.tour_race),
                   "inconsistent ZOOM ZOO result publication");
 }
 
