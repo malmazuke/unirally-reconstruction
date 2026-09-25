@@ -45,15 +45,43 @@ Measure the size rule with `clang-tidy -p build/app-debug src/core/*.cpp` (LLVM 
 app-debug build).
 
 **Accepted exceptions to the size rule:** none yet. After the format commit of part 1, 22
-functions exceed 80 lines; NATIVE-READABILITY parts 2 and 3 split them or list them here with
-a reason:
-`movement.cpp` `update_idle_pose`, `update_pose`, `update_reward_queue`, `update_movement`,
-`update_zoom_ai`, `update_zoom_throttle`, `update_hunter_effects`, `update_zoom_roll`,
-`serialize_zoom_zoo`, `deserialize_classic_race`, `deserialize_zoom_zoo`, `update_zoom_zoo`;
-`vertical_contact.cpp` `resolve_vertical_contact`; `content_pack.cpp` `ClassicContentPack`;
-`presentation.cpp` `build_result_map`, `render_dragster`, `observe_update`,
-`render_classic_race`; `rider_look.cpp` `look_for_rider`; the `main` of
-`movement_runner.cpp`, `classic_race_presentation_runner.cpp` and `zoom_zoo_runner.cpp`.
+functions exceed 80 lines (named here by the files part 2 split `movement.cpp` into);
+NATIVE-READABILITY parts 2 and 3 split them or list them here with a reason:
+`rider_pose.cpp` `update_idle_pose`, `update_pose`; `reward_queue.cpp` `update_reward_queue`;
+`movement.cpp` `update_movement`; `opponent_ai.cpp` `update_zoom_ai`, `update_zoom_throttle`;
+`hunter_effects.cpp` `update_hunter_effects`; `trick_roll.cpp` `update_zoom_roll`;
+`race_state_io.cpp` `serialize_zoom_zoo`, `deserialize_classic_race`, `deserialize_zoom_zoo`;
+`race_update.cpp` `update_zoom_zoo`; `vertical_contact.cpp` `resolve_vertical_contact`;
+`content_pack.cpp` `ClassicContentPack`; `presentation.cpp` `build_result_map`,
+`render_dragster`, `observe_update`, `render_classic_race`; `rider_look.cpp` `look_for_rider`;
+the `main` of `movement_runner.cpp`, `classic_race_presentation_runner.cpp` and
+`zoom_zoo_runner.cpp`.
+
+## Where the race engine lives
+
+One race update is `update_zoom_zoo` in `race_update.cpp`. It runs these systems in the
+original's order, each in its own file (the `ZoomZoo` names are historical: the engine was
+first recovered on ZOOM ZOO and now runs every race track):
+
+| File | System |
+| --- | --- |
+| `race_update.cpp` | One race update and the reflection transition between facings |
+| `rider_motion.cpp` | A rider's drive, jump, gravity, damping and position integration |
+| `rider_pose.cpp` | The idle wobble, the pose and animation update, rolling and quarter turns |
+| `opponent_ai.cpp` | The opponent's controller and throttle |
+| `reward_queue.cpp` | The announcement queues: trick rewards, speed boosts, voices, captions |
+| `trick_roll.cpp` | Rolls and bounces and their rewards |
+| `special_tiles.cpp` | Boost, mud, corkscrew and loop tiles |
+| `hunter_effects.cpp` | The HUNTER tour's tag effects |
+| `race_progress.cpp` | Checkpoints, laps, the finish and the result fields |
+| `race_camera.cpp` | The camera and visibility |
+| `race_setup.cpp` | Scenarios by track, the race start and a restart |
+| `race_state_io.cpp` | The serialized race states and their validation |
+| `movement.cpp` | The legacy CRAWLER/DRAGSTER movement state (URMV) and its update |
+| `word_arithmetic.hpp`, `state_bytes.hpp` | 16-bit word arithmetic; serialized-state bytes |
+
+`movement.hpp` and `zoom_zoo_movement.hpp` are the public interface; the other headers are
+internal to the engine.
 
 ## Track sampling
 
