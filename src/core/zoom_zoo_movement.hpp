@@ -138,6 +138,11 @@ struct ClassicRaceScenario {
     std::uint16_t ai_level{1};
     std::uint16_t adjustment_limit{};
     std::uint16_t ai_adjustment{};
+    // `$131F`: the HUNTER tour, whose race runs the tag effects ($83:CEC9, R-0052).
+    bool hunter_tour{};
+    // `$77:0749`, the opponent's character: 17 on every tour but HUNTER's (20);
+    // the player's (`$77:0748`) is 0 on all 45 captures (R-0052).
+    std::uint16_t opponent_character{17};
 };
 // $83:CC59-CC7C: 0x48 (mode 1) or 0x60 (mode 0) minus `$1283`, which is zero
 // on every track but HUNTER's; HUNTER's scenario carries its bound (96),
@@ -166,6 +171,36 @@ TrackGeometry track_geometry(std::span<const std::uint8_t> decoded_track);
 // for the countdown windows.
 bool classic_race_start_reflected(std::span<const std::uint8_t> decoded_track,unsigned rider);
 
+// R-0052: the HUNTER tour's tag effects ($83:CEC9). When the riders' boxes
+// overlap, the player's x picks one of eight effects, each announced at the
+// front of the player's queue and most timed over 500 updates. Words keep the
+// original bit patterns.
+struct HunterEffects {
+    std::uint16_t latched{};   // $1325: the progress counts have once differed by 2 or more
+    std::uint16_t active{};    // $1323: an effect is running
+    // $1327-$1335 (effect k at $1327 + 2k): 1 on the update the tag picks it,
+    // 2 while it runs.
+    std::array<std::uint16_t,8> effect{};
+    // The 500-update timers: effect 0 $0557, 2 $12B7, 3 $7E:2052, 4 $055B,
+    // 5 $12B5, 6 $0561, 7 $12CD; effect 1 has none (index 1 stays 0).
+    std::array<std::uint16_t,8> timer{};
+    // Effect 1's freeze pulses, bytes: $1285 updates left to skip, $1287 set
+    // once the pulse has grown to 20, $1289 the pulse length.
+    std::uint16_t pulse{}, pulse_shrinking{}, pulse_length{};
+    std::uint16_t blink{};       // $7E:2054: effect 3's HDMA picture is on
+    std::uint16_t wave_phase{};  // $7E:26BE: effect 3's alternating table
+    std::uint16_t hide_track{};  // $055D: effect 4 takes BG1 off the main screen
+    std::uint16_t mosaic{};      // $055F: effect 6's mosaic is on
+    std::uint16_t skip_update{}; // $128B: the next update's race routines are skipped
+    std::uint16_t message{};     // $12AF: the HUD message event to show, 0 once shown
+    // $11C1: an announcement was shown since the queue last ran dry. The
+    // original keeps it on every track; only the HUNTER tour reads it.
+    std::uint16_t shown{};
+    // $128D-$129C: the event whose caption the HUD message buffer holds (0
+    // blank); the empty announcement row shows it ($81:BF32-BFB7).
+    std::uint16_t hud_event{};
+    bool operator==(const HunterEffects&) const = default;
+};
 struct ZoomZooState {
     ClassicRaceTrack track{ClassicRaceTrack::ZoomZoo}; // Serialized as the state magic.
     ZoomZooPause pause;
@@ -197,6 +232,7 @@ struct ZoomZooState {
     // $0C73: updates left of the opponent's turnaround on a steep slope
     // ($83:E0C5-E111, LOCKED-TOURS); serialized with the special-tile words.
     std::uint16_t opponent_turnaround{};
+    HunterEffects hunter;
 };
 struct ZoomZooContent {
     MovementContent movement;
@@ -213,6 +249,9 @@ struct ZoomZooContent {
     std::span<const std::uint8_t> corkscrew_heights;
     // $81:834C, 17 signed words: the loop's x step by loop step (R-0051).
     std::span<const std::uint8_t> loop_offsets;
+    // $83:D3BC, 64 bytes: the HUNTER effects' blink pattern for their first
+    // and last 50 (60) updates (R-0052).
+    std::span<const std::uint8_t> hunter_blink;
 };
 // $82:9715–979D: count active updates opposing the track direction, with
 // original wrapped word comparisons at velocities -16 and +16 (1/32 units).
@@ -245,6 +284,9 @@ void update_loop_cooldown(RiderMovementState& rider,SpecialTileRider& tiles,Refl
 void update_loop_tile(RiderMovementState& rider,SpecialTileRider& tiles,SurfaceTransition& surface,
                       ReflectionTransition& transition,SpecialTileUpdate& special,
                       std::span<const std::uint8_t> offsets);
+// $83:CEC9-D600: the HUNTER tag and its effects, at the end of every update,
+// skipped ones included; `blink` is zoom.hunter-blink.
+void update_hunter_effects(ZoomZooState& state,std::span<const std::uint8_t> blink);
 std::vector<std::uint8_t> serialize_zoom_zoo(const ZoomZooState& state);
 ZoomZooState deserialize_zoom_zoo(std::span<const std::uint8_t> bytes);
 // $82:D7C6-DBD6, authenticated track header and one-player three-lap scenario.

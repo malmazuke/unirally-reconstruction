@@ -19,7 +19,7 @@ inline ZoomZooContent zoom_zoo_content(const ClassicContentPack& pack) {
              {engine("speed.masks"),engine("speed.decrements")}},
              zoom("sustained-slope-coefficients"),zoom("reflection-pose-table"),
              zoom("landing-response-matrices"),zoom("race-finish-poses"),zoom("roll-pose-table"),zoom("roll-direction-table"),zoom("roll-reward-weights"),zoom("trick-combinations"),
-             zoom("corkscrew-heights"),zoom("loop-offsets")};
+             zoom("corkscrew-heights"),zoom("loop-offsets"),zoom("hunter-blink")};
 }
 // DRAGSTER on the shared race engine (R-0038): the shared content with the
 // track, its tile columns and tile flags replaced by DRAGSTER's own entries.

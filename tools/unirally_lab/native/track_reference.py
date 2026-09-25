@@ -29,7 +29,7 @@ import tempfile
 from .zoom_zoo_trial_reference import ROOT, ROM_SHA, CORE_SHA, sha, digest
 from .zoom_zoo_race_reference import project
 from .zoom_zoo_playable import ROLL_WORDS
-from .classic_race_layout import describe, special_tile_bytes, checkpoint_tail_bytes
+from .classic_race_layout import describe, special_tile_bytes, checkpoint_tail_bytes, hunter_bytes, hud_captions
 from ..content.commands import write_track_override
 from ..reference.bsnes import BsnesCore, BUTTONS, frame_png
 from .zoom_zoo_trial import BUTTONS as RUNNER_BUTTONS  # the runner's controller-row bit order
@@ -208,6 +208,7 @@ def original_rows(directory):
     paused_updates = countdown_paused = 0
     previous = None
     finish, loading, archive, extras_archive, tail_archive = [None, None], None, None, None, b''
+    captions = None
     mode = None
     with (directory/'memory.wram').open('rb') as ws, (directory/'memory.sram').open('rb') as ss:
         for frame in range(first, last+1):
@@ -248,6 +249,12 @@ def original_rows(directory):
                     value = int.from_bytes(w[at:at+item['width']], 'little')
                     if value != item['value']:
                         violations.setdefault(f'{at:04x}', dict(frame=frame, value=value, guarded=item['value']))
+                # R-0052: the HUNTER opponent's voices 232-247 index the learned bank past its end
+                # at $7E21E8-$7E21F7, as the other tours' 200-215 do at the manifest's $7E21C9-$7E21D8;
+                # native takes the original's zero-weight exit, which these bytes being zero justifies.
+                for at in range(0x21e8, 0x21f8):
+                    if w[at]:
+                        violations.setdefault(f'{at:04x}', dict(frame=frame, value=w[at], guarded=0))
             try:
                 projected = project(w, s, frame)
             except (ValueError, AssertionError) as exc:
@@ -267,10 +274,12 @@ def original_rows(directory):
             pause = w[0xef3:0xef7]+paused_updates.to_bytes(4, 'little')+countdown_paused.to_bytes(4, 'little')
             extras_archive = charge+announcements+roll+weights+pause
             row += s[0x106f:0x1073]+s[0x618:0x61c]+extras_archive
-            # Any track but DRAGSTER and ZOOM ZOO: its state (URTRnn05) appends
+            # Any track but DRAGSTER and ZOOM ZOO: its state (URTRnn06) appends
             # the special-tile words (R-0047) and the last checkpoint flags (R-0048).
             if s[0x74a] not in (0, 1):
-                tail_archive = special_tile_bytes(w)+checkpoint_tail_bytes(w)
+                if captions is None:
+                    captions = hud_captions(Path((ROOT/'local/rom-location.txt').read_text().strip()).read_bytes())
+                tail_archive = special_tile_bytes(w)+checkpoint_tail_bytes(w)+hunter_bytes(w, captions)
                 row += tail_archive
             rows.append(row.hex())
             previous = w

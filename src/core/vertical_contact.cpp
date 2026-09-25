@@ -180,8 +180,8 @@ void resolve_vertical_contact(RiderContactState& rider,ContactMotion& motion,
                 (dx==0 ? 31 : std::min(31,16+4*(half_dy/dx)));
             const int coarse=signed_word(static_cast<std::uint16_t>(motion.x-incoming.previous_uncorrected_x))<0 ? -magnitude_angle : magnitude_angle;
             require((context.cartridge_options&8U)==0, "unrecovered landing option");
-            // M4-13 authenticates $132B == 0 throughout the domain; player
-            // selection alone does not replace the matrix ($81:94A8-94C3).
+            // Player selection alone does not replace the matrix; HUNTER
+            // effect 2 (`$132B`) does ($81:94A8-94C3, below).
             next.recontact=true;
             // $81:931C–9358 uses the reflected low six pose bits, not the
             // surface target. All comparisons below are signed original words.
@@ -224,11 +224,15 @@ void resolve_vertical_contact(RiderContactState& rider,ContactMotion& motion,
                 moved.response_a=decay(moved.response_a);moved.response_b=decay(moved.response_b);
             }
             const auto angle_difference=std::abs(coarse-static_cast<int>(summary.angle));
-            if(angle_difference>5 || summary.leading_support || force_long_airtime_matrix) {
+            // $81:94A8-94C3: under HUNTER effect 2 the player's landing takes
+            // matrix 0 ($0572) whether or not one was chosen; the velocity
+            // check below can still replace it with matrix 2 (R-0052).
+            if(angle_difference>5 || summary.leading_support || force_long_airtime_matrix || context.landing_matrix_zero) {
                 require(landing_matrices.size()==1512,"landing coefficient matrices are missing");
                 unsigned bucket=angle_difference?static_cast<unsigned>(std::min(3,(angle_difference-1)/5)):0U;
                 if(summary.leading_support)bucket=bucket>1?bucket-1:1;
                 unsigned matrix=(bucket<=1 && !force_long_airtime_matrix)?1U:2U;
+                if(context.landing_matrix_zero)matrix=0;
                 int angle=(summary.selected_high&0x80U)?-summary.angle:summary.angle;
                 const auto velocity=signed_word(moved.velocity_x);
                 if((velocity>0 && horizontal==0) || (velocity<0 && horizontal==2)) {
