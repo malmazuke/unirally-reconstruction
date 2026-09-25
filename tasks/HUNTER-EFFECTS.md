@@ -69,6 +69,15 @@ to reach more effects (the player's x at the tag picks the effect).
 | Nothing accepted moves | Gates, v1 contracts, hidden runs, fuzz, ctest, synthetic | Unchanged digests | gate logs |
 | Review | Tier 1 | Approved with a withheld capture | review on the pull request |
 
+## Evidence and attempts
+
+| Attempt | Hypothesis | Experiment | Observation | Next decision |
+| --- | --- | --- | --- | --- |
+| 1 | - | WRAM `$1321-$1335`, `$12AF`, `$0557` at TWO LOOPS' 1,252 | Trigger, dispatch and effect 0's timer in one update | Read every consumer |
+| 2 | - | Listing: consumers of the effect words | 0 BG2 axes swap (`$81:AE90`); 1 freeze pulses and 5 slow motion (`$128B` skips the race update, `$83:CC9A`); 2 player landing matrix 0 (`$81:94B9`); 3 screen flip (`$7E:2054`, HDMA, OAM y flip `$83:E04F`); 4 BG1 off (`$055D`, `$80:8638`); 6 mosaic (`$055F`, `$80:8821`); 7 reversed controls (`$82:AC5C`); captions `$1B-$24` ("barf mode on" ... "control reversed", `$23` blank) | Implement the simulation first |
+| 3 | - | Simulation (`19b3b57` and before): tag, dispatch, timers, blink table (pack v14), push-front, skips, matrix 0, reversal, OAM flip of `screen_xy`, `$12AF` consumed at `$81:BF46` into the HUD buffer, the HUNTER opponent's character 20 (voices 232-247) | Locked sweep **20 of 20** exact (TWO LOOPS included), cold start 16 of 16; 47 held captures on HUNTER tracks exact, covering all eight effects (`held/`, `effects.py`) | Presentation |
+| 4 | The effects need rendering | Pictures through each effect (`captures-pictures.sh`, `pictures.py`, `sidebyside.py`) | Frame 2,800 exact; differences: flip, barf, mosaic, BG1 hidden, the caption after a push-front, the HUNTER opponent's palette | Implement presentation (a) captions, (b) palette, (c) BG1, (d) mosaic, (e) barf, (f) flip |
+
 ## Handoff
 
 - Exact next experiment/command: `python3 -m tools.unirally_lab.native.track_reference explore
