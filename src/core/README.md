@@ -1,5 +1,62 @@
 # Recovered native components
 
+## How this code is written
+
+These rules make [D-0003](../../docs/decisions/D-0003-human-readable-native-code.md)
+checkable (NATIVE-READABILITY). Every change to `src/core` follows them, and the reviewer
+checklist in [the agent workflow](../../docs/AGENT_WORKFLOW.md#reviewer-checklist) checks them.
+They change how the code reads, never what it computes: update order, integer widths and
+serialized bytes stay those of the original.
+
+1. **Names.** Name established concepts by their game meaning (`mud_cooldown`,
+   `update_reward_queue`). Keep a meaning the evidence does not settle neutral
+   (`provisional_1225`, `unk_0f45`) and link the record that would settle it. Rename only
+   on evidence.
+2. **Constants.** A number with game meaning is a named `constexpr` next to the state or
+   function it describes (`first_voice_event = 72`). Bare literals are for 0, 1, and the
+   masks and shifts inside a named arithmetic helper.
+3. **Size.** A function fits on a screen: at most 80 lines by clang-tidy's
+   `readability-function-size` (`src/core/.clang-tidy`). An exception is listed below with its
+   reason, such as a serializer's field list.
+4. **Comments.** Say what the game does first, then give one short evidence line:
+   `// $81:C238; R-0035`. The forensic account (instruction sequences, capture frames, how it
+   was found) belongs in the research record. Keep in code only what stops a maintainer from
+   "fixing" a ROM quirk.
+5. **Addresses.** `$` marks an address: ROM `$BB:AAAA` (a range `$BB:AAAA-AAAA`), WRAM
+   `$AAAA` or `$7E:AAAA`, SRAM `$77:AAAA`. Write values in decimal or `0x` (`0x48`, not
+   `$48`), so the index does not read a value as an address. A state member's comment starts
+   with its WRAM address.
+6. **ROM quirks.** ROM-exact arithmetic (8-bit wraps, `BMI` on a difference, reads past a
+   table) lives in a small helper whose name states the game rule, such as
+   `takes_reward_path(event)`, and the quirk is explained once, there.
+7. **Guards.** A check that refuses a state the recovery does not cover goes through one
+   helper per file and reads as a guard, not as a gameplay branch.
+8. **Index.** [`native-symbols.json`](../../docs/map/static/native-symbols.json) maps every
+   address cited here to the function, member or constant citing it. After changing a
+   citation run `python3 tools/project.py coverage native-symbols`; `coverage native-symbols
+   --lookup '$81:C238'` answers "where is this routine in native" with its records. The
+   tooling test fails when the index is stale or when more cited ROM addresses than its limit
+   have no record (the limit only falls). `coverage static-map` names the native symbols
+   beside each routine.
+9. **Format.** Run `clang-format -i` (version 19; `src/core/.clang-format`) on changed
+   files. Formatting-only changes go in their own commit.
+
+Measure the size rule with `clang-tidy -p build/app-debug src/core/*.cpp` (LLVM 19; any
+preset's `compile_commands.json`).
+
+**Accepted exceptions to the size rule:** none yet. After the format commit of part 1, 22
+functions exceed 80 lines; NATIVE-READABILITY parts 2 and 3 split them or list them here with
+a reason:
+`movement.cpp` `update_idle_pose`, `update_pose`, `update_reward_queue`, `update_movement`,
+`update_zoom_ai`, `update_zoom_throttle`, `update_hunter_effects`, `update_zoom_roll`,
+`serialize_zoom_zoo`, `deserialize_classic_race`, `deserialize_zoom_zoo`, `update_zoom_zoo`;
+`vertical_contact.cpp` `resolve_vertical_contact`; `content_pack.cpp` `ClassicContentPack`;
+`presentation.cpp` `build_result_map`, `render_dragster`, `observe_update`,
+`render_classic_race`; `rider_look.cpp` `look_for_rider`; the `main` of
+`movement_runner.cpp`, `classic_race_presentation_runner.cpp` and `zoom_zoo_runner.cpp`.
+
+## Track sampling
+
 `track_sampling.hpp/.cpp` implements one dependency of riding movement: expand
 an indexed collision pose into ten points, then gather the track words under
 those points. It does **not** update a rider, accept controller input, advance

@@ -21,7 +21,7 @@ from .. import rom as rommod
 from ..reference import commands as refcmd
 from ..replay import commands as replaycmd
 from ..replay import manifest as mf
-from . import derive, drain, static_map
+from . import derive, drain, native_symbols, static_map
 
 ROOT = reportmod.repo_root()
 DEFAULT_RING = 262144
@@ -366,7 +366,8 @@ def cmd_disassemble(args: argparse.Namespace) -> int:
         xrefs[target] = [f"{static_map.addr(o)} {k}" for o, k in sorted(callers)]
     for b in range(4):
         path = out / f"bank-{0x80 + b:02X}.lst"
-        path.write_text(static_map.listing(analysis, cls, b, names_by_offset, xrefs), encoding="utf-8")
+        native = {static_map.offset_of(static_map.parse(r["start"])): r["native"] for r in doc["routines"] if "native" in r}
+        path.write_text(static_map.listing(analysis, cls, b, names_by_offset, xrefs, native), encoding="utf-8")
         rep.add_artifact(f"listing_{0x80 + b:02X}", path)
     detail = {"note": "ignored artifact: carries ROM bytes and mnemonics", "map": doc,
               "instructions": [{"address": static_map.addr(o), "length": i.length, "modes": static_map.names(i.modes), "source": i.source,
@@ -404,6 +405,41 @@ def cmd_static_map(args: argparse.Namespace) -> int:
         rep.add_artifact(path.name, path)
     size_ok = Path(args.out).stat().st_size <= (1 << 20)
     rep.add_check("map_written", "passed" if size_ok else "failed", detail=f"{args.out} ({Path(args.out).stat().st_size} bytes, limit 1 MiB)")
+    return _finish(rep, args, replaycmd._status_from_checks(rep))
+
+
+# ------------------------------------------------------ native symbols
+
+
+def cmd_native_symbols(args: argparse.Namespace) -> int:
+    """NATIVE-READABILITY: write, check or query the address-to-native-symbol index."""
+    rep = reportmod.Report(sys.argv, task_id=args.task)
+    root = Path(args.root)
+    index = native_symbols.build(root)
+    out = Path(args.out)
+    if args.lookup:
+        result = native_symbols.lookup(index, root, args.lookup)
+        print(json.dumps(result, indent=1))
+        rep.data["lookup"] = result
+        rep.add_check("lookup", "passed" if result.get("addresses") or result.get("symbols") else "failed",
+                      detail=f"{args.lookup}: nothing in src/core cites it" if not (result.get("addresses") or result.get("symbols")) else args.lookup)
+        return _finish(rep, args, replaycmd._status_from_checks(rep))
+    text = native_symbols.dump(index)
+    if args.check:
+        current = out.read_text(encoding="utf-8") if out.exists() else ""
+        rep.add_check("index_is_current", "passed" if current == text else "failed",
+                      detail=f"{out} matches src/core" if current == text else f"{out} is stale: run `{native_symbols.REGENERATE}`")
+    else:
+        out.parent.mkdir(parents=True, exist_ok=True)
+        out.write_text(text, encoding="utf-8")
+        rep.add_artifact("index", out)
+        rep.add_check("index_written", "passed", detail=f"{out}")
+    unlinked = native_symbols.rom_without_record(index, root)
+    rep.data["totals"] = index["totals"]
+    rep.data["rom_addresses_without_record"] = unlinked
+    rep.add_check("rom_citations_have_records", "passed" if not unlinked else "failed", required=False,
+                  detail=f"{index['totals']['rom_addresses']} ROM addresses cited; {len(unlinked)} cited by no record"
+                         + (": " + ", ".join(unlinked) if unlinked else ""))
     return _finish(rep, args, replaycmd._status_from_checks(rep))
 
 
@@ -454,4 +490,13 @@ def register(sub: argparse._SubParsersAction) -> None:
         p.add_argument("--report", help="write the JSON run report here")
         p.add_argument("--task", help="task ID to record in the report")
     dis.set_defaults(func=cmd_disassemble)
+
+    nat = csub.add_parser("native-symbols", help="the address-to-native-symbol index of src/core (NATIVE-READABILITY)")
+    nat.add_argument("--out", default=str(ROOT / native_symbols.OUT), help=f"tracked index (default {native_symbols.OUT})")
+    nat.add_argument("--check", action="store_true", help="fail if the tracked index differs from src/core instead of writing it")
+    nat.add_argument("--lookup", help="print the native symbols and records for an address ($81:C238, $81C238, $0C73) or a symbol substring")
+    nat.add_argument("--root", default=str(ROOT), help=argparse.SUPPRESS)
+    nat.add_argument("--report", help="write the JSON run report here")
+    nat.add_argument("--task", help="task ID to record in the report")
+    nat.set_defaults(func=cmd_native_symbols)
     static.set_defaults(func=cmd_static_map)

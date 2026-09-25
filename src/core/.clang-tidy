@@ -1,0 +1,6 @@
+# NATIVE-READABILITY: the measurable size rule of src/core/README.md ("How this code is
+# written"). Run: clang-tidy -p build/app-debug src/core/*.cpp
+Checks: '-*,readability-function-size'
+WarningsAsErrors: ''
+CheckOptions:
+  readability-function-size.LineThreshold: 80

@@ -157,7 +157,7 @@ class TrackedStaticMapTests(unittest.TestCase):
 
     def test_tracked_static_outputs_carry_no_rom_bytes_or_mnemonics(self) -> None:
         paths = sorted(STATIC.glob("*.json"))
-        self.assertEqual([p.name for p in paths], ["code-banks.map.json", "labels.json"])
+        self.assertEqual([p.name for p in paths], ["code-banks.map.json", "labels.json", "native-symbols.json"])
         for path in paths:
             with self.subTest(path=path.name):
                 text = path.read_text()
