@@ -143,6 +143,8 @@ it loads the track's content and refuses it. So since LOCKED-TOURS the app canno
 DOWN+UP or BOO!, though their simulation is exact. The font's slots after z hold a blob, two
 arrows and two unclear shapes (`local/evidence/tile-pairs/glyphs.py`); which tile the original
 draws for `+` and `!` is not known yet ([RESULT-TITLE-GLYPHS](../../tasks/RESULT-TITLE-GLYPHS.md)).
+Update, 25 September 2026: answered by [R-0053](R-0053-result-title-printer.md). The original
+prints any name byte other than a letter or digit as a small glyph one tile wide.
 
 ## Limits
 
@@ -153,8 +155,8 @@ draws for `+` and `!` is not known yet ([RESULT-TITLE-GLYPHS](../../tasks/RESULT
 - The HUNTER tag effects are unimplemented (HUNTER-EFFECTS), so HUNTER races diverge after the
   first tag.
 - The stunt events are not compared.
-- The app refuses DOWN+UP and BOO! at load: their names' `+` and `!` have no known title glyph
-  (RESULT-TITLE-GLYPHS).
+- The app refused DOWN+UP and BOO! at load, since their names' `+` and `!` had no known title
+  glyph. Fixed by RESULT-TITLE-GLYPHS (R-0053).
 
 ## Reproduction
 

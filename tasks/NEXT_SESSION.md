@@ -5,6 +5,13 @@ push the task branch, open a pull request from the template, merge with
 `gh pr merge --merge` once its checks are green and the review is done. `main`
 refuses direct pushes. The checks run on pull requests only.
 
+**Status on 25 September 2026 UTC (RESULT-TITLE-GLYPHS accepted): write the coverage roadmap.**
+The user's goal is the whole game natively, menus and all, and they asked for tasks to follow
+one another. Inventory what the native game lacks against the original, using the static code
+map's uncovered routines and M4's scope (stunt events, the result screen's icons, menus and tour
+progression, two players, audio). Record the roadmap and queue its first tasks, then take them
+in order. ROLLING-CONTACT stays ready.
+
 **Status on 25 September 2026 UTC (NATIVE-READABILITY accepted): start
 [RESULT-TITLE-GLYPHS](RESULT-TITLE-GLYPHS.md).** NATIVE-READABILITY's three parts are
 integrated: the rules and the address index, the simulation split by system, and the

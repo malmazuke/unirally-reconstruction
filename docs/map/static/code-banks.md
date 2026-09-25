@@ -70,7 +70,7 @@ Cited addresses in `unknown` bytes:
 | $80:84EB | docs/research/R-0010-native-movement.md, docs/research/R-0045-static-code-map.md |
 | $80:C3DC | docs/research/R-0053-result-title-printer.md |
 | $80:C950 | tasks/LOCKED-TOURS.md |
-| $80:D187 | docs/research/R-0053-result-title-printer.md |
+| $80:D187 | docs/research/R-0053-result-title-printer.md, tasks/RESULT-TITLE-GLYPHS.md |
 | $80:FFC0 | docs/research/R-0001-rom-identity.md, docs/research/R-0045-static-code-map.md |
 | $81:A342 | docs/research/R-0046-track-breadth-matrix.md |
 | $81:A343 | docs/research/R-0046-track-breadth-matrix.md |

@@ -738,7 +738,8 @@
    "src/core/result_screen.cpp:result_title_glyph"
   ],
   "source_records": [
-   "docs/research/R-0053-result-title-printer.md"
+   "docs/research/R-0053-result-title-printer.md",
+   "tasks/RESULT-TITLE-GLYPHS.md"
   ]
  },
  {
@@ -830,7 +831,8 @@
   "comment": "instruction start",
   "label": "loc_80C628",
   "source_records": [
-   "docs/research/R-0053-result-title-printer.md"
+   "docs/research/R-0053-result-title-printer.md",
+   "tasks/RESULT-TITLE-GLYPHS.md"
   ]
  },
  {
@@ -852,7 +854,8 @@
   ],
   "source_records": [
    "docs/research/R-0046-track-breadth-matrix.md",
-   "docs/research/R-0053-result-title-printer.md"
+   "docs/research/R-0053-result-title-printer.md",
+   "tasks/RESULT-TITLE-GLYPHS.md"
   ]
  },
  {
@@ -873,7 +876,8 @@
    "src/core/result_screen.cpp:result_title_glyph"
   ],
   "source_records": [
-   "docs/research/R-0053-result-title-printer.md"
+   "docs/research/R-0053-result-title-printer.md",
+   "tasks/RESULT-TITLE-GLYPHS.md"
   ]
  },
  {
@@ -926,7 +930,8 @@
    "src/core/result_screen.cpp:result_title_glyph"
   ],
   "source_records": [
-   "docs/research/R-0053-result-title-printer.md"
+   "docs/research/R-0053-result-title-printer.md",
+   "tasks/RESULT-TITLE-GLYPHS.md"
   ]
  },
  {
