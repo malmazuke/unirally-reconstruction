@@ -3,6 +3,7 @@
 #include "front_end.hpp"
 #include "input_timer.hpp"
 #include "presentation.hpp"
+#include "zoom_zoo_movement.hpp"
 
 #include <array>
 #include <cstdint>
@@ -108,11 +109,12 @@ private:
   std::array<std::optional<std::uint16_t>, 2> drawn_pose_{};
 };
 
-// The app's front end: power-on to the main menu (R-0054) and 1P's setup
-// screens to the race (R-0055, R-0056). Until the other modes are native,
-// choosing 2P, VS, LEAGUE, OPTIONS, reaching the demo, or a 1P race the race
-// scenarios do not have (another rider than MIKE, a stunt event) shows a short
-// notice and returns to the main menu as it first appeared.
+// The app's front end: power-on to the main menu (R-0054), 1P's setup screens
+// to the race (R-0055, R-0056), and after a one-run race its result and PICK
+// TRACK again (R-0057). Until the other modes are native, choosing 2P, VS,
+// LEAGUE, OPTIONS, reaching the demo, or a 1P race the race scenarios do not
+// have (another rider than MIKE, a stunt event) shows a short notice and
+// returns to the main menu as it first appeared, the records kept.
 class FrontEndSession {
 public:
   explicit FrontEndSession(const ClassicContentPack &pack);
@@ -128,15 +130,23 @@ public:
   std::uint32_t frames() const { return frames_; }
   std::uint32_t notices() const { return notices_; }
   std::uint32_t returns_to_menu() const { return returns_; }
+  std::uint32_t races() const { return races_; }
   ClassicRaceTrack race_track() const {
     return ClassicRaceTrack{state_.tour_menu.track};
   }
+  // True when the chosen race comes back to the front end: a one-run race,
+  // whose result screen is the menus' (`$80:951C`). A lap race keeps the race's
+  // own result screen until the lap result is recovered.
+  bool race_returns() const;
+  // The race's result load has begun (`result_updates` 1): the front end takes
+  // over with its totals.
+  void return_from_race(const ZoomZooState &race);
 
 private:
   FrontEndContent content_;
   FrontEndState state_ = start_front_end();
   std::optional<FrontEndState> main_menu_;
-  std::uint32_t notice_frames_{}, frames_{}, notices_{}, returns_{};
+  std::uint32_t notice_frames_{}, frames_{}, notices_{}, returns_{}, races_{};
   FrontEndMode notice_mode_{};
 };
 

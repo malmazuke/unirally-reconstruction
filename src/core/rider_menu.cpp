@@ -12,9 +12,9 @@ namespace unirally::front_end_screens {
 
 namespace {
 
-// What `$80:F4E9` loads on the way out ($83:91F7, $80:F502-F510): the chosen rider's palette, or
-// asset 2 after Y, at colour 0xF0; assets 28 and 5 at 0xD0 and 0xE0.
-constexpr unsigned no_rider_palette = 2, menu_text_palette = 28, early_palette = 5;
+// What `$80:F4E9` loads on the way out ($80:F502-F510), after the object palette ($83:91F7):
+// assets 28 and 5 at 0xD0 and 0xE0.
+constexpr unsigned menu_text_palette = 28, early_palette = 5;
 
 // The rider menu's text ($80:95AB): each name at column 5 (even riders) or 19 (odd), text row
 // 4 + 3 * row; then the title.
@@ -285,6 +285,7 @@ void rider_menu_frame(FrontEndState& state, const FrontEndContent& content, Fron
         return;
     }
     // $80:BBB8-BBC1 for a choice ($80:BC9B for Y), then $80:F4E9, which stops the HDMA at once.
+    state.one_player = !state.rider_menu.back; // $80:BBEE, $80:BC9B: $77:10AD
     if (!state.rider_menu.back) {
         state.arrow.target_x = off_screen_x;
         state.arrow.target_y = off_screen_y;
@@ -302,10 +303,7 @@ void rider_menu_exit_frame(FrontEndState& state, const FrontEndContent& content)
     }
     copy_oam(state);
     const bool back = state.rider_menu.back;
-    load_cgram(
-        state,
-        asset(content, back ? no_rider_palette : first_rider_palette + state.rider_menu.rider),
-        0xf0);
+    load_object_palette(state, content); // $83:91F7
     load_cgram(state, asset(content, menu_text_palette), 0xd0);
     load_cgram(state, asset(content, early_palette), 0xe0);
     state.registers.obsel = 0x63;

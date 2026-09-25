@@ -695,6 +695,16 @@
   ]
  },
  {
+  "address": "$80:88DD",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_8088DD",
+  "source_records": [
+   "docs/research/R-0057-one-run-result.md",
+   "tasks/FRONT-END-LAP-RESULT.md"
+  ]
+ },
+ {
   "address": "$80:8C41",
   "class": "observed",
   "comment": "routine start",
@@ -714,7 +724,55 @@
   "source_records": [
    "docs/research/R-0054-boot-title-main-menu.md",
    "docs/research/R-0055-rider-menu.md",
-   "docs/research/R-0056-tour-track-now-playing.md"
+   "docs/research/R-0056-tour-track-now-playing.md",
+   "docs/research/R-0057-one-run-result.md"
+  ]
+ },
+ {
+  "address": "$80:8D6E",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_808D6E",
+  "source_records": [
+   "docs/research/R-0057-one-run-result.md",
+   "tasks/FRONT-END-LAP-RESULT.md",
+   "tasks/NEXT_SESSION.md"
+  ]
+ },
+ {
+  "address": "$80:910F",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80910F",
+  "source_records": [
+   "tasks/FRONT-END-LAP-RESULT.md"
+  ]
+ },
+ {
+  "address": "$80:918F",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80918F",
+  "source_records": [
+   "tasks/FRONT-END-LAP-RESULT.md"
+  ]
+ },
+ {
+  "address": "$80:91A1",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_8091A1",
+  "source_records": [
+   "tasks/FRONT-END-LAP-RESULT.md"
+  ]
+ },
+ {
+  "address": "$80:91B9",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_8091B9",
+  "source_records": [
+   "tasks/FRONT-END-LAP-RESULT.md"
   ]
  },
  {
@@ -795,6 +853,7 @@
   "comment": "routine start",
   "label": "sub_8093A5",
   "native": [
+   "src/core/race_result.cpp:show_icons",
    "src/core/rider_menu.cpp:rider_menu_frame"
   ],
   "source_records": [
@@ -808,6 +867,22 @@
   "label": "unk_8093FB",
   "source_records": [
    "tasks/COVERAGE-ROADMAP.md"
+  ]
+ },
+ {
+  "address": "$80:951C",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_80951C",
+  "native": [
+   "src/core/front_end.hpp:FrontEndScreen",
+   "src/core/front_end.hpp:RaceResult",
+   "src/core/race_result.cpp:(file)",
+   "src/core/race_result.cpp:start_result"
+  ],
+  "source_records": [
+   "docs/research/R-0057-one-run-result.md",
+   "tasks/FRONT-END-LAP-RESULT.md"
   ]
  },
  {
@@ -891,15 +966,29 @@
   ]
  },
  {
+  "address": "$80:9805",
+  "class": "inferred",
+  "comment": "routine start",
+  "label": "sub_809805",
+  "native": [
+   "src/core/race_result.cpp:hide_result_objects"
+  ],
+  "source_records": [
+   "docs/research/R-0057-one-run-result.md"
+  ]
+ },
+ {
   "address": "$80:9869",
   "class": "observed",
   "comment": "routine start",
   "label": "sub_809869",
   "native": [
-   "src/core/front_end.cpp:fade_frames"
+   "src/core/front_end.cpp:fade_frames",
+   "src/core/race_result.cpp:rows_frame, icons_frame, first_fade_frame, fade_frames"
   ],
   "source_records": [
-   "docs/research/R-0054-boot-title-main-menu.md"
+   "docs/research/R-0054-boot-title-main-menu.md",
+   "docs/research/R-0057-one-run-result.md"
   ]
  },
  {
@@ -924,10 +1013,12 @@
   "comment": "routine start",
   "label": "sub_8098A4",
   "native": [
+   "src/core/race_result.cpp:race_return_frame",
    "src/core/rider_menu.cpp:off_screen_x, off_screen_y"
   ],
   "source_records": [
-   "docs/research/R-0055-rider-menu.md"
+   "docs/research/R-0055-rider-menu.md",
+   "docs/research/R-0057-one-run-result.md"
   ]
  },
  {
@@ -935,7 +1026,12 @@
   "class": "inferred",
   "comment": "routine start",
   "label": "sub_8098B3",
+  "native": [
+   "src/core/race_result.cpp:race_result_frame"
+  ],
   "source_records": [
+   "docs/research/R-0057-one-run-result.md",
+   "tasks/FRONT-END-LAP-RESULT.md",
    "tasks/STATIC-CODE-MAP.md"
   ]
  },
@@ -944,8 +1040,35 @@
   "class": "observed",
   "comment": "routine start",
   "label": "sub_8099A4",
+  "native": [
+   "src/core/front_end.hpp:FrontEndScreen",
+   "src/core/front_end.hpp:return_from_race",
+   "src/core/race_result.cpp:(file)"
+  ],
   "source_records": [
    "docs/research/R-0056-tour-track-now-playing.md"
+  ]
+ },
+ {
+  "address": "$80:9A27",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_809A27",
+  "native": [
+   "src/core/now_playing.cpp:race_fade_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0057-one-run-result.md"
+  ]
+ },
+ {
+  "address": "$80:9A50",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_809A50",
+  "source_records": [
+   "docs/research/R-0057-one-run-result.md",
+   "tasks/FRONT-END-LAP-RESULT.md"
   ]
  },
  {
@@ -953,6 +1076,9 @@
   "class": "observed",
   "comment": "routine start",
   "label": "sub_809B2F",
+  "native": [
+   "src/core/text_printer.cpp:record_name"
+  ],
   "source_records": [
    "docs/research/R-0055-rider-menu.md"
   ]
@@ -1012,10 +1138,16 @@
   "native": [
    "src/core/front_end.cpp:clear_oam_buffer",
    "src/core/front_end.cpp:early_objects, early_palette",
-   "src/core/front_end.cpp:set_nintendo_registers"
+   "src/core/front_end.cpp:set_early_registers",
+   "src/core/front_end_screens.hpp:clear_oam_buffer",
+   "src/core/front_end_screens.hpp:set_early_registers",
+   "src/core/race_result.cpp:early_loads",
+   "src/core/race_result.cpp:early_palette, early_objects",
+   "src/core/race_result.cpp:menu_screen_frame, objects_frame, restore_frame, tiles_frame, palette_low_frame, palette_high_frame"
   ],
   "source_records": [
-   "docs/research/R-0054-boot-title-main-menu.md"
+   "docs/research/R-0054-boot-title-main-menu.md",
+   "docs/research/R-0057-one-run-result.md"
   ]
  },
  {
@@ -1024,7 +1156,7 @@
   "comment": "routine start",
   "label": "sub_80A16A",
   "native": [
-   "src/core/front_end.cpp:load_main_menu",
+   "src/core/front_end.cpp:load_main_menu_screen",
    "src/core/front_end.cpp:load_title",
    "src/core/front_end.cpp:parked_x, parked_y",
    "src/core/front_end.cpp:reset_screen_state"
@@ -1070,12 +1202,14 @@
   "label": "sub_80A82B",
   "native": [
    "src/core/front_end.hpp:FrontEndScreen",
+   "src/core/race_result.cpp:race_return_frame",
    "src/core/tour_menu.cpp:first_medal_palette",
    "src/core/tour_menu.cpp:return_to_tour_menu",
    "src/core/tour_menu.cpp:tour_menu_entry_frame"
   ],
   "source_records": [
-   "docs/research/R-0056-tour-track-now-playing.md"
+   "docs/research/R-0056-tour-track-now-playing.md",
+   "docs/research/R-0057-one-run-result.md"
   ]
  },
  {
@@ -1090,7 +1224,8 @@
    "src/core/tour_menu.cpp:tour_menu_entry_frame"
   ],
   "source_records": [
-   "docs/research/R-0056-tour-track-now-playing.md"
+   "docs/research/R-0056-tour-track-now-playing.md",
+   "docs/research/R-0057-one-run-result.md"
   ]
  },
  {
@@ -1114,7 +1249,7 @@
   "label": "sub_80A8A8",
   "native": [
    "src/core/front_end.cpp:boot_frame_waits",
-   "src/core/front_end.cpp:load_main_menu",
+   "src/core/front_end.cpp:load_main_menu_screen",
    "src/core/front_end.cpp:load_nintendo_screen",
    "src/core/front_end_screens.hpp:reload_menu_palette"
   ],
@@ -1270,7 +1405,7 @@
   "native": [
    "src/core/front_end.cpp:boot_frame_waits",
    "src/core/front_end.cpp:nintendo_palette, nintendo_map, nintendo_tiles",
-   "src/core/front_end.cpp:set_nintendo_registers"
+   "src/core/front_end.cpp:set_early_registers"
   ],
   "source_records": [
    "docs/research/R-0054-boot-title-main-menu.md"
@@ -1755,6 +1890,18 @@
   ]
  },
  {
+  "address": "$80:BC68",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_80BC68",
+  "native": [
+   "src/core/front_end.hpp:FrontEndScreen"
+  ],
+  "source_records": [
+   "docs/research/R-0057-one-run-result.md"
+  ]
+ },
+ {
   "address": "$80:BC9B",
   "class": "inferred",
   "comment": "instruction start",
@@ -1817,6 +1964,35 @@
   ]
  },
  {
+  "address": "$80:C206",
+  "class": "inferred",
+  "comment": "routine start",
+  "label": "sub_80C206",
+  "native": [
+   "src/core/front_end.hpp:RaceResult::press_seen",
+   "src/core/race_result.cpp:(file)",
+   "src/core/race_result.cpp:pressed",
+   "src/core/race_result.cpp:race_result_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0057-one-run-result.md"
+  ]
+ },
+ {
+  "address": "$80:C24C",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_80C24C",
+  "native": [
+   "src/core/front_end.hpp:RaceResult::released",
+   "src/core/race_result.cpp:(file)",
+   "src/core/race_result.cpp:race_result_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0057-one-run-result.md"
+  ]
+ },
+ {
   "address": "$80:C3BC",
   "class": "observed",
   "comment": "routine start",
@@ -1849,7 +2025,7 @@
   "comment": "instruction start",
   "label": "loc_80C3C6",
   "native": [
-   "src/core/text_printer.cpp:end_of_text, position, number, centre, nothing, attribute, track_name, place_object, first_control"
+   "src/core/text_printer.cpp:end_of_text, position, number, centre, nothing, attribute, rider_name, track_name, race_time, place_object, capitals, first_control"
   ],
   "source_records": [
    "docs/research/R-0054-boot-title-main-menu.md"
@@ -1861,7 +2037,7 @@
   "comment": "unknown",
   "label": "unk_80C3DC",
   "native": [
-   "src/core/text_printer.cpp:end_of_text, position, number, centre, nothing, attribute, track_name, place_object, first_control"
+   "src/core/text_printer.cpp:end_of_text, position, number, centre, nothing, attribute, rider_name, track_name, race_time, place_object, capitals, first_control"
   ],
   "source_records": [
    "docs/research/R-0053-result-title-printer.md"
@@ -1974,8 +2150,12 @@
   "class": "observed",
   "comment": "instruction start",
   "label": "loc_80C5D3",
+  "native": [
+   "src/core/text_printer.cpp:print_text"
+  ],
   "source_records": [
-   "docs/research/R-0055-rider-menu.md"
+   "docs/research/R-0055-rider-menu.md",
+   "docs/research/R-0057-one-run-result.md"
   ]
  },
  {
@@ -1998,6 +2178,18 @@
   "label": "loc_80C661",
   "source_records": [
    "docs/research/R-0053-result-title-printer.md"
+  ]
+ },
+ {
+  "address": "$80:C6BB",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80C6BB",
+  "native": [
+   "src/core/text_printer.cpp:print_text"
+  ],
+  "source_records": [
+   "docs/research/R-0057-one-run-result.md"
   ]
  },
  {
@@ -2030,12 +2222,137 @@
   ]
  },
  {
+  "address": "$80:C786",
+  "class": "inferred",
+  "comment": "routine start",
+  "label": "sub_80C786",
+  "native": [
+   "src/core/race_result.cpp:(file)",
+   "src/core/race_result.cpp:race_result_exit_frame",
+   "src/core/race_result.cpp:update_records"
+  ],
+  "source_records": [
+   "docs/research/R-0057-one-run-result.md"
+  ]
+ },
+ {
+  "address": "$80:C7C4",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80C7C4",
+  "native": [
+   "src/core/race_result.cpp:(file)",
+   "src/core/race_result.cpp:race_result_exit_frame",
+   "src/core/race_result.cpp:update_records"
+  ],
+  "source_records": [
+   "docs/research/R-0057-one-run-result.md"
+  ]
+ },
+ {
+  "address": "$80:C800",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80C800",
+  "native": [
+   "src/core/race_result.cpp:(file)",
+   "src/core/race_result.cpp:race_result_exit_frame",
+   "src/core/race_result.cpp:update_records"
+  ],
+  "source_records": [
+   "docs/research/R-0057-one-run-result.md"
+  ]
+ },
+ {
+  "address": "$80:C81C",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80C81C",
+  "native": [
+   "src/core/race_result.cpp:(file)",
+   "src/core/race_result.cpp:race_result_exit_frame",
+   "src/core/race_result.cpp:update_records"
+  ],
+  "source_records": [
+   "docs/research/R-0057-one-run-result.md"
+  ]
+ },
+ {
   "address": "$80:C950",
   "class": "unknown",
   "comment": "unknown",
   "label": "unk_80C950",
   "source_records": [
    "tasks/LOCKED-TOURS.md"
+  ]
+ },
+ {
+  "address": "$80:C9D7",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80C9D7",
+  "native": [
+   "src/core/race_result.cpp:insert_record"
+  ],
+  "source_records": [
+   "docs/research/R-0057-one-run-result.md"
+  ]
+ },
+ {
+  "address": "$80:CA74",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80CA74",
+  "native": [
+   "src/core/race_result.cpp:update_records"
+  ],
+  "source_records": [
+   "docs/research/R-0057-one-run-result.md"
+  ]
+ },
+ {
+  "address": "$80:CA83",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80CA83",
+  "native": [
+   "src/core/race_result.cpp:update_records"
+  ],
+  "source_records": [
+   "docs/research/R-0057-one-run-result.md"
+  ]
+ },
+ {
+  "address": "$80:CA9B",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80CA9B",
+  "source_records": [
+   "docs/research/R-0057-one-run-result.md"
+  ]
+ },
+ {
+  "address": "$80:CAAA",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80CAAA",
+  "native": [
+   "src/core/race_result.cpp:update_records"
+  ],
+  "source_records": [
+   "docs/research/R-0057-one-run-result.md"
+  ]
+ },
+ {
+  "address": "$80:CAC5",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80CAC5",
+  "native": [
+   "src/core/race_result.cpp:update_records"
+  ],
+  "source_records": [
+   "docs/research/R-0057-one-run-result.md"
   ]
  },
  {
@@ -2207,15 +2524,123 @@
   ]
  },
  {
+  "address": "$80:CE90",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80CE90",
+  "native": [
+   "src/core/front_end.hpp:RaceResult",
+   "src/core/race_result.cpp:(file)",
+   "src/core/race_result.cpp:RowKind",
+   "src/core/race_result.cpp:sorted_rows",
+   "src/core/race_result.cpp:start_result"
+  ],
+  "source_records": [
+   "docs/research/R-0057-one-run-result.md"
+  ]
+ },
+ {
+  "address": "$80:CF56",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80CF56",
+  "source_records": [
+   "docs/research/R-0057-one-run-result.md"
+  ]
+ },
+ {
+  "address": "$80:CF91",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80CF91",
+  "native": [
+   "src/core/race_result.cpp:print_rows"
+  ],
+  "source_records": [
+   "docs/research/R-0057-one-run-result.md"
+  ]
+ },
+ {
+  "address": "$80:CFB9",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80CFB9",
+  "native": [
+   "src/core/race_result.cpp:print_rows"
+  ],
+  "source_records": [
+   "docs/research/R-0057-one-run-result.md"
+  ]
+ },
+ {
+  "address": "$80:D007",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80D007",
+  "native": [
+   "src/core/race_result.cpp:print_rows"
+  ],
+  "source_records": [
+   "docs/research/R-0057-one-run-result.md"
+  ]
+ },
+ {
+  "address": "$80:D0FE",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80D0FE",
+  "native": [
+   "src/core/race_result.cpp:print_result"
+  ],
+  "source_records": [
+   "docs/research/R-0057-one-run-result.md"
+  ]
+ },
+ {
+  "address": "$80:D110",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80D110",
+  "source_records": [
+   "docs/research/R-0057-one-run-result.md"
+  ]
+ },
+ {
+  "address": "$80:D163",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_80D163",
+  "native": [
+   "src/core/race_result.cpp:rows_palettes"
+  ],
+  "source_records": [
+   "docs/research/R-0057-one-run-result.md"
+  ]
+ },
+ {
+  "address": "$80:D17B",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80D17B",
+  "native": [
+   "src/core/front_end.hpp:FrontEndContent::result_text, FrontEndContent::result_icons"
+  ],
+  "source_records": [
+   "docs/research/R-0057-one-run-result.md"
+  ]
+ },
+ {
   "address": "$80:D187",
   "class": "unknown",
   "comment": "unknown",
   "label": "unk_80D187",
   "native": [
+   "src/core/front_end.hpp:FrontEndContent::result_text, FrontEndContent::result_icons",
    "src/core/result_screen.cpp:(file)"
   ],
   "source_records": [
    "docs/research/R-0053-result-title-printer.md",
+   "docs/research/R-0057-one-run-result.md",
    "tasks/RESULT-TITLE-GLYPHS.md"
   ]
  },
@@ -2258,11 +2683,16 @@
   "label": "sub_80D20E",
   "native": [
    "src/core/front_end.cpp:boot_frame_waits",
-   "src/core/front_end.cpp:load_main_menu",
-   "src/core/front_end.cpp:menu_objects, menu_objects_high, menu_map, menu_bg2_tiles, menu_bg1_tiles, menu_bg1_tiles_high"
+   "src/core/front_end.cpp:load_main_menu_screen",
+   "src/core/front_end.cpp:menu_objects, menu_objects_high, menu_map, menu_bg2_tiles, menu_bg1_tiles, menu_bg1_tiles_high",
+   "src/core/front_end.cpp:waits_for_frame",
+   "src/core/front_end_screens.hpp:load_main_menu_screen",
+   "src/core/race_result.cpp:menu_screen_frame, objects_frame, restore_frame, tiles_frame, palette_low_frame, palette_high_frame",
+   "src/core/race_result.cpp:race_return_frame"
   ],
   "source_records": [
-   "docs/research/R-0054-boot-title-main-menu.md"
+   "docs/research/R-0054-boot-title-main-menu.md",
+   "docs/research/R-0057-one-run-result.md"
   ]
  },
  {
@@ -2275,7 +2705,8 @@
    "src/core/front_end_screens.hpp:lay_out_menu_objects"
   ],
   "source_records": [
-   "docs/research/R-0055-rider-menu.md"
+   "docs/research/R-0055-rider-menu.md",
+   "docs/research/R-0057-one-run-result.md"
   ]
  },
  {
@@ -2322,10 +2753,25 @@
   "comment": "instruction start",
   "label": "loc_80D372",
   "native": [
-   "src/core/front_end.cpp:boot_frame"
+   "src/core/front_end.cpp:boot_frame",
+   "src/core/race_result.cpp:race_return_frame"
   ],
   "source_records": [
-   "docs/research/R-0054-boot-title-main-menu.md"
+   "docs/research/R-0054-boot-title-main-menu.md",
+   "docs/research/R-0057-one-run-result.md"
+  ]
+ },
+ {
+  "address": "$80:D377",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80D377",
+  "native": [
+   "src/core/front_end.cpp:waits_for_frame",
+   "src/core/race_result.cpp:race_return_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0057-one-run-result.md"
   ]
  },
  {
@@ -2634,7 +3080,8 @@
    "src/core/track_menu.cpp:(file)"
   ],
   "source_records": [
-   "docs/research/R-0056-tour-track-now-playing.md"
+   "docs/research/R-0056-tour-track-now-playing.md",
+   "docs/research/R-0057-one-run-result.md"
   ]
  },
  {
@@ -2737,6 +3184,18 @@
   ]
  },
  {
+  "address": "$80:EA14",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80EA14",
+  "native": [
+   "src/core/track_menu.cpp:track_menu_exit_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0057-one-run-result.md"
+  ]
+ },
+ {
   "address": "$80:EA40",
   "class": "unknown",
   "comment": "unknown",
@@ -2790,6 +3249,18 @@
   ]
  },
  {
+  "address": "$80:F082",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_80F082",
+  "native": [
+   "src/core/race_result.cpp:sorted_rows"
+  ],
+  "source_records": [
+   "docs/research/R-0057-one-run-result.md"
+  ]
+ },
+ {
   "address": "$80:F0D6",
   "class": "inferred",
   "comment": "instruction start",
@@ -2804,6 +3275,28 @@
   ]
  },
  {
+  "address": "$80:F0EE",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80F0EE",
+  "source_records": [
+   "docs/research/R-0057-one-run-result.md"
+  ]
+ },
+ {
+  "address": "$80:F4B8",
+  "class": "inferred",
+  "comment": "routine start",
+  "label": "sub_80F4B8",
+  "native": [
+   "src/core/race_result.cpp:hide_result_objects",
+   "src/core/race_result.cpp:race_result_exit_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0057-one-run-result.md"
+  ]
+ },
+ {
   "address": "$80:F4E9",
   "class": "observed",
   "comment": "routine start",
@@ -2811,7 +3304,7 @@
   "native": [
    "src/core/front_end.hpp:FrontEndScreen",
    "src/core/rider_menu.cpp:(file)",
-   "src/core/rider_menu.cpp:no_rider_palette, menu_text_palette, early_palette",
+   "src/core/rider_menu.cpp:menu_text_palette, early_palette",
    "src/core/rider_menu.cpp:rider_menu_frame"
   ],
   "source_records": [
@@ -2825,7 +3318,7 @@
   "comment": "instruction start",
   "label": "loc_80F502",
   "native": [
-   "src/core/rider_menu.cpp:no_rider_palette, menu_text_palette, early_palette"
+   "src/core/rider_menu.cpp:menu_text_palette, early_palette"
   ],
   "source_records": [
    "docs/research/R-0055-rider-menu.md"
@@ -2853,6 +3346,18 @@
   ],
   "source_records": [
    "docs/research/R-0055-rider-menu.md"
+  ]
+ },
+ {
+  "address": "$80:F53F",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_80F53F",
+  "native": [
+   "src/core/race_result.cpp:start_result"
+  ],
+  "source_records": [
+   "docs/research/R-0057-one-run-result.md"
   ]
  },
  {
@@ -2953,7 +3458,8 @@
   ],
   "source_records": [
    "docs/research/R-0038-dragster-ordinary-controls.md",
-   "docs/research/R-0039-dragster-clock-limit.md"
+   "docs/research/R-0039-dragster-clock-limit.md",
+   "docs/research/R-0057-one-run-result.md"
   ]
  },
  {
@@ -2962,7 +3468,9 @@
   "comment": "routine start",
   "label": "sub_80F8B9",
   "native": [
-   "src/core/result_screen.cpp:(file)"
+   "src/core/result_screen.cpp:(file)",
+   "src/core/text_printer.cpp:in_capitals",
+   "src/core/text_printer.hpp:TextVariables"
   ],
   "source_records": [
    "docs/research/R-0053-result-title-printer.md",
@@ -9843,9 +10351,35 @@
   "class": "inferred",
   "comment": "routine start",
   "label": "sub_83879A",
+  "native": [
+   "src/core/front_end.cpp:waits_for_frame",
+   "src/core/race_result.cpp:(file)",
+   "src/core/race_result.cpp:race_result_exit_frame",
+   "src/core/race_result.cpp:score_race"
+  ],
   "source_records": [
+   "docs/research/R-0057-one-run-result.md",
    "tasks/FRONT-END-1P-CONTINUATION.md",
-   "tasks/FRONT-END-1P-SETUP.md"
+   "tasks/FRONT-END-1P-SETUP.md",
+   "tasks/FRONT-END-TOUR-END.md"
+  ]
+ },
+ {
+  "address": "$83:87E9",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_8387E9",
+  "source_records": [
+   "docs/research/R-0057-one-run-result.md"
+  ]
+ },
+ {
+  "address": "$83:881B",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_83881B",
+  "source_records": [
+   "tasks/FRONT-END-TOUR-END.md"
   ]
  },
  {
@@ -9867,6 +10401,16 @@
   ]
  },
  {
+  "address": "$83:88FD",
+  "class": "data",
+  "comment": "data",
+  "label": "dat_8388FD",
+  "source_records": [
+   "docs/research/R-0057-one-run-result.md",
+   "tasks/FRONT-END-TOUR-END.md"
+  ]
+ },
+ {
   "address": "$83:893C",
   "class": "observed",
   "comment": "routine start",
@@ -9885,6 +10429,18 @@
   "label": "sub_838957",
   "source_records": [
    "docs/research/R-0056-tour-track-now-playing.md"
+  ]
+ },
+ {
+  "address": "$83:89BA",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_8389BA",
+  "native": [
+   "src/core/race_result.cpp:race_return_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0057-one-run-result.md"
   ]
  },
  {
@@ -9961,7 +10517,17 @@
    "src/core/text_printer.hpp:race_time_text"
   ],
   "source_records": [
-   "docs/research/R-0056-tour-track-now-playing.md"
+   "docs/research/R-0056-tour-track-now-playing.md",
+   "docs/research/R-0057-one-run-result.md"
+  ]
+ },
+ {
+  "address": "$83:8D5D",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_838D5D",
+  "source_records": [
+   "tasks/FRONT-END-LAP-RESULT.md"
   ]
  },
  {
@@ -10019,7 +10585,20 @@
    "src/core/zoom_zoo_movement.hpp:ClassicRaceScenario::tour_race"
   ],
   "source_records": [
-   "docs/research/R-0038-dragster-ordinary-controls.md"
+   "docs/research/R-0038-dragster-ordinary-controls.md",
+   "tasks/FRONT-END-LAP-RESULT.md"
+  ]
+ },
+ {
+  "address": "$83:90F4",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_8390F4",
+  "native": [
+   "src/core/front_end.hpp:OnePlayerRecords::statistics"
+  ],
+  "source_records": [
+   "docs/research/R-0057-one-run-result.md"
   ]
  },
  {
@@ -10028,12 +10607,15 @@
   "comment": "routine start",
   "label": "sub_8391F7",
   "native": [
-   "src/core/front_end.cpp:load_main_menu",
-   "src/core/rider_menu.cpp:no_rider_palette, menu_text_palette, early_palette"
+   "src/core/front_end.cpp:load_main_menu_screen",
+   "src/core/front_end_screens.hpp:load_object_palette",
+   "src/core/rider_menu.cpp:menu_text_palette, early_palette",
+   "src/core/rider_menu.cpp:rider_menu_exit_frame"
   ],
   "source_records": [
    "docs/research/R-0054-boot-title-main-menu.md",
-   "docs/research/R-0055-rider-menu.md"
+   "docs/research/R-0055-rider-menu.md",
+   "docs/research/R-0057-one-run-result.md"
   ]
  },
  {
@@ -10070,16 +10652,40 @@
   ]
  },
  {
+  "address": "$83:9454",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_839454",
+  "source_records": [
+   "docs/research/R-0057-one-run-result.md"
+  ]
+ },
+ {
+  "address": "$83:9464",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_839464",
+  "native": [
+   "src/core/front_end.hpp:OnePlayerRecords"
+  ],
+  "source_records": [
+   "docs/research/R-0057-one-run-result.md"
+  ]
+ },
+ {
   "address": "$83:94D0",
   "class": "observed",
   "comment": "routine start",
   "label": "sub_8394D0",
   "native": [
    "src/core/front_end_screens.hpp:swapped_object_tiles_word",
+   "src/core/race_result.cpp:rows_frame, icons_frame, first_fade_frame, fade_frames",
+   "src/core/race_result.cpp:start_result",
    "src/core/track_menu.cpp:track_menu_exit_frame"
   ],
   "source_records": [
-   "docs/research/R-0056-tour-track-now-playing.md"
+   "docs/research/R-0056-tour-track-now-playing.md",
+   "docs/research/R-0057-one-run-result.md"
   ]
  },
  {
@@ -10140,6 +10746,32 @@
   ]
  },
  {
+  "address": "$83:987D",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_83987D",
+  "native": [
+   "src/core/front_end.hpp:SavedMenus",
+   "src/core/race_result.cpp:restore_menus"
+  ],
+  "source_records": [
+   "docs/research/R-0057-one-run-result.md"
+  ]
+ },
+ {
+  "address": "$83:9894",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_839894",
+  "native": [
+   "src/core/front_end.hpp:SavedMenus",
+   "src/core/now_playing.cpp:race_fade_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0057-one-run-result.md"
+  ]
+ },
+ {
   "address": "$83:9983",
   "class": "observed",
   "comment": "routine start",
@@ -10191,7 +10823,8 @@
   ],
   "source_records": [
    "docs/research/R-0055-rider-menu.md",
-   "docs/research/R-0056-tour-track-now-playing.md"
+   "docs/research/R-0056-tour-track-now-playing.md",
+   "docs/research/R-0057-one-run-result.md"
   ]
  },
  {
@@ -10335,6 +10968,18 @@
   ]
  },
  {
+  "address": "$83:A923",
+  "class": "inferred",
+  "comment": "routine start",
+  "label": "sub_83A923",
+  "native": [
+   "src/core/front_end.cpp:waits_for_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0057-one-run-result.md"
+  ]
+ },
+ {
   "address": "$83:AB9A",
   "class": "inferred",
   "comment": "routine start",
@@ -10344,12 +10989,27 @@
   ]
  },
  {
+  "address": "$83:AEF6",
+  "class": "inferred",
+  "comment": "routine start",
+  "label": "sub_83AEF6",
+  "source_records": [
+   "docs/research/R-0057-one-run-result.md",
+   "tasks/FRONT-END-TOUR-END.md"
+  ]
+ },
+ {
   "address": "$83:C8E0",
   "class": "observed",
   "comment": "routine start",
   "label": "sub_83C8E0",
+  "native": [
+   "src/core/front_end.hpp:return_from_race",
+   "src/core/race_result.cpp:(file)"
+  ],
   "source_records": [
-   "docs/research/R-0056-tour-track-now-playing.md"
+   "docs/research/R-0056-tour-track-now-playing.md",
+   "docs/research/R-0057-one-run-result.md"
   ]
  },
  {

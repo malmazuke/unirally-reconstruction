@@ -66,6 +66,14 @@ void copy_oam(FrontEndState& state); // $80:9318
 void set_oam_x_high(FrontEndState& state, unsigned entry, bool high);
 void park_arrow(FrontEndState& state); // $83:99FA
 
+// $80:A09A (boot frame 24): every OAM entry at (1, 1), every high bit set.
+void clear_oam_buffer(FrontEndState& state);
+// The registers `$80:A09A` sets (boot frame 97): BG1 and BG2 maps, mode 3, objects.
+void set_early_registers(FrontEndState& state);
+// $83:91F7: colour 0xF0 on, the rider's palette in a one-player game, else asset 2.
+void load_object_palette(FrontEndState& state, const FrontEndContent& content);
+// $80:D20E: the main menu's screen (boot frame 377), its text left out.
+void load_main_menu_screen(FrontEndState& state, const FrontEndContent& content);
 // $80:D2C1: every object hidden, the main menu's objects laid out, the arrow parked.
 void lay_out_menu_objects(FrontEndState& state);
 // The main menu's text into the text map ($80:ACD5: `$80:D1FA` clears it, `$80:C3BC` prints).
@@ -119,5 +127,12 @@ void enter_now_playing(FrontEndState& state);
 void now_playing_entry_frame(FrontEndState& state, const FrontEndContent& content);
 void now_playing_frame(FrontEndState& state, const FrontEndContent& content, FrontEndPads pads);
 void race_fade_frame(FrontEndState& state);
+
+// race_result.cpp: after a one-player race, the menus' return and the result screen.
+void begin_race_return(FrontEndState& state, const FrontEndContent& content, std::uint32_t frame,
+                       const RaceTotals& totals);
+void race_return_frame(FrontEndState& state, const FrontEndContent& content);
+void race_result_frame(FrontEndState& state, const FrontEndContent& content, FrontEndPads pads);
+void race_result_exit_frame(FrontEndState& state, const FrontEndContent& content);
 
 } // namespace unirally::front_end_screens

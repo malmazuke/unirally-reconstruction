@@ -35,6 +35,8 @@ struct FrontEndContent {
     std::span<const std::uint8_t> track_menu_tiles, track_menu_layout, track_menu_text, medal_words;
     std::span<const std::uint8_t> marker_tiles, race_kind_words, now_playing_text, time_words;
     std::span<const std::uint8_t> laps, qualifying_scores, track_names;
+    // The one-run result screen (profile v18): its text (`$80:D187`) and icons (`$80:D17B`).
+    std::span<const std::uint8_t> result_text, result_icons;
 };
 FrontEndContent front_end_content(const ClassicContentPack& pack);
 
@@ -114,15 +116,25 @@ struct RiderMenu {
 };
 
 // The one-player records the menus read from SRAM, as a cold start leaves them (`$80:8C4E`):
-// no levels, medals or done tracks, every rider's best 9:59.99 on the races (0 on the stunt
-// events, `$83:9340`) and SOMEONE holding every record (`$83:93D8`). Winning races changes
-// them, which is later work (R-0056).
+// no levels or done tracks, no medals but HUNTER's 2 for every rider (`$83:9464`), every rider's best 9:59.99 on the races (0 on the stunt
+// events, `$83:9340`), no record times (`$83:936E`) and SOMEONE holding every record
+// (`$83:93D8`). The result screen and the scoring change them (R-0057).
 struct OnePlayerRecords {
-    std::array<std::uint8_t, 16> tour_levels{};   // $77:10D3 + rider: 0-3, the tours open
-    std::array<std::uint8_t, 160> medals{};       // $77:069C + 16 * tour + rider: 0, or 1-3
-    std::array<std::uint8_t, 50> tracks_done{};   // $77:1075 + track: won in the current run
-    std::array<std::uint16_t, 800> best{};        // $77:0829 + 2 * (50 * rider + track)
-    std::array<std::uint8_t, 50> record_holder{}; // $77:0550 + track: a rider, 16 SOMEONE
+    std::array<std::uint8_t, 16> tour_levels{}; // $77:10D3 + rider: 0-3, the tours open
+    std::array<std::uint8_t, 160> medals{};     // $77:069C + 16 * tour + rider: 0, or 1-3
+    std::array<std::uint8_t, 50> tracks_done{}; // $77:1075 + track: won in the current run
+    std::array<std::uint16_t, 800> best{};      // $77:0829 + 2 * (50 * rider + track)
+    // The top three records by track: times $77:0422/0486/04EA + 2 * track, holders
+    // $77:0550/0582/05B4 + track (a rider, or 16, SOMEONE).
+    std::array<std::array<std::uint16_t, 50>, 3> record_times{};
+    std::array<std::array<std::uint8_t, 50>, 3> record_holders{};
+    // $77:0230 + 8 * rider: races, wins, losses without a time, stunt points. Sixteen riders; a
+    // computer opponent keeps none (`$77:02B0` is their checksum, `$83:90F4`).
+    std::array<std::array<std::uint16_t, 4>, 16> statistics{};
+    std::uint16_t player_wins{};   // $77:10A9: the player's wins; nothing recovered reads it
+    std::uint16_t opponent_wins{}; // $77:10AB: a rider opponent's wins
+    bool race_lost{};              // $77:0742 bit 12: the last race was lost
+    std::uint16_t tries{};         // $77:1073: 3, one less after a loss; nothing reads it (R-0057)
 };
 OnePlayerRecords cold_start_records();
 
@@ -135,6 +147,19 @@ struct TourMenu {
     std::uint8_t medal{};  // $77:10D1: the rider's medal on the chosen tour
     bool back{};           // left with Y or X
     bool returning{};      // entered back from PICK TRACK ($00AC != 2): slides back in
+};
+
+// A race's totals as the race engine hands them back when its result load begins (R-0057): the
+// riders' totals in hundredths, `$77:0769` and `$77:07D3` (0xEA60 not finished).
+struct RaceTotals {
+    std::uint16_t player_total{0xea60}, opponent_total{0xea60};
+};
+
+// The one-run result screen (`$80:951C`, `$80:CE90`) and its waits for a press.
+struct RaceResult {
+    RaceTotals totals{};
+    bool released{};   // `$80:C24C` has seen both pads released
+    bool press_seen{}; // `$80:C206` saw a press on the last frame
 };
 
 // PICK TRACK ($80:E84E): the tour's five tracks, then (in 1P) the medal line, which steps the
@@ -178,6 +203,27 @@ enum class FrontEndScreen : std::uint8_t {
     now_playing_entry, // $80:B18D's set-up: the match slid in
     now_playing,       // $80:B467's loop: NOW PLAYING
     race_fade,         // $80:9885 after Race, then the race
+    race,              // the race engine runs; the front end waits for `return_from_race`
+    race_return,       // $80:99A4 after the race: the early loads and the main menu's screen again
+    race_result,       // $80:951C: the result screen, its fade and the waits for a press
+    race_result_exit,  // $80:BC68-BC7E: leaving the result, the records and the scoring
+};
+
+// What `$83:9894` saves before a race (work RAM `$0000-$019D`) and `$83:987D` puts back after
+// it: the menus' words, the palette cycle's counters, the logo's offset, the arrow's spin.
+struct SavedMenus {
+    MainMenu menu{};
+    PaletteCycle cycle{};
+    std::uint8_t logo_offset{};
+    ScreenSlide slide{};
+    MenuDecorations decorations{};
+    MenuLatches latches{};
+    RiderMenu rider_menu{};
+    TourMenu tour_menu{};
+    TrackMenu track_menu{};
+    NowPlaying now_playing{};
+    TextCursor printer{};
+    std::uint8_t arrow_spin{};
 };
 
 struct FrontEndState {
@@ -203,6 +249,9 @@ struct FrontEndState {
     TourMenu tour_menu{};
     TrackMenu track_menu{};
     NowPlaying now_playing{};
+    RaceResult race_result{};
+    SavedMenus saved{}; // during a race and its return
+    bool one_player{};  // $77:10AD = 1: 1P from a rider's choice to the main menu's return
     bool mode_chosen{};
     // For 1P, once NOW PLAYING's Race has faded out: the race is `tour_menu.track` for
     // `rider_menu.rider` against `now_playing.opponent`.
@@ -222,5 +271,10 @@ FrontEndState start_front_end();
 void update_front_end(FrontEndState& state, const FrontEndContent& content, FrontEndPads pads);
 // The frame the last update produced.
 RgbFrame render_front_end(const FrontEndState& state);
+
+// The race returns on `frame` (its result load begins, R-0049): the front end resumes with that
+// frame's work, the original's `$80:99A4` after `$83:C8E0`.
+void return_from_race(FrontEndState& state, const FrontEndContent& content, std::uint32_t frame,
+                      const RaceTotals& totals);
 
 } // namespace unirally

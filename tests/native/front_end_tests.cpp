@@ -1,6 +1,7 @@
-// FRONT-END-MAIN-MENU (R-0054) and FRONT-END-1P-SETUP (R-0055, R-0056): the
-// text printer, the SNES screen, the main menu's and the one-player screens'
-// rules, on synthetic content (no ROM). The captures' frame-by-frame agreement
+// FRONT-END-MAIN-MENU (R-0054), FRONT-END-1P-SETUP (R-0055, R-0056) and
+// FRONT-END-1P-CONTINUATION (R-0057): the text printer, the SNES screen, the
+// main menu's and the one-player screens' rules and the one-run result, on
+// synthetic content (no ROM). The captures' frame-by-frame agreement
 // is the laboratory's.
 #include "front_end.hpp"
 #include "snes_screen.hpp"
@@ -21,6 +22,15 @@ void require(bool value,
   if (!value)
     throw std::runtime_error("front-end assertion failed at line " +
                              std::to_string(where.line()));
+}
+
+template <typename Action> bool throws_logic(Action action) {
+  try {
+    action();
+  } catch (const std::logic_error &) {
+    return true;
+  }
+  return false;
 }
 
 template <typename Action> bool refuses(Action action) {
@@ -107,12 +117,32 @@ void text_variable_tests() {
   unirally::print_text(map, cursor, number, table, &variables);
   require(map.words[8 * 32 + 3] == (0x2000 | 24) && placed_object == 2 &&
           placed_at == 8 * 32 + 7); // three blanks, then two big digits
-  // Refused: a variable code without variables, and an upper-case name after
-  // F7.
+  // Refused: a variable code without variables.
   require(refuses([&] { unirally::print_text(map, cursor, track, table); }));
-  const std::array<std::uint8_t, 5> upper{0xf7, 0xb2, 0x00, 0xee, 0xff};
-  require(refuses(
-      [&] { unirally::print_text(map, cursor, upper, table, &variables); }));
+  // EE after F7: the name in capitals (R-0057). F8: rider 1's name from its
+  // 16-byte record.
+  const std::array<std::uint8_t, 5> lower{'a', 0xff, 'b', 'b', 0xff};
+  variables.track_names = lower;
+  const std::array<std::uint8_t, 8> upper{0xfe, 0,    11,   0xf7,
+                                          0xb2, 0x00, 0xee, 0xff};
+  unirally::print_text(map, cursor, upper, table, &variables);
+  require(map.words[11 * 32] == (0x2000 | 22) &&
+          map.words[11 * 32 + 2] == (0x2000 | 22));
+  std::array<std::uint8_t, 32> riders{};
+  riders.fill(0xff);
+  riders[16] = 'A';
+  variables.rider_names = riders;
+  const std::array<std::uint8_t, 7> rider{0xfe, 0, 12, 0xf8, 0xb2, 0x00, 0xff};
+  unirally::print_text(map, cursor, rider, table, &variables);
+  require(map.words[12 * 32] == (0x2000 | 20) &&
+          cursor.position == 12 * 32 + 2);
+  // F1: word 12 as a race time, `_0:00.12`; the `1` after a small blank and
+  // five big glyphs.
+  const std::array<std::uint8_t, 7> race_time{0xfe, 0,    14,  0xf1,
+                                              0xb4, 0x00, 0xff};
+  unirally::print_text(map, cursor, race_time, table, &variables);
+  require(map.words[14 * 32 + 11] == (0x2000 | 24) &&
+          map.words[14 * 32 + 13] == (0x2000 | 26));
   // `$83:8BE7` and `$83:8C7B`.
   const auto digits = [](std::uint16_t value) {
     const auto text = unirally::five_digit_text(value);
@@ -281,6 +311,9 @@ synthetic_content(std::vector<std::vector<std::uint8_t>> &storage) {
   content.time_words = bytes(std::vector<std::uint8_t>(18, 0xff));
   content.laps = bytes(std::vector<std::uint8_t>(50, 3));
   content.qualifying_scores = keep(60);
+  // The result screen (profile v18): its stream prints the track's name.
+  content.result_text = bytes({0xf7, 0xce, 0x00, 0xfc, 0x02, 0xff});
+  content.result_icons = keep(12);
   return content;
 }
 
@@ -495,6 +528,106 @@ void one_player_setup_tests() {
   require(refused);
 }
 
+// R-0057: the race's return, the one-run result screen and its waits, and the
+// records and the scoring on the way back to PICK TRACK.
+void race_result_tests() {
+  using unirally::FrontEndScreen;
+  std::vector<std::vector<std::uint8_t>> storage;
+  const auto content = synthetic_content(storage);
+  // MIKE on the first track of CRAWLER, to the race.
+  const auto to_race = [&] {
+    auto state = unirally::start_front_end();
+    run(state, content, 430);
+    require(run_to(state, content, FrontEndScreen::rider_menu, {0x1000, 0}));
+    require(run_to(state, content, FrontEndScreen::tour_menu, {0x8000, 0}));
+    require(run_to(state, content, FrontEndScreen::track_menu, {0x1000, 0}));
+    require(run_to(state, content, FrontEndScreen::now_playing, {0x1000, 0}));
+    require(run_to(state, content, FrontEndScreen::race, {0x1000, 0}));
+    require(state.mode_chosen && state.tour_menu.track == 0);
+    return state;
+  };
+  auto won = to_race();
+  // Refused before the race; accepted once, the menus' words restored in its
+  // frame 101 and the result screen's first frame after its 104.
+  auto early = unirally::start_front_end();
+  require(throws_logic(
+      [&] { unirally::return_from_race(early, content, 5000, {}); }));
+  unirally::return_from_race(won, content, 5000, {3357, 4000});
+  require(won.screen == FrontEndScreen::race_return && !won.mode_chosen &&
+          won.frame == 5001);
+  run(won, content, 103);
+  require(won.screen == FrontEndScreen::race_return &&
+          won.tour_menu.track == 0 && won.rider_menu.rider == 0);
+  run(won, content, 1);
+  require(won.screen == FrontEndScreen::race_result &&
+          won.slide.scroll == 0 && won.slide.shown_half == 0x1000);
+  // Built in three frames and faded in over seven; a pad held from the race
+  // holds the result until both pads are released.
+  run(won, content, 10, {0x0100, 0});
+  require(won.registers.brightness == 14 && !won.registers.force_blank);
+  run(won, content, 20, {0x0100, 0});
+  require(won.screen == FrontEndScreen::race_result &&
+          !won.race_result.released);
+  run(won, content, 1);
+  require(won.race_result.released);
+  // One frame's press is not enough; two running leave.
+  run(won, content, 1, {0x1000, 0});
+  run(won, content, 1);
+  require(won.screen == FrontEndScreen::race_result);
+  run(won, content, 2, {0x1000, 0});
+  require(won.screen == FrontEndScreen::race_result_exit);
+  // Five frames out: the records, the scoring, then PICK TRACK again.
+  run(won, content, 4);
+  require(won.screen == FrontEndScreen::race_result_exit);
+  run(won, content, 1);
+  require(won.screen == FrontEndScreen::track_menu_entry);
+  const auto &records = won.records;
+  require(records.tracks_done[0] == 1 && !records.race_lost &&
+          records.record_times[0][0] == 3357 &&
+          records.record_holders[0][0] == 0 &&
+          records.record_times[1][0] == 0xea60 &&
+          records.statistics[0][0] == 1 && records.statistics[0][1] == 1 &&
+          records.player_wins == 1 && records.opponent_wins == 0);
+  // A computer opponent (0x11) keeps no counts; HUNTER's medals are 2 from the
+  // cold start.
+  require(records.medals[8 * 16] == 2 && records.medals[7 * 16] == 0);
+  // A loss: a record still, no track won; leaving PICK TRACK spends a try.
+  auto lost = to_race();
+  unirally::return_from_race(lost, content, 5000, {5000, 4000});
+  require(run_to(lost, content, FrontEndScreen::race_result, {}, 104));
+  run(lost, content, 12);
+  run(lost, content, 2, {0x8000, 0});
+  require(run_to(lost, content, FrontEndScreen::track_menu_entry, {}, 5));
+  require(lost.records.tracks_done[0] == 0 && lost.records.race_lost &&
+          lost.records.record_times[0][0] == 5000 &&
+          lost.records.statistics[0][1] == 0 && lost.records.tries == 3);
+  require(run_to(lost, content, FrontEndScreen::track_menu));
+  require(run_to(lost, content, FrontEndScreen::track_menu_exit, {0x1000, 0}));
+  run(lost, content, 1);
+  require(lost.records.race_lost);
+  run(lost, content, 1);
+  require(!lost.records.race_lost && lost.records.tries == 2);
+  // A tie is a loss, and the player's win too.
+  auto tied = to_race();
+  unirally::return_from_race(tied, content, 5000, {4000, 4000});
+  require(run_to(tied, content, FrontEndScreen::race_result, {}, 104));
+  run(tied, content, 12);
+  run(tied, content, 2, {0x8000, 0});
+  require(run_to(tied, content, FrontEndScreen::track_menu_entry, {}, 5));
+  require(tied.records.race_lost && tied.records.statistics[0][1] == 1 &&
+          tied.records.player_wins == 1 && tied.records.opponent_wins == 0);
+  // No time: a loss without one, and no record.
+  auto timeless = to_race();
+  unirally::return_from_race(timeless, content, 5000, {0xea60, 4000});
+  require(run_to(timeless, content, FrontEndScreen::race_result, {}, 104));
+  run(timeless, content, 12);
+  run(timeless, content, 2, {0x8000, 0});
+  require(run_to(timeless, content, FrontEndScreen::track_menu_entry, {}, 5));
+  require(timeless.records.statistics[0][2] == 1 &&
+          timeless.records.record_times[0][0] == 0xea60 &&
+          timeless.records.record_holders[0][0] == 0x10);
+}
+
 } // namespace
 
 int main() try {
@@ -504,6 +637,7 @@ int main() try {
   main_menu_tests();
   rider_menu_tests();
   one_player_setup_tests();
+  race_result_tests();
   return 0;
 } catch (const std::exception &error) {
   std::fprintf(stderr, "%s\n", error.what());

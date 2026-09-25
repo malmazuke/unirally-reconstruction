@@ -124,30 +124,6 @@ void reset_screen_state(FrontEndState& state) {
     state.menu = {};
 }
 
-// $80:A09A (frame 24): every OAM entry at (1, 1), every high bit 0x55; the early loads.
-void clear_oam_buffer(FrontEndState& state) {
-    for (std::size_t entry = 0; entry < 128; ++entry) {
-        state.oam_buffer[entry * 4] = 1;
-        state.oam_buffer[entry * 4 + 1] = 1;
-    }
-    std::fill(state.oam_buffer.begin() + oam_high_table, state.oam_buffer.end(),
-              std::uint8_t{0x55});
-}
-
-// The Nintendo screen ($80:A09A registers at 97, $80:B08C loads at 99): BG2 only, 4bpp.
-void set_nintendo_registers(FrontEndState& state) {
-    auto& r = state.registers;
-    set_background(r.bg[0], 0x02);
-    set_background(r.bg[1], 0x13);
-    set_tile_bases(r, 0x23);
-    r.main_screen = 0x11;
-    r.mode = 3;
-    r.obsel = 0x63;
-    r.sub_screen = 0x10;
-    r.colour_select = 0x02;
-    r.colour_math = 0x00;
-}
-
 void load_nintendo_screen(FrontEndState& state, const FrontEndContent& content) {
     load_cgram(state, content.base_palette, 0); // $80:A8A8's colours
     park_arrow(state);                          // $83:99F6
@@ -169,33 +145,6 @@ void load_title(FrontEndState& state, const FrontEndContent& content) {
     load_cgram(state, asset(content, title_palette), 0);
     load_vram(state, asset(content, title_map), 0);
     load_vram(state, asset(content, title_tiles), 0x1000);
-}
-
-// The main menu's screen ($80:D20E at 377): BG1 (8bpp logo) and BG2 (4bpp checks and text)
-// with the objects, which the subscreen adds at half (the arrow's shadow).
-void load_main_menu(FrontEndState& state, const FrontEndContent& content) {
-    load_cgram(state, content.base_palette, 0); // $80:A8A8
-    state.registers.force_blank = true;
-    reset_screen_state(state); // $80:A16A
-    auto& r = state.registers;
-    set_background(r.bg[0], 0x02);
-    set_background(r.bg[1], 0x13);
-    set_tile_bases(r, 0x23);
-    r.main_screen = 0x13;
-    r.mode = 3;
-    r.obsel = 0x63;
-    r.sub_screen = 0x10;
-    r.colour_select = 0x02;
-    r.colour_math = 0x7f;
-    load_cgram(state, asset(content, menu_palette), 0x70);
-    load_cgram(state, asset(content, menu_object_palette), 0xf0); // $83:91F7
-    load_cgram(state, asset(content, menu_text_palette), 0xd0);
-    load_vram(state, asset(content, menu_objects), 0x6000);
-    load_vram(state, asset(content, menu_objects_high), 0x7d00);
-    load_vram(state, asset(content, menu_map), 0);
-    load_vram(state, asset(content, menu_bg2_tiles), 0x2000);
-    load_vram(state, asset(content, menu_bg1_tiles), 0x31a0);
-    load_vram(state, asset(content, menu_bg1_tiles_high), 0x3d80);
 }
 
 // $80:ACD5 (405-407): the menu text, printed into the cleared map ($0200) and copied to BG2's
@@ -244,7 +193,16 @@ constexpr std::array<FrameWaits, 5> boot_frame_waits{{
 }};
 
 bool waits_for_frame(const FrontEndState& state) {
-    // Every screen after the boot waits for each frame.
+    // After a race NMI is off until `$80:D377` (R-0057) but for the sound upload's last frame and
+    // `$80:D20E`'s first; then from the OAM copy on. `$83:879A`'s frame waits (`$83:A923`) leave
+    // the arrow alone.
+    if (state.screen == FrontEndScreen::race_return) {
+        const auto next = state.script_frame + 1;
+        return next == 74 || next == 75 || next >= 101;
+    }
+    if (state.screen == FrontEndScreen::race_result_exit)
+        return state.script_frame + 1 != 2 && state.script_frame + 1 != 3;
+    // Every other screen after the boot waits for each frame.
     if (state.screen != FrontEndScreen::boot) return true;
     const auto frame = state.frame;
     for (const auto& waits : boot_frame_waits) {
@@ -262,7 +220,7 @@ void boot_frame(FrontEndState& state, const FrontEndContent& content) {
         load_cgram(state, asset(content, early_palette), 0xe0);
         load_vram(state, asset(content, early_objects), 0x7000);
     } else if (f == nintendo_registers_frame) {
-        set_nintendo_registers(state);
+        set_early_registers(state);
     } else if (f == nintendo_load_frame) {
         load_nintendo_screen(state, content);
     } else if (f == nintendo_layers_frame) {
@@ -280,7 +238,7 @@ void boot_frame(FrontEndState& state, const FrontEndContent& content) {
     } else if (within(f, title_fade_out, fade_frames)) {
         fade(state, title_fade_out, false);
     } else if (f == menu_load_frame) {
-        load_main_menu(state, content);
+        load_main_menu_screen(state, content);
     } else if (f == menu_objects_frame) {
         lay_out_menu_objects(state);
     } else if (f == menu_map_filled_frame) {
@@ -377,6 +335,65 @@ void keep_line_colours(FrontEndState& state) {
 
 } // namespace
 
+// $80:A09A (frame 24): every OAM entry at (1, 1), every high bit 0x55; the early loads.
+void clear_oam_buffer(FrontEndState& state) {
+    for (std::size_t entry = 0; entry < 128; ++entry) {
+        state.oam_buffer[entry * 4] = 1;
+        state.oam_buffer[entry * 4 + 1] = 1;
+    }
+    std::fill(state.oam_buffer.begin() + oam_high_table, state.oam_buffer.end(),
+              std::uint8_t{0x55});
+}
+
+// The Nintendo screen ($80:A09A registers at 97, $80:B08C loads at 99): BG2 only, 4bpp.
+void set_early_registers(FrontEndState& state) {
+    auto& r = state.registers;
+    set_background(r.bg[0], 0x02);
+    set_background(r.bg[1], 0x13);
+    set_tile_bases(r, 0x23);
+    r.main_screen = 0x11;
+    r.mode = 3;
+    r.obsel = 0x63;
+    r.sub_screen = 0x10;
+    r.colour_select = 0x02;
+    r.colour_math = 0x00;
+}
+
+void load_object_palette(FrontEndState& state, const FrontEndContent& content) {
+    load_cgram(state,
+               asset(content, state.one_player
+                                  ? first_rider_palette + (state.rider_menu.rider & 15U)
+                                  : menu_object_palette),
+               0xf0);
+}
+
+// The main menu's screen ($80:D20E at 377): BG1 (8bpp logo) and BG2 (4bpp checks and text)
+// with the objects, which the subscreen adds at half (the arrow's shadow).
+void load_main_menu_screen(FrontEndState& state, const FrontEndContent& content) {
+    load_cgram(state, content.base_palette, 0); // $80:A8A8
+    state.registers.force_blank = true;
+    reset_screen_state(state); // $80:A16A
+    auto& r = state.registers;
+    set_background(r.bg[0], 0x02);
+    set_background(r.bg[1], 0x13);
+    set_tile_bases(r, 0x23);
+    r.main_screen = 0x13;
+    r.mode = 3;
+    r.obsel = 0x63;
+    r.sub_screen = 0x10;
+    r.colour_select = 0x02;
+    r.colour_math = 0x7f;
+    load_cgram(state, asset(content, menu_palette), 0x70);
+    load_object_palette(state, content); // $83:91F7
+    load_cgram(state, asset(content, menu_text_palette), 0xd0);
+    load_vram(state, asset(content, menu_objects), 0x6000);
+    load_vram(state, asset(content, menu_objects_high), 0x7d00);
+    load_vram(state, asset(content, menu_map), 0);
+    load_vram(state, asset(content, menu_bg2_tiles), 0x2000);
+    load_vram(state, asset(content, menu_bg1_tiles), 0x31a0);
+    load_vram(state, asset(content, menu_bg1_tiles_high), 0x3d80);
+}
+
 std::span<const std::uint8_t> asset(const FrontEndContent& content, unsigned id) {
     const auto data = content.assets[id];
     if (data.empty()) throw std::invalid_argument("front-end asset is not in the pack");
@@ -406,7 +423,8 @@ std::span<const std::uint8_t> nth_string(std::span<const std::uint8_t> table, un
     for (unsigned k = 0; k <= n; ++k) {
         std::size_t end = at;
         while (end < table.size() && table[end] != 0xff) ++end;
-        if (end == table.size()) throw std::invalid_argument("front-end string is not in its table");
+        if (end == table.size())
+            throw std::invalid_argument("front-end string is not in its table");
         if (k == n) return table.subspan(at, end - at);
         at = end + 1;
     }
@@ -494,6 +512,7 @@ void reload_menu_text_tiles(FrontEndState& state, const FrontEndContent& content
 
 void start_main_menu(FrontEndState& state) {
     state.screen = FrontEndScreen::main_menu;
+    state.one_player = false; // $80:AD18
     state.menu.selection = 0;
     state.menu.idle = first_idle;
     state.latches = {};
@@ -553,16 +572,25 @@ FrontEndContent front_end_content(const ClassicContentPack& pack) {
     content.laps = pack.entry("front-end.laps");
     content.qualifying_scores = pack.entry("front-end.qualifying-scores");
     content.track_names = pack.entry("presentation.classic.track-names.v1");
+    content.result_text = pack.entry("front-end.result-text");
+    content.result_icons = pack.entry("front-end.result-icons");
     return content;
 }
 
 OnePlayerRecords cold_start_records() {
     OnePlayerRecords records;
-    constexpr std::uint16_t cold_best = 0xea5f; // 9:59.99
+    constexpr std::uint16_t cold_best = 0xea5f, no_record_time = 0xea60; // 9:59.99, no time
     constexpr std::uint8_t stunt_place = 2, someone = 0x10;
     for (std::size_t k = 0; k < records.best.size(); ++k)
         records.best[k] = k % 5 == stunt_place ? 0 : cold_best;
-    records.record_holder.fill(someone);
+    for (auto& holders : records.record_holders) holders.fill(someone);
+    constexpr std::size_t riders = 16;
+    std::fill_n(records.medals.begin() + hunter * riders, riders, std::uint8_t{2});
+    // $83:936E: no time on the races, 0 on the stunt events.
+    for (auto& times : records.record_times)
+        for (std::size_t track = 0; track < times.size(); ++track)
+            times[track] = track % 5 == stunt_place ? 0 : no_record_time;
+    records.tries = 3;
     return records;
 }
 
@@ -599,6 +627,10 @@ void update_front_end(FrontEndState& state, const FrontEndContent& content, Fron
     case FrontEndScreen::now_playing_entry: now_playing_entry_frame(state, content); break;
     case FrontEndScreen::now_playing: now_playing_frame(state, content, physical); break;
     case FrontEndScreen::race_fade: race_fade_frame(state); break;
+    case FrontEndScreen::race: break; // the race engine's frames
+    case FrontEndScreen::race_return: race_return_frame(state, content); break;
+    case FrontEndScreen::race_result: race_result_frame(state, content, physical); break;
+    case FrontEndScreen::race_result_exit: race_result_exit_frame(state, content); break;
     }
     if (state.screen != screen) state.script_frame = 0;
     ++state.frame;

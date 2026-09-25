@@ -291,7 +291,7 @@ int main(int argc, char **argv) try {
   if(!zoom_zoo && content.pack.optional_entry("zoom.landing-response-matrices").empty())
     throw std::invalid_argument("DRAGSTER and the other tracks need the full content pack for jumps, brakes, reversal and tricks; "
                                 "create it from your ROM with: python3 tools/project.py frontend run --track dragster "
-                                "--pack local/classic-pal-crawler-tracks-v17.pack --rom PATH");
+                                "--pack local/classic-pal-crawler-tracks-v18.pack --rom PATH");
   auto zoom_content=unirally::classic_race_content(content.pack,track);
   auto race_presentation=unirally::classic_race_presentation_content(content.pack,track);
   auto zoom_state=unirally::classic_race_start(zoom_content,unirally::classic_race_scenario(track));
@@ -359,6 +359,8 @@ int main(int argc, char **argv) try {
   // Without --track the session starts at power-on; NOW PLAYING's Race starts the race.
   std::optional<unirally::app::FrontEndSession> front_end;
   if (!parsed->track_given) front_end.emplace(content.pack);
+  // During a one-run race the front end waits here for the race's result load.
+  std::optional<unirally::app::FrontEndSession> waiting_front_end;
   while (running) {
     SDL_Event event{};
     while (SDL_PollEvent(&event)) {
@@ -455,15 +457,18 @@ int main(int argc, char **argv) try {
           // The race NOW PLAYING chose, if it is not the one the app started with.
           const auto chosen=front_end->race_track();
           std::cout << "Front end: race " << unsigned(chosen.index) << " chosen after " << front_end->frames()
-                    << " frames\n";
+                    << " frames (front-end frame " << front_end->front_end_frame() << ")\n";
           if(!(chosen==track)) {
             track=chosen;
             zoom_content=unirally::classic_race_content(content.pack,chosen);
             race_presentation=unirally::classic_race_presentation_content(content.pack,chosen);
-            zoom_state=unirally::classic_race_start(zoom_content,unirally::classic_race_scenario(chosen));
-            zoom_hud_state=zoom_state;
             SDL_SetWindowTitle(window.get(),window_title(race_presentation.track_name).c_str());
           }
+          // A fresh race each time: after a result NOW PLAYING can choose the same track again.
+          zoom_state=unirally::classic_race_start(zoom_content,unirally::classic_race_scenario(chosen));
+          zoom_hud_state=zoom_state;
+          live_presentation=unirally::app::LivePresentation{};
+          if(front_end->race_returns())waiting_front_end=std::move(front_end);
           front_end.reset();
           input.clear();
         }
@@ -502,6 +507,15 @@ int main(int argc, char **argv) try {
           zoom_hud_state=zoom_state;
         } else {
           live_presentation.observe_update(zoom_hud_state,zoom_state,content.pack);
+        }
+        // The one-run race's result load: the menus' result screen takes over (R-0057).
+        if(waiting_front_end && zoom_state.result_updates==1) {
+          waiting_front_end->return_from_race(zoom_state);
+          front_end=std::move(waiting_front_end);
+          waiting_front_end.reset();
+          input.clear();
+          std::cout<<"Front end: race returned at front-end frame "<<front_end->front_end_frame()
+                   <<"; totals "<<zoom_state.race.total_times[0]<<'/'<<zoom_state.race.total_times[1]<<'\n';
         }
       }
       ++updates;
@@ -557,7 +571,8 @@ int main(int argc, char **argv) try {
   if (front_end)
     std::cout << "Front end: frames " << front_end->frames() << "; notices "
               << front_end->notices() << "; returns to the main menu "
-              << front_end->returns_to_menu() << "; no race chosen\n";
+              << front_end->returns_to_menu() << "; races returned " << front_end->races()
+              << "; in the menus at the end\n";
   std::cout << "Presentation frames: " << rendered_frames
             << "; rider-pose fallback frames: " << pose_fallback_frames
             << "; identical consecutive redraws: " << identical_redraws
