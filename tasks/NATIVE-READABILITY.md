@@ -94,10 +94,10 @@ disassembly that touches recovered WRAM easier to read.
 
   The 22 are listed in `src/core/README.md`, and parts 2 and 3 split them.
 - Address citations (part 1's index at `def1d22`):
-  - 558 distinct addresses cited in `src/core` comments: 341 ROM, 210 WRAM and 7 SRAM, by 245
-    native symbols.
+  - 570 distinct addresses cited in `src/core` comments (after review M1): 351 ROM, 198 WRAM,
+    7 SRAM and 14 io, by 247 native symbols.
   - 216 of the static map's 636 routines are cited by native code (33,018 routine bytes).
-  - 8 cited ROM addresses are cited by no record, directly or inside a cited range.
+  - 9 cited ROM addresses are cited by no record, directly or inside a cited range.
 
 ## Outcome and boundaries
 
@@ -187,9 +187,11 @@ Part 1 is rules, formatting and the index. No behaviour change is intended, and 
     address, or a cited range holding it.
   - `coverage static-map` now names the native symbols beside each routine and label, in the
     tracked map, the labels and the ignored listing.
-  - `tests/tooling/test_native_symbols.py` has 16 tests. They cover the scanner on authored
-    snippets, the tracked index against `src/core`, and a limit of 8 on cited ROM addresses
-    with no record. Part 2 brings that limit to 0.
+  - `tests/tooling/test_native_symbols.py` has 22 tests after review. They cover:
+    - the scanner on authored snippets;
+    - the tracked index, and the static map's `native` fields, against `src/core`;
+    - a limit of 9 on cited ROM addresses with no record (8 before review M1). Part 2 brings
+      that limit to 0.
 - **Equivalence sweep** (new evidence tool, `local/evidence/native-readability/equivalence.py`):
   - It runs every race scenario through a base and a candidate `zoom_zoo_runner`, under six
     controller schedules for 6,000 updates each:
@@ -247,11 +249,17 @@ Decisions and deviations, with reasons:
   - `gates.sh` and `gates-def1d22.out`, with the gate directory `gates-def1d22/` moved there
     at closeout;
   - `equivalence.py`, `objcode-compare.sh`, and the frozen base binaries `base-83dd9ff/`
-    (`zoom_zoo_runner` `e55ba6de59fcce32...`, `classic_race_presentation_runner`
-    `d25226a890dfae7d...`).
+    (`zoom_zoo_runner` `d25226a890dfae7d...`, `classic_race_presentation_runner`
+    `e55ba6de59fcce32...`).
 - Unavailable/skipped checks: the ASan presets (host; the Linux CI job covers them). Twelve of
   the sweep's 228 picture pairs are refusals on both sides: tracks 25 and 28 cannot draw their
   result title ([RESULT-TITLE-GLYPHS](RESULT-TITLE-GLYPHS.md)).
+- Part 2's sweep additions (review S7):
+  - restart every schedule from serialized states the base emits (`--seed`), which runs
+    each side's deserializer;
+  - schedules pressing X, L, R and Select;
+  - pictures on every schedule, not only Right;
+  - `movement_runner`, the legacy DRAGSTER path.
 - Exact next experiment/command: part 2, starting with the reward queue in `movement.cpp`
   (`update_reward_queue`: `takes_reward_path(event)`, a guard helper, named constants for 72,
   200-215, 232-247, 26, 31 and 40). Then split `movement.cpp` along its systems. After each
@@ -260,4 +268,37 @@ Decisions and deviations, with reasons:
 
 ## Review and integration
 
-- Part 1 (tier 2): REVIEW_PENDING
+- Part 1 (tier 2): a fresh Claude Opus 5.5 subagent in `.worktrees/native-readability-review`.
+  - At `e0f8139` it **returned**
+    ([review](https://github.com/malmazuke/unirally-reconstruction/pull/23#pullrequestreview-5314712223)).
+    It confirmed:
+    - the format commit's token and object neutrality, on 28 files and 15 objects;
+    - the index's attributions against `clang-query`: 0 wrong of 307 in-body citations, plus
+      the 50 trailing ones;
+    - a byte-identical static-map regeneration;
+    - the synthetic suite, 508 of 508;
+    - an equivalence subset: 76 runs, 0 differences;
+    - its own presentation-state mutant, caught in 5 of 38 runs.
+  - Findings and responses:
+    - **M1**, the index missed citations. Fixed in `444e354`:
+      - it now reads bank-less continuations (`$80:84CB/84DB/...`, `$83:E611, E663`) and short
+        ranges (`$114D-$119C`);
+      - it indexes bank-less `$2000`-`$7FFF` as `io`;
+      - `--lookup` finds an address inside a WRAM or SRAM range.
+
+      The index grew from 558 to 570 addresses (351 ROM, 198 WRAM, 7 SRAM, 14 io). One more
+      ROM address became visible without a record (`$80:850B`, a fifth transition table that
+      R-0010 does not list), so the limit is 9. `$1CE` and `$220` are velocity values, not
+      addresses: rule 5 has part 2 rewrite them in decimal.
+    - **S1**: a test now checks the static map's `native` fields against the index.
+    - **S2**: `operator<` and `operator<<`, digit separators and comments inside a wrapped
+      signature are read correctly and tested. A requires-clause raises `UnsupportedShape`.
+    - **S3**: the `io` entries also include VRAM words and colours written with `$`. Parts 2
+      and 3 rewrite them under rule 5.
+    - **S4** (records already say integrated): declined. The consolidated closeout rule
+      finishes the records before the merge, and the merge waits for the review and checks.
+    - **S5**: the swapped hashes are corrected.
+    - **S6**: the limit test can be moved by a records-only change that removes a citation.
+      Recorded here; such an edit is rare, and the failure message names the address.
+    - **S7** (the sweep's gaps for part 2): taken into part 2's plan in the handoff.
+    - **S8**: the README now names the app-debug build for the size command.
