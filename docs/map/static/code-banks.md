@@ -73,7 +73,7 @@ Cited addresses in `unknown` bytes:
 | $80:93FB | tasks/COVERAGE-ROADMAP.md |
 | $80:A8D4 | docs/research/R-0054-boot-title-main-menu.md |
 | $80:A9FA | docs/research/R-0054-boot-title-main-menu.md |
-| $80:AD1F | docs/research/R-0054-boot-title-main-menu.md |
+| $80:AD1F | docs/research/R-0054-boot-title-main-menu.md, tasks/FRONT-END-MAIN-MENU.md |
 | $80:B626 | tasks/COVERAGE-ROADMAP.md |
 | $80:BCBF | tasks/COVERAGE-ROADMAP.md |
 | $80:BDD4 | tasks/COVERAGE-ROADMAP.md |

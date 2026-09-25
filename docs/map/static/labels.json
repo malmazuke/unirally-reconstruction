@@ -964,7 +964,8 @@
   "comment": "unknown",
   "label": "unk_80AD1F",
   "source_records": [
-   "docs/research/R-0054-boot-title-main-menu.md"
+   "docs/research/R-0054-boot-title-main-menu.md",
+   "tasks/FRONT-END-MAIN-MENU.md"
   ]
  },
  {
@@ -1040,7 +1041,8 @@
   "comment": "instruction start",
   "label": "loc_80BB9C",
   "source_records": [
-   "tasks/COVERAGE-ROADMAP.md"
+   "tasks/COVERAGE-ROADMAP.md",
+   "tasks/FRONT-END-1P-SETUP.md"
   ]
  },
  {
@@ -1081,6 +1083,7 @@
   ],
   "source_records": [
    "docs/research/R-0053-result-title-printer.md",
+   "tasks/FRONT-END-MAIN-MENU.md",
    "tasks/RESULT-TITLE-GLYPHS.md"
   ]
  },
@@ -7649,7 +7652,9 @@
   "source_records": [
    "docs/content/dragster-segment.md",
    "docs/research/R-0008-track-decode.md",
-   "docs/research/R-0054-boot-title-main-menu.md"
+   "docs/research/R-0054-boot-title-main-menu.md",
+   "tasks/FRONT-END-1P-SETUP.md",
+   "tasks/FRONT-END-MAIN-MENU.md"
   ]
  },
  {
@@ -7693,7 +7698,9 @@
   "source_records": [
    "docs/content/dragster-segment.md",
    "docs/research/R-0008-track-decode.md",
-   "docs/research/R-0054-boot-title-main-menu.md"
+   "docs/research/R-0054-boot-title-main-menu.md",
+   "tasks/FRONT-END-1P-SETUP.md",
+   "tasks/FRONT-END-MAIN-MENU.md"
   ]
  },
  {
@@ -7750,7 +7757,9 @@
    "docs/content/dragster-segment.md",
    "docs/research/R-0008-track-decode.md",
    "docs/research/R-0020-zoom-zoo-reference.md",
-   "docs/research/R-0046-track-breadth-matrix.md"
+   "docs/research/R-0046-track-breadth-matrix.md",
+   "tasks/FRONT-END-1P-SETUP.md",
+   "tasks/FRONT-END-MAIN-MENU.md"
   ]
  },
  {
