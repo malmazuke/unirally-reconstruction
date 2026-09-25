@@ -56,3 +56,36 @@ The menu's assets 77, 70, 68, 69 are the result screen's base VRAM pieces (same 
   $0C6A = 0x400); $B76F: Up? ($9B -= 1, wrap -1 -> 4 with $0C6A = 0xD00). A move: JSR $B178
   (sound?), $8F = 1, $89 = 1500 (0x5DC), $0C62 = table[$AE + $9B] << 7 ($AE = $88BE: 10, 10, 10,
   6, 5), $0C6A -+ 0x180. $8F = 1 blocks a repeat until released?
+
+## The arrow object ($80:FAF5, called from the frame wait $80:FADF every frame)
+
+- `$C6` counts down 31..0 and wraps; tile = `$80:FBC5[$C6 >> 1]` for both sprites (OAM 119 at
+  `$0BDC`, 127 at `$0BFC`: the arrow, palette 7 priority 3, and its shadow, palette 5 priority 0).
+- x: `$0C60 += (($0C62 - $0C60) >> 2)` as a 16-bit arithmetic shift (LSR twice, then bit 13
+  sign-extended); skipped when equal. A positive gap under 4 moves 0, so x settles 3 short
+  (0x4FA for target 0x4FD); a negative gap always moves. OAM x = `$0C60 >> 4` (low byte), the
+  shadow +7; the ninth bit of each from the sign of `$0C60` and of `$0C60 + 0x70` (`$0C1D`,
+  `$0C1F` bit 6).
+- y the same with `$0C68`/`$0C6A`; OAM y = (`$0C68 >> 4`) - 0x12, the shadow +7.
+- The menu setup ($80:D20E at 375-402) places it at x 0, y 0xF00 and sets the targets to
+  0x4FD, 0x580 (`$80:A16A`), so it flies in from the left; the title does the same from 251
+  with OBJ off the main screen (invisible). The reference per-frame WRAM is the `wram-cursor`
+  series (0x0000-0x1FFF, frames 0-999).
+
+## Title ($80:F55F)
+
+- Loads CGRAM asset 27 at 0, VRAM 78 at 0 and 72 at 0x1000; BG12NBA 1, TM 1 (BG1 only), mode 3;
+  fades in; then 111 frames (`LDY #$6E`) of: frame wait, `$80:D1EC` (OAM DMA and the joypad
+  read into `$72`/`$74`), and a compare of `$72` with a five-word sequence at `$80:F618` (a code;
+  on a match it saves `$77:10D3-10E2` and sets `$77:10D0`).
+
+## Menu setup ($80:D20E)
+
+- Frame wait, `$80:A8A8`, force blank, `$80:A16A` (direct-page state and the arrow targets), the
+  registers above, CGRAM 1 at 0x70, `$83:91F7`, CGRAM 28 at 0xD0, VRAM 89, 91, 77, 70, 68, 69,
+  the arrow reset, OAM cleared to y=1, `$0C00` filled with 0x55, the arrow's OAM entries, then
+  small sprites from `$80:9B31`/`$80:D383` (OAM 104-111 at `$0BA1`...).
+- Layers: BG1 8bpp, map at word 0 (32x64), tiles at word 0x3000; BG2 4bpp, map at word 0x1000
+  (64x64; the WRAM tilemap `$0200` built by the text printer is its first page), tiles at word
+  0x2000; OBJ base word 0x6000 (OBSEL 0x63: 16x16 and 32x32). TS = OBJ, CGWSEL 2 (subscreen),
+  CGADSUB 0x7F (add, half, all layers): the arrow's shadow on the subscreen.
