@@ -7073,7 +7073,8 @@
    "src/core/rider_object.hpp:(file)"
   ],
   "source_records": [
-   "docs/research/R-0036-zoom-zoo-rider-objects.md"
+   "docs/research/R-0036-zoom-zoo-rider-objects.md",
+   "tasks/NATIVE-READABILITY.md"
   ]
  },
  {
