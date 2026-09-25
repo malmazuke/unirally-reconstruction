@@ -65,7 +65,8 @@ The coordinator maintains the status registry below. Work orders further below d
 | NATIVE-READABILITY | accepted (tiers 2, 1, 2; #23-#25): the rules and address index; the simulation split by system; the presentation split by concern; no `src/core` function over 80 lines | [Make the recovered native code read as game code](NATIVE-READABILITY.md) |
 | RESULT-TITLE-GLYPHS | accepted (tier 2, #26): the title prints through the original text printer's table; DOWN+UP and BOO! start in the app | [The result-title glyphs for `+` and `!` (DOWN+UP and BOO! cannot start in the app)](RESULT-TITLE-GLYPHS.md) |
 | COVERAGE-ROADMAP | accepted (tier 3, #27): the game's modes mapped by capture; the queue toward the whole game natively | [From the race engine to the whole game](COVERAGE-ROADMAP.md) |
-| FRONT-END-MAIN-MENU | in progress | [The app boots to the title and the main menu](FRONT-END-MAIN-MENU.md) |
+| FRONT-END-MAIN-MENU | accepted (tier 2, #28): the app starts at power-on; the Nintendo screen, the title and the main menu match the original frame for frame; pack v15 | [The app boots to the title and the main menu](FRONT-END-MAIN-MENU.md) |
+| FRONT-END-1P-SETUP | ready (next) | [The one-player setup screens](FRONT-END-1P-SETUP.md) |
 | ROLLING-CONTACT | ready | [A rolling rider's second contact after a long shoulder rotation (HUNTER-EFFECTS review)](ROLLING-CONTACT.md) |
 | PR-WORKFLOW | integrated by pull request #6 (tier 2, approved with should-fix items, all applied); changes reach `main` only through pull requests (user request, 23 September 2026) | [Changes reach main through pull requests](PR-WORKFLOW.md) |
 | CLASSIC-RACE-HUD | reviewed and integrated (four returned rounds, approved at the fifth); accepted conditional on final-tip CI and remote verification | [The original's in-race HUD](CLASSIC-RACE-HUD.md) |

@@ -5,6 +5,12 @@ push the task branch, open a pull request from the template, merge with
 `gh pr merge --merge` once its checks are green and the review is done. `main`
 refuses direct pushes. The checks run on pull requests only.
 
+**Status on 26 September 2026 UTC (FRONT-END-MAIN-MENU accepted): start
+[FRONT-END-1P-SETUP](FRONT-END-1P-SETUP.md).** The app starts at power-on and matches the
+original to the main menu's choice. The 1P screens come next, then the continuation after a
+race. The method is FRONT-END-MAIN-MENU's: every-frame captures and per-frame work RAM, then
+`compare.py` against `front_end_runner`. Rebuild the pack as v15 (`docs/STATE.md`).
+
 **Status on 25 September 2026 UTC (COVERAGE-ROADMAP accepted): start
 [FRONT-END-MAIN-MENU](FRONT-END-MAIN-MENU.md).** The roadmap orders the work toward the whole
 game natively (the user's goal): the main menu, the 1P setup, the 1P continuation, the result
