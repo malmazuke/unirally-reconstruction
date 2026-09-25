@@ -408,8 +408,7 @@ void update_zoom_zoo(ZoomZooState& state, const ControllerButtons& requested_but
         // from a controller; the selector is retained state, so it re-derives
         // each update for as long as the impulse holds.
         if (state.native_initialization && index == active)
-            update_zoom_roll(next, index, index == 0 ? player_x : (opponent_trick & 4U) != 0,
-                             content);
+            update_z_flip(next, index, index == 0 ? player_x : (opponent_trick & 4U) != 0, content);
         if (index == active || surface.leading_support) {
             if (state.native_initialization)
                 announce_landing_tricks(next, index, content);

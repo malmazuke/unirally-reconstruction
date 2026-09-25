@@ -7520,7 +7520,8 @@
    ],
    "native": [
     "src/core/race_state_io.cpp:validate_zoom_zoo_content_state",
-    "src/core/trick_roll.cpp:update_zoom_roll",
+    "src/core/trick_roll.cpp:(file)",
+    "src/core/trick_roll.cpp:update_z_flip",
     "src/core/zoom_zoo_movement.hpp:ZoomZooRoll::input_latched, ZoomZooRoll::prior_orientation, ZoomZooRoll::prior_reflection, ZoomZooRoll::pose_base"
    ],
    "observed_entries": {},
@@ -7541,7 +7542,9 @@
     "NMX"
    ],
    "native": [
-    "src/core/trick_roll.cpp:update_zoom_roll",
+    "src/core/trick_roll.cpp:(file)",
+    "src/core/trick_roll.cpp:step_spin",
+    "src/core/trick_roll.cpp:update_z_flip",
     "src/core/zoom_zoo_movement.hpp:ZoomZooRoll::input_latched, ZoomZooRoll::prior_orientation, ZoomZooRoll::prior_reflection, ZoomZooRoll::pose_base"
    ],
    "observed_entries": {},
@@ -7562,7 +7565,9 @@
     "NMX"
    ],
    "native": [
-    "src/core/trick_roll.cpp:update_zoom_roll",
+    "src/core/trick_roll.cpp:(file)",
+    "src/core/trick_roll.cpp:step_spin",
+    "src/core/trick_roll.cpp:update_z_flip",
     "src/core/zoom_zoo_movement.hpp:ZoomZooRoll::input_latched, ZoomZooRoll::prior_orientation, ZoomZooRoll::prior_reflection, ZoomZooRoll::pose_base"
    ],
    "observed_entries": {},
@@ -7583,7 +7588,9 @@
     "NMX"
    ],
    "native": [
-    "src/core/trick_roll.cpp:update_zoom_roll",
+    "src/core/trick_roll.cpp:(file)",
+    "src/core/trick_roll.cpp:step_spin",
+    "src/core/trick_roll.cpp:update_z_flip",
     "src/core/zoom_zoo_movement.hpp:ZoomZooRoll::input_latched, ZoomZooRoll::prior_orientation, ZoomZooRoll::prior_reflection, ZoomZooRoll::pose_base"
    ],
    "observed_entries": {},
@@ -7607,7 +7614,8 @@
    ],
    "native": [
     "src/core/race_state_io.cpp:deserialize_classic_race",
-    "src/core/trick_roll.cpp:update_zoom_roll",
+    "src/core/trick_roll.cpp:(file)",
+    "src/core/trick_roll.cpp:update_z_flip",
     "src/core/zoom_zoo_movement.hpp:ZoomZooRoll::input_latched, ZoomZooRoll::prior_orientation, ZoomZooRoll::prior_reflection, ZoomZooRoll::pose_base"
    ],
    "observed_entries": {},
@@ -7631,7 +7639,8 @@
    ],
    "native": [
     "src/core/race_state_io.cpp:deserialize_classic_race",
-    "src/core/trick_roll.cpp:update_zoom_roll",
+    "src/core/trick_roll.cpp:(file)",
+    "src/core/trick_roll.cpp:update_z_flip",
     "src/core/zoom_zoo_movement.hpp:ZoomZooRoll::input_latched, ZoomZooRoll::prior_orientation, ZoomZooRoll::prior_reflection, ZoomZooRoll::pose_base"
    ],
    "observed_entries": {},
@@ -7653,7 +7662,10 @@
    ],
    "native": [
     "src/core/race_state_io.cpp:deserialize_classic_race",
-    "src/core/trick_roll.cpp:update_zoom_roll",
+    "src/core/trick_roll.cpp:(file)",
+    "src/core/trick_roll.cpp:bounce_charge, highest_bounce",
+    "src/core/trick_roll.cpp:release_bounce",
+    "src/core/trick_roll.cpp:update_z_flip",
     "src/core/zoom_zoo_movement.hpp:ZoomZooRoll::input_latched, ZoomZooRoll::prior_orientation, ZoomZooRoll::prior_reflection, ZoomZooRoll::pose_base"
    ],
    "observed_entries": {},
@@ -7675,8 +7687,11 @@
    ],
    "native": [
     "src/core/race_state_io.cpp:deserialize_classic_race",
-    "src/core/trick_roll.cpp:complete_zoom_roll",
-    "src/core/trick_roll.cpp:update_zoom_roll",
+    "src/core/trick_roll.cpp:(file)",
+    "src/core/trick_roll.cpp:bounce_charge, highest_bounce",
+    "src/core/trick_roll.cpp:complete_z_flip",
+    "src/core/trick_roll.cpp:release_bounce",
+    "src/core/trick_roll.cpp:update_z_flip",
     "src/core/zoom_zoo_movement.hpp:ZoomZooRoll::input_latched, ZoomZooRoll::prior_orientation, ZoomZooRoll::prior_reflection, ZoomZooRoll::pose_base"
    ],
    "observed_entries": {},
@@ -7703,7 +7718,8 @@
     "NMX"
    ],
    "native": [
-    "src/core/trick_roll.cpp:update_zoom_roll",
+    "src/core/trick_roll.cpp:(file)",
+    "src/core/trick_roll.cpp:update_z_flip",
     "src/core/zoom_zoo_movement.hpp:ZoomZooRoll::input_latched, ZoomZooRoll::prior_orientation, ZoomZooRoll::prior_reflection, ZoomZooRoll::pose_base"
    ],
    "observed_entries": {},

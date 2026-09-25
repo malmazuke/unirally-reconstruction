@@ -1760,7 +1760,8 @@
   {
    "address": "$82:9398",
    "native": [
-    "src/core/trick_roll.cpp:update_zoom_roll",
+    "src/core/trick_roll.cpp:(file)",
+    "src/core/trick_roll.cpp:update_z_flip",
     "src/core/zoom_zoo_movement.hpp:ZoomZooRoll::input_latched, ZoomZooRoll::prior_orientation, ZoomZooRoll::prior_reflection, ZoomZooRoll::pose_base"
    ],
    "range_ends": [
@@ -1781,14 +1782,14 @@
   {
    "address": "$82:9439",
    "native": [
-    "src/core/trick_roll.cpp:update_zoom_roll"
+    "src/core/trick_roll.cpp:step_spin"
    ],
    "region": "rom"
   },
   {
    "address": "$82:955F",
    "native": [
-    "src/core/trick_roll.cpp:update_zoom_roll"
+    "src/core/trick_roll.cpp:step_spin"
    ],
    "range_ends": [
     "$82:9598"
@@ -1798,7 +1799,7 @@
   {
    "address": "$82:959B",
    "native": [
-    "src/core/trick_roll.cpp:update_zoom_roll"
+    "src/core/trick_roll.cpp:step_spin"
    ],
    "range_ends": [
     "$82:95BD"
@@ -1818,7 +1819,7 @@
   {
    "address": "$82:9636",
    "native": [
-    "src/core/trick_roll.cpp:update_zoom_roll"
+    "src/core/trick_roll.cpp:update_z_flip"
    ],
    "range_ends": [
     "$82:965B"
@@ -1839,7 +1840,8 @@
    "address": "$82:965E",
    "native": [
     "src/core/race_state_io.cpp:deserialize_classic_race",
-    "src/core/trick_roll.cpp:update_zoom_roll"
+    "src/core/trick_roll.cpp:bounce_charge, highest_bounce",
+    "src/core/trick_roll.cpp:release_bounce"
    ],
    "range_ends": [
     "$82:9666",
@@ -1850,7 +1852,7 @@
   {
    "address": "$82:96C3",
    "native": [
-    "src/core/trick_roll.cpp:complete_zoom_roll"
+    "src/core/trick_roll.cpp:complete_z_flip"
    ],
    "range_ends": [
     "$82:9711"
@@ -4651,14 +4653,14 @@
   {
    "address": "$7E:20F8",
    "native": [
-    "src/core/trick_roll.cpp:update_zoom_roll"
+    "src/core/trick_roll.cpp:heaviest_tabletop"
    ],
    "region": "wram"
   },
   {
    "address": "$7E:2112",
    "native": [
-    "src/core/trick_roll.cpp:update_zoom_roll"
+    "src/core/trick_roll.cpp:heaviest_tabletop"
    ],
    "region": "wram"
   },
@@ -6435,23 +6437,43 @@
     "$81:8A2A"
    ]
   },
-  "src/core/trick_roll.cpp:complete_zoom_roll": {
+  "src/core/trick_roll.cpp:(file)": {
+   "rom": [
+    "$82:9398"
+   ]
+  },
+  "src/core/trick_roll.cpp:bounce_charge, highest_bounce": {
+   "rom": [
+    "$82:965E"
+   ]
+  },
+  "src/core/trick_roll.cpp:complete_z_flip": {
    "rom": [
     "$82:96C3"
    ]
   },
-  "src/core/trick_roll.cpp:update_zoom_roll": {
-   "rom": [
-    "$82:9398",
-    "$82:9439",
-    "$82:955F",
-    "$82:959B",
-    "$82:9636",
-    "$82:965E"
-   ],
+  "src/core/trick_roll.cpp:heaviest_tabletop": {
    "wram": [
     "$7E:20F8",
     "$7E:2112"
+   ]
+  },
+  "src/core/trick_roll.cpp:release_bounce": {
+   "rom": [
+    "$82:965E"
+   ]
+  },
+  "src/core/trick_roll.cpp:step_spin": {
+   "rom": [
+    "$82:9439",
+    "$82:955F",
+    "$82:959B"
+   ]
+  },
+  "src/core/trick_roll.cpp:update_z_flip": {
+   "rom": [
+    "$82:9398",
+    "$82:9636"
    ]
   },
   "src/core/vertical_contact.cpp:resolve_vertical_contact": {
@@ -6927,7 +6949,7 @@
  "totals": {
   "addresses": 565,
   "io_addresses": 14,
-  "native_symbols": 280,
+  "native_symbols": 285,
   "rom_addresses": 351,
   "sram_addresses": 6,
   "wram_addresses": 194

@@ -5369,7 +5369,9 @@
   "comment": "instruction start",
   "label": "loc_829439",
   "native": [
-   "src/core/trick_roll.cpp:update_zoom_roll",
+   "src/core/trick_roll.cpp:(file)",
+   "src/core/trick_roll.cpp:step_spin",
+   "src/core/trick_roll.cpp:update_z_flip",
    "src/core/zoom_zoo_movement.hpp:ZoomZooRoll::input_latched, ZoomZooRoll::prior_orientation, ZoomZooRoll::prior_reflection, ZoomZooRoll::pose_base"
   ],
   "source_records": [
@@ -5383,7 +5385,9 @@
   "comment": "routine start",
   "label": "sub_82959B",
   "native": [
-   "src/core/trick_roll.cpp:update_zoom_roll",
+   "src/core/trick_roll.cpp:(file)",
+   "src/core/trick_roll.cpp:step_spin",
+   "src/core/trick_roll.cpp:update_z_flip",
    "src/core/zoom_zoo_movement.hpp:ZoomZooRoll::input_latched, ZoomZooRoll::prior_orientation, ZoomZooRoll::prior_reflection, ZoomZooRoll::pose_base"
   ],
   "source_records": [
