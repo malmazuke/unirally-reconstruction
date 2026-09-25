@@ -9,7 +9,7 @@ They change how the code reads, never what it computes: update order, integer wi
 serialized bytes stay those of the original.
 
 1. **Names.** Name established concepts by their game meaning (`mud_cooldown`,
-   `update_reward_queue`). Keep a meaning the evidence does not settle neutral
+   `update_opponent_announcements`). Keep a meaning the evidence does not settle neutral
    (`provisional_1225`, `unk_0f45`) and link the record that would settle it. Rename only
    on evidence.
 2. **Constants.** A number with game meaning is a named `constexpr` next to the state or
@@ -45,15 +45,37 @@ Measure the size rule with `clang-tidy -p build/app-debug src/core/*.cpp` (LLVM 
 app-debug build).
 
 **Accepted exceptions to the size rule:** none yet. After the format commit of part 1, 22
-functions exceed 80 lines; NATIVE-READABILITY parts 2 and 3 split them or list them here with
-a reason:
-`movement.cpp` `update_idle_pose`, `update_pose`, `update_reward_queue`, `update_movement`,
-`update_zoom_ai`, `update_zoom_throttle`, `update_hunter_effects`, `update_zoom_roll`,
-`serialize_zoom_zoo`, `deserialize_classic_race`, `deserialize_zoom_zoo`, `update_zoom_zoo`;
-`vertical_contact.cpp` `resolve_vertical_contact`; `content_pack.cpp` `ClassicContentPack`;
+functions exceeded 80 lines; part 2 split the 14 in the simulation. The 8 left are part 3's:
 `presentation.cpp` `build_result_map`, `render_dragster`, `observe_update`,
-`render_classic_race`; `rider_look.cpp` `look_for_rider`; the `main` of
-`movement_runner.cpp`, `classic_race_presentation_runner.cpp` and `zoom_zoo_runner.cpp`.
+`render_classic_race`; `rider_look.cpp` `look_for_rider`; the `main` of `movement_runner.cpp`,
+`classic_race_presentation_runner.cpp` and `zoom_zoo_runner.cpp`.
+
+## Where the race engine lives
+
+One race update is `update_zoom_zoo` in `race_update.cpp`. It runs these systems in the
+original's order, each in its own file (the `ZoomZoo` names are historical: the engine was
+first recovered on ZOOM ZOO and now runs every race track):
+
+| File | System |
+| --- | --- |
+| `race_update.cpp` | One race update, the tile under each rider and the reflection transition |
+| `rider_motion.cpp` | A rider's drive, brake and throttle, jump, gravity, damping and position |
+| `rider_pose.cpp` | The idle wobble, the pose and animation update, rolling and quarter turns |
+| `opponent_ai.cpp` | The opponent's controller and throttle |
+| `reward_queue.cpp` | The announcement queues: trick rewards, speed boosts, voices, captions |
+| `trick_roll.cpp` | The X trick: z flips, the tabletop hold and the head bounce |
+| `special_tiles.cpp` | Boost, mud, corkscrew and loop tiles |
+| `hunter_effects.cpp` | The HUNTER tour's tag effects |
+| `race_progress.cpp` | Checkpoints, laps, the finish and the result fields |
+| `race_camera.cpp` | The camera and visibility |
+| `race_setup.cpp` | Scenarios by track, the race start and a restart |
+| `race_state_io.cpp` | The serialized race states and their validation |
+| `movement.cpp` | The legacy CRAWLER/DRAGSTER movement state (URMV) and its update |
+| `announcements.hpp` | The announcement events, named by their captions |
+| `word_arithmetic.hpp`, `state_bytes.hpp` | 16-bit word arithmetic; serialized-state bytes |
+
+`movement.hpp` and `zoom_zoo_movement.hpp` are the public interface; the other headers are
+internal to the engine.
 
 ## Track sampling
 
@@ -206,8 +228,8 @@ saved state for fresh-process continuation.
 ## Experimental ZOOM ZOO trial (M4-12)
 
 `zoom_zoo_movement.hpp` declares the task-scoped 395-byte `URZZ0001` continuation.
-The implementation at the end of `movement.cpp` reuses the accepted semantic
-helpers without changing DRAGSTER dispatch. `update_zoom_zoo` orders controller
+The implementation, now split by system (see "Where the race engine lives"), reuses the
+accepted semantic helpers without changing DRAGSTER dispatch. `update_zoom_zoo` orders controller
 and AI production, phase-selected rider functions, reflection/throttle/gravity,
 speed limits, position and pose, timer/rewards, then both contact calls. It
 admits the frozen 1650–1849 Right/neutral trial only; the app has no new track
@@ -235,8 +257,8 @@ links source addresses, immutable inputs and the finite differential domain.
 
 M4-15's `ZoomZooRaceState` extends the research continuation with
 ordered checkpoints/laps, stored race times, camera visibility feedback and
-finish collision-pose selectors. `update_zoom_checkpoint`, `update_zoom_camera`,
-`update_zoom_visibility` and `update_zoom_finish` in `movement.cpp` preserve the
+finish collision-pose selectors. `update_checkpoints` and `update_finish` in
+`race_progress.cpp`, and `update_camera` and `update_visibility` in `race_camera.cpp`, preserve the
 source order documented by [R-0034](../../docs/research/R-0034-zoom-zoo-race-completion.md).
 This is a seed-based simulation laboratory, not a ZOOM ZOO frontend or native
 race initializer. Existing `URZZ0001` and `URZZ0002` contracts remain supported.

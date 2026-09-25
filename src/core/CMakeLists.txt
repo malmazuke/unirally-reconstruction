@@ -14,7 +14,10 @@ add_library(unirally_speed_limits STATIC speed_limits.cpp)
 target_include_directories(unirally_speed_limits PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(unirally_speed_limits PUBLIC lab_options)
 
-add_library(unirally_movement STATIC movement.cpp content_pack.cpp)
+add_library(unirally_movement STATIC
+    movement.cpp content_pack.cpp rider_motion.cpp rider_pose.cpp reward_queue.cpp
+    opponent_ai.cpp hunter_effects.cpp trick_roll.cpp race_progress.cpp race_camera.cpp
+    special_tiles.cpp race_setup.cpp race_state_io.cpp race_update.cpp)
 target_include_directories(unirally_movement PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(unirally_movement PUBLIC unirally_contact unirally_input_timer unirally_speed_limits unirally_sampling lab_options)
 add_executable(movement_runner movement_runner.cpp)

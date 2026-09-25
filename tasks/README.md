@@ -62,7 +62,7 @@ The coordinator maintains the status registry below. Work orders further below d
 | LOCKED-TOURS | accepted (tier 1): the locked tours opened in the laboratory; pack v12 and 20 scenarios; 15 of 20 exact | [The five tours a cold start does not offer, and their 25 tracks](LOCKED-TOURS.md) |
 | TILE-PAIRS-8-12-26 | accepted (tier 1): the loop and pairs 8, 12 and 28 recovered; pack v13; 35 of 36 race tracks exact | [The tile flag pairs that still stop four locked tracks](TILE-PAIRS-8-12-26.md) |
 | HUNTER-EFFECTS | accepted (tier 1): the HUNTER tag effects, simulated and drawn; pack v14; all 36 race tracks exact on the sweeps | [The HUNTER tour's tag effects](HUNTER-EFFECTS.md) |
-| NATIVE-READABILITY | in progress: part 1 integrated (#23), part 2 next; before RESULT-TITLE-GLYPHS | [Make the recovered native code read as game code](NATIVE-READABILITY.md) |
+| NATIVE-READABILITY | in progress: parts 1 (#23) and 2 integrated, part 3 next; before RESULT-TITLE-GLYPHS | [Make the recovered native code read as game code](NATIVE-READABILITY.md) |
 | RESULT-TITLE-GLYPHS | ready | [The result-title glyphs for `+` and `!` (DOWN+UP and BOO! cannot start in the app)](RESULT-TITLE-GLYPHS.md) |
 | ROLLING-CONTACT | ready | [A rolling rider's second contact after a long shoulder rotation (HUNTER-EFFECTS review)](ROLLING-CONTACT.md) |
 | PR-WORKFLOW | integrated by pull request #6 (tier 2, approved with should-fix items, all applied); changes reach `main` only through pull requests (user request, 23 September 2026) | [Changes reach main through pull requests](PR-WORKFLOW.md) |

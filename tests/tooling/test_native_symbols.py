@@ -17,9 +17,9 @@ sys.path.insert(0, str(ROOT / "tools"))
 from unirally_lab.coverage import native_symbols as ns  # noqa: E402
 
 # ROM addresses src/core cites that no research, task, inventory or content record
-# cites (directly or inside a cited range). NATIVE-READABILITY part 2 brings this to
-# zero; lower it as citations gain records, never raise it.
-ROM_WITHOUT_RECORD_LIMIT = 8
+# cites (directly or inside a cited range). NATIVE-READABILITY part 2 brought this to
+# zero: a new citation needs its record.
+ROM_WITHOUT_RECORD_LIMIT = 0
 
 
 def symbols(text: str) -> dict[str, list[str]]:

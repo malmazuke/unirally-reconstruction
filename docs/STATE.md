@@ -1,5 +1,23 @@
 # Project state
 
+Updated 25 September 2026 (NATIVE-READABILITY part 2): **the race engine reads by game system,
+and no simulation function exceeds 80 lines.**
+- `movement.cpp` is split into one file per system, as a verified pure move: 82 of 82 functions
+  are unchanged. The systems are the race update, rider motion and pose, the AI, the
+  announcements, the X trick, the special tiles, the HUNTER effects, progress, camera, setup
+  and state IO.
+- Each system was then rewritten as small named steps with named constants. The reward queue
+  the user flagged now states its `$81:C238` quirk once (`takes_reward_path`), and the
+  announcement events are named by their captions.
+- Behaviour is unchanged:
+  - every gate passes;
+  - the native equivalence sweep is identical over 1.9 million updates, 1,047 restarts from
+    saved states and 2,052 pictures;
+  - 3,000 damaged states get the same result and refusal on both sides;
+  - the 48 HUNTER captures are unchanged.
+- All 351 ROM addresses the code cites have a record, and no citation was lost. Part 3
+  (presentation and runners, tier 2) is next. See [NATIVE-READABILITY](../tasks/NATIVE-READABILITY.md).
+
 Updated 25 September 2026 (NATIVE-READABILITY part 1): **the recovered C++ now has measurable
 style rules, one format, and an index from every cited original address to the native code.**
 - `src/core/README.md` "How this code is written": nine rules (game-meaning names, named

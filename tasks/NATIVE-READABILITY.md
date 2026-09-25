@@ -2,11 +2,11 @@
 
 ## Assignment
 
-- Status: **in progress**. Part 1 (tier 2) is in review on
-  [pull request #23](https://github.com/malmazuke/unirally-reconstruction/pull/23); parts 2
-  and 3 follow. Claimed 25 September 2026 at 05:33Z by the Claude Code desktop session that
-  queued the task, on base `83dd9ff`. The user asked for it to start at once ("You can pick
-  this up here now").
+- Status: **in progress**. Part 1 (tier 2) was reviewed and integrated by
+  [pull request #23](https://github.com/malmazuke/unirally-reconstruction/pull/23) (`d97641c`).
+  Part 2 (tier 1, the simulation) is in review on its pull request; part 3 follows. Claimed
+  25 September 2026 at 05:33Z by the Claude Code desktop session that queued the task, on base
+  `83dd9ff`. The user asked for it to start at once ("You can pick this up here now").
 - Milestone: M4 breadth (a quality task on the recovered engine; no new mechanics)
 - Coordinator: the claiming session is coordinator, primary and integrator
 - Task provider (fixed for all children; record any user-initiated platform change): Anthropic
@@ -225,6 +225,76 @@ Decisions and deviations, with reasons:
 - **`docs/BUILD_AND_VALIDATION.md` gains the command's inventory row.** It is outside the owned
   paths, but the command inventory has one home.
 
+## Part 2 result (tier 1)
+
+Part 2 is the simulation, on `task/native-readability-simulation` from `d97641c`. No behaviour,
+state or format change is intended, and none was found.
+
+- **The split** (`b665bf7`, a pure move): `movement.cpp`'s 82 functions move, with bodies and
+  leading comments unchanged, into one file per system:
+  - `race_update`, `rider_motion`, `rider_pose`, `opponent_ai`, `reward_queue`, `trick_roll`,
+    `special_tiles`, `hunter_effects`, `race_progress`, `race_camera`, `race_setup`,
+    `race_state_io`;
+  - `movement.cpp` keeps the legacy URMV state;
+  - the internal headers are `word_arithmetic.hpp`, `state_bytes.hpp` and one per system that
+    another file calls.
+
+  The only edits are the ones a move needs. `verify_split.py` checks every function's body,
+  signature and comment against `d97641c`: 82 of 82. It catches a one-token change.
+- **The rewrites**, one commit per system:
+  - **Announcements**: `announcements.hpp` names the queue events by their captions (roll,
+    flip, twist, z flip, wipeout, last lap, winner, draw, loser, the HUNTER effects and their
+    end, the hints, the rider voices).
+    - The update the user flagged is now `update_opponent_announcements`, made of small named
+      steps: `takes_reward_path` states the `$81:C238` quirk once, the reward weight and the
+      reward are their own functions, and guards go through `require`.
+    - Players' landings announce their tricks by name (`announce_landing_tricks`).
+  - **HUNTER effects**: the eight effects are named (`hunter_effect::barf_mode` ...
+    `control_reversed`). There is one function per kind of effect.
+  - **The drive**: the drive, brake and throttle run for both riders, so they move to
+    `rider_motion.cpp` as `update_drive`, in five steps.
+  - **The AI**: `update_opponent_controller` names the marker's flags; the stall, the jump
+    decision and the launch are their own functions.
+  - **The pose**: `update_pose` is five steps; `update_idle_pose` is its cycle, bias, velocity
+    and wobble.
+  - **The X trick**: named by its announcements, the X trick is `update_z_flip` (a
+    completed spin is a z flip, a held middle pose a tabletop).
+  - **State IO**: `race_state_io.cpp` follows the state's layout, with one `write_`/`read_`
+    pair per section. The native race's cross-checks are named and run in the original's
+    order.
+  - **The race update**: `update_zoom_zoo` (513 lines) is its phases. The tile dispatch names
+    the flag pairs, with one function per tile.
+  - **Legacy DRAGSTER**: `update_movement` is its result phases, the scripted opponent, one
+    rider, and the contacts and finish.
+  - **Contact**: `resolve_vertical_contact` is the tile pair, the counters, support (a wall,
+    a landing, or a slope) and the correction.
+  - **The content pack**: its constructor is the header, the required entries, the inventory
+    and the payloads.
+  - **The smaller systems**: the race progress, camera, special tiles, setup and speed limits
+    get named constants and steps.
+- **Result**:
+  - no function in the simulation exceeds 80 lines; the 8 left are part 3's;
+  - all 351 cited ROM addresses have a record (the test's limit is 0);
+  - no address citation is lost against `d97641c` (`citations_kept.py`);
+  - values once written with `$` are in decimal or 0x (`rewritten-values.txt`).
+
+Decisions and deviations, with reasons:
+
+- **One pull request for part 2**, as planned. The pure-move commit is reviewable on its
+  own through `verify_split.py`, and a separate pull request would have cost a second review
+  and gate run. The move's own gates at `b665bf7` passed and are kept as evidence
+  (`gates-b665bf7.out`).
+- **The public API keeps its names** (`update_zoom_zoo`, `ZoomZooState` and the others), since
+  `src/app` and the tests use them outside this task's owned paths. Internal names changed.
+- **Records gained addresses**: R-0010, R-0035, R-0047 and R-0048 now cite the eight ROM
+  addresses the code cited alone, each checked against the static listing. The code's
+  `$82:9119` was the wrong call site; it is now `$82:9124`.
+- **Rewritten values and corrected citations**: the citation check's list of expected
+  removals is `rewritten-values.txt`. It holds values written with `$`, now in decimal or
+  0x, and one corrected citation.
+- **Left as they were**, already within the rules and clang-tidy clean: `flat_contact.cpp`,
+  `track_progress.cpp`, `track_sampling.cpp`, `input_timer.cpp` and `rider_object.cpp`.
+
 ## Evidence and attempts
 
 | Attempt | Hypothesis | Experiment | Observation | Next decision |
@@ -236,43 +306,45 @@ Decisions and deviations, with reasons:
 | 5 | A native-against-native sweep detects change | Two mutants | Simulation mutant in 8 of 76 random runs; picture mutant in 36 of 38 | Use it as part 2's main behaviour check |
 | 6 | - | Gates at `def1d22` (below) | Gates at `def1d22`: ctest 25/25 on lab-debug, lab-release and app-debug; v1 winner and loser contracts; six hidden 4,000-update app runs clean; fuzz 40 seeds, 0 aborts; the eleven differential gates passed with row digests identical to HUNTER-EFFECTS' `a3a4701`; equivalence 228 runs, 1,231,010 updates, 0 differences, 228 picture pairs identical; recompare identical to the base on 16 + 20 tracks. The synthetic suite failed 3 `test_tracks` checks (below) | Review |
 | 7 | - | The synthetic suite at `def1d22` | 3 `test_tracks` checks parse the compiled pack tables in `content_pack.cpp` with a one-line pattern the format commit's wrapping broke | Pattern takes any whitespace (`1624727`); synthetic suite 508/508 |
+| 8 | The move is pure | `verify_split.py` on `b665bf7`; a one-token mutant | 82 of 82 unchanged; the mutant fails | Rewrites |
+| 9 | - | Equivalence after each rewrite (subsets), then the full sweep | 0 differences on every run, the full batch 351 runs, 1,933,523 updates, 1,047 restarts, 2,052 pictures | Gates |
+| 10 | The state reader keeps its guards | `corruption.py`: 3,000 damaged states | 656 accepted, 46 distinct refusals, same result and message on both sides | Gates |
+| 11 | - | Citations after the rewrites | 10 dropped by shortened comments; restored, `citations_kept.py` added | Every commit |
+| 12 | - | Gates at `b665bf7` (the move) | Eleven gates with unchanged digests; the sweep; the recompare identical | Part 2 gates |
+| 13 | - | Gates at `5a9305a` | ctest 25/25 on three presets, synthetic, v1 contracts, hidden runs, fuzz 40 seeds 0 aborts; eleven gates with unchanged digests; sweep 351 runs, 1,933,523 updates, 1,047 restarts, 2,052 pictures, 0 differences; recompare identical on 16 + 20 tracks; corruption 3,000 cases 0 differences; citations 0 lost; 8 functions over 80 (part 3's); 48 HUNTER held captures identical to the accepted run | Review |
 
 ## Handoff
 
-- Current base/head commit and uncommitted state: base `83dd9ff`; part 1 on
-  `task/native-readability-rules` (`f73f06c` format, `def1d22` index and rules, `1624727` test
-  pattern, then these records).
-- Verified findings: the Part 1 result above; the index at `docs/map/static/native-symbols.json`.
+- Current base/head commit and uncommitted state: part 2 on `task/native-readability-simulation`,
+  base `d97641c`, candidate `5a9305a` plus these records.
+- Verified findings: the Part 1 and Part 2 results above.
 - Commands executed, outcomes and report hashes: `local/evidence/native-readability/` in the
-  main checkout. It holds:
-  - `gates.sh` and `gates-def1d22.out`, with the gate directory `gates-def1d22/` moved there
-    at closeout;
-  - `equivalence.py`, `objcode-compare.sh`, and the frozen base binaries `base-83dd9ff/`
-    (`zoom_zoo_runner` `d25226a890dfae7d...`, `classic_race_presentation_runner`
-    `e55ba6de59fcce32...`).
+  main checkout.
+  - `gates.sh` takes the worktree to gate as its argument.
+    - `gates-def1d22.out` is part 1's run.
+    - `gates-b665bf7.out` is the move's.
+    - `gates-5a9305a.out` is part 2's: the eleven gates, the equivalence sweep, recompare, the
+      corruption sweep, citations, function size and the 48 HUNTER held captures.
+  - Tools: `equivalence.py`, `corruption.py`, `verify_split.py` with `split_movement.py` and
+    `movement-d97641c.cpp`, `citations_kept.py` with `rewritten-values.txt`, `regen.sh`.
+  - Frozen base binaries: `base-83dd9ff/` (part 1) and `base-d97641c/` (part 2).
+  - The gates run in a detached `.worktrees/native-readability-gates`.
 - Unavailable/skipped checks: the ASan presets (host; the Linux CI job covers them). Twelve of
-  the sweep's 228 picture pairs are refusals on both sides: tracks 25 and 28 cannot draw their
-  result title ([RESULT-TITLE-GLYPHS](RESULT-TITLE-GLYPHS.md)).
-- Part 2's sweep additions (review S7):
-  - restart every schedule from serialized states the base emits (`--seed`), which runs
-    each side's deserializer;
-  - schedules pressing X, L, R and Select;
-  - pictures on every schedule, not only Right;
-  - `movement_runner`, the legacy DRAGSTER path.
-- Values the index still reads as addresses, to rewrite under rule 5 in parts 2 and 3 (re-review
-  S4):
-  - `$0000`: a VRAM address in `presentation.cpp`, indexed as WRAM;
-  - `$62A8`, `$62AC`, `$62AD`: frame positions in `movement.cpp`, indexed as io;
-  - `$3D80`, `$7A00`, `$7B00`: VRAM words or bytes;
-  - `$4A52`, `$4631`, `$56B5` and the `$4210` beside them: colours, in `presentation.cpp`;
-  - `$0213`, `$021F`: sound numbers;
-  - not indexed but written with `$`: velocities `$1CE`, `$220`, `$FFD0-$002F` and poses
-    `$0610-$061F`.
-- Exact next experiment/command: part 2, starting with the reward queue in `movement.cpp`
-  (`update_reward_queue`: `takes_reward_path(event)`, a guard helper, named constants for 72,
-  200-215, 232-247, 26, 31 and 40). Then split `movement.cpp` along its systems. After each
-  step, run `equivalence.py` against `base-83dd9ff` (about 3 minutes); run the full `gates.sh`
-  on the candidate.
+  the sweep's picture pairs are refusals on both sides: tracks 25 and 28 cannot draw their
+  result title ([RESULT-TITLE-GLYPHS](RESULT-TITLE-GLYPHS.md)). The legacy `movement_runner`
+  domain is narrow (Right, B only while still); its random schedules stop at its guards on both
+  sides. A schedule that restarts the race from the pause menu ends its run's comparison at
+  the first restart: the frame label resets and the harness's next controller row is refused
+  on both sides (every `random-3` run stops there; the review's `random-13` at update 1,424 and
+  `buttons-12` at 3,973). Restarts are compared to that point, not beyond (review of #24).
+- Two citations resolve only to a file comment, both in presentation headers, for part 3:
+  `$82:B8AA` (`rider_object.hpp`) and `$0D4B` (`rider_look.hpp`).
+- Values the index still reads as addresses, for part 3 (presentation): `$0000` (VRAM),
+  `$3D80`, `$7A00`, `$7B00`, and the colours `$4A52`, `$4631`, `$56B5`, `$4210`.
+- Exact next experiment/command: part 3 (tier 2). Apply the rules to `presentation.cpp`
+  (`build_result_map`, `render_dragster`, `observe_update`, `render_classic_race`),
+  `rider_look.cpp` (`look_for_rider`) and the three runners' `main`. Check with
+  `equivalence.py` (pictures on every schedule) and the v1 contracts, then `gates.sh`.
 
 ## Review and integration
 
@@ -326,3 +398,28 @@ Decisions and deviations, with reasons:
       - digit separators only inside numbers, so `U'x'` is read correctly;
       - `operator bool` is named correctly.
     - **S4**: the non-address entries are listed in the handoff for parts 2 and 3.
+- Part 2 (tier 1): a fresh Claude Opus 5.5 subagent in `.worktrees/native-readability-review2`.
+  - At `89979973` it **approved**
+    ([review](https://github.com/malmazuke/unirally-reconstruction/pull/24#pullrequestreview-5316410640)).
+  - **Readability probe**: from the code alone, it explained `update_opponent_announcements`,
+    `update_mud_tile`, `update_loop_tile` and `update_drive`. All four matched R-0035,
+    R-0042, R-0047, R-0051, R-0038 and R-0011.
+  - **Its independent checks**:
+    - `verify_split` 82 of 82;
+    - equivalence with withheld seeds and against its own base build, 0 differences; its own
+      mutant differs in 48 of 117 runs;
+    - corruption with two more seeds, 0 differences;
+    - diff audits of `race_update`, `race_state_io`, pose, contact and legacy code: an
+      old-against-new fuzz of about 5.8 million calls and 227,845 damaged states, 0
+      mismatches;
+    - the records' new addresses, against a regenerated listing.
+  - **Findings S1-S7, fixed in `820e828`**:
+    - S1: the cooldown units (they fall by 2 a update);
+    - S2: the HUNTER struct's comment placement, and three file-only citations moved to
+      functions;
+    - S3: the AI's suppression word is only tested;
+    - S4: the loop's velocity y points down;
+    - S5: the asymmetric braking test is now `braking_fast_enough`;
+    - S6: `roll` is the X trick's state, its completions z flips;
+    - S7: the jump, gravity, lift, drive step, loop top and options word are named.
+  - **Its evidence gap**: runs end at a pause-menu restart. Recorded in the handoff.

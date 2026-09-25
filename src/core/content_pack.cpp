@@ -620,81 +620,110 @@ std::span<const std::string_view> supported_pack_profiles() {
     return supported_profiles;
 }
 
-ClassicContentPack::ClassicContentPack(const std::filesystem::path& path) {
-    std::ifstream input(path, std::ios::binary);
-    if (!input) throw std::runtime_error("cannot open Classic content pack: " + path.string());
-    bytes_ = {std::istreambuf_iterator<char>(input), std::istreambuf_iterator<char>()};
-    if (bytes_.size() < 12 || std::string(bytes_.begin(), bytes_.begin() + 8) != "URCP0001")
+namespace {
+
+constexpr std::string_view pack_magic = "URCP0001";
+constexpr std::uint32_t pack_schema = 1;
+constexpr std::string_view pal_rom_sha256 =
+    "a1105819d48c04d680c8292bbfa9abbce05224f1bc231afd66af43b7e0a1fd4e";
+constexpr std::string_view dragster_rules_sha256 =
+    "70712c470db436ad95b02d3a6d51f737be7bb5b27689ca0d99a8297bac31d768";
+constexpr std::string_view tracks_start = "classic.crawler.race-start.v2";
+constexpr std::string_view dragster_start = "classic.crawler.dragster.race-start.v1";
+
+struct PackRow {
+    std::string id;
+    std::uint64_t offset, size;
+    std::array<std::uint8_t, 32> digest;
+};
+
+// The header: magic, schema, source ROM, profile and start state, and the extraction
+// rules' identity. Returns true for the tracks profile, false for DRAGSTER v1.
+bool read_pack_header(const std::vector<std::uint8_t>& bytes, Reader& in) {
+    if (bytes.size() < 12
+        || std::string_view(reinterpret_cast<const char*>(bytes.data()), 8) != pack_magic)
         throw std::invalid_argument("Classic pack magic is unsupported");
-    Reader in(bytes_);
     in.skip(8);
-    if (in.u32() != 1) throw std::invalid_argument("Classic pack schema is unsupported");
+    if (in.u32() != pack_schema) throw std::invalid_argument("Classic pack schema is unsupported");
     const auto source_identity = in.digest();
     const auto rules_identity = in.digest();
-    if (source_identity
-        != hex_digest("a1105819d48c04d680c8292bbfa9abbce05224f1bc231afd66af43b7e0a1fd4e"))
+    if (source_identity != hex_digest(pal_rom_sha256))
         throw std::invalid_argument("Classic pack source ROM identity is unsupported");
     const auto profile = in.text();
     const auto start = in.text();
-    const bool two_tracks = profile == supported_profiles[1];
-    if (profile != supported_profiles[two_tracks ? 1 : 0])
+    const bool tracks = profile == supported_profiles[1];
+    if (profile != supported_profiles[tracks ? 1 : 0])
         throw std::invalid_argument("Classic pack profile is unsupported");
-    if (start
-        != (two_tracks ? "classic.crawler.race-start.v2"
-                       : "classic.crawler.dragster.race-start.v1"))
+    if (start != (tracks ? tracks_start : dragster_start))
         throw std::invalid_argument("Classic pack start state is unsupported");
-    if (rules_identity
-        != hex_digest(two_tracks
-                          ? two_track_rules_sha
-                          : "70712c470db436ad95b02d3a6d51f737be7bb5b27689ca0d99a8297bac31d768"))
+    if (rules_identity != hex_digest(tracks ? two_track_rules_sha : dragster_rules_sha256))
         throw std::invalid_argument("Classic pack extraction-rules identity is unsupported");
-    std::vector<RequiredEntry> selected_required(required.begin(), required.end());
-    if (two_tracks) {
-        selected_required.insert(selected_required.end(), zoom_required.begin(),
-                                 zoom_required.end());
-        selected_required.insert(selected_required.end(), tracks_required.begin(),
-                                 tracks_required.end());
-        selected_required.insert(selected_required.end(), special_tiles_required.begin(),
-                                 special_tiles_required.end());
-        selected_required.insert(selected_required.end(), locked_tracks_required.begin(),
-                                 locked_tracks_required.end());
-        selected_required.insert(selected_required.end(), loop_required.begin(),
-                                 loop_required.end());
-        selected_required.insert(selected_required.end(), hunter_required.begin(),
-                                 hunter_required.end());
-    }
+    return tracks;
+}
+
+// The entries a profile must carry, exactly: DRAGSTER v1's, and for the tracks profile the
+// entries each later profile added.
+std::vector<RequiredEntry> required_entries(bool tracks) {
+    std::vector<RequiredEntry> out(required.begin(), required.end());
+    if (!tracks) return out;
+    for (const auto table : {std::span<const RequiredEntry>(zoom_required),
+                             std::span<const RequiredEntry>(tracks_required),
+                             std::span<const RequiredEntry>(special_tiles_required),
+                             std::span<const RequiredEntry>(locked_tracks_required),
+                             std::span<const RequiredEntry>(loop_required),
+                             std::span<const RequiredEntry>(hunter_required)})
+        out.insert(out.end(), table.begin(), table.end());
+    return out;
+}
+
+// The inventory: each entry's logical ID, payload offset, size and SHA-256, IDs unique.
+std::vector<PackRow> read_inventory(Reader& in) {
     const auto count = in.u16();
-    struct Row {
-        std::string id;
-        std::uint64_t offset, size;
-        std::array<std::uint8_t, 32> digest;
-    };
-    std::vector<Row> rows;
+    std::vector<PackRow> rows;
     rows.reserve(count);
+    std::unordered_map<std::string, bool> seen;
     for (unsigned index = 0; index < count; ++index) {
         auto id = in.text();
         const auto offset = in.u64();
         const auto size = in.u64();
         const auto digest = in.digest();
-        if (entries_.contains(id))
+        if (seen.contains(id))
             throw std::invalid_argument("Classic pack contains a duplicate logical ID");
-        entries_.emplace(id, Entry{});
+        seen.emplace(id, true);
         rows.push_back({std::move(id), offset, size, digest});
     }
-    std::uint64_t cursor = in.offset();
-    if (entries_.size() != selected_required.size())
+    return rows;
+}
+
+// The inventory holds exactly the required entries, each with its expected size and hash.
+void check_inventory(const std::vector<PackRow>& rows, const std::vector<RequiredEntry>& expected) {
+    if (rows.size() != expected.size())
         throw std::invalid_argument("Classic pack inventory is incomplete");
-    for (const auto& expected : selected_required) {
-        const auto found = entries_.find(std::string(expected.id));
-        if (found == entries_.end())
-            throw std::invalid_argument("Classic pack required logical entry is missing");
+    for (const auto& want : expected) {
         const auto row = std::find_if(rows.begin(), rows.end(),
-                                      [&](const Row& value) { return value.id == expected.id; });
-        if (row == rows.end() || row->size != expected.size
-            || row->digest != hex_digest(expected.sha256))
+                                      [&](const PackRow& value) { return value.id == want.id; });
+        if (row == rows.end())
+            throw std::invalid_argument("Classic pack required logical entry is missing");
+        if (row->size != want.size || row->digest != hex_digest(want.sha256))
             throw std::invalid_argument("Classic pack required entry identity is unsupported: "
-                                        + std::string(expected.id));
+                                        + std::string(want.id));
     }
+}
+
+} // namespace
+
+// Reads and checks a pack: the header, the inventory against the profile's required entries,
+// then each payload, which must follow the last without gaps and match its hash.
+ClassicContentPack::ClassicContentPack(const std::filesystem::path& path) {
+    std::ifstream input(path, std::ios::binary);
+    if (!input) throw std::runtime_error("cannot open Classic content pack: " + path.string());
+    bytes_ = {std::istreambuf_iterator<char>(input), std::istreambuf_iterator<char>()};
+    Reader in(bytes_);
+    const bool tracks = read_pack_header(bytes_, in);
+    const auto expected = required_entries(tracks);
+    const auto rows = read_inventory(in);
+    std::uint64_t cursor = in.offset();
+    check_inventory(rows, expected);
     for (const auto& row : rows) {
         if (row.offset != cursor || row.size > std::numeric_limits<std::size_t>::max()
             || row.offset > bytes_.size()
@@ -704,8 +733,8 @@ ClassicContentPack::ClassicContentPack(const std::filesystem::path& path) {
             static_cast<std::size_t>(row.offset), static_cast<std::size_t>(row.size));
         if (sha256(payload) != row.digest)
             throw std::invalid_argument("Classic pack entry payload hash differs: " + row.id);
-        entries_.at(row.id) = {static_cast<std::size_t>(row.offset),
-                               static_cast<std::size_t>(row.size)};
+        entries_[row.id] = {static_cast<std::size_t>(row.offset),
+                            static_cast<std::size_t>(row.size)};
         cursor += row.size;
     }
     if (cursor != bytes_.size()) throw std::invalid_argument("Classic pack has trailing data");

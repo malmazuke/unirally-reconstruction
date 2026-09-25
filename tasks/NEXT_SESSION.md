@@ -5,6 +5,12 @@ push the task branch, open a pull request from the template, merge with
 `gh pr merge --merge` once its checks are green and the review is done. `main`
 refuses direct pushes. The checks run on pull requests only.
 
+**Status on 25 September 2026 UTC (NATIVE-READABILITY part 2): continue
+[NATIVE-READABILITY](NATIVE-READABILITY.md) with part 3 (tier 2: presentation and the runners).**
+Part 2 (the simulation, split by system and rewritten) is reviewed and integrated by pull
+request. The record's handoff lists part 3's eight functions and the checks: `equivalence.py`
+with pictures, the v1 contracts, then `gates.sh`. RESULT-TITLE-GLYPHS stays next after this task.
+
 **Status on 25 September 2026 UTC (NATIVE-READABILITY part 1): continue
 [NATIVE-READABILITY](NATIVE-READABILITY.md) with part 2 (tier 1, the simulation).** Part 1
 (rules, `src/core/.clang-format`, the native-symbol index) is reviewed and integrated by pull

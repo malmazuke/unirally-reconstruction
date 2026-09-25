@@ -84,7 +84,7 @@ void resolve_recontact(RiderContactState& rider, ContactMotion& motion,
     require(dx < 0x8000U && dy < 0x8000U, "unrecovered landing displacement quadrant");
     const unsigned angle = coarse_landing_angle(dx, static_cast<unsigned>(dy) >> 1);
     // Surface angle is zero. The helper increments toward the movement angle
-    // in groups of five. Equality within the first group selects $FFFF: no
+    // in groups of five. Equality within the first group selects 0xFFFF: no
     // coefficient transform. This is an algorithm predicate, never a frame
     // number or observed-coordinate tuple. $81:98BF–98F9, $81:996A.
     require(angle <= 5, "unrecovered landing velocity transform");

@@ -17,6 +17,10 @@ struct ControllerSample {
     std::uint8_t vertical{1};   // 0 up, 1 neutral, 2 down ($0315)
     std::uint8_t horizontal{1}; // 0 left, 1 neutral, 2 right ($0319)
 };
+// The decoded axes' values.
+namespace direction {
+inline constexpr std::uint8_t left = 0, up = 0, neutral = 1, right = 2, down = 2;
+} // namespace direction
 ControllerSample sample_controller(const ControllerButtons& buttons);
 // A SNES pad's rocker D-pad cannot report opposing directions, so the
 // controller shift register never publishes Up with Down or Left with Right.
