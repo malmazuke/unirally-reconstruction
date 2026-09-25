@@ -1,5 +1,18 @@
 # Project state
 
+Updated 25 September 2026 (COVERAGE-ROADMAP): **the path from the race engine to the whole game
+is mapped and queued.**
+- All game code runs in banks `$80-$83`: 636 routines, 219 cited by native code, almost all in
+  the race. The main loop runs the main menu, then a game mode: 1P, 2P, VS, LEAGUE, OPTIONS, or,
+  after 480 idle frames, the demo (a split-screen race of two computer riders).
+- New captures of each mode confirm the table. 136 routines (17,788 bytes) run in none of the
+  captures yet.
+- The queue makes the native app a complete one-player game first: the main menu, the 1P setup
+  screens, the continuation after a race. Then the result icons, the split-screen race, the
+  demo, 2P and VS, OPTIONS and LEAGUE, the stunt events, and audio (after a decision).
+- Next: [FRONT-END-MAIN-MENU](../tasks/FRONT-END-MAIN-MENU.md). See
+  [COVERAGE-ROADMAP](../tasks/COVERAGE-ROADMAP.md).
+
 Updated 25 September 2026 (RESULT-TITLE-GLYPHS): **DOWN+UP and BOO! start in the app, and every
 result title follows the original's text printer.**
 - The original prints the title through its general text printer. Letters and digits get the

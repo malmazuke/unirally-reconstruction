@@ -652,7 +652,26 @@
   "label": "sub_808858",
   "source_records": [
    "docs/research/R-0006-observed-code-map.md",
+   "tasks/COVERAGE-ROADMAP.md",
    "tasks/M1-01.md"
+  ]
+ },
+ {
+  "address": "$80:8881",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_808881",
+  "source_records": [
+   "tasks/COVERAGE-ROADMAP.md"
+  ]
+ },
+ {
+  "address": "$80:88B2",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_8088B2",
+  "source_records": [
+   "tasks/COVERAGE-ROADMAP.md"
   ]
  },
  {
@@ -701,6 +720,15 @@
   ]
  },
  {
+  "address": "$80:93FB",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_8093FB",
+  "source_records": [
+   "tasks/COVERAGE-ROADMAP.md"
+  ]
+ },
+ {
   "address": "$80:98B3",
   "class": "inferred",
   "comment": "routine start",
@@ -721,12 +749,77 @@
   ]
  },
  {
+  "address": "$80:A9B4",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_80A9B4",
+  "source_records": [
+   "tasks/COVERAGE-ROADMAP.md",
+   "tasks/FRONT-END-MAIN-MENU.md"
+  ]
+ },
+ {
+  "address": "$80:ABC8",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_80ABC8",
+  "source_records": [
+   "tasks/COVERAGE-ROADMAP.md",
+   "tasks/FRONT-END-MAIN-MENU.md"
+  ]
+ },
+ {
   "address": "$80:AD79",
   "class": "observed",
   "comment": "instruction start",
   "label": "loc_80AD79",
   "source_records": [
    "docs/research/R-0006-observed-code-map.md"
+  ]
+ },
+ {
+  "address": "$80:B626",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80B626",
+  "source_records": [
+   "tasks/COVERAGE-ROADMAP.md"
+  ]
+ },
+ {
+  "address": "$80:BB9C",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80BB9C",
+  "source_records": [
+   "tasks/COVERAGE-ROADMAP.md"
+  ]
+ },
+ {
+  "address": "$80:BCBF",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80BCBF",
+  "source_records": [
+   "tasks/COVERAGE-ROADMAP.md"
+  ]
+ },
+ {
+  "address": "$80:BDD4",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80BDD4",
+  "source_records": [
+   "tasks/COVERAGE-ROADMAP.md"
+  ]
+ },
+ {
+  "address": "$80:BF49",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80BF49",
+  "source_records": [
+   "tasks/COVERAGE-ROADMAP.md"
   ]
  },
  {
@@ -804,7 +897,8 @@
    "src/core/result_screen.cpp:build_result_map"
   ],
   "source_records": [
-   "docs/research/R-0053-result-title-printer.md"
+   "docs/research/R-0053-result-title-printer.md",
+   "tasks/RESULT-TITLE-GLYPHS.md"
   ]
  },
  {
@@ -891,6 +985,16 @@
   "label": "loc_80D2CB",
   "source_records": [
    "docs/research/R-0037-dragster-race-palette-cycle.md"
+  ]
+ },
+ {
+  "address": "$80:F0D6",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_80F0D6",
+  "source_records": [
+   "tasks/COVERAGE-ROADMAP.md",
+   "tasks/FRONT-END-MAIN-MENU.md"
   ]
  },
  {
