@@ -13404,19 +13404,19 @@
    "call returns in the calling mode": 1262
   },
   "bytes": 131072,
-  "cited_addresses": 800,
+  "cited_addresses": 811,
   "cited_by_class": {
    "data": 13,
-   "inferred": 86,
-   "observed": 659,
-   "unknown": 42
+   "inferred": 88,
+   "observed": 662,
+   "unknown": 48
   },
   "cited_by_position": {
    "dat": 13,
-   "loc": 571,
+   "loc": 575,
    "mid": 17,
-   "sub": 157,
-   "unk": 42
+   "sub": 158,
+   "unk": 48
   },
   "conflicts": 0,
   "data": 92,

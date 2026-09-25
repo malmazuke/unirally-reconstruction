@@ -45,7 +45,7 @@ The four classes partition all 131,072 bytes. **Unknown share: 40.4%** - above D
 
 ## Cited addresses
 
-800 distinct code-bank ROM addresses cited by the research, task, inventory and content records (`labels.json`). By position: dat 13, loc 571, mid 17, sub 157, unk 42 (sub routine start, loc instruction start, mid inside an instruction, dat data, unk unknown). By class: data 13, inferred 86, observed 659, unknown 42.
+811 distinct code-bank ROM addresses cited by the research, task, inventory and content records (`labels.json`). By position: dat 13, loc 575, mid 17, sub 158, unk 48 (sub routine start, loc instruction start, mid inside an instruction, dat data, unk unknown). By class: data 13, inferred 88, observed 662, unknown 48.
 
 Cited addresses in `unknown` bytes:
 
@@ -68,6 +68,12 @@ Cited addresses in `unknown` bytes:
 | $80:84CB | docs/research/R-0010-native-movement.md, tasks/NATIVE-READABILITY.md |
 | $80:84DB | docs/research/R-0010-native-movement.md |
 | $80:84EB | docs/research/R-0010-native-movement.md, docs/research/R-0045-static-code-map.md |
+| $80:88B2 | tasks/COVERAGE-ROADMAP.md |
+| $80:93FB | tasks/COVERAGE-ROADMAP.md |
+| $80:B626 | tasks/COVERAGE-ROADMAP.md |
+| $80:BCBF | tasks/COVERAGE-ROADMAP.md |
+| $80:BDD4 | tasks/COVERAGE-ROADMAP.md |
+| $80:BF49 | tasks/COVERAGE-ROADMAP.md |
 | $80:C3DC | docs/research/R-0053-result-title-printer.md |
 | $80:C950 | tasks/LOCKED-TOURS.md |
 | $80:D187 | docs/research/R-0053-result-title-printer.md, tasks/RESULT-TITLE-GLYPHS.md |

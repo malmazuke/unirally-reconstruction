@@ -5,6 +5,13 @@ push the task branch, open a pull request from the template, merge with
 `gh pr merge --merge` once its checks are green and the review is done. `main`
 refuses direct pushes. The checks run on pull requests only.
 
+**Status on 25 September 2026 UTC (COVERAGE-ROADMAP accepted): start
+[FRONT-END-MAIN-MENU](FRONT-END-MAIN-MENU.md).** The roadmap orders the work toward the whole
+game natively (the user's goal): the main menu, the 1P setup, the 1P continuation, the result
+icons, the split-screen race, the demo, 2P and VS, OPTIONS and LEAGUE, the stunt events, then
+audio after a decision. Take them in order; queue each next task's record when the one before
+it closes. ROLLING-CONTACT stays ready.
+
 **Status on 25 September 2026 UTC (RESULT-TITLE-GLYPHS accepted): write the coverage roadmap.**
 The user's goal is the whole game natively, menus and all, and they asked for tasks to follow
 one another. Inventory what the native game lacks against the original, using the static code
