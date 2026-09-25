@@ -311,7 +311,7 @@ Decisions and deviations, with reasons:
 | 10 | The state reader keeps its guards | `corruption.py`: 3,000 damaged states | 656 accepted, 46 distinct refusals, same result and message on both sides | Gates |
 | 11 | - | Citations after the rewrites | 10 dropped by shortened comments; restored, `citations_kept.py` added | Every commit |
 | 12 | - | Gates at `b665bf7` (the move) | Eleven gates with unchanged digests; the sweep; the recompare identical | Part 2 gates |
-| 13 | - | Gates at `5a9305a` | PART2_GATES | Review |
+| 13 | - | Gates at `5a9305a` | ctest 25/25 on three presets, synthetic, v1 contracts, hidden runs, fuzz 40 seeds 0 aborts; eleven gates with unchanged digests; sweep 351 runs, 1,933,523 updates, 1,047 restarts, 2,052 pictures, 0 differences; recompare identical on 16 + 20 tracks; corruption 3,000 cases 0 differences; citations 0 lost; 8 functions over 80 (part 3's); 48 HUNTER held captures identical to the accepted run | Review |
 
 ## Handoff
 
