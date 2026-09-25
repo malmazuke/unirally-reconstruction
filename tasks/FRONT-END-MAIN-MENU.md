@@ -119,19 +119,21 @@ Decisions and deviations, with reasons:
 | 6 | - | `compare.py` on `cold` | Equal to the demo's start at 900; the demo frame's `$89`/`$9B` needed the original's store rule | `buttons` |
 | 7 | Up and Down together move down | The `buttons` capture | The menu did not move: the emulator models the rocker | `physical_pad` |
 | 8 | - | The app, hidden: no track with Start held; idle into the demo notice | 1P after 421 frames, then the race; the notice returns to the menu | Gates |
-| 9 | - | Gates at `5b271ca` | GATES_PENDING | Review |
+| 9 | - | Gates at `cb916d6` (`gates-cb916d6.out`; the first run at `5b271ca` was stopped when the review's fixes changed code; `46ccd7c` and `c48ce13` after it change a loop binding, comments and records) | ctest 26/26 on three presets; synthetic and both v1 contracts pass; eight hidden race runs pass with 0 fallback frames; the front end with Start held chooses 1P after 421 frames, and idle shows the demo notice and returns; the eleven differential gates pass on pack v15 with unchanged digests; the equivalence sweep against main's binaries: 351 runs, 1,933,523 updates, 1,047 restarts, 2,052 pictures, 0 differences; recompare per-track results identical on 20 + 25 tracks; `cursor` 1,000/1,000, `cold` 901/901, `buttons` 301/301 pictures equal with no state difference; 0 functions over 80 lines; the index check passes | Review |
 
 ## Handoff
 
 - Current base/head commit and uncommitted state: `task/front-end-main-menu` from `dd94e64`;
-  the gated candidate `5b271ca`, plus these records.
+  the gated candidate `cb916d6`, then `46ccd7c` and `c48ce13` (a loop binding, comments,
+  records).
 - Verified findings: the Result above and R-0054.
 - Commands executed, outcomes and report hashes: `local/evidence/front-end-main-menu/` in the
   main checkout.
   - The manifests `cold`, `cursor`, `buttons`, `cold-470`, `cursor-1000`, and their captures.
   - `compare.py`, `segments.py`, `captures.sh`.
   - `base-dd94e64/`: main's frozen binaries for the sweep.
-  - `gates.sh` and `gates-5b271ca.out`, run in a detached `.worktrees/front-end-main-menu-gates`.
+  - `gates.sh` and `gates-cb916d6.out` (and the stopped `gates-5b271ca.out`), run in a detached
+    `.worktrees/front-end-main-menu-gates`.
 - Unavailable/skipped checks: the ASan presets (host; the Linux CI job covers them). The demo
   and the other modes are placeholders.
 - Exact next experiment/command: FRONT-END-1P-SETUP. Capture 1P's screens (PICK A PLAYER, PICK
