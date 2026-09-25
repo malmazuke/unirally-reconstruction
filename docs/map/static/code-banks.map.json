@@ -7932,7 +7932,7 @@
     "NmX"
    ],
    "native": [
-    "src/core/rider_pose.cpp:update_quarter_turns"
+    "src/core/rider_pose.cpp:count_turns_in_the_air"
    ],
    "observed_entries": {},
    "start": "$82:9A53",
@@ -7950,6 +7950,9 @@
    "end": "$82:9B68",
    "mode_at_entry": [
     "NMX"
+   ],
+   "native": [
+    "src/core/rider_pose.cpp:count_turns_in_the_air"
    ],
    "observed_entries": {},
    "start": "$82:9AE6",
@@ -8080,7 +8083,9 @@
     "NMx"
    ],
    "native": [
-    "src/core/movement.hpp:IdlePoseState"
+    "src/core/movement.hpp:IdlePoseState",
+    "src/core/rider_pose.cpp:idle_table_size",
+    "src/core/rider_pose.cpp:update_idle_pose"
    ],
    "observed_entries": {},
    "start": "$82:A0B7",
@@ -8101,6 +8106,8 @@
    ],
    "native": [
     "src/core/movement.hpp:IdlePoseState",
+    "src/core/rider_pose.cpp:apply_idle_wobble",
+    "src/core/rider_pose.cpp:idle_table_size",
     "src/core/rider_pose.cpp:update_idle_pose"
    ],
    "observed_entries": {},
@@ -8121,7 +8128,9 @@
     "NMX"
    ],
    "native": [
-    "src/core/movement.hpp:IdlePoseState"
+    "src/core/movement.hpp:IdlePoseState",
+    "src/core/rider_pose.cpp:idle_table_size",
+    "src/core/rider_pose.cpp:update_idle_pose"
    ],
    "observed_entries": {},
    "start": "$82:A236",
@@ -12901,7 +12910,7 @@
     "NMx"
    ],
    "native": [
-    "src/core/rider_pose.cpp:update_pose"
+    "src/core/rider_pose.cpp:rolling_animation"
    ],
    "observed_entries": {},
    "start": "$83:EE83",
@@ -12921,7 +12930,7 @@
     "NMX"
    ],
    "native": [
-    "src/core/rider_pose.cpp:update_pose"
+    "src/core/rider_pose.cpp:update_target_orientation"
    ],
    "observed_entries": {},
    "start": "$83:EF54",
@@ -12941,7 +12950,7 @@
     "NMX"
    ],
    "native": [
-    "src/core/rider_pose.cpp:update_pose"
+    "src/core/rider_pose.cpp:turn_toward_target"
    ],
    "observed_entries": {},
    "start": "$83:F008",
@@ -12979,7 +12988,7 @@
     "NMX"
    ],
    "native": [
-    "src/core/rider_pose.cpp:update_pose"
+    "src/core/rider_pose.cpp:update_shown_orientation"
    ],
    "observed_entries": {},
    "start": "$83:F09E",
@@ -13380,9 +13389,9 @@
   "jump_tables": 2,
   "mode_ambiguities": 7,
   "observed": 41778,
-  "routine_bytes_cited_by_native_code": 33018,
+  "routine_bytes_cited_by_native_code": 33149,
   "routines": 636,
-  "routines_cited_by_native_code": 216,
+  "routines_cited_by_native_code": 217,
   "unknown": 52881,
   "unknown_share": 0.4035
  }

@@ -5722,7 +5722,9 @@
   "comment": "routine start",
   "label": "sub_82A0B7",
   "native": [
-   "src/core/movement.hpp:IdlePoseState"
+   "src/core/movement.hpp:IdlePoseState",
+   "src/core/rider_pose.cpp:idle_table_size",
+   "src/core/rider_pose.cpp:update_idle_pose"
   ],
   "source_records": [
    "docs/research/R-0011-motion.md",
@@ -5736,7 +5738,9 @@
   "comment": "instruction start",
   "label": "loc_82A0F5",
   "native": [
-   "src/core/movement.hpp:IdlePoseState"
+   "src/core/movement.hpp:IdlePoseState",
+   "src/core/rider_pose.cpp:idle_table_size",
+   "src/core/rider_pose.cpp:update_idle_pose"
   ],
   "source_records": [
    "docs/research/R-0036-zoom-zoo-rider-objects.md"
@@ -5748,7 +5752,9 @@
   "comment": "instruction start",
   "label": "loc_82A194",
   "native": [
-   "src/core/movement.hpp:IdlePoseState"
+   "src/core/movement.hpp:IdlePoseState",
+   "src/core/rider_pose.cpp:idle_table_size",
+   "src/core/rider_pose.cpp:update_idle_pose"
   ],
   "source_records": [
    "docs/research/R-0036-zoom-zoo-rider-objects.md"
@@ -5761,6 +5767,8 @@
   "label": "loc_82A1F2",
   "native": [
    "src/core/movement.hpp:IdlePoseState",
+   "src/core/rider_pose.cpp:apply_idle_wobble",
+   "src/core/rider_pose.cpp:idle_table_size",
    "src/core/rider_pose.cpp:update_idle_pose"
   ],
   "source_records": [
@@ -5775,7 +5783,9 @@
   "comment": "instruction start",
   "label": "loc_82A201",
   "native": [
-   "src/core/movement.hpp:IdlePoseState"
+   "src/core/movement.hpp:IdlePoseState",
+   "src/core/rider_pose.cpp:idle_table_size",
+   "src/core/rider_pose.cpp:update_idle_pose"
   ],
   "source_records": [
    "tasks/M2-01-movement.md",
@@ -5788,7 +5798,9 @@
   "comment": "routine start",
   "label": "sub_82A236",
   "native": [
-   "src/core/movement.hpp:IdlePoseState"
+   "src/core/movement.hpp:IdlePoseState",
+   "src/core/rider_pose.cpp:idle_table_size",
+   "src/core/rider_pose.cpp:update_idle_pose"
   ],
   "source_records": [
    "docs/research/R-0011-motion.md",
@@ -9002,7 +9014,7 @@
   "comment": "instruction start",
   "label": "loc_83EED2",
   "native": [
-   "src/core/rider_pose.cpp:update_pose"
+   "src/core/rider_pose.cpp:rolling_animation"
   ],
   "source_records": [
    "docs/research/R-0032-player-landing-recovery.md"
@@ -9034,7 +9046,7 @@
   "comment": "instruction start",
   "label": "loc_83EFA1",
   "native": [
-   "src/core/rider_pose.cpp:update_pose"
+   "src/core/rider_pose.cpp:update_target_orientation"
   ],
   "source_records": [
    "docs/research/R-0051-loop-and-tile-pairs.md"
@@ -9046,7 +9058,7 @@
   "comment": "instruction start",
   "label": "loc_83EFAD",
   "native": [
-   "src/core/rider_pose.cpp:update_pose"
+   "src/core/rider_pose.cpp:update_target_orientation"
   ],
   "source_records": [
    "docs/research/R-0047-special-tiles.md"
@@ -9072,7 +9084,7 @@
   "comment": "instruction start",
   "label": "loc_83F02D",
   "native": [
-   "src/core/rider_pose.cpp:update_pose"
+   "src/core/rider_pose.cpp:turn_toward_target"
   ],
   "source_records": [
    "docs/research/R-0038-dragster-ordinary-controls.md",
@@ -9086,7 +9098,7 @@
   "comment": "routine start",
   "label": "sub_83F09E",
   "native": [
-   "src/core/rider_pose.cpp:update_pose"
+   "src/core/rider_pose.cpp:update_shown_orientation"
   ],
   "source_records": [
    "docs/research/R-0011-motion.md"

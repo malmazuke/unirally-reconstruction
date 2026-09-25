@@ -1987,7 +1987,10 @@
   {
    "address": "$82:9ABD",
    "native": [
-    "src/core/rider_pose.cpp:update_quarter_turns"
+    "src/core/rider_pose.cpp:count_turns_in_the_air"
+   ],
+   "range_ends": [
+    "$82:9AF3"
    ],
    "region": "rom"
   },
@@ -2042,7 +2045,9 @@
   {
    "address": "$82:A0B7",
    "native": [
-    "src/core/movement.hpp:IdlePoseState"
+    "src/core/movement.hpp:IdlePoseState",
+    "src/core/rider_pose.cpp:idle_table_size",
+    "src/core/rider_pose.cpp:update_idle_pose"
    ],
    "range_ends": [
     "$82:A236"
@@ -2052,7 +2057,7 @@
   {
    "address": "$82:A1F2",
    "native": [
-    "src/core/rider_pose.cpp:update_idle_pose"
+    "src/core/rider_pose.cpp:apply_idle_wobble"
    ],
    "range_ends": [
     "$82:A1FF"
@@ -3069,7 +3074,7 @@
   {
    "address": "$83:EED2",
    "native": [
-    "src/core/rider_pose.cpp:update_pose"
+    "src/core/rider_pose.cpp:rolling_animation"
    ],
    "range_ends": [
     "$83:EEDB"
@@ -3079,7 +3084,7 @@
   {
    "address": "$83:EF97",
    "native": [
-    "src/core/rider_pose.cpp:update_pose"
+    "src/core/rider_pose.cpp:update_target_orientation"
    ],
    "range_ends": [
     "$83:EFB2"
@@ -3089,14 +3094,14 @@
   {
    "address": "$83:EFA1",
    "native": [
-    "src/core/rider_pose.cpp:update_pose"
+    "src/core/rider_pose.cpp:update_target_orientation"
    ],
    "region": "rom"
   },
   {
    "address": "$83:F02D",
    "native": [
-    "src/core/rider_pose.cpp:update_pose"
+    "src/core/rider_pose.cpp:turn_toward_target"
    ],
    "range_ends": [
     "$83:F034"
@@ -3106,7 +3111,7 @@
   {
    "address": "$83:F09E",
    "native": [
-    "src/core/rider_pose.cpp:update_pose"
+    "src/core/rider_pose.cpp:update_shown_orientation"
    ],
    "range_ends": [
     "$83:F0B9"
@@ -3479,14 +3484,14 @@
   {
    "address": "$04C7",
    "native": [
-    "src/core/rider_pose.cpp:update_idle_pose"
+    "src/core/rider_pose.cpp:update_idle_velocity"
    ],
    "region": "wram"
   },
   {
    "address": "$04C9",
    "native": [
-    "src/core/rider_pose.cpp:update_idle_pose"
+    "src/core/rider_pose.cpp:update_idle_velocity"
    ],
    "region": "wram"
   },
@@ -4059,7 +4064,7 @@
    "address": "$0F2D",
    "native": [
     "src/core/race_update.cpp:update_zoom_zoo",
-    "src/core/rider_pose.cpp:update_pose",
+    "src/core/rider_pose.cpp:update_target_orientation",
     "src/core/zoom_zoo_movement.hpp:SpecialTileUpdate::slow_tile"
    ],
    "region": "wram"
@@ -4104,7 +4109,7 @@
    "address": "$0F3F",
    "native": [
     "src/core/race_update.cpp:update_zoom_zoo",
-    "src/core/rider_pose.cpp:update_pose",
+    "src/core/rider_pose.cpp:update_target_orientation",
     "src/core/zoom_zoo_movement.hpp:SpecialTileUpdate::mud_velocity"
    ],
    "region": "wram"
@@ -4286,7 +4291,7 @@
    "native": [
     "src/core/presentation.cpp:ClassicRaceHudClock::observe_update",
     "src/core/race_state_io.cpp:deserialize_classic_race",
-    "src/core/rider_pose.cpp:update_idle_pose"
+    "src/core/rider_pose.cpp:update_idle_velocity"
    ],
    "region": "wram"
   },
@@ -6201,10 +6206,20 @@
     "$0D4F"
    ]
   },
+  "src/core/rider_pose.cpp:apply_idle_wobble": {
+   "rom": [
+    "$82:A1F2"
+   ]
+  },
   "src/core/rider_pose.cpp:clear_idle_cycle": {
    "wram": [
     "$0F37",
     "$0F83"
+   ]
+  },
+  "src/core/rider_pose.cpp:count_turns_in_the_air": {
+   "rom": [
+    "$82:9ABD"
    ]
   },
   "src/core/rider_pose.cpp:decay_idle_wobble": {
@@ -6212,32 +6227,46 @@
     "$81:8625"
    ]
   },
+  "src/core/rider_pose.cpp:idle_table_size": {
+   "rom": [
+    "$82:A0B7"
+   ]
+  },
+  "src/core/rider_pose.cpp:rolling_animation": {
+   "rom": [
+    "$83:EED2"
+   ]
+  },
+  "src/core/rider_pose.cpp:turn_toward_target": {
+   "rom": [
+    "$83:F02D"
+   ]
+  },
   "src/core/rider_pose.cpp:update_idle_pose": {
    "rom": [
-    "$82:A1F2"
-   ],
+    "$82:A0B7"
+   ]
+  },
+  "src/core/rider_pose.cpp:update_idle_velocity": {
    "wram": [
     "$04C7",
     "$04C9",
     "$0FF9"
    ]
   },
-  "src/core/rider_pose.cpp:update_pose": {
+  "src/core/rider_pose.cpp:update_shown_orientation": {
    "rom": [
-    "$83:EED2",
-    "$83:EF97",
-    "$83:EFA1",
-    "$83:F02D",
     "$83:F09E"
+   ]
+  },
+  "src/core/rider_pose.cpp:update_target_orientation": {
+   "rom": [
+    "$83:EF97",
+    "$83:EFA1"
    ],
    "wram": [
     "$0F2D",
     "$0F3F"
-   ]
-  },
-  "src/core/rider_pose.cpp:update_quarter_turns": {
-   "rom": [
-    "$82:9ABD"
    ]
   },
   "src/core/special_tiles.cpp:apply_boost_tile": {
@@ -6898,7 +6927,7 @@
  "totals": {
   "addresses": 565,
   "io_addresses": 14,
-  "native_symbols": 274,
+  "native_symbols": 280,
   "rom_addresses": 351,
   "sram_addresses": 6,
   "wram_addresses": 194
