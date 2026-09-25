@@ -2672,8 +2672,8 @@
    "address": "$83:CEC9",
    "native": [
     "src/core/hunter_effects.cpp:update_hunter_effects",
+    "src/core/zoom_zoo_movement.hpp:(file)",
     "src/core/zoom_zoo_movement.hpp:ClassicRaceScenario::hunter_tour",
-    "src/core/zoom_zoo_movement.hpp:HunterEffects",
     "src/core/zoom_zoo_movement.hpp:update_hunter_effects"
    ],
    "range_ends": [
@@ -2684,7 +2684,7 @@
   {
    "address": "$83:CED9",
    "native": [
-    "src/core/hunter_effects.cpp:update_hunter_effects"
+    "src/core/hunter_effects.cpp:priority"
    ],
    "range_ends": [
     "$83:D100"
@@ -2694,7 +2694,7 @@
   {
    "address": "$83:D104",
    "native": [
-    "src/core/hunter_effects.cpp:update_hunter_effects"
+    "src/core/hunter_effects.cpp:tagged"
    ],
    "range_ends": [
     "$83:D1C2"
@@ -2704,21 +2704,21 @@
   {
    "address": "$83:D275",
    "native": [
-    "src/core/hunter_effects.cpp:update_hunter_effects"
+    "src/core/hunter_effects.cpp:finish"
    ],
    "region": "rom"
   },
   {
    "address": "$83:D28A",
    "native": [
-    "src/core/hunter_effects.cpp:update_hunter_effects"
+    "src/core/hunter_effects.cpp:run_effect"
    ],
    "region": "rom"
   },
   {
    "address": "$83:D2C9",
    "native": [
-    "src/core/hunter_effects.cpp:update_hunter_effects"
+    "src/core/hunter_effects.cpp:run_screen_flip"
    ],
    "range_ends": [
     "$83:D348"
@@ -2735,7 +2735,7 @@
   {
    "address": "$83:D349",
    "native": [
-    "src/core/hunter_effects.cpp:update_hunter_effects"
+    "src/core/hunter_effects.cpp:run_blinking_effect"
    ],
    "range_ends": [
     "$83:D3BB"
@@ -2760,7 +2760,7 @@
   {
    "address": "$83:D3FC",
    "native": [
-    "src/core/hunter_effects.cpp:update_hunter_effects"
+    "src/core/hunter_effects.cpp:run_blinking_effect"
    ],
    "range_ends": [
     "$83:D473"
@@ -2777,21 +2777,21 @@
   {
    "address": "$83:D474",
    "native": [
-    "src/core/hunter_effects.cpp:update_hunter_effects"
+    "src/core/hunter_effects.cpp:run_effect"
    ],
    "region": "rom"
   },
   {
    "address": "$83:D4AE",
    "native": [
-    "src/core/hunter_effects.cpp:update_hunter_effects"
+    "src/core/hunter_effects.cpp:run_effect"
    ],
    "region": "rom"
   },
   {
    "address": "$83:D4E8",
    "native": [
-    "src/core/hunter_effects.cpp:update_hunter_effects"
+    "src/core/hunter_effects.cpp:run_slow_motion"
    ],
    "range_ends": [
     "$83:D52F"
@@ -2801,7 +2801,7 @@
   {
    "address": "$83:D530",
    "native": [
-    "src/core/hunter_effects.cpp:update_hunter_effects"
+    "src/core/hunter_effects.cpp:run_hedgehog_speed"
    ],
    "range_ends": [
     "$83:D580"
@@ -2811,7 +2811,7 @@
   {
    "address": "$83:D581",
    "native": [
-    "src/core/hunter_effects.cpp:update_hunter_effects",
+    "src/core/hunter_effects.cpp:run_screen_flip",
     "src/core/presentation.cpp:render_classic_race"
    ],
    "range_ends": [
@@ -2822,7 +2822,7 @@
   {
    "address": "$83:E04F",
    "native": [
-    "src/core/hunter_effects.cpp:update_hunter_effects",
+    "src/core/hunter_effects.cpp:run_screen_flip",
     "src/core/rider_object.hpp:RiderOam::vertical_flip"
    ],
    "region": "rom"
@@ -4540,7 +4540,7 @@
   {
    "address": "$12D1",
    "native": [
-    "src/core/hunter_effects.cpp:update_hunter_effects"
+    "src/core/hunter_effects.cpp:(file)"
    ],
    "region": "wram"
   },
@@ -4941,6 +4941,11 @@
     "$0302"
    ]
   },
+  "src/core/hunter_effects.cpp:(file)": {
+   "wram": [
+    "$12D1"
+   ]
+  },
   "src/core/hunter_effects.cpp:count_hunter_mosaic": {
    "rom": [
     "$80:8821"
@@ -4949,29 +4954,60 @@
     "$0563"
    ]
   },
+  "src/core/hunter_effects.cpp:finish": {
+   "rom": [
+    "$83:D275"
+   ]
+  },
+  "src/core/hunter_effects.cpp:priority": {
+   "rom": [
+    "$83:CED9"
+   ]
+  },
+  "src/core/hunter_effects.cpp:run_blinking_effect": {
+   "rom": [
+    "$83:D349",
+    "$83:D3FC"
+   ]
+  },
+  "src/core/hunter_effects.cpp:run_effect": {
+   "rom": [
+    "$83:D28A",
+    "$83:D474",
+    "$83:D4AE"
+   ]
+  },
+  "src/core/hunter_effects.cpp:run_hedgehog_speed": {
+   "rom": [
+    "$83:D530"
+   ]
+  },
+  "src/core/hunter_effects.cpp:run_screen_flip": {
+   "rom": [
+    "$83:D2C9",
+    "$83:D581",
+    "$83:E04F"
+   ]
+  },
+  "src/core/hunter_effects.cpp:run_slow_motion": {
+   "rom": [
+    "$83:D4E8"
+   ]
+  },
+  "src/core/hunter_effects.cpp:tagged": {
+   "rom": [
+    "$83:D104"
+   ]
+  },
   "src/core/hunter_effects.cpp:update_hunter_effects": {
    "rom": [
     "$81:C55B",
     "$83:CDAA",
-    "$83:CEC9",
-    "$83:CED9",
-    "$83:D104",
-    "$83:D275",
-    "$83:D28A",
-    "$83:D2C9",
-    "$83:D349",
-    "$83:D3FC",
-    "$83:D474",
-    "$83:D4AE",
-    "$83:D4E8",
-    "$83:D530",
-    "$83:D581",
-    "$83:E04F"
+    "$83:CEC9"
    ],
    "wram": [
     "$021F",
-    "$12AF",
-    "$12D1"
+    "$12AF"
    ]
   },
   "src/core/input_timer.cpp:advance_timer_digits": {
@@ -6376,6 +6412,11 @@
     "$80:824B"
    ]
   },
+  "src/core/zoom_zoo_movement.hpp:(file)": {
+   "rom": [
+    "$83:CEC9"
+   ]
+  },
   "src/core/zoom_zoo_movement.hpp:ClassicRaceScenario::ai_level": {
    "rom": [
     "$83:CC0B",
@@ -6437,11 +6478,6 @@
    ],
    "sram": [
     "$77:074A"
-   ]
-  },
-  "src/core/zoom_zoo_movement.hpp:HunterEffects": {
-   "rom": [
-    "$83:CEC9"
    ]
   },
   "src/core/zoom_zoo_movement.hpp:HunterEffects::active": {
@@ -6803,7 +6839,7 @@
  "totals": {
   "addresses": 565,
   "io_addresses": 14,
-  "native_symbols": 255,
+  "native_symbols": 264,
   "rom_addresses": 351,
   "sram_addresses": 6,
   "wram_addresses": 194

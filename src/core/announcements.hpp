@@ -27,8 +27,15 @@ inline constexpr std::uint8_t winner = 37;
 inline constexpr std::uint8_t draw = 38;
 inline constexpr std::uint8_t loser = 39;
 
-// The HUNTER tour's effects (R-0052), 27-34 ("screen flip on" ... "control reversed"),
-// and the blank caption that announces an effect's end.
+// The HUNTER tour's effects (R-0052), 27-34, and the blank caption of an effect's end.
+inline constexpr std::uint8_t screen_flip_on = 27;
+inline constexpr std::uint8_t hedgehog_speed = 28;
+inline constexpr std::uint8_t slow_motion_on = 29;
+inline constexpr std::uint8_t power_bounce_on = 30;
+inline constexpr std::uint8_t barf_mode_on = 31;
+inline constexpr std::uint8_t invisible_track = 32;
+inline constexpr std::uint8_t wobble_mode_on = 33;
+inline constexpr std::uint8_t control_reversed = 34;
 inline constexpr std::uint8_t effect_over = 35;
 
 // 40-71: the tutorial hints, shown four at a time.

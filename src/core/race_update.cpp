@@ -180,7 +180,7 @@ void update_zoom_zoo(ZoomZooState& state, const ControllerButtons& requested_but
     player_input.rotate_negative_input = buttons.left_shoulder;
     player_input.rotate_positive_input = buttons.right_shoulder;
     bool pressed_a = buttons.a;
-    if (state.hunter.effect[7]) {
+    if (state.hunter.effect[hunter_effect::control_reversed]) {
         // $82:AC5A-ACA7: the HUNTER effect 7 reverses the controls the port
         // reader has published: left and right, the two rotations, and Y
         // (brake) with A. It swaps the opponent's port-2 words too, which the
@@ -593,7 +593,8 @@ void update_zoom_zoo(ZoomZooState& state, const ControllerButtons& requested_but
         resolve_vertical_contact(
             rider.contact, rider.motion, summary,
             {whole.contact_phase, index == 1, next.surface[index].mode, 0xc200,
-             next.special_tiles[index].loop_step == 9, index == 0 && next.hunter.effect[2] != 0},
+             next.special_tiles[index].loop_step == 9,
+             index == 0 && next.hunter.effect[hunter_effect::power_bounce] != 0},
             content.slope_coefficients.subspan(state.sustained && next.surface[index].mode ? 64 : 0,
                                                state.sustained ? 32 : 9),
             content.slope_coefficients.subspan(
