@@ -5357,6 +5357,15 @@
   ]
  },
  {
+  "address": "$82:9119",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_829119",
+  "source_records": [
+   "tasks/NATIVE-READABILITY.md"
+  ]
+ },
+ {
   "address": "$82:9124",
   "class": "observed",
   "comment": "instruction start",
@@ -5365,7 +5374,8 @@
    "src/core/special_tiles.cpp:update_special_tile_counters"
   ],
   "source_records": [
-   "docs/research/R-0047-special-tiles.md"
+   "docs/research/R-0047-special-tiles.md",
+   "tasks/NATIVE-READABILITY.md"
   ]
  },
  {
