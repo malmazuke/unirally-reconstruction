@@ -36,8 +36,9 @@ namespace unirally {
 namespace {
 
 // The tile flag pairs the dispatch at $81:82BB runs (R-0047, R-0051), named by what they
-// do where no record names them. 18 and 22 do nothing; 20, the checkpoint tile, runs with
-// the checkpoints; 4 is unrecovered and nothing lies past 28.
+// do where no record names them. 18 and 22 do nothing ($81:84AC, a bare RTS); 20, the
+// checkpoint tile, runs with the checkpoints; 4 ($81:875C) is unrecovered and nothing lies
+// past 28.
 namespace tile_pair {
 inline constexpr unsigned boost = 2, unrecovered = 4, surface_drive = 6, slow = 8;
 inline constexpr unsigned corkscrew = 10, slow_drive = 12, mud = 14, jump_driven = 16;
@@ -190,7 +191,7 @@ bool run_pause_menu(const ZoomZooState& state, ZoomZooState& next, const Control
 // $83:E59C-E7BD: the start countdown. A rider not braking while it passes 129-101 loses its
 // start boost, and one not braking below 70 spends it. Until 70 (and before the fade
 // publishes the pad) both riders brake and neither jumps, and $83:E7A2-E7BF releases
-// their A and X; returns true while it does.
+// their A ($031D/$031F) and X ($0321/$0323); returns true while it does.
 bool run_countdown(const ZoomZooState& state, ZoomZooState& next) {
     auto& whole = next.movement;
     if (!state.native_initialization || !whole.countdown) return false;

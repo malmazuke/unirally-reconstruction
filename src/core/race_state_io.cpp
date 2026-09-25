@@ -348,8 +348,9 @@ void read_rolls(Reader& in, ZoomZooState& state, const ClassicRaceScenario& scen
                         || r.bounce_active > 1 || (r.bounce_charge && r.step) || r.prior_step
                         || (r.pose_base & roll_pose_unused_bit)),
                       "invalid ZOOM ZOO roll state");
-        // $82:9641-9649 and $82:965E-9666 store a bounce charge only for the player while
-        // $0C6D is nonzero, which the reference guard holds at 1: the opponent never charges.
+        // $82:9641-9649 and $82:965E-9666 store a bounce charge ($1007) only for the player
+        // while $0C6D is nonzero, which the reference guard holds at 1: the opponent never
+        // charges.
         refuse_unless(!(roll_index == 1 && (r.bounce_charge || r.bounce_active)),
                       "invalid ZOOM ZOO opponent bounce state");
         refuse_unless(state.movement.frame != scenario.initialization_frame || roll_is_clear(r),

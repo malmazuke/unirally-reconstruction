@@ -1079,6 +1079,9 @@
   "class": "observed",
   "comment": "routine start",
   "label": "sub_8184AC",
+  "native": [
+   "src/core/race_update.cpp:(file)"
+  ],
   "source_records": [
    "docs/research/R-0047-special-tiles.md"
   ]
@@ -1312,6 +1315,9 @@
   "class": "inferred",
   "comment": "routine start",
   "label": "sub_81875C",
+  "native": [
+   "src/core/race_update.cpp:(file)"
+  ],
   "source_records": [
    "docs/research/R-0047-special-tiles.md",
    "docs/research/R-0051-loop-and-tile-pairs.md"

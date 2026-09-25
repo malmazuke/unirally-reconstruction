@@ -138,7 +138,8 @@ void reward_opponent(MovementState& state, std::uint8_t& weight, std::uint8_t ev
 } // namespace
 
 // The opponent's queue, once per update ($81:C219-C2C9, the player's consumer
-// $81:C0CE-C18A with the opponent's words; R-0035): queue the event this update
+// $81:C0CE-C18A with the opponent's words: entries $0CEB, cursors $0D11/$0D13, learned
+// weights $7E:2102, feature total $77:0825, boost $11DB/$11E1; R-0035): queue the event this update
 // published, then, once the last announcement's display time is over, show the next one
 // and reward it. `learned_weights` is the opponent's bank for events 2-26; the legacy
 // DRAGSTER and M4-12 to M4-15 states never serialized it and pass it empty.

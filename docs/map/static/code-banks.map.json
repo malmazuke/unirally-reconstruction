@@ -2802,6 +2802,9 @@
    "mode_at_entry": [
     "NMX"
    ],
+   "native": [
+    "src/core/race_update.cpp:(file)"
+   ],
    "observed_entries": {},
    "start": "$81:84AC",
    "static_entries": {
@@ -2947,6 +2950,9 @@
    "end": "$81:87BE",
    "mode_at_entry": [
     "NMX"
+   ],
+   "native": [
+    "src/core/race_update.cpp:(file)"
    ],
    "observed_entries": {},
    "start": "$81:875C",
@@ -13406,9 +13412,9 @@
   "jump_tables": 2,
   "mode_ambiguities": 7,
   "observed": 41778,
-  "routine_bytes_cited_by_native_code": 33049,
+  "routine_bytes_cited_by_native_code": 33149,
   "routines": 636,
-  "routines_cited_by_native_code": 215,
+  "routines_cited_by_native_code": 217,
   "unknown": 52881,
   "unknown_share": 0.4035
  }
