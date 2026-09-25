@@ -24,3 +24,26 @@ Use frozen differential cases to support incremental refactoring. Defer mod APIs
 ## Revisit trigger
 
 Repeated native routines reveal common structure, a measured dependency makes the current boundary misleading, or M3/M5 supplies a concrete extension use case. Revisit those boundaries with tests, without removing the readability requirement.
+
+## Update 25 September 2026 - the rule was not enforced; make it measurable
+
+The user asked whether the reward-queue update in `src/core/movement.cpp` (at `47708b4`) is
+readable, and whether to refactor now or after full ROM coverage. It is not: it reads as an
+annotated translation of `$81:C238`, with bare literals, verification guards between gameplay
+branches and comments that explain the ROM match rather than the game. The reviewer checklist
+named readability, but no acceptance criterion measured it, so fifteen `src/core` functions
+grew past 80 lines and the translation became the public code.
+
+Decision: a bounded readability pass on the recovered code now
+([NATIVE-READABILITY](../../tasks/NATIVE-READABILITY.md)), under the frozen gates and with no
+behaviour or format change, then measurable rules (function size, named constants, intent
+before evidence, an address-to-native-symbol index) checked on every later task. Waiting for
+full coverage was rejected: the recovered code is still a minority of the game, each task
+copies the engine it extends, and a later wholesale rewrite is the outcome this decision was
+written to prevent. A game-systems architecture stays deferred until the recovered code shows
+the game's structure beyond the race engine; revisit it when recovery reaches the frontend and
+menus.
+
+The index keeps reverse engineering of the unassessed code as easy as before: once the C++ no
+longer follows the ROM routine by routine, the index is how an address found in new
+disassembly leads to the native code that already implements it.

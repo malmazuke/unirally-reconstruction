@@ -1,5 +1,15 @@
 # Project state
 
+Updated 25 September 2026 (NATIVE-READABILITY recorded): **next is a readability pass on the
+recovered native code, at the user's request, before RESULT-TITLE-GLYPHS.**
+- The user asked whether the reward-queue update in `src/core/movement.cpp` is readable. It is
+  not: it reads as an annotated translation of `$81:C238`. D-0003's readability rule was never
+  measured, and 15 `src/core` functions exceed 80 lines at `47708b4`.
+- [NATIVE-READABILITY](../tasks/NATIVE-READABILITY.md) refactors the recovered code under the
+  frozen gates with no behaviour or format change, and adds an address-to-native-symbol index
+  so reverse engineering stays a lookup ([D-0003 update](decisions/D-0003-human-readable-native-code.md)).
+- A game-systems architecture stays deferred until recovery reaches beyond the race engine.
+
 Updated 25 September 2026 (HUNTER-EFFECTS): **all 36 race tracks now match the original over
 their whole compared windows on the sweep captures** (one review input on TWO LOOPS still differs:
 [ROLLING-CONTACT](../tasks/ROLLING-CONTACT.md)).
@@ -17,7 +27,8 @@ their whole compared windows on the sweep captures** (one review input on TWO LO
   blink table and the opponent palette. Live play needs pack v14 (`content pack --rules
   tests/manifests/content/classic-crawler-tracks-pack.json --out
   local/classic-pal-crawler-tracks-v14.pack`, then rebuild app-debug).
-- Next: [RESULT-TITLE-GLYPHS](../tasks/RESULT-TITLE-GLYPHS.md) (DOWN+UP and BOO! cannot start in
+- Next: [NATIVE-READABILITY](../tasks/NATIVE-READABILITY.md) (user request, entry above), then
+  [RESULT-TITLE-GLYPHS](../tasks/RESULT-TITLE-GLYPHS.md) (DOWN+UP and BOO! cannot start in
   the app), then the stunt events.
 
 Updated 25 September 2026 (TILE-PAIRS-8-12-26): **35 of the 36 race tracks now match the
