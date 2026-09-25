@@ -81,6 +81,7 @@ to reach more effects (the player's x at the tag picks the effect).
 | 6 | NMI timing | Mosaic counter `$0563` counted at the update's start (the opening NMI); BG1 off and mosaic from the previous update; barf from the update before that (history) | Barf, wobble, invisible match to the arrow; wobble 3,403 differs by the caption transfer arbitration (`$81:F30C`) | (f) |
 | 7 | The flip | BG1 rows mirrored and the riders' OAM y flipped from the previous update's blink; the V-flip bit outlives the blink by an update (`$80:876C` resets after the OAM transfer) | All flip frames to the arrow | Regression, records |
 | 8 | - | `regression.sh`: 48 held captures, both sweeps, tile-pairs Right captures; 4,000-update hidden app runs on 40, 41, 43, 44 | All exact; no guard violations; app runs clean | Gates, review |
+| 9 | - | Review of `a3a4701`: returned (M1 pad images on skipped updates, M2 guard range off by one; S1-S3) | Fixed M1, M2, S1; `w-hedgehog-pause`, `w-slow-pause` exact over 2,210; S2 recorded as a class; S3 (`w-rev-buttons` at 1,737) attributed to shared contact code, [ROLLING-CONTACT](ROLLING-CONTACT.md) | Regression unchanged; gates; re-review |
 
 ## Capability and coverage checkpoint
 
@@ -107,4 +108,6 @@ to reach more effects (the player's x at the tag picks the effect).
 - Unavailable/skipped checks: the ASan presets (host).
 - Exact next experiment/command: none for this task; [RESULT-TITLE-GLYPHS](RESULT-TITLE-GLYPHS.md)
   is next.
-- Accepted outcome, review/fix rounds and next routing decision: pending review.
+- Accepted outcome, review/fix rounds and next routing decision: returned once
+  ([review](https://github.com/malmazuke/unirally-reconstruction/pull/21#pullrequestreview-5312888186));
+  fixes in the following commit; re-review pending.

@@ -77,9 +77,9 @@ The player-announcement consumer `$81:BEA8` sets `$11C1` when it shows an entry.
 
 - The opponent's trick voice events are `72 + 16 * (character >> 1) + (x & 15)` (`$82:9D3A-9D5B`),
   so 232-247 on HUNTER.
-  - Their reward lookup (`$81:C260`) indexes the learned bank past its end, at `$7E21E8-21F7`.
-    Those bytes are zero on all 127,252 frames of the 52 HUNTER captures, so the original takes a
-    zero-weight exit.
+  - Their reward lookup (`$81:C25C-C260`, `$7E2102 + event - 1`) indexes the learned bank past
+    its end, at `$7E21E9-21F8`. Those bytes are zero on all 129,053 frames of 53 HUNTER captures
+    (review), so the original takes a zero-weight exit.
   - `track_reference` now guards them, as the frozen manifest guards `$7E21C9-21D8` for 200-215.
 - `$82:DDB0-DDBC` loads the opponent's sprite palette from asset 6 + character: asset 26 on
   HUNTER, pack entry `presentation.classic.hunter-opponent-palette.v1`.
@@ -106,12 +106,28 @@ Pack profile v14 adds the blink table and the opponent palette.
   0 differing pixels outside the declared off-screen rider arrow (36-pixel multiples in its box
   at y 112-126), except one frame below.
 - Hidden app runs of 4,000 updates with Right held on tracks 40, 41, 43 and 44 are clean.
+- The review's withheld captures (`review-withheld/` and the reviewer's worktree) found two
+  faults, fixed: a skipped update still takes the pad images the NMI publishes (`$0311-$0314`);
+  the HUNTER learned-bank guard is `$7E21E9-21F8`. With them, Start and B pressed on skipped
+  updates (`w-hedgehog-pause`, `w-slow-pause`) are exact over 2,210 updates, and
+  `track_reference` understands the reversed and skipped publications.
+- Other withheld captures, all exact:
+  - `w-bounce-jumps`: 8 landings under power bounce.
+  - `w-p1-long`: four tags over 4,610 updates.
+  - `w-flip-left`, and four untagged runs.
 
 ## Limits
 
-- One wobble frame (3,403) shows the new caption row a frame early. The original's caption
-  transfer (`$81:F30C`) waits while another HUD cell transfer is pending that frame. That
-  arbitration is general HUD behaviour, not modelled.
+- When the queue runs dry and the effect's name returns to the caption row (`$81:BF32`), native
+  can show it a frame early: the original's caption transfer (`$81:F30C`) waits while another
+  HUD cell transfer is pending that frame. Seen on wobble 3,403 and, in the review, screen-flip
+  frames 3,403 and 5,503. That arbitration is general HUD behaviour, not modelled.
+- A known divergence outside the effects: the review's `w-rev-buttons` (TWO LOOPS, effect 7
+  with Y, A, L, R, B, X and Left) matches to update 1,737, where the player's velocity y is 72
+  natively and 0 in the original. It is the second contact of a rolling rider after a 32-update
+  shoulder-button rotation; no HUNTER word is read there, so it is attributed to the shared
+  contact code ([ROLLING-CONTACT](../../tasks/ROLLING-CONTACT.md)). "All 36 race tracks match"
+  holds for the sweeps and the held captures, not for that input.
 - The sound `$021F` is not played (audio is a declared omission).
 - Cartridge option bit 3's variants (the opponent queue push, event `$24`, `$82:B15E`) are
   outside the domain.

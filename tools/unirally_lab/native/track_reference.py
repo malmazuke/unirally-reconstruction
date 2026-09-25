@@ -237,9 +237,14 @@ def original_rows(directory):
                 rows.append((row+s[0x106f:0x1073]+s[0x618:0x61c]+extras_archive+tail_archive).hex())
                 continue
             # $82:AAA4-AAB4 publish the player's A, X and Start; the timeline must agree
-            # (the accepted original() checks the same, from its guard frame on).
-            for at, button in ((0x31d, 'a'), (0x321, 'x'), (0x339, 'start')):
-                if frame >= boundary + GUARD_OFFSET and int.from_bytes(w[at:at+2], 'little') != int(button in document['timeline'][frame][0]):
+            # (the accepted original() checks the same, from its guard frame on). R-0052: an
+            # update a HUNTER effect skips ($128B at the end of the previous frame) publishes
+            # nothing, and under effect 7 ($1335) the reader publishes Y as A ($82:AC77-AC81).
+            skipped = previous is not None and previous[0x128b] != 0
+            reversed_controls = previous is not None and int.from_bytes(previous[0x1335:0x1337], 'little') != 0
+            for at, button in ((0x31d, 'y' if reversed_controls else 'a'), (0x321, 'x'), (0x339, 'start')):
+                if frame >= boundary + GUARD_OFFSET and not skipped and \
+                        int.from_bytes(w[at:at+2], 'little') != int(button in document['timeline'][frame][0]):
                     raise ValueError(f'player {button} publication differs from the controller timeline at {frame}')
             if frame >= boundary + GUARD_OFFSET:
                 for item in guards:
@@ -250,9 +255,10 @@ def original_rows(directory):
                     if value != item['value']:
                         violations.setdefault(f'{at:04x}', dict(frame=frame, value=value, guarded=item['value']))
                 # R-0052: the HUNTER opponent's voices 232-247 index the learned bank past its end
-                # at $7E21E8-$7E21F7, as the other tours' 200-215 do at the manifest's $7E21C9-$7E21D8;
-                # native takes the original's zero-weight exit, which these bytes being zero justifies.
-                for at in range(0x21e8, 0x21f8):
+                # at $7E21E9-$7E21F8 ($7E2102 + event - 1, $81:C25C-C260), as the other tours' 200-215
+                # do at the manifest's $7E21C9-$7E21D8; native takes the original's zero-weight exit,
+                # which these bytes being zero justifies.
+                for at in range(0x21e9, 0x21f9):
                     if w[at]:
                         violations.setdefault(f'{at:04x}', dict(frame=frame, value=w[at], guarded=0))
             try:

@@ -674,7 +674,7 @@ void update_reward_queue(MovementState& state,unsigned event_one,const MovementC
         // Beyond the 72-entry class table only the opponent's voice ranges
         // are reachable. $81C241 then indexes past the table into ROM code and
         // $81C260 past the 26-byte learned bank into $7E21C9-$7E21D8 (HUNTER:
-        // $7E21E8-$7E21F7, guarded by track_reference, zero on every HUNTER
+        // $7E21E9-$7E21F8, guarded by track_reference, zero on every HUNTER
         // capture). Those
         // bytes are zero on every authenticated frame of every reference
         // capture, which the appended reward-bank guards now assert rather
@@ -2460,9 +2460,13 @@ void update_zoom_zoo(ZoomZooState& state,const ControllerButtons& requested_butt
     count_hunter_mosaic(next);
     // $83:CC9A-CCA2: an update the HUNTER effects skip ($128B, R-0052) runs
     // only the effects themselves and the hints ($83:CDAA); the race, its
-    // clocks, the controller reader and the pause menu wait.
+    // clocks, the controller reader ($82:AA71, the axes and button words) and
+    // the pause menu wait. The NMI still publishes the pad images $0311-$0314
+    // ($80:87E9-87FE).
     next.hunter.skip_update=0;
     if(state.hunter.skip_update) {
+        const auto pad=sample_controller(buttons);
+        whole.player_input.low_image=pad.low_image;whole.player_input.high_image=pad.high_image;
         update_hunter_effects(next,content.hunter_blink);
         if(state.native_initialization)update_zoom_hints(next);
         ++whole.frame;state=next;return;
