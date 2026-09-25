@@ -30,7 +30,11 @@ struct FrontEndContent {
     // The tour menu (profile v17).
     std::span<const std::uint8_t> medal_tiles, tour_menu_text, tour_badge_places, tour_levels;
     std::span<const std::uint8_t> tour_arrow_targets, tour_badge_pictures, medal_places;
-    std::span<const std::uint8_t> medal_attributes;
+    std::span<const std::uint8_t> medal_attributes, tour_names;
+    // PICK TRACK and NOW PLAYING (profile v17), and the race tracks' names.
+    std::span<const std::uint8_t> track_menu_tiles, track_menu_layout, track_menu_text, medal_words;
+    std::span<const std::uint8_t> marker_tiles, race_kind_words, now_playing_text, time_words;
+    std::span<const std::uint8_t> laps, qualifying_scores, track_names;
 };
 FrontEndContent front_end_content(const ClassicContentPack& pack);
 
@@ -109,12 +113,18 @@ struct RiderMenu {
     bool returning{};         // entered back from PICK TOUR ($00AC != 2): slides back in
 };
 
-// The one-player records the menus read from SRAM. A cold start clears SRAM (`$83:FB41`), so all
-// are 0 until races are won, which is later work (R-0056).
+// The one-player records the menus read from SRAM, as a cold start leaves them (`$80:8C4E`):
+// no levels, medals or done tracks, every rider's best 9:59.99 on the races (0 on the stunt
+// events, `$83:9340`) and SOMEONE holding every record (`$83:93D8`). Winning races changes
+// them, which is later work (R-0056).
 struct OnePlayerRecords {
-    std::array<std::uint8_t, 16> tour_levels{}; // $77:10D3 + rider: 0-3, the tours open
-    std::array<std::uint8_t, 160> medals{};     // $77:069C + 16 * tour + rider: 0, or 1-3
+    std::array<std::uint8_t, 16> tour_levels{};   // $77:10D3 + rider: 0-3, the tours open
+    std::array<std::uint8_t, 160> medals{};       // $77:069C + 16 * tour + rider: 0, or 1-3
+    std::array<std::uint8_t, 50> tracks_done{};   // $77:1075 + track: won in the current run
+    std::array<std::uint16_t, 800> best{};        // $77:0829 + 2 * (50 * rider + track)
+    std::array<std::uint8_t, 50> record_holder{}; // $77:0550 + track: a rider, 16 SOMEONE
 };
+OnePlayerRecords cold_start_records();
 
 // PICK TOUR ($80:E550): the tours in two columns of four, HUNTER below. The cursor is 2 * row +
 // column; 8 is HUNTER, 9 HUNTER reached from the right column.
@@ -124,6 +134,26 @@ struct TourMenu {
     std::uint8_t track{};  // $00CE: the first track of the tour the menu was entered with
     std::uint8_t medal{};  // $77:10D1: the rider's medal on the chosen tour
     bool back{};           // left with Y or X
+    bool returning{};      // entered back from PICK TRACK ($00AC != 2): slides back in
+};
+
+// PICK TRACK ($80:E84E): the tour's five tracks, then (in 1P) the medal line, which steps the
+// medal to race for.
+struct TrackMenu {
+    std::uint8_t cursor{};      // $009B: 0-4 the tracks, 5 the medal line
+    bool medal_latched{};       // $77:10D2: the medal line has stepped on this press
+    bool medal_stepped{};       // it stepped this frame: the next frame shows it ($80:EA8F)
+    std::uint8_t marker_step{}; // $77:10A7: the done-track markers' animation, 13 down to 0
+    bool back{};
+    bool returning{}; // entered back from NOW PLAYING ($00AC == 2): slides back in
+};
+
+// NOW PLAYING ($80:B18D): the rider against the opponent on the chosen track, Race or Exit.
+enum class NowPlayingChoice : std::uint8_t { none, race, exit, back };
+struct NowPlaying {
+    std::uint8_t opponent{0x10};  // $017F: BRONSEN, SILVIA, GOLDWYN (0x11-0x13) or ANTI-UNI 0x14
+    std::uint8_t record_holder{}; // $018F
+    NowPlayingChoice choice{};
 };
 
 struct MainMenu {
@@ -134,14 +164,20 @@ struct MainMenu {
 // Where the front end is. The boot, the steps between screens and the way back to the main menu
 // are scripts of fixed frames, counted by `FrontEndState::script_frame`.
 enum class FrontEndScreen : std::uint8_t {
-    boot,             // power-on to the main menu (R-0054)
-    main_menu,        // $80:ABC8's loop
-    rider_menu_entry, // $80:BB9C and $80:CB04's set-up: the names printed and slid in
-    rider_menu,       // $80:CBC8's loop: PICK YOUR UNI
-    rider_menu_exit,  // $80:F4E9, after a choice or Y
-    main_menu_return, // $80:ACD5 with $00A7 set: the main menu slid back in
-    tour_menu_entry,  // $80:A858, $80:A82B and $80:E550's set-up: the tours slid in
-    tour_menu,        // $80:E5B4's loop: PICK TOUR
+    boot,              // power-on to the main menu (R-0054)
+    main_menu,         // $80:ABC8's loop
+    rider_menu_entry,  // $80:BB9C and $80:CB04's set-up: the names printed and slid in
+    rider_menu,        // $80:CBC8's loop: PICK YOUR UNI
+    rider_menu_exit,   // $80:F4E9, after a choice or Y
+    main_menu_return,  // $80:ACD5 with $00A7 set: the main menu slid back in
+    tour_menu_entry,   // $80:A858, $80:A82B and $80:E550's set-up: the tours slid in
+    tour_menu,         // $80:E5B4's loop: PICK TOUR
+    track_menu_entry,  // $80:E84E's set-up: the tracks slid in
+    track_menu,        // $80:BAA4's loop: PICK TRACK
+    track_menu_exit,   // $80:E9FC, after a choice or Y
+    now_playing_entry, // $80:B18D's set-up: the match slid in
+    now_playing,       // $80:B467's loop: NOW PLAYING
+    race_fade,         // $80:9885 after Race, then the race
 };
 
 struct FrontEndState {
@@ -163,10 +199,14 @@ struct FrontEndState {
     MainMenu menu{};
     MenuLatches latches{};
     RiderMenu rider_menu{};
-    OnePlayerRecords records{};
+    OnePlayerRecords records = cold_start_records();
     TourMenu tour_menu{};
+    TrackMenu track_menu{};
+    NowPlaying now_playing{};
     bool mode_chosen{};
-    FrontEndMode mode{}; // for 1P, once PICK TOUR has a tour (`rider_menu.rider`, `tour_menu.tour`)
+    // For 1P, once NOW PLAYING's Race has faded out: the race is `tour_menu.track` for
+    // `rider_menu.rider` against `now_playing.opponent`.
+    FrontEndMode mode{};
 };
 
 // Controller words as the auto-joypad read gives them (`$4218`, `$421A`): B 0x8000, Y 0x4000,
@@ -177,8 +217,8 @@ struct FrontEndPads {
 };
 
 FrontEndState start_front_end();
-// One frame: its vblank's work, in the original's order. Once a mode is chosen (for 1P, a rider
-// and a tour) the state stops.
+// One frame: its vblank's work, in the original's order. Once a mode is chosen (for 1P, a race)
+// the state stops.
 void update_front_end(FrontEndState& state, const FrontEndContent& content, FrontEndPads pads);
 // The frame the last update produced.
 RgbFrame render_front_end(const FrontEndState& state);

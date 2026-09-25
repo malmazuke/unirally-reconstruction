@@ -60,27 +60,8 @@ std::uint8_t tour_level(const FrontEndState& state) { // $83:9F14 in 1P
     return state.records.tour_levels[state.rider_menu.rider & 0x0fU];
 }
 
-// $80:E7A1: the tour at `cursor` is open to the rider.
-bool tour_open(const FrontEndState& state, const FrontEndContent& content, unsigned cursor) {
-    const unsigned index = cursor & 0x0fU;
-    const auto needed = index < tours ? content.tour_levels[index] : max_level_needed;
-    return tour_level(state) >= needed;
-}
-
-std::uint16_t word_at(std::span<const std::uint8_t> table, std::size_t at) {
-    return static_cast<std::uint16_t>(table[at] | (static_cast<unsigned>(table[at + 1]) << 8U));
-}
-
-// $83:8D8F: tour `tour`'s badge, or the "?" badge if it is locked, into the text map.
 void draw_badge(FrontEndState& state, const FrontEndContent& content, unsigned tour) {
-    const unsigned picture = tour_open(state, content, tour) ? tour : locked_picture;
-    const auto palette = static_cast<unsigned>(content.tour_badge_pictures[picture]);
-    const unsigned first_tile = word_at(content.tour_badge_pictures, tours + picture * 2);
-    const unsigned place = word_at(content.tour_badge_places, tour * 2) / 2U;
-    for (unsigned row = 0; row < badge_size; ++row)
-        for (unsigned column = 0; column < badge_size; ++column)
-            state.text.words[(place + row * 32 + column) & 1023U] = static_cast<std::uint16_t>(
-                (first_tile + row * badge_row_tiles + column) | (palette << 10U) | badge_priority);
+    draw_tour_picture(state, content, tour, word_at(content.tour_badge_places, tour * 2) / 2U);
 }
 
 // $80:E730's text: the names of the open tours and a badge for each of 0-7 (and HUNTER).
@@ -181,7 +162,38 @@ void move_tour_cursor(FrontEndState& state, const FrontEndContent& content, std:
 
 } // namespace
 
+std::uint16_t word_at(std::span<const std::uint8_t> table, std::size_t at) {
+    return static_cast<std::uint16_t>(table[at] | (static_cast<unsigned>(table[at + 1]) << 8U));
+}
+
+bool tour_open(const FrontEndState& state, const FrontEndContent& content, unsigned cursor) {
+    const unsigned index = cursor & 0x0fU;
+    const auto needed = index < tours ? content.tour_levels[index] : max_level_needed;
+    return tour_level(state) >= needed;
+}
+
+void draw_tour_picture(FrontEndState& state, const FrontEndContent& content, unsigned tour,
+                       unsigned place) {
+    const unsigned picture = tour_open(state, content, tour) ? tour : locked_picture;
+    const auto palette = static_cast<unsigned>(content.tour_badge_pictures[picture]);
+    const unsigned first_tile = word_at(content.tour_badge_pictures, tours + picture * 2);
+    for (unsigned row = 0; row < badge_size; ++row)
+        for (unsigned column = 0; column < badge_size; ++column)
+            state.text.words[(place + row * 32 + column) & 1023U] = static_cast<std::uint16_t>(
+                (first_tile + row * badge_row_tiles + column) | (palette << 10U) | badge_priority);
+}
+
 void enter_tour_menu(FrontEndState& state) {
+    state.tour_menu.returning = false;
+    state.screen = FrontEndScreen::tour_menu_entry;
+}
+
+void return_to_tour_menu(FrontEndState& state) {
+    // `$80:BC03`: PICK TOUR from `$80:E550`, without `$80:A858` and `$80:A82B` before it; its
+    // first lines round the track now (`$83:893C`).
+    auto& menu = state.tour_menu;
+    menu.returning = true;
+    menu.track = static_cast<std::uint8_t>(menu.track / tracks_per_tour * tracks_per_tour);
     state.screen = FrontEndScreen::tour_menu_entry;
 }
 
@@ -189,7 +201,9 @@ void tour_menu_entry_frame(FrontEndState& state, const FrontEndContent& content)
     constexpr std::uint32_t first_slide_frame = 8, medal_palettes_frame = 47, medals_frame = 48,
                             loop_frame = 49;
     auto& menu = state.tour_menu;
-    switch (state.script_frame) {
+    // From PICK TRACK the script starts at the medal tiles, its fourth frame.
+    constexpr std::uint32_t returning_skips = 3;
+    switch (state.script_frame + (menu.returning ? returning_skips : 0)) {
     case 1:
     case 5: // $80:A858, twice
         copy_oam(state);
@@ -215,7 +229,7 @@ void tour_menu_entry_frame(FrontEndState& state, const FrontEndContent& content)
     case 7:
         copy_oam(state);
         load_text(state, state.slide.hidden_half);
-        start_slide(state, content, false);
+        start_slide(state, content, menu.returning);
         return;
     case medal_palettes_frame:
         for (unsigned k = 0; k < 3; ++k)
@@ -229,7 +243,9 @@ void tour_menu_entry_frame(FrontEndState& state, const FrontEndContent& content)
         state.screen = FrontEndScreen::tour_menu;
         return;
     default:
-        if (state.script_frame < first_slide_frame || !slide_frame(state, content)) return;
+        if (state.script_frame + (menu.returning ? returning_skips : 0) < first_slide_frame
+            || !slide_frame(state, content))
+            return;
         // $80:974B's first lines: the medals' entries shown, small; 9-11 hidden.
         state.oam_buffer[oam_high_table] = state.oam_buffer[oam_high_table + 1] = 0;
         state.oam_buffer[oam_high_table + 2] = 0x54;
@@ -262,8 +278,7 @@ void tour_menu_frame(FrontEndState& state, const FrontEndContent& content, Front
         return;
     }
     menu.back = false;
-    state.mode_chosen = true;
-    state.mode = FrontEndMode::one_player;
+    enter_track_menu(state, false);
 }
 
 } // namespace unirally::front_end_screens

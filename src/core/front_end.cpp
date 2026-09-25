@@ -527,7 +527,31 @@ FrontEndContent front_end_content(const ClassicContentPack& pack) {
     content.tour_badge_pictures = pack.entry("front-end.tour-badge-pictures");
     content.medal_places = pack.entry("front-end.medal-places");
     content.medal_attributes = pack.entry("front-end.medal-attributes");
+    for (unsigned id : {22U, 23U, 24U, 25U, 26U, 37U})
+        content.assets[id] = pack.entry(asset_name(id));
+    content.tour_names = pack.entry("front-end.tour-names");
+    content.track_menu_tiles = pack.entry("front-end.track-menu-tiles");
+    content.track_menu_layout = pack.entry("front-end.track-menu-layout");
+    content.track_menu_text = pack.entry("front-end.track-menu-text");
+    content.medal_words = pack.entry("front-end.medal-words");
+    content.marker_tiles = pack.entry("front-end.marker-tiles");
+    content.race_kind_words = pack.entry("front-end.race-kind-words");
+    content.now_playing_text = pack.entry("front-end.now-playing-text");
+    content.time_words = pack.entry("front-end.time-words");
+    content.laps = pack.entry("front-end.laps");
+    content.qualifying_scores = pack.entry("front-end.qualifying-scores");
+    content.track_names = pack.entry("presentation.classic.track-names.v1");
     return content;
+}
+
+OnePlayerRecords cold_start_records() {
+    OnePlayerRecords records;
+    constexpr std::uint16_t cold_best = 0xea5f; // 9:59.99
+    constexpr std::uint8_t stunt_place = 2, someone = 0x10;
+    for (std::size_t k = 0; k < records.best.size(); ++k)
+        records.best[k] = k % 5 == stunt_place ? 0 : cold_best;
+    records.record_holder.fill(someone);
+    return records;
 }
 
 FrontEndState start_front_end() {
@@ -557,6 +581,12 @@ void update_front_end(FrontEndState& state, const FrontEndContent& content, Fron
     case FrontEndScreen::main_menu_return: main_menu_return_frame(state, content); break;
     case FrontEndScreen::tour_menu_entry: tour_menu_entry_frame(state, content); break;
     case FrontEndScreen::tour_menu: tour_menu_frame(state, content, physical); break;
+    case FrontEndScreen::track_menu_entry: track_menu_entry_frame(state, content); break;
+    case FrontEndScreen::track_menu: track_menu_frame(state, content, physical); break;
+    case FrontEndScreen::track_menu_exit: track_menu_exit_frame(state, content); break;
+    case FrontEndScreen::now_playing_entry: now_playing_entry_frame(state, content); break;
+    case FrontEndScreen::now_playing: now_playing_frame(state, content, physical); break;
+    case FrontEndScreen::race_fade: race_fade_frame(state); break;
     }
     if (state.screen != screen) state.script_frame = 0;
     ++state.frame;

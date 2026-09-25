@@ -57,10 +57,30 @@ void rider_menu_frame(FrontEndState& state, const FrontEndContent& content, Fron
 void rider_menu_exit_frame(FrontEndState& state, const FrontEndContent& content);
 void main_menu_return_frame(FrontEndState& state, const FrontEndContent& content);
 
-// tour_menu.cpp: PICK TOUR after a rider is chosen (`$80:BBF7-BC0B`), a frame of its set-up and
-// of its loop.
+// tour_menu.cpp: PICK TOUR after a rider is chosen (`$80:BBF7-BC0B`) or back from PICK TRACK
+// (`$80:BC03`), a frame of its set-up and of its loop.
 void enter_tour_menu(FrontEndState& state);
+void return_to_tour_menu(FrontEndState& state);
 void tour_menu_entry_frame(FrontEndState& state, const FrontEndContent& content);
 void tour_menu_frame(FrontEndState& state, const FrontEndContent& content, FrontEndPads pads);
+std::uint16_t word_at(std::span<const std::uint8_t> table, std::size_t at);
+// $80:E7A1: the tour at `cursor` is open to the rider.
+bool tour_open(const FrontEndState& state, const FrontEndContent& content, unsigned cursor);
+// $83:8D8F: tour `tour`'s 5 x 5 picture, or the "?" picture if it is locked, at text map word
+// `place`.
+void draw_tour_picture(FrontEndState& state, const FrontEndContent& content, unsigned tour,
+                       unsigned place);
+
+// track_menu.cpp: PICK TRACK after a tour is chosen, or back from NOW PLAYING (`$80:BC4D`).
+void enter_track_menu(FrontEndState& state, bool returning);
+void track_menu_entry_frame(FrontEndState& state, const FrontEndContent& content);
+void track_menu_frame(FrontEndState& state, const FrontEndContent& content, FrontEndPads pads);
+void track_menu_exit_frame(FrontEndState& state, const FrontEndContent& content);
+
+// now_playing.cpp: NOW PLAYING after a track is chosen, and Race's fade.
+void enter_now_playing(FrontEndState& state);
+void now_playing_entry_frame(FrontEndState& state, const FrontEndContent& content);
+void now_playing_frame(FrontEndState& state, const FrontEndContent& content, FrontEndPads pads);
+void race_fade_frame(FrontEndState& state);
 
 } // namespace unirally::front_end_screens

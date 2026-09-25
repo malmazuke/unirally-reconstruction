@@ -111,7 +111,10 @@ void print_screens(const unirally::FrontEndState& state) {
               << " row=" << unsigned(r.row) << " up=" << state.latches.up
               << " down=" << state.latches.down << " tour=" << unsigned(state.tour_menu.tour)
               << " cursor=" << unsigned(state.tour_menu.cursor)
-              << " track=" << unsigned(state.tour_menu.track) << " intro=" << r.intro
+              << " track=" << unsigned(state.tour_menu.track)
+              << " track_cursor=" << unsigned(state.track_menu.cursor)
+              << " opponent=" << unsigned(state.now_playing.opponent)
+              << " holder=" << unsigned(state.now_playing.record_holder) << " intro=" << r.intro
               << " idle_step=" << unsigned(r.idle_step) << " text=";
     std::array<std::uint8_t, 2048> text{};
     for (std::size_t k = 0; k < state.text.words.size(); ++k) {

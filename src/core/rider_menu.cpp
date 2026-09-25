@@ -227,7 +227,7 @@ bool read_rider_menu_pad(FrontEndState& state, std::uint16_t pad) {
 // $80:CB04's first lines, before its first frame wait.
 void open_rider_menu_entry(FrontEndState& state) {
     state.menu.selection = state.rider_menu.rider; // $80:CB07
-    state.latches = {}; // $80:CB0C
+    state.latches = {};                            // $80:CB0C
     state.screen = FrontEndScreen::rider_menu_entry;
 }
 
