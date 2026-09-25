@@ -22,12 +22,12 @@ struct SpecialTileRider {
     // counts down one per update.
     std::uint16_t mud_cooldown{};
     // $0D57/$0D59 ($0F47): 4 on mud; cleared on the first update the
-    // cooldown has already run out (the original also queues sound $0213).
+    // cooldown has already run out (the original also queues sound 0x213).
     std::uint16_t mud_exit_pending{};
     // $0DF7/$0DF9 ($0F49), signed: 1 after an update the corkscrew held the
     // rider, -4 after an ejection counting up to 0, otherwise 0.
     std::uint16_t corkscrew_latch{};
-    // $0DF3/$0DF5 ($0FA7): the corkscrew step, 1 to $31; $FFFF after an ejection.
+    // $0DF3/$0DF5 ($0FA7): the corkscrew step, 1 to 0x31; 0xFFFF after an ejection.
     std::uint16_t corkscrew_step{};
     // $0DFF/$0E01 ($0F4B): gravity is suspended while set.
     std::uint16_t corkscrew_float{};
@@ -43,15 +43,15 @@ struct SpecialTileRider {
     // $0351/$0353 ($0F51 at entry): the loop's direction, 0 entering against
     // a mirrored descriptor facing right-to-left (reflected), 1 the other way.
     std::uint16_t loop_direction{};
-    // $0355/$0357, signed: the loop step, 1 to $10 while the loop (flag pair
-    // 26) carries the rider, $FFFE after a refused entry counting up to 0.
+    // $0355/$0357, signed: the loop step, 1 to 16 while the loop (flag pair
+    // 26) carries the rider, 0xFFFE after a refused entry counting up to 0.
     std::uint16_t loop_step{};
     // $0359/$035B: 3 on each loop update, then one less per update; at 1 the
     // loop's pose and float end. It also holds off the jump ($82:A8D0).
     std::uint16_t loop_cooldown{};
     // $0D3D/$0D3F ($0F29): flag pair 8's counter, one more per update on the
     // tile and one less per update ($81:8594); at 8 velocity x is held to
-    // +-$20 instead of counting on.
+    // +-0x20 instead of counting on.
     std::uint16_t slow_counter{};
     bool operator==(const SpecialTileRider&) const = default;
 };
@@ -70,7 +70,7 @@ struct ZoomZooRaceState {
     ZoomZooCamera camera;
     std::array<ZoomZooFinishPose, 2> finish_pose;
     // $114D-$119C: 80 first-seen flags, laps remaining * 4 + checkpoint
-    // ($81:CD25-CD2E fills them with $FF). The shared 742-byte layout holds the
+    // ($81:CD25-CD2E fills them with 0xFF). The shared 742-byte layout holds the
     // first 20, all a race of up to four laps reaches; the other tracks' layout
     // (URTRnn05) holds all 80 (R-0048).
     std::array<std::uint8_t, 80> checkpoint_seen{};
@@ -105,7 +105,7 @@ struct ZoomZooPause {
 // tracks with a recovered scenario (TRACK-BREADTH, R-0046).
 //
 // A track is its index in the ROM's track set: SRAM `$77:074A`, from which the
-// race loader unpacks asset `$C2 + index` (`$82:E140-E152`). DRAGSTER is track
+// race loader unpacks asset `0xC2 + index` (`$82:E140-E152`). DRAGSTER is track
 // 0 and ZOOM ZOO track 1.
 struct ClassicRaceTrack {
     std::uint8_t index{1};
@@ -298,7 +298,7 @@ struct SpecialTileUpdate {
 // $81:8690-86FE: the counters' part of the reset before the tile dispatch.
 void update_special_tile_counters(SpecialTileRider& tiles, ReflectionTransition& transition,
                                   std::uint8_t selected_high);
-// $81:871C-875B: the boost tile (flag pair 2), pushing by $80 plus `extra`.
+// $81:871C-875B: the boost tile (flag pair 2), pushing by 0x80 plus `extra`.
 void apply_boost_tile(RiderMovementState& rider, SurfaceTransition& surface, std::uint16_t extra);
 // $81:8999-89F6: mud (flag pair 14).
 void update_mud_tile(RiderMovementState& rider, SpecialTileRider& tiles, SurfaceTransition& surface,

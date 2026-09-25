@@ -3230,28 +3230,6 @@
    "region": "wram"
   },
   {
-   "address": "$0213",
-   "native": [
-    "src/core/special_tiles.cpp:update_special_tile_counters",
-    "src/core/zoom_zoo_movement.hpp:SpecialTileRider::mud_exit_pending"
-   ],
-   "region": "wram"
-  },
-  {
-   "address": "$021B",
-   "native": [
-    "src/core/special_tiles.cpp:update_corkscrew_tile"
-   ],
-   "region": "wram"
-  },
-  {
-   "address": "$021F",
-   "native": [
-    "src/core/hunter_effects.cpp:update_hunter_effects"
-   ],
-   "region": "wram"
-  },
-  {
    "address": "$0300",
    "native": [
     "src/core/flat_contact.hpp:ContactContext::phase",
@@ -3586,34 +3564,6 @@
    "address": "$0572",
    "native": [
     "src/core/vertical_contact.cpp:apply_landing_matrix"
-   ],
-   "region": "wram"
-  },
-  {
-   "address": "$0600",
-   "native": [
-    "src/core/special_tiles.cpp:update_corkscrew_tile",
-    "src/core/special_tiles.cpp:update_special_tile_counters"
-   ],
-   "range_ends": [
-    "$060F"
-   ],
-   "region": "wram"
-  },
-  {
-   "address": "$0610",
-   "native": [
-    "src/core/special_tiles.cpp:update_loop_tile"
-   ],
-   "region": "wram"
-  },
-  {
-   "address": "$0611",
-   "native": [
-    "src/core/special_tiles.cpp:update_loop_tile"
-   ],
-   "range_ends": [
-    "$061F"
    ],
    "region": "wram"
   },
@@ -5044,7 +4994,6 @@
     "$83:CEC9"
    ],
    "wram": [
-    "$021F",
     "$12AF"
    ]
   },
@@ -6452,8 +6401,6 @@
     "$81:885F"
    ],
    "wram": [
-    "$021B",
-    "$0600",
     "$0FAF"
    ]
   },
@@ -6470,10 +6417,6 @@
    "rom": [
     "$81:837E",
     "$81:8490"
-   ],
-   "wram": [
-    "$0610",
-    "$0611"
    ]
   },
   "src/core/special_tiles.cpp:update_mud_tile": {
@@ -6490,10 +6433,6 @@
     "$81:8690",
     "$82:8C3A",
     "$82:9124"
-   ],
-   "wram": [
-    "$0213",
-    "$0600"
    ]
   },
   "src/core/speed_limits.cpp:limit_rider_speed": {
@@ -6929,7 +6868,6 @@
   },
   "src/core/zoom_zoo_movement.hpp:SpecialTileRider::mud_exit_pending": {
    "wram": [
-    "$0213",
     "$0D57",
     "$0D59",
     "$0F47"
@@ -7145,11 +7083,11 @@
   }
  },
  "totals": {
-  "addresses": 567,
+  "addresses": 561,
   "io_addresses": 11,
   "native_symbols": 320,
   "rom_addresses": 351,
   "sram_addresses": 7,
-  "wram_addresses": 198
+  "wram_addresses": 192
  }
 }

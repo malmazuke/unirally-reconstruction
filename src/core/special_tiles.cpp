@@ -16,9 +16,9 @@ void update_special_tile_counters(SpecialTileRider& tiles, ReflectionTransition&
     if (tiles.mud_cooldown)
         --tiles.mud_cooldown;
     else if (tiles.mud_exit_pending)
-        tiles.mud_exit_pending = 0; // and sound $0213
+        tiles.mud_exit_pending = 0; // and sound 0x213
     // With no corkscrew in the previous update the step, the corkscrew's
-    // $0600-$060F poses and, off an inverted contact, the float all end.
+    // poses 0x600-0x60F and, off an inverted contact, the float all end.
     if (!tiles.corkscrew_latch) {
         tiles.corkscrew_step = 0;
         if (transition.pose_override >= 0x600 && transition.pose_override < 0x610)
@@ -49,7 +49,7 @@ void apply_boost_tile(RiderMovementState& rider, SurfaceTransition& surface, std
 // $81:8999-89F6, flag pair 14 (mud). Entering halves velocity x with an
 // arithmetic shift and stops vertical motion (the original also queues sound
 // $0212); every update on it holds both counters at 4 and brakes by 5 unless
-// velocity x is already within 48 of zero ($FFD0-$002F, N-flag compares).
+// velocity x is already within 48 of zero (0xFFD0-0x002F, N-flag compares).
 void update_mud_tile(RiderMovementState& rider, SpecialTileRider& tiles, SurfaceTransition& surface,
                      SpecialTileUpdate& special) {
     auto& velocity = rider.motion.velocity_x;
@@ -73,14 +73,14 @@ void update_mud_tile(RiderMovementState& rider, SpecialTileRider& tiles, Surface
 
 // $81:87C2-894F, flag pair 10 (corkscrew). A rider that enters it facing the
 // descriptor's way, on the ground and not mid-reflection is carried through
-// 48 steps at a fixed speed: poses $0600-$060F, y from the height table, the
+// 48 steps at a fixed speed: poses 0x600-0x60F, y from the height table, the
 // object priority toggled four times, gravity and the drive suspended. Step
-// $30 leaves it inverted and reflected; any other entry ejects it with a boost.
+// 0x30 leaves it inverted and reflected; any other entry ejects it with a boost.
 void update_corkscrew_tile(RiderMovementState& rider, SpecialTileRider& tiles,
                            SurfaceTransition& surface, ReflectionTransition& transition,
                            SpecialTileUpdate& special, std::span<const std::uint8_t> heights) {
     const auto eject = [&] {
-        // $81:87D1-87F5; a first ejection also queues sound $021B.
+        // $81:87D1-87F5; a first ejection also queues sound 0x21B.
         tiles.corkscrew_latch = 0xfffc;
         apply_boost_tile(rider, surface, 0x40);
         tiles.corkscrew_step = 0xffff;
@@ -102,7 +102,7 @@ void update_corkscrew_tile(RiderMovementState& rider, SpecialTileRider& tiles,
     }
     if (!tiles.corkscrew_step) {
         if (transition.pose_override) return;
-        tiles.raised_priority = 0; // $0FAF = $26
+        tiles.raised_priority = 0; // $0FAF = 0x26
         rider.motion.response_a = 0;
         rider.motion.response_b = 0;
     }
@@ -168,11 +168,11 @@ void update_loop_cooldown(RiderMovementState& rider, SpecialTileRider& tiles,
 
 // $81:837E-84AB, flag pair 26 (the loop). A rider on the ground, falling or
 // level, not already posed by another tile and facing the descriptor's way
-// enters it: 10 units along, velocity x stopped, pose $0610. Each later
-// update is one step: poses $0611-$061F, velocity y $1CE with gravity and
+// enters it: 10 units along, velocity x stopped, pose 0x610. Each later
+// update is one step: poses 0x611-0x61F, velocity y 0x1CE with gravity and
 // contact suspended, x moved by the step's offset along the entry direction,
 // the reflection locked and surface mode set; step 8 (the top) restores
-// gravity and contact. Step $10 ends the loop.
+// gravity and contact. Step 16 ends the loop.
 void update_loop_tile(RiderMovementState& rider, SpecialTileRider& tiles,
                       SurfaceTransition& surface, ReflectionTransition& transition,
                       SpecialTileUpdate& special, std::span<const std::uint8_t> offsets) {

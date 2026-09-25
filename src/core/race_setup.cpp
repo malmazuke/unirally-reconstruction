@@ -30,7 +30,7 @@ ClassicRaceScenario classic_race_scenario(ClassicRaceTrack track) {
         std::uint16_t initialization_frame, laps;
         bool lap_race;
     };
-    // The HUNTER tour's tracks: $83:CC0B-CC29 sets $1283 = $40, $1281 = $60 and
+    // The HUNTER tour's tracks: $83:CC0B-CC29 sets $1283 = 0x40, $1281 = 0x60 and
     // $1275 = 3 directly when $131F is nonzero (1 on all five HUNTER captures, 0
     // on the other 40) and skips $83:CC59. Every other race track has level 1.
     const bool hunter = track.index >= 40 && track.index <= 44;

@@ -197,7 +197,7 @@ void update_hunter_effects(ZoomZooState& state, std::span<const std::uint8_t> bl
     }
     // The first set flag in priority order runs and clears the others. On the update it
     // starts it is announced at the front of the queue ($81:C55B), and every effect but
-    // hedgehog speed names its HUD message ($12AF). Sound $021F is not played.
+    // hedgehog speed names its HUD message ($12AF). Sound 0x21F is not played.
     for (const auto effect : priority) {
         if (!hunter.effect[effect]) continue;
         if (hunter.effect[effect] == 1) {
