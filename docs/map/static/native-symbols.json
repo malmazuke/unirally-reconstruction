@@ -1648,7 +1648,7 @@
   {
    "address": "$82:83D2",
    "native": [
-    "src/core/rider_look.cpp:look_for_rider"
+    "src/core/rider_look.cpp:look_ahead"
    ],
    "region": "rom"
   },
@@ -1665,14 +1665,14 @@
   {
    "address": "$82:846F",
    "native": [
-    "src/core/rider_look.cpp:look_for_rider"
+    "src/core/rider_look.cpp:look_ahead"
    ],
    "region": "rom"
   },
   {
    "address": "$82:8495",
    "native": [
-    "src/core/rider_look.cpp:look_for_rider"
+    "src/core/rider_look.cpp:glance_back"
    ],
    "region": "rom"
   },
@@ -1686,14 +1686,14 @@
   {
    "address": "$82:852B",
    "native": [
-    "src/core/rider_look.cpp:look_for_rider"
+    "src/core/rider_look.cpp:run_scripted_glances"
    ],
    "region": "rom"
   },
   {
    "address": "$82:86C0",
    "native": [
-    "src/core/rider_look.cpp:look_for_rider"
+    "src/core/rider_look.cpp:glance_back"
    ],
    "region": "rom"
   },
@@ -1707,7 +1707,7 @@
   {
    "address": "$82:8756",
    "native": [
-    "src/core/rider_look.cpp:look_for_rider"
+    "src/core/rider_look.cpp:run_scripted_glances"
    ],
    "region": "rom"
   },
@@ -1724,7 +1724,7 @@
   {
    "address": "$82:8927",
    "native": [
-    "src/core/rider_look.cpp:look_for_rider"
+    "src/core/rider_look.cpp:run_scripted_glances"
    ],
    "region": "rom"
   },
@@ -6095,6 +6095,12 @@
     "$82:833B"
    ]
   },
+  "src/core/rider_look.cpp:glance_back": {
+   "rom": [
+    "$82:8495",
+    "$82:86C0"
+   ]
+  },
   "src/core/rider_look.cpp:glance_distance_table": {
    "rom": [
     "$82:835B"
@@ -6118,20 +6124,26 @@
     "$82:83F7"
    ]
   },
-  "src/core/rider_look.cpp:look_for_rider": {
+  "src/core/rider_look.cpp:look_ahead": {
    "rom": [
     "$82:83D2",
-    "$82:846F",
-    "$82:8495",
+    "$82:846F"
+   ]
+  },
+  "src/core/rider_look.cpp:look_for_rider": {
+   "rom": [
     "$82:8511",
-    "$82:852B",
-    "$82:86C0",
-    "$82:873C",
-    "$82:8756",
-    "$82:8927"
+    "$82:873C"
    ],
    "wram": [
     "$126D"
+   ]
+  },
+  "src/core/rider_look.cpp:run_scripted_glances": {
+   "rom": [
+    "$82:852B",
+    "$82:8756",
+    "$82:8927"
    ]
   },
   "src/core/rider_look.cpp:sequence_bytes": {
@@ -7170,7 +7182,7 @@
  "totals": {
   "addresses": 560,
   "io_addresses": 11,
-  "native_symbols": 338,
+  "native_symbols": 341,
   "rom_addresses": 351,
   "sram_addresses": 7,
   "wram_addresses": 191

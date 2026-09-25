@@ -5064,7 +5064,7 @@
   "comment": "routine start",
   "label": "sub_828927",
   "native": [
-   "src/core/rider_look.cpp:look_for_rider"
+   "src/core/rider_look.cpp:run_scripted_glances"
   ],
   "source_records": [
    "docs/research/R-0036-zoom-zoo-rider-objects.md",
