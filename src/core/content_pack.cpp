@@ -439,7 +439,7 @@ const std::array<RequiredEntry, 19> rider_menu_required{{
 // FRONT-END-1P-SETUP part 2 (profile v17): PICK TOUR's, PICK TRACK's and NOW PLAYING's palettes,
 // object tiles, text and tables
 // (tools/unirally_lab/content/front_end.py v17_new_entries, R-0056).
-const std::array<RequiredEntry, 30> tour_menu_required{{
+const std::array<RequiredEntry, 30> one_player_screens_required{{
     {"front-end.asset.022", 32, "dc19e3f415349382ca580033df6a25a9ccee6911d702ee347bcb718a40181c25"},
     {"front-end.asset.023", 32, "45fcaec6849e38e57046a444140508244ed1fc53d8ed521990a9176dbbfb0a56"},
     {"front-end.asset.024", 32, "e1f7bd6ca99d90433586815037afe9b5bc60e23b6e34dd4b6821a09d9d08d1c3"},
@@ -801,7 +801,7 @@ std::vector<RequiredEntry> required_entries(bool tracks) {
                              std::span<const RequiredEntry>(hunter_required),
                              std::span<const RequiredEntry>(front_end_required),
                              std::span<const RequiredEntry>(rider_menu_required),
-                             std::span<const RequiredEntry>(tour_menu_required)})
+                             std::span<const RequiredEntry>(one_player_screens_required)})
         out.insert(out.end(), table.begin(), table.end());
     return out;
 }

@@ -12,9 +12,6 @@ namespace {
 // more and falls by 1 below 7, so the passes add up to 256 pixels.
 constexpr std::int8_t slide_passes = 38, accelerate_from = 31, decelerate_below = 7;
 
-// The decoration animator's tables inside `front-end.decoration-frames` ($83:9AF9 on).
-constexpr std::size_t pair_tiles = 0x00, cycle_tiles = 0x08, left_sway = 0x10, right_sway = 0x1a,
-                      trio_tiles = 0x2e, wave_tiles = 0x38;
 constexpr std::uint8_t pair_steps = 8, wave_steps = 20;
 
 void step_slide_speed(ScreenSlide& slide) {
@@ -34,23 +31,23 @@ bool step_down(std::uint8_t& counter, std::uint8_t last) {
 }
 
 void step_decorations(FrontEndState& state, const FrontEndContent& content) {
-    auto& d = state.decorations;
+    auto& decorations = state.decorations;
     const auto frames = content.decoration_frames;
-    if (step_down(d.delay, 2)) {
-        if (step_down(d.pair_step, pair_steps - 1)) step_down(d.pair_cycle, pair_steps - 1);
-        oam_byte(state, 98, 2) = oam_byte(state, 99, 2) = frames[cycle_tiles + d.pair_cycle];
-        oam_byte(state, 96, 2) = oam_byte(state, 97, 2) = frames[pair_tiles + d.pair_step];
-        step_down(d.trio_step, pair_steps - 1);
+    if (step_down(decorations.delay, 2)) {
+        if (step_down(decorations.pair_step, pair_steps - 1)) step_down(decorations.pair_cycle, pair_steps - 1);
+        oam_byte(state, 98, 2) = oam_byte(state, 99, 2) = frames[cycle_tiles + decorations.pair_cycle];
+        oam_byte(state, 96, 2) = oam_byte(state, 97, 2) = frames[pair_tiles + decorations.pair_step];
+        step_down(decorations.trio_step, pair_steps - 1);
         for (unsigned k = 0; k < 3; ++k)
-            oam_byte(state, 112 + k, 2) = frames[trio_tiles + d.trio_step + k];
+            oam_byte(state, 112 + k, 2) = frames[trio_tiles + decorations.trio_step + k];
     }
-    if (!step_down(d.wave_delay, 1)) return;
+    if (!step_down(decorations.wave_delay, 1)) return;
     for (unsigned k = 8; k-- > 0;) {
-        step_down(d.wave[k], wave_steps - 1);
-        oam_byte(state, 104 + k, 2) = frames[wave_tiles + d.wave[k]];
+        step_down(decorations.wave[k], wave_steps - 1);
+        oam_byte(state, 104 + k, 2) = frames[wave_tiles + decorations.wave[k]];
     }
-    step_down(d.sway, wave_steps - 1);
-    const auto sway_left = frames[left_sway + d.sway], sway_right = frames[right_sway + d.sway];
+    step_down(decorations.sway, wave_steps - 1);
+    const auto sway_left = frames[left_sway + decorations.sway], sway_right = frames[right_sway + decorations.sway];
     oam_byte(state, 100, 0) = static_cast<std::uint8_t>(0x08 + sway_left);
     oam_byte(state, 101, 0) = static_cast<std::uint8_t>(0x08 + sway_right);
     oam_byte(state, 102, 0) = static_cast<std::uint8_t>(0x18 + sway_left);

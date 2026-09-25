@@ -113,6 +113,29 @@ std::array<std::uint8_t, 6> five_digit_text(std::uint16_t value) {
     return text;
 }
 
+std::vector<std::uint8_t> race_time_text(std::uint16_t time,
+                                         std::span<const std::uint8_t> time_words) {
+    constexpr std::uint16_t quit_time = 0xea61, no_time = 0xea60;
+    if (time == quit_time || time == no_time) {
+        const auto word = name_of(time_words, time == quit_time ? 0 : 1);
+        return {word.begin(), word.end()};
+    }
+    unsigned rest = time, first_minute = '0';
+    if (time & 0x8000U) {
+        rest -= 30000;
+        first_minute = '5';
+    }
+    const auto digit = [&](unsigned place) {
+        const auto value = rest / place;
+        rest %= place;
+        return static_cast<std::uint8_t>('0' + value);
+    };
+    const auto minutes = static_cast<std::uint8_t>(first_minute + rest / 6000);
+    rest %= 6000;
+    const auto tens = digit(1000), seconds = digit(100), tenths = digit(10), hundredths = digit(1);
+    return {'_', minutes, ':', tens, seconds, '.', tenths, hundredths};
+}
+
 void print_text(TextMap& map, TextCursor& cursor, std::span<const std::uint8_t> stream,
                 std::span<const std::uint8_t> character_table, const TextVariables* variables) {
     if (character_table.size() != 256)

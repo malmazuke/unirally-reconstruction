@@ -13,9 +13,10 @@ namespace unirally::front_end_screens {
 
 namespace {
 
-constexpr unsigned marker_palette_asset = 37, first_rider_palette = 6;
-constexpr unsigned object_tiles_word = 0x7a00; // `$83:94FF`, `$83:94D0`
-constexpr std::uint8_t tracks_per_tour = 5, medal_line = 5;
+constexpr unsigned marker_palette_asset = 37;
+// The items: the five tracks, then (in 1P) the medal line; `$009D` is the last, 5 in 1P (4 in
+// the other modes, which have no medal line).
+constexpr std::uint8_t medal_line = 5, last_item = medal_line;
 
 // `front-end.track-menu-layout`: the items' arrow columns (8-pixel units), the markers' rows
 // (from the last track's up) and the twelve pictures' places (byte offsets in the text map).
@@ -34,13 +35,8 @@ constexpr std::uint8_t marker_steps = 14, marker_half_cycle = 7;
 // The arrow: x the item's column * 128, y (24 * item + 0x48) * 16 ($80:BA6A).
 constexpr std::uint16_t row_spacing = 0x0180, wrap_top_y = 0x0300;
 
-// Pad 1 only. Down counts Select ($80:B794); choose: B, Start or A; back: Y or X.
-constexpr std::uint16_t up = 0x0800, down_or_select = 0x2400;
-constexpr std::uint16_t choose_buttons = 0x9080, back_buttons = 0x4040;
-
-std::uint8_t last_item(const FrontEndState&) {
-    return medal_line; // `$009D`: 5 in 1P, where the medal line follows the tracks
-}
+// The entries 0-23 PICK TRACK hides on entry, and the markers' 64-79 on the way out.
+constexpr unsigned hidden_on_entry_end = 24, markers_group_end = 80;
 
 std::uint16_t item_x(const FrontEndContent& content, unsigned item) {
     const auto column = static_cast<std::int8_t>(content.track_menu_layout[item_columns + item]);
@@ -70,15 +66,8 @@ void print_track_menu(FrontEndState& state, const FrontEndContent& content) {
                           word_at(content.track_menu_layout, picture_places + k * 2) / 2U);
     // The tour's name, centred on row 4: `FC 04` and the name from `$83:A1B4` ($80:9BA0).
     std::vector<std::uint8_t> name{0xfc, 0x04};
-    std::size_t at = 0;
-    for (unsigned k = 0; k < tour; ++k)
-        at = static_cast<std::size_t>(
-                 std::find(content.tour_names.begin() + static_cast<std::ptrdiff_t>(at),
-                           content.tour_names.end(), std::uint8_t{0xff})
-                 - content.tour_names.begin())
-           + 1;
-    for (; at < content.tour_names.size() && content.tour_names[at] != 0xff; ++at)
-        name.push_back(content.tour_names[at]);
+    const auto tour_name = nth_string(content.tour_names, tour);
+    name.insert(name.end(), tour_name.begin(), tour_name.end());
     name.push_back(0xff);
     print_text(state.text, state.printer, name, content.character_table);
     // The title and the five tracks: `$00B2 + 2i` holds track 5 * tour + i.
@@ -102,13 +91,12 @@ void lay_out_markers(FrontEndState& state, const FrontEndContent& content) {
         oam_byte(state, entry, 2) = marker_tile;
         oam_byte(state, entry, 3) = marker_attributes;
     }
-    state.oam_buffer[oam_high_table + 16] = 0x00;
-    state.oam_buffer[oam_high_table + 17] = 0x54;
+    high_bits(state, first_marker) = four_shown;
+    high_bits(state, first_marker + 4) = static_cast<std::uint8_t>(four_hidden & ~hidden_bit(68));
     const unsigned first = tour_of(state) * tracks_per_tour;
     for (unsigned k = tracks_per_tour; k-- > 0;)
         if (!state.records.tracks_done[first + k])
-            state.oam_buffer[oam_high_table + (first_marker + k) / 4] |=
-                static_cast<std::uint8_t>(1U << (((first_marker + k) % 4) * 2));
+            set_oam_x_high(state, first_marker + k, true); // $83:961E
 }
 
 // $80:EB23, before each frame wait: the markers turn, entries 64, 66 and 68 half a cycle from
@@ -122,9 +110,15 @@ void turn_markers(FrontEndState& state, const FrontEndContent& content) {
         oam_byte(state, entry, 2) = content.marker_tiles[step + marker_half_cycle];
 }
 
-// $80:E9AA-E9CC and $80:BA6A: the arrow on the chosen track, or the next one not yet won.
+// $80:E9AA-E9CC and $80:BA6A: the arrow on the chosen track, or the next one not yet won. With
+// all five won the original's search never ends (`$80:E9B6-E9CA`); native refuses it (R-0056).
 void open_track_menu(FrontEndState& state, const FrontEndContent& content) {
     auto& menu = state.track_menu;
+    const unsigned tour_first = tour_of(state) * tracks_per_tour;
+    if (std::all_of(state.records.tracks_done.begin() + tour_first,
+                    state.records.tracks_done.begin() + tour_first + tracks_per_tour,
+                    [](std::uint8_t done) { return done != 0; }))
+        throw std::logic_error("PICK TRACK with every track of the tour won hangs the original");
     unsigned track = state.tour_menu.track, item = track % tracks_per_tour;
     while (state.records.tracks_done[track]) {
         ++track;
@@ -145,7 +139,6 @@ void open_track_menu(FrontEndState& state, const FrontEndContent& content) {
 // the tour, once a press; not on HUNTER or in a run already begun. True when it stepped.
 bool step_medal(FrontEndState& state, const FrontEndContent& content) {
     auto& tour = state.tour_menu;
-    constexpr std::uint8_t hunter = 8;
     if (tour.tour == hunter || state.track_menu.medal_latched) return false;
     for (unsigned k = 0; k < tracks_per_tour; ++k)
         if (state.records.tracks_done[tour.tour * tracks_per_tour + k]) return false;
@@ -160,7 +153,7 @@ bool step_medal(FrontEndState& state, const FrontEndContent& content) {
 // $80:BAC4-BB90: Down (or Select) and Up move once a press, wrapping past either end.
 void move_track_cursor(FrontEndState& state, const FrontEndContent& content, std::uint16_t pad) {
     auto& cursor = state.track_menu.cursor;
-    const bool down = (pad & down_or_select) != 0, is_up = !down && (pad & up) != 0;
+    const bool down = (pad & (pad_down | pad_select)) != 0, is_up = !down && (pad & pad_up) != 0;
     if (!down && !is_up) {
         state.latches = {};
         return;
@@ -168,14 +161,14 @@ void move_track_cursor(FrontEndState& state, const FrontEndContent& content, std
     if (state.latches.moved) return;
     state.latches = {.moved = true};
     if (down) {
-        if (++cursor > last_item(state)) {
+        if (++cursor > last_item) {
             cursor = 0;
             state.arrow.target_y = wrap_top_y;
         }
         state.arrow.target_y = static_cast<std::uint16_t>(state.arrow.target_y + row_spacing);
     } else {
         if (cursor-- == 0) {
-            cursor = last_item(state);
+            cursor = last_item;
             state.arrow.target_y = item_y(cursor + 1U);
         }
         state.arrow.target_y = static_cast<std::uint16_t>(state.arrow.target_y - row_spacing);
@@ -183,7 +176,8 @@ void move_track_cursor(FrontEndState& state, const FrontEndContent& content, std
     state.arrow.target_x = item_x(content, cursor);
 }
 
-// $83:9983: the race the track sets (laps and kind are read from the track by the screens).
+// $80:E9E4-E9F2: the track chosen, 5 * tour + item. (`$83:9983` then derives the race's laps and
+// kind for the race's SRAM words; the screens read them from the track.)
 void choose_track(FrontEndState& state) {
     state.tour_menu.track =
         static_cast<std::uint8_t>(tour_of(state) * tracks_per_tour + state.track_menu.cursor);
@@ -197,7 +191,8 @@ void enter_track_menu(FrontEndState& state, bool returning) {
     menu.returning = returning;
     menu.medal_latched = false;
     menu.marker_step = 0;
-    for (std::size_t k = 0; k < 6; ++k) state.oam_buffer[oam_high_table + k] = 0x55;
+    for (unsigned entry = 0; entry < hidden_on_entry_end; entry += 4)
+        high_bits(state, entry) = four_hidden;
     state.screen = FrontEndScreen::track_menu_entry;
 }
 
@@ -208,7 +203,7 @@ void track_menu_entry_frame(FrontEndState& state, const FrontEndContent& content
         state.text.words.fill(cleared_text); // $83:8B51
         return;
     case 2: // `$83:94FF`'s frame wait copies no OAM
-        load_vram(state, content.track_menu_tiles, object_tiles_word);
+        load_vram(state, content.track_menu_tiles, swapped_object_tiles_word);
         load_cgram(state, asset(content, marker_palette_asset), 0xb0);
         load_cgram(state, asset(content, first_rider_palette + state.rider_menu.rider), 0x80);
         print_track_menu(state, content);
@@ -250,7 +245,8 @@ void track_menu_frame(FrontEndState& state, const FrontEndContent& content, Fron
         }
         if (!menu.back) choose_track(state);
         // $80:E9FC: the markers hidden.
-        for (std::size_t k = 16; k < 20; ++k) state.oam_buffer[oam_high_table + k] = 0x55;
+        for (unsigned entry = first_marker; entry < markers_group_end; entry += 4)
+            high_bits(state, entry) = four_hidden;
         state.screen = FrontEndScreen::track_menu_exit;
         return;
     }
@@ -265,8 +261,7 @@ void track_menu_exit_frame(FrontEndState& state, const FrontEndContent& content)
         return;
     }
     // `$83:94D0`: the usual object tiles back, without an OAM copy.
-    constexpr std::size_t medal_tiles_word = 0x7a00;
-    load_vram(state, content.medal_tiles, medal_tiles_word);
+    load_vram(state, content.medal_tiles, swapped_object_tiles_word);
     if (state.track_menu.back) {
         // `$80:BC22-BC34` would clear the run's tracks when the medal to race for is not the
         // best; a cold start's are both 0.

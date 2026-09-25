@@ -1,7 +1,7 @@
 #pragma once
-// The front end from power-on to the choice of a mode (R-0054) and, for 1P, the rider menu PICK
-// YOUR UNI (R-0055) and the tour menu PICK TOUR (R-0056): frame by frame as the original shows
-// them. The state mirrors the original's where it is observable (the
+// The front end from power-on to the choice of a mode (R-0054) and, for 1P, the setup screens
+// to the race: PICK YOUR UNI (R-0055), PICK TOUR, PICK TRACK and NOW PLAYING (R-0056), frame by
+// frame as the original shows them. The state mirrors the original's where it is observable (the
 // arrow, the palette cycle, the menus' words, the OAM buffer, the text map) so it can be compared
 // with captures.
 #include "presentation.hpp"
@@ -18,7 +18,7 @@ namespace unirally {
 
 class ClassicContentPack;
 
-// Pack content of the front end (profiles v15 and v16).
+// Pack content of the front end (profiles v15 to v17).
 struct FrontEndContent {
     std::array<std::span<const std::uint8_t>, 256> assets{}; // by asset id; empty if not packed
     std::span<const std::uint8_t> base_palette, character_table, main_menu_text, arrow_frames;
@@ -131,7 +131,7 @@ OnePlayerRecords cold_start_records();
 struct TourMenu {
     std::uint8_t tour{};   // $00D0: the tour chosen last; the arrow starts on it
     std::uint8_t cursor{}; // $009B
-    std::uint8_t track{};  // $00CE: the first track of the tour the menu was entered with
+    std::uint8_t track{};  // $00CE: the track chosen (and raced); the tour's first on PICK TOUR
     std::uint8_t medal{};  // $77:10D1: the rider's medal on the chosen tour
     bool back{};           // left with Y or X
     bool returning{};      // entered back from PICK TRACK ($00AC != 2): slides back in

@@ -1,7 +1,7 @@
-// FRONT-END-MAIN-MENU (R-0054) and FRONT-END-1P-SETUP (R-0055): the text
-// printer, the SNES screen, the main menu's and the rider menu's rules, on
-// synthetic content (no ROM). The captures' frame-by-frame agreement is the
-// laboratory's.
+// FRONT-END-MAIN-MENU (R-0054) and FRONT-END-1P-SETUP (R-0055, R-0056): the
+// text printer, the SNES screen, the main menu's and the one-player screens'
+// rules, on synthetic content (no ROM). The captures' frame-by-frame agreement
+// is the laboratory's.
 #include "front_end.hpp"
 #include "snes_screen.hpp"
 #include "text_printer.hpp"
@@ -67,6 +67,69 @@ void text_printer_tests() {
   require(refuses([&] { unirally::print_text(map, cursor, unknown, table); }));
   require(
       refuses([&] { unirally::print_text(map, cursor, unterminated, table); }));
+}
+
+// R-0056: the codes that read the game's state, and the number and time
+// formats.
+void text_variable_tests() {
+  std::array<std::uint8_t, 256> table{};
+  table['A'] = 10;
+  table['B'] = 11;
+  table['1'] = 12;
+  table['2'] = 13;
+  table['_'] = 0xaf;
+  unirally::TextVariables variables;
+  variables.word = [](std::uint16_t address) -> std::uint16_t {
+    return address == 0xb2 ? 1 : 12;
+  };
+  const std::array<std::uint8_t, 5> names{'A', 0xff, 'B', 'B', 0xff};
+  variables.track_names = names;
+  unsigned placed_object = 99, placed_at = 0;
+  variables.place_object = [&](unsigned object, unsigned position) {
+    placed_object = object;
+    placed_at = position;
+  };
+  // F7: track 1's name ("BB") at the cursor; with FC after it, centred on that
+  // row alone.
+  unirally::TextMap map;
+  unirally::TextCursor cursor;
+  const std::array<std::uint8_t, 7> track{0xfe, 1, 2, 0xf7, 0xb2, 0x00, 0xff};
+  unirally::print_text(map, cursor, track, table, &variables);
+  require(map.words[2 * 32 + 1] == (0x2000 | 22) &&
+          cursor.position == 2 * 32 + 5);
+  const std::array<std::uint8_t, 6> centred{0xf7, 0xb2, 0x00, 0xfc, 0x05, 0xff};
+  unirally::print_text(map, cursor, centred, table, &variables);
+  require(map.words[5 * 32 + 14] == (0x2000 | 22)); // (33 - 4) / 2 = 14
+  // FD: word 12 as five digits, the leading zeros blank; EF: the object at the
+  // cursor.
+  const std::array<std::uint8_t, 9> number{0xfe, 0,    8,    0xfd, 0x00,
+                                           0x01, 0xef, 0x02, 0xff};
+  unirally::print_text(map, cursor, number, table, &variables);
+  require(map.words[8 * 32 + 3] == (0x2000 | 24) && placed_object == 2 &&
+          placed_at == 8 * 32 + 7); // three blanks, then two big digits
+  // Refused: a variable code without variables, and an upper-case name after
+  // F7.
+  require(refuses([&] { unirally::print_text(map, cursor, track, table); }));
+  const std::array<std::uint8_t, 5> upper{0xf7, 0xb2, 0x00, 0xee, 0xff};
+  require(refuses(
+      [&] { unirally::print_text(map, cursor, upper, table, &variables); }));
+  // `$83:8BE7` and `$83:8C7B`.
+  const auto digits = [](std::uint16_t value) {
+    const auto text = unirally::five_digit_text(value);
+    return std::string(text.begin(), text.begin() + 5);
+  };
+  require(digits(0) == "____0" && digits(7) == "____7" &&
+          digits(10000) == "10000" && digits(65535) == "65535");
+  const std::array<std::uint8_t, 18> words{'_', 'q', 'u',  'i', 't', '_',
+                                           '_', '_', 0xff, '_', 'n', 'o',
+                                           '_', 't', 'i',  'm', 'e', 0xff};
+  const auto time = [&](std::uint16_t value) {
+    const auto text = unirally::race_time_text(value, words);
+    return std::string(text.begin(), text.end());
+  };
+  require(time(0x1770) == "_1:00.00" && time(0x7fff) == "_5:27.67" &&
+          time(0xea5f) == "_9:59.99" && time(0xea60) == "_no_time" &&
+          time(0xea61) == "_quit___");
 }
 
 void set_word(unirally::SnesVideoMemory &memory, unsigned word,
@@ -414,12 +477,29 @@ void one_player_setup_tests() {
           state.registers.brightness == 1 &&
           state.mode == unirally::FrontEndMode::one_player &&
           state.tour_menu.track == 11);
+  // With every track of a tour won, the original's PICK TRACK never ends;
+  // native refuses it.
+  auto won = unirally::start_front_end();
+  run(won, content, 430);
+  require(run_to(won, content, FrontEndScreen::rider_menu, {0x1000, 0}));
+  require(run_to(won, content, FrontEndScreen::tour_menu, {0x8000, 0}));
+  won.records.tracks_done[0] = won.records.tracks_done[1] =
+      won.records.tracks_done[2] = 1;
+  won.records.tracks_done[3] = won.records.tracks_done[4] = 1;
+  bool refused = false;
+  try {
+    run_to(won, content, FrontEndScreen::track_menu, {0x1000, 0});
+  } catch (const std::logic_error &) {
+    refused = true;
+  }
+  require(refused);
 }
 
 } // namespace
 
 int main() try {
   text_printer_tests();
+  text_variable_tests();
   snes_screen_tests();
   main_menu_tests();
   rider_menu_tests();

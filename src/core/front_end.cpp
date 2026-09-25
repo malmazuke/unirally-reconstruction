@@ -401,6 +401,18 @@ void load_text(FrontEndState& state, unsigned word) {
     }
 }
 
+std::span<const std::uint8_t> nth_string(std::span<const std::uint8_t> table, unsigned n) {
+    std::size_t at = 0;
+    for (unsigned k = 0; k <= n; ++k) {
+        std::size_t end = at;
+        while (end < table.size() && table[end] != 0xff) ++end;
+        if (end == table.size()) throw std::invalid_argument("front-end string is not in its table");
+        if (k == n) return table.subspan(at, end - at);
+        at = end + 1;
+    }
+    return {};
+}
+
 void copy_oam(FrontEndState& state) {
     state.video.oam = state.oam_buffer;
 }

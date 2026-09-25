@@ -74,7 +74,7 @@ are never reset. `$80:D2C1` resets only the wave (`$0187` from `$80:D37B`, `$008
 ## The menu's loop ($80:CBC8)
 
 Each pass, after its frame wait:
-- `$0C1F` = 0x55 keeps the arrow's shadow (entry 127) hidden;
+- `$0C1F` = 0x55 keeps the arrow's shadow (entry 127) hidden (`$80:CC0C`);
 - `$80:D1EC` copies OAM and reads the pads;
 - `$80:A705` DMAs riders 0-7's palettes into colours 0x80-0xFE;
 - `$80:93A5` sends the text again, to the half it was first shown in (`$005A`, now hidden);

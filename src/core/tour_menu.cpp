@@ -1,8 +1,7 @@
 // PICK TOUR, the one-player tour menu (R-0056): after a rider is chosen (`$80:BBF7-BC0B`), the
 // base palette and the badge tiles again, the tours printed with a badge each and slid in
 // (`$80:E550`, `$80:E730`), the medals laid out (`$80:974B`), and the menu's loop (`$80:E5B4`).
-// A tour chosen ends the native front end for now (PICK TRACK is next); Y or X slides PICK YOUR
-// UNI back in (`$80:BBA3`).
+// A tour chosen goes on to PICK TRACK; Y or X slides PICK YOUR UNI back in (`$80:BBA3`).
 #include "front_end_screens.hpp"
 
 #include <array>
@@ -12,13 +11,11 @@ namespace unirally::front_end_screens {
 
 namespace {
 
-// The palettes: the base BG palette's halves (assets 35 and 36, `$80:A858`) and the medals'
-// (assets 32-34 at colours 0x80, 0x90 and 0xA0, `$80:9764`); the badge tiles `$80:A82B` sends
-// again are asset 68's last 1,920 bytes, at VRAM word 0x3D80.
-constexpr unsigned base_palette_low = 35, base_palette_high = 36, first_medal_palette = 32;
+// The medals' palettes (assets 32-34 at colours 0x80, 0x90 and 0xA0, `$80:9764`); the badge
+// tiles `$80:A82B` sends again are asset 68's last 1,920 bytes, at VRAM word 0x3D80.
+constexpr unsigned first_medal_palette = 32;
 constexpr unsigned badge_tiles_asset = 68, badge_tiles_word = 0x3d80;
 constexpr std::size_t badge_tiles_bytes = 0x780;
-constexpr unsigned medal_tiles_word = 0x7a00; // `$83:94D0`
 
 // The text streams in `front-end.tour-menu-text`, in order: the title and the left column
 // ($80:E7C4), jumper and bounder ($80:E7FB), runner and sprinter ($80:E80F), hunter ($80:E824).
@@ -26,7 +23,7 @@ enum class TourText : std::uint8_t { left_column, level_one, level_two, hunter }
 
 // The tours: 0-7 in two columns, HUNTER 8; 5 tracks each. A cursor past 9 (a move off the
 // grid) reads the table's bytes after its ten entries, 0xFF and code, above any level.
-constexpr std::uint8_t tours = 10, hunter = 8, hunter_right = 9, tracks_per_tour = 5;
+constexpr std::uint8_t tours = 10, hunter_right = 9;
 constexpr std::uint8_t max_level_needed = 0xff;
 // A badge ($83:8D8F) is 5 x 5 tiles, a row of the picture 0x32 tiles below the last; the
 // "?" badge is picture 9.
@@ -35,25 +32,16 @@ constexpr std::uint16_t badge_priority = 0x2000;
 
 // The medal objects, entries 0-8 (tour t is entry t); tile 0xAC until the loop turns them.
 constexpr std::uint8_t medal_tile = 0xac;
-constexpr std::size_t medal_high_bytes = 3;
+constexpr unsigned first_medal = 0, medal_groups_end = 12;
 
 // The arrow and its shadow: mirrored for an even cursor, not for HUNTER (`$80:C1EB`).
 constexpr unsigned shadow_attribute_entry = shadow_entry;
 constexpr std::uint8_t mirror = 0x40;
 
-// Pad 1 only. Down counts Select too ($80:B794); choose: B, Start or A; back: Y or X.
-constexpr std::uint16_t left = 0x0200, right = 0x0100, up = 0x0800, down_or_select = 0x2400;
-constexpr std::uint16_t choose_buttons = 0x9080, back_buttons = 0x4040;
-
+// The stream with its 0xFF, as the printer takes it.
 std::span<const std::uint8_t> tour_text(const FrontEndContent& content, TourText which) {
-    auto rest = content.tour_menu_text;
-    for (unsigned k = 0; k < static_cast<unsigned>(which); ++k) {
-        std::size_t end = 0;
-        while (end < rest.size() && rest[end] != 0xff) ++end;
-        if (end == rest.size()) throw std::invalid_argument("tour menu text is truncated");
-        rest = rest.subspan(end + 1);
-    }
-    return rest;
+    const auto text = nth_string(content.tour_menu_text, static_cast<unsigned>(which));
+    return {text.data(), text.size() + 1};
 }
 
 std::uint8_t tour_level(const FrontEndState& state) { // $83:9F14 in 1P
@@ -87,11 +75,6 @@ void print_tour_menu(FrontEndState& state, const FrontEndContent& content) {
     }
 }
 
-// $83:961E: an object hidden by its ninth x bit.
-void hide_object(FrontEndState& state, unsigned entry) {
-    state.oam_buffer[oam_high_table + entry / 4] |=
-        static_cast<std::uint8_t>(1U << ((entry % 4) * 2));
-}
 
 // $80:9782-97D2: a medal beside each badge, in its colours; none without a medal. A hidden entry
 // keeps the attribute it had.
@@ -99,7 +82,7 @@ void lay_out_medals(FrontEndState& state, const FrontEndContent& content) {
     const auto rider = state.rider_menu.rider;
     for (unsigned tour = tours - 1; tour-- > 0;) {
         if (tour == hunter && tour_level(state) < 3) {
-            hide_object(state, tour);
+            set_oam_x_high(state, tour, true); // $83:961E
             continue;
         }
         oam_byte(state, tour, 0) = content.medal_places[tour * 4];
@@ -107,16 +90,19 @@ void lay_out_medals(FrontEndState& state, const FrontEndContent& content) {
         oam_byte(state, tour, 2) = medal_tile;
         const auto medal = state.records.medals[tour * 16U + rider];
         if (medal == 0)
-            hide_object(state, tour);
+            set_oam_x_high(state, tour, true); // $83:961E
         else
             oam_byte(state, tour, 3) = content.medal_attributes[medal];
     }
 }
 
+// $80:E63D, $80:E6C2: the medals' entries, 0-11, hidden.
 void hide_medals(FrontEndState& state) {
-    for (std::size_t k = 0; k < medal_high_bytes; ++k) state.oam_buffer[oam_high_table + k] = 0x55;
+    for (unsigned entry = first_medal; entry < medal_groups_end; entry += 4)
+        high_bits(state, entry) = four_hidden;
 }
 
+// $80:E5CC-E5F1, and `$80:C1EB` to clear it: the arrow and its shadow mirrored.
 void set_arrow_mirror(FrontEndState& state, bool mirrored) {
     for (const unsigned entry : {arrow_entry, shadow_attribute_entry}) {
         auto& attributes = oam_byte(state, entry, 3);
@@ -132,7 +118,6 @@ void aim_tour_arrow(FrontEndState& state, const FrontEndContent& content) {
     state.arrow.target_x = word_at(content.tour_arrow_targets, cursor * 4U);
     state.arrow.target_y = word_at(content.tour_arrow_targets, cursor * 4U + 2);
     set_arrow_mirror(state, cursor % 2 == 0 && cursor != hunter);
-    constexpr std::size_t trio_tiles = 0x2e; // $83:9B27 in `front-end.decoration-frames`
     const auto tile = content.decoration_frames[trio_tiles + state.decorations.trio_step];
     for (unsigned tour = 0; tour < tours - 1; ++tour) oam_byte(state, tour, 2) = tile;
 }
@@ -142,16 +127,16 @@ void aim_tour_arrow(FrontEndState& state, const FrontEndContent& content) {
 void move_tour_cursor(FrontEndState& state, const FrontEndContent& content, std::uint16_t pad) {
     auto& cursor = state.tour_menu.cursor;
     auto& latches = state.latches;
-    if ((pad & left) && cursor % 2 == 1) --cursor;
-    if ((pad & right) && cursor % 2 == 0 && tour_open(state, content, cursor + 1U)) ++cursor;
-    if (!(pad & up)) {
+    if ((pad & pad_left) && cursor % 2 == 1) --cursor;
+    if ((pad & pad_right) && cursor % 2 == 0 && tour_open(state, content, cursor + 1U)) ++cursor;
+    if (!(pad & pad_up)) {
         latches.up = false;
     } else if (!latches.up) {
         latches.up = true;
         const auto to = static_cast<std::uint8_t>(cursor - 2);
         if (tour_open(state, content, to)) cursor = to;
     }
-    if (!(pad & down_or_select)) {
+    if (!(pad & (pad_down | pad_select))) {
         latches.down = false;
     } else if (!latches.down) {
         latches.down = true;
@@ -220,7 +205,7 @@ void tour_menu_entry_frame(FrontEndState& state, const FrontEndContent& content)
         menu.track = static_cast<std::uint8_t>(menu.track / tracks_per_tour * tracks_per_tour);
         return;
     }
-    case 4: load_vram(state, content.medal_tiles, medal_tiles_word); return; // no OAM copy
+    case 4: load_vram(state, content.medal_tiles, swapped_object_tiles_word); return; // no OAM copy
     case 6:
         copy_oam(state);
         load_cgram(state, asset(content, base_palette_high), 0x40);
@@ -247,8 +232,8 @@ void tour_menu_entry_frame(FrontEndState& state, const FrontEndContent& content)
             || !slide_frame(state, content))
             return;
         // $80:974B's first lines: the medals' entries shown, small; 9-11 hidden.
-        state.oam_buffer[oam_high_table] = state.oam_buffer[oam_high_table + 1] = 0;
-        state.oam_buffer[oam_high_table + 2] = 0x54;
+        high_bits(state, 0) = high_bits(state, 4) = four_shown;
+        high_bits(state, 8) = static_cast<std::uint8_t>(four_hidden & ~hidden_bit(8));
         return;
     }
 }

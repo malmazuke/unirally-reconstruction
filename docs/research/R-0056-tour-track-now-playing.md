@@ -31,7 +31,7 @@ exists for it.
 | 8 | `$80:BC4D` | Y or X on NOW PLAYING: `$00AC` = 2 and PICK TRACK again, sliding back |
 | 9 | `$80:BC53` | Race: the fade `$80:9885`, then the race `$80:99A4` |
 
-After a screen returns, the handler tests Y and X again on the same pad word. So back wins over
+After a screen returns, the handler tests Y and X again (`$80:B74A`) on the same pad word. So back wins over
 a choice, after the choice's own effects.
 
 ## The menus' latch byte $008F
@@ -81,7 +81,8 @@ or code bytes, above any level, so a move off the grid is refused.
 **The loop** (`$80:E5B4`, one pass a frame, pad 1 only):
 1. Before the wait:
    - the arrow's targets from `$80:E708[cursor]`;
-   - the arrow and its shadow mirrored for an even cursor, not for HUNTER (`$80:C1EB`);
+   - the arrow and its shadow mirrored for an even cursor (`$80:E5CC`), not for HUNTER
+     (`$80:C1EB`);
    - the medals' tile from `$83:9B27[$0191]` (the decoration animator's step).
 2. After it: OAM and the pads (`$80:D1EC`), then the decoration animator `$83:9A1E`.
 3. The tests (`$80:E60A`):
@@ -90,8 +91,9 @@ or code bytes, above any level, so a move off the grid is refused.
    - **Up** and **Down** (Down counts Select) move by a row to an open tour, once a press (bits
      3 and 2).
    - **B, Start or A** chooses (`$80:E6B1`): 9 (HUNTER from the right) becomes 8; the mirroring is
-     cleared; the medals hidden; `$00D0` = the tour; `$77:10D1` = the rider's medal on it.
-   - **Y or X** clears the mirroring and hides the medals, and the handler goes back.
+     cleared; the medals hidden (`$80:E6C2`); `$00D0` = the tour; `$77:10D1` = the rider's medal on it.
+   - **Y or X** clears the mirroring and hides the medals (`$80:E63D`), and the handler goes
+     back.
 
    The arrow's shadow is not hidden here (PICK YOUR UNI hides it).
 
@@ -130,7 +132,7 @@ or code bytes, above any level, so a move off the grid is refused.
 `$80:EB61`). After it, OAM and the pads, then:
 - **Y or X**: back.
 - **B, Start or A**:
-  - On a track: its number `5 * tour + item` goes to `$00CE`. `$83:9983` derives the race's
+  - On a track: its number `5 * tour + item` goes to `$00CE` (`$80:E9E4`). `$83:9983` derives the race's
     laps, kind and place for the race's SRAM words.
   - On the medal line (1P, `$80:EA8F`): the medal to race for steps up to the rider's best on the
     tour and wraps to 0, once a press. There is no step on HUNTER or in a run already begun. A
@@ -140,6 +142,14 @@ or code bytes, above any level, so a move off the grid is refused.
 
 **The way out** (`$80:E9FC`): the markers hidden; OAM copied on c + 1; the medal tiles back
 (`$83:94D0`) on c + 2, without an OAM copy.
+
+**Paths the captures do not take** (read in the listing; native follows it, but a cold start
+cannot reach them until the records change, FRONT-END-1P-CONTINUATION):
+- a medal step above bronze (a best medal above 0), and GOLD or SILVER printed;
+- done-track markers shown, and the first item skipping won tracks;
+- every track of the tour won: the original's search for the first item never ends
+  (`$80:E9B6-E9CA`); native refuses the state rather than hang;
+- `$83:8957` clearing the run's tracks on the way back.
 
 ## NOW PLAYING ($80:B18D)
 
@@ -197,6 +207,14 @@ sways the 1P mark), then OAM and the pads, then:
 **The fade** (`$80:9885`): seven frames of brightness 13, 11, ..., 1, then forced blank in the
 seventh. The race (`$80:99A4`, `$83:C8E0`) starts on that frame, and its work RAM is the race's
 from then on.
+
+**Paths the captures do not take** (read in the listing; native follows it, but a cold start
+cannot reach them until the records change):
+- times other than 9:59.99, "quit" and "no time", and stunt scores above 0;
+- qualifying scores for a best medal above 0;
+- a real rider holding the record (a time on the record line);
+- SILVIA or GOLDWYN as the opponent, and HUNTER's races against ANTI-UNI;
+- a human opponent (2P, `$017F` below 16): the 2P mark and both times.
 
 ## Cold-start SRAM
 

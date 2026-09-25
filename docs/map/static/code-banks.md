@@ -22,8 +22,8 @@ The four classes partition all 131,072 bytes. **Unknown share: 40.4%** - above D
 | Instructions from observed | 17,569 |
 | Instructions from table | 587 |
 | Routines | 636 |
-| Routines cited by native code | 296 |
-| Routine bytes cited by native code | 40,533 |
+| Routines cited by native code | 295 |
+| Routine bytes cited by native code | 40,496 |
 | Gap sweep candidate instructions | 2,746 |
 | Gap sweep candidate bytes | 6,174 |
 | Jump tables | 2 |
@@ -45,7 +45,7 @@ The four classes partition all 131,072 bytes. **Unknown share: 40.4%** - above D
 
 ## Cited addresses
 
-1008 distinct code-bank ROM addresses cited by the research, task, inventory and content records (`labels.json`). By position: dat 15, loc 638, mid 18, sub 246, unk 91 (sub routine start, loc instruction start, mid inside an instruction, dat data, unk unknown). By class: data 15, inferred 103, observed 799, unknown 91.
+1018 distinct code-bank ROM addresses cited by the research, task, inventory and content records (`labels.json`). By position: dat 15, loc 648, mid 18, sub 246, unk 91 (sub routine start, loc instruction start, mid inside an instruction, dat data, unk unknown). By class: data 15, inferred 107, observed 805, unknown 91.
 
 Cited addresses in `unknown` bytes:
 
@@ -82,7 +82,7 @@ Cited addresses in `unknown` bytes:
 | $80:B4F6 | docs/research/R-0056-tour-track-now-playing.md |
 | $80:B53D | docs/research/R-0056-tour-track-now-playing.md |
 | $80:B626 | tasks/COVERAGE-ROADMAP.md |
-| $80:BCAF | docs/research/R-0055-rider-menu.md, tasks/FRONT-END-1P-SETUP.md |
+| $80:BCAF | docs/research/R-0055-rider-menu.md |
 | $80:BCBF | tasks/COVERAGE-ROADMAP.md |
 | $80:BDD4 | tasks/COVERAGE-ROADMAP.md |
 | $80:BF49 | tasks/COVERAGE-ROADMAP.md |

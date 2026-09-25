@@ -25,7 +25,8 @@ and the main menu. 1P runs the one-player setup (R-0055, R-0056): PICK YOUR UNI,
 PLAYING, where Race starts the chosen race. The race scenarios are MIKE's against BRONSEN, so
 another rider or a stunt event shows a notice. 2P, VS, LEAGUE, OPTIONS and the demo are not
 native yet: choosing one, or leaving the menu idle for the demo, shows a notice and returns to
-the main menu. `--track dragster|zoom-zoo|NN` starts directly in that
+the main menu as it first appeared, so the rider and tour chosen last start over (the original
+keeps them). `--track dragster|zoom-zoo|NN` starts directly in that
 race instead.
 
 DRAGSTER plays on the shared race engine (R-0038), whose jump, brake,

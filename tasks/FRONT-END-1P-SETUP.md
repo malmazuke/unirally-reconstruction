@@ -86,6 +86,7 @@ against the original ([R-0055](../docs/research/R-0055-rider-menu.md),
   cursor).
 - **The app**: NOW PLAYING's Race starts the chosen race where a race scenario has it: MIKE
   against BRONSEN, not a stunt event. Other choices show a notice and return to the main menu.
+  `--front-end-inputs` replays an input script through the front end (a smoke-test aid).
 - **Packs**: v16 adds the rider menu's content, v17 the other three screens'. All raw ROM.
 
 Decisions and deviations, with reasons:
@@ -114,6 +115,7 @@ Decisions and deviations, with reasons:
 | 5 | - | Reads of PICK TOUR, PICK TRACK and NOW PLAYING (subagents); `tour-moves`, `tour-back`, `tour-code`, `track-moves`, `track-race` | The title code is cleared by the SRAM set-up; `$008F` is shared; NOW PLAYING's Exit returns to the main menu at c + 42 | Native |
 | 6 | Native matches | `compare.py` on all nine captures | `$009B` is each screen's own cursor; the race's first frame's work RAM is the race's. Otherwise 0 differences, 6,166 pictures equal | App |
 | 7 | - | The app, hidden, Start held | DRAGSTER chosen after 613 frames, then the race | Gates |
+| 8 | - | Review of `493e97d` (M1: no evidence that a race other than the start-up one starts, nor from this build) | The app gains `--front-end-inputs` (the runner's input script, by the front end's frame). With `track-race`'s inputs from power-on it chooses race 13 after 1,008 frames, the original's race frame. After 1,392 race updates with no input its state (frame 2784, player x 2192) equals `--track 13`'s, the scenario the race gates accept. The rule for racing or a notice is unit-tested (`native_one_player_race`), and the runner reports the chosen race | Fixes S1-S8, N1-N7; gates |
 
 ## Handoff
 

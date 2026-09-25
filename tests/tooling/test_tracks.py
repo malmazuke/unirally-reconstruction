@@ -202,8 +202,8 @@ class RiderMenuEntryTests(unittest.TestCase):
 
 
 class TourMenuEntryTests(unittest.TestCase):
-    """Profile v17's added entries (R-0056): PICK TOUR's palettes, medal tiles and tables, last in
-    the rules and compiled in the same order."""
+    """Profile v17's added entries (R-0056): PICK TOUR's, PICK TRACK's and NOW PLAYING's content,
+    last in the rules and compiled in the same order."""
 
     def test_rules_and_compiled_table_agree(self) -> None:
         import re
@@ -214,10 +214,12 @@ class TourMenuEntryTests(unittest.TestCase):
         added = rules["entries"][-len(expected):]
         self.assertEqual([e["id"] for e in added], expected)
         source = (ROOT / "src" / "core" / "content_pack.cpp").read_text(encoding="utf-8")
-        table = source[source.index("tour_menu_required{{"):]
+        table = source[source.index("one_player_screens_required{{"):]
         table = table[:table.index("}};")]
         compiled = re.findall(r'\{"([^"]+)",\s*(\d+),\s*"([0-9a-f]{64})"\}', table)
         self.assertEqual(compiled, [(e["id"], str(e["size"]), e["sha256"]) for e in added])
+        for entry in added:
+            self.assertEqual(entry["source"]["kind"], "raw")
 
 
 class TrackedManifestTests(unittest.TestCase):

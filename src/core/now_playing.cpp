@@ -12,9 +12,8 @@ namespace unirally::front_end_screens {
 
 namespace {
 
-constexpr unsigned base_palette_low = 35, base_palette_high = 36, first_rider_palette = 6;
-constexpr std::uint8_t tracks_per_tour = 5, stunt_event = 2, someone = 0x10, first_computer = 0x11,
-                       last_medal_opponent = 0x13, anti_uni = 0x14, hunter = 8;
+constexpr std::uint8_t stunt_event = 2, someone = 0x10, first_computer = 0x11,
+                       last_medal_opponent = 0x13, anti_uni = 0x14;
 constexpr std::uint8_t end_of_text = 0xff, blank = '_';
 
 // `front-end.now-playing-text` ($80:B4F6-B57D): its streams by offset.
@@ -22,23 +21,20 @@ constexpr std::size_t title_at = 0x00, versus_at = 0x0f, record_at = 0x27, hi_sc
                       qualifying_at = 0x47, race_exit_at = 0x79, picture_place_at = 0x86;
 // `front-end.race-kind-words` ($80:B205): "racing_on", "over", "_laps_on", "doing_stunts_on".
 constexpr std::size_t racing_at = 0, over_at = 10, laps_on_at = 15, stunts_at = 24;
-// `front-end.time-words` ($80:FC5C): `_quit___` and `_no_time`.
-constexpr std::size_t quit_at = 0, no_time_at = 9;
-constexpr std::uint16_t quit_time = 0xea61, no_time = 0xea60;
 
 // The rows of the lines: the rider's 6, the opponent's 10, the race's 13.
 constexpr std::uint8_t rider_row = 6, opponent_row = 10, race_row = 13;
 
-// The objects: entries 100-103 the 1P and 2P marks, 104-106 the three riders' icons (their tiles
-// turned by the decoration animator), 112-115 unused here.
-constexpr std::size_t first_icon = 104, icons = 8;
+// The objects: entries 100-103 the 1P and 2P marks (100 and 102 the 1P mark, 101 and 103 the 2P
+// mark), 104-106 the three riders' icons (their tiles turned by the decoration animator), 96-99
+// and 112-115 unused here.
+constexpr unsigned first_mark = 100, first_icon = 104, icons = 8;
+constexpr std::uint8_t mark_1p_y = 0x2f, mark_1p_attributes = 0x21; // palette 0, the rider's
+constexpr std::uint8_t mark_2p_y = 0x4f, mark_2p_attributes = 0x23; // palette 1, the opponent's
 
 // The arrow's places: Race and Exit on row 24 ($80:B457, $80:B4D4).
 constexpr std::uint16_t race_x = 0x0300, exit_x = 0x0680, arrow_y = 0x0c80;
 
-// Pad 1 only: Right, Left and Select ($80:B8F1) move; choose B, Start or A; back Y or X.
-constexpr std::uint16_t right = 0x0100, left = 0x0200, select = 0x2000;
-constexpr std::uint16_t choose_buttons = 0x9080, back_buttons = 0x4040;
 
 using Text = std::vector<std::uint8_t>;
 
@@ -62,28 +58,6 @@ std::uint8_t race_kind(const FrontEndState& state) {
     return place < 3 ? place : static_cast<std::uint8_t>(place - 3);
 }
 
-// `$83:8C7B`: `_m:ss.cc`, the minute from `5` above 0x7FFF (30,000 hundredths less).
-Text time_text(const FrontEndContent& content, std::uint16_t time) {
-    Text text;
-    if (time == quit_time || time == no_time) {
-        append_until_end(text, content.time_words, time == quit_time ? quit_at : no_time_at);
-        return text;
-    }
-    unsigned rest = time, first_minute = '0';
-    if (time & 0x8000U) {
-        rest -= 30000;
-        first_minute = '5';
-    }
-    const auto digit = [&](unsigned place) {
-        const auto value = rest / place;
-        rest %= place;
-        return static_cast<std::uint8_t>('0' + value);
-    };
-    const auto minutes = static_cast<std::uint8_t>(first_minute + rest / 6000);
-    rest %= 6000;
-    const auto tens = digit(1000), seconds = digit(100), tenths = digit(10), hundredths = digit(1);
-    return {blank, minutes, ':', tens, seconds, '.', tenths, hundredths};
-}
 
 // $80:B57E: a rider's line, "FC 09" (the caller sets the row), the name to its first blank, the
 // icon (`EF n`) and, for a real rider, the best on this track in brackets.
@@ -99,7 +73,7 @@ Text name_line(const FrontEndState& state, const FrontEndContent& content, std::
     if (rider < someone) {
         const auto best = state.records.best[rider * 50U + track_of(state)];
         if (race_kind(state) != stunt_event) {
-            auto time = time_text(content, best);
+            auto time = race_time_text(best, content.time_words);
             time.front() = '(';
             line.insert(line.end(), time.begin(), time.end());
             line.push_back(')');
@@ -132,12 +106,8 @@ Text race_line(const FrontEndState& state, const FrontEndContent& content) {
         append_until_end(line, content.race_kind_words, kind == 0 ? racing_at : stunts_at);
     }
     line.push_back(blank);
-    std::size_t at = 0;
-    for (unsigned k = 0; k < track_of(state); ++k) {
-        while (content.track_names[at] != end_of_text) ++at;
-        ++at;
-    }
-    append_until_end(line, content.track_names, at);
+    const auto name = nth_string(content.track_names, track_of(state));
+    line.insert(line.end(), name.begin(), name.end());
     line.push_back(end_of_text);
     return line;
 }
@@ -152,14 +122,14 @@ std::uint8_t opponent_for(const FrontEndState& state) {
 // $80:B19A-B3DA: the marks' places, then the text map, all in one frame.
 void print_now_playing(FrontEndState& state, const FrontEndContent& content) {
     auto& now = state.now_playing;
-    for (const std::size_t k : {24U, 25U, 28U}) state.oam_buffer[oam_high_table + k] = 0x55;
-    for (const unsigned entry : {100U, 102U}) {
-        oam_byte(state, entry, 1) = 0x2f;
-        oam_byte(state, entry, 3) = 0x21;
+    for (const unsigned group : {96U, first_mark, 112U}) high_bits(state, group) = four_hidden;
+    for (const unsigned entry : {first_mark, first_mark + 2}) {
+        oam_byte(state, entry, 1) = mark_1p_y;
+        oam_byte(state, entry, 3) = mark_1p_attributes;
     }
-    for (const unsigned entry : {101U, 103U}) {
-        oam_byte(state, entry, 1) = 0x4f;
-        oam_byte(state, entry, 3) = 0x23;
+    for (const unsigned entry : {first_mark + 1, first_mark + 3}) {
+        oam_byte(state, entry, 1) = mark_2p_y;
+        oam_byte(state, entry, 3) = mark_2p_attributes;
     }
     state.text.words.fill(cleared_text);
     std::uint16_t qualifying_score{}; // `$00B6`, the stunt events' FD
@@ -205,7 +175,7 @@ void print_now_playing(FrontEndState& state, const FrontEndContent& content) {
     record.insert(record.end(), holder.begin() + 2, holder.end());
     print(record);
     print(stream_at(content, race_exit_at));
-    state.oam_buffer[oam_high_table + 26] = state.oam_buffer[oam_high_table + 27] = 0x55;
+    high_bits(state, first_icon) = high_bits(state, first_icon + 4) = four_hidden;
 }
 
 // $80:D420: the icons back at (1, 1), hidden.
@@ -214,16 +184,21 @@ void hide_icons(FrontEndState& state) {
         oam_byte(state, static_cast<unsigned>(first_icon + k), 0) = 1;
         oam_byte(state, static_cast<unsigned>(first_icon + k), 1) = 1;
     }
-    state.oam_buffer[oam_high_table + 26] = state.oam_buffer[oam_high_table + 27] = 0x55;
+    high_bits(state, first_icon) = high_bits(state, first_icon + 4) = four_hidden;
 }
 
 // $80:B42F-B465, after the slide: the 2P mark and the opponent's icon hidden for a computer
 // opponent (and for a stunt event's qualifying score); the arrow on Race.
 void open_now_playing(FrontEndState& state) {
     const bool computer = state.now_playing.opponent >= someone;
-    state.oam_buffer[oam_high_table + 25] = computer ? 0x44 : 0x00;
-    state.oam_buffer[oam_high_table + 26] =
-        race_kind(state) == stunt_event && computer ? 0x44 : 0x40;
+    const auto opponent_and_unused = static_cast<std::uint8_t>(hidden_bit(first_icon + 1)
+                                                               | hidden_bit(first_icon + 3));
+    high_bits(state, first_mark) = computer ? static_cast<std::uint8_t>(hidden_bit(first_mark + 1)
+                                                                        | hidden_bit(first_mark + 3))
+                                            : four_shown;
+    high_bits(state, first_icon) = race_kind(state) == stunt_event && computer
+                                       ? opponent_and_unused
+                                       : hidden_bit(first_icon + 3);
     state.arrow.target_x = race_x;
     state.arrow.target_y = arrow_y;
     state.latches = {};
@@ -234,11 +209,11 @@ void open_now_playing(FrontEndState& state) {
 void move_now_playing_arrow(FrontEndState& state, std::uint16_t pad) {
     auto& target = state.arrow.target_x;
     std::uint16_t to{};
-    if (pad & right)
+    if (pad & pad_right)
         to = exit_x;
-    else if (pad & left)
+    else if (pad & pad_left)
         to = race_x;
-    else if (pad & select)
+    else if (pad & pad_select)
         to = target == race_x ? exit_x : race_x;
     else {
         state.latches = {};
@@ -302,7 +277,7 @@ void now_playing_frame(FrontEndState& state, const FrontEndContent& content, Fro
         return;
     }
     hide_icons(state);
-    state.oam_buffer[oam_high_table + 28] = state.oam_buffer[oam_high_table + 25] = 0x55;
+    high_bits(state, 112) = high_bits(state, first_mark) = four_hidden;
     switch (now.choice) {
     case NowPlayingChoice::back: enter_track_menu(state, true); return;
     case NowPlayingChoice::race: state.screen = FrontEndScreen::race_fade; return;
@@ -314,6 +289,8 @@ void now_playing_frame(FrontEndState& state, const FrontEndContent& content, Fro
     }
 }
 
+// $80:9885: seven frames of brightness 13, 11, ..., 1, forced blank in the seventh; the race
+// starts on that frame.
 void race_fade_frame(FrontEndState& state) {
     constexpr std::uint32_t fade_frames = 7;
     copy_oam(state);

@@ -854,7 +854,7 @@
   "comment": "instruction start",
   "label": "loc_809764",
   "native": [
-   "src/core/tour_menu.cpp:base_palette_low, base_palette_high, first_medal_palette"
+   "src/core/tour_menu.cpp:first_medal_palette"
   ],
   "source_records": [
    "docs/research/R-0056-tour-track-now-playing.md"
@@ -910,12 +910,12 @@
   "native": [
    "src/core/front_end.cpp:fade_frames",
    "src/core/front_end.hpp:FrontEndScreen",
-   "src/core/now_playing.cpp:(file)"
+   "src/core/now_playing.cpp:(file)",
+   "src/core/now_playing.cpp:race_fade_frame"
   ],
   "source_records": [
    "docs/research/R-0054-boot-title-main-menu.md",
-   "docs/research/R-0056-tour-track-now-playing.md",
-   "tasks/FRONT-END-1P-SETUP.md"
+   "docs/research/R-0056-tour-track-now-playing.md"
   ]
  },
  {
@@ -945,8 +945,7 @@
   "comment": "routine start",
   "label": "sub_8099A4",
   "source_records": [
-   "docs/research/R-0056-tour-track-now-playing.md",
-   "tasks/FRONT-END-1P-SETUP.md"
+   "docs/research/R-0056-tour-track-now-playing.md"
   ]
  },
  {
@@ -1071,13 +1070,12 @@
   "label": "sub_80A82B",
   "native": [
    "src/core/front_end.hpp:FrontEndScreen",
-   "src/core/tour_menu.cpp:base_palette_low, base_palette_high, first_medal_palette",
+   "src/core/tour_menu.cpp:first_medal_palette",
    "src/core/tour_menu.cpp:return_to_tour_menu",
    "src/core/tour_menu.cpp:tour_menu_entry_frame"
   ],
   "source_records": [
-   "docs/research/R-0056-tour-track-now-playing.md",
-   "tasks/FRONT-END-1P-SETUP.md"
+   "docs/research/R-0056-tour-track-now-playing.md"
   ]
  },
  {
@@ -1087,13 +1085,12 @@
   "label": "sub_80A858",
   "native": [
    "src/core/front_end.hpp:FrontEndScreen",
-   "src/core/tour_menu.cpp:base_palette_low, base_palette_high, first_medal_palette",
+   "src/core/front_end_screens.hpp:first_rider_palette, base_palette_low, base_palette_high",
    "src/core/tour_menu.cpp:return_to_tour_menu",
    "src/core/tour_menu.cpp:tour_menu_entry_frame"
   ],
   "source_records": [
-   "docs/research/R-0056-tour-track-now-playing.md",
-   "tasks/FRONT-END-1P-SETUP.md"
+   "docs/research/R-0056-tour-track-now-playing.md"
   ]
  },
  {
@@ -1327,8 +1324,7 @@
    "src/core/now_playing.cpp:(file)"
   ],
   "source_records": [
-   "docs/research/R-0056-tour-track-now-playing.md",
-   "tasks/FRONT-END-1P-SETUP.md"
+   "docs/research/R-0056-tour-track-now-playing.md"
   ]
  },
  {
@@ -1508,7 +1504,7 @@
   "comment": "routine start",
   "label": "sub_80B71D",
   "native": [
-   "src/core/rider_menu.cpp:choose_buttons, back_buttons"
+   "src/core/front_end_screens.hpp:pad_up, pad_down, pad_left, pad_right, pad_select"
   ],
   "source_records": [
    "docs/research/R-0054-boot-title-main-menu.md"
@@ -1520,10 +1516,10 @@
   "comment": "routine start",
   "label": "sub_80B74A",
   "native": [
-   "src/core/rider_menu.cpp:choose_buttons, back_buttons"
+   "src/core/front_end_screens.hpp:pad_up, pad_down, pad_left, pad_right, pad_select"
   ],
   "source_records": [
-   "tasks/FRONT-END-1P-SETUP.md"
+   "docs/research/R-0056-tour-track-now-playing.md"
   ]
  },
  {
@@ -1541,8 +1537,7 @@
   "comment": "routine start",
   "label": "sub_80B794",
   "native": [
-   "src/core/tour_menu.cpp:left, right, up, down_or_select",
-   "src/core/track_menu.cpp:up, down_or_select"
+   "src/core/front_end_screens.hpp:pad_up, pad_down, pad_left, pad_right, pad_select"
   ],
   "source_records": [
    "docs/research/R-0054-boot-title-main-menu.md"
@@ -1553,9 +1548,6 @@
   "class": "observed",
   "comment": "routine start",
   "label": "sub_80B8F1",
-  "native": [
-   "src/core/now_playing.cpp:right, left, select"
-  ],
   "source_records": [
    "docs/research/R-0056-tour-track-now-playing.md"
   ]
@@ -1753,6 +1745,16 @@
   ]
  },
  {
+  "address": "$80:BC59",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80BC59",
+  "source_records": [
+   "tasks/FRONT-END-1P-CONTINUATION.md",
+   "tasks/FRONT-END-1P-SETUP.md"
+  ]
+ },
+ {
   "address": "$80:BC9B",
   "class": "inferred",
   "comment": "instruction start",
@@ -1762,8 +1764,7 @@
    "src/core/rider_menu.cpp:rider_menu_frame"
   ],
   "source_records": [
-   "docs/research/R-0055-rider-menu.md",
-   "tasks/FRONT-END-1P-SETUP.md"
+   "docs/research/R-0055-rider-menu.md"
   ]
  },
  {
@@ -1772,8 +1773,7 @@
   "comment": "unknown",
   "label": "unk_80BCAF",
   "source_records": [
-   "docs/research/R-0055-rider-menu.md",
-   "tasks/FRONT-END-1P-SETUP.md"
+   "docs/research/R-0055-rider-menu.md"
   ]
  },
  {
@@ -1809,6 +1809,7 @@
   "comment": "routine start",
   "label": "sub_80C1EB",
   "native": [
+   "src/core/tour_menu.cpp:set_arrow_mirror",
    "src/core/tour_menu.cpp:shadow_attribute_entry"
   ],
   "source_records": [
@@ -2049,8 +2050,7 @@
    "src/core/rider_menu.cpp:open_rider_menu_entry"
   ],
   "source_records": [
-   "docs/research/R-0055-rider-menu.md",
-   "tasks/FRONT-END-1P-SETUP.md"
+   "docs/research/R-0055-rider-menu.md"
   ]
  },
  {
@@ -2129,6 +2129,18 @@
   ]
  },
  {
+  "address": "$80:CC0C",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80CC0C",
+  "native": [
+   "src/core/rider_menu.cpp:shadow_group"
+  ],
+  "source_records": [
+   "docs/research/R-0055-rider-menu.md"
+  ]
+ },
+ {
   "address": "$80:CC1A",
   "class": "observed",
   "comment": "instruction start",
@@ -2150,6 +2162,18 @@
   ],
   "source_records": [
    "docs/research/R-0055-rider-menu.md"
+  ]
+ },
+ {
+  "address": "$80:CD46",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80CD46",
+  "native": [
+   "src/core/rider_menu.cpp:read_rider_menu_pad"
+  ],
+  "source_records": [
+   "tasks/FRONT-END-1P-SETUP.md"
   ]
  },
  {
@@ -2391,8 +2415,7 @@
    "src/core/tour_menu.cpp:return_to_tour_menu"
   ],
   "source_records": [
-   "docs/research/R-0056-tour-track-now-playing.md",
-   "tasks/FRONT-END-1P-SETUP.md"
+   "docs/research/R-0056-tour-track-now-playing.md"
   ]
  },
  {
@@ -2428,6 +2451,21 @@
   ]
  },
  {
+  "address": "$80:E5CC",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80E5CC",
+  "native": [
+   "src/core/front_end.hpp:FrontEndScreen",
+   "src/core/tour_menu.cpp:(file)",
+   "src/core/tour_menu.cpp:aim_tour_arrow",
+   "src/core/tour_menu.cpp:set_arrow_mirror"
+  ],
+  "source_records": [
+   "docs/research/R-0056-tour-track-now-playing.md"
+  ]
+ },
+ {
   "address": "$80:E60A",
   "class": "observed",
   "comment": "instruction start",
@@ -2440,11 +2478,36 @@
   ]
  },
  {
+  "address": "$80:E63D",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_80E63D",
+  "native": [
+   "src/core/tour_menu.cpp:hide_medals"
+  ],
+  "source_records": [
+   "docs/research/R-0056-tour-track-now-playing.md"
+  ]
+ },
+ {
   "address": "$80:E6B1",
   "class": "observed",
   "comment": "instruction start",
   "label": "loc_80E6B1",
   "native": [
+   "src/core/tour_menu.cpp:tour_menu_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0056-tour-track-now-playing.md"
+  ]
+ },
+ {
+  "address": "$80:E6C2",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80E6C2",
+  "native": [
+   "src/core/tour_menu.cpp:hide_medals",
    "src/core/tour_menu.cpp:tour_menu_frame"
   ],
   "source_records": [
@@ -2571,8 +2634,7 @@
    "src/core/track_menu.cpp:(file)"
   ],
   "source_records": [
-   "docs/research/R-0056-tour-track-now-playing.md",
-   "tasks/FRONT-END-1P-SETUP.md"
+   "docs/research/R-0056-tour-track-now-playing.md"
   ]
  },
  {
@@ -2632,6 +2694,30 @@
   "label": "loc_80E9AA",
   "native": [
    "src/core/track_menu.cpp:open_track_menu"
+  ],
+  "source_records": [
+   "docs/research/R-0056-tour-track-now-playing.md"
+  ]
+ },
+ {
+  "address": "$80:E9B6",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80E9B6",
+  "native": [
+   "src/core/track_menu.cpp:open_track_menu"
+  ],
+  "source_records": [
+   "docs/research/R-0056-tour-track-now-playing.md"
+  ]
+ },
+ {
+  "address": "$80:E9E4",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80E9E4",
+  "native": [
+   "src/core/track_menu.cpp:choose_track"
   ],
   "source_records": [
    "docs/research/R-0056-tour-track-now-playing.md"
@@ -2730,8 +2816,7 @@
   ],
   "source_records": [
    "docs/research/R-0055-rider-menu.md",
-   "docs/research/R-0056-tour-track-now-playing.md",
-   "tasks/FRONT-END-1P-SETUP.md"
+   "docs/research/R-0056-tour-track-now-playing.md"
   ]
  },
  {
@@ -2974,7 +3059,7 @@
   "comment": "unknown",
   "label": "unk_80FC5C",
   "native": [
-   "src/core/now_playing.cpp:quit_at, no_time_at"
+   "src/core/text_printer.hpp:race_time_text"
   ],
   "source_records": [
    "docs/research/R-0056-tour-track-now-playing.md"
@@ -9754,6 +9839,34 @@
   ]
  },
  {
+  "address": "$83:879A",
+  "class": "inferred",
+  "comment": "routine start",
+  "label": "sub_83879A",
+  "source_records": [
+   "tasks/FRONT-END-1P-CONTINUATION.md",
+   "tasks/FRONT-END-1P-SETUP.md"
+  ]
+ },
+ {
+  "address": "$83:8827",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_838827",
+  "source_records": [
+   "tasks/FRONT-END-1P-CONTINUATION.md"
+  ]
+ },
+ {
+  "address": "$83:8853",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_838853",
+  "source_records": [
+   "tasks/FRONT-END-1P-CONTINUATION.md"
+  ]
+ },
+ {
   "address": "$83:893C",
   "class": "observed",
   "comment": "routine start",
@@ -9771,8 +9884,7 @@
   "comment": "routine start",
   "label": "sub_838957",
   "source_records": [
-   "docs/research/R-0056-tour-track-now-playing.md",
-   "tasks/FRONT-END-1P-SETUP.md"
+   "docs/research/R-0056-tour-track-now-playing.md"
   ]
  },
  {
@@ -9846,7 +9958,7 @@
   "comment": "routine start",
   "label": "sub_838C7B",
   "native": [
-   "src/core/now_playing.cpp:time_text"
+   "src/core/text_printer.hpp:race_time_text"
   ],
   "source_records": [
    "docs/research/R-0056-tour-track-now-playing.md"
@@ -9963,8 +10075,7 @@
   "comment": "routine start",
   "label": "sub_8394D0",
   "native": [
-   "src/core/tour_menu.cpp:medal_tiles_word",
-   "src/core/track_menu.cpp:object_tiles_word",
+   "src/core/front_end_screens.hpp:swapped_object_tiles_word",
    "src/core/track_menu.cpp:track_menu_exit_frame"
   ],
   "source_records": [
@@ -9977,7 +10088,7 @@
   "comment": "routine start",
   "label": "sub_8394FF",
   "native": [
-   "src/core/track_menu.cpp:object_tiles_word",
+   "src/core/front_end_screens.hpp:swapped_object_tiles_word",
    "src/core/track_menu.cpp:track_menu_entry_frame"
   ],
   "source_records": [
@@ -9990,7 +10101,7 @@
   "comment": "routine start",
   "label": "sub_839543",
   "native": [
-   "src/core/rider_menu.cpp:choose_buttons, back_buttons"
+   "src/core/front_end_screens.hpp:pad_up, pad_down, pad_left, pad_right, pad_select"
   ],
   "source_records": [
    "docs/research/R-0055-rider-menu.md"
@@ -10011,7 +10122,9 @@
   "comment": "routine start",
   "label": "sub_83961E",
   "native": [
-   "src/core/tour_menu.cpp:hide_object"
+   "src/core/front_end_screens.hpp:set_oam_x_high",
+   "src/core/tour_menu.cpp:lay_out_medals",
+   "src/core/track_menu.cpp:lay_out_markers"
   ],
   "source_records": [
    "docs/research/R-0056-tour-track-now-playing.md"
@@ -10087,7 +10200,7 @@
   "comment": "unknown",
   "label": "unk_839AF9",
   "native": [
-   "src/core/screen_slide.cpp:pair_tiles, cycle_tiles, left_sway, right_sway, trio_tiles, wave_tiles"
+   "src/core/front_end_screens.hpp:pair_tiles, cycle_tiles, left_sway, right_sway, trio_tiles, wave_tiles"
   ],
   "source_records": [
    "docs/research/R-0055-rider-menu.md"
@@ -10125,9 +10238,6 @@
   "class": "unknown",
   "comment": "unknown",
   "label": "unk_839B27",
-  "native": [
-   "src/core/tour_menu.cpp:aim_tour_arrow"
-  ],
   "source_records": [
    "docs/research/R-0055-rider-menu.md",
    "docs/research/R-0056-tour-track-now-playing.md"
@@ -10140,15 +10250,6 @@
   "label": "dat_839B31",
   "source_records": [
    "docs/research/R-0055-rider-menu.md"
-  ]
- },
- {
-  "address": "$83:9EB4",
-  "class": "observed",
-  "comment": "routine start",
-  "label": "sub_839EB4",
-  "source_records": [
-   "tasks/FRONT-END-1P-SETUP.md"
   ]
  },
  {

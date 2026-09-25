@@ -704,7 +704,7 @@
    ],
    "native": [
     "src/core/tour_menu.cpp:(file)",
-    "src/core/tour_menu.cpp:base_palette_low, base_palette_high, first_medal_palette",
+    "src/core/tour_menu.cpp:first_medal_palette",
     "src/core/tour_menu.cpp:lay_out_medals",
     "src/core/tour_menu.cpp:tour_menu_entry_frame"
    ],
@@ -807,7 +807,8 @@
    "native": [
     "src/core/front_end.cpp:fade_frames",
     "src/core/front_end.hpp:FrontEndScreen",
-    "src/core/now_playing.cpp:(file)"
+    "src/core/now_playing.cpp:(file)",
+    "src/core/now_playing.cpp:race_fade_frame"
    ],
    "observed_entries": {},
    "start": "$80:9885",
@@ -1035,7 +1036,7 @@
    ],
    "native": [
     "src/core/front_end.hpp:FrontEndScreen",
-    "src/core/tour_menu.cpp:base_palette_low, base_palette_high, first_medal_palette",
+    "src/core/tour_menu.cpp:first_medal_palette",
     "src/core/tour_menu.cpp:return_to_tour_menu",
     "src/core/tour_menu.cpp:tour_menu_entry_frame"
    ],
@@ -1062,7 +1063,7 @@
    ],
    "native": [
     "src/core/front_end.hpp:FrontEndScreen",
-    "src/core/tour_menu.cpp:base_palette_low, base_palette_high, first_medal_palette",
+    "src/core/front_end_screens.hpp:first_rider_palette, base_palette_low, base_palette_high",
     "src/core/tour_menu.cpp:return_to_tour_menu",
     "src/core/tour_menu.cpp:tour_menu_entry_frame"
    ],
@@ -1467,7 +1468,7 @@
     "NmX"
    ],
    "native": [
-    "src/core/rider_menu.cpp:choose_buttons, back_buttons"
+    "src/core/front_end_screens.hpp:pad_up, pad_down, pad_left, pad_right, pad_select"
    ],
    "observed_entries": {},
    "start": "$80:B71D",
@@ -1498,7 +1499,7 @@
     "NmX"
    ],
    "native": [
-    "src/core/rider_menu.cpp:choose_buttons, back_buttons"
+    "src/core/front_end_screens.hpp:pad_up, pad_down, pad_left, pad_right, pad_select"
    ],
    "observed_entries": {},
    "start": "$80:B74A",
@@ -1541,8 +1542,7 @@
     "NmX"
    ],
    "native": [
-    "src/core/tour_menu.cpp:left, right, up, down_or_select",
-    "src/core/track_menu.cpp:up, down_or_select"
+    "src/core/front_end_screens.hpp:pad_up, pad_down, pad_left, pad_right, pad_select"
    ],
    "observed_entries": {},
    "start": "$80:B794",
@@ -1632,9 +1632,6 @@
    "end": "$80:B915",
    "mode_at_entry": [
     "NmX"
-   ],
-   "native": [
-    "src/core/now_playing.cpp:right, left, select"
    ],
    "observed_entries": {},
    "start": "$80:B8F1",
@@ -1727,6 +1724,7 @@
     "NmX"
    ],
    "native": [
+    "src/core/tour_menu.cpp:set_arrow_mirror",
     "src/core/tour_menu.cpp:shadow_attribute_entry"
    ],
    "observed_entries": {},
@@ -1882,6 +1880,8 @@
     "src/core/rider_menu.cpp:open_rider_menu",
     "src/core/rider_menu.cpp:open_rider_menu_entry",
     "src/core/rider_menu.cpp:read_rider_menu_pad",
+    "src/core/rider_menu.cpp:set_arrow_palette",
+    "src/core/rider_menu.cpp:shadow_group",
     "src/core/rider_menu.cpp:split_row"
    ],
    "observed_entries": {},
@@ -2198,8 +2198,10 @@
     "src/core/front_end.hpp:TourMenu",
     "src/core/tour_menu.cpp:(file)",
     "src/core/tour_menu.cpp:aim_tour_arrow",
+    "src/core/tour_menu.cpp:hide_medals",
     "src/core/tour_menu.cpp:move_tour_cursor",
     "src/core/tour_menu.cpp:return_to_tour_menu",
+    "src/core/tour_menu.cpp:set_arrow_mirror",
     "src/core/tour_menu.cpp:tour_menu_frame"
    ],
    "observed_entries": {},
@@ -2286,6 +2288,7 @@
     "src/core/front_end.hpp:FrontEndScreen",
     "src/core/front_end.hpp:TrackMenu",
     "src/core/track_menu.cpp:(file)",
+    "src/core/track_menu.cpp:choose_track",
     "src/core/track_menu.cpp:enter_track_menu",
     "src/core/track_menu.cpp:first_marker",
     "src/core/track_menu.cpp:lay_out_markers",
@@ -10670,7 +10673,7 @@
     "NMX"
    ],
    "native": [
-    "src/core/now_playing.cpp:time_text"
+    "src/core/text_printer.hpp:race_time_text"
    ],
    "observed_entries": {},
    "start": "$83:8C7B",
@@ -11034,8 +11037,7 @@
     "NmX"
    ],
    "native": [
-    "src/core/tour_menu.cpp:medal_tiles_word",
-    "src/core/track_menu.cpp:object_tiles_word",
+    "src/core/front_end_screens.hpp:swapped_object_tiles_word",
     "src/core/track_menu.cpp:track_menu_exit_frame"
    ],
    "observed_entries": {},
@@ -11056,7 +11058,7 @@
     "NmX"
    ],
    "native": [
-    "src/core/track_menu.cpp:object_tiles_word",
+    "src/core/front_end_screens.hpp:swapped_object_tiles_word",
     "src/core/track_menu.cpp:track_menu_entry_frame"
    ],
    "observed_entries": {},
@@ -11077,7 +11079,7 @@
     "NmX"
    ],
    "native": [
-    "src/core/rider_menu.cpp:choose_buttons, back_buttons"
+    "src/core/front_end_screens.hpp:pad_up, pad_down, pad_left, pad_right, pad_select"
    ],
    "observed_entries": {},
    "start": "$83:9543",
@@ -11117,7 +11119,9 @@
     "NmX"
    ],
    "native": [
-    "src/core/tour_menu.cpp:hide_object"
+    "src/core/front_end_screens.hpp:set_oam_x_high",
+    "src/core/tour_menu.cpp:lay_out_medals",
+    "src/core/track_menu.cpp:lay_out_markers"
    ],
    "observed_entries": {},
    "start": "$83:961E",
@@ -13753,16 +13757,16 @@
    "call returns in the calling mode": 1262
   },
   "bytes": 131072,
-  "cited_addresses": 1008,
+  "cited_addresses": 1018,
   "cited_by_class": {
    "data": 15,
-   "inferred": 103,
-   "observed": 799,
+   "inferred": 107,
+   "observed": 805,
    "unknown": 91
   },
   "cited_by_position": {
    "dat": 15,
-   "loc": 638,
+   "loc": 648,
    "mid": 18,
    "sub": 246,
    "unk": 91
@@ -13784,9 +13788,9 @@
   "jump_tables": 2,
   "mode_ambiguities": 7,
   "observed": 41778,
-  "routine_bytes_cited_by_native_code": 40533,
+  "routine_bytes_cited_by_native_code": 40496,
   "routines": 636,
-  "routines_cited_by_native_code": 296,
+  "routines_cited_by_native_code": 295,
   "unknown": 52881,
   "unknown_share": 0.4035
  }

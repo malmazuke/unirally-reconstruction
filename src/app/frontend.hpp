@@ -119,6 +119,11 @@ public:
   // One PAL frame from the two ports' masks (`button_mask` bits). True once a
   // race with a native scenario is chosen: `race_track()`.
   bool update(const std::array<std::uint16_t, 2> &ports);
+  // The same with the pads as the SNES reads them (`$4218`, `$421A`), as the
+  // laboratory's input scripts give them.
+  bool update(FrontEndPads pads);
+  // The front end's own frame since power-on (notices do not count).
+  std::uint32_t front_end_frame() const { return state_.frame; }
   RgbFrame frame() const;
   std::uint32_t frames() const { return frames_; }
   std::uint32_t notices() const { return notices_; }
@@ -134,6 +139,10 @@ private:
   std::uint32_t notice_frames_{}, frames_{}, notices_{}, returns_{};
   FrontEndMode notice_mode_{};
 };
+
+// 1P's race is native when a race scenario has it (R-0046, R-0050): MIKE
+// against BRONSEN, on a track with a scenario (not a stunt event).
+bool native_one_player_race(const FrontEndState &state);
 
 // A port's mask as the SNES reads the pad (`$4218`: B in bit 15 ... R in bit
 // 4).

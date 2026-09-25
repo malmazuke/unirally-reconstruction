@@ -12,8 +12,6 @@ namespace unirally::front_end_screens {
 
 namespace {
 
-// The riders' sprite palettes: rider r's is asset 6 + r (R-0055).
-constexpr unsigned first_rider_palette = 6;
 // What `$80:F4E9` loads on the way out ($83:91F7, $80:F502-F510): the chosen rider's palette, or
 // asset 2 after Y, at colour 0xF0; assets 28 and 5 at 0xD0 and 0xE0.
 constexpr unsigned no_rider_palette = 2, menu_text_palette = 28, early_palette = 5;
@@ -38,14 +36,9 @@ constexpr std::uint16_t row_spacing = 0x0180, first_row_y = 0x0290;
 constexpr std::uint16_t off_screen_x = 0xfd00, off_screen_y = 0x0700; // $80:98A4
 // The arrow's attributes ($0BDF): priority 3, palette rider & 7 (bits 3-1), mirrored in the
 // left column so that it points at the name.
-constexpr std::uint8_t arrow_priority = 0x30, arrow_mirror = 0x40;
-// The high table byte of entries 124-127, set every pass: the arrow's shadow stays hidden.
-constexpr std::size_t last_high_byte = oam_high_table + 31;
-constexpr std::uint8_t shadow_hidden = 0x55;
-
-// Pad 1 only ($83:9543). Choose: B, Start or A ($80:B71D); back: Y or X ($80:B74A).
-constexpr std::uint16_t choose_buttons = 0x9080, back_buttons = 0x4040;
-constexpr std::uint16_t up = 0x0800, down = 0x0400, left = 0x0200, right = 0x0100;
+constexpr std::uint8_t arrow_priority = 0x30, arrow_mirror = 0x40, arrow_palette_bits = 0x0e;
+// The arrow's shadow, entry 127, is kept hidden every pass (`$80:CC0C`).
+constexpr unsigned shadow_group = 124;
 
 // The HDMA of $80:CC1A-CC47: colour 0 black from the top; from row 64 one colour a row through
 // colours 0x80-0xFF, so that palette p holds rider p + 8's colours on rows 64 + 16p on.
@@ -107,7 +100,9 @@ void lay_out_icons(FrontEndState& state) {
                                            {0x42, 0x10, 0xe0, 48},
                                            {0x44, 0x00, 0xf0, 48}}};
     constexpr std::uint8_t icon_attributes = 0x31; // priority 3, the second name table
-    constexpr std::array<std::uint8_t, 3> high_bits{0x02, 0x20, 0x00}; // the first piece large
+    constexpr std::uint8_t second_object_size = 0x63; // OBSEL: 16 x 16 and 32 x 32
+    for (unsigned entry = 0; entry < riders * pieces.size(); entry += 4)
+        high_bits(state, entry) = four_shown;
     for (std::size_t rider = 0; rider < riders; ++rider) {
         const auto first = static_cast<unsigned>((riders - 1 - rider) * pieces.size());
         const bool left_column = rider % 2 == 0;
@@ -121,25 +116,28 @@ void lay_out_icons(FrontEndState& state) {
             oam_byte(state, entry, 3) = static_cast<std::uint8_t>(
                 icon_attributes | ((rider & 7U) << 1U) | (left_column ? arrow_mirror : 0));
         }
+        high_bits(state, first) |= large_bit(first); // the first piece is the large one
     }
-    for (std::size_t k = 0; k < 24; ++k) state.oam_buffer[oam_high_table + k] = high_bits[k % 3];
-    state.registers.obsel = 0x63;
+    state.registers.obsel = second_object_size;
 }
 
 std::uint8_t& arrow_attribute(FrontEndState& state) {
     return oam_byte(state, arrow_entry, 3);
 }
 
-void set_arrow_row_palette(FrontEndState& state) {
+// The arrow takes the colours of the rider under it, rider & 7. The original sets the column's
+// bit and the row's bits of the palette apart (`$80:CC61`, `$80:CCAB`); together they are this.
+void set_arrow_palette(FrontEndState& state) {
+    const unsigned rider =
+        state.rider_menu.row * 2U + (state.arrow.target_x == right_column_x ? 1U : 0U);
     auto& attributes = arrow_attribute(state);
-    attributes =
-        static_cast<std::uint8_t>((attributes & 0xf3U) | ((state.rider_menu.row & 3U) << 2U));
+    attributes = static_cast<std::uint8_t>((attributes & ~arrow_palette_bits) | ((rider & 7U) << 1U));
 }
 
 // $80:CB50-CBC6, at the end of the slide: the icons, and the arrow on the last rider chosen.
 void open_rider_menu(FrontEndState& state) {
     auto& menu = state.rider_menu;
-    state.oam_buffer[last_high_byte] = shadow_hidden;
+    high_bits(state, shadow_group) = four_hidden;
     lay_out_icons(state);
     const bool right_column = (menu.rider & 1U) != 0;
     // The attribute is written as a word here, so entry 120's x becomes 0.
@@ -174,7 +172,7 @@ void load_rider_palettes(FrontEndState& state, const FrontEndContent& content) {
 
 void move_arrow_row(FrontEndState& state, int step) {
     state.rider_menu.row = static_cast<std::uint8_t>(state.rider_menu.row + step);
-    set_arrow_row_palette(state);
+    set_arrow_palette(state);
     state.arrow.target_y =
         static_cast<std::uint16_t>(state.arrow.target_y + step * static_cast<int>(row_spacing));
 }
@@ -186,16 +184,18 @@ bool read_rider_menu_pad(FrontEndState& state, std::uint16_t pad) {
     auto& menu = state.rider_menu;
     auto& latches = state.latches;
     auto& attributes = arrow_attribute(state);
-    if ((pad & left) && !(attributes & arrow_mirror)) {
-        attributes = static_cast<std::uint8_t>((attributes | arrow_mirror) & 0xfdU);
+    if ((pad & pad_left) && !(attributes & arrow_mirror)) {
+        attributes = static_cast<std::uint8_t>(attributes | arrow_mirror);
         state.arrow.target_x = left_column_x;
+        set_arrow_palette(state);
     }
-    if ((pad & right) && (attributes & arrow_mirror)) {
-        attributes = static_cast<std::uint8_t>((attributes & ~arrow_mirror) | 0x02U);
+    if ((pad & pad_right) && (attributes & arrow_mirror)) {
+        attributes = static_cast<std::uint8_t>(attributes & ~arrow_mirror);
         state.arrow.target_x = right_column_x;
+        set_arrow_palette(state);
     }
     bool moved_up = false;
-    if (!(pad & up)) {
+    if (!(pad & pad_up)) {
         latches.up = false;
     } else if (!latches.up) {
         latches.up = true;
@@ -205,7 +205,7 @@ bool read_rider_menu_pad(FrontEndState& state, std::uint16_t pad) {
         }
     }
     if (!moved_up) {
-        if (!(pad & down)) {
+        if (!(pad & pad_down)) {
             latches.down = false;
         } else if (!latches.down) {
             latches.down = true;
@@ -272,7 +272,7 @@ void rider_menu_entry_frame(FrontEndState& state, const FrontEndContent& content
 }
 
 void rider_menu_frame(FrontEndState& state, const FrontEndContent& content, FrontEndPads pads) {
-    state.oam_buffer[last_high_byte] = shadow_hidden;
+    high_bits(state, shadow_group) = four_hidden;
     copy_oam(state); // $80:D1EC, which also reads the pads
     load_rider_palettes(state, content);
     // $80:93A5: the text again, to the half it was first shown in (`$005A`), now hidden.

@@ -186,7 +186,18 @@ std::uint16_t snes_pad_word(std::uint16_t mask) {
 FrontEndSession::FrontEndSession(const ClassicContentPack &pack)
     : content_(front_end_content(pack)) {}
 
+bool native_one_player_race(const FrontEndState &state) {
+  constexpr std::uint8_t mike = 0, bronsen = 0x11;
+  return state.mode_chosen && state.mode == FrontEndMode::one_player &&
+         state.rider_menu.rider == mike && state.now_playing.opponent == bronsen &&
+         classic_race_has_scenario(ClassicRaceTrack{state.tour_menu.track});
+}
+
 bool FrontEndSession::update(const std::array<std::uint16_t, 2> &ports) {
+  return update(FrontEndPads{snes_pad_word(ports[0]), snes_pad_word(ports[1])});
+}
+
+bool FrontEndSession::update(FrontEndPads pads) {
   ++frames_;
   if (notice_frames_) {
     if (--notice_frames_ == 0) {
@@ -195,17 +206,12 @@ bool FrontEndSession::update(const std::array<std::uint16_t, 2> &ports) {
     }
     return false;
   }
-  update_front_end(state_, content_,
-                   {snes_pad_word(ports[0]), snes_pad_word(ports[1])});
+  update_front_end(state_, content_, pads);
   if (state_.screen == FrontEndScreen::main_menu && !main_menu_)
     main_menu_ = state_;
   if (!state_.mode_chosen)
     return false;
-  // The race scenarios are MIKE's against BRONSEN (R-0046, R-0050).
-  constexpr std::uint8_t bronsen = 0x11;
-  if (state_.mode == FrontEndMode::one_player && state_.rider_menu.rider == 0 &&
-      state_.now_playing.opponent == bronsen &&
-      classic_race_has_scenario(race_track()))
+  if (native_one_player_race(state_))
     return true;
   // Two seconds of notice at 50 Hz.
   notice_mode_ = state_.mode;

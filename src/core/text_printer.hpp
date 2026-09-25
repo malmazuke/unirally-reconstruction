@@ -5,6 +5,7 @@
 #include <cstdint>
 #include <functional>
 #include <span>
+#include <vector>
 
 namespace unirally {
 
@@ -35,5 +36,11 @@ void print_text(TextMap& map, TextCursor& cursor, std::span<const std::uint8_t> 
 
 // `$83:8BE7`: five digits, the leading zeros as blanks (`_`) but the last, then 0xFF.
 std::array<std::uint8_t, 6> five_digit_text(std::uint16_t value);
+
+// `$83:8C7B`: a race time in hundredths as `_m:ss.cc`, without its 0xFF; above 0x7FFF, 30,000
+// hundredths less and the minute from `5`. 0xEA61 and 0xEA60 print `_quit___` and `_no_time`,
+// the first and second strings of `time_words` (`$80:FC5C`).
+std::vector<std::uint8_t> race_time_text(std::uint16_t time,
+                                         std::span<const std::uint8_t> time_words);
 
 } // namespace unirally

@@ -147,7 +147,11 @@ int main(int argc, char** argv) try {
         if (const auto picture = options.pictures.find(frame); picture != options.pictures.end())
             write_ppm(picture->second, unirally::render_front_end(state));
     }
-    if (state.mode_chosen) std::cout << "mode " << unsigned(state.mode) << '\n';
+    // A mode chosen; for 1P the race NOW PLAYING chose.
+    if (state.mode_chosen)
+        std::cout << "mode " << unsigned(state.mode) << " race " << unsigned(state.tour_menu.track)
+                  << " rider " << unsigned(state.rider_menu.rider) << " opponent "
+                  << unsigned(state.now_playing.opponent) << '\n';
     return 0;
 } catch (const std::exception& error) {
     std::cerr << error.what() << '\n';

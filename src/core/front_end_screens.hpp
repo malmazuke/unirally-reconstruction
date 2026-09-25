@@ -1,6 +1,7 @@
 #pragma once
-// Inside the front end (front_end.cpp, rider_menu.cpp): what every screen shares, the loads, the
-// OAM buffer and the arrow, and each screen's frame.
+// Inside the front end (front_end.cpp, screen_slide.cpp, rider_menu.cpp, tour_menu.cpp,
+// track_menu.cpp, now_playing.cpp): what every screen shares, the loads, the OAM buffer, the
+// arrow, the pads, and each screen's frame.
 #include "front_end.hpp"
 
 #include <cstddef>
@@ -15,6 +16,41 @@ inline constexpr unsigned arrow_entry = 119, shadow_entry = 127;
 // The word a cleared text map holds ($80:D1FA, $83:8B51).
 inline constexpr std::uint16_t cleared_text = 0x004c;
 
+// The OAM high table: two bits an entry, four entries a byte. Bit 0 is the ninth x bit, which
+// the menus set to push an entry off the right edge (hidden); bit 1 makes it large.
+inline std::uint8_t& high_bits(FrontEndState& state, unsigned first_entry) {
+    return state.oam_buffer[oam_high_table + first_entry / 4];
+}
+inline constexpr std::uint8_t hidden_bit(unsigned entry) {
+    return static_cast<std::uint8_t>(1U << ((entry % 4) * 2));
+}
+inline constexpr std::uint8_t large_bit(unsigned entry) {
+    return static_cast<std::uint8_t>(2U << ((entry % 4) * 2));
+}
+inline constexpr std::uint8_t four_hidden = 0x55, four_shown = 0x00;
+
+// Assets: rider r's sprite palette is asset 6 + r (R-0055); the base BG palette's halves are
+// assets 35 and 36 (`$80:A858`).
+inline constexpr unsigned first_rider_palette = 6, base_palette_low = 35, base_palette_high = 36;
+// The one-player tours: five tracks each; HUNTER is tour 8.
+inline constexpr std::uint8_t tracks_per_tour = 5, hunter = 8;
+// The object tiles at VRAM word 0x7A00 that PICK TOUR and PICK TRACK swap (`$83:94D0`,
+// `$83:94FF`).
+inline constexpr unsigned swapped_object_tiles_word = 0x7a00;
+// The decoration animator's tables inside `front-end.decoration-frames` ($83:9AF9 on).
+inline constexpr std::size_t pair_tiles = 0x00, cycle_tiles = 0x08, left_sway = 0x10,
+                             right_sway = 0x1a, trio_tiles = 0x2e, wave_tiles = 0x38;
+
+// The pads as the SNES reads them. The one-player screens read pad 1 only (`$83:9543`); Down
+// counts Select where `$80:B794` tests it. Choose is B, Start or A (`$80:B71D`); back is Y or X
+// (`$80:B74A`).
+inline constexpr std::uint16_t pad_up = 0x0800, pad_down = 0x0400, pad_left = 0x0200,
+                               pad_right = 0x0100, pad_select = 0x2000;
+inline constexpr std::uint16_t choose_buttons = 0x9080, back_buttons = 0x4040;
+
+// The `n`th 0xFF-terminated string of `table`, without its 0xFF.
+std::span<const std::uint8_t> nth_string(std::span<const std::uint8_t> table, unsigned n);
+
 inline std::uint8_t& oam_byte(FrontEndState& state, unsigned entry, unsigned field) {
     return state.oam_buffer[entry * 4 + field];
 }
@@ -26,6 +62,7 @@ void load_cgram(FrontEndState& state, std::span<const std::uint8_t> data, unsign
 // `$80:937B`: the text map to VRAM from word `word`.
 void load_text(FrontEndState& state, unsigned word);
 void copy_oam(FrontEndState& state); // $80:9318
+// The entry's ninth x bit: set, the menus' way to hide an entry (`$83:961E`).
 void set_oam_x_high(FrontEndState& state, unsigned entry, bool high);
 void park_arrow(FrontEndState& state); // $83:99FA
 
