@@ -1,6 +1,6 @@
 """Named byte layout of the 742-byte shared race state (URZZ000B / URDG0001), and
-of the 52 special-tile bytes and 60 checkpoint flags the other tracks' state (URTRnn05)
-appends (R-0047, R-0048, R-0051).
+of the 52 special-tile bytes, 60 checkpoint flags and 54 HUNTER effect bytes the other
+tracks' state (URTRnn06) appends (R-0047, R-0048, R-0051, R-0052).
 
 Diagnostic only: names follow the native serializer order so a first
 divergence can be reported as a field instead of a bare offset.
@@ -102,6 +102,59 @@ def special_tile_bytes(wram: bytes) -> bytes:
     return bytes(out+wram[0xe7b:0xe7d]+wram[0xc73:0xc75])  # $0E7B, then $0C73 (LOCKED-TOURS)
 
 
+# R-0052: the HUNTER effects' words, in the native serializer's order. Effect 1
+# has no timer (a zero word); $1285, $1287 and $1289 are bytes.
+HUNTER_WORDS = [0x1325, 0x1323, *range(0x1327, 0x1337, 2), 0x557, None, 0x12b7, 0x2052, 0x55b, 0x12b5, 0x561, 0x12cd]
+HUNTER_BYTES = [0x1285, 0x1287, 0x1289]
+HUNTER_TAIL = [0x2054, 0x26be, 0x55d, 0x55f, 0x128b, 0x12af]
+
+
+def hud_captions(rom: bytes, events=range(0x1b, 0x25)) -> dict[bytes, int]:
+    """The tile bytes each event's caption puts in a text row (the HUD message buffer
+    `$128D-$129C` or the caption row `$0EA7-$0EB6`), keyed by those bytes: `$81:BFD4-C019` reads 16
+    characters at `$17:CA04 + 16 * (event - 1)` and maps them through `$80:81FE` (letters),
+    `$80:8223`/`$8224` (`!`, `"`) and `$80` (space). An event maps to the smallest event with the
+    same text, the identity native carries (R-0052). Blank rows (zeros, or `$80`s) are event 0."""
+    def lorom(address: int) -> int:
+        return ((address >> 16) & 0x7f) * 0x8000 + (address & 0x7fff)
+    table = {bytes(16): 0, bytes([0x80] * 16): 0}
+    for event in events:
+        out = bytearray()
+        for i in range(16):
+            c = rom[lorom(0x17ca04 + 16 * (event - 1) + i)]
+            if c == 0x20:
+                out.append(0x80)
+            elif c in (0x21, 0x22):
+                out.append(rom[lorom(0x808223 + c - 0x21)])
+            else:
+                out.append(rom[lorom(0x8081fe + ((c - 0x61) & 0xffff))])
+        table.setdefault(bytes(out), event)
+    return table
+
+
+def hunter_bytes(wram: bytes, captions: dict[bytes, int] | None = None,
+                 rows: dict[bytes, int] | None = None) -> bytes:
+    """The 62 bytes URTRnn06 appends last (the HUNTER effects), from original WRAM. `$11C1`
+    projects only on the HUNTER tour (`$131F`), the only one that reads it; the HUD buffer
+    projects as its event (`hud_captions`), $FFFF if it matches none."""
+    out = bytearray()
+    for address in HUNTER_WORDS:
+        out += b'\0\0' if address is None else wram[address:address+2]
+    for address in HUNTER_BYTES:
+        out += bytes([wram[address], 0])
+    for address in HUNTER_TAIL:
+        out += wram[address:address+2]
+    hunter = wram[0x131f] != 0
+    out += (wram[0x11c1:0x11c3] if hunter else b'\0\0')
+    event = (captions or {}).get(bytes(wram[0x128d:0x129d]), 0xffff) if hunter else 0
+    out += event.to_bytes(2, 'little')
+    # The caption row on screen ($0EA7-$0EB6), HUNTER only, by the same identity.
+    row = (rows or {}).get(bytes(wram[0xea7:0xeb7]), 0xffff) if hunter else 0
+    out += row.to_bytes(2, 'little')
+    out += bytes([wram[0x563], 0])  # the effect 6 mosaic counter, a byte
+    return bytes(out)
+
+
 def checkpoint_tail_bytes(wram: bytes) -> bytes:
     """The last 60 first-seen flags ($1161-$119C) URTRnn05 appends after them (R-0048)."""
     return bytes(wram[0x1161:0x119d])
@@ -109,7 +162,10 @@ def checkpoint_tail_bytes(wram: bytes) -> bytes:
 
 LAYOUT = layout() + [(742+24*r+2*i, 2, f'{("player", "opponent")[r]}.{n}')
                      for r in (0, 1) for i, (n, _) in enumerate(SPECIAL_TILE_RIDER)] + [(790, 2, 'drive_target_latch'), (792, 2, 'opponent_turnaround')] \
-    + [(794+i, 1, f'checkpoint_seen{20+i}') for i in range(60)]
+    + [(794+i, 1, f'checkpoint_seen{20+i}') for i in range(60)] \
+    + [(854+2*i, 2, f'hunter.{n}') for i, n in enumerate(
+        ['latched', 'active', *(f'effect{k}' for k in range(8)), *(f'timer{k}' for k in range(8)),
+         'pulse', 'pulse_shrinking', 'pulse_length', 'blink', 'wave_phase', 'hide_track', 'mosaic', 'skip_update', 'message', 'shown', 'hud_event', 'caption', 'mosaic_counter'])]
 
 
 def describe(left: bytes, right: bytes, limit=24):

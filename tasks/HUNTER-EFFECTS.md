@@ -2,16 +2,18 @@
 
 ## Assignment
 
-- Status: ready (prepared 25 September 2026 by the TILE-PAIRS-8-12-26 session).
+- Status: **accepted** 25 September 2026 (tier 1, PR #21). Claimed the same day by the Claude
+  Code desktop session that ran TILE-PAIRS-8-12-26, base `47708b4`.
 - Milestone: M4 breadth
 - Coordinator: the claiming session is coordinator, primary and integrator
 - Task provider (fixed for all children; record any user-initiated platform change): Anthropic
-- Worker/session/runtime/model: to be recorded at claim
+- Worker/session/runtime/model: Claude Code desktop app, Claude Opus 5.5 (`claude-opus-5-5`)
 - Actual model/reasoning effort, routing rationale and frontier escalation question (if any):
   the claiming session's model at default effort; **tier 1** (simulation state in
   `src/core/movement.cpp` and the announcement queue).
 - Provider quota window/baseline timestamp, used/remaining or unknown, reserve and session
-  allowance (D-0004): sample at claim.
+  allowance (D-0004): at claim the 5-hour window was 7% used and the weekly window 12%; the
+  user's stop point is 50% weekly.
 - Reviewer (primary automatically spawns fresh model/effort, isolated checkout; no user
   trigger): a fresh Anthropic subagent with a withheld HUNTER capture.
 - Dependencies and evidence of acceptance: TILE-PAIRS-8-12-26 (accepted); R-0050, R-0051;
@@ -67,10 +69,74 @@ to reach more effects (the player's x at the tag picks the effect).
 | Nothing accepted moves | Gates, v1 contracts, hidden runs, fuzz, ctest, synthetic | Unchanged digests | gate logs |
 | Review | Tier 1 | Approved with a withheld capture | review on the pull request |
 
+## Evidence and attempts
+
+| Attempt | Hypothesis | Experiment | Observation | Next decision |
+| --- | --- | --- | --- | --- |
+| 1 | - | WRAM `$1321-$1335`, `$12AF`, `$0557` at TWO LOOPS' 1,252 | Trigger, dispatch and effect 0's timer in one update | Read every consumer |
+| 2 | - | Listing: consumers of the effect words | 0 BG2 axes swap (`$81:AE90`); 1 freeze pulses and 5 slow motion (`$128B` skips the race update, `$83:CC9A`); 2 player landing matrix 0 (`$81:94B9`); 3 screen flip (`$7E:2054`, HDMA, OAM y flip `$83:E04F`); 4 BG1 off (`$055D`, `$80:8638`); 6 mosaic (`$055F`, `$80:8821`); 7 reversed controls (`$82:AC5C`); captions `$1B-$24` ("barf mode on" ... "control reversed", `$23` blank) | Implement the simulation first |
+| 3 | - | Simulation (`19b3b57` and before): tag, dispatch, timers, blink table (pack v14), push-front, skips, matrix 0, reversal, OAM flip of `screen_xy`, `$12AF` consumed at `$81:BF46` into the HUD buffer, the HUNTER opponent's character 20 (voices 232-247) | Locked sweep **20 of 20** exact (TWO LOOPS included), cold start 16 of 16; 48 held captures on HUNTER tracks exact, covering all eight effects (`held/`, `effects.py`) | Presentation |
+| 4 | The effects need rendering | Pictures through each effect (`captures-pictures.sh`, `pictures.py`, `sidebyside.py`) | Frame 2,800 exact; differences: flip, barf, mosaic, BG1 hidden, the caption after a push-front, the HUNTER opponent's palette | Implement presentation (a) captions, (b) palette, (c) BG1, (d) mosaic, (e) barf, (f) flip |
+| 5 | - | (a) the caption row as HUNTER state, canonical by text, projected from `$0EA7`; (b) asset 26 at OBJ palette 4; skipped updates treated as paused by the presenter | Slow motion and hedgehog pictures down to the declared arrow | (c)-(f) |
+| 6 | NMI timing | Mosaic counter `$0563` counted at the update's start (the opening NMI); BG1 off and mosaic from the previous update; barf from the update before that (history) | Barf, wobble, invisible match to the arrow; wobble 3,403 differs by the caption transfer arbitration (`$81:F30C`) | (f) |
+| 7 | The flip | BG1 rows mirrored and the riders' OAM y flipped from the previous update's blink; the V-flip bit outlives the blink by an update (`$80:876C` resets after the OAM transfer) | All flip frames to the arrow | Regression, records |
+| 8 | - | `regression.sh`: 48 held captures, both sweeps, tile-pairs Right captures; 4,000-update hidden app runs on 40, 41, 43, 44 | All exact; no guard violations; app runs clean | Gates, review |
+| 9 | - | Review of `a3a4701`: returned (M1 pad images on skipped updates, M2 guard range off by one; S1-S3) | Fixed M1, M2, S1; `w-hedgehog-pause`, `w-slow-pause` exact over 2,210; S2 recorded as a class; S3 (`w-rev-buttons` at 1,737) attributed to shared contact code, [ROLLING-CONTACT](ROLLING-CONTACT.md) | Regression unchanged; gates; re-review |
+
+## Capability and coverage checkpoint
+
+- Native capability delivered / still missing: the HUNTER tag and all eight effects, simulated
+  and drawn; the opponent's character (palette, voices). Missing: the HUD transfer arbitration
+  (one frame), sound, option bit 3's variants, `$12D1`.
+- Frozen exact-match interval, field set and reference/seed identity: URTRnn06 (916 bytes); the
+  sweeps as captured; 48 held HUNTER captures.
+- Dynamic captured inputs still consumed (must be zero for autonomy): none new; the blink table
+  and opponent palette are pack content (v14).
+- Relevant branches/transitions exercised: every effect's start, run and end; two tags in one
+  race; effect 1's growing and shrinking pulses; effect 5's skip pattern; the flip's blink phases.
+- First divergence and cheapest next discriminating experiment: none left in the race captures.
+- Trial-wide usage baseline/current, reserve, reset authorization/outcome or none: 12% weekly at
+  claim, 13% at the records.
+
 ## Handoff
 
-- Exact next experiment/command: `python3 -m tools.unirally_lab.native.track_reference explore
-  --reference local/evidence/locked-tours/sweep/hunter-1 --binary
-  build/lab-debug/src/core/zoom_zoo_runner --pack local/classic-pal-crawler-tracks-v13.pack
-  --scenario classic.track.41 --out <json>` (diverges at update 1,252, the first tag: effect
-  `$1327`, event 31); then read `$1321-$1345`, `$12AF` and the effect's timer at each tag.
+- Current base/head commit and uncommitted state: base `47708b4`; on `task/hunter-effects`.
+- Verified findings: [R-0052](../docs/research/R-0052-hunter-effects.md).
+- Commands executed, outcomes and report hashes: `local/evidence/hunter-effects/` (captures
+  scripts, `held/`, `pictures/`, `regression.sh` and its outputs, `recompare-*.json`,
+  `pictures-summary.txt`, `hidden-*.json`).
+- Unavailable/skipped checks: the ASan presets (host).
+- Exact next experiment/command: none for this task; [RESULT-TITLE-GLYPHS](RESULT-TITLE-GLYPHS.md)
+  is next.
+- Accepted outcome, review/fix rounds and next routing decision: accepted after one returned
+  round; next is [RESULT-TITLE-GLYPHS](RESULT-TITLE-GLYPHS.md), with
+  [ROLLING-CONTACT](ROLLING-CONTACT.md) also ready. The user asked the session to stop after
+  this task's closeout.
+- Cleanup by the closing session: evidence under `local/evidence/hunter-effects/` (moved to the
+  main checkout, with the reviewer's `local/review/` and gate logs); pack v14 copied to the main
+  checkout's `local/`; both worktrees and the local branch deleted; bootstrap and app-debug
+  rerun in the main checkout.
+
+## Review and integration
+
+- Reviewer and independent reproduction/withheld-case results: a fresh Claude Opus 5.5
+  subagent in `.worktrees/hunter-effects-review`, tier 1.
+  - At `a3a4701` it **returned**
+    ([review](https://github.com/malmazuke/unirally-reconstruction/pull/21#pullrequestreview-5312888186)):
+    - M1: a skipped update must still take the NMI's pad images;
+    - M2: the HUNTER guard range was off by one;
+    - S1: `track_reference` refused captures with buttons under effects 5 and 7;
+    - S2: the caption-transfer limit is a class of frames;
+    - S3: `w-rev-buttons` diverges at 1,737 in shared contact code.
+  - At `661fcd3` it **approved**
+    ([re-review](https://github.com/malmazuke/unirally-reconstruction/pull/21#pullrequestreview-5313658405)).
+    Four new withheld captures press buttons during effects 1, 5 and 7, all exact. Both
+    sweeps reproduced, and the gates were identical.
+- Required changes or acceptance rationale:
+  - M1, M2 and S1 were fixed in `661fcd3`, and the full gates rerun (all eleven identical).
+  - S2 is recorded in R-0052, and S3 as ROLLING-CONTACT.
+  - Advisories kept as records: the loader accepts HUNTER combinations the game never produces;
+    tracks 40 and 43 never tag in the captures; the original rewrites the whole sprite attribute
+    byte; no capture reaches a HUNTER finish.
+- Exact merge candidate and required-check results: the pull request head; checks green before
+  merging.

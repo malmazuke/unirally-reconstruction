@@ -29,7 +29,7 @@ import tempfile
 from .zoom_zoo_trial_reference import ROOT, ROM_SHA, CORE_SHA, sha, digest
 from .zoom_zoo_race_reference import project
 from .zoom_zoo_playable import ROLL_WORDS
-from .classic_race_layout import describe, special_tile_bytes, checkpoint_tail_bytes
+from .classic_race_layout import describe, special_tile_bytes, checkpoint_tail_bytes, hunter_bytes, hud_captions
 from ..content.commands import write_track_override
 from ..reference.bsnes import BsnesCore, BUTTONS, frame_png
 from .zoom_zoo_trial import BUTTONS as RUNNER_BUTTONS  # the runner's controller-row bit order
@@ -208,6 +208,7 @@ def original_rows(directory):
     paused_updates = countdown_paused = 0
     previous = None
     finish, loading, archive, extras_archive, tail_archive = [None, None], None, None, None, b''
+    captions = caption_rows = None
     mode = None
     with (directory/'memory.wram').open('rb') as ws, (directory/'memory.sram').open('rb') as ss:
         for frame in range(first, last+1):
@@ -236,9 +237,14 @@ def original_rows(directory):
                 rows.append((row+s[0x106f:0x1073]+s[0x618:0x61c]+extras_archive+tail_archive).hex())
                 continue
             # $82:AAA4-AAB4 publish the player's A, X and Start; the timeline must agree
-            # (the accepted original() checks the same, from its guard frame on).
-            for at, button in ((0x31d, 'a'), (0x321, 'x'), (0x339, 'start')):
-                if frame >= boundary + GUARD_OFFSET and int.from_bytes(w[at:at+2], 'little') != int(button in document['timeline'][frame][0]):
+            # (the accepted original() checks the same, from its guard frame on). R-0052: an
+            # update a HUNTER effect skips ($128B at the end of the previous frame) publishes
+            # nothing, and under effect 7 ($1335) the reader publishes Y as A ($82:AC77-AC81).
+            skipped = previous is not None and previous[0x128b] != 0
+            reversed_controls = previous is not None and int.from_bytes(previous[0x1335:0x1337], 'little') != 0
+            for at, button in ((0x31d, 'y' if reversed_controls else 'a'), (0x321, 'x'), (0x339, 'start')):
+                if frame >= boundary + GUARD_OFFSET and not skipped and \
+                        int.from_bytes(w[at:at+2], 'little') != int(button in document['timeline'][frame][0]):
                     raise ValueError(f'player {button} publication differs from the controller timeline at {frame}')
             if frame >= boundary + GUARD_OFFSET:
                 for item in guards:
@@ -248,6 +254,13 @@ def original_rows(directory):
                     value = int.from_bytes(w[at:at+item['width']], 'little')
                     if value != item['value']:
                         violations.setdefault(f'{at:04x}', dict(frame=frame, value=value, guarded=item['value']))
+                # R-0052: the HUNTER opponent's voices 232-247 index the learned bank past its end
+                # at $7E21E9-$7E21F8 ($7E2102 + event - 1, $81:C25C-C260), as the other tours' 200-215
+                # do at the manifest's $7E21C9-$7E21D8; native takes the original's zero-weight exit,
+                # which these bytes being zero justifies.
+                for at in range(0x21e9, 0x21f9):
+                    if w[at]:
+                        violations.setdefault(f'{at:04x}', dict(frame=frame, value=w[at], guarded=0))
             try:
                 projected = project(w, s, frame)
             except (ValueError, AssertionError) as exc:
@@ -267,10 +280,13 @@ def original_rows(directory):
             pause = w[0xef3:0xef7]+paused_updates.to_bytes(4, 'little')+countdown_paused.to_bytes(4, 'little')
             extras_archive = charge+announcements+roll+weights+pause
             row += s[0x106f:0x1073]+s[0x618:0x61c]+extras_archive
-            # Any track but DRAGSTER and ZOOM ZOO: its state (URTRnn05) appends
+            # Any track but DRAGSTER and ZOOM ZOO: its state (URTRnn06) appends
             # the special-tile words (R-0047) and the last checkpoint flags (R-0048).
             if s[0x74a] not in (0, 1):
-                tail_archive = special_tile_bytes(w)+checkpoint_tail_bytes(w)
+                if captions is None:
+                    rom = Path((ROOT/'local/rom-location.txt').read_text().strip()).read_bytes()
+                    captions, caption_rows = hud_captions(rom), hud_captions(rom, range(1, 256))
+                tail_archive = special_tile_bytes(w)+checkpoint_tail_bytes(w)+hunter_bytes(w, captions, caption_rows)
                 row += tail_archive
             rows.append(row.hex())
             previous = w

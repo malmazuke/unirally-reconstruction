@@ -97,7 +97,7 @@ class PackProfileTests(unittest.TestCase):
             compiled += [(i, int(n), d) for i, n, d in re.findall(r'\{"([^"]+)", (\d+), "([0-9a-f]{64})"\}', table)]
         self.assertEqual(compiled, [(e["id"], e["size"], e["sha256"]) for e in added])
         self.assertIn(hashlib.sha256(rules_path.read_bytes()).hexdigest(), source)
-        self.assertEqual(rules["profile_id"], "classic.pal.crawler.tracks.v13")
+        self.assertEqual(rules["profile_id"], "classic.pal.crawler.tracks.v14")
         ids = {e["id"] for e in added}
         for index in tracks.NEW_RACE_TRACKS + tracks.LOCKED_RACE_TRACKS:
             for part in ("data", "tile-columns", "tile-flags", "bg1-tiles"):
@@ -127,14 +127,31 @@ class LoopEntryTests(unittest.TestCase):
     def test_rules_and_compiled_table_agree(self) -> None:
         import re
         rules = json.loads((ROOT / "tests" / "manifests" / "content" / "classic-crawler-tracks-pack.json").read_text(encoding="utf-8"))
-        self.assertEqual(rules["entries"][-1]["id"], "zoom.loop-offsets")
-        entry = rules["entries"][-1]
+        entry = next(e for e in rules["entries"] if e["id"] == "zoom.loop-offsets")
         self.assertEqual(entry["source"], {"kind": "raw", "pieces": [{"file_offset": 0x834C, "length": 34}]})
         source = (ROOT / "src" / "core" / "content_pack.cpp").read_text(encoding="utf-8")
         table = source[source.index("loop_required{{"):]
         table = table[:table.index("}};")]
         compiled = re.findall(r'\{"([^"]+)", (\d+), "([0-9a-f]{64})"\}', table)
         self.assertEqual(compiled, [(entry["id"], str(entry["size"]), entry["sha256"])])
+
+
+class HunterEntryTests(unittest.TestCase):
+    """Profile v14's added entries (R-0052): the HUNTER blink pattern and opponent palette."""
+
+    def test_rules_and_compiled_table_agree(self) -> None:
+        import re
+        rules = json.loads((ROOT / "tests" / "manifests" / "content" / "classic-crawler-tracks-pack.json").read_text(encoding="utf-8"))
+        blink, palette = rules["entries"][-2:]
+        self.assertEqual(blink["id"], "zoom.hunter-blink")
+        self.assertEqual(blink["source"], {"kind": "raw", "pieces": [{"file_offset": 0x1D3BC, "length": 64}]})
+        self.assertEqual(palette["id"], "presentation.classic.hunter-opponent-palette.v1")
+        self.assertEqual(palette["source"], {"kind": "raw", "pieces": [{"file_offset": 0x20400, "length": 32}]})
+        source = (ROOT / "src" / "core" / "content_pack.cpp").read_text(encoding="utf-8")
+        table = source[source.index("hunter_required{{"):]
+        table = table[:table.index("}};")]
+        compiled = re.findall(r'\{"([^"]+)", (\d+), "([0-9a-f]{64})"\}', table)
+        self.assertEqual(compiled, [(e["id"], str(e["size"]), e["sha256"]) for e in (blink, palette)])
 
 
 class TrackedManifestTests(unittest.TestCase):

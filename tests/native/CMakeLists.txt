@@ -64,3 +64,6 @@ add_test(NAME dragster_shared_race_geometry_scenario_identity COMMAND dragster_r
 add_executable(special_tile_tests special_tile_tests.cpp)
 target_link_libraries(special_tile_tests PRIVATE unirally_movement)
 add_test(NAME special_tiles_mud_corkscrew_layout COMMAND special_tile_tests)
+add_executable(hunter_effects_tests hunter_effects_tests.cpp)
+target_link_libraries(hunter_effects_tests PRIVATE unirally_movement)
+add_test(NAME hunter_tag_effects COMMAND hunter_effects_tests)

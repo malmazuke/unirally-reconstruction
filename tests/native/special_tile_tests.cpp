@@ -144,9 +144,9 @@ int main() {
                     update_corkscrew_tile(r2,t2,surface,tr2,u,std::span<const std::uint8_t>{});});
     }
 
-    // Layout: any track but DRAGSTER and ZOOM ZOO is URTRnn05, 854 bytes: the
+    // Layout: any track but DRAGSTER and ZOOM ZOO is URTRnn06, 916 bytes: the
     // special-tile words (12 per rider), $0E7B and $0C73 after the shared 742,
-    // then 60 checkpoint flags.
+    // then 60 checkpoint flags and the HUNTER effects' 31 words.
     {
         std::array<std::uint8_t,14> header{};header[3]=0x44;header[5]=0x32;header[7]=0x44;header[9]=0x32;header[13]=0x40;
         ZoomZooContent content{};content.movement.sampling.track=header;
@@ -154,8 +154,8 @@ int main() {
         auto state=classic_race_start(content,classic_race_scenario(ClassicRaceTrack{11}));
         state.special_tiles[1]={4,4,1,0x12,1,8,0,1};state.drive_target_latch=1;
         const auto bytes=serialize_zoom_zoo(state);
-        const std::array<std::uint8_t,8> magic{'U','R','T','R','1','1','0','5'};
-        require(bytes.size()==854 && std::equal(magic.begin(),magic.end(),bytes.begin()));
+        const std::array<std::uint8_t,8> magic{'U','R','T','R','1','1','0','6'};
+        require(bytes.size()==916 && std::equal(magic.begin(),magic.end(),bytes.begin()));
         require(bytes[766]==4 && bytes[770]==1 && bytes[772]==0x12 && bytes[776]==8 && bytes[780]==1 && bytes[790]==1);
         // R-0051: the loop's three words and flag pair 8's counter follow each rider's eight.
         auto looping=state;looping.special_tiles[0].loop_direction=1;looping.special_tiles[0].loop_step=9;
@@ -168,8 +168,12 @@ int main() {
         // Out-of-domain words are refused.
         for(const unsigned at:{742U,752U,758U,760U,762U,764U,772U,780U,790U}) {auto bad=bytes;bad[at]=0x40;rejects([&]{(void)deserialize_zoom_zoo(bad);});}
         auto short_state=bytes;short_state.resize(794);rejects([&]{(void)deserialize_zoom_zoo(short_state);});
-        auto old_version=bytes;old_version[7]='4';rejects([&]{(void)deserialize_zoom_zoo(old_version);});
-        auto old_width=bytes;old_width.resize(838);old_width[7]='4';rejects([&]{(void)deserialize_zoom_zoo(old_width);});
+        auto old_version=bytes;old_version[7]='5';rejects([&]{(void)deserialize_zoom_zoo(old_version);});
+        auto old_width=bytes;old_width.resize(854);old_width[7]='5';rejects([&]{(void)deserialize_zoom_zoo(old_width);});
+        // R-0052: HUNTER words on a track outside the HUNTER tour are refused.
+        auto stray=bytes;stray[854]=1;rejects([&]{(void)deserialize_zoom_zoo(stray);});
+        auto stray_zoom=classic_crawler_zoom_zoo_start(content);stray_zoom.hunter.latched=1;
+        rejects([&]{(void)serialize_zoom_zoo(stray_zoom);});
         // LOCKED-TOURS: the opponent's turnaround counter travels at 792, 0-30.
         auto turning=state;turning.opponent_turnaround=12;
         const auto turning_bytes=serialize_zoom_zoo(turning);

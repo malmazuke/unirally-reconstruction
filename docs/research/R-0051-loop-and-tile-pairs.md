@@ -109,7 +109,7 @@ nonzero) runs `$83:CEC9` every update, which native lacks.
   with Right held (R-0050) shows event 30, effect `$132B`.
 
 The effect routines' words feed consumers not yet traced. `tasks/HUNTER-EFFECTS.md` carries the
-reading.
+reading. Recovered in HUNTER-EFFECTS ([R-0052](R-0052-hunter-effects.md)).
 
 ## Evidence
 
