@@ -68046,6 +68046,76 @@
       "sha256": "91dd4557d6f9b28a69d69720e2ea4c1e5aaf71247bd7ba4d439d834802785c3d"
     },
     {
+      "id": "front-end.asset.022",
+      "source": {
+        "kind": "raw",
+        "pieces": [
+          {
+            "file_offset": 131968,
+            "length": 32
+          }
+        ]
+      },
+      "size": 32,
+      "sha256": "dc19e3f415349382ca580033df6a25a9ccee6911d702ee347bcb718a40181c25"
+    },
+    {
+      "id": "front-end.asset.023",
+      "source": {
+        "kind": "raw",
+        "pieces": [
+          {
+            "file_offset": 132000,
+            "length": 32
+          }
+        ]
+      },
+      "size": 32,
+      "sha256": "45fcaec6849e38e57046a444140508244ed1fc53d8ed521990a9176dbbfb0a56"
+    },
+    {
+      "id": "front-end.asset.024",
+      "source": {
+        "kind": "raw",
+        "pieces": [
+          {
+            "file_offset": 132032,
+            "length": 32
+          }
+        ]
+      },
+      "size": 32,
+      "sha256": "e1f7bd6ca99d90433586815037afe9b5bc60e23b6e34dd4b6821a09d9d08d1c3"
+    },
+    {
+      "id": "front-end.asset.025",
+      "source": {
+        "kind": "raw",
+        "pieces": [
+          {
+            "file_offset": 132064,
+            "length": 32
+          }
+        ]
+      },
+      "size": 32,
+      "sha256": "49158e78a8479bc21c65bcfc8b9f6277fa23306a8e74f8abfa3f7b800c85a33f"
+    },
+    {
+      "id": "front-end.asset.026",
+      "source": {
+        "kind": "raw",
+        "pieces": [
+          {
+            "file_offset": 132096,
+            "length": 32
+          }
+        ]
+      },
+      "size": 32,
+      "sha256": "a8d2de3b96ccc5a277cb3ffecaa92006913197e0887ccb76f27a7a25d41d6d8e"
+    },
+    {
       "id": "front-end.asset.032",
       "source": {
         "kind": "raw",
@@ -68116,6 +68186,20 @@
       "sha256": "f436724f2f119eb265e224a1c63ed66eb535309bd0a8e79e6004c4e4c4b1efe0"
     },
     {
+      "id": "front-end.asset.037",
+      "source": {
+        "kind": "raw",
+        "pieces": [
+          {
+            "file_offset": 133080,
+            "length": 32
+          }
+        ]
+      },
+      "size": 32,
+      "sha256": "e6badb0c68232da353c51a90ee7daaed43cdd37ce01d05d681a9037fee8bbacf"
+    },
+    {
       "id": "front-end.medal-tiles",
       "source": {
         "kind": "raw",
@@ -68128,6 +68212,20 @@
       },
       "size": 3072,
       "sha256": "37eb293068522399f2bfcbff576eb3b5cbd3d58e15acaa4683cc696016e8f51e"
+    },
+    {
+      "id": "front-end.track-menu-tiles",
+      "source": {
+        "kind": "raw",
+        "pieces": [
+          {
+            "file_offset": 248280,
+            "length": 3072
+          }
+        ]
+      },
+      "size": 3072,
+      "sha256": "f5804175493de79bd303aee653b914a1da28da68e6d84eab62edd86956b05759"
     },
     {
       "id": "front-end.tour-menu-text",
@@ -68226,7 +68324,147 @@
       },
       "size": 4,
       "sha256": "f92831233ca28644a831ecbb62f986b1ddc17e1a23ec5dcef17b4d8d8e75a6cf"
+    },
+    {
+      "id": "front-end.tour-names",
+      "source": {
+        "kind": "raw",
+        "pieces": [
+          {
+            "file_offset": 106952,
+            "length": 80
+          }
+        ]
+      },
+      "size": 80,
+      "sha256": "df9785d22e456f1e3e73f6270a50b09478d0e5f0396ddb4ed7d92eb6238d2f84"
+    },
+    {
+      "id": "front-end.track-menu-layout",
+      "source": {
+        "kind": "raw",
+        "pieces": [
+          {
+            "file_offset": 27189,
+            "length": 35
+          }
+        ]
+      },
+      "size": 35,
+      "sha256": "83be7c59633a47597c0091c04f4247173822631ec334e86214f6b23178d02add"
+    },
+    {
+      "id": "front-end.track-menu-text",
+      "source": {
+        "kind": "raw",
+        "pieces": [
+          {
+            "file_offset": 27224,
+            "length": 55
+          }
+        ]
+      },
+      "size": 55,
+      "sha256": "c1473ec694fa1b1e8f95481a53e050b9b3228d05be30e4fd9a575cc7dd4911a8"
+    },
+    {
+      "id": "front-end.medal-words",
+      "source": {
+        "kind": "raw",
+        "pieces": [
+          {
+            "file_offset": 27398,
+            "length": 29
+          }
+        ]
+      },
+      "size": 29,
+      "sha256": "3539e8e0ac30b4e12c584f1f1b704ec2cc35b5743b94cb7c850e3487585339fc"
+    },
+    {
+      "id": "front-end.marker-tiles",
+      "source": {
+        "kind": "raw",
+        "pieces": [
+          {
+            "file_offset": 27489,
+            "length": 21
+          }
+        ]
+      },
+      "size": 21,
+      "sha256": "4490a41a4b6d6b61a7a3123834cd24abee3799a2b641235b2cc439337e5018c9"
+    },
+    {
+      "id": "front-end.race-kind-words",
+      "source": {
+        "kind": "raw",
+        "pieces": [
+          {
+            "file_offset": 12805,
+            "length": 40
+          }
+        ]
+      },
+      "size": 40,
+      "sha256": "5e8c62d95312baf99c8b6352363b8e53239c4dfac85f264517b5883da7e26706"
+    },
+    {
+      "id": "front-end.now-playing-text",
+      "source": {
+        "kind": "raw",
+        "pieces": [
+          {
+            "file_offset": 13558,
+            "length": 136
+          }
+        ]
+      },
+      "size": 136,
+      "sha256": "20ae7da9f44789b924c0e1b1c6f2c89179769f7f44642502ed756ffeed5e3c98"
+    },
+    {
+      "id": "front-end.time-words",
+      "source": {
+        "kind": "raw",
+        "pieces": [
+          {
+            "file_offset": 31836,
+            "length": 18
+          }
+        ]
+      },
+      "size": 18,
+      "sha256": "9158849d3cadd0331810b06b8b3a1c90565505d15052b406a8d7e1758ddf87d4"
+    },
+    {
+      "id": "front-end.laps",
+      "source": {
+        "kind": "raw",
+        "pieces": [
+          {
+            "file_offset": 107092,
+            "length": 50
+          }
+        ]
+      },
+      "size": 50,
+      "sha256": "d9eb1969e8457b372f7ec775b03aefd69a5be9d6d5d5114b6805807577c8695a"
+    },
+    {
+      "id": "front-end.qualifying-scores",
+      "source": {
+        "kind": "raw",
+        "pieces": [
+          {
+            "file_offset": 107032,
+            "length": 60
+          }
+        ]
+      },
+      "size": 60,
+      "sha256": "ab4af8f8d321a129369d324aad5ea51d56dc07c11401c293879e7afb2eb18554"
     }
   ],
-  "description": "Classic content for DRAGSTER and ZOOM ZOO (the v9 entries, unchanged) and, from TRACK-BREADTH part 3, the fourteen other race tracks a cold start reaches: per track its decoded data, tile columns, tile flags and BG1 tiles (track.NN.*, R-0046 observations 1-2), per scenery (track mod 14) its BG2 tiles, BG2 map and race palette (scenery.SS.*, `$82:DC20-DD84`), and the track name table (`$83:9FFA`). Every new entry is ROM content located by the loader's own directories; tools/unirally_lab/content/tracks.py v10_new_entries generates them. From SPECIAL-TILE-RESPONSE (v11): the two 48-byte signed height tables the corkscrew tile steps through ($00:8088 and, for a rolling rider, $00:80B8; R-0047). From LOCKED-TOURS (v12): the twenty race tracks of the five tours a cold start does not list (track.NN.* for 5, 6, 8, 9, 15, 16, 18, 19, 25, 26, 28, 29, 35, 36, 38, 39, 40, 41, 43, 44) and sceneries 1, 8 and 12 (tracks.v12_new_entries). From TILE-PAIRS-8-12-26 (v13): the loop tile's 17 signed x steps by loop step ($81:834C; R-0051). From HUNTER-EFFECTS (v14): the HUNTER tag effects' blink pattern ($83:D3BC) and the HUNTER opponent's sprite palette (asset 26, character 20 + 6, `$82:DDB0-DDBC`; R-0052). From FRONT-END-MAIN-MENU (v15): the content of the boot screens, the title and the main menu: seventeen assets of the directory at `$82:B332` (front-end.asset.NNN) and the tables the front-end code reads in place: the base palette, the text printer's character table, the main menu's text, the arrow's spin frames and columns, and the palette cycle's colours (tools/unirally_lab/content/front_end.py v15_new_entries; R-0054). From FRONT-END-1P-SETUP (v16): the rider menu's content: the riders' sprite palettes (assets 6-21; `$80:A72B` and the HDMA table `$80:CD84` are the same bytes), the riders' name records a cold start copies to SRAM (`$83:800C`), the menu's title (`$80:BCAF`) and the main menu decoration animator's tables (`$83:9AF9`) (tools/unirally_lab/content/front_end.py v16_new_entries; R-0055). From FRONT-END-1P-SETUP part 2 (v17): PICK TOUR's content: the medal palettes and the base palette's halves (assets 32-36), the medal object tiles (`$07:D5D8`), the menu's text, the badges' places and pictures, the tours' levels, the arrow's targets and the medal objects' places and attributes (tools/unirally_lab/content/front_end.py v17_new_entries; R-0056)."
+  "description": "Classic content for DRAGSTER and ZOOM ZOO (the v9 entries, unchanged) and, from TRACK-BREADTH part 3, the fourteen other race tracks a cold start reaches: per track its decoded data, tile columns, tile flags and BG1 tiles (track.NN.*, R-0046 observations 1-2), per scenery (track mod 14) its BG2 tiles, BG2 map and race palette (scenery.SS.*, `$82:DC20-DD84`), and the track name table (`$83:9FFA`). Every new entry is ROM content located by the loader's own directories; tools/unirally_lab/content/tracks.py v10_new_entries generates them. From SPECIAL-TILE-RESPONSE (v11): the two 48-byte signed height tables the corkscrew tile steps through ($00:8088 and, for a rolling rider, $00:80B8; R-0047). From LOCKED-TOURS (v12): the twenty race tracks of the five tours a cold start does not list (track.NN.* for 5, 6, 8, 9, 15, 16, 18, 19, 25, 26, 28, 29, 35, 36, 38, 39, 40, 41, 43, 44) and sceneries 1, 8 and 12 (tracks.v12_new_entries). From TILE-PAIRS-8-12-26 (v13): the loop tile's 17 signed x steps by loop step ($81:834C; R-0051). From HUNTER-EFFECTS (v14): the HUNTER tag effects' blink pattern ($83:D3BC) and the HUNTER opponent's sprite palette (asset 26, character 20 + 6, `$82:DDB0-DDBC`; R-0052). From FRONT-END-MAIN-MENU (v15): the content of the boot screens, the title and the main menu: seventeen assets of the directory at `$82:B332` (front-end.asset.NNN) and the tables the front-end code reads in place: the base palette, the text printer's character table, the main menu's text, the arrow's spin frames and columns, and the palette cycle's colours (tools/unirally_lab/content/front_end.py v15_new_entries; R-0054). From FRONT-END-1P-SETUP (v16): the rider menu's content: the riders' sprite palettes (assets 6-21; `$80:A72B` and the HDMA table `$80:CD84` are the same bytes), the riders' name records a cold start copies to SRAM (`$83:800C`), the menu's title (`$80:BCAF`) and the main menu decoration animator's tables (`$83:9AF9`) (tools/unirally_lab/content/front_end.py v16_new_entries; R-0055). From FRONT-END-1P-SETUP part 2 (v17): PICK TOUR's, PICK TRACK's and NOW PLAYING's content: the computer riders', medals', base and marker palettes (assets 22-26, 32-37), the medal and marker object tiles (`$07:D5D8`, `$07:C9D8`), the menus' text and tables, the tour names, the laps by track and the stunt events' qualifying scores (tools/unirally_lab/content/front_end.py v17_new_entries; R-0056)."
 }

@@ -210,10 +210,10 @@ void main_menu_tests() {
       {0x0400, 0x0800}); // controller 2's Up while Down is held: latched
   require(state.menu.selection == 1);
   run(state, content, 1);
-  require(!state.menu.move_latched);
+  require(!state.latches.moved);
   // Opposing directions read as neither (the D-pad's rocker).
   run(state, content, 1, {0x0c00, 0});
-  require(state.menu.selection == 1 && !state.menu.move_latched);
+  require(state.menu.selection == 1 && !state.latches.moved);
   // Up past 1P wraps to OPTIONS; Select moves down and wraps back to 1P.
   run(state, content, 1, {0x0800, 0});
   run(state, content, 1);

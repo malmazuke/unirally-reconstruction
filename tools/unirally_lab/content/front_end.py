@@ -90,13 +90,17 @@ def v16_new_entries(rom: bytes) -> list[dict[str, Any]]:
     return entries + [table_entry(rom, *table) for table in RIDER_MENU_TABLES]
 
 
-# Profile v17 (FRONT-END-1P-SETUP part 2, R-0056): PICK TOUR. The medal palettes (assets 32-34, at
-# colours 0x80-0xA0, `$80:9764`) and the base palette's halves (35 at 0, 36 at 0x40, `$80:A858`).
+# Profile v17 (FRONT-END-1P-SETUP part 2, R-0056): PICK TOUR, PICK TRACK and NOW PLAYING.
+# Palettes: the medals' (assets 32-34 at colours 0x80-0xA0, `$80:9764`), the base palette's halves
+# (35 at 0, 36 at 0x40, `$80:A858`), the done-track markers' (37 at 0xB0, `$80:E888`), and the
+# computer riders' and SOMEONE's (22-26: rider 16-20's palette is asset 6 + rider, `$80:B3FC`).
 # `$80:A82B` DMAs `$84:A378`, asset 68's last 1,920 bytes, so it needs no entry of its own.
-TOUR_MENU_ASSETS = (32, 33, 34, 35, 36)
+TOUR_MENU_ASSETS = (22, 23, 24, 25, 26, 32, 33, 34, 35, 36, 37)
 TOUR_MENU_TABLES = (
-    # The medal object tiles `$83:94D0` DMAs to VRAM word 0x7A00.
+    # The medal object tiles `$83:94D0` DMAs to VRAM word 0x7A00, and PICK TRACK's set
+    # (`$83:94FF`).
     ("front-end.medal-tiles", 0x87D5D8, 0xC00),
+    ("front-end.track-menu-tiles", 0x87C9D8, 0xC00),
     # The four text streams `$80:E730` prints: the title and the left column (`$80:E7C4`), then
     # jumper and bounder, runner and sprinter, hunter.
     ("front-end.tour-menu-text", 0x80E7C4, 0x6A),
@@ -112,6 +116,24 @@ TOUR_MENU_TABLES = (
     # by medal (`$80:9801`).
     ("front-end.medal-places", 0x8097DD, 36),
     ("front-end.medal-attributes", 0x809801, 4),
+    # The tours' names (`$83:A1C8`, the strings `$83:A1B4` points to).
+    ("front-end.tour-names", 0x83A1C8, 80),
+    # PICK TRACK: the items' arrow columns (`$80:EA35`), the markers' rows (`$80:EA3B`) and the
+    # pictures' places (`$80:EA40`); its text (`$80:EA58`); the medal words GOLD, SILVER, BRONZE
+    # (`$80:EB06`); the markers' tiles (`$80:EB61`).
+    ("front-end.track-menu-layout", 0x80EA35, 0x23),
+    ("front-end.track-menu-text", 0x80EA58, None),
+    ("front-end.medal-words", 0x80EB06, 0x1D),
+    ("front-end.marker-tiles", 0x80EB61, 21),
+    # NOW PLAYING: the race kind's words (`$80:B205`) and its streams and picture place
+    # (`$80:B4F6-B57D`); a time's words `_quit___`, `_no_time` (`$80:FC5C`).
+    ("front-end.race-kind-words", 0x80B205, 40),
+    ("front-end.now-playing-text", 0x80B4F6, 0x88),
+    ("front-end.time-words", 0x80FC5C, 18),
+    # The race's laps by track (`$83:A254`) and the stunt events' qualifying scores by tour and
+    # medal (`$83:A218`).
+    ("front-end.laps", 0x83A254, 50),
+    ("front-end.qualifying-scores", 0x83A218, 60),
 )
 TOUR_BADGE_TILES = 0x84A378  # `$80:A82B`'s source: asset 68's tail
 

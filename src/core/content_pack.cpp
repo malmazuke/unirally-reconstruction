@@ -436,17 +436,26 @@ const std::array<RequiredEntry, 19> rider_menu_required{{
     {"front-end.decoration-frames", 76,
      "91dd4557d6f9b28a69d69720e2ea4c1e5aaf71247bd7ba4d439d834802785c3d"},
 }};
-// FRONT-END-1P-SETUP part 2 (profile v17): PICK TOUR's palettes, medal tiles and tables
+// FRONT-END-1P-SETUP part 2 (profile v17): PICK TOUR's, PICK TRACK's and NOW PLAYING's palettes,
+// object tiles, text and tables
 // (tools/unirally_lab/content/front_end.py v17_new_entries, R-0056).
-const std::array<RequiredEntry, 13> tour_menu_required{{
+const std::array<RequiredEntry, 30> tour_menu_required{{
+    {"front-end.asset.022", 32, "dc19e3f415349382ca580033df6a25a9ccee6911d702ee347bcb718a40181c25"},
+    {"front-end.asset.023", 32, "45fcaec6849e38e57046a444140508244ed1fc53d8ed521990a9176dbbfb0a56"},
+    {"front-end.asset.024", 32, "e1f7bd6ca99d90433586815037afe9b5bc60e23b6e34dd4b6821a09d9d08d1c3"},
+    {"front-end.asset.025", 32, "49158e78a8479bc21c65bcfc8b9f6277fa23306a8e74f8abfa3f7b800c85a33f"},
+    {"front-end.asset.026", 32, "a8d2de3b96ccc5a277cb3ffecaa92006913197e0887ccb76f27a7a25d41d6d8e"},
     {"front-end.asset.032", 32, "fb3ebb50272c0b14248c796f0d4fb5d274631395abda7059f12d7fa351a5785f"},
     {"front-end.asset.033", 32, "ced41ab2eeee8a9afdbf3fc993d0ddf7a52f3969aca08aa4786e527cb5a328f2"},
     {"front-end.asset.034", 32, "c8f6a64006fa59e874cb0346dcd3ff9d53dc0c337492a4ebee358f85d49fd67b"},
     {"front-end.asset.035", 128,
      "5dae33d15f7e6d183f05242207b8909bc2a3274f8f785e17f3c75f102d8ce89b"},
     {"front-end.asset.036", 88, "f436724f2f119eb265e224a1c63ed66eb535309bd0a8e79e6004c4e4c4b1efe0"},
+    {"front-end.asset.037", 32, "e6badb0c68232da353c51a90ee7daaed43cdd37ce01d05d681a9037fee8bbacf"},
     {"front-end.medal-tiles", 3072,
      "37eb293068522399f2bfcbff576eb3b5cbd3d58e15acaa4683cc696016e8f51e"},
+    {"front-end.track-menu-tiles", 3072,
+     "f5804175493de79bd303aee653b914a1da28da68e6d84eab62edd86956b05759"},
     {"front-end.tour-menu-text", 106,
      "0c2e16fc3839b042fe98c86f73ef83141b5f2b5386c4dad0d28c6de83c0564a8"},
     {"front-end.tour-badge-places", 18,
@@ -461,6 +470,25 @@ const std::array<RequiredEntry, 13> tour_menu_required{{
      "c71438d4455b8361466f0d487d8334ffa40b5b27f00aa9814b0374d2398b8b55"},
     {"front-end.medal-attributes", 4,
      "f92831233ca28644a831ecbb62f986b1ddc17e1a23ec5dcef17b4d8d8e75a6cf"},
+    {"front-end.tour-names", 80,
+     "df9785d22e456f1e3e73f6270a50b09478d0e5f0396ddb4ed7d92eb6238d2f84"},
+    {"front-end.track-menu-layout", 35,
+     "83be7c59633a47597c0091c04f4247173822631ec334e86214f6b23178d02add"},
+    {"front-end.track-menu-text", 55,
+     "c1473ec694fa1b1e8f95481a53e050b9b3228d05be30e4fd9a575cc7dd4911a8"},
+    {"front-end.medal-words", 29,
+     "3539e8e0ac30b4e12c584f1f1b704ec2cc35b5743b94cb7c850e3487585339fc"},
+    {"front-end.marker-tiles", 21,
+     "4490a41a4b6d6b61a7a3123834cd24abee3799a2b641235b2cc439337e5018c9"},
+    {"front-end.race-kind-words", 40,
+     "5e8c62d95312baf99c8b6352363b8e53239c4dfac85f264517b5883da7e26706"},
+    {"front-end.now-playing-text", 136,
+     "20ae7da9f44789b924c0e1b1c6f2c89179769f7f44642502ed756ffeed5e3c98"},
+    {"front-end.time-words", 18,
+     "9158849d3cadd0331810b06b8b3a1c90565505d15052b406a8d7e1758ddf87d4"},
+    {"front-end.laps", 50, "d9eb1969e8457b372f7ec775b03aefd69a5be9d6d5d5114b6805807577c8695a"},
+    {"front-end.qualifying-scores", 60,
+     "ab4af8f8d321a129369d324aad5ea51d56dc07c11401c293879e7afb2eb18554"},
 }};
 // LOCKED-TOURS (profile v12): the race tracks of the five tours a cold start does not
 // list, and sceneries 1, 8 and 12. Generated from the rules file (tracks.py v12_new_entries).
@@ -622,7 +650,7 @@ const std::array<RequiredEntry, 89> locked_tracks_required{{
     {"scenery.12.palette", 352, "b2a9aefe13c1dc68454cf0a5c2bedb086c6e162dbea1df1f2ef108347d89ab63"},
 }};
 constexpr std::string_view two_track_rules_sha =
-    "0397c1832202749c20e6b82250fe338298039819dc109cf80db6d25b8a85d088";
+    "9dc4bcbc4c2eb7e3bf911ca1b35d8f6e79e4ac2c75495e965cae8bbeef8b7c88";
 
 std::array<std::uint8_t, 32> hex_digest(std::string_view text) {
     if (text.size() != 64) throw std::logic_error("invalid compiled Classic SHA-256");

@@ -559,7 +559,7 @@ build/app-debug/src/core/classic_race_presentation_runner local/classic-pal-craw
 # the menu, the palette cycle, the OAM buffer and CGRAM in hex, and pictures of the named frames. FILE rows are
 # "frame pad1 pad2" in hex SNES pad words.
 build/lab-release/src/core/front_end_runner --content-pack local/classic-pal-crawler-tracks-v17.pack --frames 1000 [--inputs FILE] [--picture FRAME OUT.ppm]
-# Extract the Classic pack (profile classic.pal.crawler.tracks.v17, 295 rules entries: v16's 282 and PICK TOUR's 13
+# Extract the Classic pack (profile classic.pal.crawler.tracks.v17, 312 rules entries: v16's 282 and the 1P screens' 30
 # assets and tables; v16 added FRONT-END-1P-SETUP's 19 rider-menu assets and tables; v15 added FRONT-END-MAIN-MENU's 23 front-end assets and tables to v14's 240; v14 had v11's 148, LOCKED-TOURS' 89,
 # TILE-PAIRS-8-12-26's loop offsets and HUNTER-EFFECTS' blink pattern and opponent palette; v10 added the fourteen other cold-start race tracks and their sceneries in
 # TRACK-BREADTH part 3, and the corkscrew heights of SPECIAL-TILE-RESPONSE). It is the only profile the current build

@@ -1,14 +1,17 @@
 #include "text_printer.hpp"
 
 #include <stdexcept>
+#include <vector>
 
 namespace unirally {
 
 namespace {
 
 // Control codes, dispatched through `$80:C3DC` by 0xFF - code (`$80:C3C6-C3D9`).
-constexpr std::uint8_t end_of_text = 0xff, position = 0xfe, centre = 0xfc, nothing = 0xfb,
-                       attribute = 0xf9, skip_pair = 0xef, first_control = 0xee;
+constexpr std::uint8_t end_of_text = 0xff, position = 0xfe, number = 0xfd, centre = 0xfc,
+                       nothing = 0xfb, attribute = 0xf9, track_name = 0xf7, place_object = 0xef,
+                       first_control = 0xee;
+constexpr std::uint8_t row_code = 0xf2; // positions F7's name alone, like FC
 constexpr std::uint16_t priority_bit = 0x2000;
 constexpr std::uint8_t small_glyph = 0x80;
 // A small glyph's tile is its entry (less the flag) plus 0x9F, over the tile 0x3C below
@@ -69,7 +72,7 @@ void centre_on(TextCursor& cursor, std::span<const std::uint8_t> rest, std::uint
     for (std::size_t at = 0; at < rest.size(); ++at) {
         const auto character = rest[at];
         if (character == end_of_text || character == nothing) break;
-        if (character == skip_pair) {
+        if (character == place_object) {
             ++at;
             continue;
         }
@@ -78,10 +81,40 @@ void centre_on(TextCursor& cursor, std::span<const std::uint8_t> rest, std::uint
     cursor.position = row * 32U + ((budget & 0xffU) >> 1U);
 }
 
+const TextVariables& require(const TextVariables* variables) {
+    if (!variables) throw std::invalid_argument("text printer variable code without variables");
+    return *variables;
+}
+
+// The name of track `track`, up to its 0xFF (`$80:9B55`).
+std::span<const std::uint8_t> name_of(std::span<const std::uint8_t> names, unsigned track) {
+    std::size_t at = 0;
+    for (unsigned k = 0; k < track; ++k) {
+        while (at < names.size() && names[at] != end_of_text) ++at;
+        ++at;
+    }
+    std::size_t end = at;
+    while (end < names.size() && names[end] != end_of_text) ++end;
+    if (end >= names.size()) throw std::invalid_argument("track name is not in the table");
+    return names.subspan(at, end - at);
+}
+
 } // namespace
 
+std::array<std::uint8_t, 6> five_digit_text(std::uint16_t value) {
+    std::array<std::uint8_t, 6> text{};
+    unsigned rest = value, place = 10000;
+    for (std::size_t k = 0; k < 5; ++k, place /= 10) {
+        text[k] = static_cast<std::uint8_t>('0' + rest / place);
+        rest %= place;
+    }
+    for (std::size_t k = 0; k < 4 && text[k] == '0'; ++k) text[k] = '_';
+    text[5] = end_of_text;
+    return text;
+}
+
 void print_text(TextMap& map, TextCursor& cursor, std::span<const std::uint8_t> stream,
-                std::span<const std::uint8_t> character_table) {
+                std::span<const std::uint8_t> character_table, const TextVariables* variables) {
     if (character_table.size() != 256)
         throw std::invalid_argument("text printer table is not 256 bytes");
     std::size_t at = 0;
@@ -114,6 +147,34 @@ void print_text(TextMap& map, TextCursor& cursor, std::span<const std::uint8_t> 
             break;
         }
         case attribute: cursor.attribute = static_cast<std::uint16_t>(next() << 10U); break;
+        case number: { // $80:C456
+            const auto& v = require(variables);
+            const auto address = static_cast<std::uint16_t>(next() | (next() << 8U));
+            const auto text = five_digit_text(v.word(address));
+            print_text(map, cursor, text, character_table, variables);
+            break;
+        }
+        case track_name: { // $80:C628
+            const auto& v = require(variables);
+            const auto address = static_cast<std::uint16_t>(next() | (next() << 8U));
+            std::vector<std::uint8_t> text;
+            if (at < stream.size() && (stream[at] == row_code || stream[at] == centre)) {
+                text.push_back(next());
+                text.push_back(next());
+            }
+            const auto name = name_of(v.track_names, v.word(address));
+            text.insert(text.end(), name.begin(), name.end());
+            text.push_back(end_of_text);
+            if (at < stream.size() && stream[at] == first_control)
+                throw std::invalid_argument("text printer upper-case names are not recovered");
+            print_text(map, cursor, text, character_table, variables);
+            break;
+        }
+        case place_object: { // $80:C6D5
+            const auto& v = require(variables);
+            v.place_object(next() & 7U, cursor.position);
+            break;
+        }
         default: throw std::invalid_argument("text printer control code is not recovered");
         }
     }

@@ -90,10 +90,11 @@ struct MenuDecorations {
     std::uint8_t sway{};                // $0192: entries 100-103's columns, 19 down to 0
 };
 
-// The rider and tour menus' Up and Down latches ($008F bits 3 and 2): the button is held since
-// it last moved the arrow. The rider menu clears them on entry; the tour menu keeps them.
+// The menus' movement latches, the byte $008F: a direction is held since it last moved the
+// arrow. The main menu, PICK TRACK and NOW PLAYING write the whole byte, 1 or 0 (`moved`); PICK
+// YOUR UNI and PICK TOUR keep Up and Down apart in bits 3 and 2.
 struct MenuLatches {
-    bool up{}, down{};
+    bool moved{}, up{}, down{};
 };
 
 // PICK YOUR UNI ($80:CB04): 16 riders in two columns of eight, rider r at row r / 2, column
@@ -128,7 +129,6 @@ struct TourMenu {
 struct MainMenu {
     std::uint8_t selection{}; // $009B
     std::int16_t idle{};      // $0089: frames left before the demo
-    bool move_latched{};      // $008F: Up or Down still held since the last move
 };
 
 // Where the front end is. The boot, the steps between screens and the way back to the main menu

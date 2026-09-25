@@ -90,6 +90,11 @@ std::string hex(const std::array<std::uint8_t, N>& bytes) {
     return out;
 }
 
+// $008F as the original holds it.
+unsigned latch_byte(const unirally::MenuLatches& latches) {
+    return (latches.moved ? 1U : 0U) | (latches.up ? 8U : 0U) | (latches.down ? 4U : 0U);
+}
+
 // The state after the main menu (R-0055), as `key=value` fields.
 void print_screens(const unirally::FrontEndState& state) {
     const auto& slide = state.slide;
@@ -131,7 +136,7 @@ int main(int argc, char** argv) try {
         const auto& a = state.arrow;
         std::cout << frame << ' ' << unsigned(a.spin) << ' ' << a.x << ' ' << a.target_x << ' '
                   << a.y << ' ' << a.target_y << ' ' << state.menu.idle << ' '
-                  << unsigned(state.menu.selection) << ' ' << state.menu.move_latched << ' '
+                  << unsigned(state.menu.selection) << ' ' << latch_byte(state.latches) << ' '
                   << int(state.cycle.delay) << ' ' << int(state.cycle.phase) << ' '
                   << hex(state.oam_buffer) << ' ' << hex(state.video.cgram) << ' ';
         print_screens(state);

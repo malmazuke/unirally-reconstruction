@@ -335,11 +335,11 @@ void run_main_menu(FrontEndState& state, const FrontEndContent& content, FrontEn
     const bool down = pressed(down_buttons);
     const bool up = !down && pressed(up_buttons);
     if (!down && !up) {
-        menu.move_latched = false;
+        state.latches = {};
         return;
     }
-    if (menu.move_latched) return;
-    menu.move_latched = true;
+    if (state.latches.moved) return;
+    state.latches = {.moved = true};
     menu.idle = idle_after_move;
     if (down) {
         if (++menu.selection >= menu_entries) {
@@ -484,7 +484,7 @@ void start_main_menu(FrontEndState& state) {
     state.screen = FrontEndScreen::main_menu;
     state.menu.selection = 0;
     state.menu.idle = first_idle;
-    state.menu.move_latched = false;
+    state.latches = {};
     send_arrow_to_first_entry(state);
 }
 
