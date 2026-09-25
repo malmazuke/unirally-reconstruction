@@ -1,5 +1,19 @@
 # Project state
 
+Updated 25 September 2026 (NATIVE-READABILITY part 1): **the recovered C++ now has measurable
+style rules, one format, and an index from every cited original address to the native code.**
+- `src/core/README.md` "How this code is written": nine rules (game-meaning names, named
+  constants, functions of at most 80 lines, intent-first comments with one evidence line, `$`
+  only for addresses, ROM quirks in named helpers, guards through one helper, the index, the
+  format). The reviewer checklist checks them.
+- `src/core` is formatted with `src/core/.clang-format`. The lab-release object code is
+  identical, and every gate, 1.23 million updates of native-against-native equivalence and
+  both recompare sweeps are unchanged.
+- `coverage native-symbols --lookup '$81:C238'` names the native function citing an address,
+  with its records. The static map names native symbols beside 216 of its 636 routines.
+- 22 functions still exceed 80 lines. Next is part 2 (tier 1): the simulation, starting with
+  the reward queue. See [NATIVE-READABILITY](../tasks/NATIVE-READABILITY.md).
+
 Updated 25 September 2026 (NATIVE-READABILITY recorded): **next is a readability pass on the
 recovered native code, at the user's request, before RESULT-TITLE-GLYPHS.**
 - The user asked whether the reward-queue update in `src/core/movement.cpp` is readable. It is
