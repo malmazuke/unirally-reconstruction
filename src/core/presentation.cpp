@@ -499,11 +499,12 @@ void render_result_background(RgbFrame& frame, const RaceFinishState& finish,
     copy_wrapping(vram, 0x0000, content.result_base_vram.subspan(8192, 2816));
     copy_wrapping(vram, 0x4000, content.result_base_vram.subspan(11008, 8960));
     copy_wrapping(vram, 0x6340, content.result_base_vram.subspan(19968, 8000));
-    // Frame 3546 resets VMADD to word $3D80 before the remaining copier run.
+    // Frame 3546 resets VMADD to word 0x3D80 before the remaining copier run.
     copy_wrapping(vram, 0x7b00, content.result_base_vram.subspan(27968, 13568));
 
     // The two result-specific 4bpp payloads retain the current VMADD ordering:
-    // $3D80 (byte $7B00), then $7A00 (byte $F400, wrapping through $0000).
+    // word 0x3D80 (byte 0x7B00), then word 0x7A00 (byte 0xF400, wrapping through
+    // byte 0x0000).
     copy_wrapping(vram, 0x7b00, content.result_assets.subspan(216, 1920));
     copy_wrapping(vram, 0xf400, content.result_assets.subspan(2136, 3072));
 
@@ -514,7 +515,8 @@ void render_result_background(RgbFrame& frame, const RaceFinishState& finish,
     auto cgram = build_race_cgram(content.palette, false);
     std::copy(content.result_palette.begin(), content.result_palette.end(), cgram.begin());
     // The seven-frame palette cycle's stable-frame phase is captured at frame
-    // 3678: CGRAM 108..111 receive $4A52, $4631, $4210 and $56B5.
+    // 3678: CGRAM 108..111 receive colours 0x4A52, 0x4631, 0x4210 and
+    // 0x56B5.
     constexpr std::array<std::uint8_t, 8> winner_cycle{0x52, 0x4a, 0x31, 0x46,
                                                        0x10, 0x42, 0xb5, 0x56};
     // The release-3000 loss reaches its first complete result on frame 3800.

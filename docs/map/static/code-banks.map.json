@@ -8714,7 +8714,6 @@
    ],
    "native": [
     "src/core/race_camera.cpp:update_visibility",
-    "src/core/rider_object.hpp:(file)",
     "src/core/rider_object.hpp:RiderOam",
     "src/core/zoom_zoo_movement.hpp:TrackGeometry"
    ],
@@ -8739,7 +8738,6 @@
    "native": [
     "src/core/race_camera.cpp:update_visibility",
     "src/core/rider_object.cpp:project_rider_oam",
-    "src/core/rider_object.hpp:(file)",
     "src/core/rider_object.hpp:RiderOam"
    ],
    "observed_entries": {},
@@ -9095,7 +9093,7 @@
     "NmX"
    ],
    "native": [
-    "src/core/rider_object.hpp:(file)"
+    "src/core/rider_object.hpp:compose_rider_object"
    ],
    "observed_entries": {},
    "start": "$82:B8AA",
@@ -13069,7 +13067,6 @@
    ],
    "native": [
     "src/core/content_pack.cpp:zoom_required",
-    "src/core/rider_object.hpp:(file)",
     "src/core/rider_object.hpp:compose_rider_object"
    ],
    "observed_entries": {},
@@ -13092,7 +13089,6 @@
    "native": [
     "src/core/content_pack.cpp:zoom_required",
     "src/core/rider_object.cpp:compose_rider_object",
-    "src/core/rider_object.hpp:(file)",
     "src/core/rider_object.hpp:compose_rider_object"
    ],
    "observed_entries": {},
@@ -13115,7 +13111,6 @@
    "native": [
     "src/core/content_pack.cpp:zoom_required",
     "src/core/rider_object.cpp:compose_rider_object",
-    "src/core/rider_object.hpp:(file)",
     "src/core/rider_object.hpp:RiderTileReference",
     "src/core/rider_object.hpp:compose_rider_object"
    ],
@@ -13138,7 +13133,6 @@
    ],
    "native": [
     "src/core/content_pack.cpp:zoom_required",
-    "src/core/rider_object.hpp:(file)",
     "src/core/rider_object.hpp:compose_rider_object"
    ],
    "observed_entries": {},

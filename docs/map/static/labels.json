@@ -6831,7 +6831,6 @@
   "comment": "routine start",
   "label": "sub_82ACAC",
   "native": [
-   "src/core/rider_object.hpp:(file)",
    "src/core/rider_object.hpp:RiderOam"
   ],
   "source_records": [
@@ -6847,7 +6846,6 @@
   "label": "loc_82AD0F",
   "native": [
    "src/core/race_camera.cpp:update_visibility",
-   "src/core/rider_object.hpp:(file)",
    "src/core/rider_object.hpp:RiderOam",
    "src/core/zoom_zoo_movement.hpp:TrackGeometry"
   ],
@@ -6862,7 +6860,6 @@
   "label": "loc_82AD91",
   "native": [
    "src/core/rider_object.cpp:project_rider_oam",
-   "src/core/rider_object.hpp:(file)",
    "src/core/rider_object.hpp:RiderOam"
   ],
   "source_records": [
@@ -6876,7 +6873,6 @@
   "label": "loc_82ADAB",
   "native": [
    "src/core/rider_object.cpp:project_rider_oam",
-   "src/core/rider_object.hpp:(file)",
    "src/core/rider_object.hpp:RiderOam"
   ],
   "source_records": [
@@ -6889,7 +6885,6 @@
   "comment": "instruction start",
   "label": "loc_82AE5E",
   "native": [
-   "src/core/rider_object.hpp:(file)",
    "src/core/rider_object.hpp:RiderOam"
   ],
   "source_records": [
@@ -7073,7 +7068,7 @@
   "comment": "routine start",
   "label": "sub_82B8AA",
   "native": [
-   "src/core/rider_object.hpp:(file)"
+   "src/core/rider_object.hpp:compose_rider_object"
   ],
   "source_records": [
    "docs/research/R-0036-zoom-zoo-rider-objects.md",
@@ -9295,7 +9290,6 @@
   "label": "sub_83F0FF",
   "native": [
    "src/core/content_pack.cpp:zoom_required",
-   "src/core/rider_object.hpp:(file)",
    "src/core/rider_object.hpp:compose_rider_object"
   ],
   "source_records": [
@@ -9312,7 +9306,6 @@
   "native": [
    "src/core/content_pack.cpp:zoom_required",
    "src/core/rider_object.cpp:compose_rider_object",
-   "src/core/rider_object.hpp:(file)",
    "src/core/rider_object.hpp:compose_rider_object"
   ],
   "source_records": [
@@ -9327,7 +9320,6 @@
   "native": [
    "src/core/content_pack.cpp:zoom_required",
    "src/core/rider_object.cpp:compose_rider_object",
-   "src/core/rider_object.hpp:(file)",
    "src/core/rider_object.hpp:compose_rider_object"
   ],
   "source_records": [
@@ -9343,7 +9335,6 @@
   "native": [
    "src/core/content_pack.cpp:zoom_required",
    "src/core/rider_object.cpp:compose_rider_object",
-   "src/core/rider_object.hpp:(file)",
    "src/core/rider_object.hpp:compose_rider_object"
   ],
   "source_records": [
@@ -9358,7 +9349,6 @@
   "native": [
    "src/core/content_pack.cpp:zoom_required",
    "src/core/rider_object.cpp:compose_rider_object",
-   "src/core/rider_object.hpp:(file)",
    "src/core/rider_object.hpp:compose_rider_object"
   ],
   "source_records": [
@@ -9373,7 +9363,6 @@
   "native": [
    "src/core/content_pack.cpp:zoom_required",
    "src/core/rider_object.cpp:compose_rider_object",
-   "src/core/rider_object.hpp:(file)",
    "src/core/rider_object.hpp:compose_rider_object"
   ],
   "source_records": [
@@ -9389,7 +9378,6 @@
   "native": [
    "src/core/content_pack.cpp:zoom_required",
    "src/core/rider_object.cpp:compose_rider_object",
-   "src/core/rider_object.hpp:(file)",
    "src/core/rider_object.hpp:RiderTileReference",
    "src/core/rider_object.hpp:compose_rider_object"
   ],
@@ -9406,7 +9394,6 @@
   "native": [
    "src/core/content_pack.cpp:zoom_required",
    "src/core/rider_object.cpp:compose_rider_object",
-   "src/core/rider_object.hpp:(file)",
    "src/core/rider_object.hpp:RiderTileReference",
    "src/core/rider_object.hpp:compose_rider_object"
   ],
@@ -9422,7 +9409,6 @@
   "native": [
    "src/core/content_pack.cpp:zoom_required",
    "src/core/rider_object.cpp:compose_rider_object",
-   "src/core/rider_object.hpp:(file)",
    "src/core/rider_object.hpp:compose_rider_object"
   ],
   "source_records": [
@@ -9439,7 +9425,6 @@
   "native": [
    "src/core/content_pack.cpp:zoom_required",
    "src/core/rider_object.cpp:compose_rider_object",
-   "src/core/rider_object.hpp:(file)",
    "src/core/rider_object.hpp:compose_rider_object"
   ],
   "source_records": [
@@ -9456,7 +9441,6 @@
   "native": [
    "src/core/content_pack.cpp:zoom_required",
    "src/core/rider_object.cpp:compose_rider_object",
-   "src/core/rider_object.hpp:(file)",
    "src/core/rider_object.hpp:compose_rider_object"
   ],
   "source_records": [
@@ -9471,7 +9455,6 @@
   "native": [
    "src/core/content_pack.cpp:zoom_required",
    "src/core/rider_object.cpp:compose_rider_object",
-   "src/core/rider_object.hpp:(file)",
    "src/core/rider_object.hpp:compose_rider_object"
   ],
   "source_records": [
@@ -9485,7 +9468,6 @@
   "label": "loc_83F2D9",
   "native": [
    "src/core/content_pack.cpp:zoom_required",
-   "src/core/rider_object.hpp:(file)",
    "src/core/rider_object.hpp:compose_rider_object"
   ],
   "source_records": [

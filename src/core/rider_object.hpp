@@ -2,8 +2,7 @@
 // Original rider sprite composition, recovered in R-0036.
 //
 // Each rider is one 64-by-64 OBJ. Every race update the original rebuilds the
-// object's tiles from the rider's pose index ($83:F0FF-$83:F2D9, uploaded by
-// the NMI queue at $82:B8AA) and republishes its OAM entry ($82:ACAC-$82:AE5E).
+// object's tiles from the rider's pose index and republishes its OAM entry.
 // These functions reproduce those two steps from static pack content and the
 // semantic rider fields; they own no state.
 #include "zoom_zoo_movement.hpp"
@@ -36,7 +35,8 @@ inline constexpr std::size_t rider_object_size = 64;
 // Index 0 is transparent.
 using RiderObjectPixels = std::array<std::uint8_t, rider_object_size * rider_object_size>;
 
-// $83:F0FF-$83:F2D9 for one rider. A pose frame is a four-byte header of five
+// $83:F0FF-$83:F2D9 for one rider; the NMI queue at $82:B8AA uploads the
+// result. A pose frame is a four-byte header of five
 // six-bit row masks (object tile rows 0-4, columns 1-6; bits 7..2 of each
 // masked byte are columns 1..6) followed by one tile reference word per set
 // bit in row-major order. An overlay frame uses the same layout; where its

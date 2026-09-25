@@ -2356,7 +2356,6 @@
   {
    "address": "$82:ACAC",
    "native": [
-    "src/core/rider_object.hpp:(file)",
     "src/core/rider_object.hpp:RiderOam"
    ],
    "range_ends": [
@@ -2404,7 +2403,7 @@
   {
    "address": "$82:B8AA",
    "native": [
-    "src/core/rider_object.hpp:(file)"
+    "src/core/rider_object.hpp:compose_rider_object"
    ],
    "region": "rom"
   },
@@ -3143,7 +3142,6 @@
    "address": "$83:F0FF",
    "native": [
     "src/core/content_pack.cpp:zoom_required",
-    "src/core/rider_object.hpp:(file)",
     "src/core/rider_object.hpp:compose_rider_object"
    ],
    "range_ends": [
@@ -3215,13 +3213,6 @@
     "src/core/rider_object.cpp:open_frame"
    ],
    "region": "rom"
-  },
-  {
-   "address": "$0000",
-   "native": [
-    "src/core/presentation.cpp:render_result_background"
-   ],
-   "region": "wram"
   },
   {
    "address": "$000F",
@@ -3744,7 +3735,7 @@
    "address": "$0D45",
    "native": [
     "src/core/presentation.hpp:ZoomZooRiderOverlays",
-    "src/core/rider_look.hpp:(file)"
+    "src/core/rider_look.hpp:RiderLook"
    ],
    "region": "wram"
   },
@@ -3752,14 +3743,14 @@
    "address": "$0D47",
    "native": [
     "src/core/presentation.hpp:ZoomZooRiderOverlays",
-    "src/core/rider_look.hpp:(file)"
+    "src/core/rider_look.hpp:RiderLook"
    ],
    "region": "wram"
   },
   {
    "address": "$0D49",
    "native": [
-    "src/core/rider_look.hpp:(file)",
+    "src/core/rider_look.hpp:RiderLook",
     "src/core/rider_look.hpp:RiderLook::head"
    ],
    "region": "wram"
@@ -3767,7 +3758,7 @@
   {
    "address": "$0D4B",
    "native": [
-    "src/core/rider_look.hpp:(file)"
+    "src/core/rider_look.hpp:RiderLook"
    ],
    "region": "wram"
   },
@@ -3820,7 +3811,7 @@
   {
    "address": "$0D5F",
    "native": [
-    "src/core/rider_look.hpp:(file)",
+    "src/core/rider_look.hpp:RiderLook",
     "src/core/rider_look.hpp:RiderLook::sequence_cursor"
    ],
    "range_ends": [
@@ -4382,7 +4373,7 @@
   {
    "address": "$1259",
    "native": [
-    "src/core/rider_look.hpp:(file)",
+    "src/core/rider_look.hpp:RiderLook",
     "src/core/rider_look.hpp:RiderLook::target"
    ],
    "range_ends": [
@@ -4754,23 +4745,9 @@
    "region": "io"
   },
   {
-   "address": "$00:3D80",
-   "native": [
-    "src/core/presentation.cpp:render_result_background"
-   ],
-   "region": "io"
-  },
-  {
    "address": "$00:420C",
    "native": [
     "src/core/presentation.cpp:race_vblank_frame"
-   ],
-   "region": "io"
-  },
-  {
-   "address": "$00:4210",
-   "native": [
-    "src/core/presentation.cpp:render_result_background"
    ],
    "region": "io"
   },
@@ -4785,41 +4762,6 @@
    "address": "$00:4219",
    "native": [
     "src/core/input_timer.hpp:ControllerSample::high_image"
-   ],
-   "region": "io"
-  },
-  {
-   "address": "$00:4631",
-   "native": [
-    "src/core/presentation.cpp:render_result_background"
-   ],
-   "region": "io"
-  },
-  {
-   "address": "$00:4A52",
-   "native": [
-    "src/core/presentation.cpp:render_result_background"
-   ],
-   "region": "io"
-  },
-  {
-   "address": "$00:56B5",
-   "native": [
-    "src/core/presentation.cpp:render_result_background"
-   ],
-   "region": "io"
-  },
-  {
-   "address": "$00:7A00",
-   "native": [
-    "src/core/presentation.cpp:render_result_background"
-   ],
-   "region": "io"
-  },
-  {
-   "address": "$00:7B00",
-   "native": [
-    "src/core/presentation.cpp:render_result_background"
    ],
    "region": "io"
   }
@@ -5366,20 +5308,8 @@
    ]
   },
   "src/core/presentation.cpp:render_result_background": {
-   "io": [
-    "$00:3D80",
-    "$00:4210",
-    "$00:4631",
-    "$00:4A52",
-    "$00:56B5",
-    "$00:7A00",
-    "$00:7B00"
-   ],
    "rom": [
     "$82:B296"
-   ],
-   "wram": [
-    "$0000"
    ]
   },
   "src/core/presentation.cpp:render_window_xor": {
@@ -6169,7 +6099,7 @@
     "$128B"
    ]
   },
-  "src/core/rider_look.hpp:(file)": {
+  "src/core/rider_look.hpp:RiderLook": {
    "wram": [
     "$0D45",
     "$0D47",
@@ -6348,13 +6278,6 @@
     "$0D4F"
    ]
   },
-  "src/core/rider_object.hpp:(file)": {
-   "rom": [
-    "$82:ACAC",
-    "$82:B8AA",
-    "$83:F0FF"
-   ]
-  },
   "src/core/rider_object.hpp:RiderOam": {
    "rom": [
     "$82:ACAC"
@@ -6393,6 +6316,7 @@
   },
   "src/core/rider_object.hpp:compose_rider_object": {
    "rom": [
+    "$82:B8AA",
     "$83:F0FF"
    ]
   },
@@ -7180,11 +7104,11 @@
   }
  },
  "totals": {
-  "addresses": 560,
-  "io_addresses": 11,
-  "native_symbols": 341,
+  "addresses": 552,
+  "io_addresses": 4,
+  "native_symbols": 340,
   "rom_addresses": 351,
   "sram_addresses": 7,
-  "wram_addresses": 191
+  "wram_addresses": 190
  }
 }
