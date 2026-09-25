@@ -5,6 +5,14 @@ push the task branch, open a pull request from the template, merge with
 `gh pr merge --merge` once its checks are green and the review is done. `main`
 refuses direct pushes. The checks run on pull requests only.
 
+**Status on 25 September 2026 UTC (NATIVE-READABILITY accepted): start
+[RESULT-TITLE-GLYPHS](RESULT-TITLE-GLYPHS.md).** NATIVE-READABILITY's three parts are
+integrated: the rules and the address index, the simulation split by system, and the
+presentation split by concern. No function in `src/core` exceeds 80 lines. Follow
+`src/core/README.md` "How this code is written" in every task that touches `src/core`; for a
+behaviour-neutral refactor, the task record's evidence tools (`equivalence.py`,
+`corruption.py`, `verify_split.py`, `citations_kept.py`) are the oracle.
+
 **Status on 25 September 2026 UTC (NATIVE-READABILITY part 2): continue
 [NATIVE-READABILITY](NATIVE-READABILITY.md) with part 3 (tier 2: presentation and the runners).**
 Part 2 (the simulation, split by system and rewritten) is reviewed and integrated by pull

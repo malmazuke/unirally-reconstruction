@@ -269,6 +269,12 @@ private:
     // checkpoint; the original keeps four bytes a slot at `$100D` + 16 * laps
     // remaining + 4 * checkpoint: 80 slots, `$100D-$114C` (R-0048).
     std::array<std::optional<std::array<std::uint8_t, 4>>, 80> slot_times_{};
+    // The two halves of observe_update: what this update asks the HUD queue for, and the
+    // one field the queue services.
+    void request_fields(const ZoomZooState& previous, const ZoomZooState& updated);
+    ClassicHudCellRequest crossing_cell(const ZoomZooState& previous, std::size_t rider,
+                                        const ZoomZooState& updated);
+    void service_one_field(const ZoomZooState& updated);
 };
 // Presentation-only $0D45/$0D47 upper-body overlay frames. The original
 // derives them from look state the serialized race does not carry (R-0036),
@@ -407,7 +413,7 @@ struct ClassicRacePresentationContent {
     std::span<const std::uint8_t> result_assets, result_base_vram, result_palette,
         result_palette_tail;
     // The result title's name bytes for a one-run track beyond DRAGSTER (its
-    // name-table entry with the `$FF`); empty for the two accepted tracks.
+    // name-table entry with the 0xFF); empty for the two accepted tracks.
     std::span<const std::uint8_t> result_track_name;
     // R-0052: on the HUNTER tour, the opponent's sprite palette (character 20's,
     // OBJ palette 4); empty elsewhere.
@@ -423,7 +429,7 @@ ClassicRacePresentationContent classic_race_presentation_content(const ClassicCo
 // R-0042: the top tile of a caption glyph, or nothing for a space. Every byte
 // of the caption table is a space, `!`, `"`, `-` or a lowercase letter; any
 // other byte is outside the recovered domain and throws. R-0043 adds the HUD's
-// own characters, which come from the same sheet: the digits at `$01`-`$0a`,
+// own characters, which come from the same sheet: the digits at 0x01-0x0a,
 // `:` at `$45` and `/` at `$4e`, as the original's character table `$80:81F4`
 // indexes them.
 std::optional<unsigned> classic_caption_tile(char glyph);

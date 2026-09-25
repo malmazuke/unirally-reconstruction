@@ -43,141 +43,153 @@ void emit(const unirally::ZoomZooState& state) {
         std::cout << std::hex << std::setw(2) << std::setfill('0') << unsigned(byte);
     std::cout << std::dec << '\n';
 }
+
+// The runner's options: one origin (a seed, a restart seed or a native start) and one content
+// source (a pack or a loose directory), the controller stream, and an optional track override.
+struct Options {
+    std::filesystem::path seed, content, inputs, pack_path, track_override;
+    bool native_start = false, restart = false;
+    unirally::ClassicRaceTrack race_track = unirally::ClassicRaceTrack::ZoomZoo;
+};
+
+// classic.crawler.dragster, classic.crawler.zoom-zoo, or classic.track.NN for any race track
+// with a recovered scenario (TRACK-BREADTH part 3).
+unirally::ClassicRaceTrack scenario_track(const std::string& scenario) {
+    if (scenario == "classic.crawler.dragster") return unirally::ClassicRaceTrack::Dragster;
+    if (scenario.size() == 16 && scenario.starts_with("classic.track.")
+        && std::isdigit(static_cast<unsigned char>(scenario[14]))
+        && std::isdigit(static_cast<unsigned char>(scenario[15]))) {
+        const unirally::ClassicRaceTrack track{
+            static_cast<std::uint8_t>((scenario[14] - '0') * 10 + (scenario[15] - '0'))};
+        if (!unirally::classic_race_has_scenario(track))
+            throw std::invalid_argument("track has no recovered scenario");
+        return track;
+    }
+    if (scenario != "classic.crawler.zoom-zoo") throw std::invalid_argument("unknown scenario");
+    return unirally::ClassicRaceTrack::ZoomZoo;
 }
-int main(int argc, char** argv) try {
+
+Options parse_options(int argc, char** argv) {
     if (argc != 7 && argc != 9)
         throw std::invalid_argument(
             "usage: zoom_zoo_runner --seed FILE --content-dir DIR --inputs FILE");
-    std::filesystem::path seed, content, inputs;
-    bool native_start = false, restart = false;
-    unirally::ClassicRaceTrack race_track = unirally::ClassicRaceTrack::ZoomZoo;
-    std::filesystem::path pack_path, track_override;
+    Options options;
     std::set<std::string> seen;
     for (int i = 1; i < argc; i += 2) {
         const std::string option = argv[i];
         if (!seen.insert(option).second)
             throw std::invalid_argument("repeated ZOOM ZOO runner option: " + option);
         if (option == "--seed")
-            seed = argv[i + 1];
+            options.seed = argv[i + 1];
         else if (option == "--restart-from") {
-            seed = argv[i + 1];
-            restart = true;
+            options.seed = argv[i + 1];
+            options.restart = true;
         } else if (option == "--start") {
-            const std::string scenario = argv[i + 1];
-            // classic.crawler.dragster, classic.crawler.zoom-zoo, or classic.track.NN
-            // for any race track with a recovered scenario (TRACK-BREADTH part 3).
-            if (scenario == "classic.crawler.dragster")
-                race_track = unirally::ClassicRaceTrack::Dragster;
-            else if (scenario.size() == 16 && scenario.starts_with("classic.track.")
-                     && std::isdigit(static_cast<unsigned char>(scenario[14]))
-                     && std::isdigit(static_cast<unsigned char>(scenario[15]))) {
-                race_track = unirally::ClassicRaceTrack{
-                    static_cast<std::uint8_t>((scenario[14] - '0') * 10 + (scenario[15] - '0'))};
-                if (!unirally::classic_race_has_scenario(race_track))
-                    throw std::invalid_argument("track has no recovered scenario");
-            } else if (scenario != "classic.crawler.zoom-zoo")
-                throw std::invalid_argument("unknown scenario");
-            native_start = true;
+            options.race_track = scenario_track(argv[i + 1]);
+            options.native_start = true;
         } else if (option == "--content-pack")
-            pack_path = argv[i + 1];
+            options.pack_path = argv[i + 1];
         else if (option == "--content-dir")
-            content = argv[i + 1];
+            options.content = argv[i + 1];
         else if (option == "--inputs")
-            inputs = argv[i + 1];
-        // TRACK-BREADTH laboratory experiment: another track's decoded data,
-        // tile columns and tile flags (track-data.bin, tile-tables.bin,
-        // tile-flags.bin, from `tools/unirally_lab/content/tracks.py`) in
-        // place of the pack's, on the scenario `--start` names.
+            options.inputs = argv[i + 1];
+        // TRACK-BREADTH laboratory experiment: another track's decoded data, tile columns and
+        // tile flags (track-data.bin, tile-tables.bin, tile-flags.bin, from
+        // `tools/unirally_lab/content/tracks.py`) in place of the pack's, on the scenario
+        // `--start` names.
         else if (option == "--track-override")
-            track_override = argv[i + 1];
+            options.track_override = argv[i + 1];
         else
             throw std::invalid_argument("unknown ZOOM ZOO runner option");
     }
-    // One origin (a seed, a restart seed or a native start) and one content
-    // source (a pack or a loose directory).
     if (seen.count("--seed") + seen.count("--restart-from") + seen.count("--start") != 1
         || seen.count("--content-pack") + seen.count("--content-dir") != 1)
         throw std::invalid_argument("ZOOM ZOO runner needs one of --seed/--restart-from/--start "
                                     "and one of --content-pack/--content-dir");
-    if ((seed.empty() && !native_start) || (content.empty() && pack_path.empty()) || inputs.empty())
+    if ((options.seed.empty() && !options.native_start)
+        || (options.content.empty() && options.pack_path.empty()) || options.inputs.empty())
         throw std::invalid_argument("missing ZOOM ZOO runner option");
-    auto state =
-        native_start ? unirally::ZoomZooState{} : unirally::deserialize_zoom_zoo(read_bytes(seed));
-    if (native_start) state.complete_race = state.sustained = true;
-    const auto pack =
-        pack_path.empty() ? nullptr : std::make_unique<unirally::ClassicContentPack>(pack_path);
-    // A pack binds content through the shared accessors, by track. The loose
-    // content directory remains for the historical M4-12 to M4-15 cases and
-    // is read only without a pack.
+    return options;
+}
+
+// The loose content directory of the historical M4-12 to M4-15 cases, read only without a
+// pack. It owns the bytes the content's spans point into.
+struct LooseContent {
+    std::vector<std::uint8_t> track, poses, templates, columns, flags, progress, slopes;
+    std::vector<std::uint8_t> displacement, idle, reward, reward_class, masks, decrements;
+    std::vector<std::uint8_t> coefficients, reflection, landing, finish_poses, roll_poses;
+    std::vector<std::uint8_t> roll_directions, weights, combinations;
+
+    unirally::ZoomZooContent content() const {
+        const unirally::MovementContent movement{{track, poses, templates},
+                                                 {columns, flags},
+                                                 progress,
+                                                 slopes,
+                                                 displacement,
+                                                 idle,
+                                                 reward,
+                                                 reward_class,
+                                                 {masks, decrements}};
+        return {
+            movement, coefficients, reflection, landing, finish_poses, roll_poses, roll_directions,
+            weights,  combinations, {},         {},      {},           {}};
+    }
+};
+
+LooseContent load_loose_content(const std::filesystem::path& directory,
+                                const unirally::ZoomZooState& state, bool pack) {
     const auto load = [&](const char* filename) {
-        return pack ? std::vector<std::uint8_t>{} : read_bytes(content / filename);
+        return pack ? std::vector<std::uint8_t>{} : read_bytes(directory / filename);
     };
-    const auto track = load("track-data.bin");
-    const auto poses = load("collision-poses.bin");
-    const auto templates = load("collision-templates.bin");
-    const auto columns = load("tile-tables.bin");
-    const auto flags = load("tile-flags.bin");
-    const auto progress = load("progress-transitions.bin");
-    const auto slopes = load("pose-slopes.bin");
-    const auto displacement = load("displacement-table.bin");
-    const auto idle = load("idle-pose-table.bin");
-    const auto reward = load((state.complete_race ? "race-finish-reward-values.bin"
-                              : state.sustained   ? "sustained-reward-values.bin"
-                                                  : "rotation-reward.bin"));
-    const auto reward_class = load((state.complete_race ? "race-finish-reward-classes.bin"
-                                    : state.sustained   ? "sustained-reward-classes.bin"
-                                                        : "rotation-class.bin"));
-    const auto masks = load("speed-masks.bin");
-    const auto decrements = load("speed-decrements.bin");
-    const auto coefficients = load((state.sustained ? "sustained-slope-coefficients.bin"
-                                                    : "reflected-vertical-slope-coefficients.bin"));
-    const auto reflection = load("reflection-pose-table.bin");
-    const unirally::MovementContent movement{{track, poses, templates},
-                                             {columns, flags},
-                                             progress,
-                                             slopes,
-                                             displacement,
-                                             idle,
-                                             reward,
-                                             reward_class,
-                                             {masks, decrements}};
-    const auto landing = load("landing-response-matrices.bin");
-    const auto finish_poses =
+    LooseContent c;
+    c.track = load("track-data.bin");
+    c.poses = load("collision-poses.bin");
+    c.templates = load("collision-templates.bin");
+    c.columns = load("tile-tables.bin");
+    c.flags = load("tile-flags.bin");
+    c.progress = load("progress-transitions.bin");
+    c.slopes = load("pose-slopes.bin");
+    c.displacement = load("displacement-table.bin");
+    c.idle = load("idle-pose-table.bin");
+    c.reward = load((state.complete_race ? "race-finish-reward-values.bin"
+                     : state.sustained   ? "sustained-reward-values.bin"
+                                         : "rotation-reward.bin"));
+    c.reward_class = load((state.complete_race ? "race-finish-reward-classes.bin"
+                           : state.sustained   ? "sustained-reward-classes.bin"
+                                               : "rotation-class.bin"));
+    c.masks = load("speed-masks.bin");
+    c.decrements = load("speed-decrements.bin");
+    c.coefficients = load((state.sustained ? "sustained-slope-coefficients.bin"
+                                           : "reflected-vertical-slope-coefficients.bin"));
+    c.reflection = load("reflection-pose-table.bin");
+    c.landing = load("landing-response-matrices.bin");
+    c.finish_poses =
         state.complete_race ? load("race-finish-poses.bin") : std::vector<std::uint8_t>{};
-    const auto roll_poses = pack ? load("roll-pose-table.bin") : std::vector<std::uint8_t>{};
-    const auto roll_directions =
-        pack ? load("roll-direction-table.bin") : std::vector<std::uint8_t>{};
-    const auto weights = pack ? load("roll-reward-weights.bin") : std::vector<std::uint8_t>{};
-    const auto combinations = pack ? load("trick-combinations.bin") : std::vector<std::uint8_t>{};
-    const unirally::ZoomZooContent zoom_zoo_data{
-        movement, coefficients, reflection, landing, finish_poses, roll_poses, roll_directions,
-        weights,  combinations, {},         {},      {},           {}};
-    if (!native_start) race_track = state.track;
+    c.roll_poses = pack ? load("roll-pose-table.bin") : std::vector<std::uint8_t>{};
+    c.roll_directions = pack ? load("roll-direction-table.bin") : std::vector<std::uint8_t>{};
+    c.weights = pack ? load("roll-reward-weights.bin") : std::vector<std::uint8_t>{};
+    c.combinations = pack ? load("trick-combinations.bin") : std::vector<std::uint8_t>{};
+    return c;
+}
+
+// Which content can drive which state: another track needs the pack; the pack binds the
+// complete-race content; a track override needs the pack and a native start.
+void check_content_choice(const Options& options, const unirally::ZoomZooState& state, bool pack,
+                          unirally::ClassicRaceTrack race_track) {
     if (race_track != unirally::ClassicRaceTrack::ZoomZoo && !pack)
         throw std::invalid_argument("a race on any track but ZOOM ZOO requires the content pack");
-    if (pack && !(native_start || (state.complete_race && state.sustained)))
+    if (pack && !(options.native_start || (state.complete_race && state.sustained)))
         throw std::invalid_argument(
             "a content pack binds the complete-race content; earlier seeds use --content-dir");
-    if (!track_override.empty() && !(pack && native_start))
+    if (!options.track_override.empty() && !(pack && options.native_start))
         throw std::invalid_argument("--track-override needs --content-pack and --start");
-    const auto override_track = track_override.empty()
-                                  ? std::vector<std::uint8_t>{}
-                                  : read_bytes(track_override / "track-data.bin");
-    const auto override_columns = track_override.empty()
-                                    ? std::vector<std::uint8_t>{}
-                                    : read_bytes(track_override / "tile-tables.bin");
-    const auto override_flags = track_override.empty()
-                                  ? std::vector<std::uint8_t>{}
-                                  : read_bytes(track_override / "tile-flags.bin");
-    auto data = !pack ? zoom_zoo_data : unirally::classic_race_content(*pack, race_track);
-    if (!track_override.empty()) {
-        data.movement.sampling.track = override_track;
-        data.movement.flat_contact = {override_columns, override_flags};
-    }
-    if (native_start)
-        state = unirally::classic_race_start(data, unirally::classic_race_scenario(race_track));
-    if (restart) unirally::restart_zoom_zoo(state, data);
-    unirally::validate_zoom_zoo_content_state(state, data);
+}
+
+// The controller stream, one row per update ("frame player opponent"), each state printed
+// after its update. The stream is what a device reports; update_zoom_zoo applies the rocker
+// the original's controller port applies.
+int run_controller_stream(unirally::ZoomZooState& state, const unirally::ZoomZooContent& data,
+                          const std::filesystem::path& inputs) {
     std::ifstream stream(inputs);
     if (!stream) throw std::runtime_error("cannot open ZOOM ZOO controller stream");
     emit(state);
@@ -190,8 +202,6 @@ int main(int argc, char** argv) try {
             throw std::invalid_argument("malformed ZOOM ZOO controller row");
         if (frame != state.movement.frame + 1 || player > 4095 || opponent != 0)
             throw std::invalid_argument("invalid ZOOM ZOO controller row");
-        // The controller stream is what a device reports; update_zoom_zoo
-        // applies the rocker the original's controller port applies.
         const auto pressed = buttons(static_cast<std::uint16_t>(player));
         try {
             unirally::update_zoom_zoo(state, pressed, data);
@@ -203,6 +213,39 @@ int main(int argc, char** argv) try {
     }
     if (!stream.eof()) throw std::invalid_argument("malformed ZOOM ZOO controller stream");
     return 0;
+}
+
+} // namespace
+
+int main(int argc, char** argv) try {
+    const auto options = parse_options(argc, argv);
+    auto state = options.native_start ? unirally::ZoomZooState{}
+                                      : unirally::deserialize_zoom_zoo(read_bytes(options.seed));
+    if (options.native_start) state.complete_race = state.sustained = true;
+    const auto pack = options.pack_path.empty()
+                        ? nullptr
+                        : std::make_unique<unirally::ClassicContentPack>(options.pack_path);
+    const auto loose = load_loose_content(options.content, state, pack != nullptr);
+    const auto race_track = options.native_start ? options.race_track : state.track;
+    check_content_choice(options, state, pack != nullptr, race_track);
+    const auto& override_dir = options.track_override;
+    const auto override_track = override_dir.empty() ? std::vector<std::uint8_t>{}
+                                                     : read_bytes(override_dir / "track-data.bin");
+    const auto override_columns = override_dir.empty()
+                                    ? std::vector<std::uint8_t>{}
+                                    : read_bytes(override_dir / "tile-tables.bin");
+    const auto override_flags = override_dir.empty() ? std::vector<std::uint8_t>{}
+                                                     : read_bytes(override_dir / "tile-flags.bin");
+    auto data = !pack ? loose.content() : unirally::classic_race_content(*pack, race_track);
+    if (!override_dir.empty()) {
+        data.movement.sampling.track = override_track;
+        data.movement.flat_contact = {override_columns, override_flags};
+    }
+    if (options.native_start)
+        state = unirally::classic_race_start(data, unirally::classic_race_scenario(race_track));
+    if (options.restart) unirally::restart_zoom_zoo(state, data);
+    unirally::validate_zoom_zoo_content_state(state, data);
+    return run_controller_stream(state, data, options.inputs);
 } catch (const std::exception& e) {
     std::cerr << e.what() << '\n';
     return 1;

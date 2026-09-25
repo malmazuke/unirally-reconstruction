@@ -44,11 +44,9 @@ serialized bytes stay those of the original.
 Measure the size rule with `clang-tidy -p build/app-debug src/core/*.cpp` (LLVM 19, after an
 app-debug build).
 
-**Accepted exceptions to the size rule:** none yet. After the format commit of part 1, 22
-functions exceeded 80 lines; part 2 split the 14 in the simulation. The 8 left are part 3's:
-`presentation.cpp` `build_result_map`, `render_dragster`, `observe_update`,
-`render_classic_race`; `rider_look.cpp` `look_for_rider`; the `main` of `movement_runner.cpp`,
-`classic_race_presentation_runner.cpp` and `zoom_zoo_runner.cpp`.
+**Accepted exceptions to the size rule:** none. After the format commit of NATIVE-READABILITY
+part 1, 22 functions exceeded 80 lines; part 2 split the 14 in the simulation and part 3 the 8
+in the presentation and the runners.
 
 ## Where the race engine lives
 
@@ -76,6 +74,23 @@ first recovered on ZOOM ZOO and now runs every race track):
 
 `movement.hpp` and `zoom_zoo_movement.hpp` are the public interface; the other headers are
 internal to the engine.
+
+## Where the presentation lives
+
+The race picture is `render_classic_race` in `presentation.cpp`, which draws its layers in
+order: the result screen when it shows; otherwise the race backgrounds at the fade's
+brightness, the caption and HUD, the riders, the window and the pause menu. `presentation.hpp` is the public interface; `picture.hpp`,
+`result_screen.hpp` and `race_hud.hpp` are internal to the presentation.
+
+| File | Concern |
+| --- | --- |
+| `presentation.cpp` | The race picture, the content it draws from, the track's name and the pause menu |
+| `picture.cpp` | The SNES picture's parts: colours and CGRAM, tiles, backgrounds and the window |
+| `race_windows.cpp` | The window tables and palette cycles by frame: the countdown, the finish, the result |
+| `race_hud.cpp` | The HUD's lap and clock fields, their text queue, and the captions |
+| `result_screen.cpp` | The result screen's title, times, text and backgrounds |
+| `dragster_picture.cpp` | The legacy DRAGSTER picture (the v1 pack's renderer) |
+| `rider_object.cpp`, `rider_look.cpp` | The rider sprites and the riders' look animation |
 
 ## Track sampling
 

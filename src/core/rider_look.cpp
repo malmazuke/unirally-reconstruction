@@ -19,6 +19,12 @@ constexpr std::size_t sequence_bytes = 158;         // $17:C614
 constexpr std::size_t look_table_bytes = 594;
 
 constexpr std::uint16_t neutral_head = 9;
+// The head frames lie on four arcs ($82:87C9-$82:8926): arc A is frames 1-17 through the
+// neutral 9; arcs B, C and D start at 18, 26 and 34 and join arc A at 9, 2 and 7. The head
+// steps one frame a look update, along its arc toward the target, and changes arc only
+// through the junction.
+constexpr std::uint16_t arc_b = 18, arc_c = 26, arc_d = 34;
+constexpr std::uint16_t arc_b_joins = neutral_head, arc_c_joins = 2, arc_d_joins = 7;
 
 std::uint16_t table_word(const RiderLookTables& tables, std::size_t offset) {
     if (tables.bytes.size() != look_table_bytes || offset + 2 > tables.bytes.size())
@@ -48,36 +54,39 @@ void step_rider_head(RiderLook& look) {
         return head == goal ? head : (compares_negative(head, goal) ? up : down);
     };
     std::uint16_t next{};
-    if (compares_negative(target, 0x12)) {
-        if (compares_negative(head, 0x12))
+    if (compares_negative(target, arc_b)) {
+        if (compares_negative(head, arc_b))
             next = toward(target);
         else
-            next = head == 0x12 ? 9 : head == 0x1a ? 2 : head == 0x22 ? 7 : down;
-    } else if (compares_negative(target, 0x1a)) {
-        if (compares_negative(head, 0x12))
-            next = head == 9 ? 0x12 : toward(9);
-        else if (compares_negative(head, 0x1a))
+            next = head == arc_b ? arc_b_joins
+                 : head == arc_c ? arc_c_joins
+                 : head == arc_d ? arc_d_joins
+                                 : down;
+    } else if (compares_negative(target, arc_c)) {
+        if (compares_negative(head, arc_b))
+            next = head == arc_b_joins ? arc_b : toward(arc_b_joins);
+        else if (compares_negative(head, arc_c))
             next = toward(raw_target);
-        else if (compares_negative(head, 0x22))
-            next = head == 0x1a ? 2 : down;
+        else if (compares_negative(head, arc_d))
+            next = head == arc_c ? arc_c_joins : down;
         else
-            next = head == 0x22 ? 7 : down;
-    } else if (compares_negative(target, 0x22)) {
-        if (compares_negative(head, 0x12))
-            next = head == 2 ? 0x1a : toward(2);
-        else if (compares_negative(head, 0x1a))
-            next = head == 0x12 ? 9 : down;
-        else if (compares_negative(head, 0x22))
+            next = head == arc_d ? arc_d_joins : down;
+    } else if (compares_negative(target, arc_d)) {
+        if (compares_negative(head, arc_b))
+            next = head == arc_c_joins ? arc_c : toward(arc_c_joins);
+        else if (compares_negative(head, arc_c))
+            next = head == arc_b ? arc_b_joins : down;
+        else if (compares_negative(head, arc_d))
             next = toward(raw_target);
         else
-            next = head == 0x22 ? 7 : down;
+            next = head == arc_d ? arc_d_joins : down;
     } else {
-        if (compares_negative(head, 0x12))
-            next = head == 7 ? 0x22 : toward(7);
-        else if (compares_negative(head, 0x1a))
-            next = head == 0x12 ? 9 : down;
-        else if (compares_negative(head, 0x22))
-            next = head == 0x1a ? 2 : down;
+        if (compares_negative(head, arc_b))
+            next = head == arc_d_joins ? arc_d : toward(arc_d_joins);
+        else if (compares_negative(head, arc_c))
+            next = head == arc_b ? arc_b_joins : down;
+        else if (compares_negative(head, arc_d))
+            next = head == arc_c ? arc_c_joins : down;
         else
             next = toward(raw_target);
     }
@@ -121,97 +130,91 @@ std::optional<std::uint16_t> height_target(const RiderLookTables& tables, std::u
     }
 }
 
-void look_for_rider(RiderLook& look, RiderLook& player_look, std::size_t rider,
-                    const ZoomZooState& updated, const ZoomZooContent& content,
-                    const RiderLookTables& tables) {
-    const auto own = head_point(updated, rider, content);
-    const auto other = head_point(updated, 1 - rider, content);
-    const bool reflected = updated.movement.riders[rider].pose.reflected;
-    enum class Outcome { none, target, glance } outcome = Outcome::none;
-    std::uint16_t target = 0;
-    const bool within_height = !compares_negative(wrap(own.y + 0x100U), other.y)
-                            && compares_negative(wrap(own.y - 0x100U), other.y);
-    if (within_height) {
-        const bool other_ahead = reflected
-                                   ? compares_negative(own.x, other.x)
-                                   : !(compares_negative(own.x, other.x) || own.x == other.x);
-        if (!other_ahead) {
-            outcome = Outcome::glance;
-        } else {
-            // $82:83D2/$82:846F: find the distance step that passes the other rider.
-            look.looking_back = 0;
-            std::uint16_t reach = own.x;
-            std::size_t step = 0;
-            for (;;) {
-                reach = reflected ? wrap(reach + table_word(tables, forward_distance_table + step))
-                                  : wrap(reach - table_word(tables, forward_distance_table + step));
-                step += 2;
-                if (step == 0x12) break;
-                const bool keep_going = reflected
-                                          ? (compares_negative(reach, other.x) || reach == other.x)
+// The other rider counts as in view within 0x100 units of height. The look's distance steps
+// are nine words (0x12 bytes); no step is 0x11. A glance back lasts 0xB4 updates for the
+// player and 0x3C for the opponent, then rests 1-64 updates; its targets start at 0x12 facing
+// right and 0x22 facing left. The scripted glances cycle through six sequences.
+constexpr std::uint16_t view_height = 0x100, distance_steps_end = 0x12, no_distance_step = 0x11;
+constexpr std::uint16_t player_glance_updates = 0xb4, opponent_glance_updates = 0x3c;
+constexpr std::uint16_t glance_targets_reflected = 0x12, glance_targets = 0x22;
+constexpr std::size_t glance_steps_end = 0x10;
+constexpr std::uint16_t scripted_sequences = 6;
+
+enum class LookOutcome { none, target, glance };
+struct Aim {
+    LookOutcome outcome{LookOutcome::none};
+    std::uint16_t target{};
+};
+
+// Within view height, a rider ahead of the facing is looked at: $82:83D2/$82:846F find the
+// distance step that passes it, and the height target for that step; a rider behind is
+// glanced at.
+Aim look_ahead(RiderLook& look, const RiderLookTables& tables, HeadPoint own, HeadPoint other,
+               bool reflected) {
+    const bool within_height = !compares_negative(wrap(own.y + view_height), other.y)
+                            && compares_negative(wrap(own.y - view_height), other.y);
+    if (!within_height) return {};
+    const bool other_ahead = reflected ? compares_negative(own.x, other.x)
+                                       : !(compares_negative(own.x, other.x) || own.x == other.x);
+    if (!other_ahead) return {LookOutcome::glance, 0};
+    look.looking_back = 0;
+    std::uint16_t reach = own.x;
+    std::size_t step = 0;
+    for (;;) {
+        reach = reflected ? wrap(reach + table_word(tables, forward_distance_table + step))
+                          : wrap(reach - table_word(tables, forward_distance_table + step));
+        step += 2;
+        if (step == distance_steps_end) break;
+        const bool keep_going = reflected ? (compares_negative(reach, other.x) || reach == other.x)
                                           : !compares_negative(reach, other.x);
-                if (!keep_going) break;
-            }
-            if (step != 0x12) {
-                step -= 2;
-                look.distance_step = static_cast<std::uint16_t>(step);
-                if (const auto height =
-                        height_target(tables, static_cast<std::uint16_t>(step), own, other)) {
-                    outcome = Outcome::target;
-                    target = *height;
-                }
-            }
-        }
+        if (!keep_going) break;
     }
-    if (outcome == Outcome::glance) {
-        // $82:8495 / $82:86C0: look back until the timer expires, then rest for
-        // 1..64 updates chosen from the update counter.
-        outcome = Outcome::none;
-        const std::uint16_t limit = rider == 0 ? 0xb4 : 0x3c;
-        if (look.glance_timer & 0x8000U) {
-            look.glance_timer = wrap(look.glance_timer + 1U);
-            look.looking_back = 0;
+    if (step == distance_steps_end) return {};
+    step -= 2;
+    look.distance_step = static_cast<std::uint16_t>(step);
+    if (const auto height = height_target(tables, static_cast<std::uint16_t>(step), own, other))
+        return {LookOutcome::target, *height};
+    return {};
+}
+
+// $82:8495 / $82:86C0: look back until the glance timer expires, then rest for 1-64 updates
+// chosen from the update counter.
+Aim glance_back(RiderLook& look, std::size_t rider, const ZoomZooState& updated,
+                const RiderLookTables& tables, HeadPoint own, HeadPoint other, bool reflected) {
+    const std::uint16_t limit = rider == 0 ? player_glance_updates : opponent_glance_updates;
+    if (look.glance_timer & 0x8000U) {
+        look.glance_timer = wrap(look.glance_timer + 1U);
+        look.looking_back = 0;
+        return {};
+    }
+    look.glance_timer = wrap(look.glance_timer + 1U);
+    if (look.glance_timer == limit) {
+        look.glance_timer = wrap(((updated.movement.update_counter & 0x3fU) ^ 0xffffU) + 1U);
+        look.looking_back = 0;
+        return {};
+    }
+    look.looking_back = 1;
+    std::uint16_t reach = own.x;
+    for (std::size_t step = 0; step < glance_steps_end; step += 2) {
+        if (reflected) {
+            reach = wrap(reach - table_word(tables, glance_distance_table + step));
+            if (compares_negative(reach, other.x))
+                return {LookOutcome::target,
+                        static_cast<std::uint16_t>(step / 2 + glance_targets_reflected)};
         } else {
-            look.glance_timer = wrap(look.glance_timer + 1U);
-            if (look.glance_timer == limit) {
-                look.glance_timer =
-                    wrap(((updated.movement.update_counter & 0x3fU) ^ 0xffffU) + 1U);
-                look.looking_back = 0;
-            } else {
-                look.looking_back = 1;
-                std::uint16_t reach = own.x;
-                for (std::size_t step = 0; step < 0x10; step += 2) {
-                    if (reflected) {
-                        reach = wrap(reach - table_word(tables, glance_distance_table + step));
-                        if (compares_negative(reach, other.x)) {
-                            outcome = Outcome::target;
-                            target = static_cast<std::uint16_t>(step / 2 + 0x12);
-                            break;
-                        }
-                    } else {
-                        reach = wrap(reach + table_word(tables, glance_distance_table + step));
-                        if (!compares_negative(reach, other.x)) {
-                            outcome = Outcome::target;
-                            target = static_cast<std::uint16_t>(step / 2 + 0x22);
-                            break;
-                        }
-                    }
-                }
-            }
+            reach = wrap(reach + table_word(tables, glance_distance_table + step));
+            if (!compares_negative(reach, other.x))
+                return {LookOutcome::target, static_cast<std::uint16_t>(step / 2 + glance_targets)};
         }
     }
-    if (outcome == Outcome::none) {
-        // $82:8511 and $82:873C both store to the player's $126D.
-        player_look.distance_step = 0x11;
-        look.target = 0;
-    } else {
-        look.target = target;
-    }
-    if (look.target != 0) {
-        step_rider_head(look);
-        return;
-    }
-    // $82:852B / $82:8756: scripted glances while the idle cycle is latched.
+    return {};
+}
+
+// $82:852B / $82:8756: scripted glances while the idle cycle is latched, from the sequence
+// table; $82:8927, which starts the next sequence, is reached only from the opponent's copy
+// of this routine.
+void run_scripted_glances(RiderLook& look, std::size_t rider, const ZoomZooState& updated,
+                          const RiderLookTables& tables) {
     const bool latched = updated.movement.riders[rider].idle_pose.cycle_latched != 0;
     if (!latched || (look.sequence_cursor == 0 && look.head != 0)) {
         look.sequence_cursor = look.sequence_end = look.sequence_delay = 0;
@@ -220,9 +223,8 @@ void look_for_rider(RiderLook& look, RiderLook& player_look, std::size_t rider,
         return;
     }
     if (look.sequence_cursor == 0 && rider == 1) {
-        // $82:8927 is reached only from the opponent's copy of this routine.
         look.sequence_number = wrap(look.sequence_number + 1U);
-        if (look.sequence_number == 6) look.sequence_number = 0;
+        if (look.sequence_number == scripted_sequences) look.sequence_number = 0;
         const std::size_t range = sequence_range_table + 2U * look.sequence_number;
         look.sequence_cursor = table_word(tables, range);
         look.sequence_end = table_word(tables, range + 2);
@@ -247,6 +249,31 @@ void look_for_rider(RiderLook& look, RiderLook& player_look, std::size_t rider,
         }
     }
     step_rider_head(look);
+}
+
+// One rider's look for an update: at the other rider when it is in view, else back at it
+// for a while, else a scripted glance; the head then steps toward the target.
+void look_for_rider(RiderLook& look, RiderLook& player_look, std::size_t rider,
+                    const ZoomZooState& updated, const ZoomZooContent& content,
+                    const RiderLookTables& tables) {
+    const auto own = head_point(updated, rider, content);
+    const auto other = head_point(updated, 1 - rider, content);
+    const bool reflected = updated.movement.riders[rider].pose.reflected;
+    auto aim = look_ahead(look, tables, own, other, reflected);
+    if (aim.outcome == LookOutcome::glance)
+        aim = glance_back(look, rider, updated, tables, own, other, reflected);
+    if (aim.outcome == LookOutcome::none) {
+        // $82:8511 and $82:873C both store to the player's $126D.
+        player_look.distance_step = no_distance_step;
+        look.target = 0;
+    } else {
+        look.target = aim.target;
+    }
+    if (look.target != 0) {
+        step_rider_head(look);
+        return;
+    }
+    run_scripted_glances(look, rider, updated, tables);
 }
 
 } // namespace

@@ -2,11 +2,13 @@
 
 ## Assignment
 
-- Status: **in progress**. Part 1 (tier 2) was reviewed and integrated by
-  [pull request #23](https://github.com/malmazuke/unirally-reconstruction/pull/23) (`d97641c`).
-  Part 2 (tier 1, the simulation) is in review on its pull request; part 3 follows. Claimed
-  25 September 2026 at 05:33Z by the Claude Code desktop session that queued the task, on base
-  `83dd9ff`. The user asked for it to start at once ("You can pick this up here now").
+- Status: **accepted** 25 September 2026, all three parts integrated by pull request: part 1
+  (tier 2) by [#23](https://github.com/malmazuke/unirally-reconstruction/pull/23) (`d97641c`),
+  part 2 (tier 1) by [#24](https://github.com/malmazuke/unirally-reconstruction/pull/24)
+  (`a2169c3`), part 3 (tier 2) by
+  [#25](https://github.com/malmazuke/unirally-reconstruction/pull/25). Claimed 25 September
+  2026 at 05:33Z by the Claude Code desktop session that queued the task, on base `83dd9ff`.
+  The user asked for it to start at once ("You can pick this up here now").
 - Milestone: M4 breadth (a quality task on the recovered engine; no new mechanics)
 - Coordinator: the claiming session is coordinator, primary and integrator
 - Task provider (fixed for all children; record any user-initiated platform change): Anthropic
@@ -295,6 +297,70 @@ Decisions and deviations, with reasons:
 - **Left as they were**, already within the rules and clang-tidy clean: `flat_contact.cpp`,
   `track_progress.cpp`, `track_sampling.cpp`, `input_timer.cpp` and `rider_object.cpp`.
 
+## Part 3 result (tier 2)
+
+Part 3 is the presentation and the runners, on `task/native-readability-presentation` from
+`a2169c3`. No behaviour, picture or format change is intended, and none was found.
+
+- **The rewrites**, one commit per function, each checked against `a2169c3`'s pictures:
+  - **The race picture**: `render_classic_race` (297 lines) draws its layers in order: the
+    authored result or the recovered result screen, then `race_vram`, `race_cgram` at the
+    fade's brightness, `race_scroll` (with the HUNTER picture effects), the backgrounds, the
+    caption and HUD, `draw_race_riders`, the window and the pause menu.
+  - **The HUD's text queue**: `ClassicRaceHudClock::observe_update` is `request_fields` (what
+    the update asks the queue for), `crossing_cell` (a checkpoint split, or the first rider's
+    stored clock) and `service_one_field` (the one field the original writes each frame).
+  - **The result screen's map**: `build_result_map` is the title, the composition guard (which
+    also says when the player's row reads NO TIME) and the writes, in the original's order.
+  - **The legacy DRAGSTER picture**: `render_dragster`'s content check, timer marks and riders
+    are their own functions. The window members stay in the renderer, where their order is.
+  - **The rider look**: `look_for_rider` is looking ahead at the other rider, glancing back,
+    and the scripted glances of a latched idle cycle. The view height, distance steps, glance
+    times and targets are named constants.
+  - **The runners**: each `main` reads as its steps. The options, the bound or loose content
+    (which owns the bytes its spans point into), the content checks and the controller stream
+    are their own functions. `classic_race_presentation_runner`'s three modes are three
+    functions.
+  - **Rule 5**: the result screen's VRAM words and colours are written in `0x`. The last two
+    citations that resolved only to a file comment (`$82:B8AA`, `$0D4B`) moved onto
+    `compose_rider_object` and `RiderLook`.
+- **The split** (`a8e2461`, a pure move): `presentation.cpp` (2,278 lines) moves its 114 units
+  (functions, member functions, structs and constants, each with its comment) into one file per
+  concern:
+  - `picture` (colours, CGRAM, tiles, backgrounds, the window);
+  - `result_screen`, `dragster_picture` (the legacy renderer);
+  - `race_windows` (window tables and palette cycles by frame), `race_hud`;
+  - `presentation.cpp` keeps the race picture (552 lines).
+
+  `picture.hpp`, `result_screen.hpp` and `race_hud.hpp` declare the helpers another file
+  calls. `verify_presentation_split.py` checks every unit against `a56ad34`: 114 of 114, with
+  three definitions' default arguments moved to their declarations. After the review
+  (S1) it keeps whitespace inside string literals, and it accepts a header declaration only
+  when it has the signature of a function the old file defined. It then fails on a changed
+  constant, on changed spaces in a string, on a new constant and struct in a header, and on
+  a new overload's declaration. It still ignores comment edits. `src/core/README.md` gains
+  "Where the presentation lives".
+- **Result**:
+  - no function in `src/core` exceeds 80 lines, so the README's exception list is empty;
+  - every cited address resolves to a symbol, not only a file;
+  - no address citation is lost against `a2169c3` (`citations_kept.py` with
+    `rewritten-values-part3.txt`).
+
+Decisions and deviations, with reasons:
+
+- **The split was added to part 3.** The plan asked only to apply the rules, and an early
+  pass kept `presentation.cpp` whole. It was 2,278 lines covering six concerns, nearly three
+  times the next largest file. Part 2 split `movement.cpp` for the same reason, and its
+  tooling made a verified pure move cheap, so part 3 split it as a final commit, after the
+  rewrites.
+- **`picture.hpp` exports short names** (`word`, `pixel`, `rect`, `colour`, `channel8`) in
+  `unirally` (review S5). They are internal to the presentation. A clash with another
+  definition of the same signature fails at build time. Renaming them is not a move and is
+  left for a later task that touches the presentation. `word()`'s "Dragster BG1 gather" error
+  message was already shared by every track's picture before the split.
+- **Runner output is unchanged**, including every error message, so the gates' and the
+  tools' parsing of runner output is unaffected.
+
 ## Evidence and attempts
 
 | Attempt | Hypothesis | Experiment | Observation | Next decision |
@@ -312,22 +378,39 @@ Decisions and deviations, with reasons:
 | 11 | - | Citations after the rewrites | 10 dropped by shortened comments; restored, `citations_kept.py` added | Every commit |
 | 12 | - | Gates at `b665bf7` (the move) | Eleven gates with unchanged digests; the sweep; the recompare identical | Part 2 gates |
 | 13 | - | Gates at `5a9305a` | ctest 25/25 on three presets, synthetic, v1 contracts, hidden runs, fuzz 40 seeds 0 aborts; eleven gates with unchanged digests; sweep 351 runs, 1,933,523 updates, 1,047 restarts, 2,052 pictures, 0 differences; recompare identical on 16 + 20 tracks; corruption 3,000 cases 0 differences; citations 0 lost; 8 functions over 80 (part 3's); 48 HUNTER held captures identical to the accepted run | Review |
+| 14 | Part 3's rewrites keep every picture | After each rewrite: the equivalence sweep with pictures on several schedules; every 20th frame of four HUNTER-tour races under two schedules (`dense_pictures.py`); the legacy renderer on 81 states at three cameras (`legacy_pictures.py`); runner error paths | 0 differences on each: e.g. 912, 760 and 1,368 sweep pictures, 1,592 HUNTER frames, 243 legacy frames (90 the same refusal on both sides); 9, 4 and 7 bad invocations of the three runners identical | Split |
+| 15 | The split is a pure move | `verify_presentation_split.py` against `a56ad34`; a one-constant mutant | 114 of 114 units, three with defaults moved to the header; the mutant fails | Gates |
+| 16 | - | Gates at `a8e2461` | ctest 25/25 on three presets, synthetic, v1 contracts, hidden runs, fuzz 40 seeds 0 aborts; eleven gates with digests unchanged from part 2; sweep 351 runs, 1,933,523 updates, 1,047 restarts, 2,052 pictures, 0 differences; recompare identical on 16 + 20 tracks; corruption 3,000 cases 0 differences; citations 0 lost; 0 functions over 80 lines; 48 HUNTER held captures identical; split 114/114; legacy 243 and dense 1,592 frames identical | Review |
+| 17 | - | The review's fixes (`3856550`): the equivalence sweep (right, released, random-2) with pictures; `dense_pictures.py`, `legacy_pictures.py`; the corruption sweep; the stricter split check on `a8e2461` and four mutants | Sweep 117 runs, 696,126 updates, 351 restarts, 912 pictures; 1,592 and 243 frames; 3,000 damaged states: 0 differences; the split check passes and fails all four mutants | Merge |
 
 ## Handoff
 
-- Current base/head commit and uncommitted state: part 2 on `task/native-readability-simulation`,
-  base `d97641c`, candidate `5a9305a` plus these records.
-- Verified findings: the Part 1 and Part 2 results above.
+- Current base/head commit and uncommitted state: part 3 on
+  `task/native-readability-presentation`, base `a2169c3`; gated candidate `a8e2461`, the
+  review's fixes `3856550`, plus these records.
+- Verified findings: the Part 1, Part 2 and Part 3 results above.
 - Commands executed, outcomes and report hashes: `local/evidence/native-readability/` in the
   main checkout.
-  - `gates.sh` takes the worktree to gate as its argument.
+  - `gates.sh` takes the worktree to gate as its argument. `BASE` names the frozen base
+    binaries, `CIT_BASE` and `VALUES` the citation check's base commit and its list of
+    rewritten values; with `BASE=base-a2169c3` it also runs part 3's checks.
     - `gates-def1d22.out` is part 1's run.
     - `gates-b665bf7.out` is the move's.
     - `gates-5a9305a.out` is part 2's: the eleven gates, the equivalence sweep, recompare, the
       corruption sweep, citations, function size and the 48 HUNTER held captures.
-  - Tools: `equivalence.py`, `corruption.py`, `verify_split.py` with `split_movement.py` and
-    `movement-d97641c.cpp`, `citations_kept.py` with `rewritten-values.txt`, `regen.sh`.
-  - Frozen base binaries: `base-83dd9ff/` (part 1) and `base-d97641c/` (part 2).
+    - `gates-a8e2461.out` is part 3's: all of part 2's, plus the split check, the legacy
+      DRAGSTER pictures and the dense HUNTER pictures.
+  - Tools:
+    - `equivalence.py`, `corruption.py`;
+    - `verify_split.py` with `split_movement.py` and `movement-d97641c.cpp`;
+    - `verify_presentation_split.py` with `split_presentation.py` and
+      `presentation-a56ad34.cpp`;
+    - `legacy_pictures.py` and `dense_pictures.py` (part 3's picture checks);
+    - `citations_kept.py` with `rewritten-values.txt` (part 2) and
+      `rewritten-values-part3.txt`;
+    - `regen.sh`.
+  - Frozen base binaries: `base-83dd9ff/` (part 1), `base-d97641c/` (part 2) and
+    `base-a2169c3/` (part 3, with `presentation_runner`).
   - The gates run in a detached `.worktrees/native-readability-gates`.
 - Unavailable/skipped checks: the ASan presets (host; the Linux CI job covers them). Twelve of
   the sweep's picture pairs are refusals on both sides: tracks 25 and 28 cannot draw their
@@ -337,14 +420,12 @@ Decisions and deviations, with reasons:
   the first restart: the frame label resets and the harness's next controller row is refused
   on both sides (every `random-3` run stops there; the review's `random-13` at update 1,424 and
   `buttons-12` at 3,973). Restarts are compared to that point, not beyond (review of #24).
-- Two citations resolve only to a file comment, both in presentation headers, for part 3:
-  `$82:B8AA` (`rider_object.hpp`) and `$0D4B` (`rider_look.hpp`).
-- Values the index still reads as addresses, for part 3 (presentation): `$0000` (VRAM),
-  `$3D80`, `$7A00`, `$7B00`, and the colours `$4A52`, `$4631`, `$56B5`, `$4210`.
-- Exact next experiment/command: part 3 (tier 2). Apply the rules to `presentation.cpp`
-  (`build_result_map`, `render_dragster`, `observe_update`, `render_classic_race`),
-  `rider_look.cpp` (`look_for_rider`) and the three runners' `main`. Check with
-  `equivalence.py` (pictures on every schedule) and the v1 contracts, then `gates.sh`.
+  Of the legacy renderer's 243 frames, 90 are the same refusal on both sides: on 30 of the 81
+  states the riders' poses are outside the v1 rider atlas ("unsupported Classic rider atlas
+  combination"), at all three camera positions.
+- Exact next experiment/command: none for this task. Next is
+  [RESULT-TITLE-GLYPHS](RESULT-TITLE-GLYPHS.md). Every later task that touches `src/core`
+  follows the README's rules; the reviewer checklist names them.
 
 ## Review and integration
 
@@ -423,3 +504,31 @@ Decisions and deviations, with reasons:
     - S6: `roll` is the X trick's state, its completions z flips;
     - S7: the jump, gravity, lift, drive step, loop top and options word are named.
   - **Its evidence gap**: runs end at a pause-menu restart. Recorded in the handoff.
+- Part 3 (tier 2): a fresh Claude Opus 5.5 subagent in `.worktrees/native-readability-review3`.
+  - At `5a1e6f8` it **approved**
+    ([review](https://github.com/malmazuke/unirally-reconstruction/pull/25#pullrequestreview-5317117124)),
+    with no must-fix findings.
+  - **Readability**: from the code alone it explained `render_classic_race`, the HUD queue's
+    update and `look_for_rider`, and checked them against the records. It could not explain
+    the head arcs' numbers or why only a winner's result shows during loading (S3), and it
+    misread the first-seen flag (S4).
+  - **Its independent checks**, all with 0 differences or failures:
+    - ctest 25/25 on three presets, the synthetic suite 516/516;
+    - the split: 114/114, and its own stricter check (111 byte-identical, 3 with defaults
+      moved);
+    - a sweep with unused seeds (117 runs, 575,225 updates, 1,140 pictures), the legacy and
+      dense pictures;
+    - 2,901 frames on paths the sweeps miss: both DRAGSTER result screens, the 10:00 clock
+      limit with NO TIME, ZOOM ZOO's authored tour result, pause menus on five tracks;
+    - 36 bad runner invocations;
+    - the size rule, the index check and 37 tooling tests, citations, formatting.
+  - **Findings S1-S5**:
+    - S1, the split check could miss edits inside strings and new header code: tightened
+      (Part 3 result), and it now fails on the review's three mutants.
+    - S2, values still written with `$`: rewritten in `3856550`.
+    - S3, numbers left bare: the head arcs, the result loading counts, the no-time sentinel
+      (now one `no_time` for the engine), the BG3 ink colour and its red add are named. The
+      red add's comment now follows R-0042 (it is CGRAM 27's red). The result screen's
+      visibility is one shared test.
+    - S4, the first-seen flag read backwards: `slot_not_yet_crossed` names its bit 7.
+    - S5, the short exported names: recorded under Part 3's decisions.

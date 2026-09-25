@@ -3,10 +3,10 @@
 //
 // Each rider turns its seat and head toward the other rider, glances back
 // after a while, or follows a scripted glance while its idle cycle is latched.
-// The original keeps this state outside the race simulation ($0D49/$0D4B and
-// the $1259-$1273 and $0D5F-$0D71 words): nothing in gameplay reads it, so the
-// serialized race state does not carry it. It only selects the upper-body
-// overlay frame ($0D45/$0D47) composed into each rider object.
+// The original keeps this state outside the race simulation (the words listed
+// on RiderLook): nothing in gameplay reads it, so the serialized race state
+// does not carry it. It only selects the upper-body overlay frame composed into
+// each rider object.
 //
 // The per-rider words below keep the original 16-bit bit patterns.
 #include <array>
@@ -28,6 +28,9 @@ struct RiderLookTables {
 };
 RiderLookTables rider_look_tables(const ClassicContentPack& pack);
 
+// One rider's look state. The original keeps the two riders' words as pairs:
+// $0D49/$0D4B, and pairs within $1259-$1273 and $0D5F-$0D71. The look selects
+// the overlay frame ($0D45/$0D47).
 struct RiderLook {
     std::uint16_t head{};            // $0D49: 0 is the neutral pose 9
     std::uint16_t target{};          // $1259

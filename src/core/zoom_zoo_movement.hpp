@@ -66,11 +66,21 @@ struct ZoomZooRaceRider {
 struct ZoomZooCamera {
     std::uint16_t x{}, y{}, velocity_x{}, velocity_y{}, lookahead{}, screen_xy{};
 };
+// A lap slot or total not run holds 60000 (0xEA60), as the cartridge's records do; the
+// result screens show it as NO TIME.
+constexpr std::uint16_t no_time = 60000;
+
+// A slot's first-seen flag keeps bit 7 set until a rider first crosses the slot.
+inline bool slot_not_yet_crossed(std::uint8_t first_seen_flag) {
+    return (first_seen_flag & 0x80U) != 0;
+}
+
 struct ZoomZooRaceState {
     ZoomZooCamera camera;
     std::array<ZoomZooFinishPose, 2> finish_pose;
     // $114D-$119C: 80 first-seen flags, laps remaining * 4 + checkpoint
-    // ($81:CD25-CD2E fills them with 0xFF). The shared 742-byte layout holds the
+    // ($81:CD25-CD2E fills them with 0xFF; the first crossing of a slot clears its flag, see
+    // slot_not_yet_crossed). The shared 742-byte layout holds the
     // first 20, all a race of up to four laps reaches; the other tracks' layout
     // (URTRnn05) holds all 80 (R-0048).
     std::array<std::uint8_t, 80> checkpoint_seen{};
