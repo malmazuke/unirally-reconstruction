@@ -51,9 +51,9 @@ the selected tile (`$0DE7`, the flag byte of the tile named by the selected word
    `$1349` is therefore inert; pair 8 also changes the correction (`$81:92D9`,
    `$81:96FF`, `$81:97E6`, `$81:9930`) and stays guarded, as does pair 26.
 
-2. **Movement, the table at `$81:82F5`**, called through `$81:82B7` from the
-   movement driver (`$82:8C45` player, `$82:912F` opponent) after the per-update
-   reset `$81:858E` and unless the auxiliary flag `$0EF1` is set (or `$0B8E,y`,
+2. **Movement, the table at `$81:82F5`**, called through `$81:82B7` (the dispatch
+   routine `$81:82BB-82F3`) from the movement driver (`$82:8C45` player, `$82:912F`
+   opponent) after the per-update reset `$81:858E` (called at `$82:8C3A` and `$82:9124`) and unless the auxiliary flag `$0EF1` is set (or `$0B8E,y`,
    which only pair 4 sets). `JSR ($82F5,X)` with X = pair; 15 entries:
 
    | Pair | Handler | Native |

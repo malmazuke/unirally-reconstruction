@@ -22,8 +22,8 @@ highest observed is 31).
 - **Observed.** On INFINITY's capture, `$116A`, `$116B` and `$116C` clear at updates 379,
   481 and 588, then `$1166-$1168` and `$1162-$1164`, exactly like the first twenty flags.
   At the boundary `$114D-$119C` holds `$FF` on every capture, and `$119D` holds 0.
-- **Listing.** Race setup fills 80 bytes: `$81:CD25 LDY #$004F; LDA #$FF; STA $114D,Y; DEY;
-  BPL`. The only other writers are the crossing's `STA $114D,X` stores (`$81:CA3C`,
+- **Listing.** Race setup fills 80 bytes (`$81:CD25-CD2E`): `$81:CD25 LDY #$004F; LDA #$FF;
+  STA $114D,Y; DEY; BPL`. The only other writers are the crossing's `STA $114D,X` stores (`$81:CA3C`,
   `$81:CC17`), and no instruction addresses `$1161` onward directly.
 - **The HUD agrees.** The split-time slot store is `$100D + 16 * laps + 4 * checkpoint` (R-0044,
   four bytes a slot). 80 slots end at `$114C`, right before the flags.

@@ -28,7 +28,7 @@ including the625-byte combination table frozen before native tuning.
 
 | Domain | Original source and verified observation | Native decision / remaining limit |
 | --- | --- | --- |
-| Clean scenario | $82D7C6–D7FA clears runtime; $82D89D–D904 derives positions/cameras from track header; $82DB25–DB7F fills lap/total sentinels; $82DB96–DBBD sets laps and cap448 | Derive from static header and explicit fresh scenario. No end1649 seed. Initial OAM X101 is explicit $82D76D–D76F. |
+| Clean scenario | $82D7C6–D7FA clears runtime; $82D89D–D904 derives positions/cameras from track header; $82DB25–DB7F fills lap/total sentinels; $82DB96–DBBD sets laps and cap448 | Derive from static header and explicit fresh scenario. No end1649 seed. Initial OAM X101 is explicit $82D76D–D76F; the OAM y and x start at $E0 ($82:D724-D731), the queues' cursors at 0 and 1 ($81:C612-C619), the hint count at 30 ($82:D972-D975). |
 | Countdown | Fade $0FF1 grows to30; countdown waits until fade5. Start boosts $1261/1263 initialize384; countdown/control ordering clears or consumes them | Preserve original integer ordering at130/100/70 and timer below68. Initial fade draws prior update's value ($80883F–8849). |
 | Manual turn | $82A35B–A49E controls A reflection; $82A49F–A5F9 changes L/R rate under A | Tested A, Up, Down and Select overlays complete. Up/Down/Select have no extra gameplay effect in these tested sequences; not a universal inertness claim. |
 | Announcements | $829995–9A49 charge latches; $81C598–C5C8 enqueues; $81BEA8–BEF1 idle display; $81C0CE–C18A consumes weights/boost; $81C02A–C054 cooldown; $83CDBC–CE43 tutorial | Native player queue, hints and reached event1/17 reward feedback. Event/class arrays are static. Other compound reward producers remain incomplete. |

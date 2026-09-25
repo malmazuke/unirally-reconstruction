@@ -46,11 +46,11 @@ evidence, rather than a partial gameplay acceptance.
    `$81:9E1B` immediately before `$81:8DB9` calls the sampler `$81:8B75` (and
    the opponent follows the same pair at `$81:8F0A/8F0D`). The bank $21 records
    produce collision sample positions. An eight-byte record is indexed by
-   the pose index `$0F85 * 8`; its first four bytes are two x/y pairs, bytes
+   the pose index `$0F85 * 8` (three `ASL`s at `$81:9E20-9E22`); its first four bytes are two x/y pairs, bytes
    four/five are an origin, and its last word selects eight additional pairs
    in the byte template region starting `$20:BC9F`. Template byte offset is
-   `u16(byteswap16(selector) << 4)`, **not just the high selector byte times
-   16**. Each pair adds the origin modulo 256. When `$0F51 != 0`, every x
+   `u16(byteswap16(selector) << 4)` (`XBA` and four `ASL`s, `$81:9E6F-9E76`), **not just
+   the high selector byte times 16**. Each pair adds the origin modulo 256. When `$0F51 != 0`, every x
    becomes `u8(47-x)`, then every x gets `+8` modulo 256. The source operand
    offsets for 47 and 8 are `0x009F14` and `0x009F5D`.
 5. **Spatial gather reconstructed.** `$81:8A2A–8B74`: x/y divided by 64 select

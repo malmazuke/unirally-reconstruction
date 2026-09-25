@@ -10,7 +10,7 @@
 namespace unirally {
 
 // $81:8690-86FE, the special-tile part of the per-update reset that runs
-// before the tile dispatch ($81:858E from $82:8C3A / $82:9119).
+// before the tile dispatch ($81:858E from $82:8C3A / $82:9124).
 void update_special_tile_counters(SpecialTileRider& tiles, ReflectionTransition& transition,
                                   std::uint8_t selected_high) {
     if (tiles.mud_cooldown)

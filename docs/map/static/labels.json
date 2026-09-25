@@ -988,6 +988,19 @@
   ]
  },
  {
+  "address": "$81:82BB",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_8182BB",
+  "native": [
+   "src/core/race_update.cpp:(file)",
+   "src/core/race_update.cpp:tile_behavior_under"
+  ],
+  "source_records": [
+   "docs/research/R-0047-special-tiles.md"
+  ]
+ },
+ {
   "address": "$81:82D9",
   "class": "observed",
   "comment": "instruction start",
@@ -2871,6 +2884,19 @@
   ]
  },
  {
+  "address": "$81:9E20",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_819E20",
+  "native": [
+   "src/core/track_sampling.cpp:pose_record_bytes",
+   "src/core/track_sampling.hpp:SamplePoint"
+  ],
+  "source_records": [
+   "docs/research/R-0010-native-movement.md"
+  ]
+ },
+ {
   "address": "$81:9E42",
   "class": "observed",
   "comment": "instruction start",
@@ -2892,6 +2918,19 @@
   ],
   "source_records": [
    "docs/research/R-0008-track-decode.md"
+  ]
+ },
+ {
+  "address": "$81:9E6F",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_819E6F",
+  "native": [
+   "src/core/track_sampling.cpp:collision_points",
+   "src/core/track_sampling.hpp:SamplePoint"
+  ],
+  "source_records": [
+   "docs/research/R-0010-native-movement.md"
   ]
  },
  {
@@ -3581,6 +3620,15 @@
    "docs/research/R-0052-hunter-effects.md",
    "tasks/HUNTER-EFFECTS.md",
    "tasks/TILE-PAIRS-8-12-26.md"
+  ]
+ },
+ {
+  "address": "$81:C612",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_81C612",
+  "source_records": [
+   "docs/research/R-0035-zoom-zoo-playable-recovery.md"
   ]
  },
  {
@@ -5139,7 +5187,8 @@
    "src/core/special_tiles.cpp:update_special_tile_counters"
   ],
   "source_records": [
-   "docs/research/R-0010-native-movement.md"
+   "docs/research/R-0010-native-movement.md",
+   "docs/research/R-0047-special-tiles.md"
   ]
  },
  {
@@ -5300,6 +5349,18 @@
   "label": "loc_82901B",
   "source_records": [
    "docs/research/R-0036-zoom-zoo-rider-objects.md"
+  ]
+ },
+ {
+  "address": "$82:9124",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_829124",
+  "native": [
+   "src/core/special_tiles.cpp:update_special_tile_counters"
+  ],
+  "source_records": [
+   "docs/research/R-0047-special-tiles.md"
   ]
  },
  {
@@ -7208,6 +7269,18 @@
   ]
  },
  {
+  "address": "$82:D724",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82D724",
+  "native": [
+   "src/core/race_setup.cpp:classic_race_start"
+  ],
+  "source_records": [
+   "docs/research/R-0035-zoom-zoo-playable-recovery.md"
+  ]
+ },
+ {
   "address": "$82:D7F5",
   "class": "observed",
   "comment": "instruction start",
@@ -7247,6 +7320,20 @@
   ],
   "source_records": [
    "docs/research/R-0037-dragster-race-palette-cycle.md"
+  ]
+ },
+ {
+  "address": "$82:D972",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82D972",
+  "native": [
+   "src/core/race_setup.cpp:classic_crawler_zoom_zoo_start",
+   "src/core/race_setup.cpp:classic_race_start",
+   "src/core/zoom_zoo_movement.hpp:classic_crawler_zoom_zoo_start"
+  ],
+  "source_records": [
+   "docs/research/R-0035-zoom-zoo-playable-recovery.md"
   ]
  },
  {

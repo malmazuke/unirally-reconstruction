@@ -13385,18 +13385,18 @@
    "call returns in the calling mode": 1262
   },
   "bytes": 131072,
-  "cited_addresses": 780,
+  "cited_addresses": 787,
   "cited_by_class": {
    "data": 13,
    "inferred": 86,
-   "observed": 641,
+   "observed": 648,
    "unknown": 40
   },
   "cited_by_position": {
    "dat": 13,
-   "loc": 557,
+   "loc": 563,
    "mid": 17,
-   "sub": 153,
+   "sub": 154,
    "unk": 40
   },
   "conflicts": 0,

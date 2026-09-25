@@ -1756,7 +1756,7 @@
    "region": "rom"
   },
   {
-   "address": "$82:9119",
+   "address": "$82:9124",
    "native": [
     "src/core/special_tiles.cpp:update_special_tile_counters"
    ],
@@ -6489,7 +6489,7 @@
     "$81:858E",
     "$81:8690",
     "$82:8C3A",
-    "$82:9119"
+    "$82:9124"
    ],
    "wram": [
     "$0213",
