@@ -25,7 +25,7 @@ constexpr std::uint16_t boost_push = 0x80, tile_launch_override = 80;
 // within 48 of zero.
 constexpr std::uint16_t mud_hold = 4, mud_drive_step = 4, mud_brake = 5;
 constexpr std::uint16_t mud_still_speed = 0x30, mud_still_speed_back = 0xffd0;
-// The loop: poses 0x610-0x61F, 10 units in at entry, a climbing speed of 0x1CE, 17 steps
+// The loop: poses 0x610-0x61F, 10 units in at entry, velocity y 0x1CE (down), 17 steps
 // from a 34-byte offset table, a 3-update cooldown; step 8 is the top, 16 the end. A
 // refused entry counts up from -2.
 constexpr std::uint16_t loop_poses = 0x610, loop_pose_end = 0x620, loop_entry = 10;

@@ -3,8 +3,7 @@
 // On the HUNTER tour the player is "it": touching the opponent starts one of eight effects,
 // chosen by the player's x & 7. The effect is announced at the front of the queue, runs
 // for 500 updates (hedgehog speed runs its own course) and ends with a blank announcement;
-// no new tag counts while it runs. `$12D1`, a palette mode that would replace the
-// effects, is zero on every HUNTER race.
+// no new tag counts while it runs.
 
 #include "hunter_effects.hpp"
 
@@ -185,6 +184,7 @@ void run_effect(ZoomZooState& state, unsigned effect, std::span<const std::uint8
 } // namespace
 
 // $83:CEC9-D600 (R-0052), at the end of every update ($83:CDAA), skipped ones included.
+// `$12D1`, a palette mode that would replace the effects, is zero on every HUNTER race.
 void update_hunter_effects(ZoomZooState& state, std::span<const std::uint8_t> blink) {
     if (!classic_race_scenario(state.track).hunter_tour) return;
     if (blink.size() != blink_table_size)

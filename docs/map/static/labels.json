@@ -1096,7 +1096,7 @@
   "comment": "routine start",
   "label": "sub_8184AC",
   "native": [
-   "src/core/race_update.cpp:(file)"
+   "src/core/race_update.cpp:tile_behavior_under"
   ],
   "source_records": [
    "docs/research/R-0047-special-tiles.md"
@@ -1332,7 +1332,7 @@
   "comment": "routine start",
   "label": "sub_81875C",
   "native": [
-   "src/core/race_update.cpp:(file)"
+   "src/core/race_update.cpp:tile_behavior_under"
   ],
   "source_records": [
    "docs/research/R-0047-special-tiles.md",
@@ -7902,8 +7902,8 @@
   "label": "sub_83CEC9",
   "native": [
    "src/core/hunter_effects.cpp:update_hunter_effects",
-   "src/core/zoom_zoo_movement.hpp:(file)",
    "src/core/zoom_zoo_movement.hpp:ClassicRaceScenario::hunter_tour",
+   "src/core/zoom_zoo_movement.hpp:HunterEffects",
    "src/core/zoom_zoo_movement.hpp:update_hunter_effects"
   ],
   "source_records": [
@@ -7921,8 +7921,8 @@
   "native": [
    "src/core/hunter_effects.cpp:priority",
    "src/core/hunter_effects.cpp:update_hunter_effects",
-   "src/core/zoom_zoo_movement.hpp:(file)",
    "src/core/zoom_zoo_movement.hpp:ClassicRaceScenario::hunter_tour",
+   "src/core/zoom_zoo_movement.hpp:HunterEffects",
    "src/core/zoom_zoo_movement.hpp:update_hunter_effects"
   ],
   "source_records": [
@@ -7937,8 +7937,8 @@
   "native": [
    "src/core/hunter_effects.cpp:tagged",
    "src/core/hunter_effects.cpp:update_hunter_effects",
-   "src/core/zoom_zoo_movement.hpp:(file)",
    "src/core/zoom_zoo_movement.hpp:ClassicRaceScenario::hunter_tour",
+   "src/core/zoom_zoo_movement.hpp:HunterEffects",
    "src/core/zoom_zoo_movement.hpp:update_hunter_effects"
   ],
   "source_records": [
@@ -7954,8 +7954,8 @@
   "label": "sub_83D1CA",
   "native": [
    "src/core/hunter_effects.cpp:update_hunter_effects",
-   "src/core/zoom_zoo_movement.hpp:(file)",
    "src/core/zoom_zoo_movement.hpp:ClassicRaceScenario::hunter_tour",
+   "src/core/zoom_zoo_movement.hpp:HunterEffects",
    "src/core/zoom_zoo_movement.hpp:update_hunter_effects"
   ],
   "source_records": [
@@ -7971,8 +7971,8 @@
   "native": [
    "src/core/hunter_effects.cpp:finish",
    "src/core/hunter_effects.cpp:update_hunter_effects",
-   "src/core/zoom_zoo_movement.hpp:(file)",
    "src/core/zoom_zoo_movement.hpp:ClassicRaceScenario::hunter_tour",
+   "src/core/zoom_zoo_movement.hpp:HunterEffects",
    "src/core/zoom_zoo_movement.hpp:update_hunter_effects"
   ],
   "source_records": [
@@ -7988,8 +7988,8 @@
   "native": [
    "src/core/hunter_effects.cpp:run_effect",
    "src/core/hunter_effects.cpp:update_hunter_effects",
-   "src/core/zoom_zoo_movement.hpp:(file)",
    "src/core/zoom_zoo_movement.hpp:ClassicRaceScenario::hunter_tour",
+   "src/core/zoom_zoo_movement.hpp:HunterEffects",
    "src/core/zoom_zoo_movement.hpp:update_hunter_effects"
   ],
   "source_records": [
@@ -8004,8 +8004,8 @@
   "native": [
    "src/core/hunter_effects.cpp:run_screen_flip",
    "src/core/hunter_effects.cpp:update_hunter_effects",
-   "src/core/zoom_zoo_movement.hpp:(file)",
    "src/core/zoom_zoo_movement.hpp:ClassicRaceScenario::hunter_tour",
+   "src/core/zoom_zoo_movement.hpp:HunterEffects",
    "src/core/zoom_zoo_movement.hpp:update_hunter_effects"
   ],
   "source_records": [
@@ -8021,8 +8021,8 @@
   "native": [
    "src/core/hunter_effects.cpp:run_blinking_effect",
    "src/core/hunter_effects.cpp:update_hunter_effects",
-   "src/core/zoom_zoo_movement.hpp:(file)",
    "src/core/zoom_zoo_movement.hpp:ClassicRaceScenario::hunter_tour",
+   "src/core/zoom_zoo_movement.hpp:HunterEffects",
    "src/core/zoom_zoo_movement.hpp:update_hunter_effects"
   ],
   "source_records": [
@@ -8037,8 +8037,8 @@
   "native": [
    "src/core/content_pack.cpp:hunter_required",
    "src/core/hunter_effects.cpp:update_hunter_effects",
-   "src/core/zoom_zoo_movement.hpp:(file)",
    "src/core/zoom_zoo_movement.hpp:ClassicRaceScenario::hunter_tour",
+   "src/core/zoom_zoo_movement.hpp:HunterEffects",
    "src/core/zoom_zoo_movement.hpp:ZoomZooContent::hunter_blink",
    "src/core/zoom_zoo_movement.hpp:update_hunter_effects"
   ],
@@ -8055,8 +8055,8 @@
   "native": [
    "src/core/hunter_effects.cpp:run_blinking_effect",
    "src/core/hunter_effects.cpp:update_hunter_effects",
-   "src/core/zoom_zoo_movement.hpp:(file)",
    "src/core/zoom_zoo_movement.hpp:ClassicRaceScenario::hunter_tour",
+   "src/core/zoom_zoo_movement.hpp:HunterEffects",
    "src/core/zoom_zoo_movement.hpp:update_hunter_effects"
   ],
   "source_records": [
@@ -8071,8 +8071,8 @@
   "native": [
    "src/core/hunter_effects.cpp:run_effect",
    "src/core/hunter_effects.cpp:update_hunter_effects",
-   "src/core/zoom_zoo_movement.hpp:(file)",
    "src/core/zoom_zoo_movement.hpp:ClassicRaceScenario::hunter_tour",
+   "src/core/zoom_zoo_movement.hpp:HunterEffects",
    "src/core/zoom_zoo_movement.hpp:update_hunter_effects"
   ],
   "source_records": [
@@ -8087,8 +8087,8 @@
   "native": [
    "src/core/hunter_effects.cpp:run_effect",
    "src/core/hunter_effects.cpp:update_hunter_effects",
-   "src/core/zoom_zoo_movement.hpp:(file)",
    "src/core/zoom_zoo_movement.hpp:ClassicRaceScenario::hunter_tour",
+   "src/core/zoom_zoo_movement.hpp:HunterEffects",
    "src/core/zoom_zoo_movement.hpp:update_hunter_effects"
   ],
   "source_records": [
@@ -8103,8 +8103,8 @@
   "native": [
    "src/core/hunter_effects.cpp:run_slow_motion",
    "src/core/hunter_effects.cpp:update_hunter_effects",
-   "src/core/zoom_zoo_movement.hpp:(file)",
    "src/core/zoom_zoo_movement.hpp:ClassicRaceScenario::hunter_tour",
+   "src/core/zoom_zoo_movement.hpp:HunterEffects",
    "src/core/zoom_zoo_movement.hpp:update_hunter_effects"
   ],
   "source_records": [
@@ -8120,8 +8120,8 @@
   "native": [
    "src/core/hunter_effects.cpp:run_hedgehog_speed",
    "src/core/hunter_effects.cpp:update_hunter_effects",
-   "src/core/zoom_zoo_movement.hpp:(file)",
    "src/core/zoom_zoo_movement.hpp:ClassicRaceScenario::hunter_tour",
+   "src/core/zoom_zoo_movement.hpp:HunterEffects",
    "src/core/zoom_zoo_movement.hpp:update_hunter_effects"
   ],
   "source_records": [
@@ -8138,8 +8138,8 @@
    "src/core/hunter_effects.cpp:run_screen_flip",
    "src/core/hunter_effects.cpp:update_hunter_effects",
    "src/core/presentation.cpp:render_classic_race",
-   "src/core/zoom_zoo_movement.hpp:(file)",
    "src/core/zoom_zoo_movement.hpp:ClassicRaceScenario::hunter_tour",
+   "src/core/zoom_zoo_movement.hpp:HunterEffects",
    "src/core/zoom_zoo_movement.hpp:update_hunter_effects"
   ],
   "source_records": [

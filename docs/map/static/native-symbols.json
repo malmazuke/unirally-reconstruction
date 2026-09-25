@@ -390,7 +390,7 @@
   {
    "address": "$81:84AC",
    "native": [
-    "src/core/race_update.cpp:(file)"
+    "src/core/race_update.cpp:tile_behavior_under"
    ],
    "region": "rom"
   },
@@ -506,7 +506,7 @@
   {
    "address": "$81:875C",
    "native": [
-    "src/core/race_update.cpp:(file)"
+    "src/core/race_update.cpp:tile_behavior_under"
    ],
    "region": "rom"
   },
@@ -2698,8 +2698,8 @@
    "address": "$83:CEC9",
    "native": [
     "src/core/hunter_effects.cpp:update_hunter_effects",
-    "src/core/zoom_zoo_movement.hpp:(file)",
     "src/core/zoom_zoo_movement.hpp:ClassicRaceScenario::hunter_tour",
+    "src/core/zoom_zoo_movement.hpp:HunterEffects",
     "src/core/zoom_zoo_movement.hpp:update_hunter_effects"
    ],
    "range_ends": [
@@ -4536,7 +4536,7 @@
   {
    "address": "$12D1",
    "native": [
-    "src/core/hunter_effects.cpp:(file)"
+    "src/core/hunter_effects.cpp:update_hunter_effects"
    ],
    "region": "wram"
   },
@@ -4730,7 +4730,8 @@
   {
    "address": "$77:0750",
    "native": [
-    "src/core/flat_contact.hpp:ContactContext::cartridge_options"
+    "src/core/flat_contact.hpp:ContactContext::cartridge_options",
+    "src/core/race_update.cpp:loop_top_step, cartridge_options"
    ],
    "region": "sram"
   },
@@ -4930,11 +4931,6 @@
     "$0302"
    ]
   },
-  "src/core/hunter_effects.cpp:(file)": {
-   "wram": [
-    "$12D1"
-   ]
-  },
   "src/core/hunter_effects.cpp:count_hunter_mosaic": {
    "rom": [
     "$80:8821"
@@ -4995,7 +4991,8 @@
     "$83:CEC9"
    ],
    "wram": [
-    "$12AF"
+    "$12AF",
+    "$12D1"
    ]
   },
   "src/core/input_timer.cpp:advance_timer_digits": {
@@ -5756,9 +5753,7 @@
   },
   "src/core/race_update.cpp:(file)": {
    "rom": [
-    "$81:82BB",
-    "$81:84AC",
-    "$81:875C"
+    "$81:82BB"
    ]
   },
   "src/core/race_update.cpp:begin_rider_update": {
@@ -5776,6 +5771,11 @@
   "src/core/race_update.cpp:finish_update": {
    "rom": [
     "$81:C73E"
+   ]
+  },
+  "src/core/race_update.cpp:loop_top_step, cartridge_options": {
+   "sram": [
+    "$77:0750"
    ]
   },
   "src/core/race_update.cpp:next_wrong_direction_counter": {
@@ -5905,7 +5905,9 @@
   "src/core/race_update.cpp:tile_behavior_under": {
    "rom": [
     "$81:82BB",
-    "$81:82F5"
+    "$81:82F5",
+    "$81:84AC",
+    "$81:875C"
    ]
   },
   "src/core/race_update.cpp:update_reflection_transition": {
@@ -6698,11 +6700,6 @@
     "$80:824B"
    ]
   },
-  "src/core/zoom_zoo_movement.hpp:(file)": {
-   "rom": [
-    "$83:CEC9"
-   ]
-  },
   "src/core/zoom_zoo_movement.hpp:ClassicRaceScenario::ai_level": {
    "rom": [
     "$83:CC0B",
@@ -6764,6 +6761,11 @@
    ],
    "sram": [
     "$77:074A"
+   ]
+  },
+  "src/core/zoom_zoo_movement.hpp:HunterEffects": {
+   "rom": [
+    "$83:CEC9"
    ]
   },
   "src/core/zoom_zoo_movement.hpp:HunterEffects::active": {

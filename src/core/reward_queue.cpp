@@ -24,9 +24,10 @@ namespace unirally {
 namespace {
 
 constexpr unsigned queue_slots_mask = 31; // 32 entries
-// $81:C02A-C054: a shown announcement holds its row for 40 updates, 4 fewer for each
-// announcement still waiting, but at least 5; with hints on, 120. A queue found empty
-// looks again after 10.
+// $81:C02A-C054: a shown announcement sets the queue's cooldown to 40, 4 less for each
+// announcement still waiting, but at least 5; with hints on, 120. A queue found empty sets
+// 10. The race update lowers the cooldown by 2 a update, so these are 20, 60 and 5
+// updates.
 constexpr int longest_display = 40, display_saved_per_waiting = 4, shortest_display = 5;
 constexpr std::uint16_t hint_display = 120, empty_queue_wait = 10;
 // The reward class table has no class for an event whose entry is 255: it rewards nothing.
@@ -243,6 +244,7 @@ void announce_tricks(ZoomZooState& state, unsigned rider, const ZoomZooContent& 
     const unsigned rolls = turns.reflected_at_start ? forward : reverse;
     const unsigned twists =
         std::min<unsigned>(state.reflection[rider].air_turns >> 1U, most_counted_tricks);
+    // `roll` is the X trick's state (trick_roll.cpp): its completed spins are z flips.
     const unsigned z_flips = std::min<unsigned>(roll.completed_rolls, most_counted_tricks);
     if (roll.bounce_active && !roll.support_count_mirror) {
         announce(state, rider, announcement::head_bounce);

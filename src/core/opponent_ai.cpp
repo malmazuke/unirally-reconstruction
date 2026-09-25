@@ -24,7 +24,9 @@ constexpr std::int16_t steep_slope = 26, stalled_displacement = 3;
 constexpr std::uint16_t turnaround_updates = 30;
 // A trick launches when the opponent, rising, has been off the ground 4 updates or more.
 constexpr std::uint16_t launch_airborne_updates = 4;
-// After a launch the AI keeps rotating for 30 updates (60 on the HUNTER tour's level 3).
+// A launch sets the AI's suppression word to 30 (60 on the HUNTER tour's level 3). The
+// native AI only tests whether it is set: while it is, the rider rotates with its fall
+// (below). Nothing in the recovered domain counts it down.
 constexpr std::uint16_t rotation_updates = 30, hunter_rotation_updates = 60;
 // The AI lets the player catch up: below level 2 it launches only when the player has
 // no feature total yet, or leads by 3 progress transitions or more.

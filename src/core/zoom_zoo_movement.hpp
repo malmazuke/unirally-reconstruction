@@ -173,10 +173,6 @@ TrackGeometry track_geometry(std::span<const std::uint8_t> decoded_track);
 // for the countdown windows.
 bool classic_race_start_reflected(std::span<const std::uint8_t> decoded_track, unsigned rider);
 
-// R-0052: the HUNTER tour's tag effects ($83:CEC9). When the riders' boxes
-// overlap, the player's x picks one of eight effects, each announced at the
-// front of the player's queue and most timed over 500 updates. Words keep the
-// original bit patterns.
 // The HUNTER tour's eight effects, by their index in HunterEffects::effect (R-0052).
 namespace hunter_effect {
 inline constexpr unsigned barf_mode = 0;        // BG2's axes swap
@@ -189,6 +185,10 @@ inline constexpr unsigned wobble_mode = 6;      // mosaic
 inline constexpr unsigned control_reversed = 7; // left and right, the rotations, Y and A
 inline constexpr unsigned count = 8;
 } // namespace hunter_effect
+// R-0052: the HUNTER tour's tag effects ($83:CEC9). When the riders' boxes
+// overlap, the player's x picks one of eight effects, each announced at the
+// front of the player's queue and most timed over 500 updates. Words keep the
+// original bit patterns.
 struct HunterEffects {
     std::uint16_t latched{}; // $1325: the progress counts have once differed by 2 or more
     std::uint16_t active{};  // $1323: an effect is running

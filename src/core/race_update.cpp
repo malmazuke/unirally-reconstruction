@@ -36,9 +36,8 @@ namespace unirally {
 namespace {
 
 // The tile flag pairs the dispatch at $81:82BB runs (R-0047, R-0051), named by what they
-// do where no record names them. 18 and 22 do nothing ($81:84AC, a bare RTS); 20, the
-// checkpoint tile, runs with the checkpoints; 4 ($81:875C) is unrecovered and nothing lies
-// past 28.
+// do where no record names them. 18 and 22 do nothing; 20, the checkpoint tile, runs with
+// the checkpoints; 4 is unrecovered and nothing lies past 28.
 namespace tile_pair {
 inline constexpr unsigned boost = 2, unrecovered = 4, surface_drive = 6, slow = 8;
 inline constexpr unsigned corkscrew = 10, slow_drive = 12, mud = 14, jump_driven = 16;
@@ -70,6 +69,12 @@ constexpr std::uint16_t turn_hold = 30;
 // Rotation: 1 a update with A held, else 2 (254 and 255 the other way); cleared on a
 // shallow slope (under 30).
 constexpr std::int16_t shallow_slope = 30;
+// The drive steps 24 a update unless a tile sets its own; the lift holds a launch
+// override of 80.
+constexpr std::uint16_t drive_step = 24, lift_launch_override = 80;
+// The loop's top is step 9. Native passes the cartridge's options word ($77:0750) as
+// 0xC200; contact tests only its bit 3, which is clear.
+constexpr std::uint16_t loop_top_step = 9, cartridge_options = 0xc200;
 // The wrong-direction warning after 180 active updates, then every 60 ($82:974B/977B).
 constexpr std::uint16_t wrong_way_warning = 180, wrong_way_repeat = 120;
 
@@ -320,7 +325,8 @@ void begin_rider_update(ZoomZooState& next, unsigned index, const ZoomZooContent
 }
 
 // $81:82BB-82F3: the selected tile's flag pair, through the table at $81:82F5 unless the
-// auxiliary flag is set.
+// auxiliary flag is set. Pairs 18 and 22 run $81:84AC, a bare RTS; pair 4 ($81:875C) is
+// unrecovered.
 unsigned tile_behavior_under(const RiderMovementState& rider, const ZoomZooContent& content) {
     const auto descriptor = rider.contact.selected_word;
     const auto tile = ((descriptor & 0x3f0U) >> 2U) + ((descriptor & 15U) >> 1U);
@@ -400,7 +406,7 @@ void run_surface_drive_tile(RiderMovementState& rider, const ReflectionTransitio
 // N-flag compare).
 void run_lift_tile(RiderMovementState& rider, SurfaceTransition& surface) {
     if (surface.leading_support) return;
-    rider.launch_override = 80;
+    rider.launch_override = lift_launch_override;
     rider.motion.x = static_cast<std::uint16_t>(
         rider.motion.x + ((rider.contact.selected_word & mirrored_tile) ? 0xffffU : 1U));
     auto raised = static_cast<std::uint16_t>(rider.motion.velocity_y - 0x40U);
@@ -661,7 +667,7 @@ RiderOutcome update_rider(const ZoomZooState& state, ZoomZooState& next, unsigne
         update_drive(rider, transition, horizontal, animation_override, throttle_target,
                      next.charge_announced[index], surface.leading_support != 0,
                      state.native_initialization && next.rolls[index].bounce_active != 0,
-                     special.drive_step ? special.drive_step : 24,
+                     special.drive_step ? special.drive_step : drive_step,
                      tiles.mud_cooldown != 0 || special.crank_brake);
         next.drive_target_latch = throttle_target ? 0 : 1;
     }
@@ -699,8 +705,8 @@ void update_rider_contact(const ZoomZooState& state, ZoomZooState& next, unsigne
     const bool surface_mode = next.surface[index].mode != 0;
     resolve_vertical_contact(
         rider.contact, rider.motion, summary,
-        {whole.contact_phase, index == 1, next.surface[index].mode, 0xc200,
-         next.special_tiles[index].loop_step == 9,
+        {whole.contact_phase, index == 1, next.surface[index].mode, cartridge_options,
+         next.special_tiles[index].loop_step == loop_top_step,
          index == 0 && next.hunter.effect[hunter_effect::power_bounce] != 0},
         content.slope_coefficients.subspan(state.sustained && surface_mode ? 64 : 0,
                                            state.sustained ? 32 : 9),
@@ -742,8 +748,9 @@ void finish_update(const ZoomZooState& state, ZoomZooState& next,
 
 } // namespace
 
-// The wrong-direction counter counts the rider's active updates moving (16 or more either
-// way) against the marker's direction; the warning comes at 180, then every 60.
+// The wrong-direction counter counts the rider's active updates moving (16 or more
+// rightward, or below -16 leftward: N-flag compares) against the marker's direction; the
+// warning comes at 180, then every 60.
 std::uint16_t next_wrong_direction_counter(std::uint16_t previous, std::uint16_t velocity_x,
                                            std::uint16_t marker, unsigned horizontal,
                                            bool native_rewards) {

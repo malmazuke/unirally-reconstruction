@@ -333,7 +333,12 @@ Decisions and deviations, with reasons:
   the sweep's picture pairs are refusals on both sides: tracks 25 and 28 cannot draw their
   result title ([RESULT-TITLE-GLYPHS](RESULT-TITLE-GLYPHS.md)). The legacy `movement_runner`
   domain is narrow (Right, B only while still); its random schedules stop at its guards on both
-  sides.
+  sides. A schedule that restarts the race from the pause menu ends its run's comparison at
+  the first restart: the frame label resets and the harness's next controller row is refused
+  on both sides (every `random-3` run stops there; the review's `random-13` at update 1,424 and
+  `buttons-12` at 3,973). Restarts are compared to that point, not beyond (review of #24).
+- Two citations resolve only to a file comment, both in presentation headers, for part 3:
+  `$82:B8AA` (`rider_object.hpp`) and `$0D4B` (`rider_look.hpp`).
 - Values the index still reads as addresses, for part 3 (presentation): `$0000` (VRAM),
   `$3D80`, `$7A00`, `$7B00`, and the colours `$4A52`, `$4631`, `$56B5`, `$4210`.
 - Exact next experiment/command: part 3 (tier 2). Apply the rules to `presentation.cpp`
@@ -393,4 +398,28 @@ Decisions and deviations, with reasons:
       - digit separators only inside numbers, so `U'x'` is read correctly;
       - `operator bool` is named correctly.
     - **S4**: the non-address entries are listed in the handoff for parts 2 and 3.
-- Part 2 (tier 1): REVIEW2_PENDING
+- Part 2 (tier 1): a fresh Claude Opus 5.5 subagent in `.worktrees/native-readability-review2`.
+  - At `89979973` it **approved**
+    ([review](https://github.com/malmazuke/unirally-reconstruction/pull/24#pullrequestreview-5316410640)).
+  - **Readability probe**: from the code alone, it explained `update_opponent_announcements`,
+    `update_mud_tile`, `update_loop_tile` and `update_drive`. All four matched R-0035,
+    R-0042, R-0047, R-0051, R-0038 and R-0011.
+  - **Its independent checks**:
+    - `verify_split` 82 of 82;
+    - equivalence with withheld seeds and against its own base build, 0 differences; its own
+      mutant differs in 48 of 117 runs;
+    - corruption with two more seeds, 0 differences;
+    - diff audits of `race_update`, `race_state_io`, pose, contact and legacy code: an
+      old-against-new fuzz of about 5.8 million calls and 227,845 damaged states, 0
+      mismatches;
+    - the records' new addresses, against a regenerated listing.
+  - **Findings S1-S7, fixed in `FIX3_SHA`**:
+    - S1: the cooldown units (they fall by 2 a update);
+    - S2: the HUNTER struct's comment placement, and three file-only citations moved to
+      functions;
+    - S3: the AI's suppression word is only tested;
+    - S4: the loop's velocity y points down;
+    - S5: the asymmetric braking test is now `braking_fast_enough`;
+    - S6: `roll` is the X trick's state, its completions z flips;
+    - S7: the jump, gravity, lift, drive step, loop top and options word are named.
+  - **Its evidence gap**: runs end at a pause-menu restart. Recorded in the handoff.

@@ -17,7 +17,8 @@ namespace {
 // positive boost, and a launch that lifts the speed limit by 256 for one update.
 constexpr std::uint16_t dragster_drive_step = 24, dragster_throttle_cap = 448;
 constexpr std::uint16_t throttle_step = 16, launch_override = 256;
-// Braking takes effect from a speed of 16 either way ($82:9909).
+// Braking takes effect from 16 rightward but only below -16 leftward ($82:9909): the
+// test is asymmetric, so -16 does not brake. Keep it (see braking_fast_enough).
 constexpr std::int16_t braking_speed = 16;
 // Barely moving (an x displacement under 4) counts up to 4 updates of small motion,
 // which picks the pushing animation.
@@ -44,6 +45,10 @@ void count_small_motion(RiderMovementState& rider, int& animation_override, bool
         rider.small_motion_counter = add_word(rider.small_motion_counter, 1);
     animation_override = static_cast<std::int16_t>(rider.small_motion_counter);
     throttle_target = true;
+}
+
+bool braking_fast_enough(std::int16_t speed) {
+    return speed >= braking_speed || speed < -braking_speed;
 }
 
 bool on_wall(const RiderMovementState& rider) {
@@ -181,6 +186,14 @@ void update_horizontal(RiderMovementState& rider, bool brake, bool accelerate, b
                       content.speed_decay);
 }
 
+namespace {
+// A held jump pushes velocity y up to its baseline less 144 for four updates, then less 192
+// until the ninth; gravity adds 19 a update less a 32nd of the fall, until 512.
+constexpr std::uint16_t jump_updates = 9, strong_jump_updates = 5;
+constexpr int strong_jump = -144, late_jump = -192;
+constexpr int fastest_fall = 512, gravity = 19;
+} // namespace
+
 void update_jump(RiderMovementState& rider, bool jump_input) {
     bool advance = rider.jump.impulse_phase != 0;
     if (!advance && rider.jump.pending) {
@@ -199,11 +212,12 @@ void update_jump(RiderMovementState& rider, bool jump_input) {
         rider.jump.impulse_phase = 0;
     } else {
         rider.jump.impulse_phase = add_word(rider.jump.impulse_phase, 1);
-        if (rider.jump.impulse_phase >= 9) {
+        if (rider.jump.impulse_phase >= jump_updates) {
             rider.jump.impulse_phase = 0;
         } else {
             const auto impulse = static_cast<std::uint16_t>(
-                rider.jump.baseline + (rider.jump.impulse_phase < 5 ? -144 : -192));
+                rider.jump.baseline
+                + (rider.jump.impulse_phase < strong_jump_updates ? strong_jump : late_jump));
             if (!negative(static_cast<std::uint16_t>(rider.motion.velocity_y - impulse))) {
                 rider.motion.velocity_y = impulse;
             }
@@ -235,8 +249,8 @@ void apply_finish_slowdown(RiderMovementState& rider) {
 
 void update_gravity(RiderMovementState& rider) {
     const auto vertical = static_cast<std::int16_t>(rider.motion.velocity_y);
-    if (vertical >= 512) return;
-    const auto increment = vertical < 0 ? 19 : 19 - (vertical >> 5);
+    if (vertical >= fastest_fall) return;
+    const auto increment = vertical < 0 ? gravity : gravity - (vertical >> 5);
     rider.motion.velocity_y = static_cast<std::uint16_t>(vertical + increment);
     rider.motion.y = add_word(rider.motion.y, 1);
 }
@@ -271,8 +285,7 @@ void update_drive(RiderMovementState& rider, ReflectionTransition& transition, u
     const auto incoming_speed = static_cast<std::int16_t>(rider.motion.velocity_x);
     const bool grounded =
         !leading_support && rider.contact.unsupported_count < 2 && !on_wall(rider);
-    const bool braking = transition.brake_input
-                      && (incoming_speed >= braking_speed || incoming_speed < -braking_speed);
+    const bool braking = transition.brake_input && braking_fast_enough(incoming_speed);
     if (grounded && braking) {
         brake(rider, incoming_speed, drive_step, bounce_active);
         return; // before the previous-brake latch
