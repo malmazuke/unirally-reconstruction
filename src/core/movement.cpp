@@ -19,6 +19,19 @@ namespace unirally {
 
 namespace {
 
+// The legacy race: the finish delay (240 updates) and the result's load (226 updates when the
+// player won, 242 when it lost); the countdown brakes from 70; the finish line at x 0x62AC
+// on DRAGSTER's 1,024-column track.
+constexpr std::uint16_t finish_delay_updates = 240;
+constexpr std::uint16_t stable_result_won = 226, stable_result_lost = 242;
+constexpr std::uint16_t countdown_brake_from = 70;
+constexpr std::uint16_t dragster_finish_x = 0x62ac, dragster_coarse_columns = 1024;
+constexpr std::int16_t finish_drive = 24;
+// The scripted opponent: the jump marker's flag, a launch after 4 updates in the air, and
+// 30 updates of rotation; fully airborne after 9.
+constexpr std::uint16_t marker_jump = 0x2000, launch_airborne_updates = 4, rotation_updates = 30;
+constexpr std::uint16_t airborne_updates = 9;
+
 void write_rider(std::vector<std::uint8_t>& out, const RiderMovementState& r) {
     for (auto v : {r.motion.x, r.motion.y, r.motion.velocity_x, r.motion.velocity_y,
                    r.motion.previous_x_displacement, r.motion.response_a, r.motion.response_b,
@@ -153,6 +166,170 @@ void record_finish(RaceFinishState& finish, std::size_t rider, const RaceTimerDi
         finish.outcome =
             finish.rider_finished[1] ? RaceOutcome::PlayerLost : RaceOutcome::PlayerWon;
         finish.phase = RacePhase::FinishDelay;
+    }
+}
+
+// The result screen once the player has finished: after the 240-update finish delay the
+// result loads for 226 updates when the player won and 242 when it lost, then is stable.
+// Returns true when the update was a result update.
+bool advance_result_phases(MovementState& state) {
+    auto& finish = state.finish;
+    if (finish.phase == RacePhase::FinishDelay
+        && finish.player_finish_delay == finish_delay_updates) {
+        finish.phase = RacePhase::ResultLoading;
+        finish.result_loading_updates = 1;
+        ++state.frame;
+        return true;
+    }
+    if (finish.phase != RacePhase::ResultLoading && finish.phase != RacePhase::ResultScreen)
+        return false;
+    if (finish.phase == RacePhase::ResultLoading) {
+        ++finish.result_loading_updates;
+        const auto stable_update =
+            finish.outcome == RaceOutcome::PlayerWon ? stable_result_won : stable_result_lost;
+        if (finish.result_loading_updates >= stable_update) finish.phase = RacePhase::ResultScreen;
+    }
+    ++state.frame;
+    return true;
+}
+
+// The legacy opponent's scripted controls: jump at a jump marker and, launching into the
+// air, a positive rotation (trick selector 1). After a scored feature the recovered AI copies
+// the alternating motion phase instead of holding the jump; a catch-up jump is unrecovered.
+struct ScriptedOpponent {
+    bool jump{}, trick{};
+};
+
+ScriptedOpponent scripted_opponent(MovementState& state, bool opponent_finished_first) {
+    auto& ai = state.opponent_ai;
+    const auto& opponent = state.riders[1];
+    bool jump = !opponent_finished_first && (opponent.progress.marker_word & marker_jump) != 0;
+    if (jump && opponent.contact.unsupported_count < launch_airborne_updates
+        && state.rewards.feature_total != 0) {
+        const auto catch_up = static_cast<std::int16_t>(state.riders[0].progress.transition_count
+                                                        - opponent.progress.transition_count - 3U);
+        if (catch_up >= 0)
+            throw std::invalid_argument("opponent catch-up jump is outside the recovered domain");
+        jump = state.contact_phase != 0;
+    }
+    bool trick = false;
+    if (jump && ai.impulse_countdown) {
+        trick = (ai.trick_selector & 1U) != 0;
+    } else if (jump && opponent.contact.unsupported_count >= launch_airborne_updates) {
+        ai.impulse_countdown = static_cast<std::uint16_t>(
+            std::abs(static_cast<std::int16_t>(opponent.motion.velocity_y)) >> 1);
+        ai.trick_selector = 1;
+        ai.suppression_counter = rotation_updates;
+        trick = true;
+    } else if (!jump) {
+        ai.impulse_countdown = 0;
+        ai.trick_selector = 0;
+        if (opponent_finished_first) ai.suppression_counter = 0;
+    }
+    return {jump, trick};
+}
+
+struct LegacyControls {
+    bool player_brake{}, player_jump{}, forced_brake{}, finish_delay{}, opponent_finished_first{};
+    ScriptedOpponent opponent{};
+};
+
+// The neutral finish response removes the 24-unit drive contribution after ordinary
+// limiting, only when the subtraction cannot cross zero. Unlike the ten-unit
+// pre-adjustment, a smaller remainder persists.
+void remove_finish_drive(RiderMovementState& rider) {
+    const auto limited = static_cast<std::int16_t>(rider.motion.velocity_x);
+    if (limited >= finish_drive)
+        rider.motion.velocity_x = static_cast<std::uint16_t>(limited - finish_drive);
+    else if (limited <= -finish_drive)
+        rider.motion.velocity_x = static_cast<std::uint16_t>(limited + finish_drive);
+}
+
+// One rider's legacy update. Returns whether its quarter turns completed a roll (event one),
+// the only reward the legacy domain recovers, and only for the opponent.
+bool update_legacy_rider(MovementState& state, unsigned index, unsigned active,
+                         const LegacyControls& controls, const MovementContent& content) {
+    auto& rider = state.riders[index];
+    const auto speed_before = rider.motion.velocity_x;
+    const bool slowing = controls.finish_delay || (index == 1 && controls.opponent_finished_first);
+    decay_idle_wobble(rider);
+    const auto horizontal =
+        index == 0 ? (controls.finish_delay ? direction::neutral : state.player_input.horizontal)
+                   : (slowing ? direction::neutral : direction::right);
+    int animation_override =
+        index == active
+            ? stationary_animation_override(rider, static_cast<std::uint8_t>(horizontal))
+            : 0;
+    bool use_throttle_target = false;
+    bool event_one = false;
+    if (index == active) {
+        event_one = update_quarter_turns(rider) != 0;
+        if (index == 0 && event_one)
+            throw std::invalid_argument("player reward is outside the primary domain");
+        update_jump(rider, index == 0 ? controls.player_jump : controls.opponent.jump);
+        // Rotation input is accepted only once the rider is fully airborne; the scripted
+        // opponent's trick is the positive two-step rotation.
+        rider.motion.response_b = index == 1 && controls.opponent.trick
+                                       && rider.contact.unsupported_count >= airborne_updates
+                                    ? 2
+                                    : 0;
+        update_active_low_speed_damping(rider);
+    }
+    // The dispatcher skips this pre-adjustment on each third update; the ordinary
+    // limiter/damping still runs on every update.
+    if (slowing && (state.frame + 1U) % 3U != 0U) apply_finish_slowdown(rider);
+    update_horizontal(rider, index == 0 ? controls.player_brake : controls.forced_brake,
+                      horizontal == direction::right, index == 1, state, content,
+                      animation_override, use_throttle_target);
+    if (slowing) remove_finish_drive(rider);
+    update_rolling_mode(rider);
+    update_gravity(rider);
+    integrate_motion(rider);
+    update_idle_pose(rider, state.countdown == 0, index == 1, state.animation_counter,
+                     content.idle_pose_table);
+    update_pose(rider, state.animation_counter, state.contact_phase, content, animation_override,
+                use_throttle_target);
+    if (index == 1 && controls.opponent_finished_first)
+        update_opponent_finish_pose(state.finish, rider, state.frame + 1U);
+    if (controls.finish_delay && index == 0 && state.finish.player_finish_delay == 2
+        && speed_before == 460) {
+        // The later-player path crosses a contact/pose boundary on its second finish update;
+        // the source retains the prior value 15 for this one sample although position
+        // advances by 13.
+        rider.motion.previous_x_displacement = 15;
+    }
+    return event_one;
+}
+
+// Each rider's flat contact, the alternating progress update, the finish animations and
+// the finish line. R-0013 bounds the tested crossing after x 0x62A8 and by 0x62AD; the
+// aligned comparator 0x62AC is exact for both frozen DRAGSTER paths, and no general
+// boundary for another track is claimed.
+void update_contacts_and_finish(MovementState& state, const MovementContent& content,
+                                const RaceTimerDigits& timer_at_start) {
+    std::array<TrackSamples, 2> samples{};
+    for (std::size_t rider = 0; rider < state.riders.size(); ++rider) {
+        auto& movement = state.riders[rider];
+        const auto points =
+            collision_points(content.sampling, movement.pose.pose_index, movement.pose.reflected);
+        samples[rider] = sample_track(content.sampling, points, movement.motion.x,
+                                      movement.motion.y, dragster_coarse_columns);
+        const auto summary = summarize_flat_contact(content.flat_contact, points, samples[rider],
+                                                    movement.motion.x, movement.motion.y);
+        resolve_flat_contact(movement.contact, movement.motion, summary,
+                             {state.contact_phase, rider == 1, 0, 0});
+    }
+    ProgressUpdateState progress{{state.riders[0].progress, state.riders[1].progress},
+                                 state.progress_phase};
+    update_track_progress(progress, samples, content.progress_transitions);
+    state.progress_phase = progress.phase;
+    for (std::size_t rider = 0; rider < state.riders.size(); ++rider) {
+        state.riders[rider].progress = progress.riders[rider];
+        if (state.finish.finish_animation_countdown[rider] != 0)
+            --state.finish.finish_animation_countdown[rider];
+        if (!state.finish.rider_finished[rider]
+            && state.riders[rider].motion.x >= dragster_finish_x)
+            record_finish(state.finish, rider, timer_at_start, state.frame + 1U);
     }
 }
 
@@ -313,176 +490,54 @@ MovementState classic_crawler_dragster_start() {
     return state;
 }
 
+// One update of the legacy CRAWLER/DRAGSTER race (R-0011, R-0017): the result phases once
+// the player has finished, else the countdown, the opponent's scripted controls, each rider,
+// the race clock and the opponent's queue, then each rider's contact, the progress markers
+// and the finish line.
 void update_movement(MovementState& state, const ControllerButtons& player_buttons,
                      const MovementContent& content) {
     state.player_input = sample_controller(player_buttons);
-    if (state.player_input.horizontal == 0) {
+    if (state.player_input.horizontal == direction::left)
         throw std::invalid_argument("leftward movement is outside the recovered primary domain");
-    }
-    if (state.finish.phase == RacePhase::FinishDelay && state.finish.player_finish_delay == 240) {
-        state.finish.phase = RacePhase::ResultLoading;
-        state.finish.result_loading_updates = 1;
-        ++state.frame;
-        return;
-    }
-    if (state.finish.phase == RacePhase::ResultLoading
-        || state.finish.phase == RacePhase::ResultScreen) {
-        if (state.finish.phase == RacePhase::ResultLoading) {
-            ++state.finish.result_loading_updates;
-            const auto stable_update = state.finish.outcome == RaceOutcome::PlayerWon ? 226U : 242U;
-            if (state.finish.result_loading_updates >= stable_update)
-                state.finish.phase = RacePhase::ResultScreen;
-        }
-        ++state.frame;
-        return;
-    }
+    if (advance_result_phases(state)) return;
     const auto timer_at_start = state.timer;
     const bool finish_delay = state.finish.phase == RacePhase::FinishDelay;
-    // $83:EA72-$83:EAC3: when the opponent finishes first, its next update
-    // receives the same neutral horizontal/action response and phased signed
-    // slowdown while the player's timer and ordinary race remain live. This is
-    // distinct from the later player-owned global finish delay (R-0017).
+    // $83:EA72-$83:EAC3: when the opponent finishes first, its next update receives the same
+    // neutral horizontal/action response and phased signed slowdown while the player's timer
+    // and ordinary race remain live. This is distinct from the later player-owned global
+    // finish delay (R-0017).
     const bool opponent_finished_first =
         state.finish.rider_finished[1] && !state.finish.rider_finished[0];
     if (finish_delay) {
-        state.player_input.horizontal = 1;
+        state.player_input.horizontal = direction::neutral;
         ++state.finish.player_finish_delay;
     }
     state.update_counter = static_cast<std::uint8_t>(state.update_counter + 1U);
     state.animation_counter = static_cast<std::uint8_t>((state.animation_counter + 1U) & 31U);
     state.contact_phase = static_cast<std::uint8_t>(1U - state.contact_phase);
-
-    // The countdown handler publishes a forced brake while entering with 70 or
-    // more, then decrements. End-1533 contains 69, so frame 1534 releases the
-    // stored brake and takes the ordinary launch transition.
-    const bool forced_brake = state.countdown >= 70;
-    const bool timer_enabled = state.countdown < 69;
+    // The countdown handler publishes a forced brake while entering with 70 or more, then
+    // decrements. End-1533 contains 69, so frame 1534 releases the stored brake and takes the
+    // ordinary launch transition.
+    const bool forced_brake = state.countdown >= countdown_brake_from;
+    const bool timer_enabled = state.countdown < countdown_brake_from - 1U;
     if (state.countdown != 0) --state.countdown;
-    const bool player_brake = forced_brake || player_buttons.b;
-    bool opponent_jump =
-        !opponent_finished_first && (state.riders[1].progress.marker_word & 0x2000U) != 0;
-    if (opponent_jump && state.riders[1].contact.unsupported_count < 4
-        && state.rewards.feature_total != 0) {
-        const auto catch_up =
-            static_cast<std::int16_t>(state.riders[0].progress.transition_count
-                                      - state.riders[1].progress.transition_count - 3U);
-        if (catch_up >= 0) {
-            throw std::invalid_argument("opponent catch-up jump is outside the recovered domain");
-        }
-        // After a scored feature, the recovered AI copies the alternating
-        // motion phase instead of asserting another continuous jump input.
-        opponent_jump = state.contact_phase != 0;
-    }
-    bool opponent_trick = false;
-    if (opponent_jump && state.opponent_ai.impulse_countdown) {
-        opponent_trick = (state.opponent_ai.trick_selector & 1U) != 0;
-    } else if (opponent_jump && state.riders[1].contact.unsupported_count >= 4) {
-        state.opponent_ai.impulse_countdown = static_cast<std::uint16_t>(
-            std::abs(static_cast<std::int16_t>(state.riders[1].motion.velocity_y)) >> 1);
-        state.opponent_ai.trick_selector = 1;
-        state.opponent_ai.suppression_counter = 30;
-        opponent_trick = true;
-    } else if (!opponent_jump) {
-        state.opponent_ai.impulse_countdown = 0;
-        state.opponent_ai.trick_selector = 0;
-        if (opponent_finished_first) state.opponent_ai.suppression_counter = 0;
-    }
+    const LegacyControls controls{forced_brake || player_buttons.b,
+                                  player_buttons.b,
+                                  forced_brake,
+                                  finish_delay,
+                                  opponent_finished_first,
+                                  scripted_opponent(state, opponent_finished_first)};
     const unsigned active = state.contact_phase ? 0U : 1U;
-    bool opponent_event_one = false;
     state.rewards.cooldown =
         state.rewards.cooldown > 2 ? static_cast<std::uint16_t>(state.rewards.cooldown - 2U) : 0;
+    bool opponent_event_one = false;
     for (unsigned index = 0; index < state.riders.size(); ++index) {
-        auto& rider = state.riders[index];
-        const auto speed_before = rider.motion.velocity_x;
-        decay_idle_wobble(rider);
-        const auto horizontal = index == 0 ? (finish_delay ? 1U : state.player_input.horizontal)
-                                           : (finish_delay || opponent_finished_first ? 1U : 2U);
-        int animation_override =
-            index == active
-                ? stationary_animation_override(rider, static_cast<std::uint8_t>(horizontal))
-                : 0;
-        bool use_throttle_target = false;
-        if (index == active) {
-            const bool event_one = update_quarter_turns(rider);
-            if (index == 1)
-                opponent_event_one = event_one;
-            else if (event_one)
-                throw std::invalid_argument("player reward is outside the primary domain");
-            update_jump(rider, index == 0 ? player_buttons.b : opponent_jump);
-            // In the recovered branch rotation input is accepted only after the
-            // contact count reaches nine; the synthesized opponent trick is the
-            // positive two-step direction.
-            if (index == 1 && opponent_trick && rider.contact.unsupported_count >= 9) {
-                rider.motion.response_b = 2;
-            } else {
-                rider.motion.response_b = 0;
-            }
-            update_active_low_speed_damping(rider);
-        }
-        // The source dispatcher skips this pre-adjustment on each third
-        // update; the ordinary limiter/damping still runs on every update.
-        if ((finish_delay || (index == 1 && opponent_finished_first))
-            && (state.frame + 1U) % 3U != 0U)
-            apply_finish_slowdown(rider);
-        update_horizontal(rider, index == 0 ? player_brake : forced_brake, horizontal == 2,
-                          index == 1, state, content, animation_override, use_throttle_target);
-        if (finish_delay || (index == 1 && opponent_finished_first)) {
-            // Neutral finish response removes the 24-unit drive contribution
-            // after ordinary limiting only when subtraction cannot cross zero.
-            // Unlike the ten-unit pre-adjustment, a smaller remainder persists.
-            const auto limited = static_cast<std::int16_t>(rider.motion.velocity_x);
-            if (limited >= 24)
-                rider.motion.velocity_x = static_cast<std::uint16_t>(limited - 24);
-            else if (limited <= -24)
-                rider.motion.velocity_x = static_cast<std::uint16_t>(limited + 24);
-        }
-        update_rolling_mode(rider);
-        update_gravity(rider);
-        integrate_motion(rider);
-        update_idle_pose(rider, state.countdown == 0, index == 1, state.animation_counter,
-                         content.idle_pose_table);
-        update_pose(rider, state.animation_counter, state.contact_phase, content,
-                    animation_override, use_throttle_target);
-        if (index == 1 && opponent_finished_first) {
-            update_opponent_finish_pose(state.finish, rider, state.frame + 1U);
-        }
-        if (finish_delay && index == 0 && state.finish.player_finish_delay == 2
-            && speed_before == 460) {
-            // The later-player path crosses a contact/pose boundary on its
-            // second finish update; the source retains the prior value 15 for
-            // this one sample although position advances by 13.
-            rider.motion.previous_x_displacement = 15;
-        }
+        const bool event_one = update_legacy_rider(state, index, active, controls, content);
+        if (index == 1) opponent_event_one = event_one;
     }
     (void)advance_timer_digits(state.timer, timer_enabled);
     update_opponent_announcements(state, opponent_event_one, content, {});
-    std::array<TrackSamples, 2> samples{};
-    for (std::size_t rider = 0; rider < state.riders.size(); ++rider) {
-        const auto& movement = state.riders[rider];
-        const auto points =
-            collision_points(content.sampling, movement.pose.pose_index, movement.pose.reflected);
-        samples[rider] =
-            sample_track(content.sampling, points, movement.motion.x, movement.motion.y, 1024);
-        const auto summary = summarize_flat_contact(content.flat_contact, points, samples[rider],
-                                                    movement.motion.x, movement.motion.y);
-        resolve_flat_contact(state.riders[rider].contact, state.riders[rider].motion, summary,
-                             {state.contact_phase, rider == 1, 0, 0});
-    }
-    ProgressUpdateState progress{{state.riders[0].progress, state.riders[1].progress},
-                                 state.progress_phase};
-    update_track_progress(progress, samples, content.progress_transitions);
-    state.progress_phase = progress.phase;
-    for (std::size_t rider = 0; rider < state.riders.size(); ++rider) {
-        state.riders[rider].progress = progress.riders[rider];
-        if (state.finish.finish_animation_countdown[rider] != 0)
-            --state.finish.finish_animation_countdown[rider];
-        // R-0013 bounds the tested crossing after $62A8 and by $62AD. The
-        // aligned $62AC comparator is exact for both frozen Dragster paths;
-        // no general boundary for another track is claimed.
-        if (!state.finish.rider_finished[rider] && state.riders[rider].motion.x >= 0x62ACU) {
-            record_finish(state.finish, rider, timer_at_start, state.frame + 1U);
-        }
-    }
+    update_contacts_and_finish(state, content, timer_at_start);
     ++state.frame;
 }
 

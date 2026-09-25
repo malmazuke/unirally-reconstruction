@@ -4856,27 +4856,6 @@
    "region": "io"
   },
   {
-   "address": "$00:62A8",
-   "native": [
-    "src/core/movement.cpp:update_movement"
-   ],
-   "region": "io"
-  },
-  {
-   "address": "$00:62AC",
-   "native": [
-    "src/core/movement.cpp:update_movement"
-   ],
-   "region": "io"
-  },
-  {
-   "address": "$00:62AD",
-   "native": [
-    "src/core/movement.cpp:update_movement"
-   ],
-   "region": "io"
-  },
-  {
    "address": "$00:7A00",
    "native": [
     "src/core/presentation.cpp:render_result_background"
@@ -5106,11 +5085,6 @@
    ]
   },
   "src/core/movement.cpp:update_movement": {
-   "io": [
-    "$00:62A8",
-    "$00:62AC",
-    "$00:62AD"
-   ],
    "rom": [
     "$83:EA72"
    ]
@@ -7137,8 +7111,8 @@
   }
  },
  "totals": {
-  "addresses": 570,
-  "io_addresses": 14,
+  "addresses": 567,
+  "io_addresses": 11,
   "native_symbols": 313,
   "rom_addresses": 351,
   "sram_addresses": 7,
