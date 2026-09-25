@@ -511,6 +511,10 @@ int main(int argc, char **argv) try {
     if (running)
       SDL_Delay(1);
   }
+  if (front_end)
+    std::cout << "Front end: frames " << front_end->frames() << "; notices "
+              << front_end->notices() << "; returns to the main menu "
+              << front_end->returns_to_menu() << "; 1P not chosen\n";
   std::cout << "Presentation frames: " << rendered_frames
             << "; rider-pose fallback frames: " << pose_fallback_frames
             << "; identical consecutive redraws: " << identical_redraws

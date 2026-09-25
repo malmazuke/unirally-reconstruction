@@ -26,8 +26,9 @@ FRONT_END_TABLES = (
     ("front-end.arrow-frames", 0x80FBC5, 16),
     # The arrow's column by menu entry, in units of 8 pixels (`$80:88BE`, read through `$AE`).
     ("front-end.menu-arrow-columns", 0x8088BE, 5),
-    # The four colours the palette cycle rotates through CGRAM 108-111 (`$80:FA82`).
-    ("front-end.cycle-colours", 0x80FACD, 16),
+    # The four colours the palette cycle rotates through CGRAM 108-111 (`$80:FA82`): seven words,
+    # read from word `$00C9` (0-3) on; the code follows them.
+    ("front-end.cycle-colours", 0x80FACD, 14),
 )
 
 

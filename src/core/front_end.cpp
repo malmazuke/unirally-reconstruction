@@ -6,6 +6,7 @@
 #include <algorithm>
 #include <stdexcept>
 #include <string>
+#include <utility>
 
 // The front end from power-on to the main menu's choice (R-0054). The boot is a fixed script:
 // the frames on which the original loads each screen, waits for a frame, fades and so on are
@@ -41,6 +42,8 @@ constexpr std::uint16_t shadow_sign_offset = 0x0070;
 constexpr std::int16_t first_idle = 480, idle_after_move = 1500;
 constexpr std::uint8_t menu_entries = 5;
 constexpr std::uint16_t choose_buttons = 0x9080, down_buttons = 0x2400, up_buttons = 0x0800;
+// The two codes: Left, A, L and R; B, Down, L and R.
+constexpr std::uint16_t wipe_ram_code = 0x02b0, unread_code = 0x8430;
 
 // Fades ($80:9869, $80:9885): seven frames of brightness 2, 4, ..., 14, or 13, 11, ..., 1.
 constexpr unsigned fade_frames = 7;
@@ -175,10 +178,13 @@ void lay_out_menu_objects(FrontEndState& state) {
     }
     std::fill(state.oam_buffer.begin() + oam_high_table, state.oam_buffer.end(),
               std::uint8_t{0x55});
-    state.oam_buffer[arrow_entry * 4] = state.oam_buffer[shadow_entry * 4] = 0xd0;
-    state.oam_buffer[arrow_entry * 4 + 1] = state.oam_buffer[shadow_entry * 4 + 1] = 0x5e;
-    state.oam_buffer[arrow_entry * 4 + 3] = 0x3e;
-    state.oam_buffer[shadow_entry * 4 + 3] = 0x0a;
+    constexpr std::uint8_t arrow_start_x = 0xd0, arrow_start_y = 0x5e;
+    constexpr std::uint8_t arrow_attributes = 0x3e;  // palette 7, priority 3
+    constexpr std::uint8_t shadow_attributes = 0x0a; // palette 5, priority 0
+    state.oam_buffer[arrow_entry * 4] = state.oam_buffer[shadow_entry * 4] = arrow_start_x;
+    state.oam_buffer[arrow_entry * 4 + 1] = state.oam_buffer[shadow_entry * 4 + 1] = arrow_start_y;
+    state.oam_buffer[arrow_entry * 4 + 3] = arrow_attributes;
+    state.oam_buffer[shadow_entry * 4 + 3] = shadow_attributes;
     constexpr std::array<std::uint8_t, 8> waiting_tiles{32, 218, 41, 255,
                                                         0,  10,  10, 10}; // $80:9B31
     constexpr std::array<std::uint8_t, 8> waiting_attributes{31, 29, 27, 25,
@@ -189,15 +195,20 @@ void lay_out_menu_objects(FrontEndState& state) {
         state.oam_buffer[entry * 4 + 2] = waiting_tiles[7 - k];
         state.oam_buffer[entry * 4 + 3] = waiting_attributes[7 - k];
     }
-    state.oam_buffer[oam_high_table + 0x1a] = 0;
-    state.oam_buffer[oam_high_table + 0x1b] = 0;
-    state.oam_buffer[100 * 4 + 2] = 0x0e;
-    state.oam_buffer[101 * 4 + 2] = 0x2c;
-    state.oam_buffer[102 * 4 + 2] = 0x2e;
-    state.oam_buffer[103 * 4 + 2] = 0x2e;
-    state.oam_buffer[100 * 4] = state.oam_buffer[101 * 4] = 0x12;
-    state.oam_buffer[102 * 4] = state.oam_buffer[103 * 4] = 0x22;
-    state.oam_buffer[oam_high_table + 0x1d] = state.oam_buffer[oam_high_table + 0x1f] = 0xd5;
+    // Entries 104-111 are small; entries 100-103 carry tiles 0x0E, 0x2C, 0x2E, 0x2E at columns
+    // 0x12 and 0x22, pushed past the right edge by their ninth x bit (high bits 0x55 and 0xD5:
+    // the arrow and shadow large, x9 set).
+    state.oam_buffer[oam_high_table + 104 / 4] = 0;
+    state.oam_buffer[oam_high_table + 108 / 4] = 0;
+    constexpr std::array<std::uint8_t, 4> right_edge_tiles{0x0e, 0x2c, 0x2e, 0x2e};
+    constexpr std::array<std::uint8_t, 4> right_edge_columns{0x12, 0x12, 0x22, 0x22};
+    for (std::size_t k = 0; k < 4; ++k) {
+        state.oam_buffer[(100 + k) * 4] = right_edge_columns[k];
+        state.oam_buffer[(100 + k) * 4 + 2] = right_edge_tiles[k];
+    }
+    constexpr std::uint8_t large_with_ninth_bit = 0xd5;
+    state.oam_buffer[oam_high_table + arrow_entry / 4] = large_with_ninth_bit;
+    state.oam_buffer[oam_high_table + shadow_entry / 4] = large_with_ninth_bit;
 }
 
 // The Nintendo screen ($80:A09A registers at 97, $80:B08C loads at 99): BG2 only, 4bpp.
@@ -306,10 +317,25 @@ bool within(std::uint32_t frame, std::uint32_t first, std::uint32_t count) {
     return frame >= first && frame < first + count;
 }
 
-// The frames on which the original waits for vblank in `$80:FADF` (and so moves the arrow).
+// The frames on which the original waits for vblank in `$80:FADF` (and so moves the arrow):
+// first frame and count; the last range runs on (R-0054's frame model).
+struct FrameWaits {
+    std::uint32_t first, count;
+};
+constexpr std::array<FrameWaits, 5> boot_frame_waits{{
+    {98, 2},    // $80:B08C, then $80:A8A8
+    {104, 125}, // the Nintendo screen's fades and hold
+    {251, 127}, // the title's fades and hold, then $80:D20E and $80:A8A8
+    {403, 1},   // $80:D36F
+    {407, 0},   // $80:ACD5 and the main menu, every frame from here
+}};
+
 bool waits_for_frame(std::uint32_t frame) {
-    return frame == 98 || frame == 99 || within(frame, 104, 125) || within(frame, 251, 127)
-        || frame == 403 || frame >= 407;
+    for (const auto& waits : boot_frame_waits) {
+        if (waits.count == 0 && frame >= waits.first) return true;
+        if (within(frame, waits.first, waits.count)) return true;
+    }
+    return false;
 }
 
 // The boot's scripted work for one frame, after the NMI and the frame wait.
@@ -365,6 +391,16 @@ void boot_frame(FrontEndState& state, const FrontEndContent& content) {
 // One pass of the main menu's loop ($80:ABE3), after its frame wait.
 void run_main_menu(FrontEndState& state, const FrontEndContent& content, FrontEndPads pads) {
     copy_oam(state); // $80:D1EC
+    // The codes come first, as exact words on either pad, the WIPE RAM code before the other
+    // (`$80:ABEB-AC0A`).
+    for (const auto [code, mode] : {std::pair{wipe_ram_code, FrontEndMode::wipe_ram_code},
+                                    std::pair{unread_code, FrontEndMode::unread_code}}) {
+        if (pads.one == code || pads.two == code) {
+            state.mode_chosen = true;
+            state.mode = mode;
+            return;
+        }
+    }
     auto& menu = state.menu;
     // `$80:AC0F-AC14`: the count is stored only while it stays positive; the demo is mode 5.
     if (menu.idle == 0) {

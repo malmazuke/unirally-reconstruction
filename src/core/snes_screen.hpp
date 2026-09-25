@@ -2,8 +2,8 @@
 // One SNES picture from video memory and the PPU registers, as the reference emulator (bsnes'
 // fast PPU, `sfc/ppu-fast`) draws it: backgrounds in modes 0, 1 and 3, objects, colour math and
 // the master brightness. The front end's screens are drawn with it (R-0054). Windows, mosaic,
-// hires modes, mode 7 and offset-per-tile are not modelled; a picture that enables them is
-// refused.
+// HDMA, OAM priority rotation, hires modes, mode 7 and offset-per-tile are not modelled; a
+// picture that uses them is refused.
 #include "presentation.hpp"
 
 #include <array>
@@ -37,7 +37,9 @@ struct SnesVideoRegisters {
     std::uint8_t colour_select{}; // CGWSEL
     std::uint8_t colour_math{};   // CGADSUB
     std::uint16_t fixed_colour{}; // COLDATA, as BGR555
-    bool windows_or_mosaic{};     // any window or mosaic enable: refused
+    // Any window or mosaic enable, per-line register changes (HDMA) or OAM priority rotation
+    // (OAMADD's priority bit): none is modelled, so a picture that uses one is refused.
+    bool unmodelled_features{};
 };
 
 // The picture, in the output colours of the race presentation (`colour_word_rgb`).

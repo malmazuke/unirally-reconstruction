@@ -22,13 +22,24 @@ struct FrontEndContent {
 };
 FrontEndContent front_end_content(const ClassicContentPack& pack);
 
-// The main menu's entries, in `$9B` order (COVERAGE-ROADMAP), and the demo it starts when idle.
-enum class FrontEndMode : std::uint8_t { one_player, two_player, versus, league, options, demo };
+// The main menu's entries, in `$009B` order (COVERAGE-ROADMAP), and the demo it starts when idle;
+// then where the main menu's two codes lead (not `$009B` values): the WIPE RAM menu
+// (`$80:A9B4`) and code not yet read (`$80:F0D6`).
+enum class FrontEndMode : std::uint8_t {
+    one_player,
+    two_player,
+    versus,
+    league,
+    options,
+    demo,
+    wipe_ram_code,
+    unread_code
+};
 
 // The menu arrow ($80:FAF5): position and target in sixteenths of a pixel, and its spin.
 struct MenuArrow {
     std::uint16_t x{}, target_x{}, y{}, target_y{}; // $0C60, $0C62, $0C68, $0C6A
-    std::uint8_t spin{};                            // $C6, 31 down to 0
+    std::uint8_t spin{};                            // $00C6, 31 down to 0
 };
 
 // The palette cycle the NMI runs from the title on ($80:FA60).
@@ -39,7 +50,7 @@ struct PaletteCycle {
 };
 
 struct MainMenu {
-    std::uint8_t selection{}; // $9B
+    std::uint8_t selection{}; // $009B
     std::int16_t idle{};      // $89: frames left before the demo
     bool move_latched{};      // $8F: Up or Down still held since the last move
 };

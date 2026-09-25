@@ -104,8 +104,8 @@ std::uint16_t map_entry(const SnesVideoMemory& memory, const SnesBackground& bg,
 void draw_background(Line& line, const SnesVideoMemory& memory, const SnesVideoRegisters& registers,
                      const ModeLayout& layout, unsigned index, unsigned y) {
     const auto& bg = registers.bg[index];
-    const bool main = (registers.main_screen >> index) & 1U;
-    const bool sub = (registers.sub_screen >> index) & 1U;
+    const bool main = (static_cast<unsigned>(registers.main_screen) >> index) & 1U;
+    const bool sub = (static_cast<unsigned>(registers.sub_screen) >> index) & 1U;
     const auto depth = layout.depth[index];
     if ((!main && !sub) || depth == TileDepth::inactive) return;
     const auto source = static_cast<Source>(index);
@@ -172,7 +172,7 @@ struct ObjectEntry {
 // scanline late"), x with its ninth bit from the high table.
 ObjectEntry object_entry(const SnesVideoMemory& memory, unsigned n) {
     const auto* entry = &memory.oam[n * 4];
-    const unsigned high = (memory.oam[512 + n / 4] >> ((n % 4) * 2)) & 3U;
+    const unsigned high = (static_cast<unsigned>(memory.oam[512 + n / 4]) >> ((n % 4) * 2)) & 3U;
     const unsigned attributes = entry[3];
     return {static_cast<unsigned>(entry[0]) | ((high & 1U) << 8U),
             (entry[1] + 1U) & 0xffU,
@@ -322,10 +322,11 @@ bool colour_math_enabled(std::uint8_t colour_math, Source source) {
     case Source::bg1:
     case Source::bg2:
     case Source::bg3:
-    case Source::bg4: return (colour_math >> static_cast<unsigned>(source)) & 1U;
+    case Source::bg4:
+        return (static_cast<unsigned>(colour_math) >> static_cast<unsigned>(source)) & 1U;
     case Source::obj_low_palettes: return false;
-    case Source::obj_high_palettes: return (colour_math >> 4U) & 1U;
-    case Source::colour: return (colour_math >> 5U) & 1U;
+    case Source::obj_high_palettes: return (static_cast<unsigned>(colour_math) >> 4U) & 1U;
+    case Source::colour: return (static_cast<unsigned>(colour_math) >> 5U) & 1U;
     }
     return false;
 }
@@ -338,7 +339,8 @@ std::uint16_t combine(const SnesVideoRegisters& registers, Pixel above, const Pi
     if (clip_mask == 3) above.colour = 0;
     if (prevent_mask == 3) return above.colour;
     if (!colour_math_enabled(registers.colour_math, above.source)) return above.colour;
-    const bool halve = (registers.colour_math & 0x40U) != 0;
+    // bsnes halves only where the colour is not clipped to black (`halve && windowAbove[x]`).
+    const bool halve = (registers.colour_math & 0x40U) != 0 && clip_mask != 3;
     const bool subtract = (registers.colour_math & 0x80U) != 0;
     if (!(registers.colour_select & 2U))
         return blend(above.colour, registers.fixed_colour, halve, subtract);
@@ -350,8 +352,8 @@ std::uint16_t combine(const SnesVideoRegisters& registers, Pixel above, const Pi
 RgbFrame render_snes_screen(const SnesVideoMemory& memory, const SnesVideoRegisters& registers) {
     RgbFrame frame{};
     if (registers.force_blank) return frame;
-    if (registers.windows_or_mosaic)
-        throw std::invalid_argument("SNES windows and mosaic are not modelled");
+    if (registers.unmodelled_features)
+        throw std::invalid_argument("SNES windows, mosaic, HDMA and OAM rotation are not modelled");
     const unsigned clip_mask = (registers.colour_select >> 6U) & 3U;
     const unsigned prevent_mask = (registers.colour_select >> 4U) & 3U;
     if ((clip_mask == 1 || clip_mask == 2) || (prevent_mask == 1 || prevent_mask == 2))

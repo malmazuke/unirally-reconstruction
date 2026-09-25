@@ -1055,6 +1055,7 @@
     "NmX"
    ],
    "native": [
+    "src/core/front_end.cpp:boot_frame_waits",
     "src/core/front_end.cpp:load_main_menu",
     "src/core/front_end.cpp:load_nintendo_screen"
    ],
@@ -1098,6 +1099,7 @@
     "NmX"
    ],
    "native": [
+    "src/core/front_end.cpp:boot_frame_waits",
     "src/core/front_end.cpp:main_menu_text"
    ],
    "observed_entries": {},
@@ -1152,6 +1154,7 @@
     "NmX"
    ],
    "native": [
+    "src/core/front_end.cpp:boot_frame_waits",
     "src/core/front_end.cpp:nintendo_palette, nintendo_map, nintendo_tiles",
     "src/core/front_end.cpp:set_nintendo_registers"
    ],
@@ -1878,6 +1881,7 @@
     "NmX"
    ],
    "native": [
+    "src/core/front_end.cpp:boot_frame_waits",
     "src/core/front_end.cpp:load_main_menu",
     "src/core/front_end.cpp:menu_objects, menu_objects_high, menu_map, menu_bg2_tiles, menu_bg1_tiles, menu_bg1_tiles_high"
    ],
@@ -1900,6 +1904,7 @@
    ],
    "native": [
     "src/core/front_end.cpp:boot_frame",
+    "src/core/front_end.cpp:boot_frame_waits",
     "src/core/front_end.cpp:lay_out_menu_objects"
    ],
    "observed_entries": {},
@@ -2208,6 +2213,9 @@
    "end": "$80:F0ED",
    "mode_at_entry": [
     "NMX"
+   ],
+   "native": [
+    "src/core/front_end.hpp:FrontEndMode"
    ],
    "observed_entries": {},
    "start": "$80:F082",
@@ -2550,7 +2558,7 @@
     "NmX"
    ],
    "native": [
-    "src/core/front_end.cpp:waits_for_frame"
+    "src/core/front_end.cpp:FrameWaits"
    ],
    "observed_entries": {},
    "start": "$80:FADF",
@@ -13492,18 +13500,18 @@
    "call returns in the calling mode": 1262
   },
   "bytes": 131072,
-  "cited_addresses": 856,
+  "cited_addresses": 861,
   "cited_by_class": {
    "data": 13,
-   "inferred": 89,
-   "observed": 698,
+   "inferred": 90,
+   "observed": 702,
    "unknown": 56
   },
   "cited_by_position": {
    "dat": 13,
-   "loc": 587,
+   "loc": 588,
    "mid": 18,
-   "sub": 182,
+   "sub": 186,
    "unk": 56
   },
   "conflicts": 0,
@@ -13523,9 +13531,9 @@
   "jump_tables": 2,
   "mode_ambiguities": 7,
   "observed": 41778,
-  "routine_bytes_cited_by_native_code": 35276,
+  "routine_bytes_cited_by_native_code": 35384,
   "routines": 636,
-  "routines_cited_by_native_code": 242,
+  "routines_cited_by_native_code": 243,
   "unknown": 52881,
   "unknown_share": 0.4035
  }

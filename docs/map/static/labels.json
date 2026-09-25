@@ -668,6 +668,15 @@
   ]
  },
  {
+  "address": "$80:8889",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_808889",
+  "source_records": [
+   "docs/research/R-0054-boot-title-main-menu.md"
+  ]
+ },
+ {
   "address": "$80:88B2",
   "class": "unknown",
   "comment": "unknown",
@@ -692,6 +701,15 @@
   "label": "sub_808C41",
   "source_records": [
    "docs/research/R-0053-result-title-printer.md"
+  ]
+ },
+ {
+  "address": "$80:8C4E",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_808C4E",
+  "source_records": [
+   "docs/research/R-0054-boot-title-main-menu.md"
   ]
  },
  {
@@ -854,6 +872,7 @@
   "comment": "routine start",
   "label": "sub_80A8A8",
   "native": [
+   "src/core/front_end.cpp:boot_frame_waits",
    "src/core/front_end.cpp:load_main_menu",
    "src/core/front_end.cpp:load_nintendo_screen"
   ],
@@ -884,6 +903,9 @@
   "class": "inferred",
   "comment": "instruction start",
   "label": "loc_80A9B4",
+  "native": [
+   "src/core/front_end.hpp:FrontEndMode"
+  ],
   "source_records": [
    "docs/research/R-0054-boot-title-main-menu.md",
    "tasks/COVERAGE-ROADMAP.md",
@@ -943,6 +965,7 @@
   "comment": "routine start",
   "label": "sub_80ACD5",
   "native": [
+   "src/core/front_end.cpp:boot_frame_waits",
    "src/core/front_end.cpp:main_menu_text"
   ],
   "source_records": [
@@ -983,6 +1006,7 @@
   "comment": "routine start",
   "label": "sub_80B08C",
   "native": [
+   "src/core/front_end.cpp:boot_frame_waits",
    "src/core/front_end.cpp:nintendo_palette, nintendo_map, nintendo_tiles",
    "src/core/front_end.cpp:set_nintendo_registers"
   ],
@@ -1287,6 +1311,7 @@
   "comment": "routine start",
   "label": "sub_80D20E",
   "native": [
+   "src/core/front_end.cpp:boot_frame_waits",
    "src/core/front_end.cpp:load_main_menu",
    "src/core/front_end.cpp:menu_objects, menu_objects_high, menu_map, menu_bg2_tiles, menu_bg1_tiles, menu_bg1_tiles_high"
   ],
@@ -1343,10 +1368,22 @@
   ]
  },
  {
+  "address": "$80:D503",
+  "class": "inferred",
+  "comment": "routine start",
+  "label": "sub_80D503",
+  "source_records": [
+   "docs/research/R-0054-boot-title-main-menu.md"
+  ]
+ },
+ {
   "address": "$80:F0D6",
   "class": "inferred",
   "comment": "instruction start",
   "label": "loc_80F0D6",
+  "native": [
+   "src/core/front_end.hpp:FrontEndMode"
+  ],
   "source_records": [
    "docs/research/R-0054-boot-title-main-menu.md",
    "tasks/COVERAGE-ROADMAP.md",
@@ -1478,7 +1515,7 @@
   "comment": "routine start",
   "label": "sub_80FADF",
   "native": [
-   "src/core/front_end.cpp:waits_for_frame"
+   "src/core/front_end.cpp:FrameWaits"
   ],
   "source_records": [
    "docs/research/R-0054-boot-title-main-menu.md"
@@ -8289,6 +8326,24 @@
   "source_records": [
    "docs/research/R-0045-static-code-map.md",
    "tasks/STATIC-CODE-MAP.md"
+  ]
+ },
+ {
+  "address": "$83:8AF7",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_838AF7",
+  "source_records": [
+   "docs/research/R-0054-boot-title-main-menu.md"
+  ]
+ },
+ {
+  "address": "$83:8B23",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_838B23",
+  "source_records": [
+   "docs/research/R-0054-boot-title-main-menu.md"
   ]
  },
  {

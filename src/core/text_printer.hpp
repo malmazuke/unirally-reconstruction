@@ -11,7 +11,7 @@ struct TextMap {
     std::array<std::uint16_t, 1024> words{};
 };
 
-// Where the printer writes and with which tilemap attribute: `$9F` (row * 32 + column) and `$B0`.
+// Where the printer writes and with which tilemap attribute: `$009F` (row * 32 + column) and `$00B0`.
 struct TextCursor {
     unsigned position{};
     std::uint16_t attribute{};

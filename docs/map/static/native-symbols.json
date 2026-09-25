@@ -309,8 +309,16 @@
   {
    "address": "$80:A8A8",
    "native": [
+    "src/core/front_end.cpp:boot_frame_waits",
     "src/core/front_end.cpp:load_main_menu",
     "src/core/front_end.cpp:load_nintendo_screen"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:A9B4",
+   "native": [
+    "src/core/front_end.hpp:FrontEndMode"
    ],
    "region": "rom"
   },
@@ -329,6 +337,16 @@
    "region": "rom"
   },
   {
+   "address": "$80:ABEB",
+   "native": [
+    "src/core/front_end.cpp:run_main_menu"
+   ],
+   "range_ends": [
+    "$80:AC0A"
+   ],
+   "region": "rom"
+  },
+  {
    "address": "$80:AC0F",
    "native": [
     "src/core/front_end.cpp:run_main_menu"
@@ -341,6 +359,7 @@
   {
    "address": "$80:ACD5",
    "native": [
+    "src/core/front_end.cpp:boot_frame_waits",
     "src/core/front_end.cpp:main_menu_text"
    ],
    "region": "rom"
@@ -348,6 +367,7 @@
   {
    "address": "$80:B08C",
    "native": [
+    "src/core/front_end.cpp:boot_frame_waits",
     "src/core/front_end.cpp:nintendo_palette, nintendo_map, nintendo_tiles",
     "src/core/front_end.cpp:set_nintendo_registers"
    ],
@@ -494,6 +514,7 @@
   {
    "address": "$80:D20E",
    "native": [
+    "src/core/front_end.cpp:boot_frame_waits",
     "src/core/front_end.cpp:load_main_menu",
     "src/core/front_end.cpp:menu_objects, menu_objects_high, menu_map, menu_bg2_tiles, menu_bg1_tiles, menu_bg1_tiles_high"
    ],
@@ -510,6 +531,13 @@
    "region": "rom"
   },
   {
+   "address": "$80:D36F",
+   "native": [
+    "src/core/front_end.cpp:boot_frame_waits"
+   ],
+   "region": "rom"
+  },
+  {
    "address": "$80:D372",
    "native": [
     "src/core/front_end.cpp:boot_frame"
@@ -520,6 +548,13 @@
    "address": "$80:D383",
    "native": [
     "src/core/front_end.cpp:lay_out_menu_objects"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:F0D6",
+   "native": [
+    "src/core/front_end.hpp:FrontEndMode"
    ],
    "region": "rom"
   },
@@ -567,7 +602,7 @@
   {
    "address": "$80:FADF",
    "native": [
-    "src/core/front_end.cpp:waits_for_frame"
+    "src/core/front_end.cpp:FrameWaits"
    ],
    "region": "rom"
   },
@@ -3576,6 +3611,35 @@
    "region": "wram"
   },
   {
+   "address": "$009B",
+   "native": [
+    "src/core/front_end.hpp:FrontEndMode",
+    "src/core/front_end.hpp:MainMenu::selection"
+   ],
+   "region": "wram"
+  },
+  {
+   "address": "$009F",
+   "native": [
+    "src/core/text_printer.hpp:TextCursor"
+   ],
+   "region": "wram"
+  },
+  {
+   "address": "$00B0",
+   "native": [
+    "src/core/text_printer.hpp:TextCursor"
+   ],
+   "region": "wram"
+  },
+  {
+   "address": "$00C6",
+   "native": [
+    "src/core/front_end.hpp:MenuArrow::spin"
+   ],
+   "region": "wram"
+  },
+  {
    "address": "$0200",
    "native": [
     "src/core/front_end.cpp:main_menu_text",
@@ -5295,11 +5359,25 @@
     "$0302"
    ]
   },
+  "src/core/front_end.cpp:FrameWaits": {
+   "rom": [
+    "$80:FADF"
+   ]
+  },
   "src/core/front_end.cpp:boot_frame": {
    "rom": [
     "$80:D1EC",
     "$80:D372",
     "$83:99F6"
+   ]
+  },
+  "src/core/front_end.cpp:boot_frame_waits": {
+   "rom": [
+    "$80:A8A8",
+    "$80:ACD5",
+    "$80:B08C",
+    "$80:D20E",
+    "$80:D36F"
    ]
   },
   "src/core/front_end.cpp:clear_oam_buffer": {
@@ -5415,6 +5493,7 @@
   "src/core/front_end.cpp:run_main_menu": {
    "rom": [
     "$80:ABE3",
+    "$80:ABEB",
     "$80:AC0F",
     "$80:D1EC"
    ]
@@ -5440,9 +5519,13 @@
     "$80:F5B8"
    ]
   },
-  "src/core/front_end.cpp:waits_for_frame": {
+  "src/core/front_end.hpp:FrontEndMode": {
    "rom": [
-    "$80:FADF"
+    "$80:A9B4",
+    "$80:F0D6"
+   ],
+   "wram": [
+    "$009B"
    ]
   },
   "src/core/front_end.hpp:FrontEndPads": {
@@ -5456,9 +5539,19 @@
     "$0A00"
    ]
   },
+  "src/core/front_end.hpp:MainMenu::selection": {
+   "wram": [
+    "$009B"
+   ]
+  },
   "src/core/front_end.hpp:MenuArrow": {
    "rom": [
     "$80:FAF5"
+   ]
+  },
+  "src/core/front_end.hpp:MenuArrow::spin": {
+   "wram": [
+    "$00C6"
    ]
   },
   "src/core/front_end.hpp:MenuArrow::x, MenuArrow::target_x, MenuArrow::y, MenuArrow::target_y": {
@@ -7154,6 +7247,12 @@
     "$0200"
    ]
   },
+  "src/core/text_printer.hpp:TextCursor": {
+   "wram": [
+    "$009F",
+    "$00B0"
+   ]
+  },
   "src/core/text_printer.hpp:print_text": {
    "rom": [
     "$80:C709"
@@ -7789,11 +7888,11 @@
   }
  },
  "totals": {
-  "addresses": 603,
+  "addresses": 611,
   "io_addresses": 5,
-  "native_symbols": 386,
-  "rom_addresses": 394,
+  "native_symbols": 391,
+  "rom_addresses": 398,
   "sram_addresses": 7,
-  "wram_addresses": 197
+  "wram_addresses": 201
  }
 }

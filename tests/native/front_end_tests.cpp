@@ -100,10 +100,10 @@ void snes_screen_tests() {
   registers.force_blank = true;
   require(unirally::render_snes_screen(memory, registers).pixels[0] == 0);
   registers.force_blank = false;
-  registers.windows_or_mosaic = true;
+  registers.unmodelled_features = true;
   require(
       refuses([&] { (void)unirally::render_snes_screen(memory, registers); }));
-  registers.windows_or_mosaic = false;
+  registers.unmodelled_features = false;
   // An object on the subscreen, added at half where it covers the main screen
   // (CGWSEL 2, CGADSUB 0x42: BG2, halve): red 31 + blue 31 halved is (15, 0,
   // 15).
@@ -121,6 +121,11 @@ void snes_screen_tests() {
   frame = unirally::render_snes_screen(memory, registers);
   require(frame.pixels[0] == frame.pixels[2] && frame.pixels[1] == 0 &&
           frame.pixels[0] > 0 && frame.pixels[0] < 255);
+  // Clipping the main screen to black always (CGWSEL bits 7-6 = 3) also stops the halving, as
+  // in bsnes (`halve && windowAbove[x]`): black + blue 31 is full blue.
+  registers.colour_select = 0xc2;
+  frame = unirally::render_snes_screen(memory, registers);
+  require(frame.pixels[0] == 0 && frame.pixels[1] == 0 && frame.pixels[2] == 255);
 }
 
 unirally::FrontEndContent
@@ -142,7 +147,7 @@ synthetic_content(std::vector<std::vector<std::uint8_t>> &storage) {
   content.arrow_frames = keep(16);
   storage.push_back({10, 10, 10, 6, 5});
   content.menu_arrow_columns = storage.back();
-  content.cycle_colours = keep(16);
+  content.cycle_colours = keep(14);
   return content;
 }
 

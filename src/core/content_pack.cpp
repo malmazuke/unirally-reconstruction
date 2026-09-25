@@ -406,8 +406,8 @@ const std::array<RequiredEntry, 23> front_end_required{{
      "2d4174c62a9a7e66cdb3f59cd4738609510ea84469b4fea53a1feb44fd696cd0"},
     {"front-end.menu-arrow-columns", 5,
      "ba56be3883c239ca143d7c41fe5150b4bc3549b193742dcbe15dab7157f00880"},
-    {"front-end.cycle-colours", 16,
-     "9e9f104d0ef891ba719aa7613c14223c904f6d4c350360d95fa93d373e612b46"},
+    {"front-end.cycle-colours", 14,
+     "7c6f09ee6029f31598b51a183b9f0f1927dc014108098c1c71c5d2060c31cb43"},
 }};
 // LOCKED-TOURS (profile v12): the race tracks of the five tours a cold start does not
 // list, and sceneries 1, 8 and 12. Generated from the rules file (tracks.py v12_new_entries).
@@ -569,7 +569,7 @@ const std::array<RequiredEntry, 89> locked_tracks_required{{
     {"scenery.12.palette", 352, "b2a9aefe13c1dc68454cf0a5c2bedb086c6e162dbea1df1f2ef108347d89ab63"},
 }};
 constexpr std::string_view two_track_rules_sha =
-    "1b65cd023df1e07d5e277b43bcdb4d0381231b1985119a6d90845741c7c3cc69";
+    "b303087213da4c7dd572537d509ec41db7e1b044260ee0cb68fe3cdbe6e568a2";
 
 std::array<std::uint8_t, 32> hex_digest(std::string_view text) {
     if (text.size() != 64) throw std::logic_error("invalid compiled Classic SHA-256");

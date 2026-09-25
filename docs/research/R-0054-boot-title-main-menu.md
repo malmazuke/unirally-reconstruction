@@ -185,10 +185,26 @@ refused.
   - Equal on frames 0-700.
   - Pictures 400-700 match.
 
+## Paths a cold start does not take
+
+These were read in the listing but not exercised by the captures. Native follows the cold
+start's path:
+- **Pad reads**: the main menu's tests read pad 1 only while `$77:0742` bit 9 is clear, and
+  pad 2 only while bit 10 is clear (`$80:B71D`, `$80:B76F`, `$80:B794`). Both are clear on a
+  cold start.
+- **Entering the main menu** (`$80:8889-8897`): when `$77:0742` bit 4 is set, it is cleared and
+  `$80:D503` runs.
+- **Reset's SRAM routines** `$83:8AF7`, `$80:8C4E` and `$83:8B23` run at 403-405; their effects
+  are SRAM content (persistence).
+- **`$80:ACD5` prints the menu's text only while `$00A6` is clear**. It is clear on the first
+  pass; a return from a mode sets it and keeps the map.
+
 ## Not recovered
 
 - The demo (mode 5), and the modes 2P, VS, LEAGUE and OPTIONS (later tasks).
-- The three codes' effects.
+- The three codes' effects. Native reports the main menu's two codes as their own outcomes
+  (`FrontEndMode::wipe_ram_code`, `unread_code`), so an exact code never chooses a mode; the app
+  shows a notice.
 - The NMI's BG1 scroll gated by `$77:0742` bit 1.
 - Audio: the sound commands (`$82:8000`) are not played.
 - Why the loads take the frames they do. The boot uses the measured frames, which are fixed for

@@ -39,7 +39,7 @@ void print_big(TextMap& map, TextCursor& cursor, std::uint8_t entry) {
 }
 
 // `$80:C56C-C5C3`. The two special entries branch on an equal compare, so the carry is set
-// and their `ADC #$9F` adds one more.
+// and their `ADC #$009F` adds one more.
 void print_small(TextMap& map, TextCursor& cursor, std::uint8_t entry) {
     const unsigned index = entry & 0x7fU;
     if (index == 0x64) {
