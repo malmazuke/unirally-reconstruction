@@ -22,8 +22,8 @@ The four classes partition all 131,072 bytes. **Unknown share: 40.4%** - above D
 | Instructions from observed | 17,569 |
 | Instructions from table | 587 |
 | Routines | 636 |
-| Routines cited by native code | 219 |
-| Routine bytes cited by native code | 33,227 |
+| Routines cited by native code | 242 |
+| Routine bytes cited by native code | 35,276 |
 | Gap sweep candidate instructions | 2,746 |
 | Gap sweep candidate bytes | 6,174 |
 | Jump tables | 2 |
@@ -45,7 +45,7 @@ The four classes partition all 131,072 bytes. **Unknown share: 40.4%** - above D
 
 ## Cited addresses
 
-811 distinct code-bank ROM addresses cited by the research, task, inventory and content records (`labels.json`). By position: dat 13, loc 575, mid 17, sub 158, unk 48 (sub routine start, loc instruction start, mid inside an instruction, dat data, unk unknown). By class: data 13, inferred 88, observed 662, unknown 48.
+856 distinct code-bank ROM addresses cited by the research, task, inventory and content records (`labels.json`). By position: dat 13, loc 587, mid 18, sub 182, unk 56 (sub routine start, loc instruction start, mid inside an instruction, dat data, unk unknown). By class: data 13, inferred 89, observed 698, unknown 56.
 
 Cited addresses in `unknown` bytes:
 
@@ -69,7 +69,11 @@ Cited addresses in `unknown` bytes:
 | $80:84DB | docs/research/R-0010-native-movement.md |
 | $80:84EB | docs/research/R-0010-native-movement.md, docs/research/R-0045-static-code-map.md |
 | $80:88B2 | tasks/COVERAGE-ROADMAP.md |
+| $80:88BE | docs/research/R-0054-boot-title-main-menu.md |
 | $80:93FB | tasks/COVERAGE-ROADMAP.md |
+| $80:A8D4 | docs/research/R-0054-boot-title-main-menu.md |
+| $80:A9FA | docs/research/R-0054-boot-title-main-menu.md |
+| $80:AD1F | docs/research/R-0054-boot-title-main-menu.md |
 | $80:B626 | tasks/COVERAGE-ROADMAP.md |
 | $80:BCBF | tasks/COVERAGE-ROADMAP.md |
 | $80:BDD4 | tasks/COVERAGE-ROADMAP.md |
@@ -77,6 +81,10 @@ Cited addresses in `unknown` bytes:
 | $80:C3DC | docs/research/R-0053-result-title-printer.md |
 | $80:C950 | tasks/LOCKED-TOURS.md |
 | $80:D187 | docs/research/R-0053-result-title-printer.md, tasks/RESULT-TITLE-GLYPHS.md |
+| $80:D383 | docs/research/R-0054-boot-title-main-menu.md |
+| $80:F618 | docs/research/R-0054-boot-title-main-menu.md |
+| $80:FACD | docs/research/R-0054-boot-title-main-menu.md |
+| $80:FBC5 | docs/research/R-0054-boot-title-main-menu.md |
 | $80:FFC0 | docs/research/R-0001-rom-identity.md, docs/research/R-0045-static-code-map.md |
 | $81:A342 | docs/research/R-0046-track-breadth-matrix.md |
 | $81:A343 | docs/research/R-0046-track-breadth-matrix.md |
@@ -91,7 +99,7 @@ Cited addresses in `unknown` bytes:
 | $82:835B | docs/research/R-0036-zoom-zoo-rider-objects.md, docs/research/R-0045-static-code-map.md |
 | $82:9DB6 | docs/research/R-0011-motion.md |
 | $82:A2DB | docs/research/R-0030-zoom-zoo-native-trial.md |
-| $82:B332 | docs/content/dragster-segment.md, docs/research/R-0008-track-decode.md, docs/research/R-0046-track-breadth-matrix.md, tasks/M1-03.md, tasks/TRACK-BREADTH.md |
+| $82:B332 | docs/content/dragster-segment.md, docs/research/R-0008-track-decode.md, docs/research/R-0046-track-breadth-matrix.md, docs/research/R-0054-boot-title-main-menu.md, tasks/M1-03.md, tasks/TRACK-BREADTH.md |
 | $82:B7DD | docs/content/dragster-segment.md, docs/research/R-0008-track-decode.md, docs/research/R-0021-zoom-zoo-content-contract.md, docs/research/R-0046-track-breadth-matrix.md, tasks/M1-03.md, tasks/M4-03.md |
 | $82:DC12 | docs/research/R-0046-track-breadth-matrix.md, tasks/TRACK-BREADTH.md |
 | $83:8535 | docs/research/R-0045-static-code-map.md, tasks/STATIC-CODE-MAP.md |

@@ -652,6 +652,7 @@
   "label": "sub_808858",
   "source_records": [
    "docs/research/R-0006-observed-code-map.md",
+   "docs/research/R-0054-boot-title-main-menu.md",
    "tasks/COVERAGE-ROADMAP.md",
    "tasks/M1-01.md"
   ]
@@ -662,6 +663,7 @@
   "comment": "instruction start",
   "label": "loc_808881",
   "source_records": [
+   "docs/research/R-0054-boot-title-main-menu.md",
    "tasks/COVERAGE-ROADMAP.md"
   ]
  },
@@ -672,6 +674,15 @@
   "label": "unk_8088B2",
   "source_records": [
    "tasks/COVERAGE-ROADMAP.md"
+  ]
+ },
+ {
+  "address": "$80:88BE",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_8088BE",
+  "source_records": [
+   "docs/research/R-0054-boot-title-main-menu.md"
   ]
  },
  {
@@ -711,6 +722,18 @@
   ]
  },
  {
+  "address": "$80:9318",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_809318",
+  "native": [
+   "src/core/front_end.cpp:copy_oam"
+  ],
+  "source_records": [
+   "docs/research/R-0054-boot-title-main-menu.md"
+  ]
+ },
+ {
   "address": "$80:9338",
   "class": "observed",
   "comment": "instruction start",
@@ -729,12 +752,48 @@
   ]
  },
  {
+  "address": "$80:9869",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_809869",
+  "native": [
+   "src/core/front_end.cpp:fade_frames"
+  ],
+  "source_records": [
+   "docs/research/R-0054-boot-title-main-menu.md"
+  ]
+ },
+ {
+  "address": "$80:9885",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_809885",
+  "native": [
+   "src/core/front_end.cpp:fade_frames"
+  ],
+  "source_records": [
+   "docs/research/R-0054-boot-title-main-menu.md"
+  ]
+ },
+ {
   "address": "$80:98B3",
   "class": "inferred",
   "comment": "routine start",
   "label": "sub_8098B3",
   "source_records": [
    "tasks/STATIC-CODE-MAP.md"
+  ]
+ },
+ {
+  "address": "$80:9B31",
+  "class": "observed",
+  "comment": "inside the instruction at $80:9B30",
+  "label": "mid_809B31",
+  "native": [
+   "src/core/front_end.cpp:lay_out_menu_objects"
+  ],
+  "source_records": [
+   "docs/research/R-0054-boot-title-main-menu.md"
   ]
  },
  {
@@ -749,13 +808,95 @@
   ]
  },
  {
+  "address": "$80:A09A",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_80A09A",
+  "native": [
+   "src/core/front_end.cpp:clear_oam_buffer",
+   "src/core/front_end.cpp:early_objects, early_palette",
+   "src/core/front_end.cpp:set_nintendo_registers"
+  ],
+  "source_records": [
+   "docs/research/R-0054-boot-title-main-menu.md"
+  ]
+ },
+ {
+  "address": "$80:A16A",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_80A16A",
+  "native": [
+   "src/core/front_end.cpp:load_main_menu",
+   "src/core/front_end.cpp:load_title",
+   "src/core/front_end.cpp:parked_x, parked_y",
+   "src/core/front_end.cpp:reset_screen_state"
+  ],
+  "source_records": [
+   "docs/research/R-0054-boot-title-main-menu.md"
+  ]
+ },
+ {
+  "address": "$80:A877",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_80A877",
+  "native": [
+   "src/core/front_end.cpp:menu_text_tiles_dma"
+  ],
+  "source_records": [
+   "docs/research/R-0054-boot-title-main-menu.md"
+  ]
+ },
+ {
+  "address": "$80:A8A8",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_80A8A8",
+  "native": [
+   "src/core/front_end.cpp:load_main_menu",
+   "src/core/front_end.cpp:load_nintendo_screen"
+  ],
+  "source_records": [
+   "docs/research/R-0054-boot-title-main-menu.md"
+  ]
+ },
+ {
+  "address": "$80:A8D0",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80A8D0",
+  "source_records": [
+   "docs/research/R-0054-boot-title-main-menu.md"
+  ]
+ },
+ {
+  "address": "$80:A8D4",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80A8D4",
+  "source_records": [
+   "docs/research/R-0054-boot-title-main-menu.md"
+  ]
+ },
+ {
   "address": "$80:A9B4",
   "class": "inferred",
   "comment": "instruction start",
   "label": "loc_80A9B4",
   "source_records": [
+   "docs/research/R-0054-boot-title-main-menu.md",
    "tasks/COVERAGE-ROADMAP.md",
    "tasks/FRONT-END-MAIN-MENU.md"
+  ]
+ },
+ {
+  "address": "$80:A9FA",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80A9FA",
+  "source_records": [
+   "docs/research/R-0054-boot-title-main-menu.md"
   ]
  },
  {
@@ -763,9 +904,67 @@
   "class": "observed",
   "comment": "routine start",
   "label": "sub_80ABC8",
+  "native": [
+   "src/core/front_end.cpp:first_idle, idle_after_move"
+  ],
   "source_records": [
+   "docs/research/R-0054-boot-title-main-menu.md",
    "tasks/COVERAGE-ROADMAP.md",
    "tasks/FRONT-END-MAIN-MENU.md"
+  ]
+ },
+ {
+  "address": "$80:ABE3",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80ABE3",
+  "native": [
+   "src/core/front_end.cpp:run_main_menu"
+  ],
+  "source_records": [
+   "docs/research/R-0054-boot-title-main-menu.md"
+  ]
+ },
+ {
+  "address": "$80:AC0F",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80AC0F",
+  "native": [
+   "src/core/front_end.cpp:run_main_menu"
+  ],
+  "source_records": [
+   "docs/research/R-0054-boot-title-main-menu.md"
+  ]
+ },
+ {
+  "address": "$80:ACD5",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_80ACD5",
+  "native": [
+   "src/core/front_end.cpp:main_menu_text"
+  ],
+  "source_records": [
+   "docs/research/R-0054-boot-title-main-menu.md"
+  ]
+ },
+ {
+  "address": "$80:ACF1",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80ACF1",
+  "source_records": [
+   "docs/research/R-0054-boot-title-main-menu.md"
+  ]
+ },
+ {
+  "address": "$80:AD1F",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80AD1F",
+  "source_records": [
+   "docs/research/R-0054-boot-title-main-menu.md"
   ]
  },
  {
@@ -778,12 +977,61 @@
   ]
  },
  {
+  "address": "$80:B08C",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_80B08C",
+  "native": [
+   "src/core/front_end.cpp:nintendo_palette, nintendo_map, nintendo_tiles",
+   "src/core/front_end.cpp:set_nintendo_registers"
+  ],
+  "source_records": [
+   "docs/research/R-0054-boot-title-main-menu.md"
+  ]
+ },
+ {
+  "address": "$80:B178",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_80B178",
+  "source_records": [
+   "docs/research/R-0054-boot-title-main-menu.md"
+  ]
+ },
+ {
   "address": "$80:B626",
   "class": "unknown",
   "comment": "unknown",
   "label": "unk_80B626",
   "source_records": [
    "tasks/COVERAGE-ROADMAP.md"
+  ]
+ },
+ {
+  "address": "$80:B71D",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_80B71D",
+  "source_records": [
+   "docs/research/R-0054-boot-title-main-menu.md"
+  ]
+ },
+ {
+  "address": "$80:B76F",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_80B76F",
+  "source_records": [
+   "docs/research/R-0054-boot-title-main-menu.md"
+  ]
+ },
+ {
+  "address": "$80:B794",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_80B794",
+  "source_records": [
+   "docs/research/R-0054-boot-title-main-menu.md"
   ]
  },
  {
@@ -828,7 +1076,8 @@
   "comment": "routine start",
   "label": "sub_80C3BC",
   "native": [
-   "src/core/result_screen.cpp:(file)"
+   "src/core/result_screen.cpp:(file)",
+   "src/core/text_printer.hpp:(file)"
   ],
   "source_records": [
    "docs/research/R-0053-result-title-printer.md",
@@ -846,12 +1095,39 @@
   ]
  },
  {
+  "address": "$80:C3C6",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80C3C6",
+  "native": [
+   "src/core/text_printer.cpp:end_of_text, position, centre, nothing, attribute, skip_pair, first_control"
+  ],
+  "source_records": [
+   "docs/research/R-0054-boot-title-main-menu.md"
+  ]
+ },
+ {
   "address": "$80:C3DC",
   "class": "unknown",
   "comment": "unknown",
   "label": "unk_80C3DC",
+  "native": [
+   "src/core/text_printer.cpp:end_of_text, position, centre, nothing, attribute, skip_pair, first_control"
+  ],
   "source_records": [
    "docs/research/R-0053-result-title-printer.md"
+  ]
+ },
+ {
+  "address": "$80:C3FE",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80C3FE",
+  "native": [
+   "src/core/text_printer.cpp:table_entry"
+  ],
+  "source_records": [
+   "docs/research/R-0054-boot-title-main-menu.md"
   ]
  },
  {
@@ -868,6 +1144,9 @@
   "class": "observed",
   "comment": "instruction start",
   "label": "loc_80C41E",
+  "native": [
+   "src/core/text_printer.cpp:print_big"
+  ],
   "source_records": [
    "docs/research/R-0053-result-title-printer.md"
   ]
@@ -880,7 +1159,8 @@
   "native": [
    "src/core/presentation.hpp:build_dragster_result_map",
    "src/core/result_screen.cpp:build_result_map",
-   "src/core/result_screen.cpp:write_result_title"
+   "src/core/result_screen.cpp:write_result_title",
+   "src/core/text_printer.cpp:print_big"
   ],
   "source_records": [
    "docs/research/R-0015-native-presentation.md",
@@ -894,7 +1174,8 @@
   "comment": "instruction start",
   "label": "loc_80C4B8",
   "native": [
-   "src/core/result_screen.cpp:build_result_map"
+   "src/core/result_screen.cpp:build_result_map",
+   "src/core/text_printer.cpp:centre_on"
   ],
   "source_records": [
    "docs/research/R-0053-result-title-printer.md",
@@ -906,6 +1187,9 @@
   "class": "observed",
   "comment": "instruction start",
   "label": "loc_80C56C",
+  "native": [
+   "src/core/text_printer.cpp:print_small"
+  ],
   "source_records": [
    "docs/research/R-0053-result-title-printer.md"
   ]
@@ -916,7 +1200,9 @@
   "comment": "instruction start",
   "label": "loc_80C57C",
   "native": [
-   "src/core/result_screen.cpp:small_glyph_tile"
+   "src/core/result_screen.cpp:small_glyph_tile",
+   "src/core/text_printer.cpp:print_small",
+   "src/core/text_printer.cpp:small_tile_base, small_lower_row"
   ],
   "source_records": [
    "docs/research/R-0053-result-title-printer.md"
@@ -948,7 +1234,8 @@
   "label": "dat_80C709",
   "native": [
    "src/core/result_screen.cpp:(file)",
-   "src/core/result_screen.cpp:result_title_glyph"
+   "src/core/result_screen.cpp:result_title_glyph",
+   "src/core/text_printer.hpp:print_text"
   ],
   "source_records": [
    "docs/research/R-0046-track-breadth-matrix.md",
@@ -979,12 +1266,77 @@
   ]
  },
  {
+  "address": "$80:D1EC",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_80D1EC",
+  "native": [
+   "src/core/front_end.cpp:boot_frame",
+   "src/core/front_end.cpp:run_main_menu"
+  ],
+  "source_records": [
+   "docs/research/R-0054-boot-title-main-menu.md"
+  ]
+ },
+ {
+  "address": "$80:D20E",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_80D20E",
+  "native": [
+   "src/core/front_end.cpp:load_main_menu",
+   "src/core/front_end.cpp:menu_objects, menu_objects_high, menu_map, menu_bg2_tiles, menu_bg1_tiles, menu_bg1_tiles_high"
+  ],
+  "source_records": [
+   "docs/research/R-0054-boot-title-main-menu.md"
+  ]
+ },
+ {
+  "address": "$80:D2C3",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80D2C3",
+  "native": [
+   "src/core/front_end.cpp:lay_out_menu_objects"
+  ],
+  "source_records": [
+   "docs/research/R-0054-boot-title-main-menu.md"
+  ]
+ },
+ {
   "address": "$80:D2CB",
   "class": "observed",
   "comment": "instruction start",
   "label": "loc_80D2CB",
+  "native": [
+   "src/core/front_end.cpp:lay_out_menu_objects"
+  ],
   "source_records": [
    "docs/research/R-0037-dragster-race-palette-cycle.md"
+  ]
+ },
+ {
+  "address": "$80:D372",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80D372",
+  "native": [
+   "src/core/front_end.cpp:boot_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0054-boot-title-main-menu.md"
+  ]
+ },
+ {
+  "address": "$80:D383",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80D383",
+  "native": [
+   "src/core/front_end.cpp:lay_out_menu_objects"
+  ],
+  "source_records": [
+   "docs/research/R-0054-boot-title-main-menu.md"
   ]
  },
  {
@@ -993,6 +1345,7 @@
   "comment": "instruction start",
   "label": "loc_80F0D6",
   "source_records": [
+   "docs/research/R-0054-boot-title-main-menu.md",
    "tasks/COVERAGE-ROADMAP.md",
    "tasks/FRONT-END-MAIN-MENU.md"
   ]
@@ -1004,6 +1357,49 @@
   "label": "loc_80F553",
   "source_records": [
    "tasks/M3-02.md"
+  ]
+ },
+ {
+  "address": "$80:F55F",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_80F55F",
+  "native": [
+   "src/core/front_end.cpp:load_title",
+   "src/core/front_end.cpp:title_palette, title_map, title_tiles"
+  ],
+  "source_records": [
+   "docs/research/R-0054-boot-title-main-menu.md"
+  ]
+ },
+ {
+  "address": "$80:F5B8",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80F5B8",
+  "native": [
+   "src/core/front_end.cpp:update_front_end"
+  ],
+  "source_records": [
+   "docs/research/R-0054-boot-title-main-menu.md"
+  ]
+ },
+ {
+  "address": "$80:F618",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80F618",
+  "source_records": [
+   "docs/research/R-0054-boot-title-main-menu.md"
+  ]
+ },
+ {
+  "address": "$80:F622",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80F622",
+  "source_records": [
+   "docs/research/R-0054-boot-title-main-menu.md"
   ]
  },
  {
@@ -1043,12 +1439,86 @@
   ]
  },
  {
+  "address": "$80:FA60",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_80FA60",
+  "native": [
+   "src/core/front_end.cpp:step_palette_cycle",
+   "src/core/front_end.hpp:PaletteCycle"
+  ],
+  "source_records": [
+   "docs/research/R-0054-boot-title-main-menu.md"
+  ]
+ },
+ {
+  "address": "$80:FA82",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80FA82",
+  "source_records": [
+   "docs/research/R-0054-boot-title-main-menu.md"
+  ]
+ },
+ {
+  "address": "$80:FACD",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80FACD",
+  "source_records": [
+   "docs/research/R-0054-boot-title-main-menu.md"
+  ]
+ },
+ {
+  "address": "$80:FADF",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_80FADF",
+  "native": [
+   "src/core/front_end.cpp:waits_for_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0054-boot-title-main-menu.md"
+  ]
+ },
+ {
+  "address": "$80:FAF5",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_80FAF5",
+  "native": [
+   "src/core/front_end.cpp:quarter_step",
+   "src/core/front_end.hpp:MenuArrow"
+  ],
+  "source_records": [
+   "docs/research/R-0054-boot-title-main-menu.md"
+  ]
+ },
+ {
+  "address": "$80:FB08",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80FB08",
+  "source_records": [
+   "docs/research/R-0054-boot-title-main-menu.md"
+  ]
+ },
+ {
   "address": "$80:FBC3",
   "class": "observed",
   "comment": "instruction start",
   "label": "loc_80FBC3",
   "source_records": [
    "docs/research/R-0006-observed-code-map.md"
+  ]
+ },
+ {
+  "address": "$80:FBC5",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80FBC5",
+  "source_records": [
+   "docs/research/R-0054-boot-title-main-menu.md"
   ]
  },
  {
@@ -4938,6 +5408,15 @@
   ]
  },
  {
+  "address": "$82:8000",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_828000",
+  "source_records": [
+   "docs/research/R-0054-boot-title-main-menu.md"
+  ]
+ },
+ {
   "address": "$82:8038",
   "class": "observed",
   "comment": "instruction start",
@@ -7164,9 +7643,13 @@
   "class": "observed",
   "comment": "routine start",
   "label": "sub_82B183",
+  "native": [
+   "src/core/front_end.cpp:load_vram"
+  ],
   "source_records": [
    "docs/content/dragster-segment.md",
-   "docs/research/R-0008-track-decode.md"
+   "docs/research/R-0008-track-decode.md",
+   "docs/research/R-0054-boot-title-main-menu.md"
   ]
  },
  {
@@ -7204,9 +7687,13 @@
   "class": "observed",
   "comment": "routine start",
   "label": "sub_82B1DB",
+  "native": [
+   "src/core/front_end.cpp:load_vram"
+  ],
   "source_records": [
    "docs/content/dragster-segment.md",
-   "docs/research/R-0008-track-decode.md"
+   "docs/research/R-0008-track-decode.md",
+   "docs/research/R-0054-boot-title-main-menu.md"
   ]
  },
  {
@@ -7281,10 +7768,15 @@
   "class": "unknown",
   "comment": "unknown",
   "label": "unk_82B332",
+  "native": [
+   "src/core/content_pack.cpp:front_end_required",
+   "src/core/front_end.cpp:early_objects, early_palette"
+  ],
   "source_records": [
    "docs/content/dragster-segment.md",
    "docs/research/R-0008-track-decode.md",
    "docs/research/R-0046-track-breadth-matrix.md",
+   "docs/research/R-0054-boot-title-main-menu.md",
    "tasks/M1-03.md",
    "tasks/TRACK-BREADTH.md"
   ]
@@ -7823,12 +8315,50 @@
   ]
  },
  {
+  "address": "$83:91F7",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_8391F7",
+  "native": [
+   "src/core/front_end.cpp:load_main_menu"
+  ],
+  "source_records": [
+   "docs/research/R-0054-boot-title-main-menu.md"
+  ]
+ },
+ {
   "address": "$83:96FB",
   "class": "observed",
   "comment": "instruction start",
   "label": "loc_8396FB",
   "source_records": [
    "docs/research/R-0006-observed-code-map.md"
+  ]
+ },
+ {
+  "address": "$83:99F6",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_8399F6",
+  "native": [
+   "src/core/front_end.cpp:boot_frame",
+   "src/core/front_end.cpp:load_nintendo_screen"
+  ],
+  "source_records": [
+   "docs/research/R-0054-boot-title-main-menu.md"
+  ]
+ },
+ {
+  "address": "$83:99FA",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_8399FA",
+  "native": [
+   "src/core/front_end.cpp:park_arrow",
+   "src/core/front_end.cpp:parked_x, parked_y"
+  ],
+  "source_records": [
+   "docs/research/R-0054-boot-title-main-menu.md"
   ]
  },
  {
@@ -7866,6 +8396,15 @@
   "label": "unk_83A1DA",
   "source_records": [
    "docs/research/R-0008-track-decode.md"
+  ]
+ },
+ {
+  "address": "$83:AB9A",
+  "class": "inferred",
+  "comment": "routine start",
+  "label": "sub_83AB9A",
+  "source_records": [
+   "docs/research/R-0054-boot-title-main-menu.md"
   ]
  },
  {

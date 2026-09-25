@@ -185,24 +185,25 @@ ObjectEntry object_entry(const SnesVideoMemory& memory, unsigned n) {
             (attributes >> 4U) & 3U};
 }
 
-// bsnes `renderObject` for one line: 32 objects and 34 tiles at most, earlier objects in front.
-void draw_objects(Line& line, const SnesVideoMemory& memory, const SnesVideoRegisters& registers,
-                  const ModeLayout& layout, unsigned y) {
-    const bool main = (registers.main_screen >> 4U) & 1U;
-    const bool sub = (registers.sub_screen >> 4U) & 1U;
-    if (!main && !sub) return;
+struct ObjectItem {
+    unsigned index, width, height;
+};
+
+struct ObjectTile {
+    unsigned x, palette, priority;
+    bool hflip;
+    std::uint32_t data;
+};
+
+// bsnes `renderObject`, first pass: the objects on this line, 32 at most, in OAM order.
+unsigned line_objects(std::array<ObjectItem, 32>& items, const SnesVideoMemory& memory,
+                      const SnesVideoRegisters& registers, unsigned y) {
     constexpr std::array<unsigned, 8> small_width{8, 8, 8, 16, 16, 32, 16, 16};
     constexpr std::array<unsigned, 8> small_height{8, 8, 8, 16, 16, 32, 32, 32};
     constexpr std::array<unsigned, 8> large_width{16, 32, 64, 32, 64, 64, 32, 32};
     constexpr std::array<unsigned, 8> large_height{16, 32, 64, 32, 64, 64, 64, 32};
     const unsigned base_size = registers.obsel >> 5U;
-    const unsigned tile_base = (registers.obsel & 7U) << 13U;
-    const unsigned name_select = (registers.obsel >> 3U) & 3U;
-    struct Item {
-        unsigned index, width, height;
-    };
-    std::array<Item, 32> items{};
-    unsigned item_count = 0;
+    unsigned count = 0;
     for (unsigned n = 0; n < 128; ++n) {
         const auto object = object_entry(memory, n);
         const unsigned width = object.large ? large_width[base_size] : small_width[base_size];
@@ -210,17 +211,21 @@ void draw_objects(Line& line, const SnesVideoMemory& memory, const SnesVideoRegi
         if (object.x > 256 && object.x + width - 1 < 512) continue;
         if ((y >= object.y && y < object.y + height)
             || (object.y + height >= 256 && y < ((object.y + height) & 255U))) {
-            if (item_count >= items.size()) break;
-            items[item_count++] = {n, width, height};
+            if (count >= items.size()) break;
+            items[count++] = {n, width, height};
         }
     }
-    struct Tile {
-        unsigned x, palette, priority;
-        bool hflip;
-        std::uint32_t data;
-    };
-    std::array<Tile, 34> tiles{};
-    unsigned tile_count = 0;
+    return count;
+}
+
+// Second pass: their tiles on this line, last object first, 34 tiles at most.
+unsigned line_object_tiles(std::array<ObjectTile, 34>& tiles,
+                           const std::array<ObjectItem, 32>& items, unsigned item_count,
+                           const SnesVideoMemory& memory, const SnesVideoRegisters& registers,
+                           unsigned y) {
+    const unsigned tile_base = (registers.obsel & 7U) << 13U;
+    const unsigned name_select = (registers.obsel >> 3U) & 3U;
+    unsigned count = 0;
     for (unsigned k = item_count; k-- > 0;) {
         const auto& item = items[k];
         const auto object = object_entry(memory, item.index);
@@ -239,7 +244,6 @@ void draw_objects(Line& line, const SnesVideoMemory& memory, const SnesVideoRegi
         if (object.name_select) base += (1U + name_select) << 12U;
         const unsigned character_x = object.character & 15U;
         const unsigned character_y = (((object.character >> 4U) + (row >> 3U)) & 15U) << 4U;
-        bool full = false;
         for (unsigned tile_x = 0; tile_x < tile_width; ++tile_x) {
             const unsigned object_x = (object.x + (tile_x << 3U)) & 511U;
             if (object.x != 256 && object_x >= 256 && object_x + 7 < 512) continue;
@@ -249,15 +253,24 @@ void draw_objects(Line& line, const SnesVideoMemory& memory, const SnesVideoRegi
             const std::uint32_t data =
                 vram_word(memory, address)
                 | (static_cast<std::uint32_t>(vram_word(memory, address + 8)) << 16U);
-            if (tile_count >= tiles.size()) {
-                full = true;
-                break;
-            }
-            tiles[tile_count++] = {object_x, 128U + (object.palette << 4U), object.priority,
-                                   object.hflip, data};
+            if (count >= tiles.size()) return count;
+            tiles[count++] = {object_x, 128U + (object.palette << 4U), object.priority,
+                              object.hflip, data};
         }
-        if (full) break;
     }
+    return count;
+}
+
+// bsnes `renderObject` for one line: later tiles (earlier objects) are in front.
+void draw_objects(Line& line, const SnesVideoMemory& memory, const SnesVideoRegisters& registers,
+                  const ModeLayout& layout, unsigned y) {
+    const bool main = (registers.main_screen >> 4U) & 1U;
+    const bool sub = (registers.sub_screen >> 4U) & 1U;
+    if (!main && !sub) return;
+    std::array<ObjectItem, 32> items{};
+    const auto item_count = line_objects(items, memory, registers, y);
+    std::array<ObjectTile, 34> tiles{};
+    const auto tile_count = line_object_tiles(tiles, items, item_count, memory, registers, y);
     std::array<std::uint8_t, 256> palette{}, priority{};
     for (unsigned n = 0; n < tile_count; ++n) {
         const auto& tile = tiles[n];
