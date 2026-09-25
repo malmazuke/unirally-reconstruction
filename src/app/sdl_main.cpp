@@ -172,8 +172,8 @@ void print_help() {
       << "       NN: a race track's number (its index in the ROM) with a recovered scenario\n"
       << "       unirally --supported-profiles   (print the pack profiles this build reads)\n"
       << "Without --track it starts at power-on: the Nintendo screen, the title and the main menu;\n"
-      << "1P leads to PICK YOUR UNI; MIKE starts DRAGSTER. With --track it starts in that race.\n"
-      << "PAL 50 Hz.\n"
+      << "1P leads to the one-player screens and the race chosen there. With --track it starts in\n"
+      << "that race. PAL 50 Hz.\n"
       << "Keyboard: arrows, Z=B, X=Y, A=A, S=X, Q=L, W=R, Enter=Start.\n"
       << "Gamepad: D-pad, South=B, West=Y, East=A, North=X, shoulders=L/R, Start, Back=Select;\n"
       << "the analog stick is not mapped. Two gamepads are tracked; this slice consumes port 0 only.\n"
@@ -269,8 +269,8 @@ int main(int argc, char **argv) try {
     throw std::invalid_argument("DRAGSTER and the other tracks need the full content pack for jumps, brakes, reversal and tricks; "
                                 "create it from your ROM with: python3 tools/project.py frontend run --track dragster "
                                 "--pack local/classic-pal-crawler-tracks-v17.pack --rom PATH");
-  const auto zoom_content=unirally::classic_race_content(content.pack,track);
-  const auto race_presentation=unirally::classic_race_presentation_content(content.pack,track);
+  auto zoom_content=unirally::classic_race_content(content.pack,track);
+  auto race_presentation=unirally::classic_race_presentation_content(content.pack,track);
   auto zoom_state=unirally::classic_race_start(zoom_content,unirally::classic_race_scenario(track));
   auto& state=zoom_state.movement;
   auto zoom_hud_state=zoom_state; // State before the latest update, for the HUD.
@@ -334,7 +334,7 @@ int main(int argc, char **argv) try {
   std::array<std::uint16_t, 2> last_ports{};
   unirally::app::LivePresentation live_presentation;
   bool reported_held_frame{};
-  // Without --track the session starts at power-on; MIKE on 1P's rider menu starts the race.
+  // Without --track the session starts at power-on; NOW PLAYING's Race starts the race.
   std::optional<unirally::app::FrontEndSession> front_end;
   if (!parsed->track_given) front_end.emplace(content.pack);
   while (running) {
@@ -421,7 +421,18 @@ int main(int argc, char **argv) try {
       }
       if (front_end) {
         if (front_end->update(ports)) {
-          std::cout << "Front end: MIKE chosen after " << front_end->frames() << " frames\n";
+          // The race NOW PLAYING chose, if it is not the one the app started with.
+          const auto chosen=front_end->race_track();
+          std::cout << "Front end: race " << unsigned(chosen.index) << " chosen after " << front_end->frames()
+                    << " frames\n";
+          if(!(chosen==track)) {
+            zoom_content=unirally::classic_race_content(content.pack,chosen);
+            race_presentation=unirally::classic_race_presentation_content(content.pack,chosen);
+            zoom_state=unirally::classic_race_start(zoom_content,unirally::classic_race_scenario(chosen));
+            zoom_hud_state=zoom_state;
+            const std::string title="Unirally — Classic / "+race_presentation.track_name;
+            SDL_SetWindowTitle(window.get(),title.c_str());
+          }
           front_end.reset();
           input.clear();
         }
@@ -515,7 +526,7 @@ int main(int argc, char **argv) try {
   if (front_end)
     std::cout << "Front end: frames " << front_end->frames() << "; notices "
               << front_end->notices() << "; returns to the main menu "
-              << front_end->returns_to_menu() << "; MIKE not chosen\n";
+              << front_end->returns_to_menu() << "; no race chosen\n";
   std::cout << "Presentation frames: " << rendered_frames
             << "; rider-pose fallback frames: " << pose_fallback_frames
             << "; identical consecutive redraws: " << identical_redraws

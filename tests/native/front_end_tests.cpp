@@ -9,18 +9,18 @@
 #include <array>
 #include <cstdint>
 #include <cstdio>
+#include <source_location>
 #include <stdexcept>
 #include <string>
 #include <vector>
 
 namespace {
 
-int require_count = 0;
-void require(bool value) {
-  ++require_count;
+void require(bool value,
+             std::source_location where = std::source_location::current()) {
   if (!value)
-    throw std::runtime_error("front-end assertion failed at require #" +
-                             std::to_string(require_count));
+    throw std::runtime_error("front-end assertion failed at line " +
+                             std::to_string(where.line()));
 }
 
 template <typename Action> bool refuses(Action action) {
@@ -122,11 +122,13 @@ void snes_screen_tests() {
   frame = unirally::render_snes_screen(memory, registers);
   require(frame.pixels[0] == frame.pixels[2] && frame.pixels[1] == 0 &&
           frame.pixels[0] > 0 && frame.pixels[0] < 255);
-  // Clipping the main screen to black always (CGWSEL bits 7-6 = 3) also stops the halving, as
-  // in bsnes (`halve && windowAbove[x]`): black + blue 31 is full blue.
+  // Clipping the main screen to black always (CGWSEL bits 7-6 = 3) also stops
+  // the halving, as in bsnes (`halve && windowAbove[x]`): black + blue 31 is
+  // full blue.
   registers.colour_select = 0xc2;
   frame = unirally::render_snes_screen(memory, registers);
-  require(frame.pixels[0] == 0 && frame.pixels[1] == 0 && frame.pixels[2] == 255);
+  require(frame.pixels[0] == 0 && frame.pixels[1] == 0 &&
+          frame.pixels[2] == 255);
   // A colour written during the picture shows from its row on: the object
   // (drawn on row 0) turns red for a write on row 0, not for one on row 1.
   const std::array<unirally::SnesLineColour, 1> later{{{1, 129, 0x001f}}};
@@ -181,6 +183,41 @@ synthetic_content(std::vector<std::vector<std::uint8_t>> &storage) {
   content.uni_pictures.pose_pointers = storage.back();
   content.uni_pictures.pose_frames = keep(4);
   content.uni_pictures.object_tiles = keep(32);
+  // The one-player screens (profile v17), synthetic: every stream prints 'A'.
+  for (unsigned id : {22U, 23U, 24U, 25U, 26U, 32U, 33U, 34U, 35U, 36U, 37U})
+    content.assets[id] = keep(32);
+  content.medal_tiles = content.track_menu_tiles = keep(0xc00);
+  const auto bytes =
+      [&](std::vector<std::uint8_t> value) -> std::span<const std::uint8_t> {
+    storage.push_back(std::move(value));
+    return storage.back();
+  };
+  content.tour_menu_text = bytes({'A', 0xff, 'A', 0xff, 'A', 0xff, 'A', 0xff});
+  content.tour_badge_places = keep(18);
+  content.tour_levels = bytes({0, 1, 0, 1, 0, 2, 0, 2, 3, 3});
+  content.tour_arrow_targets = keep(40);
+  content.tour_badge_pictures = keep(30);
+  content.medal_places = keep(36);
+  content.medal_attributes = keep(4);
+  std::vector<std::uint8_t> names;
+  for (int k = 0; k < 50; ++k)
+    names.insert(names.end(), {'A', 0xff});
+  content.tour_names = content.track_names = bytes(names);
+  content.track_menu_layout = bytes(std::vector<std::uint8_t>(0x23, 3));
+  content.track_menu_text = bytes({0xfe, 7, 8, 0xf7, 0xb2, 0, 0xff});
+  content.medal_words = bytes(std::vector<std::uint8_t>(29, 0xff));
+  content.marker_tiles = keep(21);
+  std::vector<std::uint8_t> kinds(40, 'A');
+  for (const std::size_t end : {9U, 14U, 23U, 39U})
+    kinds[end] = 0xff;
+  content.race_kind_words = bytes(kinds);
+  std::vector<std::uint8_t> now(0x88, 'A');
+  for (const std::size_t end : {0x0eU, 0x26U, 0x3aU, 0x46U, 0x78U, 0x85U})
+    now[end] = 0xff;
+  content.now_playing_text = bytes(now);
+  content.time_words = bytes(std::vector<std::uint8_t>(18, 0xff));
+  content.laps = bytes(std::vector<std::uint8_t>(50, 3));
+  content.qualifying_scores = keep(60);
   return content;
 }
 
@@ -196,7 +233,8 @@ void main_menu_tests() {
   const auto content = synthetic_content(storage);
   auto state = unirally::start_front_end();
   run(state, content, 420);
-  require(state.screen == unirally::FrontEndScreen::main_menu && !state.mode_chosen);
+  require(state.screen == unirally::FrontEndScreen::main_menu &&
+          !state.mode_chosen);
   require(state.menu.idle == 480 && state.menu.selection == 0);
   // The arrow flies in and settles three sixteenths short of its x target
   // (R-0054).
@@ -255,8 +293,8 @@ void rider_menu_tests() {
   require(state.text.words[4 * 32 + 5] != 0x004c); // MIKE's name
   // Each frame of the menu splits the palettes: colour 0, then 128 rows.
   run(state, content, 1);
-  require(state.line_colours.size() == 129 &&
-          state.line_colours[1].row == 64 && state.line_colours[1].index == 0x80);
+  require(state.line_colours.size() == 129 && state.line_colours[1].row == 64 &&
+          state.line_colours[1].index == 0x80);
   // Controller 2 is not read; Down moves once a press and stops at row 7.
   run(state, content, 1, {0, 0x0400});
   require(state.rider_menu.row == 0);
@@ -264,34 +302,118 @@ void rider_menu_tests() {
     run(state, content, 1, {0x0400, 0});
     run(state, content, 1);
   }
-  require(state.rider_menu.row == 7 && state.arrow.target_y == 0x0290 + 7 * 0x0180);
-  // Up at row 0 stays; Right changes column (and the arrow's mirror and palette).
+  require(state.rider_menu.row == 7 &&
+          state.arrow.target_y == 0x0290 + 7 * 0x0180);
+  // Up at row 0 stays; Right changes column (and the arrow's mirror and
+  // palette).
   for (int k = 0; k < 8; ++k) {
     run(state, content, 1, {0x0800, 0});
     run(state, content, 1);
   }
   require(state.rider_menu.row == 0);
   run(state, content, 1, {0x0100, 0});
-  require(state.arrow.target_x == 0x0780 && (state.oam_buffer[119 * 4 + 3] & 0x40) == 0);
+  require(state.arrow.target_x == 0x0780 &&
+          (state.oam_buffer[119 * 4 + 3] & 0x40) == 0);
   run(state, content, 1, {0x0400, 0});
   run(state, content, 1);
   // Y goes back: three frames out, then 42 to the main menu, on 1P again.
   run(state, content, 1, {0x4000, 0});
-  require(state.screen == FrontEndScreen::rider_menu_exit && state.line_colours.empty());
+  require(state.screen == FrontEndScreen::rider_menu_exit &&
+          state.line_colours.empty());
   run(state, content, 3);
   require(state.screen == FrontEndScreen::main_menu_return);
   run(state, content, 42);
-  require(state.screen == FrontEndScreen::main_menu && state.menu.selection == 0 &&
-          state.menu.idle == 480 && state.slide.scroll == 0 && !state.mode_chosen);
+  require(state.screen == FrontEndScreen::main_menu &&
+          state.menu.selection == 0 && state.menu.idle == 480 &&
+          state.slide.scroll == 0 && !state.mode_chosen);
   // Choosing again starts on MIKE; B chooses the rider under the arrow.
   run(state, content, 1, {0x1000, 0});
   run(state, content, 43);
   run(state, content, 1, {0x0100, 0});
   run(state, content, 1, {0x8000, 0});
-  require(state.screen == FrontEndScreen::rider_menu_exit && !state.mode_chosen);
+  require(state.screen == FrontEndScreen::rider_menu_exit &&
+          !state.mode_chosen);
   run(state, content, 3);
-  require(state.mode_chosen && state.mode == unirally::FrontEndMode::one_player &&
-          state.rider_menu.rider == 1);
+  require(state.screen == FrontEndScreen::tour_menu_entry &&
+          !state.mode_chosen && state.rider_menu.rider == 1);
+}
+
+// Runs until the screen changes to `screen` (at most `limit` frames), holding
+// `pads` on the first frame only.
+bool run_to(unirally::FrontEndState &state,
+            const unirally::FrontEndContent &content,
+            unirally::FrontEndScreen screen, unirally::FrontEndPads pads = {},
+            std::uint32_t limit = 200) {
+  for (std::uint32_t k = 0; k < limit; ++k) {
+    unirally::update_front_end(state, content,
+                               k == 0 ? pads : unirally::FrontEndPads{});
+    if (state.screen == screen)
+      return true;
+  }
+  return false;
+}
+
+void one_player_setup_tests() {
+  using unirally::FrontEndScreen;
+  std::vector<std::vector<std::uint8_t>> storage;
+  const auto content = synthetic_content(storage);
+  auto state = unirally::start_front_end();
+  run(state, content, 430);
+  require(run_to(state, content, FrontEndScreen::rider_menu, {0x1000, 0}));
+  require(
+      run_to(state, content, FrontEndScreen::tour_menu, {0x8000, 0})); // MIKE
+  // A cold start opens the left column only: Right stays; Up at the top stays;
+  // Down moves.
+  run(state, content, 1, {0x0100, 0});
+  require(state.tour_menu.cursor == 0);
+  run(state, content, 1, {0x0800, 0});
+  run(state, content, 1);
+  run(state, content, 1, {0x0400, 0});
+  require(state.tour_menu.cursor == 2 && state.latches.down);
+  run(state, content, 1);
+  // Y goes back to PICK YOUR UNI, which slides back in; B there comes back to
+  // PICK TOUR, on the tour chosen last (none: CRAWLER).
+  require(run_to(state, content, FrontEndScreen::rider_menu, {0x4000, 0}));
+  require(state.slide.back && state.rider_menu.returning);
+  require(run_to(state, content, FrontEndScreen::tour_menu, {0x8000, 0}));
+  require(state.tour_menu.cursor == 0);
+  run(state, content, 1, {0x0400, 0});
+  run(state, content, 1);
+  require(run_to(state, content, FrontEndScreen::track_menu, {0x1000, 0}));
+  // Up from the first track wraps to the medal line; a choice there keeps
+  // BRONZE (best 0); Down (or Select) wraps back to the first track.
+  require(state.track_menu.cursor == 0);
+  run(state, content, 1, {0x0800, 0});
+  require(state.track_menu.cursor == 5);
+  run(state, content, 1);
+  run(state, content, 2, {0x0080, 0});
+  require(state.tour_menu.medal == 0 && state.track_menu.medal_latched);
+  run(state, content, 1);
+  run(state, content, 1, {0x2000, 0});
+  require(state.track_menu.cursor == 0);
+  run(state, content, 1);
+  run(state, content, 1, {0x0400, 0});
+  run(state, content, 1);
+  require(run_to(state, content, FrontEndScreen::now_playing, {0x1000, 0}));
+  require(state.tour_menu.track == 11 && state.now_playing.opponent == 0x11);
+  // Right to Exit, Left to Race; Y back to PICK TRACK on the chosen track.
+  run(state, content, 1, {0x0100, 0});
+  require(state.arrow.target_x == 0x0680);
+  run(state, content, 1);
+  run(state, content, 1, {0x0200, 0});
+  require(state.arrow.target_x == 0x0300);
+  require(run_to(state, content, FrontEndScreen::track_menu, {0x4000, 0}));
+  require(state.track_menu.cursor == 1 && state.slide.back);
+  // The race: NOW PLAYING again, then Race fades out over 7 frames.
+  require(run_to(state, content, FrontEndScreen::now_playing, {0x1000, 0}));
+  require(run_to(state, content, FrontEndScreen::race_fade, {0x1000, 0}));
+  run(state, content, 6);
+  require(!state.mode_chosen && state.registers.brightness == 3);
+  run(state, content, 1);
+  require(state.mode_chosen && state.registers.force_blank &&
+          state.registers.brightness == 1 &&
+          state.mode == unirally::FrontEndMode::one_player &&
+          state.tour_menu.track == 11);
 }
 
 } // namespace
@@ -301,6 +423,7 @@ int main() try {
   snes_screen_tests();
   main_menu_tests();
   rider_menu_tests();
+  one_player_setup_tests();
   return 0;
 } catch (const std::exception &error) {
   std::fprintf(stderr, "%s\n", error.what());

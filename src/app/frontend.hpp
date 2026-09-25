@@ -108,21 +108,24 @@ private:
   std::array<std::optional<std::uint16_t>, 2> drawn_pose_{};
 };
 
-// The app's front end: power-on to the main menu (R-0054) and 1P's rider menu
-// (R-0055). Until the other modes and screens are native, choosing 2P, VS,
-// LEAGUE, OPTIONS, reaching the demo or choosing a rider other than MIKE (the
-// race scenarios' rider) shows a short notice and returns to the main menu as
-// it first appeared.
+// The app's front end: power-on to the main menu (R-0054) and 1P's setup
+// screens to the race (R-0055, R-0056). Until the other modes are native,
+// choosing 2P, VS, LEAGUE, OPTIONS, reaching the demo, or a 1P race the race
+// scenarios do not have (another rider than MIKE, a stunt event) shows a short
+// notice and returns to the main menu as it first appeared.
 class FrontEndSession {
 public:
   explicit FrontEndSession(const ClassicContentPack &pack);
-  // One PAL frame from the two ports' masks (`button_mask` bits). True once
-  // MIKE is chosen on the rider menu.
+  // One PAL frame from the two ports' masks (`button_mask` bits). True once a
+  // race with a native scenario is chosen: `race_track()`.
   bool update(const std::array<std::uint16_t, 2> &ports);
   RgbFrame frame() const;
   std::uint32_t frames() const { return frames_; }
   std::uint32_t notices() const { return notices_; }
   std::uint32_t returns_to_menu() const { return returns_; }
+  ClassicRaceTrack race_track() const {
+    return ClassicRaceTrack{state_.tour_menu.track};
+  }
 
 private:
   FrontEndContent content_;
