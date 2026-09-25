@@ -1506,83 +1506,92 @@ std::string classic_hud_split_text(const std::array<std::uint8_t, 4>& clock,
             ':',
             classic_hud_digit(unsigned(ten_tenths == 10 ? 0 : ten_tenths))};
 }
+// One update of the HUD's text queue: record what the update asks for, then service one
+// field, as the original's queue does one a frame.
 void ClassicRaceHudClock::observe_update(const ZoomZooState& previous,
                                          const ZoomZooState& updated) {
     on_screen_ = latest_;
+    request_fields(previous, updated);
+    service_one_field(updated);
+}
+
+// What this update asks the queue for. `$81:818D` is the only instruction in the ROM that
+// sets `$0D17`, inside the lap-counter decrement, with the rider taken from `$0FF9` - so either
+// rider's crossing dirties the left field. The player's last crossing also blanks the clock
+// and arms its own finish time; the opponent's finish arms the opponent's. The centred
+// fields (R-0044): `$81:C910` reads the countdown after the lap routine set it and before the
+// clock ticks, so the clock a split is taken from is the previous update's; the crossing
+// digits are the lap routine's own copy. Native's engine keeps the countdown, the
+// checkpoint, the crossing digits and the shared first-seen flags; the first rider's stored
+// clock is kept here.
+void ClassicRaceHudClock::request_fields(const ZoomZooState& previous,
+                                         const ZoomZooState& updated) {
     const auto stepped = [&](std::size_t rider) {
         return previous.race.riders[rider].laps_remaining
             != updated.race.riders[rider].laps_remaining;
     };
-    // What this update asks the queue for. `$81:818D` is the only instruction
-    // in the ROM that sets `$0D17`, inside the lap-counter decrement, with the
-    // rider taken from `$0FF9` - so either rider's crossing dirties the left
-    // field. The player's last crossing also blanks the clock and arms its own
-    // finish time; the opponent's finish arms the opponent's.
     if (stepped(0) || stepped(1)) pending_.left = true;
     if (previous.race.riders[0].laps_remaining != 0 && updated.race.riders[0].laps_remaining == 0)
         pending_.clock_blank = true;
-    // The centred fields (R-0044). `$81:C910` reads the countdown after the
-    // lap routine set it and before the clock ticks, so the clock a split is
-    // taken from is the previous update's; the crossing digits are the lap
-    // routine's own copy. Native's engine keeps the countdown, the checkpoint,
-    // the crossing digits and the shared first-seen flags; the first rider's
-    // stored clock is kept here.
     for (std::size_t rider = 0; rider < 2; ++rider) {
         const auto& before = previous.race.riders[rider];
         const auto& after = updated.race.riders[rider];
         auto& cell = pending_.cells[rider];
-        // Every accepted crossing but the initial one steps the rider's next
-        // checkpoint and sets the countdown, to 120 or, for the opponent
-        // first through a slot, straight on to 2 within the same update
-        // ($81:CA6E), so the countdown alone cannot name that crossing.
+        // Every accepted crossing but the initial one steps the rider's next checkpoint and sets
+        // the countdown, to 120 or, for the opponent first through a slot, straight on to 2
+        // within the same update ($81:CA6E), so the countdown alone cannot name that crossing.
         const bool crossing = after.next_checkpoint != before.next_checkpoint
                            && after.checkpoint_display_countdown != 0;
         if (crossing) {
-            if (after.checkpoint == 0) {
+            if (after.checkpoint == 0)
                 cell = {ClassicHudCellRequest::Kind::Draw,
                         classic_hud_crossing_text(after.time_digits)};
-            } else {
-                const std::size_t slot =
-                    static_cast<std::size_t>(after.laps_remaining) * 4U + after.checkpoint;
-                const auto clock = classic_hud_clock_digits(previous.movement.timer);
-                // $81:CB13 runs the player before the opponent within one
-                // update, so a slot the player has just stored is seen by the
-                // opponent's crossing of the same update (review should-fix 1).
-                const bool first = slot < previous.race.checkpoint_seen.size()
-                                && (previous.race.checkpoint_seen[slot] & 0x80U) != 0
-                                && !(slot < slot_times_.size() && slot_times_[slot]);
-                if (first) {
-                    // $81:CA38-CA61: store the clock, draw nothing.
-                    if (slot < slot_times_.size()) slot_times_[slot] = clock;
-                    cell = {};
-                } else if (slot < slot_times_.size() && slot_times_[slot]) {
-                    cell = {ClassicHudCellRequest::Kind::Draw,
-                            classic_hud_split_text(clock, *slot_times_[slot])};
-                    // The opponent's writer ($81:F1B5-F1C6) takes its first
-                    // cell from the constant $80:8220, the minus glyph, and
-                    // never reads the sign byte `$11BD`; the player's
-                    // ($81:EF5E-EF6E) reads `$11BB`. Measured on every
-                    // opponent split of the M4-16 primary: 14 pixels a frame
-                    // until this was applied, the two glyphs' difference.
-                    if (rider == 1) cell.text[0] = '-';
-                } else {
-                    cell = {}; // no history of the slot: leave the cells
-                }
-            }
+            else
+                cell = crossing_cell(previous, rider, updated);
         }
         // $81:C91A-C922, and the opponent's first-seen cut to 2 at $81:CA6E.
         if (after.checkpoint_display_countdown == 2)
             cell = {ClassicHudCellRequest::Kind::Blank, {}};
     }
-    // Then service the first pending field and stop, as $81:F357 does.
+}
+
+// A checkpoint crossing's cells: the first rider through a slot stores the clock and draws
+// nothing ($81:CA38-CA61); the second draws the split against it. $81:CB13 runs the player
+// before the opponent within one update, so a slot the player has just stored is seen by the
+// opponent's crossing of the same update. The opponent's writer ($81:F1B5-F1C6) takes its
+// first cell from the constant $80:8220, the minus glyph, and never reads the sign byte
+// `$11BD`; the player's ($81:EF5E-EF6E) reads `$11BB`: measured on every opponent split of
+// the M4-16 primary (14 pixels a frame until this was applied).
+ClassicHudCellRequest ClassicRaceHudClock::crossing_cell(const ZoomZooState& previous,
+                                                         std::size_t rider,
+                                                         const ZoomZooState& updated) {
+    const auto& after = updated.race.riders[rider];
+    const std::size_t slot = static_cast<std::size_t>(after.laps_remaining) * 4U + after.checkpoint;
+    const auto clock = classic_hud_clock_digits(previous.movement.timer);
+    const bool stored = slot < slot_times_.size() && slot_times_[slot];
+    const bool first = slot < previous.race.checkpoint_seen.size()
+                    && (previous.race.checkpoint_seen[slot] & 0x80U) != 0 && !stored;
+    if (first) {
+        if (slot < slot_times_.size()) slot_times_[slot] = clock;
+        return {};
+    }
+    if (!stored) return {}; // no history of the slot: leave the cells
+    ClassicHudCellRequest cell{ClassicHudCellRequest::Kind::Draw,
+                               classic_hud_split_text(clock, *slot_times_[slot])};
+    if (rider == 1) cell.text[0] = '-';
+    return cell;
+}
+
+// Service the first pending field and stop, as $81:F357 does: the left field, the clock's
+// blanking, the clock's digits, then each rider's cells.
+void ClassicRaceHudClock::service_one_field(const ZoomZooState& updated) {
     const bool finished = updated.race.riders[0].laps_remaining == 0;
     if (pending_.left) {
-        // `$81:EB91` takes `finish` once the laps are gone and `$81:EB98`
-        // jumps to the lap-number writer on a tour race; both paths end at
-        // `$81:ECBC`, which clears the flag and returns through `$81:F357`.
-        // On a sprint mid-race neither runs: `$81:EB93` reads `$053F` and
-        // branches to `$81:EB9B`, whose `JMP` enters the clock handler and
-        // leaves `$0D17` set for the rest of the race.
+        // `$81:EB91` takes `finish` once the laps are gone and `$81:EB98` jumps to the
+        // lap-number writer on a tour race; both paths end at `$81:ECBC`, which clears the flag
+        // and returns through `$81:F357`. On a sprint mid-race neither runs: `$81:EB93` reads
+        // `$053F` and branches to `$81:EB9B`, whose `JMP` enters the clock handler and leaves
+        // `$0D17` set for the rest of the race.
         if (finished || classic_race_scenario(updated.track).tour_race) {
             pending_.left = false;
             return;
@@ -1593,9 +1602,9 @@ void ClassicRaceHudClock::observe_update(const ZoomZooState& previous,
         pending_.clock_blank = false;
         return;
     }
-    // `$034D` is positive while the digits the timer keeps differ from the ones
-    // the cells hold; the handler writes them and returns. Once blanked they
-    // are never rewritten, because the race clock has stopped.
+    // `$034D` is positive while the digits the timer keeps differ from the ones the cells
+    // hold; the handler writes them and returns. Once blanked they are never rewritten,
+    // because the race clock has stopped.
     if (!latest_.clock_blanked) {
         auto digits = classic_hud_clock(updated.movement.timer);
         if (latest_.clock != digits) {
@@ -1613,8 +1622,8 @@ void ClassicRaceHudClock::observe_update(const ZoomZooState& previous,
         }
         if (cell.kind == ClassicHudCellRequest::Kind::Blank) {
             cell = {};
-            // A finished rider's cells are never blanked, and the handler
-            // goes on to the next field without spending the update.
+            // A finished rider's cells are never blanked, and the handler goes on to the next
+            // field without spending the update.
             if (!updated.race.riders[rider].finished) {
                 held.reset();
                 return;
@@ -1622,6 +1631,7 @@ void ClassicRaceHudClock::observe_update(const ZoomZooState& previous,
         }
     }
 }
+
 ClassicHudText classic_race_hud_text(const ZoomZooState& previous_update,
                                      const ClassicRaceScenario& scenario,
                                      std::optional<std::uint32_t> opponent_finish_frame,

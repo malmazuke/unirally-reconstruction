@@ -269,6 +269,12 @@ private:
     // checkpoint; the original keeps four bytes a slot at `$100D` + 16 * laps
     // remaining + 4 * checkpoint: 80 slots, `$100D-$114C` (R-0048).
     std::array<std::optional<std::array<std::uint8_t, 4>>, 80> slot_times_{};
+    // The two halves of observe_update: what this update asks the HUD queue for, and the
+    // one field the queue services.
+    void request_fields(const ZoomZooState& previous, const ZoomZooState& updated);
+    ClassicHudCellRequest crossing_cell(const ZoomZooState& previous, std::size_t rider,
+                                        const ZoomZooState& updated);
+    void service_one_field(const ZoomZooState& updated);
 };
 // Presentation-only $0D45/$0D47 upper-body overlay frames. The original
 // derives them from look state the serialized race does not carry (R-0036),

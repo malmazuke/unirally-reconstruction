@@ -119,7 +119,7 @@
   {
    "address": "$80:8220",
    "native": [
-    "src/core/presentation.cpp:ClassicRaceHudClock::observe_update",
+    "src/core/presentation.cpp:ClassicRaceHudClock::crossing_cell",
     "src/core/presentation.hpp:classic_hud_crossing_text"
    ],
    "region": "rom"
@@ -294,7 +294,7 @@
   {
    "address": "$81:818D",
    "native": [
-    "src/core/presentation.cpp:ClassicRaceHudClock::observe_update",
+    "src/core/presentation.cpp:ClassicRaceHudClock::request_fields",
     "src/core/presentation.hpp:ClassicRaceHudClock"
    ],
    "region": "rom"
@@ -1332,7 +1332,7 @@
   {
    "address": "$81:C910",
    "native": [
-    "src/core/presentation.cpp:ClassicRaceHudClock::observe_update",
+    "src/core/presentation.cpp:ClassicRaceHudClock::request_fields",
     "src/core/presentation.hpp:ClassicRaceHudClock"
    ],
    "range_ends": [
@@ -1343,7 +1343,7 @@
   {
    "address": "$81:C91A",
    "native": [
-    "src/core/presentation.cpp:ClassicRaceHudClock::observe_update"
+    "src/core/presentation.cpp:ClassicRaceHudClock::request_fields"
    ],
    "range_ends": [
     "$81:C922"
@@ -1374,7 +1374,7 @@
   {
    "address": "$81:CA38",
    "native": [
-    "src/core/presentation.cpp:ClassicRaceHudClock::observe_update",
+    "src/core/presentation.cpp:ClassicRaceHudClock::crossing_cell",
     "src/core/presentation.hpp:ClassicRaceHudClock"
    ],
    "range_ends": [
@@ -1385,7 +1385,7 @@
   {
    "address": "$81:CA6E",
    "native": [
-    "src/core/presentation.cpp:ClassicRaceHudClock::observe_update"
+    "src/core/presentation.cpp:ClassicRaceHudClock::request_fields"
    ],
    "region": "rom"
   },
@@ -1402,7 +1402,7 @@
   {
    "address": "$81:CB13",
    "native": [
-    "src/core/presentation.cpp:ClassicRaceHudClock::observe_update"
+    "src/core/presentation.cpp:ClassicRaceHudClock::crossing_cell"
    ],
    "region": "rom"
   },
@@ -1454,14 +1454,14 @@
   {
    "address": "$81:EB91",
    "native": [
-    "src/core/presentation.cpp:ClassicRaceHudClock::observe_update"
+    "src/core/presentation.cpp:ClassicRaceHudClock::service_one_field"
    ],
    "region": "rom"
   },
   {
    "address": "$81:EB93",
    "native": [
-    "src/core/presentation.cpp:ClassicRaceHudClock::observe_update",
+    "src/core/presentation.cpp:ClassicRaceHudClock::service_one_field",
     "src/core/presentation.hpp:ClassicRaceHudClock"
    ],
    "region": "rom"
@@ -1469,7 +1469,7 @@
   {
    "address": "$81:EB98",
    "native": [
-    "src/core/presentation.cpp:ClassicRaceHudClock::observe_update",
+    "src/core/presentation.cpp:ClassicRaceHudClock::service_one_field",
     "src/core/presentation.hpp:ClassicRaceHudClock"
    ],
    "region": "rom"
@@ -1477,7 +1477,7 @@
   {
    "address": "$81:EB9B",
    "native": [
-    "src/core/presentation.cpp:ClassicRaceHudClock::observe_update",
+    "src/core/presentation.cpp:ClassicRaceHudClock::service_one_field",
     "src/core/presentation.hpp:ClassicRaceHudClock"
    ],
    "region": "rom"
@@ -1502,7 +1502,7 @@
   {
    "address": "$81:ECBC",
    "native": [
-    "src/core/presentation.cpp:ClassicRaceHudClock::observe_update",
+    "src/core/presentation.cpp:ClassicRaceHudClock::service_one_field",
     "src/core/presentation.hpp:ClassicRaceHudClock"
    ],
    "region": "rom"
@@ -1545,7 +1545,7 @@
   {
    "address": "$81:EF5E",
    "native": [
-    "src/core/presentation.cpp:ClassicRaceHudClock::observe_update",
+    "src/core/presentation.cpp:ClassicRaceHudClock::crossing_cell",
     "src/core/presentation.hpp:ClassicHudText::player_cells, ClassicHudText::opponent_cells"
    ],
    "range_ends": [
@@ -1574,7 +1574,7 @@
   {
    "address": "$81:F1B5",
    "native": [
-    "src/core/presentation.cpp:ClassicRaceHudClock::observe_update",
+    "src/core/presentation.cpp:ClassicRaceHudClock::crossing_cell",
     "src/core/presentation.hpp:ClassicHudText::player_cells, ClassicHudText::opponent_cells"
    ],
    "range_ends": [
@@ -1607,7 +1607,7 @@
   {
    "address": "$81:F357",
    "native": [
-    "src/core/presentation.cpp:ClassicRaceHudClock::observe_update",
+    "src/core/presentation.cpp:ClassicRaceHudClock::service_one_field",
     "src/core/presentation.hpp:ClassicRaceHudClock"
    ],
    "region": "rom"
@@ -3377,7 +3377,7 @@
   {
    "address": "$034D",
    "native": [
-    "src/core/presentation.cpp:ClassicRaceHudClock::observe_update",
+    "src/core/presentation.cpp:ClassicRaceHudClock::service_one_field",
     "src/core/presentation.hpp:ClassicRaceHudClock"
    ],
    "region": "wram"
@@ -3491,7 +3491,7 @@
   {
    "address": "$053F",
    "native": [
-    "src/core/presentation.cpp:ClassicRaceHudClock::observe_update",
+    "src/core/presentation.cpp:ClassicRaceHudClock::service_one_field",
     "src/core/presentation.cpp:classic_hud_left_field",
     "src/core/presentation.hpp:ClassicRaceHudClock"
    ],
@@ -3720,7 +3720,8 @@
   {
    "address": "$0D17",
    "native": [
-    "src/core/presentation.cpp:ClassicRaceHudClock::observe_update",
+    "src/core/presentation.cpp:ClassicRaceHudClock::request_fields",
+    "src/core/presentation.cpp:ClassicRaceHudClock::service_one_field",
     "src/core/presentation.hpp:ClassicRaceHudClock"
    ],
    "region": "wram"
@@ -4261,7 +4262,7 @@
   {
    "address": "$0FF9",
    "native": [
-    "src/core/presentation.cpp:ClassicRaceHudClock::observe_update",
+    "src/core/presentation.cpp:ClassicRaceHudClock::request_fields",
     "src/core/rider_pose.cpp:update_idle_velocity"
    ],
    "region": "wram"
@@ -4303,7 +4304,7 @@
   {
    "address": "$11BB",
    "native": [
-    "src/core/presentation.cpp:ClassicRaceHudClock::observe_update",
+    "src/core/presentation.cpp:ClassicRaceHudClock::crossing_cell",
     "src/core/presentation.hpp:classic_hud_crossing_text"
    ],
    "region": "wram"
@@ -4311,7 +4312,7 @@
   {
    "address": "$11BD",
    "native": [
-    "src/core/presentation.cpp:ClassicRaceHudClock::observe_update"
+    "src/core/presentation.cpp:ClassicRaceHudClock::crossing_cell"
    ],
    "region": "wram"
   },
@@ -5122,31 +5123,44 @@
     "$1277"
    ]
   },
-  "src/core/presentation.cpp:ClassicRaceHudClock::observe_update": {
+  "src/core/presentation.cpp:ClassicRaceHudClock::crossing_cell": {
    "rom": [
     "$80:8220",
+    "$81:CA38",
+    "$81:CB13",
+    "$81:EF5E",
+    "$81:F1B5"
+   ],
+   "wram": [
+    "$11BB",
+    "$11BD"
+   ]
+  },
+  "src/core/presentation.cpp:ClassicRaceHudClock::request_fields": {
+   "rom": [
     "$81:818D",
     "$81:C910",
     "$81:C91A",
-    "$81:CA38",
-    "$81:CA6E",
-    "$81:CB13",
+    "$81:CA6E"
+   ],
+   "wram": [
+    "$0D17",
+    "$0FF9"
+   ]
+  },
+  "src/core/presentation.cpp:ClassicRaceHudClock::service_one_field": {
+   "rom": [
     "$81:EB91",
     "$81:EB93",
     "$81:EB98",
     "$81:EB9B",
     "$81:ECBC",
-    "$81:EF5E",
-    "$81:F1B5",
     "$81:F357"
    ],
    "wram": [
     "$034D",
     "$053F",
-    "$0D17",
-    "$0FF9",
-    "$11BB",
-    "$11BD"
+    "$0D17"
    ]
   },
   "src/core/presentation.cpp:ClassicWindowPointer::observe_update": {
@@ -7148,7 +7162,7 @@
  "totals": {
   "addresses": 560,
   "io_addresses": 11,
-  "native_symbols": 334,
+  "native_symbols": 336,
   "rom_addresses": 351,
   "sram_addresses": 7,
   "wram_addresses": 191

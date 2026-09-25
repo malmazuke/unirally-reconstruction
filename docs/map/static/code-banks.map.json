@@ -2537,7 +2537,7 @@
     "NMX"
    ],
    "native": [
-    "src/core/presentation.cpp:ClassicRaceHudClock::observe_update",
+    "src/core/presentation.cpp:ClassicRaceHudClock::request_fields",
     "src/core/presentation.hpp:ClassicRaceHudClock",
     "src/core/race_progress.cpp:cross_start_line",
     "src/core/race_progress.cpp:update_checkpoints",
@@ -5374,7 +5374,7 @@
     "NmX"
    ],
    "native": [
-    "src/core/presentation.cpp:ClassicRaceHudClock::observe_update",
+    "src/core/presentation.cpp:ClassicRaceHudClock::request_fields",
     "src/core/presentation.cpp:classic_hud_split_text",
     "src/core/presentation.hpp:ClassicRaceHudClock",
     "src/core/presentation.hpp:classic_hud_crossing_text"
@@ -5397,7 +5397,8 @@
     "NMX"
    ],
    "native": [
-    "src/core/presentation.cpp:ClassicRaceHudClock::observe_update",
+    "src/core/presentation.cpp:ClassicRaceHudClock::crossing_cell",
+    "src/core/presentation.cpp:ClassicRaceHudClock::request_fields",
     "src/core/presentation.hpp:ClassicRaceHudClock"
    ],
    "observed_entries": {},
@@ -5418,7 +5419,7 @@
     "NMX"
    ],
    "native": [
-    "src/core/presentation.cpp:ClassicRaceHudClock::observe_update",
+    "src/core/presentation.cpp:ClassicRaceHudClock::request_fields",
     "src/core/presentation.cpp:classic_hud_crossing_text",
     "src/core/presentation.hpp:ClassicRaceHudClock"
    ],
@@ -5444,7 +5445,8 @@
     "NmX"
    ],
    "native": [
-    "src/core/presentation.cpp:ClassicRaceHudClock::observe_update",
+    "src/core/presentation.cpp:ClassicRaceHudClock::crossing_cell",
+    "src/core/presentation.cpp:ClassicRaceHudClock::request_fields",
     "src/core/presentation.hpp:ClassicRaceHudClock"
    ],
    "observed_entries": {},
@@ -6286,7 +6288,7 @@
     "NMX"
    ],
    "native": [
-    "src/core/presentation.cpp:ClassicRaceHudClock::observe_update",
+    "src/core/presentation.cpp:ClassicRaceHudClock::service_one_field",
     "src/core/presentation.cpp:classic_hud_left_field",
     "src/core/presentation.hpp:ClassicHudField",
     "src/core/presentation.hpp:ClassicRaceHudClock"
@@ -6329,7 +6331,7 @@
     "NMX"
    ],
    "native": [
-    "src/core/presentation.cpp:ClassicRaceHudClock::observe_update",
+    "src/core/presentation.cpp:ClassicRaceHudClock::service_one_field",
     "src/core/presentation.cpp:classic_hud_left_field",
     "src/core/presentation.hpp:ClassicRaceHudClock"
    ],
@@ -6433,7 +6435,7 @@
     "NMX"
    ],
    "native": [
-    "src/core/presentation.cpp:ClassicRaceHudClock::observe_update",
+    "src/core/presentation.cpp:ClassicRaceHudClock::crossing_cell",
     "src/core/presentation.hpp:ClassicHudText::player_cells, ClassicHudText::opponent_cells"
    ],
    "observed_entries": {},
@@ -6495,7 +6497,7 @@
     "NMX"
    ],
    "native": [
-    "src/core/presentation.cpp:ClassicRaceHudClock::observe_update",
+    "src/core/presentation.cpp:ClassicRaceHudClock::crossing_cell",
     "src/core/presentation.hpp:ClassicHudText::player_cells, ClassicHudText::opponent_cells",
     "src/core/presentation.hpp:classic_hud_crossing_text"
    ],
@@ -6547,7 +6549,7 @@
     "NMX"
    ],
    "native": [
-    "src/core/presentation.cpp:ClassicRaceHudClock::observe_update",
+    "src/core/presentation.cpp:ClassicRaceHudClock::service_one_field",
     "src/core/presentation.hpp:ClassicRaceHudClock"
    ],
    "observed_entries": {},
