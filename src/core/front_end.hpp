@@ -37,6 +37,9 @@ struct FrontEndContent {
     std::span<const std::uint8_t> laps, qualifying_scores, track_names;
     // The one-run result screen (profile v18): its text (`$80:D187`) and icons (`$80:D17B`).
     std::span<const std::uint8_t> result_text, result_icons;
+    // The lap result (profile v19): the headings and graph, the record line, the two rows.
+    std::span<const std::uint8_t> lap_result_text, lap_result_record, lap_result_player,
+        lap_result_opponent;
 };
 FrontEndContent front_end_content(const ClassicContentPack& pack);
 
@@ -150,17 +153,35 @@ struct TourMenu {
     bool returning{};      // entered back from PICK TRACK ($00AC != 2): slides back in
 };
 
-// A race's totals as the race engine hands them back when its result load begins (R-0057): the
-// riders' totals in hundredths, `$77:0769` and `$77:07D3` (0xEA60 not finished).
-struct RaceTotals {
+// A race's times as the race engine hands them back when its result load begins (R-0057): the
+// riders' totals in hundredths, `$77:0769` and `$77:07D3`, and for a lap race (race mode
+// `$77:074B` = 1) their ten lap slots, `$77:0755` and `$77:07BF` (0xEA60 not run or not finished).
+struct RaceTimes {
     std::uint16_t player_total{0xea60}, opponent_total{0xea60};
+    bool lap_race{};
+    std::array<std::uint16_t, 10> player_laps = filled_laps(), opponent_laps = filled_laps();
+
+private:
+    static constexpr std::array<std::uint16_t, 10> filled_laps() {
+        std::array<std::uint16_t, 10> laps{};
+        laps.fill(0xea60);
+        return laps;
+    }
 };
 
-// The one-run result screen (`$80:951C`, `$80:CE90`) and its waits for a press.
+// One of the lap graph's twenty dots (R-0058): its position, target and velocity in 12.4 pixels,
+// `$0CF0`, `$0DE0` (x, y), `$0D2C`, `$0E1C` (the targets) and `$0D68`, `$0E58` (the velocities).
+struct LapGraphDot {
+    std::uint16_t x{}, y{}, target_x{}, target_y{}, velocity_x{}, velocity_y{};
+};
+
+// The result screen (`$80:951C`): the one-run result (`$80:CE90`) and its waits for a press, or
+// the lap result (`$80:8D6E`) and its graph, which the first press leaves.
 struct RaceResult {
-    RaceTotals totals{};
-    bool released{};   // `$80:C24C` has seen both pads released
-    bool press_seen{}; // `$80:C206` saw a press on the last frame
+    RaceTimes times{};
+    bool released{};                    // `$80:C24C` has seen both pads released
+    bool press_seen{};                  // `$80:C206` saw a press on the last frame
+    std::array<LapGraphDot, 20> dots{}; // the player's laps, then the opponent's
 };
 
 // PICK TRACK ($80:E84E): the tour's five tracks, then (in 1P) the medal line, which steps the
@@ -275,7 +296,14 @@ RgbFrame render_front_end(const FrontEndState& state);
 
 // The race returns on `frame` (its result load begins, R-0049): the front end resumes with that
 // frame's work, the original's `$80:99A4` after `$83:C8E0`.
+// The frames between NOW PLAYING's fade and a race's initialization on the laboratory's menu path
+// (R-0057, R-0058): DRAGSTER's 121, ZOOM ZOO's 169; 0 for a track not measured.
+std::uint32_t race_loading_frames(std::uint8_t track);
+
+// The times the menus take from a native race on its result load's first update: the totals,
+// and for a lap race (its scenario's race mode 1) both riders' lap slots.
+RaceTimes race_times(const ZoomZooState& race);
 void return_from_race(FrontEndState& state, const FrontEndContent& content, std::uint32_t frame,
-                      const RaceTotals& totals);
+                      const RaceTimes& times);
 
 } // namespace unirally

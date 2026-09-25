@@ -630,7 +630,7 @@ void race_result_tests() {
           timeless.records.record_holders[0][0] == 0x10);
   // A full top three: the new time takes second place, the others move down.
   const auto finish = [&](unirally::FrontEndState &state,
-                          unirally::RaceTotals totals) {
+                          unirally::RaceTimes totals) {
     unirally::return_from_race(state, content, 5000, totals);
     require(run_to(state, content, FrontEndScreen::race_result, {}, 104));
     run(state, content, 12);

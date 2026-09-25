@@ -201,6 +201,10 @@ bool waits_for_frame(const FrontEndState& state) {
         return next == upload_last_frame || next == menu_screen_frame || next >= restore_frame;
     if (state.screen == FrontEndScreen::race_result_exit)
         return next != scoring_frame && next != scoring_wait_frame;
+    // The lap result's second frame (`$80:8FFD-910E`) runs past its frame's end, so the tail
+    // after it starts without a frame wait (R-0058).
+    if (state.screen == FrontEndScreen::race_result && state.race_result.times.lap_race)
+        return next != lap_tail_frame;
     // Every other screen after the boot waits for each frame.
     if (state.screen != FrontEndScreen::boot) return true;
     const auto frame = state.frame;
@@ -393,6 +397,13 @@ void load_main_menu_screen(FrontEndState& state, const FrontEndContent& content)
     load_vram(state, asset(content, menu_bg1_tiles_high), 0x3d80);
 }
 
+void place_printed_object(FrontEndState& state, unsigned object, unsigned position) {
+    constexpr unsigned first_printed_object = 104, row_words = 32;
+    const auto entry = first_printed_object + object;
+    oam_byte(state, entry, 0) = static_cast<std::uint8_t>((position % row_words) * 8 - 1);
+    oam_byte(state, entry, 1) = static_cast<std::uint8_t>((position / row_words) * 8 - 1);
+}
+
 void send_arrow_off(FrontEndState& state) {
     state.arrow.target_x = parked_x;
     state.arrow.target_y = parked_y;
@@ -578,6 +589,10 @@ FrontEndContent front_end_content(const ClassicContentPack& pack) {
     content.track_names = pack.entry("presentation.classic.track-names.v1");
     content.result_text = pack.entry("front-end.result-text");
     content.result_icons = pack.entry("front-end.result-icons");
+    content.lap_result_text = pack.entry("front-end.lap-result-text");
+    content.lap_result_record = pack.entry("front-end.lap-result-record");
+    content.lap_result_player = pack.entry("front-end.lap-result-player");
+    content.lap_result_opponent = pack.entry("front-end.lap-result-opponent");
     return content;
 }
 

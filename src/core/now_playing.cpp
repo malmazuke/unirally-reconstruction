@@ -133,10 +133,8 @@ void print_now_playing(FrontEndState& state, const FrontEndContent& content) {
     std::uint16_t qualifying_score{}; // `$00B6`, the stunt events' FD
     TextVariables variables;
     variables.word = [&](std::uint16_t) { return qualifying_score; };
-    variables.place_object = [&](unsigned object, unsigned position) { // `$80:C6D5`
-        const auto entry = static_cast<unsigned>(first_icon + object);
-        oam_byte(state, entry, 0) = static_cast<std::uint8_t>((position & 31U) * 8 - 1);
-        oam_byte(state, entry, 1) = static_cast<std::uint8_t>((position & ~31U) / 4 - 1);
+    variables.place_object = [&](unsigned object, unsigned position) {
+        place_printed_object(state, object, position);
     };
     const auto print = [&](std::span<const std::uint8_t> text) {
         print_text(state.text, state.printer, text, content.character_table, &variables);
