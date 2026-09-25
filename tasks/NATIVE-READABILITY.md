@@ -413,7 +413,7 @@ Decisions and deviations, with reasons:
       old-against-new fuzz of about 5.8 million calls and 227,845 damaged states, 0
       mismatches;
     - the records' new addresses, against a regenerated listing.
-  - **Findings S1-S7, fixed in `FIX3_SHA`**:
+  - **Findings S1-S7, fixed in `820e828`**:
     - S1: the cooldown units (they fall by 2 a update);
     - S2: the HUNTER struct's comment placement, and three file-only citations moved to
       functions;
