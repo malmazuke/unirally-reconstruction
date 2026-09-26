@@ -27,7 +27,10 @@ another rider or a stunt event shows a notice. After a race the menus take over 
 result load begins: the result screen (R-0057; a lap race's graph, R-0058), a press, then PICK
 TRACK again with the records and the done tracks updated. A tour's completion (its fifth win, or
 pad 1 holding exactly Select + X + R as the result is left) shows the medal award and returns to
-PICK TOUR (R-0059); a gold medal's ending is not native yet. 2P, VS, LEAGUE, OPTIONS and the demo are not
+PICK TOUR (R-0059); a gold medal's ending is not native yet. In a race started from the menus the
+pause menu's second choice ends the race as the original's QUIT does: during the start countdown
+it goes back to NOW PLAYING, after it the result shows QUIT and the race counts as lost (R-0060).
+A race started with `--track` still restarts from it. 2P, VS, LEAGUE, OPTIONS and the demo are not
 native yet: choosing one, or leaving the menu idle for the demo, shows a notice and returns to
 the main menu as it first appeared, so the rider and tour chosen last start over (the original
 keeps them); the records are kept. `--track dragster|zoom-zoo|NN` starts directly in that

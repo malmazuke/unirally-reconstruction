@@ -22,8 +22,8 @@ The four classes partition all 131,072 bytes. **Unknown share: 40.4%** - above D
 | Instructions from observed | 17,569 |
 | Instructions from table | 587 |
 | Routines | 636 |
-| Routines cited by native code | 330 |
-| Routine bytes cited by native code | 43,682 |
+| Routines cited by native code | 332 |
+| Routine bytes cited by native code | 43,924 |
 | Gap sweep candidate instructions | 2,746 |
 | Gap sweep candidate bytes | 6,174 |
 | Jump tables | 2 |
@@ -45,7 +45,7 @@ The four classes partition all 131,072 bytes. **Unknown share: 40.4%** - above D
 
 ## Cited addresses
 
-1154 distinct code-bank ROM addresses cited by the research, task, inventory and content records (`labels.json`). By position: dat 20, loc 703, mid 18, sub 278, unk 135 (sub routine start, loc instruction start, mid inside an instruction, dat data, unk unknown). By class: data 20, inferred 155, observed 844, unknown 135.
+1161 distinct code-bank ROM addresses cited by the research, task, inventory and content records (`labels.json`). By position: dat 20, loc 708, mid 18, sub 280, unk 135 (sub routine start, loc instruction start, mid inside an instruction, dat data, unk unknown). By class: data 20, inferred 159, observed 847, unknown 135.
 
 Cited addresses in `unknown` bytes:
 
@@ -114,12 +114,12 @@ Cited addresses in `unknown` bytes:
 | $80:C8BA | docs/research/R-0058-lap-result.md |
 | $80:C8C5 | docs/research/R-0058-lap-result.md |
 | $80:C8D0 | docs/research/R-0058-lap-result.md |
-| $80:C8E8 | docs/research/R-0058-lap-result.md |
+| $80:C8E8 | docs/research/R-0058-lap-result.md, docs/research/R-0060-pause-exits.md |
 | $80:C902 | docs/research/R-0058-lap-result.md |
 | $80:C913 | docs/research/R-0058-lap-result.md |
 | $80:C932 | docs/research/R-0058-lap-result.md |
 | $80:C950 | tasks/LOCKED-TOURS.md |
-| $80:C9D7 | docs/research/R-0057-one-run-result.md |
+| $80:C9D7 | docs/research/R-0057-one-run-result.md, docs/research/R-0060-pause-exits.md |
 | $80:CA74 | docs/research/R-0057-one-run-result.md |
 | $80:CA83 | docs/research/R-0057-one-run-result.md |
 | $80:CA9B | docs/research/R-0057-one-run-result.md |

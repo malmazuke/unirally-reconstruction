@@ -2,7 +2,7 @@
 
 ## Assignment
 
-- Status: **in progress**. Queued 26 September 2026 (UTC) by FRONT-END-LAP-RESULT's review (S1);
+- Status: **in review**. Queued 26 September 2026 (UTC) by FRONT-END-LAP-RESULT's review (S1);
   claimed 26 September 2026 at 04:52Z by the same Claude Code desktop session, on `4b66150`.
 - Milestone: M4 (original game coverage: menus)
 - Coordinator: the claiming session is coordinator, primary and integrator
@@ -49,7 +49,24 @@ Out of scope: the stunt events (STUNT-EVENTS).
 | Records | `sram.py` after a quit | The kept words equal the original's cartridge RAM | log |
 | Nothing moves | ctest, the synthetic suite, the v1 contracts, hidden runs, the differential gates (the pause restarts they replay), the equivalence sweep, the front end's comparisons | Unchanged, or each change explained | logs |
 
+## Evidence
+
+R-0060 and `local/evidence/race-pause-exits/` (`NOTES.md`, `decode/` with the captures,
+`pause-exits.md`, `compare.py`, `sram.py`).
+
+| Criterion | Result |
+| --- | --- |
+| Pictures and state | `quit`, `restart` and `lapquit`: no difference in the menus' words, OAM buffer or text map on any frame from each race's end; 529 pictures equal (R-0060) |
+| Records | `sram.py`: the kept words equal the original's cartridge RAM after each |
+| Nothing moves | The gates, when run |
+
+The race engine is unchanged: `update_race_for_menus` runs the ordinary update and, when the pause
+menu's second choice restarted the race, keeps the race as it was and reports the pause menu's
+total. The differential gates and the equivalence sweep, which replay pause restarts, therefore
+see the same race.
+
 ## Handoff
 
-- Exact next experiment/command: a capture from the defaults racing DRAGSTER, Start to pause at a
-  few hundred frames in, each option chosen, with work RAM every frame.
+- Findings: R-0060 and `decode/pause-exits.md`.
+- Next: [FRONT-END-ENDINGS](FRONT-END-ENDINGS.md), or the other modes on the main menu
+  (COVERAGE-ROADMAP).

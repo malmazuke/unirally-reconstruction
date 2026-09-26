@@ -5,6 +5,10 @@ push the task branch, open a pull request from the template, merge with
 `gh pr merge --merge` once its checks are green and the review is done. `main`
 refuses direct pushes. The checks run on pull requests only.
 
+**Status on 26 September 2026 UTC (RACE-PAUSE-EXITS): start
+[FRONT-END-ENDINGS](FRONT-END-ENDINGS.md).** The race's pause menu now ends a one-player race
+through the menus (R-0060). Then the main menu's other modes (COVERAGE-ROADMAP).
+
 **Status on 26 September 2026 UTC (FRONT-END-TOUR-END): start
 [RACE-PAUSE-EXITS](RACE-PAUSE-EXITS.md).** A tour's completion shows the medal award and comes back
 to PICK TOUR and PICK TRACK, frame-exact (R-0059). Still to do on the tour's end: the gold medal's
