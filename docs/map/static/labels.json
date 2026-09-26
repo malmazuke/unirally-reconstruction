@@ -655,6 +655,7 @@
    "docs/research/R-0054-boot-title-main-menu.md",
    "tasks/COVERAGE-ROADMAP.md",
    "tasks/FRONT-END-ENDINGS.md",
+   "tasks/HUNTER-ENDING.md",
    "tasks/M1-01.md"
   ]
  },
@@ -1149,7 +1150,7 @@
   "label": "sub_80974B",
   "native": [
    "src/core/tour_menu.cpp:(file)",
-   "src/core/tour_menu.cpp:tour_menu_entry_frame"
+   "src/core/tour_menu.cpp:show_medal_entries"
   ],
   "source_records": [
    "docs/research/R-0056-tour-track-now-playing.md"
@@ -1525,12 +1526,14 @@
    "src/core/front_end_screens.hpp:first_rider_palette, base_palette_low, base_palette_high",
    "src/core/race_result.cpp:race_result_exit_frame",
    "src/core/tour_menu.cpp:return_to_tour_menu",
+   "src/core/tour_menu.cpp:reveal_frames",
    "src/core/tour_menu.cpp:tour_menu_entry_frame"
   ],
   "source_records": [
    "docs/research/R-0056-tour-track-now-playing.md",
    "docs/research/R-0057-one-run-result.md",
-   "docs/research/R-0059-tour-completion.md"
+   "docs/research/R-0059-tour-completion.md",
+   "docs/research/R-0062-gold-endings.md"
   ]
  },
  {
@@ -3479,12 +3482,21 @@
   ]
  },
  {
+  "address": "$80:E2CF",
+  "class": "inferred",
+  "comment": "routine start",
+  "label": "sub_80E2CF",
+  "source_records": [
+   "tasks/HUNTER-ENDING.md"
+  ]
+ },
+ {
   "address": "$80:E54C",
   "class": "inferred",
   "comment": "routine start",
   "label": "sub_80E54C",
   "native": [
-   "src/core/award.cpp:tour_award_frame"
+   "src/core/award.cpp:way_back_frame"
   ],
   "source_records": [
    "docs/research/R-0059-tour-completion.md"
@@ -3510,13 +3522,41 @@
   ]
  },
  {
+  "address": "$80:E553",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80E553",
+  "native": [
+   "src/core/tour_menu.cpp:begin_reveal"
+  ],
+  "source_records": [
+   "docs/research/R-0062-gold-endings.md"
+  ]
+ },
+ {
   "address": "$80:E55B",
   "class": "inferred",
   "comment": "instruction start",
   "label": "loc_80E55B",
+  "native": [
+   "src/core/tour_menu.cpp:begin_reveal"
+  ],
   "source_records": [
    "docs/research/R-0056-tour-track-now-playing.md",
    "docs/research/R-0059-tour-completion.md"
+  ]
+ },
+ {
+  "address": "$80:E580",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80E580",
+  "native": [
+   "src/core/tour_menu.cpp:reveal_frames",
+   "src/core/tour_menu.cpp:tour_menu_entry_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0062-gold-endings.md"
   ]
  },
  {
@@ -3524,6 +3564,10 @@
   "class": "inferred",
   "comment": "instruction start",
   "label": "loc_80E588",
+  "native": [
+   "src/core/tour_menu.cpp:reveal_frames",
+   "src/core/tour_menu.cpp:tour_menu_entry_frame"
+  ],
   "source_records": [
    "docs/research/R-0056-tour-track-now-playing.md",
    "docs/research/R-0059-tour-completion.md",
@@ -3787,7 +3831,7 @@
   "comment": "instruction start",
   "label": "loc_80E92F",
   "native": [
-   "src/core/award.cpp:tour_award_frame"
+   "src/core/award.cpp:way_back_frame"
   ],
   "source_records": [
    "docs/research/R-0059-tour-completion.md"
@@ -4130,10 +4174,13 @@
   "comment": "routine start",
   "label": "sub_80F814",
   "native": [
-   "src/core/award.cpp:upload_rider"
+   "src/core/award.cpp:upload_rider",
+   "src/core/front_end_screens.hpp:upload_pose",
+   "src/core/tour_ending_scripts.hpp:upload_built_pose"
   ],
   "source_records": [
-   "docs/research/R-0059-tour-completion.md"
+   "docs/research/R-0059-tour-completion.md",
+   "docs/research/R-0062-gold-endings.md"
   ]
  },
  {
@@ -11252,6 +11299,7 @@
   ],
   "source_records": [
    "docs/research/R-0059-tour-completion.md",
+   "tasks/FIFTH-WIN-COMPLETION.md",
    "tasks/FRONT-END-TOUR-END.md"
   ]
  },
@@ -11283,6 +11331,21 @@
   ]
  },
  {
+  "address": "$83:883E",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_83883E",
+  "native": [
+   "src/core/award.cpp:(file)",
+   "src/core/award.cpp:complete_tour",
+   "src/core/front_end.hpp:FrontEndScreen",
+   "src/core/tour_ending.cpp:(file)"
+  ],
+  "source_records": [
+   "docs/research/R-0062-gold-endings.md"
+  ]
+ },
+ {
   "address": "$83:8853",
   "class": "inferred",
   "comment": "instruction start",
@@ -11290,11 +11353,13 @@
   "native": [
    "src/core/award.cpp:(file)",
    "src/core/award.cpp:apply_unlock_rule",
-   "src/core/award.cpp:tour_award_frame",
-   "src/core/front_end.hpp:FrontEndScreen"
+   "src/core/award.cpp:way_back_frame",
+   "src/core/front_end.hpp:FrontEndScreen",
+   "src/core/front_end_screens.hpp:way_back_frame"
   ],
   "source_records": [
    "docs/research/R-0059-tour-completion.md",
+   "docs/research/R-0062-gold-endings.md",
    "tasks/FRONT-END-1P-CONTINUATION.md"
   ]
  },
@@ -11306,8 +11371,9 @@
   "native": [
    "src/core/award.cpp:(file)",
    "src/core/award.cpp:apply_unlock_rule",
-   "src/core/award.cpp:tour_award_frame",
-   "src/core/front_end.hpp:FrontEndScreen"
+   "src/core/award.cpp:way_back_frame",
+   "src/core/front_end.hpp:FrontEndScreen",
+   "src/core/front_end_screens.hpp:way_back_frame"
   ],
   "source_records": [
    "docs/research/R-0059-tour-completion.md"
@@ -11321,8 +11387,9 @@
   "native": [
    "src/core/award.cpp:(file)",
    "src/core/award.cpp:apply_unlock_rule",
-   "src/core/award.cpp:tour_award_frame",
-   "src/core/front_end.hpp:FrontEndScreen"
+   "src/core/award.cpp:way_back_frame",
+   "src/core/front_end.hpp:FrontEndScreen",
+   "src/core/front_end_screens.hpp:way_back_frame"
   ],
   "source_records": [
    "docs/research/R-0059-tour-completion.md"
@@ -11336,8 +11403,9 @@
   "native": [
    "src/core/award.cpp:(file)",
    "src/core/award.cpp:apply_unlock_rule",
-   "src/core/award.cpp:tour_award_frame",
-   "src/core/front_end.hpp:FrontEndScreen"
+   "src/core/award.cpp:way_back_frame",
+   "src/core/front_end.hpp:FrontEndScreen",
+   "src/core/front_end_screens.hpp:way_back_frame"
   ],
   "source_records": [
    "docs/research/R-0059-tour-completion.md"
@@ -11373,11 +11441,15 @@
   "comment": "data",
   "label": "dat_8388FD",
   "native": [
-   "src/core/award.cpp:complete_tour"
+   "src/core/award.cpp:complete_tour",
+   "src/core/front_end.hpp:FrontEndScreen",
+   "src/core/front_end.hpp:TourEnding",
+   "src/core/tour_ending.cpp:(file)"
   ],
   "source_records": [
    "docs/research/R-0057-one-run-result.md",
    "docs/research/R-0059-tour-completion.md",
+   "docs/research/R-0062-gold-endings.md",
    "tasks/FRONT-END-ENDINGS.md",
    "tasks/FRONT-END-TOUR-END.md"
   ]
@@ -11568,11 +11640,13 @@
    "src/core/front_end.hpp:TourAward::pose",
    "src/core/front_end_screens.hpp:upload_pose",
    "src/core/rider_menu.cpp:uni_tiles_word, uni_row_words, tile_words",
-   "src/core/rider_object.hpp:pose_frame_rows, pose_frame_columns"
+   "src/core/rider_object.hpp:pose_frame_rows, pose_frame_columns",
+   "src/core/tour_ending_scripts.hpp:first_pose_word, second_pose_word, third_pose_word"
   ],
   "source_records": [
    "docs/research/R-0055-rider-menu.md",
-   "docs/research/R-0059-tour-completion.md"
+   "docs/research/R-0059-tour-completion.md",
+   "docs/research/R-0062-gold-endings.md"
   ]
  },
  {
@@ -11603,7 +11677,8 @@
   ],
   "source_records": [
    "docs/research/R-0057-one-run-result.md",
-   "docs/research/R-0060-pause-exits.md"
+   "docs/research/R-0060-pause-exits.md",
+   "tasks/FIFTH-WIN-COMPLETION.md"
   ]
  },
  {
@@ -12032,10 +12107,13 @@
   "label": "sub_83A4D2",
   "native": [
    "src/core/award.cpp:fade_out_frames, blank_frame, reset_frame, background_tiles_frame, podium_map_frame, podium_tiles_frame, colours_frame, objects_frame, rider_frame, first_fade_in_frame, fade_in_frames",
-   "src/core/award.cpp:fade_up"
+   "src/core/award.cpp:fade_up",
+   "src/core/front_end_screens.hpp:fade_up",
+   "src/core/front_end_screens.hpp:way_back_frame"
   ],
   "source_records": [
-   "docs/research/R-0059-tour-completion.md"
+   "docs/research/R-0059-tour-completion.md",
+   "docs/research/R-0062-gold-endings.md"
   ]
  },
  {
@@ -12045,10 +12123,40 @@
   "label": "sub_83A4E9",
   "native": [
    "src/core/award.cpp:fade_down",
-   "src/core/award.cpp:fade_out_frames, blank_frame, reset_frame, background_tiles_frame, podium_map_frame, podium_tiles_frame, colours_frame, objects_frame, rider_frame, first_fade_in_frame, fade_in_frames"
+   "src/core/award.cpp:fade_out_frames, blank_frame, reset_frame, background_tiles_frame, podium_map_frame, podium_tiles_frame, colours_frame, objects_frame, rider_frame, first_fade_in_frame, fade_in_frames",
+   "src/core/front_end_screens.hpp:fade_down",
+   "src/core/front_end_screens.hpp:way_back_frame"
   ],
   "source_records": [
-   "docs/research/R-0059-tour-completion.md"
+   "docs/research/R-0059-tour-completion.md",
+   "docs/research/R-0062-gold-endings.md"
+  ]
+ },
+ {
+  "address": "$83:A507",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_83A507",
+  "native": [
+   "src/core/front_end_screens.hpp:reset_award_screen",
+   "src/core/tour_ending.cpp:(file)",
+   "src/core/tour_ending.cpp:first_loads"
+  ],
+  "source_records": [
+   "docs/research/R-0062-gold-endings.md"
+  ]
+ },
+ {
+  "address": "$83:A575",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_83A575",
+  "native": [
+   "src/core/front_end_screens.hpp:reset_award_screen",
+   "src/core/tour_ending.cpp:blank_frame, reset_frame, pattern_tiles_frame, bar_map_frame, fade_in_frames"
+  ],
+  "source_records": [
+   "docs/research/R-0062-gold-endings.md"
   ]
  },
  {
@@ -12060,7 +12168,8 @@
    "src/core/award.cpp:fade_out_frames, blank_frame, reset_frame, background_tiles_frame, podium_map_frame, podium_tiles_frame, colours_frame, objects_frame, rider_frame, first_fade_in_frame, fade_in_frames"
   ],
   "source_records": [
-   "docs/research/R-0059-tour-completion.md"
+   "docs/research/R-0059-tour-completion.md",
+   "docs/research/R-0062-gold-endings.md"
   ]
  },
  {
@@ -12069,8 +12178,7 @@
   "comment": "instruction start",
   "label": "loc_83A67F",
   "native": [
-   "src/core/award.cpp:gold_medal_colours",
-   "src/core/award.cpp:reset_for_award"
+   "src/core/award.cpp:gold_medal_colours"
   ],
   "source_records": [
    "docs/research/R-0059-tour-completion.md"
@@ -12086,10 +12194,12 @@
    "src/core/award.cpp:exit_blank_frame, menus_frame, exit_fade_in_frame, pick_tour_frame",
    "src/core/front_end.cpp:restore_menu_screen",
    "src/core/front_end.cpp:set_menu_registers",
-   "src/core/front_end_screens.hpp:restore_menu_screen"
+   "src/core/front_end_screens.hpp:restore_menu_screen",
+   "src/core/front_end_screens.hpp:way_back_frame"
   ],
   "source_records": [
-   "docs/research/R-0059-tour-completion.md"
+   "docs/research/R-0059-tour-completion.md",
+   "docs/research/R-0062-gold-endings.md"
   ]
  },
  {
@@ -12121,7 +12231,9 @@
   "native": [
    "src/core/front_end.cpp:waits_for_frame",
    "src/core/front_end_screens.hpp:result_scoring_frame",
-   "src/core/race_result.cpp:race_result_exit_frame"
+   "src/core/race_result.cpp:race_result_exit_frame",
+   "src/core/tour_ending_scripts.hpp:Loop",
+   "src/core/tour_ending_scripts.hpp:upload_built_pose"
   ],
   "source_records": [
    "docs/research/R-0057-one-run-result.md",
@@ -12130,14 +12242,32 @@
   ]
  },
  {
+  "address": "$83:AB25",
+  "class": "inferred",
+  "comment": "routine start",
+  "label": "sub_83AB25",
+  "native": [
+   "src/core/tour_ending_right_column.cpp:bound_off_part",
+   "src/core/tour_ending_right_column.cpp:knock_part"
+  ],
+  "source_records": [
+   "docs/research/R-0062-gold-endings.md"
+  ]
+ },
+ {
   "address": "$83:AB9A",
   "class": "inferred",
   "comment": "routine start",
   "label": "sub_83AB9A",
+  "native": [
+   "src/core/award.cpp:complete_tour"
+  ],
   "source_records": [
    "docs/research/R-0054-boot-title-main-menu.md",
    "docs/research/R-0059-tour-completion.md",
-   "tasks/FRONT-END-ENDINGS.md"
+   "docs/research/R-0062-gold-endings.md",
+   "tasks/FRONT-END-ENDINGS.md",
+   "tasks/HUNTER-ENDING.md"
   ]
  },
  {
@@ -12351,12 +12481,253 @@
   ]
  },
  {
+  "address": "$83:B1EB",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_83B1EB",
+  "native": [
+   "src/core/tour_ending.cpp:endings",
+   "src/core/tour_ending_scripts.cpp:(file)"
+  ],
+  "source_records": [
+   "docs/research/R-0062-gold-endings.md"
+  ]
+ },
+ {
+  "address": "$83:B4DF",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_83B4DF",
+  "native": [
+   "src/core/tour_ending_scripts.cpp:(file)"
+  ],
+  "source_records": [
+   "docs/research/R-0062-gold-endings.md"
+  ]
+ },
+ {
+  "address": "$83:B506",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_83B506",
+  "native": [
+   "src/core/tour_ending.cpp:endings",
+   "src/core/tour_ending_scripts.cpp:(file)"
+  ],
+  "source_records": [
+   "docs/research/R-0062-gold-endings.md"
+  ]
+ },
+ {
+  "address": "$83:B790",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_83B790",
+  "native": [
+   "src/core/tour_ending_scripts.cpp:(file)"
+  ],
+  "source_records": [
+   "docs/research/R-0062-gold-endings.md"
+  ]
+ },
+ {
+  "address": "$83:B79C",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_83B79C",
+  "native": [
+   "src/core/tour_ending_right_column.cpp:walk_in_part",
+   "src/core/tour_ending_scripts.hpp:walk"
+  ],
+  "source_records": [
+   "docs/research/R-0062-gold-endings.md"
+  ]
+ },
+ {
+  "address": "$83:B7D2",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_83B7D2",
+  "native": [
+   "src/core/tour_ending.cpp:endings",
+   "src/core/tour_ending_right_column.cpp:(file)"
+  ],
+  "source_records": [
+   "docs/research/R-0062-gold-endings.md"
+  ]
+ },
+ {
+  "address": "$83:B8CB",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_83B8CB",
+  "native": [
+   "src/core/tour_ending_right_column.cpp:end",
+   "src/core/tour_ending_right_column.cpp:ride_in_part"
+  ],
+  "source_records": [
+   "docs/research/R-0062-gold-endings.md"
+  ]
+ },
+ {
+  "address": "$83:BB44",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_83BB44",
+  "native": [
+   "src/core/tour_ending_right_column.cpp:(file)"
+  ],
+  "source_records": [
+   "docs/research/R-0062-gold-endings.md"
+  ]
+ },
+ {
+  "address": "$83:BB80",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_83BB80",
+  "native": [
+   "src/core/tour_ending.cpp:endings",
+   "src/core/tour_ending_right_column.cpp:(file)"
+  ],
+  "source_records": [
+   "docs/research/R-0062-gold-endings.md"
+  ]
+ },
+ {
+  "address": "$83:BE9A",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_83BE9A",
+  "native": [
+   "src/core/tour_ending_right_column.cpp:(file)"
+  ],
+  "source_records": [
+   "docs/research/R-0062-gold-endings.md"
+  ]
+ },
+ {
+  "address": "$83:BEBA",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_83BEBA",
+  "native": [
+   "src/core/tour_ending_right_column.cpp:scroll_pattern"
+  ],
+  "source_records": [
+   "docs/research/R-0062-gold-endings.md"
+  ]
+ },
+ {
+  "address": "$83:BED0",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_83BED0",
+  "native": [
+   "src/core/tour_ending.cpp:endings",
+   "src/core/tour_ending_right_column.cpp:(file)"
+  ],
+  "source_records": [
+   "docs/research/R-0062-gold-endings.md"
+  ]
+ },
+ {
+  "address": "$83:C0F6",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_83C0F6",
+  "native": [
+   "src/core/tour_ending_right_column.cpp:(file)"
+  ],
+  "source_records": [
+   "docs/research/R-0062-gold-endings.md"
+  ]
+ },
+ {
+  "address": "$83:C11E",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_83C11E",
+  "native": [
+   "src/core/tour_ending.cpp:endings",
+   "src/core/tour_ending_scripts.cpp:(file)"
+  ],
+  "source_records": [
+   "docs/research/R-0062-gold-endings.md"
+  ]
+ },
+ {
+  "address": "$83:C126",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_83C126",
+  "native": [
+   "src/core/tour_ending_scripts.hpp:clear_third_pose_tiles"
+  ],
+  "source_records": [
+   "docs/research/R-0062-gold-endings.md"
+  ]
+ },
+ {
+  "address": "$83:C458",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_83C458",
+  "native": [
+   "src/core/tour_ending_scripts.cpp:(file)"
+  ],
+  "source_records": [
+   "docs/research/R-0062-gold-endings.md"
+  ]
+ },
+ {
   "address": "$83:C49C",
   "class": "unknown",
   "comment": "unknown",
   "label": "unk_83C49C",
+  "native": [
+   "src/core/tour_ending.cpp:(file)",
+   "src/core/tour_ending.cpp:endings"
+  ],
   "source_records": [
-   "tasks/FRONT-END-ENDINGS.md"
+   "docs/research/R-0062-gold-endings.md"
+  ]
+ },
+ {
+  "address": "$83:C6C0",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_83C6C0",
+  "native": [
+   "src/core/tour_ending.cpp:(file)"
+  ],
+  "source_records": [
+   "docs/research/R-0062-gold-endings.md"
+  ]
+ },
+ {
+  "address": "$83:C715",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_83C715",
+  "native": [
+   "src/core/tour_ending.cpp:endings",
+   "src/core/tour_ending_right_column.cpp:(file)"
+  ],
+  "source_records": [
+   "docs/research/R-0062-gold-endings.md"
+  ]
+ },
+ {
+  "address": "$83:C89A",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_83C89A",
+  "native": [
+   "src/core/tour_ending_right_column.cpp:(file)"
+  ],
+  "source_records": [
+   "docs/research/R-0062-gold-endings.md"
   ]
  },
  {

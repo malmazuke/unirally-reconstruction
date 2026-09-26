@@ -1,5 +1,19 @@
 # Project state
 
+Updated 26 September 2026 (FRONT-END-ENDINGS): **a tour's gold medal plays its ending, and PICK
+TOUR reveals the tours it opens, as the original does.**
+- Each of the eight tours has its own scripted ending on a gold screen; then the menus come back.
+- When the unlock rule's counts match, PICK TOUR first shows the tours as they were, slides, then
+  shows the new ones.
+- Against captures of the original from power-on (every tour's gold, reached with forced
+  completions, and one run through 24 of the game's 25 completions), every frame matches: no state
+  difference and every compared picture equal ([R-0062](research/R-0062-gold-endings.md)).
+- Not yet: HUNTER's ending ([HUNTER-ENDING](../tasks/HUNTER-ENDING.md)) and a completion by a fifth
+  win ([FIFTH-WIN-COMPLETION](../tasks/FIFTH-WIN-COMPLETION.md)).
+- Pack profile **v22** adds the endings' content (`content pack --rules
+  tests/manifests/content/classic-crawler-tracks-pack.json --out
+  local/classic-pal-crawler-tracks-v22.pack`).
+
 Updated 26 September 2026 (RACE-RIDERS-OPPONENTS): **every rider races, against every opponent
 the one-player menus choose.**
 - The rider changes no physics. It chooses its voices, its tutorial hints (the records keep which

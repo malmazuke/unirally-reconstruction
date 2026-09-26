@@ -271,8 +271,10 @@ synthetic_content(std::vector<std::vector<std::uint8_t>> &storage) {
   storage.push_back({0xfc, 0x01, 'A', 0xff});
   content.rider_menu_title = storage.back();
   content.decoration_frames = keep(76);
-  storage.emplace_back(0x1360 * 3, 0);
-  for (std::size_t k = 0; k < 0x1360; ++k)
+  // Poses up to 0x1432, the last the endings use (R-0062).
+  constexpr std::size_t poses = 0x1433;
+  storage.emplace_back(poses * 3, 0);
+  for (std::size_t k = 0; k < poses; ++k)
     storage.back()[k * 3 + 1] = 0x80;
   content.uni_pictures.pose_pointers = storage.back();
   content.uni_pictures.pose_frames = keep(4);
@@ -329,6 +331,14 @@ synthetic_content(std::vector<std::vector<std::uint8_t>> &storage) {
   storage.back()[9] = 6; // the bounce's first height
   content.award_tables = storage.back();
   content.award_medal_art = keep(0x2000);
+  // The gold endings (profile v22): their assets and tables.
+  for (const unsigned id : {0x3cU, 0x3eU, 0x3fU, 0x40U, 0x41U, 0x42U, 0x43U, 0x4cU, 0x52U,
+                            0x57U, 0x5eU, 0x5fU, 0x60U, 0x61U, 0x62U, 0x63U})
+    content.assets[id] = keep(64);
+  // Each tour's table longer than its script reads (CRAWLER's 82 bytes the
+  // longest).
+  for (auto &table : content.ending_tables)
+    table = keep(0x60);
   // The lap result (profile v19): empty streams.
   content.lap_result_text = content.lap_result_record = bytes({0xff});
   content.lap_result_player = content.lap_result_opponent = bytes({0xff});
@@ -967,10 +977,15 @@ void award_tests() {
   require(state.award.exit_frame == 0);
   run(state, content, 3, {0x1000, 0});
   require(run_to(state, content, FrontEndScreen::tour_menu_entry, {}, 140));
+  // Level 1 is pending (R-0062): PICK TOUR is drawn at level 0, then reveals
+  // level 1 after its slide, four frames later than without a reveal.
   require(state.cycle.running && state.registers.mode == 3 &&
-          state.tour_menu.returning && state.records.tour_levels[0] == 1);
+          state.tour_menu.returning && state.records.tour_levels[0] == 0 &&
+          state.records.pending_reveal == 1);
   // PICK TOUR's Y leads on to PICK TRACK, after `$80:A858`'s two frames.
   require(run_to(state, content, FrontEndScreen::tour_menu, {}, 60));
+  require(state.records.tour_levels[0] == 1 && state.records.pending_reveal == 0 &&
+          !state.tour_menu.revealing);
   run(state, content, 1);
   require(run_to(state, content, FrontEndScreen::award_return, {0x4000, 0}));
   run(state, content, 2);
@@ -1000,9 +1015,9 @@ void award_tests() {
     require(run_to(run_state, content, FrontEndScreen::race_result, {}, 104));
     run(run_state, content, 12);
     run(run_state, content, 5, {select_x_r, 0});
-    require(run_state.screen == FrontEndScreen::tour_award);
-    // A gold medal leaves at once: its exit starts on the completion's frame.
-    require((run_state.award.medal >= 3) == (run_state.award.exit_frame == 1));
+    // A gold medal plays the tour's ending (R-0062); the others show the award.
+    require(run_state.screen == (run_state.award.medal >= 3 ? FrontEndScreen::tour_ending
+                                                            : FrontEndScreen::tour_award));
     // Start held through a few of the animation's upload frames.
     for (unsigned k = 0; k < 700; ++k) {
       const bool held = k >= 130 && k < 140;
@@ -1022,27 +1037,90 @@ void award_tests() {
   run(forward, content, 2);
   require(forward.screen == FrontEndScreen::track_menu_entry &&
           forward.track_menu.returning);
-  // Gold: no award screen (its ending is not recovered), straight out; the
-  // level from the exact counts. All eight gold is level 3.
+  // The level a completion leaves: the pending reveal when a count matched
+  // (PICK TOUR shows the level below it until its slide ends; R-0062).
+  const auto revealed = [](const unirally::FrontEndState &completed) {
+    return completed.records.pending_reveal ? completed.records.pending_reveal
+                                            : completed.records.tour_levels[0];
+  };
+  // Gold: CRAWLER's ending, then PICK TOUR; the level from the exact counts.
+  // All eight gold is level 3.
   auto gold = complete({2, 3, 3, 3, 3, 3, 3, 3}, false, 2);
-  require(gold.records.medals[0] == 3 && gold.records.tour_levels[0] == 3 &&
+  require(gold.records.medals[0] == 3 && revealed(gold) == 3 &&
           gold.registers.mode == 3);
   // Already gold: the medal stays 3.
   auto again = complete({3, 0, 0, 0, 0, 0, 0, 0}, false, 0);
-  require(again.records.medals[0] == 3 && again.records.tour_levels[0] == 0);
+  require(again.records.medals[0] == 3 && revealed(again) == 0);
   // Six at silver or better is level 2; five at bronze is no level (the
   // counts must be exact); a level of 3 never changes.
   auto silver = complete({1, 2, 2, 2, 2, 2, 0, 0}, false, 1);
-  require(silver.records.medals[0] == 2 && silver.records.tour_levels[0] == 2);
+  require(silver.records.medals[0] == 2 && revealed(silver) == 2);
   auto five = complete({0, 1, 1, 1, 1, 0, 0, 0}, false, 0);
-  require(five.records.medals[0] == 1 && five.records.tour_levels[0] == 0);
+  require(five.records.medals[0] == 1 && revealed(five) == 0);
   auto top = complete({0, 1, 1, 1, 0, 0, 0, 0}, false, 3);
-  require(top.records.tour_levels[0] == 3);
+  require(revealed(top) == 3);
   // HUNTER's medal (tour 8, 2 from the cold start) is not counted: three
   // bronze and this one make four, level 1.
   auto hunter = complete({0, 1, 1, 1, 0, 0, 0, 0}, false, 0);
   require(hunter.records.medals[8 * 16] == 2 &&
-          hunter.records.tour_levels[0] == 1);
+          revealed(hunter) == 1);
+}
+
+// R-0062: every tour's gold ending with the synthetic content: the script runs
+// to its last frame t', PICK TOUR comes on t' + 133, and NMI's hook first runs
+// on t' + 118, or on t' + 119 after WALKER's and JUMPER's endings.
+void ending_tests() {
+  using unirally::FrontEndScreen;
+  std::vector<std::vector<std::uint8_t>> storage;
+  const auto content = synthetic_content(storage);
+  auto raced = unirally::start_front_end();
+  run(raced, content, 430);
+  require(run_to(raced, content, FrontEndScreen::rider_menu, {0x1000, 0}));
+  require(run_to(raced, content, FrontEndScreen::tour_menu, {0x8000, 0}));
+  require(run_to(raced, content, FrontEndScreen::track_menu, {0x1000, 0}));
+  require(run_to(raced, content, FrontEndScreen::now_playing, {0x1000, 0}));
+  require(run_to(raced, content, FrontEndScreen::race, {0x1000, 0}));
+  // t' by tour (`$00D0`): CRAWLER, JUMPER, SHUFFLER, BOUNDER, WALKER, RUNNER,
+  // HOPPER, SPRINTER.
+  constexpr std::array<std::uint32_t, 8> last_frames{336, 409, 380, 299,
+                                                     393, 321, 516, 356};
+  constexpr std::uint32_t hook_frame = 118, pick_tour_frame = 133;
+  constexpr std::uint16_t select_x_r = 0x2050;
+  for (std::uint8_t tour = 0; tour < 8; ++tour) {
+    auto state = raced;
+    // The tour and its first track in the menus the race's return restores,
+    // at level 2, where PICK TOUR shows all eight.
+    state.records.tour_levels[0] = 2;
+    state.saved.tour_menu.tour = tour;
+    state.saved.tour_menu.track = static_cast<std::uint8_t>(tour * 5);
+    state.records.medals[tour * 16] = 2;
+    unirally::return_from_race(state, content, 3454, {3000, 4000});
+    require(run_to(state, content, FrontEndScreen::race_result, {}, 104));
+    run(state, content, 12);
+    run(state, content, 5, {select_x_r, 0});
+    require(state.screen == FrontEndScreen::tour_ending &&
+            state.script_frame == 0 && state.records.medals[tour * 16] == 3);
+    const auto last = last_frames[tour];
+    run(state, content, last + hook_frame - 1);
+    const auto cycle = [&] {
+      return std::pair{state.cycle.delay, state.cycle.phase};
+    };
+    const auto before = cycle();
+    run(state, content, 1);
+    const bool late = tour == 1 || tour == 4; // JUMPER, WALKER
+    require((cycle() == before) == late);
+    if (late) {
+      run(state, content, 1);
+      require(cycle() != before);
+      run(state, content, pick_tour_frame - hook_frame - 2);
+    } else {
+      run(state, content, pick_tour_frame - hook_frame - 1);
+    }
+    require(state.screen == FrontEndScreen::tour_ending &&
+            state.script_frame == last + pick_tour_frame - 1);
+    run(state, content, 1);
+    require(state.screen == FrontEndScreen::tour_menu_entry);
+  }
 }
 
 } // namespace
@@ -1057,6 +1135,7 @@ int main() try {
   race_result_tests();
   lap_result_tests();
   award_tests();
+  ending_tests();
   return 0;
 } catch (const std::exception &error) {
   std::fprintf(stderr, "%s\n", error.what());

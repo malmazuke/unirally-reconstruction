@@ -518,7 +518,7 @@
    "address": "$80:974B",
    "native": [
     "src/core/tour_menu.cpp:(file)",
-    "src/core/tour_menu.cpp:tour_menu_entry_frame"
+    "src/core/tour_menu.cpp:show_medal_entries"
    ],
    "region": "rom"
   },
@@ -721,6 +721,7 @@
     "src/core/front_end_screens.hpp:first_rider_palette, base_palette_low, base_palette_high",
     "src/core/race_result.cpp:race_result_exit_frame",
     "src/core/tour_menu.cpp:return_to_tour_menu",
+    "src/core/tour_menu.cpp:reveal_frames",
     "src/core/tour_menu.cpp:tour_menu_entry_frame"
    ],
    "region": "rom"
@@ -1746,7 +1747,7 @@
   {
    "address": "$80:E54C",
    "native": [
-    "src/core/award.cpp:tour_award_frame"
+    "src/core/award.cpp:way_back_frame"
    ],
    "region": "rom"
   },
@@ -1760,6 +1761,28 @@
     "src/core/front_end_screens.hpp:return_to_tour_menu",
     "src/core/tour_menu.cpp:(file)",
     "src/core/tour_menu.cpp:return_to_tour_menu"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:E553",
+   "native": [
+    "src/core/tour_menu.cpp:begin_reveal"
+   ],
+   "range_ends": [
+    "$80:E560"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:E580",
+   "native": [
+    "src/core/tour_menu.cpp:reveal_frames",
+    "src/core/tour_menu.cpp:tour_menu_entry_frame"
+   ],
+   "range_ends": [
+    "$80:E58E",
+    "$80:E5A2"
    ],
    "region": "rom"
   },
@@ -1911,7 +1934,7 @@
   {
    "address": "$80:E92F",
    "native": [
-    "src/core/award.cpp:tour_award_frame"
+    "src/core/award.cpp:way_back_frame"
    ],
    "region": "rom"
   },
@@ -2089,7 +2112,9 @@
   {
    "address": "$80:F814",
    "native": [
-    "src/core/award.cpp:upload_rider"
+    "src/core/award.cpp:upload_rider",
+    "src/core/front_end_screens.hpp:upload_pose",
+    "src/core/tour_ending_scripts.hpp:upload_built_pose"
    ],
    "region": "rom"
   },
@@ -4287,7 +4312,7 @@
   {
    "address": "$82:B1AE",
    "native": [
-    "src/core/award.cpp:load_map"
+    "src/core/front_end_screens.hpp:load_map"
    ],
    "region": "rom"
   },
@@ -4538,7 +4563,8 @@
   {
    "address": "$83:883E",
    "native": [
-    "src/core/award.cpp:complete_tour"
+    "src/core/award.cpp:complete_tour",
+    "src/core/tour_ending.cpp:(file)"
    ],
    "region": "rom"
   },
@@ -4547,7 +4573,8 @@
    "native": [
     "src/core/award.cpp:(file)",
     "src/core/award.cpp:apply_unlock_rule",
-    "src/core/award.cpp:tour_award_frame"
+    "src/core/award.cpp:way_back_frame",
+    "src/core/front_end_screens.hpp:way_back_frame"
    ],
    "range_ends": [
     "$83:88C5"
@@ -4572,7 +4599,10 @@
   {
    "address": "$83:88FD",
    "native": [
-    "src/core/award.cpp:complete_tour"
+    "src/core/award.cpp:complete_tour",
+    "src/core/front_end.hpp:FrontEndScreen",
+    "src/core/front_end.hpp:TourEnding",
+    "src/core/tour_ending.cpp:(file)"
    ],
    "region": "rom"
   },
@@ -4644,7 +4674,8 @@
     "src/core/front_end.hpp:TourAward::pose",
     "src/core/front_end_screens.hpp:upload_pose",
     "src/core/rider_menu.cpp:uni_tiles_word, uni_row_words, tile_words",
-    "src/core/rider_object.hpp:pose_frame_rows, pose_frame_columns"
+    "src/core/rider_object.hpp:pose_frame_rows, pose_frame_columns",
+    "src/core/tour_ending_scripts.hpp:first_pose_word, second_pose_word, third_pose_word"
    ],
    "region": "rom"
   },
@@ -4866,7 +4897,9 @@
    "address": "$83:A4D2",
    "native": [
     "src/core/award.cpp:fade_out_frames, blank_frame, reset_frame, background_tiles_frame, podium_map_frame, podium_tiles_frame, colours_frame, objects_frame, rider_frame, first_fade_in_frame, fade_in_frames",
-    "src/core/award.cpp:fade_up"
+    "src/core/award.cpp:fade_up",
+    "src/core/front_end_screens.hpp:fade_up",
+    "src/core/front_end_screens.hpp:way_back_frame"
    ],
    "region": "rom"
   },
@@ -4874,7 +4907,29 @@
    "address": "$83:A4E9",
    "native": [
     "src/core/award.cpp:fade_down",
-    "src/core/award.cpp:fade_out_frames, blank_frame, reset_frame, background_tiles_frame, podium_map_frame, podium_tiles_frame, colours_frame, objects_frame, rider_frame, first_fade_in_frame, fade_in_frames"
+    "src/core/award.cpp:fade_out_frames, blank_frame, reset_frame, background_tiles_frame, podium_map_frame, podium_tiles_frame, colours_frame, objects_frame, rider_frame, first_fade_in_frame, fade_in_frames",
+    "src/core/front_end_screens.hpp:fade_down",
+    "src/core/front_end_screens.hpp:way_back_frame"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:A507",
+   "native": [
+    "src/core/front_end_screens.hpp:reset_award_screen",
+    "src/core/tour_ending.cpp:(file)",
+    "src/core/tour_ending.cpp:first_loads"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:A575",
+   "native": [
+    "src/core/front_end_screens.hpp:reset_award_screen",
+    "src/core/tour_ending.cpp:blank_frame, reset_frame, pattern_tiles_frame, bar_map_frame, fade_in_frames"
+   ],
+   "range_ends": [
+    "$83:A613"
    ],
    "region": "rom"
   },
@@ -4888,8 +4943,7 @@
   {
    "address": "$83:A67F",
    "native": [
-    "src/core/award.cpp:gold_medal_colours",
-    "src/core/award.cpp:reset_for_award"
+    "src/core/award.cpp:gold_medal_colours"
    ],
    "range_ends": [
     "$83:A720"
@@ -4903,7 +4957,8 @@
     "src/core/award.cpp:exit_blank_frame, menus_frame, exit_fade_in_frame, pick_tour_frame",
     "src/core/front_end.cpp:restore_menu_screen",
     "src/core/front_end.cpp:set_menu_registers",
-    "src/core/front_end_screens.hpp:restore_menu_screen"
+    "src/core/front_end_screens.hpp:restore_menu_screen",
+    "src/core/front_end_screens.hpp:way_back_frame"
    ],
    "region": "rom"
   },
@@ -4919,7 +4974,24 @@
    "native": [
     "src/core/front_end.cpp:waits_for_frame",
     "src/core/front_end_screens.hpp:result_scoring_frame",
-    "src/core/race_result.cpp:race_result_exit_frame"
+    "src/core/race_result.cpp:race_result_exit_frame",
+    "src/core/tour_ending_scripts.hpp:Loop",
+    "src/core/tour_ending_scripts.hpp:upload_built_pose"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:AB25",
+   "native": [
+    "src/core/tour_ending_right_column.cpp:bound_off_part",
+    "src/core/tour_ending_right_column.cpp:knock_part"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:AB9A",
+   "native": [
+    "src/core/award.cpp:complete_tour"
    ],
    "region": "rom"
   },
@@ -5003,6 +5075,711 @@
    "native": [
     "src/core/award.cpp:first_entries_at, bounce_at, poses_at, medal_tiles_at",
     "src/core/front_end.hpp:FrontEndContent::award_tables, FrontEndContent::award_medal_art"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:B1EB",
+   "native": [
+    "src/core/tour_ending.cpp:endings",
+    "src/core/tour_ending_scripts.cpp:(file)"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:B2CD",
+   "native": [
+    "src/core/tour_ending_scripts.cpp:end",
+    "src/core/tour_ending_scripts.cpp:roll_start"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:B301",
+   "native": [
+    "src/core/tour_ending_scripts.cpp:roll_end"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:B374",
+   "native": [
+    "src/core/tour_ending_scripts.cpp:bounce_part"
+   ],
+   "range_ends": [
+    "$83:B3D7"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:B388",
+   "native": [
+    "src/core/tour_ending_scripts.cpp:end"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:B3DB",
+   "native": [
+    "src/core/tour_ending_scripts.cpp:tongue_out_part"
+   ],
+   "range_ends": [
+    "$83:B434"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:B3FF",
+   "native": [
+    "src/core/tour_ending_scripts.cpp:end"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:B401",
+   "native": [
+    "src/core/tour_ending_scripts.cpp:set_eating_tiles"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:B436",
+   "native": [
+    "src/core/tour_ending_scripts.cpp:pull_over_part"
+   ],
+   "range_ends": [
+    "$83:B486"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:B44F",
+   "native": [
+    "src/core/tour_ending_scripts.cpp:end"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:B488",
+   "native": [
+    "src/core/tour_ending_scripts.cpp:swallow_part"
+   ],
+   "range_ends": [
+    "$83:B4C8"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:B496",
+   "native": [
+    "src/core/tour_ending_scripts.cpp:end"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:B498",
+   "native": [
+    "src/core/tour_ending_scripts.cpp:set_eating_tiles"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:B4DF",
+   "native": [
+    "src/core/tour_ending_scripts.cpp:(file)"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:B506",
+   "native": [
+    "src/core/tour_ending.cpp:endings",
+    "src/core/tour_ending_scripts.cpp:(file)"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:B5ED",
+   "native": [
+    "src/core/tour_ending_scripts.cpp:end",
+    "src/core/tour_ending_scripts.cpp:walk_in_part"
+   ],
+   "range_ends": [
+    "$83:B63C"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:B63F",
+   "native": [
+    "src/core/tour_ending_scripts.cpp:hit_part"
+   ],
+   "range_ends": [
+    "$83:B6AD"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:B64D",
+   "native": [
+    "src/core/tour_ending_scripts.cpp:end"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:B6AF",
+   "native": [
+    "src/core/tour_ending_scripts.cpp:red_uni_in_part"
+   ],
+   "range_ends": [
+    "$83:B705"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:B6B6",
+   "native": [
+    "src/core/tour_ending_scripts.cpp:end"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:B707",
+   "native": [
+    "src/core/tour_ending_scripts.cpp:roll_on_part"
+   ],
+   "range_ends": [
+    "$83:B782"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:B712",
+   "native": [
+    "src/core/tour_ending_scripts.cpp:end"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:B790",
+   "native": [
+    "src/core/tour_ending_scripts.cpp:(file)"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:B79C",
+   "native": [
+    "src/core/tour_ending_right_column.cpp:walk_in_part",
+    "src/core/tour_ending_scripts.hpp:walk"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:B7D2",
+   "native": [
+    "src/core/tour_ending.cpp:endings",
+    "src/core/tour_ending_right_column.cpp:(file)"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:B8B9",
+   "native": [
+    "src/core/tour_ending_right_column.cpp:end",
+    "src/core/tour_ending_right_column.cpp:ride_in_part"
+   ],
+   "range_ends": [
+    "$83:B915"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:B91E",
+   "native": [
+    "src/core/tour_ending_right_column.cpp:bump_part"
+   ],
+   "range_ends": [
+    "$83:B99A"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:B925",
+   "native": [
+    "src/core/tour_ending_right_column.cpp:end"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:B99C",
+   "native": [
+    "src/core/tour_ending_right_column.cpp:ball_falls_part"
+   ],
+   "range_ends": [
+    "$83:BA0E"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:B9A7",
+   "native": [
+    "src/core/tour_ending_right_column.cpp:end"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:BA10",
+   "native": [
+    "src/core/tour_ending_right_column.cpp:scarf_part"
+   ],
+   "range_ends": [
+    "$83:BA6A"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:BA26",
+   "native": [
+    "src/core/tour_ending_right_column.cpp:end"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:BA6C",
+   "native": [
+    "src/core/tour_ending_right_column.cpp:bound_off_part"
+   ],
+   "range_ends": [
+    "$83:BB25"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:BA87",
+   "native": [
+    "src/core/tour_ending_right_column.cpp:end"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:BAED",
+   "native": [
+    "src/core/tour_ending_right_column.cpp:after_bound_step"
+   ],
+   "range_ends": [
+    "$83:BB36"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:BB44",
+   "native": [
+    "src/core/tour_ending_right_column.cpp:(file)"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:BB80",
+   "native": [
+    "src/core/tour_ending.cpp:endings",
+    "src/core/tour_ending_right_column.cpp:(file)"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:BC62",
+   "native": [
+    "src/core/tour_ending_right_column.cpp:end",
+    "src/core/tour_ending_right_column.cpp:ride_in_part"
+   ],
+   "range_ends": [
+    "$83:BC9F"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:BCA1",
+   "native": [
+    "src/core/tour_ending_right_column.cpp:drop_part"
+   ],
+   "range_ends": [
+    "$83:BCFA"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:BCB2",
+   "native": [
+    "src/core/tour_ending_right_column.cpp:end"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:BCFC",
+   "native": [
+    "src/core/tour_ending_right_column.cpp:squash_part"
+   ],
+   "range_ends": [
+    "$83:BD7E"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:BD16",
+   "native": [
+    "src/core/tour_ending_right_column.cpp:end"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:BD81",
+   "native": [
+    "src/core/tour_ending_right_column.cpp:flatten_part"
+   ],
+   "range_ends": [
+    "$83:BDD4"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:BD94",
+   "native": [
+    "src/core/tour_ending_right_column.cpp:end"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:BDD6",
+   "native": [
+    "src/core/tour_ending_right_column.cpp:fly_off_part"
+   ],
+   "range_ends": [
+    "$83:BE1C"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:BDDD",
+   "native": [
+    "src/core/tour_ending_right_column.cpp:end"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:BE1E",
+   "native": [
+    "src/core/tour_ending_right_column.cpp:ride_off_part"
+   ],
+   "range_ends": [
+    "$83:BE62"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:BE2C",
+   "native": [
+    "src/core/tour_ending_right_column.cpp:end"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:BE6F",
+   "native": [
+    "src/core/tour_ending_right_column.cpp:build_ride_pose"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:BE9A",
+   "native": [
+    "src/core/tour_ending_right_column.cpp:(file)"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:BEBA",
+   "native": [
+    "src/core/tour_ending_right_column.cpp:scroll_pattern"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:BED0",
+   "native": [
+    "src/core/tour_ending.cpp:endings",
+    "src/core/tour_ending_right_column.cpp:(file)"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:BF89",
+   "native": [
+    "src/core/tour_ending_right_column.cpp:script"
+   ],
+   "range_ends": [
+    "$83:BF93"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:BFA5",
+   "native": [
+    "src/core/tour_ending_right_column.cpp:end",
+    "src/core/tour_ending_right_column.cpp:walk_in_part"
+   ],
+   "range_ends": [
+    "$83:BFD0"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:BFD2",
+   "native": [
+    "src/core/tour_ending_right_column.cpp:wobble_part"
+   ],
+   "range_ends": [
+    "$83:C020"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:BFE2",
+   "native": [
+    "src/core/tour_ending_right_column.cpp:end"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:C022",
+   "native": [
+    "src/core/tour_ending_right_column.cpp:knock_part"
+   ],
+   "range_ends": [
+    "$83:C0E7"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:C034",
+   "native": [
+    "src/core/tour_ending_right_column.cpp:end"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:C0BD",
+   "native": [
+    "src/core/tour_ending_right_column.cpp:tumble_step"
+   ],
+   "range_ends": [
+    "$83:C0C9"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:C0F6",
+   "native": [
+    "src/core/tour_ending_right_column.cpp:(file)"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:C11E",
+   "native": [
+    "src/core/tour_ending.cpp:endings",
+    "src/core/tour_ending_scripts.cpp:(file)"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:C126",
+   "native": [
+    "src/core/tour_ending_scripts.hpp:clear_third_pose_tiles"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:C23D",
+   "native": [
+    "src/core/tour_ending_scripts.cpp:end",
+    "src/core/tour_ending_scripts.cpp:walk_in_part"
+   ],
+   "range_ends": [
+    "$83:C286"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:C289",
+   "native": [
+    "src/core/tour_ending_scripts.cpp:turn_part"
+   ],
+   "range_ends": [
+    "$83:C300"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:C29D",
+   "native": [
+    "src/core/tour_ending_scripts.cpp:end"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:C302",
+   "native": [
+    "src/core/tour_ending_scripts.cpp:fire_part"
+   ],
+   "range_ends": [
+    "$83:C338"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:C30C",
+   "native": [
+    "src/core/tour_ending_scripts.cpp:end"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:C33A",
+   "native": [
+    "src/core/tour_ending_scripts.cpp:blast_part",
+    "src/core/tour_ending_scripts.cpp:blast_up_part"
+   ],
+   "range_ends": [
+    "$83:C3B9"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:C358",
+   "native": [
+    "src/core/tour_ending_scripts.cpp:end"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:C35F",
+   "native": [
+    "src/core/tour_ending_scripts.cpp:firing_pose"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:C3BB",
+   "native": [
+    "src/core/tour_ending_scripts.cpp:blast_part",
+    "src/core/tour_ending_scripts.cpp:burn_out_part"
+   ],
+   "range_ends": [
+    "$83:C449"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:C3E0",
+   "native": [
+    "src/core/tour_ending_scripts.cpp:end"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:C3E7",
+   "native": [
+    "src/core/tour_ending_scripts.cpp:firing_pose"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:C458",
+   "native": [
+    "src/core/tour_ending_scripts.cpp:(file)"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:C49C",
+   "native": [
+    "src/core/tour_ending.cpp:(file)",
+    "src/core/tour_ending.cpp:endings"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:C4A4",
+   "native": [
+    "src/core/tour_ending_scripts.hpp:clear_third_pose_tiles"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:C5F6",
+   "native": [
+    "src/core/tour_ending.cpp:first_countdown, first_flare, second_flare, burst, white_out, flash_hidden, colour_writes"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:C6C0",
+   "native": [
+    "src/core/tour_ending.cpp:(file)"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:C715",
+   "native": [
+    "src/core/tour_ending.cpp:endings",
+    "src/core/tour_ending_right_column.cpp:(file)"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:C7F7",
+   "native": [
+    "src/core/tour_ending_right_column.cpp:end",
+    "src/core/tour_ending_right_column.cpp:walk_in_part"
+   ],
+   "range_ends": [
+    "$83:C86B"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:C80C",
+   "native": [
+    "src/core/tour_ending_right_column.cpp:walk_in_part"
+   ],
+   "range_ends": [
+    "$83:C83E"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:C86E",
+   "native": [
+    "src/core/tour_ending_right_column.cpp:hold_part"
+   ],
+   "range_ends": [
+    "$83:C88E"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:C886",
+   "native": [
+    "src/core/tour_ending_right_column.cpp:end"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:C89A",
+   "native": [
+    "src/core/tour_ending_right_column.cpp:(file)"
    ],
    "region": "rom"
   },
@@ -5797,7 +6574,8 @@
   {
    "address": "$0090",
    "native": [
-    "src/core/front_end.hpp:ScreenSlide::scroll"
+    "src/core/front_end.hpp:ScreenSlide::scroll",
+    "src/core/tour_ending_right_column.cpp:scroll_pattern"
    ],
    "region": "wram"
   },
@@ -5858,7 +6636,7 @@
   {
    "address": "$00AC",
    "native": [
-    "src/core/award.cpp:tour_award_frame",
+    "src/core/award.cpp:way_back_frame",
     "src/core/front_end.hpp:RiderMenu::returning",
     "src/core/front_end.hpp:TourMenu::slides_back",
     "src/core/front_end.hpp:TrackMenu::returning",
@@ -5942,7 +6720,10 @@
   {
    "address": "$00D0",
    "native": [
-    "src/core/front_end.hpp:TourMenu::tour"
+    "src/core/front_end.hpp:FrontEndContent::ending_tables",
+    "src/core/front_end.hpp:TourEnding::tour",
+    "src/core/front_end.hpp:TourMenu::tour",
+    "src/core/tour_ending.cpp:endings"
    ],
    "region": "wram"
   },
@@ -6553,7 +7334,8 @@
   {
    "address": "$0CF0",
    "native": [
-    "src/core/front_end.hpp:LapGraphDot"
+    "src/core/front_end.hpp:LapGraphDot",
+    "src/core/front_end.hpp:TourEnding::pose"
    ],
    "region": "wram"
   },
@@ -7207,6 +7989,20 @@
    "region": "wram"
   },
   {
+   "address": "$10A7",
+   "native": [
+    "src/core/front_end.hpp:TourEnding"
+   ],
+   "region": "wram"
+  },
+  {
+   "address": "$10CB",
+   "native": [
+    "src/core/front_end.hpp:TourEnding"
+   ],
+   "region": "wram"
+  },
+  {
    "address": "$114D",
    "native": [
     "src/core/zoom_zoo_movement.hpp:ZoomZooRaceState::checkpoint_seen"
@@ -7545,6 +8341,14 @@
    "region": "wram"
   },
   {
+   "address": "$16F0",
+   "native": [
+    "src/core/front_end.hpp:TourEnding::second_pose",
+    "src/core/tour_ending_right_column.cpp:(file)"
+   ],
+   "region": "wram"
+  },
+  {
    "address": "$7E:2052",
    "native": [
     "src/core/zoom_zoo_movement.hpp:HunterEffects::timer"
@@ -7800,7 +8604,13 @@
   {
    "address": "$77:10A7",
    "native": [
-    "src/core/front_end.hpp:TrackMenu::marker_step"
+    "src/core/front_end.hpp:TourEnding::drop",
+    "src/core/front_end.hpp:TrackMenu::marker_step",
+    "src/core/tour_ending_right_column.cpp:ball_falls_part",
+    "src/core/tour_ending_right_column.cpp:bound_off_part",
+    "src/core/tour_ending_right_column.cpp:knock_part",
+    "src/core/tour_ending_right_column.cpp:tumble_step",
+    "src/core/tour_ending_scripts.cpp:hit_part"
    ],
    "region": "sram"
   },
@@ -7829,7 +8639,9 @@
   {
    "address": "$77:10C9",
    "native": [
-    "src/core/front_end.hpp:TourAward::step"
+    "src/core/front_end.hpp:TourAward::step",
+    "src/core/front_end.hpp:TourEnding",
+    "src/core/front_end.hpp:TourEnding::step"
    ],
    "region": "sram"
   },
@@ -7838,7 +8650,13 @@
    "native": [
     "src/core/award.cpp:last_step, repeat_step, medal_start",
     "src/core/award.cpp:upload_step",
-    "src/core/front_end.hpp:TourAward::medal_step"
+    "src/core/front_end.hpp:TourAward::medal_step",
+    "src/core/front_end.hpp:TourEnding::count",
+    "src/core/tour_ending_right_column.cpp:drop_part",
+    "src/core/tour_ending_right_column.cpp:knock_part",
+    "src/core/tour_ending_scripts.cpp:blast_up_part",
+    "src/core/tour_ending_scripts.cpp:firing_pose",
+    "src/core/tour_ending_scripts.cpp:roll_on_part"
    ],
    "region": "sram"
   },
@@ -7866,7 +8684,8 @@
   {
    "address": "$77:10FD",
    "native": [
-    "src/core/award.cpp:apply_unlock_rule"
+    "src/core/award.cpp:apply_unlock_rule",
+    "src/core/front_end.hpp:OnePlayerRecords::pending_reveal"
    ],
    "region": "sram"
   },
@@ -7976,7 +8795,8 @@
     "$83:8832",
     "$83:883E",
     "$83:88FD",
-    "$83:895B"
+    "$83:895B",
+    "$83:AB9A"
    ]
   },
   "src/core/award.cpp:exit_blank_frame, menus_frame, exit_fade_in_frame, pick_tour_frame": {
@@ -8022,14 +8842,8 @@
     "$77:10CB"
    ]
   },
-  "src/core/award.cpp:load_map": {
-   "rom": [
-    "$82:B1AE"
-   ]
-  },
   "src/core/award.cpp:reset_for_award": {
    "rom": [
-    "$83:A67F",
     "$83:AEF6"
    ]
   },
@@ -8041,16 +8855,6 @@
   "src/core/award.cpp:second_art_frame": {
    "rom": [
     "$83:B096"
-   ]
-  },
-  "src/core/award.cpp:tour_award_frame": {
-   "rom": [
-    "$80:E54C",
-    "$80:E92F",
-    "$83:8853"
-   ],
-   "wram": [
-    "$00AC"
    ]
   },
   "src/core/award.cpp:upload_rider": {
@@ -8065,6 +8869,16 @@
    ],
    "sram": [
     "$77:10CB"
+   ]
+  },
+  "src/core/award.cpp:way_back_frame": {
+   "rom": [
+    "$80:E54C",
+    "$80:E92F",
+    "$83:8853"
+   ],
+   "wram": [
+    "$00AC"
    ]
   },
   "src/core/content_pack.cpp:front_end_required": {
@@ -8360,6 +9174,11 @@
     "$83:B120"
    ]
   },
+  "src/core/front_end.hpp:FrontEndContent::ending_tables": {
+   "wram": [
+    "$00D0"
+   ]
+  },
   "src/core/front_end.hpp:FrontEndContent::result_text, FrontEndContent::result_icons": {
    "rom": [
     "$80:D17B",
@@ -8405,6 +9224,7 @@
     "$80:E9FC",
     "$80:F4E9",
     "$83:881B",
+    "$83:88FD",
     "$83:AEF6"
    ],
    "wram": [
@@ -8568,6 +9388,11 @@
   "src/core/front_end.hpp:OnePlayerRecords::opponent_wins": {
    "sram": [
     "$77:10AB"
+   ]
+  },
+  "src/core/front_end.hpp:OnePlayerRecords::pending_reveal": {
+   "sram": [
+    "$77:10FD"
    ]
   },
   "src/core/front_end.hpp:OnePlayerRecords::player_wins": {
@@ -8766,6 +9591,48 @@
     "$77:10C9"
    ]
   },
+  "src/core/front_end.hpp:TourEnding": {
+   "rom": [
+    "$83:88FD"
+   ],
+   "sram": [
+    "$77:10C9"
+   ],
+   "wram": [
+    "$10A7",
+    "$10CB"
+   ]
+  },
+  "src/core/front_end.hpp:TourEnding::count": {
+   "sram": [
+    "$77:10CB"
+   ]
+  },
+  "src/core/front_end.hpp:TourEnding::drop": {
+   "sram": [
+    "$77:10A7"
+   ]
+  },
+  "src/core/front_end.hpp:TourEnding::pose": {
+   "wram": [
+    "$0CF0"
+   ]
+  },
+  "src/core/front_end.hpp:TourEnding::second_pose": {
+   "wram": [
+    "$16F0"
+   ]
+  },
+  "src/core/front_end.hpp:TourEnding::step": {
+   "sram": [
+    "$77:10C9"
+   ]
+  },
+  "src/core/front_end.hpp:TourEnding::tour": {
+   "wram": [
+    "$00D0"
+   ]
+  },
   "src/core/front_end.hpp:TourMenu": {
    "rom": [
     "$80:E550"
@@ -8901,6 +9768,16 @@
     "$80:BC4D"
    ]
   },
+  "src/core/front_end_screens.hpp:fade_down": {
+   "rom": [
+    "$83:A4E9"
+   ]
+  },
+  "src/core/front_end_screens.hpp:fade_up": {
+   "rom": [
+    "$83:A4D2"
+   ]
+  },
   "src/core/front_end_screens.hpp:first_rider_palette, base_palette_low, base_palette_high": {
    "rom": [
     "$80:A858"
@@ -8914,6 +9791,11 @@
   "src/core/front_end_screens.hpp:load_main_menu_screen": {
    "rom": [
     "$80:D20E"
+   ]
+  },
+  "src/core/front_end_screens.hpp:load_map": {
+   "rom": [
+    "$82:B1AE"
    ]
   },
   "src/core/front_end_screens.hpp:load_object_palette": {
@@ -8997,6 +9879,12 @@
     "$80:A877"
    ]
   },
+  "src/core/front_end_screens.hpp:reset_award_screen": {
+   "rom": [
+    "$83:A507",
+    "$83:A575"
+   ]
+  },
   "src/core/front_end_screens.hpp:restore_menu_screen": {
    "rom": [
     "$80:D20E",
@@ -9072,8 +9960,17 @@
   },
   "src/core/front_end_screens.hpp:upload_pose": {
    "rom": [
+    "$80:F814",
     "$80:F818",
     "$83:8E3A"
+   ]
+  },
+  "src/core/front_end_screens.hpp:way_back_frame": {
+   "rom": [
+    "$83:8853",
+    "$83:A4D2",
+    "$83:A4E9",
+    "$83:A721"
    ]
   },
   "src/core/hunter_effects.cpp:count_hunter_mosaic": {
@@ -11447,6 +12344,356 @@
     "$83:8C7B"
    ]
   },
+  "src/core/tour_ending.cpp:(file)": {
+   "rom": [
+    "$83:883E",
+    "$83:88FD",
+    "$83:A507",
+    "$83:C49C",
+    "$83:C6C0"
+   ]
+  },
+  "src/core/tour_ending.cpp:blank_frame, reset_frame, pattern_tiles_frame, bar_map_frame, fade_in_frames": {
+   "rom": [
+    "$83:A575"
+   ]
+  },
+  "src/core/tour_ending.cpp:endings": {
+   "rom": [
+    "$83:B1EB",
+    "$83:B506",
+    "$83:B7D2",
+    "$83:BB80",
+    "$83:BED0",
+    "$83:C11E",
+    "$83:C49C",
+    "$83:C715"
+   ],
+   "wram": [
+    "$00D0"
+   ]
+  },
+  "src/core/tour_ending.cpp:first_countdown, first_flare, second_flare, burst, white_out, flash_hidden, colour_writes": {
+   "rom": [
+    "$83:C5F6"
+   ]
+  },
+  "src/core/tour_ending.cpp:first_loads": {
+   "rom": [
+    "$83:A507"
+   ]
+  },
+  "src/core/tour_ending_right_column.cpp:(file)": {
+   "rom": [
+    "$83:B7D2",
+    "$83:BB44",
+    "$83:BB80",
+    "$83:BE9A",
+    "$83:BED0",
+    "$83:C0F6",
+    "$83:C715",
+    "$83:C89A"
+   ],
+   "wram": [
+    "$16F0"
+   ]
+  },
+  "src/core/tour_ending_right_column.cpp:after_bound_step": {
+   "rom": [
+    "$83:BAED"
+   ]
+  },
+  "src/core/tour_ending_right_column.cpp:ball_falls_part": {
+   "rom": [
+    "$83:B99C"
+   ],
+   "sram": [
+    "$77:10A7"
+   ]
+  },
+  "src/core/tour_ending_right_column.cpp:bound_off_part": {
+   "rom": [
+    "$83:AB25",
+    "$83:BA6C"
+   ],
+   "sram": [
+    "$77:10A7"
+   ]
+  },
+  "src/core/tour_ending_right_column.cpp:build_ride_pose": {
+   "rom": [
+    "$83:BE6F"
+   ]
+  },
+  "src/core/tour_ending_right_column.cpp:bump_part": {
+   "rom": [
+    "$83:B91E"
+   ]
+  },
+  "src/core/tour_ending_right_column.cpp:drop_part": {
+   "rom": [
+    "$83:BCA1"
+   ],
+   "sram": [
+    "$77:10CB"
+   ]
+  },
+  "src/core/tour_ending_right_column.cpp:end": {
+   "rom": [
+    "$83:B8B9",
+    "$83:B925",
+    "$83:B9A7",
+    "$83:BA26",
+    "$83:BA87",
+    "$83:BC62",
+    "$83:BCB2",
+    "$83:BD16",
+    "$83:BD94",
+    "$83:BDDD",
+    "$83:BE2C",
+    "$83:BFA5",
+    "$83:BFE2",
+    "$83:C034",
+    "$83:C7F7",
+    "$83:C886"
+   ]
+  },
+  "src/core/tour_ending_right_column.cpp:flatten_part": {
+   "rom": [
+    "$83:BD81"
+   ]
+  },
+  "src/core/tour_ending_right_column.cpp:fly_off_part": {
+   "rom": [
+    "$83:BDD6"
+   ]
+  },
+  "src/core/tour_ending_right_column.cpp:hold_part": {
+   "rom": [
+    "$83:C86E"
+   ]
+  },
+  "src/core/tour_ending_right_column.cpp:knock_part": {
+   "rom": [
+    "$83:AB25",
+    "$83:C022"
+   ],
+   "sram": [
+    "$77:10A7",
+    "$77:10CB"
+   ]
+  },
+  "src/core/tour_ending_right_column.cpp:ride_in_part": {
+   "rom": [
+    "$83:B8B9",
+    "$83:BC62"
+   ]
+  },
+  "src/core/tour_ending_right_column.cpp:ride_off_part": {
+   "rom": [
+    "$83:BE1E"
+   ]
+  },
+  "src/core/tour_ending_right_column.cpp:scarf_part": {
+   "rom": [
+    "$83:BA10"
+   ]
+  },
+  "src/core/tour_ending_right_column.cpp:script": {
+   "rom": [
+    "$83:BF89"
+   ]
+  },
+  "src/core/tour_ending_right_column.cpp:scroll_pattern": {
+   "rom": [
+    "$83:BEBA"
+   ],
+   "wram": [
+    "$0090"
+   ]
+  },
+  "src/core/tour_ending_right_column.cpp:squash_part": {
+   "rom": [
+    "$83:BCFC"
+   ]
+  },
+  "src/core/tour_ending_right_column.cpp:tumble_step": {
+   "rom": [
+    "$83:C0BD"
+   ],
+   "sram": [
+    "$77:10A7"
+   ]
+  },
+  "src/core/tour_ending_right_column.cpp:walk_in_part": {
+   "rom": [
+    "$83:B79C",
+    "$83:BFA5",
+    "$83:C7F7",
+    "$83:C80C"
+   ]
+  },
+  "src/core/tour_ending_right_column.cpp:wobble_part": {
+   "rom": [
+    "$83:BFD2"
+   ]
+  },
+  "src/core/tour_ending_scripts.cpp:(file)": {
+   "rom": [
+    "$83:B1EB",
+    "$83:B4DF",
+    "$83:B506",
+    "$83:B790",
+    "$83:C11E",
+    "$83:C458"
+   ]
+  },
+  "src/core/tour_ending_scripts.cpp:blast_part": {
+   "rom": [
+    "$83:C33A",
+    "$83:C3BB"
+   ]
+  },
+  "src/core/tour_ending_scripts.cpp:blast_up_part": {
+   "rom": [
+    "$83:C33A"
+   ],
+   "sram": [
+    "$77:10CB"
+   ]
+  },
+  "src/core/tour_ending_scripts.cpp:bounce_part": {
+   "rom": [
+    "$83:B374"
+   ]
+  },
+  "src/core/tour_ending_scripts.cpp:burn_out_part": {
+   "rom": [
+    "$83:C3BB"
+   ]
+  },
+  "src/core/tour_ending_scripts.cpp:end": {
+   "rom": [
+    "$83:B2CD",
+    "$83:B388",
+    "$83:B3FF",
+    "$83:B44F",
+    "$83:B496",
+    "$83:B5ED",
+    "$83:B64D",
+    "$83:B6B6",
+    "$83:B712",
+    "$83:C23D",
+    "$83:C29D",
+    "$83:C30C",
+    "$83:C358",
+    "$83:C3E0"
+   ]
+  },
+  "src/core/tour_ending_scripts.cpp:fire_part": {
+   "rom": [
+    "$83:C302"
+   ]
+  },
+  "src/core/tour_ending_scripts.cpp:firing_pose": {
+   "rom": [
+    "$83:C35F",
+    "$83:C3E7"
+   ],
+   "sram": [
+    "$77:10CB"
+   ]
+  },
+  "src/core/tour_ending_scripts.cpp:hit_part": {
+   "rom": [
+    "$83:B63F"
+   ],
+   "sram": [
+    "$77:10A7"
+   ]
+  },
+  "src/core/tour_ending_scripts.cpp:pull_over_part": {
+   "rom": [
+    "$83:B436"
+   ]
+  },
+  "src/core/tour_ending_scripts.cpp:red_uni_in_part": {
+   "rom": [
+    "$83:B6AF"
+   ]
+  },
+  "src/core/tour_ending_scripts.cpp:roll_end": {
+   "rom": [
+    "$83:B301"
+   ]
+  },
+  "src/core/tour_ending_scripts.cpp:roll_on_part": {
+   "rom": [
+    "$83:B707"
+   ],
+   "sram": [
+    "$77:10CB"
+   ]
+  },
+  "src/core/tour_ending_scripts.cpp:roll_start": {
+   "rom": [
+    "$83:B2CD"
+   ]
+  },
+  "src/core/tour_ending_scripts.cpp:set_eating_tiles": {
+   "rom": [
+    "$83:B401",
+    "$83:B498"
+   ]
+  },
+  "src/core/tour_ending_scripts.cpp:swallow_part": {
+   "rom": [
+    "$83:B488"
+   ]
+  },
+  "src/core/tour_ending_scripts.cpp:tongue_out_part": {
+   "rom": [
+    "$83:B3DB"
+   ]
+  },
+  "src/core/tour_ending_scripts.cpp:turn_part": {
+   "rom": [
+    "$83:C289"
+   ]
+  },
+  "src/core/tour_ending_scripts.cpp:walk_in_part": {
+   "rom": [
+    "$83:B5ED",
+    "$83:C23D"
+   ]
+  },
+  "src/core/tour_ending_scripts.hpp:Loop": {
+   "rom": [
+    "$83:A923"
+   ]
+  },
+  "src/core/tour_ending_scripts.hpp:clear_third_pose_tiles": {
+   "rom": [
+    "$83:C126",
+    "$83:C4A4"
+   ]
+  },
+  "src/core/tour_ending_scripts.hpp:first_pose_word, second_pose_word, third_pose_word": {
+   "rom": [
+    "$83:8E3A"
+   ]
+  },
+  "src/core/tour_ending_scripts.hpp:upload_built_pose": {
+   "rom": [
+    "$80:F814",
+    "$83:A923"
+   ]
+  },
+  "src/core/tour_ending_scripts.hpp:walk": {
+   "rom": [
+    "$83:B79C"
+   ]
+  },
   "src/core/tour_menu.cpp:(file)": {
    "rom": [
     "$80:974B",
@@ -11476,6 +12723,11 @@
   "src/core/tour_menu.cpp:badge_size, badge_row_tiles, locked_picture": {
    "rom": [
     "$83:8D8F"
+   ]
+  },
+  "src/core/tour_menu.cpp:begin_reveal": {
+   "rom": [
+    "$80:E553"
    ]
   },
   "src/core/tour_menu.cpp:first_medal_palette": {
@@ -11517,6 +12769,12 @@
     "$83:893C"
    ]
   },
+  "src/core/tour_menu.cpp:reveal_frames": {
+   "rom": [
+    "$80:A858",
+    "$80:E580"
+   ]
+  },
   "src/core/tour_menu.cpp:set_arrow_mirror": {
    "rom": [
     "$80:C1EB",
@@ -11528,6 +12786,11 @@
     "$80:C1EB"
    ]
   },
+  "src/core/tour_menu.cpp:show_medal_entries": {
+   "rom": [
+    "$80:974B"
+   ]
+  },
   "src/core/tour_menu.cpp:tour_level": {
    "rom": [
     "$83:9F14"
@@ -11535,9 +12798,9 @@
   },
   "src/core/tour_menu.cpp:tour_menu_entry_frame": {
    "rom": [
-    "$80:974B",
     "$80:A82B",
-    "$80:A858"
+    "$80:A858",
+    "$80:E580"
    ]
   },
   "src/core/tour_menu.cpp:tour_menu_frame": {
@@ -12305,11 +13568,11 @@
   }
  },
  "totals": {
-  "addresses": 925,
+  "addresses": 1018,
   "io_addresses": 5,
-  "native_symbols": 668,
-  "rom_addresses": 638,
+  "native_symbols": 734,
+  "rom_addresses": 728,
   "sram_addresses": 33,
-  "wram_addresses": 249
+  "wram_addresses": 252
  }
 }

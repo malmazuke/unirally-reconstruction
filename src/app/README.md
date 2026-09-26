@@ -27,7 +27,8 @@ PLAYING, where Race starts the chosen race: any rider against the opponent NOW P
 result load begins: the result screen (R-0057; a lap race's graph, R-0058), a press, then PICK
 TRACK again with the records and the done tracks updated. A tour's completion (its fifth win, or
 pad 1 holding exactly Select + X + R as the result is left) shows the medal award and returns to
-PICK TOUR (R-0059); a gold medal's ending is not native yet. In a race started from the menus the
+PICK TOUR (R-0059); a gold medal plays the tour's ending and PICK TOUR then reveals any tours it
+opens (R-0062); HUNTER's ending is not native yet. In a race started from the menus the
 pause menu's second choice ends the race as the original's QUIT does: during the start countdown
 it goes back to NOW PLAYING, after it the result shows QUIT and the race counts as lost (R-0060).
 A race started with `--track` still restarts from it. 2P, VS, LEAGUE, OPTIONS and the demo are not
@@ -39,7 +40,7 @@ race instead.
 DRAGSTER plays on the shared race engine (R-0038), whose jump, brake,
 reversal, trick and finish tables only the two-track pack carries. With the
 25-entry DRAGSTER pack the launcher uses a valid
-`local/classic-pal-crawler-tracks-v21.pack` beside it without
+`local/classic-pal-crawler-tracks-v22.pack` beside it without
 opening the ROM, or extracts one when `--rom` is given; without either it
 reports a missing prerequisite. The app itself refuses the DRAGSTER-only pack
 before gameplay starts.

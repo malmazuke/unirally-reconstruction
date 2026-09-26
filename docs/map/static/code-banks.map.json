@@ -727,7 +727,7 @@
     "src/core/tour_menu.cpp:(file)",
     "src/core/tour_menu.cpp:first_medal_palette",
     "src/core/tour_menu.cpp:lay_out_medals",
-    "src/core/tour_menu.cpp:tour_menu_entry_frame"
+    "src/core/tour_menu.cpp:show_medal_entries"
    ],
    "observed_entries": {},
    "start": "$80:974B",
@@ -1123,6 +1123,7 @@
     "src/core/front_end_screens.hpp:first_rider_palette, base_palette_low, base_palette_high",
     "src/core/race_result.cpp:race_result_exit_frame",
     "src/core/tour_menu.cpp:return_to_tour_menu",
+    "src/core/tour_menu.cpp:reveal_frames",
     "src/core/tour_menu.cpp:tour_menu_entry_frame"
    ],
    "observed_entries": {},
@@ -2279,7 +2280,7 @@
     "NmX"
    ],
    "native": [
-    "src/core/award.cpp:tour_award_frame"
+    "src/core/award.cpp:way_back_frame"
    ],
    "observed_entries": {},
    "start": "$80:E54C",
@@ -2307,10 +2308,13 @@
     "src/core/front_end_screens.hpp:return_to_tour_menu",
     "src/core/tour_menu.cpp:(file)",
     "src/core/tour_menu.cpp:aim_tour_arrow",
+    "src/core/tour_menu.cpp:begin_reveal",
     "src/core/tour_menu.cpp:hide_medals",
     "src/core/tour_menu.cpp:move_tour_cursor",
     "src/core/tour_menu.cpp:return_to_tour_menu",
+    "src/core/tour_menu.cpp:reveal_frames",
     "src/core/tour_menu.cpp:set_arrow_mirror",
+    "src/core/tour_menu.cpp:tour_menu_entry_frame",
     "src/core/tour_menu.cpp:tour_menu_frame"
    ],
    "observed_entries": {},
@@ -2394,7 +2398,7 @@
     "NmX"
    ],
    "native": [
-    "src/core/award.cpp:tour_award_frame",
+    "src/core/award.cpp:way_back_frame",
     "src/core/front_end.hpp:FrontEndScreen",
     "src/core/front_end.hpp:TrackMenu",
     "src/core/track_menu.cpp:(file)",
@@ -2682,7 +2686,9 @@
     "NmX"
    ],
    "native": [
-    "src/core/award.cpp:upload_rider"
+    "src/core/award.cpp:upload_rider",
+    "src/core/front_end_screens.hpp:upload_pose",
+    "src/core/tour_ending_scripts.hpp:upload_built_pose"
    ],
    "observed_entries": {},
    "start": "$80:F814",
@@ -9351,7 +9357,7 @@
     "NmX"
    ],
    "native": [
-    "src/core/award.cpp:load_map"
+    "src/core/front_end_screens.hpp:load_map"
    ],
    "observed_entries": {},
    "start": "$82:B1AE",
@@ -10903,7 +10909,8 @@
     "src/core/front_end.hpp:TourAward::pose",
     "src/core/front_end_screens.hpp:upload_pose",
     "src/core/rider_menu.cpp:uni_tiles_word, uni_row_words, tile_words",
-    "src/core/rider_object.hpp:pose_frame_rows, pose_frame_columns"
+    "src/core/rider_object.hpp:pose_frame_rows, pose_frame_columns",
+    "src/core/tour_ending_scripts.hpp:first_pose_word, second_pose_word, third_pose_word"
    ],
    "observed_entries": {},
    "start": "$83:8E3A",
@@ -11784,7 +11791,9 @@
    ],
    "native": [
     "src/core/award.cpp:fade_out_frames, blank_frame, reset_frame, background_tiles_frame, podium_map_frame, podium_tiles_frame, colours_frame, objects_frame, rider_frame, first_fade_in_frame, fade_in_frames",
-    "src/core/award.cpp:fade_up"
+    "src/core/award.cpp:fade_up",
+    "src/core/front_end_screens.hpp:fade_up",
+    "src/core/front_end_screens.hpp:way_back_frame"
    ],
    "observed_entries": {},
    "start": "$83:A4D2",
@@ -11810,7 +11819,9 @@
    ],
    "native": [
     "src/core/award.cpp:fade_down",
-    "src/core/award.cpp:fade_out_frames, blank_frame, reset_frame, background_tiles_frame, podium_map_frame, podium_tiles_frame, colours_frame, objects_frame, rider_frame, first_fade_in_frame, fade_in_frames"
+    "src/core/award.cpp:fade_out_frames, blank_frame, reset_frame, background_tiles_frame, podium_map_frame, podium_tiles_frame, colours_frame, objects_frame, rider_frame, first_fade_in_frame, fade_in_frames",
+    "src/core/front_end_screens.hpp:fade_down",
+    "src/core/front_end_screens.hpp:way_back_frame"
    ],
    "observed_entries": {},
    "start": "$83:A4E9",
@@ -11831,8 +11842,7 @@
    ],
    "native": [
     "src/core/award.cpp:fade_out_frames, blank_frame, reset_frame, background_tiles_frame, podium_map_frame, podium_tiles_frame, colours_frame, objects_frame, rider_frame, first_fade_in_frame, fade_in_frames",
-    "src/core/award.cpp:gold_medal_colours",
-    "src/core/award.cpp:reset_for_award"
+    "src/core/award.cpp:gold_medal_colours"
    ],
    "observed_entries": {},
    "start": "$83:A614",
@@ -11856,7 +11866,8 @@
     "src/core/award.cpp:exit_blank_frame, menus_frame, exit_fade_in_frame, pick_tour_frame",
     "src/core/front_end.cpp:restore_menu_screen",
     "src/core/front_end.cpp:set_menu_registers",
-    "src/core/front_end_screens.hpp:restore_menu_screen"
+    "src/core/front_end_screens.hpp:restore_menu_screen",
+    "src/core/front_end_screens.hpp:way_back_frame"
    ],
    "observed_entries": {},
    "start": "$83:A721",
@@ -11889,7 +11900,9 @@
    "native": [
     "src/core/front_end.cpp:waits_for_frame",
     "src/core/front_end_screens.hpp:result_scoring_frame",
-    "src/core/race_result.cpp:race_result_exit_frame"
+    "src/core/race_result.cpp:race_result_exit_frame",
+    "src/core/tour_ending_scripts.hpp:Loop",
+    "src/core/tour_ending_scripts.hpp:upload_built_pose"
    ],
    "observed_entries": {},
    "start": "$83:A923",
@@ -11924,6 +11937,10 @@
    "end": "$83:AB7B",
    "mode_at_entry": [
     "NmX"
+   ],
+   "native": [
+    "src/core/tour_ending_right_column.cpp:bound_off_part",
+    "src/core/tour_ending_right_column.cpp:knock_part"
    ],
    "observed_entries": {},
    "start": "$83:AB25",
@@ -11961,6 +11978,9 @@
    "end": "$83:AE00",
    "mode_at_entry": [
     "NmX"
+   ],
+   "native": [
+    "src/core/award.cpp:complete_tour"
    ],
    "observed_entries": {},
    "start": "$83:AB9A",
@@ -13997,19 +14017,19 @@
    "call returns in the calling mode": 1262
   },
   "bytes": 131072,
-  "cited_addresses": 1182,
+  "cited_addresses": 1208,
   "cited_by_class": {
    "data": 20,
-   "inferred": 168,
-   "observed": 857,
-   "unknown": 137
+   "inferred": 171,
+   "observed": 859,
+   "unknown": 158
   },
   "cited_by_position": {
    "dat": 20,
-   "loc": 721,
+   "loc": 724,
    "mid": 18,
-   "sub": 286,
-   "unk": 137
+   "sub": 288,
+   "unk": 158
   },
   "conflicts": 0,
   "data": 92,
@@ -14028,9 +14048,9 @@
   "jump_tables": 2,
   "mode_ambiguities": 7,
   "observed": 41778,
-  "routine_bytes_cited_by_native_code": 44379,
+  "routine_bytes_cited_by_native_code": 45081,
   "routines": 636,
-  "routines_cited_by_native_code": 333,
+  "routines_cited_by_native_code": 335,
   "unknown": 52881,
   "unknown_share": 0.4035
  }

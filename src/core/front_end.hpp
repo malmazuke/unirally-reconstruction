@@ -43,6 +43,9 @@ struct FrontEndContent {
         lap_result_opponent;
     // The medal award (profile v20): its tables at `$83:B120` and the medal's second art.
     std::span<const std::uint8_t> award_tables, award_medal_art;
+    // Each tour's ending tables (profile v22), by tour (`$00D0`): CRAWLER, JUMPER, SHUFFLER,
+    // BOUNDER, WALKER, RUNNER, HOPPER, SPRINTER.
+    std::array<std::span<const std::uint8_t>, 8> ending_tables{};
 };
 FrontEndContent front_end_content(const ClassicContentPack& pack);
 
@@ -142,6 +145,9 @@ struct OnePlayerRecords {
     std::uint16_t opponent_wins{}; // $77:10AB: a rider opponent's wins
     bool race_lost{};              // $77:0742 bit 12: the last race was lost
     std::uint16_t tries{};         // $77:1073: 3, one less after a loss; nothing reads it (R-0057)
+    // $77:10FD: the level PICK TOUR is still to reveal, which the unlock rule writes whenever a
+    // count matches; PICK TOUR first draws the level below it (R-0062).
+    std::uint8_t pending_reveal{};
     // $77:1116: bit r once rider r's tutorial hints have ended in a race ($83:CE2C); a race
     // starts its hints only without its rider's bit ($82:D94C, R-0061).
     std::uint16_t tutorial_bits{};
@@ -158,6 +164,7 @@ struct TourMenu {
     bool back{};           // left with Y or X
     bool returning{};      // entered back from PICK TRACK, from `$80:E550`: no first loads
     bool slides_back{};    // slides back in ($00AC != 2 on `$80:E550`'s path)
+    bool revealing{};      // after the slide, the new tours are being shown (R-0062)
 };
 
 // A race's times as the race engine hands them back when its result load begins (R-0057): the
@@ -206,6 +213,17 @@ struct TourAward {
     AwardPhase phase{};
     std::uint32_t exit_frame{}; // frames since the press was seen, 0 before
     bool after_completion{};    // PICK TOUR was entered from the scoring (`$83:88CD`)
+};
+
+// A tour's gold ending (`$83:88FD`, R-0062): a scripted animation that reads no pad. Its counters
+// are the cartridge RAM's `$77:10C9`, `$10CB` and `$10A7`.
+struct TourEnding {
+    std::uint8_t tour{};         // $00D0: the tour completed
+    std::uint16_t step{};        // $77:10C9
+    std::uint16_t count{};       // $77:10CB
+    std::uint16_t drop{};        // $77:10A7
+    std::uint16_t pose{};        // the pose built into `$0CF0`, sent by the next upload
+    std::uint16_t second_pose{}; // the pose built into `$16F0` (BOUNDER, SPRINTER)
 };
 
 // The result screen (`$80:951C`): the one-run result (`$80:CE90`) and its waits for a press, or
@@ -266,6 +284,7 @@ enum class FrontEndScreen : std::uint8_t {
     tour_award,        // $83:881B: a tour's completion, the medal award `$83:AEF6`, the restore
     award_return,      // $80:BC7B after PICK TOUR's return from a completion: `$80:A858`
     race_restart,      // $80:88DD: the race restarted from its pause menu, back to NOW PLAYING
+    tour_ending,       // $83:88FD: a gold medal's ending, then the award's way back to PICK TOUR
 };
 
 // What `$83:9894` saves before a race (work RAM `$0000-$019D`) and `$83:987D` puts back after
@@ -310,6 +329,7 @@ struct FrontEndState {
     NowPlaying now_playing{};
     RaceResult race_result{};
     TourAward award{};
+    TourEnding ending{};
     SavedMenus saved{}; // during a race and its return
     bool one_player{};  // $77:10AD = 1: 1P from a rider's choice to the main menu's return
     bool mode_chosen{};

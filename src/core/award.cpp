@@ -57,6 +57,8 @@ std::uint16_t word_of(std::span<const std::uint8_t> table, std::size_t at) {
     return static_cast<std::uint16_t>(table[at] | (table[at + 1] << 8U));
 }
 
+} // namespace
+
 void fade_down(FrontEndState& state, std::uint32_t frame) { // $83:A4E9, frames 1-16
     if (frame < exit_blank_frame) {
         state.registers.brightness = static_cast<std::uint8_t>(fade_out_frames - frame);
@@ -71,9 +73,22 @@ void fade_up(FrontEndState& state, std::uint32_t step) { // $83:A4D2, steps 1-15
     state.registers.force_blank = false;
 }
 
-// $83:A67F-A720 and `$83:AEF6-AF3E` (q + 100): NMI off, the screen's state reset, the award's
-// first loads.
+namespace {
+
+// `$83:AEF6-AF3E` (q + 100) after the shared reset: the award's first loads.
 void reset_for_award(FrontEndState& state, const FrontEndContent& content) {
+    reset_award_screen(state, content);
+    auto& r = state.registers;
+    r.mode = 2;
+    const auto medal = state.award.medal;
+    load_cgram(state, asset(content, first_medal_colours + medal), 0x80);
+    load_cgram(state, asset(content, first_rider_palette + state.rider_menu.rider), 0x90);
+    load_vram(state, asset(content, background_map), 0);
+}
+
+} // namespace
+
+void reset_award_screen(FrontEndState& state, const FrontEndContent& content) {
     state.cycle.running = false;
     const std::vector<std::uint8_t> zeros(cleared_objects_words * 2, 0);
     load_vram(state, zeros, cleared_objects_word);
@@ -89,15 +104,8 @@ void reset_for_award(FrontEndState& state, const FrontEndContent& content) {
     for (unsigned entry = 0; entry < 128; ++entry)
         oam_byte(state, entry, 2) = oam_byte(state, entry, 3) = 0;
     load_cgram(state, asset(content, gold_medal_colours), 0x90);
-    r.mode = 2;
-    const auto medal = state.award.medal;
-    load_cgram(state, asset(content, first_medal_colours + medal), 0x80);
-    load_cgram(state, asset(content, first_rider_palette + state.rider_menu.rider), 0x90);
-    load_vram(state, asset(content, background_map), 0);
 }
 
-// $82:B1AE: a map into VRAM from word `word`, `bits` added to each entry (its palette and
-// priority).
 void load_map(FrontEndState& state, std::span<const std::uint8_t> map, unsigned word,
               std::uint16_t bits) {
     std::vector<std::uint8_t> entries(map.begin(), map.end());
@@ -105,6 +113,8 @@ void load_map(FrontEndState& state, std::span<const std::uint8_t> map, unsigned 
         entries[at + 1] = static_cast<std::uint8_t>(entries[at + 1] + (bits >> 8U));
     load_vram(state, entries, word);
 }
+
+namespace {
 
 // $80:F814: the rider's pose into its object tiles at VRAM word 0x7000.
 void upload_rider(FrontEndState& state, const FrontEndContent& content) {
@@ -217,15 +227,18 @@ void apply_unlock_rule(FrontEndState& state) {
         bronze += medal >= 1 ? 1 : 0;
         silver += medal >= 2 ? 1 : 0;
     }
-    // The original also writes the level to `$77:10FD`, the pending reveal, whenever a count
-    // matches, even if the level is unchanged: PICK TOUR then draws the tours of level - 1, slides,
-    // and shows the others four frames later. Native shows the level at once (R-0059).
+    // Whenever a count matches, even with the level unchanged, the level is also the pending
+    // reveal `$77:10FD`: PICK TOUR then draws the tours of the level below, slides, and shows the
+    // others four frames later (R-0062).
     if (sum == 24)
         level = 3;
     else if (silver == 6)
         level = 2;
     else if (bronze == 4)
         level = 1;
+    else
+        return;
+    records.pending_reveal = level;
 }
 
 } // namespace
@@ -245,9 +258,14 @@ void complete_tour(FrontEndState& state) {
     state.award.after_completion = true;
     state.screen = FrontEndScreen::tour_award;
     state.script_frame = 0;
-    // $83:883E: a gold medal plays its tour's ending (`$83:88FD`), HUNTER's resets. Not recovered:
-    // native leaves at once through the award's way out (R-0059).
-    if (raised >= 3) state.award.exit_frame = 1;
+    // $83:883E: a gold medal plays its tour's ending (`$83:88FD`, R-0062). HUNTER's (`$83:AB9A`),
+    // which ends in a soft reset, is not recovered: native leaves at once through the award's way
+    // out.
+    if (raised < 3) return;
+    if (has_tour_ending(menu.tour))
+        start_tour_ending(state);
+    else
+        state.award.exit_frame = 1;
 }
 
 void tour_award_frame(FrontEndState& state, const FrontEndContent& content, FrontEndPads pads) {
@@ -299,18 +317,24 @@ void tour_award_frame(FrontEndState& state, const FrontEndContent& content, Fron
         if (animation_frame(state, content, pads)) award.exit_frame = 1;
         return;
     }
-    const auto exit = ++award.exit_frame - 1; // frames after the exit test
+    // Frames after the exit test; NMI's hook first runs a frame after the menus' screen.
+    way_back_frame(state, content, ++award.exit_frame - 1, 0, false);
+}
+
+void way_back_frame(FrontEndState& state, const FrontEndContent& content, std::uint32_t exit,
+                    std::uint32_t delay, bool hook_at_once) {
     if (exit <= exit_blank_frame) {
         fade_down(state, exit);
         return;
     }
-    if (exit == menus_frame) {
+    if (exit == menus_frame + delay) {
         restore_menu_screen(state, content);
+        if (hook_at_once) run_nmi_hook(state, content);
         return;
     }
-    if (exit >= exit_fade_in_frame && exit <= pick_tour_frame) {
-        fade_up(state, exit - exit_fade_in_frame + 1);
-        if (exit < pick_tour_frame) return;
+    if (exit >= exit_fade_in_frame + delay && exit <= pick_tour_frame + delay) {
+        fade_up(state, exit - exit_fade_in_frame - delay + 1);
+        if (exit < pick_tour_frame + delay) return;
         apply_unlock_rule(state); // $83:8853, then PICK TOUR (`$80:E54C`) in the same frame
         // `$00AC` as restored before the race: 2 (NOW PLAYING was left with Y or X) slides PICK
         // TOUR forward and PICK TRACK back (`$80:E92F`); otherwise the other way round.
