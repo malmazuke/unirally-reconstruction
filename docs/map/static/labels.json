@@ -1106,6 +1106,18 @@
   ]
  },
  {
+  "address": "$80:9AAC",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_809AAC",
+  "native": [
+   "src/core/race_result.cpp:race_return_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0057-one-run-result.md"
+  ]
+ },
+ {
   "address": "$80:9B2F",
   "class": "observed",
   "comment": "routine start",
@@ -1177,11 +1189,13 @@
    "src/core/front_end_screens.hpp:set_early_registers",
    "src/core/race_result.cpp:early_loads",
    "src/core/race_result.cpp:early_palette, early_objects",
+   "src/core/race_result.cpp:hide_result_objects",
    "src/core/race_result.cpp:objects_frame, tiles_frame, palette_low_frame, palette_high_frame"
   ],
   "source_records": [
    "docs/research/R-0054-boot-title-main-menu.md",
-   "docs/research/R-0057-one-run-result.md"
+   "docs/research/R-0057-one-run-result.md",
+   "tasks/FRONT-END-LAP-RESULT.md"
   ]
  },
  {
@@ -11103,6 +11117,18 @@
   "label": "dat_839B31",
   "source_records": [
    "docs/research/R-0055-rider-menu.md"
+  ]
+ },
+ {
+  "address": "$83:9EC8",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_839EC8",
+  "native": [
+   "src/core/race_result.cpp:score_race"
+  ],
+  "source_records": [
+   "docs/research/R-0057-one-run-result.md"
   ]
  },
  {

@@ -45,7 +45,7 @@ The four classes partition all 131,072 bytes. **Unknown share: 40.4%** - above D
 
 ## Cited addresses
 
-1087 distinct code-bank ROM addresses cited by the research, task, inventory and content records (`labels.json`). By position: dat 16, loc 674, mid 18, sub 263, unk 116 (sub routine start, loc instruction start, mid inside an instruction, dat data, unk unknown). By class: data 16, inferred 117, observed 838, unknown 116.
+1089 distinct code-bank ROM addresses cited by the research, task, inventory and content records (`labels.json`). By position: dat 16, loc 675, mid 18, sub 263, unk 117 (sub routine start, loc instruction start, mid inside an instruction, dat data, unk unknown). By class: data 16, inferred 117, observed 839, unknown 117.
 
 Cited addresses in `unknown` bytes:
 
@@ -162,6 +162,7 @@ Cited addresses in `unknown` bytes:
 | $83:9B09 | docs/research/R-0055-rider-menu.md |
 | $83:9B13 | docs/research/R-0055-rider-menu.md |
 | $83:9B27 | docs/research/R-0055-rider-menu.md, docs/research/R-0056-tour-track-now-playing.md |
+| $83:9EC8 | docs/research/R-0057-one-run-result.md |
 | $83:9F96 | docs/research/R-0053-result-title-printer.md, tasks/LOCKED-TOURS.md |
 | $83:9FFA | docs/research/R-0046-track-breadth-matrix.md, docs/research/R-0053-result-title-printer.md, tasks/LOCKED-TOURS.md, tasks/TRACK-BREADTH.md |
 | $83:A1B4 | docs/research/R-0056-tour-track-now-playing.md |

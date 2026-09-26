@@ -460,6 +460,7 @@
     "src/core/front_end_screens.hpp:set_early_registers",
     "src/core/race_result.cpp:early_loads",
     "src/core/race_result.cpp:early_palette, early_objects",
+    "src/core/race_result.cpp:hide_result_objects",
     "src/core/race_result.cpp:objects_frame, tiles_frame, palette_low_frame, palette_high_frame"
    ],
    "region": "rom"
@@ -8664,6 +8665,7 @@
    "rom": [
     "$80:9805",
     "$80:98CB",
+    "$80:A09A",
     "$80:C236",
     "$80:F4B8"
    ],
