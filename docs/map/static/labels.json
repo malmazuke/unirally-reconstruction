@@ -650,9 +650,15 @@
   "class": "observed",
   "comment": "routine start",
   "label": "sub_808858",
+  "native": [
+   "src/core/front_end.hpp:FrontEndState::boot_start",
+   "src/core/front_end_screens.hpp:soft_reset",
+   "src/core/hunter_ending.cpp:(file)"
+  ],
   "source_records": [
    "docs/research/R-0006-observed-code-map.md",
    "docs/research/R-0054-boot-title-main-menu.md",
+   "docs/research/R-0064-hunter-ending-and-soft-reset.md",
    "tasks/COVERAGE-ROADMAP.md",
    "tasks/FRONT-END-ENDINGS.md",
    "tasks/HUNTER-ENDING.md",
@@ -776,13 +782,15 @@
   "comment": "routine start",
   "label": "sub_808C4E",
   "native": [
+   "src/core/front_end.cpp:check_records",
    "src/core/front_end.hpp:OnePlayerRecords"
   ],
   "source_records": [
    "docs/research/R-0054-boot-title-main-menu.md",
    "docs/research/R-0055-rider-menu.md",
    "docs/research/R-0056-tour-track-now-playing.md",
-   "docs/research/R-0057-one-run-result.md"
+   "docs/research/R-0057-one-run-result.md",
+   "docs/research/R-0064-hunter-ending-and-soft-reset.md"
   ]
  },
  {
@@ -984,6 +992,9 @@
   "class": "observed",
   "comment": "routine start",
   "label": "sub_8091D1",
+  "native": [
+   "src/core/front_end.cpp:soft_reset"
+  ],
   "source_records": [
    "docs/research/R-0006-observed-code-map.md"
   ]
@@ -1012,7 +1023,8 @@
   "comment": "routine start",
   "label": "sub_809314",
   "native": [
-   "src/core/front_end.cpp:restore_menu_screen"
+   "src/core/front_end.cpp:restore_menu_screen",
+   "src/core/hunter_ending.cpp:show_credits"
   ],
   "source_records": [
    "docs/research/R-0059-tour-completion.md"
@@ -1024,7 +1036,9 @@
   "comment": "routine start",
   "label": "sub_809318",
   "native": [
-   "src/core/front_end_screens.hpp:copy_oam"
+   "src/core/front_end_screens.hpp:copy_oam",
+   "src/core/hunter_ending.cpp:enter_hunter_code",
+   "src/core/hunter_ending.cpp:reveal_step"
   ],
   "source_records": [
    "docs/research/R-0054-boot-title-main-menu.md"
@@ -1251,7 +1265,8 @@
   "comment": "routine start",
   "label": "sub_8098A4",
   "native": [
-   "src/core/front_end_screens.hpp:send_arrow_off"
+   "src/core/front_end_screens.hpp:send_arrow_off",
+   "src/core/hunter_ending.cpp:enter_hunter_code"
   ],
   "source_records": [
    "docs/research/R-0055-rider-menu.md",
@@ -1437,6 +1452,7 @@
   "comment": "routine start",
   "label": "sub_80A09A",
   "native": [
+   "src/core/front_end.cpp:boot_frame_number",
    "src/core/front_end.cpp:clear_oam_buffer",
    "src/core/front_end.cpp:early_objects, early_palette",
    "src/core/front_end.cpp:set_early_registers",
@@ -1736,8 +1752,12 @@
   "class": "observed",
   "comment": "routine start",
   "label": "sub_80B124",
+  "native": [
+   "src/core/front_end.cpp:check_title_code"
+  ],
   "source_records": [
-   "docs/research/R-0055-rider-menu.md"
+   "docs/research/R-0055-rider-menu.md",
+   "docs/research/R-0064-hunter-ending-and-soft-reset.md"
   ]
  },
  {
@@ -1950,6 +1970,18 @@
   ]
  },
  {
+  "address": "$80:B612",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_80B612",
+  "native": [
+   "src/core/front_end.cpp:soft_reset"
+  ],
+  "source_records": [
+   "docs/research/R-0064-hunter-ending-and-soft-reset.md"
+  ]
+ },
+ {
   "address": "$80:B626",
   "class": "unknown",
   "comment": "unknown",
@@ -1965,6 +1997,10 @@
   "label": "sub_80B6D3",
   "native": [
    "src/core/award.cpp:award_left",
+   "src/core/front_end.hpp:HunterEnding::both_pads",
+   "src/core/front_end_screens.hpp:start_hunter_ending",
+   "src/core/hunter_ending.cpp:ending_press",
+   "src/core/hunter_ending.cpp:twelve_buttons",
    "src/core/race_result.cpp:lap_graph_frame",
    "src/core/race_result.cpp:lap_graph_left"
   ],
@@ -1979,7 +2015,7 @@
   "comment": "routine start",
   "label": "sub_80B71D",
   "native": [
-   "src/core/front_end_screens.hpp:pad_up, pad_down, pad_left, pad_right, pad_select"
+   "src/core/front_end_screens.hpp:pad_up, pad_down, pad_left, pad_right, pad_select, pad_a, pad_r"
   ],
   "source_records": [
    "docs/research/R-0054-boot-title-main-menu.md"
@@ -1991,7 +2027,7 @@
   "comment": "routine start",
   "label": "sub_80B74A",
   "native": [
-   "src/core/front_end_screens.hpp:pad_up, pad_down, pad_left, pad_right, pad_select"
+   "src/core/front_end_screens.hpp:pad_up, pad_down, pad_left, pad_right, pad_select, pad_a, pad_r"
   ],
   "source_records": [
    "docs/research/R-0056-tour-track-now-playing.md"
@@ -2012,7 +2048,7 @@
   "comment": "routine start",
   "label": "sub_80B794",
   "native": [
-   "src/core/front_end_screens.hpp:pad_up, pad_down, pad_left, pad_right, pad_select"
+   "src/core/front_end_screens.hpp:pad_up, pad_down, pad_left, pad_right, pad_select, pad_a, pad_r"
   ],
   "source_records": [
    "docs/research/R-0054-boot-title-main-menu.md"
@@ -2397,12 +2433,26 @@
   ]
  },
  {
+  "address": "$80:C202",
+  "class": "inferred",
+  "comment": "routine start",
+  "label": "sub_80C202",
+  "native": [
+   "src/core/front_end.hpp:HunterEnding::press_seen",
+   "src/core/hunter_ending.cpp:(file)"
+  ],
+  "source_records": [
+   "docs/research/R-0064-hunter-ending-and-soft-reset.md"
+  ]
+ },
+ {
   "address": "$80:C206",
   "class": "inferred",
   "comment": "routine start",
   "label": "sub_80C206",
   "native": [
    "src/core/front_end.hpp:RaceResult::press_seen",
+   "src/core/hunter_ending.cpp:first_page_press",
    "src/core/race_result.cpp:(file)",
    "src/core/race_result.cpp:one_run_wait_frame",
    "src/core/race_result.cpp:pressed"
@@ -2412,11 +2462,24 @@
   ]
  },
  {
+  "address": "$80:C20C",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_80C20C",
+  "native": [
+   "src/core/hunter_ending.cpp:hunter_ending_waits"
+  ],
+  "source_records": [
+   "docs/research/R-0064-hunter-ending-and-soft-reset.md"
+  ]
+ },
+ {
   "address": "$80:C236",
   "class": "inferred",
   "comment": "instruction start",
   "label": "loc_80C236",
   "native": [
+   "src/core/hunter_ending.cpp:first_page_press",
    "src/core/race_result.cpp:hide_result_objects",
    "src/core/race_result.cpp:lap_graph_frame"
   ],
@@ -3248,6 +3311,8 @@
   "label": "sub_80D1E8",
   "native": [
    "src/core/award.cpp:upload_step",
+   "src/core/hunter_ending.cpp:credits_pass",
+   "src/core/hunter_ending.cpp:timed_wait_pass",
    "src/core/race_result.cpp:race_result_exit_frame",
    "src/core/race_result.cpp:score_race"
   ],
@@ -3263,6 +3328,7 @@
   "native": [
    "src/core/front_end.cpp:boot_frame",
    "src/core/front_end.cpp:run_main_menu",
+   "src/core/hunter_ending.cpp:first_page_press",
    "src/core/now_playing.cpp:now_playing_frame",
    "src/core/rider_menu.cpp:rider_menu_frame",
    "src/core/tour_menu.cpp:tour_menu_frame",
@@ -3294,11 +3360,12 @@
   "label": "sub_80D20E",
   "native": [
    "src/core/front_end.cpp:boot_frame_waits",
+   "src/core/front_end.cpp:load_main_menu_screen",
    "src/core/front_end.cpp:menu_objects, menu_objects_high, menu_map, menu_bg2_tiles, menu_bg1_tiles, menu_bg1_tiles_high",
-   "src/core/front_end.cpp:set_menu_registers",
    "src/core/front_end.cpp:waits_for_frame",
    "src/core/front_end_screens.hpp:load_main_menu_screen",
    "src/core/front_end_screens.hpp:restore_menu_screen",
+   "src/core/front_end_screens.hpp:set_menu_registers",
    "src/core/front_end_screens.hpp:upload_last_frame, menu_screen_frame, restore_frame",
    "src/core/race_result.cpp:objects_frame, tiles_frame, palette_low_frame, palette_high_frame",
    "src/core/race_result.cpp:race_return_frame"
@@ -3486,8 +3553,74 @@
   "class": "inferred",
   "comment": "routine start",
   "label": "sub_80E2CF",
+  "native": [
+   "src/core/hunter_ending.cpp:(file)"
+  ],
   "source_records": [
+   "docs/research/R-0064-hunter-ending-and-soft-reset.md",
    "tasks/HUNTER-ENDING.md"
+  ]
+ },
+ {
+  "address": "$80:E2D8",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_80E2D8",
+  "native": [
+   "src/core/hunter_ending.cpp:copy_reveal_tables"
+  ],
+  "source_records": [
+   "docs/research/R-0064-hunter-ending-and-soft-reset.md"
+  ]
+ },
+ {
+  "address": "$80:E322",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_80E322",
+  "native": [
+   "src/core/hunter_ending.cpp:hunter_ending_waits",
+   "src/core/hunter_ending.cpp:reveal_step"
+  ],
+  "source_records": [
+   "docs/research/R-0064-hunter-ending-and-soft-reset.md"
+  ]
+ },
+ {
+  "address": "$80:E369",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_80E369",
+  "native": [
+   "src/core/hunter_ending.cpp:end_reveal",
+   "src/core/hunter_ending.cpp:page_load_frame, page_tiles_frame, reveal_steps"
+  ],
+  "source_records": [
+   "docs/research/R-0064-hunter-ending-and-soft-reset.md"
+  ]
+ },
+ {
+  "address": "$80:E37B",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80E37B",
+  "native": [
+   "src/core/front_end.hpp:FrontEndContent::reveal_brightness, FrontEndContent::reveal_offsets, FrontEndContent::credits_text, FrontEndContent::credits_poses, FrontEndContent::credits_objects"
+  ],
+  "source_records": [
+   "docs/research/R-0064-hunter-ending-and-soft-reset.md"
+  ]
+ },
+ {
+  "address": "$80:E3A1",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80E3A1",
+  "native": [
+   "src/core/front_end.hpp:FrontEndContent::reveal_brightness, FrontEndContent::reveal_offsets, FrontEndContent::credits_text, FrontEndContent::credits_poses, FrontEndContent::credits_objects"
+  ],
+  "source_records": [
+   "docs/research/R-0064-hunter-ending-and-soft-reset.md"
   ]
  },
  {
@@ -3982,7 +4115,10 @@
   "comment": "instruction start",
   "label": "loc_80F0D6",
   "native": [
-   "src/core/front_end.hpp:FrontEndMode"
+   "src/core/front_end.hpp:FrontEndMode",
+   "src/core/front_end.hpp:FrontEndScreen",
+   "src/core/front_end_screens.hpp:enter_hunter_code",
+   "src/core/hunter_ending.cpp:enter_hunter_code"
   ],
   "source_records": [
    "docs/research/R-0054-boot-title-main-menu.md",
@@ -4050,6 +4186,7 @@
   "comment": "routine start",
   "label": "sub_80F51B",
   "native": [
+   "src/core/hunter_ending.cpp:enter_hunter_code",
    "src/core/rider_menu.cpp:enter_rider_menu"
   ],
   "source_records": [
@@ -4117,6 +4254,19 @@
   ]
  },
  {
+  "address": "$80:F564",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80F564",
+  "native": [
+   "src/core/front_end.cpp:load_title",
+   "src/core/front_end.hpp:OnePlayerRecords::cheat"
+  ],
+  "source_records": [
+   "docs/research/R-0064-hunter-ending-and-soft-reset.md"
+  ]
+ },
+ {
   "address": "$80:F5B8",
   "class": "observed",
   "comment": "instruction start",
@@ -4129,10 +4279,29 @@
   ]
  },
  {
+  "address": "$80:F5C0",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80F5C0",
+  "native": [
+   "src/core/front_end.cpp:check_title_code",
+   "src/core/front_end.hpp:FrontEndState::title_code_step",
+   "src/core/front_end.hpp:OnePlayerRecords::cheat"
+  ],
+  "source_records": [
+   "docs/research/R-0064-hunter-ending-and-soft-reset.md"
+  ]
+ },
+ {
   "address": "$80:F5E3",
   "class": "inferred",
   "comment": "instruction start",
   "label": "loc_80F5E3",
+  "native": [
+   "src/core/front_end.cpp:check_title_code",
+   "src/core/front_end.hpp:FrontEndState::title_code_step",
+   "src/core/front_end.hpp:OnePlayerRecords::cheat"
+  ],
   "source_records": [
    "docs/research/R-0056-tour-track-now-playing.md"
   ]
@@ -4142,6 +4311,9 @@
   "class": "unknown",
   "comment": "unknown",
   "label": "unk_80F618",
+  "native": [
+   "src/core/front_end.cpp:check_title_code"
+  ],
   "source_records": [
    "docs/research/R-0054-boot-title-main-menu.md"
   ]
@@ -4152,6 +4324,7 @@
   "comment": "instruction start",
   "label": "loc_80F622",
   "native": [
+   "src/core/front_end.cpp:check_title_code",
    "src/core/front_end.cpp:scroll_logo",
    "src/core/front_end.hpp:LogoScroll"
   ],
@@ -4264,7 +4437,9 @@
   "comment": "routine start",
   "label": "sub_80FADF",
   "native": [
-   "src/core/front_end.cpp:FrameWaits"
+   "src/core/front_end.cpp:FrameWaits",
+   "src/core/front_end_screens.hpp:start_hunter_ending",
+   "src/core/hunter_ending.cpp:hunter_ending_waits"
   ],
   "source_records": [
    "docs/research/R-0054-boot-title-main-menu.md"
@@ -11302,6 +11477,18 @@
   ]
  },
  {
+  "address": "$83:8000",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_838000",
+  "native": [
+   "src/core/front_end.cpp:check_records"
+  ],
+  "source_records": [
+   "docs/research/R-0064-hunter-ending-and-soft-reset.md"
+  ]
+ },
+ {
   "address": "$83:800C",
   "class": "unknown",
   "comment": "unknown",
@@ -11596,6 +11783,10 @@
   "class": "observed",
   "comment": "routine start",
   "label": "sub_838B23",
+  "native": [
+   "src/core/front_end.cpp:check_records",
+   "src/core/front_end.cpp:soft_reset"
+  ],
   "source_records": [
    "docs/research/R-0054-boot-title-main-menu.md"
   ]
@@ -11607,6 +11798,7 @@
   "label": "sub_838B51",
   "native": [
    "src/core/front_end_screens.hpp:cleared_text",
+   "src/core/hunter_ending.cpp:set_up_credits",
    "src/core/rider_menu.cpp:print_rider_menu",
    "src/core/tour_menu.cpp:print_tour_menu",
    "src/core/track_menu.cpp:track_menu_entry_frame"
@@ -11762,6 +11954,7 @@
   "label": "sub_8391F7",
   "native": [
    "src/core/front_end.cpp:load_main_menu_screen",
+   "src/core/front_end.cpp:soft_reset",
    "src/core/front_end_screens.hpp:load_object_palette",
    "src/core/rider_menu.cpp:menu_text_palette, early_palette",
    "src/core/rider_menu.cpp:rider_menu_exit_frame"
@@ -11887,7 +12080,7 @@
   "comment": "routine start",
   "label": "sub_839543",
   "native": [
-   "src/core/front_end_screens.hpp:pad_up, pad_down, pad_left, pad_right, pad_select"
+   "src/core/front_end_screens.hpp:pad_up, pad_down, pad_left, pad_right, pad_select, pad_a, pad_r"
   ],
   "source_records": [
    "docs/research/R-0055-rider-menu.md"
@@ -12183,7 +12376,8 @@
    "src/core/award.cpp:fade_out_frames, blank_frame, reset_frame, background_tiles_frame, podium_map_frame, podium_tiles_frame, colours_frame, objects_frame, rider_frame, first_fade_in_frame, fade_in_frames",
    "src/core/award.cpp:fade_up",
    "src/core/front_end_screens.hpp:fade_up",
-   "src/core/front_end_screens.hpp:way_back_frame"
+   "src/core/front_end_screens.hpp:way_back_frame",
+   "src/core/hunter_ending.cpp:credits_setup_frame, credits_shown_frame, lower_pose_frame, credits_fade_in, credits_loop_frame"
   ],
   "source_records": [
    "docs/research/R-0059-tour-completion.md",
@@ -12199,11 +12393,13 @@
    "src/core/award.cpp:fade_down",
    "src/core/award.cpp:fade_out_frames, blank_frame, reset_frame, background_tiles_frame, podium_map_frame, podium_tiles_frame, colours_frame, objects_frame, rider_frame, first_fade_in_frame, fade_in_frames",
    "src/core/front_end_screens.hpp:fade_down",
-   "src/core/front_end_screens.hpp:way_back_frame"
+   "src/core/front_end_screens.hpp:way_back_frame",
+   "src/core/hunter_ending.cpp:page_load_frame, page_tiles_frame, reveal_steps"
   ],
   "source_records": [
    "docs/research/R-0059-tour-completion.md",
-   "docs/research/R-0062-gold-endings.md"
+   "docs/research/R-0062-gold-endings.md",
+   "docs/research/R-0064-hunter-ending-and-soft-reset.md"
   ]
  },
  {
@@ -12267,8 +12463,8 @@
    "src/core/award.cpp:(file)",
    "src/core/award.cpp:exit_blank_frame, menus_frame, exit_fade_in_frame, pick_tour_frame",
    "src/core/front_end.cpp:restore_menu_screen",
-   "src/core/front_end.cpp:set_menu_registers",
    "src/core/front_end_screens.hpp:restore_menu_screen",
+   "src/core/front_end_screens.hpp:set_menu_registers",
    "src/core/front_end_screens.hpp:way_back_frame"
   ],
   "source_records": [
@@ -12305,6 +12501,8 @@
   "native": [
    "src/core/front_end.cpp:waits_for_frame",
    "src/core/front_end_screens.hpp:result_scoring_frame",
+   "src/core/hunter_ending.cpp:hunter_ending_waits",
+   "src/core/hunter_ending.cpp:timed_wait_pass",
    "src/core/race_result.cpp:race_result_exit_frame",
    "src/core/tour_ending_scripts.hpp:Loop",
    "src/core/tour_ending_scripts.hpp:upload_built_pose"
@@ -12313,6 +12511,18 @@
    "docs/research/R-0057-one-run-result.md",
    "docs/research/R-0059-tour-completion.md",
    "docs/research/R-0060-pause-exits.md"
+  ]
+ },
+ {
+  "address": "$83:A93A",
+  "class": "inferred",
+  "comment": "routine start",
+  "label": "sub_83A93A",
+  "native": [
+   "src/core/hunter_ending.cpp:show_credits"
+  ],
+  "source_records": [
+   "docs/research/R-0064-hunter-ending-and-soft-reset.md"
   ]
  },
  {
@@ -12334,14 +12544,245 @@
   "comment": "routine start",
   "label": "sub_83AB9A",
   "native": [
-   "src/core/award.cpp:complete_tour"
+   "src/core/award.cpp:complete_tour",
+   "src/core/front_end.hpp:FrontEndScreen",
+   "src/core/front_end.hpp:HunterEndingPart",
+   "src/core/front_end_screens.hpp:start_hunter_ending",
+   "src/core/hunter_ending.cpp:(file)",
+   "src/core/hunter_ending.cpp:enter_hunter_code"
   ],
   "source_records": [
    "docs/research/R-0054-boot-title-main-menu.md",
    "docs/research/R-0059-tour-completion.md",
    "docs/research/R-0062-gold-endings.md",
+   "docs/research/R-0064-hunter-ending-and-soft-reset.md",
    "tasks/FRONT-END-ENDINGS.md",
    "tasks/HUNTER-ENDING.md"
+  ]
+ },
+ {
+  "address": "$83:AB9F",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_83AB9F",
+  "native": [
+   "src/core/hunter_ending.cpp:page_screens, page_mode, page_map, page_tile_bases",
+   "src/core/hunter_ending.cpp:set_page_registers"
+  ],
+  "source_records": [
+   "docs/research/R-0064-hunter-ending-and-soft-reset.md"
+  ]
+ },
+ {
+  "address": "$83:ABB3",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_83ABB3",
+  "native": [
+   "src/core/hunter_ending.cpp:start_hunter_ending"
+  ],
+  "source_records": [
+   "docs/research/R-0064-hunter-ending-and-soft-reset.md"
+  ]
+ },
+ {
+  "address": "$83:ABB9",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_83ABB9",
+  "native": [
+   "src/core/hunter_ending.cpp:cheat_page"
+  ],
+  "source_records": [
+   "docs/research/R-0064-hunter-ending-and-soft-reset.md"
+  ]
+ },
+ {
+  "address": "$83:ABDA",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_83ABDA",
+  "native": [
+   "src/core/hunter_ending.cpp:daily_news"
+  ],
+  "source_records": [
+   "docs/research/R-0064-hunter-ending-and-soft-reset.md"
+  ]
+ },
+ {
+  "address": "$83:ABFD",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_83ABFD",
+  "native": [
+   "src/core/hunter_ending.cpp:speedking"
+  ],
+  "source_records": [
+   "docs/research/R-0064-hunter-ending-and-soft-reset.md"
+  ]
+ },
+ {
+  "address": "$83:AC1F",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_83AC1F",
+  "native": [
+   "src/core/hunter_ending.cpp:(file)",
+   "src/core/hunter_ending.cpp:timed_wait_pass",
+   "src/core/hunter_ending.cpp:timed_wait_passes"
+  ],
+  "source_records": [
+   "docs/research/R-0064-hunter-ending-and-soft-reset.md"
+  ]
+ },
+ {
+  "address": "$83:AC32",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_83AC32",
+  "native": [
+   "src/core/hunter_ending.cpp:credits_setup_frame, credits_shown_frame, lower_pose_frame, credits_fade_in, credits_loop_frame",
+   "src/core/hunter_ending.cpp:set_up_credits"
+  ],
+  "source_records": [
+   "docs/research/R-0064-hunter-ending-and-soft-reset.md"
+  ]
+ },
+ {
+  "address": "$83:AC3B",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_83AC3B",
+  "native": [
+   "src/core/front_end_screens.hpp:set_menu_registers",
+   "src/core/hunter_ending.cpp:credits_setup_frame, credits_shown_frame, lower_pose_frame, credits_fade_in, credits_loop_frame",
+   "src/core/hunter_ending.cpp:set_up_credits"
+  ],
+  "source_records": [
+   "docs/research/R-0064-hunter-ending-and-soft-reset.md"
+  ]
+ },
+ {
+  "address": "$83:AC6D",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_83AC6D",
+  "native": [
+   "src/core/hunter_ending.cpp:credits_logo_offset",
+   "src/core/hunter_ending.cpp:credits_setup_frame, credits_shown_frame, lower_pose_frame, credits_fade_in, credits_loop_frame",
+   "src/core/hunter_ending.cpp:set_up_credits"
+  ],
+  "source_records": [
+   "docs/research/R-0064-hunter-ending-and-soft-reset.md"
+  ]
+ },
+ {
+  "address": "$83:ACDD",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_83ACDD",
+  "native": [
+   "src/core/hunter_ending.cpp:credits_object_colours",
+   "src/core/hunter_ending.cpp:credits_setup_frame, credits_shown_frame, lower_pose_frame, credits_fade_in, credits_loop_frame",
+   "src/core/hunter_ending.cpp:set_up_credits",
+   "src/core/hunter_ending.cpp:show_credits"
+  ],
+  "source_records": [
+   "docs/research/R-0064-hunter-ending-and-soft-reset.md"
+  ]
+ },
+ {
+  "address": "$83:AD33",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_83AD33",
+  "native": [
+   "src/core/hunter_ending.cpp:credits_object_colours",
+   "src/core/hunter_ending.cpp:credits_object_entries",
+   "src/core/hunter_ending.cpp:credits_setup_frame, credits_shown_frame, lower_pose_frame, credits_fade_in, credits_loop_frame",
+   "src/core/hunter_ending.cpp:set_up_credits",
+   "src/core/hunter_ending.cpp:show_credits"
+  ],
+  "source_records": [
+   "docs/research/R-0064-hunter-ending-and-soft-reset.md"
+  ]
+ },
+ {
+  "address": "$83:AD67",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_83AD67",
+  "native": [
+   "src/core/hunter_ending.cpp:credits_object_colours",
+   "src/core/hunter_ending.cpp:credits_setup_frame, credits_shown_frame, lower_pose_frame, credits_fade_in, credits_loop_frame",
+   "src/core/hunter_ending.cpp:set_up_credits",
+   "src/core/hunter_ending.cpp:show_credits",
+   "src/core/hunter_ending.cpp:upper_pose_word, lower_pose_word"
+  ],
+  "source_records": [
+   "docs/research/R-0064-hunter-ending-and-soft-reset.md"
+  ]
+ },
+ {
+  "address": "$83:AD9B",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_83AD9B",
+  "native": [
+   "src/core/hunter_ending.cpp:credits_pass",
+   "src/core/hunter_ending.cpp:credits_setup_frame, credits_shown_frame, lower_pose_frame, credits_fade_in, credits_loop_frame",
+   "src/core/hunter_ending.cpp:set_up_credits"
+  ],
+  "source_records": [
+   "docs/research/R-0064-hunter-ending-and-soft-reset.md"
+  ]
+ },
+ {
+  "address": "$83:ADFA",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_83ADFA",
+  "native": [
+   "src/core/hunter_ending.cpp:reset_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0064-hunter-ending-and-soft-reset.md"
+  ]
+ },
+ {
+  "address": "$83:AE01",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_83AE01",
+  "native": [
+   "src/core/front_end.hpp:FrontEndContent::reveal_brightness, FrontEndContent::reveal_offsets, FrontEndContent::credits_text, FrontEndContent::credits_poses, FrontEndContent::credits_objects"
+  ],
+  "source_records": [
+   "docs/research/R-0064-hunter-ending-and-soft-reset.md"
+  ]
+ },
+ {
+  "address": "$83:AE12",
+  "class": "data",
+  "comment": "data",
+  "label": "dat_83AE12",
+  "native": [
+   "src/core/front_end.hpp:FrontEndContent::reveal_brightness, FrontEndContent::reveal_offsets, FrontEndContent::credits_text, FrontEndContent::credits_poses, FrontEndContent::credits_objects"
+  ],
+  "source_records": [
+   "docs/research/R-0064-hunter-ending-and-soft-reset.md"
+  ]
+ },
+ {
+  "address": "$83:AE72",
+  "class": "data",
+  "comment": "data",
+  "label": "dat_83AE72",
+  "native": [
+   "src/core/front_end.hpp:FrontEndContent::reveal_brightness, FrontEndContent::reveal_offsets, FrontEndContent::credits_text, FrontEndContent::credits_poses, FrontEndContent::credits_objects"
+  ],
+  "source_records": [
+   "docs/research/R-0064-hunter-ending-and-soft-reset.md"
   ]
  },
  {
@@ -14978,6 +15419,18 @@
   "label": "loc_83FAAE",
   "source_records": [
    "tasks/LOCKED-TOURS.md"
+  ]
+ },
+ {
+  "address": "$83:FB41",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_83FB41",
+  "native": [
+   "src/core/front_end.cpp:check_records"
+  ],
+  "source_records": [
+   "docs/research/R-0064-hunter-ending-and-soft-reset.md"
   ]
  },
  {

@@ -46,12 +46,17 @@ struct FrontEndContent {
     // Each tour's ending tables (profile v22), by tour (`$00D0`): CRAWLER, JUMPER, SHUFFLER,
     // BOUNDER, WALKER, RUNNER, HOPPER, SPRINTER.
     std::array<std::span<const std::uint8_t>, 8> ending_tables{};
+    // HUNTER's ending (profile v23): the pages' HDMA tables, `$80:E37B` (INIDISP) and `$80:E3A1`
+    // (BG1VOFS), and the credits' text (`$83:AE01`), pose words (`$83:AE12`) and first 33
+    // objects (`$83:AE72`).
+    std::span<const std::uint8_t> reveal_brightness, reveal_offsets, credits_text, credits_poses,
+        credits_objects;
 };
 FrontEndContent front_end_content(const ClassicContentPack& pack);
 
 // The main menu's entries, in `$009B` order (COVERAGE-ROADMAP), and the demo it starts when idle;
-// then where the main menu's two codes lead (not `$009B` values): the WIPE RAM menu
-// (`$80:A9B4`) and code not yet read (`$80:F0D6`).
+// then where the main menu's WIPE RAM code leads (not a `$009B` value): its menu (`$80:A9B4`).
+// The other code plays HUNTER's ending in the front end (`$80:F0D6`, HUNTER-ENDING).
 enum class FrontEndMode : std::uint8_t {
     one_player,
     two_player,
@@ -59,8 +64,7 @@ enum class FrontEndMode : std::uint8_t {
     league,
     options,
     demo,
-    wipe_ram_code,
-    unread_code
+    wipe_ram_code
 };
 
 // The menu arrow ($80:FAF5): position and target in sixteenths of a pixel, and its spin.
@@ -151,6 +155,11 @@ struct OnePlayerRecords {
     // $77:1116: bit r once rider r's tutorial hints have ended in a race ($83:CE2C); a race
     // starts its hints only without its rider's bit ($82:D94C, R-0061).
     std::uint16_t tutorial_bits{};
+    // $77:10D0: the title's code was entered (`$80:F5C0-F60D`): every level is 3 and HUNTER's
+    // ending shows the CHEAT! page, until the next boot's title (`$80:F564`) puts back the levels
+    // saved at `$77:10E3` and clears the flag.
+    bool cheat{};
+    std::array<std::uint8_t, 16> levels_before_cheat{}; // $77:10E3 + rider
 };
 OnePlayerRecords cold_start_records();
 
@@ -226,6 +235,27 @@ struct TourEnding {
     std::uint16_t second_pose{}; // the pose built into `$16F0` (BOUNDER, SPRINTER)
 };
 
+// HUNTER's gold ending (`$83:AB9A`, HUNTER-ENDING): newspaper pages rolled in by HDMA, the credits
+// and a soft reset. Each part counts its frames from the frame the part before it ended (the
+// first from the scoring frame, or from the main menu's code).
+enum class HunterEndingPart : std::uint8_t {
+    first_page,  // the fade, DAILY NEWS (or CHEAT!) rolled in, then its wait
+    second_page, // SPEEDKING rolled in, then the timed wait
+    credits,     // the fade, the credits' loads, the fade in and their loop
+    leaving,     // the fade, then the soft reset
+};
+struct HunterEnding {
+    HunterEndingPart part{};
+    std::uint32_t part_start{}; // the script frame the part counts from
+    bool cheat_page{};          // `$77:10D0` was set: one CHEAT! page instead of the two
+    bool both_pads{};           // entered from the main menu, where `$80:B6D3` reads pad 2 too
+    // $0C70-$0CDD: the reveal's HDMA tables in work RAM, BG1VOFS's (72 bytes) then INIDISP's.
+    std::array<std::uint8_t, 110> reveal_tables{};
+    bool reveal_on{};          // HDMAEN = 0x60: channels 5 and 6 read the tables
+    bool press_seen{};         // $80:C202 saw a pad on its last pass
+    std::uint16_t pose_step{}; // $0036: the credits' pose step, 0 to 0x5F
+};
+
 // The result screen (`$80:951C`): the one-run result (`$80:CE90`) and its waits for a press, or
 // the lap result (`$80:8D6E`) and its graph, which the first press leaves.
 struct RaceResult {
@@ -285,6 +315,8 @@ enum class FrontEndScreen : std::uint8_t {
     award_return,      // $80:BC7B after PICK TOUR's return from a completion: `$80:A858`
     race_restart,      // $80:88DD: the race restarted from its pause menu, back to NOW PLAYING
     tour_ending,       // $83:88FD: a gold medal's ending, then the award's way back to PICK TOUR
+    hunter_ending,     // $83:AB9A: HUNTER's gold ending, then the soft reset to the boot
+    hunter_code,       // $80:F0D6: the main menu's code, 31 frames, then HUNTER's ending
 };
 
 // What `$83:9894` saves before a race (work RAM `$0000-$019D`) and `$83:987D` puts back after
@@ -306,12 +338,23 @@ struct SavedMenus {
 
 struct FrontEndState {
     std::uint32_t frame{}; // frames since power-on; the next update is this frame
+    // The boot's first frame: 0, or the frame of the last soft reset (`JML $80:8858`), after
+    // which the sound program's upload ends later than at power-on, and the boot's frames 97-403
+    // with it (HUNTER-ENDING): 3 frames after the captures' first resets, 2 after a second. The
+    // delay depends on the sound processor's state, which native does not model; a laboratory
+    // run takes it from the capture, as it takes a race's initialization frame.
+    std::uint32_t boot_start{};
+    bool after_soft_reset{};
+    std::uint32_t reset_upload_delay{3};
+    std::uint8_t title_code_step{}; // the title code's words matched so far (`$80:F5C0`)
     FrontEndScreen screen{};
     std::uint32_t script_frame{}; // frames since the current script began
     SnesVideoMemory video{};
     SnesVideoRegisters registers{};
     // The colours HDMA writes during this frame's picture; they stay in CGRAM after it.
     std::vector<SnesLineColour> line_colours;
+    // The registers HDMA writes during this frame's picture; the last writes stay after it.
+    std::vector<SnesLineRegister> line_registers;
     std::array<std::uint8_t, 544> oam_buffer{}; // $0A00, copied to OAM by DMA
     TextMap text{};                             // $0200, copied to BG2's map
     TextCursor printer{};                       // $009F and $00B0, kept between prints
@@ -330,6 +373,7 @@ struct FrontEndState {
     RaceResult race_result{};
     TourAward award{};
     TourEnding ending{};
+    HunterEnding hunter{};
     SavedMenus saved{}; // during a race and its return
     bool one_player{};  // $77:10AD = 1: 1P from a rider's choice to the main menu's return
     bool mode_chosen{};

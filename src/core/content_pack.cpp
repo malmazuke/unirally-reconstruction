@@ -587,6 +587,41 @@ const std::array<RequiredEntry, 24> ending_required{{
     {"front-end.ending-sprinter", 40,
      "260be8fb3b747688b586beeae410b0568dae4a48f4332e9ba2f1c075bf7fa23a"},
 }};
+
+// HUNTER-ENDING (profile v23): HUNTER's gold ending, its newspaper pages and credits
+// (tools/unirally_lab/content/front_end.py v23_new_entries).
+const std::array<RequiredEntry, 17> hunter_ending_required{{
+    {"front-end.asset.000", 224,
+     "28f6193ad660ca3df37909af865f927a23bda9280683d8f61384c0349f3b594b"},
+    {"front-end.asset.058", 32, "fd4ac04fdb910e87a18f20a9bd816c620712a23fbab35ceb79ed82a1910494f6"},
+    {"front-end.asset.093", 6144,
+     "8993b11e0f415818ebb4abbfe4e86a62eabfd4cf8ef53fddb579f2f00e6ad15d"},
+    {"front-end.asset.102", 32, "8c436d455bc0c3bf4db6e1c56462e2dcb56e54f815b1c31bc3109f5e95e26aaa"},
+    {"front-end.asset.103", 32, "8c436d455bc0c3bf4db6e1c56462e2dcb56e54f815b1c31bc3109f5e95e26aaa"},
+    {"front-end.asset.104", 32, "f4dc8610ae1377287df591611ea603a6a11f7abb28db9033bdd7826f542a26d7"},
+    {"front-end.asset.105", 12512,
+     "ac9852e353fef0fa80b3f9cf03bb36833c4cac7a3b3b9269015619d577fdda1f"},
+    {"front-end.asset.107", 13088,
+     "0ffc9e49938a1f3d074ae8bbcd610eae9548a4b4c04ee75203a332cbaa78a448"},
+    {"front-end.asset.108", 14336,
+     "58d6a33509e4dd66ca957e14e60a121e51faebea3370d245e720af8a2381b3cb"},
+    {"front-end.asset.109", 1920,
+     "87f25a9637f70ee73a727664d6a49d657e6b5820091e6718ea29e731ed9abdc2"},
+    {"front-end.asset.110", 1920,
+     "374b4092f714042b5063c5150668367a1765bd7b04e785e5b995c8175c801e96"},
+    {"front-end.asset.111", 1920,
+     "c58f5948706cbcfc72215d45f94f1ef868c5285a79a22302ea9782bd225d02c6"},
+    {"front-end.reveal-brightness", 38,
+     "b34ea369f06c9766d2a6d4d5ad1180340d3447d00e89ca7518fde013968cd8e8"},
+    {"front-end.reveal-offsets", 72,
+     "d3d113012ed26cdd825550a01a68384c58052ef080b43d582602f429e1a67820"},
+    {"front-end.credits-text", 17,
+     "74a0c919adde209d919e7905b4be8fdfeff8a78b3a0b6570ed8eaf38d4c48dc7"},
+    {"front-end.credits-poses", 96,
+     "45923dc0714290503cc519970298e7204628f4dc25ea1c6cb9f47f4a56f165bd"},
+    {"front-end.credits-objects", 132,
+     "0bbb4cc931af069cbe4706f4ece85fb649be10bac1e0e3dbbddc7acfb2ee8a3e"},
+}};
 // LOCKED-TOURS (profile v12): the race tracks of the five tours a cold start does not
 // list, and sceneries 1, 8 and 12. Generated from the rules file (tracks.py v12_new_entries).
 const std::array<RequiredEntry, 89> locked_tracks_required{{
@@ -747,7 +782,7 @@ const std::array<RequiredEntry, 89> locked_tracks_required{{
     {"scenery.12.palette", 352, "b2a9aefe13c1dc68454cf0a5c2bedb086c6e162dbea1df1f2ef108347d89ab63"},
 }};
 constexpr std::string_view two_track_rules_sha =
-    "f8aa55d05a62acc472885b9bf8c43a21d91fee93fbf89e66ea4850a013028a02";
+    "44839c406b613d9b2684a0a1734507df2cff6576575e5770158fff1a74066900";
 
 std::array<std::uint8_t, 32> hex_digest(std::string_view text) {
     if (text.size() != 64) throw std::logic_error("invalid compiled Classic SHA-256");
@@ -837,7 +872,7 @@ std::array<std::uint8_t, 32> sha256(std::span<const std::uint8_t> source) {
 
 namespace {
 constexpr std::array<std::string_view, 2> supported_profiles{"classic.pal.crawler.dragster.v1",
-                                                             "classic.pal.crawler.tracks.v22"};
+                                                             "classic.pal.crawler.tracks.v23"};
 } // namespace
 
 std::span<const std::string_view> supported_pack_profiles() {
@@ -903,7 +938,8 @@ std::vector<RequiredEntry> required_entries(bool tracks) {
                              std::span<const RequiredEntry>(lap_result_required),
                              std::span<const RequiredEntry>(award_required),
                              std::span<const RequiredEntry>(race_pairing_required),
-                             std::span<const RequiredEntry>(ending_required)})
+                             std::span<const RequiredEntry>(ending_required),
+                             std::span<const RequiredEntry>(hunter_ending_required)})
         out.insert(out.end(), table.begin(), table.end());
     return out;
 }

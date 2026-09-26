@@ -5,6 +5,8 @@
 #include "text_printer.hpp"
 
 #include <algorithm>
+#include <array>
+#include <optional>
 #include <stdexcept>
 #include <string>
 #include <utility>
@@ -41,8 +43,8 @@ constexpr std::uint16_t shadow_sign_offset = 0x0070;
 constexpr std::int16_t first_idle = 480, idle_after_move = 1500;
 constexpr std::uint8_t menu_entries = 5;
 constexpr std::uint16_t choose_buttons = 0x9080, down_buttons = 0x2400, up_buttons = 0x0800;
-// The two codes: Left, A, L and R; B, Down, L and R.
-constexpr std::uint16_t wipe_ram_code = 0x02b0, unread_code = 0x8430;
+// The two codes: Left, A, L and R (the WIPE RAM menu); B, Down, L and R (HUNTER's ending).
+constexpr std::uint16_t wipe_ram_code = 0x02b0, hunter_ending_code = 0x8430;
 
 // Fades ($80:9869, $80:9885): seven frames of brightness 2, 4, ..., 14, or 13, 11, ..., 1.
 constexpr unsigned fade_frames = 7;
@@ -55,15 +57,6 @@ constexpr std::uint32_t nintendo_registers_frame = 97, nintendo_load_frame = 99,
                         menu_objects_frame = 402, menu_map_filled_frame = 403,
                         menu_map_copy_frame = 407, menu_palette_frame = 408, menu_tiles_frame = 409,
                         menu_fade_in = 410, menu_palette_again_frame = 418, main_menu_frame = 419;
-
-void set_background(SnesBackground& bg, std::uint8_t sc) {
-    bg.map_word = static_cast<std::uint16_t>((sc & 0xfcU) << 8U);
-    bg.map_size = sc & 3U;
-}
-void set_tile_bases(SnesVideoRegisters& registers, std::uint8_t nba) {
-    registers.bg[0].tile_word = static_cast<std::uint16_t>((nba & 0x0fU) << 12U);
-    registers.bg[1].tile_word = static_cast<std::uint16_t>((nba >> 4U) << 12U);
-}
 
 // $80:FAF5: spin, then move a quarter of the way to the target. The quarter is an arithmetic
 // shift, so a positive gap under 4 moves nothing: x settles three sixteenths short.
@@ -133,9 +126,16 @@ void load_nintendo_screen(FrontEndState& state, const FrontEndContent& content) 
     load_vram(state, asset(content, nintendo_tiles), 0x2000);
 }
 
-// The title ($80:F55F at 228): BG1 only, 8bpp, its own 256 colours.
+// The title ($80:F55F at 228): BG1 only, 8bpp, its own 256 colours. After the title code
+// (`$80:F564-F580`) the levels it saved come back and its flag is cleared.
 void load_title(FrontEndState& state, const FrontEndContent& content) {
     reset_screen_state(state); // $80:A16A
+    auto& records = state.records;
+    if (records.cheat) {
+        records.tour_levels = records.levels_before_cheat;
+        records.cheat = false;
+    }
+    state.title_code_step = 0;
     auto& r = state.registers;
     r.force_blank = true;
     set_tile_bases(r, 0x01);
@@ -154,8 +154,9 @@ void copy_menu_text(FrontEndState& state, const FrontEndContent& content) {
     load_text(state, state.slide.shown_half);
 }
 
-void fade(FrontEndState& state, std::uint32_t first_frame, bool in) {
-    const auto step = state.frame - first_frame;
+// The boot's fades: boot frame `frame`, the fade's first `first_frame`.
+void fade(FrontEndState& state, std::uint32_t frame, std::uint32_t first_frame, bool in) {
+    const auto step = frame - first_frame;
     copy_oam(state);
     if (in) {
         state.registers.brightness = static_cast<std::uint8_t>(2 * (step + 1));
@@ -192,6 +193,20 @@ constexpr std::array<FrameWaits, 5> boot_frame_waits{{
     {407, 0},   // $80:ACD5 and the main menu, every frame from here
 }};
 
+// The boot's frame: the frames since power-on, or since a soft reset. After a reset the sound
+// program's upload (`$80:A09A`) ends `reset_upload_delay` frames later than at power-on, so the
+// boot's frames 97-403 come that much later; the records' wipe (404-406), which the reset does not
+// need, is skipped (HUNTER-ENDING). Empty on the frames the upload adds.
+std::optional<std::uint32_t> boot_frame_number(const FrontEndState& state) {
+    constexpr std::uint32_t wipe_frames = 3;
+    const auto delay = state.reset_upload_delay;
+    const auto frame = state.frame - state.boot_start;
+    if (!state.after_soft_reset || frame < nintendo_registers_frame) return frame;
+    if (frame < nintendo_registers_frame + delay) return std::nullopt;
+    if (frame <= menu_map_filled_frame + delay) return frame - delay;
+    return frame - delay + wipe_frames;
+}
+
 bool waits_for_frame(const FrontEndState& state) {
     // After a race NMI is off until `$80:D377` (R-0057) but for the sound upload's last frame and
     // `$80:D20E`'s first; then from the OAM copy on. `$83:879A`'s frame waits (`$83:A923`) leave
@@ -204,23 +219,53 @@ bool waits_for_frame(const FrontEndState& state) {
     // The award's waits are `$83:A923`'s, which leave the arrow alone.
     if (state.screen == FrontEndScreen::tour_award || state.screen == FrontEndScreen::tour_ending)
         return false;
+    if (state.screen == FrontEndScreen::hunter_ending) return hunter_ending_waits(state);
     // The lap result's second frame (`$80:8FFD-910E`) runs past its frame's end, so the tail
     // after it starts without a frame wait (R-0058).
     if (state.screen == FrontEndScreen::race_result && state.race_result.times.lap_race)
         return next != result_tail_frame;
     // Every other screen after the boot waits for each frame.
     if (state.screen != FrontEndScreen::boot) return true;
-    const auto frame = state.frame;
+    const auto frame = boot_frame_number(state);
+    if (!frame) return false;
     for (const auto& waits : boot_frame_waits) {
-        if (waits.count == 0 && frame >= waits.first) return true;
-        if (within(frame, waits.first, waits.count)) return true;
+        if (waits.count == 0 && *frame >= waits.first) return true;
+        if (within(*frame, waits.first, waits.count)) return true;
     }
     return false;
 }
 
+// $80:F5C0-F612, a pass of the title's 111: pad 1's word matching the code's next word
+// (`$80:F618`: Up, Left, Up, R, A) moves the code on, and any other word leaves it where it is.
+// The fifth saves the levels, opens every tour (level 3) and sets the flag `$77:10D0`, then calls
+// `$80:B124`, which is not read. The word after the code (`$80:F622`'s code bytes) has bit 1 set,
+// which no pad gives. On a cold start the records' wipe (boot frame 403) undoes it all.
+void check_title_code(FrontEndState& state, std::uint16_t pad) {
+    constexpr std::array<std::uint16_t, 5> title_code{pad_up, pad_left, pad_up, pad_r, pad_a};
+    auto& step = state.title_code_step;
+    if (step >= title_code.size() || pad != title_code[step]) return;
+    if (++step < title_code.size()) return;
+    auto& records = state.records;
+    records.levels_before_cheat = records.tour_levels;
+    records.tour_levels.fill(3);
+    records.cheat = true;
+}
+
+// $80:8C4E (boot frame 403): cartridge RAM that does not start with the signature `$83:8000` is
+// wiped to a cold start's records (`$83:FB41`, frames 403-405). Native's power-on has no records
+// of its own, so it always wipes; after a soft reset the signature is there. Then `$83:8B23`
+// clears the one-player flag `$77:10AD` and the pending reveal.
+void check_records(FrontEndState& state) {
+    if (!state.after_soft_reset) state.records = cold_start_records();
+    state.one_player = false;
+    state.records.pending_reveal = 0;
+}
+
 // The boot's scripted work for one frame, after the NMI and the frame wait.
-void boot_frame(FrontEndState& state, const FrontEndContent& content) {
-    const auto f = state.frame;
+void boot_frame(FrontEndState& state, const FrontEndContent& content, FrontEndPads pads) {
+    const auto frame = boot_frame_number(state);
+    if (!frame) return;
+    const auto f = *frame;
     if (f == 24) {
         clear_oam_buffer(state);
         load_cgram(state, asset(content, early_palette), 0xe0);
@@ -233,22 +278,24 @@ void boot_frame(FrontEndState& state, const FrontEndContent& content) {
         state.registers.main_screen = 0x02;
         state.registers.sub_screen = 0;
     } else if (within(f, nintendo_fade_in, fade_frames)) {
-        fade(state, nintendo_fade_in, true);
+        fade(state, f, nintendo_fade_in, true);
     } else if (within(f, nintendo_fade_out, fade_frames)) {
-        fade(state, nintendo_fade_out, false);
+        fade(state, f, nintendo_fade_out, false);
         if (f == title_load_frame) load_title(state, content);
     } else if (within(f, title_fade_in, fade_frames)) {
-        fade(state, title_fade_in, true);
+        fade(state, f, title_fade_in, true);
     } else if (f > title_fade_in + fade_frames - 1 && f < title_fade_out) {
         copy_oam(state); // $80:D1EC
+        check_title_code(state, pads.one);
     } else if (within(f, title_fade_out, fade_frames)) {
-        fade(state, title_fade_out, false);
+        fade(state, f, title_fade_out, false);
     } else if (f == menu_load_frame) {
         load_main_menu_screen(state, content);
     } else if (f == menu_objects_frame) {
         lay_out_menu_objects(state);
     } else if (f == menu_map_filled_frame) {
         copy_oam(state); // $80:D372
+        check_records(state);
     } else if (f == menu_map_copy_frame) {
         copy_menu_text(state, content);
     } else if (f == menu_palette_frame || f == menu_palette_again_frame) {
@@ -257,7 +304,7 @@ void boot_frame(FrontEndState& state, const FrontEndContent& content) {
         reload_menu_text_tiles(state, content);
         if (f == main_menu_frame) start_main_menu(state);
     } else if (within(f, menu_fade_in, fade_frames)) {
-        fade(state, menu_fade_in, true);
+        fade(state, f, menu_fade_in, true);
     }
 }
 
@@ -266,13 +313,15 @@ void run_main_menu(FrontEndState& state, const FrontEndContent& content, FrontEn
     copy_oam(state); // $80:D1EC
     // The codes come first, as exact words on either pad, the WIPE RAM code before the other
     // (`$80:ABEB-AC0A`).
-    for (const auto& [code, mode] : {std::pair{wipe_ram_code, FrontEndMode::wipe_ram_code},
-                                     std::pair{unread_code, FrontEndMode::unread_code}}) {
-        if (pads.one == code || pads.two == code) {
-            state.mode_chosen = true;
-            state.mode = mode;
-            return;
-        }
+    const auto entered = [&](std::uint16_t code) { return pads.one == code || pads.two == code; };
+    if (entered(wipe_ram_code)) {
+        state.mode_chosen = true;
+        state.mode = FrontEndMode::wipe_ram_code;
+        return;
+    }
+    if (entered(hunter_ending_code)) {
+        enter_hunter_code(state);
+        return;
     }
     auto& menu = state.menu;
     // `$80:AC0F-AC14`: the count is stored only while it stays positive; the demo is mode 5.
@@ -330,16 +379,29 @@ void scroll_logo(FrontEndState& state) {
     state.registers.bg[0].vofs = next;
 }
 
-// The colours HDMA wrote during the last picture stay in CGRAM.
-void keep_line_colours(FrontEndState& state) {
+// The colours HDMA wrote during the last picture stay in CGRAM, and the registers it wrote hold
+// their last values.
+void keep_line_writes(FrontEndState& state) {
     for (const auto& colour : state.line_colours) {
         state.video.cgram[colour.index * 2U] = static_cast<std::uint8_t>(colour.colour);
         state.video.cgram[colour.index * 2U + 1] = static_cast<std::uint8_t>(colour.colour >> 8U);
     }
     state.line_colours.clear();
+    for (const auto& write : state.line_registers) apply_line_register(state.registers, write);
+    state.line_registers.clear();
 }
 
 } // namespace
+
+void set_background(SnesBackground& bg, std::uint8_t sc) {
+    bg.map_word = static_cast<std::uint16_t>((sc & 0xfcU) << 8U);
+    bg.map_size = sc & 3U;
+}
+
+void set_tile_bases(SnesVideoRegisters& registers, std::uint8_t nba) {
+    registers.bg[0].tile_word = static_cast<std::uint16_t>((nba & 0x0fU) << 12U);
+    registers.bg[1].tile_word = static_cast<std::uint16_t>((nba >> 4U) << 12U);
+}
 
 void run_nmi_hook(FrontEndState& state, const FrontEndContent& content) {
     scroll_logo(state);
@@ -378,10 +440,6 @@ void load_object_palette(FrontEndState& state, const FrontEndContent& content) {
                0xf0);
 }
 
-// The main menu's screen ($80:D20E at 377): BG1 (8bpp logo) and BG2 (4bpp checks and text)
-// with the objects, which the subscreen adds at half (the arrow's shadow).
-// The main menu's registers (`$80:D20E`, `$83:A721`): BG1 and BG2 maps and tiles, mode 3, the
-// objects, the colour math.
 void set_menu_registers(SnesVideoRegisters& r) {
     set_background(r.bg[0], 0x02);
     set_background(r.bg[1], 0x13);
@@ -394,6 +452,8 @@ void set_menu_registers(SnesVideoRegisters& r) {
     r.colour_math = 0x7f;
 }
 
+// The main menu's screen ($80:D20E at 377): BG1 (8bpp logo) and BG2 (4bpp checks and text)
+// with the objects, which the subscreen adds at half (the arrow's shadow).
 void load_main_menu_screen(FrontEndState& state, const FrontEndContent& content) {
     load_cgram(state, content.base_palette, 0); // $80:A8A8
     state.registers.force_blank = true;
@@ -648,6 +708,14 @@ FrontEndContent front_end_content(const ClassicContentPack& pack) {
                                                  "walker",  "runner", "hopper",   "sprinter"};
     for (std::size_t tour = 0; tour < endings.size(); ++tour)
         content.ending_tables[tour] = pack.entry(std::string("front-end.ending-") + endings[tour]);
+    for (const unsigned id :
+         {0x00U, 0x3aU, 0x5dU, 0x66U, 0x67U, 0x68U, 0x69U, 0x6bU, 0x6cU, 0x6dU, 0x6eU, 0x6fU})
+        content.assets[id] = pack.entry(asset_name(id));
+    content.reveal_brightness = pack.entry("front-end.reveal-brightness");
+    content.reveal_offsets = pack.entry("front-end.reveal-offsets");
+    content.credits_text = pack.entry("front-end.credits-text");
+    content.credits_poses = pack.entry("front-end.credits-poses");
+    content.credits_objects = pack.entry("front-end.credits-objects");
     return content;
 }
 
@@ -672,19 +740,40 @@ FrontEndState start_front_end() {
     return {};
 }
 
+namespace front_end_screens {
+
+// The power-on path again (`$80:91D1`): every register and all work RAM reset (VRAM is cleared on
+// the boot's frame 18, `$80:B612`, while the screen is blank), the boot from its first frame; the
+// cartridge RAM's records and one-player flag are kept, and CGRAM and OAM until the boot reloads
+// them. The flag makes `$83:91F7` load rider 0's colours for the arrow, red, until `$83:8B23`
+// clears it.
+void soft_reset(FrontEndState& state) {
+    auto reset = start_front_end();
+    reset.frame = reset.boot_start = state.frame;
+    reset.after_soft_reset = true;
+    reset.records = state.records;
+    reset.one_player = state.one_player;
+    reset.video.cgram = state.video.cgram;
+    reset.video.oam = state.video.oam;
+    state = std::move(reset);
+}
+
+} // namespace front_end_screens
+
 void update_front_end(FrontEndState& state, const FrontEndContent& content, FrontEndPads pads) {
     if (state.mode_chosen) return;
-    keep_line_colours(state);
+    keep_line_writes(state);
     // NMIs are enabled at the end of the title's loads (`$80:F5B8`); the hook runs from then on:
     // the logo's slide, then the palette cycle.
-    if (state.frame == cycle_start_frame) state.cycle.running = true;
+    if (state.screen == FrontEndScreen::boot && boot_frame_number(state) == cycle_start_frame)
+        state.cycle.running = true;
     if (state.cycle.running) run_nmi_hook(state, content);
     if (waits_for_frame(state)) update_arrow(state, content);
     const FrontEndPads physical{physical_pad(pads.one), physical_pad(pads.two)};
     const auto screen = state.screen;
     ++state.script_frame;
     switch (screen) {
-    case FrontEndScreen::boot: boot_frame(state, content); break;
+    case FrontEndScreen::boot: boot_frame(state, content, physical); break;
     case FrontEndScreen::main_menu: run_main_menu(state, content, physical); break;
     case FrontEndScreen::rider_menu_entry: rider_menu_entry_frame(state, content); break;
     case FrontEndScreen::rider_menu: rider_menu_frame(state, content, physical); break;
@@ -706,13 +795,16 @@ void update_front_end(FrontEndState& state, const FrontEndContent& content, Fron
     case FrontEndScreen::race_restart: race_restart_frame(state); break;
     case FrontEndScreen::award_return: award_return_frame(state, content); break;
     case FrontEndScreen::tour_ending: tour_ending_frame(state, content); break;
+    case FrontEndScreen::hunter_ending: hunter_ending_frame(state, content, physical); break;
+    case FrontEndScreen::hunter_code: hunter_code_frame(state); break;
     }
     if (state.screen != screen) state.script_frame = 0;
     ++state.frame;
 }
 
 RgbFrame render_front_end(const FrontEndState& state) {
-    return render_snes_screen(state.video, state.registers, state.line_colours);
+    return render_snes_screen(state.video, state.registers, state.line_colours,
+                              state.line_registers);
 }
 
 } // namespace unirally

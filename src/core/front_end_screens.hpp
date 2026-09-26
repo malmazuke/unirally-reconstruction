@@ -57,7 +57,8 @@ inline constexpr std::size_t pair_tiles = 0x00, cycle_tiles = 0x08, left_sway = 
 // counts Select where `$80:B794` tests it. Choose is B, Start or A (`$80:B71D`); back is Y or X
 // (`$80:B74A`).
 inline constexpr std::uint16_t pad_up = 0x0800, pad_down = 0x0400, pad_left = 0x0200,
-                               pad_right = 0x0100, pad_select = 0x2000;
+                               pad_right = 0x0100, pad_select = 0x2000, pad_a = 0x0080,
+                               pad_r = 0x0010;
 inline constexpr std::uint16_t choose_buttons = 0x9080, back_buttons = 0x4040;
 
 // The `n`th 0xFF-terminated string of `table`, without its 0xFF.
@@ -103,6 +104,12 @@ void copy_oam(FrontEndState& state); // $80:9318
 void set_oam_x_high(FrontEndState& state, unsigned entry, bool high);
 void park_arrow(FrontEndState& state); // $83:99FA
 
+// BGnSC: a background's map address and size; BG12NBA: BG1's and BG2's tile addresses.
+void set_background(SnesBackground& bg, std::uint8_t sc);
+void set_tile_bases(SnesVideoRegisters& registers, std::uint8_t nba);
+// The main menu's registers (`$80:D20E`, `$83:A721`, `$83:AC3B-AC6A`): BG1 and BG2 maps and
+// tiles, mode 3, the objects, the colour math.
+void set_menu_registers(SnesVideoRegisters& r);
 // $80:A09A (boot frame 24): every OAM entry at (1, 1), every high bit set.
 void clear_oam_buffer(FrontEndState& state);
 // The registers `$80:A09A` sets (boot frame 97): BG1 and BG2 maps, mode 3, objects.
@@ -212,6 +219,18 @@ void tour_ending_frame(FrontEndState& state, const FrontEndContent& content);
 // row, five rows 0x100 words apart.
 void upload_pose(FrontEndState& state, const FrontEndContent& content, std::uint16_t pose,
                  unsigned word);
+
+// hunter_ending.cpp: HUNTER's gold ending (`$83:AB9A`, HUNTER-ENDING), from its tour's
+// completion or from the main menu's code (`both_pads`: `$80:B6D3` reads pad 2 there too); a
+// frame of it; whether the frame waits in `$80:FADF` (and so moves the arrow).
+void start_hunter_ending(FrontEndState& state, bool both_pads);
+void hunter_ending_frame(FrontEndState& state, const FrontEndContent& content, FrontEndPads pads);
+bool hunter_ending_waits(const FrontEndState& state);
+// `JML $80:8858`, the power-on entry: the boot again, the records kept.
+void soft_reset(FrontEndState& state);
+// The main menu's code B, Down, L and R (`$80:F0D6`), then a frame of its 31 before the ending.
+void enter_hunter_code(FrontEndState& state);
+void hunter_code_frame(FrontEndState& state);
 
 // lap_result.cpp: the lap result (R-0058). Its build on the result's first frame, after the
 // common part; its streams on the second; one step of its graph.
