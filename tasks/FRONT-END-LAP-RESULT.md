@@ -2,7 +2,7 @@
 
 ## Assignment
 
-- Status: **in progress**. Queued 25 September 2026 (UTC) by FRONT-END-1P-CONTINUATION; claimed
+- Status: **in review**. Queued 25 September 2026 (UTC) by FRONT-END-1P-CONTINUATION; claimed
   25 September 2026 at 23:50Z by the same Claude Code desktop session, on FRONT-END-1P-CONTINUATION's
   head `689fefb` (pull request #30, to be rebased onto `main` once it merges).
 - Milestone: M4 (original game coverage: menus)
@@ -71,21 +71,10 @@ recovery.
 
 ## Handoff
 
-
-- The native race's loading time between NOW PLAYING's fade and its initialization is known for
-  DRAGSTER only (121 frames on the laboratory's path). `front_end_runner` times no other track.
-  Measure ZOOM ZOO's from a capture (the first frame `$0FF1` moves).
-- `$77:0742` bit 8 matters here. `$80:9805` parks entries 0-29 (and `$0CF0`, `$0DE0`) only
-  while the bit is clear, and sets it. The first result after a cold start sets it, and it stays
-  set (it is in `$0742`, across races) until the lap result's graph loop clears it
-  (`$80:98CB`). So later one-run results skip the parking. Native keeps neither the bit nor
-  those tables and always parks; `$80:A09A` has already parked those entries, so the OAM agrees.
-  The lap graph uses entries 0-19.
-- Holding Right alone never finishes ZOOM ZOO: `lap-explore` circles the loop at 0 of 3 laps.
-- The capture exists: `local/evidence/front-end-lap-result/lap-won` (8,400 frames). It uses
-  M4-16 boundary-a's inputs, which drive three laps to 6724: MIKE 1:38.02 against BRONSEN
-  1:38.10, a win. Start at 7600 leaves the lap result, and PICK TRACK shows ZOOM ZOO done with
-  the cursor on BOWL. It has work RAM every frame and pictures 6700-8399.
-- Exact next experiment/command: run the native race between the menus for ZOOM ZOO in
-  `front_end_runner` (measure its loading frames from the capture), then compare with a copy of
-  the continuation's `compare.py`.
+- Findings: R-0058 and `decode/lap-result.md`, which checks the graph rule against every pass of
+  `lap-won`.
+- The race's loading varies by a frame (R-0039): the laboratory's `compare.py` aligns each native
+  race to the capture's own initialization (`--race-initialization`).
+- Next: [FRONT-END-TOUR-END](FRONT-END-TOUR-END.md). Its first captures (`forced-bronze`,
+  `forced-bronze-long`) and a decode of the completion, the award screen and PICK TOUR's return
+  are ready in `local/evidence/front-end-tour-end/`.
