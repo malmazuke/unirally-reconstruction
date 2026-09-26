@@ -1,5 +1,15 @@
 # Project state
 
+Updated 26 September 2026 (HUNTER-ENDING): **the whole one-player game can be finished natively.**
+- HUNTER's gold ending shows its newspaper pages, rolled down line by line, and the credits, each
+  until a press, then resets to the Nintendo screen with the records kept, as the original does.
+- The title's code (Up, Left, Up, R, A) and the main menu's code (B, Down, L and R, straight into
+  the ending) work.
+- Against captures of the original through the ending and one or two resets: no state difference
+  and every picture equal ([R-0064](research/R-0064-hunter-ending-and-soft-reset.md)).
+- Pack profile **v23** (`content pack --rules tests/manifests/content/classic-crawler-tracks-pack.json
+  --out local/classic-pal-crawler-tracks-v23.pack`).
+
 Updated 26 September 2026 (RACE-OFFSCREEN-ARROW): **the race's pictures match the original's on
 every compared frame.**
 - The arrow the original draws when the player is behind (not an off-screen indicator: it shows
