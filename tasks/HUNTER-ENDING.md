@@ -2,15 +2,17 @@
 
 ## Assignment
 
-- Status: **ready**. Queued 26 September 2026 (UTC) by FRONT-END-ENDINGS.
+- Status: **in progress**. Queued 26 September 2026 (UTC) by FRONT-END-ENDINGS; claimed 26 September
+  2026 at 20:40Z by the Claude Code desktop session that ran RACE-OFFSCREEN-ARROW, on `2ffcea0`.
 - Milestone: M4 (original game coverage: menus)
 - Coordinator: the claiming session is coordinator, primary and integrator
 - Task provider (fixed for all children; record any user-initiated platform change): Anthropic
-- Worker/session/runtime/model: recorded at claim
+- Worker/session/runtime/model: Claude Code desktop app, Claude Opus 5.5 (`claude-opus-5-5`)
 - Actual model/reasoning effort, routing rationale and frontier escalation question (if any):
   **tier 2** (screens).
 - Provider quota window/baseline timestamp, used/remaining or unknown, reserve and session
-  allowance (D-0004): recorded at claim.
+  allowance (D-0004): at claim the 5-hour window was 12% used and the weekly window 57%. The
+  user's allowance: continue until the weekly window reaches 80%.
 - Reviewer (primary automatically spawns fresh model/effort, isolated checkout; no user
   trigger): a fresh Anthropic subagent.
 - Dependencies and evidence of acceptance: FRONT-END-ENDINGS (R-0062, the other tours' endings and
