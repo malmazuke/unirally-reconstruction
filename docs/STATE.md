@@ -1,5 +1,15 @@
 # Project state
 
+Updated 26 September 2026 (RACE-OFFSCREEN-ARROW): **the race's pictures match the original's on
+every compared frame.**
+- The arrow the original draws when the player is behind (not an off-screen indicator: it shows
+  whenever the opponent leads, its length the lead) is drawn.
+- Captions reach the screen when the original's do: its text layer uploads one field a frame, the
+  caption last.
+- The rider look keeps each rider's head point from its last contact, as the original does.
+- R-0061's seven captures, the M4-16 primary's kept frames and the HUNTER tour's captures: 0
+  differing pixels ([R-0063](research/R-0063-race-arrow-and-bg3-uploads.md)).
+
 Updated 26 September 2026 (FRONT-END-ENDINGS): **a tour's gold medal plays its ending, and PICK
 TOUR reveals the tours it opens, as the original does.**
 - Each of the eight tours has its own scripted ending on a gold screen; then the menus come back.

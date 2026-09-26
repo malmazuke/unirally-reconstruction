@@ -1,5 +1,6 @@
 #include "movement.hpp"
 #include "presentation.hpp"
+#include "race_hud.hpp"
 #include "result_screen.hpp"
 #include "zoom_zoo_movement.hpp"
 #include <stdexcept>
@@ -14,6 +15,276 @@ void require(bool v) {
     throw std::runtime_error("presentation assertion failed at require #" +
                              std::to_string(require_count));
 }
+
+// RACE-OFFSCREEN-ARROW: the arrow's length, word and redraw. The captures show the side
+// arrows at every length; the up and down arrows, a rejected transition and the time-out
+// are the listing's alone, so they are pinned here.
+void arrow_rules() {
+  using unirally::ClassicRaceArrow;
+  using Direction = ClassicRaceArrow::Direction;
+  // $1255 steps every 8 race NMIs through 0-3: under a lead of 10 one chevron, then 2, 1, 0,
+  // 2 under 20 and 3, 2, 1, 0 from 20 (silvia-zoom-zoo 1702-1726: L3, L2, L1, none).
+  const std::array<unsigned, 4> blink{2, 1, 0, 2}, run{3, 2, 1, 0};
+  for (unsigned nmis = 0; nmis < 64; ++nmis) {
+    const auto step = (nmis / 8) % 4;
+    require(unirally::classic_arrow_chevrons(1, nmis) == 1);
+    require(unirally::classic_arrow_chevrons(9, nmis) == 1);
+    require(unirally::classic_arrow_chevrons(10, nmis) == blink[step]);
+    require(unirally::classic_arrow_chevrons(19, nmis) == blink[step]);
+    require(unirally::classic_arrow_chevrons(20, nmis) == run[step]);
+    require(unirally::classic_arrow_chevrons(400, nmis) == run[step]);
+  }
+  // The word: silvia-dragster 1746-1758. 18 against 19 share a pair; 19 against 20 do not.
+  unirally::ZoomZooState previous{}, updated{};
+  auto &player = updated.movement.riders[0].progress;
+  auto &opponent = updated.movement.riders[1].progress;
+  player.transition_count = 18;
+  opponent.transition_count = 19;
+  require(!unirally::classic_race_arrow(previous, updated, 0));
+  player.transition_count = 19;
+  opponent.transition_count = 20;
+  auto arrow = unirally::classic_race_arrow(previous, updated, 0);
+  require(arrow && arrow->direction == Direction::Right && arrow->chevrons == 1);
+  // Only a player behind sees it.
+  std::swap(player.transition_count, opponent.transition_count);
+  require(!unirally::classic_race_arrow(previous, updated, 0));
+  std::swap(player.transition_count, opponent.transition_count);
+  // The direction is the previous update's marker bits 15-14, not this update's.
+  const std::array<std::pair<std::uint16_t, Direction>, 4> markers{
+      {{0x0000, Direction::Right}, {0x4000, Direction::Left}, {0x8000, Direction::Up},
+       {0xc000, Direction::Down}}};
+  for (const auto &[marker, direction] : markers) {
+    previous.movement.riders[0].progress.marker_word = static_cast<std::uint16_t>(marker | 0x0123);
+    player.marker_word = 0x4000;
+    arrow = unirally::classic_race_arrow(previous, updated, 0);
+    require(arrow && arrow->direction == direction);
+  }
+  previous.movement.riders[0].progress.marker_word = 0;
+  // A rejected transition draws nothing ($81:E9DE).
+  player.transition_rejected = true;
+  require(!unirally::classic_race_arrow(previous, updated, 0));
+  player.transition_rejected = false;
+  // Crossing the line removes it on that update; the 10:00 time-out, which finishes the
+  // player with laps left after the word is written, one update later.
+  updated.race.riders[0].finished = 1;
+  updated.race.riders[0].laps_remaining = 0;
+  require(!unirally::classic_race_arrow(previous, updated, 0));
+  updated.race.riders[0].laps_remaining = 2;
+  require(unirally::classic_race_arrow(previous, updated, 0).has_value());
+  previous.race.riders[0].finished = 1;
+  require(!unirally::classic_race_arrow(previous, updated, 0));
+}
+
+// The NMI counts from the first update at fade 5 and redraws the arrow only after an update
+// with the progress phase set; the player's centred cells cut the up arrow to one chevron.
+void arrow_redraw() {
+  using Direction = unirally::ClassicRaceArrow::Direction;
+  unirally::ClassicRaceHudClock queue;
+  unirally::ZoomZooState dark{}, lit{};
+  lit.fade_level = 30;
+  lit.movement.riders[0].progress.transition_count = 0;
+  lit.movement.riders[1].progress.transition_count = 30; // a lead of 30: 3, 2, 1, 0
+  const auto shown = [&queue](const unirally::ZoomZooState &before,
+                              const unirally::ZoomZooState &after) {
+    queue.observe_update(before, after);
+    queue.observe_update(after, after); // published() lags one update
+    return queue.published().arrow;
+  };
+  auto even = lit, odd = lit;
+  odd.movement.progress_phase = 1;
+  // Dark updates run no race NMI; a phase-0 update keeps the arrow already drawn (none).
+  queue.observe_update(dark, dark);
+  queue.observe_update(dark, even);
+  require(!queue.published().arrow);
+  // NMIs counted: 1 (even), then 2 (odd): step 0, three chevrons.
+  queue.observe_update(even, odd);
+  queue.observe_update(odd, even);
+  require(queue.published().arrow &&
+          queue.published().arrow->chevrons == 3 &&
+          queue.published().arrow->direction == Direction::Right);
+  // Five more NMIs reach 8, the last after a phase-0 update, so its picture keeps three
+  // chevrons though the step is now 1; the redraw on the ninth draws step 1's two.
+  for (int i = 0; i < 2; ++i) {
+    queue.observe_update(even, odd);
+    queue.observe_update(odd, even);
+  }
+  queue.observe_update(even, even); // the eighth NMI, phase 0
+  queue.observe_update(even, odd);  // the ninth NMI, phase 1
+  require(queue.published().arrow->chevrons == 3); // the eighth NMI's picture
+  queue.observe_update(odd, even);
+  require(queue.published().arrow->chevrons == 2); // the ninth's
+  // The player draws level: the phase-0 picture keeps the arrow, the next redraw removes it.
+  auto level = even;
+  level.movement.riders[0].progress.transition_count = 30;
+  queue.observe_update(even, level);
+  queue.observe_update(level, level);
+  require(queue.published().arrow.has_value());
+  auto level_odd = level;
+  level_odd.movement.progress_phase = 1;
+  require(!shown(level, level_odd));
+
+  // The up arrow, redrawn while the player's crossing time shows: row 4 only.
+  unirally::ClassicRaceHudClock up;
+  auto marked = odd;
+  marked.movement.riders[0].progress.marker_word = 0x8000;
+  auto crossing = marked;
+  crossing.movement.progress_phase = 0;
+  crossing.race.riders[0].next_checkpoint = 1;
+  crossing.race.riders[0].checkpoint_display_countdown = 120;
+  crossing.race.riders[0].time_digits = {0, 3, 1, 2, 3};
+  up.observe_update(marked, marked);
+  up.observe_update(marked, marked); // the clock digits are written
+  up.observe_update(marked, marked);
+  auto arrow = up.published().arrow;
+  require(arrow && arrow->direction == Direction::Up && !arrow->middle_rows_covered);
+  up.observe_update(marked, crossing); // the crossing's cells are drawn over rows 5-6
+  up.observe_update(crossing, crossing);
+  arrow = up.published().arrow;
+  require(up.published().player_cells && arrow && arrow->middle_rows_covered);
+  auto redrawn = crossing;
+  redrawn.movement.progress_phase = 1;
+  up.observe_update(crossing, redrawn);
+  up.observe_update(redrawn, redrawn);
+  arrow = up.published().arrow;
+  require(arrow && arrow->direction == Direction::Up && arrow->middle_rows_covered);
+}
+
+// Where each arrow is drawn: a font whose every tile is solid shows the cells it covers.
+void arrow_drawing() {
+  using Direction = unirally::ClassicRaceArrow::Direction;
+  std::vector<std::uint8_t> font(2048, 0xff);
+  unirally::ClassicRacePresentationContent content{};
+  content.caption_font = font;
+  content.scenario = unirally::classic_race_scenario(unirally::ClassicRaceTrack::Dragster);
+  const auto inked_box = [&](unirally::ClassicRaceArrow arrow, int x0, int x1, int y0, int y1) {
+    unirally::RgbFrame frame{};
+    std::bitset<256 * 224> inked;
+    unirally::ClassicHudPublished published{};
+    published.clock_blanked = true;
+    published.arrow = arrow;
+    unirally::ZoomZooState state{};
+    state.race.riders[0].finished = 1;
+    state.race.riders[0].laps_remaining = 0; // `finish` at row 2
+    unirally::draw_classic_hud(frame, state, content, std::nullopt, published, {255, 0, 0},
+                               inked);
+    std::size_t inside = 0, below_row_4 = 0;
+    for (int y = 31; y < 224; ++y)
+      for (int x = 0; x < 256; ++x) {
+        if (!inked.test(static_cast<std::size_t>(y * 256 + x))) continue;
+        ++below_row_4;
+        if (x >= x0 && x <= x1 && y >= y0 && y <= y1) ++inside;
+      }
+    return inside == below_row_4 ? inside : 0;
+  };
+  // Every ink pixel below the HUD's own row, wherever it is.
+  const auto inked_below_hud = [&](unirally::ClassicRaceArrow arrow) {
+    return inked_box(arrow, 0, 255, 31, 223);
+  };
+  // Right, three chevrons: columns 26-28 of rows 14-15.
+  require(inked_box({Direction::Right, 3, false}, 208, 231, 111, 126) == 24 * 16);
+  require(inked_box({Direction::Right, 1, false}, 224, 231, 111, 126) == 8 * 16);
+  // Left, two: columns 5-6.
+  require(inked_box({Direction::Left, 2, false}, 40, 55, 111, 126) == 16 * 16);
+  // Up, three: columns 15-16 of rows 4-6; with the middle rows covered, row 4 only.
+  require(inked_box({Direction::Up, 3, false}, 120, 135, 31, 54) == 16 * 24);
+  require(inked_box({Direction::Up, 3, true}, 120, 135, 31, 38) == 16 * 8);
+  // Down, two: rows 24-25.
+  require(inked_box({Direction::Down, 2, false}, 120, 135, 191, 206) == 16 * 16);
+  // No chevrons: nothing drawn below the HUD row at all (a one-chevron arrow is seen there).
+  require(inked_below_hud({Direction::Right, 0, false}) == 0);
+  require(inked_below_hud({Direction::Right, 1, false}) == 8 * 16);
+}
+
+// RACE-OFFSCREEN-ARROW: the caption is the HUD queue's last task, so a caption consumed on
+// the update the clock's tenth ticks reaches the screen a picture late (silvia-runner-25
+// 1846), one consumed off a tick on time, and a dry queue's blank likewise
+// (andrew-dragster 2740). `published()` lags one update, as for the clock.
+void caption_queue() {
+  unirally::ClassicRaceHudClock queue;
+  unirally::ZoomZooState idle{};
+  auto &announcements = idle.player_announcements;
+  announcements.queue.entries[0] = 14;
+  announcements.queue.cooldown = 1;
+  queue.observe_update(idle, idle);
+  queue.observe_update(idle, idle); // the clock digits are written
+  require(queue.published().caption_event == 0);
+  // A consumption (the read cursor steps) on a tenth's tick: the clock goes first.
+  auto ticked = idle;
+  ticked.player_announcements.queue.cooldown = 120;
+  ticked.player_announcements.queue.read_cursor = 1;
+  ticked.player_announcements.queue.entries[1] = 14;
+  ticked.movement.timer.tenths = 1;
+  queue.observe_update(idle, ticked);
+  queue.observe_update(ticked, ticked);
+  require(queue.published().caption_event == 0 &&
+          queue.published().clock == std::optional<std::string>("0:00:1"));
+  queue.observe_update(ticked, ticked);
+  require(queue.published().caption_event == 14);
+  // Off a tick it is uploaded by the next NMI, whatever the cooldown does: when the hints end
+  // the cooldown is cleared and the consumption sets a lower one.
+  auto waiting = ticked;
+  waiting.player_announcements.queue.cooldown = 92;
+  auto consumed = waiting;
+  consumed.player_announcements.queue.cooldown = 40;
+  consumed.player_announcements.queue.read_cursor = 2;
+  consumed.player_announcements.queue.entries[2] = 15;
+  queue.observe_update(ticked, waiting);
+  queue.observe_update(waiting, consumed);
+  queue.observe_update(consumed, consumed);
+  require(queue.published().caption_event == 15);
+  // The first look at a dry queue after a consumption writes a blank.
+  auto dry = consumed;
+  dry.player_announcements.queue.cooldown = 10;
+  dry.player_announcements.empty_display = 1;
+  queue.observe_update(consumed, dry);
+  queue.observe_update(dry, dry);
+  require(queue.published().caption_event == 0);
+  // Behind the clock and the player's crossing time, a caption waits two pictures.
+  auto crossing = dry;
+  crossing.player_announcements.queue.cooldown = 120;
+  crossing.player_announcements.queue.read_cursor = 3;
+  crossing.player_announcements.queue.entries[3] = 16;
+  crossing.player_announcements.empty_display = 0;
+  crossing.movement.timer.tenths = 2;
+  crossing.race.riders[0].next_checkpoint = 1;
+  crossing.race.riders[0].checkpoint_display_countdown = 120;
+  crossing.race.riders[0].time_digits = {0, 0, 0, 2, 0};
+  queue.observe_update(dry, crossing);      // the clock
+  queue.observe_update(crossing, crossing); // the crossing time
+  require(queue.published().clock == std::optional<std::string>("0:00:2") &&
+          !queue.published().player_cells && queue.published().caption_event == 0);
+  queue.observe_update(crossing, crossing); // the caption
+  require(queue.published().player_cells && queue.published().caption_event == 0);
+  queue.observe_update(crossing, crossing);
+  require(queue.published().caption_event == 16);
+
+  // The HUNTER tour: a consumption and a front-of-queue push in the same update leave the read
+  // cursor where it was, and here the text is the one already showing. The display leaving
+  // its dry state still marks the consumption, so the next dry look uploads the HUD message
+  // buffer (the effect's name) as the original does.
+  const unirally::ClassicRaceTrack two_loops{41};
+  require(unirally::classic_race_scenario(two_loops).hunter_tour);
+  unirally::ClassicRaceHudClock tour;
+  unirally::ZoomZooState showing{};
+  showing.track = two_loops;
+  showing.player_announcements.empty_display = 1;
+  showing.player_announcements.queue.read_cursor = 4;
+  showing.hunter.caption = 5;
+  tour.observe_update(showing, showing);
+  tour.observe_update(showing, showing); // the clock digits are written
+  auto pushed = showing;
+  pushed.player_announcements.empty_display = 0;
+  auto after_push = pushed;
+  auto effect_name = pushed;
+  effect_name.player_announcements.empty_display = 1;
+  effect_name.hunter.caption = 7;
+  tour.observe_update(showing, pushed);     // consumed and pushed: caption 5 again
+  tour.observe_update(pushed, after_push);
+  tour.observe_update(after_push, effect_name); // the dry look: the effect's name
+  tour.observe_update(effect_name, effect_name);
+  require(tour.published().caption_event == 7);
+}
+
 } // namespace
 int main() {
   // Primary-source examples from bsnes' mode-3 direct-colour and add/halve
@@ -1465,5 +1736,10 @@ int main() {
     std::vector<std::uint8_t> long_table(4096, ' ');
     require(!unirally::classic_caption_entry(published, long_table).has_value());
   }
+
+  arrow_rules();
+  arrow_redraw();
+  arrow_drawing();
+  caption_queue();
 
 }

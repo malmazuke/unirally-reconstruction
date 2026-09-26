@@ -2,15 +2,18 @@
 
 ## Assignment
 
-- Status: **ready**. Queued 26 September 2026 (UTC) by RACE-RIDERS-OPPONENTS.
+- Status: **in review**. Queued 26 September 2026 (UTC) by RACE-RIDERS-OPPONENTS; claimed
+  26 September 2026 at 14:35Z by the Claude Code desktop session that ran FRONT-END-ENDINGS, on
+  `16fe22c`.
 - Milestone: M4 (original game coverage)
 - Coordinator: the claiming session is coordinator, primary and integrator
 - Task provider (fixed for all children; record any user-initiated platform change): Anthropic
-- Worker/session/runtime/model: recorded at claim
+- Worker/session/runtime/model: Claude Code desktop app, Claude Opus 5.5 (`claude-opus-5-5`)
 - Actual model/reasoning effort, routing rationale and frontier escalation question (if any):
   **tier 2** (the race's picture), unless the arrow needs race state the engine does not carry.
 - Provider quota window/baseline timestamp, used/remaining or unknown, reserve and session
-  allowance (D-0004): recorded at claim.
+  allowance (D-0004): at claim the 5-hour window was 19% used and the weekly window 53%. The
+  user's allowance: continue until the weekly window reaches 80%.
 - Reviewer (primary automatically spawns fresh model/effort, isolated checkout; no user
   trigger): a fresh Anthropic subagent.
 - Dependencies and evidence of acceptance: the race HUD (R-0043), the riders and opponents
@@ -26,7 +29,8 @@
 
 ## Outcome and boundaries
 
-When the other rider is off screen, the original draws an arrow in the HUD's ink, in the race's text layer (BG3),
+(As queued; R-0063 found the arrow is not an off-screen indicator: it shows whenever the player is
+behind.) When the other rider is off screen, the original draws an arrow in the HUD's ink, in the race's text layer (BG3),
 at rows 14-15: columns 5-7 when it is behind (on the left) and 26-28 when it is ahead (on the
 right). Native has never drawn it; R-0043 declared it an omission. R-0061's captures show both
 sides: SILVIA and GOLDWYN get ahead of the player, and the arrows differ on 26 to 32 of those
@@ -52,8 +56,33 @@ Out of scope: two-player play.
 | Timing | Consecutive frames around the arrow's appearance and disappearance, both sides | Equal to the pixel | pictures |
 | Nothing moves | The gates of RACE-RIDERS-OPPONENTS | Unchanged apart from the arrow's pixels, each accounted for | logs |
 
+## Result
+
+[R-0063](../docs/research/R-0063-race-arrow-and-bg3-uploads.md). The "off-screen arrow" is a
+direction arrow the one-player race NMI draws whenever the player is behind, whatever the screen
+shows, with a length that shows the opponent's lead. The late captions come from the NMI uploading
+one BG3 field a frame, the caption last. MIKE's early look came from the head point, which the
+original keeps from the rider's last contact. All three are native, and the race's pictures now
+match the original's on every compared frame, including the M4-16 primary's and the HUNTER tour's.
+A research worker decoded them; an implementation worker wrote the code; the primary integrated.
+Tier 2 stands: the race's state does not change.
+
+## Evidence
+
+`local/evidence/race-offscreen-arrow/`: `decode/` (the research, its replays and checks),
+`checks/` (the implementation's picture sweeps), `base-16fe22c/`, `gates.sh`.
+
+| Criterion | Result |
+| --- | --- |
+| Pictures | R-0061's seven captures: 0 differing pixels on 307 frames (7,767 before). The M4-16 primary, brake and trick-long kept frames: 0 (9,086 before). The eight HUNTER captures: 0 (4,938 before). |
+| Timing | Consecutive frames around the arrow's appearance, disappearance, length cycle and side switch (silvia-dragster, silvia-zoom-zoo, M4-16): 0 (22,521 before); silvia-runner-25 1836-1864: 0 (944 before). |
+| Nothing moves | The gates on `21d623b` (`local/evidence/race-offscreen-arrow/gates-21d623b.out`, 18:43-20:28Z, 105 minutes; a first run of the same head stopped when the disk filled, `gates-21d623b-disk-full.out`). The three presets build, ctest 27 of 27, the synthetic suite, both v1 contracts and every hidden app run pass. The eleven differential gates pass. The per-track recompare of both sweeps is identical. Every front-end comparison (main menu, 1P screens, results, the tour's completion, the pause exits, the riders' menus, the endings and reveals) shows no difference and all its pictures equal; the records match at 34 frames. The seven race captures and the track 25 frames: exact on every update and 0 differing pixels. The native equivalence sweep against main's binaries (base `16fe22c`) finds the race state identical on all 1,933,523 updates and 1,047 restarts, and 1,544 of 2,052 pictures different in 334 runs: the new drawing. A sample of 40 of those pictures, rendered on both sides (`checks/equivalence_regions.py`): every differing pixel is in the arrow's cells, except one picture (track 4, `right`, frame 5419) whose 74 pixels are on the player's upper body, the head-point rule. No function is over 80 lines; the address index passes. |
+
+## Review
+
+Tier 2, a fresh Opus 5.5 subagent in an isolated worktree. Round 1 (`085fe28`): approve the code, fix the evidence and records (`review-085fe28.md`): the sweep logs kept, the gate results recorded; and should-fixes (R-0063 on the skipped contact, a HUNTER caption case, two test assertions); answered in `414957f` and `21d623b`. Round 2 (`21d623b`): approved, provided these gate results are recorded (`review-21d623b.md`).
+
 ## Handoff
 
-- Exact next experiment/command: find the BG3 writes at rows 14-15 in the listing (the tilemap's
-  words for columns 5-7 and 26-28), starting from R-0043's writers (`$81:D1B2-$81:D30C`,
-  `$81:EB44-$81:EB83`), then capture consecutive frames from `silvia-dragster` around frame 1790.
+- Exact next experiment/command: after the review and the merge, [HUNTER-ENDING](HUNTER-ENDING.md)
+  or [FIFTH-WIN-COMPLETION](FIFTH-WIN-COMPLETION.md).

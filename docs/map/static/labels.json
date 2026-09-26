@@ -4459,6 +4459,7 @@
   "comment": "instruction start",
   "label": "loc_81823B",
   "native": [
+   "src/core/race_hud.cpp:classic_race_arrow",
    "src/core/race_progress.cpp:update_checkpoints"
   ],
   "source_records": [
@@ -6477,7 +6478,8 @@
   "comment": "instruction start",
   "label": "loc_819FA6",
   "native": [
-   "src/core/rider_look.cpp:head_point",
+   "src/core/rider_look.cpp:contact_head_offset",
+   "src/core/rider_look.hpp:RiderHeadOffset",
    "src/core/track_sampling.hpp:SamplePoint"
   ],
   "source_records": [
@@ -6904,6 +6906,7 @@
   "label": "sub_81BEA8",
   "native": [
    "src/core/presentation.hpp:classic_caption_entry",
+   "src/core/race_hud.cpp:ClassicRaceHudClock::request_caption",
    "src/core/race_hud.cpp:classic_caption_entry",
    "src/core/reward_queue.cpp:show_next_player_announcement"
   ],
@@ -6981,6 +6984,9 @@
   "class": "observed",
   "comment": "instruction start",
   "label": "loc_81C057",
+  "native": [
+   "src/core/race_hud.cpp:ClassicRaceHudClock::request_caption"
+  ],
   "source_records": [
    "docs/research/R-0042-stunt-name-captions.md",
    "tasks/CLASSIC-STUNT-NAMES-review.md",
@@ -7140,6 +7146,7 @@
   "label": "sub_81C55B",
   "native": [
    "src/core/hunter_effects.cpp:update_hunter_effects",
+   "src/core/race_hud.cpp:ClassicRaceHudClock::request_caption",
    "src/core/reward_queue.cpp:push_front_player_announcement"
   ],
   "source_records": [
@@ -7581,8 +7588,7 @@
   "comment": "instruction start",
   "label": "loc_81D1B2",
   "source_records": [
-   "docs/research/R-0043-classic-race-hud.md",
-   "tasks/RACE-OFFSCREEN-ARROW.md"
+   "docs/research/R-0043-classic-race-hud.md"
   ]
  },
  {
@@ -7591,8 +7597,7 @@
   "comment": "instruction start",
   "label": "loc_81D30C",
   "source_records": [
-   "docs/research/R-0043-classic-race-hud.md",
-   "tasks/RACE-OFFSCREEN-ARROW.md"
+   "docs/research/R-0043-classic-race-hud.md"
   ]
  },
  {
@@ -7713,6 +7718,7 @@
   "label": "sub_81E49F",
   "source_records": [
    "docs/research/R-0061-riders-and-opponents.md",
+   "docs/research/R-0063-race-arrow-and-bg3-uploads.md",
    "tasks/RACE-OFFSCREEN-ARROW.md"
   ]
  },
@@ -7723,6 +7729,7 @@
   "label": "sub_81E6F6",
   "source_records": [
    "docs/research/R-0061-riders-and-opponents.md",
+   "docs/research/R-0063-race-arrow-and-bg3-uploads.md",
    "tasks/RACE-OFFSCREEN-ARROW.md"
   ]
  },
@@ -7733,6 +7740,7 @@
   "label": "sub_81E79B",
   "source_records": [
    "docs/research/R-0061-riders-and-opponents.md",
+   "docs/research/R-0063-race-arrow-and-bg3-uploads.md",
    "tasks/RACE-OFFSCREEN-ARROW.md"
   ]
  },
@@ -7743,7 +7751,20 @@
   "label": "sub_81E831",
   "source_records": [
    "docs/research/R-0061-riders-and-opponents.md",
+   "docs/research/R-0063-race-arrow-and-bg3-uploads.md",
    "tasks/RACE-OFFSCREEN-ARROW.md"
+  ]
+ },
+ {
+  "address": "$81:E8C9",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_81E8C9",
+  "native": [
+   "src/core/presentation.hpp:ClassicRaceHudClock"
+  ],
+  "source_records": [
+   "docs/research/R-0063-race-arrow-and-bg3-uploads.md"
   ]
  },
  {
@@ -7751,6 +7772,10 @@
   "class": "inferred",
   "comment": "inside the instruction at $81:EB3F",
   "label": "mid_81EB40",
+  "native": [
+   "src/core/race_hud.cpp:ClassicRaceHudClock::redraw_arrow",
+   "src/core/race_hud.cpp:draw_classic_arrow"
+  ],
   "source_records": [
    "tasks/CLASSIC-RACE-HUD.md"
   ]
@@ -7760,9 +7785,12 @@
   "class": "inferred",
   "comment": "instruction start",
   "label": "loc_81EB44",
+  "native": [
+   "src/core/race_hud.cpp:ClassicRaceHudClock::redraw_arrow",
+   "src/core/race_hud.cpp:draw_classic_arrow"
+  ],
   "source_records": [
-   "docs/research/R-0043-classic-race-hud.md",
-   "tasks/RACE-OFFSCREEN-ARROW.md"
+   "docs/research/R-0043-classic-race-hud.md"
   ]
  },
  {
@@ -7770,9 +7798,12 @@
   "class": "inferred",
   "comment": "instruction start",
   "label": "loc_81EB83",
+  "native": [
+   "src/core/race_hud.cpp:ClassicRaceHudClock::redraw_arrow",
+   "src/core/race_hud.cpp:draw_classic_arrow"
+  ],
   "source_records": [
-   "docs/research/R-0043-classic-race-hud.md",
-   "tasks/RACE-OFFSCREEN-ARROW.md"
+   "docs/research/R-0043-classic-race-hud.md"
   ]
  },
  {
@@ -8166,6 +8197,10 @@
   "class": "observed",
   "comment": "instruction start",
   "label": "loc_81F30C",
+  "native": [
+   "src/core/presentation.hpp:ClassicRaceHudClock",
+   "src/core/race_hud.cpp:ClassicRaceHudClock::service_one_field"
+  ],
   "source_records": [
    "docs/research/R-0052-hunter-effects.md",
    "tasks/CLASSIC-STUNT-NAMES-review.md",
@@ -8177,6 +8212,10 @@
   "class": "observed",
   "comment": "instruction start",
   "label": "loc_81F31D",
+  "native": [
+   "src/core/presentation.hpp:ClassicRaceHudClock",
+   "src/core/race_hud.cpp:ClassicRaceHudClock::service_one_field"
+  ],
   "source_records": [
    "docs/research/R-0042-stunt-name-captions.md",
    "docs/research/R-0043-classic-race-hud.md",
@@ -8189,6 +8228,8 @@
   "comment": "instruction start",
   "label": "loc_81F322",
   "native": [
+   "src/core/presentation.hpp:ClassicRaceHudClock",
+   "src/core/race_hud.cpp:ClassicRaceHudClock::service_one_field",
    "src/core/race_hud.cpp:draw_classic_caption"
   ],
   "source_records": [
@@ -8202,6 +8243,10 @@
   "class": "observed",
   "comment": "instruction start",
   "label": "loc_81F327",
+  "native": [
+   "src/core/presentation.hpp:ClassicRaceHudClock",
+   "src/core/race_hud.cpp:ClassicRaceHudClock::service_one_field"
+  ],
   "source_records": [
    "docs/research/R-0042-stunt-name-captions.md",
    "tasks/CLASSIC-STUNT-NAMES-review.md"
@@ -8212,6 +8257,10 @@
   "class": "observed",
   "comment": "instruction start",
   "label": "loc_81F337",
+  "native": [
+   "src/core/presentation.hpp:ClassicRaceHudClock",
+   "src/core/race_hud.cpp:ClassicRaceHudClock::service_one_field"
+  ],
   "source_records": [
    "docs/research/R-0042-stunt-name-captions.md",
    "docs/research/R-0043-classic-race-hud.md",
@@ -8224,6 +8273,8 @@
   "comment": "instruction start",
   "label": "loc_81F33C",
   "native": [
+   "src/core/presentation.hpp:ClassicRaceHudClock",
+   "src/core/race_hud.cpp:ClassicRaceHudClock::service_one_field",
    "src/core/race_hud.cpp:draw_classic_caption"
   ],
   "source_records": [
@@ -8236,6 +8287,10 @@
   "class": "observed",
   "comment": "instruction start",
   "label": "loc_81F345",
+  "native": [
+   "src/core/presentation.hpp:ClassicRaceHudClock",
+   "src/core/race_hud.cpp:ClassicRaceHudClock::service_one_field"
+  ],
   "source_records": [
    "docs/research/R-0042-stunt-name-captions.md",
    "tasks/CLASSIC-STUNT-NAMES-review.md"
@@ -8561,6 +8616,7 @@
   "comment": "routine start",
   "label": "sub_82836D",
   "native": [
+   "src/core/rider_look.cpp:head_point",
    "src/core/rider_look.hpp:advance_rider_look"
   ],
   "source_records": [
@@ -8574,6 +8630,7 @@
   "comment": "instruction start",
   "label": "loc_82857F",
   "native": [
+   "src/core/rider_look.cpp:head_point",
    "src/core/rider_look.hpp:advance_rider_look"
   ],
   "source_records": [
@@ -8588,6 +8645,7 @@
   "comment": "instruction start",
   "label": "loc_828768",
   "native": [
+   "src/core/rider_look.cpp:head_point",
    "src/core/rider_look.hpp:advance_rider_look"
   ],
   "source_records": [
@@ -8600,6 +8658,7 @@
   "comment": "instruction start",
   "label": "loc_8287AD",
   "native": [
+   "src/core/rider_look.cpp:head_point",
    "src/core/rider_look.hpp:advance_rider_look"
   ],
   "source_records": [
@@ -8615,6 +8674,7 @@
   "label": "sub_8287C9",
   "native": [
    "src/core/rider_look.cpp:arc_b, arc_c, arc_d",
+   "src/core/rider_look.cpp:head_point",
    "src/core/rider_look.hpp:advance_rider_look",
    "src/core/rider_look.hpp:step_rider_head"
   ],
@@ -8629,6 +8689,7 @@
   "label": "loc_828926",
   "native": [
    "src/core/rider_look.cpp:arc_b, arc_c, arc_d",
+   "src/core/rider_look.cpp:head_point",
    "src/core/rider_look.hpp:advance_rider_look",
    "src/core/rider_look.hpp:step_rider_head"
   ],
@@ -9160,6 +9221,19 @@
   "label": "loc_829805",
   "source_records": [
    "docs/research/R-0010-native-movement.md"
+  ]
+ },
+ {
+  "address": "$82:9822",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_829822",
+  "native": [
+   "src/core/presentation.hpp:classic_race_arrow",
+   "src/core/race_hud.cpp:classic_race_arrow"
+  ],
+  "source_records": [
+   "docs/research/R-0063-race-arrow-and-bg3-uploads.md"
   ]
  },
  {

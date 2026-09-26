@@ -340,6 +340,12 @@ struct SpecialTileUpdate {
     std::uint16_t slow_tile{}; // $0F2D: flag pair 8 ran (the slope nudge and pose follow velocity)
     std::uint16_t crank_brake{}; // $0FB1: flag pair 12 ran (the brake path skips the idle step)
 };
+// Whether the update that left `tiles` skipped the rider's contact with the track, the
+// transient `contact_skip` above, from the words it leaves: a corkscrew step sets the physics
+// hold to 8 after the reset has counted it down, and a loop step other than the entry and the
+// top sets the loop's cooldown to 3 and moves its step on to 2-16. For the presentation, which
+// sees only the states between updates.
+bool special_tiles_skipped_contact(const SpecialTileRider& tiles);
 // $81:8690-86FE: the counters' part of the reset before the tile dispatch.
 void update_special_tile_counters(SpecialTileRider& tiles, ReflectionTransition& transition,
                                   std::uint8_t selected_high);

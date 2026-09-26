@@ -2954,6 +2954,7 @@
    "native": [
     "src/core/presentation.hpp:ClassicRaceHudClock",
     "src/core/race_hud.cpp:ClassicRaceHudClock::request_fields",
+    "src/core/race_hud.cpp:classic_race_arrow",
     "src/core/race_progress.cpp:cross_start_line",
     "src/core/race_progress.cpp:update_checkpoints",
     "src/core/zoom_zoo_movement.hpp:ClassicRaceScenario::tour_race"
@@ -3626,7 +3627,8 @@
     "NMX"
    ],
    "native": [
-    "src/core/race_update.cpp:update_rider_contact"
+    "src/core/race_update.cpp:update_rider_contact",
+    "src/core/rider_look.hpp:advance_rider_look"
    ],
    "observed_entries": {},
    "start": "$81:8E43",
@@ -4005,7 +4007,8 @@
     "NMX"
    ],
    "native": [
-    "src/core/rider_look.cpp:head_point",
+    "src/core/rider_look.cpp:contact_head_offset",
+    "src/core/rider_look.hpp:RiderHeadOffset",
     "src/core/track_sampling.cpp:collision_points",
     "src/core/track_sampling.cpp:pose_record_bytes",
     "src/core/track_sampling.hpp:SamplePoint"
@@ -5073,6 +5076,7 @@
    ],
    "native": [
     "src/core/presentation.hpp:classic_caption_entry",
+    "src/core/race_hud.cpp:ClassicRaceHudClock::request_caption",
     "src/core/race_hud.cpp:classic_caption_entry",
     "src/core/reward_queue.cpp:show_next_player_announcement"
    ],
@@ -5095,6 +5099,7 @@
     "NMX"
    ],
    "native": [
+    "src/core/race_hud.cpp:ClassicRaceHudClock::request_caption",
     "src/core/reward_queue.cpp:show_hunter_message",
     "src/core/zoom_zoo_movement.hpp:HunterEffects::hud_event"
    ],
@@ -5151,6 +5156,7 @@
     "NMX"
    ],
    "native": [
+    "src/core/race_hud.cpp:ClassicRaceHudClock::request_caption",
     "src/core/reward_queue.cpp:longest_display, display_saved_per_waiting, shortest_display",
     "src/core/reward_queue.cpp:show_next_player_announcement"
    ],
@@ -5356,6 +5362,7 @@
    ],
    "native": [
     "src/core/hunter_effects.cpp:update_hunter_effects",
+    "src/core/race_hud.cpp:ClassicRaceHudClock::request_caption",
     "src/core/reward_queue.cpp:push_front_player_announcement"
    ],
    "observed_entries": {},
@@ -5377,6 +5384,7 @@
    ],
    "native": [
     "src/core/hunter_effects.cpp:update_hunter_effects",
+    "src/core/race_hud.cpp:ClassicRaceHudClock::request_caption",
     "src/core/reward_queue.cpp:push_front_player_announcement"
    ],
    "observed_entries": {},
@@ -5444,6 +5452,7 @@
     "NMX"
    ],
    "native": [
+    "src/core/race_hud.cpp:ClassicRaceHudClock::request_caption",
     "src/core/race_state_io.cpp:check_queued_events",
     "src/core/reward_queue.cpp:queue_player_announcement"
    ],
@@ -6625,6 +6634,11 @@
    "mode_at_entry": [
     "NmX"
    ],
+   "native": [
+    "src/core/presentation.hpp:ClassicRaceHudClock",
+    "src/core/race_hud.cpp:ClassicRaceHudClock::redraw_arrow",
+    "src/core/race_hud.cpp:classic_arrow_chevrons"
+   ],
    "observed_entries": {},
    "start": "$81:E8C9",
    "static_entries": {
@@ -6641,6 +6655,9 @@
    "end": "$81:E9AB",
    "mode_at_entry": [
     "NMX"
+   ],
+   "native": [
+    "src/core/race_hud.cpp:ClassicRaceHudClock::redraw_arrow"
    ],
    "observed_entries": {},
    "start": "$81:E94F",
@@ -6660,6 +6677,13 @@
    "mode_at_entry": [
     "NMX"
    ],
+   "native": [
+    "src/core/presentation.hpp:classic_arrow_chevrons",
+    "src/core/race_hud.cpp:ClassicRaceHudClock::redraw_arrow",
+    "src/core/race_hud.cpp:classic_arrow_chevrons",
+    "src/core/race_hud.cpp:classic_race_arrow",
+    "src/core/race_hud.cpp:draw_classic_arrow"
+   ],
    "observed_entries": {},
    "start": "$81:E9AC",
    "static_entries": {
@@ -6676,6 +6700,10 @@
    "end": "$81:EB85",
    "mode_at_entry": [
     "NMX"
+   ],
+   "native": [
+    "src/core/race_hud.cpp:ClassicRaceHudClock::redraw_arrow",
+    "src/core/race_hud.cpp:draw_classic_arrow"
    ],
    "observed_entries": {},
    "start": "$81:EAC5",
@@ -6935,6 +6963,8 @@
     "NMX"
    ],
    "native": [
+    "src/core/presentation.hpp:ClassicRaceHudClock",
+    "src/core/race_hud.cpp:ClassicRaceHudClock::service_one_field",
     "src/core/race_hud.cpp:draw_classic_caption"
    ],
    "observed_entries": {},
@@ -7407,6 +7437,7 @@
     "NMx"
    ],
    "native": [
+    "src/core/rider_look.cpp:head_point",
     "src/core/rider_look.cpp:look_ahead",
     "src/core/rider_look.hpp:advance_rider_look"
    ],
@@ -7428,6 +7459,7 @@
     "NMX"
    ],
    "native": [
+    "src/core/rider_look.cpp:head_point",
     "src/core/rider_look.cpp:height_target",
     "src/core/rider_look.hpp:advance_rider_look"
    ],
@@ -7449,6 +7481,7 @@
     "NMX"
    ],
    "native": [
+    "src/core/rider_look.cpp:head_point",
     "src/core/rider_look.cpp:look_ahead",
     "src/core/rider_look.hpp:advance_rider_look"
    ],
@@ -7471,6 +7504,7 @@
    ],
    "native": [
     "src/core/rider_look.cpp:glance_back",
+    "src/core/rider_look.cpp:head_point",
     "src/core/rider_look.hpp:advance_rider_look"
    ],
    "observed_entries": {},
@@ -7496,6 +7530,7 @@
     "NMX"
    ],
    "native": [
+    "src/core/rider_look.cpp:head_point",
     "src/core/rider_look.cpp:look_for_rider",
     "src/core/rider_look.hpp:advance_rider_look"
    ],
@@ -7518,6 +7553,7 @@
     "NMX"
    ],
    "native": [
+    "src/core/rider_look.cpp:head_point",
     "src/core/rider_look.cpp:run_scripted_glances",
     "src/core/rider_look.hpp:advance_rider_look"
    ],
@@ -7539,6 +7575,7 @@
     "NMX"
    ],
    "native": [
+    "src/core/rider_look.cpp:head_point",
     "src/core/rider_look.hpp:advance_rider_look"
    ],
    "observed_entries": {},
@@ -7560,6 +7597,7 @@
     "NMX"
    ],
    "native": [
+    "src/core/rider_look.cpp:head_point",
     "src/core/rider_look.hpp:advance_rider_look"
    ],
    "observed_entries": {},
@@ -7580,6 +7618,7 @@
     "NMX"
    ],
    "native": [
+    "src/core/rider_look.cpp:head_point",
     "src/core/rider_look.hpp:advance_rider_look"
    ],
    "observed_entries": {},
@@ -7600,6 +7639,7 @@
     "NMX"
    ],
    "native": [
+    "src/core/rider_look.cpp:head_point",
     "src/core/rider_look.hpp:advance_rider_look"
    ],
    "observed_entries": {},
@@ -7621,6 +7661,7 @@
    ],
    "native": [
     "src/core/rider_look.cpp:glance_back",
+    "src/core/rider_look.cpp:head_point",
     "src/core/rider_look.hpp:advance_rider_look"
    ],
    "observed_entries": {},
@@ -7646,6 +7687,7 @@
     "NMX"
    ],
    "native": [
+    "src/core/rider_look.cpp:head_point",
     "src/core/rider_look.cpp:look_for_rider",
     "src/core/rider_look.hpp:advance_rider_look"
    ],
@@ -7668,6 +7710,7 @@
     "NMX"
    ],
    "native": [
+    "src/core/rider_look.cpp:head_point",
     "src/core/rider_look.cpp:run_scripted_glances",
     "src/core/rider_look.hpp:advance_rider_look"
    ],
@@ -7689,6 +7732,7 @@
     "NMX"
    ],
    "native": [
+    "src/core/rider_look.cpp:head_point",
     "src/core/rider_look.hpp:advance_rider_look"
    ],
    "observed_entries": {},
@@ -7710,6 +7754,7 @@
     "NMX"
    ],
    "native": [
+    "src/core/rider_look.cpp:head_point",
     "src/core/rider_look.hpp:advance_rider_look"
    ],
    "observed_entries": {},
@@ -7734,6 +7779,7 @@
    ],
    "native": [
     "src/core/rider_look.cpp:arc_b, arc_c, arc_d",
+    "src/core/rider_look.cpp:head_point",
     "src/core/rider_look.hpp:advance_rider_look",
     "src/core/rider_look.hpp:step_rider_head"
    ],
@@ -7761,6 +7807,7 @@
    ],
    "native": [
     "src/core/rider_look.cpp:arc_b, arc_c, arc_d",
+    "src/core/rider_look.cpp:head_point",
     "src/core/rider_look.hpp:advance_rider_look",
     "src/core/rider_look.hpp:step_rider_head"
    ],
@@ -7785,6 +7832,7 @@
    ],
    "native": [
     "src/core/rider_look.cpp:arc_b, arc_c, arc_d",
+    "src/core/rider_look.cpp:head_point",
     "src/core/rider_look.hpp:advance_rider_look",
     "src/core/rider_look.hpp:step_rider_head"
    ],
@@ -7815,6 +7863,7 @@
    ],
    "native": [
     "src/core/rider_look.cpp:arc_b, arc_c, arc_d",
+    "src/core/rider_look.cpp:head_point",
     "src/core/rider_look.hpp:advance_rider_look",
     "src/core/rider_look.hpp:step_rider_head"
    ],
@@ -8236,6 +8285,10 @@
    "mode_at_entry": [
     "NMX",
     "Nmx"
+   ],
+   "native": [
+    "src/core/presentation.hpp:classic_race_arrow",
+    "src/core/race_hud.cpp:classic_race_arrow"
    ],
    "observed_entries": {},
    "start": "$82:9822",
@@ -14017,18 +14070,18 @@
    "call returns in the calling mode": 1262
   },
   "bytes": 131072,
-  "cited_addresses": 1208,
+  "cited_addresses": 1210,
   "cited_by_class": {
    "data": 20,
    "inferred": 171,
-   "observed": 859,
+   "observed": 861,
    "unknown": 158
   },
   "cited_by_position": {
    "dat": 20,
    "loc": 724,
    "mid": 18,
-   "sub": 288,
+   "sub": 290,
    "unk": 158
   },
   "conflicts": 0,
@@ -14048,9 +14101,9 @@
   "jump_tables": 2,
   "mode_ambiguities": 7,
   "observed": 41778,
-  "routine_bytes_cited_by_native_code": 45081,
+  "routine_bytes_cited_by_native_code": 45955,
   "routines": 636,
-  "routines_cited_by_native_code": 335,
+  "routines_cited_by_native_code": 340,
   "unknown": 52881,
   "unknown_share": 0.4035
  }

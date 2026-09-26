@@ -64,6 +64,12 @@ void update_special_tile_counters(SpecialTileRider& tiles, ReflectionTransition&
     if (tiles.physics_hold) --tiles.physics_hold;
 }
 
+bool special_tiles_skipped_contact(const SpecialTileRider& tiles) {
+    if (tiles.physics_hold == corkscrew_hold) return true;
+    return tiles.loop_cooldown == loop_cooldown_updates && tiles.loop_step >= 2
+        && tiles.loop_step <= loop_end && tiles.loop_step != loop_top + 1U;
+}
+
 // $81:871C-875B, the boost tile (flag pair 2); the corkscrew's ejection adds
 // `extra` ($0DED) to the push. Leading support bypasses the push and the pose flag.
 void apply_boost_tile(RiderMovementState& rider, SurfaceTransition& surface, std::uint16_t extra) {

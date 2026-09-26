@@ -564,11 +564,12 @@ RgbFrame render_classic_race(const ZoomZooState& state,
     // ink it is the flat colour, which matches the original on every other measured frame.
     const auto& rider_source = previous_update ? *previous_update : state;
     std::bitset<256 * 224> caption_ink;
-    draw_classic_caption(frame, rider_source, content, bg3_ink, caption_ink);
-    draw_classic_hud(
-        frame, rider_source, content, history ? history->opponent_finish_frame : std::nullopt,
-        history ? std::optional<ClassicHudPublished>(history->published_hud) : std::nullopt,
-        bg3_ink, caption_ink);
+    const auto hud =
+        history ? std::optional<ClassicHudPublished>(history->published_hud) : std::nullopt;
+    draw_classic_caption(frame, rider_source, content, hud, bg3_ink, caption_ink);
+    draw_classic_hud(frame, rider_source, content,
+                     history ? history->opponent_finish_frame : std::nullopt, hud, bg3_ink,
+                     caption_ink);
     draw_race_riders(frame, rider_source, content, history, cgram, scroll.flip, bg1_above_objects,
                      caption_ink);
     // Every member covers both objects as well as the backgrounds: inside the window the

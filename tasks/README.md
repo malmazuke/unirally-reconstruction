@@ -70,10 +70,10 @@ The coordinator maintains the status registry below. Work orders further below d
 | FRONT-END-1P-CONTINUATION | accepted (tier 2, #30): after a one-run race, the result screen, the records and PICK TRACK again match the original frame for frame; the app returns to the menus; pack v18 | [After a one-player race](FRONT-END-1P-CONTINUATION.md) |
 | FRONT-END-LAP-RESULT | accepted (tier 2, #31): after a lap race, the lap result and its graph, the best laps and records match the original frame for frame; every race the app starts returns to the menus; pack v19 | [The lap race's result, and quit and restart](FRONT-END-LAP-RESULT.md) |
 | FRONT-END-TOUR-END | accepted (tier 2, #32): a tour's completion, the medal award and the way back to PICK TOUR and PICK TRACK match the original frame for frame; pack v20; the endings and the reveal moved to FRONT-END-ENDINGS | [A tour's completion: the award, the endings and the unlocks](FRONT-END-TOUR-END.md) |
-| FRONT-END-ENDINGS | in review (tier 2): the eight tours' gold endings and the reveal of new tours; pack v22 | [The gold medal's endings and the reveal of new tours](FRONT-END-ENDINGS.md) |
+| FRONT-END-ENDINGS | accepted (tier 2, #35): the eight tours' gold endings and the reveal of new tours; pack v22 | [The gold medal's endings and the reveal of new tours](FRONT-END-ENDINGS.md) |
 | RACE-PAUSE-EXITS | accepted (tier 1, #33): the pause menu's quit and restart go through the menus as the original's do | [The race's pause menu in one-player play: restart and quit](RACE-PAUSE-EXITS.md) |
 | RACE-RIDERS-OPPONENTS | accepted (tier 1, #34): every rider against every opponent the one-player menus choose; pack v21 | [The one-player race's other riders and opponents](RACE-RIDERS-OPPONENTS.md) |
-| RACE-OFFSCREEN-ARROW | ready | [The race's off-screen rider arrows](RACE-OFFSCREEN-ARROW.md) |
+| RACE-OFFSCREEN-ARROW | in review (tier 2): the direction arrow, the BG3 upload order, the look's head point | [The race's off-screen rider arrows](RACE-OFFSCREEN-ARROW.md) |
 | HUNTER-ENDING | ready | [HUNTER's gold ending and the soft reset](HUNTER-ENDING.md) |
 | FIFTH-WIN-COMPLETION | ready | [A tour completed by its fifth win](FIFTH-WIN-COMPLETION.md) |
 | ROLLING-CONTACT | ready | [A rolling rider's second contact after a long shoulder rotation (HUNTER-EFFECTS review)](ROLLING-CONTACT.md) |
