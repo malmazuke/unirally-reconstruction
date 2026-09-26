@@ -201,7 +201,9 @@ bool FrontEndSession::update(FrontEndPads pads) {
   ++frames_;
   if (notice_frames_) {
     if (--notice_frames_ == 0) {
+      const auto records = state_.records;
       state_ = *main_menu_;
+      state_.records = records;
       ++returns_;
     }
     return false;
@@ -218,6 +220,22 @@ bool FrontEndSession::update(FrontEndPads pads) {
   notice_frames_ = 100;
   ++notices_;
   return false;
+}
+
+bool FrontEndSession::race_returns() const {
+  return !classic_race_scenario(race_track()).tour_race;
+}
+
+void FrontEndSession::return_from_race(const ZoomZooState &race) {
+  // The front end's frame: the race's updates after DRAGSTER's 121 frames of
+  // loading on the laboratory's menu path (R-0057); for the other tracks a
+  // label, as the scenarios' initialization frames are.
+  constexpr std::uint32_t loading_frames = 121;
+  const auto updates =
+      race.movement.frame - classic_race_scenario(race.track).initialization_frame;
+  unirally::return_from_race(state_, content_, state_.frame - 1 + loading_frames + updates,
+                             {race.race.total_times[0], race.race.total_times[1]});
+  ++races_;
 }
 
 RgbFrame FrontEndSession::frame() const {

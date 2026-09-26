@@ -32,6 +32,13 @@ inline constexpr std::uint8_t four_hidden = 0x55, four_shown = 0x00;
 // Assets: rider r's sprite palette is asset 6 + r (R-0055); the base BG palette's halves are
 // assets 35 and 36 (`$80:A858`).
 inline constexpr unsigned first_rider_palette = 6, base_palette_low = 35, base_palette_high = 36;
+// A record's holder that is no rider, SOMEONE; from 0x11 on, the computer opponents (`$017F`).
+inline constexpr std::uint8_t someone = 0x10;
+// After a race (R-0057), the return's script frames from the race's last frame: NMI runs the
+// arrow on the sound upload's last frame and `$80:D20E`'s first, then from the OAM copy on
+// (the restore frame). Leaving the result: `$83:879A`'s two frame waits leave the arrow alone.
+inline constexpr std::uint32_t upload_last_frame = 74, menu_screen_frame = 75, restore_frame = 101;
+inline constexpr std::uint32_t scoring_frame = 2, scoring_wait_frame = 3;
 // The one-player tours: five tracks each; HUNTER is tour 8.
 inline constexpr std::uint8_t tracks_per_tour = 5, hunter = 8;
 // The object tiles at VRAM word 0x7A00 that PICK TOUR and PICK TRACK swap (`$83:94D0`,
@@ -55,6 +62,9 @@ inline std::uint8_t& oam_byte(FrontEndState& state, unsigned entry, unsigned fie
     return state.oam_buffer[entry * 4 + field];
 }
 
+// $80:98A4: the arrow flies off the left edge.
+void send_arrow_off(FrontEndState& state);
+
 std::span<const std::uint8_t> asset(const FrontEndContent& content, unsigned id);
 // The VRAM copier `$82:B1DB` from word address `word`; CGRAM `$82:B183` from colour `colour`.
 void load_vram(FrontEndState& state, std::span<const std::uint8_t> data, unsigned word);
@@ -66,6 +76,14 @@ void copy_oam(FrontEndState& state); // $80:9318
 void set_oam_x_high(FrontEndState& state, unsigned entry, bool high);
 void park_arrow(FrontEndState& state); // $83:99FA
 
+// $80:A09A (boot frame 24): every OAM entry at (1, 1), every high bit set.
+void clear_oam_buffer(FrontEndState& state);
+// The registers `$80:A09A` sets (boot frame 97): BG1 and BG2 maps, mode 3, objects.
+void set_early_registers(FrontEndState& state);
+// $83:91F7: colour 0xF0 on, the rider's palette in a one-player game, else asset 2.
+void load_object_palette(FrontEndState& state, const FrontEndContent& content);
+// $80:D20E: the main menu's screen (boot frame 377), its text left out.
+void load_main_menu_screen(FrontEndState& state, const FrontEndContent& content);
 // $80:D2C1: every object hidden, the main menu's objects laid out, the arrow parked.
 void lay_out_menu_objects(FrontEndState& state);
 // The main menu's text into the text map ($80:ACD5: `$80:D1FA` clears it, `$80:C3BC` prints).
@@ -119,5 +137,12 @@ void enter_now_playing(FrontEndState& state);
 void now_playing_entry_frame(FrontEndState& state, const FrontEndContent& content);
 void now_playing_frame(FrontEndState& state, const FrontEndContent& content, FrontEndPads pads);
 void race_fade_frame(FrontEndState& state);
+
+// race_result.cpp: after a one-player race, the menus' return and the result screen.
+void begin_race_return(FrontEndState& state, const FrontEndContent& content, std::uint32_t frame,
+                       const RaceTotals& totals);
+void race_return_frame(FrontEndState& state, const FrontEndContent& content);
+void race_result_frame(FrontEndState& state, const FrontEndContent& content, FrontEndPads pads);
+void race_result_exit_frame(FrontEndState& state, const FrontEndContent& content);
 
 } // namespace unirally::front_end_screens

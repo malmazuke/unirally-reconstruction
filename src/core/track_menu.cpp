@@ -190,6 +190,7 @@ void enter_track_menu(FrontEndState& state, bool returning) {
     auto& menu = state.track_menu;
     menu.returning = returning;
     menu.medal_latched = false;
+    state.records.tries = 3; // $80:E857
     menu.marker_step = 0;
     for (unsigned entry = 0; entry < hidden_on_entry_end; entry += 4)
         high_bits(state, entry) = four_hidden;
@@ -262,6 +263,10 @@ void track_menu_exit_frame(FrontEndState& state, const FrontEndContent& content)
     }
     // `$83:94D0`: the usual object tiles back, without an OAM copy.
     load_vram(state, content.medal_tiles, swapped_object_tiles_word);
+    if (state.records.race_lost) { // $80:EA14-EA2E
+        state.records.race_lost = false;
+        --state.records.tries;
+    }
     if (state.track_menu.back) {
         // `$80:BC22-BC34` would clear the run's tracks when the medal to race for is not the
         // best; a cold start's are both 0.

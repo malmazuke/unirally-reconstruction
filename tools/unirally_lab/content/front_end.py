@@ -151,3 +151,17 @@ def v17_new_entries(rom: bytes) -> list[dict[str, Any]]:
     check_tour_badge_tiles(rom)
     entries = [_raw(f"front-end.asset.{asset:03d}", rom, [_asset_piece(rom, asset)]) for asset in TOUR_MENU_ASSETS]
     return entries + [table_entry(rom, *table) for table in TOUR_MENU_TABLES]
+
+
+# Profile v18 (FRONT-END-1P-CONTINUATION, R-0057): the one-run result screen's text (`$80:D187`:
+# the track's name, COMPLETE, the headings and four rows) and its three trophies (`$80:D17B`,
+# entries 112-114: x, y, tile, attribute).
+RESULT_TABLES = (
+    ("front-end.result-text", 0x80D187, None),
+    ("front-end.result-icons", 0x80D17B, 12),
+)
+
+
+def v18_new_entries(rom: bytes) -> list[dict[str, Any]]:
+    """The entries profile v18 adds to v17 (FRONT-END-1P-CONTINUATION), in pack order."""
+    return [table_entry(rom, *table) for table in RESULT_TABLES]

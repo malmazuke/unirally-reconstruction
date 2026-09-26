@@ -9,8 +9,8 @@ namespace {
 
 // Control codes, dispatched through `$80:C3DC` by 0xFF - code (`$80:C3C6-C3D9`).
 constexpr std::uint8_t end_of_text = 0xff, position = 0xfe, number = 0xfd, centre = 0xfc,
-                       nothing = 0xfb, attribute = 0xf9, track_name = 0xf7, place_object = 0xef,
-                       first_control = 0xee;
+                       nothing = 0xfb, attribute = 0xf9, rider_name = 0xf8, track_name = 0xf7,
+                       race_time = 0xf1, place_object = 0xef, capitals = 0xee, first_control = 0xee;
 constexpr std::uint8_t row_code = 0xf2; // positions F7's name alone, like FC
 constexpr std::uint16_t priority_bit = 0x2000;
 constexpr std::uint8_t small_glyph = 0x80;
@@ -99,6 +99,28 @@ std::span<const std::uint8_t> name_of(std::span<const std::uint8_t> names, unsig
     return names.subspan(at, end - at);
 }
 
+// A rider's 16-byte name record (`$80:9B2F`), to its 0xFF.
+std::span<const std::uint8_t> record_name(std::span<const std::uint8_t> records, unsigned rider) {
+    constexpr std::size_t record = 16;
+    if ((rider + 1) * record > records.size())
+        throw std::invalid_argument("rider name is not in the records");
+    const auto name = records.subspan(rider * record, record);
+    std::size_t end = 0;
+    while (end < record && name[end] != end_of_text) ++end;
+    return name.first(end);
+}
+
+// $80:F8B9: small letters become capitals, digits the big font's (0x16-0x1F). The original
+// converts its whole buffer `$00DC-$00FB`, the FC or F2 look-ahead bytes at its start included.
+void in_capitals(std::vector<std::uint8_t>& text) {
+    for (auto& character : text) {
+        if (character >= 'a' && character <= 'z')
+            character = static_cast<std::uint8_t>(character - 0x20);
+        else if (character >= '0' && character <= '9')
+            character = static_cast<std::uint8_t>(character + 0xe6);
+    }
+}
+
 } // namespace
 
 std::array<std::uint8_t, 6> five_digit_text(std::uint16_t value) {
@@ -177,7 +199,8 @@ void print_text(TextMap& map, TextCursor& cursor, std::span<const std::uint8_t> 
             print_text(map, cursor, text, character_table, variables);
             break;
         }
-        case track_name: { // $80:C628
+        case track_name:   // $80:C628
+        case rider_name: { // $80:C5D3
             const auto& v = require(variables);
             const auto address = static_cast<std::uint16_t>(next() | (next() << 8U));
             std::vector<std::uint8_t> text;
@@ -185,11 +208,23 @@ void print_text(TextMap& map, TextCursor& cursor, std::span<const std::uint8_t> 
                 text.push_back(next());
                 text.push_back(next());
             }
-            const auto name = name_of(v.track_names, v.word(address));
+            const auto value = v.word(address);
+            const auto name = byte == track_name ? name_of(v.track_names, value)
+                                                 : record_name(v.rider_names, value);
             text.insert(text.end(), name.begin(), name.end());
             text.push_back(end_of_text);
-            if (at < stream.size() && stream[at] == first_control)
-                throw std::invalid_argument("text printer upper-case names are not recovered");
+            if (at < stream.size() && stream[at] == capitals) {
+                ++at;
+                in_capitals(text);
+            }
+            print_text(map, cursor, text, character_table, variables);
+            break;
+        }
+        case race_time: { // $80:C6BB
+            const auto& v = require(variables);
+            const auto address = static_cast<std::uint16_t>(next() | (next() << 8U));
+            auto text = race_time_text(v.word(address), v.time_words);
+            text.push_back(end_of_text);
             print_text(map, cursor, text, character_table, variables);
             break;
         }

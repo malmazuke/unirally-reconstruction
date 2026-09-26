@@ -5,6 +5,13 @@ push the task branch, open a pull request from the template, merge with
 `gh pr merge --merge` once its checks are green and the review is done. `main`
 refuses direct pushes. The checks run on pull requests only.
 
+**Status on 25 September 2026 UTC (FRONT-END-1P-CONTINUATION): start
+[FRONT-END-LAP-RESULT](FRONT-END-LAP-RESULT.md).** After a one-run race the menus take over,
+frame-exact, and the records match the original's cartridge RAM (R-0057). Next is the lap race's
+result (`$80:8D6E`, the lap graph), so that a whole tour's races come back to PICK TRACK, then
+the tour's end. The method: `local/evidence/front-end-1p-continuation/compare.py` (the native
+race between the menus) and `sram.py` (the records). Rebuild the pack as v18 (`docs/STATE.md`).
+
 **Status on 26 September 2026 UTC (FRONT-END-1P-SETUP accepted): start
 [FRONT-END-1P-CONTINUATION](FRONT-END-1P-CONTINUATION.md).** 1P now runs from power-on through
 the four setup screens to the race, frame-exact. Next is what follows a race: the result's way back

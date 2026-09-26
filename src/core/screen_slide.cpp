@@ -34,9 +34,12 @@ void step_decorations(FrontEndState& state, const FrontEndContent& content) {
     auto& decorations = state.decorations;
     const auto frames = content.decoration_frames;
     if (step_down(decorations.delay, 2)) {
-        if (step_down(decorations.pair_step, pair_steps - 1)) step_down(decorations.pair_cycle, pair_steps - 1);
-        oam_byte(state, 98, 2) = oam_byte(state, 99, 2) = frames[cycle_tiles + decorations.pair_cycle];
-        oam_byte(state, 96, 2) = oam_byte(state, 97, 2) = frames[pair_tiles + decorations.pair_step];
+        if (step_down(decorations.pair_step, pair_steps - 1))
+            step_down(decorations.pair_cycle, pair_steps - 1);
+        oam_byte(state, 98, 2) = oam_byte(state, 99, 2) =
+            frames[cycle_tiles + decorations.pair_cycle];
+        oam_byte(state, 96, 2) = oam_byte(state, 97, 2) =
+            frames[pair_tiles + decorations.pair_step];
         step_down(decorations.trio_step, pair_steps - 1);
         for (unsigned k = 0; k < 3; ++k)
             oam_byte(state, 112 + k, 2) = frames[trio_tiles + decorations.trio_step + k];
@@ -47,7 +50,8 @@ void step_decorations(FrontEndState& state, const FrontEndContent& content) {
         oam_byte(state, 104 + k, 2) = frames[wave_tiles + decorations.wave[k]];
     }
     step_down(decorations.sway, wave_steps - 1);
-    const auto sway_left = frames[left_sway + decorations.sway], sway_right = frames[right_sway + decorations.sway];
+    const auto sway_left = frames[left_sway + decorations.sway],
+               sway_right = frames[right_sway + decorations.sway];
     oam_byte(state, 100, 0) = static_cast<std::uint8_t>(0x08 + sway_left);
     oam_byte(state, 101, 0) = static_cast<std::uint8_t>(0x08 + sway_right);
     oam_byte(state, 102, 0) = static_cast<std::uint8_t>(0x18 + sway_left);

@@ -35,7 +35,6 @@ constexpr std::uint8_t mark_2p_y = 0x4f, mark_2p_attributes = 0x23; // palette 1
 // The arrow's places: Race and Exit on row 24 ($80:B457, $80:B4D4).
 constexpr std::uint16_t race_x = 0x0300, exit_x = 0x0680, arrow_y = 0x0c80;
 
-
 using Text = std::vector<std::uint8_t>;
 
 // The bytes of `table` from `at` up to its 0xFF, without it.
@@ -57,7 +56,6 @@ std::uint8_t race_kind(const FrontEndState& state) {
     const auto place = static_cast<std::uint8_t>(track_of(state) % tracks_per_tour);
     return place < 3 ? place : static_cast<std::uint8_t>(place - 3);
 }
-
 
 // $80:B57E: a rider's line, "FC 09" (the caller sets the row), the name to its first blank, the
 // icon (`EF n`) and, for a real rider, the best on this track in brackets.
@@ -166,7 +164,7 @@ void print_now_playing(FrontEndState& state, const FrontEndContent& content) {
         print_line(name_line(state, content, now.opponent, 1), opponent_row);
     }
     // The record line: "record:" (or "hi score:"), then the holder's line without its "FC 09".
-    now.record_holder = state.records.record_holder[track_of(state)];
+    now.record_holder = state.records.record_holders[0][track_of(state)];
     Text record;
     append_until_end(record, content.now_playing_text,
                      race_kind(state) == stunt_event ? hi_score_at : record_at);
@@ -191,14 +189,15 @@ void hide_icons(FrontEndState& state) {
 // opponent (and for a stunt event's qualifying score); the arrow on Race.
 void open_now_playing(FrontEndState& state) {
     const bool computer = state.now_playing.opponent >= someone;
-    const auto opponent_and_unused = static_cast<std::uint8_t>(hidden_bit(first_icon + 1)
-                                                               | hidden_bit(first_icon + 3));
-    high_bits(state, first_mark) = computer ? static_cast<std::uint8_t>(hidden_bit(first_mark + 1)
-                                                                        | hidden_bit(first_mark + 3))
-                                            : four_shown;
+    const auto opponent_and_unused =
+        static_cast<std::uint8_t>(hidden_bit(first_icon + 1) | hidden_bit(first_icon + 3));
+    high_bits(state, first_mark) =
+        computer
+            ? static_cast<std::uint8_t>(hidden_bit(first_mark + 1) | hidden_bit(first_mark + 3))
+            : four_shown;
     high_bits(state, first_icon) = race_kind(state) == stunt_event && computer
-                                       ? opponent_and_unused
-                                       : hidden_bit(first_icon + 3);
+                                     ? opponent_and_unused
+                                     : hidden_bit(first_icon + 3);
     state.arrow.target_x = race_x;
     state.arrow.target_y = arrow_y;
     state.latches = {};
@@ -300,6 +299,11 @@ void race_fade_frame(FrontEndState& state) {
     state.registers.force_blank = true;
     state.mode_chosen = true;
     state.mode = FrontEndMode::one_player;
+    // $83:9894 (`$80:9A27`): the menus' words saved for the race's return.
+    state.saved = {state.menu,        state.cycle,       state.logo.offset, state.slide,
+                   state.decorations, state.latches,     state.rider_menu,  state.tour_menu,
+                   state.track_menu,  state.now_playing, state.printer,     state.arrow.spin};
+    state.screen = FrontEndScreen::race;
 }
 
 } // namespace unirally::front_end_screens

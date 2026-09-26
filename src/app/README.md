@@ -23,16 +23,18 @@ python3 tools/project.py frontend run
 The app starts at power-on, as the original does (R-0054): the Nintendo screen, the title
 and the main menu. 1P runs the one-player setup (R-0055, R-0056): PICK YOUR UNI, PICK TOUR, PICK TRACK and NOW
 PLAYING, where Race starts the chosen race. The race scenarios are MIKE's against BRONSEN, so
-another rider or a stunt event shows a notice. 2P, VS, LEAGUE, OPTIONS and the demo are not
+another rider or a stunt event shows a notice. After a one-run race the menus take over when the
+race's result load begins (R-0057): the result screen, a press, then PICK TRACK again with the
+records and the done tracks updated. A lap race still ends on the race's own result screen. 2P, VS, LEAGUE, OPTIONS and the demo are not
 native yet: choosing one, or leaving the menu idle for the demo, shows a notice and returns to
 the main menu as it first appeared, so the rider and tour chosen last start over (the original
-keeps them). `--track dragster|zoom-zoo|NN` starts directly in that
+keeps them); the records are kept. `--track dragster|zoom-zoo|NN` starts directly in that
 race instead.
 
 DRAGSTER plays on the shared race engine (R-0038), whose jump, brake,
 reversal, trick and finish tables only the two-track pack carries. With the
 25-entry DRAGSTER pack the launcher uses a valid
-`local/classic-pal-crawler-tracks-v17.pack` beside it without
+`local/classic-pal-crawler-tracks-v18.pack` beside it without
 opening the ROM, or extracts one when `--rom` is given; without either it
 reports a missing prerequisite. The app itself refuses the DRAGSTER-only pack
 before gameplay starts.

@@ -490,6 +490,14 @@ const std::array<RequiredEntry, 30> one_player_screens_required{{
     {"front-end.qualifying-scores", 60,
      "ab4af8f8d321a129369d324aad5ea51d56dc07c11401c293879e7afb2eb18554"},
 }};
+// FRONT-END-1P-CONTINUATION (profile v18): the one-run result screen's text and trophies
+// (tools/unirally_lab/content/front_end.py v18_new_entries, R-0057).
+const std::array<RequiredEntry, 2> race_result_required{{
+    {"front-end.result-text", 84,
+     "746239efad431a1e7f7a1959af9fd8dc5635cb099cda11d12aafe495ac8023e8"},
+    {"front-end.result-icons", 12,
+     "932debcc0ad000f6b980d5fe057dd9e0519e36e4ef78af87615ac7dc39cc88f4"},
+}};
 // LOCKED-TOURS (profile v12): the race tracks of the five tours a cold start does not
 // list, and sceneries 1, 8 and 12. Generated from the rules file (tracks.py v12_new_entries).
 const std::array<RequiredEntry, 89> locked_tracks_required{{
@@ -650,7 +658,7 @@ const std::array<RequiredEntry, 89> locked_tracks_required{{
     {"scenery.12.palette", 352, "b2a9aefe13c1dc68454cf0a5c2bedb086c6e162dbea1df1f2ef108347d89ab63"},
 }};
 constexpr std::string_view two_track_rules_sha =
-    "9dc4bcbc4c2eb7e3bf911ca1b35d8f6e79e4ac2c75495e965cae8bbeef8b7c88";
+    "efbbf7467794e30c9c9931172a437e907ee041c29504e10882100a9d5e54aa38";
 
 std::array<std::uint8_t, 32> hex_digest(std::string_view text) {
     if (text.size() != 64) throw std::logic_error("invalid compiled Classic SHA-256");
@@ -740,7 +748,7 @@ std::array<std::uint8_t, 32> sha256(std::span<const std::uint8_t> source) {
 
 namespace {
 constexpr std::array<std::string_view, 2> supported_profiles{"classic.pal.crawler.dragster.v1",
-                                                             "classic.pal.crawler.tracks.v17"};
+                                                             "classic.pal.crawler.tracks.v18"};
 } // namespace
 
 std::span<const std::string_view> supported_pack_profiles() {
@@ -801,7 +809,8 @@ std::vector<RequiredEntry> required_entries(bool tracks) {
                              std::span<const RequiredEntry>(hunter_required),
                              std::span<const RequiredEntry>(front_end_required),
                              std::span<const RequiredEntry>(rider_menu_required),
-                             std::span<const RequiredEntry>(one_player_screens_required)})
+                             std::span<const RequiredEntry>(one_player_screens_required),
+                             std::span<const RequiredEntry>(race_result_required)})
         out.insert(out.end(), table.begin(), table.end());
     return out;
 }
