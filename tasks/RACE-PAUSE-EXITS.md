@@ -58,7 +58,7 @@ R-0060 and `local/evidence/race-pause-exits/` (`NOTES.md`, `decode/` with the ca
 | --- | --- |
 | Pictures and state | `quit`, `restart` and `lapquit`: no difference in the menus' words, OAM buffer or text map on any frame from each race's end; 529 pictures equal (R-0060) |
 | Records | `sram.py`: the kept words equal the original's cartridge RAM after each |
-| Nothing moves | The gates, when run |
+| Nothing moves | Gates on `04d1229` (`gates-04d1229.out`; the head after it changes only records): three presets build, ctest 26 of 26; the synthetic suite; both v1 contracts; the hidden and front-end app runs; the eleven differential gates (the same rows digests); the equivalence sweep, 351 runs with 0 differences; both recompares identical; every front-end comparison equal (the main menu, the one-player screens, the one-run and lap results, the completions, the pause menu's three); the records equal; 0 functions over 80 lines; the address index current |
 
 The race engine is unchanged: `update_race_for_menus` runs the ordinary update and, when the pause
 menu's second choice restarted the race, keeps the race as it was and reports the pause menu's

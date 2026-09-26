@@ -60,7 +60,7 @@ The current recovered slice consumes controller port 0 only.
 
 DRAGSTER follows the original controls: B jumps, Y brakes, Left rides and
 turns back, A, X, L and R act in the air, and Start pauses (RESUME or RESTART
-RACE). Opposing directions held together on a keyboard are dropped, as a SNES
+RACE; in a race from the menus RESTART RACE is the original's QUIT, see above). Opposing directions held together on a keyboard are dropped, as a SNES
 pad cannot report them. Start on the stable result screen races again.
 
 Audio is intentionally not implemented in M3. Both tracks are drawn by the
