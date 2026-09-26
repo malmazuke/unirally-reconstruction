@@ -22,9 +22,9 @@ START_STATE_ID = "classic.crawler.dragster.race-start.v1"
 # The current Classic pack: DRAGSTER, ZOOM ZOO and, from v10 (TRACK-BREADTH part 3), the other
 # race tracks a cold start reaches; v11 (SPECIAL-TILE-RESPONSE) adds the corkscrew heights and
 # v12 (LOCKED-TOURS) the locked tours' race tracks, v13 (TILE-PAIRS-8-12-26) the loop's x steps, v14 (HUNTER-EFFECTS) the HUNTER blink pattern, v15 (FRONT-END-MAIN-MENU) the boot screens and
-# the main menu, v16 (FRONT-END-1P-SETUP) the rider menu, v17 PICK TOUR, PICK TRACK and NOW PLAYING, v18 the one-run result, v19 the lap result. The names keep their two-track origin.
+# the main menu, v16 (FRONT-END-1P-SETUP) the rider menu, v17 PICK TOUR, PICK TRACK and NOW PLAYING, v18 the one-run result, v19 the lap result, v20 the medal award. The names keep their two-track origin.
 TWO_TRACK_RULES_PATH = "tests/manifests/content/classic-crawler-tracks-pack.json"
-TWO_TRACK_PROFILE = "classic.pal.crawler.tracks.v19"
+TWO_TRACK_PROFILE = "classic.pal.crawler.tracks.v20"
 TWO_TRACK_START = "classic.crawler.race-start.v2"
 
 

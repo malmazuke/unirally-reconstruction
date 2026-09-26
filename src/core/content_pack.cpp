@@ -511,6 +511,31 @@ const std::array<RequiredEntry, 4> lap_result_required{{
     {"front-end.lap-result-opponent", 24,
      "d198a344e476d31cafd4a259ebcb89e5564d5882aeb5d0b6af58ddd0f6a19694"},
 }};
+
+// FRONT-END-TOUR-END (profile v20): the medal award screen's content
+// (tools/unirally_lab/content/front_end.py v20_new_entries, R-0059).
+const std::array<RequiredEntry, 10> award_required{{
+    {"front-end.asset.059", 32,
+     "82e0feac9f2c51e77d24ffc0d0a85d1fa8527fb09d7e88ec8aca140ede4b1de1"},
+    {"front-end.asset.083", 2048,
+     "96ba2b3053a3b5894f9e4988e79b26ac4070dd0a5e83271b7b6271e3b7264a0c"},
+    {"front-end.asset.084", 1024,
+     "3023d6a7b49108a31e60683460cca7d3cbb0d057fde5762fedfda1e277e89388"},
+    {"front-end.asset.085", 32,
+     "57c4633c161065fc610ce15709d256ddca057e6f18f11a29c392f7bbabd9d70d"},
+    {"front-end.asset.086", 32,
+     "bf5544921d9c456a0d17eb202cdf74b35d55220dd662ffede97242d880ba6148"},
+    {"front-end.asset.092", 8192,
+     "2170e453192e3a60371da4cad27b3545b2a343a5d9d8c5af4ab146d053e94c8d"},
+    {"front-end.asset.100", 960,
+     "85c3cf89d6ca4dfe1e286b16da6ea51446b54720940a847f34062f239f1c304e"},
+    {"front-end.asset.101", 1920,
+     "de12c1d81e969966eff113921afd9437def924e7e6f9cbf619e6813ae5489466"},
+    {"front-end.award-medal-art", 8192,
+     "c22f071a8326d401594be7ae6fb2719ee04924daae834f80539aa0ccdcfae1e2"},
+    {"front-end.award-tables", 203,
+     "70cdab5ffe350fd0ff2252c5436e9fd32453d2d2c843456823ad43c29be7420d"},
+}};
 // LOCKED-TOURS (profile v12): the race tracks of the five tours a cold start does not
 // list, and sceneries 1, 8 and 12. Generated from the rules file (tracks.py v12_new_entries).
 const std::array<RequiredEntry, 89> locked_tracks_required{{
@@ -671,7 +696,7 @@ const std::array<RequiredEntry, 89> locked_tracks_required{{
     {"scenery.12.palette", 352, "b2a9aefe13c1dc68454cf0a5c2bedb086c6e162dbea1df1f2ef108347d89ab63"},
 }};
 constexpr std::string_view two_track_rules_sha =
-    "94a670ebae490753985679b545168db610847affc62d4ab7087c4c9ebf9bf3b0";
+    "1a5c5832f34285014ea4996d636b83897781c0eae9913c70223036213f5ed0b3";
 
 std::array<std::uint8_t, 32> hex_digest(std::string_view text) {
     if (text.size() != 64) throw std::logic_error("invalid compiled Classic SHA-256");
@@ -761,7 +786,7 @@ std::array<std::uint8_t, 32> sha256(std::span<const std::uint8_t> source) {
 
 namespace {
 constexpr std::array<std::string_view, 2> supported_profiles{"classic.pal.crawler.dragster.v1",
-                                                             "classic.pal.crawler.tracks.v19"};
+                                                             "classic.pal.crawler.tracks.v20"};
 } // namespace
 
 std::span<const std::string_view> supported_pack_profiles() {
@@ -824,7 +849,8 @@ std::vector<RequiredEntry> required_entries(bool tracks) {
                              std::span<const RequiredEntry>(rider_menu_required),
                              std::span<const RequiredEntry>(one_player_screens_required),
                              std::span<const RequiredEntry>(race_result_required),
-                             std::span<const RequiredEntry>(lap_result_required)})
+                             std::span<const RequiredEntry>(lap_result_required),
+                             std::span<const RequiredEntry>(award_required)})
         out.insert(out.end(), table.begin(), table.end());
     return out;
 }

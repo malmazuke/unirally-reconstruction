@@ -2,15 +2,18 @@
 
 ## Assignment
 
-- Status: **ready**. Queued 25 September 2026 (UTC) by FRONT-END-1P-CONTINUATION.
+- Status: **in progress**. Queued 25 September 2026 (UTC) by FRONT-END-1P-CONTINUATION; claimed
+  26 September 2026 at 02:10Z by the same Claude Code desktop session, on FRONT-END-LAP-RESULT's
+  head `003a7b3` (pull request #31, to be rebased onto `main` once it merges).
 - Milestone: M4 (original game coverage: menus)
 - Coordinator: the claiming session is coordinator, primary and integrator
 - Task provider (fixed for all children; record any user-initiated platform change): Anthropic
-- Worker/session/runtime/model: recorded at claim
+- Worker/session/runtime/model: Claude Code desktop app, Claude Opus 5.5 (`claude-opus-5-5`)
 - Actual model/reasoning effort, routing rationale and frontier escalation question (if any):
   **tier 2** for the screens; **tier 1** for anything that changes the scoring.
 - Provider quota window/baseline timestamp, used/remaining or unknown, reserve and session
-  allowance (D-0004): recorded at claim.
+  allowance (D-0004): at claim the weekly window was about 42% used. The user's allowance (25
+  September 2026): continue until the weekly window reaches 80%.
 - Reviewer (primary automatically spawns fresh model/effort, isolated checkout; no user
   trigger): a fresh Anthropic subagent.
 - Dependencies and evidence of acceptance: FRONT-END-1P-CONTINUATION (R-0057); PICK TOUR's
