@@ -36,9 +36,16 @@ constexpr std::uint8_t ending_screens = 0x13; // BG1, BG2, objects
 constexpr unsigned first_pose_word = 0x7000, second_pose_word = 0x7080;
 constexpr std::size_t oam_entry_bytes = 4;
 
+// On the way back the menus' screen comes back and NMI is turned on in frame t' + 118
+// (`$83:A90B`); for most tours that write lands inside the frame's vertical blank and NMI's hook
+// runs at once, but for WALKER and JUMPER it lands after it and the hook first runs a frame later
+// (walker-gold, locked-gold and all-gold alike). Why their copies end later is not recovered.
+constexpr std::uint32_t menus_back_frame = 118;
+
 // One tour's ending: where the rider's colours go (the tour's own at the next row), the tour's
 // object colours and tiles, OBSEL, the first frame of the fade in and the script's last frame
-// (t'), and the script, which runs on every frame from `bar_frame` to t'.
+// (t'), the script, which runs on every frame from `bar_frame` to t', and whether NMI's hook
+// comes back a frame late.
 struct EndingLayout {
     unsigned rider_colours_at{};
     unsigned tour_colours{}; // 0: none
@@ -46,6 +53,7 @@ struct EndingLayout {
     std::uint8_t obsel{};
     std::uint32_t fade_in_frame{}, last_frame{};
     void (*script)(FrontEndState&, const FrontEndContent&, std::uint32_t){};
+    bool late_nmi_hook{};
 };
 
 // $83:A923 between the steps: the pose built on the last frame, sent to `word`.
@@ -352,6 +360,120 @@ void script(FrontEndState& state, const FrontEndContent& content, std::uint32_t 
 }
 } // namespace shuffler
 
+// WALKER (`$83:B506`): a riderless uni walks in from the right; an arrow flies in, hits it and
+// drops, and the uni falls apart; the rider's red uni rolls in from the left and on across the
+// screen. Its table (`$83:B790`): objects 0-2.
+namespace walker {
+constexpr unsigned tour = 4;
+constexpr unsigned uni = 0, red_uni = 1, arrow = 2;
+constexpr std::uint8_t first_high = 0x4e, red_uni_high = 0x4a;
+constexpr std::uint32_t setup_frame = 93;
+// $83:B5ED, $83:B64D, $83:B6B6 and $83:B712 (which ends on t').
+constexpr Loop walk_in{108, 128, 1}, hit{walk_in.end(), 32, 2}, red_uni_in{hit.end(), 25, 1},
+    roll_on{red_uni_in.end(), 68, 1};
+constexpr std::uint16_t arrow_flies = 0x70, fall_poses = 0xa5e, red_uni_shown = 0x0f,
+                        wobble_poses = 0x13b8, roll_poses = 0x13c0, roll_count = 0x43,
+                        held_step = 0x27, held_pose = 6;
+constexpr std::uint8_t arrow_speed = 7, arrow_drift = 2, red_uni_speed = 3;
+
+void setup(FrontEndState& state, const FrontEndContent& content) {
+    load_first_objects(state, content.ending_tables[tour], 0, 3);
+    high_bits(state, 0) = first_high;
+    copy_oam(state);
+    state.ending.pose = 0;
+    upload_built_pose(state, content, first_pose_word);
+    upload_built_pose(state, content, second_pose_word);
+    state.ending.step = 0;
+}
+
+// $83:B5ED-B63C: the uni walks a pixel left; from step 0x70 the arrow flies in.
+void walk_in_part(FrontEndState& state, const FrontEndContent& content, unsigned wait) {
+    auto& ending = state.ending;
+    if (wait == 0) {
+        --oam_byte(state, uni, 0);
+        return;
+    }
+    upload_built_pose(state, content, first_pose_word);
+    copy_oam(state);
+    walk(state);
+    ++ending.step;
+    if (ending.step >= arrow_flies) oam_byte(state, arrow, 0) += arrow_speed;
+}
+
+// $83:B63F-B6AD: the arrow drops, faster and faster (`$10A7` counts its fall), drifting left;
+// the uni falls apart (poses 0xA5E on).
+void hit_part(FrontEndState& state, const FrontEndContent& content, unsigned step, unsigned wait) {
+    auto& ending = state.ending;
+    if (wait == 0) {
+        if (step == 0) ending.step = ending.drop = 0;
+        return;
+    }
+    if (wait == 1) {
+        upload_built_pose(state, content, first_pose_word);
+        copy_oam(state);
+        return;
+    }
+    // The fall counter is a byte here.
+    const auto drop = static_cast<std::uint8_t>(ending.drop + 1);
+    ending.drop = static_cast<std::uint16_t>((ending.drop & 0xff00U) | drop);
+    oam_byte(state, arrow, 1) += static_cast<std::uint8_t>(drop >> 2);
+    oam_byte(state, arrow, 0) -= arrow_drift;
+    ending.pose = static_cast<std::uint16_t>(fall_poses + ending.step);
+    ++ending.step;
+}
+
+// $83:B6AF-B705: the red uni rolls in from the left, shown from step 0x0F (poses 0x13B8, eight
+// in turn), sent to tile 0x108.
+void red_uni_in_part(FrontEndState& state, const FrontEndContent& content, unsigned step,
+                     unsigned wait) {
+    auto& ending = state.ending;
+    if (wait == 0) {
+        if (step == 0) ending.step = 0;
+        oam_byte(state, red_uni, 0) += red_uni_speed;
+        if ((ending.step & 0xffU) == red_uni_shown) high_bits(state, 0) = red_uni_high;
+        return;
+    }
+    upload_built_pose(state, content, second_pose_word);
+    copy_oam(state);
+    ending.pose = static_cast<std::uint16_t>(wobble_poses + (ending.step & 7U));
+    ++ending.step;
+}
+
+// $83:B707-B782: the red uni rolls on (poses 0x13C0, a new one every second step, held at step
+// 0x27) while `$10CB` counts to 0x43.
+void roll_on_part(FrontEndState& state, const FrontEndContent& content, unsigned step,
+                  unsigned wait) {
+    auto& ending = state.ending;
+    if (wait == 0) {
+        if (step == 0) ending.step = ending.count = 0;
+        oam_byte(state, red_uni, 0) += red_uni_speed;
+        return;
+    }
+    upload_built_pose(state, content, second_pose_word);
+    copy_oam(state);
+    const auto pose_step = ending.step == held_step ? held_pose : ending.step >> 1;
+    ending.pose = static_cast<std::uint16_t>(roll_poses + pose_step);
+    if (ending.count >= roll_count) return;
+    ++ending.count;
+    if (ending.step != held_step) ++ending.step;
+}
+
+void script(FrontEndState& state, const FrontEndContent& content, std::uint32_t frame) {
+    if (frame == setup_frame) {
+        setup(state, content);
+        return;
+    }
+    run_loop(walk_in, frame, [&](unsigned, unsigned wait) { walk_in_part(state, content, wait); });
+    const auto part = [&](auto function) {
+        return
+            [&, function](unsigned step, unsigned wait) { function(state, content, step, wait); };
+    };
+    run_loop(hit, frame, part(hit_part));
+    run_loop(red_uni_in, frame, part(red_uni_in_part));
+    run_loop(roll_on, frame, part(roll_on_part));
+}
+} // namespace walker
+
 // The eight tours' endings by `$00D0`; a tour whose ending is not recovered has no script and
 // leaves at once through the award's way out.
 const std::array<EndingLayout, 8> endings{{
@@ -359,7 +481,7 @@ const std::array<EndingLayout, 8> endings{{
     {},
     {0x80, 0x41, 0x61, 0xa3, 96, 380, shuffler::script}, // SHUFFLER `$83:B1EB`
     {},
-    {},
+    {0x80, 0, 0x5e, 0x83, 94, 393, walker::script, true}, // WALKER `$83:B506`
     {},
     {},
     {},
@@ -402,7 +524,11 @@ void tour_ending_frame(FrontEndState& state, const FrontEndContent& content) {
     const auto& layout = endings[state.ending.tour];
     const auto frame = state.script_frame;
     if (frame > layout.last_frame) {
-        way_back_frame(state, content, frame - layout.last_frame, way_back_delay);
+        const auto exit = frame - layout.last_frame;
+        if (layout.late_nmi_hook && exit == menus_back_frame)
+            restore_menu_screen(state, content); // NMI's hook runs from the next frame
+        else
+            way_back_frame(state, content, exit, way_back_delay);
         return;
     }
     if (frame <= blank_frame) {
