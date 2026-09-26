@@ -330,7 +330,10 @@ tables; private validation against eight original WRAM series is in R-0036.
 track: the track data, BG tiles, maps and palette are the track's own entries;
 the race palette cycle, the channel-6 window family and the rider object
 tables are shared ROM content; the scenario (initialization frame, laps) and
-the playfield geometry come from the engine. The same code composes the BG
+the playfield geometry come from the engine. `classic_race_presentation_content(pack,
+scenario)` takes a scenario's pairing too: the riders' sprite palettes (the
+front end's assets 6 + character) and the rider's colour math on the ink
+(`classic_race_ink`, R-0061). The same code composes the BG
 scroll from the previous update's camera, the rider objects, the fade from
 `$0FF1`, the palette cycle and the window selection for both tracks; a track
 whose pack carries the recovered mode-0 result screen draws it, the tour race

@@ -1323,6 +1323,15 @@
   ]
  },
  {
+  "address": "$80:99E8",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_8099E8",
+  "source_records": [
+   "docs/research/R-0061-riders-and-opponents.md"
+  ]
+ },
+ {
   "address": "$80:9A27",
   "class": "observed",
   "comment": "instruction start",
@@ -1808,7 +1817,8 @@
    "src/core/zoom_zoo_movement.hpp:(file)"
   ],
   "source_records": [
-   "docs/research/R-0056-tour-track-now-playing.md"
+   "docs/research/R-0056-tour-track-now-playing.md",
+   "docs/research/R-0061-riders-and-opponents.md"
   ]
  },
  {
@@ -6853,6 +6863,7 @@
   "source_records": [
    "docs/research/R-0042-stunt-name-captions.md",
    "docs/research/R-0052-hunter-effects.md",
+   "docs/research/R-0061-riders-and-opponents.md",
    "tasks/CLASSIC-STUNT-NAMES.md"
   ]
  },
@@ -6981,6 +6992,18 @@
   ],
   "source_records": [
    "docs/research/R-0033-sustained-traversal.md"
+  ]
+ },
+ {
+  "address": "$81:C253",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_81C253",
+  "native": [
+   "src/core/reward_queue.cpp:update_opponent_announcements"
+  ],
+  "source_records": [
+   "docs/research/R-0061-riders-and-opponents.md"
   ]
  },
  {
@@ -9242,6 +9265,22 @@
   ]
  },
  {
+  "address": "$82:9D47",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_829D47",
+  "native": [
+   "src/core/announcements.hpp:first_voice",
+   "src/core/race_state_io.cpp:check_queued_events",
+   "src/core/race_state_io.cpp:check_rolls",
+   "src/core/reward_queue.cpp:announce_combination",
+   "src/core/reward_queue.cpp:announce_landing_tricks"
+  ],
+  "source_records": [
+   "docs/research/R-0061-riders-and-opponents.md"
+  ]
+ },
+ {
   "address": "$82:9D7F",
   "class": "observed",
   "comment": "instruction start",
@@ -9821,6 +9860,21 @@
   "source_records": [
    "docs/research/R-0050-locked-tours.md",
    "tasks/LOCKED-TOURS.md"
+  ]
+ },
+ {
+  "address": "$82:A793",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82A793",
+  "native": [
+   "src/core/race_update.cpp:run_physics",
+   "src/core/race_update.cpp:speed_limit_context",
+   "src/core/speed_limits.cpp:launch_extra, most_extra, vertical_base_cap",
+   "src/core/speed_limits.cpp:limit_rider_speed"
+  ],
+  "source_records": [
+   "docs/research/R-0061-riders-and-opponents.md"
   ]
  },
  {
@@ -10757,6 +10811,19 @@
   ]
  },
  {
+  "address": "$82:D4DC",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_82D4DC",
+  "native": [
+   "src/core/presentation.cpp:colour_math_size",
+   "src/core/presentation.hpp:ClassicRacePresentationContent::rider_colour_math"
+  ],
+  "source_records": [
+   "docs/research/R-0061-riders-and-opponents.md"
+  ]
+ },
+ {
   "address": "$82:D56B",
   "class": "observed",
   "comment": "instruction start",
@@ -10784,6 +10851,19 @@
    "docs/research/R-0040-dragster-window-effects.md",
    "tasks/DRAGSTER-WINDOW-EFFECTS-review.md",
    "tasks/M3-02.md"
+  ]
+ },
+ {
+  "address": "$82:D57F",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82D57F",
+  "native": [
+   "src/core/presentation.hpp:ClassicRacePresentationContent::rider_colour_math",
+   "src/core/presentation.hpp:classic_race_ink"
+  ],
+  "source_records": [
+   "docs/research/R-0061-riders-and-opponents.md"
   ]
  },
  {
@@ -10840,6 +10920,24 @@
   ],
   "source_records": [
    "docs/research/R-0037-dragster-race-palette-cycle.md"
+  ]
+ },
+ {
+  "address": "$82:D94C",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82D94C",
+  "native": [
+   "src/core/front_end.hpp:OnePlayerRecords::tutorial_bits",
+   "src/core/race_setup.cpp:classic_crawler_zoom_zoo_start",
+   "src/core/race_setup.cpp:classic_race_start",
+   "src/core/race_setup.cpp:restart_zoom_zoo",
+   "src/core/race_setup.cpp:start_countdown, base_speed_cap",
+   "src/core/zoom_zoo_movement.hpp:ClassicRaceScenario::tutorial_hints",
+   "src/core/zoom_zoo_movement.hpp:classic_crawler_zoom_zoo_start"
+  ],
+  "source_records": [
+   "docs/research/R-0061-riders-and-opponents.md"
   ]
  },
  {
@@ -10915,6 +11013,20 @@
   ]
  },
  {
+  "address": "$82:DD90",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82DD90",
+  "native": [
+   "src/core/presentation.cpp:character_palette",
+   "src/core/presentation.cpp:race_cgram",
+   "src/core/presentation.hpp:ClassicRacePresentationContent::rider_palette, ClassicRacePresentationContent::opponent_palette"
+  ],
+  "source_records": [
+   "docs/research/R-0061-riders-and-opponents.md"
+  ]
+ },
+ {
   "address": "$82:DDB0",
   "class": "observed",
   "comment": "instruction start",
@@ -10926,7 +11038,8 @@
    "src/core/presentation.hpp:ClassicRacePresentationContent::rider_palette, ClassicRacePresentationContent::opponent_palette"
   ],
   "source_records": [
-   "docs/research/R-0052-hunter-effects.md"
+   "docs/research/R-0052-hunter-effects.md",
+   "docs/research/R-0061-riders-and-opponents.md"
   ]
  },
  {
@@ -12202,6 +12315,19 @@
   ]
  },
  {
+  "address": "$83:C8B3",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_83C8B3",
+  "native": [
+   "src/core/zoom_zoo_movement.hpp:ZoomZooContent::opponent_catch_up",
+   "src/core/zoom_zoo_movement.hpp:opponent_tier"
+  ],
+  "source_records": [
+   "docs/research/R-0061-riders-and-opponents.md"
+  ]
+ },
+ {
   "address": "$83:C8E0",
   "class": "observed",
   "comment": "routine start",
@@ -12270,6 +12396,7 @@
   ],
   "source_records": [
    "docs/research/R-0050-locked-tours.md",
+   "docs/research/R-0061-riders-and-opponents.md",
    "tasks/LOCKED-TOURS.md"
   ]
  },
@@ -12288,6 +12415,21 @@
   ]
  },
  {
+  "address": "$83:CC2B",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83CC2B",
+  "native": [
+   "src/core/race_setup.cpp:classic_race_scenario",
+   "src/core/race_setup.cpp:hunter_tier",
+   "src/core/race_setup.cpp:opponent_level_base",
+   "src/core/zoom_zoo_movement.hpp:OpponentTier"
+  ],
+  "source_records": [
+   "docs/research/R-0061-riders-and-opponents.md"
+  ]
+ },
+ {
   "address": "$83:CC59",
   "class": "observed",
   "comment": "instruction start",
@@ -12301,6 +12443,7 @@
   "source_records": [
    "docs/research/R-0038-dragster-ordinary-controls.md",
    "docs/research/R-0050-locked-tours.md",
+   "docs/research/R-0061-riders-and-opponents.md",
    "tasks/DRAGSTER-ORDINARY-CONTROLS-review.md",
    "tasks/LOCKED-TOURS.md"
   ]
@@ -12492,6 +12635,22 @@
   ],
   "source_records": [
    "docs/research/R-0052-hunter-effects.md"
+  ]
+ },
+ {
+  "address": "$83:CE2C",
+  "class": "inferred",
+  "comment": "routine start",
+  "label": "sub_83CE2C",
+  "native": [
+   "src/core/front_end.hpp:OnePlayerRecords::tutorial_bits",
+   "src/core/race_result.cpp:begin_race_return",
+   "src/core/race_setup.cpp:restart_zoom_zoo",
+   "src/core/reward_queue.cpp:hint_interval",
+   "src/core/reward_queue.cpp:update_tutorial_hints"
+  ],
+  "source_records": [
+   "docs/research/R-0061-riders-and-opponents.md"
   ]
  },
  {
@@ -12847,6 +13006,7 @@
   ],
   "source_records": [
    "docs/research/R-0050-locked-tours.md",
+   "docs/research/R-0061-riders-and-opponents.md",
    "tasks/LOCKED-TOURS.md"
   ]
  },
@@ -12876,7 +13036,38 @@
   ],
   "source_records": [
    "docs/research/R-0050-locked-tours.md",
+   "docs/research/R-0061-riders-and-opponents.md",
    "tasks/LOCKED-TOURS.md"
+  ]
+ },
+ {
+  "address": "$83:E175",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_83E175",
+  "native": [
+   "src/core/opponent_ai.cpp:(file)",
+   "src/core/opponent_ai.cpp:jump_at_marker",
+   "src/core/opponent_ai.cpp:opponent_launches",
+   "src/core/opponent_ai.cpp:update_opponent_controller"
+  ],
+  "source_records": [
+   "docs/research/R-0061-riders-and-opponents.md"
+  ]
+ },
+ {
+  "address": "$83:E17D",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_83E17D",
+  "native": [
+   "src/core/opponent_ai.cpp:(file)",
+   "src/core/opponent_ai.cpp:jump_at_marker",
+   "src/core/opponent_ai.cpp:opponent_launches",
+   "src/core/opponent_ai.cpp:update_opponent_controller"
+  ],
+  "source_records": [
+   "docs/research/R-0061-riders-and-opponents.md"
   ]
  },
  {
@@ -12891,7 +13082,8 @@
    "src/core/opponent_ai.cpp:update_opponent_controller"
   ],
   "source_records": [
-   "docs/research/R-0050-locked-tours.md"
+   "docs/research/R-0050-locked-tours.md",
+   "docs/research/R-0061-riders-and-opponents.md"
   ]
  },
  {

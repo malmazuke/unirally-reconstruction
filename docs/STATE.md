@@ -1,5 +1,21 @@
 # Project state
 
+Updated 26 September 2026 (RACE-RIDERS-OPPONENTS): **every rider races, against every opponent
+the one-player menus choose.**
+- The rider changes no physics. It chooses its voices, its tutorial hints (the records keep which
+  riders' hints have ended), its sprite colours and the HUD's ink colour.
+- The opponent sets the computer's skill: SILVIA (after a bronze) and GOLDWYN (after a silver)
+  catch up faster and launch their tricks by their own rules.
+- Against six captures of the original's races every update matches. Their pictures match apart
+  from the off-screen rider arrow, which native has never drawn
+  ([RACE-OFFSCREEN-ARROW](../tasks/RACE-OFFSCREEN-ARROW.md)). The menus around ANDREW's, SILVIA's
+  and GOLDWYN's races match on every frame: 7,957 pictures and the records
+  ([R-0061](research/R-0061-riders-and-opponents.md)).
+- The caption's blank now reaches the screen a picture later, as in the original.
+- Pack profile **v21** adds two tables (`content pack --rules
+  tests/manifests/content/classic-crawler-tracks-pack.json --out
+  local/classic-pal-crawler-tracks-v21.pack`).
+
 Updated 26 September 2026 (RACE-PAUSE-EXITS): **the race's pause menu ends a one-player race as
 the original does.**
 - In a race started from the menus, its second choice (the original's QUIT) goes back to NOW

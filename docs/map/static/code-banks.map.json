@@ -13996,19 +13996,19 @@
    "call returns in the calling mode": 1262
   },
   "bytes": 131072,
-  "cited_addresses": 1162,
+  "cited_addresses": 1175,
   "cited_by_class": {
    "data": 20,
-   "inferred": 159,
-   "observed": 848,
-   "unknown": 135
+   "inferred": 163,
+   "observed": 855,
+   "unknown": 137
   },
   "cited_by_position": {
    "dat": 20,
-   "loc": 708,
+   "loc": 718,
    "mid": 18,
-   "sub": 281,
-   "unk": 135
+   "sub": 282,
+   "unk": 137
   },
   "conflicts": 0,
   "data": 92,

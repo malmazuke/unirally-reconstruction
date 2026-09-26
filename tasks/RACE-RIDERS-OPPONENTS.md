@@ -2,7 +2,7 @@
 
 ## Assignment
 
-- Status: **in progress**. Queued and claimed 26 September 2026 at 06:50Z by the Claude Code
+- Status: **in review**. Queued and claimed 26 September 2026 at 06:50Z by the Claude Code
   desktop session that ran RACE-PAUSE-EXITS, on `3f2c2f7`.
 - Milestone: M4 (original game coverage)
 - Coordinator: the claiming session is coordinator, primary and integrator
@@ -46,9 +46,35 @@ Out of scope: the stunt events (STUNT-EVENTS); the second human (SPLIT-SCREEN-RA
 | Playable | The app from power-on with another rider and against each opponent | The race runs and returns to the menus | report |
 | Nothing moves | ctest, the synthetic suite, the v1 contracts, hidden runs, the differential gates, the equivalence sweep, the front end's comparisons | Unchanged for MIKE against BRONSEN | logs |
 
+## Result
+
+[R-0061](../docs/research/R-0061-riders-and-opponents.md). The rider changes no physics: it
+chooses its voices, its tutorial hints (the records' `$77:1116`), its sprite palette and the ink's
+colour math (`$82:D4DC`). The opponent sets the AI's tier (`$1275`, `$1283` from `$83:C8B3`,
+`$1281`), including SILVIA's level-2 launch rule (`$83:E17D`), which native did not have, and its
+voices and palette. Native races every pairing the one-player menus choose, in the app, the
+front-end runner and the race runners. Pack profile v21 adds the two tables. While comparing
+ANDREW's pictures, the caption's blank turned out to reach the screen a picture later than native
+drew it, for every rider; that is fixed and recorded as a correction to R-0042.
+
+Tier 1 stands: the race's state changes by opponent.
+
+## Evidence
+
+Captures and scripts in `local/evidence/race-riders-opponents/`: `decode/` (the listing and the
+first captures, work RAM `$0000-$1FFF`), `race/` (`track_reference` captures with full memory,
+each taken twice and identical; `explore-*.json`; `pictures.py` and its logs) and `front-end/`
+(`compare.py`, `sram.py`, the captures and the app's hidden runs in `app/`).
+
+| Criterion | Result |
+| --- | --- |
+| Race state | Six captures: ANDREW, SILVIA, GOLDWYN and a hints-off MIKE on DRAGSTER (2,473 updates each), SILVIA and ANDREW v GOLDWYN on ZOOM ZOO (4,825 each). Every update is equal from the boundary. |
+| Pictures | 274 frames of those races. ANDREW's and the hints-off race's are equal to the pixel. SILVIA's and GOLDWYN's differ only by the off-screen rider arrow, a declared omission since M4-16 (R-0043), now queued as [RACE-OFFSCREEN-ARROW](RACE-OFFSCREEN-ARROW.md). |
+| The menus around the races | `andrew` (ANDREW's race), `forced-silver` (SILVIA's) and `goldwyn` (BRONSEN, SILVIA and GOLDWYN in turn), from power-on: no difference in the menus' words, OAM buffer or text map on any frame, and 1,054, 582 and 6,321 pictures all equal. `sram.py` (now with `$77:1116`): the kept words equal at `andrew` 3690 and `goldwyn` 5600, 10500 and 13390. |
+| Playable | The app, hidden, with `andrew`'s pads: ANDREW's race runs and returns to the menus. With `goldwyn`'s: three races (BRONSEN, SILVIA, GOLDWYN) run and return, with the original's totals and no notice. |
+| Nothing moves | The gates (below). |
+
 ## Handoff
 
-- Exact next experiment/command: read the race's set-up for `$77:0748` and `$77:0749` in the
-  listing (R-0052's `opponent_character`), then capture DRAGSTER with ANDREW (the second rider)
-  and against SILVIA (the medal line stepped to bronze after a forced bronze, as
-  `local/evidence/front-end-tour-end/forced-silver` did).
+- Exact next experiment/command: after the review and the merge,
+  [FRONT-END-ENDINGS](FRONT-END-ENDINGS.md) or [RACE-OFFSCREEN-ARROW](RACE-OFFSCREEN-ARROW.md).
