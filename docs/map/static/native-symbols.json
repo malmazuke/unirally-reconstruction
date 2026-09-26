@@ -255,6 +255,15 @@
    "region": "rom"
   },
   {
+   "address": "$80:8858",
+   "native": [
+    "src/core/front_end.hpp:FrontEndState::boot_start",
+    "src/core/front_end_screens.hpp:soft_reset",
+    "src/core/hunter_ending.cpp:(file)"
+   ],
+   "region": "rom"
+  },
+  {
    "address": "$80:88DD",
    "native": [
     "src/core/front_end.hpp:FrontEndScreen",
@@ -287,6 +296,7 @@
   {
    "address": "$80:8C4E",
    "native": [
+    "src/core/front_end.cpp:check_records",
     "src/core/front_end.hpp:OnePlayerRecords"
    ],
    "region": "rom"
@@ -439,16 +449,26 @@
    "region": "rom"
   },
   {
+   "address": "$80:91D1",
+   "native": [
+    "src/core/front_end.cpp:soft_reset"
+   ],
+   "region": "rom"
+  },
+  {
    "address": "$80:9314",
    "native": [
-    "src/core/front_end.cpp:restore_menu_screen"
+    "src/core/front_end.cpp:restore_menu_screen",
+    "src/core/hunter_ending.cpp:show_credits"
    ],
    "region": "rom"
   },
   {
    "address": "$80:9318",
    "native": [
-    "src/core/front_end_screens.hpp:copy_oam"
+    "src/core/front_end_screens.hpp:copy_oam",
+    "src/core/hunter_ending.cpp:enter_hunter_code",
+    "src/core/hunter_ending.cpp:reveal_step"
    ],
    "region": "rom"
   },
@@ -570,7 +590,8 @@
   {
    "address": "$80:98A4",
    "native": [
-    "src/core/front_end_screens.hpp:send_arrow_off"
+    "src/core/front_end_screens.hpp:send_arrow_off",
+    "src/core/hunter_ending.cpp:enter_hunter_code"
    ],
    "region": "rom"
   },
@@ -674,6 +695,7 @@
   {
    "address": "$80:A09A",
    "native": [
+    "src/core/front_end.cpp:boot_frame_number",
     "src/core/front_end.cpp:clear_oam_buffer",
     "src/core/front_end.cpp:early_objects, early_palette",
     "src/core/front_end.cpp:set_early_registers",
@@ -817,6 +839,13 @@
    "region": "rom"
   },
   {
+   "address": "$80:B124",
+   "native": [
+    "src/core/front_end.cpp:check_title_code"
+   ],
+   "region": "rom"
+  },
+  {
    "address": "$80:B18D",
    "native": [
     "src/core/front_end.hpp:FrontEndScreen",
@@ -925,9 +954,20 @@
    "region": "rom"
   },
   {
+   "address": "$80:B612",
+   "native": [
+    "src/core/front_end.cpp:soft_reset"
+   ],
+   "region": "rom"
+  },
+  {
    "address": "$80:B6D3",
    "native": [
     "src/core/award.cpp:award_left",
+    "src/core/front_end.hpp:HunterEnding::both_pads",
+    "src/core/front_end_screens.hpp:start_hunter_ending",
+    "src/core/hunter_ending.cpp:ending_press",
+    "src/core/hunter_ending.cpp:twelve_buttons",
     "src/core/race_result.cpp:lap_graph_frame",
     "src/core/race_result.cpp:lap_graph_left"
    ],
@@ -936,21 +976,21 @@
   {
    "address": "$80:B71D",
    "native": [
-    "src/core/front_end_screens.hpp:pad_up, pad_down, pad_left, pad_right, pad_select"
+    "src/core/front_end_screens.hpp:pad_up, pad_down, pad_left, pad_right, pad_select, pad_a, pad_r"
    ],
    "region": "rom"
   },
   {
    "address": "$80:B74A",
    "native": [
-    "src/core/front_end_screens.hpp:pad_up, pad_down, pad_left, pad_right, pad_select"
+    "src/core/front_end_screens.hpp:pad_up, pad_down, pad_left, pad_right, pad_select, pad_a, pad_r"
    ],
    "region": "rom"
   },
   {
    "address": "$80:B794",
    "native": [
-    "src/core/front_end_screens.hpp:pad_up, pad_down, pad_left, pad_right, pad_select"
+    "src/core/front_end_screens.hpp:pad_up, pad_down, pad_left, pad_right, pad_select, pad_a, pad_r"
    ],
    "region": "rom"
   },
@@ -1119,9 +1159,18 @@
    "region": "rom"
   },
   {
+   "address": "$80:C202",
+   "native": [
+    "src/core/front_end.hpp:HunterEnding::press_seen",
+    "src/core/hunter_ending.cpp:(file)"
+   ],
+   "region": "rom"
+  },
+  {
    "address": "$80:C206",
    "native": [
     "src/core/front_end.hpp:RaceResult::press_seen",
+    "src/core/hunter_ending.cpp:first_page_press",
     "src/core/race_result.cpp:(file)",
     "src/core/race_result.cpp:one_run_wait_frame",
     "src/core/race_result.cpp:pressed"
@@ -1129,8 +1178,16 @@
    "region": "rom"
   },
   {
+   "address": "$80:C20C",
+   "native": [
+    "src/core/hunter_ending.cpp:hunter_ending_waits"
+   ],
+   "region": "rom"
+  },
+  {
    "address": "$80:C236",
    "native": [
+    "src/core/hunter_ending.cpp:first_page_press",
     "src/core/race_result.cpp:hide_result_objects",
     "src/core/race_result.cpp:lap_graph_frame"
    ],
@@ -1619,6 +1676,8 @@
    "address": "$80:D1E8",
    "native": [
     "src/core/award.cpp:upload_step",
+    "src/core/hunter_ending.cpp:credits_pass",
+    "src/core/hunter_ending.cpp:timed_wait_pass",
     "src/core/race_result.cpp:race_result_exit_frame",
     "src/core/race_result.cpp:score_race"
    ],
@@ -1629,6 +1688,7 @@
    "native": [
     "src/core/front_end.cpp:boot_frame",
     "src/core/front_end.cpp:run_main_menu",
+    "src/core/hunter_ending.cpp:first_page_press",
     "src/core/now_playing.cpp:now_playing_frame",
     "src/core/rider_menu.cpp:rider_menu_frame",
     "src/core/tour_menu.cpp:tour_menu_frame",
@@ -1648,11 +1708,12 @@
    "address": "$80:D20E",
    "native": [
     "src/core/front_end.cpp:boot_frame_waits",
+    "src/core/front_end.cpp:load_main_menu_screen",
     "src/core/front_end.cpp:menu_objects, menu_objects_high, menu_map, menu_bg2_tiles, menu_bg1_tiles, menu_bg1_tiles_high",
-    "src/core/front_end.cpp:set_menu_registers",
     "src/core/front_end.cpp:waits_for_frame",
     "src/core/front_end_screens.hpp:load_main_menu_screen",
     "src/core/front_end_screens.hpp:restore_menu_screen",
+    "src/core/front_end_screens.hpp:set_menu_registers",
     "src/core/front_end_screens.hpp:upload_last_frame, menu_screen_frame, restore_frame",
     "src/core/race_result.cpp:objects_frame, tiles_frame, palette_low_frame, palette_high_frame",
     "src/core/race_result.cpp:race_return_frame"
@@ -1742,6 +1803,59 @@
     "src/core/rider_menu.cpp:(file)",
     "src/core/screen_slide.cpp:(file)",
     "src/core/screen_slide.cpp:slide_passes, accelerate_from, decelerate_below"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:E2CF",
+   "native": [
+    "src/core/hunter_ending.cpp:(file)"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:E2D8",
+   "native": [
+    "src/core/hunter_ending.cpp:copy_reveal_tables"
+   ],
+   "range_ends": [
+    "$80:E2F6"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:E322",
+   "native": [
+    "src/core/hunter_ending.cpp:hunter_ending_waits",
+    "src/core/hunter_ending.cpp:reveal_step"
+   ],
+   "range_ends": [
+    "$80:E367"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:E369",
+   "native": [
+    "src/core/hunter_ending.cpp:end_reveal",
+    "src/core/hunter_ending.cpp:page_load_frame, page_tiles_frame, reveal_steps"
+   ],
+   "range_ends": [
+    "$80:E377"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:E37B",
+   "native": [
+    "src/core/front_end.hpp:FrontEndContent::reveal_brightness, FrontEndContent::reveal_offsets, FrontEndContent::credits_text, FrontEndContent::credits_poses, FrontEndContent::credits_objects"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:E3A1",
+   "native": [
+    "src/core/front_end.hpp:FrontEndContent::reveal_brightness, FrontEndContent::reveal_offsets, FrontEndContent::credits_text, FrontEndContent::credits_poses, FrontEndContent::credits_objects"
    ],
    "region": "rom"
   },
@@ -2024,7 +2138,10 @@
   {
    "address": "$80:F0D6",
    "native": [
-    "src/core/front_end.hpp:FrontEndMode"
+    "src/core/front_end.hpp:FrontEndMode",
+    "src/core/front_end.hpp:FrontEndScreen",
+    "src/core/front_end_screens.hpp:enter_hunter_code",
+    "src/core/hunter_ending.cpp:enter_hunter_code"
    ],
    "region": "rom"
   },
@@ -2061,6 +2178,7 @@
   {
    "address": "$80:F51B",
    "native": [
+    "src/core/hunter_ending.cpp:enter_hunter_code",
     "src/core/rider_menu.cpp:enter_rider_menu"
    ],
    "region": "rom"
@@ -2096,6 +2214,17 @@
    "region": "rom"
   },
   {
+   "address": "$80:F564",
+   "native": [
+    "src/core/front_end.cpp:load_title",
+    "src/core/front_end.hpp:OnePlayerRecords::cheat"
+   ],
+   "range_ends": [
+    "$80:F580"
+   ],
+   "region": "rom"
+  },
+  {
    "address": "$80:F5B8",
    "native": [
     "src/core/front_end.cpp:update_front_end"
@@ -2103,8 +2232,29 @@
    "region": "rom"
   },
   {
+   "address": "$80:F5C0",
+   "native": [
+    "src/core/front_end.cpp:check_title_code",
+    "src/core/front_end.hpp:FrontEndState::title_code_step",
+    "src/core/front_end.hpp:OnePlayerRecords::cheat"
+   ],
+   "range_ends": [
+    "$80:F60D",
+    "$80:F612"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:F618",
+   "native": [
+    "src/core/front_end.cpp:check_title_code"
+   ],
+   "region": "rom"
+  },
+  {
    "address": "$80:F622",
    "native": [
+    "src/core/front_end.cpp:check_title_code",
     "src/core/front_end.cpp:scroll_logo",
     "src/core/front_end.hpp:LogoScroll"
    ],
@@ -2159,7 +2309,9 @@
   {
    "address": "$80:FADF",
    "native": [
-    "src/core/front_end.cpp:FrameWaits"
+    "src/core/front_end.cpp:FrameWaits",
+    "src/core/front_end_screens.hpp:start_hunter_ending",
+    "src/core/hunter_ending.cpp:hunter_ending_waits"
    ],
    "region": "rom"
   },
@@ -4645,6 +4797,13 @@
    "region": "rom"
   },
   {
+   "address": "$83:8000",
+   "native": [
+    "src/core/front_end.cpp:check_records"
+   ],
+   "region": "rom"
+  },
+  {
    "address": "$83:879A",
    "native": [
     "src/core/award.cpp:(file)",
@@ -4749,9 +4908,18 @@
    "region": "rom"
   },
   {
+   "address": "$83:8B23",
+   "native": [
+    "src/core/front_end.cpp:check_records",
+    "src/core/front_end.cpp:soft_reset"
+   ],
+   "region": "rom"
+  },
+  {
    "address": "$83:8B51",
    "native": [
     "src/core/front_end_screens.hpp:cleared_text",
+    "src/core/hunter_ending.cpp:set_up_credits",
     "src/core/rider_menu.cpp:print_rider_menu",
     "src/core/tour_menu.cpp:print_tour_menu",
     "src/core/track_menu.cpp:track_menu_entry_frame"
@@ -4835,6 +5003,7 @@
    "address": "$83:91F7",
    "native": [
     "src/core/front_end.cpp:load_main_menu_screen",
+    "src/core/front_end.cpp:soft_reset",
     "src/core/front_end_screens.hpp:load_object_palette",
     "src/core/rider_menu.cpp:menu_text_palette, early_palette",
     "src/core/rider_menu.cpp:rider_menu_exit_frame"
@@ -4898,7 +5067,7 @@
   {
    "address": "$83:9543",
    "native": [
-    "src/core/front_end_screens.hpp:pad_up, pad_down, pad_left, pad_right, pad_select"
+    "src/core/front_end_screens.hpp:pad_up, pad_down, pad_left, pad_right, pad_select, pad_a, pad_r"
    ],
    "region": "rom"
   },
@@ -5020,7 +5189,8 @@
     "src/core/award.cpp:fade_out_frames, blank_frame, reset_frame, background_tiles_frame, podium_map_frame, podium_tiles_frame, colours_frame, objects_frame, rider_frame, first_fade_in_frame, fade_in_frames",
     "src/core/award.cpp:fade_up",
     "src/core/front_end_screens.hpp:fade_up",
-    "src/core/front_end_screens.hpp:way_back_frame"
+    "src/core/front_end_screens.hpp:way_back_frame",
+    "src/core/hunter_ending.cpp:credits_setup_frame, credits_shown_frame, lower_pose_frame, credits_fade_in, credits_loop_frame"
    ],
    "region": "rom"
   },
@@ -5030,7 +5200,8 @@
     "src/core/award.cpp:fade_down",
     "src/core/award.cpp:fade_out_frames, blank_frame, reset_frame, background_tiles_frame, podium_map_frame, podium_tiles_frame, colours_frame, objects_frame, rider_frame, first_fade_in_frame, fade_in_frames",
     "src/core/front_end_screens.hpp:fade_down",
-    "src/core/front_end_screens.hpp:way_back_frame"
+    "src/core/front_end_screens.hpp:way_back_frame",
+    "src/core/hunter_ending.cpp:page_load_frame, page_tiles_frame, reveal_steps"
    ],
    "region": "rom"
   },
@@ -5077,8 +5248,8 @@
     "src/core/award.cpp:(file)",
     "src/core/award.cpp:exit_blank_frame, menus_frame, exit_fade_in_frame, pick_tour_frame",
     "src/core/front_end.cpp:restore_menu_screen",
-    "src/core/front_end.cpp:set_menu_registers",
     "src/core/front_end_screens.hpp:restore_menu_screen",
+    "src/core/front_end_screens.hpp:set_menu_registers",
     "src/core/front_end_screens.hpp:way_back_frame"
    ],
    "region": "rom"
@@ -5095,9 +5266,18 @@
    "native": [
     "src/core/front_end.cpp:waits_for_frame",
     "src/core/front_end_screens.hpp:result_scoring_frame",
+    "src/core/hunter_ending.cpp:hunter_ending_waits",
+    "src/core/hunter_ending.cpp:timed_wait_pass",
     "src/core/race_result.cpp:race_result_exit_frame",
     "src/core/tour_ending_scripts.hpp:Loop",
     "src/core/tour_ending_scripts.hpp:upload_built_pose"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:A93A",
+   "native": [
+    "src/core/hunter_ending.cpp:show_credits"
    ],
    "region": "rom"
   },
@@ -5112,7 +5292,171 @@
   {
    "address": "$83:AB9A",
    "native": [
-    "src/core/award.cpp:complete_tour"
+    "src/core/award.cpp:complete_tour",
+    "src/core/front_end.hpp:FrontEndScreen",
+    "src/core/front_end.hpp:HunterEndingPart",
+    "src/core/front_end_screens.hpp:start_hunter_ending",
+    "src/core/hunter_ending.cpp:(file)",
+    "src/core/hunter_ending.cpp:enter_hunter_code"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:AB9F",
+   "native": [
+    "src/core/hunter_ending.cpp:page_screens, page_mode, page_map, page_tile_bases",
+    "src/core/hunter_ending.cpp:set_page_registers"
+   ],
+   "range_ends": [
+    "$83:ABB0"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:ABB3",
+   "native": [
+    "src/core/hunter_ending.cpp:start_hunter_ending"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:ABB9",
+   "native": [
+    "src/core/hunter_ending.cpp:cheat_page"
+   ],
+   "range_ends": [
+    "$83:ABD4"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:ABDA",
+   "native": [
+    "src/core/hunter_ending.cpp:daily_news"
+   ],
+   "range_ends": [
+    "$83:ABF5"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:ABFD",
+   "native": [
+    "src/core/hunter_ending.cpp:speedking"
+   ],
+   "range_ends": [
+    "$83:AC1B"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:AC1F",
+   "native": [
+    "src/core/hunter_ending.cpp:(file)",
+    "src/core/hunter_ending.cpp:timed_wait_pass",
+    "src/core/hunter_ending.cpp:timed_wait_passes"
+   ],
+   "range_ends": [
+    "$83:AC30"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:AC32",
+   "native": [
+    "src/core/hunter_ending.cpp:credits_setup_frame, credits_shown_frame, lower_pose_frame, credits_fade_in, credits_loop_frame",
+    "src/core/hunter_ending.cpp:set_up_credits"
+   ],
+   "range_ends": [
+    "$83:AC92",
+    "$83:ADF8"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:AC3B",
+   "native": [
+    "src/core/front_end_screens.hpp:set_menu_registers"
+   ],
+   "range_ends": [
+    "$83:AC6A"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:AC6D",
+   "native": [
+    "src/core/hunter_ending.cpp:credits_logo_offset"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:ACDD",
+   "native": [
+    "src/core/hunter_ending.cpp:credits_object_colours",
+    "src/core/hunter_ending.cpp:show_credits"
+   ],
+   "range_ends": [
+    "$83:AD21",
+    "$83:AD8F"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:AD33",
+   "native": [
+    "src/core/hunter_ending.cpp:credits_object_entries"
+   ],
+   "range_ends": [
+    "$83:AD63"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:AD67",
+   "native": [
+    "src/core/hunter_ending.cpp:upper_pose_word, lower_pose_word"
+   ],
+   "range_ends": [
+    "$83:AD8F"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:AD9B",
+   "native": [
+    "src/core/hunter_ending.cpp:credits_pass"
+   ],
+   "range_ends": [
+    "$83:ADF8"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:ADFA",
+   "native": [
+    "src/core/hunter_ending.cpp:reset_frame"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:AE01",
+   "native": [
+    "src/core/front_end.hpp:FrontEndContent::reveal_brightness, FrontEndContent::reveal_offsets, FrontEndContent::credits_text, FrontEndContent::credits_poses, FrontEndContent::credits_objects"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:AE12",
+   "native": [
+    "src/core/front_end.hpp:FrontEndContent::reveal_brightness, FrontEndContent::reveal_offsets, FrontEndContent::credits_text, FrontEndContent::credits_poses, FrontEndContent::credits_objects"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:AE72",
+   "native": [
+    "src/core/front_end.hpp:FrontEndContent::reveal_brightness, FrontEndContent::reveal_offsets, FrontEndContent::credits_text, FrontEndContent::credits_poses, FrontEndContent::credits_objects"
    ],
    "region": "rom"
   },
@@ -6597,6 +6941,13 @@
    "region": "rom"
   },
   {
+   "address": "$83:FB41",
+   "native": [
+    "src/core/front_end.cpp:check_records"
+   ],
+   "region": "rom"
+  },
+  {
    "address": "$0000",
    "native": [
     "src/core/front_end.hpp:SavedMenus",
@@ -6625,6 +6976,14 @@
    "address": "$0010",
    "native": [
     "src/core/rider_menu.cpp:read_rider_menu_pad"
+   ],
+   "region": "wram"
+  },
+  {
+   "address": "$0036",
+   "native": [
+    "src/core/front_end.hpp:HunterEnding::pose_step",
+    "src/core/hunter_ending.cpp:credits_pass"
    ],
    "region": "wram"
   },
@@ -6672,6 +7031,7 @@
    "native": [
     "src/core/front_end.hpp:MainMenu::idle",
     "src/core/front_end.hpp:MenuDecorations::delay",
+    "src/core/hunter_ending.cpp:enter_hunter_code",
     "src/core/race_result.cpp:start_lap_graph",
     "src/core/rider_menu.cpp:enter_rider_menu"
    ],
@@ -6768,7 +7128,8 @@
   {
    "address": "$00AD",
    "native": [
-    "src/core/front_end.hpp:LogoScroll::offset"
+    "src/core/front_end.hpp:LogoScroll::offset",
+    "src/core/hunter_ending.cpp:credits_logo_offset"
    ],
    "region": "wram"
   },
@@ -7439,6 +7800,18 @@
    "region": "wram"
   },
   {
+   "address": "$0C70",
+   "native": [
+    "src/core/front_end.hpp:HunterEnding::reveal_tables",
+    "src/core/hunter_ending.cpp:offsets_at, brightness_at, offset_entry, brightness_entry",
+    "src/core/hunter_ending.cpp:write_reveal_lines"
+   ],
+   "range_ends": [
+    "$0CDD"
+   ],
+   "region": "wram"
+  },
+  {
    "address": "$0C73",
    "native": [
     "src/core/opponent_ai.cpp:update_opponent_controller",
@@ -7465,6 +7838,21 @@
    "address": "$0C8B",
    "native": [
     "src/core/rider_object.hpp:RiderRowClip"
+   ],
+   "region": "wram"
+  },
+  {
+   "address": "$0CB8",
+   "native": [
+    "src/core/hunter_ending.cpp:offsets_at, brightness_at, offset_entry, brightness_entry",
+    "src/core/hunter_ending.cpp:write_reveal_lines"
+   ],
+   "region": "wram"
+  },
+  {
+   "address": "$0CDE",
+   "native": [
+    "src/core/hunter_ending.cpp:add_hdma_writes"
    ],
    "region": "wram"
   },
@@ -8658,6 +9046,8 @@
    "native": [
     "src/core/front_end.hpp:LogoScroll::raised",
     "src/core/front_end.hpp:OnePlayerRecords::race_lost",
+    "src/core/hunter_ending.cpp:ending_press",
+    "src/core/hunter_ending.cpp:enter_hunter_code",
     "src/core/race_result.cpp:hide_result_objects",
     "src/core/race_result.cpp:lap_graph_left",
     "src/core/race_result.cpp:race_return_frame",
@@ -8816,6 +9206,7 @@
   {
    "address": "$77:10AD",
    "native": [
+    "src/core/front_end.cpp:check_records",
     "src/core/front_end.hpp:FrontEndState::one_player",
     "src/core/rider_menu.cpp:rider_menu_frame"
    ],
@@ -8846,6 +9237,16 @@
    "region": "sram"
   },
   {
+   "address": "$77:10D0",
+   "native": [
+    "src/core/front_end.cpp:check_title_code",
+    "src/core/front_end.hpp:HunterEnding::cheat_page",
+    "src/core/front_end.hpp:OnePlayerRecords::cheat",
+    "src/core/hunter_ending.cpp:(file)"
+   ],
+   "region": "sram"
+  },
+  {
    "address": "$77:10D1",
    "native": [
     "src/core/front_end.hpp:TourMenu::medal"
@@ -8863,6 +9264,14 @@
    "address": "$77:10D3",
    "native": [
     "src/core/front_end.hpp:OnePlayerRecords::tour_levels"
+   ],
+   "region": "sram"
+  },
+  {
+   "address": "$77:10E3",
+   "native": [
+    "src/core/front_end.hpp:OnePlayerRecords::cheat",
+    "src/core/front_end.hpp:OnePlayerRecords::levels_before_cheat"
    ],
    "region": "sram"
   },
@@ -9180,6 +9589,11 @@
     "$80:D372"
    ]
   },
+  "src/core/front_end.cpp:boot_frame_number": {
+   "rom": [
+    "$80:A09A"
+   ]
+  },
   "src/core/front_end.cpp:boot_frame_waits": {
    "rom": [
     "$80:A8A8",
@@ -9187,6 +9601,28 @@
     "$80:B08C",
     "$80:D20E",
     "$80:D36F"
+   ]
+  },
+  "src/core/front_end.cpp:check_records": {
+   "rom": [
+    "$80:8C4E",
+    "$83:8000",
+    "$83:8B23",
+    "$83:FB41"
+   ],
+   "sram": [
+    "$77:10AD"
+   ]
+  },
+  "src/core/front_end.cpp:check_title_code": {
+   "rom": [
+    "$80:B124",
+    "$80:F5C0",
+    "$80:F618",
+    "$80:F622"
+   ],
+   "sram": [
+    "$77:10D0"
    ]
   },
   "src/core/front_end.cpp:clear_oam_buffer": {
@@ -9238,6 +9674,7 @@
    "rom": [
     "$80:A16A",
     "$80:A8A8",
+    "$80:D20E",
     "$83:91F7"
    ]
   },
@@ -9250,7 +9687,8 @@
   "src/core/front_end.cpp:load_title": {
    "rom": [
     "$80:A16A",
-    "$80:F55F"
+    "$80:F55F",
+    "$80:F564"
    ]
   },
   "src/core/front_end.cpp:menu_objects, menu_objects_high, menu_map, menu_bg2_tiles, menu_bg1_tiles, menu_bg1_tiles_high": {
@@ -9314,10 +9752,12 @@
     "$80:B08C"
    ]
   },
-  "src/core/front_end.cpp:set_menu_registers": {
+  "src/core/front_end.cpp:soft_reset": {
    "rom": [
-    "$80:D20E",
-    "$83:A721"
+    "$80:91D1",
+    "$80:B612",
+    "$83:8B23",
+    "$83:91F7"
    ]
   },
   "src/core/front_end.cpp:start_main_menu": {
@@ -9370,6 +9810,15 @@
     "$80:D187"
    ]
   },
+  "src/core/front_end.hpp:FrontEndContent::reveal_brightness, FrontEndContent::reveal_offsets, FrontEndContent::credits_text, FrontEndContent::credits_poses, FrontEndContent::credits_objects": {
+   "rom": [
+    "$80:E37B",
+    "$80:E3A1",
+    "$83:AE01",
+    "$83:AE12",
+    "$83:AE72"
+   ]
+  },
   "src/core/front_end.hpp:FrontEndMode": {
    "rom": [
     "$80:A9B4",
@@ -9407,13 +9856,20 @@
     "$80:E5B4",
     "$80:E84E",
     "$80:E9FC",
+    "$80:F0D6",
     "$80:F4E9",
     "$83:881B",
     "$83:88FD",
+    "$83:AB9A",
     "$83:AEF6"
    ],
    "wram": [
     "$00A7"
+   ]
+  },
+  "src/core/front_end.hpp:FrontEndState::boot_start": {
+   "rom": [
+    "$80:8858"
    ]
   },
   "src/core/front_end.hpp:FrontEndState::oam_buffer": {
@@ -9435,6 +9891,41 @@
   "src/core/front_end.hpp:FrontEndState::text": {
    "wram": [
     "$0200"
+   ]
+  },
+  "src/core/front_end.hpp:FrontEndState::title_code_step": {
+   "rom": [
+    "$80:F5C0"
+   ]
+  },
+  "src/core/front_end.hpp:HunterEnding::both_pads": {
+   "rom": [
+    "$80:B6D3"
+   ]
+  },
+  "src/core/front_end.hpp:HunterEnding::cheat_page": {
+   "sram": [
+    "$77:10D0"
+   ]
+  },
+  "src/core/front_end.hpp:HunterEnding::pose_step": {
+   "wram": [
+    "$0036"
+   ]
+  },
+  "src/core/front_end.hpp:HunterEnding::press_seen": {
+   "rom": [
+    "$80:C202"
+   ]
+  },
+  "src/core/front_end.hpp:HunterEnding::reveal_tables": {
+   "wram": [
+    "$0C70"
+   ]
+  },
+  "src/core/front_end.hpp:HunterEndingPart": {
+   "rom": [
+    "$83:AB9A"
    ]
   },
   "src/core/front_end.hpp:LapGraphDot": {
@@ -9563,6 +10054,21 @@
   "src/core/front_end.hpp:OnePlayerRecords::best": {
    "sram": [
     "$77:0829"
+   ]
+  },
+  "src/core/front_end.hpp:OnePlayerRecords::cheat": {
+   "rom": [
+    "$80:F564",
+    "$80:F5C0"
+   ],
+   "sram": [
+    "$77:10D0",
+    "$77:10E3"
+   ]
+  },
+  "src/core/front_end.hpp:OnePlayerRecords::levels_before_cheat": {
+   "sram": [
+    "$77:10E3"
    ]
   },
   "src/core/front_end.hpp:OnePlayerRecords::medals": {
@@ -9936,6 +10442,11 @@
     "$83:8D8F"
    ]
   },
+  "src/core/front_end_screens.hpp:enter_hunter_code": {
+   "rom": [
+    "$80:F0D6"
+   ]
+  },
   "src/core/front_end_screens.hpp:enter_rider_menu": {
    "rom": [
     "$80:BB9C",
@@ -10005,7 +10516,7 @@
     "$0C00"
    ]
   },
-  "src/core/front_end_screens.hpp:pad_up, pad_down, pad_left, pad_right, pad_select": {
+  "src/core/front_end_screens.hpp:pad_up, pad_down, pad_left, pad_right, pad_select, pad_a, pad_r": {
    "rom": [
     "$80:B71D",
     "$80:B74A",
@@ -10107,14 +10618,33 @@
     "$80:A09A"
    ]
   },
+  "src/core/front_end_screens.hpp:set_menu_registers": {
+   "rom": [
+    "$80:D20E",
+    "$83:A721",
+    "$83:AC3B"
+   ]
+  },
   "src/core/front_end_screens.hpp:set_oam_x_high": {
    "rom": [
     "$83:961E"
    ]
   },
+  "src/core/front_end_screens.hpp:soft_reset": {
+   "rom": [
+    "$80:8858"
+   ]
+  },
   "src/core/front_end_screens.hpp:someone": {
    "wram": [
     "$017F"
+   ]
+  },
+  "src/core/front_end_screens.hpp:start_hunter_ending": {
+   "rom": [
+    "$80:B6D3",
+    "$80:FADF",
+    "$83:AB9A"
    ]
   },
   "src/core/front_end_screens.hpp:start_main_menu": {
@@ -10220,6 +10750,198 @@
    "wram": [
     "$12AF",
     "$12D1"
+   ]
+  },
+  "src/core/hunter_ending.cpp:(file)": {
+   "rom": [
+    "$80:8858",
+    "$80:C202",
+    "$80:E2CF",
+    "$83:AB9A",
+    "$83:AC1F"
+   ],
+   "sram": [
+    "$77:10D0"
+   ]
+  },
+  "src/core/hunter_ending.cpp:add_hdma_writes": {
+   "wram": [
+    "$0CDE"
+   ]
+  },
+  "src/core/hunter_ending.cpp:cheat_page": {
+   "rom": [
+    "$83:ABB9"
+   ]
+  },
+  "src/core/hunter_ending.cpp:copy_reveal_tables": {
+   "rom": [
+    "$80:E2D8"
+   ]
+  },
+  "src/core/hunter_ending.cpp:credits_logo_offset": {
+   "rom": [
+    "$83:AC6D"
+   ],
+   "wram": [
+    "$00AD"
+   ]
+  },
+  "src/core/hunter_ending.cpp:credits_object_colours": {
+   "rom": [
+    "$83:ACDD"
+   ]
+  },
+  "src/core/hunter_ending.cpp:credits_object_entries": {
+   "rom": [
+    "$83:AD33"
+   ]
+  },
+  "src/core/hunter_ending.cpp:credits_pass": {
+   "rom": [
+    "$80:D1E8",
+    "$83:AD9B"
+   ],
+   "wram": [
+    "$0036"
+   ]
+  },
+  "src/core/hunter_ending.cpp:credits_setup_frame, credits_shown_frame, lower_pose_frame, credits_fade_in, credits_loop_frame": {
+   "rom": [
+    "$83:A4D2",
+    "$83:AC32"
+   ]
+  },
+  "src/core/hunter_ending.cpp:daily_news": {
+   "rom": [
+    "$83:ABDA"
+   ]
+  },
+  "src/core/hunter_ending.cpp:end_reveal": {
+   "rom": [
+    "$80:E369"
+   ]
+  },
+  "src/core/hunter_ending.cpp:ending_press": {
+   "rom": [
+    "$80:B6D3"
+   ],
+   "sram": [
+    "$77:0742"
+   ]
+  },
+  "src/core/hunter_ending.cpp:enter_hunter_code": {
+   "rom": [
+    "$80:9318",
+    "$80:98A4",
+    "$80:F0D6",
+    "$80:F51B",
+    "$83:AB9A"
+   ],
+   "sram": [
+    "$77:0742"
+   ],
+   "wram": [
+    "$0089"
+   ]
+  },
+  "src/core/hunter_ending.cpp:first_page_press": {
+   "rom": [
+    "$80:C206",
+    "$80:C236",
+    "$80:D1EC"
+   ]
+  },
+  "src/core/hunter_ending.cpp:hunter_ending_waits": {
+   "rom": [
+    "$80:C20C",
+    "$80:E322",
+    "$80:FADF",
+    "$83:A923"
+   ]
+  },
+  "src/core/hunter_ending.cpp:offsets_at, brightness_at, offset_entry, brightness_entry": {
+   "wram": [
+    "$0C70",
+    "$0CB8"
+   ]
+  },
+  "src/core/hunter_ending.cpp:page_load_frame, page_tiles_frame, reveal_steps": {
+   "rom": [
+    "$80:E369",
+    "$83:A4E9"
+   ]
+  },
+  "src/core/hunter_ending.cpp:page_screens, page_mode, page_map, page_tile_bases": {
+   "rom": [
+    "$83:AB9F"
+   ]
+  },
+  "src/core/hunter_ending.cpp:reset_frame": {
+   "rom": [
+    "$83:ADFA"
+   ]
+  },
+  "src/core/hunter_ending.cpp:reveal_step": {
+   "rom": [
+    "$80:9318",
+    "$80:E322"
+   ]
+  },
+  "src/core/hunter_ending.cpp:set_page_registers": {
+   "rom": [
+    "$83:AB9F"
+   ]
+  },
+  "src/core/hunter_ending.cpp:set_up_credits": {
+   "rom": [
+    "$83:8B51",
+    "$83:AC32"
+   ]
+  },
+  "src/core/hunter_ending.cpp:show_credits": {
+   "rom": [
+    "$80:9314",
+    "$83:A93A",
+    "$83:ACDD"
+   ]
+  },
+  "src/core/hunter_ending.cpp:speedking": {
+   "rom": [
+    "$83:ABFD"
+   ]
+  },
+  "src/core/hunter_ending.cpp:start_hunter_ending": {
+   "rom": [
+    "$83:ABB3"
+   ]
+  },
+  "src/core/hunter_ending.cpp:timed_wait_pass": {
+   "rom": [
+    "$80:D1E8",
+    "$83:A923",
+    "$83:AC1F"
+   ]
+  },
+  "src/core/hunter_ending.cpp:timed_wait_passes": {
+   "rom": [
+    "$83:AC1F"
+   ]
+  },
+  "src/core/hunter_ending.cpp:twelve_buttons": {
+   "rom": [
+    "$80:B6D3"
+   ]
+  },
+  "src/core/hunter_ending.cpp:upper_pose_word, lower_pose_word": {
+   "rom": [
+    "$83:AD67"
+   ]
+  },
+  "src/core/hunter_ending.cpp:write_reveal_lines": {
+   "wram": [
+    "$0C70",
+    "$0CB8"
    ]
   },
   "src/core/input_timer.cpp:advance_timer_digits": {
@@ -13867,11 +14589,11 @@
   }
  },
  "totals": {
-  "addresses": 1039,
+  "addresses": 1081,
   "io_addresses": 5,
-  "native_symbols": 747,
-  "rom_addresses": 742,
-  "sram_addresses": 33,
-  "wram_addresses": 259
+  "native_symbols": 795,
+  "rom_addresses": 778,
+  "sram_addresses": 35,
+  "wram_addresses": 263
  }
 }

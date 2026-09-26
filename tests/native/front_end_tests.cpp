@@ -169,6 +169,48 @@ void set_word(unirally::SnesVideoMemory &memory, unsigned word,
   memory.vram[word * 2 + 1] = static_cast<std::uint8_t>(value >> 8U);
 }
 
+// HUNTER-ENDING: HDMA's INIDISP and BG1VOFS writes, row by row, over the
+// CPU's registers. BG1 (mode 1, 4bpp): map entry 0 is tile 1, whose first row
+// is colour 1 (red 31); the CPU holds forced blank and BG1's offset 0.
+void line_register_tests() {
+  using unirally::SnesLineRegister;
+  using Name = unirally::SnesLineRegisterName;
+  unirally::SnesVideoMemory memory;
+  unirally::SnesVideoRegisters registers;
+  registers.mode = 1;
+  registers.bg[0].tile_word = 0x1000;
+  registers.main_screen = 0x01;
+  set_word(memory, 0, 0x0001);
+  set_word(memory, 0x1000 + 16, 0x00ff);
+  memory.cgram[2] = 0x1f;
+  const auto red = [](const unirally::RgbFrame &frame, int row) {
+    return frame.pixels[static_cast<std::size_t>(row) * 256 * 3];
+  };
+  // No write: the CPU's forced blank.
+  require(red(unirally::render_snes_screen(memory, registers), 0) == 0);
+  // Row 0 lit at brightness 15 with BG1 one line up (it shows the tile's
+  // first row); rows from 1 back at offset 0 (the tile's second row, colour 0);
+  // rows from 2 blank again. The registers themselves are not changed.
+  const std::array<SnesLineRegister, 4> reveal{
+      {{0, Name::display, 0x0f},
+       {0, Name::bg1_vertical_offset, 0x3ff},
+       {1, Name::bg1_vertical_offset, 0},
+       {2, Name::display, 0xbb}}};
+  auto frame = unirally::render_snes_screen(memory, registers, {}, reveal);
+  require(red(frame, 0) == 255 && red(frame, 1) == 0 && red(frame, 2) == 0);
+  require(registers.force_blank && registers.bg[0].vofs == 0);
+  // A row's brightness is its own: brightness 7 halves the red.
+  const std::array<SnesLineRegister, 2> dim{
+      {{0, Name::display, 0x07}, {0, Name::bg1_vertical_offset, 0x3ff}}};
+  frame = unirally::render_snes_screen(memory, registers, {}, dim);
+  require(red(frame, 0) > 0 && red(frame, 0) < 255);
+  // A write left in the registers, as the PPU holds the last one.
+  unirally::apply_line_register(registers, reveal[3]);
+  require(registers.force_blank && registers.brightness == 11);
+  unirally::apply_line_register(registers, reveal[1]);
+  require(registers.bg[0].vofs == 0x3ff);
+}
+
 void snes_screen_tests() {
   unirally::SnesVideoMemory memory;
   unirally::SnesVideoRegisters registers;
@@ -232,6 +274,7 @@ void snes_screen_tests() {
   frame = unirally::render_snes_screen(memory, registers, first);
   require(frame.pixels[0] == 255 && frame.pixels[2] == 0);
   require(memory.cgram[129 * 2] == 0); // the memory itself is not changed
+  line_register_tests();
 }
 
 unirally::FrontEndContent
@@ -339,6 +382,30 @@ synthetic_content(std::vector<std::vector<std::uint8_t>> &storage) {
   // longest).
   for (auto &table : content.ending_tables)
     table = keep(0x60);
+  // HUNTER's ending (profile v23): its assets; the reveal's tables in the
+  // original's form, BG1's offsets k and a brightness ramp of 1-15; a text
+  // and 48 poses.
+  for (const unsigned id : {0x00U, 0x3aU, 0x5dU, 0x66U, 0x67U, 0x68U, 0x69U,
+                            0x6bU, 0x6cU, 0x6dU, 0x6eU, 0x6fU})
+    content.assets[id] = keep(64);
+  storage.push_back({1, 0, 0, 1, 0, 0, 0x9f});
+  for (std::uint8_t k = 0; k < 31; ++k)
+    storage.back().insert(storage.back().end(), {k, 0});
+  storage.back().insert(storage.back().end(), {0xd6, 0, 0});
+  content.reveal_offsets = storage.back();
+  storage.push_back({1, 0x0f, 1, 0x0f, 0x9f});
+  for (std::uint8_t k = 0; k < 31; ++k)
+    storage.back().push_back(static_cast<std::uint8_t>(k % 15 + 1));
+  storage.back().insert(storage.back().end(), {1, 0xbb});
+  content.reveal_brightness = storage.back();
+  content.credits_text = bytes({0xfe, 5, 2, 'A', 0xff});
+  storage.emplace_back(96, 0);
+  for (std::size_t k = 0; k < 48; ++k) {
+    storage.back()[2 * k] = static_cast<std::uint8_t>(0x50 + k);
+    storage.back()[2 * k + 1] = 0x13;
+  }
+  content.credits_poses = storage.back();
+  content.credits_objects = keep(132);
   // The lap result (profile v19): empty streams.
   content.lap_result_text = content.lap_result_record = bytes({0xff});
   content.lap_result_player = content.lap_result_opponent = bytes({0xff});
@@ -1123,6 +1190,257 @@ void ending_tests() {
   }
 }
 
+// HUNTER-ENDING: HUNTER's gold ending, entered from its tour's completion (the
+// scoring frame s is the ending's script frame 0).
+unirally::FrontEndState
+hunter_completion(const unirally::FrontEndContent &content, bool cheat) {
+  using unirally::FrontEndScreen;
+  auto state = unirally::start_front_end();
+  run(state, content, 430);
+  require(run_to(state, content, FrontEndScreen::rider_menu, {0x1000, 0}));
+  require(run_to(state, content, FrontEndScreen::tour_menu, {0x8000, 0}));
+  require(run_to(state, content, FrontEndScreen::track_menu, {0x1000, 0}));
+  require(run_to(state, content, FrontEndScreen::now_playing, {0x1000, 0}));
+  require(run_to(state, content, FrontEndScreen::race, {0x1000, 0}));
+  state.records.tour_levels[0] = 3;
+  state.records.cheat = cheat;
+  state.saved.tour_menu.tour = 8;
+  state.saved.tour_menu.track = 40;
+  unirally::return_from_race(state, content, 3454, {3000, 4000});
+  require(run_to(state, content, FrontEndScreen::race_result, {}, 104));
+  run(state, content, 12);
+  run(state, content, 5, {0x2050, 0}); // Select, X and R: a forced completion
+  require(state.screen == FrontEndScreen::hunter_ending &&
+          state.script_frame == 0 && state.records.medals[8 * 16] == 3);
+  return state;
+}
+
+// The rows and values of the picture's INIDISP writes.
+std::vector<std::pair<unsigned, unsigned>>
+display_writes(const unirally::FrontEndState &state) {
+  std::vector<std::pair<unsigned, unsigned>> writes;
+  for (const auto &write : state.line_registers)
+    if (write.name == unirally::SnesLineRegisterName::display)
+      writes.emplace_back(write.row, write.value);
+  return writes;
+}
+
+// The first page's reveal: from the part's frame 25 HDMA writes INIDISP on
+// every picture over the CPU's forced blank: rows [0, c) at brightness 15, the
+// band's 31 rows on the ramp, then forced blank, with c = 2 + 3n at step n;
+// BG1's offsets follow the band (the CPU's registers hold the last writes).
+// Frame 101 turns it off and lights the page.
+void hunter_reveal_tests() {
+  std::vector<std::vector<std::uint8_t>> storage;
+  const auto content = synthetic_content(storage);
+  auto state = hunter_completion(content, false);
+  run(state, content, 24);
+  require(state.line_registers.empty() && state.registers.force_blank);
+  for (unsigned step = 0; step <= 75; ++step) {
+    run(state, content, 1);
+    const unsigned band = 2 + 3 * step;
+    const auto writes = display_writes(state);
+    require(writes[0].first == 0 && writes[0].second == 0x0f);
+    if (band + 31 < 224) {
+      require(writes.size() == 34 && writes[2].first == band &&
+              writes[2].second == 1 && writes[33].first == band + 31 &&
+              writes[33].second == 0xbb);
+      for (const auto &write : state.line_registers)
+        if (write.name == unirally::SnesLineRegisterName::bg1_vertical_offset &&
+            write.row >= band && write.row < band + 31)
+          require(write.value == write.row - band);
+    }
+    if (band >= 224)
+      require(writes.size() == 2);
+  }
+  run(state, content, 1);
+  require(state.line_registers.empty() && !state.registers.force_blank &&
+          state.registers.brightness == 15 && state.registers.bg[0].vofs == 0);
+}
+
+// The waits: the first page's needs a pad on two frames running (either pad);
+// the second page's ends on pad 1 or after 1,201 frames; the credits' on pad
+// 1 (pad 2 is not read after a one-player completion); the leaving fade ends
+// in the soft reset, the records kept. The arrow moves on the reveal's frames
+// and the first page's wait only.
+void hunter_wait_tests() {
+  using unirally::FrontEndScreen;
+  using Part = unirally::HunterEndingPart;
+  std::vector<std::vector<std::uint8_t>> storage;
+  const auto content = synthetic_content(storage);
+  auto state = hunter_completion(content, false);
+  const auto arrow_moves = [&](unirally::FrontEndPads pads = {}) {
+    const auto spin = state.arrow.spin;
+    unirally::update_front_end(state, content, pads);
+    return state.arrow.spin != spin;
+  };
+  for (unsigned frame = 1; frame < 25; ++frame)
+    require(!arrow_moves());
+  for (unsigned frame = 25; frame <= 110; ++frame)
+    require(arrow_moves());
+  run(state, content, 1, {0x1000, 0}); // one frame is not enough
+  run(state, content, 3);
+  require(state.hunter.part == Part::first_page);
+  require(arrow_moves({0, 0x0080}));
+  require(arrow_moves({0, 0x0080}) && state.hunter.part == Part::second_page);
+  // SPEEDKING's tiles take a frame longer: its reveal starts on frame 26.
+  for (unsigned frame = 1; frame < 26; ++frame)
+    require(!arrow_moves());
+  for (unsigned frame = 26; frame <= 102; ++frame)
+    require(arrow_moves());
+  for (unsigned pass = 1; pass < 1201; ++pass)
+    require(!arrow_moves({0, 0x1000}) &&
+            state.hunter.part == Part::second_page);
+  require(!arrow_moves() && state.hunter.part == Part::credits);
+  run(state, content, 61);
+  require(!state.registers.force_blank && state.registers.brightness == 15);
+  run(state, content, 3, {0, 0x1000});
+  require(state.hunter.part == Part::credits && state.hunter.pose_step == 3);
+  run(state, content, 1, {0x0010, 0}); // R
+  require(state.hunter.part == Part::leaving);
+  run(state, content, 15);
+  require(state.screen == FrontEndScreen::hunter_ending);
+  run(state, content, 1);
+  require(state.screen == FrontEndScreen::boot && state.script_frame == 0 &&
+          state.records.medals[8 * 16] == 3);
+  // With the title code's flag one CHEAT! page, then the timed wait.
+  auto cheat = hunter_completion(content, true);
+  run(cheat, content, 102);
+  require(cheat.hunter.cheat_page && cheat.hunter.part == Part::first_page);
+  run(cheat, content, 1, {0x1000, 0});
+  require(cheat.hunter.part == Part::credits);
+}
+
+// Runs a HUNTER ending from its start through its three presses to the soft
+// reset; returns the reset's frame J (the boot's frame 0).
+std::uint32_t run_to_soft_reset(unirally::FrontEndState &state,
+                                const unirally::FrontEndContent &content) {
+  using unirally::FrontEndScreen;
+  run(state, content, 110);
+  run(state, content, 2, {0x1000, 0}); // the first page
+  run(state, content, 110);
+  run(state, content, 1, {0x1000, 0}); // the second page
+  run(state, content, 70);
+  run(state, content, 1, {0x1000, 0}); // the credits
+  run(state, content, 16);
+  require(state.screen == FrontEndScreen::boot && state.script_frame == 0);
+  return state.frame - 1;
+}
+
+// HUNTER-ENDING: the soft reset runs the boot again from its frame J: power-on
+// frame f on J + f, but J + f + d for 97 <= f <= 403, where the sound
+// program's upload ends d frames later (3 by default; a laboratory run takes it
+// from its capture), and J + f + d - 3 from 407 (no records' wipe). The records
+// are kept, and the one-player flag until the boot's frame 403, so the menu's
+// arrow takes rider 0's colours (asset 6) instead of asset 2.
+void soft_reset_tests(std::uint32_t delay) {
+  using unirally::FrontEndScreen;
+  std::vector<std::vector<std::uint8_t>> storage;
+  auto content = synthetic_content(storage);
+  storage.emplace_back(32, 0x11);
+  content.assets[6] = storage.back();
+  auto reset = hunter_completion(content, false);
+  const auto j = run_to_soft_reset(reset, content);
+  require(reset.reset_upload_delay == 3);
+  reset.reset_upload_delay = delay;
+  auto power_on = unirally::start_front_end();
+  run(power_on, content, 1); // both after their frame 0
+  const auto same = [&] {
+    return reset.registers.brightness == power_on.registers.brightness &&
+           reset.registers.force_blank == power_on.registers.force_blank &&
+           reset.screen == power_on.screen &&
+           reset.cycle.running == power_on.cycle.running &&
+           reset.arrow.spin == power_on.arrow.spin &&
+           reset.oam_buffer == power_on.oam_buffer;
+  };
+  for (std::uint32_t f = 1; f <= 440; ++f) {
+    run(power_on, content, 1);
+    const std::uint32_t at = f < 97     ? j + f
+                             : f <= 403 ? j + f + delay
+                                        : j + f + delay - 3;
+    while (reset.frame <= at)
+      run(reset, content, 1);
+    if (f >= 404 && f <= 406)
+      continue; // power-on's records' wipe
+    require(same());
+    if (f == 104)
+      require(reset.frame - 1 == j + 104 + delay &&
+              reset.registers.brightness == 2);
+    if (f == 377) // $80:D20E's object colours
+      require(reset.one_player && reset.video.cgram[0xf0 * 2] == 0x11 &&
+              power_on.video.cgram[0xf0 * 2] == 0);
+  }
+  require(!reset.one_player && reset.screen == FrontEndScreen::main_menu &&
+          reset.records.medals[8 * 16] == 3 &&
+          reset.records.pending_reveal == 0);
+}
+
+// The title code (`$80:F5C0`): Up, Left, Up, R and A on pad 1 during the
+// title's 111 frames, other words between them ignored, opens every tour and
+// sets the flag, which a cold start's records' wipe then undoes (boot frame
+// 403); after a soft reset it stays: HUNTER's ending then shows the CHEAT!
+// page, and the next boot's title puts the levels back and clears the flag.
+void title_code_tests() {
+  std::vector<std::vector<std::uint8_t>> storage;
+  const auto content = synthetic_content(storage);
+  auto state = unirally::start_front_end();
+  run(state, content, 260);
+  for (const unsigned word : {0x0800U, 0x0400U, 0x0200U, 0x0800U, 0x0010U}) {
+    run(state, content, 3, {static_cast<std::uint16_t>(word), 0});
+    run(state, content, 1);
+  }
+  require(!state.records.cheat);
+  run(state, content, 1, {0x0080, 0});
+  require(state.records.cheat && state.records.tour_levels[5] == 3 &&
+          state.records.levels_before_cheat[5] == 0);
+  run(state, content, 403 - 281); // to boot frame 402
+  require(state.records.cheat);
+  run(state, content, 1);
+  require(!state.records.cheat && state.records.tour_levels[5] == 0);
+  auto ending = hunter_completion(content, true);
+  ending.records.levels_before_cheat.fill(1);
+  run(ending, content, 102);
+  run(ending, content, 1, {0x1000, 0}); // the CHEAT! page's timed wait
+  run(ending, content, 70);
+  run(ending, content, 1, {0x1000, 0}); // the credits
+  run(ending, content, 16);             // to the reset's frame J
+  run(ending, content, 230);
+  require(ending.records.cheat && ending.records.tour_levels[0] == 3);
+  run(ending, content, 1); // the title's load, boot frame 228 at J + 231
+  require(!ending.records.cheat && ending.records.tour_levels[0] == 1);
+}
+
+// The main menu's code B, Down, L and R (`$80:F0D6`): the logo rises, the
+// arrow flies off, and 31 frames later (with a frame wait each) HUNTER's
+// ending starts, its pad tests reading pad 2 too; no medal changes.
+void code_route_tests() {
+  using unirally::FrontEndScreen;
+  using Part = unirally::HunterEndingPart;
+  std::vector<std::vector<std::uint8_t>> storage;
+  const auto content = synthetic_content(storage);
+  auto state = unirally::start_front_end();
+  run(state, content, 430);
+  require(state.screen == FrontEndScreen::main_menu);
+  run(state, content, 1, {0, 0x8430});
+  require(state.screen == FrontEndScreen::hunter_code && state.logo.raised &&
+          state.arrow.target_x == 0xfd00 && !state.mode_chosen);
+  for (unsigned frame = 1; frame < 31; ++frame) {
+    const auto spin = state.arrow.spin;
+    run(state, content, 1);
+    require(state.screen == FrontEndScreen::hunter_code &&
+            state.arrow.spin != spin);
+  }
+  run(state, content, 1);
+  require(state.screen == FrontEndScreen::hunter_ending &&
+          state.script_frame == 0 && state.hunter.both_pads);
+  run(state, content, 110);
+  run(state, content, 2, {0, 0x0080}); // the first page
+  run(state, content, 110);
+  run(state, content, 1, {0, 0x0080}); // pad 2 ends the second page's wait
+  require(state.hunter.part == Part::credits &&
+          state.records.medals[8 * 16] == 2);
+}
+
 } // namespace
 
 int main() try {
@@ -1136,6 +1454,12 @@ int main() try {
   lap_result_tests();
   award_tests();
   ending_tests();
+  hunter_reveal_tests();
+  hunter_wait_tests();
+  soft_reset_tests(3);
+  soft_reset_tests(2);
+  title_code_tests();
+  code_route_tests();
   return 0;
 } catch (const std::exception &error) {
   std::fprintf(stderr, "%s\n", error.what());

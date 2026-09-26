@@ -40,7 +40,7 @@ race instead.
 DRAGSTER plays on the shared race engine (R-0038), whose jump, brake,
 reversal, trick and finish tables only the two-track pack carries. With the
 25-entry DRAGSTER pack the launcher uses a valid
-`local/classic-pal-crawler-tracks-v22.pack` beside it without
+`local/classic-pal-crawler-tracks-v23.pack` beside it without
 opening the ROM, or extracts one when `--rom` is given; without either it
 reports a missing prerequisite. The app itself refuses the DRAGSTER-only pack
 before gameplay starts.

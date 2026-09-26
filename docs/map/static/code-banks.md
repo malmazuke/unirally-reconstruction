@@ -22,8 +22,8 @@ The four classes partition all 131,072 bytes. **Unknown share: 40.4%** - above D
 | Instructions from observed | 17,569 |
 | Instructions from table | 587 |
 | Routines | 636 |
-| Routines cited by native code | 340 |
-| Routine bytes cited by native code | 45,955 |
+| Routines cited by native code | 350 |
+| Routine bytes cited by native code | 46,273 |
 | Gap sweep candidate instructions | 2,746 |
 | Gap sweep candidate bytes | 6,174 |
 | Jump tables | 2 |
@@ -45,7 +45,7 @@ The four classes partition all 131,072 bytes. **Unknown share: 40.4%** - above D
 
 ## Cited addresses
 
-1210 distinct code-bank ROM addresses cited by the research, task, inventory and content records (`labels.json`). By position: dat 20, loc 724, mid 18, sub 290, unk 158 (sub routine start, loc instruction start, mid inside an instruction, dat data, unk unknown). By class: data 20, inferred 171, observed 861, unknown 158.
+1240 distinct code-bank ROM addresses cited by the research, task, inventory and content records (`labels.json`). By position: dat 22, loc 744, mid 18, sub 294, unk 162 (sub routine start, loc instruction start, mid inside an instruction, dat data, unk unknown). By class: data 22, inferred 191, observed 865, unknown 162.
 
 Cited addresses in `unknown` bytes:
 
@@ -133,6 +133,8 @@ Cited addresses in `unknown` bytes:
 | $80:D187 | docs/research/R-0053-result-title-printer.md, docs/research/R-0057-one-run-result.md, tasks/RESULT-TITLE-GLYPHS.md |
 | $80:D37B | docs/research/R-0055-rider-menu.md |
 | $80:D383 | docs/research/R-0054-boot-title-main-menu.md |
+| $80:E37B | docs/research/R-0064-hunter-ending-and-soft-reset.md |
+| $80:E3A1 | docs/research/R-0064-hunter-ending-and-soft-reset.md |
 | $80:E708 | docs/research/R-0056-tour-track-now-playing.md |
 | $80:E7C4 | docs/research/R-0056-tour-track-now-playing.md |
 | $80:E7FB | docs/research/R-0056-tour-track-now-playing.md |
@@ -167,6 +169,7 @@ Cited addresses in `unknown` bytes:
 | $82:B7DD | docs/content/dragster-segment.md, docs/research/R-0008-track-decode.md, docs/research/R-0021-zoom-zoo-content-contract.md, docs/research/R-0046-track-breadth-matrix.md, tasks/M1-03.md, tasks/M4-03.md |
 | $82:D4DC | docs/research/R-0061-riders-and-opponents.md, tasks/RACE-RIDERS-OPPONENTS.md |
 | $82:DC12 | docs/research/R-0046-track-breadth-matrix.md, tasks/TRACK-BREADTH.md |
+| $83:8000 | docs/research/R-0064-hunter-ending-and-soft-reset.md |
 | $83:800C | docs/research/R-0055-rider-menu.md |
 | $83:8535 | docs/research/R-0045-static-code-map.md, tasks/STATIC-CODE-MAP.md |
 | $83:87E9 | docs/research/R-0057-one-run-result.md |
@@ -188,6 +191,7 @@ Cited addresses in `unknown` bytes:
 | $83:A254 | docs/research/R-0056-tour-track-now-playing.md |
 | $83:A507 | docs/research/R-0062-gold-endings.md |
 | $83:A575 | docs/research/R-0062-gold-endings.md |
+| $83:AE01 | docs/research/R-0064-hunter-ending-and-soft-reset.md |
 | $83:B1EB | docs/research/R-0062-gold-endings.md |
 | $83:B4DF | docs/research/R-0062-gold-endings.md |
 | $83:B506 | docs/research/R-0062-gold-endings.md |

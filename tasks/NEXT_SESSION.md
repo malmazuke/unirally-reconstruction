@@ -5,6 +5,12 @@ push the task branch, open a pull request from the template, merge with
 `gh pr merge --merge` once its checks are green and the review is done. `main`
 refuses direct pushes. The checks run on pull requests only.
 
+**Status on 26 September 2026 UTC (HUNTER-ENDING): start
+[FIFTH-WIN-COMPLETION](FIFTH-WIN-COMPLETION.md), then the main menu's other modes
+(COVERAGE-ROADMAP: 2P, VS, LEAGUE, OPTIONS, the demo).** HUNTER's ending and the soft reset are native
+(R-0064). Rebuild the pack as v23. The main menu's code B, Down, L and R reaches HUNTER's ending
+from power-on in about 1,300 frames.
+
 **Status on 26 September 2026 UTC (RACE-OFFSCREEN-ARROW): start
 [HUNTER-ENDING](HUNTER-ENDING.md), then [FIFTH-WIN-COMPLETION](FIFTH-WIN-COMPLETION.md).** The
 race's pictures now match the original's on every compared frame (R-0063). The disk is nearly full

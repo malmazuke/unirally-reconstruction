@@ -350,13 +350,46 @@ std::uint16_t combine(const SnesVideoRegisters& registers, Pixel above, const Pi
     return blend(above.colour, below.colour, halve && below.source != Source::colour, subtract);
 }
 
+// One screen row; row 0 is scanline 1, as in `background_pixel`.
+void draw_row(RgbFrame& frame, const SnesVideoMemory& memory, const SnesVideoRegisters& registers,
+              const ModeLayout& layout, int row) {
+    const auto y = static_cast<unsigned>(row + 1);
+    Line line;
+    line.above.fill({Source::colour, 0, cgram_colour(memory, 0)});
+    line.below.fill({Source::colour, 0, registers.fixed_colour});
+    for (unsigned index = 0; index < 4; ++index)
+        draw_background(line, memory, registers, layout, index, y);
+    draw_objects(line, memory, registers, layout, y);
+    for (int x = 0; x < 256; ++x) {
+        const auto at = static_cast<std::size_t>(x);
+        const auto value = combine(registers, line.above[at], line.below[at]);
+        pixel(frame, x, row, colour_word_rgb(apply_snes_brightness(value, registers.brightness)));
+    }
+}
+
 } // namespace
+
+void apply_line_register(SnesVideoRegisters& registers, const SnesLineRegister& write) {
+    switch (write.name) {
+    case SnesLineRegisterName::display:
+        registers.force_blank = (write.value & 0x80U) != 0;
+        registers.brightness = static_cast<std::uint8_t>(write.value & 0x0fU);
+        return;
+    case SnesLineRegisterName::bg1_vertical_offset:
+        registers.bg[0].vofs = static_cast<std::uint16_t>(write.value & 0x3ffU);
+        return;
+    }
+}
 
 RgbFrame render_snes_screen(const SnesVideoMemory& screen_memory,
                             const SnesVideoRegisters& registers,
-                            std::span<const SnesLineColour> line_colours) {
+                            std::span<const SnesLineColour> line_colours,
+                            std::span<const SnesLineRegister> line_registers) {
     RgbFrame frame{};
-    if (registers.force_blank) return frame;
+    const bool display_written =
+        std::any_of(line_registers.begin(), line_registers.end(),
+                    [](const auto& write) { return write.name == SnesLineRegisterName::display; });
+    if (registers.force_blank && !display_written) return frame;
     if (registers.unmodelled_features)
         throw std::invalid_argument("SNES windows, mosaic, HDMA and OAM rotation are not modelled");
     const unsigned clip_mask = (registers.colour_select >> 6U) & 3U;
@@ -377,27 +410,19 @@ RgbFrame render_snes_screen(const SnesVideoMemory& screen_memory,
     // bsnes caches CGRAM per line (`PPU::Line::cache`), so a colour changed during the picture
     // shows from the next line on: the picture is drawn from a copy whose CGRAM changes by row.
     SnesVideoMemory memory = screen_memory;
+    SnesVideoRegisters row_registers = registers;
     auto next_colour = line_colours.begin();
+    auto next_register = line_registers.begin();
     for (int row = 0; row < 224; ++row) {
         for (; next_colour != line_colours.end() && next_colour->row <= row; ++next_colour) {
             memory.cgram[next_colour->index * 2U] = static_cast<std::uint8_t>(next_colour->colour);
             memory.cgram[next_colour->index * 2U + 1] =
                 static_cast<std::uint8_t>(next_colour->colour >> 8U);
         }
-        // Screen row 0 is scanline 1, as in `background_pixel`.
-        const auto y = static_cast<unsigned>(row + 1);
-        Line line;
-        line.above.fill({Source::colour, 0, cgram_colour(memory, 0)});
-        line.below.fill({Source::colour, 0, registers.fixed_colour});
-        for (unsigned index = 0; index < 4; ++index)
-            draw_background(line, memory, registers, layout, index, y);
-        draw_objects(line, memory, registers, layout, y);
-        for (int x = 0; x < 256; ++x) {
-            const auto at = static_cast<std::size_t>(x);
-            const auto value = combine(registers, line.above[at], line.below[at]);
-            pixel(frame, x, row,
-                  colour_word_rgb(apply_snes_brightness(value, registers.brightness)));
-        }
+        for (; next_register != line_registers.end() && next_register->row <= row; ++next_register)
+            apply_line_register(row_registers, *next_register);
+        if (row_registers.force_blank) continue; // the row stays black
+        draw_row(frame, memory, row_registers, layout, row);
     }
     return frame;
 }
