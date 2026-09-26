@@ -81,7 +81,8 @@ From the test that sees a press, t:
   slides it forward, and PICK TRACK afterwards the other way round (`$80:E92F`).
 - PICK TOUR's first interactive frame is t + 179. It returns into the scoring on a choice or on
   Y or X alike (`$83:88D1`), and `$80:BC7B` runs `$80:A858` (two frames) and PICK TRACK, which
-  slides forward.
+  slides forward, or back when `$00AC` is 2. The captures take the first case; a native test
+  covers the second.
 
 The arrow does not move during the award: its frame waits are `$83:A923`'s. The palette cycle
 stops with the NMI at q + 100 and resumes at t + 118.

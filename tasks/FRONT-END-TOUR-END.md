@@ -11,7 +11,8 @@
 - Worker/session/runtime/model: Claude Code desktop app, Claude Opus 5.5 (`claude-opus-5-5`)
 - Actual model/reasoning effort, routing rationale and frontier escalation question (if any):
   **tier 2** for the screens; **tier 1** for anything that changes the scoring.
-  Kept at tier 2: the win test is unchanged; the completion's records (the done tracks, the
+  Kept at tier 2: the win test is unchanged, though the scoring now runs on its own frame, q + 3
+  (it ran a frame early, q + 2, with no visible difference); the completion's records (the done tracks, the
   medal, the unlock rule) transcribe `$83:881B-88D2`, checked against the listing by the worker
   and the reviewer, against cartridge RAM after two completions (`sram.py`), and by native tests
   of every rule case.
@@ -76,8 +77,8 @@ R-0059 and `local/evidence/front-end-tour-end/` (`NOTES.md`, `decode/tour-end.md
 | --- | --- |
 | Pictures and state | A bronze and a silver forced completion, the award looping, its exit, and PICK TOUR's exits by a choice and by Y: no difference in the menus' words, OAM buffer or text map on any frame; 4,161 pictures equal (R-0059) |
 | Records | `sram.py`: the medals, done tracks, levels and records equal the original's cartridge RAM after both completions |
-| Playable | The gates run the app hidden with `forced-bronze-long`'s pads through the forced completion, the award and back to PICK TOUR. A completion by a fifth win is not captured (R-0059) |
-| Nothing moves | The gates, when run |
+| Playable | The app hidden with `forced-bronze-long`'s pads: the race returns at front-end frame 3455, and the run ends on PICK TOUR (screen 7) with CRAWLER's medal 1, so through the forced completion and the award (re-run on the head after `ec64483`, which adds that line to the app's log). A completion by a fifth win is not captured (R-0059) |
+| Nothing moves | Gates on `ec64483` (`gates-ec64483.out`): three presets build, ctest 26 of 26; the synthetic suite; both v1 contracts; the hidden runs and the front end's app runs; the eleven differential gates (the same rows digests); the equivalence sweep, 351 runs with 0 differences; both recompares identical; every front-end comparison equal (the main menu, the one-player screens, the one-run and lap results, the five completions); the records equal; 0 functions over 80 lines; the address index current. The head after it changes the app's closing log line, one test's assertion and records; its build, ctest and the app run were re-run |
 
 Not done here, recorded in R-0059: the gold medal's endings and HUNTER's, and the reveal of newly
 opened tours (native shows the new level at once).

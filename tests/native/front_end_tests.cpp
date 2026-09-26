@@ -952,6 +952,8 @@ void award_tests() {
     run(run_state, content, 12);
     run(run_state, content, 5, {select_x_r, 0});
     require(run_state.screen == FrontEndScreen::tour_award);
+    // A gold medal leaves at once: its exit starts on the completion's frame.
+    require((run_state.award.medal >= 3) == (run_state.award.exit_frame == 1));
     // Start held through a few of the animation's upload frames.
     for (unsigned k = 0; k < 700; ++k) {
       const bool held = k >= 130 && k < 140;

@@ -36,7 +36,7 @@ What R-0059 leaves:
 - **A completion by a fifth win**, captured from a preloaded cartridge RAM with four done tracks.
   The laboratory runner must then start from those records.
 
-Make native do both, frame for frame. `local/evidence/front-end-tour-end/decode/tour-end.md`
+Make native do all three, frame for frame. `local/evidence/front-end-tour-end/decode/tour-end.md`
 section 5 outlines every ending.
 
 ## Acceptance

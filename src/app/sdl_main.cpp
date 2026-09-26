@@ -573,7 +573,8 @@ int main(int argc, char **argv) try {
     std::cout << "Front end: frames " << front_end->frames() << "; notices "
               << front_end->notices() << "; returns to the main menu "
               << front_end->returns_to_menu() << "; races returned " << front_end->races()
-              << "; in the menus at the end\n";
+              << "; in the menus at the end, screen " << front_end->screen()
+              << ", medal on the tour " << front_end->tour_medal() << '\n';
   std::cout << "Presentation frames: " << rendered_frames
             << "; rider-pose fallback frames: " << pose_fallback_frames
             << "; identical consecutive redraws: " << identical_redraws
