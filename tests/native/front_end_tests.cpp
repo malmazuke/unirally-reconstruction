@@ -271,8 +271,10 @@ synthetic_content(std::vector<std::vector<std::uint8_t>> &storage) {
   storage.push_back({0xfc, 0x01, 'A', 0xff});
   content.rider_menu_title = storage.back();
   content.decoration_frames = keep(76);
-  storage.emplace_back(0x1360 * 3, 0);
-  for (std::size_t k = 0; k < 0x1360; ++k)
+  // Poses up to 0x1432, the last the endings use (R-0062).
+  constexpr std::size_t poses = 0x1433;
+  storage.emplace_back(poses * 3, 0);
+  for (std::size_t k = 0; k < poses; ++k)
     storage.back()[k * 3 + 1] = 0x80;
   content.uni_pictures.pose_pointers = storage.back();
   content.uni_pictures.pose_frames = keep(4);
@@ -333,6 +335,8 @@ synthetic_content(std::vector<std::vector<std::uint8_t>> &storage) {
   for (const unsigned id : {0x3cU, 0x3eU, 0x3fU, 0x40U, 0x41U, 0x42U, 0x43U, 0x4cU, 0x52U,
                             0x57U, 0x5eU, 0x5fU, 0x60U, 0x61U, 0x62U, 0x63U})
     content.assets[id] = keep(64);
+  // Each tour's table longer than its script reads (CRAWLER's 82 bytes the
+  // longest).
   for (auto &table : content.ending_tables)
     table = keep(0x60);
   // The lap result (profile v19): empty streams.
@@ -1062,6 +1066,63 @@ void award_tests() {
           revealed(hunter) == 1);
 }
 
+// R-0062: every tour's gold ending with the synthetic content: the script runs
+// to its last frame t', PICK TOUR comes on t' + 133, and NMI's hook first runs
+// on t' + 118, or on t' + 119 after WALKER's and JUMPER's endings.
+void ending_tests() {
+  using unirally::FrontEndScreen;
+  std::vector<std::vector<std::uint8_t>> storage;
+  const auto content = synthetic_content(storage);
+  auto raced = unirally::start_front_end();
+  run(raced, content, 430);
+  require(run_to(raced, content, FrontEndScreen::rider_menu, {0x1000, 0}));
+  require(run_to(raced, content, FrontEndScreen::tour_menu, {0x8000, 0}));
+  require(run_to(raced, content, FrontEndScreen::track_menu, {0x1000, 0}));
+  require(run_to(raced, content, FrontEndScreen::now_playing, {0x1000, 0}));
+  require(run_to(raced, content, FrontEndScreen::race, {0x1000, 0}));
+  // t' by tour (`$00D0`): CRAWLER, JUMPER, SHUFFLER, BOUNDER, WALKER, RUNNER,
+  // HOPPER, SPRINTER.
+  constexpr std::array<std::uint32_t, 8> last_frames{336, 409, 380, 299,
+                                                     393, 321, 516, 356};
+  constexpr std::uint32_t hook_frame = 118, pick_tour_frame = 133;
+  constexpr std::uint16_t select_x_r = 0x2050;
+  for (std::uint8_t tour = 0; tour < 8; ++tour) {
+    auto state = raced;
+    // The tour and its first track in the menus the race's return restores,
+    // at level 2, where PICK TOUR shows all eight.
+    state.records.tour_levels[0] = 2;
+    state.saved.tour_menu.tour = tour;
+    state.saved.tour_menu.track = static_cast<std::uint8_t>(tour * 5);
+    state.records.medals[tour * 16] = 2;
+    unirally::return_from_race(state, content, 3454, {3000, 4000});
+    require(run_to(state, content, FrontEndScreen::race_result, {}, 104));
+    run(state, content, 12);
+    run(state, content, 5, {select_x_r, 0});
+    require(state.screen == FrontEndScreen::tour_ending &&
+            state.script_frame == 0 && state.records.medals[tour * 16] == 3);
+    const auto last = last_frames[tour];
+    run(state, content, last + hook_frame - 1);
+    const auto cycle = [&] {
+      return std::pair{state.cycle.delay, state.cycle.phase};
+    };
+    const auto before = cycle();
+    run(state, content, 1);
+    const bool late = tour == 1 || tour == 4; // JUMPER, WALKER
+    require((cycle() == before) == late);
+    if (late) {
+      run(state, content, 1);
+      require(cycle() != before);
+      run(state, content, pick_tour_frame - hook_frame - 2);
+    } else {
+      run(state, content, pick_tour_frame - hook_frame - 1);
+    }
+    require(state.screen == FrontEndScreen::tour_ending &&
+            state.script_frame == last + pick_tour_frame - 1);
+    run(state, content, 1);
+    require(state.screen == FrontEndScreen::tour_menu_entry);
+  }
+}
+
 } // namespace
 
 int main() try {
@@ -1074,6 +1135,7 @@ int main() try {
   race_result_tests();
   lap_result_tests();
   award_tests();
+  ending_tests();
   return 0;
 } catch (const std::exception &error) {
   std::fprintf(stderr, "%s\n", error.what());
