@@ -55,11 +55,12 @@ Out of scope: the stunt events (STUNT-EVENTS) and the tour's end (FRONT-END-TOUR
 - The native race's loading time between NOW PLAYING's fade and its initialization is known for
   DRAGSTER only (121 frames on the laboratory's path). `front_end_runner` times no other track.
   Measure ZOOM ZOO's from a capture (the first frame `$0FF1` moves).
-- `$77:0742` bit 8 matters here. `$80:9805` parks entries 0-29 (and `$0CF0`, `$0DE0`) and sets
-  the bit only while it is clear. Only the lap result's `$80:98CB` clears it, and the bit
-  persists across races in `$0742`. Native keeps neither the bit nor those tables and always
-  parks: right after a one-run race, but not necessarily after a lap race. The lap graph uses
-  entries 0-19.
+- `$77:0742` bit 8 matters here. `$80:9805` parks entries 0-29 (and `$0CF0`, `$0DE0`) only
+  while the bit is clear, and sets it. The first result after a cold start sets it, and it stays
+  set (it is in `$0742`, across races) until the lap result's graph loop clears it
+  (`$80:98CB`). So later one-run results skip the parking. Native keeps neither the bit nor
+  those tables and always parks; `$80:A09A` has already parked those entries, so the OAM agrees.
+  The lap graph uses entries 0-19.
 - Holding Right alone never finishes ZOOM ZOO: `lap-explore` circles the loop at 0 of 3 laps.
 - The capture exists: `local/evidence/front-end-lap-result/lap-won` (8,400 frames). It uses
   M4-16 boundary-a's inputs, which drive three laps to 6724: MIKE 1:38.02 against BRONSEN
