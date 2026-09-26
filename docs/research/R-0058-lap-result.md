@@ -66,7 +66,7 @@ Frames count from r, the race's last frame; the return, r to r + 104, is R-0057'
 
 - Entry 112 at (0xE7, 0xAB), attributes 0x17, beside the record; asset 0x22 at 0xB0.
 - **The player's best lap** (`$80:9017-905A`) is the smallest of the ten slots. Below the rider's
-  best on the track (`$77:0829`), it becomes the new best and the player's markers show
+  best on the track (`$77:0829 + 2 x (50 x rider + track)`, `$83:9E47`), it becomes the new best and the player's markers show
   (`$0C18 &= 0xEE`).
 - **The streams**, through the text printer (R-0053):
   - `$80:910F`: player, total and best lap; the graph's axes; its top and floor times, cut to
