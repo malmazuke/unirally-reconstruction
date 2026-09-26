@@ -642,12 +642,193 @@ void script(FrontEndState& state, const FrontEndContent& content, std::uint32_t 
 }
 } // namespace hopper
 
+// JUMPER (`$83:BB80`): the riderless uni and the rider's red uni ride in from the left while the
+// gold pattern scrolls past; an elephant drops onto the uni and flattens it, then flies off, and
+// the red uni rides on. Both unis show the pose at tile 0x100 in their own palettes until the
+// flattened uni takes tile 0x108. Its table (`$83:BE9A`): objects 0-2, the elephant's tiles.
+namespace jumper {
+constexpr unsigned tour = 1;
+constexpr std::size_t elephant_tiles_at = 12, squashed_tiles = 4;
+constexpr unsigned uni = 0, red_uni = 1, elephant = 2;
+constexpr std::uint8_t first_high = 0x5b, red_uni_high = 0x1a, elephant_high = 0x4a,
+                       flattened_high = 0x49, flattened_attr = 0x49, squashed_attr = 0x13,
+                       second_pose_tile = 8;
+constexpr std::uint16_t red_uni_shown = 0x15, squash_poses = 0x13dc, ride_poses = 0x38,
+                        walk_poses = 23, pose_stride = 0x40, scroll_step = 8;
+constexpr std::uint32_t setup_frame = 96;
+// $83:BC62, $83:BCB2, $83:BD16, $83:BD94, $83:BDDD and $83:BE2C (which ends on t').
+constexpr Loop ride_in{111, 64, 1}, drop{ride_in.end(), 55, 1}, squash{drop.end(), 16, 2},
+    flatten{squash.end(), 8, 1}, fly_off{flatten.end(), 55, 1}, ride_off{fly_off.end(), 84, 1};
+
+// $83:BEBA: the gold pattern scrolls 8 pixels (`$0090`, BG1's horizontal offset).
+void scroll_pattern(FrontEndState& state) {
+    state.slide.scroll = static_cast<std::uint16_t>(state.slide.scroll + scroll_step);
+    state.registers.bg[0].hofs = state.slide.scroll;
+}
+
+// $83:BE6F: the ride's poses from 0x38, a new one every step, 23 in turn.
+void build_ride_pose(FrontEndState& state) {
+    auto& ending = state.ending;
+    ending.pose =
+        static_cast<std::uint16_t>((((ending.step * 2U) % walk_poses) * pose_stride) + ride_poses);
+}
+
+// Every step's end: the built pose to `word`, the objects, the scroll, the next ride pose.
+void ride_step(FrontEndState& state, const FrontEndContent& content, unsigned word) {
+    upload_built_pose(state, content, word);
+    copy_oam(state);
+    scroll_pattern(state);
+    build_ride_pose(state);
+}
+
+void set_elephant_tile(FrontEndState& state, const FrontEndContent& content, std::size_t index) {
+    oam_byte(state, elephant, 2) =
+        table_byte(content.ending_tables[tour], elephant_tiles_at + index);
+}
+
+void setup(FrontEndState& state, const FrontEndContent& content) {
+    load_first_objects(state, content.ending_tables[tour], 0, 3);
+    high_bits(state, 0) = first_high;
+    copy_oam(state);
+    state.ending.pose = ride_poses;
+    upload_built_pose(state, content, first_pose_word);
+    upload_built_pose(state, content, second_pose_word);
+    state.ending.step = 0;
+}
+
+// $83:BC62-BC9F: the uni rides in 3 pixels a step, the red uni 1, shown from step 0x15.
+void ride_in_part(FrontEndState& state, const FrontEndContent& content, unsigned wait) {
+    if (wait == 1) {
+        ride_step(state, content, first_pose_word);
+        ++state.ending.step;
+        return;
+    }
+    oam_byte(state, uni, 0) += 3;
+    ++oam_byte(state, red_uni, 0);
+    if ((state.ending.step & 0xffU) == red_uni_shown) high_bits(state, 0) = red_uni_high;
+}
+
+// $83:BCA1-BCFA: the elephant drops in from the top left, walking (`$10CB` its step).
+void drop_part(FrontEndState& state, const FrontEndContent& content, unsigned step, unsigned wait) {
+    auto& ending = state.ending;
+    if (wait == 1) {
+        ride_step(state, content, first_pose_word);
+        ++ending.count;
+        ++ending.step;
+        return;
+    }
+    if (step == 0) {
+        ending.step = ending.count = 0;
+        high_bits(state, 0) = elephant_high; // a word write: entries 4-7 shown, small
+        high_bits(state, 4) = four_shown;
+    }
+    oam_byte(state, elephant, 0) += 2;
+    oam_byte(state, elephant, 1) += 2;
+    set_elephant_tile(state, content, ((ending.count & 0xffU) >> 1) & 3U);
+}
+
+// $83:BCFC-BD7E: the elephant lands on the uni, which is squashed (poses 0x13DC on, at tile
+// 0x108) while the red uni rides on; the first frame of each pair copies no objects.
+void squash_part(FrontEndState& state, const FrontEndContent& content, unsigned step,
+                 unsigned wait) {
+    auto& ending = state.ending;
+    if (wait == 1) {
+        upload_built_pose(state, content, second_pose_word);
+        scroll_pattern(state);
+        ending.pose = static_cast<std::uint16_t>(squash_poses + (ending.step >> 1));
+        return;
+    }
+    if (wait == 2) {
+        ride_step(state, content, first_pose_word);
+        ++ending.count;
+        ++ending.step;
+        return;
+    }
+    if (step == 0) {
+        ending.step = ending.count = 0;
+        oam_byte(state, red_uni, 2) = second_pose_tile;
+        oam_byte(state, uni, 3) = squashed_attr;
+    }
+    set_elephant_tile(state, content, (ending.count >> 1) + squashed_tiles);
+}
+
+// $83:BD81-BDD4: the flattened uni hidden; the red uni's ride goes to tile 0x108.
+void flatten_part(FrontEndState& state, const FrontEndContent& content, unsigned step,
+                  unsigned wait) {
+    auto& ending = state.ending;
+    if (wait == 1) {
+        ride_step(state, content, second_pose_word);
+        ++ending.count;
+        ++ending.step;
+        return;
+    }
+    if (step == 0) {
+        ending.step = 0;
+        high_bits(state, 0) = flattened_high;
+        oam_byte(state, uni, 3) = flattened_attr;
+    }
+    set_elephant_tile(state, content, (ending.count >> 1) + squashed_tiles);
+}
+
+// $83:BDD6-BE1C: the elephant flies off to the top right.
+void fly_off_part(FrontEndState& state, const FrontEndContent& content, unsigned step,
+                  unsigned wait) {
+    auto& ending = state.ending;
+    if (wait == 1) {
+        ride_step(state, content, second_pose_word);
+        ++ending.step;
+        return;
+    }
+    if (step == 0) ending.step = 0;
+    oam_byte(state, elephant, 0) += 2;
+    oam_byte(state, elephant, 1) -= 2;
+    set_elephant_tile(state, content, ((ending.step & 0xffU) >> 1) & 3U);
+}
+
+// $83:BE1E-BE62: the red uni rides off to the right on tile 0x100; on t' the scroll goes back
+// to 0.
+void ride_off_part(FrontEndState& state, const FrontEndContent& content, unsigned step,
+                   unsigned wait) {
+    auto& ending = state.ending;
+    if (wait == 1) {
+        ride_step(state, content, first_pose_word);
+        ++ending.step;
+        if (step + 1 < ride_off.steps) return;
+        state.slide.scroll = 0;
+        state.registers.bg[0].hofs = 0;
+        return;
+    }
+    if (step == 0) {
+        ending.step = 0;
+        oam_byte(state, red_uni, 2) = 0;
+    }
+    oam_byte(state, red_uni, 0) += 2;
+}
+
+void script(FrontEndState& state, const FrontEndContent& content, std::uint32_t frame) {
+    if (frame == setup_frame) {
+        setup(state, content);
+        return;
+    }
+    run_loop(ride_in, frame, [&](unsigned, unsigned wait) { ride_in_part(state, content, wait); });
+    const auto part = [&](auto function) {
+        return
+            [&, function](unsigned step, unsigned wait) { function(state, content, step, wait); };
+    };
+    run_loop(drop, frame, part(drop_part));
+    run_loop(squash, frame, part(squash_part));
+    run_loop(flatten, frame, part(flatten_part));
+    run_loop(fly_off, frame, part(fly_off_part));
+    run_loop(ride_off, frame, part(ride_off_part));
+}
+} // namespace jumper
+
 // The eight tours' endings by `$00D0`; a tour whose ending is not recovered has no script and
 // leaves at once through the award's way out.
 const std::array<EndingLayout, 8> endings{{
-    {0xc0, 0x40, 0x60, 0xa3, 96, 336, crawler::script}, // CRAWLER `$83:C49C`
-    {},
-    {0x80, 0x41, 0x61, 0xa3, 96, 380, shuffler::script}, // SHUFFLER `$83:B1EB`
+    {0xc0, 0x40, 0x60, 0xa3, 96, 336, crawler::script},      // CRAWLER `$83:C49C`
+    {0x80, 0x3f, 0x5f, 0xa3, 97, 409, jumper::script, true}, // JUMPER `$83:BB80`
+    {0x80, 0x41, 0x61, 0xa3, 96, 380, shuffler::script},     // SHUFFLER `$83:B1EB`
     {},
     {0x80, 0, 0x5e, 0x83, 94, 393, walker::script, true}, // WALKER `$83:B506`
     {},
