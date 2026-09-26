@@ -56,15 +56,6 @@ constexpr std::uint32_t nintendo_registers_frame = 97, nintendo_load_frame = 99,
                         menu_map_copy_frame = 407, menu_palette_frame = 408, menu_tiles_frame = 409,
                         menu_fade_in = 410, menu_palette_again_frame = 418, main_menu_frame = 419;
 
-void set_background(SnesBackground& bg, std::uint8_t sc) {
-    bg.map_word = static_cast<std::uint16_t>((sc & 0xfcU) << 8U);
-    bg.map_size = sc & 3U;
-}
-void set_tile_bases(SnesVideoRegisters& registers, std::uint8_t nba) {
-    registers.bg[0].tile_word = static_cast<std::uint16_t>((nba & 0x0fU) << 12U);
-    registers.bg[1].tile_word = static_cast<std::uint16_t>((nba >> 4U) << 12U);
-}
-
 // $80:FAF5: spin, then move a quarter of the way to the target. The quarter is an arithmetic
 // shift, so a positive gap under 4 moves nothing: x settles three sixteenths short.
 std::uint16_t quarter_step(std::uint16_t gap) {
@@ -204,6 +195,7 @@ bool waits_for_frame(const FrontEndState& state) {
     // The award's waits are `$83:A923`'s, which leave the arrow alone.
     if (state.screen == FrontEndScreen::tour_award || state.screen == FrontEndScreen::tour_ending)
         return false;
+    if (state.screen == FrontEndScreen::hunter_ending) return hunter_ending_waits(state);
     // The lap result's second frame (`$80:8FFD-910E`) runs past its frame's end, so the tail
     // after it starts without a frame wait (R-0058).
     if (state.screen == FrontEndScreen::race_result && state.race_result.times.lap_race)
@@ -330,16 +322,29 @@ void scroll_logo(FrontEndState& state) {
     state.registers.bg[0].vofs = next;
 }
 
-// The colours HDMA wrote during the last picture stay in CGRAM.
-void keep_line_colours(FrontEndState& state) {
+// The colours HDMA wrote during the last picture stay in CGRAM, and the registers it wrote hold
+// their last values.
+void keep_line_writes(FrontEndState& state) {
     for (const auto& colour : state.line_colours) {
         state.video.cgram[colour.index * 2U] = static_cast<std::uint8_t>(colour.colour);
         state.video.cgram[colour.index * 2U + 1] = static_cast<std::uint8_t>(colour.colour >> 8U);
     }
     state.line_colours.clear();
+    for (const auto& write : state.line_registers) apply_line_register(state.registers, write);
+    state.line_registers.clear();
 }
 
 } // namespace
+
+void set_background(SnesBackground& bg, std::uint8_t sc) {
+    bg.map_word = static_cast<std::uint16_t>((sc & 0xfcU) << 8U);
+    bg.map_size = sc & 3U;
+}
+
+void set_tile_bases(SnesVideoRegisters& registers, std::uint8_t nba) {
+    registers.bg[0].tile_word = static_cast<std::uint16_t>((nba & 0x0fU) << 12U);
+    registers.bg[1].tile_word = static_cast<std::uint16_t>((nba >> 4U) << 12U);
+}
 
 void run_nmi_hook(FrontEndState& state, const FrontEndContent& content) {
     scroll_logo(state);
@@ -378,10 +383,6 @@ void load_object_palette(FrontEndState& state, const FrontEndContent& content) {
                0xf0);
 }
 
-// The main menu's screen ($80:D20E at 377): BG1 (8bpp logo) and BG2 (4bpp checks and text)
-// with the objects, which the subscreen adds at half (the arrow's shadow).
-// The main menu's registers (`$80:D20E`, `$83:A721`): BG1 and BG2 maps and tiles, mode 3, the
-// objects, the colour math.
 void set_menu_registers(SnesVideoRegisters& r) {
     set_background(r.bg[0], 0x02);
     set_background(r.bg[1], 0x13);
@@ -394,6 +395,8 @@ void set_menu_registers(SnesVideoRegisters& r) {
     r.colour_math = 0x7f;
 }
 
+// The main menu's screen ($80:D20E at 377): BG1 (8bpp logo) and BG2 (4bpp checks and text)
+// with the objects, which the subscreen adds at half (the arrow's shadow).
 void load_main_menu_screen(FrontEndState& state, const FrontEndContent& content) {
     load_cgram(state, content.base_palette, 0); // $80:A8A8
     state.registers.force_blank = true;
@@ -648,6 +651,14 @@ FrontEndContent front_end_content(const ClassicContentPack& pack) {
                                                  "walker",  "runner", "hopper",   "sprinter"};
     for (std::size_t tour = 0; tour < endings.size(); ++tour)
         content.ending_tables[tour] = pack.entry(std::string("front-end.ending-") + endings[tour]);
+    for (const unsigned id :
+         {0x00U, 0x3aU, 0x5dU, 0x66U, 0x67U, 0x68U, 0x69U, 0x6bU, 0x6cU, 0x6dU, 0x6eU, 0x6fU})
+        content.assets[id] = pack.entry(asset_name(id));
+    content.reveal_brightness = pack.entry("front-end.reveal-brightness");
+    content.reveal_offsets = pack.entry("front-end.reveal-offsets");
+    content.credits_text = pack.entry("front-end.credits-text");
+    content.credits_poses = pack.entry("front-end.credits-poses");
+    content.credits_objects = pack.entry("front-end.credits-objects");
     return content;
 }
 
@@ -672,9 +683,24 @@ FrontEndState start_front_end() {
     return {};
 }
 
+namespace front_end_screens {
+
+// The power-on path again (`$80:91D1`): every register and all work RAM reset, the boot from its
+// first frame; the cartridge RAM's records are kept, and CGRAM and OAM until the boot reloads them.
+void soft_reset(FrontEndState& state) {
+    auto reset = start_front_end();
+    reset.frame = state.frame;
+    reset.records = state.records;
+    reset.video.cgram = state.video.cgram;
+    reset.video.oam = state.video.oam;
+    state = std::move(reset);
+}
+
+} // namespace front_end_screens
+
 void update_front_end(FrontEndState& state, const FrontEndContent& content, FrontEndPads pads) {
     if (state.mode_chosen) return;
-    keep_line_colours(state);
+    keep_line_writes(state);
     // NMIs are enabled at the end of the title's loads (`$80:F5B8`); the hook runs from then on:
     // the logo's slide, then the palette cycle.
     if (state.frame == cycle_start_frame) state.cycle.running = true;
@@ -706,13 +732,15 @@ void update_front_end(FrontEndState& state, const FrontEndContent& content, Fron
     case FrontEndScreen::race_restart: race_restart_frame(state); break;
     case FrontEndScreen::award_return: award_return_frame(state, content); break;
     case FrontEndScreen::tour_ending: tour_ending_frame(state, content); break;
+    case FrontEndScreen::hunter_ending: hunter_ending_frame(state, content, physical); break;
     }
     if (state.screen != screen) state.script_frame = 0;
     ++state.frame;
 }
 
 RgbFrame render_front_end(const FrontEndState& state) {
-    return render_snes_screen(state.video, state.registers, state.line_colours);
+    return render_snes_screen(state.video, state.registers, state.line_colours,
+                              state.line_registers);
 }
 
 } // namespace unirally

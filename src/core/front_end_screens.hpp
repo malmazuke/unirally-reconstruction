@@ -103,6 +103,12 @@ void copy_oam(FrontEndState& state); // $80:9318
 void set_oam_x_high(FrontEndState& state, unsigned entry, bool high);
 void park_arrow(FrontEndState& state); // $83:99FA
 
+// BGnSC: a background's map address and size; BG12NBA: BG1's and BG2's tile addresses.
+void set_background(SnesBackground& bg, std::uint8_t sc);
+void set_tile_bases(SnesVideoRegisters& registers, std::uint8_t nba);
+// The main menu's registers (`$80:D20E`, `$83:A721`, `$83:AC3B-AC6A`): BG1 and BG2 maps and
+// tiles, mode 3, the objects, the colour math.
+void set_menu_registers(SnesVideoRegisters& r);
 // $80:A09A (boot frame 24): every OAM entry at (1, 1), every high bit set.
 void clear_oam_buffer(FrontEndState& state);
 // The registers `$80:A09A` sets (boot frame 97): BG1 and BG2 maps, mode 3, objects.
@@ -212,6 +218,15 @@ void tour_ending_frame(FrontEndState& state, const FrontEndContent& content);
 // row, five rows 0x100 words apart.
 void upload_pose(FrontEndState& state, const FrontEndContent& content, std::uint16_t pose,
                  unsigned word);
+
+// hunter_ending.cpp: HUNTER's gold ending (`$83:AB9A`, HUNTER-ENDING), from its tour's
+// completion or from the main menu's code (`both_pads`: `$80:B6D3` reads pad 2 there too); a
+// frame of it; whether the frame waits in `$80:FADF` (and so moves the arrow).
+void start_hunter_ending(FrontEndState& state, bool both_pads);
+void hunter_ending_frame(FrontEndState& state, const FrontEndContent& content, FrontEndPads pads);
+bool hunter_ending_waits(const FrontEndState& state);
+// `JML $80:8858`, the power-on entry: the boot again, the records kept.
+void soft_reset(FrontEndState& state);
 
 // lap_result.cpp: the lap result (R-0058). Its build on the result's first frame, after the
 // common part; its streams on the second; one step of its graph.

@@ -382,6 +382,30 @@ synthetic_content(std::vector<std::vector<std::uint8_t>> &storage) {
   // longest).
   for (auto &table : content.ending_tables)
     table = keep(0x60);
+  // HUNTER's ending (profile v23): its assets; the reveal's tables in the
+  // original's form, BG1's offsets k and a brightness ramp of 1-15; a text
+  // and 48 poses.
+  for (const unsigned id : {0x00U, 0x3aU, 0x5dU, 0x66U, 0x67U, 0x68U, 0x69U,
+                            0x6bU, 0x6cU, 0x6dU, 0x6eU, 0x6fU})
+    content.assets[id] = keep(64);
+  storage.push_back({1, 0, 0, 1, 0, 0, 0x9f});
+  for (std::uint8_t k = 0; k < 31; ++k)
+    storage.back().insert(storage.back().end(), {k, 0});
+  storage.back().insert(storage.back().end(), {0xd6, 0, 0});
+  content.reveal_offsets = storage.back();
+  storage.push_back({1, 0x0f, 1, 0x0f, 0x9f});
+  for (std::uint8_t k = 0; k < 31; ++k)
+    storage.back().push_back(static_cast<std::uint8_t>(k % 15 + 1));
+  storage.back().insert(storage.back().end(), {1, 0xbb});
+  content.reveal_brightness = storage.back();
+  content.credits_text = bytes({0xfe, 5, 2, 'A', 0xff});
+  storage.emplace_back(96, 0);
+  for (std::size_t k = 0; k < 48; ++k) {
+    storage.back()[2 * k] = static_cast<std::uint8_t>(0x50 + k);
+    storage.back()[2 * k + 1] = 0x13;
+  }
+  content.credits_poses = storage.back();
+  content.credits_objects = keep(132);
   // The lap result (profile v19): empty streams.
   content.lap_result_text = content.lap_result_record = bytes({0xff});
   content.lap_result_player = content.lap_result_opponent = bytes({0xff});
@@ -1166,6 +1190,126 @@ void ending_tests() {
   }
 }
 
+// HUNTER-ENDING: HUNTER's gold ending, entered from its tour's completion (the
+// scoring frame s is the ending's script frame 0).
+unirally::FrontEndState
+hunter_completion(const unirally::FrontEndContent &content, bool cheat) {
+  using unirally::FrontEndScreen;
+  auto state = unirally::start_front_end();
+  run(state, content, 430);
+  require(run_to(state, content, FrontEndScreen::rider_menu, {0x1000, 0}));
+  require(run_to(state, content, FrontEndScreen::tour_menu, {0x8000, 0}));
+  require(run_to(state, content, FrontEndScreen::track_menu, {0x1000, 0}));
+  require(run_to(state, content, FrontEndScreen::now_playing, {0x1000, 0}));
+  require(run_to(state, content, FrontEndScreen::race, {0x1000, 0}));
+  state.records.tour_levels[0] = 3;
+  state.records.cheat = cheat;
+  state.saved.tour_menu.tour = 8;
+  state.saved.tour_menu.track = 40;
+  unirally::return_from_race(state, content, 3454, {3000, 4000});
+  require(run_to(state, content, FrontEndScreen::race_result, {}, 104));
+  run(state, content, 12);
+  run(state, content, 5, {0x2050, 0}); // Select, X and R: a forced completion
+  require(state.screen == FrontEndScreen::hunter_ending &&
+          state.script_frame == 0 && state.records.medals[8 * 16] == 3);
+  return state;
+}
+
+// The rows and values of the picture's INIDISP writes.
+std::vector<std::pair<unsigned, unsigned>>
+display_writes(const unirally::FrontEndState &state) {
+  std::vector<std::pair<unsigned, unsigned>> writes;
+  for (const auto &write : state.line_registers)
+    if (write.name == unirally::SnesLineRegisterName::display)
+      writes.emplace_back(write.row, write.value);
+  return writes;
+}
+
+// The first page's reveal: from the part's frame 25 HDMA writes INIDISP on
+// every picture over the CPU's forced blank: rows [0, c) at brightness 15, the
+// band's 31 rows on the ramp, then forced blank, with c = 2 + 3n at step n;
+// BG1's offsets follow the band (the CPU's registers hold the last writes).
+// Frame 101 turns it off and lights the page.
+void hunter_reveal_tests() {
+  std::vector<std::vector<std::uint8_t>> storage;
+  const auto content = synthetic_content(storage);
+  auto state = hunter_completion(content, false);
+  run(state, content, 24);
+  require(state.line_registers.empty() && state.registers.force_blank);
+  for (unsigned step = 0; step <= 75; ++step) {
+    run(state, content, 1);
+    const unsigned band = 2 + 3 * step;
+    const auto writes = display_writes(state);
+    require(writes[0].first == 0 && writes[0].second == 0x0f);
+    if (band + 31 < 224) {
+      require(writes.size() == 34 && writes[2].first == band &&
+              writes[2].second == 1 && writes[33].first == band + 31 &&
+              writes[33].second == 0xbb);
+      for (const auto &write : state.line_registers)
+        if (write.name == unirally::SnesLineRegisterName::bg1_vertical_offset &&
+            write.row >= band && write.row < band + 31)
+          require(write.value == write.row - band);
+    }
+    if (band >= 224)
+      require(writes.size() == 2);
+  }
+  run(state, content, 1);
+  require(state.line_registers.empty() && !state.registers.force_blank &&
+          state.registers.brightness == 15 && state.registers.bg[0].vofs == 0);
+}
+
+// The waits: the first page's needs a pad on two frames running (either pad);
+// the second page's ends on pad 1 or after 1,201 frames; the credits' on pad
+// 1 (pad 2 is not read after a one-player completion); the leaving fade ends
+// in the soft reset, the records kept. The arrow moves on the reveal's frames
+// and the first page's wait only.
+void hunter_wait_tests() {
+  using unirally::FrontEndScreen;
+  using Part = unirally::HunterEndingPart;
+  std::vector<std::vector<std::uint8_t>> storage;
+  const auto content = synthetic_content(storage);
+  auto state = hunter_completion(content, false);
+  const auto arrow_moves = [&](unirally::FrontEndPads pads = {}) {
+    const auto spin = state.arrow.spin;
+    unirally::update_front_end(state, content, pads);
+    return state.arrow.spin != spin;
+  };
+  for (unsigned frame = 1; frame < 25; ++frame)
+    require(!arrow_moves());
+  for (unsigned frame = 25; frame <= 110; ++frame)
+    require(arrow_moves());
+  run(state, content, 1, {0x1000, 0}); // one frame is not enough
+  run(state, content, 3);
+  require(state.hunter.part == Part::first_page);
+  require(arrow_moves({0, 0x0080}));
+  require(arrow_moves({0, 0x0080}) && state.hunter.part == Part::second_page);
+  // SPEEDKING's tiles take a frame longer: its reveal starts on frame 26.
+  for (unsigned frame = 1; frame < 26; ++frame)
+    require(!arrow_moves());
+  for (unsigned frame = 26; frame <= 102; ++frame)
+    require(arrow_moves());
+  for (unsigned pass = 1; pass < 1201; ++pass)
+    require(!arrow_moves({0, 0x1000}) && state.hunter.part == Part::second_page);
+  require(!arrow_moves() && state.hunter.part == Part::credits);
+  run(state, content, 61);
+  require(!state.registers.force_blank && state.registers.brightness == 15);
+  run(state, content, 3, {0, 0x1000});
+  require(state.hunter.part == Part::credits && state.hunter.pose_step == 3);
+  run(state, content, 1, {0x0010, 0}); // R
+  require(state.hunter.part == Part::leaving);
+  run(state, content, 15);
+  require(state.screen == FrontEndScreen::hunter_ending);
+  run(state, content, 1);
+  require(state.screen == FrontEndScreen::boot && state.script_frame == 0 &&
+          state.records.medals[8 * 16] == 3);
+  // With the title code's flag one CHEAT! page, then the timed wait.
+  auto cheat = hunter_completion(content, true);
+  run(cheat, content, 102);
+  require(cheat.hunter.cheat_page && cheat.hunter.part == Part::first_page);
+  run(cheat, content, 1, {0x1000, 0});
+  require(cheat.hunter.part == Part::credits);
+}
+
 } // namespace
 
 int main() try {
@@ -1179,6 +1323,8 @@ int main() try {
   lap_result_tests();
   award_tests();
   ending_tests();
+  hunter_reveal_tests();
+  hunter_wait_tests();
   return 0;
 } catch (const std::exception &error) {
   std::fprintf(stderr, "%s\n", error.what());

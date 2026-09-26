@@ -258,11 +258,12 @@ void complete_tour(FrontEndState& state) {
     state.award.after_completion = true;
     state.screen = FrontEndScreen::tour_award;
     state.script_frame = 0;
-    // $83:883E: a gold medal plays its tour's ending (`$83:88FD`, R-0062). HUNTER's (`$83:AB9A`),
-    // which ends in a soft reset, is not recovered: native leaves at once through the award's way
-    // out.
+    // $83:883E: a gold medal plays its tour's ending (`$83:88FD`, R-0062); HUNTER's (`$83:AB9A`)
+    // ends in a soft reset (HUNTER-ENDING).
     if (raised < 3) return;
-    if (has_tour_ending(menu.tour))
+    if (menu.tour == hunter)
+        start_hunter_ending(state, false);
+    else if (has_tour_ending(menu.tour))
         start_tour_ending(state);
     else
         state.award.exit_frame = 1;

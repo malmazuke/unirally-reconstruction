@@ -100,7 +100,7 @@ the public interface; `front_end_screens.hpp` is internal to the front end.
 
 | File | Concern |
 | --- | --- |
-| `snes_screen.cpp` | The SNES picture as bsnes' fast PPU draws it, with colours written during it (HDMA) |
+| `snes_screen.cpp` | The SNES picture as bsnes' fast PPU draws it, with colours, brightness, forced blank and BG1's vertical offset written during it (HDMA) |
 | `text_printer.cpp` | The game's text printer `$80:C3BC` into a 32 x 32 text map (R-0053) |
 | `front_end.cpp` | Power-on, the title and the main menu (R-0054), the loads and objects the screens share, and the frame's dispatch |
 | `screen_slide.cpp` | The slides between the menus' texts and the main menu's decoration animator (R-0055) |
@@ -111,6 +111,7 @@ the public interface; `front_end_screens.hpp` is internal to the front end.
 | `race_result.cpp` | After a race (R-0057, R-0060): the race's end for the menus (its result load or its pause menu's quit or restart), the return, the one-run result screen and its waits, the records and the scoring, then PICK TRACK; a restart back to NOW PLAYING |
 | `lap_result.cpp` | A lap race's result (R-0058): the graph's build and animation, the best laps and the streams |
 | `award.cpp` | A tour's completion (R-0059): the medal award screen and its animation, the menus' restore, the unlock rule, PICK TOUR and on to PICK TRACK |
+| `hunter_ending.cpp` | HUNTER's gold ending (HUNTER-ENDING): the newspaper pages and their HDMA reveal, the waits, the credits and the soft reset |
 | `front_end_runner.cpp` | The laboratory runner: the state by frame and pictures, for comparison with captures; the native race between the menus |
 
 ## Track sampling
