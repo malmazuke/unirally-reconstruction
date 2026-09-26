@@ -48,6 +48,22 @@ std::uint8_t tour_level(const FrontEndState& state) { // $83:9F14 in 1P
     return state.records.tour_levels[state.rider_menu.rider & 0x0fU];
 }
 
+std::uint8_t& level_of(FrontEndState& state) {
+    return state.records.tour_levels[state.rider_menu.rider & 0x0fU];
+}
+
+// $80:974B's first lines: the medals' entries shown, small; 9-11 hidden.
+void show_medal_entries(FrontEndState& state) {
+    high_bits(state, 0) = high_bits(state, 4) = four_shown;
+    high_bits(state, 8) = static_cast<std::uint8_t>(four_hidden & ~hidden_bit(8));
+}
+
+// $80:E553-E560: with a reveal pending, PICK TOUR is drawn at the level below it first.
+void begin_reveal(FrontEndState& state) {
+    const auto pending = state.records.pending_reveal;
+    if (pending != 0) level_of(state) = static_cast<std::uint8_t>(pending - 1);
+}
+
 void draw_badge(FrontEndState& state, const FrontEndContent& content, unsigned tour) {
     draw_tour_picture(state, content, tour, word_at(content.tour_badge_places, tour * 2) / 2U);
 }
@@ -168,6 +184,7 @@ void draw_tour_picture(FrontEndState& state, const FrontEndContent& content, uns
 }
 
 void enter_tour_menu(FrontEndState& state) {
+    begin_reveal(state);
     state.tour_menu.returning = false;
     state.tour_menu.slides_back = false;
     state.screen = FrontEndScreen::tour_menu_entry;
@@ -176,6 +193,7 @@ void enter_tour_menu(FrontEndState& state) {
 void return_to_tour_menu(FrontEndState& state, bool slides_back) {
     // `$80:BC03`: PICK TOUR from `$80:E550`, without `$80:A858` and `$80:A82B` before it; its
     // first lines round the track now (`$83:893C`).
+    begin_reveal(state);
     auto& menu = state.tour_menu;
     menu.returning = true;
     menu.slides_back = slides_back;
@@ -189,7 +207,32 @@ void tour_menu_entry_frame(FrontEndState& state, const FrontEndContent& content)
     auto& menu = state.tour_menu;
     // From PICK TRACK the script starts at the medal tiles, its fourth frame.
     constexpr std::uint32_t returning_skips = 3;
-    switch (state.script_frame + (menu.returning ? returning_skips : 0)) {
+    auto frame = state.script_frame + (menu.returning ? returning_skips : 0);
+    // A reveal (`$80:E580-E5A2`) redraws the screen after the slide at the new level: the medal
+    // tiles, `$80:A858`'s two frames with the tours printed, and the text sent to the shown half;
+    // the rest of the entry follows four frames later (R-0062).
+    constexpr std::uint32_t reveal_frames = 4;
+    if (menu.revealing && frame >= medal_palettes_frame) {
+        switch (frame - medal_palettes_frame) {
+        case 0: load_vram(state, content.medal_tiles, swapped_object_tiles_word); return;
+        case 1:
+            copy_oam(state);
+            load_cgram(state, asset(content, base_palette_low), 0);
+            return;
+        case 2:
+            copy_oam(state);
+            load_cgram(state, asset(content, base_palette_high), 0x40);
+            print_tour_menu(state, content);
+            return;
+        case 3:
+            copy_oam(state);
+            load_text(state, state.slide.shown_half);
+            show_medal_entries(state);
+            return;
+        default: frame -= reveal_frames; break;
+        }
+    }
+    switch (frame) {
     case 1:
     case 5: // $80:A858, twice
         copy_oam(state);
@@ -226,6 +269,7 @@ void tour_menu_entry_frame(FrontEndState& state, const FrontEndContent& content)
     case medals_frame: lay_out_medals(state, content); return;
     case loop_frame:
         copy_oam(state);
+        menu.revealing = false;
         menu.cursor = menu.tour;
         aim_tour_arrow(state, content);
         state.screen = FrontEndScreen::tour_menu;
@@ -234,9 +278,13 @@ void tour_menu_entry_frame(FrontEndState& state, const FrontEndContent& content)
         if (state.script_frame + (menu.returning ? returning_skips : 0) < first_slide_frame
             || !slide_frame(state, content))
             return;
-        // $80:974B's first lines: the medals' entries shown, small; 9-11 hidden.
-        high_bits(state, 0) = high_bits(state, 4) = four_shown;
-        high_bits(state, 8) = static_cast<std::uint8_t>(four_hidden & ~hidden_bit(8));
+        if (auto& pending = state.records.pending_reveal; pending != 0) {
+            level_of(state) = pending; // $80:E580-E58E: the level revealed, nothing pending
+            pending = 0;
+            menu.revealing = true;
+            return;
+        }
+        show_medal_entries(state);
         return;
     }
 }
