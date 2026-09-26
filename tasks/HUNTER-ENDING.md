@@ -60,9 +60,13 @@ it; the primary integrated. Tier 2 stands.
 
 | Criterion | Result |
 | --- | --- |
-| Pictures and state | all-gold's HUNTER ending and reset: no difference on 28,487 compared frames, 3,007 of 3,007 pictures. code-route: 1,850 frames, 1,410 of 1,410. cheat-route (two resets): 2,800 frames, 1,060 of 1,060. The 17 frames after each reset, where the original is still clearing work RAM, are not compared. |
+| Pictures and state | all-gold's HUNTER ending and reset: no difference on 28,487 compared frames, 3,007 of 3,007 pictures. code-route: 1,850 frames, 1,410 of 1,410. cheat-route (two resets): 2,800 frames, 1,060 of 1,060. The 18 frames after each reset, where the original is still clearing work RAM, are not compared. |
 | Records | all-gold: the kept words equal at 39786, 42302, 42709 and 42786. The code routes: equal but for `tries` (`$77:1073`), an older difference of native's cold start (R-0064). |
-| Nothing moves | The gates (below). |
+| Nothing moves | The gates on `c9a42d1` (`local/evidence/hunter-ending/gates-c9a42d1.out`, 21:53-23:41Z, 108 minutes). The three presets build, ctest 27 of 27, the synthetic suite, both v1 contracts and every hidden app run pass. The eleven differential gates pass. The equivalence sweep against main's binaries (base `2ffcea0`, pack v22) compares 1,933,523 updates, 1,047 restarts and 2,052 pictures with no difference. The per-track recompare is identical. Every earlier front-end comparison, the race pictures of R-0061's captures and FRONT-END-ENDINGS' eleven windows show no difference and all pictures equal. This task's three: all-gold (28,487 frames, 3,007 of 3,007 pictures), code-route (1,850, 1,410 of 1,410) and cheat-route (2,800, 1,060 of 1,060), no difference. The records match everywhere but `tries` on the two code routes. No function is over 80 lines; the address index passes. |
+
+## Review
+
+Tier 2, a fresh Opus 5.5 subagent in an isolated worktree, of `c9a42d1`: approved with no must-fix items (`review-c9a42d1.md`). Its should-fixes are answered in the records: R-0064 now says each reset's delay was taken from the capture (the "2 after a second reset" rests on one reset) and that the app always uses 3; that 18 frames after each reset go uncompared; and that the comparison takes the reset frame from native (documented in this task's `compare.py`, with the reviewer's independent check of the resets).
 
 ## Handoff
 

@@ -39,10 +39,13 @@ The ending's routine points are listed in the code at `$83:AB9F`, `$83:ABB3`, `$
 ## The reset's timing
 
 Power-on frame f shows at J + f after the reset J, except that the sound program's upload ends
-later: frames 97-403 come 3 frames late after a first reset and 2 after a second. So the Nintendo
-screen fades in at J + 107 on the long capture. The delay is measured, not derived; native keeps it
-as a state field (3 by default), and the laboratory runner takes it from a capture
-(`--reset-upload-delay`), as it takes race start frames. The boot's frames from 407 on shift by the
+later, so frames 97-403 come d frames late. The captures measured d = 3 after all three first resets
+and d = 2 after cheat-route's second, the only second reset captured; between its two resets the
+title code had sent sound commands too, so the second value cannot be put down to being a second
+reset. So the Nintendo screen fades in at J + 107 on the long capture. The delay is measured, not
+derived: native keeps it as a state field (3 by default), and the laboratory runner takes each
+reset's delay from its capture (`--reset-upload-delay`), as it takes race start frames. The app
+always uses 3: after cheat-route's second reset it would run its boot a frame off. The boot's frames from 407 on shift by the
 delay less 3. The boot's frame 18 (`$80:B612`) runs while the screen is still blank.
 
 ## The codes
@@ -76,13 +79,16 @@ reset, the title code, the code again, the CHEAT! page and a second reset), this
 | code-route | 1,850 | 1,410 of 1,410 | none |
 | cheat-route (two resets) | 2,800 | 1,060 of 1,060 | none |
 
-The first 17 frames after each reset are not compared: the original is still clearing work RAM
-there. The records are equal at every compared frame of all-gold. On the code routes `tries`
+The first 18 frames after each reset (J to J + 17) are not compared: the original is still clearing
+work RAM there. The comparison takes J from native and fits d to it, so a reset a frame off would be
+absorbed into d; the review and the research found the three captures' resets in the original's own
+memory at native's frames. The records are equal at every compared frame of all-gold. On the code routes `tries`
 (`$77:1073`) differs: native's cold start holds 3 where the original holds 0 until the one-player
 screens set it, an older difference this task leaves.
 
 ## Not recovered
 
 - `$80:B124`, which the title code calls, is not read.
-- The page loads' lengths (8 or 9 frames) and the reset's upload delay are measured, not derived.
+- The page loads' lengths (8 or 9 frames) and the reset's upload delay are measured, not derived;
+  the app always uses a delay of 3.
 - A pad-2 press during the first page's wait is not captured.
