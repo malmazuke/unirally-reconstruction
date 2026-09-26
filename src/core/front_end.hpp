@@ -209,7 +209,7 @@ struct RaceResult {
     RaceTimes times{};
     bool released{};                    // `$80:C24C` has seen both pads released
     bool press_seen{};                  // `$80:C206` saw a press on the last frame
-    bool record_placed{};               // `$80:C786` placed a time in the track\'s top three
+    bool record_placed{};               // `$80:C786` placed a time in the track's top three
     std::array<LapGraphDot, 20> dots{}; // the player's laps, then the opponent's
 };
 

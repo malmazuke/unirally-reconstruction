@@ -664,6 +664,20 @@ void race_result_tests() {
   require(quit.screen == FrontEndScreen::track_menu_entry &&
           quit.records.statistics[0][2] == 1 && quit.records.race_lost &&
           quit.records.record_times[0][0] == 0xea60);
+  // A win whose time places nowhere (three faster records) leaves as quickly.
+  auto slow = to_race();
+  for (unsigned place = 0; place < 3; ++place)
+    slow.records.record_times[place][0] = static_cast<std::uint16_t>(1000 + place);
+  unirally::return_from_race(slow, content, 5000, {3000, 4000});
+  require(run_to(slow, content, FrontEndScreen::race_result, {}, 104));
+  run(slow, content, 12);
+  run(slow, content, 2, {0x8000, 0});
+  run(slow, content, 3);
+  require(slow.screen == FrontEndScreen::race_result_exit);
+  run(slow, content, 1);
+  require(slow.screen == FrontEndScreen::track_menu_entry &&
+          slow.records.tracks_done[0] == 1 &&
+          !slow.race_result.record_placed);
   // No time: a loss without one, and no record.
   auto timeless = to_race();
   unirally::return_from_race(timeless, content, 5000, {0xea60, 4000});

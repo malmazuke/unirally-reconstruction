@@ -33,7 +33,7 @@ In the original's one-player play the race's pause menu ends the race through th
   then fades back to NOW PLAYING without scoring (8 frames);
 - its quit writes 0xEA61 (`$83:F8DA`, `$83:F8EB`), zeroes the quitter's stunt score, and
   `$80:9A50` scores the quit (the `_quit___` row, the stunt tallies' counters);
-- `$83:C9AC` also writes 0xEA62 at the race's start when `$0545` = 1 (meaning unknown).
+- `$83:C9AC` also writes 0xEA62 at the race's start when `$0545` = 1: a name cheat (R-0060).
 
 The native race's pause menu restarts inside the race and has no quit, so in a 1P tour the app
 skips NOW PLAYING on a restart and cannot quit. Make both go through the menus as the original's

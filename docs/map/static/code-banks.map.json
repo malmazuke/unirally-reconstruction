@@ -354,7 +354,8 @@
     "src/core/front_end.hpp:FrontEndScreen",
     "src/core/front_end_screens.hpp:race_restart_frame",
     "src/core/race_result.cpp:race_restart_frame",
-    "src/core/race_result.cpp:race_return_frame"
+    "src/core/race_result.cpp:race_return_frame",
+    "src/core/race_result.cpp:restarted"
    ],
    "observed_entries": {},
    "start": "$80:88DD",
@@ -13981,18 +13982,18 @@
    "call returns in the calling mode": 1262
   },
   "bytes": 131072,
-  "cited_addresses": 1161,
+  "cited_addresses": 1162,
   "cited_by_class": {
    "data": 20,
    "inferred": 159,
-   "observed": 847,
+   "observed": 848,
    "unknown": 135
   },
   "cited_by_position": {
    "dat": 20,
    "loc": 708,
    "mid": 18,
-   "sub": 280,
+   "sub": 281,
    "unk": 135
   },
   "conflicts": 0,

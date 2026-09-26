@@ -703,7 +703,8 @@
   "native": [
    "src/core/front_end.hpp:FrontEndScreen",
    "src/core/front_end_screens.hpp:race_restart_frame",
-   "src/core/race_result.cpp:race_return_frame"
+   "src/core/race_result.cpp:race_return_frame",
+   "src/core/race_result.cpp:restarted"
   ],
   "source_records": [
    "docs/research/R-0057-one-run-result.md",
@@ -721,7 +722,8 @@
   "native": [
    "src/core/front_end.hpp:FrontEndScreen",
    "src/core/front_end_screens.hpp:race_restart_frame",
-   "src/core/race_result.cpp:race_return_frame"
+   "src/core/race_result.cpp:race_return_frame",
+   "src/core/race_result.cpp:restarted"
   ],
   "source_records": [
    "docs/research/R-0060-pause-exits.md"
@@ -736,7 +738,8 @@
    "src/core/front_end.hpp:FrontEndScreen",
    "src/core/front_end_screens.hpp:race_restart_frame",
    "src/core/race_result.cpp:race_restart_frame",
-   "src/core/race_result.cpp:race_return_frame"
+   "src/core/race_result.cpp:race_return_frame",
+   "src/core/race_result.cpp:restarted"
   ],
   "source_records": [
    "docs/research/R-0060-pause-exits.md"
@@ -750,7 +753,8 @@
   "native": [
    "src/core/front_end.hpp:FrontEndScreen",
    "src/core/front_end_screens.hpp:race_restart_frame",
-   "src/core/race_result.cpp:race_return_frame"
+   "src/core/race_result.cpp:race_return_frame",
+   "src/core/race_result.cpp:restarted"
   ],
   "source_records": [
    "docs/research/R-0060-pause-exits.md"
@@ -14253,6 +14257,15 @@
   "label": "loc_83FAAE",
   "source_records": [
    "tasks/LOCKED-TOURS.md"
+  ]
+ },
+ {
+  "address": "$83:FB8A",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_83FB8A",
+  "source_records": [
+   "docs/research/R-0060-pause-exits.md"
   ]
  }
 ]

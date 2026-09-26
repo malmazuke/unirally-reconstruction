@@ -1,5 +1,6 @@
 // ROM-free checks for DRAGSTER on the shared race engine (R-0038): playfield
 // geometry, scenario values, state identity and the physical D-pad adapter.
+#include "front_end.hpp"
 #include "zoom_zoo_movement.hpp"
 #include <array>
 #include <stdexcept>
@@ -157,4 +158,20 @@ int main() {
     require(serialize_zoom_zoo(opposed)==serialize_zoom_zoo(held) && opposed.pause.selection==1);
     require(serialize_zoom_zoo(steered)!=serialize_zoom_zoo(held));
     require(navigated.pause.selection==0xffffU);
+
+    // R-0060: from the menus the pause menu's second choice ends the race, left
+    // as it was: 0xEA61 (a quit) after the countdown, 0xEA62 (a restart) in it.
+    // Any other paused update carries on.
+    auto quitting=start;quitting.fade_level=30;quitting.movement.countdown=0;
+    quitting.pause.selection=0xffffU;quitting.pause.released=1;quitting.pause.suspended_updates=5;
+    ControllerButtons confirm{};confirm.start=true;
+    const auto before=serialize_zoom_zoo(quitting);
+    auto over=update_race_for_menus(quitting,confirm,content);
+    require(over && over->player_total==0xea61 && serialize_zoom_zoo(quitting)==before);
+    auto restarting=quitting;restarting.movement.countdown=100;
+    over=update_race_for_menus(restarting,confirm,content);
+    require(over && over->player_total==0xea62);
+    auto waiting=quitting;
+    over=update_race_for_menus(waiting,nothing,content);
+    require(!over && waiting.pause.suspended_updates==6);
 }

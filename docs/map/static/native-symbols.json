@@ -258,7 +258,8 @@
    "native": [
     "src/core/front_end.hpp:FrontEndScreen",
     "src/core/front_end_screens.hpp:race_restart_frame",
-    "src/core/race_result.cpp:race_return_frame"
+    "src/core/race_result.cpp:race_return_frame",
+    "src/core/race_result.cpp:restarted"
    ],
    "range_ends": [
     "$80:8914"
@@ -9840,6 +9841,7 @@
   },
   "src/core/race_result.cpp:restarted": {
    "rom": [
+    "$80:88DD",
     "$83:F8DA"
    ]
   },

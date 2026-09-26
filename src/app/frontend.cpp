@@ -229,8 +229,12 @@ void FrontEndSession::return_from_race(const ZoomZooState &race, const RaceTimes
   const auto measured = race_loading_frames(race.track);
   const auto loading_frames =
       measured ? measured : race_loading_frames(ClassicRaceTrack::Dragster);
-  const auto updates =
-      race.movement.frame - classic_race_scenario(race.track).initialization_frame;
+  // A pause menu's quit or restart ends the race in the update the race was
+  // left before (R-0060): that update counts too.
+  const bool pause_exit = times.player_total == 0xea61 || times.player_total == 0xea62;
+  const auto updates = race.movement.frame -
+                       classic_race_scenario(race.track).initialization_frame +
+                       (pause_exit ? 1U : 0U);
   unirally::return_from_race(state_, content_, state_.frame - 1 + loading_frames + updates,
                              times);
   ++races_;

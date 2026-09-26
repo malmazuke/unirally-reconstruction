@@ -38,7 +38,8 @@ struct Row {
 };
 constexpr std::uint16_t no_row = 0xea62; // sorts after every time
 // A total the race's pause menu writes (`$83:F8DA-F90B`): quit after the countdown, restart during
-// it (R-0060).
+// it (R-0060). `$80:88DD` also tests the opponent's total, which only pad 2's pause writes: not in
+// one-player play.
 constexpr std::uint16_t restarted = 0xea62;
 
 // The result's objects (`$80:951C`, `$80:CE90`): the two riders' large marks (entries 30 and 31);
@@ -548,7 +549,9 @@ std::optional<RaceTimes> update_race_for_menus(ZoomZooState& race, const Control
     constexpr std::uint16_t quit = 0xea61, restart = 0xea62;
     auto next = race;
     update_zoom_zoo(next, buttons, content);
-    if (next.movement.frame < race.movement.frame) { // `restart_zoom_zoo` from the pause menu
+    // `restart_zoom_zoo` from the pause menu: a paused race whose count of paused updates, which
+    // only a restart clears, is back to 0.
+    if (race.pause.suspended_updates != 0 && next.pause.suspended_updates == 0) {
         auto times = race_times(race);
         times.player_total = race.movement.countdown != 0 ? restart : quit; // $83:F8DA-F90B
         return times;

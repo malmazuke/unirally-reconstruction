@@ -62,6 +62,9 @@ past its frame, and the scoring and everything after it come a frame later: PICK
 exit's fifth frame, as R-0057 found. With none placed, as after a quit, PICK TRACK comes on the
 fourth frame, and the arrow moves on the third. Native now counts that frame by whether a time
 was placed (`result_scoring_frame`).
+- The captures show the placed case (every earlier capture) and the quits. A finished time slower
+  than the track's three records, which also places nothing, is taken from the listing (one
+  checksum, as a quit's) and covered by a native test only.
 
 ## Evidence
 
@@ -75,8 +78,9 @@ with the defaults' menu presses and work RAM every frame:
 - The listing work is `decode/pause-exits.md`.
 
 `compare.py` runs the native front end with the captures' pads and the native race between the
-menus, and compares the menus' words, the OAM buffer and the text map on every frame, and every
-picture.
+menus, and compares the menus' words, the OAM buffer and the text map on every frame from the
+race's end, and the pictures from then on (the race's own frames, the pause menu among them, are
+the race engine's).
 
 | Capture | r | Frames compared | Differences | Pictures equal |
 | --- | --- | --- | --- | --- |
@@ -90,7 +94,10 @@ picture.
 ## Not recovered
 
 - **The pause menu's picture.** Native draws its own overlay (PAUSED, RESUME, RESTART RACE; R-0035)
-  where the original prints CONTINUE GAME and QUIT in the race's text layer at brightness 7.
+  where the original prints CONTINUE GAME and QUIT in the race's text layer at brightness 7. From
+  the menus RESTART RACE now acts as the original's QUIT: it quits after the countdown.
+- **`$0545`** is a name cheat (`$83:FB8A`): a first rider named "credits" shows a 500-frame screen,
+  the name becomes "mike____", and the race ends as a restart. Native has no such name.
 - **Pad 2's pause** and the other modes' pause messages (`$83:F6FD`): not one-player play.
 - A quit after a lap was run, which also puts that lap into the records (`$80:C8E8`), is not
   captured.
