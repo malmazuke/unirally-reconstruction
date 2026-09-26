@@ -329,6 +329,12 @@ synthetic_content(std::vector<std::vector<std::uint8_t>> &storage) {
   storage.back()[9] = 6; // the bounce's first height
   content.award_tables = storage.back();
   content.award_medal_art = keep(0x2000);
+  // The gold endings (profile v22): their assets and tables.
+  for (const unsigned id : {0x3cU, 0x3eU, 0x3fU, 0x40U, 0x41U, 0x42U, 0x43U, 0x4cU, 0x52U,
+                            0x57U, 0x5eU, 0x5fU, 0x60U, 0x61U, 0x62U, 0x63U})
+    content.assets[id] = keep(64);
+  for (auto &table : content.ending_tables)
+    table = keep(0x60);
   // The lap result (profile v19): empty streams.
   content.lap_result_text = content.lap_result_record = bytes({0xff});
   content.lap_result_player = content.lap_result_opponent = bytes({0xff});
@@ -1000,9 +1006,9 @@ void award_tests() {
     require(run_to(run_state, content, FrontEndScreen::race_result, {}, 104));
     run(run_state, content, 12);
     run(run_state, content, 5, {select_x_r, 0});
-    require(run_state.screen == FrontEndScreen::tour_award);
-    // A gold medal leaves at once: its exit starts on the completion's frame.
-    require((run_state.award.medal >= 3) == (run_state.award.exit_frame == 1));
+    // A gold medal plays the tour's ending (R-0062); the others show the award.
+    require(run_state.screen == (run_state.award.medal >= 3 ? FrontEndScreen::tour_ending
+                                                            : FrontEndScreen::tour_award));
     // Start held through a few of the animation's upload frames.
     for (unsigned k = 0; k < 700; ++k) {
       const bool held = k >= 130 && k < 140;
@@ -1022,8 +1028,8 @@ void award_tests() {
   run(forward, content, 2);
   require(forward.screen == FrontEndScreen::track_menu_entry &&
           forward.track_menu.returning);
-  // Gold: no award screen (its ending is not recovered), straight out; the
-  // level from the exact counts. All eight gold is level 3.
+  // Gold: CRAWLER's ending, then PICK TOUR; the level from the exact counts.
+  // All eight gold is level 3.
   auto gold = complete({2, 3, 3, 3, 3, 3, 3, 3}, false, 2);
   require(gold.records.medals[0] == 3 && gold.records.tour_levels[0] == 3 &&
           gold.registers.mode == 3);
