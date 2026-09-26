@@ -78,7 +78,11 @@ their manifests, pictures and work RAM, `endings.md`, the listings, `compare.py`
 | Reveal | The reveal capture: no state difference, 600 of 600 pictures. |
 | Fifth win | Moved to FIFTH-WIN-COMPLETION. |
 | Records | `sram.py` (now with `$77:10FD`): the kept words equal through the reveal, and at the gates' frames. |
-| Nothing moves | The gates (below). |
+| Nothing moves | The gates on `58a635d` (`local/evidence/front-end-endings/gates-58a635d.out`, 12:29-14:15Z, 106 minutes). The three presets build, ctest 27 of 27, the synthetic suite, both v1 contracts and every hidden app run pass. The eleven differential gates pass (179 to 801 restores each). The equivalence sweep against main's binaries (base `be11fa8`, pack v21) compares 1,933,523 updates, 1,047 restarts and 2,052 pictures with no difference. The per-track recompare of both sweeps is identical on 20 and 25 tracks. Every earlier front-end comparison and RACE-RIDERS-OPPONENTS' shows no difference and all its pictures equal; the seven race captures' pictures are as that task left them (the off-screen arrow). This task's eleven windows (four golds, the reveal, JUMPER, BOUNDER, RUNNER, SPRINTER, the level-2 and level-3 reveals) show no difference and every picture equal. The records match at 34 frames. No function is over 80 lines; the address index passes. The race pictures step first ran on the wrong pack default and was re-run on the same head (`gates-58a635d-pictures.out`; `gates.sh` now passes the pack). |
+
+## Review
+
+Tier 2, a fresh Opus 5.5 subagent in an isolated worktree. Round 1 (`92c9fc2`): changes requested (`review-92c9fc2.md`): a function over 80 lines, HOPPER's and JUMPER's pose names, the NMI-hook comments, the registry, a test of every tour's ending; answered in `a5299e9`, `9e50dc5`, `552c554`, `58a635d`. Round 2 (`58a635d`): approved, provided these gate results are recorded (`review-58a635d.md`).
 
 ## Handoff
 
