@@ -33,7 +33,7 @@ constexpr std::uint16_t bar_map_bits = 0x2400;
 constexpr std::uint8_t ending_screens = 0x13; // BG1, BG2, objects
 
 // Where `$83:8E3A`'s pose buffer goes: object tiles 0x100 (the uni), 0x108 and 0x180.
-constexpr unsigned first_pose_word = 0x7000;
+constexpr unsigned first_pose_word = 0x7000, second_pose_word = 0x7080;
 constexpr std::size_t oam_entry_bytes = 4;
 
 // One tour's ending: where the rider's colours go (the tour's own at the next row), the tour's
@@ -165,12 +165,199 @@ void script(FrontEndState& state, const FrontEndContent& content, std::uint32_t 
 }
 } // namespace crawler
 
+// One loop of a script: `steps` passes of `waits` waits each (`$83:A923`), the first pass
+// starting in frame `first`. Pass k's code after its w-th wait runs in frame
+// first + waits * k + w, so its code after its last wait and pass k + 1's code before its first
+// wait share a frame, and the loop's end is the next loop's first frame.
+struct Loop {
+    std::uint32_t first{}, steps{}, waits{};
+    [[nodiscard]] constexpr std::uint32_t end() const { return first + steps * waits; }
+};
+
+// Runs a loop's code for `frame`: part(step, w), where w = 0 is the code before the pass's first
+// wait and w = `waits` the code after its last.
+template <typename Part>
+void run_loop(const Loop& loop, std::uint32_t frame, Part part) {
+    if (frame < loop.first || frame > loop.end()) return;
+    const auto offset = frame - loop.first;
+    const auto step = offset / loop.waits, wait = offset % loop.waits;
+    if (wait == 0 && step > 0) part(step - 1, loop.waits);
+    if (step < loop.steps) part(step, wait);
+}
+
+std::uint8_t table_byte(std::span<const std::uint8_t> table, std::size_t at) {
+    if (at >= table.size()) throw std::invalid_argument("ending table is short");
+    return table[at];
+}
+
+// SHUFFLER (`$83:B1EB`): a riderless uni rolls in from the right with a turtle walking behind
+// it; the rider's red uni drops in and bounces away; the turtle's tongue reaches out, pulls the
+// uni over and swallows it. Its table (`$83:B4DF`): objects 0-3, objects 4-7 (the turtle
+// eating, four quarters), the walking turtle's four tiles, the eating turtle's three.
+namespace shuffler {
+constexpr unsigned tour = 2;
+constexpr std::size_t first_objects_at = 0, eating_objects_at = 16, turtle_tiles_at = 32,
+                      eating_tiles_at = 36;
+constexpr unsigned turtle_top = 0, uni = 1, red_uni = 2, turtle_bottom = 3, eating_turtle = 4;
+constexpr std::uint8_t first_high = 0x28, eating_high = 0x69, swallowed_high = 0x55;
+constexpr std::uint32_t setup_frame = 95;
+// $83:B2CD, $83:B388, $83:B3FF, $83:B44F and $83:B496, then 61 waits to t'.
+constexpr Loop roll{110, 151, 1}, bounce{roll.end(), 9, 2}, tongue_out{bounce.end(), 6, 2},
+    pull_over{tongue_out.end(), 8, 2}, swallow{pull_over.end(), 6, 2};
+constexpr std::uint16_t turtle_starts = 0x1d, red_uni_drops = 0x89, bounce_poses = 0x621,
+                        pull_poses = 0x1390, walk_poses = 23, pose_stride = 0x40;
+constexpr std::uint8_t lower_tile_row = 0x20, bounce_height = 8, pulled_attr = 0x13,
+                       pulled_x = 0x57;
+
+void setup(FrontEndState& state, const FrontEndContent& content) {
+    load_first_objects(state, content.ending_tables[tour], first_objects_at, 4);
+    high_bits(state, 0) = first_high;
+    copy_oam(state);
+    state.ending.pose = 0;
+    upload_built_pose(state, content, first_pose_word);
+    upload_built_pose(state, content, second_pose_word);
+    state.ending.step = 0;
+}
+
+// $83:B2CD: the uni rolls a pixel left; from step 0x1D the turtle follows, walking.
+void roll_start(FrontEndState& state, const FrontEndContent& content) {
+    --oam_byte(state, uni, 0);
+    const auto step = state.ending.step;
+    if (step < turtle_starts) return;
+    --oam_byte(state, turtle_top, 0);
+    --oam_byte(state, turtle_bottom, 0);
+    const auto tile = table_byte(content.ending_tables[tour], turtle_tiles_at + ((step & 6U) >> 1));
+    oam_byte(state, turtle_top, 2) = tile;
+    oam_byte(state, turtle_bottom, 2) = static_cast<std::uint8_t>(tile + lower_tile_row);
+}
+
+// $83:B301: the wheel turns backwards: the walk's poses counted down from step 0x100.
+void roll_end(FrontEndState& state, const FrontEndContent& content) {
+    auto& ending = state.ending;
+    upload_built_pose(state, content, first_pose_word);
+    copy_oam(state);
+    ending.pose =
+        static_cast<std::uint16_t>((((0x100U - ending.step) >> 1) % walk_poses) * pose_stride);
+    ++ending.step;
+    if (ending.step >= red_uni_drops) oam_byte(state, red_uni, 1) += bounce_height;
+}
+
+// $83:B374-B3D7: the red uni is put back on the ground and bounces up out of sight while the
+// uni's poses 0x621 on play.
+void bounce_part(FrontEndState& state, const FrontEndContent& content, unsigned step,
+                 unsigned wait) {
+    auto& ending = state.ending;
+    auto& red_uni_y = oam_byte(state, red_uni, 1);
+    if (wait == 0) {
+        if (step == 0) {
+            ending.step = 0;
+            red_uni_y = 0x69;
+        }
+        red_uni_y -= bounce_height;
+    } else if (wait == 1) {
+        red_uni_y -= bounce_height;
+        copy_oam(state);
+    } else {
+        upload_built_pose(state, content, first_pose_word);
+        copy_oam(state);
+        ending.pose = static_cast<std::uint16_t>(bounce_poses + ending.step);
+        ++ending.step;
+    }
+}
+
+// $83:B401 and $83:B498: the eating turtle's four tiles, from its tile for the step.
+void set_eating_tiles(FrontEndState& state, const FrontEndContent& content) {
+    const auto tile = table_byte(content.ending_tables[tour],
+                                 eating_tiles_at + ((state.ending.step & 0xffU) >> 1));
+    const std::array<std::uint8_t, 4> offsets{0x00, 0x01, 0x10, 0x11};
+    for (unsigned k = 0; k < 4; ++k)
+        oam_byte(state, eating_turtle + k, 2) = static_cast<std::uint8_t>(tile + offsets[k]);
+}
+
+// $83:B3DB-B434: the eating turtle is shown in place of the walking one (and the red uni hidden)
+// and its tongue comes out.
+void tongue_out_part(FrontEndState& state, const FrontEndContent& content, unsigned step,
+                     unsigned wait) {
+    if (wait == 1) return;
+    if (wait == 2) {
+        copy_oam(state);
+        ++state.ending.step;
+        return;
+    }
+    if (step == 0) {
+        const auto table = content.ending_tables[tour];
+        for (std::size_t k = 0; k < 4 * oam_entry_bytes; ++k)
+            state.oam_buffer[eating_turtle * oam_entry_bytes + k] =
+                table_byte(table, eating_objects_at + k);
+        high_bits(state, 0) = eating_high;
+        high_bits(state, eating_turtle) = four_shown;
+        state.ending.step = 0;
+    }
+    set_eating_tiles(state, content);
+}
+
+// $83:B436-B486: the tongue pulls the uni over (poses 0x1390 on), turned and moved to it.
+void pull_over_part(FrontEndState& state, const FrontEndContent& content, unsigned step,
+                    unsigned wait) {
+    auto& ending = state.ending;
+    if (wait == 1) return;
+    if (wait == 2) {
+        upload_built_pose(state, content, first_pose_word);
+        copy_oam(state);
+        ++ending.step;
+        return;
+    }
+    if (step == 0) {
+        ending.step = 0;
+        oam_byte(state, uni, 3) = pulled_attr;
+        oam_byte(state, uni, 0) = pulled_x;
+        --oam_byte(state, uni, 1);
+    }
+    ending.pose = static_cast<std::uint16_t>(pull_poses + ending.step);
+}
+
+// $83:B488-B4C8: the uni swallowed (objects 0-3 hidden), the tongue goes back, its tiles counted
+// down from step 5.
+void swallow_part(FrontEndState& state, const FrontEndContent& content, unsigned step,
+                  unsigned wait) {
+    if (wait == 1) return;
+    if (wait == 2) {
+        copy_oam(state);
+        --state.ending.step;
+        return;
+    }
+    if (step == 0) {
+        state.ending.step = 5;
+        high_bits(state, 0) = swallowed_high;
+    }
+    set_eating_tiles(state, content);
+}
+
+void script(FrontEndState& state, const FrontEndContent& content, std::uint32_t frame) {
+    if (frame == setup_frame) {
+        setup(state, content);
+        return;
+    }
+    run_loop(roll, frame, [&](unsigned, unsigned wait) {
+        wait == 0 ? roll_start(state, content) : roll_end(state, content);
+    });
+    const auto part = [&](auto function) {
+        return
+            [&, function](unsigned step, unsigned wait) { function(state, content, step, wait); };
+    };
+    run_loop(bounce, frame, part(bounce_part));
+    run_loop(tongue_out, frame, part(tongue_out_part));
+    run_loop(pull_over, frame, part(pull_over_part));
+    run_loop(swallow, frame, part(swallow_part));
+}
+} // namespace shuffler
+
 // The eight tours' endings by `$00D0`; a tour whose ending is not recovered has no script and
 // leaves at once through the award's way out.
 const std::array<EndingLayout, 8> endings{{
     {0xc0, 0x40, 0x60, 0xa3, 96, 336, crawler::script}, // CRAWLER `$83:C49C`
     {},
-    {},
+    {0x80, 0x41, 0x61, 0xa3, 96, 380, shuffler::script}, // SHUFFLER `$83:B1EB`
     {},
     {},
     {},
