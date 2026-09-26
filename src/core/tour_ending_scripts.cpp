@@ -290,12 +290,13 @@ void script(FrontEndState& state, const FrontEndContent& content, std::uint32_t 
 
 // HOPPER (`$83:C11E`): a riderless uni walks in from the right; the rider's red uni drops in
 // behind it and breathes fire at it; the uni goes up in a blast and is left a burnt frame. Its
-// table (`$83:C458`): the blast's twenty poses (words), objects 0-4, the flame's eight tiles.
+// table (`$83:C458`): the red uni's twenty firing poses (words), objects 0-4, the flame's eight
+// tiles.
 namespace hopper {
 namespace {
 
 constexpr unsigned tour = 6;
-constexpr std::size_t blast_poses_at = 0, blast_pose_count = 20, first_objects_at = 40,
+constexpr std::size_t firing_poses_at = 0, firing_pose_count = 20, first_objects_at = 40,
                       flame_tiles_at = 60;
 // Object 0 the blast (tile 0x180), 1 the red uni (0x108), 2 and 3 the flame, 4 the uni (0x100).
 // Entries 5-7 are left shown, small, at (1, 1) with tile 0 (hi1 = 0x02).
@@ -306,9 +307,9 @@ constexpr std::uint32_t objects_frame = 93, poses_frame = 94;
 // `$83:C3E0`), the second ending on t'.
 constexpr Loop walk_in{109, 173, 1}, turn{walk_in.end(), 18, 2}, fire{turn.end(), 16, 2},
     blast_up{fire.end() - 1, 24, 2}, burn_out{blast_up.end() - 1, 60, 2};
-constexpr std::uint16_t red_uni_poses = 0x1420, red_uni_drops = 0x9f, uni_turn_poses = 0x1417,
-                        red_uni_turn_poses = 0x621, red_uni_fire_poses = 0x1402,
-                        burnt_poses = 0x140f, last_burnt_pose = 7;
+constexpr std::uint16_t red_uni_poses = 0x1420, red_uni_drops = 0x9f,
+                        red_uni_landing_poses = 0x1417, uni_turn_poses = 0x621,
+                        blast_poses = 0x1402, burnt_poses = 0x140f, last_burnt_pose = 7;
 constexpr std::uint8_t red_uni_landing_y = 0x69, drop_speed = 8, red_uni_drift = 2,
                        flame_tip_offset = 2;
 
@@ -342,8 +343,8 @@ void walk_in_part(FrontEndState& state, const FrontEndContent& content, unsigned
     oam_byte(state, red_uni, 1) += drop_speed;
 }
 
-// $83:C289-C300: the red uni lands and turns (poses 0x621 on, to tile 0x108) while the uni turns
-// to face it (poses 0x1417 on), each a new pose every second step.
+// $83:C289-C300: the red uni lands (poses 0x1417 on, at tile 0x108) while the uni turns to face
+// it (poses 0x621 on, at tile 0x100), each a new pose every second step.
 void turn_part(FrontEndState& state, const FrontEndContent& content, unsigned step, unsigned wait) {
     auto& ending = state.ending;
     if (wait == 0) {
@@ -358,7 +359,7 @@ void turn_part(FrontEndState& state, const FrontEndContent& content, unsigned st
     const auto first = wait == 1;
     upload_built_pose(state, content, first ? first_pose_word : second_pose_word);
     copy_oam(state);
-    ending.pose = static_cast<std::uint16_t>((first ? uni_turn_poses : red_uni_turn_poses)
+    ending.pose = static_cast<std::uint16_t>((first ? red_uni_landing_poses : uni_turn_poses)
                                              + (ending.step >> 1));
     if (!first) ++ending.step;
 }
@@ -379,26 +380,27 @@ void fire_part(FrontEndState& state, const FrontEndContent& content, unsigned st
     oam_byte(state, flame_tip, 2) = static_cast<std::uint8_t>(tile + flame_tip_offset);
 }
 
-// $83:C35F and $83:C3E7: the blast's pose for `$77:10CB`, its twenty in turn.
-std::uint16_t blast_pose(const FrontEndState& state, const FrontEndContent& content) {
-    const auto at = blast_poses_at + 2U * (state.ending.count % blast_pose_count);
+// $83:C35F and $83:C3E7: the red uni's firing pose for `$77:10CB`, its twenty in turn.
+std::uint16_t firing_pose(const FrontEndState& state, const FrontEndContent& content) {
+    const auto at = firing_poses_at + 2U * (state.ending.count % firing_pose_count);
     const auto table = content.ending_tables[tour];
     return static_cast<std::uint16_t>(table_byte(table, at) | table_byte(table, at + 1) << 8U);
 }
 
-// $83:C33A-C3B9 and $83:C3BB-C449: after the first wait the blast's pose goes to `blast_word`
-// and the next is built; after the second the red uni's (or the burnt uni's) pose goes to tile
-// 0x108 and the next is built. The first step starts after its first wait.
+// $83:C33A-C3B9 and $83:C3BB-C449: after the first wait the pose built last (the blast's, or the
+// burnt uni's) goes to `word` and the red uni's firing pose is built; after the second that goes
+// to the red uni's tile 0x108 and `next_pose` builds the next for `word`. The first step starts
+// after its first wait.
 void blast_part(FrontEndState& state, const FrontEndContent& content, unsigned step, unsigned wait,
-                unsigned blast_word, std::uint16_t (*next_pose)(std::uint16_t)) {
+                unsigned word, std::uint16_t (*next_pose)(std::uint16_t)) {
     auto& ending = state.ending;
     if (wait == 0) return;
     if (wait == 1 && step > 0) {
-        upload_built_pose(state, content, blast_word);
+        upload_built_pose(state, content, word);
         copy_oam(state);
     }
     if (wait == 1) {
-        ending.pose = blast_pose(state, content);
+        ending.pose = firing_pose(state, content);
         return;
     }
     upload_built_pose(state, content, second_pose_word);
@@ -408,20 +410,23 @@ void blast_part(FrontEndState& state, const FrontEndContent& content, unsigned s
     ++ending.step;
 }
 
-// $83:C33A: the blast grows at tile 0x180 while the red uni keeps firing (poses 0x1402 on).
+// $83:C33A: the blast grows over the uni (poses 0x1402 on, at tile 0x180) while the red uni
+// fires.
 void blast_up_part(FrontEndState& state, const FrontEndContent& content, unsigned step,
                    unsigned wait) {
+    // Byte writes of both counters. `$77:10CB` is cartridge RAM that carries over, but its high
+    // byte is 0 on every captured path: the screens before write it as a small word (0x0007 just
+    // before HOPPER's gold in hopper-gold), and native's count starts at 0.
     if (step == 0 && wait == 1) {
         set_low_byte(state.ending.step, 0);
         set_low_byte(state.ending.count, 0);
     }
-    blast_part(state, content, step, wait, third_pose_word, [](std::uint16_t s) {
-        return static_cast<std::uint16_t>(red_uni_fire_poses + (s >> 1));
-    });
+    blast_part(state, content, step, wait, third_pose_word,
+               [](std::uint16_t s) { return static_cast<std::uint16_t>(blast_poses + (s >> 1)); });
 }
 
-// $83:C3BB: the blast goes on over the uni's tiles (0x100), the uni's object hidden and the burnt
-// uni's poses (0x140F on, held at the eighth) at tile 0x108.
+// $83:C3BB: the blast's object and the flame hidden, the burnt uni's poses (0x140F on, held at
+// the eighth) go to the uni's own tiles (0x100) while the red uni fires on.
 void burn_out_part(FrontEndState& state, const FrontEndContent& content, unsigned step,
                    unsigned wait) {
     if (step == 0 && wait == 1) {

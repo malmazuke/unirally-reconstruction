@@ -317,20 +317,19 @@ void tour_award_frame(FrontEndState& state, const FrontEndContent& content, Fron
         if (animation_frame(state, content, pads)) award.exit_frame = 1;
         return;
     }
-    way_back_frame(state, content, ++award.exit_frame - 1, 0); // frames after the exit test
+    // Frames after the exit test; NMI's hook first runs a frame after the menus' screen.
+    way_back_frame(state, content, ++award.exit_frame - 1, 0, false);
 }
 
 void way_back_frame(FrontEndState& state, const FrontEndContent& content, std::uint32_t exit,
-                    std::uint32_t delay) {
+                    std::uint32_t delay, bool hook_at_once) {
     if (exit <= exit_blank_frame) {
         fade_down(state, exit);
         return;
     }
     if (exit == menus_frame + delay) {
         restore_menu_screen(state, content);
-        // After an ending NMI comes back before the frame's vertical blank, so its hook runs in
-        // this frame already (R-0062).
-        if (delay) run_nmi_hook(state, content);
+        if (hook_at_once) run_nmi_hook(state, content);
         return;
     }
     if (exit >= exit_fade_in_frame + delay && exit <= pick_tour_frame + delay) {

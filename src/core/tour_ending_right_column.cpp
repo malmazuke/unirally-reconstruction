@@ -12,7 +12,9 @@ namespace unirally::front_end_screens::ending {
 // JUMPER (`$83:BB80`): the riderless uni and the rider's red uni ride in from the left while the
 // gold pattern scrolls past; an elephant drops onto the uni and flattens it, then flies off, and
 // the red uni rides on. Both unis show the pose at tile 0x100 in their own palettes until the
-// flattened uni takes tile 0x108. Its table (`$83:BE9A`): objects 0-2, the elephant's tiles.
+// red uni moves to tile 0x108, so that the uni under the elephant can take the squashed poses at
+// tile 0x100; the red uni goes back to 0x100 to ride off. Its table (`$83:BE9A`): objects 0-2,
+// the elephant's tiles.
 namespace jumper {
 namespace {
 
@@ -96,8 +98,9 @@ void drop_part(FrontEndState& state, const FrontEndContent& content, unsigned st
     set_elephant_tile(state, content, ((ending.count & 0xffU) >> 1) & 3U);
 }
 
-// $83:BCFC-BD7E: the elephant lands on the uni, which is squashed (poses 0x13DC on, at tile
-// 0x108) while the red uni rides on; the first frame of each pair copies no objects.
+// $83:BCFC-BD7E: the elephant lands on the uni. The red uni moves to tile 0x108 (its ride poses
+// sent there) so that the uni under the elephant can take the squashed poses (0x13DC on) at tile
+// 0x100; the first frame of each pair copies no objects.
 void squash_part(FrontEndState& state, const FrontEndContent& content, unsigned step,
                  unsigned wait) {
     auto& ending = state.ending;

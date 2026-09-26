@@ -74,16 +74,11 @@ constexpr unsigned pattern_tiles_word = 0x3000, bar_map_word = 0x1000, bar_tiles
                    object_tiles_word = 0x6000;
 constexpr std::uint16_t bar_map_bits = 0x2400;
 
-// On the way back the menus' screen comes back and NMI is turned on in frame t' + 118
-// (`$83:A90B`); for most tours that write lands inside the frame's vertical blank and NMI's hook
-// runs at once, but for WALKER and JUMPER it lands after it and the hook first runs a frame later
-// (walker-gold, locked-gold and all-gold alike). Why their copies end later is not recovered.
-constexpr std::uint32_t menus_back_frame = 118;
-
 // One tour's ending: where the rider's colours go (the tour's own at the next row), the tour's
 // object colours and tiles, OBSEL, the first frame of the fade in and the script's last frame
 // (t'), the script, which runs on every frame from `bar_frame` to t', and whether NMI's hook
-// comes back a frame late.
+// first runs a frame late: on t' + 119 after WALKER's and JUMPER's endings, on t' + 118 after
+// the others; why is not recovered (R-0062).
 struct EndingLayout {
     unsigned rider_colours_at{};
     unsigned tour_colours{}; // 0: none
@@ -101,10 +96,16 @@ namespace crawler {
 constexpr std::size_t first_objects_at = 0, hole_objects_at = 32, flash_colours_at = 40;
 constexpr std::uint32_t setup_frame = 95, walk_frame = 111, walk_steps = 131,
                         flash_frame = walk_frame + walk_steps, flash_steps = 14;
-constexpr unsigned uni = 1, first_flash = 4, hole = 8;
+constexpr unsigned first_objects = 8, uni = 1, first_flash = 4, hole = 8, hole_objects = 2;
 constexpr std::uint8_t first_high = 0x68, flash_high = 0x69, hole_high = 0x65,
                        hole_objects_high = 0x50;
 constexpr std::uint8_t flash_math = 0x33; // add: BG1, BG2, objects, backdrop
+// The flash's loop counts Y down from 13 (`$83:C5F6`): at 12 and 6 its quarters flare (tile
+// 0x40), at 10 they burst (0x44), at 8 the screen goes white and the hole opens, at 4 the flash
+// is hidden. Each step then writes three COLDATA bytes.
+constexpr unsigned first_countdown = flash_steps - 1, first_flare = 12, second_flare = 6,
+                   burst = 10, white_out = 8, flash_hidden = 4, colour_writes = 3;
+constexpr std::uint8_t flare_tile = 0x40, burst_tile = 0x44;
 // The hole: BG2 map words 0x124E-0x1251 and 0x126E-0x1271 take tile 0x64, which the menus'
 // asset 0x46 left in VRAM.
 constexpr std::array<unsigned, 2> hole_rows{0x124e, 0x126e};
@@ -126,14 +127,14 @@ void flash_step(FrontEndState& state, const FrontEndContent& content, unsigned i
     copy_oam(state);
     auto& r = state.registers;
     r.main_screen = ending_screens;
-    const auto countdown = 13 - index; // the loop's Y
+    const auto countdown = first_countdown - index;
     const auto set_flash_tiles = [&](std::uint8_t tile) {
         for (unsigned entry = first_flash; entry < first_flash + 4; ++entry)
             oam_byte(state, entry, 2) = tile;
     };
-    if (countdown == 12 || countdown == 6) set_flash_tiles(0x40);
-    if (countdown == 10) set_flash_tiles(0x44);
-    if (countdown == 8) {
+    if (countdown == first_flare || countdown == second_flare) set_flash_tiles(flare_tile);
+    if (countdown == burst) set_flash_tiles(burst_tile);
+    if (countdown == white_out) {
         r.main_screen = 0; // the picture is the backdrop and the fixed colour
         high_bits(state, 0) = hole_high;
         for (const auto row : hole_rows)
@@ -141,13 +142,14 @@ void flash_step(FrontEndState& state, const FrontEndContent& content, unsigned i
                 state,
                 std::vector<std::uint8_t>{hole_tile, 0, hole_tile, 0, hole_tile, 0, hole_tile, 0},
                 row);
-        for (std::size_t k = 0; k < 2 * oam_entry_bytes; ++k)
-            state.oam_buffer[hole * oam_entry_bytes + k] = table[hole_objects_at + k];
+        for (std::size_t k = 0; k < hole_objects * oam_entry_bytes; ++k)
+            state.oam_buffer[hole * oam_entry_bytes + k] = table_byte(table, hole_objects_at + k);
         high_bits(state, hole) = hole_objects_high;
     }
-    if (countdown == 4) high_bits(state, first_flash) = four_hidden;
-    for (unsigned write = 0; write < 3; ++write)
-        write_fixed_colour(state, table[flash_colours_at + 3U * index + write]);
+    if (countdown == flash_hidden) high_bits(state, first_flash) = four_hidden;
+    for (unsigned write = 0; write < colour_writes; ++write)
+        write_fixed_colour(state,
+                           table_byte(table, flash_colours_at + colour_writes * index + write));
 }
 
 void script(FrontEndState& state, const FrontEndContent& content, std::uint32_t frame) {
@@ -157,7 +159,7 @@ void script(FrontEndState& state, const FrontEndContent& content, std::uint32_t 
         return;
     }
     if (frame == setup_frame) {
-        load_first_objects(state, content.ending_tables[0], first_objects_at, 8);
+        load_first_objects(state, content.ending_tables[0], first_objects_at, first_objects);
         high_bits(state, 0) = first_high;
         high_bits(state, first_flash) = four_hidden;
         copy_oam(state);
@@ -242,11 +244,8 @@ void tour_ending_frame(FrontEndState& state, const FrontEndContent& content) {
     const auto& layout = endings[state.ending.tour];
     const auto frame = state.script_frame;
     if (frame > layout.last_frame) {
-        const auto exit = frame - layout.last_frame;
-        if (layout.late_nmi_hook && exit == menus_back_frame)
-            restore_menu_screen(state, content); // NMI's hook runs from the next frame
-        else
-            way_back_frame(state, content, exit, way_back_delay);
+        way_back_frame(state, content, frame - layout.last_frame, way_back_delay,
+                       !layout.late_nmi_hook);
         return;
     }
     if (frame <= blank_frame) {

@@ -34,7 +34,7 @@ using LoopPart = void (*)(FrontEndState&, const FrontEndContent&, unsigned step,
 void run_loop(const Loop& loop, std::uint32_t frame, FrontEndState& state,
               const FrontEndContent& content, LoopPart part);
 
-// $83:A923 between the steps: the pose built last (`TourEnding::pose`), sent to `word`.
+// $80:F814 (after a wait, `$83:A923`): the pose built last (`TourEnding::pose`) sent to `word`.
 void upload_built_pose(FrontEndState& state, const FrontEndContent& content, unsigned word);
 // $83:B79C: the walk's poses, a new one every second step, 23 in turn.
 void walk(FrontEndState& state);

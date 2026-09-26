@@ -195,13 +195,15 @@ void load_map(FrontEndState& state, std::span<const std::uint8_t> map, unsigned 
 // object tiles and text cleared, the scroll, screens and colour math reset, every object hidden,
 // the gold medal's colours at CGRAM 0x90.
 void reset_award_screen(FrontEndState& state, const FrontEndContent& content);
-// The way back after the award or an ending (`$83:A4E9`, `$83:A721`, `$83:A4D2`, `$83:8853`),
-// `exit` frames after the last shown frame; after an ending everything from the menus' screen on
-// runs `delay` (1) frame later, and NMI's hook runs in the frame the screen comes back (R-0062).
 // The NMI's hook while NMI is on: the logo's slide, then the palette cycle.
 void run_nmi_hook(FrontEndState& state, const FrontEndContent& content);
+// The way back after the award or an ending (`$83:A4E9`, `$83:A721`, `$83:A4D2`, `$83:8853`),
+// `exit` frames after the last shown frame; after an ending everything from the menus' screen on
+// runs `delay` (1) frame later. NMI's hook first runs in the frame the menus' screen comes back
+// when `hook_at_once` (after most endings), else a frame later (after the award, and after
+// WALKER's and JUMPER's endings); why is not recovered (R-0062).
 void way_back_frame(FrontEndState& state, const FrontEndContent& content, std::uint32_t exit,
-                    std::uint32_t delay);
+                    std::uint32_t delay, bool hook_at_once);
 // A gold medal's ending (R-0062).
 void start_tour_ending(FrontEndState& state);
 bool has_tour_ending(unsigned tour);
