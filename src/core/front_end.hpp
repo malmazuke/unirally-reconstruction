@@ -40,6 +40,8 @@ struct FrontEndContent {
     // The lap result (profile v19): the headings and graph, the record line, the two rows.
     std::span<const std::uint8_t> lap_result_text, lap_result_record, lap_result_player,
         lap_result_opponent;
+    // The medal award (profile v20): its tables at `$83:B120` and the medal's second art.
+    std::span<const std::uint8_t> award_tables, award_medal_art;
 };
 FrontEndContent front_end_content(const ClassicContentPack& pack);
 
@@ -176,6 +178,29 @@ struct LapGraphDot {
     std::uint16_t x{}, y{}, target_x{}, target_y{}, velocity_x{}, velocity_y{};
 };
 
+// The medal award's animation (`$83:AFF6-B093`), three frames a step: the build, the upload and
+// the pads, the test; the step that brings the medal's second art takes three more.
+enum class AwardPhase : std::uint8_t {
+    build,
+    upload,
+    second_art_low,
+    second_art_high,
+    bounce,
+    test
+};
+
+// A tour's completion (R-0059): the award screen and its way back to PICK TOUR.
+struct TourAward {
+    std::uint8_t medal{};      // the medal just won: 1 bronze, 2 silver, 3 gold
+    std::uint16_t step{};      // $77:10C9: the rider's pose step
+    std::int16_t medal_step{}; // $77:10CB: the medal's step, from -5
+    std::uint16_t pose{};      // the rider's pose for the next upload (`$83:8E3A`)
+    std::uint16_t pads{};      // $0072 as the last upload read it
+    AwardPhase phase{};
+    std::uint32_t exit_frame{}; // frames since the press was seen, 0 before
+    bool after_completion{};    // PICK TOUR was entered from the scoring (`$83:88CD`)
+};
+
 // The result screen (`$80:951C`): the one-run result (`$80:CE90`) and its waits for a press, or
 // the lap result (`$80:8D6E`) and its graph, which the first press leaves.
 struct RaceResult {
@@ -230,6 +255,8 @@ enum class FrontEndScreen : std::uint8_t {
     race_return,       // $80:99A4 after the race: the early loads and the main menu's screen again
     race_result,       // $80:951C: the result screen, its fade and the waits for a press
     race_result_exit,  // $80:BC68-BC7E: leaving the result, the records and the scoring
+    tour_award,        // $83:881B: a tour's completion, the medal award `$83:AEF6`, the restore
+    award_return,      // $80:BC7B after PICK TOUR's return from a completion: `$80:A858`
 };
 
 // What `$83:9894` saves before a race (work RAM `$0000-$019D`) and `$83:987D` puts back after
@@ -273,6 +300,7 @@ struct FrontEndState {
     TrackMenu track_menu{};
     NowPlaying now_playing{};
     RaceResult race_result{};
+    TourAward award{};
     SavedMenus saved{}; // during a race and its return
     bool one_player{};  // $77:10AD = 1: 1P from a rider's choice to the main menu's return
     bool mode_chosen{};

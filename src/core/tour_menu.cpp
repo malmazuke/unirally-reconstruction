@@ -257,6 +257,13 @@ void tour_menu_frame(FrontEndState& state, const FrontEndContent& content, Front
         menu.tour = menu.cursor;
         menu.medal = state.records.medals[menu.tour * 16U + state.rider_menu.rider];
     }
+    // From a completion PICK TOUR returns into the scoring (`$83:88D1`), which goes on to PICK
+    // TRACK without testing Y or X.
+    if (state.award.after_completion) {
+        state.award.after_completion = false;
+        state.screen = FrontEndScreen::award_return;
+        return;
+    }
     // The handler tests Y and X again after a choice (`$80:BC12`), so back wins.
     if (back) {
         menu.back = true;
