@@ -481,8 +481,12 @@ int main(int argc, char **argv) try {
         // A keyboard and an analog stick can report opposing directions that a
         // SNES pad's rocker cannot; update_zoom_zoo drops them for both tracks.
         const auto buttons=unirally::app::controller_buttons(ports[0]);
+        // A race from the menus ends for them on its result load or its pause menu's second
+        // choice (R-0057, R-0060); a race on its own restarts from either.
+        std::optional<unirally::RaceTimes> over;
         if(at_stable_result && buttons.start)
           unirally::restart_zoom_zoo(zoom_state,zoom_content);
+        else if(waiting_front_end) over=unirally::update_race_for_menus(zoom_state,buttons,zoom_content);
         else unirally::update_zoom_zoo(zoom_state,buttons,zoom_content);
         // Selector 0 is a real trick (the flat path's negative-velocity
         // rotation), so the impulse is the activity signal; the selector alone
@@ -508,15 +512,16 @@ int main(int argc, char **argv) try {
         } else {
           live_presentation.observe_update(zoom_hud_state,zoom_state,content.pack);
         }
-        // The race's result load: the menus' result screen takes over (R-0057, R-0058).
-        if(waiting_front_end && zoom_state.result_updates==1) {
-          waiting_front_end->return_from_race(zoom_state);
+        // The race's end for the menus: its result, or NOW PLAYING after a restart (R-0057, R-0058,
+        // R-0060).
+        if(waiting_front_end && over) {
+          waiting_front_end->return_from_race(zoom_state,*over);
           front_end=std::move(waiting_front_end);
           waiting_front_end.reset();
           // The input is kept: a button held from the race holds a one-run result (`$80:C24C`)
           // and ends a lap result at its first test (`$80:B6D3`), as in the original.
           std::cout<<"Front end: race returned at front-end frame "<<front_end->front_end_frame()
-                   <<"; totals "<<zoom_state.race.total_times[0]<<'/'<<zoom_state.race.total_times[1]<<'\n';
+                   <<"; totals "<<over->player_total<<'/'<<over->opponent_total<<'\n';
         }
       }
       ++updates;

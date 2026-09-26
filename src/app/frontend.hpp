@@ -139,9 +139,10 @@ public:
   ClassicRaceTrack race_track() const {
     return ClassicRaceTrack{state_.tour_menu.track};
   }
-  // The race's result load has begun (`result_updates` 1): the front end takes
-  // over with its totals.
-  void return_from_race(const ZoomZooState &race);
+  // The race is over for the menus (`update_race_for_menus`): its result load
+  // has begun, or its pause menu quit or restarted it. The front end takes over
+  // with its times.
+  void return_from_race(const ZoomZooState &race, const RaceTimes &times);
 
 private:
   FrontEndContent content_;

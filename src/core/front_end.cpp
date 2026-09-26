@@ -200,7 +200,7 @@ bool waits_for_frame(const FrontEndState& state) {
     if (state.screen == FrontEndScreen::race_return)
         return next == upload_last_frame || next == menu_screen_frame || next >= restore_frame;
     if (state.screen == FrontEndScreen::race_result_exit)
-        return next != scoring_frame && next != scoring_wait_frame;
+        return next == 1 || next > result_scoring_frame(state);
     // The award's waits are `$83:A923`'s, which leave the arrow alone.
     if (state.screen == FrontEndScreen::tour_award) return false;
     // The lap result's second frame (`$80:8FFD-910E`) runs past its frame's end, so the tail
@@ -693,6 +693,7 @@ void update_front_end(FrontEndState& state, const FrontEndContent& content, Fron
     case FrontEndScreen::race_result: race_result_frame(state, content, physical); break;
     case FrontEndScreen::race_result_exit: race_result_exit_frame(state, content, physical); break;
     case FrontEndScreen::tour_award: tour_award_frame(state, content, physical); break;
+    case FrontEndScreen::race_restart: race_restart_frame(state); break;
     case FrontEndScreen::award_return: award_return_frame(state, content); break;
     }
     if (state.screen != screen) state.script_frame = 0;

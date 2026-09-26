@@ -36,9 +36,8 @@ inline constexpr unsigned first_rider_palette = 6, base_palette_low = 35, base_p
 inline constexpr std::uint8_t someone = 0x10;
 // After a race (R-0057), the return's script frames from the race's last frame: NMI runs the
 // arrow on the sound upload's last frame and `$80:D20E`'s first, then from the OAM copy on
-// (the restore frame). Leaving the result: `$83:879A`'s two frame waits leave the arrow alone.
+// (the restore frame).
 inline constexpr std::uint32_t upload_last_frame = 74, menu_screen_frame = 75, restore_frame = 101;
-inline constexpr std::uint32_t scoring_frame = 2, scoring_wait_frame = 3;
 // The result screen's third frame, its tail (`$80:9579`); after a lap result's second frame's
 // overrun it starts without a frame wait.
 inline constexpr std::uint32_t result_tail_frame = 3;
@@ -68,6 +67,12 @@ inline std::uint8_t& oam_byte(FrontEndState& state, unsigned entry, unsigned fie
     return state.oam_buffer[entry * 4 + field];
 }
 
+// Leaving the result (R-0057, R-0060): `$83:879A` scores on the exit's second frame, after
+// `$83:A923`'s wait; when `$80:C786` placed a time its checksums run past their frame, and the
+// scoring comes a frame later. Neither of those frames moves the arrow.
+inline std::uint32_t result_scoring_frame(const FrontEndState& state) {
+    return state.race_result.record_placed ? 3 : 2;
+}
 // $83:9E47: the rider's best time (or score) on the track, `$77:0829 + 2 x (50 x rider + track)`.
 inline std::uint16_t& personal_best(OnePlayerRecords& records, unsigned rider, unsigned track) {
     return records.best[rider * 50U + track];
@@ -167,6 +172,9 @@ void begin_race_return(FrontEndState& state, const FrontEndContent& content, std
                        const RaceTimes& times);
 void race_return_frame(FrontEndState& state, const FrontEndContent& content);
 void race_result_frame(FrontEndState& state, const FrontEndContent& content, FrontEndPads pads);
+// $80:88DD-8914 after a restart from the race's pause menu: the logo up, a blank text faded in,
+// then NOW PLAYING (R-0060).
+void race_restart_frame(FrontEndState& state);
 void race_result_exit_frame(FrontEndState& state, const FrontEndContent& content,
                             FrontEndPads pads);
 

@@ -636,6 +636,48 @@ void race_result_tests() {
           tied.records.player_wins == 1 && tied.records.opponent_wins == 0 &&
           tied.records.record_times[0][0] == 4000 &&
           tied.records.record_holders[0][0] == 0);
+  // R-0060: the race's pause menu. A restart (0xEA62) skips the result: the
+  // text cleared at r + 104, faded in, NOW PLAYING at r + 112; nothing scored.
+  auto restart = to_race();
+  unirally::return_from_race(restart, content, 5000, {0xea62, 0xea60});
+  run(restart, content, 104);
+  require(restart.screen == FrontEndScreen::race_restart &&
+          restart.text.words[0] == 0x004c);
+  run(restart, content, 7);
+  require(restart.screen == FrontEndScreen::race_restart &&
+          restart.registers.brightness == 12);
+  run(restart, content, 1);
+  require(restart.screen == FrontEndScreen::now_playing_entry &&
+          restart.registers.brightness == 14 &&
+          restart.records.statistics[0][0] == 0 && !restart.records.race_lost);
+  // A quit (0xEA61) is a loss without a time: no record placed, so the way out
+  // is a frame shorter, PICK TRACK on its fourth frame.
+  auto quit = to_race();
+  unirally::return_from_race(quit, content, 5000, {0xea61, 0xea60});
+  require(run_to(quit, content, FrontEndScreen::race_result, {}, 104));
+  run(quit, content, 12);
+  run(quit, content, 2, {0x8000, 0});
+  require(quit.screen == FrontEndScreen::race_result_exit);
+  run(quit, content, 3);
+  require(quit.screen == FrontEndScreen::race_result_exit);
+  run(quit, content, 1);
+  require(quit.screen == FrontEndScreen::track_menu_entry &&
+          quit.records.statistics[0][2] == 1 && quit.records.race_lost &&
+          quit.records.record_times[0][0] == 0xea60);
+  // A win whose time places nowhere (three faster records) leaves as quickly.
+  auto slow = to_race();
+  for (unsigned place = 0; place < 3; ++place)
+    slow.records.record_times[place][0] = static_cast<std::uint16_t>(1000 + place);
+  unirally::return_from_race(slow, content, 5000, {3000, 4000});
+  require(run_to(slow, content, FrontEndScreen::race_result, {}, 104));
+  run(slow, content, 12);
+  run(slow, content, 2, {0x8000, 0});
+  run(slow, content, 3);
+  require(slow.screen == FrontEndScreen::race_result_exit);
+  run(slow, content, 1);
+  require(slow.screen == FrontEndScreen::track_menu_entry &&
+          slow.records.tracks_done[0] == 1 &&
+          !slow.race_result.record_placed);
   // No time: a loss without one, and no record.
   auto timeless = to_race();
   unirally::return_from_race(timeless, content, 5000, {0xea60, 4000});

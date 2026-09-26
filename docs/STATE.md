@@ -1,5 +1,13 @@
 # Project state
 
+Updated 26 September 2026 (RACE-PAUSE-EXITS): **the race's pause menu ends a one-player race as
+the original does.**
+- In a race started from the menus, its second choice (the original's QUIT) goes back to NOW
+  PLAYING during the start countdown, and after it shows the result with QUIT and counts a loss.
+- Leaving a result where no record was placed is a frame shorter, as in the original.
+- Against three captures of the original (a quit, a restart and a lap race's quit), every frame
+  matches: 529 pictures, the menus' state and the records ([R-0060](research/R-0060-pause-exits.md)).
+
 Updated 26 September 2026 (FRONT-END-TOUR-END): **a tour's completion shows the medal award,
 as the original does.**
 - The medal falls onto the rider on a podium until a press, then the menus come back, the unlock

@@ -161,8 +161,9 @@ bool read_player_buttons(ZoomZooState& next, const ControllerButtons& buttons, b
 // $83:CD05-CD35: the pause menu takes the update once the controller and phase clocks are
 // sampled; the race, the AI, the queues and the hints wait. Start opens it (unless the
 // player has finished); up and down choose; releasing and pressing Start again resumes, or
-// restarts the race from RESTART RACE, this menu's authored choice (the original's Retire
-// and tour progression are not emulated). Returns true when it took the update.
+// restarts the race from RESTART RACE, this menu's authored choice. A race from the menus is
+// ended there instead, as the original's QUIT (`update_race_for_menus`, R-0060). Returns true
+// when it took the update.
 bool run_pause_menu(const ZoomZooState& state, ZoomZooState& next, const ControllerButtons& buttons,
                     const ZoomZooContent& content) {
     if (!state.native_initialization

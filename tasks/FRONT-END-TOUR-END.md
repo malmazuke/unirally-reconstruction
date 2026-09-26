@@ -2,7 +2,8 @@
 
 ## Assignment
 
-- Status: **in review**. Queued 25 September 2026 (UTC) by FRONT-END-1P-CONTINUATION; claimed
+- Status: **accepted** (pull request #32, merge commit `4b66150`, 26 September 2026 at 04:47Z;
+  claim to merge 2 hours 37 minutes). Queued 25 September 2026 (UTC) by FRONT-END-1P-CONTINUATION; claimed
   26 September 2026 at 02:10Z by the same Claude Code desktop session, on FRONT-END-LAP-RESULT's
   head `003a7b3` (pull request #31), rebased onto `main` `d39e444` after it merged.
 - Milestone: M4 (original game coverage: menus)
