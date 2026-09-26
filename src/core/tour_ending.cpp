@@ -5,6 +5,7 @@
 // Frames count from the completion's scoring frame, s.
 #include "front_end_screens.hpp"
 
+#include <algorithm>
 #include <array>
 #include <cstdint>
 #include <span>
@@ -33,7 +34,7 @@ constexpr std::uint16_t bar_map_bits = 0x2400;
 constexpr std::uint8_t ending_screens = 0x13; // BG1, BG2, objects
 
 // Where `$83:8E3A`'s pose buffer goes: object tiles 0x100 (the uni), 0x108 and 0x180.
-constexpr unsigned first_pose_word = 0x7000, second_pose_word = 0x7080;
+constexpr unsigned first_pose_word = 0x7000, second_pose_word = 0x7080, third_pose_word = 0x7800;
 constexpr std::size_t oam_entry_bytes = 4;
 
 // On the way back the menus' screen comes back and NMI is turned on in frame t' + 118
@@ -76,6 +77,14 @@ void load_first_objects(FrontEndState& state, std::span<const std::uint8_t> tabl
     for (std::size_t k = 0; k < bytes; ++k) state.oam_buffer[k] = table[at + k];
 }
 
+// $83:C4A4 (CRAWLER) and $83:C126 (HOPPER): object tiles 0x180-0x1FF (VRAM 0x7800-0x7FFF), where
+// the menus left the medals' tiles, cleared by a DMA on frame 89. Native clears them on
+// `bar_frame`; the screen is blank either way.
+void clear_third_pose_tiles(FrontEndState& state) {
+    constexpr std::size_t cleared_bytes = 0x1000;
+    load_vram(state, std::vector<std::uint8_t>(cleared_bytes, 0), third_pose_word);
+}
+
 // COLDATA: bits 5, 6 and 7 choose red, green and blue, bits 0-4 their intensity.
 void write_fixed_colour(FrontEndState& state, std::uint8_t data) {
     auto& colour = state.registers.fixed_colour;
@@ -98,7 +107,6 @@ constexpr unsigned uni = 1, first_flash = 4, hole = 8;
 constexpr std::uint8_t first_high = 0x68, flash_high = 0x69, hole_high = 0x65,
                        hole_objects_high = 0x50;
 constexpr std::uint8_t flash_math = 0x33; // add: BG1, BG2, objects, backdrop
-constexpr unsigned clear_word = 0x7800, clear_words = 0x400;
 // The hole: BG2 map words 0x124E-0x1251 and 0x126E-0x1271 take tile 0x64, which the menus'
 // asset 0x46 left in VRAM.
 constexpr std::array<unsigned, 2> hole_rows{0x124e, 0x126e};
@@ -135,8 +143,8 @@ void flash_step(FrontEndState& state, const FrontEndContent& content, unsigned i
 
 void script(FrontEndState& state, const FrontEndContent& content, std::uint32_t frame) {
     auto& ending = state.ending;
-    if (frame == bar_frame) { // CRAWLER alone clears these tiles (on frame 89; the screen is blank)
-        load_vram(state, std::vector<std::uint8_t>(clear_words * 2, 0), clear_word);
+    if (frame == bar_frame) {
+        clear_third_pose_tiles(state);
         return;
     }
     if (frame == setup_frame) {
@@ -474,6 +482,166 @@ void script(FrontEndState& state, const FrontEndContent& content, std::uint32_t 
 }
 } // namespace walker
 
+// HOPPER (`$83:C11E`): a riderless uni walks in from the right; the rider's red uni drops in
+// behind it and breathes fire at it; the uni goes up in a blast and is left a burnt frame. Its
+// table (`$83:C458`): the blast's twenty poses (words), objects 0-4, the flame's eight tiles.
+namespace hopper {
+constexpr unsigned tour = 6;
+constexpr std::size_t blast_poses_at = 0, blast_pose_count = 20, first_objects_at = 40,
+                      flame_tiles_at = 60;
+// Object 0 the blast (tile 0x180), 1 the red uni (0x108), 2 and 3 the flame, 4 the uni (0x100).
+// Entries 5-7 are left shown, small, at (1, 1) with tile 0 (hi1 = 0x02).
+constexpr unsigned red_uni = 1, flame_tip = 2, flame = 3, uni = 4;
+constexpr std::uint8_t first_high = 0x0a, second_high = 0x02, burnt_high = 0x59;
+constexpr std::uint32_t objects_frame = 93, poses_frame = 94;
+// $83:C23D, $83:C29D, $83:C30C, then two loops entered after their first wait (`$83:C358` and
+// `$83:C3E0`), the second ending on t'.
+constexpr Loop walk_in{109, 173, 1}, turn{walk_in.end(), 18, 2}, fire{turn.end(), 16, 2},
+    blast_up{fire.end() - 1, 24, 2}, burn_out{blast_up.end() - 1, 60, 2};
+constexpr std::uint16_t red_uni_poses = 0x1420, red_uni_drops = 0x9f, uni_turn_poses = 0x1417,
+                        red_uni_turn_poses = 0x621, red_uni_fire_poses = 0x1402,
+                        burnt_poses = 0x140f, last_burnt_pose = 7;
+constexpr std::uint8_t red_uni_landing_y = 0x69, drop_speed = 8, flame_tip_offset = 2;
+
+void setup_objects(FrontEndState& state, const FrontEndContent& content) {
+    load_first_objects(state, content.ending_tables[tour], first_objects_at, 5);
+    high_bits(state, 0) = first_high;
+    high_bits(state, uni) = second_high;
+    copy_oam(state);
+}
+
+void setup_poses(FrontEndState& state, const FrontEndContent& content) {
+    upload_pose(state, content, 0, first_pose_word);
+    state.ending.pose = red_uni_poses;
+    upload_built_pose(state, content, second_pose_word);
+    state.ending.step = 0;
+}
+
+// $83:C23D-C286: the uni walks a pixel left; from step 0x9F the red uni drops in.
+void walk_in_part(FrontEndState& state, const FrontEndContent& content, unsigned wait) {
+    auto& ending = state.ending;
+    if (wait == 0) {
+        --oam_byte(state, uni, 0);
+        return;
+    }
+    upload_built_pose(state, content, first_pose_word);
+    copy_oam(state);
+    walk(state);
+    ++ending.step;
+    if (ending.step < red_uni_drops) return;
+    oam_byte(state, red_uni, 0) += 2;
+    oam_byte(state, red_uni, 1) += drop_speed;
+}
+
+// $83:C289-C300: the red uni lands and turns (poses 0x621 on, to tile 0x108) while the uni turns
+// to face it (poses 0x1417 on), each a new pose every second step.
+void turn_part(FrontEndState& state, const FrontEndContent& content, unsigned step, unsigned wait) {
+    auto& ending = state.ending;
+    if (wait == 0) {
+        if (step == 0) {
+            ending.step = 0;
+            oam_byte(state, red_uni, 0) -= 2;
+            oam_byte(state, red_uni, 1) = red_uni_landing_y;
+        }
+        --oam_byte(state, red_uni, 0);
+        return;
+    }
+    const auto first = wait == 1;
+    upload_built_pose(state, content, first ? first_pose_word : second_pose_word);
+    copy_oam(state);
+    ending.pose = static_cast<std::uint16_t>((first ? uni_turn_poses : red_uni_turn_poses)
+                                             + (ending.step >> 1));
+    if (!first) ++ending.step;
+}
+
+// $83:C302-C338: the flame's tiles, a new pair every second step.
+void fire_part(FrontEndState& state, const FrontEndContent& content, unsigned step, unsigned wait) {
+    auto& ending = state.ending;
+    if (wait == 1) return;
+    if (wait == 2) {
+        copy_oam(state);
+        ++ending.step;
+        return;
+    }
+    if (step == 0) ending.step = 0;
+    const auto tile =
+        table_byte(content.ending_tables[tour], flame_tiles_at + ((ending.step & 0xffU) >> 1));
+    oam_byte(state, flame, 2) = tile;
+    oam_byte(state, flame_tip, 2) = static_cast<std::uint8_t>(tile + flame_tip_offset);
+}
+
+// $83:C35F and $83:C3E7: the blast's pose for `$10CB`, its twenty in turn.
+std::uint16_t blast_pose(const FrontEndState& state, const FrontEndContent& content) {
+    const auto at = blast_poses_at + 2U * (state.ending.count % blast_pose_count);
+    const auto table = content.ending_tables[tour];
+    return static_cast<std::uint16_t>(table_byte(table, at) | table_byte(table, at + 1) << 8U);
+}
+
+// $83:C33A-C3B9 and $83:C3BB-C449: after the first wait the blast's pose goes to `blast_word`
+// and the next is built; after the second the red uni's (or the burnt uni's) pose goes to tile
+// 0x108 and the next is built. The first step starts after its first wait.
+void blast_part(FrontEndState& state, const FrontEndContent& content, unsigned step, unsigned wait,
+                unsigned blast_word, std::uint16_t (*next_pose)(std::uint16_t)) {
+    auto& ending = state.ending;
+    if (wait == 0) return;
+    if (wait == 1 && step > 0) {
+        upload_built_pose(state, content, blast_word);
+        copy_oam(state);
+    }
+    if (wait == 1) {
+        ending.pose = blast_pose(state, content);
+        return;
+    }
+    upload_built_pose(state, content, second_pose_word);
+    copy_oam(state);
+    ending.pose = next_pose(ending.step);
+    ++ending.count;
+    ++ending.step;
+}
+
+// $83:C33A: the blast grows at tile 0x180 while the red uni keeps firing (poses 0x1402 on).
+void blast_up_part(FrontEndState& state, const FrontEndContent& content, unsigned step,
+                   unsigned wait) {
+    if (step == 0 && wait == 1) {
+        // Byte writes: the low bytes of both counters.
+        state.ending.step &= 0xff00U;
+        state.ending.count &= 0xff00U;
+    }
+    blast_part(state, content, step, wait, third_pose_word, [](std::uint16_t s) {
+        return static_cast<std::uint16_t>(red_uni_fire_poses + (s >> 1));
+    });
+}
+
+// $83:C3BB: the blast goes on over the uni's tiles (0x100), the uni's object hidden and the burnt
+// uni's poses (0x140F on, held at the eighth) at tile 0x108.
+void burn_out_part(FrontEndState& state, const FrontEndContent& content, unsigned step,
+                   unsigned wait) {
+    if (step == 0 && wait == 1) {
+        state.ending.step = 0;
+        high_bits(state, 0) = burnt_high;
+    }
+    blast_part(state, content, step, wait, first_pose_word, [](std::uint16_t s) {
+        return static_cast<std::uint16_t>(burnt_poses
+                                          + std::min<unsigned>(s >> 1, last_burnt_pose));
+    });
+}
+
+void script(FrontEndState& state, const FrontEndContent& content, std::uint32_t frame) {
+    if (frame == bar_frame) clear_third_pose_tiles(state);
+    if (frame == objects_frame) setup_objects(state, content);
+    if (frame == poses_frame) setup_poses(state, content);
+    run_loop(walk_in, frame, [&](unsigned, unsigned wait) { walk_in_part(state, content, wait); });
+    const auto part = [&](auto function) {
+        return
+            [&, function](unsigned step, unsigned wait) { function(state, content, step, wait); };
+    };
+    run_loop(turn, frame, part(turn_part));
+    run_loop(fire, frame, part(fire_part));
+    run_loop(blast_up, frame, part(blast_up_part));
+    run_loop(burn_out, frame, part(burn_out_part));
+}
+} // namespace hopper
+
 // The eight tours' endings by `$00D0`; a tour whose ending is not recovered has no script and
 // leaves at once through the award's way out.
 const std::array<EndingLayout, 8> endings{{
@@ -483,7 +651,7 @@ const std::array<EndingLayout, 8> endings{{
     {},
     {0x80, 0, 0x5e, 0x83, 94, 393, walker::script, true}, // WALKER `$83:B506`
     {},
-    {},
+    {0x80, 0x42, 0x62, 0x83, 95, 516, hopper::script}, // HOPPER `$83:C11E`
     {},
 }};
 
