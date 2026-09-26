@@ -126,13 +126,70 @@ std::string classic_hud_split_text(const std::array<std::uint8_t, 4>& clock,
             classic_hud_digit(unsigned(ten_tenths == 10 ? 0 : ten_tenths))};
 }
 
-// One update of the HUD's text queue: record what the update asks for, then service one
-// field, as the original's queue does one a frame.
+namespace {
+
+// The race NMI takes its race path once the fade `$0FF1` has reached 5 ($80:8642-865B).
+constexpr unsigned race_nmi_fade = 5;
+// A lead under 10 transitions shows one chevron; from 20 the arrow runs from three.
+constexpr unsigned short_lead = 10, long_lead = 20;
+
+} // namespace
+
+// $81:E8D2-$81:E8E5 steps `$1257` every race NMI and `$1255` each time it wraps; the length
+// is chosen from `$1255` at $81:E9AC-$81:E9DB, the CMPs read as signed.
+unsigned classic_arrow_chevrons(std::uint16_t lead, unsigned race_nmis) {
+    const unsigned step = (race_nmis >> 3U) & 3U;
+    const auto below = [lead](unsigned bound) {
+        return (static_cast<std::uint16_t>(lead - bound) & 0x8000U) != 0;
+    };
+    if (below(short_lead)) return 1;
+    // `2 - $1255` goes negative on step 3, and `AND #1`, `INC` turn that into 2.
+    if (below(long_lead)) return step < 3 ? 2 - step : 2;
+    return 3 - step;
+}
+
+// $82:9822 writes the arrow word `$0FD5` on every update, after the riders' movement and before
+// their contact, so the track marker it reads is the previous update's. The race mode's stunt
+// event (`$77:074B` of 2), which also blanks it, has no native scenario. The finished flag is
+// this update's when the player crossed the line (`$81:823B` runs first); the 10:00 time-out
+// sets it after the word is written, so there the arrow stays one update longer.
+std::optional<ClassicRaceArrow>
+classic_race_arrow(const ZoomZooState& previous, const ZoomZooState& updated, unsigned race_nmis) {
+    const auto& player = updated.movement.riders[0].progress;
+    const auto own = player.transition_count;
+    const auto other = updated.movement.riders[1].progress.transition_count;
+    const bool behind = (static_cast<std::uint16_t>(own - other) & 0x8000U) != 0;
+    if ((own >> 1U) == (other >> 1U) || !behind) return std::nullopt;
+    const auto& rider = updated.race.riders[0];
+    const bool crossed = rider.finished && rider.laps_remaining == 0;
+    if (crossed || previous.race.riders[0].finished) return std::nullopt;
+    // $81:E9DE: nothing is drawn after a rejected transition.
+    if (player.transition_rejected) return std::nullopt;
+    const auto marker = previous.movement.riders[0].progress.marker_word;
+    return ClassicRaceArrow{
+        static_cast<ClassicRaceArrow::Direction>(marker >> 14U),
+        classic_arrow_chevrons(static_cast<std::uint16_t>(other - own), race_nmis)};
+}
+
+// One update of the HUD's text layer: the NMI's counter and arrow, then what the update asks
+// the queue for and the one field the queue services, as the original's does one a frame.
 void ClassicRaceHudClock::observe_update(const ZoomZooState& previous,
                                          const ZoomZooState& updated) {
     on_screen_ = latest_;
+    if (updated.fade_level >= race_nmi_fade) ++race_nmis_;
+    redraw_arrow(previous, updated);
     request_fields(previous, updated);
     service_one_field(updated);
+}
+
+// $81:E8E8-$81:EB83: after an update whose progress phase is clear the NMI leaves the arrow
+// as it is; otherwise it takes down the arrow it drew last and draws the one the update asks
+// for. The up arrow's rows 5-6 are skipped while the player's centred cells show (`$0D19`).
+void ClassicRaceHudClock::redraw_arrow(const ZoomZooState& previous, const ZoomZooState& updated) {
+    if (updated.movement.progress_phase == 0) return;
+    latest_.arrow = classic_race_arrow(previous, updated, race_nmis_);
+    if (latest_.arrow && latest_.arrow->direction == ClassicRaceArrow::Direction::Up)
+        latest_.arrow->middle_rows_covered = latest_.player_cells.has_value();
 }
 
 // What this update asks the queue for. `$81:818D` is the only instruction in the ROM that
@@ -232,12 +289,19 @@ void ClassicRaceHudClock::service_one_field(const ZoomZooState& updated) {
             return;
         }
     }
+    // The player's cells, drawn or blanked, overwrite an up arrow's rows 5-6.
+    const auto cover_arrow = [this](std::size_t rider) {
+        if (rider == 0 && latest_.arrow
+            && latest_.arrow->direction == ClassicRaceArrow::Direction::Up)
+            latest_.arrow->middle_rows_covered = true;
+    };
     for (std::size_t rider = 0; rider < 2; ++rider) {
         auto& cell = pending_.cells[rider];
         auto& held = rider == 0 ? latest_.player_cells : latest_.opponent_cells;
         if (cell.kind == ClassicHudCellRequest::Kind::Draw) {
             held = cell.text;
             cell = {};
+            cover_arrow(rider);
             return;
         }
         if (cell.kind == ClassicHudCellRequest::Kind::Blank) {
@@ -246,6 +310,7 @@ void ClassicRaceHudClock::service_one_field(const ZoomZooState& updated) {
             // field without spending the update.
             if (!updated.race.riders[rider].finished) {
                 held.reset();
+                cover_arrow(rider);
                 return;
             }
         }
@@ -377,33 +442,91 @@ classic_caption_entry(const ZoomZooState& published, std::span<const std::uint8_
 
 namespace {
 
-// One BG3 text cell of the race screen. A glyph is eight pixels wide and
-// sixteen tall, drawn as the tile the character names and the tile 0x10 above
-// it, so a field at tilemap row r covers rows r and r+1. BG3 scrolls by one
-// line, which is why the caption's row 10 shows at y 79 and the HUD's row 2
-// at y 15 (R-0042, R-0043).
+// One BG3 tile of the race screen's text layer at tilemap `column` and `row`, in the ink
+// wherever the 2bpp tile has a nonzero pixel. BG3 scrolls by one line, which is why the
+// caption's row 10 shows at y 79 and the HUD's row 2 at y 15 (R-0042, R-0043).
+void draw_bg3_tile(RgbFrame& frame, std::span<const std::uint8_t> font, unsigned column,
+                   unsigned row, unsigned tile, std::array<std::uint8_t, 3> ink,
+                   std::bitset<256 * 224>& inked) {
+    const auto at = static_cast<std::size_t>(tile) * 16U;
+    for (unsigned line = 0; line < 8; ++line) {
+        const unsigned low = font[at + 2U * line], high = font[at + 2U * line + 1U];
+        for (unsigned bit = 0; bit < 8; ++bit) {
+            if (!(((low | high) >> (7U - bit)) & 1U)) continue;
+            const int x = int(column) * 8 + int(bit), y = int(row) * 8 - 1 + int(line);
+            if (x < 0 || x >= 256 || y < 0 || y >= 224) continue;
+            pixel(frame, x, y, ink);
+            inked.set(static_cast<std::size_t>(y) * 256 + static_cast<std::size_t>(x));
+        }
+    }
+}
+
+// A line of text. A glyph is eight pixels wide and sixteen tall, drawn as the tile the
+// character names and the tile 0x10 above it, so a field at tilemap row r covers rows r and
+// r+1.
 void draw_bg3_text(RgbFrame& frame, std::span<const std::uint8_t> font, unsigned column,
                    unsigned row, std::string_view text, std::array<std::uint8_t, 3> ink,
                    std::bitset<256 * 224>& inked) {
     for (std::size_t index = 0; index < text.size(); ++index) {
         const auto tile = classic_caption_tile(text[index]);
         if (!tile) continue;
-        for (unsigned half = 0; half < 2; ++half) {
-            const auto at = static_cast<std::size_t>(*tile + half * 0x10U) * 16U;
-            for (unsigned line = 0; line < 8; ++line) {
-                const unsigned low = font[at + 2U * line], high = font[at + 2U * line + 1U];
-                for (unsigned bit = 0; bit < 8; ++bit) {
-                    if (((low >> (7U - bit)) & 1U) | ((high >> (7U - bit)) & 1U)) {
-                        const int x = int(column + index) * 8 + int(bit),
-                                  y = int(row) * 8 - 1 + int(half) * 8 + int(line);
-                        if (x < 0 || x >= 256 || y < 0 || y >= 224) continue;
-                        pixel(frame, x, y, ink);
-                        inked.set(static_cast<std::size_t>(y) * 256 + static_cast<std::size_t>(x));
-                    }
-                }
-            }
+        const auto at = column + static_cast<unsigned>(index);
+        draw_bg3_tile(frame, font, at, row, *tile, ink, inked);
+        draw_bg3_tile(frame, font, at, row + 1U, *tile + 0x10U, ink, inked);
+    }
+}
+
+// The arrow's chevrons in the font sheet: the left one's two halves, its mirror's, and the
+// up and down chevrons, each two tiles side by side.
+constexpr unsigned left_chevron = 0x46, right_chevron = 0x47, up_chevron = 0x48,
+                   down_chevron = 0x4a, lower_half = 0x10;
+constexpr unsigned side_arrow_row = 14, up_arrow_row = 4, down_arrow_row = 24;
+constexpr unsigned left_arrow_column = 5, right_arrow_end = 28, vertical_arrow_column = 15;
+
+// $81:E9EE-$81:EB83: the right arrow grows leftward from column 28, the left one rightward
+// from column 5, the up one downward from row 4 and the down one from row 24.
+void draw_classic_arrow(RgbFrame& frame, std::span<const std::uint8_t> font,
+                        const ClassicRaceArrow& arrow, std::array<std::uint8_t, 3> ink,
+                        std::bitset<256 * 224>& inked) {
+    using Direction = ClassicRaceArrow::Direction;
+    for (unsigned chevron = 0; chevron < arrow.chevrons; ++chevron) {
+        switch (arrow.direction) {
+        case Direction::Right:
+        case Direction::Left: {
+            const bool right = arrow.direction == Direction::Right;
+            const unsigned column = right ? right_arrow_end - chevron : left_arrow_column + chevron;
+            const unsigned tile = right ? right_chevron : left_chevron;
+            draw_bg3_tile(frame, font, column, side_arrow_row, tile, ink, inked);
+            draw_bg3_tile(frame, font, column, side_arrow_row + 1U, tile + lower_half, ink, inked);
+            break;
+        }
+        case Direction::Up:
+        case Direction::Down: {
+            const bool up = arrow.direction == Direction::Up;
+            if (up && chevron > 0 && arrow.middle_rows_covered) break;
+            const unsigned row = (up ? up_arrow_row : down_arrow_row) + chevron;
+            const unsigned tile = up ? up_chevron : down_chevron;
+            draw_bg3_tile(frame, font, vertical_arrow_column, row, tile, ink, inked);
+            draw_bg3_tile(frame, font, vertical_arrow_column + 1U, row, tile + 1U, ink, inked);
+            break;
+        }
         }
     }
+}
+
+// Without the NMI's history, the arrow from the update drawn alone. The first race NMI is
+// the picture after the update at boundary + 5, so the NMI after the update at frame F has
+// counted F - boundary - 4 (exact while every update since the boundary advanced
+// `movement.frame`, as paused and skipped ones do). The update's own marker stands in for the
+// previous update's. After an update with the progress phase clear the arrow on screen was
+// drawn a picture earlier from the update before, which a single state does not have; this
+// one stands in for it too.
+std::optional<ClassicRaceArrow> classic_arrow_without_history(const ZoomZooState& drawn,
+                                                              const ClassicRaceScenario& scenario) {
+    const auto frame = drawn.movement.frame, first = scenario.initialization_frame + race_nmi_fade;
+    if (drawn.fade_level < race_nmi_fade || frame < first) return std::nullopt;
+    const unsigned held = drawn.movement.progress_phase == 0 ? 1U : 0U;
+    return classic_race_arrow(drawn, drawn, frame - first + 1U - held);
 }
 
 } // namespace
@@ -440,6 +563,9 @@ void draw_classic_hud(RgbFrame& frame, const ZoomZooState& state,
     draw_bg3_text(frame, font, 24, 2, hud.clock, ink, inked);
     draw_bg3_text(frame, font, 13, 5, hud.player_cells, ink, inked);
     draw_bg3_text(frame, font, 13, 20, hud.opponent_cells, ink, inked);
+    const auto arrow =
+        published ? published->arrow : classic_arrow_without_history(state, content.scenario);
+    if (arrow) draw_classic_arrow(frame, font, *arrow, ink, inked);
 }
 
 } // namespace unirally

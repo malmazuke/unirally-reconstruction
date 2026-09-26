@@ -165,6 +165,20 @@ struct ClassicHudText {
     // `+M:SS:t` (`$81:EF5E-$81:F030`, `$81:F1B5-$81:F288`; R-0044).
     std::string player_cells, opponent_cells;
 };
+// RACE-OFFSCREEN-ARROW: the one-player race's direction arrow. It shows while
+// the player is behind, points the way the player's track marker runs, and its
+// length in chevrons (0 to 3) tells how far behind. The side arrows sit in rows
+// 14-15, right at columns 26-28 and left at columns 5-7; the up arrow at
+// columns 15-16 of rows 4-6 and the down arrow at rows 24-26, a chevron a row.
+struct ClassicRaceArrow {
+    enum class Direction : std::uint8_t { Right, Left, Up, Down };
+    Direction direction{};
+    unsigned chevrons{};
+    // The up arrow only: its rows 5-6 hold the player's centred cells instead,
+    // which the NMI does not draw over and which overwrite it.
+    bool middle_rows_covered{};
+    bool operator==(const ClassicRaceArrow&) const = default;
+};
 // What the original's HUD cells are holding: the clock digits the queue last
 // wrote, and whether it has reached each of the three fields the finish sets
 // going. `finish`'s own cells need no flag because the left field is derived
@@ -174,8 +188,26 @@ struct ClassicHudPublished {
     bool clock_blanked{};
     // What the two centred fields hold, nothing while blank.
     std::optional<std::string> player_cells{}, opponent_cells{};
+    // The direction arrow the NMI last drew, nothing while none shows.
+    std::optional<ClassicRaceArrow> arrow{};
+    // The caption table entry (1-255) the caption cells show, 0 while blank.
+    // Not followed on the HUNTER tour, whose caption is drawn from the state.
+    unsigned caption_event{};
     bool operator==(const ClassicHudPublished&) const = default;
 };
+// $81:E9AC-$81:E9DB: the arrow's length for a lead of `lead` transitions and
+// the NMI counter `race_nmis` (race NMIs since the fade reached 5; its bits 3-4
+// are the step `$1255`, which moves every 8 frames): one chevron under a lead
+// of 10, then 2, 1, 0, 2 as the step runs 0-3 under a lead of 20, then 3, 2, 1, 0.
+unsigned classic_arrow_chevrons(std::uint16_t lead, unsigned race_nmis);
+// The arrow the NMI draws from the update that produced `updated` ($82:9822
+// computes its word, the NMI its length): nothing unless the player's
+// transition count is behind the opponent's by more than the pair they share,
+// the player has not finished and the player's last transition was not
+// rejected. The direction is the player's track marker as it stood before the
+// update's contact (`previous`).
+std::optional<ClassicRaceArrow> classic_race_arrow(const ZoomZooState& previous,
+                                                   const ZoomZooState& updated, unsigned race_nmis);
 // R-0044: the centred fields' content. A crossing publishes the crossing
 // clock digits `$0E43,y..` (native `time_digits`) as `M:SS:th`. A checkpoint
 // the other rider has already passed publishes the difference between the
@@ -242,6 +274,9 @@ ClassicHudText classic_race_hud_text(const ZoomZooState& previous_update,
 // race does not carry, so a queue that did not observe the first crossing of
 // a slot leaves the cells as they are. A finished rider's blank is skipped
 // without spending the update ($81:EDE9, $81:F040).
+// The one-player NMI ($81:E8C9) redraws the direction arrow before it services
+// the queue, and only after an update whose progress phase `$0302` is set: every
+// other picture keeps the arrow of the picture before (RACE-OFFSCREEN-ARROW).
 class ClassicRaceHudClock {
 public:
     void reset() {
@@ -249,6 +284,7 @@ public:
         on_screen_ = {};
         pending_ = {};
         slot_times_ = {};
+        race_nmis_ = 0;
     }
     void observe_update(const ZoomZooState& previous, const ZoomZooState& updated);
     // The cells as the picture drawn from the earlier of the two states last
@@ -264,6 +300,9 @@ private:
     };
     ClassicHudPublished latest_{}, on_screen_{};
     Pending pending_{};
+    // `$1255`/`$1257`: the race NMIs counted since the fade reached 5, pauses
+    // included (the NMI runs through them).
+    unsigned race_nmis_{};
     // The clock the first rider through each slot stored, minutes, tens,
     // seconds, tenths. Indexed like `checkpoint_seen`, laps remaining * 4 +
     // checkpoint; the original keeps four bytes a slot at `$100D` + 16 * laps
@@ -275,6 +314,7 @@ private:
     ClassicHudCellRequest crossing_cell(const ZoomZooState& previous, std::size_t rider,
                                         const ZoomZooState& updated);
     void service_one_field(const ZoomZooState& updated);
+    void redraw_arrow(const ZoomZooState& previous, const ZoomZooState& updated);
 };
 // Presentation-only $0D45/$0D47 upper-body overlay frames. The original
 // derives them from look state the serialized race does not carry (R-0036),
