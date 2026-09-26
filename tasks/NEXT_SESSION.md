@@ -5,6 +5,11 @@ push the task branch, open a pull request from the template, merge with
 `gh pr merge --merge` once its checks are green and the review is done. `main`
 refuses direct pushes. The checks run on pull requests only.
 
+**Status on 26 September 2026 UTC (RACE-OFFSCREEN-ARROW): start
+[HUNTER-ENDING](HUNTER-ENDING.md), then [FIFTH-WIN-COMPLETION](FIFTH-WIN-COMPLETION.md).** The
+race's pictures now match the original's on every compared frame (R-0063). The disk is nearly full
+(about 4 GB free on 26 September): keep new captures small.
+
 **Status on 26 September 2026 UTC (FRONT-END-ENDINGS): start
 [RACE-OFFSCREEN-ARROW](RACE-OFFSCREEN-ARROW.md), then [HUNTER-ENDING](HUNTER-ENDING.md) and
 [FIFTH-WIN-COMPLETION](FIFTH-WIN-COMPLETION.md).** The eight tours' gold endings and the reveal of

@@ -2,7 +2,7 @@
 
 ## Assignment
 
-- Status: **in progress**. Queued 26 September 2026 (UTC) by RACE-RIDERS-OPPONENTS; claimed
+- Status: **in review**. Queued 26 September 2026 (UTC) by RACE-RIDERS-OPPONENTS; claimed
   26 September 2026 at 14:35Z by the Claude Code desktop session that ran FRONT-END-ENDINGS, on
   `16fe22c`.
 - Milestone: M4 (original game coverage)
@@ -55,8 +55,29 @@ Out of scope: two-player play.
 | Timing | Consecutive frames around the arrow's appearance and disappearance, both sides | Equal to the pixel | pictures |
 | Nothing moves | The gates of RACE-RIDERS-OPPONENTS | Unchanged apart from the arrow's pixels, each accounted for | logs |
 
+## Result
+
+[R-0063](../docs/research/R-0063-race-arrow-and-bg3-uploads.md). The "off-screen arrow" is a
+direction arrow the one-player race NMI draws whenever the player is behind, whatever the screen
+shows, with a length that shows the opponent's lead. The late captions come from the NMI uploading
+one BG3 field a frame, the caption last. MIKE's early look came from the head point, which the
+original keeps from the rider's last contact. All three are native, and the race's pictures now
+match the original's on every compared frame, including the M4-16 primary's and the HUNTER tour's.
+A research worker decoded them; an implementation worker wrote the code; the primary integrated.
+Tier 2 stands: the race's state does not change.
+
+## Evidence
+
+`local/evidence/race-offscreen-arrow/`: `decode/` (the research, its replays and checks),
+`checks/` (the implementation's picture sweeps), `base-16fe22c/`, `gates.sh`.
+
+| Criterion | Result |
+| --- | --- |
+| Pictures | R-0061's seven captures: 0 differing pixels on 307 frames (7,767 before). The M4-16 primary, brake and trick-long kept frames: 0 (9,086 before). The eight HUNTER captures: 0 (4,938 before). |
+| Timing | Consecutive frames around the arrow's appearance, disappearance, length cycle and side switch (silvia-dragster, silvia-zoom-zoo, M4-16): 0 (22,521 before); silvia-runner-25 1836-1864: 0 (944 before). |
+| Nothing moves | The gates (below). |
+
 ## Handoff
 
-- Exact next experiment/command: find the BG3 writes at rows 14-15 in the listing (the tilemap's
-  words for columns 5-7 and 26-28), starting from R-0043's writers (`$81:D1B2-$81:D30C`,
-  `$81:EB44-$81:EB83`), then capture consecutive frames from `silvia-dragster` around frame 1790.
+- Exact next experiment/command: after the review and the merge, [HUNTER-ENDING](HUNTER-ENDING.md)
+  or [FIFTH-WIN-COMPLETION](FIFTH-WIN-COMPLETION.md).
