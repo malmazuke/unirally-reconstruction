@@ -1039,9 +1039,9 @@ void award_tests() {
           forward.track_menu.returning);
   // The level a completion leaves: the pending reveal when a count matched
   // (PICK TOUR shows the level below it until its slide ends; R-0062).
-  const auto revealed = [](const unirally::FrontEndState &state) {
-    return state.records.pending_reveal ? state.records.pending_reveal
-                                        : state.records.tour_levels[0];
+  const auto revealed = [](const unirally::FrontEndState &completed) {
+    return completed.records.pending_reveal ? completed.records.pending_reveal
+                                            : completed.records.tour_levels[0];
   };
   // Gold: CRAWLER's ending, then PICK TOUR; the level from the exact counts.
   // All eight gold is level 3.
