@@ -7,8 +7,8 @@ the one-player menus choose.**
 - The opponent sets the computer's skill: SILVIA (after a bronze) and GOLDWYN (after a silver)
   catch up faster and launch their tricks by their own rules.
 - Against seven captures of the original's races every update matches. Their pictures match apart
-  from the off-screen rider arrow, which native has never drawn, and two one-frame residues on one
-  track ([RACE-OFFSCREEN-ARROW](../tasks/RACE-OFFSCREEN-ARROW.md)). The menus around ANDREW's, SILVIA's
+  from the off-screen rider arrow, which native has never drawn, and two residues of a frame or two
+  on one track ([RACE-OFFSCREEN-ARROW](../tasks/RACE-OFFSCREEN-ARROW.md)). The menus around ANDREW's, SILVIA's
   and GOLDWYN's races match on every frame: 7,957 pictures and the records
   ([R-0061](research/R-0061-riders-and-opponents.md)).
 - The caption's blank now reaches the screen a picture later, as in the original.
