@@ -201,6 +201,11 @@ void run_loop(const Loop& loop, std::uint32_t frame, Part part) {
     if (step < loop.steps) part(step, wait);
 }
 
+// A counter's byte write (`STA` with an 8-bit accumulator): the low byte only.
+void set_low_byte(std::uint16_t& word, unsigned value) {
+    word = static_cast<std::uint16_t>((word & 0xff00U) | (value & 0xffU));
+}
+
 std::uint8_t table_byte(std::span<const std::uint8_t> table, std::size_t at) {
     if (at >= table.size()) throw std::invalid_argument("ending table is short");
     return table[at];
@@ -823,14 +828,174 @@ void script(FrontEndState& state, const FrontEndContent& content, std::uint32_t 
 }
 } // namespace jumper
 
+// BOUNDER (`$83:B7D2`): the riderless uni rides in from the right and the rider's red uni from
+// the left; the red uni jumps, bumps a block and a ball pops out and falls away; the red uni,
+// its scarf flying, bounds off the top of the screen while the uni sinks down. Both unis show
+// the pose at tile 0x100 until the red uni takes tile 0x108; the uni's last poses are built in
+// the second buffer (`$16F0`). Its table (`$83:BB44`): objects 0-5, then the bump's seven steps
+// of five bytes (the red uni's x and y, the ball's x and y, the block's y).
+namespace bounder {
+constexpr unsigned tour = 3;
+constexpr std::size_t bump_steps_at = 24, bump_step_bytes = 5;
+constexpr unsigned uni = 0, red_uni = 1, bumped_block = 4, ball = 5;
+constexpr std::uint8_t first_high = 0x0e, blocks_high = 0x50, red_uni_high = 0x0a,
+                       ball_gone_high = 0x54, second_pose_tile = 8, rise = 3;
+constexpr std::uint16_t red_uni_shown = 0x17, red_uni_rises = 0x21, ball_falls_from = 7,
+                        scarf_poses = 0x1384, sink_poses = 0x13d4, jump_speed = 0x0c,
+                        second_jump = 0x15, sink_starts = 0x15, last_sink_pose = 7;
+constexpr std::uint32_t setup_frame = 93;
+// $83:B8B9, $83:B925, $83:B9A7, $83:BA26 and $83:BA87 (which ends on t').
+constexpr Loop ride_in{108, 38, 1}, bump{ride_in.end(), 7, 1}, ball_falls{bump.end(), 14, 1},
+    scarf{ball_falls.end(), 18, 2}, bound_off{scarf.end(), 48, 2};
+
+void setup(FrontEndState& state, const FrontEndContent& content) {
+    load_first_objects(state, content.ending_tables[tour], 0, 6);
+    high_bits(state, 0) = first_high;
+    high_bits(state, bumped_block) = blocks_high;
+    copy_oam(state);
+    state.ending.pose = 0;
+    upload_built_pose(state, content, first_pose_word);
+    upload_built_pose(state, content, second_pose_word);
+    state.ending.step = 0;
+}
+
+// The steps of the first three loops end alike: the walk's pose to tile 0x100, the objects,
+// the next walk pose.
+void walk_step(FrontEndState& state, const FrontEndContent& content) {
+    upload_built_pose(state, content, first_pose_word);
+    copy_oam(state);
+    walk(state);
+    ++state.ending.step;
+}
+
+// $83:B8B9-B915: the unis ride towards each other, the red uni shown from step 0x17; from
+// step 0x21 it rises, jumping.
+void ride_in_part(FrontEndState& state, const FrontEndContent& content, unsigned wait) {
+    if (wait == 1) {
+        walk_step(state, content);
+        if (state.ending.step >= red_uni_rises) oam_byte(state, red_uni, 1) -= rise;
+        return;
+    }
+    oam_byte(state, uni, 0) -= 2;
+    oam_byte(state, red_uni, 0) += 2;
+    if ((state.ending.step & 0xffU) == red_uni_shown) high_bits(state, 0) = red_uni_high;
+}
+
+// $83:B91E-B99A: the red uni hits the block, which bumps up, and the ball pops out.
+void bump_part(FrontEndState& state, const FrontEndContent& content, unsigned step, unsigned wait) {
+    if (wait == 1) {
+        walk_step(state, content);
+        return;
+    }
+    if (step == 0) state.ending.step = 0;
+    const auto table = content.ending_tables[tour];
+    const auto at = bump_steps_at + bump_step_bytes * (state.ending.step & 0xffU);
+    oam_byte(state, red_uni, 0) = table_byte(table, at);
+    oam_byte(state, red_uni, 1) = table_byte(table, at + 1);
+    oam_byte(state, ball, 0) = table_byte(table, at + 2);
+    oam_byte(state, ball, 1) = table_byte(table, at + 3);
+    oam_byte(state, bumped_block, 1) = table_byte(table, at + 4);
+}
+
+// $83:B99C-BA0E: the ball rolls right and, from step 7, falls faster and faster (`$10A7`).
+void ball_falls_part(FrontEndState& state, const FrontEndContent& content, unsigned step,
+                     unsigned wait) {
+    auto& ending = state.ending;
+    if (wait == 1) {
+        walk_step(state, content);
+        if (ending.step >= ball_falls_from) ++ending.drop;
+        return;
+    }
+    if (step == 0) ending.step = ending.drop = 0;
+    ++oam_byte(state, red_uni, 0);
+    ++oam_byte(state, ball, 0);
+    oam_byte(state, ball, 1) += static_cast<std::uint8_t>(ending.drop);
+}
+
+// $83:BA10-BA6A: the ball gone, the red uni takes tile 0x108 and its scarf flies (poses 0x1384
+// on, a new one every second step).
+void scarf_part(FrontEndState& state, const FrontEndContent& content, unsigned step,
+                unsigned wait) {
+    auto& ending = state.ending;
+    if (wait == 0 && step == 0) {
+        ending.step = 0;
+        high_bits(state, bumped_block) = ball_gone_high;
+        oam_byte(state, red_uni, 2) = second_pose_tile;
+    }
+    if (wait == 2) {
+        upload_built_pose(state, content, second_pose_word);
+        copy_oam(state);
+        ending.pose = static_cast<std::uint16_t>(scarf_poses + (ending.step >> 1));
+        ++ending.step;
+        return;
+    }
+    if (wait == 1) copy_oam(state);
+    ++oam_byte(state, red_uni, 0);
+}
+
+// $83:BAED-BB36 after each step of the bound: from step 0x15 the red uni bounds again, and the
+// uni's sinking poses (0x13D4 on, held at the eighth) are built in the second buffer.
+void after_bound_step(FrontEndState& state) {
+    auto& ending = state.ending;
+    set_low_byte(ending.drop, ending.drop - 1U);
+    ++ending.step;
+    if (ending.step < sink_starts || ending.step >= bound_off.steps) return;
+    if (ending.step == second_jump) set_low_byte(ending.drop, jump_speed);
+    ending.second_pose = static_cast<std::uint16_t>(sink_poses + ending.count);
+    if ((ending.count & 0xffU) < last_sink_pose) set_low_byte(ending.count, ending.count + 1U);
+}
+
+// $83:BA6C-BB25: the red uni bounds off to the top right, rising by `$10A7` (a byte, rounded
+// down to even) as it counts down; the uni's second picture goes to tile 0x100 once built.
+void bound_off_part(FrontEndState& state, const FrontEndContent& content, unsigned step,
+                    unsigned wait) {
+    auto& ending = state.ending;
+    if (wait == 1) {
+        copy_oam(state);
+        if (ending.count & 0xffU) upload_pose(state, content, ending.second_pose, first_pose_word);
+        return;
+    }
+    if (wait == 2) {
+        upload_built_pose(state, content, second_pose_word);
+        copy_oam(state);
+        ending.pose = static_cast<std::uint16_t>(scarf_poses + ((ending.step & 0xfU) >> 1));
+        after_bound_step(state);
+        return;
+    }
+    if (step == 0) {
+        ending.step = ending.count = 0;
+        set_low_byte(ending.drop, jump_speed);
+        oam_byte(state, red_uni, 2) = second_pose_tile;
+    }
+    oam_byte(state, red_uni, 0) += 3;
+    oam_byte(state, red_uni, 1) -= static_cast<std::uint8_t>(ending.drop & 0xfeU);
+}
+
+void script(FrontEndState& state, const FrontEndContent& content, std::uint32_t frame) {
+    if (frame == setup_frame) {
+        setup(state, content);
+        return;
+    }
+    run_loop(ride_in, frame, [&](unsigned, unsigned wait) { ride_in_part(state, content, wait); });
+    const auto part = [&](auto function) {
+        return
+            [&, function](unsigned step, unsigned wait) { function(state, content, step, wait); };
+    };
+    run_loop(bump, frame, part(bump_part));
+    run_loop(ball_falls, frame, part(ball_falls_part));
+    run_loop(scarf, frame, part(scarf_part));
+    run_loop(bound_off, frame, part(bound_off_part));
+}
+} // namespace bounder
+
 // The eight tours' endings by `$00D0`; a tour whose ending is not recovered has no script and
 // leaves at once through the award's way out.
 const std::array<EndingLayout, 8> endings{{
     {0xc0, 0x40, 0x60, 0xa3, 96, 336, crawler::script},      // CRAWLER `$83:C49C`
     {0x80, 0x3f, 0x5f, 0xa3, 97, 409, jumper::script, true}, // JUMPER `$83:BB80`
     {0x80, 0x41, 0x61, 0xa3, 96, 380, shuffler::script},     // SHUFFLER `$83:B1EB`
-    {},
-    {0x80, 0, 0x5e, 0x83, 94, 393, walker::script, true}, // WALKER `$83:B506`
+    {0x80, 0x3e, 0x5e, 0x83, 94, 299, bounder::script},      // BOUNDER `$83:B7D2`
+    {0x80, 0, 0x5e, 0x83, 94, 393, walker::script, true},    // WALKER `$83:B506`
     {},
     {0x80, 0x42, 0x62, 0x83, 95, 516, hopper::script}, // HOPPER `$83:C11E`
     {},
