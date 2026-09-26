@@ -169,6 +169,48 @@ void set_word(unirally::SnesVideoMemory &memory, unsigned word,
   memory.vram[word * 2 + 1] = static_cast<std::uint8_t>(value >> 8U);
 }
 
+// HUNTER-ENDING: HDMA's INIDISP and BG1VOFS writes, row by row, over the
+// CPU's registers. BG1 (mode 1, 4bpp): map entry 0 is tile 1, whose first row
+// is colour 1 (red 31); the CPU holds forced blank and BG1's offset 0.
+void line_register_tests() {
+  using unirally::SnesLineRegister;
+  using Name = unirally::SnesLineRegisterName;
+  unirally::SnesVideoMemory memory;
+  unirally::SnesVideoRegisters registers;
+  registers.mode = 1;
+  registers.bg[0].tile_word = 0x1000;
+  registers.main_screen = 0x01;
+  set_word(memory, 0, 0x0001);
+  set_word(memory, 0x1000 + 16, 0x00ff);
+  memory.cgram[2] = 0x1f;
+  const auto red = [](const unirally::RgbFrame &frame, int row) {
+    return frame.pixels[static_cast<std::size_t>(row) * 256 * 3];
+  };
+  // No write: the CPU's forced blank.
+  require(red(unirally::render_snes_screen(memory, registers), 0) == 0);
+  // Row 0 lit at brightness 15 with BG1 one line up (it shows the tile's
+  // first row); rows from 1 back at offset 0 (the tile's second row, colour 0);
+  // rows from 2 blank again. The registers themselves are not changed.
+  const std::array<SnesLineRegister, 4> reveal{
+      {{0, Name::display, 0x0f},
+       {0, Name::bg1_vertical_offset, 0x3ff},
+       {1, Name::bg1_vertical_offset, 0},
+       {2, Name::display, 0xbb}}};
+  auto frame = unirally::render_snes_screen(memory, registers, {}, reveal);
+  require(red(frame, 0) == 255 && red(frame, 1) == 0 && red(frame, 2) == 0);
+  require(registers.force_blank && registers.bg[0].vofs == 0);
+  // A row's brightness is its own: brightness 7 halves the red.
+  const std::array<SnesLineRegister, 2> dim{
+      {{0, Name::display, 0x07}, {0, Name::bg1_vertical_offset, 0x3ff}}};
+  frame = unirally::render_snes_screen(memory, registers, {}, dim);
+  require(red(frame, 0) > 0 && red(frame, 0) < 255);
+  // A write left in the registers, as the PPU holds the last one.
+  unirally::apply_line_register(registers, reveal[3]);
+  require(registers.force_blank && registers.brightness == 11);
+  unirally::apply_line_register(registers, reveal[1]);
+  require(registers.bg[0].vofs == 0x3ff);
+}
+
 void snes_screen_tests() {
   unirally::SnesVideoMemory memory;
   unirally::SnesVideoRegisters registers;
@@ -232,6 +274,7 @@ void snes_screen_tests() {
   frame = unirally::render_snes_screen(memory, registers, first);
   require(frame.pixels[0] == 255 && frame.pixels[2] == 0);
   require(memory.cgram[129 * 2] == 0); // the memory itself is not changed
+  line_register_tests();
 }
 
 unirally::FrontEndContent

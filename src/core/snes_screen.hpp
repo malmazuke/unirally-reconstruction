@@ -2,7 +2,8 @@
 // One SNES picture from video memory and the PPU registers, as the reference emulator (bsnes'
 // fast PPU, `sfc/ppu-fast`) draws it: backgrounds in modes 0, 1 and 3, objects, colour math and
 // the master brightness. The front end's screens are drawn with it (R-0054). Colours written
-// during the picture (HDMA to CGADD and CGDATA) are applied line by line; windows, mosaic, other
+// during the picture (HDMA to CGADD and CGDATA), and HDMA's writes to INIDISP and BG1VOFS (the
+// newspaper pages' reveal, HUNTER-ENDING), are applied line by line; windows, mosaic, other
 // per-line register changes, OAM priority rotation, hires modes, mode 7 and offset-per-tile are
 // not modelled, and a picture that uses them is refused.
 #include "presentation.hpp"
@@ -39,9 +40,9 @@ struct SnesVideoRegisters {
     std::uint8_t colour_select{}; // CGWSEL
     std::uint8_t colour_math{};   // CGADSUB
     std::uint16_t fixed_colour{}; // COLDATA, as BGR555
-    // Any window or mosaic enable, per-line register changes (HDMA other than colours) or OAM
-    // priority rotation (OAMADD's priority bit): none is modelled, so a picture that uses one is
-    // refused.
+    // Any window or mosaic enable, per-line register changes (HDMA other than colours, INIDISP
+    // and BG1VOFS) or OAM priority rotation (OAMADD's priority bit): none is modelled, so a
+    // picture that uses one is refused.
     bool unmodelled_features{};
 };
 
@@ -53,9 +54,23 @@ struct SnesLineColour {
     std::uint16_t colour{};
 };
 
+// A register HDMA writes during the picture, from screen row `row` on (a write on the table's
+// line n, as for a colour): INIDISP (bit 7 forced blank, bits 3-0 the brightness) or BG1VOFS
+// (the whole offset, as HDMA's two-write mode leaves it). The PPU latches both for each line
+// (bsnes `PPU::Line::cache`), so a row's own value overrides the CPU's, forced blank included.
+enum class SnesLineRegisterName : std::uint8_t { display, bg1_vertical_offset };
+struct SnesLineRegister {
+    std::uint8_t row{};
+    SnesLineRegisterName name{};
+    std::uint16_t value{};
+};
+// The register as a write leaves it.
+void apply_line_register(SnesVideoRegisters& registers, const SnesLineRegister& write);
+
 // The picture, in the output colours of the race presentation (`colour_word_rgb`). The line
-// colours are in row order.
+// colours and registers are in row order.
 RgbFrame render_snes_screen(const SnesVideoMemory& memory, const SnesVideoRegisters& registers,
-                            std::span<const SnesLineColour> line_colours = {});
+                            std::span<const SnesLineColour> line_colours = {},
+                            std::span<const SnesLineRegister> line_registers = {});
 
 } // namespace unirally
