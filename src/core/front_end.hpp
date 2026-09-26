@@ -338,6 +338,11 @@ struct SavedMenus {
 
 struct FrontEndState {
     std::uint32_t frame{}; // frames since power-on; the next update is this frame
+    // The boot's first frame: 0, or the frame of the last soft reset (`JML $80:8858`), after
+    // which the boot's frames from 97 come three frames later (HUNTER-ENDING).
+    std::uint32_t boot_start{};
+    bool after_soft_reset{};
+    std::uint8_t title_code_step{}; // the title code's words matched so far (`$80:F5C0`)
     FrontEndScreen screen{};
     std::uint32_t script_frame{}; // frames since the current script began
     SnesVideoMemory video{};
