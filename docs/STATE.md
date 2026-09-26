@@ -1,5 +1,19 @@
 # Project state
 
+Updated 26 September 2026 (FRONT-END-TOUR-END): **a tour's completion shows the medal award,
+as the original does.**
+- The medal falls onto the rider on a podium until a press, then the menus come back, the unlock
+  rule runs, and PICK TOUR returns with the new medal; its choice, or Y, goes on to PICK TRACK.
+- A completion comes from a tour's fifth win, or at once when pad 1 holds exactly Select + X + R
+  as the result is left (the original's forced completion).
+- Against captures of the original (a bronze and a silver award, and PICK TOUR's exits), every
+  frame matches: 0 differing pixels in 4,161 pictures, and equal menu state, OAM buffer
+  and text map ([R-0059](research/R-0059-tour-completion.md)). The SNES screen now draws mode 2.
+- Not yet: the gold medal's endings and the reveal of newly opened tours.
+- Pack profile **v20** adds the award's content (`content pack --rules
+  tests/manifests/content/classic-crawler-tracks-pack.json --out
+  local/classic-pal-crawler-tracks-v20.pack`).
+
 Updated 26 September 2026 (FRONT-END-LAP-RESULT): **after a lap race too, 1P goes on as the
 original does.**
 - A lap race's result is the menus' graph of every lap: twenty dots fly to their laps' times,

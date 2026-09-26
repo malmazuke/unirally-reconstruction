@@ -55,7 +55,23 @@ Out of scope: the stunt events (STUNT-EVENTS); the endings' music (audio).
 | Playable | The app through a completion | The award, the reveal on PICK TOUR, and the next tour | report |
 | Nothing moves | ctest, the synthetic suite, the v1 contracts, hidden runs, the differential gates, the equivalence sweep, the front end's comparisons | Unchanged | logs |
 
+## Evidence
+
+R-0059 and `local/evidence/front-end-tour-end/` (`NOTES.md`, `decode/tour-end.md`, `compare.py`,
+`sram.py`).
+
+| Criterion | Result |
+| --- | --- |
+| Pictures and state | A bronze and a silver forced completion, the award looping, its exit, and PICK TOUR's exits by a choice and by Y: no difference in the menus' words, OAM buffer or text map on any frame; 4,161 pictures equal (R-0059) |
+| Records | `sram.py`: the medals, done tracks, levels and records equal the original's cartridge RAM after both completions |
+| Playable | The app shows the award after a forced completion; a completion by a fifth win needs the stunt event (STUNT-EVENTS) |
+| Nothing moves | The gates, when run |
+
+Not done here, recorded in R-0059: the gold medal's endings and HUNTER's, and the reveal of newly
+opened tours (native shows the new level at once).
+
 ## Handoff
+
 
 - Native scores a forced completion as an ordinary race today, silently.
 - Exact next experiment/command: `cont-win`'s inputs (`local/evidence/front-end-1p-continuation`).

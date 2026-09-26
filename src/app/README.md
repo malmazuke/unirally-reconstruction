@@ -25,7 +25,9 @@ and the main menu. 1P runs the one-player setup (R-0055, R-0056): PICK YOUR UNI,
 PLAYING, where Race starts the chosen race. The race scenarios are MIKE's against BRONSEN, so
 another rider or a stunt event shows a notice. After a race the menus take over when the race's
 result load begins: the result screen (R-0057; a lap race's graph, R-0058), a press, then PICK
-TRACK again with the records and the done tracks updated. 2P, VS, LEAGUE, OPTIONS and the demo are not
+TRACK again with the records and the done tracks updated. A tour's completion (its fifth win, or
+pad 1 holding exactly Select + X + R as the result is left) shows the medal award and returns to
+PICK TOUR (R-0059); a gold medal's ending is not native yet. 2P, VS, LEAGUE, OPTIONS and the demo are not
 native yet: choosing one, or leaving the menu idle for the demo, shows a notice and returns to
 the main menu as it first appeared, so the rider and tour chosen last start over (the original
 keeps them); the records are kept. `--track dragster|zoom-zoo|NN` starts directly in that
