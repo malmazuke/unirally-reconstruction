@@ -44,8 +44,18 @@ struct RiderLook {
     std::uint16_t sequence_number{}; // $0D6F
     bool operator==(const RiderLook&) const = default;
 };
+// $1265-$1268: a rider's head point relative to its position, collision point 0 of the pose
+// its contact last ran with. The contact routine stores it ($81:9FA6), so while the corkscrew
+// or the loop carries a rider, and the contact is skipped, it keeps the pose of the last
+// contact (RACE-OFFSCREEN-ARROW: silvia-runner-25 update 1847, SILVIA in the corkscrew).
+struct RiderHeadOffset {
+    std::uint8_t x{}, y{};
+    bool operator==(const RiderHeadOffset&) const = default;
+};
 struct RiderLookState {
     std::array<RiderLook, 2> riders{};
+    // Nothing until the look has followed an update whose contact ran for that rider.
+    std::array<std::optional<RiderHeadOffset>, 2> head_offsets{};
     bool operator==(const RiderLookState&) const = default;
 };
 
@@ -63,7 +73,9 @@ void step_rider_head(RiderLook& look);
 
 // $82:836D-$82:8926 for the race update that produced `updated`. Only one
 // rider steps per update: the player on odd contact phases, the opponent on
-// even ones. The caller skips updates the pause menu diverted.
+// even ones. Each rider whose contact ran in that update first stores its head
+// offset (`$0DFB`/`$0DFD` skip it; `$0B8E`/`$0B90`, which also do, are clear
+// throughout a race). The caller skips updates the pause menu diverted.
 void advance_rider_look(RiderLookState& look, const ZoomZooState& updated,
                         const ZoomZooContent& content, const RiderLookTables& tables);
 

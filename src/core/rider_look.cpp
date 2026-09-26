@@ -99,13 +99,24 @@ struct HeadPoint {
     std::uint16_t x{}, y{};
 };
 
-HeadPoint head_point(const ZoomZooState& state, std::size_t rider, const ZoomZooContent& content) {
-    // $1265-$1268 hold collision point 0 of the current pose ($81:9FA6).
-    const auto& movement = state.movement.riders[rider];
-    const auto points = collision_points(content.movement.sampling, movement.pose.pose_index,
-                                         movement.pose.reflected);
-    return {wrap(static_cast<unsigned>(points[0].x) + movement.motion.x),
-            wrap(static_cast<unsigned>(points[0].y) + movement.motion.y)};
+// Collision point 0 of the rider's pose in `state`, which its contact stores ($81:9FA6).
+RiderHeadOffset contact_head_offset(const ZoomZooState& state, std::size_t rider,
+                                    const ZoomZooContent& content) {
+    const auto& pose = state.movement.riders[rider].pose;
+    const auto point =
+        collision_points(content.movement.sampling, pose.pose_index, pose.reflected)[0];
+    return {point.x, point.y};
+}
+
+// $82:836D: the head point the look reads, the stored offset `$1265,Y` plus the rider's
+// current position. A look that has seen no contact for the rider takes its current pose.
+HeadPoint head_point(const RiderLookState& look, const ZoomZooState& state, std::size_t rider,
+                     const ZoomZooContent& content) {
+    const auto& motion = state.movement.riders[rider].motion;
+    const auto offset =
+        look.head_offsets[rider].value_or(contact_head_offset(state, rider, content));
+    return {wrap(static_cast<unsigned>(offset.x) + motion.x),
+            wrap(static_cast<unsigned>(offset.y) + motion.y)};
 }
 
 // $82:83F7-$82:8464: choose the vertical target 1..17 for a rider within the
@@ -253,11 +264,12 @@ void run_scripted_glances(RiderLook& look, std::size_t rider, const ZoomZooState
 
 // One rider's look for an update: at the other rider when it is in view, else back at it
 // for a while, else a scripted glance; the head then steps toward the target.
-void look_for_rider(RiderLook& look, RiderLook& player_look, std::size_t rider,
-                    const ZoomZooState& updated, const ZoomZooContent& content,
-                    const RiderLookTables& tables) {
-    const auto own = head_point(updated, rider, content);
-    const auto other = head_point(updated, 1 - rider, content);
+void look_for_rider(RiderLookState& state, std::size_t rider, const ZoomZooState& updated,
+                    const ZoomZooContent& content, const RiderLookTables& tables) {
+    auto& look = state.riders[rider];
+    auto& player_look = state.riders[0];
+    const auto own = head_point(state, updated, rider, content);
+    const auto other = head_point(state, updated, 1 - rider, content);
     const bool reflected = updated.movement.riders[rider].pose.reflected;
     auto aim = look_ahead(look, tables, own, other, reflected);
     if (aim.outcome == LookOutcome::glance)
@@ -308,8 +320,11 @@ std::array<std::optional<std::uint16_t>, 2> rider_overlay_poses(const RiderLookS
 
 void advance_rider_look(RiderLookState& look, const ZoomZooState& updated,
                         const ZoomZooContent& content, const RiderLookTables& tables) {
+    for (std::size_t rider = 0; rider < 2; ++rider)
+        if (!special_tiles_skipped_contact(updated.special_tiles[rider]))
+            look.head_offsets[rider] = contact_head_offset(updated, rider, content);
     const std::size_t rider = updated.movement.contact_phase != 0 ? 0 : 1;
-    look_for_rider(look.riders[rider], look.riders[0], rider, updated, content, tables);
+    look_for_rider(look, rider, updated, content, tables);
 }
 
 bool zoom_zoo_update_was_paused(const ZoomZooState& previous, const ZoomZooState& updated) {

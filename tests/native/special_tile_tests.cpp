@@ -112,6 +112,22 @@ int main() {
         require(tiles.corkscrew_step==0x31 && rider.launch_override==80 && !hold.corkscrew_stepped);
     }
     {
+        // The rider look reads the corkscrew's skipped contact back from the words each update
+        // leaves: the reset counts the hold down, and each step sets it to 8 again. The exit
+        // step and the updates after it run the contact.
+        RiderMovementState rider{};SpecialTileRider tiles{};SurfaceTransition surface{};
+        ReflectionTransition transition{};
+        rider.contact.selected_word=0x0a02;rider.motion.y=100;
+        require(!special_tiles_skipped_contact(tiles));
+        for(unsigned update=0;update<0x34;++update) {
+            SpecialTileUpdate special{};
+            update_special_tile_counters(tiles,transition,rider.contact.selected_high);
+            update_corkscrew_tile(rider,tiles,surface,transition,special,heights);
+            require(special_tiles_skipped_contact(tiles)==(special.contact_skip!=0));
+            require(special.contact_skip==(update<0x30?1:0));
+        }
+    }
+    {
         // Ejection: moving the wrong way (right while unreflected) boosts the
         // rider by $C0 along the descriptor's facing and latches -4.
         RiderMovementState rider{};SpecialTileRider tiles{};SurfaceTransition surface{};
@@ -231,6 +247,8 @@ int main() {
             require(s.mode==1 && tiles.reflection_lock==6 && rider.pose.reflected);
             // Step 8, the top, restores contact and gravity for that update.
             require(u.contact_skip==(step==8?0:1) && tiles.corkscrew_float==(step==8?0:1) && s.tile_pose_enabled==(step==8?0:1));
+            // The rider look reads the skipped contact back from the words the update leaves.
+            require(special_tiles_skipped_contact(tiles)==(u.contact_skip!=0));
         }
         SpecialTileUpdate last{};
         update_loop_tile(rider,tiles,surface,transition,last,offsets);
