@@ -22,8 +22,8 @@ The four classes partition all 131,072 bytes. **Unknown share: 40.4%** - above D
 | Instructions from observed | 17,569 |
 | Instructions from table | 587 |
 | Routines | 636 |
-| Routines cited by native code | 332 |
-| Routine bytes cited by native code | 43,924 |
+| Routines cited by native code | 333 |
+| Routine bytes cited by native code | 44,379 |
 | Gap sweep candidate instructions | 2,746 |
 | Gap sweep candidate bytes | 6,174 |
 | Jump tables | 2 |
@@ -45,7 +45,7 @@ The four classes partition all 131,072 bytes. **Unknown share: 40.4%** - above D
 
 ## Cited addresses
 
-1162 distinct code-bank ROM addresses cited by the research, task, inventory and content records (`labels.json`). By position: dat 20, loc 708, mid 18, sub 281, unk 135 (sub routine start, loc instruction start, mid inside an instruction, dat data, unk unknown). By class: data 20, inferred 159, observed 848, unknown 135.
+1182 distinct code-bank ROM addresses cited by the research, task, inventory and content records (`labels.json`). By position: dat 20, loc 721, mid 18, sub 286, unk 137 (sub routine start, loc instruction start, mid inside an instruction, dat data, unk unknown). By class: data 20, inferred 168, observed 857, unknown 137.
 
 Cited addresses in `unknown` bytes:
 
@@ -165,6 +165,7 @@ Cited addresses in `unknown` bytes:
 | $82:A2DB | docs/research/R-0030-zoom-zoo-native-trial.md |
 | $82:B332 | docs/content/dragster-segment.md, docs/research/R-0008-track-decode.md, docs/research/R-0046-track-breadth-matrix.md, docs/research/R-0054-boot-title-main-menu.md, tasks/M1-03.md, tasks/TRACK-BREADTH.md |
 | $82:B7DD | docs/content/dragster-segment.md, docs/research/R-0008-track-decode.md, docs/research/R-0021-zoom-zoo-content-contract.md, docs/research/R-0046-track-breadth-matrix.md, tasks/M1-03.md, tasks/M4-03.md |
+| $82:D4DC | docs/research/R-0061-riders-and-opponents.md, tasks/RACE-RIDERS-OPPONENTS.md |
 | $82:DC12 | docs/research/R-0046-track-breadth-matrix.md, tasks/TRACK-BREADTH.md |
 | $83:800C | docs/research/R-0055-rider-menu.md |
 | $83:8535 | docs/research/R-0045-static-code-map.md, tasks/STATIC-CODE-MAP.md |
@@ -186,3 +187,4 @@ Cited addresses in `unknown` bytes:
 | $83:A1DA | docs/research/R-0008-track-decode.md |
 | $83:A254 | docs/research/R-0056-tour-track-now-playing.md |
 | $83:C49C | tasks/FRONT-END-ENDINGS.md |
+| $83:C8B3 | docs/research/R-0061-riders-and-opponents.md, tasks/RACE-RIDERS-OPPONENTS.md |

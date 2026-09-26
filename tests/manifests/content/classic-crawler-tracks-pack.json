@@ -1,12 +1,12 @@
 {
   "schema_version": 1,
   "kind": "classic_pack_rules",
-  "profile_id": "classic.pal.crawler.tracks.v20",
+  "profile_id": "classic.pal.crawler.tracks.v21",
   "source_rom": {
     "size": 2097152,
     "sha256": "a1105819d48c04d680c8292bbfa9abbce05224f1bc231afd66af43b7e0a1fd4e"
   },
-  "rules_id": "classic-crawler-tracks-extraction-v20",
+  "rules_id": "classic-crawler-tracks-extraction-v21",
   "start_state_id": "classic.crawler.race-start.v2",
   "entries": [
     {
@@ -68688,7 +68688,35 @@
       },
       "size": 203,
       "sha256": "70cdab5ffe350fd0ff2252c5436e9fd32453d2d2c843456823ad43c29be7420d"
+    },
+    {
+      "id": "race.opponent-catch-up",
+      "source": {
+        "kind": "raw",
+        "pieces": [
+          {
+            "file_offset": 116915,
+            "length": 45
+          }
+        ]
+      },
+      "size": 45,
+      "sha256": "714361950a0117a377bf0202b0b23dd53ec1345540169fbf58432f5b23213134"
+    },
+    {
+      "id": "race.rider-colour-math",
+      "source": {
+        "kind": "raw",
+        "pieces": [
+          {
+            "file_offset": 87260,
+            "length": 64
+          }
+        ]
+      },
+      "size": 64,
+      "sha256": "d20ed19f19efbacd90ce3f12b050d8e5fc95c934a87b93e2e59847e2a7ef68e6"
     }
   ],
-  "description": "Classic content for DRAGSTER and ZOOM ZOO (the v9 entries, unchanged) and, from TRACK-BREADTH part 3, the fourteen other race tracks a cold start reaches: per track its decoded data, tile columns, tile flags and BG1 tiles (track.NN.*, R-0046 observations 1-2), per scenery (track mod 14) its BG2 tiles, BG2 map and race palette (scenery.SS.*, `$82:DC20-DD84`), and the track name table (`$83:9FFA`). Every new entry is ROM content located by the loader's own directories; tools/unirally_lab/content/tracks.py v10_new_entries generates them. From SPECIAL-TILE-RESPONSE (v11): the two 48-byte signed height tables the corkscrew tile steps through ($00:8088 and, for a rolling rider, $00:80B8; R-0047). From LOCKED-TOURS (v12): the twenty race tracks of the five tours a cold start does not list (track.NN.* for 5, 6, 8, 9, 15, 16, 18, 19, 25, 26, 28, 29, 35, 36, 38, 39, 40, 41, 43, 44) and sceneries 1, 8 and 12 (tracks.v12_new_entries). From TILE-PAIRS-8-12-26 (v13): the loop tile's 17 signed x steps by loop step ($81:834C; R-0051). From HUNTER-EFFECTS (v14): the HUNTER tag effects' blink pattern ($83:D3BC) and the HUNTER opponent's sprite palette (asset 26, character 20 + 6, `$82:DDB0-DDBC`; R-0052). From FRONT-END-MAIN-MENU (v15): the content of the boot screens, the title and the main menu: seventeen assets of the directory at `$82:B332` (front-end.asset.NNN) and the tables the front-end code reads in place: the base palette, the text printer's character table, the main menu's text, the arrow's spin frames and columns, and the palette cycle's colours (tools/unirally_lab/content/front_end.py v15_new_entries; R-0054). From FRONT-END-1P-SETUP (v16): the rider menu's content: the riders' sprite palettes (assets 6-21; `$80:A72B` and the HDMA table `$80:CD84` are the same bytes), the riders' name records a cold start copies to SRAM (`$83:800C`), the menu's title (`$80:BCAF`) and the main menu decoration animator's tables (`$83:9AF9`) (tools/unirally_lab/content/front_end.py v16_new_entries; R-0055). From FRONT-END-1P-SETUP part 2 (v17): PICK TOUR's, PICK TRACK's and NOW PLAYING's content: the computer riders', medals', base and marker palettes (assets 22-26, 32-37), the medal and marker object tiles (`$07:D5D8`, `$07:C9D8`), the menus' text and tables, the tour names, the laps by track and the stunt events' qualifying scores (tools/unirally_lab/content/front_end.py v17_new_entries; R-0056). From FRONT-END-1P-CONTINUATION (v18): the one-run result screen's text (`$80:D187`) and trophies (`$80:D17B`) (tools/unirally_lab/content/front_end.py v18_new_entries; R-0057). From FRONT-END-LAP-RESULT (v19): the lap result screen's text: the headings, the graph's axes and times, and \"laps on\" the track (`$80:910F`), the record line (`$80:918F`) and the two riders' rows (`$80:91A1`, `$80:91B9`) (tools/unirally_lab/content/front_end.py v19_new_entries; R-0058). From FRONT-END-TOUR-END (v20): the medal award screen's assets (0x3B, 0x53-0x56, 0x5C, 0x64, 0x65), the medal's second art (`$09:A658`) and the award's tables (`$83:B120`) (tools/unirally_lab/content/front_end.py v20_new_entries; R-0059)."
+  "description": "Classic content for DRAGSTER and ZOOM ZOO (the v9 entries, unchanged) and, from TRACK-BREADTH part 3, the fourteen other race tracks a cold start reaches: per track its decoded data, tile columns, tile flags and BG1 tiles (track.NN.*, R-0046 observations 1-2), per scenery (track mod 14) its BG2 tiles, BG2 map and race palette (scenery.SS.*, `$82:DC20-DD84`), and the track name table (`$83:9FFA`). Every new entry is ROM content located by the loader's own directories; tools/unirally_lab/content/tracks.py v10_new_entries generates them. From SPECIAL-TILE-RESPONSE (v11): the two 48-byte signed height tables the corkscrew tile steps through ($00:8088 and, for a rolling rider, $00:80B8; R-0047). From LOCKED-TOURS (v12): the twenty race tracks of the five tours a cold start does not list (track.NN.* for 5, 6, 8, 9, 15, 16, 18, 19, 25, 26, 28, 29, 35, 36, 38, 39, 40, 41, 43, 44) and sceneries 1, 8 and 12 (tracks.v12_new_entries). From TILE-PAIRS-8-12-26 (v13): the loop tile's 17 signed x steps by loop step ($81:834C; R-0051). From HUNTER-EFFECTS (v14): the HUNTER tag effects' blink pattern ($83:D3BC) and the HUNTER opponent's sprite palette (asset 26, character 20 + 6, `$82:DDB0-DDBC`; R-0052). From FRONT-END-MAIN-MENU (v15): the content of the boot screens, the title and the main menu: seventeen assets of the directory at `$82:B332` (front-end.asset.NNN) and the tables the front-end code reads in place: the base palette, the text printer's character table, the main menu's text, the arrow's spin frames and columns, and the palette cycle's colours (tools/unirally_lab/content/front_end.py v15_new_entries; R-0054). From FRONT-END-1P-SETUP (v16): the rider menu's content: the riders' sprite palettes (assets 6-21; `$80:A72B` and the HDMA table `$80:CD84` are the same bytes), the riders' name records a cold start copies to SRAM (`$83:800C`), the menu's title (`$80:BCAF`) and the main menu decoration animator's tables (`$83:9AF9`) (tools/unirally_lab/content/front_end.py v16_new_entries; R-0055). From FRONT-END-1P-SETUP part 2 (v17): PICK TOUR's, PICK TRACK's and NOW PLAYING's content: the computer riders', medals', base and marker palettes (assets 22-26, 32-37), the medal and marker object tiles (`$07:D5D8`, `$07:C9D8`), the menus' text and tables, the tour names, the laps by track and the stunt events' qualifying scores (tools/unirally_lab/content/front_end.py v17_new_entries; R-0056). From FRONT-END-1P-CONTINUATION (v18): the one-run result screen's text (`$80:D187`) and trophies (`$80:D17B`) (tools/unirally_lab/content/front_end.py v18_new_entries; R-0057). From FRONT-END-LAP-RESULT (v19): the lap result screen's text: the headings, the graph's axes and times, and \"laps on\" the track (`$80:910F`), the record line (`$80:918F`) and the two riders' rows (`$80:91A1`, `$80:91B9`) (tools/unirally_lab/content/front_end.py v19_new_entries; R-0058). From FRONT-END-TOUR-END (v20): the medal award screen's assets (0x3B, 0x53-0x56, 0x5C, 0x64, 0x65), the medal's second art (`$09:A658`) and the award's tables (`$83:B120`) (tools/unirally_lab/content/front_end.py v20_new_entries; R-0059). From RACE-RIDERS-OPPONENTS (v21): the opponent's catch-up by track (`$83:C8B3`) and the riders' colour math on the race's BG3 ink (`$82:D4DC`) (tools/unirally_lab/content/front_end.py v21_new_entries; R-0061)."
 }

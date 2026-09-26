@@ -16,13 +16,16 @@ namespace {
 // at 226 when the player won and 242 when it lost (DRAGSTER's; R-0012, R-0019).
 constexpr std::uint16_t lap_race_stable_result = 115;
 constexpr std::uint16_t one_run_stable_won = 226, one_run_stable_lost = 242;
-// The HUNTER tour's tier ($83:CC0B-CC29): AI level 3 (1 elsewhere), a progress adjustment
-// bound of 0x60, the opponent's catch-up term 0x40 (0 elsewhere), and its opponent,
-// character 20 (17, BRONSEN, elsewhere).
-constexpr std::uint16_t hunter_ai_level = 3, ai_level = 1;
-constexpr std::uint16_t hunter_adjustment_limit = 0x60, hunter_ai_adjustment = 0x40;
-constexpr std::uint16_t hunter_opponent = 20, bronsen = 17;
+// The HUNTER tour's tier ($83:CC0B-CC29): AI level 3, a progress adjustment bound of 0x60 and
+// the opponent's catch-up term 0x40.
+constexpr OpponentTier hunter_tier{3, 0x40, 0x60};
 constexpr std::uint8_t first_hunter_track = 40, last_hunter_track = 44;
+// $83:CC2B-CC7C: the AI level is the opponent's character less 16; SILVIA (level 2) adds 0x20 to
+// the track's catch-up byte and GOLDWYN (3) 0x40. The bound is 0x60 (a one-run race) or 0x48 (a
+// lap race) less the catch-up, 8-bit, or the base when that sets bit 7.
+constexpr std::uint8_t opponent_level_base = 16;
+constexpr std::uint16_t silvia_catch_up = 0x20, goldwyn_catch_up = 0x40;
+constexpr std::uint16_t one_run_adjustment_limit = 0x60, lap_adjustment_limit = 0x48;
 // The race start ($82:D7C6-DBD6): a 270-update countdown ($82:D841-D844), a base speed cap
 // of 448, no times (60000), the camera 256 above and left of the player in 16-unit cells,
 // the rider sprites off screen (0xE0E0; $82:D724-D731), the opponent's HUD OAM x 0x65
@@ -35,7 +38,7 @@ constexpr std::uint8_t opponent_hud_oam_x = 0x65, checkpoint_unseen = 0xff;
 constexpr std::size_t reward_weight_count = 26;
 
 // A scenario the original sets up for `track`: a lap race or a one-run race, and the
-// HUNTER tour's tier on its tracks.
+// HUNTER tour's opponent on its tracks.
 ClassicRaceScenario observed_scenario(ClassicRaceTrack track, std::uint32_t initialization_frame,
                                       std::uint16_t laps, bool lap_race) {
     const bool hunter = track.index >= first_hunter_track && track.index <= last_hunter_track;
@@ -45,11 +48,8 @@ ClassicRaceScenario observed_scenario(ClassicRaceTrack track, std::uint32_t init
             lap_race ? lap_race_stable_result : one_run_stable_won,
             lap_race ? lap_race_stable_result : one_run_stable_lost,
             lap_race,
-            hunter ? hunter_ai_level : ai_level,
-            static_cast<std::uint16_t>(hunter ? hunter_adjustment_limit : 0),
-            static_cast<std::uint16_t>(hunter ? hunter_ai_adjustment : 0),
             hunter,
-            hunter ? hunter_opponent : bronsen};
+            {0, hunter ? opponent::anti_uni : opponent::bronsen}};
 }
 
 } // namespace
@@ -59,9 +59,9 @@ ClassicRaceScenario classic_race_scenario(ClassicRaceTrack track) {
     // DRAGSTER: end-1328 on the accepted menu path (R-0038), one lap; the
     // stable winner/loser screens follow load 226/242 (R-0012, R-0019).
     if (track == ClassicRaceTrack::ZoomZoo)
-        return {track, 1376, 3, lap_race_stable_result, lap_race_stable_result, true};
+        return {track, 1376, 3, lap_race_stable_result, lap_race_stable_result, true, false};
     if (track == ClassicRaceTrack::Dragster)
-        return {track, 1328, 1, one_run_stable_won, one_run_stable_lost, false};
+        return {track, 1328, 1, one_run_stable_won, one_run_stable_lost, false, false};
     // TRACK-BREADTH part 2 (R-0046 observations 6-8): the other race tracks a
     // cold start reaches, as the original sets them up. The race mode ($77:074B)
     // and lap count ($77:0744) are read at each track's initialization boundary;
@@ -106,9 +106,37 @@ bool classic_race_has_scenario(ClassicRaceTrack track) {
     }
 }
 
-std::uint16_t race_adjustment_limit(const ClassicRaceScenario& scenario) {
-    if (scenario.adjustment_limit) return scenario.adjustment_limit;
-    return static_cast<std::uint16_t>(scenario.tour_race ? 0x48U : 0x60U);
+ClassicRaceScenario classic_race_scenario(ClassicRaceTrack track, RacePairing pairing,
+                                          bool tutorial_hints) {
+    auto scenario = classic_race_scenario(track);
+    // The one-player menus give HUNTER's tracks ANTI-UNI ($80:B361-B369) and the other tours'
+    // BRONSEN, SILVIA or GOLDWYN by the rider's medal ($80:B31F-B346).
+    const bool chosen = scenario.hunter_tour ? pairing.opponent == opponent::anti_uni
+                                             : pairing.opponent >= opponent::bronsen
+                                                   && pairing.opponent <= opponent::goldwyn;
+    if (pairing.rider >= rider_characters || !chosen)
+        throw std::invalid_argument("the one-player menus cannot choose this race's pairing");
+    scenario.pairing = pairing;
+    scenario.tutorial_hints = tutorial_hints;
+    return scenario;
+}
+
+OpponentTier opponent_tier(const ClassicRaceScenario& scenario,
+                           std::span<const std::uint8_t> catch_up_by_track) {
+    if (scenario.hunter_tour) return hunter_tier;
+    OpponentTier tier;
+    tier.ai_level = static_cast<std::uint8_t>(scenario.pairing.opponent - opponent_level_base);
+    if (tier.ai_level >= 2) {
+        if (catch_up_by_track.size() <= scenario.track.index)
+            throw std::invalid_argument("the opponent's catch-up table is missing (pack v21)");
+        tier.catch_up =
+            static_cast<std::uint8_t>(catch_up_by_track[scenario.track.index]
+                                      + (tier.ai_level == 2 ? silvia_catch_up : goldwyn_catch_up));
+    }
+    const auto base = scenario.tour_race ? lap_adjustment_limit : one_run_adjustment_limit;
+    const auto limit = static_cast<std::uint8_t>(base - tier.catch_up);
+    tier.adjustment_limit = (limit & 0x80U) ? base : limit;
+    return tier;
 }
 
 bool classic_race_start_reflected(std::span<const std::uint8_t> decoded_track, unsigned rider) {
@@ -156,6 +184,8 @@ ZoomZooState classic_race_start(const ZoomZooContent& content,
     if (track.size() < 11) throw std::invalid_argument("ZOOM ZOO track header missing");
     ZoomZooState state{};
     state.track = scenario.track;
+    state.pairing = scenario.pairing;
+    state.opponent_tier = opponent_tier(scenario, content.opponent_catch_up);
     state.native_initialization = state.complete_race = state.sustained = true;
     auto& movement = state.movement;
     movement.frame = scenario.initialization_frame;
@@ -192,7 +222,7 @@ ZoomZooState classic_race_start(const ZoomZooContent& content,
     for (auto& weights : state.learned_weights)
         std::copy(content.reward_weights.begin() + 1, content.reward_weights.end(),
                   weights.begin());
-    state.player_announcements.hints_active = 1; // $82D95C fresh scenario tutorial bit.
+    state.player_announcements.hints_active = scenario.tutorial_hints ? 1 : 0; // $82:D94C-D96F
     state.player_announcements.hint_updates = first_hint_phase;
     state.race.checkpoint_seen.fill(checkpoint_unseen);
     return state;
@@ -204,7 +234,10 @@ void restart_zoom_zoo(ZoomZooState& state, const ZoomZooContent& content) {
         || (state.result_updates != stable_result_updates(state) && !paused_restart))
         throw std::invalid_argument(
             "ZOOM ZOO restart requires a stable result or selected paused restart");
-    state = classic_race_start(content, classic_race_scenario(state.track));
+    // $82:D94C reads the rider's tutorial bit again, which $83:CE2C set in the cartridge RAM
+    // when the hints ended: the restart's hints run only if they still were.
+    const bool hints = state.player_announcements.hints_active != 0;
+    state = classic_race_start(content, classic_race_scenario(state.track, state.pairing, hints));
 }
 
 } // namespace unirally

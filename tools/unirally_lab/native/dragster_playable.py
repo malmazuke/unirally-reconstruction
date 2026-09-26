@@ -30,6 +30,9 @@ GUARD_OVERRIDES_PATH = 'tests/manifests/native/dragster-race-guards.reference.js
 STABLE_RESULT = dict(player_won=226, player_lost=242)
 
 
+# The player's hints_active word in the 742-byte race row (race_state_io's native section).
+HINTS_ACTIVE = 624
+
 def guard_items():
     """ZOOM ZOO race guards with DRAGSTER's recovered scenario/playfield values."""
     base = json.loads((ROOT/GUARDS_PATH).read_text())['items']
@@ -336,9 +339,9 @@ def compare(a, b, contract, binary, pack, out, restores=True, prefix=False):
         root = Path(directory); local_pack = root/'classic.pack'; local_pack.write_bytes(pack.read_bytes())
         inputs = root/'inputs.txt'; seed = root/'restore.bin'
 
-        def execute(start, restore=None, restart=False):
+        def execute(start, restore=None, restart=False, hints=1):
             inputs.write_text(''.join(f'{f} {sum(1<<BUTTONS.index(x) for x in reference["timeline"][f][0])} 0\n' for f in range(start+1, last+1)))
-            options = ['--start', 'classic.crawler.dragster']
+            options = ['--start', 'classic.crawler.dragster'] + ([] if hints else ['--tutorial-hints', '0'])
             if restore is not None:
                 seed.write_bytes(bytes.fromhex(restore)); options = ['--restart-from' if restart else '--seed', str(seed)]
             run = subprocess.run([str(binary), *options, '--content-pack', str(local_pack), '--inputs', str(inputs)], cwd=root, capture_output=True, text=True, timeout=60)
@@ -360,7 +363,11 @@ def compare(a, b, contract, binary, pack, out, restores=True, prefix=False):
             raise ValueError('native frame count differs')
         if execute(first) != actual:
             raise ValueError('fresh native initialization differs')
-        if not prefix and execute(first, actual[-1], True) != actual:
+        # R-0061: a restart reads the rider's tutorial bit again, which the race set in $77:1116 when
+        # its hints ended (the primary's row 474): it equals a fresh race started with the hints
+        # the last state still has.
+        hints = int.from_bytes(bytes.fromhex(actual[-1])[HINTS_ACTIVE:HINTS_ACTIVE + 2], 'little')
+        if not prefix and execute(first, actual[-1], True) != execute(first, hints=hints):
             raise ValueError('restart retains stale race/result state')
         for frame in boundaries:
             if execute(frame, actual[frame-first]) != actual[frame-first:]:

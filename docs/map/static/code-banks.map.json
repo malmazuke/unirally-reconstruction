@@ -8417,6 +8417,7 @@
     "NMX"
    ],
    "native": [
+    "src/core/announcements.hpp:first_voice",
     "src/core/race_state_io.cpp:check_queued_events",
     "src/core/race_state_io.cpp:check_rolls",
     "src/core/reward_queue.cpp:announce_combination",
@@ -10064,6 +10065,10 @@
    "mode_at_entry": [
     "Nmx"
    ],
+   "native": [
+    "src/core/presentation.hpp:ClassicRacePresentationContent::rider_colour_math",
+    "src/core/presentation.hpp:classic_race_ink"
+   ],
    "observed_entries": {},
    "start": "$82:D51C",
    "static_entries": {
@@ -10198,11 +10203,14 @@
     "NmX"
    ],
    "native": [
+    "src/core/front_end.hpp:OnePlayerRecords::tutorial_bits",
     "src/core/race_setup.cpp:classic_crawler_zoom_zoo_start",
     "src/core/race_setup.cpp:classic_race_start",
+    "src/core/race_setup.cpp:restart_zoom_zoo",
     "src/core/race_setup.cpp:start_countdown, base_speed_cap",
     "src/core/race_state_io.cpp:check_opponent_queue",
     "src/core/zoom_zoo_movement.hpp:ClassicRaceScenario::laps",
+    "src/core/zoom_zoo_movement.hpp:ClassicRaceScenario::tutorial_hints",
     "src/core/zoom_zoo_movement.hpp:classic_crawler_zoom_zoo_start"
    ],
    "observed_entries": {},
@@ -10280,8 +10288,10 @@
    "native": [
     "src/core/content_pack.cpp:hunter_required",
     "src/core/content_pack.cpp:tracks_required",
+    "src/core/presentation.cpp:character_palette",
     "src/core/presentation.cpp:classic_race_presentation_content",
-    "src/core/presentation.cpp:race_cgram"
+    "src/core/presentation.cpp:race_cgram",
+    "src/core/presentation.hpp:ClassicRacePresentationContent::rider_palette, ClassicRacePresentationContent::opponent_palette"
    ],
    "observed_entries": {},
    "start": "$82:DD84",
@@ -12163,11 +12173,11 @@
     "src/core/presentation.hpp:ClassicRacePresentationContent::window_transition_member",
     "src/core/presentation.hpp:classic_window_transition_member",
     "src/core/race_setup.cpp:classic_race_scenario",
-    "src/core/race_setup.cpp:hunter_ai_level, ai_level",
+    "src/core/race_setup.cpp:hunter_tier",
+    "src/core/race_setup.cpp:opponent_level_base",
     "src/core/race_windows.cpp:classic_window_transition_member",
     "src/core/race_windows.cpp:dragster_window_transition_index",
-    "src/core/zoom_zoo_movement.hpp:ClassicRaceScenario::ai_level",
-    "src/core/zoom_zoo_movement.hpp:race_adjustment_limit"
+    "src/core/zoom_zoo_movement.hpp:OpponentTier"
    ],
    "observed_entries": {},
    "start": "$83:CBF2",
@@ -12293,6 +12303,9 @@
     "NMX"
    ],
    "native": [
+    "src/core/front_end.hpp:OnePlayerRecords::tutorial_bits",
+    "src/core/race_result.cpp:begin_race_return",
+    "src/core/race_setup.cpp:restart_zoom_zoo",
     "src/core/reward_queue.cpp:hint_interval",
     "src/core/reward_queue.cpp:update_tutorial_hints"
    ],
@@ -12817,10 +12830,12 @@
     "src/core/opponent_ai.cpp:(file)",
     "src/core/opponent_ai.cpp:jump_at_marker",
     "src/core/opponent_ai.cpp:launch_trick",
+    "src/core/opponent_ai.cpp:opponent_launches",
     "src/core/opponent_ai.cpp:stalled_against_slope",
     "src/core/opponent_ai.cpp:steep_slope, stalled_displacement",
     "src/core/opponent_ai.cpp:update_opponent_controller",
     "src/core/race_state_io.cpp:check_opponent_queue",
+    "src/core/race_state_io.cpp:check_opponent_suppression",
     "src/core/race_state_io.cpp:spin_steps",
     "src/core/zoom_zoo_movement.hpp:ZoomZooState::opponent_turnaround"
    ],
@@ -13982,19 +13997,19 @@
    "call returns in the calling mode": 1262
   },
   "bytes": 131072,
-  "cited_addresses": 1162,
+  "cited_addresses": 1182,
   "cited_by_class": {
    "data": 20,
-   "inferred": 159,
-   "observed": 848,
-   "unknown": 135
+   "inferred": 168,
+   "observed": 857,
+   "unknown": 137
   },
   "cited_by_position": {
    "dat": 20,
-   "loc": 708,
+   "loc": 721,
    "mid": 18,
-   "sub": 281,
-   "unk": 135
+   "sub": 286,
+   "unk": 137
   },
   "conflicts": 0,
   "data": 92,
@@ -14013,9 +14028,9 @@
   "jump_tables": 2,
   "mode_ambiguities": 7,
   "observed": 41778,
-  "routine_bytes_cited_by_native_code": 43924,
+  "routine_bytes_cited_by_native_code": 44379,
   "routines": 636,
-  "routines_cited_by_native_code": 332,
+  "routines_cited_by_native_code": 333,
   "unknown": 52881,
   "unknown_share": 0.4035
  }

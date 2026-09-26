@@ -1,5 +1,6 @@
 #include "race_hud.hpp"
 
+#include "announcements.hpp"
 #include "picture.hpp"
 #include "presentation.hpp"
 #include "zoom_zoo_movement.hpp"
@@ -343,7 +344,14 @@ std::optional<unsigned> classic_caption_tile(char glyph) {
 
 // The caption is cleared by the queue, not by a timer: a hint sentence ends by
 // publishing an entry of sixteen spaces, and $81:BEA8-BEF1 blanks the display
-// when the queue runs dry, which the engine carries as `empty_display`.
+// when the queue runs dry, which the engine carries as `empty_display`. The
+// blank reaches the screen a picture later than a published state shows it:
+// the picture after the dry update, whose cooldown is still the full wait,
+// keeps the last caption. This rule is measured, not derived (R-0061): the
+// text reaches VRAM through the NMI's upload flag `$0EE7`, one task behind the
+// HUD's uploads, which native does not model; a new caption can arrive a
+// picture late too (RACE-OFFSCREEN-ARROW), and a pause opened on that picture
+// is not measured.
 std::optional<std::span<const std::uint8_t>>
 classic_caption_entry(const ZoomZooState& published, std::span<const std::uint8_t> captions) {
     if (captions.size() != 4080) return std::nullopt;
@@ -356,7 +364,9 @@ classic_caption_entry(const ZoomZooState& published, std::span<const std::uint8_
         return captions.subspan((row - 1U) * 16U, 16U);
     }
     const auto& announcements = published.player_announcements;
-    if (announcements.empty_display) return std::nullopt;
+    if (announcements.empty_display
+        && announcements.queue.cooldown != announcement::empty_queue_wait)
+        return std::nullopt;
     // `movement.rewards` is the opponent's queue ($0D11/$0D13 cursors); the
     // player's, the one the captions follow, is the announcements' own.
     const auto& queue = announcements.queue;

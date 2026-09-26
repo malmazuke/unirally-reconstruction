@@ -119,7 +119,7 @@ class FrontEndSession {
 public:
   explicit FrontEndSession(const ClassicContentPack &pack);
   // One PAL frame from the two ports' masks (`button_mask` bits). True once a
-  // race with a native scenario is chosen: `race_track()`.
+  // race with a native scenario is chosen: `race_scenario()`.
   bool update(const std::array<std::uint16_t, 2> &ports);
   // The same with the pads as the SNES reads them (`$4218`, `$421A`), as the
   // laboratory's input scripts give them.
@@ -139,6 +139,10 @@ public:
   ClassicRaceTrack race_track() const {
     return ClassicRaceTrack{state_.tour_menu.track};
   }
+  // The race NOW PLAYING chose, with its rider, opponent and tutorial hints.
+  ClassicRaceScenario race_scenario() const {
+    return one_player_race_scenario(state_);
+  }
   // The race is over for the menus (`update_race_for_menus`): its result load
   // has begun, or its pause menu quit or restarted it. The front end takes over
   // with its times.
@@ -152,8 +156,8 @@ private:
   FrontEndMode notice_mode_{};
 };
 
-// 1P's race is native when a race scenario has it (R-0046, R-0050): MIKE
-// against BRONSEN, on a track with a scenario (not a stunt event).
+// 1P's race is native when a race scenario has its track (R-0046, R-0050): any
+// rider against the opponent NOW PLAYING chose (R-0061), not a stunt event.
 bool native_one_player_race(const FrontEndState &state);
 
 // A port's mask as the SNES reads the pad (`$4218`: B in bit 15 ... R in bit

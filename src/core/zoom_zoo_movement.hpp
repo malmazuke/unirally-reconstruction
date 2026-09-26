@@ -124,6 +124,20 @@ struct ClassicRaceTrack {
 };
 inline constexpr ClassicRaceTrack ClassicRaceTrack::Dragster{0};
 inline constexpr ClassicRaceTrack ClassicRaceTrack::ZoomZoo{1};
+// Opponent characters (`$77:0749`): BRONSEN, then SILVIA and GOLDWYN once the rider holds a
+// bronze or a silver on the tour (NOW PLAYING, `$80:B31F-B346`), and ANTI-UNI on HUNTER's.
+namespace opponent {
+inline constexpr std::uint8_t bronsen = 17, silvia = 18, goldwyn = 19, anti_uni = 20;
+} // namespace opponent
+// The riders of a one-player race: the player's character `$77:0748` (PICK YOUR UNI's 0-15, MIKE
+// 0) and the opponent's `$77:0749`. The rider changes no race physics; it chooses the player's
+// voices, tutorial bit, sprite palette and ink colour (R-0061).
+struct RacePairing {
+    std::uint8_t rider{};
+    std::uint8_t opponent{opponent::bronsen};
+    friend constexpr bool operator==(RacePairing, RacePairing) = default;
+};
+inline constexpr unsigned rider_characters = 16;
 struct ClassicRaceScenario {
     ClassicRaceTrack track{};
     // Original frame number at the race initialization boundary: the end of
@@ -143,25 +157,39 @@ struct ClassicRaceScenario {
     // announcement ($81:81AE) and the result screen: mode 1 publishes the lap
     // graph extrema at load 106 ($83:904A-90F0); the mode-0 screen publishes none.
     bool tour_race{};
-    // The HUNTER tour's tier, which $83:CC0B-CC29 sets at setup when $131F is
-    // nonzero (skipping $83:CC59): AI level $1275 (3; 1 elsewhere), the
-    // opponent's catch-up term $1283 (64; 0 elsewhere) and, when nonzero, the
-    // progress adjustment bound $1281 (96) in place of the race-mode default.
-    std::uint16_t ai_level{1};
-    std::uint16_t adjustment_limit{};
-    std::uint16_t ai_adjustment{};
     // `$131F`: the HUNTER tour, whose race runs the tag effects ($83:CEC9, R-0052).
     bool hunter_tour{};
-    // `$77:0749`, the opponent's character: 17 on every tour but HUNTER's (20);
-    // the player's (`$77:0748`) is 0 on all 45 captures (R-0052).
-    std::uint16_t opponent_character{17};
+    // The rider and opponent: MIKE against BRONSEN (ANTI-UNI on the HUNTER tour) unless the
+    // menus chose others.
+    RacePairing pairing{};
+    // `$12E3` at the start ($82:D94C-D96F): the player's tutorial hints run unless its rider's
+    // bit is set in the cartridge RAM's `$77:1116`, which a race sets once its hints end.
+    bool tutorial_hints{true};
 };
-// $83:CC59-CC7C: 0x48 (mode 1) or 0x60 (mode 0) minus `$1283`, which is zero
-// on every track but HUNTER's; HUNTER's scenario carries its bound (96),
-// which $83:CC0B-CC29 sets directly (LOCKED-TOURS).
-std::uint16_t race_adjustment_limit(const ClassicRaceScenario& scenario);
-// The scenario of a race track; throws for a track without a recovered one.
+// The opponent's tier, which `$83:CC0B-CC7C` sets at the race's setup from the opponent and the
+// track: the AI level `$1275` (opponent - 16: BRONSEN 1, SILVIA 2, GOLDWYN 3), the catch-up term
+// `$1283` the opponent's speed cap gains while the player leads (0; SILVIA the track's catch-up
+// byte + 0x20, GOLDWYN + 0x40) and the progress adjustment bound `$1281` (0x60 for a one-run race,
+// 0x48 for a lap race, less the catch-up unless that goes below zero). The HUNTER tour
+// ($131F nonzero) sets level 3, 0x40 and 0x60 directly (LOCKED-TOURS).
+struct OpponentTier {
+    std::uint16_t ai_level{1};
+    std::uint16_t catch_up{};
+    std::uint16_t adjustment_limit{0x60};
+    friend constexpr bool operator==(const OpponentTier&, const OpponentTier&) = default;
+};
+// `catch_up_by_track` is the `$83:C8B3` table (race.opponent-catch-up); only SILVIA and
+// GOLDWYN read it, so BRONSEN's and HUNTER's tiers need none.
+OpponentTier opponent_tier(const ClassicRaceScenario& scenario,
+                           std::span<const std::uint8_t> catch_up_by_track);
+// The scenario of a race track with MIKE against its usual opponent; throws for a track
+// without a recovered one.
 ClassicRaceScenario classic_race_scenario(ClassicRaceTrack track);
+// The same with the menus' pairing; throws for a pairing the one-player menus cannot choose
+// (a rider past 15, an opponent other than BRONSEN, SILVIA and GOLDWYN, or on HUNTER's tracks
+// other than ANTI-UNI).
+ClassicRaceScenario classic_race_scenario(ClassicRaceTrack track, RacePairing pairing,
+                                          bool tutorial_hints = true);
 bool classic_race_has_scenario(ClassicRaceTrack track);
 // $81:A304-A51B: decoded track byte 13 selects one of the fixed playfields of
 // 16,384 64-unit coarse cells. Zero selects 1,024 columns (DRAGSTER) and 0x40
@@ -266,6 +294,10 @@ struct ZoomZooState {
     // ($83:E0C5-E111, LOCKED-TOURS); serialized with the special-tile words.
     std::uint16_t opponent_turnaround{};
     HunterEffects hunter;
+    // Not serialized: the menus' riders and the opponent's tier set from them at the race's
+    // setup. A deserialized race is MIKE's against the track's usual opponent.
+    RacePairing pairing{};
+    OpponentTier opponent_tier{};
 };
 struct ZoomZooContent {
     MovementContent movement;
@@ -288,6 +320,9 @@ struct ZoomZooContent {
     // presentation.classic.captions.v1 (`$17:CA04`), sixteen characters per
     // event 1-255: the HUNTER caption row's identity is its text.
     std::span<const std::uint8_t> captions;
+    // $83:C8B3, a byte per track: SILVIA's and GOLDWYN's catch-up (R-0061); empty in packs
+    // before profile v21, whose races are BRONSEN's.
+    std::span<const std::uint8_t> opponent_catch_up;
 };
 // $82:9715–979D: count active updates opposing the track direction, with
 // original wrapped word comparisons at velocities -16 and +16 (1/32 units).
@@ -329,6 +364,13 @@ void update_loop_tile(RiderMovementState& rider, SpecialTileRider& tiles,
 void update_hunter_effects(ZoomZooState& state, std::span<const std::uint8_t> blink);
 std::vector<std::uint8_t> serialize_zoom_zoo(const ZoomZooState& state);
 ZoomZooState deserialize_zoom_zoo(std::span<const std::uint8_t> bytes);
+// A state of a race with another pairing than MIKE against the track's usual opponent, or
+// whose rider's tutorial hints had ended before it started: the layouts carry neither, nor the
+// opponent's tier, which SILVIA's and GOLDWYN's take from `opponent_catch_up`
+// (race.opponent-catch-up).
+ZoomZooState deserialize_zoom_zoo(std::span<const std::uint8_t> bytes, RacePairing pairing,
+                                  bool tutorial_hints,
+                                  std::span<const std::uint8_t> opponent_catch_up);
 // $82:D7C6-DBD6, authenticated track header and one-player three-lap scenario.
 ZoomZooState classic_crawler_zoom_zoo_start(const ZoomZooContent& content);
 // The same initializer for the one-player, one-lap CRAWLER/DRAGSTER race.

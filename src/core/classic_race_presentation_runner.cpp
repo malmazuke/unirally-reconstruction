@@ -5,6 +5,7 @@
 #include <fstream>
 #include <iostream>
 #include <iterator>
+#include <optional>
 #include <stdexcept>
 #include <string>
 #include <vector>
@@ -22,7 +23,16 @@ unsigned parse_unsigned(std::string_view text, const char* name) {
         throw std::invalid_argument(std::string("invalid ") + name);
     return value;
 }
-unirally::ZoomZooState parse_timeline_row(const std::string& line, unsigned& frame) {
+// RACE-RIDERS-OPPONENTS: a timeline of another rider's or opponent's race (zoom_zoo_runner
+// --rider/--opponent/--tutorial-hints) names its pairing, which the states do not carry.
+struct Pairing {
+    unirally::RacePairing riders;
+    bool tutorial_hints = true;
+    std::span<const std::uint8_t> opponent_catch_up;
+};
+
+unirally::ZoomZooState parse_timeline_row(const std::string& line, unsigned& frame,
+                                          const std::optional<Pairing>& pairing = {}) {
     const auto space = line.find(' ');
     if (space == std::string::npos) throw std::invalid_argument("timeline row lacks a state");
     frame = parse_unsigned(std::string_view(line).substr(0, space), "timeline frame");
@@ -35,7 +45,10 @@ unirally::ZoomZooState parse_timeline_row(const std::string& line, unsigned& fra
         if (parsed.ec != std::errc{} || parsed.ptr != hex.data() + 2 * i + 2)
             throw std::invalid_argument("timeline state is not hexadecimal");
     }
-    const auto state = unirally::deserialize_zoom_zoo(bytes);
+    const auto state =
+        pairing ? unirally::deserialize_zoom_zoo(bytes, pairing->riders, pairing->tutorial_hints,
+                                                 pairing->opponent_catch_up)
+                : unirally::deserialize_zoom_zoo(bytes);
     if (state.movement.frame != frame)
         throw std::invalid_argument("timeline row frame differs from its state");
     return state;
@@ -91,8 +104,9 @@ int print_window_indices(const char* pack_path, const char* timeline) {
 // Replays consecutive native states from the timeline's first row so the rider look overlays
 // (R-0036) and the opponent's finish frame (R-0040) follow the race, then draws FRAME.
 int draw_timeline_frame(const char* pack_path, const char* timeline, const char* frame_text,
-                        const char* out) {
+                        const char* out, std::optional<Pairing> pairing) {
     unirally::ClassicContentPack pack(pack_path);
+    if (pairing) pairing->opponent_catch_up = pack.optional_entry("race.opponent-catch-up");
     const auto target = parse_unsigned(frame_text, "frame");
     std::ifstream input(timeline);
     if (!input) throw std::invalid_argument("cannot read timeline");
@@ -100,15 +114,18 @@ int draw_timeline_frame(const char* pack_path, const char* timeline, const char*
     std::string line;
     unsigned frame{};
     if (!std::getline(input, line)) throw std::invalid_argument("timeline is empty");
-    auto previous = parse_timeline_row(line, frame);
+    auto previous = parse_timeline_row(line, frame, pairing);
     if (!previous.native_initialization
         || frame != unirally::classic_race_scenario(previous.track).initialization_frame)
         throw std::invalid_argument("timeline must begin at the native race initialization");
     if (target <= frame) throw std::invalid_argument("frame must follow the timeline's first row");
-    const auto content = unirally::classic_race_presentation_content(pack, previous.track);
+    const auto content = unirally::classic_race_presentation_content(
+        pack, pairing ? unirally::classic_race_scenario(previous.track, pairing->riders,
+                                                        pairing->tutorial_hints)
+                      : unirally::classic_race_scenario(previous.track));
     while (std::getline(input, line)) {
         const auto previous_frame = frame;
-        auto state = parse_timeline_row(line, frame);
+        auto state = parse_timeline_row(line, frame, pairing);
         if (frame != previous_frame + 1U)
             throw std::invalid_argument("timeline rows must be consecutive");
         history.observe_update(previous, state, pack);
@@ -148,12 +165,20 @@ int main(int argc, char** argv) try {
     if (argc == 4 && std::string_view(argv[2]) == "--window-index")
         return print_window_indices(argv[1], argv[3]);
     if (argc == 6 && std::string_view(argv[2]) == "--timeline")
-        return draw_timeline_frame(argv[1], argv[3], argv[4], argv[5]);
+        return draw_timeline_frame(argv[1], argv[3], argv[4], argv[5], std::nullopt);
+    if (argc == 10 && std::string_view(argv[2]) == "--timeline"
+        && std::string_view(argv[6]) == "--pairing") {
+        const Pairing pairing{{static_cast<std::uint8_t>(parse_unsigned(argv[7], "rider")),
+                               static_cast<std::uint8_t>(parse_unsigned(argv[8], "opponent"))},
+                              parse_unsigned(argv[9], "tutorial hints") != 0,
+                              {}};
+        return draw_timeline_frame(argv[1], argv[3], argv[4], argv[5], pairing);
+    }
     if (argc != 4 && argc != 5)
         throw std::invalid_argument(
             "usage: classic_race_presentation_runner PACK STATE OUT.ppm [PREVIOUS_STATE]\n"
             "       classic_race_presentation_runner PACK --timeline NATIVE_TIMELINE FRAME "
-            "OUT.ppm\n"
+            "OUT.ppm [--pairing RIDER OPPONENT TUTORIAL_HINTS]\n"
             "       classic_race_presentation_runner PACK --window-index NATIVE_TIMELINE");
     return draw_state(argv[1], argv[2], argv[3], argc == 5 ? argv[4] : nullptr);
 } catch (const std::exception& e) {

@@ -121,6 +121,7 @@ void write_records(const std::filesystem::path& path, const unirally::OnePlayerR
     put_word(0x10a9, records.player_wins);
     put_word(0x10ab, records.opponent_wins);
     put_word(0x1073, records.tries);
+    put_word(0x1116, records.tutorial_bits);
     std::ofstream out(path, std::ios::binary);
     out.write(reinterpret_cast<const char*>(image.data()),
               static_cast<std::streamsize>(image.size()));
@@ -212,21 +213,16 @@ struct RaceBetweenMenus {
     std::uint32_t loading_initialization{}; // the frame the track's loading gives, if measured
 };
 
-// Why a race is not run (the run stops there): its loading time on this path is not known, or its
-// opponent is not one the race scenarios have. Empty when it starts. A given initialization frame
-// (`initialization`, nonzero) takes the place of the loading's.
+// Why a race is not run (the run stops there): its loading time on this path is not known. Empty
+// when it starts. A given initialization frame (`initialization`, nonzero) takes the place of the
+// loading's. The rider and opponent change no loading time (R-0061).
 std::string start_race(RaceBetweenMenus& race, const unirally::ClassicContentPack& pack,
                        const unirally::FrontEndState& front_end, std::uint32_t initialization) {
-    const unirally::ClassicRaceTrack track{front_end.tour_menu.track};
-    const auto loading_frames = unirally::race_loading_frames(track);
+    const auto scenario = unirally::one_player_race_scenario(front_end);
+    const auto loading_frames = unirally::race_loading_frames(scenario.track);
     if (loading_frames == 0 && initialization == 0) return "its loading time is not known";
-    // The race scenarios are MIKE's against BRONSEN (R-0046); another opponent is another race.
-    constexpr std::uint8_t bronsen = 0x11;
-    if (front_end.now_playing.opponent != bronsen)
-        return "opponent " + std::to_string(front_end.now_playing.opponent) + " has no scenario";
-    race.content = unirally::classic_race_content(pack, track);
-    race.state =
-        unirally::classic_race_start(*race.content, unirally::classic_race_scenario(track));
+    race.content = unirally::classic_race_content(pack, scenario.track);
+    race.state = unirally::classic_race_start(*race.content, scenario);
     race.loading_initialization = loading_frames ? front_end.frame - 1 + loading_frames : 0;
     race.initialization_frame = initialization != 0 ? initialization : race.loading_initialization;
     race.state.movement.frame = race.initialization_frame;

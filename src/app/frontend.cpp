@@ -187,9 +187,7 @@ FrontEndSession::FrontEndSession(const ClassicContentPack &pack)
     : content_(front_end_content(pack)) {}
 
 bool native_one_player_race(const FrontEndState &state) {
-  constexpr std::uint8_t mike = 0, bronsen = 0x11;
   return state.mode_chosen && state.mode == FrontEndMode::one_player &&
-         state.rider_menu.rider == mike && state.now_playing.opponent == bronsen &&
          classic_race_has_scenario(ClassicRaceTrack{state.tour_menu.track});
 }
 

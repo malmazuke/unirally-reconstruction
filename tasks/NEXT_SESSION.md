@@ -5,6 +5,13 @@ push the task branch, open a pull request from the template, merge with
 `gh pr merge --merge` once its checks are green and the review is done. `main`
 refuses direct pushes. The checks run on pull requests only.
 
+**Status on 26 September 2026 UTC (RACE-RIDERS-OPPONENTS): start
+[FRONT-END-ENDINGS](FRONT-END-ENDINGS.md), then [RACE-OFFSCREEN-ARROW](RACE-OFFSCREEN-ARROW.md).**
+Every rider now races against every opponent the one-player menus choose (R-0061). The app shows
+a notice in 1P only for a stunt event. Rebuild the pack as v21 (`docs/STATE.md`).
+`local/evidence/race-riders-opponents/race/pictures.py` compares a race's pictures with a
+`track_reference` capture for any pairing.
+
 **Status on 26 September 2026 UTC (RACE-PAUSE-EXITS): start
 [FRONT-END-ENDINGS](FRONT-END-ENDINGS.md).** The race's pause menu now ends a one-player race
 through the menus (R-0060). Then the main menu's other modes (COVERAGE-ROADMAP).

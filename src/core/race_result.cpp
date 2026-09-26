@@ -512,6 +512,10 @@ void begin_race_return(FrontEndState& state, const FrontEndContent& content, std
     state.frame = frame;
     state.race_result = {};
     state.race_result.times = times;
+    // $83:CE2C set the rider's bit when the race's hints ended.
+    if (times.tutorial_hints_over)
+        state.records.tutorial_bits = static_cast<std::uint16_t>(state.records.tutorial_bits
+                                                                 | (1U << state.rider_menu.rider));
     state.screen = FrontEndScreen::race_return;
     state.script_frame = 0;
     early_loads(state, content);
@@ -525,6 +529,13 @@ namespace unirally {
 void return_from_race(FrontEndState& state, const FrontEndContent& content, std::uint32_t frame,
                       const RaceTimes& times) {
     front_end_screens::begin_race_return(state, content, frame, times);
+}
+
+ClassicRaceScenario one_player_race_scenario(const FrontEndState& state) {
+    const auto rider = state.rider_menu.rider;
+    return classic_race_scenario(ClassicRaceTrack{state.tour_menu.track},
+                                 {rider, state.now_playing.opponent},
+                                 ((state.records.tutorial_bits >> rider) & 1U) == 0);
 }
 
 std::uint32_t race_loading_frames(ClassicRaceTrack track) {
@@ -541,6 +552,7 @@ RaceTimes race_times(const ZoomZooState& race) {
         result.player_laps = times.lap_times[0];
         result.opponent_laps = times.lap_times[1];
     }
+    result.tutorial_hints_over = race.player_announcements.hints_active == 0;
     return result;
 }
 

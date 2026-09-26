@@ -18,6 +18,7 @@
 // Reading refuses any state the original cannot produce: each section's guards run as it is
 // read, and the natively started race's cross-checks run in the order below.
 
+#include "announcements.hpp"
 #include "race_progress.hpp"
 #include "reward_queue.hpp"
 #include "state_bytes.hpp"
@@ -63,9 +64,6 @@ constexpr unsigned hint_interval = 300, first_hint_updates = 30, hint_groups = 8
 // opponent's of up to 40 ($81:C2CC-C2D0).
 constexpr std::uint8_t last_queue_slot = 31;
 constexpr std::uint16_t longest_player_cooldown = 120, longest_opponent_cooldown = 40;
-// The player's voices end at 87; each rider's voices are the sixteen of its character pair.
-constexpr std::uint8_t past_player_voices = 88, first_voice = 72;
-constexpr unsigned voices_per_character_pair = 16;
 constexpr std::uint8_t heaviest_learned_weight = 64;
 // The X trick's step runs -9 to 9; a bounce charges to 160; the opponent's trick selector
 // is x & 7 at most ($83:E1F1).
@@ -426,12 +424,12 @@ void check_result_and_start_fields(const ZoomZooState& state, const ClassicRaceS
 // At the start the player's queue holds only the first hint phase (30 of 300) and a
 // write cursor of 1; later, while the hints run, their phase follows the updates elapsed
 // outside the pause.
-void check_hint_timeline(const ZoomZooState& state, unsigned elapsed) {
+void check_hint_timeline(const ZoomZooState& state, unsigned elapsed, bool tutorial_hints) {
     const auto& a = state.player_announcements;
     const auto& q = a.queue;
     refuse_unless(!(elapsed == 0
                     && (q.read_cursor || q.write_cursor != 1 || q.cooldown || q.feature_total
-                        || q.event_one_weight != 4 || a.hints_active != 1
+                        || q.event_one_weight != 4 || a.hints_active != (tutorial_hints ? 1 : 0)
                         || a.hint_updates != first_hint_updates || a.hint_group || a.empty_display
                         || std::any_of(q.entries.begin(), q.entries.end(),
                                        [](auto event) { return event != 0; }))),
@@ -443,21 +441,23 @@ void check_hint_timeline(const ZoomZooState& state, unsigned elapsed) {
                   "inconsistent ZOOM ZOO hint phase");
 }
 
-// $82:9D47-9D5B produces the riders' voices: the player's end at 87, the opponent's are the
-// sixteen of its character (200-215, or 232-247 on the HUNTER tour, R-0052). Admitting only
-// these keeps update_opponent_announcements' other refusals unreachable and its
+// $82:9D47-9D5B produces the riders' voices: each rider's are the sixteen of its character
+// (MIKE's 72-87; BRONSEN's 200-215, or ANTI-UNI's 232-247 on the HUNTER tour, R-0052). Admitting
+// only these keeps update_opponent_announcements' other refusals unreachable and its
 // learned-bank guards sufficient; widening the range means widening those guards. A queue
 // never holds a zero between its cursors ($81:C598-C5C8 never queues one).
 void check_queued_events(const ZoomZooState& state, const ClassicRaceScenario& scenario) {
+    const auto own_voice = [](unsigned event, unsigned character) {
+        const auto first = announcement::first_voice_of(character);
+        return event < announcement::first_voice
+            || (event >= first && event < first + announcement::voices_per_character_pair);
+    };
     const auto& q = state.player_announcements.queue;
     for (auto event : q.entries)
-        refuse_unless(event < past_player_voices, "invalid ZOOM ZOO player voice event");
-    const unsigned opponent_first_voice =
-        first_voice + (scenario.opponent_character >> 1U) * voices_per_character_pair;
+        refuse_unless(own_voice(event, scenario.pairing.rider),
+                      "invalid ZOOM ZOO player voice event");
     for (auto event : state.movement.rewards.entries)
-        refuse_unless(event < first_voice
-                          || (event >= opponent_first_voice
-                              && event <= opponent_first_voice + voices_per_character_pair - 1U),
+        refuse_unless(own_voice(event, scenario.pairing.opponent),
                       "invalid ZOOM ZOO opponent voice event");
     for (unsigned cursor = (q.read_cursor + 1U) & last_queue_slot; cursor != q.write_cursor;
          cursor = (cursor + 1U) & last_queue_slot)
@@ -520,10 +520,24 @@ void read_native_race(Reader& in, ZoomZooState& state, const ClassicRaceScenario
     check_rolls(state, scenario);
     check_result_and_start_fields(state, scenario);
     const auto elapsed = state.movement.frame - scenario.initialization_frame;
-    check_hint_timeline(state, elapsed);
+    check_hint_timeline(state, elapsed, scenario.tutorial_hints);
     check_queued_events(state, scenario);
     check_countdown(state, elapsed);
     check_lap_times(state, scenario);
+}
+
+// $1277 holds what the opponent's last launch decision left ($83:E16B-E1C8): 0 or 30 below
+// level 2, 0 or 60 above it, and at level 2 the player's lead + 15, never negative. A state read
+// without its pairing is BRONSEN's (or ANTI-UNI's), so SILVIA's words are refused there.
+void check_opponent_suppression(const ZoomZooState& state) {
+    constexpr std::uint16_t lead_weighing_level = 2, low_level_word = 30, high_level_word = 60;
+    const auto word = state.movement.opponent_ai.suppression_counter;
+    const auto level = state.opponent_tier.ai_level;
+    const bool possible =
+        level == lead_weighing_level
+            ? !negative(word)
+            : word == 0 || word == (level < lead_weighing_level ? low_level_word : high_level_word);
+    refuse_unless(possible, "the opponent's suppression word does not fit its AI level");
 }
 
 void check_controls_and_horizon(const ZoomZooState& state, const ClassicRaceScenario& scenario) {
@@ -546,8 +560,11 @@ void check_controls_and_horizon(const ZoomZooState& state, const ClassicRaceScen
 }
 
 // Reads the shared layouts (URZZ0001 to URZZ000B) as a race on `track`.
-ZoomZooState deserialize_classic_race(std::span<const std::uint8_t> bytes, ClassicRaceTrack track) {
-    const auto scenario = classic_race_scenario(track);
+ZoomZooState deserialize_classic_race(std::span<const std::uint8_t> bytes, ClassicRaceTrack track,
+                                      std::optional<RacePairing> pairing, bool tutorial_hints,
+                                      std::span<const std::uint8_t> opponent_catch_up) {
+    const auto scenario = pairing ? classic_race_scenario(track, *pairing, tutorial_hints)
+                                  : classic_race_scenario(track);
     const auto magic = race_state_magic;
     // Read only once the size is known to hold the identity.
     const auto family = [&] { return std::equal(magic.begin(), magic.begin() + 7, bytes.begin()); };
@@ -568,6 +585,8 @@ ZoomZooState deserialize_classic_race(std::span<const std::uint8_t> bytes, Class
     std::copy(movement_state_magic.begin(), movement_state_magic.end(), prefix.begin());
     ZoomZooState state;
     state.track = track;
+    state.pairing = scenario.pairing;
+    state.opponent_tier = opponent_tier(scenario, opponent_catch_up);
     state.native_initialization = native_initialization;
     state.complete_race = complete_race;
     state.sustained = sustained;
@@ -581,6 +600,7 @@ ZoomZooState deserialize_classic_race(std::span<const std::uint8_t> bytes, Class
     if (complete_race) read_race_progress(in, state, scenario);
     if (native_initialization) read_native_race(in, state, scenario);
     check_controls_and_horizon(state, scenario);
+    check_opponent_suppression(state);
     in.require_end();
     return state;
 }
@@ -724,13 +744,20 @@ std::vector<std::uint8_t> serialize_zoom_zoo(const ZoomZooState& state) {
     return bytes;
 }
 
-ZoomZooState deserialize_zoom_zoo(std::span<const std::uint8_t> bytes) {
+namespace {
+
+ZoomZooState deserialize_race(std::span<const std::uint8_t> bytes,
+                              std::optional<RacePairing> pairing, bool tutorial_hints,
+                              std::span<const std::uint8_t> opponent_catch_up) {
     const auto track = identified_track(bytes);
-    if (!track) return deserialize_classic_race(bytes, ClassicRaceTrack::ZoomZoo);
+    if (!track)
+        return deserialize_classic_race(bytes, ClassicRaceTrack::ZoomZoo, pairing, tutorial_hints,
+                                        opponent_catch_up);
     std::vector<std::uint8_t> shared(bytes.begin(), bytes.begin() + native_race_size);
     const auto zoom_zoo_magic = classic_race_state_magic(ClassicRaceTrack::ZoomZoo);
     std::copy(zoom_zoo_magic.begin(), zoom_zoo_magic.end(), shared.begin());
-    auto state = deserialize_classic_race(shared, *track);
+    auto state =
+        deserialize_classic_race(shared, *track, pairing, tutorial_hints, opponent_catch_up);
     if (bytes.size() == native_race_size) return state;
     Reader tiles{bytes.subspan(native_race_size, special_tiles_size)};
     read_special_tiles(tiles, state);
@@ -750,6 +777,17 @@ ZoomZooState deserialize_zoom_zoo(std::span<const std::uint8_t> bytes) {
                       || state.opponent_turnaround,
                   "an extended DRAGSTER or ZOOM ZOO state carries no special-tile word");
     return state;
+}
+} // namespace
+
+ZoomZooState deserialize_zoom_zoo(std::span<const std::uint8_t> bytes) {
+    return deserialize_race(bytes, std::nullopt, true, {});
+}
+
+ZoomZooState deserialize_zoom_zoo(std::span<const std::uint8_t> bytes, RacePairing pairing,
+                                  bool tutorial_hints,
+                                  std::span<const std::uint8_t> opponent_catch_up) {
+    return deserialize_race(bytes, pairing, tutorial_hints, opponent_catch_up);
 }
 
 void validate_zoom_zoo_content_state(const ZoomZooState& state, const ZoomZooContent& content) {
