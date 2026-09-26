@@ -22,8 +22,8 @@ The four classes partition all 131,072 bytes. **Unknown share: 40.4%** - above D
 | Instructions from observed | 17,569 |
 | Instructions from table | 587 |
 | Routines | 636 |
-| Routines cited by native code | 333 |
-| Routine bytes cited by native code | 44,379 |
+| Routines cited by native code | 335 |
+| Routine bytes cited by native code | 45,081 |
 | Gap sweep candidate instructions | 2,746 |
 | Gap sweep candidate bytes | 6,174 |
 | Jump tables | 2 |
@@ -45,7 +45,7 @@ The four classes partition all 131,072 bytes. **Unknown share: 40.4%** - above D
 
 ## Cited addresses
 
-1182 distinct code-bank ROM addresses cited by the research, task, inventory and content records (`labels.json`). By position: dat 20, loc 721, mid 18, sub 286, unk 137 (sub routine start, loc instruction start, mid inside an instruction, dat data, unk unknown). By class: data 20, inferred 168, observed 857, unknown 137.
+1208 distinct code-bank ROM addresses cited by the research, task, inventory and content records (`labels.json`). By position: dat 20, loc 724, mid 18, sub 288, unk 158 (sub routine start, loc instruction start, mid inside an instruction, dat data, unk unknown). By class: data 20, inferred 171, observed 859, unknown 158.
 
 Cited addresses in `unknown` bytes:
 
@@ -186,5 +186,26 @@ Cited addresses in `unknown` bytes:
 | $83:A1B4 | docs/research/R-0056-tour-track-now-playing.md |
 | $83:A1DA | docs/research/R-0008-track-decode.md |
 | $83:A254 | docs/research/R-0056-tour-track-now-playing.md |
-| $83:C49C | tasks/FRONT-END-ENDINGS.md |
+| $83:A507 | docs/research/R-0062-gold-endings.md |
+| $83:A575 | docs/research/R-0062-gold-endings.md |
+| $83:B1EB | docs/research/R-0062-gold-endings.md |
+| $83:B4DF | docs/research/R-0062-gold-endings.md |
+| $83:B506 | docs/research/R-0062-gold-endings.md |
+| $83:B790 | docs/research/R-0062-gold-endings.md |
+| $83:B79C | docs/research/R-0062-gold-endings.md |
+| $83:B7D2 | docs/research/R-0062-gold-endings.md |
+| $83:B8CB | docs/research/R-0062-gold-endings.md |
+| $83:BB44 | docs/research/R-0062-gold-endings.md |
+| $83:BB80 | docs/research/R-0062-gold-endings.md |
+| $83:BE9A | docs/research/R-0062-gold-endings.md |
+| $83:BEBA | docs/research/R-0062-gold-endings.md |
+| $83:BED0 | docs/research/R-0062-gold-endings.md |
+| $83:C0F6 | docs/research/R-0062-gold-endings.md |
+| $83:C11E | docs/research/R-0062-gold-endings.md |
+| $83:C126 | docs/research/R-0062-gold-endings.md |
+| $83:C458 | docs/research/R-0062-gold-endings.md |
+| $83:C49C | docs/research/R-0062-gold-endings.md, tasks/FRONT-END-ENDINGS.md |
+| $83:C6C0 | docs/research/R-0062-gold-endings.md |
+| $83:C715 | docs/research/R-0062-gold-endings.md |
+| $83:C89A | docs/research/R-0062-gold-endings.md |
 | $83:C8B3 | docs/research/R-0061-riders-and-opponents.md, tasks/RACE-RIDERS-OPPONENTS.md |

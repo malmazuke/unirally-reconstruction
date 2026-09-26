@@ -5,6 +5,13 @@ push the task branch, open a pull request from the template, merge with
 `gh pr merge --merge` once its checks are green and the review is done. `main`
 refuses direct pushes. The checks run on pull requests only.
 
+**Status on 26 September 2026 UTC (FRONT-END-ENDINGS): start
+[RACE-OFFSCREEN-ARROW](RACE-OFFSCREEN-ARROW.md), then [HUNTER-ENDING](HUNTER-ENDING.md) and
+[FIFTH-WIN-COMPLETION](FIFTH-WIN-COMPLETION.md).** The eight tours' gold endings and the reveal of
+new tours are native (R-0062). Rebuild the pack as v22 (`docs/STATE.md`). The fast way to a
+completion from power-on is a race quit through its pause menu, then Select + X + R as its result is
+left (R-0062); `local/evidence/front-end-endings/decode/all-gold.json` reaches all 25 completions.
+
 **Status on 26 September 2026 UTC (RACE-RIDERS-OPPONENTS): start
 [FRONT-END-ENDINGS](FRONT-END-ENDINGS.md), then [RACE-OFFSCREEN-ARROW](RACE-OFFSCREEN-ARROW.md).**
 Every rider now races against every opponent the one-player menus choose (R-0061). The app shows

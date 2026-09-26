@@ -2,7 +2,7 @@
 
 ## Assignment
 
-- Status: **in progress**. Queued 26 September 2026 (UTC) by FRONT-END-TOUR-END; claimed
+- Status: **in review**. Queued 26 September 2026 (UTC) by FRONT-END-TOUR-END; claimed
   26 September 2026 at 10:05Z by the Claude Code desktop session that ran RACE-RIDERS-OPPONENTS,
   on `be11fa8`.
 - Milestone: M4 (original game coverage: menus)
@@ -51,7 +51,36 @@ section 5 outlines every ending.
 | Records | `sram.py` after each | The medals, levels and reveal equal the original's cartridge RAM | log |
 | Nothing moves | The gates of FRONT-END-TOUR-END | Unchanged | logs |
 
+## Result
+
+[R-0062](../docs/research/R-0062-gold-endings.md). The eight tours' gold endings and the reveal of
+new tours are native and match the original frame for frame. Captures from power-on use forced
+completions of races quit through the pause menu, so no cartridge RAM preload was needed. Two parts
+moved to their own tasks: HUNTER's ending, which ends in a soft reset
+([HUNTER-ENDING](HUNTER-ENDING.md)), and a completion by a fifth win
+([FIFTH-WIN-COMPLETION](FIFTH-WIN-COMPLETION.md)), which needs the runner to start from given
+records. The work was split: a research worker made the captures and the decode; the primary wrote
+the scheme, CRAWLER's ending and the reveal; an implementation worker wrote the other seven tours'
+scripts. Tier 2 stands.
+
+Along the way the front-end runner stopped overwriting a race's frame label, which had made the
+race engine refuse HOPPER's first track (a race starting before its scenario's frame).
+
+## Evidence
+
+Captures and scripts in `local/evidence/front-end-endings/`: `decode/` (the seven captures with
+their manifests, pictures and work RAM, `endings.md`, the listings, `compare.py`, `sram.py`),
+`base-be11fa8/` (main's binaries for the equivalence sweep), `gates.sh`.
+
+| Criterion | Result |
+| --- | --- |
+| Pictures and state | crawler-gold, shuffler-gold, walker-gold, hopper-gold: no state difference and every picture equal (830, 1,030, 1,030, 1,030). locked-gold (JUMPER, BOUNDER; 16,300 frames) and all-gold to frame 39700 (24 completions, RUNNER, SPRINTER, the level-2 and level-3 reveals): no state difference, every compared picture equal. |
+| Reveal | The reveal capture: no state difference, 600 of 600 pictures. |
+| Fifth win | Moved to FIFTH-WIN-COMPLETION. |
+| Records | `sram.py` (now with `$77:10FD`): the kept words equal through the reveal, and at the gates' frames. |
+| Nothing moves | The gates (below). |
+
 ## Handoff
 
-- Exact next experiment/command: a preloaded cartridge RAM with CRAWLER at silver for MIKE, then
-  `forced-bronze`'s inputs: the forced completion plays CRAWLER's ending (`$83:C49C`).
+- Exact next experiment/command: after the review and the merge,
+  [RACE-OFFSCREEN-ARROW](RACE-OFFSCREEN-ARROW.md) or [HUNTER-ENDING](HUNTER-ENDING.md).
