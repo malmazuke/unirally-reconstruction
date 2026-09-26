@@ -367,7 +367,8 @@ RgbFrame render_snes_screen(const SnesVideoMemory& screen_memory,
     // Mode 2's offset-per-tile entries are BG3's map words; bits 13 and 14 apply one to BG1 and
     // BG2. Native draws mode 2 without them, so it refuses a map where any is set.
     if (registers.mode == 2) {
-        constexpr unsigned map_words = 32 * 32;
+        const unsigned size = registers.bg[2].map_size; // 64 wide, 64 tall by bits 0 and 1
+        const unsigned map_words = 32U * 32U * (1U + (size & 1U)) * (1U + (size >> 1U));
         constexpr std::uint16_t applies = 0x6000;
         for (unsigned k = 0; k < map_words; ++k)
             if (vram_word(screen_memory, registers.bg[2].map_word + k) & applies)

@@ -326,6 +326,7 @@ synthetic_content(std::vector<std::vector<std::uint8_t>> &storage) {
   }
   storage.back()[0] = 0x78; // the medal's first entry: (0x78, 0x09)
   storage.back()[1] = 0x09;
+  storage.back()[9] = 6; // the bounce's first height
   content.award_tables = storage.back();
   content.award_medal_art = keep(0x2000);
   // The lap result (profile v19): empty streams.
@@ -897,11 +898,26 @@ void award_tests() {
   require(state.oam_buffer[1] == 0x09 && state.award.step == 4);
   run(state, content, 1);
   require(state.oam_buffer[1] == 0x0d);
+  // Step 43 (medal step 0x26) takes three more frames: the second art, then
+  // tile 0x84 written to OAM directly, then both objects at the bounce's first
+  // height (0x71 - 6).
+  run(state, content, 115);
+  require(state.award.step == 43 &&
+          state.award.phase == unirally::AwardPhase::second_art_low);
+  run(state, content, 2);
+  require(state.oam_buffer[2] == 0x84 && state.video.oam[2] == 0x84 &&
+          state.video.oam[3] == 0x10);
+  run(state, content, 1);
+  require(state.oam_buffer[1] == 0x6b && state.oam_buffer[5] == 0x6b);
+  // After step 0x39 the reset step: back to 0x2B and 0x26.
+  run(state, content, 44);
+  require(state.award.step == 0x2b && state.award.medal_step == 0x26);
   // A press on pad 2 is ignored; pad 1's seen by an upload leaves after the
   // test, then 132 frames to PICK TOUR, which slides back.
   run(state, content, 60, {0, 0x1000});
   require(state.award.exit_frame == 0);
-  require(run_to(state, content, FrontEndScreen::tour_menu_entry, {0x1000, 0}, 140));
+  run(state, content, 3, {0x1000, 0});
+  require(run_to(state, content, FrontEndScreen::tour_menu_entry, {}, 140));
   require(state.cycle.running && state.registers.mode == 3 &&
           state.tour_menu.returning && state.records.tour_levels[0] == 1);
   // PICK TOUR's Y leads on to PICK TRACK, after `$80:A858`'s two frames.
@@ -911,6 +927,71 @@ void award_tests() {
   run(state, content, 2);
   require(state.screen == FrontEndScreen::track_menu_entry &&
           !state.award.after_completion);
+
+  // A completion from records `medals` (tour 0 first, the rider's), forced,
+  // the award left at once, to PICK TOUR's entry. With `now_playing_back`,
+  // NOW PLAYING is left with Y once before the race (`$00AC` = 2).
+  const auto complete = [&](std::array<std::uint8_t, 8> medals,
+                            bool now_playing_back, std::uint8_t level) {
+    auto run_state = unirally::start_front_end();
+    run(run_state, content, 430);
+    require(run_to(run_state, content, FrontEndScreen::rider_menu, {0x1000, 0}));
+    require(run_to(run_state, content, FrontEndScreen::tour_menu, {0x8000, 0}));
+    require(run_to(run_state, content, FrontEndScreen::track_menu, {0x1000, 0}));
+    require(run_to(run_state, content, FrontEndScreen::now_playing, {0x1000, 0}));
+    if (now_playing_back) {
+      require(run_to(run_state, content, FrontEndScreen::track_menu, {0x4000, 0}));
+      require(run_to(run_state, content, FrontEndScreen::now_playing, {0x1000, 0}));
+    }
+    require(run_to(run_state, content, FrontEndScreen::race, {0x1000, 0}));
+    for (unsigned tour = 0; tour < 8; ++tour)
+      run_state.records.medals[tour * 16] = medals[tour];
+    run_state.records.tour_levels[0] = level;
+    unirally::return_from_race(run_state, content, 3454, {3000, 4000});
+    require(run_to(run_state, content, FrontEndScreen::race_result, {}, 104));
+    run(run_state, content, 12);
+    run(run_state, content, 5, {select_x_r, 0});
+    require(run_state.screen == FrontEndScreen::tour_award);
+    // Start held through a few of the animation's upload frames.
+    for (unsigned k = 0; k < 700; ++k) {
+      const bool held = k >= 130 && k < 140;
+      unirally::update_front_end(run_state, content,
+                                 {static_cast<std::uint16_t>(held ? 0x1000 : 0), 0});
+      if (run_state.screen == FrontEndScreen::tour_menu_entry) break;
+    }
+    require(run_state.screen == FrontEndScreen::tour_menu_entry);
+    return run_state;
+  };
+  // `$00AC` = 2: PICK TOUR slides forward, PICK TRACK then back.
+  auto forward = complete({0, 0, 0, 0, 0, 0, 0, 0}, true, 0);
+  require(!forward.tour_menu.slides_back && forward.track_menu.returning);
+  require(run_to(forward, content, FrontEndScreen::tour_menu, {}, 60));
+  run(forward, content, 1);
+  require(run_to(forward, content, FrontEndScreen::award_return, {0x1000, 0}));
+  run(forward, content, 2);
+  require(forward.screen == FrontEndScreen::track_menu_entry &&
+          forward.track_menu.returning);
+  // Gold: no award screen (its ending is not recovered), straight out; the
+  // level from the exact counts. All eight gold is level 3.
+  auto gold = complete({2, 3, 3, 3, 3, 3, 3, 3}, false, 2);
+  require(gold.records.medals[0] == 3 && gold.records.tour_levels[0] == 3 &&
+          gold.registers.mode == 3);
+  // Already gold: the medal stays 3.
+  auto again = complete({3, 0, 0, 0, 0, 0, 0, 0}, false, 0);
+  require(again.records.medals[0] == 3 && again.records.tour_levels[0] == 0);
+  // Six at silver or better is level 2; five at bronze is no level (the
+  // counts must be exact); a level of 3 never changes.
+  auto silver = complete({1, 2, 2, 2, 2, 2, 0, 0}, false, 1);
+  require(silver.records.medals[0] == 2 && silver.records.tour_levels[0] == 2);
+  auto five = complete({0, 1, 1, 1, 1, 0, 0, 0}, false, 0);
+  require(five.records.medals[0] == 1 && five.records.tour_levels[0] == 0);
+  auto top = complete({0, 1, 1, 1, 0, 0, 0, 0}, false, 3);
+  require(top.records.tour_levels[0] == 3);
+  // HUNTER's medal (tour 8, 2 from the cold start) is not counted: three
+  // bronze and this one make four, level 1.
+  auto hunter = complete({0, 1, 1, 1, 0, 0, 0, 0}, false, 0);
+  require(hunter.records.medals[8 * 16] == 2 &&
+          hunter.records.tour_levels[0] == 1);
 }
 
 } // namespace

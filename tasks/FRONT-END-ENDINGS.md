@@ -30,9 +30,11 @@ What R-0059 leaves:
   (`$83:88FD`), one routine per tour: a gold award screen and a scripted animation, then the
   restore. HUNTER's (`$83:AB9A`) shows picture screens and ends in a soft reset (`$80:8858`).
   Native now leaves a gold completion at once through the award's way out.
-- **The reveal.** When the unlock rule raises the rider's level, PICK TOUR draws the old tours,
-  slides, then shows the newly opened ones four frames later (`$80:E588-E5A2`, `$77:10FD`).
-  Native shows the new level at once.
+- **The reveal.** Whenever the unlock rule's counts match, even with the level unchanged, PICK
+  TOUR draws the tours of level - 1, slides, then shows the others four frames later
+  (`$80:E588-E5A2`, `$77:10FD`). Native shows the level at once.
+- **A completion by a fifth win**, captured from a preloaded cartridge RAM with four done tracks.
+  The laboratory runner must then start from those records.
 
 Make native do both, frame for frame. `local/evidence/front-end-tour-end/decode/tour-end.md`
 section 5 outlines every ending.
@@ -42,6 +44,7 @@ section 5 outlines every ending.
 | Criterion | Command or experiment | Expected result | Required artifact |
 | --- | --- | --- | --- |
 | Pictures and state | Captures of the original reaching each tour's gold by forced completions (preloaded cartridge RAM with silver medals, R-0050's method), and a reveal (four bronze medals), against native | Pictures match to the pixel and the words agree frame by frame, or each residue is explained | pictures, logs, research record |
+| Fifth win | A capture from a preloaded cartridge RAM with four done tracks, the fifth race won | The same completion as a forced one, frame for frame | pictures, logs |
 | Records | `sram.py` after each | The medals, levels and reveal equal the original's cartridge RAM | log |
 | Nothing moves | The gates of FRONT-END-TOUR-END | Unchanged | logs |
 

@@ -1749,6 +1749,7 @@
     "src/core/front_end_screens.hpp:enter_rider_menu",
     "src/core/front_end_screens.hpp:enter_tour_menu",
     "src/core/front_end_screens.hpp:enter_track_menu",
+    "src/core/front_end_screens.hpp:return_to_tour_menu",
     "src/core/rider_menu.cpp:(file)",
     "src/core/rider_menu.cpp:rider_menu_frame",
     "src/core/tour_menu.cpp:(file)",
@@ -2085,8 +2086,8 @@
    ],
    "native": [
     "src/core/front_end.cpp:boot_frame_waits",
-    "src/core/front_end.cpp:load_main_menu_screen",
     "src/core/front_end.cpp:menu_objects, menu_objects_high, menu_map, menu_bg2_tiles, menu_bg1_tiles, menu_bg1_tiles_high",
+    "src/core/front_end.cpp:set_menu_registers",
     "src/core/front_end.cpp:waits_for_frame",
     "src/core/front_end_screens.hpp:load_main_menu_screen",
     "src/core/front_end_screens.hpp:restore_menu_screen",
@@ -2289,6 +2290,9 @@
    "native": [
     "src/core/front_end.hpp:FrontEndScreen",
     "src/core/front_end.hpp:TourMenu",
+    "src/core/front_end.hpp:TourMenu::returning",
+    "src/core/front_end.hpp:TourMenu::slides_back",
+    "src/core/front_end_screens.hpp:return_to_tour_menu",
     "src/core/tour_menu.cpp:(file)",
     "src/core/tour_menu.cpp:aim_tour_arrow",
     "src/core/tour_menu.cpp:hide_medals",
@@ -2378,6 +2382,7 @@
     "NmX"
    ],
    "native": [
+    "src/core/award.cpp:tour_award_frame",
     "src/core/front_end.hpp:FrontEndScreen",
     "src/core/front_end.hpp:TrackMenu",
     "src/core/track_menu.cpp:(file)",
@@ -11803,6 +11808,7 @@
    ],
    "native": [
     "src/core/award.cpp:fade_out_frames, blank_frame, reset_frame, background_tiles_frame, podium_map_frame, podium_tiles_frame, colours_frame, objects_frame, rider_frame, first_fade_in_frame, fade_in_frames",
+    "src/core/award.cpp:gold_medal_colours",
     "src/core/award.cpp:reset_for_award"
    ],
    "observed_entries": {},
@@ -11826,6 +11832,7 @@
     "src/core/award.cpp:(file)",
     "src/core/award.cpp:exit_blank_frame, menus_frame, exit_fade_in_frame, pick_tour_frame",
     "src/core/front_end.cpp:restore_menu_screen",
+    "src/core/front_end.cpp:set_menu_registers",
     "src/core/front_end_screens.hpp:restore_menu_screen"
    ],
    "observed_entries": {},
@@ -11952,7 +11959,9 @@
     "src/core/award.cpp:(file)",
     "src/core/award.cpp:build_step",
     "src/core/award.cpp:fade_out_frames, blank_frame, reset_frame, background_tiles_frame, podium_map_frame, podium_tiles_frame, colours_frame, objects_frame, rider_frame, first_fade_in_frame, fade_in_frames",
+    "src/core/award.cpp:first_medal_colours",
     "src/core/award.cpp:reset_for_award",
+    "src/core/award.cpp:second_art_attributes",
     "src/core/award.cpp:second_art_frame",
     "src/core/award.cpp:upload_step",
     "src/core/front_end.hpp:AwardPhase",
@@ -13955,19 +13964,19 @@
    "call returns in the calling mode": 1262
   },
   "bytes": 131072,
-  "cited_addresses": 1147,
+  "cited_addresses": 1154,
   "cited_by_class": {
    "data": 20,
-   "inferred": 151,
-   "observed": 842,
-   "unknown": 134
+   "inferred": 155,
+   "observed": 844,
+   "unknown": 135
   },
   "cited_by_position": {
    "dat": 20,
-   "loc": 697,
+   "loc": 703,
    "mid": 18,
    "sub": 278,
-   "unk": 134
+   "unk": 135
   },
   "conflicts": 0,
   "data": 92,

@@ -137,7 +137,9 @@ void main_menu_return_frame(FrontEndState& state, const FrontEndContent& content
 // tour_menu.cpp: PICK TOUR after a rider is chosen (`$80:BBF7-BC0B`) or back from PICK TRACK
 // (`$80:BC03`), a frame of its set-up and of its loop.
 void enter_tour_menu(FrontEndState& state);
-void return_to_tour_menu(FrontEndState& state);
+// From `$80:E550`: back from PICK TRACK (`$80:BC03`, `$00AC` = 1, sliding back), or from a
+// completion, when `$00AC` as the race left it decides.
+void return_to_tour_menu(FrontEndState& state, bool slides_back = true);
 void tour_menu_entry_frame(FrontEndState& state, const FrontEndContent& content);
 void tour_menu_frame(FrontEndState& state, const FrontEndContent& content, FrontEndPads pads);
 std::uint16_t word_at(std::span<const std::uint8_t> table, std::size_t at);

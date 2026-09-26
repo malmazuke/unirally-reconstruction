@@ -71,12 +71,14 @@ From the test that sees a press, t:
   - the text cleared and sent to the shown half; the objects laid out (`$80:D2C1`'s layout) and
     copied (`$80:9314`, without a frame wait);
   - the logo held up (`$80:F53B`), NMI on (`$83:A90E`).
-  - One difference from `$80:D2C1`: that routine reads the waiting tiles of entries 104-111 at
-    `$9B31` in bank `$80`, which are code bytes. `$83:A721` runs with the data bank at `$83`, so
-    it reads the decoration animator's wave tiles at `$83:9B31`.
+  - One difference from `$80:D2C1`: that routine reads the waiting tiles of entries 104-111 with
+    `LDA $9B31,X` and the data bank at `$80` (`$80:D318`), which are code bytes. `$83:A721` reads
+    them with a long `LDA $839B31,X` (`$83:A8A2`): the decoration animator's wave tiles.
 - t + 118 to t + 132: fade in, brightness 1 to 15.
 - t + 132: the unlock rule, then PICK TOUR (`$80:E54C`) in the same frame. It is R-0056's entry
-  from `$80:E550`, the same as the way back from PICK TRACK, sliding back.
+  from `$80:E550`, the same as the way back from PICK TRACK. Its slide follows `$00AC` as it was
+  saved before the race: 1 slides it back, 2 (NOW PLAYING left with Y or X before the race)
+  slides it forward, and PICK TRACK afterwards the other way round (`$80:E92F`).
 - PICK TOUR's first interactive frame is t + 179. It returns into the scoring on a choice or on
   Y or X alike (`$83:88D1`), and `$80:BC7B` runs `$80:A858` (two frames) and PICK TRACK, which
   slides forward.
@@ -91,7 +93,8 @@ stops with the NMI at q + 100 and resumes at t + 118.
 - The unlock rule (`$83:8853`), unless the rider's level is already 3: over tours 0-7 (HUNTER's
   is not counted), all eight gold (a sum of 24) gives level 3; otherwise six tours at silver or
   better give level 2; otherwise four at bronze or better give level 1. The counts must be exact.
-  The level goes to `$77:10D3 + rider`, and the same value to `$77:10FD`, the pending reveal.
+  The level goes to `$77:10D3 + rider`, and the same value to `$77:10FD`, the pending reveal,
+  whenever a count matches, even when the level does not change.
 - A forced completion runs no win test: no done flag and no loss bit are set, whatever the race.
 - No checksum is written between q + 3 and t + 132; nothing in the ROM verifies them.
 
@@ -134,16 +137,21 @@ picture.
 
 `sram.py`: the kept cartridge RAM words (the medals, the done tracks, the levels, the records)
 equal the original's at `forced-bronze-long` 3900, 5600 and 7199 and `forced-silver-bronsen`
-8800 and 10899. Not kept: the award's counters `$77:10C9` and `$10CB`, and the checksums.
+8800 and 10899. Not kept: the award's counters `$77:10C9` and `$10CB`, the pending reveal
+`$77:10FD`, and the checksums.
 
 ## Not recovered
 
-- **The reveal.** When the rule raises the level, the original draws PICK TOUR with the old
-  level, slides it in, then shows the newly opened tours four frames later (`$80:E588-E5A2`) and
-  clears `$77:10FD`. Native shows the new level at once and keeps no pending reveal. No capture
-  reaches it yet (it needs four completions).
+- **The reveal.** Whenever the rule's counts match (`$83:8899`, `$83:88AD`, `$83:88C1`), even
+  with the level unchanged, the original draws PICK TOUR with level - 1 (`$80:E55B-E560`),
+  slides it in, then shows the other tours four frames later (`$80:E588-E5A2`) and clears
+  `$77:10FD`. Native shows the level at once and keeps no pending reveal. No capture reaches it
+  yet (it needs four completions).
 - **The gold medal's endings** (`$83:88FD`, one routine per tour) and HUNTER's (`$83:AB9A`,
-  which ends in a reset). Native leaves a gold completion at once through the award's way out:
-  the fade, the restore, the rule and PICK TOUR.
-- **A completion by a fifth win** is not captured: it needs a stunt event (STUNT-EVENTS). From
-  `$83:881B` on it is the same code as the forced one.
+  which ends in a soft reset). Native leaves a gold completion at once through the award's way
+  out: the fade, the restore, the rule and PICK TOUR. For HUNTER native so keeps the session
+  where the original resets.
+- **A completion by a fifth win** is not captured. The tour's stunt event is not native, and a
+  capture from a preloaded cartridge RAM (R-0050's method, four done tracks) needs the runner to
+  start from those records, which it does not yet (FRONT-END-ENDINGS). From `$83:881B` on it is
+  the same code as the forced one.

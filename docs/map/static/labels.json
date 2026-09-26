@@ -654,6 +654,7 @@
    "docs/research/R-0006-observed-code-map.md",
    "docs/research/R-0054-boot-title-main-menu.md",
    "tasks/COVERAGE-ROADMAP.md",
+   "tasks/FRONT-END-ENDINGS.md",
    "tasks/M1-01.md"
   ]
  },
@@ -2098,6 +2099,7 @@
   "label": "loc_80BC03",
   "native": [
    "src/core/front_end_screens.hpp:enter_tour_menu",
+   "src/core/front_end_screens.hpp:return_to_tour_menu",
    "src/core/tour_menu.cpp:(file)",
    "src/core/tour_menu.cpp:return_to_tour_menu"
   ],
@@ -3198,8 +3200,8 @@
   "label": "sub_80D20E",
   "native": [
    "src/core/front_end.cpp:boot_frame_waits",
-   "src/core/front_end.cpp:load_main_menu_screen",
    "src/core/front_end.cpp:menu_objects, menu_objects_high, menu_map, menu_bg2_tiles, menu_bg1_tiles, menu_bg1_tiles_high",
+   "src/core/front_end.cpp:set_menu_registers",
    "src/core/front_end.cpp:waits_for_frame",
    "src/core/front_end_screens.hpp:load_main_menu_screen",
    "src/core/front_end_screens.hpp:restore_menu_screen",
@@ -3255,6 +3257,20 @@
   ],
   "source_records": [
    "docs/research/R-0037-dragster-race-palette-cycle.md"
+  ]
+ },
+ {
+  "address": "$80:D318",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80D318",
+  "native": [
+   "src/core/front_end.cpp:lay_out_menu_objects",
+   "src/core/front_end.cpp:restore_menu_screen",
+   "src/core/front_end_screens.hpp:lay_out_menu_objects"
+  ],
+  "source_records": [
+   "docs/research/R-0059-tour-completion.md"
   ]
  },
  {
@@ -3391,6 +3407,9 @@
   "native": [
    "src/core/front_end.hpp:FrontEndScreen",
    "src/core/front_end.hpp:TourMenu",
+   "src/core/front_end.hpp:TourMenu::returning",
+   "src/core/front_end.hpp:TourMenu::slides_back",
+   "src/core/front_end_screens.hpp:return_to_tour_menu",
    "src/core/tour_menu.cpp:(file)",
    "src/core/tour_menu.cpp:return_to_tour_menu"
   ],
@@ -3405,7 +3424,8 @@
   "comment": "instruction start",
   "label": "loc_80E55B",
   "source_records": [
-   "docs/research/R-0056-tour-track-now-playing.md"
+   "docs/research/R-0056-tour-track-now-playing.md",
+   "docs/research/R-0059-tour-completion.md"
   ]
  },
  {
@@ -3415,7 +3435,8 @@
   "label": "loc_80E588",
   "source_records": [
    "docs/research/R-0056-tour-track-now-playing.md",
-   "docs/research/R-0059-tour-completion.md"
+   "docs/research/R-0059-tour-completion.md",
+   "tasks/FRONT-END-ENDINGS.md"
   ]
  },
  {
@@ -3667,6 +3688,18 @@
   ],
   "source_records": [
    "docs/research/R-0056-tour-track-now-playing.md"
+  ]
+ },
+ {
+  "address": "$80:E92F",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80E92F",
+  "native": [
+   "src/core/award.cpp:tour_award_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0059-tour-completion.md"
   ]
  },
  {
@@ -11023,6 +11056,51 @@
   ]
  },
  {
+  "address": "$83:8899",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_838899",
+  "native": [
+   "src/core/award.cpp:(file)",
+   "src/core/award.cpp:apply_unlock_rule",
+   "src/core/award.cpp:tour_award_frame",
+   "src/core/front_end.hpp:FrontEndScreen"
+  ],
+  "source_records": [
+   "docs/research/R-0059-tour-completion.md"
+  ]
+ },
+ {
+  "address": "$83:88AD",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_8388AD",
+  "native": [
+   "src/core/award.cpp:(file)",
+   "src/core/award.cpp:apply_unlock_rule",
+   "src/core/award.cpp:tour_award_frame",
+   "src/core/front_end.hpp:FrontEndScreen"
+  ],
+  "source_records": [
+   "docs/research/R-0059-tour-completion.md"
+  ]
+ },
+ {
+  "address": "$83:88C1",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_8388C1",
+  "native": [
+   "src/core/award.cpp:(file)",
+   "src/core/award.cpp:apply_unlock_rule",
+   "src/core/award.cpp:tour_award_frame",
+   "src/core/front_end.hpp:FrontEndScreen"
+  ],
+  "source_records": [
+   "docs/research/R-0059-tour-completion.md"
+  ]
+ },
+ {
   "address": "$83:88D1",
   "class": "inferred",
   "comment": "instruction start",
@@ -11057,6 +11135,7 @@
   "source_records": [
    "docs/research/R-0057-one-run-result.md",
    "docs/research/R-0059-tour-completion.md",
+   "tasks/FRONT-END-ENDINGS.md",
    "tasks/FRONT-END-TOUR-END.md"
   ]
  },
@@ -11592,8 +11671,7 @@
   "comment": "data",
   "label": "dat_839B31",
   "source_records": [
-   "docs/research/R-0055-rider-menu.md",
-   "docs/research/R-0059-tour-completion.md"
+   "docs/research/R-0055-rider-menu.md"
   ]
  },
  {
@@ -11746,6 +11824,7 @@
   "comment": "instruction start",
   "label": "loc_83A67F",
   "native": [
+   "src/core/award.cpp:gold_medal_colours",
    "src/core/award.cpp:reset_for_award"
   ],
   "source_records": [
@@ -11761,8 +11840,18 @@
    "src/core/award.cpp:(file)",
    "src/core/award.cpp:exit_blank_frame, menus_frame, exit_fade_in_frame, pick_tour_frame",
    "src/core/front_end.cpp:restore_menu_screen",
+   "src/core/front_end.cpp:set_menu_registers",
    "src/core/front_end_screens.hpp:restore_menu_screen"
   ],
+  "source_records": [
+   "docs/research/R-0059-tour-completion.md"
+  ]
+ },
+ {
+  "address": "$83:A8A2",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_83A8A2",
   "source_records": [
    "docs/research/R-0059-tour-completion.md"
   ]
@@ -11800,7 +11889,8 @@
   "label": "sub_83AB9A",
   "source_records": [
    "docs/research/R-0054-boot-title-main-menu.md",
-   "docs/research/R-0059-tour-completion.md"
+   "docs/research/R-0059-tour-completion.md",
+   "tasks/FRONT-END-ENDINGS.md"
   ]
  },
  {
@@ -12011,6 +12101,15 @@
   "label": "dat_83B1B6",
   "source_records": [
    "docs/research/R-0059-tour-completion.md"
+  ]
+ },
+ {
+  "address": "$83:C49C",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_83C49C",
+  "source_records": [
+   "tasks/FRONT-END-ENDINGS.md"
   ]
  },
  {

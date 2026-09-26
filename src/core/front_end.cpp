@@ -374,11 +374,9 @@ void load_object_palette(FrontEndState& state, const FrontEndContent& content) {
 
 // The main menu's screen ($80:D20E at 377): BG1 (8bpp logo) and BG2 (4bpp checks and text)
 // with the objects, which the subscreen adds at half (the arrow's shadow).
-void load_main_menu_screen(FrontEndState& state, const FrontEndContent& content) {
-    load_cgram(state, content.base_palette, 0); // $80:A8A8
-    state.registers.force_blank = true;
-    reset_screen_state(state); // $80:A16A
-    auto& r = state.registers;
+// The main menu's registers (`$80:D20E`, `$83:A721`): BG1 and BG2 maps and tiles, mode 3, the
+// objects, the colour math.
+void set_menu_registers(SnesVideoRegisters& r) {
     set_background(r.bg[0], 0x02);
     set_background(r.bg[1], 0x13);
     set_tile_bases(r, 0x23);
@@ -388,6 +386,13 @@ void load_main_menu_screen(FrontEndState& state, const FrontEndContent& content)
     r.sub_screen = 0x10;
     r.colour_select = 0x02;
     r.colour_math = 0x7f;
+}
+
+void load_main_menu_screen(FrontEndState& state, const FrontEndContent& content) {
+    load_cgram(state, content.base_palette, 0); // $80:A8A8
+    state.registers.force_blank = true;
+    reset_screen_state(state); // $80:A16A
+    set_menu_registers(state.registers);
     load_cgram(state, asset(content, menu_palette), 0x70);
     load_object_palette(state, content); // $83:91F7
     load_cgram(state, asset(content, menu_text_palette), 0xd0);
@@ -401,15 +406,7 @@ void load_main_menu_screen(FrontEndState& state, const FrontEndContent& content)
 
 void restore_menu_screen(FrontEndState& state, const FrontEndContent& content) {
     auto& r = state.registers;
-    set_background(r.bg[0], 0x02);
-    set_background(r.bg[1], 0x13);
-    set_tile_bases(r, 0x23);
-    r.main_screen = 0x13;
-    r.mode = 3;
-    r.obsel = 0x63;
-    r.sub_screen = 0x10;
-    r.colour_select = 0x02;
-    r.colour_math = 0x7f;
+    set_menu_registers(r);
     load_cgram(state, asset(content, menu_palette), 0x70);
     load_object_palette(state, content); // $83:91FB
     load_cgram(state, asset(content, menu_text_palette), 0xd0);
@@ -431,7 +428,7 @@ void restore_menu_screen(FrontEndState& state, const FrontEndContent& content) {
     // tiles, where `$80:D2C1` reads the code bytes at `$80:9B31`.
     for (unsigned k = 0; k < 8; ++k)
         oam_byte(state, 104 + k, 2) = content.decoration_frames[wave_tiles + 7 - k];
-    copy_oam(state); // $80:9314
+    copy_oam(state);          // $80:9314
     state.logo.raised = true; // $80:F53B
     state.logo.offset = 0x52;
     r.bg[0].vofs = 0x52;

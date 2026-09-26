@@ -212,24 +212,25 @@ struct RaceBetweenMenus {
     std::uint32_t loading_initialization{}; // the frame the track's loading gives, if measured
 };
 
-// False for a race whose loading time on this path is not known, or against an opponent the race
-// scenarios do not have: the run stops there.
-// A given initialization frame (`initialization`, nonzero) takes the place of the loading's.
-bool start_race(RaceBetweenMenus& race, const unirally::ClassicContentPack& pack,
-                const unirally::FrontEndState& front_end, std::uint32_t initialization) {
+// Why a race is not run (the run stops there): its loading time on this path is not known, or its
+// opponent is not one the race scenarios have. Empty when it starts. A given initialization frame
+// (`initialization`, nonzero) takes the place of the loading's.
+std::string start_race(RaceBetweenMenus& race, const unirally::ClassicContentPack& pack,
+                       const unirally::FrontEndState& front_end, std::uint32_t initialization) {
     const unirally::ClassicRaceTrack track{front_end.tour_menu.track};
     const auto loading_frames = unirally::race_loading_frames(track);
-    if (loading_frames == 0 && initialization == 0) return false;
+    if (loading_frames == 0 && initialization == 0) return "its loading time is not known";
     // The race scenarios are MIKE's against BRONSEN (R-0046); another opponent is another race.
     constexpr std::uint8_t bronsen = 0x11;
-    if (front_end.now_playing.opponent != bronsen) return false;
+    if (front_end.now_playing.opponent != bronsen)
+        return "opponent " + std::to_string(front_end.now_playing.opponent) + " has no scenario";
     race.content = unirally::classic_race_content(pack, track);
     race.state =
         unirally::classic_race_start(*race.content, unirally::classic_race_scenario(track));
     race.loading_initialization = loading_frames ? front_end.frame - 1 + loading_frames : 0;
     race.initialization_frame = initialization != 0 ? initialization : race.loading_initialization;
     race.state.movement.frame = race.initialization_frame;
-    return true;
+    return {};
 }
 
 } // namespace
@@ -249,10 +250,12 @@ int main(int argc, char** argv) try {
             const auto given = races < options.race_initializations.size()
                                  ? options.race_initializations[races]
                                  : 0;
-            if (!race.content && !start_race(race, pack, state, given)) {
-                std::cout << "race " << unsigned(state.tour_menu.track) << " against "
-                          << unsigned(state.now_playing.opponent) << " not native\n";
-                break;
+            if (!race.content) {
+                if (const auto why = start_race(race, pack, state, given); !why.empty()) {
+                    std::cout << "race " << unsigned(state.tour_menu.track) << " not run: " << why
+                              << '\n';
+                    break;
+                }
             }
             if (frame <= race.initialization_frame) continue;
             unirally::update_zoom_zoo(race.state, race_buttons(pads.one), *race.content);

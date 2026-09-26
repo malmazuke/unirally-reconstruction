@@ -152,7 +152,8 @@ struct TourMenu {
     std::uint8_t track{};  // $00CE: the track chosen (and raced); the tour's first on PICK TOUR
     std::uint8_t medal{};  // $77:10D1: the rider's medal on the chosen tour
     bool back{};           // left with Y or X
-    bool returning{};      // entered back from PICK TRACK ($00AC != 2): slides back in
+    bool returning{};      // entered back from PICK TRACK, from `$80:E550`: no first loads
+    bool slides_back{};    // slides back in ($00AC != 2 on `$80:E550`'s path)
 };
 
 // A race's times as the race engine hands them back when its result load begins (R-0057): the
@@ -191,7 +192,7 @@ enum class AwardPhase : std::uint8_t {
 
 // A tour's completion (R-0059): the award screen and its way back to PICK TOUR.
 struct TourAward {
-    std::uint8_t medal{};      // the medal just won: 1 bronze, 2 silver, 3 gold
+    std::uint8_t medal{};      // raised to: 1 bronze, 2 silver, 3 gold; 4 if already gold
     std::uint16_t step{};      // $77:10C9: the rider's pose step
     std::int16_t medal_step{}; // $77:10CB: the medal's step, from -5
     std::uint16_t pose{};      // the rider's pose for the next upload (`$83:8E3A`)

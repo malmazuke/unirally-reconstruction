@@ -20,16 +20,20 @@ constexpr std::uint32_t fade_out_frames = 15, blank_frame = 16, reset_frame = 97
                         podium_tiles_frame = 101, colours_frame = 102, objects_frame = 106,
                         rider_frame = 107, first_fade_in_frame = 108, fade_in_frames = 15;
 // After the press, frames from the exit test: the fade out, `$83:A721` (its sound upload, then
-// the menus' screen at `restore_frame`), the fade in, and PICK TOUR on its last frame.
+// the menus' screen at `menus_frame`), the fade in, and PICK TOUR on its last frame.
 constexpr std::uint32_t exit_blank_frame = 16, menus_frame = 117, exit_fade_in_frame = 118,
                         pick_tour_frame = 132;
 
 // The award's assets (profile v20).
 constexpr unsigned background_map = 0x53, background_tiles = 0x54, podium_map = 0x65,
                    podium_tiles = 0x64, podium_colours = 0x3b, medal_tiles = 0x5c;
-constexpr unsigned first_medal_colours = 0x1f;      // + the new medal: 0x20 bronze, 0x21 silver
+// The medal's colours are PICK TOUR's medal palettes, 0x20 bronze and 0x21 silver (`tour_menu.cpp`);
+// `$83:AF14` takes 0x1F + the new medal.
+constexpr unsigned first_medal_colours = 0x1f;
 constexpr unsigned first_background_colours = 0x54; // + the new medal: 0x55, 0x56
-constexpr unsigned early_rider_colours_asset = 0x22;
+// `$83:A67F-A720` loads 0x22 (the gold medal's colours) at 0x90, which the rider's overwrite in
+// the same frame; its CGRAM 0 load (the rider's) is omitted, as q + 105 overwrites it.
+constexpr unsigned gold_medal_colours = 0x22;
 constexpr unsigned background_tiles_word = 0x3000, podium_map_word = 0x1000,
                    podium_tiles_word = 0x2000, medal_tiles_word = 0x6000, second_art_word = 0x6800,
                    cleared_objects_word = 0x7000, cleared_objects_words = 0x800;
@@ -40,6 +44,8 @@ constexpr std::uint16_t rider_pose = 0x1340;
 // `$83:B120` (front-end.award-tables): the medal's and the rider's first entries (8 bytes), the
 // bounce (25), the rider's poses by step (58 words), the medal's tiles by step (53).
 constexpr std::size_t first_entries_at = 0, bounce_at = 9, poses_at = 0x22, medal_tiles_at = 0x96;
+// (Byte 8 is unused.) `$83:B0FC` writes the second art's entry 0 attribute as a constant.
+constexpr std::uint8_t second_art_attributes = 0x10;
 constexpr std::uint8_t first_objects_high = 0x58; // entry 0 small, entry 1 large, 2-3 hidden
 // The animation: steps 1 to 0x39 once, then 0x2C to 0x39 again until a press; the medal falls
 // 4 lines a step until step 0x1A of `$77:10CB`, and at 0x26 its second art arrives.
@@ -82,7 +88,7 @@ void reset_for_award(FrontEndState& state, const FrontEndContent& content) {
     clear_oam_buffer(state); // every entry at (1, 1), hidden, with tile and attributes 0
     for (unsigned entry = 0; entry < 128; ++entry)
         oam_byte(state, entry, 2) = oam_byte(state, entry, 3) = 0;
-    load_cgram(state, asset(content, early_rider_colours_asset), 0x90);
+    load_cgram(state, asset(content, gold_medal_colours), 0x90);
     r.mode = 2;
     const auto medal = state.award.medal;
     load_cgram(state, asset(content, first_medal_colours + medal), 0x80);
@@ -132,7 +138,7 @@ void upload_step(FrontEndState& state, const FrontEndContent& content, FrontEndP
     upload_rider(state, content);
     copy_oam(state); // $80:D1E8, which also reads the pads
     award.pads = pads.one;
-    if (award.medal_step >= second_art && award.medal_step != second_art) {
+    if (award.medal_step > second_art) {
         const auto y = static_cast<std::uint8_t>(
             bounce_base
             - content.award_tables[bounce_at
@@ -160,7 +166,7 @@ void second_art_frame(FrontEndState& state, const FrontEndContent& content, unsi
         upload_rider(state, content);
         oam_byte(state, 0, 2) = second_art_tile;
         state.video.oam[2] = second_art_tile;
-        state.video.oam[3] = oam_byte(state, 0, 3);
+        state.video.oam[3] = second_art_attributes;
         return;
     }
     const auto y = static_cast<std::uint8_t>(bounce_base - content.award_tables[bounce_at]);
@@ -211,17 +217,15 @@ void apply_unlock_rule(FrontEndState& state) {
         bronze += medal >= 1 ? 1 : 0;
         silver += medal >= 2 ? 1 : 0;
     }
+    // The original also writes the level to `$77:10FD`, the pending reveal, whenever a count
+    // matches, even if the level is unchanged: PICK TOUR then draws the tours of level - 1, slides,
+    // and shows the others four frames later. Native shows the level at once (R-0059).
     if (sum == 24)
         level = 3;
     else if (silver == 6)
         level = 2;
     else if (bronze == 4)
         level = 1;
-    else
-        return;
-    // The original also sets `$77:10FD`, the pending reveal: PICK TOUR draws the old tours,
-    // slides, then shows the new ones four frames later and clears it. Native shows the new level
-    // at once (not captured, R-0059).
 }
 
 } // namespace
@@ -308,7 +312,9 @@ void tour_award_frame(FrontEndState& state, const FrontEndContent& content, Fron
         fade_up(state, exit - exit_fade_in_frame + 1);
         if (exit < pick_tour_frame) return;
         apply_unlock_rule(state); // $83:8853, then PICK TOUR (`$80:E54C`) in the same frame
-        return_to_tour_menu(state);
+        // `$00AC` as restored before the race: 2 (NOW PLAYING was left with Y or X) slides PICK
+        // TOUR forward and PICK TRACK back (`$80:E92F`); otherwise the other way round.
+        return_to_tour_menu(state, !state.track_menu.returning);
     }
 }
 
@@ -321,7 +327,7 @@ void award_return_frame(FrontEndState& state, const FrontEndContent& content) {
         return;
     }
     load_cgram(state, asset(content, base_palette_high), 0x40);
-    enter_track_menu(state, false);
+    enter_track_menu(state, state.track_menu.returning);
 }
 
 } // namespace unirally::front_end_screens

@@ -1006,6 +1006,7 @@
    "address": "$80:BC03",
    "native": [
     "src/core/front_end_screens.hpp:enter_tour_menu",
+    "src/core/front_end_screens.hpp:return_to_tour_menu",
     "src/core/tour_menu.cpp:return_to_tour_menu"
    ],
    "region": "rom"
@@ -1595,8 +1596,8 @@
    "address": "$80:D20E",
    "native": [
     "src/core/front_end.cpp:boot_frame_waits",
-    "src/core/front_end.cpp:load_main_menu_screen",
     "src/core/front_end.cpp:menu_objects, menu_objects_high, menu_map, menu_bg2_tiles, menu_bg1_tiles, menu_bg1_tiles_high",
+    "src/core/front_end.cpp:set_menu_registers",
     "src/core/front_end.cpp:waits_for_frame",
     "src/core/front_end_screens.hpp:load_main_menu_screen",
     "src/core/front_end_screens.hpp:restore_menu_screen",
@@ -1704,6 +1705,9 @@
    "native": [
     "src/core/front_end.hpp:FrontEndScreen",
     "src/core/front_end.hpp:TourMenu",
+    "src/core/front_end.hpp:TourMenu::returning",
+    "src/core/front_end.hpp:TourMenu::slides_back",
+    "src/core/front_end_screens.hpp:return_to_tour_menu",
     "src/core/tour_menu.cpp:(file)",
     "src/core/tour_menu.cpp:return_to_tour_menu"
    ],
@@ -1851,6 +1855,13 @@
    ],
    "range_ends": [
     "$80:E923"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:E92F",
+   "native": [
+    "src/core/award.cpp:tour_award_frame"
    ],
    "region": "rom"
   },
@@ -4786,6 +4797,7 @@
   {
    "address": "$83:A67F",
    "native": [
+    "src/core/award.cpp:gold_medal_colours",
     "src/core/award.cpp:reset_for_award"
    ],
    "range_ends": [
@@ -4799,6 +4811,7 @@
     "src/core/award.cpp:(file)",
     "src/core/award.cpp:exit_blank_frame, menus_frame, exit_fade_in_frame, pick_tour_frame",
     "src/core/front_end.cpp:restore_menu_screen",
+    "src/core/front_end.cpp:set_menu_registers",
     "src/core/front_end_screens.hpp:restore_menu_screen"
    ],
    "region": "rom"
@@ -4829,6 +4842,13 @@
    "range_ends": [
     "$83:AF3E",
     "$83:AFE3"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:AF14",
+   "native": [
+    "src/core/award.cpp:first_medal_colours"
    ],
    "region": "rom"
   },
@@ -4876,6 +4896,13 @@
    ],
    "range_ends": [
     "$83:B111"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:B0FC",
+   "native": [
+    "src/core/award.cpp:second_art_attributes"
    ],
    "region": "rom"
   },
@@ -5691,9 +5718,11 @@
   {
    "address": "$00AC",
    "native": [
+    "src/core/award.cpp:tour_award_frame",
     "src/core/front_end.hpp:RiderMenu::returning",
-    "src/core/front_end.hpp:TourMenu::returning",
-    "src/core/front_end.hpp:TrackMenu::returning"
+    "src/core/front_end.hpp:TourMenu::slides_back",
+    "src/core/front_end.hpp:TrackMenu::returning",
+    "src/core/front_end_screens.hpp:return_to_tour_menu"
    ],
    "region": "wram"
   },
@@ -7784,6 +7813,16 @@
     "$83:B120"
    ]
   },
+  "src/core/award.cpp:first_medal_colours": {
+   "rom": [
+    "$83:AF14"
+   ]
+  },
+  "src/core/award.cpp:gold_medal_colours": {
+   "rom": [
+    "$83:A67F"
+   ]
+  },
   "src/core/award.cpp:last_step, repeat_step, medal_start": {
    "sram": [
     "$77:10CB"
@@ -7800,6 +7839,11 @@
     "$83:AEF6"
    ]
   },
+  "src/core/award.cpp:second_art_attributes": {
+   "rom": [
+    "$83:B0FC"
+   ]
+  },
   "src/core/award.cpp:second_art_frame": {
    "rom": [
     "$83:B096"
@@ -7808,7 +7852,11 @@
   "src/core/award.cpp:tour_award_frame": {
    "rom": [
     "$80:E54C",
+    "$80:E92F",
     "$83:8853"
+   ],
+   "wram": [
+    "$00AC"
    ]
   },
   "src/core/award.cpp:upload_rider": {
@@ -7997,7 +8045,6 @@
    "rom": [
     "$80:A16A",
     "$80:A8A8",
-    "$80:D20E",
     "$83:91F7"
    ]
   },
@@ -8072,6 +8119,12 @@
    "rom": [
     "$80:A09A",
     "$80:B08C"
+   ]
+  },
+  "src/core/front_end.cpp:set_menu_registers": {
+   "rom": [
+    "$80:D20E",
+    "$83:A721"
    ]
   },
   "src/core/front_end.cpp:start_main_menu": {
@@ -8515,6 +8568,14 @@
    ]
   },
   "src/core/front_end.hpp:TourMenu::returning": {
+   "rom": [
+    "$80:E550"
+   ]
+  },
+  "src/core/front_end.hpp:TourMenu::slides_back": {
+   "rom": [
+    "$80:E550"
+   ],
    "wram": [
     "$00AC"
    ]
@@ -8726,6 +8787,15 @@
   "src/core/front_end_screens.hpp:result_tail_frame": {
    "rom": [
     "$80:9579"
+   ]
+  },
+  "src/core/front_end_screens.hpp:return_to_tour_menu": {
+   "rom": [
+    "$80:BC03",
+    "$80:E550"
+   ],
+   "wram": [
+    "$00AC"
    ]
   },
   "src/core/front_end_screens.hpp:send_arrow_off": {
@@ -11884,10 +11954,10 @@
   }
  },
  "totals": {
-  "addresses": 905,
+  "addresses": 908,
   "io_addresses": 5,
-  "native_symbols": 636,
-  "rom_addresses": 623,
+  "native_symbols": 642,
+  "rom_addresses": 626,
   "sram_addresses": 32,
   "wram_addresses": 245
  }

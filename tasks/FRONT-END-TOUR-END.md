@@ -11,6 +11,10 @@
 - Worker/session/runtime/model: Claude Code desktop app, Claude Opus 5.5 (`claude-opus-5-5`)
 - Actual model/reasoning effort, routing rationale and frontier escalation question (if any):
   **tier 2** for the screens; **tier 1** for anything that changes the scoring.
+  Kept at tier 2: the win test is unchanged; the completion's records (the done tracks, the
+  medal, the unlock rule) transcribe `$83:881B-88D2`, checked against the listing by the worker
+  and the reviewer, against cartridge RAM after two completions (`sram.py`), and by native tests
+  of every rule case.
 - Provider quota window/baseline timestamp, used/remaining or unknown, reserve and session
   allowance (D-0004): at claim the weekly window was about 42% used. The user's allowance (25
   September 2026): continue until the weekly window reaches 80%.
@@ -60,6 +64,9 @@ The gold medal's endings and the reveal of new tours move to
 | Playable | The app through a completion | The award, the reveal on PICK TOUR, and the next tour | report |
 | Nothing moves | ctest, the synthetic suite, the v1 contracts, hidden runs, the differential gates, the equivalence sweep, the front end's comparisons | Unchanged | logs |
 
+The gold endings, the reveal and a completion by a fifth win moved to
+[FRONT-END-ENDINGS](FRONT-END-ENDINGS.md) with the re-scope.
+
 ## Evidence
 
 R-0059 and `local/evidence/front-end-tour-end/` (`NOTES.md`, `decode/tour-end.md`, `compare.py`,
@@ -69,7 +76,7 @@ R-0059 and `local/evidence/front-end-tour-end/` (`NOTES.md`, `decode/tour-end.md
 | --- | --- |
 | Pictures and state | A bronze and a silver forced completion, the award looping, its exit, and PICK TOUR's exits by a choice and by Y: no difference in the menus' words, OAM buffer or text map on any frame; 4,161 pictures equal (R-0059) |
 | Records | `sram.py`: the medals, done tracks, levels and records equal the original's cartridge RAM after both completions |
-| Playable | The app shows the award after a forced completion; a completion by a fifth win needs the stunt event (STUNT-EVENTS) |
+| Playable | The gates run the app hidden with `forced-bronze-long`'s pads through the forced completion, the award and back to PICK TOUR. A completion by a fifth win is not captured (R-0059) |
 | Nothing moves | The gates, when run |
 
 Not done here, recorded in R-0059: the gold medal's endings and HUNTER's, and the reveal of newly
