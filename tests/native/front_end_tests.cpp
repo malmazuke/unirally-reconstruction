@@ -13,6 +13,7 @@
 #include <source_location>
 #include <stdexcept>
 #include <string>
+#include <utility>
 #include <vector>
 
 namespace {
@@ -314,6 +315,9 @@ synthetic_content(std::vector<std::vector<std::uint8_t>> &storage) {
   // The result screen (profile v18): its stream prints the track's name.
   content.result_text = bytes({0xf7, 0xce, 0x00, 0xfc, 0x02, 0xff});
   content.result_icons = keep(12);
+  // The lap result (profile v19): empty streams.
+  content.lap_result_text = content.lap_result_record = bytes({0xff});
+  content.lap_result_player = content.lap_result_opponent = bytes({0xff});
   return content;
 }
 
@@ -693,6 +697,66 @@ void race_result_tests() {
   require(again.track_menu.cursor == 0);
 }
 
+// R-0058: a lap race's result, with lap-won's times (MIKE 1:38.02 against
+// BRONSEN 1:38.10 on ZOOM ZOO): the graph, the best laps, the one-press exit.
+void lap_result_tests() {
+  using unirally::FrontEndScreen;
+  std::vector<std::vector<std::uint8_t>> storage;
+  const auto content = synthetic_content(storage);
+  auto state = unirally::start_front_end();
+  run(state, content, 430);
+  require(run_to(state, content, FrontEndScreen::rider_menu, {0x1000, 0}));
+  require(run_to(state, content, FrontEndScreen::tour_menu, {0x8000, 0}));
+  require(run_to(state, content, FrontEndScreen::track_menu, {0x1000, 0}));
+  run(state, content, 1, {0x0400, 0}); // ZOOM ZOO
+  run(state, content, 1);
+  require(run_to(state, content, FrontEndScreen::now_playing, {0x1000, 0}));
+  require(run_to(state, content, FrontEndScreen::race, {0x1000, 0}));
+  require(state.tour_menu.track == 1);
+  unirally::RaceTimes times{0x264a, 0x2652, true};
+  times.player_laps[0] = 0x0cb2;
+  times.player_laps[1] = 0x0cc0;
+  times.player_laps[2] = 0x0cd8;
+  times.opponent_laps[0] = 0x0cb2;
+  times.opponent_laps[1] = 0x0ccc;
+  times.opponent_laps[2] = 0x0cd4;
+  unirally::return_from_race(state, content, 6725, times);
+  require(run_to(state, content, FrontEndScreen::race_result, {}, 104));
+  // The build: 8 x 8 objects, the dots' targets (the capture's), no record.
+  run(state, content, 1);
+  const auto &dots = state.race_result.dots;
+  require(state.registers.obsel == 0x03 && dots[0].target_x == 0x03b0 &&
+          dots[9].target_x == 0x0cb0);
+  require(dots[0].target_y == 0x0510 && dots[1].target_y == 0x0480 &&
+          dots[2].target_y == 0x0380 && dots[3].target_y == 0x0f00);
+  require(dots[10].target_y == 0x0520 && dots[11].target_y == 0x0410 &&
+          dots[12].target_y == 0x03c0);
+  require(state.oam_buffer[512 + 104 / 4] == 0x5a); // no record: 106-107 hidden
+  // The streams' frame: the best lap a personal best; BRONSEN's under the saved
+  // word `$0064` (0x1300), so all four markers show.
+  run(state, content, 1);
+  require(state.records.best[1] == 0x0cb2 &&
+          state.oam_buffer[512 + 96 / 4] == 0xaa);
+  // The graph settles as in the capture, one pixel short on the first column.
+  run(state, content, 800);
+  const auto at = [&](unsigned entry) {
+    return std::pair{state.oam_buffer[entry * 4], state.oam_buffer[entry * 4 + 1]};
+  };
+  require(at(0) == std::pair<std::uint8_t, std::uint8_t>{0x3a, 0x51});
+  require(at(3) == std::pair<std::uint8_t, std::uint8_t>{0x6b, 0xf0});
+  require(at(11) == std::pair<std::uint8_t, std::uint8_t>{0x4a, 0x40});
+  // Pad 2 does not leave (`$77:0742` bit 10); one frame of pad 1 does.
+  run(state, content, 1, {0, 0x1000});
+  require(state.screen == FrontEndScreen::race_result);
+  run(state, content, 1, {0x1000, 0});
+  require(state.screen == FrontEndScreen::race_result_exit);
+  // The records take the best lap; the win marks ZOOM ZOO done.
+  require(run_to(state, content, FrontEndScreen::track_menu_entry, {}, 5));
+  require(state.records.record_times[0][1] == 0x0cb2 &&
+          state.records.record_holders[0][1] == 0 &&
+          state.records.tracks_done[1] == 1);
+}
+
 } // namespace
 
 int main() try {
@@ -703,6 +767,7 @@ int main() try {
   rider_menu_tests();
   one_player_setup_tests();
   race_result_tests();
+  lap_result_tests();
   return 0;
 } catch (const std::exception &error) {
   std::fprintf(stderr, "%s\n", error.what());

@@ -610,6 +610,7 @@
    "native": [
     "src/core/front_end.hpp:FrontEndScreen",
     "src/core/front_end.hpp:RaceResult",
+    "src/core/lap_result.cpp:(file)",
     "src/core/race_result.cpp:(file)",
     "src/core/race_result.cpp:rider_mark_tile, rider_mark_attributes, opponent_mark_attributes, rider_marks_high",
     "src/core/race_result.cpp:show_icons",
@@ -735,7 +736,8 @@
     "NmX"
    ],
    "native": [
-    "src/core/race_result.cpp:hide_result_objects"
+    "src/core/race_result.cpp:hide_result_objects",
+    "src/core/race_result.cpp:race_result_frame"
    ],
    "observed_entries": {},
    "start": "$80:9805",
@@ -864,6 +866,8 @@
     "NmX"
    ],
    "native": [
+    "src/core/lap_result.cpp:(file)",
+    "src/core/lap_result.cpp:steer",
     "src/core/race_result.cpp:hide_result_objects",
     "src/core/race_result.cpp:race_result_frame"
    ],
@@ -885,6 +889,10 @@
    "mode_at_entry": [
     "NMX"
    ],
+   "native": [
+    "src/core/lap_result.cpp:desired_velocity",
+    "src/core/lap_result.cpp:fastest"
+   ],
    "observed_entries": {},
    "start": "$80:9980",
    "static_entries": {
@@ -904,7 +912,7 @@
    ],
    "native": [
     "src/core/front_end.hpp:FrontEndScreen",
-    "src/core/front_end.hpp:return_from_race",
+    "src/core/front_end.hpp:race_loading_frames",
     "src/core/now_playing.cpp:race_fade_frame",
     "src/core/race_result.cpp:(file)",
     "src/core/race_result.cpp:race_return_frame"
@@ -930,6 +938,7 @@
    ],
    "native": [
     "src/core/front_end.cpp:lay_out_menu_objects",
+    "src/core/lap_result.cpp:print_stream",
     "src/core/text_printer.cpp:record_name"
    ],
    "observed_entries": {},
@@ -1000,7 +1009,6 @@
     "src/core/front_end_screens.hpp:set_early_registers",
     "src/core/race_result.cpp:early_loads",
     "src/core/race_result.cpp:early_palette, early_objects",
-    "src/core/race_result.cpp:hide_result_objects",
     "src/core/race_result.cpp:objects_frame, tiles_frame, palette_low_frame, palette_high_frame"
    ],
    "observed_entries": {},
@@ -1477,6 +1485,9 @@
    "end": "$80:B6F7",
    "mode_at_entry": [
     "NMX"
+   ],
+   "native": [
+    "src/core/race_result.cpp:lap_graph_left"
    ],
    "observed_entries": {},
    "start": "$80:B6D3",
@@ -2474,8 +2485,10 @@
     "NmX"
    ],
    "native": [
+    "src/core/lap_result.cpp:graph_object_sizes",
     "src/core/race_result.cpp:hide_result_objects",
-    "src/core/race_result.cpp:race_result_exit_frame"
+    "src/core/race_result.cpp:race_result_exit_frame",
+    "src/core/race_result.cpp:race_result_frame"
    ],
    "observed_entries": {},
    "start": "$80:F4B8",
@@ -11310,6 +11323,7 @@
    ],
    "native": [
     "src/core/front_end.hpp:SavedMenus",
+    "src/core/lap_result.cpp:saved_word_under_opponent_best",
     "src/core/now_playing.cpp:race_fade_frame"
    ],
    "observed_entries": {},
@@ -11889,7 +11903,7 @@
     "NmX"
    ],
    "native": [
-    "src/core/front_end.hpp:return_from_race",
+    "src/core/front_end.hpp:race_loading_frames",
     "src/core/race_result.cpp:(file)"
    ],
    "observed_entries": {},
@@ -13868,19 +13882,19 @@
    "call returns in the calling mode": 1262
   },
   "bytes": 131072,
-  "cited_addresses": 1089,
+  "cited_addresses": 1109,
   "cited_by_class": {
    "data": 16,
-   "inferred": 117,
+   "inferred": 120,
    "observed": 839,
-   "unknown": 117
+   "unknown": 134
   },
   "cited_by_position": {
    "dat": 16,
-   "loc": 675,
+   "loc": 676,
    "mid": 18,
-   "sub": 263,
-   "unk": 117
+   "sub": 265,
+   "unk": 134
   },
   "conflicts": 0,
   "data": 92,
@@ -13899,9 +13913,9 @@
   "jump_tables": 2,
   "mode_ambiguities": 7,
   "observed": 41778,
-  "routine_bytes_cited_by_native_code": 42055,
+  "routine_bytes_cited_by_native_code": 42123,
   "routines": 636,
-  "routines_cited_by_native_code": 314,
+  "routines_cited_by_native_code": 316,
   "unknown": 52881,
   "unknown_share": 0.4035
  }

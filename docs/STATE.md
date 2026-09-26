@@ -1,5 +1,20 @@
 # Project state
 
+Updated 26 September 2026 (FRONT-END-LAP-RESULT): **after a lap race too, 1P goes on as the
+original does.**
+- A lap race's result is the menus' graph of every lap: twenty dots fly to their laps' times,
+  beside each rider's total and best lap and the track's record line. A press on pad 1 leaves it.
+- The best laps become the personal bests and the track's records, as the original's cartridge
+  RAM has them. So every race of a tour but the stunt event now comes back to PICK TRACK in the
+  app.
+- Against three captures of the original (a won and a lost ZOOM ZOO, and a second race with a
+  record), every frame matches from each race's return to the end: 0 differing pixels in 4,104
+  pictures, and equal menu state, OAM buffer and text map ([R-0058](research/R-0058-lap-result.md)).
+- Pack profile **v19** adds the lap result's text (`content pack --rules
+  tests/manifests/content/classic-crawler-tracks-pack.json --out
+  local/classic-pal-crawler-tracks-v19.pack`).
+- Next: the tour's end ([FRONT-END-TOUR-END](../tasks/FRONT-END-TOUR-END.md)).
+
 Updated 26 September 2026 (FRONT-END-1P-CONTINUATION): **after a one-run race, 1P goes on as
 the original does.**
 - The menus take over on the frame the native race's result load begins: the menus' reload, the

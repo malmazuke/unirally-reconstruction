@@ -53,7 +53,24 @@ Out of scope: the stunt events (STUNT-EVENTS) and the tour's end (FRONT-END-TOUR
 | Playable | The app from power-on through a tour's races | Each race but the stunt event comes back to PICK TRACK | report |
 | Nothing moves | ctest, the synthetic suite, the v1 contracts, hidden runs, the differential gates, the equivalence sweep, the front end's comparisons | Unchanged | logs |
 
+## Evidence
+
+R-0058 and `local/evidence/front-end-lap-result/` (`NOTES.md`, `decode/lap-result.md`,
+`compare.py`, `sram.py`).
+
+| Criterion | Result |
+| --- | --- |
+| Pictures and state | `lap-won`, `lap-lost`, `lap-record` and `lap-record-frames`: the native races return on the original's frames (6725, 7659, 13455); no difference in the menus' words, OAM buffer or text map on any frame from r + 101 to the end; 4,104 pictures equal |
+| Records | `sram.py`: the kept cartridge RAM words equal the original's at lap-won 7610 and 8399 and lap-lost 8610 and 9399 |
+| Playable | Every native race comes back to the menus in the app. The runner's comparisons cover the lap race; the app cannot replay a driven lap race (its race input is a fixed mask), so its hidden runs cover the one-run hand-over and the shared code |
+| Nothing moves | The gates (below) |
+
+Quit and restart: the native race's pause menu restarts the race itself, and nothing hands 0xEA61
+or 0xEA62 to the menus, so there is nothing to score. They stay with the pause menu's own
+recovery.
+
 ## Handoff
+
 
 - The native race's loading time between NOW PLAYING's fade and its initialization is known for
   DRAGSTER only (121 frames on the laboratory's path). `front_end_runner` times no other track.
