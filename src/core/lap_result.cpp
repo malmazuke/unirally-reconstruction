@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <array>
+#include <stdexcept>
 
 namespace unirally::front_end_screens {
 
