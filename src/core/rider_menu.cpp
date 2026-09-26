@@ -60,9 +60,10 @@ void print_rider_menu(FrontEndState& state, const FrontEndContent& content) {
     print_text(state.text, state.printer, content.rider_menu_title, content.character_table);
 }
 
-// $80:F818: the picture built on the last pass into the object tiles.
-void upload_uni(FrontEndState& state, const FrontEndContent& content) {
-    const auto cells = pose_frame_cells(content.uni_pictures, state.rider_menu.picture);
+} // namespace
+
+void upload_pose(FrontEndState& state, const FrontEndContent& content, std::uint16_t pose) {
+    const auto cells = pose_frame_cells(content.uni_pictures, pose);
     for (std::size_t row = 0; row < pose_frame_rows; ++row)
         for (std::size_t column = 0; column < pose_frame_columns; ++column) {
             const auto word = cells[row * pose_frame_columns + column];
@@ -70,6 +71,13 @@ void upload_uni(FrontEndState& state, const FrontEndContent& content) {
                 state, rider_tile_bytes(content.uni_pictures, word),
                 static_cast<unsigned>(uni_tiles_word + row * uni_row_words + column * tile_words));
         }
+}
+
+namespace {
+
+// $80:F818: the picture built on the last pass into the object tiles.
+void upload_uni(FrontEndState& state, const FrontEndContent& content) {
+    upload_pose(state, content, state.rider_menu.picture);
 }
 
 // $80:CBC8-CBFB: the next picture, the intro's while it runs, then the loop's.

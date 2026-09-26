@@ -182,3 +182,24 @@ def v19_new_entries(rom: bytes) -> list[dict[str, Any]]:
     """The entries profile v19 adds to v18 (FRONT-END-LAP-RESULT), in pack order. Run once with the
     ROM to append them to the rules; the tests check the rules against the compiled table."""
     return [table_entry(rom, *table) for table in LAP_RESULT_TABLES]
+
+
+# Profile v20 (FRONT-END-TOUR-END, R-0059): the medal award screen `$83:AEF6`. Its assets: the
+# background's map and tiles (0x53, 0x54), the podium's map and tiles (0x65, 0x64) and colours
+# (0x3B), the background's colours by medal (0x55 bronze, 0x56 silver), and the medal's object
+# tiles (0x5C). The medal's second art, which `$83:B096-B111` DMAs from `$09:A658` and `$09:B658`
+# (two 4 KiB halves, one span), and the award's tables at `$83:B120`: the two objects' first
+# entries (8 bytes), the bounce (`$83:B129`, 25), the rider's poses by step (`$83:B142`, 58
+# words) and the medal's tiles by step (`$83:B1B6`, 53).
+AWARD_ASSETS = (0x3B, 0x53, 0x54, 0x55, 0x56, 0x5C, 0x64, 0x65)
+AWARD_TABLES = (
+    ("front-end.award-medal-art", 0x89A658, 0x2000),
+    ("front-end.award-tables", 0x83B120, 0xCB),
+)
+
+
+def v20_new_entries(rom: bytes) -> list[dict[str, Any]]:
+    """The entries profile v20 adds to v19 (FRONT-END-TOUR-END), in pack order. Run once with the
+    ROM to append them to the rules; the tests check the rules against the compiled table."""
+    entries = [_raw(f"front-end.asset.{asset:03d}", rom, [_asset_piece(rom, asset)]) for asset in AWARD_ASSETS]
+    return entries + [table_entry(rom, *table) for table in AWARD_TABLES]

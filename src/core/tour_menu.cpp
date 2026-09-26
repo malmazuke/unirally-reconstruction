@@ -169,14 +169,16 @@ void draw_tour_picture(FrontEndState& state, const FrontEndContent& content, uns
 
 void enter_tour_menu(FrontEndState& state) {
     state.tour_menu.returning = false;
+    state.tour_menu.slides_back = false;
     state.screen = FrontEndScreen::tour_menu_entry;
 }
 
-void return_to_tour_menu(FrontEndState& state) {
+void return_to_tour_menu(FrontEndState& state, bool slides_back) {
     // `$80:BC03`: PICK TOUR from `$80:E550`, without `$80:A858` and `$80:A82B` before it; its
     // first lines round the track now (`$83:893C`).
     auto& menu = state.tour_menu;
     menu.returning = true;
+    menu.slides_back = slides_back;
     menu.track = static_cast<std::uint8_t>(menu.track / tracks_per_tour * tracks_per_tour);
     state.screen = FrontEndScreen::tour_menu_entry;
 }
@@ -215,7 +217,7 @@ void tour_menu_entry_frame(FrontEndState& state, const FrontEndContent& content)
     case 7:
         copy_oam(state);
         load_text(state, state.slide.hidden_half);
-        start_slide(state, content, menu.returning);
+        start_slide(state, content, menu.slides_back);
         return;
     case medal_palettes_frame:
         for (unsigned k = 0; k < 3; ++k)
@@ -256,6 +258,13 @@ void tour_menu_frame(FrontEndState& state, const FrontEndContent& content, Front
         if (menu.cursor == hunter_right) menu.cursor = hunter;
         menu.tour = menu.cursor;
         menu.medal = state.records.medals[menu.tour * 16U + state.rider_menu.rider];
+    }
+    // From a completion PICK TOUR returns into the scoring (`$83:88D1`), which goes on to PICK
+    // TRACK without testing Y or X.
+    if (state.award.after_completion) {
+        state.award.after_completion = false;
+        state.screen = FrontEndScreen::award_return;
+        return;
     }
     // The handler tests Y and X again after a choice (`$80:BC12`), so back wins.
     if (back) {

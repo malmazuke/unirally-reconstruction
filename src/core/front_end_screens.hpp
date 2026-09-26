@@ -76,6 +76,12 @@ inline std::uint16_t personal_best(const OnePlayerRecords& records, unsigned rid
                                    unsigned track) {
     return records.best[rider * 50U + track];
 }
+// $83:A721 after the award: the menus' registers, colours, VRAM, text and objects as `$80:D20E`
+// leaves them, without its reset of the menus' words; the logo held up; NMI on.
+void restore_menu_screen(FrontEndState& state, const FrontEndContent& content);
+// $83:8E3A and `$80:F818`: pose `pose` into the five rows of six object tiles at VRAM word
+// 0x7000.
+void upload_pose(FrontEndState& state, const FrontEndContent& content, std::uint16_t pose);
 // $80:C6D5, the printer's EF: entry 104 + `object` at the text map word `position`.
 void place_printed_object(FrontEndState& state, unsigned object, unsigned position);
 // $80:98A4: the arrow flies off the left edge.
@@ -131,7 +137,9 @@ void main_menu_return_frame(FrontEndState& state, const FrontEndContent& content
 // tour_menu.cpp: PICK TOUR after a rider is chosen (`$80:BBF7-BC0B`) or back from PICK TRACK
 // (`$80:BC03`), a frame of its set-up and of its loop.
 void enter_tour_menu(FrontEndState& state);
-void return_to_tour_menu(FrontEndState& state);
+// From `$80:E550`: back from PICK TRACK (`$80:BC03`, `$00AC` = 1, sliding back), or from a
+// completion, when `$00AC` as the race left it decides.
+void return_to_tour_menu(FrontEndState& state, bool slides_back = true);
 void tour_menu_entry_frame(FrontEndState& state, const FrontEndContent& content);
 void tour_menu_frame(FrontEndState& state, const FrontEndContent& content, FrontEndPads pads);
 std::uint16_t word_at(std::span<const std::uint8_t> table, std::size_t at);
@@ -159,7 +167,14 @@ void begin_race_return(FrontEndState& state, const FrontEndContent& content, std
                        const RaceTimes& times);
 void race_return_frame(FrontEndState& state, const FrontEndContent& content);
 void race_result_frame(FrontEndState& state, const FrontEndContent& content, FrontEndPads pads);
-void race_result_exit_frame(FrontEndState& state, const FrontEndContent& content);
+void race_result_exit_frame(FrontEndState& state, const FrontEndContent& content,
+                            FrontEndPads pads);
+
+// award.cpp: a tour's completion (R-0059). `complete_tour` on the scoring frame; then the award's
+// frames and, after PICK TOUR, the way to PICK TRACK.
+void complete_tour(FrontEndState& state);
+void tour_award_frame(FrontEndState& state, const FrontEndContent& content, FrontEndPads pads);
+void award_return_frame(FrontEndState& state, const FrontEndContent& content);
 
 // lap_result.cpp: the lap result (R-0058). Its build on the result's first frame, after the
 // common part; its streams on the second; one step of its graph.

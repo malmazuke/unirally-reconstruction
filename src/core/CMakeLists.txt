@@ -25,7 +25,8 @@ target_link_libraries(movement_runner PRIVATE unirally_movement)
 add_library(unirally_presentation STATIC presentation.cpp picture.cpp result_screen.cpp dragster_picture.cpp
             race_windows.cpp race_hud.cpp rider_object.cpp rider_look.cpp snes_screen.cpp
             text_printer.cpp front_end.cpp rider_menu.cpp screen_slide.cpp tour_menu.cpp
-            track_menu.cpp now_playing.cpp race_result.cpp lap_result.cpp)
+            track_menu.cpp now_playing.cpp race_result.cpp lap_result.cpp
+            award.cpp)
 target_include_directories(unirally_presentation PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(unirally_presentation PUBLIC unirally_movement lab_options)
 add_executable(presentation_runner presentation_runner.cpp)

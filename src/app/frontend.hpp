@@ -131,6 +131,11 @@ public:
   std::uint32_t notices() const { return notices_; }
   std::uint32_t returns_to_menu() const { return returns_; }
   std::uint32_t races() const { return races_; }
+  // The front end's screen now, and the rider's medal on the tour chosen last.
+  unsigned screen() const { return static_cast<unsigned>(state_.screen); }
+  unsigned tour_medal() const {
+    return state_.records.medals[state_.tour_menu.tour * 16U + state_.rider_menu.rider];
+  }
   ClassicRaceTrack race_track() const {
     return ClassicRaceTrack{state_.tour_menu.track};
   }

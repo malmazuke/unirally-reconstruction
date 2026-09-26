@@ -201,6 +201,8 @@ bool waits_for_frame(const FrontEndState& state) {
         return next == upload_last_frame || next == menu_screen_frame || next >= restore_frame;
     if (state.screen == FrontEndScreen::race_result_exit)
         return next != scoring_frame && next != scoring_wait_frame;
+    // The award's waits are `$83:A923`'s, which leave the arrow alone.
+    if (state.screen == FrontEndScreen::tour_award) return false;
     // The lap result's second frame (`$80:8FFD-910E`) runs past its frame's end, so the tail
     // after it starts without a frame wait (R-0058).
     if (state.screen == FrontEndScreen::race_result && state.race_result.times.lap_race)
@@ -372,11 +374,9 @@ void load_object_palette(FrontEndState& state, const FrontEndContent& content) {
 
 // The main menu's screen ($80:D20E at 377): BG1 (8bpp logo) and BG2 (4bpp checks and text)
 // with the objects, which the subscreen adds at half (the arrow's shadow).
-void load_main_menu_screen(FrontEndState& state, const FrontEndContent& content) {
-    load_cgram(state, content.base_palette, 0); // $80:A8A8
-    state.registers.force_blank = true;
-    reset_screen_state(state); // $80:A16A
-    auto& r = state.registers;
+// The main menu's registers (`$80:D20E`, `$83:A721`): BG1 and BG2 maps and tiles, mode 3, the
+// objects, the colour math.
+void set_menu_registers(SnesVideoRegisters& r) {
     set_background(r.bg[0], 0x02);
     set_background(r.bg[1], 0x13);
     set_tile_bases(r, 0x23);
@@ -386,6 +386,13 @@ void load_main_menu_screen(FrontEndState& state, const FrontEndContent& content)
     r.sub_screen = 0x10;
     r.colour_select = 0x02;
     r.colour_math = 0x7f;
+}
+
+void load_main_menu_screen(FrontEndState& state, const FrontEndContent& content) {
+    load_cgram(state, content.base_palette, 0); // $80:A8A8
+    state.registers.force_blank = true;
+    reset_screen_state(state); // $80:A16A
+    set_menu_registers(state.registers);
     load_cgram(state, asset(content, menu_palette), 0x70);
     load_object_palette(state, content); // $83:91F7
     load_cgram(state, asset(content, menu_text_palette), 0xd0);
@@ -395,6 +402,37 @@ void load_main_menu_screen(FrontEndState& state, const FrontEndContent& content)
     load_vram(state, asset(content, menu_bg2_tiles), 0x2000);
     load_vram(state, asset(content, menu_bg1_tiles), 0x31a0);
     load_vram(state, asset(content, menu_bg1_tiles_high), 0x3d80);
+}
+
+void restore_menu_screen(FrontEndState& state, const FrontEndContent& content) {
+    auto& r = state.registers;
+    set_menu_registers(r);
+    load_cgram(state, asset(content, menu_palette), 0x70);
+    load_object_palette(state, content); // $83:91FB
+    load_cgram(state, asset(content, menu_text_palette), 0xd0);
+    load_cgram(state, asset(content, base_palette_low), 0);
+    load_cgram(state, asset(content, base_palette_high), 0x40);
+    load_vram(state, asset(content, menu_objects), 0x6000);
+    load_vram(state, asset(content, early_objects), 0x7000);
+    load_vram(state, asset(content, menu_objects_high), 0x7d00);
+    load_vram(state, asset(content, menu_map), 0);
+    load_vram(state, asset(content, menu_bg2_tiles), 0x2000);
+    load_vram(state, asset(content, menu_bg1_tiles_high), 0x3d80);
+    load_vram(state, asset(content, menu_bg1_tiles), 0x31a0); // after 0x45, over its end
+    state.text.words.fill(cleared_text);
+    load_text(state, state.slide.shown_half);
+    state.arrow.x = 0;
+    state.arrow.y = 0x0f00;
+    lay_out_menu_objects(state);
+    // $83:A721 reads the waiting tiles of entries 104-111 at `$9B31` in bank `$83`, the wave's
+    // tiles, where `$80:D2C1` reads the code bytes at `$80:9B31`.
+    for (unsigned k = 0; k < 8; ++k)
+        oam_byte(state, 104 + k, 2) = content.decoration_frames[wave_tiles + 7 - k];
+    copy_oam(state);          // $80:9314
+    state.logo.raised = true; // $80:F53B
+    state.logo.offset = 0x52;
+    r.bg[0].vofs = 0x52;
+    state.cycle.running = true; // NMI on (`$83:A90E`)
 }
 
 void place_printed_object(FrontEndState& state, unsigned object, unsigned position) {
@@ -593,6 +631,10 @@ FrontEndContent front_end_content(const ClassicContentPack& pack) {
     content.lap_result_record = pack.entry("front-end.lap-result-record");
     content.lap_result_player = pack.entry("front-end.lap-result-player");
     content.lap_result_opponent = pack.entry("front-end.lap-result-opponent");
+    for (const unsigned id : {0x3bU, 0x53U, 0x54U, 0x55U, 0x56U, 0x5cU, 0x64U, 0x65U})
+        content.assets[id] = pack.entry(asset_name(id));
+    content.award_tables = pack.entry("front-end.award-tables");
+    content.award_medal_art = pack.entry("front-end.award-medal-art");
     return content;
 }
 
@@ -649,7 +691,9 @@ void update_front_end(FrontEndState& state, const FrontEndContent& content, Fron
     case FrontEndScreen::race: break; // the race engine's frames
     case FrontEndScreen::race_return: race_return_frame(state, content); break;
     case FrontEndScreen::race_result: race_result_frame(state, content, physical); break;
-    case FrontEndScreen::race_result_exit: race_result_exit_frame(state, content); break;
+    case FrontEndScreen::race_result_exit: race_result_exit_frame(state, content, physical); break;
+    case FrontEndScreen::tour_award: tour_award_frame(state, content, physical); break;
+    case FrontEndScreen::award_return: award_return_frame(state, content); break;
     }
     if (state.screen != screen) state.script_frame = 0;
     ++state.frame;

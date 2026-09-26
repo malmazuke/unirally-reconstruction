@@ -291,7 +291,7 @@ int main(int argc, char **argv) try {
   if(!zoom_zoo && content.pack.optional_entry("zoom.landing-response-matrices").empty())
     throw std::invalid_argument("DRAGSTER and the other tracks need the full content pack for jumps, brakes, reversal and tricks; "
                                 "create it from your ROM with: python3 tools/project.py frontend run --track dragster "
-                                "--pack local/classic-pal-crawler-tracks-v19.pack --rom PATH");
+                                "--pack local/classic-pal-crawler-tracks-v20.pack --rom PATH");
   auto zoom_content=unirally::classic_race_content(content.pack,track);
   auto race_presentation=unirally::classic_race_presentation_content(content.pack,track);
   auto zoom_state=unirally::classic_race_start(zoom_content,unirally::classic_race_scenario(track));
@@ -573,7 +573,8 @@ int main(int argc, char **argv) try {
     std::cout << "Front end: frames " << front_end->frames() << "; notices "
               << front_end->notices() << "; returns to the main menu "
               << front_end->returns_to_menu() << "; races returned " << front_end->races()
-              << "; in the menus at the end\n";
+              << "; in the menus at the end, screen " << front_end->screen()
+              << ", medal on the tour " << front_end->tour_medal() << '\n';
   std::cout << "Presentation frames: " << rendered_frames
             << "; rider-pose fallback frames: " << pose_fallback_frames
             << "; identical consecutive redraws: " << identical_redraws

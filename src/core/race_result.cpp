@@ -306,9 +306,16 @@ void update_records(FrontEndState& state) {
     }
 }
 
-// $83:879A for a one-run race: a win (a total strictly under the opponent's) marks the track
-// won; a loss sets `$77:0742` bit 12.
-void score_race(FrontEndState& state) {
+// $83:879A on its pad read (`$80:D1E8`, the exit's third frame): pad 1 exactly Select + X + R
+// forces the tour's completion (`$83:87B6`); otherwise a win (a total strictly under the
+// opponent's) marks the track done, and the tour's fifth done track completes it; a loss sets
+// `$77:0742` bit 12.
+void score_race(FrontEndState& state, FrontEndPads pads) {
+    constexpr std::uint16_t forced_completion = 0x2050;
+    if (pads.one == forced_completion) {
+        complete_tour(state);
+        return;
+    }
     const auto& times = state.race_result.times;
     auto& records = state.records;
     if (times.player_total >= times.opponent_total) {
@@ -322,8 +329,7 @@ void score_race(FrontEndState& state) {
     if (std::all_of(records.tracks_done.begin() + first,
                     records.tracks_done.begin() + first + tracks_per_tour,
                     [](std::uint8_t done) { return done != 0; }))
-        throw std::logic_error("a tour's completion (its award and PICK TOUR's reveal) is not "
-                               "recovered yet");
+        complete_tour(state);
 }
 
 // $80:C24C and `$80:C206`: after a one-run result's fade, both pads released, then a press seen
@@ -435,7 +441,8 @@ void race_result_frame(FrontEndState& state, const FrontEndContent& content, Fro
         one_run_wait_frame(state, content, pads);
 }
 
-void race_result_exit_frame(FrontEndState& state, const FrontEndContent& content) {
+void race_result_exit_frame(FrontEndState& state, const FrontEndContent& content,
+                            FrontEndPads pads) {
     constexpr std::uint32_t leave_frame = 1, palette_low = 4, palette_high = 5;
     constexpr unsigned menu_text_palette = 28;
     switch (state.script_frame) {
@@ -447,8 +454,10 @@ void race_result_exit_frame(FrontEndState& state, const FrontEndContent& content
         update_records(state);
         state.records.tries = 3;
         return;
-    case scoring_frame: // $83:879A: frame waits without the arrow (to `scoring_wait_frame`)
-        score_race(state);
+    case scoring_frame: return; // $83:879A: `$83:A923`'s wait, without the arrow or an OAM copy
+    case scoring_wait_frame:    // $80:D1E8: the OAM copy and the pads, then the scoring
+        copy_oam(state);
+        score_race(state, pads);
         return;
     case palette_low:
         copy_oam(state);

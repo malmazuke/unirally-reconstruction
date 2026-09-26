@@ -49,6 +49,9 @@ ModeLayout mode_layout(const SnesVideoRegisters& registers) {
             return {
                 {bits4, bits4, bits2, inactive}, {{{5, 8}, {4, 7}, {1, 10}, {0, 0}}}, {2, 3, 6, 9}};
         return {{bits4, bits4, bits2, inactive}, {{{6, 9}, {5, 8}, {1, 3}, {0, 0}}}, {2, 4, 7, 10}};
+    case 2: // offset-per-tile from BG3's map; `render_snes_screen` refuses any it would apply
+        return {
+            {bits4, bits4, inactive, inactive}, {{{3, 7}, {1, 5}, {0, 0}, {0, 0}}}, {2, 4, 6, 8}};
     case 3:
         return {
             {bits8, bits4, inactive, inactive}, {{{3, 7}, {1, 5}, {0, 0}, {0, 0}}}, {2, 4, 6, 8}};
@@ -361,6 +364,16 @@ RgbFrame render_snes_screen(const SnesVideoMemory& screen_memory,
     if ((clip_mask == 1 || clip_mask == 2) || (prevent_mask == 1 || prevent_mask == 2))
         throw std::invalid_argument("SNES colour window regions are not modelled");
     const auto layout = mode_layout(registers);
+    // Mode 2's offset-per-tile entries are BG3's map words; bits 13 and 14 apply one to BG1 and
+    // BG2. Native draws mode 2 without them, so it refuses a map where any is set.
+    if (registers.mode == 2) {
+        const unsigned size = registers.bg[2].map_size; // 64 wide, 64 tall by bits 0 and 1
+        const unsigned map_words = 32U * 32U * (1U + (size & 1U)) * (1U + (size >> 1U));
+        constexpr std::uint16_t applies = 0x6000;
+        for (unsigned k = 0; k < map_words; ++k)
+            if (vram_word(screen_memory, registers.bg[2].map_word + k) & applies)
+                throw std::invalid_argument("SNES mode 2's offset-per-tile is not modelled");
+    }
     // bsnes caches CGRAM per line (`PPU::Line::cache`), so a colour changed during the picture
     // shows from the next line on: the picture is drawn from a copy whose CGRAM changes by row.
     SnesVideoMemory memory = screen_memory;
