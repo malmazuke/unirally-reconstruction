@@ -55,8 +55,8 @@ struct FrontEndContent {
 FrontEndContent front_end_content(const ClassicContentPack& pack);
 
 // The main menu's entries, in `$009B` order (COVERAGE-ROADMAP), and the demo it starts when idle;
-// then where the main menu's two codes lead (not `$009B` values): the WIPE RAM menu
-// (`$80:A9B4`) and code not yet read (`$80:F0D6`).
+// then where the main menu's WIPE RAM code leads (not a `$009B` value): its menu (`$80:A9B4`).
+// The other code plays HUNTER's ending in the front end (`$80:F0D6`, HUNTER-ENDING).
 enum class FrontEndMode : std::uint8_t {
     one_player,
     two_player,
@@ -64,8 +64,7 @@ enum class FrontEndMode : std::uint8_t {
     league,
     options,
     demo,
-    wipe_ram_code,
-    unread_code
+    wipe_ram_code
 };
 
 // The menu arrow ($80:FAF5): position and target in sixteenths of a pixel, and its spin.
@@ -317,6 +316,7 @@ enum class FrontEndScreen : std::uint8_t {
     race_restart,      // $80:88DD: the race restarted from its pause menu, back to NOW PLAYING
     tour_ending,       // $83:88FD: a gold medal's ending, then the award's way back to PICK TOUR
     hunter_ending,     // $83:AB9A: HUNTER's gold ending, then the soft reset to the boot
+    hunter_code,       // $80:F0D6: the main menu's code, 31 frames, then HUNTER's ending
 };
 
 // What `$83:9894` saves before a race (work RAM `$0000-$019D`) and `$83:987D` puts back after

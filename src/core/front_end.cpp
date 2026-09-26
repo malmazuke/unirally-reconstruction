@@ -43,8 +43,8 @@ constexpr std::uint16_t shadow_sign_offset = 0x0070;
 constexpr std::int16_t first_idle = 480, idle_after_move = 1500;
 constexpr std::uint8_t menu_entries = 5;
 constexpr std::uint16_t choose_buttons = 0x9080, down_buttons = 0x2400, up_buttons = 0x0800;
-// The two codes: Left, A, L and R; B, Down, L and R.
-constexpr std::uint16_t wipe_ram_code = 0x02b0, unread_code = 0x8430;
+// The two codes: Left, A, L and R (the WIPE RAM menu); B, Down, L and R (HUNTER's ending).
+constexpr std::uint16_t wipe_ram_code = 0x02b0, hunter_ending_code = 0x8430;
 
 // Fades ($80:9869, $80:9885): seven frames of brightness 2, 4, ..., 14, or 13, 11, ..., 1.
 constexpr unsigned fade_frames = 7;
@@ -305,13 +305,15 @@ void run_main_menu(FrontEndState& state, const FrontEndContent& content, FrontEn
     copy_oam(state); // $80:D1EC
     // The codes come first, as exact words on either pad, the WIPE RAM code before the other
     // (`$80:ABEB-AC0A`).
-    for (const auto& [code, mode] : {std::pair{wipe_ram_code, FrontEndMode::wipe_ram_code},
-                                     std::pair{unread_code, FrontEndMode::unread_code}}) {
-        if (pads.one == code || pads.two == code) {
-            state.mode_chosen = true;
-            state.mode = mode;
-            return;
-        }
+    const auto entered = [&](std::uint16_t code) { return pads.one == code || pads.two == code; };
+    if (entered(wipe_ram_code)) {
+        state.mode_chosen = true;
+        state.mode = FrontEndMode::wipe_ram_code;
+        return;
+    }
+    if (entered(hunter_ending_code)) {
+        enter_hunter_code(state);
+        return;
     }
     auto& menu = state.menu;
     // `$80:AC0F-AC14`: the count is stored only while it stays positive; the demo is mode 5.
@@ -786,6 +788,7 @@ void update_front_end(FrontEndState& state, const FrontEndContent& content, Fron
     case FrontEndScreen::award_return: award_return_frame(state, content); break;
     case FrontEndScreen::tour_ending: tour_ending_frame(state, content); break;
     case FrontEndScreen::hunter_ending: hunter_ending_frame(state, content, physical); break;
+    case FrontEndScreen::hunter_code: hunter_code_frame(state); break;
     }
     if (state.screen != screen) state.script_frame = 0;
     ++state.frame;

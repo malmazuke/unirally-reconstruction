@@ -323,6 +323,22 @@ void credits_frame(FrontEndState& state, const FrontEndContent& content, FrontEn
 
 } // namespace
 
+// $80:F0D6: the logo raised (`$80:F51B`, `$77:0742` bit 1) and the arrow sent off (`$80:98A4`);
+// then 31 frames of a wait and an OAM copy (`$80:9318`), and `JML $83:AB9A` on the last, which
+// counts as the ending's frame 0. From the main menu `$77:0742` bits 9 and 10 are clear, so the
+// ending's pad test reads pad 2 too.
+void enter_hunter_code(FrontEndState& state) {
+    state.logo.raised = true;
+    send_arrow_off(state);
+    state.screen = FrontEndScreen::hunter_code;
+}
+
+void hunter_code_frame(FrontEndState& state) {
+    constexpr std::uint32_t code_frames = 31;
+    copy_oam(state);
+    if (state.script_frame == code_frames) start_hunter_ending(state, true);
+}
+
 void start_hunter_ending(FrontEndState& state, bool both_pads) {
     state.hunter = {};
     state.hunter.cheat_page = state.records.cheat; // $83:ABB3

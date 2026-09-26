@@ -228,6 +228,9 @@ void hunter_ending_frame(FrontEndState& state, const FrontEndContent& content, F
 bool hunter_ending_waits(const FrontEndState& state);
 // `JML $80:8858`, the power-on entry: the boot again, the records kept.
 void soft_reset(FrontEndState& state);
+// The main menu's code B, Down, L and R (`$80:F0D6`), then a frame of its 31 before the ending.
+void enter_hunter_code(FrontEndState& state);
+void hunter_code_frame(FrontEndState& state);
 
 // lap_result.cpp: the lap result (R-0058). Its build on the result's first frame, after the
 // common part; its streams on the second; one step of its graph.

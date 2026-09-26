@@ -1398,6 +1398,37 @@ void title_code_tests() {
   require(!ending.records.cheat && ending.records.tour_levels[0] == 1);
 }
 
+// The main menu's code B, Down, L and R (`$80:F0D6`): the logo rises, the
+// arrow flies off, and 31 frames later (with a frame wait each) HUNTER's
+// ending starts, its pad tests reading pad 2 too; no medal changes.
+void code_route_tests() {
+  using unirally::FrontEndScreen;
+  using Part = unirally::HunterEndingPart;
+  std::vector<std::vector<std::uint8_t>> storage;
+  const auto content = synthetic_content(storage);
+  auto state = unirally::start_front_end();
+  run(state, content, 430);
+  require(state.screen == FrontEndScreen::main_menu);
+  run(state, content, 1, {0, 0x8430});
+  require(state.screen == FrontEndScreen::hunter_code && state.logo.raised &&
+          state.arrow.target_x == 0xfd00 && !state.mode_chosen);
+  for (unsigned frame = 1; frame < 31; ++frame) {
+    const auto spin = state.arrow.spin;
+    run(state, content, 1);
+    require(state.screen == FrontEndScreen::hunter_code &&
+            state.arrow.spin != spin);
+  }
+  run(state, content, 1);
+  require(state.screen == FrontEndScreen::hunter_ending &&
+          state.script_frame == 0 && state.hunter.both_pads);
+  run(state, content, 110);
+  run(state, content, 2, {0, 0x0080}); // the first page
+  run(state, content, 110);
+  run(state, content, 1, {0, 0x0080}); // pad 2 ends the second page's wait
+  require(state.hunter.part == Part::credits &&
+          state.records.medals[8 * 16] == 2);
+}
+
 } // namespace
 
 int main() try {
@@ -1415,6 +1446,7 @@ int main() try {
   hunter_wait_tests();
   soft_reset_tests();
   title_code_tests();
+  code_route_tests();
   return 0;
 } catch (const std::exception &error) {
   std::fprintf(stderr, "%s\n", error.what());
