@@ -198,8 +198,8 @@ const std::array<EndingLayout, 8> endings{{
     {0x80, 0x41, 0x61, 0xa3, 96, 380, shuffler::script},     // SHUFFLER `$83:B1EB`
     {0x80, 0x3e, 0x5e, 0x83, 94, 299, bounder::script},      // BOUNDER `$83:B7D2`
     {0x80, 0, 0x5e, 0x83, 94, 393, walker::script, true},    // WALKER `$83:B506`
-    {},
-    {0x80, 0x42, 0x62, 0x83, 95, 516, hopper::script}, // HOPPER `$83:C11E`
+    {0x80, 0x43, 0x63, 0xa3, 95, 321, runner::script},       // RUNNER `$83:C715`
+    {0x80, 0x42, 0x62, 0x83, 95, 516, hopper::script},       // HOPPER `$83:C11E`
     {},
 }};
 

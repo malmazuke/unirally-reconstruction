@@ -1,4 +1,4 @@
-// The gold endings' scripts of SHUFFLER, WALKER, HOPPER, JUMPER and BOUNDER (R-0062), one
+// The gold endings' scripts of the tours after CRAWLER (R-0062), one
 // namespace a tour: each runs on every frame from `bar_frame` to its t', frames counted from the
 // completion's scoring frame (tour_ending.cpp has the scheme around them and CRAWLER's).
 #include "tour_ending_scripts.hpp"
@@ -789,5 +789,66 @@ void script(FrontEndState& state, const FrontEndContent& content, std::uint32_t 
     run_loop(bound_off, frame, state, content, bound_off_part);
 }
 } // namespace bounder
+
+// RUNNER (`$83:C715`): a riderless uni walks in from the right and a ten-ton weight drops on it.
+// Its table (`$83:C89A`): objects 0-3.
+namespace runner {
+namespace {
+
+constexpr unsigned tour = 5;
+constexpr unsigned first_objects = 4, weight = 0, uni = 1;
+constexpr std::uint8_t first_high = 0x28, squashed_high = 0x2c, drop_speed = 8;
+constexpr std::uint32_t objects_frame = 93, poses_frame = 94;
+constexpr std::uint16_t weight_drops = 0x89;
+// $83:C7F7, then 61 waits each with an OAM copy (`$83:C886`) to t'.
+constexpr Loop walk_in{109, 151, 1}, hold{walk_in.end(), 61, 1};
+
+void setup_objects(FrontEndState& state, const FrontEndContent& content) {
+    load_first_objects(state, content.ending_tables[tour], 0, first_objects);
+    high_bits(state, 0) = first_high;
+    copy_oam(state);
+}
+
+void setup_poses(FrontEndState& state, const FrontEndContent& content) {
+    state.ending.pose = 0;
+    upload_built_pose(state, content, first_pose_word);
+    upload_built_pose(state, content, second_pose_word);
+    state.ending.step = 0;
+}
+
+// $83:C7F7-C86B: the uni walks a pixel left; from step 0x89 the weight drops.
+void walk_in_part(FrontEndState& state, const FrontEndContent& content, unsigned, unsigned wait) {
+    auto& ending = state.ending;
+    if (wait == 0) {
+        --oam_byte(state, uni, 0);
+        return;
+    }
+    upload_built_pose(state, content, first_pose_word);
+    copy_oam(state);
+    walk(state); // $83:C80C-C83E, a copy of `$83:B79C`
+    ++ending.step;
+    if (ending.step >= weight_drops) oam_byte(state, weight, 1) += drop_speed;
+}
+
+// $83:C86E-C88E: the weight lands (back up a step) and the uni under it is hidden.
+void hold_part(FrontEndState& state, const FrontEndContent&, unsigned step, unsigned wait) {
+    if (wait == 1) {
+        copy_oam(state);
+        return;
+    }
+    if (step > 0) return;
+    oam_byte(state, weight, 1) -= drop_speed;
+    high_bits(state, 0) = squashed_high;
+}
+
+} // namespace
+
+void script(FrontEndState& state, const FrontEndContent& content, std::uint32_t frame) {
+    if (frame == objects_frame) setup_objects(state, content);
+    if (frame == poses_frame) setup_poses(state, content);
+    run_loop(walk_in, frame, state, content, walk_in_part);
+    run_loop(hold, frame, state, content, hold_part);
+}
+} // namespace runner
 
 } // namespace unirally::front_end_screens::ending
