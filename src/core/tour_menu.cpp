@@ -201,6 +201,31 @@ void return_to_tour_menu(FrontEndState& state, bool slides_back) {
     state.screen = FrontEndScreen::tour_menu_entry;
 }
 
+// A reveal (`$80:E580-E5A2`) redraws the screen after the slide at the new level: the medal
+// tiles, `$80:A858`'s two frames with the tours printed, and the text sent to the shown half; the
+// rest of the entry follows four frames later (R-0062). False past the four frames.
+constexpr std::uint32_t reveal_frames = 4;
+bool reveal_frame(FrontEndState& state, const FrontEndContent& content, std::uint32_t step) {
+    switch (step) {
+    case 0: load_vram(state, content.medal_tiles, swapped_object_tiles_word); return true;
+    case 1:
+        copy_oam(state);
+        load_cgram(state, asset(content, base_palette_low), 0);
+        return true;
+    case 2:
+        copy_oam(state);
+        load_cgram(state, asset(content, base_palette_high), 0x40);
+        print_tour_menu(state, content);
+        return true;
+    case 3:
+        copy_oam(state);
+        load_text(state, state.slide.shown_half);
+        show_medal_entries(state);
+        return true;
+    default: return false;
+    }
+}
+
 void tour_menu_entry_frame(FrontEndState& state, const FrontEndContent& content) {
     constexpr std::uint32_t first_slide_frame = 8, medal_palettes_frame = 47, medals_frame = 48,
                             loop_frame = 49;
@@ -208,29 +233,10 @@ void tour_menu_entry_frame(FrontEndState& state, const FrontEndContent& content)
     // From PICK TRACK the script starts at the medal tiles, its fourth frame.
     constexpr std::uint32_t returning_skips = 3;
     auto frame = state.script_frame + (menu.returning ? returning_skips : 0);
-    // A reveal (`$80:E580-E5A2`) redraws the screen after the slide at the new level: the medal
-    // tiles, `$80:A858`'s two frames with the tours printed, and the text sent to the shown half;
-    // the rest of the entry follows four frames later (R-0062).
-    constexpr std::uint32_t reveal_frames = 4;
+    // A reveal's four frames come after the slide; the rest of the entry follows them.
     if (menu.revealing && frame >= medal_palettes_frame) {
-        switch (frame - medal_palettes_frame) {
-        case 0: load_vram(state, content.medal_tiles, swapped_object_tiles_word); return;
-        case 1:
-            copy_oam(state);
-            load_cgram(state, asset(content, base_palette_low), 0);
-            return;
-        case 2:
-            copy_oam(state);
-            load_cgram(state, asset(content, base_palette_high), 0x40);
-            print_tour_menu(state, content);
-            return;
-        case 3:
-            copy_oam(state);
-            load_text(state, state.slide.shown_half);
-            show_medal_entries(state);
-            return;
-        default: frame -= reveal_frames; break;
-        }
+        if (reveal_frame(state, content, frame - medal_palettes_frame)) return;
+        frame -= reveal_frames;
     }
     switch (frame) {
     case 1:
