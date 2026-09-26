@@ -63,13 +63,17 @@ void print_rider_menu(FrontEndState& state, const FrontEndContent& content) {
 } // namespace
 
 void upload_pose(FrontEndState& state, const FrontEndContent& content, std::uint16_t pose) {
+    upload_pose(state, content, pose, uni_tiles_word);
+}
+
+void upload_pose(FrontEndState& state, const FrontEndContent& content, std::uint16_t pose,
+                 unsigned word) {
     const auto cells = pose_frame_cells(content.uni_pictures, pose);
     for (std::size_t row = 0; row < pose_frame_rows; ++row)
         for (std::size_t column = 0; column < pose_frame_columns; ++column) {
-            const auto word = cells[row * pose_frame_columns + column];
-            load_vram(
-                state, rider_tile_bytes(content.uni_pictures, word),
-                static_cast<unsigned>(uni_tiles_word + row * uni_row_words + column * tile_words));
+            const auto cell = cells[row * pose_frame_columns + column];
+            load_vram(state, rider_tile_bytes(content.uni_pictures, cell),
+                      static_cast<unsigned>(word + row * uni_row_words + column * tile_words));
         }
 }
 

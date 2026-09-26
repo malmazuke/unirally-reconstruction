@@ -80,7 +80,7 @@ def main():
     p.add_argument('--out', type=Path, required=True); p.add_argument('--first-seed', type=int, default=1)
     p.add_argument('--seeds', type=int, default=10); p.add_argument('--binary', type=Path, required=True)
     p.add_argument('--core', type=Path, default=Path('local/emulators/bsnes/bsnes/out/bsnes_libretro.dylib'))
-    p.add_argument('--pack', type=Path, default=Path('local/classic-pal-crawler-tracks-v21.pack'))
+    p.add_argument('--pack', type=Path, default=Path('local/classic-pal-crawler-tracks-v22.pack'))
     a = p.parse_args()
     results = run(a.out, a.first_seed, a.seeds, a.binary.resolve(), a.core, a.pack)
     counts = {}

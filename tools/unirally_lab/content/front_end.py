@@ -220,3 +220,27 @@ def v21_new_entries(rom: bytes) -> list[dict[str, Any]]:
     """The entries profile v21 adds to v20 (RACE-RIDERS-OPPONENTS), in pack order. Run once with
     the ROM to append them to the rules; the tests check the rules against the compiled table."""
     return [table_entry(rom, *table) for table in RACE_PAIRING_TABLES]
+
+
+# Profile v22 (FRONT-END-ENDINGS, R-0062): the tours' gold endings. Their screen's assets: BG1's gold
+# colours (0x57), the bar's map, tiles and colours (0x52, 0x4C, 0x3C), the tours' object colours
+# (0x3E-0x43) and object tiles (0x5E-0x63); and each ending's tables between its code in bank $83
+# (first objects, tiles by step, pose words, the flash's colours).
+ENDING_ASSETS = (0x3C, 0x3E, 0x3F, 0x40, 0x41, 0x42, 0x43, 0x4C, 0x52, 0x57, 0x5E, 0x5F, 0x60, 0x61, 0x62, 0x63)
+ENDING_TABLES = (
+    ("front-end.ending-crawler", 0x83C6C0, 82),
+    ("front-end.ending-shuffler", 0x83B4DF, 39),
+    ("front-end.ending-walker", 0x83B790, 12),
+    ("front-end.ending-hopper", 0x83C458, 68),
+    ("front-end.ending-jumper", 0x83BE9A, 32),
+    ("front-end.ending-bounder", 0x83BB44, 60),
+    ("front-end.ending-runner", 0x83C89A, 16),
+    ("front-end.ending-sprinter", 0x83C0F6, 40),
+)
+
+
+def v22_new_entries(rom: bytes) -> list[dict[str, Any]]:
+    """The entries profile v22 adds to v21 (FRONT-END-ENDINGS), in pack order. Run once with the
+    ROM to append them to the rules; the tests check the rules against the compiled table."""
+    entries = [_raw(f"front-end.asset.{asset:03d}", rom, [_asset_piece(rom, asset)]) for asset in ENDING_ASSETS]
+    return entries + [table_entry(rom, *table) for table in ENDING_TABLES]

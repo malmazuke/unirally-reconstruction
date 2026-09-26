@@ -183,6 +183,33 @@ void race_result_exit_frame(FrontEndState& state, const FrontEndContent& content
 void complete_tour(FrontEndState& state);
 void tour_award_frame(FrontEndState& state, const FrontEndContent& content, FrontEndPads pads);
 void award_return_frame(FrontEndState& state, const FrontEndContent& content);
+// $83:A4E9: brightness 14 to 0 on frames 1-15, then forced blank on frame 16.
+void fade_down(FrontEndState& state, std::uint32_t frame);
+// $83:A4D2: brightness `step` (1-15), the screen shown.
+void fade_up(FrontEndState& state, std::uint32_t step);
+// $82:B1AE: a map into VRAM from word `word`, `bits` added to each entry (its palette and
+// priority).
+void load_map(FrontEndState& state, std::span<const std::uint8_t> map, unsigned word,
+              std::uint16_t bits);
+// The award's first reset (`$83:A575-A613`), which the endings' `$83:A507` shares: NMI off, the
+// object tiles and text cleared, the scroll, screens and colour math reset, every object hidden,
+// the gold medal's colours at CGRAM 0x90.
+void reset_award_screen(FrontEndState& state, const FrontEndContent& content);
+// The way back after the award or an ending (`$83:A4E9`, `$83:A721`, `$83:A4D2`, `$83:8853`),
+// `exit` frames after the last shown frame; after an ending everything from the menus' screen on
+// runs `delay` (1) frame later, and NMI's hook runs in the frame the screen comes back (R-0062).
+// The NMI's hook while NMI is on: the logo's slide, then the palette cycle.
+void run_nmi_hook(FrontEndState& state, const FrontEndContent& content);
+void way_back_frame(FrontEndState& state, const FrontEndContent& content, std::uint32_t exit,
+                    std::uint32_t delay);
+// A gold medal's ending (R-0062).
+void start_tour_ending(FrontEndState& state);
+bool has_tour_ending(unsigned tour);
+void tour_ending_frame(FrontEndState& state, const FrontEndContent& content);
+// $83:8E3A and `$80:F814` to VRAM word `word`: pose `pose` into six columns of object tiles a
+// row, five rows 0x100 words apart.
+void upload_pose(FrontEndState& state, const FrontEndContent& content, std::uint16_t pose,
+                 unsigned word);
 
 // lap_result.cpp: the lap result (R-0058). Its build on the result's first frame, after the
 // common part; its streams on the second; one step of its graph.

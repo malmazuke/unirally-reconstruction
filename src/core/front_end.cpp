@@ -202,7 +202,8 @@ bool waits_for_frame(const FrontEndState& state) {
     if (state.screen == FrontEndScreen::race_result_exit)
         return next == 1 || next > result_scoring_frame(state);
     // The award's waits are `$83:A923`'s, which leave the arrow alone.
-    if (state.screen == FrontEndScreen::tour_award) return false;
+    if (state.screen == FrontEndScreen::tour_award || state.screen == FrontEndScreen::tour_ending)
+        return false;
     // The lap result's second frame (`$80:8FFD-910E`) runs past its frame's end, so the tail
     // after it starts without a frame wait (R-0058).
     if (state.screen == FrontEndScreen::race_result && state.race_result.times.lap_race)
@@ -339,6 +340,11 @@ void keep_line_colours(FrontEndState& state) {
 }
 
 } // namespace
+
+void run_nmi_hook(FrontEndState& state, const FrontEndContent& content) {
+    scroll_logo(state);
+    step_palette_cycle(state, content);
+}
 
 // $80:A09A (frame 24): every OAM entry at (1, 1), every high bit 0x55; the early loads.
 void clear_oam_buffer(FrontEndState& state) {
@@ -635,6 +641,13 @@ FrontEndContent front_end_content(const ClassicContentPack& pack) {
         content.assets[id] = pack.entry(asset_name(id));
     content.award_tables = pack.entry("front-end.award-tables");
     content.award_medal_art = pack.entry("front-end.award-medal-art");
+    for (const unsigned id : {0x3cU, 0x3eU, 0x3fU, 0x40U, 0x41U, 0x42U, 0x43U, 0x4cU, 0x52U, 0x57U,
+                              0x5eU, 0x5fU, 0x60U, 0x61U, 0x62U, 0x63U})
+        content.assets[id] = pack.entry(asset_name(id));
+    constexpr std::array<const char*, 8> endings{"crawler", "jumper", "shuffler", "bounder",
+                                                 "walker",  "runner", "hopper",   "sprinter"};
+    for (std::size_t tour = 0; tour < endings.size(); ++tour)
+        content.ending_tables[tour] = pack.entry(std::string("front-end.ending-") + endings[tour]);
     return content;
 }
 
@@ -665,10 +678,7 @@ void update_front_end(FrontEndState& state, const FrontEndContent& content, Fron
     // NMIs are enabled at the end of the title's loads (`$80:F5B8`); the hook runs from then on:
     // the logo's slide, then the palette cycle.
     if (state.frame == cycle_start_frame) state.cycle.running = true;
-    if (state.cycle.running) {
-        scroll_logo(state);
-        step_palette_cycle(state, content);
-    }
+    if (state.cycle.running) run_nmi_hook(state, content);
     if (waits_for_frame(state)) update_arrow(state, content);
     const FrontEndPads physical{physical_pad(pads.one), physical_pad(pads.two)};
     const auto screen = state.screen;
@@ -695,6 +705,7 @@ void update_front_end(FrontEndState& state, const FrontEndContent& content, Fron
     case FrontEndScreen::tour_award: tour_award_frame(state, content, physical); break;
     case FrontEndScreen::race_restart: race_restart_frame(state); break;
     case FrontEndScreen::award_return: award_return_frame(state, content); break;
+    case FrontEndScreen::tour_ending: tour_ending_frame(state, content); break;
     }
     if (state.screen != screen) state.script_frame = 0;
     ++state.frame;

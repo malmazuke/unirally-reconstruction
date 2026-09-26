@@ -542,6 +542,51 @@ const std::array<RequiredEntry, 2> race_pairing_required{{
     {"race.rider-colour-math", 64,
      "d20ed19f19efbacd90ce3f12b050d8e5fc95c934a87b93e2e59847e2a7ef68e6"},
 }};
+
+// FRONT-END-ENDINGS (profile v22): the tours' gold endings
+// (tools/unirally_lab/content/front_end.py v22_new_entries, R-0062).
+const std::array<RequiredEntry, 24> ending_required{{
+    {"front-end.asset.060", 32, "4c18bf49e7550fb65f731ce30ae7729621f926c1a88aa69ed6831283a5dac25a"},
+    {"front-end.asset.062", 32, "73055011db80f721f12d966c58e31cb539bfe3d454f374635619d43a5823ae63"},
+    {"front-end.asset.063", 32, "d68729d0c2d57e87aeed270d0a80fc1d7a5a79a4a7313be7d59cc2fa427d350c"},
+    {"front-end.asset.064", 32, "20c67f52b9c9ff9ac32fef50cb6d904ffa285c98cae0d69e83623f81f240eb28"},
+    {"front-end.asset.065", 32, "6f962d098e51b15fb97b674521a0a0b38095cdb0290b82701f7c6b837f3f3f97"},
+    {"front-end.asset.066", 32, "20c67f52b9c9ff9ac32fef50cb6d904ffa285c98cae0d69e83623f81f240eb28"},
+    {"front-end.asset.067", 32, "1d00328596452d100810fba588063590062af42d167fa5cdf728645f7e05758d"},
+    {"front-end.asset.076", 160,
+     "575bf52ab1376600fa3f3763cf3088810db082d25ba7502259cff01452f0aaa5"},
+    {"front-end.asset.082", 1920,
+     "27bc67ff10deb4a1adde80d8f3dbc4e4429f0559b423cc6a1bdb99cf0db23234"},
+    {"front-end.asset.087", 32, "7c4050022226cb77b761a73161ffb534376f30ac1aa8487396aeb8dd313989cf"},
+    {"front-end.asset.094", 1024,
+     "2c9fdaae7c31a28e13979e35c7c9c13fbf209406ca68a9a691627b54ad3ed00e"},
+    {"front-end.asset.095", 6144,
+     "5503bf37fba504ac8424880d520b6f3f7816ea0c631c4b18f2f3a79de9319519"},
+    {"front-end.asset.096", 4096,
+     "09fa99ef31e4edc20cda7c63f59755f6baf100e891841cd2a33deef319a012ef"},
+    {"front-end.asset.097", 5120,
+     "e7c6ca020a9a272133a7249a91c627e2f73b81b8c9b5ce922d66aef8f8042ab6"},
+    {"front-end.asset.098", 2048,
+     "db37e9afe45b2b81750d44cb28d3686075e5cd42ae567c93ca79e4275b98db50"},
+    {"front-end.asset.099", 2048,
+     "d5d8d391b67997e59b218a896b4f9f34af675c03a0e541435390cc996ec14fc9"},
+    {"front-end.ending-crawler", 82,
+     "3f28268340f48e270bd8105ab3dfd1eb84dd7e8d2b27ee0dc4a74245f01e83a8"},
+    {"front-end.ending-shuffler", 39,
+     "93d209cbe61ce61be3f1e0cc9d640c24ad3a9099f16d94f81c37771b2cd04f96"},
+    {"front-end.ending-walker", 12,
+     "e90aea14daf09093439f4a021e20262f9aef716568af6e8a78b5c313f091e4e0"},
+    {"front-end.ending-hopper", 68,
+     "6a342f96a49bcc93e00a96e857130220cfe4064586c5829245b98db3b333f1d0"},
+    {"front-end.ending-jumper", 32,
+     "b427c6e308ff9f05d439c48d2990bd1636222f349d56878f38a39f2eb8db475b"},
+    {"front-end.ending-bounder", 60,
+     "f6b3a40f98e596bc9370b65d8853a71cfd849e86cda3b321d0d1f161fc9162a4"},
+    {"front-end.ending-runner", 16,
+     "49b7103105841599332759ede60db976bbbe468097d170a263295d81baa5d9a6"},
+    {"front-end.ending-sprinter", 40,
+     "260be8fb3b747688b586beeae410b0568dae4a48f4332e9ba2f1c075bf7fa23a"},
+}};
 // LOCKED-TOURS (profile v12): the race tracks of the five tours a cold start does not
 // list, and sceneries 1, 8 and 12. Generated from the rules file (tracks.py v12_new_entries).
 const std::array<RequiredEntry, 89> locked_tracks_required{{
@@ -702,7 +747,7 @@ const std::array<RequiredEntry, 89> locked_tracks_required{{
     {"scenery.12.palette", 352, "b2a9aefe13c1dc68454cf0a5c2bedb086c6e162dbea1df1f2ef108347d89ab63"},
 }};
 constexpr std::string_view two_track_rules_sha =
-    "d4d19ba176a830833219a184c271821cd63901c899da00cbbbb2198c425b54e4";
+    "f8aa55d05a62acc472885b9bf8c43a21d91fee93fbf89e66ea4850a013028a02";
 
 std::array<std::uint8_t, 32> hex_digest(std::string_view text) {
     if (text.size() != 64) throw std::logic_error("invalid compiled Classic SHA-256");
@@ -792,7 +837,7 @@ std::array<std::uint8_t, 32> sha256(std::span<const std::uint8_t> source) {
 
 namespace {
 constexpr std::array<std::string_view, 2> supported_profiles{"classic.pal.crawler.dragster.v1",
-                                                             "classic.pal.crawler.tracks.v21"};
+                                                             "classic.pal.crawler.tracks.v22"};
 } // namespace
 
 std::span<const std::string_view> supported_pack_profiles() {
@@ -857,7 +902,8 @@ std::vector<RequiredEntry> required_entries(bool tracks) {
                              std::span<const RequiredEntry>(race_result_required),
                              std::span<const RequiredEntry>(lap_result_required),
                              std::span<const RequiredEntry>(award_required),
-                             std::span<const RequiredEntry>(race_pairing_required)})
+                             std::span<const RequiredEntry>(race_pairing_required),
+                             std::span<const RequiredEntry>(ending_required)})
         out.insert(out.end(), table.begin(), table.end());
     return out;
 }

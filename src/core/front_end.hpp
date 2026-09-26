@@ -43,6 +43,9 @@ struct FrontEndContent {
         lap_result_opponent;
     // The medal award (profile v20): its tables at `$83:B120` and the medal's second art.
     std::span<const std::uint8_t> award_tables, award_medal_art;
+    // Each tour's ending tables (profile v22), by tour (`$00D0`): CRAWLER, JUMPER, SHUFFLER,
+    // BOUNDER, WALKER, RUNNER, HOPPER, SPRINTER.
+    std::array<std::span<const std::uint8_t>, 8> ending_tables{};
 };
 FrontEndContent front_end_content(const ClassicContentPack& pack);
 
@@ -208,6 +211,18 @@ struct TourAward {
     bool after_completion{};    // PICK TOUR was entered from the scoring (`$83:88CD`)
 };
 
+// A tour's gold ending (`$83:88FD`, R-0062): a scripted animation that reads no pad. Its counters
+// are the cartridge RAM's `$77:10C9`, `$10CB` and `$10A7`.
+struct TourEnding {
+    std::uint8_t tour{};         // $00D0: the tour completed
+    std::uint16_t step{};        // $77:10C9
+    std::uint16_t count{};       // $77:10CB
+    std::uint16_t drop{};        // $77:10A7
+    std::uint16_t pose{};        // the pose built into `$0CF0`, sent by the next upload
+    std::uint16_t second_pose{}; // the pose built into `$16F0` (BOUNDER, SPRINTER)
+    std::uint16_t scroll{};      // $0090: JUMPER's scrolling pattern
+};
+
 // The result screen (`$80:951C`): the one-run result (`$80:CE90`) and its waits for a press, or
 // the lap result (`$80:8D6E`) and its graph, which the first press leaves.
 struct RaceResult {
@@ -266,6 +281,7 @@ enum class FrontEndScreen : std::uint8_t {
     tour_award,        // $83:881B: a tour's completion, the medal award `$83:AEF6`, the restore
     award_return,      // $80:BC7B after PICK TOUR's return from a completion: `$80:A858`
     race_restart,      // $80:88DD: the race restarted from its pause menu, back to NOW PLAYING
+    tour_ending,       // $83:88FD: a gold medal's ending, then the award's way back to PICK TOUR
 };
 
 // What `$83:9894` saves before a race (work RAM `$0000-$019D`) and `$83:987D` puts back after
@@ -310,6 +326,7 @@ struct FrontEndState {
     NowPlaying now_playing{};
     RaceResult race_result{};
     TourAward award{};
+    TourEnding ending{};
     SavedMenus saved{}; // during a race and its return
     bool one_player{};  // $77:10AD = 1: 1P from a rider's choice to the main menu's return
     bool mode_chosen{};
