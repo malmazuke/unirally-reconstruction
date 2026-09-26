@@ -194,23 +194,29 @@ void ClassicRaceHudClock::redraw_arrow(const ZoomZooState& previous, const ZoomZ
 
 // The update raises `$0EE7` in two places, both in the player's consumer `$81:BEA8`, which runs
 // when the queue's cooldown is zero: taking an event (`$81:C057`), which steps the read cursor
-// and writes the event's sixteen characters, and the first look at a dry queue (`$81:BFB4`),
-// which sets `$03ED` (native `empty_display`) and writes the HUD message buffer, blank outside
-// the HUNTER tour, only if `$11C1` says an event was taken since the last dry look. The
-// cooldown alone does not tell: when the hints end `$81:C5B9` clears it and a consumption in
-// the same update sets a lower one (M4-16 primary 2742: 92 to 40). The NMI uploads the text as
-// it stands when the task is reached.
+// on and writes the event's sixteen characters, and the first look at a dry queue (`$81:BFB4`),
+// which sets `$03ED` (native `empty_display`) and writes the HUD message buffer (blank outside
+// the HUNTER tour, the effect's name on it) only if `$11C1` says an event was taken since the
+// last dry look. The cooldown alone does not tell: when the hints end `$81:C5B9` clears it and
+// a consumption in the same update sets a lower one (M4-16 primary 2742: 92 to 40). The NMI
+// uploads the text as it stands when the task is reached.
 void ClassicRaceHudClock::request_caption(const ZoomZooState& previous,
                                           const ZoomZooState& updated) {
-    // The HUNTER tour's front-of-queue announcements move the read cursor too.
-    if (classic_race_scenario(updated.track).hunter_tour) return;
     const auto& before = previous.player_announcements;
     const auto& after = updated.player_announcements;
-    if (after.queue.read_cursor != before.queue.read_cursor) {
-        caption_buffer_ = after.queue.entries[after.queue.read_cursor];
+    const auto slots = static_cast<unsigned>(after.queue.entries.size());
+    // On the HUNTER tour a front-of-queue announcement ($81:C55B) steps the cursor back later
+    // in the same update; the text it carries (`hunter.caption`) still changes.
+    const bool hunter = classic_race_scenario(updated.track).hunter_tour;
+    const bool taken =
+        after.queue.read_cursor == (before.queue.read_cursor + 1U) % slots
+        || (hunter && !after.empty_display && updated.hunter.caption != previous.hunter.caption);
+    if (taken) {
+        caption_buffer_ =
+            hunter ? updated.hunter.caption : after.queue.entries[after.queue.read_cursor];
         consumed_since_blank_ = true;
     } else if (after.empty_display && !before.empty_display && consumed_since_blank_) {
-        caption_buffer_ = 0;
+        caption_buffer_ = hunter ? updated.hunter.caption : 0U;
         consumed_since_blank_ = false;
     } else {
         return;
@@ -553,17 +559,15 @@ std::optional<ClassicRaceArrow> classic_arrow_without_history(const ZoomZooState
 
 } // namespace
 
-// With the HUD queue's history the caption is what the queue last uploaded; the HUNTER tour's
-// is drawn from the state's carried row.
+// With the HUD queue's history the caption is what the queue last uploaded.
 void draw_classic_caption(RgbFrame& frame, const ZoomZooState& published,
                           const ClassicRacePresentationContent& content,
                           const std::optional<ClassicHudPublished>& hud,
                           std::array<std::uint8_t, 3> ink, std::bitset<256 * 224>& inked) {
     const auto font = content.caption_font;
     if (font.size() != 2048) return;
-    const bool queued = hud && !classic_race_scenario(published.track).hunter_tour;
-    const auto selected = queued ? classic_caption_text(hud->caption_event, content.captions)
-                                 : classic_caption_entry(published, content.captions);
+    const auto selected = hud ? classic_caption_text(hud->caption_event, content.captions)
+                              : classic_caption_entry(published, content.captions);
     if (!selected) return;
     const auto entry = *selected;
     // $81:F322/$81:F33C write sixteen characters to columns 8-23 of rows 10-11.

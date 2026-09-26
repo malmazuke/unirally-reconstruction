@@ -191,7 +191,6 @@ struct ClassicHudPublished {
     // The direction arrow the NMI last drew, nothing while none shows.
     std::optional<ClassicRaceArrow> arrow{};
     // The caption table entry (1-255) the caption cells show, 0 while blank.
-    // Not followed on the HUNTER tour, whose caption is drawn from the state.
     unsigned caption_event{};
     bool operator==(const ClassicHudPublished&) const = default;
 };
