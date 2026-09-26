@@ -179,5 +179,6 @@ LAP_RESULT_TABLES = (
 
 
 def v19_new_entries(rom: bytes) -> list[dict[str, Any]]:
-    """The entries profile v19 adds to v18 (FRONT-END-LAP-RESULT), in pack order."""
+    """The entries profile v19 adds to v18 (FRONT-END-LAP-RESULT), in pack order. Run once with the
+    ROM to append them to the rules; the tests check the rules against the compiled table."""
     return [table_entry(rom, *table) for table in LAP_RESULT_TABLES]

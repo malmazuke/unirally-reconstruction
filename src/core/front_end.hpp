@@ -155,7 +155,8 @@ struct TourMenu {
 
 // A race's times as the race engine hands them back when its result load begins (R-0057): the
 // riders' totals in hundredths, `$77:0769` and `$77:07D3`, and for a lap race (race mode
-// `$77:074B` = 1) their ten lap slots, `$77:0755` and `$77:07BF` (0xEA60 not run or not finished).
+// `$77:074B` = 1) their ten lap slots, `$77:0755` and `$77:07BF`. A slot not run, or a total not
+// finished, is 0xEA60 or more in the original; the native race stores exactly 0xEA60.
 struct RaceTimes {
     std::uint16_t player_total{0xea60}, opponent_total{0xea60};
     bool lap_race{};
@@ -294,15 +295,16 @@ void update_front_end(FrontEndState& state, const FrontEndContent& content, Fron
 // The frame the last update produced.
 RgbFrame render_front_end(const FrontEndState& state);
 
-// The race returns on `frame` (its result load begins, R-0049): the front end resumes with that
-// frame's work, the original's `$80:99A4` after `$83:C8E0`.
 // The frames between NOW PLAYING's fade and a race's initialization on the laboratory's menu path
 // (R-0057, R-0058): DRAGSTER's 121, ZOOM ZOO's 169; 0 for a track not measured.
-std::uint32_t race_loading_frames(std::uint8_t track);
+std::uint32_t race_loading_frames(ClassicRaceTrack track);
 
 // The times the menus take from a native race on its result load's first update: the totals,
 // and for a lap race (its scenario's race mode 1) both riders' lap slots.
 RaceTimes race_times(const ZoomZooState& race);
+
+// The race returns on `frame` (its result load begins, R-0049): the front end resumes with that
+// frame's work, the original's `$80:99A4` after `$83:C8E0`.
 void return_from_race(FrontEndState& state, const FrontEndContent& content, std::uint32_t frame,
                       const RaceTimes& times);
 

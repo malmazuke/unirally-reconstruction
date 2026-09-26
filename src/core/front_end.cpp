@@ -204,7 +204,7 @@ bool waits_for_frame(const FrontEndState& state) {
     // The lap result's second frame (`$80:8FFD-910E`) runs past its frame's end, so the tail
     // after it starts without a frame wait (R-0058).
     if (state.screen == FrontEndScreen::race_result && state.race_result.times.lap_race)
-        return next != lap_tail_frame;
+        return next != result_tail_frame;
     // Every other screen after the boot waits for each frame.
     if (state.screen != FrontEndScreen::boot) return true;
     const auto frame = state.frame;

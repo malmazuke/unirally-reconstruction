@@ -703,16 +703,20 @@ void lap_result_tests() {
   using unirally::FrontEndScreen;
   std::vector<std::vector<std::uint8_t>> storage;
   const auto content = synthetic_content(storage);
-  auto state = unirally::start_front_end();
-  run(state, content, 430);
-  require(run_to(state, content, FrontEndScreen::rider_menu, {0x1000, 0}));
-  require(run_to(state, content, FrontEndScreen::tour_menu, {0x8000, 0}));
-  require(run_to(state, content, FrontEndScreen::track_menu, {0x1000, 0}));
-  run(state, content, 1, {0x0400, 0}); // ZOOM ZOO
-  run(state, content, 1);
-  require(run_to(state, content, FrontEndScreen::now_playing, {0x1000, 0}));
-  require(run_to(state, content, FrontEndScreen::race, {0x1000, 0}));
-  require(state.tour_menu.track == 1);
+  // MIKE against BRONSEN on ZOOM ZOO, to the race.
+  const auto to_lap_race = [&] {
+    auto state = unirally::start_front_end();
+    run(state, content, 430);
+    require(run_to(state, content, FrontEndScreen::rider_menu, {0x1000, 0}));
+    require(run_to(state, content, FrontEndScreen::tour_menu, {0x8000, 0}));
+    require(run_to(state, content, FrontEndScreen::track_menu, {0x1000, 0}));
+    run(state, content, 1, {0x0400, 0}); // ZOOM ZOO
+    run(state, content, 1);
+    require(run_to(state, content, FrontEndScreen::now_playing, {0x1000, 0}));
+    require(run_to(state, content, FrontEndScreen::race, {0x1000, 0}));
+    require(state.tour_menu.track == 1);
+    return state;
+  };
   unirally::RaceTimes times{0x264a, 0x2652, true};
   times.player_laps[0] = 0x0cb2;
   times.player_laps[1] = 0x0cc0;
@@ -720,6 +724,21 @@ void lap_result_tests() {
   times.opponent_laps[0] = 0x0cb2;
   times.opponent_laps[1] = 0x0ccc;
   times.opponent_laps[2] = 0x0cd4;
+  // To the result's first frame, then through its fade and out with a press.
+  const auto to_result = [&](unirally::FrontEndState &state,
+                             const unirally::RaceTimes &race) {
+    unirally::return_from_race(state, content, 6725, race);
+    require(run_to(state, content, FrontEndScreen::race_result, {}, 104));
+  };
+  const auto leave = [&](unirally::FrontEndState &state) {
+    run(state, content, 20);
+    run(state, content, 1, {0x1000, 0});
+    require(run_to(state, content, FrontEndScreen::track_menu_entry, {}, 5));
+  };
+  const auto high = [](const unirally::FrontEndState &state, unsigned entry) {
+    return state.oam_buffer[512 + entry / 4];
+  };
+  auto state = to_lap_race();
   unirally::return_from_race(state, content, 6725, times);
   require(run_to(state, content, FrontEndScreen::race_result, {}, 104));
   // The build: 8 x 8 objects, the dots' targets (the capture's), no record.
@@ -755,6 +774,59 @@ void lap_result_tests() {
   require(state.records.record_times[0][1] == 0x0cb2 &&
           state.records.record_holders[0][1] == 0 &&
           state.records.tracks_done[1] == 1);
+  // With a record (0:32.00, rider 5's): the line at its height, entries 20-29
+  // and the icons 106 and 112 shown. The spread is under 200, so the floor is
+  // the top (0:32.88) less 200: 0xB8 - 128 x 112 / 200 = 0x71.
+  auto record = to_lap_race();
+  record.records.record_times[0][1] = 0x0c80;
+  record.records.record_holders[0][1] = 5;
+  to_result(record, times);
+  run(record, content, 1);
+  require(record.oam_buffer[20 * 4 + 1] == 0x71 &&
+          record.oam_buffer[29 * 4 + 1] == 0x71);
+  require(high(record, 104) == 0x6a && high(record, 112) == 0x56 &&
+          high(record, 20) == 0xaa && high(record, 24) == 0xaa &&
+          high(record, 28) == 0x5a);
+  // A tie is a loss; the player's best lap still goes into the records.
+  auto tie = to_lap_race();
+  auto tied = times;
+  tied.opponent_total = tied.player_total;
+  to_result(tie, tied);
+  leave(tie);
+  require(tie.records.race_lost && tie.records.tracks_done[1] == 0 &&
+          tie.records.record_times[0][1] == 0x0cb2 &&
+          tie.records.statistics[0][1] == 1);
+  // No time: every slot 0xEA60. A loss without a time, no record, and the
+  // best (9:59.99) kept.
+  auto timeless = to_lap_race();
+  unirally::RaceTimes none{0xea60, 0x2652, true};
+  to_result(timeless, none);
+  leave(timeless);
+  require(timeless.records.statistics[0][2] == 1 &&
+          timeless.records.record_times[0][1] == 0xea60 &&
+          timeless.records.best[1] == 0xea5f);
+  // A zero slot: the result's best lap takes it, the records skip it.
+  auto zero = to_lap_race();
+  auto zeroed = times;
+  zeroed.player_laps[3] = 0;
+  to_result(zero, zeroed);
+  leave(zero);
+  require(zero.records.best[1] == 0 &&
+          zero.records.record_times[0][1] == 0x0cb2);
+  // Past CRAWLER's tracks native keeps no saved word: no opponent markers.
+  auto elsewhere = to_lap_race();
+  elsewhere.saved.tour_menu.track = 6;
+  to_result(elsewhere, times);
+  run(elsewhere, content, 2);
+  require(high(elsewhere, 96) == 0xee);
+  // A button held from the race, the d-pad too: no test before the graph's
+  // first pass (the fade's last frame), then the result ends on the next.
+  auto held = to_lap_race();
+  to_result(held, times);
+  run(held, content, 10, {0x0100, 0});
+  require(held.screen == FrontEndScreen::race_result);
+  run(held, content, 1, {0x0100, 0});
+  require(held.screen == FrontEndScreen::race_result_exit);
 }
 
 } // namespace

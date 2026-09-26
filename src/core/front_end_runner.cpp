@@ -209,6 +209,7 @@ struct RaceBetweenMenus {
     std::optional<unirally::ZoomZooContent> content;
     unirally::ZoomZooState state{};
     std::uint32_t initialization_frame{};
+    std::uint32_t loading_initialization{}; // the frame the track's loading gives, if measured
 };
 
 // False for a race whose loading time on this path is not known: the run stops there.
@@ -216,13 +217,13 @@ struct RaceBetweenMenus {
 bool start_race(RaceBetweenMenus& race, const unirally::ClassicContentPack& pack,
                 const unirally::FrontEndState& front_end, std::uint32_t initialization) {
     const unirally::ClassicRaceTrack track{front_end.tour_menu.track};
-    const auto loading_frames = unirally::race_loading_frames(track.index);
+    const auto loading_frames = unirally::race_loading_frames(track);
     if (loading_frames == 0 && initialization == 0) return false;
     race.content = unirally::classic_race_content(pack, track);
     race.state =
         unirally::classic_race_start(*race.content, unirally::classic_race_scenario(track));
-    race.initialization_frame =
-        initialization != 0 ? initialization : front_end.frame - 1 + loading_frames;
+    race.loading_initialization = loading_frames ? front_end.frame - 1 + loading_frames : 0;
+    race.initialization_frame = initialization != 0 ? initialization : race.loading_initialization;
     race.state.movement.frame = race.initialization_frame;
     return true;
 }
@@ -255,7 +256,7 @@ int main(int argc, char** argv) try {
             unirally::return_from_race(state, content, frame, times);
             std::cerr << "race returned at " << frame << "; totals " << times.player_total << '/'
                       << times.opponent_total << "; initialized at " << race.initialization_frame
-                      << '\n';
+                      << " (its loading gives " << race.loading_initialization << ")\n";
             race.content.reset();
             ++races;
         } else if (state.mode_chosen) {

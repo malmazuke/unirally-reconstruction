@@ -513,7 +513,8 @@ int main(int argc, char **argv) try {
           waiting_front_end->return_from_race(zoom_state);
           front_end=std::move(waiting_front_end);
           waiting_front_end.reset();
-          // The input is kept: a button held from the race holds the result (`$80:C24C`).
+          // The input is kept: a button held from the race holds a one-run result (`$80:C24C`)
+          // and ends a lap result at its first test (`$80:B6D3`), as in the original.
           std::cout<<"Front end: race returned at front-end frame "<<front_end->front_end_frame()
                    <<"; totals "<<zoom_state.race.total_times[0]<<'/'<<zoom_state.race.total_times[1]<<'\n';
         }

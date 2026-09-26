@@ -24,7 +24,8 @@ constexpr std::size_t badge_tiles_bytes = 0x780;
 
 // The result screen's frames from its first, `$83:94D0`'s wait: the rows, the icons and the
 // text, then the fade (`$80:9869`, brightness 2, 4, ..., 14).
-constexpr std::uint32_t rows_frame = 2, icons_frame = 3, first_fade_frame = 4, fade_frames = 7;
+constexpr std::uint32_t rows_frame = 2, icons_frame = result_tail_frame, first_fade_frame = 4,
+                        fade_frames = 7;
 constexpr unsigned first_rider_palette_colour = 0x80, opponent_palette_colour = 0x90;
 constexpr unsigned rows_palettes = 0x80;         // `$80:D163`: a row's rider at 0x80, 0x90, ...
 constexpr unsigned trophy_palettes_first = 0x22; // assets 0x22, 0x21, 0x20 at 0xD0, 0xE0, 0xF0
@@ -45,8 +46,6 @@ constexpr std::uint8_t rider_mark_tile = 0xc0, rider_mark_attributes = 0x21,
 constexpr std::uint8_t icon_column = 0x78, marker_column = 0xdb, marker_attributes = 0x1b;
 constexpr std::uint8_t first_row_line = 0x58, row_lines = 24, player_mark_attributes = 0x11;
 constexpr std::uint8_t off_screen_line = 0xef;
-// The high-table bits `$80:CFB9` clears for the player's new-best markers, entries 96 and 98.
-constexpr std::uint8_t player_best_markers = 0xee;
 
 // Pads that leave the one-run result: any button on either pad (`$80:C206`).
 bool pressed(FrontEndPads pads) {
@@ -135,7 +134,7 @@ void print_rows(FrontEndState& state, const FrontEndContent& content,
         case RowKind::opponent: continue; // a human opponent's row is 2P's (not recovered)
         case RowKind::player: {
             rider = state.rider_menu.rider;
-            auto& best = records.best[rider * 50U + track];
+            auto& best = personal_best(records, rider, track);
             if (row.time < best) {
                 best = row.time;
                 high_bits(state, 96) &= player_best_markers;
@@ -277,7 +276,6 @@ void update_records(FrontEndState& state) {
     const auto player_record = times.lap_race ? record_lap(times.player_laps) : player;
     const auto other_record = times.lap_race ? record_lap(times.opponent_laps) : other;
     constexpr std::size_t races = 0, wins = 1, no_time_losses = 2;
-    constexpr std::uint16_t no_time = 0xea60;
     const auto track = track_of(state);
     // A time goes into the records unless it is no time, which counts a loss without one.
     const auto record = [&](std::uint8_t who, std::uint16_t time) {
@@ -326,6 +324,45 @@ void score_race(FrontEndState& state) {
                     [](std::uint8_t done) { return done != 0; }))
         throw std::logic_error("a tour's completion (its award and PICK TOUR's reveal) is not "
                                "recovered yet");
+}
+
+// $80:C24C and `$80:C206`: after a one-run result's fade, both pads released, then a press seen
+// on two frames running.
+void one_run_wait_frame(FrontEndState& state, const FrontEndContent& content, FrontEndPads pads) {
+    auto& result = state.race_result;
+    step_decorations(state, content);
+    if (!result.released) { // $80:C24C
+        result.released = !pressed(pads);
+        if (result.released) state.decorations.delay = 3; // $80:98B3
+        return;
+    }
+    const bool press = pressed(pads); // $80:C206: a press on two frames running
+    if (!result.press_seen || !press) {
+        result.press_seen = press;
+        return;
+    }
+    hide_result_objects(state);
+    state.screen = FrontEndScreen::race_result_exit;
+}
+
+// $80:98B3 on the lap result's last fade frame: `$0089` = 3, then the graph's first pass.
+void start_lap_graph(FrontEndState& state, const FrontEndContent& content) {
+    state.decorations.delay = 3;
+    step_decorations(state, content);
+    step_lap_graph(state);
+}
+
+// $80:98C9-997B: the lap graph until a press on pad 1 (`$80:B6D3`); then `$80:9805` (the graph
+// cleared bit 8, so it parks) and `$80:F4B8`. `hide_result_objects` also makes `$80:C236`'s
+// writes, which the lap result does not, but `$80:9805`'s cover them: the OAM buffer is the same.
+void lap_graph_frame(FrontEndState& state, const FrontEndContent& content, FrontEndPads pads) {
+    if (lap_graph_left(pads)) {
+        hide_result_objects(state);
+        state.screen = FrontEndScreen::race_result_exit;
+        return;
+    }
+    step_decorations(state, content);
+    step_lap_graph(state);
 }
 
 } // namespace
@@ -389,31 +426,13 @@ void race_result_frame(FrontEndState& state, const FrontEndContent& content, Fro
     if (frame <= last_fade_frame) {
         state.registers.brightness = static_cast<std::uint8_t>(2 * (frame - first_fade_frame + 1));
         state.registers.force_blank = false;
-        if (frame < last_fade_frame || !result.times.lap_race) return;
-        state.decorations.delay = 3; // $80:98B3, then the graph's first pass in the same frame
-    } else if (result.times.lap_race && lap_graph_left(pads)) {
-        hide_result_objects(state); // `$80:9805` (the graph loop cleared bit 8) and `$80:F4B8`
-        state.screen = FrontEndScreen::race_result_exit;
+        if (frame == last_fade_frame && result.times.lap_race) start_lap_graph(state, content);
         return;
     }
-    if (result.times.lap_race) { // $80:98C9-997B
-        step_decorations(state, content);
-        step_lap_graph(state);
-        return;
-    }
-    step_decorations(state, content);
-    if (!result.released) { // $80:C24C
-        result.released = !pressed(pads);
-        if (result.released) state.decorations.delay = 3; // $80:98B3
-        return;
-    }
-    const bool press = pressed(pads); // $80:C206: a press on two frames running
-    if (!result.press_seen || !press) {
-        result.press_seen = press;
-        return;
-    }
-    hide_result_objects(state);
-    state.screen = FrontEndScreen::race_result_exit;
+    if (result.times.lap_race)
+        lap_graph_frame(state, content, pads);
+    else
+        one_run_wait_frame(state, content, pads);
 }
 
 void race_result_exit_frame(FrontEndState& state, const FrontEndContent& content) {
@@ -467,10 +486,9 @@ void return_from_race(FrontEndState& state, const FrontEndContent& content, std:
     front_end_screens::begin_race_return(state, content, frame, times);
 }
 
-std::uint32_t race_loading_frames(std::uint8_t track) {
-    constexpr std::uint8_t dragster = 0, zoom_zoo = 1;
-    if (track == dragster) return 121;
-    if (track == zoom_zoo) return 169;
+std::uint32_t race_loading_frames(ClassicRaceTrack track) {
+    if (track == ClassicRaceTrack::Dragster) return 121;
+    if (track == ClassicRaceTrack::ZoomZoo) return 169;
     return 0;
 }
 

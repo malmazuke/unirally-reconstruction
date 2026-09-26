@@ -701,7 +701,9 @@
   "label": "sub_8088DD",
   "source_records": [
    "docs/research/R-0057-one-run-result.md",
-   "tasks/FRONT-END-LAP-RESULT.md"
+   "docs/research/R-0058-lap-result.md",
+   "tasks/FRONT-END-LAP-RESULT.md",
+   "tasks/RACE-PAUSE-EXITS.md"
   ]
  },
  {
@@ -865,6 +867,7 @@
    "src/core/front_end.hpp:RaceResult",
    "src/core/lap_result.cpp:(file)",
    "src/core/lap_result.cpp:LapWords",
+   "src/core/lap_result.cpp:print_lap_result",
    "src/core/lap_result.cpp:saved_word_under_opponent_best",
    "src/core/race_result.cpp:start_result"
   ],
@@ -1040,6 +1043,7 @@
   "comment": "instruction start",
   "label": "loc_809579",
   "native": [
+   "src/core/front_end_screens.hpp:result_tail_frame",
    "src/core/race_result.cpp:show_icons"
   ],
   "source_records": [
@@ -1134,12 +1138,11 @@
   "label": "sub_809805",
   "native": [
    "src/core/race_result.cpp:hide_result_objects",
-   "src/core/race_result.cpp:race_result_frame"
+   "src/core/race_result.cpp:lap_graph_frame"
   ],
   "source_records": [
    "docs/research/R-0057-one-run-result.md",
-   "docs/research/R-0058-lap-result.md",
-   "tasks/FRONT-END-LAP-RESULT.md"
+   "docs/research/R-0058-lap-result.md"
   ]
  },
  {
@@ -1193,7 +1196,8 @@
   "label": "sub_8098B3",
   "native": [
    "src/core/lap_result.cpp:(file)",
-   "src/core/race_result.cpp:race_result_frame"
+   "src/core/race_result.cpp:one_run_wait_frame",
+   "src/core/race_result.cpp:start_lap_graph"
   ],
   "source_records": [
    "docs/research/R-0057-one-run-result.md",
@@ -1208,23 +1212,10 @@
   "comment": "instruction start",
   "label": "loc_8098C9",
   "native": [
-   "src/core/race_result.cpp:race_result_frame"
+   "src/core/race_result.cpp:lap_graph_frame"
   ],
   "source_records": [
    "docs/research/R-0058-lap-result.md"
-  ]
- },
- {
-  "address": "$80:98CB",
-  "class": "inferred",
-  "comment": "instruction start",
-  "label": "loc_8098CB",
-  "native": [
-   "src/core/race_result.cpp:hide_result_objects",
-   "src/core/race_result.cpp:race_result_frame"
-  ],
-  "source_records": [
-   "tasks/FRONT-END-LAP-RESULT.md"
   ]
  },
  {
@@ -1247,7 +1238,7 @@
   "label": "sub_8099A4",
   "native": [
    "src/core/front_end.hpp:FrontEndScreen",
-   "src/core/front_end.hpp:race_loading_frames",
+   "src/core/front_end.hpp:return_from_race",
    "src/core/race_result.cpp:(file)"
   ],
   "source_records": [
@@ -1282,7 +1273,9 @@
   "label": "loc_809A50",
   "source_records": [
    "docs/research/R-0057-one-run-result.md",
-   "tasks/FRONT-END-LAP-RESULT.md"
+   "docs/research/R-0058-lap-result.md",
+   "tasks/FRONT-END-LAP-RESULT.md",
+   "tasks/RACE-PAUSE-EXITS.md"
   ]
  },
  {
@@ -1376,8 +1369,7 @@
   ],
   "source_records": [
    "docs/research/R-0054-boot-title-main-menu.md",
-   "docs/research/R-0057-one-run-result.md",
-   "tasks/FRONT-END-LAP-RESULT.md"
+   "docs/research/R-0057-one-run-result.md"
   ]
  },
  {
@@ -1881,6 +1873,7 @@
   "comment": "routine start",
   "label": "sub_80B6D3",
   "native": [
+   "src/core/race_result.cpp:lap_graph_frame",
    "src/core/race_result.cpp:lap_graph_left"
   ],
   "source_records": [
@@ -2290,8 +2283,8 @@
   "native": [
    "src/core/front_end.hpp:RaceResult::press_seen",
    "src/core/race_result.cpp:(file)",
-   "src/core/race_result.cpp:pressed",
-   "src/core/race_result.cpp:race_result_frame"
+   "src/core/race_result.cpp:one_run_wait_frame",
+   "src/core/race_result.cpp:pressed"
   ],
   "source_records": [
    "docs/research/R-0057-one-run-result.md"
@@ -2303,7 +2296,8 @@
   "comment": "instruction start",
   "label": "loc_80C236",
   "native": [
-   "src/core/race_result.cpp:hide_result_objects"
+   "src/core/race_result.cpp:hide_result_objects",
+   "src/core/race_result.cpp:lap_graph_frame"
   ],
   "source_records": [
    "docs/research/R-0057-one-run-result.md"
@@ -2317,7 +2311,7 @@
   "native": [
    "src/core/front_end.hpp:RaceResult::released",
    "src/core/race_result.cpp:(file)",
-   "src/core/race_result.cpp:race_result_frame"
+   "src/core/race_result.cpp:one_run_wait_frame"
   ],
   "source_records": [
    "docs/research/R-0057-one-run-result.md"
@@ -2648,7 +2642,8 @@
    "src/core/race_result.cpp:update_records"
   ],
   "source_records": [
-   "docs/research/R-0058-lap-result.md"
+   "docs/research/R-0058-lap-result.md",
+   "tasks/FRONT-END-LAP-RESULT.md"
   ]
  },
  {
@@ -3028,7 +3023,7 @@
   "comment": "instruction start",
   "label": "loc_80CFB9",
   "native": [
-   "src/core/race_result.cpp:player_best_markers",
+   "src/core/front_end_screens.hpp:player_best_markers",
    "src/core/race_result.cpp:print_rows"
   ],
   "source_records": [
@@ -3781,8 +3776,8 @@
   "native": [
    "src/core/lap_result.cpp:graph_object_sizes",
    "src/core/race_result.cpp:hide_result_objects",
-   "src/core/race_result.cpp:race_result_exit_frame",
-   "src/core/race_result.cpp:race_result_frame"
+   "src/core/race_result.cpp:lap_graph_frame",
+   "src/core/race_result.cpp:race_result_exit_frame"
   ],
   "source_records": [
    "docs/research/R-0057-one-run-result.md",
@@ -11544,12 +11539,21 @@
   "comment": "routine start",
   "label": "sub_83C8E0",
   "native": [
-   "src/core/front_end.hpp:race_loading_frames",
+   "src/core/front_end.hpp:return_from_race",
    "src/core/race_result.cpp:(file)"
   ],
   "source_records": [
    "docs/research/R-0056-tour-track-now-playing.md",
    "docs/research/R-0057-one-run-result.md"
+  ]
+ },
+ {
+  "address": "$83:C9AC",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_83C9AC",
+  "source_records": [
+   "tasks/RACE-PAUSE-EXITS.md"
   ]
  },
  {
@@ -13499,6 +13503,42 @@
   ],
   "source_records": [
    "docs/research/R-0036-zoom-zoo-rider-objects.md"
+  ]
+ },
+ {
+  "address": "$83:F8DA",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_83F8DA",
+  "source_records": [
+   "tasks/RACE-PAUSE-EXITS.md"
+  ]
+ },
+ {
+  "address": "$83:F8EB",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_83F8EB",
+  "source_records": [
+   "tasks/RACE-PAUSE-EXITS.md"
+  ]
+ },
+ {
+  "address": "$83:F901",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_83F901",
+  "source_records": [
+   "tasks/RACE-PAUSE-EXITS.md"
+  ]
+ },
+ {
+  "address": "$83:F90B",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_83F90B",
+  "source_records": [
+   "tasks/RACE-PAUSE-EXITS.md"
   ]
  },
  {

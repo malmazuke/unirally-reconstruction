@@ -69,7 +69,7 @@ Text name_line(const FrontEndState& state, const FrontEndContent& content, std::
         line.push_back(record[at++]); // `$80:933C`, the terminator made a blank
     line.insert(line.end(), {blank, 0xef, icon, blank, blank});
     if (rider < someone) {
-        const auto best = state.records.best[rider * 50U + track_of(state)];
+        const auto best = personal_best(state.records, rider, track_of(state));
         if (race_kind(state) != stunt_event) {
             auto time = race_time_text(best, content.time_words);
             time.front() = '(';

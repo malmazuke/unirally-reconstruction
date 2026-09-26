@@ -70,6 +70,7 @@ The coordinator maintains the status registry below. Work orders further below d
 | FRONT-END-1P-CONTINUATION | accepted (tier 2, #30): after a one-run race, the result screen, the records and PICK TRACK again match the original frame for frame; the app returns to the menus; pack v18 | [After a one-player race](FRONT-END-1P-CONTINUATION.md) |
 | FRONT-END-LAP-RESULT | in review (tier 2): after a lap race, the lap result and its graph, the best laps and records match the original frame for frame; every race returns to the menus in the app; pack v19 | [The lap race's result, and quit and restart](FRONT-END-LAP-RESULT.md) |
 | FRONT-END-TOUR-END | ready | [A tour's completion: the award, the endings and the unlocks](FRONT-END-TOUR-END.md) |
+| RACE-PAUSE-EXITS | ready | [The race's pause menu in one-player play: restart and quit](RACE-PAUSE-EXITS.md) |
 | ROLLING-CONTACT | ready | [A rolling rider's second contact after a long shoulder rotation (HUNTER-EFFECTS review)](ROLLING-CONTACT.md) |
 | PR-WORKFLOW | integrated by pull request #6 (tier 2, approved with should-fix items, all applied); changes reach `main` only through pull requests (user request, 23 September 2026) | [Changes reach main through pull requests](PR-WORKFLOW.md) |
 | CLASSIC-RACE-HUD | reviewed and integrated (four returned rounds, approved at the fifth); accepted conditional on final-tip CI and remote verification | [The original's in-race HUD](CLASSIC-RACE-HUD.md) |

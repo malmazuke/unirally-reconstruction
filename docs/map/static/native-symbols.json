@@ -364,13 +364,14 @@
   {
    "address": "$80:9051",
    "native": [
-    "src/core/lap_result.cpp:player_best_markers, opponent_best_markers"
+    "src/core/front_end_screens.hpp:player_best_markers"
    ],
    "region": "rom"
   },
   {
    "address": "$80:90AF",
    "native": [
+    "src/core/lap_result.cpp:print_lap_result",
     "src/core/lap_result.cpp:saved_word_under_opponent_best"
    ],
    "range_ends": [
@@ -381,7 +382,7 @@
   {
    "address": "$80:90E5",
    "native": [
-    "src/core/lap_result.cpp:player_best_markers, opponent_best_markers"
+    "src/core/lap_result.cpp:opponent_best_markers"
    ],
    "region": "rom"
   },
@@ -453,6 +454,7 @@
   {
    "address": "$80:9579",
    "native": [
+    "src/core/front_end_screens.hpp:result_tail_frame",
     "src/core/race_result.cpp:show_icons"
    ],
    "range_ends": [
@@ -504,7 +506,7 @@
    "address": "$80:9805",
    "native": [
     "src/core/race_result.cpp:hide_result_objects",
-    "src/core/race_result.cpp:race_result_frame"
+    "src/core/race_result.cpp:lap_graph_frame"
    ],
    "region": "rom"
   },
@@ -537,14 +539,15 @@
    "address": "$80:98B3",
    "native": [
     "src/core/lap_result.cpp:(file)",
-    "src/core/race_result.cpp:race_result_frame"
+    "src/core/race_result.cpp:one_run_wait_frame",
+    "src/core/race_result.cpp:start_lap_graph"
    ],
    "region": "rom"
   },
   {
    "address": "$80:98C9",
    "native": [
-    "src/core/race_result.cpp:race_result_frame"
+    "src/core/race_result.cpp:lap_graph_frame"
    ],
    "range_ends": [
     "$80:997B"
@@ -580,7 +583,7 @@
    "address": "$80:99A4",
    "native": [
     "src/core/front_end.hpp:FrontEndScreen",
-    "src/core/front_end.hpp:race_loading_frames",
+    "src/core/front_end.hpp:return_from_race",
     "src/core/race_result.cpp:(file)"
    ],
    "region": "rom"
@@ -875,6 +878,7 @@
   {
    "address": "$80:B6D3",
    "native": [
+    "src/core/race_result.cpp:lap_graph_frame",
     "src/core/race_result.cpp:lap_graph_left"
    ],
    "region": "rom"
@@ -1051,15 +1055,16 @@
    "native": [
     "src/core/front_end.hpp:RaceResult::press_seen",
     "src/core/race_result.cpp:(file)",
-    "src/core/race_result.cpp:pressed",
-    "src/core/race_result.cpp:race_result_frame"
+    "src/core/race_result.cpp:one_run_wait_frame",
+    "src/core/race_result.cpp:pressed"
    ],
    "region": "rom"
   },
   {
    "address": "$80:C236",
    "native": [
-    "src/core/race_result.cpp:hide_result_objects"
+    "src/core/race_result.cpp:hide_result_objects",
+    "src/core/race_result.cpp:lap_graph_frame"
    ],
    "range_ends": [
     "$80:C245"
@@ -1071,7 +1076,7 @@
    "native": [
     "src/core/front_end.hpp:RaceResult::released",
     "src/core/race_result.cpp:(file)",
-    "src/core/race_result.cpp:race_result_frame"
+    "src/core/race_result.cpp:one_run_wait_frame"
    ],
    "region": "rom"
   },
@@ -1490,7 +1495,7 @@
   {
    "address": "$80:CFB9",
    "native": [
-    "src/core/race_result.cpp:player_best_markers"
+    "src/core/front_end_screens.hpp:player_best_markers"
    ],
    "region": "rom"
   },
@@ -1908,8 +1913,8 @@
    "native": [
     "src/core/lap_result.cpp:graph_object_sizes",
     "src/core/race_result.cpp:hide_result_objects",
-    "src/core/race_result.cpp:race_result_exit_frame",
-    "src/core/race_result.cpp:race_result_frame"
+    "src/core/race_result.cpp:lap_graph_frame",
+    "src/core/race_result.cpp:race_result_exit_frame"
    ],
    "region": "rom"
   },
@@ -4571,6 +4576,13 @@
    "region": "rom"
   },
   {
+   "address": "$83:9E47",
+   "native": [
+    "src/core/front_end_screens.hpp:personal_best"
+   ],
+   "region": "rom"
+  },
+  {
    "address": "$83:9EC8",
    "native": [
     "src/core/race_result.cpp:score_race"
@@ -4618,7 +4630,7 @@
   {
    "address": "$83:C8E0",
    "native": [
-    "src/core/front_end.hpp:race_loading_frames",
+    "src/core/front_end.hpp:return_from_race",
     "src/core/race_result.cpp:(file)"
    ],
    "region": "rom"
@@ -5328,6 +5340,7 @@
    "native": [
     "src/core/front_end.hpp:MainMenu::idle",
     "src/core/front_end.hpp:MenuDecorations::delay",
+    "src/core/race_result.cpp:start_lap_graph",
     "src/core/rider_menu.cpp:enter_rider_menu"
    ],
    "region": "wram"
@@ -7279,6 +7292,7 @@
    "address": "$77:0829",
    "native": [
     "src/core/front_end.hpp:OnePlayerRecords::best",
+    "src/core/front_end_screens.hpp:personal_best",
     "src/core/lap_result.cpp:saved_word_under_opponent_best"
    ],
    "region": "sram"
@@ -8095,7 +8109,7 @@
     "$00AC"
    ]
   },
-  "src/core/front_end.hpp:race_loading_frames": {
+  "src/core/front_end.hpp:return_from_race": {
    "rom": [
     "$80:99A4",
     "$83:C8E0"
@@ -8217,9 +8231,23 @@
     "$83:99FA"
    ]
   },
+  "src/core/front_end_screens.hpp:personal_best": {
+   "rom": [
+    "$83:9E47"
+   ],
+   "sram": [
+    "$77:0829"
+   ]
+  },
   "src/core/front_end_screens.hpp:place_printed_object": {
    "rom": [
     "$80:C6D5"
+   ]
+  },
+  "src/core/front_end_screens.hpp:player_best_markers": {
+   "rom": [
+    "$80:9051",
+    "$80:CFB9"
    ]
   },
   "src/core/front_end_screens.hpp:print_main_menu": {
@@ -8237,6 +8265,11 @@
   "src/core/front_end_screens.hpp:reload_menu_text_tiles": {
    "rom": [
     "$80:A877"
+   ]
+  },
+  "src/core/front_end_screens.hpp:result_tail_frame": {
+   "rom": [
+    "$80:9579"
    ]
   },
   "src/core/front_end_screens.hpp:send_arrow_off": {
@@ -8439,20 +8472,20 @@
     "$80:F4B8"
    ]
   },
+  "src/core/lap_result.cpp:opponent_best_markers": {
+   "rom": [
+    "$80:90E5"
+   ]
+  },
   "src/core/lap_result.cpp:opponent_dots, record_line, record_line_entries": {
    "rom": [
     "$80:8DD9"
    ]
   },
-  "src/core/lap_result.cpp:player_best_markers, opponent_best_markers": {
-   "rom": [
-    "$80:9051",
-    "$80:90E5"
-   ]
-  },
   "src/core/lap_result.cpp:print_lap_result": {
    "rom": [
     "$80:9017",
+    "$80:90AF",
     "$80:910F",
     "$80:91A1",
     "$80:91B9"
@@ -9115,6 +9148,15 @@
     "$80:C9D7"
    ]
   },
+  "src/core/race_result.cpp:lap_graph_frame": {
+   "rom": [
+    "$80:9805",
+    "$80:98C9",
+    "$80:B6D3",
+    "$80:C236",
+    "$80:F4B8"
+   ]
+  },
   "src/core/race_result.cpp:lap_graph_left": {
    "rom": [
     "$80:B6D3"
@@ -9129,9 +9171,11 @@
     "$80:D20E"
    ]
   },
-  "src/core/race_result.cpp:player_best_markers": {
+  "src/core/race_result.cpp:one_run_wait_frame": {
    "rom": [
-    "$80:CFB9"
+    "$80:98B3",
+    "$80:C206",
+    "$80:C24C"
    ]
   },
   "src/core/race_result.cpp:pressed": {
@@ -9160,16 +9204,6 @@
    ],
    "sram": [
     "$77:1073"
-   ]
-  },
-  "src/core/race_result.cpp:race_result_frame": {
-   "rom": [
-    "$80:9805",
-    "$80:98B3",
-    "$80:98C9",
-    "$80:C206",
-    "$80:C24C",
-    "$80:F4B8"
    ]
   },
   "src/core/race_result.cpp:race_return_frame": {
@@ -9231,6 +9265,14 @@
    "rom": [
     "$80:CE90",
     "$80:F082"
+   ]
+  },
+  "src/core/race_result.cpp:start_lap_graph": {
+   "rom": [
+    "$80:98B3"
+   ],
+   "wram": [
+    "$0089"
    ]
   },
   "src/core/race_result.cpp:start_result": {
@@ -11375,10 +11417,10 @@
   }
  },
  "totals": {
-  "addresses": 870,
+  "addresses": 871,
   "io_addresses": 5,
-  "native_symbols": 604,
-  "rom_addresses": 592,
+  "native_symbols": 608,
+  "rom_addresses": 593,
   "sram_addresses": 29,
   "wram_addresses": 244
  }

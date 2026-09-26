@@ -11,8 +11,8 @@ leaves its result the same way. What differs is the result screen:
 - the best laps, which become the personal bests and the track's records;
 - a press on any frame leaves it: there is no release wait.
 
-Native now does the same (`src/core/lap_result.cpp`), so every race of a tour but the stunt event
-comes back to PICK TRACK in the app.
+Native now does the same (`src/core/lap_result.cpp`), so every race the app starts (MIKE against
+BRONSEN, and not the stunt event) comes back to PICK TRACK.
 
 ## Frames
 
@@ -32,7 +32,7 @@ Frames count from r, the race's last frame; the return, r to r + 104, is R-0057'
   misses a step there. The captures show it: the spin stays put at r + 107.
 - **The exit** (`$80:B6D3`): any of pad 1's twelve buttons (`& 0xFFF0`), on one frame. Pad 2 is
   ignored in one-player play, where `$77:0742` bit 10 is set. A button still held from the race
-  therefore ends the result at r + 115.
+  therefore ends the result at r + 115 (from the listing; no capture holds one).
 - **From the press, q.** `$80:9805` parks entries 0-29 and sets `$77:0742` bit 8 (the graph loop
   clears it on every pass), and `$80:F4B8` hides entries 96-115 and 120-123. The decorations do
   not step on q. From q + 1 the way out is R-0057's, one frame earlier than a one-run race's
@@ -76,12 +76,17 @@ Frames count from r, the race's last frame; the return, r to r + 104, is R-0057'
 - **A computer opponent's best lap** (`$80:90AF-90F2`) goes to `$77:0829 + 100 x opponent + 2 x
   track`, past the 16 riders' table.
   - For opponents 0x11-0x13 that address lies in `$77:0E6B-1008`, the pre-race save of work RAM
-    (`$83:9894`). The save is taken again before the next race, so the write does nothing later.
-  - The opponent's markers show when its best lap is under the saved word there (`$0C18 &=
-    0xBB`). For BRONSEN on CRAWLER's five tracks those are the words `$0062-$006B` that the
-    menus leave: 0, 0x1300, 0, 0x9E00, 0, the same in every capture. On ZOOM ZOO (0x1300,
-    0:48.64) all four markers show.
-  - Native keeps those five words, and takes 0 (no markers) elsewhere, which is not recovered.
+    (`$83:9894`): work RAM `$0062 + 2 x track` for BRONSEN, `$00C6 + 2 x track` for SILVIA and
+    `$012A + 2 x track` for GOLDWYN. The save is taken again before the next race, so the write
+    does nothing later. ANTI-UNI (0x14) on HUNTER's tracks 40-44 writes `$77:1049-1051`,
+    outside the save, in cartridge RAM whose use is not recovered.
+  - The opponent's markers show when its best lap is under the word there (`$0C18 &= 0xBB`).
+    For BRONSEN on CRAWLER's five tracks those are `$0062-$006B`: 0, 0x1300, 0, 0x9E00, 0. The
+    boot writes them (frames 42-93), and they stay unchanged through the menus and across both
+    races of all three captures. On ZOOM ZOO (0x1300, 0:48.64) all four markers show.
+  - Native keeps those five words, and takes 0 (no markers) elsewhere. That is wrong where the
+    word is not 0: BRONSEN on track 31 reads `$00A0`, which changes during NOW PLAYING; SILVIA
+    on tracks 11-26 reads the name buffer `$00DC-$00FB` (text codes, such as 0x6E6F).
 
 ## The graph ($80:98B3)
 
@@ -143,8 +148,8 @@ menus' words, the OAM buffer and the text map on every frame from r + 101 on, an
 | --- | --- | --- | --- | --- |
 | lap-won | 6725 | to 8399 | none | 1,675 of 1,675 |
 | lap-lost | 7659 | to 9399 | none | 1,700 of 1,700 |
-| lap-record | 6725, 13455 | to 15099 | none | 199 of 199 |
-| lap-record-frames | 6725, 13455 | to 14419 | none | 530 of 530 (every frame of the second result's build, fade, graph and exit) |
+| lap-record | 6725, 13416 | to 15099 | none | 199 of 199 |
+| lap-record-frames | 6725, 13416 | to 14419 | none | 530 of 530 (every frame of the second result's build, fade, graph and exit) |
 
 `sram.py` compares the records native keeps with the original's cartridge RAM. They are equal at
 `lap-won` 7610 and 8399 and `lap-lost` 8610 and 9399, including the best-lap record and the
@@ -156,5 +161,8 @@ slots and the checksums (R-0057).
 - The opponent's saved word for any opponent or track but BRONSEN's on CRAWLER (no markers).
 - `$77:0749` = 0xFF, a path one-player play does not take.
 - The stunt events' result (`$80:F0EE-F2E9`, STUNT-EVENTS).
-- Quit and restart (0xEA61, 0xEA62). The native race's pause menu restarts the race itself, so
-  neither reaches the menus.
+- Quit and restart (0xEA61, 0xEA62). In the original the pause menu's restart writes 0xEA62, and
+  `$80:88DD` fades back to NOW PLAYING; its quit writes 0xEA61, which `$80:9A50` scores. The
+  native race's pause menu restarts inside the race and has no quit, so in a 1P tour the app
+  skips NOW PLAYING on a restart and cannot quit. This is a known difference, queued as
+  [RACE-PAUSE-EXITS](../../tasks/RACE-PAUSE-EXITS.md).

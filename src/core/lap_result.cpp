@@ -11,7 +11,6 @@ namespace unirally::front_end_screens {
 
 namespace {
 
-constexpr std::uint16_t no_time = 0xea60;
 constexpr std::size_t lap_slots = 10;
 
 // The graph ($80:8DD9-8F49): ten dots a rider, entries 0-9 the player's laps and 10-19 the
@@ -27,14 +26,19 @@ constexpr std::uint8_t player_dot_tile = 0x08, computer_dot_tile = 0x0a, line_ti
 constexpr std::uint8_t player_dot_attributes = 0x11, opponent_dot_attributes = 0x13,
                        line_attributes = 0x15;
 // The new-best markers, entries 96-99 beside the best laps, and entry 112 beside the record.
-constexpr std::uint8_t marker_column = 0xe5, player_marker_line = 0x16, opponent_marker_line = 0x26,
-                       marker_attributes = 0x17;
+constexpr std::uint8_t lap_marker_column = 0xe5, player_marker_line = 0x16,
+                       opponent_marker_line = 0x26, lap_marker_attributes = 0x17;
 constexpr std::uint8_t record_icon_x = 0xe7, record_icon_y = 0xab;
 constexpr unsigned holder_palette_colour = 0xa0, marker_palette_colour = 0xb0,
                    marker_palette_asset = 0x22;
-// The high-table bits `$80:9051` and `$80:90E5` clear for the new-best markers: entries 96 and 98
-// (the player's), 97 and 99 (the opponent's).
-constexpr std::uint8_t player_best_markers = 0xee, opponent_best_markers = 0xbb;
+// The high-table bits `$80:90E5` clears for the opponent's new-best markers, entries 97 and 99.
+constexpr std::uint8_t opponent_best_markers = 0xbb;
+// The high table's groups of four entries (two bits each: bit 0 the ninth x bit, set hides;
+// bit 1 large). 0xFF: the markers 96-99 large and hidden. 0x5A: 104-105 large and shown, 106-107
+// hidden. With a record: 0x6A shows 106 too, 0x56 shows 112 large, 0xAA shows 20-27 large, and
+// 0x5A shows 28-29 large and hides 30-31.
+constexpr std::uint8_t markers_hidden_large = 0xff, two_icons = 0x5a, three_icons = 0x6a,
+                       record_icon_shown = 0x56, record_line_shown = 0xaa, record_line_end = 0x5a;
 // $80:8D98: 8 x 8 and 16 x 16 objects, name base 3, until `$80:F4B8`.
 constexpr std::uint8_t graph_object_sizes = 0x03;
 // $80:9980: a dot's desired velocity is its distance over 8, at most 40 (2.5 pixels) either way.
@@ -126,8 +130,9 @@ void print_stream(FrontEndState& state, const FrontEndContent& content,
 // $80:90AF-90F2 for a computer opponent: the best lap goes to `$77:0829 + 100 x opponent + 2 x
 // track`, past the 16 riders' table. For 0x11-0x13 that is inside `$77:0E6B-1008`, the pre-race
 // save of work RAM `$0000-$019D` (`$83:9894`), so the markers show when the best lap is under
-// the saved word there. Native keeps the words a cold start's menus leave under BRONSEN's
-// CRAWLER tracks (`$0062-$006B`; the same in every capture); elsewhere it takes 0: no markers.
+// the saved word there. Native keeps the words the boot leaves under BRONSEN's CRAWLER tracks
+// (`$0062-$006B`, unchanged in every capture); elsewhere it takes 0, no markers, which is wrong
+// where the word is not 0 (R-0058 lists the cases).
 std::uint16_t saved_word_under_opponent_best(const FrontEndState& state) {
     constexpr std::uint8_t bronsen = 0x11;
     constexpr std::array<std::uint16_t, 5> bronsen_crawler{0x0000, 0x1300, 0x0000, 0x9e00, 0x0000};
@@ -154,7 +159,7 @@ void build_lap_result(FrontEndState& state, const FrontEndContent& content) {
     auto& result = state.race_result;
     const auto& times = result.times;
     // $80:8D70-8D9A: the markers large and pushed off, entries 0-19 shown and small.
-    high_bits(state, 96) = 0xff;
+    high_bits(state, 96) = markers_hidden_large;
     high_bits(state, 100) = four_hidden;
     for (const unsigned group : {0U, 4U, 8U, 12U, 16U}) high_bits(state, group) = four_shown;
     state.registers.obsel = graph_object_sizes;
@@ -193,9 +198,9 @@ void build_lap_result(FrontEndState& state, const FrontEndContent& content) {
         oam_byte(state, record_line + k, 3) = line_attributes;
     }
     for (unsigned entry = 96; entry < 100; ++entry) {
-        oam_byte(state, entry, 0) = marker_column;
+        oam_byte(state, entry, 0) = lap_marker_column;
         oam_byte(state, entry, 1) = entry % 2 == 0 ? player_marker_line : opponent_marker_line;
-        oam_byte(state, entry, 3) = marker_attributes;
+        oam_byte(state, entry, 3) = lap_marker_attributes;
     }
     for (unsigned k = 0; k < record_line_entries; ++k) { // $80:8F4C-8FA6
         oam_byte(state, record_line + k, 0) =
@@ -206,14 +211,14 @@ void build_lap_result(FrontEndState& state, const FrontEndContent& content) {
     const auto holder = state.records.record_holders[0][state.tour_menu.track];
     load_cgram(state, asset(content, first_rider_palette + holder), holder_palette_colour);
     if (record >= no_time) {
-        high_bits(state, 104) = 0x5a;
+        high_bits(state, 104) = two_icons;
         return;
     }
     print_stream(state, content, content.lap_result_record, {0, holder, record, 0, 0, 0});
-    high_bits(state, 112) = 0x56;
-    high_bits(state, 104) = 0x6a;
-    high_bits(state, 20) = high_bits(state, 24) = 0xaa;
-    high_bits(state, 28) = 0x5a;
+    high_bits(state, 112) = record_icon_shown;
+    high_bits(state, 104) = three_icons;
+    high_bits(state, 20) = high_bits(state, 24) = record_line_shown;
+    high_bits(state, 28) = record_line_end;
 }
 
 void print_lap_result(FrontEndState& state, const FrontEndContent& content) {
@@ -223,11 +228,11 @@ void print_lap_result(FrontEndState& state, const FrontEndContent& content) {
     load_cgram(state, asset(content, marker_palette_asset), marker_palette_colour);
     oam_byte(state, 112, 0) = record_icon_x;
     oam_byte(state, 112, 1) = record_icon_y;
-    oam_byte(state, 112, 3) = marker_attributes;
+    oam_byte(state, 112, 3) = lap_marker_attributes;
     const auto scale = graph_scale(times, record_of(state));
     // $80:9017-905A: the player's best lap, a personal best when under the rider's.
     const auto player_best = best_lap(times.player_laps);
-    auto& best = records.best[state.rider_menu.rider * 50U + track];
+    auto& best = personal_best(records, state.rider_menu.rider, track);
     if (player_best < best) {
         best = player_best;
         high_bits(state, 96) &= player_best_markers;
@@ -236,6 +241,8 @@ void print_lap_result(FrontEndState& state, const FrontEndContent& content) {
                  {0, 0, 0, 0, scale.floor, scale.top}); // $80:910F
     print_stream(state, content, content.lap_result_player,
                  {player_best, 0, 0, times.player_total, 0, 0}); // $80:91A1
+    // A rider opponent (below 0x10) would keep a personal best like the player's (`$80:90AF`);
+    // one-player play has none, and `start_result` refuses one.
     const auto opponent_best = best_lap(times.opponent_laps);
     if (opponent_best < saved_word_under_opponent_best(state))
         high_bits(state, 96) &= opponent_best_markers;

@@ -226,8 +226,9 @@ void FrontEndSession::return_from_race(const ZoomZooState &race) {
   // The front end's frame: the race's updates after its track's loading, as
   // measured on the laboratory's menu path (R-0057, R-0058); for a track not
   // measured DRAGSTER's, a label as the scenarios' initialization frames are.
-  const auto measured = race_loading_frames(race.track.index);
-  const auto loading_frames = measured ? measured : race_loading_frames(0);
+  const auto measured = race_loading_frames(race.track);
+  const auto loading_frames =
+      measured ? measured : race_loading_frames(ClassicRaceTrack::Dragster);
   const auto updates =
       race.movement.frame - classic_race_scenario(race.track).initialization_frame;
   unirally::return_from_race(state_, content_, state_.frame - 1 + loading_frames + updates,

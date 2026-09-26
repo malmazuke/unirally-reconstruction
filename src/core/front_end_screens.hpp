@@ -39,8 +39,12 @@ inline constexpr std::uint8_t someone = 0x10;
 // (the restore frame). Leaving the result: `$83:879A`'s two frame waits leave the arrow alone.
 inline constexpr std::uint32_t upload_last_frame = 74, menu_screen_frame = 75, restore_frame = 101;
 inline constexpr std::uint32_t scoring_frame = 2, scoring_wait_frame = 3;
-// The lap result's third frame, the tail, which follows the second's overrun without a wait.
-inline constexpr std::uint32_t lap_tail_frame = 3;
+// The result screen's third frame, its tail (`$80:9579`); after a lap result's second frame's
+// overrun it starts without a frame wait.
+inline constexpr std::uint32_t result_tail_frame = 3;
+// The high-table bits the result screens clear to show the player's new-best markers, entries
+// 96 and 98 (`$80:CFB9`, `$80:9051`).
+inline constexpr std::uint8_t player_best_markers = 0xee;
 // The one-player tours: five tracks each; HUNTER is tour 8.
 inline constexpr std::uint8_t tracks_per_tour = 5, hunter = 8;
 // The object tiles at VRAM word 0x7A00 that PICK TOUR and PICK TRACK swap (`$83:94D0`,
@@ -64,6 +68,14 @@ inline std::uint8_t& oam_byte(FrontEndState& state, unsigned entry, unsigned fie
     return state.oam_buffer[entry * 4 + field];
 }
 
+// $83:9E47: the rider's best time (or score) on the track, `$77:0829 + 2 x (50 x rider + track)`.
+inline std::uint16_t& personal_best(OnePlayerRecords& records, unsigned rider, unsigned track) {
+    return records.best[rider * 50U + track];
+}
+inline std::uint16_t personal_best(const OnePlayerRecords& records, unsigned rider,
+                                   unsigned track) {
+    return records.best[rider * 50U + track];
+}
 // $80:C6D5, the printer's EF: entry 104 + `object` at the text map word `position`.
 void place_printed_object(FrontEndState& state, unsigned object, unsigned position);
 // $80:98A4: the arrow flies off the left edge.
@@ -154,8 +166,8 @@ void race_result_exit_frame(FrontEndState& state, const FrontEndContent& content
 void build_lap_result(FrontEndState& state, const FrontEndContent& content);
 void print_lap_result(FrontEndState& state, const FrontEndContent& content);
 void step_lap_graph(FrontEndState& state);
-// $80:9017: the slowest-first minimum of the ten lap slots, the result's best lap; `$80:C868`:
-// the same without zero slots, from 0xEA62, the records' best lap.
+// $80:9017: the unsigned minimum of the ten lap slots, zero slots not skipped, the result's best
+// lap; `$80:C868`: the minimum of the slots that are not zero, from 0xEA62, the records' best lap.
 std::uint16_t best_lap(const std::array<std::uint16_t, 10>& laps);
 std::uint16_t record_lap(const std::array<std::uint16_t, 10>& laps);
 

@@ -11,6 +11,10 @@
 - Worker/session/runtime/model: Claude Code desktop app, Claude Opus 5.5 (`claude-opus-5-5`)
 - Actual model/reasoning effort, routing rationale and frontier escalation question (if any):
   **tier 2** for the screen; **tier 1** for anything that changes how a race is scored or ended.
+  Kept at tier 2: the win test and the race engine are unchanged; the records' change for a lap
+  race (the best laps, `$80:C868`) is a direct transcription, checked against the listing by the
+  worker and the reviewer, against cartridge RAM at four frames (`sram.py`), and by native tests
+  of a tie and a no-time race (the reviewer's condition for not escalating).
 - Provider quota window/baseline timestamp, used/remaining or unknown, reserve and session
   allowance (D-0004): at claim the 5-hour window was 36% used and the weekly window 38%. The
   user's allowance (25 September 2026): continue until the weekly window reaches 80%.
@@ -60,14 +64,14 @@ R-0058 and `local/evidence/front-end-lap-result/` (`NOTES.md`, `decode/lap-resul
 
 | Criterion | Result |
 | --- | --- |
-| Pictures and state | `lap-won`, `lap-lost`, `lap-record` and `lap-record-frames`: the native races return on the original's frames (6725, 7659, 13455); no difference in the menus' words, OAM buffer or text map on any frame from r + 101 to the end; 4,104 pictures equal |
+| Pictures and state | `lap-won`, `lap-lost`, `lap-record` and `lap-record-frames`: the native races return on the original's frames (6725, 7659, 13416); no difference in the menus' words, OAM buffer or text map on any frame from r + 101 to the end; 4,104 pictures equal |
 | Records | `sram.py`: the kept cartridge RAM words equal the original's at lap-won 7610 and 8399 and lap-lost 8610 and 9399 |
-| Playable | Every native race comes back to the menus in the app. The runner's comparisons cover the lap race; the app cannot replay a driven lap race (its race input is a fixed mask), so its hidden runs cover the one-run hand-over and the shared code |
+| Playable | Every race the app starts (MIKE against BRONSEN, not a stunt event) comes back to the menus. The runner's comparisons cover the lap race; the app cannot replay a driven lap race (its race input is a fixed mask), so its hidden runs cover the one-run hand-over and the shared code |
 | Nothing moves | The gates (below) |
 
-Quit and restart: the native race's pause menu restarts the race itself, and nothing hands 0xEA61
-or 0xEA62 to the menus, so there is nothing to score. They stay with the pause menu's own
-recovery.
+Quit and restart: a known difference, not done here. The original's restart goes back to NOW
+PLAYING and its quit is scored (R-0058 "Not recovered"); the native race's pause menu restarts
+inside the race and has no quit. Queued as [RACE-PAUSE-EXITS](RACE-PAUSE-EXITS.md).
 
 ## Handoff
 
