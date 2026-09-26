@@ -2,7 +2,7 @@
 
 ## Assignment
 
-- Status: **in review**. Queued 26 September 2026 (UTC) by FRONT-END-TOUR-END; claimed
+- Status: **accepted** (tier 2, pull request #35, merged in `16fe22c`; round 2 approved). Queued 26 September 2026 (UTC) by FRONT-END-TOUR-END; claimed
   26 September 2026 at 10:05Z by the Claude Code desktop session that ran RACE-RIDERS-OPPONENTS,
   on `be11fa8`.
 - Milestone: M4 (original game coverage: menus)
