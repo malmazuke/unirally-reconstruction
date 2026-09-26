@@ -11,6 +11,7 @@
 
 #include <array>
 #include <cstdint>
+#include <optional>
 #include <span>
 #include <vector>
 
@@ -208,6 +209,7 @@ struct RaceResult {
     RaceTimes times{};
     bool released{};                    // `$80:C24C` has seen both pads released
     bool press_seen{};                  // `$80:C206` saw a press on the last frame
+    bool record_placed{};               // `$80:C786` placed a time in the track\'s top three
     std::array<LapGraphDot, 20> dots{}; // the player's laps, then the opponent's
 };
 
@@ -258,6 +260,7 @@ enum class FrontEndScreen : std::uint8_t {
     race_result_exit,  // $80:BC68-BC7E: leaving the result, the records and the scoring
     tour_award,        // $83:881B: a tour's completion, the medal award `$83:AEF6`, the restore
     award_return,      // $80:BC7B after PICK TOUR's return from a completion: `$80:A858`
+    race_restart,      // $80:88DD: the race restarted from its pause menu, back to NOW PLAYING
 };
 
 // What `$83:9894` saves before a race (work RAM `$0000-$019D`) and `$83:987D` puts back after
@@ -331,6 +334,14 @@ std::uint32_t race_loading_frames(ClassicRaceTrack track);
 // The times the menus take from a native race on its result load's first update: the totals,
 // and for a lap race (its scenario's race mode 1) both riders' lap slots.
 RaceTimes race_times(const ZoomZooState& race);
+
+// One update of a race started from the menus (R-0060): the times when the race is over for
+// them, on its result load's first update, or on the pause menu's confirmed second choice. That
+// choice restarts the race on its own (`restart_zoom_zoo`); from the menus it ends it instead,
+// the race left as it was and the player's total the pause menu's: 0xEA62 (a restart, back to
+// NOW PLAYING) during the countdown, 0xEA61 (a quit) after it.
+std::optional<RaceTimes> update_race_for_menus(ZoomZooState& race, const ControllerButtons& buttons,
+                                               const ZoomZooContent& content);
 
 // The race returns on `frame` (its result load begins, R-0049): the front end resumes with that
 // frame's work, the original's `$80:99A4` after `$83:C8E0`.

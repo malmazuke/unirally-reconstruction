@@ -37,6 +37,9 @@ struct Row {
     std::uint16_t time;
 };
 constexpr std::uint16_t no_row = 0xea62; // sorts after every time
+// A total the race's pause menu writes (`$83:F8DA-F90B`): quit after the countdown, restart during
+// it (R-0060).
+constexpr std::uint16_t restarted = 0xea62;
 
 // The result's objects (`$80:951C`, `$80:CE90`): the two riders' large marks (entries 30 and 31);
 // the row icons (104-108); the new-best markers (96-99); the 1P mark (100, 102) and the 2P mark
@@ -246,8 +249,9 @@ void hide_result_objects(FrontEndState& state) {
         high_bits(state, group) = four_hidden;
 }
 
-// $80:C9D7: a time into the track's top three, shorter strictly first.
-void insert_record(OnePlayerRecords& records, unsigned track, std::uint16_t time,
+// $80:C9D7: a time into the track's top three, shorter strictly first; true when it is placed
+// (and the original then recomputes the checksums, `$83:90F4`).
+bool insert_record(OnePlayerRecords& records, unsigned track, std::uint16_t time,
                    std::uint8_t holder) {
     auto& times = records.record_times;
     auto& holders = records.record_holders;
@@ -259,8 +263,9 @@ void insert_record(OnePlayerRecords& records, unsigned track, std::uint16_t time
         }
         times[place][track] = time;
         holders[place][track] = holder;
-        return;
+        return true;
     }
+    return false;
 }
 
 // $80:C786: races and wins by rider, and the times into the records: for a one-run race
@@ -278,11 +283,15 @@ void update_records(FrontEndState& state) {
     constexpr std::size_t races = 0, wins = 1, no_time_losses = 2;
     const auto track = track_of(state);
     // A time goes into the records unless it is no time, which counts a loss without one.
+    bool placed = false;
+    const auto insert = [&](std::uint16_t time, std::uint8_t who) {
+        placed = insert_record(records, track, time, who) || placed;
+    };
     const auto record = [&](std::uint8_t who, std::uint16_t time) {
         if (time >= no_time)
             ++records.statistics[who][no_time_losses];
         else
-            insert_record(records, track, time, who);
+            insert(time, who);
     };
     ++records.statistics[rider][races]; // $80:CA74
     if (rider_opponent) ++records.statistics[opponent][races];
@@ -295,15 +304,18 @@ void update_records(FrontEndState& state) {
         ++records.opponent_wins;
     }
     if (player < other) {
-        insert_record(records, track, player_record, rider); // $80:C81C, $80:C902
-        if (rider_opponent) record(opponent, other_record);  // $80:C82F, $80:C913
+        insert(player_record, rider);                       // $80:C81C, $80:C902
+        if (rider_opponent) record(opponent, other_record); // $80:C82F, $80:C913
     } else if (player > other) {
-        if (rider_opponent) insert_record(records, track, other_record, opponent); // $80:C850
-        record(rider, player_record); // $80:C800, $80:C8E8
-    } else {                          // $80:C7EE, $80:C8D0
-        insert_record(records, track, player_record, rider);
-        if (rider_opponent) insert_record(records, track, other_record, opponent);
+        if (rider_opponent) insert(other_record, opponent); // $80:C850
+        record(rider, player_record);                       // $80:C800, $80:C8E8
+    } else {                                                // $80:C7EE, $80:C8D0
+        insert(player_record, rider);
+        if (rider_opponent) insert(other_record, opponent);
     }
+    // A placed time's checksums run `$80:C786` past its frame's end, so the scoring waits a frame
+    // more (R-0060).
+    state.race_result.record_placed = placed;
 }
 
 // $83:879A on its pad read (`$80:D1E8`, the exit's third frame): pad 1 exactly Select + X + R
@@ -403,10 +415,32 @@ void race_return_frame(FrontEndState& state, const FrontEndContent& content) {
         state.slide.scroll = 0;
         state.registers.bg[1].hofs = state.registers.bg[1].vofs = 0;
         state.logo.raised = true;
+        // $80:88DD: a restart from the race's pause menu (0xEA62) skips the result.
+        if (state.race_result.times.player_total == restarted) {
+            state.text.words.fill(cleared_text); // $80:88F8
+            state.screen = FrontEndScreen::race_restart;
+            return;
+        }
         state.screen = FrontEndScreen::race_result;
         return;
     default: return; // the sound program's upload and `$80:D20E`'s frames
     }
+}
+
+void race_restart_frame(FrontEndState& state) {
+    const auto frame = state.script_frame;
+    if (frame == 1) { // $80:8903-890A: the logo up, the blank text shown
+        state.logo.raised = true;
+        state.logo.offset = 0x52;
+        state.registers.bg[0].vofs = 0x52;
+        load_text(state, state.slide.shown_half);
+        return;
+    }
+    copy_oam(state); // $80:9869: seven frames, brightness 2 to 14
+    constexpr std::uint32_t last_fade_frame = 8;
+    state.registers.brightness = static_cast<std::uint8_t>(2 * (frame - 1));
+    state.registers.force_blank = false;
+    if (frame == last_fade_frame) enter_now_playing(state); // $80:BC36-BC45
 }
 
 void race_result_frame(FrontEndState& state, const FrontEndContent& content, FrontEndPads pads) {
@@ -443,10 +477,10 @@ void race_result_frame(FrontEndState& state, const FrontEndContent& content, Fro
 
 void race_result_exit_frame(FrontEndState& state, const FrontEndContent& content,
                             FrontEndPads pads) {
-    constexpr std::uint32_t leave_frame = 1, palette_low = 4, palette_high = 5;
     constexpr unsigned menu_text_palette = 28;
-    switch (state.script_frame) {
-    case leave_frame: // $80:F4B8's wait, then `$80:C786` and `$77:1073`
+    const auto frame = state.script_frame;
+    const auto scoring = result_scoring_frame(state);
+    if (frame == 1) { // $80:F4B8's wait, then `$80:C786` and `$77:1073`
         copy_oam(state);
         load_object_palette(state, content);
         load_cgram(state, asset(content, menu_text_palette), 0xd0);
@@ -454,22 +488,19 @@ void race_result_exit_frame(FrontEndState& state, const FrontEndContent& content
         update_records(state);
         state.records.tries = 3;
         return;
-    case scoring_frame: return; // $83:879A: `$83:A923`'s wait, without the arrow or an OAM copy
-    case scoring_wait_frame:    // $80:D1E8: the OAM copy and the pads, then the scoring
-        copy_oam(state);
+    }
+    if (frame < scoring) return; // `$80:C786`'s overrun: no wait, no OAM copy
+    copy_oam(state);
+    if (frame == scoring) { // $83:879A after `$83:A923`'s wait: `$80:D1E8` (the pads), the scoring
         score_race(state, pads);
         return;
-    case palette_low:
-        copy_oam(state);
+    }
+    if (frame == scoring + 1) { // $80:A858, twice
         load_cgram(state, asset(content, base_palette_low), 0);
         return;
-    case palette_high:
-        copy_oam(state);
-        load_cgram(state, asset(content, base_palette_high), 0x40);
-        enter_track_menu(state, state.track_menu.returning);
-        return;
-    default: copy_oam(state); return;
     }
+    load_cgram(state, asset(content, base_palette_high), 0x40);
+    enter_track_menu(state, state.track_menu.returning);
 }
 
 void begin_race_return(FrontEndState& state, const FrontEndContent& content, std::uint32_t frame,
@@ -510,6 +541,21 @@ RaceTimes race_times(const ZoomZooState& race) {
         result.opponent_laps = times.lap_times[1];
     }
     return result;
+}
+
+std::optional<RaceTimes> update_race_for_menus(ZoomZooState& race, const ControllerButtons& buttons,
+                                               const ZoomZooContent& content) {
+    constexpr std::uint16_t quit = 0xea61, restart = 0xea62;
+    auto next = race;
+    update_zoom_zoo(next, buttons, content);
+    if (next.movement.frame < race.movement.frame) { // `restart_zoom_zoo` from the pause menu
+        auto times = race_times(race);
+        times.player_total = race.movement.countdown != 0 ? restart : quit; // $83:F8DA-F90B
+        return times;
+    }
+    race = next;
+    if (race.result_updates != 1) return std::nullopt;
+    return race_times(race);
 }
 
 } // namespace unirally

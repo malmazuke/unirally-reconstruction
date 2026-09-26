@@ -258,9 +258,10 @@ int main(int argc, char** argv) try {
                 }
             }
             if (frame <= race.initialization_frame) continue;
-            unirally::update_zoom_zoo(race.state, race_buttons(pads.one), *race.content);
-            if (race.state.result_updates != 1) continue;
-            const auto times = unirally::race_times(race.state);
+            const auto over =
+                unirally::update_race_for_menus(race.state, race_buttons(pads.one), *race.content);
+            if (!over) continue;
+            const auto& times = *over;
             unirally::return_from_race(state, content, frame, times);
             std::cerr << "race returned at " << frame << "; totals " << times.player_total << '/'
                       << times.opponent_total << "; initialized at " << race.initialization_frame

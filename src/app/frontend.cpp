@@ -222,7 +222,7 @@ bool FrontEndSession::update(FrontEndPads pads) {
   return false;
 }
 
-void FrontEndSession::return_from_race(const ZoomZooState &race) {
+void FrontEndSession::return_from_race(const ZoomZooState &race, const RaceTimes &times) {
   // The front end's frame: the race's updates after its track's loading, as
   // measured on the laboratory's menu path (R-0057, R-0058); for a track not
   // measured DRAGSTER's, a label as the scenarios' initialization frames are.
@@ -232,7 +232,7 @@ void FrontEndSession::return_from_race(const ZoomZooState &race) {
   const auto updates =
       race.movement.frame - classic_race_scenario(race.track).initialization_frame;
   unirally::return_from_race(state_, content_, state_.frame - 1 + loading_frames + updates,
-                             race_times(race));
+                             times);
   ++races_;
 }
 
