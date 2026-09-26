@@ -5359,7 +5359,8 @@
    "address": "$83:E16B",
    "native": [
     "src/core/opponent_ai.cpp:jump_at_marker",
-    "src/core/opponent_ai.cpp:opponent_launches"
+    "src/core/opponent_ai.cpp:opponent_launches",
+    "src/core/race_state_io.cpp:check_opponent_suppression"
    ],
    "range_ends": [
     "$83:E1C8"
@@ -6859,6 +6860,13 @@
    "region": "wram"
   },
   {
+   "address": "$0EE7",
+   "native": [
+    "src/core/race_hud.cpp:classic_caption_entry"
+   ],
+   "region": "wram"
+  },
+  {
    "address": "$0EF3",
    "native": [
     "src/core/zoom_zoo_movement.hpp:ZoomZooPause::selection, ZoomZooPause::released"
@@ -7350,7 +7358,8 @@
    "native": [
     "src/core/opponent_ai.cpp:opponent_launches",
     "src/core/opponent_ai.cpp:rotation_updates, level_three_rotation_updates",
-    "src/core/opponent_ai.cpp:update_opponent_controller"
+    "src/core/opponent_ai.cpp:update_opponent_controller",
+    "src/core/race_state_io.cpp:check_opponent_suppression"
    ],
    "region": "wram"
   },
@@ -9797,7 +9806,8 @@
    ],
    "wram": [
     "$0D11",
-    "$0D13"
+    "$0D13",
+    "$0EE7"
    ]
   },
   "src/core/race_hud.cpp:classic_caption_tile": {
@@ -10219,6 +10229,14 @@
     "$81:C27B",
     "$82:DB87",
     "$83:E1F1"
+   ]
+  },
+  "src/core/race_state_io.cpp:check_opponent_suppression": {
+   "rom": [
+    "$83:E16B"
+   ],
+   "wram": [
+    "$1277"
    ]
   },
   "src/core/race_state_io.cpp:check_queued_events": {
@@ -12287,11 +12305,11 @@
   }
  },
  "totals": {
-  "addresses": 924,
+  "addresses": 925,
   "io_addresses": 5,
-  "native_symbols": 667,
+  "native_symbols": 668,
   "rom_addresses": 638,
   "sram_addresses": 33,
-  "wram_addresses": 248
+  "wram_addresses": 249
  }
 }

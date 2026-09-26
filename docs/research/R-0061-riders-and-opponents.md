@@ -22,14 +22,17 @@ menu temporaries differ. The rider changes four things:
   MELISSA 88-103, up to STEVE's 184-199. All of them take the voice path (caption only, no reward).
 - **Its tutorial hints.** `$82:D94C-D96F` starts the hints (`$12E3` = 1) only when the cartridge
   RAM's `$77:1116` lacks the rider's bit (`$12E7`, 16-bit). When a scoring event ends the hints,
-  `$83:CE2C` sets that bit and clears `$12E3` (unless `$7E212C` is nonzero, which one-player play
-  never has). So once a rider's hints have ended, that rider's later races, and a restart of the
-  same race, start without them.
+  `$83:CE2C` sets that bit and clears `$12E3` (unless `$7E212C` is nonzero; its writer,
+  `$83:CBFC-CC01`, runs only with `$77:0750` bit 1 set, which one-player play does not set). So
+  once a rider's hints have ended, that rider's later races, and a restart of the same race, start
+  without them. The M4-16 primary shows it: `$12E3` goes 1 to 0 and `$77:1116` 0 to 1 on the same
+  frame (2742), and DRAGSTER's primary likewise at its gated row 474.
 - **Its sprite colours.** `$82:DD90-DD9A` loads OBJ palette 3 (CGRAM 0xB0) from asset 6 + rider.
   The tiles are the same for every rider.
 - **The ink of the HUD and captions.** `$82:D57F-D5FB` sets up HDMA channel 5 from the rider's
   four bytes of `$82:D4DC`: three COLDATA writes (bits 5, 6 and 7 choose red, green and blue, bits
-  0-4 the intensity) and CGADSUB (0x04, or 0x84 to subtract). With CGWSEL 0x02, the BG3 ink is
+  0-4 the intensity) and CGADSUB (0x04, or 0x84 to subtract). CGWSEL 0x02 adds the subscreen,
+  which in a race is empty, so its backdrop, the fixed colour, is what is added: the BG3 ink is
   CGRAM 27 (`$000D` on every race palette) plus that fixed colour, clamped per channel. MIKE's
   (15,0,0) gives (28,0,0), which is also CGRAM 22's colour, the one native drew before. ANDREW's
   (0,0,31) gives (13,0,31), and TONY's subtraction gives black. Where a rider covers the ink, the
@@ -51,7 +54,8 @@ The launch rule by level, with `$1277` the suppression word it leaves:
   progress transitions or more): 30, else 0 and no launch.
 - **Level 2** (`$83:E17D-E1A5`, SILVIA): `$1277` = the player's lead + 15. A negative sum leaves 0
   and no launch. Otherwise no trick launches when the animation counter `$04C7` ends in 7, though
-  the word stays.
+  the word stays. `$04C7` is incremented (`$83:CCCC`) before the AI runs (`$83:CD5E`), in native
+  too.
 - **Level 3** (`$83:E175`, GOLDWYN and ANTI-UNI): always, with 60.
 
 The opponent's voices follow its character: BRONSEN's 200-215, SILVIA's and GOLDWYN's 216-231
@@ -85,7 +89,18 @@ The blank reaches the screen one picture later than native showed it: the pictur
 update that found the queue dry still shows the last caption, and the blank follows from the next
 picture. Native now blanks once the dry wait's cooldown has started to run down. This was measured
 on ANDREW's DRAGSTER race, whose captions are MIKE's: frames 2736-2748 around the end of a hint
-group.
+group. The rule is measured, not derived. The blank, like a new caption, reaches VRAM through the
+upload flag `$0EE7`, which the NMI serves one task per frame behind the HUD's uploads
+(`$81:E49F`, `$81:E6F6`, `$81:E79B` before `$81:E831`). Native does not model that order, so a new
+caption can also arrive a picture late (below), and a pause opened on that picture is not measured.
+
+**The gates' restart check.** The differential gates restart each race from its last state and
+used to require the fresh race again. A restart now starts without hints when they had ended
+(`$82:D94C` rereads `$77:1116`), as the original does at the frames above. So `zoom_zoo_playable`
+and `dragster_playable` now compare the restart with a fresh race started with the hints the last
+state still has (`--tutorial-hints`), and deserialization refuses a `$1277` its AI level cannot
+leave (0 or 30 below level 2, 0 or 60 above it), so a SILVIA state read without its pairing is
+refused rather than taken for BRONSEN's.
 
 ## Evidence
 
@@ -105,15 +120,28 @@ twice, with identical memory.
 | mike-hints-off-dragster | MIKE v BRONSEN, `$77:1116` = 1 | 2,473 of 2,473 | 43 of 43 equal |
 | silvia-zoom-zoo | MIKE v SILVIA | 4,825 of 4,825 | 51; 32 differ only by the off-screen arrow |
 | goldwyn-zoom-zoo | ANDREW v GOLDWYN | 4,825 of 4,825 | 51; 32 differ only by the off-screen arrow |
+| silvia-runner-25 | MIKE v SILVIA on RUNNER's first track | 2,307 of 2,307 | 33; the arrow, and two other residues (below) |
 
 - The boundary words match the rules above. For example, SILVIA on ZOOM ZOO has `$1283` 0x21 and
   `$1281` 0x27, and GOLDWYN on ZOOM ZOO has 0x41 and 0x07.
 - In SILVIA's DRAGSTER race, `$1277` took the level-2 values 6 to 15.
+- The skip on a counter ending in 7 needed its own capture: on DRAGSTER every decision falls on an
+  even phase, and on ZOOM ZOO the player soon falls more than 15 transitions behind. A native
+  search (a build without the skip against the real one) found it on track 25 (RUNNER, unlocked,
+  with MIKE's bronze there at `$77:06EC`, Right from 1500). At frame 2537 the original's `$04C7`
+  is 23, the lead -14: `$1277` becomes 1 and nothing launches; the trick launches on the next
+  update. Native matches all 2,307 updates, and the build without the skip diverges at 2537.
 - GOLDWYN's ZOOM ZOO race queued voice 219.
 - In the hints-off race `$12E3` starts at 0.
-- Every differing pixel lies in BG3 rows 14-15, columns 5-7 or 26-28. That is the red off-screen
-  rider arrow, a declared omission since M4-16 (R-0043). SILVIA and GOLDWYN get ahead of the player,
-  so it shows on the right as well as the left. It is queued as RACE-OFFSCREEN-ARROW.
+- In the first six races every differing pixel lies in BG3 rows 14-15, columns 5-7 or 26-28. That
+  is the off-screen rider arrow, a declared omission since M4-16 (R-0043). SILVIA and GOLDWYN get
+  ahead of the player, so it shows on the right as well as the left.
+- `silvia-runner-25` has two more, both of the picture and not of the race's state, and both
+  found by consecutive frames 1836-1864: a new hint caption arrives a picture late on 1846 (the
+  upload order above), and MIKE's upper body shows its next shape two pictures early on 1849-1850
+  (63 pixels; with BRONSEN, behind, the same frames match, so it is probably the rider look of
+  R-0036 following the other rider, not measured further). All three are queued as
+  [RACE-OFFSCREEN-ARROW](../../tasks/RACE-OFFSCREEN-ARROW.md).
 
 **The menus around the races.** These are front-end captures (pictures from frame 400, work RAM
 `$0000-$1FFF` every frame), compared by `compare.py` in `local/evidence/race-riders-opponents/
@@ -135,7 +163,6 @@ and `goldwyn` 5600, 10500 and 13390.
   `track_reference` capture in the evidence queues a player voice), so riders 2-15's voices are
   from the listing.
   Native computes them with the same expression as the opponent's, which GOLDWYN's 219 confirms.
-- **`$7E212C`**, which stops the hints ending, has no recovered writer in one-player play.
 - **The cartridge RAM class counters** that the opponent's out-of-table voices increment
   (`$81:C253-C258`) are not modelled, as for BRONSEN (R-0035).
 - **ANTI-UNI against another rider** on HUNTER's tracks has no capture. Its parts (the rider's

@@ -1,4 +1,4 @@
-# RACE-OFFSCREEN-ARROW - the race's off-screen rider arrows
+# RACE-OFFSCREEN-ARROW - the race's off-screen rider arrows, and the picture residues R-0061 found
 
 ## Assignment
 
@@ -34,13 +34,21 @@ races' 43-51 kept frames. They are the only difference left in those races' pict
 what it reads (the riders' positions, and maybe the distance), and when it appears and goes, and
 draw it frame for frame.
 
+Two more residues from R-0061's `silvia-runner-25` capture belong here:
+- **The BG3 upload order.** A new caption reaches the screen a picture late on frame 1846, and a
+  blank does after a dry queue (R-0061's measured rule). Both go through the NMI's upload flag
+  `$0EE7`, served one task per frame behind the HUD's uploads (`$81:E49F`, `$81:E6F6`,
+  `$81:E79B`, then `$81:E831`). Model that order and replace the measured blank rule with it.
+- **MIKE's upper body on 1849-1850** shows its next shape two pictures early (63 pixels) when the
+  opponent is ahead; with BRONSEN behind the same frames match. Probably the rider look (R-0036).
+
 Out of scope: two-player play.
 
 ## Acceptance
 
 | Criterion | Command or experiment | Expected result | Required artifact |
 | --- | --- | --- | --- |
-| Pictures | `local/evidence/race-riders-opponents/race/pictures.py` on R-0061's six captures, and the M4-16 primary's kept frames | 0 differing pixels, or each residue explained | logs, research record |
+| Pictures | `local/evidence/race-riders-opponents/race/pictures.py` on R-0061's seven captures, and the M4-16 primary's kept frames | 0 differing pixels, or each residue explained | logs, research record |
 | Timing | Consecutive frames around the arrow's appearance and disappearance, both sides | Equal to the pixel | pictures |
 | Nothing moves | The gates of RACE-RIDERS-OPPONENTS | Unchanged apart from the arrow's pixels, each accounted for | logs |
 

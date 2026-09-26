@@ -26,7 +26,8 @@ template <class F> static void rejects(F action) {
 namespace {
 using namespace unirally;
 
-// `$83:C8B3`'s first bytes: 00 01 01 02 ..., and 0x20 at track 39 (a lap race).
+// A sparse stand-in for `$83:C8B3` (00 01 01 02 ...): 1 at ZOOM ZOO (track 1) and 0x20 at
+// track 39 (a lap race), 0 elsewhere.
 std::array<std::uint8_t, 45> catch_up_table() {
     std::array<std::uint8_t, 45> table{};
     table[1] = 1;
@@ -161,6 +162,74 @@ void menus_pass_the_tutorial_bit() {
     require(!one_player_race_scenario(state).tutorial_hints);
 }
 
+// A DRAGSTER race start from a synthetic header, as dragster_race_tests builds it.
+struct SyntheticRace {
+    std::array<std::uint8_t, 14> header{};
+    std::array<std::uint8_t, 26> weights{};
+    std::array<std::uint8_t, 45> table = catch_up_table();
+    ZoomZooContent content{};
+    SyntheticRace() {
+        header[3] = 0x44;
+        header[5] = 0x32;
+        header[7] = 0x44;
+        header[9] = 0x32;
+        weights[0] = 4;
+        content.movement.sampling.track = header;
+        content.reward_weights = weights;
+        content.opponent_catch_up = table;
+    }
+};
+
+void restarts_keep_the_pairing() {
+    SyntheticRace race;
+    const auto silvia = classic_race_scenario(ClassicRaceTrack::Dragster, {1, opponent::silvia});
+    auto state = classic_race_start(race.content, silvia);
+    require(state.pairing == RacePairing{1, opponent::silvia});
+    require(state.opponent_tier == OpponentTier{2, 0x20, 0x40});
+    require(state.player_announcements.hints_active == 1);
+    // A paused restart ($0EF3 = -1, released): the hints run again only if they still were.
+    state.pause.selection = 0xffff;
+    state.pause.released = 1;
+    auto again = state;
+    restart_zoom_zoo(again, race.content);
+    require(again.player_announcements.hints_active == 1 && again.pairing == state.pairing);
+    state.player_announcements.hints_active = 0;
+    restart_zoom_zoo(state, race.content);
+    require(state.player_announcements.hints_active == 0);
+    require(state.pairing == RacePairing{1, opponent::silvia});
+    require(state.opponent_tier == OpponentTier{2, 0x20, 0x40});
+    // The hints-off start itself.
+    const auto off = classic_race_start(
+        race.content, classic_race_scenario(ClassicRaceTrack::Dragster, {0, opponent::bronsen}, false));
+    require(off.player_announcements.hints_active == 0);
+}
+
+void paired_states_read_back() {
+    SyntheticRace race;
+    const auto scenario = classic_race_scenario(ClassicRaceTrack::Dragster, {0, opponent::silvia});
+    auto state = classic_race_start(race.content, scenario);
+    state.movement.opponent_ai.suppression_counter = 15; // a level-2 word
+    const auto bytes = serialize_zoom_zoo(state);
+    const auto read = deserialize_zoom_zoo(bytes, {0, opponent::silvia}, true, race.table);
+    require(serialize_zoom_zoo(read) == bytes);
+    require(read.pairing == scenario.pairing && read.opponent_tier == state.opponent_tier);
+    // SILVIA's tier needs the table; without the pairing the word is not BRONSEN's.
+    rejects([&] { (void)deserialize_zoom_zoo(bytes, {0, opponent::silvia}, true, {}); });
+    rejects([&] { (void)deserialize_zoom_zoo(bytes); });
+    // BRONSEN's word is 0 or 30.
+    state.pairing = {0, opponent::bronsen};
+    state.opponent_tier = opponent_tier(classic_race_scenario(ClassicRaceTrack::Dragster), {});
+    state.movement.opponent_ai.suppression_counter = 30;
+    require(deserialize_zoom_zoo(serialize_zoom_zoo(state)).opponent_tier.ai_level == 1);
+    // A hints-off start reads back only as one.
+    auto off = classic_race_start(
+        race.content, classic_race_scenario(ClassicRaceTrack::Dragster, {0, opponent::bronsen}, false));
+    const auto off_bytes = serialize_zoom_zoo(off);
+    require(!deserialize_zoom_zoo(off_bytes, {0, opponent::bronsen}, false, {})
+                 .player_announcements.hints_active);
+    rejects([&] { (void)deserialize_zoom_zoo(off_bytes); });
+}
+
 } // namespace
 
 int main() {
@@ -170,5 +239,7 @@ int main() {
     voices();
     ink_colour_math();
     menus_pass_the_tutorial_bit();
+    restarts_keep_the_pairing();
+    paired_states_read_back();
     return 0;
 }

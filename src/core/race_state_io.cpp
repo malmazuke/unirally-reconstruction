@@ -526,6 +526,20 @@ void read_native_race(Reader& in, ZoomZooState& state, const ClassicRaceScenario
     check_lap_times(state, scenario);
 }
 
+// $1277 holds what the opponent's last launch decision left ($83:E16B-E1C8): 0 or 30 below
+// level 2, 0 or 60 above it, and at level 2 the player's lead + 15, never negative. A state read
+// without its pairing is BRONSEN's (or ANTI-UNI's), so SILVIA's words are refused there.
+void check_opponent_suppression(const ZoomZooState& state) {
+    constexpr std::uint16_t lead_weighing_level = 2, low_level_word = 30, high_level_word = 60;
+    const auto word = state.movement.opponent_ai.suppression_counter;
+    const auto level = state.opponent_tier.ai_level;
+    const bool possible =
+        level == lead_weighing_level
+            ? !negative(word)
+            : word == 0 || word == (level < lead_weighing_level ? low_level_word : high_level_word);
+    refuse_unless(possible, "the opponent's suppression word does not fit its AI level");
+}
+
 void check_controls_and_horizon(const ZoomZooState& state, const ClassicRaceScenario& scenario) {
     for (const auto& surface : state.surface)
         refuse_unless(!(surface.mode > 1 || surface.tile_mode > 1 || surface.leading_support > 1
@@ -586,6 +600,7 @@ ZoomZooState deserialize_classic_race(std::span<const std::uint8_t> bytes, Class
     if (complete_race) read_race_progress(in, state, scenario);
     if (native_initialization) read_native_race(in, state, scenario);
     check_controls_and_horizon(state, scenario);
+    check_opponent_suppression(state);
     in.require_end();
     return state;
 }

@@ -59,6 +59,24 @@ drew it, for every rider; that is fixed and recorded as a correction to R-0042.
 
 Tier 1 stands: the race's state changes by opponent.
 
+The differential gates' restart check changed with the rule it checks. A restart starts without
+hints when they had ended, as the original does (R-0061: the M4-16 primary's frame 2742, DRAGSTER's
+primary row 474), so `zoom_zoo_playable` and `dragster_playable` compare it with a fresh race
+started with the last state's hints, not with the fresh race itself. Deserialization now refuses
+a `$1277` the AI level cannot leave.
+
+## Review
+
+Round 1 (tier 1, fresh Opus 5.5 subagent, isolated worktree) of `46ea255`: changes requested,
+`local/evidence/race-riders-opponents/review-46ea255.md`. Answered:
+- M1, the gates' restart check: the expectation above.
+- M2, the counter-7 skip untested: the track 25 capture, found by a native search.
+- S1: the caption rule marked measured, the upload order named, and queued.
+- S2: the equivalence sweep's picture differences are listed with the gates.
+- S3: the `$1277` refusal. S4: tests of the restart's hints and of reading paired states back.
+- S5: `$7E212C`'s writer and the subscreen named in R-0061. The nits: the ink out of
+  `render_classic_race`, the test comment, the asset name.
+
 ## Evidence
 
 Captures and scripts in `local/evidence/race-riders-opponents/`: `decode/` (the listing and the
@@ -68,8 +86,8 @@ each taken twice and identical; `explore-*.json`; `pictures.py` and its logs) an
 
 | Criterion | Result |
 | --- | --- |
-| Race state | Six captures: ANDREW, SILVIA, GOLDWYN and a hints-off MIKE on DRAGSTER (2,473 updates each), SILVIA and ANDREW v GOLDWYN on ZOOM ZOO (4,825 each). Every update is equal from the boundary. |
-| Pictures | 274 frames of those races. ANDREW's and the hints-off race's are equal to the pixel. SILVIA's and GOLDWYN's differ only by the off-screen rider arrow, a declared omission since M4-16 (R-0043), now queued as [RACE-OFFSCREEN-ARROW](RACE-OFFSCREEN-ARROW.md). |
+| Race state | Seven captures: ANDREW, SILVIA, GOLDWYN and a hints-off MIKE on DRAGSTER (2,473 updates each), SILVIA and ANDREW v GOLDWYN on ZOOM ZOO (4,825 each), and SILVIA on track 25 (2,307), which reaches the level-2 skip on a counter ending in 7. Every update is equal from the boundary; a build without that skip diverges at its frame. |
+| Pictures | 307 frames of those races. ANDREW's and the hints-off race's are equal to the pixel. SILVIA's and GOLDWYN's differ only by the off-screen rider arrow, a declared omission since M4-16 (R-0043), except two picture residues on track 25 (a caption a picture late, MIKE's upper body two pictures early). All three are queued as [RACE-OFFSCREEN-ARROW](RACE-OFFSCREEN-ARROW.md). |
 | The menus around the races | `andrew` (ANDREW's race), `forced-silver` (SILVIA's) and `goldwyn` (BRONSEN, SILVIA and GOLDWYN in turn), from power-on: no difference in the menus' words, OAM buffer or text map on any frame, and 1,054, 582 and 6,321 pictures all equal. `sram.py` (now with `$77:1116`): the kept words equal at `andrew` 3690 and `goldwyn` 5600, 10500 and 13390. |
 | Playable | The app, hidden, with `andrew`'s pads: ANDREW's race runs and returns to the menus. With `goldwyn`'s: three races (BRONSEN, SILVIA, GOLDWYN) run and return, with the original's totals and no notice. |
 | Nothing moves | The gates (below). |

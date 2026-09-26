@@ -19,6 +19,9 @@ from ..content.pack import load_rules,validate_pack,TWO_TRACK_RULES_PATH
 
 ROLL_WORDS=[0x1215,0x123f,0x121b,0x1221,0x124f,0xfdf,0x1009,0x42f,0x433,0x42b,0x54b,0x124b]
 
+# The player's hints_active word in the 742-byte race row (race_state_io's native section).
+HINTS_ACTIVE = 624
+
 def original(directory, *, allow_incomplete=False):
     document=json.loads((directory/'reference.json').read_text())
     if (document['rom_sha256'],document['core_sha256'],document['manifest_sha256'])!=(ROM_SHA,CORE_SHA,PRIMARY_SHA):
@@ -127,9 +130,9 @@ def compare(a,b,contract,binary,pack,out):
     boundaries=sorted(f for f in boundaries if 1376<=f<last)
     with tempfile.TemporaryDirectory(prefix='zoom-playable-native-') as directory:
         root=Path(directory);local_pack=root/'classic.pack';local_pack.write_bytes(pack.read_bytes());inputs=root/'inputs.txt';seed=root/'restore.bin'
-        def execute(first,restore=None,restart=False):
+        def execute(first,restore=None,restart=False,hints=1):
             inputs.write_text(''.join(f'{f} {sum(1<<BUTTONS.index(b) for b in reference["timeline"][f][0])} 0\n' for f in range(first+1,last+1)))
-            start=['--start','classic.crawler.zoom-zoo']
+            start=['--start','classic.crawler.zoom-zoo']+([] if hints else ['--tutorial-hints','0'])
             if restore is not None:seed.write_bytes(bytes.fromhex(restore));start=['--restart-from' if restart else '--seed',str(seed)]
             run=subprocess.run([str(binary),*start,'--content-pack',str(local_pack),'--inputs',str(inputs)],cwd=root,capture_output=True,text=True,timeout=30)
             if run.returncode:raise ValueError(f'native failed: {run.stderr}')
@@ -145,7 +148,11 @@ def compare(a,b,contract,binary,pack,out):
                 if x!=y:raise ValueError(f'first mismatch {1376+i}: {[n for n,(v,w) in enumerate(zip(bytes.fromhex(x),bytes.fromhex(y))) if v!=w]}')
             raise ValueError('native frame count differs')
         if execute(1376)!=actual:raise ValueError('fresh native initialization differs')
-        if execute(1376,actual[-1],True)!=actual:raise ValueError('restart retains stale race/result state')
+        # R-0061: a restart reads the rider's tutorial bit again, which the race set in $77:1116 when
+        # its hints ended ($12E3 1 to 0 and $77:1116 0 to 1 on one frame, M4-16 boundary-a frame
+        # 2742): it equals a fresh race started with the hints the last state still has.
+        if execute(1376,actual[-1],True)!=execute(1376,hints=int.from_bytes(bytes.fromhex(actual[-1])[HINTS_ACTIVE:HINTS_ACTIVE+2],'little')):
+            raise ValueError('restart retains stale race/result state')
         for frame in boundaries:
             if execute(frame,actual[frame-1376])!=actual[frame-1376:]:raise ValueError(f'restore differs at {frame}')
     if (subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT)!=head or

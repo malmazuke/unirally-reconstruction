@@ -38,10 +38,8 @@ constexpr std::size_t colour_math_size = 4;
 // loader copies ($82:DD90-DDBC).
 std::span<const std::uint8_t> character_palette(const ClassicContentPack& pack,
                                                 unsigned character) {
-    const auto asset = 6U + character;
-    const std::string name = "front-end.asset.0" + std::string(1, char('0' + asset / 10U))
-                           + std::string(1, char('0' + asset % 10U));
-    return pack.entry(name);
+    const auto asset = std::to_string(6U + character);
+    return pack.entry("front-end.asset." + std::string(3U - asset.size(), '0') + asset);
 }
 
 } // namespace
@@ -302,6 +300,18 @@ std::array<std::uint8_t, 65536> race_vram(const ClassicRacePresentationContent& 
     return vram;
 }
 
+// The BG3 ink at `brightness`: CGRAM 27 through the rider's colour math, then faded, as the
+// PPU fades the colour math's result.
+std::array<std::uint8_t, 3> race_ink_rgb(const ClassicRacePresentationContent& content,
+                                         unsigned brightness) {
+    auto ink = classic_race_ink(
+        static_cast<std::uint16_t>(content.palette[2U * bg3_ink_colour]
+                                   | (unsigned(content.palette[2U * bg3_ink_colour + 1U]) << 8U)),
+        content.rider_colour_math);
+    if (brightness < 15U) ink = apply_snes_brightness(ink, brightness);
+    return colour_word_rgb(ink);
+}
+
 // The race's CGRAM at `brightness` (0-15). Colours 96-111 and 0 are cycled by the race NMI
 // from ROM tables every frame (R-0037); neither track keys them to rider poses here.
 // $82:DD90-DDBC: OBJ palettes 3 and 4 are the riders' (asset 6 + $77:0748 and + $77:0749); the
@@ -526,14 +536,7 @@ RgbFrame render_classic_race(const ZoomZooState& state,
     const unsigned prior_fade = classic_race_prior_fade(state, previous_update, scenario);
     const auto brightness = prior_fade > 15U ? prior_fade - 15U : 0U;
     const auto cgram = race_cgram(state, content, brightness);
-    // The PPU fades the colour math's result: the ink is CGRAM 27 through the rider's colour
-    // math, then faded like CGRAM.
-    auto ink_word = classic_race_ink(
-        static_cast<std::uint16_t>(content.palette[2U * bg3_ink_colour]
-                                   | (unsigned(content.palette[2U * bg3_ink_colour + 1U]) << 8U)),
-        content.rider_colour_math);
-    if (brightness < 15U) ink_word = apply_snes_brightness(ink_word, brightness);
-    const auto bg3_ink = colour_word_rgb(ink_word);
+    const auto bg3_ink = race_ink_rgb(content, brightness);
     // Authored UI has no CGRAM entry; fade it through the same 1.5 output curve.
     const auto ui_scale = std::pow(brightness / 15.0, 1.5);
     const auto ui = [ui_scale](std::array<std::uint8_t, 3> rgb) {

@@ -7534,7 +7534,8 @@
   "comment": "instruction start",
   "label": "loc_81D1B2",
   "source_records": [
-   "docs/research/R-0043-classic-race-hud.md"
+   "docs/research/R-0043-classic-race-hud.md",
+   "tasks/RACE-OFFSCREEN-ARROW.md"
   ]
  },
  {
@@ -7543,7 +7544,8 @@
   "comment": "instruction start",
   "label": "loc_81D30C",
   "source_records": [
-   "docs/research/R-0043-classic-race-hud.md"
+   "docs/research/R-0043-classic-race-hud.md",
+   "tasks/RACE-OFFSCREEN-ARROW.md"
   ]
  },
  {
@@ -7658,6 +7660,46 @@
   ]
  },
  {
+  "address": "$81:E49F",
+  "class": "inferred",
+  "comment": "routine start",
+  "label": "sub_81E49F",
+  "source_records": [
+   "docs/research/R-0061-riders-and-opponents.md",
+   "tasks/RACE-OFFSCREEN-ARROW.md"
+  ]
+ },
+ {
+  "address": "$81:E6F6",
+  "class": "inferred",
+  "comment": "routine start",
+  "label": "sub_81E6F6",
+  "source_records": [
+   "docs/research/R-0061-riders-and-opponents.md",
+   "tasks/RACE-OFFSCREEN-ARROW.md"
+  ]
+ },
+ {
+  "address": "$81:E79B",
+  "class": "inferred",
+  "comment": "routine start",
+  "label": "sub_81E79B",
+  "source_records": [
+   "docs/research/R-0061-riders-and-opponents.md",
+   "tasks/RACE-OFFSCREEN-ARROW.md"
+  ]
+ },
+ {
+  "address": "$81:E831",
+  "class": "inferred",
+  "comment": "routine start",
+  "label": "sub_81E831",
+  "source_records": [
+   "docs/research/R-0061-riders-and-opponents.md",
+   "tasks/RACE-OFFSCREEN-ARROW.md"
+  ]
+ },
+ {
   "address": "$81:EB40",
   "class": "inferred",
   "comment": "inside the instruction at $81:EB3F",
@@ -7672,7 +7714,8 @@
   "comment": "instruction start",
   "label": "loc_81EB44",
   "source_records": [
-   "docs/research/R-0043-classic-race-hud.md"
+   "docs/research/R-0043-classic-race-hud.md",
+   "tasks/RACE-OFFSCREEN-ARROW.md"
   ]
  },
  {
@@ -7681,7 +7724,8 @@
   "comment": "instruction start",
   "label": "loc_81EB83",
   "source_records": [
-   "docs/research/R-0043-classic-race-hud.md"
+   "docs/research/R-0043-classic-race-hud.md",
+   "tasks/RACE-OFFSCREEN-ARROW.md"
   ]
  },
  {
@@ -10820,7 +10864,8 @@
    "src/core/presentation.hpp:ClassicRacePresentationContent::rider_colour_math"
   ],
   "source_records": [
-   "docs/research/R-0061-riders-and-opponents.md"
+   "docs/research/R-0061-riders-and-opponents.md",
+   "tasks/RACE-RIDERS-OPPONENTS.md"
   ]
  },
  {
@@ -12324,7 +12369,8 @@
    "src/core/zoom_zoo_movement.hpp:opponent_tier"
   ],
   "source_records": [
-   "docs/research/R-0061-riders-and-opponents.md"
+   "docs/research/R-0061-riders-and-opponents.md",
+   "tasks/RACE-RIDERS-OPPONENTS.md"
   ]
  },
  {
@@ -12349,6 +12395,15 @@
   "label": "loc_83C9AC",
   "source_records": [
    "tasks/RACE-PAUSE-EXITS.md"
+  ]
+ },
+ {
+  "address": "$83:CBFC",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_83CBFC",
+  "source_records": [
+   "docs/research/R-0061-riders-and-opponents.md"
   ]
  },
  {
@@ -12501,6 +12556,15 @@
   ]
  },
  {
+  "address": "$83:CCCC",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83CCCC",
+  "source_records": [
+   "docs/research/R-0061-riders-and-opponents.md"
+  ]
+ },
+ {
   "address": "$83:CCDE",
   "class": "observed",
   "comment": "instruction start",
@@ -12544,6 +12608,15 @@
    "docs/research/R-0040-dragster-window-effects.md",
    "docs/research/R-0060-pause-exits.md",
    "tasks/ZOOM-ZOO-WINDOW-EFFECTS.md"
+  ]
+ },
+ {
+  "address": "$83:CD5E",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83CD5E",
+  "source_records": [
+   "docs/research/R-0061-riders-and-opponents.md"
   ]
  },
  {
@@ -13032,7 +13105,8 @@
    "src/core/opponent_ai.cpp:(file)",
    "src/core/opponent_ai.cpp:jump_at_marker",
    "src/core/opponent_ai.cpp:opponent_launches",
-   "src/core/opponent_ai.cpp:update_opponent_controller"
+   "src/core/opponent_ai.cpp:update_opponent_controller",
+   "src/core/race_state_io.cpp:check_opponent_suppression"
   ],
   "source_records": [
    "docs/research/R-0050-locked-tours.md",
@@ -13049,7 +13123,8 @@
    "src/core/opponent_ai.cpp:(file)",
    "src/core/opponent_ai.cpp:jump_at_marker",
    "src/core/opponent_ai.cpp:opponent_launches",
-   "src/core/opponent_ai.cpp:update_opponent_controller"
+   "src/core/opponent_ai.cpp:update_opponent_controller",
+   "src/core/race_state_io.cpp:check_opponent_suppression"
   ],
   "source_records": [
    "docs/research/R-0061-riders-and-opponents.md"
@@ -13064,10 +13139,12 @@
    "src/core/opponent_ai.cpp:(file)",
    "src/core/opponent_ai.cpp:jump_at_marker",
    "src/core/opponent_ai.cpp:opponent_launches",
-   "src/core/opponent_ai.cpp:update_opponent_controller"
+   "src/core/opponent_ai.cpp:update_opponent_controller",
+   "src/core/race_state_io.cpp:check_opponent_suppression"
   ],
   "source_records": [
-   "docs/research/R-0061-riders-and-opponents.md"
+   "docs/research/R-0061-riders-and-opponents.md",
+   "tasks/RACE-RIDERS-OPPONENTS.md"
   ]
  },
  {
@@ -13079,7 +13156,8 @@
    "src/core/opponent_ai.cpp:(file)",
    "src/core/opponent_ai.cpp:jump_at_marker",
    "src/core/opponent_ai.cpp:opponent_launches",
-   "src/core/opponent_ai.cpp:update_opponent_controller"
+   "src/core/opponent_ai.cpp:update_opponent_controller",
+   "src/core/race_state_io.cpp:check_opponent_suppression"
   ],
   "source_records": [
    "docs/research/R-0050-locked-tours.md",

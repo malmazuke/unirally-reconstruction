@@ -12835,6 +12835,7 @@
     "src/core/opponent_ai.cpp:steep_slope, stalled_displacement",
     "src/core/opponent_ai.cpp:update_opponent_controller",
     "src/core/race_state_io.cpp:check_opponent_queue",
+    "src/core/race_state_io.cpp:check_opponent_suppression",
     "src/core/race_state_io.cpp:spin_steps",
     "src/core/zoom_zoo_movement.hpp:ZoomZooState::opponent_turnaround"
    ],
@@ -13996,18 +13997,18 @@
    "call returns in the calling mode": 1262
   },
   "bytes": 131072,
-  "cited_addresses": 1175,
+  "cited_addresses": 1182,
   "cited_by_class": {
    "data": 20,
-   "inferred": 163,
-   "observed": 855,
+   "inferred": 168,
+   "observed": 857,
    "unknown": 137
   },
   "cited_by_position": {
    "dat": 20,
-   "loc": 718,
+   "loc": 721,
    "mid": 18,
-   "sub": 282,
+   "sub": 286,
    "unk": 137
   },
   "conflicts": 0,

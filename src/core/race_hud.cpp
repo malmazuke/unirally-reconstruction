@@ -347,7 +347,11 @@ std::optional<unsigned> classic_caption_tile(char glyph) {
 // when the queue runs dry, which the engine carries as `empty_display`. The
 // blank reaches the screen a picture later than a published state shows it:
 // the picture after the dry update, whose cooldown is still the full wait,
-// keeps the last caption (R-0061, measured on ANDREW's and MIKE's DRAGSTER).
+// keeps the last caption. This rule is measured, not derived (R-0061): the
+// text reaches VRAM through the NMI's upload flag `$0EE7`, one task behind the
+// HUD's uploads, which native does not model; a new caption can arrive a
+// picture late too (RACE-OFFSCREEN-ARROW), and a pause opened on that picture
+// is not measured.
 std::optional<std::span<const std::uint8_t>>
 classic_caption_entry(const ZoomZooState& published, std::span<const std::uint8_t> captions) {
     if (captions.size() != 4080) return std::nullopt;
