@@ -206,10 +206,13 @@ void ClassicRaceHudClock::request_caption(const ZoomZooState& previous,
     const auto& after = updated.player_announcements;
     const auto slots = static_cast<unsigned>(after.queue.entries.size());
     // On the HUNTER tour a front-of-queue announcement ($81:C55B) steps the cursor back later
-    // in the same update; the text it carries (`hunter.caption`) still changes.
+    // in the same update, so the cursor alone can miss a consumption. Two other signs are
+    // exact: the display cleared from a dry look (`$81:BED1` clears `$03ED` only after taking an
+    // event) and a change of the carried text (`hunter.caption`).
     const bool hunter = classic_race_scenario(updated.track).hunter_tour;
     const bool taken =
         after.queue.read_cursor == (before.queue.read_cursor + 1U) % slots
+        || (before.empty_display && !after.empty_display)
         || (hunter && !after.empty_display && updated.hunter.caption != previous.hunter.caption);
     if (taken) {
         caption_buffer_ =
@@ -594,8 +597,11 @@ void draw_classic_hud(RgbFrame& frame, const ZoomZooState& state,
     draw_bg3_text(frame, font, 24, 2, hud.clock, ink, inked);
     draw_bg3_text(frame, font, 13, 5, hud.player_cells, ink, inked);
     draw_bg3_text(frame, font, 13, 20, hud.opponent_cells, ink, inked);
-    const auto arrow =
+    auto arrow =
         published ? published->arrow : classic_arrow_without_history(state, content.scenario);
+    // Without history the cells drawn above stand for `$0D19`.
+    if (!published && arrow && arrow->direction == ClassicRaceArrow::Direction::Up)
+        arrow->middle_rows_covered = !hud.player_cells.empty();
     if (arrow) draw_classic_arrow(frame, font, *arrow, ink, inked);
 }
 

@@ -75,7 +75,8 @@ void step_rider_head(RiderLook& look);
 // rider steps per update: the player on odd contact phases, the opponent on
 // even ones. Each rider whose contact ran in that update first stores its head
 // offset (`$0DFB`/`$0DFD` skip it; `$0B8E`/`$0B90`, which also do, are clear
-// throughout a race). The caller skips updates the pause menu diverted.
+// throughout a race, and so is the opponent's `$0C6D == 0` skip at $81:8E58 in
+// the measured races). The caller skips updates the pause menu diverted.
 void advance_rider_look(RiderLookState& look, const ZoomZooState& updated,
                         const ZoomZooContent& content, const RiderLookTables& tables);
 

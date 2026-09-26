@@ -102,17 +102,17 @@ void arrow_redraw() {
   require(queue.published().arrow &&
           queue.published().arrow->chevrons == 3 &&
           queue.published().arrow->direction == Direction::Right);
-  // Five more NMIs reach 8 on a phase-0 update, which keeps three chevrons; the redraw on
-  // the ninth draws step 1's two.
+  // Five more NMIs reach 8, the last after a phase-0 update, so its picture keeps three
+  // chevrons though the step is now 1; the redraw on the ninth draws step 1's two.
   for (int i = 0; i < 2; ++i) {
     queue.observe_update(even, odd);
     queue.observe_update(odd, even);
   }
-  queue.observe_update(even, even);
-  require(queue.published().arrow->chevrons == 3);
-  queue.observe_update(even, odd); // the ninth NMI, phase 1
+  queue.observe_update(even, even); // the eighth NMI, phase 0
+  queue.observe_update(even, odd);  // the ninth NMI, phase 1
+  require(queue.published().arrow->chevrons == 3); // the eighth NMI's picture
   queue.observe_update(odd, even);
-  require(queue.published().arrow->chevrons == 2);
+  require(queue.published().arrow->chevrons == 2); // the ninth's
   // The player draws level: the phase-0 picture keeps the arrow, the next redraw removes it.
   auto level = even;
   level.movement.riders[0].progress.transition_count = 30;
@@ -176,6 +176,10 @@ void arrow_drawing() {
       }
     return inside == below_row_4 ? inside : 0;
   };
+  // Every ink pixel below the HUD's own row, wherever it is.
+  const auto inked_below_hud = [&](unirally::ClassicRaceArrow arrow) {
+    return inked_box(arrow, 0, 255, 31, 223);
+  };
   // Right, three chevrons: columns 26-28 of rows 14-15.
   require(inked_box({Direction::Right, 3, false}, 208, 231, 111, 126) == 24 * 16);
   require(inked_box({Direction::Right, 1, false}, 224, 231, 111, 126) == 8 * 16);
@@ -186,7 +190,9 @@ void arrow_drawing() {
   require(inked_box({Direction::Up, 3, true}, 120, 135, 31, 38) == 16 * 8);
   // Down, two: rows 24-25.
   require(inked_box({Direction::Down, 2, false}, 120, 135, 191, 206) == 16 * 16);
-  require(inked_box({Direction::Right, 0, false}, 0, 0, 0, 0) == 0);
+  // No chevrons: nothing drawn below the HUD row at all (a one-chevron arrow is seen there).
+  require(inked_below_hud({Direction::Right, 0, false}) == 0);
+  require(inked_below_hud({Direction::Right, 1, false}) == 8 * 16);
 }
 
 // RACE-OFFSCREEN-ARROW: the caption is the HUD queue's last task, so a caption consumed on
@@ -251,6 +257,32 @@ void caption_queue() {
   require(queue.published().player_cells && queue.published().caption_event == 0);
   queue.observe_update(crossing, crossing);
   require(queue.published().caption_event == 16);
+
+  // The HUNTER tour: a consumption and a front-of-queue push in the same update leave the read
+  // cursor where it was, and here the text is the one already showing. The display leaving
+  // its dry state still marks the consumption, so the next dry look uploads the HUD message
+  // buffer (the effect's name) as the original does.
+  const unirally::ClassicRaceTrack two_loops{41};
+  require(unirally::classic_race_scenario(two_loops).hunter_tour);
+  unirally::ClassicRaceHudClock tour;
+  unirally::ZoomZooState showing{};
+  showing.track = two_loops;
+  showing.player_announcements.empty_display = 1;
+  showing.player_announcements.queue.read_cursor = 4;
+  showing.hunter.caption = 5;
+  tour.observe_update(showing, showing);
+  tour.observe_update(showing, showing); // the clock digits are written
+  auto pushed = showing;
+  pushed.player_announcements.empty_display = 0;
+  auto after_push = pushed;
+  auto effect_name = pushed;
+  effect_name.player_announcements.empty_display = 1;
+  effect_name.hunter.caption = 7;
+  tour.observe_update(showing, pushed);     // consumed and pushed: caption 5 again
+  tour.observe_update(pushed, after_push);
+  tour.observe_update(after_push, effect_name); // the dry look: the effect's name
+  tour.observe_update(effect_name, effect_name);
+  require(tour.published().caption_event == 7);
 }
 
 } // namespace

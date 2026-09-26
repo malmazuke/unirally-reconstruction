@@ -113,8 +113,8 @@ RiderHeadOffset contact_head_offset(const ZoomZooState& state, std::size_t rider
 HeadPoint head_point(const RiderLookState& look, const ZoomZooState& state, std::size_t rider,
                      const ZoomZooContent& content) {
     const auto& motion = state.movement.riders[rider].motion;
-    const auto offset =
-        look.head_offsets[rider].value_or(contact_head_offset(state, rider, content));
+    const auto& stored = look.head_offsets[rider];
+    const auto offset = stored ? *stored : contact_head_offset(state, rider, content);
     return {wrap(static_cast<unsigned>(offset.x) + motion.x),
             wrap(static_cast<unsigned>(offset.y) + motion.y)};
 }
