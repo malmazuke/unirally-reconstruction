@@ -68,5 +68,8 @@ void script(FrontEndState& state, const FrontEndContent& content, std::uint32_t 
 namespace runner {
 void script(FrontEndState& state, const FrontEndContent& content, std::uint32_t frame);
 }
+namespace sprinter {
+void script(FrontEndState& state, const FrontEndContent& content, std::uint32_t frame);
+}
 
 } // namespace unirally::front_end_screens::ending

@@ -200,7 +200,7 @@ const std::array<EndingLayout, 8> endings{{
     {0x80, 0, 0x5e, 0x83, 94, 393, walker::script, true},    // WALKER `$83:B506`
     {0x80, 0x43, 0x63, 0xa3, 95, 321, runner::script},       // RUNNER `$83:C715`
     {0x80, 0x42, 0x62, 0x83, 95, 516, hopper::script},       // HOPPER `$83:C11E`
-    {},
+    {0x80, 0, 0, 0xa3, 94, 356, sprinter::script},           // SPRINTER `$83:BED0`
 }};
 
 // $83:A507's frame 89 and the tour routine's first loads.

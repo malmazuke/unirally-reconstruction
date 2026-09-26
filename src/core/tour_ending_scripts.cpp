@@ -851,4 +851,104 @@ void script(FrontEndState& state, const FrontEndContent& content, std::uint32_t 
 }
 } // namespace runner
 
+// SPRINTER (`$83:BED0`): a riderless uni walks in from the right and wobbles; the rider's red
+// uni cartwheels in from the left and knocks it tumbling away. The knocked uni's poses are built
+// in the second buffer (`$16F0`). No object tiles are loaded: the menus' stay. Its table
+// (`$83:C0F6`): objects 0-1, then the wobble's sixteen pose words; the objects' copy reads twelve
+// bytes, so entry 2 is the first two pose words (hidden).
+namespace sprinter {
+namespace {
+
+constexpr unsigned tour = 7;
+constexpr std::size_t wobble_poses_at = 8;
+constexpr unsigned first_objects = 3, uni = 0, red_uni = 1;
+constexpr std::uint8_t first_high = 0x5e, red_uni_high = 0x4a, cartwheel_speed = 4;
+constexpr std::uint32_t objects_frame = bar_frame, second_pose_frame = 93;
+constexpr std::uint16_t red_uni_shown = 0x0b, cartwheel_poses = 0x13b5, cartwheel_pose_count = 17,
+                        knocked_from = 0x1b, first_tumble_rise = 0xfff4;
+// $83:BFA5, $83:BFE2 and $83:C034 (which ends on t').
+constexpr Loop walk_in{108, 144, 1}, wobble{walk_in.end(), 17, 2}, knock{wobble.end(), 70, 1};
+
+void setup_objects(FrontEndState& state, const FrontEndContent& content) {
+    load_first_objects(state, content.ending_tables[tour], 0, first_objects);
+    high_bits(state, 0) = first_high;
+    copy_oam(state);
+    state.ending.pose = 0;
+    upload_built_pose(state, content, first_pose_word);
+}
+
+// $83:BFA5-BFD0: the uni walks a pixel left.
+void walk_in_part(FrontEndState& state, const FrontEndContent& content, unsigned, unsigned wait) {
+    if (wait == 0) {
+        --oam_byte(state, uni, 0);
+        return;
+    }
+    upload_built_pose(state, content, first_pose_word);
+    copy_oam(state);
+    walk(state);
+    ++state.ending.step;
+}
+
+// $83:BFD2-C020: the uni wobbles (the table's sixteen poses in turn), a pose every second frame.
+void wobble_part(FrontEndState& state, const FrontEndContent& content, unsigned step,
+                 unsigned wait) {
+    auto& ending = state.ending;
+    if (wait == 0 && step == 0) ending.step = ending.count = 0;
+    if (wait != 2) return;
+    upload_built_pose(state, content, first_pose_word);
+    copy_oam(state);
+    const auto at = wobble_poses_at + 2U * (ending.step & 0xfU);
+    const auto table = content.ending_tables[tour];
+    ending.pose =
+        static_cast<std::uint16_t>(table_byte(table, at) | table_byte(table, at + 1) << 8U);
+    ++ending.step;
+}
+
+// $83:C0BD-C0C9: the knocked uni's rise or fall for a step: `$77:10A7`'s low byte as a signed
+// byte divided by four (two shifts right, the sign copied back from bit 5).
+std::uint8_t tumble_step(std::uint16_t rise) {
+    const auto quarter = static_cast<std::uint8_t>((rise & 0xffU) >> 2);
+    return (quarter & 0x20U) ? static_cast<std::uint8_t>(quarter | 0xc0U) : quarter;
+}
+
+// $83:C022-C0E7: the red uni cartwheels in (poses 0x13B5 counted down, seventeen in turn, at
+// tile 0x108), shown from step 0x0B; from step 0x1B the uni is knocked away, rising then falling
+// by `$77:10A7`, its poses from 0 on in the second buffer, sent to tile 0x100 every step
+// (`$83:AB25`). `$77:10CB` counts the knocked steps to 0x2C.
+void knock_part(FrontEndState& state, const FrontEndContent& content, unsigned step,
+                unsigned wait) {
+    auto& ending = state.ending;
+    if (wait == 0) {
+        if (step == 0) {
+            ending.step = ending.count = 0;
+            ending.drop = first_tumble_rise;
+        }
+        oam_byte(state, red_uni, 0) += cartwheel_speed;
+        if ((ending.step & 0xffU) == red_uni_shown) high_bits(state, 0) = red_uni_high;
+        return;
+    }
+    upload_built_pose(state, content, second_pose_word);
+    upload_pose(state, content, ending.second_pose, first_pose_word);
+    copy_oam(state);
+    ending.pose = static_cast<std::uint16_t>(cartwheel_poses - ending.step % cartwheel_pose_count);
+    ending.second_pose = ending.count;
+    ++ending.step;
+    if (ending.step < knocked_from) return;
+    ++oam_byte(state, uni, 0);
+    oam_byte(state, uni, 1) += tumble_step(ending.drop);
+    ++ending.drop;
+    ++ending.count;
+}
+
+} // namespace
+
+void script(FrontEndState& state, const FrontEndContent& content, std::uint32_t frame) {
+    if (frame == objects_frame) setup_objects(state, content);
+    if (frame == second_pose_frame) state.ending.second_pose = 0; // $83:BF89-BF93
+    run_loop(walk_in, frame, state, content, walk_in_part);
+    run_loop(wobble, frame, state, content, wobble_part);
+    run_loop(knock, frame, state, content, knock_part);
+}
+} // namespace sprinter
+
 } // namespace unirally::front_end_screens::ending
