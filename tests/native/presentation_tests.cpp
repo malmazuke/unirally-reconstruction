@@ -188,6 +188,71 @@ void arrow_drawing() {
   require(inked_box({Direction::Down, 2, false}, 120, 135, 191, 206) == 16 * 16);
   require(inked_box({Direction::Right, 0, false}, 0, 0, 0, 0) == 0);
 }
+
+// RACE-OFFSCREEN-ARROW: the caption is the HUD queue's last task, so a caption consumed on
+// the update the clock's tenth ticks reaches the screen a picture late (silvia-runner-25
+// 1846), one consumed off a tick on time, and a dry queue's blank likewise
+// (andrew-dragster 2740). `published()` lags one update, as for the clock.
+void caption_queue() {
+  unirally::ClassicRaceHudClock queue;
+  unirally::ZoomZooState idle{};
+  auto &announcements = idle.player_announcements;
+  announcements.queue.entries[0] = 14;
+  announcements.queue.cooldown = 1;
+  queue.observe_update(idle, idle);
+  queue.observe_update(idle, idle); // the clock digits are written
+  require(queue.published().caption_event == 0);
+  // A consumption (the read cursor steps) on a tenth's tick: the clock goes first.
+  auto ticked = idle;
+  ticked.player_announcements.queue.cooldown = 120;
+  ticked.player_announcements.queue.read_cursor = 1;
+  ticked.player_announcements.queue.entries[1] = 14;
+  ticked.movement.timer.tenths = 1;
+  queue.observe_update(idle, ticked);
+  queue.observe_update(ticked, ticked);
+  require(queue.published().caption_event == 0 &&
+          queue.published().clock == std::optional<std::string>("0:00:1"));
+  queue.observe_update(ticked, ticked);
+  require(queue.published().caption_event == 14);
+  // Off a tick it is uploaded by the next NMI, whatever the cooldown does: when the hints end
+  // the cooldown is cleared and the consumption sets a lower one.
+  auto waiting = ticked;
+  waiting.player_announcements.queue.cooldown = 92;
+  auto consumed = waiting;
+  consumed.player_announcements.queue.cooldown = 40;
+  consumed.player_announcements.queue.read_cursor = 2;
+  consumed.player_announcements.queue.entries[2] = 15;
+  queue.observe_update(ticked, waiting);
+  queue.observe_update(waiting, consumed);
+  queue.observe_update(consumed, consumed);
+  require(queue.published().caption_event == 15);
+  // The first look at a dry queue after a consumption writes a blank.
+  auto dry = consumed;
+  dry.player_announcements.queue.cooldown = 10;
+  dry.player_announcements.empty_display = 1;
+  queue.observe_update(consumed, dry);
+  queue.observe_update(dry, dry);
+  require(queue.published().caption_event == 0);
+  // Behind the clock and the player's crossing time, a caption waits two pictures.
+  auto crossing = dry;
+  crossing.player_announcements.queue.cooldown = 120;
+  crossing.player_announcements.queue.read_cursor = 3;
+  crossing.player_announcements.queue.entries[3] = 16;
+  crossing.player_announcements.empty_display = 0;
+  crossing.movement.timer.tenths = 2;
+  crossing.race.riders[0].next_checkpoint = 1;
+  crossing.race.riders[0].checkpoint_display_countdown = 120;
+  crossing.race.riders[0].time_digits = {0, 0, 0, 2, 0};
+  queue.observe_update(dry, crossing);      // the clock
+  queue.observe_update(crossing, crossing); // the crossing time
+  require(queue.published().clock == std::optional<std::string>("0:00:2") &&
+          !queue.published().player_cells && queue.published().caption_event == 0);
+  queue.observe_update(crossing, crossing); // the caption
+  require(queue.published().player_cells && queue.published().caption_event == 0);
+  queue.observe_update(crossing, crossing);
+  require(queue.published().caption_event == 16);
+}
+
 } // namespace
 int main() {
   // Primary-source examples from bsnes' mode-3 direct-colour and add/halve
@@ -1643,5 +1708,6 @@ int main() {
   arrow_rules();
   arrow_redraw();
   arrow_drawing();
+  caption_queue();
 
 }

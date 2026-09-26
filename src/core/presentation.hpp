@@ -202,9 +202,9 @@ struct ClassicHudPublished {
 unsigned classic_arrow_chevrons(std::uint16_t lead, unsigned race_nmis);
 // The arrow the NMI draws from the update that produced `updated` ($82:9822
 // computes its word, the NMI its length): nothing unless the player's
-// transition count is behind the opponent's by more than the pair they share,
-// the player has not finished and the player's last transition was not
-// rejected. The direction is the player's track marker as it stood before the
+// transition count is behind the opponent's and outside its pair (the two
+// counts halved differ), the player has not finished and the player's last
+// transition was not rejected. The direction is the player's track marker as it stood before the
 // update's contact (`previous`).
 std::optional<ClassicRaceArrow> classic_race_arrow(const ZoomZooState& previous,
                                                    const ZoomZooState& updated, unsigned race_nmis);
@@ -276,7 +276,11 @@ ClassicHudText classic_race_hud_text(const ZoomZooState& previous_update,
 // without spending the update ($81:EDE9, $81:F040).
 // The one-player NMI ($81:E8C9) redraws the direction arrow before it services
 // the queue, and only after an update whose progress phase `$0302` is set: every
-// other picture keeps the arrow of the picture before (RACE-OFFSCREEN-ARROW).
+// other picture keeps the arrow of the picture before. The caption is the
+// queue's last task (`$0EE7`, $81:F30C), after the opponent's cells (the stunt
+// event's field, which comes between, has no native scenario), so a new caption
+// waits a picture behind each field still pending, usually the clock's tenth
+// (RACE-OFFSCREEN-ARROW).
 class ClassicRaceHudClock {
 public:
     void reset() {
@@ -285,6 +289,8 @@ public:
         pending_ = {};
         slot_times_ = {};
         race_nmis_ = 0;
+        caption_buffer_ = 0;
+        consumed_since_blank_ = false;
     }
     void observe_update(const ZoomZooState& previous, const ZoomZooState& updated);
     // The cells as the picture drawn from the earlier of the two states last
@@ -295,7 +301,7 @@ public:
 
 private:
     struct Pending {
-        bool left{}, clock_blank{};
+        bool left{}, clock_blank{}, caption{};
         std::array<ClassicHudCellRequest, 2> cells{};
     };
     ClassicHudPublished latest_{}, on_screen_{};
@@ -303,6 +309,11 @@ private:
     // `$1255`/`$1257`: the race NMIs counted since the fade reached 5, pauses
     // included (the NMI runs through them).
     unsigned race_nmis_{};
+    // `$0EA7`: the caption text the update last wrote for the NMI to upload,
+    // as its caption table entry (0 blank), and `$11C1`: whether an event has
+    // been consumed since the last blank was written.
+    unsigned caption_buffer_{};
+    bool consumed_since_blank_{};
     // The clock the first rider through each slot stored, minutes, tens,
     // seconds, tenths. Indexed like `checkpoint_seen`, laps remaining * 4 +
     // checkpoint; the original keeps four bytes a slot at `$100D` + 16 * laps
@@ -315,6 +326,7 @@ private:
                                         const ZoomZooState& updated);
     void service_one_field(const ZoomZooState& updated);
     void redraw_arrow(const ZoomZooState& previous, const ZoomZooState& updated);
+    void request_caption(const ZoomZooState& previous, const ZoomZooState& updated);
 };
 // Presentation-only $0D45/$0D47 upper-body overlay frames. The original
 // derives them from look state the serialized race does not carry (R-0036),
@@ -489,9 +501,15 @@ std::optional<unsigned> classic_caption_tile(char glyph);
 
 // R-0042: the sixteen bytes the caption shows for a published state, or nothing
 // when the queue has blanked the display ($81:BEA8-BEF1's `empty_display`) or
-// has published no event yet.
+// has published no event yet. Without the HUD queue's history this is the
+// state's own text, which the original shows a picture late whenever the queue
+// was busy (`ClassicRaceHudClock`).
 std::optional<std::span<const std::uint8_t>>
 classic_caption_entry(const ZoomZooState& published, std::span<const std::uint8_t> captions);
+// The sixteen bytes of caption table entry `event`, or nothing for 0 (blank)
+// or a table of the wrong size.
+std::optional<std::span<const std::uint8_t>>
+classic_caption_text(unsigned event, std::span<const std::uint8_t> captions);
 
 RgbFrame render_classic_race(const ZoomZooState& state,
                              const ClassicRacePresentationContent& content,
