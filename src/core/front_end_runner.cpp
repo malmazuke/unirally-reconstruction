@@ -1,7 +1,7 @@
 // FRONT-END-MAIN-MENU laboratory runner: the native front end from power-on, frame by frame.
 //
 // usage: front_end_runner --content-pack PACK --frames N [--inputs FILE] [--picture FRAME OUT.ppm]...
-//                         [--records FRAME OUT.bin]...
+//                         [--records FRAME OUT.bin]... [--race-initialization FRAME]...
 //
 // FILE rows are "frame pad1 pad2" (hex controller words, as `$4218`/`$421A` read them); a frame
 // without a row has both pads released. Each frame prints one line: the frame, the arrow (spin,
@@ -34,6 +34,9 @@ struct Options {
     std::filesystem::path pack, inputs;
     std::uint32_t frames{};
     std::map<std::uint32_t, std::filesystem::path> pictures, records;
+    // The original's race initialization frames, in race order, from a capture: the loading time
+    // varies by a frame with the sound program's handshake (R-0039, R-0058).
+    std::vector<std::uint32_t> race_initializations;
 };
 
 Options parse_options(int argc, char** argv) {
@@ -54,6 +57,8 @@ Options parse_options(int argc, char** argv) {
         else if (option == "--picture") {
             const auto frame = static_cast<std::uint32_t>(std::stoul(value()));
             options.pictures[frame] = value();
+        } else if (option == "--race-initialization") {
+            options.race_initializations.push_back(static_cast<std::uint32_t>(std::stoul(value())));
         } else if (option == "--records") {
             const auto frame = static_cast<std::uint32_t>(std::stoul(value()));
             options.records[frame] = value();
@@ -63,7 +68,8 @@ Options parse_options(int argc, char** argv) {
     if (options.pack.empty() || options.frames == 0)
         throw std::invalid_argument("usage: front_end_runner --content-pack PACK --frames N "
                                     "[--inputs FILE] [--picture FRAME OUT.ppm]... "
-                                    "[--records FRAME OUT.bin]...");
+                                    "[--records FRAME OUT.bin]... "
+                                    "[--race-initialization FRAME]...");
     return options;
 }
 
@@ -197,24 +203,27 @@ void print_state(std::uint32_t frame, const unirally::FrontEndState& state) {
 }
 
 // A one-player race between the menus: the native race from its initialization frame, the
-// front end resuming when the race's result load begins (R-0057). DRAGSTER initializes 121
-// frames after NOW PLAYING's fade ends, as on the laboratory's menu path (1207, 1328).
+// front end resuming when the race's result load begins (R-0057). A race initializes its track's
+// loading frames after NOW PLAYING's fade ends (`race_loading_frames`).
 struct RaceBetweenMenus {
     std::optional<unirally::ZoomZooContent> content;
     unirally::ZoomZooState state{};
     std::uint32_t initialization_frame{};
+    std::uint32_t loading_initialization{}; // the frame the track's loading gives, if measured
 };
 
 // False for a race whose loading time on this path is not known: the run stops there.
+// A given initialization frame (`initialization`, nonzero) takes the place of the loading's.
 bool start_race(RaceBetweenMenus& race, const unirally::ClassicContentPack& pack,
-                const unirally::FrontEndState& front_end) {
+                const unirally::FrontEndState& front_end, std::uint32_t initialization) {
     const unirally::ClassicRaceTrack track{front_end.tour_menu.track};
-    if (!(track == unirally::ClassicRaceTrack::Dragster)) return false;
-    constexpr std::uint32_t dragster_loading_frames = 121;
+    const auto loading_frames = unirally::race_loading_frames(track);
+    if (loading_frames == 0 && initialization == 0) return false;
     race.content = unirally::classic_race_content(pack, track);
     race.state =
         unirally::classic_race_start(*race.content, unirally::classic_race_scenario(track));
-    race.initialization_frame = front_end.frame - 1 + dragster_loading_frames;
+    race.loading_initialization = loading_frames ? front_end.frame - 1 + loading_frames : 0;
+    race.initialization_frame = initialization != 0 ? initialization : race.loading_initialization;
     race.state.movement.frame = race.initialization_frame;
     return true;
 }
@@ -228,20 +237,28 @@ int main(int argc, char** argv) try {
     const auto inputs = read_inputs(options.inputs);
     auto state = unirally::start_front_end();
     RaceBetweenMenus race;
+    std::size_t races = 0;
     for (std::uint32_t frame = 0; frame < options.frames; ++frame) {
         const auto row = inputs.find(frame);
         const auto pads = row == inputs.end() ? unirally::FrontEndPads{} : row->second;
         if (state.screen == unirally::FrontEndScreen::race) {
-            if (!race.content && !start_race(race, pack, state)) {
+            const auto given = races < options.race_initializations.size()
+                                 ? options.race_initializations[races]
+                                 : 0;
+            if (!race.content && !start_race(race, pack, state, given)) {
                 std::cout << "race " << unsigned(state.tour_menu.track) << " not timed\n";
                 break;
             }
             if (frame <= race.initialization_frame) continue;
             unirally::update_zoom_zoo(race.state, race_buttons(pads.one), *race.content);
             if (race.state.result_updates != 1) continue;
-            const auto& totals = race.state.race.total_times;
-            unirally::return_from_race(state, content, frame, {totals[0], totals[1]});
+            const auto times = unirally::race_times(race.state);
+            unirally::return_from_race(state, content, frame, times);
+            std::cerr << "race returned at " << frame << "; totals " << times.player_total << '/'
+                      << times.opponent_total << "; initialized at " << race.initialization_frame
+                      << " (its loading gives " << race.loading_initialization << ")\n";
             race.content.reset();
+            ++races;
         } else if (state.mode_chosen) {
             break;
         } else {

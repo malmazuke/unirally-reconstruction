@@ -108,7 +108,8 @@ the public interface; `front_end_screens.hpp` is internal to the front end.
 | `tour_menu.cpp` | PICK TOUR (R-0056): the badges, the medals and the moves between open tours |
 | `track_menu.cpp` | PICK TRACK (R-0056): the tour's tracks, the medal line and the done-track markers |
 | `now_playing.cpp` | NOW PLAYING (R-0056): the match, the race line, the record, Race's fade and Exit |
-| `race_result.cpp` | After a one-run race (R-0057): the race's return, the result screen and its waits, the records and the scoring, then PICK TRACK |
+| `race_result.cpp` | After a race (R-0057): the race's return, the one-run result screen and its waits, the records and the scoring, then PICK TRACK |
+| `lap_result.cpp` | A lap race's result (R-0058): the graph's build and animation, the best laps and the streams |
 | `front_end_runner.cpp` | The laboratory runner: the state by frame and pictures, for comparison with captures; the native race between the menus |
 
 ## Track sampling

@@ -701,7 +701,9 @@
   "label": "sub_8088DD",
   "source_records": [
    "docs/research/R-0057-one-run-result.md",
-   "tasks/FRONT-END-LAP-RESULT.md"
+   "docs/research/R-0058-lap-result.md",
+   "tasks/FRONT-END-LAP-RESULT.md",
+   "tasks/RACE-PAUSE-EXITS.md"
   ]
  },
  {
@@ -733,10 +735,144 @@
   "class": "unknown",
   "comment": "unknown",
   "label": "unk_808D6E",
+  "native": [
+   "src/core/front_end.hpp:RaceResult",
+   "src/core/lap_result.cpp:(file)",
+   "src/core/race_result.cpp:start_result"
+  ],
   "source_records": [
    "docs/research/R-0057-one-run-result.md",
+   "docs/research/R-0058-lap-result.md",
    "tasks/FRONT-END-LAP-RESULT.md",
    "tasks/NEXT_SESSION.md"
+  ]
+ },
+ {
+  "address": "$80:8D70",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_808D70",
+  "native": [
+   "src/core/front_end.hpp:RaceResult",
+   "src/core/lap_result.cpp:(file)",
+   "src/core/lap_result.cpp:build_lap_result",
+   "src/core/race_result.cpp:start_result"
+  ],
+  "source_records": [
+   "docs/research/R-0058-lap-result.md"
+  ]
+ },
+ {
+  "address": "$80:8DD9",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_808DD9",
+  "native": [
+   "src/core/front_end.hpp:RaceResult",
+   "src/core/lap_result.cpp:(file)",
+   "src/core/lap_result.cpp:opponent_dots, record_line, record_line_entries",
+   "src/core/race_result.cpp:start_result"
+  ],
+  "source_records": [
+   "docs/research/R-0058-lap-result.md"
+  ]
+ },
+ {
+  "address": "$80:8E0D",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_808E0D",
+  "native": [
+   "src/core/front_end.hpp:RaceResult",
+   "src/core/lap_result.cpp:(file)",
+   "src/core/lap_result.cpp:graph_line",
+   "src/core/lap_result.cpp:opponent_dots, record_line, record_line_entries",
+   "src/core/race_result.cpp:start_result"
+  ],
+  "source_records": [
+   "docs/research/R-0058-lap-result.md"
+  ]
+ },
+ {
+  "address": "$80:8F4C",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_808F4C",
+  "native": [
+   "src/core/front_end.hpp:RaceResult",
+   "src/core/lap_result.cpp:(file)",
+   "src/core/lap_result.cpp:build_lap_result",
+   "src/core/race_result.cpp:start_result"
+  ],
+  "source_records": [
+   "docs/research/R-0058-lap-result.md"
+  ]
+ },
+ {
+  "address": "$80:8FA8",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_808FA8",
+  "native": [
+   "src/core/front_end.hpp:RaceResult",
+   "src/core/lap_result.cpp:(file)",
+   "src/core/lap_result.cpp:build_lap_result",
+   "src/core/race_result.cpp:start_result"
+  ],
+  "source_records": [
+   "docs/research/R-0058-lap-result.md"
+  ]
+ },
+ {
+  "address": "$80:8FFD",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_808FFD",
+  "native": [
+   "src/core/front_end.cpp:waits_for_frame",
+   "src/core/front_end.hpp:RaceResult",
+   "src/core/lap_result.cpp:(file)",
+   "src/core/lap_result.cpp:LapWords",
+   "src/core/race_result.cpp:start_result"
+  ],
+  "source_records": [
+   "docs/research/R-0058-lap-result.md"
+  ]
+ },
+ {
+  "address": "$80:9017",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_809017",
+  "native": [
+   "src/core/front_end.cpp:waits_for_frame",
+   "src/core/front_end.hpp:RaceResult",
+   "src/core/front_end_screens.hpp:best_lap",
+   "src/core/lap_result.cpp:(file)",
+   "src/core/lap_result.cpp:LapWords",
+   "src/core/lap_result.cpp:print_lap_result",
+   "src/core/race_result.cpp:start_result"
+  ],
+  "source_records": [
+   "docs/research/R-0058-lap-result.md"
+  ]
+ },
+ {
+  "address": "$80:90AF",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_8090AF",
+  "native": [
+   "src/core/front_end.cpp:waits_for_frame",
+   "src/core/front_end.hpp:RaceResult",
+   "src/core/lap_result.cpp:(file)",
+   "src/core/lap_result.cpp:LapWords",
+   "src/core/lap_result.cpp:print_lap_result",
+   "src/core/lap_result.cpp:saved_word_under_opponent_best",
+   "src/core/race_result.cpp:start_result"
+  ],
+  "source_records": [
+   "docs/research/R-0058-lap-result.md"
   ]
  },
  {
@@ -744,7 +880,11 @@
   "class": "unknown",
   "comment": "unknown",
   "label": "unk_80910F",
+  "native": [
+   "src/core/lap_result.cpp:print_lap_result"
+  ],
   "source_records": [
+   "docs/research/R-0058-lap-result.md",
    "tasks/FRONT-END-LAP-RESULT.md"
   ]
  },
@@ -754,6 +894,7 @@
   "comment": "unknown",
   "label": "unk_80918F",
   "source_records": [
+   "docs/research/R-0058-lap-result.md",
    "tasks/FRONT-END-LAP-RESULT.md"
   ]
  },
@@ -762,7 +903,11 @@
   "class": "unknown",
   "comment": "unknown",
   "label": "unk_8091A1",
+  "native": [
+   "src/core/lap_result.cpp:print_lap_result"
+  ],
   "source_records": [
+   "docs/research/R-0058-lap-result.md",
    "tasks/FRONT-END-LAP-RESULT.md"
   ]
  },
@@ -771,7 +916,11 @@
   "class": "unknown",
   "comment": "unknown",
   "label": "unk_8091B9",
+  "native": [
+   "src/core/lap_result.cpp:print_lap_result"
+  ],
   "source_records": [
+   "docs/research/R-0058-lap-result.md",
    "tasks/FRONT-END-LAP-RESULT.md"
   ]
  },
@@ -877,12 +1026,14 @@
   "native": [
    "src/core/front_end.hpp:FrontEndScreen",
    "src/core/front_end.hpp:RaceResult",
+   "src/core/lap_result.cpp:(file)",
    "src/core/race_result.cpp:(file)",
    "src/core/race_result.cpp:rider_mark_tile, rider_mark_attributes, opponent_mark_attributes, rider_marks_high",
    "src/core/race_result.cpp:start_result"
   ],
   "source_records": [
    "docs/research/R-0057-one-run-result.md",
+   "docs/research/R-0058-lap-result.md",
    "tasks/FRONT-END-LAP-RESULT.md"
   ]
  },
@@ -892,10 +1043,12 @@
   "comment": "instruction start",
   "label": "loc_809579",
   "native": [
+   "src/core/front_end_screens.hpp:result_tail_frame",
    "src/core/race_result.cpp:show_icons"
   ],
   "source_records": [
-   "docs/research/R-0057-one-run-result.md"
+   "docs/research/R-0057-one-run-result.md",
+   "docs/research/R-0058-lap-result.md"
   ]
  },
  {
@@ -984,11 +1137,12 @@
   "comment": "routine start",
   "label": "sub_809805",
   "native": [
-   "src/core/race_result.cpp:hide_result_objects"
+   "src/core/race_result.cpp:hide_result_objects",
+   "src/core/race_result.cpp:lap_graph_frame"
   ],
   "source_records": [
    "docs/research/R-0057-one-run-result.md",
-   "tasks/FRONT-END-LAP-RESULT.md"
+   "docs/research/R-0058-lap-result.md"
   ]
  },
  {
@@ -1002,7 +1156,8 @@
   ],
   "source_records": [
    "docs/research/R-0054-boot-title-main-menu.md",
-   "docs/research/R-0057-one-run-result.md"
+   "docs/research/R-0057-one-run-result.md",
+   "docs/research/R-0058-lap-result.md"
   ]
  },
  {
@@ -1040,24 +1195,40 @@
   "comment": "routine start",
   "label": "sub_8098B3",
   "native": [
-   "src/core/race_result.cpp:race_result_frame"
+   "src/core/lap_result.cpp:(file)",
+   "src/core/race_result.cpp:one_run_wait_frame",
+   "src/core/race_result.cpp:start_lap_graph"
   ],
   "source_records": [
    "docs/research/R-0057-one-run-result.md",
+   "docs/research/R-0058-lap-result.md",
    "tasks/FRONT-END-LAP-RESULT.md",
    "tasks/STATIC-CODE-MAP.md"
   ]
  },
  {
-  "address": "$80:98CB",
+  "address": "$80:98C9",
   "class": "inferred",
   "comment": "instruction start",
-  "label": "loc_8098CB",
+  "label": "loc_8098C9",
   "native": [
-   "src/core/race_result.cpp:hide_result_objects"
+   "src/core/race_result.cpp:lap_graph_frame"
   ],
   "source_records": [
-   "tasks/FRONT-END-LAP-RESULT.md"
+   "docs/research/R-0058-lap-result.md"
+  ]
+ },
+ {
+  "address": "$80:9980",
+  "class": "inferred",
+  "comment": "routine start",
+  "label": "sub_809980",
+  "native": [
+   "src/core/lap_result.cpp:desired_velocity",
+   "src/core/lap_result.cpp:fastest"
+  ],
+  "source_records": [
+   "docs/research/R-0058-lap-result.md"
   ]
  },
  {
@@ -1102,7 +1273,9 @@
   "label": "loc_809A50",
   "source_records": [
    "docs/research/R-0057-one-run-result.md",
-   "tasks/FRONT-END-LAP-RESULT.md"
+   "docs/research/R-0058-lap-result.md",
+   "tasks/FRONT-END-LAP-RESULT.md",
+   "tasks/RACE-PAUSE-EXITS.md"
   ]
  },
  {
@@ -1123,10 +1296,12 @@
   "comment": "routine start",
   "label": "sub_809B2F",
   "native": [
+   "src/core/lap_result.cpp:print_stream",
    "src/core/text_printer.cpp:record_name"
   ],
   "source_records": [
-   "docs/research/R-0055-rider-menu.md"
+   "docs/research/R-0055-rider-menu.md",
+   "docs/research/R-0058-lap-result.md"
   ]
  },
  {
@@ -1194,8 +1369,7 @@
   ],
   "source_records": [
    "docs/research/R-0054-boot-title-main-menu.md",
-   "docs/research/R-0057-one-run-result.md",
-   "tasks/FRONT-END-LAP-RESULT.md"
+   "docs/research/R-0057-one-run-result.md"
   ]
  },
  {
@@ -1694,6 +1868,19 @@
   ]
  },
  {
+  "address": "$80:B6D3",
+  "class": "inferred",
+  "comment": "routine start",
+  "label": "sub_80B6D3",
+  "native": [
+   "src/core/race_result.cpp:lap_graph_frame",
+   "src/core/race_result.cpp:lap_graph_left"
+  ],
+  "source_records": [
+   "docs/research/R-0058-lap-result.md"
+  ]
+ },
+ {
   "address": "$80:B71D",
   "class": "observed",
   "comment": "routine start",
@@ -2096,8 +2283,8 @@
   "native": [
    "src/core/front_end.hpp:RaceResult::press_seen",
    "src/core/race_result.cpp:(file)",
-   "src/core/race_result.cpp:pressed",
-   "src/core/race_result.cpp:race_result_frame"
+   "src/core/race_result.cpp:one_run_wait_frame",
+   "src/core/race_result.cpp:pressed"
   ],
   "source_records": [
    "docs/research/R-0057-one-run-result.md"
@@ -2109,7 +2296,8 @@
   "comment": "instruction start",
   "label": "loc_80C236",
   "native": [
-   "src/core/race_result.cpp:hide_result_objects"
+   "src/core/race_result.cpp:hide_result_objects",
+   "src/core/race_result.cpp:lap_graph_frame"
   ],
   "source_records": [
    "docs/research/R-0057-one-run-result.md"
@@ -2123,7 +2311,7 @@
   "native": [
    "src/core/front_end.hpp:RaceResult::released",
    "src/core/race_result.cpp:(file)",
-   "src/core/race_result.cpp:race_result_frame"
+   "src/core/race_result.cpp:one_run_wait_frame"
   ],
   "source_records": [
    "docs/research/R-0057-one-run-result.md"
@@ -2335,7 +2523,7 @@
   "comment": "instruction start",
   "label": "loc_80C6D5",
   "native": [
-   "src/core/now_playing.cpp:print_now_playing",
+   "src/core/front_end_screens.hpp:place_printed_object",
    "src/core/text_printer.cpp:print_text"
   ],
   "source_records": [
@@ -2378,8 +2566,6 @@
   "comment": "unknown",
   "label": "unk_80C7C4",
   "native": [
-   "src/core/race_result.cpp:(file)",
-   "src/core/race_result.cpp:race_result_exit_frame",
    "src/core/race_result.cpp:update_records"
   ],
   "source_records": [
@@ -2392,8 +2578,6 @@
   "comment": "unknown",
   "label": "unk_80C7EE",
   "native": [
-   "src/core/race_result.cpp:(file)",
-   "src/core/race_result.cpp:race_result_exit_frame",
    "src/core/race_result.cpp:update_records"
   ],
   "source_records": [
@@ -2406,8 +2590,6 @@
   "comment": "unknown",
   "label": "unk_80C800",
   "native": [
-   "src/core/race_result.cpp:(file)",
-   "src/core/race_result.cpp:race_result_exit_frame",
    "src/core/race_result.cpp:update_records"
   ],
   "source_records": [
@@ -2420,8 +2602,6 @@
   "comment": "unknown",
   "label": "unk_80C81C",
   "native": [
-   "src/core/race_result.cpp:(file)",
-   "src/core/race_result.cpp:race_result_exit_frame",
    "src/core/race_result.cpp:update_records"
   ],
   "source_records": [
@@ -2434,8 +2614,6 @@
   "comment": "unknown",
   "label": "unk_80C82F",
   "native": [
-   "src/core/race_result.cpp:(file)",
-   "src/core/race_result.cpp:race_result_exit_frame",
    "src/core/race_result.cpp:update_records"
   ],
   "source_records": [
@@ -2448,12 +2626,99 @@
   "comment": "unknown",
   "label": "unk_80C850",
   "native": [
-   "src/core/race_result.cpp:(file)",
-   "src/core/race_result.cpp:race_result_exit_frame",
    "src/core/race_result.cpp:update_records"
   ],
   "source_records": [
    "docs/research/R-0057-one-run-result.md"
+  ]
+ },
+ {
+  "address": "$80:C868",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80C868",
+  "native": [
+   "src/core/front_end_screens.hpp:best_lap",
+   "src/core/race_result.cpp:update_records"
+  ],
+  "source_records": [
+   "docs/research/R-0058-lap-result.md",
+   "tasks/FRONT-END-LAP-RESULT.md"
+  ]
+ },
+ {
+  "address": "$80:C8BA",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80C8BA",
+  "source_records": [
+   "docs/research/R-0058-lap-result.md"
+  ]
+ },
+ {
+  "address": "$80:C8C5",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80C8C5",
+  "source_records": [
+   "docs/research/R-0058-lap-result.md"
+  ]
+ },
+ {
+  "address": "$80:C8D0",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80C8D0",
+  "native": [
+   "src/core/race_result.cpp:update_records"
+  ],
+  "source_records": [
+   "docs/research/R-0058-lap-result.md"
+  ]
+ },
+ {
+  "address": "$80:C8E8",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80C8E8",
+  "native": [
+   "src/core/race_result.cpp:update_records"
+  ],
+  "source_records": [
+   "docs/research/R-0058-lap-result.md"
+  ]
+ },
+ {
+  "address": "$80:C902",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80C902",
+  "native": [
+   "src/core/race_result.cpp:update_records"
+  ],
+  "source_records": [
+   "docs/research/R-0058-lap-result.md"
+  ]
+ },
+ {
+  "address": "$80:C913",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80C913",
+  "native": [
+   "src/core/race_result.cpp:update_records"
+  ],
+  "source_records": [
+   "docs/research/R-0058-lap-result.md"
+  ]
+ },
+ {
+  "address": "$80:C932",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80C932",
+  "source_records": [
+   "docs/research/R-0058-lap-result.md"
   ]
  },
  {
@@ -2758,7 +3023,7 @@
   "comment": "instruction start",
   "label": "loc_80CFB9",
   "native": [
-   "src/core/race_result.cpp:player_best_markers",
+   "src/core/front_end_screens.hpp:player_best_markers",
    "src/core/race_result.cpp:print_rows"
   ],
   "source_records": [
@@ -3499,7 +3764,8 @@
   "comment": "unknown",
   "label": "unk_80F0EE",
   "source_records": [
-   "docs/research/R-0057-one-run-result.md"
+   "docs/research/R-0057-one-run-result.md",
+   "docs/research/R-0058-lap-result.md"
   ]
  },
  {
@@ -3508,11 +3774,14 @@
   "comment": "routine start",
   "label": "sub_80F4B8",
   "native": [
+   "src/core/lap_result.cpp:graph_object_sizes",
    "src/core/race_result.cpp:hide_result_objects",
+   "src/core/race_result.cpp:lap_graph_frame",
    "src/core/race_result.cpp:race_result_exit_frame"
   ],
   "source_records": [
-   "docs/research/R-0057-one-run-result.md"
+   "docs/research/R-0057-one-run-result.md",
+   "docs/research/R-0058-lap-result.md"
   ]
  },
  {
@@ -10622,6 +10891,15 @@
   ]
  },
  {
+  "address": "$83:88D3",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_8388D3",
+  "source_records": [
+   "docs/research/R-0058-lap-result.md"
+  ]
+ },
+ {
   "address": "$83:88FD",
   "class": "data",
   "comment": "data",
@@ -10747,7 +11025,11 @@
   "class": "unknown",
   "comment": "unknown",
   "label": "unk_838D5D",
+  "native": [
+   "src/core/lap_result.cpp:graph_line"
+  ],
   "source_records": [
+   "docs/research/R-0058-lap-result.md",
    "tasks/FRONT-END-LAP-RESULT.md"
   ]
  },
@@ -10802,11 +11084,14 @@
   "comment": "unknown",
   "label": "unk_83904A",
   "native": [
+   "src/core/lap_result.cpp:GraphScale",
+   "src/core/lap_result.cpp:graph_height, minimum_range",
    "src/core/race_progress.cpp:graph_update, totals_update, dragster_totals_update",
    "src/core/zoom_zoo_movement.hpp:ClassicRaceScenario::tour_race"
   ],
   "source_records": [
    "docs/research/R-0038-dragster-ordinary-controls.md",
+   "docs/research/R-0058-lap-result.md",
    "tasks/FRONT-END-LAP-RESULT.md"
   ]
  },
@@ -10919,7 +11204,8 @@
   ],
   "source_records": [
    "docs/research/R-0056-tour-track-now-playing.md",
-   "docs/research/R-0057-one-run-result.md"
+   "docs/research/R-0057-one-run-result.md",
+   "docs/research/R-0058-lap-result.md"
   ]
  },
  {
@@ -10999,10 +11285,12 @@
   "label": "sub_839894",
   "native": [
    "src/core/front_end.hpp:SavedMenus",
+   "src/core/lap_result.cpp:saved_word_under_opponent_best",
    "src/core/now_playing.cpp:race_fade_frame"
   ],
   "source_records": [
-   "docs/research/R-0057-one-run-result.md"
+   "docs/research/R-0057-one-run-result.md",
+   "docs/research/R-0058-lap-result.md"
   ]
  },
  {
@@ -11058,7 +11346,8 @@
   "source_records": [
    "docs/research/R-0055-rider-menu.md",
    "docs/research/R-0056-tour-track-now-playing.md",
-   "docs/research/R-0057-one-run-result.md"
+   "docs/research/R-0057-one-run-result.md",
+   "docs/research/R-0058-lap-result.md"
   ]
  },
  {
@@ -11117,6 +11406,18 @@
   "label": "dat_839B31",
   "source_records": [
    "docs/research/R-0055-rider-menu.md"
+  ]
+ },
+ {
+  "address": "$83:9E47",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_839E47",
+  "native": [
+   "src/core/front_end_screens.hpp:personal_best"
+  ],
+  "source_records": [
+   "docs/research/R-0058-lap-result.md"
   ]
  },
  {
@@ -11256,6 +11557,15 @@
   "source_records": [
    "docs/research/R-0056-tour-track-now-playing.md",
    "docs/research/R-0057-one-run-result.md"
+  ]
+ },
+ {
+  "address": "$83:C9AC",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_83C9AC",
+  "source_records": [
+   "tasks/RACE-PAUSE-EXITS.md"
   ]
  },
  {
@@ -13205,6 +13515,42 @@
   ],
   "source_records": [
    "docs/research/R-0036-zoom-zoo-rider-objects.md"
+  ]
+ },
+ {
+  "address": "$83:F8DA",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_83F8DA",
+  "source_records": [
+   "tasks/RACE-PAUSE-EXITS.md"
+  ]
+ },
+ {
+  "address": "$83:F8EB",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_83F8EB",
+  "source_records": [
+   "tasks/RACE-PAUSE-EXITS.md"
+  ]
+ },
+ {
+  "address": "$83:F901",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_83F901",
+  "source_records": [
+   "tasks/RACE-PAUSE-EXITS.md"
+  ]
+ },
+ {
+  "address": "$83:F90B",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_83F90B",
+  "source_records": [
+   "tasks/RACE-PAUSE-EXITS.md"
   ]
  },
  {

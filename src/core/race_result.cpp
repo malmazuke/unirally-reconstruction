@@ -24,7 +24,8 @@ constexpr std::size_t badge_tiles_bytes = 0x780;
 
 // The result screen's frames from its first, `$83:94D0`'s wait: the rows, the icons and the
 // text, then the fade (`$80:9869`, brightness 2, 4, ..., 14).
-constexpr std::uint32_t rows_frame = 2, icons_frame = 3, first_fade_frame = 4, fade_frames = 7;
+constexpr std::uint32_t rows_frame = 2, icons_frame = result_tail_frame, first_fade_frame = 4,
+                        fade_frames = 7;
 constexpr unsigned first_rider_palette_colour = 0x80, opponent_palette_colour = 0x90;
 constexpr unsigned rows_palettes = 0x80;         // `$80:D163`: a row's rider at 0x80, 0x90, ...
 constexpr unsigned trophy_palettes_first = 0x22; // assets 0x22, 0x21, 0x20 at 0xD0, 0xE0, 0xF0
@@ -45,12 +46,17 @@ constexpr std::uint8_t rider_mark_tile = 0xc0, rider_mark_attributes = 0x21,
 constexpr std::uint8_t icon_column = 0x78, marker_column = 0xdb, marker_attributes = 0x1b;
 constexpr std::uint8_t first_row_line = 0x58, row_lines = 24, player_mark_attributes = 0x11;
 constexpr std::uint8_t off_screen_line = 0xef;
-// The high-table bits `$80:CFB9` clears for the player's new-best markers, entries 96 and 98.
-constexpr std::uint8_t player_best_markers = 0xee;
 
-// Pads that leave the result: any button on either pad (`$80:C206`).
+// Pads that leave the one-run result: any button on either pad (`$80:C206`).
 bool pressed(FrontEndPads pads) {
     return pads.one != 0 || pads.two != 0;
+}
+
+// Pads that leave the lap result: any of pad 1's twelve buttons (`$80:B6D3`); pad 2 is ignored in
+// one-player play, where `$77:0742` bit 10 is set.
+bool lap_graph_left(FrontEndPads pads) {
+    constexpr std::uint16_t buttons = 0xfff0;
+    return (pads.one & buttons) != 0;
 }
 
 std::uint8_t track_of(const FrontEndState& state) {
@@ -89,10 +95,10 @@ void early_loads(FrontEndState& state, const FrontEndContent& content) {
 std::array<Row, 8> sorted_rows(const FrontEndState& state) {
     const auto& records = state.records;
     const auto track = track_of(state);
-    const auto& totals = state.race_result.totals;
+    const auto& times = state.race_result.times;
     const bool computer = state.now_playing.opponent >= someone;
-    std::array<Row, 8> rows{{{RowKind::player, totals.player_total},
-                             {RowKind::opponent, computer ? no_row : totals.opponent_total},
+    std::array<Row, 8> rows{{{RowKind::player, times.player_total},
+                             {RowKind::opponent, computer ? no_row : times.opponent_total},
                              {RowKind::record_1, records.record_times[0][track]},
                              {RowKind::record_2, records.record_times[1][track]},
                              {RowKind::record_3, records.record_times[2][track]},
@@ -128,7 +134,7 @@ void print_rows(FrontEndState& state, const FrontEndContent& content,
         case RowKind::opponent: continue; // a human opponent's row is 2P's (not recovered)
         case RowKind::player: {
             rider = state.rider_menu.rider;
-            auto& best = records.best[rider * 50U + track];
+            auto& best = personal_best(records, rider, track);
             if (row.time < best) {
                 best = row.time;
                 high_bits(state, 96) &= player_best_markers;
@@ -172,6 +178,10 @@ void start_result(FrontEndState& state, const FrontEndContent& content) {
     state.logo.offset = 0x52;
     state.registers.bg[0].vofs = 0x52;
     state.text.words.fill(cleared_text);
+    if (state.race_result.times.lap_race) {
+        build_lap_result(state, content); // $80:8D6E
+        return;
+    }
     // The icons beside the rows, entries 104-108, and the new-best markers 96-99 (hidden).
     constexpr std::array<std::uint8_t, 5> icon_rows{0x57, 0x6f, 0x87, 0x9f, 0xb7};
     for (unsigned k = 0; k < icon_rows.size(); ++k) {
@@ -206,13 +216,15 @@ void print_result(FrontEndState& state, const FrontEndContent& content) {
     high_bits(state, 100) = four_shown;
 }
 
-// $80:D113-D13C and the tail `$80:9579-958F`.
+// $80:D113-D13C for a one-run race, then the tail `$80:9579-958F`.
 void show_icons(FrontEndState& state, const FrontEndContent& content) {
-    for (unsigned k = 0; k < 3; ++k)
-        load_cgram(state, asset(content, trophy_palettes_first - k), 0xd0 + k * 16);
-    for (std::size_t k = 0; k < content.result_icons.size(); ++k)
-        state.oam_buffer[112 * 4 + k] = content.result_icons[k];
-    high_bits(state, 112) = hidden_bit(115);
+    if (!state.race_result.times.lap_race) {
+        for (unsigned k = 0; k < 3; ++k)
+            load_cgram(state, asset(content, trophy_palettes_first - k), 0xd0 + k * 16);
+        for (std::size_t k = 0; k < content.result_icons.size(); ++k)
+            state.oam_buffer[112 * 4 + k] = content.result_icons[k];
+        high_bits(state, 112) = hidden_bit(115);
+    }
     load_text(state, state.slide.shown_half); // $80:93A5 to $00AA
     state.decorations.delay = state.decorations.wave_delay = state.decorations.sway = 0;
     step_decorations(state, content);
@@ -251,16 +263,19 @@ void insert_record(OnePlayerRecords& records, unsigned track, std::uint16_t time
     }
 }
 
-// $80:C786-C866 for a one-run race: races and wins by rider, and the times into the records. A
-// computer opponent (16 and up) keeps no counts and no records (`$80:CAAA`, `$80:C82F`).
+// $80:C786: races and wins by rider, and the times into the records: for a one-run race
+// (`$80:C7C4`) the totals, for a lap race (`$80:C868`) the best laps; a win is still the lower
+// total. A computer opponent (16 and up) keeps no counts and no records (`$80:CAAA`, `$80:C82F`).
 void update_records(FrontEndState& state) {
     auto& records = state.records;
     const auto rider = state.rider_menu.rider, opponent = state.now_playing.opponent;
     const bool rider_opponent = opponent < records.statistics.size();
-    const auto& totals = state.race_result.totals;
-    const auto player = totals.player_total, other = totals.opponent_total;
+    const auto& times = state.race_result.times;
+    const auto player = times.player_total, other = times.opponent_total;
+    // A lap race's records take the best laps (`$80:C868`), a one-run race's the totals.
+    const auto player_record = times.lap_race ? record_lap(times.player_laps) : player;
+    const auto other_record = times.lap_race ? record_lap(times.opponent_laps) : other;
     constexpr std::size_t races = 0, wins = 1, no_time_losses = 2;
-    constexpr std::uint16_t no_time = 0xea60;
     const auto track = track_of(state);
     // A time goes into the records unless it is no time, which counts a loss without one.
     const auto record = [&](std::uint8_t who, std::uint16_t time) {
@@ -280,23 +295,23 @@ void update_records(FrontEndState& state) {
         ++records.opponent_wins;
     }
     if (player < other) {
-        insert_record(records, track, player, rider); // $80:C81C
-        if (rider_opponent) record(opponent, other);  // $80:C82F
+        insert_record(records, track, player_record, rider); // $80:C81C, $80:C902
+        if (rider_opponent) record(opponent, other_record);  // $80:C82F, $80:C913
     } else if (player > other) {
-        if (rider_opponent) insert_record(records, track, other, opponent); // $80:C850
-        record(rider, player);                                              // $80:C800
-    } else {
-        insert_record(records, track, player, rider); // $80:C7EE's $80:C81C and $80:C850
-        if (rider_opponent) insert_record(records, track, other, opponent);
+        if (rider_opponent) insert_record(records, track, other_record, opponent); // $80:C850
+        record(rider, player_record); // $80:C800, $80:C8E8
+    } else {                          // $80:C7EE, $80:C8D0
+        insert_record(records, track, player_record, rider);
+        if (rider_opponent) insert_record(records, track, other_record, opponent);
     }
 }
 
 // $83:879A for a one-run race: a win (a total strictly under the opponent's) marks the track
 // won; a loss sets `$77:0742` bit 12.
 void score_race(FrontEndState& state) {
-    const auto& totals = state.race_result.totals;
+    const auto& times = state.race_result.times;
     auto& records = state.records;
-    if (totals.player_total >= totals.opponent_total) {
+    if (times.player_total >= times.opponent_total) {
         records.race_lost = true;
         return;
     }
@@ -309,6 +324,45 @@ void score_race(FrontEndState& state) {
                     [](std::uint8_t done) { return done != 0; }))
         throw std::logic_error("a tour's completion (its award and PICK TOUR's reveal) is not "
                                "recovered yet");
+}
+
+// $80:C24C and `$80:C206`: after a one-run result's fade, both pads released, then a press seen
+// on two frames running.
+void one_run_wait_frame(FrontEndState& state, const FrontEndContent& content, FrontEndPads pads) {
+    auto& result = state.race_result;
+    step_decorations(state, content);
+    if (!result.released) { // $80:C24C
+        result.released = !pressed(pads);
+        if (result.released) state.decorations.delay = 3; // $80:98B3
+        return;
+    }
+    const bool press = pressed(pads); // $80:C206: a press on two frames running
+    if (!result.press_seen || !press) {
+        result.press_seen = press;
+        return;
+    }
+    hide_result_objects(state);
+    state.screen = FrontEndScreen::race_result_exit;
+}
+
+// $80:98B3 on the lap result's last fade frame: `$0089` = 3, then the graph's first pass.
+void start_lap_graph(FrontEndState& state, const FrontEndContent& content) {
+    state.decorations.delay = 3;
+    step_decorations(state, content);
+    step_lap_graph(state);
+}
+
+// $80:98C9-997B: the lap graph until a press on pad 1 (`$80:B6D3`); then `$80:9805` (the graph
+// cleared bit 8, so it parks) and `$80:F4B8`. `hide_result_objects` also makes `$80:C236`'s
+// writes, which the lap result does not, but `$80:9805`'s cover them: the OAM buffer is the same.
+void lap_graph_frame(FrontEndState& state, const FrontEndContent& content, FrontEndPads pads) {
+    if (lap_graph_left(pads)) {
+        hide_result_objects(state);
+        state.screen = FrontEndScreen::race_result_exit;
+        return;
+    }
+    step_decorations(state, content);
+    step_lap_graph(state);
 }
 
 } // namespace
@@ -357,7 +411,10 @@ void race_result_frame(FrontEndState& state, const FrontEndContent& content, Fro
         return;
     }
     if (frame == rows_frame) {
-        print_result(state, content);
+        if (result.times.lap_race)
+            print_lap_result(state, content);
+        else
+            print_result(state, content);
         return;
     }
     if (frame == icons_frame) {
@@ -365,24 +422,17 @@ void race_result_frame(FrontEndState& state, const FrontEndContent& content, Fro
         return;
     }
     copy_oam(state);
-    if (frame < first_fade_frame + fade_frames) {
+    const auto last_fade_frame = first_fade_frame + fade_frames - 1;
+    if (frame <= last_fade_frame) {
         state.registers.brightness = static_cast<std::uint8_t>(2 * (frame - first_fade_frame + 1));
         state.registers.force_blank = false;
+        if (frame == last_fade_frame && result.times.lap_race) start_lap_graph(state, content);
         return;
     }
-    step_decorations(state, content);
-    if (!result.released) { // $80:C24C
-        result.released = !pressed(pads);
-        if (result.released) state.decorations.delay = 3; // $80:98B3
-        return;
-    }
-    const bool press = pressed(pads); // $80:C206: a press on two frames running
-    if (!result.press_seen || !press) {
-        result.press_seen = press;
-        return;
-    }
-    hide_result_objects(state);
-    state.screen = FrontEndScreen::race_result_exit;
+    if (result.times.lap_race)
+        lap_graph_frame(state, content, pads);
+    else
+        one_run_wait_frame(state, content, pads);
 }
 
 void race_result_exit_frame(FrontEndState& state, const FrontEndContent& content) {
@@ -414,13 +464,13 @@ void race_result_exit_frame(FrontEndState& state, const FrontEndContent& content
 }
 
 void begin_race_return(FrontEndState& state, const FrontEndContent& content, std::uint32_t frame,
-                       const RaceTotals& totals) {
+                       const RaceTimes& times) {
     if (state.screen != FrontEndScreen::race)
         throw std::logic_error("the front end is not waiting for a race");
     state.mode_chosen = false;
     state.frame = frame;
     state.race_result = {};
-    state.race_result.totals = totals;
+    state.race_result.times = times;
     state.screen = FrontEndScreen::race_return;
     state.script_frame = 0;
     early_loads(state, content);
@@ -432,8 +482,25 @@ void begin_race_return(FrontEndState& state, const FrontEndContent& content, std
 namespace unirally {
 
 void return_from_race(FrontEndState& state, const FrontEndContent& content, std::uint32_t frame,
-                      const RaceTotals& totals) {
-    front_end_screens::begin_race_return(state, content, frame, totals);
+                      const RaceTimes& times) {
+    front_end_screens::begin_race_return(state, content, frame, times);
+}
+
+std::uint32_t race_loading_frames(ClassicRaceTrack track) {
+    if (track == ClassicRaceTrack::Dragster) return 121;
+    if (track == ClassicRaceTrack::ZoomZoo) return 169;
+    return 0;
+}
+
+RaceTimes race_times(const ZoomZooState& race) {
+    const auto& times = race.race;
+    RaceTimes result{times.total_times[0], times.total_times[1],
+                     classic_race_scenario(race.track).tour_race};
+    if (result.lap_race) {
+        result.player_laps = times.lap_times[0];
+        result.opponent_laps = times.lap_times[1];
+    }
+    return result;
 }
 
 } // namespace unirally

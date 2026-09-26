@@ -291,7 +291,7 @@ int main(int argc, char **argv) try {
   if(!zoom_zoo && content.pack.optional_entry("zoom.landing-response-matrices").empty())
     throw std::invalid_argument("DRAGSTER and the other tracks need the full content pack for jumps, brakes, reversal and tricks; "
                                 "create it from your ROM with: python3 tools/project.py frontend run --track dragster "
-                                "--pack local/classic-pal-crawler-tracks-v18.pack --rom PATH");
+                                "--pack local/classic-pal-crawler-tracks-v19.pack --rom PATH");
   auto zoom_content=unirally::classic_race_content(content.pack,track);
   auto race_presentation=unirally::classic_race_presentation_content(content.pack,track);
   auto zoom_state=unirally::classic_race_start(zoom_content,unirally::classic_race_scenario(track));
@@ -359,7 +359,7 @@ int main(int argc, char **argv) try {
   // Without --track the session starts at power-on; NOW PLAYING's Race starts the race.
   std::optional<unirally::app::FrontEndSession> front_end;
   if (!parsed->track_given) front_end.emplace(content.pack);
-  // During a one-run race the front end waits here for the race's result load.
+  // During a race the front end waits here for the race's result load.
   std::optional<unirally::app::FrontEndSession> waiting_front_end;
   while (running) {
     SDL_Event event{};
@@ -468,7 +468,7 @@ int main(int argc, char **argv) try {
           zoom_state=unirally::classic_race_start(zoom_content,unirally::classic_race_scenario(chosen));
           zoom_hud_state=zoom_state;
           live_presentation=unirally::app::LivePresentation{};
-          if(front_end->race_returns())waiting_front_end=std::move(front_end);
+          waiting_front_end=std::move(front_end);
           front_end.reset();
           input.clear();
         }
@@ -508,12 +508,13 @@ int main(int argc, char **argv) try {
         } else {
           live_presentation.observe_update(zoom_hud_state,zoom_state,content.pack);
         }
-        // The one-run race's result load: the menus' result screen takes over (R-0057).
+        // The race's result load: the menus' result screen takes over (R-0057, R-0058).
         if(waiting_front_end && zoom_state.result_updates==1) {
           waiting_front_end->return_from_race(zoom_state);
           front_end=std::move(waiting_front_end);
           waiting_front_end.reset();
-          // The input is kept: a button held from the race holds the result (`$80:C24C`).
+          // The input is kept: a button held from the race holds a one-run result (`$80:C24C`)
+          // and ends a lap result at its first test (`$80:B6D3`), as in the original.
           std::cout<<"Front end: race returned at front-end frame "<<front_end->front_end_frame()
                    <<"; totals "<<zoom_state.race.total_times[0]<<'/'<<zoom_state.race.total_times[1]<<'\n';
         }

@@ -498,6 +498,19 @@ const std::array<RequiredEntry, 2> race_result_required{{
     {"front-end.result-icons", 12,
      "932debcc0ad000f6b980d5fe057dd9e0519e36e4ef78af87615ac7dc39cc88f4"},
 }};
+
+// FRONT-END-LAP-RESULT (profile v19): the lap result screen's text
+// (tools/unirally_lab/content/front_end.py v19_new_entries, R-0058).
+const std::array<RequiredEntry, 4> lap_result_required{{
+    {"front-end.lap-result-text", 128,
+     "2ecce5cabbc6edaddd694475fa3e9540ee716fc3dfd16b804e41e6caa632f301"},
+    {"front-end.lap-result-record", 18,
+     "d29c3d6f798d375d0dbf844c88f9ef925b0610ab310dab6f4a837f00e44cedf9"},
+    {"front-end.lap-result-player", 24,
+     "bf963c0388ffad767a93357fba1e8385b7987e5674bc155e3ba064499b7c5c6f"},
+    {"front-end.lap-result-opponent", 24,
+     "d198a344e476d31cafd4a259ebcb89e5564d5882aeb5d0b6af58ddd0f6a19694"},
+}};
 // LOCKED-TOURS (profile v12): the race tracks of the five tours a cold start does not
 // list, and sceneries 1, 8 and 12. Generated from the rules file (tracks.py v12_new_entries).
 const std::array<RequiredEntry, 89> locked_tracks_required{{
@@ -658,7 +671,7 @@ const std::array<RequiredEntry, 89> locked_tracks_required{{
     {"scenery.12.palette", 352, "b2a9aefe13c1dc68454cf0a5c2bedb086c6e162dbea1df1f2ef108347d89ab63"},
 }};
 constexpr std::string_view two_track_rules_sha =
-    "efbbf7467794e30c9c9931172a437e907ee041c29504e10882100a9d5e54aa38";
+    "94a670ebae490753985679b545168db610847affc62d4ab7087c4c9ebf9bf3b0";
 
 std::array<std::uint8_t, 32> hex_digest(std::string_view text) {
     if (text.size() != 64) throw std::logic_error("invalid compiled Classic SHA-256");
@@ -748,7 +761,7 @@ std::array<std::uint8_t, 32> sha256(std::span<const std::uint8_t> source) {
 
 namespace {
 constexpr std::array<std::string_view, 2> supported_profiles{"classic.pal.crawler.dragster.v1",
-                                                             "classic.pal.crawler.tracks.v18"};
+                                                             "classic.pal.crawler.tracks.v19"};
 } // namespace
 
 std::span<const std::string_view> supported_pack_profiles() {
@@ -810,7 +823,8 @@ std::vector<RequiredEntry> required_entries(bool tracks) {
                              std::span<const RequiredEntry>(front_end_required),
                              std::span<const RequiredEntry>(rider_menu_required),
                              std::span<const RequiredEntry>(one_player_screens_required),
-                             std::span<const RequiredEntry>(race_result_required)})
+                             std::span<const RequiredEntry>(race_result_required),
+                             std::span<const RequiredEntry>(lap_result_required)})
         out.insert(out.end(), table.begin(), table.end());
     return out;
 }

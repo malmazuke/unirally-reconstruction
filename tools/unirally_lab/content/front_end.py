@@ -165,3 +165,20 @@ RESULT_TABLES = (
 def v18_new_entries(rom: bytes) -> list[dict[str, Any]]:
     """The entries profile v18 adds to v17 (FRONT-END-1P-CONTINUATION), in pack order."""
     return [table_entry(rom, *table) for table in RESULT_TABLES]
+
+
+# Profile v19 (FRONT-END-LAP-RESULT, R-0058): the lap result screen's text. `$80:910F` prints the
+# headings, the graph's axes and TIME, its times, and "laps on" the track; `$80:918F` the track's
+# record line; `$80:91A1` and `$80:91B9` the player's and the opponent's rows.
+LAP_RESULT_TABLES = (
+    ("front-end.lap-result-text", 0x80910F, None),
+    ("front-end.lap-result-record", 0x80918F, None),
+    ("front-end.lap-result-player", 0x8091A1, None),
+    ("front-end.lap-result-opponent", 0x8091B9, None),
+)
+
+
+def v19_new_entries(rom: bytes) -> list[dict[str, Any]]:
+    """The entries profile v19 adds to v18 (FRONT-END-LAP-RESULT), in pack order. Run once with the
+    ROM to append them to the rules; the tests check the rules against the compiled table."""
+    return [table_entry(rom, *table) for table in LAP_RESULT_TABLES]

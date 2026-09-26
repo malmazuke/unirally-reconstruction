@@ -5,6 +5,13 @@ push the task branch, open a pull request from the template, merge with
 `gh pr merge --merge` once its checks are green and the review is done. `main`
 refuses direct pushes. The checks run on pull requests only.
 
+**Status on 26 September 2026 UTC (FRONT-END-LAP-RESULT): start
+[FRONT-END-TOUR-END](FRONT-END-TOUR-END.md), then [RACE-PAUSE-EXITS](RACE-PAUSE-EXITS.md).** After
+every race the app starts (MIKE against BRONSEN, not the stunt event) the menus take over, frame-exact, and the records match the original's cartridge RAM (R-0057, R-0058).
+Next is a tour's completion: the award screen, the endings, the unlocks and PICK TOUR's reveal.
+Captures and a decode are ready in `local/evidence/front-end-tour-end/`. Rebuild the pack as v19
+(`docs/STATE.md`).
+
 **Status on 25 September 2026 UTC (FRONT-END-1P-CONTINUATION): start
 [FRONT-END-LAP-RESULT](FRONT-END-LAP-RESULT.md).** After a one-run race the menus take over,
 frame-exact, and the records match the original's cartridge RAM (R-0057). Next is the lap race's

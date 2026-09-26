@@ -2,15 +2,22 @@
 
 ## Assignment
 
-- Status: **ready**. Queued 25 September 2026 (UTC) by FRONT-END-1P-CONTINUATION.
+- Status: **in review**. Queued 25 September 2026 (UTC) by FRONT-END-1P-CONTINUATION; claimed
+  25 September 2026 at 23:50Z by the same Claude Code desktop session, on FRONT-END-1P-CONTINUATION's
+  head `689fefb` (pull request #30, to be rebased onto `main` once it merges).
 - Milestone: M4 (original game coverage: menus)
 - Coordinator: the claiming session is coordinator, primary and integrator
 - Task provider (fixed for all children; record any user-initiated platform change): Anthropic
-- Worker/session/runtime/model: recorded at claim
+- Worker/session/runtime/model: Claude Code desktop app, Claude Opus 5.5 (`claude-opus-5-5`)
 - Actual model/reasoning effort, routing rationale and frontier escalation question (if any):
   **tier 2** for the screen; **tier 1** for anything that changes how a race is scored or ended.
+  Kept at tier 2: the win test and the race engine are unchanged; the records' change for a lap
+  race (the best laps, `$80:C868`) is a direct transcription, checked against the listing by the
+  worker and the reviewer, against cartridge RAM at four frames (`sram.py`), and by native tests
+  of a tie and a no-time race (the reviewer's condition for not escalating).
 - Provider quota window/baseline timestamp, used/remaining or unknown, reserve and session
-  allowance (D-0004): recorded at claim.
+  allowance (D-0004): at claim the 5-hour window was 36% used and the weekly window 38%. The
+  user's allowance (25 September 2026): continue until the weekly window reaches 80%.
 - Reviewer (primary automatically spawns fresh model/effort, isolated checkout; no user
   trigger): a fresh Anthropic subagent.
 - Dependencies and evidence of acceptance: FRONT-END-1P-CONTINUATION (R-0057, the one-run result
@@ -50,22 +57,29 @@ Out of scope: the stunt events (STUNT-EVENTS) and the tour's end (FRONT-END-TOUR
 | Playable | The app from power-on through a tour's races | Each race but the stunt event comes back to PICK TRACK | report |
 | Nothing moves | ctest, the synthetic suite, the v1 contracts, hidden runs, the differential gates, the equivalence sweep, the front end's comparisons | Unchanged | logs |
 
+## Evidence
+
+R-0058 and `local/evidence/front-end-lap-result/` (`NOTES.md`, `decode/lap-result.md`,
+`compare.py`, `sram.py`).
+
+| Criterion | Result |
+| --- | --- |
+| Pictures and state | `lap-won`, `lap-lost`, `lap-record` and `lap-record-frames`: the native races return on the original's frames (6725, 7659, 13416); no difference in the menus' words, OAM buffer or text map on any frame from r + 101 to the end; 4,104 pictures equal |
+| Records | `sram.py`: the kept cartridge RAM words equal the original's at lap-won 7610 and 8399 and lap-lost 8610 and 9399 |
+| Playable | Every race the app starts (MIKE against BRONSEN, not a stunt event) comes back to the menus. The runner's comparisons cover the lap race; the app cannot replay a driven lap race (its race input is a fixed mask), so its hidden runs cover the one-run hand-over and the shared code |
+| Nothing moves | Gates on `003a7b3` (`gates-003a7b3.out`; the head after it changes only records): three presets build, ctest 26 of 26; the synthetic suite; both v1 contracts; the hidden runs, and cont-win's and cont-loss's pads through the app; the eleven differential gates (the same rows digests); the equivalence sweep, 351 runs with 0 differences; both recompares identical; the main menu's, the one-player screens', the one-run and the lap results' comparisons all equal; the records equal; 0 functions over 80 lines; the address index current |
+
+Quit and restart: a known difference, not done here. The original's restart goes back to NOW
+PLAYING and its quit is scored (R-0058 "Not recovered"); the native race's pause menu restarts
+inside the race and has no quit. Queued as [RACE-PAUSE-EXITS](RACE-PAUSE-EXITS.md).
+
 ## Handoff
 
-- The native race's loading time between NOW PLAYING's fade and its initialization is known for
-  DRAGSTER only (121 frames on the laboratory's path). `front_end_runner` times no other track.
-  Measure ZOOM ZOO's from a capture (the first frame `$0FF1` moves).
-- `$77:0742` bit 8 matters here. `$80:9805` parks entries 0-29 (and `$0CF0`, `$0DE0`) only
-  while the bit is clear, and sets it. The first result after a cold start sets it, and it stays
-  set (it is in `$0742`, across races) until the lap result's graph loop clears it
-  (`$80:98CB`). So later one-run results skip the parking. Native keeps neither the bit nor
-  those tables and always parks; `$80:A09A` has already parked those entries, so the OAM agrees.
-  The lap graph uses entries 0-19.
-- Holding Right alone never finishes ZOOM ZOO: `lap-explore` circles the loop at 0 of 3 laps.
-- The capture exists: `local/evidence/front-end-lap-result/lap-won` (8,400 frames). It uses
-  M4-16 boundary-a's inputs, which drive three laps to 6724: MIKE 1:38.02 against BRONSEN
-  1:38.10, a win. Start at 7600 leaves the lap result, and PICK TRACK shows ZOOM ZOO done with
-  the cursor on BOWL. It has work RAM every frame and pictures 6700-8399.
-- Exact next experiment/command: run the native race between the menus for ZOOM ZOO in
-  `front_end_runner` (measure its loading frames from the capture), then compare with a copy of
-  the continuation's `compare.py`.
+- Findings: R-0058 and `decode/lap-result.md`, which checks the graph rule against every pass of
+  `lap-won`.
+- The race's loading varies by a frame (R-0039): the laboratory's `compare.py` aligns each native
+  race to the capture's own initialization (`--race-initialization`).
+- Next: [FRONT-END-TOUR-END](FRONT-END-TOUR-END.md), then [RACE-PAUSE-EXITS](RACE-PAUSE-EXITS.md)
+  (the race's pause menu in one-player play, a known difference). Its first captures (`forced-bronze`,
+  `forced-bronze-long`) and a decode of the completion, the award screen and PICK TOUR's return
+  are ready in `local/evidence/front-end-tour-end/`.

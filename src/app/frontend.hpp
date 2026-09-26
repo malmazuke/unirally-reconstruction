@@ -134,10 +134,6 @@ public:
   ClassicRaceTrack race_track() const {
     return ClassicRaceTrack{state_.tour_menu.track};
   }
-  // True when the chosen race comes back to the front end: a one-run race,
-  // whose result screen is the menus' (`$80:951C`). A lap race keeps the race's
-  // own result screen until the lap result is recovered.
-  bool race_returns() const;
   // The race's result load has begun (`result_updates` 1): the front end takes
   // over with its totals.
   void return_from_race(const ZoomZooState &race);

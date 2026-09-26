@@ -97,7 +97,7 @@ class PackProfileTests(unittest.TestCase):
             compiled += [(i, int(n), d) for i, n, d in re.findall(r'\{"([^"]+)",\s*(\d+),\s*"([0-9a-f]{64})"\}', table)]
         self.assertEqual(compiled, [(e["id"], e["size"], e["sha256"]) for e in added])
         self.assertIn(hashlib.sha256(rules_path.read_bytes()).hexdigest(), source)
-        self.assertEqual(rules["profile_id"], "classic.pal.crawler.tracks.v18")
+        self.assertEqual(rules["profile_id"], "classic.pal.crawler.tracks.v19")
         ids = {e["id"] for e in added}
         for index in tracks.NEW_RACE_TRACKS + tracks.LOCKED_RACE_TRACKS:
             for part in ("data", "tile-columns", "tile-flags", "bg1-tiles"):
@@ -169,7 +169,7 @@ class FrontEndEntryTests(unittest.TestCase):
         added = [by_id[entry_id] for entry_id in expected]
         later = len(front_end.RIDER_MENU_ASSETS) + len(front_end.RIDER_MENU_TABLES)
         later += len(front_end.TOUR_MENU_ASSETS) + len(front_end.TOUR_MENU_TABLES)
-        later += len(front_end.RESULT_TABLES)
+        later += len(front_end.RESULT_TABLES) + len(front_end.LAP_RESULT_TABLES)
         self.assertEqual(rules["entries"][-len(added) - later:-later], added)
         source = (ROOT / "src" / "core" / "content_pack.cpp").read_text(encoding="utf-8")
         table = source[source.index("front_end_required{{"):]
@@ -191,7 +191,7 @@ class RiderMenuEntryTests(unittest.TestCase):
         expected = [f"front-end.asset.{asset:03d}" for asset in front_end.RIDER_MENU_ASSETS]
         expected += [table[0] for table in front_end.RIDER_MENU_TABLES]
         tour_menu = len(front_end.TOUR_MENU_ASSETS) + len(front_end.TOUR_MENU_TABLES)
-        tour_menu += len(front_end.RESULT_TABLES)
+        tour_menu += len(front_end.RESULT_TABLES) + len(front_end.LAP_RESULT_TABLES)
         added = rules["entries"][-len(expected) - tour_menu:-tour_menu]
         self.assertEqual([e["id"] for e in added], expected)
         source = (ROOT / "src" / "core" / "content_pack.cpp").read_text(encoding="utf-8")
@@ -213,7 +213,7 @@ class TourMenuEntryTests(unittest.TestCase):
         rules = json.loads((ROOT / "tests" / "manifests" / "content" / "classic-crawler-tracks-pack.json").read_text(encoding="utf-8"))
         expected = [f"front-end.asset.{asset:03d}" for asset in front_end.TOUR_MENU_ASSETS]
         expected += [table[0] for table in front_end.TOUR_MENU_TABLES]
-        later = len(front_end.RESULT_TABLES)
+        later = len(front_end.RESULT_TABLES) + len(front_end.LAP_RESULT_TABLES)
         added = rules["entries"][-len(expected) - later:-later]
         self.assertEqual([e["id"] for e in added], expected)
         source = (ROOT / "src" / "core" / "content_pack.cpp").read_text(encoding="utf-8")
@@ -234,10 +234,31 @@ class ResultEntryTests(unittest.TestCase):
         from tools.unirally_lab.content import front_end
         rules = json.loads((ROOT / "tests" / "manifests" / "content" / "classic-crawler-tracks-pack.json").read_text(encoding="utf-8"))
         expected = [table[0] for table in front_end.RESULT_TABLES]
-        added = rules["entries"][-len(expected):]
+        later = len(front_end.LAP_RESULT_TABLES)
+        added = rules["entries"][-len(expected) - later:-later]
         self.assertEqual([e["id"] for e in added], expected)
         source = (ROOT / "src" / "core" / "content_pack.cpp").read_text(encoding="utf-8")
         table = source[source.index("race_result_required{{"):]
+        table = table[:table.index("}};")]
+        compiled = re.findall(r'\{"([^"]+)",\s*(\d+),\s*"([0-9a-f]{64})"\}', table)
+        self.assertEqual(compiled, [(e["id"], str(e["size"]), e["sha256"]) for e in added])
+        for entry in added:
+            self.assertEqual(entry["source"]["kind"], "raw")
+
+
+class LapResultEntryTests(unittest.TestCase):
+    """Profile v19's added entries (R-0058): the lap result screen's text, last in the rules and
+    compiled in the same order."""
+
+    def test_rules_and_compiled_table_agree(self) -> None:
+        import re
+        from tools.unirally_lab.content import front_end
+        rules = json.loads((ROOT / "tests" / "manifests" / "content" / "classic-crawler-tracks-pack.json").read_text(encoding="utf-8"))
+        expected = [table[0] for table in front_end.LAP_RESULT_TABLES]
+        added = rules["entries"][-len(expected):]
+        self.assertEqual([e["id"] for e in added], expected)
+        source = (ROOT / "src" / "core" / "content_pack.cpp").read_text(encoding="utf-8")
+        table = source[source.index("lap_result_required{{"):]
         table = table[:table.index("}};")]
         compiled = re.findall(r'\{"([^"]+)",\s*(\d+),\s*"([0-9a-f]{64})"\}', table)
         self.assertEqual(compiled, [(e["id"], str(e["size"]), e["sha256"]) for e in added])

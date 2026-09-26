@@ -22,8 +22,8 @@ The four classes partition all 131,072 bytes. **Unknown share: 40.4%** - above D
 | Instructions from observed | 17,569 |
 | Instructions from table | 587 |
 | Routines | 636 |
-| Routines cited by native code | 314 |
-| Routine bytes cited by native code | 42,055 |
+| Routines cited by native code | 317 |
+| Routine bytes cited by native code | 42,179 |
 | Gap sweep candidate instructions | 2,746 |
 | Gap sweep candidate bytes | 6,174 |
 | Jump tables | 2 |
@@ -45,7 +45,7 @@ The four classes partition all 131,072 bytes. **Unknown share: 40.4%** - above D
 
 ## Cited addresses
 
-1089 distinct code-bank ROM addresses cited by the research, task, inventory and content records (`labels.json`). By position: dat 16, loc 675, mid 18, sub 263, unk 117 (sub routine start, loc instruction start, mid inside an instruction, dat data, unk unknown). By class: data 16, inferred 117, observed 839, unknown 117.
+1114 distinct code-bank ROM addresses cited by the research, task, inventory and content records (`labels.json`). By position: dat 16, loc 680, mid 18, sub 266, unk 134 (sub routine start, loc instruction start, mid inside an instruction, dat data, unk unknown). By class: data 16, inferred 124, observed 840, unknown 134.
 
 Cited addresses in `unknown` bytes:
 
@@ -70,11 +70,19 @@ Cited addresses in `unknown` bytes:
 | $80:84EB | docs/research/R-0010-native-movement.md, docs/research/R-0045-static-code-map.md |
 | $80:88B2 | tasks/COVERAGE-ROADMAP.md |
 | $80:88BE | docs/research/R-0054-boot-title-main-menu.md |
-| $80:8D6E | docs/research/R-0057-one-run-result.md, tasks/FRONT-END-LAP-RESULT.md, tasks/NEXT_SESSION.md |
-| $80:910F | tasks/FRONT-END-LAP-RESULT.md |
-| $80:918F | tasks/FRONT-END-LAP-RESULT.md |
-| $80:91A1 | tasks/FRONT-END-LAP-RESULT.md |
-| $80:91B9 | tasks/FRONT-END-LAP-RESULT.md |
+| $80:8D6E | docs/research/R-0057-one-run-result.md, docs/research/R-0058-lap-result.md, tasks/FRONT-END-LAP-RESULT.md, tasks/NEXT_SESSION.md |
+| $80:8D70 | docs/research/R-0058-lap-result.md |
+| $80:8DD9 | docs/research/R-0058-lap-result.md |
+| $80:8E0D | docs/research/R-0058-lap-result.md |
+| $80:8F4C | docs/research/R-0058-lap-result.md |
+| $80:8FA8 | docs/research/R-0058-lap-result.md |
+| $80:8FFD | docs/research/R-0058-lap-result.md |
+| $80:9017 | docs/research/R-0058-lap-result.md |
+| $80:90AF | docs/research/R-0058-lap-result.md |
+| $80:910F | docs/research/R-0058-lap-result.md, tasks/FRONT-END-LAP-RESULT.md |
+| $80:918F | docs/research/R-0058-lap-result.md, tasks/FRONT-END-LAP-RESULT.md |
+| $80:91A1 | docs/research/R-0058-lap-result.md, tasks/FRONT-END-LAP-RESULT.md |
+| $80:91B9 | docs/research/R-0058-lap-result.md, tasks/FRONT-END-LAP-RESULT.md |
 | $80:93FB | tasks/COVERAGE-ROADMAP.md |
 | $80:97DD | docs/research/R-0056-tour-track-now-playing.md |
 | $80:9801 | docs/research/R-0056-tour-track-now-playing.md |
@@ -102,6 +110,14 @@ Cited addresses in `unknown` bytes:
 | $80:C81C | docs/research/R-0057-one-run-result.md |
 | $80:C82F | docs/research/R-0057-one-run-result.md |
 | $80:C850 | docs/research/R-0057-one-run-result.md |
+| $80:C868 | docs/research/R-0058-lap-result.md, tasks/FRONT-END-LAP-RESULT.md |
+| $80:C8BA | docs/research/R-0058-lap-result.md |
+| $80:C8C5 | docs/research/R-0058-lap-result.md |
+| $80:C8D0 | docs/research/R-0058-lap-result.md |
+| $80:C8E8 | docs/research/R-0058-lap-result.md |
+| $80:C902 | docs/research/R-0058-lap-result.md |
+| $80:C913 | docs/research/R-0058-lap-result.md |
+| $80:C932 | docs/research/R-0058-lap-result.md |
 | $80:C950 | tasks/LOCKED-TOURS.md |
 | $80:C9D7 | docs/research/R-0057-one-run-result.md |
 | $80:CA74 | docs/research/R-0057-one-run-result.md |
@@ -128,7 +144,7 @@ Cited addresses in `unknown` bytes:
 | $80:EA40 | docs/research/R-0056-tour-track-now-playing.md |
 | $80:EA58 | docs/research/R-0056-tour-track-now-playing.md |
 | $80:EB61 | docs/research/R-0056-tour-track-now-playing.md |
-| $80:F0EE | docs/research/R-0057-one-run-result.md |
+| $80:F0EE | docs/research/R-0057-one-run-result.md, docs/research/R-0058-lap-result.md |
 | $80:F618 | docs/research/R-0054-boot-title-main-menu.md |
 | $80:FACD | docs/research/R-0054-boot-title-main-menu.md |
 | $80:FBC5 | docs/research/R-0054-boot-title-main-menu.md |
@@ -153,10 +169,11 @@ Cited addresses in `unknown` bytes:
 | $83:800C | docs/research/R-0055-rider-menu.md |
 | $83:8535 | docs/research/R-0045-static-code-map.md, tasks/STATIC-CODE-MAP.md |
 | $83:87E9 | docs/research/R-0057-one-run-result.md |
-| $83:8D5D | tasks/FRONT-END-LAP-RESULT.md |
+| $83:88D3 | docs/research/R-0058-lap-result.md |
+| $83:8D5D | docs/research/R-0058-lap-result.md, tasks/FRONT-END-LAP-RESULT.md |
 | $83:8E1C | docs/research/R-0056-tour-track-now-playing.md |
 | $83:8E26 | docs/research/R-0056-tour-track-now-playing.md |
-| $83:904A | docs/research/R-0038-dragster-ordinary-controls.md, tasks/FRONT-END-LAP-RESULT.md |
+| $83:904A | docs/research/R-0038-dragster-ordinary-controls.md, docs/research/R-0058-lap-result.md, tasks/FRONT-END-LAP-RESULT.md |
 | $83:9AF9 | docs/research/R-0055-rider-menu.md |
 | $83:9B01 | docs/research/R-0055-rider-menu.md |
 | $83:9B09 | docs/research/R-0055-rider-menu.md |

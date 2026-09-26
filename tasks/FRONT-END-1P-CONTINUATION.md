@@ -2,9 +2,11 @@
 
 ## Assignment
 
-- Status: **in review**. Claimed 25 September 2026 at 20:53Z (26 September, 06:53 AEST) by the
-  Claude Code desktop session that ran FRONT-END-1P-SETUP, on base `7d92810`. Re-scoped to the
-  one-run race on 25 September (see "Outcome and boundaries").
+- Status: **accepted** (pull request #30, merge commit `075e8f9`, 26 September 2026 at 01:01Z).
+  Claimed 25 September 2026 at 20:53Z (26 September, 06:53 AEST) by the Claude Code desktop
+  session that ran FRONT-END-1P-SETUP, on base `7d92810`. Re-scoped to the one-run race on 25
+  September (see "Outcome and boundaries"). Measured elapsed time, claim to merge: 4 hours 8
+  minutes.
 - Milestone: M4 (original game coverage: menus)
 - Coordinator: the claiming session is coordinator, primary and integrator
 - Task provider (fixed for all children; record any user-initiated platform change): Anthropic
