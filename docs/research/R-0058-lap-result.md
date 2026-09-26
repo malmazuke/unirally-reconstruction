@@ -82,11 +82,18 @@ Frames count from r, the race's last frame; the return, r to r + 104, is R-0057'
     outside the save, in cartridge RAM whose use is not recovered.
   - The opponent's markers show when its best lap is under the word there (`$0C18 &= 0xBB`).
     For BRONSEN on CRAWLER's five tracks those are `$0062-$006B`: 0, 0x1300, 0, 0x9E00, 0. The
-    boot writes them (frames 42-93), and they stay unchanged through the menus and across both
-    races of all three captures. On ZOOM ZOO (0x1300, 0:48.64) all four markers show.
-  - Native keeps those five words, and takes 0 (no markers) elsewhere. That is wrong where the
-    word is not 0: BRONSEN on track 31 reads `$00A0`, which changes during NOW PLAYING; SILVIA
-    on tracks 11-26 reads the name buffer `$00DC-$00FB` (text codes, such as 0x6E6F).
+    boot writes them (frames 42-93). They change during each race's loading and return, but on
+    the menus' frames, where the save is taken, they are the same in all three captures and
+    both races. On ZOOM ZOO (0x1300, 0:48.64) all four markers show.
+  - Native keeps those five words, and takes 0 (no markers) elsewhere. The markers show only when
+    the saved word is above the best lap (in practice at least about 0x0BB8), so a small word
+    changes nothing. Where native is wrong:
+    - BRONSEN on tracks 9, 16, 26 and 39: the words read up to 0x8085, 0x81CD, 0xFFFF and 0x1C00,
+      varying with the menus. The app races BRONSEN there, so its markers can be missing.
+    - SILVIA: text or time codes (the name buffer `$00DC-$00FB` and the time buffers) on nearly
+      every lap track from 9 to 41.
+    - Native is right for BRONSEN on track 31 (`$00A0`, 0 to 0x0103) and for GOLDWYN (0x0100 to
+      0x0600) everywhere.
 
 ## The graph ($80:98B3)
 

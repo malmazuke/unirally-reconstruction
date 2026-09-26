@@ -67,7 +67,7 @@ R-0058 and `local/evidence/front-end-lap-result/` (`NOTES.md`, `decode/lap-resul
 | Pictures and state | `lap-won`, `lap-lost`, `lap-record` and `lap-record-frames`: the native races return on the original's frames (6725, 7659, 13416); no difference in the menus' words, OAM buffer or text map on any frame from r + 101 to the end; 4,104 pictures equal |
 | Records | `sram.py`: the kept cartridge RAM words equal the original's at lap-won 7610 and 8399 and lap-lost 8610 and 9399 |
 | Playable | Every race the app starts (MIKE against BRONSEN, not a stunt event) comes back to the menus. The runner's comparisons cover the lap race; the app cannot replay a driven lap race (its race input is a fixed mask), so its hidden runs cover the one-run hand-over and the shared code |
-| Nothing moves | The gates (below) |
+| Nothing moves | Gates on `003a7b3` (`gates-003a7b3.out`; the head after it changes only records): three presets build, ctest 26 of 26; the synthetic suite; both v1 contracts; the hidden runs, and cont-win's and cont-loss's pads through the app; the eleven differential gates (the same rows digests); the equivalence sweep, 351 runs with 0 differences; both recompares identical; the main menu's, the one-player screens', the one-run and the lap results' comparisons all equal; the records equal; 0 functions over 80 lines; the address index current |
 
 Quit and restart: a known difference, not done here. The original's restart goes back to NOW
 PLAYING and its quit is scored (R-0058 "Not recovered"); the native race's pause menu restarts
@@ -79,6 +79,7 @@ inside the race and has no quit. Queued as [RACE-PAUSE-EXITS](RACE-PAUSE-EXITS.m
   `lap-won`.
 - The race's loading varies by a frame (R-0039): the laboratory's `compare.py` aligns each native
   race to the capture's own initialization (`--race-initialization`).
-- Next: [FRONT-END-TOUR-END](FRONT-END-TOUR-END.md). Its first captures (`forced-bronze`,
+- Next: [FRONT-END-TOUR-END](FRONT-END-TOUR-END.md), then [RACE-PAUSE-EXITS](RACE-PAUSE-EXITS.md)
+  (the race's pause menu in one-player play, a known difference). Its first captures (`forced-bronze`,
   `forced-bronze-long`) and a decode of the completion, the award screen and PICK TOUR's return
   are ready in `local/evidence/front-end-tour-end/`.
