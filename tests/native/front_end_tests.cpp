@@ -1289,7 +1289,8 @@ void hunter_wait_tests() {
   for (unsigned frame = 26; frame <= 102; ++frame)
     require(arrow_moves());
   for (unsigned pass = 1; pass < 1201; ++pass)
-    require(!arrow_moves({0, 0x1000}) && state.hunter.part == Part::second_page);
+    require(!arrow_moves({0, 0x1000}) &&
+            state.hunter.part == Part::second_page);
   require(!arrow_moves() && state.hunter.part == Part::credits);
   run(state, content, 61);
   require(!state.registers.force_blank && state.registers.brightness == 15);
@@ -1327,11 +1328,12 @@ std::uint32_t run_to_soft_reset(unirally::FrontEndState &state,
 }
 
 // HUNTER-ENDING: the soft reset runs the boot again from its frame J: power-on
-// frame f on J + f, but J + f + 3 for 97 <= f <= 403 (the sound program's
-// upload ends later) and J + f again from 407 (no records' wipe). The records
+// frame f on J + f, but J + f + d for 97 <= f <= 403, where the sound
+// program's upload ends d frames later (3 by default; a laboratory run takes it
+// from its capture), and J + f + d - 3 from 407 (no records' wipe). The records
 // are kept, and the one-player flag until the boot's frame 403, so the menu's
 // arrow takes rider 0's colours (asset 6) instead of asset 2.
-void soft_reset_tests() {
+void soft_reset_tests(std::uint32_t delay) {
   using unirally::FrontEndScreen;
   std::vector<std::vector<std::uint8_t>> storage;
   auto content = synthetic_content(storage);
@@ -1339,6 +1341,8 @@ void soft_reset_tests() {
   content.assets[6] = storage.back();
   auto reset = hunter_completion(content, false);
   const auto j = run_to_soft_reset(reset, content);
+  require(reset.reset_upload_delay == 3);
+  reset.reset_upload_delay = delay;
   auto power_on = unirally::start_front_end();
   run(power_on, content, 1); // both after their frame 0
   const auto same = [&] {
@@ -1351,14 +1355,17 @@ void soft_reset_tests() {
   };
   for (std::uint32_t f = 1; f <= 440; ++f) {
     run(power_on, content, 1);
-    const std::uint32_t late = f >= 97 && f <= 403 ? 3 : 0;
-    while (reset.frame <= j + f + late)
+    const std::uint32_t at = f < 97     ? j + f
+                             : f <= 403 ? j + f + delay
+                                        : j + f + delay - 3;
+    while (reset.frame <= at)
       run(reset, content, 1);
     if (f >= 404 && f <= 406)
       continue; // power-on's records' wipe
     require(same());
     if (f == 104)
-      require(reset.frame - 1 == j + 107 && reset.registers.brightness == 2);
+      require(reset.frame - 1 == j + 104 + delay &&
+              reset.registers.brightness == 2);
     if (f == 377) // $80:D20E's object colours
       require(reset.one_player && reset.video.cgram[0xf0 * 2] == 0x11 &&
               power_on.video.cgram[0xf0 * 2] == 0);
@@ -1368,16 +1375,17 @@ void soft_reset_tests() {
           reset.records.pending_reveal == 0);
 }
 
-// The title code (`$80:F5C0`): Up, Left, Up, Start and A on pad 1 during the
+// The title code (`$80:F5C0`): Up, Left, Up, R and A on pad 1 during the
 // title's 111 frames, other words between them ignored, opens every tour and
-// sets the flag; HUNTER's ending then shows the CHEAT! page, and the next
-// boot's title puts the levels back and clears the flag.
+// sets the flag, which a cold start's records' wipe then undoes (boot frame
+// 403); after a soft reset it stays: HUNTER's ending then shows the CHEAT!
+// page, and the next boot's title puts the levels back and clears the flag.
 void title_code_tests() {
   std::vector<std::vector<std::uint8_t>> storage;
   const auto content = synthetic_content(storage);
   auto state = unirally::start_front_end();
   run(state, content, 260);
-  for (const unsigned word : {0x0800U, 0x0400U, 0x0200U, 0x0800U, 0x1000U}) {
+  for (const unsigned word : {0x0800U, 0x0400U, 0x0200U, 0x0800U, 0x0010U}) {
     run(state, content, 3, {static_cast<std::uint16_t>(word), 0});
     run(state, content, 1);
   }
@@ -1385,13 +1393,17 @@ void title_code_tests() {
   run(state, content, 1, {0x0080, 0});
   require(state.records.cheat && state.records.tour_levels[5] == 3 &&
           state.records.levels_before_cheat[5] == 0);
+  run(state, content, 403 - 281); // to boot frame 402
+  require(state.records.cheat);
+  run(state, content, 1);
+  require(!state.records.cheat && state.records.tour_levels[5] == 0);
   auto ending = hunter_completion(content, true);
   ending.records.levels_before_cheat.fill(1);
   run(ending, content, 102);
   run(ending, content, 1, {0x1000, 0}); // the CHEAT! page's timed wait
   run(ending, content, 70);
   run(ending, content, 1, {0x1000, 0}); // the credits
-  run(ending, content, 16); // to the reset's frame J
+  run(ending, content, 16);             // to the reset's frame J
   run(ending, content, 230);
   require(ending.records.cheat && ending.records.tour_levels[0] == 3);
   run(ending, content, 1); // the title's load, boot frame 228 at J + 231
@@ -1444,7 +1456,8 @@ int main() try {
   ending_tests();
   hunter_reveal_tests();
   hunter_wait_tests();
-  soft_reset_tests();
+  soft_reset_tests(3);
+  soft_reset_tests(2);
   title_code_tests();
   code_route_tests();
   return 0;

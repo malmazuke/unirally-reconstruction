@@ -193,17 +193,18 @@ constexpr std::array<FrameWaits, 5> boot_frame_waits{{
     {407, 0},   // $80:ACD5 and the main menu, every frame from here
 }};
 
-// The boot's frame: the frames since power-on, or since a soft reset, after which the sound
-// program's upload ends three frames later: power-on frames 97-403 come three frames late, and the
-// records' wipe (404-406), which the reset does not need, is skipped (HUNTER-ENDING). Empty on
-// the three frames the upload adds.
+// The boot's frame: the frames since power-on, or since a soft reset. After a reset the sound
+// program's upload (`$80:A09A`) ends `reset_upload_delay` frames later than at power-on, so the
+// boot's frames 97-403 come that much later; the records' wipe (404-406), which the reset does not
+// need, is skipped (HUNTER-ENDING). Empty on the frames the upload adds.
 std::optional<std::uint32_t> boot_frame_number(const FrontEndState& state) {
-    constexpr std::uint32_t reset_delay = 3;
+    constexpr std::uint32_t wipe_frames = 3;
+    const auto delay = state.reset_upload_delay;
     const auto frame = state.frame - state.boot_start;
     if (!state.after_soft_reset || frame < nintendo_registers_frame) return frame;
-    if (frame < nintendo_registers_frame + reset_delay) return std::nullopt;
-    if (frame <= menu_map_filled_frame + reset_delay) return frame - reset_delay;
-    return frame;
+    if (frame < nintendo_registers_frame + delay) return std::nullopt;
+    if (frame <= menu_map_filled_frame + delay) return frame - delay;
+    return frame - delay + wipe_frames;
 }
 
 bool waits_for_frame(const FrontEndState& state) {
@@ -235,12 +236,12 @@ bool waits_for_frame(const FrontEndState& state) {
 }
 
 // $80:F5C0-F612, a pass of the title's 111: pad 1's word matching the code's next word
-// (`$80:F618`: Up, Left, Up, Start, A) moves the code on, and any other word leaves it where it
-// is. The fifth saves the levels, opens every tour (level 3) and sets the flag `$77:10D0`, then
-// calls `$80:B124`, which is not read. The word after the code (`$80:F622`'s code bytes) has bit
-// 1 set, which no pad gives.
+// (`$80:F618`: Up, Left, Up, R, A) moves the code on, and any other word leaves it where it is.
+// The fifth saves the levels, opens every tour (level 3) and sets the flag `$77:10D0`, then calls
+// `$80:B124`, which is not read. The word after the code (`$80:F622`'s code bytes) has bit 1 set,
+// which no pad gives. On a cold start the records' wipe (boot frame 403) undoes it all.
 void check_title_code(FrontEndState& state, std::uint16_t pad) {
-    constexpr std::array<std::uint16_t, 5> title_code{pad_up, pad_left, pad_up, pad_start, pad_a};
+    constexpr std::array<std::uint16_t, 5> title_code{pad_up, pad_left, pad_up, pad_r, pad_a};
     auto& step = state.title_code_step;
     if (step >= title_code.size() || pad != title_code[step]) return;
     if (++step < title_code.size()) return;
@@ -248,6 +249,16 @@ void check_title_code(FrontEndState& state, std::uint16_t pad) {
     records.levels_before_cheat = records.tour_levels;
     records.tour_levels.fill(3);
     records.cheat = true;
+}
+
+// $80:8C4E (boot frame 403): cartridge RAM that does not start with the signature `$83:8000` is
+// wiped to a cold start's records (`$83:FB41`, frames 403-405). Native's power-on has no records
+// of its own, so it always wipes; after a soft reset the signature is there. Then `$83:8B23`
+// clears the one-player flag `$77:10AD` and the pending reveal.
+void check_records(FrontEndState& state) {
+    if (!state.after_soft_reset) state.records = cold_start_records();
+    state.one_player = false;
+    state.records.pending_reveal = 0;
 }
 
 // The boot's scripted work for one frame, after the NMI and the frame wait.
@@ -284,10 +295,7 @@ void boot_frame(FrontEndState& state, const FrontEndContent& content, FrontEndPa
         lay_out_menu_objects(state);
     } else if (f == menu_map_filled_frame) {
         copy_oam(state); // $80:D372
-        // $83:8B23: the one-player flag `$77:10AD` and the pending reveal cleared (after a soft
-        // reset; at power-on they are clear already).
-        state.one_player = false;
-        state.records.pending_reveal = 0;
+        check_records(state);
     } else if (f == menu_map_copy_frame) {
         copy_menu_text(state, content);
     } else if (f == menu_palette_frame || f == menu_palette_again_frame) {

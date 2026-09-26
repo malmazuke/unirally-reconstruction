@@ -57,8 +57,8 @@ inline constexpr std::size_t pair_tiles = 0x00, cycle_tiles = 0x08, left_sway = 
 // counts Select where `$80:B794` tests it. Choose is B, Start or A (`$80:B71D`); back is Y or X
 // (`$80:B74A`).
 inline constexpr std::uint16_t pad_up = 0x0800, pad_down = 0x0400, pad_left = 0x0200,
-                               pad_right = 0x0100, pad_select = 0x2000, pad_start = 0x1000,
-                               pad_a = 0x0080;
+                               pad_right = 0x0100, pad_select = 0x2000, pad_a = 0x0080,
+                               pad_r = 0x0010;
 inline constexpr std::uint16_t choose_buttons = 0x9080, back_buttons = 0x4040;
 
 // The `n`th 0xFF-terminated string of `table`, without its 0xFF.

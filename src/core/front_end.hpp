@@ -339,9 +339,13 @@ struct SavedMenus {
 struct FrontEndState {
     std::uint32_t frame{}; // frames since power-on; the next update is this frame
     // The boot's first frame: 0, or the frame of the last soft reset (`JML $80:8858`), after
-    // which the boot's frames from 97 come three frames later (HUNTER-ENDING).
+    // which the sound program's upload ends later than at power-on, and the boot's frames 97-403
+    // with it (HUNTER-ENDING): 3 frames after the captures' first resets, 2 after a second. The
+    // delay depends on the sound processor's state, which native does not model; a laboratory
+    // run takes it from the capture, as it takes a race's initialization frame.
     std::uint32_t boot_start{};
     bool after_soft_reset{};
+    std::uint32_t reset_upload_delay{3};
     std::uint8_t title_code_step{}; // the title code's words matched so far (`$80:F5C0`)
     FrontEndScreen screen{};
     std::uint32_t script_frame{}; // frames since the current script began

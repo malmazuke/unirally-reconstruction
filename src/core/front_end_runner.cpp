@@ -2,6 +2,7 @@
 //
 // usage: front_end_runner --content-pack PACK --frames N [--inputs FILE] [--picture FRAME OUT.ppm]...
 //                         [--records FRAME OUT.bin]... [--race-initialization FRAME]...
+//                         [--reset-upload-delay FRAMES]...
 //
 // FILE rows are "frame pad1 pad2" (hex controller words, as `$4218`/`$421A` read them); a frame
 // without a row has both pads released. Each frame prints one line: the frame, the arrow (spin,
@@ -37,6 +38,9 @@ struct Options {
     // The original's race initialization frames, in race order, from a capture: the loading time
     // varies by a frame with the sound program's handshake (R-0039, R-0058).
     std::vector<std::uint32_t> race_initializations;
+    // After each soft reset in turn, how much later the sound program's upload ends than at
+    // power-on (HUNTER-ENDING); native's own is 3.
+    std::vector<std::uint32_t> reset_upload_delays;
 };
 
 Options parse_options(int argc, char** argv) {
@@ -59,6 +63,8 @@ Options parse_options(int argc, char** argv) {
             options.pictures[frame] = value();
         } else if (option == "--race-initialization") {
             options.race_initializations.push_back(static_cast<std::uint32_t>(std::stoul(value())));
+        } else if (option == "--reset-upload-delay") {
+            options.reset_upload_delays.push_back(static_cast<std::uint32_t>(std::stoul(value())));
         } else if (option == "--records") {
             const auto frame = static_cast<std::uint32_t>(std::stoul(value()));
             options.records[frame] = value();
@@ -69,7 +75,8 @@ Options parse_options(int argc, char** argv) {
         throw std::invalid_argument("usage: front_end_runner --content-pack PACK --frames N "
                                     "[--inputs FILE] [--picture FRAME OUT.ppm]... "
                                     "[--records FRAME OUT.bin]... "
-                                    "[--race-initialization FRAME]...");
+                                    "[--race-initialization FRAME]... "
+                                    "[--reset-upload-delay FRAMES]...");
     return options;
 }
 
@@ -243,7 +250,7 @@ int main(int argc, char** argv) try {
     const auto inputs = read_inputs(options.inputs);
     auto state = unirally::start_front_end();
     RaceBetweenMenus race;
-    std::size_t races = 0;
+    std::size_t races = 0, resets = 0;
     for (std::uint32_t frame = 0; frame < options.frames; ++frame) {
         const auto row = inputs.find(frame);
         const auto pads = row == inputs.end() ? unirally::FrontEndPads{} : row->second;
@@ -273,6 +280,10 @@ int main(int argc, char** argv) try {
             break;
         } else {
             unirally::update_front_end(state, content, pads);
+            const bool reset = state.after_soft_reset && state.boot_start + 1 == state.frame;
+            if (reset && resets < options.reset_upload_delays.size())
+                state.reset_upload_delay = options.reset_upload_delays[resets];
+            if (reset) ++resets;
         }
         print_state(frame, state);
         if (const auto picture = options.pictures.find(frame); picture != options.pictures.end())

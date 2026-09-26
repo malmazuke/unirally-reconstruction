@@ -328,6 +328,7 @@ void credits_frame(FrontEndState& state, const FrontEndContent& content, FrontEn
 // counts as the ending's frame 0. From the main menu `$77:0742` bits 9 and 10 are clear, so the
 // ending's pad test reads pad 2 too.
 void enter_hunter_code(FrontEndState& state) {
+    state.decorations.delay = static_cast<std::uint8_t>(state.menu.idle); // the shared $0089
     state.logo.raised = true;
     send_arrow_off(state);
     state.screen = FrontEndScreen::hunter_code;
