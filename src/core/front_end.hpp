@@ -145,6 +145,9 @@ struct OnePlayerRecords {
     std::uint16_t opponent_wins{}; // $77:10AB: a rider opponent's wins
     bool race_lost{};              // $77:0742 bit 12: the last race was lost
     std::uint16_t tries{};         // $77:1073: 3, one less after a loss; nothing reads it (R-0057)
+    // $77:10FD: the level PICK TOUR is still to reveal, which the unlock rule writes whenever a
+    // count matches; PICK TOUR first draws the level below it (R-0062).
+    std::uint8_t pending_reveal{};
     // $77:1116: bit r once rider r's tutorial hints have ended in a race ($83:CE2C); a race
     // starts its hints only without its rider's bit ($82:D94C, R-0061).
     std::uint16_t tutorial_bits{};
@@ -161,6 +164,7 @@ struct TourMenu {
     bool back{};           // left with Y or X
     bool returning{};      // entered back from PICK TRACK, from `$80:E550`: no first loads
     bool slides_back{};    // slides back in ($00AC != 2 on `$80:E550`'s path)
+    bool revealing{};      // after the slide, the new tours are being shown (R-0062)
 };
 
 // A race's times as the race engine hands them back when its result load begins (R-0057): the

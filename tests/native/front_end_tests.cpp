@@ -973,10 +973,15 @@ void award_tests() {
   require(state.award.exit_frame == 0);
   run(state, content, 3, {0x1000, 0});
   require(run_to(state, content, FrontEndScreen::tour_menu_entry, {}, 140));
+  // Level 1 is pending (R-0062): PICK TOUR is drawn at level 0, then reveals
+  // level 1 after its slide, four frames later than without a reveal.
   require(state.cycle.running && state.registers.mode == 3 &&
-          state.tour_menu.returning && state.records.tour_levels[0] == 1);
+          state.tour_menu.returning && state.records.tour_levels[0] == 0 &&
+          state.records.pending_reveal == 1);
   // PICK TOUR's Y leads on to PICK TRACK, after `$80:A858`'s two frames.
   require(run_to(state, content, FrontEndScreen::tour_menu, {}, 60));
+  require(state.records.tour_levels[0] == 1 && state.records.pending_reveal == 0 &&
+          !state.tour_menu.revealing);
   run(state, content, 1);
   require(run_to(state, content, FrontEndScreen::award_return, {0x4000, 0}));
   run(state, content, 2);
@@ -1028,27 +1033,33 @@ void award_tests() {
   run(forward, content, 2);
   require(forward.screen == FrontEndScreen::track_menu_entry &&
           forward.track_menu.returning);
+  // The level a completion leaves: the pending reveal when a count matched
+  // (PICK TOUR shows the level below it until its slide ends; R-0062).
+  const auto revealed = [](const unirally::FrontEndState &state) {
+    return state.records.pending_reveal ? state.records.pending_reveal
+                                        : state.records.tour_levels[0];
+  };
   // Gold: CRAWLER's ending, then PICK TOUR; the level from the exact counts.
   // All eight gold is level 3.
   auto gold = complete({2, 3, 3, 3, 3, 3, 3, 3}, false, 2);
-  require(gold.records.medals[0] == 3 && gold.records.tour_levels[0] == 3 &&
+  require(gold.records.medals[0] == 3 && revealed(gold) == 3 &&
           gold.registers.mode == 3);
   // Already gold: the medal stays 3.
   auto again = complete({3, 0, 0, 0, 0, 0, 0, 0}, false, 0);
-  require(again.records.medals[0] == 3 && again.records.tour_levels[0] == 0);
+  require(again.records.medals[0] == 3 && revealed(again) == 0);
   // Six at silver or better is level 2; five at bronze is no level (the
   // counts must be exact); a level of 3 never changes.
   auto silver = complete({1, 2, 2, 2, 2, 2, 0, 0}, false, 1);
-  require(silver.records.medals[0] == 2 && silver.records.tour_levels[0] == 2);
+  require(silver.records.medals[0] == 2 && revealed(silver) == 2);
   auto five = complete({0, 1, 1, 1, 1, 0, 0, 0}, false, 0);
-  require(five.records.medals[0] == 1 && five.records.tour_levels[0] == 0);
+  require(five.records.medals[0] == 1 && revealed(five) == 0);
   auto top = complete({0, 1, 1, 1, 0, 0, 0, 0}, false, 3);
-  require(top.records.tour_levels[0] == 3);
+  require(revealed(top) == 3);
   // HUNTER's medal (tour 8, 2 from the cold start) is not counted: three
   // bronze and this one make four, level 1.
   auto hunter = complete({0, 1, 1, 1, 0, 0, 0, 0}, false, 0);
   require(hunter.records.medals[8 * 16] == 2 &&
-          hunter.records.tour_levels[0] == 1);
+          revealed(hunter) == 1);
 }
 
 } // namespace

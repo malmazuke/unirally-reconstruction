@@ -227,15 +227,18 @@ void apply_unlock_rule(FrontEndState& state) {
         bronze += medal >= 1 ? 1 : 0;
         silver += medal >= 2 ? 1 : 0;
     }
-    // The original also writes the level to `$77:10FD`, the pending reveal, whenever a count
-    // matches, even if the level is unchanged: PICK TOUR then draws the tours of level - 1, slides,
-    // and shows the others four frames later. Native shows the level at once (R-0059).
+    // Whenever a count matches, even with the level unchanged, the level is also the pending
+    // reveal `$77:10FD`: PICK TOUR then draws the tours of the level below, slides, and shows the
+    // others four frames later (R-0062).
     if (sum == 24)
         level = 3;
     else if (silver == 6)
         level = 2;
     else if (bronze == 4)
         level = 1;
+    else
+        return;
+    records.pending_reveal = level;
 }
 
 } // namespace
