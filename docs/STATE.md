@@ -9,7 +9,8 @@ as the original does.**
 - Against captures of the original (a bronze and a silver award, and PICK TOUR's exits), every
   frame matches: 0 differing pixels in 4,161 pictures, and equal menu state, OAM buffer
   and text map ([R-0059](research/R-0059-tour-completion.md)). The SNES screen now draws mode 2.
-- Not yet: the gold medal's endings and the reveal of newly opened tours.
+- Not yet: the gold medal's endings and the reveal of newly opened tours
+  ([FRONT-END-ENDINGS](../tasks/FRONT-END-ENDINGS.md)).
 - Pack profile **v20** adds the award's content (`content pack --rules
   tests/manifests/content/classic-crawler-tracks-pack.json --out
   local/classic-pal-crawler-tracks-v20.pack`).

@@ -5,6 +5,12 @@ push the task branch, open a pull request from the template, merge with
 `gh pr merge --merge` once its checks are green and the review is done. `main`
 refuses direct pushes. The checks run on pull requests only.
 
+**Status on 26 September 2026 UTC (FRONT-END-TOUR-END): start
+[RACE-PAUSE-EXITS](RACE-PAUSE-EXITS.md).** A tour's completion shows the medal award and comes back
+to PICK TOUR and PICK TRACK, frame-exact (R-0059). Still to do on the tour's end: the gold medal's
+endings and the reveal of newly opened tours (R-0059 "Not recovered"). Rebuild the pack as v20
+(`docs/STATE.md`).
+
 **Status on 26 September 2026 UTC (FRONT-END-LAP-RESULT): start
 [FRONT-END-TOUR-END](FRONT-END-TOUR-END.md), then [RACE-PAUSE-EXITS](RACE-PAUSE-EXITS.md).** After
 every race the app starts (MIKE against BRONSEN, not the stunt event) the menus take over, frame-exact, and the records match the original's cartridge RAM (R-0057, R-0058).

@@ -2,9 +2,9 @@
 
 ## Assignment
 
-- Status: **in progress**. Queued 25 September 2026 (UTC) by FRONT-END-1P-CONTINUATION; claimed
+- Status: **in review**. Queued 25 September 2026 (UTC) by FRONT-END-1P-CONTINUATION; claimed
   26 September 2026 at 02:10Z by the same Claude Code desktop session, on FRONT-END-LAP-RESULT's
-  head `003a7b3` (pull request #31, to be rebased onto `main` once it merges).
+  head `003a7b3` (pull request #31), rebased onto `main` `d39e444` after it merged.
 - Milestone: M4 (original game coverage: menus)
 - Coordinator: the claiming session is coordinator, primary and integrator
 - Task provider (fixed for all children; record any user-initiated platform change): Anthropic
@@ -46,6 +46,11 @@ Native refuses a fifth done track today (`score_race`). Make it do what the orig
 
 Out of scope: the stunt events (STUNT-EVENTS); the endings' music (audio).
 
+**Re-scoped (26 September 2026).** This task delivers the completion itself, the bronze and
+silver award screens, the restore, the unlock rule and the way back to PICK TOUR and PICK TRACK.
+The gold medal's endings and the reveal of new tours move to
+[FRONT-END-ENDINGS](FRONT-END-ENDINGS.md).
+
 ## Acceptance
 
 | Criterion | Command or experiment | Expected result | Required artifact |
@@ -72,10 +77,8 @@ opened tours (native shows the new level at once).
 
 ## Handoff
 
-
-- Native scores a forced completion as an ordinary race today, silently.
-- Exact next experiment/command: `cont-win`'s inputs (`local/evidence/front-end-1p-continuation`).
-  Pad 1 holds exactly Select + X + R from 3799 through at least 3805: the test reads `$72` after
-  `$83:879A`'s frame wait, at q + 2 or q + 3 (3803-3804). Confirm `$72` = 0x2050 on the scoring
-  frame in the capture. Capture with work RAM every frame to the award screen and PICK TOUR's
-  reveal.
+- Findings: R-0059 and `decode/tour-end.md` (its section 5 outlines the endings).
+- Next: [RACE-PAUSE-EXITS](RACE-PAUSE-EXITS.md), then [FRONT-END-ENDINGS](FRONT-END-ENDINGS.md).
+- The race scenarios are MIKE's against BRONSEN: after a bronze, PICK TOUR's choice makes the
+  medal raced for bronze, so the next race is SILVIA's unless the medal line steps it back
+  (`forced-silver` against `forced-silver-bronsen`).
