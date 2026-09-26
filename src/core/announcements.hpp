@@ -42,12 +42,18 @@ inline constexpr std::uint8_t effect_over = 35;
 inline constexpr std::uint8_t first_hint = 40;
 inline constexpr unsigned hints_per_group = 4;
 
-// 72 and up: rider voices ("rockin", "righteous", ...), sixteen per character pair. The
-// player's are 72-87, BRONSEN's (character 17) 200-215 and the HUNTER opponent's
-// (character 20) 232-247.
+// 72 and up: rider voices ("rockin", "righteous", ...), sixteen per character pair
+// ($82:9D47-9D5E). The riders' (characters 0-15) are 72-199; the computer opponents' are
+// 200-247: BRONSEN's (17) 200-215, SILVIA's and GOLDWYN's (18 and 19, one pair) 216-231 and
+// ANTI-UNI's (20) 232-247.
 inline constexpr std::uint8_t first_voice = 72;
+// A queue found dry waits this many cooldown units (two an update) before looking again.
+inline constexpr std::uint16_t empty_queue_wait = 10;
 inline constexpr unsigned voices_per_character_pair = 16;
-inline constexpr std::uint8_t bronsen_first_voice = 200, bronsen_last_voice = 215;
-inline constexpr std::uint8_t hunter_first_voice = 232, hunter_last_voice = 247;
+inline constexpr std::uint8_t first_opponent_voice = 200, last_opponent_voice = 247;
+// The first of `character`'s sixteen voices.
+constexpr unsigned first_voice_of(unsigned character) {
+    return first_voice + (character >> 1U) * voices_per_character_pair;
+}
 
 } // namespace unirally::announcement

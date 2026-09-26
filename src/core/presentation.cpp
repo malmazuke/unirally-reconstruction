@@ -24,10 +24,47 @@ namespace unirally {
 
 namespace {
 
-// The caption and HUD (BG3) ink is CGRAM colour 22; where a rider covers it the original adds
-// 13 to the sprite's red (draw_race_riders, R-0042).
-constexpr std::uint8_t bg3_ink_colour = 22;
+// The caption and HUD (BG3) ink is CGRAM colour 27 through the rider's colour math (race_ink):
+// MIKE's (28,0,0) is also CGRAM 22's. Where a rider covers it the original adds colour 27's 13
+// to the sprite's red (draw_race_riders, R-0042).
+constexpr std::uint8_t bg3_ink_colour = 27;
 constexpr unsigned ink_red_add = 13;
+// OBJ palettes 3 and 4 in CGRAM bytes: the player's and the opponent's sprite colours.
+constexpr std::size_t rider_palette_at = 352, opponent_palette_at = 384, sprite_palette_size = 32;
+// $82:D4DC: four bytes a rider.
+constexpr std::size_t colour_math_size = 4;
+
+// A character's sprite palette: the front end's asset 6 + character, the bytes the race
+// loader copies ($82:DD90-DDBC).
+std::span<const std::uint8_t> character_palette(const ClassicContentPack& pack,
+                                                unsigned character) {
+    const auto asset = 6U + character;
+    const std::string name = "front-end.asset.0" + std::string(1, char('0' + asset / 10U))
+                           + std::string(1, char('0' + asset % 10U));
+    return pack.entry(name);
+}
+
+} // namespace
+
+std::uint16_t classic_race_ink(std::uint16_t ink, std::span<const std::uint8_t> colour_math) {
+    if (colour_math.size() != colour_math_size)
+        throw std::invalid_argument("the rider's colour math is missing (pack v21)");
+    std::array<unsigned, 3> fixed{};
+    for (std::size_t write = 0; write < 3; ++write)
+        for (unsigned channel = 0; channel < 3; ++channel)
+            if (colour_math[write] & (0x20U << channel)) fixed[channel] = colour_math[write] & 31U;
+    const bool subtract = (colour_math[3] & 0x80U) != 0;
+    unsigned word = 0;
+    for (unsigned channel = 0; channel < 3; ++channel) {
+        const auto base = (unsigned(ink) >> (5U * channel)) & 31U;
+        const auto value = subtract ? (base > fixed[channel] ? base - fixed[channel] : 0U)
+                                    : std::min(31U, base + fixed[channel]);
+        word |= value << (5U * channel);
+    }
+    return static_cast<std::uint16_t>(word);
+}
+
+namespace {
 
 // The decoded track a race runs on: the engine's own entry.
 std::span<const std::uint8_t> classic_track_data(const ClassicContentPack& pack,
@@ -113,9 +150,23 @@ void ClassicRaceHistoryTracker::observe_update(const ZoomZooState& previous,
 
 ClassicRacePresentationContent classic_race_presentation_content(const ClassicContentPack& pack,
                                                                  ClassicRaceTrack track) {
+    return classic_race_presentation_content(pack, classic_race_scenario(track));
+}
+
+ClassicRacePresentationContent
+classic_race_presentation_content(const ClassicContentPack& pack,
+                                  const ClassicRaceScenario& scenario) {
+    const auto track = scenario.track;
     ClassicRacePresentationContent content;
-    content.scenario = classic_race_scenario(track);
+    content.scenario = scenario;
     content.riders = rider_object_content(pack);
+    content.rider_palette = character_palette(pack, scenario.pairing.rider);
+    content.opponent_palette = character_palette(pack, scenario.pairing.opponent);
+    const auto colour_math = pack.entry("race.rider-colour-math");
+    if (colour_math.size() < colour_math_size * rider_characters)
+        throw std::invalid_argument("the riders' colour math table is short");
+    content.rider_colour_math =
+        colour_math.subspan(colour_math_size * scenario.pairing.rider, colour_math_size);
     // One ROM table serves both tracks (R-0037); its accepted entry name
     // predates DRAGSTER reading it and cannot be renamed.
     content.race_palette_cycle = pack.entry("presentation.zoom.race-palette-cycle.v1");
@@ -137,9 +188,6 @@ ClassicRacePresentationContent classic_race_presentation_content(const ClassicCo
         const auto name =
             std::string("scenery.") + char('0' + scenery / 10U) + char('0' + scenery % 10U) + '.';
         content.track_name = classic_track_name(pack, track);
-        if (content.scenario.hunter_tour)
-            content.hunter_opponent_palette =
-                pack.entry("presentation.classic.hunter-opponent-palette.v1");
         content.bg1_tiles = pack.entry(classic_track_entry(track, "bg1-tiles"));
         content.bg2_tiles = pack.entry(name + "bg2-tiles");
         content.bg2_map = pack.entry(name + "bg2-map");
@@ -256,16 +304,18 @@ std::array<std::uint8_t, 65536> race_vram(const ClassicRacePresentationContent& 
 
 // The race's CGRAM at `brightness` (0-15). Colours 96-111 and 0 are cycled by the race NMI
 // from ROM tables every frame (R-0037); neither track keys them to rider poses here.
-// $82:DDB0-DDBC: OBJ palette 4 is the opponent character's (asset 6 + $77:0749); the
-// scenery palette carries the other tours' (R-0052). The PPU scales each 5-bit channel
+// $82:DD90-DDBC: OBJ palettes 3 and 4 are the riders' (asset 6 + $77:0748 and + $77:0749); the
+// scenery palettes carry MIKE's and BRONSEN's (R-0052, R-0061). The PPU scales each 5-bit channel
 // before output conversion (bsnes lightTable: luma*c+0.5), so the fade applies to CGRAM
 // words, as in the DRAGSTER result fade.
 auto race_cgram(const ZoomZooState& state, const ClassicRacePresentationContent& content,
                 unsigned brightness) {
     auto cgram = build_race_cgram(content.palette, false);
-    if (content.hunter_opponent_palette.size() == 32)
-        std::copy(content.hunter_opponent_palette.begin(), content.hunter_opponent_palette.end(),
-                  cgram.begin() + 384);
+    for (const auto& [palette, at] : {std::pair{content.rider_palette, rider_palette_at},
+                                      std::pair{content.opponent_palette, opponent_palette_at}})
+        if (palette.size() == sprite_palette_size)
+            std::copy(palette.begin(), palette.end(),
+                      cgram.begin() + static_cast<std::ptrdiff_t>(at));
     apply_classic_race_palette_cycle(cgram, content.race_palette_cycle, state,
                                      content.scenario.initialization_frame + 6U);
     if (brightness < 15U) {
@@ -476,6 +526,14 @@ RgbFrame render_classic_race(const ZoomZooState& state,
     const unsigned prior_fade = classic_race_prior_fade(state, previous_update, scenario);
     const auto brightness = prior_fade > 15U ? prior_fade - 15U : 0U;
     const auto cgram = race_cgram(state, content, brightness);
+    // The PPU fades the colour math's result: the ink is CGRAM 27 through the rider's colour
+    // math, then faded like CGRAM.
+    auto ink_word = classic_race_ink(
+        static_cast<std::uint16_t>(content.palette[2U * bg3_ink_colour]
+                                   | (unsigned(content.palette[2U * bg3_ink_colour + 1U]) << 8U)),
+        content.rider_colour_math);
+    if (brightness < 15U) ink_word = apply_snes_brightness(ink_word, brightness);
+    const auto bg3_ink = colour_word_rgb(ink_word);
     // Authored UI has no CGRAM entry; fade it through the same 1.5 output curve.
     const auto ui_scale = std::pow(brightness / 15.0, 1.5);
     const auto ui = [ui_scale](std::array<std::uint8_t, 3> rgb) {
@@ -503,11 +561,11 @@ RgbFrame render_classic_race(const ZoomZooState& state,
     // ink it is the flat colour, which matches the original on every other measured frame.
     const auto& rider_source = previous_update ? *previous_update : state;
     std::bitset<256 * 224> caption_ink;
-    draw_classic_caption(frame, rider_source, content, colour(cgram, bg3_ink_colour), caption_ink);
+    draw_classic_caption(frame, rider_source, content, bg3_ink, caption_ink);
     draw_classic_hud(
         frame, rider_source, content, history ? history->opponent_finish_frame : std::nullopt,
         history ? std::optional<ClassicHudPublished>(history->published_hud) : std::nullopt,
-        colour(cgram, bg3_ink_colour), caption_ink);
+        bg3_ink, caption_ink);
     draw_race_riders(frame, rider_source, content, history, cgram, scroll.flip, bg1_above_objects,
                      caption_ink);
     // Every member covers both objects as well as the backgrounds: inside the window the

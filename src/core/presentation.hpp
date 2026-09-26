@@ -415,12 +415,25 @@ struct ClassicRacePresentationContent {
     // The result title's name bytes for a one-run track beyond DRAGSTER (its
     // name-table entry with the 0xFF); empty for the two accepted tracks.
     std::span<const std::uint8_t> result_track_name;
-    // R-0052: on the HUNTER tour, the opponent's sprite palette (character 20's,
-    // OBJ palette 4); empty elsewhere.
-    std::span<const std::uint8_t> hunter_opponent_palette;
+    // The riders' sprite palettes, asset 6 + character: OBJ palette 3 the player's
+    // ($82:DD90-DD9A) and 4 the opponent's ($82:DDB0-DDBC; R-0052, R-0061).
+    std::span<const std::uint8_t> rider_palette, opponent_palette;
+    // The player's four bytes of `$82:D4DC`: COLDATA's writes and CGADSUB, the colour math
+    // HDMA channel 5 applies to the BG3 ink ($82:D57F-D5FB, R-0061).
+    std::span<const std::uint8_t> rider_colour_math;
 };
+// $82:D57F-D5FB: HDMA channel 5 writes the rider's COLDATA bytes (bits 5-7 choose red, green
+// and blue, bits 0-4 the intensity) and CGADSUB (bit 7 subtracts). With CGWSEL 0x02 and BG3
+// enabled the race's ink is CGRAM 27 (`ink`) plus, or minus, that fixed colour, clamped per
+// channel (R-0061): MIKE's (13,0,0) + (15,0,0), TONY's black.
+std::uint16_t classic_race_ink(std::uint16_t ink, std::span<const std::uint8_t> colour_math);
+// The content of MIKE's race against the track's usual opponent.
 ClassicRacePresentationContent classic_race_presentation_content(const ClassicContentPack& pack,
                                                                  ClassicRaceTrack track);
+// The content of the race `scenario` sets up (its track and pairing).
+ClassicRacePresentationContent
+classic_race_presentation_content(const ClassicContentPack& pack,
+                                  const ClassicRaceScenario& scenario);
 // One renderer for both tracks. previous_update is the state before the update
 // being drawn. The original picture shows the HUD and both rider objects from
 // that update (the BG scroll is derived from this state's prior camera);

@@ -1,6 +1,8 @@
 #include "zoom_zoo_pack.hpp"
+#include <algorithm>
 #include <cctype>
 #include <memory>
+#include <optional>
 #include <set>
 
 #include <filesystem>
@@ -50,7 +52,19 @@ struct Options {
     std::filesystem::path seed, content, inputs, pack_path, track_override;
     bool native_start = false, restart = false;
     unirally::ClassicRaceTrack race_track = unirally::ClassicRaceTrack::ZoomZoo;
+    // RACE-RIDERS-OPPONENTS: another rider or opponent than the scenario's MIKE against its
+    // usual opponent, and the tutorial hints' start ($77:1116's rider bit), on a --start race.
+    std::optional<unsigned> rider, opponent;
+    bool tutorial_hints = true, pairing_given = false;
 };
+
+unsigned small_number(const std::string& text) {
+    if (text.empty() || text.size() > 2 || !std::all_of(text.begin(), text.end(), [](char c) {
+            return std::isdigit(static_cast<unsigned char>(c));
+        }))
+        throw std::invalid_argument("a rider, an opponent or a hints flag is a small number");
+    return static_cast<unsigned>(std::stoi(text));
+}
 
 // classic.crawler.dragster, classic.crawler.zoom-zoo, or classic.track.NN for any race track
 // with a recovered scenario (TRACK-BREADTH part 3).
@@ -70,7 +84,7 @@ unirally::ClassicRaceTrack scenario_track(const std::string& scenario) {
 }
 
 Options parse_options(int argc, char** argv) {
-    if (argc != 7 && argc != 9)
+    if (argc < 7 || argc % 2 == 0)
         throw std::invalid_argument(
             "usage: zoom_zoo_runner --seed FILE --content-dir DIR --inputs FILE");
     Options options;
@@ -99,13 +113,24 @@ Options parse_options(int argc, char** argv) {
         // `--start` names.
         else if (option == "--track-override")
             options.track_override = argv[i + 1];
-        else
+        else if (option == "--rider")
+            options.rider = small_number(argv[i + 1]);
+        else if (option == "--opponent")
+            options.opponent = small_number(argv[i + 1]);
+        else if (option == "--tutorial-hints") {
+            const auto hints = small_number(argv[i + 1]);
+            if (hints > 1) throw std::invalid_argument("--tutorial-hints is 0 or 1");
+            options.tutorial_hints = hints == 1;
+        } else
             throw std::invalid_argument("unknown ZOOM ZOO runner option");
     }
     if (seen.count("--seed") + seen.count("--restart-from") + seen.count("--start") != 1
         || seen.count("--content-pack") + seen.count("--content-dir") != 1)
         throw std::invalid_argument("ZOOM ZOO runner needs one of --seed/--restart-from/--start "
                                     "and one of --content-pack/--content-dir");
+    options.pairing_given = options.rider || options.opponent || !options.tutorial_hints;
+    if (options.pairing_given && !options.native_start)
+        throw std::invalid_argument("--rider, --opponent and --tutorial-hints need --start");
     if ((options.seed.empty() && !options.native_start)
         || (options.content.empty() && options.pack_path.empty()) || options.inputs.empty())
         throw std::invalid_argument("missing ZOOM ZOO runner option");
@@ -132,7 +157,7 @@ struct LooseContent {
                                                  {masks, decrements}};
         return {
             movement, coefficients, reflection, landing, finish_poses, roll_poses, roll_directions,
-            weights,  combinations, {},         {},      {},           {}};
+            weights,  combinations, {},         {},      {},           {},         {}};
     }
 };
 
@@ -241,8 +266,16 @@ int main(int argc, char** argv) try {
         data.movement.sampling.track = override_track;
         data.movement.flat_contact = {override_columns, override_flags};
     }
-    if (options.native_start)
-        state = unirally::classic_race_start(data, unirally::classic_race_scenario(race_track));
+    if (options.native_start) {
+        auto scenario = unirally::classic_race_scenario(race_track);
+        if (options.pairing_given) {
+            auto pairing = scenario.pairing;
+            if (options.rider) pairing.rider = static_cast<std::uint8_t>(*options.rider);
+            if (options.opponent) pairing.opponent = static_cast<std::uint8_t>(*options.opponent);
+            scenario = unirally::classic_race_scenario(race_track, pairing, options.tutorial_hints);
+        }
+        state = unirally::classic_race_start(data, scenario);
+    }
     if (options.restart) unirally::restart_zoom_zoo(state, data);
     unirally::validate_zoom_zoo_content_state(state, data);
     return run_controller_stream(state, data, options.inputs);

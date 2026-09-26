@@ -203,3 +203,20 @@ def v20_new_entries(rom: bytes) -> list[dict[str, Any]]:
     ROM to append them to the rules; the tests check the rules against the compiled table."""
     entries = [_raw(f"front-end.asset.{asset:03d}", rom, [_asset_piece(rom, asset)]) for asset in AWARD_ASSETS]
     return entries + [table_entry(rom, *table) for table in AWARD_TABLES]
+
+
+# Profile v21 (RACE-RIDERS-OPPONENTS, R-0061): what a one-player race takes from its pairing. The
+# opponent's catch-up by track (`$83:C8B3`, 45 bytes): SILVIA's `$1283` is the track's byte + 0x20
+# and GOLDWYN's + 0x40 (`$83:CC2B-CC56`). The riders' colour math (`$82:D4DC`, 4 bytes a rider:
+# COLDATA's red, green and blue writes and CGADSUB, which HDMA channel 5 applies to the race's BG3
+# ink, `$82:D57F-D5FB`).
+RACE_PAIRING_TABLES = (
+    ("race.opponent-catch-up", 0x83C8B3, 45),
+    ("race.rider-colour-math", 0x82D4DC, 64),
+)
+
+
+def v21_new_entries(rom: bytes) -> list[dict[str, Any]]:
+    """The entries profile v21 adds to v20 (RACE-RIDERS-OPPONENTS), in pack order. Run once with
+    the ROM to append them to the rules; the tests check the rules against the compiled table."""
+    return [table_entry(rom, *table) for table in RACE_PAIRING_TABLES]

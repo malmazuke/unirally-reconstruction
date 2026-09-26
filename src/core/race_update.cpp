@@ -581,12 +581,11 @@ void run_active_controls(const ZoomZooState& state, ZoomZooState& next, unsigned
 }
 
 // $82:A77E-A797 and the limiter's context: the opponent's cap rises by $1283 * 2 while the
-// player leads ($1283 is 64 on the HUNTER tour, 0 elsewhere; LOCKED-TOURS). $150B has no
+// player leads ($1283, the opponent's catch-up, is 0 against BRONSEN; OpponentTier). $150B has no
 // writer in the declared continuation, so the pose byte keeps its seed: the player's
 // published screen x, the opponent's retained OAM x.
 SpeedLimitContext speed_limit_context(const ZoomZooState& state, const ZoomZooState& next,
-                                      unsigned index, unsigned horizontal,
-                                      const ClassicRaceScenario& scenario) {
+                                      unsigned index, unsigned horizontal) {
     const auto& whole = next.movement;
     const auto& rider = whole.riders[index];
     SpeedLimitContext limit{};
@@ -599,8 +598,8 @@ SpeedLimitContext speed_limit_context(const ZoomZooState& state, const ZoomZooSt
     limit.start_override = rider.launch_override != 0;
     limit.player_progress = whole.riders[0].progress.transition_count;
     limit.opponent_progress = whole.riders[1].progress.transition_count;
-    limit.adjustment_limit = race_adjustment_limit(scenario);
-    limit.ai_adjustment = scenario.ai_adjustment;
+    limit.adjustment_limit = next.opponent_tier.adjustment_limit;
+    limit.ai_adjustment = next.opponent_tier.catch_up;
     limit.player_base_cap = next.reflection[0].base_velocity_cap;
     limit.update_counter = whole.update_counter;
     limit.friction_mode = static_cast<std::uint16_t>(horizontal);
@@ -609,8 +608,7 @@ SpeedLimitContext speed_limit_context(const ZoomZooState& state, const ZoomZooSt
 
 // Gravity, the speed limit, the position, and the settle onto a sloped surface.
 void run_physics(const ZoomZooState& state, ZoomZooState& next, unsigned index, unsigned horizontal,
-                 const SpecialTileUpdate& special, const ClassicRaceScenario& scenario,
-                 const ZoomZooContent& content) {
+                 const SpecialTileUpdate& special, const ZoomZooContent& content) {
     auto& rider = next.movement.riders[index];
     const auto& tiles = next.special_tiles[index];
     const auto& surface = next.surface[index];
@@ -619,7 +617,7 @@ void run_physics(const ZoomZooState& state, ZoomZooState& next, unsigned index, 
     // A player boost below 16 makes the limiter's optional subtraction inert.
     if (index == 0 && rider.speed.boost >= 16 && !state.native_initialization)
         throw std::invalid_argument("ZOOM ZOO player boost requires unrecovered camera state");
-    const auto limit = speed_limit_context(state, next, index, horizontal, scenario);
+    const auto limit = speed_limit_context(state, next, index, horizontal);
     // $82:A6FD: and the speed limiter.
     if (!tiles.physics_hold)
         limit_rider_speed(rider.motion.velocity_x, rider.motion.velocity_y, rider.speed, limit,
@@ -639,7 +637,7 @@ void run_physics(const ZoomZooState& state, ZoomZooState& next, unsigned index, 
 // One rider's update, in the original's order.
 RiderOutcome update_rider(const ZoomZooState& state, ZoomZooState& next, unsigned index,
                           unsigned active, const TrickButtons& buttons,
-                          const ClassicRaceScenario& scenario, const ZoomZooContent& content) {
+                          const ZoomZooContent& content) {
     auto& whole = next.movement;
     auto& rider = whole.riders[index];
     auto& transition = next.reflection[index];
@@ -676,7 +674,7 @@ RiderOutcome update_rider(const ZoomZooState& state, ZoomZooState& next, unsigne
         rider, next.drive_target_latch && !surface.leading_support && transition.pose_override == 0,
         index == 1, whole.animation_counter, content.movement.idle_pose_table);
     if (rider.idle_pose.active) surface.tile_mode = 1;
-    run_physics(state, next, index, horizontal, special, scenario, content);
+    run_physics(state, next, index, horizontal, special, content);
     surface.animation_delta = static_cast<std::uint16_t>(animation_override);
     update_pose(rider, whole.animation_counter, whole.contact_phase, content.movement,
                 animation_override, next.drive_target_latch == 0,
@@ -818,8 +816,7 @@ void update_zoom_zoo(ZoomZooState& state, const ControllerButtons& requested_but
         whole.rewards.cooldown > 2 ? static_cast<std::uint16_t>(whole.rewards.cooldown - 2U) : 0;
     std::array<RiderOutcome, 2> outcomes{};
     for (unsigned index = 0; index < 2; ++index)
-        outcomes[index] =
-            update_rider(state, next, index, active, trick_buttons, scenario, content);
+        outcomes[index] = update_rider(state, next, index, active, trick_buttons, content);
     finish_update(state, next, outcomes, content);
     state = next;
 }

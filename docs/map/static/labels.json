@@ -1803,7 +1803,9 @@
   "label": "loc_80B31F",
   "native": [
    "src/core/now_playing.cpp:opponent_for",
-   "src/core/now_playing.cpp:print_now_playing"
+   "src/core/now_playing.cpp:print_now_playing",
+   "src/core/race_setup.cpp:classic_race_scenario",
+   "src/core/zoom_zoo_movement.hpp:(file)"
   ],
   "source_records": [
    "docs/research/R-0056-tour-track-now-playing.md"
@@ -1816,7 +1818,8 @@
   "label": "loc_80B361",
   "native": [
    "src/core/now_playing.cpp:opponent_for",
-   "src/core/now_playing.cpp:print_now_playing"
+   "src/core/now_playing.cpp:print_now_playing",
+   "src/core/race_setup.cpp:classic_race_scenario"
   ],
   "source_records": [
    "docs/research/R-0056-tour-track-now-playing.md"
@@ -10918,7 +10921,9 @@
   "label": "loc_82DDB0",
   "native": [
    "src/core/content_pack.cpp:hunter_required",
-   "src/core/presentation.cpp:race_cgram"
+   "src/core/presentation.cpp:character_palette",
+   "src/core/presentation.cpp:race_cgram",
+   "src/core/presentation.hpp:ClassicRacePresentationContent::rider_palette, ClassicRacePresentationContent::opponent_palette"
   ],
   "source_records": [
    "docs/research/R-0052-hunter-effects.md"
@@ -12260,9 +12265,8 @@
   "label": "loc_83CC0B",
   "native": [
    "src/core/race_setup.cpp:classic_race_scenario",
-   "src/core/race_setup.cpp:hunter_ai_level, ai_level",
-   "src/core/zoom_zoo_movement.hpp:ClassicRaceScenario::ai_level",
-   "src/core/zoom_zoo_movement.hpp:race_adjustment_limit"
+   "src/core/race_setup.cpp:hunter_tier",
+   "src/core/zoom_zoo_movement.hpp:OpponentTier"
   ],
   "source_records": [
    "docs/research/R-0050-locked-tours.md",
@@ -12276,9 +12280,8 @@
   "label": "loc_83CC20",
   "native": [
    "src/core/race_setup.cpp:classic_race_scenario",
-   "src/core/race_setup.cpp:hunter_ai_level, ai_level",
-   "src/core/zoom_zoo_movement.hpp:ClassicRaceScenario::ai_level",
-   "src/core/zoom_zoo_movement.hpp:race_adjustment_limit"
+   "src/core/race_setup.cpp:hunter_tier",
+   "src/core/zoom_zoo_movement.hpp:OpponentTier"
   ],
   "source_records": [
    "tasks/ZOOM-ZOO-WINDOW-EFFECTS-review.md"
@@ -12291,8 +12294,9 @@
   "label": "loc_83CC59",
   "native": [
    "src/core/race_setup.cpp:classic_race_scenario",
-   "src/core/zoom_zoo_movement.hpp:ClassicRaceScenario::ai_level",
-   "src/core/zoom_zoo_movement.hpp:race_adjustment_limit"
+   "src/core/race_setup.cpp:hunter_tier",
+   "src/core/race_setup.cpp:opponent_level_base",
+   "src/core/zoom_zoo_movement.hpp:OpponentTier"
   ],
   "source_records": [
    "docs/research/R-0038-dragster-ordinary-controls.md",
@@ -12867,6 +12871,7 @@
   "native": [
    "src/core/opponent_ai.cpp:(file)",
    "src/core/opponent_ai.cpp:jump_at_marker",
+   "src/core/opponent_ai.cpp:opponent_launches",
    "src/core/opponent_ai.cpp:update_opponent_controller"
   ],
   "source_records": [
@@ -12882,6 +12887,7 @@
   "native": [
    "src/core/opponent_ai.cpp:(file)",
    "src/core/opponent_ai.cpp:jump_at_marker",
+   "src/core/opponent_ai.cpp:opponent_launches",
    "src/core/opponent_ai.cpp:update_opponent_controller"
   ],
   "source_records": [

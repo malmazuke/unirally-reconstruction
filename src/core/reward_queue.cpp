@@ -29,7 +29,8 @@ constexpr unsigned queue_slots_mask = 31; // 32 entries
 // 10. The race update lowers the cooldown by 2 a update, so these are 20, 60 and 5
 // updates.
 constexpr int longest_display = 40, display_saved_per_waiting = 4, shortest_display = 5;
-constexpr std::uint16_t hint_display = 120, empty_queue_wait = 10;
+constexpr std::uint16_t hint_display = 120;
+using announcement::empty_queue_wait;
 // The reward class table has no class for an event whose entry is 255: it rewards nothing.
 constexpr std::uint8_t no_reward_class = 255;
 // The learned weights cover events 1-26: event 1's own weight, then a 25-byte bank.
@@ -74,8 +75,8 @@ bool takes_reward_path(std::uint8_t event) {
 }
 
 bool is_opponent_voice(std::uint8_t event) {
-    return (event >= announcement::bronsen_first_voice && event <= announcement::bronsen_last_voice)
-        || (event >= announcement::hunter_first_voice && event <= announcement::hunter_last_voice);
+    return event >= announcement::first_opponent_voice
+        && event <= announcement::last_opponent_voice;
 }
 
 // Legacy DRAGSTER and M4-12 to M4-15 states carry no learned bank, so only the event-one
@@ -105,8 +106,9 @@ std::uint8_t* opponent_reward_weight(RewardQueueState& queue, std::uint8_t event
     }
     // Past the class table only the opponent's voices get here: the original then reads
     // past the table into code ($81:C241) and past the learned bank ($81:C260) into
-    // $7E:21C9-21D8 (HUNTER: $7E:21E9-21F8). Those bytes are zero on every reference
-    // capture and the reward-bank guards assert it, so it rewards nothing (R-0035).
+    // $7E:21C9-21D8 (SILVIA and GOLDWYN: $7E:21D9-21E8; HUNTER: $7E:21E9-21F8). Those bytes
+    // are zero on every reference capture and the reward-bank guards assert it, so it rewards
+    // nothing (R-0035, R-0061).
     // Deserialization admits no other event here; widen its guards if this ever moves.
     require(is_opponent_voice(event), "reward queue left the recovered event-one domain");
     return nullptr;
@@ -205,12 +207,9 @@ void announce(ZoomZooState& state, unsigned rider, unsigned event) {
 // $82:9D3A-9D70: a combination of tricks is praised in the rider's voice: one of sixteen
 // voices of its character pair chosen by x & 15, queued twice.
 void announce_combination(ZoomZooState& state, unsigned rider) {
-    const unsigned character =
-        rider == 0 ? 0U : classic_race_scenario(state.track).opponent_character;
+    const unsigned character = rider == 0 ? state.pairing.rider : state.pairing.opponent;
     const auto x = state.movement.riders[rider].motion.x;
-    const auto voice = (announcement::first_voice
-                        + (character >> 1U) * announcement::voices_per_character_pair + (x & 15U))
-                     & 0xffU;
+    const auto voice = (announcement::first_voice_of(character) + (x & 15U)) & 0xffU;
     announce(state, rider, voice);
     announce(state, rider, voice);
 }

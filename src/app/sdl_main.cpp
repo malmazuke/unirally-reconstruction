@@ -291,7 +291,7 @@ int main(int argc, char **argv) try {
   if(!zoom_zoo && content.pack.optional_entry("zoom.landing-response-matrices").empty())
     throw std::invalid_argument("DRAGSTER and the other tracks need the full content pack for jumps, brakes, reversal and tricks; "
                                 "create it from your ROM with: python3 tools/project.py frontend run --track dragster "
-                                "--pack local/classic-pal-crawler-tracks-v20.pack --rom PATH");
+                                "--pack local/classic-pal-crawler-tracks-v21.pack --rom PATH");
   auto zoom_content=unirally::classic_race_content(content.pack,track);
   auto race_presentation=unirally::classic_race_presentation_content(content.pack,track);
   auto zoom_state=unirally::classic_race_start(zoom_content,unirally::classic_race_scenario(track));
@@ -455,17 +455,20 @@ int main(int argc, char **argv) try {
       if (front_end) {
         if (race_chosen) {
           // The race NOW PLAYING chose, if it is not the one the app started with.
-          const auto chosen=front_end->race_track();
+          const auto scenario=front_end->race_scenario();
+          const auto chosen=scenario.track;
           std::cout << "Front end: race " << unsigned(chosen.index) << " chosen after " << front_end->frames()
-                    << " frames (front-end frame " << front_end->front_end_frame() << ")\n";
+                    << " frames (front-end frame " << front_end->front_end_frame() << "); rider "
+                    << unsigned(scenario.pairing.rider) << " against " << unsigned(scenario.pairing.opponent) << "\n";
           if(!(chosen==track)) {
             track=chosen;
             zoom_content=unirally::classic_race_content(content.pack,chosen);
-            race_presentation=unirally::classic_race_presentation_content(content.pack,chosen);
-            SDL_SetWindowTitle(window.get(),window_title(race_presentation.track_name).c_str());
           }
+          // The pairing's palettes and ink, whatever the track.
+          race_presentation=unirally::classic_race_presentation_content(content.pack,scenario);
+          SDL_SetWindowTitle(window.get(),window_title(race_presentation.track_name).c_str());
           // A fresh race each time: after a result NOW PLAYING can choose the same track again.
-          zoom_state=unirally::classic_race_start(zoom_content,unirally::classic_race_scenario(chosen));
+          zoom_state=unirally::classic_race_start(zoom_content,scenario);
           zoom_hud_state=zoom_state;
           live_presentation=unirally::app::LivePresentation{};
           waiting_front_end=std::move(front_end);

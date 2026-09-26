@@ -46,7 +46,7 @@ int main() {
     const auto zoom_scenario=classic_race_scenario(ClassicRaceTrack::ZoomZoo);
     require(dragster_scenario.initialization_frame==1328 && dragster_scenario.laps==1 && !dragster_scenario.tour_race);
     require(zoom_scenario.initialization_frame==1376 && zoom_scenario.laps==3 && zoom_scenario.tour_race);
-    require(race_adjustment_limit(dragster_scenario)==96 && race_adjustment_limit(zoom_scenario)==72);
+    require(opponent_tier(dragster_scenario,{}).adjustment_limit==96 && opponent_tier(zoom_scenario,{}).adjustment_limit==72);
 
     ZoomZooContent content{};content.movement.sampling.track=header;
     std::array<std::uint8_t,26> weights{};weights[0]=4;content.reward_weights=weights;

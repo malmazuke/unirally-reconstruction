@@ -39,19 +39,33 @@ MENU_STARTS = ((300, 305), (620, 625), (750, 755), (900, 905))
 FIRST_DOWN = 1000
 FIRST_TOUR_DOWN = 850
 DOWN_SPACING = 20
+# RACE-RIDERS-OPPONENTS: PICK YOUR UNI reads the pad from frame 662; its riders are two to a row,
+# so rider r is Right for an odd r and Down r >> 1 times, from frame 680, 20 frames apart. Its
+# Start (750) and everything after it wait until 20 frames after the last press.
+FIRST_RIDER_PRESS = 680
 GUARDS_PATH = 'tests/manifests/native/zoom-zoo-race-guards.reference.json'
 # ZOOM ZOO applies its constant-domain guards from end-1649, 273 updates after its boundary.
 GUARD_OFFSET = 1649 - 1376
 
 
-def menu_events(position, tour_row=0, tour_column=0):
+def menu_events(position, tour_row=0, tour_column=0, rider=0):
     """(from, to, button) for the track at ``position`` (0-4) on the PICK TRACK screen of the
     tour at ``tour_row`` and ``tour_column`` of PICK TOUR (row 0, column 0 = CRAWLER, the default
-    highlight). Down walks the left column (CRAWLER, SHUFFLER, WALKER, HOPPER, then HUNTER once
-    the locked tours are open); Right takes the right column (JUMPER, BOUNDER, RUNNER, SPRINTER)."""
+    highlight), ridden by ``rider`` (0-15, PICK YOUR UNI's order; 0 MIKE, the default). Down walks
+    the left column (CRAWLER, SHUFFLER, WALKER, HOPPER, then HUNTER once the locked tours are
+    open); Right takes the right column (JUMPER, BOUNDER, RUNNER, SPRINTER)."""
     if not 0 <= position <= 4 or not 0 <= tour_row <= 4 or tour_column not in (0, 1) or \
             (tour_column == 1 and tour_row == 4):
         raise ValueError('a track position is 0-4, a PICK TOUR row 0-4 and a column 0-1 (row 4 has no column 1)')
+    if not 0 <= rider <= 15:
+        raise ValueError('a rider is 0-15')
+    if rider:
+        presses = ['right'] * (rider & 1) + ['down'] * (rider >> 1)
+        firsts = [FIRST_RIDER_PRESS + DOWN_SPACING * k for k in range(len(presses))]
+        shift = max(0, firsts[-1] + 5 + DOWN_SPACING - MENU_STARTS[2][0])
+        later = [(a + shift, b + shift, button) if a >= MENU_STARTS[2][0] else (a, b, button)
+                 for a, b, button in menu_events(position, tour_row, tour_column)]
+        return sorted(later + [(first, first + 5, button) for first, button in zip(firsts, presses)])
     events = [(a, b, 'start') for a, b in MENU_STARTS[:3]]
     shift = 0
     for k in range(tour_row + tour_column):
@@ -77,12 +91,12 @@ def segments(hold):
     return sorted((int(first), list(buttons)) for first, buttons in hold)
 
 
-def timeline(position, horizon, tour_row=0, hold=None, tour_column=0):
+def timeline(position, horizon, tour_row=0, hold=None, tour_column=0, rider=0):
     """The menu inputs, then a released controller, or ``hold``: (first frame, buttons) held
     from that frame to the horizon, or several such segments, each held until the next
     begins (an empty button list releases the controller)."""
     rows = [[[], []] for _ in range(horizon + 1)]
-    events = menu_events(position, tour_row, tour_column)
+    events = menu_events(position, tour_row, tour_column, rider)
     for first, last, button in events:
         for frame in range(first, last + 1):
             rows[frame][0] = [button]
@@ -104,11 +118,14 @@ def timeline(position, horizon, tour_row=0, hold=None, tour_column=0):
 UNLOCK_TOURS_SRAM = [0x1000, *range(0x10c0, 0x1100)]
 
 
-def unlocked_sram(core_path, rom):
+def unlocked_sram(core_path, rom, unlock=True, preload=()):
     """Cartridge RAM for a locked-tour capture: a fresh power-on's RAM (all $FF) is formatted by
     the menu (frames 403-405, after the first Start), which would clear the unlock, so boot once
     through the cold menu to frame 600, after the format and before any choice, take the
-    formatted RAM, and set $77:1000 and $10C0-$10FF to $FF."""
+    formatted RAM, and set $77:1000 and $10C0-$10FF to $FF (``unlock``) and each (offset, byte)
+    of ``preload`` (RACE-RIDERS-OPPONENTS: a medal on the tour, which chooses NOW PLAYING's
+    opponent, or the riders' tutorial bits; nothing in the ROM verifies the save's checksums,
+    R-0059)."""
     with tempfile.TemporaryDirectory() as directory:
         core = BsnesCore(core_path, Path(directory), {})
         try:
@@ -123,12 +140,15 @@ def unlocked_sram(core_path, rom):
             core.unload()
     if image[UNLOCK_TOURS_SRAM[0]] != 0:
         raise ValueError('the cold menu left cartridge RAM unformatted')
-    for address in UNLOCK_TOURS_SRAM:
+    for address in UNLOCK_TOURS_SRAM if unlock else ():
         image[address] = 0xff
+    for address, value in preload:
+        image[address] = value
     return bytes(image)
 
 
-def capture(core_path, out, track, horizon, frame_images=(), tour_row=0, hold=None, tour_column=0, unlock_tours=False):
+def capture(core_path, out, track, horizon, frame_images=(), tour_row=0, hold=None, tour_column=0, unlock_tours=False,
+            rider=0, sram=()):
     if out.exists():
         raise ValueError('fresh output directory required')
     if any(b not in BUTTONS for _, buttons in segments(hold) for b in buttons):
@@ -138,8 +158,8 @@ def capture(core_path, out, track, horizon, frame_images=(), tour_row=0, hold=No
         raise ValueError('original identities differ')
     if (tour_column or tour_row == 4) and not unlock_tours:
         raise ValueError('a locked tour needs --unlock-tours')
-    preload = unlocked_sram(core_path, rom) if unlock_tours else None
-    inputs = timeline(track, horizon, tour_row, hold, tour_column)
+    preload = unlocked_sram(core_path, rom, unlock_tours, sram) if unlock_tours or sram else None
+    inputs = timeline(track, horizon, tour_row, hold, tour_column, rider)
     out.mkdir(parents=True)
     hashes, cartridge_hashes, video = [], [], []
     boundary = None
@@ -178,8 +198,9 @@ def capture(core_path, out, track, horizon, frame_images=(), tour_row=0, hold=No
             core.unload()
     report = dict(kind='track_breadth_original', position=track, frames=[FIRST_RECORDED_FRAME, horizon],
                   initialization_frame=boundary, tour_row=tour_row, tour_column=tour_column, unlock_tours=unlock_tours,
+                  **(dict(rider=rider, sram_preload=[[a, v] for a, v in sram]) if rider or sram else {}),
                   preload_sram_sha256=sha(preload) if preload is not None else None,
-                  hold=hold, menu_events=menu_events(track, tour_row, tour_column), rom_sha256=ROM_SHA, core_sha256=CORE_SHA,
+                  hold=hold, menu_events=menu_events(track, tour_row, tour_column, rider), rom_sha256=ROM_SHA, core_sha256=CORE_SHA,
                   timeline_sha256=digest(inputs), timeline=inputs, wram_sha256=hashes, sram_sha256=cartridge_hashes, video=video)
     (out/'reference.json').write_text(json.dumps(report, separators=(',', ':'))+'\n')
     return dict(position=track, tour_row=tour_row, initialization_frame=boundary, wram=digest(hashes), sram=digest(cartridge_hashes), video=digest(video))
@@ -263,7 +284,8 @@ def original_rows(directory):
                 # at $7E21E9-$7E21F8 ($7E2102 + event - 1, $81:C25C-C260), as the other tours' 200-215
                 # do at the manifest's $7E21C9-$7E21D8; native takes the original's zero-weight exit,
                 # which these bytes being zero justifies.
-                for at in range(0x21e9, 0x21f9):
+                # RACE-RIDERS-OPPONENTS: SILVIA's and GOLDWYN's voices 216-231 read $7E21D9-$7E21E8.
+                for at in range(0x21d9, 0x21f9):
                     if w[at]:
                         violations.setdefault(f'{at:04x}', dict(frame=frame, value=w[at], guarded=0))
             try:
@@ -299,7 +321,9 @@ def original_rows(directory):
     with (directory/'memory.sram').open('rb') as ss:
         ss.seek((boundary-first)*8192)
         s = ss.read(8192)
-        scenario = {'track_074a': s[0x74a], 'race_mode_074b': s[0x74b], 'laps_0744': s[0x744]}
+        scenario = {'track_074a': s[0x74a], 'race_mode_074b': s[0x74b], 'laps_0744': s[0x744],
+                    'rider_0748': s[0x748], 'opponent_0749': s[0x749],
+                    'tutorial_bits_1116': s[0x1116] | s[0x1117] << 8}
     events = dict(finish_frames=finish, loading_frame=loading)
     if loading is not None:
         # As zoom_zoo_playable: the result is black through loading + 75, and the accepted
@@ -311,13 +335,17 @@ def original_rows(directory):
     return document, rows, dict(guard_violations=violations, projection_stop=error, scenario=scenario, **events)
 
 
-def native_rows(binary, pack, track, count, scenario, hold=None, controller=None):
+def native_rows(binary, pack, track, count, scenario, hold=None, controller=None, pairing=None):
     rom = Path((ROOT/'local/rom-location.txt').read_text().strip()).read_bytes()
     with tempfile.TemporaryDirectory(prefix='track-native-') as directory:
         root = Path(directory)
         write_track_override(rom, track, root/'content')
         empty = root/'none.txt'; empty.write_text('')
         base = [str(binary), '--start', scenario, '--content-pack', str(pack)]
+        # Another rider or opponent than MIKE against the track's own, or a rider whose tutorial
+        # hints have ended (RACE-RIDERS-OPPONENTS).
+        if pairing is not None:
+            base += ['--rider', str(pairing[0]), '--opponent', str(pairing[1]), '--tutorial-hints', str(pairing[2])]
         start = int(subprocess.run(base+['--inputs', str(empty)], capture_output=True, text=True, timeout=60).stdout.split()[0])
         inputs = root/'inputs.txt'
         # The capture's held input, if any, by update (it starts that many updates
@@ -346,8 +374,12 @@ def explore(reference, binary, pack, scenario):
     track = events['scenario']['track_074a']
     boundary = document['initialization_frame']
     controller = [document['timeline'][boundary+k][0] for k in range(1, len(rows))]
+    rider = events['scenario']['rider_0748']
+    hints = 0 if events['scenario']['tutorial_bits_1116'] >> rider & 1 else 1
+    pairing = (rider, events['scenario']['opponent_0749'], hints)
+    default = (0, 20 if 40 <= track <= 44 else 17, 1)
     actual, code, error, native_start = native_rows(binary.resolve(), pack.resolve(), track, len(rows), scenario,
-                                                    controller=controller)
+                                                    controller=controller, pairing=None if pairing == default else pairing)
     divergence = None
     for i, (x, y) in enumerate(zip(actual, rows)):
         a, b = bytes.fromhex(x), bytes.fromhex(y)
@@ -435,6 +467,9 @@ def main():
     c.add_argument('--tour-row', type=int, default=0, help='row on the PICK TOUR screen, 0-4')
     c.add_argument('--tour-column', type=int, default=0, help='column on the PICK TOUR screen, 0-1')
     c.add_argument('--unlock-tours', action='store_true', help='preload cartridge RAM $77:1000 and $10C0-$10FF with $FF (all nine tours)')
+    c.add_argument('--rider', type=int, default=0, help='rider on PICK YOUR UNI, 0-15 (0 MIKE)')
+    c.add_argument('--sram', nargs=2, action='append', default=[], metavar=('OFFSET', 'BYTE'),
+                   help='preload cartridge RAM byte OFFSET (hex) with BYTE (hex), e.g. 069c 01: a bronze on CRAWLER for MIKE (SILVIA)')
     c.add_argument('--out', type=Path, required=True)
     c.add_argument('--horizon', type=int, required=True)
     c.add_argument('--frame-image', type=int, action='append', default=[])
@@ -470,7 +505,8 @@ def main():
         if hold is not None and len(hold) == 1:
             hold = hold[0]
         print(json.dumps(capture(a.core.resolve(), a.out, a.track, a.horizon, set(a.frame_image), a.tour_row, hold,
-                                 a.tour_column, a.unlock_tours)))
+                                 a.tour_column, a.unlock_tours, a.rider,
+                                 tuple((int(o, 16), int(v, 16)) for o, v in a.sram))))
     else:
         result = explore(a.reference, a.binary, a.pack, a.scenario)
         a.out.write_text(json.dumps(result, indent=1, default=list)+'\n')

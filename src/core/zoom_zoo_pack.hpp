@@ -35,7 +35,8 @@ inline ZoomZooContent zoom_zoo_content(const ClassicContentPack& pack) {
         zoom("corkscrew-heights"),
         zoom("loop-offsets"),
         zoom("hunter-blink"),
-        pack.entry("presentation.classic.captions.v1")};
+        pack.entry("presentation.classic.captions.v1"),
+        pack.optional_entry("race.opponent-catch-up")};
 }
 // DRAGSTER on the shared race engine (R-0038): the shared content with the
 // track, its tile columns and tile flags replaced by DRAGSTER's own entries.

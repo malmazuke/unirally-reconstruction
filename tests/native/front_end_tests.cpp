@@ -652,8 +652,15 @@ void race_result_tests() {
           restart.records.statistics[0][0] == 0 && !restart.records.race_lost);
   // A quit (0xEA61) is a loss without a time: no record placed, so the way out
   // is a frame shorter, PICK TRACK on its fourth frame.
+  // R-0061: a race whose tutorial hints ended sets its rider's bit ($83:CE2C).
+  auto hints_over = to_race();
+  unirally::RaceTimes over_times{0xea61, 0xea60};
+  over_times.tutorial_hints_over = true;
+  unirally::return_from_race(hints_over, content, 5000, over_times);
+  require(hints_over.records.tutorial_bits == 1);
   auto quit = to_race();
   unirally::return_from_race(quit, content, 5000, {0xea61, 0xea60});
+  require(quit.records.tutorial_bits == 0);
   require(run_to(quit, content, FrontEndScreen::race_result, {}, 104));
   run(quit, content, 12);
   run(quit, content, 2, {0x8000, 0});

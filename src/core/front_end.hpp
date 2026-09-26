@@ -142,6 +142,9 @@ struct OnePlayerRecords {
     std::uint16_t opponent_wins{}; // $77:10AB: a rider opponent's wins
     bool race_lost{};              // $77:0742 bit 12: the last race was lost
     std::uint16_t tries{};         // $77:1073: 3, one less after a loss; nothing reads it (R-0057)
+    // $77:1116: bit r once rider r's tutorial hints have ended in a race ($83:CE2C); a race
+    // starts its hints only without its rider's bit ($82:D94C, R-0061).
+    std::uint16_t tutorial_bits{};
 };
 OnePlayerRecords cold_start_records();
 
@@ -165,6 +168,8 @@ struct RaceTimes {
     std::uint16_t player_total{0xea60}, opponent_total{0xea60};
     bool lap_race{};
     std::array<std::uint16_t, 10> player_laps = filled_laps(), opponent_laps = filled_laps();
+    // The race's tutorial hints ended (or never ran): the rider's bit is set in `$77:1116`.
+    bool tutorial_hints_over{};
 
 private:
     static constexpr std::array<std::uint16_t, 10> filled_laps() {
@@ -326,6 +331,10 @@ FrontEndState start_front_end();
 void update_front_end(FrontEndState& state, const FrontEndContent& content, FrontEndPads pads);
 // The frame the last update produced.
 RgbFrame render_front_end(const FrontEndState& state);
+
+// The race NOW PLAYING chose: its track, the rider PICK YOUR UNI chose against NOW PLAYING's
+// opponent, and the tutorial hints unless the records hold the rider's bit (R-0061).
+ClassicRaceScenario one_player_race_scenario(const FrontEndState& state);
 
 // The frames between NOW PLAYING's fade and a race's initialization on the laboratory's menu path
 // (R-0057, R-0058): DRAGSTER's 121, ZOOM ZOO's 169; 0 for a track not measured.
