@@ -244,3 +244,27 @@ def v22_new_entries(rom: bytes) -> list[dict[str, Any]]:
     ROM to append them to the rules; the tests check the rules against the compiled table."""
     entries = [_raw(f"front-end.asset.{asset:03d}", rom, [_asset_piece(rom, asset)]) for asset in ENDING_ASSETS]
     return entries + [table_entry(rom, *table) for table in ENDING_TABLES]
+
+
+# Profile v23 (HUNTER-ENDING): HUNTER's gold ending `$83:AB9A`. Its assets: the newspaper pages'
+# colours, maps and tiles (DAILY NEWS 0x67, 0x6E, 0x6B; SPEEDKING 0x68, 0x6F, 0x6C; CHEAT! 0x66,
+# 0x6D, 0x69), the credits' colours 0-111 (0x00) and the faces' colours and tiles (0x3A, 0x5D).
+# Its tables: the pages' HDMA tables `$80:E37B` (INIDISP) and `$80:E3A1` (BG1VOFS), which
+# `$80:E2D8-E2F6` copies to work RAM, and the credits' text (`$83:AE01`), pose words (`$83:AE12`)
+# and first 33 objects (`$83:AE72`).
+HUNTER_ENDING_ASSETS = (0x00, 0x3A, 0x5D, 0x66, 0x67, 0x68, 0x69, 0x6B, 0x6C, 0x6D, 0x6E, 0x6F)
+HUNTER_ENDING_TABLES = (
+    ("front-end.reveal-brightness", 0x80E37B, 38),
+    ("front-end.reveal-offsets", 0x80E3A1, 72),
+    ("front-end.credits-text", 0x83AE01, 17),
+    ("front-end.credits-poses", 0x83AE12, 96),
+    ("front-end.credits-objects", 0x83AE72, 132),
+)
+
+
+def v23_new_entries(rom: bytes) -> list[dict[str, Any]]:
+    """The entries profile v23 adds to v22 (HUNTER-ENDING), in pack order. Run once with the ROM
+    to append them to the rules; the tests check the rules against the compiled table."""
+    entries = [_raw(f"front-end.asset.{asset:03d}", rom, [_asset_piece(rom, asset)])
+               for asset in HUNTER_ENDING_ASSETS]
+    return entries + [table_entry(rom, *table) for table in HUNTER_ENDING_TABLES]
