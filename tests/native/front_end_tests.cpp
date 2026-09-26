@@ -973,10 +973,15 @@ void award_tests() {
   require(state.award.exit_frame == 0);
   run(state, content, 3, {0x1000, 0});
   require(run_to(state, content, FrontEndScreen::tour_menu_entry, {}, 140));
+  // Level 1 is pending (R-0062): PICK TOUR is drawn at level 0, then reveals
+  // level 1 after its slide, four frames later than without a reveal.
   require(state.cycle.running && state.registers.mode == 3 &&
-          state.tour_menu.returning && state.records.tour_levels[0] == 1);
+          state.tour_menu.returning && state.records.tour_levels[0] == 0 &&
+          state.records.pending_reveal == 1);
   // PICK TOUR's Y leads on to PICK TRACK, after `$80:A858`'s two frames.
   require(run_to(state, content, FrontEndScreen::tour_menu, {}, 60));
+  require(state.records.tour_levels[0] == 1 && state.records.pending_reveal == 0 &&
+          !state.tour_menu.revealing);
   run(state, content, 1);
   require(run_to(state, content, FrontEndScreen::award_return, {0x4000, 0}));
   run(state, content, 2);
