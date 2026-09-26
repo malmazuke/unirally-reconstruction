@@ -220,7 +220,6 @@ struct TourEnding {
     std::uint16_t drop{};        // $77:10A7
     std::uint16_t pose{};        // the pose built into `$0CF0`, sent by the next upload
     std::uint16_t second_pose{}; // the pose built into `$16F0` (BOUNDER, SPRINTER)
-    std::uint16_t scroll{};      // $0090: JUMPER's scrolling pattern
 };
 
 // The result screen (`$80:951C`): the one-run result (`$80:CE90`) and its waits for a press, or
