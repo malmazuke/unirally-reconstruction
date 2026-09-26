@@ -204,7 +204,7 @@ Cited addresses in `unknown` bytes:
 | $83:C11E | docs/research/R-0062-gold-endings.md |
 | $83:C126 | docs/research/R-0062-gold-endings.md |
 | $83:C458 | docs/research/R-0062-gold-endings.md |
-| $83:C49C | docs/research/R-0062-gold-endings.md, tasks/FRONT-END-ENDINGS.md |
+| $83:C49C | docs/research/R-0062-gold-endings.md |
 | $83:C6C0 | docs/research/R-0062-gold-endings.md |
 | $83:C715 | docs/research/R-0062-gold-endings.md |
 | $83:C89A | docs/research/R-0062-gold-endings.md |

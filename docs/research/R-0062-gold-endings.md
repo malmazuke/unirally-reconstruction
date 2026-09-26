@@ -94,10 +94,12 @@ the text map every frame, and the pictures) and `sram.py` (the records):
 | crawler-gold | three completions on CRAWLER, its ending, PICK TOUR | no difference on 3,784 frames | 830 of 830 (every frame from 4670) |
 | shuffler-gold, walker-gold, hopper-gold | the same for those tours | no difference | 1,030 of 1,030 each |
 | reveal | a bronze on each of the four first tours, the level-1 reveal | no difference | 600 of 600; records equal at 6353, 6400, 6799 |
-| locked-gold | the reveal, JUMPER's and BOUNDER's golds | no difference on 16,300 frames | 910 of 910, 770 of 770 |
-| all-gold, to frame 39700 | 24 completions: levels 2 and 3 with their reveals, RUNNER's and SPRINTER's golds, the first four tours' golds at level 2 | no difference | RUNNER 720 of 720, SPRINTER 790 of 790, the reveals 81 and 181 |
+| locked-gold | the reveal, JUMPER's and BOUNDER's golds | no difference on 10,580 compared frames (a 16,300-frame run; the races' frames are the race engine's) | 910 of 910, 770 of 770 |
+| all-gold, to frame 39700 | 24 completions: levels 2 and 3 with their reveals, RUNNER's and SPRINTER's golds, the first four tours' golds at level 2 | no difference on 25,400 compared frames | RUNNER 720 of 720, SPRINTER 790 of 790, the reveals 81 and 181 |
 
-(The records at more frames are in the task record's gates.)
+A native test completes each tour at gold and checks each ending's length, the frame NMI's hook
+comes back and PICK TOUR's return, without the ROM. The records at more frames are in the task
+record's gates.
 
 ## Not recovered
 
@@ -108,3 +110,5 @@ the text map every frame, and the pictures) and `sram.py` (the records):
 - The endings' counters `$77:10C9`, `$10CB` and `$10A7` stay in cartridge RAM with values the
   records do not keep.
 - Why NMI's hook runs a frame later after WALKER's and JUMPER's endings.
+- Not exercised by any capture or test: a reveal on PICK TOUR's forward entry (from PICK YOUR UNI),
+  which needs preloaded records; another rider's colours in an ending (every capture rides MIKE).

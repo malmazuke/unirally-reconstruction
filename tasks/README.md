@@ -73,9 +73,9 @@ The coordinator maintains the status registry below. Work orders further below d
 | FRONT-END-ENDINGS | in review (tier 2): the eight tours' gold endings and the reveal of new tours; pack v22 | [The gold medal's endings and the reveal of new tours](FRONT-END-ENDINGS.md) |
 | RACE-PAUSE-EXITS | accepted (tier 1, #33): the pause menu's quit and restart go through the menus as the original's do | [The race's pause menu in one-player play: restart and quit](RACE-PAUSE-EXITS.md) |
 | RACE-RIDERS-OPPONENTS | accepted (tier 1, #34): every rider against every opponent the one-player menus choose; pack v21 | [The one-player race's other riders and opponents](RACE-RIDERS-OPPONENTS.md) |
-| RACE-OFFSCREEN-ARROW | ready |
+| RACE-OFFSCREEN-ARROW | ready | [The race's off-screen rider arrows](RACE-OFFSCREEN-ARROW.md) |
 | HUNTER-ENDING | ready | [HUNTER's gold ending and the soft reset](HUNTER-ENDING.md) |
-| FIFTH-WIN-COMPLETION | ready | [A tour completed by its fifth win](FIFTH-WIN-COMPLETION.md) | [The race's off-screen rider arrows](RACE-OFFSCREEN-ARROW.md) |
+| FIFTH-WIN-COMPLETION | ready | [A tour completed by its fifth win](FIFTH-WIN-COMPLETION.md) |
 | ROLLING-CONTACT | ready | [A rolling rider's second contact after a long shoulder rotation (HUNTER-EFFECTS review)](ROLLING-CONTACT.md) |
 | PR-WORKFLOW | integrated by pull request #6 (tier 2, approved with should-fix items, all applied); changes reach `main` only through pull requests (user request, 23 September 2026) | [Changes reach main through pull requests](PR-WORKFLOW.md) |
 | CLASSIC-RACE-HUD | reviewed and integrated (four returned rounds, approved at the fifth); accepted conditional on final-tip CI and remote verification | [The original's in-race HUD](CLASSIC-RACE-HUD.md) |

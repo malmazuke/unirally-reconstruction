@@ -1526,6 +1526,7 @@
    "src/core/front_end_screens.hpp:first_rider_palette, base_palette_low, base_palette_high",
    "src/core/race_result.cpp:race_result_exit_frame",
    "src/core/tour_menu.cpp:return_to_tour_menu",
+   "src/core/tour_menu.cpp:reveal_frames",
    "src/core/tour_menu.cpp:tour_menu_entry_frame"
   ],
   "source_records": [
@@ -3551,6 +3552,7 @@
   "comment": "instruction start",
   "label": "loc_80E580",
   "native": [
+   "src/core/tour_menu.cpp:reveal_frames",
    "src/core/tour_menu.cpp:tour_menu_entry_frame"
   ],
   "source_records": [
@@ -3563,6 +3565,7 @@
   "comment": "instruction start",
   "label": "loc_80E588",
   "native": [
+   "src/core/tour_menu.cpp:reveal_frames",
    "src/core/tour_menu.cpp:tour_menu_entry_frame"
   ],
   "source_records": [
@@ -4172,7 +4175,8 @@
   "label": "sub_80F814",
   "native": [
    "src/core/award.cpp:upload_rider",
-   "src/core/front_end_screens.hpp:upload_pose"
+   "src/core/front_end_screens.hpp:upload_pose",
+   "src/core/tour_ending_scripts.hpp:upload_built_pose"
   ],
   "source_records": [
    "docs/research/R-0059-tour-completion.md",
@@ -11351,7 +11355,7 @@
    "src/core/award.cpp:apply_unlock_rule",
    "src/core/award.cpp:way_back_frame",
    "src/core/front_end.hpp:FrontEndScreen",
-   "src/core/front_end_screens.hpp:run_nmi_hook"
+   "src/core/front_end_screens.hpp:way_back_frame"
   ],
   "source_records": [
    "docs/research/R-0059-tour-completion.md",
@@ -11369,7 +11373,7 @@
    "src/core/award.cpp:apply_unlock_rule",
    "src/core/award.cpp:way_back_frame",
    "src/core/front_end.hpp:FrontEndScreen",
-   "src/core/front_end_screens.hpp:run_nmi_hook"
+   "src/core/front_end_screens.hpp:way_back_frame"
   ],
   "source_records": [
    "docs/research/R-0059-tour-completion.md"
@@ -11385,7 +11389,7 @@
    "src/core/award.cpp:apply_unlock_rule",
    "src/core/award.cpp:way_back_frame",
    "src/core/front_end.hpp:FrontEndScreen",
-   "src/core/front_end_screens.hpp:run_nmi_hook"
+   "src/core/front_end_screens.hpp:way_back_frame"
   ],
   "source_records": [
    "docs/research/R-0059-tour-completion.md"
@@ -11401,7 +11405,7 @@
    "src/core/award.cpp:apply_unlock_rule",
    "src/core/award.cpp:way_back_frame",
    "src/core/front_end.hpp:FrontEndScreen",
-   "src/core/front_end_screens.hpp:run_nmi_hook"
+   "src/core/front_end_screens.hpp:way_back_frame"
   ],
   "source_records": [
    "docs/research/R-0059-tour-completion.md"
@@ -12105,7 +12109,7 @@
    "src/core/award.cpp:fade_out_frames, blank_frame, reset_frame, background_tiles_frame, podium_map_frame, podium_tiles_frame, colours_frame, objects_frame, rider_frame, first_fade_in_frame, fade_in_frames",
    "src/core/award.cpp:fade_up",
    "src/core/front_end_screens.hpp:fade_up",
-   "src/core/front_end_screens.hpp:run_nmi_hook"
+   "src/core/front_end_screens.hpp:way_back_frame"
   ],
   "source_records": [
    "docs/research/R-0059-tour-completion.md",
@@ -12121,7 +12125,7 @@
    "src/core/award.cpp:fade_down",
    "src/core/award.cpp:fade_out_frames, blank_frame, reset_frame, background_tiles_frame, podium_map_frame, podium_tiles_frame, colours_frame, objects_frame, rider_frame, first_fade_in_frame, fade_in_frames",
    "src/core/front_end_screens.hpp:fade_down",
-   "src/core/front_end_screens.hpp:run_nmi_hook"
+   "src/core/front_end_screens.hpp:way_back_frame"
   ],
   "source_records": [
    "docs/research/R-0059-tour-completion.md",
@@ -12191,7 +12195,7 @@
    "src/core/front_end.cpp:restore_menu_screen",
    "src/core/front_end.cpp:set_menu_registers",
    "src/core/front_end_screens.hpp:restore_menu_screen",
-   "src/core/front_end_screens.hpp:run_nmi_hook"
+   "src/core/front_end_screens.hpp:way_back_frame"
   ],
   "source_records": [
    "docs/research/R-0059-tour-completion.md",
@@ -12686,8 +12690,7 @@
    "src/core/tour_ending.cpp:endings"
   ],
   "source_records": [
-   "docs/research/R-0062-gold-endings.md",
-   "tasks/FRONT-END-ENDINGS.md"
+   "docs/research/R-0062-gold-endings.md"
   ]
  },
  {

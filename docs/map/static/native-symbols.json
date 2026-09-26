@@ -721,6 +721,7 @@
     "src/core/front_end_screens.hpp:first_rider_palette, base_palette_low, base_palette_high",
     "src/core/race_result.cpp:race_result_exit_frame",
     "src/core/tour_menu.cpp:return_to_tour_menu",
+    "src/core/tour_menu.cpp:reveal_frames",
     "src/core/tour_menu.cpp:tour_menu_entry_frame"
    ],
    "region": "rom"
@@ -1776,6 +1777,7 @@
   {
    "address": "$80:E580",
    "native": [
+    "src/core/tour_menu.cpp:reveal_frames",
     "src/core/tour_menu.cpp:tour_menu_entry_frame"
    ],
    "range_ends": [
@@ -2111,7 +2113,8 @@
    "address": "$80:F814",
    "native": [
     "src/core/award.cpp:upload_rider",
-    "src/core/front_end_screens.hpp:upload_pose"
+    "src/core/front_end_screens.hpp:upload_pose",
+    "src/core/tour_ending_scripts.hpp:upload_built_pose"
    ],
    "region": "rom"
   },
@@ -4571,7 +4574,7 @@
     "src/core/award.cpp:(file)",
     "src/core/award.cpp:apply_unlock_rule",
     "src/core/award.cpp:way_back_frame",
-    "src/core/front_end_screens.hpp:run_nmi_hook"
+    "src/core/front_end_screens.hpp:way_back_frame"
    ],
    "range_ends": [
     "$83:88C5"
@@ -4896,7 +4899,7 @@
     "src/core/award.cpp:fade_out_frames, blank_frame, reset_frame, background_tiles_frame, podium_map_frame, podium_tiles_frame, colours_frame, objects_frame, rider_frame, first_fade_in_frame, fade_in_frames",
     "src/core/award.cpp:fade_up",
     "src/core/front_end_screens.hpp:fade_up",
-    "src/core/front_end_screens.hpp:run_nmi_hook"
+    "src/core/front_end_screens.hpp:way_back_frame"
    ],
    "region": "rom"
   },
@@ -4906,7 +4909,7 @@
     "src/core/award.cpp:fade_down",
     "src/core/award.cpp:fade_out_frames, blank_frame, reset_frame, background_tiles_frame, podium_map_frame, podium_tiles_frame, colours_frame, objects_frame, rider_frame, first_fade_in_frame, fade_in_frames",
     "src/core/front_end_screens.hpp:fade_down",
-    "src/core/front_end_screens.hpp:run_nmi_hook"
+    "src/core/front_end_screens.hpp:way_back_frame"
    ],
    "region": "rom"
   },
@@ -4955,14 +4958,7 @@
     "src/core/front_end.cpp:restore_menu_screen",
     "src/core/front_end.cpp:set_menu_registers",
     "src/core/front_end_screens.hpp:restore_menu_screen",
-    "src/core/front_end_screens.hpp:run_nmi_hook"
-   ],
-   "region": "rom"
-  },
-  {
-   "address": "$83:A90B",
-   "native": [
-    "src/core/tour_ending.cpp:menus_back_frame"
+    "src/core/front_end_screens.hpp:way_back_frame"
    ],
    "region": "rom"
   },
@@ -5669,7 +5665,7 @@
   {
    "address": "$83:C35F",
    "native": [
-    "src/core/tour_ending_scripts.cpp:blast_pose"
+    "src/core/tour_ending_scripts.cpp:firing_pose"
    ],
    "region": "rom"
   },
@@ -5694,7 +5690,7 @@
   {
    "address": "$83:C3E7",
    "native": [
-    "src/core/tour_ending_scripts.cpp:blast_pose"
+    "src/core/tour_ending_scripts.cpp:firing_pose"
    ],
    "region": "rom"
   },
@@ -5717,6 +5713,13 @@
    "address": "$83:C4A4",
    "native": [
     "src/core/tour_ending_scripts.hpp:clear_third_pose_tiles"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:C5F6",
+   "native": [
+    "src/core/tour_ending.cpp:first_countdown, first_flare, second_flare, burst, white_out, flash_hidden, colour_writes"
    ],
    "region": "rom"
   },
@@ -8651,7 +8654,8 @@
     "src/core/front_end.hpp:TourEnding::count",
     "src/core/tour_ending_right_column.cpp:drop_part",
     "src/core/tour_ending_right_column.cpp:knock_part",
-    "src/core/tour_ending_scripts.cpp:blast_pose",
+    "src/core/tour_ending_scripts.cpp:blast_up_part",
+    "src/core/tour_ending_scripts.cpp:firing_pose",
     "src/core/tour_ending_scripts.cpp:roll_on_part"
    ],
    "region": "sram"
@@ -9908,14 +9912,6 @@
     "$00AC"
    ]
   },
-  "src/core/front_end_screens.hpp:run_nmi_hook": {
-   "rom": [
-    "$83:8853",
-    "$83:A4D2",
-    "$83:A4E9",
-    "$83:A721"
-   ]
-  },
   "src/core/front_end_screens.hpp:send_arrow_off": {
    "rom": [
     "$80:98A4"
@@ -9967,6 +9963,14 @@
     "$80:F814",
     "$80:F818",
     "$83:8E3A"
+   ]
+  },
+  "src/core/front_end_screens.hpp:way_back_frame": {
+   "rom": [
+    "$83:8853",
+    "$83:A4D2",
+    "$83:A4E9",
+    "$83:A721"
    ]
   },
   "src/core/hunter_effects.cpp:count_hunter_mosaic": {
@@ -12369,14 +12373,14 @@
     "$00D0"
    ]
   },
+  "src/core/tour_ending.cpp:first_countdown, first_flare, second_flare, burst, white_out, flash_hidden, colour_writes": {
+   "rom": [
+    "$83:C5F6"
+   ]
+  },
   "src/core/tour_ending.cpp:first_loads": {
    "rom": [
     "$83:A507"
-   ]
-  },
-  "src/core/tour_ending.cpp:menus_back_frame": {
-   "rom": [
-    "$83:A90B"
    ]
   },
   "src/core/tour_ending_right_column.cpp:(file)": {
@@ -12550,18 +12554,12 @@
     "$83:C3BB"
    ]
   },
-  "src/core/tour_ending_scripts.cpp:blast_pose": {
-   "rom": [
-    "$83:C35F",
-    "$83:C3E7"
-   ],
-   "sram": [
-    "$77:10CB"
-   ]
-  },
   "src/core/tour_ending_scripts.cpp:blast_up_part": {
    "rom": [
     "$83:C33A"
+   ],
+   "sram": [
+    "$77:10CB"
    ]
   },
   "src/core/tour_ending_scripts.cpp:bounce_part": {
@@ -12595,6 +12593,15 @@
   "src/core/tour_ending_scripts.cpp:fire_part": {
    "rom": [
     "$83:C302"
+   ]
+  },
+  "src/core/tour_ending_scripts.cpp:firing_pose": {
+   "rom": [
+    "$83:C35F",
+    "$83:C3E7"
+   ],
+   "sram": [
+    "$77:10CB"
    ]
   },
   "src/core/tour_ending_scripts.cpp:hit_part": {
@@ -12678,6 +12685,7 @@
   },
   "src/core/tour_ending_scripts.hpp:upload_built_pose": {
    "rom": [
+    "$80:F814",
     "$83:A923"
    ]
   },
@@ -12759,6 +12767,12 @@
     "$80:BC03",
     "$80:E550",
     "$83:893C"
+   ]
+  },
+  "src/core/tour_menu.cpp:reveal_frames": {
+   "rom": [
+    "$80:A858",
+    "$80:E580"
    ]
   },
   "src/core/tour_menu.cpp:set_arrow_mirror": {
@@ -13556,7 +13570,7 @@
  "totals": {
   "addresses": 1018,
   "io_addresses": 5,
-  "native_symbols": 733,
+  "native_symbols": 734,
   "rom_addresses": 728,
   "sram_addresses": 33,
   "wram_addresses": 252
