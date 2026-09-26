@@ -124,8 +124,7 @@ fade: PICK TRACK slides in over the result at brightness 14.
 - **Scoring** (`$83:879A`). A win needs the player's total strictly below the opponent's: a tie
   is a loss.
   - A win marks the track done (`$77:1075 + track`, the track's low six bits, `$83:9EC8`). The
-    tour's fifth done track completes it (not
-    recovered; native refuses it).
+    tour's fifth done track completes it (not recovered; native refuses it).
   - A loss sets `$77:0742` bit 12. PICK TRACK's exit (`$80:EA14`) clears it and takes one from
     `$77:1073`.
   - Nothing reads `$77:1073`, and `$83:87E9`, a jump to the main loop, has no caller. **There is
