@@ -3627,7 +3627,8 @@
     "NMX"
    ],
    "native": [
-    "src/core/race_update.cpp:update_rider_contact"
+    "src/core/race_update.cpp:update_rider_contact",
+    "src/core/rider_look.hpp:advance_rider_look"
    ],
    "observed_entries": {},
    "start": "$81:8E43",

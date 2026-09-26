@@ -7588,8 +7588,7 @@
   "comment": "instruction start",
   "label": "loc_81D1B2",
   "source_records": [
-   "docs/research/R-0043-classic-race-hud.md",
-   "tasks/RACE-OFFSCREEN-ARROW.md"
+   "docs/research/R-0043-classic-race-hud.md"
   ]
  },
  {
@@ -7598,8 +7597,7 @@
   "comment": "instruction start",
   "label": "loc_81D30C",
   "source_records": [
-   "docs/research/R-0043-classic-race-hud.md",
-   "tasks/RACE-OFFSCREEN-ARROW.md"
+   "docs/research/R-0043-classic-race-hud.md"
   ]
  },
  {
@@ -7792,8 +7790,7 @@
    "src/core/race_hud.cpp:draw_classic_arrow"
   ],
   "source_records": [
-   "docs/research/R-0043-classic-race-hud.md",
-   "tasks/RACE-OFFSCREEN-ARROW.md"
+   "docs/research/R-0043-classic-race-hud.md"
   ]
  },
  {
@@ -7806,8 +7803,7 @@
    "src/core/race_hud.cpp:draw_classic_arrow"
   ],
   "source_records": [
-   "docs/research/R-0043-classic-race-hud.md",
-   "tasks/RACE-OFFSCREEN-ARROW.md"
+   "docs/research/R-0043-classic-race-hud.md"
   ]
  },
  {

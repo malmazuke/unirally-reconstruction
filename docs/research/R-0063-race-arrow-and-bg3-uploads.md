@@ -40,7 +40,9 @@ stunt event's field (`$12C9`), then the caption (`$0EE7`). The addresses R-0061 
 A caption, or its blank after the queue runs dry, therefore waits a picture for each field ahead of
 it. The clock is the usual one: the hints' cadence keeps the queue's consumptions on the updates
 where the tenth ticks. Native now requests the caption when the player's queue takes an event (its
-read cursor steps forward), or on the first dry look after an event was taken, and serves it last.
+read cursor steps forward, or its display leaves the dry state, which also covers an event pushed
+to the front of the queue in the same update; on the HUNTER tour also when the carried caption
+changes), or on the first dry look after an event was taken, and serves it last.
 This replaces R-0061's measured rule for the blank, which fitted only because dry looks fall on tick
 updates. The research's first formulation, a request whenever the cooldown rises, failed where the
 hints end in the same update as a consumption.
@@ -51,7 +53,11 @@ The look (R-0036) reads each rider's head point, `$1265,Y`, which only the rider
 writes. While the corkscrew or the loop carries a rider the contact does not run, so the point stays
 at the pose of the last contact. Native had taken the current pose's point; in the track 25 race
 SILVIA is in the corkscrew and MIKE's look turned two pictures early. Native now keeps point 0 of
-the pose of the latest update whose contact ran, plus the current position.
+the pose of the latest update whose contact ran, plus the current position. The race state does not
+store whether the contact ran, so the look infers it from what the update leaves: the corkscrew's
+physics hold and the loop's cooldown and step. The captures confirm the corkscrew case; the loop's is
+covered by native tests only. A history started from a restored state uses the current pose until
+the rider's next contact.
 
 ## Evidence
 
@@ -62,7 +68,8 @@ checked each rule against the original's own memory:
   mismatches.
 - The head point against `$1265-$1268` on all 36,536 rider updates of six captures.
 
-The native pictures (`checks/`, and the gates), before and after:
+The native pictures (`checks/`: the scripts, and the logs of the base, built from the claim commit,
+and of the final code; and the gates), before and after:
 
 | Comparison | Before (differing pixels) | After |
 | --- | ---: | ---: |
