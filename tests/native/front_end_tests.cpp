@@ -426,7 +426,7 @@ synthetic_content(std::vector<std::vector<std::uint8_t>> &storage) {
     content.assets[id] = keep(32);
   content.stunt_result_text = bytes({0xf7, 0xce, 0x00, 0xfc, 0x02, 0xff, // table
                                      0xff,                                 // 1P dashes
-                                     0xfe, 0x13, 0x16, 0xfd, 0xc0, 0x00, 0xff, // total
+                                     0xfe, 0x13, 0x17, 0xfd, 0xc0, 0x00, 0xff, // total
                                      0xff,                                 // 2P total
                                      0xfe, 0x13, 0x18, 0xfd, 0xb2, 0x00, 0xff, // qualify
                                      0xfe, 0x13, 0x14, 0xfd, 0xc0, 0x00, 0xff, // record
@@ -1584,6 +1584,14 @@ void stunt_result_tests() {
           won.records.record_holders[0][2] == 5 &&
           won.records.record_times[1][2] == 60 &&
           won.records.record_holders[1][2] == 0);
+  // The statistics count a tie with the computer's 0 as a win (`$80:C948`):
+  // 0 points is not a quit.
+  auto tie = to_stunt(0);
+  run(tie, content, 10 + 16 + 8 + 14 * 3 + 16 + 4);
+  run(tie, content, 2, {0x0080, 0});
+  require(run_to(tie, content, FrontEndScreen::track_menu_entry, {}, 6));
+  require(tie.records.statistics[0][0] == 1 && tie.records.statistics[0][1] == 1 &&
+          tie.records.player_wins == 1 && tie.records.race_lost);
   // The rider's best medal on the tour picks the word (`$83:9EEB`): bronze's
   // 130, and gold counts as silver, 250.
   const auto scored_with_medal = [&](std::uint16_t score, std::uint8_t medal) {

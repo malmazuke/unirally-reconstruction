@@ -56,7 +56,6 @@ bool pressed(FrontEndPads pads) {
     return pads.one != 0 || pads.two != 0;
 }
 
-
 std::uint8_t track_of(const FrontEndState& state) {
     return state.tour_menu.track;
 }
