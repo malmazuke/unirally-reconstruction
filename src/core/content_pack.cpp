@@ -688,6 +688,34 @@ const std::array<RequiredEntry, 36> stunt_tracks_required{{
     {"track.42.bg1-tiles", 22656,
      "a8c0086e3abdd3609bdd36ead0a5fc9fffd83b10780abf0c1acc443c96d664bd"},
 }};
+// STUNT-RESULT (profile v25): the stunt result's heads' colours, its texts and the tally's
+// cells (tools/unirally_lab/content/front_end.py v25_new_entries, R-0067).
+const std::array<RequiredEntry, 22> stunt_result_required{{
+    {"front-end.asset.038", 32, "70cc7b91f6f2e9cfe57e84b265f8efd2d052e6462aaf028c9cbea24acadb0676"},
+    {"front-end.asset.039", 32, "6069bda58f490d015b4561ab8b2c25bead75739790b3c112b87ee6b970690bce"},
+    {"front-end.asset.040", 32, "84c8b3f8f8eebe2ccf8e4c34a4d756788c8468d08530fcbb09e3c044750ff3ff"},
+    {"front-end.asset.041", 32, "0c0e4a3eb8bda9ea6bbd3b5bbc82d63fa0bdff0caa2164a77df6cbffbc175d9e"},
+    {"front-end.asset.042", 32, "2ab803e11e68dd7d69a3ca9aa59480a5ae40b89bf4c42914c22bb6886a090286"},
+    {"front-end.asset.043", 32, "72b47efa34917d65cca353255cf95db0abe0f421a77a2d574660849f51d995e4"},
+    {"front-end.asset.044", 32, "43b306e058a2f9df58376aef0600919a3c0f573cfc4ee90d20500ce3f38dd1e4"},
+    {"front-end.asset.045", 32, "7cb154211217a664358fdf09615b49cbb5ae72eed1bd2c741c3dbb58d80297a6"},
+    {"front-end.asset.046", 32, "7c5b80c7255580acb10e3f9d62d5e9771be747594ff30ec41a834454bf0ae83f"},
+    {"front-end.asset.047", 32, "1c3b01de2ce23a417bea0b9a53109122c0426e8057879f583a355c9c8a875bc9"},
+    {"front-end.asset.048", 32, "dd35578bea05c85bd832b84c1599ae465b18e4f0178e0a3722562bca7be66322"},
+    {"front-end.asset.049", 32, "e183edf29e04ca92df40dc0f8eb91d23240d98b837c77060e047b8b412795e24"},
+    {"front-end.asset.050", 32, "52536bf34d7f061c5331dd62ed3aba1366fb7c76ff3f27dd0d85e8c2d07fc168"},
+    {"front-end.asset.051", 32, "78f3414f9e79c9f6df77724d1fdcae4dc367b9e8391876de42fc17589d182b30"},
+    {"front-end.asset.052", 32, "451630ecf36724ee52122c896013b0222083dba50c9a22b6404d41af072100ae"},
+    {"front-end.asset.053", 32, "03597ab3891673f89ce9dce83e9a9e2f44699b25a8250b039b56ed5268df6a7a"},
+    {"front-end.asset.054", 32, "7c5b80c7255580acb10e3f9d62d5e9771be747594ff30ec41a834454bf0ae83f"},
+    {"front-end.asset.055", 32, "5da69e9e1108d3e9b91367571035c50ddd637e0e9897116d3cb6da781ebce660"},
+    {"front-end.asset.056", 32, "825135f0791ae5ea0da005465a822c2f18c2589bcbcbf8d47bc96e16c728d794"},
+    {"front-end.asset.057", 32, "afe93533782ad240368d547d67c4a48ee361cb0e0066d97f7cb7a9e6f236fe09"},
+    {"front-end.stunt-result-text", 459,
+     "3be7b3e59a6e4a2b119b3050474b9ef90b5e99f9ce84a94c2b8669822ccbb205"},
+    {"front-end.stunt-tally-cells", 20,
+     "edf31d91dfd6cb00bec05b9a617a2bd3c553cd5cad7202e531268ba11c4da962"},
+}};
 // LOCKED-TOURS (profile v12): the race tracks of the five tours a cold start does not
 // list, and sceneries 1, 8 and 12. Generated from the rules file (tracks.py v12_new_entries).
 const std::array<RequiredEntry, 89> locked_tracks_required{{
@@ -848,7 +876,7 @@ const std::array<RequiredEntry, 89> locked_tracks_required{{
     {"scenery.12.palette", 352, "b2a9aefe13c1dc68454cf0a5c2bedb086c6e162dbea1df1f2ef108347d89ab63"},
 }};
 constexpr std::string_view two_track_rules_sha =
-    "7df2a59fdae465979d73ec0981bb6c18eca8df270cc4382f2ae00f44baed107a";
+    "f4e1692ad5fe4e68413c344b83b80e1c729c9329e0e908392dfa68adcf0d1f2f";
 
 std::array<std::uint8_t, 32> hex_digest(std::string_view text) {
     if (text.size() != 64) throw std::logic_error("invalid compiled Classic SHA-256");
@@ -938,7 +966,7 @@ std::array<std::uint8_t, 32> sha256(std::span<const std::uint8_t> source) {
 
 namespace {
 constexpr std::array<std::string_view, 2> supported_profiles{"classic.pal.crawler.dragster.v1",
-                                                             "classic.pal.crawler.tracks.v24"};
+                                                             "classic.pal.crawler.tracks.v25"};
 } // namespace
 
 std::span<const std::string_view> supported_pack_profiles() {
@@ -1006,7 +1034,8 @@ std::vector<RequiredEntry> required_entries(bool tracks) {
                              std::span<const RequiredEntry>(race_pairing_required),
                              std::span<const RequiredEntry>(ending_required),
                              std::span<const RequiredEntry>(hunter_ending_required),
-                             std::span<const RequiredEntry>(stunt_tracks_required)})
+                             std::span<const RequiredEntry>(stunt_tracks_required),
+                             std::span<const RequiredEntry>(stunt_result_required)})
         out.insert(out.end(), table.begin(), table.end());
     return out;
 }
