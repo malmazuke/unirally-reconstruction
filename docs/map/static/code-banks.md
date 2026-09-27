@@ -22,8 +22,8 @@ The four classes partition all 131,072 bytes. **Unknown share: 40.4%** - above D
 | Instructions from observed | 17,569 |
 | Instructions from table | 587 |
 | Routines | 636 |
-| Routines cited by native code | 350 |
-| Routine bytes cited by native code | 46,273 |
+| Routines cited by native code | 357 |
+| Routine bytes cited by native code | 46,891 |
 | Gap sweep candidate instructions | 2,746 |
 | Gap sweep candidate bytes | 6,174 |
 | Jump tables | 2 |
@@ -45,7 +45,7 @@ The four classes partition all 131,072 bytes. **Unknown share: 40.4%** - above D
 
 ## Cited addresses
 
-1254 distinct code-bank ROM addresses cited by the research, task, inventory and content records (`labels.json`). By position: dat 23, loc 748, mid 18, sub 295, unk 170 (sub routine start, loc instruction start, mid inside an instruction, dat data, unk unknown). By class: data 23, inferred 194, observed 867, unknown 170.
+1299 distinct code-bank ROM addresses cited by the research, task, inventory and content records (`labels.json`). By position: dat 23, loc 789, mid 18, sub 298, unk 171 (sub routine start, loc instruction start, mid inside an instruction, dat data, unk unknown). By class: data 23, inferred 216, observed 889, unknown 171.
 
 Cited addresses in `unknown` bytes:
 
@@ -146,19 +146,19 @@ Cited addresses in `unknown` bytes:
 | $80:EA40 | docs/research/R-0056-tour-track-now-playing.md |
 | $80:EA58 | docs/research/R-0056-tour-track-now-playing.md |
 | $80:EB61 | docs/research/R-0056-tour-track-now-playing.md |
-| $80:F0EE | docs/research/R-0057-one-run-result.md, docs/research/R-0058-lap-result.md |
+| $80:F0EE | docs/research/R-0057-one-run-result.md, docs/research/R-0058-lap-result.md, docs/research/R-0066-stunt-event-race.md |
 | $80:F618 | docs/research/R-0054-boot-title-main-menu.md |
 | $80:FACD | docs/research/R-0054-boot-title-main-menu.md |
 | $80:FBC5 | docs/research/R-0054-boot-title-main-menu.md |
 | $80:FC5C | docs/research/R-0056-tour-track-now-playing.md |
 | $80:FFC0 | docs/research/R-0001-rom-identity.md, docs/research/R-0045-static-code-map.md |
 | $81:A342 | docs/research/R-0046-track-breadth-matrix.md |
-| $81:A343 | docs/research/R-0046-track-breadth-matrix.md |
+| $81:A343 | docs/research/R-0046-track-breadth-matrix.md, docs/research/R-0066-stunt-event-race.md |
 | $81:A388 | docs/research/R-0046-track-breadth-matrix.md |
 | $81:A3C7 | docs/research/R-0046-track-breadth-matrix.md |
 | $81:A406 | docs/research/R-0046-track-breadth-matrix.md |
 | $81:BA4B | docs/research/R-0008-track-decode.md, tasks/M1-03.md |
-| $81:C50A | docs/research/R-0011-motion.md |
+| $81:C50A | docs/research/R-0011-motion.md, docs/research/R-0066-stunt-event-race.md |
 | $81:CC17 | docs/research/R-0048-race-guards.md |
 | $82:833B | docs/research/R-0036-zoom-zoo-rider-objects.md, docs/research/R-0045-static-code-map.md |
 | $82:834B | docs/research/R-0036-zoom-zoo-rider-objects.md |
@@ -180,7 +180,7 @@ Cited addresses in `unknown` bytes:
 | $83:8815 | docs/research/R-0065-fifth-win-completion.md |
 | $83:88D3 | docs/research/R-0058-lap-result.md, docs/research/R-0065-fifth-win-completion.md |
 | $83:88DD | docs/research/R-0065-fifth-win-completion.md |
-| $83:88E1 | docs/research/R-0065-fifth-win-completion.md |
+| $83:88E1 | docs/research/R-0065-fifth-win-completion.md, docs/research/R-0066-stunt-event-race.md |
 | $83:88F1 | docs/research/R-0065-fifth-win-completion.md |
 | $83:8D5D | docs/research/R-0058-lap-result.md, tasks/FRONT-END-LAP-RESULT.md |
 | $83:8E1C | docs/research/R-0056-tour-track-now-playing.md |
@@ -196,6 +196,7 @@ Cited addresses in `unknown` bytes:
 | $83:9FFA | docs/research/R-0046-track-breadth-matrix.md, docs/research/R-0053-result-title-printer.md, tasks/LOCKED-TOURS.md, tasks/TRACK-BREADTH.md |
 | $83:A1B4 | docs/research/R-0056-tour-track-now-playing.md |
 | $83:A1DA | docs/research/R-0008-track-decode.md |
+| $83:A218 | docs/research/R-0066-stunt-event-race.md |
 | $83:A254 | docs/research/R-0056-tour-track-now-playing.md |
 | $83:A507 | docs/research/R-0062-gold-endings.md |
 | $83:A575 | docs/research/R-0062-gold-endings.md |

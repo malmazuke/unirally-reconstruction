@@ -1348,6 +1348,21 @@
   ]
  },
  {
+  "address": "$80:99ED",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_8099ED",
+  "native": [
+   "src/core/race_result.cpp:one_player_race_scenario",
+   "src/core/race_setup.cpp:classic_race_start",
+   "src/core/race_setup.cpp:restart_zoom_zoo",
+   "src/core/zoom_zoo_movement.hpp:StuntEvent::qualifying_score"
+  ],
+  "source_records": [
+   "docs/research/R-0066-stunt-event-race.md"
+  ]
+ },
+ {
   "address": "$80:9A27",
   "class": "observed",
   "comment": "instruction start",
@@ -1368,6 +1383,7 @@
    "docs/research/R-0057-one-run-result.md",
    "docs/research/R-0058-lap-result.md",
    "docs/research/R-0060-pause-exits.md",
+   "docs/research/R-0066-stunt-event-race.md",
    "tasks/FRONT-END-LAP-RESULT.md",
    "tasks/RACE-PAUSE-EXITS.md"
   ]
@@ -1845,6 +1861,19 @@
   ]
  },
  {
+  "address": "$80:B351",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80B351",
+  "native": [
+   "src/core/now_playing.cpp:print_now_playing",
+   "src/core/race_setup.cpp:stunt_scenario"
+  ],
+  "source_records": [
+   "docs/research/R-0066-stunt-event-race.md"
+  ]
+ },
+ {
   "address": "$80:B361",
   "class": "observed",
   "comment": "instruction start",
@@ -1852,10 +1881,12 @@
   "native": [
    "src/core/now_playing.cpp:opponent_for",
    "src/core/now_playing.cpp:print_now_playing",
-   "src/core/race_setup.cpp:classic_race_scenario"
+   "src/core/race_setup.cpp:classic_race_scenario",
+   "src/core/race_setup.cpp:stunt_scenario"
   ],
   "source_records": [
-   "docs/research/R-0056-tour-track-now-playing.md"
+   "docs/research/R-0056-tour-track-now-playing.md",
+   "docs/research/R-0066-stunt-event-race.md"
   ]
  },
  {
@@ -4144,9 +4175,13 @@
   "class": "unknown",
   "comment": "unknown",
   "label": "unk_80F0EE",
+  "native": [
+   "src/core/race_setup.cpp:stunt_stable_result"
+  ],
   "source_records": [
    "docs/research/R-0057-one-run-result.md",
-   "docs/research/R-0058-lap-result.md"
+   "docs/research/R-0058-lap-result.md",
+   "docs/research/R-0066-stunt-event-race.md"
   ]
  },
  {
@@ -5014,6 +5049,20 @@
   ]
  },
  {
+  "address": "$81:8709",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_818709",
+  "native": [
+   "src/core/race_update.cpp:begin_rider_update",
+   "src/core/race_update.cpp:update_zoom_zoo",
+   "src/core/special_tiles.cpp:update_special_tile_counters"
+  ],
+  "source_records": [
+   "docs/research/R-0066-stunt-event-race.md"
+  ]
+ },
+ {
   "address": "$81:871C",
   "class": "observed",
   "comment": "routine start",
@@ -5132,6 +5181,7 @@
   ],
   "source_records": [
    "docs/research/R-0046-track-breadth-matrix.md",
+   "docs/research/R-0066-stunt-event-race.md",
    "tasks/TRACK-BREADTH.md"
   ]
  },
@@ -5750,6 +5800,18 @@
   ],
   "source_records": [
    "docs/research/R-0047-special-tiles.md"
+  ]
+ },
+ {
+  "address": "$81:8E53",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_818E53",
+  "native": [
+   "src/core/race_update.cpp:rider_passes"
+  ],
+  "source_records": [
+   "docs/research/R-0066-stunt-event-race.md"
   ]
  },
  {
@@ -6748,7 +6810,8 @@
    "src/core/zoom_zoo_movement.hpp:TrackGeometry"
   ],
   "source_records": [
-   "docs/research/R-0046-track-breadth-matrix.md"
+   "docs/research/R-0046-track-breadth-matrix.md",
+   "docs/research/R-0066-stunt-event-race.md"
   ]
  },
  {
@@ -6871,7 +6934,8 @@
    "src/core/race_setup.cpp:track_geometry"
   ],
   "source_records": [
-   "docs/research/R-0046-track-breadth-matrix.md"
+   "docs/research/R-0046-track-breadth-matrix.md",
+   "docs/research/R-0066-stunt-event-race.md"
   ]
  },
  {
@@ -7193,8 +7257,55 @@
   ],
   "source_records": [
    "docs/research/R-0042-stunt-name-captions.md",
+   "docs/research/R-0066-stunt-event-race.md",
    "tasks/CLASSIC-STUNT-NAMES-review.md",
    "tasks/CLASSIC-STUNT-NAMES.md"
+  ]
+ },
+ {
+  "address": "$81:C0FF",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_81C0FF",
+  "native": [
+   "src/core/race_hud.cpp:classic_caption_tile",
+   "src/core/reward_queue.cpp:show_next_player_announcement",
+   "src/core/reward_queue.cpp:update_opponent_announcements",
+   "src/core/stunt_event.hpp:tally_stunt_trick",
+   "src/core/zoom_zoo_movement.hpp:TrickTally"
+  ],
+  "source_records": [
+   "docs/research/R-0066-stunt-event-race.md"
+  ]
+ },
+ {
+  "address": "$81:C12A",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_81C12A",
+  "native": [
+   "src/core/race_hud.cpp:classic_caption_tile",
+   "src/core/race_state_io.cpp:read_stunt_event",
+   "src/core/reward_queue.cpp:show_next_player_announcement",
+   "src/core/reward_queue.cpp:update_opponent_announcements"
+  ],
+  "source_records": [
+   "docs/research/R-0066-stunt-event-race.md"
+  ]
+ },
+ {
+  "address": "$81:C173",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_81C173",
+  "native": [
+   "src/core/race_hud.cpp:classic_caption_tile",
+   "src/core/reward_queue.cpp:show_next_player_announcement",
+   "src/core/reward_queue.cpp:update_opponent_announcements",
+   "src/core/stunt_event.hpp:tally_stunt_trick"
+  ],
+  "source_records": [
+   "docs/research/R-0066-stunt-event-race.md"
   ]
  },
  {
@@ -7324,7 +7435,8 @@
   "comment": "unknown",
   "label": "unk_81C50A",
   "source_records": [
-   "docs/research/R-0011-motion.md"
+   "docs/research/R-0011-motion.md",
+   "docs/research/R-0066-stunt-event-race.md"
   ]
  },
  {
@@ -7368,7 +7480,8 @@
   "comment": "instruction start",
   "label": "loc_81C6A0",
   "source_records": [
-   "docs/research/R-0010-input-timer.md"
+   "docs/research/R-0010-input-timer.md",
+   "docs/research/R-0066-stunt-event-race.md"
   ]
  },
  {
@@ -7611,6 +7724,123 @@
   "label": "loc_81C75E",
   "source_records": [
    "tasks/M4-16-review.md"
+  ]
+ },
+ {
+  "address": "$81:C7CE",
+  "class": "inferred",
+  "comment": "routine start",
+  "label": "sub_81C7CE",
+  "native": [
+   "src/core/stunt_event.hpp:update_stunt_clock"
+  ],
+  "source_records": [
+   "docs/research/R-0066-stunt-event-race.md"
+  ]
+ },
+ {
+  "address": "$81:C7D2",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_81C7D2",
+  "native": [
+   "src/core/stunt_event.cpp:update_stunt_clock",
+   "src/core/stunt_event.hpp:update_stunt_clock"
+  ],
+  "source_records": [
+   "docs/research/R-0066-stunt-event-race.md"
+  ]
+ },
+ {
+  "address": "$81:C7DE",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_81C7DE",
+  "native": [
+   "src/core/stunt_event.cpp:count_down_tenth",
+   "src/core/stunt_event.cpp:updates_per_tenth",
+   "src/core/stunt_event.hpp:update_stunt_clock"
+  ],
+  "source_records": [
+   "docs/research/R-0066-stunt-event-race.md"
+  ]
+ },
+ {
+  "address": "$81:C7F4",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_81C7F4",
+  "native": [
+   "src/core/stunt_event.cpp:count_digit_down",
+   "src/core/stunt_event.cpp:count_down_tenth",
+   "src/core/stunt_event.hpp:update_stunt_clock"
+  ],
+  "source_records": [
+   "docs/research/R-0066-stunt-event-race.md"
+  ]
+ },
+ {
+  "address": "$81:C830",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_81C830",
+  "native": [
+   "src/core/race_state_io.cpp:stopped_stunt_clock",
+   "src/core/stunt_event.cpp:count_down_tenth",
+   "src/core/stunt_event.hpp:update_stunt_clock",
+   "src/core/zoom_zoo_movement.hpp:StuntEvent::clock_stopped"
+  ],
+  "source_records": [
+   "docs/research/R-0066-stunt-event-race.md"
+  ]
+ },
+ {
+  "address": "$81:C836",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_81C836",
+  "native": [
+   "src/core/race_state_io.cpp:stopped_stunt_clock",
+   "src/core/stunt_event.cpp:count_down_tenth",
+   "src/core/stunt_event.hpp:stunt_rider_can_finish",
+   "src/core/stunt_event.hpp:update_stunt_clock",
+   "src/core/zoom_zoo_movement.hpp:StuntEvent::clock_stopped"
+  ],
+  "source_records": [
+   "docs/research/R-0066-stunt-event-race.md"
+  ]
+ },
+ {
+  "address": "$81:C838",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_81C838",
+  "native": [
+   "src/core/race_state_io.cpp:stopped_stunt_clock",
+   "src/core/stunt_event.cpp:count_down_tenth",
+   "src/core/stunt_event.cpp:unsupported_limit, fastest_finishing_fall",
+   "src/core/stunt_event.hpp:stunt_rider_can_finish",
+   "src/core/stunt_event.hpp:update_stunt_clock",
+   "src/core/zoom_zoo_movement.hpp:StuntEvent::clock_stopped"
+  ],
+  "source_records": [
+   "docs/research/R-0066-stunt-event-race.md"
+  ]
+ },
+ {
+  "address": "$81:C864",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_81C864",
+  "native": [
+   "src/core/race_state_io.cpp:stopped_stunt_clock",
+   "src/core/stunt_event.cpp:count_down_tenth",
+   "src/core/stunt_event.cpp:update_stunt_clock",
+   "src/core/stunt_event.hpp:update_stunt_clock",
+   "src/core/zoom_zoo_movement.hpp:StuntEvent::clock_stopped"
+  ],
+  "source_records": [
+   "docs/research/R-0066-stunt-event-race.md"
   ]
  },
  {
@@ -9170,6 +9400,27 @@
   ]
  },
  {
+  "address": "$82:8EAB",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_828EAB",
+  "native": [
+   "src/core/race_update.cpp:rider_passes"
+  ],
+  "source_records": [
+   "docs/research/R-0066-stunt-event-race.md"
+  ]
+ },
+ {
+  "address": "$82:8EB8",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_828EB8",
+  "source_records": [
+   "docs/research/R-0066-stunt-event-race.md"
+  ]
+ },
+ {
   "address": "$82:8FE8",
   "class": "observed",
   "comment": "instruction start",
@@ -9292,6 +9543,15 @@
   "label": "loc_829388",
   "source_records": [
    "docs/research/R-0017-opponent-first-audit.md"
+  ]
+ },
+ {
+  "address": "$82:9397",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_829397",
+  "source_records": [
+   "docs/research/R-0066-stunt-event-race.md"
   ]
  },
  {
@@ -10307,14 +10567,31 @@
   "label": "loc_82A81A",
   "native": [
    "src/core/race_update.cpp:run_physics",
-   "src/core/speed_limits.cpp:limit_rider_speed"
+   "src/core/speed_limits.cpp:bowl_track, hunter_stunt_track",
+   "src/core/speed_limits.cpp:limit_rider_speed",
+   "src/core/speed_limits.hpp:SpeedLimitContext::track"
   ],
   "source_records": [
    "docs/inventory/M4-11-vertical-velocity.md",
    "docs/research/R-0011-speed.md",
    "docs/research/R-0029-zoom-zoo-vertical-velocity.md",
+   "docs/research/R-0066-stunt-event-race.md",
    "tasks/M4-11-review.md",
    "tasks/M4-11.md"
+  ]
+ },
+ {
+  "address": "$82:A84F",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_82A84F",
+  "native": [
+   "src/core/race_update.cpp:run_physics",
+   "src/core/speed_limits.cpp:cap_falling_only",
+   "src/core/speed_limits.cpp:limit_rider_speed"
+  ],
+  "source_records": [
+   "docs/research/R-0066-stunt-event-race.md"
   ]
  },
  {
@@ -10540,6 +10817,19 @@
   ]
  },
  {
+  "address": "$82:AA7D",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82AA7D",
+  "native": [
+   "src/core/race_update.cpp:release_settled_player",
+   "src/core/zoom_zoo_movement.hpp:StuntEvent::settled"
+  ],
+  "source_records": [
+   "docs/research/R-0066-stunt-event-race.md"
+  ]
+ },
+ {
   "address": "$82:AAA4",
   "class": "observed",
   "comment": "instruction start",
@@ -10652,12 +10942,37 @@
   ]
  },
  {
+  "address": "$82:AB62",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82AB62",
+  "native": [
+   "src/core/zoom_zoo_movement.hpp:StuntEvent::settled"
+  ],
+  "source_records": [
+   "docs/research/R-0066-stunt-event-race.md"
+  ]
+ },
+ {
+  "address": "$82:AB6A",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82AB6A",
+  "native": [
+   "src/core/race_update.cpp:release_absent_opponent"
+  ],
+  "source_records": [
+   "docs/research/R-0066-stunt-event-race.md"
+  ]
+ },
+ {
   "address": "$82:AB6F",
   "class": "observed",
   "comment": "routine start",
   "label": "sub_82AB6F",
   "native": [
-   "src/core/opponent_ai.cpp:update_opponent_controller"
+   "src/core/opponent_ai.cpp:update_opponent_controller",
+   "src/core/race_update.cpp:release_absent_opponent"
   ],
   "source_records": [
    "docs/research/R-0048-race-guards.md",
@@ -11248,6 +11563,21 @@
   ]
  },
  {
+  "address": "$82:D7FD",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82D7FD",
+  "native": [
+   "src/core/race_setup.cpp:classic_crawler_zoom_zoo_start",
+   "src/core/race_setup.cpp:start_clock",
+   "src/core/race_setup.cpp:start_countdown, base_speed_cap",
+   "src/core/zoom_zoo_movement.hpp:classic_crawler_zoom_zoo_start"
+  ],
+  "source_records": [
+   "docs/research/R-0066-stunt-event-race.md"
+  ]
+ },
+ {
   "address": "$82:D841",
   "class": "observed",
   "comment": "instruction start",
@@ -11309,6 +11639,34 @@
   ]
  },
  {
+  "address": "$82:DA75",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82DA75",
+  "native": [
+   "src/core/race_setup.cpp:classic_crawler_zoom_zoo_start",
+   "src/core/race_setup.cpp:start_countdown, base_speed_cap",
+   "src/core/zoom_zoo_movement.hpp:classic_crawler_zoom_zoo_start"
+  ],
+  "source_records": [
+   "docs/research/R-0066-stunt-event-race.md"
+  ]
+ },
+ {
+  "address": "$82:DB1D",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82DB1D",
+  "native": [
+   "src/core/race_setup.cpp:classic_crawler_zoom_zoo_start",
+   "src/core/race_setup.cpp:start_countdown, base_speed_cap",
+   "src/core/zoom_zoo_movement.hpp:classic_crawler_zoom_zoo_start"
+  ],
+  "source_records": [
+   "docs/research/R-0066-stunt-event-race.md"
+  ]
+ },
+ {
   "address": "$82:DB96",
   "class": "observed",
   "comment": "instruction start",
@@ -11316,6 +11674,7 @@
   "native": [
    "src/core/race_setup.cpp:classic_crawler_zoom_zoo_start",
    "src/core/race_setup.cpp:start_countdown, base_speed_cap",
+   "src/core/race_setup.cpp:stunt_scenario",
    "src/core/zoom_zoo_movement.hpp:classic_crawler_zoom_zoo_start"
   ],
   "source_records": [
@@ -11793,8 +12152,13 @@
   "class": "unknown",
   "comment": "unknown",
   "label": "unk_8388E1",
+  "native": [
+   "src/core/race_progress.cpp:classic_race_player_won",
+   "src/core/zoom_zoo_movement.hpp:classic_race_player_won"
+  ],
   "source_records": [
-   "docs/research/R-0065-fifth-win-completion.md"
+   "docs/research/R-0065-fifth-win-completion.md",
+   "docs/research/R-0066-stunt-event-race.md"
   ]
  },
  {
@@ -11802,6 +12166,10 @@
   "class": "unknown",
   "comment": "unknown",
   "label": "unk_8388F1",
+  "native": [
+   "src/core/race_progress.cpp:classic_race_player_won",
+   "src/core/zoom_zoo_movement.hpp:classic_race_player_won"
+  ],
   "source_records": [
    "docs/research/R-0065-fifth-win-completion.md"
   ]
@@ -12291,6 +12659,18 @@
   ]
  },
  {
+  "address": "$83:99AD",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_8399AD",
+  "native": [
+   "src/core/zoom_zoo_movement.hpp:ClassicRaceScenario::stunt_event"
+  ],
+  "source_records": [
+   "docs/research/R-0066-stunt-event-race.md"
+  ]
+ },
+ {
   "address": "$83:99F6",
   "class": "observed",
   "comment": "routine start",
@@ -12431,10 +12811,15 @@
   "comment": "routine start",
   "label": "sub_839EEB",
   "native": [
-   "src/core/now_playing.cpp:print_now_playing"
+   "src/core/now_playing.cpp:print_now_playing",
+   "src/core/race_setup.cpp:tracks_per_tour, qualifying_levels",
+   "src/core/race_state_io.cpp:validate_zoom_zoo_content_state",
+   "src/core/zoom_zoo_movement.hpp:ClassicRaceScenario::best_medal",
+   "src/core/zoom_zoo_movement.hpp:stunt_qualifying_score"
   ],
   "source_records": [
-   "docs/research/R-0056-tour-track-now-playing.md"
+   "docs/research/R-0056-tour-track-now-playing.md",
+   "docs/research/R-0066-stunt-event-race.md"
   ]
  },
  {
@@ -12496,6 +12881,18 @@
   "label": "unk_83A1DA",
   "source_records": [
    "docs/research/R-0008-track-decode.md"
+  ]
+ },
+ {
+  "address": "$83:A218",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_83A218",
+  "native": [
+   "src/core/zoom_zoo_movement.hpp:ZoomZooContent::qualifying_scores"
+  ],
+  "source_records": [
+   "docs/research/R-0066-stunt-event-race.md"
   ]
  },
  {
@@ -13424,6 +13821,19 @@
   ]
  },
  {
+  "address": "$83:CBD8",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_83CBD8",
+  "native": [
+   "src/core/race_setup.cpp:opponent_tier",
+   "src/core/race_update.cpp:rider_passes"
+  ],
+  "source_records": [
+   "docs/research/R-0066-stunt-event-race.md"
+  ]
+ },
+ {
   "address": "$83:CBFC",
   "class": "inferred",
   "comment": "instruction start",
@@ -13473,11 +13883,13 @@
   "native": [
    "src/core/race_setup.cpp:classic_race_scenario",
    "src/core/race_setup.cpp:hunter_tier",
+   "src/core/race_setup.cpp:opponent_tier",
    "src/core/zoom_zoo_movement.hpp:OpponentTier"
   ],
   "source_records": [
    "docs/research/R-0050-locked-tours.md",
    "docs/research/R-0061-riders-and-opponents.md",
+   "docs/research/R-0066-stunt-event-race.md",
    "tasks/LOCKED-TOURS.md"
   ]
  },
@@ -13489,6 +13901,7 @@
   "native": [
    "src/core/race_setup.cpp:classic_race_scenario",
    "src/core/race_setup.cpp:hunter_tier",
+   "src/core/race_setup.cpp:opponent_tier",
    "src/core/zoom_zoo_movement.hpp:OpponentTier"
   ],
   "source_records": [
@@ -13504,6 +13917,7 @@
    "src/core/race_setup.cpp:classic_race_scenario",
    "src/core/race_setup.cpp:hunter_tier",
    "src/core/race_setup.cpp:opponent_level_base",
+   "src/core/race_setup.cpp:opponent_tier",
    "src/core/zoom_zoo_movement.hpp:OpponentTier"
   ],
   "source_records": [
@@ -13519,6 +13933,7 @@
    "src/core/race_setup.cpp:classic_race_scenario",
    "src/core/race_setup.cpp:hunter_tier",
    "src/core/race_setup.cpp:opponent_level_base",
+   "src/core/race_setup.cpp:opponent_tier",
    "src/core/zoom_zoo_movement.hpp:OpponentTier"
   ],
   "source_records": [
@@ -13527,6 +13942,22 @@
    "docs/research/R-0061-riders-and-opponents.md",
    "tasks/DRAGSTER-ORDINARY-CONTROLS-review.md",
    "tasks/LOCKED-TOURS.md"
+  ]
+ },
+ {
+  "address": "$83:CC72",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83CC72",
+  "native": [
+   "src/core/race_setup.cpp:classic_race_scenario",
+   "src/core/race_setup.cpp:hunter_tier",
+   "src/core/race_setup.cpp:opponent_level_base",
+   "src/core/race_setup.cpp:opponent_tier",
+   "src/core/zoom_zoo_movement.hpp:OpponentTier"
+  ],
+  "source_records": [
+   "docs/research/R-0066-stunt-event-race.md"
   ]
  },
  {
@@ -14029,6 +14460,18 @@
   ]
  },
  {
+  "address": "$83:E084",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83E084",
+  "native": [
+   "src/core/race_update.cpp:release_absent_opponent"
+  ],
+  "source_records": [
+   "docs/research/R-0066-stunt-event-race.md"
+  ]
+ },
+ {
   "address": "$83:E08C",
   "class": "observed",
   "comment": "instruction start",
@@ -14260,11 +14703,13 @@
   "native": [
    "src/core/presentation.hpp:classic_countdown_window",
    "src/core/presentation.hpp:dragster_window_table_index",
+   "src/core/race_update.cpp:CountdownPhases",
    "src/core/race_update.cpp:run_countdown",
    "src/core/race_windows.cpp:classic_countdown_window"
   ],
   "source_records": [
    "docs/research/R-0040-dragster-window-effects.md",
+   "docs/research/R-0066-stunt-event-race.md",
    "tasks/CLASSIC-PRESENTATION-UNIFICATION-review.md",
    "tasks/DRAGSTER-WINDOW-EFFECTS-review.md",
    "tasks/ZOOM-ZOO-WINDOW-EFFECTS.md"
@@ -14278,6 +14723,7 @@
   "native": [
    "src/core/presentation.hpp:classic_countdown_window",
    "src/core/presentation.hpp:dragster_window_table_index",
+   "src/core/race_update.cpp:CountdownPhases",
    "src/core/race_update.cpp:run_countdown",
    "src/core/race_windows.cpp:classic_countdown_window"
   ],
@@ -14294,6 +14740,7 @@
   "native": [
    "src/core/presentation.hpp:classic_countdown_window",
    "src/core/presentation.hpp:dragster_window_table_index",
+   "src/core/race_update.cpp:CountdownPhases",
    "src/core/race_update.cpp:run_countdown",
    "src/core/race_windows.cpp:classic_countdown_window"
   ],
@@ -14309,6 +14756,7 @@
   "native": [
    "src/core/presentation.hpp:classic_countdown_window",
    "src/core/presentation.hpp:dragster_window_table_index",
+   "src/core/race_update.cpp:CountdownPhases",
    "src/core/race_update.cpp:run_countdown",
    "src/core/race_windows.cpp:classic_countdown_window"
   ],
@@ -14324,6 +14772,7 @@
   "native": [
    "src/core/presentation.hpp:classic_countdown_window",
    "src/core/presentation.hpp:dragster_window_table_index",
+   "src/core/race_update.cpp:CountdownPhases",
    "src/core/race_update.cpp:run_countdown",
    "src/core/race_windows.cpp:classic_countdown_window"
   ],
@@ -14339,6 +14788,7 @@
   "native": [
    "src/core/presentation.hpp:classic_countdown_window",
    "src/core/presentation.hpp:dragster_window_table_index",
+   "src/core/race_update.cpp:CountdownPhases",
    "src/core/race_update.cpp:run_countdown",
    "src/core/race_windows.cpp:classic_countdown_window"
   ],
@@ -14354,6 +14804,7 @@
   "native": [
    "src/core/presentation.hpp:classic_countdown_window",
    "src/core/presentation.hpp:dragster_window_table_index",
+   "src/core/race_update.cpp:CountdownPhases",
    "src/core/race_update.cpp:run_countdown",
    "src/core/race_windows.cpp:classic_countdown_window"
   ],
@@ -14369,6 +14820,7 @@
   "native": [
    "src/core/presentation.hpp:classic_countdown_window",
    "src/core/presentation.hpp:dragster_window_table_index",
+   "src/core/race_update.cpp:CountdownPhases",
    "src/core/race_update.cpp:run_countdown",
    "src/core/race_windows.cpp:classic_countdown_window",
    "src/core/race_windows.cpp:classic_window_transition_member",
@@ -14387,6 +14839,7 @@
   "native": [
    "src/core/presentation.hpp:classic_countdown_window",
    "src/core/presentation.hpp:dragster_window_table_index",
+   "src/core/race_update.cpp:CountdownPhases",
    "src/core/race_update.cpp:run_countdown",
    "src/core/race_windows.cpp:classic_countdown_window"
   ],
@@ -14402,6 +14855,7 @@
   "native": [
    "src/core/presentation.hpp:classic_countdown_window",
    "src/core/presentation.hpp:dragster_window_table_index",
+   "src/core/race_update.cpp:CountdownPhases",
    "src/core/race_update.cpp:run_countdown",
    "src/core/race_windows.cpp:classic_countdown_window"
   ],
@@ -14417,6 +14871,7 @@
   "native": [
    "src/core/presentation.hpp:classic_countdown_window",
    "src/core/presentation.hpp:dragster_window_table_index",
+   "src/core/race_update.cpp:CountdownPhases",
    "src/core/race_update.cpp:run_countdown",
    "src/core/race_windows.cpp:classic_countdown_window"
   ],
@@ -14432,6 +14887,7 @@
   "native": [
    "src/core/presentation.hpp:classic_countdown_window",
    "src/core/presentation.hpp:dragster_window_table_index",
+   "src/core/race_update.cpp:CountdownPhases",
    "src/core/race_update.cpp:run_countdown",
    "src/core/race_windows.cpp:classic_countdown_window"
   ],
@@ -14447,6 +14903,7 @@
   "native": [
    "src/core/presentation.hpp:classic_countdown_window",
    "src/core/presentation.hpp:dragster_window_table_index",
+   "src/core/race_update.cpp:CountdownPhases",
    "src/core/race_update.cpp:run_countdown",
    "src/core/race_windows.cpp:classic_countdown_window"
   ],
@@ -14462,6 +14919,7 @@
   "native": [
    "src/core/presentation.hpp:classic_countdown_window",
    "src/core/presentation.hpp:dragster_window_table_index",
+   "src/core/race_update.cpp:CountdownPhases",
    "src/core/race_update.cpp:run_countdown",
    "src/core/race_windows.cpp:classic_countdown_window"
   ],
@@ -14477,11 +14935,28 @@
   "native": [
    "src/core/presentation.hpp:classic_countdown_window",
    "src/core/presentation.hpp:dragster_window_table_index",
+   "src/core/race_update.cpp:CountdownPhases",
    "src/core/race_update.cpp:run_countdown",
    "src/core/race_windows.cpp:classic_countdown_window"
   ],
   "source_records": [
    "tasks/ZOOM-ZOO-WINDOW-EFFECTS-review.md"
+  ]
+ },
+ {
+  "address": "$83:E686",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83E686",
+  "native": [
+   "src/core/presentation.hpp:classic_countdown_window",
+   "src/core/presentation.hpp:dragster_window_table_index",
+   "src/core/race_update.cpp:CountdownPhases",
+   "src/core/race_update.cpp:run_countdown",
+   "src/core/race_windows.cpp:classic_countdown_window"
+  ],
+  "source_records": [
+   "docs/research/R-0066-stunt-event-race.md"
   ]
  },
  {
@@ -14492,6 +14967,7 @@
   "native": [
    "src/core/presentation.hpp:classic_countdown_window",
    "src/core/presentation.hpp:dragster_window_table_index",
+   "src/core/race_update.cpp:CountdownPhases",
    "src/core/race_update.cpp:run_countdown",
    "src/core/race_windows.cpp:classic_countdown_window"
   ],
@@ -14507,6 +14983,7 @@
   "native": [
    "src/core/presentation.hpp:classic_countdown_window",
    "src/core/presentation.hpp:dragster_window_table_index",
+   "src/core/race_update.cpp:CountdownPhases",
    "src/core/race_update.cpp:run_countdown",
    "src/core/race_windows.cpp:classic_countdown_window"
   ],
@@ -14522,11 +14999,28 @@
   "native": [
    "src/core/presentation.hpp:classic_countdown_window",
    "src/core/presentation.hpp:dragster_window_table_index",
+   "src/core/race_update.cpp:CountdownPhases",
    "src/core/race_update.cpp:run_countdown",
    "src/core/race_windows.cpp:classic_countdown_window"
   ],
   "source_records": [
    "tasks/ZOOM-ZOO-WINDOW-EFFECTS-review.md"
+  ]
+ },
+ {
+  "address": "$83:E6E8",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83E6E8",
+  "native": [
+   "src/core/presentation.hpp:classic_countdown_window",
+   "src/core/presentation.hpp:dragster_window_table_index",
+   "src/core/race_update.cpp:CountdownPhases",
+   "src/core/race_update.cpp:run_countdown",
+   "src/core/race_windows.cpp:classic_countdown_window"
+  ],
+  "source_records": [
+   "docs/research/R-0066-stunt-event-race.md"
   ]
  },
  {
@@ -14537,11 +15031,28 @@
   "native": [
    "src/core/presentation.hpp:classic_countdown_window",
    "src/core/presentation.hpp:dragster_window_table_index",
+   "src/core/race_update.cpp:CountdownPhases",
    "src/core/race_update.cpp:run_countdown",
    "src/core/race_windows.cpp:classic_countdown_window"
   ],
   "source_records": [
    "docs/research/R-0011-motion.md"
+  ]
+ },
+ {
+  "address": "$83:E704",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83E704",
+  "native": [
+   "src/core/presentation.hpp:classic_countdown_window",
+   "src/core/presentation.hpp:dragster_window_table_index",
+   "src/core/race_update.cpp:CountdownPhases",
+   "src/core/race_update.cpp:run_countdown",
+   "src/core/race_windows.cpp:classic_countdown_window"
+  ],
+  "source_records": [
+   "docs/research/R-0066-stunt-event-race.md"
   ]
  },
  {
@@ -14552,6 +15063,7 @@
   "native": [
    "src/core/presentation.hpp:classic_countdown_window",
    "src/core/presentation.hpp:dragster_window_table_index",
+   "src/core/race_update.cpp:CountdownPhases",
    "src/core/race_update.cpp:run_countdown",
    "src/core/race_windows.cpp:classic_countdown_window"
   ],
@@ -14568,12 +15080,14 @@
   "native": [
    "src/core/presentation.hpp:classic_countdown_window",
    "src/core/presentation.hpp:dragster_window_table_index",
+   "src/core/race_update.cpp:CountdownPhases",
    "src/core/race_update.cpp:run_countdown",
    "src/core/race_windows.cpp:classic_countdown_window",
    "src/core/race_windows.cpp:dragster_window_transition_index"
   ],
   "source_records": [
-   "docs/research/R-0040-dragster-window-effects.md"
+   "docs/research/R-0040-dragster-window-effects.md",
+   "docs/research/R-0066-stunt-event-race.md"
   ]
  },
  {
@@ -14584,6 +15098,7 @@
   "native": [
    "src/core/presentation.hpp:classic_countdown_window",
    "src/core/presentation.hpp:dragster_window_table_index",
+   "src/core/race_update.cpp:CountdownPhases",
    "src/core/race_update.cpp:run_countdown",
    "src/core/race_windows.cpp:classic_countdown_window"
   ],
@@ -14599,6 +15114,7 @@
   "native": [
    "src/core/presentation.hpp:classic_countdown_window",
    "src/core/presentation.hpp:dragster_window_table_index",
+   "src/core/race_update.cpp:CountdownPhases",
    "src/core/race_update.cpp:run_countdown",
    "src/core/race_windows.cpp:classic_countdown_window"
   ],
@@ -14614,6 +15130,7 @@
   "native": [
    "src/core/presentation.hpp:classic_countdown_window",
    "src/core/presentation.hpp:dragster_window_table_index",
+   "src/core/race_update.cpp:CountdownPhases",
    "src/core/race_update.cpp:run_countdown",
    "src/core/race_windows.cpp:classic_countdown_window"
   ],
@@ -14629,6 +15146,7 @@
   "native": [
    "src/core/presentation.hpp:classic_countdown_window",
    "src/core/presentation.hpp:dragster_window_table_index",
+   "src/core/race_update.cpp:CountdownPhases",
    "src/core/race_update.cpp:run_countdown",
    "src/core/race_windows.cpp:classic_countdown_window"
   ],
@@ -14644,6 +15162,7 @@
   "native": [
    "src/core/presentation.hpp:classic_countdown_window",
    "src/core/presentation.hpp:dragster_window_table_index",
+   "src/core/race_update.cpp:CountdownPhases",
    "src/core/race_update.cpp:run_countdown",
    "src/core/race_windows.cpp:classic_countdown_window"
   ],
@@ -14654,10 +15173,37 @@
   ]
  },
  {
+  "address": "$83:E7C1",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_83E7C1",
+  "native": [
+   "src/core/stunt_event.hpp:update_stunt_finish"
+  ],
+  "source_records": [
+   "docs/research/R-0066-stunt-event-race.md"
+  ]
+ },
+ {
+  "address": "$83:E803",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83E803",
+  "native": [
+   "src/core/stunt_event.hpp:update_stunt_finish"
+  ],
+  "source_records": [
+   "docs/research/R-0066-stunt-event-race.md"
+  ]
+ },
+ {
   "address": "$83:E808",
   "class": "observed",
   "comment": "instruction start",
   "label": "loc_83E808",
+  "native": [
+   "src/core/stunt_event.hpp:update_stunt_finish"
+  ],
   "source_records": [
    "docs/research/R-0038-dragster-ordinary-controls.md"
   ]
@@ -14667,10 +15213,94 @@
   "class": "observed",
   "comment": "instruction start",
   "label": "loc_83E81D",
+  "native": [
+   "src/core/stunt_event.hpp:update_stunt_finish"
+  ],
   "source_records": [
    "docs/research/R-0012-complete-race-evidence.md",
    "docs/research/R-0013-native-finish-reference-freeze.md",
    "tasks/M3-00.md"
+  ]
+ },
+ {
+  "address": "$83:E856",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_83E856",
+  "native": [
+   "src/core/stunt_event.cpp:settled_fall",
+   "src/core/stunt_event.hpp:update_stunt_finish"
+  ],
+  "source_records": [
+   "docs/research/R-0066-stunt-event-race.md"
+  ]
+ },
+ {
+  "address": "$83:E85C",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_83E85C",
+  "native": [
+   "src/core/stunt_event.cpp:settled_fall",
+   "src/core/stunt_event.cpp:stands_on_ground",
+   "src/core/stunt_event.hpp:update_stunt_finish",
+   "src/core/zoom_zoo_movement.hpp:StuntEvent::settled"
+  ],
+  "source_records": [
+   "docs/research/R-0066-stunt-event-race.md"
+  ]
+ },
+ {
+  "address": "$83:E874",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_83E874",
+  "native": [
+   "src/core/stunt_event.hpp:update_stunt_finish"
+  ],
+  "source_records": [
+   "docs/research/R-0066-stunt-event-race.md"
+  ]
+ },
+ {
+  "address": "$83:E87A",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_83E87A",
+  "native": [
+   "src/core/stunt_event.hpp:update_stunt_finish",
+   "src/core/zoom_zoo_movement.hpp:StuntEvent::settled"
+  ],
+  "source_records": [
+   "docs/research/R-0066-stunt-event-race.md"
+  ]
+ },
+ {
+  "address": "$83:E8B6",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_83E8B6",
+  "native": [
+   "src/core/stunt_event.cpp:update_stunt_finish",
+   "src/core/stunt_event.hpp:update_stunt_finish",
+   "src/core/zoom_zoo_movement.hpp:StuntEvent::finish_display"
+  ],
+  "source_records": [
+   "docs/research/R-0066-stunt-event-race.md"
+  ]
+ },
+ {
+  "address": "$83:E8DA",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_83E8DA",
+  "native": [
+   "src/core/stunt_event.cpp:update_stunt_finish",
+   "src/core/stunt_event.hpp:update_stunt_finish",
+   "src/core/zoom_zoo_movement.hpp:StuntEvent::finish_display"
+  ],
+  "source_records": [
+   "docs/research/R-0066-stunt-event-race.md"
   ]
  },
  {
@@ -14680,10 +15310,12 @@
   "label": "sub_83E8E0",
   "native": [
    "src/core/race_progress.cpp:classic_race_player_won",
-   "src/core/race_progress.cpp:update_finish"
+   "src/core/race_progress.cpp:update_finish",
+   "src/core/stunt_event.hpp:update_stunt_finish"
   ],
   "source_records": [
-   "docs/research/R-0049-race-finish-breadth.md"
+   "docs/research/R-0049-race-finish-breadth.md",
+   "docs/research/R-0066-stunt-event-race.md"
   ]
  },
  {
@@ -14693,7 +15325,8 @@
   "label": "loc_83E8F8",
   "native": [
    "src/core/race_progress.cpp:classic_race_player_won",
-   "src/core/race_progress.cpp:update_finish"
+   "src/core/race_progress.cpp:update_finish",
+   "src/core/stunt_event.hpp:update_stunt_finish"
   ],
   "source_records": [
    "docs/research/R-0012-complete-race-evidence.md",
@@ -14707,7 +15340,8 @@
   "label": "loc_83E908",
   "native": [
    "src/core/race_progress.cpp:classic_race_player_won",
-   "src/core/race_progress.cpp:update_finish"
+   "src/core/race_progress.cpp:update_finish",
+   "src/core/stunt_event.hpp:update_stunt_finish"
   ],
   "source_records": [
    "docs/research/R-0012-complete-race-evidence.md",
@@ -14724,7 +15358,8 @@
    "src/core/race_progress.cpp:classic_race_player_won",
    "src/core/race_progress.cpp:finish_rider",
    "src/core/race_progress.cpp:update_finish",
-   "src/core/rider_motion.cpp:apply_finish_slowdown"
+   "src/core/rider_motion.cpp:apply_finish_slowdown",
+   "src/core/stunt_event.hpp:update_stunt_finish"
   ],
   "source_records": [
    "docs/research/R-0013-native-finish-reference-freeze.md",
@@ -14744,7 +15379,8 @@
    "src/core/race_progress.cpp:classic_race_player_won",
    "src/core/race_progress.cpp:finish_rider",
    "src/core/race_progress.cpp:update_finish",
-   "src/core/rider_motion.cpp:apply_finish_slowdown"
+   "src/core/rider_motion.cpp:apply_finish_slowdown",
+   "src/core/stunt_event.hpp:update_stunt_finish"
   ],
   "source_records": [
    "tasks/M3-01-review.md"
@@ -14760,12 +15396,42 @@
    "src/core/race_progress.cpp:classic_race_player_won",
    "src/core/race_progress.cpp:finish_rider",
    "src/core/race_progress.cpp:update_finish",
-   "src/core/rider_motion.cpp:apply_finish_slowdown"
+   "src/core/rider_motion.cpp:apply_finish_slowdown",
+   "src/core/stunt_event.hpp:update_stunt_finish"
   ],
   "source_records": [
    "docs/research/R-0013-native-finish-reference-freeze.md",
    "tasks/M3-01-review.md",
    "tasks/M3-01.md"
+  ]
+ },
+ {
+  "address": "$83:E940",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_83E940",
+  "native": [
+   "src/core/race_progress.cpp:classic_race_player_won",
+   "src/core/race_progress.cpp:update_finish",
+   "src/core/stunt_event.hpp:stunt_finish_announcement",
+   "src/core/stunt_event.hpp:update_stunt_finish"
+  ],
+  "source_records": [
+   "docs/research/R-0066-stunt-event-race.md"
+  ]
+ },
+ {
+  "address": "$83:E958",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_83E958",
+  "native": [
+   "src/core/race_progress.cpp:classic_race_player_won",
+   "src/core/race_progress.cpp:update_finish",
+   "src/core/stunt_event.hpp:update_stunt_finish"
+  ],
+  "source_records": [
+   "docs/research/R-0066-stunt-event-race.md"
   ]
  },
  {
@@ -14777,7 +15443,8 @@
    "src/core/presentation.hpp:dragster_window_table_index",
    "src/core/race_progress.cpp:classic_race_player_won",
    "src/core/race_progress.cpp:update_finish",
-   "src/core/race_windows.cpp:winner_window_first, winner_window_cycle, winner_window_life_updates"
+   "src/core/race_windows.cpp:winner_window_first, winner_window_cycle, winner_window_life_updates",
+   "src/core/stunt_event.hpp:update_stunt_finish"
   ],
   "source_records": [
    "docs/research/R-0040-dragster-window-effects.md",
@@ -14794,7 +15461,8 @@
    "src/core/presentation.hpp:dragster_window_table_index",
    "src/core/race_progress.cpp:classic_race_player_won",
    "src/core/race_progress.cpp:update_finish",
-   "src/core/race_windows.cpp:winner_window_first, winner_window_cycle, winner_window_life_updates"
+   "src/core/race_windows.cpp:winner_window_first, winner_window_cycle, winner_window_life_updates",
+   "src/core/stunt_event.hpp:update_stunt_finish"
   ],
   "source_records": [
    "docs/research/R-0040-dragster-window-effects.md"
@@ -14809,7 +15477,8 @@
    "src/core/presentation.hpp:dragster_window_table_index",
    "src/core/race_progress.cpp:classic_race_player_won",
    "src/core/race_progress.cpp:update_finish",
-   "src/core/race_windows.cpp:winner_window_first, winner_window_cycle, winner_window_life_updates"
+   "src/core/race_windows.cpp:winner_window_first, winner_window_cycle, winner_window_life_updates",
+   "src/core/stunt_event.hpp:update_stunt_finish"
   ],
   "source_records": [
    "tasks/DRAGSTER-WINDOW-EFFECTS-review.md"
@@ -14824,7 +15493,8 @@
    "src/core/presentation.hpp:dragster_window_table_index",
    "src/core/race_progress.cpp:classic_race_player_won",
    "src/core/race_progress.cpp:update_finish",
-   "src/core/race_windows.cpp:winner_window_first, winner_window_cycle, winner_window_life_updates"
+   "src/core/race_windows.cpp:winner_window_first, winner_window_cycle, winner_window_life_updates",
+   "src/core/stunt_event.hpp:update_stunt_finish"
   ],
   "source_records": [
    "docs/research/R-0040-dragster-window-effects.md"
@@ -14837,7 +15507,8 @@
   "label": "loc_83EA5D",
   "native": [
    "src/core/race_progress.cpp:classic_race_player_won",
-   "src/core/race_progress.cpp:update_finish"
+   "src/core/race_progress.cpp:update_finish",
+   "src/core/stunt_event.hpp:update_stunt_finish"
   ],
   "source_records": [
    "docs/research/R-0040-dragster-window-effects.md"
@@ -14851,7 +15522,8 @@
   "native": [
    "src/core/movement.cpp:update_movement",
    "src/core/race_progress.cpp:classic_race_player_won",
-   "src/core/race_progress.cpp:update_finish"
+   "src/core/race_progress.cpp:update_finish",
+   "src/core/stunt_event.hpp:update_stunt_finish"
   ],
   "source_records": [
    "docs/research/R-0017-m3-acceptance.md",
@@ -14867,7 +15539,8 @@
   "native": [
    "src/core/movement.cpp:update_movement",
    "src/core/race_progress.cpp:classic_race_player_won",
-   "src/core/race_progress.cpp:update_finish"
+   "src/core/race_progress.cpp:update_finish",
+   "src/core/stunt_event.hpp:update_stunt_finish"
   ],
   "source_records": [
    "docs/research/R-0017-opponent-first-audit.md"
@@ -14881,7 +15554,8 @@
   "native": [
    "src/core/movement.cpp:update_movement",
    "src/core/race_progress.cpp:classic_race_player_won",
-   "src/core/race_progress.cpp:update_finish"
+   "src/core/race_progress.cpp:update_finish",
+   "src/core/stunt_event.hpp:update_stunt_finish"
   ],
   "source_records": [
    "docs/research/R-0017-opponent-first-audit.md"
@@ -14895,7 +15569,8 @@
   "native": [
    "src/core/movement.cpp:update_movement",
    "src/core/race_progress.cpp:classic_race_player_won",
-   "src/core/race_progress.cpp:update_finish"
+   "src/core/race_progress.cpp:update_finish",
+   "src/core/stunt_event.hpp:update_stunt_finish"
   ],
   "source_records": [
    "docs/research/R-0017-opponent-first-audit.md"
@@ -14910,7 +15585,8 @@
    "src/core/movement.cpp:update_movement",
    "src/core/race_progress.cpp:classic_race_player_won",
    "src/core/race_progress.cpp:finish_rider",
-   "src/core/race_progress.cpp:update_finish"
+   "src/core/race_progress.cpp:update_finish",
+   "src/core/stunt_event.hpp:update_stunt_finish"
   ],
   "source_records": [
    "docs/research/R-0017-opponent-first-audit.md",
@@ -14925,7 +15601,8 @@
   "native": [
    "src/core/movement.cpp:update_movement",
    "src/core/race_progress.cpp:classic_race_player_won",
-   "src/core/race_progress.cpp:update_finish"
+   "src/core/race_progress.cpp:update_finish",
+   "src/core/stunt_event.hpp:update_stunt_finish"
   ],
   "source_records": [
    "docs/research/R-0017-opponent-first-audit.md"
@@ -14939,11 +15616,41 @@
   "native": [
    "src/core/movement.cpp:update_movement",
    "src/core/race_progress.cpp:classic_race_player_won",
-   "src/core/race_progress.cpp:update_finish"
+   "src/core/race_progress.cpp:update_finish",
+   "src/core/stunt_event.hpp:update_stunt_finish"
   ],
   "source_records": [
    "docs/research/R-0017-m3-acceptance.md",
    "tasks/M3-04.md"
+  ]
+ },
+ {
+  "address": "$83:EAD2",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_83EAD2",
+  "native": [
+   "src/core/race_progress.cpp:classic_race_player_won",
+   "src/core/race_progress.cpp:update_finish",
+   "src/core/stunt_event.hpp:stunt_finish_announcement",
+   "src/core/stunt_event.hpp:update_stunt_finish"
+  ],
+  "source_records": [
+   "docs/research/R-0066-stunt-event-race.md"
+  ]
+ },
+ {
+  "address": "$83:EAEA",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_83EAEA",
+  "native": [
+   "src/core/race_progress.cpp:classic_race_player_won",
+   "src/core/race_progress.cpp:update_finish",
+   "src/core/stunt_event.hpp:update_stunt_finish"
+  ],
+  "source_records": [
+   "docs/research/R-0066-stunt-event-race.md"
   ]
  },
  {
@@ -14953,7 +15660,8 @@
   "label": "sub_83EBA3",
   "native": [
    "src/core/race_progress.cpp:classic_race_player_won",
-   "src/core/race_progress.cpp:update_finish"
+   "src/core/race_progress.cpp:update_finish",
+   "src/core/stunt_event.hpp:update_stunt_finish"
   ],
   "source_records": [
    "docs/research/R-0017-opponent-first-audit.md"
@@ -14966,7 +15674,8 @@
   "label": "loc_83EBB0",
   "native": [
    "src/core/race_progress.cpp:classic_race_player_won",
-   "src/core/race_progress.cpp:update_finish"
+   "src/core/race_progress.cpp:update_finish",
+   "src/core/stunt_event.hpp:update_stunt_finish"
   ],
   "source_records": [
    "docs/research/R-0040-dragster-window-effects.md",
@@ -14980,7 +15689,8 @@
   "label": "loc_83EBCB",
   "native": [
    "src/core/race_progress.cpp:classic_race_player_won",
-   "src/core/race_progress.cpp:update_finish"
+   "src/core/race_progress.cpp:update_finish",
+   "src/core/stunt_event.hpp:update_stunt_finish"
   ],
   "source_records": [
    "docs/research/R-0017-opponent-first-audit.md",
@@ -14994,7 +15704,8 @@
   "label": "sub_83EC13",
   "native": [
    "src/core/race_progress.cpp:classic_race_player_won",
-   "src/core/race_progress.cpp:update_finish"
+   "src/core/race_progress.cpp:update_finish",
+   "src/core/stunt_event.hpp:update_stunt_finish"
   ],
   "source_records": [
    "docs/research/R-0040-dragster-window-effects.md"
