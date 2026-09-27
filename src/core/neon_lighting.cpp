@@ -45,7 +45,7 @@ std::uint16_t neon_colour(std::uint8_t green) {
 std::uint16_t subtract_colour(std::uint16_t object, std::uint16_t below) {
     std::uint16_t result = 0;
     for (const unsigned shift : {0U, 5U, 10U}) {
-        const unsigned a = (object >> shift) & 31U, b = (below >> shift) & 31U;
+        const unsigned a = (unsigned{object} >> shift) & 31U, b = (unsigned{below} >> shift) & 31U;
         result = static_cast<std::uint16_t>(result | ((a > b ? a - b : 0U) << shift));
     }
     return result;

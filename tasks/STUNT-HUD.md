@@ -51,7 +51,7 @@ checks-b69a83d, front-end-b69a83d).
 | --- | --- |
 | Pictures | bowl-lose 2,708 and hill-win 2,779 pictures (every frame of the race), 0 differing pixels; the nine idle stunt tracks, 13,940 frames equal by digest; neon-start 43 pictures and neon-ride 2,702 pictures equal. |
 | NEON race state | neon-ride (hill-win's inputs on track 42): 2,808 of 2,808 race rows exact through the result load. |
-| Nothing moves | The gates: pending. |
+| Nothing moves | The gates on `9413b30` (`local/evidence/stunt-hud/gates-9413b30.out`, 09:31-11:53Z, 142 minutes): the three presets, ctest 29 of 29, the synthetic suite, both v1 contracts, every hidden app run and the eleven differential gates pass. The equivalence sweep against main `0173cbb`'s binaries: 432 runs, 81 differing, all by design: 73 are pictures of the nine stunt tracks (main draws the race HUD there; this branch the stunt HUD, which equals the original's) and 8 are track 42's rows (NEON, where main still runs the HUNTER tag effects). No race track differs. The per-track recompare's race tracks are identical; the 16 stunt captures exact; R-0061's race captures and HUNTER-EFFECTS' 48 held captures unchanged; every front-end comparison and records check unchanged. The tooling tests (506); no function over 80 lines; the address index passes. After the gates, `neon_lighting.cpp`'s one cast for GCC's `-Wsign-conversion` (Linux CI), no change in behaviour: the presets and ctest 29 of 29. |
 
 ## Review
 
