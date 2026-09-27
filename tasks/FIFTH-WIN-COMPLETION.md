@@ -2,7 +2,7 @@
 
 ## Assignment
 
-- Status: **in review**. Queued 26 September 2026 (UTC) by FRONT-END-ENDINGS; claimed 26 September
+- Status: **accepted** (tier 2, pull request #38, merged in `94b3034`; approved). Queued 26 September 2026 (UTC) by FRONT-END-ENDINGS; claimed 26 September
   2026 at 23:55Z by the Claude Code desktop session that ran HUNTER-ENDING, on `e01aaaa`.
 - Milestone: M4 (original game coverage: menus)
 - Coordinator: the claiming session is coordinator, primary and integrator
