@@ -145,7 +145,9 @@ The ridden NEON capture, before the two race rules: rows exact to update 221 (na
 tag), then, with the tag skipped, to 1576 (the selected word); its pictures differed on 183 frames
 before the ink was put in front of the rider.
 
-Nothing else moves (`checks-f31aae8.out`, on the commit that added NEON's race rules):
+Nothing else moves (`checks-b69a83d.out`, on the review's corrections; `checks-f31aae8.out` gave the
+same numbers on the commit that first added NEON's race rules). The acceptance rows above are
+the same in both:
 - the stunt rows (`stunt-event-race/compare.sh`): all 16 captures exact on every row, as before
   (bowl-explore 2,831, bowl-lose 2,814, hill-win 2,885, bowl-brake 2,808, hill-brake 2,902,
   jumps-ride 2,815, downer-ride 2,952, the four cold and five locked idle captures);
@@ -156,7 +158,7 @@ Nothing else moves (`checks-f31aae8.out`, on the commit that added NEON's race r
   among them), the stunt rows exact;
 - HUNTER-EFFECTS' 48 held captures (R-0052; tracks 40, 41, 43, 44): every one the same as main's
   runner gives, all exact to their ends;
-- the front end around a stunt event (STUNT-RESULT's acceptance, pack v26, on `1c07cd2`):
+- the front end around a stunt event (STUNT-RESULT's acceptance, pack v26, on `b69a83d`):
   bowl-lose, hill-win, bowl-quit, hill-complete and bowl-press equal on every frame from power-on
   and on every picture from 400 (2,165, 2,298, 2,289, 3,898 and 2,165), the records at every
   checked frame;
