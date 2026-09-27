@@ -98,10 +98,10 @@ def _finish(rep: reportmod.Report, report: Path | None, status: int) -> int:
 
 
 def _track_choice(value: str) -> str:
-    # The stunt events (R-0066) race natively but have no native result yet (STUNT-RESULT), so the
-    # app refuses them on --track as its menus do.
+    # A stunt event (R-0066) is started from the menus, whose stunt result it needs (R-0067); a race
+    # started by --track ends on the race's own Classic result screen, so --track refuses one.
     if value.isdigit() and int(value) in STUNT_TRACKS:
-        raise argparse.ArgumentTypeError(f"track {int(value)} is a stunt event, whose result is not native yet")
+        raise argparse.ArgumentTypeError(f"track {int(value)} is a stunt event: start it from the menus (1P)")
     if value in ("dragster", "zoom-zoo") or (value.isdigit() and 0 <= int(value) <= 44):
         return value
     raise argparse.ArgumentTypeError("use dragster, zoom-zoo or a track number 0-44")
@@ -333,8 +333,8 @@ def register(sub: argparse._SubParsersAction) -> None:
                      help="one pack to validate and launch; omit it to select a pack by profile under local/")
     run.add_argument("--track", type=_track_choice, default=None,
                      help="start in this race: dragster, zoom-zoo, or the number of a race track with a recovered "
-                          "scenario (TRACK-BREADTH), not a stunt event (2, 7, 12, 17, 22, 27, 32, 37, 42) until its "
-                          "result is native; without it the app starts at power-on (the title and main menu)")
+                          "scenario (TRACK-BREADTH), not a stunt event (2, 7, 12, 17, 22, 27, 32, 37, 42), which "
+                          "the menus start; without it the app starts at power-on (the title and main menu)")
     run.add_argument("--rom", help="supported PAL ROM for first launch only; omission means selection was cancelled")
     run.add_argument("--replace-pack", action="store_true",
                      help="with --rom, move an incompatible existing pack aside and extract a new one in its place")

@@ -110,11 +110,11 @@ private:
 };
 
 // The app's front end: power-on to the main menu (R-0054), 1P's setup screens
-// to the race (R-0055, R-0056), and after a one-run race its result and PICK
-// TRACK again (R-0057). Until the other modes are native, choosing 2P, VS,
-// LEAGUE, OPTIONS, reaching the demo, or a 1P race the race scenarios do not
-// have (another rider than MIKE, a stunt event) shows a short notice and
-// returns to the main menu as it first appeared, the records kept.
+// to the race (R-0055, R-0056), and after a race its result and PICK TRACK
+// again (R-0057, R-0058, R-0067). Until the other modes are native, choosing
+// 2P, VS, LEAGUE, OPTIONS, reaching the demo, or a 1P race the race scenarios
+// do not have shows a short notice and returns to the main menu as it first
+// appeared, the records kept.
 class FrontEndSession {
 public:
   explicit FrontEndSession(const ClassicContentPack &pack);
@@ -156,12 +156,12 @@ private:
   FrontEndMode notice_mode_{};
 };
 
-// A track the app races natively, from the menus or from --track: one with a race scenario
-// (R-0046, R-0050), not a stunt event. A stunt event's race runs natively (R-0066), but its
-// result screen and records do not yet (STUNT-RESULT), so the app does not start one.
+// A track --track starts: one with a race scenario (R-0046, R-0050), not a stunt event. A race
+// started by --track ends on the race's own Classic result screen; a stunt event's result is the
+// menus' (R-0067), so a stunt event is started from the menus only.
 bool native_race_track(ClassicRaceTrack track);
-// 1P's race is native when native_race_track holds for its track: any rider against the
-// opponent NOW PLAYING chose (R-0061).
+// 1P's race is native when a race scenario has its track, the stunt events included (R-0066,
+// R-0067): any rider against the opponent NOW PLAYING chose (R-0061).
 bool native_one_player_race(const FrontEndState &state);
 
 // A port's mask as the SNES reads the pad (`$4218`: B in bit 15 ... R in bit

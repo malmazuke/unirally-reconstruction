@@ -10,7 +10,8 @@ namespace {
 // Control codes, dispatched through `$80:C3DC` by 0xFF - code (`$80:C3C6-C3D9`).
 constexpr std::uint8_t end_of_text = 0xff, position = 0xfe, number = 0xfd, centre = 0xfc,
                        nothing = 0xfb, attribute = 0xf9, rider_name = 0xf8, track_name = 0xf7,
-                       race_time = 0xf1, place_object = 0xef, capitals = 0xee, first_control = 0xee;
+                       race_time = 0xf1, two_digits = 0xf0, place_object = 0xef, capitals = 0xee,
+                       first_control = 0xee;
 constexpr std::uint8_t row_code = 0xf2; // positions F7's name alone, like FC
 constexpr std::uint16_t priority_bit = 0x2000;
 constexpr std::uint8_t small_glyph = 0x80;
@@ -192,11 +193,14 @@ void print_text(TextMap& map, TextCursor& cursor, std::span<const std::uint8_t> 
             break;
         }
         case attribute: cursor.attribute = static_cast<std::uint16_t>(next() << 10U); break;
-        case number: { // $80:C456
+        case number:       // $80:C456: five digits
+        case two_digits: { // $80:C474: their last two, the tens a blank below 10
             const auto& v = require(variables);
             const auto address = static_cast<std::uint16_t>(next() | (next() << 8U));
             const auto text = five_digit_text(v.word(address));
-            print_text(map, cursor, text, character_table, variables);
+            constexpr std::size_t tens = 3;
+            print_text(map, cursor, std::span(text).subspan(byte == number ? 0 : tens),
+                       character_table, variables);
             break;
         }
         case track_name:   // $80:C628

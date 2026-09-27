@@ -5,6 +5,10 @@ push the task branch, open a pull request from the template, merge with
 `gh pr merge --merge` once its checks are green and the review is done. `main`
 refuses direct pushes. The checks run on pull requests only.
 
+**Status on 27 September 2026 UTC (STUNT-RESULT): start [STUNT-HUD](STUNT-HUD.md), then the main
+menu's other modes (COVERAGE-ROADMAP: 2P, VS, LEAGUE, OPTIONS, the demo).** Stunt events play
+through from the menus (R-0066, R-0067). Rebuild the pack as v25.
+
 **Status on 27 September 2026 UTC (STUNT-EVENT-RACE): start [STUNT-RESULT](STUNT-RESULT.md), then
 [STUNT-HUD](STUNT-HUD.md), then the main menu's other modes (COVERAGE-ROADMAP).** The stunt events
 run natively in the race engine (R-0066). Rebuild the pack as v24. The research for the result and

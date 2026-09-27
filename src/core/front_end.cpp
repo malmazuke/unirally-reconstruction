@@ -224,6 +224,8 @@ bool waits_for_frame(const FrontEndState& state) {
     // after it starts without a frame wait (R-0058).
     if (state.screen == FrontEndScreen::race_result && state.race_result.times.lap_race)
         return next != result_tail_frame;
+    // So does the stunt result's (R-0067).
+    if (state.screen == FrontEndScreen::stunt_result) return next != stunt_text_frame;
     // Every other screen after the boot waits for each frame.
     if (state.screen != FrontEndScreen::boot) return true;
     const auto frame = boot_frame_number(state);
@@ -716,6 +718,10 @@ FrontEndContent front_end_content(const ClassicContentPack& pack) {
     content.credits_text = pack.entry("front-end.credits-text");
     content.credits_poses = pack.entry("front-end.credits-poses");
     content.credits_objects = pack.entry("front-end.credits-objects");
+    // STUNT-RESULT (profile v25): the stunt result's heads' colours (asset 0x26 + rider) and texts.
+    for (unsigned id = 0x26; id <= 0x39; ++id) content.assets[id] = pack.entry(asset_name(id));
+    content.stunt_result_text = pack.entry("front-end.stunt-result-text");
+    content.stunt_tally_cells = pack.entry("front-end.stunt-tally-cells");
     return content;
 }
 
@@ -732,7 +738,8 @@ OnePlayerRecords cold_start_records() {
     for (auto& times : records.record_times)
         for (std::size_t track = 0; track < times.size(); ++track)
             times[track] = track % 5 == stunt_place ? 0 : no_record_time;
-    records.tries = 3;
+    // `$77:1073` stays 0 until a rider is chosen (`$80:BBE3-BBE5`, R-0067).
+    records.tries = 0;
     return records;
 }
 
@@ -797,6 +804,7 @@ void update_front_end(FrontEndState& state, const FrontEndContent& content, Fron
     case FrontEndScreen::tour_ending: tour_ending_frame(state, content); break;
     case FrontEndScreen::hunter_ending: hunter_ending_frame(state, content, physical); break;
     case FrontEndScreen::hunter_code: hunter_code_frame(state); break;
+    case FrontEndScreen::stunt_result: stunt_result_frame(state, content, physical); break;
     }
     if (state.screen != screen) state.script_frame = 0;
     ++state.frame;

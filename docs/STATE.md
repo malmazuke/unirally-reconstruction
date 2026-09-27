@@ -1,5 +1,17 @@
 # Project state
 
+Updated 27 September 2026 (STUNT-RESULT): **the one-player game's stunt events play through from
+the menus.**
+- After a stunt event the result counts up the player's tricks, shows the score, best and the
+  qualifying score, then updates the records and marks the track done on a win, as the original
+  does; a stunt win can complete a tour. Against five captures of the original from power-on:
+  no state difference, every picture equal, the records equal
+  ([R-0067](research/R-0067-stunt-result.md)).
+- The app no longer shows a notice for a stunt event. Not yet: its race picture (STUNT-HUD), which
+  still shows the race's HUD.
+- Pack profile **v25** (`content pack --rules tests/manifests/content/classic-crawler-tracks-pack.json
+  --out local/classic-pal-crawler-tracks-v25.pack`).
+
 Updated 27 September 2026 (STUNT-EVENT-RACE): **the stunt events run natively.**
 - Each tour's third track, a 45-second solo run for points, now runs in the native race engine
   exactly as the original does, from the start to the result: on seven riding captures and the

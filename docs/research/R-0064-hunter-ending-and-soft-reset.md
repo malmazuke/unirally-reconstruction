@@ -84,7 +84,8 @@ work RAM there. The comparison takes J from native and fits d to it, so a reset 
 absorbed into d; the review and the research found the three captures' resets in the original's own
 memory at native's frames. The records are equal at every compared frame of all-gold. On the code routes `tries`
 (`$77:1073`) differs: native's cold start holds 3 where the original holds 0 until the one-player
-screens set it, an older difference this task leaves.
+screens set it, an older difference this task leaves. (Closed by STUNT-RESULT, R-0067: native's cold
+start now holds 0, and both code routes' records are equal at every checked frame.)
 
 ## Not recovered
 

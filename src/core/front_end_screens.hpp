@@ -60,6 +60,12 @@ inline constexpr std::uint16_t pad_up = 0x0800, pad_down = 0x0400, pad_left = 0x
                                pad_right = 0x0100, pad_select = 0x2000, pad_a = 0x0080,
                                pad_r = 0x0010;
 inline constexpr std::uint16_t choose_buttons = 0x9080, back_buttons = 0x4040;
+// $80:B6D3: any of pad 1's twelve buttons, and of pad 2's while `$77:0742` bit 10 is clear (the
+// main menu's code, HUNTER-ENDING); in one-player play bit 10 is set and pad 2 is ignored.
+inline bool any_button_pressed(FrontEndPads pads, bool pad_two_counts = false) {
+    constexpr std::uint16_t twelve_buttons = 0xfff0;
+    return (pads.one & twelve_buttons) != 0 || (pad_two_counts && (pads.two & twelve_buttons) != 0);
+}
 
 // The `n`th 0xFF-terminated string of `table`, without its 0xFF.
 std::span<const std::uint8_t> nth_string(std::span<const std::uint8_t> table, unsigned n);
@@ -82,6 +88,16 @@ inline std::uint16_t personal_best(const OnePlayerRecords& records, unsigned rid
                                    unsigned track) {
     return records.best[rider * 50U + track];
 }
+// $83:9EB4 and `$83:9EF3`: the rider's best medal on the chosen tour, `$77:069C` & 3.
+std::uint8_t best_medal(const FrontEndState& state);
+// $83:9EEB: the chosen tour's qualifying score for the rider's best medal (silver and gold alike).
+std::uint16_t tour_qualifying_score(const FrontEndState& state, const FrontEndContent& content);
+// $80:F53F: the logo held up.
+void raise_logo(FrontEndState& state);
+// A stunt result's third frame (R-0067): its streams' printing ran past the second frame's end,
+// so the text's upload starts without a frame wait.
+inline constexpr std::uint32_t stunt_text_frame = 3;
+
 // $83:A721 after the award: the menus' registers, colours, VRAM, text and objects as `$80:D20E`
 // leaves them, without its reset of the menus' words; the logo held up; NMI on.
 void restore_menu_screen(FrontEndState& state, const FrontEndContent& content);
@@ -184,6 +200,15 @@ void race_result_frame(FrontEndState& state, const FrontEndContent& content, Fro
 void race_restart_frame(FrontEndState& state);
 void race_result_exit_frame(FrontEndState& state, const FrontEndContent& content,
                             FrontEndPads pads);
+// $80:951C-955A: the result's first frame as every race mode starts it.
+void start_result_screen(FrontEndState& state, const FrontEndContent& content);
+// $80:C24C and `$80:C206` after a one-run or stunt result: both pads released, then a press seen
+// on two frames running, which leaves the result.
+void wait_for_result_press(FrontEndState& state, const FrontEndContent& content,
+                           FrontEndPads pads);
+
+// stunt_result.cpp: a stunt event's result (R-0067), from its first frame to the press.
+void stunt_result_frame(FrontEndState& state, const FrontEndContent& content, FrontEndPads pads);
 
 // award.cpp: a tour's completion (R-0059). `complete_tour` on the scoring frame; then the award's
 // frames and, after PICK TOUR, the way to PICK TRACK.

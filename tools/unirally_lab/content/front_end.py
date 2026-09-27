@@ -268,3 +268,23 @@ def v23_new_entries(rom: bytes) -> list[dict[str, Any]]:
     entries = [_raw(f"front-end.asset.{asset:03d}", rom, [_asset_piece(rom, asset)])
                for asset in HUNTER_ENDING_ASSETS]
     return entries + [table_entry(rom, *table) for table in HUNTER_ENDING_TABLES]
+
+
+# Profile v25 (STUNT-RESULT, R-0067): a stunt event's result `$80:F0EE-F2E9`. Its assets: the heads'
+# colours, 0x26 + rider or computer opponent (`$80:F0FC-F112`), for all twenty. Its tables: the
+# result's nine text streams (`$80:F2EA-F4B4`, 0xFF-terminated: the table, the one-player dashes,
+# the totals, the qualifying line, the record line and the riders' lines) and the tally's five
+# cells (`$80:F7E7-F7FA`, the printer's F0 on `$00B2-$00BA`).
+STUNT_RESULT_ASSETS = tuple(range(0x26, 0x3A))
+STUNT_RESULT_TABLES = (
+    ("front-end.stunt-result-text", 0x80F2EA, 0x1CB),
+    ("front-end.stunt-tally-cells", 0x80F7E7, 20),
+)
+
+
+def v25_new_entries(rom: bytes) -> list[dict[str, Any]]:
+    """The entries profile v25 adds to v24 (STUNT-RESULT), in pack order. Run once with the ROM to
+    append them to the rules; the tests check the rules against the compiled table."""
+    entries = [_raw(f"front-end.asset.{asset:03d}", rom, [_asset_piece(rom, asset)])
+               for asset in STUNT_RESULT_ASSETS]
+    return entries + [table_entry(rom, *table) for table in STUNT_RESULT_TABLES]

@@ -159,8 +159,7 @@ void upload_step(FrontEndState& state, const FrontEndContent& content, FrontEndP
 
 // $80:B6D3 on the pads the last upload read: any of pad 1's twelve buttons.
 bool award_left(const FrontEndState& state) {
-    constexpr std::uint16_t buttons = 0xfff0;
-    return (state.award.pads & buttons) != 0;
+    return any_button_pressed({state.award.pads, 0});
 }
 
 // $83:B096-B111: the medal's second art in two halves, the pose again, the medal's tile set in

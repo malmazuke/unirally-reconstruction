@@ -22,8 +22,8 @@ The four classes partition all 131,072 bytes. **Unknown share: 40.4%** - above D
 | Instructions from observed | 17,569 |
 | Instructions from table | 587 |
 | Routines | 636 |
-| Routines cited by native code | 357 |
-| Routine bytes cited by native code | 46,891 |
+| Routines cited by native code | 358 |
+| Routine bytes cited by native code | 46,911 |
 | Gap sweep candidate instructions | 2,746 |
 | Gap sweep candidate bytes | 6,174 |
 | Jump tables | 2 |
@@ -45,7 +45,7 @@ The four classes partition all 131,072 bytes. **Unknown share: 40.4%** - above D
 
 ## Cited addresses
 
-1302 distinct code-bank ROM addresses cited by the research, task, inventory and content records (`labels.json`). By position: dat 23, loc 790, mid 18, sub 298, unk 173 (sub routine start, loc instruction start, mid inside an instruction, dat data, unk unknown). By class: data 23, inferred 217, observed 889, unknown 173.
+1359 distinct code-bank ROM addresses cited by the research, task, inventory and content records (`labels.json`). By position: dat 23, loc 798, mid 18, sub 299, unk 221 (sub routine start, loc instruction start, mid inside an instruction, dat data, unk unknown). By class: data 23, inferred 218, observed 897, unknown 221.
 
 Cited addresses in `unknown` bytes:
 
@@ -70,7 +70,8 @@ Cited addresses in `unknown` bytes:
 | $80:84EB | docs/research/R-0010-native-movement.md, docs/research/R-0045-static-code-map.md |
 | $80:88B2 | tasks/COVERAGE-ROADMAP.md |
 | $80:88BE | docs/research/R-0054-boot-title-main-menu.md |
-| $80:8CCB | tasks/STUNT-RESULT.md |
+| $80:8953 | docs/research/R-0067-stunt-result.md |
+| $80:8CCB | docs/research/R-0067-stunt-result.md, tasks/STUNT-RESULT.md |
 | $80:8D6E | docs/research/R-0057-one-run-result.md, docs/research/R-0058-lap-result.md, tasks/FRONT-END-LAP-RESULT.md, tasks/NEXT_SESSION.md |
 | $80:8D70 | docs/research/R-0058-lap-result.md |
 | $80:8DD9 | docs/research/R-0058-lap-result.md |
@@ -85,6 +86,7 @@ Cited addresses in `unknown` bytes:
 | $80:91A1 | docs/research/R-0058-lap-result.md, tasks/FRONT-END-LAP-RESULT.md |
 | $80:91B9 | docs/research/R-0058-lap-result.md, tasks/FRONT-END-LAP-RESULT.md |
 | $80:93FB | tasks/COVERAGE-ROADMAP.md |
+| $80:95A5 | docs/research/R-0067-stunt-result.md |
 | $80:97DD | docs/research/R-0056-tour-track-now-playing.md |
 | $80:9801 | docs/research/R-0056-tour-track-now-playing.md |
 | $80:9D0B | docs/research/R-0055-rider-menu.md |
@@ -105,6 +107,7 @@ Cited addresses in `unknown` bytes:
 | $80:BF9F | docs/research/R-0057-one-run-result.md |
 | $80:C3DC | docs/research/R-0053-result-title-printer.md |
 | $80:C456 | docs/research/R-0056-tour-track-now-playing.md |
+| $80:C474 | docs/research/R-0067-stunt-result.md |
 | $80:C7C4 | docs/research/R-0057-one-run-result.md |
 | $80:C7EE | docs/research/R-0057-one-run-result.md |
 | $80:C800 | docs/research/R-0057-one-run-result.md |
@@ -119,14 +122,19 @@ Cited addresses in `unknown` bytes:
 | $80:C902 | docs/research/R-0058-lap-result.md |
 | $80:C913 | docs/research/R-0058-lap-result.md |
 | $80:C932 | docs/research/R-0058-lap-result.md |
-| $80:C948 | tasks/STUNT-RESULT.md |
+| $80:C948 | docs/research/R-0067-stunt-result.md, tasks/STUNT-RESULT.md |
 | $80:C950 | tasks/LOCKED-TOURS.md |
+| $80:C95C | docs/research/R-0067-stunt-result.md |
+| $80:C967 | docs/research/R-0067-stunt-result.md |
+| $80:C97E | docs/research/R-0067-stunt-result.md |
+| $80:C984 | docs/research/R-0067-stunt-result.md |
+| $80:C9AB | docs/research/R-0067-stunt-result.md |
 | $80:C9D7 | docs/research/R-0057-one-run-result.md, docs/research/R-0060-pause-exits.md |
-| $80:CA74 | docs/research/R-0057-one-run-result.md |
-| $80:CA83 | docs/research/R-0057-one-run-result.md |
+| $80:CA74 | docs/research/R-0057-one-run-result.md, docs/research/R-0067-stunt-result.md |
+| $80:CA83 | docs/research/R-0057-one-run-result.md, docs/research/R-0067-stunt-result.md |
 | $80:CA9B | docs/research/R-0057-one-run-result.md |
-| $80:CAAA | docs/research/R-0057-one-run-result.md |
-| $80:CAC5 | docs/research/R-0057-one-run-result.md |
+| $80:CAAA | docs/research/R-0057-one-run-result.md, docs/research/R-0067-stunt-result.md |
+| $80:CAC5 | docs/research/R-0057-one-run-result.md, docs/research/R-0067-stunt-result.md |
 | $80:CD47 | docs/research/R-0055-rider-menu.md |
 | $80:CD5C | docs/research/R-0055-rider-menu.md |
 | $80:CD84 | docs/research/R-0055-rider-menu.md |
@@ -148,8 +156,46 @@ Cited addresses in `unknown` bytes:
 | $80:EA40 | docs/research/R-0056-tour-track-now-playing.md |
 | $80:EA58 | docs/research/R-0056-tour-track-now-playing.md |
 | $80:EB61 | docs/research/R-0056-tour-track-now-playing.md |
-| $80:F0EE | docs/research/R-0057-one-run-result.md, docs/research/R-0058-lap-result.md, docs/research/R-0066-stunt-event-race.md, tasks/STUNT-RESULT.md |
+| $80:F0EE | docs/research/R-0057-one-run-result.md, docs/research/R-0058-lap-result.md, docs/research/R-0066-stunt-event-race.md, docs/research/R-0067-stunt-result.md, tasks/STUNT-RESULT.md |
+| $80:F0F3 | docs/research/R-0067-stunt-result.md |
+| $80:F0FC | docs/research/R-0067-stunt-result.md |
+| $80:F116 | docs/research/R-0067-stunt-result.md |
+| $80:F1A8 | docs/research/R-0067-stunt-result.md |
+| $80:F1F4 | docs/research/R-0067-stunt-result.md |
+| $80:F209 | docs/research/R-0067-stunt-result.md |
+| $80:F21C | docs/research/R-0067-stunt-result.md |
+| $80:F222 | docs/research/R-0067-stunt-result.md |
+| $80:F249 | docs/research/R-0067-stunt-result.md |
+| $80:F24F | docs/research/R-0067-stunt-result.md |
+| $80:F26F | docs/research/R-0067-stunt-result.md |
+| $80:F283 | docs/research/R-0067-stunt-result.md |
+| $80:F2AE | docs/research/R-0067-stunt-result.md |
+| $80:F2EA | docs/research/R-0067-stunt-result.md |
+| $80:F3E0 | docs/research/R-0067-stunt-result.md |
+| $80:F44F | docs/research/R-0067-stunt-result.md |
+| $80:F456 | docs/research/R-0067-stunt-result.md |
+| $80:F45D | docs/research/R-0067-stunt-result.md |
+| $80:F471 | docs/research/R-0067-stunt-result.md |
+| $80:F47F | docs/research/R-0067-stunt-result.md |
+| $80:F491 | docs/research/R-0067-stunt-result.md |
+| $80:F4A3 | docs/research/R-0067-stunt-result.md |
+| $80:F4B4 | docs/research/R-0067-stunt-result.md |
+| $80:F4B5 | docs/research/R-0067-stunt-result.md |
 | $80:F618 | docs/research/R-0054-boot-title-main-menu.md |
+| $80:F669 | docs/research/R-0067-stunt-result.md |
+| $80:F680 | docs/research/R-0067-stunt-result.md |
+| $80:F68F | docs/research/R-0067-stunt-result.md |
+| $80:F755 | docs/research/R-0067-stunt-result.md |
+| $80:F758 | docs/research/R-0067-stunt-result.md |
+| $80:F75D | docs/research/R-0067-stunt-result.md |
+| $80:F765 | docs/research/R-0067-stunt-result.md |
+| $80:F775 | docs/research/R-0067-stunt-result.md |
+| $80:F77F | docs/research/R-0067-stunt-result.md |
+| $80:F7AD | docs/research/R-0067-stunt-result.md |
+| $80:F7C4 | docs/research/R-0067-stunt-result.md |
+| $80:F7CB | docs/research/R-0067-stunt-result.md |
+| $80:F7E7 | docs/research/R-0067-stunt-result.md |
+| $80:F7FB | docs/research/R-0067-stunt-result.md |
 | $80:FACD | docs/research/R-0054-boot-title-main-menu.md |
 | $80:FBC5 | docs/research/R-0054-boot-title-main-menu.md |
 | $80:FC5C | docs/research/R-0056-tour-track-now-playing.md |
@@ -182,12 +228,14 @@ Cited addresses in `unknown` bytes:
 | $83:8815 | docs/research/R-0065-fifth-win-completion.md |
 | $83:88D3 | docs/research/R-0058-lap-result.md, docs/research/R-0065-fifth-win-completion.md |
 | $83:88DD | docs/research/R-0065-fifth-win-completion.md |
-| $83:88E1 | docs/research/R-0065-fifth-win-completion.md, docs/research/R-0066-stunt-event-race.md, tasks/STUNT-RESULT.md |
-| $83:88F1 | docs/research/R-0065-fifth-win-completion.md |
+| $83:88E1 | docs/research/R-0065-fifth-win-completion.md, docs/research/R-0066-stunt-event-race.md, docs/research/R-0067-stunt-result.md, tasks/STUNT-RESULT.md |
+| $83:88F1 | docs/research/R-0065-fifth-win-completion.md, docs/research/R-0067-stunt-result.md |
+| $83:88F4 | docs/research/R-0067-stunt-result.md |
 | $83:8D5D | docs/research/R-0058-lap-result.md, tasks/FRONT-END-LAP-RESULT.md |
 | $83:8E1C | docs/research/R-0056-tour-track-now-playing.md |
 | $83:8E26 | docs/research/R-0056-tour-track-now-playing.md |
 | $83:904A | docs/research/R-0038-dragster-ordinary-controls.md, docs/research/R-0058-lap-result.md, tasks/FRONT-END-LAP-RESULT.md |
+| $83:98B8 | docs/research/R-0067-stunt-result.md |
 | $83:9AF9 | docs/research/R-0055-rider-menu.md |
 | $83:9B01 | docs/research/R-0055-rider-menu.md |
 | $83:9B09 | docs/research/R-0055-rider-menu.md |
