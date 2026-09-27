@@ -58,7 +58,7 @@ hill-complete, bowl-press; `acceptance.sh`, `nothing-moves.sh`, `decode/compare.
 | Result | From power-on through each stunt result to PICK TRACK: bowl-lose (a loss) 2,565 frames, hill-win (a win) 2,698, bowl-quit (the pause QUIT) 2,689, bowl-press (presses during the tally) 2,565: no state difference; every picture from frame 400 equal (2,165, 2,298, 2,289 and 2,165). |
 | Records | Equal to the original's cartridge RAM at 10 or 11 frames of each capture (the cold start's tries, the result, the tally's end, the best, the statistics, the scoring, the end). |
 | Completion | hill-complete (HILL CLIMB won with WALKER's other four done tracks written during the race): 4,298 frames through the award and PICK TOUR, no difference, 3,898 pictures equal. |
-| Nothing moves | The gates: pending. |
+| Nothing moves | The gates on `16d2789` (`local/evidence/stunt-result/gates-16d2789.out`, 06:31-08:41Z, 130 minutes): the three presets, ctest 28 of 28, the synthetic suite, both v1 contracts, every hidden app run (and two new ones playing BOWL and HILL CLIMB from the menus with no notice) and the eleven differential gates pass. The equivalence sweep against main `e131469`'s binaries (pack v24 against v25), now with the nine stunt scenarios on both sides: 432 runs, 2,387,105 updates, 1,290 restarts and 2,538 pictures, no difference. The per-track recompare is identical, stunt rows included. Every earlier front-end comparison and records check is unchanged, except HUNTER's code routes, whose `tries` now match. The five captures above; the tooling tests (504); no function over 80 lines; the address index passes. |
 
 ## Review
 
