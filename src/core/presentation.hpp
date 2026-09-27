@@ -378,6 +378,9 @@ struct ClassicRaceHistory {
     // screen. The riders' OAM vertical-flip bit outlives the blink by an update:
     // the NMI resets the attributes ($80:876C) only after its OAM transfer.
     bool hunter_flip_prior{};
+    // R-0068: NEON's green level (`$12D3`) as the update before the picture left it; the NMI
+    // writes it into colour 113. Nothing for a caller without the history.
+    std::optional<std::uint8_t> neon_green{};
 };
 // The countdown's transition member for a track: 5 + `$1229`, which
 // $83:CC05-CC08 latches at race initialization from the player's reflection
@@ -444,9 +447,9 @@ public:
                         const ClassicContentPack& pack);
     // History for the update that produced the `previous_update` being drawn.
     ClassicRaceHistory on_screen() const {
-        return {on_screen_,           opponent_finish_frame_, window_.observed(),
-                window_.published(),  clock_.published(),     on_screen_barf_,
-                on_screen_flip_prior_};
+        return {on_screen_,          opponent_finish_frame_, window_.observed(),
+                window_.published(), clock_.published(),     on_screen_barf_,
+                on_screen_flip_prior_, on_screen_neon_green_};
     }
     const RiderLookState& look() const { return look_; }
 
@@ -460,6 +463,10 @@ private:
     // The track's countdown transition member, a constant of the race read
     // from the pack on the first update after a reset.
     std::optional<unsigned> transition_member_{};
+    // NEON's green level after the latest observed update ($83:D1CA runs in the update, the NMI
+    // after it shows it) and after the update on screen; the setup leaves 0. Nothing on another
+    // track.
+    std::optional<std::uint8_t> neon_green_{}, on_screen_neon_green_{};
 };
 // The content one track's race is drawn from, selected by track from the pack.
 // Every span is pack content; the scenario and geometry come from the engine.
@@ -501,7 +508,28 @@ struct ClassicRacePresentationContent {
     // The player's four bytes of `$82:D4DC`: COLDATA's writes and CGADSUB, the colour math
     // HDMA channel 5 applies to the BG3 ink ($82:D57F-D5FB, R-0061).
     std::span<const std::uint8_t> rider_colour_math;
+    // NEON (R-0068): the green levels by palette (`$83:D1C3`, eight bytes); empty elsewhere.
+    std::span<const std::uint8_t> neon_green_levels;
+    // NEON: colours 96-111, which its race never loads or cycles, as the menus left them (R-0068):
+    // NOW PLAYING's colours 96-107 (front-end.asset.036 from colour 64) and the front end's
+    // cycle of 108-111 ($80:FA60) at its phase. The app passes the front end's own; the content
+    // alone gives NOW PLAYING's with the cycle at phase 0, where the laboratory's menu route
+    // leaves it.
+    std::array<std::uint8_t, 32> neon_menu_colours{};
 };
+// R-0068, NEON (track 42 in one-player play, `$12D1`): $83:D1EE-D247 moves the green level
+// `$12D3` towards `levels[palette]` (presentation.neon.green-levels, `$83:D1C3`; `palette` is the
+// player's `$12CF`), a quarter of the distance a race update, at least one, in the original's
+// eight-bit arithmetic. The table's eighth byte is the next routine's first opcode, which a
+// palette of 7 reads.
+std::uint8_t neon_green_step(std::uint8_t green, std::uint8_t palette,
+                             std::span<const std::uint8_t> levels);
+// $83:D24A-D271: colour 113 for a green level (`$12D5`): red 15, blue 30, green the level's low
+// five bits.
+std::uint16_t neon_colour(std::uint8_t green);
+// NEON's colour math (`$2131` = 0x92, $80:87AC): the objects of palettes 4-7 less the sub
+// screen, channel by channel, at least 0.
+std::uint16_t subtract_colour(std::uint16_t object, std::uint16_t below);
 // $82:D57F-D5FB: HDMA channel 5 writes the rider's COLDATA bytes (bits 5-7 choose red, green
 // and blue, bits 0-4 the intensity) and CGADSUB (bit 7 subtracts). With CGWSEL 0x02 and BG3
 // enabled the race's ink is CGRAM 27 (`ink`) plus, or minus, that fixed colour, clamped per

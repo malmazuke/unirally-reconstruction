@@ -39,17 +39,23 @@ unirally::ControllerButtons buttons(std::uint16_t mask) {
     return value;
 }
 
-void emit(const unirally::ZoomZooState& state) {
+// One timeline row, the state after its update. STUNT-HUD: with `palettes`, also the player's
+// contact palette ("frame palette"), which NEON's picture follows and the state does not carry.
+void emit(const unirally::ZoomZooState& state, std::ostream* palettes) {
     std::cout << state.movement.frame << ' ';
     for (auto byte : unirally::serialize_zoom_zoo(state))
         std::cout << std::hex << std::setw(2) << std::setfill('0') << unsigned(byte);
     std::cout << std::dec << '\n';
+    if (palettes)
+        *palettes << state.movement.frame << ' ' << unsigned(state.player_contact_palette) << '\n';
 }
 
 // The runner's options: one origin (a seed, a restart seed or a native start) and one content
 // source (a pack or a loose directory), the controller stream, and an optional track override.
 struct Options {
     std::filesystem::path seed, content, inputs, pack_path, track_override;
+    // STUNT-HUD: where to write the player's contact palette by update (R-0068).
+    std::filesystem::path contact_palettes;
     bool native_start = false, restart = false;
     unirally::ClassicRaceTrack race_track = unirally::ClassicRaceTrack::ZoomZoo;
     // RACE-RIDERS-OPPONENTS: another rider or opponent than the scenario's MIKE against its
@@ -125,6 +131,8 @@ Options parse_options(int argc, char** argv) {
             const auto hints = small_number(argv[i + 1]);
             if (hints > 1) throw std::invalid_argument("--tutorial-hints is 0 or 1");
             options.tutorial_hints = hints == 1;
+        } else if (option == "--contact-palettes") {
+            options.contact_palettes = argv[i + 1];
         } else if (option == "--best-medal") {
             options.best_medal = small_number(argv[i + 1]);
             if (*options.best_medal > 3) throw std::invalid_argument("--best-medal is 0 to 3");
@@ -222,10 +230,10 @@ void check_content_choice(const Options& options, const unirally::ZoomZooState& 
 // after its update. The stream is what a device reports; update_zoom_zoo applies the rocker
 // the original's controller port applies.
 int run_controller_stream(unirally::ZoomZooState& state, const unirally::ZoomZooContent& data,
-                          const std::filesystem::path& inputs) {
+                          const std::filesystem::path& inputs, std::ostream* palettes) {
     std::ifstream stream(inputs);
     if (!stream) throw std::runtime_error("cannot open ZOOM ZOO controller stream");
-    emit(state);
+    emit(state, palettes);
     std::string line;
     while (std::getline(stream, line)) {
         unsigned frame, player, opponent;
@@ -242,7 +250,7 @@ int run_controller_stream(unirally::ZoomZooState& state, const unirally::ZoomZoo
             std::cerr << "frame " << frame << ": " << e.what() << '\n';
             return 1;
         }
-        emit(state);
+        emit(state, palettes);
     }
     if (!stream.eof()) throw std::invalid_argument("malformed ZOOM ZOO controller stream");
     return 0;
@@ -287,7 +295,12 @@ int main(int argc, char** argv) try {
     }
     if (options.restart) unirally::restart_zoom_zoo(state, data);
     unirally::validate_zoom_zoo_content_state(state, data);
-    return run_controller_stream(state, data, options.inputs);
+    std::ofstream palettes;
+    if (!options.contact_palettes.empty()) {
+        palettes.open(options.contact_palettes);
+        if (!palettes) throw std::runtime_error("cannot write the contact palettes");
+    }
+    return run_controller_stream(state, data, options.inputs, palettes.is_open() ? &palettes : nullptr);
 } catch (const std::exception& e) {
     std::cerr << e.what() << '\n';
     return 1;

@@ -171,6 +171,10 @@ struct ClassicRaceScenario {
     // The rider's best medal on the tour, `$77:069C` & 3 (0 none, 1 bronze, 2 silver, 3 gold):
     // it picks a stunt event's qualifying score ($83:9EEB). A race ignores it.
     std::uint8_t best_medal{};
+    // `$12D1`, NEON: track 42 in one-player play (R-0068). Its picture is its own scenery (14)
+    // lit by the BG1 palette under the player; its race routines otherwise run as a stunt
+    // event's (the presentation reads `player_contact_palette`).
+    bool neon_lighting{};
 };
 // The opponent's tier, which `$83:CC0B-CC7C` sets at the race's setup from the opponent and the
 // track: the AI level `$1275` (opponent - 16: BRONSEN 1, SILVIA 2, GOLDWYN 3), the catch-up term
@@ -343,6 +347,10 @@ struct ZoomZooState {
     // setup. A deserialized race is MIKE's against the track's usual opponent.
     RacePairing pairing{};
     OpponentTier opponent_tier{};
+    // Not serialized, and read only by the picture: `$12CF`, the lowest BG1 palette (a cell
+    // word's bits 10-12) among the ten cells the player's latest contact sampled
+    // ($81:8B75-8BB3), which NEON's lighting follows (R-0068). The setup leaves 0.
+    std::uint8_t player_contact_palette{};
 };
 struct ZoomZooContent {
     MovementContent movement;

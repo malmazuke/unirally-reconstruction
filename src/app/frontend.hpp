@@ -5,6 +5,7 @@
 #include "presentation.hpp"
 #include "zoom_zoo_movement.hpp"
 
+#include <algorithm>
 #include <array>
 #include <cstdint>
 #include <optional>
@@ -142,6 +143,13 @@ public:
   // The race NOW PLAYING chose, with its rider, opponent and tutorial hints.
   ClassicRaceScenario race_scenario() const {
     return one_player_race_scenario(state_);
+  }
+  // Colours 96-111 as the menus leave them to the race: NEON (track 42) never reloads or cycles
+  // them (R-0068).
+  std::array<std::uint8_t, 32> race_leftover_colours() const {
+    std::array<std::uint8_t, 32> colours{};
+    std::copy_n(state_.video.cgram.begin() + 96 * 2, colours.size(), colours.begin());
+    return colours;
   }
   // The race is over for the menus (`update_race_for_menus`): its result load
   // has begun, or its pause menu quit or restarted it. The front end takes over

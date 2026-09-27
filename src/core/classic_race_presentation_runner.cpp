@@ -5,6 +5,7 @@
 #include <fstream>
 #include <iostream>
 #include <iterator>
+#include <map>
 #include <optional>
 #include <stdexcept>
 #include <string>
@@ -30,9 +31,26 @@ struct Pairing {
     bool tutorial_hints = true;
     std::span<const std::uint8_t> opponent_catch_up;
 };
+// STUNT-HUD: the player's contact palette by frame (zoom_zoo_runner --contact-palettes), which
+// NEON's picture follows and the timeline's states do not carry (R-0068).
+using ContactPalettes = std::map<unsigned, std::uint8_t>;
+
+ContactPalettes read_contact_palettes(const char* path) {
+    std::ifstream input(path);
+    if (!input) throw std::invalid_argument("cannot read the contact palettes");
+    ContactPalettes palettes;
+    unsigned frame{}, palette{};
+    while (input >> frame >> palette) {
+        if (palette > 7) throw std::invalid_argument("a contact palette is 0 to 7");
+        palettes[frame] = static_cast<std::uint8_t>(palette);
+    }
+    if (!input.eof()) throw std::invalid_argument("malformed contact palettes");
+    return palettes;
+}
 
 unirally::ZoomZooState parse_timeline_row(const std::string& line, unsigned& frame,
-                                          const std::optional<Pairing>& pairing = {}) {
+                                          const std::optional<Pairing>& pairing = {},
+                                          const ContactPalettes& palettes = {}) {
     const auto space = line.find(' ');
     if (space == std::string::npos) throw std::invalid_argument("timeline row lacks a state");
     frame = parse_unsigned(std::string_view(line).substr(0, space), "timeline frame");
@@ -45,12 +63,14 @@ unirally::ZoomZooState parse_timeline_row(const std::string& line, unsigned& fra
         if (parsed.ec != std::errc{} || parsed.ptr != hex.data() + 2 * i + 2)
             throw std::invalid_argument("timeline state is not hexadecimal");
     }
-    const auto state =
+    auto state =
         pairing ? unirally::deserialize_zoom_zoo(bytes, pairing->riders, pairing->tutorial_hints,
                                                  pairing->opponent_catch_up)
                 : unirally::deserialize_zoom_zoo(bytes);
     if (state.movement.frame != frame)
         throw std::invalid_argument("timeline row frame differs from its state");
+    if (const auto palette = palettes.find(frame); palette != palettes.end())
+        state.player_contact_palette = palette->second;
     return state;
 }
 void write_frame(const char* path, const unirally::RgbFrame& frame) {
@@ -104,7 +124,8 @@ int print_window_indices(const char* pack_path, const char* timeline) {
 // Replays consecutive native states from the timeline's first row so the rider look overlays
 // (R-0036) and the opponent's finish frame (R-0040) follow the race, then draws FRAME.
 int draw_timeline_frame(const char* pack_path, const char* timeline, const char* frame_text,
-                        const char* out, std::optional<Pairing> pairing) {
+                        const char* out, std::optional<Pairing> pairing,
+                        const ContactPalettes& palettes) {
     unirally::ClassicContentPack pack(pack_path);
     if (pairing) pairing->opponent_catch_up = pack.optional_entry("race.opponent-catch-up");
     const auto target = parse_unsigned(frame_text, "frame");
@@ -114,7 +135,7 @@ int draw_timeline_frame(const char* pack_path, const char* timeline, const char*
     std::string line;
     unsigned frame{};
     if (!std::getline(input, line)) throw std::invalid_argument("timeline is empty");
-    auto previous = parse_timeline_row(line, frame, pairing);
+    auto previous = parse_timeline_row(line, frame, pairing, palettes);
     if (!previous.native_initialization
         || frame != unirally::classic_race_scenario(previous.track).initialization_frame)
         throw std::invalid_argument("timeline must begin at the native race initialization");
@@ -125,7 +146,7 @@ int draw_timeline_frame(const char* pack_path, const char* timeline, const char*
                       : unirally::classic_race_scenario(previous.track));
     while (std::getline(input, line)) {
         const auto previous_frame = frame;
-        auto state = parse_timeline_row(line, frame, pairing);
+        auto state = parse_timeline_row(line, frame, pairing, palettes);
         if (frame != previous_frame + 1U)
             throw std::invalid_argument("timeline rows must be consecutive");
         history.observe_update(previous, state, pack);
@@ -158,27 +179,41 @@ int draw_state(const char* pack_path, const char* state_path, const char* out,
     return 0;
 }
 
+// PACK --timeline TIMELINE FRAME OUT [--pairing RIDER OPPONENT HINTS] [--contact-palettes FILE]
+int draw_timeline_frame_with_options(int argc, char** argv) {
+    std::optional<Pairing> pairing;
+    ContactPalettes palettes;
+    for (int i = 6; i < argc;) {
+        const std::string_view option = argv[i];
+        if (option == "--pairing" && i + 3 < argc && !pairing) {
+            pairing = Pairing{{static_cast<std::uint8_t>(parse_unsigned(argv[i + 1], "rider")),
+                               static_cast<std::uint8_t>(parse_unsigned(argv[i + 2], "opponent"))},
+                              parse_unsigned(argv[i + 3], "tutorial hints") != 0,
+                              {}};
+            i += 4;
+        } else if (option == "--contact-palettes" && i + 1 < argc && palettes.empty()) {
+            palettes = read_contact_palettes(argv[i + 1]);
+            i += 2;
+        } else {
+            throw std::invalid_argument("unknown or repeated timeline option");
+        }
+    }
+    return draw_timeline_frame(argv[1], argv[3], argv[4], argv[5], pairing, palettes);
+}
+
 } // namespace
 
 int main(int argc, char** argv) try {
     // One picture of either track's shared race state, drawn as the app draws it.
     if (argc == 4 && std::string_view(argv[2]) == "--window-index")
         return print_window_indices(argv[1], argv[3]);
-    if (argc == 6 && std::string_view(argv[2]) == "--timeline")
-        return draw_timeline_frame(argv[1], argv[3], argv[4], argv[5], std::nullopt);
-    if (argc == 10 && std::string_view(argv[2]) == "--timeline"
-        && std::string_view(argv[6]) == "--pairing") {
-        const Pairing pairing{{static_cast<std::uint8_t>(parse_unsigned(argv[7], "rider")),
-                               static_cast<std::uint8_t>(parse_unsigned(argv[8], "opponent"))},
-                              parse_unsigned(argv[9], "tutorial hints") != 0,
-                              {}};
-        return draw_timeline_frame(argv[1], argv[3], argv[4], argv[5], pairing);
-    }
+    if (argc >= 6 && std::string_view(argv[2]) == "--timeline")
+        return draw_timeline_frame_with_options(argc, argv);
     if (argc != 4 && argc != 5)
         throw std::invalid_argument(
             "usage: classic_race_presentation_runner PACK STATE OUT.ppm [PREVIOUS_STATE]\n"
             "       classic_race_presentation_runner PACK --timeline NATIVE_TIMELINE FRAME "
-            "OUT.ppm [--pairing RIDER OPPONENT TUTORIAL_HINTS]\n"
+            "OUT.ppm [--pairing RIDER OPPONENT TUTORIAL_HINTS] [--contact-palettes FILE]\n"
             "       classic_race_presentation_runner PACK --window-index NATIVE_TIMELINE");
     return draw_state(argv[1], argv[2], argv[3], argc == 5 ? argv[4] : nullptr);
 } catch (const std::exception& e) {
