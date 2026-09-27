@@ -616,6 +616,19 @@ std::optional<std::uint8_t> neon_green_on_screen(const ZoomZooState& drawn,
     return content.neon_green_levels[drawn.player_contact_palette];
 }
 
+// R-0040: the countdown and winner windows show colour 0 through colour math. With history
+// the member is the one the vblank published for this picture; a single restored state
+// derives it from its counters and frame (exact when no pause intervened).
+std::optional<unsigned> race_window_member(const ZoomZooState& state,
+                                           const ClassicRacePresentationContent& content,
+                                           const ClassicRaceHistory* history) {
+    if (content.window_tables.empty()) return std::nullopt;
+    if (history && history->window_published) return history->window_table;
+    return classic_window_table_index(state, content.scenario.initialization_frame + 6U,
+                                      history ? history->opponent_finish_frame : std::nullopt,
+                                      content.window_transition_member);
+}
+
 } // namespace
 
 // One race picture, in the PPU's layers: the recovered or authored result once it shows;
@@ -671,16 +684,7 @@ RgbFrame render_classic_race(const ZoomZooState& state,
     const std::array<std::uint8_t, 3> ink = ui({255, 240, 220});
     const auto scroll = race_scroll(state, content, previous_update, history);
     const auto bg1_above_objects = draw_race_backgrounds(frame, vram, cgram, content, scroll);
-    // R-0040: the countdown and winner windows show colour 0 through colour math. With history
-    // the member is the one the vblank published for this picture; a single restored state
-    // derives it from its counters and frame (exact when no pause intervened).
-    const auto window_index =
-        content.window_tables.empty() ? std::optional<unsigned>{}
-        : history && history->window_published
-            ? history->window_table
-            : classic_window_table_index(state, scenario.initialization_frame + 6U,
-                                         history ? history->opponent_finish_frame : std::nullopt,
-                                         content.window_transition_member);
+    const auto window_index = race_window_member(state, content, history);
     const auto window_colour = colour(cgram, 0);
     // The caption (R-0042) and the HUD (R-0043) are BG3, drawn over the track and under the
     // riders; where no sprite covers the ink it is the flat colour, which matches the original
