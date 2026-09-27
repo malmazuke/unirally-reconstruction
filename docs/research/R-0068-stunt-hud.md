@@ -148,6 +148,10 @@ Nothing else moves (`checks-f31aae8.out`, on the commit that added NEON's race r
   among them), the stunt rows exact;
 - HUNTER-EFFECTS' 48 held captures (R-0052; tracks 40, 41, 43, 44): every one the same as main's
   runner gives, all exact to their ends;
+- the front end around a stunt event (STUNT-RESULT's acceptance, pack v26, on `1c07cd2`):
+  bowl-lose, hill-win, bowl-quit, hill-complete and bowl-press equal on every frame from power-on
+  and on every picture from 400 (2,165, 2,298, 2,289, 3,898 and 2,165), the records at every
+  checked frame;
 - builds lab-release, lab-debug and app-debug with no warnings, ctest 29 of 29 on each; no
   function over 80 lines; native-symbols passed.
 
