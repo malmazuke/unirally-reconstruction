@@ -1,6 +1,7 @@
 """Named byte layout of the 742-byte shared race state (URZZ000B / URDG0001), and
 of the 52 special-tile bytes, 60 checkpoint flags and 54 HUNTER effect bytes the other
-tracks' state (URTRnn06) appends (R-0047, R-0048, R-0051, R-0052).
+tracks' state (URTRnn06) appends (R-0047, R-0048, R-0051, R-0052), and of the 90 stunt event
+bytes a stunt event's state (URTRnn07) appends after them (R-0066).
 
 Diagnostic only: names follow the native serializer order so a first
 divergence can be reported as a field instead of a bare offset.
@@ -166,6 +167,25 @@ LAYOUT = layout() + [(742+24*r+2*i, 2, f'{("player", "opponent")[r]}.{n}')
     + [(854+2*i, 2, f'hunter.{n}') for i, n in enumerate(
         ['latched', 'active', *(f'effect{k}' for k in range(8)), *(f'timer{k}' for k in range(8)),
          'pulse', 'pulse_shrinking', 'pulse_length', 'blink', 'wave_phase', 'hide_track', 'mosaic', 'skip_update', 'message', 'shown', 'hud_event', 'caption', 'mosaic_counter'])]
+
+
+# R-0066: a stunt event's words, from original memory: the qualifying score `$77:0753`, the
+# clock's stop `$0BF5`, the finish display `$0FE9`, the riders' settling `$12DF`/`$12E1`, then the
+# trick tallies `$77:076B-07BA` (per family roll, flip, twist, z flip and mega, four columns
+# x1-x4 of a count byte, a zero byte and a points word).
+STUNT_FAMILIES = ('roll', 'flip', 'twist', 'z_flip', 'mega')
+
+
+def stunt_event_bytes(wram: bytes, sram: bytes) -> bytes:
+    """The 90 bytes URTRnn07 appends last (the stunt event), from original WRAM and SRAM."""
+    return bytes(sram[0x753:0x755] + wram[0xbf5:0xbf7] + wram[0xfe9:0xfeb] + wram[0x12df:0x12e3]
+                 + sram[0x76b:0x7bb])
+
+
+LAYOUT += [(916, 2, 'stunt.qualifying_score'), (918, 2, 'stunt.clock_stopped'), (920, 2, 'stunt.finish_display'),
+           (922, 2, 'player.stunt.settled'), (924, 2, 'opponent.stunt.settled')] \
+    + [(926+16*f+4*c+k, w, f'stunt.{family}.x{c+1}.{n}') for f, family in enumerate(STUNT_FAMILIES)
+       for c in range(4) for k, w, n in ((0, 1, 'shown'), (1, 1, 'pad'), (2, 2, 'points'))]
 
 
 def describe(left: bytes, right: bytes, limit=24):

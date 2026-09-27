@@ -40,8 +40,20 @@ void one_player_race_rule() {
   require(!unirally::app::native_one_player_race(state), "2P is refused");
 }
 
+// STUNT-EVENT-RACE: --track and the menus start the same races; no stunt event until its
+// result is native (STUNT-RESULT).
+void track_option_rule() {
+  using unirally::ClassicRaceTrack;
+  for (const std::uint8_t stunt : std::array<std::uint8_t, 9>{2, 7, 12, 17, 22, 27, 32, 37, 42})
+    require(!unirally::app::native_race_track(ClassicRaceTrack{stunt}), "a stunt event is refused");
+  for (const std::uint8_t race : std::array<std::uint8_t, 6>{0, 1, 13, 36, 41, 44})
+    require(unirally::app::native_race_track(ClassicRaceTrack{race}), "a race track runs");
+  require(!unirally::app::native_race_track(ClassicRaceTrack{45}), "no track 45");
+}
+
 int main() {
   one_player_race_rule();
+  track_option_rule();
   using namespace unirally::app;
   PalScheduler scheduler(1'000);
   require(scheduler.updates_due(20'000'999) == 0, "no early update");

@@ -622,6 +622,72 @@ const std::array<RequiredEntry, 17> hunter_ending_required{{
     {"front-end.credits-objects", 132,
      "0bbb4cc931af069cbe4706f4ece85fb649be10bac1e0e3dbbddc7acfb2ee8a3e"},
 }};
+// STUNT-EVENT-RACE (profile v24): the nine stunt events' decoded data, tile columns, tile flags
+// and BG1 tiles. Generated from the rules file (tracks.py v24_new_entries).
+const std::array<RequiredEntry, 36> stunt_tracks_required{{
+    {"track.02.data", 35810, "09b580858db72b03da0a54203b51383215efcad95dbffc408a8b8620446c8400"},
+    {"track.02.tile-columns", 5376,
+     "b78080f9a2f227693c2da4abd2644344a9a38cfbd459c8eb8a3fb8e2fa10fb59"},
+    {"track.02.tile-flags", 168,
+     "00ac674895f31af95d9ba97aa143ee4e5603f8b7b101249df290291ad33104fd"},
+    {"track.02.bg1-tiles", 21504,
+     "048c38fc3e68406dfbce48b485f39dfe9dee67e478fbe9e075f3032fc43a79dc"},
+    {"track.07.data", 35617, "49e5b593705325a5f66685f9b743eec790533556019f9fb94632a95a5b081024"},
+    {"track.07.tile-columns", 5664,
+     "2ad8bb02dfd2304ed7ebbe201c44d45c5a69836af50a54e382961feb14ae451f"},
+    {"track.07.tile-flags", 177,
+     "26cdebdbb3b400f3351c7b5b1fa2e6915cf31227d8920fdd3deb5541e5e104ee"},
+    {"track.07.bg1-tiles", 22656,
+     "bea9ab77774d702bcbae9881e1a3eedcb490c90119f0923b2c80bd96b6dc57be"},
+    {"track.12.data", 38625, "71d1842a55e19dd51f35410215ab35ecabc46f7798a07fd781c836b43e80ab53"},
+    {"track.12.tile-columns", 5344,
+     "d28539fc45a99434a5b2c610a5eb972cf3e78515945e62f31a8ea7c0d2f8c788"},
+    {"track.12.tile-flags", 167,
+     "d02dc75e4d0061d0894daa4f0e45f478e6af091184afbd7779676c2a04fa0c26"},
+    {"track.12.bg1-tiles", 21376,
+     "ccf716cd6d1f4e9d80c4558c85182fb8d2c848f1f8416d6a295c6ea0e6760e97"},
+    {"track.17.data", 34490, "4d5542b633c69cf54c718e36ec2ba05550fb1b3fe9ad71a7c779cf34baa8569c"},
+    {"track.17.tile-columns", 1888,
+     "73b00979619eba39f193824f398d2468efdb4fa142467e8fec1bbb445fbd011c"},
+    {"track.17.tile-flags", 59, "9204261213e848b67439754d242c43246f114a44385c862fc8b350cf6cc8d4c8"},
+    {"track.17.bg1-tiles", 7552,
+     "54592a7365bf99d95760ea047848dff4e2c91b8b609f024933e3dcbcfb9b2ed4"},
+    {"track.22.data", 34622, "24092404332793733e9ed93a058b6e0283c23eea0b67c045e5e5f98ef4729d66"},
+    {"track.22.tile-columns", 3840,
+     "dfb2cfb1c1652676520b9922bd449be38de26e139f39ea148c7ab5587500e3c2"},
+    {"track.22.tile-flags", 120,
+     "d9d554c0cc5da4fcf5f9273cf25c2fd4f0de1126b5cb8a063ae2716c543b9656"},
+    {"track.22.bg1-tiles", 15360,
+     "aa0bd77d50d8eedace4ac0e581995e63da6081baf4218588e6094b08fb0245be"},
+    {"track.27.data", 39267, "840f8ded32239c3588a6db101081b09f46e1f2b1b8f6c2963822fed6a5f38683"},
+    {"track.27.tile-columns", 5408,
+     "f922bebc2fd338a040bbc016deba339b7e8506646012c9b8af03f7970b6f238e"},
+    {"track.27.tile-flags", 169,
+     "484f6dd3ab0ab7784e8ba1120e5cc9a8ab48a0464f7f107919efd44862f99974"},
+    {"track.27.bg1-tiles", 21632,
+     "33c15d239af63551191c89e2ebc4fac59c7bcf3fe3634206c177ab299a9bc9e6"},
+    {"track.32.data", 34497, "67a6f31f05f0554730838f8ab2aec5f1809e68133340337a599527dad916deb0"},
+    {"track.32.tile-columns", 4192,
+     "ee0f81e93b8bcfdc8219539218d629ae233139c961059a739405bfd851c058a1"},
+    {"track.32.tile-flags", 131,
+     "5db5dce4e199b3675f58396bccbe6176447a9c65ccf9a1b8035bea2ecd47d091"},
+    {"track.32.bg1-tiles", 16768,
+     "24c43c712b3ee456c3da0ce7c72b013e70c9b386a3b17c92f08d41856df15ab8"},
+    {"track.37.data", 35364, "f5866b4ff3bdb54d924d1ae5227c8ad4be2685a8491e8bf4efc35331d49f636d"},
+    {"track.37.tile-columns", 5600,
+     "ef845c567855e29d29f63583f3e39e5611361e310adab4d6cbfdb518a9450b22"},
+    {"track.37.tile-flags", 175,
+     "f9cf614d284501eb6e746d0f52cdc2139c7668c52b9d41b53a9a895ddc8a07f8"},
+    {"track.37.bg1-tiles", 22400,
+     "376523cb08a04a8713b3cd873dcf8f0a1acf06b3f8e6134a53ef65bace726613"},
+    {"track.42.data", 48453, "f64852b8e307f4f47a4b185ead39a5d477677f49a7eee0f148291305faf5fbd2"},
+    {"track.42.tile-columns", 5664,
+     "b31b6b1b60044ad0a3bb9143eee5dd6fdbcab563385ca1ef3232e13170047ed3"},
+    {"track.42.tile-flags", 177,
+     "50536e203a232808ac81df056854cd0d42ac6fa70f18c85d4e0b1a16e48c831b"},
+    {"track.42.bg1-tiles", 22656,
+     "a8c0086e3abdd3609bdd36ead0a5fc9fffd83b10780abf0c1acc443c96d664bd"},
+}};
 // LOCKED-TOURS (profile v12): the race tracks of the five tours a cold start does not
 // list, and sceneries 1, 8 and 12. Generated from the rules file (tracks.py v12_new_entries).
 const std::array<RequiredEntry, 89> locked_tracks_required{{
@@ -782,7 +848,7 @@ const std::array<RequiredEntry, 89> locked_tracks_required{{
     {"scenery.12.palette", 352, "b2a9aefe13c1dc68454cf0a5c2bedb086c6e162dbea1df1f2ef108347d89ab63"},
 }};
 constexpr std::string_view two_track_rules_sha =
-    "44839c406b613d9b2684a0a1734507df2cff6576575e5770158fff1a74066900";
+    "7df2a59fdae465979d73ec0981bb6c18eca8df270cc4382f2ae00f44baed107a";
 
 std::array<std::uint8_t, 32> hex_digest(std::string_view text) {
     if (text.size() != 64) throw std::logic_error("invalid compiled Classic SHA-256");
@@ -872,7 +938,7 @@ std::array<std::uint8_t, 32> sha256(std::span<const std::uint8_t> source) {
 
 namespace {
 constexpr std::array<std::string_view, 2> supported_profiles{"classic.pal.crawler.dragster.v1",
-                                                             "classic.pal.crawler.tracks.v23"};
+                                                             "classic.pal.crawler.tracks.v24"};
 } // namespace
 
 std::span<const std::string_view> supported_pack_profiles() {
@@ -939,7 +1005,8 @@ std::vector<RequiredEntry> required_entries(bool tracks) {
                              std::span<const RequiredEntry>(award_required),
                              std::span<const RequiredEntry>(race_pairing_required),
                              std::span<const RequiredEntry>(ending_required),
-                             std::span<const RequiredEntry>(hunter_ending_required)})
+                             std::span<const RequiredEntry>(hunter_ending_required),
+                             std::span<const RequiredEntry>(stunt_tracks_required)})
         out.insert(out.end(), table.begin(), table.end());
     return out;
 }

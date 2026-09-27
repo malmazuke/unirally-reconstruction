@@ -19,5 +19,9 @@ void show_next_player_announcement(ZoomZooState& state, const MovementContent& c
                                    std::span<const std::uint8_t> captions);
 void push_front_player_announcement(ZoomZooState& state, unsigned event);
 void update_tutorial_hints(ZoomZooState& state);
+// $81:8709-8718: each rider's pass lowers both queues' cooldowns by 1, not below 0; a stunt
+// event runs one pass (rider_passes), a race two. A race restored from a capture has no player
+// queue to lower.
+void lower_announcement_cooldowns(ZoomZooState& state, const ClassicRaceScenario& scenario);
 
 } // namespace unirally

@@ -29,7 +29,7 @@ import tempfile
 from .zoom_zoo_trial_reference import ROOT, ROM_SHA, CORE_SHA, sha, digest
 from .zoom_zoo_race_reference import project
 from .zoom_zoo_playable import ROLL_WORDS
-from .classic_race_layout import describe, special_tile_bytes, checkpoint_tail_bytes, hunter_bytes, hud_captions
+from .classic_race_layout import describe, special_tile_bytes, checkpoint_tail_bytes, hunter_bytes, hud_captions, stunt_event_bytes
 from ..content.commands import write_track_override
 from ..reference.bsnes import BsnesCore, BUTTONS, frame_png
 from .zoom_zoo_trial import BUTTONS as RUNNER_BUTTONS  # the runner's controller-row bit order
@@ -208,8 +208,14 @@ def capture(core_path, out, track, horizon, frame_images=(), tour_row=0, hold=No
 
 # Result-loading updates until the result screen is stable, by race mode $77:074B and outcome:
 # a lap race's (ZOOM ZOO, M4-16) and a one-run race's (DRAGSTER, R-0012/R-0019), as native's
-# scenario table uses them.
-STABLE_RESULT = {1: dict(player_won=115, player_lost=115), 0: dict(player_won=226, player_lost=242)}
+# scenario table uses them. A stunt event's (mode 2, R-0066) is the race's return, 105 loads,
+# after which the stunt result ($80:F0EE, STUNT-RESULT) takes over; its rows end there.
+STABLE_RESULT = {1: dict(player_won=115, player_lost=115), 0: dict(player_won=226, player_lost=242),
+                 2: dict(player_won=105, player_lost=105)}
+STUNT_MODE = 2
+# A stunt event switches the opponent off and sets no tier ($83:CBD8, $83:CC0B) and runs one
+# lap count ($0D15 = 0 + 1): the guards' ZOOM ZOO values of these words are not its constants.
+STUNT_GUARDS = {0xc6d: 0, 0x1275: 0, 0xd15: 1}
 
 
 def original_rows(directory):
@@ -246,6 +252,8 @@ def original_rows(directory):
                         finish[r] = frame
                 if archive is not None and int.from_bytes(archive[515:517], 'little') == 240:
                     loading = frame
+            if loading is not None and mode == STUNT_MODE and frame - loading + 1 > STABLE_RESULT[mode]['player_won']:
+                break
             if loading is not None:
                 # $83:904A-90F0 and $80:F88D publish the graph extrema and totals to SRAM;
                 # the laps and totals of both riders survive there unchanged.
@@ -266,10 +274,14 @@ def original_rows(directory):
             # (the accepted original() checks the same, from its guard frame on). R-0052: an
             # update a HUNTER effect skips ($128B at the end of the previous frame) publishes
             # nothing, and under effect 7 ($1335) the reader publishes Y as A ($82:AC77-AC81).
+            # R-0066: in a stunt event, once the finished player has settled ($12DF at the end of
+            # the previous frame) the reader releases its buttons ($82:AA7D-AAA1) whatever the pad
+            # holds; a stunt capture's inputs run on past the finish, so the check stops at the settle.
             skipped = previous is not None and previous[0x128b] != 0
+            released = mode == STUNT_MODE and previous is not None and previous[0x12df] != 0
             reversed_controls = previous is not None and int.from_bytes(previous[0x1335:0x1337], 'little') != 0
             for at, button in ((0x31d, 'y' if reversed_controls else 'a'), (0x321, 'x'), (0x339, 'start')):
-                if frame >= boundary + GUARD_OFFSET and not skipped and \
+                if frame >= boundary + GUARD_OFFSET and not skipped and not released and \
                         int.from_bytes(w[at:at+2], 'little') != int(button in document['timeline'][frame][0]):
                     raise ValueError(f'player {button} publication differs from the controller timeline at {frame}')
             if frame >= boundary + GUARD_OFFSET:
@@ -278,8 +290,9 @@ def original_rows(directory):
                     if at in (0xd53, 0xd55, 0x31d, 0x321, 0x339) or at in {a+2*r for a in ROLL_WORDS for r in (0, 1)}:
                         continue
                     value = int.from_bytes(w[at:at+item['width']], 'little')
-                    if value != item['value']:
-                        violations.setdefault(f'{at:04x}', dict(frame=frame, value=value, guarded=item['value']))
+                    guarded = STUNT_GUARDS.get(at, item['value']) if mode == STUNT_MODE else item['value']
+                    if value != guarded:
+                        violations.setdefault(f'{at:04x}', dict(frame=frame, value=value, guarded=guarded))
                 # R-0052: the HUNTER opponent's voices 232-247 index the learned bank past its end
                 # at $7E21E9-$7E21F8 ($7E2102 + event - 1, $81:C25C-C260), as the other tours' 200-215
                 # do at the manifest's $7E21C9-$7E21D8; native takes the original's zero-weight exit,
@@ -314,6 +327,9 @@ def original_rows(directory):
                     rom = Path((ROOT/'local/rom-location.txt').read_text().strip()).read_bytes()
                     captions, caption_rows = hud_captions(rom), hud_captions(rom, range(1, 256))
                 tail_archive = special_tile_bytes(w)+checkpoint_tail_bytes(w)+hunter_bytes(w, captions, caption_rows)
+                # A stunt event's state (URTRnn07) appends its words (R-0066).
+                if mode == STUNT_MODE:
+                    tail_archive += stunt_event_bytes(w, s)
                 row += tail_archive
             rows.append(row.hex())
             previous = w
@@ -323,7 +339,10 @@ def original_rows(directory):
         s = ss.read(8192)
         scenario = {'track_074a': s[0x74a], 'race_mode_074b': s[0x74b], 'laps_0744': s[0x744],
                     'rider_0748': s[0x748], 'opponent_0749': s[0x749],
-                    'tutorial_bits_1116': s[0x1116] | s[0x1117] << 8}
+                    'tutorial_bits_1116': s[0x1116] | s[0x1117] << 8,
+                    # The rider's best medal on the tour ($77:069C + 16 * tour + rider, five
+                    # tracks a tour): a stunt event's qualifying score ($83:9EEB).
+                    'best_medal_069c': s[0x69c + 16 * (s[0x74a] // 5) + s[0x748]] & 3}
     events = dict(finish_frames=finish, loading_frame=loading)
     if loading is not None:
         # As zoom_zoo_playable: the result is black through loading + 75, and the accepted
@@ -335,7 +354,7 @@ def original_rows(directory):
     return document, rows, dict(guard_violations=violations, projection_stop=error, scenario=scenario, **events)
 
 
-def native_rows(binary, pack, track, count, scenario, hold=None, controller=None, pairing=None):
+def native_rows(binary, pack, track, count, scenario, hold=None, controller=None, pairing=None, best_medal=0):
     rom = Path((ROOT/'local/rom-location.txt').read_text().strip()).read_bytes()
     with tempfile.TemporaryDirectory(prefix='track-native-') as directory:
         root = Path(directory)
@@ -346,7 +365,15 @@ def native_rows(binary, pack, track, count, scenario, hold=None, controller=None
         # hints have ended (RACE-RIDERS-OPPONENTS).
         if pairing is not None:
             base += ['--rider', str(pairing[0]), '--opponent', str(pairing[1]), '--tutorial-hints', str(pairing[2])]
-        start = int(subprocess.run(base+['--inputs', str(empty)], capture_output=True, text=True, timeout=60).stdout.split()[0])
+        # A stunt event's qualifying score follows the rider's best medal on the tour (R-0066).
+        if best_medal:
+            base += ['--best-medal', str(best_medal)]
+        first = subprocess.run(base+['--inputs', str(empty)], capture_output=True, text=True, timeout=60)
+        if first.returncode or not first.stdout.split():
+            # A runner that cannot start the scenario (a binary before STUNT-EVENT-RACE on a stunt
+            # event) compares no rows.
+            return [], first.returncode, first.stderr.strip(), None
+        start = int(first.stdout.split()[0])
         inputs = root/'inputs.txt'
         # The capture's held input, if any, by update (it starts that many updates
         # after the original's boundary, whatever native's frame label).
@@ -372,14 +399,20 @@ def explore(reference, binary, pack, scenario):
     document, rows, events = original_rows(reference)
     # The track the original loaded (SRAM $77:074A at the boundary), not the menu position.
     track = events['scenario']['track_074a']
+    if scenario == 'auto':  # the track's own scenario (a stunt event's always is)
+        scenario = native_scenario(track, events['scenario']['race_mode_074b'], True)
     boundary = document['initialization_frame']
     controller = [document['timeline'][boundary+k][0] for k in range(1, len(rows))]
     rider = events['scenario']['rider_0748']
     hints = 0 if events['scenario']['tutorial_bits_1116'] >> rider & 1 else 1
     pairing = (rider, events['scenario']['opponent_0749'], hints)
-    default = (0, 20 if 40 <= track <= 44 else 17, 1)
+    stunt = events['scenario']['race_mode_074b'] == STUNT_MODE
+    # ANTI-UNI on HUNTER's race tracks; BRONSEN on the others and on every stunt event.
+    default = (0, 20 if 40 <= track <= 44 and not stunt else 17, 1)
+    best_medal = events['scenario']['best_medal_069c'] if stunt else 0
     actual, code, error, native_start = native_rows(binary.resolve(), pack.resolve(), track, len(rows), scenario,
-                                                    controller=controller, pairing=None if pairing == default else pairing)
+                                                    controller=controller, pairing=None if pairing == default else pairing,
+                                                    best_medal=best_medal)
     divergence = None
     for i, (x, y) in enumerate(zip(actual, rows)):
         a, b = bytes.fromhex(x), bytes.fromhex(y)
@@ -394,8 +427,8 @@ def explore(reference, binary, pack, scenario):
 
 
 # Race mode `$77:074B` at the boundary -> the native scenario whose mode it is
-# (0 DRAGSTER's one-way race, 1 ZOOM ZOO's lap race); mode 2 is the stunt event,
-# which no native scenario models.
+# (0 DRAGSTER's one-way race, 1 ZOOM ZOO's lap race). Mode 2, the stunt event (R-0066), is
+# compared on each stunt track's own scenario (native_scenario), as its content is in the pack.
 SCENARIO_FOR_MODE = {0: 'classic.crawler.dragster', 1: 'classic.crawler.zoom-zoo'}
 
 
@@ -413,7 +446,7 @@ def sweep(core_path, out, binary, pack, horizon, tour_rows=range(4), positions=r
             repeat = {k: a[k] == b[k] for k in ('wram', 'sram', 'video', 'initialization_frame')}
             document, original, events = original_rows(out/name)
             mode = events['scenario']['race_mode_074b']
-            scenario = SCENARIO_FOR_MODE.get(mode)
+            scenario = native_scenario(events['scenario']['track_074a'], mode, False)
             row = dict(tour_row=tour_row, position=position, capture=name, now_playing_frame=pick + 140,
                        repeat_identical=all(repeat.values()), repeat=repeat, **events['scenario'],
                        initialization_frame=document['initialization_frame'], native_scenario=scenario)
@@ -431,7 +464,10 @@ def sweep(core_path, out, binary, pack, horizon, tour_rows=range(4), positions=r
 
 def native_scenario(track, mode, per_track):
     """The native scenario to compare a captured race with: the track's own
-    (TRACK-BREADTH part 3) or the accepted track of the same race mode."""
+    (TRACK-BREADTH part 3) or the accepted track of the same race mode; a stunt event's
+    always its own (R-0066)."""
+    if mode == STUNT_MODE:
+        return f'classic.track.{track:02d}'
     if mode not in SCENARIO_FOR_MODE:
         return None
     if per_track and track not in (0, 1):
@@ -480,7 +516,8 @@ def main():
     e.add_argument('--reference', type=Path, required=True)
     e.add_argument('--binary', type=Path, required=True)
     e.add_argument('--pack', type=Path, required=True)
-    e.add_argument('--scenario', default='classic.crawler.zoom-zoo')
+    e.add_argument('--scenario', default='classic.crawler.zoom-zoo',
+                   help="the native scenario, or 'auto' for the captured track's own (classic.track.NN)")
     e.add_argument('--out', type=Path, required=True)
     w = sub.add_parser('sweep')
     w.add_argument('--core', type=Path, required=True)

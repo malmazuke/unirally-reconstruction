@@ -14,6 +14,9 @@
 //                   those two only while a word is live: URDG0004, URZZ000E, 794 bytes)
 //   more flags      the last 60 checkpoint flags (R-0048; other tracks)
 //   HUNTER effects  (R-0052; other tracks: URTRnn06, 916 bytes)
+//   stunt event     the qualifying score, the clock's stop, the finish's settling and the
+//                   trick tallies (R-0066;
+//                   the stunt events: URTRnn07, 1,006 bytes)
 //
 // Reading refuses any state the original cannot produce: each section's guards run as it is
 // read, and the natively started race's cross-checks run in the order below.
@@ -41,6 +44,7 @@ constexpr std::size_t movement_prefix_size = 333;
 constexpr std::size_t first_layout_size = 395, sustained_size = 423, complete_race_size = 565;
 constexpr std::size_t native_race_size = 742, extended_size = 794, other_track_size = 916;
 constexpr std::size_t special_tiles_size = 52, hunter_effects_size = 62;
+constexpr std::size_t stunt_event_size = 90, stunt_track_size = other_track_size + stunt_event_size;
 constexpr std::array<std::uint8_t, 8> race_state_magic{'U', 'R', 'Z', 'Z', '0', '0', '0', '1'};
 // The layout letter in byte 7 of the identity.
 constexpr std::uint8_t sustained_layout = '2', complete_race_layout = '3', native_race_layout = 'B';
@@ -58,6 +62,15 @@ constexpr unsigned lap_slots = 10;
 // The native start: 30 fade updates, a 4-update delay, a 270-update countdown, start boosts
 // of 384 until it reaches 128; the tutorial hints every 300 updates from 30, eight groups.
 constexpr std::uint16_t brightest_fade = 30, start_boost = 384, last_start_boost_countdown = 129;
+// A stunt event's countdown drops the start boosts from 160 (R-0066), so they stay whole while
+// it is 160 or more after an update.
+constexpr std::uint16_t last_stunt_start_boost_countdown = 160;
+// A stunt event's clock stops on the tick after 0:00.0 with its digits at 0:59.9 ($81:C830).
+constexpr RaceTimerDigits stopped_stunt_clock{0, 5, 9, 9, 0};
+// A settled rider's vertical velocity in a stunt event ($83:E856, $83:E874).
+constexpr std::uint16_t stunt_settled_fall = 0x80;
+// The track header's opponent start, x then y in 16-unit cells (bytes 7-10).
+constexpr unsigned opponent_start_x = 7, opponent_start_y = 9;
 constexpr unsigned countdown_delay = 4, countdown_updates = 270;
 constexpr unsigned hint_interval = 300, first_hint_updates = 30, hint_groups = 8;
 // The announcement queues: 32 entries, a player's cooldown of up to 120 (hints) and an
@@ -172,8 +185,26 @@ void write_hunter_effects(std::vector<std::uint8_t>& bytes, const HunterEffects&
         put16(bytes, v);
 }
 
+// Each tally column is the original's four bytes: the count, a zero byte, the points word.
+void write_stunt_event(std::vector<std::uint8_t>& bytes, const StuntEvent& stunt) {
+    put16(bytes, stunt.qualifying_score);
+    put16(bytes, stunt.clock_stopped);
+    put16(bytes, stunt.finish_display);
+    for (auto v : stunt.settled) put16(bytes, v);
+    for (const auto& family : stunt.tallies)
+        for (const auto& tally : family) {
+            put8(bytes, tally.shown);
+            put8(bytes, 0);
+            put16(bytes, tally.points);
+        }
+}
+
 bool is_other_track(ClassicRaceTrack track) {
     return track != ClassicRaceTrack::ZoomZoo && track != ClassicRaceTrack::Dragster;
+}
+
+bool is_stunt_track(ClassicRaceTrack track) {
+    return classic_race_has_scenario(track) && classic_race_scenario(track).stunt_event;
 }
 
 // ------------------------------------------------------------------ reading
@@ -221,13 +252,16 @@ void check_finish_poses(const ZoomZooRaceState& race) {
     }
 }
 
-// $81:C73E-C75B finishes both riders, laps or not, once the clock holds 9:59.9.
-void check_lap_clocks(const ZoomZooState& state) {
+// $81:C73E-C75B finishes both riders, laps or not, once the clock holds 9:59.9. A stunt
+// event's riders finish by its clock with their lap left; read_stunt_event checks that the
+// clock has stopped.
+void check_lap_clocks(const ZoomZooState& state, const ClassicRaceScenario& scenario) {
     const auto& clock = state.movement.timer;
     const bool clock_expired = state.native_initialization && clock.minutes == 9
                             && clock.tens_seconds == 5 && clock.seconds == 9 && clock.tenths == 9;
-    const bool timed_out =
-        state.race.riders[0].finished && state.race.riders[1].finished && clock_expired;
+    const bool timed_out = scenario.stunt_event
+                        || (state.race.riders[0].finished && state.race.riders[1].finished
+                            && clock_expired);
     for (const auto& lap : state.race.riders) {
         refuse_unless(
             !((lap.finished ? lap.laps_remaining != 0 && !timed_out : lap.laps_remaining == 0)
@@ -265,7 +299,7 @@ void read_race_progress(Reader& in, ZoomZooState& state, const ClassicRaceScenar
         refuse_unless(seen == 0 || seen == checkpoint_unseen,
                       "ZOOM ZOO checkpoint seen flag invalid");
     check_finish_poses(race);
-    check_lap_clocks(state);
+    check_lap_clocks(state, scenario);
 }
 
 void read_result_and_charges(Reader& in, ZoomZooState& state) {
@@ -469,8 +503,9 @@ void check_queued_events(const ZoomZooState& state, const ClassicRaceScenario& s
 }
 
 // The countdown starts 4 updates after the fade and runs 270 updates, minus those paused;
-// the start boosts stay whole until it passes 128.
-void check_countdown(const ZoomZooState& state, unsigned elapsed) {
+// the start boosts stay whole until it passes 128 (a stunt event's 159).
+void check_countdown(const ZoomZooState& state, unsigned elapsed,
+                     const ClassicRaceScenario& scenario) {
     refuse_unless(!(elapsed == 0 && (state.charge_announced[0] || state.charge_announced[1])),
                   "initial charge flag must be clear");
     const auto running = elapsed > countdown_delay ? elapsed - countdown_delay : 0U;
@@ -484,7 +519,8 @@ void check_countdown(const ZoomZooState& state, unsigned elapsed) {
                       && state.movement.countdown == countdown_updates - decrements,
                   "inconsistent ZOOM ZOO countdown/fade phase");
     refuse_unless(
-        !(state.movement.countdown >= last_start_boost_countdown
+        !(state.movement.countdown >= (scenario.stunt_event ? last_stunt_start_boost_countdown
+                                                            : last_start_boost_countdown)
           && (state.start_boost[0] != start_boost || state.start_boost[1] != start_boost)),
         "premature ZOOM ZOO start boost consumption");
 }
@@ -522,7 +558,7 @@ void read_native_race(Reader& in, ZoomZooState& state, const ClassicRaceScenario
     const auto elapsed = state.movement.frame - scenario.initialization_frame;
     check_hint_timeline(state, elapsed, scenario.tutorial_hints);
     check_queued_events(state, scenario);
-    check_countdown(state, elapsed);
+    check_countdown(state, elapsed, scenario);
     check_lap_times(state, scenario);
 }
 
@@ -651,6 +687,90 @@ void read_hunter_effects(Reader& in, HunterEffects& h, ClassicRaceTrack track) {
                   "classic race HUNTER effect state is invalid");
 }
 
+// R-0066: the stunt event's words. A column's second byte stays 0 (its count is one byte); a
+// stopped clock holds 0:59.9; a rider finishes only by the stopped clock, with its lap left; and
+// the columns' points add up to the score, as every weight the queue pays goes to both
+// ($81:C12A-C132, $81:C17A-C184).
+void read_stunt_event(Reader& in, ZoomZooState& state) {
+    auto& stunt = state.stunt;
+    stunt.qualifying_score = in.u16();
+    stunt.clock_stopped = in.u16();
+    stunt.finish_display = in.u16();
+    for (auto& v : stunt.settled) v = in.u16();
+    std::uint16_t points = 0;
+    for (auto& family : stunt.tallies)
+        for (auto& tally : family) {
+            tally.shown = in.u8();
+            refuse_unless(in.u8() == 0, "a stunt tally's count is one byte");
+            tally.points = in.u16();
+            points = add_word(points, tally.points);
+            // A trick is counted before it pays ($81:C111-C116, then $81:C173-C184). A count
+            // wrapped past 255 (256 tricks of one kind in one run) is outside the domain.
+            refuse_unless(tally.shown || !tally.points, "a stunt tally pays for no trick");
+        }
+    in.require_end();
+    const auto& clock = state.movement.timer;
+    const bool stopped_clock = clock.minutes == stopped_stunt_clock.minutes
+                            && clock.tens_seconds == stopped_stunt_clock.tens_seconds
+                            && clock.seconds == stopped_stunt_clock.seconds
+                            && clock.tenths == stopped_stunt_clock.tenths
+                            && clock.subframe == stopped_stunt_clock.subframe;
+    refuse_unless(stunt.clock_stopped <= 1 && (!stunt.clock_stopped || stopped_clock),
+                  "a stunt event's clock stops at its end");
+    for (unsigned index = 0; index < 2; ++index) {
+        const bool finished = state.race.riders[index].finished != 0;
+        refuse_unless((!finished || stunt.clock_stopped) && stunt.settled[index] <= 1
+                          && (!stunt.settled[index] || finished),
+                      "a stunt event's rider finishes only when its clock stops, then settles");
+    }
+    // The display waits for both finishes; the finish poses and the count towards the result
+    // wait for it.
+    const auto& race = state.race;
+    const bool posed = race.finish_pose[0].active || race.finish_pose[1].active;
+    // It starts only on an update both stand, the update that settles them both.
+    refuse_unless(stunt.finish_display <= 1
+                      && (!stunt.finish_display
+                          || (race.riders[0].finished && race.riders[1].finished
+                              && stunt.settled[0] && stunt.settled[1]))
+                      && (stunt.finish_display || (!race.finish_delay && !posed)),
+                  "a stunt event's finish display is out of order");
+    // The switched-off opponent never moves: no horizontal velocity, and a vertical one only
+    // once it has settled, held at 128 ($83:E874).
+    const auto& opponent = state.movement.riders[1].motion;
+    refuse_unless(opponent.velocity_x == 0
+                      && (opponent.velocity_y == 0
+                          || (opponent.velocity_y == stunt_settled_fall && stunt.settled[1])),
+                  "a stunt event's opponent moves");
+    refuse_unless(points == state.player_announcements.queue.feature_total,
+                  "a stunt event's tallies do not add up to its score");
+}
+
+// A stunt event against its content: the qualifying score is one of its tour's three
+// ($83:9EEB); a running clock reads no later than the header's start (it only counts down); the
+// switched-off opponent stays at its start.
+void check_stunt_content(const ZoomZooState& state, const ZoomZooContent& content) {
+    bool of_tour = false;
+    for (std::uint8_t medal = 0; medal < 3; ++medal)
+        of_tour = of_tour
+               || stunt_qualifying_score(content.qualifying_scores, state.track, medal)
+                      == state.stunt.qualifying_score;
+    refuse_unless(of_tour, "a stunt event's qualifying score is not its tour's");
+    const auto& track = content.movement.sampling.track;
+    refuse_unless(track.size() >= 11, "a stunt event's track header is missing");
+    constexpr unsigned tenths_a_minute = 600, tenths_a_ten = 100, tenths_a_second = 10;
+    const auto& clock = state.movement.timer;
+    const unsigned shown = clock.minutes * tenths_a_minute + clock.tens_seconds * tenths_a_ten
+                         + clock.seconds * tenths_a_second + clock.tenths;
+    const unsigned start = track[1] * tenths_a_minute + track[2] * tenths_a_second; // $82:D7FD
+    refuse_unless(state.stunt.clock_stopped || shown <= start,
+                  "a stunt event's clock reads later than its start");
+    const auto& opponent = state.movement.riders[1].motion;
+    refuse_unless(
+        opponent.x == static_cast<std::uint16_t>(content_word(track, opponent_start_x) << 4U)
+            && opponent.y == static_cast<std::uint16_t>(content_word(track, opponent_start_y) << 4U),
+                  "a stunt event's opponent left its start");
+}
+
 // The track and layout a state's identity names. A 742-byte state with no other identity
 // is ZOOM ZOO's (URZZ); none means the shared layouts, read as ZOOM ZOO.
 std::optional<ClassicRaceTrack> identified_track(std::span<const std::uint8_t> bytes) {
@@ -667,13 +787,15 @@ std::optional<ClassicRaceTrack> identified_track(std::span<const std::uint8_t> b
         if (magic_is("URDG0004")) return ClassicRaceTrack::Dragster;
         throw std::invalid_argument("classic race state identity/width differs");
     }
-    if (bytes.size() == other_track_size) {
+    if (bytes.size() == other_track_size || bytes.size() == stunt_track_size) {
+        const bool stunt = bytes.size() == stunt_track_size;
         refuse_unless(magic_is("URTR") && bytes[4] >= '0' && bytes[4] <= '9' && bytes[5] >= '0'
-                          && bytes[5] <= '9' && bytes[6] == '0' && bytes[7] == '6',
+                          && bytes[5] <= '9' && bytes[6] == '0' && bytes[7] == (stunt ? '7' : '6'),
                       "classic race state identity/width differs");
         const ClassicRaceTrack other{
             static_cast<std::uint8_t>((bytes[4] - '0') * 10 + (bytes[5] - '0'))};
-        refuse_unless(is_other_track(other) && classic_race_has_scenario(other),
+        refuse_unless(is_other_track(other) && classic_race_has_scenario(other)
+                          && is_stunt_track(other) == stunt,
                       "classic race state names a track without its own identity");
         return other;
     }
@@ -692,7 +814,7 @@ std::array<std::uint8_t, 8> classic_race_state_magic(ClassicRaceTrack track) {
             static_cast<std::uint8_t>('0' + track.index / 10U),
             static_cast<std::uint8_t>('0' + track.index % 10U),
             '0',
-            '6'};
+            static_cast<std::uint8_t>(is_stunt_track(track) ? '7' : '6')};
 }
 
 std::vector<std::uint8_t> serialize_zoom_zoo(const ZoomZooState& state) {
@@ -727,10 +849,13 @@ std::vector<std::uint8_t> serialize_zoom_zoo(const ZoomZooState& state) {
         for (unsigned i = shared_checkpoint_flags; i < checkpoint_flags; ++i)
             put8(bytes, state.race.checkpoint_seen[i]);
         write_hunter_effects(bytes, state.hunter);
+        if (is_stunt_track(state.track)) write_stunt_event(bytes, state.stunt);
     } else {
         refuse_unless(state.hunter == HunterEffects{},
                       "HUNTER effects run only on the HUNTER tour");
     }
+    refuse_unless(is_stunt_track(state.track) || state.stunt == StuntEvent{},
+                  "only a stunt event keeps a score to qualify, a clock's stop and trick tallies");
     if (state.track != ClassicRaceTrack::ZoomZoo) {
         // Another track on the shared engine: the URZZ000B layout under its own identity, so
         // a restore can never run one track's state on another.
@@ -761,7 +886,7 @@ ZoomZooState deserialize_race(std::span<const std::uint8_t> bytes,
     if (bytes.size() == native_race_size) return state;
     Reader tiles{bytes.subspan(native_race_size, special_tiles_size)};
     read_special_tiles(tiles, state);
-    if (bytes.size() == other_track_size) {
+    if (bytes.size() >= other_track_size) {
         const auto more_flags = native_race_size + special_tiles_size;
         std::copy(bytes.begin() + more_flags,
                   bytes.begin() + more_flags + (checkpoint_flags - shared_checkpoint_flags),
@@ -771,6 +896,10 @@ ZoomZooState deserialize_race(std::span<const std::uint8_t> bytes,
         for (auto seen : state.race.checkpoint_seen)
             refuse_unless(seen == 0 || seen == checkpoint_unseen,
                           "classic race checkpoint-seen flag is invalid");
+    }
+    if (bytes.size() == stunt_track_size) {
+        Reader stunt{bytes.subspan(other_track_size, stunt_event_size)};
+        read_stunt_event(stunt, state);
     }
     // DRAGSTER and ZOOM ZOO take the extended layout only while a word is live.
     refuse_unless(is_other_track(*track) || state.special_tiles != std::array<SpecialTileRider, 2>{}
@@ -793,6 +922,7 @@ ZoomZooState deserialize_zoom_zoo(std::span<const std::uint8_t> bytes, RacePairi
 void validate_zoom_zoo_content_state(const ZoomZooState& state, const ZoomZooContent& content) {
     if (!state.native_initialization) return;
     refuse_unless(content.reward_weights.size() == 26, "ZOOM ZOO reward weights missing");
+    if (is_stunt_track(state.track)) check_stunt_content(state, content);
     for (unsigned i = 0; i < 2; ++i) {
         const auto& roll = state.rolls[i];
         // The low pose base is latched once from the entry orientation at $82:93E5-941D and

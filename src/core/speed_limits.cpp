@@ -18,8 +18,9 @@ constexpr std::uint16_t launch_extra = 80, most_extra = 384, vertical_base_cap =
 constexpr std::size_t decay_buckets = 9;
 constexpr unsigned last_decay_bucket = 8;
 constexpr std::uint16_t neutral_friction = 1;
-// Cartridge modes 2 and 42 select an alternate vertical cap, not recovered.
-constexpr std::uint8_t alternate_cap_mode = 2, alternate_cap_mode_42 = 42;
+// $82:A81A-A829: on these two tracks (the stunt events BOWL and HUNTER's) the vertical cap
+// takes its other path.
+constexpr std::uint8_t bowl_track = 2, hunter_stunt_track = 42;
 
 std::uint16_t add(std::uint16_t left, std::uint16_t right) {
     return static_cast<std::uint16_t>(static_cast<std::uint32_t>(left) + right);
@@ -42,6 +43,13 @@ std::uint16_t cap_velocity(std::uint16_t velocity, std::uint16_t cap) {
         return !negative(subtract(negative_cap, velocity)) ? negative_cap : velocity;
     }
     return negative(subtract(cap, velocity)) ? cap : velocity;
+}
+// $82:A84F-A86A: the other vertical cap holds falling to 768, whatever the extra. Rising is
+// left alone: the listing compares it with -(768 + the vertical boost), and on the path where
+// that would store it compares again with the same result and branches past the store.
+std::uint16_t cap_falling_only(std::uint16_t velocity) {
+    return !negative(velocity) && negative(subtract(vertical_base_cap, velocity)) ? vertical_base_cap
+                                                                                  : velocity;
 }
 std::uint16_t progress_contribution(SpeedModifiers& state, const SpeedLimitContext& context) {
     if (context.ai_enabled && context.opponent) {
@@ -73,10 +81,6 @@ void limit_rider_speed(std::uint16_t& velocity_x, std::uint16_t& velocity_y,
                        SpeedModifiers& modifiers, const SpeedLimitContext& context,
                        const SpeedDecayContent& content) {
     if (context.skip) return;
-    if (context.cartridge_mode == alternate_cap_mode
-        || context.cartridge_mode == alternate_cap_mode_42) {
-        throw std::invalid_argument("alternate cartridge vertical cap is not recovered");
-    }
     if (content.masks.size() != decay_buckets || content.decrements.size() != 2 * decay_buckets) {
         throw std::invalid_argument("speed decay content must contain nine masks and nine words");
     }
@@ -105,7 +109,9 @@ void limit_rider_speed(std::uint16_t& velocity_x, std::uint16_t& velocity_y,
     horizontal = cap_velocity(
         horizontal, add(static_cast<std::uint16_t>(extra >> 1U), context.player_base_cap));
     vertical =
-        cap_velocity(vertical, add(static_cast<std::uint16_t>(extra >> 1U), vertical_base_cap));
+        context.track == bowl_track || context.track == hunter_stunt_track
+            ? cap_falling_only(vertical)
+            : cap_velocity(vertical, add(static_cast<std::uint16_t>(extra >> 1U), vertical_base_cap));
     subtract_if_nonnegative(state.vertical_boost, 1);
 
     // The counter-controlled decay follows this update's extra.

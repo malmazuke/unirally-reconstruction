@@ -151,7 +151,7 @@ struct ClassicRaceScenario {
     // player won, player lost.
     std::uint16_t stable_result_won{}, stable_result_lost{};
     // Race mode `$77:074B`: 1 for a lap race (ZOOM ZOO), 0 for a one-run race
-    // (DRAGSTER); 2, the stunt event, has no native scenario.
+    // (DRAGSTER); 2, the stunt event, sets `stunt_event` instead.
     // Besides the laps above it selects the speed-limiter progress adjustment
     // bound `$1281` (72 or 96, see race_adjustment_limit), the final-lap
     // announcement ($81:81AE) and the result screen: mode 1 publishes the lap
@@ -165,6 +165,12 @@ struct ClassicRaceScenario {
     // `$12E3` at the start ($82:D94C-D96F): the player's tutorial hints run unless its rider's
     // bit is set in the cartridge RAM's `$77:1116`, which a race sets once its hints end.
     bool tutorial_hints{true};
+    // Race mode 2, a stunt event (`$83:99AD-99B8`: place 2 of every tour; R-0066): a solo run
+    // against the header's clock for points, the opponent switched off (StuntEvent).
+    bool stunt_event{};
+    // The rider's best medal on the tour, `$77:069C` & 3 (0 none, 1 bronze, 2 silver, 3 gold):
+    // it picks a stunt event's qualifying score ($83:9EEB). A race ignores it.
+    std::uint8_t best_medal{};
 };
 // The opponent's tier, which `$83:CC0B-CC7C` sets at the race's setup from the opponent and the
 // track: the AI level `$1275` (opponent - 16: BRONSEN 1, SILVIA 2, GOLDWYN 3), the catch-up term
@@ -202,6 +208,9 @@ struct TrackGeometry {
     unsigned screen_shift{};
     std::int16_t follow_window_low{}, follow_window_high{};
     std::int16_t visible_left{}, visible_right{};
+    // `$0FF7`, set only by the narrowest playfield (16 columns of 1,024 rows, 65,536 units
+    // tall): the sampler takes every y as a row, a negative one included (see sample_track).
+    bool whole_height{};
 };
 TrackGeometry track_geometry(std::span<const std::uint8_t> decoded_track);
 // Whether a rider starts the race reflected: the parity of its start y word in
@@ -261,6 +270,40 @@ struct HunterEffects {
     std::uint16_t mosaic_counter{};
     bool operator==(const HunterEffects&) const = default;
 };
+// R-0066: a stunt event's own words. The tallies are `$77:076B-07BA`, a row of four columns
+// (x1-x4: one to four of a kind) per family of tricks; each column counts the tricks of that
+// family and count shown, and the points they paid. `$81:C0FF-C116` counts a trick before it
+// reads the trick's weight, so a trick whose weight has not grown (a short tabletop) counts
+// with no points.
+struct TrickTally {
+    std::uint8_t shown{};    // one byte; the column's second byte stays 0
+    std::uint16_t points{};  // the weights paid, added as $77:07BB is
+    bool operator==(const TrickTally&) const = default;
+};
+namespace trick_family {
+// The families by row: roll (events 1-4), flip (5-8), twist (9-12), z flip (18-21) and "mega"
+// (16 head bounce in x1, 17 tabletop in x2).
+inline constexpr unsigned roll = 0, flip = 1, twist = 2, z_flip = 3, mega = 4, count = 5;
+inline constexpr unsigned columns = 4;
+} // namespace trick_family
+struct StuntEvent {
+    // $77:0753: the score to reach, set at the race's setup ($80:99ED) from the tour and the
+    // rider's best medal on it (`front-end.qualifying-scores`).
+    std::uint16_t qualifying_score{};
+    // $0BF5: 1 once the clock, counting down from the track header's time, has run out
+    // ($81:C830-C867); from then on each update tests whether each rider can finish.
+    std::uint16_t clock_stopped{};
+    // $0FE9: 1 once both riders have finished and stand on the ground and both announcement
+    // queues are empty ($83:E898-E8DD); only then do the finish poses and captions run and the
+    // finish display count towards the result.
+    std::uint16_t finish_display{};
+    // $12DF/$12E1: 1 once a finished rider has stood on the ground ($83:E85C-E867,
+    // $83:E87A-E885). From then on its vertical velocity is held at 128 each update and its
+    // controls are released ($82:AA7D-AAA1, $82:AB62-AB67).
+    std::array<std::uint16_t, 2> settled{};
+    std::array<std::array<TrickTally, trick_family::columns>, trick_family::count> tallies{};
+    bool operator==(const StuntEvent&) const = default;
+};
 struct ZoomZooState {
     ClassicRaceTrack track{ClassicRaceTrack::ZoomZoo}; // Serialized as the state magic.
     ZoomZooPause pause;
@@ -294,6 +337,8 @@ struct ZoomZooState {
     // ($83:E0C5-E111, LOCKED-TOURS); serialized with the special-tile words.
     std::uint16_t opponent_turnaround{};
     HunterEffects hunter;
+    // Only in a stunt event, whose state (URTRnn07) appends it; zero in a race.
+    StuntEvent stunt;
     // Not serialized: the menus' riders and the opponent's tier set from them at the race's
     // setup. A deserialized race is MIKE's against the track's usual opponent.
     RacePairing pairing{};
@@ -323,6 +368,9 @@ struct ZoomZooContent {
     // $83:C8B3, a byte per track: SILVIA's and GOLDWYN's catch-up (R-0061); empty in packs
     // before profile v21, whose races are BRONSEN's.
     std::span<const std::uint8_t> opponent_catch_up;
+    // front-end.qualifying-scores (`$83:A218`), a word per tour and medal level: the stunt
+    // events' qualifying scores; empty in packs before profile v17, which hold no stunt event.
+    std::span<const std::uint8_t> qualifying_scores;
 };
 // $82:9715–979D: count active updates opposing the track direction, with
 // original wrapped word comparisons at velocities -16 and +16 (1/32 units).
@@ -387,10 +435,17 @@ ZoomZooState classic_race_start(const ZoomZooContent& content, const ClassicRace
 inline constexpr std::array<std::uint8_t, 8> dragster_race_state_magic{'U', 'R', 'D', 'G',
                                                                        '0', '0', '0', '1'};
 // Identity of any other track's race state: `URTR`, the two-digit track index,
-// `05`; the 742-byte layout followed by the special-tile words with $0E7B and
-// $0C73 (52 bytes) and the last 60 checkpoint-seen flags (854 bytes).
+// `06`; the 742-byte layout followed by the special-tile words with $0E7B and
+// $0C73 (52 bytes), the last 60 checkpoint-seen flags and the HUNTER effects (916 bytes).
+// A stunt event's is `07`: the same 916 bytes and its StuntEvent (90 bytes).
 std::array<std::uint8_t, 8> classic_race_state_magic(ClassicRaceTrack track);
+// A race: the player finished first (or with the opponent). A stunt event: the score reached
+// the qualifying score, as the scoring's win test `$83:88E1` counts it.
 bool classic_race_player_won(const ZoomZooState& state);
+// $83:9EEB: a stunt event's qualifying score for the tour of `track` (five tracks a tour) and the
+// rider's best medal on it, silver and gold alike; `table` is front-end.qualifying-scores.
+std::uint16_t stunt_qualifying_score(std::span<const std::uint8_t> table, ClassicRaceTrack track,
+                                     std::uint8_t best_medal);
 // Result-loading update at which the result screen is stable (restart allowed).
 std::uint16_t stable_result_updates(const ZoomZooState& state);
 // Race Again selects the same clean scenario after the stable result.

@@ -186,7 +186,8 @@ std::uint16_t parse_controller_mask(std::string_view value) {
 void print_help() {
   std::cout
       << "Usage: unirally --content-pack PATH [--track dragster|zoom-zoo|NN] [--updates N] [--hidden]\n"
-      << "       NN: a race track's number (its index in the ROM) with a recovered scenario\n"
+      << "       NN: a race track's number (its index in the ROM) with a recovered scenario;\n"
+      << "       not a stunt event (2, 7, 12, 17, 22, 27, 32, 37, 42) until its result is native\n"
       << "       unirally --supported-profiles   (print the pack profiles this build reads)\n"
       << "Without --track it starts at power-on: the Nintendo screen, the title and the main menu;\n"
       << "1P leads to the one-player screens and the race chosen there. With --track it starts in\n"
@@ -225,8 +226,8 @@ std::optional<Options> options(int argc, char **argv) {
         unsigned track_index{};
         const auto parsed_index=std::from_chars(value.data(),value.data()+value.size(),track_index);
         if(parsed_index.ec!=std::errc{} || parsed_index.ptr!=value.data()+value.size() || track_index>44U ||
-           !unirally::classic_race_has_scenario(unirally::ClassicRaceTrack{static_cast<std::uint8_t>(track_index)}))
-          throw std::invalid_argument("unknown track: use dragster, zoom-zoo or the number of a race track with a recovered scenario");
+           !unirally::app::native_race_track(unirally::ClassicRaceTrack{static_cast<std::uint8_t>(track_index)}))
+          throw std::invalid_argument("unknown track: use dragster, zoom-zoo or the number of a race track with a recovered scenario (not a stunt event)");
         result.track=unirally::ClassicRaceTrack{static_cast<std::uint8_t>(track_index)};
       }
     } else if (option == "--content-pack")
@@ -291,7 +292,7 @@ int main(int argc, char **argv) try {
   if(!zoom_zoo && content.pack.optional_entry("zoom.landing-response-matrices").empty())
     throw std::invalid_argument("DRAGSTER and the other tracks need the full content pack for jumps, brakes, reversal and tricks; "
                                 "create it from your ROM with: python3 tools/project.py frontend run --track dragster "
-                                "--pack local/classic-pal-crawler-tracks-v23.pack --rom PATH");
+                                "--pack local/classic-pal-crawler-tracks-v24.pack --rom PATH");
   auto zoom_content=unirally::classic_race_content(content.pack,track);
   auto race_presentation=unirally::classic_race_presentation_content(content.pack,track);
   auto zoom_state=unirally::classic_race_start(zoom_content,unirally::classic_race_scenario(track));

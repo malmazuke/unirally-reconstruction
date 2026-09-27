@@ -11,6 +11,10 @@
 //      its controls, drive, pose and physics;
 //   6. the race clock, the announcement queues, the camera;
 //   7. each rider's contact with the track, the visibility, the HUNTER effects, the hints.
+//
+// A stunt event (R-0066) switches the opponent off: its controls, its own update and its
+// contact are skipped, while its finish and its announcement queue still run; its clock counts
+// down (stunt_event.cpp).
 
 #include "announcements.hpp"
 #include "hunter_effects.hpp"
@@ -20,6 +24,7 @@
 #include "reward_queue.hpp"
 #include "rider_motion.hpp"
 #include "rider_pose.hpp"
+#include "stunt_event.hpp"
 #include "trick_roll.hpp"
 #include "vertical_contact.hpp"
 #include "word_arithmetic.hpp"
@@ -49,12 +54,12 @@ constexpr std::uint16_t brightest_fade = 30, first_published_fade = 5;
 // A capture-restored state runs within the trial horizon.
 constexpr std::uint32_t trial_first_frame = 1649, trial_last_frame = 1849,
                         sustained_last_frame = 9999;
-// The countdown: 270 updates natively (68 in a capture-restored state); the start boosts
-// are dropped for a rider not braking between 129 and 101, spent below 70; the brakes are
-// held from 100.
+// The countdown: 270 updates natively (68 in a capture-restored state). A race drops the
+// start boosts for a rider not braking between 129 and 101 and spends them below 70, when it
+// releases the riders; the brakes are held from 100. A stunt event drops them from 160 and
+// spends them and releases the riders from 100 (see CountdownPhases).
 constexpr unsigned longest_native_countdown = 271, longest_restored_countdown = 69;
-constexpr std::uint16_t boost_drop_first = 130, boost_drop_last = 100, boost_spend = 70;
-constexpr std::uint16_t brakes_from = 100, clock_running_below = 68;
+constexpr std::uint16_t boost_drop_last = 100, brakes_from = 100, clock_running_below = 68;
 constexpr std::uint16_t finish_display_updates = 240;
 // The riders are fully airborne after 9 updates without support.
 constexpr std::uint16_t airborne_updates = 9, off_ground_updates = 2;
@@ -77,6 +82,16 @@ constexpr std::uint16_t drive_step = 24, lift_launch_override = 80;
 constexpr std::uint16_t loop_top_step = 9, cartridge_options = 0xc200;
 // The wrong-direction warning after 180 active updates, then every 60 ($82:974B/977B).
 constexpr std::uint16_t wrong_way_warning = 180, wrong_way_repeat = 120;
+
+// $83:E59C-E7C0: the countdown's phases by $11C5. A race's phases 3 and 4 wait for 0x82 and
+// 0x46 before they drop and spend the start boosts; a stunt event's skip the waits
+// ($83:E686, $83:E6E8), so its phase 3 (160 down to 101) drops them at once and its phase 4
+// (100 down) spends them and releases the riders without the hold (R-0066).
+struct CountdownPhases {
+    std::uint16_t boost_drop_below{}; // boosts dropped while the countdown is below this, above 100
+    std::uint16_t release_below{};    // boosts spent and the riders released below this
+};
+constexpr CountdownPhases race_countdown{130, 70}, stunt_countdown{161, 101};
 
 // The request the engine sees: nothing before the fade publishes the pad.
 ControllerButtons gate_controller(const ZoomZooState& state, const ControllerButtons& request) {
@@ -158,6 +173,17 @@ bool read_player_buttons(ZoomZooState& next, const ControllerButtons& buttons, b
     return pressed_a;
 }
 
+// $82:AA7D-AAA1: once a stunt event's finished player has settled ($12DF), the reader
+// releases all its controls and centres its horizontal axis, and leaves the vertical axis as it
+// was; the NMI still publishes the pad images (R-0066). Returns what the player's buttons are.
+ControllerButtons release_settled_player(const ZoomZooState& state, ZoomZooState& next,
+                                         const ControllerButtons& buttons) {
+    if (!next.stunt.settled[0]) return buttons;
+    next.movement.player_input.horizontal = direction::neutral;
+    next.movement.player_input.vertical = state.movement.player_input.vertical;
+    return {};
+}
+
 // $83:CD05-CD35: the pause menu takes the update once the controller and phase clocks are
 // sampled; the race, the AI, the queues and the hints wait. Start opens it (unless the
 // player has finished); up and down choose; releasing and pressing Start again resumes, or
@@ -194,19 +220,19 @@ bool run_pause_menu(const ZoomZooState& state, ZoomZooState& next, const Control
     return true;
 }
 
-// $83:E59C-E7BD: the start countdown. A rider not braking while it passes 129-101 loses its
-// start boost, and one not braking below 70 spends it. Until 70 (and before the fade
-// publishes the pad) both riders brake and neither jumps, and $83:E7A2-E7BF releases
-// their A ($031D/$031F) and X ($0321/$0323); returns true while it does.
-bool run_countdown(const ZoomZooState& state, ZoomZooState& next) {
+// $83:E59C-E7BD: the start countdown. A rider not braking while it passes the phases' drop
+// window loses its start boost, and one not braking once they release the riders spends it.
+// Until then (and before the fade publishes the pad) both riders brake and neither jumps, and
+// $83:E7A2-E7BF releases their A ($031D/$031F) and X ($0321/$0323); returns true while it does.
+bool run_countdown(const ZoomZooState& state, ZoomZooState& next, const CountdownPhases& phases) {
     auto& whole = next.movement;
     if (!state.native_initialization || !whole.countdown) return false;
     const bool published = next.fade_level >= first_published_fade;
     if (published) {
-        if (whole.countdown < boost_drop_first && whole.countdown > boost_drop_last)
+        if (whole.countdown < phases.boost_drop_below && whole.countdown > boost_drop_last)
             for (unsigned i = 0; i < 2; ++i)
                 if (!next.reflection[i].brake_input) next.start_boost[i] = 0;
-        if (whole.countdown < boost_spend)
+        if (whole.countdown < phases.release_below)
             for (unsigned i = 0; i < 2; ++i)
                 if (!next.reflection[i].brake_input) {
                     whole.riders[i].speed.boost =
@@ -215,7 +241,7 @@ bool run_countdown(const ZoomZooState& state, ZoomZooState& next) {
                 }
         --whole.countdown;
     }
-    if (state.movement.countdown < boost_spend && published) return false;
+    if (state.movement.countdown < phases.release_below && published) return false;
     if (published && state.movement.countdown <= brakes_from)
         for (auto& input : next.reflection) input.brake_input = 1;
     if (!next.reflection[0].brake_input) whole.player_input.horizontal = direction::neutral;
@@ -224,6 +250,17 @@ bool run_countdown(const ZoomZooState& state, ZoomZooState& next) {
         input.brake_input = 1;
         input.jump_input = 0;
     }
+    return true;
+}
+
+// $82:AB6A-AB91 and $83:E084-E089: with the AI flag clear, port 2 is read as a second pad, which
+// nothing holds, and the AI is skipped: the opponent presses nothing and its selector, countdown
+// and suppression words keep their values. Returns true, as an AI switched off by a marker.
+bool release_absent_opponent(ZoomZooState& next) {
+    auto& input = next.reflection[1];
+    input.brake_input = input.jump_input = input.rotate_negative_input =
+        input.rotate_positive_input = 0;
+    next.opponent_horizontal = direction::neutral;
     return true;
 }
 
@@ -603,6 +640,7 @@ SpeedLimitContext speed_limit_context(const ZoomZooState& state, const ZoomZooSt
     limit.player_base_cap = next.reflection[0].base_velocity_cap;
     limit.update_counter = whole.update_counter;
     limit.friction_mode = static_cast<std::uint16_t>(horizontal);
+    limit.track = next.track.index;
     return limit;
 }
 
@@ -695,8 +733,9 @@ void update_rider_contact(const ZoomZooState& state, ZoomZooState& next, unsigne
     auto& rider = whole.riders[index];
     const auto& sampling = content.movement.sampling;
     const auto points = collision_points(sampling, rider.pose.pose_index, rider.pose.reflected);
+    const auto geometry = track_geometry(sampling.track);
     const auto samples = sample_track(sampling, points, rider.motion.x, rider.motion.y,
-                                      track_geometry(sampling.track).coarse_columns);
+                                      geometry.coarse_columns, geometry.whole_height);
     const auto summary = summarize_vertical_contact(content.movement.flat_contact, points, samples,
                                                     rider.motion.x, rider.motion.y);
     if (content.slope_coefficients.size() != 18 && content.slope_coefficients.size() != 128)
@@ -721,13 +760,17 @@ void update_rider_contact(const ZoomZooState& state, ZoomZooState& next, unsigne
 }
 
 // $81:C73E-C75B: when the race clock would reach 10:00 it holds 9:59.9 and marks both
-// riders finished, whatever their laps. Then the queues, the camera, each rider's contact,
-// the visibility, the HUNTER effects and the hints.
+// riders finished, whatever their laps; a stunt event's clock counts down instead. Then the
+// queues, the camera, each rider's contact (the opponent's only when it rides), the
+// visibility, the HUNTER effects and the hints.
 void finish_update(const ZoomZooState& state, ZoomZooState& next,
-                   const std::array<RiderOutcome, 2>& outcomes, const ZoomZooContent& content) {
+                   const std::array<RiderOutcome, 2>& outcomes, const ZoomZooContent& content,
+                   const ClassicRaceScenario& scenario) {
     auto& whole = next.movement;
-    if (advance_timer_digits(whole.timer, whole.countdown < clock_running_below)
-        && state.native_initialization)
+    const bool clock_running = whole.countdown < clock_running_below;
+    if (scenario.stunt_event)
+        update_stunt_clock(next, clock_running);
+    else if (advance_timer_digits(whole.timer, clock_running) && state.native_initialization)
         for (auto& rider : next.race.riders) rider.finished = 1;
     if (state.native_initialization)
         show_next_player_announcement(next, content.movement, content.captions);
@@ -736,7 +779,7 @@ void finish_update(const ZoomZooState& state, ZoomZooState& next,
                                       ? std::span<std::uint8_t>{next.learned_weights[1]}
                                       : std::span<std::uint8_t>{});
     if (state.complete_race) update_camera(next, track_geometry(content.movement.sampling.track));
-    for (unsigned index = 0; index < 2; ++index)
+    for (unsigned index = 0; index < rider_passes(scenario); ++index)
         if (!outcomes[index].contact_skip) update_rider_contact(state, next, index, content);
     if (state.complete_race)
         update_visibility(next, track_geometry(content.movement.sampling.track));
@@ -791,33 +834,31 @@ void update_zoom_zoo(ZoomZooState& state, const ControllerButtons& requested_but
         return;
     }
     advance_clocks(next, buttons);
+    const auto player_buttons = release_settled_player(state, next, buttons);
     const bool pressed_a = read_player_buttons(
-        next, buttons, state.hunter.effect[hunter_effect::control_reversed] != 0);
-    if (run_pause_menu(state, next, buttons, content)) {
+        next, player_buttons, state.hunter.effect[hunter_effect::control_reversed] != 0);
+    if (run_pause_menu(state, next, player_buttons, content)) {
         state = next;
         return;
     }
-    if (state.native_initialization && next.pause.released && !buttons.start)
+    if (state.native_initialization && next.pause.released && !player_buttons.start)
         next.pause.released = 0;
-    const bool ai_off = update_opponent_controller(next);
-    const bool countdown_holds = run_countdown(state, next);
+    const bool ai_off = scenario.stunt_event ? release_absent_opponent(next)
+                                             : update_opponent_controller(next);
+    const bool countdown_holds =
+        run_countdown(state, next, scenario.stunt_event ? stunt_countdown : race_countdown);
     // The opponent's A and X are its selector's bits only on updates the AI stores them;
     // with the AI off both stay released (R-0048).
     const TrickButtons trick_buttons{
-        pressed_a && !countdown_holds, buttons.x && !countdown_holds,
+        pressed_a && !countdown_holds, player_buttons.x && !countdown_holds,
         countdown_holds ? 0U : (unsigned(whole.opponent_ai.trick_selector) & (ai_off ? ~6U : ~0U))};
     if (state.complete_race) update_finish(next, content);
     const unsigned active = whole.progress_phase ? 0U : 1U;
-    if (state.native_initialization) {
-        auto& cooldown = next.player_announcements.queue.cooldown;
-        cooldown = cooldown > 2 ? static_cast<std::uint16_t>(cooldown - 2U) : 0;
-    }
-    whole.rewards.cooldown =
-        whole.rewards.cooldown > 2 ? static_cast<std::uint16_t>(whole.rewards.cooldown - 2U) : 0;
+    lower_announcement_cooldowns(next, scenario);
     std::array<RiderOutcome, 2> outcomes{};
-    for (unsigned index = 0; index < 2; ++index)
+    for (unsigned index = 0; index < rider_passes(scenario); ++index)
         outcomes[index] = update_rider(state, next, index, active, trick_buttons, content);
-    finish_update(state, next, outcomes, content);
+    finish_update(state, next, outcomes, content, scenario);
     state = next;
 }
 

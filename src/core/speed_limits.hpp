@@ -25,7 +25,9 @@ struct SpeedLimitContext {
     std::uint16_t player_base_cap{}; // original $11D3 is used for BOTH riders
     std::uint8_t update_counter{};
     std::uint16_t friction_mode{};
-    std::uint8_t cartridge_mode{};
+    // `$77:074A`, the race's track: BOWL (2) and HUNTER's stunt event (42) cap only falling
+    // velocity ($82:A81A-A829, R-0066).
+    std::uint8_t track{};
 };
 struct SpeedDecayContent {
     std::span<const std::uint8_t> masks;      // 9 bytes from PAL ROM file 0x051B

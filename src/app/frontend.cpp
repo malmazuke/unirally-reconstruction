@@ -186,9 +186,13 @@ std::uint16_t snes_pad_word(std::uint16_t mask) {
 FrontEndSession::FrontEndSession(const ClassicContentPack &pack)
     : content_(front_end_content(pack)) {}
 
+bool native_race_track(ClassicRaceTrack track) {
+  return classic_race_has_scenario(track) && !classic_race_scenario(track).stunt_event;
+}
+
 bool native_one_player_race(const FrontEndState &state) {
   return state.mode_chosen && state.mode == FrontEndMode::one_player &&
-         classic_race_has_scenario(ClassicRaceTrack{state.tour_menu.track});
+         native_race_track(ClassicRaceTrack{state.tour_menu.track});
 }
 
 bool FrontEndSession::update(const std::array<std::uint16_t, 2> &ports) {

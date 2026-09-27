@@ -190,11 +190,14 @@ def inventory(rom: bytes) -> dict[str, Any]:
 
 # The race tracks a cold start reaches, beyond DRAGSTER (0) and ZOOM ZOO (1), whose
 # scenario (race mode, laps, initialization frame) is observed (R-0046 observations
-# 6-8). The stunt events (2, 12, 22, 32) are a separate mode and are not listed.
+# 6-8). The stunt events (2, 12, 22, 32) are a separate mode, listed in STUNT_TRACKS.
 NEW_RACE_TRACKS = (3, 4, 10, 11, 13, 14, 20, 21, 23, 24, 30, 31, 33, 34)
 # LOCKED-TOURS: the race tracks of JUMPER, BOUNDER, RUNNER, SPRINTER and HUNTER (the stunt
 # events 7, 17, 27, 37 and 42 excluded), observed through an unlocked PICK TOUR.
 LOCKED_RACE_TRACKS = (5, 6, 8, 9, 15, 16, 18, 19, 25, 26, 28, 29, 35, 36, 38, 39, 40, 41, 43, 44)
+# STUNT-EVENT-RACE: the stunt events (race mode 2, `$83:99AD-99B8`), place 2 of every tour
+# (R-0066). Their sceneries are all in the pack already.
+STUNT_TRACKS = (2, 7, 12, 17, 22, 27, 32, 37, 42)
 SCENERY_COUNT = 14
 # `$82:DC20-DD84`: BG2 tiles asset `$70 + s`, map `$82 + s`, palette row `$93 + s`
 # for scenery s = track mod 14 (track 42, NEON, has an extra case not listed here),
@@ -310,5 +313,18 @@ def v12_new_entries(rom: bytes) -> list[dict[str, Any]]:
     for index in LOCKED_RACE_TRACKS:
         entries += track_pack_entries(rom, index)
     for s in sorted({scenery(index) for index in LOCKED_RACE_TRACKS} - {scenery(index) for index in NEW_RACE_TRACKS}):
+        entries += scenery_pack_entries(rom, s)
+    return entries
+
+
+def v24_new_entries(rom: bytes) -> list[dict[str, Any]]:
+    """The entries profile v24 adds to v23 (STUNT-EVENT-RACE), in pack order: the stunt events'
+    content. Run once with the ROM to append them to the rules; the tests check the rules
+    against the compiled table."""
+    entries = []
+    for index in STUNT_TRACKS:
+        entries += track_pack_entries(rom, index)
+    covered = {scenery(index) for index in (0, 1) + NEW_RACE_TRACKS + LOCKED_RACE_TRACKS}
+    for s in sorted({scenery(index) for index in STUNT_TRACKS} - covered):
         entries += scenery_pack_entries(rom, s)
     return entries

@@ -74,13 +74,13 @@ CollisionPoints collision_points(const SamplingContent& content, std::uint16_t p
 
 TrackSamples sample_track(const SamplingContent& content, const CollisionPoints& points,
                           std::uint16_t position_x, std::uint16_t position_y,
-                          std::uint16_t coarse_width) {
+                          std::uint16_t coarse_width, bool whole_height) {
     unsigned column = static_cast<unsigned>(position_x) >> coarse_cell_shift;
     unsigned row = static_cast<unsigned>(position_y) >> coarse_cell_shift;
-    // $81:8A2C-8A3B: a negative y ($A7 bit 15) with $0FF7 clear, as every
-    // shape track_geometry accepts leaves it, samples coarse cell (0, 0); the
-    // fine offsets below still use the position (TRACK-BREADTH part 3).
-    if (position_y >= 0x8000U) column = row = 0;
+    // $81:8A2C-8A3B: a negative y ($A7 bit 15) with $0FF7 clear samples coarse cell (0, 0); the
+    // fine offsets below still use the position (TRACK-BREADTH part 3). With $0FF7 set (the
+    // 16-column playfield, R-0066) y's sixteen bits are its row.
+    if (position_y >= 0x8000U && !whole_height) column = row = 0;
     if (coarse_width == 0 || column >= coarse_width) {
         throw std::out_of_range("coarse column outside the playfield");
     }

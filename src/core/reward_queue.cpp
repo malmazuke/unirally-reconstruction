@@ -11,6 +11,7 @@
 
 #include "announcements.hpp"
 #include "rider_pose.hpp"
+#include "stunt_event.hpp"
 #include "word_arithmetic.hpp"
 #include "zoom_zoo_movement.hpp"
 
@@ -27,7 +28,7 @@ constexpr unsigned queue_slots_mask = 31; // 32 entries
 // $81:C02A-C054: a shown announcement sets the queue's cooldown to 40, 4 less for each
 // announcement still waiting, but at least 5; with hints on, 120. A queue found empty sets
 // 10. The race update lowers the cooldown by 2 a update, so these are 20, 60 and 5
-// updates.
+// updates (twice as many in a stunt event, where only the player's pass lowers it).
 constexpr int longest_display = 40, display_saved_per_waiting = 4, shortest_display = 5;
 constexpr std::uint16_t hint_display = 120;
 using announcement::empty_queue_wait;
@@ -322,13 +323,14 @@ void show_hunter_message(ZoomZooState& state) {
 }
 
 // The player's reward: as the opponent's, but half the reward word goes to the vertical
-// boost ($81:C169).
-void reward_player(ZoomZooState& state, std::uint8_t event, const MovementContent& content) {
+// boost ($81:C169). Returns the weight it added to the score, 0 for none.
+std::uint8_t reward_player(ZoomZooState& state, std::uint8_t event, const MovementContent& content) {
     auto& queue = state.player_announcements.queue;
     require(event <= last_learned_event, "player reward class is outside learned inventory");
     auto& weight =
         event == announcement::roll ? queue.event_one_weight : state.learned_weights[0][event - 2];
-    if (!weight) return;
+    if (!weight) return 0;
+    const auto paid = weight;
     queue.feature_total = add_word(queue.feature_total, weight);
     weight = std::max<std::uint8_t>(weight >> 1U, 1);
     auto& speed = state.movement.riders[0].speed;
@@ -339,6 +341,7 @@ void reward_player(ZoomZooState& state, std::uint8_t event, const MovementConten
         speed.vertical_boost =
             add_word(speed.vertical_boost, static_cast<std::uint16_t>(amount >> 1U));
     }
+    return paid;
 }
 
 } // namespace
@@ -353,7 +356,8 @@ void show_next_player_announcement(ZoomZooState& state, const MovementContent& c
     auto& queue = announcements.queue;
     if (queue.cooldown) return;
     const auto slot = next_slot(queue.read_cursor);
-    const bool hunter = classic_race_scenario(state.track).hunter_tour;
+    const auto scenario = classic_race_scenario(state.track);
+    const bool hunter = scenario.hunter_tour;
     if (slot == queue.write_cursor) {
         if (!announcements.empty_display) {
             if (hunter) show_hunter_message(state);
@@ -370,8 +374,12 @@ void show_next_player_announcement(ZoomZooState& state, const MovementContent& c
     }
     require(event && (event >= announcement::first_voice || event <= content.rotation_class.size()),
             "player announcement event is outside static inventory");
-    if (event < announcement::first_voice && content.rotation_class[event - 1] != no_reward_class)
-        reward_player(state, event, content);
+    if (event < announcement::first_voice && content.rotation_class[event - 1] != no_reward_class) {
+        const auto paid = reward_player(state, event, content);
+        // The original tallies every race's tricks; only a stunt event's result reads them.
+        if (scenario.stunt_event)
+            tally_stunt_trick(state.stunt, content.rotation_class[event - 1], paid);
+    }
     queue.cooldown = announcements.hints_active ? hint_display : display_updates(queue);
     announcements.empty_display = 0;
 }
@@ -384,6 +392,15 @@ void push_front_player_announcement(ZoomZooState& state, unsigned event) {
     if (queue.read_cursor == queue.write_cursor) return;
     queue.entries[queue.read_cursor] = static_cast<std::uint8_t>(event);
     queue.read_cursor = static_cast<std::uint8_t>((queue.read_cursor - 1U) & queue_slots_mask);
+}
+
+void lower_announcement_cooldowns(ZoomZooState& state, const ClassicRaceScenario& scenario) {
+    const auto passes = rider_passes(scenario);
+    const auto lower = [passes](std::uint16_t& cooldown) {
+        cooldown = cooldown > passes ? static_cast<std::uint16_t>(cooldown - passes) : 0;
+    };
+    if (state.native_initialization) lower(state.player_announcements.queue.cooldown);
+    lower(state.movement.rewards.cooldown);
 }
 
 // $83:CDBC-CE43: while the tutorial hints are on, every 300 updates queue the next group

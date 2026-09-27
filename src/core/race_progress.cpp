@@ -10,6 +10,7 @@
 #include "announcements.hpp"
 #include "reward_queue.hpp"
 #include "rider_motion.hpp"
+#include "stunt_event.hpp"
 #include "word_arithmetic.hpp"
 #include "zoom_zoo_movement.hpp"
 
@@ -45,6 +46,19 @@ unsigned race_update_phase(const ZoomZooState& state) {
 
 bool finished_first(std::uint16_t own, std::uint16_t other) {
     return own != no_time && (other == no_time || own < other);
+}
+
+// The rider's finish caption: in a race by the times ($83:E967-E997: an equal time, or none for
+// both, is a draw), in a stunt event by its score against the qualifying score (R-0066).
+std::uint8_t finish_announcement(const ZoomZooState& state, unsigned index) {
+    if (classic_race_scenario(state.track).stunt_event) {
+        const auto score = index == 0 ? state.player_announcements.queue.feature_total // $77:07BB
+                                      : state.movement.rewards.feature_total;          // $77:0825
+        return stunt_finish_announcement(score, state.stunt.qualifying_score);
+    }
+    const auto own = state.race.total_times[index], other = state.race.total_times[1 - index];
+    if (own == other) return announcement::draw;
+    return finished_first(own, other) ? announcement::winner : announcement::loser;
 }
 
 void announce(ZoomZooState& state, unsigned rider, unsigned event) {
@@ -87,21 +101,16 @@ void finish_rider(ZoomZooState& state, unsigned index, const ZoomZooContent& con
     // and ZOOM ZOO, whose boundaries are 2 mod 3, once read it from the frame.
     if (race_update_phase(state) == 1U) return;
     apply_finish_slowdown(whole.riders[index]);
-    const auto own = state.race.total_times[index], other = state.race.total_times[1 - index];
-    const bool won = finished_first(own, other);
-    const bool tied = own == other;
+    const auto result = finish_announcement(state, index);
     auto& pose = state.race.finish_pose[index];
-    if (pose.active)
-        announce(state, index,
-                 tied  ? announcement::draw
-                 : won ? announcement::winner
-                       : announcement::loser);
+    if (pose.active) announce(state, index, result);
     const auto& queue = index == 1 ? whole.rewards : state.player_announcements.queue;
     if (!pose.active && (index == 1 || state.native_initialization)
         && ((queue.write_cursor - queue.read_cursor - 1U) & 31U) != 0)
         return;
     pose.active = 1;
-    const unsigned kind = won || tied ? winner_pose : loser_pose;
+    // A draw takes the winner's pose ($83:E9C8-E9DF joins the winner's path at $83:E9F8).
+    const unsigned kind = result == announcement::loser ? loser_pose : winner_pose;
     if (pose.kind != kind && !pose.locked) {
         pose.kind = static_cast<std::uint16_t>(kind);
         pose.selector = 0;
@@ -177,9 +186,12 @@ void pass_checkpoint(ZoomZooState& state, unsigned index, unsigned checkpoint) {
 } // namespace
 
 // $83:E8E0-EC13 and $82:8953-89C2: the finish display counts to 240 once the player has
-// finished, and each finished rider brakes and poses. The finish pose feeds the collision
+// finished (a stunt event's once its display has started), and each finished rider brakes and
+// poses. The finish pose feeds the collision
 // sample.
 void update_finish(ZoomZooState& state, const ZoomZooContent& content) {
+    // A stunt event first waits for both riders to stand and its queues to empty (R-0066).
+    if (classic_race_scenario(state.track).stunt_event && !update_stunt_finish(state)) return;
     if (state.race.riders[0].finished) {
         if (state.race.finish_delay == finish_display_updates)
             throw std::invalid_argument("race result loading outside frozen finish display");
@@ -235,6 +247,9 @@ ZoomZooResult result_fields(const ZoomZooRaceState& race, unsigned updates, bool
 }
 
 bool classic_race_player_won(const ZoomZooState& state) {
+    // A stunt event: the score against the qualifying score, unsigned ($83:88E1-88F6).
+    if (classic_race_scenario(state.track).stunt_event)
+        return state.player_announcements.queue.feature_total >= state.stunt.qualifying_score;
     // Finish order, as $83:E8E0-EC13 selects the finish pose: an equal time means both
     // crossed on one update, and the player is processed first.
     const auto own = state.race.total_times[0], other = state.race.total_times[1];

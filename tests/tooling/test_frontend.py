@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import argparse
 import contextlib
 import hashlib
 import json
@@ -18,6 +19,18 @@ from unirally_lab.frontend import commands
 
 ROOT = Path(__file__).resolve().parents[2]
 PROJECT = ROOT / "tools" / "project.py"
+
+
+class TrackChoiceTests(unittest.TestCase):
+    def test_stunt_events_are_refused_until_their_result_is_native(self):
+        # STUNT-EVENT-RACE: the app's --track, like its menus, starts no stunt event (R-0066).
+        for track in ("2", "7", "12", "17", "22", "27", "32", "37", "42"):
+            with self.assertRaises(argparse.ArgumentTypeError):
+                commands._track_choice(track)
+        for track in ("dragster", "zoom-zoo", "0", "13", "36", "44"):
+            self.assertEqual(commands._track_choice(track), track)
+        with self.assertRaises(argparse.ArgumentTypeError):
+            commands._track_choice("45")
 
 
 class FrontendLaunchTests(unittest.TestCase):
@@ -142,7 +155,7 @@ class FrontendLaunchTests(unittest.TestCase):
         with mock.patch.object(commands, "ROOT", self.root):
             default = commands.default_pack_path(rules)
             self.assertEqual(default.parent, local.resolve())
-            self.assertIn("tracks-v23", default.name)
+            self.assertIn("tracks-v24", default.name)
             report = self.root / "none.json"
             self.assertEqual(commands.cmd_run(self.args(pack=None, rules=str(rules_path), report=str(report))),
                              EXIT_MISSING_PREREQUISITE)
