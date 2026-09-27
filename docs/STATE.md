@@ -1,5 +1,14 @@
 # Project state
 
+Updated 27 September 2026 (FIFTH-WIN-COMPLETION): **a tour completed by its fifth won race matches
+the original.**
+- Captured from power-on (a DRAGSTER win with CRAWLER's other four tracks written done during the
+  race): no state difference and every picture equal through the award and PICK TOUR
+  ([R-0065](research/R-0065-fifth-win-completion.md)).
+- Native's completion test is now the original's sum of the tour's five done bytes.
+- Replay manifests can write cartridge RAM after a frame (`cartridge_ram_writes`), and the
+  front-end runner replays such writes (`--record-write`).
+
 Updated 26 September 2026 (HUNTER-ENDING): **the whole one-player game can be finished natively.**
 - HUNTER's gold ending shows its newspaper pages, rolled down line by line, and the credits, each
   until a press, then resets to the Nintendo screen with the records kept, as the original does.

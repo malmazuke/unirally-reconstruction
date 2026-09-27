@@ -2,7 +2,7 @@
 
 ## Assignment
 
-- Status: **in progress**. Queued 26 September 2026 (UTC) by FRONT-END-ENDINGS; claimed 26 September
+- Status: **in review**. Queued 26 September 2026 (UTC) by FRONT-END-ENDINGS; claimed 26 September
   2026 at 23:55Z by the Claude Code desktop session that ran HUNTER-ENDING, on `e01aaaa`.
 - Milestone: M4 (original game coverage: menus)
 - Coordinator: the claiming session is coordinator, primary and integrator
@@ -42,8 +42,31 @@ which needs the front-end runner and its comparison to start from given records.
 | Records | `sram.py` after it | Equal to the original's cartridge RAM | log |
 | Nothing moves | The gates of FRONT-END-ENDINGS | Unchanged | logs |
 
+## Result
+
+[R-0065](../docs/research/R-0065-fifth-win-completion.md). A tour completed by its fifth won race
+is captured from power-on and native matches it frame for frame. A real fifth win is out of reach
+(each tour's third track is a stunt event), and a power-on preload does not survive the rider's
+choice, which clears the done tracks. So the route wins DRAGSTER with CRAWLER's other four done
+tracks written into cartridge RAM during the race. Native's scoring needed no change for it; its
+completion test is now the original's 8-bit sum of the five done bytes, the same for every byte the
+game writes. Replay manifests and the reference worker take cartridge RAM writes, and the
+front-end runner replays them (`--record-write`). A research worker decoded it; the primary wrote
+the rest. Tier 2 stands: the scoring change moves nothing the game can reach.
+
+## Evidence
+
+`local/evidence/fifth-win-completion/`: `decode/` (the research, its own capture and this task's
+`compare.py` and `sram.py`), `project/` (the same manifest through `coverage capture` and `access
+capture`).
+
+| Criterion | Result |
+| --- | --- |
+| Fifth win | fifth-win, power-on to 6300: no difference on 4,055 compared frames; 2,511 of 2,511 pictures equal (3790-6300). Without the writes (main's runner) native diverges at 3805. |
+| Records | Equal to the original's cartridge RAM at 1000, 3803, 3804, 3900, 5600 and 6300. |
+| Nothing moves | The gates: pending. |
+
 ## Handoff
 
-- Exact next experiment/command: `track_reference capture --sram 1076 01 --sram 1077 01 --sram 1078
-  01 --sram 1079 01` with cont-win's DRAGSTER inputs, then a front-end runner option to start from a
-  cartridge RAM image.
+- Exact next experiment/command: after the review and the merge, the main menu's other modes
+  (COVERAGE-ROADMAP: 2P, VS, LEAGUE, OPTIONS, the demo).

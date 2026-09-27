@@ -2165,7 +2165,20 @@
   ],
   "source_records": [
    "docs/research/R-0057-one-run-result.md",
+   "docs/research/R-0065-fifth-win-completion.md",
    "tasks/FRONT-END-1P-CONTINUATION.md"
+  ]
+ },
+ {
+  "address": "$80:BBDC",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80BBDC",
+  "native": [
+   "src/core/rider_menu.cpp:rider_menu_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0065-fifth-win-completion.md"
   ]
  },
  {
@@ -11523,6 +11536,7 @@
   "source_records": [
    "docs/research/R-0057-one-run-result.md",
    "docs/research/R-0060-pause-exits.md",
+   "docs/research/R-0065-fifth-win-completion.md",
    "tasks/FRONT-END-1P-CONTINUATION.md",
    "tasks/FRONT-END-1P-SETUP.md",
    "tasks/FRONT-END-TOUR-END.md"
@@ -11537,7 +11551,35 @@
    "src/core/race_result.cpp:score_race"
   ],
   "source_records": [
-   "docs/research/R-0059-tour-completion.md"
+   "docs/research/R-0059-tour-completion.md",
+   "docs/research/R-0065-fifth-win-completion.md"
+  ]
+ },
+ {
+  "address": "$83:87BB",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_8387BB",
+  "source_records": [
+   "docs/research/R-0065-fifth-win-completion.md"
+  ]
+ },
+ {
+  "address": "$83:87C0",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_8387C0",
+  "source_records": [
+   "docs/research/R-0065-fifth-win-completion.md"
+  ]
+ },
+ {
+  "address": "$83:87D4",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_8387D4",
+  "source_records": [
+   "docs/research/R-0065-fifth-win-completion.md"
   ]
  },
  {
@@ -11547,6 +11589,54 @@
   "label": "unk_8387E9",
   "source_records": [
    "docs/research/R-0057-one-run-result.md"
+  ]
+ },
+ {
+  "address": "$83:87F5",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_8387F5",
+  "source_records": [
+   "docs/research/R-0065-fifth-win-completion.md"
+  ]
+ },
+ {
+  "address": "$83:87FB",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_8387FB",
+  "source_records": [
+   "docs/research/R-0065-fifth-win-completion.md"
+  ]
+ },
+ {
+  "address": "$83:8801",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_838801",
+  "source_records": [
+   "docs/research/R-0065-fifth-win-completion.md"
+  ]
+ },
+ {
+  "address": "$83:8805",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_838805",
+  "native": [
+   "src/core/race_result.cpp:score_race"
+  ],
+  "source_records": [
+   "docs/research/R-0065-fifth-win-completion.md"
+  ]
+ },
+ {
+  "address": "$83:8815",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_838815",
+  "source_records": [
+   "docs/research/R-0065-fifth-win-completion.md"
   ]
  },
  {
@@ -11560,6 +11650,7 @@
   ],
   "source_records": [
    "docs/research/R-0059-tour-completion.md",
+   "docs/research/R-0065-fifth-win-completion.md",
    "tasks/FIFTH-WIN-COMPLETION.md",
    "tasks/FRONT-END-TOUR-END.md"
   ]
@@ -11693,7 +11784,44 @@
   "comment": "unknown",
   "label": "unk_8388D3",
   "source_records": [
-   "docs/research/R-0058-lap-result.md"
+   "docs/research/R-0058-lap-result.md",
+   "docs/research/R-0065-fifth-win-completion.md"
+  ]
+ },
+ {
+  "address": "$83:88DD",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_8388DD",
+  "source_records": [
+   "docs/research/R-0065-fifth-win-completion.md"
+  ]
+ },
+ {
+  "address": "$83:88E1",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_8388E1",
+  "source_records": [
+   "docs/research/R-0065-fifth-win-completion.md"
+  ]
+ },
+ {
+  "address": "$83:88F1",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_8388F1",
+  "source_records": [
+   "docs/research/R-0065-fifth-win-completion.md"
+  ]
+ },
+ {
+  "address": "$83:88F7",
+  "class": "data",
+  "comment": "data",
+  "label": "dat_8388F7",
+  "source_records": [
+   "docs/research/R-0065-fifth-win-completion.md"
   ]
  },
  {
@@ -11754,7 +11882,17 @@
    "src/core/award.cpp:complete_tour"
   ],
   "source_records": [
-   "docs/research/R-0059-tour-completion.md"
+   "docs/research/R-0059-tour-completion.md",
+   "docs/research/R-0065-fifth-win-completion.md"
+  ]
+ },
+ {
+  "address": "$83:8967",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_838967",
+  "source_records": [
+   "docs/research/R-0065-fifth-win-completion.md"
   ]
  },
  {
@@ -11944,6 +12082,7 @@
   "source_records": [
    "docs/research/R-0057-one-run-result.md",
    "docs/research/R-0060-pause-exits.md",
+   "docs/research/R-0065-fifth-win-completion.md",
    "tasks/FIFTH-WIN-COMPLETION.md"
   ]
  },
@@ -12282,7 +12421,17 @@
    "src/core/race_result.cpp:score_race"
   ],
   "source_records": [
-   "docs/research/R-0057-one-run-result.md"
+   "docs/research/R-0057-one-run-result.md",
+   "docs/research/R-0065-fifth-win-completion.md"
+  ]
+ },
+ {
+  "address": "$83:9ED5",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_839ED5",
+  "source_records": [
+   "docs/research/R-0065-fifth-win-completion.md"
   ]
  },
  {

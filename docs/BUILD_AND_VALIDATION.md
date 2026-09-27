@@ -269,6 +269,10 @@ replay support remains bounded to the listed implemented commands):
 - Scenario ID and tested behavior; ROM/emulator identity and adapter schema.
 - Initial reset procedure or snapshot hash, SRAM/configuration hashes and RNG state if known.
 - Both controllers' inputs, sequence length, timing units and exact injection/sampling point.
+- Optional cartridge RAM writes (`cartridge_ram_writes`, FIFTH-WIN-COMPLETION): after a frame, a
+  byte at an offset in the 8 KiB cartridge RAM. The worker makes them after the frame's sample and
+  before a state saved after it, so a route can set records the menus would clear at power-on
+  (R-0065). A manifest without writes derives the same script as before.
 - State-field schema, address mapping and signedness/scales; expected events.
 - Canonical reference artifact hashes, regeneration command and storage location.
 - Native rules/content versions, expected outcomes and any explicitly justified tolerance.
@@ -559,7 +563,9 @@ build/app-debug/src/core/classic_race_presentation_runner local/classic-pal-craw
 # the menu, the palette cycle, the OAM buffer and CGRAM in hex, and pictures of the named frames. FILE rows are
 # "frame pad1 pad2" in hex SNES pad words. After each soft reset (HUNTER's ending) --reset-upload-delay gives, in turn,
 # how many frames later than at power-on the sound program's upload ends, read from a capture (native's own is 3).
-build/lab-release/src/core/front_end_runner --content-pack local/classic-pal-crawler-tracks-v23.pack --frames 1000 [--inputs FILE] [--picture FRAME OUT.ppm] [--reset-upload-delay FRAMES]...
+# --record-write replays a manifest's cartridge RAM write (FIFTH-WIN-COMPLETION): after FRAME, the done track or
+# medal at OFFSET (hex, `$77:1075-10A6` or `$77:069C-073B`) becomes BYTE (hex).
+build/lab-release/src/core/front_end_runner --content-pack local/classic-pal-crawler-tracks-v23.pack --frames 1000 [--inputs FILE] [--picture FRAME OUT.ppm] [--reset-upload-delay FRAMES]... [--record-write FRAME OFFSET BYTE]...
 # Extract the Classic pack (profile classic.pal.crawler.tracks.v23, 371 rules entries: v22's 354 and HUNTER's ending's
 # 12 assets and 5 tables; v22 added the gold endings' 16 assets and 8 tables to v21's 330; v21 added the race pairing's 2 tables to v20's 328; v20 added the medal award's 10 assets and tables to v19's 318; v19 added the lap result's 4 texts to v18's 314; v18 added the result screen's 2 tables to v17's 312; v17 added the 1P screens' 30 assets and tables to v16's 282; v16 added FRONT-END-1P-SETUP's 19 rider-menu assets and tables; v15 added FRONT-END-MAIN-MENU's 23 front-end assets and tables to v14's 240; v14 had v11's 148, LOCKED-TOURS' 89,
 # TILE-PAIRS-8-12-26's loop offsets and HUNTER-EFFECTS' blink pattern and opponent palette; v10 added the fourteen other cold-start race tracks and their sceneries in

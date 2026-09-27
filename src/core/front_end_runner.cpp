@@ -3,6 +3,7 @@
 // usage: front_end_runner --content-pack PACK --frames N [--inputs FILE] [--picture FRAME OUT.ppm]...
 //                         [--records FRAME OUT.bin]... [--race-initialization FRAME]...
 //                         [--reset-upload-delay FRAMES]...
+//                         [--record-write FRAME OFFSET BYTE]...
 //
 // FILE rows are "frame pad1 pad2" (hex controller words, as `$4218`/`$421A` read them); a frame
 // without a row has both pads released. Each frame prints one line: the frame, the arrow (spin,
@@ -10,6 +11,9 @@
 // the OAM buffer ($0A00, 544 bytes) and CGRAM, in hex, for comparison with a capture's work RAM.
 // `--records` writes the one-player records after that frame as the original keeps them in
 // cartridge RAM (8 KiB, `$77:0000`), the words native does not keep left 0.
+// `--record-write` sets one record byte, at its cartridge RAM offset (hex, a done track
+// `$77:1075-10A6` or a medal `$77:069C-073B`), to BYTE (hex) after FRAME: a capture that wrote the
+// original's cartridge RAM during the run (FIFTH-WIN-COMPLETION, R-0065) replays the same write.
 #include "content_pack.hpp"
 #include "front_end.hpp"
 #include "zoom_zoo_movement.hpp"
@@ -22,6 +26,7 @@
 #include <fstream>
 #include <iostream>
 #include <map>
+#include <tuple>
 #include <optional>
 #include <sstream>
 #include <stdexcept>
@@ -41,7 +46,18 @@ struct Options {
     // After each soft reset in turn, how much later the sound program's upload ends than at
     // power-on (HUNTER-ENDING); native's own is 3.
     std::vector<std::uint32_t> reset_upload_delays;
+    // Record bytes written after a frame: the frame, the cartridge RAM offset and the byte.
+    std::vector<std::tuple<std::uint32_t, std::uint32_t, std::uint8_t>> record_writes;
 };
+
+// The record byte native keeps for a cartridge RAM offset: a done track or a medal.
+std::uint8_t& record_byte(unirally::OnePlayerRecords& records, std::uint32_t offset) {
+    if (offset >= 0x1075 && offset < 0x1075 + records.tracks_done.size())
+        return records.tracks_done[offset - 0x1075];
+    if (offset >= 0x069c && offset < 0x069c + records.medals.size())
+        return records.medals[offset - 0x069c];
+    throw std::invalid_argument("--record-write: not a done track or a medal offset");
+}
 
 Options parse_options(int argc, char** argv) {
     Options options;
@@ -65,6 +81,13 @@ Options parse_options(int argc, char** argv) {
             options.race_initializations.push_back(static_cast<std::uint32_t>(std::stoul(value())));
         } else if (option == "--reset-upload-delay") {
             options.reset_upload_delays.push_back(static_cast<std::uint32_t>(std::stoul(value())));
+        } else if (option == "--record-write") {
+            const auto frame = static_cast<std::uint32_t>(std::stoul(value()));
+            const auto offset = static_cast<std::uint32_t>(std::stoul(value(), nullptr, 16));
+            const auto byte = static_cast<std::uint8_t>(std::stoul(value(), nullptr, 16));
+            unirally::OnePlayerRecords check;
+            record_byte(check, offset); // refuses an offset native keeps no record for
+            options.record_writes.emplace_back(frame, offset, byte);
         } else if (option == "--records") {
             const auto frame = static_cast<std::uint32_t>(std::stoul(value()));
             options.records[frame] = value();
@@ -76,7 +99,8 @@ Options parse_options(int argc, char** argv) {
                                     "[--inputs FILE] [--picture FRAME OUT.ppm]... "
                                     "[--records FRAME OUT.bin]... "
                                     "[--race-initialization FRAME]... "
-                                    "[--reset-upload-delay FRAMES]...");
+                                    "[--reset-upload-delay FRAMES]... "
+                                    "[--record-write FRAME OFFSET BYTE]...");
     return options;
 }
 
@@ -252,6 +276,8 @@ int main(int argc, char** argv) try {
     RaceBetweenMenus race;
     std::size_t races = 0, resets = 0;
     for (std::uint32_t frame = 0; frame < options.frames; ++frame) {
+        for (const auto& [after, offset, byte] : options.record_writes)
+            if (frame == after + 1) record_byte(state.records, offset) = byte;
         const auto row = inputs.find(frame);
         const auto pads = row == inputs.end() ? unirally::FrontEndPads{} : row->second;
         if (state.screen == unirally::FrontEndScreen::race) {

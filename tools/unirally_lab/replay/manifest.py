@@ -197,6 +197,18 @@ def _validate(data: Any) -> dict[str, Any]:
         if rc.get("save_after") != after:
             raise ManifestError("origin.restore_check.save_after must equal origin.after_frame")
 
+    writes = data.get("cartridge_ram_writes", [])
+    if not isinstance(writes, list):
+        raise ManifestError("cartridge_ram_writes must be a list")
+    for i, w in enumerate(writes):
+        if not isinstance(w, dict) or set(w) != {"after_frame", "offset", "byte"} or not all(_is_int(v) for v in w.values()):
+            raise ManifestError(f"cartridge_ram_writes[{i}] must be an object of integers after_frame, offset and byte")
+        if not (0 <= w["after_frame"] < frames - 1 and 0 <= w["offset"] < 0x2000 and 0 <= w["byte"] <= 0xFF):
+            raise ManifestError(f"cartridge_ram_writes[{i}]: need 0 <= after_frame < run.frames - 1, "
+                                "0 <= offset < 0x2000 and 0 <= byte <= 255")
+        if origin["kind"] == "state" and w["after_frame"] <= origin["after_frame"]:
+            raise ManifestError(f"cartridge_ram_writes[{i}]: a state origin's run starts after after_frame")
+
     expected = data.get("expected", {})
     if not isinstance(expected, dict):
         raise ManifestError("expected must be an object")
@@ -228,6 +240,8 @@ def derive_script(manifest: dict[str, Any]) -> dict[str, Any]:
         "inputs": inputs,
         "core_options": dict(manifest["core"].get("options", {})),
     }
+    if manifest.get("cartridge_ram_writes"):
+        script["cartridge_ram_writes"] = [dict(w) for w in manifest["cartridge_ram_writes"]]
     return validate_script(script)
 
 
@@ -240,6 +254,9 @@ def script_equivalent(script: dict[str, Any], derived: dict[str, Any]) -> list[s
     norm = lambda entries: sorted((e["from"], e["to"], e.get("port", 0), tuple(sorted(e["buttons"]))) for e in entries)  # noqa: E731
     if norm(script.get("inputs", [])) != norm(derived["inputs"]):
         diffs.append("inputs")
+    writes = lambda s: sorted((w["after_frame"], w["offset"], w["byte"]) for w in s.get("cartridge_ram_writes", []))  # noqa: E731
+    if writes(script) != writes(derived):
+        diffs.append("cartridge_ram_writes")
     return diffs
 
 

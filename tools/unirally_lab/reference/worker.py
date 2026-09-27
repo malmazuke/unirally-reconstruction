@@ -96,6 +96,16 @@ def validate_script(data: Any) -> dict[str, Any]:
             raise ScriptError(f"inputs[{i}]: need 0 <= from <= to and port in (0, 1)")
         if not isinstance(buttons, list) or not buttons or any(b not in bsnes.BUTTONS for b in buttons):
             raise ScriptError(f"inputs[{i}]: buttons must be a non-empty list from {sorted(bsnes.BUTTONS)}")
+    writes = data.get("cartridge_ram_writes", [])
+    if not isinstance(writes, list):
+        raise ScriptError("cartridge_ram_writes must be a list")
+    for i, entry in enumerate(writes):
+        if not isinstance(entry, dict) or set(entry) != {"after_frame", "offset", "byte"}:
+            raise ScriptError(f"cartridge_ram_writes[{i}] must be an object with after_frame, offset and byte")
+        if not all(isinstance(v, int) and not isinstance(v, bool) for v in entry.values()):
+            raise ScriptError(f"cartridge_ram_writes[{i}]: after_frame, offset and byte must be integers")
+        if not (0 <= entry["after_frame"] < frames and entry["offset"] >= 0 and 0 <= entry["byte"] <= 0xFF):
+            raise ScriptError(f"cartridge_ram_writes[{i}]: need 0 <= after_frame < frames, offset >= 0, 0 <= byte <= 255")
     options = data.get("core_options", {})
     if not isinstance(options, dict) or any(not isinstance(k, str) or not isinstance(v, str) for k, v in options.items()):
         raise ScriptError("core_options must map strings to strings")
@@ -189,6 +199,11 @@ def inputs_for_frame(script: dict[str, Any], frame: int) -> dict[int, set[str]]:
         if entry["from"] <= frame <= entry["to"]:
             result[entry.get("port", 0)].update(entry["buttons"])
     return result
+
+
+def cartridge_ram_writes_after(script: dict[str, Any], frame: int) -> list[tuple[int, int]]:
+    """The (offset, byte) writes into cartridge RAM made once the frame has run and been sampled."""
+    return [(w["offset"], w["byte"]) for w in script.get("cartridge_ram_writes", []) if w["after_frame"] == frame]
 
 
 def sha256_file(path: Path) -> str:
@@ -437,6 +452,16 @@ def run(args: argparse.Namespace) -> int:
             out["frames"].append({"frame": frame, "wram_sha256": wram_sha, "registers": bsnes.registers_to_dict(regs_raw),
                                   "fields": capture_fields(wram, fields),
                                   "video": output.video, "audio_sha256": output.audio_sha256, "audio_frames": output.audio_frames})
+        # A script's cartridge RAM writes (FIFTH-WIN-COMPLETION): made after the frame's sample and
+        # before a state saved after it, so the next frame and a resumed run both see them.
+        for offset, byte in cartridge_ram_writes_after(script, frame):
+            try:
+                core.write_cartridge_ram(offset, bytes([byte]))
+            except bsnes.CoreError as exc:
+                print(f"cartridge RAM write failed: {exc}", file=sys.stderr)
+                core.unload()
+                shutil.rmtree(system_dir, ignore_errors=True)
+                return EXIT_INVALID_INPUT
         if args.save_after is not None and frame == args.save_after:
             blob = core.serialize()
             state_out = Path(args.state_out)

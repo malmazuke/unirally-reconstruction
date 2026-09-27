@@ -129,6 +129,13 @@ class ManifestSchemaTests(unittest.TestCase):
             "state after last frame": mutate(origin={**state_origin, "after_frame": 599, "restore_check": {"report": "r.json", "save_after": 599}}),
             "restore check mismatch": mutate(origin={**state_origin, "restore_check": {"report": "r.json", "save_after": 149}}),
             "restore check missing": mutate(origin={k: v for k, v in state_origin.items() if k != "restore_check"}),
+            "writes not a list": mutate(cartridge_ram_writes={"after_frame": 10, "offset": 0, "byte": 1}),
+            "write key": mutate(cartridge_ram_writes=[{"after_frame": 10, "offset": 0, "value": 1}]),
+            "write after last frame": mutate(cartridge_ram_writes=[{"after_frame": 599, "offset": 0, "byte": 1}]),
+            "write offset": mutate(cartridge_ram_writes=[{"after_frame": 10, "offset": 0x2000, "byte": 1}]),
+            "write byte": mutate(cartridge_ram_writes=[{"after_frame": 10, "offset": 0, "byte": 256}]),
+            "write bool": mutate(cartridge_ram_writes=[{"after_frame": 10, "offset": 0, "byte": True}]),
+            "write before state": mutate(origin=state_origin, cartridge_ram_writes=[{"after_frame": 150, "offset": 0, "byte": 1}]),
             "expected key": mutate(expected={"av_digest": "a" * 64}),
             "expected digest": mutate(expected={"sample_digest": "xyz"}),
         }
@@ -200,6 +207,16 @@ class DerivationTests(unittest.TestCase):
         reordered = copy.deepcopy(derived)
         reordered["inputs"][0]["buttons"] = ["start"]
         self.assertEqual(mf.script_equivalent(reordered, derived), [])
+
+    def test_cartridge_ram_writes_reach_the_script_and_its_equivalence(self) -> None:
+        plain = mf.derive_script(mf.load_manifest(PRIMARY))
+        self.assertNotIn("cartridge_ram_writes", plain)  # the scripts of manifests without writes are unchanged
+        m = primary()
+        m["cartridge_ram_writes"] = [{"after_frame": 400, "offset": 0x1076, "byte": 1}]
+        derived = mf.derive_script(mf.validate_manifest(m))
+        self.assertEqual(derived["cartridge_ram_writes"], [{"after_frame": 400, "offset": 0x1076, "byte": 1}])
+        self.assertEqual(mf.script_equivalent(plain, derived), ["cartridge_ram_writes"])
+        self.assertEqual(mf.script_equivalent(derived, derived), [])
 
     def test_inputs_at_frame_covers_both_ports(self) -> None:
         m = mf.load_manifest(PRIMARY)
