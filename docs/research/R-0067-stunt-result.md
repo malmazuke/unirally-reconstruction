@@ -1,7 +1,7 @@
 # R-0067 - A stunt event's result, its records and the way back to PICK TRACK
 
-Status: recovered and implemented on `stunt-result-work` (STUNT-RESULT), 27 September 2026, on
-`task/stunt-event-race` `5dd973f`. PAL ROM
+Status: recovered and implemented on `task/stunt-result` (STUNT-RESULT), 27 September 2026 (written
+on STUNT-EVENT-RACE's branch, integrated on `e131469`). PAL ROM
 `a1105819d48c04d680c8292bbfa9abbce05224f1bc231afd66af43b7e0a1fd4e`, the pinned bsnes core.
 Follows R-0066 (the stunt event in the race engine), R-0057 (the one-run result, whose return,
 waits and exit the stunt result shares), R-0060 (the pause exits) and R-0065 (a completion by a
