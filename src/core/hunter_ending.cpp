@@ -45,8 +45,6 @@ constexpr std::uint8_t reveal_growth = 3;
 constexpr unsigned screen_rows = 224;
 // $83:AC1F: 1,201 passes at most (Y from 0x4B0 down past 0).
 constexpr std::uint32_t timed_wait_passes = 0x4b1;
-// $80:B6D3: any of a pad's twelve buttons.
-constexpr std::uint16_t twelve_buttons = 0xfff0;
 
 // The credits (`$83:AC32-ADF8`), frames from the part's start: the fade ends on 16 with the
 // set-up; the menus' tile and map loads end on their frames; on 45 the colours, the text, the
@@ -230,8 +228,7 @@ bool first_page_press(FrontEndState& state, const FrontEndContent& content, Fron
 
 // $80:B6D3: pad 1's twelve buttons; pad 2's too from the main menu (`$77:0742` bit 10 clear).
 bool ending_press(const FrontEndState& state, FrontEndPads pads) {
-    return (pads.one & twelve_buttons) != 0
-        || (state.hunter.both_pads && (pads.two & twelve_buttons) != 0);
+    return any_button_pressed(pads, state.hunter.both_pads);
 }
 
 // $83:AC1F-AC30, pass `pass` (from 1): a wait (`$83:A923`), the pads read with an OAM copy

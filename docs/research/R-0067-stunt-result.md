@@ -11,8 +11,10 @@ section 2), which this record supersedes where they differ.
 Evidence tags: **[C]** seen in a capture (work RAM or cartridge RAM every frame, pictures, or the
 program counters of `coverage capture` and `capture.py --trace-frames`), **[L]** read from the
 static listing (`artifacts/static-map/bank-8x.lst`) or disassembled where it has a gap, not seen
-executing. Every rule below is also confirmed by the native comparison: from power-on to the end of
-each capture below, no state difference and every picture equal.
+executing. Every rule the captures reach is also confirmed by the native comparison: from power-on
+to the end of each capture below, no state difference and every picture equal. The rules no capture
+reaches are marked [L] and "tested ROM-free" (`tests/native/front_end_tests.cpp`): the top three's
+strictly-higher rule, the statistics' tie rule and the medal's part in the qualifying score.
 
 ## Summary
 
@@ -87,7 +89,11 @@ text map]:
   (`$80:F7AD-F7BC`): the next column's first pass 14 frames later (`$80:F7C4`). bowl-lose: x1's total
   31 at 4246, x2's first pass at 4260 [C].
 - A press cuts a wait short (`$80:B6D3`: any of pad 1's twelve buttons; pad 2 is ignored while
-  `$77:0742` bit 10 is set) [L]: the next pass runs in that frame. A press during the wait of a pass
+  `$77:0742` bit 10 is set) [C bowl-press]: the next pass runs in that frame. bowl-press (bowl-lose's
+  inputs with A at 4170, 4250 and held 4280-4299): the pass due at 4174 runs at 4170; the column
+  total due at 4256 ends at 4250 with x2's first pass; with A held x2's total wait ends at 4280, x3
+  and x4 add up at 4280 and 4281 and the tally ends at 4282 (bowl-lose: 4326). The release wait then
+  holds the result until A is let go (`$80:C24C`: `$0089` = 3 at 4300). A press during the wait of a pass
   also only skips a sound (`$80:F758-F75D`, `$80:B178`); the column's sound is `$80:B124`. Native plays
   no sound. The first pass's check reads the pad word the menus saved before the race (0x1000, NOW
   PLAYING's Start, on all four captures), so its sound is skipped [C: `$80:F75D` first runs at 4166 on
@@ -111,17 +117,19 @@ text map]:
 
 The exit is the one-run result's (`$80:C236`, `$80:9805`, `$80:F4B8`; R-0057): q is the press's
 second frame. `$80:C786` dispatches by mode to the stunt branch `$80:C948-C9D6` [L; C cartridge
-RAM]:
-- races +1 for the rider (`$80:CA74`) and a rider opponent (`$80:CAAA`);
+RAM where marked]:
+- races +1 for the rider (`$80:CA74`) and a rider opponent (`$80:CAAA`) [C: the rider's];
 - the score `$77:07BB` against the opponent's `$77:0825` (0 in one-player play): higher or equal adds
   the rider's win and `$77:10A9` (`$80:CA83`), lower or equal a rider opponent's win and `$77:10AB`
-  (`$80:CAC5`);
-- the stunt points `$77:0236 + 8 x rider` += the score (`$80:C984`), and a score that is not 0 goes
-  into the track's top three (`$80:8CCB-8D6D`): scores `$77:0422/0486/04EA + 2 x track`, holders
-  `$77:0550/0582/05B4 + track`, a slot taken only by a strictly higher score (an equal score goes
-  below it), the checksums after a placing; a rider opponent's the same (`$80:C9AB`), the loser's
-  after the winner's;
-- the checksums again (`$80:C97E`).
+  (`$80:CAC5`) [C: higher on bowl-lose and hill-win, lower on bowl-quit; a tie is [L], tested
+  ROM-free];
+- the stunt points `$77:0236 + 8 x rider` += the score (`$80:C984`) [C], and a score that is not 0
+  goes into the track's top three (`$80:8CCB-8D6D`): scores `$77:0422/0486/04EA + 2 x track`,
+  holders `$77:0550/0582/05B4 + track` [C: the first slot, over the cold start's 0], a slot taken
+  only by a strictly higher score, so an equal score goes below it ([L], tested ROM-free: every
+  capture starts from the cold start's records), the checksums after a placing; a rider opponent's
+  the same (`$80:C9AB`), the loser's after the winner's [L];
+- the checksums again (`$80:C97E`) [C].
 
 When a score was placed the scoring comes on q + 3, otherwise on q + 2 (the one-run result's rule,
 R-0060): bowl-lose and hill-win (placed) q = 4701, statistics 4702, scoring 4704; bowl-quit (score
@@ -133,7 +141,9 @@ score wins. A win marks the track done and adds the tour's five done bytes (R-00
 `$77:0742` bit 12 [C: `$77:0743` 05 -> 15 at 4704 on bowl-lose, `$77:108B` = 1 on hill-win].
 
 `$83:9EEB` takes its medal through `$83:9EB4` (X = 16 x `$00D0` + `$00CA`) and `$83:9EF3`
-(`$77:069C,X` & 3, gold counting as silver) [L]; native's `tour_qualifying_score`.
+(`$77:069C,X` & 3, gold counting as silver) [L], tested ROM-free: every capture is MIKE's with no
+medal, so neither the medal nor the rider's index is told apart dynamically; native's
+`tour_qualifying_score`.
 
 ## A tour completed by a stunt win
 
@@ -169,17 +179,22 @@ not kept.
   (`$80:C948`), `insert_stunt_record` (`$80:8CCB`) and the win test `race_won`; the result's common
   first frame `start_result_screen`.
 - The text printer's F0.
-- `src/app/frontend.cpp`: a stunt event is a native race; the notice is gone.
+- `src/app/frontend.cpp`: the menus start a stunt event (the notice is gone). `--track` still refuses
+  one: a race started by `--track` ends on the race's own Classic result screen, not the menus' stunt
+  result.
 - Pack profile v25 (429 entries): assets 0x26-0x39 (the heads' colours) and the two tables above.
-- Native keeps no score history (`$77:0618`) and no checksums, as for the other results (R-0057):
-  nothing in one-player play reads them.
+- Native keeps neither the score history (`$77:0618`, `$77:0678`) nor the checksums (`$83:90F4`),
+  as for the other results (R-0057): the original writes them [C], but nothing in one-player play
+  reads them (the history's readers, `$80:8953` and `$83:98B8`, belong to other modes), so they
+  change nothing a player sees and the records comparison leaves them out.
 
 ## Evidence
 
 In `local/evidence/stunt-result/`: the manifests and captures (`decode/`: `capture.py`'s work RAM and
 cartridge RAM every frame from power-on and pictures from 400; `project/`: the same manifests
 through `coverage capture` and `access capture`, whose work RAM series equal `capture.py`'s on every
-frame and whose pictures from the race's return are identical: 1,357, 1,490, 1,481 and 3,090),
+frame and whose pictures from the race's return are identical: 1,357, 1,490, 1,481 and 3,090;
+bowl-press is `capture.py`'s only),
 `compare.py` and `sram.py` (this task's copies), `acceptance.sh` and its logs, and `NOTES.md`. The
 coverage captures executed the branches cited [C] above: `$80:F0EE-F27F`, `$80:C474`, the tally's
 passes and waits, `$80:C948-C97E` (`$80:C967` on the wins, `$80:C95C` on bowl-quit), `$80:8CCB` on
@@ -192,21 +207,24 @@ hill-complete, then `$83:881B`) or `$83:88F4` (bowl-lose, bowl-quit); not `$80:F
 | hill-win | WALKER, HILL CLIMB, 121 >= 90, A at 4700, PICK TRACK with HILL CLIMB done | 2,698 (to 5600) | none | 2,298 of 2,298 |
 | bowl-quit | BOWL ridden to 1989, the pause menu's QUIT at 2120, A at 3000 | 2,689 (to 3600) | none | 2,289 of 2,289 |
 | hill-complete | hill-win with WALKER's other four done, the award, PICK TOUR | 4,298 (to 7200) | none | 3,898 of 3,898 |
+| bowl-press | bowl-lose with A at 4170, 4250 and held 4280-4299 (the tally cut short), A at 4700 | 2,565 (to 5400) | none | 2,165 of 2,165 |
 
 Frames compared exclude the race's own frames (R-0066 compares them); the pictures are every frame
 from 400 outside the race. The records (`sram.py`: the statistics, the records and holders, the
 medals, the bests, bit 12, the tries, the done tracks, the wins, the levels) equal the original's
 cartridge RAM at 500 (a cold start's tries), 1000, the result's first frame, the tally's end, the
 best, the history, the statistics, the scoring, after it and the end: 10 frames each on bowl-lose,
-hill-win and bowl-quit, 11 on hill-complete (the award at 4800, PICK TOUR at 6400 and the end).
+hill-win, bowl-quit and bowl-press (with the presses' frames 4250 and 4282), 11 on hill-complete
+(the award at 4800, PICK TOUR at 6400 and the end).
 
 ## Not covered
 
 - Two players: the 2P tally (`$80:F283-F2E9`: the second pass from `$77:07D5`, X = 0x6A), its total
   and line (`$80:F456`, `$80:F4A3`, `$80:F4B5`), the 2P rider's best (`$80:F2AE-F2C9`), a rider
   opponent's statistics and records; `$77:10AD` = 4. Native refuses a stunt result for two players.
-- A press during the tally (`$80:B6D3` in `$80:F7FB`): read from the listing and tested ROM-free, not
-  captured.
-- The score history `$77:0618` and the checksums are written [C] but not kept natively.
+- A press during the pass itself (`$80:F758`), which only skips a sound.
+- The score history `$77:0618` and the checksums are written [C] but not kept natively (see Native).
+- A tie in the statistics, a score equal to a record, and a medal's qualifying score (all tested
+  ROM-free only).
 - The opponent's tallies (`$77:07D5-0824`) and an opponent's quit (`$80:9A7D-9AA4`).
 - The sounds `$80:B124` and `$80:B178`.

@@ -35,7 +35,7 @@ A race started with `--track` still restarts from it. 2P, VS, LEAGUE, OPTIONS an
 native yet: choosing one, or leaving the menu idle for the demo, shows a notice and returns to
 the main menu as it first appeared, so the rider and tour chosen last start over (the original
 keeps them); the records are kept. `--track dragster|zoom-zoo|NN` starts directly in that
-race instead.
+race instead (not a stunt event, whose result only the menus show).
 
 DRAGSTER plays on the shared race engine (R-0038), whose jump, brake,
 reversal, trick and finish tables only the two-track pack carries. With the

@@ -6,6 +6,7 @@
 #include "text_printer.hpp"
 
 #include <array>
+#include <optional>
 #include <stdexcept>
 
 namespace unirally::front_end_screens {
@@ -34,7 +35,8 @@ enum class StuntText : unsigned {
 
 // The direct-page words the streams print (`F7`, `F8`, `FD`, `F0`).
 constexpr std::uint16_t track_word = 0xce, rider_word = 0x17d, holder_word = 0xbe,
-                        record_or_total_word = 0xc0, first_shown_word = 0xb2;
+                        record_or_total_word = 0xc0, first_shown_word = 0xb2,
+                        qualifying_word = first_shown_word;
 
 // The tally's first cell, row 9 column 7 (`$80:F68F-F6A6`): six columns a tally column, two text
 // rows a trick row.
@@ -71,10 +73,12 @@ std::span<const std::uint8_t> stream_of(std::span<const std::uint8_t> table, uns
     return {text.data(), text.size() + 1};
 }
 
-// The words the result's streams read, as the result sets them before each print.
+// The words the result's streams read, as the result sets them before each print. `$00B2` is both
+// the first row's shown count, during the tally, and the qualifying score, after it (`$80:F25D`).
 struct ResultWords {
     std::uint16_t holder{}, record_or_total{};
     std::array<std::uint16_t, trick_family::count> shown{};
+    std::optional<std::uint16_t> qualifying_score; // printed in place of the first row's count
 };
 
 void print_stunt(FrontEndState& state, const FrontEndContent& content,
@@ -85,6 +89,7 @@ void print_stunt(FrontEndState& state, const FrontEndContent& content,
         if (address == rider_word) return state.rider_menu.rider;
         if (address == holder_word) return words.holder;
         if (address == record_or_total_word) return words.record_or_total;
+        if (address == qualifying_word && words.qualifying_score) return *words.qualifying_score;
         if (address >= first_shown_word) {
             const auto row = static_cast<unsigned>(address - first_shown_word) / 2U;
             if (row < words.shown.size()) return words.shown[row];
@@ -193,17 +198,11 @@ void tally_pass(FrontEndState& state, const FrontEndContent& content) {
     print_stunt(state, content, StuntText::total, words);
 }
 
-// $80:F7FB's wait, cut short by any of pad 1's buttons (`$80:B6D3`); pad 2 is ignored in
-// one-player play (`$77:0742` bit 10).
-bool tally_skipped(FrontEndPads pads) {
-    constexpr std::uint16_t buttons = 0xfff0;
-    return (pads.one & buttons) != 0;
-}
-
 // A frame of the tally after a pass: the first shows the text and steps the decorations
 // (`$80:F765-F76C`, `$80:F7AD-F7B0`); each copies the OAM and reads the pads (`$80:D1EC`) and then
-// either waits on, stepping the decorations again, or ends the wait with the next pass. The last
-// column's end leaves the tally (`$80:F7C4-F7CB`).
+// either waits on, stepping the decorations again, or ends the wait with the next pass: after its
+// frames, or at once on a press (`$80:F7FB`, `$80:B6D3`). The last column's end leaves the tally
+// (`$80:F7C4-F7CB`).
 void tally_frame(FrontEndState& state, const FrontEndContent& content, FrontEndPads pads) {
     auto& tally = state.race_result.tally;
     ++tally.frames_waited;
@@ -213,7 +212,7 @@ void tally_frame(FrontEndState& state, const FrontEndContent& content, FrontEndP
     }
     copy_oam(state);
     const auto wait = tally.column_total_shown ? column_wait_frames : pass_wait_frames;
-    if (tally.frames_waited <= wait && !tally_skipped(pads)) {
+    if (tally.frames_waited <= wait && !any_button_pressed(pads)) { // $80:F7FB
         step_decorations(state, content);
         return;
     }
@@ -252,7 +251,7 @@ void after_tally_frame(FrontEndState& state, const FrontEndContent& content, Fro
     if (after == 2) {
         load_text(state, state.slide.shown_half);
         ResultWords words;
-        words.shown[0] = tour_qualifying_score(state, content); // $80:F259, `$83:9EEB`
+        words.qualifying_score = tour_qualifying_score(state, content); // $80:F259, `$83:9EEB`
         print_stunt(state, content, StuntText::qualify, words);
         return;
     }

@@ -56,12 +56,6 @@ bool pressed(FrontEndPads pads) {
     return pads.one != 0 || pads.two != 0;
 }
 
-// Pads that leave the lap result: any of pad 1's twelve buttons (`$80:B6D3`); pad 2 is ignored in
-// one-player play, where `$77:0742` bit 10 is set.
-bool lap_graph_left(FrontEndPads pads) {
-    constexpr std::uint16_t buttons = 0xfff0;
-    return (pads.one & buttons) != 0;
-}
 
 std::uint8_t track_of(const FrontEndState& state) {
     return state.tour_menu.track;
@@ -429,7 +423,7 @@ void start_lap_graph(FrontEndState& state, const FrontEndContent& content) {
 // cleared bit 8, so it parks) and `$80:F4B8`. `hide_result_objects` also makes `$80:C236`'s
 // writes, which the lap result does not, but `$80:9805`'s cover them: the OAM buffer is the same.
 void lap_graph_frame(FrontEndState& state, const FrontEndContent& content, FrontEndPads pads) {
-    if (lap_graph_left(pads)) {
+    if (any_button_pressed(pads)) {
         hide_result_objects(state);
         state.screen = FrontEndScreen::race_result_exit;
         return;

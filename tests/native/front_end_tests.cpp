@@ -431,9 +431,10 @@ synthetic_content(std::vector<std::vector<std::uint8_t>> &storage) {
                                      0xfe, 0x13, 0x18, 0xfd, 0xb2, 0x00, 0xff, // qualify
                                      0xfe, 0x13, 0x14, 0xfd, 0xc0, 0x00, 0xff, // record
                                      0xff, 0xff, 0xff});
-  content.stunt_tally_cells = bytes({0xf0, 0xb2, 0, 0xff, 0xf0, 0xb4, 0, 0xff,
-                                     0xf0, 0xb6, 0, 0xff, 0xf0, 0xb8, 0, 0xff,
-                                     0xf0, 0xba, 0, 0xff});
+  // Each cell a nothing code (FB) before its F0, which the ROM's cells do not have.
+  content.stunt_tally_cells = bytes({0xfb, 0xf0, 0xb2, 0, 0xff, 0xfb, 0xf0, 0xb4, 0, 0xff,
+                                     0xfb, 0xf0, 0xb6, 0, 0xff, 0xfb, 0xf0, 0xb8, 0, 0xff,
+                                     0xfb, 0xf0, 0xba, 0, 0xff});
   return content;
 }
 
@@ -1508,7 +1509,7 @@ void stunt_result_tests() {
   using unirally::FrontEndScreen;
   std::vector<std::vector<std::uint8_t>> storage;
   auto content = synthetic_content(storage);
-  storage.push_back({68, 0, 137, 0, 14, 1});
+  storage.push_back({60, 0, 130, 0, 250, 0}); // synthetic words
   content.qualifying_scores = storage.back();
   const auto to_stunt = [&](std::uint16_t score, std::uint16_t total = 0xea60) {
     auto state = unirally::start_front_end();
@@ -1560,7 +1561,7 @@ void stunt_result_tests() {
   run(lost, content, 2, {0x0080, 0});
   require(lost.screen == FrontEndScreen::race_result_exit);
   // A placed score: the scoring a frame later, on the exit's third frame.
-  // 49 < 68 loses.
+  // 49 < 60 loses.
   run(lost, content, 2);
   require(!lost.records.race_lost);
   run(lost, content, 1);
@@ -1572,17 +1573,29 @@ void stunt_result_tests() {
   require(run_to(lost, content, FrontEndScreen::track_menu_entry, {}, 3));
   // The qualifying score itself wins (`$83:88E1`), and a score equal to a
   // record does not displace it (`$80:8CCB`).
-  auto won = to_stunt(68);
-  won.records.record_times[0][2] = 68;
+  auto won = to_stunt(60);
+  won.records.record_times[0][2] = 60;
   won.records.record_holders[0][2] = 5;
   run(won, content, 10 + 16 + 8 + 14 * 3 + 16 + 4);
   run(won, content, 2, {0x0080, 0});
   require(run_to(won, content, FrontEndScreen::track_menu_entry, {}, 6));
   require(!won.records.race_lost && won.records.tracks_done[2] == 1 &&
-          won.records.record_times[0][2] == 68 &&
+          won.records.record_times[0][2] == 60 &&
           won.records.record_holders[0][2] == 5 &&
-          won.records.record_times[1][2] == 68 &&
+          won.records.record_times[1][2] == 60 &&
           won.records.record_holders[1][2] == 0);
+  // The rider's best medal on the tour picks the word (`$83:9EEB`): bronze's
+  // 130, and gold counts as silver, 250.
+  const auto scored_with_medal = [&](std::uint16_t score, std::uint8_t medal) {
+    auto state = to_stunt(score);
+    state.records.medals[0] = medal; // CRAWLER, MIKE
+    run(state, content, 10 + 16 + 8 + 14 * 3 + 16 + 4);
+    run(state, content, 2, {0x0080, 0});
+    require(run_to(state, content, FrontEndScreen::track_menu_entry, {}, 6));
+    return !state.records.race_lost;
+  };
+  require(scored_with_medal(130, 1) && !scored_with_medal(129, 1));
+  require(scored_with_medal(250, 3) && !scored_with_medal(249, 3));
   // A press cuts the tally's waits short: a pass a frame.
   auto skipped = to_stunt(49);
   run(skipped, content, 10);

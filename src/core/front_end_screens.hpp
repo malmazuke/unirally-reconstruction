@@ -60,6 +60,12 @@ inline constexpr std::uint16_t pad_up = 0x0800, pad_down = 0x0400, pad_left = 0x
                                pad_right = 0x0100, pad_select = 0x2000, pad_a = 0x0080,
                                pad_r = 0x0010;
 inline constexpr std::uint16_t choose_buttons = 0x9080, back_buttons = 0x4040;
+// $80:B6D3: any of pad 1's twelve buttons, and of pad 2's while `$77:0742` bit 10 is clear (the
+// main menu's code, HUNTER-ENDING); in one-player play bit 10 is set and pad 2 is ignored.
+inline bool any_button_pressed(FrontEndPads pads, bool pad_two_counts = false) {
+    constexpr std::uint16_t twelve_buttons = 0xfff0;
+    return (pads.one & twelve_buttons) != 0 || (pad_two_counts && (pads.two & twelve_buttons) != 0);
+}
 
 // The `n`th 0xFF-terminated string of `table`, without its 0xFF.
 std::span<const std::uint8_t> nth_string(std::span<const std::uint8_t> table, unsigned n);

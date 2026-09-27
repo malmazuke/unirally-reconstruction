@@ -1538,12 +1538,11 @@
    "native": [
     "src/core/award.cpp:award_left",
     "src/core/front_end.hpp:HunterEnding::both_pads",
+    "src/core/front_end_screens.hpp:any_button_pressed",
     "src/core/front_end_screens.hpp:start_hunter_ending",
     "src/core/hunter_ending.cpp:ending_press",
-    "src/core/hunter_ending.cpp:twelve_buttons",
     "src/core/race_result.cpp:lap_graph_frame",
-    "src/core/race_result.cpp:lap_graph_left",
-    "src/core/stunt_result.cpp:tally_skipped"
+    "src/core/stunt_result.cpp:tally_frame"
    ],
    "observed_entries": {},
    "start": "$80:B6D3",
@@ -14269,19 +14268,19 @@
    "call returns in the calling mode": 1262
   },
   "bytes": 131072,
-  "cited_addresses": 1357,
+  "cited_addresses": 1359,
   "cited_by_class": {
    "data": 23,
    "inferred": 218,
    "observed": 897,
-   "unknown": 219
+   "unknown": 221
   },
   "cited_by_position": {
    "dat": 23,
    "loc": 798,
    "mid": 18,
    "sub": 299,
-   "unk": 219
+   "unk": 221
   },
   "conflicts": 0,
   "data": 92,

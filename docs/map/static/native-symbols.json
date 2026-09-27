@@ -1009,12 +1009,11 @@
    "native": [
     "src/core/award.cpp:award_left",
     "src/core/front_end.hpp:HunterEnding::both_pads",
+    "src/core/front_end_screens.hpp:any_button_pressed",
     "src/core/front_end_screens.hpp:start_hunter_ending",
     "src/core/hunter_ending.cpp:ending_press",
-    "src/core/hunter_ending.cpp:twelve_buttons",
     "src/core/race_result.cpp:lap_graph_frame",
-    "src/core/race_result.cpp:lap_graph_left",
-    "src/core/stunt_result.cpp:tally_skipped"
+    "src/core/stunt_result.cpp:tally_frame"
    ],
    "region": "rom"
   },
@@ -2353,6 +2352,13 @@
    "region": "rom"
   },
   {
+   "address": "$80:F25D",
+   "native": [
+    "src/core/stunt_result.cpp:ResultWords"
+   ],
+   "region": "rom"
+  },
+  {
    "address": "$80:F2EA",
    "native": [
     "src/core/front_end.hpp:FrontEndContent::stunt_result_text, FrontEndContent::stunt_tally_cells",
@@ -2645,7 +2651,7 @@
   {
    "address": "$80:F7FB",
    "native": [
-    "src/core/stunt_result.cpp:tally_skipped"
+    "src/core/stunt_result.cpp:tally_frame"
    ],
    "region": "rom"
   },
@@ -8039,6 +8045,7 @@
    "native": [
     "src/core/front_end.hpp:StuntTally::shown",
     "src/core/race_result.cpp:print_rows",
+    "src/core/stunt_result.cpp:ResultWords",
     "src/core/track_menu.cpp:first_track_word",
     "src/core/track_menu.cpp:print_track_menu"
    ],
@@ -10020,13 +10027,12 @@
    "native": [
     "src/core/front_end.hpp:LogoScroll::raised",
     "src/core/front_end.hpp:OnePlayerRecords::race_lost",
+    "src/core/front_end_screens.hpp:any_button_pressed",
     "src/core/hunter_ending.cpp:ending_press",
     "src/core/hunter_ending.cpp:enter_hunter_code",
     "src/core/race_result.cpp:hide_result_objects",
-    "src/core/race_result.cpp:lap_graph_left",
     "src/core/race_result.cpp:race_return_frame",
-    "src/core/race_result.cpp:score_race",
-    "src/core/stunt_result.cpp:tally_skipped"
+    "src/core/race_result.cpp:score_race"
    ],
    "region": "sram"
   },
@@ -11481,6 +11487,14 @@
     "$008F"
    ]
   },
+  "src/core/front_end_screens.hpp:any_button_pressed": {
+   "rom": [
+    "$80:B6D3"
+   ],
+   "sram": [
+    "$77:0742"
+   ]
+  },
   "src/core/front_end_screens.hpp:best_lap": {
    "rom": [
     "$80:9017",
@@ -12022,11 +12036,6 @@
   "src/core/hunter_ending.cpp:timed_wait_passes": {
    "rom": [
     "$83:AC1F"
-   ]
-  },
-  "src/core/hunter_ending.cpp:twelve_buttons": {
-   "rom": [
-    "$80:B6D3"
    ]
   },
   "src/core/hunter_ending.cpp:upper_pose_word, lower_pose_word": {
@@ -12986,14 +12995,6 @@
     "$80:B6D3",
     "$80:C236",
     "$80:F4B8"
-   ]
-  },
-  "src/core/race_result.cpp:lap_graph_left": {
-   "rom": [
-    "$80:B6D3"
-   ],
-   "sram": [
-    "$77:0742"
    ]
   },
   "src/core/race_result.cpp:objects_frame, tiles_frame, palette_low_frame, palette_high_frame": {
@@ -14646,6 +14647,14 @@
     "$83:88E1"
    ]
   },
+  "src/core/stunt_result.cpp:ResultWords": {
+   "rom": [
+    "$80:F25D"
+   ],
+   "wram": [
+    "$00B2"
+   ]
+  },
   "src/core/stunt_result.cpp:StuntText": {
    "rom": [
     "$80:F2EA",
@@ -14728,25 +14737,18 @@
   },
   "src/core/stunt_result.cpp:tally_frame": {
    "rom": [
+    "$80:B6D3",
     "$80:D1EC",
     "$80:F765",
     "$80:F7AD",
-    "$80:F7C4"
+    "$80:F7C4",
+    "$80:F7FB"
    ]
   },
   "src/core/stunt_result.cpp:tally_pass": {
    "rom": [
     "$80:F680",
     "$80:F77F"
-   ]
-  },
-  "src/core/stunt_result.cpp:tally_skipped": {
-   "rom": [
-    "$80:B6D3",
-    "$80:F7FB"
-   ],
-   "sram": [
-    "$77:0742"
    ]
   },
   "src/core/text_printer.cpp:centre_on": {
@@ -16154,10 +16156,10 @@
   }
  },
  "totals": {
-  "addresses": 1187,
+  "addresses": 1188,
   "io_addresses": 5,
-  "native_symbols": 875,
-  "rom_addresses": 871,
+  "native_symbols": 874,
+  "rom_addresses": 872,
   "sram_addresses": 39,
   "wram_addresses": 272
  }

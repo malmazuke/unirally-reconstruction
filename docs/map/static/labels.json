@@ -768,6 +768,15 @@
   ]
  },
  {
+  "address": "$80:8953",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_808953",
+  "source_records": [
+   "docs/research/R-0067-stunt-result.md"
+  ]
+ },
+ {
   "address": "$80:8C41",
   "class": "observed",
   "comment": "routine start",
@@ -2127,12 +2136,11 @@
   "native": [
    "src/core/award.cpp:award_left",
    "src/core/front_end.hpp:HunterEnding::both_pads",
+   "src/core/front_end_screens.hpp:any_button_pressed",
    "src/core/front_end_screens.hpp:start_hunter_ending",
    "src/core/hunter_ending.cpp:ending_press",
-   "src/core/hunter_ending.cpp:twelve_buttons",
    "src/core/race_result.cpp:lap_graph_frame",
-   "src/core/race_result.cpp:lap_graph_left",
-   "src/core/stunt_result.cpp:tally_skipped"
+   "src/core/stunt_result.cpp:tally_frame"
   ],
   "source_records": [
    "docs/research/R-0058-lap-result.md",
@@ -5175,7 +5183,7 @@
   "native": [
    "src/core/front_end.hpp:StuntTally",
    "src/core/stunt_result.cpp:(file)",
-   "src/core/stunt_result.cpp:tally_skipped"
+   "src/core/stunt_result.cpp:tally_frame"
   ],
   "source_records": [
    "docs/research/R-0067-stunt-result.md"
@@ -13491,6 +13499,15 @@
   "source_records": [
    "docs/research/R-0057-one-run-result.md",
    "docs/research/R-0058-lap-result.md"
+  ]
+ },
+ {
+  "address": "$83:98B8",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_8398B8",
+  "source_records": [
+   "docs/research/R-0067-stunt-result.md"
   ]
  },
  {
