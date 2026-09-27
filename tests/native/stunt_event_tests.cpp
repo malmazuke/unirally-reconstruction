@@ -3,6 +3,8 @@
 // the caption by score, the qualifying score and the stunt event's state (URTRnn07).
 #include "announcements.hpp"
 #include "front_end.hpp"
+#include "race_progress.hpp"
+#include "reward_queue.hpp"
 #include "stunt_event.hpp"
 #include "zoom_zoo_movement.hpp"
 
@@ -33,13 +35,25 @@ template <class F> void rejects(F action, const char* what) {
 constexpr std::array<std::uint8_t, 9> stunt_tracks{2, 7, 12, 17, 22, 27, 32, 37, 42};
 
 // A synthetic stunt event: a track header whose clock reads 0:45 (byte 2 = 45), the riders'
-// start cells, and a qualifying table whose word k is 50 + k.
+// start cells, a qualifying table whose word k is 50 + k, and a finish pose table whose two
+// poses both step through 0x100, 0x101, ...
 struct SyntheticStunt {
     std::array<std::uint8_t, 14> header{};
     std::array<std::uint8_t, 26> weights{};
     std::array<std::uint8_t, 54> qualifying{};
+    std::array<std::uint8_t, 38> finish_poses{};
     ZoomZooContent content{};
     SyntheticStunt() {
+        constexpr unsigned pose_table = 0xc7c8 + 6; // the poses' tables' base, then 6 bytes on
+        for (const unsigned kind : {1U, 2U}) {
+            finish_poses[2 * kind] = static_cast<std::uint8_t>(pose_table & 0xffU);
+            finish_poses[2 * kind + 1] = static_cast<std::uint8_t>(pose_table >> 8U);
+        }
+        for (unsigned k = 0; k < 16; ++k) {
+            finish_poses[6 + 2 * k] = static_cast<std::uint8_t>(k);
+            finish_poses[7 + 2 * k] = 1;
+        }
+        content.finish_poses = finish_poses;
         header[2] = 45;
         header[3] = 0x44;
         header[5] = 0x32;
@@ -221,6 +235,98 @@ void the_state() {
     rejects([&] { (void)serialize_zoom_zoo(on_a_race); }, "a race keeps no stunt words");
 }
 
+// A state at the end of a run: the clock stopped at 0:59.9, both riders finished and standing,
+// the queues empty, two tricks tallied.
+ZoomZooState run_over(const SyntheticStunt& stunt) {
+    auto state = classic_race_start(stunt.content, classic_race_scenario(ClassicRaceTrack{2}));
+    constexpr std::uint32_t run_updates = 2465;
+    state.movement.frame += run_updates;
+    state.fade_level = 30;
+    state.movement.countdown = 0;
+    state.start_boost = {0, 0};
+    state.player_announcements.hints_active = 0;
+    state.movement.timer = {0, 5, 9, 9, 0};
+    state.stunt.clock_stopped = 1;
+    state.race.riders[0].finished = state.race.riders[1].finished = 1;
+    state.stunt.tallies[trick_family::roll][0] = {2, 6};
+    state.stunt.tallies[trick_family::mega][1] = {1, 0}; // a tabletop that paid nothing
+    state.player_announcements.queue.feature_total = 6;
+    return state;
+}
+
+// The finish sequence's wiring into the race's finish (update_finish): nothing poses or counts
+// towards the result until the update after both riders stand with the queues empty.
+void the_finish_sequence() {
+    const SyntheticStunt stunt;
+    auto state = run_over(stunt);
+    state.movement.frame += 1;
+    update_finish(state, stunt.content);
+    require(state.stunt.finish_display && state.stunt.settled == std::array<std::uint16_t, 2>{1, 1},
+            "both settle and the display starts");
+    require(!state.race.finish_delay && !state.race.finish_pose[0].active
+                && !state.race.finish_pose[1].active,
+            "no pose or count on the update the display starts");
+    state.movement.frame += 1; // the finish routine skips an update in three ($83:E90D)
+    update_finish(state, stunt.content);
+    require(state.race.finish_delay == 1 && state.race.finish_pose[0].active
+                && state.race.finish_pose[1].active,
+            "then the poses and the count");
+    require(state.movement.riders[0].motion.velocity_y == 0x80
+                && state.movement.riders[1].motion.velocity_y == 0x80,
+            "settled riders held at 128");
+    // A state in the middle of the sequence round-trips and fits its content.
+    const auto bytes = serialize_zoom_zoo(state);
+    const auto restored = deserialize_zoom_zoo(bytes);
+    require(serialize_zoom_zoo(restored) == bytes && restored.stunt == state.stunt,
+            "a finished run round-trips");
+    validate_zoom_zoo_content_state(restored, stunt.content);
+    // The guards refuse what the original cannot reach.
+    auto unsettled = restored;
+    unsettled.stunt.settled[0] = 0;
+    rejects([&] { (void)deserialize_zoom_zoo(serialize_zoom_zoo(unsettled)); },
+            "a display before both settle");
+    auto unpaid = restored;
+    unpaid.stunt.tallies[trick_family::flip][2] = {0, 6};
+    unpaid.player_announcements.queue.feature_total = 12;
+    rejects([&] { (void)deserialize_zoom_zoo(serialize_zoom_zoo(unpaid)); },
+            "points for no trick");
+    auto moving = restored;
+    moving.movement.riders[1].motion.velocity_x = 300;
+    rejects([&] { (void)deserialize_zoom_zoo(serialize_zoom_zoo(moving)); }, "an opponent that moves");
+    auto falling = restored;
+    falling.stunt.settled[1] = 0;
+    falling.stunt.finish_display = 0;
+    falling.race.finish_delay = 0;
+    falling.race.finish_pose = {};
+    rejects([&] { (void)deserialize_zoom_zoo(serialize_zoom_zoo(falling)); },
+            "an unsettled opponent held at 128");
+    auto moved = restored;
+    moved.movement.riders[1].motion.x = static_cast<std::uint16_t>(moved.movement.riders[1].motion.x + 1);
+    rejects([&] { validate_zoom_zoo_content_state(moved, stunt.content); }, "an opponent off its start");
+    auto late = classic_race_start(stunt.content, classic_race_scenario(ClassicRaceTrack{2}));
+    validate_zoom_zoo_content_state(late, stunt.content);
+    late.movement.timer = {0, 4, 5, 1, 0};
+    rejects([&] { validate_zoom_zoo_content_state(late, stunt.content); },
+            "a running clock past its start");
+}
+
+// $81:8709-8718: one rider pass a stunt event, two a race; each lowers both cooldowns by 1.
+void the_cooldowns() {
+    const SyntheticStunt stunt;
+    auto state = classic_race_start(stunt.content, classic_race_scenario(ClassicRaceTrack{2}));
+    const auto scenario = classic_race_scenario(ClassicRaceTrack{2});
+    require(rider_passes(scenario) == 1 && rider_passes(classic_race_scenario(ClassicRaceTrack{13})) == 2,
+            "one pass, two passes");
+    state.player_announcements.queue.cooldown = 10;
+    state.movement.rewards.cooldown = 1;
+    lower_announcement_cooldowns(state, scenario);
+    require(state.player_announcements.queue.cooldown == 9 && state.movement.rewards.cooldown == 0,
+            "a stunt event lowers them by 1");
+    lower_announcement_cooldowns(state, classic_race_scenario(ClassicRaceTrack{13}));
+    require(state.player_announcements.queue.cooldown == 7 && state.movement.rewards.cooldown == 0,
+            "a race by 2");
+}
+
 void the_score_decides() {
     const SyntheticStunt stunt;
     auto state = classic_race_start(stunt.content, classic_race_scenario(ClassicRaceTrack{2}));
@@ -252,6 +358,8 @@ int main() {
         the_finish();
         tallies_and_captions();
         the_state();
+        the_finish_sequence();
+        the_cooldowns();
         the_score_decides();
         the_menus_medal();
     } catch (const std::exception& error) {

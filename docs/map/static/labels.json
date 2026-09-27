@@ -794,6 +794,15 @@
   ]
  },
  {
+  "address": "$80:8CCB",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_808CCB",
+  "source_records": [
+   "tasks/STUNT-RESULT.md"
+  ]
+ },
+ {
   "address": "$80:8D6E",
   "class": "unknown",
   "comment": "unknown",
@@ -2954,6 +2963,15 @@
   ]
  },
  {
+  "address": "$80:C948",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80C948",
+  "source_records": [
+   "tasks/STUNT-RESULT.md"
+  ]
+ },
+ {
   "address": "$80:C950",
   "class": "unknown",
   "comment": "unknown",
@@ -4181,7 +4199,8 @@
   "source_records": [
    "docs/research/R-0057-one-run-result.md",
    "docs/research/R-0058-lap-result.md",
-   "docs/research/R-0066-stunt-event-race.md"
+   "docs/research/R-0066-stunt-event-race.md",
+   "tasks/STUNT-RESULT.md"
   ]
  },
  {
@@ -5055,7 +5074,7 @@
   "label": "loc_818709",
   "native": [
    "src/core/race_update.cpp:begin_rider_update",
-   "src/core/race_update.cpp:update_zoom_zoo",
+   "src/core/reward_queue.hpp:lower_announcement_cooldowns",
    "src/core/special_tiles.cpp:update_special_tile_counters"
   ],
   "source_records": [
@@ -5808,7 +5827,7 @@
   "comment": "instruction start",
   "label": "loc_818E53",
   "native": [
-   "src/core/race_update.cpp:rider_passes"
+   "src/core/stunt_event.hpp:rider_passes"
   ],
   "source_records": [
    "docs/research/R-0066-stunt-event-race.md"
@@ -7279,6 +7298,24 @@
   ]
  },
  {
+  "address": "$81:C111",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_81C111",
+  "native": [
+   "src/core/race_hud.cpp:classic_caption_tile",
+   "src/core/race_state_io.cpp:read_stunt_event",
+   "src/core/reward_queue.cpp:show_next_player_announcement",
+   "src/core/reward_queue.cpp:update_opponent_announcements",
+   "src/core/stunt_event.cpp:tally_stunt_trick",
+   "src/core/stunt_event.hpp:tally_stunt_trick",
+   "src/core/zoom_zoo_movement.hpp:TrickTally"
+  ],
+  "source_records": [
+   "docs/research/R-0066-stunt-event-race.md"
+  ]
+ },
+ {
   "address": "$81:C12A",
   "class": "inferred",
   "comment": "instruction start",
@@ -7300,6 +7337,7 @@
   "label": "loc_81C173",
   "native": [
    "src/core/race_hud.cpp:classic_caption_tile",
+   "src/core/race_state_io.cpp:read_stunt_event",
    "src/core/reward_queue.cpp:show_next_player_announcement",
    "src/core/reward_queue.cpp:update_opponent_announcements",
    "src/core/stunt_event.hpp:tally_stunt_trick"
@@ -9405,7 +9443,7 @@
   "comment": "instruction start",
   "label": "loc_828EAB",
   "native": [
-   "src/core/race_update.cpp:rider_passes"
+   "src/core/stunt_event.hpp:rider_passes"
   ],
   "source_records": [
    "docs/research/R-0066-stunt-event-race.md"
@@ -11571,6 +11609,7 @@
    "src/core/race_setup.cpp:classic_crawler_zoom_zoo_start",
    "src/core/race_setup.cpp:start_clock",
    "src/core/race_setup.cpp:start_countdown, base_speed_cap",
+   "src/core/race_state_io.cpp:check_stunt_content",
    "src/core/zoom_zoo_movement.hpp:classic_crawler_zoom_zoo_start"
   ],
   "source_records": [
@@ -12158,7 +12197,8 @@
   ],
   "source_records": [
    "docs/research/R-0065-fifth-win-completion.md",
-   "docs/research/R-0066-stunt-event-race.md"
+   "docs/research/R-0066-stunt-event-race.md",
+   "tasks/STUNT-RESULT.md"
   ]
  },
  {
@@ -12813,7 +12853,7 @@
   "native": [
    "src/core/now_playing.cpp:print_now_playing",
    "src/core/race_setup.cpp:tracks_per_tour, qualifying_levels",
-   "src/core/race_state_io.cpp:validate_zoom_zoo_content_state",
+   "src/core/race_state_io.cpp:check_stunt_content",
    "src/core/zoom_zoo_movement.hpp:ClassicRaceScenario::best_medal",
    "src/core/zoom_zoo_movement.hpp:stunt_qualifying_score"
   ],
@@ -13827,7 +13867,7 @@
   "label": "loc_83CBD8",
   "native": [
    "src/core/race_setup.cpp:opponent_tier",
-   "src/core/race_update.cpp:rider_passes"
+   "src/core/stunt_event.hpp:rider_passes"
   ],
   "source_records": [
    "docs/research/R-0066-stunt-event-race.md"
@@ -15228,6 +15268,7 @@
   "comment": "instruction start",
   "label": "loc_83E856",
   "native": [
+   "src/core/race_state_io.cpp:stunt_settled_fall",
    "src/core/stunt_event.cpp:settled_fall",
    "src/core/stunt_event.hpp:update_stunt_finish"
   ],
@@ -15256,6 +15297,8 @@
   "comment": "instruction start",
   "label": "loc_83E874",
   "native": [
+   "src/core/race_state_io.cpp:read_stunt_event",
+   "src/core/race_state_io.cpp:stunt_settled_fall",
    "src/core/stunt_event.hpp:update_stunt_finish"
   ],
   "source_records": [

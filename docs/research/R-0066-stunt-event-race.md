@@ -9,9 +9,12 @@ record supersedes where they differ.
 
 Evidence tags: **[C]** seen in a capture (work RAM, cartridge RAM or the program-counter trace of
 the decode's `trace.py`), **[L]** read from the static listing (`artifacts/static-map/bank-8x.lst`),
-not seen executing on its own. Every rule below is also confirmed by the native comparison: the
-race rows of every capture listed under Evidence are equal from the boundary through the result
-load.
+not seen executing on its own. Every rule the captures reach is also confirmed by the native
+comparison: the race rows of every capture listed under Evidence are equal from the boundary
+through the result load. These parts are read from the listing only, with native tests but no
+capture: a negative y on track 37 (whole-height sampling), the `draw` caption (a score equal to the
+qualifying score), the other vertical cap beyond the falling case and the one rising case BOWL
+reaches, a tally count wrapping past 255, and a start-line crossing.
 
 ## Summary
 
@@ -94,12 +97,13 @@ hold (`$83:E704-E740`), so the riders are free from 100 (a race: 70). The brake-
   `$81:C50A[e - 1]` is not 0xFF, the tally byte `$77:076B + 2c` counts it (`$81:C0FF-C116`) before
   the weight is read, so a trick of weight 0 still counts; a non-zero weight adds to `$77:07BB`
   (`$81:C12A-C132`) and to the column's points word `$77:076B + 2c + 2` (`$81:C173-C184`), then
-  halves. Columns are four bytes (count, zero, points); rows ROLL, FLIP, TWST, ZEE, MEGA are 16
+  halves (the count is one byte, `$81:C111-C116`, so it wraps past 255 [L only]). Columns are four
+  bytes (count, zero, points); rows ROLL, FLIP, TWST, ZEE, MEGA are 16
   bytes apart. The class table is the pack's `physics.reward.rotation-class`. Native keeps the
   player's tallies in a stunt event only (every race writes them too, but only the stunt result
   reads them); the opponent's (`$77:07D5`) stay 0, as it shows no trick.
 - Captions `$83:E940-E957` (player) and `$83:EAD2-EAE7` (opponent) [L][C]: the score against the
-  qualifying score, a 16-bit difference: equal is `draw`, negative `loser`, else `winner`; the
+  qualifying score, a 16-bit difference: equal is `draw` [L only], negative `loser`, else `winner`; the
   opponent's score `$77:0825` is 0, so it announces `loser`. The win test of the scoring
   `$83:88E1-88F6` counts equal as a win [C, decode].
 
@@ -122,10 +126,17 @@ hold (`$83:E704-E740`), so the riders are free from 100 (a race: 70). The brake-
 
 A stunt event's state is `URTRnn07`, 1,006 bytes: the other tracks' 916 (`URTRnn06`) and 90 more:
 the qualifying score, `$0BF5`, `$0FE9`, `$12DF`, `$12E1`, then the 80 tally bytes in the original's
-layout. Restore guards: a count's second byte is 0; a stopped clock reads 0:59.9; a rider finishes
-only once the clock has stopped, and settles only once finished; the display waits for both
-finishes, and the finish poses and the finish display wait for it; the columns' points add up to
-the score; the qualifying score is one of the tour's three.
+layout. Restore guards: a count's second byte is 0; a column pays only with a trick shown (a count
+wrapped past 255 is outside the domain); a stopped clock reads 0:59.9, and a running one no later
+than the header's start; a rider finishes only once the clock has stopped, and settles only once
+finished; the display waits for both finishes and both settles, and the finish poses and the
+finish display wait for it; the columns' points add up to the score; the qualifying score is one
+of the tour's three; the opponent stays at its start with no horizontal velocity and a vertical one
+of 128 only once settled.
+
+The app's `--track` refuses a stunt event as its menus do, until the stunt result is native
+(STUNT-RESULT); a stunt event run to its end would otherwise reach the race's result screen, which
+has no composition for two riders without times.
 
 ## Evidence
 

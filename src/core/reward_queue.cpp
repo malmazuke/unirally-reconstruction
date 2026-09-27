@@ -394,6 +394,15 @@ void push_front_player_announcement(ZoomZooState& state, unsigned event) {
     queue.read_cursor = static_cast<std::uint8_t>((queue.read_cursor - 1U) & queue_slots_mask);
 }
 
+void lower_announcement_cooldowns(ZoomZooState& state, const ClassicRaceScenario& scenario) {
+    const auto passes = rider_passes(scenario);
+    const auto lower = [passes](std::uint16_t& cooldown) {
+        cooldown = cooldown > passes ? static_cast<std::uint16_t>(cooldown - passes) : 0;
+    };
+    if (state.native_initialization) lower(state.player_announcements.queue.cooldown);
+    lower(state.movement.rewards.cooldown);
+}
+
 // $83:CDBC-CE43: while the tutorial hints are on, every 300 updates queue the next group
 // of four. The race start sets the first count to 30.
 void update_tutorial_hints(ZoomZooState& state) {

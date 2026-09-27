@@ -156,8 +156,12 @@ private:
   FrontEndMode notice_mode_{};
 };
 
-// 1P's race is native when a race scenario has its track (R-0046, R-0050): any
-// rider against the opponent NOW PLAYING chose (R-0061), not a stunt event.
+// A track the app races natively, from the menus or from --track: one with a race scenario
+// (R-0046, R-0050), not a stunt event. A stunt event's race runs natively (R-0066), but its
+// result screen and records do not yet (STUNT-RESULT), so the app does not start one.
+bool native_race_track(ClassicRaceTrack track);
+// 1P's race is native when native_race_track holds for its track: any rider against the
+// opponent NOW PLAYING chose (R-0061).
 bool native_one_player_race(const FrontEndState &state);
 
 // A port's mask as the SNES reads the pad (`$4218`: B in bit 15 ... R in bit

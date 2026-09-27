@@ -253,14 +253,6 @@ bool run_countdown(const ZoomZooState& state, ZoomZooState& next, const Countdow
     return true;
 }
 
-// The riders whose own update runs: both, unless the opponent is switched off. $81:8E53-8E5D
-// (contact) and $82:8EAB-8EB5 (the rider update) skip the opponent while `$0DE1` (a second
-// human) and the AI flag `$0C6D` are both clear: in a stunt event, whose setup clears the flag
-// ($83:CBD8). Its finish and its announcement queue still run (R-0066).
-unsigned rider_passes(const ClassicRaceScenario& scenario) {
-    return scenario.stunt_event ? 1U : 2U;
-}
-
 // $82:AB6A-AB91 and $83:E084-E089: with the AI flag clear, port 2 is read as a second pad, which
 // nothing holds, and the AI is skipped: the opponent presses nothing and its selector, countdown
 // and suppression words keep their values. Returns true, as an AI switched off by a marker.
@@ -862,16 +854,9 @@ void update_zoom_zoo(ZoomZooState& state, const ControllerButtons& requested_but
         countdown_holds ? 0U : (unsigned(whole.opponent_ai.trick_selector) & (ai_off ? ~6U : ~0U))};
     if (state.complete_race) update_finish(next, content);
     const unsigned active = whole.progress_phase ? 0U : 1U;
-    // $81:8709-8718: each rider's pass lowers both queues' cooldowns by 1, not below 0.
-    const auto passes = rider_passes(scenario);
-    const auto lower = [passes](std::uint16_t cooldown) {
-        return cooldown > passes ? static_cast<std::uint16_t>(cooldown - passes) : std::uint16_t{0};
-    };
-    if (state.native_initialization)
-        next.player_announcements.queue.cooldown = lower(next.player_announcements.queue.cooldown);
-    whole.rewards.cooldown = lower(whole.rewards.cooldown);
+    lower_announcement_cooldowns(next, scenario);
     std::array<RiderOutcome, 2> outcomes{};
-    for (unsigned index = 0; index < passes; ++index)
+    for (unsigned index = 0; index < rider_passes(scenario); ++index)
         outcomes[index] = update_rider(state, next, index, active, trick_buttons, content);
     finish_update(state, next, outcomes, content, scenario);
     state = next;

@@ -3380,7 +3380,7 @@
    ],
    "native": [
     "src/core/race_update.cpp:begin_rider_update",
-    "src/core/race_update.cpp:update_zoom_zoo",
+    "src/core/reward_queue.hpp:lower_announcement_cooldowns",
     "src/core/rider_motion.cpp:update_horizontal",
     "src/core/rider_pose.cpp:decay_idle_wobble",
     "src/core/special_tiles.cpp:update_loop_cooldown",
@@ -3685,9 +3685,9 @@
     "NMX"
    ],
    "native": [
-    "src/core/race_update.cpp:rider_passes",
     "src/core/race_update.cpp:update_rider_contact",
-    "src/core/rider_look.hpp:advance_rider_look"
+    "src/core/rider_look.hpp:advance_rider_look",
+    "src/core/stunt_event.hpp:rider_passes"
    ],
    "observed_entries": {},
    "start": "$81:8E43",
@@ -8037,8 +8037,8 @@
     "NMX"
    ],
    "native": [
-    "src/core/race_update.cpp:rider_passes",
-    "src/core/special_tiles.cpp:update_special_tile_counters"
+    "src/core/special_tiles.cpp:update_special_tile_counters",
+    "src/core/stunt_event.hpp:rider_passes"
    ],
    "observed_entries": {},
    "start": "$82:89CC",
@@ -10352,6 +10352,8 @@
     "src/core/race_setup.cpp:start_countdown, base_speed_cap",
     "src/core/race_setup.cpp:stunt_scenario",
     "src/core/race_state_io.cpp:check_opponent_queue",
+    "src/core/race_state_io.cpp:check_stunt_content",
+    "src/core/stunt_event.cpp:update_stunt_finish",
     "src/core/zoom_zoo_movement.hpp:ClassicRaceScenario::laps",
     "src/core/zoom_zoo_movement.hpp:ClassicRaceScenario::tutorial_hints",
     "src/core/zoom_zoo_movement.hpp:classic_crawler_zoom_zoo_start"
@@ -11814,7 +11816,7 @@
    "native": [
     "src/core/now_playing.cpp:print_now_playing",
     "src/core/race_setup.cpp:tracks_per_tour, qualifying_levels",
-    "src/core/race_state_io.cpp:validate_zoom_zoo_content_state",
+    "src/core/race_state_io.cpp:check_stunt_content",
     "src/core/zoom_zoo_movement.hpp:ClassicRaceScenario::best_medal",
     "src/core/zoom_zoo_movement.hpp:stunt_qualifying_score"
    ],
@@ -12354,7 +12356,7 @@
    ],
    "native": [
     "src/core/race_setup.cpp:opponent_tier",
-    "src/core/race_update.cpp:rider_passes"
+    "src/core/stunt_event.hpp:rider_passes"
    ],
    "observed_entries": {},
    "start": "$83:CBC8",
@@ -13517,6 +13519,8 @@
     "NMX"
    ],
    "native": [
+    "src/core/race_state_io.cpp:read_stunt_event",
+    "src/core/race_state_io.cpp:stunt_settled_fall",
     "src/core/stunt_event.cpp:settled_fall",
     "src/core/stunt_event.cpp:stands_on_ground",
     "src/core/stunt_event.cpp:update_stunt_finish",
@@ -14241,19 +14245,19 @@
    "call returns in the calling mode": 1262
   },
   "bytes": 131072,
-  "cited_addresses": 1299,
+  "cited_addresses": 1302,
   "cited_by_class": {
    "data": 23,
-   "inferred": 216,
+   "inferred": 217,
    "observed": 889,
-   "unknown": 171
+   "unknown": 173
   },
   "cited_by_position": {
    "dat": 23,
-   "loc": 789,
+   "loc": 790,
    "mid": 18,
    "sub": 298,
-   "unk": 171
+   "unk": 173
   },
   "conflicts": 0,
   "data": 92,

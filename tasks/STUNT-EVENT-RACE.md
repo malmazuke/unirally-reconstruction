@@ -67,7 +67,7 @@ the primary integrated.
 
 | Criterion | Result |
 | --- | --- |
-| Stunt events | Every race row exact from the boundary through the result load on the seven riding captures (BOWL four times, HILL CLIMB twice, JUMPS, DOWNER: 2,808 to 2,952 rows each) and the nine idle captures of the nine tracks (1,502 to 1,571 rows each). |
+| Stunt events | Every race row exact from the boundary through the result load on the seven riding captures (BOWL three times, HILL CLIMB twice, JUMPS, DOWNER: 2,808 to 2,952 rows each) and the nine idle captures of the nine tracks (1,502 to 1,571 rows each). |
 | State | ROM-free tests round-trip a stunt event's state and refuse broken ones (`stunt_event_tests`). |
 | Nothing moves | The gates: pending. |
 

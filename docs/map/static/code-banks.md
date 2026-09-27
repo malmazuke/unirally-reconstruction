@@ -45,7 +45,7 @@ The four classes partition all 131,072 bytes. **Unknown share: 40.4%** - above D
 
 ## Cited addresses
 
-1299 distinct code-bank ROM addresses cited by the research, task, inventory and content records (`labels.json`). By position: dat 23, loc 789, mid 18, sub 298, unk 171 (sub routine start, loc instruction start, mid inside an instruction, dat data, unk unknown). By class: data 23, inferred 216, observed 889, unknown 171.
+1302 distinct code-bank ROM addresses cited by the research, task, inventory and content records (`labels.json`). By position: dat 23, loc 790, mid 18, sub 298, unk 173 (sub routine start, loc instruction start, mid inside an instruction, dat data, unk unknown). By class: data 23, inferred 217, observed 889, unknown 173.
 
 Cited addresses in `unknown` bytes:
 
@@ -70,6 +70,7 @@ Cited addresses in `unknown` bytes:
 | $80:84EB | docs/research/R-0010-native-movement.md, docs/research/R-0045-static-code-map.md |
 | $80:88B2 | tasks/COVERAGE-ROADMAP.md |
 | $80:88BE | docs/research/R-0054-boot-title-main-menu.md |
+| $80:8CCB | tasks/STUNT-RESULT.md |
 | $80:8D6E | docs/research/R-0057-one-run-result.md, docs/research/R-0058-lap-result.md, tasks/FRONT-END-LAP-RESULT.md, tasks/NEXT_SESSION.md |
 | $80:8D70 | docs/research/R-0058-lap-result.md |
 | $80:8DD9 | docs/research/R-0058-lap-result.md |
@@ -118,6 +119,7 @@ Cited addresses in `unknown` bytes:
 | $80:C902 | docs/research/R-0058-lap-result.md |
 | $80:C913 | docs/research/R-0058-lap-result.md |
 | $80:C932 | docs/research/R-0058-lap-result.md |
+| $80:C948 | tasks/STUNT-RESULT.md |
 | $80:C950 | tasks/LOCKED-TOURS.md |
 | $80:C9D7 | docs/research/R-0057-one-run-result.md, docs/research/R-0060-pause-exits.md |
 | $80:CA74 | docs/research/R-0057-one-run-result.md |
@@ -146,7 +148,7 @@ Cited addresses in `unknown` bytes:
 | $80:EA40 | docs/research/R-0056-tour-track-now-playing.md |
 | $80:EA58 | docs/research/R-0056-tour-track-now-playing.md |
 | $80:EB61 | docs/research/R-0056-tour-track-now-playing.md |
-| $80:F0EE | docs/research/R-0057-one-run-result.md, docs/research/R-0058-lap-result.md, docs/research/R-0066-stunt-event-race.md |
+| $80:F0EE | docs/research/R-0057-one-run-result.md, docs/research/R-0058-lap-result.md, docs/research/R-0066-stunt-event-race.md, tasks/STUNT-RESULT.md |
 | $80:F618 | docs/research/R-0054-boot-title-main-menu.md |
 | $80:FACD | docs/research/R-0054-boot-title-main-menu.md |
 | $80:FBC5 | docs/research/R-0054-boot-title-main-menu.md |
@@ -180,7 +182,7 @@ Cited addresses in `unknown` bytes:
 | $83:8815 | docs/research/R-0065-fifth-win-completion.md |
 | $83:88D3 | docs/research/R-0058-lap-result.md, docs/research/R-0065-fifth-win-completion.md |
 | $83:88DD | docs/research/R-0065-fifth-win-completion.md |
-| $83:88E1 | docs/research/R-0065-fifth-win-completion.md, docs/research/R-0066-stunt-event-race.md |
+| $83:88E1 | docs/research/R-0065-fifth-win-completion.md, docs/research/R-0066-stunt-event-race.md, tasks/STUNT-RESULT.md |
 | $83:88F1 | docs/research/R-0065-fifth-win-completion.md |
 | $83:8D5D | docs/research/R-0058-lap-result.md, tasks/FRONT-END-LAP-RESULT.md |
 | $83:8E1C | docs/research/R-0056-tour-track-now-playing.md |

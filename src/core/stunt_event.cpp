@@ -69,6 +69,10 @@ bool queue_empty(const RewardQueueState& queue) {
 
 } // namespace
 
+unsigned rider_passes(const ClassicRaceScenario& scenario) {
+    return scenario.stunt_event ? 1U : 2U;
+}
+
 bool update_stunt_finish(ZoomZooState& state) {
     auto& stunt = state.stunt;
     const auto& riders = state.movement.riders;
@@ -81,7 +85,9 @@ bool update_stunt_finish(ZoomZooState& state) {
     if (!state.race.riders[0].finished || !state.race.riders[1].finished
         || !stands_on_ground(riders[0]) || !stands_on_ground(riders[1]))
         return false;
-    state.player_announcements.hints_active = 0; // $12E3 ($83:E8B6)
+    // $83:E8B6 clears $12E3 and $12E5; $12E5, a second human's hints, is only ever set with one
+    // ($82:D96F), so one player has only $12E3.
+    state.player_announcements.hints_active = 0;
     if (queue_empty(state.player_announcements.queue) && queue_empty(state.movement.rewards))
         stunt.finish_display = 1; // $83:E8DA
     return false;

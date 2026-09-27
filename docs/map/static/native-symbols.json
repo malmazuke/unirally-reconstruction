@@ -2589,7 +2589,7 @@
   {
    "address": "$81:8709",
    "native": [
-    "src/core/race_update.cpp:update_zoom_zoo"
+    "src/core/reward_queue.hpp:lower_announcement_cooldowns"
    ],
    "range_ends": [
     "$81:8718"
@@ -2824,7 +2824,7 @@
   {
    "address": "$81:8E53",
    "native": [
-    "src/core/race_update.cpp:rider_passes"
+    "src/core/stunt_event.hpp:rider_passes"
    ],
    "range_ends": [
     "$81:8E5D"
@@ -3374,6 +3374,7 @@
   {
    "address": "$81:C111",
    "native": [
+    "src/core/race_state_io.cpp:read_stunt_event",
     "src/core/stunt_event.cpp:tally_stunt_trick"
    ],
    "range_ends": [
@@ -3402,6 +3403,7 @@
   {
    "address": "$81:C173",
    "native": [
+    "src/core/race_state_io.cpp:read_stunt_event",
     "src/core/stunt_event.hpp:tally_stunt_trick"
    ],
    "range_ends": [
@@ -4131,7 +4133,7 @@
   {
    "address": "$82:8EAB",
    "native": [
-    "src/core/race_update.cpp:rider_passes"
+    "src/core/stunt_event.hpp:rider_passes"
    ],
    "range_ends": [
     "$82:8EB5"
@@ -4961,7 +4963,8 @@
   {
    "address": "$82:D7FD",
    "native": [
-    "src/core/race_setup.cpp:start_clock"
+    "src/core/race_setup.cpp:start_clock",
+    "src/core/race_state_io.cpp:check_stunt_content"
    ],
    "range_ends": [
     "$82:D836"
@@ -4988,6 +4991,13 @@
    ],
    "range_ends": [
     "$82:D96F"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$82:D96F",
+   "native": [
+    "src/core/stunt_event.cpp:update_stunt_finish"
    ],
    "region": "rom"
   },
@@ -5469,7 +5479,7 @@
    "native": [
     "src/core/now_playing.cpp:print_now_playing",
     "src/core/race_setup.cpp:tracks_per_tour, qualifying_levels",
-    "src/core/race_state_io.cpp:validate_zoom_zoo_content_state",
+    "src/core/race_state_io.cpp:check_stunt_content",
     "src/core/zoom_zoo_movement.hpp:ClassicRaceScenario::best_medal",
     "src/core/zoom_zoo_movement.hpp:stunt_qualifying_score"
    ],
@@ -6591,7 +6601,7 @@
    "address": "$83:CBD8",
    "native": [
     "src/core/race_setup.cpp:opponent_tier",
-    "src/core/race_update.cpp:rider_passes"
+    "src/core/stunt_event.hpp:rider_passes"
    ],
    "region": "rom"
   },
@@ -7113,6 +7123,7 @@
   {
    "address": "$83:E856",
    "native": [
+    "src/core/race_state_io.cpp:stunt_settled_fall",
     "src/core/stunt_event.cpp:settled_fall"
    ],
    "range_ends": [
@@ -7131,6 +7142,14 @@
     "$83:E85F",
     "$83:E862",
     "$83:E867"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:E874",
+   "native": [
+    "src/core/race_state_io.cpp:read_stunt_event",
+    "src/core/race_state_io.cpp:stunt_settled_fall"
    ],
    "region": "rom"
   },
@@ -8277,8 +8296,8 @@
    "native": [
     "src/core/race_setup.cpp:opponent_tier",
     "src/core/race_state_io.cpp:read_rolls",
-    "src/core/race_update.cpp:rider_passes",
-    "src/core/rider_look.hpp:advance_rider_look"
+    "src/core/rider_look.hpp:advance_rider_look",
+    "src/core/stunt_event.hpp:rider_passes"
    ],
    "region": "wram"
   },
@@ -8548,7 +8567,7 @@
   {
    "address": "$0DE1",
    "native": [
-    "src/core/race_update.cpp:rider_passes"
+    "src/core/stunt_event.hpp:rider_passes"
    ],
    "region": "wram"
   },
@@ -9367,6 +9386,13 @@
    "native": [
     "src/core/stunt_event.cpp:update_stunt_finish",
     "src/core/zoom_zoo_movement.hpp:ClassicRaceScenario::tutorial_hints"
+   ],
+   "region": "wram"
+  },
+  {
+   "address": "$12E5",
+   "native": [
+    "src/core/stunt_event.cpp:update_stunt_finish"
    ],
    "region": "wram"
   },
@@ -12780,6 +12806,12 @@
     "$82:9B69"
    ]
   },
+  "src/core/race_state_io.cpp:check_stunt_content": {
+   "rom": [
+    "$82:D7FD",
+    "$83:9EEB"
+   ]
+  },
   "src/core/race_state_io.cpp:last_queue_slot": {
    "rom": [
     "$81:C2CC"
@@ -12802,8 +12834,11 @@
   },
   "src/core/race_state_io.cpp:read_stunt_event": {
    "rom": [
+    "$81:C111",
     "$81:C12A",
-    "$81:C17A"
+    "$81:C173",
+    "$81:C17A",
+    "$83:E874"
    ]
   },
   "src/core/race_state_io.cpp:spin_steps": {
@@ -12816,10 +12851,15 @@
     "$81:C830"
    ]
   },
+  "src/core/race_state_io.cpp:stunt_settled_fall": {
+   "rom": [
+    "$83:E856",
+    "$83:E874"
+   ]
+  },
   "src/core/race_state_io.cpp:validate_zoom_zoo_content_state": {
    "rom": [
-    "$82:93E5",
-    "$83:9EEB"
+    "$82:93E5"
    ]
   },
   "src/core/race_update.cpp:(file)": {
@@ -12887,17 +12927,6 @@
    ],
    "wram": [
     "$12DF"
-   ]
-  },
-  "src/core/race_update.cpp:rider_passes": {
-   "rom": [
-    "$81:8E53",
-    "$82:8EAB",
-    "$83:CBD8"
-   ],
-   "wram": [
-    "$0C6D",
-    "$0DE1"
    ]
   },
   "src/core/race_update.cpp:run_active_controls": {
@@ -13054,11 +13083,6 @@
    "wram": [
     "$0E6F",
     "$0F89"
-   ]
-  },
-  "src/core/race_update.cpp:update_zoom_zoo": {
-   "rom": [
-    "$81:8709"
    ]
   },
   "src/core/race_update.cpp:wrong_way_warning, wrong_way_repeat": {
@@ -13309,6 +13333,11 @@
   "src/core/reward_queue.cpp:update_tutorial_hints": {
    "rom": [
     "$83:CDBC"
+   ]
+  },
+  "src/core/reward_queue.hpp:lower_announcement_cooldowns": {
+   "rom": [
+    "$81:8709"
    ]
   },
   "src/core/rider_look.cpp:arc_b, arc_c, arc_d": {
@@ -14016,16 +14045,29 @@
   },
   "src/core/stunt_event.cpp:update_stunt_finish": {
    "rom": [
+    "$82:D96F",
     "$83:E8B6",
     "$83:E8DA"
    ],
    "wram": [
-    "$12E3"
+    "$12E3",
+    "$12E5"
    ]
   },
   "src/core/stunt_event.cpp:updates_per_tenth": {
    "rom": [
     "$81:C7DE"
+   ]
+  },
+  "src/core/stunt_event.hpp:rider_passes": {
+   "rom": [
+    "$81:8E53",
+    "$82:8EAB",
+    "$83:CBD8"
+   ],
+   "wram": [
+    "$0C6D",
+    "$0DE1"
    ]
   },
   "src/core/stunt_event.hpp:stunt_finish_announcement": {
@@ -15460,11 +15502,11 @@
   }
  },
  "totals": {
-  "addresses": 1140,
+  "addresses": 1143,
   "io_addresses": 5,
-  "native_symbols": 838,
-  "rom_addresses": 827,
+  "native_symbols": 840,
+  "rom_addresses": 829,
   "sram_addresses": 38,
-  "wram_addresses": 270
+  "wram_addresses": 271
  }
 }
