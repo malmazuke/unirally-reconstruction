@@ -33,6 +33,8 @@ constexpr unsigned ink_red_add = 13;
 constexpr std::size_t rider_palette_at = 352, opponent_palette_at = 384, sprite_palette_size = 32;
 // $82:D4DC: four bytes a rider.
 constexpr std::size_t colour_math_size = 4;
+// $82:DC3D: NEON's scenery number.
+constexpr unsigned neon_scenery = 14;
 
 // A character's sprite palette: the front end's asset 6 + character, the bytes the race
 // loader copies ($82:DD90-DDBC).
@@ -108,6 +110,26 @@ std::string classic_track_name(const ClassicContentPack& pack, ClassicRaceTrack 
     return name;
 }
 
+// R-0068: colours 96-111 as NOW PLAYING leaves them: its base palette's upper half from colour
+// 64 ($80:A858, front-end.asset.036), and the cycle $80:FA60 at phase 0, colour 111 - k taking
+// the cycle's word k.
+std::array<std::uint8_t, 32> now_playing_leftover_colours(const ClassicContentPack& pack) {
+    constexpr std::size_t base_from = 64, first_colour = 96, cycled_colours = 4;
+    const auto base = pack.entry("front-end.asset.036");
+    const auto cycle = pack.entry("front-end.cycle-colours");
+    std::array<std::uint8_t, 32> colours{};
+    const auto from = (first_colour - base_from) * 2U;
+    if (base.size() < from + colours.size() - 2U * cycled_colours || cycle.size() < 8)
+        throw std::invalid_argument("NOW PLAYING's palette is short");
+    std::copy_n(base.begin() + static_cast<std::ptrdiff_t>(from),
+                colours.size() - 2U * cycled_colours, colours.begin());
+    for (std::size_t k = 0; k < cycled_colours; ++k) {
+        colours[colours.size() - 2U * (k + 1U)] = cycle[2U * k];
+        colours[colours.size() - 2U * (k + 1U) + 1U] = cycle[2U * k + 1U];
+    }
+    return colours;
+}
+
 } // namespace
 
 void ClassicRaceHistoryTracker::reset() {
@@ -119,6 +141,8 @@ void ClassicRaceHistoryTracker::reset() {
     window_.reset();
     clock_.reset();
     transition_member_.reset();
+    neon_green_.reset();
+    on_screen_neon_green_.reset();
 }
 
 void ClassicRaceHistoryTracker::observe_update(const ZoomZooState& previous,
@@ -137,6 +161,13 @@ void ClassicRaceHistoryTracker::observe_update(const ZoomZooState& previous,
     if (!transition_member_)
         transition_member_ =
             classic_window_transition_member(classic_track_data(pack, updated.track));
+    // $83:CDB1 -> $83:CEC9 -> $83:D1CA, after the contact, in every update the pause menu does not
+    // divert (R-0068).
+    on_screen_neon_green_ = neon_green_;
+    const auto scenario = classic_race_scenario(updated.track);
+    if (scenario.neon_lighting && !zoom_zoo_update_was_paused(previous, updated))
+        neon_green_ = neon_green_step(neon_green_.value_or(0), updated.player_contact_palette,
+                                      pack.entry("presentation.neon.green-levels"));
     window_.observe_update(previous, updated, *transition_member_);
     clock_.observe_update(previous, updated);
     if (updated.result_updates || zoom_zoo_update_was_paused(previous, updated)) return;
@@ -182,7 +213,8 @@ classic_race_presentation_content(const ClassicContentPack& pack,
         // The result screen follows the race mode's accepted track (the
         // DRAGSTER assets for a one-run race, titled with the track's own
         // name); EAST's and FLAT FUN's results were compared with the original.
-        const auto scenery = track.index % 14U;
+        // $82:DC22-DC40: NEON's scenery is 14, past the other thirteen (R-0068).
+        const auto scenery = scenario.neon_lighting ? neon_scenery : track.index % 14U;
         const auto name =
             std::string("scenery.") + char('0' + scenery / 10U) + char('0' + scenery % 10U) + '.';
         content.track_name = classic_track_name(pack, track);
@@ -201,6 +233,10 @@ classic_race_presentation_content(const ClassicContentPack& pack,
             for (const auto byte :
                  content.result_track_name.first(content.result_track_name.size() - 1U))
                 (void)result_title_glyph(static_cast<char>(byte));
+        }
+        if (scenario.neon_lighting) {
+            content.neon_green_levels = pack.entry("presentation.neon.green-levels");
+            content.neon_menu_colours = now_playing_leftover_colours(pack);
         }
         content.geometry = track_geometry(content.track);
         return content;
@@ -318,16 +354,32 @@ std::array<std::uint8_t, 3> race_ink_rgb(const ClassicRacePresentationContent& c
 // scenery palettes carry MIKE's and BRONSEN's (R-0052, R-0061). The PPU scales each 5-bit channel
 // before output conversion (bsnes lightTable: luma*c+0.5), so the fade applies to CGRAM
 // words, as in the DRAGSTER result fade.
+// R-0068: NEON's NMI writes colour 0 black and colour 113 its lighting ($80:87BB-87D4) and skips
+// the palette cycle ($80:8816-881B), so colours 96-111 keep what the menus left.
+void apply_neon_colours(std::array<std::uint8_t, 512>& cgram,
+                        const ClassicRacePresentationContent& content, std::uint8_t green) {
+    constexpr std::size_t menu_colours_at = 96U * 2U, lit_colour_at = 113U * 2U;
+    std::copy(content.neon_menu_colours.begin(), content.neon_menu_colours.end(),
+              cgram.begin() + static_cast<std::ptrdiff_t>(menu_colours_at));
+    cgram[0] = cgram[1] = 0;
+    const auto lit = neon_colour(green);
+    cgram[lit_colour_at] = static_cast<std::uint8_t>(lit);
+    cgram[lit_colour_at + 1U] = static_cast<std::uint8_t>(lit >> 8U);
+}
+
 auto race_cgram(const ZoomZooState& state, const ClassicRacePresentationContent& content,
-                unsigned brightness) {
+                unsigned brightness, std::optional<std::uint8_t> neon_green) {
     auto cgram = build_race_cgram(content.palette, false);
     for (const auto& [palette, at] : {std::pair{content.rider_palette, rider_palette_at},
                                       std::pair{content.opponent_palette, opponent_palette_at}})
         if (palette.size() == sprite_palette_size)
             std::copy(palette.begin(), palette.end(),
                       cgram.begin() + static_cast<std::ptrdiff_t>(at));
-    apply_classic_race_palette_cycle(cgram, content.race_palette_cycle, state,
-                                     content.scenario.initialization_frame + 6U);
+    if (neon_green)
+        apply_neon_colours(cgram, content, *neon_green);
+    else
+        apply_classic_race_palette_cycle(cgram, content.race_palette_cycle, state,
+                                         content.scenario.initialization_frame + 6U);
     if (brightness < 15U) {
         for (std::size_t at = 0; at < cgram.size(); at += 2) {
             const auto faded = apply_snes_brightness(
@@ -339,6 +391,13 @@ auto race_cgram(const ZoomZooState& state, const ClassicRacePresentationContent&
     }
     return cgram;
 }
+
+// The race's colours at full brightness (`lit`, where the colour math adds) and as the fade
+// shows them (`shown`, at `brightness` 0-15).
+struct RaceColours {
+    std::array<std::uint8_t, 512> lit, shown;
+    unsigned brightness{};
+};
 
 // Where the race picture's backgrounds scroll, and the HUNTER effects the vblank that
 // opened it set up from the update before it (R-0052).
@@ -397,6 +456,14 @@ RaceScroll race_scroll(const ZoomZooState& state, const ClassicRacePresentationC
     return scroll;
 }
 
+// BG2's colour index at a screen pixel (0 where it is transparent).
+unsigned race_bg2_pixel(const std::array<std::uint8_t, 65536>& vram, const RaceScroll& scroll,
+                        int x, int y) {
+    return background_pixel(vram, 0xe000, true, true, 0x2000, false,
+                            static_cast<std::int16_t>(scroll.bg_x),
+                            static_cast<std::int16_t>(scroll.bg_y), x, y);
+}
+
 // BG2, then BG1 over it. $81:A304-A51B: the playfield is 16,384 coarse cells of 64 units in
 // the track's column count (256 by 64 for ZOOM ZOO, 1,024 by 16 for DRAGSTER). BG1 map
 // entries with bit 13 set are drawn above priority-2 OBJs; returns those pixels.
@@ -410,24 +477,27 @@ std::array<bool, 256 * 224> draw_race_backgrounds(RgbFrame& frame,
     const int columns = geometry.coarse_columns;
     const int world_height = (16384 / columns) * 64;
     std::array<bool, 256 * 224> bg1_above_objects{};
+    // R-0068: NEON's main screen has no BG2 ($80:87B6: BG1, BG3 and the objects), so the
+    // backdrop, colour 0, shows behind BG1.
+    const bool bg2_on_main = !content.scenario.neon_lighting;
     for (int y = 0; y < 224; ++y)
         for (int x = 0; x < 256; ++x) {
             // A mosaic block repeats its top-left pixel.
             const int mx = x - x % scroll.mosaic, my = y - y % scroll.mosaic;
-            const auto background = background_pixel(
-                vram, 0xe000, true, true, 0x2000, false, static_cast<std::int16_t>(scroll.bg_x),
-                static_cast<std::int16_t>(scroll.bg_y), mx, my);
-            pixel(frame, x, y, colour(cgram, background));
+            const auto background = bg2_on_main ? race_bg2_pixel(vram, scroll, mx, my) : 0U;
+            pixel(frame, x, y, colour(cgram, static_cast<std::uint8_t>(background)));
             if (scroll.hide_track) continue;
             // Screen row 0 is scanline 1, as in background_pixel's vertical +1. The BG1 map
             // wraps horizontally: the original's map fetch masks the column with `$0D51`
             // ($81:AD05), so past the playfield's right edge the picture continues from column
             // 0, as the sampler's contact does (TRACK-BREADTH, LOOPER). Rows off the playfield
             // are left blank, which is not yet checked against the original's row test at
-            // $81:AD22-AD2C.
-            const int world_x = (scroll.background_x + mx) & geometry.position_mask,
-                      world_y = scroll.flip ? scroll.background_y + 224 - my
-                                            : scroll.background_y + my + 1;
+            // $81:AD22-AD2C. The 65,536-unit playfield (`$0FF7`, track 37) skips that test
+            // ($81:AD1D-AD20, $81:AD71-AD74) and its rows take y's sixteen bits (R-0068).
+            const int world_x = (scroll.background_x + mx) & geometry.position_mask;
+            int world_y = scroll.flip ? scroll.background_y + 224 - my
+                                      : scroll.background_y + my + 1;
+            if (geometry.whole_height) world_y &= 0xffff;
             if (world_y < 0 || world_y >= world_height) continue;
             const auto selector = word(
                 track, 15 + static_cast<std::size_t>((world_y / 64) * columns + world_x / 64) * 2);
@@ -452,6 +522,36 @@ std::array<bool, 256 * 224> draw_race_backgrounds(RgbFrame& frame,
     return bg1_above_objects;
 }
 
+// The colour math a rider's pixels take: a race's channel 5 adds red where a rider covers the
+// BG3 ink (`caption_ink`); NEON's colour math subtracts the sub screen, BG2 (`neon_vram`, at the
+// race's BG2 scroll), from the objects of palettes 4-7 ($80:87AC-87B8, R-0068).
+struct RaceObjectMath {
+    const std::bitset<256 * 224>& caption_ink;
+    const std::array<std::uint8_t, 65536>* neon_vram{};
+    const RaceScroll* scroll{};
+};
+
+std::array<std::uint8_t, 3> rider_pixel(const RaceColours& colours, const RaceObjectMath& math,
+                                        std::uint8_t index, int x, int y) {
+    const auto at = static_cast<std::size_t>(y) * 256 + static_cast<std::size_t>(x);
+    std::uint16_t word{};
+    if (math.neon_vram) {
+        // The sub screen's backdrop, where BG2 is transparent, is the fixed colour, black.
+        const auto below = race_bg2_pixel(*math.neon_vram, *math.scroll, x, y);
+        const auto sub =
+            below ? colour_word(colours.lit, static_cast<std::uint8_t>(below)) : std::uint16_t{};
+        word = subtract_colour(colour_word(colours.lit, index), sub);
+    } else if (math.caption_ink.test(at)) {
+        const auto object = colour_word(colours.lit, index);
+        word = static_cast<std::uint16_t>((object & ~31U)
+                                          | std::min<unsigned>(31U, (object & 31U) + ink_red_add));
+    } else {
+        return colour(colours.shown, index);
+    }
+    return colour_word_rgb(
+        colours.brightness < 15U ? apply_snes_brightness(word, colours.brightness) : word);
+}
+
 // R-0036: the riders, opponent first, from the OBJ tiles and OAM the original published in
 // the previous update. Entry 98 (player, tile base 0, palette 3) has priority over entry 99
 // (opponent, base 0x88, palette 4); both use OBJ priority 2 outside a corkscrew. Where a rider
@@ -459,13 +559,19 @@ std::array<bool, 256 * 224> draw_race_backgrounds(RgbFrame& frame,
 // sprite_red + 13), green and blue untouched, measured over 35 such pixels on frame 2100 of
 // the M4-16 primary and the same on 2120, 2340 and 2600. The 13 is the red of CGRAM 27, the
 // colour the caption's attribute names, on both race palettes; which PPU configuration adds
-// it is not recovered, so the measured value is kept.
+// it is not recovered, so the measured value is kept. The fade (INIDISP) scales the sum, as it
+// scales every colour after the colour math: in the fade-in the sum is as dark as the rest
+// (bowl-lose 1340-1341, a stunt event's score field under the rider, R-0068).
 void draw_race_riders(RgbFrame& frame, const ZoomZooState& rider_source,
                       const ClassicRacePresentationContent& content,
-                      const ClassicRaceHistory* history, const std::array<std::uint8_t, 512>& cgram,
-                      bool flip, const std::array<bool, 256 * 224>& bg1_above_objects,
-                      const std::bitset<256 * 224>& caption_ink) {
+                      const ClassicRaceHistory* history, const RaceColours& colours, bool flip,
+                      const std::array<bool, 256 * 224>& bg1_above_objects,
+                      const RaceObjectMath& math) {
     for (int rider = 1; rider >= 0; --rider) {
+        // R-0068: a stunt event's setup sets entry 99's ninth x bit (`$15A3` = 0xE5,
+        // $82:D789-D797) and the opponent's object writer, part of its skipped update, never
+        // clears it, so the opponent stays at the setup's x 0x60 - 256, off the screen.
+        if (rider == 1 && content.scenario.stunt_event) continue;
         const auto& source = rider_source.movement.riders[static_cast<std::size_t>(rider)];
         auto oam =
             project_rider_oam(source.motion.x, source.motion.y, rider_source.race.camera.x,
@@ -478,7 +584,9 @@ void draw_race_riders(RgbFrame& frame, const ZoomZooState& rider_source,
             history ? history->overlays.pose[static_cast<std::size_t>(rider)] : std::nullopt;
         const auto pixels =
             compose_rider_object(content.riders, source.pose.pose_index, overlay, oam.clip);
-        const unsigned object_palette = 128U + (rider ? 4U : 3U) * 16U;
+        // NEON's update gives the player's object palette 7 ($83:D1DC-D1E3, R-0068).
+        const unsigned palette = rider ? 4U : content.scenario.neon_lighting ? 7U : 3U;
+        const unsigned object_palette = 128U + palette * 16U;
         // R-0047: through the corkscrew the object's priority is toggled to 3
         // ($1516/$151A bit 4), above every BG1 tile.
         const bool raised =
@@ -486,19 +594,39 @@ void draw_race_riders(RgbFrame& frame, const ZoomZooState& rider_source,
         draw_rider_object(pixels, oam, [&](int x, int y, std::uint8_t value) {
             const auto at = static_cast<std::size_t>(y) * 256 + static_cast<std::size_t>(x);
             if (bg1_above_objects[at] && !raised) return;
+            // NEON: BG3's ink (priority tiles) is in front of the objects, which a race's
+            // colour math shows through (rider_pixel); NEON's leaves BG3 out (R-0068).
+            if (math.neon_vram && math.caption_ink.test(at)) return;
             const auto index = static_cast<std::uint8_t>(object_palette + value);
-            if (!caption_ink.test(at)) {
-                pixel(frame, x, y, colour(cgram, index));
-                return;
-            }
-            const auto word = colour_word(cgram, index);
-            const auto added =
-                static_cast<std::uint16_t>(std::min<unsigned>(31U, (word & 31U) + ink_red_add));
-            pixel(frame, x, y,
-                  {channel8(added), channel8(static_cast<std::uint16_t>((word >> 5U) & 31U)),
-                   channel8(static_cast<std::uint16_t>((word >> 10U) & 31U))});
+            pixel(frame, x, y, rider_pixel(colours, math, index, x, y));
         });
     }
+}
+
+// NEON's green level for the picture of `drawn` (R-0068): the history's, from the setup's 0;
+// a single state has none, so it takes the level the lighting settles at for the palette under
+// the player. Nothing on another track.
+std::optional<std::uint8_t> neon_green_on_screen(const ZoomZooState& drawn,
+                                                 const ClassicRacePresentationContent& content,
+                                                 const ClassicRaceHistory* history) {
+    if (!content.scenario.neon_lighting) return std::nullopt;
+    if (history) return history->neon_green.value_or(0);
+    if (drawn.player_contact_palette >= content.neon_green_levels.size())
+        throw std::invalid_argument("NEON level table is short");
+    return content.neon_green_levels[drawn.player_contact_palette];
+}
+
+// R-0040: the countdown and winner windows show colour 0 through colour math. With history
+// the member is the one the vblank published for this picture; a single restored state
+// derives it from its counters and frame (exact when no pause intervened).
+std::optional<unsigned> race_window_member(const ZoomZooState& state,
+                                           const ClassicRacePresentationContent& content,
+                                           const ClassicRaceHistory* history) {
+    if (content.window_tables.empty()) return std::nullopt;
+    if (history && history->window_published) return history->window_table;
+    return classic_window_table_index(state, content.scenario.initialization_frame + 6U,
+                                      history ? history->opponent_finish_frame : std::nullopt,
+                                      content.window_transition_member);
 }
 
 } // namespace
@@ -535,8 +663,17 @@ RgbFrame render_classic_race(const ZoomZooState& state,
     // made mid-fade frames too bright: green 15 at brightness 8 is 47 in the original, not 64.
     const unsigned prior_fade = classic_race_prior_fade(state, previous_update, scenario);
     const auto brightness = prior_fade > 15U ? prior_fade - 15U : 0U;
-    const auto cgram = race_cgram(state, content, brightness);
-    const auto bg3_ink = race_ink_rgb(content, brightness);
+    // Picture N shows the objects of update N-1, like the scroll; without a previous update
+    // the riders are drawn from this state, one update ahead.
+    const auto& rider_source = previous_update ? *previous_update : state;
+    const auto neon_green = neon_green_on_screen(rider_source, content, history);
+    const RaceColours colours{race_cgram(state, content, 15U, neon_green),
+                              race_cgram(state, content, brightness, neon_green), brightness};
+    const auto& cgram = colours.shown;
+    // NEON's NMI turns channel 5, the rider's colour math on the ink, off ($80:87A7) and its
+    // colour math leaves BG3 out: the ink is colour 27 itself (R-0068).
+    const auto bg3_ink =
+        neon_green ? colour(cgram, bg3_ink_colour) : race_ink_rgb(content, brightness);
     // Authored UI has no CGRAM entry; fade it through the same 1.5 output curve.
     const auto ui_scale = std::pow(brightness / 15.0, 1.5);
     const auto ui = [ui_scale](std::array<std::uint8_t, 3> rgb) {
@@ -547,22 +684,11 @@ RgbFrame render_classic_race(const ZoomZooState& state,
     const std::array<std::uint8_t, 3> ink = ui({255, 240, 220});
     const auto scroll = race_scroll(state, content, previous_update, history);
     const auto bg1_above_objects = draw_race_backgrounds(frame, vram, cgram, content, scroll);
-    // R-0040: the countdown and winner windows show colour 0 through colour math. With history
-    // the member is the one the vblank published for this picture; a single restored state
-    // derives it from its counters and frame (exact when no pause intervened).
-    const auto window_index =
-        content.window_tables.empty() ? std::optional<unsigned>{}
-        : history && history->window_published
-            ? history->window_table
-            : classic_window_table_index(state, scenario.initialization_frame + 6U,
-                                         history ? history->opponent_finish_frame : std::nullopt,
-                                         content.window_transition_member);
+    const auto window_index = race_window_member(state, content, history);
     const auto window_colour = colour(cgram, 0);
-    // Picture N shows the objects of update N-1, like the scroll; without a previous update
-    // the riders are drawn from this state, one update ahead. The caption (R-0042) and the HUD
-    // (R-0043) are BG3, drawn over the track and under the riders; where no sprite covers the
-    // ink it is the flat colour, which matches the original on every other measured frame.
-    const auto& rider_source = previous_update ? *previous_update : state;
+    // The caption (R-0042) and the HUD (R-0043) are BG3, drawn over the track and under the
+    // riders; where no sprite covers the ink it is the flat colour, which matches the original
+    // on every other measured frame.
     std::bitset<256 * 224> caption_ink;
     const auto hud =
         history ? std::optional<ClassicHudPublished>(history->published_hud) : std::nullopt;
@@ -570,8 +696,9 @@ RgbFrame render_classic_race(const ZoomZooState& state,
     draw_classic_hud(frame, rider_source, content,
                      history ? history->opponent_finish_frame : std::nullopt, hud, bg3_ink,
                      caption_ink);
-    draw_race_riders(frame, rider_source, content, history, cgram, scroll.flip, bg1_above_objects,
-                     caption_ink);
+    const RaceObjectMath math{caption_ink, neon_green ? &vram : nullptr, &scroll};
+    draw_race_riders(frame, rider_source, content, history, colours, scroll.flip,
+                     bg1_above_objects, math);
     // Every member covers both objects as well as the backgrounds: inside the window the
     // original shows the flat window colour and nothing else (ZOOM-ZOO-WINDOW-EFFECTS:
     // start-line frames 1450, 1583 and 1649 of the M4-16 primary and countdown-pause originals

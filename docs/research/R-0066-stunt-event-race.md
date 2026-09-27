@@ -30,7 +30,9 @@ for a stunt event until the result exists.
 - Scenario: no laps (`$0EFB/$0EFD` = 0 + 1, one start-line crossing), not a tour race, BRONSEN in
   the opponent's slot (the medal's opponent, SILVIA or GOLDWYN, after a medal; on HUNTER's tour too,
   as `$80:B351-B35F` skip the ANTI-UNI assignment `$80:B361` in mode 2 [L]; GOLDWYN in the track 42
-  capture [C]). HUNTER's stunt event keeps `$131F` = 1 and the tag effects [C].
+  capture [C]). HUNTER's stunt event keeps `$131F` = 1 [C]; it is NEON
+  (track 42, `$12D1`), which runs its lighting in place of the tag effects (R-0068; this record first said
+  it kept the tag effects, which the idle capture could not tell).
 - Initialization boundaries on the laboratory's menu path [C]: 2 at 1335, 12 at 1343, 22 at 1331,
   32 at 1349 (a cold start), 7 at 1336, 17 at 1330, 27 at 1360, 37 at 1368, 42 at 1399 (LOCKED-TOURS'
   unlocked path).

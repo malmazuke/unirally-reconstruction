@@ -23,7 +23,7 @@ target_link_libraries(unirally_movement PUBLIC unirally_contact unirally_input_t
 add_executable(movement_runner movement_runner.cpp)
 target_link_libraries(movement_runner PRIVATE unirally_movement)
 add_library(unirally_presentation STATIC presentation.cpp picture.cpp result_screen.cpp dragster_picture.cpp
-            race_windows.cpp race_hud.cpp rider_object.cpp rider_look.cpp snes_screen.cpp
+            race_windows.cpp race_hud.cpp neon_lighting.cpp rider_object.cpp rider_look.cpp snes_screen.cpp
             text_printer.cpp front_end.cpp rider_menu.cpp screen_slide.cpp tour_menu.cpp
             track_menu.cpp now_playing.cpp race_result.cpp lap_result.cpp stunt_result.cpp
             award.cpp

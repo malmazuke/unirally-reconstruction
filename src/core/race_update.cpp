@@ -724,6 +724,16 @@ RiderOutcome update_rider(const ZoomZooState& state, ZoomZooState& next, unsigne
     return outcome;
 }
 
+// $81:8B75-8BB3: from 7, the lowest palette (bits 10-12 of the cell word) among the samples.
+// The original keeps it only while `$12D1` is set (NEON); nothing in the race reads it.
+std::uint8_t lowest_palette(const TrackSamples& samples) {
+    constexpr unsigned palette_shift = 10, palette_mask = 7;
+    unsigned lowest = palette_mask;
+    for (const auto sample : samples)
+        lowest = std::min(lowest, (unsigned{sample} >> palette_shift) & palette_mask);
+    return static_cast<std::uint8_t>(lowest);
+}
+
 // $81:8CFC / $81:8E43: each rider's contact with the track, unless the corkscrew carries it
 // ($0DFB/$0DFD). $81:91F4-920C clears leading support on the auxiliary boundary return,
 // even when an earlier probe established support.
@@ -736,8 +746,9 @@ void update_rider_contact(const ZoomZooState& state, ZoomZooState& next, unsigne
     const auto geometry = track_geometry(sampling.track);
     const auto samples = sample_track(sampling, points, rider.motion.x, rider.motion.y,
                                       geometry.coarse_columns, geometry.whole_height);
-    const auto summary = summarize_vertical_contact(content.movement.flat_contact, points, samples,
-                                                    rider.motion.x, rider.motion.y);
+    const auto summary =
+        summarize_vertical_contact(content.movement.flat_contact, points, samples, rider.motion.x,
+                                   rider.motion.y, classic_race_scenario(state.track).neon_lighting);
     if (content.slope_coefficients.size() != 18 && content.slope_coefficients.size() != 128)
         throw std::invalid_argument("ZOOM ZOO slope coefficients missing");
     const bool surface_mode = next.surface[index].mode != 0;
@@ -754,6 +765,7 @@ void update_rider_contact(const ZoomZooState& state, ZoomZooState& next, unsigne
         rider.pose.pose_index, rider.pose.reflected);
     next.surface[index].leading_support =
         rider.contact.auxiliary_flag == 1 ? false : summary.leading_support;
+    if (index == 0) next.player_contact_palette = lowest_palette(samples);
     if (state.native_initialization)
         next.rolls[index].support_count_mirror = rider.contact.unsupported_count;
     observe_track_markers(rider.progress, samples);

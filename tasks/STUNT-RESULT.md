@@ -2,7 +2,7 @@
 
 ## Assignment
 
-- Status: **in review**. Queued 27 September 2026 (UTC) by STUNT-EVENT-RACE; claimed 27 September
+- Status: **accepted** (tier 2, pull request #40, merged in `0173cbb`; approved after one returned review). Queued 27 September 2026 (UTC) by STUNT-EVENT-RACE; claimed 27 September
   2026 at 06:35Z by the Claude Code desktop session that ran STUNT-EVENT-RACE, on `e131469`. The
   implementation worker started on STUNT-EVENT-RACE's branch while it was in review; its commits
   were moved onto this claim.

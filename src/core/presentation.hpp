@@ -164,7 +164,22 @@ struct ClassicHudText {
     // signed split against the first rider through the same checkpoint in
     // `+M:SS:t` (`$81:EF5E-$81:F030`, `$81:F1B5-$81:F288`; R-0044).
     std::string player_cells, opponent_cells;
+    // A stunt event's score field (R-0068), seven cells from column 23 of rows 24-25: the score
+    // right-aligned in columns 23-25, `/` and the qualifying score from column 27. Empty in a
+    // race.
+    std::string score_field;
 };
+// R-0068: a stunt event's score cells, columns 23-25 of rows 24-25, after the one-player NMI
+// writes the score ($81:F297-F300). `$81:C374-C3CA` splits the score into hundreds, tens and
+// units and marks the hundreds cell unwritten below 100 and the tens cell below 10; the NMI
+// leaves an unwritten cell as it was, so `held` shows through there. Each digit is an index
+// into the character table `$80:81F4` (0-9 the digits, 10-35 the letters, R-0043), so a
+// hundreds count past 9 shows a letter; beyond the letters the domain ends (throws).
+std::array<char, 3> stunt_score_cells(std::uint16_t score, std::array<char, 3> held);
+// `$81:CD8D-CE6B`, the race setup's qualifying score from column 27: three cells, the
+// hundreds, tens and units, or below 100 the tens and units then a blank. The tens digit is
+// always written, so a qualifying score under 10 would read `0u`.
+std::string stunt_qualifying_text(std::uint16_t qualifying_score);
 // RACE-OFFSCREEN-ARROW: the one-player race's direction arrow. It shows while
 // the player is behind, points the way the player's track marker runs, and its
 // length in chevrons (0 to 3) tells how far behind. The side arrows sit in rows
@@ -192,6 +207,8 @@ struct ClassicHudPublished {
     std::optional<ClassicRaceArrow> arrow{};
     // The caption table entry (1-255) the caption cells show, 0 while blank.
     unsigned caption_event{};
+    // A stunt event's score cells, columns 23-25: the setup's `0` until the NMI writes a score.
+    std::array<char, 3> score_cells{' ', ' ', '0'};
     bool operator==(const ClassicHudPublished&) const = default;
 };
 // $81:E9AC-$81:E9DB: the arrow's length for a lead of `lead` transitions and
@@ -276,10 +293,11 @@ ClassicHudText classic_race_hud_text(const ZoomZooState& previous_update,
 // The one-player NMI ($81:E8C9) redraws the direction arrow before it services
 // the queue, and only after an update whose progress phase `$0302` is set: every
 // other picture keeps the arrow of the picture before. The caption is the
-// queue's last task (`$0EE7`, $81:F30C), after the opponent's cells (the stunt
-// event's field, which comes between, has no native scenario), so a new caption
-// waits a picture behind each field still pending, usually the clock's tenth
-// (RACE-OFFSCREEN-ARROW).
+// queue's last task (`$0EE7`, $81:F30C), after the opponent's cells and a stunt
+// event's score field (`$12C9`, $81:F297, R-0068), so a new caption waits a picture
+// behind each field still pending, usually the clock's tenth (RACE-OFFSCREEN-ARROW).
+// A stunt event asks for the score field on the update its score changes, which is
+// the update a trick's caption is taken, so the caption follows it a picture later.
 class ClassicRaceHudClock {
 public:
     void reset() {
@@ -290,6 +308,7 @@ public:
         race_nmis_ = 0;
         caption_buffer_ = 0;
         consumed_since_blank_ = false;
+        score_buffer_ = 0;
     }
     void observe_update(const ZoomZooState& previous, const ZoomZooState& updated);
     // The cells as the picture drawn from the earlier of the two states last
@@ -300,7 +319,10 @@ public:
 
 private:
     struct Pending {
-        bool left{}, clock_blank{}, caption{};
+        // `clock_rewrite`: a stunt event's clock stopping sets `$034D` without new digits
+        // ($81:C7EC, then $81:C830 skips the cells' update), so the NMI rewrites what the cells
+        // hold and spends the update. `score`: `$12C9`, a stunt event's score field.
+        bool left{}, clock_blank{}, clock_rewrite{}, score{}, caption{};
         std::array<ClassicHudCellRequest, 2> cells{};
     };
     ClassicHudPublished latest_{}, on_screen_{};
@@ -313,6 +335,8 @@ private:
     // been consumed since the last blank was written.
     unsigned caption_buffer_{};
     bool consumed_since_blank_{};
+    // `$12B9`: the score the update last split into `$12BD/$12C1/$12C5` for the NMI.
+    std::uint16_t score_buffer_{};
     // The clock the first rider through each slot stored, minutes, tens,
     // seconds, tenths. Indexed like `checkpoint_seen`, laps remaining * 4 +
     // checkpoint; the original keeps four bytes a slot at `$100D` + 16 * laps
@@ -321,6 +345,7 @@ private:
     // The two halves of observe_update: what this update asks the HUD queue for, and the
     // one field the queue services.
     void request_fields(const ZoomZooState& previous, const ZoomZooState& updated);
+    void request_stunt_fields(const ZoomZooState& previous, const ZoomZooState& updated);
     ClassicHudCellRequest crossing_cell(const ZoomZooState& previous, std::size_t rider,
                                         const ZoomZooState& updated);
     void service_one_field(const ZoomZooState& updated);
@@ -353,6 +378,9 @@ struct ClassicRaceHistory {
     // screen. The riders' OAM vertical-flip bit outlives the blink by an update:
     // the NMI resets the attributes ($80:876C) only after its OAM transfer.
     bool hunter_flip_prior{};
+    // R-0068: NEON's green level (`$12D3`) as the update before the picture left it; the NMI
+    // writes it into colour 113. Nothing for a caller without the history.
+    std::optional<std::uint8_t> neon_green{};
 };
 // The countdown's transition member for a track: 5 + `$1229`, which
 // $83:CC05-CC08 latches at race initialization from the player's reflection
@@ -367,8 +395,12 @@ unsigned classic_window_transition_member(std::span<const std::uint8_t> decoded_
 // DRAGSTER and ZOOM ZOO; the clock ticks through a pause, the drivers do not
 // run through one), and the
 // track's transition member above. Nothing once the word is zero.
+// A stunt event (R-0068) skips each digit's wait ($83:E5E2, $83:E634, $83:E686, $83:E6E8):
+// the transition member never shows, each phase shows its digit from its first update, and
+// GO from 100.
 std::optional<unsigned> classic_countdown_window(std::uint16_t countdown_before, bool parity_set,
-                                                 unsigned transition_member);
+                                                 unsigned transition_member,
+                                                 bool stunt_event = false);
 // The channel-6 window pointer `$11FD` as the original keeps it (R-0040,
 // DRAGSTER-WINDOW-PAUSE), followed update by update from the shared race
 // state alone. Each rider's finish arms that rider's banner driver
@@ -415,9 +447,9 @@ public:
                         const ClassicContentPack& pack);
     // History for the update that produced the `previous_update` being drawn.
     ClassicRaceHistory on_screen() const {
-        return {on_screen_,           opponent_finish_frame_, window_.observed(),
-                window_.published(),  clock_.published(),     on_screen_barf_,
-                on_screen_flip_prior_};
+        return {on_screen_,          opponent_finish_frame_, window_.observed(),
+                window_.published(), clock_.published(),     on_screen_barf_,
+                on_screen_flip_prior_, on_screen_neon_green_};
     }
     const RiderLookState& look() const { return look_; }
 
@@ -431,6 +463,10 @@ private:
     // The track's countdown transition member, a constant of the race read
     // from the pack on the first update after a reset.
     std::optional<unsigned> transition_member_{};
+    // NEON's green level after the latest observed update ($83:D1CA runs in the update, the NMI
+    // after it shows it) and after the update on screen; the setup leaves 0. Nothing on another
+    // track.
+    std::optional<std::uint8_t> neon_green_{}, on_screen_neon_green_{};
 };
 // The content one track's race is drawn from, selected by track from the pack.
 // Every span is pack content; the scenario and geometry come from the engine.
@@ -472,7 +508,28 @@ struct ClassicRacePresentationContent {
     // The player's four bytes of `$82:D4DC`: COLDATA's writes and CGADSUB, the colour math
     // HDMA channel 5 applies to the BG3 ink ($82:D57F-D5FB, R-0061).
     std::span<const std::uint8_t> rider_colour_math;
+    // NEON (R-0068): the green levels by palette (`$83:D1C3`, eight bytes); empty elsewhere.
+    std::span<const std::uint8_t> neon_green_levels;
+    // NEON: colours 96-111, which its race never loads or cycles, as the menus left them (R-0068):
+    // NOW PLAYING's colours 96-107 (front-end.asset.036 from colour 64) and the front end's
+    // cycle of 108-111 ($80:FA60) at its phase. The app passes the front end's own; the content
+    // alone gives NOW PLAYING's with the cycle at phase 0, where the laboratory's menu route
+    // leaves it.
+    std::array<std::uint8_t, 32> neon_menu_colours{};
 };
+// R-0068, NEON (track 42 in one-player play, `$12D1`): $83:D1EE-D247 moves the green level
+// `$12D3` towards `levels[palette]` (presentation.neon.green-levels, `$83:D1C3`; `palette` is the
+// player's `$12CF`), a quarter of the distance a race update, at least one, in the original's
+// eight-bit arithmetic. The table's eighth byte is the next routine's first opcode, which a
+// palette of 7 reads.
+std::uint8_t neon_green_step(std::uint8_t green, std::uint8_t palette,
+                             std::span<const std::uint8_t> levels);
+// $83:D24A-D271: colour 113 for a green level (`$12D5`): red 15, blue 30, green the level's low
+// five bits.
+std::uint16_t neon_colour(std::uint8_t green);
+// NEON's colour math (`$2131` = 0x92, $80:87AC): the objects of palettes 4-7 less the sub
+// screen, channel by channel, at least 0.
+std::uint16_t subtract_colour(std::uint16_t object, std::uint16_t below);
 // $82:D57F-D5FB: HDMA channel 5 writes the rider's COLDATA bytes (bits 5-7 choose red, green
 // and blue, bits 0-4 the intensity) and CGADSUB (bit 7 subtracts). With CGWSEL 0x02 and BG3
 // enabled the race's ink is CGRAM 27 (`ink`) plus, or minus, that fixed colour, clamped per

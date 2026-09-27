@@ -61,15 +61,35 @@ Probe preprocess(const FlatContactContent& content, SamplePoint point, std::uint
             static_cast<std::uint8_t>(horizontal ? (mirrored ? 3 : 4)
                                                  : ((descriptor & 0x8000U) ? 1 : 0))};
 }
+// R-0068: an empty cell of palette 7 is a probe of penetration 0x7F whose angle $81:8CDD reads
+// from `$7E:A001 + X`. Every probe of the loop loads X from `$12D1` at $81:8BA0 and an empty cell
+// never changes it, so the angle is the tile-column table's byte 1 + `$12D1`: byte 1 (0 in every
+// track's table) on every track but NEON, byte 2 on NEON, whose `$12D1` is 1. It is negated
+// ($81:8CE1) when the latest probe of the contact with a tile was mirrored (`$0202`).
+std::uint8_t empty_probe_angle(const FlatContactContent& content, bool neon, bool mirrored) {
+    const unsigned x = neon ? 1U : 0U; // `$12D1`
+    const auto angle = byte(content.columns, 1U + x);
+    return mirrored ? static_cast<std::uint8_t>(0U - angle) : angle;
+}
+
 } // namespace
 
 VerticalContactSummary summarize_vertical_contact(const FlatContactContent& content,
                                                   const CollisionPoints& points,
                                                   const TrackSamples& samples, std::uint16_t x,
-                                                  std::uint16_t y) {
+                                                  std::uint16_t y, bool neon) {
     std::array<Probe, 10> probes{};
-    for (std::size_t i = 0; i < probes.size(); ++i)
+    // $81:8B93-8CF0 takes the probes from the tenth down; `$0202` is the latest tiled probe's
+    // mirror bit ($81:8BEB). Before a tiled probe in the contact it holds whatever the last of
+    // the routines that use it as scratch left; native takes it clear (not covered, R-0068).
+    bool mirrored = false;
+    for (std::size_t i = probes.size(); i-- > 0;) {
         probes[i] = preprocess(content, points[i], samples[i], x, y);
+        if ((samples[i] & 0x03ffU) != 0)
+            mirrored = (samples[i] & 0x4000U) != 0;
+        else if (probes[i].penetration == 0x7fU)
+            probes[i].angle = empty_probe_angle(content, neon, mirrored);
+    }
     VerticalContactSummary result{};
     std::uint8_t support = probes[0].penetration == 0xa0U ? 0xff : probes[0].penetration,
                  angle = 0xe0;
@@ -85,9 +105,13 @@ VerticalContactSummary summarize_vertical_contact(const FlatContactContent& cont
             result.horizontal_penetration = probes[0].penetration;
             result.horizontal_direction = probes[0].direction;
         }
-        angle = probes[0].angle;
-        result.selected_word = probes[0].descriptor;
-        result.selected_high = static_cast<std::uint8_t>(probes[0].descriptor >> 8U);
+        // $81:900E-9025: the first probe is selected only when its angle is not below the
+        // 0xE0 `$02BE` starts from; NEON's empty probes of angle 0xA0 are not (R-0068).
+        if (nonnegative_difference(probes[0].angle, angle)) {
+            angle = probes[0].angle;
+            result.selected_word = probes[0].descriptor;
+            result.selected_high = static_cast<std::uint8_t>(probes[0].descriptor >> 8U);
+        }
     }
     for (std::size_t i = 1; i < probes.size(); ++i) {
         const auto& probe = probes[i];

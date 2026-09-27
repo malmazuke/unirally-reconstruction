@@ -292,7 +292,7 @@ int main(int argc, char **argv) try {
   if(!zoom_zoo && content.pack.optional_entry("zoom.landing-response-matrices").empty())
     throw std::invalid_argument("DRAGSTER and the other tracks need the full content pack for jumps, brakes, reversal and tricks; "
                                 "create it from your ROM with: python3 tools/project.py frontend run --track dragster "
-                                "--pack local/classic-pal-crawler-tracks-v25.pack --rom PATH");
+                                "--pack local/classic-pal-crawler-tracks-v26.pack --rom PATH");
   auto zoom_content=unirally::classic_race_content(content.pack,track);
   auto race_presentation=unirally::classic_race_presentation_content(content.pack,track);
   auto zoom_state=unirally::classic_race_start(zoom_content,unirally::classic_race_scenario(track));
@@ -467,6 +467,8 @@ int main(int argc, char **argv) try {
           }
           // The pairing's palettes and ink, whatever the track.
           race_presentation=unirally::classic_race_presentation_content(content.pack,scenario);
+          // NEON shows the colours the menus left (R-0068).
+          if(scenario.neon_lighting) race_presentation.neon_menu_colours=front_end->race_leftover_colours();
           SDL_SetWindowTitle(window.get(),window_title(race_presentation.track_name).c_str());
           // A fresh race each time: after a result NOW PLAYING can choose the same track again.
           zoom_state=unirally::classic_race_start(zoom_content,scenario);

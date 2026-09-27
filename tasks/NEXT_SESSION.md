@@ -5,6 +5,10 @@ push the task branch, open a pull request from the template, merge with
 `gh pr merge --merge` once its checks are green and the review is done. `main`
 refuses direct pushes. The checks run on pull requests only.
 
+**Status on 27 September 2026 UTC (STUNT-HUD): start the main menu's other modes
+(COVERAGE-ROADMAP: 2P, VS, LEAGUE, OPTIONS, the demo).** The one-player game, stunt events
+included, plays natively from power-on (R-0066 to R-0068). Rebuild the pack as v26.
+
 **Status on 27 September 2026 UTC (STUNT-RESULT): start [STUNT-HUD](STUNT-HUD.md), then the main
 menu's other modes (COVERAGE-ROADMAP: 2P, VS, LEAGUE, OPTIONS, the demo).** Stunt events play
 through from the menus (R-0066, R-0067). Rebuild the pack as v25.
