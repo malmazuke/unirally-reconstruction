@@ -270,6 +270,12 @@
    ],
    "native": [
     "src/core/input_timer.cpp:sample_controller",
+    "src/core/neon_lighting.cpp:(file)",
+    "src/core/presentation.cpp:RaceObjectMath",
+    "src/core/presentation.cpp:apply_neon_colours",
+    "src/core/presentation.cpp:draw_race_backgrounds",
+    "src/core/presentation.cpp:render_classic_race",
+    "src/core/presentation.hpp:subtract_colour",
     "src/core/race_update.cpp:run_skipped_update"
    ],
    "observed_entries": {},
@@ -1145,6 +1151,7 @@
     "src/core/award.cpp:award_return_frame",
     "src/core/front_end.hpp:FrontEndScreen",
     "src/core/front_end_screens.hpp:first_rider_palette, base_palette_low, base_palette_high",
+    "src/core/presentation.cpp:now_playing_leftover_colours",
     "src/core/race_result.cpp:race_result_exit_frame",
     "src/core/tour_menu.cpp:return_to_tour_menu",
     "src/core/tour_menu.cpp:reveal_frames",
@@ -2868,7 +2875,9 @@
    ],
    "native": [
     "src/core/front_end.cpp:step_palette_cycle",
-    "src/core/front_end.hpp:PaletteCycle"
+    "src/core/front_end.hpp:PaletteCycle",
+    "src/core/presentation.cpp:now_playing_leftover_colours",
+    "src/core/presentation.hpp:ClassicRacePresentationContent::neon_menu_colours"
    ],
    "observed_entries": {},
    "start": "$80:FA60",
@@ -3600,7 +3609,10 @@
     "NmX"
    ],
    "native": [
-    "src/core/track_progress.cpp:observe_track_markers"
+    "src/core/race_update.cpp:lowest_palette",
+    "src/core/track_progress.cpp:observe_track_markers",
+    "src/core/vertical_contact.cpp:summarize_vertical_contact",
+    "src/core/zoom_zoo_movement.hpp:ZoomZooState::player_contact_palette"
    ],
    "observed_entries": {},
    "start": "$81:8B75",
@@ -3622,7 +3634,12 @@
    ],
    "native": [
     "src/core/flat_contact.cpp:preprocess",
-    "src/core/flat_contact.cpp:tile_index"
+    "src/core/flat_contact.cpp:tile_index",
+    "src/core/race_update.cpp:lowest_palette",
+    "src/core/track_progress.cpp:observe_track_markers",
+    "src/core/vertical_contact.cpp:neon_empty_probe_angle",
+    "src/core/vertical_contact.cpp:summarize_vertical_contact",
+    "src/core/zoom_zoo_movement.hpp:ZoomZooState::player_contact_palette"
    ],
    "observed_entries": {},
    "start": "$81:8B96",
@@ -3641,6 +3658,11 @@
    "end": "$81:8CF3",
    "mode_at_entry": [
     "NmX"
+   ],
+   "native": [
+    "src/core/track_progress.cpp:observe_track_markers",
+    "src/core/vertical_contact.cpp:neon_empty_probe_angle",
+    "src/core/vertical_contact.cpp:summarize_vertical_contact"
    ],
    "observed_entries": {},
    "start": "$81:8CDD",
@@ -3701,6 +3723,7 @@
    ],
    "native": [
     "src/core/race_update.cpp:update_rider_contact",
+    "src/core/rider_look.cpp:advance_rider_look",
     "src/core/rider_look.hpp:advance_rider_look",
     "src/core/stunt_event.hpp:rider_passes"
    ],
@@ -4452,6 +4475,7 @@
     "NMX"
    ],
    "native": [
+    "src/core/presentation.cpp:draw_race_backgrounds",
     "src/core/race_setup.cpp:track_geometry"
    ],
    "observed_entries": {},
@@ -4479,6 +4503,7 @@
     "NMX"
    ],
    "native": [
+    "src/core/presentation.cpp:draw_race_backgrounds",
     "src/core/race_setup.cpp:track_geometry"
    ],
    "observed_entries": {},
@@ -5389,6 +5414,11 @@
     "NMx",
     "Nmx"
    ],
+   "native": [
+    "src/core/presentation.hpp:stunt_score_cells",
+    "src/core/race_hud.cpp:ClassicRaceHudClock::request_stunt_fields",
+    "src/core/race_hud.cpp:decimal_cells"
+   ],
    "observed_entries": {},
    "start": "$81:C357",
    "static_entries": {
@@ -5787,6 +5817,8 @@
     "NMX"
    ],
    "native": [
+    "src/core/presentation.hpp:ClassicRaceHudClock::Pending::left, ClassicRaceHudClock::Pending::clock_blank, ClassicRaceHudClock::Pending::clock_rewrite, ClassicRaceHudClock::Pending::score, ClassicRaceHudClock::Pending::caption",
+    "src/core/race_hud.cpp:classic_hud_timer",
     "src/core/race_state_io.cpp:stopped_stunt_clock",
     "src/core/stunt_event.cpp:count_digit_down",
     "src/core/stunt_event.cpp:count_down_tenth",
@@ -5997,6 +6029,9 @@
     "Nmx"
    ],
    "native": [
+    "src/core/presentation.hpp:stunt_qualifying_text",
+    "src/core/race_hud.cpp:decimal_cells",
+    "src/core/race_hud.cpp:stunt_qualifying_text",
     "src/core/race_setup.cpp:start_countdown, base_speed_cap",
     "src/core/zoom_zoo_movement.hpp:ZoomZooRaceState::checkpoint_seen"
    ],
@@ -6175,6 +6210,9 @@
    "end": "$81:D816",
    "mode_at_entry": [
     "NMX"
+   ],
+   "native": [
+    "src/core/race_hud.cpp:classic_hud_left_field"
    ],
    "observed_entries": {},
    "start": "$81:D771",
@@ -7053,8 +7091,10 @@
    ],
    "native": [
     "src/core/presentation.hpp:ClassicRaceHudClock",
+    "src/core/presentation.hpp:stunt_score_cells",
     "src/core/race_hud.cpp:ClassicRaceHudClock::service_one_field",
-    "src/core/race_hud.cpp:draw_classic_caption"
+    "src/core/race_hud.cpp:draw_classic_caption",
+    "src/core/race_hud.cpp:stunt_score_cells"
    ],
    "observed_entries": {},
    "start": "$81:F28B",
@@ -10278,6 +10318,7 @@
     "NMx"
    ],
    "native": [
+    "src/core/presentation.cpp:draw_race_riders",
     "src/core/race_setup.cpp:start_countdown, base_speed_cap"
    ],
    "observed_entries": {},
@@ -10362,6 +10403,7 @@
     "src/core/front_end.hpp:OnePlayerRecords::tutorial_bits",
     "src/core/race_setup.cpp:classic_crawler_zoom_zoo_start",
     "src/core/race_setup.cpp:classic_race_start",
+    "src/core/race_setup.cpp:neon_track",
     "src/core/race_setup.cpp:restart_zoom_zoo",
     "src/core/race_setup.cpp:start_clock",
     "src/core/race_setup.cpp:start_countdown, base_speed_cap",
@@ -10426,7 +10468,9 @@
    ],
    "native": [
     "src/core/content_pack.cpp:tracks_required",
-    "src/core/presentation.cpp:classic_race_presentation_content"
+    "src/core/presentation.cpp:classic_race_presentation_content",
+    "src/core/presentation.cpp:neon_scenery",
+    "src/core/race_setup.cpp:stunt_scenario"
    ],
    "observed_entries": {},
    "start": "$82:DC20",
@@ -10448,9 +10492,9 @@
    "native": [
     "src/core/content_pack.cpp:hunter_required",
     "src/core/content_pack.cpp:tracks_required",
+    "src/core/presentation.cpp:apply_neon_colours",
     "src/core/presentation.cpp:character_palette",
     "src/core/presentation.cpp:classic_race_presentation_content",
-    "src/core/presentation.cpp:race_cgram",
     "src/core/presentation.hpp:ClassicRacePresentationContent::rider_palette, ClassicRacePresentationContent::opponent_palette"
    ],
    "observed_entries": {},
@@ -12475,6 +12519,7 @@
    ],
    "native": [
     "src/core/hunter_effects.cpp:update_hunter_effects",
+    "src/core/presentation.cpp:ClassicRaceHistoryTracker::observe_update",
     "src/core/race_update.cpp:run_skipped_update"
    ],
    "observed_entries": {},
@@ -12614,6 +12659,7 @@
    "native": [
     "src/core/hunter_effects.cpp:priority",
     "src/core/hunter_effects.cpp:update_hunter_effects",
+    "src/core/presentation.cpp:ClassicRaceHistoryTracker::observe_update",
     "src/core/zoom_zoo_movement.hpp:ClassicRaceScenario::hunter_tour",
     "src/core/zoom_zoo_movement.hpp:HunterEffects",
     "src/core/zoom_zoo_movement.hpp:update_hunter_effects"
@@ -12645,6 +12691,7 @@
    ],
    "native": [
     "src/core/hunter_effects.cpp:update_hunter_effects",
+    "src/core/presentation.cpp:ClassicRaceHistoryTracker::observe_update",
     "src/core/zoom_zoo_movement.hpp:ClassicRaceScenario::hunter_tour",
     "src/core/zoom_zoo_movement.hpp:HunterEffects",
     "src/core/zoom_zoo_movement.hpp:update_hunter_effects"
@@ -12669,6 +12716,7 @@
    "native": [
     "src/core/hunter_effects.cpp:tagged",
     "src/core/hunter_effects.cpp:update_hunter_effects",
+    "src/core/presentation.cpp:ClassicRaceHistoryTracker::observe_update",
     "src/core/zoom_zoo_movement.hpp:ClassicRaceScenario::hunter_tour",
     "src/core/zoom_zoo_movement.hpp:HunterEffects",
     "src/core/zoom_zoo_movement.hpp:update_hunter_effects"
@@ -12696,6 +12744,7 @@
    "native": [
     "src/core/hunter_effects.cpp:tagged",
     "src/core/hunter_effects.cpp:update_hunter_effects",
+    "src/core/presentation.cpp:ClassicRaceHistoryTracker::observe_update",
     "src/core/zoom_zoo_movement.hpp:ClassicRaceScenario::hunter_tour",
     "src/core/zoom_zoo_movement.hpp:HunterEffects",
     "src/core/zoom_zoo_movement.hpp:update_hunter_effects"
@@ -12719,6 +12768,15 @@
    ],
    "native": [
     "src/core/hunter_effects.cpp:update_hunter_effects",
+    "src/core/neon_lighting.cpp:(file)",
+    "src/core/neon_lighting.cpp:negative_byte",
+    "src/core/neon_lighting.cpp:neon_colour",
+    "src/core/neon_lighting.cpp:quarter_step",
+    "src/core/presentation.cpp:ClassicRaceHistoryTracker::observe_update",
+    "src/core/presentation.cpp:draw_race_riders",
+    "src/core/presentation.hpp:ClassicRaceHistoryTracker::neon_green_, ClassicRaceHistoryTracker::on_screen_neon_green_",
+    "src/core/presentation.hpp:neon_colour",
+    "src/core/presentation.hpp:neon_green_step",
     "src/core/zoom_zoo_movement.hpp:ClassicRaceScenario::hunter_tour",
     "src/core/zoom_zoo_movement.hpp:HunterEffects",
     "src/core/zoom_zoo_movement.hpp:update_hunter_effects"
@@ -12742,6 +12800,7 @@
    ],
    "native": [
     "src/core/hunter_effects.cpp:update_hunter_effects",
+    "src/core/presentation.cpp:ClassicRaceHistoryTracker::observe_update",
     "src/core/zoom_zoo_movement.hpp:ClassicRaceScenario::hunter_tour",
     "src/core/zoom_zoo_movement.hpp:HunterEffects",
     "src/core/zoom_zoo_movement.hpp:update_hunter_effects"
@@ -12772,6 +12831,7 @@
    "native": [
     "src/core/hunter_effects.cpp:finish",
     "src/core/hunter_effects.cpp:update_hunter_effects",
+    "src/core/presentation.cpp:ClassicRaceHistoryTracker::observe_update",
     "src/core/zoom_zoo_movement.hpp:ClassicRaceScenario::hunter_tour",
     "src/core/zoom_zoo_movement.hpp:HunterEffects",
     "src/core/zoom_zoo_movement.hpp:update_hunter_effects"
@@ -12796,6 +12856,7 @@
    "native": [
     "src/core/hunter_effects.cpp:run_effect",
     "src/core/hunter_effects.cpp:update_hunter_effects",
+    "src/core/presentation.cpp:ClassicRaceHistoryTracker::observe_update",
     "src/core/zoom_zoo_movement.hpp:ClassicRaceScenario::hunter_tour",
     "src/core/zoom_zoo_movement.hpp:HunterEffects",
     "src/core/zoom_zoo_movement.hpp:update_hunter_effects"
@@ -12821,6 +12882,7 @@
     "src/core/content_pack.cpp:hunter_required",
     "src/core/hunter_effects.cpp:run_screen_flip",
     "src/core/hunter_effects.cpp:update_hunter_effects",
+    "src/core/presentation.cpp:ClassicRaceHistoryTracker::observe_update",
     "src/core/zoom_zoo_movement.hpp:ClassicRaceScenario::hunter_tour",
     "src/core/zoom_zoo_movement.hpp:HunterEffects",
     "src/core/zoom_zoo_movement.hpp:update_hunter_effects"
@@ -12846,6 +12908,7 @@
     "src/core/content_pack.cpp:hunter_required",
     "src/core/hunter_effects.cpp:run_blinking_effect",
     "src/core/hunter_effects.cpp:update_hunter_effects",
+    "src/core/presentation.cpp:ClassicRaceHistoryTracker::observe_update",
     "src/core/zoom_zoo_movement.hpp:ClassicRaceScenario::hunter_tour",
     "src/core/zoom_zoo_movement.hpp:HunterEffects",
     "src/core/zoom_zoo_movement.hpp:update_hunter_effects"
@@ -12871,6 +12934,7 @@
     "src/core/content_pack.cpp:hunter_required",
     "src/core/hunter_effects.cpp:run_blinking_effect",
     "src/core/hunter_effects.cpp:update_hunter_effects",
+    "src/core/presentation.cpp:ClassicRaceHistoryTracker::observe_update",
     "src/core/zoom_zoo_movement.hpp:ClassicRaceScenario::hunter_tour",
     "src/core/zoom_zoo_movement.hpp:HunterEffects",
     "src/core/zoom_zoo_movement.hpp:update_hunter_effects"
@@ -12895,6 +12959,7 @@
    "native": [
     "src/core/hunter_effects.cpp:run_effect",
     "src/core/hunter_effects.cpp:update_hunter_effects",
+    "src/core/presentation.cpp:ClassicRaceHistoryTracker::observe_update",
     "src/core/zoom_zoo_movement.hpp:ClassicRaceScenario::hunter_tour",
     "src/core/zoom_zoo_movement.hpp:HunterEffects",
     "src/core/zoom_zoo_movement.hpp:update_hunter_effects"
@@ -12919,6 +12984,7 @@
    "native": [
     "src/core/hunter_effects.cpp:run_effect",
     "src/core/hunter_effects.cpp:update_hunter_effects",
+    "src/core/presentation.cpp:ClassicRaceHistoryTracker::observe_update",
     "src/core/zoom_zoo_movement.hpp:ClassicRaceScenario::hunter_tour",
     "src/core/zoom_zoo_movement.hpp:HunterEffects",
     "src/core/zoom_zoo_movement.hpp:update_hunter_effects"
@@ -12943,6 +13009,7 @@
    "native": [
     "src/core/hunter_effects.cpp:run_slow_motion",
     "src/core/hunter_effects.cpp:update_hunter_effects",
+    "src/core/presentation.cpp:ClassicRaceHistoryTracker::observe_update",
     "src/core/zoom_zoo_movement.hpp:ClassicRaceScenario::hunter_tour",
     "src/core/zoom_zoo_movement.hpp:HunterEffects",
     "src/core/zoom_zoo_movement.hpp:update_hunter_effects"
@@ -12967,6 +13034,7 @@
    "native": [
     "src/core/hunter_effects.cpp:run_hedgehog_speed",
     "src/core/hunter_effects.cpp:update_hunter_effects",
+    "src/core/presentation.cpp:ClassicRaceHistoryTracker::observe_update",
     "src/core/zoom_zoo_movement.hpp:ClassicRaceScenario::hunter_tour",
     "src/core/zoom_zoo_movement.hpp:HunterEffects",
     "src/core/zoom_zoo_movement.hpp:update_hunter_effects"
@@ -12991,6 +13059,7 @@
    "native": [
     "src/core/hunter_effects.cpp:run_screen_flip",
     "src/core/hunter_effects.cpp:update_hunter_effects",
+    "src/core/presentation.cpp:ClassicRaceHistoryTracker::observe_update",
     "src/core/presentation.cpp:race_scroll",
     "src/core/zoom_zoo_movement.hpp:ClassicRaceScenario::hunter_tour",
     "src/core/zoom_zoo_movement.hpp:HunterEffects",
@@ -13544,6 +13613,7 @@
    "native": [
     "src/core/race_state_io.cpp:read_stunt_event",
     "src/core/race_state_io.cpp:stunt_settled_fall",
+    "src/core/race_windows.cpp:ClassicWindowPointer::observe_update",
     "src/core/stunt_event.cpp:settled_fall",
     "src/core/stunt_event.cpp:stands_on_ground",
     "src/core/stunt_event.cpp:update_stunt_finish",
@@ -13574,6 +13644,7 @@
     "src/core/race_progress.cpp:finish_announcement",
     "src/core/race_progress.cpp:finish_rider",
     "src/core/race_progress.cpp:update_finish",
+    "src/core/race_windows.cpp:ClassicWindowPointer::observe_update",
     "src/core/rider_motion.cpp:apply_finish_slowdown",
     "src/core/stunt_event.hpp:stunt_finish_announcement",
     "src/core/stunt_event.hpp:update_stunt_finish"
@@ -13600,6 +13671,7 @@
     "src/core/race_progress.cpp:classic_race_player_won",
     "src/core/race_progress.cpp:finish_rider",
     "src/core/race_progress.cpp:update_finish",
+    "src/core/race_windows.cpp:ClassicWindowPointer::observe_update",
     "src/core/stunt_event.hpp:update_stunt_finish"
    ],
    "observed_entries": {},
@@ -13624,6 +13696,7 @@
     "src/core/presentation.hpp:dragster_window_table_index",
     "src/core/race_progress.cpp:classic_race_player_won",
     "src/core/race_progress.cpp:update_finish",
+    "src/core/race_windows.cpp:ClassicWindowPointer::observe_update",
     "src/core/race_windows.cpp:winner_window_first, winner_window_cycle, winner_window_life_updates",
     "src/core/stunt_event.hpp:update_stunt_finish"
    ],
@@ -13649,6 +13722,7 @@
     "src/core/race_progress.cpp:classic_race_player_won",
     "src/core/race_progress.cpp:finish_rider",
     "src/core/race_progress.cpp:update_finish",
+    "src/core/race_windows.cpp:ClassicWindowPointer::observe_update",
     "src/core/stunt_event.hpp:stunt_finish_announcement",
     "src/core/stunt_event.hpp:update_stunt_finish"
    ],
@@ -13673,6 +13747,7 @@
    "native": [
     "src/core/race_progress.cpp:classic_race_player_won",
     "src/core/race_progress.cpp:update_finish",
+    "src/core/race_windows.cpp:ClassicWindowPointer::observe_update",
     "src/core/stunt_event.hpp:update_stunt_finish"
    ],
    "observed_entries": {},
@@ -13696,6 +13771,7 @@
    "native": [
     "src/core/race_progress.cpp:classic_race_player_won",
     "src/core/race_progress.cpp:update_finish",
+    "src/core/race_windows.cpp:ClassicWindowPointer::observe_update",
     "src/core/stunt_event.hpp:update_stunt_finish"
    ],
    "observed_entries": {},
@@ -13725,6 +13801,7 @@
    "native": [
     "src/core/race_progress.cpp:classic_race_player_won",
     "src/core/race_progress.cpp:update_finish",
+    "src/core/race_windows.cpp:ClassicWindowPointer::observe_update",
     "src/core/stunt_event.hpp:update_stunt_finish"
    ],
    "observed_entries": {},
@@ -14268,18 +14345,18 @@
    "call returns in the calling mode": 1262
   },
   "bytes": 131072,
-  "cited_addresses": 1359,
+  "cited_addresses": 1389,
   "cited_by_class": {
-   "data": 23,
-   "inferred": 218,
-   "observed": 897,
+   "data": 25,
+   "inferred": 230,
+   "observed": 913,
    "unknown": 221
   },
   "cited_by_position": {
-   "dat": 23,
-   "loc": 798,
+   "dat": 25,
+   "loc": 822,
    "mid": 18,
-   "sub": 299,
+   "sub": 303,
    "unk": 221
   },
   "conflicts": 0,
@@ -14299,9 +14376,9 @@
   "jump_tables": 2,
   "mode_ambiguities": 7,
   "observed": 41778,
-  "routine_bytes_cited_by_native_code": 46911,
+  "routine_bytes_cited_by_native_code": 47331,
   "routines": 636,
-  "routines_cited_by_native_code": 358,
+  "routines_cited_by_native_code": 361,
   "unknown": 52881,
   "unknown_share": 0.4035
  }
