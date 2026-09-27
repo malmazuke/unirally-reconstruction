@@ -276,7 +276,7 @@ def original_rows(directory):
             # nothing, and under effect 7 ($1335) the reader publishes Y as A ($82:AC77-AC81).
             # R-0066: in a stunt event, once the finished player has settled ($12DF at the end of
             # the previous frame) the reader releases its buttons ($82:AA7D-AAA1) whatever the pad
-            # holds; a stunt capture's inputs run on past the finish, so the check stops there.
+            # holds; a stunt capture's inputs run on past the finish, so the check stops at the settle.
             skipped = previous is not None and previous[0x128b] != 0
             released = mode == STUNT_MODE and previous is not None and previous[0x12df] != 0
             reversed_controls = previous is not None and int.from_bytes(previous[0x1335:0x1337], 'little') != 0
