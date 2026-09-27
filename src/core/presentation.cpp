@@ -340,6 +340,13 @@ auto race_cgram(const ZoomZooState& state, const ClassicRacePresentationContent&
     return cgram;
 }
 
+// The race's colours at full brightness (`lit`, where the colour math adds) and as the fade
+// shows them (`shown`, at `brightness` 0-15).
+struct RaceColours {
+    std::array<std::uint8_t, 512> lit, shown;
+    unsigned brightness{};
+};
+
 // Where the race picture's backgrounds scroll, and the HUNTER effects the vblank that
 // opened it set up from the update before it (R-0052).
 struct RaceScroll {
@@ -424,10 +431,12 @@ std::array<bool, 256 * 224> draw_race_backgrounds(RgbFrame& frame,
             // ($81:AD05), so past the playfield's right edge the picture continues from column
             // 0, as the sampler's contact does (TRACK-BREADTH, LOOPER). Rows off the playfield
             // are left blank, which is not yet checked against the original's row test at
-            // $81:AD22-AD2C.
-            const int world_x = (scroll.background_x + mx) & geometry.position_mask,
-                      world_y = scroll.flip ? scroll.background_y + 224 - my
-                                            : scroll.background_y + my + 1;
+            // $81:AD22-AD2C. The 65,536-unit playfield (`$0FF7`, track 37) skips that test
+            // ($81:AD1D-AD20, $81:AD71-AD74) and its rows take y's sixteen bits (R-0068).
+            const int world_x = (scroll.background_x + mx) & geometry.position_mask;
+            int world_y = scroll.flip ? scroll.background_y + 224 - my
+                                      : scroll.background_y + my + 1;
+            if (geometry.whole_height) world_y &= 0xffff;
             if (world_y < 0 || world_y >= world_height) continue;
             const auto selector = word(
                 track, 15 + static_cast<std::size_t>((world_y / 64) * columns + world_x / 64) * 2);
@@ -459,13 +468,19 @@ std::array<bool, 256 * 224> draw_race_backgrounds(RgbFrame& frame,
 // sprite_red + 13), green and blue untouched, measured over 35 such pixels on frame 2100 of
 // the M4-16 primary and the same on 2120, 2340 and 2600. The 13 is the red of CGRAM 27, the
 // colour the caption's attribute names, on both race palettes; which PPU configuration adds
-// it is not recovered, so the measured value is kept.
+// it is not recovered, so the measured value is kept. The fade (INIDISP) scales the sum, as it
+// scales every colour after the colour math: in the fade-in the sum is as dark as the rest
+// (bowl-lose 1340-1341, a stunt event's score field under the rider, R-0068).
 void draw_race_riders(RgbFrame& frame, const ZoomZooState& rider_source,
                       const ClassicRacePresentationContent& content,
-                      const ClassicRaceHistory* history, const std::array<std::uint8_t, 512>& cgram,
-                      bool flip, const std::array<bool, 256 * 224>& bg1_above_objects,
+                      const ClassicRaceHistory* history, const RaceColours& colours, bool flip,
+                      const std::array<bool, 256 * 224>& bg1_above_objects,
                       const std::bitset<256 * 224>& caption_ink) {
     for (int rider = 1; rider >= 0; --rider) {
+        // R-0068: a stunt event's setup sets entry 99's ninth x bit (`$15A3` = 0xE5,
+        // $82:D789-D797) and the opponent's object writer, part of its skipped update, never
+        // clears it, so the opponent stays at the setup's x 0x60 - 256, off the screen.
+        if (rider == 1 && content.scenario.stunt_event) continue;
         const auto& source = rider_source.movement.riders[static_cast<std::size_t>(rider)];
         auto oam =
             project_rider_oam(source.motion.x, source.motion.y, rider_source.race.camera.x,
@@ -488,15 +503,16 @@ void draw_race_riders(RgbFrame& frame, const ZoomZooState& rider_source,
             if (bg1_above_objects[at] && !raised) return;
             const auto index = static_cast<std::uint8_t>(object_palette + value);
             if (!caption_ink.test(at)) {
-                pixel(frame, x, y, colour(cgram, index));
+                pixel(frame, x, y, colour(colours.shown, index));
                 return;
             }
-            const auto word = colour_word(cgram, index);
-            const auto added =
-                static_cast<std::uint16_t>(std::min<unsigned>(31U, (word & 31U) + ink_red_add));
+            const auto word = colour_word(colours.lit, index);
+            const auto added = static_cast<std::uint16_t>(
+                (word & ~31U) | std::min<unsigned>(31U, (word & 31U) + ink_red_add));
             pixel(frame, x, y,
-                  {channel8(added), channel8(static_cast<std::uint16_t>((word >> 5U) & 31U)),
-                   channel8(static_cast<std::uint16_t>((word >> 10U) & 31U))});
+                  colour_word_rgb(colours.brightness < 15U
+                                      ? apply_snes_brightness(added, colours.brightness)
+                                      : added));
         });
     }
 }
@@ -535,7 +551,9 @@ RgbFrame render_classic_race(const ZoomZooState& state,
     // made mid-fade frames too bright: green 15 at brightness 8 is 47 in the original, not 64.
     const unsigned prior_fade = classic_race_prior_fade(state, previous_update, scenario);
     const auto brightness = prior_fade > 15U ? prior_fade - 15U : 0U;
-    const auto cgram = race_cgram(state, content, brightness);
+    const RaceColours colours{race_cgram(state, content, 15U),
+                              race_cgram(state, content, brightness), brightness};
+    const auto& cgram = colours.shown;
     const auto bg3_ink = race_ink_rgb(content, brightness);
     // Authored UI has no CGRAM entry; fade it through the same 1.5 output curve.
     const auto ui_scale = std::pow(brightness / 15.0, 1.5);
@@ -570,8 +588,8 @@ RgbFrame render_classic_race(const ZoomZooState& state,
     draw_classic_hud(frame, rider_source, content,
                      history ? history->opponent_finish_frame : std::nullopt, hud, bg3_ink,
                      caption_ink);
-    draw_race_riders(frame, rider_source, content, history, cgram, scroll.flip, bg1_above_objects,
-                     caption_ink);
+    draw_race_riders(frame, rider_source, content, history, colours, scroll.flip,
+                     bg1_above_objects, caption_ink);
     // Every member covers both objects as well as the backgrounds: inside the window the
     // original shows the flat window colour and nothing else (ZOOM-ZOO-WINDOW-EFFECTS:
     // start-line frames 1450, 1583 and 1649 of the M4-16 primary and countdown-pause originals

@@ -39,6 +39,9 @@ ClassicHudField classic_hud_left_field(const ZoomZooState& published,
     // so `$0EFB` is not zero and the field keeps the lap (stop-timeout original
     // frames 31578-31920 all read `2/3`).
     if (race.riders[0].finished && race.riders[0].laps_remaining == 0) return {"finish", 1};
+    // R-0068: a stunt event's setup writes `stunt` from column 2 instead ($81:D771-D816, which
+    // also sets $053F); its riders never cross the line for good, so `finish` never replaces it.
+    if (scenario.stunt_event) return {"stunt", 2};
     // The word wins over the lap count, so a DRAGSTER finish replaces `race`
     // too, and $053F only suppresses the lap number.
     if (!scenario.tour_race) return {"race", 2};
@@ -48,6 +51,14 @@ ClassicHudField classic_hud_left_field(const ZoomZooState& published,
     // of this product reaches a second digit in either.
     const auto lap = classic_hud_lap(race.riders[0].laps_remaining, scenario.laps);
     return {std::to_string(lap) + "/" + std::to_string(scenario.laps), lap >= 10U ? 1U : 2U};
+}
+
+// The digits the clock cells hold for `state`'s timer. A stunt event's clock, once stopped,
+// keeps 0:00.0: the tick after it wraps the timer's lower digits to 5, 9 and 9 and clamps the
+// minutes ($81:C830), and $81:C86A then skips the writes to the cells `$0E2F-$0E3B`.
+RaceTimerDigits classic_hud_timer(const ZoomZooState& state) {
+    if (classic_race_scenario(state.track).stunt_event && state.stunt.clock_stopped) return {};
+    return state.movement.timer;
 }
 
 std::string classic_hud_clock(const RaceTimerDigits& t) {
@@ -66,6 +77,26 @@ char classic_hud_digit(unsigned value) {
     return static_cast<char>('0' + value);
 }
 
+// The character table $80:81F4 as R-0043 read it: indexes 0-9 are the digits, 10-35 `a`-`z`.
+// The punctuation after them is not a digit any score reaches, so it is refused.
+constexpr unsigned character_table_digits = 10, character_table_letters = 26;
+char hud_character(unsigned index) {
+    if (index < character_table_digits) return static_cast<char>('0' + index);
+    if (index < character_table_digits + character_table_letters)
+        return static_cast<char>('a' + (index - character_table_digits));
+    throw std::invalid_argument("stunt score is outside the character table's digits and letters");
+}
+
+struct DecimalCells {
+    unsigned hundreds{}, tens{}, units{};
+};
+// $81:C374-C3A3 and $81:CD8D-CDB5: the hundreds by subtracting 100 until below it, then the
+// tens by subtracting 10; the word is read as signed, and a stunt score never reaches 0x8000.
+DecimalCells decimal_cells(std::uint16_t value) {
+    if (value & 0x8000U) throw std::invalid_argument("stunt score is outside its supported domain");
+    return {value / 100U, value / 10U % 10U, value % 10U};
+}
+
 } // namespace
 
 // $81:CAAD-CB10: minutes, tens, seconds, tenths and hundredths of the crossing.
@@ -73,6 +104,25 @@ std::string classic_hud_crossing_text(const std::array<std::uint16_t, 5>& d) {
     return {classic_hud_digit(d[0]), ':', classic_hud_digit(d[1]),
             classic_hud_digit(d[2]), ':', classic_hud_digit(d[3]),
             classic_hud_digit(d[4])};
+}
+
+// $81:F29C-F2FD: the hundreds cell is written only when `$12FB` (the hundreds less one) is not
+// negative, the tens cell only when `$12F7` (hundreds plus tens, less one) is not, the units
+// always.
+std::array<char, 3> stunt_score_cells(std::uint16_t score, std::array<char, 3> held) {
+    const auto cells = decimal_cells(score);
+    if (cells.hundreds > 0) held[0] = hud_character(cells.hundreds);
+    if (cells.hundreds + cells.tens > 0) held[1] = hud_character(cells.tens);
+    held[2] = hud_character(cells.units);
+    return held;
+}
+
+// $81:CDB8-CE0F: a zero hundreds count becomes -1, and then the tens and units move left one
+// cell and the third takes `$80:822A`, which the pictures show blank (bowl-lose `0/68`).
+std::string stunt_qualifying_text(std::uint16_t qualifying_score) {
+    const auto cells = decimal_cells(qualifying_score);
+    if (cells.hundreds == 0) return {hud_character(cells.tens), hud_character(cells.units), ' '};
+    return {hud_character(cells.hundreds), hud_character(cells.tens), hud_character(cells.units)};
 }
 
 std::array<std::uint8_t, 4> classic_hud_clock_digits(const RaceTimerDigits& t) {
@@ -148,12 +198,13 @@ unsigned classic_arrow_chevrons(std::uint16_t lead, unsigned race_nmis) {
 }
 
 // $82:9822 writes the arrow word `$0FD5` on every update, after the riders' movement and before
-// their contact, so the track marker it reads is the previous update's. The race mode's stunt
-// event (`$77:074B` of 2), which also blanks it, has no native scenario. The finished flag is
+// their contact, so the track marker it reads is the previous update's. A stunt event (race mode
+// 2) blanks it every update ($82:98B7-98C8, R-0068), so it shows no arrow. The finished flag is
 // this update's when the player crossed the line (`$81:823B` runs first); the 10:00 time-out
 // sets it after the word is written, so there the arrow stays one update longer.
 std::optional<ClassicRaceArrow>
 classic_race_arrow(const ZoomZooState& previous, const ZoomZooState& updated, unsigned race_nmis) {
+    if (classic_race_scenario(updated.track).stunt_event) return std::nullopt;
     const auto& player = updated.movement.riders[0].progress;
     const auto own = player.transition_count;
     const auto other = updated.movement.riders[1].progress.transition_count;
@@ -178,6 +229,7 @@ void ClassicRaceHudClock::observe_update(const ZoomZooState& previous,
     if (updated.fade_level >= race_nmi_fade) ++race_nmis_;
     redraw_arrow(previous, updated);
     request_fields(previous, updated);
+    if (classic_race_scenario(updated.track).stunt_event) request_stunt_fields(previous, updated);
     request_caption(previous, updated);
     service_one_field(updated);
 }
@@ -267,6 +319,20 @@ void ClassicRaceHudClock::request_fields(const ZoomZooState& previous,
     }
 }
 
+// R-0068: a stunt event's own requests. The clock's stopping tick sets `$034D` without new
+// digits. `$81:C357-C3D0`, at the end of the player's queue consumer, compares the score
+// `$77:07BB` with the one it last split (`$12B9`) and, when they differ, splits it and sets
+// `$12C9`: on the update a trick's points are paid, the update its caption is taken.
+void ClassicRaceHudClock::request_stunt_fields(const ZoomZooState& previous,
+                                               const ZoomZooState& updated) {
+    if (updated.stunt.clock_stopped && !previous.stunt.clock_stopped)
+        pending_.clock_rewrite = true;
+    const auto score = updated.player_announcements.queue.feature_total;
+    if (score == score_buffer_) return;
+    score_buffer_ = score;
+    pending_.score = true;
+}
+
 // A checkpoint crossing's cells: the first rider through a slot stores the clock and draws
 // nothing ($81:CA38-CA61); the second draws the split against it. $81:CB13 runs the player
 // before the opponent within one update, so a slot the player has just stored is seen by the
@@ -318,9 +384,10 @@ void ClassicRaceHudClock::service_one_field(const ZoomZooState& updated) {
     // hold; the handler writes them and returns. Once blanked they are never rewritten,
     // because the race clock has stopped.
     if (!latest_.clock_blanked) {
-        auto digits = classic_hud_clock(updated.movement.timer);
-        if (latest_.clock != digits) {
+        auto digits = classic_hud_clock(classic_hud_timer(updated));
+        if (latest_.clock != digits || pending_.clock_rewrite) {
             latest_.clock = std::move(digits);
+            pending_.clock_rewrite = false;
             return;
         }
     }
@@ -350,6 +417,12 @@ void ClassicRaceHudClock::service_one_field(const ZoomZooState& updated) {
             }
         }
     }
+    // $81:F28B-F303: a stunt event's score field, before the caption.
+    if (pending_.score) {
+        latest_.score_cells = stunt_score_cells(score_buffer_, latest_.score_cells);
+        pending_.score = false;
+        return;
+    }
     // $81:F30C-$81:F34D, the last task: the caption rows take the buffer's sixteen characters.
     if (pending_.caption) {
         latest_.caption_event = caption_buffer_;
@@ -367,6 +440,16 @@ ClassicHudText classic_race_hud_text(const ZoomZooState& previous_update,
     const auto left = classic_hud_left_field(previous_update, scenario);
     hud.left = left.text;
     hud.left_column = left.column;
+    // R-0068: the score's cells as the NMI last wrote them; a score never falls during a
+    // run, so without the queue's history the state's own score gives the same cells.
+    if (scenario.stunt_event) {
+        const auto cells =
+            published ? published->score_cells
+                      : stunt_score_cells(previous_update.player_announcements.queue.feature_total,
+                                          ClassicHudPublished{}.score_cells);
+        hud.score_field = std::string(cells.begin(), cells.end()) + '/'
+                        + stunt_qualifying_text(previous_update.stunt.qualifying_score);
+    }
     // The corner clock shows tenths, one digit per field. Every gate below is a
     // *picture* number, not an update number: picture N is drawn from the state
     // after update N-1, so a field the queue writes on update F shows in
@@ -382,13 +465,13 @@ ClassicHudText classic_race_hud_text(const ZoomZooState& previous_update,
     if (published) {
         if (!published->clock_blanked)
             hud.clock = published->clock ? *published->clock
-                                         : classic_hud_clock(previous_update.movement.timer);
+                                         : classic_hud_clock(classic_hud_timer(previous_update));
         hud.player_cells = published->player_cells.value_or("");
         hud.opponent_cells = published->opponent_cells.value_or("");
         return hud;
     }
     if (!finished || race.finish_delay < 1)
-        hud.clock = classic_hud_clock(previous_update.movement.timer);
+        hud.clock = classic_hud_clock(classic_hud_timer(previous_update));
     // The player's own time is written on `finish + 3`, which reads delay 2,
     // and the opponent's two updates after the opponent finishes, which is the
     // picture one update after that frame.
@@ -597,6 +680,7 @@ void draw_classic_hud(RgbFrame& frame, const ZoomZooState& state,
     draw_bg3_text(frame, font, 24, 2, hud.clock, ink, inked);
     draw_bg3_text(frame, font, 13, 5, hud.player_cells, ink, inked);
     draw_bg3_text(frame, font, 13, 20, hud.opponent_cells, ink, inked);
+    draw_bg3_text(frame, font, 23, 24, hud.score_field, ink, inked);
     auto arrow =
         published ? published->arrow : classic_arrow_without_history(state, content.scenario);
     // Without history the cells drawn above stand for `$0D19`.

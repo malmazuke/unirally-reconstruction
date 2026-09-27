@@ -82,8 +82,16 @@ void ClassicWindowPointer::observe_update(const ZoomZooState& previous, const Zo
     for (std::size_t i = 0; i < pending_count_ && ordered_ < order_.size(); ++i)
         order_[ordered_++] = pending_[i];
     pending_count_ = 0;
+    // A stunt event's finish routine $83:E8E0 runs only once `$0FE9` is set ($83:E898), for
+    // both riders at once, the player's first (R-0068): both drivers are armed by the update
+    // that sets it, as a race's are by the rider's finish.
+    const auto armed = [&](std::size_t rider) {
+        if (scenario.stunt_event)
+            return !previous.stunt.finish_display && updated.stunt.finish_display;
+        return !previous.race.riders[rider].finished && updated.race.riders[rider].finished;
+    };
     for (std::size_t rider = 0; rider < 2 && pending_count_ < pending_.size(); ++rider)
-        if (!previous.race.riders[rider].finished && updated.race.riders[rider].finished) {
+        if (armed(rider)) {
             drivers_[rider] = {};
             pending_[pending_count_++] = rider;
         }
@@ -111,7 +119,7 @@ void ClassicWindowPointer::observe_update(const ZoomZooState& previous, const Zo
     }
     chosen_ = request ? request
                       : classic_countdown_window(previous.movement.countdown, parity_set,
-                                                 transition_member);
+                                                 transition_member, scenario.stunt_event);
 }
 
 std::optional<unsigned> zoom_zoo_palette_cycle_index(std::uint32_t frame) {
@@ -256,7 +264,7 @@ std::optional<unsigned> window_table_index_for(std::uint32_t frame, std::uint16_
                                                std::optional<std::uint32_t> first_finish,
                                                std::optional<std::uint32_t> latest_finish,
                                                std::uint32_t setup_frame,
-                                               unsigned transition_member) {
+                                               unsigned transition_member, bool stunt_event) {
     // The drivers' parity is `$0300`'s, which counts from the initialization
     // boundary (setup_frame - 6). Shifting every frame by the boundary's own
     // parity makes the frame parities below `$0300`'s; on the even boundaries
@@ -298,7 +306,7 @@ std::optional<unsigned> window_table_index_for(std::uint32_t frame, std::uint16_
     // The driver of frame shown - 1 read 270 - elapsed and its own parity.
     return classic_countdown_window(
         static_cast<std::uint16_t>(dragster_window_countdown_start - elapsed),
-        ((*shown - 1U) & 1U) != 0U, transition_member);
+        ((*shown - 1U) & 1U) != 0U, transition_member, stunt_event);
 }
 
 } // namespace
@@ -315,11 +323,19 @@ unsigned classic_window_transition_member(std::span<const std::uint8_t> decoded_
 }
 
 std::optional<unsigned> classic_countdown_window(std::uint16_t countdown, bool parity_set,
-                                                 unsigned transition_member) {
+                                                 unsigned transition_member, bool stunt_event) {
     // $83:E59C dispatches on $11C5 as the update read it, before its own
     // decrement, and inside each digit on the digit's own threshold: above it
     // the transition table, below it the digit's table.
     if (countdown == 0U) return std::nullopt;
+    // A stunt event's tests ($83:E5E2, $83:E634, $83:E686, $83:E6E8) go straight to the digit
+    // of the phase ($83:E5B7-E5D5 splits the phases above 220, 160 and 100) and to GO.
+    if (stunt_event) {
+        if (countdown > 220U) return 0U;
+        if (countdown > 160U) return 1U;
+        if (countdown > 100U) return 2U;
+        return parity_set ? 3U : 4U;
+    }
     if (countdown >= 250U) return transition_member;
     if (countdown >= 221U) return 0U;
     if (countdown >= 190U) return transition_member;
@@ -338,7 +354,7 @@ std::optional<unsigned> dragster_window_table_index(const MovementState& state) 
     if (const auto since = updates_since_winner_finish(state.finish))
         if (const auto shown = race_vblank_frame(state.frame, loading)) finish = *shown - *since;
     return window_table_index_for(state.frame, loading, finish, finish, dragster_race_setup_frame,
-                                  dragster_window_transition_index);
+                                  dragster_window_transition_index, false);
 }
 
 std::optional<std::uint32_t> classic_opponent_finish_frame(const ZoomZooState& state) {
@@ -392,7 +408,10 @@ classic_window_table_index(const ZoomZooState& state, std::uint32_t setup_frame,
     // both have finished, from the two finish times. The first finisher's
     // driver runs first; the other's follows once it stops.
     std::optional<std::uint32_t> player_finish, opponent_finish = opponent_finish_frame;
-    if (race.riders[0].finished) {
+    // A stunt event arms both drivers on the update that sets `$0FE9` (R-0068), and its finish
+    // delay counts from the update after it, as a race's does from the finish.
+    const bool stunt = classic_race_scenario(state.track).stunt_event;
+    if (stunt ? state.stunt.finish_display != 0 : race.riders[0].finished != 0) {
         const auto counted =
             state.result_updates
                 ? state.movement.frame
@@ -400,7 +419,9 @@ classic_window_table_index(const ZoomZooState& state, std::uint32_t setup_frame,
                 : state.movement.frame;
         if (race.finish_delay <= counted) player_finish = counted - race.finish_delay;
     }
-    if (race.riders[1].finished && !opponent_finish)
+    if (stunt)
+        opponent_finish = player_finish;
+    else if (race.riders[1].finished && !opponent_finish)
         opponent_finish = classic_opponent_finish_frame(state);
     std::optional<std::uint32_t> first, latest;
     for (const auto& finish : {player_finish, opponent_finish}) {
@@ -409,7 +430,7 @@ classic_window_table_index(const ZoomZooState& state, std::uint32_t setup_frame,
         latest = latest ? std::max(*latest, *finish) : *finish;
     }
     return window_table_index_for(state.movement.frame, state.result_updates, first, latest,
-                                  setup_frame, transition_member);
+                                  setup_frame, transition_member, stunt);
 }
 
 unsigned classic_race_prior_fade(const ZoomZooState& state, const ZoomZooState* previous_update,
