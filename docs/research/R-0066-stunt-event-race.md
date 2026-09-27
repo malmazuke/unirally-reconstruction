@@ -1,7 +1,7 @@
 # R-0066 - The stunt event in the race engine (race mode 2)
 
-Status: draft; recovered and implemented on `task/stunt-event-race` (STUNT-EVENT-RACE),
-27 September 2026, on main `e01aaaa`. PAL ROM
+Status: recovered and implemented on `task/stunt-event-race` (STUNT-EVENT-RACE), 27 September
+2026 (written on main `e01aaaa`, integrated on `94b3034`). PAL ROM
 `a1105819d48c04d680c8292bbfa9abbce05224f1bc231afd66af43b7e0a1fd4e`, audited bsnes core
 `e59bf88d4fc922c9fe3b5438e65ff3a6909d24e1628f0f87141c8de17699a91b`. Builds on the STUNT-EVENTS
 decode (`local/evidence/stunt-events/decode/stunt-events.md`, sections 1, 3 and 4.1), which this
@@ -145,8 +145,9 @@ boundary; after the result load begins, rows through load 105):
 | track-breadth-2/sweep/row0-pos2, row1-pos2, row2-pos2, row3-pos2 | 2, 12, 22, 32 | released, to frame 2900 | 1566, 1558, 1570, 1552 of the same |
 | locked-tours/sweep/jumper-2, bounder-2, runner-2, sprinter-2, hunter-2 | 7, 17, 27, 37, 42 | released, to frame 2900 | 1565, 1571, 1541, 1533, 1502 of the same |
 
-Nothing else moves: the native equivalence sweep against main `e01aaaa`'s binaries and the
-per-track recompare of the track-breadth and locked-tours sweeps (STUNT-EVENT-RACE's NOTES.md).
+Nothing else moves: the native equivalence sweep against main's binaries and the per-track
+recompare of the track-breadth and locked-tours sweeps, race tracks identical (the task record's
+gates).
 
 ## Not covered
 

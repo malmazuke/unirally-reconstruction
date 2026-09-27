@@ -1,5 +1,14 @@
 # Project state
 
+Updated 27 September 2026 (STUNT-EVENT-RACE): **the stunt events run natively.**
+- Each tour's third track, a 45-second solo run for points, now runs in the native race engine
+  exactly as the original does, from the start to the result: on seven riding captures and the
+  nine tracks' idle captures every race row matches ([R-0066](research/R-0066-stunt-event-race.md)).
+- Not yet: its race picture (STUNT-HUD) and its result screen and records (STUNT-RESULT); the menus
+  still show a notice for a stunt event.
+- Pack profile **v24** (`content pack --rules tests/manifests/content/classic-crawler-tracks-pack.json
+  --out local/classic-pal-crawler-tracks-v24.pack`).
+
 Updated 27 September 2026 (FIFTH-WIN-COMPLETION): **a tour completed by its fifth won race matches
 the original.**
 - Captured from power-on (a DRAGSTER win with CRAWLER's other four tracks written done during the

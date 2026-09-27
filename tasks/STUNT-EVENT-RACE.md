@@ -46,6 +46,32 @@ menus (STUNT-RESULT); the menus keep their notice for a stunt event until then.
 | State | Save and restore of a stunt event's state | Round trip, restore checks pass | tests |
 | Nothing moves | The gates of FIFTH-WIN-COMPLETION | The race tracks unchanged | logs |
 
+## Result
+
+[R-0066](../docs/research/R-0066-stunt-event-race.md). The nine stunt events run in the native race
+engine as race mode 2: the header's 45-second clock counting down and its finish rule, the
+opponent switched off (its pass skipped, so the queue cooldowns fall once an update), the
+countdown's stunt phases, a finish sequence that waits for both riders to stand and both queues to
+empty, captions by score against the qualifying score, the trick tallies, and two single-track
+rules (BOWL's and track 42's vertical speed cap, track 37's 16-column playfield). A stunt event's
+state is `URTRnn07`. Pack profile v24 adds the nine tracks' content. The laboratory's
+track_reference compares a stunt event on its own scenario. The menus still show their notice for a
+stunt event until STUNT-RESULT. A research worker decoded it; an implementation worker wrote it;
+the primary integrated.
+
+## Evidence
+
+`local/evidence/stunt-events/decode/` (the research and its captures) and
+`local/evidence/stunt-event-race/` (the two new riding captures, `compare.sh`, `nothing_moves.sh`,
+`NOTES.md`).
+
+| Criterion | Result |
+| --- | --- |
+| Stunt events | Every race row exact from the boundary through the result load on the seven riding captures (BOWL four times, HILL CLIMB twice, JUMPS, DOWNER: 2,808 to 2,952 rows each) and the nine idle captures of the nine tracks (1,502 to 1,571 rows each). |
+| State | ROM-free tests round-trip a stunt event's state and refuse broken ones (`stunt_event_tests`). |
+| Nothing moves | The gates: pending. |
+
 ## Handoff
 
-- Exact next experiment/command: integrate the implementation worker's commits, run the gates.
+- Exact next experiment/command: after the review and the merge, STUNT-RESULT (the result screen,
+  records and way back to the menus), then STUNT-HUD.
