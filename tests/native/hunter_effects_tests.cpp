@@ -47,6 +47,18 @@ int main() {
         update_hunter_effects(other,blink);
         require(other.hunter==HunterEffects{});
     }
+    // NEON (R-0068): HUNTER's stunt event runs the lighting in the tag effects' place, so riders
+    // three transitions apart with their boxes together latch nothing; a HUNTER race does.
+    for (const unsigned track : {42U, 41U}) {
+        ZoomZooState state{};
+        state.track = ClassicRaceTrack{static_cast<std::uint8_t>(track)};
+        state.movement.riders[0].progress.transition_count = 4;
+        state.movement.riders[1].progress.transition_count = 1;
+        update_hunter_effects(state, blink);
+        require(classic_race_scenario(state.track).neon_lighting == (track == 42));
+        require(track == 42 ? state.hunter == HunterEffects{}
+                            : state.hunter.latched && state.hunter.active);
+    }
     // No tag until the progress counts have once differed by 2 or more.
     {
         auto even=tagged_race(0x400);

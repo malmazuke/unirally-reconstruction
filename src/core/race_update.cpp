@@ -746,8 +746,9 @@ void update_rider_contact(const ZoomZooState& state, ZoomZooState& next, unsigne
     const auto geometry = track_geometry(sampling.track);
     const auto samples = sample_track(sampling, points, rider.motion.x, rider.motion.y,
                                       geometry.coarse_columns, geometry.whole_height);
-    const auto summary = summarize_vertical_contact(content.movement.flat_contact, points, samples,
-                                                    rider.motion.x, rider.motion.y);
+    const auto summary =
+        summarize_vertical_contact(content.movement.flat_contact, points, samples, rider.motion.x,
+                                   rider.motion.y, classic_race_scenario(state.track).neon_lighting);
     if (content.slope_coefficients.size() != 18 && content.slope_coefficients.size() != 128)
         throw std::invalid_argument("ZOOM ZOO slope coefficients missing");
     const bool surface_mode = next.surface[index].mode != 0;

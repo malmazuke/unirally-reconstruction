@@ -1,8 +1,10 @@
 // ROM-free checks for a stunt event's race picture (R-0068): the score field's cells and the
 // qualifying score, the countdown's windows, `stunt` in the left field, the score field's place
 // in the one-player NMI's upload order, the clock that stops at 0:00.0, no direction arrow, and
-// the finish drivers armed by the finish display. Every state here is synthetic.
+// the finish drivers armed by the finish display; NEON's lighting, colour math and contact
+// (track 42). Every state and table here is synthetic.
 #include "presentation.hpp"
+#include "vertical_contact.hpp"
 #include "zoom_zoo_movement.hpp"
 
 #include <array>
@@ -181,6 +183,56 @@ void finish_drivers() {
     require(member == 7U || member == 8U, "the banner from the finish display");
 }
 
+// $83:D1EE-D247: a quarter of the distance, at least one, in eight-bit arithmetic; $83:D24A-D271:
+// red 15, blue 30, the level's low five bits as green. The levels here are made up.
+void neon_lighting() {
+    const std::array<std::uint8_t, 8> levels{0, 8, 40, 100, 3, 60, 31, 0xE2};
+    require(neon_green_step(0, 2, levels) == 10, "up by a quarter");
+    require(neon_green_step(38, 2, levels) == 39, "at least one");
+    require(neon_green_step(40, 2, levels) == 40, "at the level");
+    require(neon_green_step(20, 4, levels) == 16, "down by a quarter");
+    require(neon_green_step(4, 4, levels) == 3, "down at least one, not past the level");
+    require(neon_green_step(0, 3, levels) == 25, "a level of 100");
+    // 0xE2 reads as below 20 in the signed test: down by (20 - 0xE2) & 0xFF >> 2 = 12.
+    require(neon_green_step(20, 7, levels) == 8, "the eighth byte, eight-bit arithmetic");
+    rejects([&] { (void)neon_green_step(0, 8, levels); }, "past the table");
+    require(neon_colour(0) == 0x780F, "red 15 and blue 30");
+    require(neon_colour(0x13) == (0x780F | (0x13 << 5)), "green");
+    require(neon_colour(0x3F) == neon_colour(0x1F), "five bits of green");
+    require(subtract_colour(0x7FFF, 0x780F) == (16U | (31U << 5) | (1U << 10)), "channel by channel");
+    require(subtract_colour(0x0001, 0x7FFF) == 0, "at least 0");
+    auto neon = classic_race_scenario(ClassicRaceTrack{42});
+    require(neon.neon_lighting && neon.stunt_event, "track 42 is NEON");
+    require(!classic_race_scenario(bowl).neon_lighting, "BOWL is not");
+}
+
+// $81:8BD9-8BE0 and $81:8CDD-8CEE: an empty cell of palette 7 is a probe of penetration 0x7F;
+// NEON's X of 1 makes its angle the tile-column table's byte 2, negated after a mirrored tile.
+// $81:900E-9025: the first probe is selected only with an angle not below 0xE0.
+void neon_contact() {
+    std::array<std::uint8_t, 64> columns{};
+    for (unsigned i = 0; i < columns.size(); i += 2) columns[i] = 0xA0;
+    columns[2] = 0x30; // tile 0, column 1's height: the angle NEON's X reads
+    const std::array<std::uint8_t, 2> flags{};
+    const FlatContactContent content{columns, flags};
+    CollisionPoints points{};
+    TrackSamples samples{};
+    samples[0] = 0x1C00; // empty, palette 7
+    const auto race = summarize_vertical_contact(content, points, samples, 0, 0);
+    require(race.selected_word == 0x1C00 && race.boundary_marker, "a race's angle 0 is selected");
+    const auto lit = summarize_vertical_contact(content, points, samples, 0, 0, true);
+    require(lit.selected_word == 0x1C00 && lit.selected_high == 0x1C && lit.angle == 0x30,
+            "angle 0x30 is selected");
+    samples[1] = 0x4002; // tile 1, mirrored: processed before the first probe
+    const auto mirrored = summarize_vertical_contact(content, points, samples, 0, 0, true);
+    // Not selected, the first probe leaves the word to the tiled empty probe after it ($81:9063).
+    require(mirrored.selected_word == 0x4002 && mirrored.selected_high == 0, "angle 0xD0 is not");
+    columns[2] = 0xA0;
+    samples[1] = 0;
+    const auto steep = summarize_vertical_contact(content, points, samples, 0, 0, true);
+    require(steep.selected_word == 0 && steep.supported, "angle 0xA0 is not, the support stays");
+}
+
 } // namespace
 
 int main() {
@@ -191,6 +243,8 @@ int main() {
         upload_order();
         no_arrow();
         finish_drivers();
+        neon_lighting();
+        neon_contact();
     } catch (const std::exception& error) {
         std::cerr << error.what() << '\n';
         return 1;
