@@ -64,7 +64,12 @@ capture`).
 | --- | --- |
 | Fifth win | fifth-win, power-on to 6300: no difference on 4,055 compared frames; 2,511 of 2,511 pictures equal (3790-6300). Without the writes (main's runner) native diverges at 3805. |
 | Records | Equal to the original's cartridge RAM at 1000, 3803, 3804, 3900, 5600 and 6300. |
-| Nothing moves | The gates: pending. |
+| Nothing moves | The gates on `fe26824` (`local/evidence/fifth-win-completion/gates-fe26824.out`, 00:11-02:03Z, 112 minutes). The three presets build, ctest 27 of 27, the synthetic suite, both v1 contracts and every hidden app run pass. The eleven differential gates pass. The equivalence sweep against main's binaries (base `e01aaaa`) compares 1,933,523 updates, 1,047 restarts and 2,052 pictures with no difference. The per-track recompare is identical. Every earlier front-end comparison and every record check is unchanged (HUNTER's code routes keep R-0064's older `tries` difference). The tooling tests pass (499). No function is over 80 lines; the address index passes. The gates' own fifth-win step did not run (a variable clash in the script, since fixed); it ran in the checks below. |
+| Corrections | The checks on `e55931e` (`checks-e55931e/checks.out`): the presets and ctest 27 of 27; fifth-win no difference on 4,055 frames and 2,511 of 2,511 pictures, the records equal at the six frames; cont-win, cont-loss and forced-bronze unchanged; the tooling tests; function size and the address index. |
+
+## Review
+
+Tier 2, a fresh Opus 5.5 subagent in an isolated worktree, of `fe26824`: approved with no must-fix items (`review-fe26824.md`). It checked the worker's write ordering on the core (saves and resumes around a write), the runner against the worker, and the 8-bit sum against the listing. Its should-fixes are made in `e55931e`: R-0065 now says a lap race uses the one-run race's win test and lists exactly the scoring addresses the capture ran; `--record-write` refuses a signed, oversized or trailing-text value; a test covers the sum's 8-bit wrap; a manifest or script refuses two writes to one byte after one frame; the worker checks the write offsets when the core loads. Tier 2 stands, as the reviewer agreed: the new completion rule agrees with the old for every byte the game writes.
 
 ## Handoff
 
