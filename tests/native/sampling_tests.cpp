@@ -56,6 +56,13 @@ int main(int argc, char** argv) {
             // $81:8A2C-8A3B: a negative y samples coarse cell (0, 0) whatever x is.
             const auto negative = unirally::sample_track({track, {}, {}}, points, 64, 0xFFC0, 2);
             require(negative[0] / 100 == 0 && negative[1] / 100 == 1 && negative[2] / 100 == 2 && negative[3] / 100 == 3);
+            // R-0066: a whole-height playfield ($0FF7) takes y's sixteen bits as its row: 0xFFC0 is
+            // row 1023. In column 1 of 2 the cell is word 2047, its right-hand neighbour word 2046
+            // (column 0), and the row below words 2049 and 2048.
+            set_word(track, 15 + 4094, 2); set_word(track, 15 + 4092, 3);
+            set_word(track, 15 + 4098, 1); set_word(track, 15 + 4096, 0);
+            const auto whole = unirally::sample_track({track, {}, {}}, points, 64, 0xFFC0, 2, true);
+            require(whole[0] / 100 == 2 && whole[1] / 100 == 3 && whole[2] / 100 == 1 && whole[3] / 100 == 0);
         } else if (name == "bounds") {
             bool missing = false, edge = false;
             try { (void)unirally::collision_points({{}, {}, {}}, 0, false); }

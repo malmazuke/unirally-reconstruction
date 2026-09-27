@@ -585,6 +585,14 @@ contracts; DRAGSTER guard overrides are in
 `tests/manifests/native/dragster-race-guards.reference.json`. The fuzz reports
 aborts only; divergences need an original capture of the same timeline.
 
+A stunt event (STUNT-EVENT-RACE, R-0066) runs on its own scenario, `zoom_zoo_runner --start
+classic.track.NN` for NN in 02, 07, 12, 17, 22, 27, 32, 37, 42, with pack v24; `--best-medal M`
+(0-3, the rider's best medal on the tour) sets its qualifying score. A capture of one is compared
+with `python3 -m tools.unirally_lab.native.track_reference explore --reference DIR --binary
+build/lab-release/src/core/zoom_zoo_runner --pack local/classic-pal-crawler-tracks-v24.pack
+--scenario auto --out OUT.json` (the captured track's own scenario; the rows end at the 105th
+result load, where the stunt result takes over).
+
 ## Opposing directions (ZOOM-ZOO-OPPOSING-INPUT)
 
 Added in `task/zoom-zoo-opposing-input` for

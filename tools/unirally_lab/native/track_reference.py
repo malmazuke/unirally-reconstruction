@@ -368,7 +368,12 @@ def native_rows(binary, pack, track, count, scenario, hold=None, controller=None
         # A stunt event's qualifying score follows the rider's best medal on the tour (R-0066).
         if best_medal:
             base += ['--best-medal', str(best_medal)]
-        start = int(subprocess.run(base+['--inputs', str(empty)], capture_output=True, text=True, timeout=60).stdout.split()[0])
+        first = subprocess.run(base+['--inputs', str(empty)], capture_output=True, text=True, timeout=60)
+        if first.returncode or not first.stdout.split():
+            # A runner that cannot start the scenario (a binary before STUNT-EVENT-RACE on a stunt
+            # event) compares no rows.
+            return [], first.returncode, first.stderr.strip(), None
+        start = int(first.stdout.split()[0])
         inputs = root/'inputs.txt'
         # The capture's held input, if any, by update (it starts that many updates
         # after the original's boundary, whatever native's frame label).
