@@ -2,7 +2,7 @@
 
 ## Assignment
 
-- Status: **in progress**. Queued 27 September 2026 (UTC) by the STUNT-EVENTS research (COVERAGE-ROADMAP
+- Status: **accepted** (tier 1, pull request #39, merged in `e131469`; approved after one returned review). Queued 27 September 2026 (UTC) by the STUNT-EVENTS research (COVERAGE-ROADMAP
   item 9); claimed 27 September 2026 at 02:20Z by the Claude Code desktop session that ran
   FIFTH-WIN-COMPLETION, on `94b3034`. The implementation worker started on `e01aaaa` while
   FIFTH-WIN-COMPLETION was in its gates; its commits were moved onto this claim.
