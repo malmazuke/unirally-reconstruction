@@ -1,5 +1,13 @@
 # Project state
 
+Updated 27 September 2026 (STUNT-HUD): **the stunt events look as the original's do.**
+- A stunt event's race picture (the clock counting down, the score and qualifying field, no
+  opponent) and HUNTER's NEON stunt event, lit under the rider, are native: every picture of the
+  compared stunt races equal ([R-0068](research/R-0068-stunt-hud.md)).
+- On NEON the original replaces the HUNTER tag effects with its lighting; native now does too.
+- Pack profile **v26** (`content pack --rules tests/manifests/content/classic-crawler-tracks-pack.json
+  --out local/classic-pal-crawler-tracks-v26.pack`).
+
 Updated 27 September 2026 (STUNT-RESULT): **the one-player game's stunt events play through from
 the menus.**
 - After a stunt event the result counts up the player's tricks, shows the score, best and the
