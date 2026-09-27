@@ -63,6 +63,8 @@ class ScriptContractTests(unittest.TestCase):
             {"schema_version": 1, "frames": 10, "cartridge_ram_writes": [{"after_frame": 1, "offset": -1, "byte": 1}]},
             {"schema_version": 1, "frames": 10, "cartridge_ram_writes": [{"after_frame": 1, "offset": 0, "byte": 0x100}]},
             {"schema_version": 1, "frames": 10, "cartridge_ram_writes": [{"after_frame": 1, "offset": 0}]},
+            {"schema_version": 1, "frames": 10, "cartridge_ram_writes": [{"after_frame": 1, "offset": 0, "byte": 1},
+                                                                         {"after_frame": 1, "offset": 0, "byte": 2}]},
         ]
         for data in bad:
             with self.subTest(script=data):
@@ -76,7 +78,6 @@ class ScriptContractTests(unittest.TestCase):
         self.assertEqual(worker.inputs_for_frame(script, 3), {0: {"start", "a"}, 1: set()})
         self.assertEqual(worker.inputs_for_frame(script, 4), {0: {"start", "a"}, 1: {"b"}})
         self.assertEqual(worker.inputs_for_frame(script, 5), {0: set(), 1: {"b"}})
-
 
     def test_cartridge_ram_writes_follow_their_frame(self) -> None:
         script = worker.validate_script({"schema_version": 1, "frames": 10, "cartridge_ram_writes": [

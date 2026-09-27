@@ -45,7 +45,7 @@ The four classes partition all 131,072 bytes. **Unknown share: 40.4%** - above D
 
 ## Cited addresses
 
-1255 distinct code-bank ROM addresses cited by the research, task, inventory and content records (`labels.json`). By position: dat 23, loc 748, mid 18, sub 295, unk 171 (sub routine start, loc instruction start, mid inside an instruction, dat data, unk unknown). By class: data 23, inferred 194, observed 867, unknown 171.
+1254 distinct code-bank ROM addresses cited by the research, task, inventory and content records (`labels.json`). By position: dat 23, loc 748, mid 18, sub 295, unk 170 (sub routine start, loc instruction start, mid inside an instruction, dat data, unk unknown). By class: data 23, inferred 194, observed 867, unknown 170.
 
 Cited addresses in `unknown` bytes:
 
@@ -172,7 +172,6 @@ Cited addresses in `unknown` bytes:
 | $83:8000 | docs/research/R-0064-hunter-ending-and-soft-reset.md |
 | $83:800C | docs/research/R-0055-rider-menu.md |
 | $83:8535 | docs/research/R-0045-static-code-map.md, tasks/STATIC-CODE-MAP.md |
-| $83:87D4 | docs/research/R-0065-fifth-win-completion.md |
 | $83:87E9 | docs/research/R-0057-one-run-result.md |
 | $83:87F5 | docs/research/R-0065-fifth-win-completion.md |
 | $83:87FB | docs/research/R-0065-fifth-win-completion.md |

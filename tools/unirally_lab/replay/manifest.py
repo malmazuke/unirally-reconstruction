@@ -206,6 +206,8 @@ def _validate(data: Any) -> dict[str, Any]:
         if not (0 <= w["after_frame"] < frames - 1 and 0 <= w["offset"] < 0x2000 and 0 <= w["byte"] <= 0xFF):
             raise ManifestError(f"cartridge_ram_writes[{i}]: need 0 <= after_frame < run.frames - 1, "
                                 "0 <= offset < 0x2000 and 0 <= byte <= 255")
+        if any((v["after_frame"], v["offset"]) == (w["after_frame"], w["offset"]) for v in writes[:i]):
+            raise ManifestError(f"cartridge_ram_writes[{i}]: a second write to the same byte after the same frame")
         if origin["kind"] == "state" and w["after_frame"] <= origin["after_frame"]:
             raise ManifestError(f"cartridge_ram_writes[{i}]: a state origin's run starts after after_frame")
 

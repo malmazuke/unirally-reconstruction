@@ -26,11 +26,11 @@
 #include <fstream>
 #include <iostream>
 #include <map>
-#include <tuple>
 #include <optional>
 #include <sstream>
 #include <stdexcept>
 #include <string>
+#include <tuple>
 #include <utility>
 #include <vector>
 
@@ -59,6 +59,22 @@ std::uint8_t& record_byte(unirally::OnePlayerRecords& records, std::uint32_t off
     throw std::invalid_argument("--record-write: not a done track or a medal offset");
 }
 
+// A whole unsigned number in the base, at most the limit; refuses a sign, trailing text or overflow.
+std::uint32_t parse_number(const std::string& text, int base, std::uint32_t limit,
+                           const std::string& what) {
+    std::size_t end = 0;
+    unsigned long value = 0;
+    try {
+        if (!text.empty() && text.front() != '-' && text.front() != '+')
+            value = std::stoul(text, &end, base);
+    } catch (const std::exception&) {
+        end = 0;
+    }
+    if (end == 0 || end != text.size() || value > limit)
+        throw std::invalid_argument("--record-write: bad " + what + ": " + text);
+    return static_cast<std::uint32_t>(value);
+}
+
 Options parse_options(int argc, char** argv) {
     Options options;
     for (int i = 1; i < argc; ++i) {
@@ -82,9 +98,9 @@ Options parse_options(int argc, char** argv) {
         } else if (option == "--reset-upload-delay") {
             options.reset_upload_delays.push_back(static_cast<std::uint32_t>(std::stoul(value())));
         } else if (option == "--record-write") {
-            const auto frame = static_cast<std::uint32_t>(std::stoul(value()));
-            const auto offset = static_cast<std::uint32_t>(std::stoul(value(), nullptr, 16));
-            const auto byte = static_cast<std::uint8_t>(std::stoul(value(), nullptr, 16));
+            const auto frame = parse_number(value(), 10, UINT32_MAX - 1, "frame");
+            const auto offset = parse_number(value(), 16, 0x1fff, "offset");
+            const auto byte = static_cast<std::uint8_t>(parse_number(value(), 16, 0xff, "byte"));
             unirally::OnePlayerRecords check;
             record_byte(check, offset); // refuses an offset native keeps no record for
             options.record_writes.emplace_back(frame, offset, byte);

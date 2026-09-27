@@ -135,6 +135,7 @@ class ManifestSchemaTests(unittest.TestCase):
             "write offset": mutate(cartridge_ram_writes=[{"after_frame": 10, "offset": 0x2000, "byte": 1}]),
             "write byte": mutate(cartridge_ram_writes=[{"after_frame": 10, "offset": 0, "byte": 256}]),
             "write bool": mutate(cartridge_ram_writes=[{"after_frame": 10, "offset": 0, "byte": True}]),
+            "write twice": mutate(cartridge_ram_writes=[{"after_frame": 10, "offset": 0, "byte": 1}, {"after_frame": 10, "offset": 0, "byte": 2}]),
             "write before state": mutate(origin=state_origin, cartridge_ram_writes=[{"after_frame": 150, "offset": 0, "byte": 1}]),
             "expected key": mutate(expected={"av_digest": "a" * 64}),
             "expected digest": mutate(expected={"sample_digest": "xyz"}),

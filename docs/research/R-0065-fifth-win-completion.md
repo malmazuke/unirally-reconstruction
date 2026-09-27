@@ -12,8 +12,9 @@ compares native with it.
 
 On the result's exit (`$83:879A`, its pad read), `$83:87B6` reads pad 1. When it is not exactly
 Select + X + R, `$83:87BB` branches to `$83:87C0`, which runs the race's win test through a jump
-table (`$83:88F7`). For a timed race the test is `$83:88D3-88DD`: the player's total must be
-strictly under the opponent's, so a tie is a loss. A win sets Z at `$83:88F1`. Then:
+table (`$83:88F7`, by race mode). For a one-run race and a lap race alike the test is
+`$83:88D3-88DD`: the player's total must be strictly under the opponent's, so a tie is a loss. A
+stunt event's is `$83:88E1`. A win sets Z at `$83:88F1`. Then:
 
 - `$83:87F5-87FB` marks the track done: `$77:1075` + (`$CE` & 0x3F) = 1 (`$83:9EC8`).
 - `$83:8801-8813` adds the tour's five done bytes, from `$77:1075` + 5 x `$D0` (`$83:9ED5`), in 8
@@ -39,14 +40,15 @@ keeps neither.
   the choice, read 0 afterwards. Native clears them the same way (R-0057).
 - **The route taken** is cont-win's DRAGSTER win (R-0058), with CRAWLER's other four done bytes
   (`$77:1076-1079`) set to 1 after frame 2000, during the race. Nothing reads them before the
-  scoring. The work RAM is byte for byte the forced-choice capture's up to frame 3798, where the two
-  runs' inputs first differ.
+  scoring. The work RAM is byte for byte the forced-choice capture's up to frame 3798; the inputs
+  first differ at 3799 (the review found the first difference there on full work RAM digests).
 
 A replay manifest can now carry such writes (`cartridge_ram_writes`: after a frame, an offset in
 cartridge RAM and a byte). The reference worker makes each write after the frame's sample and
 before a state saved after that frame. A manifest without writes derives the same script as before.
 The front-end runner replays them with `--record-write FRAME OFFSET BYTE`, for the done bytes and
-the medals.
+the medals. The injected write is not a CPU store, so an access log shows the bytes read with no
+store before them, and the runner's `--records` dump at a write's own frame comes before it.
 
 ## Native
 
@@ -68,7 +70,7 @@ with the pictures from 3790 to 6300, and the work RAM series from `access captur
 task's copies of `compare.py` and `sram.py`, which pass the manifest's writes to the runner.
 
 The two captures of the manifest agree: the research's own script and the project's tools give the
-same work RAM on all 6,301 frames and the same 2,511 pictures.
+same work RAM `$0000-$1FFF` on all 6,301 frames and the same 2,511 pictures.
 
 | Comparison | Frames compared | Pictures equal | Differences |
 | --- | --- | --- | --- |
@@ -76,14 +78,15 @@ same work RAM on all 6,301 frames and the same 2,511 pictures.
 | fifth-win's records (1000, 3803, 3804, 3900, 5600, 6300) | 6 | - | none |
 | fifth-win without the writes (main's runner) | from 3805 | - | native opens PICK TRACK, the original the award |
 
-The coverage capture executed the win test `$83:88D3-88F3` and the scoring `$83:87C0-8813` (the
-forced captures skip both), then the completion from `$83:881B`. `static-map` reads only the tracked
+The coverage capture executed `$83:87C0-87D4`, `$83:87F5-8813`, the win test's `$83:88D3-88DD`
+and `$83:88F1-88F3` (the forced captures skip them), then the completion from `$83:881B`. The loss
+path is not in it. `static-map` reads only the tracked
 maps, none of them a front-end capture, so its listing still shows the scoring as unobserved.
 
 ## Not covered
 
-- A fifth win on a lap race (the same code from `$83:87D4`, with its own win test) or on a stunt
-  event (`$83:88E1`, stunt points).
+- A fifth win on a lap race (the same code and win test, not captured) or on a stunt event
+  (`$83:88E1`, stunt points).
 - A fifth win that raises a medal to gold (an ending), or one on HUNTER. From `$83:881B` these are
   R-0062's and R-0064's paths.
 - PICK TRACK with four done tracks written before it (its markers and cursor search): here the

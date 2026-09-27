@@ -106,6 +106,8 @@ def validate_script(data: Any) -> dict[str, Any]:
             raise ScriptError(f"cartridge_ram_writes[{i}]: after_frame, offset and byte must be integers")
         if not (0 <= entry["after_frame"] < frames and entry["offset"] >= 0 and 0 <= entry["byte"] <= 0xFF):
             raise ScriptError(f"cartridge_ram_writes[{i}]: need 0 <= after_frame < frames, offset >= 0, 0 <= byte <= 255")
+        if any((v["after_frame"], v["offset"]) == (entry["after_frame"], entry["offset"]) for v in writes[:i]):
+            raise ScriptError(f"cartridge_ram_writes[{i}]: a second write to the same byte after the same frame")
     options = data.get("core_options", {})
     if not isinstance(options, dict) or any(not isinstance(k, str) or not isinstance(v, str) for k, v in options.items()):
         raise ScriptError("core_options must map strings to strings")
@@ -329,6 +331,9 @@ def run(args: argparse.Namespace) -> int:
     out["cartridge_ram_size"] = len(core.cartridge_ram())
     if fields and any(f["start"] + f["length"] > out["wram_size"] for f in fields):
         print(f"declared fields exceed the core's work RAM of {out['wram_size']} bytes", file=sys.stderr)
+        return EXIT_INVALID_INPUT
+    if any(w["offset"] >= out["cartridge_ram_size"] for w in script.get("cartridge_ram_writes", [])):
+        print(f"a cartridge RAM write lies outside the core's {out['cartridge_ram_size']} bytes", file=sys.stderr)
         return EXIT_INVALID_INPUT
     out["initial"] = {"wram_sha256": hashlib.sha256(core.wram()).hexdigest(),
                       "cartridge_ram_sha256": hashlib.sha256(core.cartridge_ram()).hexdigest(),

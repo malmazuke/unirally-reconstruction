@@ -11574,15 +11574,6 @@
   ]
  },
  {
-  "address": "$83:87D4",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_8387D4",
-  "source_records": [
-   "docs/research/R-0065-fifth-win-completion.md"
-  ]
- },
- {
   "address": "$83:87E9",
   "class": "unknown",
   "comment": "unknown",

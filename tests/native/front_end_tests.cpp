@@ -835,6 +835,18 @@ void race_result_tests() {
   run(summed, content, 2, {0x8000, 0});
   require(run_to(summed, content, FrontEndScreen::tour_award, {}, 5));
   require(summed.records.medals[0] == 1 && summed.records.tracks_done[1] == 0);
+  // The sum is 8 bits: 0xFF, 1, 1, 1 and the win make 3, not a completion.
+  auto wrapped = to_race();
+  wrapped.records.tracks_done[1] = 0xff;
+  for (unsigned track = 2; track < 5; ++track)
+    wrapped.records.tracks_done[track] = 1;
+  unirally::return_from_race(wrapped, content, 5000, {3000, 4000});
+  require(run_to(wrapped, content, FrontEndScreen::race_result, {}, 104));
+  run(wrapped, content, 12);
+  run(wrapped, content, 2, {0x8000, 0});
+  run(wrapped, content, 5);
+  require(wrapped.screen != FrontEndScreen::tour_award &&
+          wrapped.records.medals[0] == 0 && wrapped.records.tracks_done[0] == 1);
   // A second race in the session: PICK TRACK comes back on the next undone
   // track, which NOW PLAYING then races.
   require(run_to(won, content, FrontEndScreen::track_menu));
