@@ -69,7 +69,11 @@ the primary integrated.
 | --- | --- |
 | Stunt events | Every race row exact from the boundary through the result load on the seven riding captures (BOWL three times, HILL CLIMB twice, JUMPS, DOWNER: 2,808 to 2,952 rows each) and the nine idle captures of the nine tracks (1,502 to 1,571 rows each). |
 | State | ROM-free tests round-trip a stunt event's state and refuse broken ones (`stunt_event_tests`). |
-| Nothing moves | The gates: pending. |
+| Nothing moves | The gates on `5dd973f` (`local/evidence/stunt-event-race/gates-5dd973f.out`, 02:22-04:18Z, 116 minutes): the three presets, ctest 28 of 28, the synthetic suite, both v1 contracts, every hidden app run and the eleven differential gates pass. The equivalence sweep against main `94b3034`'s binaries compares 1,933,523 updates, 1,047 restarts and 2,052 pictures; its 9 differing runs are exactly the nine stunt scenarios, which main refuses. The per-track recompare's race tracks are identical (16 of 16, 20 of 20). Every earlier front-end comparison and records check is unchanged. The stunt captures: 16 of 16 exact. The tooling tests pass (502); no function is over 80 lines; the address index passes. The gates on the corrections: pending. |
+
+## Review
+
+Tier 1, a fresh Opus 5.5 subagent in an isolated worktree, of `5dd973f`: request changes, for one must-fix (`review-5dd973f.md`). It found the race rules, the stunt-mode gating and save and restore correct: 8,651 states of three captures restore byte for byte, 18 continuations match, and three mutations (the cooldown, the finish sequence, the vertical cap) break the comparisons. The must-fix: `unirally --track` ran a stunt event into an unsupported result screen; `8c9adc7` refuses it as the menus do, with a contract test. The should-fixes, all made in `8c9adc7`: restore guards for the finish display (both settled), the tallies (no points without a trick), a running clock (no later than the header's) and the switched-off opponent (still, at its start); a mid-finish round-trip test with the guards; ROM-free tests of the cooldown rule and the finish sequence's wiring (ctest now catches reverting either); the publication check stopping only in a stunt event, once the player settles; R-0066 marking its listing-only rules; the capture count.
 
 ## Handoff
 
