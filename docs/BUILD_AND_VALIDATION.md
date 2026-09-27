@@ -586,12 +586,16 @@ contracts; DRAGSTER guard overrides are in
 aborts only; divergences need an original capture of the same timeline.
 
 A stunt event (STUNT-EVENT-RACE, R-0066) runs on its own scenario, `zoom_zoo_runner --start
-classic.track.NN` for NN in 02, 07, 12, 17, 22, 27, 32, 37, 42, with pack v24; `--best-medal M`
+classic.track.NN` for NN in 02, 07, 12, 17, 22, 27, 32, 37, 42, with pack v24 or later; `--best-medal M`
 (0-3, the rider's best medal on the tour) sets its qualifying score. A capture of one is compared
 with `python3 -m tools.unirally_lab.native.track_reference explore --reference DIR --binary
 build/lab-release/src/core/zoom_zoo_runner --pack local/classic-pal-crawler-tracks-v25.pack
 --scenario auto --out OUT.json` (the captured track's own scenario; the rows end at the 105th
-result load, where the stunt result takes over).
+result load, where the stunt result takes over). The stunt result, its records and the way back to
+PICK TRACK (STUNT-RESULT, R-0067) are compared as the other results are, with `front_end_runner`
+and a capture's work RAM and cartridge RAM series from power-on (`local/evidence/stunt-result/`:
+`decode/compare.py CAPTURE`, `decode/sram.py CAPTURE BINARY PACK FRAME...`); pack v25 adds the
+result's head colours and texts.
 
 ## Opposing directions (ZOOM-ZOO-OPPOSING-INPUT)
 

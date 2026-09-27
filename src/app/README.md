@@ -23,12 +23,12 @@ python3 tools/project.py frontend run
 The app starts at power-on, as the original does (R-0054): the Nintendo screen, the title
 and the main menu. 1P runs the one-player setup (R-0055, R-0056): PICK YOUR UNI, PICK TOUR, PICK TRACK and NOW
 PLAYING, where Race starts the chosen race: any rider against the opponent NOW PLAYING chose
-(R-0061); a stunt event shows a notice. After a race the menus take over when the race's
-result load begins: the result screen (R-0057; a lap race's graph, R-0058), a press, then PICK
-TRACK again with the records and the done tracks updated. A tour's completion (its fifth win, or
+(R-0061), a stunt event included (R-0066). After a race the menus take over when the race's
+result load begins: the result screen (R-0057; a lap race's graph, R-0058; a stunt event's trick
+tally, R-0067), a press, then PICK TRACK again with the records and the done tracks updated. A tour's completion (its fifth win, or
 pad 1 holding exactly Select + X + R as the result is left) shows the medal award and returns to
 PICK TOUR (R-0059); a gold medal plays the tour's ending and PICK TOUR then reveals any tours it
-opens (R-0062); HUNTER's ending is not native yet. In a race started from the menus the
+opens (R-0062) and HUNTER's plays its pages and credits, then resets (R-0064). In a race started from the menus the
 pause menu's second choice ends the race as the original's QUIT does: during the start countdown
 it goes back to NOW PLAYING, after it the result shows QUIT and the race counts as lost (R-0060).
 A race started with `--track` still restarts from it. 2P, VS, LEAGUE, OPTIONS and the demo are not
