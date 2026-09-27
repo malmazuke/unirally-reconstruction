@@ -823,6 +823,30 @@ void race_result_tests() {
   require(run_to(fifth, content, FrontEndScreen::tour_award, {}, 5));
   require(fifth.records.medals[0] == 1 && fifth.records.tracks_done[0] == 0 &&
           fifth.records.tracks_done[4] == 0);
+  // The completion test adds the five done bytes and needs 5 (`$83:8805-8813`,
+  // R-0065): a done byte of 2 from foreign save data stands for two tracks.
+  auto summed = to_race();
+  summed.records.tracks_done[1] = 2;
+  summed.records.tracks_done[2] = 1;
+  summed.records.tracks_done[3] = 1;
+  unirally::return_from_race(summed, content, 5000, {3000, 4000});
+  require(run_to(summed, content, FrontEndScreen::race_result, {}, 104));
+  run(summed, content, 12);
+  run(summed, content, 2, {0x8000, 0});
+  require(run_to(summed, content, FrontEndScreen::tour_award, {}, 5));
+  require(summed.records.medals[0] == 1 && summed.records.tracks_done[1] == 0);
+  // The sum is 8 bits: 0xFF, 1, 1, 1 and the win make 3, not a completion.
+  auto wrapped = to_race();
+  wrapped.records.tracks_done[1] = 0xff;
+  for (unsigned track = 2; track < 5; ++track)
+    wrapped.records.tracks_done[track] = 1;
+  unirally::return_from_race(wrapped, content, 5000, {3000, 4000});
+  require(run_to(wrapped, content, FrontEndScreen::race_result, {}, 104));
+  run(wrapped, content, 12);
+  run(wrapped, content, 2, {0x8000, 0});
+  run(wrapped, content, 5);
+  require(wrapped.screen != FrontEndScreen::tour_award &&
+          wrapped.records.medals[0] == 0 && wrapped.records.tracks_done[0] == 1);
   // A second race in the session: PICK TRACK comes back on the next undone
   // track, which NOW PLAYING then races.
   require(run_to(won, content, FrontEndScreen::track_menu));

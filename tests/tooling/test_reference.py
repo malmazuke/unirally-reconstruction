@@ -58,6 +58,13 @@ class ScriptContractTests(unittest.TestCase):
             {"schema_version": 1, "frames": 10, "core_options": {"bsnes_entropy": 1}},
             {"schema_version": 1, "frames": 10, "core_options": {"not_an_option": "x"}},
             {"schema_version": 1, "frames": 10, "trace_entries": -1},
+            {"schema_version": 1, "frames": 10, "cartridge_ram_writes": {}},
+            {"schema_version": 1, "frames": 10, "cartridge_ram_writes": [{"after_frame": 10, "offset": 0, "byte": 1}]},
+            {"schema_version": 1, "frames": 10, "cartridge_ram_writes": [{"after_frame": 1, "offset": -1, "byte": 1}]},
+            {"schema_version": 1, "frames": 10, "cartridge_ram_writes": [{"after_frame": 1, "offset": 0, "byte": 0x100}]},
+            {"schema_version": 1, "frames": 10, "cartridge_ram_writes": [{"after_frame": 1, "offset": 0}]},
+            {"schema_version": 1, "frames": 10, "cartridge_ram_writes": [{"after_frame": 1, "offset": 0, "byte": 1},
+                                                                         {"after_frame": 1, "offset": 0, "byte": 2}]},
         ]
         for data in bad:
             with self.subTest(script=data):
@@ -71,6 +78,12 @@ class ScriptContractTests(unittest.TestCase):
         self.assertEqual(worker.inputs_for_frame(script, 3), {0: {"start", "a"}, 1: set()})
         self.assertEqual(worker.inputs_for_frame(script, 4), {0: {"start", "a"}, 1: {"b"}})
         self.assertEqual(worker.inputs_for_frame(script, 5), {0: set(), 1: {"b"}})
+
+    def test_cartridge_ram_writes_follow_their_frame(self) -> None:
+        script = worker.validate_script({"schema_version": 1, "frames": 10, "cartridge_ram_writes": [
+            {"after_frame": 3, "offset": 0x1076, "byte": 1}, {"after_frame": 3, "offset": 0x1077, "byte": 2}]})
+        self.assertEqual(worker.cartridge_ram_writes_after(script, 2), [])
+        self.assertEqual(worker.cartridge_ram_writes_after(script, 3), [(0x1076, 1), (0x1077, 2)])
 
 
 class SamplingAndPairingTests(unittest.TestCase):

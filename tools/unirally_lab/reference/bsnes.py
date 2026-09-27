@@ -278,6 +278,14 @@ class BsnesCore:
     def cartridge_ram(self) -> bytes:
         return self._memory(1)
 
+    def write_cartridge_ram(self, offset: int, data: bytes) -> None:
+        """Write bytes into the core's live cartridge RAM (the save RAM the game reads and writes)."""
+        size = C.c_size_t()
+        ptr = self._lib.unirally_memory(1, C.byref(size))
+        if not ptr or offset < 0 or offset + len(data) > size.value:
+            raise CoreError(f"cartridge RAM write at {offset:#x} ({len(data)} bytes) is outside its {size.value} bytes")
+        C.memmove(ptr + offset, data, len(data))
+
     def registers_raw(self) -> bytes:
         buf = C.create_string_buffer(_REGISTERS.size)
         n = self._lib.unirally_cpu_registers(buf, _REGISTERS.size)

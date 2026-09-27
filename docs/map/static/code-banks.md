@@ -45,7 +45,7 @@ The four classes partition all 131,072 bytes. **Unknown share: 40.4%** - above D
 
 ## Cited addresses
 
-1240 distinct code-bank ROM addresses cited by the research, task, inventory and content records (`labels.json`). By position: dat 22, loc 744, mid 18, sub 294, unk 162 (sub routine start, loc instruction start, mid inside an instruction, dat data, unk unknown). By class: data 22, inferred 191, observed 865, unknown 162.
+1254 distinct code-bank ROM addresses cited by the research, task, inventory and content records (`labels.json`). By position: dat 23, loc 748, mid 18, sub 295, unk 170 (sub routine start, loc instruction start, mid inside an instruction, dat data, unk unknown). By class: data 23, inferred 194, observed 867, unknown 170.
 
 Cited addresses in `unknown` bytes:
 
@@ -173,7 +173,15 @@ Cited addresses in `unknown` bytes:
 | $83:800C | docs/research/R-0055-rider-menu.md |
 | $83:8535 | docs/research/R-0045-static-code-map.md, tasks/STATIC-CODE-MAP.md |
 | $83:87E9 | docs/research/R-0057-one-run-result.md |
-| $83:88D3 | docs/research/R-0058-lap-result.md |
+| $83:87F5 | docs/research/R-0065-fifth-win-completion.md |
+| $83:87FB | docs/research/R-0065-fifth-win-completion.md |
+| $83:8801 | docs/research/R-0065-fifth-win-completion.md |
+| $83:8805 | docs/research/R-0065-fifth-win-completion.md |
+| $83:8815 | docs/research/R-0065-fifth-win-completion.md |
+| $83:88D3 | docs/research/R-0058-lap-result.md, docs/research/R-0065-fifth-win-completion.md |
+| $83:88DD | docs/research/R-0065-fifth-win-completion.md |
+| $83:88E1 | docs/research/R-0065-fifth-win-completion.md |
+| $83:88F1 | docs/research/R-0065-fifth-win-completion.md |
 | $83:8D5D | docs/research/R-0058-lap-result.md, tasks/FRONT-END-LAP-RESULT.md |
 | $83:8E1C | docs/research/R-0056-tour-track-now-playing.md |
 | $83:8E26 | docs/research/R-0056-tour-track-now-playing.md |
@@ -183,7 +191,7 @@ Cited addresses in `unknown` bytes:
 | $83:9B09 | docs/research/R-0055-rider-menu.md |
 | $83:9B13 | docs/research/R-0055-rider-menu.md |
 | $83:9B27 | docs/research/R-0055-rider-menu.md, docs/research/R-0056-tour-track-now-playing.md |
-| $83:9EC8 | docs/research/R-0057-one-run-result.md |
+| $83:9EC8 | docs/research/R-0057-one-run-result.md, docs/research/R-0065-fifth-win-completion.md |
 | $83:9F96 | docs/research/R-0053-result-title-printer.md, tasks/LOCKED-TOURS.md |
 | $83:9FFA | docs/research/R-0046-track-breadth-matrix.md, docs/research/R-0053-result-title-printer.md, tasks/LOCKED-TOURS.md, tasks/TRACK-BREADTH.md |
 | $83:A1B4 | docs/research/R-0056-tour-track-now-playing.md |

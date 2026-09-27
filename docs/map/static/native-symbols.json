@@ -4823,6 +4823,16 @@
    "region": "rom"
   },
   {
+   "address": "$83:8805",
+   "native": [
+    "src/core/race_result.cpp:score_race"
+   ],
+   "range_ends": [
+    "$83:8813"
+   ],
+   "region": "rom"
+  },
+  {
    "address": "$83:881B",
    "native": [
     "src/core/award.cpp:(file)",
@@ -9037,7 +9047,11 @@
   {
    "address": "$77:069C",
    "native": [
-    "src/core/front_end.hpp:OnePlayerRecords::medals"
+    "src/core/front_end.hpp:OnePlayerRecords::medals",
+    "src/core/front_end_runner.cpp:(file)"
+   ],
+   "range_ends": [
+    "$77:073B"
    ],
    "region": "sram"
   },
@@ -9172,7 +9186,11 @@
   {
    "address": "$77:1075",
    "native": [
-    "src/core/front_end.hpp:OnePlayerRecords::tracks_done"
+    "src/core/front_end.hpp:OnePlayerRecords::tracks_done",
+    "src/core/front_end_runner.cpp:(file)"
+   ],
+   "range_ends": [
+    "$77:10A6"
    ],
    "region": "sram"
   },
@@ -10404,7 +10422,9 @@
     "$00:421A"
    ],
    "sram": [
-    "$77:0000"
+    "$77:0000",
+    "$77:069C",
+    "$77:1075"
    ],
    "wram": [
     "$0A00"
@@ -11978,6 +11998,7 @@
     "$80:D1E8",
     "$83:879A",
     "$83:87B6",
+    "$83:8805",
     "$83:9EC8"
    ],
    "sram": [
@@ -14589,10 +14610,10 @@
   }
  },
  "totals": {
-  "addresses": 1081,
+  "addresses": 1082,
   "io_addresses": 5,
   "native_symbols": 795,
-  "rom_addresses": 778,
+  "rom_addresses": 779,
   "sram_addresses": 35,
   "wram_addresses": 263
  }

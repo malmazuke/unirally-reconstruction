@@ -2,7 +2,7 @@
 
 ## Assignment
 
-- Status: **in review**. Queued 26 September 2026 (UTC) by FRONT-END-ENDINGS; claimed 26 September
+- Status: **accepted** (tier 2, pull request #37, merged in `e01aaaa`; approved). Queued 26 September 2026 (UTC) by FRONT-END-ENDINGS; claimed 26 September
   2026 at 20:40Z by the Claude Code desktop session that ran RACE-OFFSCREEN-ARROW, on `2ffcea0`.
 - Milestone: M4 (original game coverage: menus)
 - Coordinator: the claiming session is coordinator, primary and integrator

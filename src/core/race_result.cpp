@@ -4,8 +4,8 @@
 // the records (`$80:C786`) and scores the race (`$83:879A`), then PICK TRACK comes again.
 #include "front_end_screens.hpp"
 
-#include <algorithm>
 #include <array>
+#include <numeric>
 #include <stdexcept>
 
 namespace unirally::front_end_screens {
@@ -322,7 +322,8 @@ void update_records(FrontEndState& state) {
 // $83:879A on its pad read (`$80:D1E8`, the exit's third frame): pad 1 exactly Select + X + R
 // forces the tour's completion (`$83:87B6`); otherwise a win (a total strictly under the
 // opponent's) marks the track done, and the tour's fifth done track completes it; a loss sets
-// `$77:0742` bit 12.
+// `$77:0742` bit 12. The completion test adds the tour's five done bytes in 8 bits and needs 5
+// (`$83:8805-8813`), which is "all five done" for the 0 and 1 the game writes (R-0065).
 void score_race(FrontEndState& state, FrontEndPads pads) {
     constexpr std::uint16_t forced_completion = 0x2050;
     if (pads.one == forced_completion) {
@@ -339,10 +340,12 @@ void score_race(FrontEndState& state, FrontEndPads pads) {
     constexpr unsigned track_bits = 0x3f; // $83:9EC8
     records.tracks_done[track & track_bits] = 1;
     const auto first = track / tracks_per_tour * tracks_per_tour;
-    if (std::all_of(records.tracks_done.begin() + first,
-                    records.tracks_done.begin() + first + tracks_per_tour,
-                    [](std::uint8_t done) { return done != 0; }))
-        complete_tour(state);
+    const auto done = std::accumulate(records.tracks_done.begin() + first,
+                                      records.tracks_done.begin() + first + tracks_per_tour,
+                                      std::uint8_t{0}, [](std::uint8_t sum, std::uint8_t flag) {
+                                          return static_cast<std::uint8_t>(sum + flag);
+                                      });
+    if (done >= tracks_per_tour) complete_tour(state);
 }
 
 // $80:C24C and `$80:C206`: after a one-run result's fade, both pads released, then a press seen
