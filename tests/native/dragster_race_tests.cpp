@@ -15,8 +15,8 @@ int main() {
     using namespace unirally;
     // $81:A304-A51B: byte 13 = 0 takes the 1,024 x 16 arm ($81:A4C1), 0x40 the
     // 256 x 64 arm ($81:A445); 0x80, 0x20, 0x10 and 0x08 the arms read from the
-    // listing (TRACK-BREADTH). 0x04 also sets $0FF7 and is rejected, as is any
-    // value without an arm.
+    // listing (TRACK-BREADTH), and 0x04, which also sets $0FF7 (R-0066). Any
+    // value without an arm is rejected.
     std::array<std::uint8_t,14> header{};
     header[3]=0x44;header[5]=0x32;header[7]=0x44;header[9]=0x32; // DRAGSTER cells 68,50
     const auto dragster=track_geometry(header);
@@ -37,7 +37,12 @@ int main() {
         require(g.follow_window_low==arm.low && g.follow_window_high==arm.high && g.visible_left==arm.left && g.visible_right==arm.right);
         require(g.coarse_columns/4U==(arm.shape==0 ? 256U : arm.shape) && (g.coarse_columns*64U-1U)==g.position_mask);
     }
-    for(unsigned shape:{0x04U,0x01U,0x02U,0xC0U}) {auto other=header;other[13]=static_cast<std::uint8_t>(shape);rejects([&]{(void)track_geometry(other);});}
+    // R-0066: the 0x04 arm (track 37), 16 columns of 1,024 rows, the only one whole-height.
+    {auto narrow=header;narrow[13]=0x04;const auto g=track_geometry(narrow);
+     require(g.coarse_columns==16 && g.position_mask==0x03ff && g.screen_shift==6 && g.whole_height);
+     require(g.follow_window_low==-0x600 && g.follow_window_high==0x640 && g.visible_left==-0xc40 && g.visible_right==0x4000);
+     require(!zoom.whole_height && !dragster.whole_height);}
+    for(unsigned shape:{0x01U,0x02U,0xC0U}) {auto other=header;other[13]=static_cast<std::uint8_t>(shape);rejects([&]{(void)track_geometry(other);});}
     rejects([&]{(void)track_geometry(std::span<const std::uint8_t>(header.data(),13));});
 
     // Scenario: DRAGSTER initializes 48 frames before ZOOM ZOO on the accepted
@@ -70,15 +75,15 @@ int main() {
     auto legacy=start;legacy.native_initialization=false;rejects([&]{(void)serialize_zoom_zoo(legacy);});
 
     // TRACK-BREADTH part 3: the other cold-start race tracks. FLAT FUN (13) is a
-    // one-run race like DRAGSTER, INFINITY (14) a seven-lap race; the stunt
-    // events (2) and the tracks no cold start reaches (37) have no scenario.
+    // one-run race like DRAGSTER, INFINITY (14) a seven-lap race. Every one of the 45 tracks
+    // has a scenario since STUNT-EVENT-RACE (R-0066); no track 45 exists.
     const ClassicRaceTrack flat_fun{13},infinity{14};
     const auto flat=classic_race_scenario(flat_fun),seven=classic_race_scenario(infinity);
     require(flat.initialization_frame==1392 && flat.laps==1 && !flat.tour_race && flat.stable_result_won==226);
     require(seven.initialization_frame==1376 && seven.laps==7 && seven.tour_race && seven.stable_result_won==115);
-    require(classic_race_has_scenario(flat_fun) && !classic_race_has_scenario(ClassicRaceTrack{2}) &&
-            !classic_race_has_scenario(ClassicRaceTrack{37}));
-    rejects([&]{(void)classic_race_scenario(ClassicRaceTrack{2});});
+    require(classic_race_has_scenario(flat_fun) && classic_race_has_scenario(ClassicRaceTrack{2}) &&
+            !classic_race_has_scenario(ClassicRaceTrack{45}));
+    rejects([&]{(void)classic_race_scenario(ClassicRaceTrack{45});});
     // Its state carries its own identity, URTR13 06 (the 742-byte layout, the
     // special-tile words of R-0047 and R-0051 with $0C73, the checkpoint
     // flags of R-0048 and the HUNTER words of R-0052), and round-trips.
@@ -89,7 +94,7 @@ int main() {
     require(flat_bytes.size()==916 && classic_race_state_magic(flat_fun)==flat_magic && std::equal(flat_magic.begin(),flat_magic.end(),flat_bytes.begin()));
     const auto flat_restored=deserialize_zoom_zoo(flat_bytes);
     require(flat_restored.track==flat_fun && serialize_zoom_zoo(flat_restored)==flat_bytes);
-    // An identity naming DRAGSTER, ZOOM ZOO or a track without a scenario is refused.
+    // An identity naming DRAGSTER, ZOOM ZOO or a stunt event (whose state is URTRnn07) is refused.
     for(const auto digits:{std::array<std::uint8_t,2>{'0','0'},std::array<std::uint8_t,2>{'0','2'},std::array<std::uint8_t,2>{'3','7'}}) {
         auto renamed=flat_bytes;renamed[4]=digits[0];renamed[5]=digits[1];
         rejects([&]{(void)deserialize_zoom_zoo(renamed);});

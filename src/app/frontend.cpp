@@ -187,8 +187,12 @@ FrontEndSession::FrontEndSession(const ClassicContentPack &pack)
     : content_(front_end_content(pack)) {}
 
 bool native_one_player_race(const FrontEndState &state) {
+  // A stunt event runs natively (R-0066), but its result screen and records do not yet
+  // (STUNT-RESULT), so the menus still show the notice for it.
+  const ClassicRaceTrack track{state.tour_menu.track};
   return state.mode_chosen && state.mode == FrontEndMode::one_player &&
-         classic_race_has_scenario(ClassicRaceTrack{state.tour_menu.track});
+         classic_race_has_scenario(track) &&
+         !classic_race_scenario(track).stunt_event;
 }
 
 bool FrontEndSession::update(const std::array<std::uint16_t, 2> &ports) {

@@ -8,6 +8,7 @@
 #include <cstdint>
 #include <span>
 #include <stdexcept>
+#include <utility>
 
 namespace unirally {
 namespace {
@@ -36,6 +37,12 @@ constexpr unsigned camera_margin = 256, camera_cell_mask = 0xfff0;
 constexpr std::uint16_t sprites_off_screen = 0xe0e0, start_boost = 384, first_hint_phase = 30;
 constexpr std::uint8_t opponent_hud_oam_x = 0x65, checkpoint_unseen = 0xff;
 constexpr std::size_t reward_weight_count = 26;
+// R-0066: the stunt result screen takes over from result load 106 ($80:F0EE, dispatched once the
+// race's return has run; STUNT-RESULT), so a stunt event's result is stable at load 105.
+constexpr std::uint16_t stunt_stable_result = 105;
+// $83:9EEB: five tracks a tour; three qualifying scores a tour (no medal, bronze, silver or gold).
+constexpr unsigned tracks_per_tour = 5, qualifying_levels = 3;
+constexpr std::uint8_t best_medal_gold = 3;
 
 // A scenario the original sets up for `track`: a lap race or a one-run race, and the
 // HUNTER tour's opponent on its tracks.
@@ -52,7 +59,44 @@ ClassicRaceScenario observed_scenario(ClassicRaceTrack track, std::uint32_t init
             {0, hunter ? opponent::anti_uni : opponent::bronsen}};
 }
 
+// R-0066: a stunt event (race mode 2): no laps (one line crossing to start, $82:DB96-DBB2
+// storing 0 + 1), not a tour race, BRONSEN in the opponent's slot. On HUNTER's tour it keeps
+// `$131F` and the tag effects, but not ANTI-UNI ($80:B351-B35F skip $80:B361 in mode 2).
+ClassicRaceScenario stunt_scenario(ClassicRaceTrack track, std::uint32_t initialization_frame) {
+    const bool hunter = track.index >= first_hunter_track && track.index <= last_hunter_track;
+    ClassicRaceScenario scenario{track, initialization_frame, 0, stunt_stable_result,
+                                 stunt_stable_result, false, hunter, {0, opponent::bronsen}};
+    scenario.stunt_event = true;
+    return scenario;
+}
+
+// The race start's clock ($82:D7FD-D836): the track header's minutes (byte 1) and seconds (byte
+// 2, split into tens and units), no tenths. It counts down from there unless it is 0:00, when it
+// counts up; every race track's header holds 0:00 and every stunt event's 0:45.
+RaceTimerDigits start_clock(std::span<const std::uint8_t> decoded_track, bool stunt_event) {
+    constexpr unsigned header_minutes = 1, header_seconds = 2;
+    const unsigned seconds = decoded_track[header_seconds];
+    const RaceTimerDigits clock{decoded_track[header_minutes],
+                                static_cast<std::uint16_t>(seconds / 10U),
+                                static_cast<std::uint16_t>(seconds % 10U), 0, 0};
+    const bool counts_down = clock.minutes || clock.tens_seconds || clock.seconds;
+    if (counts_down != stunt_event)
+        throw std::invalid_argument(
+            "the track header's clock does not fit the race mode (a stunt event's counts down)");
+    return clock;
+}
+
 } // namespace
+
+std::uint16_t stunt_qualifying_score(std::span<const std::uint8_t> table, ClassicRaceTrack track,
+                                     std::uint8_t best_medal) {
+    if (best_medal > best_medal_gold) throw std::invalid_argument("a medal is 0 to 3");
+    const unsigned level = best_medal == best_medal_gold ? best_medal - 1U : best_medal;
+    const unsigned index = track.index / tracks_per_tour * qualifying_levels + level;
+    if (table.size() < 2U * (index + 1U))
+        throw std::invalid_argument("the stunt events' qualifying scores are missing (pack v17)");
+    return static_cast<std::uint16_t>(content_word(table, 2U * index));
+}
 
 ClassicRaceScenario classic_race_scenario(ClassicRaceTrack track) {
     // ZOOM ZOO: M4-16 primary, end-1376, three laps, result stable at load 115.
@@ -94,6 +138,13 @@ ClassicRaceScenario classic_race_scenario(ClassicRaceTrack track) {
     for (const auto& o : observed)
         if (o.index == track.index)
             return observed_scenario(track, o.initialization_frame, o.laps, o.lap_race);
+    // STUNT-EVENT-RACE (R-0066): the stunt events, place 2 of every tour, their boundaries on
+    // the laboratory's menu path (the cold start's four, then LOCKED-TOURS' unlocked path).
+    static constexpr std::array<std::pair<std::uint8_t, std::uint16_t>, 9> stunt_events{
+        {{2, 1335}, {12, 1343}, {22, 1331}, {32, 1349}, {7, 1336}, {17, 1330}, {27, 1360},
+         {37, 1368}, {42, 1399}}};
+    for (const auto& [index, initialization_frame] : stunt_events)
+        if (index == track.index) return stunt_scenario(track, initialization_frame);
     throw std::invalid_argument("classic race track has no recovered scenario");
 }
 
@@ -109,11 +160,13 @@ bool classic_race_has_scenario(ClassicRaceTrack track) {
 ClassicRaceScenario classic_race_scenario(ClassicRaceTrack track, RacePairing pairing,
                                           bool tutorial_hints) {
     auto scenario = classic_race_scenario(track);
-    // The one-player menus give HUNTER's tracks ANTI-UNI ($80:B361-B369) and the other tours'
-    // BRONSEN, SILVIA or GOLDWYN by the rider's medal ($80:B31F-B346).
-    const bool chosen = scenario.hunter_tour ? pairing.opponent == opponent::anti_uni
-                                             : pairing.opponent >= opponent::bronsen
-                                                   && pairing.opponent <= opponent::goldwyn;
+    // The one-player menus give HUNTER's race tracks ANTI-UNI ($80:B361-B369) and the other
+    // races, and every stunt event, BRONSEN, SILVIA or GOLDWYN by the rider's medal
+    // ($80:B31F-B346).
+    const bool chosen = scenario.hunter_tour && !scenario.stunt_event
+                          ? pairing.opponent == opponent::anti_uni
+                          : pairing.opponent >= opponent::bronsen
+                                && pairing.opponent <= opponent::goldwyn;
     if (pairing.rider >= rider_characters || !chosen)
         throw std::invalid_argument("the one-player menus cannot choose this race's pairing");
     scenario.pairing = pairing;
@@ -123,6 +176,9 @@ ClassicRaceScenario classic_race_scenario(ClassicRaceTrack track, RacePairing pa
 
 OpponentTier opponent_tier(const ClassicRaceScenario& scenario,
                            std::span<const std::uint8_t> catch_up_by_track) {
+    // A stunt event's AI flag `$0C6D` is already clear ($83:CBD8), so $83:CC0B skips the tier,
+    // HUNTER's included: level 0, no catch-up, and the non-zero mode's bound 0x48 ($83:CC72).
+    if (scenario.stunt_event) return {0, 0, lap_adjustment_limit};
     if (scenario.hunter_tour) return hunter_tier;
     OpponentTier tier;
     tier.ai_level = static_cast<std::uint8_t>(scenario.pairing.opponent - opponent_level_base);
@@ -153,9 +209,10 @@ TrackGeometry track_geometry(std::span<const std::uint8_t> decoded_track) {
     // are observed (DRAGSTER, ZOOM ZOO); the 0x80, 0x20, 0x10 and 0x08 arms
     // store the same fields with the same progression and are read from the
     // static listing (TRACK-BREADTH, R-0046) until a capture executes them.
-    // The 0x04 arm also sets $0FF7, which changes the sampler ($81:8A2C) and
-    // the BG1 map fetch ($81:AD1D-ADA7); that is not recovered, so it is
-    // rejected, as is any other value (the original falls into BRK at $A342).
+    // The 0x04 arm (SPRINTER's stunt event, track 37; R-0066) continues the progression and
+    // also sets $0FF7, which stops the sampler from clamping a negative y ($81:8A2C-8A2F); its
+    // other use, the BG1 map fetch ($81:AD1D-ADA7), is the picture's. Any other value is
+    // rejected (the original falls into BRK at $A342).
     switch (decoded_track[13]) {
     case 0x00: return {1024, 0xffff, 0, -0x18, 0x19, -0x31, 0x100};   // $81:A4C1-A4FD, 1,024 x 16
     case 0x80: return {512, 0x7fff, 1, -0x30, 0x32, -0x62, 0x200};    // $81:A483-A4BF, 512 x 32
@@ -163,6 +220,8 @@ TrackGeometry track_geometry(std::span<const std::uint8_t> decoded_track) {
     case 0x20: return {128, 0x1fff, 3, -0xc0, 0xc8, -0x188, 0x800};   // $81:A406-A444, 128 x 128
     case 0x10: return {64, 0x0fff, 4, -0x180, 0x190, -0x310, 0x1000}; // $81:A3C7-A405, 64 x 256
     case 0x08: return {32, 0x07ff, 5, -0x300, 0x320, -0x620, 0x2000}; // $81:A388-A3C6, 32 x 512
+    case 0x04:                                                         // $81:A343-A387, 16 x 1,024
+        return {16, 0x03ff, 6, -0x600, 0x640, -0xc40, 0x4000, true};
     default: throw std::invalid_argument("track playfield shape is outside the recovered tracks");
     }
 }
@@ -189,6 +248,10 @@ ZoomZooState classic_race_start(const ZoomZooContent& content,
     state.native_initialization = state.complete_race = state.sustained = true;
     auto& movement = state.movement;
     movement.frame = scenario.initialization_frame;
+    movement.timer = start_clock(track, scenario.stunt_event);
+    if (scenario.stunt_event) // $80:99ED
+        state.stunt.qualifying_score =
+            stunt_qualifying_score(content.qualifying_scores, scenario.track, scenario.best_medal);
     movement.player_input.vertical = movement.player_input.horizontal = direction::neutral;
     movement.countdown = start_countdown; // the timer begins below 68
     movement.rewards.write_cursor = 1;    // $81:C615-C619
@@ -237,7 +300,10 @@ void restart_zoom_zoo(ZoomZooState& state, const ZoomZooContent& content) {
     // $82:D94C reads the rider's tutorial bit again, which $83:CE2C set in the cartridge RAM
     // when the hints ended: the restart's hints run only if they still were.
     const bool hints = state.player_announcements.hints_active != 0;
+    // The race's setup reads the same medal again ($80:99ED): the qualifying score stays.
+    const auto qualifying_score = state.stunt.qualifying_score;
     state = classic_race_start(content, classic_race_scenario(state.track, state.pairing, hints));
+    state.stunt.qualifying_score = qualifying_score;
 }
 
 } // namespace unirally

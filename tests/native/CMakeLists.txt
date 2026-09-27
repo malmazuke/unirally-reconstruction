@@ -73,3 +73,7 @@ add_test(NAME race_pairing_tiers_launches_voices_ink COMMAND race_pairing_tests)
 add_executable(front_end_tests front_end_tests.cpp)
 target_link_libraries(front_end_tests PRIVATE unirally_presentation)
 add_test(NAME front_end_text_screen_and_menu COMMAND front_end_tests)
+
+add_executable(stunt_event_tests stunt_event_tests.cpp)
+target_link_libraries(stunt_event_tests PRIVATE unirally_presentation)
+add_test(NAME stunt_event_clock_finish_tallies_state COMMAND stunt_event_tests)

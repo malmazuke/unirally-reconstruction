@@ -56,13 +56,17 @@ struct Options {
     // usual opponent, and the tutorial hints' start ($77:1116's rider bit), on a --start race.
     std::optional<unsigned> rider, opponent;
     bool tutorial_hints = true, pairing_given = false;
+    // STUNT-EVENT-RACE: the rider's best medal on the tour (0-3), which sets a stunt event's
+    // qualifying score, on a --start race.
+    std::optional<unsigned> best_medal;
 };
 
 unsigned small_number(const std::string& text) {
     if (text.empty() || text.size() > 2 || !std::all_of(text.begin(), text.end(), [](char c) {
             return std::isdigit(static_cast<unsigned char>(c));
         }))
-        throw std::invalid_argument("a rider, an opponent or a hints flag is a small number");
+        throw std::invalid_argument(
+            "a rider, an opponent, a hints flag or a medal is a small number");
     return static_cast<unsigned>(std::stoi(text));
 }
 
@@ -121,6 +125,9 @@ Options parse_options(int argc, char** argv) {
             const auto hints = small_number(argv[i + 1]);
             if (hints > 1) throw std::invalid_argument("--tutorial-hints is 0 or 1");
             options.tutorial_hints = hints == 1;
+        } else if (option == "--best-medal") {
+            options.best_medal = small_number(argv[i + 1]);
+            if (*options.best_medal > 3) throw std::invalid_argument("--best-medal is 0 to 3");
         } else
             throw std::invalid_argument("unknown ZOOM ZOO runner option");
     }
@@ -129,8 +136,9 @@ Options parse_options(int argc, char** argv) {
         throw std::invalid_argument("ZOOM ZOO runner needs one of --seed/--restart-from/--start "
                                     "and one of --content-pack/--content-dir");
     options.pairing_given = options.rider || options.opponent || !options.tutorial_hints;
-    if (options.pairing_given && !options.native_start)
-        throw std::invalid_argument("--rider, --opponent and --tutorial-hints need --start");
+    if ((options.pairing_given || options.best_medal) && !options.native_start)
+        throw std::invalid_argument(
+            "--rider, --opponent, --tutorial-hints and --best-medal need --start");
     if ((options.seed.empty() && !options.native_start)
         || (options.content.empty() && options.pack_path.empty()) || options.inputs.empty())
         throw std::invalid_argument("missing ZOOM ZOO runner option");
@@ -157,7 +165,7 @@ struct LooseContent {
                                                  {masks, decrements}};
         return {
             movement, coefficients, reflection, landing, finish_poses, roll_poses, roll_directions,
-            weights,  combinations, {},         {},      {},           {},         {}};
+            weights,  combinations, {},         {},      {},           {},         {}, {}};
     }
 };
 
@@ -274,6 +282,7 @@ int main(int argc, char** argv) try {
             if (options.opponent) pairing.opponent = static_cast<std::uint8_t>(*options.opponent);
             scenario = unirally::classic_race_scenario(race_track, pairing, options.tutorial_hints);
         }
+        if (options.best_medal) scenario.best_medal = static_cast<std::uint8_t>(*options.best_medal);
         state = unirally::classic_race_start(data, scenario);
     }
     if (options.restart) unirally::restart_zoom_zoo(state, data);

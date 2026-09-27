@@ -50,16 +50,29 @@ int main() {
         state = {};
         unirally::limit_rider_speed(vx, vy, state, context, content);
         require(vx == 65535); // The original negative-one asymmetry.
-        context.cartridge_mode = 2;
+        // BOWL and HUNTER's stunt event cap falling at 768 whatever the extra, and rising not at
+        // all ($82:A84F-A86A); the horizontal cap and the vertical boost's decay are unchanged.
+        for (const std::uint8_t track : {std::uint8_t{2}, std::uint8_t{42}}) {
+            context.track = track;
+            vx = 600;
+            vy = 1000;
+            state = {128, 10, 12};
+            unirally::limit_rider_speed(vx, vy, state, context, content);
+            require(vx == 517 && vy == 768 && state.vertical_boost == 9);
+            vy = 65536 - 1000;
+            state = {128, 10, 12};
+            unirally::limit_rider_speed(vx, vy, state, context, content);
+            require(vy == 65536 - 1000 && state.vertical_boost == 9);
+        }
+        context.track = 0;
         vx = 600;
-        vy = 1000;
+        vy = 65536 - 1000;
+        state = {128, 10, 12};
+        unirally::limit_rider_speed(vx, vy, state, context, content);
+        require(vy == 65536 - 838);
+        vx = 600;
         state = {128, 10, 12};
         bool rejected = false;
-        try { unirally::limit_rider_speed(vx, vy, state, context, content); }
-        catch (const std::invalid_argument&) { rejected = true; }
-        require(rejected && vx == 600 && vy == 1000 && state.boost == 128);
-        context.cartridge_mode = 0;
-        rejected = false;
         try { unirally::limit_rider_speed(vx, vy, state, context, {masks, {}}); }
         catch (const std::invalid_argument&) { rejected = true; }
         require(rejected && vx == 600 && state.progress_adjustment == 12);

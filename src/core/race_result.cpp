@@ -536,9 +536,13 @@ void return_from_race(FrontEndState& state, const FrontEndContent& content, std:
 
 ClassicRaceScenario one_player_race_scenario(const FrontEndState& state) {
     const auto rider = state.rider_menu.rider;
-    return classic_race_scenario(ClassicRaceTrack{state.tour_menu.track},
-                                 {rider, state.now_playing.opponent},
-                                 ((state.records.tutorial_bits >> rider) & 1U) == 0);
+    auto scenario = classic_race_scenario(ClassicRaceTrack{state.tour_menu.track},
+                                          {rider, state.now_playing.opponent},
+                                          ((state.records.tutorial_bits >> rider) & 1U) == 0);
+    // A stunt event's qualifying score, by the rider's best medal on the tour ($80:99ED).
+    scenario.best_medal = static_cast<std::uint8_t>(
+        state.records.medals[state.tour_menu.tour * 16U + rider] & 3U);
+    return scenario;
 }
 
 std::uint32_t race_loading_frames(ClassicRaceTrack track) {

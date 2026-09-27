@@ -26,11 +26,12 @@ CollisionPoints collision_points(const SamplingContent& content, std::uint16_t p
                                  bool reflected);
 
 // Coarse cells are 64x64 position units, with four 16x16 cells per axis.
-// A negative y samples coarse cell (0, 0), and the last column's right-hand
+// A negative y samples coarse cell (0, 0) unless the playfield is `whole_height`
+// (`$0FF7`, 65,536 units tall), and the last column's right-hand
 // neighbours are column 0 of the same rows ($81:8A2A-8AC4, TRACK-BREADTH
 // part 3). A zero width or a column outside the playfield is rejected.
 TrackSamples sample_track(const SamplingContent& content, const CollisionPoints& points,
                           std::uint16_t position_x, std::uint16_t position_y,
-                          std::uint16_t coarse_width);
+                          std::uint16_t coarse_width, bool whole_height = false);
 
 } // namespace unirally
