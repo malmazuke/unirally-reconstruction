@@ -3240,7 +3240,7 @@
   {
    "address": "$81:8BA0",
    "native": [
-    "src/core/vertical_contact.cpp:neon_empty_probe_angle"
+    "src/core/vertical_contact.cpp:empty_probe_angle"
    ],
    "region": "rom"
   },
@@ -3274,14 +3274,14 @@
   {
    "address": "$81:8CDD",
    "native": [
-    "src/core/vertical_contact.cpp:neon_empty_probe_angle"
+    "src/core/vertical_contact.cpp:empty_probe_angle"
    ],
    "region": "rom"
   },
   {
    "address": "$81:8CE1",
    "native": [
-    "src/core/vertical_contact.cpp:neon_empty_probe_angle"
+    "src/core/vertical_contact.cpp:empty_probe_angle"
    ],
    "region": "rom"
   },
@@ -8621,7 +8621,7 @@
   {
    "address": "$0202",
    "native": [
-    "src/core/vertical_contact.cpp:neon_empty_probe_angle",
+    "src/core/vertical_contact.cpp:empty_probe_angle",
     "src/core/vertical_contact.cpp:summarize_vertical_contact"
    ],
    "region": "wram"
@@ -10279,7 +10279,7 @@
     "src/core/race_setup.cpp:neon_track",
     "src/core/race_setup.cpp:stunt_scenario",
     "src/core/race_update.cpp:lowest_palette",
-    "src/core/vertical_contact.cpp:neon_empty_probe_angle",
+    "src/core/vertical_contact.cpp:empty_probe_angle",
     "src/core/vertical_contact.hpp:summarize_vertical_contact",
     "src/core/zoom_zoo_movement.hpp:ClassicRaceScenario::neon_lighting"
    ],
@@ -10514,7 +10514,7 @@
   {
    "address": "$7E:A001",
    "native": [
-    "src/core/vertical_contact.cpp:neon_empty_probe_angle"
+    "src/core/vertical_contact.cpp:empty_probe_angle"
    ],
    "region": "wram"
   },
@@ -16379,6 +16379,18 @@
     "$81:92FE"
    ]
   },
+  "src/core/vertical_contact.cpp:empty_probe_angle": {
+   "rom": [
+    "$81:8BA0",
+    "$81:8CDD",
+    "$81:8CE1"
+   ],
+   "wram": [
+    "$0202",
+    "$12D1",
+    "$7E:A001"
+   ]
+  },
   "src/core/vertical_contact.cpp:follow_slope": {
    "rom": [
     "$81:96FA"
@@ -16395,18 +16407,6 @@
   "src/core/vertical_contact.cpp:landing_rotation": {
    "rom": [
     "$81:931C"
-   ]
-  },
-  "src/core/vertical_contact.cpp:neon_empty_probe_angle": {
-   "rom": [
-    "$81:8BA0",
-    "$81:8CDD",
-    "$81:8CE1"
-   ],
-   "wram": [
-    "$0202",
-    "$12D1",
-    "$7E:A001"
    ]
   },
   "src/core/vertical_contact.cpp:summarize_vertical_contact": {

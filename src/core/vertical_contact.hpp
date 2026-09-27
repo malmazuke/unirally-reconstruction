@@ -14,7 +14,7 @@ struct VerticalContactSummary : FlatContactSummary {
     bool leading_support{};   // $0F5D: winning nonnegative probe is one of first two
 };
 
-// `neon`: the race sets `$12D1` (NEON, R-0068), which changes an empty palette-7 probe's angle.
+// `neon`: the race sets `$12D1` (NEON, R-0068), which an empty palette-7 probe's angle reads.
 VerticalContactSummary summarize_vertical_contact(const FlatContactContent& content,
                                                   const CollisionPoints& points,
                                                   const TrackSamples& samples, std::uint16_t x,

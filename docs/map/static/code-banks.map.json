@@ -3637,7 +3637,7 @@
     "src/core/flat_contact.cpp:tile_index",
     "src/core/race_update.cpp:lowest_palette",
     "src/core/track_progress.cpp:observe_track_markers",
-    "src/core/vertical_contact.cpp:neon_empty_probe_angle",
+    "src/core/vertical_contact.cpp:empty_probe_angle",
     "src/core/vertical_contact.cpp:summarize_vertical_contact",
     "src/core/zoom_zoo_movement.hpp:ZoomZooState::player_contact_palette"
    ],
@@ -3661,7 +3661,7 @@
    ],
    "native": [
     "src/core/track_progress.cpp:observe_track_markers",
-    "src/core/vertical_contact.cpp:neon_empty_probe_angle",
+    "src/core/vertical_contact.cpp:empty_probe_angle",
     "src/core/vertical_contact.cpp:summarize_vertical_contact"
    ],
    "observed_entries": {},
@@ -14345,16 +14345,16 @@
    "call returns in the calling mode": 1262
   },
   "bytes": 131072,
-  "cited_addresses": 1389,
+  "cited_addresses": 1396,
   "cited_by_class": {
    "data": 25,
    "inferred": 230,
-   "observed": 913,
+   "observed": 920,
    "unknown": 221
   },
   "cited_by_position": {
    "dat": 25,
-   "loc": 822,
+   "loc": 829,
    "mid": 18,
    "sub": 303,
    "unk": 221

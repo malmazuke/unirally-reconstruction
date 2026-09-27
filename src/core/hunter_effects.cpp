@@ -184,7 +184,8 @@ void run_effect(ZoomZooState& state, unsigned effect, std::span<const std::uint8
 } // namespace
 
 // $83:CEC9-D600 (R-0052), at the end of every update ($83:CDAA), skipped ones included.
-// `$12D1`, a palette mode that would replace the effects, is zero on every HUNTER race.
+// `$12D1`, NEON's lighting, replaces the effects: it is set on HUNTER's stunt event, track 42, and
+// zero on every HUNTER race (R-0068).
 void update_hunter_effects(ZoomZooState& state, std::span<const std::uint8_t> blink) {
     // $83:CECB-CED3: with `$12D1` set (NEON, track 42 in one-player play, R-0068) the update runs
     // NEON's lighting ($83:D1CA) and returns through $83:D103: no tag, no effect.

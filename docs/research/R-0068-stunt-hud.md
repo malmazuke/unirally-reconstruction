@@ -106,13 +106,21 @@ rows near y 8,000 (`$040B` 0x7D) and is exact with the rule and without it.
   NEON. R-0066's "HUNTER's stunt event keeps the tag effects" held only while the riders' counts
   stayed together. [C] the ridden capture: native latched at update 221, the original never does.
 - An empty palette-7 cell [L; C]: an empty cell (tile bits 0) of palette 7 is a probe of
-  penetration 0x7F (`$81:8BD9-8BE0`), whose angle `$81:8CDD` reads from `$7E:A001 + X` with X as
-  it stands. NEON's test at `$81:8BA0` has just loaded `$12D1` into X, so the angle is the
-  tile-column table's byte 2, negated (`$81:8CE1`) when the latest tiled probe of the contact was
-  mirrored (`$0202`). The first probe is selected (`$0F13`, `$02EC`, `$02BE`) only when its angle
-  is not below 0xE0 (`$81:8FBD-8FC2`, `$81:900E-9025`). [C] the ridden capture at update 1576:
-  probe 0 of penetration 0x7F and angle 0xA0, `$0F13` 0; native had selected the word 0x1C00.
-  Elsewhere native keeps such a probe's angle 0 (X there is the previous probe's `$0202`).
+  penetration 0x7F (`$81:8BD9-8BE0`), whose angle `$81:8CDD` reads from `$7E:A001 + X`. Every pass
+  of the probe loop loads X from `$12D1` at `$81:8BA0` (16-bit X), and an empty cell's paths
+  (`$81:8BC4-8BE0`) do not change it, so on every track the angle is the tile-column table's byte
+  1 + `$12D1`: byte 1 off NEON, byte 2 on NEON. It is negated (`$81:8CE1`) when `$0202` is set,
+  the latest tiled probe's mirror bit (`$81:8BEB`). Byte 1 is 0x00 and byte 2 is 0xA0 in every
+  track's table (all 45: tracks 02-44, DRAGSTER's and ZOOM ZOO's; `angle_scan.py`), so the angle is
+  0 off NEON and 0xA0, or 0x60 after a mirrored tile, on NEON.
+- The first probe [L; C]: it is selected (`$0F13`, `$02EC`, `$02BE`) only when its angle is not
+  below the 0xE0 `$02BE` starts from (`$81:8FBD-8FC2`, `$81:900E-9025`): an eight-bit signed test,
+  the difference angle - 0xE0 not negative, so angles 0xE0-0xFF and 0x00-0x5F are selected and
+  0x60-0xDF are not. The rule is the original's on every track, but it changes nothing off NEON: no
+  column with a height other than 0xA0 in any track's table has an angle, plain or negated, in
+  0x60-0xDF (`angle_scan.py`), and the empty probe's angle there is 0. [C] the ridden capture at
+  update 1576: probe 0 of penetration 0x7F and angle 0xA0, `$0F13` 0; native had selected the word
+  0x1C00. Native now reads the table's byte 1 + `$12D1` for every empty palette-7 probe.
 
 ## Evidence
 
@@ -159,8 +167,12 @@ Nothing else moves (`checks-f31aae8.out`, on the commit that added NEON's race r
 
 - Track 37's rows outside the playfield; a score of 1000 or more (a letter), a qualifying score
   below 10; the `draw` caption.
-- NEON's `$0202` when no tiled probe precedes an empty palette-7 probe in the contact (it is the
-  previous contact's; native takes it clear); the up-and-down arrows are not drawn in a stunt event.
+- `$0202` before a tiled probe in a contact: it is scratch that many routines write (among them
+  `$82:83FD`, `$82:841B`, `$82:8628`, `$83:F12E`, `$83:8DE9`), so an empty palette-7 probe met
+  before any tiled probe of its contact is negated or not by whatever the last of them left; native
+  takes it clear. Off NEON the angle is 0 either way; on NEON it can change race state (a first
+  probe of angle 0x60 is selected, one of 0xA0 is not, and the angle feeds `$02BE` at
+  `$81:90CC-90E0`). Not covered by any capture.
 - NEON's colours 96-111 in the app: the front end's, not compared with a capture from power-on;
   whether a BG1 tile of palette 6 showed in the compared NEON pictures was not checked.
 - NEON's two race rules are shown by one ridden capture; the empty palette-7 probe was reached

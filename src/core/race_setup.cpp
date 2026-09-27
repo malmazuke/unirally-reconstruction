@@ -61,7 +61,8 @@ ClassicRaceScenario observed_scenario(ClassicRaceTrack track, std::uint32_t init
 
 // R-0066: a stunt event (race mode 2): no laps (one line crossing to start, $82:DB96-DBB2
 // storing 0 + 1), not a tour race, BRONSEN in the opponent's slot. On HUNTER's tour it keeps
-// `$131F` and the tag effects, but not ANTI-UNI ($80:B351-B35F skip $80:B361 in mode 2).
+// `$131F`, but not ANTI-UNI ($80:B351-B35F skip $80:B361 in mode 2); HUNTER's stunt event is NEON,
+// which runs its lighting in place of the tag effects (R-0068).
 // NEON, HUNTER's stunt event: the one track whose one-player race sets `$12D1`.
 constexpr std::uint8_t neon_track = 42;
 

@@ -186,15 +186,16 @@ void finish_drivers() {
 // $83:D1EE-D247: a quarter of the distance, at least one, in eight-bit arithmetic; $83:D24A-D271:
 // red 15, blue 30, the level's low five bits as green. The levels here are made up.
 void neon_lighting() {
-    const std::array<std::uint8_t, 8> levels{0, 8, 40, 100, 3, 60, 31, 0xE2};
+    const std::array<std::uint8_t, 8> levels{0, 8, 40, 100, 3, 60, 31, 0xC0};
     require(neon_green_step(0, 2, levels) == 10, "up by a quarter");
     require(neon_green_step(38, 2, levels) == 39, "at least one");
     require(neon_green_step(40, 2, levels) == 40, "at the level");
     require(neon_green_step(20, 4, levels) == 16, "down by a quarter");
     require(neon_green_step(4, 4, levels) == 3, "down at least one, not past the level");
     require(neon_green_step(0, 3, levels) == 25, "a level of 100");
-    // 0xE2 reads as below 20 in the signed test: down by (20 - 0xE2) & 0xFF >> 2 = 12.
-    require(neon_green_step(20, 7, levels) == 8, "the eighth byte, eight-bit arithmetic");
+    // 0xC0 reads as below 20 in the signed test: down by (20 - 0xC0) & 0xFF >> 2 = 21, to 0xFF,
+    // which is not past the level in eight bits (0xC0 - 0xFF is negative).
+    require(neon_green_step(20, 7, levels) == 0xFF, "the eighth byte, eight-bit arithmetic");
     rejects([&] { (void)neon_green_step(0, 8, levels); }, "past the table");
     require(neon_colour(0) == 0x780F, "red 15 and blue 30");
     require(neon_colour(0x13) == (0x780F | (0x13 << 5)), "green");
@@ -206,9 +207,10 @@ void neon_lighting() {
     require(!classic_race_scenario(bowl).neon_lighting, "BOWL is not");
 }
 
-// $81:8BD9-8BE0 and $81:8CDD-8CEE: an empty cell of palette 7 is a probe of penetration 0x7F;
-// NEON's X of 1 makes its angle the tile-column table's byte 2, negated after a mirrored tile.
-// $81:900E-9025: the first probe is selected only with an angle not below 0xE0.
+// $81:8BD9-8BE0 and $81:8CDD-8CEE: an empty cell of palette 7 is a probe of penetration 0x7F
+// whose angle is the tile-column table's byte 1 + `$12D1` (X, $81:8BA0): byte 1 in a race, byte 2
+// on NEON, negated after a mirrored tile. $81:900E-9025: the first probe is selected only when
+// its angle less 0xE0 is not negative in eight bits. The column table here is made up.
 void neon_contact() {
     std::array<std::uint8_t, 64> columns{};
     for (unsigned i = 0; i < columns.size(); i += 2) columns[i] = 0xA0;
@@ -220,6 +222,10 @@ void neon_contact() {
     samples[0] = 0x1C00; // empty, palette 7
     const auto race = summarize_vertical_contact(content, points, samples, 0, 0);
     require(race.selected_word == 0x1C00 && race.boundary_marker, "a race's angle 0 is selected");
+    columns[1] = 0x90; // byte 1: a race's angle, were it not 0
+    const auto race_steep = summarize_vertical_contact(content, points, samples, 0, 0);
+    require(race_steep.selected_word == 0 && race_steep.supported, "a race reads byte 1");
+    columns[1] = 0;
     const auto lit = summarize_vertical_contact(content, points, samples, 0, 0, true);
     require(lit.selected_word == 0x1C00 && lit.selected_high == 0x1C && lit.angle == 0x30,
             "angle 0x30 is selected");

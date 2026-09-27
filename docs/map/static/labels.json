@@ -6172,7 +6172,7 @@
   "native": [
    "src/core/race_update.cpp:lowest_palette",
    "src/core/track_progress.cpp:observe_track_markers",
-   "src/core/vertical_contact.cpp:neon_empty_probe_angle",
+   "src/core/vertical_contact.cpp:empty_probe_angle",
    "src/core/vertical_contact.cpp:summarize_vertical_contact",
    "src/core/zoom_zoo_movement.hpp:ZoomZooState::player_contact_palette"
   ],
@@ -6191,6 +6191,19 @@
   ],
   "source_records": [
    "docs/research/R-0010-native-movement.md"
+  ]
+ },
+ {
+  "address": "$81:8BC4",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_818BC4",
+  "native": [
+   "src/core/track_progress.cpp:observe_track_markers",
+   "src/core/vertical_contact.cpp:summarize_vertical_contact"
+  ],
+  "source_records": [
+   "docs/research/R-0068-stunt-hud.md"
   ]
  },
  {
@@ -6278,6 +6291,7 @@
   "source_records": [
    "docs/inventory/M4-07-reflected-vertical.md",
    "docs/research/R-0025-zoom-zoo-reflected-vertical-contact.md",
+   "docs/research/R-0068-stunt-hud.md",
    "tasks/M4-07-rereview.md",
    "tasks/M4-07-review.md",
    "tasks/M4-07.md"
@@ -6590,7 +6604,7 @@
   "label": "sub_818CDD",
   "native": [
    "src/core/track_progress.cpp:observe_track_markers",
-   "src/core/vertical_contact.cpp:neon_empty_probe_angle",
+   "src/core/vertical_contact.cpp:empty_probe_angle",
    "src/core/vertical_contact.cpp:summarize_vertical_contact"
   ],
   "source_records": [
@@ -6613,7 +6627,7 @@
   "label": "loc_818CE1",
   "native": [
    "src/core/track_progress.cpp:observe_track_markers",
-   "src/core/vertical_contact.cpp:neon_empty_probe_angle",
+   "src/core/vertical_contact.cpp:empty_probe_angle",
    "src/core/vertical_contact.cpp:summarize_vertical_contact"
   ],
   "source_records": [
@@ -6990,6 +7004,15 @@
   "source_records": [
    "tasks/M4-06-review.md",
    "tasks/M4-07-review.md"
+  ]
+ },
+ {
+  "address": "$81:90CC",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_8190CC",
+  "source_records": [
+   "docs/research/R-0068-stunt-hud.md"
   ]
  },
  {
@@ -10197,6 +10220,34 @@
   ]
  },
  {
+  "address": "$82:83FD",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_8283FD",
+  "native": [
+   "src/core/rider_look.cpp:head_point",
+   "src/core/rider_look.cpp:height_target",
+   "src/core/rider_look.hpp:advance_rider_look"
+  ],
+  "source_records": [
+   "docs/research/R-0068-stunt-hud.md"
+  ]
+ },
+ {
+  "address": "$82:841B",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82841B",
+  "native": [
+   "src/core/rider_look.cpp:head_point",
+   "src/core/rider_look.cpp:height_target",
+   "src/core/rider_look.hpp:advance_rider_look"
+  ],
+  "source_records": [
+   "docs/research/R-0068-stunt-hud.md"
+  ]
+ },
+ {
   "address": "$82:857F",
   "class": "inferred",
   "comment": "instruction start",
@@ -10209,6 +10260,19 @@
    "docs/research/R-0036-zoom-zoo-rider-objects.md",
    "tasks/M4-16-review.md",
    "tasks/M4-16.md"
+  ]
+ },
+ {
+  "address": "$82:8628",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_828628",
+  "native": [
+   "src/core/rider_look.cpp:head_point",
+   "src/core/rider_look.hpp:advance_rider_look"
+  ],
+  "source_records": [
+   "docs/research/R-0068-stunt-hud.md"
   ]
  },
  {
@@ -13627,6 +13691,15 @@
   ],
   "source_records": [
    "docs/research/R-0056-tour-track-now-playing.md"
+  ]
+ },
+ {
+  "address": "$83:8DE9",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_838DE9",
+  "source_records": [
+   "docs/research/R-0068-stunt-hud.md"
   ]
  },
  {
@@ -17422,6 +17495,19 @@
    "docs/research/R-0036-zoom-zoo-rider-objects.md",
    "tasks/M4-16-review.md",
    "tasks/M4-16.md"
+  ]
+ },
+ {
+  "address": "$83:F12E",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83F12E",
+  "native": [
+   "src/core/content_pack.cpp:zoom_required",
+   "src/core/rider_object.hpp:compose_rider_object"
+  ],
+  "source_records": [
+   "docs/research/R-0068-stunt-hud.md"
   ]
  },
  {
