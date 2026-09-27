@@ -77,8 +77,8 @@ The coordinator maintains the status registry below. Work orders further below d
 | HUNTER-ENDING | accepted (tier 2, #37): HUNTER's ending, the soft reset, the title and main-menu codes; pack v23 | [HUNTER's gold ending and the soft reset](HUNTER-ENDING.md) |
 | FIFTH-WIN-COMPLETION | accepted (tier 2, #38): a tour completed by its fifth win; cartridge RAM writes in replay manifests | [A tour completed by its fifth win](FIFTH-WIN-COMPLETION.md) |
 | STUNT-EVENT-RACE | accepted (tier 1, #39): the nine stunt events in the race engine; pack v24 | [The stunt events in the race engine](STUNT-EVENT-RACE.md) |
-| STUNT-RESULT | in review (tier 2): a stunt event's result, records and way back to the menus; pack v25 | [A stunt event's result, records and way back to the menus](STUNT-RESULT.md) |
-| STUNT-HUD | ready after STUNT-EVENT-RACE | [A stunt event's race picture](STUNT-HUD.md) |
+| STUNT-RESULT | accepted (tier 2, #40): a stunt event's result, records and way back to the menus; pack v25 | [A stunt event's result, records and way back to the menus](STUNT-RESULT.md) |
+| STUNT-HUD | in progress | [A stunt event's race picture](STUNT-HUD.md) |
 | ROLLING-CONTACT | ready | [A rolling rider's second contact after a long shoulder rotation (HUNTER-EFFECTS review)](ROLLING-CONTACT.md) |
 | PR-WORKFLOW | integrated by pull request #6 (tier 2, approved with should-fix items, all applied); changes reach `main` only through pull requests (user request, 23 September 2026) | [Changes reach main through pull requests](PR-WORKFLOW.md) |
 | CLASSIC-RACE-HUD | reviewed and integrated (four returned rounds, approved at the fifth); accepted conditional on final-tip CI and remote verification | [The original's in-race HUD](CLASSIC-RACE-HUD.md) |

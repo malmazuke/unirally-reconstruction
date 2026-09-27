@@ -2,9 +2,18 @@
 
 ## Assignment
 
-- Status: **ready** after STUNT-EVENT-RACE. Queued 27 September 2026 (UTC) by STUNT-EVENT-RACE.
+- Status: **in progress**. Queued 27 September 2026 (UTC) by STUNT-EVENT-RACE; claimed 27 September
+  2026 at 09:30Z by the Claude Code desktop session that ran STUNT-RESULT, on `0173cbb`. The
+  implementation worker started on STUNT-RESULT's branch while it was in its gates; its commits
+  were moved onto this claim.
+- Coordinator: the claiming session is coordinator, primary and integrator
+- Worker/session/runtime/model: Claude Code desktop app, Claude Opus 5.5 (`claude-opus-5-5`)
+- Provider quota (D-0004): at claim the weekly window was about 76% used; the user asked to stop
+  after this task.
+- Reviewer: a fresh Anthropic subagent, isolated checkout.
+- Branch and isolated worktree: `task/stunt-hud` in `.worktrees/stunt-hud`.
 - Milestone: M4 (original game coverage)
-- Tier: 2 (presentation).
+- Tier: 1: presentation, plus a race-state finding on NEON (track 42) made during the work.
 - Dependencies: STUNT-EVENT-RACE (R-0066), the race HUD (CLASSIC-RACE-HUD), R-0063.
 
 ## Outcome and boundaries
