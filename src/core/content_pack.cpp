@@ -716,6 +716,17 @@ const std::array<RequiredEntry, 22> stunt_result_required{{
     {"front-end.stunt-tally-cells", 20,
      "edf31d91dfd6cb00bec05b9a617a2bd3c553cd5cad7202e531268ba11c4da962"},
 }};
+// STUNT-HUD (profile v26): NEON's scenery 14 and its lighting's green levels
+// (tools/unirally_lab/content/tracks.py v26_new_entries, R-0068).
+const std::array<RequiredEntry, 4> neon_required{{
+    {"scenery.14.bg2-tiles", 64,
+     "8313688d0efd04c08b9b789d1b851d33b5abee0e6225dada48db53bd73d2fd3f"},
+    {"scenery.14.bg2-map", 8192,
+     "b0b64ac43c1c2101300d5971f1c5ce8e612b263bab572943a38eb8e7cc2c62f1"},
+    {"scenery.14.palette", 352, "35c3ade288a643c022f1a672fdf8e4970208abff80a17f643011b4516ee23eb1"},
+    {"presentation.neon.green-levels", 8,
+     "7267f204fd805b12356fde47e03c7d1751601cff24482f1f19c78599669919dc"},
+}};
 // LOCKED-TOURS (profile v12): the race tracks of the five tours a cold start does not
 // list, and sceneries 1, 8 and 12. Generated from the rules file (tracks.py v12_new_entries).
 const std::array<RequiredEntry, 89> locked_tracks_required{{
@@ -876,7 +887,7 @@ const std::array<RequiredEntry, 89> locked_tracks_required{{
     {"scenery.12.palette", 352, "b2a9aefe13c1dc68454cf0a5c2bedb086c6e162dbea1df1f2ef108347d89ab63"},
 }};
 constexpr std::string_view two_track_rules_sha =
-    "f4e1692ad5fe4e68413c344b83b80e1c729c9329e0e908392dfa68adcf0d1f2f";
+    "f5ee27ffa910f7b212f13fe20235a5a3f369ba5276b1b90970082fef453003dc";
 
 std::array<std::uint8_t, 32> hex_digest(std::string_view text) {
     if (text.size() != 64) throw std::logic_error("invalid compiled Classic SHA-256");
@@ -966,7 +977,7 @@ std::array<std::uint8_t, 32> sha256(std::span<const std::uint8_t> source) {
 
 namespace {
 constexpr std::array<std::string_view, 2> supported_profiles{"classic.pal.crawler.dragster.v1",
-                                                             "classic.pal.crawler.tracks.v25"};
+                                                             "classic.pal.crawler.tracks.v26"};
 } // namespace
 
 std::span<const std::string_view> supported_pack_profiles() {
@@ -1035,7 +1046,8 @@ std::vector<RequiredEntry> required_entries(bool tracks) {
                              std::span<const RequiredEntry>(ending_required),
                              std::span<const RequiredEntry>(hunter_ending_required),
                              std::span<const RequiredEntry>(stunt_tracks_required),
-                             std::span<const RequiredEntry>(stunt_result_required)})
+                             std::span<const RequiredEntry>(stunt_result_required),
+                             std::span<const RequiredEntry>(neon_required)})
         out.insert(out.end(), table.begin(), table.end());
     return out;
 }

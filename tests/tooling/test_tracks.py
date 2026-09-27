@@ -20,6 +20,8 @@ MANIFEST = ROOT / "tests" / "manifests" / "content" / "track-streams.json"
 STUNT_ENTRIES = 4 * len(tracks.STUNT_TRACKS)
 # Profile v25 appends the stunt result's head colours and tables after v24's.
 STUNT_RESULT_ENTRIES = len(front_end_rules.STUNT_RESULT_ASSETS) + len(front_end_rules.STUNT_RESULT_TABLES)
+# Profile v26 appends NEON's scenery (three entries) and its green levels after v25's.
+NEON_ENTRIES = 4
 
 
 def _header(shape: int, list_offset: int) -> bytearray:
@@ -92,7 +94,8 @@ class PackProfileTests(unittest.TestCase):
         import re
         rules_path = ROOT / "tests" / "manifests" / "content" / "classic-crawler-tracks-pack.json"
         rules = json.loads(rules_path.read_text(encoding="utf-8"))
-        added = [e for e in rules["entries"] if e["id"].startswith(("track.", "scenery.")) or e["id"] == "presentation.classic.track-names.v1"]
+        added = [e for e in rules["entries"][:-NEON_ENTRIES]
+                 if e["id"].startswith(("track.", "scenery.")) or e["id"] == "presentation.classic.track-names.v1"]
         source = (ROOT / "src" / "core" / "content_pack.cpp").read_text(encoding="utf-8")
         compiled = []
         for name in ("tracks_required{{", "locked_tracks_required{{", "stunt_tracks_required{{"):  # v10's, v12's, v24's
@@ -101,7 +104,7 @@ class PackProfileTests(unittest.TestCase):
             compiled += [(i, int(n), d) for i, n, d in re.findall(r'\{"([^"]+)",\s*(\d+),\s*"([0-9a-f]{64})"\}', table)]
         self.assertEqual(compiled, [(e["id"], e["size"], e["sha256"]) for e in added])
         self.assertIn(hashlib.sha256(rules_path.read_bytes()).hexdigest(), source)
-        self.assertEqual(rules["profile_id"], "classic.pal.crawler.tracks.v25")
+        self.assertEqual(rules["profile_id"], "classic.pal.crawler.tracks.v26")
         ids = {e["id"] for e in added}
         for index in tracks.NEW_RACE_TRACKS + tracks.LOCKED_RACE_TRACKS + tracks.STUNT_TRACKS:
             for part in ("data", "tile-columns", "tile-flags", "bg1-tiles"):
@@ -173,7 +176,7 @@ class FrontEndEntryTests(unittest.TestCase):
         added = [by_id[entry_id] for entry_id in expected]
         later = len(front_end.RIDER_MENU_ASSETS) + len(front_end.RIDER_MENU_TABLES)
         later += len(front_end.TOUR_MENU_ASSETS) + len(front_end.TOUR_MENU_TABLES)
-        later += len(front_end.RESULT_TABLES) + len(front_end.LAP_RESULT_TABLES) + len(front_end.AWARD_ASSETS) + len(front_end.AWARD_TABLES) + len(front_end.RACE_PAIRING_TABLES) + len(front_end.ENDING_ASSETS) + len(front_end.ENDING_TABLES) + len(front_end.HUNTER_ENDING_ASSETS) + len(front_end.HUNTER_ENDING_TABLES) + STUNT_ENTRIES + STUNT_RESULT_ENTRIES
+        later += len(front_end.RESULT_TABLES) + len(front_end.LAP_RESULT_TABLES) + len(front_end.AWARD_ASSETS) + len(front_end.AWARD_TABLES) + len(front_end.RACE_PAIRING_TABLES) + len(front_end.ENDING_ASSETS) + len(front_end.ENDING_TABLES) + len(front_end.HUNTER_ENDING_ASSETS) + len(front_end.HUNTER_ENDING_TABLES) + STUNT_ENTRIES + STUNT_RESULT_ENTRIES + NEON_ENTRIES
         self.assertEqual(rules["entries"][-len(added) - later:-later], added)
         source = (ROOT / "src" / "core" / "content_pack.cpp").read_text(encoding="utf-8")
         table = source[source.index("front_end_required{{"):]
@@ -195,7 +198,7 @@ class RiderMenuEntryTests(unittest.TestCase):
         expected = [f"front-end.asset.{asset:03d}" for asset in front_end.RIDER_MENU_ASSETS]
         expected += [table[0] for table in front_end.RIDER_MENU_TABLES]
         tour_menu = len(front_end.TOUR_MENU_ASSETS) + len(front_end.TOUR_MENU_TABLES)
-        tour_menu += len(front_end.RESULT_TABLES) + len(front_end.LAP_RESULT_TABLES) + len(front_end.AWARD_ASSETS) + len(front_end.AWARD_TABLES) + len(front_end.RACE_PAIRING_TABLES) + len(front_end.ENDING_ASSETS) + len(front_end.ENDING_TABLES) + len(front_end.HUNTER_ENDING_ASSETS) + len(front_end.HUNTER_ENDING_TABLES) + STUNT_ENTRIES + STUNT_RESULT_ENTRIES
+        tour_menu += len(front_end.RESULT_TABLES) + len(front_end.LAP_RESULT_TABLES) + len(front_end.AWARD_ASSETS) + len(front_end.AWARD_TABLES) + len(front_end.RACE_PAIRING_TABLES) + len(front_end.ENDING_ASSETS) + len(front_end.ENDING_TABLES) + len(front_end.HUNTER_ENDING_ASSETS) + len(front_end.HUNTER_ENDING_TABLES) + STUNT_ENTRIES + STUNT_RESULT_ENTRIES + NEON_ENTRIES
         added = rules["entries"][-len(expected) - tour_menu:-tour_menu]
         self.assertEqual([e["id"] for e in added], expected)
         source = (ROOT / "src" / "core" / "content_pack.cpp").read_text(encoding="utf-8")
@@ -217,7 +220,7 @@ class TourMenuEntryTests(unittest.TestCase):
         rules = json.loads((ROOT / "tests" / "manifests" / "content" / "classic-crawler-tracks-pack.json").read_text(encoding="utf-8"))
         expected = [f"front-end.asset.{asset:03d}" for asset in front_end.TOUR_MENU_ASSETS]
         expected += [table[0] for table in front_end.TOUR_MENU_TABLES]
-        later = len(front_end.RESULT_TABLES) + len(front_end.LAP_RESULT_TABLES) + len(front_end.AWARD_ASSETS) + len(front_end.AWARD_TABLES) + len(front_end.RACE_PAIRING_TABLES) + len(front_end.ENDING_ASSETS) + len(front_end.ENDING_TABLES) + len(front_end.HUNTER_ENDING_ASSETS) + len(front_end.HUNTER_ENDING_TABLES) + STUNT_ENTRIES + STUNT_RESULT_ENTRIES
+        later = len(front_end.RESULT_TABLES) + len(front_end.LAP_RESULT_TABLES) + len(front_end.AWARD_ASSETS) + len(front_end.AWARD_TABLES) + len(front_end.RACE_PAIRING_TABLES) + len(front_end.ENDING_ASSETS) + len(front_end.ENDING_TABLES) + len(front_end.HUNTER_ENDING_ASSETS) + len(front_end.HUNTER_ENDING_TABLES) + STUNT_ENTRIES + STUNT_RESULT_ENTRIES + NEON_ENTRIES
         added = rules["entries"][-len(expected) - later:-later]
         self.assertEqual([e["id"] for e in added], expected)
         source = (ROOT / "src" / "core" / "content_pack.cpp").read_text(encoding="utf-8")
@@ -238,7 +241,7 @@ class ResultEntryTests(unittest.TestCase):
         from tools.unirally_lab.content import front_end
         rules = json.loads((ROOT / "tests" / "manifests" / "content" / "classic-crawler-tracks-pack.json").read_text(encoding="utf-8"))
         expected = [table[0] for table in front_end.RESULT_TABLES]
-        later = len(front_end.LAP_RESULT_TABLES) + len(front_end.AWARD_ASSETS) + len(front_end.AWARD_TABLES) + len(front_end.RACE_PAIRING_TABLES) + len(front_end.ENDING_ASSETS) + len(front_end.ENDING_TABLES) + len(front_end.HUNTER_ENDING_ASSETS) + len(front_end.HUNTER_ENDING_TABLES) + STUNT_ENTRIES + STUNT_RESULT_ENTRIES
+        later = len(front_end.LAP_RESULT_TABLES) + len(front_end.AWARD_ASSETS) + len(front_end.AWARD_TABLES) + len(front_end.RACE_PAIRING_TABLES) + len(front_end.ENDING_ASSETS) + len(front_end.ENDING_TABLES) + len(front_end.HUNTER_ENDING_ASSETS) + len(front_end.HUNTER_ENDING_TABLES) + STUNT_ENTRIES + STUNT_RESULT_ENTRIES + NEON_ENTRIES
         added = rules["entries"][-len(expected) - later:-later]
         self.assertEqual([e["id"] for e in added], expected)
         source = (ROOT / "src" / "core" / "content_pack.cpp").read_text(encoding="utf-8")
@@ -259,7 +262,7 @@ class LapResultEntryTests(unittest.TestCase):
         from tools.unirally_lab.content import front_end
         rules = json.loads((ROOT / "tests" / "manifests" / "content" / "classic-crawler-tracks-pack.json").read_text(encoding="utf-8"))
         expected = [table[0] for table in front_end.LAP_RESULT_TABLES]
-        later = len(front_end.AWARD_ASSETS) + len(front_end.AWARD_TABLES) + len(front_end.RACE_PAIRING_TABLES) + len(front_end.ENDING_ASSETS) + len(front_end.ENDING_TABLES) + len(front_end.HUNTER_ENDING_ASSETS) + len(front_end.HUNTER_ENDING_TABLES) + STUNT_ENTRIES + STUNT_RESULT_ENTRIES
+        later = len(front_end.AWARD_ASSETS) + len(front_end.AWARD_TABLES) + len(front_end.RACE_PAIRING_TABLES) + len(front_end.ENDING_ASSETS) + len(front_end.ENDING_TABLES) + len(front_end.HUNTER_ENDING_ASSETS) + len(front_end.HUNTER_ENDING_TABLES) + STUNT_ENTRIES + STUNT_RESULT_ENTRIES + NEON_ENTRIES
         added = rules["entries"][-len(expected) - later:-later]
         self.assertEqual([e["id"] for e in added], expected)
         source = (ROOT / "src" / "core" / "content_pack.cpp").read_text(encoding="utf-8")
@@ -281,7 +284,7 @@ class AwardEntryTests(unittest.TestCase):
         rules = json.loads((ROOT / "tests" / "manifests" / "content" / "classic-crawler-tracks-pack.json").read_text(encoding="utf-8"))
         expected = [f"front-end.asset.{asset:03d}" for asset in front_end.AWARD_ASSETS]
         expected += [table[0] for table in front_end.AWARD_TABLES]
-        later = len(front_end.RACE_PAIRING_TABLES) + len(front_end.ENDING_ASSETS) + len(front_end.ENDING_TABLES) + len(front_end.HUNTER_ENDING_ASSETS) + len(front_end.HUNTER_ENDING_TABLES) + STUNT_ENTRIES + STUNT_RESULT_ENTRIES
+        later = len(front_end.RACE_PAIRING_TABLES) + len(front_end.ENDING_ASSETS) + len(front_end.ENDING_TABLES) + len(front_end.HUNTER_ENDING_ASSETS) + len(front_end.HUNTER_ENDING_TABLES) + STUNT_ENTRIES + STUNT_RESULT_ENTRIES + NEON_ENTRIES
         added = rules["entries"][-len(expected) - later:-later]
         self.assertEqual([e["id"] for e in added], expected)
         source = (ROOT / "src" / "core" / "content_pack.cpp").read_text(encoding="utf-8")
@@ -302,7 +305,7 @@ class RacePairingEntryTests(unittest.TestCase):
         from tools.unirally_lab.content import front_end
         rules = json.loads((ROOT / "tests" / "manifests" / "content" / "classic-crawler-tracks-pack.json").read_text(encoding="utf-8"))
         expected = [table[0] for table in front_end.RACE_PAIRING_TABLES]
-        later = len(front_end.ENDING_ASSETS) + len(front_end.ENDING_TABLES) + len(front_end.HUNTER_ENDING_ASSETS) + len(front_end.HUNTER_ENDING_TABLES) + STUNT_ENTRIES + STUNT_RESULT_ENTRIES
+        later = len(front_end.ENDING_ASSETS) + len(front_end.ENDING_TABLES) + len(front_end.HUNTER_ENDING_ASSETS) + len(front_end.HUNTER_ENDING_TABLES) + STUNT_ENTRIES + STUNT_RESULT_ENTRIES + NEON_ENTRIES
         added = rules["entries"][-len(expected) - later:-later]
         self.assertEqual([e["id"] for e in added], expected)
         source = (ROOT / "src" / "core" / "content_pack.cpp").read_text(encoding="utf-8")
@@ -324,7 +327,7 @@ class EndingEntryTests(unittest.TestCase):
         rules = json.loads((ROOT / "tests" / "manifests" / "content" / "classic-crawler-tracks-pack.json").read_text(encoding="utf-8"))
         expected = [f"front-end.asset.{asset:03d}" for asset in front_end.ENDING_ASSETS]
         expected += [table[0] for table in front_end.ENDING_TABLES]
-        later = len(front_end.HUNTER_ENDING_ASSETS) + len(front_end.HUNTER_ENDING_TABLES) + STUNT_ENTRIES + STUNT_RESULT_ENTRIES
+        later = len(front_end.HUNTER_ENDING_ASSETS) + len(front_end.HUNTER_ENDING_TABLES) + STUNT_ENTRIES + STUNT_RESULT_ENTRIES + NEON_ENTRIES
         added = rules["entries"][-len(expected) - later:-later]
         self.assertEqual([e["id"] for e in added], expected)
         source = (ROOT / "src" / "core" / "content_pack.cpp").read_text(encoding="utf-8")
@@ -346,7 +349,7 @@ class HunterEndingEntryTests(unittest.TestCase):
         rules = json.loads((ROOT / "tests" / "manifests" / "content" / "classic-crawler-tracks-pack.json").read_text(encoding="utf-8"))
         expected = [f"front-end.asset.{asset:03d}" for asset in front_end.HUNTER_ENDING_ASSETS]
         expected += [table[0] for table in front_end.HUNTER_ENDING_TABLES]
-        later = STUNT_ENTRIES + STUNT_RESULT_ENTRIES
+        later = STUNT_ENTRIES + STUNT_RESULT_ENTRIES + NEON_ENTRIES
         added = rules["entries"][-len(expected) - later:-later]
         self.assertEqual([e["id"] for e in added], expected)
         source = (ROOT / "src" / "core" / "content_pack.cpp").read_text(encoding="utf-8")
@@ -368,7 +371,8 @@ class StuntTrackEntryTests(unittest.TestCase):
         expected = [f"track.{index:02d}.{part}" for index in tracks.STUNT_TRACKS
                     for part in ("data", "tile-columns", "tile-flags", "bg1-tiles")]
         self.assertEqual(len(expected), STUNT_ENTRIES)
-        added = rules["entries"][-len(expected) - STUNT_RESULT_ENTRIES:-STUNT_RESULT_ENTRIES]
+        later = STUNT_RESULT_ENTRIES + NEON_ENTRIES
+        added = rules["entries"][-len(expected) - later:-later]
         self.assertEqual([e["id"] for e in added], expected)
         source = (ROOT / "src" / "core" / "content_pack.cpp").read_text(encoding="utf-8")
         table = source[source.index("stunt_tracks_required{{"):]
@@ -393,7 +397,7 @@ class StuntResultEntryTests(unittest.TestCase):
         expected = [f"front-end.asset.{asset:03d}" for asset in front_end_rules.STUNT_RESULT_ASSETS]
         expected += [table[0] for table in front_end_rules.STUNT_RESULT_TABLES]
         self.assertEqual(len(expected), STUNT_RESULT_ENTRIES)
-        added = rules["entries"][-len(expected):]
+        added = rules["entries"][-len(expected) - NEON_ENTRIES:-NEON_ENTRIES]
         self.assertEqual([e["id"] for e in added], expected)
         source = (ROOT / "src" / "core" / "content_pack.cpp").read_text(encoding="utf-8")
         table = source[source.index("stunt_result_required{{"):]
@@ -402,6 +406,44 @@ class StuntResultEntryTests(unittest.TestCase):
         self.assertEqual(compiled, [(e["id"], str(e["size"]), e["sha256"]) for e in added])
         for entry in added:
             self.assertEqual(entry["source"]["kind"], "raw")
+
+
+class NeonEntryTests(unittest.TestCase):
+    """Profile v26's added entries (STUNT-HUD, R-0068): NEON's scenery 14 and its lighting's green
+    levels, last in the rules and compiled in the same order."""
+
+    def test_rules_and_compiled_table_agree(self) -> None:
+        import re
+        rules = json.loads((ROOT / "tests" / "manifests" / "content" / "classic-crawler-tracks-pack.json").read_text(encoding="utf-8"))
+        expected = [f"scenery.{tracks.NEON_SCENERY:02d}.{part}" for part in ("bg2-tiles", "bg2-map", "palette")]
+        expected.append(tracks.NEON_GREEN_LEVELS[0])
+        self.assertEqual(len(expected), NEON_ENTRIES)
+        added = rules["entries"][-len(expected):]
+        self.assertEqual([e["id"] for e in added], expected)
+        source = (ROOT / "src" / "core" / "content_pack.cpp").read_text(encoding="utf-8")
+        table = source[source.index("neon_required{{"):]
+        table = table[:table.index("}};")]
+        compiled = re.findall(r'\{"([^"]+)",\s*(\d+),\s*"([0-9a-f]{64})"\}', table)
+        self.assertEqual(compiled, [(e["id"], str(e["size"]), e["sha256"]) for e in added])
+        sizes = [e["size"] for e in added]
+        self.assertEqual(sizes[2], 352)  # the race palette's layout, as every scenery's
+        self.assertEqual(sizes[3], tracks.NEON_GREEN_LEVELS[2])
+        for entry in added:
+            self.assertEqual(entry["source"]["kind"], "raw")
+
+    def test_palette_block_repeats_one_asset(self) -> None:
+        # Six copies of the block's asset, then the scenery's row and the four fixed rows; a
+        # synthetic directory stands in for the ROM's.
+        pieces = {0xA6: (0x1000, 32), 0x93 + 14: (0x2000, 32), 0x70 + 14: (0x3000, 64), 0x82 + 14: (0x4000, 8192)}
+        from unittest import mock
+        with mock.patch.object(tracks, "_asset_piece", side_effect=lambda rom, asset: pieces[asset]):
+            neon = tracks.neon_scenery_pieces(b"")
+        self.assertEqual(neon["palette"][:6], [(0x1000, 32)] * 6)
+        self.assertEqual(neon["palette"][6], (0x2000, 32))
+        self.assertEqual(neon["palette"][7:], list(tracks.FIXED_PALETTE_PIECES))
+        self.assertEqual(sum(length for _, length in neon["palette"]), 352)
+        self.assertEqual(neon["bg2_tiles"], [(0x3000, 64)])
+        self.assertEqual(neon["bg2_map"], [(0x4000, 8192)])
 
 
 class TrackedManifestTests(unittest.TestCase):

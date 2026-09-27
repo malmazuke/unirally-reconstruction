@@ -328,3 +328,35 @@ def v24_new_entries(rom: bytes) -> list[dict[str, Any]]:
     for s in sorted({scenery(index) for index in STUNT_TRACKS} - covered):
         entries += scenery_pack_entries(rom, s)
     return entries
+
+
+# STUNT-HUD (R-0068): NEON, track 42 in one-player play (`$12D1`, `$82:DC22-DC40`), loads scenery
+# 14, past the thirteen `track mod 14` gives: BG2 tiles `$70 + 14`, map `$82 + 14`, palette row
+# `$93 + 14`, and asset `$A6` in all six rows of the block (`$82:DC7C-DCB4`) instead of the class
+# table's choice; then the four fixed rows. `$83:D1C3`: the green levels by BG1 palette that
+# `$83:D1CA` moves NEON's lighting towards, seven bytes and the next routine's first opcode,
+# which a palette of 7 reads.
+NEON_SCENERY = 14
+NEON_BLOCK_ASSET = 0xA6
+NEON_GREEN_LEVELS = ("presentation.neon.green-levels", 0x83D1C3, 8)
+
+
+def neon_scenery_pieces(rom: bytes) -> dict[str, list[tuple[int, int]]]:
+    """BG2 tiles, BG2 map and the 352-byte race palette of NEON's scenery."""
+    block = [_asset_piece(rom, NEON_BLOCK_ASSET)] * 6
+    palette = block + [_asset_piece(rom, 0x93 + NEON_SCENERY)] + list(FIXED_PALETTE_PIECES)
+    return {"bg2_tiles": [_asset_piece(rom, 0x70 + NEON_SCENERY)],
+            "bg2_map": [_asset_piece(rom, 0x82 + NEON_SCENERY)], "palette": palette}
+
+
+def v26_new_entries(rom: bytes) -> list[dict[str, Any]]:
+    """The entries profile v26 adds to v25 (STUNT-HUD), in pack order: NEON's scenery and its
+    green levels. Run once with the ROM to append them to the rules; the tests check the rules
+    against the compiled table."""
+    pieces = neon_scenery_pieces(rom)
+    name = f"scenery.{NEON_SCENERY:02d}"
+    entry_id, bus, length = NEON_GREEN_LEVELS
+    levels = (provenance.rom_file_offset(bus, len(rom)), length)
+    return [_raw(f"{name}.bg2-tiles", rom, pieces["bg2_tiles"]), _raw(f"{name}.bg2-map", rom, pieces["bg2_map"]),
+            _raw(f"{name}.palette", rom, pieces["palette"]), _raw(entry_id, rom, [levels])]
+
