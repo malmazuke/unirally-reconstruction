@@ -16,7 +16,8 @@ void require(bool condition, const char *message) {
 }
 
 // FRONT-END-1P-SETUP: 1P races natively where a race scenario has the race;
-// RACE-RIDERS-OPPONENTS: whoever rides it, against whichever opponent.
+// RACE-RIDERS-OPPONENTS: whoever rides it, against whichever opponent;
+// STUNT-RESULT: the stunt events too.
 void one_player_race_rule() {
   auto state = unirally::start_front_end();
   state.mode_chosen = true;
@@ -25,8 +26,8 @@ void one_player_race_rule() {
   state.now_playing.opponent = 0x11;   // BRONSEN
   state.tour_menu.track = 13;          // FLAT FUN
   require(unirally::app::native_one_player_race(state), "MIKE against BRONSEN races");
-  state.tour_menu.track = 2;           // BOWL, a stunt event
-  require(!unirally::app::native_one_player_race(state), "a stunt event is refused");
+  state.tour_menu.track = 2;           // BOWL, a stunt event: its result is native (R-0067)
+  require(unirally::app::native_one_player_race(state), "a stunt event races");
   state.tour_menu.track = 13;
   state.rider_menu.rider = 1;          // ANDREW
   require(unirally::app::native_one_player_race(state), "another rider races");
@@ -40,12 +41,20 @@ void one_player_race_rule() {
   require(!unirally::app::native_one_player_race(state), "2P is refused");
 }
 
-// STUNT-EVENT-RACE: --track and the menus start the same races; no stunt event until its
-// result is native (STUNT-RESULT).
+// STUNT-EVENT-RACE and STUNT-RESULT: --track starts the races a scenario has but no stunt event,
+// whose result is the menus' (R-0067), not the --track path's Classic result screen; the menus
+// start every one of them, the stunt events too.
 void track_option_rule() {
   using unirally::ClassicRaceTrack;
-  for (const std::uint8_t stunt : std::array<std::uint8_t, 9>{2, 7, 12, 17, 22, 27, 32, 37, 42})
-    require(!unirally::app::native_race_track(ClassicRaceTrack{stunt}), "a stunt event is refused");
+  auto state = unirally::start_front_end();
+  state.mode_chosen = true;
+  state.mode = unirally::FrontEndMode::one_player;
+  state.now_playing.opponent = 0x11;
+  for (const std::uint8_t stunt : std::array<std::uint8_t, 9>{2, 7, 12, 17, 22, 27, 32, 37, 42}) {
+    require(!unirally::app::native_race_track(ClassicRaceTrack{stunt}), "--track refuses a stunt event");
+    state.tour_menu.track = stunt;
+    require(unirally::app::native_one_player_race(state), "the menus race a stunt event");
+  }
   for (const std::uint8_t race : std::array<std::uint8_t, 6>{0, 1, 13, 36, 41, 44})
     require(unirally::app::native_race_track(ClassicRaceTrack{race}), "a race track runs");
   require(!unirally::app::native_race_track(ClassicRaceTrack{45}), "no track 45");

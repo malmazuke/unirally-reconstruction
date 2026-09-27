@@ -22,8 +22,9 @@ PROJECT = ROOT / "tools" / "project.py"
 
 
 class TrackChoiceTests(unittest.TestCase):
-    def test_stunt_events_are_refused_until_their_result_is_native(self):
-        # STUNT-EVENT-RACE: the app's --track, like its menus, starts no stunt event (R-0066).
+    def test_stunt_events_are_refused_on_track(self):
+        # STUNT-EVENT-RACE, STUNT-RESULT: --track starts no stunt event; its result is the menus'
+        # (R-0067), which only the menus reach.
         for track in ("2", "7", "12", "17", "22", "27", "32", "37", "42"):
             with self.assertRaises(argparse.ArgumentTypeError):
                 commands._track_choice(track)

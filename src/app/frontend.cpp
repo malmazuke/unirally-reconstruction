@@ -187,12 +187,16 @@ FrontEndSession::FrontEndSession(const ClassicContentPack &pack)
     : content_(front_end_content(pack)) {}
 
 bool native_race_track(ClassicRaceTrack track) {
+  // A stunt event from --track would end on the race's own Classic result screen, not the
+  // menus' stunt result (R-0067), so --track takes the other races only.
   return classic_race_has_scenario(track) && !classic_race_scenario(track).stunt_event;
 }
 
 bool native_one_player_race(const FrontEndState &state) {
+  // Every race the menus choose, the stunt events too (R-0066, R-0067), has a scenario.
+  const ClassicRaceTrack track{state.tour_menu.track};
   return state.mode_chosen && state.mode == FrontEndMode::one_player &&
-         native_race_track(ClassicRaceTrack{state.tour_menu.track});
+         classic_race_has_scenario(track);
 }
 
 bool FrontEndSession::update(const std::array<std::uint16_t, 2> &ports) {

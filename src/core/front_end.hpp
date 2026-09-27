@@ -51,6 +51,9 @@ struct FrontEndContent {
     // objects (`$83:AE72`).
     std::span<const std::uint8_t> reveal_brightness, reveal_offsets, credits_text, credits_poses,
         credits_objects;
+    // The stunt result (profile v25): its nine text streams (`$80:F2EA-F4B4`) and the tally's five
+    // cells (`$80:F7E7-F7FA`); its head colours are assets 0x26 + rider.
+    std::span<const std::uint8_t> stunt_result_text, stunt_tally_cells;
 };
 FrontEndContent front_end_content(const ClassicContentPack& pack);
 
@@ -148,7 +151,9 @@ struct OnePlayerRecords {
     std::uint16_t player_wins{};   // $77:10A9: the player's wins; nothing recovered reads it
     std::uint16_t opponent_wins{}; // $77:10AB: a rider opponent's wins
     bool race_lost{};              // $77:0742 bit 12: the last race was lost
-    std::uint16_t tries{};         // $77:1073: 3, one less after a loss; nothing reads it (R-0057)
+    // $77:1073: 3 from a rider's choice (0 before, after a cold start), one less after a loss;
+    // nothing reads it (R-0057, R-0067).
+    std::uint16_t tries{};
     // $77:10FD: the level PICK TOUR is still to reveal, which the unlock rule writes whenever a
     // count matches; PICK TOUR first draws the level below it (R-0062).
     std::uint8_t pending_reveal{};
@@ -186,6 +191,12 @@ struct RaceTimes {
     std::array<std::uint16_t, 10> player_laps = filled_laps(), opponent_laps = filled_laps();
     // The race's tutorial hints ended (or never ran): the rider's bit is set in `$77:1116`.
     bool tutorial_hints_over{};
+    // A stunt event (race mode 2, R-0066): the riders' scores `$77:07BB` and `$77:0825` and the
+    // player's trick tallies `$77:076B-07BA`, which the stunt result shows. The opponent's tallies
+    // (`$77:07D5`) are only shown to a second player (not recovered).
+    bool stunt_event{};
+    std::uint16_t player_score{}, opponent_score{};
+    std::array<std::array<TrickTally, trick_family::columns>, trick_family::count> player_tallies{};
 
 private:
     static constexpr std::array<std::uint16_t, 10> filled_laps() {
@@ -256,14 +267,28 @@ struct HunterEnding {
     std::uint16_t pose_step{}; // $0036: the credits' pose step, 0 to 0x5F
 };
 
-// The result screen (`$80:951C`): the one-run result (`$80:CE90`) and its waits for a press, or
-// the lap result (`$80:8D6E`) and its graph, which the first press leaves.
+// The stunt result's tally (`$80:F669-F813`), column by column (x1 to x4): each pass raises every
+// row's shown count by one towards its tally; a pass that raises none adds the column's points to
+// the total. Each pass waits 7 frames and each column's total 13, less after a press.
+struct StuntTally {
+    std::uint8_t column{}; // 3 - `$0076`: 0-3 (x1-x4), 4 once all are added
+    std::array<std::uint16_t, trick_family::count> shown{}; // $00B2-$00BA, by row
+    std::uint16_t total{};          // $00C0: the columns added so far
+    std::uint8_t frames_waited{};   // frames since the last pass (or column total)
+    bool column_total_shown{};      // the wait is the column total's (`$80:F7B9`), not a pass's
+    std::uint32_t finished_frame{}; // the script frame the last column's wait ended, 0 before
+};
+
+// The result screen (`$80:951C`): the one-run result (`$80:CE90`) and its waits for a press, the
+// lap result (`$80:8D6E`) and its graph, which the first press leaves, or the stunt result
+// (`$80:F0EE`), its tally and the one-run result's waits.
 struct RaceResult {
     RaceTimes times{};
     bool released{};                    // `$80:C24C` has seen both pads released
     bool press_seen{};                  // `$80:C206` saw a press on the last frame
-    bool record_placed{};               // `$80:C786` placed a time in the track's top three
+    bool record_placed{}; // `$80:C786` placed a time or score in the track's top three
     std::array<LapGraphDot, 20> dots{}; // the player's laps, then the opponent's
+    StuntTally tally{};                 // a stunt result's
 };
 
 // PICK TRACK ($80:E84E): the tour's five tracks, then (in 1P) the medal line, which steps the
@@ -317,6 +342,7 @@ enum class FrontEndScreen : std::uint8_t {
     tour_ending,       // $83:88FD: a gold medal's ending, then the award's way back to PICK TOUR
     hunter_ending,     // $83:AB9A: HUNTER's gold ending, then the soft reset to the boot
     hunter_code,       // $80:F0D6: the main menu's code, 31 frames, then HUNTER's ending
+    stunt_result,      // $80:F0EE: a stunt event's result, its tally and the waits for a press
 };
 
 // What `$83:9894` saves before a race (work RAM `$0000-$019D`) and `$83:987D` puts back after

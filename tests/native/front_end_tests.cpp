@@ -73,7 +73,7 @@ void text_printer_tests() {
   require(map.words[5 * 32 + 3] == (0x6000 | 0xa4));
   require(map.words[6 * 32 + 3] == (0x6000 | (0xa4 + 0x3c)));
   // An unrecovered control code and a stream without its end are refused.
-  const std::array<std::uint8_t, 2> unknown{0xf0, 0xff};
+  const std::array<std::uint8_t, 2> unknown{0xf3, 0xff};
   const std::array<std::uint8_t, 1> unterminated{'A'};
   require(refuses([&] { unirally::print_text(map, cursor, unknown, table); }));
   require(
@@ -118,6 +118,16 @@ void text_variable_tests() {
   unirally::print_text(map, cursor, number, table, &variables);
   require(map.words[8 * 32 + 3] == (0x2000 | 24) && placed_object == 2 &&
           placed_at == 8 * 32 + 7); // three blanks, then two big digits
+  // F0 (`$80:C474`, R-0067): the five digits' last two, so 12 prints `12` and
+  // 1 a blank and `1`.
+  const std::array<std::uint8_t, 10> two{0xfe, 0, 16, 0xf0, 0xb4, 0x00,
+                                         0xf0, 0xb2, 0x00, 0xff};
+  unirally::print_text(map, cursor, two, table, &variables);
+  require(map.words[16 * 32] == (0x2000 | 24) &&
+          map.words[16 * 32 + 2] == (0x2000 | 26) &&
+          map.words[16 * 32 + 4] == (0x2000 | (0x2f + 0x9f)) &&
+          map.words[16 * 32 + 5] == (0x2000 | 24) &&
+          cursor.position == 16 * 32 + 7);
   // Refused: a variable code without variables.
   require(refuses([&] { unirally::print_text(map, cursor, track, table); }));
   // EE after F7: the name in capitals (R-0057). F8: rider 1's name from its
@@ -409,6 +419,21 @@ synthetic_content(std::vector<std::vector<std::uint8_t>> &storage) {
   // The lap result (profile v19): empty streams.
   content.lap_result_text = content.lap_result_record = bytes({0xff});
   content.lap_result_player = content.lap_result_opponent = bytes({0xff});
+  // The stunt result (profile v25): the heads' colours; nine streams, the
+  // table printing the track's name, the totals and the qualifying score
+  // five-digit words; the tally's cells the shown counts' last two digits.
+  for (unsigned id = 0x26; id <= 0x39; ++id)
+    content.assets[id] = keep(32);
+  content.stunt_result_text = bytes({0xf7, 0xce, 0x00, 0xfc, 0x02, 0xff, // table
+                                     0xff,                                 // 1P dashes
+                                     0xfe, 0x13, 0x16, 0xfd, 0xc0, 0x00, 0xff, // total
+                                     0xff,                                 // 2P total
+                                     0xfe, 0x13, 0x18, 0xfd, 0xb2, 0x00, 0xff, // qualify
+                                     0xfe, 0x13, 0x14, 0xfd, 0xc0, 0x00, 0xff, // record
+                                     0xff, 0xff, 0xff});
+  content.stunt_tally_cells = bytes({0xf0, 0xb2, 0, 0xff, 0xf0, 0xb4, 0, 0xff,
+                                     0xf0, 0xb6, 0, 0xff, 0xf0, 0xb8, 0, 0xff,
+                                     0xf0, 0xba, 0, 0xff});
   return content;
 }
 
@@ -1465,6 +1490,126 @@ void code_route_tests() {
           state.records.medals[8 * 16] == 2);
 }
 
+// R-0067: a stunt event's result, its tally, records and scoring, on
+// synthetic content: MIKE on BOWL (track 2, CRAWLER's stunt event), whose
+// qualifying score with no medal is the table's first word.
+unirally::RaceTimes stunt_times(std::uint16_t score) {
+  unirally::RaceTimes times;
+  times.stunt_event = true;
+  times.player_score = score;
+  // ROLL x1 twice for 4 and 2 points, FLIP x2 once for 16 (the rest of the
+  // score from tricks the result need not show).
+  times.player_tallies[0][0] = {2, 6};
+  times.player_tallies[1][1] = {1, 16};
+  return times;
+}
+
+void stunt_result_tests() {
+  using unirally::FrontEndScreen;
+  std::vector<std::vector<std::uint8_t>> storage;
+  auto content = synthetic_content(storage);
+  storage.push_back({68, 0, 137, 0, 14, 1});
+  content.qualifying_scores = storage.back();
+  const auto to_stunt = [&](std::uint16_t score, std::uint16_t total = 0xea60) {
+    auto state = unirally::start_front_end();
+    run(state, content, 430);
+    // A cold start holds no tries until a rider is chosen (`$80:BBE3`).
+    require(state.records.tries == 0);
+    require(run_to(state, content, FrontEndScreen::rider_menu, {0x1000, 0}));
+    require(run_to(state, content, FrontEndScreen::tour_menu, {0x8000, 0}));
+    require(state.records.tries == 3);
+    require(run_to(state, content, FrontEndScreen::track_menu, {0x1000, 0}));
+    require(run_to(state, content, FrontEndScreen::now_playing, {0x1000, 0}));
+    require(run_to(state, content, FrontEndScreen::race, {0x1000, 0}));
+    // BOWL, in the menus' words the race's return puts back (`$83:987D`).
+    state.tour_menu.track = state.saved.tour_menu.track = 2;
+    auto times = stunt_times(score);
+    times.player_total = total;
+    unirally::return_from_race(state, content, 5000, times);
+    require(run_to(state, content, FrontEndScreen::stunt_result, {}, 104));
+    return state;
+  };
+  // Built in three frames and faded in over seven; the tally's first pass in
+  // the fade's last frame: ROLL x1 shows 1, FLIP x1 its 0.
+  auto lost = to_stunt(49);
+  run(lost, content, 10);
+  const auto &tally = lost.race_result.tally;
+  require(lost.registers.brightness == 14 && tally.column == 0 &&
+          tally.shown[0] == 1 && tally.shown[1] == 0 && tally.total == 0);
+  // A pass waits eight frames; the third pass raises nothing and adds the
+  // column's 6 points, and each later column adds its own after fourteen.
+  run(lost, content, 7);
+  require(tally.shown[0] == 1);
+  run(lost, content, 1);
+  require(tally.shown[0] == 2 && !tally.column_total_shown);
+  run(lost, content, 8);
+  require(tally.column_total_shown && tally.total == 6);
+  run(lost, content, 14);
+  require(tally.column == 1 && tally.shown[1] == 1 && tally.total == 6);
+  run(lost, content, 16);
+  require(tally.column_total_shown && tally.total == 22);
+  // Columns x3 and x4 have nothing to count: a column total each.
+  run(lost, content, 34);
+  require(tally.column == 4 && tally.finished_frame == 90 &&
+          lost.records.best[2] == 0);
+  // Then the rider's best (a higher score, the markers shown), the qualifying
+  // score, and the waits for a press.
+  run(lost, content, 1);
+  require(lost.records.best[2] == 49 && (lost.oam_buffer[512 + 24] & 0x11) == 0);
+  run(lost, content, 3);
+  run(lost, content, 2, {0x0080, 0});
+  require(lost.screen == FrontEndScreen::race_result_exit);
+  // A placed score: the scoring a frame later, on the exit's third frame.
+  // 49 < 68 loses.
+  run(lost, content, 2);
+  require(!lost.records.race_lost);
+  run(lost, content, 1);
+  const auto &records = lost.records;
+  require(records.race_lost && records.tracks_done[2] == 0 &&
+          records.statistics[0][0] == 1 && records.statistics[0][1] == 1 &&
+          records.statistics[0][3] == 49 && records.player_wins == 1 &&
+          records.record_times[0][2] == 49 && records.record_holders[0][2] == 0);
+  require(run_to(lost, content, FrontEndScreen::track_menu_entry, {}, 3));
+  // The qualifying score itself wins (`$83:88E1`), and a score equal to a
+  // record does not displace it (`$80:8CCB`).
+  auto won = to_stunt(68);
+  won.records.record_times[0][2] = 68;
+  won.records.record_holders[0][2] = 5;
+  run(won, content, 10 + 16 + 8 + 14 * 3 + 16 + 4);
+  run(won, content, 2, {0x0080, 0});
+  require(run_to(won, content, FrontEndScreen::track_menu_entry, {}, 6));
+  require(!won.records.race_lost && won.records.tracks_done[2] == 1 &&
+          won.records.record_times[0][2] == 68 &&
+          won.records.record_holders[0][2] == 5 &&
+          won.records.record_times[1][2] == 68 &&
+          won.records.record_holders[1][2] == 0);
+  // A press cuts the tally's waits short: a pass a frame.
+  auto skipped = to_stunt(49);
+  run(skipped, content, 10);
+  run(skipped, content, 2, {0x0080, 0});
+  require(skipped.race_result.tally.column_total_shown &&
+          skipped.race_result.tally.total == 6);
+  // A quit (0xEA61, `$80:9A50`): no score, a point to the opponent, so no win
+  // in the statistics and no record; the scoring comes on the exit's third
+  // frame.
+  auto quit = to_stunt(49, 0xea61);
+  require(quit.race_result.times.player_score == 0 &&
+          quit.race_result.times.opponent_score == 1);
+  run(quit, content, 10 + 16 + 8 + 14 * 3 + 16 + 4);
+  run(quit, content, 2, {0x0080, 0});
+  run(quit, content, 2);
+  require(quit.records.race_lost && quit.records.statistics[0][1] == 0 &&
+          quit.records.statistics[0][3] == 0 &&
+          quit.records.record_times[0][2] == 0 && quit.records.best[2] == 0);
+  // A stunt win completing the tour (`$83:8805-8813`): the award.
+  auto completes = to_stunt(121);
+  for (const unsigned track : {0U, 1U, 3U, 4U})
+    completes.records.tracks_done[track] = 1;
+  run(completes, content, 10 + 16 + 8 + 14 * 3 + 16 + 4);
+  run(completes, content, 2, {0x0080, 0});
+  require(run_to(completes, content, FrontEndScreen::tour_award, {}, 4));
+}
+
 } // namespace
 
 int main() try {
@@ -1475,6 +1620,7 @@ int main() try {
   rider_menu_tests();
   one_player_setup_tests();
   race_result_tests();
+  stunt_result_tests();
   lap_result_tests();
   award_tests();
   ending_tests();

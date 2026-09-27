@@ -187,7 +187,7 @@ void print_help() {
   std::cout
       << "Usage: unirally --content-pack PATH [--track dragster|zoom-zoo|NN] [--updates N] [--hidden]\n"
       << "       NN: a race track's number (its index in the ROM) with a recovered scenario;\n"
-      << "       not a stunt event (2, 7, 12, 17, 22, 27, 32, 37, 42) until its result is native\n"
+      << "       not a stunt event (2, 7, 12, 17, 22, 27, 32, 37, 42), which the menus start\n"
       << "       unirally --supported-profiles   (print the pack profiles this build reads)\n"
       << "Without --track it starts at power-on: the Nintendo screen, the title and the main menu;\n"
       << "1P leads to the one-player screens and the race chosen there. With --track it starts in\n"
