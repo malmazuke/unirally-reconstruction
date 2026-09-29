@@ -1,5 +1,15 @@
 # Next session
 
+**Status on 29 September 2026 UTC (ATTRACT-DEMO in progress): continue the claimed
+task branch `task/attract-demo` in `.worktrees/attract-demo`.** The second idle
+cycle now reaches one-view track 3 and returns to the menu with the normal
+path's 1,901 projected race rows, 42 demo/camera fields and 22 retained pictures
+equal to the PAL reference. Two early-exit control runs also match through
+their returns ([R-0070](../docs/research/R-0070-attract-demo.md)). The source
+is still uncommitted at this checkpoint. Next: format, run focused checks,
+freeze and review the candidate, then broad gates and PR integration. Task
+details and usage boundary are in [ATTRACT-DEMO](ATTRACT-DEMO.md).
+
 **Status on 29 September 2026 UTC (SPLIT-SCREEN-RACE): confirm [PR #43](https://github.com/malmazuke/unirally-reconstruction/pull/43) and its closeout, then claim [ATTRACT-DEMO](ATTRACT-DEMO.md).**
 The first idle split ZOOM ZOO race matches the original through its menu return (R-0069);
 independent tier-1 review, the eleven private frozen races and source-head macOS/Linux CI pass.

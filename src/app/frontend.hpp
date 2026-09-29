@@ -145,8 +145,10 @@ public:
   // The race NOW PLAYING chose, with its rider, opponent and tutorial hints.
   ClassicRaceScenario race_scenario() const {
     if (demo_race()) {
-      auto scenario = classic_race_scenario(ClassicRaceTrack::ZoomZoo);
-      scenario.pairing = {4, 14};
+      const bool split = state_.demo_cycles == 0;
+      auto scenario = classic_race_scenario(ClassicRaceTrack{state_.tour_menu.track});
+      scenario.pairing = {state_.rider_menu.rider, state_.now_playing.opponent};
+      if (!split) scenario.initialization_frame = state_.frame - 1U;
       return scenario;
     }
     return one_player_race_scenario(state_);
@@ -162,7 +164,7 @@ public:
   // has begun, or its pause menu quit or restarted it. The front end takes over
   // with its times.
   void return_from_race(const ZoomZooState &race, const RaceTimes &times);
-  void return_from_demo(std::uint32_t exit_frame);
+  void return_from_demo(std::uint32_t exit_frame, std::uint16_t demo_elapsed);
 
 private:
   FrontEndContent content_;

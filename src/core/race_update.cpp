@@ -870,7 +870,7 @@ void update_zoom_zoo(ZoomZooState& state, const ControllerButtons& requested_but
     if (state.native_initialization && next.pause.released && !player_buttons.start)
         next.pause.released = 0;
     DemoTrickButtons demo_buttons{};
-    bool ai_off = next.demo_ai || next.split_screen || scenario.stunt_event;
+    bool ai_off = next.split_screen || scenario.stunt_event;
     const auto opponent_buttons = with_physical_dpad(gate_controller(state, second_port));
     if (next.demo_ai) {
         const auto pressed = [](const ControllerButtons& pad) {
@@ -879,6 +879,9 @@ void update_zoom_zoo(ZoomZooState& state, const ControllerButtons& requested_but
         };
         demo_buttons = update_demo_controllers(next, pressed(request) || pressed(opponent_buttons));
         pressed_a = demo_buttons.a[0];
+        // $83:CD50-CD61; ATTRACT-DEMO: the one-view demo runs normal opponent AI
+        // after its demo controls. The split demo suppresses that second pass.
+        if (!next.split_screen) ai_off = update_opponent_controller(next);
     } else if (next.split_screen) {
         const auto sample = sample_controller(opponent_buttons);
         next.opponent_horizontal = sample.horizontal;

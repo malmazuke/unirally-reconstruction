@@ -40,6 +40,7 @@ namespace {
 
 struct Options {
     std::filesystem::path pack, inputs;
+    std::filesystem::path race_timeline;
     std::uint32_t frames{};
     std::map<std::uint32_t, std::filesystem::path> pictures, records, vram;
     // The original's race initialization frames, in race order, from a capture: the loading time
@@ -93,6 +94,8 @@ Options parse_options(int argc, char** argv) {
             options.frames = static_cast<std::uint32_t>(std::stoul(value()));
         else if (option == "--inputs")
             options.inputs = value();
+        else if (option == "--race-timeline")
+            options.race_timeline = value();
         else if (option == "--picture") {
             const auto frame = static_cast<std::uint32_t>(std::stoul(value()));
             options.pictures[frame] = value();
@@ -281,17 +284,22 @@ struct RaceBetweenMenus {
 std::string start_race(RaceBetweenMenus& race, const unirally::ClassicContentPack& pack,
                        const unirally::FrontEndState& front_end, std::uint32_t initialization) {
     if (front_end.mode == unirally::FrontEndMode::demo) {
-        auto scenario = unirally::classic_race_scenario(unirally::ClassicRaceTrack::ZoomZoo);
+        const bool split = front_end.demo_cycles == 0;
+        auto scenario =
+            unirally::classic_race_scenario(unirally::ClassicRaceTrack{front_end.tour_menu.track});
+        scenario.pairing = {front_end.rider_menu.rider, front_end.now_playing.opponent};
+        if (!split) scenario.initialization_frame = front_end.frame - 1U;
         race.content = unirally::classic_race_content(pack, scenario.track);
         race.state = unirally::classic_race_start(*race.content, scenario);
-        unirally::initialize_split_cameras(race.state);
+        if (split)
+            unirally::initialize_split_cameras(race.state);
+        else
+            unirally::initialize_second_camera(race.state);
         race.state.demo_ai = race.state.demo.opponent_hints_active = true;
-        race.state.pairing = {4, 14}; // First PAL idle demo, $77:0748/$77:0749 at 1448.
-        race.state.opponent_tier.ai_level = 0;
-        scenario.pairing = race.state.pairing;
+        if (split) race.state.opponent_tier.ai_level = 0;
         race.presentation = unirally::classic_race_presentation_content(pack, scenario);
-        race.initialization_frame = initialization ? initialization : 1448;
-        race.loading_initialization = 1448;
+        race.initialization_frame = initialization ? initialization : front_end.frame - 1U;
+        race.loading_initialization = front_end.frame - 1U;
         race.history = {};
         return {};
     }
@@ -321,7 +329,7 @@ void update_demo_race(const Options& options, const unirally::ClassicContentPack
                   unirally::render_classic_race(race.state, *race.presentation, &previous, &shown));
     }
     if (race.state.demo.exit_requested) {
-        unirally::return_from_demo(front_end, frame);
+        unirally::return_from_demo(front_end, frame, race.state.demo.elapsed);
         race.content.reset();
         race.presentation.reset();
         ++races;
@@ -329,10 +337,26 @@ void update_demo_race(const Options& options, const unirally::ClassicContentPack
     print_state(frame, front_end);
 }
 
+void write_race_state(std::ofstream& out, std::uint32_t frame,
+                      const unirally::ZoomZooState& state) {
+    if (!out) return;
+    out << frame << ' ';
+    for (const auto byte : unirally::serialize_zoom_zoo(state)) {
+        constexpr char hex[] = "0123456789abcdef";
+        out << hex[byte >> 4U] << hex[byte & 15U];
+    }
+    out << '\n';
+}
+
 } // namespace
 
 int main(int argc, char** argv) try {
     const auto options = parse_options(argc, argv);
+    std::ofstream race_timeline;
+    if (!options.race_timeline.empty()) {
+        race_timeline.open(options.race_timeline);
+        if (!race_timeline) throw std::runtime_error("cannot create race timeline");
+    }
     const unirally::ClassicContentPack pack(options.pack);
     const auto content = unirally::front_end_content(pack);
     const auto inputs = read_inputs(options.inputs);
@@ -354,10 +378,13 @@ int main(int argc, char** argv) try {
                               << '\n';
                     break;
                 }
+                if (state.mode == unirally::FrontEndMode::demo)
+                    write_race_state(race_timeline, race.initialization_frame, race.state);
             }
             if (state.mode == unirally::FrontEndMode::demo) {
                 if (frame <= race.initialization_frame) continue;
                 update_demo_race(options, pack, state, race, frame, pads, races);
+                write_race_state(race_timeline, frame, race.state);
                 continue;
             }
             if (frame <= race.initialization_frame) continue;

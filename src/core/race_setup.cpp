@@ -68,8 +68,9 @@ constexpr std::uint8_t neon_track = 42;
 
 ClassicRaceScenario stunt_scenario(ClassicRaceTrack track, std::uint32_t initialization_frame) {
     const bool hunter = track.index >= first_hunter_track && track.index <= last_hunter_track;
-    ClassicRaceScenario scenario{track, initialization_frame, 0, stunt_stable_result,
-                                 stunt_stable_result, false, hunter, {0, opponent::bronsen}};
+    ClassicRaceScenario scenario{
+        track,  initialization_frame,  0, stunt_stable_result, stunt_stable_result, false,
+        hunter, {0, opponent::bronsen}};
     scenario.stunt_event = true;
     // $82:D98F-D9A7 and $82:DC22-DC3A: track 42 in one-player play sets `$12D1` (R-0068).
     scenario.neon_lighting = track.index == neon_track;
@@ -147,8 +148,15 @@ ClassicRaceScenario classic_race_scenario(ClassicRaceTrack track) {
     // STUNT-EVENT-RACE (R-0066): the stunt events, place 2 of every tour, their boundaries on
     // the laboratory's menu path (the cold start's four, then LOCKED-TOURS' unlocked path).
     static constexpr std::array<std::pair<std::uint8_t, std::uint16_t>, 9> stunt_events{
-        {{2, 1335}, {12, 1343}, {22, 1331}, {32, 1349}, {7, 1336}, {17, 1330}, {27, 1360},
-         {37, 1368}, {42, 1399}}};
+        {{2, 1335},
+         {12, 1343},
+         {22, 1331},
+         {32, 1349},
+         {7, 1336},
+         {17, 1330},
+         {27, 1360},
+         {37, 1368},
+         {42, 1399}}};
     for (const auto& [index, initialization_frame] : stunt_events)
         if (index == track.index) return stunt_scenario(track, initialization_frame);
     throw std::invalid_argument("classic race track has no recovered scenario");
@@ -169,10 +177,10 @@ ClassicRaceScenario classic_race_scenario(ClassicRaceTrack track, RacePairing pa
     // The one-player menus give HUNTER's race tracks ANTI-UNI ($80:B361-B369) and the other
     // races, and every stunt event, BRONSEN, SILVIA or GOLDWYN by the rider's medal
     // ($80:B31F-B346).
-    const bool chosen = scenario.hunter_tour && !scenario.stunt_event
-                          ? pairing.opponent == opponent::anti_uni
-                          : pairing.opponent >= opponent::bronsen
-                                && pairing.opponent <= opponent::goldwyn;
+    const bool chosen =
+        scenario.hunter_tour && !scenario.stunt_event
+            ? pairing.opponent == opponent::anti_uni
+            : pairing.opponent >= opponent::bronsen && pairing.opponent <= opponent::goldwyn;
     if (pairing.rider >= rider_characters || !chosen)
         throw std::invalid_argument("the one-player menus cannot choose this race's pairing");
     scenario.pairing = pairing;
@@ -188,7 +196,7 @@ OpponentTier opponent_tier(const ClassicRaceScenario& scenario,
     if (scenario.hunter_tour) return hunter_tier;
     OpponentTier tier;
     tier.ai_level = static_cast<std::uint8_t>(scenario.pairing.opponent - opponent_level_base);
-    if (tier.ai_level >= 2) {
+    if (tier.ai_level == 2 || tier.ai_level == 3) {
         if (catch_up_by_track.size() <= scenario.track.index)
             throw std::invalid_argument("the opponent's catch-up table is missing (pack v21)");
         tier.catch_up =
@@ -226,7 +234,7 @@ TrackGeometry track_geometry(std::span<const std::uint8_t> decoded_track) {
     case 0x20: return {128, 0x1fff, 3, -0xc0, 0xc8, -0x188, 0x800};   // $81:A406-A444, 128 x 128
     case 0x10: return {64, 0x0fff, 4, -0x180, 0x190, -0x310, 0x1000}; // $81:A3C7-A405, 64 x 256
     case 0x08: return {32, 0x07ff, 5, -0x300, 0x320, -0x620, 0x2000}; // $81:A388-A3C6, 32 x 512
-    case 0x04:                                                         // $81:A343-A387, 16 x 1,024
+    case 0x04:                                                        // $81:A343-A387, 16 x 1,024
         return {16, 0x03ff, 6, -0x600, 0x640, -0xc40, 0x4000, true};
     default: throw std::invalid_argument("track playfield shape is outside the recovered tracks");
     }

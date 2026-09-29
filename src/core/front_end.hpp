@@ -273,7 +273,7 @@ struct HunterEnding {
 struct StuntTally {
     std::uint8_t column{}; // 3 - `$0076`: 0-3 (x1-x4), 4 once all are added
     std::array<std::uint16_t, trick_family::count> shown{}; // $00B2-$00BA, by row
-    std::uint16_t total{};          // $00C0: the columns added so far
+    std::uint16_t total{};                                  // $00C0: the columns added so far
     std::uint8_t frames_waited{};   // frames since the last pass (or column total)
     bool column_total_shown{};      // the wait is the column total's (`$80:F7B9`), not a pass's
     std::uint32_t finished_frame{}; // the script frame the last column's wait ended, 0 before
@@ -284,8 +284,8 @@ struct StuntTally {
 // (`$80:F0EE`), its tally and the one-run result's waits.
 struct RaceResult {
     RaceTimes times{};
-    bool released{};                    // `$80:C24C` has seen both pads released
-    bool press_seen{};                  // `$80:C206` saw a press on the last frame
+    bool released{};      // `$80:C24C` has seen both pads released
+    bool press_seen{};    // `$80:C206` saw a press on the last frame
     bool record_placed{}; // `$80:C786` placed a time or score in the track's top three
     std::array<LapGraphDot, 20> dots{}; // the player's laps, then the opponent's
     StuntTally tally{};                 // a stunt result's
@@ -343,7 +343,7 @@ enum class FrontEndScreen : std::uint8_t {
     hunter_ending,     // $83:AB9A: HUNTER's gold ending, then the soft reset to the boot
     hunter_code,       // $80:F0D6: the main menu's code, 31 frames, then HUNTER's ending
     stunt_result,      // $80:F0EE: a stunt event's result, its tally and the waits for a press
-    demo_title,        // the idle demo's native title display before its first split race
+    demo_title,        // the idle demo's native title display before a race
     demo_return,       // the idle demo's return to the main menu
 };
 
@@ -402,8 +402,11 @@ struct FrontEndState {
     TourAward award{};
     TourEnding ending{};
     HunterEnding hunter{};
-    SavedMenus saved{}; // during a race and its return
-    bool one_player{};  // $77:10AD = 1: 1P from a rider's choice to the main menu's return
+    SavedMenus saved{};         // during a race and its return
+    bool one_player{};          // $77:10AD = 1: 1P from a rider's choice to the main menu's return
+    std::uint8_t demo_cycles{}; // completed idle races since power-on (ATTRACT-DEMO)
+    std::uint8_t demo_return_wait{}; // extra blank frames after an interrupted demo (R-0070)
+    bool demo_return_interrupted{};
     bool mode_chosen{};
     // For 1P, once NOW PLAYING's Race has faded out: the race is `tour_menu.track` for
     // `rider_menu.rider` against `now_playing.opponent`.
@@ -421,8 +424,8 @@ FrontEndState start_front_end();
 // One frame: its vblank's work, in the original's order. Once a mode is chosen (for 1P, a race)
 // the state stops.
 void update_front_end(FrontEndState& state, const FrontEndContent& content, FrontEndPads pads);
-// Return from the first idle demo's race on the original's exit frame.
-void return_from_demo(FrontEndState& state, std::uint32_t exit_frame);
+// Return from an idle demo race on the original's exit frame.
+void return_from_demo(FrontEndState& state, std::uint32_t exit_frame, std::uint16_t demo_elapsed);
 // The frame the last update produced.
 RgbFrame render_front_end(const FrontEndState& state);
 

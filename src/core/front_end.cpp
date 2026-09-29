@@ -333,6 +333,10 @@ void run_main_menu(FrontEndState& state, const FrontEndContent& content, FrontEn
     if (menu.idle == 0) {
         menu.selection = static_cast<std::uint8_t>(FrontEndMode::demo);
         state.mode = FrontEndMode::demo;
+        if (state.demo_cycles >= 2) {
+            state.mode_chosen = true; // Later cycles are outside the recovered domain.
+            return;
+        }
         state.screen = FrontEndScreen::demo_title;
         return;
     }
@@ -750,14 +754,20 @@ FrontEndState start_front_end() {
     return {};
 }
 
-void return_from_demo(FrontEndState& state, std::uint32_t exit_frame) {
+void return_from_demo(FrontEndState& state, std::uint32_t exit_frame, std::uint16_t demo_elapsed) {
+    ++state.demo_cycles;
     state.frame = exit_frame + 1U;
     state.screen = FrontEndScreen::demo_return;
     state.script_frame = 0;
+    // R-0070: an early pad exit stays blank for two more pictures before the
+    // menu's return script. The timer exit at elapsed $076B does not.
+    state.demo_return_interrupted = demo_elapsed != 0x076b;
+    state.demo_return_wait = state.demo_return_interrupted ? 2 : 0;
     state.mode_chosen = false;
     state.registers.force_blank = true;
     state.line_registers.clear();
     state.cycle.running = false;
+    state.cycle.delay = state.cycle.phase = 0;
 }
 
 namespace {
@@ -802,16 +812,21 @@ void demo_title_frame(FrontEndState& state, const FrontEndContent& content) {
             state.line_registers.push_back({static_cast<std::uint8_t>(wave_start + wave.size()),
                                             SnesLineRegisterName::display, 0x80});
     }
-    if (frame >= 452 && frame <= 457)
-        state.registers.brightness = static_cast<std::uint8_t>(13U - 2U * (frame - 452U));
-    if (frame >= 458) {
+    // R-0070: the second title holds full brightness one picture longer.
+    const auto fade_start = state.demo_cycles == 1 ? 453U : 452U;
+    if (frame >= fade_start && frame < fade_start + 6U)
+        state.registers.brightness = static_cast<std::uint8_t>(13U - 2U * (frame - fade_start));
+    if (frame >= fade_start + 6U) {
         state.registers.force_blank = true;
         state.cycle.running = false;
     }
-    if (frame == 548) {
-        state.tour_menu.track = ClassicRaceTrack::ZoomZoo.index;
-        state.rider_menu.rider = 4;      // $77:0748 on the first demo's race initialization.
-        state.now_playing.opponent = 14; // $77:0749.
+    // $83:C8E0-C9F4; ATTRACT-DEMO: the second cold idle cycle loads track 3,
+    // rider 6 against rider 1 after the title's 28 additional loading frames.
+    const bool second_cycle = state.demo_cycles == 1;
+    if (frame == (second_cycle ? 576U : 548U)) {
+        state.tour_menu.track = second_cycle ? 3 : ClassicRaceTrack::ZoomZoo.index;
+        state.rider_menu.rider = second_cycle ? 6 : 4;
+        state.now_playing.opponent = second_cycle ? 1 : 14;
         state.mode_chosen = true;
         state.screen = FrontEndScreen::race;
     }
@@ -833,7 +848,9 @@ void demo_return_frame(FrontEndState& state, const FrontEndContent& content) {
         state.cycle.running = false;
         state.cycle.delay = state.cycle.phase = 0;
     }
-    if (frame == 101) {
+    // The interrupted return enables the palette hook one picture earlier
+    // (R-0070, $00C8/$00C9 trace at frames 5103-5117).
+    if (frame == (state.demo_return_interrupted ? 100U : 101U)) {
         state.cycle.running = true;
     }
     if (frame == 102) state.arrow.spin = 4;
@@ -867,6 +884,11 @@ void soft_reset(FrontEndState& state) {
 
 void update_front_end(FrontEndState& state, const FrontEndContent& content, FrontEndPads pads) {
     if (state.mode_chosen) return;
+    if (state.screen == FrontEndScreen::demo_return && state.demo_return_wait != 0) {
+        --state.demo_return_wait;
+        ++state.frame;
+        return;
+    }
     keep_line_writes(state);
     // NMIs are enabled at the end of the title's loads (`$80:F5B8`); the hook runs from then on:
     // the logo's slide, then the palette cycle.

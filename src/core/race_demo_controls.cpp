@@ -43,6 +43,12 @@ void demo_rider(ZoomZooState& state, unsigned index, DemoTrickButtons& buttons) 
     }
     if (rider.progress.marker_word & jump_marker) {
         transition.jump_input = 1;
+        // $83:E36E-E3E3; ATTRACT-DEMO: once fully off the surface, a
+        // downward-moving rider follows the alternating contact phase even
+        // while the marker still asks for a jump.
+        if (!control.airborne_rotation[index] && rider.contact.unsupported_count >= 4
+            && static_cast<std::int16_t>(rider.motion.velocity_y) >= 0)
+            transition.jump_input = state.movement.contact_phase;
         if (!control.airborne_rotation[index] && rider.contact.unsupported_count >= 4
             && static_cast<std::int16_t>(rider.motion.velocity_y) < 0) {
             control.airborne_rotation[index] =

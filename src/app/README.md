@@ -31,10 +31,11 @@ PICK TOUR (R-0059); a gold medal plays the tour's ending and PICK TOUR then reve
 opens (R-0062) and HUNTER's plays its pages and credits, then resets (R-0064). In a race started from the menus the
 pause menu's second choice ends the race as the original's QUIT does: during the start countdown
 it goes back to NOW PLAYING, after it the result shows QUIT and the race counts as lost (R-0060).
-A race started with `--track` still restarts from it. 2P, VS, LEAGUE, OPTIONS and the demo are not
-native yet: choosing one, or leaving the menu idle for the demo, shows a notice and returns to
-the main menu as it first appeared, so the rider and tour chosen last start over (the original
-keeps them); the records are kept. `--track dragster|zoom-zoo|NN` starts directly in that
+A race started with `--track` still restarts from it. The first idle demo runs a two-view
+ZOOM ZOO race, then the next idle demo runs one-view track 3; both return to the main menu
+(R-0069, R-0070). 2P, VS, LEAGUE and OPTIONS still show a notice and return to the main menu
+as it first appeared, so the rider and tour chosen last start over (the original keeps them);
+the records are kept. `--track dragster|zoom-zoo|NN` starts directly in that
 race instead (not a stunt event, whose result only the menus show).
 
 DRAGSTER plays on the shared race engine (R-0038), whose jump, brake,
@@ -57,7 +58,7 @@ for shell expansion or pass an absolute path.
 
 Keyboard controls are arrows, Z=B, X=Y, A=A, S=X, Q=L, W=R, Enter=Start and
 Backspace=Select. Standard gamepad buttons follow the equivalent SNES layout.
-The current recovered slice consumes controller port 0 only.
+The menus and one-player races use port 0; either port can interrupt an idle demo.
 
 DRAGSTER follows the original controls: B jumps, Y brakes, Left rides and
 turns back, A, X, L and R act in the air, and Start pauses (RESUME or RESTART

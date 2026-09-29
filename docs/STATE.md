@@ -1,5 +1,13 @@
 # Project state
 
+Updated 29 September 2026 (ATTRACT-DEMO, in progress): **the second idle demo
+cycle has a native candidate, pending review and integration.** It selects
+one-view track 3, rider 6 against rider 1. The normal path's 1,901 projected
+race rows and demo/camera fields match the original; 22 sampled pictures
+through the menu return differ by zero pixels. Two independently pressed
+early-exit paths agree through their return ([R-0070](research/R-0070-attract-demo.md)).
+The exact source candidate, broad gates and independent tier-1 review remain.
+
 Updated 29 September 2026 (SPLIT-SCREEN-RACE): **the first idle split-screen demo race is
 native and independently reviewed in [PR #43](https://github.com/malmazuke/unirally-reconstruction/pull/43).**
 - From power-on, the idle menu starts a two-rider ZOOM ZOO demo. Both native viewports, cameras,
