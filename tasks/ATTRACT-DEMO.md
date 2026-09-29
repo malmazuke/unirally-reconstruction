@@ -204,3 +204,48 @@ beyond this one, and audio outside this task unless a verified dependency requir
   head, run the broad private/sanitizer and hosted CI gates, then merge and
   close out. Codex weekly usage is 33% at the correction checkpoint, below
   the 44% discretionary cap; no reset was used.
+
+## Integration handoff - 29 September 2026 11:06 UTC
+
+- Reviewed runtime correction `ad76af5b24f63036c80167d1200700f61a1b3d9d`;
+  its map-only successor is `97a60980003687e9350fc7d3613917867977a2aa`.
+  The fresh independent tier-1 reviewer accepted that exact head in
+  [PR #44's final review](https://github.com/malmazuke/unirally-reconstruction/pull/44#pullrequestreview-5351284026).
+  The prior gameplay and generated-map findings each have an Agent reply on
+  the PR. The four raw-coverage static-map regeneration checked 53,062 sites
+  with zero disagreements; native-symbol and its 24 tests pass.
+- On the corrected code, the first and second normal demos each match 1,901
+  original projected race rows. The second also matches its 42-byte trailer
+  on all 1,901 rows and all 22 retained pictures. Three independent pad exits
+  match 478, 678 and 1,878 projected-plus-trailer rows; their 57, 7 and 57
+  retained return pictures are pixel equal. A fresh late-Left resume from
+  frame 6399 reproduces serialized frame 6400 byte for byte. The hidden app
+  run reaches both demo returns through 7,000 updates with no notices or pose
+  fallbacks.
+- The final source/map head `97a6098` passed all 11 private frozen native
+  comparisons under `artifacts/attract-demo-integration/private-97a6098/`.
+  Local `lab-debug` passed 506 Python tooling tests, 29 CTests and the
+  fresh-process repeatability probe after using a real worktree `artifacts`
+  directory. `app-debug` passed 29 CTests and repeatability on the identical
+  runtime source; `lab-release` passed 29 CTests. The v1 presentation winner
+  and loser contracts passed all seven and one visual cases, respectively.
+  The pack v26 has 433 validated entries under the track rules. Hosted
+  [macOS and Linux checks](https://github.com/malmazuke/unirally-reconstruction/actions/runs/36557279664)
+  pass at `97a6098`, including the Linux sanitizer step.
+- The local macOS `app-sanitize` build passed, but its complete CTest exceeded
+  600 seconds and two focused tests each exceeded 180 seconds. These are
+  timeouts, not passes. The first local Python tooling run had 11 setup
+  failures because a linked `artifacts` directory resolves outside its
+  checkout; the rerun with a real directory passed all 506. An attempted
+  `content pack-inspect` used its default older DRAGSTER rules and failed on
+  v26; direct validation with the tracked v26 rules passed. No reference
+  results or thresholds changed.
+- Next integration steps: commit this record-only handoff, get current-head
+  CI and inspect every PR review, issue comment and line comment, update the
+  PR body, merge with a merge commit, fast-forward local `main`, then write
+  `artifacts/attract-demo-integration/closeout.json` with the actual merge
+  commit and cleanup list. Preserve the cited captures under
+  `local/evidence/attract-demo/`. After this task, the roadmap's next native
+  outcome is the 2P and VS modes; create its task record before claiming it.
+  Weekly Codex usage is 37% at 11:06 UTC, below the 44% discretionary cap;
+  no reset credit was redeemed.

@@ -1,10 +1,11 @@
 # R-0070 - second idle demo cycle
 
-Status: candidate evidence for [ATTRACT-DEMO](../../tasks/ATTRACT-DEMO.md). The tested domain
-is a PAL cold power-on with Start held on frames 300-305, both pads then released through
-frame 6999. Three separate runs press port 1 A at frame 5000, port 2 B at frame 5200,
-or port 1 Left at frame 6400. The claim covers this second cycle through its main-menu return, not later demo cycles or the
-2P/VS menu paths.
+Status: independently reviewed evidence for [ATTRACT-DEMO](../../tasks/ATTRACT-DEMO.md);
+PR #44's merge is pending. The tested domain is a PAL cold power-on with Start held on
+frames 300-305, both pads then released through frame 6999. Three separate runs press
+port 1 A at frame 5000, port 2 B at frame 5200, or port 1 Left at frame 6400.
+The claim covers this second cycle through its main-menu return, not later demo cycles
+or the 2P/VS menu paths.
 
 ## Identities and method
 
