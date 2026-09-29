@@ -1,5 +1,20 @@
 # Project state
 
+Updated 29 September 2026 (TWO-PLAYER-VS, tier-1 review accepted): **the measured
+first 2P and VS race, result and continuation paths are native** on
+[PR #45](https://github.com/malmazuke/unirally-reconstruction/pull/45).
+Two pads select and control distinct riders. The first both-Right DRAGSTER race
+returns MIKE/MARTIN totals 0:34.41/0:34.37 at frame 4146, matching the pinned
+PAL run. The 2P continuation, VS return after challenger, SELECT TOUR and the
+second ZOOM ZOO race's measured pictures have zero differences at their cited
+frames ([R-0071](research/R-0071-two-player-versus.md)). The v27 pack has 442
+validated entries. Eleven private frozen comparisons, the full app-debug suite,
+the independent review and hosted macOS/Ubuntu checks pass at `1191408`.
+The local macOS sanitizer suite timed out; hosted Linux sanitizers passed.
+The task's exact domain and remaining animated-picture differences are in
+[TWO-PLAYER-VS](../tasks/TWO-PLAYER-VS.md). OPTIONS is the next unclaimed
+roadmap outcome, ahead of LEAGUE.
+
 Updated 29 September 2026 (TWO-PLAYER-VS claim): ATTRACT-DEMO merged in
 [PR #44](https://github.com/malmazuke/unirally-reconstruction/pull/44) at
 `5df56c6`; its ignored closeout verifies the final-tip checks and local/remote
