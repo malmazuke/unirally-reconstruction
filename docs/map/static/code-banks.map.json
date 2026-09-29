@@ -7344,6 +7344,9 @@
     "NMX",
     "NmX"
    ],
+   "native": [
+    "src/core/front_end.cpp:return_from_demo"
+   ],
    "observed_entries": {},
    "start": "$82:8035",
    "static_entries": {
@@ -13269,6 +13272,7 @@
     "Nmx"
    ],
    "native": [
+    "src/core/front_end.cpp:return_from_demo",
     "src/core/race_demo_controls.cpp:(file)",
     "src/core/race_demo_controls.cpp:demo_rider",
     "src/core/race_demo_controls.cpp:update_demo_controllers",
@@ -14425,18 +14429,18 @@
    "call returns in the calling mode": 1262
   },
   "bytes": 131072,
-  "cited_addresses": 1409,
+  "cited_addresses": 1413,
   "cited_by_class": {
    "data": 25,
-   "inferred": 238,
-   "observed": 925,
+   "inferred": 241,
+   "observed": 926,
    "unknown": 221
   },
   "cited_by_position": {
    "dat": 25,
-   "loc": 840,
+   "loc": 843,
    "mid": 18,
-   "sub": 305,
+   "sub": 306,
    "unk": 221
   },
   "conflicts": 0,
@@ -14456,9 +14460,9 @@
   "jump_tables": 2,
   "mode_ambiguities": 7,
   "observed": 41778,
-  "routine_bytes_cited_by_native_code": 48762,
+  "routine_bytes_cited_by_native_code": 48835,
   "routines": 636,
-  "routines_cited_by_native_code": 373,
+  "routines_cited_by_native_code": 374,
   "unknown": 52881,
   "unknown_share": 0.4035
  }
