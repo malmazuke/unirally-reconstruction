@@ -1,5 +1,16 @@
 # Project state
 
+Updated 29 September 2026 22:40 UTC (OPTIONS resource handoff): OPTIONS is
+active but unaccepted on pushed branch `codex/options` in `.worktrees/options`.
+Its menu shell, player name editor and DEFINE PLAYER removal are implemented in
+partial native slices; the league setup and four RECORDS details remain open.
+PAL captures now cover a two-member first league's save/name mutation and one
+populated TRACK RECORDS and HIGH SCORES case
+([R-0072](research/R-0072-options.md)). Weekly Codex usage reached the task's
+D-0004 80% discretionary boundary. The last 20% is reserved for review and
+recovery; no override or reset was authorized by this handoff. See
+[OPTIONS](../tasks/OPTIONS.md) for the exact tested domain and next work.
+
 Updated 29 September 2026 (OPTIONS claim): TWO-PLAYER-VS merged in
 [PR #45](https://github.com/malmazuke/unirally-reconstruction/pull/45) at `f2da955`.
 The next roadmap outcome, [OPTIONS](../tasks/OPTIONS.md), is active in an isolated checkout.

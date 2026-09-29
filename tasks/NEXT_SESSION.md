@@ -1,5 +1,18 @@
 # Next session
 
+**Status on 29 September 2026 22:40 UTC (OPTIONS resource handoff):**
+[OPTIONS](OPTIONS.md) remains claimed and incomplete on pushed branch `codex/options`
+in `.worktrees/options`, with ignored PAL evidence under main's `local/evidence/options/`.
+The latest committed source slice implements the OPTIONS/RECORDS menu shell,
+player name edit and DEFINE PLAYER reset; DEFINE LEAGUE and four RECORDS details
+are still pending. The task record and [R-0072](../docs/research/R-0072-options.md)
+hold the exact captures, source commits, tests and next experiment. The task
+reached its D-0004 80% weekly-used discretionary boundary from a 60% start;
+no reset or override is authorized as of this handoff. Do not accept, review,
+open a PR for, or automatically dispatch a separate replacement task for this
+partial capability. Resume this same task when capacity or explicit authority
+is available.
+
 **Status on 29 September 2026 UTC (OPTIONS claimed): continue
 [OPTIONS](OPTIONS.md) in `.worktrees/options` from merged TWO-PLAYER-VS `f2da955`.**
 PR #45's ignored closeout verifies final-tip CI, local `main` synchronization and cleanup.
