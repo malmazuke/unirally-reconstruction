@@ -310,6 +310,15 @@ std::uint8_t stored_character(std::uint8_t key) {
     return key;
 }
 
+void erase_keyboard_character(FrontEndState& state, const FrontEndContent& content) {
+    if (state.keyboard.length == 0) return;
+    --state.keyboard.length;
+    --state.printer.position;
+    constexpr std::array<std::uint8_t, 2> dot{'.', 0xff};
+    print_text(state.text, state.printer, dot, content.character_table);
+    --state.printer.position;
+}
+
 } // namespace
 
 void rename_keyboard_frame(FrontEndState& state, const FrontEndContent& content, FrontEndPads pads) {
@@ -339,8 +348,12 @@ void rename_keyboard_frame(FrontEndState& state, const FrontEndContent& content,
         editor.offset_y = editor.offset_y == -72 ? 0
                                                  : static_cast<std::int16_t>(editor.offset_y - 24);
     }
-    if (pressed & back_buttons)
-        throw std::runtime_error("OPTIONS keyboard cancellation is not yet recovered");
+    if (pressed & back_buttons) { // Y or X: direct backspace, $80:A29B
+        state.arrow.target_x = 0x0100;
+        state.arrow.target_y = 0x04e0;
+        erase_keyboard_character(state, content);
+        return;
+    }
     if (!(pressed & choose_buttons)) return;
     // $80:A3A0-A3BC aims at the selected key, in sixteenths of a pixel.
     state.arrow.target_x = static_cast<std::uint16_t>(-editor.offset_x * 16);
@@ -353,13 +366,7 @@ void rename_keyboard_frame(FrontEndState& state, const FrontEndContent& content,
         return;
     }
     if (key == 0x3c) { // backspace
-        if (editor.length != 0) {
-            --editor.length;
-            --state.printer.position;
-            constexpr std::array<std::uint8_t, 2> dot{'.', 0xff};
-            print_text(state.text, state.printer, dot, content.character_table);
-            --state.printer.position;
-        }
+        erase_keyboard_character(state, content);
         return;
     }
     if (editor.length >= 8) return;
