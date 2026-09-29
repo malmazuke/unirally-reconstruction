@@ -192,6 +192,15 @@ void print_text(TextMap& map, TextCursor& cursor, std::span<const std::uint8_t> 
             centre_on(cursor, stream.subspan(at), row, character_table);
             break;
         }
+        case row_code: {
+            const auto row = next();
+            const auto remaining = stream.subspan(at);
+            std::size_t visible = 0;
+            for (std::size_t k = 0; k < remaining.size() && remaining[k] != end_of_text; ++k)
+                if (remaining[k] != '_') visible = k + 1;
+            centre_on(cursor, remaining.first(visible), row, character_table);
+            break;
+        }
         case attribute: cursor.attribute = static_cast<std::uint16_t>(next() << 10U); break;
         case number:       // $80:C456: five digits
         case two_digits: { // $80:C474: their last two, the tens a blank below 10

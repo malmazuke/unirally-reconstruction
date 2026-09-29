@@ -59,7 +59,11 @@ void print_rider_menu(FrontEndState& state, const FrontEndContent& content) {
             print_text(state.text, state.printer, name, content.character_table);
         }
     auto title = content.rider_menu_title;
-    if (state.rider_menu.challenger)
+    if (state.rider_menu.purpose == RiderMenuPurpose::rename_player)
+        title = content.rename_who_title;
+    else if (state.rider_menu.purpose == RiderMenuPurpose::define_player)
+        title = content.define_player_who_title;
+    else if (state.rider_menu.challenger)
         title = content.pick_challenger_title;
     else if (state.mode == FrontEndMode::two_player)
         title = state.rider_menu.second ? content.two_player_second_title
@@ -323,7 +327,7 @@ void rider_menu_frame(FrontEndState& state, const FrontEndContent& content, Fron
     // $80:BBB8-BBEE for a choice ($80:BC9B for Y), then $80:F4E9, which stops the HDMA at once.
     state.one_player = !state.rider_menu.back && state.mode == FrontEndMode::one_player;
     if (!state.rider_menu.back) {
-        send_arrow_off(state);
+        if (state.rider_menu.purpose == RiderMenuPurpose::normal) send_arrow_off(state);
         if (state.rider_menu.second) {
             state.second_rider = state.menu.selection;
             state.now_playing.opponent = state.second_rider;
@@ -343,7 +347,10 @@ void rider_menu_frame(FrontEndState& state, const FrontEndContent& content, Fron
 
 void rider_menu_exit_frame(FrontEndState& state, const FrontEndContent& content) {
     switch (state.script_frame) {
-    case 1: lay_out_menu_objects(state); return;
+    case 1:
+        if (state.rider_menu.purpose != RiderMenuPurpose::normal) send_arrow_off(state);
+        lay_out_menu_objects(state);
+        return;
     case 2: copy_oam(state); return;
     default: break;
     }
@@ -353,6 +360,21 @@ void rider_menu_exit_frame(FrontEndState& state, const FrontEndContent& content)
     load_cgram(state, asset(content, menu_text_palette), 0xd0);
     load_cgram(state, asset(content, early_palette), 0xe0);
     state.registers.obsel = 0x63;
+    if (state.rider_menu.purpose != RiderMenuPurpose::normal) {
+        const auto purpose = state.rider_menu.purpose;
+        state.rider_menu.purpose = RiderMenuPurpose::normal;
+        if (back) {
+            state.logo.raised = false;
+            return_to_options_menu(state, content);
+            return;
+        }
+        if (purpose == RiderMenuPurpose::rename_player) {
+            enter_rename_editor(state, content);
+            return;
+        }
+        enter_define_player_warning(state, content);
+        return;
+    }
     if (state.rider_menu.challenger) {
         state.rider_menu.challenger = false;
         if (back)

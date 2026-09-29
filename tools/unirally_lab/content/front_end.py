@@ -319,6 +319,12 @@ OPTIONS_TABLES = (
     ("front-end.options-arrow-columns", 0x80B6CA, 5),
     ("front-end.records-menu-text", 0x80D593, 78),
     ("front-end.records-arrow-columns", 0x80D5E1, 5),
+    ("front-end.rename-who-title", 0x80D4C5, 13),
+    ("front-end.define-player-who-title", 0x80C1DE, 13),
+    ("front-end.define-player-warning", 0x80C1AE, 48),
+    ("front-end.define-player-confirm-prompt", 0x809C77, 23),
+    ("front-end.rename-prompt", 0x80D4D2, 49),
+    ("front-end.keyboard-text", 0x80A4DB, 80),
 )
 
 

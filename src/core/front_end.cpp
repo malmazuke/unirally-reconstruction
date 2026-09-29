@@ -229,6 +229,9 @@ bool waits_for_frame(const FrontEndState& state) {
         return next != result_tail_frame;
     // So does the stunt result's (R-0067).
     if (state.screen == FrontEndScreen::stunt_result) return next != stunt_text_frame;
+    // $80:D494-D4BF runs through the name save and return without a frame wait.
+    if (state.screen == FrontEndScreen::rename_return) return false;
+    if (state.screen == FrontEndScreen::define_player_after_confirm) return false;
     // Every other screen after the boot waits for each frame.
     if (state.screen != FrontEndScreen::boot) return true;
     const auto frame = boot_frame_number(state);
@@ -727,6 +730,12 @@ FrontEndContent front_end_content(const ClassicContentPack& pack) {
     content.options_arrow_columns = pack.entry("front-end.options-arrow-columns");
     content.records_menu_text = pack.entry("front-end.records-menu-text");
     content.records_arrow_columns = pack.entry("front-end.records-arrow-columns");
+    content.rename_who_title = pack.entry("front-end.rename-who-title");
+    content.define_player_who_title = pack.entry("front-end.define-player-who-title");
+    content.define_player_warning = pack.entry("front-end.define-player-warning");
+    content.define_player_confirm_prompt = pack.entry("front-end.define-player-confirm-prompt");
+    content.rename_prompt = pack.entry("front-end.rename-prompt");
+    content.keyboard_text = pack.entry("front-end.keyboard-text");
     content.result_icons = pack.entry("front-end.result-icons");
     content.lap_result_text = pack.entry("front-end.lap-result-text");
     content.lap_result_record = pack.entry("front-end.lap-result-record");
@@ -964,6 +973,16 @@ void update_front_end(FrontEndState& state, const FrontEndContent& content, Fron
     case FrontEndScreen::options_menu: options_menu_frame(state, content, physical); break;
     case FrontEndScreen::records_entry: records_entry_frame(state, content); break;
     case FrontEndScreen::records_menu: records_menu_frame(state, content, physical); break;
+    case FrontEndScreen::rename_entry: rename_entry_frame(state, content); break;
+    case FrontEndScreen::rename_keyboard: rename_keyboard_frame(state, content, physical); break;
+    case FrontEndScreen::rename_commit: rename_commit_frame(state, content); break;
+    case FrontEndScreen::rename_return: rename_return_frame(state, content); break;
+    case FrontEndScreen::define_player_warning_entry:
+        define_player_warning_entry_frame(state, content); break;
+    case FrontEndScreen::define_player_warning:
+        define_player_warning_frame(state, physical); break;
+    case FrontEndScreen::define_player_after_confirm:
+        define_player_after_confirm_frame(state, content); break;
     }
     if (state.screen != screen) state.script_frame = 0;
     ++state.frame;

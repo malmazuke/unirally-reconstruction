@@ -749,7 +749,7 @@ const std::array<RequiredEntry, 9> two_rider_titles_required{{
      "78eeb86bb284a6eff931df88c7c53ead732489400ee84879f06cc67916c9923d"},
 }};
 // OPTIONS (profile v28): the five choices in each menu and their arrow columns (R-0072).
-const std::array<RequiredEntry, 4> options_required{{
+const std::array<RequiredEntry, 10> options_required{{
     {"front-end.options-menu-text", 74,
      "80b0f85f99788398d43622701b4f08676cf6d6044b119bcf604e1fc5d641876a"},
     {"front-end.options-arrow-columns", 5,
@@ -758,6 +758,18 @@ const std::array<RequiredEntry, 4> options_required{{
      "83aab26a83e7f9c8559b01838bbe2cbc4d819297d9a8cdf88ad3a8c36881e5d1"},
     {"front-end.records-arrow-columns", 5,
      "ec28a29892e7fb8af7042606ec53b550cbdd62e5c04241fdadfd1c06ccc0ebd1"},
+    {"front-end.rename-who-title", 13,
+     "09edaa43a1966c72158142e38f53871b5963281bf34de1d754085af1d237c363"},
+    {"front-end.define-player-who-title", 13,
+     "c016aeacf4ac23014ea9183719b2ec61ca830ea3ba8f2aa38be5dc2964e0eba9"},
+    {"front-end.define-player-warning", 48,
+     "e26ade35171753cb11a28745dd934c8ecb74442d0bffa9e833d96f3703a6a0d6"},
+    {"front-end.define-player-confirm-prompt", 23,
+     "11cab0513fe9a579c4e8a563b960896b73406d09e9091348ff9afa80d9d4cc9b"},
+    {"front-end.rename-prompt", 49,
+     "898af58024aac8722302fdf8bb2f496d0d0ea060cb14eb3ba2ffe09a82287ab1"},
+    {"front-end.keyboard-text", 80,
+     "25180830ab1d1ae9e37c6a03803c06f051b8254bfb6f8bcb78cc118e8a2b8fa8"},
 }};
 // LOCKED-TOURS (profile v12): the race tracks of the five tours a cold start does not
 // list, and sceneries 1, 8 and 12. Generated from the rules file (tracks.py v12_new_entries).
@@ -919,7 +931,7 @@ const std::array<RequiredEntry, 89> locked_tracks_required{{
     {"scenery.12.palette", 352, "b2a9aefe13c1dc68454cf0a5c2bedb086c6e162dbea1df1f2ef108347d89ab63"},
 }};
 constexpr std::string_view two_track_rules_sha =
-    "67f180ff4a9c8a2d158026eb8a76a4fa36ac0ba341470d443873fca1f349400e";
+    "62668a625e04b08e802cb94ef8a2f5cbbcd17233e175e18cb62846527d310e11";
 
 std::array<std::uint8_t, 32> hex_digest(std::string_view text) {
     if (text.size() != 64) throw std::logic_error("invalid compiled Classic SHA-256");

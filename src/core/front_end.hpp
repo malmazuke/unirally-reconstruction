@@ -46,6 +46,9 @@ struct FrontEndContent {
     // OPTIONS and RECORDS' five original text streams and per-row arrow columns (R-0072).
     std::span<const std::uint8_t> options_menu_text, options_arrow_columns;
     std::span<const std::uint8_t> records_menu_text, records_arrow_columns;
+    std::span<const std::uint8_t> rename_who_title, define_player_who_title;
+    std::span<const std::uint8_t> define_player_warning, define_player_confirm_prompt;
+    std::span<const std::uint8_t> rename_prompt, keyboard_text;
     // The lap result (profile v19): the headings and graph, the record line, the two rows.
     std::span<const std::uint8_t> lap_result_text, lap_result_record, lap_result_player,
         lap_result_opponent;
@@ -129,6 +132,8 @@ struct MenuLatches {
 
 // PICK YOUR UNI ($80:CB04): 16 riders in two columns of eight, rider r at row r / 2, column
 // r % 2. The column is the arrow's x target's.
+enum class RiderMenuPurpose : std::uint8_t { normal, rename_player, define_player };
+
 struct RiderMenu {
     std::uint8_t rider{};     // $017D: the rider chosen last; the arrow starts on it
     std::uint8_t row{};       // $000E
@@ -139,6 +144,16 @@ struct RiderMenu {
     bool returning{};         // entered back from PICK TOUR ($00AC != 2): slides back in
     bool second{};            // 2P/VS: port 2 chooses a distinct second rider (R-0071)
     bool challenger{};        // VS: port 1 reselects the first rider after champions
+    RiderMenuPurpose purpose{}; // OPTIONS reuses the picker for an existing player
+};
+
+// $80:A1F2-A529: the shared four-row name keyboard. Offsets are signed pixel steps;
+// the reference keeps the input buffer in work RAM $00DC and leaves its stale tail intact.
+struct KeyboardEditor {
+    std::array<std::uint8_t, 12> scratch{};
+    std::int16_t offset_x{-96}, offset_y{-24};
+    std::uint8_t length{};
+    std::uint16_t previous_buttons{};
 };
 
 // The one-player records the menus read from SRAM, as a cold start leaves them (`$80:8C4E`):
@@ -367,6 +382,13 @@ enum class FrontEndScreen : std::uint8_t {
     options_return,      // $80:D566 back from RECORDS to OPTIONS
     records_entry,       // $80:D525, five RECORDS categories sliding in
     records_menu,
+    rename_entry,        // $80:D468, keyboard and prompt sliding in
+    rename_keyboard,
+    rename_commit,
+    rename_return,
+    define_player_warning_entry,
+    define_player_warning,
+    define_player_after_confirm,
 };
 
 // What `$83:9894` saves before a race (work RAM `$0000-$019D`) and `$83:987D` puts back after
@@ -416,6 +438,9 @@ struct FrontEndState {
     MainMenu menu{};
     MenuLatches latches{};
     RiderMenu rider_menu{};
+    KeyboardEditor keyboard{};
+    std::array<std::uint8_t, 256> options_upper_palette{}; // pre-picker CGRAM colours $80-$FF
+    bool options_palette_saved{};
     std::uint8_t second_rider{}; // $017F, second human chosen by port 2 (R-0071)
     OnePlayerRecords records = cold_start_records();
     TourMenu tour_menu{};

@@ -55,7 +55,7 @@ struct Options {
     std::vector<std::tuple<std::uint32_t, std::uint32_t, std::uint8_t>> record_writes;
 };
 
-// The record byte native keeps for a cartridge RAM offset: a name, done track or medal.
+// The record byte native keeps for a cartridge RAM offset.
 std::uint8_t& record_byte(unirally::OnePlayerRecords& records, std::uint32_t offset) {
     if (offset >= 0x000c && offset < 0x000c + records.rider_names.size())
         return records.rider_names[offset - 0x000c];
@@ -63,7 +63,42 @@ std::uint8_t& record_byte(unirally::OnePlayerRecords& records, std::uint32_t off
         return records.tracks_done[offset - 0x1075];
     if (offset >= 0x069c && offset < 0x069c + records.medals.size())
         return records.medals[offset - 0x069c];
-    throw std::invalid_argument("--record-write: not a name, done track or medal offset");
+    if (offset >= 0x10d3 && offset < 0x10d3 + records.tour_levels.size())
+        return records.tour_levels[offset - 0x10d3];
+    constexpr std::array<std::uint32_t, 3> holders{0x0550, 0x0582, 0x05b4};
+    for (std::size_t rank = 0; rank < holders.size(); ++rank)
+        if (offset >= holders[rank] && offset < holders[rank] + 50)
+            return records.record_holders[rank][offset - holders[rank]];
+    throw std::invalid_argument("--record-write: unsupported record offset");
+}
+
+void set_record_byte(unirally::OnePlayerRecords& records, std::uint32_t offset,
+                     std::uint8_t byte) {
+    const auto write_word = [&](std::uint16_t& word, std::uint32_t base) {
+        if (offset == base)
+            word = static_cast<std::uint16_t>((word & 0xff00U) | byte);
+        else
+            word = static_cast<std::uint16_t>((word & 0x00ffU)
+                                              | (static_cast<unsigned>(byte) << 8U));
+    };
+    if (offset >= 0x0230 && offset < 0x02b0) {
+        const auto index = offset - 0x0230;
+        write_word(records.statistics[index / 8][(index % 8) / 2], offset & ~1U);
+        return;
+    }
+    if (offset >= 0x0829 && offset < 0x0829 + records.best.size() * 2) {
+        const auto index = offset - 0x0829;
+        write_word(records.best[index / 2], 0x0829 + (index & ~1U));
+        return;
+    }
+    constexpr std::array<std::uint32_t, 3> times{0x0422, 0x0486, 0x04ea};
+    for (std::size_t rank = 0; rank < times.size(); ++rank)
+        if (offset >= times[rank] && offset < times[rank] + 100) {
+            const auto index = offset - times[rank];
+            write_word(records.record_times[rank][index / 2], times[rank] + (index & ~1U));
+            return;
+        }
+    record_byte(records, offset) = byte;
 }
 
 // A whole unsigned number in the base, at most the limit; refuses a sign, trailing text or overflow.
@@ -111,7 +146,7 @@ Options parse_options(int argc, char** argv) {
             const auto offset = parse_number(value(), 16, 0x1fff, "offset");
             const auto byte = static_cast<std::uint8_t>(parse_number(value(), 16, 0xff, "byte"));
             unirally::OnePlayerRecords check;
-            record_byte(check, offset); // refuses an offset native keeps no record for
+            set_record_byte(check, offset, byte); // refuses an offset native keeps no record for
             options.record_writes.emplace_back(frame, offset, byte);
         } else if (option == "--records") {
             const auto frame = static_cast<std::uint32_t>(std::stoul(value()));
@@ -470,7 +505,7 @@ int main(int argc, char** argv) try {
     std::size_t races = 0, resets = 0;
     for (std::uint32_t frame = 0; frame < options.frames; ++frame) {
         for (const auto& [after, offset, byte] : options.record_writes)
-            if (frame == after + 1) record_byte(state.records, offset) = byte;
+            if (frame == after + 1) set_record_byte(state.records, offset, byte);
         const auto row = inputs.find(frame);
         const auto pads = row == inputs.end() ? unirally::FrontEndPads{} : row->second;
         if (state.screen == unirally::FrontEndScreen::race) {
