@@ -188,7 +188,8 @@ struct LooseContent {
                                                  {masks, decrements}};
         return {
             movement, coefficients, reflection, landing, finish_poses, roll_poses, roll_directions,
-            weights,  combinations, {},         {},      {},           {},         {}, {}};
+            weights,  combinations, {},         {},      {},           {},         {},
+            {}};
     }
 };
 
@@ -306,7 +307,8 @@ int main(int argc, char** argv) try {
             if (options.opponent) pairing.opponent = static_cast<std::uint8_t>(*options.opponent);
             scenario = unirally::classic_race_scenario(race_track, pairing, options.tutorial_hints);
         }
-        if (options.best_medal) scenario.best_medal = static_cast<std::uint8_t>(*options.best_medal);
+        if (options.best_medal)
+            scenario.best_medal = static_cast<std::uint8_t>(*options.best_medal);
         state = unirally::classic_race_start(data, scenario);
         if (options.split_screen) {
             unirally::initialize_split_cameras(state);

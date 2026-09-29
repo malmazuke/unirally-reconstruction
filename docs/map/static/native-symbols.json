@@ -7887,6 +7887,16 @@
    "region": "rom"
   },
   {
+   "address": "$83:E2C4",
+   "native": [
+    "src/core/race_state_io.cpp:validate_split_demo_words"
+   ],
+   "range_ends": [
+    "$83:E55B"
+   ],
+   "region": "rom"
+  },
+  {
    "address": "$83:E3E0",
    "native": [
     "src/core/race_demo_controls.cpp:demo_rider"
@@ -14453,6 +14463,11 @@
     "$83:E874"
    ]
   },
+  "src/core/race_state_io.cpp:validate_split_demo_words": {
+   "rom": [
+    "$83:E2C4"
+   ]
+  },
   "src/core/race_state_io.cpp:validate_zoom_zoo_content_state": {
    "rom": [
     "$82:93E5"
@@ -17335,10 +17350,10 @@
   }
  },
  "totals": {
-  "addresses": 1275,
+  "addresses": 1276,
   "io_addresses": 6,
-  "native_symbols": 925,
-  "rom_addresses": 925,
+  "native_symbols": 926,
+  "rom_addresses": 926,
   "sram_addresses": 39,
   "wram_addresses": 305
  }

@@ -527,8 +527,8 @@ std::array<bool, 256 * 224> draw_race_backgrounds(RgbFrame& frame,
             // $81:AD22-AD2C. The 65,536-unit playfield (`$0FF7`, track 37) skips that test
             // ($81:AD1D-AD20, $81:AD71-AD74) and its rows take y's sixteen bits (R-0068).
             const int world_x = (scroll.background_x + mx) & geometry.position_mask;
-            int world_y = scroll.flip ? scroll.background_y + 224 - my
-                                      : scroll.background_y + my + 1;
+            int world_y =
+                scroll.flip ? scroll.background_y + 224 - my : scroll.background_y + my + 1;
             if (geometry.whole_height) world_y &= 0xffff;
             if (world_y < 0 || world_y >= world_height) continue;
             const auto selector = word(
@@ -751,8 +751,8 @@ RgbFrame render_classic_race(const ZoomZooState& state,
     };
     if (!state.split_screen) draw_hud();
     const RaceObjectMath math{caption_ink, neon_green ? &vram : nullptr, &scroll};
-    draw_race_riders(frame, rider_source, content, history, colours, scroll.flip,
-                     bg1_above_objects, math);
+    draw_race_riders(frame, rider_source, content, history, colours, scroll.flip, bg1_above_objects,
+                     math);
     // The split's HUD tile priority covers both riders at the lap-banner overlap.
     if (state.split_screen) draw_hud();
     // Every member covers both objects as well as the backgrounds: inside the window the

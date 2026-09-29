@@ -7842,7 +7842,8 @@
    "src/core/race_camera.cpp:split_vertical_velocity"
   ],
   "source_records": [
-   "docs/research/R-0069-split-screen-race.md"
+   "docs/research/R-0069-split-screen-race.md",
+   "tasks/SPLIT-SCREEN-RACE.md"
   ]
  },
  {
@@ -16274,6 +16275,7 @@
   "native": [
    "src/core/race_demo_controls.cpp:(file)",
    "src/core/race_demo_controls.hpp:(file)",
+   "src/core/race_state_io.cpp:validate_split_demo_words",
    "src/core/zoom_zoo_movement.hpp:DemoControllers"
   ],
   "source_records": [
@@ -16288,6 +16290,7 @@
   "native": [
    "src/core/race_demo_controls.cpp:(file)",
    "src/core/race_demo_controls.hpp:(file)",
+   "src/core/race_state_io.cpp:validate_split_demo_words",
    "src/core/zoom_zoo_movement.hpp:DemoControllers"
   ],
   "source_records": [

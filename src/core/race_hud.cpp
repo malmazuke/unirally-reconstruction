@@ -325,8 +325,7 @@ void ClassicRaceHudClock::request_fields(const ZoomZooState& previous,
 // `$12C9`: on the update a trick's points are paid, the update its caption is taken.
 void ClassicRaceHudClock::request_stunt_fields(const ZoomZooState& previous,
                                                const ZoomZooState& updated) {
-    if (updated.stunt.clock_stopped && !previous.stunt.clock_stopped)
-        pending_.clock_rewrite = true;
+    if (updated.stunt.clock_stopped && !previous.stunt.clock_stopped) pending_.clock_rewrite = true;
     const auto score = updated.player_announcements.queue.feature_total;
     if (score == score_buffer_) return;
     score_buffer_ = score;

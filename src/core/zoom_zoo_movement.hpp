@@ -292,8 +292,8 @@ struct HunterEffects {
 // reads the trick's weight, so a trick whose weight has not grown (a short tabletop) counts
 // with no points.
 struct TrickTally {
-    std::uint8_t shown{};    // one byte; the column's second byte stays 0
-    std::uint16_t points{};  // the weights paid, added as $77:07BB is
+    std::uint8_t shown{};   // one byte; the column's second byte stays 0
+    std::uint16_t points{}; // the weights paid, added as $77:07BB is
     bool operator==(const TrickTally&) const = default;
 };
 namespace trick_family {

@@ -45,6 +45,18 @@ void check_split_save_words(const std::vector<std::uint8_t>& saved) {
         }
         if (!refused) throw std::runtime_error("split state accepted impossible controller word");
     }
+    for (const unsigned from_end : {26U, 24U}) {
+        auto impossible = saved;
+        impossible[impossible.size() - from_end] = 49;
+        impossible[impossible.size() - from_end + 1] = 0;
+        bool refused = false;
+        try {
+            (void)unirally::deserialize_zoom_zoo(impossible);
+        } catch (const std::invalid_argument&) {
+            refused = true;
+        }
+        if (!refused) throw std::runtime_error("split state accepted impossible rotation window");
+    }
 }
 } // namespace
 

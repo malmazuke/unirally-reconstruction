@@ -13265,6 +13265,7 @@
     "src/core/race_demo_controls.cpp:(file)",
     "src/core/race_demo_controls.cpp:update_demo_controllers",
     "src/core/race_demo_controls.hpp:(file)",
+    "src/core/race_state_io.cpp:validate_split_demo_words",
     "src/core/zoom_zoo_movement.hpp:DemoControllers"
    ],
    "observed_entries": {},
@@ -13287,6 +13288,7 @@
    "native": [
     "src/core/race_demo_controls.cpp:(file)",
     "src/core/race_demo_controls.hpp:(file)",
+    "src/core/race_state_io.cpp:validate_split_demo_words",
     "src/core/zoom_zoo_movement.hpp:DemoControllers"
    ],
    "observed_entries": {},
@@ -13311,6 +13313,7 @@
     "src/core/race_demo_controls.cpp:(file)",
     "src/core/race_demo_controls.cpp:demo_rider",
     "src/core/race_demo_controls.hpp:(file)",
+    "src/core/race_state_io.cpp:validate_split_demo_words",
     "src/core/zoom_zoo_movement.hpp:DemoControllers"
    ],
    "observed_entries": {},
@@ -13333,6 +13336,7 @@
    "native": [
     "src/core/race_demo_controls.cpp:(file)",
     "src/core/race_demo_controls.hpp:(file)",
+    "src/core/race_state_io.cpp:validate_split_demo_words",
     "src/core/zoom_zoo_movement.hpp:DemoControllers"
    ],
    "observed_entries": {},
@@ -13357,6 +13361,7 @@
    "native": [
     "src/core/race_demo_controls.cpp:(file)",
     "src/core/race_demo_controls.hpp:(file)",
+    "src/core/race_state_io.cpp:validate_split_demo_words",
     "src/core/zoom_zoo_movement.hpp:DemoControllers"
    ],
    "observed_entries": {},
@@ -13379,6 +13384,7 @@
    "native": [
     "src/core/race_demo_controls.cpp:(file)",
     "src/core/race_demo_controls.hpp:(file)",
+    "src/core/race_state_io.cpp:validate_split_demo_words",
     "src/core/zoom_zoo_movement.hpp:DemoControllers"
    ],
    "observed_entries": {},
@@ -13403,6 +13409,7 @@
     "src/core/race_demo_controls.cpp:(file)",
     "src/core/race_demo_controls.cpp:demo_rider",
     "src/core/race_demo_controls.hpp:(file)",
+    "src/core/race_state_io.cpp:validate_split_demo_words",
     "src/core/zoom_zoo_movement.hpp:DemoControllers"
    ],
    "observed_entries": {},
@@ -13425,6 +13432,7 @@
    "native": [
     "src/core/race_demo_controls.cpp:(file)",
     "src/core/race_demo_controls.hpp:(file)",
+    "src/core/race_state_io.cpp:validate_split_demo_words",
     "src/core/zoom_zoo_movement.hpp:DemoControllers"
    ],
    "observed_entries": {},
@@ -13450,6 +13458,7 @@
    "native": [
     "src/core/race_demo_controls.cpp:(file)",
     "src/core/race_demo_controls.hpp:(file)",
+    "src/core/race_state_io.cpp:validate_split_demo_words",
     "src/core/zoom_zoo_movement.hpp:DemoControllers"
    ],
    "observed_entries": {},

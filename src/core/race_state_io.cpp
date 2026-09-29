@@ -285,9 +285,9 @@ void check_lap_clocks(const ZoomZooState& state, const ClassicRaceScenario& scen
     const auto& clock = state.movement.timer;
     const bool clock_expired = state.native_initialization && clock.minutes == 9
                             && clock.tens_seconds == 5 && clock.seconds == 9 && clock.tenths == 9;
-    const bool timed_out = scenario.stunt_event
-                        || (state.race.riders[0].finished && state.race.riders[1].finished
-                            && clock_expired);
+    const bool timed_out =
+        scenario.stunt_event
+        || (state.race.riders[0].finished && state.race.riders[1].finished && clock_expired);
     for (const auto& lap : state.race.riders) {
         refuse_unless(
             !((lap.finished ? lap.laps_remaining != 0 && !timed_out : lap.laps_remaining == 0)
@@ -756,8 +756,8 @@ void read_stunt_event(Reader& in, ZoomZooState& state) {
     // It starts only on an update both stand, the update that settles them both.
     refuse_unless(stunt.finish_display <= 1
                       && (!stunt.finish_display
-                          || (race.riders[0].finished && race.riders[1].finished
-                              && stunt.settled[0] && stunt.settled[1]))
+                          || (race.riders[0].finished && race.riders[1].finished && stunt.settled[0]
+                              && stunt.settled[1]))
                       && (stunt.finish_display || (!race.finish_delay && !posed)),
                   "a stunt event's finish display is out of order");
     // The switched-off opponent never moves: no horizontal velocity, and a vertical one only
@@ -793,8 +793,9 @@ void check_stunt_content(const ZoomZooState& state, const ZoomZooContent& conten
     const auto& opponent = state.movement.riders[1].motion;
     refuse_unless(
         opponent.x == static_cast<std::uint16_t>(content_word(track, opponent_start_x) << 4U)
-            && opponent.y == static_cast<std::uint16_t>(content_word(track, opponent_start_y) << 4U),
-                  "a stunt event's opponent left its start");
+            && opponent.y
+                   == static_cast<std::uint16_t>(content_word(track, opponent_start_y) << 4U),
+        "a stunt event's opponent left its start");
 }
 
 // The track and layout a state's identity names. A 742-byte state with no other identity
@@ -905,6 +906,16 @@ std::vector<std::uint8_t> serialize_zoom_zoo(const ZoomZooState& state) {
 
 namespace {
 
+void validate_split_demo_words(const DemoControllers& demo) {
+    // $83:E2C4-E55B; R-0069: the rotation window is set to 50, never decremented.
+    for (unsigned rider = 0; rider < 2; ++rider)
+        refuse_unless(demo.trick_bits[rider] <= 7
+                          && (demo.rotation_window[rider] == 0 || demo.rotation_window[rider] == 50)
+                          && demo.turnaround[rider] <= 30 && demo.airborne_rotation[rider] <= 0x4000
+                          && (demo.airborne_rotation[rider] || !demo.trick_bits[rider]),
+                      "split demo controller words are invalid");
+}
+
 ZoomZooState deserialize_race(std::span<const std::uint8_t> bytes,
                               std::optional<RacePairing> pairing, bool tutorial_hints,
                               std::span<const std::uint8_t> opponent_catch_up) {
@@ -941,13 +952,7 @@ ZoomZooState deserialize_race(std::span<const std::uint8_t> bytes,
         state.split_screen = true;
         state.demo_ai = demo_ai != 0;
         in.require_end();
-        for (unsigned rider = 0; rider < 2; ++rider)
-            refuse_unless(
-                state.demo.trick_bits[rider] <= 7 && state.demo.rotation_window[rider] <= 50
-                    && state.demo.turnaround[rider] <= 30
-                    && state.demo.airborne_rotation[rider] <= 0x4000
-                    && (state.demo.airborne_rotation[rider] || !state.demo.trick_bits[rider]),
-                "split demo controller words are invalid");
+        validate_split_demo_words(state.demo);
         refuse_unless(
             state.native_initialization && state.split_screen
                 && state.track == ClassicRaceTrack::ZoomZoo
