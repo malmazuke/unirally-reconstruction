@@ -420,6 +420,7 @@ struct FrontEndState {
     std::uint8_t demo_return_wait{}; // extra blank frames after an interrupted demo (R-0070)
     bool demo_return_interrupted{};
     bool mode_chosen{};
+    bool local_result_seen{}; // a local result has returned in this session (R-0071)
     // For 1P, once NOW PLAYING's Race has faded out: the race is `tour_menu.track` for
     // `rider_menu.rider` against `now_playing.opponent`.
     FrontEndMode mode{};
@@ -448,6 +449,7 @@ ClassicRaceScenario one_player_race_scenario(const FrontEndState& state);
 // The frames between NOW PLAYING's fade and a race's initialization on the laboratory's menu path
 // (R-0057, R-0058): DRAGSTER's 121, ZOOM ZOO's 169; 0 for a track not measured.
 std::uint32_t race_loading_frames(ClassicRaceTrack track);
+std::uint32_t race_loading_frames(const FrontEndState& state);
 
 // The times the menus take from a native race on its result load's first update: the totals,
 // and for a lap race (its scenario's race mode 1) both riders' lap slots.

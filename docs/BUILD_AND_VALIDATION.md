@@ -14,6 +14,10 @@ accepts both SNES pad words in each `frame pad1 pad2` row, and `--picture FRAME 
 retains a comparison frame. Split DRAGSTER native save states use
 `URDG000H/I` when both riders are human. The v26 command examples below are
 historical task records and require their matching pack profile.
+For a live hidden smoke replay, the app's `--front-end-inputs FILE` uses the
+same rows through 2P/VS setup and, in those two modes, the race. Race rows use
+the PAL frame label including the measured loading interval; the app skips that
+black loading interval when entering the native race.
 
 For SPLIT-SCREEN-RACE (R-0069), `front_end_runner` also accepts
 `--human-after FRAME` as a bounded laboratory intervention: from that first

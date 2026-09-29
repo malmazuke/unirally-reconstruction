@@ -599,6 +599,7 @@ void race_result_exit_frame(FrontEndState& state, const FrontEndContent& content
         load_cgram(state, asset(content, menu_text_palette), 0xd0);
         state.registers.obsel = 0x63;
         update_records(state);
+        if (state.mode != FrontEndMode::one_player) state.local_result_seen = true;
         if (state.mode == FrontEndMode::one_player) state.records.tries = 3;
         return;
     }
@@ -664,6 +665,17 @@ std::uint32_t race_loading_frames(ClassicRaceTrack track) {
     if (track == ClassicRaceTrack::Dragster) return 121;
     if (track == ClassicRaceTrack::ZoomZoo) return 169;
     return 0;
+}
+
+std::uint32_t race_loading_frames(const FrontEndState& state) {
+    const auto track = ClassicRaceTrack{state.tour_menu.track};
+    const auto ordinary = race_loading_frames(track);
+    // The measured cold local ZOOM ZOO entry uses 169 frames. After a local
+    // DRAGSTER result, NEXT TRACK reaches the same countdown one frame earlier.
+    if (state.local_result_seen && state.mode != FrontEndMode::one_player
+        && track == ClassicRaceTrack::ZoomZoo)
+        return ordinary - 1;
+    return ordinary;
 }
 
 RaceTimes race_times(const ZoomZooState& race) {

@@ -314,13 +314,14 @@ std::string start_race(RaceBetweenMenus& race, const unirally::ClassicContentPac
                                     unirally::ClassicRaceTrack{front_end.tour_menu.track},
                                     {front_end.rider_menu.rider, front_end.second_rider})
                               : unirally::one_player_race_scenario(front_end);
-    const auto loading_frames = unirally::race_loading_frames(scenario.track);
+    const auto loading_frames = unirally::race_loading_frames(front_end);
     if (loading_frames == 0 && initialization == 0) return "its loading time is not known";
     race.content = unirally::classic_race_content(pack, scenario.track);
     race.state = unirally::classic_race_start(*race.content, scenario);
     if (local) unirally::initialize_split_cameras(race.state);
     if (local)
         race.presentation = unirally::classic_race_presentation_content(pack, scenario);
+    race.history = {};
     race.loading_initialization = loading_frames ? front_end.frame - 1 + loading_frames : 0;
     // The race keeps its scenario's frame label, which its own clocks count from; the runner
     // lines its first update up with the menus' frame after `initialization_frame`.

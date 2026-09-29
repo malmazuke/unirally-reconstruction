@@ -141,6 +141,9 @@ public:
   ClassicRaceTrack race_track() const {
     return ClassicRaceTrack{state_.tour_menu.track};
   }
+  std::uint32_t race_loading_frames() const {
+    return unirally::race_loading_frames(state_);
+  }
   // The race NOW PLAYING chose, with its rider, opponent and tutorial hints.
   ClassicRaceScenario race_scenario() const {
     if (demo_race()) {
@@ -181,9 +184,8 @@ private:
 // started by --track ends on the race's own Classic result screen; a stunt event's result is the
 // menus' (R-0067), so a stunt event is started from the menus only.
 bool native_race_track(ClassicRaceTrack track);
-// 1P's race is native when a race scenario has its track, the stunt events included (R-0066,
-// R-0067): any rider against the opponent NOW PLAYING chose (R-0061).
-bool native_one_player_race(const FrontEndState &state);
+// A menu-selected 1P, 2P or VS race is native when its track has a scenario.
+bool native_menu_race(const FrontEndState &state);
 
 // A port's mask as the SNES reads the pad (`$4218`: B in bit 15 ... R in bit
 // 4).

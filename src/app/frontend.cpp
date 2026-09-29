@@ -192,7 +192,7 @@ bool native_race_track(ClassicRaceTrack track) {
   return classic_race_has_scenario(track) && !classic_race_scenario(track).stunt_event;
 }
 
-bool native_one_player_race(const FrontEndState &state) {
+bool native_menu_race(const FrontEndState &state) {
   // Every race the menus choose, the stunt events too (R-0066, R-0067), has a scenario.
   const ClassicRaceTrack track{state.tour_menu.track};
   const bool local = state.mode == FrontEndMode::two_player ||
@@ -221,7 +221,7 @@ bool FrontEndSession::update(FrontEndPads pads) {
     main_menu_ = state_;
   if (!state_.mode_chosen)
     return false;
-  if (native_one_player_race(state_))
+  if (native_menu_race(state_))
     return true;
   if (state_.mode == FrontEndMode::demo && state_.screen == FrontEndScreen::race)
     return true;
@@ -236,9 +236,9 @@ void FrontEndSession::return_from_race(const ZoomZooState &race, const RaceTimes
   // The front end's frame: the race's updates after its track's loading, as
   // measured on the laboratory's menu path (R-0057, R-0058); for a track not
   // measured DRAGSTER's, a label as the scenarios' initialization frames are.
-  const auto measured = race_loading_frames(race.track);
+  const auto measured = unirally::race_loading_frames(state_);
   const auto loading_frames =
-      measured ? measured : race_loading_frames(ClassicRaceTrack::Dragster);
+      measured ? measured : unirally::race_loading_frames(ClassicRaceTrack::Dragster);
   // A pause menu's quit or restart ends the race in the update the race was
   // left before (R-0060): that update counts too.
   const bool pause_exit = times.player_total == 0xea61 || times.player_total == 0xea62;
