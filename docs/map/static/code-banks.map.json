@@ -10331,7 +10331,7 @@
    ],
    "native": [
     "src/core/presentation.cpp:draw_race_riders",
-    "src/core/race_camera.cpp:initialize_split_cameras",
+    "src/core/race_camera.cpp:initialize_second_camera",
     "src/core/race_setup.cpp:start_countdown, base_speed_cap"
    ],
    "observed_entries": {},
@@ -12292,6 +12292,7 @@
     "NmX"
    ],
    "native": [
+    "src/core/front_end.cpp:demo_title_frame",
     "src/core/front_end.hpp:return_from_race",
     "src/core/race_result.cpp:(file)"
    ],
@@ -12311,6 +12312,11 @@
    "end": "$83:CA20",
    "mode_at_entry": [
     "NmX"
+   ],
+   "native": [
+    "src/core/front_end.cpp:demo_title_frame",
+    "src/core/front_end.hpp:return_from_race",
+    "src/core/race_result.cpp:(file)"
    ],
    "observed_entries": {},
    "start": "$83:C998",
@@ -12512,6 +12518,7 @@
    ],
    "native": [
     "src/core/race_update.cpp:run_pause_menu",
+    "src/core/race_update.cpp:update_zoom_zoo",
     "src/core/rider_look.cpp:zoom_zoo_update_was_paused"
    ],
    "observed_entries": {},
@@ -13263,6 +13270,7 @@
    ],
    "native": [
     "src/core/race_demo_controls.cpp:(file)",
+    "src/core/race_demo_controls.cpp:demo_rider",
     "src/core/race_demo_controls.cpp:update_demo_controllers",
     "src/core/race_demo_controls.hpp:(file)",
     "src/core/race_state_io.cpp:validate_split_demo_words",
@@ -13287,6 +13295,7 @@
    ],
    "native": [
     "src/core/race_demo_controls.cpp:(file)",
+    "src/core/race_demo_controls.cpp:demo_rider",
     "src/core/race_demo_controls.hpp:(file)",
     "src/core/race_state_io.cpp:validate_split_demo_words",
     "src/core/zoom_zoo_movement.hpp:DemoControllers"
@@ -14416,16 +14425,16 @@
    "call returns in the calling mode": 1262
   },
   "bytes": 131072,
-  "cited_addresses": 1404,
+  "cited_addresses": 1409,
   "cited_by_class": {
    "data": 25,
-   "inferred": 234,
-   "observed": 924,
+   "inferred": 238,
+   "observed": 925,
    "unknown": 221
   },
   "cited_by_position": {
    "dat": 25,
-   "loc": 835,
+   "loc": 840,
    "mid": 18,
    "sub": 305,
    "unk": 221
@@ -14447,9 +14456,9 @@
   "jump_tables": 2,
   "mode_ambiguities": 7,
   "observed": 41778,
-  "routine_bytes_cited_by_native_code": 48625,
+  "routine_bytes_cited_by_native_code": 48762,
   "routines": 636,
-  "routines_cited_by_native_code": 372,
+  "routines_cited_by_native_code": 373,
   "unknown": 52881,
   "unknown_share": 0.4035
  }
