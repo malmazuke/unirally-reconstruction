@@ -1,13 +1,15 @@
 # Project state
 
 Updated 29 September 2026 (ATTRACT-DEMO, in progress): **the second idle demo
-cycle has a native candidate, pending review and integration.** It selects
+cycle has a native correction candidate, pending re-review and integration.** It selects
 one-view track 3, rider 6 against rider 1. The normal path's 1,901 projected
 race rows and demo/camera fields match the original; 22 sampled pictures
-through the menu return differ by zero pixels. Two independently pressed
-early-exit paths agree through their return ([R-0070](research/R-0070-attract-demo.md)).
-The candidate implementation is `d4d9ea6`; a hidden-window app run through
-both cycles passes. Broad gates and independent tier-1 review remain.
+through the menu return differ by zero pixels. Three independently pressed
+exits at frames 5000, 5200 and 6400 now agree on projected state, the 42-byte
+demo trailer and retained return pictures
+([R-0070](research/R-0070-attract-demo.md)). [PR #44](https://github.com/malmazuke/unirally-reconstruction/pull/44)
+has the first candidate and a tier-1 correction review. The corrected source
+awaits a new commit, re-review, broad gates and current-head hosted CI.
 
 Updated 29 September 2026 (SPLIT-SCREEN-RACE): **the first idle split-screen demo race is
 native and independently reviewed in [PR #43](https://github.com/malmazuke/unirally-reconstruction/pull/43).**

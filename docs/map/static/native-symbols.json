@@ -4645,6 +4645,13 @@
    "region": "rom"
   },
   {
+   "address": "$82:8035",
+   "native": [
+    "src/core/front_end.cpp:return_from_demo"
+   ],
+   "region": "rom"
+  },
+  {
    "address": "$82:833B",
    "native": [
     "src/core/content_pack.cpp:zoom_required",
@@ -7892,8 +7899,19 @@
    "region": "rom"
   },
   {
+   "address": "$83:E256",
+   "native": [
+    "src/core/race_demo_controls.cpp:update_demo_controllers"
+   ],
+   "range_ends": [
+    "$83:E25F"
+   ],
+   "region": "rom"
+  },
+  {
    "address": "$83:E267",
    "native": [
+    "src/core/front_end.cpp:return_from_demo",
     "src/core/race_demo_controls.cpp:update_demo_controllers"
    ],
    "range_ends": [
@@ -9158,13 +9176,6 @@
    "address": "$0572",
    "native": [
     "src/core/vertical_contact.cpp:apply_landing_matrix"
-   ],
-   "region": "wram"
-  },
-  {
-   "address": "$076B",
-   "native": [
-    "src/core/front_end.cpp:return_from_demo"
    ],
    "region": "wram"
   },
@@ -11602,8 +11613,9 @@
    ]
   },
   "src/core/front_end.cpp:return_from_demo": {
-   "wram": [
-    "$076B"
+   "rom": [
+    "$82:8035",
+    "$83:E267"
    ]
   },
   "src/core/front_end.cpp:run_main_menu": {
@@ -13723,6 +13735,7 @@
   },
   "src/core/race_demo_controls.cpp:update_demo_controllers": {
    "rom": [
+    "$83:E256",
     "$83:E267"
    ]
   },
@@ -17391,11 +17404,11 @@
   }
  },
  "totals": {
-  "addresses": 1279,
+  "addresses": 1280,
   "io_addresses": 6,
   "native_symbols": 928,
-  "rom_addresses": 928,
+  "rom_addresses": 930,
   "sram_addresses": 39,
-  "wram_addresses": 306
+  "wram_addresses": 305
  }
 }

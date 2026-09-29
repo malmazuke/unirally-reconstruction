@@ -81,7 +81,9 @@ void demo_rider(ZoomZooState& state, unsigned index, DemoTrickButtons& buttons) 
 
 DemoTrickButtons update_demo_controllers(ZoomZooState& state, bool pad_pressed) {
     auto& demo = state.demo;
-    if (demo.elapsed + 1U == demo_duration || pad_pressed) {
+    // $83:E256-E25F compares the incremented timer before storing it. A
+    // timeout exits with the old value; a pad exit stores the new value.
+    if (demo.elapsed + 1U == demo_duration) {
         demo.exit_requested = true;
         state.movement.player_input.horizontal = direction::neutral;
         state.opponent_horizontal = direction::neutral;
@@ -94,6 +96,10 @@ DemoTrickButtons update_demo_controllers(ZoomZooState& state, bool pad_pressed) 
     // $83:E267-E276 sends a fade/sound sequence after this point; its visual
     // state is handled by the demo transition, not the race controller.
     (void)warning_at;
+    if (pad_pressed) {
+        demo.exit_requested = true;
+        return {};
+    }
     DemoTrickButtons buttons;
     for (unsigned rider = 0; rider < 2; ++rider) demo_rider(state, rider, buttons);
     return buttons;

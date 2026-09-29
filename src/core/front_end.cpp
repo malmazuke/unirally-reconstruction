@@ -759,10 +759,12 @@ void return_from_demo(FrontEndState& state, std::uint32_t exit_frame, std::uint1
     state.frame = exit_frame + 1U;
     state.screen = FrontEndScreen::demo_return;
     state.script_frame = 0;
-    // R-0070: an early pad exit stays blank for two more pictures before the
-    // menu's return script. The timer exit at elapsed $076B does not.
+    // R-0070: a pad exit before the warning threshold stays blank for two
+    // more pictures before the menu's return script. The timer exit does not.
     state.demo_return_interrupted = demo_elapsed != 0x076b;
-    state.demo_return_wait = state.demo_return_interrupted ? 2 : 0;
+    // $83:E267-E276 calls $82:8035 twice before testing a late pad press.
+    // The observed late-press return has one fewer blank picture.
+    state.demo_return_wait = state.demo_return_interrupted ? (demo_elapsed >= 0x0714 ? 1 : 2) : 0;
     state.mode_chosen = false;
     state.registers.force_blank = true;
     state.line_registers.clear();

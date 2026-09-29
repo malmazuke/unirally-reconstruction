@@ -171,3 +171,36 @@ beyond this one, and audio outside this task unless a verified dependency requir
 - Next: push the up-to-date branch, open a PR, spawn the required fresh
   `gpt-5.6-sol`/medium reviewer in an isolated checkout, answer findings,
   then run the full private/app-debug/app-sanitize/hosted gate matrix.
+
+## Review correction - 29 September 2026
+
+- [PR #44](https://github.com/malmazuke/unirally-reconstruction/pull/44) is open.
+  Its first candidate `d63714e` passed hosted macOS/Linux CI after the static
+  map was regenerated with the renamed camera initializer. The fresh
+  `gpt-5.6-sol`/medium independent reviewer posted an initial acceptance and
+  then a correction review that superseded it. Its withheld late Left press at
+  frame 6400 found 17 projected race-byte differences at the exit and a
+  different return picture at 6600. The primary independently reproduced the
+  failure and captured the full 42-byte trailer for this and the two earlier
+  pad variations, finding an off-by-one demo timer on all three exits.
+- Verified original ordering from the static listing `$83:E254-E2BB`, the
+  bounded `late-press-access` trace and fresh cold PAL captures: timeout
+  compares the incremented clock without storing it; a pad exit stores the
+  incremented value before checking the pad. The exit preserves the pressed
+  direction for the last race update. At the late warning threshold, the
+  return holds one fewer blank picture than an earlier pad interruption.
+- The corrected source matches projected race bytes 12-564 and all 42 trailer
+  bytes on 478 port 1 A, 678 port 2 B and 1,878 port 1 Left rows through
+  their respective exits. Native pictures match 57, 7 and 57 retained original
+  pictures on their returns. The first split demo and the normal second demo
+  still each match 1,901 projected rows; the normal second demo also matches
+  all 1,901 trailers and 22 retained pictures. These are exact measured
+  domains, not a claim for arbitrary pads or all video frames.
+- The ignored evidence in the main checkout is under
+  `local/evidence/attract-demo/trailer-*`, `late-press-access`,
+  `interrupt-*-fixed2`, `interrupt-*-dense-native-*` and
+  `interrupt-report.json`. Source changes and [R-0070](../docs/research/R-0070-attract-demo.md)
+  are awaiting a corrected candidate commit. Next: obtain re-review on that
+  head, run the broad private/sanitizer and hosted CI gates, then merge and
+  close out. Codex weekly usage is 33% at the correction checkpoint, below
+  the 44% discretionary cap; no reset was used.
