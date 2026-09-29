@@ -147,3 +147,27 @@ beyond this one, and audio outside this task unless a verified dependency requir
   review candidate and PR, obtain fresh tier-1 review, run full private and
   hosted gates, then integrate and close out. A 45-minute reassessment has
   been made; this checkpoint does not end the task.
+
+## Review candidate - 29 September 2026 10:07 UTC
+
+- Candidate implementation commit `d4d9ea6280bafac9f87ec3e3a65bbb1fba16325f`.
+  `origin/main` remains the claimed base `5718fc2`. Only tracked source,
+  documentation and the regenerated native-symbol index are committed; the
+  staged diff was inspected and did not contain ROMs, captures or symlinks.
+- `python3 tools/project.py build --preset app-debug` passed. Nine focused
+  CTest cases passed, including race pairing, state serialization and the
+  frontend scheduler. `clang-tidy -p build/app-debug src/core/*.cpp` reports
+  no warnings; changed core files pass clang-format dry-run and
+  `coverage native-symbols --check` passes.
+- The rebuilt runner matches the first demo's 1,901 projected race rows and
+  the second demo's 1,901 projected rows and 42 trailer fields. A hidden-window
+  app run (`build/app-debug/src/app/unirally.app/Contents/MacOS/unirally
+  --content-pack local/classic-pal-crawler-tracks-v26.pack --updates 7000
+  --hidden --front-end-inputs
+  local/evidence/split-screen-race/title-start-300-305.inputs`) completed 7,000
+  updates: first and second demos returned at front-end frames 3349 and 6424,
+  two returns, zero notices and zero pose fallback frames. The ignored log is
+  `artifacts/attract-demo-integration/live-app.log` in the main checkout.
+- Next: push the up-to-date branch, open a PR, spawn the required fresh
+  `gpt-5.6-sol`/medium reviewer in an isolated checkout, answer findings,
+  then run the full private/app-debug/app-sanitize/hosted gate matrix.
