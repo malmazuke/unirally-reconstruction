@@ -18,9 +18,7 @@ void draw_classic_hud(RgbFrame& frame, const ZoomZooState& state,
                       const ClassicRacePresentationContent& content,
                       std::optional<std::uint32_t> opponent_finish_frame,
                       const std::optional<ClassicHudPublished>& published,
-                      std::array<std::uint8_t, 3> ink,
-                      std::array<std::uint8_t, 3> opponent_ink,
-                      unsigned opponent_caption_event,
-                      std::bitset<256 * 224>& inked);
+                      std::array<std::uint8_t, 3> ink, std::array<std::uint8_t, 3> opponent_ink,
+                      unsigned opponent_caption_event, std::bitset<256 * 224>& inked);
 
 } // namespace unirally

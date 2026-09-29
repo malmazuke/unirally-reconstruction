@@ -28,7 +28,7 @@ class NativeSeedPreparationTests(unittest.TestCase):
         with self.assertRaises(ValueError):validate_observation(Path(__file__),Path(__file__),Path(__file__))
 
     def test_static_content_identity_is_checked_before_output(self):
-        with tempfile.TemporaryDirectory(dir=ROOT/"local") as temporary:
+        with tempfile.TemporaryDirectory(dir=ROOT) as temporary:
             temporary=Path(temporary); bindings=[]
             for name,(size,_) in STATIC_CONTENT.items():
                 source=temporary/name; source.write_bytes(bytes(size))

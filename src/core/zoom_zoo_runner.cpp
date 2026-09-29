@@ -1,5 +1,5 @@
-#include "zoom_zoo_pack.hpp"
 #include "race_camera.hpp"
+#include "zoom_zoo_pack.hpp"
 #include <algorithm>
 #include <cctype>
 #include <memory>
@@ -42,8 +42,7 @@ unirally::ControllerButtons buttons(std::uint16_t mask) {
 
 // One timeline row, the state after its update. STUNT-HUD: with `palettes`, also the player's
 // contact palette ("frame palette"), which NEON's picture follows and the state does not carry.
-void emit(const unirally::ZoomZooState& state, std::ostream* palettes,
-          std::ostream* split_state) {
+void emit(const unirally::ZoomZooState& state, std::ostream* palettes, std::ostream* split_state) {
     std::cout << state.movement.frame << ' ';
     for (auto byte : unirally::serialize_zoom_zoo(state))
         std::cout << std::hex << std::setw(2) << std::setfill('0') << unsigned(byte);

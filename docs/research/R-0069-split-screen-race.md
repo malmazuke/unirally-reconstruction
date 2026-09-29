@@ -91,8 +91,8 @@ second idle demo cycle after that is outside this task.
 
 ## Static reading and implementation implications
 
-The static code map's `bank-81.lst` reads `$81:9FB0-A16D` as the top camera
-follow and vertical calculation, then the second camera follow. With `$0DE1`
+The static code map's `bank-81.lst` reads `$81:9FB0-A16D` and
+`$81:A23C-A2D5` as the two camera follows and vertical calculations. With `$0DE1`
 nonzero, the top camera's vertical branch at `$81:A0D4-A16A` differs from the
 one-player branch and uses the other rider's y. The second camera has its own
 `$041F/$0423`, `$04FB/$04FF`, `$0555` words. The 1,901-frame camera-state

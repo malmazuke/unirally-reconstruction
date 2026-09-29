@@ -11,18 +11,20 @@ constexpr std::uint16_t demo_duration = 0x076c, warning_at = 0x0714;
 constexpr std::uint16_t turnaround_updates = 30, rotation_window = 50;
 
 void rotate(ReflectionTransition& input, bool positive) {
-    if (positive) input.rotate_positive_input = 1;
-    else input.rotate_negative_input = 1;
+    if (positive)
+        input.rotate_positive_input = 1;
+    else
+        input.rotate_negative_input = 1;
 }
 
 void demo_rider(ZoomZooState& state, unsigned index, DemoTrickButtons& buttons) {
     auto& transition = state.reflection[index];
     auto& rider = state.movement.riders[index];
     auto& control = state.demo;
-    auto& horizontal = index == 0 ? state.movement.player_input.horizontal
-                                  : state.opponent_horizontal;
-    transition.brake_input = transition.rotate_negative_input =
-        transition.rotate_positive_input = transition.jump_input = 0;
+    auto& horizontal =
+        index == 0 ? state.movement.player_input.horizontal : state.opponent_horizontal;
+    transition.brake_input = transition.rotate_negative_input = transition.rotate_positive_input =
+        transition.jump_input = 0;
     if (rider.progress.marker_word & ai_off) return;
     horizontal = (rider.progress.marker_word & leftward) ? direction::left : direction::right;
     if (control.turnaround[index]) {
@@ -43,13 +45,14 @@ void demo_rider(ZoomZooState& state, unsigned index, DemoTrickButtons& buttons) 
         transition.jump_input = 1;
         if (!control.airborne_rotation[index] && rider.contact.unsupported_count >= 4
             && static_cast<std::int16_t>(rider.motion.velocity_y) < 0) {
-            control.airborne_rotation[index] = static_cast<std::uint16_t>(
-                -static_cast<std::int16_t>(rider.motion.velocity_y) / 2);
+            control.airborne_rotation[index] =
+                static_cast<std::uint16_t>(-static_cast<std::int16_t>(rider.motion.velocity_y) / 2);
             control.rotation_window[index] = rotation_window;
             if (rider.contact.surface_angle == 0)
                 control.trick_bits[index] =
                     static_cast<std::int16_t>(rider.motion.velocity_x) < 0 ? 0 : 1;
-            else control.trick_bits[index] = rider.motion.x & 7U;
+            else
+                control.trick_bits[index] = rider.motion.x & 7U;
         }
         if (control.airborne_rotation[index]) {
             const auto bits = control.trick_bits[index];
@@ -64,10 +67,8 @@ void demo_rider(ZoomZooState& state, unsigned index, DemoTrickButtons& buttons) 
     if (!(rider.progress.marker_word & jump_marker))
         transition.jump_input = state.movement.contact_phase;
     control.trick_bits[index] = control.airborne_rotation[index] = 0;
-    if (static_cast<std::int16_t>(rider.motion.velocity_y) >= 0
-        && control.rotation_window[index]
-        && rider.pose.reflected_orientation >= 16
-        && rider.pose.reflected_orientation < 48)
+    if (static_cast<std::int16_t>(rider.motion.velocity_y) >= 0 && control.rotation_window[index]
+        && rider.pose.reflected_orientation >= 16 && rider.pose.reflected_orientation < 48)
         rotate(transition, static_cast<std::int16_t>(rider.motion.velocity_x) >= 0);
 }
 } // namespace

@@ -1149,7 +1149,8 @@
   "comment": "unknown",
   "label": "unk_8093FB",
   "source_records": [
-   "tasks/COVERAGE-ROADMAP.md"
+   "tasks/COVERAGE-ROADMAP.md",
+   "tasks/SPLIT-SCREEN-RACE.md"
   ]
  },
  {
@@ -5547,10 +5548,12 @@
   "comment": "instruction start",
   "label": "loc_818288",
   "native": [
+   "src/core/race_progress.cpp:pass_checkpoint",
    "src/core/race_progress.cpp:update_checkpoints"
   ],
   "source_records": [
-   "docs/research/R-0044-classic-split-time.md"
+   "docs/research/R-0044-classic-split-time.md",
+   "docs/research/R-0069-split-screen-race.md"
   ]
  },
  {
@@ -7240,7 +7243,8 @@
   "comment": "instruction start",
   "label": "loc_8194A8",
   "native": [
-   "src/core/vertical_contact.cpp:apply_landing_matrix"
+   "src/core/vertical_contact.cpp:apply_landing_matrix",
+   "src/core/vertical_contact.cpp:land"
   ],
   "source_records": [
    "docs/research/R-0011-contact.md"
@@ -7252,7 +7256,8 @@
   "comment": "instruction start",
   "label": "loc_8194AF",
   "native": [
-   "src/core/vertical_contact.cpp:apply_landing_matrix"
+   "src/core/vertical_contact.cpp:apply_landing_matrix",
+   "src/core/vertical_contact.cpp:land"
   ],
   "source_records": [
    "docs/research/R-0011-contact.md"
@@ -7264,7 +7269,8 @@
   "comment": "instruction start",
   "label": "loc_8194B4",
   "native": [
-   "src/core/vertical_contact.cpp:apply_landing_matrix"
+   "src/core/vertical_contact.cpp:apply_landing_matrix",
+   "src/core/vertical_contact.cpp:land"
   ],
   "source_records": [
    "docs/research/R-0011-contact.md"
@@ -7277,7 +7283,8 @@
   "label": "loc_8194B9",
   "native": [
    "src/core/flat_contact.hpp:ContactContext::landing_matrix_zero",
-   "src/core/vertical_contact.cpp:apply_landing_matrix"
+   "src/core/vertical_contact.cpp:apply_landing_matrix",
+   "src/core/vertical_contact.cpp:land"
   ],
   "source_records": [
    "docs/research/R-0011-contact.md",
@@ -7794,7 +7801,8 @@
    "src/core/zoom_zoo_movement.hpp:TrackGeometry"
   ],
   "source_records": [
-   "docs/research/R-0038-dragster-ordinary-controls.md"
+   "docs/research/R-0038-dragster-ordinary-controls.md",
+   "docs/research/R-0069-split-screen-race.md"
   ]
  },
  {
@@ -7809,6 +7817,32 @@
   "source_records": [
    "docs/research/R-0045-static-code-map.md",
    "tasks/STATIC-CODE-MAP.md"
+  ]
+ },
+ {
+  "address": "$81:A0D4",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_81A0D4",
+  "native": [
+   "src/core/race_camera.cpp:split_vertical_velocity",
+   "src/core/race_camera.cpp:update_camera",
+   "src/core/zoom_zoo_movement.hpp:TrackGeometry"
+  ],
+  "source_records": [
+   "docs/research/R-0069-split-screen-race.md"
+  ]
+ },
+ {
+  "address": "$81:A23C",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_81A23C",
+  "native": [
+   "src/core/race_camera.cpp:split_vertical_velocity"
+  ],
+  "source_records": [
+   "docs/research/R-0069-split-screen-race.md"
   ]
  },
  {
@@ -8552,6 +8586,18 @@
   ]
  },
  {
+  "address": "$81:C5D5",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_81C5D5",
+  "native": [
+   "src/core/race_update.cpp:finish_update"
+  ],
+  "source_records": [
+   "docs/research/R-0069-split-screen-race.md"
+  ]
+ },
+ {
   "address": "$81:C612",
   "class": "observed",
   "comment": "instruction start",
@@ -9158,6 +9204,9 @@
   "class": "inferred",
   "comment": "instruction start",
   "label": "loc_81D1B2",
+  "native": [
+   "src/core/race_hud.cpp:draw_split_hud"
+  ],
   "source_records": [
    "docs/research/R-0043-classic-race-hud.md"
   ]
@@ -9167,6 +9216,9 @@
   "class": "inferred",
   "comment": "instruction start",
   "label": "loc_81D30C",
+  "native": [
+   "src/core/race_hud.cpp:draw_split_hud"
+  ],
   "source_records": [
    "docs/research/R-0043-classic-race-hud.md"
   ]
@@ -9370,7 +9422,8 @@
   "label": "loc_81EB44",
   "native": [
    "src/core/race_hud.cpp:ClassicRaceHudClock::redraw_arrow",
-   "src/core/race_hud.cpp:draw_classic_arrow"
+   "src/core/race_hud.cpp:draw_classic_arrow",
+   "src/core/race_hud.cpp:draw_split_hud"
   ],
   "source_records": [
    "docs/research/R-0043-classic-race-hud.md"
@@ -9383,7 +9436,8 @@
   "label": "loc_81EB83",
   "native": [
    "src/core/race_hud.cpp:ClassicRaceHudClock::redraw_arrow",
-   "src/core/race_hud.cpp:draw_classic_arrow"
+   "src/core/race_hud.cpp:draw_classic_arrow",
+   "src/core/race_hud.cpp:draw_split_hud"
   ],
   "source_records": [
    "docs/research/R-0043-classic-race-hud.md"
@@ -11702,6 +11756,7 @@
   ],
   "source_records": [
    "docs/research/R-0050-locked-tours.md",
+   "docs/research/R-0069-split-screen-race.md",
    "tasks/LOCKED-TOURS.md"
   ]
  },
@@ -12252,6 +12307,7 @@
   ],
   "source_records": [
    "docs/research/R-0036-zoom-zoo-rider-objects.md",
+   "docs/research/R-0069-split-screen-race.md",
    "tasks/M4-16-review.md",
    "tasks/M4-16.md"
   ]
@@ -12779,6 +12835,19 @@
   ]
  },
  {
+  "address": "$82:D76D",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82D76D",
+  "native": [
+   "src/core/race_camera.cpp:initialize_split_cameras",
+   "src/core/race_setup.cpp:start_countdown, base_speed_cap"
+  ],
+  "source_records": [
+   "docs/research/R-0069-split-screen-race.md"
+  ]
+ },
+ {
   "address": "$82:D789",
   "class": "observed",
   "comment": "instruction start",
@@ -12977,7 +13046,7 @@
   "label": "sub_82DC20",
   "native": [
    "src/core/content_pack.cpp:tracks_required",
-   "src/core/presentation.cpp:classic_race_presentation_content"
+   "src/core/presentation.cpp:load_other_track_presentation_content"
   ],
   "source_records": [
    "docs/research/R-0046-track-breadth-matrix.md",
@@ -12991,7 +13060,7 @@
   "label": "loc_82DC22",
   "native": [
    "src/core/content_pack.cpp:tracks_required",
-   "src/core/presentation.cpp:classic_race_presentation_content",
+   "src/core/presentation.cpp:load_other_track_presentation_content",
    "src/core/race_setup.cpp:stunt_scenario"
   ],
   "source_records": [
@@ -13005,7 +13074,7 @@
   "label": "loc_82DC7C",
   "native": [
    "src/core/content_pack.cpp:tracks_required",
-   "src/core/presentation.cpp:classic_race_presentation_content"
+   "src/core/presentation.cpp:load_other_track_presentation_content"
   ],
   "source_records": [
    "docs/research/R-0068-stunt-hud.md"
@@ -15437,6 +15506,15 @@
   ]
  },
  {
+  "address": "$83:CD50",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83CD50",
+  "source_records": [
+   "docs/research/R-0069-split-screen-race.md"
+  ]
+ },
+ {
   "address": "$83:CD5E",
   "class": "observed",
   "comment": "instruction start",
@@ -16172,6 +16250,48 @@
   "source_records": [
    "docs/research/R-0050-locked-tours.md",
    "tasks/M4-11-review.md"
+  ]
+ },
+ {
+  "address": "$83:E254",
+  "class": "inferred",
+  "comment": "routine start",
+  "label": "sub_83E254",
+  "native": [
+   "src/core/race_demo_controls.cpp:(file)",
+   "src/core/race_demo_controls.hpp:(file)",
+   "src/core/zoom_zoo_movement.hpp:DemoControllers"
+  ],
+  "source_records": [
+   "docs/research/R-0069-split-screen-race.md"
+  ]
+ },
+ {
+  "address": "$83:E2C4",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_83E2C4",
+  "native": [
+   "src/core/race_demo_controls.cpp:(file)",
+   "src/core/race_demo_controls.hpp:(file)",
+   "src/core/zoom_zoo_movement.hpp:DemoControllers"
+  ],
+  "source_records": [
+   "docs/research/R-0069-split-screen-race.md"
+  ]
+ },
+ {
+  "address": "$83:E417",
+  "class": "inferred",
+  "comment": "routine start",
+  "label": "sub_83E417",
+  "native": [
+   "src/core/race_demo_controls.cpp:(file)",
+   "src/core/race_demo_controls.hpp:(file)",
+   "src/core/zoom_zoo_movement.hpp:DemoControllers"
+  ],
+  "source_records": [
+   "docs/research/R-0069-split-screen-race.md"
   ]
  },
  {

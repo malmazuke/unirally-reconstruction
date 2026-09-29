@@ -19,8 +19,8 @@
 #include "announcements.hpp"
 #include "hunter_effects.hpp"
 #include "opponent_ai.hpp"
-#include "race_demo_controls.hpp"
 #include "race_camera.hpp"
+#include "race_demo_controls.hpp"
 #include "race_progress.hpp"
 #include "reward_queue.hpp"
 #include "rider_motion.hpp"
@@ -80,8 +80,7 @@ constexpr std::int16_t shallow_slope = 30;
 constexpr std::uint16_t drive_step = 24, lift_launch_override = 80;
 // The loop's top is step 9. Native passes the cartridge's options word ($77:0750) as
 // 0xC200; contact tests only its bit 3, which is clear.
-constexpr std::uint16_t loop_top_step = 9, cartridge_options = 0xc200,
-                        split_demo_options = 0xc20a;
+constexpr std::uint16_t loop_top_step = 9, cartridge_options = 0xc200, split_demo_options = 0xc20a;
 // The wrong-direction warning after 180 active updates, then every 60 ($82:974B/977B).
 constexpr std::uint16_t wrong_way_warning = 180, wrong_way_repeat = 120;
 
@@ -790,12 +789,12 @@ void finish_update(const ZoomZooState& state, ZoomZooState& next,
     if (state.native_initialization)
         show_next_player_announcement(next, content.movement, content.captions);
     const auto previous_write = state.movement.rewards.write_cursor;
-    const bool queued_scoring_event = whole.rewards.write_cursor != previous_write
-                                   && whole.rewards.entries[previous_write]
-                                          < announcement::wrong_way;
+    const bool queued_scoring_event =
+        whole.rewards.write_cursor != previous_write
+        && whole.rewards.entries[previous_write] < announcement::wrong_way;
     if (next.demo_ai && next.demo.opponent_hints_active
-        && (queued_scoring_event || (outcomes[1].reward
-                                     && outcomes[1].reward < announcement::wrong_way))) {
+        && (queued_scoring_event
+            || (outcomes[1].reward && outcomes[1].reward < announcement::wrong_way))) {
         // $81:C5D5-C5E1: the second rider's first scoring event interrupts
         // the tutorial wait and is consumed on this update (R-0069).
         whole.rewards.cooldown = 0;
@@ -862,8 +861,8 @@ void update_zoom_zoo(ZoomZooState& state, const ControllerButtons& requested_but
     }
     advance_clocks(next, buttons);
     const auto player_buttons = release_settled_player(state, next, buttons);
-    bool pressed_a = read_player_buttons(
-        next, player_buttons, state.hunter.effect[hunter_effect::control_reversed] != 0);
+    bool pressed_a = read_player_buttons(next, player_buttons,
+                                         state.hunter.effect[hunter_effect::control_reversed] != 0);
     if (!state.demo_ai && run_pause_menu(state, next, player_buttons, content)) {
         state = next;
         return;
@@ -875,12 +874,10 @@ void update_zoom_zoo(ZoomZooState& state, const ControllerButtons& requested_but
     const auto opponent_buttons = with_physical_dpad(gate_controller(state, second_port));
     if (next.demo_ai) {
         const auto pressed = [](const ControllerButtons& pad) {
-            return pad.a || pad.b || pad.x || pad.y || pad.left_shoulder
-                   || pad.right_shoulder || pad.select || pad.start || pad.up || pad.down
-                   || pad.left || pad.right;
+            return pad.a || pad.b || pad.x || pad.y || pad.left_shoulder || pad.right_shoulder
+                || pad.select || pad.start || pad.up || pad.down || pad.left || pad.right;
         };
-        demo_buttons = update_demo_controllers(next,
-                                               pressed(request) || pressed(opponent_buttons));
+        demo_buttons = update_demo_controllers(next, pressed(request) || pressed(opponent_buttons));
         pressed_a = demo_buttons.a[0];
     } else if (next.split_screen) {
         const auto sample = sample_controller(opponent_buttons);
@@ -903,11 +900,9 @@ void update_zoom_zoo(ZoomZooState& state, const ControllerButtons& requested_but
     const TrickButtons trick_buttons{
         pressed_a && !countdown_holds,
         (next.demo_ai ? demo_buttons.x[0] : player_buttons.x) && !countdown_holds,
-        countdown_holds ? 0U
-                        : next.split_screen ? unsigned(demo_buttons.a[1]) * 2U
-                                       + unsigned(demo_buttons.x[1]) * 4U
-                                       : (unsigned(whole.opponent_ai.trick_selector)
-                                          & (ai_off ? ~6U : ~0U))};
+        countdown_holds     ? 0U
+        : next.split_screen ? unsigned(demo_buttons.a[1]) * 2U + unsigned(demo_buttons.x[1]) * 4U
+                            : (unsigned(whole.opponent_ai.trick_selector) & (ai_off ? ~6U : ~0U))};
     if (state.complete_race) update_finish(next, content);
     const unsigned active = whole.progress_phase ? 0U : 1U;
     lower_announcement_cooldowns(next, scenario);

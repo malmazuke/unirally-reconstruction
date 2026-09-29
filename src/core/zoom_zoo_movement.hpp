@@ -116,10 +116,9 @@ struct ZoomZooPause {
 // $83:E254-E55B: the idle demo's two computer riders. The four per-rider words
 // are $1377/$1379, $137B/$137D, $137F/$1381 and $1383/$1385; elapsed is $1387.
 struct DemoControllers {
-    std::array<std::uint16_t, 2> trick_bits{}, rotation_window{}, turnaround{},
-        airborne_rotation{};
+    std::array<std::uint16_t, 2> trick_bits{}, rotation_window{}, turnaround{}, airborne_rotation{};
     std::uint16_t elapsed{};
-    bool exit_requested{}; // $12B3
+    bool exit_requested{};        // $12B3
     bool opponent_hints_active{}; // $12E5: first scoring event clears the queue wait.
 };
 // The race engine was first recovered on ZOOM ZOO, hence the ZoomZoo names.
@@ -324,7 +323,7 @@ struct StuntEvent {
 struct ZoomZooState {
     ClassicRaceTrack track{ClassicRaceTrack::ZoomZoo}; // Serialized as the state magic.
     bool split_screen{}; // $0DE1; separate native demo/two-player state format pending.
-    bool demo_ai{}; // $7E:212C; controls both riders in a split demo.
+    bool demo_ai{};      // $7E:212C; controls both riders in a split demo.
     DemoControllers demo;
     ZoomZooPause pause;
     std::array<ZoomZooRoll, 2> rolls{};

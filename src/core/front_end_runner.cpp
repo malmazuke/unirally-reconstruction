@@ -307,6 +307,28 @@ std::string start_race(RaceBetweenMenus& race, const unirally::ClassicContentPac
     return {};
 }
 
+void update_demo_race(const Options& options, const unirally::ClassicContentPack& pack,
+                      unirally::FrontEndState& front_end, RaceBetweenMenus& race,
+                      std::uint32_t frame, unirally::FrontEndPads pads, std::size_t& races) {
+    if (options.human_after && frame >= *options.human_after) race.state.demo_ai = false;
+    const auto previous = race.state;
+    unirally::update_zoom_zoo(race.state, race_buttons(pads.one), race_buttons(pads.two),
+                              *race.content);
+    race.history.observe_update(previous, race.state, pack);
+    if (const auto picture = options.pictures.find(frame); picture != options.pictures.end()) {
+        const auto shown = race.history.on_screen();
+        write_ppm(picture->second,
+                  unirally::render_classic_race(race.state, *race.presentation, &previous, &shown));
+    }
+    if (race.state.demo.exit_requested) {
+        unirally::return_from_demo(front_end, frame);
+        race.content.reset();
+        race.presentation.reset();
+        ++races;
+    }
+    print_state(frame, front_end);
+}
+
 } // namespace
 
 int main(int argc, char** argv) try {
@@ -335,26 +357,7 @@ int main(int argc, char** argv) try {
             }
             if (state.mode == unirally::FrontEndMode::demo) {
                 if (frame <= race.initialization_frame) continue;
-                if (options.human_after && frame >= *options.human_after)
-                    race.state.demo_ai = false;
-                const auto previous = race.state;
-                unirally::update_zoom_zoo(race.state, race_buttons(pads.one),
-                                          race_buttons(pads.two), *race.content);
-                race.history.observe_update(previous, race.state, pack);
-                if (const auto picture = options.pictures.find(frame);
-                    picture != options.pictures.end()) {
-                    const auto shown = race.history.on_screen();
-                    write_ppm(picture->second, unirally::render_classic_race(
-                                                   race.state, *race.presentation, &previous,
-                                                   &shown));
-                }
-                if (race.state.demo.exit_requested) {
-                    unirally::return_from_demo(state, frame);
-                    race.content.reset();
-                    race.presentation.reset();
-                    ++races;
-                }
-                print_state(frame, state);
+                update_demo_race(options, pack, state, race, frame, pads, races);
                 continue;
             }
             if (frame <= race.initialization_frame) continue;

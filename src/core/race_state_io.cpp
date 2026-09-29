@@ -182,8 +182,8 @@ void write_special_tiles(std::vector<std::uint8_t>& bytes, const ZoomZooState& s
 
 void write_split_trailer(std::vector<std::uint8_t>& bytes, const ZoomZooState& state) {
     const auto& camera = state.race.second_camera;
-    for (auto value : {camera.x, camera.y, camera.velocity_x, camera.velocity_y,
-                       camera.lookahead, camera.screen_xy})
+    for (auto value : {camera.x, camera.y, camera.velocity_x, camera.velocity_y, camera.lookahead,
+                       camera.screen_xy})
         put16(bytes, value);
     for (const auto& words : {state.demo.trick_bits, state.demo.rotation_window,
                               state.demo.turnaround, state.demo.airborne_rotation})
@@ -911,8 +911,8 @@ ZoomZooState deserialize_race(std::span<const std::uint8_t> bytes,
     if (bytes.size() == split_race_size || bytes.size() == extended_split_size) {
         const bool extended = bytes.size() == extended_split_size;
         const auto expected = extended ? extended_split_layout : split_layout;
-        refuse_unless(std::equal(bytes.begin(), bytes.begin() + 7,
-                                 race_state_magic.begin()) && bytes[7] == expected,
+        refuse_unless(std::equal(bytes.begin(), bytes.begin() + 7, race_state_magic.begin())
+                          && bytes[7] == expected,
                       "split race state identity/width differs");
         const auto base_size = extended ? extended_size : native_race_size;
         const auto base_view = bytes.first(base_size);
@@ -929,8 +929,7 @@ ZoomZooState deserialize_race(std::span<const std::uint8_t> bytes,
             for (auto& value : *words) value = in.u16();
         state.demo.elapsed = in.u16();
         const auto exit_requested = in.u8(), hints_active = in.u8();
-        refuse_unless(exit_requested <= 1 && hints_active <= 1,
-                      "split demo flags are invalid");
+        refuse_unless(exit_requested <= 1 && hints_active <= 1, "split demo flags are invalid");
         state.demo.exit_requested = exit_requested != 0;
         state.demo.opponent_hints_active = hints_active != 0;
         state.pairing = {in.u8(), in.u8()};
@@ -938,20 +937,26 @@ ZoomZooState deserialize_race(std::span<const std::uint8_t> bytes,
         state.opponent_tier.catch_up = in.u16();
         state.opponent_tier.adjustment_limit = in.u16();
         const auto split = in.u8(), demo_ai = in.u8();
-        refuse_unless(split == 1 && demo_ai <= 1,
-                      "split race mode flags are invalid");
+        refuse_unless(split == 1 && demo_ai <= 1, "split race mode flags are invalid");
         state.split_screen = true;
         state.demo_ai = demo_ai != 0;
         in.require_end();
-        refuse_unless(state.native_initialization && state.split_screen
-                          && state.track == ClassicRaceTrack::ZoomZoo
-                          && state.pairing.rider < rider_characters
-                          && state.pairing.opponent < rider_characters
-                          && state.demo.elapsed <= 0x076c
-                          && camera.x <= zoom_zoo_camera_x_limit
-                          && std::abs(static_cast<std::int16_t>(camera.velocity_x)) <= fastest_camera
-                          && std::abs(static_cast<std::int16_t>(camera.velocity_y)) <= fastest_camera,
-                      "split race state is outside its recovered domain");
+        for (unsigned rider = 0; rider < 2; ++rider)
+            refuse_unless(
+                state.demo.trick_bits[rider] <= 7 && state.demo.rotation_window[rider] <= 50
+                    && state.demo.turnaround[rider] <= 30
+                    && state.demo.airborne_rotation[rider] <= 0x4000
+                    && (state.demo.airborne_rotation[rider] || !state.demo.trick_bits[rider]),
+                "split demo controller words are invalid");
+        refuse_unless(
+            state.native_initialization && state.split_screen
+                && state.track == ClassicRaceTrack::ZoomZoo
+                && state.pairing.rider < rider_characters
+                && state.pairing.opponent < rider_characters && state.demo.elapsed <= 0x076c
+                && camera.x <= zoom_zoo_camera_x_limit
+                && std::abs(static_cast<std::int16_t>(camera.velocity_x)) <= fastest_camera
+                && std::abs(static_cast<std::int16_t>(camera.velocity_y)) <= fastest_camera,
+            "split race state is outside its recovered domain");
         return state;
     }
     const auto track = identified_track(bytes);

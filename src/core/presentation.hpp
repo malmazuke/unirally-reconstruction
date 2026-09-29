@@ -448,9 +448,15 @@ public:
                         const ClassicContentPack& pack);
     // History for the update that produced the `previous_update` being drawn.
     ClassicRaceHistory on_screen() const {
-        return {on_screen_,          opponent_finish_frame_, window_.observed(),
-                window_.published(), clock_.published(),     on_screen_barf_,
-                on_screen_flip_prior_, on_screen_neon_green_, on_screen_opponent_caption_};
+        return {on_screen_,
+                opponent_finish_frame_,
+                window_.observed(),
+                window_.published(),
+                clock_.published(),
+                on_screen_barf_,
+                on_screen_flip_prior_,
+                on_screen_neon_green_,
+                on_screen_opponent_caption_};
     }
     const RiderLookState& look() const { return look_; }
 

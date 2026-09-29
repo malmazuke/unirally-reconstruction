@@ -14,6 +14,7 @@
 #include <optional>
 #include <stdexcept>
 #include <string>
+#include <vector>
 
 namespace {
 constexpr unsigned frame_offset = 72;
@@ -25,6 +26,26 @@ void write_picture(const std::filesystem::path& path, const unirally::RgbFrame& 
               static_cast<std::streamsize>(frame.pixels.size()));
     if (!out) throw std::runtime_error("cannot write split demo picture");
 }
+
+void check_split_save_words(const std::vector<std::uint8_t>& saved) {
+    const auto restored = unirally::deserialize_zoom_zoo(saved);
+    if (unirally::serialize_zoom_zoo(restored) != saved)
+        throw std::runtime_error("split state did not round-trip");
+    // The 42-byte trailer has camera words, then four pairs of controller words.
+    // An all-ones value is impossible for every controller word in either layout.
+    for (const unsigned from_end : {30U, 28U, 26U, 24U, 22U, 20U, 18U, 16U}) {
+        auto impossible = saved;
+        impossible[impossible.size() - from_end] = 0xff;
+        impossible[impossible.size() - from_end + 1] = 0xff;
+        bool refused = false;
+        try {
+            (void)unirally::deserialize_zoom_zoo(impossible);
+        } catch (const std::invalid_argument&) {
+            refused = true;
+        }
+        if (!refused) throw std::runtime_error("split state accepted impossible controller word");
+    }
+}
 } // namespace
 
 int main(int argc, char** argv) try {
@@ -33,13 +54,15 @@ int main(int argc, char** argv) try {
     std::optional<unsigned> restore_frame;
     for (int i = 1; i < argc; ++i) {
         const std::string option = argv[i];
-        if (option == "--content-pack" && i + 1 < argc) pack_path = argv[++i];
+        if (option == "--content-pack" && i + 1 < argc)
+            pack_path = argv[++i];
         else if (option == "--picture" && i + 2 < argc) {
             const unsigned frame = static_cast<unsigned>(std::stoul(argv[++i]));
             pictures[frame] = argv[++i];
         } else if (option == "--restore-check" && i + 1 < argc) {
             restore_frame = static_cast<unsigned>(std::stoul(argv[++i]));
-        } else throw std::invalid_argument("split_demo_runner: bad option");
+        } else
+            throw std::invalid_argument("split_demo_runner: bad option");
     }
     if (pack_path.empty() || pictures.empty() || pictures.begin()->first <= 1448)
         throw std::invalid_argument("split_demo_runner needs a pack and pictures after 1448");
@@ -62,9 +85,15 @@ int main(int argc, char** argv) try {
         const auto original_frame = state.movement.frame + frame_offset;
         if (restore_frame == original_frame) {
             const auto saved = unirally::serialize_zoom_zoo(state);
+            if (saved[7] != 'F') throw std::runtime_error("expected demo split layout F");
+            check_split_save_words(saved);
+            auto extended = state;
+            extended.special_tiles[0].mud_cooldown = 1;
+            const auto extended_saved = unirally::serialize_zoom_zoo(extended);
+            if (extended_saved[7] != 'G')
+                throw std::runtime_error("expected extended demo split layout G");
+            check_split_save_words(extended_saved);
             restored = unirally::deserialize_zoom_zoo(saved);
-            if (unirally::serialize_zoom_zoo(*restored) != saved)
-                throw std::runtime_error("split state did not round-trip");
         } else if (restored) {
             unirally::update_zoom_zoo(*restored, {}, content);
             if (unirally::serialize_zoom_zoo(*restored) != unirally::serialize_zoom_zoo(state))
@@ -74,9 +103,8 @@ int main(int argc, char** argv) try {
         history.observe_update(previous, state, pack);
         if (const auto picture = pictures.find(original_frame); picture != pictures.end()) {
             const auto on_screen = history.on_screen();
-            write_picture(picture->second,
-                          unirally::render_classic_race(state, picture_content, &previous,
-                                                        &on_screen));
+            write_picture(picture->second, unirally::render_classic_race(state, picture_content,
+                                                                         &previous, &on_screen));
         }
     }
     return 0;

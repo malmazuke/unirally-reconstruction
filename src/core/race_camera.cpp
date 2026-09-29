@@ -38,21 +38,22 @@ void follow_split_rider(ZoomZooCamera& camera, const RiderMovementState& rider,
                         const TrackGeometry& geometry) {
     const auto target = 1 - (static_cast<std::int16_t>(rider.motion.velocity_x) >> 3);
     auto look = static_cast<std::int16_t>(camera.lookahead);
-    if (look < target) ++look;
-    else if (look > target) --look;
+    if (look < target)
+        ++look;
+    else if (look > target)
+        --look;
     camera.lookahead = static_cast<std::uint16_t>(look);
-    const auto center = static_cast<std::uint16_t>(
-        (camera.x + camera.lookahead + center_offset) & geometry.position_mask);
-    const auto delta = static_cast<std::int16_t>(static_cast<std::uint16_t>(
-        (static_cast<unsigned>(rider.motion.x) << geometry.screen_shift)
-        - (static_cast<unsigned>(center) << geometry.screen_shift)));
+    const auto center = static_cast<std::uint16_t>((camera.x + camera.lookahead + center_offset)
+                                                   & geometry.position_mask);
+    const auto delta = static_cast<std::int16_t>(
+        static_cast<std::uint16_t>((static_cast<unsigned>(rider.motion.x) << geometry.screen_shift)
+                                   - (static_cast<unsigned>(center) << geometry.screen_shift)));
     int vx{};
     if (delta < geometry.follow_window_low || delta >= geometry.follow_window_high)
         vx = delta < 0 ? -top_speed : top_speed;
     else {
         const int distance = delta >> geometry.screen_shift;
-        vx = distance < 0 ? std::min(0, distance + dead_zone)
-                          : std::max(0, distance - dead_zone);
+        vx = distance < 0 ? std::min(0, distance + dead_zone) : std::max(0, distance - dead_zone);
     }
     camera.velocity_x = static_cast<std::uint16_t>(vx);
     const int vy = split_vertical_velocity(rider.motion.y, camera.y);
@@ -62,8 +63,8 @@ void follow_split_rider(ZoomZooCamera& camera, const RiderMovementState& rider,
 }
 
 void publish_split_rider(ZoomZooCamera& camera, const RiderMovementState& rider,
-                         const TrackGeometry& geometry, std::uint16_t offscreen,
-                         unsigned y_offset, std::uint16_t& provisional) {
+                         const TrackGeometry& geometry, std::uint16_t offscreen, unsigned y_offset,
+                         std::uint16_t& provisional) {
     const int dy = static_cast<std::int16_t>(rider.motion.y - camera.y);
     const auto dx = static_cast<std::int16_t>(rider.motion.x - camera.x);
     const int scaled = static_cast<std::int16_t>(static_cast<std::uint16_t>(
@@ -71,10 +72,10 @@ void publish_split_rider(ZoomZooCamera& camera, const RiderMovementState& rider,
     const bool outside = dy < visible_top || dy >= split_visible_bottom
                       || scaled < geometry.visible_left || scaled >= geometry.visible_right;
     provisional = (outside || scaled < 0) ? 1 : 0;
-    camera.screen_xy = outside ? offscreen
-                               : static_cast<std::uint16_t>(
-                                   ((static_cast<unsigned>(dy) + y_offset) & 255U) * 256U
-                                   + (static_cast<unsigned>(dx) & 255U));
+    camera.screen_xy =
+        outside ? offscreen
+                : static_cast<std::uint16_t>(((static_cast<unsigned>(dy) + y_offset) & 255U) * 256U
+                                             + (static_cast<unsigned>(dx) & 255U));
 }
 
 } // namespace
@@ -129,8 +130,7 @@ void update_visibility(ZoomZooState& state, const TrackGeometry& geometry) {
         publish_split_rider(state.race.camera, state.movement.riders[0], geometry, off_screen, 0,
                             state.race.provisional_1225);
         publish_split_rider(state.race.second_camera, state.movement.riders[1], geometry,
-                            second_off_screen, split_visible_bottom,
-                            state.race.provisional_1227);
+                            second_off_screen, split_visible_bottom, state.race.provisional_1227);
         state.opponent_retained_oam_x =
             static_cast<std::uint8_t>(state.race.second_camera.screen_xy);
         return;
@@ -155,10 +155,10 @@ void initialize_split_cameras(ZoomZooState& state) {
     constexpr unsigned camera_margin = 256, camera_cell_mask = 0xfff0;
     state.split_screen = true;
     const auto& motion = state.movement.riders[1].motion;
-    state.race.second_camera.x = static_cast<std::uint16_t>((motion.x - camera_margin)
-                                                            & camera_cell_mask);
-    state.race.second_camera.y = static_cast<std::uint16_t>((motion.y - camera_margin)
-                                                            & camera_cell_mask);
+    state.race.second_camera.x =
+        static_cast<std::uint16_t>((motion.x - camera_margin) & camera_cell_mask);
+    state.race.second_camera.y =
+        static_cast<std::uint16_t>((motion.y - camera_margin) & camera_cell_mask);
     state.race.second_camera.screen_xy = 0x2065; // $82:D76D-D774: initial second-rider OAM.
 }
 
