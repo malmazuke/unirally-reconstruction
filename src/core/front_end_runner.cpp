@@ -11,9 +11,9 @@
 // the OAM buffer ($0A00, 544 bytes) and CGRAM, in hex, for comparison with a capture's work RAM.
 // `--records` writes the one-player records after that frame as the original keeps them in
 // cartridge RAM (8 KiB, `$77:0000`), the words native does not keep left 0.
-// `--record-write` sets one record byte, at its cartridge RAM offset (hex, a done track
-// `$77:1075-10A6` or a medal `$77:069C-073B`), to BYTE (hex) after FRAME: a capture that wrote the
-// original's cartridge RAM during the run (FIFTH-WIN-COMPLETION, R-0065) replays the same write.
+// `--record-write` sets one record byte at its cartridge RAM offset (hex): a name
+// `$77:000C-016B`, done track `$77:1075-10A6` or medal `$77:069C-073B`.
+// Writes happen after FRAME, as in the bounded reference interventions (R-0065).
 #include "content_pack.hpp"
 #include "front_end.hpp"
 #include "presentation.hpp"
@@ -55,13 +55,15 @@ struct Options {
     std::vector<std::tuple<std::uint32_t, std::uint32_t, std::uint8_t>> record_writes;
 };
 
-// The record byte native keeps for a cartridge RAM offset: a done track or a medal.
+// The record byte native keeps for a cartridge RAM offset: a name, done track or medal.
 std::uint8_t& record_byte(unirally::OnePlayerRecords& records, std::uint32_t offset) {
+    if (offset >= 0x000c && offset < 0x000c + records.rider_names.size())
+        return records.rider_names[offset - 0x000c];
     if (offset >= 0x1075 && offset < 0x1075 + records.tracks_done.size())
         return records.tracks_done[offset - 0x1075];
     if (offset >= 0x069c && offset < 0x069c + records.medals.size())
         return records.medals[offset - 0x069c];
-    throw std::invalid_argument("--record-write: not a done track or a medal offset");
+    throw std::invalid_argument("--record-write: not a name, done track or medal offset");
 }
 
 // A whole unsigned number in the base, at most the limit; refuses a sign, trailing text or overflow.
@@ -164,6 +166,13 @@ void write_records(const std::filesystem::path& path, const unirally::OnePlayerR
         image[at] = static_cast<std::uint8_t>(value);
         image[at + 1] = static_cast<std::uint8_t>(value >> 8U);
     };
+    std::copy(records.rider_names.begin(), records.rider_names.end(), image.begin() + 0x000c);
+    std::uint16_t name_checksum = 0;
+    for (std::size_t at = 0; at < records.rider_names.size(); at += 2)
+        name_checksum = static_cast<std::uint16_t>(name_checksum
+            + records.rider_names[at]
+            + (static_cast<std::uint16_t>(records.rider_names[at + 1]) << 8U));
+    put_word(0x016c, name_checksum);
     for (std::size_t k = 0; k < records.tour_levels.size(); ++k)
         image[0x10d3 + k] = records.tour_levels[k];
     for (std::size_t k = 0; k < records.medals.size(); ++k) image[0x069c + k] = records.medals[k];
@@ -302,6 +311,7 @@ std::string start_race(RaceBetweenMenus& race, const unirally::ClassicContentPac
         race.state.demo_ai = race.state.demo.opponent_hints_active = true;
         if (split) race.state.opponent_tier.ai_level = 0;
         race.presentation = unirally::classic_race_presentation_content(pack, scenario);
+        race.presentation->rider_names = front_end.records.rider_names;
         race.initialization_frame = initialization ? initialization : front_end.frame - 1U;
         race.loading_initialization = front_end.frame - 1U;
         race.history = {};
@@ -318,7 +328,10 @@ std::string start_race(RaceBetweenMenus& race, const unirally::ClassicContentPac
     race.content = unirally::classic_race_content(pack, scenario.track);
     race.state = unirally::classic_race_start(*race.content, scenario);
     if (local) unirally::initialize_split_cameras(race.state);
-    if (local) race.presentation = unirally::classic_race_presentation_content(pack, scenario);
+    if (local) {
+        race.presentation = unirally::classic_race_presentation_content(pack, scenario);
+        race.presentation->rider_names = front_end.records.rider_names;
+    }
     race.history = {};
     race.loading_initialization = loading_frames ? front_end.frame - 1 + loading_frames : 0;
     // The race keeps its scenario's frame label, which its own clocks count from; the runner

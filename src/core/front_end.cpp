@@ -260,8 +260,14 @@ void check_title_code(FrontEndState& state, std::uint16_t pad) {
 // wiped to a cold start's records (`$83:FB41`, frames 403-405). Native's power-on has no records
 // of its own, so it always wipes; after a soft reset the signature is there. Then `$83:8B23`
 // clears the one-player flag `$77:10AD` and the pending reveal.
-void check_records(FrontEndState& state) {
-    if (!state.after_soft_reset) state.records = cold_start_records();
+void check_records(FrontEndState& state, const FrontEndContent& content) {
+    if (!state.after_soft_reset) {
+        state.records = cold_start_records();
+        if (content.rider_names.size() != state.records.rider_names.size())
+            throw std::invalid_argument("the original rider-name table has the wrong size");
+        std::copy(content.rider_names.begin(), content.rider_names.end(),
+                  state.records.rider_names.begin());
+    }
     state.one_player = false;
     state.records.pending_reveal = 0;
 }
@@ -300,7 +306,7 @@ void boot_frame(FrontEndState& state, const FrontEndContent& content, FrontEndPa
         lay_out_menu_objects(state);
     } else if (f == menu_map_filled_frame) {
         copy_oam(state); // $80:D372
-        check_records(state);
+        check_records(state, content);
     } else if (f == menu_map_copy_frame) {
         copy_menu_text(state, content);
     } else if (f == menu_palette_frame || f == menu_palette_again_frame) {

@@ -25,7 +25,7 @@ void print_continue(FrontEndState& state, const FrontEndContent& content) {
 void print_champions(FrontEndState& state, const FrontEndContent& content) {
     state.text.words.fill(cleared_text);
     TextVariables variables;
-    variables.rider_names = content.rider_names;
+    variables.rider_names = state.records.rider_names;
     variables.place_object = [&](unsigned object, unsigned position) {
         place_printed_object(state, object, position);
     };

@@ -54,7 +54,8 @@ void print_rider_menu(FrontEndState& state, const FrontEndContent& content) {
                 text_position, right_column ? right_name_column : left_name_column,
                 static_cast<std::uint8_t>(first_name_row + name_rows * row), end_of_text};
             print_text(state.text, state.printer, place, content.character_table);
-            const auto name = content.rider_names.subspan(rider * name_record, name_record);
+            const auto name = std::span<const std::uint8_t>(state.records.rider_names)
+                                  .subspan(rider * name_record, name_record);
             print_text(state.text, state.printer, name, content.character_table);
         }
     auto title = content.rider_menu_title;

@@ -97,7 +97,7 @@ void print_stunt(FrontEndState& state, const FrontEndContent& content,
         throw std::logic_error("the stunt result prints no such word");
     };
     variables.track_names = content.track_names;
-    variables.rider_names = content.rider_names;
+    variables.rider_names = state.records.rider_names;
     print_text(state.text, state.printer, stream, content.character_table, &variables);
 }
 

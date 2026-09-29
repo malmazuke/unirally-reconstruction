@@ -147,6 +147,9 @@ struct RiderMenu {
 // (`$83:936E`) and SOMEONE holding every record (`$83:93D8`). The result screen and the scoring
 // change them (R-0057).
 struct OnePlayerRecords {
+    // $77:000C-016B: 22 sixteen-byte name records. The first 16 can be edited in OPTIONS;
+    // the rest include non-player display names. The original keeps the whole table in SRAM.
+    std::array<std::uint8_t, 352> rider_names{};
     std::array<std::uint8_t, 16> tour_levels{}; // $77:10D3 + rider: 0-3, the tours open
     std::array<std::uint8_t, 160> medals{};     // $77:069C + 16 * tour + rider: 0, or 1-3
     std::array<std::uint8_t, 50> tracks_done{}; // $77:1075 + track: won in the current run

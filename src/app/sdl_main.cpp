@@ -489,6 +489,7 @@ int main(int argc, char **argv) try {
           }
           // The pairing's palettes and ink, whatever the track.
           race_presentation=unirally::classic_race_presentation_content(content.pack,scenario);
+          race_presentation.rider_names=front_end->rider_names();
           // NEON shows the colours the menus left (R-0068).
           if(scenario.neon_lighting) race_presentation.neon_menu_colours=front_end->race_leftover_colours();
           SDL_SetWindowTitle(window.get(),window_title(race_presentation.track_name).c_str());

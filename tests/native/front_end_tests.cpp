@@ -1407,7 +1407,9 @@ void soft_reset_tests(std::uint32_t delay) {
   storage.emplace_back(32, 0x11);
   content.assets[6] = storage.back();
   auto reset = hunter_completion(content, false);
+  reset.records.rider_names[0] = 'g'; // OPTIONS' edited SRAM name survives the code-route reset.
   const auto j = run_to_soft_reset(reset, content);
+  require(reset.records.rider_names[0] == 'g');
   require(reset.reset_upload_delay == 3);
   reset.reset_upload_delay = delay;
   auto power_on = unirally::start_front_end();
@@ -1439,7 +1441,7 @@ void soft_reset_tests(std::uint32_t delay) {
   }
   require(!reset.one_player && reset.screen == FrontEndScreen::main_menu &&
           reset.records.medals[8 * 16] == 3 &&
-          reset.records.pending_reveal == 0);
+          reset.records.pending_reveal == 0 && reset.records.rider_names[0] == 'g');
 }
 
 // The title code (`$80:F5C0`): Up, Left, Up, R and A on pad 1 during the

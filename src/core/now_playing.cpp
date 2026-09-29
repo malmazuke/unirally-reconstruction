@@ -62,7 +62,8 @@ std::uint8_t race_kind(const FrontEndState& state) {
 Text name_line(const FrontEndState& state, const FrontEndContent& content, std::uint8_t rider,
                std::uint8_t icon) {
     Text line{0xfc, 0x09};
-    const auto record = content.rider_names.subspan(rider * 16U, 16);
+    const auto record = std::span<const std::uint8_t>(state.records.rider_names)
+                            .subspan(rider * 16U, 16);
     std::size_t at = 0;
     while (at < record.size() && record[at] != end_of_text && record[at] != ' '
            && record[at] != blank)
