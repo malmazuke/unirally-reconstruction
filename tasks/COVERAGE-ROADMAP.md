@@ -123,7 +123,8 @@ In order; each becomes ready when the one before it is integrated, unless noted.
 6. [ATTRACT-DEMO](ATTRACT-DEMO.md): the next idle demo cycle and its return. SPLIT-SCREEN-RACE
    covers the first split ZOOM ZOO demo from power-on through its menu return; the next cycle
    reaches a one-player track 3 by frame 4399 (R-0069) and is outside that tested domain.
-7. TWO-PLAYER and VS modes.
+7. [TWO-PLAYER-VS](TWO-PLAYER-VS.md): both local two-rider modes from main-menu selection
+   through their measured race, result and return paths. Claimed after PR #44 merged.
 8. OPTIONS and LEAGUE.
 9. STUNT-EVENTS: the four stunt tracks' rules and scoring.
 10. AUDIO-DECISION, then audio tasks.

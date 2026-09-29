@@ -1,5 +1,14 @@
 # Next session
 
+**Status on 29 September 2026 UTC (TWO-PLAYER-VS claimed): continue
+[TWO-PLAYER-VS](TWO-PLAYER-VS.md) in `.worktrees/two-player-vs` from the
+ATTRACT-DEMO merge `5df56c6`.** PR #44 is merged and its ignored closeout confirms
+final-tip CI, local `main` synchronization and cleanup. The new task's first
+experiment is a fresh PAL capture of the 2P and VS selections through first race
+entry, beginning with the existing first-screen reconnaissance and the static
+listing's unknown `$80:BCBF` and `$80:BF49` entries. Its task record holds the
+scope, tier, usage boundary, branch and exact next step.
+
 **Status on 29 September 2026 UTC (ATTRACT-DEMO reviewed, merge pending): finish
 [PR #44](https://github.com/malmazuke/unirally-reconstruction/pull/44) from the claimed
 task branch `task/attract-demo` in `.worktrees/attract-demo`.** The second idle

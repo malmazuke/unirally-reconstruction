@@ -1,5 +1,11 @@
 # Project state
 
+Updated 29 September 2026 (TWO-PLAYER-VS claim): ATTRACT-DEMO merged in
+[PR #44](https://github.com/malmazuke/unirally-reconstruction/pull/44) at
+`5df56c6`; its ignored closeout verifies the final-tip checks and local/remote
+main equality. The next roadmap outcome, [TWO-PLAYER-VS](../tasks/TWO-PLAYER-VS.md),
+is claimed for fresh PAL capture of both mode paths before native implementation.
+
 Updated 29 September 2026 (ATTRACT-DEMO, review accepted): **the second idle demo
 cycle is native through its return, pending PR #44's merge and closeout.** It selects
 one-view track 3, rider 6 against rider 1. The normal path's 1,901 projected
