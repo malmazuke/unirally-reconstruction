@@ -370,6 +370,9 @@ void rename_keyboard_frame(FrontEndState& state, const FrontEndContent& content,
 }
 
 void rename_commit_frame(FrontEndState& state, const FrontEndContent& content) {
+    // The save path makes one final OAM upload after the arrow's frame update.
+    // The keyboard's preceding frame retained the older sprite position.
+    copy_oam(state);
     const auto first = static_cast<std::size_t>(state.rider_menu.rider) * 16U;
     std::copy_n(state.keyboard.scratch.begin(), 8,
                 state.records.rider_names.begin() + first);
