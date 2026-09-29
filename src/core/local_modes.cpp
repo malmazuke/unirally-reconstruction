@@ -11,8 +11,7 @@ namespace unirally::front_end_screens {
 namespace {
 
 constexpr std::uint8_t choices = 5, ranking_rows = 8;
-constexpr std::uint16_t continue_x = 0x0100, continue_first_y = 0x0580,
-                        continue_row_y = 0x0180;
+constexpr std::uint16_t continue_x = 0x0100, continue_first_y = 0x0580, continue_row_y = 0x0180;
 
 void print_continue(FrontEndState& state, const FrontEndContent& content) {
     state.text.words.fill(cleared_text);
@@ -30,8 +29,8 @@ void print_champions(FrontEndState& state, const FrontEndContent& content) {
     variables.place_object = [&](unsigned object, unsigned position) {
         place_printed_object(state, object, position);
     };
-    print_text(state.text, state.printer, content.vs_champions_header,
-               content.character_table, &variables);
+    print_text(state.text, state.printer, content.vs_champions_header, content.character_table,
+               &variables);
     std::array<std::uint8_t, 16> ranked{};
     for (unsigned rider = 0; rider < ranked.size(); ++rider)
         ranked[rider] = static_cast<std::uint8_t>(rider);
@@ -94,8 +93,7 @@ void local_continue_entry_frame(FrontEndState& state, const FrontEndContent& con
     }
 }
 
-void local_continue_frame(FrontEndState& state, const FrontEndContent& content,
-                          FrontEndPads pads) {
+void local_continue_frame(FrontEndState& state, const FrontEndContent& content, FrontEndPads pads) {
     copy_oam(state);
     step_decorations(state, content);
     const auto pad = pads.one;
@@ -108,8 +106,8 @@ void local_continue_frame(FrontEndState& state, const FrontEndContent& content,
         state.latches.down = true;
         if (state.menu.selection + 1 < choices) ++state.menu.selection;
     }
-    state.arrow.target_y = static_cast<std::uint16_t>(continue_first_y
-                                                    + state.menu.selection * continue_row_y);
+    state.arrow.target_y =
+        static_cast<std::uint16_t>(continue_first_y + state.menu.selection * continue_row_y);
     if (!(pad & choose_buttons)) return;
     switch (state.menu.selection) {
     case 0: // NEXT TRACK
@@ -155,8 +153,7 @@ void vs_champions_entry_frame(FrontEndState& state, const FrontEndContent& conte
     }
 }
 
-void vs_champions_frame(FrontEndState& state, const FrontEndContent& content,
-                        FrontEndPads pads) {
+void vs_champions_frame(FrontEndState& state, const FrontEndContent& content, FrontEndPads pads) {
     copy_oam(state);
     step_decorations(state, content);
     if (!(pads.one & choose_buttons)) {

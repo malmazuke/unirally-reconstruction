@@ -1,8 +1,8 @@
 // Race scenarios by track, the race start and a restart.
 
+#include "race_camera.hpp"
 #include "word_arithmetic.hpp"
 #include "zoom_zoo_movement.hpp"
-#include "race_camera.hpp"
 
 #include <algorithm>
 #include <array>
@@ -191,8 +191,8 @@ ClassicRaceScenario classic_race_scenario(ClassicRaceTrack track, RacePairing pa
 
 ClassicRaceScenario classic_local_race_scenario(ClassicRaceTrack track, RacePairing pairing,
                                                 bool tutorial_hints) {
-    if (pairing.rider >= rider_characters || pairing.opponent >= rider_characters ||
-        pairing.rider == pairing.opponent)
+    if (pairing.rider >= rider_characters || pairing.opponent >= rider_characters
+        || pairing.rider == pairing.opponent)
         throw std::invalid_argument("local race requires two distinct human riders");
     auto scenario = classic_race_scenario(track);
     scenario.pairing = pairing;
@@ -331,9 +331,9 @@ void restart_zoom_zoo(ZoomZooState& state, const ZoomZooContent& content) {
     // The race's setup reads the same medal again ($80:99ED): the qualifying score stays.
     const auto qualifying_score = state.stunt.qualifying_score;
     auto scenario = state.split_screen && !state.demo_ai
-                        ? classic_local_race_scenario(state.track, state.pairing, hints)
-                        : state.demo_ai ? classic_race_scenario(state.track)
-                                        : classic_race_scenario(state.track, state.pairing, hints);
+                      ? classic_local_race_scenario(state.track, state.pairing, hints)
+                  : state.demo_ai ? classic_race_scenario(state.track)
+                                  : classic_race_scenario(state.track, state.pairing, hints);
     if (state.demo_ai) {
         scenario.pairing = state.pairing;
         scenario.tutorial_hints = hints;

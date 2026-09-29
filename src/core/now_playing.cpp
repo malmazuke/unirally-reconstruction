@@ -155,8 +155,8 @@ void print_now_playing(FrontEndState& state, const FrontEndContent& content) {
         print(count);
     }
     print(stream_at(content, versus_at));
-    now.opponent = state.mode == FrontEndMode::one_player ? opponent_for(state)
-                                                          : state.second_rider;
+    now.opponent =
+        state.mode == FrontEndMode::one_player ? opponent_for(state) : state.second_rider;
     if (race_kind(state) == stunt_event) {
         // The qualifying score in place of the opponent (`$83:9EEB`: by tour and best medal).
         const auto best = state.records.medals[state.tour_menu.tour * 16U + state.rider_menu.rider];

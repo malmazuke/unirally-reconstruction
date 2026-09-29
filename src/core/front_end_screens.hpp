@@ -213,8 +213,7 @@ void race_result_exit_frame(FrontEndState& state, const FrontEndContent& content
 void start_result_screen(FrontEndState& state, const FrontEndContent& content);
 // $80:C24C and `$80:C206` after a one-run or stunt result: both pads released, then a press seen
 // on two frames running, which leaves the result.
-void wait_for_result_press(FrontEndState& state, const FrontEndContent& content,
-                           FrontEndPads pads);
+void wait_for_result_press(FrontEndState& state, const FrontEndContent& content, FrontEndPads pads);
 
 // stunt_result.cpp: a stunt event's result (R-0067), from its first frame to the press.
 void stunt_result_frame(FrontEndState& state, const FrontEndContent& content, FrontEndPads pads);

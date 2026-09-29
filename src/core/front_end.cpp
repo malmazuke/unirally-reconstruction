@@ -346,8 +346,8 @@ void run_main_menu(FrontEndState& state, const FrontEndContent& content, FrontEn
     };
     if (pressed(choose_buttons)) {
         const auto mode = static_cast<FrontEndMode>(menu.selection);
-        if (mode == FrontEndMode::one_player || mode == FrontEndMode::two_player ||
-            mode == FrontEndMode::versus) {
+        if (mode == FrontEndMode::one_player || mode == FrontEndMode::two_player
+            || mode == FrontEndMode::versus) {
             state.mode = mode;
             enter_rider_menu(state);
             return;
@@ -642,7 +642,8 @@ void reload_menu_text_tiles(FrontEndState& state, const FrontEndContent& content
 
 void start_main_menu(FrontEndState& state) {
     state.screen = FrontEndScreen::main_menu;
-    state.one_player = false; // $80:AD18
+    state.one_player = false;        // $80:AD18
+    state.local_result_seen = false; // A fresh local run uses its first-race loading timing.
     state.menu.selection = 0;
     state.menu.idle = first_idle;
     state.latches = {};

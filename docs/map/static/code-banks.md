@@ -45,7 +45,7 @@ The four classes partition all 131,072 bytes. **Unknown share: 40.4%** - above D
 
 ## Cited addresses
 
-1413 distinct code-bank ROM addresses cited by the research, task, inventory and content records (`labels.json`). By position: dat 25, loc 843, mid 18, sub 306, unk 221 (sub routine start, loc instruction start, mid inside an instruction, dat data, unk unknown). By class: data 25, inferred 241, observed 926, unknown 221.
+1423 distinct code-bank ROM addresses cited by the research, task, inventory and content records (`labels.json`). By position: dat 25, loc 843, mid 18, sub 306, unk 231 (sub routine start, loc instruction start, mid inside an instruction, dat data, unk unknown). By class: data 25, inferred 241, observed 926, unknown 231.
 
 Cited addresses in `unknown` bytes:
 
@@ -94,17 +94,25 @@ Cited addresses in `unknown` bytes:
 | $80:A8D4 | docs/research/R-0054-boot-title-main-menu.md |
 | $80:A9FA | docs/research/R-0054-boot-title-main-menu.md |
 | $80:AD1F | docs/research/R-0054-boot-title-main-menu.md, tasks/FRONT-END-MAIN-MENU.md |
+| $80:ADE3 | docs/research/R-0071-two-player-versus.md |
+| $80:AE3F | docs/research/R-0071-two-player-versus.md |
 | $80:B205 | docs/research/R-0056-tour-track-now-playing.md |
 | $80:B4F6 | docs/research/R-0056-tour-track-now-playing.md |
 | $80:B53D | docs/research/R-0056-tour-track-now-playing.md |
 | $80:B626 | tasks/COVERAGE-ROADMAP.md |
 | $80:BCAF | docs/research/R-0055-rider-menu.md |
-| $80:BCBF | tasks/COVERAGE-ROADMAP.md |
+| $80:BCBF | docs/research/R-0071-two-player-versus.md, tasks/COVERAGE-ROADMAP.md, tasks/NEXT_SESSION.md, tasks/TWO-PLAYER-VS.md |
+| $80:BCFB | docs/research/R-0071-two-player-versus.md |
+| $80:BD02 | docs/research/R-0071-two-player-versus.md |
 | $80:BD1F | docs/research/R-0057-one-run-result.md |
 | $80:BDD4 | tasks/COVERAGE-ROADMAP.md |
 | $80:BE3F | docs/research/R-0057-one-run-result.md |
-| $80:BF49 | tasks/COVERAGE-ROADMAP.md |
+| $80:BF49 | docs/research/R-0071-two-player-versus.md, tasks/COVERAGE-ROADMAP.md, tasks/NEXT_SESSION.md, tasks/TWO-PLAYER-VS.md |
+| $80:BF85 | docs/research/R-0071-two-player-versus.md |
+| $80:BF8A | docs/research/R-0071-two-player-versus.md |
+| $80:BF94 | docs/research/R-0071-two-player-versus.md |
 | $80:BF9F | docs/research/R-0057-one-run-result.md |
+| $80:C10E | docs/research/R-0071-two-player-versus.md |
 | $80:C3DC | docs/research/R-0053-result-title-printer.md |
 | $80:C456 | docs/research/R-0056-tour-track-now-playing.md |
 | $80:C474 | docs/research/R-0067-stunt-result.md |
@@ -141,6 +149,7 @@ Cited addresses in `unknown` bytes:
 | $80:CF91 | docs/research/R-0057-one-run-result.md |
 | $80:D17B | docs/research/R-0057-one-run-result.md |
 | $80:D187 | docs/research/R-0053-result-title-printer.md, docs/research/R-0057-one-run-result.md, tasks/RESULT-TITLE-GLYPHS.md |
+| $80:D1DB | tasks/TWO-PLAYER-VS.md |
 | $80:D37B | docs/research/R-0055-rider-menu.md |
 | $80:D383 | docs/research/R-0054-boot-title-main-menu.md |
 | $80:E37B | docs/research/R-0064-hunter-ending-and-soft-reset.md |
@@ -196,6 +205,7 @@ Cited addresses in `unknown` bytes:
 | $80:F7CB | docs/research/R-0067-stunt-result.md |
 | $80:F7E7 | docs/research/R-0067-stunt-result.md |
 | $80:F7FB | docs/research/R-0067-stunt-result.md |
+| $80:F9EE | docs/research/R-0071-two-player-versus.md |
 | $80:FACD | docs/research/R-0054-boot-title-main-menu.md |
 | $80:FBC5 | docs/research/R-0054-boot-title-main-menu.md |
 | $80:FC5C | docs/research/R-0056-tour-track-now-playing.md |

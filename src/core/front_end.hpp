@@ -41,8 +41,8 @@ struct FrontEndContent {
     // The one-run result screen (profile v18): its text (`$80:D187`) and icons (`$80:D17B`).
     std::span<const std::uint8_t> result_text, result_icons;
     std::span<const std::uint8_t> result_fifth_row; // $80:D1DB, human opponent (R-0071)
-    std::span<const std::uint8_t> local_continue_text, vs_champions_header,
-        vs_champions_row, pick_challenger_title;
+    std::span<const std::uint8_t> local_continue_text, vs_champions_header, vs_champions_row,
+        pick_challenger_title;
     // The lap result (profile v19): the headings and graph, the record line, the two rows.
     std::span<const std::uint8_t> lap_result_text, lap_result_record, lap_result_player,
         lap_result_opponent;
@@ -462,8 +462,7 @@ RaceTimes race_times(const ZoomZooState& race);
 // NOW PLAYING) during the countdown, 0xEA61 (a quit) after it.
 std::optional<RaceTimes> update_race_for_menus(ZoomZooState& race, const ControllerButtons& buttons,
                                                const ZoomZooContent& content);
-std::optional<RaceTimes> update_race_for_menus(ZoomZooState& race,
-                                               const ControllerButtons& first,
+std::optional<RaceTimes> update_race_for_menus(ZoomZooState& race, const ControllerButtons& first,
                                                const ControllerButtons& second,
                                                const ZoomZooContent& content);
 

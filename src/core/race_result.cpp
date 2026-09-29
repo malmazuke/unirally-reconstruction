@@ -214,8 +214,8 @@ void print_result(FrontEndState& state, const FrontEndContent& content) {
     variables.time_words = content.time_words;
     print_text(state.text, state.printer, content.result_text, content.character_table, &variables);
     if (state.now_playing.opponent < someone)
-        print_text(state.text, state.printer, content.result_fifth_row,
-                   content.character_table, &variables);
+        print_text(state.text, state.printer, content.result_fifth_row, content.character_table,
+                   &variables);
     // A computer opponent has no row: its 2P mark goes (`$80:D0FE`).
     high_bits(state, 108) = four_hidden;
     if (state.now_playing.opponent >= someone)
@@ -417,11 +417,10 @@ void score_race(FrontEndState& state, const FrontEndContent& content, FrontEndPa
     constexpr unsigned track_bits = 0x3f; // $83:9EC8
     records.tracks_done[track & track_bits] = 1;
     const auto first = track / tracks_per_tour * tracks_per_tour;
-    const auto done = std::accumulate(records.tracks_done.begin() + first,
-                                      records.tracks_done.begin() + first + tracks_per_tour,
-                                      std::uint8_t{0}, [](std::uint8_t sum, std::uint8_t flag) {
-                                          return static_cast<std::uint8_t>(sum + flag);
-                                      });
+    const auto done = std::accumulate(
+        records.tracks_done.begin() + first, records.tracks_done.begin() + first + tracks_per_tour,
+        std::uint8_t{0},
+        [](std::uint8_t sum, std::uint8_t flag) { return static_cast<std::uint8_t>(sum + flag); });
     if (done >= tracks_per_tour) complete_tour(state);
 }
 
@@ -607,8 +606,10 @@ void race_result_exit_frame(FrontEndState& state, const FrontEndContent& content
     copy_oam(state);
     if (state.mode != FrontEndMode::one_player) {
         if (frame == scoring) {
-            if (state.mode == FrontEndMode::versus) enter_vs_champions(state);
-            else enter_local_continue(state);
+            if (state.mode == FrontEndMode::versus)
+                enter_vs_champions(state);
+            else
+                enter_local_continue(state);
         }
         return;
     }
@@ -702,8 +703,7 @@ std::optional<RaceTimes> update_race_for_menus(ZoomZooState& race, const Control
     return update_race_for_menus(race, buttons, {}, content);
 }
 
-std::optional<RaceTimes> update_race_for_menus(ZoomZooState& race,
-                                               const ControllerButtons& first,
+std::optional<RaceTimes> update_race_for_menus(ZoomZooState& race, const ControllerButtons& first,
                                                const ControllerButtons& second,
                                                const ZoomZooContent& content) {
     constexpr std::uint16_t quit = 0xea61, restart = 0xea62;

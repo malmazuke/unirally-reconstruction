@@ -67,8 +67,7 @@ void print_rider_menu(FrontEndState& state, const FrontEndContent& content) {
         title = content.versus_first_title;
     print_text(state.text, state.printer, title, content.character_table);
     if (state.mode == FrontEndMode::versus && state.rider_menu.second)
-        print_text(state.text, state.printer, content.versus_second_title,
-                   content.character_table);
+        print_text(state.text, state.printer, content.versus_second_title, content.character_table);
 }
 
 } // namespace
@@ -315,8 +314,8 @@ void rider_menu_frame(FrontEndState& state, const FrontEndContent& content, Fron
         choose_next_picture(state.rider_menu);
         return;
     }
-    if (state.rider_menu.second && !state.rider_menu.back &&
-        state.menu.selection == state.rider_menu.rider) {
+    if (state.rider_menu.second && !state.rider_menu.back
+        && state.menu.selection == state.rider_menu.rider) {
         choose_next_picture(state.rider_menu);
         return;
     }
@@ -355,8 +354,10 @@ void rider_menu_exit_frame(FrontEndState& state, const FrontEndContent& content)
     state.registers.obsel = 0x63;
     if (state.rider_menu.challenger) {
         state.rider_menu.challenger = false;
-        if (back) enter_vs_champions(state);
-        else enter_local_continue(state);
+        if (back)
+            enter_vs_champions(state);
+        else
+            enter_local_continue(state);
         return;
     }
     if (!back && state.mode != FrontEndMode::one_player && !state.rider_menu.second) {
