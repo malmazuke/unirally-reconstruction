@@ -4,11 +4,10 @@ This is the M0 implementation specification. Commands marked implemented in the 
 
 ## Validation by stage
 
-For TWO-PLAYER-VS (R-0071), the current supported Classic pack profile is
-`classic.pal.crawler.tracks.v27` with 442 exact PAL entries. Its nine additions
-hold the 2P/VS rider titles, the fifth result row, the five-choice continuation,
-VS champions and PICK CHALLENGER. Extract with
-`python3 tools/project.py content pack --rules tests/manifests/content/classic-crawler-tracks-pack.json --out local/classic-pal-crawler-tracks-v27.pack`.
+For OPTIONS (R-0072), the current supported Classic pack profile is
+`classic.pal.crawler.tracks.v28` with 446 exact PAL entries. Its four additions
+hold the OPTIONS and RECORDS text streams and arrow columns. Extract with
+`python3 tools/project.py content pack --rules tests/manifests/content/classic-crawler-tracks-pack.json --out local/classic-pal-crawler-tracks-v28.pack`.
 The native `front_end_runner --content-pack PACK --frames N --inputs FILE`
 accepts both SNES pad words in each `frame pad1 pad2` row, and `--picture FRAME OUT.ppm`
 retains a comparison frame. Split DRAGSTER native save states use

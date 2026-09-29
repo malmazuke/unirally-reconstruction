@@ -43,6 +43,9 @@ struct FrontEndContent {
     std::span<const std::uint8_t> result_fifth_row; // $80:D1DB, human opponent (R-0071)
     std::span<const std::uint8_t> local_continue_text, vs_champions_header, vs_champions_row,
         pick_challenger_title;
+    // OPTIONS and RECORDS' five original text streams and per-row arrow columns (R-0072).
+    std::span<const std::uint8_t> options_menu_text, options_arrow_columns;
+    std::span<const std::uint8_t> records_menu_text, records_arrow_columns;
     // The lap result (profile v19): the headings and graph, the record line, the two rows.
     std::span<const std::uint8_t> lap_result_text, lap_result_record, lap_result_player,
         lap_result_opponent;
@@ -356,6 +359,11 @@ enum class FrontEndScreen : std::uint8_t {
     local_continue,
     vs_champions_entry, // the VS ranking after a result
     vs_champions,
+    options_entry,       // $80:B626, five OPTIONS choices sliding in
+    options_menu,
+    options_return,      // $80:D566 back from RECORDS to OPTIONS
+    records_entry,       // $80:D525, five RECORDS categories sliding in
+    records_menu,
 };
 
 // What `$83:9894` saves before a race (work RAM `$0000-$019D`) and `$83:987D` puts back after

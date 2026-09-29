@@ -748,6 +748,17 @@ const std::array<RequiredEntry, 9> two_rider_titles_required{{
     {"front-end.pick-challenger-title", 18,
      "78eeb86bb284a6eff931df88c7c53ead732489400ee84879f06cc67916c9923d"},
 }};
+// OPTIONS (profile v28): the five choices in each menu and their arrow columns (R-0072).
+const std::array<RequiredEntry, 4> options_required{{
+    {"front-end.options-menu-text", 74,
+     "80b0f85f99788398d43622701b4f08676cf6d6044b119bcf604e1fc5d641876a"},
+    {"front-end.options-arrow-columns", 5,
+     "a900e07cde00abfdb0f18e8b87f75260277dee5307734462de42377428009af6"},
+    {"front-end.records-menu-text", 78,
+     "83aab26a83e7f9c8559b01838bbe2cbc4d819297d9a8cdf88ad3a8c36881e5d1"},
+    {"front-end.records-arrow-columns", 5,
+     "ec28a29892e7fb8af7042606ec53b550cbdd62e5c04241fdadfd1c06ccc0ebd1"},
+}};
 // LOCKED-TOURS (profile v12): the race tracks of the five tours a cold start does not
 // list, and sceneries 1, 8 and 12. Generated from the rules file (tracks.py v12_new_entries).
 const std::array<RequiredEntry, 89> locked_tracks_required{{
@@ -908,7 +919,7 @@ const std::array<RequiredEntry, 89> locked_tracks_required{{
     {"scenery.12.palette", 352, "b2a9aefe13c1dc68454cf0a5c2bedb086c6e162dbea1df1f2ef108347d89ab63"},
 }};
 constexpr std::string_view two_track_rules_sha =
-    "9c35a089e4f1b33fbb7dd2073845fa4c625bf25c455206fd5fba4b9f0f9e90ee";
+    "67f180ff4a9c8a2d158026eb8a76a4fa36ac0ba341470d443873fca1f349400e";
 
 std::array<std::uint8_t, 32> hex_digest(std::string_view text) {
     if (text.size() != 64) throw std::logic_error("invalid compiled Classic SHA-256");
@@ -998,7 +1009,7 @@ std::array<std::uint8_t, 32> sha256(std::span<const std::uint8_t> source) {
 
 namespace {
 constexpr std::array<std::string_view, 2> supported_profiles{"classic.pal.crawler.dragster.v1",
-                                                             "classic.pal.crawler.tracks.v27"};
+                                                             "classic.pal.crawler.tracks.v28"};
 } // namespace
 
 std::span<const std::string_view> supported_pack_profiles() {
@@ -1069,7 +1080,8 @@ std::vector<RequiredEntry> required_entries(bool tracks) {
                              std::span<const RequiredEntry>(stunt_tracks_required),
                              std::span<const RequiredEntry>(stunt_result_required),
                              std::span<const RequiredEntry>(neon_required),
-                             std::span<const RequiredEntry>(two_rider_titles_required)})
+                             std::span<const RequiredEntry>(two_rider_titles_required),
+                             std::span<const RequiredEntry>(options_required)})
         out.insert(out.end(), table.begin(), table.end());
     return out;
 }

@@ -352,6 +352,10 @@ void run_main_menu(FrontEndState& state, const FrontEndContent& content, FrontEn
             enter_rider_menu(state);
             return;
         }
+        if (mode == FrontEndMode::options) {
+            enter_options_menu(state, content);
+            return;
+        }
         state.mode_chosen = true;
         state.mode = mode;
         return;
@@ -713,6 +717,10 @@ FrontEndContent front_end_content(const ClassicContentPack& pack) {
     content.vs_champions_header = pack.entry("front-end.vs-champions-header");
     content.vs_champions_row = pack.entry("front-end.vs-champions-row");
     content.pick_challenger_title = pack.entry("front-end.pick-challenger-title");
+    content.options_menu_text = pack.entry("front-end.options-menu-text");
+    content.options_arrow_columns = pack.entry("front-end.options-arrow-columns");
+    content.records_menu_text = pack.entry("front-end.records-menu-text");
+    content.records_arrow_columns = pack.entry("front-end.records-arrow-columns");
     content.result_icons = pack.entry("front-end.result-icons");
     content.lap_result_text = pack.entry("front-end.lap-result-text");
     content.lap_result_record = pack.entry("front-end.lap-result-record");
@@ -945,6 +953,11 @@ void update_front_end(FrontEndState& state, const FrontEndContent& content, Fron
     case FrontEndScreen::local_continue: local_continue_frame(state, content, physical); break;
     case FrontEndScreen::vs_champions_entry: vs_champions_entry_frame(state, content); break;
     case FrontEndScreen::vs_champions: vs_champions_frame(state, content, physical); break;
+    case FrontEndScreen::options_entry: options_entry_frame(state, content); break;
+    case FrontEndScreen::options_return: options_return_frame(state, content); break;
+    case FrontEndScreen::options_menu: options_menu_frame(state, content, physical); break;
+    case FrontEndScreen::records_entry: records_entry_frame(state, content); break;
+    case FrontEndScreen::records_menu: records_menu_frame(state, content, physical); break;
     }
     if (state.screen != screen) state.script_frame = 0;
     ++state.frame;

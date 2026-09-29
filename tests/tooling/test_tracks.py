@@ -23,11 +23,12 @@ STUNT_RESULT_ENTRIES = len(front_end_rules.STUNT_RESULT_ASSETS) + len(front_end_
 # Profile v26 appends NEON's scenery (three entries) and its green levels after v25's.
 NEON_ENTRIES = 4
 LOCAL_MODE_ENTRIES = len(front_end_rules.LOCAL_MODE_TABLES)
+OPTIONS_ENTRIES = len(front_end_rules.OPTIONS_TABLES)
 
 
 def legacy_entries(rules: dict) -> list[dict]:
     """The v10-v26 inventory, excluding v27 entries added after NEON."""
-    return rules["entries"][:-LOCAL_MODE_ENTRIES]
+    return rules["entries"][:-(LOCAL_MODE_ENTRIES + OPTIONS_ENTRIES)]
 
 
 class LocalModeEntryTests(unittest.TestCase):
@@ -37,11 +38,28 @@ class LocalModeEntryTests(unittest.TestCase):
         import re
         rules = json.loads((ROOT / "tests" / "manifests" / "content" /
                             "classic-crawler-tracks-pack.json").read_text(encoding="utf-8"))
-        added = rules["entries"][-LOCAL_MODE_ENTRIES:]
+        added = rules["entries"][-(LOCAL_MODE_ENTRIES + OPTIONS_ENTRIES):-OPTIONS_ENTRIES]
         self.assertEqual([e["id"] for e in added],
                          [name for name, _, _ in front_end_rules.LOCAL_MODE_TABLES])
         source = (ROOT / "src" / "core" / "content_pack.cpp").read_text(encoding="utf-8")
         table = source[source.index("two_rider_titles_required{{"):]
+        table = table[:table.index("}};")]
+        compiled = re.findall(r'\{"([^"]+)",\s*(\d+),\s*"([0-9a-f]{64})"\}', table)
+        self.assertEqual(compiled, [(e["id"], str(e["size"]), e["sha256"]) for e in added])
+
+
+class OptionsEntryTests(unittest.TestCase):
+    """OPTIONS and RECORDS' four tables are pinned in the v28 inventory."""
+
+    def test_rules_and_compiled_table_agree(self) -> None:
+        import re
+        rules = json.loads((ROOT / "tests" / "manifests" / "content" /
+                            "classic-crawler-tracks-pack.json").read_text(encoding="utf-8"))
+        added = rules["entries"][-OPTIONS_ENTRIES:]
+        self.assertEqual([e["id"] for e in added],
+                         [name for name, _, _ in front_end_rules.OPTIONS_TABLES])
+        source = (ROOT / "src" / "core" / "content_pack.cpp").read_text(encoding="utf-8")
+        table = source[source.index("options_required{{"):]
         table = table[:table.index("}};")]
         compiled = re.findall(r'\{"([^"]+)",\s*(\d+),\s*"([0-9a-f]{64})"\}', table)
         self.assertEqual(compiled, [(e["id"], str(e["size"]), e["sha256"]) for e in added])
@@ -127,7 +145,7 @@ class PackProfileTests(unittest.TestCase):
             compiled += [(i, int(n), d) for i, n, d in re.findall(r'\{"([^"]+)",\s*(\d+),\s*"([0-9a-f]{64})"\}', table)]
         self.assertEqual(compiled, [(e["id"], e["size"], e["sha256"]) for e in added])
         self.assertIn(hashlib.sha256(rules_path.read_bytes()).hexdigest(), source)
-        self.assertEqual(rules["profile_id"], "classic.pal.crawler.tracks.v27")
+        self.assertEqual(rules["profile_id"], "classic.pal.crawler.tracks.v28")
         ids = {e["id"] for e in added}
         for index in tracks.NEW_RACE_TRACKS + tracks.LOCKED_RACE_TRACKS + tracks.STUNT_TRACKS:
             for part in ("data", "tile-columns", "tile-flags", "bg1-tiles"):

@@ -310,3 +310,18 @@ LOCAL_MODE_TABLES = (
 def v27_new_entries(rom: bytes) -> list[dict[str, Any]]:
     """Local rider titles, result row, continuation choices and VS table streams."""
     return [table_entry(rom, *table) for table in LOCAL_MODE_TABLES]
+
+
+# OPTIONS and RECORDS menu streams and arrow-column tables ($80:B66E/B6CA,
+# $80:D53D/D5E1). The streams include all five FF-terminated choices.
+OPTIONS_TABLES = (
+    ("front-end.options-menu-text", 0x80B678, 74),
+    ("front-end.options-arrow-columns", 0x80B6CA, 5),
+    ("front-end.records-menu-text", 0x80D593, 78),
+    ("front-end.records-arrow-columns", 0x80D5E1, 5),
+)
+
+
+def v28_new_entries(rom: bytes) -> list[dict[str, Any]]:
+    """The OPTIONS and RECORDS menu content (R-0072)."""
+    return [table_entry(rom, *table) for table in OPTIONS_TABLES]

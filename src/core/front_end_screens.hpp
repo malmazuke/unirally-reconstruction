@@ -171,6 +171,15 @@ void enter_vs_champions(FrontEndState& state);
 void vs_champions_entry_frame(FrontEndState& state, const FrontEndContent& content);
 void vs_champions_frame(FrontEndState& state, const FrontEndContent& content, FrontEndPads pads);
 
+// options_menu.cpp: OPTIONS and RECORDS' five-choice screens (R-0072).
+void enter_options_menu(FrontEndState& state, const FrontEndContent& content);
+void options_entry_frame(FrontEndState& state, const FrontEndContent& content);
+void options_return_frame(FrontEndState& state, const FrontEndContent& content);
+void options_menu_frame(FrontEndState& state, const FrontEndContent& content, FrontEndPads pads);
+void enter_records_menu(FrontEndState& state, const FrontEndContent& content);
+void records_entry_frame(FrontEndState& state, const FrontEndContent& content);
+void records_menu_frame(FrontEndState& state, const FrontEndContent& content, FrontEndPads pads);
+
 // tour_menu.cpp: PICK TOUR after a rider is chosen (`$80:BBF7-BC0B`) or back from PICK TRACK
 // (`$80:BC03`), a frame of its set-up and of its loop.
 void enter_tour_menu(FrontEndState& state);
