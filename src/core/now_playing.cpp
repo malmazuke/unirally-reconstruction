@@ -148,8 +148,15 @@ void print_now_playing(FrontEndState& state, const FrontEndContent& content) {
     draw_tour_picture(state, content, state.tour_menu.tour,
                       word_at(content.now_playing_text, picture_place_at) / 2U);
     print_line(name_line(state, content, state.rider_menu.rider, 0), rider_row);
+    if (state.mode != FrontEndMode::one_player) {
+        const auto wins = state.records.statistics[state.rider_menu.rider][1];
+        const std::array<std::uint8_t, 5> count{0xfe, 29, rider_row,
+                                                static_cast<std::uint8_t>('0' + wins % 10), 0xff};
+        print(count);
+    }
     print(stream_at(content, versus_at));
-    now.opponent = opponent_for(state);
+    now.opponent = state.mode == FrontEndMode::one_player ? opponent_for(state)
+                                                          : state.second_rider;
     if (race_kind(state) == stunt_event) {
         // The qualifying score in place of the opponent (`$83:9EEB`: by tour and best medal).
         const auto best = state.records.medals[state.tour_menu.tour * 16U + state.rider_menu.rider];
@@ -158,8 +165,15 @@ void print_now_playing(FrontEndState& state, const FrontEndContent& content) {
             word_at(content.qualifying_scores, (state.tour_menu.tour * 3U + level) * 2);
         print(stream_at(content, qualifying_at));
     } else {
-        if (state.tour_menu.tour >= hunter) now.opponent = anti_uni;
+        if (state.mode == FrontEndMode::one_player && state.tour_menu.tour >= hunter)
+            now.opponent = anti_uni;
         print_line(name_line(state, content, now.opponent, 1), opponent_row);
+        if (state.mode != FrontEndMode::one_player) {
+            const auto wins = state.records.statistics[now.opponent][1];
+            const std::array<std::uint8_t, 5> count{
+                0xfe, 29, opponent_row, static_cast<std::uint8_t>('0' + wins % 10), 0xff};
+            print(count);
+        }
     }
     // The record line: "record:" (or "hi score:"), then the holder's line without its "FC 09".
     now.record_holder = state.records.record_holders[0][track_of(state)];
@@ -296,7 +310,6 @@ void race_fade_frame(FrontEndState& state) {
     if (state.script_frame < fade_frames) return;
     state.registers.force_blank = true;
     state.mode_chosen = true;
-    state.mode = FrontEndMode::one_player;
     // $83:9894 (`$80:9A27`): the menus' words saved for the race's return.
     state.saved = {state.menu,        state.cycle,       state.logo.offset, state.slide,
                    state.decorations, state.latches,     state.rider_menu,  state.tour_menu,

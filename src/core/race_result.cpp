@@ -137,7 +137,20 @@ void print_rows(FrontEndState& state, const FrontEndContent& content,
         std::uint8_t rider{};
         switch (row.kind) {
         case RowKind::blank: continue;
-        case RowKind::opponent: continue; // a human opponent's row is 2P's (not recovered)
+        case RowKind::opponent: {
+            rider = state.second_rider;
+            auto& best = personal_best(records, rider, track);
+            if (row.time < best) {
+                best = row.time;
+                high_bits(state, 96) &= 0xbb; // entries 97 and 99's size bits
+            }
+            const auto y = static_cast<std::uint8_t>(first_row_line + row_lines * printed);
+            for (const unsigned entry : {97U, 99U, 101U, 103U}) oam_byte(state, entry, 1) = y;
+            for (const unsigned entry : {101U, 103U})
+                oam_byte(state, entry, 3) =
+                    static_cast<std::uint8_t>(player_mark_attributes | (printed * 2));
+            break;
+        }
         case RowKind::player: {
             rider = state.rider_menu.rider;
             auto& best = personal_best(records, rider, track);
@@ -165,11 +178,8 @@ void print_rows(FrontEndState& state, const FrontEndContent& content,
     }
 }
 
-// $80:951C-9555 and $80:CE90-CF4E, on the result's first frame. In one-player play the opponent
-// is a computer's (0x11 on); a rider opponent's row and 2P mark (`$80:D007`) are not recovered.
+// $80:951C-9555 and $80:CE90-CF4E, on the result's first frame.
 void start_result(FrontEndState& state, const FrontEndContent& content) {
-    if (state.now_playing.opponent < someone)
-        throw std::logic_error("a rider opponent's result row ($80:D007) is not recovered");
     start_result_screen(state, content);
     if (state.race_result.times.lap_race) {
         build_lap_result(state, content); // $80:8D6E
@@ -203,9 +213,13 @@ void print_result(FrontEndState& state, const FrontEndContent& content) {
     variables.rider_names = content.rider_names;
     variables.time_words = content.time_words;
     print_text(state.text, state.printer, content.result_text, content.character_table, &variables);
-    // A computer opponent has no row: the 2P mark and entries 108-111 go (`$80:D0FE`).
+    if (state.now_playing.opponent < someone)
+        print_text(state.text, state.printer, content.result_fifth_row,
+                   content.character_table, &variables);
+    // A computer opponent has no row: its 2P mark goes (`$80:D0FE`).
     high_bits(state, 108) = four_hidden;
-    for (const unsigned entry : {101U, 103U}) oam_byte(state, entry, 1) = off_screen_line;
+    if (state.now_playing.opponent >= someone)
+        for (const unsigned entry : {101U, 103U}) oam_byte(state, entry, 1) = off_screen_line;
     high_bits(state, 100) = four_shown;
 }
 
@@ -585,11 +599,18 @@ void race_result_exit_frame(FrontEndState& state, const FrontEndContent& content
         load_cgram(state, asset(content, menu_text_palette), 0xd0);
         state.registers.obsel = 0x63;
         update_records(state);
-        state.records.tries = 3;
+        if (state.mode == FrontEndMode::one_player) state.records.tries = 3;
         return;
     }
     if (frame < scoring) return; // `$80:C786`'s overrun: no wait, no OAM copy
     copy_oam(state);
+    if (state.mode != FrontEndMode::one_player) {
+        if (frame == scoring) {
+            if (state.mode == FrontEndMode::versus) enter_vs_champions(state);
+            else enter_local_continue(state);
+        }
+        return;
+    }
     if (frame == scoring) { // $83:879A after `$83:A923`'s wait: `$80:D1E8` (the pads), the scoring
         score_race(state, content, pads);
         return;
@@ -666,9 +687,16 @@ RaceTimes race_times(const ZoomZooState& race) {
 
 std::optional<RaceTimes> update_race_for_menus(ZoomZooState& race, const ControllerButtons& buttons,
                                                const ZoomZooContent& content) {
+    return update_race_for_menus(race, buttons, {}, content);
+}
+
+std::optional<RaceTimes> update_race_for_menus(ZoomZooState& race,
+                                               const ControllerButtons& first,
+                                               const ControllerButtons& second,
+                                               const ZoomZooContent& content) {
     constexpr std::uint16_t quit = 0xea61, restart = 0xea62;
     auto next = race;
-    update_zoom_zoo(next, buttons, content);
+    update_zoom_zoo(next, first, second, content);
     // `restart_zoom_zoo` from the pause menu: a paused race whose count of paused updates, which
     // only a restart clears, is back to 0.
     if (race.pause.suspended_updates != 0 && next.pause.suspended_updates == 0) {

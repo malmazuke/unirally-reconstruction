@@ -212,6 +212,10 @@ ClassicRaceScenario classic_race_scenario(ClassicRaceTrack track);
 // other than ANTI-UNI).
 ClassicRaceScenario classic_race_scenario(ClassicRaceTrack track, RacePairing pairing,
                                           bool tutorial_hints = true);
+// The local modes pair two distinct human riders; unlike the one-player factory, this
+// leaves the opponent's AI tier at zero (R-0071, DRAGSTER capture).
+ClassicRaceScenario classic_local_race_scenario(ClassicRaceTrack track, RacePairing pairing,
+                                                bool tutorial_hints = true);
 bool classic_race_has_scenario(ClassicRaceTrack track);
 // $81:A304-A51B: decoded track byte 13 selects one of the fixed playfields of
 // 16,384 64-unit coarse cells. Zero selects 1,024 columns (DRAGSTER) and 0x40

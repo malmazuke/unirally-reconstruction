@@ -346,7 +346,9 @@ void run_main_menu(FrontEndState& state, const FrontEndContent& content, FrontEn
     };
     if (pressed(choose_buttons)) {
         const auto mode = static_cast<FrontEndMode>(menu.selection);
-        if (mode == FrontEndMode::one_player) {
+        if (mode == FrontEndMode::one_player || mode == FrontEndMode::two_player ||
+            mode == FrontEndMode::versus) {
+            state.mode = mode;
             enter_rider_menu(state);
             return;
         }
@@ -675,6 +677,10 @@ FrontEndContent front_end_content(const ClassicContentPack& pack) {
     for (unsigned id = 6; id <= 21; ++id) content.assets[id] = pack.entry(asset_name(id));
     content.rider_names = pack.entry("front-end.rider-names");
     content.rider_menu_title = pack.entry("front-end.pick-rider-title");
+    content.two_player_first_title = pack.entry("front-end.two-player-first-title");
+    content.two_player_second_title = pack.entry("front-end.two-player-second-title");
+    content.versus_first_title = pack.entry("front-end.versus-first-title");
+    content.versus_second_title = pack.entry("front-end.versus-second-title");
     content.decoration_frames = pack.entry("front-end.decoration-frames");
     content.uni_pictures = rider_object_content(pack);
     for (unsigned id = 32; id <= 36; ++id) content.assets[id] = pack.entry(asset_name(id));
@@ -701,6 +707,11 @@ FrontEndContent front_end_content(const ClassicContentPack& pack) {
     content.qualifying_scores = pack.entry("front-end.qualifying-scores");
     content.track_names = pack.entry("presentation.classic.track-names.v1");
     content.result_text = pack.entry("front-end.result-text");
+    content.result_fifth_row = pack.entry("front-end.result-fifth-row");
+    content.local_continue_text = pack.entry("front-end.local-continue-text");
+    content.vs_champions_header = pack.entry("front-end.vs-champions-header");
+    content.vs_champions_row = pack.entry("front-end.vs-champions-row");
+    content.pick_challenger_title = pack.entry("front-end.pick-challenger-title");
     content.result_icons = pack.entry("front-end.result-icons");
     content.lap_result_text = pack.entry("front-end.lap-result-text");
     content.lap_result_record = pack.entry("front-end.lap-result-record");
@@ -929,6 +940,10 @@ void update_front_end(FrontEndState& state, const FrontEndContent& content, Fron
     case FrontEndScreen::stunt_result: stunt_result_frame(state, content, physical); break;
     case FrontEndScreen::demo_title: demo_title_frame(state, content); break;
     case FrontEndScreen::demo_return: demo_return_frame(state, content); break;
+    case FrontEndScreen::local_continue_entry: local_continue_entry_frame(state, content); break;
+    case FrontEndScreen::local_continue: local_continue_frame(state, content, physical); break;
+    case FrontEndScreen::vs_champions_entry: vs_champions_entry_frame(state, content); break;
+    case FrontEndScreen::vs_champions: vs_champions_frame(state, content, physical); break;
     }
     if (state.screen != screen) state.script_frame = 0;
     ++state.frame;

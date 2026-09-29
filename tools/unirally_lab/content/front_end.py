@@ -288,3 +288,25 @@ def v25_new_entries(rom: bytes) -> list[dict[str, Any]]:
     entries = [_raw(f"front-end.asset.{asset:03d}", rom, [_asset_piece(rom, asset)])
                for asset in STUNT_RESULT_ASSETS]
     return entries + [table_entry(rom, *table) for table in STUNT_RESULT_TABLES]
+
+
+# Profile v27 (TWO-PLAYER-VS, R-0071): the mode handlers print these streams for the two
+# rider choices. VS's second stream positions TWO over ONE from its first title.
+LOCAL_MODE_TABLES = (
+    ("front-end.two-player-first-title", 0x80BDB0, None),
+    ("front-end.two-player-second-title", 0x80BDC2, None),
+    ("front-end.versus-first-title", 0x80C0F5, None),
+    ("front-end.versus-second-title", 0x80C107, None),
+    # `$80:D1DB`: after the shared four result rows, a human opponent allows the fifth.
+    ("front-end.result-fifth-row", 0x80D1DB, None),
+    # `$80:AE3F-AE80`: five FF-terminated 2P/VS continuation choices.
+    ("front-end.local-continue-text", 0x80AE3F, 0x42),
+    ("front-end.vs-champions-header", 0x80F9EE, None),
+    ("front-end.vs-champions-row", 0x80FA46, None),
+    ("front-end.pick-challenger-title", 0x80C10E, None),
+)
+
+
+def v27_new_entries(rom: bytes) -> list[dict[str, Any]]:
+    """Local rider titles, result row, continuation choices and VS table streams."""
+    return [table_entry(rom, *table) for table in LOCAL_MODE_TABLES]

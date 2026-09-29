@@ -161,6 +161,15 @@ void rider_menu_entry_frame(FrontEndState& state, const FrontEndContent& content
 void rider_menu_frame(FrontEndState& state, const FrontEndContent& content, FrontEndPads pads);
 void rider_menu_exit_frame(FrontEndState& state, const FrontEndContent& content);
 void main_menu_return_frame(FrontEndState& state, const FrontEndContent& content);
+void enter_vs_challenger(FrontEndState& state);
+
+// Local result continuation and VS champion ranking (R-0071).
+void enter_local_continue(FrontEndState& state);
+void local_continue_entry_frame(FrontEndState& state, const FrontEndContent& content);
+void local_continue_frame(FrontEndState& state, const FrontEndContent& content, FrontEndPads pads);
+void enter_vs_champions(FrontEndState& state);
+void vs_champions_entry_frame(FrontEndState& state, const FrontEndContent& content);
+void vs_champions_frame(FrontEndState& state, const FrontEndContent& content, FrontEndPads pads);
 
 // tour_menu.cpp: PICK TOUR after a rider is chosen (`$80:BBF7-BC0B`) or back from PICK TRACK
 // (`$80:BC03`), a frame of its set-up and of its loop.

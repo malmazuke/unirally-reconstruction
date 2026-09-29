@@ -33,7 +33,8 @@ pause menu's second choice ends the race as the original's QUIT does: during the
 it goes back to NOW PLAYING, after it the result shows QUIT and the race counts as lost (R-0060).
 A race started with `--track` still restarts from it. The first idle demo runs a two-view
 ZOOM ZOO race, then the next idle demo runs one-view track 3; both return to the main menu
-(R-0069, R-0070). 2P, VS, LEAGUE and OPTIONS still show a notice and return to the main menu
+(R-0069, R-0070). 2P and VS use two human controllers through their races and
+result menus (R-0071). LEAGUE and OPTIONS still show a notice and return to the main menu
 as it first appeared, so the rider and tour chosen last start over (the original keeps them);
 the records are kept. `--track dragster|zoom-zoo|NN` starts directly in that
 race instead (not a stunt event, whose result only the menus show).
@@ -41,7 +42,7 @@ race instead (not a stunt event, whose result only the menus show).
 DRAGSTER plays on the shared race engine (R-0038), whose jump, brake,
 reversal, trick and finish tables only the two-track pack carries. With the
 25-entry DRAGSTER pack the launcher uses a valid
-`local/classic-pal-crawler-tracks-v26.pack` beside it without
+`local/classic-pal-crawler-tracks-v27.pack` beside it without
 opening the ROM, or extracts one when `--rom` is given; without either it
 reports a missing prerequisite. The app itself refuses the DRAGSTER-only pack
 before gameplay starts.

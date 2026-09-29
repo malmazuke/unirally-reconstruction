@@ -293,7 +293,7 @@ int main(int argc, char **argv) try {
   if(!zoom_zoo && content.pack.optional_entry("zoom.landing-response-matrices").empty())
     throw std::invalid_argument("DRAGSTER and the other tracks need the full content pack for jumps, brakes, reversal and tricks; "
                                 "create it from your ROM with: python3 tools/project.py frontend run --track dragster "
-                                "--pack local/classic-pal-crawler-tracks-v26.pack --rom PATH");
+                                "--pack local/classic-pal-crawler-tracks-v27.pack --rom PATH");
   auto zoom_content=unirally::classic_race_content(content.pack,track);
   auto race_presentation=unirally::classic_race_presentation_content(content.pack,track);
   auto zoom_state=unirally::classic_race_start(zoom_content,unirally::classic_race_scenario(track));
@@ -474,6 +474,7 @@ int main(int argc, char **argv) try {
           SDL_SetWindowTitle(window.get(),window_title(race_presentation.track_name).c_str());
           // A fresh race each time: after a result NOW PLAYING can choose the same track again.
           zoom_state=unirally::classic_race_start(zoom_content,scenario);
+          if (front_end->local_race()) unirally::initialize_split_cameras(zoom_state);
           if (front_end->demo_race()) {
             if (front_end->race_track() == unirally::ClassicRaceTrack::ZoomZoo)
               unirally::initialize_split_cameras(zoom_state);
@@ -508,7 +509,8 @@ int main(int argc, char **argv) try {
           ++demo_race_updates;
         } else if(at_stable_result && buttons.start)
           unirally::restart_zoom_zoo(zoom_state,zoom_content);
-        else if(waiting_front_end) over=unirally::update_race_for_menus(zoom_state,buttons,zoom_content);
+        else if(waiting_front_end) over=unirally::update_race_for_menus(
+            zoom_state,buttons,unirally::app::controller_buttons(ports[1]),zoom_content);
         else unirally::update_zoom_zoo(zoom_state,buttons,zoom_content);
         // Selector 0 is a real trick (the flat path's negative-velocity
         // rotation), so the impulse is the activity signal; the selector alone
