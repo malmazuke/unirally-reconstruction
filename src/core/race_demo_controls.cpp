@@ -43,6 +43,12 @@ void demo_rider(ZoomZooState& state, unsigned index, DemoTrickButtons& buttons) 
     }
     if (rider.progress.marker_word & jump_marker) {
         transition.jump_input = 1;
+        // $83:E36E-E3E3; ATTRACT-DEMO: once fully off the surface, a
+        // downward-moving rider follows the alternating contact phase even
+        // while the marker still asks for a jump.
+        if (!control.airborne_rotation[index] && rider.contact.unsupported_count >= 4
+            && static_cast<std::int16_t>(rider.motion.velocity_y) >= 0)
+            transition.jump_input = state.movement.contact_phase;
         if (!control.airborne_rotation[index] && rider.contact.unsupported_count >= 4
             && static_cast<std::int16_t>(rider.motion.velocity_y) < 0) {
             control.airborne_rotation[index] =
@@ -75,7 +81,9 @@ void demo_rider(ZoomZooState& state, unsigned index, DemoTrickButtons& buttons) 
 
 DemoTrickButtons update_demo_controllers(ZoomZooState& state, bool pad_pressed) {
     auto& demo = state.demo;
-    if (demo.elapsed + 1U == demo_duration || pad_pressed) {
+    // $83:E256-E25F compares the incremented timer before storing it. A
+    // timeout exits with the old value; a pad exit stores the new value.
+    if (demo.elapsed + 1U == demo_duration) {
         demo.exit_requested = true;
         state.movement.player_input.horizontal = direction::neutral;
         state.opponent_horizontal = direction::neutral;
@@ -88,6 +96,10 @@ DemoTrickButtons update_demo_controllers(ZoomZooState& state, bool pad_pressed) 
     // $83:E267-E276 sends a fade/sound sequence after this point; its visual
     // state is handled by the demo transition, not the race controller.
     (void)warning_at;
+    if (pad_pressed) {
+        demo.exit_requested = true;
+        return {};
+    }
     DemoTrickButtons buttons;
     for (unsigned rider = 0; rider < 2; ++rider) demo_rider(state, rider, buttons);
     return buttons;

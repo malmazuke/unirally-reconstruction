@@ -248,8 +248,8 @@ void FrontEndSession::return_from_race(const ZoomZooState &race, const RaceTimes
   ++races_;
 }
 
-void FrontEndSession::return_from_demo(std::uint32_t exit_frame) {
-  unirally::return_from_demo(state_, exit_frame);
+void FrontEndSession::return_from_demo(std::uint32_t exit_frame, std::uint16_t demo_elapsed) {
+  unirally::return_from_demo(state_, exit_frame, demo_elapsed);
   ++races_;
   ++returns_;
 }

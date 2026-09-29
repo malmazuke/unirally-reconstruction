@@ -13,6 +13,16 @@ OUT.ppm` checks the new `URZZ000F/G` save layout and every resumed update
 through LAST; FRAME and LAST use original cold-start frame labels. The app's
 idle first demo path needs no laboratory option.
 
+For ATTRACT-DEMO (R-0070), `front_end_runner --content-pack PACK --frames 7000
+--inputs INPUTS --race-timeline OUT.txt` writes each native demo state at its
+cold-start frame label. With Start on frames 300-305 and released afterward,
+the second cycle initializes one-view track 3 at frame 4523 and returns to the
+menu after its race exits at 6423. The 958-byte `URTR0308` layout extends the
+ordinary 916-byte track-3 state with the 42-byte demo/camera trailer. The app
+also plays this second idle cycle. Port 1 A at frame 5000 and port 2 B at 5200
+are independently captured early-exit variants; their exact tested domain is
+recorded in R-0070.
+
 [D-0006](decisions/D-0006-capability-driven-work.md) changes when checks run, not
 what constitutes evidence. Historical frozen expectations and acceptance remain.
 

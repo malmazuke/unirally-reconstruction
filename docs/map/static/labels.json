@@ -7839,10 +7839,12 @@
   "comment": "instruction start",
   "label": "loc_81A23C",
   "native": [
-   "src/core/race_camera.cpp:split_vertical_velocity"
+   "src/core/race_camera.cpp:split_vertical_velocity",
+   "src/core/race_camera.cpp:update_camera"
   ],
   "source_records": [
    "docs/research/R-0069-split-screen-race.md",
+   "docs/research/R-0070-attract-demo.md",
    "tasks/SPLIT-SCREEN-RACE.md"
   ]
  },
@@ -9978,6 +9980,18 @@
   "label": "sub_828000",
   "source_records": [
    "docs/research/R-0054-boot-title-main-menu.md"
+  ]
+ },
+ {
+  "address": "$82:8035",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_828035",
+  "native": [
+   "src/core/front_end.cpp:return_from_demo"
+  ],
+  "source_records": [
+   "docs/research/R-0070-attract-demo.md"
   ]
  },
  {
@@ -12841,7 +12855,7 @@
   "comment": "instruction start",
   "label": "loc_82D76D",
   "native": [
-   "src/core/race_camera.cpp:initialize_split_cameras",
+   "src/core/race_camera.cpp:initialize_second_camera",
    "src/core/race_setup.cpp:start_countdown, base_speed_cap"
   ],
   "source_records": [
@@ -15241,6 +15255,7 @@
   "comment": "routine start",
   "label": "sub_83C8E0",
   "native": [
+   "src/core/front_end.cpp:demo_title_frame",
    "src/core/front_end.hpp:return_from_race",
    "src/core/race_result.cpp:(file)"
   ],
@@ -15255,6 +15270,11 @@
   "class": "inferred",
   "comment": "instruction start",
   "label": "loc_83C9AC",
+  "native": [
+   "src/core/front_end.cpp:demo_title_frame",
+   "src/core/front_end.hpp:return_from_race",
+   "src/core/race_result.cpp:(file)"
+  ],
   "source_records": [
    "tasks/RACE-PAUSE-EXITS.md"
   ]
@@ -15511,8 +15531,13 @@
   "class": "observed",
   "comment": "instruction start",
   "label": "loc_83CD50",
+  "native": [
+   "src/core/race_update.cpp:update_zoom_zoo"
+  ],
   "source_records": [
-   "docs/research/R-0069-split-screen-race.md"
+   "docs/research/R-0069-split-screen-race.md",
+   "docs/research/R-0070-attract-demo.md",
+   "tasks/ATTRACT-DEMO.md"
   ]
  },
  {
@@ -15520,6 +15545,9 @@
   "class": "observed",
   "comment": "instruction start",
   "label": "loc_83CD5E",
+  "native": [
+   "src/core/race_update.cpp:update_zoom_zoo"
+  ],
   "source_records": [
    "docs/research/R-0061-riders-and-opponents.md"
   ]
@@ -16029,7 +16057,9 @@
   "label": "sub_83E082",
   "source_records": [
    "docs/research/R-0030-zoom-zoo-native-trial.md",
-   "docs/research/R-0048-race-guards.md"
+   "docs/research/R-0048-race-guards.md",
+   "docs/research/R-0070-attract-demo.md",
+   "tasks/ATTRACT-DEMO.md"
   ]
  },
  {
@@ -16065,6 +16095,19 @@
   "source_records": [
    "docs/research/R-0048-race-guards.md",
    "tasks/RACE-GUARDS.md"
+  ]
+ },
+ {
+  "address": "$83:E0C2",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83E0C2",
+  "native": [
+   "src/core/opponent_ai.cpp:(file)",
+   "src/core/opponent_ai.cpp:update_opponent_controller"
+  ],
+  "source_records": [
+   "tasks/ATTRACT-DEMO.md"
   ]
  },
  {
@@ -16264,7 +16307,54 @@
    "src/core/zoom_zoo_movement.hpp:DemoControllers"
   ],
   "source_records": [
-   "docs/research/R-0069-split-screen-race.md"
+   "docs/research/R-0069-split-screen-race.md",
+   "docs/research/R-0070-attract-demo.md",
+   "tasks/ATTRACT-DEMO.md"
+  ]
+ },
+ {
+  "address": "$83:E256",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_83E256",
+  "native": [
+   "src/core/race_demo_controls.cpp:(file)",
+   "src/core/race_demo_controls.cpp:update_demo_controllers",
+   "src/core/race_demo_controls.hpp:(file)",
+   "src/core/zoom_zoo_movement.hpp:DemoControllers"
+  ],
+  "source_records": [
+   "docs/research/R-0070-attract-demo.md"
+  ]
+ },
+ {
+  "address": "$83:E267",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_83E267",
+  "native": [
+   "src/core/front_end.cpp:return_from_demo",
+   "src/core/race_demo_controls.cpp:(file)",
+   "src/core/race_demo_controls.cpp:update_demo_controllers",
+   "src/core/race_demo_controls.hpp:(file)",
+   "src/core/zoom_zoo_movement.hpp:DemoControllers"
+  ],
+  "source_records": [
+   "docs/research/R-0070-attract-demo.md"
+  ]
+ },
+ {
+  "address": "$83:E2BB",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_83E2BB",
+  "native": [
+   "src/core/race_demo_controls.cpp:(file)",
+   "src/core/race_demo_controls.hpp:(file)",
+   "src/core/zoom_zoo_movement.hpp:DemoControllers"
+  ],
+  "source_records": [
+   "docs/research/R-0070-attract-demo.md"
   ]
  },
  {
@@ -16283,10 +16373,73 @@
   ]
  },
  {
+  "address": "$83:E303",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_83E303",
+  "native": [
+   "src/core/race_demo_controls.cpp:(file)",
+   "src/core/race_demo_controls.hpp:(file)",
+   "src/core/race_state_io.cpp:validate_split_demo_words",
+   "src/core/zoom_zoo_movement.hpp:DemoControllers"
+  ],
+  "source_records": [
+   "tasks/ATTRACT-DEMO.md"
+  ]
+ },
+ {
+  "address": "$83:E389",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_83E389",
+  "native": [
+   "src/core/race_demo_controls.cpp:(file)",
+   "src/core/race_demo_controls.cpp:demo_rider",
+   "src/core/race_demo_controls.hpp:(file)",
+   "src/core/race_state_io.cpp:validate_split_demo_words",
+   "src/core/zoom_zoo_movement.hpp:DemoControllers"
+  ],
+  "source_records": [
+   "docs/research/R-0069-split-screen-race.md"
+  ]
+ },
+ {
+  "address": "$83:E3E3",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_83E3E3",
+  "native": [
+   "src/core/race_demo_controls.cpp:(file)",
+   "src/core/race_demo_controls.cpp:demo_rider",
+   "src/core/race_demo_controls.hpp:(file)",
+   "src/core/race_state_io.cpp:validate_split_demo_words",
+   "src/core/zoom_zoo_movement.hpp:DemoControllers"
+  ],
+  "source_records": [
+   "docs/research/R-0070-attract-demo.md",
+   "tasks/ATTRACT-DEMO.md"
+  ]
+ },
+ {
   "address": "$83:E417",
   "class": "inferred",
   "comment": "routine start",
   "label": "sub_83E417",
+  "native": [
+   "src/core/race_demo_controls.cpp:(file)",
+   "src/core/race_demo_controls.hpp:(file)",
+   "src/core/race_state_io.cpp:validate_split_demo_words",
+   "src/core/zoom_zoo_movement.hpp:DemoControllers"
+  ],
+  "source_records": [
+   "docs/research/R-0069-split-screen-race.md"
+  ]
+ },
+ {
+  "address": "$83:E4CD",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_83E4CD",
   "native": [
    "src/core/race_demo_controls.cpp:(file)",
    "src/core/race_demo_controls.hpp:(file)",
@@ -16818,7 +16971,9 @@
    "src/core/race_windows.cpp:classic_countdown_window"
   ],
   "source_records": [
-   "docs/research/R-0007-player-state.md"
+   "docs/research/R-0007-player-state.md",
+   "docs/research/R-0070-attract-demo.md",
+   "tasks/ATTRACT-DEMO.md"
   ]
  },
  {

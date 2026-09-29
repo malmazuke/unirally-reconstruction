@@ -475,10 +475,13 @@ int main(int argc, char **argv) try {
           // A fresh race each time: after a result NOW PLAYING can choose the same track again.
           zoom_state=unirally::classic_race_start(zoom_content,scenario);
           if (front_end->demo_race()) {
-            unirally::initialize_split_cameras(zoom_state);
+            if (front_end->race_track() == unirally::ClassicRaceTrack::ZoomZoo)
+              unirally::initialize_split_cameras(zoom_state);
+            else
+              unirally::initialize_second_camera(zoom_state);
             zoom_state.demo_ai = zoom_state.demo.opponent_hints_active = true;
             zoom_state.pairing = scenario.pairing;
-            zoom_state.opponent_tier.ai_level = 0;
+            if (zoom_state.split_screen) zoom_state.opponent_tier.ai_level = 0;
             demo_race_updates = 0;
           }
           zoom_hud_state=zoom_state;
@@ -536,7 +539,7 @@ int main(int argc, char **argv) try {
         if(waiting_front_end && waiting_front_end->demo_race() &&
            zoom_state.demo.exit_requested) {
           const auto exit_frame = waiting_front_end->front_end_frame() + demo_race_updates - 1U;
-          waiting_front_end->return_from_demo(exit_frame);
+          waiting_front_end->return_from_demo(exit_frame, zoom_state.demo.elapsed);
           front_end=std::move(waiting_front_end);
           waiting_front_end.reset();
           input.clear();

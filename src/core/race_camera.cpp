@@ -88,6 +88,15 @@ void update_camera(ZoomZooState& state, const TrackGeometry& geometry) {
         follow_split_rider(state.race.second_camera, state.movement.riders[1], geometry);
         return;
     }
+    if (state.demo_ai) {
+        // $81:A23C-A2D5; ATTRACT-DEMO: in the one-view demo the second
+        // camera's velocity and lookahead still run, but its position is held.
+        auto& second = state.race.second_camera;
+        const auto x = second.x, y = second.y;
+        follow_split_rider(second, state.movement.riders[1], geometry);
+        second.x = x;
+        second.y = y;
+    }
     auto& c = state.race.camera;
     const auto& rider = state.movement.riders[0];
     const auto target = 1 - (static_cast<std::int16_t>(rider.motion.velocity_x) >> 3);
@@ -151,15 +160,19 @@ void update_visibility(ZoomZooState& state, const TrackGeometry& geometry) {
                                                        + (static_cast<unsigned>(dx) & 255U));
 }
 
-void initialize_split_cameras(ZoomZooState& state) {
+void initialize_second_camera(ZoomZooState& state) {
     constexpr unsigned camera_margin = 256, camera_cell_mask = 0xfff0;
-    state.split_screen = true;
     const auto& motion = state.movement.riders[1].motion;
     state.race.second_camera.x =
         static_cast<std::uint16_t>((motion.x - camera_margin) & camera_cell_mask);
     state.race.second_camera.y =
         static_cast<std::uint16_t>((motion.y - camera_margin) & camera_cell_mask);
     state.race.second_camera.screen_xy = 0x2065; // $82:D76D-D774: initial second-rider OAM.
+}
+
+void initialize_split_cameras(ZoomZooState& state) {
+    state.split_screen = true;
+    initialize_second_camera(state);
 }
 
 } // namespace unirally

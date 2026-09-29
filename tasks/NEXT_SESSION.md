@@ -1,5 +1,23 @@
 # Next session
 
+**Status on 29 September 2026 UTC (ATTRACT-DEMO reviewed, merge pending): finish
+[PR #44](https://github.com/malmazuke/unirally-reconstruction/pull/44) from the claimed
+task branch `task/attract-demo` in `.worktrees/attract-demo`.** The second idle
+cycle now reaches one-view track 3 and returns to the menu with the normal
+path's 1,901 projected race rows, 42 demo/camera fields and 22 retained pictures
+equal to the PAL reference. Three pad variations - A at 5000, port 2 B at
+5200 and Left after the warning threshold at 6400 - match their projected
+state, full 42-byte trailers and retained return pictures
+([R-0070](../docs/research/R-0070-attract-demo.md)). The corrected source and
+static map at `97a6098` have an accepted independent tier-1 review, 11 passing
+private frozen comparisons, local lab-debug/app-debug suites and passing
+hosted macOS/Linux CI. The local macOS sanitizer suite timed out; hosted Linux
+sanitizers passed. Next: commit this record-only handoff, get current-head CI,
+inspect PR comments, update its body, merge through a merge commit and write
+the ignored closeout with actual commit and cleanup. After ATTRACT-DEMO,
+the roadmap's next outcome is 2P and VS modes. Task details and usage
+boundary are in [ATTRACT-DEMO](ATTRACT-DEMO.md).
+
 **Status on 29 September 2026 UTC (SPLIT-SCREEN-RACE): confirm [PR #43](https://github.com/malmazuke/unirally-reconstruction/pull/43) and its closeout, then claim [ATTRACT-DEMO](ATTRACT-DEMO.md).**
 The first idle split ZOOM ZOO race matches the original through its menu return (R-0069);
 independent tier-1 review, the eleven private frozen races and source-head macOS/Linux CI pass.
