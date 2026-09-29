@@ -221,6 +221,8 @@ bool FrontEndSession::update(FrontEndPads pads) {
     return false;
   if (native_one_player_race(state_))
     return true;
+  if (state_.mode == FrontEndMode::demo && state_.screen == FrontEndScreen::race)
+    return true;
   // Two seconds of notice at 50 Hz.
   notice_mode_ = state_.mode;
   notice_frames_ = 100;
@@ -244,6 +246,12 @@ void FrontEndSession::return_from_race(const ZoomZooState &race, const RaceTimes
   unirally::return_from_race(state_, content_, state_.frame - 1 + loading_frames + updates,
                              times);
   ++races_;
+}
+
+void FrontEndSession::return_from_demo(std::uint32_t exit_frame) {
+  unirally::return_from_demo(state_, exit_frame);
+  ++races_;
+  ++returns_;
 }
 
 RgbFrame FrontEndSession::frame() const {

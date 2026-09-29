@@ -3,6 +3,7 @@
 #include "movement.hpp"
 #include "zoom_zoo_pack.hpp"
 #include "presentation.hpp"
+#include "race_camera.hpp"
 
 #include <SDL3/SDL.h>
 
@@ -194,7 +195,7 @@ void print_help() {
       << "that race. PAL 50 Hz.\n"
       << "Keyboard: arrows, Z=B, X=Y, A=A, S=X, Q=L, W=R, Enter=Start.\n"
       << "Gamepad: D-pad, South=B, West=Y, East=A, North=X, shoulders=L/R, Start, Back=Select;\n"
-      << "the analog stick is not mapped. Two gamepads are tracked; this slice consumes port 0 only.\n"
+      << "the analog stick is not mapped. Either gamepad exits the idle demo.\n"
       << "Audio is intentionally not implemented in M3.\n";
 }
 
@@ -362,6 +363,7 @@ int main(int argc, char **argv) try {
   if (!parsed->track_given) front_end.emplace(content.pack);
   // During a race the front end waits here for the race's result load.
   std::optional<unirally::app::FrontEndSession> waiting_front_end;
+  std::uint32_t demo_race_updates = 0;
   while (running) {
     SDL_Event event{};
     while (SDL_PollEvent(&event)) {
@@ -472,6 +474,13 @@ int main(int argc, char **argv) try {
           SDL_SetWindowTitle(window.get(),window_title(race_presentation.track_name).c_str());
           // A fresh race each time: after a result NOW PLAYING can choose the same track again.
           zoom_state=unirally::classic_race_start(zoom_content,scenario);
+          if (front_end->demo_race()) {
+            unirally::initialize_split_cameras(zoom_state);
+            zoom_state.demo_ai = zoom_state.demo.opponent_hints_active = true;
+            zoom_state.pairing = scenario.pairing;
+            zoom_state.opponent_tier.ai_level = 0;
+            demo_race_updates = 0;
+          }
           zoom_hud_state=zoom_state;
           live_presentation=unirally::app::LivePresentation{};
           waiting_front_end=std::move(front_end);
@@ -490,7 +499,11 @@ int main(int argc, char **argv) try {
         // A race from the menus ends for them on its result load or its pause menu's second
         // choice (R-0057, R-0060); a race on its own restarts from either.
         std::optional<unirally::RaceTimes> over;
-        if(at_stable_result && buttons.start)
+        if(waiting_front_end && waiting_front_end->demo_race()) {
+          unirally::update_zoom_zoo(
+              zoom_state, buttons, unirally::app::controller_buttons(ports[1]), zoom_content);
+          ++demo_race_updates;
+        } else if(at_stable_result && buttons.start)
           unirally::restart_zoom_zoo(zoom_state,zoom_content);
         else if(waiting_front_end) over=unirally::update_race_for_menus(zoom_state,buttons,zoom_content);
         else unirally::update_zoom_zoo(zoom_state,buttons,zoom_content);
@@ -520,7 +533,16 @@ int main(int argc, char **argv) try {
         }
         // The race's end for the menus: its result, or NOW PLAYING after a restart (R-0057, R-0058,
         // R-0060).
-        if(waiting_front_end && over) {
+        if(waiting_front_end && waiting_front_end->demo_race() &&
+           zoom_state.demo.exit_requested) {
+          const auto exit_frame = waiting_front_end->front_end_frame() + demo_race_updates - 1U;
+          waiting_front_end->return_from_demo(exit_frame);
+          front_end=std::move(waiting_front_end);
+          waiting_front_end.reset();
+          input.clear();
+          std::cout << "Front end: demo returned at front-end frame "
+                    << front_end->front_end_frame() << '\n';
+        } else if(waiting_front_end && over) {
           waiting_front_end->return_from_race(zoom_state,*over);
           front_end=std::move(waiting_front_end);
           waiting_front_end.reset();

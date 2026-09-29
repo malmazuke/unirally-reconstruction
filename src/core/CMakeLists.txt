@@ -16,7 +16,7 @@ target_link_libraries(unirally_speed_limits PUBLIC lab_options)
 
 add_library(unirally_movement STATIC
     movement.cpp content_pack.cpp rider_motion.cpp rider_pose.cpp reward_queue.cpp
-    opponent_ai.cpp hunter_effects.cpp trick_roll.cpp race_progress.cpp race_camera.cpp
+    opponent_ai.cpp race_demo_controls.cpp hunter_effects.cpp trick_roll.cpp race_progress.cpp race_camera.cpp
     special_tiles.cpp stunt_event.cpp race_setup.cpp race_state_io.cpp race_update.cpp)
 target_include_directories(unirally_movement PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(unirally_movement PUBLIC unirally_contact unirally_input_timer unirally_speed_limits unirally_sampling lab_options)
@@ -42,3 +42,5 @@ add_executable(front_end_runner front_end_runner.cpp)
 target_link_libraries(front_end_runner PRIVATE unirally_presentation)
 add_executable(classic_race_presentation_runner classic_race_presentation_runner.cpp)
 target_link_libraries(classic_race_presentation_runner PRIVATE unirally_presentation)
+add_executable(split_demo_runner split_demo_runner.cpp)
+target_link_libraries(split_demo_runner PRIVATE unirally_presentation)

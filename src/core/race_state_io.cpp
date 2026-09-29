@@ -43,12 +43,18 @@ namespace {
 constexpr std::size_t movement_prefix_size = 333;
 constexpr std::size_t first_layout_size = 395, sustained_size = 423, complete_race_size = 565;
 constexpr std::size_t native_race_size = 742, extended_size = 794, other_track_size = 916;
+// A two-view state appends the second camera, two demo controllers, and the
+// pairing/tier which a one-player restore normally derives from its menus.
+constexpr std::size_t split_trailer_size = 42;
+constexpr std::size_t split_race_size = native_race_size + split_trailer_size;
+constexpr std::size_t extended_split_size = extended_size + split_trailer_size;
 constexpr std::size_t special_tiles_size = 52, hunter_effects_size = 62;
 constexpr std::size_t stunt_event_size = 90, stunt_track_size = other_track_size + stunt_event_size;
 constexpr std::array<std::uint8_t, 8> race_state_magic{'U', 'R', 'Z', 'Z', '0', '0', '0', '1'};
 // The layout letter in byte 7 of the identity.
 constexpr std::uint8_t sustained_layout = '2', complete_race_layout = '3', native_race_layout = 'B';
 constexpr std::uint8_t extended_zoom_zoo_layout = 'E', extended_dragster_layout = '4';
+constexpr std::uint8_t split_layout = 'F', extended_split_layout = 'G';
 // DRAGSTER's one lap and ZOOM ZOO's three reach only the first 20 of the 80 checkpoint flags.
 constexpr unsigned shared_checkpoint_flags = 20, checkpoint_flags = 80;
 constexpr std::uint8_t checkpoint_unseen = 255;
@@ -174,6 +180,26 @@ void write_special_tiles(std::vector<std::uint8_t>& bytes, const ZoomZooState& s
     put16(bytes, state.opponent_turnaround);
 }
 
+void write_split_trailer(std::vector<std::uint8_t>& bytes, const ZoomZooState& state) {
+    const auto& camera = state.race.second_camera;
+    for (auto value : {camera.x, camera.y, camera.velocity_x, camera.velocity_y, camera.lookahead,
+                       camera.screen_xy})
+        put16(bytes, value);
+    for (const auto& words : {state.demo.trick_bits, state.demo.rotation_window,
+                              state.demo.turnaround, state.demo.airborne_rotation})
+        for (auto value : words) put16(bytes, value);
+    put16(bytes, state.demo.elapsed);
+    put8(bytes, state.demo.exit_requested);
+    put8(bytes, state.demo.opponent_hints_active);
+    put8(bytes, state.pairing.rider);
+    put8(bytes, state.pairing.opponent);
+    for (auto value : {state.opponent_tier.ai_level, state.opponent_tier.catch_up,
+                       state.opponent_tier.adjustment_limit})
+        put16(bytes, value);
+    put8(bytes, state.split_screen);
+    put8(bytes, state.demo_ai);
+}
+
 void write_hunter_effects(std::vector<std::uint8_t>& bytes, const HunterEffects& h) {
     put16(bytes, h.latched);
     put16(bytes, h.active);
@@ -259,9 +285,9 @@ void check_lap_clocks(const ZoomZooState& state, const ClassicRaceScenario& scen
     const auto& clock = state.movement.timer;
     const bool clock_expired = state.native_initialization && clock.minutes == 9
                             && clock.tens_seconds == 5 && clock.seconds == 9 && clock.tenths == 9;
-    const bool timed_out = scenario.stunt_event
-                        || (state.race.riders[0].finished && state.race.riders[1].finished
-                            && clock_expired);
+    const bool timed_out =
+        scenario.stunt_event
+        || (state.race.riders[0].finished && state.race.riders[1].finished && clock_expired);
     for (const auto& lap : state.race.riders) {
         refuse_unless(
             !((lap.finished ? lap.laps_remaining != 0 && !timed_out : lap.laps_remaining == 0)
@@ -730,8 +756,8 @@ void read_stunt_event(Reader& in, ZoomZooState& state) {
     // It starts only on an update both stand, the update that settles them both.
     refuse_unless(stunt.finish_display <= 1
                       && (!stunt.finish_display
-                          || (race.riders[0].finished && race.riders[1].finished
-                              && stunt.settled[0] && stunt.settled[1]))
+                          || (race.riders[0].finished && race.riders[1].finished && stunt.settled[0]
+                              && stunt.settled[1]))
                       && (stunt.finish_display || (!race.finish_delay && !posed)),
                   "a stunt event's finish display is out of order");
     // The switched-off opponent never moves: no horizontal velocity, and a vertical one only
@@ -767,8 +793,9 @@ void check_stunt_content(const ZoomZooState& state, const ZoomZooContent& conten
     const auto& opponent = state.movement.riders[1].motion;
     refuse_unless(
         opponent.x == static_cast<std::uint16_t>(content_word(track, opponent_start_x) << 4U)
-            && opponent.y == static_cast<std::uint16_t>(content_word(track, opponent_start_y) << 4U),
-                  "a stunt event's opponent left its start");
+            && opponent.y
+                   == static_cast<std::uint16_t>(content_word(track, opponent_start_y) << 4U),
+        "a stunt event's opponent left its start");
 }
 
 // The track and layout a state's identity names. A 742-byte state with no other identity
@@ -866,14 +893,77 @@ std::vector<std::uint8_t> serialize_zoom_zoo(const ZoomZooState& state) {
         if (state.track == ClassicRaceTrack::Dragster && special_tiles_live)
             bytes[7] = extended_dragster_layout;
     }
+    if (state.split_screen) {
+        refuse_unless(state.native_initialization && state.track == ClassicRaceTrack::ZoomZoo,
+                      "split race state requires native ZOOM ZOO initialization");
+        refuse_unless(bytes.size() == native_race_size || bytes.size() == extended_size,
+                      "split race base layout is unsupported");
+        bytes[7] = bytes.size() == native_race_size ? split_layout : extended_split_layout;
+        write_split_trailer(bytes, state);
+    }
     return bytes;
 }
 
 namespace {
 
+void validate_split_demo_words(const DemoControllers& demo) {
+    // $83:E2C4-E55B; R-0069: the rotation window is set to 50, never decremented.
+    for (unsigned rider = 0; rider < 2; ++rider)
+        refuse_unless(demo.trick_bits[rider] <= 7
+                          && (demo.rotation_window[rider] == 0 || demo.rotation_window[rider] == 50)
+                          && demo.turnaround[rider] <= 30 && demo.airborne_rotation[rider] <= 0x4000
+                          && (demo.airborne_rotation[rider] || !demo.trick_bits[rider]),
+                      "split demo controller words are invalid");
+}
+
 ZoomZooState deserialize_race(std::span<const std::uint8_t> bytes,
                               std::optional<RacePairing> pairing, bool tutorial_hints,
                               std::span<const std::uint8_t> opponent_catch_up) {
+    if (bytes.size() == split_race_size || bytes.size() == extended_split_size) {
+        const bool extended = bytes.size() == extended_split_size;
+        const auto expected = extended ? extended_split_layout : split_layout;
+        refuse_unless(std::equal(bytes.begin(), bytes.begin() + 7, race_state_magic.begin())
+                          && bytes[7] == expected,
+                      "split race state identity/width differs");
+        const auto base_size = extended ? extended_size : native_race_size;
+        const auto base_view = bytes.first(base_size);
+        std::vector<std::uint8_t> base(base_view.begin(), base_view.end());
+        base[7] = extended ? extended_zoom_zoo_layout : native_race_layout;
+        auto state = deserialize_race(base, pairing, tutorial_hints, opponent_catch_up);
+        Reader in{bytes.subspan(base_size)};
+        auto& camera = state.race.second_camera;
+        for (auto* value : {&camera.x, &camera.y, &camera.velocity_x, &camera.velocity_y,
+                            &camera.lookahead, &camera.screen_xy})
+            *value = in.u16();
+        for (auto* words : {&state.demo.trick_bits, &state.demo.rotation_window,
+                            &state.demo.turnaround, &state.demo.airborne_rotation})
+            for (auto& value : *words) value = in.u16();
+        state.demo.elapsed = in.u16();
+        const auto exit_requested = in.u8(), hints_active = in.u8();
+        refuse_unless(exit_requested <= 1 && hints_active <= 1, "split demo flags are invalid");
+        state.demo.exit_requested = exit_requested != 0;
+        state.demo.opponent_hints_active = hints_active != 0;
+        state.pairing = {in.u8(), in.u8()};
+        state.opponent_tier.ai_level = in.u16();
+        state.opponent_tier.catch_up = in.u16();
+        state.opponent_tier.adjustment_limit = in.u16();
+        const auto split = in.u8(), demo_ai = in.u8();
+        refuse_unless(split == 1 && demo_ai <= 1, "split race mode flags are invalid");
+        state.split_screen = true;
+        state.demo_ai = demo_ai != 0;
+        in.require_end();
+        validate_split_demo_words(state.demo);
+        refuse_unless(
+            state.native_initialization && state.split_screen
+                && state.track == ClassicRaceTrack::ZoomZoo
+                && state.pairing.rider < rider_characters
+                && state.pairing.opponent < rider_characters && state.demo.elapsed <= 0x076c
+                && camera.x <= zoom_zoo_camera_x_limit
+                && std::abs(static_cast<std::int16_t>(camera.velocity_x)) <= fastest_camera
+                && std::abs(static_cast<std::int16_t>(camera.velocity_y)) <= fastest_camera,
+            "split race state is outside its recovered domain");
+        return state;
+    }
     const auto track = identified_track(bytes);
     if (!track)
         return deserialize_classic_race(bytes, ClassicRaceTrack::ZoomZoo, pairing, tutorial_hints,

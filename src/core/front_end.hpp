@@ -343,6 +343,8 @@ enum class FrontEndScreen : std::uint8_t {
     hunter_ending,     // $83:AB9A: HUNTER's gold ending, then the soft reset to the boot
     hunter_code,       // $80:F0D6: the main menu's code, 31 frames, then HUNTER's ending
     stunt_result,      // $80:F0EE: a stunt event's result, its tally and the waits for a press
+    demo_title,        // the idle demo's native title display before its first split race
+    demo_return,       // the idle demo's return to the main menu
 };
 
 // What `$83:9894` saves before a race (work RAM `$0000-$019D`) and `$83:987D` puts back after
@@ -419,6 +421,8 @@ FrontEndState start_front_end();
 // One frame: its vblank's work, in the original's order. Once a mode is chosen (for 1P, a race)
 // the state stops.
 void update_front_end(FrontEndState& state, const FrontEndContent& content, FrontEndPads pads);
+// Return from the first idle demo's race on the original's exit frame.
+void return_from_demo(FrontEndState& state, std::uint32_t exit_frame);
 // The frame the last update produced.
 RgbFrame render_front_end(const FrontEndState& state);
 

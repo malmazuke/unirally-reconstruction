@@ -1,3 +1,4 @@
+#include "race_camera.hpp"
 #include "zoom_zoo_pack.hpp"
 #include <algorithm>
 #include <cctype>
@@ -41,13 +42,21 @@ unirally::ControllerButtons buttons(std::uint16_t mask) {
 
 // One timeline row, the state after its update. STUNT-HUD: with `palettes`, also the player's
 // contact palette ("frame palette"), which NEON's picture follows and the state does not carry.
-void emit(const unirally::ZoomZooState& state, std::ostream* palettes) {
+void emit(const unirally::ZoomZooState& state, std::ostream* palettes, std::ostream* split_state) {
     std::cout << state.movement.frame << ' ';
     for (auto byte : unirally::serialize_zoom_zoo(state))
         std::cout << std::hex << std::setw(2) << std::setfill('0') << unsigned(byte);
     std::cout << std::dec << '\n';
     if (palettes)
         *palettes << state.movement.frame << ' ' << unsigned(state.player_contact_palette) << '\n';
+    if (split_state) {
+        const auto& camera = state.race.second_camera;
+        *split_state << state.movement.frame;
+        for (const auto value : {camera.x, camera.y, camera.velocity_x, camera.velocity_y,
+                                 camera.lookahead, camera.screen_xy, state.demo.elapsed})
+            *split_state << ' ' << value;
+        *split_state << ' ' << state.demo.exit_requested << '\n';
+    }
 }
 
 // The runner's options: one origin (a seed, a restart seed or a native start) and one content
@@ -56,7 +65,9 @@ struct Options {
     std::filesystem::path seed, content, inputs, pack_path, track_override;
     // STUNT-HUD: where to write the player's contact palette by update (R-0068).
     std::filesystem::path contact_palettes;
+    std::filesystem::path split_state;
     bool native_start = false, restart = false;
+    bool split_screen = false;
     unirally::ClassicRaceTrack race_track = unirally::ClassicRaceTrack::ZoomZoo;
     // RACE-RIDERS-OPPONENTS: another rider or opponent than the scenario's MIKE against its
     // usual opponent, and the tutorial hints' start ($77:1116's rider bit), on a --start race.
@@ -133,9 +144,13 @@ Options parse_options(int argc, char** argv) {
             options.tutorial_hints = hints == 1;
         } else if (option == "--contact-palettes") {
             options.contact_palettes = argv[i + 1];
+        } else if (option == "--split-state") {
+            options.split_state = argv[i + 1];
         } else if (option == "--best-medal") {
             options.best_medal = small_number(argv[i + 1]);
             if (*options.best_medal > 3) throw std::invalid_argument("--best-medal is 0 to 3");
+        } else if (option == "--split-screen") {
+            options.split_screen = small_number(argv[i + 1]) == 1;
         } else
             throw std::invalid_argument("unknown ZOOM ZOO runner option");
     }
@@ -173,7 +188,8 @@ struct LooseContent {
                                                  {masks, decrements}};
         return {
             movement, coefficients, reflection, landing, finish_poses, roll_poses, roll_directions,
-            weights,  combinations, {},         {},      {},           {},         {}, {}};
+            weights,  combinations, {},         {},      {},           {},         {},
+            {}};
     }
 };
 
@@ -230,10 +246,11 @@ void check_content_choice(const Options& options, const unirally::ZoomZooState& 
 // after its update. The stream is what a device reports; update_zoom_zoo applies the rocker
 // the original's controller port applies.
 int run_controller_stream(unirally::ZoomZooState& state, const unirally::ZoomZooContent& data,
-                          const std::filesystem::path& inputs, std::ostream* palettes) {
+                          const std::filesystem::path& inputs, std::ostream* palettes,
+                          std::ostream* split_state) {
     std::ifstream stream(inputs);
     if (!stream) throw std::runtime_error("cannot open ZOOM ZOO controller stream");
-    emit(state, palettes);
+    emit(state, palettes, split_state);
     std::string line;
     while (std::getline(stream, line)) {
         unsigned frame, player, opponent;
@@ -250,7 +267,7 @@ int run_controller_stream(unirally::ZoomZooState& state, const unirally::ZoomZoo
             std::cerr << "frame " << frame << ": " << e.what() << '\n';
             return 1;
         }
-        emit(state, palettes);
+        emit(state, palettes, split_state);
     }
     if (!stream.eof()) throw std::invalid_argument("malformed ZOOM ZOO controller stream");
     return 0;
@@ -290,8 +307,16 @@ int main(int argc, char** argv) try {
             if (options.opponent) pairing.opponent = static_cast<std::uint8_t>(*options.opponent);
             scenario = unirally::classic_race_scenario(race_track, pairing, options.tutorial_hints);
         }
-        if (options.best_medal) scenario.best_medal = static_cast<std::uint8_t>(*options.best_medal);
+        if (options.best_medal)
+            scenario.best_medal = static_cast<std::uint8_t>(*options.best_medal);
         state = unirally::classic_race_start(data, scenario);
+        if (options.split_screen) {
+            unirally::initialize_split_cameras(state);
+            state.demo_ai = true;
+            state.demo.opponent_hints_active = true;
+            state.pairing = {4, 14};
+            state.opponent_tier.ai_level = 0;
+        }
     }
     if (options.restart) unirally::restart_zoom_zoo(state, data);
     unirally::validate_zoom_zoo_content_state(state, data);
@@ -300,7 +325,14 @@ int main(int argc, char** argv) try {
         palettes.open(options.contact_palettes);
         if (!palettes) throw std::runtime_error("cannot write the contact palettes");
     }
-    return run_controller_stream(state, data, options.inputs, palettes.is_open() ? &palettes : nullptr);
+    std::ofstream split_state;
+    if (!options.split_state.empty()) {
+        split_state.open(options.split_state);
+        if (!split_state) throw std::runtime_error("cannot write split state");
+    }
+    return run_controller_stream(state, data, options.inputs,
+                                 palettes.is_open() ? &palettes : nullptr,
+                                 split_state.is_open() ? &split_state : nullptr);
 } catch (const std::exception& e) {
     std::cerr << e.what() << '\n';
     return 1;

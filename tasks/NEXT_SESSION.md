@@ -1,5 +1,13 @@
 # Next session
 
+**Status on 29 September 2026 UTC (SPLIT-SCREEN-RACE): confirm [PR #43](https://github.com/malmazuke/unirally-reconstruction/pull/43) and its closeout, then claim [ATTRACT-DEMO](ATTRACT-DEMO.md).**
+The first idle split ZOOM ZOO race matches the original through its menu return (R-0069);
+independent tier-1 review, the eleven private frozen races and source-head macOS/Linux CI pass.
+The ignored closeout `artifacts/split-screen-race-integration/closeout.json` in the main checkout
+records final-tip CI, the PR merge and local `main` synchronization.
+ATTRACT-DEMO starts with the next idle cycle, one-player track 3 by frame 4399. The 2P and VS
+selection paths remain after that task. Pack v26 remains the current input.
+
 **From 23 September 2026, integrate through a pull request** (PR-WORKFLOW):
 push the task branch, open a pull request from the template, merge with
 `gh pr merge --merge` once its checks are green and the review is done. `main`
