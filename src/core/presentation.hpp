@@ -381,6 +381,7 @@ struct ClassicRaceHistory {
     // R-0068: NEON's green level (`$12D3`) as the update before the picture left it; the NMI
     // writes it into colour 113. Nothing for a caller without the history.
     std::optional<std::uint8_t> neon_green{};
+    unsigned opponent_caption_event{}; // Split HUD's delayed lower caption.
 };
 // The countdown's transition member for a track: 5 + `$1229`, which
 // $83:CC05-CC08 latches at race initialization from the player's reflection
@@ -449,7 +450,7 @@ public:
     ClassicRaceHistory on_screen() const {
         return {on_screen_,          opponent_finish_frame_, window_.observed(),
                 window_.published(), clock_.published(),     on_screen_barf_,
-                on_screen_flip_prior_, on_screen_neon_green_};
+                on_screen_flip_prior_, on_screen_neon_green_, on_screen_opponent_caption_};
     }
     const RiderLookState& look() const { return look_; }
 
@@ -467,6 +468,7 @@ private:
     // after it shows it) and after the update on screen; the setup leaves 0. Nothing on another
     // track.
     std::optional<std::uint8_t> neon_green_{}, on_screen_neon_green_{};
+    unsigned pending_opponent_caption_{}, latest_opponent_caption_{}, on_screen_opponent_caption_{};
 };
 // The content one track's race is drawn from, selected by track from the pack.
 // Every span is pack content; the scenario and geometry come from the engine.
@@ -489,6 +491,8 @@ struct ClassicRacePresentationContent {
     std::span<const std::uint8_t> captions;
     // The 2bpp 128-tile sheet the captions are drawn with, already in the pack.
     std::span<const std::uint8_t> caption_font;
+    // Sixteen-byte records used by the split race's rider labels.
+    std::span<const std::uint8_t> rider_names;
     // The countdown's transition member, 5 + `$1229`, which race initialization
     // latches from the player's start reflection ($83:CC05-CC08): 6 on
     // DRAGSTER, 5 on ZOOM ZOO. Derived from the track header like the engine's
@@ -508,6 +512,7 @@ struct ClassicRacePresentationContent {
     // The player's four bytes of `$82:D4DC`: COLDATA's writes and CGADSUB, the colour math
     // HDMA channel 5 applies to the BG3 ink ($82:D57F-D5FB, R-0061).
     std::span<const std::uint8_t> rider_colour_math;
+    std::span<const std::uint8_t> opponent_colour_math;
     // NEON (R-0068): the green levels by palette (`$83:D1C3`, eight bytes); empty elsewhere.
     std::span<const std::uint8_t> neon_green_levels;
     // NEON: colours 96-111, which its race never loads or cycles, as the menus left them (R-0068):

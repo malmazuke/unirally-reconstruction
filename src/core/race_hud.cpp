@@ -671,11 +671,85 @@ void draw_classic_hud(RgbFrame& frame, const ZoomZooState& state,
                       const ClassicRacePresentationContent& content,
                       std::optional<std::uint32_t> opponent_finish_frame,
                       const std::optional<ClassicHudPublished>& published,
-                      std::array<std::uint8_t, 3> ink, std::bitset<256 * 224>& inked) {
+                      std::array<std::uint8_t, 3> ink,
+                      std::array<std::uint8_t, 3> opponent_ink,
+                      unsigned opponent_caption_event,
+                      std::bitset<256 * 224>& inked) {
     const auto font = content.caption_font;
     if (font.size() != 2048) return;
     const auto hud =
         classic_race_hud_text(state, content.scenario, opponent_finish_frame, published);
+    if (state.split_screen) {
+        // $81:D1B2-D30C initializes two lap counters; $81:EB44-EB83 writes
+        // the active fields at rows 1 and 15. The second timer is one tick
+        // behind the first in the captured PAL demo's two-view race.
+        draw_bg3_text(frame, font, hud.left_column, 1, hud.left, ink, inked);
+        draw_bg3_text(frame, font, 24, 1, hud.clock, ink, inked);
+        const auto& opponent = state.race.riders[1];
+        const auto lap = classic_hud_lap(opponent.laps_remaining, content.scenario.laps);
+        const auto lower_left = opponent.finished && opponent.laps_remaining == 0
+                                    ? std::string("finish")
+                                    : std::to_string(lap) + "/"
+                                          + std::to_string(content.scenario.laps);
+        draw_bg3_text(frame, font, 2, 15, lower_left, opponent_ink, inked);
+        auto bottom_timer = classic_hud_timer(state);
+        if (state.movement.timer.subframe == 0 && bottom_timer.tenths) --bottom_timer.tenths;
+        else if (state.movement.timer.subframe == 0 &&
+                 (bottom_timer.seconds || bottom_timer.tens_seconds || bottom_timer.minutes)) {
+            bottom_timer.tenths = 9;
+            if (bottom_timer.seconds) --bottom_timer.seconds;
+            else {
+                bottom_timer.seconds = 9;
+                if (bottom_timer.tens_seconds) --bottom_timer.tens_seconds;
+                else {
+                    bottom_timer.tens_seconds = 5;
+                    --bottom_timer.minutes;
+                }
+            }
+        }
+        draw_bg3_text(frame, font, 24, 15, classic_hud_clock(bottom_timer), opponent_ink,
+                      inked);
+        draw_bg3_text(frame, font, 13, 3, hud.player_cells, ink, inked);
+        draw_bg3_text(frame, font, 13, 17, hud.opponent_cells, opponent_ink, inked);
+        if (const auto caption = classic_caption_text(opponent_caption_event, content.captions)) {
+            std::string line;
+            for (unsigned column = 0; column < 16; ++column)
+                line.push_back(static_cast<char>((*caption)[column]));
+            line.erase(0, line.find_first_not_of(' '));
+            draw_bg3_text(frame, font, 13, 19, line, opponent_ink, inked);
+        }
+        const auto name = [&](unsigned rider) {
+            std::string result;
+            const auto record = content.rider_names.subspan(rider * 16U, 16U);
+            for (auto byte : record) {
+                if (byte == ' ' || byte == '_' || byte == 0xffU || byte == 0x00U) break;
+                if (byte >= 'A' && byte <= 'Z') byte += 'a' - 'A';
+                result.push_back(static_cast<char>(byte));
+            }
+            return result;
+        };
+        const auto top_name = name(state.pairing.rider);
+        const auto bottom_name = name(state.pairing.opponent);
+        draw_bg3_text(frame, font, 30U - static_cast<unsigned>(top_name.size()), 11,
+                      top_name, ink, inked);
+        draw_bg3_text(frame, font, 30U - static_cast<unsigned>(bottom_name.size()), 25,
+                      bottom_name, opponent_ink, inked);
+        auto arrow = published ? published->arrow
+                               : classic_arrow_without_history(state, content.scenario);
+        if (arrow) {
+            // $81:EB44-EB83's split tilemap moves the side arrow into the top
+            // 112-line view. The captured right-arrow phase has one chevron.
+            if (arrow->direction == ClassicRaceArrow::Direction::Right
+                || arrow->direction == ClassicRaceArrow::Direction::Left) {
+                const bool right = arrow->direction == ClassicRaceArrow::Direction::Right;
+                const unsigned tile = right ? right_chevron : left_chevron;
+                const unsigned column = right ? right_arrow_end : left_arrow_column;
+                draw_bg3_tile(frame, font, column, 6, tile, ink, inked);
+                draw_bg3_tile(frame, font, column, 7, tile + lower_half, ink, inked);
+            } else draw_classic_arrow(frame, font, *arrow, ink, inked);
+        }
+        return;
+    }
     draw_bg3_text(frame, font, hud.left_column, 2, hud.left, ink, inked);
     draw_bg3_text(frame, font, 24, 2, hud.clock, ink, inked);
     draw_bg3_text(frame, font, 13, 5, hud.player_cells, ink, inked);

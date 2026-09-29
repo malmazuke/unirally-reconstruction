@@ -179,7 +179,11 @@ void pass_checkpoint(ZoomZooState& state, unsigned index, unsigned checkpoint) {
     auto& seen = state.race.checkpoint_seen[seen_index];
     if (slot_not_yet_crossed(seen)) {
         seen = 0;
-        if (index == 1) lap.checkpoint_display_countdown = 2;
+        // $81:8288 writes 120; the accepted one-player comparison shortens an
+        // unseen opponent's display to 2. R-0069's split capture keeps the
+        // second viewport's 120 updates at frames 2080-2199, 2327-2446 and
+        // 3054-3173.
+        if (index == 1 && !state.split_screen) lap.checkpoint_display_countdown = 2;
     }
 }
 

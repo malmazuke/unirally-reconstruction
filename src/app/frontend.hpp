@@ -112,8 +112,9 @@ private:
 
 // The app's front end: power-on to the main menu (R-0054), 1P's setup screens
 // to the race (R-0055, R-0056), and after a race its result and PICK TRACK
-// again (R-0057, R-0058, R-0067). Until the other modes are native, choosing
-// 2P, VS, LEAGUE, OPTIONS, reaching the demo, or a 1P race the race scenarios
+// again (R-0057, R-0058, R-0067). The idle demo runs its first two-view race
+// and returns to the menu (R-0069). Until the other modes are native, choosing
+// 2P, VS, LEAGUE, OPTIONS, or a 1P race the race scenarios
 // do not have shows a short notice and returns to the main menu as it first
 // appeared, the records kept.
 class FrontEndSession {
@@ -134,6 +135,7 @@ public:
   std::uint32_t races() const { return races_; }
   // The front end's screen now, and the rider's medal on the tour chosen last.
   unsigned screen() const { return static_cast<unsigned>(state_.screen); }
+  bool demo_race() const { return state_.mode == FrontEndMode::demo; }
   unsigned tour_medal() const {
     return state_.records.medals[state_.tour_menu.tour * 16U + state_.rider_menu.rider];
   }
@@ -142,6 +144,11 @@ public:
   }
   // The race NOW PLAYING chose, with its rider, opponent and tutorial hints.
   ClassicRaceScenario race_scenario() const {
+    if (demo_race()) {
+      auto scenario = classic_race_scenario(ClassicRaceTrack::ZoomZoo);
+      scenario.pairing = {4, 14};
+      return scenario;
+    }
     return one_player_race_scenario(state_);
   }
   // Colours 96-111 as the menus leave them to the race: NEON (track 42) never reloads or cycles
@@ -155,6 +162,7 @@ public:
   // has begun, or its pause menu quit or restarted it. The front end takes over
   // with its times.
   void return_from_race(const ZoomZooState &race, const RaceTimes &times);
+  void return_from_demo(std::uint32_t exit_frame);
 
 private:
   FrontEndContent content_;

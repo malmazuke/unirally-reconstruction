@@ -166,6 +166,7 @@ void arrow_drawing() {
     state.race.riders[0].finished = 1;
     state.race.riders[0].laps_remaining = 0; // `finish` at row 2
     unirally::draw_classic_hud(frame, state, content, std::nullopt, published, {255, 0, 0},
+                               {255, 0, 0}, 0,
                                inked);
     std::size_t inside = 0, below_row_4 = 0;
     for (int y = 31; y < 224; ++y)

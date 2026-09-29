@@ -1,6 +1,7 @@
 #include "presentation.hpp"
 
 #include "content_pack.hpp"
+#include "announcements.hpp"
 #include "picture.hpp"
 #include "race_hud.hpp"
 #include "result_screen.hpp"
@@ -143,6 +144,7 @@ void ClassicRaceHistoryTracker::reset() {
     transition_member_.reset();
     neon_green_.reset();
     on_screen_neon_green_.reset();
+    pending_opponent_caption_ = latest_opponent_caption_ = on_screen_opponent_caption_ = 0;
 }
 
 void ClassicRaceHistoryTracker::observe_update(const ZoomZooState& previous,
@@ -151,6 +153,16 @@ void ClassicRaceHistoryTracker::observe_update(const ZoomZooState& previous,
     // R-0036: update N builds its objects with overlays chosen from the look
     // state before its own look step; picture N+1 shows them.
     on_screen_ = latest_;
+    on_screen_opponent_caption_ = latest_opponent_caption_;
+    latest_opponent_caption_ = pending_opponent_caption_;
+    if (updated.split_screen) {
+        const auto& before = previous.movement.rewards;
+        const auto& after = updated.movement.rewards;
+        if (after.read_cursor != before.read_cursor)
+            pending_opponent_caption_ = after.entries[after.read_cursor];
+        else if (before.cooldown <= 2 && after.cooldown == announcement::empty_queue_wait)
+            pending_opponent_caption_ = 0;
+    }
     on_screen_barf_ = latest_barf_;
     on_screen_flip_prior_ = latest_flip_prior_;
     latest_flip_prior_ = previous.hunter.blink != 0;
@@ -196,6 +208,8 @@ classic_race_presentation_content(const ClassicContentPack& pack,
         throw std::invalid_argument("the riders' colour math table is short");
     content.rider_colour_math =
         colour_math.subspan(colour_math_size * scenario.pairing.rider, colour_math_size);
+    content.opponent_colour_math =
+        colour_math.subspan(colour_math_size * scenario.pairing.opponent, colour_math_size);
     // One ROM table serves both tracks (R-0037); its accepted entry name
     // predates DRAGSTER reading it and cannot be renamed.
     content.race_palette_cycle = pack.entry("presentation.zoom.race-palette-cycle.v1");
@@ -205,6 +219,7 @@ classic_race_presentation_content(const ClassicContentPack& pack,
     // R-0042: the caption table, likewise one table for both tracks.
     content.captions = pack.entry("presentation.classic.captions.v1");
     content.caption_font = pack.entry("presentation.classic.font.v1");
+    content.rider_names = pack.entry("front-end.rider-names");
     content.track = classic_track_data(pack, track);
     content.window_transition_member = classic_window_transition_member(content.track);
     if (track != ClassicRaceTrack::ZoomZoo && track != ClassicRaceTrack::Dragster) {
@@ -339,11 +354,11 @@ std::array<std::uint8_t, 65536> race_vram(const ClassicRacePresentationContent& 
 // The BG3 ink at `brightness`: CGRAM 27 through the rider's colour math, then faded, as the
 // PPU fades the colour math's result.
 std::array<std::uint8_t, 3> race_ink_rgb(const ClassicRacePresentationContent& content,
-                                         unsigned brightness) {
+                                         unsigned brightness, bool opponent = false) {
     auto ink = classic_race_ink(
         static_cast<std::uint16_t>(content.palette[2U * bg3_ink_colour]
                                    | (unsigned(content.palette[2U * bg3_ink_colour + 1U]) << 8U)),
-        content.rider_colour_math);
+        opponent ? content.opponent_colour_math : content.rider_colour_math);
     if (brightness < 15U) ink = apply_snes_brightness(ink, brightness);
     return colour_word_rgb(ink);
 }
@@ -419,23 +434,28 @@ struct RaceScroll {
 // BG2 mosaic, its size the NMI counter's low three bits; effect 3 ($83:D581-E081) shows the
 // playfield upside down through a per-line BG1 scroll table.
 RaceScroll race_scroll(const ZoomZooState& state, const ClassicRacePresentationContent& content,
-                       const ZoomZooState* previous_update, const ClassicRaceHistory* history) {
+                       const ZoomZooState* previous_update, const ClassicRaceHistory* history,
+                       bool second_camera = false) {
     const auto& geometry = content.geometry;
     const auto track = content.track;
     const bool previous_is_prior =
         previous_update && previous_update->movement.frame <= state.movement.frame;
-    const int camera_x = state.race.camera.x,
-              camera_y = static_cast<std::int16_t>(state.race.camera.y);
+    const auto& camera = second_camera ? state.race.second_camera : state.race.camera;
+    const auto& prior = previous_update
+                          ? (second_camera ? previous_update->race.second_camera
+                                           : previous_update->race.camera)
+                          : camera;
+    const int camera_x = camera.x, camera_y = static_cast<std::int16_t>(camera.y);
     RaceScroll scroll;
     scroll.background_x = previous_is_prior
-                            ? previous_update->race.camera.x & geometry.position_mask
-                            : (camera_x - static_cast<std::int16_t>(state.race.camera.velocity_x))
+                            ? prior.x & geometry.position_mask
+                            : (camera_x - static_cast<std::int16_t>(camera.velocity_x))
                                   & geometry.position_mask;
     scroll.background_y =
         previous_is_prior
-            ? static_cast<std::int16_t>(previous_update->race.camera.y)
+            ? static_cast<std::int16_t>(prior.y)
             : static_cast<std::int16_t>(static_cast<std::uint16_t>(
-                  camera_y - static_cast<std::int16_t>(state.race.camera.velocity_y)));
+                  camera_y - static_cast<std::int16_t>(camera.velocity_y)));
     const auto origin_x =
         static_cast<std::uint16_t>(((unsigned(word(track, 3)) << 4) - 256U) & 0xfff0U);
     const auto origin_y =
@@ -471,7 +491,8 @@ std::array<bool, 256 * 224> draw_race_backgrounds(RgbFrame& frame,
                                                   const std::array<std::uint8_t, 65536>& vram,
                                                   const std::array<std::uint8_t, 512>& cgram,
                                                   const ClassicRacePresentationContent& content,
-                                                  const RaceScroll& scroll) {
+                                                  const RaceScroll& top_scroll,
+                                                  const RaceScroll* bottom_scroll = nullptr) {
     const auto track = content.track;
     const auto& geometry = content.geometry;
     const int columns = geometry.coarse_columns;
@@ -482,9 +503,17 @@ std::array<bool, 256 * 224> draw_race_backgrounds(RgbFrame& frame,
     const bool bg2_on_main = !content.scenario.neon_lighting;
     for (int y = 0; y < 224; ++y)
         for (int x = 0; x < 256; ++x) {
+            const auto& scroll = bottom_scroll && y >= 112 ? *bottom_scroll : top_scroll;
+            const int viewport_y = bottom_scroll && y >= 112 ? y - 112 : y;
             // A mosaic block repeats its top-left pixel.
-            const int mx = x - x % scroll.mosaic, my = y - y % scroll.mosaic;
-            const auto background = bg2_on_main ? race_bg2_pixel(vram, scroll, mx, my) : 0U;
+            const int mx = x - x % scroll.mosaic,
+                      my = viewport_y - viewport_y % scroll.mosaic;
+            // The split HDMA changes BG2 scroll at scanline 112, but PPU tile fetches
+            // still count scanlines from the top of the full picture.
+            const auto background =
+                bg2_on_main ? race_bg2_pixel(vram, scroll, mx,
+                                             bottom_scroll && y >= 112 ? y : my)
+                            : 0U;
             pixel(frame, x, y, colour(cgram, static_cast<std::uint8_t>(background)));
             if (scroll.hide_track) continue;
             // Screen row 0 is scanline 1, as in background_pixel's vertical +1. The BG1 map
@@ -567,15 +596,25 @@ void draw_race_riders(RgbFrame& frame, const ZoomZooState& rider_source,
                       const ClassicRaceHistory* history, const RaceColours& colours, bool flip,
                       const std::array<bool, 256 * 224>& bg1_above_objects,
                       const RaceObjectMath& math) {
-    for (int rider = 1; rider >= 0; --rider) {
+    const unsigned viewports = rider_source.split_screen ? 2U : 1U;
+    for (unsigned viewport = 0; viewport < viewports; ++viewport)
+    for (int order = 0; order < 2; ++order) {
+        // Each half gives its followed rider the front OAM slot. On frame
+        // 1700 both riders overlap in the lower half; ALICE covers AMY there.
+        const int rider = viewport ? order : 1 - order;
         // R-0068: a stunt event's setup sets entry 99's ninth x bit (`$15A3` = 0xE5,
         // $82:D789-D797) and the opponent's object writer, part of its skipped update, never
         // clears it, so the opponent stays at the setup's x 0x60 - 256, off the screen.
         if (rider == 1 && content.scenario.stunt_event) continue;
         const auto& source = rider_source.movement.riders[static_cast<std::size_t>(rider)];
-        auto oam =
-            project_rider_oam(source.motion.x, source.motion.y, rider_source.race.camera.x,
-                              rider_source.race.camera.y, source.pose.reflected, content.geometry);
+        const auto& camera = viewport ? rider_source.race.second_camera : rider_source.race.camera;
+        if (rider_source.split_screen) {
+            const auto dy = static_cast<std::int16_t>(source.motion.y - camera.y);
+            if (dy < -41 || dy >= 112) continue;
+        }
+        auto oam = project_rider_oam(source.motion.x, source.motion.y, camera.x, camera.y,
+                                     source.pose.reflected, content.geometry);
+        if (viewport) oam.y = static_cast<std::uint8_t>(oam.y + 112U);
         if (flip)
             oam.y = static_cast<std::uint8_t>(0xe0U - static_cast<std::uint8_t>(oam.y + 0x40U));
         oam.vertical_flip = flip || (history && history->hunter_flip_prior);
@@ -592,6 +631,8 @@ void draw_race_riders(RgbFrame& frame, const ZoomZooState& rider_source,
         const bool raised =
             rider_source.special_tiles[static_cast<std::size_t>(rider)].raised_priority != 0;
         draw_rider_object(pixels, oam, [&](int x, int y, std::uint8_t value) {
+            if (rider_source.split_screen && (static_cast<unsigned>(y >= 112) != viewport))
+                return;
             const auto at = static_cast<std::size_t>(y) * 256 + static_cast<std::size_t>(x);
             if (bg1_above_objects[at] && !raised) return;
             // NEON: BG3's ink (priority tiles) is in front of the objects, which a race's
@@ -683,7 +724,12 @@ RgbFrame render_classic_race(const ZoomZooState& state,
     };
     const std::array<std::uint8_t, 3> ink = ui({255, 240, 220});
     const auto scroll = race_scroll(state, content, previous_update, history);
-    const auto bg1_above_objects = draw_race_backgrounds(frame, vram, cgram, content, scroll);
+    const auto second_scroll = state.split_screen
+                                   ? std::optional<RaceScroll>(
+                                         race_scroll(state, content, previous_update, history, true))
+                                   : std::nullopt;
+    const auto bg1_above_objects = draw_race_backgrounds(
+        frame, vram, cgram, content, scroll, second_scroll ? &*second_scroll : nullptr);
     const auto window_index = race_window_member(state, content, history);
     const auto window_colour = colour(cgram, 0);
     // The caption (R-0042) and the HUD (R-0043) are BG3, drawn over the track and under the
@@ -693,12 +739,19 @@ RgbFrame render_classic_race(const ZoomZooState& state,
     const auto hud =
         history ? std::optional<ClassicHudPublished>(history->published_hud) : std::nullopt;
     draw_classic_caption(frame, rider_source, content, hud, bg3_ink, caption_ink);
-    draw_classic_hud(frame, rider_source, content,
-                     history ? history->opponent_finish_frame : std::nullopt, hud, bg3_ink,
-                     caption_ink);
+    const auto draw_hud = [&] {
+        draw_classic_hud(frame, rider_source, content,
+                         history ? history->opponent_finish_frame : std::nullopt, hud, bg3_ink,
+                         race_ink_rgb(content, brightness, true),
+                         history ? history->opponent_caption_event : 0U,
+                         caption_ink);
+    };
+    if (!state.split_screen) draw_hud();
     const RaceObjectMath math{caption_ink, neon_green ? &vram : nullptr, &scroll};
     draw_race_riders(frame, rider_source, content, history, colours, scroll.flip,
                      bg1_above_objects, math);
+    // The split's HUD tile priority covers both riders at the lap-banner overlap.
+    if (state.split_screen) draw_hud();
     // Every member covers both objects as well as the backgrounds: inside the window the
     // original shows the flat window colour and nothing else (ZOOM-ZOO-WINDOW-EFFECTS:
     // start-line frames 1450, 1583 and 1649 of the M4-16 primary and countdown-pause originals
@@ -709,6 +762,9 @@ RgbFrame render_classic_race(const ZoomZooState& state,
     if (window_index)
         render_window_xor(frame, dragster_window_table(content.window_tables, *window_index),
                           window_colour);
+    if (state.split_screen)
+        for (int y = 111; y <= 112; ++y)
+            for (int x = 0; x < 256; ++x) pixel(frame, x, y, {0, 0, 0});
     if (state.pause.selection)
         draw_race_pause_menu(frame, state.pause.selection, ui({15, 30, 30}), ink);
     return frame;

@@ -4,6 +4,15 @@ This is the M0 implementation specification. Commands marked implemented in the 
 
 ## Validation by stage
 
+For SPLIT-SCREEN-RACE (R-0069), `front_end_runner` also accepts
+`--human-after FRAME` as a bounded laboratory intervention: from that first
+race update it disables the first demo's AI so two scripted pad words can be
+compared against the same one-byte intervention in the PAL reference. The
+`split_demo_runner --content-pack PACK --restore-check FRAME --picture LAST
+OUT.ppm` checks the new `URZZ000F/G` save layout and every resumed update
+through LAST; FRAME and LAST use original cold-start frame labels. The app's
+idle first demo path needs no laboratory option.
+
 [D-0006](decisions/D-0006-capability-driven-work.md) changes when checks run, not
 what constitutes evidence. Historical frozen expectations and acceptance remain.
 

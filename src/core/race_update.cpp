@@ -19,6 +19,7 @@
 #include "announcements.hpp"
 #include "hunter_effects.hpp"
 #include "opponent_ai.hpp"
+#include "race_demo_controls.hpp"
 #include "race_camera.hpp"
 #include "race_progress.hpp"
 #include "reward_queue.hpp"
@@ -79,7 +80,8 @@ constexpr std::int16_t shallow_slope = 30;
 constexpr std::uint16_t drive_step = 24, lift_launch_override = 80;
 // The loop's top is step 9. Native passes the cartridge's options word ($77:0750) as
 // 0xC200; contact tests only its bit 3, which is clear.
-constexpr std::uint16_t loop_top_step = 9, cartridge_options = 0xc200;
+constexpr std::uint16_t loop_top_step = 9, cartridge_options = 0xc200,
+                        split_demo_options = 0xc20a;
 // The wrong-direction warning after 180 active updates, then every 60 ($82:974B/977B).
 constexpr std::uint16_t wrong_way_warning = 180, wrong_way_repeat = 120;
 
@@ -115,7 +117,7 @@ void check_update_domain(const ZoomZooState& state, const ControllerButtons& req
     if ((restored
          && (request.y || request.select || request.start || request.up || request.down || request.a
              || request.x || request.left_shoulder || request.right_shoulder))
-        || (!state.complete_race && request.left))
+        || (!state.complete_race && !state.split_screen && request.left))
         throw std::invalid_argument("ZOOM ZOO controller is outside the recovered domain");
     if (state.movement.frame < (restored ? trial_first_frame : scenario.initialization_frame)
         || (restored
@@ -627,7 +629,7 @@ SpeedLimitContext speed_limit_context(const ZoomZooState& state, const ZoomZooSt
     const auto& rider = whole.riders[index];
     SpeedLimitContext limit{};
     limit.opponent = index == 1;
-    limit.ai_enabled = true;
+    limit.ai_enabled = !next.split_screen; // $0C6D is clear in the two-rider demo (R-0069).
     limit.pose_byte = index == 1 ? next.opponent_retained_oam_x
                                  : static_cast<std::uint8_t>(next.race.camera.screen_xy);
     limit.drag = state.complete_race
@@ -754,7 +756,8 @@ void update_rider_contact(const ZoomZooState& state, ZoomZooState& next, unsigne
     const bool surface_mode = next.surface[index].mode != 0;
     resolve_vertical_contact(
         rider.contact, rider.motion, summary,
-        {whole.contact_phase, index == 1, next.surface[index].mode, cartridge_options,
+        {whole.contact_phase, index == 1, next.surface[index].mode,
+         next.split_screen ? split_demo_options : cartridge_options,
          next.special_tiles[index].loop_step == loop_top_step,
          index == 0 && next.hunter.effect[hunter_effect::power_bounce] != 0},
         content.slope_coefficients.subspan(state.sustained && surface_mode ? 64 : 0,
@@ -786,6 +789,18 @@ void finish_update(const ZoomZooState& state, ZoomZooState& next,
         for (auto& rider : next.race.riders) rider.finished = 1;
     if (state.native_initialization)
         show_next_player_announcement(next, content.movement, content.captions);
+    const auto previous_write = state.movement.rewards.write_cursor;
+    const bool queued_scoring_event = whole.rewards.write_cursor != previous_write
+                                   && whole.rewards.entries[previous_write]
+                                          < announcement::wrong_way;
+    if (next.demo_ai && next.demo.opponent_hints_active
+        && (queued_scoring_event || (outcomes[1].reward
+                                     && outcomes[1].reward < announcement::wrong_way))) {
+        // $81:C5D5-C5E1: the second rider's first scoring event interrupts
+        // the tutorial wait and is consumed on this update (R-0069).
+        whole.rewards.cooldown = 0;
+        next.demo.opponent_hints_active = false;
+    }
     update_opponent_announcements(whole, outcomes[1].reward, content.movement,
                                   state.native_initialization
                                       ? std::span<std::uint8_t>{next.learned_weights[1]}
@@ -822,7 +837,7 @@ std::uint16_t next_wrong_direction_counter(std::uint16_t previous, std::uint16_t
 }
 
 void update_zoom_zoo(ZoomZooState& state, const ControllerButtons& requested_buttons,
-                     const ZoomZooContent& content) {
+                     const ControllerButtons& second_port, const ZoomZooContent& content) {
     const auto request = gate_controller(state, requested_buttons);
     validate_zoom_zoo_content_state(state, content);
     const auto scenario = classic_race_scenario(state.track);
@@ -847,23 +862,52 @@ void update_zoom_zoo(ZoomZooState& state, const ControllerButtons& requested_but
     }
     advance_clocks(next, buttons);
     const auto player_buttons = release_settled_player(state, next, buttons);
-    const bool pressed_a = read_player_buttons(
+    bool pressed_a = read_player_buttons(
         next, player_buttons, state.hunter.effect[hunter_effect::control_reversed] != 0);
-    if (run_pause_menu(state, next, player_buttons, content)) {
+    if (!state.demo_ai && run_pause_menu(state, next, player_buttons, content)) {
         state = next;
         return;
     }
     if (state.native_initialization && next.pause.released && !player_buttons.start)
         next.pause.released = 0;
-    const bool ai_off = scenario.stunt_event ? release_absent_opponent(next)
-                                             : update_opponent_controller(next);
+    DemoTrickButtons demo_buttons{};
+    bool ai_off = next.demo_ai || next.split_screen || scenario.stunt_event;
+    const auto opponent_buttons = with_physical_dpad(gate_controller(state, second_port));
+    if (next.demo_ai) {
+        const auto pressed = [](const ControllerButtons& pad) {
+            return pad.a || pad.b || pad.x || pad.y || pad.left_shoulder
+                   || pad.right_shoulder || pad.select || pad.start || pad.up || pad.down
+                   || pad.left || pad.right;
+        };
+        demo_buttons = update_demo_controllers(next,
+                                               pressed(request) || pressed(opponent_buttons));
+        pressed_a = demo_buttons.a[0];
+    } else if (next.split_screen) {
+        const auto sample = sample_controller(opponent_buttons);
+        next.opponent_horizontal = sample.horizontal;
+        auto& input = next.reflection[1];
+        input.brake_input = opponent_buttons.y;
+        input.jump_input = opponent_buttons.b;
+        input.rotate_negative_input = opponent_buttons.left_shoulder;
+        input.rotate_positive_input = opponent_buttons.right_shoulder;
+        demo_buttons.a[1] = opponent_buttons.a;
+        demo_buttons.x[1] = opponent_buttons.x;
+    } else if (scenario.stunt_event)
+        release_absent_opponent(next);
+    else
+        ai_off = update_opponent_controller(next);
     const bool countdown_holds =
         run_countdown(state, next, scenario.stunt_event ? stunt_countdown : race_countdown);
     // The opponent's A and X are its selector's bits only on updates the AI stores them;
     // with the AI off both stay released (R-0048).
     const TrickButtons trick_buttons{
-        pressed_a && !countdown_holds, player_buttons.x && !countdown_holds,
-        countdown_holds ? 0U : (unsigned(whole.opponent_ai.trick_selector) & (ai_off ? ~6U : ~0U))};
+        pressed_a && !countdown_holds,
+        (next.demo_ai ? demo_buttons.x[0] : player_buttons.x) && !countdown_holds,
+        countdown_holds ? 0U
+                        : next.split_screen ? unsigned(demo_buttons.a[1]) * 2U
+                                       + unsigned(demo_buttons.x[1]) * 4U
+                                       : (unsigned(whole.opponent_ai.trick_selector)
+                                          & (ai_off ? ~6U : ~0U))};
     if (state.complete_race) update_finish(next, content);
     const unsigned active = whole.progress_phase ? 0U : 1U;
     lower_announcement_cooldowns(next, scenario);
@@ -872,6 +916,11 @@ void update_zoom_zoo(ZoomZooState& state, const ControllerButtons& requested_but
         outcomes[index] = update_rider(state, next, index, active, trick_buttons, content);
     finish_update(state, next, outcomes, content, scenario);
     state = next;
+}
+
+void update_zoom_zoo(ZoomZooState& state, const ControllerButtons& requested_buttons,
+                     const ZoomZooContent& content) {
+    update_zoom_zoo(state, requested_buttons, ControllerButtons{}, content);
 }
 
 } // namespace unirally

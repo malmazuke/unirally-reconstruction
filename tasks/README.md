@@ -78,7 +78,8 @@ The coordinator maintains the status registry below. Work orders further below d
 | FIFTH-WIN-COMPLETION | accepted (tier 2, #38): a tour completed by its fifth win; cartridge RAM writes in replay manifests | [A tour completed by its fifth win](FIFTH-WIN-COMPLETION.md) |
 | STUNT-EVENT-RACE | accepted (tier 1, #39): the nine stunt events in the race engine; pack v24 | [The stunt events in the race engine](STUNT-EVENT-RACE.md) |
 | STUNT-RESULT | accepted (tier 2, #40): a stunt event's result, records and way back to the menus; pack v25 | [A stunt event's result, records and way back to the menus](STUNT-RESULT.md) |
-| STUNT-HUD | in review (tier 1): a stunt event's race picture; NEON; pack v26 | [A stunt event's race picture](STUNT-HUD.md) |
+| STUNT-HUD | integrated by #42 (tier 1): a stunt event's race picture; NEON; pack v26 | [A stunt event's race picture](STUNT-HUD.md) |
+| SPLIT-SCREEN-RACE | claimed (tier 1): two native viewports and rider controls, first through the demo | [A race with two visible riders](SPLIT-SCREEN-RACE.md) |
 | ROLLING-CONTACT | ready | [A rolling rider's second contact after a long shoulder rotation (HUNTER-EFFECTS review)](ROLLING-CONTACT.md) |
 | PORTABLE-CORE-IDENTITY | ready (tier 2): the reference core accepted by its source and its pinned outputs, not one binary hash; no pack can be built from a ROM on Linux today | [The laboratory and the pack build on any host that builds the pinned core](PORTABLE-CORE-IDENTITY.md) |
 | PR-WORKFLOW | integrated by pull request #6 (tier 2, approved with should-fix items, all applied); changes reach `main` only through pull requests (user request, 23 September 2026) | [Changes reach main through pull requests](PR-WORKFLOW.md) |

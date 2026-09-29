@@ -77,6 +77,10 @@ inline bool slot_not_yet_crossed(std::uint8_t first_seen_flag) {
 
 struct ZoomZooRaceState {
     ZoomZooCamera camera;
+    // $041F/$0423, $04FB/$04FF, $0555: the second rider's camera only while
+    // $0DE1 selects two 112-line viewports (R-0069). The one-player state format
+    // does not carry these unused words.
+    ZoomZooCamera second_camera;
     std::array<ZoomZooFinishPose, 2> finish_pose;
     // $114D-$119C: 80 first-seen flags, laps remaining * 4 + checkpoint
     // ($81:CD25-CD2E fills them with 0xFF; the first crossing of a slot clears its flag, see
@@ -108,6 +112,15 @@ struct ZoomZooPause {
     std::uint16_t selection{},
         released{}; // $0EF3: 0/racing, 1/resume, -1/authored restart (original Retire); $0EF5.
     std::uint32_t suspended_updates{}, suspended_countdown_updates{}; // Semantic update clocks.
+};
+// $83:E254-E55B: the idle demo's two computer riders. The four per-rider words
+// are $1377/$1379, $137B/$137D, $137F/$1381 and $1383/$1385; elapsed is $1387.
+struct DemoControllers {
+    std::array<std::uint16_t, 2> trick_bits{}, rotation_window{}, turnaround{},
+        airborne_rotation{};
+    std::uint16_t elapsed{};
+    bool exit_requested{}; // $12B3
+    bool opponent_hints_active{}; // $12E5: first scoring event clears the queue wait.
 };
 // The race engine was first recovered on ZOOM ZOO, hence the ZoomZoo names.
 // DRAGSTER runs the same original routines with its own track content and
@@ -310,6 +323,9 @@ struct StuntEvent {
 };
 struct ZoomZooState {
     ClassicRaceTrack track{ClassicRaceTrack::ZoomZoo}; // Serialized as the state magic.
+    bool split_screen{}; // $0DE1; separate native demo/two-player state format pending.
+    bool demo_ai{}; // $7E:212C; controls both riders in a split demo.
+    DemoControllers demo;
     ZoomZooPause pause;
     std::array<ZoomZooRoll, 2> rolls{};
     std::array<std::array<std::uint8_t, 25>, 2>
@@ -466,4 +482,6 @@ void validate_zoom_zoo_content_state(const ZoomZooState& state, const ZoomZooCon
 // directions on one axis reach the race as neither (R-0041).
 void update_zoom_zoo(ZoomZooState& state, const ControllerButtons& requested_buttons,
                      const ZoomZooContent& content);
+void update_zoom_zoo(ZoomZooState& state, const ControllerButtons& first_port,
+                     const ControllerButtons& second_port, const ZoomZooContent& content);
 } // namespace unirally

@@ -487,8 +487,11 @@ void main_menu_tests() {
   run(idle, content, 900);
   require(!idle.mode_chosen);
   run(idle, content, 1);
-  require(idle.mode_chosen && idle.mode == unirally::FrontEndMode::demo &&
+  require(!idle.mode_chosen && idle.screen == unirally::FrontEndScreen::demo_title &&
           idle.frame == 901);
+  run(idle, content, 548);
+  require(idle.mode_chosen && idle.mode == unirally::FrontEndMode::demo &&
+          idle.screen == unirally::FrontEndScreen::race && idle.frame == 1449);
 }
 
 void rider_menu_tests() {

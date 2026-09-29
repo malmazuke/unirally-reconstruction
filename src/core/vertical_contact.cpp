@@ -332,8 +332,9 @@ void land(ContactStep& s, unsigned horizontal, unsigned pose_index, bool reflect
     s.next.recontact = true;
     if (s.magnitude >= steep_angle || s.flag_pair == slow_pair) return;
     const int coarse = coarse_landing_angle(s);
-    // Player selection alone does not replace the matrix; HUNTER effect 2 ($132B) does.
-    require((s.context.cartridge_options & 8U) == 0, "unrecovered landing option");
+    // $81:94A8-94C3: option bit 3 skips the $0FF9 check, then only HUNTER
+    // effect 2 ($132B) can replace the matrix. The split demo has bit 3 set
+    // and that effect clear, so it takes this ordinary matrix path (R-0069).
     const bool long_airtime_matrix = landing_rotation(s, coarse, pose_index, reflected);
     apply_landing_matrix(s, coarse, long_airtime_matrix, horizontal, landing_matrices);
 }

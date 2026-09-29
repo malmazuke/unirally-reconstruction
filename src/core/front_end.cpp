@@ -212,6 +212,10 @@ bool waits_for_frame(const FrontEndState& state) {
     // `$80:D20E`'s first; then from the OAM copy on. `$83:879A`'s frame waits (`$83:A923`) leave
     // the arrow alone.
     const auto next = state.script_frame + 1;
+    if (state.screen == FrontEndScreen::demo_title)
+        return next <= 9 || next == 35 || (next >= 134 && next <= 458);
+    if (state.screen == FrontEndScreen::demo_return)
+        return next == 75 || next == 76 || next >= 103;
     if (state.screen == FrontEndScreen::race_return)
         return next == upload_last_frame || next == menu_screen_frame || next >= restore_frame;
     if (state.screen == FrontEndScreen::race_result_exit)
@@ -329,8 +333,8 @@ void run_main_menu(FrontEndState& state, const FrontEndContent& content, FrontEn
     // `$80:AC0F-AC14`: the count is stored only while it stays positive; the demo is mode 5.
     if (menu.idle == 0) {
         menu.selection = static_cast<std::uint8_t>(FrontEndMode::demo);
-        state.mode_chosen = true;
         state.mode = FrontEndMode::demo;
+        state.screen = FrontEndScreen::demo_title;
         return;
     }
     --menu.idle;
@@ -747,6 +751,103 @@ FrontEndState start_front_end() {
     return {};
 }
 
+void return_from_demo(FrontEndState& state, std::uint32_t exit_frame) {
+    state.frame = exit_frame + 1U;
+    state.screen = FrontEndScreen::demo_return;
+    state.script_frame = 0;
+    state.mode_chosen = false;
+    state.registers.force_blank = true;
+    state.line_registers.clear();
+    state.cycle.running = false;
+}
+
+namespace {
+
+// The original's idle title has a 31-line brightness wave. Its 16-level
+// profile repeats every picture, moving three lines down the display. The
+// region above the wave is bright; below it the display is blank (R-0069).
+void demo_title_frame(FrontEndState& state, const FrontEndContent& content) {
+    const auto frame = state.script_frame;
+    if (frame == 1) {
+        load_title(state, content);
+        clear_oam_buffer(state);
+        copy_oam(state);
+    }
+    state.line_registers.clear();
+    state.registers.bg[0].vofs = 0;
+    if (frame < 134) {
+        state.registers.force_blank = true;
+        return;
+    }
+    state.registers.force_blank = false;
+    state.registers.brightness = 15;
+    if (frame < 208) {
+        constexpr std::array<std::uint8_t, 31> wave{
+            1, 3, 5, 7, 8, 9, 10, 11, 12, 12, 13, 13, 14, 14, 15, 15,
+            15, 15, 14, 14, 13, 13, 12, 12, 11, 10, 9, 8, 7, 5, 3};
+        constexpr std::array<int, 31> source_offsets{
+            40, 35, 30, 27, 26, 25, 24, 23, 22, 21, 20, 19, 18, 17, 16, 15,
+            14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, -1, -6};
+        const auto wave_start = 2U + 3U * (frame - 134U);
+        for (unsigned row = wave_start; row < 224U && row < wave_start + wave.size(); ++row) {
+            state.line_registers.push_back({static_cast<std::uint8_t>(row),
+                                            SnesLineRegisterName::display,
+                                            wave[row - wave_start]});
+            // BG1's per-line vertical offset reverses the title image inside
+            // the band, with five eased rows at its two edges.
+            state.line_registers.push_back({
+                static_cast<std::uint8_t>(row), SnesLineRegisterName::bg1_vertical_offset,
+                static_cast<std::uint16_t>(source_offsets[row - wave_start]
+                                           - int(row - wave_start))});
+        }
+        if (wave_start + wave.size() < 224U)
+            state.line_registers.push_back({
+                static_cast<std::uint8_t>(wave_start + wave.size()),
+                SnesLineRegisterName::display, 0x80});
+    }
+    if (frame >= 452 && frame <= 457)
+        state.registers.brightness = static_cast<std::uint8_t>(13U - 2U * (frame - 452U));
+    if (frame >= 458) {
+        state.registers.force_blank = true;
+        state.cycle.running = false;
+    }
+    if (frame == 548) {
+        state.tour_menu.track = ClassicRaceTrack::ZoomZoo.index;
+        state.rider_menu.rider = 4; // $77:0748 on the first demo's race initialization.
+        state.now_playing.opponent = 14; // $77:0749.
+        state.mode_chosen = true;
+        state.screen = FrontEndScreen::race;
+    }
+}
+
+void demo_return_frame(FrontEndState& state, const FrontEndContent& content) {
+    const auto frame = state.script_frame;
+    if (frame == 90) {
+        load_main_menu_screen(state, content);
+        lay_out_menu_objects(state);
+        reload_menu_palette(state, content);
+        copy_menu_text(state, content);
+        reload_menu_text_tiles(state, content);
+        state.logo.raised = false;
+        state.logo.offset = 0;
+        state.registers.bg[0].vofs = 0;
+        state.registers.brightness = 14;
+        state.registers.force_blank = true;
+        state.cycle.running = false;
+        state.cycle.delay = state.cycle.phase = 0;
+    }
+    if (frame == 101) {
+        state.cycle.running = true;
+    }
+    if (frame == 102) state.arrow.spin = 4;
+    if (within(frame, 109, fade_frames)) fade(state, frame, 109, true);
+    if (frame == 118) {
+        start_main_menu(state);
+    }
+}
+
+} // namespace
+
 namespace front_end_screens {
 
 // The power-on path again (`$80:91D1`): every register and all work RAM reset (VRAM is cleared on
@@ -805,6 +906,8 @@ void update_front_end(FrontEndState& state, const FrontEndContent& content, Fron
     case FrontEndScreen::hunter_ending: hunter_ending_frame(state, content, physical); break;
     case FrontEndScreen::hunter_code: hunter_code_frame(state); break;
     case FrontEndScreen::stunt_result: stunt_result_frame(state, content, physical); break;
+    case FrontEndScreen::demo_title: demo_title_frame(state, content); break;
+    case FrontEndScreen::demo_return: demo_return_frame(state, content); break;
     }
     if (state.screen != screen) state.script_frame = 0;
     ++state.frame;

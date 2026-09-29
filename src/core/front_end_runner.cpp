@@ -16,6 +16,8 @@
 // original's cartridge RAM during the run (FIFTH-WIN-COMPLETION, R-0065) replays the same write.
 #include "content_pack.hpp"
 #include "front_end.hpp"
+#include "presentation.hpp"
+#include "race_camera.hpp"
 #include "zoom_zoo_movement.hpp"
 #include "zoom_zoo_pack.hpp"
 
@@ -39,13 +41,14 @@ namespace {
 struct Options {
     std::filesystem::path pack, inputs;
     std::uint32_t frames{};
-    std::map<std::uint32_t, std::filesystem::path> pictures, records;
+    std::map<std::uint32_t, std::filesystem::path> pictures, records, vram;
     // The original's race initialization frames, in race order, from a capture: the loading time
     // varies by a frame with the sound program's handshake (R-0039, R-0058).
     std::vector<std::uint32_t> race_initializations;
     // After each soft reset in turn, how much later the sound program's upload ends than at
     // power-on (HUNTER-ENDING); native's own is 3.
     std::vector<std::uint32_t> reset_upload_delays;
+    std::optional<std::uint32_t> human_after;
     // Record bytes written after a frame: the frame, the cartridge RAM offset and the byte.
     std::vector<std::tuple<std::uint32_t, std::uint32_t, std::uint8_t>> record_writes;
 };
@@ -107,6 +110,11 @@ Options parse_options(int argc, char** argv) {
         } else if (option == "--records") {
             const auto frame = static_cast<std::uint32_t>(std::stoul(value()));
             options.records[frame] = value();
+        } else if (option == "--vram") {
+            const auto frame = static_cast<std::uint32_t>(std::stoul(value()));
+            options.vram[frame] = value();
+        } else if (option == "--human-after") {
+            options.human_after = static_cast<std::uint32_t>(std::stoul(value()));
         } else
             throw std::invalid_argument("unknown front-end runner option: " + option);
     }
@@ -115,6 +123,7 @@ Options parse_options(int argc, char** argv) {
                                     "[--inputs FILE] [--picture FRAME OUT.ppm]... "
                                     "[--records FRAME OUT.bin]... "
                                     "[--race-initialization FRAME]... "
+                                    "[--human-after FRAME] "
                                     "[--reset-upload-delay FRAMES]... "
                                     "[--record-write FRAME OFFSET BYTE]...");
     return options;
@@ -259,6 +268,8 @@ void print_state(std::uint32_t frame, const unirally::FrontEndState& state) {
 // loading frames after NOW PLAYING's fade ends (`race_loading_frames`).
 struct RaceBetweenMenus {
     std::optional<unirally::ZoomZooContent> content;
+    std::optional<unirally::ClassicRacePresentationContent> presentation;
+    unirally::ClassicRaceHistoryTracker history;
     unirally::ZoomZooState state{};
     std::uint32_t initialization_frame{};
     std::uint32_t loading_initialization{}; // the frame the track's loading gives, if measured
@@ -269,6 +280,21 @@ struct RaceBetweenMenus {
 // loading's. The rider and opponent change no loading time (R-0061).
 std::string start_race(RaceBetweenMenus& race, const unirally::ClassicContentPack& pack,
                        const unirally::FrontEndState& front_end, std::uint32_t initialization) {
+    if (front_end.mode == unirally::FrontEndMode::demo) {
+        auto scenario = unirally::classic_race_scenario(unirally::ClassicRaceTrack::ZoomZoo);
+        race.content = unirally::classic_race_content(pack, scenario.track);
+        race.state = unirally::classic_race_start(*race.content, scenario);
+        unirally::initialize_split_cameras(race.state);
+        race.state.demo_ai = race.state.demo.opponent_hints_active = true;
+        race.state.pairing = {4, 14}; // First PAL idle demo, $77:0748/$77:0749 at 1448.
+        race.state.opponent_tier.ai_level = 0;
+        scenario.pairing = race.state.pairing;
+        race.presentation = unirally::classic_race_presentation_content(pack, scenario);
+        race.initialization_frame = initialization ? initialization : 1448;
+        race.loading_initialization = 1448;
+        race.history = {};
+        return {};
+    }
     const auto scenario = unirally::one_player_race_scenario(front_end);
     const auto loading_frames = unirally::race_loading_frames(scenario.track);
     if (loading_frames == 0 && initialization == 0) return "its loading time is not known";
@@ -307,6 +333,30 @@ int main(int argc, char** argv) try {
                     break;
                 }
             }
+            if (state.mode == unirally::FrontEndMode::demo) {
+                if (frame <= race.initialization_frame) continue;
+                if (options.human_after && frame >= *options.human_after)
+                    race.state.demo_ai = false;
+                const auto previous = race.state;
+                unirally::update_zoom_zoo(race.state, race_buttons(pads.one),
+                                          race_buttons(pads.two), *race.content);
+                race.history.observe_update(previous, race.state, pack);
+                if (const auto picture = options.pictures.find(frame);
+                    picture != options.pictures.end()) {
+                    const auto shown = race.history.on_screen();
+                    write_ppm(picture->second, unirally::render_classic_race(
+                                                   race.state, *race.presentation, &previous,
+                                                   &shown));
+                }
+                if (race.state.demo.exit_requested) {
+                    unirally::return_from_demo(state, frame);
+                    race.content.reset();
+                    race.presentation.reset();
+                    ++races;
+                }
+                print_state(frame, state);
+                continue;
+            }
             if (frame <= race.initialization_frame) continue;
             const auto over =
                 unirally::update_race_for_menus(race.state, race_buttons(pads.one), *race.content);
@@ -332,6 +382,11 @@ int main(int argc, char** argv) try {
             write_ppm(picture->second, unirally::render_front_end(state));
         if (const auto at = options.records.find(frame); at != options.records.end())
             write_records(at->second, state.records);
+        if (const auto at = options.vram.find(frame); at != options.vram.end()) {
+            std::ofstream out(at->second, std::ios::binary);
+            out.write(reinterpret_cast<const char*>(state.video.vram.data()),
+                      static_cast<std::streamsize>(state.video.vram.size()));
+        }
     }
     // A mode chosen; for 1P the race NOW PLAYING chose.
     if (state.mode_chosen)

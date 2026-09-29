@@ -112,8 +112,11 @@ In order; each becomes ready when the one before it is integrated, unless noted.
    rider, tour and track into the race start.
 3. FRONT-END-1P-CONTINUATION: after the result, the next track, tour standings, the tour's end,
    unlocks and saving them.
-4. RESULT-ICONS: the result screen's `1P` arrow, unicycles and awards.
-5. SPLIT-SCREEN-RACE: two riders on a split screen, both computer (the demo) or human.
+4. RESULT-ICONS: fulfilled on the one-player product path by FRONT-END-1P-CONTINUATION
+   (R-0057): its OAM build draws the `1P` marker, rider icons and trophies. The older standalone
+   race renderer still omits them; that historical limitation is not a missing one-player mode.
+5. [SPLIT-SCREEN-RACE](SPLIT-SCREEN-RACE.md): two riders on a split screen, both computer (the
+   demo) or human. Claimed 29 September 2026.
 6. ATTRACT-DEMO: the demo race and its return to the title.
 7. TWO-PLAYER and VS modes.
 8. OPTIONS and LEAGUE.
