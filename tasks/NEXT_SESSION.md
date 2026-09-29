@@ -1,5 +1,28 @@
 # Next session
 
+**Status on 29 September 2026 UTC (TWO-PLAYER-VS reviewed on PR #45):** the
+native source/map commit `1191408` has accepted tier-1 independent review,
+11/11 frozen private comparisons, a 539/539 app-debug synthetic suite and green
+hosted macOS/Ubuntu checks. The local macOS sanitizer suite timed out and is
+recorded as such. [TWO-PLAYER-VS](TWO-PLAYER-VS.md) has the precise tested domain,
+residuals, evidence and closeout procedure. If [PR #45](https://github.com/malmazuke/unirally-reconstruction/pull/45)
+is open, finish its exact-tip record-only review/checks, merge commit and local
+cleanup. If it has merged, verify its ignored `artifacts/two-player-vs-integration/closeout.json`
+and synchronized `main`. Then claim OPTIONS before LEAGUE: its menu navigation
+and records presentation are the smaller independent outcome, while LEAGUE adds
+the six-player tournament state machine. No new task should spend this task's
+remaining review and recovery reserve; the next claim gets its own D-0004
+baseline.
+
+**Status on 29 September 2026 UTC (TWO-PLAYER-VS claimed): continue
+[TWO-PLAYER-VS](TWO-PLAYER-VS.md) in `.worktrees/two-player-vs` from the
+ATTRACT-DEMO merge `5df56c6`.** PR #44 is merged and its ignored closeout confirms
+final-tip CI, local `main` synchronization and cleanup. The new task's first
+experiment is a fresh PAL capture of the 2P and VS selections through first race
+entry, beginning with the existing first-screen reconnaissance and the static
+listing's unknown `$80:BCBF` and `$80:BF49` entries. Its task record holds the
+scope, tier, usage boundary, branch and exact next step.
+
 **Status on 29 September 2026 UTC (ATTRACT-DEMO reviewed, merge pending): finish
 [PR #44](https://github.com/malmazuke/unirally-reconstruction/pull/44) from the claimed
 task branch `task/attract-demo` in `.worktrees/attract-demo`.** The second idle

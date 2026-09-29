@@ -27,6 +27,8 @@ struct FrontEndContent {
     // The rider menu: the riders' name records (16 bytes each), its title, the decoration
     // animator's tables and the uni pictures (the race riders' pose frames and tiles).
     std::span<const std::uint8_t> rider_names, rider_menu_title, decoration_frames;
+    std::span<const std::uint8_t> two_player_first_title, two_player_second_title;
+    std::span<const std::uint8_t> versus_first_title, versus_second_title;
     RiderObjectContent uni_pictures;
     // The tour menu (profile v17).
     std::span<const std::uint8_t> medal_tiles, tour_menu_text, tour_badge_places, tour_levels;
@@ -38,6 +40,9 @@ struct FrontEndContent {
     std::span<const std::uint8_t> laps, qualifying_scores, track_names;
     // The one-run result screen (profile v18): its text (`$80:D187`) and icons (`$80:D17B`).
     std::span<const std::uint8_t> result_text, result_icons;
+    std::span<const std::uint8_t> result_fifth_row; // $80:D1DB, human opponent (R-0071)
+    std::span<const std::uint8_t> local_continue_text, vs_champions_header, vs_champions_row,
+        pick_challenger_title;
     // The lap result (profile v19): the headings and graph, the record line, the two rows.
     std::span<const std::uint8_t> lap_result_text, lap_result_record, lap_result_player,
         lap_result_opponent;
@@ -129,6 +134,8 @@ struct RiderMenu {
     std::uint16_t picture{};  // the uni picture built for the next frame ($83:8E3A)
     bool back{};              // left with Y or X rather than chosen
     bool returning{};         // entered back from PICK TOUR ($00AC != 2): slides back in
+    bool second{};            // 2P/VS: port 2 chooses a distinct second rider (R-0071)
+    bool challenger{};        // VS: port 1 reselects the first rider after champions
 };
 
 // The one-player records the menus read from SRAM, as a cold start leaves them (`$80:8C4E`):
@@ -345,6 +352,10 @@ enum class FrontEndScreen : std::uint8_t {
     stunt_result,      // $80:F0EE: a stunt event's result, its tally and the waits for a press
     demo_title,        // the idle demo's native title display before a race
     demo_return,       // the idle demo's return to the main menu
+    local_continue_entry, // the five choices after a 2P result or VS challenger
+    local_continue,
+    vs_champions_entry, // the VS ranking after a result
+    vs_champions,
 };
 
 // What `$83:9894` saves before a race (work RAM `$0000-$019D`) and `$83:987D` puts back after
@@ -394,6 +405,7 @@ struct FrontEndState {
     MainMenu menu{};
     MenuLatches latches{};
     RiderMenu rider_menu{};
+    std::uint8_t second_rider{}; // $017F, second human chosen by port 2 (R-0071)
     OnePlayerRecords records = cold_start_records();
     TourMenu tour_menu{};
     TrackMenu track_menu{};
@@ -408,6 +420,7 @@ struct FrontEndState {
     std::uint8_t demo_return_wait{}; // extra blank frames after an interrupted demo (R-0070)
     bool demo_return_interrupted{};
     bool mode_chosen{};
+    bool local_result_seen{}; // a local result has returned in this session (R-0071)
     // For 1P, once NOW PLAYING's Race has faded out: the race is `tour_menu.track` for
     // `rider_menu.rider` against `now_playing.opponent`.
     FrontEndMode mode{};
@@ -436,6 +449,7 @@ ClassicRaceScenario one_player_race_scenario(const FrontEndState& state);
 // The frames between NOW PLAYING's fade and a race's initialization on the laboratory's menu path
 // (R-0057, R-0058): DRAGSTER's 121, ZOOM ZOO's 169; 0 for a track not measured.
 std::uint32_t race_loading_frames(ClassicRaceTrack track);
+std::uint32_t race_loading_frames(const FrontEndState& state);
 
 // The times the menus take from a native race on its result load's first update: the totals,
 // and for a lap race (its scenario's race mode 1) both riders' lap slots.
@@ -447,6 +461,9 @@ RaceTimes race_times(const ZoomZooState& race);
 // the race left as it was and the player's total the pause menu's: 0xEA62 (a restart, back to
 // NOW PLAYING) during the countdown, 0xEA61 (a quit) after it.
 std::optional<RaceTimes> update_race_for_menus(ZoomZooState& race, const ControllerButtons& buttons,
+                                               const ZoomZooContent& content);
+std::optional<RaceTimes> update_race_for_menus(ZoomZooState& race, const ControllerButtons& first,
+                                               const ControllerButtons& second,
                                                const ZoomZooContent& content);
 
 // The race returns on `frame` (its result load begins, R-0049): the front end resumes with that

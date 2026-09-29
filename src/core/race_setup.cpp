@@ -1,5 +1,6 @@
 // Race scenarios by track, the race start and a restart.
 
+#include "race_camera.hpp"
 #include "word_arithmetic.hpp"
 #include "zoom_zoo_movement.hpp"
 
@@ -188,11 +189,24 @@ ClassicRaceScenario classic_race_scenario(ClassicRaceTrack track, RacePairing pa
     return scenario;
 }
 
+ClassicRaceScenario classic_local_race_scenario(ClassicRaceTrack track, RacePairing pairing,
+                                                bool tutorial_hints) {
+    if (pairing.rider >= rider_characters || pairing.opponent >= rider_characters
+        || pairing.rider == pairing.opponent)
+        throw std::invalid_argument("local race requires two distinct human riders");
+    auto scenario = classic_race_scenario(track);
+    scenario.pairing = pairing;
+    scenario.tutorial_hints = tutorial_hints;
+    return scenario;
+}
+
 OpponentTier opponent_tier(const ClassicRaceScenario& scenario,
                            std::span<const std::uint8_t> catch_up_by_track) {
     // A stunt event's AI flag `$0C6D` is already clear ($83:CBD8), so $83:CC0B skips the tier,
     // HUNTER's included: level 0, no catch-up, and the non-zero mode's bound 0x48 ($83:CC72).
     if (scenario.stunt_event) return {0, 0, lap_adjustment_limit};
+    if (scenario.pairing.opponent < rider_characters)
+        return {0, 0, scenario.tour_race ? lap_adjustment_limit : one_run_adjustment_limit};
     if (scenario.hunter_tour) return hunter_tier;
     OpponentTier tier;
     tier.ai_level = static_cast<std::uint8_t>(scenario.pairing.opponent - opponent_level_base);
@@ -316,7 +330,20 @@ void restart_zoom_zoo(ZoomZooState& state, const ZoomZooContent& content) {
     const bool hints = state.player_announcements.hints_active != 0;
     // The race's setup reads the same medal again ($80:99ED): the qualifying score stays.
     const auto qualifying_score = state.stunt.qualifying_score;
-    state = classic_race_start(content, classic_race_scenario(state.track, state.pairing, hints));
+    auto scenario = state.split_screen && !state.demo_ai
+                      ? classic_local_race_scenario(state.track, state.pairing, hints)
+                  : state.demo_ai ? classic_race_scenario(state.track)
+                                  : classic_race_scenario(state.track, state.pairing, hints);
+    if (state.demo_ai) {
+        scenario.pairing = state.pairing;
+        scenario.tutorial_hints = hints;
+    }
+    const bool split = state.split_screen;
+    const bool demo_ai = state.demo_ai;
+    state = classic_race_start(content, scenario);
+    if (split) initialize_split_cameras(state);
+    state.demo_ai = demo_ai;
+    state.demo.opponent_hints_active = demo_ai;
     state.stunt.qualifying_score = qualifying_score;
 }
 

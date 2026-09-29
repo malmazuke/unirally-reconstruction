@@ -110,13 +110,9 @@ private:
   std::array<std::optional<std::uint16_t>, 2> drawn_pose_{};
 };
 
-// The app's front end: power-on to the main menu (R-0054), 1P's setup screens
-// to the race (R-0055, R-0056), and after a race its result and PICK TRACK
-// again (R-0057, R-0058, R-0067). The idle demo runs its first two-view race
-// and returns to the menu (R-0069). Until the other modes are native, choosing
-// 2P, VS, LEAGUE, OPTIONS, or a 1P race the race scenarios
-// do not have shows a short notice and returns to the main menu as it first
-// appeared, the records kept.
+// The app's front end: power-on, native 1P, 2P and VS menu-race paths, their
+// results and continuations (R-0054-R-0058, R-0071), and the idle demo
+// (R-0069). LEAGUE, OPTIONS and unavailable scenarios show a short notice.
 class FrontEndSession {
 public:
   explicit FrontEndSession(const ClassicContentPack &pack);
@@ -136,11 +132,17 @@ public:
   // The front end's screen now, and the rider's medal on the tour chosen last.
   unsigned screen() const { return static_cast<unsigned>(state_.screen); }
   bool demo_race() const { return state_.mode == FrontEndMode::demo; }
+  bool local_race() const {
+    return state_.mode == FrontEndMode::two_player || state_.mode == FrontEndMode::versus;
+  }
   unsigned tour_medal() const {
     return state_.records.medals[state_.tour_menu.tour * 16U + state_.rider_menu.rider];
   }
   ClassicRaceTrack race_track() const {
     return ClassicRaceTrack{state_.tour_menu.track};
+  }
+  std::uint32_t race_loading_frames() const {
+    return unirally::race_loading_frames(state_);
   }
   // The race NOW PLAYING chose, with its rider, opponent and tutorial hints.
   ClassicRaceScenario race_scenario() const {
@@ -151,6 +153,10 @@ public:
       if (!split) scenario.initialization_frame = state_.frame - 1U;
       return scenario;
     }
+    if (local_race())
+      return classic_local_race_scenario(ClassicRaceTrack{state_.tour_menu.track},
+                                         {state_.rider_menu.rider, state_.second_rider},
+                                         ((state_.records.tutorial_bits >> state_.rider_menu.rider) & 1U) == 0);
     return one_player_race_scenario(state_);
   }
   // Colours 96-111 as the menus leave them to the race: NEON (track 42) never reloads or cycles
@@ -178,9 +184,8 @@ private:
 // started by --track ends on the race's own Classic result screen; a stunt event's result is the
 // menus' (R-0067), so a stunt event is started from the menus only.
 bool native_race_track(ClassicRaceTrack track);
-// 1P's race is native when a race scenario has its track, the stunt events included (R-0066,
-// R-0067): any rider against the opponent NOW PLAYING chose (R-0061).
-bool native_one_player_race(const FrontEndState &state);
+// A menu-selected 1P, 2P or VS race is native when its track has a scenario.
+bool native_menu_race(const FrontEndState &state);
 
 // A port's mask as the SNES reads the pad (`$4218`: B in bit 15 ... R in bit
 // 4).

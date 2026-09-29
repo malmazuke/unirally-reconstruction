@@ -25,7 +25,7 @@ target_link_libraries(movement_runner PRIVATE unirally_movement)
 add_library(unirally_presentation STATIC presentation.cpp picture.cpp result_screen.cpp dragster_picture.cpp
             race_windows.cpp race_hud.cpp neon_lighting.cpp rider_object.cpp rider_look.cpp snes_screen.cpp
             text_printer.cpp front_end.cpp rider_menu.cpp screen_slide.cpp tour_menu.cpp
-            track_menu.cpp now_playing.cpp race_result.cpp lap_result.cpp stunt_result.cpp
+            track_menu.cpp now_playing.cpp race_result.cpp local_modes.cpp lap_result.cpp stunt_result.cpp
             award.cpp
             tour_ending.cpp
             tour_ending_scripts.cpp tour_ending_right_column.cpp

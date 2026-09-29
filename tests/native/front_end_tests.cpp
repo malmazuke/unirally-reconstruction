@@ -4,6 +4,7 @@
 // synthetic content (no ROM). The captures' frame-by-frame agreement
 // is the laboratory's.
 #include "front_end.hpp"
+#include "front_end_screens.hpp"
 #include "snes_screen.hpp"
 #include "text_printer.hpp"
 
@@ -492,6 +493,19 @@ void main_menu_tests() {
   run(idle, content, 548);
   require(idle.mode_chosen && idle.mode == unirally::FrontEndMode::demo &&
           idle.screen == unirally::FrontEndScreen::race && idle.frame == 1449);
+}
+
+void new_local_run_loading_tests() {
+  auto state = unirally::start_front_end();
+  state.mode = unirally::FrontEndMode::two_player;
+  state.tour_menu.track = unirally::ClassicRaceTrack::ZoomZoo.index;
+  require(unirally::race_loading_frames(state) == 169);
+  state.local_result_seen = true;
+  require(unirally::race_loading_frames(state) == 168);
+  unirally::front_end_screens::start_main_menu(state);
+  require(!state.local_result_seen);
+  state.mode = unirally::FrontEndMode::versus;
+  require(unirally::race_loading_frames(state) == 169);
 }
 
 void rider_menu_tests() {
@@ -1641,6 +1655,7 @@ int main() try {
   text_variable_tests();
   snes_screen_tests();
   main_menu_tests();
+  new_local_run_loading_tests();
   rider_menu_tests();
   one_player_setup_tests();
   race_result_tests();

@@ -22,6 +22,29 @@ STUNT_ENTRIES = 4 * len(tracks.STUNT_TRACKS)
 STUNT_RESULT_ENTRIES = len(front_end_rules.STUNT_RESULT_ASSETS) + len(front_end_rules.STUNT_RESULT_TABLES)
 # Profile v26 appends NEON's scenery (three entries) and its green levels after v25's.
 NEON_ENTRIES = 4
+LOCAL_MODE_ENTRIES = len(front_end_rules.LOCAL_MODE_TABLES)
+
+
+def legacy_entries(rules: dict) -> list[dict]:
+    """The v10-v26 inventory, excluding v27 entries added after NEON."""
+    return rules["entries"][:-LOCAL_MODE_ENTRIES]
+
+
+class LocalModeEntryTests(unittest.TestCase):
+    """The v27 rider titles and fifth result row match the compiled pack inventory."""
+
+    def test_rules_and_compiled_table_agree(self) -> None:
+        import re
+        rules = json.loads((ROOT / "tests" / "manifests" / "content" /
+                            "classic-crawler-tracks-pack.json").read_text(encoding="utf-8"))
+        added = rules["entries"][-LOCAL_MODE_ENTRIES:]
+        self.assertEqual([e["id"] for e in added],
+                         [name for name, _, _ in front_end_rules.LOCAL_MODE_TABLES])
+        source = (ROOT / "src" / "core" / "content_pack.cpp").read_text(encoding="utf-8")
+        table = source[source.index("two_rider_titles_required{{"):]
+        table = table[:table.index("}};")]
+        compiled = re.findall(r'\{"([^"]+)",\s*(\d+),\s*"([0-9a-f]{64})"\}', table)
+        self.assertEqual(compiled, [(e["id"], str(e["size"]), e["sha256"]) for e in added])
 
 
 def _header(shape: int, list_offset: int) -> bytearray:
@@ -94,7 +117,7 @@ class PackProfileTests(unittest.TestCase):
         import re
         rules_path = ROOT / "tests" / "manifests" / "content" / "classic-crawler-tracks-pack.json"
         rules = json.loads(rules_path.read_text(encoding="utf-8"))
-        added = [e for e in rules["entries"][:-NEON_ENTRIES]
+        added = [e for e in legacy_entries(rules)[:-NEON_ENTRIES]
                  if e["id"].startswith(("track.", "scenery.")) or e["id"] == "presentation.classic.track-names.v1"]
         source = (ROOT / "src" / "core" / "content_pack.cpp").read_text(encoding="utf-8")
         compiled = []
@@ -104,7 +127,7 @@ class PackProfileTests(unittest.TestCase):
             compiled += [(i, int(n), d) for i, n, d in re.findall(r'\{"([^"]+)",\s*(\d+),\s*"([0-9a-f]{64})"\}', table)]
         self.assertEqual(compiled, [(e["id"], e["size"], e["sha256"]) for e in added])
         self.assertIn(hashlib.sha256(rules_path.read_bytes()).hexdigest(), source)
-        self.assertEqual(rules["profile_id"], "classic.pal.crawler.tracks.v26")
+        self.assertEqual(rules["profile_id"], "classic.pal.crawler.tracks.v27")
         ids = {e["id"] for e in added}
         for index in tracks.NEW_RACE_TRACKS + tracks.LOCKED_RACE_TRACKS + tracks.STUNT_TRACKS:
             for part in ("data", "tile-columns", "tile-flags", "bg1-tiles"):
@@ -177,7 +200,7 @@ class FrontEndEntryTests(unittest.TestCase):
         later = len(front_end.RIDER_MENU_ASSETS) + len(front_end.RIDER_MENU_TABLES)
         later += len(front_end.TOUR_MENU_ASSETS) + len(front_end.TOUR_MENU_TABLES)
         later += len(front_end.RESULT_TABLES) + len(front_end.LAP_RESULT_TABLES) + len(front_end.AWARD_ASSETS) + len(front_end.AWARD_TABLES) + len(front_end.RACE_PAIRING_TABLES) + len(front_end.ENDING_ASSETS) + len(front_end.ENDING_TABLES) + len(front_end.HUNTER_ENDING_ASSETS) + len(front_end.HUNTER_ENDING_TABLES) + STUNT_ENTRIES + STUNT_RESULT_ENTRIES + NEON_ENTRIES
-        self.assertEqual(rules["entries"][-len(added) - later:-later], added)
+        self.assertEqual(legacy_entries(rules)[-len(added) - later:-later], added)
         source = (ROOT / "src" / "core" / "content_pack.cpp").read_text(encoding="utf-8")
         table = source[source.index("front_end_required{{"):]
         table = table[:table.index("}};")]
@@ -199,7 +222,7 @@ class RiderMenuEntryTests(unittest.TestCase):
         expected += [table[0] for table in front_end.RIDER_MENU_TABLES]
         tour_menu = len(front_end.TOUR_MENU_ASSETS) + len(front_end.TOUR_MENU_TABLES)
         tour_menu += len(front_end.RESULT_TABLES) + len(front_end.LAP_RESULT_TABLES) + len(front_end.AWARD_ASSETS) + len(front_end.AWARD_TABLES) + len(front_end.RACE_PAIRING_TABLES) + len(front_end.ENDING_ASSETS) + len(front_end.ENDING_TABLES) + len(front_end.HUNTER_ENDING_ASSETS) + len(front_end.HUNTER_ENDING_TABLES) + STUNT_ENTRIES + STUNT_RESULT_ENTRIES + NEON_ENTRIES
-        added = rules["entries"][-len(expected) - tour_menu:-tour_menu]
+        added = legacy_entries(rules)[-len(expected) - tour_menu:-tour_menu]
         self.assertEqual([e["id"] for e in added], expected)
         source = (ROOT / "src" / "core" / "content_pack.cpp").read_text(encoding="utf-8")
         table = source[source.index("rider_menu_required{{"):]
@@ -221,7 +244,7 @@ class TourMenuEntryTests(unittest.TestCase):
         expected = [f"front-end.asset.{asset:03d}" for asset in front_end.TOUR_MENU_ASSETS]
         expected += [table[0] for table in front_end.TOUR_MENU_TABLES]
         later = len(front_end.RESULT_TABLES) + len(front_end.LAP_RESULT_TABLES) + len(front_end.AWARD_ASSETS) + len(front_end.AWARD_TABLES) + len(front_end.RACE_PAIRING_TABLES) + len(front_end.ENDING_ASSETS) + len(front_end.ENDING_TABLES) + len(front_end.HUNTER_ENDING_ASSETS) + len(front_end.HUNTER_ENDING_TABLES) + STUNT_ENTRIES + STUNT_RESULT_ENTRIES + NEON_ENTRIES
-        added = rules["entries"][-len(expected) - later:-later]
+        added = legacy_entries(rules)[-len(expected) - later:-later]
         self.assertEqual([e["id"] for e in added], expected)
         source = (ROOT / "src" / "core" / "content_pack.cpp").read_text(encoding="utf-8")
         table = source[source.index("one_player_screens_required{{"):]
@@ -242,7 +265,7 @@ class ResultEntryTests(unittest.TestCase):
         rules = json.loads((ROOT / "tests" / "manifests" / "content" / "classic-crawler-tracks-pack.json").read_text(encoding="utf-8"))
         expected = [table[0] for table in front_end.RESULT_TABLES]
         later = len(front_end.LAP_RESULT_TABLES) + len(front_end.AWARD_ASSETS) + len(front_end.AWARD_TABLES) + len(front_end.RACE_PAIRING_TABLES) + len(front_end.ENDING_ASSETS) + len(front_end.ENDING_TABLES) + len(front_end.HUNTER_ENDING_ASSETS) + len(front_end.HUNTER_ENDING_TABLES) + STUNT_ENTRIES + STUNT_RESULT_ENTRIES + NEON_ENTRIES
-        added = rules["entries"][-len(expected) - later:-later]
+        added = legacy_entries(rules)[-len(expected) - later:-later]
         self.assertEqual([e["id"] for e in added], expected)
         source = (ROOT / "src" / "core" / "content_pack.cpp").read_text(encoding="utf-8")
         table = source[source.index("race_result_required{{"):]
@@ -263,7 +286,7 @@ class LapResultEntryTests(unittest.TestCase):
         rules = json.loads((ROOT / "tests" / "manifests" / "content" / "classic-crawler-tracks-pack.json").read_text(encoding="utf-8"))
         expected = [table[0] for table in front_end.LAP_RESULT_TABLES]
         later = len(front_end.AWARD_ASSETS) + len(front_end.AWARD_TABLES) + len(front_end.RACE_PAIRING_TABLES) + len(front_end.ENDING_ASSETS) + len(front_end.ENDING_TABLES) + len(front_end.HUNTER_ENDING_ASSETS) + len(front_end.HUNTER_ENDING_TABLES) + STUNT_ENTRIES + STUNT_RESULT_ENTRIES + NEON_ENTRIES
-        added = rules["entries"][-len(expected) - later:-later]
+        added = legacy_entries(rules)[-len(expected) - later:-later]
         self.assertEqual([e["id"] for e in added], expected)
         source = (ROOT / "src" / "core" / "content_pack.cpp").read_text(encoding="utf-8")
         table = source[source.index("lap_result_required{{"):]
@@ -285,7 +308,7 @@ class AwardEntryTests(unittest.TestCase):
         expected = [f"front-end.asset.{asset:03d}" for asset in front_end.AWARD_ASSETS]
         expected += [table[0] for table in front_end.AWARD_TABLES]
         later = len(front_end.RACE_PAIRING_TABLES) + len(front_end.ENDING_ASSETS) + len(front_end.ENDING_TABLES) + len(front_end.HUNTER_ENDING_ASSETS) + len(front_end.HUNTER_ENDING_TABLES) + STUNT_ENTRIES + STUNT_RESULT_ENTRIES + NEON_ENTRIES
-        added = rules["entries"][-len(expected) - later:-later]
+        added = legacy_entries(rules)[-len(expected) - later:-later]
         self.assertEqual([e["id"] for e in added], expected)
         source = (ROOT / "src" / "core" / "content_pack.cpp").read_text(encoding="utf-8")
         table = source[source.index("award_required{{"):]
@@ -306,7 +329,7 @@ class RacePairingEntryTests(unittest.TestCase):
         rules = json.loads((ROOT / "tests" / "manifests" / "content" / "classic-crawler-tracks-pack.json").read_text(encoding="utf-8"))
         expected = [table[0] for table in front_end.RACE_PAIRING_TABLES]
         later = len(front_end.ENDING_ASSETS) + len(front_end.ENDING_TABLES) + len(front_end.HUNTER_ENDING_ASSETS) + len(front_end.HUNTER_ENDING_TABLES) + STUNT_ENTRIES + STUNT_RESULT_ENTRIES + NEON_ENTRIES
-        added = rules["entries"][-len(expected) - later:-later]
+        added = legacy_entries(rules)[-len(expected) - later:-later]
         self.assertEqual([e["id"] for e in added], expected)
         source = (ROOT / "src" / "core" / "content_pack.cpp").read_text(encoding="utf-8")
         table = source[source.index("race_pairing_required{{"):]
@@ -328,7 +351,7 @@ class EndingEntryTests(unittest.TestCase):
         expected = [f"front-end.asset.{asset:03d}" for asset in front_end.ENDING_ASSETS]
         expected += [table[0] for table in front_end.ENDING_TABLES]
         later = len(front_end.HUNTER_ENDING_ASSETS) + len(front_end.HUNTER_ENDING_TABLES) + STUNT_ENTRIES + STUNT_RESULT_ENTRIES + NEON_ENTRIES
-        added = rules["entries"][-len(expected) - later:-later]
+        added = legacy_entries(rules)[-len(expected) - later:-later]
         self.assertEqual([e["id"] for e in added], expected)
         source = (ROOT / "src" / "core" / "content_pack.cpp").read_text(encoding="utf-8")
         table = source[source.index("ending_required{{"):]
@@ -350,7 +373,7 @@ class HunterEndingEntryTests(unittest.TestCase):
         expected = [f"front-end.asset.{asset:03d}" for asset in front_end.HUNTER_ENDING_ASSETS]
         expected += [table[0] for table in front_end.HUNTER_ENDING_TABLES]
         later = STUNT_ENTRIES + STUNT_RESULT_ENTRIES + NEON_ENTRIES
-        added = rules["entries"][-len(expected) - later:-later]
+        added = legacy_entries(rules)[-len(expected) - later:-later]
         self.assertEqual([e["id"] for e in added], expected)
         source = (ROOT / "src" / "core" / "content_pack.cpp").read_text(encoding="utf-8")
         table = source[source.index("hunter_ending_required{{"):]
@@ -372,7 +395,7 @@ class StuntTrackEntryTests(unittest.TestCase):
                     for part in ("data", "tile-columns", "tile-flags", "bg1-tiles")]
         self.assertEqual(len(expected), STUNT_ENTRIES)
         later = STUNT_RESULT_ENTRIES + NEON_ENTRIES
-        added = rules["entries"][-len(expected) - later:-later]
+        added = legacy_entries(rules)[-len(expected) - later:-later]
         self.assertEqual([e["id"] for e in added], expected)
         source = (ROOT / "src" / "core" / "content_pack.cpp").read_text(encoding="utf-8")
         table = source[source.index("stunt_tracks_required{{"):]
@@ -397,7 +420,7 @@ class StuntResultEntryTests(unittest.TestCase):
         expected = [f"front-end.asset.{asset:03d}" for asset in front_end_rules.STUNT_RESULT_ASSETS]
         expected += [table[0] for table in front_end_rules.STUNT_RESULT_TABLES]
         self.assertEqual(len(expected), STUNT_RESULT_ENTRIES)
-        added = rules["entries"][-len(expected) - NEON_ENTRIES:-NEON_ENTRIES]
+        added = legacy_entries(rules)[-len(expected) - NEON_ENTRIES:-NEON_ENTRIES]
         self.assertEqual([e["id"] for e in added], expected)
         source = (ROOT / "src" / "core" / "content_pack.cpp").read_text(encoding="utf-8")
         table = source[source.index("stunt_result_required{{"):]
@@ -418,7 +441,7 @@ class NeonEntryTests(unittest.TestCase):
         expected = [f"scenery.{tracks.NEON_SCENERY:02d}.{part}" for part in ("bg2-tiles", "bg2-map", "palette")]
         expected.append(tracks.NEON_GREEN_LEVELS[0])
         self.assertEqual(len(expected), NEON_ENTRIES)
-        added = rules["entries"][-len(expected):]
+        added = legacy_entries(rules)[-len(expected):]
         self.assertEqual([e["id"] for e in added], expected)
         source = (ROOT / "src" / "core" / "content_pack.cpp").read_text(encoding="utf-8")
         table = source[source.index("neon_required{{"):]

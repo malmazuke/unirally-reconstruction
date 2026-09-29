@@ -1184,13 +1184,6 @@
    "region": "rom"
   },
   {
-   "address": "$80:BBEE",
-   "native": [
-    "src/core/rider_menu.cpp:rider_menu_frame"
-   ],
-   "region": "rom"
-  },
-  {
    "address": "$80:BBF7",
    "native": [
     "src/core/front_end_screens.hpp:enter_tour_menu",
@@ -1794,13 +1787,6 @@
    "region": "rom"
   },
   {
-   "address": "$80:D007",
-   "native": [
-    "src/core/race_result.cpp:start_result"
-   ],
-   "region": "rom"
-  },
-  {
    "address": "$80:D0FE",
    "native": [
     "src/core/race_result.cpp:print_result"
@@ -1836,6 +1822,13 @@
    "native": [
     "src/core/front_end.hpp:FrontEndContent::result_text, FrontEndContent::result_icons",
     "src/core/result_screen.cpp:(file)"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:D1DB",
+   "native": [
+    "src/core/front_end.hpp:FrontEndContent::result_fifth_row"
    ],
    "region": "rom"
   },
@@ -8711,6 +8704,7 @@
   {
    "address": "$017F",
    "native": [
+    "src/core/front_end.hpp:FrontEndState::second_rider",
     "src/core/front_end.hpp:NowPlaying::opponent",
     "src/core/front_end_screens.hpp:someone"
    ],
@@ -11064,8 +11058,7 @@
    "address": "$77:10AD",
    "native": [
     "src/core/front_end.cpp:check_records",
-    "src/core/front_end.hpp:FrontEndState::one_player",
-    "src/core/rider_menu.cpp:rider_menu_frame"
+    "src/core/front_end.hpp:FrontEndState::one_player"
    ],
    "region": "sram"
   },
@@ -11689,6 +11682,11 @@
     "$00D0"
    ]
   },
+  "src/core/front_end.hpp:FrontEndContent::result_fifth_row": {
+   "rom": [
+    "$80:D1DB"
+   ]
+  },
   "src/core/front_end.hpp:FrontEndContent::result_text, FrontEndContent::result_icons": {
    "rom": [
     "$80:D17B",
@@ -11778,6 +11776,11 @@
    "wram": [
     "$009F",
     "$00B0"
+   ]
+  },
+  "src/core/front_end.hpp:FrontEndState::second_rider": {
+   "wram": [
+    "$017F"
    ]
   },
   "src/core/front_end.hpp:FrontEndState::text": {
@@ -14253,8 +14256,7 @@
    "rom": [
     "$80:8D6E",
     "$80:951C",
-    "$80:CE90",
-    "$80:D007"
+    "$80:CE90"
    ]
   },
   "src/core/race_result.cpp:start_result_screen": {
@@ -15326,13 +15328,9 @@
     "$80:BBB8",
     "$80:BBC3",
     "$80:BBD6",
-    "$80:BBEE",
     "$80:BC9B",
     "$80:D1EC",
     "$80:F4E9"
-   ],
-   "sram": [
-    "$77:10AD"
    ],
    "wram": [
     "$005A"
@@ -17404,10 +17402,10 @@
   }
  },
  "totals": {
-  "addresses": 1280,
+  "addresses": 1279,
   "io_addresses": 6,
-  "native_symbols": 928,
-  "rom_addresses": 930,
+  "native_symbols": 930,
+  "rom_addresses": 929,
   "sram_addresses": 39,
   "wram_addresses": 305
  }

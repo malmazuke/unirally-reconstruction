@@ -161,6 +161,15 @@ void rider_menu_entry_frame(FrontEndState& state, const FrontEndContent& content
 void rider_menu_frame(FrontEndState& state, const FrontEndContent& content, FrontEndPads pads);
 void rider_menu_exit_frame(FrontEndState& state, const FrontEndContent& content);
 void main_menu_return_frame(FrontEndState& state, const FrontEndContent& content);
+void enter_vs_challenger(FrontEndState& state);
+
+// Local result continuation and VS champion ranking (R-0071).
+void enter_local_continue(FrontEndState& state);
+void local_continue_entry_frame(FrontEndState& state, const FrontEndContent& content);
+void local_continue_frame(FrontEndState& state, const FrontEndContent& content, FrontEndPads pads);
+void enter_vs_champions(FrontEndState& state);
+void vs_champions_entry_frame(FrontEndState& state, const FrontEndContent& content);
+void vs_champions_frame(FrontEndState& state, const FrontEndContent& content, FrontEndPads pads);
 
 // tour_menu.cpp: PICK TOUR after a rider is chosen (`$80:BBF7-BC0B`) or back from PICK TRACK
 // (`$80:BC03`), a frame of its set-up and of its loop.
@@ -204,8 +213,7 @@ void race_result_exit_frame(FrontEndState& state, const FrontEndContent& content
 void start_result_screen(FrontEndState& state, const FrontEndContent& content);
 // $80:C24C and `$80:C206` after a one-run or stunt result: both pads released, then a press seen
 // on two frames running, which leaves the result.
-void wait_for_result_press(FrontEndState& state, const FrontEndContent& content,
-                           FrontEndPads pads);
+void wait_for_result_press(FrontEndState& state, const FrontEndContent& content, FrontEndPads pads);
 
 // stunt_result.cpp: a stunt event's result (R-0067), from its first frame to the press.
 void stunt_result_frame(FrontEndState& state, const FrontEndContent& content, FrontEndPads pads);

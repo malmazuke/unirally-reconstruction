@@ -57,7 +57,17 @@ void print_rider_menu(FrontEndState& state, const FrontEndContent& content) {
             const auto name = content.rider_names.subspan(rider * name_record, name_record);
             print_text(state.text, state.printer, name, content.character_table);
         }
-    print_text(state.text, state.printer, content.rider_menu_title, content.character_table);
+    auto title = content.rider_menu_title;
+    if (state.rider_menu.challenger)
+        title = content.pick_challenger_title;
+    else if (state.mode == FrontEndMode::two_player)
+        title = state.rider_menu.second ? content.two_player_second_title
+                                        : content.two_player_first_title;
+    else if (state.mode == FrontEndMode::versus)
+        title = content.versus_first_title;
+    print_text(state.text, state.printer, title, content.character_table);
+    if (state.mode == FrontEndMode::versus && state.rider_menu.second)
+        print_text(state.text, state.printer, content.versus_second_title, content.character_table);
 }
 
 } // namespace
@@ -250,6 +260,16 @@ void enter_rider_menu(FrontEndState& state) {
     state.logo.raised = true;                                             // $80:F51B
     state.decorations.delay = static_cast<std::uint8_t>(state.menu.idle); // the shared $0089
     state.rider_menu.returning = false;
+    state.rider_menu.second = false;
+    state.rider_menu.challenger = false;
+    open_rider_menu_entry(state);
+}
+
+void enter_vs_challenger(FrontEndState& state) {
+    state.rider_menu.returning = false;
+    state.rider_menu.second = false;
+    state.rider_menu.challenger = true;
+    state.logo.raised = true;
     open_rider_menu_entry(state);
 }
 
@@ -290,19 +310,31 @@ void rider_menu_frame(FrontEndState& state, const FrontEndContent& content, Fron
     // $80:93A5: the text again, to the half it was first shown in (`$005A`), now hidden.
     load_text(state, state.slide.hidden_half);
     upload_uni(state, content);
-    if (!read_rider_menu_pad(state, pads.one)) {
+    if (!read_rider_menu_pad(state, state.rider_menu.second ? pads.two : pads.one)) {
+        choose_next_picture(state.rider_menu);
+        return;
+    }
+    if (state.rider_menu.second && !state.rider_menu.back
+        && state.menu.selection == state.rider_menu.rider) {
         choose_next_picture(state.rider_menu);
         return;
     }
     // $80:BBB8-BBEE for a choice ($80:BC9B for Y), then $80:F4E9, which stops the HDMA at once.
-    state.one_player = !state.rider_menu.back; // $80:BBEE, $80:BC9B: $77:10AD
+    state.one_player = !state.rider_menu.back && state.mode == FrontEndMode::one_player;
     if (!state.rider_menu.back) {
         send_arrow_off(state);
-        state.rider_menu.rider = state.menu.selection;
-        state.now_playing.opponent = someone; // $80:BBC3
-        // $80:BBD6-BBE5: a new run, no track done, three tries (R-0057).
-        state.records.tracks_done.fill(0);
-        state.records.tries = 3;
+        if (state.rider_menu.second) {
+            state.second_rider = state.menu.selection;
+            state.now_playing.opponent = state.second_rider;
+        } else {
+            state.rider_menu.rider = state.menu.selection;
+            state.now_playing.opponent = someone; // $80:BBC3
+            if (state.mode == FrontEndMode::one_player) {
+                // $80:BBD6-BBE5: a new run, no track done, three tries (R-0057).
+                state.records.tracks_done.fill(0);
+                state.records.tries = 3;
+            }
+        }
     }
     state.line_colours.clear();
     state.screen = FrontEndScreen::rider_menu_exit;
@@ -320,6 +352,19 @@ void rider_menu_exit_frame(FrontEndState& state, const FrontEndContent& content)
     load_cgram(state, asset(content, menu_text_palette), 0xd0);
     load_cgram(state, asset(content, early_palette), 0xe0);
     state.registers.obsel = 0x63;
+    if (state.rider_menu.challenger) {
+        state.rider_menu.challenger = false;
+        if (back)
+            enter_vs_champions(state);
+        else
+            enter_local_continue(state);
+        return;
+    }
+    if (!back && state.mode != FrontEndMode::one_player && !state.rider_menu.second) {
+        state.rider_menu.second = true;
+        open_rider_menu_entry(state);
+        return;
+    }
     if (!back) {
         enter_tour_menu(state);
         return;

@@ -727,6 +727,27 @@ const std::array<RequiredEntry, 4> neon_required{{
     {"presentation.neon.green-levels", 8,
      "7267f204fd805b12356fde47e03c7d1751601cff24482f1f19c78599669919dc"},
 }};
+// TWO-PLAYER-VS (profile v27): local rider titles, result row and return text (R-0071).
+const std::array<RequiredEntry, 9> two_rider_titles_required{{
+    {"front-end.two-player-first-title", 18,
+     "4c9ca3b270b70981f4e88f8405894fb65a8f77e954b331967f9ce85fe083eaf3"},
+    {"front-end.two-player-second-title", 18,
+     "3ce1e4c4817029868f894a8d6f0915246debd352280e676853d1a29f7eb03c58"},
+    {"front-end.versus-first-title", 18,
+     "2dd35cd276a7acf43f2fa77d0709e3f3c12af168adcdc395d273ae58f57a6c7a"},
+    {"front-end.versus-second-title", 7,
+     "a66b7b99a31fcee3ef9d0fb0e2b88abf19644650f628e3727526f9a480ddfa9a"},
+    {"front-end.result-fifth-row", 13,
+     "fb1685351cf7fa69f8be1f09104febf132417442ba5ffce2e8a187177523a95d"},
+    {"front-end.local-continue-text", 66,
+     "af7b21b25ca8ac4d492a69d729a5e178598db185559f198dd12faceeff2cb9bf"},
+    {"front-end.vs-champions-header", 88,
+     "30e32be2584a17d102a45d9eb43505a1be1e754980e281c4a2bf632562bafbdf"},
+    {"front-end.vs-champions-row", 26,
+     "2d12220e6e2771e0429748880ef4109e52ce86425406ea7adec197a2f2bfea4a"},
+    {"front-end.pick-challenger-title", 18,
+     "78eeb86bb284a6eff931df88c7c53ead732489400ee84879f06cc67916c9923d"},
+}};
 // LOCKED-TOURS (profile v12): the race tracks of the five tours a cold start does not
 // list, and sceneries 1, 8 and 12. Generated from the rules file (tracks.py v12_new_entries).
 const std::array<RequiredEntry, 89> locked_tracks_required{{
@@ -887,7 +908,7 @@ const std::array<RequiredEntry, 89> locked_tracks_required{{
     {"scenery.12.palette", 352, "b2a9aefe13c1dc68454cf0a5c2bedb086c6e162dbea1df1f2ef108347d89ab63"},
 }};
 constexpr std::string_view two_track_rules_sha =
-    "f5ee27ffa910f7b212f13fe20235a5a3f369ba5276b1b90970082fef453003dc";
+    "9c35a089e4f1b33fbb7dd2073845fa4c625bf25c455206fd5fba4b9f0f9e90ee";
 
 std::array<std::uint8_t, 32> hex_digest(std::string_view text) {
     if (text.size() != 64) throw std::logic_error("invalid compiled Classic SHA-256");
@@ -977,7 +998,7 @@ std::array<std::uint8_t, 32> sha256(std::span<const std::uint8_t> source) {
 
 namespace {
 constexpr std::array<std::string_view, 2> supported_profiles{"classic.pal.crawler.dragster.v1",
-                                                             "classic.pal.crawler.tracks.v26"};
+                                                             "classic.pal.crawler.tracks.v27"};
 } // namespace
 
 std::span<const std::string_view> supported_pack_profiles() {
@@ -1047,7 +1068,8 @@ std::vector<RequiredEntry> required_entries(bool tracks) {
                              std::span<const RequiredEntry>(hunter_ending_required),
                              std::span<const RequiredEntry>(stunt_tracks_required),
                              std::span<const RequiredEntry>(stunt_result_required),
-                             std::span<const RequiredEntry>(neon_required)})
+                             std::span<const RequiredEntry>(neon_required),
+                             std::span<const RequiredEntry>(two_rider_titles_required)})
         out.insert(out.end(), table.begin(), table.end());
     return out;
 }

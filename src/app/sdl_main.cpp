@@ -164,6 +164,18 @@ std::map<std::uint32_t, unirally::FrontEndPads> read_front_end_inputs(const std:
   return rows;
 }
 
+// The laboratory script carries SNES pad words, while the live bridge takes
+// logical button masks. A scripted race uses the same two ports as a gamepad.
+std::array<std::uint16_t, 2> logical_masks(unirally::FrontEndPads pads) {
+  std::array<std::uint16_t, 2> masks{};
+  for (unsigned bit = 0; bit < 12; ++bit) {
+    const auto snes_bit = static_cast<std::uint16_t>(0x8000U >> bit);
+    if (pads.one & snes_bit) masks[0] = static_cast<std::uint16_t>(masks[0] | (1U << bit));
+    if (pads.two & snes_bit) masks[1] = static_cast<std::uint16_t>(masks[1] | (1U << bit));
+  }
+  return masks;
+}
+
 std::uint32_t parse_updates(std::string_view value) {
   std::uint32_t parsed{};
   const auto result = std::from_chars(value.data(), value.data() + value.size(), parsed);
@@ -293,7 +305,7 @@ int main(int argc, char **argv) try {
   if(!zoom_zoo && content.pack.optional_entry("zoom.landing-response-matrices").empty())
     throw std::invalid_argument("DRAGSTER and the other tracks need the full content pack for jumps, brakes, reversal and tricks; "
                                 "create it from your ROM with: python3 tools/project.py frontend run --track dragster "
-                                "--pack local/classic-pal-crawler-tracks-v26.pack --rom PATH");
+                                "--pack local/classic-pal-crawler-tracks-v27.pack --rom PATH");
   auto zoom_content=unirally::classic_race_content(content.pack,track);
   auto race_presentation=unirally::classic_race_presentation_content(content.pack,track);
   auto zoom_state=unirally::classic_race_start(zoom_content,unirally::classic_race_scenario(track));
@@ -364,6 +376,7 @@ int main(int argc, char **argv) try {
   // During a race the front end waits here for the race's result load.
   std::optional<unirally::app::FrontEndSession> waiting_front_end;
   std::uint32_t demo_race_updates = 0;
+  std::uint32_t scripted_race_frame = 0;
   while (running) {
     SDL_Event event{};
     while (SDL_PollEvent(&event)) {
@@ -437,6 +450,13 @@ int main(int argc, char **argv) try {
         ++gamepad_only_updates;
       if (parsed->fixed_controller_mask.has_value())
         ports[0] = *parsed->fixed_controller_mask;
+      if (waiting_front_end && waiting_front_end->local_race()
+          && !parsed->front_end_inputs.empty()) {
+        const auto row = parsed->front_end_inputs.find(++scripted_race_frame);
+        ports = row == parsed->front_end_inputs.end()
+                    ? std::array<std::uint16_t, 2>{}
+                    : logical_masks(row->second);
+      }
       last_ports = ports;
       if (ports[0] != 0) {
         ++nonzero_input_updates;
@@ -474,6 +494,10 @@ int main(int argc, char **argv) try {
           SDL_SetWindowTitle(window.get(),window_title(race_presentation.track_name).c_str());
           // A fresh race each time: after a result NOW PLAYING can choose the same track again.
           zoom_state=unirally::classic_race_start(zoom_content,scenario);
+          if (front_end->local_race())
+            scripted_race_frame = front_end->front_end_frame() - 1U
+                                  + front_end->race_loading_frames();
+          if (front_end->local_race()) unirally::initialize_split_cameras(zoom_state);
           if (front_end->demo_race()) {
             if (front_end->race_track() == unirally::ClassicRaceTrack::ZoomZoo)
               unirally::initialize_split_cameras(zoom_state);
@@ -508,7 +532,8 @@ int main(int argc, char **argv) try {
           ++demo_race_updates;
         } else if(at_stable_result && buttons.start)
           unirally::restart_zoom_zoo(zoom_state,zoom_content);
-        else if(waiting_front_end) over=unirally::update_race_for_menus(zoom_state,buttons,zoom_content);
+        else if(waiting_front_end) over=unirally::update_race_for_menus(
+            zoom_state,buttons,unirally::app::controller_buttons(ports[1]),zoom_content);
         else unirally::update_zoom_zoo(zoom_state,buttons,zoom_content);
         // Selector 0 is a real trick (the flat path's negative-velocity
         // rotation), so the impulse is the activity signal; the selector alone

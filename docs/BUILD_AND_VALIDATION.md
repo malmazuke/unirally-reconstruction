@@ -4,6 +4,21 @@ This is the M0 implementation specification. Commands marked implemented in the 
 
 ## Validation by stage
 
+For TWO-PLAYER-VS (R-0071), the current supported Classic pack profile is
+`classic.pal.crawler.tracks.v27` with 442 exact PAL entries. Its nine additions
+hold the 2P/VS rider titles, the fifth result row, the five-choice continuation,
+VS champions and PICK CHALLENGER. Extract with
+`python3 tools/project.py content pack --rules tests/manifests/content/classic-crawler-tracks-pack.json --out local/classic-pal-crawler-tracks-v27.pack`.
+The native `front_end_runner --content-pack PACK --frames N --inputs FILE`
+accepts both SNES pad words in each `frame pad1 pad2` row, and `--picture FRAME OUT.ppm`
+retains a comparison frame. Split DRAGSTER native save states use
+`URDG000H/I` when both riders are human. The v26 command examples below are
+historical task records and require their matching pack profile.
+For a live hidden smoke replay, the app's `--front-end-inputs FILE` uses the
+same rows through 2P/VS setup and, in those two modes, the race. Race rows use
+the PAL frame label including the measured loading interval; the app skips that
+black loading interval when entering the native race.
+
 For SPLIT-SCREEN-RACE (R-0069), `front_end_runner` also accepts
 `--human-after FRAME` as a bounded laboratory intervention: from that first
 race update it disables the first demo's AI so two scripted pad words can be

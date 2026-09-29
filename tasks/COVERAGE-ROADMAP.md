@@ -123,8 +123,11 @@ In order; each becomes ready when the one before it is integrated, unless noted.
 6. [ATTRACT-DEMO](ATTRACT-DEMO.md): the next idle demo cycle and its return. SPLIT-SCREEN-RACE
    covers the first split ZOOM ZOO demo from power-on through its menu return; the next cycle
    reaches a one-player track 3 by frame 4399 (R-0069) and is outside that tested domain.
-7. TWO-PLAYER and VS modes.
-8. OPTIONS and LEAGUE.
+7. [TWO-PLAYER-VS](TWO-PLAYER-VS.md): both local two-rider modes from main-menu selection
+   through their measured race, result and return paths. Tier-1 review and final
+   source checks accepted on PR #45; its task handoff names the integration closeout.
+8. OPTIONS, then LEAGUE. OPTIONS is the smaller menu and records outcome; LEAGUE
+   adds six-player tournament state, so capture and implement it separately.
 9. STUNT-EVENTS: the four stunt tracks' rules and scoring.
 10. AUDIO-DECISION, then audio tasks.
 
