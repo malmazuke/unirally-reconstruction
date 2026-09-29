@@ -126,8 +126,8 @@ In order; each becomes ready when the one before it is integrated, unless noted.
 7. [TWO-PLAYER-VS](TWO-PLAYER-VS.md): both local two-rider modes from main-menu selection
    through their measured race, result and return paths. Tier-1 review and final
    source checks accepted on PR #45; its task handoff names the integration closeout.
-8. OPTIONS, then LEAGUE. OPTIONS is the smaller menu and records outcome; LEAGUE
-   adds six-player tournament state, so capture and implement it separately.
+8. [OPTIONS](OPTIONS.md), then LEAGUE. OPTIONS is the menu, records and editor outcome;
+   LEAGUE adds the six-player tournament state, so capture and implement it separately.
 9. STUNT-EVENTS: the four stunt tracks' rules and scoring.
 10. AUDIO-DECISION, then audio tasks.
 

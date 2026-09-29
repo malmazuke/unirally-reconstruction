@@ -1,5 +1,16 @@
 # Next session
 
+**Status on 29 September 2026 UTC (OPTIONS claimed): continue
+[OPTIONS](OPTIONS.md) in `.worktrees/options` from merged TWO-PLAYER-VS `f2da955`.**
+PR #45's ignored closeout verifies final-tip CI, local `main` synchronization and cleanup.
+The new task has frozen cold PAL paths for every OPTIONS top-level choice and the four
+RECORDS categories, plus confirm/cancel warning variations. [R-0072](../docs/research/R-0072-options.md)
+holds the exact tested domain and next experiments: name completion, populated removal,
+league slots and populated record views before implementation. The first OPTIONS claim has
+a 60% weekly-used baseline and 80% discretionary boundary under D-0004; 61% was used at the
+first checkpoint. No reset is authorized. The primary owns its isolated checkout and the
+main checkout owns ignored `local/evidence/options/` and `artifacts/options-integration/`.
+
 **Status on 29 September 2026 UTC (TWO-PLAYER-VS reviewed on PR #45):** the
 native source/map commit `1191408` has accepted tier-1 independent review,
 11/11 frozen private comparisons, a 539/539 app-debug synthetic suite and green

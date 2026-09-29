@@ -1,5 +1,12 @@
 # Project state
 
+Updated 29 September 2026 (OPTIONS claim): TWO-PLAYER-VS merged in
+[PR #45](https://github.com/malmazuke/unirally-reconstruction/pull/45) at `f2da955`.
+The next roadmap outcome, [OPTIONS](../tasks/OPTIONS.md), is active in an isolated checkout.
+Cold PAL captures now show its five choices, four RECORDS categories, two destructive
+confirmation paths and their cancel controls ([R-0072](research/R-0072-options.md)). No native
+OPTIONS behavior is yet accepted. LEAGUE's tournament flow remains next after this task.
+
 Updated 29 September 2026 (TWO-PLAYER-VS, tier-1 review accepted): **the measured
 first 2P and VS race, result and continuation paths are native** on
 [PR #45](https://github.com/malmazuke/unirally-reconstruction/pull/45).
