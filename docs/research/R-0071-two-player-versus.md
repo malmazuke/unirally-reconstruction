@@ -1,12 +1,12 @@
 # R-0071 - Two-player and versus mode entry
 
-Status: active investigation for [TWO-PLAYER-VS](../../tasks/TWO-PLAYER-VS.md), 29 September 2026. These are observations of the original, not a native accuracy claim.
+Status: bounded original observations for [TWO-PLAYER-VS](../../tasks/TWO-PLAYER-VS.md), 29 September 2026. The task record states the separate native accuracy claim.
 
 ## Identity and method
 
 - PAL ROM SHA-256 `a1105819d48c04d680c8292bbfa9abbce05224f1bc231afd66af43b7e0a1fd4e`; Strict bsnes lock commit `7d5aa1e656b9171524d01b1b22917197d8121cb4`, patch SHA-256 `a719f5ffe2222dad4c1ab04336633319ad85004f74e32fc14893a058be333885` (built core reports `e59bf88d4fc9`).
 - Original input and full-WRAM/video hash evidence: `local/evidence/two-player-vs/` in the main checkout. The mode-1 and mode-2 `*-repeat/samples.json` runs reproduce their respective COVERAGE-ROADMAP captures on all 3,000 frames: zero differing whole-WRAM hashes and zero differing video hashes. Both use a cold start, Start at frame 300, one or two main-menu Down presses and Start at 620. The first rider is chosen with port 1 Start at frame 900.
-- The pre-existing static listing `artifacts/static-map/bank-80.lst` has `$80:BCBF` (2P) and `$80:BF49` (VS) as unknown bytes. After the new port-2 selection captures, temporary maps under the task worktree's ignored `artifacts/two-player-vs/temp-maps/` and the regenerated ignored `static-mode/bank-80.lst` decode these as observed instructions. Across the two captures, 8,254 sites decode with zero address/length disagreements. This listing is the source for the routine reading below; the captures are the dynamic evidence.
+- The pre-existing static listing `local/evidence/static-code-map/static-map/bank-80.lst` in the main checkout has `$80:BCBF` (2P) and `$80:BF49` (VS) as unknown bytes. After the new port-2 selection captures, temporary maps in `local/evidence/two-player-vs/static-map/temp-maps/` and the regenerated `local/evidence/two-player-vs/static-map/static-mode/bank-80.lst` decode these as observed instructions. Across the two captures, 8,254 sites decode with zero address/length disagreements. This listing is the source for the routine reading below; the captures are the dynamic evidence.
 
 ## Reached selection path
 
