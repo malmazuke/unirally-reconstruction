@@ -1,5 +1,18 @@
 # Project state
 
+Updated 29 September 2026 (SPLIT-SCREEN-RACE): **the first idle split-screen demo race is
+native and independently reviewed in [PR #43](https://github.com/malmazuke/unirally-reconstruction/pull/43).**
+- From power-on, the idle menu starts a two-rider ZOOM ZOO demo. Both native viewports, cameras,
+  controls and HUD match the original on 357 retained pictures across 334 frame labels, while
+  the race state and second camera/demo fields match all 1,901 measured race frames. Two
+  injected human-control variations match 31 original pictures each ([R-0069](research/R-0069-split-screen-race.md)).
+- Eleven private frozen ZOOM ZOO and DRAGSTER comparisons and the tier-1 independent review pass
+  on source `fed95fa`. Hosted macOS/Linux CI passes there, including Linux sanitizers. A local
+  macOS sanitizer CTest timed out, so it is not counted as a pass.
+- The next idle cycle, which reaches a one-player track 3, is
+  [ATTRACT-DEMO](../tasks/ATTRACT-DEMO.md). The 2P and VS menu paths remain later work. Pack
+  profile v26 remains the content input; this task adds no pack revision.
+
 Updated 27 September 2026 (STUNT-HUD): **the stunt events look as the original's do.**
 - A stunt event's race picture (the clock counting down, the score and qualifying field, no
   opponent) and HUNTER's NEON stunt event, lit under the rider, are native: every picture of the

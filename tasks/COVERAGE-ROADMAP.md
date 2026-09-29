@@ -56,6 +56,9 @@ original does that native does not, from the code and from new captures, and ord
 
 ## Coverage today
 
+The inventory in this section is the 25 September baseline used to set the queue. Later task
+results, including the first split demo in R-0069, are recorded in the queue and `docs/STATE.md`.
+
 Routines by where the captures first execute them (the four raw captures behind the static map,
 all on the 1P path, plus this task's six):
 
@@ -115,9 +118,11 @@ In order; each becomes ready when the one before it is integrated, unless noted.
 4. RESULT-ICONS: fulfilled on the one-player product path by FRONT-END-1P-CONTINUATION
    (R-0057): its OAM build draws the `1P` marker, rider icons and trophies. The older standalone
    race renderer still omits them; that historical limitation is not a missing one-player mode.
-5. [SPLIT-SCREEN-RACE](SPLIT-SCREEN-RACE.md): two riders on a split screen, both computer (the
-   demo) or human. Claimed 29 September 2026.
-6. ATTRACT-DEMO: the demo race and its return to the title.
+5. [SPLIT-SCREEN-RACE](SPLIT-SCREEN-RACE.md): the first idle demo's two-rider ZOOM ZOO race,
+   including independent injected controls. Reviewed on PR #43, 29 September 2026.
+6. [ATTRACT-DEMO](ATTRACT-DEMO.md): the next idle demo cycle and its return. SPLIT-SCREEN-RACE
+   covers the first split ZOOM ZOO demo from power-on through its menu return; the next cycle
+   reaches a one-player track 3 by frame 4399 (R-0069) and is outside that tested domain.
 7. TWO-PLAYER and VS modes.
 8. OPTIONS and LEAGUE.
 9. STUNT-EVENTS: the four stunt tracks' rules and scoring.

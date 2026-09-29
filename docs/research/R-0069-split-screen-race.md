@@ -1,6 +1,6 @@
 # R-0069 - first split-screen demo race
 
-Status: implementation candidate for [SPLIT-SCREEN-RACE](../../tasks/SPLIT-SCREEN-RACE.md).
+Status: reviewed implementation for [SPLIT-SCREEN-RACE](../../tasks/SPLIT-SCREEN-RACE.md).
 The tested domain is PAL cold power-on, Start held on frames 300-305 to skip the title,
 then both pads released through frame 6999. Acceptance for this task concerns the first
 demo race, initialized at frame 1448 and back at the main menu by frame 3500. The
@@ -88,6 +88,25 @@ second idle demo cycle after that is outside this task.
    camera, demo controls, pairing and opponent tier. Restoring at original
    frame labels 1650, 2500 and 3320 reproduces the uninterrupted serialized
    state through frame 3348. The separate 1P layouts stay unchanged.
+10. The final source candidate `fed95fa` regenerated 357 retained original
+    pictures across 334 distinct labels on frames 900-3500, with zero differing
+    pixels. The initialization frame 1448 has no front-end picture. The two
+    independently injected rider-control variations each match all 31 pictures
+    on frames 1650-1680 again on this source. Reports are
+    `artifacts/split-screen-race-integration/picture-recheck-fed95fa.json` and
+    `final-human-variations-fed95fa.json` in the main checkout; native pictures
+    are under `local/evidence/split-screen-race/final-*-recheck/`.
+11. The original's rotation-window byte is `$7E:137B` for rider 0 and
+    `$7E:137D` for rider 1. Reading each byte from
+    `demo-primary-full/wram-series.bin` on all 1,901 frames 1448-3348 gives
+    rider 0: 0 on 542 frames, 50 on 1,359; rider 1: 0 on 258, 50 on 1,643.
+    Reproduce with `Counter(wram[(frame-1300)*0x2200+address] for frame in
+    range(1448,3349))` for `address` 0x137B and 0x137D. The static map's
+    `bank-83.lst` writes 50 at `$83:E389-E38C` and `$83:E4CD-E4D0` and has
+    no decrement in the demo-control routine. The save reader therefore
+    accepts only 0 or 50 for these words in this split-demo layout; F and G
+    mutation tests reject 49 and eight all-ones controller words. This bound
+    is measured on the stated first-demo domain, not arbitrary split modes.
 
 ## Static reading and implementation implications
 
