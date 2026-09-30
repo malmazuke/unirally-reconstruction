@@ -1,7 +1,8 @@
 # Next session
 
 **Status on 30 September 2026 UTC (OPTIONS validated, PR #46 integration):**
-[OPTIONS](OPTIONS.md) has a reviewed native source candidate at `7d13924`.
+[OPTIONS](OPTIONS.md) has a validated native source candidate at `7d13924`;
+the independent tier-1 review accepted the preceding behavior head.
 Its 11 frozen race gates, 19 focused PAL menu comparisons, full 540-check
 synthetic suite, v1 presentation contracts, pack check and hosted macOS/Ubuntu
 checks pass; the local macOS sanitizer runtime remains unavailable. If

@@ -3,12 +3,13 @@
 Updated 30 September 2026 UTC (OPTIONS validation complete): the native OPTIONS
 menus, player and league editors, and four RECORDS views are validated in the
 bounded PAL domain of [R-0072](research/R-0072-options.md). [PR #46](https://github.com/malmazuke/unirally-reconstruction/pull/46)
-carries the source and final tracked handoff; its ignored
-`artifacts/options-integration/closeout.json` records the actual integration.
+carries the source and final tracked handoff; the ignored
+`artifacts/options-integration/closeout.json` will record integration after merge.
 The 466-entry v28 pack, 19 focused comparisons (80 of 85 retained pictures
 exact), 11 frozen race regressions, 540 required synthetic checks, two v1
-presentation contracts, independent tier-1 review and hosted macOS/Ubuntu
-checks pass on source `7d13924`. R-0072 states the animated and transition
+presentation contracts and hosted macOS/Ubuntu checks pass on source `7d13924`.
+The independent tier-1 review accepted the preceding behavior head; PR #46
+carries the final-tip review. R-0072 states the animated and transition
 picture residuals and the projected-SRAM limit. Linux sanitizers pass in hosted
 CI; the local macOS sanitizer runtime stalled before tests. LEAGUE's played
 tournament scoring is the next roadmap outcome after OPTIONS integration.

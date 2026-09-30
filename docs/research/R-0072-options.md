@@ -1,6 +1,6 @@
 # R-0072 - OPTIONS paths and persistent data
 
-Status: bounded native OPTIONS evidence complete, 30 September 2026 UTC. This record distinguishes PAL observations from provisional interpretations. Acceptance is limited to the tested inputs, state projections and pictures below; pull request integration is recorded in the OPTIONS closeout.
+Status: bounded native OPTIONS evidence complete, 30 September 2026 UTC. This record distinguishes PAL observations from provisional interpretations. Acceptance is limited to the tested inputs, state projections and pictures below; the OPTIONS closeout will record pull request integration after merge.
 
 ## Identity and method
 

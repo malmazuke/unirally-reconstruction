@@ -2,7 +2,7 @@
 
 ## Assignment
 
-- Status: claimed 29 September 2026 20:48 UTC; bounded native implementation validated on PR #46, integration outcome in the ignored closeout.
+- Status: claimed 29 September 2026 20:48 UTC; bounded native implementation validated on PR #46, integration pending.
 - Milestone: M4 original-game coverage, after TWO-PLAYER-VS and before LEAGUE in [COVERAGE-ROADMAP](COVERAGE-ROADMAP.md).
 - Base: `f2da955d08e754a6af82af33a4411e1dc9a6198b`, synchronized local and remote `main` after [PR #45](https://github.com/malmazuke/unirally-reconstruction/pull/45).
 - Branch and isolated checkout: `codex/options`, `.worktrees/options`.
@@ -28,7 +28,7 @@ Freeze the original paths before changing native behavior. Run focused and froze
 
 ## Handoff
 
-The validated native source is `7d13924fd47a1fbfc42d02d3a40991d51f6a8a61` on `codex/options` in `.worktrees/options`, reviewed at the preceding behavior head with a narrow final formatting change. [PR #46](https://github.com/malmazuke/unirally-reconstruction/pull/46) carries the final tracked record update; `artifacts/options-integration/closeout.json` in the main checkout records its actual merge, final-tip checks and cleanup. The main checkout owns the ignored PAL captures under `local/evidence/options/`, the v28 pack and the gate reports under `artifacts/options-integration/`. The final source gates and the tested domain are in the checkpoint below and [R-0072](../docs/research/R-0072-options.md). A fresh session should verify the closeout before claiming LEAGUE. The user's continuation instruction overrides the percentage stop for this task; no reset credit or purchase was used.
+The validated native source is `7d13924fd47a1fbfc42d02d3a40991d51f6a8a61` on `codex/options` in `.worktrees/options`, reviewed at the preceding behavior head with a narrow final formatting change. [PR #46](https://github.com/malmazuke/unirally-reconstruction/pull/46) carries the final tracked record update; `artifacts/options-integration/closeout.json` in the main checkout will record its actual merge, final-tip checks and cleanup afterward. The main checkout owns the ignored PAL captures under `local/evidence/options/`, the v28 pack and the gate reports under `artifacts/options-integration/`. The final source gates and the tested domain are in the checkpoint below and [R-0072](../docs/research/R-0072-options.md). A fresh session should verify the closeout before claiming LEAGUE. The user's continuation instruction overrides the percentage stop for this task; no reset credit or purchase was used.
 
 ## Checkpoint - 29 September 2026 20:59 UTC
 
