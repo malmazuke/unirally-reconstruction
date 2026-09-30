@@ -1,5 +1,19 @@
 # Next session
 
+**Status on 30 September 2026 UTC (OPTIONS validated, PR #46 integration):**
+[OPTIONS](OPTIONS.md) has a reviewed native source candidate at `7d13924`.
+Its 11 frozen race gates, 19 focused PAL menu comparisons, full 540-check
+synthetic suite, v1 presentation contracts, pack check and hosted macOS/Ubuntu
+checks pass; the local macOS sanitizer runtime remains unavailable. If
+[PR #46](https://github.com/malmazuke/unirally-reconstruction/pull/46) is still
+open, finish its documentation-only exact-tip review and checks, read all
+comments, merge with a merge commit, synchronize local `main`, and write the
+ignored `artifacts/options-integration/closeout.json`. If it has merged,
+verify that closeout and local/remote `main` equality. [R-0072](../docs/research/R-0072-options.md)
+defines the tested domain and residuals. The next roadmap outcome after
+integration is LEAGUE, which owns played tournament scoring. Do not claim
+that path from OPTIONS' first-slot setup evidence.
+
 **Status on 30 September 2026 UTC (OPTIONS continuation):** the user explicitly
 overrode OPTIONS' percentage usage boundary and requested work through task
 completion. Continue the same `codex/options` task from its pushed branch and

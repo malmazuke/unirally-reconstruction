@@ -1,6 +1,6 @@
 # R-0072 - OPTIONS paths and persistent data
 
-Status: research in progress, 29 September 2026 UTC. This record distinguishes PAL observations from provisional interpretations. The complete native OPTIONS capability is not yet accepted.
+Status: bounded native OPTIONS evidence complete, 30 September 2026 UTC. This record distinguishes PAL observations from provisional interpretations. Acceptance is limited to the tested inputs, state projections and pictures below; pull request integration is recorded in the OPTIONS closeout.
 
 ## Identity and method
 
@@ -61,4 +61,4 @@ alone does not establish behavior on other paths.
 
 - The static branch table suggests RECORDS enters `$80:D525`, DEFINE PLAYER `$80:C12A`, RENAME PLAYER `$80:D448`, and DEFINE LEAGUE `$80:9BC4`. The new captures execute each of those ranges, but their precise entry/exit and all subroutines need a regenerated dynamic listing before citing their meanings in code.
 - Mutable player names are owned by `OnePlayerRecords`; the immutable pack table initializes them on cold boot. An Astra/medium read-only architecture consultation found direct pack-name consumers in rider selection, NOW PLAYING, local modes, result screens and race HUD, plus a soft-reset path that preserves records alone. The native owner and consumers were updated after the G and reset captures. `front_end_runner --records` now writes the 352 name bytes and their checksum, but still has a partial SRAM projection and cannot prove whole-SRAM equality for this task.
-- Next experiment: run the OPTIONS candidate's focused and frozen gates, then the exact-candidate independent review. The known picture residuals are the 51-pixel PLAYER SCORES icon, the TRACK RECORDS wrapped printer and return transitions, record-detail slide transitions, and the G return at frame 2003. Decide from the original's frame-level traces whether any residual changes accepted state or a later settled picture. The native SRAM runner remains a projection, so it cannot establish whole-cartridge-RAM equality.
+- Next experiment for a broader claim: capture the played league scoring path and additional holder values, then compare full SRAM persistence separately from the current projection. The known picture residuals are the PLAYER SCORES icon and return arrow, the TRACK RECORDS wrapped printer and return transitions, record-detail slide transitions, and the G return at frame 2003. The tested return menus do not show a changed selection, but those residual frames remain outside pixel-exact acceptance.
