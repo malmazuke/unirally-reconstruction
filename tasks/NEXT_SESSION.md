@@ -1,5 +1,7 @@
 # Next session
 
+**30 September 2026 UTC: LEAGUE is claimed** on `codex/league` in `.worktrees/league` from OPTIONS merge `a2cdb9c`. OPTIONS #46 and its closeout are verified; local main equals freshly fetched origin/main. [LEAGUE](LEAGUE.md) owns tournament play and scored continuation, tier 1. Main `local/evidence/league/` holds the first organically defined two-member played original; main `artifacts/league-integration/` holds gates. No native tournament behavior is accepted. Startup weekly usage 0%, latest 1%, task boundary 20%. [R-0073](../docs/research/R-0073-league.md) holds evidence and the next experiment.
+
 **Status on 30 September 2026 UTC (OPTIONS validated, PR #46 integration):**
 [OPTIONS](OPTIONS.md) has a validated native source candidate at `7d13924`;
 the independent tier-1 review accepted the preceding behavior head.
