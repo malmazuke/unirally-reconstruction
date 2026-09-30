@@ -149,16 +149,18 @@ void print_now_playing(FrontEndState& state, const FrontEndContent& content) {
     draw_tour_picture(state, content, state.tour_menu.tour,
                       word_at(content.now_playing_text, picture_place_at) / 2U);
     print_line(name_line(state, content, state.rider_menu.rider, 0), rider_row);
-    if (state.mode != FrontEndMode::one_player) {
+    if (state.mode == FrontEndMode::two_player || state.mode == FrontEndMode::versus) {
         const auto wins = state.records.statistics[state.rider_menu.rider][1];
         const std::array<std::uint8_t, 5> count{0xfe, 29, rider_row,
                                                 static_cast<std::uint8_t>('0' + wins % 10), 0xff};
         print(count);
     }
     print(stream_at(content, versus_at));
-    now.opponent =
-        state.mode == FrontEndMode::one_player ? opponent_for(state) : state.second_rider;
-    if (race_kind(state) == stunt_event) {
+    now.opponent = (state.mode == FrontEndMode::one_player
+                    || (state.mode == FrontEndMode::league && state.second_rider >= someone))
+                     ? opponent_for(state)
+                     : state.second_rider;
+    if (race_kind(state) == stunt_event && now.opponent >= someone) {
         // The qualifying score in place of the opponent (`$83:9EEB`: by tour and best medal).
         const auto best = state.records.medals[state.tour_menu.tour * 16U + state.rider_menu.rider];
         const auto level = (best & 3U) == 3 ? 2U : best & 3U;
@@ -169,7 +171,7 @@ void print_now_playing(FrontEndState& state, const FrontEndContent& content) {
         if (state.mode == FrontEndMode::one_player && state.tour_menu.tour >= hunter)
             now.opponent = anti_uni;
         print_line(name_line(state, content, now.opponent, 1), opponent_row);
-        if (state.mode != FrontEndMode::one_player) {
+        if (state.mode == FrontEndMode::two_player || state.mode == FrontEndMode::versus) {
             const auto wins = state.records.statistics[now.opponent][1];
             const std::array<std::uint8_t, 5> count{
                 0xfe, 29, opponent_row, static_cast<std::uint8_t>('0' + wins % 10), 0xff};
@@ -291,7 +293,12 @@ void now_playing_frame(FrontEndState& state, const FrontEndContent& content, Fro
     hide_icons(state);
     high_bits(state, 112) = high_bits(state, first_mark) = four_hidden;
     switch (now.choice) {
-    case NowPlayingChoice::back: enter_track_menu(state, true); return;
+    case NowPlayingChoice::back:
+        if (state.mode == FrontEndMode::league)
+            enter_league_table(state, content);
+        else
+            enter_track_menu(state, true);
+        return;
     case NowPlayingChoice::race: state.screen = FrontEndScreen::race_fade; return;
     default: // Exit: the main loop prints the main menu again and slides it back in (`$80:ACD5`)
         print_main_menu(state, content);

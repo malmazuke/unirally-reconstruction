@@ -748,6 +748,25 @@ const std::array<RequiredEntry, 9> two_rider_titles_required{{
     {"front-end.pick-challenger-title", 18,
      "78eeb86bb284a6eff931df88c7c53ead732489400ee84879f06cc67916c9923d"},
 }};
+// LEAGUE standings content (profile v29); $80:A68D-A704; R-0073.
+const std::array<RequiredEntry, 9> league_required{{
+    {"front-end.league-table-text", 120,
+     "36eb47273ca721bee9b5e809bbde35a536cc1cca7bdf33c3f8ccf6a823784296"},
+    {"front-end.league-awards-text", 206,
+     "4a5e0ac4e8709da18c0969b7a6203a397a93394f26a321a36e1f3bdf10cd2d61"},
+    {"front-end.league-continue-text", 36,
+     "e6151f71369714deace4125097c8b6d01239855746561735692875c718f758d2"},
+    {"front-end.asset.127", 2400,
+     "1d8d10da96b905ebc112cd1fa4ed54d66913623f5db68809e2bfe207783100e3"},
+    {"front-end.asset.128", 960,
+     "f4a8039218684e8b9d5a798d819134dd1da843c49c4e9bd1639dc82d9b219090"},
+    {"front-end.asset.145", 2112,
+     "7d74622f3ce884ade3d79be7976ff8bc5119d8548b1abfbf699dfa61582bf87c"},
+    {"front-end.asset.146", 2112,
+     "4757c597c84488533ca88264380236cb0f899a2495f28bd65382026ec617765e"},
+    {"front-end.asset.162", 32, "82e0feac9f2c51e77d24ffc0d0a85d1fa8527fb09d7e88ec8aca140ede4b1de1"},
+    {"front-end.asset.163", 32, "7c4050022226cb77b761a73161ffb534376f30ac1aa8487396aeb8dd313989cf"},
+}};
 // OPTIONS (profile v28): menu, editor, league and record-detail content (R-0072).
 const std::array<RequiredEntry, 24> options_required{{
     {"front-end.options-menu-text", 74,
@@ -959,7 +978,7 @@ const std::array<RequiredEntry, 89> locked_tracks_required{{
     {"scenery.12.palette", 352, "b2a9aefe13c1dc68454cf0a5c2bedb086c6e162dbea1df1f2ef108347d89ab63"},
 }};
 constexpr std::string_view two_track_rules_sha =
-    "6a1baecefc2ed5a2e1f57ca42160aa36c6dd985de48570fc1b8294f14f37fcfc";
+    "7c3377caa308cbbbe0a7324459f22b70900cf12153b7f78098559f023d75ae9c";
 
 std::array<std::uint8_t, 32> hex_digest(std::string_view text) {
     if (text.size() != 64) throw std::logic_error("invalid compiled Classic SHA-256");
@@ -1049,7 +1068,7 @@ std::array<std::uint8_t, 32> sha256(std::span<const std::uint8_t> source) {
 
 namespace {
 constexpr std::array<std::string_view, 2> supported_profiles{"classic.pal.crawler.dragster.v1",
-                                                             "classic.pal.crawler.tracks.v28"};
+                                                             "classic.pal.crawler.tracks.v29"};
 } // namespace
 
 std::span<const std::string_view> supported_pack_profiles() {
@@ -1121,7 +1140,8 @@ std::vector<RequiredEntry> required_entries(bool tracks) {
                              std::span<const RequiredEntry>(stunt_result_required),
                              std::span<const RequiredEntry>(neon_required),
                              std::span<const RequiredEntry>(two_rider_titles_required),
-                             std::span<const RequiredEntry>(options_required)})
+                             std::span<const RequiredEntry>(options_required),
+                             std::span<const RequiredEntry>(league_required)})
         out.insert(out.end(), table.begin(), table.end());
     return out;
 }

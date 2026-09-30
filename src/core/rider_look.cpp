@@ -323,7 +323,8 @@ void advance_rider_look(RiderLookState& look, const ZoomZooState& updated,
     // A stunt event skips the opponent's contact ($81:8E53-8E5D, R-0066), so its head point
     // keeps the zero the race's setup left (`$1267/$1268` stay 0 in bowl-lose and hill-win,
     // R-0068), while both riders' look steps still run.
-    const bool opponent_contact = !classic_race_scenario(updated.track).stunt_event;
+    const bool opponent_contact =
+        updated.split_screen || !classic_race_scenario(updated.track).stunt_event;
     if (!opponent_contact) look.head_offsets[1] = RiderHeadOffset{};
     for (std::size_t rider = 0; rider < 2; ++rider)
         if ((rider == 0 || opponent_contact)

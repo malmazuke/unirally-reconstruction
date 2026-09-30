@@ -100,6 +100,8 @@ inline constexpr std::uint32_t stunt_text_frame = 3;
 
 // $83:A721 after the award: the menus' registers, colours, VRAM, text and objects as `$80:D20E`
 // leaves them, without its reset of the menus' words; the logo held up; NMI on.
+void restore_menus(FrontEndState& state);
+void begin_menu_restore(FrontEndState& state, const FrontEndContent& content);
 void restore_menu_screen(FrontEndState& state, const FrontEndContent& content);
 // $83:8E3A and `$80:F818`: pose `pose` into the five rows of six object tiles at VRAM word
 // 0x7000.
@@ -189,6 +191,22 @@ void enter_define_player_warning(FrontEndState& state, const FrontEndContent& co
 void define_player_warning_entry_frame(FrontEndState& state, const FrontEndContent& content);
 void define_player_warning_frame(FrontEndState& state, FrontEndPads pads);
 void define_player_after_confirm_frame(FrontEndState& state, const FrontEndContent& content);
+void reset_league(FrontEndState&);
+void record_league_result(FrontEndState&);
+void restore_league_pair(FrontEndState&);
+void finish_league_pair(FrontEndState&, const FrontEndContent&);
+void league_awards_frame(FrontEndState&, const FrontEndContent&, FrontEndPads);
+void choose_league_slot(FrontEndState& state, const FrontEndContent& content);
+void enter_league_table(FrontEndState& state, const FrontEndContent& content);
+void league_table_entry_frame(FrontEndState& state, const FrontEndContent& content);
+void league_table_frame(FrontEndState& state, const FrontEndContent& content, FrontEndPads pads);
+void choose_league_pair(FrontEndState& state);
+void enter_league_podium(FrontEndState& state);
+void league_podium_entry_frame(FrontEndState& state, const FrontEndContent& content);
+void league_podium_frame(FrontEndState& state, const FrontEndContent& content, FrontEndPads pads);
+void league_podium_exit_frame(FrontEndState& state, const FrontEndContent& content);
+void league_continue_entry_frame(FrontEndState& state, const FrontEndContent& content);
+void league_continue_frame(FrontEndState& state, const FrontEndContent& content, FrontEndPads pads);
 void enter_league_slots(FrontEndState& state, const FrontEndContent& content);
 void league_slots_entry_frame(FrontEndState& state, const FrontEndContent& content);
 void league_slots_frame(FrontEndState& state, const FrontEndContent& content, FrontEndPads pads);

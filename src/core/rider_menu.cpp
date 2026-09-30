@@ -268,6 +268,8 @@ void mark_league_member(FrontEndState& state, unsigned rider) {
     state.league.members ^= bit;
     const unsigned column = (rider & 1U) ? 27 : 3;
     const unsigned row = 4 + 3 * (rider / 2);
+    state.league.marker_column = static_cast<std::uint8_t>(column);
+    state.league.marker_row = static_cast<std::uint8_t>(row);
     const unsigned at = row * 32 + column;
     const bool selected = (state.league.members & bit) != 0;
     state.text.words[at] = selected ? 0x3c40 : cleared_text;
@@ -299,6 +301,7 @@ bool read_league_members_pad(FrontEndState& state, const FrontEndContent& conten
         return false;
     }
     state.records.league_members[state.league.slot] = state.league.members;
+    reset_league(state);
     return true;
 }
 
@@ -347,6 +350,7 @@ void rider_menu_entry_frame(FrontEndState& state, const FrontEndContent& content
             std::fill_n(names.begin() + first + 2, 29, std::uint8_t{'_'});
             state.records.league_members[state.league.slot] = 0;
             state.records.league_scores[state.league.slot].fill(0);
+            state.records.league_played[state.league.slot].fill(0);
             state.records.league_naming = true;
             state.text.words.fill(cleared_text);
         } else {

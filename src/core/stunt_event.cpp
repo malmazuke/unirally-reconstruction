@@ -69,8 +69,8 @@ bool queue_empty(const RewardQueueState& queue) {
 
 } // namespace
 
-unsigned rider_passes(const ClassicRaceScenario& scenario) {
-    return scenario.stunt_event ? 1U : 2U;
+unsigned rider_passes(const ClassicRaceScenario& scenario, bool two_human) {
+    return scenario.stunt_event && !two_human ? 1U : 2U;
 }
 
 bool update_stunt_finish(ZoomZooState& state) {
@@ -88,6 +88,7 @@ bool update_stunt_finish(ZoomZooState& state) {
     // $83:E8B6 clears $12E3 and $12E5; $12E5, a second human's hints, is only ever set with one
     // ($82:D96F), so one player has only $12E3.
     state.player_announcements.hints_active = 0;
+    if (state.league_statistics.enabled) state.league_statistics.opponent_hints_over = true;
     if (queue_empty(state.player_announcements.queue) && queue_empty(state.movement.rewards))
         stunt.finish_display = 1; // $83:E8DA
     return false;
@@ -106,7 +107,7 @@ void update_stunt_clock(ZoomZooState& state, bool running) {
     for (unsigned index = 0; index < 2; ++index)
         if (stunt_rider_can_finish(state.movement.riders[index]))
             state.race.riders[index].finished = 1; // $0EFF/$0F01; the times stay 60000
-    stunt.clock_stopped = 1;                        // $81:C864-C867
+    stunt.clock_stopped = 1;                       // $81:C864-C867
 }
 
 void tally_stunt_trick(StuntEvent& stunt, std::uint8_t trick_class, std::uint8_t paid) {

@@ -233,6 +233,11 @@ bool waits_for_frame(const FrontEndState& state) {
     if (state.screen == FrontEndScreen::rename_return) return false;
     if (state.screen == FrontEndScreen::define_player_after_confirm) return false;
     if (state.screen == FrontEndScreen::records_detail_entry && next == 1) return false;
+    if (state.screen == FrontEndScreen::league_podium_entry) return next <= 7;
+    if (state.screen == FrontEndScreen::league_podium) return false;
+    if (state.screen == FrontEndScreen::league_podium_exit)
+        return next == upload_last_frame + 2 || next == menu_screen_frame + 2
+            || next >= restore_frame + 2;
     // Every other screen after the boot waits for each frame.
     if (state.screen != FrontEndScreen::boot) return true;
     const auto frame = boot_frame_number(state);
@@ -364,6 +369,12 @@ void run_main_menu(FrontEndState& state, const FrontEndContent& content, FrontEn
             || mode == FrontEndMode::versus) {
             state.mode = mode;
             enter_rider_menu(state);
+            return;
+        }
+        if (mode == FrontEndMode::league) {
+            state.mode = mode;
+            state.logo.raised = true;
+            enter_league_slots(state, content);
             return;
         }
         if (mode == FrontEndMode::options) {
@@ -702,6 +713,11 @@ void load_options_content(FrontEndContent& content, const ClassicContentPack& pa
     content.league_minimum = pack.entry("front-end.league-minimum");
     content.league_maximum = pack.entry("front-end.league-maximum");
     content.league_prompt = pack.entry("front-end.league-prompt");
+    content.league_table_text = pack.entry("front-end.league-table-text");
+    content.league_awards_text = pack.entry("front-end.league-awards-text");
+    content.league_continue_text = pack.entry("front-end.league-continue-text");
+    for (const unsigned id : {0x7fU, 0x80U, 0x91U, 0x92U, 0xa2U, 0xa3U})
+        content.assets[id] = pack.entry(asset_name(id));
     content.track_records_text = pack.entry("front-end.track-records-text");
     content.track_records_objects = pack.entry("front-end.track-records-objects");
     content.high_scores_text = pack.entry("front-end.high-scores-text");
@@ -801,6 +817,8 @@ OnePlayerRecords cold_start_records() {
     for (std::size_t k = 0; k < records.best.size(); ++k)
         records.best[k] = k % 5 == stunt_place ? 0 : cold_best;
     for (auto& holders : records.record_holders) holders.fill(someone);
+    for (auto& pairings : records.league_pairings) pairings.fill(someone);
+    records.league_best_holder.fill(someone);
     constexpr std::size_t riders = 16;
     std::fill_n(records.medals.begin() + hunter * riders, riders, std::uint8_t{2});
     // $83:936E: no time on the races, 0 on the stunt events.
@@ -1000,6 +1018,14 @@ void dispatch_front_end_screen(FrontEndState& state, const FrontEndContent& cont
         break;
     case FrontEndScreen::league_slots_entry: league_slots_entry_frame(state, content); break;
     case FrontEndScreen::league_slots: league_slots_frame(state, content, physical); break;
+    case FrontEndScreen::league_table_entry: league_table_entry_frame(state, content); break;
+    case FrontEndScreen::league_awards: league_awards_frame(state, content, physical); break;
+    case FrontEndScreen::league_table: league_table_frame(state, content, physical); break;
+    case FrontEndScreen::league_podium_entry: league_podium_entry_frame(state, content); break;
+    case FrontEndScreen::league_podium: league_podium_frame(state, content, physical); break;
+    case FrontEndScreen::league_podium_exit: league_podium_exit_frame(state, content); break;
+    case FrontEndScreen::league_continue_entry: league_continue_entry_frame(state, content); break;
+    case FrontEndScreen::league_continue: league_continue_frame(state, content, physical); break;
     case FrontEndScreen::league_warning_entry: league_warning_entry_frame(state, content); break;
     case FrontEndScreen::league_warning: league_warning_frame(state, physical); break;
     case FrontEndScreen::records_detail_entry: records_detail_entry_frame(state, content); break;

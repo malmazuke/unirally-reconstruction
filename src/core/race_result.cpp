@@ -60,6 +60,8 @@ std::uint8_t track_of(const FrontEndState& state) {
     return state.tour_menu.track;
 }
 
+} // namespace
+
 void restore_menus(FrontEndState& state) { // $83:987D
     const auto& saved = state.saved;
     state.menu = saved.menu;
@@ -76,6 +78,8 @@ void restore_menus(FrontEndState& state) { // $83:987D
     state.printer = saved.printer;
     state.arrow.spin = saved.arrow_spin;
 }
+
+namespace {
 
 // $80:9A50-9A79 on the return: a quit (0xEA61, the pause menu's) scores nothing and gives the
 // opponent a point (and a MEGA x1 trick, only a second player's tally shows). A race's totals
@@ -526,12 +530,18 @@ void race_return_frame(FrontEndState& state, const FrontEndContent& content) {
         state.registers.bg[1].hofs = state.registers.bg[1].vofs = 0;
         state.logo.raised = true;
         // $80:88DD: a restart from the race's pause menu (0xEA62) skips the result.
-        if (state.race_result.times.player_total == restarted) {
+        if (state.race_result.times.player_total == restarted
+            || (state.mode == FrontEndMode::league
+                && state.race_result.times.opponent_total == restarted)) {
             state.text.words.fill(cleared_text); // $80:88F8
             state.screen = FrontEndScreen::race_restart;
             return;
         }
         apply_quit_scores(state.race_result.times);
+        if (state.mode == FrontEndMode::league) {
+            restore_league_pair(state);
+            record_league_result(state);
+        }
         state.screen = state.race_result.times.stunt_event ? FrontEndScreen::stunt_result
                                                            : FrontEndScreen::race_result;
         return;
@@ -606,7 +616,9 @@ void race_result_exit_frame(FrontEndState& state, const FrontEndContent& content
     copy_oam(state);
     if (state.mode != FrontEndMode::one_player) {
         if (frame == scoring) {
-            if (state.mode == FrontEndMode::versus)
+            if (state.mode == FrontEndMode::league)
+                finish_league_pair(state, content);
+            else if (state.mode == FrontEndMode::versus)
                 enter_vs_champions(state);
             else
                 enter_local_continue(state);
@@ -637,10 +649,18 @@ void begin_race_return(FrontEndState& state, const FrontEndContent& content, std
     if (times.tutorial_hints_over)
         state.records.tutorial_bits = static_cast<std::uint16_t>(state.records.tutorial_bits
                                                                  | (1U << state.rider_menu.rider));
+    if (state.mode == FrontEndMode::league && state.second_rider < 16
+        && times.opponent_tutorial_hints_over)
+        state.records.tutorial_bits =
+            static_cast<std::uint16_t>(state.records.tutorial_bits | (1U << state.second_rider));
     state.screen = FrontEndScreen::race_return;
     state.script_frame = 0;
     early_loads(state, content);
     ++state.frame;
+}
+
+void begin_menu_restore(FrontEndState& state, const FrontEndContent& content) {
+    early_loads(state, content);
 }
 
 } // namespace unirally::front_end_screens
@@ -665,12 +685,21 @@ ClassicRaceScenario one_player_race_scenario(const FrontEndState& state) {
 std::uint32_t race_loading_frames(ClassicRaceTrack track) {
     if (track == ClassicRaceTrack::Dragster) return 121;
     if (track == ClassicRaceTrack::ZoomZoo) return 169;
+    if (track.index == 2) return 127; // CRAWLER STUNT loading, R-0073 three-event capture.
+    // R-0073 organic-full-tour-turnaround: DUELLER's gap ends at 23603, with one
+    // additional idle NMI before fade 1 at 23605. GOING UP starts fade 1 at 30060.
+    if (track.index == 3) return 197;
+    if (track.index == 4) return 175;
     return 0;
 }
 
 std::uint32_t race_loading_frames(const FrontEndState& state) {
     const auto track = ClassicRaceTrack{state.tour_menu.track};
     const auto ordinary = race_loading_frames(track);
+    // The resumed odd-member DRAGSTER initializes at 11627 in organic-three-clean (R-0073).
+    if (state.local_result_seen && state.mode == FrontEndMode::league && state.second_rider >= 16
+        && track == ClassicRaceTrack::Dragster)
+        return ordinary - 1;
     // The measured cold local ZOOM ZOO entry uses 169 frames. After a local
     // DRAGSTER result, NEXT TRACK reaches the same countdown one frame earlier.
     if (state.local_result_seen && state.mode != FrontEndMode::one_player
@@ -687,13 +716,29 @@ RaceTimes race_times(const ZoomZooState& race) {
         result.player_laps = times.lap_times[0];
         result.opponent_laps = times.lap_times[1];
     }
+    if (race.league_statistics.enabled) {
+        for (unsigned rider = 0; rider < 2; ++rider)
+            for (const auto count : race.league_statistics.tricks[rider])
+                result.league_tricks[rider] =
+                    static_cast<std::uint16_t>(result.league_tricks[rider] + count);
+        result.league_wipeouts = race.league_statistics.wipeouts;
+    }
     result.tutorial_hints_over = race.player_announcements.hints_active == 0;
+    result.opponent_tutorial_hints_over = race.league_statistics.opponent_hints_over;
     // A stunt event's scores ($77:07BB, $77:0825) and the player's tallies (R-0066).
     result.stunt_event = classic_race_scenario(race.track).stunt_event;
     if (result.stunt_event) {
         result.player_score = race.player_announcements.queue.feature_total;
         result.opponent_score = race.movement.rewards.feature_total;
         result.player_tallies = race.stunt.tallies;
+        if (race.league_statistics.enabled)
+            for (unsigned row = 0; row < trick_family::count; ++row)
+                for (unsigned column = 0; column < trick_family::columns; ++column) {
+                    const auto cell = row * trick_family::columns + column;
+                    result.opponent_tallies[row][column] = {
+                        race.league_statistics.tricks[1][cell],
+                        race.league_statistics.opponent_points[cell]};
+                }
     }
     return result;
 }
@@ -713,7 +758,10 @@ std::optional<RaceTimes> update_race_for_menus(ZoomZooState& race, const Control
     // only a restart clears, is back to 0.
     if (race.pause.suspended_updates != 0 && next.pause.suspended_updates == 0) {
         auto times = race_times(race);
-        times.player_total = race.movement.countdown != 0 ? restart : quit; // $83:F8DA-F90B
+        auto& total = race.league_statistics.enabled && race.split_screen && !first.start
+                        ? times.opponent_total
+                        : times.player_total;
+        total = race.movement.countdown != 0 ? restart : quit; // $83:F8DA-F90B
         return times;
     }
     race = next;

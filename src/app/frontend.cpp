@@ -196,7 +196,7 @@ bool native_menu_race(const FrontEndState &state) {
   // Every race the menus choose, the stunt events too (R-0066, R-0067), has a scenario.
   const ClassicRaceTrack track{state.tour_menu.track};
   const bool local = state.mode == FrontEndMode::two_player ||
-                     state.mode == FrontEndMode::versus;
+                     state.mode == FrontEndMode::versus || state.mode == FrontEndMode::league;
   return state.mode_chosen && (state.mode == FrontEndMode::one_player || local) &&
          classic_race_has_scenario(track);
 }

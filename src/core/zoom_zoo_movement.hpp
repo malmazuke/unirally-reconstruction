@@ -324,6 +324,15 @@ struct StuntEvent {
     std::array<std::array<TrickTally, trick_family::columns>, trick_family::count> tallies{};
     bool operator==(const StuntEvent&) const = default;
 };
+// League bonuses read twenty wrapping byte counts and two wipeout words; R-0073.
+struct LeagueRaceStatistics {
+    bool enabled{};
+    bool opponent_hints_over{};
+    std::array<std::array<std::uint8_t, 20>, 2> tricks{};
+    std::array<std::uint16_t, 2> wipeouts{};
+    std::array<std::uint16_t, 20> opponent_points{};
+    bool operator==(const LeagueRaceStatistics&) const = default;
+};
 struct ZoomZooState {
     ClassicRaceTrack track{ClassicRaceTrack::ZoomZoo}; // Serialized as the state magic.
     bool split_screen{}; // $0DE1; separate native demo/two-player state format pending.
@@ -362,6 +371,7 @@ struct ZoomZooState {
     HunterEffects hunter;
     // Only in a stunt event, whose state (URTRnn07) appends it; zero in a race.
     StuntEvent stunt;
+    LeagueRaceStatistics league_statistics;
     // Not serialized: the menus' riders and the opponent's tier set from them at the race's
     // setup. A deserialized race is MIKE's against the track's usual opponent.
     RacePairing pairing{};

@@ -50,7 +50,8 @@ struct FrontEndContent {
     std::span<const std::uint8_t> define_player_warning, define_player_confirm_prompt;
     std::span<const std::uint8_t> rename_prompt, keyboard_text;
     std::span<const std::uint8_t> league_slot_text, league_names, league_warning, league_title,
-        league_minimum, league_maximum, league_prompt;
+        league_minimum, league_maximum, league_prompt, league_table_text, league_awards_text,
+        league_continue_text;
     std::span<const std::uint8_t> track_records_text, track_records_objects, high_scores_text,
         player_scores_text, player_scores_values, group_scores_text, group_scores_empty;
     // The lap result (profile v19): the headings and graph, the record line, the two rows.
@@ -166,7 +167,15 @@ struct LeagueSetup {
     std::uint8_t slot{};     // $00CC, 0-5
     std::uint16_t members{}; // $00D2, selection currently shown
     std::uint16_t previous_buttons{};
+    // $80:9E3C; R-0073: the last membership marker's text position survives into name scratch.
+    std::uint8_t marker_column{3}, marker_row{4};
     bool editor_active{};
+    std::array<unsigned, 8> award_rows{};
+    std::array<std::uint8_t, 8> award_riders{};
+    std::array<std::uint16_t, 8> award_points{};
+    std::array<std::uint16_t, 3> podium_poses{0x0a45, 0x0a4d, 0x0a55};
+    std::uint16_t podium_phase{};
+    bool after_podium{}; // $80:BEC6-BEE2: a tour choice goes straight to NOW PLAYING
 };
 
 struct RecordsDetail {
@@ -192,9 +201,16 @@ struct OnePlayerRecords {
     std::array<std::uint16_t, 6> league_members{}; // $77:02B2, rider bit per slot
     std::uint16_t active_league_members{};         // $77:02BE, last saved league
     // $77:02C0 + 32 * slot + 4 * row + 2: eight league score words per slot.
-    // The adjacent row-index words are rebuilt while GROUP TABLES opens ($80:EF89).
+    // $77:02C0 + 32 * slot + 4 * row: played counters; scratch sorting indices are separate.
+    std::array<std::array<std::uint16_t, 8>, 6> league_played{};
     std::array<std::array<std::uint16_t, 8>, 6> league_scores{};
-    bool league_naming{}; // $77:0742 bit 1 while the league keyboard is active
+    std::array<std::array<std::uint8_t, 8>, 6> league_pairings{}; // $77:05E8, rank order
+    std::array<std::uint8_t, 6> league_pair_cursor{};             // $77:0678, next pairing offset
+    std::array<std::array<std::uint16_t, 8>, 6> league_event_totals{}; // $77:0618, pairing order
+    std::array<std::uint16_t, 6> league_best{}, league_best_holder{};  // $77:0684/0686
+    std::array<std::uint8_t, 6> league_tracks{};                       // $77:067E, current event
+    bool league_cycle_complete{}; // $77:0742 bit 13: podium before the next tour
+    bool league_naming{};         // $77:0742 bit 1 while the league keyboard is active
     std::array<std::uint8_t, 16> tour_levels{}; // $77:10D3 + rider: 0-3, the tours open
     std::array<std::uint8_t, 160> medals{};     // $77:069C + 16 * tour + rider: 0, or 1-3
     std::array<std::uint8_t, 50> tracks_done{}; // $77:1075 + track: won in the current run
@@ -249,12 +265,15 @@ struct RaceTimes {
     std::array<std::uint16_t, 10> player_laps = filled_laps(), opponent_laps = filled_laps();
     // The race's tutorial hints ended (or never ran): the rider's bit is set in `$77:1116`.
     bool tutorial_hints_over{};
+    bool opponent_tutorial_hints_over{};
     // A stunt event (race mode 2, R-0066): the riders' scores `$77:07BB` and `$77:0825` and the
     // player's trick tallies `$77:076B-07BA`, which the stunt result shows. The opponent's tallies
     // (`$77:07D5`) are only shown to a second player (not recovered).
     bool stunt_event{};
+    std::array<std::uint16_t, 2> league_tricks{}, league_wipeouts{};
     std::uint16_t player_score{}, opponent_score{};
-    std::array<std::array<TrickTally, trick_family::columns>, trick_family::count> player_tallies{};
+    std::array<std::array<TrickTally, trick_family::columns>, trick_family::count> player_tallies{},
+        opponent_tallies{};
 
 private:
     static constexpr std::array<std::uint16_t, 10> filled_laps() {
@@ -331,7 +350,9 @@ struct HunterEnding {
 struct StuntTally {
     std::uint8_t column{}; // 3 - `$0076`: 0-3 (x1-x4), 4 once all are added
     std::array<std::uint16_t, trick_family::count> shown{}; // $00B2-$00BA, by row
-    std::uint16_t total{};                                  // $00C0: the columns added so far
+    std::array<std::uint16_t, trick_family::count> second_shown{};
+    std::uint16_t second_total{};
+    std::uint16_t total{};          // $00C0: the columns added so far
     std::uint8_t frames_waited{};   // frames since the last pass (or column total)
     bool column_total_shown{};      // the wait is the column total's (`$80:F7B9`), not a pass's
     std::uint32_t finished_frame{}; // the script frame the last column's wait ended, 0 before
@@ -423,6 +444,14 @@ enum class FrontEndScreen : std::uint8_t {
     league_slots,
     league_warning_entry,
     league_warning,
+    league_table_entry,
+    league_table,
+    league_awards,
+    league_podium_entry,
+    league_podium,
+    league_podium_exit,
+    league_continue_entry,
+    league_continue,
     records_detail_entry,
     records_detail,
     records_detail_exit,

@@ -80,3 +80,7 @@ add_test(NAME stunt_event_clock_finish_tallies_state COMMAND stunt_event_tests)
 add_executable(stunt_hud_tests stunt_hud_tests.cpp)
 target_link_libraries(stunt_hud_tests PRIVATE unirally_presentation)
 add_test(NAME stunt_hud_score_countdown_upload_order COMMAND stunt_hud_tests)
+
+add_executable(league_tests league_tests.cpp)
+target_link_libraries(league_tests PRIVATE unirally_presentation)
+add_test(NAME league_pairing_awards_bonus_and_wrap COMMAND league_tests)

@@ -345,3 +345,12 @@ OPTIONS_TABLES = (
 def v28_new_entries(rom: bytes) -> list[dict[str, Any]]:
     """The OPTIONS and RECORDS menu content (R-0072)."""
     return [table_entry(rom, *table) for table in OPTIONS_TABLES]
+
+
+def v29_new_entries(rom: bytes) -> list[dict[str, Any]]:
+    """The LEAGUE standings streams ($80:A68D-A704, R-0073)."""
+    entries = [table_entry(rom, "front-end.league-table-text", 0x80A68D, 120),
+               table_entry(rom, "front-end.league-awards-text", 0x808B6F, 206),
+               table_entry(rom, "front-end.league-continue-text", 0x80FC05, 36)]
+    return entries + [_raw(f"front-end.asset.{asset:03d}", rom, [_asset_piece(rom, asset)])
+                      for asset in (0x7f, 0x80, 0x91, 0x92, 0xa2, 0xa3)]

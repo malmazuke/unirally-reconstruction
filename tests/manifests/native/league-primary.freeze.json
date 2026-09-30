@@ -1,0 +1,1161 @@
+{
+  "kind": "league_projection_freeze",
+  "schema_version": 1,
+  "rom_sha256": "a1105819d48c04d680c8292bbfa9abbce05224f1bc231afd66af43b7e0a1fd4e",
+  "core_sha256": "e59bf88d4fc922c9fe3b5438e65ff3a6909d24e1628f0f87141c8de17699a91b",
+  "pack_sha256": "d05d97f63a1a725be48dde1e0d116cb8f3007de56c8fb2d395611dc8d27605cb",
+  "record_ranges": [
+    [
+      366,
+      560
+    ],
+    [
+      690,
+      702
+    ],
+    [
+      704,
+      896
+    ],
+    [
+      1512,
+      1692
+    ],
+    [
+      4374,
+      4376
+    ]
+  ],
+  "record_scope": "Six league names and memberships; census played/points; ranked pairings and event totals; pair/track cursors and bonus/holder words; tutorial bits. SRAM0742 bit13 separately. This is a projection, not whole-SRAM equality.",
+  "picture_scope": "Listed frames only. Exact RGB except the established fourteen-pixel second-view checkpoint minus-glyph seam. Other retained pictures remain investigative and outside pixel-exact acceptance; R-0073 lists the residuals.",
+  "cases": [
+    {
+      "name": "organic-full-tour-turnaround",
+      "manifest_sha256": "7bff1212749499005ed220fa91a2291c719a196b00bdeb136305c17456a0e9f4",
+      "original_gate": "full-tour-original-gate.json",
+      "coverage_path": "organic-full-tour-turnaround-coverage/coverage.json",
+      "record_frames": [
+        23200,
+        23580,
+        23600,
+        23610,
+        23620,
+        23630,
+        23640,
+        23650,
+        23660,
+        23670,
+        23680,
+        24000,
+        26000,
+        28400,
+        28700,
+        29200,
+        29600,
+        30060,
+        30070,
+        30080,
+        30090,
+        30100,
+        32000,
+        35000,
+        35600,
+        35800,
+        36100,
+        36500,
+        36900,
+        37300,
+        37500,
+        38000,
+        38500,
+        39400,
+        40200
+      ],
+      "returns": [
+        [
+          9122,
+          3293,
+          3290,
+          7028
+        ],
+        [
+          17268,
+          9690,
+          9686,
+          11975
+        ],
+        [
+          21715,
+          60000,
+          60000,
+          19012
+        ],
+        [
+          28267,
+          8430,
+          8429,
+          23604
+        ],
+        [
+          36004,
+          10989,
+          10994,
+          30059
+        ]
+      ],
+      "pictures": [
+        {
+          "frame": 23580,
+          "max_differing_pixels": 0
+        },
+        {
+          "frame": 23600,
+          "max_differing_pixels": 0
+        },
+        {
+          "frame": 23610,
+          "max_differing_pixels": 0
+        },
+        {
+          "frame": 23620,
+          "max_differing_pixels": 0
+        },
+        {
+          "frame": 23630,
+          "max_differing_pixels": 0
+        },
+        {
+          "frame": 23640,
+          "max_differing_pixels": 0
+        },
+        {
+          "frame": 23650,
+          "max_differing_pixels": 0
+        },
+        {
+          "frame": 23660,
+          "max_differing_pixels": 0
+        },
+        {
+          "frame": 23670,
+          "max_differing_pixels": 0
+        },
+        {
+          "frame": 23680,
+          "max_differing_pixels": 0
+        },
+        {
+          "frame": 24000,
+          "max_differing_pixels": 0
+        },
+        {
+          "frame": 29200,
+          "max_differing_pixels": 0
+        },
+        {
+          "frame": 30100,
+          "max_differing_pixels": 0
+        },
+        {
+          "frame": 36100,
+          "max_differing_pixels": 0
+        },
+        {
+          "frame": 36900,
+          "max_differing_pixels": 0
+        },
+        {
+          "frame": 37300,
+          "max_differing_pixels": 0
+        },
+        {
+          "frame": 37500,
+          "max_differing_pixels": 0
+        },
+        {
+          "frame": 38000,
+          "max_differing_pixels": 0
+        },
+        {
+          "frame": 38500,
+          "max_differing_pixels": 0
+        },
+        {
+          "frame": 26000,
+          "max_differing_pixels": 14
+        },
+        {
+          "frame": 32000,
+          "max_differing_pixels": 14
+        },
+        {
+          "frame": 35000,
+          "max_differing_pixels": 14
+        }
+      ],
+      "references": [
+        {
+          "path": "snapshots/sram-23200.bin",
+          "sha256": "ce317ea7a33abb75f4d88327bf13b1996138f1fb1b6b9a7cd27b9e22e26a6004"
+        },
+        {
+          "path": "snapshots/sram-23580.bin",
+          "sha256": "9b19eb762511717727a08503fd23e3b425f610fcd4cc1c0c10a4388f34592397"
+        },
+        {
+          "path": "snapshots/sram-23600.bin",
+          "sha256": "9b19eb762511717727a08503fd23e3b425f610fcd4cc1c0c10a4388f34592397"
+        },
+        {
+          "path": "snapshots/sram-23610.bin",
+          "sha256": "9b19eb762511717727a08503fd23e3b425f610fcd4cc1c0c10a4388f34592397"
+        },
+        {
+          "path": "snapshots/sram-23620.bin",
+          "sha256": "9b19eb762511717727a08503fd23e3b425f610fcd4cc1c0c10a4388f34592397"
+        },
+        {
+          "path": "snapshots/sram-23630.bin",
+          "sha256": "9b19eb762511717727a08503fd23e3b425f610fcd4cc1c0c10a4388f34592397"
+        },
+        {
+          "path": "snapshots/sram-23640.bin",
+          "sha256": "9b19eb762511717727a08503fd23e3b425f610fcd4cc1c0c10a4388f34592397"
+        },
+        {
+          "path": "snapshots/sram-23650.bin",
+          "sha256": "9b19eb762511717727a08503fd23e3b425f610fcd4cc1c0c10a4388f34592397"
+        },
+        {
+          "path": "snapshots/sram-23660.bin",
+          "sha256": "9b19eb762511717727a08503fd23e3b425f610fcd4cc1c0c10a4388f34592397"
+        },
+        {
+          "path": "snapshots/sram-23670.bin",
+          "sha256": "9b19eb762511717727a08503fd23e3b425f610fcd4cc1c0c10a4388f34592397"
+        },
+        {
+          "path": "snapshots/sram-23680.bin",
+          "sha256": "9b19eb762511717727a08503fd23e3b425f610fcd4cc1c0c10a4388f34592397"
+        },
+        {
+          "path": "snapshots/sram-24000.bin",
+          "sha256": "9b19eb762511717727a08503fd23e3b425f610fcd4cc1c0c10a4388f34592397"
+        },
+        {
+          "path": "snapshots/sram-26000.bin",
+          "sha256": "9b19eb762511717727a08503fd23e3b425f610fcd4cc1c0c10a4388f34592397"
+        },
+        {
+          "path": "snapshots/sram-28400.bin",
+          "sha256": "75ce3bee08d42c857ce0787593b95464d6f4b95828a5fc94886b564cde1a237c"
+        },
+        {
+          "path": "snapshots/sram-28700.bin",
+          "sha256": "f19bf072ba0d587f94866f6fa036914659a7ee996d3d0099b7a4fea674ae85e8"
+        },
+        {
+          "path": "snapshots/sram-29200.bin",
+          "sha256": "cfb866041e98ebddcba86150d9a67b41ff175360c8b4ee99b750bd2158028f70"
+        },
+        {
+          "path": "snapshots/sram-29600.bin",
+          "sha256": "cfb866041e98ebddcba86150d9a67b41ff175360c8b4ee99b750bd2158028f70"
+        },
+        {
+          "path": "snapshots/sram-30060.bin",
+          "sha256": "2c0ec86876dc1d55a8246f0b3ddde5df809745b2385ba7b139374f757b5a9389"
+        },
+        {
+          "path": "snapshots/sram-30070.bin",
+          "sha256": "2c0ec86876dc1d55a8246f0b3ddde5df809745b2385ba7b139374f757b5a9389"
+        },
+        {
+          "path": "snapshots/sram-30080.bin",
+          "sha256": "2c0ec86876dc1d55a8246f0b3ddde5df809745b2385ba7b139374f757b5a9389"
+        },
+        {
+          "path": "snapshots/sram-30090.bin",
+          "sha256": "2c0ec86876dc1d55a8246f0b3ddde5df809745b2385ba7b139374f757b5a9389"
+        },
+        {
+          "path": "snapshots/sram-30100.bin",
+          "sha256": "2c0ec86876dc1d55a8246f0b3ddde5df809745b2385ba7b139374f757b5a9389"
+        },
+        {
+          "path": "snapshots/sram-32000.bin",
+          "sha256": "2c0ec86876dc1d55a8246f0b3ddde5df809745b2385ba7b139374f757b5a9389"
+        },
+        {
+          "path": "snapshots/sram-35000.bin",
+          "sha256": "361016333fadf2e6802a1a409f5d74992894207e45d1e5961b446a395a3049c0"
+        },
+        {
+          "path": "snapshots/sram-35600.bin",
+          "sha256": "361016333fadf2e6802a1a409f5d74992894207e45d1e5961b446a395a3049c0"
+        },
+        {
+          "path": "snapshots/sram-35800.bin",
+          "sha256": "7644a3387eee0d8b86eabbb4087dc4ea3312cde3674500d7d9d80daff9d61bbc"
+        },
+        {
+          "path": "snapshots/sram-36100.bin",
+          "sha256": "5de470718eb1d428d5f28fcfdb009fa41c1305d68eafd892629dae34ae1de63e"
+        },
+        {
+          "path": "snapshots/sram-36500.bin",
+          "sha256": "a662a0b7c77012dcfeea57f11fdd7adeb8bbdfb7ca61e205e3174a0bac5f8681"
+        },
+        {
+          "path": "snapshots/sram-36900.bin",
+          "sha256": "a662a0b7c77012dcfeea57f11fdd7adeb8bbdfb7ca61e205e3174a0bac5f8681"
+        },
+        {
+          "path": "snapshots/sram-37300.bin",
+          "sha256": "c69c64f7a58299019ae8e576ede532117188bf988780bf36d725d98f69cde955"
+        },
+        {
+          "path": "snapshots/sram-37500.bin",
+          "sha256": "c69c64f7a58299019ae8e576ede532117188bf988780bf36d725d98f69cde955"
+        },
+        {
+          "path": "snapshots/sram-38000.bin",
+          "sha256": "c69c64f7a58299019ae8e576ede532117188bf988780bf36d725d98f69cde955"
+        },
+        {
+          "path": "snapshots/sram-38500.bin",
+          "sha256": "2264ee278f88166706a5ab03aceeaf4c6f8a7ae075baa7c36bd78d64df238632"
+        },
+        {
+          "path": "snapshots/sram-39400.bin",
+          "sha256": "b0f8ef406d154a5f67af57c6677003c9c810f08cd152cc53c2a2a02465be6362"
+        },
+        {
+          "path": "snapshots/sram-40200.bin",
+          "sha256": "40e0054e576b23161d7b574aa16152f114f3d30d4128247a6a7725e62784a1f1"
+        },
+        {
+          "path": "frames/frame-23580.png",
+          "sha256": "0ed7b26b91b35f00cac8a9909698a5aeec7f2b425d7f4726a7fb21d0427b3bf4"
+        },
+        {
+          "path": "frames/frame-23600.png",
+          "sha256": "0ed7b26b91b35f00cac8a9909698a5aeec7f2b425d7f4726a7fb21d0427b3bf4"
+        },
+        {
+          "path": "frames/frame-23610.png",
+          "sha256": "0ed7b26b91b35f00cac8a9909698a5aeec7f2b425d7f4726a7fb21d0427b3bf4"
+        },
+        {
+          "path": "frames/frame-23620.png",
+          "sha256": "0ed7b26b91b35f00cac8a9909698a5aeec7f2b425d7f4726a7fb21d0427b3bf4"
+        },
+        {
+          "path": "frames/frame-23630.png",
+          "sha256": "e98119efa738190fd205e44b1106017169127167bc7fbacb3132f780eb6a8db3"
+        },
+        {
+          "path": "frames/frame-23640.png",
+          "sha256": "033cf6c3dec1406fff13635d3b43091fb478a5589a98db6d7916748714839e7b"
+        },
+        {
+          "path": "frames/frame-23650.png",
+          "sha256": "fb6563a02911b7fc9eeabf9900a0ca5bcccd1649affa411d4d540726844cd878"
+        },
+        {
+          "path": "frames/frame-23660.png",
+          "sha256": "34edb303a174958a1cad47f1555cd21a14018f111e64ff7359bebf373780c2c4"
+        },
+        {
+          "path": "frames/frame-23670.png",
+          "sha256": "c8d9839f0f4fae335cf1550befaa018cac5fb9b6a481cd5ceca1853fe0b94de0"
+        },
+        {
+          "path": "frames/frame-23680.png",
+          "sha256": "766d9df728e814bf2fbae1a8353a2b583bbbed80f01055f40afeea8108093717"
+        },
+        {
+          "path": "frames/frame-24000.png",
+          "sha256": "8228b7b08d8dded7c561485315825390bf7ce756ec12e77b64a8d921f97f40d4"
+        },
+        {
+          "path": "frames/frame-29200.png",
+          "sha256": "e0d49d8f62e52234b5f461101863b512168cf379acb0cbfd53079773c62e2195"
+        },
+        {
+          "path": "frames/frame-30100.png",
+          "sha256": "2291668fe370a94a29af7aa8254b63907b0564770cf73fe54b145d11ab387e21"
+        },
+        {
+          "path": "frames/frame-36100.png",
+          "sha256": "0ed7b26b91b35f00cac8a9909698a5aeec7f2b425d7f4726a7fb21d0427b3bf4"
+        },
+        {
+          "path": "frames/frame-36900.png",
+          "sha256": "4905e3a2f57ab6ab271b2af8c88507bedb5b4864272d5022dcbdabecc2ac1e3d"
+        },
+        {
+          "path": "frames/frame-37300.png",
+          "sha256": "0ed7b26b91b35f00cac8a9909698a5aeec7f2b425d7f4726a7fb21d0427b3bf4"
+        },
+        {
+          "path": "frames/frame-37500.png",
+          "sha256": "f7f34adbe20625f8f8378292fe3fb4223768990ed8922b7bc28ffb1cc1689e22"
+        },
+        {
+          "path": "frames/frame-38000.png",
+          "sha256": "a7580ca41c585d702063422b3b8e6f92dc97a8299ce6e41cca2fcadfb2532f55"
+        },
+        {
+          "path": "frames/frame-38500.png",
+          "sha256": "253b494fa07d8e79aaf823450f7370ced352ea9a21facb562fa0bfde83c110b4"
+        },
+        {
+          "path": "frames/frame-26000.png",
+          "sha256": "a9ae1ae55c5196825f67b49ee40bbe52de10af6f8c999051fc61bbd3542c32f5"
+        },
+        {
+          "path": "frames/frame-32000.png",
+          "sha256": "85fdc6b2770e2885e335239d23e1f1d5d89c96046442bfb7a79fa54c0ed7a133"
+        },
+        {
+          "path": "frames/frame-35000.png",
+          "sha256": "85348bba92ff24eeb1c3ec4d3ebfefd28c89a1467bbbe5be4b2de403f8ea821e"
+        }
+      ],
+      "restore_frame": 34000
+    },
+    {
+      "name": "organic-odd-resume",
+      "manifest_sha256": "ff85d7619e42f03203079c1cd90a0b165fe1a092af4d094dfe8f51e76c3e33a0",
+      "original_gate": "odd-resume-original-gate.json",
+      "coverage_path": "organic-odd-resume-coverage/coverage.json",
+      "record_frames": [
+        11000,
+        11400,
+        11800,
+        12600,
+        13000,
+        13400,
+        13800,
+        14200,
+        15100
+      ],
+      "returns": [
+        [
+          9222,
+          3293,
+          3290,
+          7128
+        ]
+      ],
+      "pictures": [
+        {
+          "frame": 11000,
+          "max_differing_pixels": 0
+        },
+        {
+          "frame": 11400,
+          "max_differing_pixels": 0
+        },
+        {
+          "frame": 11800,
+          "max_differing_pixels": 0
+        },
+        {
+          "frame": 12600,
+          "max_differing_pixels": 0
+        },
+        {
+          "frame": 13000,
+          "max_differing_pixels": 0
+        },
+        {
+          "frame": 13800,
+          "max_differing_pixels": 0
+        }
+      ],
+      "references": [
+        {
+          "path": "snapshots/sram-11000.bin",
+          "sha256": "cef263a1ee7e0b0c4c648fb6d13a32b3effeac861fa8ee4bf34e0425f7c52277"
+        },
+        {
+          "path": "snapshots/sram-11400.bin",
+          "sha256": "e7fc25579ff12d86f032bfb596b223d659b0c90e8b322a31c11022524b13dd70"
+        },
+        {
+          "path": "snapshots/sram-11800.bin",
+          "sha256": "18025ddf19fab6791bb86fb59c77c05f19eddac28672bf730f30a8b47a04a2ef"
+        },
+        {
+          "path": "snapshots/sram-12600.bin",
+          "sha256": "46ee95a8dd463138fc88cc959fa0decd3ef3872b5334add1d7126d3bb3fa024c"
+        },
+        {
+          "path": "snapshots/sram-13000.bin",
+          "sha256": "2d7c2e02ba8aa535733c8b7b76fa331330648babd1108c117891e7f8971b9e58"
+        },
+        {
+          "path": "snapshots/sram-13400.bin",
+          "sha256": "3eab8cbc81ba277469087cf533ce6cc3d3f62c07d767e07ce7d784388fb38d45"
+        },
+        {
+          "path": "snapshots/sram-13800.bin",
+          "sha256": "3eab8cbc81ba277469087cf533ce6cc3d3f62c07d767e07ce7d784388fb38d45"
+        },
+        {
+          "path": "snapshots/sram-14200.bin",
+          "sha256": "3eab8cbc81ba277469087cf533ce6cc3d3f62c07d767e07ce7d784388fb38d45"
+        },
+        {
+          "path": "snapshots/sram-15100.bin",
+          "sha256": "4fa8e4ffe4749ad1784543166d4365f0ad80838593fdac5304f3833cc3ae67a0"
+        },
+        {
+          "path": "frames/frame-11000.png",
+          "sha256": "36464944ceff85bc258b1d0839f642f4cb3ae58947385cbf3370bfd37a673d8c"
+        },
+        {
+          "path": "frames/frame-11400.png",
+          "sha256": "52c51417e4378af381dca77511f685eccdd45239b94582510e948a3ba4969d95"
+        },
+        {
+          "path": "frames/frame-11800.png",
+          "sha256": "02b3c25308d1eff5a83f85157be0cd417fb2eaf1b72100b416210a3122b620dd"
+        },
+        {
+          "path": "frames/frame-12600.png",
+          "sha256": "d8ae4220b9da1b626a30a523ad1a0ee309a3accc81b5f677e661fcd609c23244"
+        },
+        {
+          "path": "frames/frame-13000.png",
+          "sha256": "7aa46b80176ea2dba7699e4da76ccd9120cc2d3419c811399e757ab4a669935f"
+        },
+        {
+          "path": "frames/frame-13800.png",
+          "sha256": "f55af5f3992bbef1113446d993b36b3588df668b1f97456c64691763929d96e4"
+        }
+      ]
+    },
+    {
+      "name": "organic-second-slot",
+      "manifest_sha256": "768c6f8e7bfaa1a3d79433887ed7fc4d3822035cc952a4604eb1149b17d3cc46",
+      "original_gate": "second-slot-original-gate.json",
+      "coverage_path": "organic-second-slot-coverage/coverage.json",
+      "record_frames": [
+        1250,
+        4500,
+        5300,
+        5600,
+        6200,
+        6600,
+        7100,
+        10700,
+        11100,
+        11500
+      ],
+      "returns": [
+        [
+          9122,
+          3293,
+          3290,
+          7028
+        ]
+      ],
+      "pictures": [],
+      "references": [
+        {
+          "path": "snapshots/sram-01250.bin",
+          "sha256": "0dcedd8729f27129068e94c729e3fd39db94331018c799ad8fc5c2b925c20b85"
+        },
+        {
+          "path": "snapshots/sram-04500.bin",
+          "sha256": "24f463dd0f533f9705cda9e21a89d4ee32e54d17dd0cc65559f5f38fa8b6a9e1"
+        },
+        {
+          "path": "snapshots/sram-05300.bin",
+          "sha256": "ecbf730169d4846bfbbad293334abde394f95f6995150e73f5b5e725b98cd293"
+        },
+        {
+          "path": "snapshots/sram-05600.bin",
+          "sha256": "a218bc596b36a46e230fa78bbcaf6138bb7c118096d404b6182894bf2c81102f"
+        },
+        {
+          "path": "snapshots/sram-06200.bin",
+          "sha256": "8e8fe43a0d6e9a5497347bee6f4abba2083536c84f2703f168dfd88346b51618"
+        },
+        {
+          "path": "snapshots/sram-06600.bin",
+          "sha256": "ae182e15bfc08c1dcaa71a6e7f35cb50bb4427792bedd01378bc32faaf72c9c3"
+        },
+        {
+          "path": "snapshots/sram-07100.bin",
+          "sha256": "6dc7e71e1ff15f95947cdc67a61948130e9c9a8c9dc5457145f845491c60eb64"
+        },
+        {
+          "path": "snapshots/sram-10700.bin",
+          "sha256": "730d02adbf696333b4cf2e1c38557bbd8885a966ce19398825e55c6e2e55aa4e"
+        },
+        {
+          "path": "snapshots/sram-11100.bin",
+          "sha256": "730d02adbf696333b4cf2e1c38557bbd8885a966ce19398825e55c6e2e55aa4e"
+        },
+        {
+          "path": "snapshots/sram-11500.bin",
+          "sha256": "b9ee91ee1cbe64a12c84575546b703a73fdace000f8e96685ec4c1b2b009686d"
+        }
+      ]
+    },
+    {
+      "name": "organic-stunt-tricks",
+      "manifest_sha256": "f573b861baed4190a5f4d668fc7dccb5284ef6e59ffffae0f7f5238ad64481cb",
+      "original_gate": "stunt-tricks-original-gate.json",
+      "coverage_path": "organic-stunt-tricks-coverage/coverage.json",
+      "record_frames": [
+        21000,
+        22100,
+        22400,
+        22800
+      ],
+      "returns": [
+        [
+          9122,
+          3293,
+          3290,
+          7028
+        ],
+        [
+          17268,
+          9690,
+          9686,
+          11975
+        ],
+        [
+          21715,
+          60000,
+          60000,
+          19012
+        ]
+      ],
+      "pictures": [],
+      "references": [
+        {
+          "path": "snapshots/sram-21000.bin",
+          "sha256": "fe38ee1987a1d938debaaf6a5c90506ed904a08419f6ff3da758eb6ccbaf8c3f"
+        },
+        {
+          "path": "snapshots/sram-22100.bin",
+          "sha256": "d8612c4c2c766dda6607571393a9f10277e0bebe54a95f9110806d3ec2c2b1ed"
+        },
+        {
+          "path": "snapshots/sram-22400.bin",
+          "sha256": "2ca8a10ba4d9afba319cb4cebfbad56545291a2f0965a0f39ea8a7f71b73c825"
+        },
+        {
+          "path": "snapshots/sram-22800.bin",
+          "sha256": "2ca8a10ba4d9afba319cb4cebfbad56545291a2f0965a0f39ea8a7f71b73c825"
+        }
+      ],
+      "restore_frame": 20100
+    },
+    {
+      "name": "organic-colin-wins",
+      "manifest_sha256": "ac2ac3ae9dee3c4564bee898efc745259d3e2ef3d2329c1db58ffe3c3141c4a3",
+      "original_gate": "organic-colin-wins-gate.json",
+      "coverage_path": "organic-colin-wins/coverage.json",
+      "record_frames": [
+        9900,
+        10700,
+        11100,
+        11500
+      ],
+      "returns": [
+        [
+          9413,
+          3450,
+          3874,
+          7028
+        ]
+      ],
+      "pictures": [
+        {
+          "frame": 10700,
+          "max_differing_pixels": 0
+        },
+        {
+          "frame": 11100,
+          "max_differing_pixels": 0
+        }
+      ],
+      "references": [
+        {
+          "path": "snapshots/sram-09900.bin",
+          "sha256": "5033b916e1f60136ca801cd5e4be710b6318f01c10b7a01f7226ac4ef4472057"
+        },
+        {
+          "path": "snapshots/sram-10700.bin",
+          "sha256": "5bbd76401ae79c03fe6638920c7e0a634d91bace79b489b0da94f3693e624c0f"
+        },
+        {
+          "path": "snapshots/sram-11100.bin",
+          "sha256": "5bbd76401ae79c03fe6638920c7e0a634d91bace79b489b0da94f3693e624c0f"
+        },
+        {
+          "path": "snapshots/sram-11500.bin",
+          "sha256": "5bbd76401ae79c03fe6638920c7e0a634d91bace79b489b0da94f3693e624c0f"
+        },
+        {
+          "path": "frames/frame-10700.png",
+          "sha256": "1b31507dd3511e231694b7d7504f863f8b3302a0b1e49a460c2ca797a4501c57"
+        },
+        {
+          "path": "frames/frame-11100.png",
+          "sha256": "200a8782ef422a33b636491bda2b2a17815daa504a2f6d0180a9d5f499f89a1a"
+        }
+      ]
+    },
+    {
+      "name": "organic-cycle-five",
+      "manifest_sha256": "f7eab837e3328a9b08adc580ed87dba699a1e2e79832f78c656f612bc53120a9",
+      "original_gate": "cycle-five-gate.json",
+      "coverage_path": "organic-cycle-five/coverage.json",
+      "record_frames": [
+        10700,
+        11100,
+        11400,
+        11401,
+        11408,
+        11409,
+        11499,
+        11500,
+        11510,
+        11520,
+        11530,
+        11540,
+        11550,
+        11600,
+        12000,
+        12001,
+        12002,
+        12003,
+        12004,
+        12005,
+        12006,
+        12007,
+        12008,
+        12200,
+        12302,
+        12303,
+        12304,
+        12305,
+        12318,
+        12319,
+        12320,
+        12350,
+        12400,
+        12500,
+        13000,
+        13600,
+        14400,
+        15000
+      ],
+      "returns": [
+        [
+          9122,
+          3293,
+          3290,
+          7028
+        ]
+      ],
+      "pictures": [
+        {
+          "frame": 11500,
+          "max_differing_pixels": 0
+        },
+        {
+          "frame": 11510,
+          "max_differing_pixels": 0
+        },
+        {
+          "frame": 11520,
+          "max_differing_pixels": 0
+        },
+        {
+          "frame": 11530,
+          "max_differing_pixels": 0
+        },
+        {
+          "frame": 11540,
+          "max_differing_pixels": 0
+        },
+        {
+          "frame": 11550,
+          "max_differing_pixels": 0
+        },
+        {
+          "frame": 11600,
+          "max_differing_pixels": 0
+        },
+        {
+          "frame": 12000,
+          "max_differing_pixels": 0
+        },
+        {
+          "frame": 12001,
+          "max_differing_pixels": 0
+        },
+        {
+          "frame": 12002,
+          "max_differing_pixels": 0
+        },
+        {
+          "frame": 12003,
+          "max_differing_pixels": 0
+        },
+        {
+          "frame": 12004,
+          "max_differing_pixels": 0
+        },
+        {
+          "frame": 12005,
+          "max_differing_pixels": 0
+        },
+        {
+          "frame": 12006,
+          "max_differing_pixels": 0
+        },
+        {
+          "frame": 12007,
+          "max_differing_pixels": 0
+        },
+        {
+          "frame": 12008,
+          "max_differing_pixels": 0
+        },
+        {
+          "frame": 12200,
+          "max_differing_pixels": 0
+        },
+        {
+          "frame": 12302,
+          "max_differing_pixels": 0
+        },
+        {
+          "frame": 12303,
+          "max_differing_pixels": 0
+        },
+        {
+          "frame": 12304,
+          "max_differing_pixels": 0
+        },
+        {
+          "frame": 12305,
+          "max_differing_pixels": 0
+        },
+        {
+          "frame": 12318,
+          "max_differing_pixels": 0
+        },
+        {
+          "frame": 12319,
+          "max_differing_pixels": 0
+        },
+        {
+          "frame": 12320,
+          "max_differing_pixels": 0
+        },
+        {
+          "frame": 12350,
+          "max_differing_pixels": 0
+        },
+        {
+          "frame": 12400,
+          "max_differing_pixels": 0
+        },
+        {
+          "frame": 12500,
+          "max_differing_pixels": 0
+        },
+        {
+          "frame": 13000,
+          "max_differing_pixels": 0
+        },
+        {
+          "frame": 13600,
+          "max_differing_pixels": 0
+        }
+      ],
+      "references": [
+        {
+          "path": "snapshots/sram-10700.bin",
+          "sha256": "95f7927f13b1c7deb806b58903f53d6c6b2bcbcdd10597038b9cdacb1ca9a30c"
+        },
+        {
+          "path": "snapshots/sram-11100.bin",
+          "sha256": "95f7927f13b1c7deb806b58903f53d6c6b2bcbcdd10597038b9cdacb1ca9a30c"
+        },
+        {
+          "path": "snapshots/sram-11400.bin",
+          "sha256": "95f7927f13b1c7deb806b58903f53d6c6b2bcbcdd10597038b9cdacb1ca9a30c"
+        },
+        {
+          "path": "snapshots/sram-11401.bin",
+          "sha256": "e6d72496140e1c2a6fa66937089884c19cb216e5b74ff8d25eb2a65e7d002430"
+        },
+        {
+          "path": "snapshots/sram-11408.bin",
+          "sha256": "756a594dadf8dd23bdd01066c55bc0bf2eeb78f8a1eb0f4ac7542373bd6316ee"
+        },
+        {
+          "path": "snapshots/sram-11409.bin",
+          "sha256": "756a594dadf8dd23bdd01066c55bc0bf2eeb78f8a1eb0f4ac7542373bd6316ee"
+        },
+        {
+          "path": "snapshots/sram-11499.bin",
+          "sha256": "756a594dadf8dd23bdd01066c55bc0bf2eeb78f8a1eb0f4ac7542373bd6316ee"
+        },
+        {
+          "path": "snapshots/sram-11500.bin",
+          "sha256": "756a594dadf8dd23bdd01066c55bc0bf2eeb78f8a1eb0f4ac7542373bd6316ee"
+        },
+        {
+          "path": "snapshots/sram-11510.bin",
+          "sha256": "756a594dadf8dd23bdd01066c55bc0bf2eeb78f8a1eb0f4ac7542373bd6316ee"
+        },
+        {
+          "path": "snapshots/sram-11520.bin",
+          "sha256": "756a594dadf8dd23bdd01066c55bc0bf2eeb78f8a1eb0f4ac7542373bd6316ee"
+        },
+        {
+          "path": "snapshots/sram-11530.bin",
+          "sha256": "756a594dadf8dd23bdd01066c55bc0bf2eeb78f8a1eb0f4ac7542373bd6316ee"
+        },
+        {
+          "path": "snapshots/sram-11540.bin",
+          "sha256": "756a594dadf8dd23bdd01066c55bc0bf2eeb78f8a1eb0f4ac7542373bd6316ee"
+        },
+        {
+          "path": "snapshots/sram-11550.bin",
+          "sha256": "756a594dadf8dd23bdd01066c55bc0bf2eeb78f8a1eb0f4ac7542373bd6316ee"
+        },
+        {
+          "path": "snapshots/sram-11600.bin",
+          "sha256": "756a594dadf8dd23bdd01066c55bc0bf2eeb78f8a1eb0f4ac7542373bd6316ee"
+        },
+        {
+          "path": "snapshots/sram-12000.bin",
+          "sha256": "756a594dadf8dd23bdd01066c55bc0bf2eeb78f8a1eb0f4ac7542373bd6316ee"
+        },
+        {
+          "path": "snapshots/sram-12001.bin",
+          "sha256": "756a594dadf8dd23bdd01066c55bc0bf2eeb78f8a1eb0f4ac7542373bd6316ee"
+        },
+        {
+          "path": "snapshots/sram-12002.bin",
+          "sha256": "756a594dadf8dd23bdd01066c55bc0bf2eeb78f8a1eb0f4ac7542373bd6316ee"
+        },
+        {
+          "path": "snapshots/sram-12003.bin",
+          "sha256": "756a594dadf8dd23bdd01066c55bc0bf2eeb78f8a1eb0f4ac7542373bd6316ee"
+        },
+        {
+          "path": "snapshots/sram-12004.bin",
+          "sha256": "756a594dadf8dd23bdd01066c55bc0bf2eeb78f8a1eb0f4ac7542373bd6316ee"
+        },
+        {
+          "path": "snapshots/sram-12005.bin",
+          "sha256": "756a594dadf8dd23bdd01066c55bc0bf2eeb78f8a1eb0f4ac7542373bd6316ee"
+        },
+        {
+          "path": "snapshots/sram-12006.bin",
+          "sha256": "756a594dadf8dd23bdd01066c55bc0bf2eeb78f8a1eb0f4ac7542373bd6316ee"
+        },
+        {
+          "path": "snapshots/sram-12007.bin",
+          "sha256": "756a594dadf8dd23bdd01066c55bc0bf2eeb78f8a1eb0f4ac7542373bd6316ee"
+        },
+        {
+          "path": "snapshots/sram-12008.bin",
+          "sha256": "756a594dadf8dd23bdd01066c55bc0bf2eeb78f8a1eb0f4ac7542373bd6316ee"
+        },
+        {
+          "path": "snapshots/sram-12200.bin",
+          "sha256": "4ab67aa5cd03721b63e8dcf7b9366d10772a966529879d5337fa1b0f2361c7b1"
+        },
+        {
+          "path": "snapshots/sram-12302.bin",
+          "sha256": "4ab67aa5cd03721b63e8dcf7b9366d10772a966529879d5337fa1b0f2361c7b1"
+        },
+        {
+          "path": "snapshots/sram-12303.bin",
+          "sha256": "4ab67aa5cd03721b63e8dcf7b9366d10772a966529879d5337fa1b0f2361c7b1"
+        },
+        {
+          "path": "snapshots/sram-12304.bin",
+          "sha256": "4ab67aa5cd03721b63e8dcf7b9366d10772a966529879d5337fa1b0f2361c7b1"
+        },
+        {
+          "path": "snapshots/sram-12305.bin",
+          "sha256": "4ab67aa5cd03721b63e8dcf7b9366d10772a966529879d5337fa1b0f2361c7b1"
+        },
+        {
+          "path": "snapshots/sram-12318.bin",
+          "sha256": "756a594dadf8dd23bdd01066c55bc0bf2eeb78f8a1eb0f4ac7542373bd6316ee"
+        },
+        {
+          "path": "snapshots/sram-12319.bin",
+          "sha256": "756a594dadf8dd23bdd01066c55bc0bf2eeb78f8a1eb0f4ac7542373bd6316ee"
+        },
+        {
+          "path": "snapshots/sram-12320.bin",
+          "sha256": "756a594dadf8dd23bdd01066c55bc0bf2eeb78f8a1eb0f4ac7542373bd6316ee"
+        },
+        {
+          "path": "snapshots/sram-12350.bin",
+          "sha256": "756a594dadf8dd23bdd01066c55bc0bf2eeb78f8a1eb0f4ac7542373bd6316ee"
+        },
+        {
+          "path": "snapshots/sram-12400.bin",
+          "sha256": "4e150ff7a727fa5469b55166cd207fc1331e45b120490a8f8f82920917ea8b12"
+        },
+        {
+          "path": "snapshots/sram-12500.bin",
+          "sha256": "9600a11a993a812b546d03d80a9742be3aece36230bc75150048c20c157a65f8"
+        },
+        {
+          "path": "snapshots/sram-13000.bin",
+          "sha256": "a846e3787b2f8da3bb6f2b2882e4c92848c7430b5a3fa8bcffeca34dd3247ffa"
+        },
+        {
+          "path": "snapshots/sram-13600.bin",
+          "sha256": "36c564894205b0fe0414e0a03b38953ec4f9a2313c0dcc8b5db37d8aa44bbaf8"
+        },
+        {
+          "path": "snapshots/sram-14400.bin",
+          "sha256": "7f69cc26d7963bd30b53fcc7afb87a984c9e7cc88b3599722b4f17536ad31fb8"
+        },
+        {
+          "path": "snapshots/sram-15000.bin",
+          "sha256": "7f69cc26d7963bd30b53fcc7afb87a984c9e7cc88b3599722b4f17536ad31fb8"
+        },
+        {
+          "path": "frames/frame-11500.png",
+          "sha256": "1fd2ac2f8ed70042b8dace79f61c262a17c142c106fbf91cef95efae5a7d9813"
+        },
+        {
+          "path": "frames/frame-11510.png",
+          "sha256": "57997e1767300aa558480a9c8594b14207e73120acce9bb2fb0418b237a4caee"
+        },
+        {
+          "path": "frames/frame-11520.png",
+          "sha256": "2d9366191d85d6effa6b8255dfda1aba548893a1aa42ca8c378902e5aa46c7c9"
+        },
+        {
+          "path": "frames/frame-11530.png",
+          "sha256": "07187fd6af82db398763ac92ec65f633e429a281c7b63a19d05bb1d0c5ad3718"
+        },
+        {
+          "path": "frames/frame-11540.png",
+          "sha256": "131695162009ecf7acc2f16420ea12eb6f90c923d4cf2d1afab14d9ae7dc36af"
+        },
+        {
+          "path": "frames/frame-11550.png",
+          "sha256": "fb491bb8579a73b01b1bd465698119b1f1c526894159026eb5a7a75c98efe7c4"
+        },
+        {
+          "path": "frames/frame-11600.png",
+          "sha256": "4a8599ed2850ef09dfe96807f7a71c2688d79e0425a46f9e84c76124d4e503e3"
+        },
+        {
+          "path": "frames/frame-12000.png",
+          "sha256": "2d9366191d85d6effa6b8255dfda1aba548893a1aa42ca8c378902e5aa46c7c9"
+        },
+        {
+          "path": "frames/frame-12001.png",
+          "sha256": "2d9366191d85d6effa6b8255dfda1aba548893a1aa42ca8c378902e5aa46c7c9"
+        },
+        {
+          "path": "frames/frame-12002.png",
+          "sha256": "bdcb42ccf0e7c446e4a5fa12cba62da1c62f924357bcae6858030dc8e5653152"
+        },
+        {
+          "path": "frames/frame-12003.png",
+          "sha256": "bdcb42ccf0e7c446e4a5fa12cba62da1c62f924357bcae6858030dc8e5653152"
+        },
+        {
+          "path": "frames/frame-12004.png",
+          "sha256": "9f9d9674accb1e3a614896eaae8f4f95cb635a11f8965408c2c71a9de2a2081d"
+        },
+        {
+          "path": "frames/frame-12005.png",
+          "sha256": "9f9d9674accb1e3a614896eaae8f4f95cb635a11f8965408c2c71a9de2a2081d"
+        },
+        {
+          "path": "frames/frame-12006.png",
+          "sha256": "f82a181b76d4058aed3cc55ef64e921523c8ccf9a3865183090bdcee2e08dbdc"
+        },
+        {
+          "path": "frames/frame-12007.png",
+          "sha256": "f82a181b76d4058aed3cc55ef64e921523c8ccf9a3865183090bdcee2e08dbdc"
+        },
+        {
+          "path": "frames/frame-12008.png",
+          "sha256": "032119106befa372467a1f86de23060d22be2d4b59f3c70ba69ebda48a3eea0f"
+        },
+        {
+          "path": "frames/frame-12200.png",
+          "sha256": "0ed7b26b91b35f00cac8a9909698a5aeec7f2b425d7f4726a7fb21d0427b3bf4"
+        },
+        {
+          "path": "frames/frame-12302.png",
+          "sha256": "0ed7b26b91b35f00cac8a9909698a5aeec7f2b425d7f4726a7fb21d0427b3bf4"
+        },
+        {
+          "path": "frames/frame-12303.png",
+          "sha256": "0ed7b26b91b35f00cac8a9909698a5aeec7f2b425d7f4726a7fb21d0427b3bf4"
+        },
+        {
+          "path": "frames/frame-12304.png",
+          "sha256": "0ed7b26b91b35f00cac8a9909698a5aeec7f2b425d7f4726a7fb21d0427b3bf4"
+        },
+        {
+          "path": "frames/frame-12305.png",
+          "sha256": "0ed7b26b91b35f00cac8a9909698a5aeec7f2b425d7f4726a7fb21d0427b3bf4"
+        },
+        {
+          "path": "frames/frame-12318.png",
+          "sha256": "0ed7b26b91b35f00cac8a9909698a5aeec7f2b425d7f4726a7fb21d0427b3bf4"
+        },
+        {
+          "path": "frames/frame-12319.png",
+          "sha256": "0ed7b26b91b35f00cac8a9909698a5aeec7f2b425d7f4726a7fb21d0427b3bf4"
+        },
+        {
+          "path": "frames/frame-12320.png",
+          "sha256": "0ed7b26b91b35f00cac8a9909698a5aeec7f2b425d7f4726a7fb21d0427b3bf4"
+        },
+        {
+          "path": "frames/frame-12350.png",
+          "sha256": "b629ccef88b74d6da827802f485b49a26f5c32245b863b0f4eb70d3b431ed6aa"
+        },
+        {
+          "path": "frames/frame-12400.png",
+          "sha256": "0a2a22217964138db91eabfb485e77d1f61b7cb3a653ca44615d600b13d363ac"
+        },
+        {
+          "path": "frames/frame-12500.png",
+          "sha256": "f9c70be2ab3e66536d57aefa1b33bea446be74a45265571abb6fc0e5ab6c6b52"
+        },
+        {
+          "path": "frames/frame-13000.png",
+          "sha256": "25e8e4eb33c32e63df44fb6b03dfa65437f763597d9642e32638bc9c66901da4"
+        },
+        {
+          "path": "frames/frame-13600.png",
+          "sha256": "05d1e75bf7f073f05bcdbfd350c67284235f9167331448ee4c52f3d756b57c6f"
+        }
+      ]
+    }
+  ]
+}

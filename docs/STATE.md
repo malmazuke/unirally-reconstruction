@@ -1,6 +1,6 @@
 # Project state
 
-**30 September 2026 UTC: LEAGUE is claimed** on `codex/league` in `.worktrees/league` from OPTIONS merge `a2cdb9c`. OPTIONS #46 and its closeout are verified; local main equals freshly fetched origin/main. [LEAGUE](../tasks/LEAGUE.md) owns tournament play and scored continuation, tier 1. Main `local/evidence/league/` holds the first organically defined two-member played original; main `artifacts/league-integration/` holds gates. No native tournament behavior is accepted. Startup weekly usage 0%, latest 1%, task boundary 20%. [R-0073](research/R-0073-league.md) holds evidence and the next experiment.
+**30 September 2026 UTC: LEAGUE implementation is under validation.** The native first CRAWLER tour reproduces all five played totals and scored continuation on the retained PAL inputs. The task remains unaccepted on `codex/league`; strict six-slot persistence/picture gates, regression, application smoke and fresh tier-1 review remain before integration. Main `local/evidence/league/` holds originals; main `artifacts/league-integration/` holds reports. Startup weekly usage 0%, latest 7%, discretionary boundary 20%; no reset/spending. See the LEAGUE task and R-0073 for exact scope and failed attempts.
 
 Updated 30 September 2026 UTC (OPTIONS validation complete): the native OPTIONS
 menus, player and league editors, and four RECORDS views are validated in the

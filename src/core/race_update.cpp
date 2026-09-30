@@ -192,16 +192,25 @@ ControllerButtons release_settled_player(const ZoomZooState& state, ZoomZooState
 // ended there instead, as the original's QUIT (`update_race_for_menus`, R-0060). Returns true
 // when it took the update.
 bool run_pause_menu(const ZoomZooState& state, ZoomZooState& next, const ControllerButtons& buttons,
-                    const ZoomZooContent& content) {
-    if (!state.native_initialization
-        || !(state.pause.selection || (buttons.start && !state.race.riders[0].finished)))
-        return false;
+                    const ControllerButtons& second, const ZoomZooContent& content) {
+    const bool league_pair = state.league_statistics.enabled && state.split_screen;
+    const bool start = buttons.start || (league_pair && second.start);
+    const bool opening = (buttons.start && !state.race.riders[0].finished)
+                      || (league_pair && second.start && !state.race.riders[1].finished);
+    if (!state.native_initialization || !(state.pause.selection || opening)) return false;
     auto& pause = next.pause;
     auto& whole = next.movement;
     if (!pause.selection) pause.selection = 1;
-    if (whole.player_input.vertical != direction::neutral)
+    // $83:F6FD-F791: two unfinished humans see only a pause message after the countdown.
+    const bool message_only = league_pair && !whole.countdown && !state.race.riders[0].finished
+                           && !state.race.riders[1].finished;
+    if (message_only)
+        pause.selection = 1;
+    else if (whole.player_input.vertical != direction::neutral)
         pause.selection = whole.player_input.vertical ? 0xffff : 1;
-    if (!buttons.start) {
+    else if (league_pair && (second.up || second.down))
+        pause.selection = second.down ? 0xffff : 1;
+    if (!start) {
         pause.released = 1;
     } else if (pause.released) {
         if (negative(pause.selection)) {
@@ -800,12 +809,27 @@ void finish_update(const ZoomZooState& state, ZoomZooState& next,
         whole.rewards.cooldown = 0;
         next.demo.opponent_hints_active = false;
     }
+    const auto previous_reward_cursor = whole.rewards.read_cursor;
+    const auto previous_reward_total = whole.rewards.feature_total;
     update_opponent_announcements(whole, outcomes[1].reward, content.movement,
                                   state.native_initialization
                                       ? std::span<std::uint8_t>{next.learned_weights[1]}
                                       : std::span<std::uint8_t>{});
+    if (next.league_statistics.enabled && previous_reward_cursor != whole.rewards.read_cursor) {
+        const auto event = whole.rewards.entries[whole.rewards.read_cursor];
+        if (event < announcement::wrong_way) next.league_statistics.opponent_hints_over = true;
+        if (event == announcement::wipeout) ++next.league_statistics.wipeouts[1];
+        if (event < announcement::wrong_way && event != 0
+            && content.movement.rotation_class[event - 1] != 255) {
+            const auto cell = content.movement.rotation_class[event - 1] / 2U;
+            ++next.league_statistics.tricks[1].at(cell);
+            auto& points = next.league_statistics.opponent_points.at(cell);
+            points = static_cast<std::uint16_t>(points + whole.rewards.feature_total
+                                                - previous_reward_total);
+        }
+    }
     if (state.complete_race) update_camera(next, track_geometry(content.movement.sampling.track));
-    for (unsigned index = 0; index < rider_passes(scenario); ++index)
+    for (unsigned index = 0; index < rider_passes(scenario, next.split_screen); ++index)
         if (!outcomes[index].contact_skip) update_rider_contact(state, next, index, content);
     if (state.complete_race)
         update_visibility(next, track_geometry(content.movement.sampling.track));
@@ -863,7 +887,8 @@ void update_zoom_zoo(ZoomZooState& state, const ControllerButtons& requested_but
     const auto player_buttons = release_settled_player(state, next, buttons);
     bool pressed_a = read_player_buttons(next, player_buttons,
                                          state.hunter.effect[hunter_effect::control_reversed] != 0);
-    if (!state.demo_ai && run_pause_menu(state, next, player_buttons, content)) {
+    const auto opponent_buttons = with_physical_dpad(gate_controller(state, second_port));
+    if (!state.demo_ai && run_pause_menu(state, next, player_buttons, opponent_buttons, content)) {
         state = next;
         return;
     }
@@ -871,7 +896,6 @@ void update_zoom_zoo(ZoomZooState& state, const ControllerButtons& requested_but
         next.pause.released = 0;
     DemoTrickButtons demo_buttons{};
     bool ai_off = next.split_screen || scenario.stunt_event;
-    const auto opponent_buttons = with_physical_dpad(gate_controller(state, second_port));
     if (next.demo_ai) {
         const auto pressed = [](const ControllerButtons& pad) {
             return pad.a || pad.b || pad.x || pad.y || pad.left_shoulder || pad.right_shoulder
@@ -910,7 +934,7 @@ void update_zoom_zoo(ZoomZooState& state, const ControllerButtons& requested_but
     const unsigned active = whole.progress_phase ? 0U : 1U;
     lower_announcement_cooldowns(next, scenario);
     std::array<RiderOutcome, 2> outcomes{};
-    for (unsigned index = 0; index < rider_passes(scenario); ++index)
+    for (unsigned index = 0; index < rider_passes(scenario, next.split_screen); ++index)
         outcomes[index] = update_rider(state, next, index, active, trick_buttons, content);
     finish_update(state, next, outcomes, content, scenario);
     state = next;

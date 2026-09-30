@@ -679,14 +679,17 @@ void draw_split_hud(RgbFrame& frame, const ZoomZooState& state,
     draw_bg3_text(frame, font, 24, 1, hud.clock, ink, inked);
     const auto& opponent = state.race.riders[1];
     const auto lap = classic_hud_lap(opponent.laps_remaining, content.scenario.laps);
-    const auto lower_left = opponent.finished && opponent.laps_remaining == 0
+    const auto lower_left = content.scenario.stunt_event ? std::string("stunt")
+                          : opponent.finished && opponent.laps_remaining == 0
                               ? std::string("finish")
+                          : !content.scenario.tour_race
+                              ? std::string("race")
                               : std::to_string(lap) + "/" + std::to_string(content.scenario.laps);
     draw_bg3_text(frame, font, 2, 15, lower_left, opponent_ink, inked);
     auto bottom_timer = classic_hud_timer(state);
-    if (state.movement.timer.subframe == 0 && bottom_timer.tenths)
+    if (!content.scenario.stunt_event && state.movement.timer.subframe == 0 && bottom_timer.tenths)
         --bottom_timer.tenths;
-    else if (state.movement.timer.subframe == 0
+    else if (!content.scenario.stunt_event && state.movement.timer.subframe == 0
              && (bottom_timer.seconds || bottom_timer.tens_seconds || bottom_timer.minutes)) {
         bottom_timer.tenths = 9;
         if (bottom_timer.seconds)

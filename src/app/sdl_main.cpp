@@ -495,6 +495,7 @@ int main(int argc, char **argv) try {
           SDL_SetWindowTitle(window.get(),window_title(race_presentation.track_name).c_str());
           // A fresh race each time: after a result NOW PLAYING can choose the same track again.
           zoom_state=unirally::classic_race_start(zoom_content,scenario);
+          zoom_state.league_statistics.enabled = front_end->league_race();
           if (front_end->local_race())
             scripted_race_frame = front_end->front_end_frame() - 1U
                                   + front_end->race_loading_frames();
