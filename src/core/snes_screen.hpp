@@ -61,7 +61,12 @@ struct SnesLineColour {
 // line n, as for a colour): INIDISP (bit 7 forced blank, bits 3-0 the brightness) or BG1VOFS
 // (the whole offset, as HDMA's two-write mode leaves it). The PPU latches both for each line
 // (bsnes `PPU::Line::cache`), so a row's own value overrides the CPU's, forced blank included.
-enum class SnesLineRegisterName : std::uint8_t { display, bg1_vertical_offset };
+enum class SnesLineRegisterName : std::uint8_t {
+    display,
+    bg1_vertical_offset,
+    bg2_horizontal_offset,
+    bg2_vertical_offset
+};
 struct SnesLineRegister {
     std::uint8_t row{};
     SnesLineRegisterName name{};

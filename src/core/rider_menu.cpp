@@ -181,11 +181,11 @@ void open_rider_menu(FrontEndState& state) {
     }
     state.arrow.target_x = right_column ? right_column_x : left_column_x;
     menu.row = static_cast<std::uint8_t>(menu.rider >> 1U);
-    state.arrow.target_y = static_cast<std::uint16_t>(first_row_y + menu.row * row_spacing
+    state.arrow.target_y = static_cast<std::uint16_t>(
+        first_row_y + menu.row * row_spacing
         + (menu.purpose == RiderMenuPurpose::league_members ? 0x20U : 0U));
     menu.intro = menu.purpose == RiderMenuPurpose::league_members ? 0 : intro_start;
-    if (menu.purpose == RiderMenuPurpose::league_members)
-        state.menu.selection = menu.rider;
+    if (menu.purpose == RiderMenuPurpose::league_members) state.menu.selection = menu.rider;
     state.screen = FrontEndScreen::rider_menu;
 }
 
@@ -281,8 +281,8 @@ bool read_league_members_pad(FrontEndState& state, const FrontEndContent& conten
     const auto pressed = static_cast<std::uint16_t>(pad & ~state.league.previous_buttons);
     state.league.previous_buttons = pad;
     (void)read_rider_menu_pad(state, pad & (pad_left | pad_right | pad_up | pad_down));
-    const unsigned rider = state.rider_menu.row * 2U
-        + (state.arrow.target_x == right_column_x ? 1U : 0U);
+    const unsigned rider =
+        state.rider_menu.row * 2U + (state.arrow.target_x == right_column_x ? 1U : 0U);
     if (pressed & (0x4000U | 0x8000U)) { // Y or B
         mark_league_member(state, rider);
         state.menu.selection = static_cast<std::uint8_t>(rider);
@@ -306,7 +306,7 @@ bool read_league_members_pad(FrontEndState& state, const FrontEndContent& conten
 void open_rider_menu_entry(FrontEndState& state) {
     if (state.rider_menu.purpose != RiderMenuPurpose::league_members)
         state.menu.selection = state.rider_menu.rider; // $80:CB07
-    state.latches = {};                            // $80:CB0C
+    state.latches = {};                                // $80:CB0C
     state.screen = FrontEndScreen::rider_menu_entry;
 }
 
@@ -346,6 +346,7 @@ void rider_menu_entry_frame(FrontEndState& state, const FrontEndContent& content
             names[first] = names[first + 1] = 0xff;
             std::fill_n(names.begin() + first + 2, 29, std::uint8_t{'_'});
             state.records.league_members[state.league.slot] = 0;
+            state.records.league_scores[state.league.slot].fill(0);
             state.records.league_naming = true;
             state.text.words.fill(cleared_text);
         } else {
@@ -357,10 +358,10 @@ void rider_menu_entry_frame(FrontEndState& state, const FrontEndContent& content
         if (state.rider_menu.purpose == RiderMenuPurpose::league_members)
             print_rider_menu(state, content);
         load_text(state, state.slide.hidden_half);
-        if (state.rider_menu.purpose != RiderMenuPurpose::league_members)
-            send_arrow_off(state);
+        if (state.rider_menu.purpose != RiderMenuPurpose::league_members) send_arrow_off(state);
         state.rider_menu.picture = state.rider_menu.purpose == RiderMenuPurpose::league_members
-            ? first_loop_picture : first_picture;
+                                     ? first_loop_picture
+                                     : first_picture;
         return;
     case 3:
         upload_uni(state, content);
@@ -388,8 +389,9 @@ void rider_menu_frame(FrontEndState& state, const FrontEndContent& content, Fron
     load_text(state, state.slide.hidden_half);
     upload_uni(state, content);
     const bool league = state.rider_menu.purpose == RiderMenuPurpose::league_members;
-    const bool finished = league ? read_league_members_pad(state, content, pads.one)
-        : read_rider_menu_pad(state, state.rider_menu.second ? pads.two : pads.one);
+    const bool finished =
+        league ? read_league_members_pad(state, content, pads.one)
+               : read_rider_menu_pad(state, state.rider_menu.second ? pads.two : pads.one);
     if (!finished) {
         choose_next_picture(state.rider_menu);
         return;

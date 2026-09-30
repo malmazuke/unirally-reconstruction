@@ -22,8 +22,8 @@ The four classes partition all 131,072 bytes. **Unknown share: 40.4%** - above D
 | Instructions from observed | 17,569 |
 | Instructions from table | 587 |
 | Routines | 636 |
-| Routines cited by native code | 374 |
-| Routine bytes cited by native code | 48,835 |
+| Routines cited by native code | 375 |
+| Routine bytes cited by native code | 48,895 |
 | Gap sweep candidate instructions | 2,746 |
 | Gap sweep candidate bytes | 6,174 |
 | Jump tables | 2 |
@@ -45,7 +45,7 @@ The four classes partition all 131,072 bytes. **Unknown share: 40.4%** - above D
 
 ## Cited addresses
 
-1423 distinct code-bank ROM addresses cited by the research, task, inventory and content records (`labels.json`). By position: dat 25, loc 843, mid 18, sub 306, unk 231 (sub routine start, loc instruction start, mid inside an instruction, dat data, unk unknown). By class: data 25, inferred 241, observed 926, unknown 231.
+1478 distinct code-bank ROM addresses cited by the research, task, inventory and content records (`labels.json`). By position: dat 25, loc 843, mid 18, sub 307, unk 285 (sub routine start, loc instruction start, mid inside an instruction, dat data, unk unknown). By class: data 25, inferred 242, observed 926, unknown 285.
 
 Cited addresses in `unknown` bytes:
 
@@ -89,7 +89,24 @@ Cited addresses in `unknown` bytes:
 | $80:95A5 | docs/research/R-0067-stunt-result.md |
 | $80:97DD | docs/research/R-0056-tour-track-now-playing.md |
 | $80:9801 | docs/research/R-0056-tour-track-now-playing.md |
+| $80:9AB2 | docs/research/R-0072-options.md |
+| $80:9B79 | docs/research/R-0072-options.md |
+| $80:9BC4 | docs/research/R-0072-options.md |
 | $80:9D0B | docs/research/R-0055-rider-menu.md |
+| $80:9E0F | docs/research/R-0072-options.md |
+| $80:9E57 | docs/research/R-0072-options.md |
+| $80:9EF7 | docs/research/R-0072-options.md |
+| $80:A1F2 | docs/research/R-0072-options.md |
+| $80:A207 | docs/research/R-0072-options.md |
+| $80:A212 | docs/research/R-0072-options.md |
+| $80:A231 | docs/research/R-0072-options.md |
+| $80:A29B | docs/research/R-0072-options.md |
+| $80:A3A0 | docs/research/R-0072-options.md |
+| $80:A4DD | docs/research/R-0072-options.md |
+| $80:A4F1 | docs/research/R-0072-options.md |
+| $80:A501 | docs/research/R-0072-options.md |
+| $80:A511 | docs/research/R-0072-options.md |
+| $80:A52A | docs/research/R-0072-options.md |
 | $80:A72B | docs/research/R-0055-rider-menu.md |
 | $80:A8D4 | docs/research/R-0054-boot-title-main-menu.md |
 | $80:A9FA | docs/research/R-0054-boot-title-main-menu.md |
@@ -99,7 +116,10 @@ Cited addresses in `unknown` bytes:
 | $80:B205 | docs/research/R-0056-tour-track-now-playing.md |
 | $80:B4F6 | docs/research/R-0056-tour-track-now-playing.md |
 | $80:B53D | docs/research/R-0056-tour-track-now-playing.md |
-| $80:B626 | tasks/COVERAGE-ROADMAP.md |
+| $80:B626 | docs/research/R-0072-options.md, tasks/COVERAGE-ROADMAP.md, tasks/OPTIONS.md |
+| $80:B66D | tasks/OPTIONS.md |
+| $80:B66E | docs/research/R-0072-options.md, tasks/OPTIONS.md |
+| $80:B6C2 | docs/research/R-0072-options.md |
 | $80:BCAF | docs/research/R-0055-rider-menu.md |
 | $80:BCBF | docs/research/R-0071-two-player-versus.md, tasks/COVERAGE-ROADMAP.md, tasks/NEXT_SESSION.md, tasks/TWO-PLAYER-VS.md |
 | $80:BCFB | docs/research/R-0071-two-player-versus.md |
@@ -113,9 +133,13 @@ Cited addresses in `unknown` bytes:
 | $80:BF94 | docs/research/R-0071-two-player-versus.md |
 | $80:BF9F | docs/research/R-0057-one-run-result.md |
 | $80:C10E | docs/research/R-0071-two-player-versus.md |
+| $80:C12A | docs/research/R-0072-options.md |
+| $80:C1DE | docs/research/R-0072-options.md |
 | $80:C3DC | docs/research/R-0053-result-title-printer.md |
 | $80:C456 | docs/research/R-0056-tour-track-now-playing.md |
 | $80:C474 | docs/research/R-0067-stunt-result.md |
+| $80:C675 | docs/research/R-0072-options.md |
+| $80:C67D | docs/research/R-0072-options.md |
 | $80:C7C4 | docs/research/R-0057-one-run-result.md |
 | $80:C7EE | docs/research/R-0057-one-run-result.md |
 | $80:C800 | docs/research/R-0057-one-run-result.md |
@@ -152,6 +176,29 @@ Cited addresses in `unknown` bytes:
 | $80:D1DB | tasks/TWO-PLAYER-VS.md |
 | $80:D37B | docs/research/R-0055-rider-menu.md |
 | $80:D383 | docs/research/R-0054-boot-title-main-menu.md |
+| $80:D448 | docs/research/R-0072-options.md |
+| $80:D468 | docs/research/R-0072-options.md |
+| $80:D494 | docs/research/R-0072-options.md |
+| $80:D4BF | docs/research/R-0072-options.md |
+| $80:D4C5 | docs/research/R-0072-options.md |
+| $80:D525 | docs/research/R-0072-options.md |
+| $80:D566 | docs/research/R-0072-options.md |
+| $80:D5E6 | docs/research/R-0072-options.md, tasks/OPTIONS.md |
+| $80:D699 | docs/research/R-0072-options.md, tasks/OPTIONS.md |
+| $80:D7CD | docs/research/R-0072-options.md |
+| $80:D8C1 | docs/research/R-0072-options.md |
+| $80:D917 | docs/research/R-0072-options.md |
+| $80:D9AC | docs/research/R-0072-options.md |
+| $80:D9B7 | docs/research/R-0072-options.md |
+| $80:D9D8 | docs/research/R-0072-options.md |
+| $80:DACF | docs/research/R-0072-options.md |
+| $80:DB2B | docs/research/R-0072-options.md |
+| $80:DB4E | docs/research/R-0072-options.md |
+| $80:DB9E | docs/research/R-0072-options.md |
+| $80:DDE3 | docs/research/R-0072-options.md |
+| $80:DE2E | docs/research/R-0072-options.md |
+| $80:DEB5 | docs/research/R-0072-options.md |
+| $80:E043 | docs/research/R-0072-options.md |
 | $80:E37B | docs/research/R-0064-hunter-ending-and-soft-reset.md |
 | $80:E3A1 | docs/research/R-0064-hunter-ending-and-soft-reset.md |
 | $80:E708 | docs/research/R-0056-tour-track-now-playing.md |
@@ -165,6 +212,12 @@ Cited addresses in `unknown` bytes:
 | $80:EA40 | docs/research/R-0056-tour-track-now-playing.md |
 | $80:EA58 | docs/research/R-0056-tour-track-now-playing.md |
 | $80:EB61 | docs/research/R-0056-tour-track-now-playing.md |
+| $80:EB76 | docs/research/R-0072-options.md |
+| $80:ECD1 | docs/research/R-0072-options.md |
+| $80:ECF7 | docs/research/R-0072-options.md |
+| $80:EEF2 | docs/research/R-0072-options.md |
+| $80:EF3D | docs/research/R-0072-options.md, tasks/OPTIONS.md |
+| $80:EF89 | docs/research/R-0072-options.md, tasks/OPTIONS.md |
 | $80:F0EE | docs/research/R-0057-one-run-result.md, docs/research/R-0058-lap-result.md, docs/research/R-0066-stunt-event-race.md, docs/research/R-0067-stunt-result.md, tasks/STUNT-RESULT.md |
 | $80:F0F3 | docs/research/R-0067-stunt-result.md |
 | $80:F0FC | docs/research/R-0067-stunt-result.md |
@@ -244,6 +297,7 @@ Cited addresses in `unknown` bytes:
 | $83:8D5D | docs/research/R-0058-lap-result.md, tasks/FRONT-END-LAP-RESULT.md |
 | $83:8E1C | docs/research/R-0056-tour-track-now-playing.md |
 | $83:8E26 | docs/research/R-0056-tour-track-now-playing.md |
+| $83:8FDE | docs/research/R-0072-options.md |
 | $83:904A | docs/research/R-0038-dragster-ordinary-controls.md, docs/research/R-0058-lap-result.md, tasks/FRONT-END-LAP-RESULT.md |
 | $83:98B8 | docs/research/R-0067-stunt-result.md |
 | $83:9AF9 | docs/research/R-0055-rider-menu.md |

@@ -2012,7 +2012,7 @@
    ],
    "native": [
     "src/core/front_end.hpp:FrontEndScreen",
-    "src/core/front_end.hpp:RiderMenu",
+    "src/core/front_end.hpp:RiderMenuPurpose",
     "src/core/rider_menu.cpp:(file)",
     "src/core/rider_menu.cpp:choose_next_picture",
     "src/core/rider_menu.cpp:left_column_x, right_column_x",
@@ -2133,7 +2133,8 @@
    ],
    "native": [
     "src/core/front_end_screens.hpp:cleared_text",
-    "src/core/front_end_screens.hpp:print_main_menu"
+    "src/core/front_end_screens.hpp:print_main_menu",
+    "src/core/options_menu.cpp:rename_commit_frame"
    ],
    "observed_entries": {},
    "start": "$80:D1FA",
@@ -2539,6 +2540,9 @@
    "mode_at_entry": [
     "NmX"
    ],
+   "native": [
+    "src/core/options_menu.cpp:enter_options_menu"
+   ],
    "observed_entries": {},
    "start": "$80:EF4D",
    "static_entries": {
@@ -2667,6 +2671,7 @@
     "NmX"
    ],
    "native": [
+    "src/core/options_menu.cpp:rename_commit_frame",
     "src/core/rider_menu.cpp:main_menu_return_frame"
    ],
    "observed_entries": {},
@@ -14429,19 +14434,19 @@
    "call returns in the calling mode": 1262
   },
   "bytes": 131072,
-  "cited_addresses": 1423,
+  "cited_addresses": 1478,
   "cited_by_class": {
    "data": 25,
-   "inferred": 241,
+   "inferred": 242,
    "observed": 926,
-   "unknown": 231
+   "unknown": 285
   },
   "cited_by_position": {
    "dat": 25,
    "loc": 843,
    "mid": 18,
-   "sub": 306,
-   "unk": 231
+   "sub": 307,
+   "unk": 285
   },
   "conflicts": 0,
   "data": 92,
@@ -14460,9 +14465,9 @@
   "jump_tables": 2,
   "mode_ambiguities": 7,
   "observed": 41778,
-  "routine_bytes_cited_by_native_code": 48835,
+  "routine_bytes_cited_by_native_code": 48895,
   "routines": 636,
-  "routines_cited_by_native_code": 374,
+  "routines_cited_by_native_code": 375,
   "unknown": 52881,
   "unknown_share": 0.4035
  }

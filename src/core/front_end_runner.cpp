@@ -72,19 +72,26 @@ std::uint8_t& record_byte(unirally::OnePlayerRecords& records, std::uint32_t off
     throw std::invalid_argument("--record-write: unsupported record offset");
 }
 
-void set_record_byte(unirally::OnePlayerRecords& records, std::uint32_t offset,
-                     std::uint8_t byte) {
+void set_record_byte(unirally::OnePlayerRecords& records, std::uint32_t offset, std::uint8_t byte) {
     const auto write_word = [&](std::uint16_t& word, std::uint32_t base) {
         if (offset == base)
             word = static_cast<std::uint16_t>((word & 0xff00U) | byte);
         else
-            word = static_cast<std::uint16_t>((word & 0x00ffU)
-                                              | (static_cast<unsigned>(byte) << 8U));
+            word =
+                static_cast<std::uint16_t>((word & 0x00ffU) | (static_cast<unsigned>(byte) << 8U));
     };
     if (offset >= 0x0230 && offset < 0x02b0) {
         const auto index = offset - 0x0230;
         write_word(records.statistics[index / 8][(index % 8) / 2], offset & ~1U);
         return;
+    }
+    if (offset >= 0x02c0 && offset < 0x02c0 + 32 * records.league_scores.size()) {
+        const auto index = offset - 0x02c0;
+        if (index % 4 >= 2) {
+            write_word(records.league_scores[index / 32][(index % 32) / 4],
+                       0x02c0 + (index & ~3U) + 2);
+            return;
+        }
     }
     if (offset >= 0x0829 && offset < 0x0829 + records.best.size() * 2) {
         const auto index = offset - 0x0829;
@@ -204,20 +211,23 @@ void write_records(const std::filesystem::path& path, const unirally::OnePlayerR
     std::copy(records.rider_names.begin(), records.rider_names.end(), image.begin() + 0x000c);
     std::uint16_t name_checksum = 0;
     for (std::size_t at = 0; at < records.rider_names.size(); at += 2)
-        name_checksum = static_cast<std::uint16_t>(name_checksum
-            + records.rider_names[at]
+        name_checksum = static_cast<std::uint16_t>(
+            name_checksum + records.rider_names[at]
             + (static_cast<std::uint16_t>(records.rider_names[at + 1]) << 8U));
     put_word(0x016c, name_checksum);
     std::copy(records.league_names.begin(), records.league_names.end(), image.begin() + 0x016e);
     std::uint16_t league_checksum = 0;
     for (std::size_t at = 0; at < records.league_names.size(); at += 2)
-        league_checksum = static_cast<std::uint16_t>(league_checksum
-            + records.league_names[at]
+        league_checksum = static_cast<std::uint16_t>(
+            league_checksum + records.league_names[at]
             + (static_cast<std::uint16_t>(records.league_names[at + 1]) << 8U));
     put_word(0x022e, league_checksum);
     for (std::size_t slot = 0; slot < records.league_members.size(); ++slot)
         put_word(0x02b2 + 2 * slot, records.league_members[slot]);
     put_word(0x02be, records.active_league_members);
+    for (std::size_t slot = 0; slot < records.league_scores.size(); ++slot)
+        for (std::size_t row = 0; row < records.league_scores[slot].size(); ++row)
+            put_word(0x02c0 + 32 * slot + 4 * row + 2, records.league_scores[slot][row]);
     for (std::size_t k = 0; k < records.tour_levels.size(); ++k)
         image[0x10d3 + k] = records.tour_levels[k];
     for (std::size_t k = 0; k < records.medals.size(); ++k) image[0x069c + k] = records.medals[k];
@@ -235,7 +245,7 @@ void write_records(const std::filesystem::path& path, const unirally::OnePlayerR
         for (std::size_t k = 0; k < 4; ++k)
             put_word(0x0230 + 8 * rider + 2 * k, records.statistics[rider][k]);
     put_word(0x0742, static_cast<std::uint16_t>((records.race_lost ? 0x1000 : 0)
-                                                 | (records.league_naming ? 0x0002 : 0)));
+                                                | (records.league_naming ? 0x0002 : 0)));
     put_word(0x10a9, records.player_wins);
     put_word(0x10ab, records.opponent_wins);
     put_word(0x1073, records.tries);

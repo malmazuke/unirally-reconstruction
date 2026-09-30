@@ -1538,6 +1538,15 @@
   ]
  },
  {
+  "address": "$80:9AB2",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_809AB2",
+  "source_records": [
+   "docs/research/R-0072-options.md"
+  ]
+ },
+ {
   "address": "$80:9B2F",
   "class": "observed",
   "comment": "routine start",
@@ -1579,6 +1588,19 @@
   ]
  },
  {
+  "address": "$80:9B79",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_809B79",
+  "native": [
+   "src/core/text_printer.cpp:league_name",
+   "src/core/text_printer.cpp:print_text"
+  ],
+  "source_records": [
+   "docs/research/R-0072-options.md"
+  ]
+ },
+ {
   "address": "$80:9BA0",
   "class": "observed",
   "comment": "routine start",
@@ -1591,12 +1613,70 @@
   ]
  },
  {
+  "address": "$80:9BC4",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_809BC4",
+  "native": [
+   "src/core/front_end.hpp:LeagueSetup",
+   "src/core/rider_menu.cpp:rider_menu_entry_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0072-options.md"
+  ]
+ },
+ {
   "address": "$80:9D0B",
   "class": "unknown",
   "comment": "unknown",
   "label": "unk_809D0B",
+  "native": [
+   "src/core/front_end.hpp:LeagueSetup",
+   "src/core/options_menu.cpp:league_warning_frame",
+   "src/core/rider_menu.cpp:rider_menu_entry_frame"
+  ],
   "source_records": [
    "docs/research/R-0055-rider-menu.md"
+  ]
+ },
+ {
+  "address": "$80:9E0F",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_809E0F",
+  "native": [
+   "src/core/front_end.hpp:LeagueSetup",
+   "src/core/options_menu.cpp:enter_league_editor",
+   "src/core/rider_menu.cpp:rider_menu_entry_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0072-options.md"
+  ]
+ },
+ {
+  "address": "$80:9E57",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_809E57",
+  "native": [
+   "src/core/front_end.hpp:LeagueSetup",
+   "src/core/options_menu.cpp:enter_league_editor",
+   "src/core/rider_menu.cpp:rider_menu_entry_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0072-options.md"
+  ]
+ },
+ {
+  "address": "$80:9EF7",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_809EF7",
+  "native": [
+   "src/core/options_menu.cpp:enter_league_slots"
+  ],
+  "source_records": [
+   "docs/research/R-0072-options.md"
   ]
  },
  {
@@ -1644,6 +1724,148 @@
   "label": "loc_80A1A1",
   "source_records": [
    "docs/research/R-0055-rider-menu.md"
+  ]
+ },
+ {
+  "address": "$80:A1F2",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80A1F2",
+  "native": [
+   "src/core/front_end.hpp:KeyboardEditor"
+  ],
+  "source_records": [
+   "docs/research/R-0072-options.md"
+  ]
+ },
+ {
+  "address": "$80:A207",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80A207",
+  "native": [
+   "src/core/front_end.hpp:KeyboardEditor",
+   "src/core/options_menu.cpp:enter_rename_editor"
+  ],
+  "source_records": [
+   "docs/research/R-0072-options.md"
+  ]
+ },
+ {
+  "address": "$80:A212",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80A212",
+  "native": [
+   "src/core/front_end.hpp:KeyboardEditor",
+   "src/core/options_menu.cpp:initialize_keyboard_cursor"
+  ],
+  "source_records": [
+   "docs/research/R-0072-options.md"
+  ]
+ },
+ {
+  "address": "$80:A231",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80A231",
+  "native": [
+   "src/core/front_end.hpp:KeyboardEditor",
+   "src/core/options_menu.cpp:initialize_keyboard_cursor",
+   "src/core/options_menu.cpp:rename_keyboard_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0072-options.md"
+  ]
+ },
+ {
+  "address": "$80:A29B",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80A29B",
+  "native": [
+   "src/core/front_end.hpp:KeyboardEditor",
+   "src/core/options_menu.cpp:rename_keyboard_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0072-options.md"
+  ]
+ },
+ {
+  "address": "$80:A3A0",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80A3A0",
+  "native": [
+   "src/core/front_end.hpp:KeyboardEditor",
+   "src/core/options_menu.cpp:rename_keyboard_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0072-options.md"
+  ]
+ },
+ {
+  "address": "$80:A4DD",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80A4DD",
+  "native": [
+   "src/core/front_end.hpp:KeyboardEditor",
+   "src/core/options_menu.cpp:keyboard_key"
+  ],
+  "source_records": [
+   "docs/research/R-0072-options.md"
+  ]
+ },
+ {
+  "address": "$80:A4F1",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80A4F1",
+  "native": [
+   "src/core/front_end.hpp:KeyboardEditor",
+   "src/core/options_menu.cpp:keyboard_key"
+  ],
+  "source_records": [
+   "docs/research/R-0072-options.md"
+  ]
+ },
+ {
+  "address": "$80:A501",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80A501",
+  "native": [
+   "src/core/front_end.hpp:KeyboardEditor",
+   "src/core/options_menu.cpp:keyboard_key"
+  ],
+  "source_records": [
+   "docs/research/R-0072-options.md"
+  ]
+ },
+ {
+  "address": "$80:A511",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80A511",
+  "native": [
+   "src/core/front_end.hpp:KeyboardEditor",
+   "src/core/options_menu.cpp:keyboard_key"
+  ],
+  "source_records": [
+   "docs/research/R-0072-options.md"
+  ]
+ },
+ {
+  "address": "$80:A52A",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80A52A",
+  "native": [
+   "src/core/options_menu.cpp:rename_keyboard_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0072-options.md"
   ]
  },
  {
@@ -2175,8 +2397,42 @@
   "class": "unknown",
   "comment": "unknown",
   "label": "unk_80B626",
+  "native": [
+   "src/core/front_end.hpp:FrontEndScreen",
+   "src/core/options_menu.cpp:enter_options_menu"
+  ],
   "source_records": [
-   "tasks/COVERAGE-ROADMAP.md"
+   "docs/research/R-0072-options.md",
+   "tasks/COVERAGE-ROADMAP.md",
+   "tasks/OPTIONS.md"
+  ]
+ },
+ {
+  "address": "$80:B66D",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80B66D",
+  "source_records": [
+   "tasks/OPTIONS.md"
+  ]
+ },
+ {
+  "address": "$80:B66E",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80B66E",
+  "source_records": [
+   "docs/research/R-0072-options.md",
+   "tasks/OPTIONS.md"
+  ]
+ },
+ {
+  "address": "$80:B6C2",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80B6C2",
+  "source_records": [
+   "docs/research/R-0072-options.md"
   ]
  },
  {
@@ -2696,6 +2952,30 @@
   ]
  },
  {
+  "address": "$80:C12A",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80C12A",
+  "native": [
+   "src/core/options_menu.cpp:enter_define_player_warning"
+  ],
+  "source_records": [
+   "docs/research/R-0072-options.md"
+  ]
+ },
+ {
+  "address": "$80:C1DE",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80C1DE",
+  "native": [
+   "src/core/options_menu.cpp:enter_define_player_warning"
+  ],
+  "source_records": [
+   "docs/research/R-0072-options.md"
+  ]
+ },
+ {
   "address": "$80:C1EB",
   "class": "observed",
   "comment": "routine start",
@@ -2982,6 +3262,30 @@
   "label": "loc_80C661",
   "source_records": [
    "docs/research/R-0053-result-title-printer.md"
+  ]
+ },
+ {
+  "address": "$80:C675",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80C675",
+  "native": [
+   "src/core/text_printer.cpp:print_text"
+  ],
+  "source_records": [
+   "docs/research/R-0072-options.md"
+  ]
+ },
+ {
+  "address": "$80:C67D",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80C67D",
+  "native": [
+   "src/core/text_printer.cpp:print_text"
+  ],
+  "source_records": [
+   "docs/research/R-0072-options.md"
   ]
  },
  {
@@ -3389,7 +3693,7 @@
   "label": "sub_80CB04",
   "native": [
    "src/core/front_end.hpp:FrontEndScreen",
-   "src/core/front_end.hpp:RiderMenu",
+   "src/core/front_end.hpp:RiderMenuPurpose",
    "src/core/rider_menu.cpp:(file)",
    "src/core/rider_menu.cpp:open_rider_menu_entry"
   ],
@@ -3754,7 +4058,8 @@
   "label": "sub_80D1FA",
   "native": [
    "src/core/front_end_screens.hpp:cleared_text",
-   "src/core/front_end_screens.hpp:print_main_menu"
+   "src/core/front_end_screens.hpp:print_main_menu",
+   "src/core/options_menu.cpp:rename_commit_frame"
   ],
   "source_records": [
    "docs/research/R-0055-rider-menu.md"
@@ -3917,12 +4222,294 @@
   ]
  },
  {
+  "address": "$80:D448",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80D448",
+  "source_records": [
+   "docs/research/R-0072-options.md"
+  ]
+ },
+ {
+  "address": "$80:D468",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80D468",
+  "native": [
+   "src/core/front_end.hpp:FrontEndScreen",
+   "src/core/options_menu.cpp:enter_rename_editor"
+  ],
+  "source_records": [
+   "docs/research/R-0072-options.md"
+  ]
+ },
+ {
+  "address": "$80:D494",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80D494",
+  "native": [
+   "src/core/front_end.cpp:waits_for_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0072-options.md"
+  ]
+ },
+ {
+  "address": "$80:D4BF",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80D4BF",
+  "native": [
+   "src/core/front_end.cpp:waits_for_frame",
+   "src/core/options_menu.cpp:rename_commit_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0072-options.md"
+  ]
+ },
+ {
+  "address": "$80:D4C5",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80D4C5",
+  "source_records": [
+   "docs/research/R-0072-options.md"
+  ]
+ },
+ {
   "address": "$80:D503",
   "class": "inferred",
   "comment": "routine start",
   "label": "sub_80D503",
   "source_records": [
    "docs/research/R-0054-boot-title-main-menu.md"
+  ]
+ },
+ {
+  "address": "$80:D525",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80D525",
+  "native": [
+   "src/core/front_end.hpp:FrontEndScreen",
+   "src/core/options_menu.cpp:enter_records_menu"
+  ],
+  "source_records": [
+   "docs/research/R-0072-options.md"
+  ]
+ },
+ {
+  "address": "$80:D566",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80D566",
+  "native": [
+   "src/core/front_end.hpp:FrontEndScreen"
+  ],
+  "source_records": [
+   "docs/research/R-0072-options.md"
+  ]
+ },
+ {
+  "address": "$80:D5E6",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80D5E6",
+  "native": [
+   "src/core/options_menu.cpp:print_track_records"
+  ],
+  "source_records": [
+   "docs/research/R-0072-options.md",
+   "tasks/OPTIONS.md"
+  ]
+ },
+ {
+  "address": "$80:D699",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80D699",
+  "native": [
+   "src/core/options_menu.cpp:print_track_records",
+   "src/core/options_menu.cpp:print_track_selected_times"
+  ],
+  "source_records": [
+   "docs/research/R-0072-options.md",
+   "tasks/OPTIONS.md"
+  ]
+ },
+ {
+  "address": "$80:D7CD",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80D7CD",
+  "native": [
+   "src/core/options_menu.cpp:print_high_scores"
+  ],
+  "source_records": [
+   "docs/research/R-0072-options.md"
+  ]
+ },
+ {
+  "address": "$80:D8C1",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80D8C1",
+  "native": [
+   "src/core/options_menu.cpp:high_score_leaders",
+   "src/core/options_menu.cpp:print_high_scores"
+  ],
+  "source_records": [
+   "docs/research/R-0072-options.md"
+  ]
+ },
+ {
+  "address": "$80:D917",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80D917",
+  "native": [
+   "src/core/options_menu.cpp:load_high_score_palettes",
+   "src/core/options_menu.cpp:print_high_scores"
+  ],
+  "source_records": [
+   "docs/research/R-0072-options.md"
+  ]
+ },
+ {
+  "address": "$80:D9AC",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80D9AC",
+  "native": [
+   "src/core/options_menu.cpp:print_high_scores",
+   "src/core/options_menu.cpp:records_detail_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0072-options.md"
+  ]
+ },
+ {
+  "address": "$80:D9B7",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80D9B7",
+  "native": [
+   "src/core/options_menu.cpp:print_high_scores",
+   "src/core/options_menu.cpp:records_detail_exit_frame",
+   "src/core/options_menu.cpp:records_detail_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0072-options.md"
+  ]
+ },
+ {
+  "address": "$80:D9D8",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80D9D8",
+  "native": [
+   "src/core/options_menu.cpp:print_high_scores"
+  ],
+  "source_records": [
+   "docs/research/R-0072-options.md"
+  ]
+ },
+ {
+  "address": "$80:DACF",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80DACF",
+  "native": [
+   "src/core/options_menu.cpp:print_player_scores"
+  ],
+  "source_records": [
+   "docs/research/R-0072-options.md"
+  ]
+ },
+ {
+  "address": "$80:DB2B",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80DB2B",
+  "native": [
+   "src/core/options_menu.cpp:print_player_scores"
+  ],
+  "source_records": [
+   "docs/research/R-0072-options.md"
+  ]
+ },
+ {
+  "address": "$80:DB4E",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80DB4E",
+  "native": [
+   "src/core/options_menu.cpp:print_player_scores"
+  ],
+  "source_records": [
+   "docs/research/R-0072-options.md"
+  ]
+ },
+ {
+  "address": "$80:DB9E",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80DB9E",
+  "native": [
+   "src/core/options_menu.cpp:print_player_scores"
+  ],
+  "source_records": [
+   "docs/research/R-0072-options.md"
+  ]
+ },
+ {
+  "address": "$80:DDE3",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80DDE3",
+  "native": [
+   "src/core/options_menu.cpp:print_player_scores",
+   "src/core/options_menu.cpp:set_bar_objects"
+  ],
+  "source_records": [
+   "docs/research/R-0072-options.md"
+  ]
+ },
+ {
+  "address": "$80:DE2E",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80DE2E",
+  "native": [
+   "src/core/options_menu.cpp:print_group_scores"
+  ],
+  "source_records": [
+   "docs/research/R-0072-options.md"
+  ]
+ },
+ {
+  "address": "$80:DEB5",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80DEB5",
+  "native": [
+   "src/core/options_menu.cpp:print_group_scores"
+  ],
+  "source_records": [
+   "docs/research/R-0072-options.md"
+  ]
+ },
+ {
+  "address": "$80:E043",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80E043",
+  "native": [
+   "src/core/options_menu.cpp:set_bar_objects"
+  ],
+  "source_records": [
+   "docs/research/R-0072-options.md"
   ]
  },
  {
@@ -4505,6 +5092,90 @@
   ]
  },
  {
+  "address": "$80:EB76",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80EB76",
+  "native": [
+   "src/core/options_menu.cpp:track_records_hdma"
+  ],
+  "source_records": [
+   "docs/research/R-0072-options.md"
+  ]
+ },
+ {
+  "address": "$80:ECD1",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80ECD1",
+  "native": [
+   "src/core/options_menu.cpp:track_records_hdma"
+  ],
+  "source_records": [
+   "docs/research/R-0072-options.md"
+  ]
+ },
+ {
+  "address": "$80:ECF7",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80ECF7",
+  "native": [
+   "src/core/options_menu.cpp:track_records_hdma"
+  ],
+  "source_records": [
+   "docs/research/R-0072-options.md"
+  ]
+ },
+ {
+  "address": "$80:EEF2",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80EEF2",
+  "native": [
+   "src/core/options_menu.cpp:track_grid_half"
+  ],
+  "source_records": [
+   "docs/research/R-0072-options.md"
+  ]
+ },
+ {
+  "address": "$80:EF3D",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80EF3D",
+  "source_records": [
+   "docs/research/R-0072-options.md",
+   "tasks/OPTIONS.md"
+  ]
+ },
+ {
+  "address": "$80:EF4D",
+  "class": "inferred",
+  "comment": "routine start",
+  "label": "sub_80EF4D",
+  "native": [
+   "src/core/options_menu.cpp:enter_options_menu"
+  ],
+  "source_records": [
+   "docs/research/R-0072-options.md"
+  ]
+ },
+ {
+  "address": "$80:EF89",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80EF89",
+  "native": [
+   "src/core/front_end.hpp:OnePlayerRecords::league_scores",
+   "src/core/options_menu.cpp:print_group_scores"
+  ],
+  "source_records": [
+   "docs/research/R-0072-options.md",
+   "tasks/OPTIONS.md"
+  ]
+ },
+ {
   "address": "$80:F082",
   "class": "observed",
   "comment": "routine start",
@@ -4974,6 +5645,7 @@
   "comment": "routine start",
   "label": "sub_80F52B",
   "native": [
+   "src/core/options_menu.cpp:rename_commit_frame",
    "src/core/rider_menu.cpp:main_menu_return_frame"
   ],
   "source_records": [
@@ -13919,6 +14591,18 @@
    "docs/research/R-0055-rider-menu.md",
    "docs/research/R-0059-tour-completion.md",
    "docs/research/R-0062-gold-endings.md"
+  ]
+ },
+ {
+  "address": "$83:8FDE",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_838FDE",
+  "native": [
+   "src/core/options_menu.cpp:score_bar_targets"
+  ],
+  "source_records": [
+   "docs/research/R-0072-options.md"
   ]
  },
  {

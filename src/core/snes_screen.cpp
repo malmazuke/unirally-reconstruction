@@ -297,7 +297,8 @@ void draw_objects(Line& line, const SnesVideoMemory& memory, const SnesVideoRegi
         const auto source =
             palette[at] < 192 ? Source::obj_low_palettes : Source::obj_high_palettes;
         const auto value = cgram_colour(memory, palette[at]);
-        const bool object_visible = !registers.object_window_one_inverted
+        const bool object_visible =
+            !registers.object_window_one_inverted
             || (x >= registers.object_window_left && x <= registers.object_window_right);
         if (main && object_visible) plot(line.above, x, source, priority[at], value);
         if (sub && object_visible) plot(line.below, x, source, priority[at], value);
@@ -379,6 +380,12 @@ void apply_line_register(SnesVideoRegisters& registers, const SnesLineRegister& 
         return;
     case SnesLineRegisterName::bg1_vertical_offset:
         registers.bg[0].vofs = static_cast<std::uint16_t>(write.value & 0x3ffU);
+        return;
+    case SnesLineRegisterName::bg2_horizontal_offset:
+        registers.bg[1].hofs = static_cast<std::uint16_t>(write.value & 0x3ffU);
+        return;
+    case SnesLineRegisterName::bg2_vertical_offset:
+        registers.bg[1].vofs = static_cast<std::uint16_t>(write.value & 0x3ffU);
         return;
     }
 }
