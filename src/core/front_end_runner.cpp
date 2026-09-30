@@ -208,6 +208,16 @@ void write_records(const std::filesystem::path& path, const unirally::OnePlayerR
             + records.rider_names[at]
             + (static_cast<std::uint16_t>(records.rider_names[at + 1]) << 8U));
     put_word(0x016c, name_checksum);
+    std::copy(records.league_names.begin(), records.league_names.end(), image.begin() + 0x016e);
+    std::uint16_t league_checksum = 0;
+    for (std::size_t at = 0; at < records.league_names.size(); at += 2)
+        league_checksum = static_cast<std::uint16_t>(league_checksum
+            + records.league_names[at]
+            + (static_cast<std::uint16_t>(records.league_names[at + 1]) << 8U));
+    put_word(0x022e, league_checksum);
+    for (std::size_t slot = 0; slot < records.league_members.size(); ++slot)
+        put_word(0x02b2 + 2 * slot, records.league_members[slot]);
+    put_word(0x02be, records.active_league_members);
     for (std::size_t k = 0; k < records.tour_levels.size(); ++k)
         image[0x10d3 + k] = records.tour_levels[k];
     for (std::size_t k = 0; k < records.medals.size(); ++k) image[0x069c + k] = records.medals[k];
@@ -224,7 +234,8 @@ void write_records(const std::filesystem::path& path, const unirally::OnePlayerR
     for (std::size_t rider = 0; rider < records.statistics.size(); ++rider)
         for (std::size_t k = 0; k < 4; ++k)
             put_word(0x0230 + 8 * rider + 2 * k, records.statistics[rider][k]);
-    put_word(0x0742, records.race_lost ? 0x1000 : 0);
+    put_word(0x0742, static_cast<std::uint16_t>((records.race_lost ? 0x1000 : 0)
+                                                 | (records.league_naming ? 0x0002 : 0)));
     put_word(0x10a9, records.player_wins);
     put_word(0x10ab, records.opponent_wins);
     put_word(0x1073, records.tries);

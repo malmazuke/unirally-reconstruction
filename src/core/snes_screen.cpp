@@ -297,8 +297,10 @@ void draw_objects(Line& line, const SnesVideoMemory& memory, const SnesVideoRegi
         const auto source =
             palette[at] < 192 ? Source::obj_low_palettes : Source::obj_high_palettes;
         const auto value = cgram_colour(memory, palette[at]);
-        if (main) plot(line.above, x, source, priority[at], value);
-        if (sub) plot(line.below, x, source, priority[at], value);
+        const bool object_visible = !registers.object_window_one_inverted
+            || (x >= registers.object_window_left && x <= registers.object_window_right);
+        if (main && object_visible) plot(line.above, x, source, priority[at], value);
+        if (sub && object_visible) plot(line.below, x, source, priority[at], value);
     }
 }
 

@@ -4,8 +4,10 @@
 overrode OPTIONS' percentage usage boundary and requested work through task
 completion. Continue the same `codex/options` task from its pushed branch and
 ignored evidence, subject to actual provider availability and the separate
-no-reset/no-spending rule. The task record and R-0072 have the exact remaining
-native league, RECORDS, review and integration work.
+no-reset/no-spending rule. Native league save and three settled RECORDS detail
+screens are partly implemented; TRACK RECORDS, varied data and detail timing
+remain before review and integration. The task record and R-0072 have the exact
+scope and next experiment.
 
 **Status on 29 September 2026 22:40 UTC (OPTIONS resource handoff):**
 [OPTIONS](OPTIONS.md) remains claimed and incomplete on pushed branch `codex/options`

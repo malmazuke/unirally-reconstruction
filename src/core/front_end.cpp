@@ -232,6 +232,7 @@ bool waits_for_frame(const FrontEndState& state) {
     // $80:D494-D4BF runs through the name save and return without a frame wait.
     if (state.screen == FrontEndScreen::rename_return) return false;
     if (state.screen == FrontEndScreen::define_player_after_confirm) return false;
+    if (state.screen == FrontEndScreen::records_detail_entry && next == 1) return false;
     // Every other screen after the boot waits for each frame.
     if (state.screen != FrontEndScreen::boot) return true;
     const auto frame = boot_frame_number(state);
@@ -270,6 +271,10 @@ void check_records(FrontEndState& state, const FrontEndContent& content) {
             throw std::invalid_argument("the original rider-name table has the wrong size");
         std::copy(content.rider_names.begin(), content.rider_names.end(),
                   state.records.rider_names.begin());
+        if (content.league_names.size() != state.records.league_names.size())
+            throw std::invalid_argument("the original league-name table has the wrong size");
+        std::copy(content.league_names.begin(), content.league_names.end(),
+                  state.records.league_names.begin());
     }
     state.one_player = false;
     state.records.pending_reveal = 0;
@@ -736,6 +741,20 @@ FrontEndContent front_end_content(const ClassicContentPack& pack) {
     content.define_player_confirm_prompt = pack.entry("front-end.define-player-confirm-prompt");
     content.rename_prompt = pack.entry("front-end.rename-prompt");
     content.keyboard_text = pack.entry("front-end.keyboard-text");
+    content.league_slot_text = pack.entry("front-end.league-slot-text");
+    content.league_names = pack.entry("front-end.league-names");
+    content.league_warning = pack.entry("front-end.league-warning");
+    content.league_title = pack.entry("front-end.league-title");
+    content.league_minimum = pack.entry("front-end.league-minimum");
+    content.league_maximum = pack.entry("front-end.league-maximum");
+    content.league_prompt = pack.entry("front-end.league-prompt");
+    content.track_records_text = pack.entry("front-end.track-records-text");
+    content.track_records_objects = pack.entry("front-end.track-records-objects");
+    content.high_scores_text = pack.entry("front-end.high-scores-text");
+    content.player_scores_text = pack.entry("front-end.player-scores-text");
+    content.player_scores_values = pack.entry("front-end.player-scores-values");
+    content.group_scores_text = pack.entry("front-end.group-scores-text");
+    content.group_scores_empty = pack.entry("front-end.group-scores-empty");
     content.result_icons = pack.entry("front-end.result-icons");
     content.lap_result_text = pack.entry("front-end.lap-result-text");
     content.lap_result_record = pack.entry("front-end.lap-result-record");
@@ -983,6 +1002,20 @@ void update_front_end(FrontEndState& state, const FrontEndContent& content, Fron
         define_player_warning_frame(state, physical); break;
     case FrontEndScreen::define_player_after_confirm:
         define_player_after_confirm_frame(state, content); break;
+    case FrontEndScreen::league_slots_entry:
+        league_slots_entry_frame(state, content); break;
+    case FrontEndScreen::league_slots:
+        league_slots_frame(state, content, physical); break;
+    case FrontEndScreen::league_warning_entry:
+        league_warning_entry_frame(state, content); break;
+    case FrontEndScreen::league_warning:
+        league_warning_frame(state, physical); break;
+    case FrontEndScreen::records_detail_entry:
+        records_detail_entry_frame(state, content); break;
+    case FrontEndScreen::records_detail:
+        records_detail_frame(state, content, physical); break;
+    case FrontEndScreen::records_detail_exit:
+        records_detail_exit_frame(state, content); break;
     }
     if (state.screen != screen) state.script_frame = 0;
     ++state.frame;

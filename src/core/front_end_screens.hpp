@@ -189,6 +189,15 @@ void enter_define_player_warning(FrontEndState& state, const FrontEndContent& co
 void define_player_warning_entry_frame(FrontEndState& state, const FrontEndContent& content);
 void define_player_warning_frame(FrontEndState& state, FrontEndPads pads);
 void define_player_after_confirm_frame(FrontEndState& state, const FrontEndContent& content);
+void enter_league_slots(FrontEndState& state, const FrontEndContent& content);
+void league_slots_entry_frame(FrontEndState& state, const FrontEndContent& content);
+void league_slots_frame(FrontEndState& state, const FrontEndContent& content, FrontEndPads pads);
+void league_warning_entry_frame(FrontEndState& state, const FrontEndContent& content);
+void league_warning_frame(FrontEndState& state, FrontEndPads pads);
+void enter_league_editor(FrontEndState& state, const FrontEndContent& content);
+void records_detail_entry_frame(FrontEndState& state, const FrontEndContent& content);
+void records_detail_frame(FrontEndState& state, const FrontEndContent& content, FrontEndPads pads);
+void records_detail_exit_frame(FrontEndState& state, const FrontEndContent& content);
 
 // tour_menu.cpp: PICK TOUR after a rider is chosen (`$80:BBF7-BC0B`) or back from PICK TRACK
 // (`$80:BC03`), a frame of its set-up and of its loop.

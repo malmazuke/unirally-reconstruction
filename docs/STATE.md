@@ -2,10 +2,14 @@
 
 Updated 30 September 2026 UTC (OPTIONS continuation): the user overrode this
 task's percentage usage boundary and requested continuation to acceptance.
-OPTIONS remains active and unaccepted on `codex/options`; work resumes with
-the frozen first-league setup and RECORDS detail paths. No reset redemption or
-purchase was authorized. See [D-0004](decisions/D-0004-model-and-usage-budget.md)
-and [OPTIONS](../tasks/OPTIONS.md).
+OPTIONS remains active and unaccepted on `codex/options`. Native DEFINE LEAGUE
+matches the cold first-slot TONY/COLIN and one-letter T save path; HIGH SCORES,
+PLAYER SCORES and GROUP TABLES have matching settled pictures on the recorded
+cold or one populated path. TRACK RECORDS and the remaining detail transitions,
+varied records and persistence checks remain open. No reset redemption or
+purchase was authorized. See [R-0072](research/R-0072-options.md),
+[D-0004](decisions/D-0004-model-and-usage-budget.md) and
+[OPTIONS](../tasks/OPTIONS.md).
 
 Updated 29 September 2026 22:40 UTC (OPTIONS resource handoff): OPTIONS is
 active but unaccepted on pushed branch `codex/options` in `.worktrees/options`.

@@ -748,8 +748,8 @@ const std::array<RequiredEntry, 9> two_rider_titles_required{{
     {"front-end.pick-challenger-title", 18,
      "78eeb86bb284a6eff931df88c7c53ead732489400ee84879f06cc67916c9923d"},
 }};
-// OPTIONS (profile v28): the five choices in each menu and their arrow columns (R-0072).
-const std::array<RequiredEntry, 10> options_required{{
+// OPTIONS (profile v28): menu, editor, league and record-detail content (R-0072).
+const std::array<RequiredEntry, 24> options_required{{
     {"front-end.options-menu-text", 74,
      "80b0f85f99788398d43622701b4f08676cf6d6044b119bcf604e1fc5d641876a"},
     {"front-end.options-arrow-columns", 5,
@@ -770,6 +770,34 @@ const std::array<RequiredEntry, 10> options_required{{
      "898af58024aac8722302fdf8bb2f496d0d0ea060cb14eb3ba2ffe09a82287ab1"},
     {"front-end.keyboard-text", 80,
      "25180830ab1d1ae9e37c6a03803c06f051b8254bfb6f8bcb78cc118e8a2b8fa8"},
+    {"front-end.league-slot-text", 64,
+     "3c0ea7a1532eda96600922744033970c3cb72858e248426d4eea2b2f30d08574"},
+    {"front-end.league-names", 192,
+     "12d480127164e46fa26b3450b5ed8e83b985ba84071958b2adbeb1ce58607504"},
+    {"front-end.league-warning", 44,
+     "b13baf2cfa063dbd07fbae8006342565d336eed93d9e5f20e5b980b82afc4051"},
+    {"front-end.league-title", 19,
+     "51b550e550da6747454458cdeeca9c823dee36964cdd05e09ec003d5076f5d9a"},
+    {"front-end.league-minimum", 9,
+     "628d94f85c81266022f313cbecd3e815fc844fe6d2523af282a463749c90ba73"},
+    {"front-end.league-maximum", 9,
+     "6ef60a67cf22692d178271f73dc5999b1d5f6cef22a4eaa0f33df7cf3bbc2127"},
+    {"front-end.league-prompt", 58,
+     "b7644ee2529e1ecfc7c76676a0e853389abf0c03833a45b3dcd9444edad3cda4"},
+    {"front-end.track-records-text", 148,
+     "714ff69d629c52642922cc9d5cb2506234ff69ad2871e4f4235227e713070826"},
+    {"front-end.track-records-objects", 16,
+     "c48c0c9685164d6f53d41b117628714327c7eb7428a80cd3851bc0056f432a4d"},
+    {"front-end.high-scores-text", 247,
+     "72d429218180990b4d87e9359e5515afcfd563e0450421c092abe4dce4082d9c"},
+    {"front-end.player-scores-text", 198,
+     "7eeff1eafd62adf698ffb2fc42daad260fc5e0be715f04c703916a3608b51346"},
+    {"front-end.player-scores-values", 45,
+     "71bfe6ae9d295a54788af066e302492988c88945699f9e2084cf02b2b2acf7aa"},
+    {"front-end.group-scores-text", 192,
+     "01cd8fbd852e098f2dd72fa40b1ffb4030bca04122f26eb9d9825c9c868aa493"},
+    {"front-end.group-scores-empty", 89,
+     "361ea7290083b7a4bc1f5d3ca9299532a4b4d3d53da36c34a3b8144cb1a83e3e"},
 }};
 // LOCKED-TOURS (profile v12): the race tracks of the five tours a cold start does not
 // list, and sceneries 1, 8 and 12. Generated from the rules file (tracks.py v12_new_entries).
@@ -931,7 +959,7 @@ const std::array<RequiredEntry, 89> locked_tracks_required{{
     {"scenery.12.palette", 352, "b2a9aefe13c1dc68454cf0a5c2bedb086c6e162dbea1df1f2ef108347d89ab63"},
 }};
 constexpr std::string_view two_track_rules_sha =
-    "62668a625e04b08e802cb94ef8a2f5cbbcd17233e175e18cb62846527d310e11";
+    "6a1baecefc2ed5a2e1f57ca42160aa36c6dd985de48570fc1b8294f14f37fcfc";
 
 std::array<std::uint8_t, 32> hex_digest(std::string_view text) {
     if (text.size() != 64) throw std::logic_error("invalid compiled Classic SHA-256");

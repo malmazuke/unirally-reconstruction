@@ -322,6 +322,10 @@ synthetic_content(std::vector<std::vector<std::uint8_t>> &storage) {
     storage.back()[r * 16 + 1] = 0xff;
   }
   content.rider_names = storage.back();
+  storage.emplace_back(6 * 32, 0xff);
+  for (std::size_t slot = 0; slot < 6; ++slot)
+    storage.back()[slot * 32] = 'A';
+  content.league_names = storage.back();
   storage.push_back({0xfc, 0x01, 'A', 0xff});
   content.rider_menu_title = storage.back();
   content.decoration_frames = keep(76);

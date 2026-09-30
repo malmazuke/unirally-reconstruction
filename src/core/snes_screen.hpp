@@ -40,9 +40,12 @@ struct SnesVideoRegisters {
     std::uint8_t colour_select{}; // CGWSEL
     std::uint8_t colour_math{};   // CGADSUB
     std::uint16_t fixed_colour{}; // COLDATA, as BGR555
-    // Any window or mosaic enable, per-line register changes (HDMA other than colours, INIDISP
-    // and BG1VOFS) or OAM priority rotation (OAMADD's priority bit): none is modelled, so a
-    // picture that uses one is refused.
+    // $2125/$2126/$2127/$212E: the RECORDS bar sprites use window 1 on OBJ,
+    // inverted so pixels outside the horizontal interval are masked.
+    bool object_window_one_inverted{};
+    std::uint8_t object_window_left{}, object_window_right{};
+    // Other windows, mosaic, per-line register changes (HDMA other than colours, INIDISP
+    // and BG1VOFS) and OAM priority rotation remain unmodelled.
     bool unmodelled_features{};
 };
 

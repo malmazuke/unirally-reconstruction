@@ -5,8 +5,8 @@ This is the M0 implementation specification. Commands marked implemented in the 
 ## Validation by stage
 
 For OPTIONS (R-0072), the current supported Classic pack profile is
-`classic.pal.crawler.tracks.v28` with 452 exact PAL entries. Its ten additions
-hold the OPTIONS and RECORDS menu streams, arrow columns, picker titles, warning and confirmation prompt, rename prompt and keyboard text. Extract with
+`classic.pal.crawler.tracks.v28` with 466 exact PAL entries. Its 24 additions
+hold the OPTIONS and RECORDS menu streams, arrow columns, picker titles, warning and confirmation prompt, rename prompt and keyboard text, league setup data, and RECORDS detail streams. Extract with
 `python3 tools/project.py content pack --rules tests/manifests/content/classic-crawler-tracks-pack.json --out local/classic-pal-crawler-tracks-v28.pack`.
 The native `front_end_runner --content-pack PACK --frames N --inputs FILE`
 accepts both SNES pad words in each `frame pad1 pad2` row, and `--picture FRAME OUT.ppm`

@@ -325,6 +325,20 @@ OPTIONS_TABLES = (
     ("front-end.define-player-confirm-prompt", 0x809C77, 23),
     ("front-end.rename-prompt", 0x80D4D2, 49),
     ("front-end.keyboard-text", 0x80A4DB, 80),
+    ("front-end.league-slot-text", 0x809F34, 64),
+    ("front-end.league-names", 0x83815E, 192),
+    ("front-end.league-warning", 0x809C4B, 44),
+    ("front-end.league-title", 0x809E29, 19),
+    ("front-end.league-minimum", 0x809E20, 9),
+    ("front-end.league-maximum", 0x809E17, 9),
+    ("front-end.league-prompt", 0x809EBD, 58),
+    ("front-end.track-records-text", 0x80D729, 148),
+    ("front-end.track-records-objects", 0x80D7BD, 16),
+    ("front-end.high-scores-text", 0x80D9D8, 247),
+    ("front-end.player-scores-text", 0x80DCF1, 198),
+    ("front-end.player-scores-values", 0x80DDB7, 45),
+    ("front-end.group-scores-text", 0x80E06B, 192),
+    ("front-end.group-scores-empty", 0x80E12B, 89),
 )
 
 

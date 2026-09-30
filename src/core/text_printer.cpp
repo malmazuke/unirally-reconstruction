@@ -12,6 +12,7 @@ constexpr std::uint8_t end_of_text = 0xff, position = 0xfe, number = 0xfd, centr
                        nothing = 0xfb, attribute = 0xf9, rider_name = 0xf8, track_name = 0xf7,
                        race_time = 0xf1, two_digits = 0xf0, place_object = 0xef, capitals = 0xee,
                        first_control = 0xee;
+constexpr std::uint8_t league_slot_name = 0xf3, league_current_name = 0xf6;
 constexpr std::uint8_t row_code = 0xf2; // positions F7's name alone, like FC
 constexpr std::uint16_t priority_bit = 0x2000;
 constexpr std::uint8_t small_glyph = 0x80;
@@ -108,6 +109,17 @@ std::span<const std::uint8_t> record_name(std::span<const std::uint8_t> records,
     const auto name = records.subspan(rider * record, record);
     std::size_t end = 0;
     while (end < record && name[end] != end_of_text) ++end;
+    return name.first(end);
+}
+
+// $80:9B79: a league name occupies 32 SRAM bytes; the printer copies at most 31.
+std::span<const std::uint8_t> league_name(std::span<const std::uint8_t> records, unsigned slot) {
+    constexpr std::size_t record = 32;
+    if ((slot + 1) * record > records.size())
+        throw std::invalid_argument("league name is not in the records");
+    const auto name = records.subspan(slot * record, record);
+    std::size_t end = 0;
+    while (end < record - 1 && name[end] != end_of_text) ++end;
     return name.first(end);
 }
 
@@ -231,6 +243,23 @@ void print_text(TextMap& map, TextCursor& cursor, std::span<const std::uint8_t> 
                 in_capitals(text);
             }
             print_text(map, cursor, text, character_table, variables);
+            break;
+        }
+        case league_slot_name:
+        case league_current_name: { // $80:C675, $80:C67D, $80:9B79
+            const auto& v = require(variables);
+            const auto slot = byte == league_slot_name
+                ? next() : v.word(static_cast<std::uint16_t>(next() | (next() << 8U)));
+            const auto name = league_name(v.league_names,
+                                          static_cast<unsigned>(slot) & 0xffU);
+            std::vector<std::uint8_t> stream_name;
+            if (at < stream.size() && (stream[at] == row_code || stream[at] == centre)) {
+                stream_name.push_back(next());
+                stream_name.push_back(next());
+            }
+            stream_name.insert(stream_name.end(), name.begin(), name.end());
+            stream_name.push_back(end_of_text);
+            print_text(map, cursor, stream_name, character_table, variables);
             break;
         }
         case race_time: { // $80:C6BB
