@@ -144,7 +144,7 @@ void record_league_result(FrontEndState& state) {
     auto& totals = state.records.league_event_totals[slot];
     const bool swapped = state.records.league_pairings[slot][cursor] != state.rider_menu.rider;
     totals[cursor] = times.stunt_event ? times.player_score : times.player_total;
-    if (cursor + 1 < league_rows) {
+    if (cursor + 1U < league_rows) {
         totals[cursor + 1] = times.stunt_event ? times.opponent_score : times.opponent_total;
         if (swapped) std::swap(totals[cursor], totals[cursor + 1]);
     }
@@ -360,7 +360,7 @@ void choose_league_pair(FrontEndState& state) {
     if (cursor >= league_rows || members[cursor] == someone)
         throw std::invalid_argument("league pairing continuation is not recovered");
     state.rider_menu.rider = members[cursor];
-    state.second_rider = cursor + 1 < league_rows ? members[cursor + 1] : someone;
+    state.second_rider = cursor + 1U < league_rows ? members[cursor + 1U] : someone;
     if (state.second_rider < someone && state.rider_menu.rider > state.second_rider)
         std::swap(state.rider_menu.rider, state.second_rider);
     state.tour_menu.track = state.records.league_tracks[slot];
