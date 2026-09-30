@@ -365,9 +365,9 @@ void print_player_scores(FrontEndState& state, const FrontEndContent& content) {
         switch (address) {
         case 0x00ca: return rider;
         case 0x00b2: return races;
-        case 0x00b4: return races == 0 ? 0 : static_cast<std::uint16_t>(100U * wins / races);
-        case 0x00b6: return races == 0 ? 0 : static_cast<std::uint16_t>(100U * losses / races);
-        case 0x00b8: return races == 0 ? 0 : static_cast<std::uint16_t>(100U * failed / races);
+        case 0x00b4: return static_cast<std::uint16_t>(races == 0 ? 0U : 100U * wins / races);
+        case 0x00b6: return static_cast<std::uint16_t>(races == 0 ? 0U : 100U * losses / races);
+        case 0x00b8: return static_cast<std::uint16_t>(races == 0 ? 0U : 100U * failed / races);
         case 0x00ba: return stats[3];
         default: throw std::invalid_argument("unknown PLAYER SCORES text operand");
         }
