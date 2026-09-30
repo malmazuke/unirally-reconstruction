@@ -82,7 +82,7 @@ The coordinator maintains the status registry below. Work orders further below d
 | STUNT-HUD | integrated by #42 (tier 1): a stunt event's race picture; NEON; pack v26 | [A stunt event's race picture](STUNT-HUD.md) |
 | SPLIT-SCREEN-RACE | reviewed in #43 (tier 1): the first idle split ZOOM ZOO demo, two native viewports and rider controls; integration result in its closeout | [A race with two visible riders](SPLIT-SCREEN-RACE.md) |
 | ATTRACT-DEMO | ready (tier 1): the next idle demo cycle, one-player track 3, after SPLIT-SCREEN-RACE integrates | [The next idle demo cycle](ATTRACT-DEMO.md) |
-| LEAGUE | claimed (tier 1): tournament play and played scoring after OPTIONS #46 | [Native league tournament](LEAGUE.md) |
+| LEAGUE | reviewed and integrated by PR #48 (tier 1): first CRAWLER tournament, six-slot scoring projection and continuation; closeout in main artifacts | [Native league tournament](LEAGUE.md) |
 | ROLLING-CONTACT | ready | [A rolling rider's second contact after a long shoulder rotation (HUNTER-EFFECTS review)](ROLLING-CONTACT.md) |
 | PORTABLE-CORE-IDENTITY | ready (tier 2): the reference core accepted by its source and its pinned outputs, not one binary hash; no pack can be built from a ROM on Linux today | [The laboratory and the pack build on any host that builds the pinned core](PORTABLE-CORE-IDENTITY.md) |
 | PR-WORKFLOW | integrated by pull request #6 (tier 2, approved with should-fix items, all applied); changes reach `main` only through pull requests (user request, 23 September 2026) | [Changes reach main through pull requests](PR-WORKFLOW.md) |
