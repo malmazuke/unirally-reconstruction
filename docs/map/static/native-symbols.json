@@ -1625,6 +1625,7 @@
   {
    "address": "$80:C5D3",
    "native": [
+    "src/core/text_printer.cpp:print_name_operand",
     "src/core/text_printer.cpp:print_text"
    ],
    "region": "rom"
@@ -1632,6 +1633,7 @@
   {
    "address": "$80:C628",
    "native": [
+    "src/core/text_printer.cpp:print_name_operand",
     "src/core/text_printer.cpp:print_text"
    ],
    "region": "rom"
@@ -1639,6 +1641,7 @@
   {
    "address": "$80:C675",
    "native": [
+    "src/core/text_printer.cpp:print_name_operand",
     "src/core/text_printer.cpp:print_text"
    ],
    "region": "rom"
@@ -1646,6 +1649,7 @@
   {
    "address": "$80:C67D",
    "native": [
+    "src/core/text_printer.cpp:print_name_operand",
     "src/core/text_printer.cpp:print_text"
    ],
    "region": "rom"
@@ -16726,6 +16730,14 @@
     "$80:C41E"
    ]
   },
+  "src/core/text_printer.cpp:print_name_operand": {
+   "rom": [
+    "$80:C5D3",
+    "$80:C628",
+    "$80:C675",
+    "$80:C67D"
+   ]
+  },
   "src/core/text_printer.cpp:print_small": {
    "rom": [
     "$80:C56C"
@@ -18190,7 +18202,7 @@
  "totals": {
   "addresses": 1341,
   "io_addresses": 9,
-  "native_symbols": 969,
+  "native_symbols": 970,
   "rom_addresses": 979,
   "sram_addresses": 44,
   "wram_addresses": 309

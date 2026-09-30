@@ -171,15 +171,57 @@ std::vector<std::uint8_t> race_time_text(std::uint16_t time,
     return {'_', minutes, ':', tens, seconds, '.', tenths, hundredths};
 }
 
+namespace {
+
+std::uint8_t read_stream_byte(std::span<const std::uint8_t> stream, std::size_t& at) {
+    if (at >= stream.size()) throw std::invalid_argument("text stream ends without 0xFF");
+    return stream[at++];
+}
+
+void print_name_operand(TextMap& map, TextCursor& cursor, std::span<const std::uint8_t> stream,
+                        std::size_t& at, std::span<const std::uint8_t> character_table,
+                        const TextVariables* variables, std::uint8_t control) {
+    // $80:C5D3, $80:C628, $80:C675 and $80:C67D; R-0072 observations 3 and 19.
+    const auto& values = require(variables);
+    std::vector<std::uint8_t> text;
+    unsigned name_index = 0;
+    if (control == league_slot_name) {
+        name_index = read_stream_byte(stream, at);
+    } else {
+        const auto low = read_stream_byte(stream, at);
+        const auto high = read_stream_byte(stream, at);
+        const auto address = static_cast<std::uint16_t>(low | (high << 8U));
+        name_index = values.word(address);
+    }
+    if (at < stream.size() && (stream[at] == row_code || stream[at] == centre)) {
+        text.push_back(read_stream_byte(stream, at));
+        text.push_back(read_stream_byte(stream, at));
+    }
+    if (control == track_name || control == rider_name) {
+        const auto name = control == track_name ? name_of(values.track_names, name_index)
+                                                : record_name(values.rider_names, name_index);
+        text.insert(text.end(), name.begin(), name.end());
+        text.push_back(end_of_text);
+        if (at < stream.size() && stream[at] == capitals) {
+            ++at;
+            in_capitals(text);
+        }
+    } else {
+        const auto name = league_name(values.league_names, name_index & 0xffU);
+        text.insert(text.end(), name.begin(), name.end());
+        text.push_back(end_of_text);
+    }
+    print_text(map, cursor, text, character_table, variables);
+}
+
+} // namespace
+
 void print_text(TextMap& map, TextCursor& cursor, std::span<const std::uint8_t> stream,
                 std::span<const std::uint8_t> character_table, const TextVariables* variables) {
     if (character_table.size() != 256)
         throw std::invalid_argument("text printer table is not 256 bytes");
     std::size_t at = 0;
-    const auto next = [&] {
-        if (at >= stream.size()) throw std::invalid_argument("text stream ends without 0xFF");
-        return stream[at++];
-    };
+    const auto next = [&] { return read_stream_byte(stream, at); };
     for (;;) {
         const auto byte = next();
         if (byte < first_control) {
@@ -226,40 +268,12 @@ void print_text(TextMap& map, TextCursor& cursor, std::span<const std::uint8_t> 
         }
         case track_name:   // $80:C628
         case rider_name: { // $80:C5D3
-            const auto& v = require(variables);
-            const auto address = static_cast<std::uint16_t>(next() | (next() << 8U));
-            std::vector<std::uint8_t> text;
-            if (at < stream.size() && (stream[at] == row_code || stream[at] == centre)) {
-                text.push_back(next());
-                text.push_back(next());
-            }
-            const auto value = v.word(address);
-            const auto name = byte == track_name ? name_of(v.track_names, value)
-                                                 : record_name(v.rider_names, value);
-            text.insert(text.end(), name.begin(), name.end());
-            text.push_back(end_of_text);
-            if (at < stream.size() && stream[at] == capitals) {
-                ++at;
-                in_capitals(text);
-            }
-            print_text(map, cursor, text, character_table, variables);
+            print_name_operand(map, cursor, stream, at, character_table, variables, byte);
             break;
         }
         case league_slot_name:
         case league_current_name: { // $80:C675, $80:C67D, $80:9B79
-            const auto& v = require(variables);
-            const auto slot = byte == league_slot_name
-                ? next() : v.word(static_cast<std::uint16_t>(next() | (next() << 8U)));
-            const auto name = league_name(v.league_names,
-                                          static_cast<unsigned>(slot) & 0xffU);
-            std::vector<std::uint8_t> stream_name;
-            if (at < stream.size() && (stream[at] == row_code || stream[at] == centre)) {
-                stream_name.push_back(next());
-                stream_name.push_back(next());
-            }
-            stream_name.insert(stream_name.end(), name.begin(), name.end());
-            stream_name.push_back(end_of_text);
-            print_text(map, cursor, stream_name, character_table, variables);
+            print_name_operand(map, cursor, stream, at, character_table, variables, byte);
             break;
         }
         case race_time: { // $80:C6BB

@@ -3235,6 +3235,7 @@
   "comment": "instruction start",
   "label": "loc_80C5D3",
   "native": [
+   "src/core/text_printer.cpp:print_name_operand",
    "src/core/text_printer.cpp:print_text"
   ],
   "source_records": [
@@ -3248,6 +3249,7 @@
   "comment": "instruction start",
   "label": "loc_80C628",
   "native": [
+   "src/core/text_printer.cpp:print_name_operand",
    "src/core/text_printer.cpp:print_text"
   ],
   "source_records": [
@@ -3270,6 +3272,7 @@
   "comment": "unknown",
   "label": "unk_80C675",
   "native": [
+   "src/core/text_printer.cpp:print_name_operand",
    "src/core/text_printer.cpp:print_text"
   ],
   "source_records": [
@@ -3282,6 +3285,7 @@
   "comment": "unknown",
   "label": "unk_80C67D",
   "native": [
+   "src/core/text_printer.cpp:print_name_operand",
    "src/core/text_printer.cpp:print_text"
   ],
   "source_records": [

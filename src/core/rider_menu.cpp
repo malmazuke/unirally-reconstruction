@@ -182,7 +182,7 @@ void open_rider_menu(FrontEndState& state) {
     state.arrow.target_x = right_column ? right_column_x : left_column_x;
     menu.row = static_cast<std::uint8_t>(menu.rider >> 1U);
     state.arrow.target_y = static_cast<std::uint16_t>(
-        first_row_y + menu.row * row_spacing
+        static_cast<unsigned>(first_row_y) + menu.row * row_spacing
         + (menu.purpose == RiderMenuPurpose::league_members ? 0x20U : 0U));
     menu.intro = menu.purpose == RiderMenuPurpose::league_members ? 0 : intro_start;
     if (menu.purpose == RiderMenuPurpose::league_members) state.menu.selection = menu.rider;
