@@ -1,5 +1,12 @@
 # Next session
 
+**Status on 30 September 2026 UTC (OPTIONS continuation):** the user explicitly
+overrode OPTIONS' percentage usage boundary and requested work through task
+completion. Continue the same `codex/options` task from its pushed branch and
+ignored evidence, subject to actual provider availability and the separate
+no-reset/no-spending rule. The task record and R-0072 have the exact remaining
+native league, RECORDS, review and integration work.
+
 **Status on 29 September 2026 22:40 UTC (OPTIONS resource handoff):**
 [OPTIONS](OPTIONS.md) remains claimed and incomplete on pushed branch `codex/options`
 in `.worktrees/options`, with ignored PAL evidence under main's `local/evidence/options/`.

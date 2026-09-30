@@ -1,5 +1,12 @@
 # Project state
 
+Updated 30 September 2026 UTC (OPTIONS continuation): the user overrode this
+task's percentage usage boundary and requested continuation to acceptance.
+OPTIONS remains active and unaccepted on `codex/options`; work resumes with
+the frozen first-league setup and RECORDS detail paths. No reset redemption or
+purchase was authorized. See [D-0004](decisions/D-0004-model-and-usage-budget.md)
+and [OPTIONS](../tasks/OPTIONS.md).
+
 Updated 29 September 2026 22:40 UTC (OPTIONS resource handoff): OPTIONS is
 active but unaccepted on pushed branch `codex/options` in `.worktrees/options`.
 Its menu shell, player name editor and DEFINE PLAYER removal are implemented in
