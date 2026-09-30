@@ -2,14 +2,16 @@
 
 ## Assignment
 
-- Status: in_progress, claimed 30 September 2026; documentation only.
+- Status: documentation recorded in
+  [PR #47](https://github.com/malmazuke/unirally-reconstruction/pull/47),
+  claimed 30 September 2026; integration result is in the PR and closeout.
 - Milestone: none. This records future ideas without scheduling feature work.
 - Coordinator/primary/integrator: current OpenAI Codex session; no children.
 - Actual model/effort: not exposed by this runtime; no model override or frontier
   consultation requested for this routine documentation change.
 - Review tier: **3**, records only under D-0008; no independent review required.
-- D-0004 quota: weekly-used 2%, remaining 98%, sampled at session start on
-  30 September 2026 UTC; reset epoch 1791365217. Discretionary boundary 22%
+- D-0004 quota: weekly-used 2%, remaining 98%, sampled at session start and
+  recorded 30 September 2026 at 10:16:18 UTC; reset epoch 1791365217. Boundary 22%
   used, with the final 20% reserved. No reset, purchase or other spending.
 - Base: `a2cdb9c`, synchronized `main`/`origin/main` at claim.
 - Branch/worktree: `codex/future-ideas` in `.worktrees/future-ideas`.
@@ -43,9 +45,20 @@ freeze a design, and a ready task would imply work the user has deferred.
 
 ## Handoff
 
-- Current content candidate and validation results: pending the initial commit.
-- Integration: push this task branch and open a template-based pull request;
-  inspect every conversation/review/line comment before the authorized merge.
+- Content candidate: `e8643bb`, pushed and captured in PR #47; the closing
+  record commit and exact merged head are identified by the closeout below.
+- Local results: staged whitespace/scope inspection passed; all four changed
+  Markdown files use ASCII hyphens in new prose and their six added local links
+  resolve. The existing classifier reports `docs_only=true` for all four paths
+  against `a2cdb9c`, inheriting successful CI from merged head `596585b`.
+- Commands: `git diff --cached --check`; a one-off Python check of added local
+  links and Unicode dashes; `GITHUB_EVENT_NAME=pull_request
+  CLASSIFY_BASE=a2cdb9c CLASSIFY_REQUIRE_BASE_RUN=synthetic.yml
+  GITHUB_REPOSITORY=malmazuke/unirally-reconstruction python3
+  .github/scripts/classify_changes.py`. Re-run the classifier and whitespace
+  check on the final tip; hosted job results belong in the closeout.
+- Tier 3 needs no reviewer. Read PR #47's conversation/review and line comments
+  and require its current-head checks before the authorized merge commit.
 - Final source/head, PR, hosted checks, merge commit, main synchronization and
   fresh usage will be recorded in main's ignored
   `artifacts/future-ideas-integration/closeout.json`.
