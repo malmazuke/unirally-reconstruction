@@ -710,8 +710,8 @@ void dim_finished_league_views(RgbFrame& frame, const ZoomZooState& state,
                 const auto at = (y * 256 + x) * 3;
                 std::uint16_t word = 0;
                 for (unsigned channel = 0; channel < 3; ++channel)
-                    word |= static_cast<std::uint16_t>(five_bit_channel(frame.pixels[at + channel]))
-                         << (channel * 5);
+                    word = static_cast<std::uint16_t>(
+                        word | (five_bit_channel(frame.pixels[at + channel]) << (channel * 5)));
                 const auto rgb = colour_word_rgb(apply_snes_brightness(word, 7));
                 for (unsigned channel = 0; channel < 3; ++channel)
                     frame.pixels[at + channel] = rgb[channel];

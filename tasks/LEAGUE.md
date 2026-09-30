@@ -123,3 +123,9 @@ Deliver LEAGUE from native main-menu selection through an existing or newly defi
 - Fresh independent gpt-5.6-sol/medium reviewer was automatically dispatched with no inherited conversation into detached `.worktrees/league-review-81ca3a2`; its report goes on PR #48. No implementation was delegated.
 - Full synthetic on that commit has 540 passes and two failure records: the stale static-map annotation check and its suite aggregate. Native tests pass; the generated maps need correction. `coverage static-map` with the same four canonical originals passes 53,062 decoded sites, zero disagreements. Final rerun is pending the generated-map commit.
 - The first direct app smoke command used the executable path without macOS's .app bundle and failed with exit 127; the corrected bundle path starts. The visible scripted entry run reaches native DRAGSTER at front-end frame 6908, with zero pose fallbacks over 193 rendered race frames. Real keyboard/window inspection and hidden full tour are still pending.
+
+## Hosted compiler correction - 30 September 2026 13:43 UTC
+
+- Linux CI on 72743f5 fails GCC's conversion warning in league finish dimming: integer promotion of the packed RGB shift was assigned with an implicit narrowing. Native now casts the completed OR expression explicitly; this preserves the 15-bit colour value. macOS accepted the prior expression; the failure is not waived.
+- The initial eleven-race run was stopped after source-identity failures from generated-map correction. Its completed failure logs are retained under `race-81ca3a2/`; final immutable-source regressions will be run after review corrections. No missing report or interrupted run counts as a pass.
+- All 542 required synthetic checks pass on 72743f5. Hidden full application and independent review continue; no merge yet.
