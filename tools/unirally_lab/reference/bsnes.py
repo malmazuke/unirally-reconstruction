@@ -355,3 +355,39 @@ def frame_png(width: int, height: int, pitch: int, raw: bytes) -> bytes:
 
 def library_name() -> str:
     return {"darwin": "bsnes_libretro.dylib", "linux": "bsnes_libretro.so"}.get(os.uname().sysname.lower(), "bsnes_libretro.so")
+
+# AUDIO-TITLE-MENU observation ABI is additive; existing API-1 cores remain usable.
+_AUDIO_EVENT = struct.Struct('<QQQQIHHBB')
+
+
+def bind_audio(core: BsnesCore) -> None:
+    """Bind only on explicit audio capture, so old references remain loadable."""
+    lib = core._lib
+    try:
+        lib.unirally_audio_api_version.restype = C.c_uint32
+        if lib.unirally_audio_api_version() != 1:
+            raise CoreError('unsupported audio observation ABI')
+        lib.unirally_audio_byte_order.restype = C.c_uint32
+        if lib.unirally_audio_byte_order() != 1:
+            raise CoreError('audio observation ABI requires a little-endian host')
+        lib.unirally_audio_dsp_balance.restype = C.c_int64
+        lib.unirally_audio_event_size.restype = C.c_size_t
+        if lib.unirally_audio_event_size() != _AUDIO_EVENT.size:
+            raise CoreError('audio event ABI size mismatch')
+        lib.unirally_audio_enable.argtypes = [C.c_size_t, C.c_bool]
+        lib.unirally_audio_enable.restype = C.c_bool
+        lib.unirally_audio_read.argtypes = [C.c_void_p, C.c_size_t]
+        lib.unirally_audio_read.restype = C.c_size_t
+        for name in ('total', 'dropped', 'smp_ticks', 'dsp_clocks', 'smp_frequency', 'cpu_frequency'):
+            getattr(lib, 'unirally_audio_' + name).restype = C.c_uint64
+        lib.unirally_audio_apu_frequency.restype = C.c_double
+    except AttributeError as exc:
+        raise CoreMissingError('core lacks the additive audio observation exports') from exc
+
+
+def read_audio_raw(core: BsnesCore, capacity: int) -> bytes:
+    buf = C.create_string_buffer(_AUDIO_EVENT.size * capacity)
+    count = core._lib.unirally_audio_read(buf, capacity)
+    if count > capacity:
+        raise CoreError('audio observation returned more than its capacity')
+    return buf.raw[:count * _AUDIO_EVENT.size]

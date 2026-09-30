@@ -2,22 +2,25 @@
 
 ## Assignment
 
-- Status: ready after AUDIO-DECISION integration; not claimed by preparation.
+- Status: in_progress, claimed 30 September 2026 UTC after PR #49 verification.
 - Milestone: M4 (original game coverage).
-- Coordinator/primary/provider/model: claiming session records these at claim.
-  New OpenAI work defaults to Sol/medium under D-0004; retain its starting provider.
+- Coordinator/primary: `/root`, OpenAI, current Codex session; model identifier
+  is not exposed by this runtime. D-0004 Sol/medium project default remains
+  recorded; explicit consultation/reviewer settings are named below.
 - Tier: 1. Native audio state, clock/order semantics, content extraction and
   new differential evidence require the full D-0006 review process.
-- Quota: sample at claim; record baseline, 20-point discretionary boundary,
-  final 20% review/recovery reserve, and UTC timestamps. Preparation grants no
-  reset redemption, spending or provider change.
+- Quota: weekly used 12% at claim; discretionary stop 32% used and final
+  20% reserved for review/recovery. Reset epoch 1791365217. Startup telemetry
+  is in main `artifacts/audio-title-menu-integration/startup.json`. No reset,
+  spending or provider change authorized.
 - Reviewer: automatically spawn fresh explicit Sol/medium, no inherited context,
   isolated checkout at the immutable candidate; post report on the PR. Handle
   findings and re-review before integration without a user trigger.
-- Base: synchronized main after AUDIO-DECISION; record exact hash at claim.
+- Base: clean synchronized main `7a958cd6621c213c680d1ffe62fcde964e2b0295`;
+  PR #49 is MERGED and its closeout agrees.
 - Dependencies: D-0009, R-0074; accepted native power-on/title/main-menu path,
   pack v29 and the pinned PAL ROM/reference core.
-- Branch/worktree: create `codex/audio-title-menu` in its isolated checkout.
+- Branch/worktree: `codex/audio-title-menu`, `.worktrees/audio-title-menu`.
 - Owned scope: sound observation tools/patch lock, native audio core and tests,
   audio extraction with evidence, SDL output, affected pack/profile interfaces,
   task/research/validation/state records and regenerated static/native maps.
@@ -96,3 +99,39 @@ No implementation, capture interface, native sound or future pass is claimed by
 this preparation. Internal research checkpoints do not require the user to
 choose or resume the next experiment. Continue the capability through review
 and integration within the actual D-0004 resource boundary.
+
+## Claim experiment
+
+Read R-0074 and main `artifacts/static-map/bank-82.lst` before new capture
+design. Preserve the old core and evidence. Build an isolated updated laboratory
+core so instrumentation on/off and the previous binary can be compared. One
+bounded fresh Astra/medium consultation in `.worktrees/audio-clock-consult`
+examines the integer clock/event schema before it is implemented; it has no
+write ownership or acceptance authority. Tier 1 remains required for the full
+capability, including a fresh Sol/medium reviewer and withheld cases.
+
+## 30 September 2026 23:33 UTC checkpoint
+
+- Foundation reproduced: two old-core cold 700-frame runs, exact R-0074 callback
+  audit and passing doctor. Old/new-disabled/new-observed baseline sample, A/V
+  and final-state digests agree. Both observed schedules repeat full event/PCM
+  bytes; details and remaining limits are in R-0075.
+- Laboratory capture and standalone DSP replay are implemented experiments.
+  Replay matches 448,326/448,325 raw pairs and both final 64 KiB APU memories.
+  One-entry overflow fails explicitly. Seven new tooling checks and the existing
+  33 reference-tool checks pass; full native/hosted checks have not run.
+- Bounded fresh `gpt-6-astra`/medium consultation completed. Adopt separate
+  executed DSP clocks, SMP/CPU tick domains and sequence order; retain existing
+  synchronization, effective RAM writes and CONTROL latch clears. Do not use a
+  replacing PCM hook or infer per-cycle sample phase from a batch's final phase.
+- Captures, core copies, private listings and failed overflow are in main
+  `local/evidence/audio-title-menu/`. Build failures/success and replay report
+  are in main `artifacts/audio-title-menu-integration/`. No product driver or
+  audio pack is implemented; no task acceptance, PR merge or tag is claimed.
+- Next experiment: audit the three cold upload records against effective IPL
+  RAM writes, extend score-pointer/timer observation to a complete music loop,
+  identify score controls/instruments/samples, then freeze native-domain gates
+  before implementing recovered native functions. Check the first navigation
+  DSP/PCM difference against the baseline and keep its timing explicit.
+- Weekly usage remains 12% at 23:31 UTC, startup 12%, boundary 32%. No reset,
+  spending, provider change or percentage-boundary override authorized.
