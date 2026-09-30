@@ -4,7 +4,9 @@ Status: in-progress coupled experiments for AUDIO-TITLE-MENU, 30 September
 2026 UTC. No native driver, audible product or capability acceptance is claimed.
 PAL ROM SHA-256 `a1105819d48c04d680c8292bbfa9abbce05224f1bc231afd66af43b7e0a1fd4e`;
 bsnes `7d5aa1e656b9171524d01b1b22917197d8121cb4`, default adapter options,
-Strict synchronization, fresh private save directory per process. R-0074's
+Strict synchronization, fresh private save directory per process. The new
+`tools/locks/audio-observation.json` and `bsnes-audio-exports.patch` are opt-in;
+the default lock/patch and all historical manifests retain their identity. R-0074's
 old binary and evidence remain unchanged. The task record identifies source
 commits and main's `local/evidence/audio-title-menu/` retains private observations.
 
@@ -104,3 +106,10 @@ pass. Full native regressions, hosted CI, independent tier-1 review, musical-loo
 coverage, native driver/sequencer, content extraction, native audio save/restore,
 SDL output and audible live checks remain pending. Reference restore audio stays
 excluded under D-0001. Echo-shadow and alternative options have no replay claim.
+
+Hosted CI on the first experimental commit failed on the new test's import path
+and 56 historical manifest checks after the default patch identity was changed.
+The correction isolates audio in its own opt-in lock/checkout/patch and restores
+the original default files byte-for-byte. Historical identities and comparison
+expectations are not relaxed. The test uses the repository tooling import path.
+The new CI result is recorded in the task once available.

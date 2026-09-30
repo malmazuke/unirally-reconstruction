@@ -135,3 +135,13 @@ capability, including a fresh Sol/medium reviewer and withheld cases.
   DSP/PCM difference against the baseline and keep its timing explicit.
 - Weekly usage remains 12% at 23:31 UTC, startup 12%, boundary 32%. No reset,
   spending, provider change or percentage-boundary override authorized.
+
+## 23:43 UTC isolation correction
+
+Source experiment `e9c64e6` is pushed; draft [PR #50](https://github.com/malmazuke/unirally-reconstruction/pull/50)
+is attached and not ready for merge. First hosted checks failed: one new test
+import and 56 frozen manifest identity checks. Restore the default lock/patch
+unchanged and use new opt-in `tools/locks/audio-observation.json` with
+`bsnes-audio-exports.patch` in `local/emulators/bsnes-audio`; do not rewrite any
+frozen manifest or loosen identity matching. All captures remain canonical main
+evidence. The consultant's read-only checkout is removed; no capture was there.

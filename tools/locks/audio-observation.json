@@ -1,0 +1,39 @@
+{
+  "lock_schema_version": 1,
+  "note": "Separate opt-in AUDIO-TITLE-MENU observation build. Historical reference lock, patch and manifests are unchanged; use reference build --lock tools/locks/audio-observation.json explicitly.",
+  "install_dir": "local/emulators",
+  "cores": {
+    "bsnes": {
+      "role": "laboratory-only raw DSP/APU observation",
+      "repository": "https://github.com/bsnes-emu/bsnes.git",
+      "commit": "7d5aa1e656b9171524d01b1b22917197d8121cb4",
+      "tree": "62631b8a2f01f663f1e1300987295af6bf8ea556",
+      "describe": "nightly, after v115; commit dated 2026-05-23",
+      "checkout_dir": "bsnes-audio",
+      "patch": "tools/unirally_lab/reference/patches/bsnes-audio-exports.patch",
+      "patch_sha256": "939785c0e30a3d0d5d42b6d0461344ff73fc1ee91c246c6db0b88eedd79cbfee",
+      "build": {
+        "command": [
+          "make",
+          "-C",
+          "bsnes",
+          "target=libretro",
+          "binary=library",
+          "local=false",
+          "-j4"
+        ],
+        "library": {
+          "darwin": "bsnes/out/bsnes_libretro.dylib",
+          "linux": "bsnes/out/bsnes_libretro.so"
+        },
+        "outputs": [
+          "bsnes/out",
+          "bsnes/obj",
+          "lab-core.json"
+        ],
+        "notes": "local=false avoids -march=native so the library is portable across machines of the same architecture. The upstream default build profile (performance, -O3) is kept. `outputs` lists paths excluded from the patch comparison: build products and the lab-core.json manifest that `reference build` writes into the checkout."
+      },
+      "patch_diff_command": "git add -N -A -- . ':!bsnes/out' ':!bsnes/obj' ':!lab-core.json' && git -c diff.noprefix=false -c diff.mnemonicPrefix=false -c diff.renames=false -c core.abbrev=40 -c diff.algorithm=myers -c diff.suppressBlankEmpty=false diff --no-color --no-ext-diff --full-index --src-prefix=a/ --dst-prefix=b/ --no-renames -- . ':!bsnes/out' ':!bsnes/obj' ':!lab-core.json'; git reset -q"
+    }
+  }
+}

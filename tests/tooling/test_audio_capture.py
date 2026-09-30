@@ -2,11 +2,13 @@
 import json
 import struct
 import tempfile
+import sys
 import unittest
 from pathlib import Path
 from unittest.mock import patch
 
-from tools.unirally_lab.reference import audio, bsnes
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / 'tools'))
+from unirally_lab.reference import audio, bsnes
 
 
 class FakeLib:
