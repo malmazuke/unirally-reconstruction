@@ -2,6 +2,17 @@
 
 Status: adopted, 12 September 2026. Reassess from measured accepted work.
 
+## OPTIONS continuation override - 30 September 2026
+
+After the incomplete OPTIONS handoff at 80% weekly usage, the user instructed:
+"Keep working - don't worry about the usage limits at all". For the active
+OPTIONS task, ignore the percentage stop and reserve boundaries and continue
+toward acceptance. Retain usage telemetry for the record and the required
+independent review. This instruction does not authorize redeeming a reset
+credit, purchasing credits, changing provider, releasing or deploying. An
+actual provider or tool limit remains a resource condition rather than a
+percentage checkpoint. Other tasks retain their existing D-0004 boundaries.
+
 ## M4-16 continuation override — 14 September 2026
 
 After the incomplete recovery checkpoint, the user explicitly instructed:

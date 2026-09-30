@@ -144,6 +144,7 @@ public:
   std::uint32_t race_loading_frames() const {
     return unirally::race_loading_frames(state_);
   }
+  std::span<const std::uint8_t> rider_names() const { return state_.records.rider_names; }
   // The race NOW PLAYING chose, with its rider, opponent and tutorial hints.
   ClassicRaceScenario race_scenario() const {
     if (demo_race()) {

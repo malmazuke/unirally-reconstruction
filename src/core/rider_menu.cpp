@@ -6,6 +6,7 @@
 #include "front_end_screens.hpp"
 
 #include <array>
+#include <bit>
 #include <utility>
 
 namespace unirally::front_end_screens {
@@ -54,11 +55,18 @@ void print_rider_menu(FrontEndState& state, const FrontEndContent& content) {
                 text_position, right_column ? right_name_column : left_name_column,
                 static_cast<std::uint8_t>(first_name_row + name_rows * row), end_of_text};
             print_text(state.text, state.printer, place, content.character_table);
-            const auto name = content.rider_names.subspan(rider * name_record, name_record);
+            const auto name = std::span<const std::uint8_t>(state.records.rider_names)
+                                  .subspan(rider * name_record, name_record);
             print_text(state.text, state.printer, name, content.character_table);
         }
     auto title = content.rider_menu_title;
-    if (state.rider_menu.challenger)
+    if (state.rider_menu.purpose == RiderMenuPurpose::rename_player)
+        title = content.rename_who_title;
+    else if (state.rider_menu.purpose == RiderMenuPurpose::define_player)
+        title = content.define_player_who_title;
+    else if (state.rider_menu.purpose == RiderMenuPurpose::league_members)
+        title = content.league_title;
+    else if (state.rider_menu.challenger)
         title = content.pick_challenger_title;
     else if (state.mode == FrontEndMode::two_player)
         title = state.rider_menu.second ? content.two_player_second_title
@@ -167,10 +175,17 @@ void open_rider_menu(FrontEndState& state) {
     arrow_attribute(state) = static_cast<std::uint8_t>(
         arrow_priority | (right_column ? 0U : unsigned{arrow_mirror}) | ((menu.rider & 7U) << 1U));
     oam_byte(state, arrow_entry + 1, 0) = 0;
+    if (menu.purpose == RiderMenuPurpose::league_members) {
+        oam_byte(state, arrow_entry + 1, 0) = 1;
+        oam_byte(state, shadow_entry, 3) |= 0x20U;
+    }
     state.arrow.target_x = right_column ? right_column_x : left_column_x;
     menu.row = static_cast<std::uint8_t>(menu.rider >> 1U);
-    state.arrow.target_y = static_cast<std::uint16_t>(first_row_y + menu.row * row_spacing);
-    menu.intro = intro_start;
+    state.arrow.target_y = static_cast<std::uint16_t>(
+        static_cast<unsigned>(first_row_y) + menu.row * row_spacing
+        + (menu.purpose == RiderMenuPurpose::league_members ? 0x20U : 0U));
+    menu.intro = menu.purpose == RiderMenuPurpose::league_members ? 0 : intro_start;
+    if (menu.purpose == RiderMenuPurpose::league_members) state.menu.selection = menu.rider;
     state.screen = FrontEndScreen::rider_menu;
 }
 
@@ -247,10 +262,51 @@ bool read_rider_menu_pad(FrontEndState& state, std::uint16_t pad) {
     return true;
 }
 
+void mark_league_member(FrontEndState& state, unsigned rider) {
+    // $80:9D2B-9D9E: the bit order is reverse screen order; Y or B toggles it.
+    const auto bit = static_cast<std::uint16_t>(0x8000U >> rider);
+    state.league.members ^= bit;
+    const unsigned column = (rider & 1U) ? 27 : 3;
+    const unsigned row = 4 + 3 * (rider / 2);
+    const unsigned at = row * 32 + column;
+    const bool selected = (state.league.members & bit) != 0;
+    state.text.words[at] = selected ? 0x3c40 : cleared_text;
+    state.text.words[at + 1] = selected ? 0x3c41 : cleared_text;
+    state.text.words[at + 32] = selected ? 0x3c90 : cleared_text;
+    state.text.words[at + 33] = selected ? 0x3c91 : cleared_text;
+}
+
+bool read_league_members_pad(FrontEndState& state, const FrontEndContent& content,
+                             std::uint16_t pad) {
+    const auto pressed = static_cast<std::uint16_t>(pad & ~state.league.previous_buttons);
+    state.league.previous_buttons = pad;
+    (void)read_rider_menu_pad(state, pad & (pad_left | pad_right | pad_up | pad_down));
+    const unsigned rider =
+        state.rider_menu.row * 2U + (state.arrow.target_x == right_column_x ? 1U : 0U);
+    if (pressed & (0x4000U | 0x8000U)) { // Y or B
+        mark_league_member(state, rider);
+        state.menu.selection = static_cast<std::uint8_t>(rider);
+        load_text(state, state.slide.shown_half);
+        return false;
+    }
+    if (!(pressed & 0x1000U)) return false; // Start finishes a valid selection
+    const auto count = std::popcount(state.league.members);
+    if (count < 2 || count > 8) {
+        print_text(state.text, state.printer,
+                   count < 2 ? content.league_minimum : content.league_maximum,
+                   content.character_table);
+        load_text(state, state.slide.shown_half);
+        return false;
+    }
+    state.records.league_members[state.league.slot] = state.league.members;
+    return true;
+}
+
 // $80:CB04's first lines, before its first frame wait.
 void open_rider_menu_entry(FrontEndState& state) {
-    state.menu.selection = state.rider_menu.rider; // $80:CB07
-    state.latches = {};                            // $80:CB0C
+    if (state.rider_menu.purpose != RiderMenuPurpose::league_members)
+        state.menu.selection = state.rider_menu.rider; // $80:CB07
+    state.latches = {};                                // $80:CB0C
     state.screen = FrontEndScreen::rider_menu_entry;
 }
 
@@ -283,17 +339,39 @@ void rider_menu_entry_frame(FrontEndState& state, const FrontEndContent& content
     switch (state.script_frame) {
     case 1:
         copy_oam(state);
-        print_rider_menu(state, content);
+        if (state.rider_menu.purpose == RiderMenuPurpose::league_members) {
+            // $80:9BC4-9C3D erases the slot on the first frame after confirmation.
+            const auto first = static_cast<std::size_t>(state.league.slot) * 32;
+            auto& names = state.records.league_names;
+            names[first] = names[first + 1] = 0xff;
+            std::fill_n(names.begin() + first + 2, 29, std::uint8_t{'_'});
+            state.records.league_members[state.league.slot] = 0;
+            state.records.league_scores[state.league.slot].fill(0);
+            state.records.league_naming = true;
+            state.text.words.fill(cleared_text);
+        } else {
+            print_rider_menu(state, content);
+        }
         return;
     case 2:
         copy_oam(state);
+        if (state.rider_menu.purpose == RiderMenuPurpose::league_members)
+            print_rider_menu(state, content);
         load_text(state, state.slide.hidden_half);
-        send_arrow_off(state);
-        state.rider_menu.picture = first_picture;
+        if (state.rider_menu.purpose != RiderMenuPurpose::league_members) send_arrow_off(state);
+        state.rider_menu.picture = state.rider_menu.purpose == RiderMenuPurpose::league_members
+                                     ? first_loop_picture
+                                     : first_picture;
         return;
     case 3:
         upload_uni(state, content);
         start_slide(state, content, state.rider_menu.returning);
+        if (state.rider_menu.purpose == RiderMenuPurpose::league_members) {
+            state.arrow.x = 0x00fd;
+            state.arrow.y = 0x0580;
+            state.arrow.target_x = right_column_x;
+            state.arrow.target_y = first_row_y + 3 * row_spacing + 0x20U;
+        }
         return;
     default:
         if (!slide_frame(state, content)) return;
@@ -310,8 +388,18 @@ void rider_menu_frame(FrontEndState& state, const FrontEndContent& content, Fron
     // $80:93A5: the text again, to the half it was first shown in (`$005A`), now hidden.
     load_text(state, state.slide.hidden_half);
     upload_uni(state, content);
-    if (!read_rider_menu_pad(state, state.rider_menu.second ? pads.two : pads.one)) {
+    const bool league = state.rider_menu.purpose == RiderMenuPurpose::league_members;
+    const bool finished =
+        league ? read_league_members_pad(state, content, pads.one)
+               : read_rider_menu_pad(state, state.rider_menu.second ? pads.two : pads.one);
+    if (!finished) {
         choose_next_picture(state.rider_menu);
+        return;
+    }
+    if (league) {
+        state.rider_menu.back = false;
+        state.line_colours.clear();
+        state.screen = FrontEndScreen::rider_menu_exit;
         return;
     }
     if (state.rider_menu.second && !state.rider_menu.back
@@ -322,7 +410,7 @@ void rider_menu_frame(FrontEndState& state, const FrontEndContent& content, Fron
     // $80:BBB8-BBEE for a choice ($80:BC9B for Y), then $80:F4E9, which stops the HDMA at once.
     state.one_player = !state.rider_menu.back && state.mode == FrontEndMode::one_player;
     if (!state.rider_menu.back) {
-        send_arrow_off(state);
+        if (state.rider_menu.purpose == RiderMenuPurpose::normal) send_arrow_off(state);
         if (state.rider_menu.second) {
             state.second_rider = state.menu.selection;
             state.now_playing.opponent = state.second_rider;
@@ -342,7 +430,10 @@ void rider_menu_frame(FrontEndState& state, const FrontEndContent& content, Fron
 
 void rider_menu_exit_frame(FrontEndState& state, const FrontEndContent& content) {
     switch (state.script_frame) {
-    case 1: lay_out_menu_objects(state); return;
+    case 1:
+        if (state.rider_menu.purpose != RiderMenuPurpose::normal) send_arrow_off(state);
+        lay_out_menu_objects(state);
+        return;
     case 2: copy_oam(state); return;
     default: break;
     }
@@ -352,6 +443,25 @@ void rider_menu_exit_frame(FrontEndState& state, const FrontEndContent& content)
     load_cgram(state, asset(content, menu_text_palette), 0xd0);
     load_cgram(state, asset(content, early_palette), 0xe0);
     state.registers.obsel = 0x63;
+    if (state.rider_menu.purpose != RiderMenuPurpose::normal) {
+        const auto purpose = state.rider_menu.purpose;
+        state.rider_menu.purpose = RiderMenuPurpose::normal;
+        if (back) {
+            state.logo.raised = false;
+            return_to_options_menu(state, content);
+            return;
+        }
+        if (purpose == RiderMenuPurpose::rename_player) {
+            enter_rename_editor(state, content);
+            return;
+        }
+        if (purpose == RiderMenuPurpose::league_members) {
+            enter_league_editor(state, content);
+            return;
+        }
+        enter_define_player_warning(state, content);
+        return;
+    }
     if (state.rider_menu.challenger) {
         state.rider_menu.challenger = false;
         if (back)

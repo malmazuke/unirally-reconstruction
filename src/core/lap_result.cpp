@@ -120,7 +120,7 @@ void print_stream(FrontEndState& state, const FrontEndContent& content,
         }
     };
     variables.track_names = content.track_names;
-    variables.rider_names = content.rider_names;
+    variables.rider_names = state.records.rider_names;
     variables.time_words = content.time_words;
     variables.place_object = [&](unsigned object, unsigned position) {
         place_printed_object(state, object, position);

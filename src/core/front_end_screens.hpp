@@ -171,6 +171,34 @@ void enter_vs_champions(FrontEndState& state);
 void vs_champions_entry_frame(FrontEndState& state, const FrontEndContent& content);
 void vs_champions_frame(FrontEndState& state, const FrontEndContent& content, FrontEndPads pads);
 
+// options_menu.cpp: OPTIONS and RECORDS' five-choice screens (R-0072).
+void enter_options_menu(FrontEndState& state, const FrontEndContent& content);
+void return_to_options_menu(FrontEndState& state, const FrontEndContent& content);
+void options_entry_frame(FrontEndState& state, const FrontEndContent& content);
+void options_return_frame(FrontEndState& state, const FrontEndContent& content);
+void options_menu_frame(FrontEndState& state, const FrontEndContent& content, FrontEndPads pads);
+void enter_records_menu(FrontEndState& state, const FrontEndContent& content);
+void records_entry_frame(FrontEndState& state, const FrontEndContent& content);
+void records_menu_frame(FrontEndState& state, const FrontEndContent& content, FrontEndPads pads);
+void enter_rename_editor(FrontEndState& state, const FrontEndContent& content);
+void rename_entry_frame(FrontEndState& state, const FrontEndContent& content);
+void rename_keyboard_frame(FrontEndState& state, const FrontEndContent& content, FrontEndPads pads);
+void rename_commit_frame(FrontEndState& state, const FrontEndContent& content);
+void rename_return_frame(FrontEndState& state, const FrontEndContent& content);
+void enter_define_player_warning(FrontEndState& state, const FrontEndContent& content);
+void define_player_warning_entry_frame(FrontEndState& state, const FrontEndContent& content);
+void define_player_warning_frame(FrontEndState& state, FrontEndPads pads);
+void define_player_after_confirm_frame(FrontEndState& state, const FrontEndContent& content);
+void enter_league_slots(FrontEndState& state, const FrontEndContent& content);
+void league_slots_entry_frame(FrontEndState& state, const FrontEndContent& content);
+void league_slots_frame(FrontEndState& state, const FrontEndContent& content, FrontEndPads pads);
+void league_warning_entry_frame(FrontEndState& state, const FrontEndContent& content);
+void league_warning_frame(FrontEndState& state, FrontEndPads pads);
+void enter_league_editor(FrontEndState& state, const FrontEndContent& content);
+void records_detail_entry_frame(FrontEndState& state, const FrontEndContent& content);
+void records_detail_frame(FrontEndState& state, const FrontEndContent& content, FrontEndPads pads);
+void records_detail_exit_frame(FrontEndState& state, const FrontEndContent& content);
+
 // tour_menu.cpp: PICK TOUR after a rider is chosen (`$80:BBF7-BC0B`) or back from PICK TRACK
 // (`$80:BC03`), a frame of its set-up and of its loop.
 void enter_tour_menu(FrontEndState& state);

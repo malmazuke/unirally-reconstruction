@@ -1,5 +1,48 @@
 # Project state
 
+Updated 30 September 2026 UTC (OPTIONS validation complete): the native OPTIONS
+menus, player and league editors, and four RECORDS views are validated in the
+bounded PAL domain of [R-0072](research/R-0072-options.md). [PR #46](https://github.com/malmazuke/unirally-reconstruction/pull/46)
+carries the source and final tracked handoff; the ignored
+`artifacts/options-integration/closeout.json` will record integration after merge.
+The 466-entry v28 pack, 19 focused comparisons (80 of 85 retained pictures
+exact), 11 frozen race regressions, 540 required synthetic checks, two v1
+presentation contracts and hosted macOS/Ubuntu checks pass on source `7d13924`.
+The independent tier-1 review accepted the preceding behavior head; PR #46
+carries the final-tip review. R-0072 states the animated and transition
+picture residuals and the projected-SRAM limit. Linux sanitizers pass in hosted
+CI; the local macOS sanitizer runtime stalled before tests. LEAGUE's played
+tournament scoring is the next roadmap outcome after OPTIONS integration.
+
+Updated 30 September 2026 UTC (OPTIONS continuation): the user overrode this
+task's percentage usage boundary and requested continuation to acceptance.
+OPTIONS remains active and unaccepted on `codex/options`. Native DEFINE LEAGUE
+matches the cold first-slot TONY/COLIN and one-letter T save path; HIGH SCORES,
+PLAYER SCORES and GROUP TABLES have matching settled pictures on the recorded
+cold or one populated path. TRACK RECORDS and the remaining detail transitions,
+varied records and persistence checks remain open. No reset redemption or
+purchase was authorized. See [R-0072](research/R-0072-options.md),
+[D-0004](decisions/D-0004-model-and-usage-budget.md) and
+[OPTIONS](../tasks/OPTIONS.md).
+
+Updated 29 September 2026 22:40 UTC (OPTIONS resource handoff): OPTIONS is
+active but unaccepted on pushed branch `codex/options` in `.worktrees/options`.
+Its menu shell, player name editor and DEFINE PLAYER removal are implemented in
+partial native slices; the league setup and four RECORDS details remain open.
+PAL captures now cover a two-member first league's save/name mutation and one
+populated TRACK RECORDS and HIGH SCORES case
+([R-0072](research/R-0072-options.md)). Weekly Codex usage reached the task's
+D-0004 80% discretionary boundary. The last 20% is reserved for review and
+recovery; no override or reset was authorized by this handoff. See
+[OPTIONS](../tasks/OPTIONS.md) for the exact tested domain and next work.
+
+Updated 29 September 2026 (OPTIONS claim): TWO-PLAYER-VS merged in
+[PR #45](https://github.com/malmazuke/unirally-reconstruction/pull/45) at `f2da955`.
+The next roadmap outcome, [OPTIONS](../tasks/OPTIONS.md), is active in an isolated checkout.
+Cold PAL captures now show its five choices, four RECORDS categories, two destructive
+confirmation paths and their cancel controls ([R-0072](research/R-0072-options.md)). No native
+OPTIONS behavior is yet accepted. LEAGUE's tournament flow remains next after this task.
+
 Updated 29 September 2026 (TWO-PLAYER-VS, tier-1 review accepted): **the measured
 first 2P and VS race, result and continuation paths are native** on
 [PR #45](https://github.com/malmazuke/unirally-reconstruction/pull/45).

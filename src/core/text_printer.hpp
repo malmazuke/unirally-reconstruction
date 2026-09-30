@@ -28,6 +28,7 @@ struct TextVariables {
     std::function<std::uint16_t(std::uint16_t address)> word; // the direct-page word at address
     std::span<const std::uint8_t> track_names;                // FF-terminated, by track
     std::span<const std::uint8_t> rider_names;                // 16-byte records, by rider
+    std::span<const std::uint8_t> league_names;               // 32-byte records, by slot
     std::span<const std::uint8_t> time_words;                 // `_quit___`, `_no_time` (FF each)
     std::function<void(unsigned object, unsigned position)> place_object;
 };

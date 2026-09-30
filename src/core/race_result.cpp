@@ -210,7 +210,7 @@ void print_result(FrontEndState& state, const FrontEndContent& content) {
         return words[(address - first_row_word) / 2U];
     };
     variables.track_names = content.track_names;
-    variables.rider_names = content.rider_names;
+    variables.rider_names = state.records.rider_names;
     variables.time_words = content.time_words;
     print_text(state.text, state.printer, content.result_text, content.character_table, &variables);
     if (state.now_playing.opponent < someone)

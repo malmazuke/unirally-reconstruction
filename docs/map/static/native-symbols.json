@@ -783,9 +783,73 @@
    "region": "rom"
   },
   {
+   "address": "$80:9B79",
+   "native": [
+    "src/core/text_printer.cpp:league_name",
+    "src/core/text_printer.cpp:print_text"
+   ],
+   "region": "rom"
+  },
+  {
    "address": "$80:9BA0",
    "native": [
     "src/core/track_menu.cpp:print_track_menu"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:9BC4",
+   "native": [
+    "src/core/front_end.hpp:LeagueSetup",
+    "src/core/rider_menu.cpp:rider_menu_entry_frame"
+   ],
+   "range_ends": [
+    "$80:9C3D",
+    "$80:9EBC"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:9D0B",
+   "native": [
+    "src/core/options_menu.cpp:league_warning_frame"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:9D2B",
+   "native": [
+    "src/core/rider_menu.cpp:mark_league_member"
+   ],
+   "range_ends": [
+    "$80:9D9E"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:9E0F",
+   "native": [
+    "src/core/options_menu.cpp:enter_league_editor"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:9E57",
+   "native": [
+    "src/core/options_menu.cpp:enter_league_editor"
+   ],
+   "range_ends": [
+    "$80:9E7C"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:9EF7",
+   "native": [
+    "src/core/options_menu.cpp:enter_league_slots"
+   ],
+   "range_ends": [
+    "$80:9F73"
    ],
    "region": "rom"
   },
@@ -812,6 +876,93 @@
     "src/core/front_end.cpp:load_title",
     "src/core/front_end.cpp:parked_x, parked_y",
     "src/core/front_end.cpp:reset_screen_state"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:A1F2",
+   "native": [
+    "src/core/front_end.hpp:KeyboardEditor"
+   ],
+   "range_ends": [
+    "$80:A529"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:A207",
+   "native": [
+    "src/core/options_menu.cpp:enter_rename_editor"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:A212",
+   "native": [
+    "src/core/options_menu.cpp:initialize_keyboard_cursor"
+   ],
+   "range_ends": [
+    "$80:A22B"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:A231",
+   "native": [
+    "src/core/options_menu.cpp:initialize_keyboard_cursor",
+    "src/core/options_menu.cpp:rename_keyboard_frame"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:A29B",
+   "native": [
+    "src/core/options_menu.cpp:rename_keyboard_frame"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:A3A0",
+   "native": [
+    "src/core/options_menu.cpp:rename_keyboard_frame"
+   ],
+   "range_ends": [
+    "$80:A3BC"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:A4DD",
+   "native": [
+    "src/core/options_menu.cpp:keyboard_key"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:A4F1",
+   "native": [
+    "src/core/options_menu.cpp:keyboard_key"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:A501",
+   "native": [
+    "src/core/options_menu.cpp:keyboard_key"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:A511",
+   "native": [
+    "src/core/options_menu.cpp:keyboard_key"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:A52A",
+   "native": [
+    "src/core/options_menu.cpp:rename_keyboard_frame"
    ],
    "region": "rom"
   },
@@ -1070,6 +1221,17 @@
    "region": "rom"
   },
   {
+   "address": "$80:B626",
+   "native": [
+    "src/core/front_end.hpp:FrontEndScreen",
+    "src/core/options_menu.cpp:enter_options_menu"
+   ],
+   "range_ends": [
+    "$80:B639"
+   ],
+   "region": "rom"
+  },
+  {
    "address": "$80:B6D3",
    "native": [
     "src/core/award.cpp:award_left",
@@ -1259,6 +1421,16 @@
    "native": [
     "src/core/rider_menu.cpp:(file)",
     "src/core/rider_menu.cpp:rider_menu_frame"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:C12A",
+   "native": [
+    "src/core/options_menu.cpp:enter_define_player_warning"
+   ],
+   "range_ends": [
+    "$80:C1EA"
    ],
    "region": "rom"
   },
@@ -1453,6 +1625,7 @@
   {
    "address": "$80:C5D3",
    "native": [
+    "src/core/text_printer.cpp:print_name_operand",
     "src/core/text_printer.cpp:print_text"
    ],
    "region": "rom"
@@ -1460,6 +1633,23 @@
   {
    "address": "$80:C628",
    "native": [
+    "src/core/text_printer.cpp:print_name_operand",
+    "src/core/text_printer.cpp:print_text"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:C675",
+   "native": [
+    "src/core/text_printer.cpp:print_name_operand",
+    "src/core/text_printer.cpp:print_text"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:C67D",
+   "native": [
+    "src/core/text_printer.cpp:print_name_operand",
     "src/core/text_printer.cpp:print_text"
    ],
    "region": "rom"
@@ -1653,7 +1843,7 @@
    "address": "$80:CB04",
    "native": [
     "src/core/front_end.hpp:FrontEndScreen",
-    "src/core/front_end.hpp:RiderMenu",
+    "src/core/front_end.hpp:RiderMenuPurpose",
     "src/core/rider_menu.cpp:(file)",
     "src/core/rider_menu.cpp:open_rider_menu_entry"
    ],
@@ -1861,7 +2051,8 @@
    "address": "$80:D1FA",
    "native": [
     "src/core/front_end_screens.hpp:cleared_text",
-    "src/core/front_end_screens.hpp:print_main_menu"
+    "src/core/front_end_screens.hpp:print_main_menu",
+    "src/core/options_menu.cpp:rename_commit_frame"
    ],
    "region": "rom"
   },
@@ -1944,6 +2135,200 @@
    "address": "$80:D420",
    "native": [
     "src/core/now_playing.cpp:hide_icons"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:D468",
+   "native": [
+    "src/core/front_end.hpp:FrontEndScreen",
+    "src/core/options_menu.cpp:enter_rename_editor"
+   ],
+   "range_ends": [
+    "$80:D47D"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:D494",
+   "native": [
+    "src/core/front_end.cpp:waits_for_frame"
+   ],
+   "range_ends": [
+    "$80:D4BF"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:D4BF",
+   "native": [
+    "src/core/options_menu.cpp:rename_commit_frame"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:D525",
+   "native": [
+    "src/core/front_end.hpp:FrontEndScreen",
+    "src/core/options_menu.cpp:enter_records_menu"
+   ],
+   "range_ends": [
+    "$80:D53C"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:D566",
+   "native": [
+    "src/core/front_end.hpp:FrontEndScreen"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:D5E6",
+   "native": [
+    "src/core/options_menu.cpp:print_track_records"
+   ],
+   "range_ends": [
+    "$80:D7C0"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:D641",
+   "native": [
+    "src/core/options_menu.cpp:print_track_records"
+   ],
+   "range_ends": [
+    "$80:D660"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:D699",
+   "native": [
+    "src/core/options_menu.cpp:print_track_selected_times"
+   ],
+   "range_ends": [
+    "$80:D6B1"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:D6AE",
+   "native": [
+    "src/core/options_menu.cpp:print_track_selected_times"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:D6D5",
+   "native": [
+    "src/core/options_menu.cpp:print_track_selected_times"
+   ],
+   "range_ends": [
+    "$80:D6FF"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:D7CD",
+   "native": [
+    "src/core/options_menu.cpp:print_high_scores"
+   ],
+   "range_ends": [
+    "$80:DACC"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:D8C1",
+   "native": [
+    "src/core/options_menu.cpp:high_score_leaders"
+   ],
+   "range_ends": [
+    "$80:D8D8"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:D917",
+   "native": [
+    "src/core/options_menu.cpp:load_high_score_palettes"
+   ],
+   "range_ends": [
+    "$80:D9A8"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:D9AC",
+   "native": [
+    "src/core/options_menu.cpp:records_detail_frame"
+   ],
+   "range_ends": [
+    "$80:D9B7"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:D9B7",
+   "native": [
+    "src/core/options_menu.cpp:records_detail_exit_frame"
+   ],
+   "range_ends": [
+    "$80:D9D7"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:DACF",
+   "native": [
+    "src/core/options_menu.cpp:print_player_scores"
+   ],
+   "range_ends": [
+    "$80:DDE3"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:DB4E",
+   "native": [
+    "src/core/options_menu.cpp:print_player_scores"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:DB9E",
+   "native": [
+    "src/core/options_menu.cpp:print_player_scores"
+   ],
+   "range_ends": [
+    "$80:DC11"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:DDE3",
+   "native": [
+    "src/core/options_menu.cpp:set_bar_objects"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:DE2E",
+   "native": [
+    "src/core/options_menu.cpp:print_group_scores"
+   ],
+   "range_ends": [
+    "$80:E008"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:E043",
+   "native": [
+    "src/core/options_menu.cpp:set_bar_objects"
    ],
    "region": "rom"
   },
@@ -2290,6 +2675,55 @@
    "region": "rom"
   },
   {
+   "address": "$80:EB76",
+   "native": [
+    "src/core/options_menu.cpp:track_records_hdma"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:ECD1",
+   "native": [
+    "src/core/options_menu.cpp:track_records_hdma"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:ECF7",
+   "native": [
+    "src/core/options_menu.cpp:track_records_hdma"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:EEF2",
+   "native": [
+    "src/core/options_menu.cpp:track_grid_half"
+   ],
+   "range_ends": [
+    "$80:EF35"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:EF4D",
+   "native": [
+    "src/core/options_menu.cpp:enter_options_menu"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:EF89",
+   "native": [
+    "src/core/front_end.hpp:OnePlayerRecords::league_scores",
+    "src/core/options_menu.cpp:print_group_scores"
+   ],
+   "range_ends": [
+    "$80:EFD3"
+   ],
+   "region": "rom"
+  },
+  {
    "address": "$80:F082",
    "native": [
     "src/core/race_result.cpp:sorted_rows"
@@ -2524,6 +2958,7 @@
   {
    "address": "$80:F52B",
    "native": [
+    "src/core/options_menu.cpp:rename_commit_frame",
     "src/core/rider_menu.cpp:main_menu_return_frame"
    ],
    "region": "rom"
@@ -6015,6 +6450,16 @@
    "region": "rom"
   },
   {
+   "address": "$83:8FDE",
+   "native": [
+    "src/core/options_menu.cpp:score_bar_targets"
+   ],
+   "range_ends": [
+    "$83:8FE8"
+   ],
+   "region": "rom"
+  },
+  {
    "address": "$83:904A",
    "native": [
     "src/core/lap_result.cpp:GraphScale",
@@ -8527,7 +8972,8 @@
     "src/core/front_end.hpp:FrontEndMode",
     "src/core/front_end.hpp:MainMenu::selection",
     "src/core/front_end.hpp:TourMenu::cursor",
-    "src/core/front_end.hpp:TrackMenu::cursor"
+    "src/core/front_end.hpp:TrackMenu::cursor",
+    "src/core/options_menu.cpp:enter_rename_editor"
    ],
    "region": "wram"
   },
@@ -8668,6 +9114,20 @@
    "region": "wram"
   },
   {
+   "address": "$00CA",
+   "native": [
+    "src/core/options_menu.cpp:enter_define_player_warning"
+   ],
+   "region": "wram"
+  },
+  {
+   "address": "$00CC",
+   "native": [
+    "src/core/front_end.hpp:LeagueSetup::slot"
+   ],
+   "region": "wram"
+  },
+  {
    "address": "$00CE",
    "native": [
     "src/core/front_end.hpp:TourMenu::track"
@@ -8685,8 +9145,17 @@
    "region": "wram"
   },
   {
+   "address": "$00D2",
+   "native": [
+    "src/core/front_end.hpp:LeagueSetup::members"
+   ],
+   "region": "wram"
+  },
+  {
    "address": "$00DC",
    "native": [
+    "src/core/front_end.hpp:KeyboardEditor",
+    "src/core/options_menu.cpp:enter_rename_editor",
     "src/core/text_printer.cpp:in_capitals"
    ],
    "range_ends": [
@@ -8769,7 +9238,11 @@
    "native": [
     "src/core/front_end.cpp:copy_menu_text",
     "src/core/front_end.hpp:FrontEndState::text",
+    "src/core/options_menu.cpp:rename_commit_frame",
     "src/core/text_printer.hpp:(file)"
+   ],
+   "range_ends": [
+    "$09FF"
    ],
    "region": "wram"
   },
@@ -9275,6 +9748,13 @@
    "address": "$0BE9",
    "native": [
     "src/core/zoom_zoo_movement.hpp:SpecialTileRider::reflection_lock"
+   ],
+   "region": "wram"
+  },
+  {
+   "address": "$0BEC",
+   "native": [
+    "src/core/options_menu.cpp:position_keyboard_cursor"
    ],
    "region": "wram"
   },
@@ -10806,6 +11286,24 @@
    "region": "sram"
   },
   {
+   "address": "$77:000C",
+   "native": [
+    "src/core/front_end.hpp:OnePlayerRecords::rider_names",
+    "src/core/front_end_runner.cpp:(file)"
+   ],
+   "range_ends": [
+    "$77:016B"
+   ],
+   "region": "sram"
+  },
+  {
+   "address": "$77:016E",
+   "native": [
+    "src/core/front_end.hpp:OnePlayerRecords::league_names"
+   ],
+   "region": "sram"
+  },
+  {
    "address": "$77:0230",
    "native": [
     "src/core/front_end.hpp:OnePlayerRecords::statistics"
@@ -10816,6 +11314,28 @@
    "address": "$77:02B0",
    "native": [
     "src/core/front_end.hpp:OnePlayerRecords::statistics"
+   ],
+   "region": "sram"
+  },
+  {
+   "address": "$77:02B2",
+   "native": [
+    "src/core/front_end.hpp:OnePlayerRecords::league_members"
+   ],
+   "region": "sram"
+  },
+  {
+   "address": "$77:02BE",
+   "native": [
+    "src/core/front_end.hpp:OnePlayerRecords::active_league_members"
+   ],
+   "region": "sram"
+  },
+  {
+   "address": "$77:02C0",
+   "native": [
+    "src/core/front_end.hpp:OnePlayerRecords::league_scores",
+    "src/core/options_menu.cpp:print_group_scores"
    ],
    "region": "sram"
   },
@@ -10850,6 +11370,7 @@
    "address": "$77:0742",
    "native": [
     "src/core/front_end.hpp:LogoScroll::raised",
+    "src/core/front_end.hpp:OnePlayerRecords::league_naming",
     "src/core/front_end.hpp:OnePlayerRecords::race_lost",
     "src/core/front_end_screens.hpp:any_button_pressed",
     "src/core/hunter_ending.cpp:ending_press",
@@ -11144,12 +11665,34 @@
    "region": "sram"
   },
   {
+   "address": "$00:2125",
+   "native": [
+    "src/core/snes_screen.hpp:SnesVideoRegisters::object_window_one_inverted"
+   ],
+   "region": "io"
+  },
+  {
    "address": "$00:2126",
    "native": [
-    "src/core/picture.cpp:render_window_xor"
+    "src/core/picture.cpp:render_window_xor",
+    "src/core/snes_screen.hpp:SnesVideoRegisters::object_window_one_inverted"
    ],
    "range_ends": [
     "$00:2129"
+   ],
+   "region": "io"
+  },
+  {
+   "address": "$00:2127",
+   "native": [
+    "src/core/snes_screen.hpp:SnesVideoRegisters::object_window_one_inverted"
+   ],
+   "region": "io"
+  },
+  {
+   "address": "$00:212E",
+   "native": [
+    "src/core/snes_screen.hpp:SnesVideoRegisters::object_window_one_inverted"
    ],
    "region": "io"
   },
@@ -11663,6 +12206,7 @@
     "$80:8FFD",
     "$80:D20E",
     "$80:D377",
+    "$80:D494",
     "$83:879A",
     "$83:A923"
    ]
@@ -11735,12 +12279,16 @@
     "$80:ACD5",
     "$80:B18D",
     "$80:B467",
+    "$80:B626",
     "$80:BAA4",
     "$80:BB9C",
     "$80:BC68",
     "$80:BC7B",
     "$80:CB04",
     "$80:CBC8",
+    "$80:D468",
+    "$80:D525",
+    "$80:D566",
     "$80:E550",
     "$80:E5B4",
     "$80:E84E",
@@ -11823,6 +12371,14 @@
     "$83:AB9A"
    ]
   },
+  "src/core/front_end.hpp:KeyboardEditor": {
+   "rom": [
+    "$80:A1F2"
+   ],
+   "wram": [
+    "$00DC"
+   ]
+  },
   "src/core/front_end.hpp:LapGraphDot": {
    "wram": [
     "$0CF0",
@@ -11831,6 +12387,21 @@
     "$0DE0",
     "$0E1C",
     "$0E58"
+   ]
+  },
+  "src/core/front_end.hpp:LeagueSetup": {
+   "rom": [
+    "$80:9BC4"
+   ]
+  },
+  "src/core/front_end.hpp:LeagueSetup::members": {
+   "wram": [
+    "$00D2"
+   ]
+  },
+  "src/core/front_end.hpp:LeagueSetup::slot": {
+   "wram": [
+    "$00CC"
    ]
   },
   "src/core/front_end.hpp:LogoScroll": {
@@ -11946,6 +12517,11 @@
     "$83:9464"
    ]
   },
+  "src/core/front_end.hpp:OnePlayerRecords::active_league_members": {
+   "sram": [
+    "$77:02BE"
+   ]
+  },
   "src/core/front_end.hpp:OnePlayerRecords::best": {
    "sram": [
     "$77:0829"
@@ -11959,6 +12535,29 @@
    "sram": [
     "$77:10D0",
     "$77:10E3"
+   ]
+  },
+  "src/core/front_end.hpp:OnePlayerRecords::league_members": {
+   "sram": [
+    "$77:02B2"
+   ]
+  },
+  "src/core/front_end.hpp:OnePlayerRecords::league_names": {
+   "sram": [
+    "$77:016E"
+   ]
+  },
+  "src/core/front_end.hpp:OnePlayerRecords::league_naming": {
+   "sram": [
+    "$77:0742"
+   ]
+  },
+  "src/core/front_end.hpp:OnePlayerRecords::league_scores": {
+   "rom": [
+    "$80:EF89"
+   ],
+   "sram": [
+    "$77:02C0"
    ]
   },
   "src/core/front_end.hpp:OnePlayerRecords::levels_before_cheat": {
@@ -11995,6 +12594,11 @@
    "sram": [
     "$77:0422",
     "$77:0550"
+   ]
+  },
+  "src/core/front_end.hpp:OnePlayerRecords::rider_names": {
+   "sram": [
+    "$77:000C"
    ]
   },
   "src/core/front_end.hpp:OnePlayerRecords::statistics": {
@@ -12090,11 +12694,6 @@
     "$77:1116"
    ]
   },
-  "src/core/front_end.hpp:RiderMenu": {
-   "rom": [
-    "$80:CB04"
-   ]
-  },
   "src/core/front_end.hpp:RiderMenu::idle_step": {
    "wram": [
     "$0190"
@@ -12123,6 +12722,11 @@
   "src/core/front_end.hpp:RiderMenu::row": {
    "wram": [
     "$000E"
+   ]
+  },
+  "src/core/front_end.hpp:RiderMenuPurpose": {
+   "rom": [
+    "$80:CB04"
    ]
   },
   "src/core/front_end.hpp:SavedMenus": {
@@ -12334,6 +12938,7 @@
    ],
    "sram": [
     "$77:0000",
+    "$77:000C",
     "$77:069C",
     "$77:1075"
    ],
@@ -13261,6 +13866,165 @@
     "$0C73",
     "$0C75",
     "$1277"
+   ]
+  },
+  "src/core/options_menu.cpp:enter_define_player_warning": {
+   "rom": [
+    "$80:C12A"
+   ],
+   "wram": [
+    "$00CA"
+   ]
+  },
+  "src/core/options_menu.cpp:enter_league_editor": {
+   "rom": [
+    "$80:9E0F",
+    "$80:9E57"
+   ]
+  },
+  "src/core/options_menu.cpp:enter_league_slots": {
+   "rom": [
+    "$80:9EF7"
+   ]
+  },
+  "src/core/options_menu.cpp:enter_options_menu": {
+   "rom": [
+    "$80:B626",
+    "$80:EF4D"
+   ]
+  },
+  "src/core/options_menu.cpp:enter_records_menu": {
+   "rom": [
+    "$80:D525"
+   ]
+  },
+  "src/core/options_menu.cpp:enter_rename_editor": {
+   "rom": [
+    "$80:A207",
+    "$80:D468"
+   ],
+   "wram": [
+    "$009B",
+    "$00DC"
+   ]
+  },
+  "src/core/options_menu.cpp:high_score_leaders": {
+   "rom": [
+    "$80:D8C1"
+   ]
+  },
+  "src/core/options_menu.cpp:initialize_keyboard_cursor": {
+   "rom": [
+    "$80:A212",
+    "$80:A231"
+   ]
+  },
+  "src/core/options_menu.cpp:keyboard_key": {
+   "rom": [
+    "$80:A4DD",
+    "$80:A4F1",
+    "$80:A501",
+    "$80:A511"
+   ]
+  },
+  "src/core/options_menu.cpp:league_warning_frame": {
+   "rom": [
+    "$80:9D0B"
+   ]
+  },
+  "src/core/options_menu.cpp:load_high_score_palettes": {
+   "rom": [
+    "$80:D917"
+   ]
+  },
+  "src/core/options_menu.cpp:position_keyboard_cursor": {
+   "wram": [
+    "$0BEC"
+   ]
+  },
+  "src/core/options_menu.cpp:print_group_scores": {
+   "rom": [
+    "$80:DE2E",
+    "$80:EF89"
+   ],
+   "sram": [
+    "$77:02C0"
+   ]
+  },
+  "src/core/options_menu.cpp:print_high_scores": {
+   "rom": [
+    "$80:D7CD"
+   ]
+  },
+  "src/core/options_menu.cpp:print_player_scores": {
+   "rom": [
+    "$80:DACF",
+    "$80:DB4E",
+    "$80:DB9E"
+   ]
+  },
+  "src/core/options_menu.cpp:print_track_records": {
+   "rom": [
+    "$80:D5E6",
+    "$80:D641"
+   ]
+  },
+  "src/core/options_menu.cpp:print_track_selected_times": {
+   "rom": [
+    "$80:D699",
+    "$80:D6AE",
+    "$80:D6D5"
+   ]
+  },
+  "src/core/options_menu.cpp:records_detail_exit_frame": {
+   "rom": [
+    "$80:D9B7"
+   ]
+  },
+  "src/core/options_menu.cpp:records_detail_frame": {
+   "rom": [
+    "$80:D9AC"
+   ]
+  },
+  "src/core/options_menu.cpp:rename_commit_frame": {
+   "rom": [
+    "$80:D1FA",
+    "$80:D4BF",
+    "$80:F52B"
+   ],
+   "wram": [
+    "$0200"
+   ]
+  },
+  "src/core/options_menu.cpp:rename_keyboard_frame": {
+   "rom": [
+    "$80:A231",
+    "$80:A29B",
+    "$80:A3A0",
+    "$80:A52A"
+   ]
+  },
+  "src/core/options_menu.cpp:score_bar_targets": {
+   "rom": [
+    "$83:8FDE"
+   ]
+  },
+  "src/core/options_menu.cpp:set_bar_objects": {
+   "rom": [
+    "$80:DDE3",
+    "$80:E043"
+   ]
+  },
+  "src/core/options_menu.cpp:track_grid_half": {
+   "rom": [
+    "$80:EEF2"
+   ]
+  },
+  "src/core/options_menu.cpp:track_records_hdma": {
+   "rom": [
+    "$80:EB76",
+    "$80:ECD1",
+    "$80:ECF7"
    ]
   },
   "src/core/picture.cpp:render_window_xor": {
@@ -15284,6 +16048,11 @@
     "$80:F52B"
    ]
   },
+  "src/core/rider_menu.cpp:mark_league_member": {
+   "rom": [
+    "$80:9D2B"
+   ]
+  },
   "src/core/rider_menu.cpp:menu_text_palette, early_palette": {
    "rom": [
     "$80:F4E9",
@@ -15315,6 +16084,11 @@
    ],
    "wram": [
     "$0010"
+   ]
+  },
+  "src/core/rider_menu.cpp:rider_menu_entry_frame": {
+   "rom": [
+    "$80:9BC4"
    ]
   },
   "src/core/rider_menu.cpp:rider_menu_exit_frame": {
@@ -15600,6 +16374,14 @@
   "src/core/screen_slide.cpp:start_slide": {
    "wram": [
     "$0056"
+   ]
+  },
+  "src/core/snes_screen.hpp:SnesVideoRegisters::object_window_one_inverted": {
+   "io": [
+    "$00:2125",
+    "$00:2126",
+    "$00:2127",
+    "$00:212E"
    ]
   },
   "src/core/special_tiles.cpp:apply_boost_tile": {
@@ -15933,6 +16715,11 @@
     "$00DC"
    ]
   },
+  "src/core/text_printer.cpp:league_name": {
+   "rom": [
+    "$80:9B79"
+   ]
+  },
   "src/core/text_printer.cpp:name_of": {
    "rom": [
     "$80:9B55"
@@ -15943,6 +16730,14 @@
     "$80:C41E"
    ]
   },
+  "src/core/text_printer.cpp:print_name_operand": {
+   "rom": [
+    "$80:C5D3",
+    "$80:C628",
+    "$80:C675",
+    "$80:C67D"
+   ]
+  },
   "src/core/text_printer.cpp:print_small": {
    "rom": [
     "$80:C56C"
@@ -15950,10 +16745,13 @@
   },
   "src/core/text_printer.cpp:print_text": {
    "rom": [
+    "$80:9B79",
     "$80:C456",
     "$80:C474",
     "$80:C5D3",
     "$80:C628",
+    "$80:C675",
+    "$80:C67D",
     "$80:C6BB",
     "$80:C6D5"
    ]
@@ -17402,11 +18200,11 @@
   }
  },
  "totals": {
-  "addresses": 1279,
-  "io_addresses": 6,
-  "native_symbols": 930,
-  "rom_addresses": 929,
-  "sram_addresses": 39,
-  "wram_addresses": 305
+  "addresses": 1341,
+  "io_addresses": 9,
+  "native_symbols": 970,
+  "rom_addresses": 979,
+  "sram_addresses": 44,
+  "wram_addresses": 309
  }
 }

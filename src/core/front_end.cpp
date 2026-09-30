@@ -229,6 +229,10 @@ bool waits_for_frame(const FrontEndState& state) {
         return next != result_tail_frame;
     // So does the stunt result's (R-0067).
     if (state.screen == FrontEndScreen::stunt_result) return next != stunt_text_frame;
+    // $80:D494-D4BF runs through the name save and return without a frame wait.
+    if (state.screen == FrontEndScreen::rename_return) return false;
+    if (state.screen == FrontEndScreen::define_player_after_confirm) return false;
+    if (state.screen == FrontEndScreen::records_detail_entry && next == 1) return false;
     // Every other screen after the boot waits for each frame.
     if (state.screen != FrontEndScreen::boot) return true;
     const auto frame = boot_frame_number(state);
@@ -260,8 +264,18 @@ void check_title_code(FrontEndState& state, std::uint16_t pad) {
 // wiped to a cold start's records (`$83:FB41`, frames 403-405). Native's power-on has no records
 // of its own, so it always wipes; after a soft reset the signature is there. Then `$83:8B23`
 // clears the one-player flag `$77:10AD` and the pending reveal.
-void check_records(FrontEndState& state) {
-    if (!state.after_soft_reset) state.records = cold_start_records();
+void check_records(FrontEndState& state, const FrontEndContent& content) {
+    if (!state.after_soft_reset) {
+        state.records = cold_start_records();
+        if (content.rider_names.size() != state.records.rider_names.size())
+            throw std::invalid_argument("the original rider-name table has the wrong size");
+        std::copy(content.rider_names.begin(), content.rider_names.end(),
+                  state.records.rider_names.begin());
+        if (content.league_names.size() != state.records.league_names.size())
+            throw std::invalid_argument("the original league-name table has the wrong size");
+        std::copy(content.league_names.begin(), content.league_names.end(),
+                  state.records.league_names.begin());
+    }
     state.one_player = false;
     state.records.pending_reveal = 0;
 }
@@ -300,7 +314,7 @@ void boot_frame(FrontEndState& state, const FrontEndContent& content, FrontEndPa
         lay_out_menu_objects(state);
     } else if (f == menu_map_filled_frame) {
         copy_oam(state); // $80:D372
-        check_records(state);
+        check_records(state, content);
     } else if (f == menu_map_copy_frame) {
         copy_menu_text(state, content);
     } else if (f == menu_palette_frame || f == menu_palette_again_frame) {
@@ -350,6 +364,10 @@ void run_main_menu(FrontEndState& state, const FrontEndContent& content, FrontEn
             || mode == FrontEndMode::versus) {
             state.mode = mode;
             enter_rider_menu(state);
+            return;
+        }
+        if (mode == FrontEndMode::options) {
+            enter_options_menu(state, content);
             return;
         }
         state.mode_chosen = true;
@@ -664,6 +682,37 @@ std::string asset_name(unsigned id) {
 }
 } // namespace
 
+namespace {
+
+void load_options_content(FrontEndContent& content, const ClassicContentPack& pack) {
+    content.options_menu_text = pack.entry("front-end.options-menu-text");
+    content.options_arrow_columns = pack.entry("front-end.options-arrow-columns");
+    content.records_menu_text = pack.entry("front-end.records-menu-text");
+    content.records_arrow_columns = pack.entry("front-end.records-arrow-columns");
+    content.rename_who_title = pack.entry("front-end.rename-who-title");
+    content.define_player_who_title = pack.entry("front-end.define-player-who-title");
+    content.define_player_warning = pack.entry("front-end.define-player-warning");
+    content.define_player_confirm_prompt = pack.entry("front-end.define-player-confirm-prompt");
+    content.rename_prompt = pack.entry("front-end.rename-prompt");
+    content.keyboard_text = pack.entry("front-end.keyboard-text");
+    content.league_slot_text = pack.entry("front-end.league-slot-text");
+    content.league_names = pack.entry("front-end.league-names");
+    content.league_warning = pack.entry("front-end.league-warning");
+    content.league_title = pack.entry("front-end.league-title");
+    content.league_minimum = pack.entry("front-end.league-minimum");
+    content.league_maximum = pack.entry("front-end.league-maximum");
+    content.league_prompt = pack.entry("front-end.league-prompt");
+    content.track_records_text = pack.entry("front-end.track-records-text");
+    content.track_records_objects = pack.entry("front-end.track-records-objects");
+    content.high_scores_text = pack.entry("front-end.high-scores-text");
+    content.player_scores_text = pack.entry("front-end.player-scores-text");
+    content.player_scores_values = pack.entry("front-end.player-scores-values");
+    content.group_scores_text = pack.entry("front-end.group-scores-text");
+    content.group_scores_empty = pack.entry("front-end.group-scores-empty");
+}
+
+} // namespace
+
 FrontEndContent front_end_content(const ClassicContentPack& pack) {
     FrontEndContent content;
     for (const unsigned id :
@@ -713,6 +762,7 @@ FrontEndContent front_end_content(const ClassicContentPack& pack) {
     content.vs_champions_header = pack.entry("front-end.vs-champions-header");
     content.vs_champions_row = pack.entry("front-end.vs-champions-row");
     content.pick_challenger_title = pack.entry("front-end.pick-challenger-title");
+    load_options_content(content, pack);
     content.result_icons = pack.entry("front-end.result-icons");
     content.lap_result_text = pack.entry("front-end.lap-result-text");
     content.lap_result_record = pack.entry("front-end.lap-result-record");
@@ -896,23 +946,10 @@ void soft_reset(FrontEndState& state) {
 
 } // namespace front_end_screens
 
-void update_front_end(FrontEndState& state, const FrontEndContent& content, FrontEndPads pads) {
-    if (state.mode_chosen) return;
-    if (state.screen == FrontEndScreen::demo_return && state.demo_return_wait != 0) {
-        --state.demo_return_wait;
-        ++state.frame;
-        return;
-    }
-    keep_line_writes(state);
-    // NMIs are enabled at the end of the title's loads (`$80:F5B8`); the hook runs from then on:
-    // the logo's slide, then the palette cycle.
-    if (state.screen == FrontEndScreen::boot && boot_frame_number(state) == cycle_start_frame)
-        state.cycle.running = true;
-    if (state.cycle.running) run_nmi_hook(state, content);
-    if (waits_for_frame(state)) update_arrow(state, content);
-    const FrontEndPads physical{physical_pad(pads.one), physical_pad(pads.two)};
-    const auto screen = state.screen;
-    ++state.script_frame;
+namespace {
+
+void dispatch_front_end_screen(FrontEndState& state, const FrontEndContent& content,
+                               FrontEndScreen screen, FrontEndPads physical) {
     switch (screen) {
     case FrontEndScreen::boot: boot_frame(state, content, physical); break;
     case FrontEndScreen::main_menu: run_main_menu(state, content, physical); break;
@@ -945,7 +982,52 @@ void update_front_end(FrontEndState& state, const FrontEndContent& content, Fron
     case FrontEndScreen::local_continue: local_continue_frame(state, content, physical); break;
     case FrontEndScreen::vs_champions_entry: vs_champions_entry_frame(state, content); break;
     case FrontEndScreen::vs_champions: vs_champions_frame(state, content, physical); break;
+    case FrontEndScreen::options_entry: options_entry_frame(state, content); break;
+    case FrontEndScreen::options_return: options_return_frame(state, content); break;
+    case FrontEndScreen::options_menu: options_menu_frame(state, content, physical); break;
+    case FrontEndScreen::records_entry: records_entry_frame(state, content); break;
+    case FrontEndScreen::records_menu: records_menu_frame(state, content, physical); break;
+    case FrontEndScreen::rename_entry: rename_entry_frame(state, content); break;
+    case FrontEndScreen::rename_keyboard: rename_keyboard_frame(state, content, physical); break;
+    case FrontEndScreen::rename_commit: rename_commit_frame(state, content); break;
+    case FrontEndScreen::rename_return: rename_return_frame(state, content); break;
+    case FrontEndScreen::define_player_warning_entry:
+        define_player_warning_entry_frame(state, content);
+        break;
+    case FrontEndScreen::define_player_warning: define_player_warning_frame(state, physical); break;
+    case FrontEndScreen::define_player_after_confirm:
+        define_player_after_confirm_frame(state, content);
+        break;
+    case FrontEndScreen::league_slots_entry: league_slots_entry_frame(state, content); break;
+    case FrontEndScreen::league_slots: league_slots_frame(state, content, physical); break;
+    case FrontEndScreen::league_warning_entry: league_warning_entry_frame(state, content); break;
+    case FrontEndScreen::league_warning: league_warning_frame(state, physical); break;
+    case FrontEndScreen::records_detail_entry: records_detail_entry_frame(state, content); break;
+    case FrontEndScreen::records_detail: records_detail_frame(state, content, physical); break;
+    case FrontEndScreen::records_detail_exit: records_detail_exit_frame(state, content); break;
     }
+}
+
+} // namespace
+
+void update_front_end(FrontEndState& state, const FrontEndContent& content, FrontEndPads pads) {
+    if (state.mode_chosen) return;
+    if (state.screen == FrontEndScreen::demo_return && state.demo_return_wait != 0) {
+        --state.demo_return_wait;
+        ++state.frame;
+        return;
+    }
+    keep_line_writes(state);
+    // NMIs are enabled at the end of the title's loads (`$80:F5B8`); the hook runs from then on:
+    // the logo's slide, then the palette cycle.
+    if (state.screen == FrontEndScreen::boot && boot_frame_number(state) == cycle_start_frame)
+        state.cycle.running = true;
+    if (state.cycle.running) run_nmi_hook(state, content);
+    if (waits_for_frame(state)) update_arrow(state, content);
+    const FrontEndPads physical{physical_pad(pads.one), physical_pad(pads.two)};
+    const auto screen = state.screen;
+    ++state.script_frame;
+    dispatch_front_end_screen(state, content, screen, physical);
     if (state.screen != screen) state.script_frame = 0;
     ++state.frame;
 }

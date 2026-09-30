@@ -40,9 +40,12 @@ struct SnesVideoRegisters {
     std::uint8_t colour_select{}; // CGWSEL
     std::uint8_t colour_math{};   // CGADSUB
     std::uint16_t fixed_colour{}; // COLDATA, as BGR555
-    // Any window or mosaic enable, per-line register changes (HDMA other than colours, INIDISP
-    // and BG1VOFS) or OAM priority rotation (OAMADD's priority bit): none is modelled, so a
-    // picture that uses one is refused.
+    // $2125/$2126/$2127/$212E: the RECORDS bar sprites use window 1 on OBJ,
+    // inverted so pixels outside the horizontal interval are masked.
+    bool object_window_one_inverted{};
+    std::uint8_t object_window_left{}, object_window_right{};
+    // Other windows, mosaic, per-line register changes (HDMA other than colours, INIDISP
+    // and BG1VOFS) and OAM priority rotation remain unmodelled.
     bool unmodelled_features{};
 };
 
@@ -58,7 +61,12 @@ struct SnesLineColour {
 // line n, as for a colour): INIDISP (bit 7 forced blank, bits 3-0 the brightness) or BG1VOFS
 // (the whole offset, as HDMA's two-write mode leaves it). The PPU latches both for each line
 // (bsnes `PPU::Line::cache`), so a row's own value overrides the CPU's, forced blank included.
-enum class SnesLineRegisterName : std::uint8_t { display, bg1_vertical_offset };
+enum class SnesLineRegisterName : std::uint8_t {
+    display,
+    bg1_vertical_offset,
+    bg2_horizontal_offset,
+    bg2_vertical_offset
+};
 struct SnesLineRegister {
     std::uint8_t row{};
     SnesLineRegisterName name{};

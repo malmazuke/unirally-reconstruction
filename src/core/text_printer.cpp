@@ -12,6 +12,7 @@ constexpr std::uint8_t end_of_text = 0xff, position = 0xfe, number = 0xfd, centr
                        nothing = 0xfb, attribute = 0xf9, rider_name = 0xf8, track_name = 0xf7,
                        race_time = 0xf1, two_digits = 0xf0, place_object = 0xef, capitals = 0xee,
                        first_control = 0xee;
+constexpr std::uint8_t league_slot_name = 0xf3, league_current_name = 0xf6;
 constexpr std::uint8_t row_code = 0xf2; // positions F7's name alone, like FC
 constexpr std::uint16_t priority_bit = 0x2000;
 constexpr std::uint8_t small_glyph = 0x80;
@@ -111,6 +112,17 @@ std::span<const std::uint8_t> record_name(std::span<const std::uint8_t> records,
     return name.first(end);
 }
 
+// $80:9B79: a league name occupies 32 SRAM bytes; the printer copies at most 31.
+std::span<const std::uint8_t> league_name(std::span<const std::uint8_t> records, unsigned slot) {
+    constexpr std::size_t record = 32;
+    if ((slot + 1) * record > records.size())
+        throw std::invalid_argument("league name is not in the records");
+    const auto name = records.subspan(slot * record, record);
+    std::size_t end = 0;
+    while (end < record - 1 && name[end] != end_of_text) ++end;
+    return name.first(end);
+}
+
 // $80:F8B9: small letters become capitals, digits the big font's (0x16-0x1F). The original
 // converts its whole buffer `$00DC-$00FB`, the FC or F2 look-ahead bytes at its start included.
 void in_capitals(std::vector<std::uint8_t>& text) {
@@ -159,15 +171,57 @@ std::vector<std::uint8_t> race_time_text(std::uint16_t time,
     return {'_', minutes, ':', tens, seconds, '.', tenths, hundredths};
 }
 
+namespace {
+
+std::uint8_t read_stream_byte(std::span<const std::uint8_t> stream, std::size_t& at) {
+    if (at >= stream.size()) throw std::invalid_argument("text stream ends without 0xFF");
+    return stream[at++];
+}
+
+void print_name_operand(TextMap& map, TextCursor& cursor, std::span<const std::uint8_t> stream,
+                        std::size_t& at, std::span<const std::uint8_t> character_table,
+                        const TextVariables* variables, std::uint8_t control) {
+    // $80:C5D3, $80:C628, $80:C675 and $80:C67D; R-0072 observations 3 and 19.
+    const auto& values = require(variables);
+    std::vector<std::uint8_t> text;
+    unsigned name_index = 0;
+    if (control == league_slot_name) {
+        name_index = read_stream_byte(stream, at);
+    } else {
+        const auto low = read_stream_byte(stream, at);
+        const auto high = read_stream_byte(stream, at);
+        const auto address = static_cast<std::uint16_t>(low | (high << 8U));
+        name_index = values.word(address);
+    }
+    if (at < stream.size() && (stream[at] == row_code || stream[at] == centre)) {
+        text.push_back(read_stream_byte(stream, at));
+        text.push_back(read_stream_byte(stream, at));
+    }
+    if (control == track_name || control == rider_name) {
+        const auto name = control == track_name ? name_of(values.track_names, name_index)
+                                                : record_name(values.rider_names, name_index);
+        text.insert(text.end(), name.begin(), name.end());
+        text.push_back(end_of_text);
+        if (at < stream.size() && stream[at] == capitals) {
+            ++at;
+            in_capitals(text);
+        }
+    } else {
+        const auto name = league_name(values.league_names, name_index & 0xffU);
+        text.insert(text.end(), name.begin(), name.end());
+        text.push_back(end_of_text);
+    }
+    print_text(map, cursor, text, character_table, variables);
+}
+
+} // namespace
+
 void print_text(TextMap& map, TextCursor& cursor, std::span<const std::uint8_t> stream,
                 std::span<const std::uint8_t> character_table, const TextVariables* variables) {
     if (character_table.size() != 256)
         throw std::invalid_argument("text printer table is not 256 bytes");
     std::size_t at = 0;
-    const auto next = [&] {
-        if (at >= stream.size()) throw std::invalid_argument("text stream ends without 0xFF");
-        return stream[at++];
-    };
+    const auto next = [&] { return read_stream_byte(stream, at); };
     for (;;) {
         const auto byte = next();
         if (byte < first_control) {
@@ -192,6 +246,15 @@ void print_text(TextMap& map, TextCursor& cursor, std::span<const std::uint8_t> 
             centre_on(cursor, stream.subspan(at), row, character_table);
             break;
         }
+        case row_code: {
+            const auto row = next();
+            const auto remaining = stream.subspan(at);
+            std::size_t visible = 0;
+            for (std::size_t k = 0; k < remaining.size() && remaining[k] != end_of_text; ++k)
+                if (remaining[k] != '_') visible = k + 1;
+            centre_on(cursor, remaining.first(visible), row, character_table);
+            break;
+        }
         case attribute: cursor.attribute = static_cast<std::uint16_t>(next() << 10U); break;
         case number:       // $80:C456: five digits
         case two_digits: { // $80:C474: their last two, the tens a blank below 10
@@ -205,23 +268,12 @@ void print_text(TextMap& map, TextCursor& cursor, std::span<const std::uint8_t> 
         }
         case track_name:   // $80:C628
         case rider_name: { // $80:C5D3
-            const auto& v = require(variables);
-            const auto address = static_cast<std::uint16_t>(next() | (next() << 8U));
-            std::vector<std::uint8_t> text;
-            if (at < stream.size() && (stream[at] == row_code || stream[at] == centre)) {
-                text.push_back(next());
-                text.push_back(next());
-            }
-            const auto value = v.word(address);
-            const auto name = byte == track_name ? name_of(v.track_names, value)
-                                                 : record_name(v.rider_names, value);
-            text.insert(text.end(), name.begin(), name.end());
-            text.push_back(end_of_text);
-            if (at < stream.size() && stream[at] == capitals) {
-                ++at;
-                in_capitals(text);
-            }
-            print_text(map, cursor, text, character_table, variables);
+            print_name_operand(map, cursor, stream, at, character_table, variables, byte);
+            break;
+        }
+        case league_slot_name:
+        case league_current_name: { // $80:C675, $80:C67D, $80:9B79
+            print_name_operand(map, cursor, stream, at, character_table, variables, byte);
             break;
         }
         case race_time: { // $80:C6BB

@@ -1,5 +1,53 @@
 # Next session
 
+**Status on 30 September 2026 UTC (OPTIONS validated, PR #46 integration):**
+[OPTIONS](OPTIONS.md) has a validated native source candidate at `7d13924`;
+the independent tier-1 review accepted the preceding behavior head.
+Its 11 frozen race gates, 19 focused PAL menu comparisons, full 540-check
+synthetic suite, v1 presentation contracts, pack check and hosted macOS/Ubuntu
+checks pass; the local macOS sanitizer runtime remains unavailable. If
+[PR #46](https://github.com/malmazuke/unirally-reconstruction/pull/46) is still
+open, finish its documentation-only exact-tip review and checks, read all
+comments, merge with a merge commit, synchronize local `main`, and write the
+ignored `artifacts/options-integration/closeout.json`. If it has merged,
+verify that closeout and local/remote `main` equality. [R-0072](../docs/research/R-0072-options.md)
+defines the tested domain and residuals. The next roadmap outcome after
+integration is LEAGUE, which owns played tournament scoring. Do not claim
+that path from OPTIONS' first-slot setup evidence.
+
+**Status on 30 September 2026 UTC (OPTIONS continuation):** the user explicitly
+overrode OPTIONS' percentage usage boundary and requested work through task
+completion. Continue the same `codex/options` task from its pushed branch and
+ignored evidence, subject to actual provider availability and the separate
+no-reset/no-spending rule. Native league save and three settled RECORDS detail
+screens are partly implemented; TRACK RECORDS, varied data and detail timing
+remain before review and integration. The task record and R-0072 have the exact
+scope and next experiment.
+
+**Status on 29 September 2026 22:40 UTC (OPTIONS resource handoff):**
+[OPTIONS](OPTIONS.md) remains claimed and incomplete on pushed branch `codex/options`
+in `.worktrees/options`, with ignored PAL evidence under main's `local/evidence/options/`.
+The latest committed source slice implements the OPTIONS/RECORDS menu shell,
+player name edit and DEFINE PLAYER reset; DEFINE LEAGUE and four RECORDS details
+are still pending. The task record and [R-0072](../docs/research/R-0072-options.md)
+hold the exact captures, source commits, tests and next experiment. The task
+reached its D-0004 80% weekly-used discretionary boundary from a 60% start;
+no reset or override is authorized as of this handoff. Do not accept, review,
+open a PR for, or automatically dispatch a separate replacement task for this
+partial capability. Resume this same task when capacity or explicit authority
+is available.
+
+**Status on 29 September 2026 UTC (OPTIONS claimed): continue
+[OPTIONS](OPTIONS.md) in `.worktrees/options` from merged TWO-PLAYER-VS `f2da955`.**
+PR #45's ignored closeout verifies final-tip CI, local `main` synchronization and cleanup.
+The new task has frozen cold PAL paths for every OPTIONS top-level choice and the four
+RECORDS categories, plus confirm/cancel warning variations. [R-0072](../docs/research/R-0072-options.md)
+holds the exact tested domain and next experiments: name completion, populated removal,
+league slots and populated record views before implementation. The first OPTIONS claim has
+a 60% weekly-used baseline and 80% discretionary boundary under D-0004; 61% was used at the
+first checkpoint. No reset is authorized. The primary owns its isolated checkout and the
+main checkout owns ignored `local/evidence/options/` and `artifacts/options-integration/`.
+
 **Status on 29 September 2026 UTC (TWO-PLAYER-VS reviewed on PR #45):** the
 native source/map commit `1191408` has accepted tier-1 independent review,
 11/11 frozen private comparisons, a 539/539 app-debug synthetic suite and green

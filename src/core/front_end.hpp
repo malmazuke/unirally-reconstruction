@@ -43,6 +43,16 @@ struct FrontEndContent {
     std::span<const std::uint8_t> result_fifth_row; // $80:D1DB, human opponent (R-0071)
     std::span<const std::uint8_t> local_continue_text, vs_champions_header, vs_champions_row,
         pick_challenger_title;
+    // OPTIONS and RECORDS' five original text streams and per-row arrow columns (R-0072).
+    std::span<const std::uint8_t> options_menu_text, options_arrow_columns;
+    std::span<const std::uint8_t> records_menu_text, records_arrow_columns;
+    std::span<const std::uint8_t> rename_who_title, define_player_who_title;
+    std::span<const std::uint8_t> define_player_warning, define_player_confirm_prompt;
+    std::span<const std::uint8_t> rename_prompt, keyboard_text;
+    std::span<const std::uint8_t> league_slot_text, league_names, league_warning, league_title,
+        league_minimum, league_maximum, league_prompt;
+    std::span<const std::uint8_t> track_records_text, track_records_objects, high_scores_text,
+        player_scores_text, player_scores_values, group_scores_text, group_scores_empty;
     // The lap result (profile v19): the headings and graph, the record line, the two rows.
     std::span<const std::uint8_t> lap_result_text, lap_result_record, lap_result_player,
         lap_result_opponent;
@@ -126,16 +136,47 @@ struct MenuLatches {
 
 // PICK YOUR UNI ($80:CB04): 16 riders in two columns of eight, rider r at row r / 2, column
 // r % 2. The column is the arrow's x target's.
+enum class RiderMenuPurpose : std::uint8_t { normal, rename_player, define_player, league_members };
+
 struct RiderMenu {
-    std::uint8_t rider{};     // $017D: the rider chosen last; the arrow starts on it
-    std::uint8_t row{};       // $000E
-    std::uint16_t intro{};    // $0076: the uni's build-up, picture intro / 2; 0 once it loops
-    std::uint8_t idle_step{}; // $0190: the loop's step, 39 down to 0
-    std::uint16_t picture{};  // the uni picture built for the next frame ($83:8E3A)
-    bool back{};              // left with Y or X rather than chosen
-    bool returning{};         // entered back from PICK TOUR ($00AC != 2): slides back in
-    bool second{};            // 2P/VS: port 2 chooses a distinct second rider (R-0071)
-    bool challenger{};        // VS: port 1 reselects the first rider after champions
+    std::uint8_t rider{};       // $017D: the rider chosen last; the arrow starts on it
+    std::uint8_t row{};         // $000E
+    std::uint16_t intro{};      // $0076: the uni's build-up, picture intro / 2; 0 once it loops
+    std::uint8_t idle_step{};   // $0190: the loop's step, 39 down to 0
+    std::uint16_t picture{};    // the uni picture built for the next frame ($83:8E3A)
+    bool back{};                // left with Y or X rather than chosen
+    bool returning{};           // entered back from PICK TOUR ($00AC != 2): slides back in
+    bool second{};              // 2P/VS: port 2 chooses a distinct second rider (R-0071)
+    bool challenger{};          // VS: port 1 reselects the first rider after champions
+    RiderMenuPurpose purpose{}; // OPTIONS reuses the picker for an existing player
+};
+
+// $80:A1F2-A529: the shared four-row name keyboard. Offsets are signed pixel steps;
+// the reference keeps the input buffer in work RAM $00DC and leaves its stale tail intact.
+struct KeyboardEditor {
+    std::array<std::uint8_t, 12> scratch{};
+    std::int16_t offset_x{-96}, offset_y{-24};
+    std::uint8_t length{};
+    std::uint16_t previous_buttons{};
+};
+
+// DEFINE LEAGUE ($80:9BC4-9EBC): six slots, each with a 16-rider membership mask.
+// The picker stores its bits in reverse screen order, bit 15 for MIKE through bit 0 for STEVE.
+struct LeagueSetup {
+    std::uint8_t slot{};     // $00CC, 0-5
+    std::uint16_t members{}; // $00D2, selection currently shown
+    std::uint16_t previous_buttons{};
+    bool editor_active{};
+};
+
+struct RecordsDetail {
+    std::uint8_t category{};            // the RECORDS menu's 0-3 choice
+    std::uint8_t rider{};               // PLAYER SCORES' selected rider
+    std::uint8_t tour{};                // TRACK RECORDS' first visible tour
+    std::uint16_t track_scroll{0x01e7}; // BG2's grid offset during the records HDMA band
+    std::uint8_t track_scroll_step{};   // 0 idle, otherwise the next easing-table step
+    bool track_scroll_up{};
+    bool returning{}; // the detail view slides back into the category menu
 };
 
 // The one-player records the menus read from SRAM, as a cold start leaves them (`$80:8C4E`):
@@ -144,6 +185,16 @@ struct RiderMenu {
 // (`$83:936E`) and SOMEONE holding every record (`$83:93D8`). The result screen and the scoring
 // change them (R-0057).
 struct OnePlayerRecords {
+    // $77:000C-016B: 22 sixteen-byte name records. The first 16 can be edited in OPTIONS;
+    // the rest include non-player display names. The original keeps the whole table in SRAM.
+    std::array<std::uint8_t, 352> rider_names{};
+    std::array<std::uint8_t, 192> league_names{};  // $77:016E, six 32-byte names
+    std::array<std::uint16_t, 6> league_members{}; // $77:02B2, rider bit per slot
+    std::uint16_t active_league_members{};         // $77:02BE, last saved league
+    // $77:02C0 + 32 * slot + 4 * row + 2: eight league score words per slot.
+    // The adjacent row-index words are rebuilt while GROUP TABLES opens ($80:EF89).
+    std::array<std::array<std::uint16_t, 8>, 6> league_scores{};
+    bool league_naming{}; // $77:0742 bit 1 while the league keyboard is active
     std::array<std::uint8_t, 16> tour_levels{}; // $77:10D3 + rider: 0-3, the tours open
     std::array<std::uint8_t, 160> medals{};     // $77:069C + 16 * tour + rider: 0, or 1-3
     std::array<std::uint8_t, 50> tracks_done{}; // $77:1075 + track: won in the current run
@@ -356,6 +407,25 @@ enum class FrontEndScreen : std::uint8_t {
     local_continue,
     vs_champions_entry, // the VS ranking after a result
     vs_champions,
+    options_entry, // $80:B626, five OPTIONS choices sliding in
+    options_menu,
+    options_return, // $80:D566 back from RECORDS to OPTIONS
+    records_entry,  // $80:D525, five RECORDS categories sliding in
+    records_menu,
+    rename_entry, // $80:D468, keyboard and prompt sliding in
+    rename_keyboard,
+    rename_commit,
+    rename_return,
+    define_player_warning_entry,
+    define_player_warning,
+    define_player_after_confirm,
+    league_slots_entry,
+    league_slots,
+    league_warning_entry,
+    league_warning,
+    records_detail_entry,
+    records_detail,
+    records_detail_exit,
 };
 
 // What `$83:9894` saves before a race (work RAM `$0000-$019D`) and `$83:987D` puts back after
@@ -405,6 +475,11 @@ struct FrontEndState {
     MainMenu menu{};
     MenuLatches latches{};
     RiderMenu rider_menu{};
+    KeyboardEditor keyboard{};
+    LeagueSetup league{};
+    RecordsDetail records_detail{};
+    std::array<std::uint8_t, 256> options_upper_palette{}; // pre-picker CGRAM colours $80-$FF
+    bool options_palette_saved{};
     std::uint8_t second_rider{}; // $017F, second human chosen by port 2 (R-0071)
     OnePlayerRecords records = cold_start_records();
     TourMenu tour_menu{};
