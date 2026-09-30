@@ -4,6 +4,7 @@ The coordinator maintains the status registry below. Work orders further below d
 
 | Task | Status | Record |
 | --- | --- | --- |
+| FUTURE-IDEAS | in_progress (tier 3): record deferred ghost racing ideas; no feature implementation scheduled | [Preserve future feature ideas](FUTURE-IDEAS.md) |
 | M0-00 | accepted | [Repository setup](M0-00.md) |
 | M0-01 | accepted: integrated 10 September 2026 | [ROM identity manifest](M0-01.md) |
 | M0-02 | accepted: integrated 10 September 2026 after two independent reviews | [Laboratory bootstrap](M0-02.md) |

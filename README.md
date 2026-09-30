@@ -77,6 +77,10 @@ custom tracks, a track editor, and high-resolution replacement assets. These are
 future goals, not current features. The [project plan](docs/PROJECT_PLAN.md)
 describes the milestones and acceptance criteria.
 
+[Future feature ideas](docs/FUTURE_IDEAS.md) preserves deferred discussions,
+including personal ghosts and asynchronous ghost leaderboards, outside the
+immediate roadmap.
+
 ## License
 
 Project-owned code and documentation are available under the [MIT License](LICENSE).
@@ -107,6 +111,7 @@ this stage.** See [the contribution policy](CONTRIBUTING.md).
 | [Agent workflow](docs/AGENT_WORKFLOW.md) | Ownership, independent review, and integration |
 | [Task records](tasks/README.md) | Work history, dependencies, and evidence links |
 | [Project plan](docs/PROJECT_PLAN.md) | Architecture, scope, and future milestones |
+| [Future feature ideas](docs/FUTURE_IDEAS.md) | Deferred ideas without scheduled implementation work |
 
 For research entry points, see [the second-track investigation](tasks/M4-02.md)
 and [the content/read contract](tasks/M4-03.md). The
