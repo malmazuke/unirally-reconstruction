@@ -2,7 +2,7 @@
 
 ## Assignment
 
-- Status: review candidate; claimed 30 September 2026 at 19:50 UTC.
+- Status: record outcome complete; integration via [PR #49](https://github.com/malmazuke/unirally-reconstruction/pull/49), with actual merge/check/synchronization status in the ignored closeout; claimed 30 September 2026 at 19:50 UTC.
 - Milestone: M4 (original game coverage).
 - Coordinator and primary: this Codex desktop session.
 - Task provider: OpenAI, including children. Primary model/effort is not exposed
@@ -72,11 +72,10 @@ does not expand their tested domain or claim stunt edge cases are complete.
 
 ## Handoff
 
-- Current head is the base above; this claim is uncommitted.
+- Evidence/code base: `16675d0`; decision/map candidate `3b3d48d48b1501dc9a1a5f56ace67b9dc8976c37` is committed and pushed. The final record tip is recorded in the closeout.
 - The cold audio and CPU transport experiments are complete; D-0009 and
   AUDIO-TITLE-MENU record the adopted design and next native capability.
-- Next: regenerate the static citation map, inspect the exact staged records,
-  open the PR, obtain current-head CI, merge and synchronize main.
+- Next capability: AUDIO-TITLE-MENU. First verify [PR #49](https://github.com/malmazuke/unirally-reconstruction/pull/49) and main `artifacts/audio-decision-integration/closeout.json`, then reproduce R-0074 and implement its coupled raw-audio observation experiment.
 - No native audio implementation, playable audio or audio restore claim yet.
 - Source and accepted baselines unchanged. No broad native suites rerun for
   the records-only diff; required hosted checks will run on the final tip.
@@ -85,7 +84,10 @@ does not expand their tested domain or claim stunt edge cases are complete.
 
 - Tier 3: independent review not required. Planning consultation is advisory,
   not review or evidence of audio accuracy.
-- PR and closeout to be recorded before integration.
+- [PR #49](https://github.com/malmazuke/unirally-reconstruction/pull/49) holds the decision/map candidate and final tracked handoff. Main `artifacts/audio-decision-integration/closeout.json` records the actual final head, required checks, merge commit, synchronization, quota and cleanup. Final-tip CI and merge are pending at this record commit; neither is preclaimed.
+- The primary reads all conversation/review and line comments immediately before merging. Tier 3 requires no review comment; the planning consultation is not a substitute for the next capability's tier-1 review.
+- All evidence and integration logs already use their canonical main homes. Closing cleanup removes only this session's `.worktrees/audio-decision` (private locator/cache links; no build directory created) and local `codex/audio-decision` after verifying every commit is on origin/main. It preserves all cited original/failed captures and the pre-existing playtest checkout. No evidence move or duplicate deletion is planned.
+- No M4 milestone is accepted by this decision; no tag, release or deployment is due.
 
 ## Checkpoint - 30 September 2026 20:08 UTC
 
@@ -138,3 +140,16 @@ does not expand their tested domain or claim stunt edge cases are complete.
 - `static-map.json` SHA-256 `86f1f336cf15a14b1fe845a66a303370bfba6c96f953cf040afe4c14de63ad69`.
 - `source-map-identity.json` SHA-256 `3e79a4f7117d84229a44432287f4c02cef090ab303abdfd8aca0a31dc6e7f218`.
 - `evidence-manifest.json` SHA-256 `04ca20ef4cc925456f72081570275e5d9592ee4053f4947690d277ace63be0d4`.
+
+## Final tracked handoff - 30 September 2026 20:20 UTC
+
+- Staged diff inspected: only Markdown and the generated citation map/labels;
+  no original content, PCM, ROM bytes, states, credentials or traces tracked.
+  Relative Markdown links resolve. Source-map classification/routines and every
+  src/tools/tests/build/CI file are unchanged from the evidence base.
+- Required hosted checks are running on PR #49; initial read finds no owner
+  comments, reviews or line comments. The final read and exact-tip results
+  belong in closeout. A future green run is not claimed here.
+- Scope completed: D-0009 and first native audio capability queued; stale stunt
+  queue reconciled. The product remains silent. No waveform, driver, DSP model
+  or native/live audio acceptance exists yet.

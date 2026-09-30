@@ -84,7 +84,7 @@ The coordinator maintains the status registry below. Work orders further below d
 | ATTRACT-DEMO | ready (tier 1): the next idle demo cycle, one-player track 3, after SPLIT-SCREEN-RACE integrates | [The next idle demo cycle](ATTRACT-DEMO.md) |
 | LEAGUE | reviewed and integrated by PR #48 (tier 1): first CRAWLER tournament, six-slot scoring projection and continuation; closeout in main artifacts | [Native league tournament](LEAGUE.md) |
 | STUNT-EVENTS | fulfilled by #39/#40/#42; tier-3 queue reconciliation in AUDIO-DECISION, no new gameplay domain | [The delivered stunt outcome](STUNT-EVENTS.md) |
-| AUDIO-DECISION | tier 3: native audio architecture, cold callback observations and first capability task; integration in its closeout | [Choose the native audio path and its evidence](AUDIO-DECISION.md) |
+| AUDIO-DECISION | PR #49, tier 3: native audio architecture, cold callback observations and first capability task; integration in its closeout | [Choose the native audio path and its evidence](AUDIO-DECISION.md) |
 | AUDIO-TITLE-MENU | ready after AUDIO-DECISION integration (tier 1): native title/menu music and navigation effect; observation/recovery coupled inside the task | [Audible native title and menu audio](AUDIO-TITLE-MENU.md) |
 | ROLLING-CONTACT | ready | [A rolling rider's second contact after a long shoulder rotation (HUNTER-EFFECTS review)](ROLLING-CONTACT.md) |
 | PORTABLE-CORE-IDENTITY | ready (tier 2): the reference core accepted by its source and its pinned outputs, not one binary hash; no pack can be built from a ROM on Linux today | [The laboratory and the pack build on any host that builds the pinned core](PORTABLE-CORE-IDENTITY.md) |

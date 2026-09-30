@@ -1,6 +1,6 @@
 # Project state
 
-**30 September 2026 UTC: AUDIO-DECISION defines the next native audio outcome.**
+**30 September 2026 UTC: [AUDIO-DECISION](https://github.com/malmazuke/unirally-reconstruction/pull/49) defines the next native audio outcome.**
 The stale STUNT-EVENTS queue entry is reconciled: STUNT-EVENT-RACE (#39),
 STUNT-RESULT (#40) and STUNT-HUD (#42) already delivered the nine tour stunt
 scenarios within R-0066/67/68's bounded domain. This adds no stunt accuracy claim.
