@@ -310,6 +310,48 @@ void the_finish_sequence() {
             "a running clock past its start");
 }
 
+void league_state_guards() {
+    const SyntheticStunt stunt;
+    auto state =
+        classic_race_start(stunt.content, classic_local_race_scenario(ClassicRaceTrack{2}, {7, 9}));
+    state.split_screen = true;
+    state.league_statistics.enabled = true;
+    state.league_statistics.tricks[1][19] = 255;
+    state.league_statistics.wipeouts[1] = 65535;
+    state.league_statistics.opponent_points[19] = 65535;
+    auto saved = serialize_zoom_zoo(state);
+    const auto restored = deserialize_zoom_zoo(saved);
+    require(serialize_zoom_zoo(restored) == saved, "paired stunt wrapper round trip");
+    auto bad = saved;
+    bad[12] = 0;
+    rejects([&] { (void)deserialize_zoom_zoo(bad); }, "human opponent needs split view");
+    bad = saved;
+    const auto trailer = 13U + unsigned(saved[8]) + 256U * unsigned(saved[9]);
+    bad[trailer + 4] = 17;
+    bad[trailer + 5] = 0;
+    rejects([&] { (void)deserialize_zoom_zoo(bad); }, "second camera velocity boundary");
+    bad = saved;
+    bad.pop_back();
+    rejects([&] { (void)deserialize_zoom_zoo(bad); }, "truncated wrapper");
+    bad = saved;
+    bad.back() = 2;
+    rejects([&] { (void)deserialize_zoom_zoo(bad); }, "opponent tutorial flag boolean");
+}
+
+void league_finish_waits_for_both() {
+    SyntheticStunt content;
+    content.header[2] = 0;
+    auto state = classic_race_start(content.content,
+                                    classic_local_race_scenario(ClassicRaceTrack{3}, {7, 9}));
+    state.split_screen = true;
+    state.league_statistics.enabled = true;
+    state.race.riders[0].finished = 1;
+    update_finish(state, content.content);
+    require(state.race.finish_delay == 0, "paired race waits for the second finish");
+    state.race.riders[1].finished = 1;
+    update_finish(state, content.content);
+    require(state.race.finish_delay == 1, "paired finish display begins after both");
+}
 // $81:8709-8718: one rider pass a stunt event, two a race; each lowers both cooldowns by 1.
 void the_cooldowns() {
     const SyntheticStunt stunt;
@@ -358,6 +400,8 @@ int main() {
         the_finish();
         tallies_and_captions();
         the_state();
+        league_state_guards();
+        league_finish_waits_for_both();
         the_finish_sequence();
         the_cooldowns();
         the_score_decides();

@@ -4,19 +4,30 @@ This is the M0 implementation specification. Commands marked implemented in the 
 
 ## Validation by stage
 
-For OPTIONS (R-0072), the current supported Classic pack profile is
-`classic.pal.crawler.tracks.v28` with 466 exact PAL entries. Its 24 additions
+For LEAGUE (R-0073), the current supported Classic pack profile is
+`classic.pal.crawler.tracks.v29` with 475 exact PAL entries. Nine additions hold
+three league text streams and six podium assets. The earlier OPTIONS v28's 24 additions
 hold the OPTIONS and RECORDS menu streams, arrow columns, picker titles, warning and confirmation prompt, rename prompt and keyboard text, league setup data, and RECORDS detail streams. Extract with
-`python3 tools/project.py content pack --rules tests/manifests/content/classic-crawler-tracks-pack.json --out local/classic-pal-crawler-tracks-v28.pack`.
+`python3 tools/project.py content pack --rules tests/manifests/content/classic-crawler-tracks-pack.json --out local/classic-pal-crawler-tracks-v29.pack`.
 The native `front_end_runner --content-pack PACK --frames N --inputs FILE`
 accepts both SNES pad words in each `frame pad1 pad2` row, and `--picture FRAME OUT.ppm`
 retains a comparison frame. Split DRAGSTER native save states use
 `URDG000H/I` when both riders are human. The v26 command examples below are
 historical task records and require their matching pack profile.
 For a live hidden smoke replay, the app's `--front-end-inputs FILE` uses the
-same rows through 2P/VS setup and, in those two modes, the race. Race rows use
+same rows through 2P/VS/LEAGUE setup and, in those modes, the race. Race rows use
 the PAL frame label including the measured loading interval; the app skips that
 black loading interval when entering the native race.
+
+LEAGUE's opt-in `URLG0001` wrapper retains the existing race payload and appends
+the pairing, second camera, wrapping trick/wipeout counters, opponent tally points
+and tutorial completion. `tests/manifests/native/league-primary.freeze.json`
+pins private originals and the compared record ranges/pictures. Run main's retained
+`local/evidence/league/frozen-gates.py REPORT.json` from the task checkout after
+building app-debug on clean source. The script fails on missing or changed references,
+state differences, return timing, picture limits, or dirty source. Its claims are a
+six-slot league projection and the listed pictures; unmatched retained animation,
+palette and finish pictures remain outside pixel-exact acceptance.
 
 For SPLIT-SCREEN-RACE (R-0069), `front_end_runner` also accepts
 `--human-after FRAME` as a bounded laboratory intervention: from that first

@@ -65,6 +65,12 @@ std::uint8_t& record_byte(unirally::OnePlayerRecords& records, std::uint32_t off
         return records.medals[offset - 0x069c];
     if (offset >= 0x10d3 && offset < 0x10d3 + records.tour_levels.size())
         return records.tour_levels[offset - 0x10d3];
+    if (offset >= 0x0678 && offset < 0x067e) return records.league_pair_cursor[offset - 0x0678];
+    if (offset >= 0x067e && offset < 0x0684) return records.league_tracks[offset - 0x067e];
+    if (offset >= 0x05e8 && offset < 0x0618) {
+        const auto index = offset - 0x05e8;
+        return records.league_pairings[index / 8][index % 8];
+    }
     constexpr std::array<std::uint32_t, 3> holders{0x0550, 0x0582, 0x05b4};
     for (std::size_t rank = 0; rank < holders.size(); ++rank)
         if (offset >= holders[rank] && offset < holders[rank] + 50)
@@ -87,11 +93,10 @@ void set_record_byte(unirally::OnePlayerRecords& records, std::uint32_t offset, 
     }
     if (offset >= 0x02c0 && offset < 0x02c0 + 32 * records.league_scores.size()) {
         const auto index = offset - 0x02c0;
-        if (index % 4 >= 2) {
-            write_word(records.league_scores[index / 32][(index % 32) / 4],
-                       0x02c0 + (index & ~3U) + 2);
-            return;
-        }
+        auto& value = index % 4 >= 2 ? records.league_scores[index / 32][(index % 32) / 4]
+                                     : records.league_played[index / 32][(index % 32) / 4];
+        write_word(value, offset & ~1U);
+        return;
     }
     if (offset >= 0x0829 && offset < 0x0829 + records.best.size() * 2) {
         const auto index = offset - 0x0829;
@@ -226,8 +231,18 @@ void write_records(const std::filesystem::path& path, const unirally::OnePlayerR
         put_word(0x02b2 + 2 * slot, records.league_members[slot]);
     put_word(0x02be, records.active_league_members);
     for (std::size_t slot = 0; slot < records.league_scores.size(); ++slot)
-        for (std::size_t row = 0; row < records.league_scores[slot].size(); ++row)
+        for (std::size_t row = 0; row < records.league_scores[slot].size(); ++row) {
+            put_word(0x02c0 + 32 * slot + 4 * row, records.league_played[slot][row]);
             put_word(0x02c0 + 32 * slot + 4 * row + 2, records.league_scores[slot][row]);
+            image[0x05e8 + 8 * slot + row] = records.league_pairings[slot][row];
+            put_word(0x0618 + 16 * slot + 2 * row, records.league_event_totals[slot][row]);
+        }
+    for (std::size_t slot = 0; slot < records.league_members.size(); ++slot) {
+        image[0x0678 + slot] = records.league_pair_cursor[slot];
+        image[0x067e + slot] = records.league_tracks[slot];
+        put_word(0x0684 + 4 * slot, records.league_best[slot]);
+        put_word(0x0686 + 4 * slot, records.league_best_holder[slot]);
+    }
     for (std::size_t k = 0; k < records.tour_levels.size(); ++k)
         image[0x10d3 + k] = records.tour_levels[k];
     for (std::size_t k = 0; k < records.medals.size(); ++k) image[0x069c + k] = records.medals[k];
@@ -245,7 +260,8 @@ void write_records(const std::filesystem::path& path, const unirally::OnePlayerR
         for (std::size_t k = 0; k < 4; ++k)
             put_word(0x0230 + 8 * rider + 2 * k, records.statistics[rider][k]);
     put_word(0x0742, static_cast<std::uint16_t>((records.race_lost ? 0x1000 : 0)
-                                                | (records.league_naming ? 0x0002 : 0)));
+                                                | (records.league_naming ? 0x0002 : 0)
+                                                | (records.league_cycle_complete ? 0x2000 : 0)));
     put_word(0x10a9, records.player_wins);
     put_word(0x10ab, records.opponent_wins);
     put_word(0x1073, records.tries);
@@ -373,16 +389,21 @@ std::string start_race(RaceBetweenMenus& race, const unirally::ClassicContentPac
         race.history = {};
         return {};
     }
-    const bool local = front_end.mode == unirally::FrontEndMode::two_player
-                    || front_end.mode == unirally::FrontEndMode::versus;
-    const auto scenario = local ? unirally::classic_local_race_scenario(
-                                      unirally::ClassicRaceTrack{front_end.tour_menu.track},
-                                      {front_end.rider_menu.rider, front_end.second_rider})
-                                : unirally::one_player_race_scenario(front_end);
+    const bool local =
+        front_end.mode == unirally::FrontEndMode::two_player
+        || front_end.mode == unirally::FrontEndMode::versus
+        || (front_end.mode == unirally::FrontEndMode::league && front_end.second_rider < 16);
+    const auto scenario =
+        local ? unirally::classic_local_race_scenario(
+                    unirally::ClassicRaceTrack{front_end.tour_menu.track},
+                    {front_end.rider_menu.rider, front_end.second_rider},
+                    ((front_end.records.tutorial_bits >> front_end.rider_menu.rider) & 1U) == 0)
+              : unirally::one_player_race_scenario(front_end);
     const auto loading_frames = unirally::race_loading_frames(front_end);
     if (loading_frames == 0 && initialization == 0) return "its loading time is not known";
     race.content = unirally::classic_race_content(pack, scenario.track);
     race.state = unirally::classic_race_start(*race.content, scenario);
+    race.state.league_statistics.enabled = front_end.mode == unirally::FrontEndMode::league;
     if (local) unirally::initialize_split_cameras(race.state);
     if (local) {
         race.presentation = unirally::classic_race_presentation_content(pack, scenario);
@@ -432,6 +453,13 @@ void write_race_state(std::ofstream& out, std::uint32_t frame,
 // Check both local save layouts, the AI guard and the frame after restoration.
 void check_local_restore(const unirally::ZoomZooState& race_state,
                          std::optional<unirally::ZoomZooState>& restored) {
+    if (race_state.league_statistics.enabled) {
+        const auto saved = unirally::serialize_zoom_zoo(race_state);
+        restored = unirally::deserialize_zoom_zoo(saved);
+        if (unirally::serialize_zoom_zoo(*restored) != saved)
+            throw std::runtime_error("league save failed round-trip");
+        return;
+    }
     const auto saved = unirally::serialize_zoom_zoo(race_state);
     if (saved.size() != 784 || saved[7] != 'H')
         throw std::runtime_error("local DRAGSTER save is not layout H");
@@ -478,9 +506,12 @@ void update_local_race(const Options& options, const unirally::ClassicContentPac
     const auto previous = race.state;
     const auto over = unirally::update_race_for_menus(race.state, race_buttons(pads.one),
                                                       race_buttons(pads.two), *race.content);
-    const bool local = front_end.mode == unirally::FrontEndMode::two_player
-                    || front_end.mode == unirally::FrontEndMode::versus;
-    if (local && options.restore_check == frame) {
+    const bool local =
+        front_end.mode == unirally::FrontEndMode::two_player
+        || front_end.mode == unirally::FrontEndMode::versus
+        || (front_end.mode == unirally::FrontEndMode::league && front_end.second_rider < 16);
+    if ((local || front_end.mode == unirally::FrontEndMode::league)
+        && options.restore_check == frame) {
         check_local_restore(race.state, restored_local);
     } else if (restored_local) {
         (void)unirally::update_race_for_menus(*restored_local, race_buttons(pads.one),
@@ -549,7 +580,17 @@ int main(int argc, char** argv) try {
                 write_race_state(race_timeline, frame, race.state);
                 continue;
             }
-            if (frame <= race.initialization_frame) continue;
+            if (frame <= race.initialization_frame) {
+                // The content load is forced blank; retain requested pictures instead of
+                // silently omitting them from a fixed-frame differential capture (R-0073).
+                if (const auto picture = options.pictures.find(frame);
+                    picture != options.pictures.end())
+                    write_ppm(picture->second, unirally::RgbFrame{});
+                if (const auto records = options.records.find(frame);
+                    records != options.records.end())
+                    write_records(records->second, state.records);
+                continue;
+            }
             update_local_race(options, pack, content, state, race, race_timeline, restored_local,
                               races, frame, pads);
         } else if (state.mode_chosen) {
@@ -561,7 +602,15 @@ int main(int argc, char** argv) try {
                 state.reset_upload_delay = options.reset_upload_delays[resets];
             if (reset) ++resets;
         }
-        write_frame_outputs(options, frame, state);
+        if (state.screen != unirally::FrontEndScreen::race) {
+            write_frame_outputs(options, frame, state);
+        } else {
+            if (frame <= race.initialization_frame)
+                if (const auto at = options.pictures.find(frame); at != options.pictures.end())
+                    write_ppm(at->second, unirally::RgbFrame{});
+            if (const auto at = options.records.find(frame); at != options.records.end())
+                write_records(at->second, state.records);
+        }
     }
     // A mode chosen; for 1P the race NOW PLAYING chose.
     if (state.mode_chosen)

@@ -780,9 +780,10 @@ void read_stunt_event(Reader& in, ZoomZooState& state) {
     // The switched-off opponent never moves: no horizontal velocity, and a vertical one only
     // once it has settled, held at 128 ($83:E874).
     const auto& opponent = state.movement.riders[1].motion;
-    refuse_unless(opponent.velocity_x == 0
-                      && (opponent.velocity_y == 0
-                          || (opponent.velocity_y == stunt_settled_fall && stunt.settled[1])),
+    refuse_unless(state.pairing.opponent < rider_characters
+                      || (opponent.velocity_x == 0
+                          && (opponent.velocity_y == 0
+                              || (opponent.velocity_y == stunt_settled_fall && stunt.settled[1]))),
                   "a stunt event's opponent moves");
     refuse_unless(points == state.player_announcements.queue.feature_total,
                   "a stunt event's tallies do not add up to its score");
@@ -792,7 +793,7 @@ void read_stunt_event(Reader& in, ZoomZooState& state) {
 // ($83:9EEB); a running clock reads no later than the header's start (it only counts down); the
 // switched-off opponent stays at its start.
 void check_stunt_content(const ZoomZooState& state, const ZoomZooContent& content) {
-    bool of_tour = false;
+    bool of_tour = state.pairing.opponent < rider_characters && state.stunt.qualifying_score == 0;
     for (std::uint8_t medal = 0; medal < 3; ++medal)
         of_tour = of_tour
                || stunt_qualifying_score(content.qualifying_scores, state.track, medal)
@@ -809,9 +810,11 @@ void check_stunt_content(const ZoomZooState& state, const ZoomZooContent& conten
                   "a stunt event's clock reads later than its start");
     const auto& opponent = state.movement.riders[1].motion;
     refuse_unless(
-        opponent.x == static_cast<std::uint16_t>(content_word(track, opponent_start_x) << 4U)
-            && opponent.y
-                   == static_cast<std::uint16_t>(content_word(track, opponent_start_y) << 4U),
+        state.pairing.opponent < rider_characters
+            || (opponent.x
+                    == static_cast<std::uint16_t>(content_word(track, opponent_start_x) << 4U)
+                && opponent.y
+                       == static_cast<std::uint16_t>(content_word(track, opponent_start_y) << 4U)),
         "a stunt event's opponent left its start");
 }
 
@@ -861,7 +864,38 @@ std::array<std::uint8_t, 8> classic_race_state_magic(ClassicRaceTrack track) {
             static_cast<std::uint8_t>(is_stunt_track(track) ? '7' : '6')};
 }
 
+namespace {
+constexpr std::array<std::uint8_t, 8> league_magic{'U', 'R', 'L', 'G', '0', '0', '0', '1'};
+// An opt-in wrapper retains the established base plus the second camera and league bonus words.
+// Existing race formats are byte-identical when league statistics are disabled (R-0073).
+std::vector<std::uint8_t> serialize_league_race(const ZoomZooState& state) {
+    refuse_unless(state.native_initialization && !state.demo_ai,
+                  "league save requires native human play");
+    auto base = state;
+    base.league_statistics = {};
+    base.split_screen = false;
+    const auto payload = serialize_zoom_zoo(base);
+    std::vector<std::uint8_t> bytes(league_magic.begin(), league_magic.end());
+    put16(bytes, static_cast<std::uint16_t>(payload.size()));
+    put8(bytes, state.pairing.rider);
+    put8(bytes, state.pairing.opponent);
+    put_bool(bytes, state.split_screen);
+    bytes.insert(bytes.end(), payload.begin(), payload.end());
+    const auto& camera = state.race.second_camera;
+    for (const auto word : {camera.x, camera.y, camera.velocity_x, camera.velocity_y,
+                            camera.lookahead, camera.screen_xy})
+        put16(bytes, word);
+    for (const auto& counts : state.league_statistics.tricks)
+        for (const auto count : counts) put8(bytes, count);
+    for (const auto count : state.league_statistics.wipeouts) put16(bytes, count);
+    for (const auto points : state.league_statistics.opponent_points) put16(bytes, points);
+    put_bool(bytes, state.league_statistics.opponent_hints_over);
+    return bytes;
+}
+} // namespace
+
 std::vector<std::uint8_t> serialize_zoom_zoo(const ZoomZooState& state) {
+    if (state.league_statistics.enabled) return serialize_league_race(state);
     refuse_unless(!state.complete_race || state.sustained, "race state requires sustained prefix");
     auto bytes = serialize_movement_state(state.movement);
     refuse_unless(bytes.size() == movement_prefix_size, "ZOOM ZOO finish state is unsupported");
@@ -1097,13 +1131,57 @@ ZoomZooState deserialize_race(std::span<const std::uint8_t> bytes,
 }
 } // namespace
 
+namespace {
+std::optional<ZoomZooState> deserialize_league_race(std::span<const std::uint8_t> bytes) {
+    if (bytes.size() < league_magic.size()
+        || !std::equal(league_magic.begin(), league_magic.end(), bytes.begin()))
+        return std::nullopt;
+    Reader header{bytes.subspan(8)};
+    const auto size = header.u16();
+    const RacePairing pairing{header.u8(), header.u8()};
+    const auto split = header.flag();
+    refuse_unless(size <= 1006 && size >= 742 && bytes.size() == 13U + size + 97U,
+                  "league race wrapper width differs");
+    auto state = deserialize_race(bytes.subspan(13, size), pairing, true, {});
+    refuse_unless(state.native_initialization && !state.demo_ai && pairing.rider < rider_characters
+                      && split == (pairing.opponent < rider_characters)
+                      && pairing.rider != pairing.opponent,
+                  "league race wrapper pairing differs");
+    Reader trailer{bytes.subspan(13U + size)};
+    auto& camera = state.race.second_camera;
+    for (auto* word : {&camera.x, &camera.y, &camera.velocity_x, &camera.velocity_y,
+                       &camera.lookahead, &camera.screen_xy})
+        *word = trailer.u16();
+    refuse_unless(
+        !split
+            || ((state.track != ClassicRaceTrack::ZoomZoo || camera.x <= zoom_zoo_camera_x_limit)
+                && std::abs(static_cast<std::int16_t>(camera.velocity_x)) <= fastest_camera
+                && std::abs(static_cast<std::int16_t>(camera.velocity_y)) <= fastest_camera),
+        "league second camera state invalid");
+    state.split_screen = split;
+    state.league_statistics.enabled = true;
+    for (auto& counts : state.league_statistics.tricks)
+        for (auto& count : counts) count = trailer.u8();
+    for (auto& count : state.league_statistics.wipeouts) count = trailer.u16();
+    for (auto& points : state.league_statistics.opponent_points) points = trailer.u16();
+    state.league_statistics.opponent_hints_over = trailer.flag();
+    trailer.require_end();
+    return state;
+}
+} // namespace
+
 ZoomZooState deserialize_zoom_zoo(std::span<const std::uint8_t> bytes) {
+    if (const auto league = deserialize_league_race(bytes)) return *league;
     return deserialize_race(bytes, std::nullopt, true, {});
 }
 
 ZoomZooState deserialize_zoom_zoo(std::span<const std::uint8_t> bytes, RacePairing pairing,
                                   bool tutorial_hints,
                                   std::span<const std::uint8_t> opponent_catch_up) {
+    if (const auto league = deserialize_league_race(bytes)) {
+        refuse_unless(league->pairing == pairing, "league pairing differs from caller");
+        return *league;
+    }
     return deserialize_race(bytes, pairing, tutorial_hints, opponent_catch_up);
 }
 

@@ -324,7 +324,8 @@ void show_hunter_message(ZoomZooState& state) {
 
 // The player's reward: as the opponent's, but half the reward word goes to the vertical
 // boost ($81:C169). Returns the weight it added to the score, 0 for none.
-std::uint8_t reward_player(ZoomZooState& state, std::uint8_t event, const MovementContent& content) {
+std::uint8_t reward_player(ZoomZooState& state, std::uint8_t event,
+                           const MovementContent& content) {
     auto& queue = state.player_announcements.queue;
     require(event <= last_learned_event, "player reward class is outside learned inventory");
     auto& weight =
@@ -368,6 +369,8 @@ void show_next_player_announcement(ZoomZooState& state, const MovementContent& c
     }
     queue.read_cursor = slot;
     const auto event = queue.entries[slot];
+    if (state.league_statistics.enabled && event == announcement::wipeout)
+        ++state.league_statistics.wipeouts[0];
     if (hunter && event) {
         state.hunter.shown = 1;
         state.hunter.caption = canonical_caption(captions, event);
@@ -376,6 +379,10 @@ void show_next_player_announcement(ZoomZooState& state, const MovementContent& c
             "player announcement event is outside static inventory");
     if (event < announcement::first_voice && content.rotation_class[event - 1] != no_reward_class) {
         const auto paid = reward_player(state, event, content);
+        if (state.league_statistics.enabled) {
+            const auto column = content.rotation_class[event - 1] / 2U;
+            ++state.league_statistics.tricks[0].at(column);
+        }
         // The original tallies every race's tricks; only a stunt event's result reads them.
         if (scenario.stunt_event)
             tally_stunt_trick(state.stunt, content.rotation_class[event - 1], paid);
@@ -395,7 +402,7 @@ void push_front_player_announcement(ZoomZooState& state, unsigned event) {
 }
 
 void lower_announcement_cooldowns(ZoomZooState& state, const ClassicRaceScenario& scenario) {
-    const auto passes = rider_passes(scenario);
+    const auto passes = rider_passes(scenario, state.split_screen);
     const auto lower = [passes](std::uint16_t& cooldown) {
         cooldown = cooldown > passes ? static_cast<std::uint16_t>(cooldown - passes) : 0;
     };

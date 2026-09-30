@@ -1,5 +1,7 @@
 # Next session
 
+**30 September 2026 UTC: LEAGUE is reviewed and integrated by [PR #48](https://github.com/malmazuke/unirally-reconstruction/pull/48).** The native first CRAWLER tour matches five played totals and scored continuation. Six frozen schedules pass 100 exact league projections and 59 pictures (56 exact, three frozen 14-pixel residuals); eleven earlier race contracts, both v1 presentation contracts and 542 synthetic checks pass on the recorded implementations. Fresh tier-1 review accepts `fcabf53` and closes the live-input evidence finding. The visible desktop run completes five events with no pose fallbacks; normal sampled B input separately cancels the demo. Hosted macOS/Ubuntu checks pass on the implementation; local sanitizer execution times out. [LEAGUE](LEAGUE.md) and R-0073 define the domain. Main `artifacts/league-integration/closeout.json` holds final-tip checks, merge, synchronized main and cleanup. Weekly usage last 10% from 0% startup, boundary 20%, no reset/spending. Next coverage outcome: STUNT-EVENTS for the four stunt tracks, using paired BOWL evidence here only as a starting domain.
+
 **Status on 30 September 2026 UTC (OPTIONS validated, PR #46 integration):**
 [OPTIONS](OPTIONS.md) has a validated native source candidate at `7d13924`;
 the independent tier-1 review accepted the preceding behavior head.

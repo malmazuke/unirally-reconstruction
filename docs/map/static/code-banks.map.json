@@ -1287,6 +1287,9 @@
    "mode_at_entry": [
     "NMX"
    ],
+   "native": [
+    "src/core/league_menu.cpp:reorder_league"
+   ],
    "observed_entries": {},
    "start": "$80:AD47",
    "static_entries": {
@@ -2160,7 +2163,7 @@
     "src/core/front_end.cpp:menu_objects, menu_objects_high, menu_map, menu_bg2_tiles, menu_bg1_tiles, menu_bg1_tiles_high",
     "src/core/front_end.cpp:waits_for_frame",
     "src/core/front_end_screens.hpp:load_main_menu_screen",
-    "src/core/front_end_screens.hpp:restore_menu_screen",
+    "src/core/front_end_screens.hpp:restore_menus",
     "src/core/front_end_screens.hpp:set_menu_registers",
     "src/core/front_end_screens.hpp:upload_last_frame, menu_screen_frame, restore_frame",
     "src/core/race_result.cpp:objects_frame, tiles_frame, palette_low_frame, palette_high_frame",
@@ -2560,6 +2563,9 @@
    "mode_at_entry": [
     "NMX"
    ],
+   "native": [
+    "src/core/league_menu.cpp:standings_order"
+   ],
    "observed_entries": {},
    "start": "$80:EFD4",
    "static_entries": {
@@ -2834,6 +2840,7 @@
     "NMX"
    ],
    "native": [
+    "src/core/league_menu.cpp:record_league_result",
     "src/core/race_progress.cpp:graph_update, totals_update, dragster_totals_update",
     "src/core/race_progress.cpp:result_fields",
     "src/core/stunt_result.cpp:after_tally_frame"
@@ -10607,6 +10614,9 @@
    "mode_at_entry": [
     "NMX"
    ],
+   "native": [
+    "src/core/league_completion.cpp:league_podium_frame"
+   ],
    "observed_entries": {},
    "start": "$82:DF06",
    "static_entries": {
@@ -10624,6 +10634,10 @@
    "mode_at_entry": [
     "NmX"
    ],
+   "native": [
+    "src/core/league_completion.cpp:league_podium_frame",
+    "src/core/league_completion.cpp:setup_podium"
+   ],
    "observed_entries": {},
    "start": "$82:DF9E",
    "static_entries": {
@@ -10640,6 +10654,9 @@
    "end": "$82:E06E",
    "mode_at_entry": [
     "NmX"
+   ],
+   "native": [
+    "src/core/league_completion.cpp:setup_podium"
    ],
    "observed_entries": {},
    "start": "$82:DFF4",
@@ -10674,6 +10691,9 @@
    "end": "$82:E12A",
    "mode_at_entry": [
     "NmX"
+   ],
+   "native": [
+    "src/core/league_completion.cpp:setup_podium"
    ],
    "observed_entries": {},
    "start": "$82:E103",
@@ -11552,6 +11572,9 @@
    "mode_at_entry": [
     "NmX"
    ],
+   "native": [
+    "src/core/league_menu.cpp:league_members"
+   ],
    "observed_entries": {},
    "start": "$83:963C",
    "static_entries": {
@@ -12108,7 +12131,7 @@
     "src/core/award.cpp:(file)",
     "src/core/award.cpp:exit_blank_frame, menus_frame, exit_fade_in_frame, pick_tour_frame",
     "src/core/front_end.cpp:restore_menu_screen",
-    "src/core/front_end_screens.hpp:restore_menu_screen",
+    "src/core/front_end_screens.hpp:restore_menus",
     "src/core/front_end_screens.hpp:set_menu_registers",
     "src/core/front_end_screens.hpp:way_back_frame"
    ],
@@ -13680,6 +13703,7 @@
     "NMX"
    ],
    "native": [
+    "src/core/race_progress.cpp:update_finish",
     "src/core/stunt_event.hpp:update_stunt_finish"
    ],
    "observed_entries": {},
@@ -13700,6 +13724,7 @@
     "NMX"
    ],
    "native": [
+    "src/core/race_progress.cpp:update_finish",
     "src/core/race_state_io.cpp:read_stunt_event",
     "src/core/race_state_io.cpp:stunt_settled_fall",
     "src/core/race_windows.cpp:ClassicWindowPointer::observe_update",
@@ -13729,6 +13754,7 @@
    ],
    "native": [
     "src/core/movement.hpp:finish_speed_toward_zero",
+    "src/core/presentation.cpp:dim_finished_league_views",
     "src/core/race_progress.cpp:classic_race_player_won",
     "src/core/race_progress.cpp:finish_announcement",
     "src/core/race_progress.cpp:finish_rider",
@@ -13808,6 +13834,7 @@
    ],
    "native": [
     "src/core/movement.cpp:update_movement",
+    "src/core/presentation.cpp:dim_finished_league_views",
     "src/core/race_progress.cpp:classic_race_player_won",
     "src/core/race_progress.cpp:finish_rider",
     "src/core/race_progress.cpp:update_finish",
@@ -14100,6 +14127,7 @@
    ],
    "native": [
     "src/core/content_pack.cpp:zoom_required",
+    "src/core/league_completion.cpp:upload_podium_rider",
     "src/core/rider_object.hpp:compose_rider_object"
    ],
    "observed_entries": {},
@@ -14121,6 +14149,7 @@
    ],
    "native": [
     "src/core/content_pack.cpp:zoom_required",
+    "src/core/league_completion.cpp:upload_podium_rider",
     "src/core/rider_object.cpp:compose_rider_object",
     "src/core/rider_object.hpp:compose_rider_object"
    ],
@@ -14143,6 +14172,7 @@
    ],
    "native": [
     "src/core/content_pack.cpp:zoom_required",
+    "src/core/league_completion.cpp:upload_podium_rider",
     "src/core/rider_object.cpp:compose_rider_object",
     "src/core/rider_object.hpp:RiderTileReference",
     "src/core/rider_object.hpp:compose_rider_object"
@@ -14166,6 +14196,7 @@
    ],
    "native": [
     "src/core/content_pack.cpp:zoom_required",
+    "src/core/league_completion.cpp:upload_podium_rider",
     "src/core/rider_object.hpp:compose_rider_object"
    ],
    "observed_entries": {},
@@ -14227,6 +14258,9 @@
    "end": "$83:F793",
    "mode_at_entry": [
     "Nmx"
+   ],
+   "native": [
+    "src/core/race_update.cpp:run_pause_menu"
    ],
    "observed_entries": {},
    "start": "$83:F63E",
@@ -14434,19 +14468,19 @@
    "call returns in the calling mode": 1262
   },
   "bytes": 131072,
-  "cited_addresses": 1478,
+  "cited_addresses": 1503,
   "cited_by_class": {
    "data": 25,
-   "inferred": 242,
-   "observed": 926,
-   "unknown": 285
+   "inferred": 247,
+   "observed": 933,
+   "unknown": 298
   },
   "cited_by_position": {
    "dat": 25,
-   "loc": 843,
-   "mid": 18,
-   "sub": 307,
-   "unk": 285
+   "loc": 847,
+   "mid": 19,
+   "sub": 314,
+   "unk": 298
   },
   "conflicts": 0,
   "data": 92,
@@ -14465,9 +14499,9 @@
   "jump_tables": 2,
   "mode_ambiguities": 7,
   "observed": 41778,
-  "routine_bytes_cited_by_native_code": 48895,
+  "routine_bytes_cited_by_native_code": 49945,
   "routines": 636,
-  "routines_cited_by_native_code": 375,
+  "routines_cited_by_native_code": 383,
   "unknown": 52881,
   "unknown_share": 0.4035
  }

@@ -157,9 +157,9 @@ void league_slots_entry_frame(FrontEndState& state, const FrontEndContent& conte
         return;
     }
     if (!slide_frame(state, content)) return;
-    state.menu.selection = 0;
+    state.menu.selection = state.league.slot;
     state.arrow.target_x = 0x0100;
-    state.arrow.target_y = first_row;
+    state.arrow.target_y = static_cast<std::uint16_t>(first_row + state.league.slot * row_step);
     state.latches = {};
     state.screen = FrontEndScreen::league_slots;
 }
@@ -170,11 +170,18 @@ void league_slots_frame(FrontEndState& state, const FrontEndContent& content, Fr
     move_choice(state, columns, pads, 6);
     const auto pad = static_cast<std::uint16_t>(pads.one | pads.two);
     if (pad & back_buttons) {
-        return_to_options_menu(state, content);
+        if (state.mode == FrontEndMode::league)
+            return_to_main(state, content);
+        else
+            return_to_options_menu(state, content);
         return;
     }
     if (!(pad & choose_buttons)) return;
     state.league.slot = state.menu.selection;
+    if (state.mode == FrontEndMode::league) {
+        choose_league_slot(state, content);
+        return;
+    }
     state.text.words.fill(cleared_text);
     TextVariables variables;
     variables.word = [&](std::uint16_t address) -> std::uint16_t {
@@ -966,6 +973,9 @@ void enter_league_editor(FrontEndState& state, const FrontEndContent& content) {
     state.keyboard = {};
     state.keyboard.scratch = {0xf9, 0x07, 0xfe, 0x1b, 0x0d, 0x58,
                               0xfb, 0xff, 0xfe, 0x5f, 0xff, 0xff};
+    // $80:9E3C-9E54; R-0073: retain the last marker's column/row, including bytes after FF FF.
+    state.keyboard.scratch[3] = state.league.marker_column;
+    state.keyboard.scratch[4] = state.league.marker_row;
     state.league.editor_active = true;
     state.rider_menu.rider = 0xff;
     state.menu.selection = 0;

@@ -45,6 +45,9 @@ std::span<const std::uint8_t> tour_text(const FrontEndContent& content, TourText
 }
 
 std::uint8_t tour_level(const FrontEndState& state) { // $83:9F14 in 1P
+    if (state.mode == FrontEndMode::league)
+        return *std::max_element(state.records.tour_levels.begin(),
+                                 state.records.tour_levels.end()); // $83:9F30; R-0073
     return state.records.tour_levels[state.rider_menu.rider & 0x0fU];
 }
 
@@ -94,6 +97,10 @@ void print_tour_menu(FrontEndState& state, const FrontEndContent& content) {
 // $80:9782-97D2: a medal beside each badge, in its colours; none without a medal. A hidden entry
 // keeps the attribute it had.
 void lay_out_medals(FrontEndState& state, const FrontEndContent& content) {
+    if (state.mode == FrontEndMode::league) {
+        high_bits(state, 0) = high_bits(state, 4) = high_bits(state, 8) = four_hidden;
+        return;
+    }
     const auto rider = state.rider_menu.rider;
     for (unsigned tour = tours - 1; tour-- > 0;) {
         if (tour == hunter && tour_level(state) < 3) {
@@ -321,6 +328,21 @@ void tour_menu_frame(FrontEndState& state, const FrontEndContent& content, Front
         return;
     }
     // The handler tests Y and X again after a choice (`$80:BC12`), so back wins.
+    if (state.mode == FrontEndMode::league) {
+        if (back) {
+            state.league.after_podium = false;
+            enter_league_slots(state, content);
+        } else {
+            state.records.league_tracks[state.league.slot] =
+                static_cast<std::uint8_t>(menu.tour * tracks_per_tour);
+            if (state.league.after_podium) {
+                state.league.after_podium = false;
+                choose_league_pair(state);
+            } else
+                enter_league_table(state, content);
+        }
+        return;
+    }
     if (back) {
         menu.back = true;
         return_to_rider_menu(state);

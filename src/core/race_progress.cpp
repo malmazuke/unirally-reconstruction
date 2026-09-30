@@ -54,7 +54,10 @@ std::uint8_t finish_announcement(const ZoomZooState& state, unsigned index) {
     if (classic_race_scenario(state.track).stunt_event) {
         const auto score = index == 0 ? state.player_announcements.queue.feature_total // $77:07BB
                                       : state.movement.rewards.feature_total;          // $77:0825
-        return stunt_finish_announcement(score, state.stunt.qualifying_score);
+        const auto other = index == 0 ? state.movement.rewards.feature_total
+                                      : state.player_announcements.queue.feature_total;
+        return stunt_finish_announcement(score,
+                                         state.split_screen ? other : state.stunt.qualifying_score);
     }
     const auto own = state.race.total_times[index], other = state.race.total_times[1 - index];
     if (own == other) return announcement::draw;
@@ -196,7 +199,12 @@ void pass_checkpoint(ZoomZooState& state, unsigned index, unsigned checkpoint) {
 void update_finish(ZoomZooState& state, const ZoomZooContent& content) {
     // A stunt event first waits for both riders to stand and its queues to empty (R-0066).
     if (classic_race_scenario(state.track).stunt_event && !update_stunt_finish(state)) return;
-    if (state.race.riders[0].finished) {
+    // $83:E7C3-E7EA; R-0073: the split display waits for both riders. The league
+    // opt-in preserves earlier serialized one-player and local acceptance domains.
+    const bool finish_display_ready = state.race.riders[0].finished
+                                   && (!(state.league_statistics.enabled && state.split_screen)
+                                       || state.race.riders[1].finished);
+    if (finish_display_ready) {
         if (state.race.finish_delay == finish_display_updates)
             throw std::invalid_argument("race result loading outside frozen finish display");
         ++state.race.finish_delay;
@@ -253,7 +261,9 @@ ZoomZooResult result_fields(const ZoomZooRaceState& race, unsigned updates, bool
 bool classic_race_player_won(const ZoomZooState& state) {
     // A stunt event: the score against the qualifying score, unsigned ($83:88E1-88F6).
     if (classic_race_scenario(state.track).stunt_event)
-        return state.player_announcements.queue.feature_total >= state.stunt.qualifying_score;
+        return state.player_announcements.queue.feature_total
+            >= (state.split_screen ? state.movement.rewards.feature_total
+                                   : state.stunt.qualifying_score);
     // Finish order, as $83:E8E0-EC13 selects the finish pose: an equal time means both
     // crossed on one update, and the player is processed first.
     const auto own = state.race.total_times[0], other = state.race.total_times[1];

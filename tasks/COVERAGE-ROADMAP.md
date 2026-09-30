@@ -47,7 +47,7 @@ original does that native does not, from the code and from new captures, and ord
 | 0 | `$80:BB9C` | 1P | PICK A PLAYER (16 riders), then tour, track, race |
 | 1 | `$80:BCBF` | 2P | PICK A PLAYER |
 | 2 | `$80:BF49` | VS | PICK PLAYER ONE |
-| 3 | `$80:BDD4` | LEAGUE | six players, ONE to SIX: DEFINE ME |
+| 3 | `$80:BDD4` | LEAGUE | six saved league slots, ONE to SIX: DEFINE ME |
 | 4 | `$80:B626` | OPTIONS | RECORDS, DEFINE PLAYER, RENAME PLAYER, DEFINE LEAGUE, MAIN MENU |
 | 5 | `$80:93FB` | (idle 480 frames) | the demo: a split-screen race of two computer riders (AMY and ALICE) |
 
@@ -127,8 +127,9 @@ In order; each becomes ready when the one before it is integrated, unless noted.
    through their measured race, result and return paths. Tier-1 review and final
    source checks accepted on PR #45; its task handoff names the integration closeout.
 8. [OPTIONS](OPTIONS.md): the menu, records and editor outcome is validated on PR #46
-   within R-0072's tested domain. LEAGUE is next after integration; it adds the
-   six-player tournament state and played scoring, so capture and implement it separately.
+   within R-0072's tested domain. [LEAGUE](LEAGUE.md) adds the six saved slots,
+   two-to-eight-human pairing and played scoring, reviewed and integrated by PR #48
+   within R-0073's first CRAWLER tour and continuation domain.
 9. STUNT-EVENTS: the four stunt tracks' rules and scoring.
 10. AUDIO-DECISION, then audio tasks.
 

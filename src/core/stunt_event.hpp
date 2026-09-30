@@ -13,7 +13,7 @@ namespace unirally {
 // (contact) and $82:8EAB-8EB5 (the rider update) skip the opponent while `$0DE1` (a second
 // human) and the AI flag `$0C6D` are both clear: in a stunt event, whose setup clears the flag
 // ($83:CBD8). Its finish and its announcement queue still run.
-unsigned rider_passes(const ClassicRaceScenario& scenario);
+unsigned rider_passes(const ClassicRaceScenario& scenario, bool two_human = false);
 // $81:C7CE-C867, the race clock of a stunt event: once `running` (the start countdown below 68,
 // as a race's clock) it counts down a tenth every five updates. The tick after 0:00.0 stops it;
 // from then on every update finishes each rider that can finish (see stunt_rider_can_finish).

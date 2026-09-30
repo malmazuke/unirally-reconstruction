@@ -132,8 +132,10 @@ public:
   // The front end's screen now, and the rider's medal on the tour chosen last.
   unsigned screen() const { return static_cast<unsigned>(state_.screen); }
   bool demo_race() const { return state_.mode == FrontEndMode::demo; }
+  bool league_race() const { return state_.mode == FrontEndMode::league; }
   bool local_race() const {
-    return state_.mode == FrontEndMode::two_player || state_.mode == FrontEndMode::versus;
+    return state_.mode == FrontEndMode::two_player || state_.mode == FrontEndMode::versus
+           || (state_.mode == FrontEndMode::league && state_.second_rider < 16);
   }
   unsigned tour_medal() const {
     return state_.records.medals[state_.tour_menu.tour * 16U + state_.rider_menu.rider];

@@ -24,11 +24,17 @@ STUNT_RESULT_ENTRIES = len(front_end_rules.STUNT_RESULT_ASSETS) + len(front_end_
 NEON_ENTRIES = 4
 LOCAL_MODE_ENTRIES = len(front_end_rules.LOCAL_MODE_TABLES)
 OPTIONS_ENTRIES = len(front_end_rules.OPTIONS_TABLES)
+LEAGUE_ENTRIES = 9
+
+
+def through_options(rules: dict) -> list[dict]:
+    """The v28 inventory, before v29's three league streams and six podium assets."""
+    return rules["entries"][:-LEAGUE_ENTRIES]
 
 
 def legacy_entries(rules: dict) -> list[dict]:
     """The v10-v26 inventory, excluding v27 entries added after NEON."""
-    return rules["entries"][:-(LOCAL_MODE_ENTRIES + OPTIONS_ENTRIES)]
+    return through_options(rules)[:-(LOCAL_MODE_ENTRIES + OPTIONS_ENTRIES)]
 
 
 class LocalModeEntryTests(unittest.TestCase):
@@ -38,7 +44,7 @@ class LocalModeEntryTests(unittest.TestCase):
         import re
         rules = json.loads((ROOT / "tests" / "manifests" / "content" /
                             "classic-crawler-tracks-pack.json").read_text(encoding="utf-8"))
-        added = rules["entries"][-(LOCAL_MODE_ENTRIES + OPTIONS_ENTRIES):-OPTIONS_ENTRIES]
+        added = through_options(rules)[-(LOCAL_MODE_ENTRIES + OPTIONS_ENTRIES):-OPTIONS_ENTRIES]
         self.assertEqual([e["id"] for e in added],
                          [name for name, _, _ in front_end_rules.LOCAL_MODE_TABLES])
         source = (ROOT / "src" / "core" / "content_pack.cpp").read_text(encoding="utf-8")
@@ -55,13 +61,33 @@ class OptionsEntryTests(unittest.TestCase):
         import re
         rules = json.loads((ROOT / "tests" / "manifests" / "content" /
                             "classic-crawler-tracks-pack.json").read_text(encoding="utf-8"))
-        added = rules["entries"][-OPTIONS_ENTRIES:]
+        added = through_options(rules)[-OPTIONS_ENTRIES:]
         self.assertEqual([e["id"] for e in added],
                          [name for name, _, _ in front_end_rules.OPTIONS_TABLES])
         source = (ROOT / "src" / "core" / "content_pack.cpp").read_text(encoding="utf-8")
         table = source[source.index("options_required{{"):]
         table = table[:table.index("}};")]
         compiled = re.findall(r'\{"([^"]+)",\s*(\d+),\s*"([0-9a-f]{64})"\}', table)
+        self.assertEqual(compiled, [(e["id"], str(e["size"]), e["sha256"]) for e in added])
+
+
+class LeagueEntryTests(unittest.TestCase):
+    """v29 pins both the added league inventory and the unchanged v28 prefix."""
+
+    def test_rules_and_compiled_table_agree(self) -> None:
+        import re
+        rules = json.loads((ROOT / "tests" / "manifests" / "content" /
+                            "classic-crawler-tracks-pack.json").read_text(encoding="utf-8"))
+        added = rules["entries"][-LEAGUE_ENTRIES:]
+        self.assertEqual(len(through_options(rules)), 466)
+        self.assertEqual([e["id"] for e in added], [
+            "front-end.league-table-text", "front-end.league-awards-text",
+            "front-end.league-continue-text", *[f"front-end.asset.{asset:03d}"
+                                             for asset in (127, 128, 145, 146, 162, 163)]])
+        source = (ROOT / "src" / "core" / "content_pack.cpp").read_text(encoding="utf-8")
+        table = source[source.index("league_required{{"):]
+        table = table[:table.index("}};")]
+        compiled = re.findall(r'\{"([^\"]+)",\s*(\d+),\s*"([0-9a-f]{64})"\}', table)
         self.assertEqual(compiled, [(e["id"], str(e["size"]), e["sha256"]) for e in added])
 
 
@@ -145,7 +171,7 @@ class PackProfileTests(unittest.TestCase):
             compiled += [(i, int(n), d) for i, n, d in re.findall(r'\{"([^"]+)",\s*(\d+),\s*"([0-9a-f]{64})"\}', table)]
         self.assertEqual(compiled, [(e["id"], e["size"], e["sha256"]) for e in added])
         self.assertIn(hashlib.sha256(rules_path.read_bytes()).hexdigest(), source)
-        self.assertEqual(rules["profile_id"], "classic.pal.crawler.tracks.v28")
+        self.assertEqual(rules["profile_id"], "classic.pal.crawler.tracks.v29")
         ids = {e["id"] for e in added}
         for index in tracks.NEW_RACE_TRACKS + tracks.LOCKED_RACE_TRACKS + tracks.STUNT_TRACKS:
             for part in ("data", "tile-columns", "tile-flags", "bg1-tiles"):

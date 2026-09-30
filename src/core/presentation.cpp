@@ -461,10 +461,10 @@ RaceScroll race_scroll(const ZoomZooState& state, const ClassicRacePresentationC
                             ? static_cast<std::int16_t>(prior.y)
                             : static_cast<std::int16_t>(static_cast<std::uint16_t>(
                                   camera_y - static_cast<std::int16_t>(camera.velocity_y)));
-    const auto origin_x =
-        static_cast<std::uint16_t>(((unsigned(word(track, 3)) << 4) - 256U) & 0xfff0U);
-    const auto origin_y =
-        static_cast<std::uint16_t>(((unsigned(word(track, 5)) << 4) - 256U) & 0xfff0U);
+    const auto origin_x = static_cast<std::uint16_t>(
+        ((unsigned(word(track, second_camera ? 7 : 3)) << 4) - 256U) & 0xfff0U);
+    const auto origin_y = static_cast<std::uint16_t>(
+        ((unsigned(word(track, second_camera ? 9 : 5)) << 4) - 256U) & 0xfff0U);
     scroll.bg_x = static_cast<std::uint16_t>(scroll.background_x - origin_x) >> 1U;
     scroll.bg_y = static_cast<std::uint16_t>(scroll.background_y - origin_y) >> 1U;
     const auto* effects = previous_update ? &previous_update->hunter : nullptr;
@@ -608,7 +608,7 @@ void draw_race_riders(RgbFrame& frame, const ZoomZooState& rider_source,
             // R-0068: a stunt event's setup sets entry 99's ninth x bit (`$15A3` = 0xE5,
             // $82:D789-D797) and the opponent's object writer, part of its skipped update, never
             // clears it, so the opponent stays at the setup's x 0x60 - 256, off the screen.
-            if (rider == 1 && content.scenario.stunt_event) continue;
+            if (rider == 1 && content.scenario.stunt_event && !rider_source.split_screen) continue;
             const auto& source = rider_source.movement.riders[static_cast<std::size_t>(rider)];
             const auto& camera =
                 viewport ? rider_source.race.second_camera : rider_source.race.camera;
@@ -672,6 +672,51 @@ std::optional<unsigned> race_window_member(const ZoomZooState& state,
     return classic_window_table_index(state, content.scenario.initialization_frame + 6U,
                                       history ? history->opponent_finish_frame : std::nullopt,
                                       content.window_transition_member);
+}
+
+// Recover the five-bit channel before the same SNES brightness operation used by CGRAM.
+// channel8 includes the reference core's display gamma, so a linear inverse is incorrect.
+std::uint8_t five_bit_channel(std::uint8_t value) {
+    static const auto inverse = [] {
+        std::array<std::uint8_t, 256> table{};
+        for (unsigned byte = 0; byte < table.size(); ++byte) {
+            int distance = 256;
+            for (unsigned level = 0; level < 32; ++level) {
+                const auto candidate =
+                    std::abs(static_cast<int>(channel8(static_cast<std::uint16_t>(level)))
+                             - static_cast<int>(byte));
+                if (candidate < distance) {
+                    distance = candidate;
+                    table[byte] = static_cast<std::uint8_t>(level);
+                }
+            }
+        }
+        return table;
+    }();
+    return inverse[value];
+}
+
+void dim_finished_league_views(RgbFrame& frame, const ZoomZooState& state,
+                               const ClassicRaceScenario& scenario) {
+    // $83:E8F0/EA82 publish brightness 7 separately for finished split views.
+    // R-0073 neutral STUNT: both bytes are 7 at original frame 21700.
+    if (!state.split_screen || !state.league_statistics.enabled) return;
+    for (unsigned view = 0; view < 2; ++view) {
+        if (!state.race.riders[view].finished
+            || (scenario.stunt_event && !state.stunt.finish_display))
+            continue;
+        for (unsigned y = view * 112; y < (view + 1) * 112; ++y)
+            for (unsigned x = 0; x < 256; ++x) {
+                const auto at = (y * 256 + x) * 3;
+                std::uint16_t word = 0;
+                for (unsigned channel = 0; channel < 3; ++channel)
+                    word = static_cast<std::uint16_t>(
+                        word | (five_bit_channel(frame.pixels[at + channel]) << (channel * 5)));
+                const auto rgb = colour_word_rgb(apply_snes_brightness(word, 7));
+                for (unsigned channel = 0; channel < 3; ++channel)
+                    frame.pixels[at + channel] = rgb[channel];
+            }
+    }
 }
 
 } // namespace
@@ -768,6 +813,7 @@ RgbFrame render_classic_race(const ZoomZooState& state,
     if (state.split_screen)
         for (int y = 111; y <= 112; ++y)
             for (int x = 0; x < 256; ++x) pixel(frame, x, y, {0, 0, 0});
+    dim_finished_league_views(frame, rider_source, scenario);
     if (state.pause.selection)
         draw_race_pause_menu(frame, state.pause.selection, ui({15, 30, 30}), ink);
     return frame;
