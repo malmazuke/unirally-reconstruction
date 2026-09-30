@@ -130,8 +130,15 @@ In order; each becomes ready when the one before it is integrated, unless noted.
    within R-0072's tested domain. [LEAGUE](LEAGUE.md) adds the six saved slots,
    two-to-eight-human pairing and played scoring, reviewed and integrated by PR #48
    within R-0073's first CRAWLER tour and continuation domain.
-9. STUNT-EVENTS: the four stunt tracks' rules and scoring.
-10. AUDIO-DECISION, then audio tasks.
+9. [STUNT-EVENTS](STUNT-EVENTS.md): fulfilled before the later menu modes by
+   STUNT-EVENT-RACE (#39), STUNT-RESULT (#40) and STUNT-HUD (#42). The four
+   cold-start tracks have seven ridden rule/scoring captures; all nine tour
+   stunt event scenarios are native in the bounded domains of R-0066/67/68.
+   This queue reconciliation does not expand their edge-case acceptance.
+10. [AUDIO-DECISION](AUDIO-DECISION.md): D-0009 defines native command producers,
+    a recovered sound driver/sequencer, identified local score/sample data and
+    an isolated DSP model. [AUDIO-TITLE-MENU](AUDIO-TITLE-MENU.md) is the first
+    implementation outcome: audible title/menu music and navigation effect.
 
 ROLLING-CONTACT (ready) can run at any point; it is race-engine polish.
 
@@ -148,4 +155,6 @@ ROLLING-CONTACT (ready) can run at any point; it is race-engine polish.
 
 ## Handoff
 
-- Exact next experiment/command: FRONT-END-MAIN-MENU.
+- Current next outcome: AUDIO-TITLE-MENU after AUDIO-DECISION integration.
+  The original FRONT-END-MAIN-MENU handoff and inventory above remain the
+  25 September baseline; they are not a current missing-feature inventory.
