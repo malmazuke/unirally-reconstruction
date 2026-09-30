@@ -10944,7 +10944,10 @@
   "comment": "routine start",
   "label": "sub_828000",
   "source_records": [
-   "docs/research/R-0054-boot-title-main-menu.md"
+   "docs/research/R-0054-boot-title-main-menu.md",
+   "docs/research/R-0074-audio-foundation.md",
+   "tasks/AUDIO-DECISION.md",
+   "tasks/AUDIO-TITLE-MENU.md"
   ]
  },
  {
@@ -10956,7 +10959,8 @@
    "src/core/front_end.cpp:return_from_demo"
   ],
   "source_records": [
-   "docs/research/R-0070-attract-demo.md"
+   "docs/research/R-0070-attract-demo.md",
+   "docs/research/R-0074-audio-foundation.md"
   ]
  },
  {
@@ -11011,6 +11015,24 @@
   "label": "loc_828043",
   "source_records": [
    "docs/research/R-0006-observed-code-map.md"
+  ]
+ },
+ {
+  "address": "$82:806D",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82806D",
+  "source_records": [
+   "docs/research/R-0074-audio-foundation.md"
+  ]
+ },
+ {
+  "address": "$82:807E",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_82807E",
+  "source_records": [
+   "docs/research/R-0074-audio-foundation.md"
   ]
  },
  {
@@ -11108,6 +11130,7 @@
   "label": "sub_82812A",
   "source_records": [
    "docs/research/M4-16-persistent-input-ledger.md",
+   "docs/research/R-0074-audio-foundation.md",
    "tasks/M4-16-review.md",
    "tasks/M4-16.md"
   ]
@@ -15505,7 +15528,8 @@
   ],
   "source_records": [
    "docs/research/R-0059-tour-completion.md",
-   "docs/research/R-0062-gold-endings.md"
+   "docs/research/R-0062-gold-endings.md",
+   "tasks/AUDIO-DECISION.md"
   ]
  },
  {

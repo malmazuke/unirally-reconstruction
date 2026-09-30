@@ -1,5 +1,19 @@
 # Next session
 
+**30 September 2026 UTC: [AUDIO-DECISION](https://github.com/malmazuke/unirally-reconstruction/pull/49) defines the next native audio outcome.**
+The stale STUNT-EVENTS queue entry is reconciled: STUNT-EVENT-RACE (#39),
+STUNT-RESULT (#40) and STUNT-HUD (#42) already delivered the nine tour stunt
+scenarios within R-0066/67/68's bounded domain. This adds no stunt accuracy claim.
+[D-0009](../docs/decisions/D-0009-native-audio.md) chooses native sound command producers, a recovered
+C++ driver/sequencer, identified local score/sample data and an isolated DSP
+model. Three cold PAL schedules reproduce 2,000 callback audio frame rows
+exactly; two instrumented schedules preserve their original state/A/V digests
+([R-0074](../docs/research/R-0074-audio-foundation.md)). The app remains silent. Raw DSP PCM/APU observation
+and implementation belong inside the next tier-1 capability,
+[AUDIO-TITLE-MENU](AUDIO-TITLE-MENU.md): audible title/menu music and navigation effect.
+Verify AUDIO-DECISION's PR and main `artifacts/audio-decision-integration/closeout.json`
+then follow that task's first experiment. No reset, spending or milestone tag.
+
 **30 September 2026 UTC: LEAGUE is reviewed and integrated by [PR #48](https://github.com/malmazuke/unirally-reconstruction/pull/48).** The native first CRAWLER tour matches five played totals and scored continuation. Six frozen schedules pass 100 exact league projections and 59 pictures (56 exact, three frozen 14-pixel residuals); eleven earlier race contracts, both v1 presentation contracts and 542 synthetic checks pass on the recorded implementations. Fresh tier-1 review accepts `fcabf53` and closes the live-input evidence finding. The visible desktop run completes five events with no pose fallbacks; normal sampled B input separately cancels the demo. Hosted macOS/Ubuntu checks pass on the implementation; local sanitizer execution times out. [LEAGUE](LEAGUE.md) and R-0073 define the domain. Main `artifacts/league-integration/closeout.json` holds final-tip checks, merge, synchronized main and cleanup. Weekly usage last 10% from 0% startup, boundary 20%, no reset/spending. Next coverage outcome: STUNT-EVENTS for the four stunt tracks, using paired BOWL evidence here only as a starting domain.
 
 **Status on 30 September 2026 UTC (OPTIONS validated, PR #46 integration):**

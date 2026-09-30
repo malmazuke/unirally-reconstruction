@@ -4,6 +4,15 @@ This is the M0 implementation specification. Commands marked implemented in the 
 
 ## Validation by stage
 
+For the upcoming AUDIO-TITLE-MENU, [D-0009](decisions/D-0009-native-audio.md)
+requires a native sound driver/sequencer and isolated DSP model, compared by
+ordered events and raw pre-resampler PCM. [R-0074](research/R-0074-audio-foundation.md)
+establishes only uninterrupted callback hash/count repeatability with the existing
+`reference verify` and CPU `access capture` commands. Raw PCM, APU RAM and DSP-write
+capture interfaces, native audio and device output are not implemented yet.
+These remain coupled prerequisites inside that tier-1 capability task. Existing
+reference restore-audio exclusions and all gameplay gates remain in force.
+
 For LEAGUE (R-0073), the current supported Classic pack profile is
 `classic.pal.crawler.tracks.v29` with 475 exact PAL entries. Nine additions hold
 three league text streams and six podium assets. The earlier OPTIONS v28's 24 additions

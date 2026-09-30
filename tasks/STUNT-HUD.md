@@ -2,7 +2,7 @@
 
 ## Assignment
 
-- Status: **in review**. Queued 27 September 2026 (UTC) by STUNT-EVENT-RACE; claimed 27 September
+- Status: **reviewed and integrated** by [PR #42](https://github.com/malmazuke/unirally-reconstruction/pull/42), merge `490302a`; status reconciled 30 September 2026 without expanding R-0068's domain. Queued 27 September 2026 (UTC) by STUNT-EVENT-RACE; claimed 27 September
   2026 at 09:30Z by the Claude Code desktop session that ran STUNT-RESULT, on `0173cbb`. The
   implementation worker started on STUNT-RESULT's branch while it was in its gates; its commits
   were moved onto this claim.

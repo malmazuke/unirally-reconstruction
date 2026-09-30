@@ -51,6 +51,13 @@ publication, select a source/content license or replace legal review.
 
 ## Architecture to grow from
 
+Audio recovery follows [D-0009](decisions/D-0009-native-audio.md): native command
+producers and a recovered sound driver/sequencer use locally extracted identified
+score/sample data and an isolated DSP hardware model. Device output stays outside
+deterministic musical time. AUDIO-TITLE-MENU is the first queued capability;
+no native audio is implemented by that decision, and the product never executes
+the original 65816 or SPC700 game code.
+
 Use a small deterministic simulation library with a headless runner. A desktop frontend consumes its state. Research tools run the original in a reference emulator through a separate adapter. Keep the emulator integration replaceable.
 
 ```text
