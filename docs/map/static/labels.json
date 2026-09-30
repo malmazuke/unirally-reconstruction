@@ -808,6 +808,18 @@
   ]
  },
  {
+  "address": "$80:8B3F",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_808B3F",
+  "native": [
+   "src/core/league_menu.cpp:print_awards"
+  ],
+  "source_records": [
+   "docs/research/R-0073-league.md"
+  ]
+ },
+ {
   "address": "$80:8C41",
   "class": "observed",
   "comment": "routine start",
@@ -1597,7 +1609,8 @@
    "src/core/text_printer.cpp:print_text"
   ],
   "source_records": [
-   "docs/research/R-0072-options.md"
+   "docs/research/R-0072-options.md",
+   "tasks/LEAGUE.md"
   ]
  },
  {
@@ -1651,6 +1664,21 @@
   ],
   "source_records": [
    "docs/research/R-0072-options.md"
+  ]
+ },
+ {
+  "address": "$80:9E3C",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_809E3C",
+  "native": [
+   "src/core/front_end.hpp:LeagueSetup",
+   "src/core/front_end.hpp:LeagueSetup::marker_column, LeagueSetup::marker_row",
+   "src/core/options_menu.cpp:enter_league_editor",
+   "src/core/rider_menu.cpp:rider_menu_entry_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0073-league.md"
   ]
  },
  {
@@ -1866,6 +1894,30 @@
   ],
   "source_records": [
    "docs/research/R-0072-options.md"
+  ]
+ },
+ {
+  "address": "$80:A5B2",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80A5B2",
+  "native": [
+   "src/core/league_menu.cpp:print_standings"
+  ],
+  "source_records": [
+   "docs/research/R-0073-league.md"
+  ]
+ },
+ {
+  "address": "$80:A68D",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80A68D",
+  "native": [
+   "src/core/content_pack.cpp:league_required"
+  ],
+  "source_records": [
+   "docs/research/R-0073-league.md"
   ]
  },
  {
@@ -2101,10 +2153,25 @@
   ]
  },
  {
+  "address": "$80:AD47",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_80AD47",
+  "native": [
+   "src/core/league_menu.cpp:reorder_league"
+  ],
+  "source_records": [
+   "docs/research/R-0073-league.md"
+  ]
+ },
+ {
   "address": "$80:AD79",
   "class": "observed",
   "comment": "instruction start",
   "label": "loc_80AD79",
+  "native": [
+   "src/core/league_menu.cpp:reorder_league"
+  ],
   "source_records": [
    "docs/research/R-0006-observed-code-map.md"
   ]
@@ -2125,6 +2192,15 @@
   "label": "unk_80AE3F",
   "source_records": [
    "docs/research/R-0071-two-player-versus.md"
+  ]
+ },
+ {
+  "address": "$80:AF54",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80AF54",
+  "source_records": [
+   "docs/research/R-0073-league.md"
   ]
  },
  {
@@ -2881,8 +2957,12 @@
   "class": "unknown",
   "comment": "unknown",
   "label": "unk_80BDD4",
+  "native": [
+   "src/core/league_menu.cpp:(file)"
+  ],
   "source_records": [
-   "tasks/COVERAGE-ROADMAP.md"
+   "tasks/COVERAGE-ROADMAP.md",
+   "tasks/LEAGUE.md"
   ]
  },
  {
@@ -2890,8 +2970,38 @@
   "class": "unknown",
   "comment": "unknown",
   "label": "unk_80BE3F",
+  "native": [
+   "src/core/league_menu.cpp:(file)"
+  ],
   "source_records": [
    "docs/research/R-0057-one-run-result.md"
+  ]
+ },
+ {
+  "address": "$80:BE76",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80BE76",
+  "native": [
+   "src/core/league_completion.cpp:(file)",
+   "src/core/league_menu.cpp:(file)"
+  ],
+  "source_records": [
+   "docs/research/R-0073-league.md"
+  ]
+ },
+ {
+  "address": "$80:BEC6",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80BEC6",
+  "native": [
+   "src/core/front_end.hpp:LeagueSetup::after_podium",
+   "src/core/league_completion.cpp:(file)",
+   "src/core/league_menu.cpp:(file)"
+  ],
+  "source_records": [
+   "docs/research/R-0073-league.md"
   ]
  },
  {
@@ -4080,7 +4190,7 @@
    "src/core/front_end.cpp:menu_objects, menu_objects_high, menu_map, menu_bg2_tiles, menu_bg1_tiles, menu_bg1_tiles_high",
    "src/core/front_end.cpp:waits_for_frame",
    "src/core/front_end_screens.hpp:load_main_menu_screen",
-   "src/core/front_end_screens.hpp:restore_menu_screen",
+   "src/core/front_end_screens.hpp:restore_menus",
    "src/core/front_end_screens.hpp:set_menu_registers",
    "src/core/front_end_screens.hpp:upload_last_frame, menu_screen_frame, restore_frame",
    "src/core/race_result.cpp:objects_frame, tiles_frame, palette_low_frame, palette_high_frame",
@@ -4211,6 +4321,18 @@
   ],
   "source_records": [
    "docs/research/R-0054-boot-title-main-menu.md"
+  ]
+ },
+ {
+  "address": "$80:D3F5",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80D3F5",
+  "native": [
+   "src/core/league_menu.cpp:reset_league"
+  ],
+  "source_records": [
+   "docs/research/R-0073-league.md"
   ]
  },
  {
@@ -5171,12 +5293,23 @@
   "comment": "unknown",
   "label": "unk_80EF89",
   "native": [
-   "src/core/front_end.hpp:OnePlayerRecords::league_scores",
    "src/core/options_menu.cpp:print_group_scores"
   ],
   "source_records": [
    "docs/research/R-0072-options.md",
    "tasks/OPTIONS.md"
+  ]
+ },
+ {
+  "address": "$80:EFD4",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_80EFD4",
+  "native": [
+   "src/core/league_menu.cpp:standings_order"
+  ],
+  "source_records": [
+   "docs/research/R-0073-league.md"
   ]
  },
  {
@@ -5801,7 +5934,8 @@
   "label": "unk_80F669",
   "native": [
    "src/core/front_end.hpp:StuntTally",
-   "src/core/stunt_result.cpp:(file)"
+   "src/core/stunt_result.cpp:(file)",
+   "src/core/stunt_result.cpp:second_tally_pass"
   ],
   "source_records": [
    "docs/research/R-0067-stunt-result.md"
@@ -5815,6 +5949,7 @@
   "native": [
    "src/core/front_end.hpp:StuntTally",
    "src/core/stunt_result.cpp:(file)",
+   "src/core/stunt_result.cpp:second_tally_pass",
    "src/core/stunt_result.cpp:tally_pass"
   ],
   "source_records": [
@@ -5830,6 +5965,7 @@
    "src/core/front_end.hpp:StuntTally",
    "src/core/stunt_result.cpp:(file)",
    "src/core/stunt_result.cpp:first_cell, cell_columns, cell_rows",
+   "src/core/stunt_result.cpp:second_tally_pass",
    "src/core/stunt_result.cpp:tally_pass"
   ],
   "source_records": [
@@ -5843,7 +5979,8 @@
   "label": "unk_80F755",
   "native": [
    "src/core/front_end.hpp:StuntTally",
-   "src/core/stunt_result.cpp:(file)"
+   "src/core/stunt_result.cpp:(file)",
+   "src/core/stunt_result.cpp:second_tally_pass"
   ],
   "source_records": [
    "docs/research/R-0067-stunt-result.md"
@@ -5856,7 +5993,8 @@
   "label": "unk_80F758",
   "native": [
    "src/core/front_end.hpp:StuntTally",
-   "src/core/stunt_result.cpp:(file)"
+   "src/core/stunt_result.cpp:(file)",
+   "src/core/stunt_result.cpp:second_tally_pass"
   ],
   "source_records": [
    "docs/research/R-0067-stunt-result.md"
@@ -5869,7 +6007,8 @@
   "label": "unk_80F75D",
   "native": [
    "src/core/front_end.hpp:StuntTally",
-   "src/core/stunt_result.cpp:(file)"
+   "src/core/stunt_result.cpp:(file)",
+   "src/core/stunt_result.cpp:second_tally_pass"
   ],
   "source_records": [
    "docs/research/R-0067-stunt-result.md"
@@ -5883,6 +6022,7 @@
   "native": [
    "src/core/front_end.hpp:StuntTally",
    "src/core/stunt_result.cpp:(file)",
+   "src/core/stunt_result.cpp:second_tally_pass",
    "src/core/stunt_result.cpp:tally_frame"
   ],
   "source_records": [
@@ -5897,7 +6037,8 @@
   "native": [
    "src/core/front_end.hpp:StuntTally",
    "src/core/stunt_result.cpp:(file)",
-   "src/core/stunt_result.cpp:pass_wait_frames, column_wait_frames"
+   "src/core/stunt_result.cpp:pass_wait_frames, column_wait_frames",
+   "src/core/stunt_result.cpp:second_tally_pass"
   ],
   "source_records": [
    "docs/research/R-0067-stunt-result.md"
@@ -5911,6 +6052,7 @@
   "native": [
    "src/core/front_end.hpp:StuntTally",
    "src/core/stunt_result.cpp:(file)",
+   "src/core/stunt_result.cpp:second_tally_pass",
    "src/core/stunt_result.cpp:tally_pass"
   ],
   "source_records": [
@@ -5925,6 +6067,7 @@
   "native": [
    "src/core/front_end.hpp:StuntTally",
    "src/core/stunt_result.cpp:(file)",
+   "src/core/stunt_result.cpp:second_tally_pass",
    "src/core/stunt_result.cpp:tally_frame"
   ],
   "source_records": [
@@ -5939,6 +6082,7 @@
   "native": [
    "src/core/front_end.hpp:StuntTally",
    "src/core/stunt_result.cpp:(file)",
+   "src/core/stunt_result.cpp:second_tally_pass",
    "src/core/stunt_result.cpp:tally_frame"
   ],
   "source_records": [
@@ -5953,6 +6097,7 @@
   "native": [
    "src/core/front_end.hpp:StuntTally",
    "src/core/stunt_result.cpp:(file)",
+   "src/core/stunt_result.cpp:second_tally_pass",
    "src/core/stunt_result.cpp:tally_frame"
   ],
   "source_records": [
@@ -5967,7 +6112,8 @@
   "native": [
    "src/core/front_end.hpp:FrontEndContent::stunt_result_text, FrontEndContent::stunt_tally_cells",
    "src/core/front_end.hpp:StuntTally",
-   "src/core/stunt_result.cpp:(file)"
+   "src/core/stunt_result.cpp:(file)",
+   "src/core/stunt_result.cpp:second_tally_pass"
   ],
   "source_records": [
    "docs/research/R-0067-stunt-result.md"
@@ -5981,6 +6127,7 @@
   "native": [
    "src/core/front_end.hpp:StuntTally",
    "src/core/stunt_result.cpp:(file)",
+   "src/core/stunt_result.cpp:second_tally_pass",
    "src/core/stunt_result.cpp:tally_frame"
   ],
   "source_records": [
@@ -6022,6 +6169,7 @@
   "comment": "routine start",
   "label": "sub_80F88D",
   "native": [
+   "src/core/league_menu.cpp:record_league_result",
    "src/core/race_progress.cpp:graph_update, totals_update, dragster_totals_update",
    "src/core/race_progress.cpp:result_fields",
    "src/core/stunt_result.cpp:after_tally_frame"
@@ -6030,7 +6178,8 @@
    "docs/research/R-0038-dragster-ordinary-controls.md",
    "docs/research/R-0039-dragster-clock-limit.md",
    "docs/research/R-0057-one-run-result.md",
-   "docs/research/R-0067-stunt-result.md"
+   "docs/research/R-0067-stunt-result.md",
+   "docs/research/R-0073-league.md"
   ]
  },
  {
@@ -6144,6 +6293,39 @@
   "label": "unk_80FBC5",
   "source_records": [
    "docs/research/R-0054-boot-title-main-menu.md"
+  ]
+ },
+ {
+  "address": "$80:FBD5",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80FBD5",
+  "source_records": [
+   "docs/research/R-0073-league.md"
+  ]
+ },
+ {
+  "address": "$80:FC2F",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80FC2F",
+  "native": [
+   "src/core/league_completion.cpp:league_continue_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0073-league.md"
+  ]
+ },
+ {
+  "address": "$80:FC32",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80FC32",
+  "native": [
+   "src/core/league_completion.cpp:league_continue_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0073-league.md"
   ]
  },
  {
@@ -6888,6 +7070,15 @@
    "tasks/M1-03.md",
    "tasks/M4-03.md",
    "tasks/M4-04-review.md"
+  ]
+ },
+ {
+  "address": "$81:8AFB",
+  "class": "observed",
+  "comment": "inside the instruction at $81:8AFA",
+  "label": "mid_818AFB",
+  "source_records": [
+   "docs/research/R-0073-league.md"
   ]
  },
  {
@@ -13900,6 +14091,55 @@
   ]
  },
  {
+  "address": "$82:DF06",
+  "class": "inferred",
+  "comment": "routine start",
+  "label": "sub_82DF06",
+  "native": [
+   "src/core/league_completion.cpp:league_podium_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0073-league.md"
+  ]
+ },
+ {
+  "address": "$82:DF9E",
+  "class": "inferred",
+  "comment": "routine start",
+  "label": "sub_82DF9E",
+  "native": [
+   "src/core/league_completion.cpp:league_podium_frame",
+   "src/core/league_completion.cpp:setup_podium"
+  ],
+  "source_records": [
+   "docs/research/R-0073-league.md"
+  ]
+ },
+ {
+  "address": "$82:DFF4",
+  "class": "inferred",
+  "comment": "routine start",
+  "label": "sub_82DFF4",
+  "native": [
+   "src/core/league_completion.cpp:setup_podium"
+  ],
+  "source_records": [
+   "docs/research/R-0073-league.md"
+  ]
+ },
+ {
+  "address": "$82:E103",
+  "class": "inferred",
+  "comment": "routine start",
+  "label": "sub_82E103",
+  "native": [
+   "src/core/league_completion.cpp:setup_podium"
+  ],
+  "source_records": [
+   "docs/research/R-0073-league.md"
+  ]
+ },
+ {
   "address": "$82:E12B",
   "class": "observed",
   "comment": "routine start",
@@ -14794,6 +15034,32 @@
   ]
  },
  {
+  "address": "$83:958C",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_83958C",
+  "native": [
+   "src/core/league_menu.cpp:choose_league_pair",
+   "src/core/league_menu.cpp:restore_league_pair"
+  ],
+  "source_records": [
+   "docs/research/R-0073-league.md"
+  ]
+ },
+ {
+  "address": "$83:95CA",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_8395CA",
+  "native": [
+   "src/core/league_menu.cpp:choose_league_pair",
+   "src/core/league_menu.cpp:restore_league_pair"
+  ],
+  "source_records": [
+   "docs/research/R-0073-league.md"
+  ]
+ },
+ {
   "address": "$83:961E",
   "class": "observed",
   "comment": "routine start",
@@ -14805,6 +15071,18 @@
   ],
   "source_records": [
    "docs/research/R-0056-tour-track-now-playing.md"
+  ]
+ },
+ {
+  "address": "$83:963C",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_83963C",
+  "native": [
+   "src/core/league_menu.cpp:league_members"
+  ],
+  "source_records": [
+   "docs/research/R-0073-league.md"
   ]
  },
  {
@@ -15074,6 +15352,18 @@
   ]
  },
  {
+  "address": "$83:9F30",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_839F30",
+  "native": [
+   "src/core/tour_menu.cpp:tour_level"
+  ],
+  "source_records": [
+   "docs/research/R-0073-league.md"
+  ]
+ },
+ {
   "address": "$83:9F96",
   "class": "unknown",
   "comment": "unknown",
@@ -15239,7 +15529,7 @@
    "src/core/award.cpp:(file)",
    "src/core/award.cpp:exit_blank_frame, menus_frame, exit_fade_in_frame, pick_tour_frame",
    "src/core/front_end.cpp:restore_menu_screen",
-   "src/core/front_end_screens.hpp:restore_menu_screen",
+   "src/core/front_end_screens.hpp:restore_menus",
    "src/core/front_end_screens.hpp:set_menu_registers",
    "src/core/front_end_screens.hpp:way_back_frame"
   ],
@@ -16309,6 +16599,7 @@
   "source_records": [
    "docs/research/R-0040-dragster-window-effects.md",
    "docs/research/R-0060-pause-exits.md",
+   "docs/research/R-0073-league.md",
    "tasks/ZOOM-ZOO-WINDOW-EFFECTS.md"
   ]
  },
@@ -17793,6 +18084,20 @@
   ]
  },
  {
+  "address": "$83:E7C3",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83E7C3",
+  "native": [
+   "src/core/race_progress.cpp:update_finish",
+   "src/core/stunt_event.hpp:update_stunt_finish"
+  ],
+  "source_records": [
+   "docs/research/R-0073-league.md",
+   "tasks/LEAGUE.md"
+  ]
+ },
+ {
   "address": "$83:E803",
   "class": "observed",
   "comment": "instruction start",
@@ -17945,6 +18250,23 @@
    "docs/research/R-0049-race-finish-breadth.md",
    "docs/research/R-0066-stunt-event-race.md",
    "docs/research/R-0068-stunt-hud.md"
+  ]
+ },
+ {
+  "address": "$83:E8F0",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83E8F0",
+  "native": [
+   "src/core/presentation.cpp:dim_finished_league_views",
+   "src/core/race_progress.cpp:classic_race_player_won",
+   "src/core/race_progress.cpp:update_finish",
+   "src/core/race_windows.cpp:ClassicWindowPointer::observe_update",
+   "src/core/stunt_event.hpp:update_stunt_finish"
+  ],
+  "source_records": [
+   "docs/research/R-0073-league.md",
+   "tasks/LEAGUE.md"
   ]
  },
  {
@@ -18171,6 +18493,23 @@
    "docs/research/R-0017-m3-acceptance.md",
    "docs/research/R-0017-opponent-first-audit.md",
    "tasks/M3-04.md"
+  ]
+ },
+ {
+  "address": "$83:EA82",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83EA82",
+  "native": [
+   "src/core/movement.cpp:update_movement",
+   "src/core/presentation.cpp:dim_finished_league_views",
+   "src/core/race_progress.cpp:classic_race_player_won",
+   "src/core/race_progress.cpp:update_finish",
+   "src/core/race_windows.cpp:ClassicWindowPointer::observe_update",
+   "src/core/stunt_event.hpp:update_stunt_finish"
+  ],
+  "source_records": [
+   "docs/research/R-0073-league.md"
   ]
  },
  {
@@ -18553,6 +18892,7 @@
   "label": "sub_83F0FF",
   "native": [
    "src/core/content_pack.cpp:zoom_required",
+   "src/core/league_completion.cpp:upload_podium_rider",
    "src/core/rider_object.hpp:compose_rider_object"
   ],
   "source_records": [
@@ -18568,6 +18908,7 @@
   "label": "loc_83F12E",
   "native": [
    "src/core/content_pack.cpp:zoom_required",
+   "src/core/league_completion.cpp:upload_podium_rider",
    "src/core/rider_object.hpp:compose_rider_object"
   ],
   "source_records": [
@@ -18581,6 +18922,7 @@
   "label": "sub_83F1F2",
   "native": [
    "src/core/content_pack.cpp:zoom_required",
+   "src/core/league_completion.cpp:upload_podium_rider",
    "src/core/rider_object.cpp:compose_rider_object",
    "src/core/rider_object.hpp:compose_rider_object"
   ],
@@ -18595,6 +18937,7 @@
   "label": "loc_83F237",
   "native": [
    "src/core/content_pack.cpp:zoom_required",
+   "src/core/league_completion.cpp:upload_podium_rider",
    "src/core/rider_object.cpp:compose_rider_object",
    "src/core/rider_object.hpp:compose_rider_object"
   ],
@@ -18610,6 +18953,7 @@
   "label": "loc_83F239",
   "native": [
    "src/core/content_pack.cpp:zoom_required",
+   "src/core/league_completion.cpp:upload_podium_rider",
    "src/core/rider_object.cpp:compose_rider_object",
    "src/core/rider_object.hpp:compose_rider_object"
   ],
@@ -18624,6 +18968,7 @@
   "label": "loc_83F23B",
   "native": [
    "src/core/content_pack.cpp:zoom_required",
+   "src/core/league_completion.cpp:upload_podium_rider",
    "src/core/rider_object.cpp:compose_rider_object",
    "src/core/rider_object.hpp:compose_rider_object"
   ],
@@ -18638,6 +18983,7 @@
   "label": "loc_83F24D",
   "native": [
    "src/core/content_pack.cpp:zoom_required",
+   "src/core/league_completion.cpp:upload_podium_rider",
    "src/core/rider_object.cpp:compose_rider_object",
    "src/core/rider_object.hpp:compose_rider_object"
   ],
@@ -18653,6 +18999,7 @@
   "label": "loc_83F253",
   "native": [
    "src/core/content_pack.cpp:zoom_required",
+   "src/core/league_completion.cpp:upload_podium_rider",
    "src/core/rider_object.cpp:compose_rider_object",
    "src/core/rider_object.hpp:RiderTileReference",
    "src/core/rider_object.hpp:compose_rider_object"
@@ -18669,6 +19016,7 @@
   "label": "loc_83F26B",
   "native": [
    "src/core/content_pack.cpp:zoom_required",
+   "src/core/league_completion.cpp:upload_podium_rider",
    "src/core/rider_object.cpp:compose_rider_object",
    "src/core/rider_object.hpp:RiderTileReference",
    "src/core/rider_object.hpp:compose_rider_object"
@@ -18684,6 +19032,7 @@
   "label": "loc_83F27E",
   "native": [
    "src/core/content_pack.cpp:zoom_required",
+   "src/core/league_completion.cpp:upload_podium_rider",
    "src/core/rider_object.cpp:compose_rider_object",
    "src/core/rider_object.hpp:compose_rider_object"
   ],
@@ -18700,6 +19049,7 @@
   "label": "loc_83F286",
   "native": [
    "src/core/content_pack.cpp:zoom_required",
+   "src/core/league_completion.cpp:upload_podium_rider",
    "src/core/rider_object.cpp:compose_rider_object",
    "src/core/rider_object.hpp:compose_rider_object"
   ],
@@ -18716,6 +19066,7 @@
   "label": "loc_83F29C",
   "native": [
    "src/core/content_pack.cpp:zoom_required",
+   "src/core/league_completion.cpp:upload_podium_rider",
    "src/core/rider_object.cpp:compose_rider_object",
    "src/core/rider_object.hpp:compose_rider_object"
   ],
@@ -18730,6 +19081,7 @@
   "label": "loc_83F2C3",
   "native": [
    "src/core/content_pack.cpp:zoom_required",
+   "src/core/league_completion.cpp:upload_podium_rider",
    "src/core/rider_object.cpp:compose_rider_object",
    "src/core/rider_object.hpp:compose_rider_object"
   ],
@@ -18744,6 +19096,7 @@
   "label": "loc_83F2D9",
   "native": [
    "src/core/content_pack.cpp:zoom_required",
+   "src/core/league_completion.cpp:upload_podium_rider",
    "src/core/rider_object.hpp:compose_rider_object"
   ],
   "source_records": [
@@ -18864,8 +19217,13 @@
   "class": "inferred",
   "comment": "instruction start",
   "label": "loc_83F6FD",
+  "native": [
+   "src/core/race_update.cpp:run_pause_menu"
+  ],
   "source_records": [
-   "docs/research/R-0060-pause-exits.md"
+   "docs/research/R-0060-pause-exits.md",
+   "docs/research/R-0073-league.md",
+   "tasks/LEAGUE.md"
   ]
  },
  {
@@ -18879,6 +19237,7 @@
   ],
   "source_records": [
    "docs/research/R-0060-pause-exits.md",
+   "docs/research/R-0073-league.md",
    "tasks/RACE-PAUSE-EXITS.md"
   ]
  },
