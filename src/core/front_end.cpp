@@ -207,6 +207,20 @@ std::optional<std::uint32_t> boot_frame_number(const FrontEndState& state) {
     return frame - delay + wipe_frames;
 }
 
+bool waits_for_frame(const FrontEndState& state);
+// Whether the frame just run ended in a frame wait, which polls the sound queue ($80:FADF,
+// $83:A923; R-0076): the next frame starts after one, except that the `$83:A923` waits that
+// leave the arrow alone (the award's, the ending's, and `$83:879A`'s before the result's
+// scoring) poll it too. A race's frames are its own.
+bool ends_with_queue_wait(const FrontEndState& state) {
+    if (state.screen == FrontEndScreen::race) return false;
+    if (state.screen == FrontEndScreen::race_result_exit
+        && state.script_frame + 1 == result_scoring_frame(state))
+        return true;
+    return waits_for_frame(state) || state.screen == FrontEndScreen::tour_award
+        || state.screen == FrontEndScreen::tour_ending;
+}
+
 bool waits_for_frame(const FrontEndState& state) {
     // After a race NMI is off until `$80:D377` (R-0057) but for the sound upload's last frame and
     // `$80:D20E`'s first; then from the OAM copy on. `$83:879A`'s frame waits (`$83:A923`) leave
@@ -1037,6 +1051,7 @@ void dispatch_front_end_screen(FrontEndState& state, const FrontEndContent& cont
 } // namespace
 
 void update_front_end(FrontEndState& state, const FrontEndContent& content, FrontEndPads pads) {
+    state.sound_cues.clear();
     if (state.mode_chosen) return;
     if (state.screen == FrontEndScreen::demo_return && state.demo_return_wait != 0) {
         --state.demo_return_wait;
@@ -1055,6 +1070,8 @@ void update_front_end(FrontEndState& state, const FrontEndContent& content, Fron
     ++state.script_frame;
     dispatch_front_end_screen(state, content, screen, physical);
     if (state.screen != screen) state.script_frame = 0;
+    if (ends_with_queue_wait(state))
+        state.sound_cues.push_back(audio_dispatch(AudioDispatchSite::frame_wait));
     ++state.frame;
 }
 

@@ -19,7 +19,9 @@ enum class AudioSessionLoad : std::uint8_t {
     first_race,   // $83:CA72-CBEE: race set, then its music start and four polls
     title_return, // $80:A0F7-A11C after a race: title set, then the title music start
 };
-enum class AudioCueKind : std::uint8_t { enqueue, dispatch, load };
+// `rotation`: a rider's rotation state (`command` the rider, `parameter` 1 rotating); the
+// audio side keeps the original's sound latches and enqueues only on a change.
+enum class AudioCueKind : std::uint8_t { enqueue, dispatch, load, rotation };
 struct AudioCue {
     AudioCueKind kind = AudioCueKind::enqueue;
     std::uint8_t command = 0, parameter = 0; // enqueue: `$82:8000`'s cue word
@@ -32,6 +34,10 @@ inline AudioCue audio_enqueue(std::uint8_t command, std::uint8_t parameter) {
 }
 inline AudioCue audio_dispatch(AudioDispatchSite site) {
     return {AudioCueKind::dispatch, 0, 0, site};
+}
+inline AudioCue audio_rotation(unsigned rider, bool rotating) {
+    return {AudioCueKind::rotation, static_cast<std::uint8_t>(rider),
+            static_cast<std::uint8_t>(rotating ? 1 : 0)};
 }
 inline AudioCue audio_load(AudioSessionLoad load) {
     return {AudioCueKind::load, 0, 0, AudioDispatchSite::frame_wait, load};

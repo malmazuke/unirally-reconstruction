@@ -295,6 +295,7 @@ void tour_menu_entry_frame(FrontEndState& state, const FrontEndContent& content)
             level_of(state) = pending; // $80:E580-E58E: the level revealed, nothing pending
             pending = 0;
             menu.revealing = true;
+            play_menu_sound(state, MenuSound::select); // $80:E595
             return;
         }
         show_medal_entries(state);

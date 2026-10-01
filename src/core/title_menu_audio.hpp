@@ -66,6 +66,7 @@ struct TitleMenuAudioState {
     std::uint16_t hunter_remaining = 30;
     AudioCpuHunterWorkState hunter;
     std::uint32_t cued_frame = 0; // the last frame cue_frame completed
+    std::array<bool, 2> rotation_sounding{}; // the race's `$1003`/`$1005` sound latches
 };
 // Semantic call boundaries own all continuation state. Controller words are
 // external future input; identified content stays immutable outside the state.
@@ -116,6 +117,8 @@ private:
     std::uint32_t cued_frame_ = 0;
     void run_cue(std::uint32_t frame, const AudioCue& cue);
     void load_session(std::uint32_t frame, AudioSessionLoad load);
+    void rotation_sound(unsigned rider, bool rotating);
+    std::array<bool, 2> rotation_sounding_{};
     AudioCpuQueueState queue_;
     AudioCpuSceneWorkState scene_;
     AudioCpuTitleHoldState title_;

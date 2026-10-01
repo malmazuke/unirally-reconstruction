@@ -6,6 +6,7 @@
 // shown, cycles its finish pose while its result (winner, draw or loser) is announced.
 
 #include "race_progress.hpp"
+#include "race_sound.hpp"
 
 #include "announcements.hpp"
 #include "reward_queue.hpp"
@@ -160,6 +161,7 @@ void cross_start_line(ZoomZooState& state, unsigned index) {
     }
     lap.checkpoint = 0;
     lap.next_checkpoint = 1;
+    race_sound::checkpoint(state, state.movement.riders[index].motion.velocity_x);
 }
 
 // A checkpoint counts only in order; checkpoint 2 also releases the start line. The first
@@ -188,6 +190,7 @@ void pass_checkpoint(ZoomZooState& state, unsigned index, unsigned checkpoint) {
         // 3054-3173.
         if (index == 1 && !state.split_screen) lap.checkpoint_display_countdown = 2;
     }
+    race_sound::checkpoint(state, state.movement.riders[index].motion.velocity_x);
 }
 
 } // namespace
@@ -208,6 +211,7 @@ void update_finish(ZoomZooState& state, const ZoomZooContent& content) {
         if (state.race.finish_delay == finish_display_updates)
             throw std::invalid_argument("race result loading outside frozen finish display");
         ++state.race.finish_delay;
+        race_sound::finish_fade(state);
     }
     for (unsigned index = 0; index < 2; ++index)
         if (state.race.riders[index].finished) finish_rider(state, index, content);

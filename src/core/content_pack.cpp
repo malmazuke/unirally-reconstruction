@@ -984,38 +984,30 @@ const std::array<RequiredEntry, 1> hunter_audio_required{{
      "f6feefdc31b7ac09dfc62ad2b157a41882e7fbd4efb72ecbf6ab66ea92f3c01a"},
 }};
 // The first race's sound set (profile v32): tables, song 1, their transfers, the race sample
-// slots and the samples the title set lacks, and directory lengths through resource 62. R-0076.
-const std::array<RequiredEntry, 15> race_audio_required{{
+// slots and the samples the title set lacks, directory lengths through resource 62 and the
+// announcement voice table. R-0076.
+const std::array<RequiredEntry, 16> race_audio_required{{
     {"audio.race-resource-lengths", 10,
      "0ee7cc9007abe7db5de4d518ce5b1035ceba025e467d8280aaf3bea971cb93f6"},
-    {"audio.race-tables", 1583,
-     "29785acae0e18e6a82eac2db73f88b17f55af51797c134744bb757410396d9e9"},
-    {"audio.race-song-1", 2457,
-     "b01c450c706b78785c48bfb2e6b70737cb4f04e77ffdb5a0542306df653cdb3c"},
+    {"audio.race-tables", 1583, "29785acae0e18e6a82eac2db73f88b17f55af51797c134744bb757410396d9e9"},
+    {"audio.race-song-1", 2457, "b01c450c706b78785c48bfb2e6b70737cb4f04e77ffdb5a0542306df653cdb3c"},
     {"audio.race-tables-transfer", 1589,
      "d274549640f1255aab3e58d3b2da4a1cf032d8d69ad2f1b3cc6ebd4246f360f7"},
     {"audio.race-song-1-transfer", 2463,
      "d2141ff867ae3fe9f1b412b124abcf7e10b796f883a455579775e8c23a45a4c8"},
     {"audio.race-sample-slots", 64,
      "85c0973c8e26803e411b6e87cf350ea1c56300427097ff7cd5009296ca52febf"},
-    {"audio.sample.16", 3613,
-     "92c128eba436aee6dcf9dd710686109ea68654aa8e2c8da3d68fc1792c0f1f4f"},
-    {"audio.sample.25", 7267,
-     "5e6a5326cc6f4a398e592b048083638f197657a0cd394fc8c21d87ce1934e478"},
-    {"audio.sample.28", 1345,
-     "6980ba1bbda7441b6f08410ff816deb0551c97d2a2382747d474c5fe6e11350f"},
-    {"audio.sample.31", 940,
-     "caa2e82917f0ff72792e3894c03b399f5673f7bb4eaa4a7b8fab4ff30b77566b"},
-    {"audio.sample.32", 3145,
-     "6663f9a18f1bb3308d7e2a1f6ebf77765495d99305f46389ccc8dbb99f461665"},
-    {"audio.sample.33", 850,
-     "327862e11c55ac69da234d63d0d8d26bf92a993771df7b055365284b4e4411c9"},
-    {"audio.sample.37", 2956,
-     "1c6d83140456826cb66772d20abf7a41060d2cea59eb604e0b3a9a0994dc1cbc"},
-    {"audio.sample.42", 1354,
-     "bc44c2c747bb395468ffd5a2558aed0aaddd44699f1398aa7c48c8fe67dad2d0"},
-    {"audio.sample.47", 1219,
-     "34e3a249cb6b995a35d01a84e3ab0dd37f9bc162991a0ac3f234319eb9950c71"},
+    {"audio.sample.16", 3613, "92c128eba436aee6dcf9dd710686109ea68654aa8e2c8da3d68fc1792c0f1f4f"},
+    {"audio.sample.25", 7267, "5e6a5326cc6f4a398e592b048083638f197657a0cd394fc8c21d87ce1934e478"},
+    {"audio.sample.28", 1345, "6980ba1bbda7441b6f08410ff816deb0551c97d2a2382747d474c5fe6e11350f"},
+    {"audio.sample.31", 940, "caa2e82917f0ff72792e3894c03b399f5673f7bb4eaa4a7b8fab4ff30b77566b"},
+    {"audio.sample.32", 3145, "6663f9a18f1bb3308d7e2a1f6ebf77765495d99305f46389ccc8dbb99f461665"},
+    {"audio.sample.33", 850, "327862e11c55ac69da234d63d0d8d26bf92a993771df7b055365284b4e4411c9"},
+    {"audio.sample.37", 2956, "1c6d83140456826cb66772d20abf7a41060d2cea59eb604e0b3a9a0994dc1cbc"},
+    {"audio.sample.42", 1354, "bc44c2c747bb395468ffd5a2558aed0aaddd44699f1398aa7c48c8fe67dad2d0"},
+    {"audio.sample.47", 1219, "34e3a249cb6b995a35d01a84e3ab0dd37f9bc162991a0ac3f234319eb9950c71"},
+    {"audio.announcement-voices", 72,
+     "8ca87ccd736216f63131f75b0cb40c6935f650d5cc81bd78606d464bb07f463a"},
 }};
 const std::array<RequiredEntry, 33> audio_required{{
     {"audio.menu-tables", 621, "e75d7872e341a636dc822616a202db6b8894196471c13d47f1b21d15f38fc407"},
@@ -1170,7 +1162,7 @@ constexpr std::string_view dragster_rules_sha256 =
 constexpr std::string_view audio_rules_sha =
     "293039530c6ad250aa072415ea0f9af096532754648029d9ab69e734e0c81cf7";
 constexpr std::string_view race_audio_rules_sha =
-    "ef4d341d86c71fbf1b8cefa17d48f3715bbbe4e465e18ee88eb17fb82ffd9be1";
+    "765ba4573f388bbcf59434a78f9216bcdcc741d3edebe9216435c1c58bbd3d03";
 constexpr std::string_view hunter_audio_rules_sha =
     "9bad18735028fa2502328f13e7d50edb5e15d239962c66f914f31856384fc037";
 constexpr std::string_view tracks_start = "classic.crawler.race-start.v2";
@@ -1213,9 +1205,9 @@ PackHeader read_pack_header(const std::vector<std::uint8_t>& bytes, Reader& in) 
     if (rules_identity
         != hex_digest(variant == PackVariant::race_audio     ? race_audio_rules_sha
                       : variant == PackVariant::hunter_audio ? hunter_audio_rules_sha
-                      : variant == PackVariant::audio      ? audio_rules_sha
-                      : tracks                             ? two_track_rules_sha
-                                                           : dragster_rules_sha256))
+                      : variant == PackVariant::audio        ? audio_rules_sha
+                      : tracks                               ? two_track_rules_sha
+                                                             : dragster_rules_sha256))
         throw std::invalid_argument("Classic pack extraction-rules identity is unsupported");
     return {variant, rules_identity};
 }

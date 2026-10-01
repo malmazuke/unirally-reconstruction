@@ -86,3 +86,56 @@ previous frame boundary, while the driver polls port 2 about every 178 SMP
 ticks (about 1,850 master clocks). Which poll first sees a command, and so
 every later DSP write time, depends on the CPU work of the race body before
 the dispatch.
+
+## Frame-anchored transport (D-0010)
+
+The race's dispatch sites and the setup screens' frame waits are not cycle-modelled, so
+[D-0010](../decisions/D-0010-frame-anchored-sound-commands.md) delivers commands at declared
+frame-anchored clocks after the exact title/menu model's 1P exit. Frame n's work follows the
+vertical-blank boundary at line 225 that ends frame n-1, observed at 306,900 + n * 425,568
+master clocks from power-on in every one of `primary-a`'s 4,000 frames. Calibration constants
+are the medians of the dispatcher call sites watched in `primary-disp1/2` (every `JSL $82:8035`
+site in banks 80-83): the setup screens' `$80:FADF` 13,082, the race's `$83:CD6E` 27,920 and
+`$83:CD9F` 207,728, the countdown's `$83:E739`/`$83:E74F`/`$83:E785` 31,564, the finish fade's
+`$83:E82C` 26,324, NOW PLAYING's `$80:99BE` 9,908, and the first FF requests of the race load
+(169,072) and post-race reload (344,450). `$83:A923` is a second frame-wait routine that also
+polls the queue. A dispatch whose anchor has passed runs at once; a frame wait in a frame the
+CPU has already left (an upload) is skipped.
+
+Driven by cues derived from the original's watches (`derive_cues.py`), `race_audio_runner`
+delivers all 120 commands in the original's frames and order; arrival clocks differ by
+-43,072 to +26,596 master clocks, and the race load's first command is exact (`anchored-2`).
+
+## Native producers
+
+Static listings name every enqueue (`JSL $82:8000`) and dispatch site on the played path;
+`primary-enq1/2` and `primary-disp1/2` watch them all. The native front end and race engine
+emit the same operations in program order:
+
+- Menus: the slides' sounds at `$80:E233` (forward: volume 79, effect 2) and `$80:E27E`
+  (back: effect 1); a choice's `$80:B124` (volume 63, effect 4) from the rider menu
+  (`$80:BBB8`), NOW PLAYING's Race/Exit (`$80:B4A0`, `$80:B4B1`; Back is silent) and a tour
+  reveal (`$80:E595`); NOW PLAYING's arrow moves play the navigation sound (`$80:B4DE`,
+  `$80:B4F1` to `$80:B178`); the result's `$80:B10F` (volume 63, effect 6) at `$80:9596` on
+  the fade's last frame; NOW PLAYING's Race fades the menu music (`$80:99B7`, command 3 with
+  `0x90`) and dispatches at once (`$80:99BE`).
+- Frame waits: every front-end frame that ends in `$80:FADF`/`$83:A923`, taken from the
+  existing `waits_for_frame` timing plus the `$83:A923` waits that leave the arrow alone
+  (award, ending, and the wait before `$83:879A`'s scoring).
+- Loads: the race start's countdown cue (`$82:D84A`) 85 frames before the native
+  initialization (the upload's queue reset drops it), the race set's upload 79 frames before
+  it (`$83:CA72`), and the title set's reload on the race return's fourth frame (`$80:A0F7`,
+  `$80:A0FC`).
+- Race: the countdown (`$83:E59C-E785`) beeps when `$11C5` first falls below 250, 190 and
+  130, sounds GO below 70 and dispatches on every published update; the finish fade
+  (`$83:E7F2-E830`) from the finish display's 180th update; the skid flag follows the brake
+  latch `$0D53`/`$0D55` (`$82:999A-9A49`); checkpoints set or clear flag 20 by speed
+  (`$81:828E-82B2`); rotation flags 42/43 follow the `$1003`/`$1005` latches, which the audio
+  side keeps (`$82:A507-A5F3`); each read announcement plays its voice from `$81:C441`
+  (`$81:C191-C216` player, `$81:C2D0-C357` opponent; the 72-byte table is pack entry
+  `audio.announcement-voices`); then `$83:CD6E` and `$83:CD9F`.
+
+`front_end_runner --sound-cues` on the primary schedule writes 5,791 cues for frames
+620-3,999, equal line for line to `primary.cues.txt` (4,757 without the frame waits); the
+native race initializes at 1,328 as before. The stunt event's beeps follow the static reading
+only; no stunt event, pause or other mode is compared yet.

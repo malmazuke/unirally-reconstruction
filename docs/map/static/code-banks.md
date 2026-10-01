@@ -22,8 +22,8 @@ The four classes partition all 131,072 bytes. **Unknown share: 40.4%** - above D
 | Instructions from observed | 17,569 |
 | Instructions from table | 587 |
 | Routines | 636 |
-| Routines cited by native code | 409 |
-| Routine bytes cited by native code | 50,744 |
+| Routines cited by native code | 418 |
+| Routine bytes cited by native code | 51,268 |
 | Gap sweep candidate instructions | 2,746 |
 | Gap sweep candidate bytes | 6,174 |
 | Jump tables | 2 |
@@ -45,7 +45,7 @@ The four classes partition all 131,072 bytes. **Unknown share: 40.4%** - above D
 
 ## Cited addresses
 
-1556 distinct code-bank ROM addresses cited by the research, task, inventory and content records (`labels.json`). By position: dat 25, loc 883, mid 19, sub 329, unk 300 (sub routine start, loc instruction start, mid inside an instruction, dat data, unk unknown). By class: data 25, inferred 249, observed 982, unknown 300.
+1583 distinct code-bank ROM addresses cited by the research, task, inventory and content records (`labels.json`). By position: dat 25, loc 902, mid 19, sub 335, unk 302 (sub routine start, loc instruction start, mid inside an instruction, dat data, unk unknown). By class: data 25, inferred 254, observed 1002, unknown 302.
 
 Cited addresses in `unknown` bytes:
 
@@ -280,6 +280,7 @@ Cited addresses in `unknown` bytes:
 | $81:A3C7 | docs/research/R-0046-track-breadth-matrix.md |
 | $81:A406 | docs/research/R-0046-track-breadth-matrix.md |
 | $81:BA4B | docs/research/R-0008-track-decode.md, tasks/M1-03.md |
+| $81:C441 | docs/research/R-0076-first-race-audio.md |
 | $81:C50A | docs/research/R-0011-motion.md, docs/research/R-0066-stunt-event-race.md |
 | $81:CC17 | docs/research/R-0048-race-guards.md |
 | $82:833B | docs/research/R-0036-zoom-zoo-rider-objects.md, docs/research/R-0045-static-code-map.md |
@@ -350,4 +351,5 @@ Cited addresses in `unknown` bytes:
 | $83:C715 | docs/research/R-0062-gold-endings.md |
 | $83:C89A | docs/research/R-0062-gold-endings.md |
 | $83:C8B3 | docs/research/R-0061-riders-and-opponents.md, tasks/RACE-RIDERS-OPPONENTS.md |
-| $83:FCF5 | tasks/AUDIO-TITLE-MENU.md |
+| $83:FC75 | docs/research/R-0076-first-race-audio.md, tasks/AUDIO-FIRST-RACE.md |
+| $83:FCF5 | docs/research/R-0076-first-race-audio.md, tasks/AUDIO-TITLE-MENU.md |

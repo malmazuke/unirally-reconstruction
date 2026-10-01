@@ -257,7 +257,8 @@ TitleMenuAudioState NativeTitleMenuAudio::snapshot() {
             cartridge_,
             hunter_remaining_,
             hunter_,
-            cued_frame_};
+            cued_frame_,
+            rotation_sounding_};
 }
 void NativeTitleMenuAudio::restore(const TitleMenuAudioState& state) {
     if (state.content_identity != content_->identity)
@@ -281,6 +282,7 @@ void NativeTitleMenuAudio::restore(const TitleMenuAudioState& state) {
     hunter_remaining_ = state.hunter_remaining;
     hunter_ = state.hunter;
     cued_frame_ = state.cued_frame;
+    rotation_sounding_ = state.rotation_sounding;
     queue_ = state.queue;
     scene_ = state.scene;
     title_ = state.title;

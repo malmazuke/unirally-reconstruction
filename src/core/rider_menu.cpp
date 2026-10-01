@@ -414,6 +414,7 @@ void rider_menu_frame(FrontEndState& state, const FrontEndContent& content, Fron
     // $80:BBB8-BBEE for a choice ($80:BC9B for Y), then $80:F4E9, which stops the HDMA at once.
     state.one_player = !state.rider_menu.back && state.mode == FrontEndMode::one_player;
     if (!state.rider_menu.back) {
+        play_menu_sound(state, MenuSound::select);
         if (state.rider_menu.purpose == RiderMenuPurpose::normal) send_arrow_off(state);
         if (state.rider_menu.second) {
             state.second_rider = state.menu.selection;

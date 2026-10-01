@@ -69,6 +69,7 @@ def v31_new_entries(rom: bytes) -> list[dict[str, Any]]:
                  [(directory+5*i, 5) for i in HUNTER_GRAPHICS_WORK_ASSETS])]
 
 
+ANNOUNCEMENT_VOICES = 0xc441  # $81:C441 ($81:C199, $81:C2DA)
 RACE_SAMPLE_SLOTS = 0x1fc75  # $83:FC75, selected by every race sound load ($83:CA48-CBA1)
 
 
@@ -95,4 +96,6 @@ def v32_new_entries(rom: bytes) -> list[dict[str, Any]]:
     ]
     entries += [_raw(f"audio.sample.{s:02d}", rom, [(resources[s][0]+2, resources[s][1]-2)])
                 for s in sorted(set(slots) - set(title_slots) - {255})]
+    # $81:C441, a byte per announcement event 0-71: the voice its reading plays.
+    entries.append(_raw("audio.announcement-voices", rom, [(ANNOUNCEMENT_VOICES, 72)]))
     return entries

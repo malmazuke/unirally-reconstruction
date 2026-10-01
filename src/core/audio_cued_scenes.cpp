@@ -93,8 +93,23 @@ void NativeTitleMenuAudio::run_cue(std::uint32_t frame, const AudioCue& cue) {
             native_audio_poll_queue(c, queue_);
         return;
     case AudioCueKind::load: load_session(frame, cue.load); return;
+    case AudioCueKind::rotation: rotation_sound(cue.command, cue.parameter != 0); return;
     }
     throw std::invalid_argument("unknown audio cue");
+}
+// $82:A507-A5F3: the race keeps a sound latch per rider (`$1003`, `$1005`) and changes the
+// rotation flag (42 player, 43 opponent) and its effect only when the rotation changes.
+void NativeTitleMenuAudio::rotation_sound(unsigned rider, bool rotating) {
+    constexpr std::uint8_t clear_flag = 6, set_flag = 11, start_effect = 2, first_flag = 42,
+                           rotation_effect = 12;
+    if (rider > 1) throw std::invalid_argument("rotation cue names no rider");
+    auto& latch = rotation_sounding_[rider];
+    if (latch == rotating) return;
+    latch = rotating;
+    auto& c = engine_.cpu();
+    enqueue_cue(c, queue_, rotating ? set_flag : clear_flag,
+                static_cast<std::uint8_t>(first_flag + rider));
+    enqueue_cue(c, queue_, start_effect, rotation_effect);
 }
 // $82:807E from a running driver: its FF request stops the driver, the IPL then
 // takes the session's driver, tables, score and samples (R-0075/R-0076). The
@@ -110,6 +125,7 @@ void NativeTitleMenuAudio::load_session(std::uint32_t frame, AudioSessionLoad lo
     native_audio_cpu_finish_driver_entry(c);
     queue_ = {};
     native_audio_cpu_upload_samples(c, content_->upload, set);
+    rotation_sounding_ = {}; // the race load clears the race's work RAM
     if (race)
         start_race_music(c, queue_);
     else

@@ -578,7 +578,8 @@ class AudioEntryTests(unittest.TestCase):
                          ["audio.race-resource-lengths", "audio.race-tables", "audio.race-song-1",
                           "audio.race-tables-transfer", "audio.race-song-1-transfer",
                           "audio.race-sample-slots"]
-                         + [f"audio.sample.{s:02d}" for s in (16, 25, 28, 31, 32, 33, 37, 42, 47)])
+                         + [f"audio.sample.{s:02d}" for s in (16, 25, 28, 31, 32, 33, 37, 42, 47)]
+                         + ["audio.announcement-voices"])
         source = (ROOT / "src/core/content_pack.cpp").read_text(encoding="utf-8")
         table = source[source.index("race_audio_required{{"):]
         table = table[:table.index("}};")]

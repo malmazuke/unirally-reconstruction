@@ -658,6 +658,7 @@
     "src/core/front_end_screens.hpp:start_result_screen",
     "src/core/lap_result.cpp:(file)",
     "src/core/race_result.cpp:(file)",
+    "src/core/race_result.cpp:race_result_frame",
     "src/core/race_result.cpp:rider_mark_tile, rider_mark_attributes, opponent_mark_attributes, rider_marks_high",
     "src/core/race_result.cpp:show_icons",
     "src/core/race_result.cpp:start_result",
@@ -970,6 +971,7 @@
     "NmX"
    ],
    "native": [
+    "src/core/audio_cue.hpp:AudioDispatchSite",
     "src/core/front_end.hpp:FrontEndScreen",
     "src/core/front_end.hpp:return_from_race",
     "src/core/now_playing.cpp:race_fade_frame",
@@ -1069,6 +1071,8 @@
    "native": [
     "src/core/audio_cpu_interrupt.hpp:AudioCpuInterruptWorkState::cartridge_flags, AudioCpuInterruptWorkState::scroll, AudioCpuInterruptWorkState::palette_delay, AudioCpuInterruptWorkState::palette_index",
     "src/core/audio_cpu_queue.cpp:native_audio_bootstrap_queue",
+    "src/core/audio_cpu_upload.cpp:native_audio_cpu_uploads",
+    "src/core/audio_cue.hpp:AudioSessionLoad",
     "src/core/front_end.cpp:boot_frame_number",
     "src/core/front_end.cpp:clear_oam_buffer",
     "src/core/front_end.cpp:early_objects, early_palette",
@@ -1078,7 +1082,8 @@
     "src/core/race_result.cpp:early_loads",
     "src/core/race_result.cpp:early_palette, early_objects",
     "src/core/race_result.cpp:hide_result_objects",
-    "src/core/race_result.cpp:objects_frame, tiles_frame, palette_low_frame, palette_high_frame"
+    "src/core/race_result.cpp:objects_frame, tiles_frame, palette_low_frame, palette_high_frame",
+    "src/core/race_result.cpp:race_return_frame"
    ],
    "observed_entries": {},
    "start": "$80:A09A",
@@ -1395,6 +1400,10 @@
    "mode_at_entry": [
     "NmX"
    ],
+   "native": [
+    "src/core/front_end_screens.hpp:MenuSound",
+    "src/core/screen_slide.cpp:play_menu_sound"
+   ],
    "observed_entries": {},
    "start": "$80:B10F",
    "static_entries": {
@@ -1418,7 +1427,9 @@
    ],
    "native": [
     "src/core/audio_cpu_title_hold.cpp:acknowledge_title_code",
-    "src/core/front_end.cpp:check_title_code"
+    "src/core/front_end.cpp:check_title_code",
+    "src/core/front_end_screens.hpp:MenuSound",
+    "src/core/screen_slide.cpp:play_menu_sound"
    ],
    "observed_entries": {},
    "start": "$80:B124",
@@ -1439,7 +1450,9 @@
     "NmX"
    ],
    "native": [
-    "src/core/audio_cpu_hunter_reveal.cpp:reveal_cue"
+    "src/core/audio_cpu_hunter_reveal.cpp:reveal_cue",
+    "src/core/front_end_screens.hpp:MenuSound",
+    "src/core/screen_slide.cpp:play_menu_sound"
    ],
    "observed_entries": {},
    "start": "$80:B139",
@@ -1457,6 +1470,10 @@
    "end": "$80:B162",
    "mode_at_entry": [
     "NmX"
+   ],
+   "native": [
+    "src/core/front_end_screens.hpp:MenuSound",
+    "src/core/screen_slide.cpp:play_menu_sound"
    ],
    "observed_entries": {},
    "start": "$80:B14E",
@@ -1492,7 +1509,9 @@
     "NmX"
    ],
    "native": [
-    "src/core/audio_cpu_menu_input.cpp:enqueue_navigation"
+    "src/core/audio_cpu_menu_input.cpp:enqueue_navigation",
+    "src/core/front_end_screens.hpp:MenuSound",
+    "src/core/screen_slide.cpp:play_menu_sound"
    ],
    "observed_entries": {},
    "start": "$80:B178",
@@ -3079,7 +3098,11 @@
    ],
    "native": [
     "src/core/audio_cpu_queue.cpp:native_audio_wait_vblank",
+    "src/core/audio_cue.hpp:AudioDispatchSite",
+    "src/core/audio_cued_scenes.cpp:frame_wait_anchor, race_early_anchor, race_late_anchor, countdown_anchor, finish_fade_anchor, race_choice_anchor",
     "src/core/front_end.cpp:FrameWaits",
+    "src/core/front_end.cpp:ends_with_queue_wait",
+    "src/core/front_end.hpp:FrontEndState::sound_cues",
     "src/core/front_end_screens.hpp:start_hunter_ending",
     "src/core/hunter_ending.cpp:hunter_ending_waits"
    ],
@@ -3192,7 +3215,9 @@
    ],
    "native": [
     "src/core/race_progress.cpp:pass_checkpoint",
-    "src/core/race_progress.cpp:update_checkpoints"
+    "src/core/race_progress.cpp:update_checkpoints",
+    "src/core/race_sound.cpp:fast_checkpoint",
+    "src/core/race_sound.hpp:checkpoint"
    ],
    "observed_entries": {},
    "start": "$81:8266",
@@ -5440,6 +5465,10 @@
    "mode_at_entry": [
     "Nmx"
    ],
+   "native": [
+    "src/core/race_sound.cpp:announcement_voice",
+    "src/core/race_sound.hpp:announcement_voice"
+   ],
    "observed_entries": {},
    "start": "$81:C191",
    "static_entries": {
@@ -5503,6 +5532,8 @@
     "Nmx"
    ],
    "native": [
+    "src/core/race_sound.cpp:announcement_voice",
+    "src/core/race_sound.hpp:announcement_voice",
     "src/core/race_state_io.cpp:last_queue_slot"
    ],
    "observed_entries": {},
@@ -5534,7 +5565,9 @@
    "native": [
     "src/core/presentation.hpp:stunt_score_cells",
     "src/core/race_hud.cpp:ClassicRaceHudClock::request_stunt_fields",
-    "src/core/race_hud.cpp:decimal_cells"
+    "src/core/race_hud.cpp:decimal_cells",
+    "src/core/race_sound.cpp:announcement_voice",
+    "src/core/race_sound.hpp:announcement_voice"
    ],
    "observed_entries": {},
    "start": "$81:C357",
@@ -7372,7 +7405,8 @@
     "NMx"
    ],
    "native": [
-    "src/core/audio_cpu_queue.cpp:native_audio_enqueue"
+    "src/core/audio_cpu_queue.cpp:native_audio_enqueue",
+    "src/core/audio_cue.hpp:AudioCue::command, AudioCue::parameter"
    ],
    "observed_entries": {},
    "start": "$82:8000",
@@ -7462,6 +7496,7 @@
    ],
    "native": [
     "src/core/audio_cpu_queue.cpp:native_audio_poll_queue",
+    "src/core/audio_cue.hpp:AudioDispatchSite",
     "src/core/front_end.cpp:return_from_demo"
    ],
    "observed_entries": {},
@@ -7509,6 +7544,11 @@
    "end": "$82:8081",
    "mode_at_entry": [
     "NMX"
+   ],
+   "native": [
+    "src/core/audio_cpu_upload.hpp:native_audio_cpu_begin_session",
+    "src/core/audio_cue.hpp:AudioSessionLoad",
+    "src/core/audio_cued_scenes.cpp:NativeTitleMenuAudio::load_session"
    ],
    "observed_entries": {},
    "start": "$82:807E",
@@ -8596,6 +8636,8 @@
     "NMx"
    ],
    "native": [
+    "src/core/race_sound.hpp:brake_skid",
+    "src/core/race_update.cpp:update_rider",
     "src/core/rider_motion.cpp:hold_brake",
     "src/core/rider_motion.cpp:release_brake",
     "src/core/rider_motion.cpp:update_drive",
@@ -8619,6 +8661,8 @@
     "NMx"
    ],
    "native": [
+    "src/core/race_sound.hpp:brake_skid",
+    "src/core/race_update.cpp:update_rider",
     "src/core/rider_motion.cpp:release_brake",
     "src/core/rider_motion.cpp:update_drive",
     "src/core/zoom_zoo_movement.hpp:ZoomZooState::drive_target_latch"
@@ -9028,7 +9072,7 @@
     "NMx"
    ],
    "native": [
-    "src/core/race_update.cpp:update_rotation"
+    "src/core/race_update.cpp:RotationChange"
    ],
    "observed_entries": {},
    "start": "$82:A49F",
@@ -9048,7 +9092,9 @@
     "NmX"
    ],
    "native": [
-    "src/core/race_update.cpp:update_rotation"
+    "src/core/audio_cued_scenes.cpp:NativeTitleMenuAudio::rotation_sound",
+    "src/core/race_sound.hpp:rotation",
+    "src/core/race_update.cpp:RotationChange"
    ],
    "observed_entries": {},
    "start": "$82:A4FF",
@@ -9068,7 +9114,9 @@
     "NmX"
    ],
    "native": [
-    "src/core/race_update.cpp:update_rotation"
+    "src/core/audio_cued_scenes.cpp:NativeTitleMenuAudio::rotation_sound",
+    "src/core/race_sound.hpp:rotation",
+    "src/core/race_update.cpp:RotationChange"
    ],
    "observed_entries": {},
    "start": "$82:A55B",
@@ -9094,7 +9142,9 @@
     "NmX"
    ],
    "native": [
-    "src/core/race_update.cpp:update_rotation"
+    "src/core/audio_cued_scenes.cpp:NativeTitleMenuAudio::rotation_sound",
+    "src/core/race_sound.hpp:rotation",
+    "src/core/race_update.cpp:RotationChange"
    ],
    "observed_entries": {},
    "start": "$82:A5B4",
@@ -9122,7 +9172,7 @@
     "NmX"
    ],
    "native": [
-    "src/core/race_update.cpp:update_rotation"
+    "src/core/race_update.cpp:RotationChange"
    ],
    "observed_entries": {},
    "start": "$82:A5F9",
@@ -10548,6 +10598,8 @@
     "src/core/race_setup.cpp:start_clock",
     "src/core/race_setup.cpp:start_countdown, base_speed_cap",
     "src/core/race_setup.cpp:stunt_scenario",
+    "src/core/race_sound.cpp:countdown_start",
+    "src/core/race_sound.hpp:loading",
     "src/core/race_state_io.cpp:check_opponent_queue",
     "src/core/race_state_io.cpp:check_stunt_content",
     "src/core/stunt_event.cpp:update_stunt_finish",
@@ -10918,6 +10970,7 @@
    ],
    "native": [
     "src/core/award.cpp:(file)",
+    "src/core/front_end.cpp:ends_with_queue_wait",
     "src/core/front_end.cpp:waits_for_frame",
     "src/core/front_end_screens.hpp:result_scoring_frame",
     "src/core/race_result.cpp:(file)",
@@ -12329,6 +12382,8 @@
    ],
    "native": [
     "src/core/audio_cpu_hunter_entry.cpp:native_audio_hunter_ending_wait",
+    "src/core/audio_cue.hpp:AudioDispatchSite",
+    "src/core/front_end.cpp:ends_with_queue_wait",
     "src/core/front_end.cpp:waits_for_frame",
     "src/core/front_end_screens.hpp:result_scoring_frame",
     "src/core/hunter_ending.cpp:hunter_ending_waits",
@@ -12563,6 +12618,12 @@
    "mode_at_entry": [
     "NMX"
    ],
+   "native": [
+    "src/core/audio_cpu_upload.cpp:native_audio_cpu_uploads",
+    "src/core/audio_cue.hpp:AudioSessionLoad",
+    "src/core/audio_cued_scenes.cpp:start_race_music",
+    "src/core/race_sound.hpp:loading"
+   ],
    "observed_entries": {},
    "start": "$83:CA72",
    "static_entries": {
@@ -12579,6 +12640,11 @@
    "end": "$83:CAFB",
    "mode_at_entry": [
     "NMX"
+   ],
+   "native": [
+    "src/core/audio_cue.hpp:AudioSessionLoad",
+    "src/core/audio_cued_scenes.cpp:start_race_music",
+    "src/core/race_sound.hpp:loading"
    ],
    "observed_entries": {},
    "start": "$83:CAB7",
@@ -12597,6 +12663,11 @@
    "mode_at_entry": [
     "NMX"
    ],
+   "native": [
+    "src/core/audio_cue.hpp:AudioSessionLoad",
+    "src/core/audio_cued_scenes.cpp:start_race_music",
+    "src/core/race_sound.hpp:loading"
+   ],
    "observed_entries": {},
    "start": "$83:CAFC",
    "static_entries": {
@@ -12614,6 +12685,11 @@
    "mode_at_entry": [
     "NMX"
    ],
+   "native": [
+    "src/core/audio_cue.hpp:AudioSessionLoad",
+    "src/core/audio_cued_scenes.cpp:start_race_music",
+    "src/core/race_sound.hpp:loading"
+   ],
    "observed_entries": {},
    "start": "$83:CB41",
    "static_entries": {
@@ -12630,6 +12706,11 @@
    "end": "$83:CBC7",
    "mode_at_entry": [
     "NMX"
+   ],
+   "native": [
+    "src/core/audio_cue.hpp:AudioSessionLoad",
+    "src/core/audio_cued_scenes.cpp:start_race_music",
+    "src/core/race_sound.hpp:loading"
    ],
    "observed_entries": {},
    "start": "$83:CB86",
@@ -12653,7 +12734,10 @@
     "NMX"
    ],
    "native": [
+    "src/core/audio_cue.hpp:AudioSessionLoad",
+    "src/core/audio_cued_scenes.cpp:start_race_music",
     "src/core/race_setup.cpp:opponent_tier",
+    "src/core/race_sound.hpp:loading",
     "src/core/stunt_event.hpp:rider_passes"
    ],
    "observed_entries": {},
@@ -12728,6 +12812,9 @@
     "Nmx"
    ],
    "native": [
+    "src/core/audio_cue.hpp:AudioDispatchSite",
+    "src/core/audio_cued_scenes.cpp:frame_wait_anchor, race_early_anchor, race_late_anchor, countdown_anchor, finish_fade_anchor, race_choice_anchor",
+    "src/core/race_sound.hpp:dispatch",
     "src/core/race_update.cpp:run_pause_menu",
     "src/core/race_update.cpp:update_zoom_zoo",
     "src/core/rider_look.cpp:zoom_zoo_update_was_paused"
@@ -13702,6 +13789,8 @@
    "native": [
     "src/core/presentation.hpp:classic_countdown_window",
     "src/core/presentation.hpp:dragster_window_table_index",
+    "src/core/race_sound.cpp:first_beep, second_beep, third_beep, go_beep",
+    "src/core/race_sound.hpp:countdown",
     "src/core/race_update.cpp:CountdownPhases",
     "src/core/race_update.cpp:run_countdown",
     "src/core/race_windows.cpp:classic_countdown_window",
@@ -13728,6 +13817,8 @@
    "native": [
     "src/core/presentation.hpp:classic_countdown_window",
     "src/core/presentation.hpp:dragster_window_table_index",
+    "src/core/race_sound.cpp:first_beep, second_beep, third_beep, go_beep",
+    "src/core/race_sound.hpp:countdown",
     "src/core/race_update.cpp:CountdownPhases",
     "src/core/race_update.cpp:run_countdown",
     "src/core/race_windows.cpp:classic_countdown_window",
@@ -13754,6 +13845,8 @@
    "native": [
     "src/core/presentation.hpp:classic_countdown_window",
     "src/core/presentation.hpp:dragster_window_table_index",
+    "src/core/race_sound.cpp:first_beep, second_beep, third_beep, go_beep",
+    "src/core/race_sound.hpp:countdown",
     "src/core/race_update.cpp:CountdownPhases",
     "src/core/race_update.cpp:run_countdown",
     "src/core/race_windows.cpp:classic_countdown_window",
@@ -13778,8 +13871,11 @@
     "NMX"
    ],
    "native": [
+    "src/core/audio_cue.hpp:AudioDispatchSite",
     "src/core/presentation.hpp:classic_countdown_window",
     "src/core/presentation.hpp:dragster_window_table_index",
+    "src/core/race_sound.cpp:first_beep, second_beep, third_beep, go_beep",
+    "src/core/race_sound.hpp:countdown",
     "src/core/race_update.cpp:CountdownPhases",
     "src/core/race_update.cpp:run_countdown",
     "src/core/race_windows.cpp:classic_countdown_window",
@@ -13810,8 +13906,10 @@
     "NMX"
    ],
    "native": [
+    "src/core/audio_cue.hpp:AudioDispatchSite",
     "src/core/presentation.hpp:classic_countdown_window",
     "src/core/presentation.hpp:dragster_window_table_index",
+    "src/core/race_sound.hpp:countdown",
     "src/core/race_update.cpp:CountdownPhases",
     "src/core/race_update.cpp:run_countdown",
     "src/core/race_windows.cpp:classic_countdown_window"
@@ -13836,6 +13934,7 @@
    "native": [
     "src/core/presentation.hpp:classic_countdown_window",
     "src/core/presentation.hpp:dragster_window_table_index",
+    "src/core/race_sound.hpp:countdown",
     "src/core/race_update.cpp:CountdownPhases",
     "src/core/race_update.cpp:run_countdown",
     "src/core/race_windows.cpp:classic_countdown_window"
@@ -13861,6 +13960,7 @@
    "native": [
     "src/core/presentation.hpp:classic_countdown_window",
     "src/core/presentation.hpp:dragster_window_table_index",
+    "src/core/race_sound.hpp:countdown",
     "src/core/race_update.cpp:CountdownPhases",
     "src/core/race_update.cpp:run_countdown",
     "src/core/race_windows.cpp:classic_countdown_window"
@@ -13904,7 +14004,11 @@
     "NMX"
    ],
    "native": [
+    "src/core/audio_cue.hpp:AudioDispatchSite",
     "src/core/race_progress.cpp:update_finish",
+    "src/core/race_sound.cpp:finish_fade_from",
+    "src/core/race_sound.cpp:finish_fade_rate",
+    "src/core/race_sound.hpp:finish_fade",
     "src/core/race_state_io.cpp:read_stunt_event",
     "src/core/race_state_io.cpp:stunt_settled_fall",
     "src/core/race_windows.cpp:ClassicWindowPointer::observe_update",
@@ -14649,19 +14753,19 @@
    "call returns in the calling mode": 1262
   },
   "bytes": 131072,
-  "cited_addresses": 1556,
+  "cited_addresses": 1583,
   "cited_by_class": {
    "data": 25,
-   "inferred": 249,
-   "observed": 982,
-   "unknown": 300
+   "inferred": 254,
+   "observed": 1002,
+   "unknown": 302
   },
   "cited_by_position": {
    "dat": 25,
-   "loc": 883,
+   "loc": 902,
    "mid": 19,
-   "sub": 329,
-   "unk": 300
+   "sub": 335,
+   "unk": 302
   },
   "conflicts": 0,
   "data": 92,
@@ -14680,9 +14784,9 @@
   "jump_tables": 2,
   "mode_ambiguities": 7,
   "observed": 41778,
-  "routine_bytes_cited_by_native_code": 50744,
+  "routine_bytes_cited_by_native_code": 51268,
   "routines": 636,
-  "routines_cited_by_native_code": 409,
+  "routines_cited_by_native_code": 418,
   "unknown": 52881,
   "unknown_share": 0.4035
  }

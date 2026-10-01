@@ -18,6 +18,7 @@
 #include "front_end.hpp"
 #include "presentation.hpp"
 #include "race_camera.hpp"
+#include "race_sound.hpp"
 #include "zoom_zoo_movement.hpp"
 #include "zoom_zoo_pack.hpp"
 
@@ -40,7 +41,7 @@ namespace {
 
 struct Options {
     std::filesystem::path pack, inputs;
-    std::filesystem::path race_timeline;
+    std::filesystem::path race_timeline, sound_cues;
     std::uint32_t frames{};
     std::map<std::uint32_t, std::filesystem::path> pictures, records, vram;
     // The original's race initialization frames, in race order, from a capture: the loading time
@@ -146,6 +147,8 @@ Options parse_options(int argc, char** argv) {
             options.inputs = value();
         else if (option == "--race-timeline")
             options.race_timeline = value();
+        else if (option == "--sound-cues")
+            options.sound_cues = value();
         else if (option == "--picture") {
             const auto frame = static_cast<std::uint32_t>(std::stoul(value()));
             options.pictures[frame] = value();
@@ -484,6 +487,49 @@ void check_local_restore(const unirally::ZoomZooState& race_state,
         throw std::runtime_error("extended local DRAGSTER save failed round-trip");
 }
 
+// AUDIO-FIRST-RACE: each frame's sound queue work, one cue a line ("FRAME E COMMAND PARAMETER",
+// "FRAME D SITE", "FRAME L race|title"), rotation cues resolved through the audio side's latches
+// so that the lines compare with the original's enqueue and dispatch watches (R-0076).
+class SoundCueLog {
+public:
+    explicit SoundCueLog(const std::filesystem::path& path) {
+        if (path.empty()) return;
+        out_.open(path);
+        if (!out_) throw std::runtime_error("cannot create sound cue log");
+    }
+    void write(std::uint32_t frame, const unirally::AudioCueList& cues) {
+        if (!out_.is_open()) return;
+        constexpr std::array<const char*, 6> sites{"wait",      "early",  "late",
+                                                   "countdown", "finish", "choice"};
+        for (const auto& cue : cues) switch (cue.kind) {
+            case unirally::AudioCueKind::enqueue:
+                out_ << frame << " E " << unsigned(cue.command) << ' ' << unsigned(cue.parameter)
+                     << '\n';
+                break;
+            case unirally::AudioCueKind::dispatch:
+                out_ << frame << " D " << sites[static_cast<unsigned>(cue.site)] << '\n';
+                break;
+            case unirally::AudioCueKind::load:
+                rotating_ = {};
+                out_ << frame << " L "
+                     << (cue.load == unirally::AudioSessionLoad::first_race ? "race" : "title")
+                     << '\n';
+                break;
+            case unirally::AudioCueKind::rotation:
+                if (rotating_[cue.command] == (cue.parameter != 0)) break;
+                rotating_[cue.command] = cue.parameter != 0;
+                out_ << frame << " E " << (cue.parameter ? 11 : 6) << ' ' << 42 + cue.command
+                     << '\n'
+                     << frame << " E 2 12\n";
+                break;
+            }
+    }
+
+private:
+    std::ofstream out_;
+    std::array<bool, 2> rotating_{};
+};
+
 void write_frame_outputs(const Options& options, std::uint32_t frame,
                          const unirally::FrontEndState& state) {
     print_state(frame, state);
@@ -555,6 +601,7 @@ int main(int argc, char** argv) try {
     RaceBetweenMenus race;
     std::optional<unirally::ZoomZooState> restored_local;
     std::size_t races = 0, resets = 0;
+    SoundCueLog sound_cues(options.sound_cues);
     for (std::uint32_t frame = 0; frame < options.frames; ++frame) {
         for (const auto& [after, offset, byte] : options.record_writes)
             if (frame == after + 1) set_record_byte(state.records, offset, byte);
@@ -581,6 +628,8 @@ int main(int argc, char** argv) try {
                 continue;
             }
             if (frame <= race.initialization_frame) {
+                sound_cues.write(frame,
+                                 unirally::race_sound::loading(race.initialization_frame - frame));
                 // The content load is forced blank; retain requested pictures instead of
                 // silently omitting them from a fixed-frame differential capture (R-0073).
                 if (const auto picture = options.pictures.find(frame);
@@ -593,10 +642,12 @@ int main(int argc, char** argv) try {
             }
             update_local_race(options, pack, content, state, race, race_timeline, restored_local,
                               races, frame, pads);
+            sound_cues.write(frame, race.state.sound_cues);
         } else if (state.mode_chosen) {
             break;
         } else {
             unirally::update_front_end(state, content, pads);
+            sound_cues.write(frame, state.sound_cues);
             const bool reset = state.after_soft_reset && state.boot_start + 1 == state.frame;
             if (reset && resets < options.reset_upload_delays.size())
                 state.reset_upload_delay = options.reset_upload_delays[resets];
