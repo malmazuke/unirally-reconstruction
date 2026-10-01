@@ -258,9 +258,13 @@ void begin_sound_upload(Clock& c) {
 }
 std::array<std::uint64_t, 12> native_audio_cpu_boot_prefix(const AudioBootAssetSizes& sizes,
                                                            AudioCpuWorkObserver* observer) {
-    if (sizes.palette_bytes != 32 || sizes.tile_bytes != 8192)
+    Clock clock(observer);
+    return native_audio_cpu_boot_prefix(clock, sizes);
+}
+std::array<std::uint64_t, 12> native_audio_cpu_boot_prefix(AudioCpuWorkClock& c,
+                                                         const AudioBootAssetSizes& sizes) {
+    if (c.ticks() != 0 || sizes.palette_bytes != 32 || sizes.tile_bytes != 8192)
         throw std::invalid_argument("unidentified cold audio asset-clock domain");
-    Clock c(observer);
     c.idle(22);
     c.ram_reads();
     c.idle();

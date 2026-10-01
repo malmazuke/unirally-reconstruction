@@ -2,6 +2,10 @@
 #include <stdexcept>
 
 namespace unirally {
+std::uint8_t AudioCpuWorkObserver::read_audio_port(std::uint64_t, std::uint8_t) {
+    throw std::logic_error("CPU observer has no audio receiver");
+}
+
 void AudioCpuWorkClock::step(unsigned clocks) {
     if (clocks < 2 || clocks > 12 || (clocks & 1))
         throw std::invalid_argument("CPU bus interval is not an even 2..12 clocks");
@@ -106,6 +110,28 @@ void AudioCpuWorkClock::store_port(unsigned bytes, bool long_address) {
 void AudioCpuWorkClock::branch(bool taken) {
     rom_reads(2);
     if (taken) idle();
+}
+void AudioCpuWorkClock::write_audio_word(std::uint8_t first_port, std::uint16_t value) {
+    if (first_port > 2) throw std::invalid_argument("audio word exceeds ports");
+    rom_reads(3);
+    for (unsigned i = 0; i < 2; ++i) {
+        step(6);
+        if (observer_) observer_->write_audio_port(ticks_, static_cast<std::uint8_t>(first_port + i),
+                                                  static_cast<std::uint8_t>(value >> (8 * i)));
+    }
+}
+std::uint16_t AudioCpuWorkClock::read_audio_ports(std::uint8_t first_port, unsigned bytes) {
+    if (!observer_ || bytes < 1 || bytes > 2 || unsigned(first_port) + bytes > 4)
+        throw std::invalid_argument("invalid CPU audio read");
+    rom_reads(3);
+    std::uint16_t value = 0;
+    for (unsigned i = 0; i < bytes; ++i) {
+        step(2);
+        value |= static_cast<std::uint16_t>(unsigned(observer_->read_audio_port(
+            ticks_, static_cast<std::uint8_t>(first_port + i))) << (8 * i));
+        step(4);
+    }
+    return value;
 }
 void AudioCpuWorkClock::write_audio_port(std::uint8_t port, std::uint8_t value) {
     store_port();

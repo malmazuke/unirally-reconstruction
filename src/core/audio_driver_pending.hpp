@@ -78,7 +78,7 @@ struct AudioDriverContinuation {
     std::array<std::uint8_t, 4> port_reads{};
     std::array<std::uint8_t, 3> timer_reads{};
     std::uint8_t first_header = 0, command_header = 0;
-    bool effects = false;
+    bool effects = false, deferred_timer_step = false;
     std::uint8_t voice = 0, upload_phase = 129, slot = 0, sample = 255;
     std::uint16_t sample_cursor = 0x3000, loop_sum = 0;
     std::uint8_t sample_offset = 0, stop_volume = 0;

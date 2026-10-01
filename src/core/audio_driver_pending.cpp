@@ -1,4 +1,5 @@
 #include "audio_driver.hpp"
+#include <algorithm>
 #include <stdexcept>
 
 namespace unirally {
@@ -84,6 +85,28 @@ void TitleMenuAudioDriver::execute_pending_io(const AudioDriverPendingIo& operat
         break;
     }
 }
+// A force-sync visit occurs after the physical clock step and before timers.
+// Retain that small pending timer step when the CPU takes control.
+void TitleMenuAudioDriver::advance_pending_clock(std::uint64_t target) {
+    if (continuation_.deferred_timer_step) {
+        timers_.advance_to(ticks_);
+        continuation_.deferred_timer_step = false;
+    }
+    const auto quantum = bus_->clock_sync_step();
+    if (!quantum) {
+        ticks_ = target;
+        timers_.advance_to(ticks_);
+        return;
+    }
+    if (quantum > 2) throw std::logic_error("invalid SMP synchronization quantum");
+    while (ticks_ < target) {
+        ticks_ += std::min<std::uint64_t>(quantum, target - ticks_);
+        continuation_.deferred_timer_step = true;
+        bus_->advance_clock(ticks_);
+        timers_.advance_to(ticks_);
+        continuation_.deferred_timer_step = false;
+    }
+}
 // A CPU yield can interrupt a port access before it completes. The operation
 // stays pending, while physical SMP/timer clocks have already reached that tick.
 void TitleMenuAudioDriver::run_pending_until(std::uint64_t exclusive_ticks) {
@@ -96,8 +119,7 @@ void TitleMenuAudioDriver::run_pending_until(std::uint64_t exclusive_ticks) {
         }
         const auto& operation = continuation_.operations.at(continuation_.next_operation);
         if (operation.ticks >= exclusive_ticks) break;
-        ticks_ = operation.ticks;
-        timers_.advance_to(ticks_);
+        advance_pending_clock(operation.ticks);
         execute_pending_io(operation);
         ++continuation_.next_operation;
     }
@@ -109,7 +131,9 @@ AudioDriverSnapshot TitleMenuAudioDriver::snapshot() const {
 }
 void TitleMenuAudioDriver::restore(const AudioDriverSnapshot& state) {
     const auto& pending = state.continuation;
-    if (!resumable_ || planning_ || state.timers.ticks != state.ticks
+    if (!resumable_ || planning_
+        || (state.timers.ticks > state.ticks
+            || state.ticks - state.timers.ticks > (pending.deferred_timer_step ? 2U : 0U))
         || pending.next_operation > pending.operations.size()
         || pending.phase > AudioDriverPhase::exited
         || pending.poll_return > AudioDriverPhase::exited

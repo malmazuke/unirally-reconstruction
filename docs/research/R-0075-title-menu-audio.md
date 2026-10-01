@@ -602,3 +602,37 @@ timer phase, score state and stop. No full audio save is established: the CPU
 transport, DSP history and output queue still need one canonical owner and a
 fresh-process comparison. Original CPU writes remain conditional inputs here;
 cold upload/producer recovery and audible product integration are still open.
+
+## Seedless native cold uploads and driver ready, 1 October
+
+Verified: `native-cold-cpu-upload.json` matches 164,801 projected accesses
+from power-on through all three IPL transfers' final jump request. Both clocks
+and all non-executable values/order are exact, ending C=17,907,842.
+`native-cold-cpu-driver-ready.json` extends to 169,905 accesses including the
+29 initial DSP writes, incoming-port clears and selected voice RAM, ending
+at CPU P2=128 (C=18,125,718, S=1,746,507). Native CPU work, native IPL and
+resumable native driver start at zero; no observed clocks/events, snapshots,
+RAM seed or executable payload are inputs. The data inputs are identified
+resource lengths and the two score transfers, including their six trailing
+resource-header bytes. CPU work reads no original opcode or ROM bytes.
+
+Implementation decision: the executable's 4,445 transfer bytes are discarded
+by native IPL and supplied as zero in the CPU work experiment. Their C1/R1
+values are declared opaque in the frozen projection, while every access,
+clock and handshake value remains required. Version 1 accidentally used the
+RAM-store PC FFE4 for opaque R1 reads; the hook's advanced read PC is FFE0.
+The original projection/failure remain retained, and version 2 corrects only
+that marker under the already-declared domain. The first native attempt also
+omitted SMP port-write synchronization. Pinned `sfc/smp/io.cpp` requires it
+for writes and reads; adding it makes the two-clock upload comparison exact.
+
+The driver-ready comparison also exercises the pinned noncommunicating-SMP
+lead guard (`768 * 24 * 24,000,000` balance units), yielding at S=1,746,422
+before the timer step and resuming without losing its pending work. The
+authored restore test preserves that deferred timer step. Seven focused audio
+checks pass; sliced-driver events/PCM remain exact after the clock extension.
+Evidence and frozen projections live in main `local/evidence/audio-title-menu/`.
+Source readings: static bank-82 $808F-$8160, bank-80 $A100-$A10E and pinned
+CPU/SMP memory, I/O and timing code. CPU functions still have an uninterrupted
+caller stack. Full sample upload, cold music/command producer, complete native
+fresh-process save, pack/device audio and capability review remain open.

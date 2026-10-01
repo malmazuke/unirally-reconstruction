@@ -844,3 +844,58 @@ Next experiment reads `artifacts/static-map/bank-82.lst` $82:808F-$82:8160
 CPU writes from the cold transport. The static listing supplies the reading;
 the frozen cold CPU instruction/port traces supply dynamic evidence. Preserve
 clock coupling order and narrow any first divergence before extending coverage.
+
+### 1 October 05:01 UTC checkpoint
+
+Driver continuation work was committed as 63004f5 and pushed; the separate
+formatting-only commit aaa779d is also pushed. Seven focused native audio
+checks passed after formatting. The draft PR description now distinguishes
+resumable driver state from the still-open canonical full audio save. No
+capability review, merge, tag or acceptance was claimed.
+
+Before cold CPU upload implementation, `cold-cpu-upload-frozen.json` fixed
+164,801 projected events from power-on through the third final IPL jump
+request (C=17,907,842, S=1,725,519). All CPU/SMP port accesses, selected IPL
+clear/score RAM, order and both clocks are required. Only the first executable
+transfer's 4,445 C1/R1 payload values are opaque; no executable payload is
+supplied to native code, and native IPL discards those bytes. Hardware
+handshake decisions depend on counter/header latches, independently of those
+payloads. This projection was recorded before implementing upload work and
+does not relax command/DSP/PCM or product acceptance. Typed resource lengths
+and score data with six trailing resource-header bytes remain private inputs.
+Static bank-82 $808F-$8160 and bank-80 $A100-$A10E supply the routine reading.
+The first coupled comparison is running; CPU resumability, later producer,
+full save and product integration remain open. Next checkpoint by 05:11;
+45-minute reassessment due 05:12. No new child, credit or provider change.
+
+### 1 October 05:11 UTC checkpoint and reassessment
+
+Cold native CPU/IPL transport matches all 164,801 frozen projected events
+through the third final jump request, including both clocks and all handshake
+and score data. `native-cold-cpu-upload.json` records C=17,907,842. The first
+failed attempt omitted CPU synchronization on SMP port writes; pinned
+`sfc/smp/io.cpp` confirms that writes and reads both synchronize. The
+comparison's first version also used FFE4 for the declared opaque executable
+R1 reads; the observer's advanced PC is FFE0. The unchanged declared domain
+was corrected in `cold-cpu-upload-frozen-v2.json` before the next attempt;
+version 1 and `native-cold-cpu-upload-failure01.json` remain retained. No
+clock, order or non-executable value requirement was changed.
+
+The joint cold CPU/native IPL/native driver extension matches all 169,905
+frozen projected events through the first CPU P2=128 ready acknowledgment
+(C=18,125,718, S=1,746,507). `native-cold-cpu-driver-ready.json` includes the
+initial 29 DSP writes, port clears and selected voice RAM. Driver entry,
+physical synchronization and the noncommunicating-SMP lead guard are computed
+from zero. The guard preserves suspension before its deferred timer step;
+an authored restore check is being added at that boundary. No event/timestamp/
+RAM seed or executable payload enters the native run. CPU functions currently
+use an uninterrupted caller stack, so canonical CPU continuation remains open.
+
+Fresh telemetry at 05:10 remains 19% weekly used, ordinary usage allowed,
+reset 1791365217. Baseline 12%, discretionary stop 32%, final 20% reserve.
+CI 36817262129 passes macOS and Ubuntu at aaa779d. At this reassessment,
+continue the same assigned capability: next recover the 64-slot sample loader
+from static bank-82 $82A5-$8336 and identified resource metadata, then close
+producer timing and canonical state. Full command/PCM/product acceptance and
+fresh isolated review remain open; no fallback, task boundary, credit or
+provider change. Next checkpoint by 05:21 and reassessment by 05:56 UTC.

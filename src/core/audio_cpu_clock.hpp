@@ -8,6 +8,7 @@ public:
     // CPU::scanline synchronizes SMP before the enclosing bus step subtracts
     // its clocks from the CPU/SMP balance. Keep that completed-step clock.
     virtual void scanline(std::uint64_t master_ticks, std::uint64_t completed_step_ticks) = 0;
+    virtual std::uint8_t read_audio_port(std::uint64_t master_ticks, std::uint8_t port);
     virtual void write_audio_port(std::uint64_t master_ticks, std::uint8_t port,
                                   std::uint8_t value) = 0;
 };
@@ -39,6 +40,8 @@ public:
     void store_port(unsigned bytes = 1, bool long_address = false);
     void branch(bool taken);
     void write_audio_port(std::uint8_t port, std::uint8_t value);
+    void write_audio_word(std::uint8_t first_port, std::uint16_t value);
+    std::uint16_t read_audio_ports(std::uint8_t first_port, unsigned bytes = 1);
 
 private:
     std::uint64_t ticks_ = 0, completed_step_ticks_ = 0, scanline_ = 0;
