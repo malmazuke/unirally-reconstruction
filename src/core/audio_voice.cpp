@@ -3,8 +3,12 @@
 
 namespace unirally {
 namespace {
-std::uint8_t byte(unsigned value) { return static_cast<std::uint8_t>(value); }
-std::uint16_t word(unsigned value) { return static_cast<std::uint16_t>(value); }
+std::uint8_t byte(unsigned value) {
+    return static_cast<std::uint8_t>(value);
+}
+std::uint16_t word(unsigned value) {
+    return static_cast<std::uint16_t>(value);
+}
 
 // SPC arithmetic's eight-bit quotient, including overflow and divisor zero.
 // Only integer division semantics are represented; this is not a CPU model.
@@ -20,8 +24,10 @@ void update_pan(AudioVoiceArithmetic& voice, std::uint8_t update_counter) {
     const auto panned = byte(unsigned(voice.volume) * voice.pan >> 8);
     voice.right_volume = byte(2U * byte(voice.volume - panned) - 1U);
     voice.left_volume = byte(2U * panned);
-    if (voice.pan & 128) voice.left_volume = voice.volume;
-    else voice.right_volume = voice.volume;
+    if (voice.pan & 128)
+        voice.left_volume = voice.volume;
+    else
+        voice.right_volume = voice.volume;
     if ((update_counter & 15) == 0 && voice.volume_decay) {
         voice.volume = byte(unsigned(voice.volume) * voice.volume_decay >> 8);
         if (!voice.volume) {
@@ -33,7 +39,8 @@ void update_pan(AudioVoiceArithmetic& voice, std::uint8_t update_counter) {
     if (boundary) {
         voice.pan = (voice.pan_step & 128) ? 0 : 255;
         voice.pan_step = byte(0U - voice.pan_step);
-    } else voice.pan = byte(sum);
+    } else
+        voice.pan = byte(sum);
 }
 
 // 0A3F-0A64: alternate between the base note and an unsigned interval.
@@ -61,7 +68,8 @@ void calculate_target_pitch(AudioVoiceArithmetic& voice, const AudioPitchData& d
 // 0A65-0AA8: note-space slide. Bounds use wrapped eight-bit results, as the
 // original does, rather than clamping a signed mathematical intermediate.
 void update_note_slide(AudioVoiceArithmetic& voice, const AudioPitchData& data) {
-    if (!voice.slide_remaining) voice.current_note = voice.alternating_note;
+    if (!voice.slide_remaining)
+        voice.current_note = voice.alternating_note;
     else {
         voice.slide_remaining = byte(voice.slide_remaining - 1U);
         if (voice.slide_remaining) return;
@@ -69,10 +77,12 @@ void update_note_slide(AudioVoiceArithmetic& voice, const AudioPitchData& data) 
         if (voice.current_note == voice.alternating_note) return;
         if (voice.current_note > voice.alternating_note) {
             voice.current_note = byte(voice.current_note - voice.slide_amount);
-            if (voice.current_note < voice.alternating_note) voice.current_note = voice.alternating_note;
+            if (voice.current_note < voice.alternating_note)
+                voice.current_note = voice.alternating_note;
         } else {
             voice.current_note = byte(voice.current_note + voice.slide_amount);
-            if (voice.current_note >= voice.alternating_note) voice.current_note = voice.alternating_note;
+            if (voice.current_note >= voice.alternating_note)
+                voice.current_note = voice.alternating_note;
         }
     }
     calculate_target_pitch(voice, data);
@@ -81,10 +91,14 @@ void update_note_slide(AudioVoiceArithmetic& voice, const AudioPitchData& data) 
 // 0AA9-0AF6: delayed fractional modulation. Negative amount zero deliberately
 // adds FF00; replacing the bytewise negation with signed -0 changes behavior.
 void update_modulation(AudioVoiceArithmetic& voice) {
-    if (voice.modulation_delay) { --voice.modulation_delay; return; }
+    if (voice.modulation_delay) {
+        --voice.modulation_delay;
+        return;
+    }
     if (!voice.modulation_direction) return;
     const unsigned delta = (voice.modulation_direction & 128)
-        ? 0xff00U | byte(0U - voice.modulation_amount) : voice.modulation_amount;
+                             ? 0xff00U | byte(0U - voice.modulation_amount)
+                             : voice.modulation_amount;
     voice.modulation_offset = word(voice.modulation_offset + delta);
     voice.modulation_remaining = byte(voice.modulation_remaining - 1U);
     if (voice.modulation_remaining) return;
@@ -95,7 +109,10 @@ void update_modulation(AudioVoiceArithmetic& voice) {
 // 0AF7-0B41: converge the base pitch towards the lookup result, preserving the
 // wrapped add/subtract then unsigned comparison used at 0995-09A6.
 void update_pitch_convergence(AudioVoiceArithmetic& voice) {
-    if (!voice.convergence_step) { voice.base_pitch = voice.target_pitch; return; }
+    if (!voice.convergence_step) {
+        voice.base_pitch = voice.target_pitch;
+        return;
+    }
     if (voice.base_pitch == voice.target_pitch) return;
     if (voice.base_pitch > voice.target_pitch) {
         const unsigned delta = 0xff00U | byte(0U - voice.convergence_step);
@@ -123,29 +140,35 @@ void update_envelope(AudioVoiceArithmetic& voice) {
     case 0:
         if (instrument[2]) {
             const unsigned difference = byte(instrument[3] - instrument[1]);
-            const auto quotient = envelope_quotient(difference * voice.envelope_position,
-                                                     byte(instrument[2] - 1U));
+            const auto quotient =
+                envelope_quotient(difference * voice.envelope_position, byte(instrument[2] - 1U));
             voice.gain = byte(quotient + instrument[1]);
             voice.envelope_position = byte(voice.envelope_position + 1U);
             if (voice.envelope_position == instrument[2]) {
-                ++voice.envelope_phase; voice.envelope_position = 0;
+                ++voice.envelope_phase;
+                voice.envelope_position = 0;
             }
         }
         break;
     case 1:
         if (byte(instrument[4] - voice.envelope_position - 1U) == 0) {
-            voice.gain = instrument[5]; ++voice.envelope_phase; voice.envelope_position = 0;
+            voice.gain = instrument[5];
+            ++voice.envelope_phase;
+            voice.envelope_position = 0;
         } else if (instrument[4]) {
             const unsigned difference = byte(instrument[3] - instrument[5]);
             const unsigned position = byte(instrument[4] - voice.envelope_position - 1U);
-            voice.gain = byte(envelope_quotient(difference * position, instrument[4]) + instrument[5]);
+            voice.gain =
+                byte(envelope_quotient(difference * position, instrument[4]) + instrument[5]);
             voice.envelope_position = byte(voice.envelope_position + 1U);
         }
         break;
-    case 2: case 4: break;
+    case 2:
+    case 4: break;
     case 3:
         if (byte(instrument[6] - voice.envelope_position - 1U) == 0) {
-            voice.gain = 0; ++voice.envelope_phase;
+            voice.gain = 0;
+            ++voice.envelope_phase;
         } else if (instrument[6]) {
             const unsigned position = byte(instrument[6] - voice.envelope_position - 1U);
             voice.gain = envelope_quotient(unsigned(voice.release_gain) * position, instrument[6]);
@@ -156,7 +179,7 @@ void update_envelope(AudioVoiceArithmetic& voice) {
     }
     voice.envelope_timer = instrument[0];
 }
-}  // namespace
+} // namespace
 
 void update_audio_voice(AudioVoiceArithmetic& voice, const AudioPitchData& pitch_data,
                         std::uint8_t update_counter) {
@@ -172,9 +195,9 @@ void update_audio_voice(AudioVoiceArithmetic& voice, const AudioPitchData& pitch
 // 0C66-0CB9 and 0D19-0D5B. A zero note retains pitch/envelope state. Duration
 // and inline volume follow this initialization in the score format.
 void initialize_audio_note(AudioVoiceArithmetic& voice, const AudioPitchData& pitch_data,
-                           std::uint8_t note, std::uint8_t transpose,
-                           std::uint8_t modulation_delay, std::uint8_t modulation_period,
-                           std::uint8_t modulation_direction, bool restart_envelope) {
+                           std::uint8_t note, std::uint8_t transpose, std::uint8_t modulation_delay,
+                           std::uint8_t modulation_period, std::uint8_t modulation_direction,
+                           bool restart_envelope) {
     if (!note) return;
     if (voice.sample >= pitch_data.sample_transpose.size())
         throw std::runtime_error("sample transpose leaves identified data");
@@ -196,4 +219,4 @@ void initialize_audio_note(AudioVoiceArithmetic& voice, const AudioPitchData& pi
     }
 }
 
-}  // namespace unirally
+} // namespace unirally

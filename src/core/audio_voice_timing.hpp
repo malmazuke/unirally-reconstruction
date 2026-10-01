@@ -8,5 +8,5 @@ namespace unirally {
 // Pitch data is required for nonzero convergence because the preceding note
 // slide can change the target. Scripted envelopes remain outside this domain.
 std::uint32_t audio_voice_work_ticks(const AudioVoiceArithmetic& voice, std::uint8_t update_counter,
-                                    const AudioPitchData* pitch_data = nullptr);
-}  // namespace unirally
+                                     const AudioPitchData* pitch_data = nullptr);
+} // namespace unirally
