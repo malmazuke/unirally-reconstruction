@@ -899,3 +899,26 @@ from static bank-82 $82A5-$8336 and identified resource metadata, then close
 producer timing and canonical state. Full command/PCM/product acceptance and
 fresh isolated review remain open; no fallback, task boundary, credit or
 provider change. Next checkpoint by 05:21 and reassessment by 05:56 UTC.
+
+### 1 October 05:22 UTC checkpoint
+
+Joint cold CPU/native IPL/native driver work now matches all 713,909 frozen
+projected events through the 64-slot sample loader's final request, including
+21 selected samples and 42,498 BRR bytes. `native-cold-cpu-samples.json`
+records C=41,360,956/S=3,985,343 at that request and computed caller return
+C=41,361,676, independently matching CPU instruction trace $80:A119. The
+first harness run compared 17 valid later return-work events beyond the
+already-frozen endpoint; `native-cold-cpu-samples-endpoint-failure01.json`
+is retained. The comparator now applies the frozen CPU endpoint to output,
+without changing any expected row. No earlier difference occurred. The
+62530-pair original PCM prefix through this return is entirely silent; it was
+frozen for reference but is not an audible acceptance result.
+
+44fb240 (cold uploads/driver-ready clock coupling) is pushed. Seven focused
+audio checks and native-symbol metadata regeneration pass after the sample
+work; readability passes. Sample changes remain uncommitted pending their
+record/source audit. Next read and capture the remaining cold frontend work
+after $80:A119, its cue enqueue and receiver calls, to remove observed producer
+entry times. Full canonical CPU continuation/device playback and independent
+capability review remain open. No task completion or user prerequisite.
+Next checkpoint by 05:32 and reassessment remains 05:56 UTC.

@@ -16,7 +16,7 @@ void increment_direct(Clock& c, unsigned bytes) {
     c.ram_writes(bytes);
 }
 // Static bank-82 listing 812A-8150; directory lengths are data-format values.
-void select_resource(Clock& c, const AudioCpuUploadData& data, unsigned index) {
+std::uint16_t select_resource(Clock& c, const AudioCpuUploadData& data, unsigned index) {
     c.call_local();
     c.save_register();
     c.change_widths();
@@ -50,6 +50,7 @@ void select_resource(Clock& c, const AudioCpuUploadData& data, unsigned index) {
     c.branch(true);
     c.restore_register();
     c.return_local();
+    return static_cast<std::uint16_t>(cursor);
 }
 // 8151-8160. All three identified payloads stay within their source bank.
 void advance_source(Clock& c) {
@@ -150,6 +151,86 @@ void begin_next_transfer(Clock& c) {
     c.load_constant();
     c.write_audio_port(0, 255);
 }
+// Static bank-82 8328-8336. XBA retains a hidden accumulator byte and
+// consumes two idle cycles; the supplied value is typed descriptor data.
+void send_sample_descriptor(Clock& c, std::uint8_t phase, std::uint8_t value) {
+    c.call_local();
+    c.write_audio_port(3, value);
+    c.rom_reads(1);
+    c.idle(2);
+    c.write_audio_port(2, phase);
+    bool ready = false;
+    do {
+        ready = c.read_audio_ports(2) == phase;
+        c.branch(!ready);
+    } while (!ready);
+    c.update_register();
+    c.rom_reads(1);
+    c.idle(2);
+    c.return_local();
+}
+void advance_sample_cursor(Clock& c, std::uint16_t& cursor, bool word_mode) {
+    c.update_register();
+    cursor = static_cast<std::uint16_t>(cursor + 1U);
+    c.branch(cursor != 0);
+    if (!cursor) {
+        increment_direct(c, word_mode ? 2U : 1U);
+        c.load_constant(2);
+        cursor = 0x8000;
+    }
+}
+// 82C8-8315. Four metadata bytes and BRR bytes share the wrapping phase.
+void send_sample_resource(Clock& c, const AudioCpuUploadData& data, unsigned sample,
+                          std::uint8_t& phase) {
+    c.update_register();
+    auto cursor = select_resource(c, data, sample);
+    c.read_direct(2);
+    c.store_direct();
+    c.store_direct();
+    c.change_widths();
+    read_resource(c, 2);
+    advance_sample_cursor(c, cursor, true);
+    advance_sample_cursor(c, cursor, true);
+    c.update_register();
+    c.load_constant(2);
+    c.update_register();
+    c.change_widths();
+    c.restore_register();
+    c.update_register();
+    ++phase;
+    const auto& bytes = data.sample_resources[sample];
+    for (std::size_t offset = 0; offset < bytes.size(); ++offset) {
+        c.rom_reads(1);
+        c.idle(2);
+        read_resource(c, 1);
+        c.write_audio_port(3, bytes[offset]);
+        c.rom_reads(1);
+        c.idle(2);
+        c.write_audio_port(2, phase);
+        advance_sample_cursor(c, cursor, false);
+        bool ready = false;
+        do {
+            ready = c.read_audio_ports(2) == phase;
+            c.branch(!ready);
+        } while (!ready);
+        c.update_register();
+        ++phase;
+        c.update_register();
+        c.branch(offset + 1 < bytes.size());
+    }
+    c.update_register();
+    c.load_constant();
+    ++phase;
+    c.write_audio_port(2, phase);
+    bool ready = false;
+    do {
+        ready = c.read_audio_ports(2) == phase;
+        c.branch(!ready);
+    } while (!ready);
+    c.update_register();
+    ++phase;
+}
+
 }
 void native_audio_cpu_uploads(AudioCpuWorkClock& c, const AudioCpuUploadData& data) {
     if (data.resource_lengths[50] != 4445 || data.resource_lengths[53] != 627
@@ -199,6 +280,60 @@ void native_audio_cpu_finish_driver_entry(AudioCpuWorkClock& c) {
     c.restore_register(2);
     c.restore_register(2);
     c.restore_register(2);
+    c.restore_register();
+    c.return_local();
+    c.return_far();
+}
+// Bank-80 A112/A115 and bank-82 82A5-8327. There are 64 selected slots,
+// including FF holes; each nonempty slot names identified sample data only.
+void native_audio_cpu_upload_samples(AudioCpuWorkClock& c, const AudioCpuUploadData& data) {
+    for (const auto sample : data.sample_slots) {
+        if (sample != 255
+            && (sample >= 50 || data.resource_lengths[sample] < 6
+                || data.sample_resources[sample].size()
+                       != unsigned(data.resource_lengths[sample]) - 2))
+            throw std::invalid_argument("unidentified audio sample resource");
+    }
+    c.load_constant(2);
+    c.call_far();
+    c.call_local();
+    c.save_register();
+    c.change_widths();
+    c.change_widths();
+    c.load_constant();
+    c.store_direct();
+    c.load_constant();
+    std::uint8_t phase = 129;
+    for (unsigned slot = 0; slot < data.sample_slots.size(); ++slot) {
+        c.save_register(2);
+        c.store_direct(2);
+        c.save_register();
+        c.rom_reads(1);
+        c.idle(2);
+        c.rom_reads(5);
+        const auto sample = data.sample_slots[slot];
+        send_sample_descriptor(c, phase, sample);
+        c.load_constant();
+        c.branch(sample != 255);
+        if (sample == 255) {
+            c.restore_register();
+            c.update_register();
+            ++phase;
+            c.branch(true);
+        } else
+            send_sample_resource(c, data, sample, phase);
+        c.restore_register(2);
+        c.update_register();
+        increment_direct(c, 1);
+        c.branch(slot + 1 < data.sample_slots.size());
+    }
+    c.load_constant();
+    c.write_audio_port(2, 128);
+    bool ready = false;
+    do {
+        ready = c.read_audio_ports(2) == 128;
+        c.branch(!ready);
+    } while (!ready);
     c.restore_register();
     c.return_local();
     c.return_far();

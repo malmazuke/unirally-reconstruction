@@ -9,9 +9,12 @@ namespace unirally {
 struct AudioCpuUploadData {
     std::array<std::uint16_t, 58> resource_lengths{};
     std::vector<std::uint8_t> menu_transfer, title_transfer;
+    std::array<std::uint8_t, 64> sample_slots{};
+    std::array<std::vector<std::uint8_t>, 58> sample_resources;
 };
 // Cold transport after the first native FF write. Ending at the third final
 // jump request is a research boundary, not complete CPU/product acceptance.
 void native_audio_cpu_uploads(AudioCpuWorkClock& clock, const AudioCpuUploadData& data);
 void native_audio_cpu_finish_driver_entry(AudioCpuWorkClock& clock);
+void native_audio_cpu_upload_samples(AudioCpuWorkClock& clock, const AudioCpuUploadData& data);
 } // namespace unirally

@@ -93,8 +93,9 @@ std::vector<std::uint8_t> read(const std::string& path) {
 int main(int argc, char** argv) {
     try {
         if (argc != 3 && argc != 4)
-            throw std::invalid_argument("audio_cpu_upload_runner DATA_DIRECTORY OUTPUT [ready]");
-        const bool ready = argc == 4 && std::string(argv[3]) == "ready";
+            throw std::invalid_argument("audio_cpu_upload_runner DATA_DIRECTORY OUTPUT [ready|samples]");
+        const bool samples = argc == 4 && std::string(argv[3]) == "samples";
+        const bool ready = argc == 4 && (std::string(argv[3]) == "ready" || samples);
         if (argc == 4 && !ready) throw std::invalid_argument("unknown upload mode");
         const std::string root = argv[1]; unirally::AudioCpuUploadData data;
         std::ifstream lengths(root + "/cpu-resource-lengths.txt");
@@ -105,6 +106,18 @@ int main(int argc, char** argv) {
         }
         data.menu_transfer = read(root + "/cpu-menu-upload.bin");
         data.title_transfer = read(root + "/cpu-title-upload.bin");
+        if (samples) {
+            const auto slots = read(root + "/cpu-sample-slots.bin");
+            if (slots.size() != 64) throw std::invalid_argument("invalid sample slots");
+            std::copy(slots.begin(), slots.end(), data.sample_slots.begin());
+            for (const auto sample : slots) {
+                if (sample == 255) continue;
+                if (sample >= data.sample_resources.size()) throw std::invalid_argument("sample index");
+                const auto name = std::to_string(sample);
+                data.sample_resources[sample] = read(root + "/cpu-sample-resource-"
+                    + (sample < 10 ? "0" : "") + name + ".bin");
+            }
+        }
         std::ofstream output(argv[2]);
         if (!output) throw std::runtime_error("cannot write native upload events");
         const unirally::TitleMenuAudioData score{read(root + "/menu-tables.bin"),
@@ -123,6 +136,7 @@ int main(int argc, char** argv) {
         unirally::native_audio_cpu_boot_prefix(clock);
         unirally::native_audio_cpu_uploads(clock, data);
         if (ready) unirally::native_audio_cpu_finish_driver_entry(clock);
+        if (samples) unirally::native_audio_cpu_upload_samples(clock, data);
         std::cout << "computed_final_upload_cpu_clock=" << clock.ticks() << '\n';
         if (!output) throw std::runtime_error("native upload events failed"); return 0;
     } catch (const std::exception& error) { std::cerr << error.what() << '\n'; return 1; }

@@ -636,3 +636,27 @@ Source readings: static bank-82 $808F-$8160, bank-80 $A100-$A10E and pinned
 CPU/SMP memory, I/O and timing code. CPU functions still have an uninterrupted
 caller stack. Full sample upload, cold music/command producer, complete native
 fresh-process save, pack/device audio and capability review remain open.
+
+## Seedless 64-slot sample transport, 1 October
+
+Verified: `native-cold-cpu-samples.json` matches all 713,909 projected events
+from power-on through the CPU sample-loader's final P2=128 request
+(C=41,360,956/S=3,985,343). Native CPU selects 21 nonempty slots from the
+identified 64-byte table at ROM offset 0x1FCF5, traverses typed resource lengths,
+sends metadata and 42,498 BRR bytes, and waits on native SMP acknowledgments.
+SMP directory/fraction/transpose and BRR writes, all port accesses and both
+clocks/order/values match. The computed caller return C=41,361,676 independently
+matches the original CPU trace at $80:A119. No observed clock/event/RAM seed or
+executable payload is used. The same opaque executable-payload projection is
+retained; score, sample and handshake values remain exact requirements.
+
+The initial comparator reported 17 additional events from the callee's return
+work beyond the previously frozen request endpoint. Its failed report is
+retained; comparison now applies that frozen CPU endpoint to emitted output,
+without changing any expected row. `cold-cpu-samples-frozen.json` predates
+native sample implementation. The original 62,530-pair prefix through caller
+return is all zero and is not claimed as audible evidence. Static reading:
+bank-82 $82A5-$8336 and bank-80 $A112-$A115. Seven focused audio checks and
+readability pass; native-symbol metadata remains unchanged. Remaining cold
+frontend enqueue/dispatch work, CPU continuation, complete save/device audio
+and independent capability review remain open.
