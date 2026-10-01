@@ -259,3 +259,42 @@ is retained. This is DSP hardware evidence, not native driver PCM acceptance.
 Eleven capture, eight conditional-clock and seven score-boundary unit tests pass.
 The native hardware test passes locally; new hosted checks and independent review
 are still pending. The product remains silent and the task remains incomplete.
+
+## Native parser and voice calculation experiment
+
+The C++ score parser predicts the same 13,328 ordered original score reads;
+`native-score-conditional.json` retains commands, data/source/runner hashes and
+exact byte comparisons. Its command boundaries and voice-update modes are
+observations. The authored native score check covers calls, counted loops,
+unsigned zero duration, object-state continuation and invalid stack rejection.
+
+Readings in `driver-observed-down-700.lst` and the bounded
+`driver-voice-readings.lst` identify pan, note alternation, note/pitch slides,
+fractional pitch modulation and the seven-byte software envelope. The native
+calculation reproduces all 5,139 baseline and 5,155 Down complete arithmetic
+state rows, initially using original pre-update states
+(`native-voice-conditional.json`). Joining it to the score parser reproduces
+all 10,294 rows from native initialized state and identified data, with no
+original voice-state seed (`native-sequence-conditional.json`). Supplied
+command/update boundaries and update counters still make this conditional.
+
+The combined native state predicts every six-register voice-output group:
+74,088 baseline, 74,250 Down and 481,080 long-steered register values are exact,
+629,418 total (`native-register-conditional.json`). The output boundary is also
+supplied in that experiment. It neither predicts write clocks nor feeds the
+native DSP; raw PCM, command/timer scheduling and full restore remain pending.
+The unchanged original register values are compared without tolerances.
+
+Pitch data readings are 85 low bytes at APU `$1407` and 85 high bytes at `$145C`;
+the exact ROM source offsets are in `native-voice-conditional.json`. Sample
+fraction and transpose bytes come from the already identified sample headers,
+not an APU snapshot. The lookup adds `floor(base * fraction / 256)` modulo
+65,536. Pan and all envelope parameters retain byte wrap and the original
+division quotient, including divisor zero. Negative modulation with amount
+zero adds `$FF00`; a signed `-0` replacement would be wrong. Authored integer
+boundary checks exercise these cases and the pitch-data bound. No claim is made
+for unobserved controls, scripted envelopes or the rest of the soundtrack.
+
+Hosted macOS/Ubuntu checks pass for dependency/parser head `d60761a`, run
+36799359085. The C++ voice candidate has not yet received hosted or independent
+review. The product remains silent.

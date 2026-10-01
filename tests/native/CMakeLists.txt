@@ -92,3 +92,19 @@ add_test(NAME audio_dsp_phase_and_restore COMMAND audio_dsp_tests)
 # Private raw-audio diagnostic; not linked into the frontend.
 add_executable(audio_dsp_replay ../../tools/unirally_lab/reference/audio_lab/replay.cpp)
 target_link_libraries(audio_dsp_replay PRIVATE unirally_dsp lab_options)
+
+add_executable(audio_score_runner audio_score_runner.cpp)
+target_link_libraries(audio_score_runner PRIVATE unirally_audio_score)
+add_executable(audio_score_tests audio_score_tests.cpp)
+target_link_libraries(audio_score_tests PRIVATE unirally_audio_score)
+add_test(NAME audio_score_calls_loops_duration_restore COMMAND audio_score_tests)
+
+add_executable(audio_voice_runner audio_voice_runner.cpp)
+target_link_libraries(audio_voice_runner PRIVATE unirally_audio_score lab_options)
+
+add_executable(audio_sequence_runner audio_sequence_runner.cpp)
+target_link_libraries(audio_sequence_runner PRIVATE unirally_audio_score lab_options)
+
+add_executable(audio_voice_tests audio_voice_tests.cpp)
+target_link_libraries(audio_voice_tests PRIVATE unirally_audio_score lab_options)
+add_test(NAME audio_voice_integer_boundaries COMMAND audio_voice_tests)

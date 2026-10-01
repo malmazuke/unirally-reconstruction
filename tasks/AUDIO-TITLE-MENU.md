@@ -351,3 +351,50 @@ timing and frozen cold raw acceptance. Tier-1 review and live output remain.
 
 At 01:02 UTC weekly usage is 15%, startup 12%, discretionary boundary 32%.
 No reset/spending/provider change. Reassessment remains due by 01:19 UTC.
+
+## 01:14 UTC checkpoint
+
+Hosted macOS/Ubuntu checks pass for pushed `d60761a` (run 36799359085).
+The recovered conditional parser now has a C++ core candidate; its authored
+calls/loops, unsigned duration and object-state continuation check passes.
+Comparison to original score reads is running against the unchanged three
+retained schedules. Observed commands/update modes still supply its inputs;
+no cold native audio, full audio restore or audible product pass is claimed.
+Next recover voice arithmetic and the coupled causal command/timer scheduler.
+Reassessment remains due by 01:19 UTC. Latest usage is 15%, boundary 32%,
+with review/recovery reserve and no reset/spending/provider change.
+
+## 01:19 UTC 45-minute reassessment
+
+Continue the same capability. The C++ conditional parser matches all 13,328
+original reads in baseline, Down and the 4,000-frame steered menu schedule;
+`native-score-conditional.json` retains data/source/runner/input hashes and
+byte comparisons. Score controls now have a readable native state candidate.
+The isolated shared DSP replay and conditional poll model remain exact in
+their recorded diagnostic domains. None substitutes for cold native audio.
+
+Next close per-voice arithmetic against original state at each update, then
+connect command consumption and timer/producer timing causally. This reduces
+the unknown output values before debugging clock positions. Product audio,
+pack extraction, full audio restore, live evidence, regressions and tier-1
+review remain required. Do not freeze an abbreviated headless acceptance.
+Latest account sample at 01:16 UTC is 15% weekly used, reset 1791365217,
+startup 12% and discretionary boundary 32%. Preserve the review reserve;
+no reset, spending, provider switch or new frontier consultation.
+Next durable checkpoint by 01:29 UTC and reassessment by 02:04 UTC.
+
+## 01:29 UTC checkpoint
+
+The C++ voice arithmetic matches 5,139 baseline and 5,155 Down updates exactly
+from observed pre-update state (`native-voice-conditional.json`). Joining it to
+the data-only score parser also matches all 10,294 complete voice state rows
+from native initialization, with no observed voice-state seed
+(`native-sequence-conditional.json`). Command boundaries, update mode and the
+update counter remain supplied observations. The authored score check passes.
+
+Next compare the native values of all six per-voice DSP writes, including the
+long-steered schedule, then close causal scheduling. Cold original PCM, full
+restore and live output are still unimplemented. No acceptance gate has been
+weakened or frozen expectation changed. Tier-1 review remains pending.
+Latest usage is 15%, startup 12%, boundary 32%, no reset/spending/provider change.
+Checkpoint by 01:39 UTC; reassessment by 02:04 UTC.
