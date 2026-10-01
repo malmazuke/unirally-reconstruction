@@ -44,7 +44,9 @@ public:
          << unsigned(value) << '\n';
   }
 };
-// "FRAME E COMMAND PARAMETER", "FRAME D early|late|wait", "FRAME L race|title".
+// "FRAME E COMMAND PARAMETER", "FRAME D early|late|...|wait", "FRAME L
+// race|title", and the app's unresolved "FRAME R RIDER ROTATING", which the
+// audio side's latches resolve.
 std::map<std::uint32_t, unirally::AudioCueList> read_cues(const char *path) {
   std::ifstream file(path);
   if (!file)
@@ -61,18 +63,26 @@ std::map<std::uint32_t, unirally::AudioCueList> read_cues(const char *path) {
       list.push_back(
           unirally::audio_enqueue(static_cast<std::uint8_t>(command),
                                   static_cast<std::uint8_t>(parameter)));
+    } else if (kind == "R") {
+      unsigned rider, rotating;
+      if (!(file >> rider >> rotating) || rider > 1 || rotating > 1)
+        throw std::invalid_argument("invalid rotation cue");
+      list.push_back(unirally::audio_rotation(rider, rotating != 0));
     } else if (kind == "D" || kind == "L") {
       std::string what;
       file >> what;
       if (kind == "D")
         list.push_back(unirally::audio_dispatch(
-            what == "early"       ? unirally::AudioDispatchSite::race_early
-            : what == "late"      ? unirally::AudioDispatchSite::race_late
-            : what == "countdown" ? unirally::AudioDispatchSite::countdown
-            : what == "finish"    ? unirally::AudioDispatchSite::finish_fade
-            : what == "choice"    ? unirally::AudioDispatchSite::race_choice
-            : what == "pause"     ? unirally::AudioDispatchSite::pause
-                                  : unirally::AudioDispatchSite::frame_wait));
+            what == "early"        ? unirally::AudioDispatchSite::race_early
+            : what == "late"       ? unirally::AudioDispatchSite::race_late
+            : what == "countdown"  ? unirally::AudioDispatchSite::countdown
+            : what == "finish"     ? unirally::AudioDispatchSite::finish_fade
+            : what == "choice"     ? unirally::AudioDispatchSite::race_choice
+            : what == "pause"      ? unirally::AudioDispatchSite::pause
+            : what == "pause-fade" ? unirally::AudioDispatchSite::pause_fade
+            : what == "pause-continue"
+                ? unirally::AudioDispatchSite::pause_continue
+                : unirally::AudioDispatchSite::frame_wait));
       else
         list.push_back(unirally::audio_load(
             what == "race" ? unirally::AudioSessionLoad::first_race

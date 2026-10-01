@@ -160,6 +160,7 @@ void move_track_cursor(FrontEndState& state, const FrontEndContent& content, std
     }
     if (state.latches.moved) return;
     state.latches = {.moved = true};
+    play_menu_sound(state, MenuSound::navigate); // $80:BB45 (Down), $80:BAE3 (Up)
     if (down) {
         if (++cursor > last_item) {
             cursor = 0;

@@ -6,7 +6,7 @@ namespace {
 using Clock = AudioCpuWorkClock;
 // A PAL frame is 312 lines of 1,364 master clocks. Frame n's work follows the
 // vertical-blank boundary (line 225) that ends frame n-1, observed at
-// 306,900 + n * 425,568 master clocks from power-on (R-0076).
+// 306,900 + (n - 1) * 425,568 master clocks from power-on (R-0076).
 constexpr std::uint64_t frame_clocks = 425568, first_frame_boundary = 306900;
 // D-0010 calibration constants, not recovered timing: master clocks after the
 // boundary that starts the frame, the medians of the cold 1P DRAGSTER captures
@@ -15,8 +15,10 @@ constexpr std::uint64_t frame_clocks = 425568, first_frame_boundary = 306900;
 // each session's first FF request.
 constexpr std::uint64_t frame_wait_anchor = 13082, race_early_anchor = 27920,
                         race_late_anchor = 207728, countdown_anchor = 31564,
-                        finish_fade_anchor = 26324, race_choice_anchor = 9908, pause_anchor = 13012;
+                        finish_fade_anchor = 26324, race_choice_anchor = 9908, pause_anchor = 12232,
+                        pause_fade_anchor = 17214, pause_continue_anchor = 36340;
 constexpr std::uint64_t first_race_load_anchor = 169072, title_return_load_anchor = 344450;
+constexpr std::uint32_t longest_session_frames = 16;
 
 std::uint64_t frame_start(std::uint32_t frame) {
     return first_frame_boundary + (std::uint64_t(frame) - 1) * frame_clocks;
@@ -34,6 +36,8 @@ std::uint64_t dispatch_anchor(AudioDispatchSite site) {
     case AudioDispatchSite::finish_fade: return finish_fade_anchor;
     case AudioDispatchSite::race_choice: return race_choice_anchor;
     case AudioDispatchSite::pause: return pause_anchor;
+    case AudioDispatchSite::pause_fade: return pause_fade_anchor;
+    case AudioDispatchSite::pause_continue: return pause_continue_anchor;
     }
     throw std::invalid_argument("unknown audio dispatch site");
 }
@@ -108,9 +112,14 @@ bool NativeTitleMenuAudio::valid_cued_state(const TitleMenuAudioState& state) {
         return state.cued_frame == 0 && !state.rotation_sounding[0] && !state.rotation_sounding[1]
             && state.engine.sound_set == AudioSoundSetId::title
             && state.engine.uploading_sound_set == AudioSoundSetId::title;
-    constexpr std::uint32_t last_frame = 0xfffffffeU;
+    // Only an upload session runs the clock past a frame's end; the longest, the race load,
+    // starts in frame 1249 and ends in 1260 (R-0076), so a clock further ahead names a lagging
+    // frame. A lag within one session's length is not detectable from the saved state.
+    constexpr std::uint32_t last_frame = 0xfffffffeU - longest_session_frames;
+    const auto ticks = state.engine.cpu.ticks;
     return state.cued_frame != 0 && state.cued_frame <= last_frame
-        && state.engine.cpu.ticks >= frame_start(state.cued_frame + 1);
+        && ticks >= frame_start(state.cued_frame + 1)
+        && ticks < frame_start(state.cued_frame + 1 + longest_session_frames);
 }
 // $82:A507-A5F3: the race keeps a sound latch per rider (`$1003`, `$1005`) and changes the
 // rotation flag (42 player, 43 opponent) and its effect only when the rotation changes.

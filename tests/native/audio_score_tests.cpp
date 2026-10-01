@@ -36,6 +36,11 @@ int main() {
         for (unsigned update = 0; update < 255; ++update) zero.update_voice(0, false);
         require(zero.state().voices[0].enabled, "zero duration did not wrap");
         zero.update_voice(0, false); require(!zero.state().voices[0].enabled, "zero duration never ended");
+        // The 64 score flags (AUDIO-FIRST-RACE): 63 is the last; 64 would index past the table.
+        zero.set_flag(63, true); require(zero.flag(63) && !zero.flag(55), "flag 63 not its own bit");
+        bool flag_rejected = false;
+        try { zero.set_flag(64, true); } catch (const std::invalid_argument&) { flag_rejected = true; }
+        require(flag_rejected && !zero.flag(0), "flag 64 aliased onto flag 0");
 
         // Restore while a nonzero software envelope and score loop are active.
         const std::uint8_t voiced[]{0xb3, 64, 128, 0xa2, 1, 0, 3, 127, 5, 80, 6,

@@ -1,4 +1,5 @@
 #include "race_sound.hpp"
+#include "announcements.hpp"
 #include "zoom_zoo_movement.hpp"
 
 namespace unirally::race_sound {
@@ -19,7 +20,8 @@ constexpr std::uint16_t stunt_second_beep = 220, stunt_third_beep = 160, stunt_f
 // Every start begins its countdown at 270 ($82:D841), so a stunt event's first range starts
 // on that value's update. No stunt event is compared in R-0076: a static reading only.
 constexpr std::uint16_t countdown_start = 270;
-// $81:828E-829D: a speed within (-256, 256) clears the checkpoint flag.
+// $81:828E-829D: a speed of 256 or more sets the checkpoint flag; a negative speed sets it only
+// below -256 (`CMP #$FF00` leaves N clear for -256 itself); any other speed clears it.
 constexpr std::uint16_t fast_checkpoint = 0x0100;
 
 void enqueue(ZoomZooState& next, std::uint8_t command, std::uint8_t parameter) {
@@ -42,14 +44,14 @@ void pause_frame(ZoomZooState& next, bool opening) {
     for (unsigned call = 0; call < paused_calls; ++call) dispatch(next, AudioDispatchSite::pause);
     if (!opening) return;
     enqueue(next, music_fade, pause_fade_out);
-    dispatch(next, AudioDispatchSite::pause);
-    dispatch(next, AudioDispatchSite::pause);
+    dispatch(next, AudioDispatchSite::pause_fade);
+    dispatch(next, AudioDispatchSite::pause_fade);
 }
 void pause_continue(ZoomZooState& next) {
     constexpr std::uint8_t pause_fade_in = 0x7f;
     enqueue(next, music_fade, pause_fade_in);
-    dispatch(next, AudioDispatchSite::pause);
-    dispatch(next, AudioDispatchSite::pause);
+    dispatch(next, AudioDispatchSite::pause_continue);
+    dispatch(next, AudioDispatchSite::pause_continue);
 }
 void countdown(ZoomZooState& next, std::uint16_t countdown, bool stunt_event) {
     if (beeps(countdown, stunt_event)) enqueue(next, start_effect, countdown_beep);
@@ -64,7 +66,7 @@ void finish_fade(ZoomZooState& next) {
 }
 void checkpoint(ZoomZooState& next, std::uint16_t velocity_x) {
     const auto speed = static_cast<std::int16_t>(velocity_x);
-    const bool fast = speed >= fast_checkpoint || speed <= -static_cast<int>(fast_checkpoint);
+    const bool fast = speed >= fast_checkpoint || speed < -static_cast<int>(fast_checkpoint);
     enqueue(next, fast ? set_flag : clear_flag, checkpoint_flag);
     enqueue(next, start_effect, checkpoint_chime);
 }
@@ -76,12 +78,14 @@ void brake_skid(ZoomZooState& next, unsigned rider, bool skidding) {
 void rotation(ZoomZooState& next, unsigned rider, bool rotating) {
     next.sound_cues.push_back(audio_rotation(rider, rotating));
 }
-// $81:C198-C216 / $81:C2D7-C357: FF is silent; bit 7 names a plain effect; otherwise the
-// voice effect plays with flags from the entry: bits 0 and 1, and its high bits as an index.
+// $81:C198-C216 / $81:C2D7-C357: an event on the reward path (0-71 and 200-255) reads its
+// entry at `$81:C441` with the 8-bit event as the index ($81:C2DA). FF is silent; bit 7 names a
+// plain effect; otherwise the voice effect plays with flags from the entry: bits 0 and 1, and
+// its high bits as an index.
 void announcement_voice(ZoomZooState& next, unsigned rider, std::uint8_t event,
                         std::span<const std::uint8_t> voices) {
-    constexpr std::uint8_t first_voice_event = 72, silent = 0xff;
-    if (!event || event >= first_voice_event || event >= voices.size()) return;
+    constexpr std::uint8_t silent = 0xff;
+    if (!event || !announcement::takes_reward_path(event) || event >= voices.size()) return;
     const auto entry = voices[event];
     if (entry == silent) return;
     if (entry & 0x80U) {

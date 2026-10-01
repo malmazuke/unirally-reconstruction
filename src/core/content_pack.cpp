@@ -1006,8 +1006,8 @@ const std::array<RequiredEntry, 16> race_audio_required{{
     {"audio.sample.37", 2956, "1c6d83140456826cb66772d20abf7a41060d2cea59eb604e0b3a9a0994dc1cbc"},
     {"audio.sample.42", 1354, "bc44c2c747bb395468ffd5a2558aed0aaddd44699f1398aa7c48c8fe67dad2d0"},
     {"audio.sample.47", 1219, "34e3a249cb6b995a35d01a84e3ab0dd37f9bc162991a0ac3f234319eb9950c71"},
-    {"audio.announcement-voices", 72,
-     "8ca87ccd736216f63131f75b0cb40c6935f650d5cc81bd78606d464bb07f463a"},
+    {"audio.announcement-voices", 256,
+     "3ddda4ddf6245c12a91cc74951946dc5de014bbf58e96a13412ffa507672d357"},
 }};
 const std::array<RequiredEntry, 33> audio_required{{
     {"audio.menu-tables", 621, "e75d7872e341a636dc822616a202db6b8894196471c13d47f1b21d15f38fc407"},
@@ -1162,7 +1162,7 @@ constexpr std::string_view dragster_rules_sha256 =
 constexpr std::string_view audio_rules_sha =
     "293039530c6ad250aa072415ea0f9af096532754648029d9ab69e734e0c81cf7";
 constexpr std::string_view race_audio_rules_sha =
-    "765ba4573f388bbcf59434a78f9216bcdcc741d3edebe9216435c1c58bbd3d03";
+    "00d7a342ebdc8b8cfcaac9159c503de1204f5e4f6b1637fbc5d0fa262b51fd08";
 constexpr std::string_view hunter_audio_rules_sha =
     "9bad18735028fa2502328f13e7d50edb5e15d239962c66f914f31856384fc037";
 constexpr std::string_view tracks_start = "classic.crawler.race-start.v2";

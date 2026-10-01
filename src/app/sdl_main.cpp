@@ -333,8 +333,9 @@ std::optional<Options> options(int argc, char **argv) {
 // rotation cues.
 void write_audio_cues(std::ofstream &out, std::uint32_t frame,
                       const unirally::AudioCueList &cues) {
-  constexpr std::array<const char *, 7> sites{
-      "wait", "early", "late", "countdown", "finish", "choice", "pause"};
+  constexpr std::array<const char *, 9> sites{
+      "wait",   "early", "late",       "countdown",     "finish",
+      "choice", "pause", "pause-fade", "pause-continue"};
   for (const auto &cue : cues)
     switch (cue.kind) {
     case unirally::AudioCueKind::enqueue:
@@ -649,8 +650,13 @@ int main(int argc, char **argv) try {
         if (!front_end->one_player_mode())
           audio_stopped = true;
         if (race_chosen && native_audio && !audio_stopped) {
+          // The cued producer and its calibration are R-0076's: the first
+          // race of a run, on DRAGSTER. Any other race stops the audio.
           const auto loading = front_end->race_loading_frames();
-          if (front_end->races() != 0 || loading == 0 || front_end->demo_race())
+          if (front_end->races() != 0 || loading == 0 ||
+              front_end->demo_race() ||
+              !(front_end->race_scenario().track ==
+                unirally::ClassicRaceTrack::Dragster))
             audio_stopped = true;
           else {
             race_loading_remaining = loading;

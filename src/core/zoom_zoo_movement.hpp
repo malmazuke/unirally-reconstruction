@@ -412,7 +412,7 @@ struct ZoomZooContent {
     // front-end.qualifying-scores (`$83:A218`), a word per tour and medal level: the stunt
     // events' qualifying scores; empty in packs before profile v17, which hold no stunt event.
     std::span<const std::uint8_t> qualifying_scores;
-    // audio.announcement-voices (`$81:C441`), a byte per announcement event 0-71: its voice
+    // audio.announcement-voices (`$81:C441`), a byte per 8-bit announcement event: its voice
     // (R-0076); empty in packs before profile v32, whose races are silent.
     std::span<const std::uint8_t> announcement_voices;
 };

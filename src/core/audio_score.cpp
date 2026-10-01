@@ -193,14 +193,22 @@ std::uint32_t TitleMenuAudioScore::start_effect_timed(std::uint8_t effect) {
     measured_work_ = nullptr;
     return work.ticks;
 }
-// 1151-1160: flag n is bit n & 7 of table byte n >> 3 (all 64 flags exist).
+// 1151-1160: flag n is bit n & 7 of table byte n >> 3. The table holds 64 flags; the driver
+// would index past it for a larger n, which no identified producer or score sends.
+namespace {
+void check_score_flag(std::uint8_t flag) {
+    if (flag >= 64) throw std::invalid_argument("score flag outside the 64-flag table");
+}
+} // namespace
 void TitleMenuAudioScore::set_flag(std::uint8_t flag, bool value) {
+    check_score_flag(flag);
     const auto mask = byte(1U << (flag & 7));
-    auto& bits = state_.flags[flag >> 3 & 7];
+    auto& bits = state_.flags[flag >> 3];
     bits = value ? byte(bits | mask) : byte(bits & ~unsigned(mask));
 }
 bool TitleMenuAudioScore::flag(std::uint8_t flag) const {
-    return (state_.flags[flag >> 3 & 7] >> (flag & 7) & 1) != 0;
+    check_score_flag(flag);
+    return (state_.flags[flag >> 3] >> (flag & 7) & 1) != 0;
 }
 void TitleMenuAudioScore::set_volume_gain(bool effects, std::uint8_t gain) {
     if (effects)

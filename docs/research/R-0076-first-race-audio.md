@@ -92,12 +92,13 @@ the dispatch.
 The race's dispatch sites and the setup screens' frame waits are not cycle-modelled, so
 [D-0010](../decisions/D-0010-frame-anchored-sound-commands.md) delivers commands at declared
 frame-anchored clocks after the exact title/menu model's 1P exit. Frame n's work follows the
-vertical-blank boundary at line 225 that ends frame n-1, observed at 306,900 + n * 425,568
+vertical-blank boundary at line 225 that ends frame n-1, observed at 306,900 + (n - 1) * 425,568
 master clocks from power-on in every one of `primary-a`'s 4,000 frames. Calibration constants
 are the medians of the dispatcher call sites watched in `primary-disp1/2` (every `JSL $82:8035`
 site in banks 80-83): the setup screens' `$80:FADF` 13,082, the race's `$83:CD6E` 27,920 and
 `$83:CD9F` 207,728, the countdown's `$83:E739`/`$83:E74F`/`$83:E785` 31,564, the finish fade's
-`$83:E82C` 26,324, NOW PLAYING's `$80:99BE` 9,908, and the first FF requests of the race load
+`$83:E82C` 26,324, NOW PLAYING's `$80:99BE` 9,908, the pause's three groups (see Pause below),
+and the first FF requests of the race load
 (169,072) and post-race reload (344,450). `$83:A923` is a second frame-wait routine that also
 polls the queue. A dispatch whose anchor has passed runs at once; a frame wait in a frame the
 CPU has already left (an upload) is skipped.
@@ -116,8 +117,12 @@ emit the same operations in program order:
   (back: effect 1); a choice's `$80:B124` (volume 63, effect 4) from the rider menu
   (`$80:BBB8`), NOW PLAYING's Race/Exit (`$80:B4A0`, `$80:B4B1`; Back is silent) and a tour
   reveal (`$80:E595`); NOW PLAYING's arrow moves play the navigation sound (`$80:B4DE`,
-  `$80:B4F1` to `$80:B178`); the result's `$80:B10F` (volume 63, effect 6) at `$80:9596` on
-  the fade's last frame; NOW PLAYING's Race fades the menu music (`$80:99B7`, command 3 with
+  `$80:B4F1` to `$80:B178`); so do the rider menu's column changes and every new Up or Down
+  press, also on the first and last rows (`$80:CC5E`, `$80:CC7F`, `$80:CCA1`, `$80:CCE1`),
+  PICK TRACK's moves including both wraps (`$80:BB45` Down, `$80:BAE3` Up), and PICK TOUR's
+  moves (`$80:E654` Left, `$80:E669` Right, `$80:E683` Up), where a move down calls it twice
+  (`$80:E69D`, then `$80:E6AB` after the HUNTER clamp); the result's `$80:B10F` (volume 63,
+  effect 6) at `$80:9596` on the fade's last frame; NOW PLAYING's Race fades the menu music (`$80:99B7`, command 3 with
   `0x90`) and dispatches at once (`$80:99BE`).
 - Frame waits: every front-end frame that ends in `$80:FADF`/`$83:A923`, taken from the
   existing `waits_for_frame` timing plus the `$83:A923` waits that leave the arrow alone
@@ -129,16 +134,23 @@ emit the same operations in program order:
 - Race: the countdown (`$83:E59C-E785`) beeps when `$11C5` first falls below 250, 190 and
   130, sounds GO below 70 and dispatches on every published update; the finish fade
   (`$83:E7F2-E830`) from the finish display's 180th update; the skid flag follows the brake
-  latch `$0D53`/`$0D55` (`$82:999A-9A49`); checkpoints set or clear flag 20 by speed
-  (`$81:828E-82B2`); rotation flags 42/43 follow the `$1003`/`$1005` latches, which the audio
-  side keeps (`$82:A507-A5F3`); each read announcement plays its voice from `$81:C441`
-  (`$81:C191-C216` player, `$81:C2D0-C357` opponent; the 72-byte table is pack entry
-  `audio.announcement-voices`); then `$83:CD6E` and `$83:CD9F`.
+  latch `$0D53`/`$0D55` (`$82:999A-9A49`); checkpoints set flag 20 at a speed of 256 or more or below
+  -256 (`CMP #$FF00` leaves N clear for -256 itself) and clear it otherwise (`$81:828E-82B2`); rotation flags 42/43 follow the `$1003`/`$1005` latches, which the audio
+  side keeps (`$82:A507-A5F3`); each announcement read on the reward path (events 0-71 and 200-255,
+  `$81:C238`'s bit-7 test) plays its voice from `$81:C441` indexed by the 8-bit event
+  (`$81:C191-C216` player, `$81:C2D0-C357` opponent, `$81:C2DA`; the 256-byte table is pack
+  entry `audio.announcement-voices`, and its entries 201-212 are BRONSEN's praise voices);
+  then `$83:CD6E` and `$83:CD9F`.
 - Pause (`$83:F63E` from `$83:CD2A`): every paused update calls the dispatcher eight times
   (`$83:F65E-F67A`); the update that opens the pause also fades the music out (command 3,
   `0x80`) and dispatches twice (`$83:F68A`, `$83:F68E`), clearing the latch `$1365`. CONTINUE
-  (`$83:F930-F93B`) fades it back in (`0x7F`), dispatches twice and restores `$1365` from
-  `$1369`. A quit keeps the quitting update's cues; the race state is left as it was.
+  (`$83:F930-F93B`) fades it back in (`0x7F`), dispatches twice (`$83:F937`, `$83:F93B`) and
+  restores `$1365` from `$1369`. A quit keeps the quitting update's cues; the race state is
+  left as it was. The three groups run at different points of the frame: medians 12,232,
+  17,214 and 36,340 master clocks over 339, 9 and 8 calls in `quit-disp1` and
+  `continue-disp1`. With one anchor for all of them, a CONTINUE in the frame that opened the
+  pause sent its fade-in a frame late (the driver had not yet acknowledged the fade-out), so
+  each group has its own anchor.
 
 `front_end_runner --sound-cues` on the primary schedule writes 5,791 cues for frames
 620-3,999, equal line for line to `primary.cues.txt` (4,757 without the frame waits); the

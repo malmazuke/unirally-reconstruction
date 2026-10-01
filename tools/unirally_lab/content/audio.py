@@ -96,6 +96,7 @@ def v32_new_entries(rom: bytes) -> list[dict[str, Any]]:
     ]
     entries += [_raw(f"audio.sample.{s:02d}", rom, [(resources[s][0]+2, resources[s][1]-2)])
                 for s in sorted(set(slots) - set(title_slots) - {255})]
-    # $81:C441, a byte per announcement event 0-71: the voice its reading plays.
-    entries.append(_raw("audio.announcement-voices", rom, [(ANNOUNCEMENT_VOICES, 72)]))
+    # $81:C441, indexed by the 8-bit announcement event: the voice its reading plays. The
+    # readers voice events 0-71 and 200-255 (`$81:C238`'s bit-7 test; R-0076).
+    entries.append(_raw("audio.announcement-voices", rom, [(ANNOUNCEMENT_VOICES, 256)]))
     return entries

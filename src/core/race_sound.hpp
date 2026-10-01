@@ -14,7 +14,7 @@ namespace race_sound {
 // $83:F65E-F67A: a paused update's eight dispatcher calls; the update that opens the pause also
 // fades the music out (command 3, 0x80) and sends it at $83:F68A-F68E ($1365 latches that once).
 void pause_frame(ZoomZooState& next, bool opening);
-// $83:F930-F93B: CONTINUE fades the music back in (0x7F) and sends it.
+// $83:F930-F93B: CONTINUE fades the music back in (0x7F) and sends it at $83:F937-F93B.
 void pause_continue(ZoomZooState& next);
 // $83:CD6E and $83:CD9F: the race loop's two dispatcher calls.
 void dispatch(ZoomZooState& next, AudioDispatchSite site);
