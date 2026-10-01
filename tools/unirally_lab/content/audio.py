@@ -14,10 +14,10 @@ from .provenance import rom_file_offset
 GRAPHICS_WORK_ASSETS = (1, 2, 5, 27, 28, 31, 68, 69, 70, 72, 74, 77, 78, 80, 88, 89, 91)
 
 
-def resource_headers(rom: bytes) -> list[tuple[int, int]]:
+def resource_headers(rom: bytes, count: int = 58) -> list[tuple[int, int]]:
     offset = 0x80000
     rows = []
-    for _ in range(58):
+    for _ in range(count):
         if offset + 2 > len(rom):
             raise ValueError("audio resource header outside ROM")
         length = int.from_bytes(rom[offset:offset+2], "little")
@@ -67,3 +67,32 @@ def v31_new_entries(rom: bytes) -> list[dict[str, Any]]:
     directory = rom_file_offset(ASSET_DIRECTORY_BUS, len(rom))
     return [_raw("audio.hunter-graphics-work-directory", rom,
                  [(directory+5*i, 5) for i in HUNTER_GRAPHICS_WORK_ASSETS])]
+
+
+RACE_SAMPLE_SLOTS = 0x1fc75  # $83:FC75, selected by every race sound load ($83:CA48-CBA1)
+
+
+def v32_new_entries(rom: bytes) -> list[dict[str, Any]]:
+    """The first race's sound set (R-0076); v31 entries are unchanged.
+
+    Resource 54 holds the race tables and resource 62 the first race's song; each
+    transfer also carries the next record's six header bytes, as the menu ones do.
+    Only the samples the race slots add to the title set are new entries.
+    """
+    resources = resource_headers(rom, 63)
+    slots = rom[RACE_SAMPLE_SLOTS:RACE_SAMPLE_SLOTS + 64]
+    title_slots = rom[0x1fcf5:0x1fd35]
+    if len(slots) != 64 or any(s != 255 and s >= 50 for s in slots):
+        raise ValueError("unidentified race sample selection")
+    tables, song = resources[54][0] + 6, resources[62][0] + 6
+    entries = [
+        _raw("audio.race-resource-lengths", rom, [(at, 2) for at, _ in resources[58:63]]),
+        _raw("audio.race-tables", rom, [(tables, 1583)]),
+        _raw("audio.race-song-1", rom, [(song, 2457)]),
+        _raw("audio.race-tables-transfer", rom, [(tables, 1589)]),
+        _raw("audio.race-song-1-transfer", rom, [(song, 2463)]),
+        _raw("audio.race-sample-slots", rom, [(RACE_SAMPLE_SLOTS, 64)]),
+    ]
+    entries += [_raw(f"audio.sample.{s:02d}", rom, [(resources[s][0]+2, resources[s][1]-2)])
+                for s in sorted(set(slots) - set(title_slots) - {255})]
+    return entries
