@@ -1,7 +1,7 @@
 #pragma once
+#include "audio_driver_pending.hpp"
 #include "audio_score.hpp"
 #include "audio_timers.hpp"
-#include "audio_driver_pending.hpp"
 
 namespace unirally {
 // A bus access is observed at its SMP tick, before any later driver work.

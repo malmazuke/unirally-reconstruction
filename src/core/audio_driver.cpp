@@ -29,7 +29,10 @@ TitleMenuAudioDriver::TitleMenuAudioDriver(const TitleMenuAudioData& data,
         score_.start_music(0);
 }
 void TitleMenuAudioDriver::advance(unsigned ticks) {
-    if (planning_) { planned_ticks_ += ticks; return; }
+    if (planning_) {
+        planned_ticks_ += ticks;
+        return;
+    }
     ticks_ += ticks;
     timers_.advance_to(ticks_);
 }
@@ -53,7 +56,10 @@ void TitleMenuAudioDriver::write_port(std::uint8_t port, std::uint8_t value) {
 }
 void TitleMenuAudioDriver::write_dsp(unsigned ticks, std::uint8_t reg, std::uint8_t value) {
     advance(ticks);
-    if (planning_) { queue_io(AudioDriverIoKind::write_dsp, reg, value); return; }
+    if (planning_) {
+        queue_io(AudioDriverIoKind::write_dsp, reg, value);
+        return;
+    }
     bus_->write_dsp(ticks_, reg, value);
 }
 // 04BA-04C6. Music changes reconfigure both timers, preserving physical phase.
@@ -210,7 +216,10 @@ void TitleMenuAudioDriver::iteration() {
     }
 }
 void TitleMenuAudioDriver::run_until(std::uint64_t ticks) {
-    if (resumable_) { run_pending_until(ticks); return; }
+    if (resumable_) {
+        run_pending_until(ticks);
+        return;
+    }
     try {
         while (ticks_ < ticks && !stopped_for_ipl_) iteration();
     } catch (const DriverReturnedToIpl&) {}

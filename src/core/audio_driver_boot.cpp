@@ -24,7 +24,10 @@ bool negative_difference(std::uint8_t expected, std::uint8_t actual) {
 }
 void TitleMenuAudioDriver::write_ram(unsigned ticks, std::uint16_t address, std::uint8_t value) {
     advance(ticks);
-    if (planning_) { queue_io(AudioDriverIoKind::write_ram, address, value); return; }
+    if (planning_) {
+        queue_io(AudioDriverIoKind::write_ram, address, value);
+        return;
+    }
     bus_->write_ram(ticks_, address, value);
 }
 // 137D-138E: identified register/value initialization table, followed by its
