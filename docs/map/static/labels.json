@@ -697,7 +697,8 @@
   "native": [
    "src/core/front_end.hpp:FrontEndState::boot_start",
    "src/core/front_end_screens.hpp:soft_reset",
-   "src/core/hunter_ending.cpp:(file)"
+   "src/core/hunter_ending.cpp:(file)",
+   "src/core/title_menu_audio.cpp:NativeTitleMenuAudio::restart_title"
   ],
   "source_records": [
    "docs/research/R-0006-observed-code-map.md",
@@ -1137,7 +1138,8 @@
    "src/core/front_end.cpp:soft_reset"
   ],
   "source_records": [
-   "docs/research/R-0006-observed-code-map.md"
+   "docs/research/R-0006-observed-code-map.md",
+   "docs/research/R-0075-title-menu-audio.md"
   ]
  },
  {
@@ -2497,8 +2499,12 @@
   "class": "observed",
   "comment": "routine start",
   "label": "sub_80B139",
+  "native": [
+   "src/core/audio_cpu_hunter_reveal.cpp:reveal_cue"
+  ],
   "source_records": [
-   "docs/research/R-0055-rider-menu.md"
+   "docs/research/R-0055-rider-menu.md",
+   "docs/research/R-0075-title-menu-audio.md"
   ]
  },
  {
@@ -2778,11 +2784,24 @@
   ]
  },
  {
+  "address": "$80:B6CF",
+  "class": "inferred",
+  "comment": "routine start",
+  "label": "sub_80B6CF",
+  "native": [
+   "src/core/audio_cpu_hunter_wait.cpp:native_audio_ending_press"
+  ],
+  "source_records": [
+   "docs/research/R-0075-title-menu-audio.md"
+  ]
+ },
+ {
   "address": "$80:B6D3",
   "class": "inferred",
   "comment": "routine start",
   "label": "sub_80B6D3",
   "native": [
+   "src/core/audio_cpu_hunter_wait.cpp:native_audio_ending_press",
    "src/core/award.cpp:award_left",
    "src/core/front_end.hpp:HunterEnding::both_pads",
    "src/core/front_end_screens.hpp:any_button_pressed",
@@ -3378,11 +3397,13 @@
   "comment": "routine start",
   "label": "sub_80C202",
   "native": [
+   "src/core/audio_cpu_hunter_wait.cpp:native_audio_hunter_page_wait_frame",
    "src/core/front_end.hpp:HunterEnding::press_seen",
    "src/core/hunter_ending.cpp:(file)"
   ],
   "source_records": [
-   "docs/research/R-0064-hunter-ending-and-soft-reset.md"
+   "docs/research/R-0064-hunter-ending-and-soft-reset.md",
+   "docs/research/R-0075-title-menu-audio.md"
   ]
  },
  {
@@ -3391,8 +3412,11 @@
   "comment": "routine start",
   "label": "sub_80C206",
   "native": [
+   "src/core/audio_cpu_hunter_wait.cpp:native_audio_hunter_page_wait_frame",
+   "src/core/front_end.hpp:HunterEnding::press_seen",
    "src/core/front_end.hpp:RaceResult::press_seen",
    "src/core/front_end_screens.hpp:wait_for_result_press",
+   "src/core/hunter_ending.cpp:(file)",
    "src/core/hunter_ending.cpp:first_page_press",
    "src/core/race_result.cpp:(file)",
    "src/core/race_result.cpp:pressed",
@@ -3410,6 +3434,9 @@
   "comment": "instruction start",
   "label": "loc_80C20C",
   "native": [
+   "src/core/audio_cpu_hunter_wait.cpp:native_audio_hunter_page_wait_frame",
+   "src/core/front_end.hpp:HunterEnding::press_seen",
+   "src/core/hunter_ending.cpp:(file)",
    "src/core/hunter_ending.cpp:hunter_ending_waits"
   ],
   "source_records": [
@@ -3422,6 +3449,9 @@
   "comment": "instruction start",
   "label": "loc_80C236",
   "native": [
+   "src/core/audio_cpu_hunter_wait.cpp:native_audio_hunter_page_wait_frame",
+   "src/core/front_end.hpp:HunterEnding::press_seen",
+   "src/core/hunter_ending.cpp:(file)",
    "src/core/hunter_ending.cpp:first_page_press",
    "src/core/race_result.cpp:hide_result_objects",
    "src/core/race_result.cpp:lap_graph_frame"
@@ -4438,7 +4468,8 @@
    "src/core/race_result.cpp:score_race"
   ],
   "source_records": [
-   "docs/research/R-0059-tour-completion.md"
+   "docs/research/R-0059-tour-completion.md",
+   "docs/research/R-0075-title-menu-audio.md"
   ]
  },
  {
@@ -5028,10 +5059,12 @@
   "comment": "routine start",
   "label": "sub_80E2CF",
   "native": [
+   "src/core/audio_cpu_hunter_reveal.cpp:reveal_page",
    "src/core/hunter_ending.cpp:(file)"
   ],
   "source_records": [
    "docs/research/R-0064-hunter-ending-and-soft-reset.md",
+   "docs/research/R-0075-title-menu-audio.md",
    "tasks/HUNTER-ENDING.md"
   ]
  },
@@ -5041,6 +5074,9 @@
   "comment": "instruction start",
   "label": "loc_80E2D8",
   "native": [
+   "src/core/audio_cpu_hunter_reveal.cpp:copy_reveal_work",
+   "src/core/audio_cpu_hunter_reveal.cpp:reveal_page",
+   "src/core/hunter_ending.cpp:(file)",
    "src/core/hunter_ending.cpp:copy_reveal_tables"
   ],
   "source_records": [
@@ -5053,6 +5089,8 @@
   "comment": "instruction start",
   "label": "loc_80E322",
   "native": [
+   "src/core/audio_cpu_hunter_reveal.cpp:reveal_page",
+   "src/core/hunter_ending.cpp:(file)",
    "src/core/hunter_ending.cpp:hunter_ending_waits",
    "src/core/hunter_ending.cpp:reveal_step"
   ],
@@ -5066,6 +5104,10 @@
   "comment": "instruction start",
   "label": "loc_80E369",
   "native": [
+   "src/core/audio_cpu_hunter_reveal.cpp:native_audio_hunter_reveal_frame",
+   "src/core/audio_cpu_hunter_reveal.cpp:reveal_frame",
+   "src/core/audio_cpu_hunter_reveal.cpp:reveal_page",
+   "src/core/hunter_ending.cpp:(file)",
    "src/core/hunter_ending.cpp:end_reveal",
    "src/core/hunter_ending.cpp:page_load_frame, page_tiles_frame, reveal_steps"
   ],
@@ -6533,13 +6575,15 @@
   "comment": "routine start",
   "label": "sub_80F814",
   "native": [
+   "src/core/audio_cpu_pose_upload.cpp:native_audio_upload_pose_work",
    "src/core/award.cpp:upload_rider",
    "src/core/front_end_screens.hpp:upload_pose",
    "src/core/tour_ending_scripts.hpp:upload_built_pose"
   ],
   "source_records": [
    "docs/research/R-0059-tour-completion.md",
-   "docs/research/R-0062-gold-endings.md"
+   "docs/research/R-0062-gold-endings.md",
+   "docs/research/R-0075-title-menu-audio.md"
   ]
  },
  {
@@ -6548,9 +6592,12 @@
   "comment": "routine start",
   "label": "sub_80F818",
   "native": [
+   "src/core/audio_cpu_pose_upload.cpp:native_audio_upload_pose_work",
+   "src/core/award.cpp:upload_rider",
    "src/core/front_end_screens.hpp:upload_pose",
    "src/core/rider_menu.cpp:uni_tiles_word, uni_row_words, tile_words",
-   "src/core/rider_menu.cpp:upload_uni"
+   "src/core/rider_menu.cpp:upload_uni",
+   "src/core/tour_ending_scripts.hpp:upload_built_pose"
   ],
   "source_records": [
    "docs/research/R-0055-rider-menu.md"
@@ -11549,6 +11596,15 @@
   ]
  },
  {
+  "address": "$82:80D6",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_8280D6",
+  "source_records": [
+   "docs/research/R-0075-title-menu-audio.md"
+  ]
+ },
+ {
   "address": "$82:810F",
   "class": "observed",
   "comment": "instruction start",
@@ -14742,6 +14798,18 @@
   ]
  },
  {
+  "address": "$83:8484",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_838484",
+  "native": [
+   "src/core/audio_cpu_pose.cpp:copy_pose_tile"
+  ],
+  "source_records": [
+   "docs/research/R-0075-title-menu-audio.md"
+  ]
+ },
+ {
   "address": "$83:8535",
   "class": "unknown",
   "comment": "unknown",
@@ -15329,6 +15397,7 @@
   "comment": "routine start",
   "label": "sub_838E3A",
   "native": [
+   "src/core/audio_cpu_pose.cpp:native_audio_build_pose_work",
    "src/core/front_end.hpp:RiderMenu::picture",
    "src/core/front_end.hpp:TourAward::pose",
    "src/core/front_end_screens.hpp:upload_pose",
@@ -15339,7 +15408,8 @@
   "source_records": [
    "docs/research/R-0055-rider-menu.md",
    "docs/research/R-0059-tour-completion.md",
-   "docs/research/R-0062-gold-endings.md"
+   "docs/research/R-0062-gold-endings.md",
+   "docs/research/R-0075-title-menu-audio.md"
   ]
  },
  {
@@ -15836,6 +15906,8 @@
   "comment": "routine start",
   "label": "sub_839A1E",
   "native": [
+   "src/core/audio_cpu_decorations.cpp:native_audio_step_decorations",
+   "src/core/audio_cpu_scene.hpp:AudioCpuDecorationWorkState",
    "src/core/front_end.hpp:MenuDecorations",
    "src/core/front_end_screens.hpp:step_decorations",
    "src/core/screen_slide.cpp:(file)"
@@ -15845,7 +15917,8 @@
    "docs/research/R-0056-tour-track-now-playing.md",
    "docs/research/R-0057-one-run-result.md",
    "docs/research/R-0058-lap-result.md",
-   "docs/research/R-0067-stunt-result.md"
+   "docs/research/R-0067-stunt-result.md",
+   "docs/research/R-0075-title-menu-audio.md"
   ]
  },
  {
@@ -16086,6 +16159,7 @@
   "comment": "routine start",
   "label": "sub_83A4D2",
   "native": [
+   "src/core/audio_cpu_credits_loop.cpp:native_audio_hunter_finish_credits_setup",
    "src/core/award.cpp:fade_out_frames, blank_frame, reset_frame, background_tiles_frame, podium_map_frame, podium_tiles_frame, colours_frame, objects_frame, rider_frame, first_fade_in_frame, fade_in_frames",
    "src/core/award.cpp:fade_up",
    "src/core/front_end_screens.hpp:fade_up",
@@ -16094,7 +16168,8 @@
   ],
   "source_records": [
    "docs/research/R-0059-tour-completion.md",
-   "docs/research/R-0062-gold-endings.md"
+   "docs/research/R-0062-gold-endings.md",
+   "docs/research/R-0075-title-menu-audio.md"
   ]
  },
  {
@@ -16214,7 +16289,7 @@
   "comment": "routine start",
   "label": "sub_83A923",
   "native": [
-   "src/core/audio_cpu_hunter_entry.cpp:ending_wait",
+   "src/core/audio_cpu_hunter_entry.cpp:native_audio_hunter_ending_wait",
    "src/core/front_end.cpp:waits_for_frame",
    "src/core/front_end_screens.hpp:result_scoring_frame",
    "src/core/hunter_ending.cpp:hunter_ending_waits",
@@ -16226,7 +16301,8 @@
   "source_records": [
    "docs/research/R-0057-one-run-result.md",
    "docs/research/R-0059-tour-completion.md",
-   "docs/research/R-0060-pause-exits.md"
+   "docs/research/R-0060-pause-exits.md",
+   "docs/research/R-0075-title-menu-audio.md"
   ]
  },
  {
@@ -16235,10 +16311,40 @@
   "comment": "routine start",
   "label": "sub_83A93A",
   "native": [
+   "src/core/audio_cpu_credits_text.cpp:native_audio_print_credits",
    "src/core/hunter_ending.cpp:show_credits"
   ],
   "source_records": [
-   "docs/research/R-0064-hunter-ending-and-soft-reset.md"
+   "docs/research/R-0064-hunter-ending-and-soft-reset.md",
+   "docs/research/R-0075-title-menu-audio.md"
+  ]
+ },
+ {
+  "address": "$83:A9FB",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_83A9FB",
+  "native": [
+   "src/core/audio_cpu_credits_text.cpp:native_audio_print_credits",
+   "src/core/audio_cpu_credits_text.cpp:set_position",
+   "src/core/hunter_ending.cpp:show_credits"
+  ],
+  "source_records": [
+   "docs/research/R-0075-title-menu-audio.md"
+  ]
+ },
+ {
+  "address": "$83:AAC5",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_83AAC5",
+  "native": [
+   "src/core/audio_cpu_credits_text.cpp:native_audio_print_credits",
+   "src/core/audio_cpu_credits_text.cpp:small_glyph",
+   "src/core/hunter_ending.cpp:show_credits"
+  ],
+  "source_records": [
+   "docs/research/R-0075-title-menu-audio.md"
   ]
  },
  {
@@ -16247,6 +16353,7 @@
   "comment": "routine start",
   "label": "sub_83AB25",
   "native": [
+   "src/core/audio_cpu_pose_upload.cpp:native_audio_upload_pose_work",
    "src/core/tour_ending_right_column.cpp:bound_off_part",
    "src/core/tour_ending_right_column.cpp:knock_part"
   ],
@@ -16273,6 +16380,7 @@
    "docs/research/R-0059-tour-completion.md",
    "docs/research/R-0062-gold-endings.md",
    "docs/research/R-0064-hunter-ending-and-soft-reset.md",
+   "docs/research/R-0075-title-menu-audio.md",
    "tasks/FRONT-END-ENDINGS.md",
    "tasks/HUNTER-ENDING.md"
   ]
@@ -16283,6 +16391,7 @@
   "comment": "instruction start",
   "label": "loc_83AB9F",
   "native": [
+   "src/core/audio_cpu_hunter_reveal.cpp:native_audio_hunter_begin_first_page",
    "src/core/hunter_ending.cpp:page_screens, page_mode, page_map, page_tile_bases",
    "src/core/hunter_ending.cpp:set_page_registers"
   ],
@@ -16296,6 +16405,9 @@
   "comment": "instruction start",
   "label": "loc_83ABB3",
   "native": [
+   "src/core/audio_cpu_hunter_reveal.cpp:native_audio_hunter_begin_first_page",
+   "src/core/hunter_ending.cpp:page_screens, page_mode, page_map, page_tile_bases",
+   "src/core/hunter_ending.cpp:set_page_registers",
    "src/core/hunter_ending.cpp:start_hunter_ending"
   ],
   "source_records": [
@@ -16308,7 +16420,10 @@
   "comment": "instruction start",
   "label": "loc_83ABB9",
   "native": [
-   "src/core/hunter_ending.cpp:cheat_page"
+   "src/core/audio_cpu_hunter_reveal.cpp:native_audio_hunter_begin_first_page",
+   "src/core/hunter_ending.cpp:cheat_page",
+   "src/core/hunter_ending.cpp:page_screens, page_mode, page_map, page_tile_bases",
+   "src/core/hunter_ending.cpp:set_page_registers"
   ],
   "source_records": [
    "docs/research/R-0064-hunter-ending-and-soft-reset.md"
@@ -16320,7 +16435,10 @@
   "comment": "instruction start",
   "label": "loc_83ABDA",
   "native": [
-   "src/core/hunter_ending.cpp:daily_news"
+   "src/core/audio_cpu_hunter_reveal.cpp:native_audio_hunter_begin_first_page",
+   "src/core/hunter_ending.cpp:daily_news",
+   "src/core/hunter_ending.cpp:page_screens, page_mode, page_map, page_tile_bases",
+   "src/core/hunter_ending.cpp:set_page_registers"
   ],
   "source_records": [
    "docs/research/R-0064-hunter-ending-and-soft-reset.md"
@@ -16332,6 +16450,7 @@
   "comment": "instruction start",
   "label": "loc_83ABFD",
   "native": [
+   "src/core/audio_cpu_hunter_reveal.cpp:native_audio_hunter_begin_second_page",
    "src/core/hunter_ending.cpp:speedking"
   ],
   "source_records": [
@@ -16344,7 +16463,10 @@
   "comment": "instruction start",
   "label": "loc_83AC1F",
   "native": [
+   "src/core/audio_cpu_hunter_reveal.cpp:native_audio_hunter_begin_second_page",
+   "src/core/audio_cpu_hunter_wait.cpp:native_audio_hunter_timed_frame",
    "src/core/hunter_ending.cpp:(file)",
+   "src/core/hunter_ending.cpp:speedking",
    "src/core/hunter_ending.cpp:timed_wait_pass",
    "src/core/hunter_ending.cpp:timed_wait_passes"
   ],
@@ -16358,8 +16480,13 @@
   "comment": "instruction start",
   "label": "loc_83AC32",
   "native": [
+   "src/core/audio_cpu_credits_setup.cpp:native_audio_hunter_prepare_credits",
+   "src/core/audio_cpu_hunter_wait.cpp:native_audio_hunter_timed_frame",
+   "src/core/hunter_ending.cpp:(file)",
    "src/core/hunter_ending.cpp:credits_setup_frame, credits_shown_frame, lower_pose_frame, credits_fade_in, credits_loop_frame",
-   "src/core/hunter_ending.cpp:set_up_credits"
+   "src/core/hunter_ending.cpp:set_up_credits",
+   "src/core/hunter_ending.cpp:timed_wait_pass",
+   "src/core/hunter_ending.cpp:timed_wait_passes"
   ],
   "source_records": [
    "docs/research/R-0064-hunter-ending-and-soft-reset.md"
@@ -16371,6 +16498,7 @@
   "comment": "instruction start",
   "label": "loc_83AC3B",
   "native": [
+   "src/core/audio_cpu_credits_setup.cpp:native_audio_hunter_prepare_credits",
    "src/core/front_end_screens.hpp:set_menu_registers",
    "src/core/hunter_ending.cpp:credits_setup_frame, credits_shown_frame, lower_pose_frame, credits_fade_in, credits_loop_frame",
    "src/core/hunter_ending.cpp:set_up_credits"
@@ -16385,6 +16513,7 @@
   "comment": "instruction start",
   "label": "loc_83AC6D",
   "native": [
+   "src/core/audio_cpu_credits_setup.cpp:native_audio_hunter_prepare_credits",
    "src/core/hunter_ending.cpp:credits_logo_offset",
    "src/core/hunter_ending.cpp:credits_setup_frame, credits_shown_frame, lower_pose_frame, credits_fade_in, credits_loop_frame",
    "src/core/hunter_ending.cpp:set_up_credits"
@@ -16399,6 +16528,7 @@
   "comment": "instruction start",
   "label": "loc_83ACDD",
   "native": [
+   "src/core/audio_cpu_credits_setup.cpp:native_audio_hunter_prepare_credits",
    "src/core/hunter_ending.cpp:credits_object_colours",
    "src/core/hunter_ending.cpp:credits_setup_frame, credits_shown_frame, lower_pose_frame, credits_fade_in, credits_loop_frame",
    "src/core/hunter_ending.cpp:set_up_credits",
@@ -16414,6 +16544,7 @@
   "comment": "instruction start",
   "label": "loc_83AD33",
   "native": [
+   "src/core/audio_cpu_credits_setup.cpp:native_audio_hunter_prepare_credits",
    "src/core/hunter_ending.cpp:credits_object_colours",
    "src/core/hunter_ending.cpp:credits_object_entries",
    "src/core/hunter_ending.cpp:credits_setup_frame, credits_shown_frame, lower_pose_frame, credits_fade_in, credits_loop_frame",
@@ -16430,6 +16561,7 @@
   "comment": "instruction start",
   "label": "loc_83AD67",
   "native": [
+   "src/core/audio_cpu_credits_setup.cpp:native_audio_hunter_prepare_credits",
    "src/core/hunter_ending.cpp:credits_object_colours",
    "src/core/hunter_ending.cpp:credits_setup_frame, credits_shown_frame, lower_pose_frame, credits_fade_in, credits_loop_frame",
    "src/core/hunter_ending.cpp:set_up_credits",
@@ -16446,6 +16578,10 @@
   "comment": "instruction start",
   "label": "loc_83AD9B",
   "native": [
+   "src/core/audio_cpu_credits_loop.cpp:build_credits_pose",
+   "src/core/audio_cpu_credits_loop.cpp:native_audio_hunter_credits_frame",
+   "src/core/audio_cpu_credits_loop.cpp:native_audio_hunter_finish_credits_setup",
+   "src/core/audio_cpu_credits_setup.cpp:native_audio_hunter_prepare_credits",
    "src/core/hunter_ending.cpp:credits_pass",
    "src/core/hunter_ending.cpp:credits_setup_frame, credits_shown_frame, lower_pose_frame, credits_fade_in, credits_loop_frame",
    "src/core/hunter_ending.cpp:set_up_credits"
@@ -16460,6 +16596,9 @@
   "comment": "instruction start",
   "label": "loc_83ADFA",
   "native": [
+   "src/core/audio_cpu_credits_loop.cpp:build_credits_pose",
+   "src/core/audio_cpu_credits_loop.cpp:native_audio_hunter_credits_frame",
+   "src/core/hunter_ending.cpp:credits_pass",
    "src/core/hunter_ending.cpp:reset_frame"
   ],
   "source_records": [

@@ -57,6 +57,34 @@ void TitleMenuAudioStream::check_failure() {
     }
     if (failure) std::rethrow_exception(failure);
 }
+AudioCpuMenuAction TitleMenuAudioStream::run_menu() {
+    auto& native = playback_.native();
+    for (;;) {
+        const auto before = native.menu_selection();
+        const auto action = native.menu_frame();
+        if (native.menu_selection() != before) ++navigation_count_;
+        if (action != AudioCpuMenuAction::waiting) return action;
+    }
+}
+void TitleMenuAudioStream::run_hunter() {
+    auto& native = playback_.native();
+    while (native.hunter_entry_frame()) {}
+    native.hunter_first_fade();
+    native.hunter_reveal_first_page();
+    while (native.hunter_page_wait_frame()) {}
+    native.hunter_reveal_second_page();
+    while (native.hunter_timed_wait_frame()) {}
+    native.hunter_prepare_credits();
+    native.hunter_build_first_pose();
+    native.hunter_build_second_pose();
+    native.hunter_finish_credits_setup();
+    while (native.hunter_credits_frame()) {}
+    native.hunter_finish_credits();
+    native.restart_title();
+    while (native.phase() == TitleMenuAudioPhase::warm_title_hold) native.title_frame();
+    native.reveal_menu();
+    ++restart_count_;
+}
 void TitleMenuAudioStream::run() {
     try {
         auto& native = playback_.native();
@@ -64,13 +92,10 @@ void TitleMenuAudioStream::run() {
         while (native.phase() == TitleMenuAudioPhase::title_hold) native.title_frame();
         native.reveal_menu();
         for (;;) {
-            const auto before = native.menu_selection();
-            const auto action = native.menu_frame();
-            if (action != AudioCpuMenuAction::waiting) break;
-            if (native.menu_selection() != before) ++navigation_count_;
+            const auto action = run_menu();
+            if (action != AudioCpuMenuAction::hunter) break;
+            run_hunter();
         }
-        // Joined post-menu producers are the next recovery domain. This stream
-        // prototype stops at that semantic boundary and has no product acceptance.
     } catch (const StreamStopped&) {
     } catch (...) {
         std::lock_guard lock(input_mutex_);

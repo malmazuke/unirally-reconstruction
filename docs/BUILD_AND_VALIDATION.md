@@ -13,13 +13,19 @@ experimental `--audio-out`, `--audio-instructions`, `--audio-cpu-watch`,
 `--audio-smp-watch` and `--audio-ram-frame` options retain cold uninterrupted raw
 evidence; missing ABI, overflow or incompatible restore/runahead fails the capture.
 The older diagnostic score/clock runners take observed scheduling inputs.
-`title_menu_audio_runner` now predicts cold title/menu work from a validated v30
+`title_menu_audio_runner` now predicts cold title/menu work from a validated v30/v31
 pack and future controller words only; frozen event/raw PCM and call-boundary
 fresh-process continuation pass in R-0075's bounded domains. The new
+`title_menu_audio_runner` additionally predicts the coupled HUNTER pages, credits
+and warm title/menu restart from v31 identified data; original clocks/events
+are comparison outputs only. Its strict URAU0004 includes reveal HDMA and
+retained timer work. These differential experiments remain inside the incomplete
+capability; the warm opaque transport correction awaits independent review.
 `audio_playback_runner` also owns modern output fractions and queued PCM.
 The app's opt-in `--native-title-menu-audio` prototype delivers native audio
-through SDL from cold power-on and stops at the first menu exit. Default product
-audio, joined scene restart, live navigation and device/thread save acceptance
+through SDL from cold power-on and follows the coupled HUNTER path through
+a warm title/menu restart. Other menu exits stop its bounded producer. Default product
+audio, live navigation and device/thread save acceptance
 remain incomplete. A stream restore needs a quiescent producer and device;
 no OS mixer state is serialized.
 No raw replay is product acceptance. Reference restore-audio exclusions and all

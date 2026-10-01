@@ -53,8 +53,9 @@ int main(int argc, char** argv) {
         if (argc != 11 && argc != 12)
             throw std::invalid_argument(
                 "title_menu_audio_runner DATA INPUT EVENTS PCM MENU_FRAMES DSP_END "
-                "SAVE_PHASE SAVE_FRAME STATE RESTORE (phase: none|cold|title|menu; restore: - or "
-                "file) [--stream-pcm|--hunter-exit|--hunter-entry|--hunter-fade]");
+                "SAVE_PHASE SAVE_FRAME STATE RESTORE (phase: none|cold|title|menu|hunter|"
+                "first-reveal|second-reveal|page-wait|timed-wait|credits-loop|reset|warm-title; "
+                "restore: - or file) [--stream-pcm|--hunter-<endpoint>]");
         const auto content = audio_test::content(argv[1]);
         Controllers controllers(argv[2]);
         Events events(argv[3]);
@@ -63,8 +64,17 @@ int main(int argc, char** argv) {
         unirally::NativeTitleMenuAudio audio(content, controllers, &events);
         Pcm streamed(pcm);
         const std::string mode = argc == 12 ? argv[11] : "";
-        const bool hunter = mode == "--hunter-exit" || mode == "--hunter-entry"
-                           || mode == "--hunter-fade";
+        const std::array<std::string_view, 14> hunter_modes{
+            "--hunter-exit",        "--hunter-entry",         "--hunter-fade",
+            "--hunter-page",        "--hunter-pressed",       "--hunter-timed",
+            "--hunter-credits",     "--hunter-credits-setup", "--hunter-first-pose",
+            "--hunter-second-pose", "--hunter-loop",          "--hunter-leaving",
+            "--hunter-reset",       "--hunter-warm-menu"};
+        const auto found = std::find(hunter_modes.begin(), hunter_modes.end(), mode);
+        const unsigned hunter_stage = found == hunter_modes.end()
+                                        ? 0U
+                                        : static_cast<unsigned>(found - hunter_modes.begin() + 1);
+        const bool hunter = hunter_stage != 0;
         if (argc == 12) {
             if (mode == "--stream-pcm") {
                 if (std::string(argv[7]) != "none" || std::string(argv[10]) != "-")
@@ -127,7 +137,7 @@ int main(int argc, char** argv) {
         if (hunter && audio.phase() == unirally::TitleMenuAudioPhase::menu)
             throw std::runtime_error("HUNTER menu code was not entered");
         unsigned hunter_frames = 0;
-        if (mode == "--hunter-entry" || mode == "--hunter-fade") {
+        if (hunter_stage >= 2) {
             while (audio.phase() == unirally::TitleMenuAudioPhase::menu_exit
                    || audio.phase() == unirally::TitleMenuAudioPhase::hunter_entry) {
                 audio.hunter_entry_frame();
@@ -139,8 +149,90 @@ int main(int argc, char** argv) {
                 }
             }
         }
-        if (mode == "--hunter-fade" && audio.phase() == unirally::TitleMenuAudioPhase::hunter_ready)
+        if (hunter_stage >= 3 && audio.phase() == unirally::TitleMenuAudioPhase::hunter_ready)
             audio.hunter_first_fade();
+        if (hunter_stage >= 4 && audio.phase() == unirally::TitleMenuAudioPhase::hunter_faded)
+            audio.hunter_begin_first_page();
+        unsigned first_reveal_frames = 0;
+        if (hunter_stage >= 4)
+            while (audio.phase() == unirally::TitleMenuAudioPhase::hunter_first_reveal) {
+                audio.hunter_reveal_frame();
+                if (save_phase == "first-reveal" && ++first_reveal_frames == save_frame) {
+                    save();
+                    return 0;
+                }
+            }
+        unsigned page_frames = 0;
+        if (hunter_stage >= 5)
+            while (audio.phase() == unirally::TitleMenuAudioPhase::hunter_first_page) {
+                audio.hunter_page_wait_frame();
+                if (save_phase == "page-wait" && ++page_frames == save_frame) {
+                    save();
+                    return 0;
+                }
+            }
+        if (hunter_stage >= 6
+            && audio.phase() == unirally::TitleMenuAudioPhase::hunter_page_pressed)
+            audio.hunter_begin_second_page();
+        unsigned second_reveal_frames = 0;
+        if (hunter_stage >= 6)
+            while (audio.phase() == unirally::TitleMenuAudioPhase::hunter_second_reveal) {
+                audio.hunter_reveal_frame();
+                if (save_phase == "second-reveal" && ++second_reveal_frames == save_frame) {
+                    save();
+                    return 0;
+                }
+            }
+        unsigned timed_frames = 0;
+        if (hunter_stage >= 7)
+            while (audio.phase() == unirally::TitleMenuAudioPhase::hunter_timed_wait) {
+                audio.hunter_timed_wait_frame();
+                if (save_phase == "timed-wait" && ++timed_frames == save_frame) {
+                    save();
+                    return 0;
+                }
+            }
+        if (hunter_stage >= 8
+            && audio.phase() == unirally::TitleMenuAudioPhase::hunter_credits_ready)
+            for (auto mark : audio.hunter_prepare_credits())
+                std::cout << "credits_work_mark=" << mark << '\n';
+        if (hunter_stage >= 9
+            && audio.phase() == unirally::TitleMenuAudioPhase::hunter_credits_prepared)
+            audio.hunter_build_first_pose();
+        if (hunter_stage >= 10 && audio.phase() == unirally::TitleMenuAudioPhase::hunter_first_pose)
+            audio.hunter_build_second_pose();
+        if (hunter_stage >= 11
+            && audio.phase() == unirally::TitleMenuAudioPhase::hunter_second_pose)
+            audio.hunter_finish_credits_setup();
+        unsigned credits_frames = 0;
+        if (hunter_stage >= 12)
+            while (audio.phase() == unirally::TitleMenuAudioPhase::hunter_credits_loop) {
+                audio.hunter_credits_frame();
+                std::cout << "credits_frame_end=" << audio.cpu_ticks() << '\n';
+                if (save_phase == "credits-loop" && ++credits_frames == save_frame) {
+                    save();
+                    return 0;
+                }
+            }
+        if (hunter_stage >= 13 && audio.phase() == unirally::TitleMenuAudioPhase::hunter_leaving)
+            audio.hunter_finish_credits();
+        if (save_phase == "reset"
+            && audio.phase() == unirally::TitleMenuAudioPhase::hunter_reset_ready) {
+            save();
+            return 0;
+        }
+        if (hunter_stage >= 14) {
+            if (audio.phase() == unirally::TitleMenuAudioPhase::hunter_reset_ready)
+                audio.restart_title();
+            if (save_phase == "warm-title") {
+                save();
+                return 0;
+            }
+            while (audio.phase() == unirally::TitleMenuAudioPhase::warm_title_hold)
+                audio.title_frame();
+            if (audio.phase() == unirally::TitleMenuAudioPhase::warm_title_complete)
+                audio.reveal_menu();
+        }
         audio.finish_pcm_to(std::stoull(argv[6]));
         audio_test::write_pcm(pcm, audio.take_pcm());
         audio_test::write(argv[9], unirally::serialize_title_menu_audio(audio.snapshot()));

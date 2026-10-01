@@ -540,7 +540,7 @@ class AudioEntryTests(unittest.TestCase):
         previous_bytes = json.dumps(previous, sort_keys=True, separators=(",", ":")).encode()
         self.assertEqual(hashlib.sha256(previous_bytes).hexdigest(),
                          "6df6cfce7f83ef8ac93a4e6143f1987244dbb1901dc6a7b5e1fe61618cd487f7")
-        added = rules["entries"][len(previous):]
+        added = rules["entries"][len(previous):len(previous)+33]
         self.assertEqual(len(added), 33)
         self.assertTrue(all(e["id"].startswith("audio.") for e in added))
         self.assertEqual([e["id"] for e in added[12:]],
@@ -548,10 +548,21 @@ class AudioEntryTests(unittest.TestCase):
                           (0, 4, 6, 8, 10, 13, 14, 15, 17, 18, 19, 20, 21, 24, 26, 27,
                            39, 40, 43, 46, 48)])
         source = (ROOT / "src/core/content_pack.cpp").read_text(encoding="utf-8")
-        table = source[source.index("audio_required{{"):]
+        table = source[source.index("33> audio_required{{"):]
         table = table[:table.index("}};")]
         compiled = re.findall(r'\{"([^"]+)",\s*(\d+),\s*"([0-9a-f]{64})"\}', table)
         self.assertEqual(compiled, [(e["id"], str(e["size"]), e["sha256"]) for e in added])
+
+    def test_hunter_metadata_preserves_v30_inventory(self) -> None:
+        import hashlib
+        rules = json.loads((ROOT / "tests/manifests/content/classic-crawler-tracks-pack.json")
+                           .read_text(encoding="utf-8"))
+        previous = rules["entries"][:508]
+        encoded = json.dumps(previous, sort_keys=True, separators=(",", ":")).encode()
+        self.assertEqual(hashlib.sha256(encoded).hexdigest(), "945b74512a544739f8ca8d2ab35ea9aa537e73f528b73025acd3b0e8eb8905b0")
+        self.assertEqual([e["id"] for e in rules["entries"][508:]],
+                         ["audio.hunter-graphics-work-directory"])
+        self.assertEqual(rules["entries"][508]["size"], 95)
 
     def test_resource_headers_reject_truncation_and_short_length(self) -> None:
         for rom in (bytes(0x80001), bytes(0x80002), bytes(0x80000) + b"\x05\x00"):

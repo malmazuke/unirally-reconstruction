@@ -19,7 +19,12 @@ void AudioCpuWorkClock::step(unsigned clocks) {
         if (line != scanline_) {
             scanline_ = line;
             refreshed_ = false;
-            if (scanline_ % 312 == 0) auto_joypad_counter_ = 33;
+            if (scanline_ % 312 == 0) {
+                auto_joypad_counter_ = 33;
+                reveal_hdma_.setup_position = 12U + unsigned(ticks_ & 7);
+                reveal_hdma_.setup_triggered = false;
+            }
+            if (scanline_ % 312 < 225) reveal_hdma_.run_triggered = false;
             if (observer_) observer_->scanline(ticks_, completed_step_ticks_);
         }
         if (ticks_ % 1364 & 2) poll_nmi();
@@ -34,6 +39,7 @@ void AudioCpuWorkClock::step(unsigned clocks) {
             step(2);
         }
     }
+    poll_hdma();
 }
 void AudioCpuWorkClock::rom_reads(unsigned count) {
     for (unsigned i = 0; i < count; ++i) {
@@ -136,6 +142,14 @@ void AudioCpuWorkClock::return_far() {
     last_cycle();
     ram_reads();
 }
+void AudioCpuWorkClock::return_ram_far() {
+    begin_instruction();
+    ram_reads();
+    idle(2);
+    ram_reads(2);
+    last_cycle();
+    ram_reads();
+}
 void AudioCpuWorkClock::store_ram(unsigned bytes, bool long_address, bool indexed) {
     begin_instruction();
     rom_reads(long_address ? 4U : 3U);
@@ -224,9 +238,28 @@ void AudioCpuWorkClock::request_dma(unsigned bytes) {
 // bus cycle; then alignment, global/channel setup, split byte reads and
 // final alignment run before the next CPU bus interval.
 void AudioCpuWorkClock::begin_bus(unsigned clocks) {
-    if (!pending_dma_bytes_) return;
+    if (!pending_dma_bytes_ && !reveal_hdma_.pending) return;
     if (!dma_active_) {
         dma_active_ = true;
+        return;
+    }
+    if (reveal_hdma_.pending) {
+        const auto mode = reveal_hdma_.pending;
+        reveal_hdma_.pending = 0;
+        if (reveal_hdma_.enabled) {
+            if (pending_dma_bytes_)
+                throw std::logic_error("overlapping reveal HDMA and DMA outside native domain");
+            const auto alignment = 8U - unsigned(ticks_ & 7);
+            step(alignment);
+            const auto bus_clocks = alignment + run_reveal_hdma(mode == 1);
+            step(clocks - bus_clocks % clocks);
+            dma_active_ = false;
+            irq_lock_ = true;
+            return;
+        }
+    }
+    if (!pending_dma_bytes_) {
+        dma_active_ = false;
         return;
     }
     const auto bytes = pending_dma_bytes_;
@@ -238,6 +271,8 @@ void AudioCpuWorkClock::begin_bus(unsigned clocks) {
     for (unsigned i = 0; i < bytes; ++i) {
         step(4);
         step(4);
+        if (reveal_hdma_.pending)
+            throw std::logic_error("reveal HDMA during DMA outside native domain");
     }
     const auto dma_bus_clocks = alignment + 16U + bytes * 8U;
     step(clocks - dma_bus_clocks % clocks);

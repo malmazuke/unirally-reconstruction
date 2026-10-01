@@ -330,7 +330,8 @@
    "native": [
     "src/core/front_end.hpp:FrontEndState::boot_start",
     "src/core/front_end_screens.hpp:soft_reset",
-    "src/core/hunter_ending.cpp:(file)"
+    "src/core/hunter_ending.cpp:(file)",
+    "src/core/title_menu_audio.cpp:NativeTitleMenuAudio::restart_title"
    ],
    "region": "rom"
   },
@@ -1315,6 +1316,13 @@
    "region": "rom"
   },
   {
+   "address": "$80:B139",
+   "native": [
+    "src/core/audio_cpu_hunter_reveal.cpp:reveal_cue"
+   ],
+   "region": "rom"
+  },
+  {
    "address": "$80:B178",
    "native": [
     "src/core/audio_cpu_menu_input.cpp:enqueue_navigation"
@@ -1460,8 +1468,16 @@
    "region": "rom"
   },
   {
+   "address": "$80:B6CF",
+   "native": [
+    "src/core/audio_cpu_hunter_wait.cpp:native_audio_ending_press"
+   ],
+   "region": "rom"
+  },
+  {
    "address": "$80:B6D3",
    "native": [
+    "src/core/audio_cpu_hunter_wait.cpp:native_audio_ending_press",
     "src/core/award.cpp:award_left",
     "src/core/front_end.hpp:HunterEnding::both_pads",
     "src/core/front_end_screens.hpp:any_button_pressed",
@@ -1722,8 +1738,12 @@
   {
    "address": "$80:C202",
    "native": [
+    "src/core/audio_cpu_hunter_wait.cpp:native_audio_hunter_page_wait_frame",
     "src/core/front_end.hpp:HunterEnding::press_seen",
     "src/core/hunter_ending.cpp:(file)"
+   ],
+   "range_ends": [
+    "$80:C24B"
    ],
    "region": "rom"
   },
@@ -2683,17 +2703,32 @@
   {
    "address": "$80:E2CF",
    "native": [
+    "src/core/audio_cpu_hunter_reveal.cpp:reveal_page",
     "src/core/hunter_ending.cpp:(file)"
+   ],
+   "range_ends": [
+    "$80:E37A"
    ],
    "region": "rom"
   },
   {
    "address": "$80:E2D8",
    "native": [
+    "src/core/audio_cpu_hunter_reveal.cpp:copy_reveal_work",
     "src/core/hunter_ending.cpp:copy_reveal_tables"
    ],
    "range_ends": [
     "$80:E2F6"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:E2F8",
+   "native": [
+    "src/core/audio_cpu_hunter_reveal.cpp:configure_reveal_channels"
+   ],
+   "range_ends": [
+    "$80:E31F"
    ],
    "region": "rom"
   },
@@ -2705,6 +2740,18 @@
    ],
    "range_ends": [
     "$80:E367"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:E330",
+   "native": [
+    "src/core/audio_cpu_hunter_reveal.cpp:native_audio_hunter_reveal_frame",
+    "src/core/audio_cpu_hunter_reveal.cpp:reveal_frame"
+   ],
+   "range_ends": [
+    "$80:E367",
+    "$80:E37A"
    ],
    "region": "rom"
   },
@@ -3508,9 +3555,13 @@
   {
    "address": "$80:F814",
    "native": [
+    "src/core/audio_cpu_pose_upload.cpp:native_audio_upload_pose_work",
     "src/core/award.cpp:upload_rider",
     "src/core/front_end_screens.hpp:upload_pose",
     "src/core/tour_ending_scripts.hpp:upload_built_pose"
+   ],
+   "range_ends": [
+    "$80:F88C"
    ],
    "region": "rom"
   },
@@ -6692,6 +6743,16 @@
    "region": "rom"
   },
   {
+   "address": "$83:8484",
+   "native": [
+    "src/core/audio_cpu_pose.cpp:copy_pose_tile"
+   ],
+   "range_ends": [
+    "$83:84D8"
+   ],
+   "region": "rom"
+  },
+  {
    "address": "$83:879A",
    "native": [
     "src/core/award.cpp:(file)",
@@ -6889,12 +6950,16 @@
   {
    "address": "$83:8E3A",
    "native": [
+    "src/core/audio_cpu_pose.cpp:native_audio_build_pose_work",
     "src/core/front_end.hpp:RiderMenu::picture",
     "src/core/front_end.hpp:TourAward::pose",
     "src/core/front_end_screens.hpp:upload_pose",
     "src/core/rider_menu.cpp:uni_tiles_word, uni_row_words, tile_words",
     "src/core/rider_object.hpp:pose_frame_rows, pose_frame_columns",
     "src/core/tour_ending_scripts.hpp:first_pose_word, second_pose_word, third_pose_word"
+   ],
+   "range_ends": [
+    "$83:8EFD"
    ],
    "region": "rom"
   },
@@ -7188,9 +7253,14 @@
   {
    "address": "$83:9A1E",
    "native": [
+    "src/core/audio_cpu_decorations.cpp:native_audio_step_decorations",
+    "src/core/audio_cpu_scene.hpp:AudioCpuDecorationWorkState",
     "src/core/front_end.hpp:MenuDecorations",
     "src/core/front_end_screens.hpp:step_decorations",
     "src/core/screen_slide.cpp:(file)"
+   ],
+   "range_ends": [
+    "$83:9AF8"
    ],
    "region": "rom"
   },
@@ -7284,6 +7354,7 @@
   {
    "address": "$83:A4D2",
    "native": [
+    "src/core/audio_cpu_credits_loop.cpp:native_audio_hunter_finish_credits_setup",
     "src/core/award.cpp:fade_out_frames, blank_frame, reset_frame, background_tiles_frame, podium_map_frame, podium_tiles_frame, colours_frame, objects_frame, rider_frame, first_fade_in_frame, fade_in_frames",
     "src/core/award.cpp:fade_up",
     "src/core/front_end_screens.hpp:fade_up",
@@ -7363,7 +7434,7 @@
   {
    "address": "$83:A923",
    "native": [
-    "src/core/audio_cpu_hunter_entry.cpp:ending_wait",
+    "src/core/audio_cpu_hunter_entry.cpp:native_audio_hunter_ending_wait",
     "src/core/front_end.cpp:waits_for_frame",
     "src/core/front_end_screens.hpp:result_scoring_frame",
     "src/core/hunter_ending.cpp:hunter_ending_waits",
@@ -7377,15 +7448,43 @@
   {
    "address": "$83:A93A",
    "native": [
+    "src/core/audio_cpu_credits_text.cpp:native_audio_print_credits",
     "src/core/hunter_ending.cpp:show_credits"
+   ],
+   "range_ends": [
+    "$83:AB24"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:A9FB",
+   "native": [
+    "src/core/audio_cpu_credits_text.cpp:set_position"
+   ],
+   "range_ends": [
+    "$83:AA20"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:AAC5",
+   "native": [
+    "src/core/audio_cpu_credits_text.cpp:small_glyph"
+   ],
+   "range_ends": [
+    "$83:AB23"
    ],
    "region": "rom"
   },
   {
    "address": "$83:AB25",
    "native": [
+    "src/core/audio_cpu_pose_upload.cpp:native_audio_upload_pose_work",
     "src/core/tour_ending_right_column.cpp:bound_off_part",
     "src/core/tour_ending_right_column.cpp:knock_part"
+   ],
+   "range_ends": [
+    "$83:AB98"
    ],
    "region": "rom"
   },
@@ -7405,11 +7504,13 @@
   {
    "address": "$83:AB9F",
    "native": [
+    "src/core/audio_cpu_hunter_reveal.cpp:native_audio_hunter_begin_first_page",
     "src/core/hunter_ending.cpp:page_screens, page_mode, page_map, page_tile_bases",
     "src/core/hunter_ending.cpp:set_page_registers"
    ],
    "range_ends": [
-    "$83:ABB0"
+    "$83:ABB0",
+    "$83:ABF9"
    ],
    "region": "rom"
   },
@@ -7443,33 +7544,39 @@
   {
    "address": "$83:ABFD",
    "native": [
+    "src/core/audio_cpu_hunter_reveal.cpp:native_audio_hunter_begin_second_page",
     "src/core/hunter_ending.cpp:speedking"
    ],
    "range_ends": [
-    "$83:AC1B"
+    "$83:AC1B",
+    "$83:AC1F"
    ],
    "region": "rom"
   },
   {
    "address": "$83:AC1F",
    "native": [
+    "src/core/audio_cpu_hunter_wait.cpp:native_audio_hunter_timed_frame",
     "src/core/hunter_ending.cpp:(file)",
     "src/core/hunter_ending.cpp:timed_wait_pass",
     "src/core/hunter_ending.cpp:timed_wait_passes"
    ],
    "range_ends": [
-    "$83:AC30"
+    "$83:AC30",
+    "$83:AC32"
    ],
    "region": "rom"
   },
   {
    "address": "$83:AC32",
    "native": [
+    "src/core/audio_cpu_credits_setup.cpp:native_audio_hunter_prepare_credits",
     "src/core/hunter_ending.cpp:credits_setup_frame, credits_shown_frame, lower_pose_frame, credits_fade_in, credits_loop_frame",
     "src/core/hunter_ending.cpp:set_up_credits"
    ],
    "range_ends": [
     "$83:AC92",
+    "$83:AD67",
     "$83:ADF8"
    ],
    "region": "rom"
@@ -7524,12 +7631,26 @@
    "region": "rom"
   },
   {
+   "address": "$83:AD8A",
+   "native": [
+    "src/core/audio_cpu_credits_loop.cpp:native_audio_hunter_finish_credits_setup"
+   ],
+   "range_ends": [
+    "$83:AD9B"
+   ],
+   "region": "rom"
+  },
+  {
    "address": "$83:AD9B",
    "native": [
+    "src/core/audio_cpu_credits_loop.cpp:build_credits_pose",
+    "src/core/audio_cpu_credits_loop.cpp:native_audio_hunter_credits_frame",
     "src/core/hunter_ending.cpp:credits_pass"
    ],
    "range_ends": [
-    "$83:ADF8"
+    "$83:ADCD",
+    "$83:ADF8",
+    "$83:ADFA"
    ],
    "region": "rom"
   },
@@ -10435,6 +10556,7 @@
   {
    "address": "$0C70",
    "native": [
+    "src/core/audio_cpu_clock.hpp:AudioRevealHdmaState",
     "src/core/front_end.hpp:HunterEnding::reveal_tables",
     "src/core/hunter_ending.cpp:offsets_at, brightness_at, offset_entry, brightness_entry",
     "src/core/hunter_ending.cpp:write_reveal_lines"
@@ -12427,13 +12549,59 @@
     "$80:91D1"
    ]
   },
+  "src/core/audio_cpu_clock.hpp:AudioRevealHdmaState": {
+   "wram": [
+    "$0C70"
+   ]
+  },
   "src/core/audio_cpu_clock_controllers.cpp:AudioCpuWorkClock::read_controller": {
    "rom": [
     "$80:D1EF",
     "$80:D1F4"
    ]
   },
-  "src/core/audio_cpu_hunter_entry.cpp:ending_wait": {
+  "src/core/audio_cpu_credits_loop.cpp:build_credits_pose": {
+   "rom": [
+    "$83:AD9B"
+   ]
+  },
+  "src/core/audio_cpu_credits_loop.cpp:native_audio_hunter_credits_frame": {
+   "rom": [
+    "$83:AD9B"
+   ]
+  },
+  "src/core/audio_cpu_credits_loop.cpp:native_audio_hunter_finish_credits_setup": {
+   "rom": [
+    "$83:A4D2",
+    "$83:AD8A"
+   ]
+  },
+  "src/core/audio_cpu_credits_setup.cpp:native_audio_hunter_prepare_credits": {
+   "rom": [
+    "$83:AC32"
+   ]
+  },
+  "src/core/audio_cpu_credits_text.cpp:native_audio_print_credits": {
+   "rom": [
+    "$83:A93A"
+   ]
+  },
+  "src/core/audio_cpu_credits_text.cpp:set_position": {
+   "rom": [
+    "$83:A9FB"
+   ]
+  },
+  "src/core/audio_cpu_credits_text.cpp:small_glyph": {
+   "rom": [
+    "$83:AAC5"
+   ]
+  },
+  "src/core/audio_cpu_decorations.cpp:native_audio_step_decorations": {
+   "rom": [
+    "$83:9A1E"
+   ]
+  },
+  "src/core/audio_cpu_hunter_entry.cpp:native_audio_hunter_ending_wait": {
    "rom": [
     "$83:A923"
    ]
@@ -12442,6 +12610,62 @@
    "rom": [
     "$83:A4E9",
     "$83:AB9A"
+   ]
+  },
+  "src/core/audio_cpu_hunter_reveal.cpp:configure_reveal_channels": {
+   "rom": [
+    "$80:E2F8"
+   ]
+  },
+  "src/core/audio_cpu_hunter_reveal.cpp:copy_reveal_work": {
+   "rom": [
+    "$80:E2D8"
+   ]
+  },
+  "src/core/audio_cpu_hunter_reveal.cpp:native_audio_hunter_begin_first_page": {
+   "rom": [
+    "$83:AB9F"
+   ]
+  },
+  "src/core/audio_cpu_hunter_reveal.cpp:native_audio_hunter_begin_second_page": {
+   "rom": [
+    "$83:ABFD"
+   ]
+  },
+  "src/core/audio_cpu_hunter_reveal.cpp:native_audio_hunter_reveal_frame": {
+   "rom": [
+    "$80:E330"
+   ]
+  },
+  "src/core/audio_cpu_hunter_reveal.cpp:reveal_cue": {
+   "rom": [
+    "$80:B139"
+   ]
+  },
+  "src/core/audio_cpu_hunter_reveal.cpp:reveal_frame": {
+   "rom": [
+    "$80:E330"
+   ]
+  },
+  "src/core/audio_cpu_hunter_reveal.cpp:reveal_page": {
+   "rom": [
+    "$80:E2CF"
+   ]
+  },
+  "src/core/audio_cpu_hunter_wait.cpp:native_audio_ending_press": {
+   "rom": [
+    "$80:B6CF",
+    "$80:B6D3"
+   ]
+  },
+  "src/core/audio_cpu_hunter_wait.cpp:native_audio_hunter_page_wait_frame": {
+   "rom": [
+    "$80:C202"
+   ]
+  },
+  "src/core/audio_cpu_hunter_wait.cpp:native_audio_hunter_timed_frame": {
+   "rom": [
+    "$83:AC1F"
    ]
   },
   "src/core/audio_cpu_interrupt.cpp:restore_interrupt_caller": {
@@ -12687,6 +12911,22 @@
     "$80:937B"
    ]
   },
+  "src/core/audio_cpu_pose.cpp:copy_pose_tile": {
+   "rom": [
+    "$83:8484"
+   ]
+  },
+  "src/core/audio_cpu_pose.cpp:native_audio_build_pose_work": {
+   "rom": [
+    "$83:8E3A"
+   ]
+  },
+  "src/core/audio_cpu_pose_upload.cpp:native_audio_upload_pose_work": {
+   "rom": [
+    "$80:F814",
+    "$83:AB25"
+   ]
+  },
   "src/core/audio_cpu_queue.cpp:native_audio_bootstrap_queue": {
    "rom": [
     "$80:A119"
@@ -12747,6 +12987,11 @@
   "src/core/audio_cpu_scene.cpp:upload_oam": {
    "rom": [
     "$80:9318"
+   ]
+  },
+  "src/core/audio_cpu_scene.hpp:AudioCpuDecorationWorkState": {
+   "rom": [
+    "$83:9A1E"
    ]
   },
   "src/core/audio_cpu_scene.hpp:AudioCpuSceneWorkState::title_levels_pending": {
@@ -18032,6 +18277,11 @@
     "$83:8C7B"
    ]
   },
+  "src/core/title_menu_audio.cpp:NativeTitleMenuAudio::restart_title": {
+   "rom": [
+    "$80:8858"
+   ]
+  },
   "src/core/tour_ending.cpp:(file)": {
    "rom": [
     "$83:883E",
@@ -19425,10 +19675,10 @@
   }
  },
  "totals": {
-  "addresses": 1417,
+  "addresses": 1425,
   "io_addresses": 9,
-  "native_symbols": 1079,
-  "rom_addresses": 1049,
+  "native_symbols": 1104,
+  "rom_addresses": 1057,
   "sram_addresses": 49,
   "wram_addresses": 310
  }

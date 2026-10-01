@@ -22,8 +22,8 @@ The four classes partition all 131,072 bytes. **Unknown share: 40.4%** - above D
 | Instructions from observed | 17,569 |
 | Instructions from table | 587 |
 | Routines | 636 |
-| Routines cited by native code | 404 |
-| Routine bytes cited by native code | 50,574 |
+| Routines cited by native code | 409 |
+| Routine bytes cited by native code | 50,744 |
 | Gap sweep candidate instructions | 2,746 |
 | Gap sweep candidate bytes | 6,174 |
 | Jump tables | 2 |
@@ -45,7 +45,7 @@ The four classes partition all 131,072 bytes. **Unknown share: 40.4%** - above D
 
 ## Cited addresses
 
-1551 distinct code-bank ROM addresses cited by the research, task, inventory and content records (`labels.json`). By position: dat 25, loc 881, mid 19, sub 327, unk 299 (sub routine start, loc instruction start, mid inside an instruction, dat data, unk unknown). By class: data 25, inferred 247, observed 980, unknown 299.
+1556 distinct code-bank ROM addresses cited by the research, task, inventory and content records (`labels.json`). By position: dat 25, loc 883, mid 19, sub 329, unk 300 (sub routine start, loc instruction start, mid inside an instruction, dat data, unk unknown). By class: data 25, inferred 249, observed 982, unknown 300.
 
 Cited addresses in `unknown` bytes:
 
@@ -327,6 +327,7 @@ Cited addresses in `unknown` bytes:
 | $83:A254 | docs/research/R-0056-tour-track-now-playing.md |
 | $83:A507 | docs/research/R-0062-gold-endings.md |
 | $83:A575 | docs/research/R-0062-gold-endings.md |
+| $83:A9FB | docs/research/R-0075-title-menu-audio.md |
 | $83:AE01 | docs/research/R-0064-hunter-ending-and-soft-reset.md |
 | $83:B1EB | docs/research/R-0062-gold-endings.md |
 | $83:B4DF | docs/research/R-0062-gold-endings.md |

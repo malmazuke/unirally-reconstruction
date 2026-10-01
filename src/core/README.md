@@ -377,3 +377,26 @@ last 60 checkpoint-seen flags of R-0048 and the HUNTER effects' 62 bytes of R-00
 DRAGSTER and ZOOM ZOO also append, as `URDG0004` and `URZZ000E`, only while one of those
 words is live. The legacy DRAGSTER
 `update_movement` path and its `URMV` formats remain for the accepted gates.
+
+
+## Native title and menu audio candidate
+
+`NativeTitleMenuAudio` owns the PAL CPU bus clock, command queue, recovered
+SPC sequencer, identified local score/sample content and isolated DSP. Its
+explicit phase methods follow cold initialization, title, menu navigation and
+the HUNTER pages/credits through a warm title/menu restart. They charge recovered
+bus work without fetching or executing original CPU instructions. R-0075 records
+the exact original/native domains and the opaque executable transport projection.
+
+`audio_cpu_clock_hdma.cpp` models the two reveal channels' cursor, line counter,
+transfer flags and pending bus work. Page decoration, credits text, pose building
+and sprite uploads have separate small functions. `audio_state_io.cpp` writes
+URAU0004, including active reveal state, retained IPL timers and complete DSP
+history; `AudioOutput` retains the integer resampling fraction and queued PCM.
+Fresh-process comparisons cover active reveals, first-press history, credits
+wrap and warm restart. These are candidate results pending independent review.
+
+The opt-in desktop flag `--native-title-menu-audio` uses this producer with
+sampled frontend controls and SDL output. Its scripted device run covers the
+HUNTER lifecycle. Physical input/listening acceptance is still pending; other
+menu exits stop this bounded producer and the default app remains silent.

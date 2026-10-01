@@ -1086,3 +1086,135 @@ No keyboard policy or expectation changes to force the check. These counters
 establish device delivery, not human listening or completed live acceptance.
 The ordinary app remains silent; the prototype, scene lifecycle and full
 capability review are unaccepted.
+
+## Native HUNTER pages, credits and warm restart - 1 October 12:39 UTC
+
+These are coupled lifecycle experiments within AUDIO-TITLE-MENU, not an
+accepted ending-audio outcome. The ROM is PAL a1105819d48c04d680c8292bbfa9abbce05224f1bc231afd66af43b7e0a1fd4e;
+the unchanged1850-frame script and v5 observer/options are those above. The
+static reading source is main evidence `native-lifecycle-static/bank-80.lst`
+($80:B139, $80:E2CF-E37A, $80:C202-C24B, $80:D1E8-D1F4, $80:B6CF-B6D3,
+$80:F814-F88C, $80:8858 and $80:91D1-9311) and `bank-83.lst`
+($83:AB9A-ADFD, $83:A4D2-A506, $83:A923, $83:A93A-A9D7, $83:A9FB (large glyph), $83:AAC5 (small glyph),
+$83:9A1E-9AF8, $83:8E3A-8EFD and $83:8484-84D5). The listings describe
+readings; the frozen dynamic watches and raw PCM below establish this domain.
+The new credits watch at those pose/text/copy boundaries preserves state/A/V,
+normalized audio events, PCM and final APU against the unchanged uninstrumented
+run (`hunter-credits-work-watch-integrity.json`). A diagnostic print raises
+KeyError after writing the integrity/point files; capture completion is preserved.
+
+The v31 pack appends only `audio.hunter-graphics-work-directory`:95 bytes for
+19 identified uncompressed graphics descriptors. Its entry SHA256 is
+f6feefdc31b7ac09dfc62ad2b157a41882e7fbd4efb72ecbf6ab66ea92f3c01a.
+The preceding508-entry v30 compact inventory SHA256 remains
+945b74512a544739f8ca8d2ab35ea9aa537e73f528b73025acd3b0e8eb8905b0.
+`artifacts/audio-title-menu-integration/pack-v31.json` passes all509 entries;
+pack SHA25642d5d9d95a1093acd06e68f68081db21b18d98f56a00de5d7c11754e2685939e
+and rules SHA2569bad18735028fa2502328f13e7d50edb5e15d239962c66f914f31856384fc037.
+Existing page reveal/text/pose entries supply all other content. No executable
+range, ROM image, original RAM routine or captured soundtrack is packed.
+
+Native channel5 mode2/channel6 mode0 HDMA owns mutable copied tables, cursors,
+line counters, transfer/completion flags, raster triggers and pending bus work.
+Setup/transfer/reload alignment follows the pinned CPU hardware readings; byte
+line counters wrap before the low7-bit reload test. Repeated reads after copied
+data need cleared RAM: the512-byte WRAM series is nonperturbing
+(`hunter-hdma-workram-integrity.json`). All relative bytes110..239 are zero on
+every frame0..803, covering both reveals (`hunter-hdma-tail-domain.json`).
+They first change at1045 in credits. The broader full1850-frame-zero hypothesis
+is rejected; no such full-capture cleared-tail claim is supported. The clock
+rejects uncovered DMA/HDMA overlap and other channel configurations.
+
+Frozen endpoint comparisons pass before credits, including the page cue gain79/
+effect2 over continuing music (`native-hunter-page.json` and
+`native-hunter-page-waits.json`):
+
+| Endpoint | CPU master clocks | Projected events | Raw stereo pairs |
+| --- | ---: | ---: | ---: |
+| First page ready | 247564544 | 1225156 | 372735 |
+| Two consecutive presses | 298213036 | 1360221 | 448975 |
+| Second page, timed wait entry | 341615464 | 1467760 | 514317 |
+| Credits setup entry | 425456504 | 1692487 | 640565 |
+| Animation loop entry | 451411026 | 1742677 | 679626 |
+| Credits exit | 553148856 | 1927492 | 832790 |
+| Reset entry | 559931912 | 1945832 | 843001 |
+
+The page wait retains animator counters and first-press history; a release
+after the first press resets that history. The timed wait tests the cartridge
+disable bits on both pads and masks only their low four bits. Credits use the
+identified48-word pose sequence over96 frames, with the second tile buffer's
+pose offset25. Each present or blank tile charges the recovered33-byte RAM
+copy, followed by five192-byte row DMA uploads. The product executes native
+C++ work and reads no original CPU instructions. `native-hunter-credits-setup.json`
+passes work marks AC6D432377202, AD25444842364, AD33444876556, AD67444899420;
+`native-hunter-first-pose.json` and `native-hunter-second-pose.json` pass
+CPU445008034/445127992. A retained first setup failure is194 clocks early
+(`native-hunter-credits-setup-missing-work.json`); restoring one large-glyph shift
+and one small-glyph transfer fixes native work without changing expectations.
+`native-hunter-credits-loop.json` passes the loop/exit/reset endpoints above.
+
+Warm boot uses the current raster and FastROM setting, disables NMI/autopoll/
+HDMA at their timed MMIO writes, clears native work state and retains cartridge,
+DSP RAM/history, audio ports and timer divider state. The stopped native driver
+returns to the native IPL handshake; the next native driver receives retained
+timers. The matching cartridge signature bypasses cold record initialization.
+`native-hunter-warm-menu-v2.json` matches CPU738265952,2933842 projected rows
+and all1111493 raw pairs. Native inputs are pack v31 and future controller words
+only; original events, PCM and endpoint clocks are comparison outputs.
+
+The first warm comparison retains literal original executable transport bytes
+and fails only those values, while CPU and PCM already match
+(`native-hunter-warm-menu-opaque-code-mismatch.json`). The separately named
+`cold-cpu-hunter-warm-menu-input-frozen-v2.json` applies the existing cold
+resource50 policy to exactly4445 CPU port1 writes at $82:80D6 and their4445
+first IPL reads: compare clocks/order/address, treat executable values as opaque.
+Native transport uses zeros and never retains/executes them. The unchanged raw
+capture, PCM and first literal projection remain retained. This policy correction
+requires independent review; it is not a silently replaced original expectation.
+Post-cold N RAM writes stay outside this declared event projection, as in the
+preceding menu/page projections; raw PCM remains fully exact.
+
+URAU0004 adds reveal HDMA, HUNTER wait/animation work and retained IPL timers.
+Earlier formats remain evidence and are rejected without conversion. Distinct
+warm title phases make the restart's call-boundary position explicit. Malformed
+cursor/trigger/count/press/timer states must reject before changing the running
+owner. Fresh-process v4 checks are running and not yet claimed here. The
+visible prototype still has pending navigation, lifecycle/device continuation
+and independent review requirements; none of these headless results substitutes
+for complete capability acceptance.
+
+The first v4 menu and combined-output reports pass eight separate-process
+cases each (`native-fresh-process-save-v4.json` and
+`native-playback-fresh-process-save-v4.json`). Combined output still equals
+all1726556 pairs of the independent conversion of original raw PCM. The ten
+HUNTER v4 cases retain first_press=1, timed counts, credits96->0/97->1 and
+reset/warm-title position (`native-hunter-fresh-process-save-v4.json`).
+After exposing frame boundaries during each reveal and clearing represented
+reveal RAM at the already timed boot clear, a separately retained nine-case
+report passes active first-reveal1/30/74 and second-reveal1/40, first-press119,
+credits96, reset and warm-title (`native-hunter-reveal-fresh-process-save-v4.json`).
+Events, PCM and final owned state remain identical to the uninterrupted native
+run that matches the original. Early v4 draft files bind their source hashes;
+they predate this field addition and are not a published compatibility format.
+Native event outputs are byte-for-byte verified gzip archives after comparison.
+
+The unchanged implementation also predicts a credits Start press three frames
+earlier, at1297..1300. Instrumentation on/off preserves state/A/V/final hashes,
+normalized events, PCM and APU (`hunter-warm-variation-integrity.json`). Frozen
+original outputs and the established opaque transport policy predate its native
+comparison. `native-hunter-warm-variation-v2.json` matches CPU736989304,2931808
+projected rows and1109573 raw pairs. This is a primary-selected withheld timing
+variation; independent reviewer-selected evidence remains required.
+
+The SDL producer now follows that HUNTER lifecycle and warm restart using the
+same native owner. The bounded visible1850-update scripted CoreAudio run
+reports1185137 source pairs,1761280 delivered,1594126 nonzero, zero underruns
+and one restart (`artifacts/audio-title-menu-integration/hunter-live-scripted-result.json`).
+Its input is the existing future-controller smoke-test path. These counters
+prove device delivery across this scripted lifecycle, not physical input or
+human listening. AX bound the actual app window; a later screenshot request
+times out after the bounded process closes. No screenshot/recording is claimed.
+All41 lab tests,540 tooling tests and19 changed-core80-line checks pass on this
+slice; static regeneration checks53062 sites/42700 shared instructions with zero
+disagreements and1057 supported citations. Full private regressions, physical
+input/listening, final-head hosted checks and independent review remain open.

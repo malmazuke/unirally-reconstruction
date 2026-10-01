@@ -326,7 +326,8 @@
    "native": [
     "src/core/front_end.hpp:FrontEndState::boot_start",
     "src/core/front_end_screens.hpp:soft_reset",
-    "src/core/hunter_ending.cpp:(file)"
+    "src/core/hunter_ending.cpp:(file)",
+    "src/core/title_menu_audio.cpp:NativeTitleMenuAudio::restart_title"
    ],
    "observed_entries": {},
    "start": "$80:8858",
@@ -1437,6 +1438,9 @@
    "mode_at_entry": [
     "NmX"
    ],
+   "native": [
+    "src/core/audio_cpu_hunter_reveal.cpp:reveal_cue"
+   ],
    "observed_entries": {},
    "start": "$80:B139",
    "static_entries": {
@@ -1577,6 +1581,9 @@
    "mode_at_entry": [
     "NmX"
    ],
+   "native": [
+    "src/core/audio_cpu_hunter_wait.cpp:native_audio_ending_press"
+   ],
    "observed_entries": {},
    "start": "$80:B6CF",
    "static_entries": {
@@ -1596,6 +1603,7 @@
     "NMX"
    ],
    "native": [
+    "src/core/audio_cpu_hunter_wait.cpp:native_audio_ending_press",
     "src/core/award.cpp:award_left",
     "src/core/front_end.hpp:HunterEnding::both_pads",
     "src/core/front_end_screens.hpp:any_button_pressed",
@@ -1913,6 +1921,7 @@
     "NmX"
    ],
    "native": [
+    "src/core/audio_cpu_hunter_wait.cpp:native_audio_hunter_page_wait_frame",
     "src/core/front_end.hpp:HunterEnding::press_seen",
     "src/core/hunter_ending.cpp:(file)"
    ],
@@ -1934,8 +1943,11 @@
     "NmX"
    ],
    "native": [
+    "src/core/audio_cpu_hunter_wait.cpp:native_audio_hunter_page_wait_frame",
+    "src/core/front_end.hpp:HunterEnding::press_seen",
     "src/core/front_end.hpp:RaceResult::press_seen",
     "src/core/front_end_screens.hpp:wait_for_result_press",
+    "src/core/hunter_ending.cpp:(file)",
     "src/core/hunter_ending.cpp:first_page_press",
     "src/core/hunter_ending.cpp:hunter_ending_waits",
     "src/core/race_result.cpp:(file)",
@@ -2370,6 +2382,7 @@
     "NmX"
    ],
    "native": [
+    "src/core/audio_cpu_hunter_reveal.cpp:reveal_page",
     "src/core/hunter_ending.cpp:(file)"
    ],
    "observed_entries": {},
@@ -2390,6 +2403,12 @@
     "NmX"
    ],
    "native": [
+    "src/core/audio_cpu_hunter_reveal.cpp:configure_reveal_channels",
+    "src/core/audio_cpu_hunter_reveal.cpp:copy_reveal_work",
+    "src/core/audio_cpu_hunter_reveal.cpp:native_audio_hunter_reveal_frame",
+    "src/core/audio_cpu_hunter_reveal.cpp:reveal_frame",
+    "src/core/audio_cpu_hunter_reveal.cpp:reveal_page",
+    "src/core/hunter_ending.cpp:(file)",
     "src/core/hunter_ending.cpp:copy_reveal_tables",
     "src/core/hunter_ending.cpp:end_reveal",
     "src/core/hunter_ending.cpp:hunter_ending_waits",
@@ -2842,6 +2861,7 @@
     "NmX"
    ],
    "native": [
+    "src/core/audio_cpu_pose_upload.cpp:native_audio_upload_pose_work",
     "src/core/award.cpp:upload_rider",
     "src/core/front_end_screens.hpp:upload_pose",
     "src/core/tour_ending_scripts.hpp:upload_built_pose"
@@ -2866,9 +2886,12 @@
     "NmX"
    ],
    "native": [
+    "src/core/audio_cpu_pose_upload.cpp:native_audio_upload_pose_work",
+    "src/core/award.cpp:upload_rider",
     "src/core/front_end_screens.hpp:upload_pose",
     "src/core/rider_menu.cpp:uni_tiles_word, uni_row_words, tile_words",
-    "src/core/rider_menu.cpp:upload_uni"
+    "src/core/rider_menu.cpp:upload_uni",
+    "src/core/tour_ending_scripts.hpp:upload_built_pose"
    ],
    "observed_entries": {},
    "start": "$80:F818",
@@ -2889,6 +2912,12 @@
    "end": "$80:F88C",
    "mode_at_entry": [
     "NMX"
+   ],
+   "native": [
+    "src/core/audio_cpu_pose_upload.cpp:native_audio_upload_pose_work",
+    "src/core/award.cpp:upload_rider",
+    "src/core/front_end_screens.hpp:upload_pose",
+    "src/core/tour_ending_scripts.hpp:upload_built_pose"
    ],
    "observed_entries": {},
    "start": "$80:F86F",
@@ -10867,6 +10896,9 @@
    "mode_at_entry": [
     "NmX"
    ],
+   "native": [
+    "src/core/audio_cpu_pose.cpp:copy_pose_tile"
+   ],
    "observed_entries": {},
    "start": "$83:8484",
    "static_entries": {
@@ -11237,6 +11269,7 @@
     "NmX"
    ],
    "native": [
+    "src/core/audio_cpu_pose.cpp:native_audio_build_pose_work",
     "src/core/front_end.hpp:RiderMenu::picture",
     "src/core/front_end.hpp:TourAward::pose",
     "src/core/front_end_screens.hpp:upload_pose",
@@ -11912,6 +11945,8 @@
     "NmX"
    ],
    "native": [
+    "src/core/audio_cpu_decorations.cpp:native_audio_step_decorations",
+    "src/core/audio_cpu_scene.hpp:AudioCpuDecorationWorkState",
     "src/core/front_end.hpp:MenuDecorations",
     "src/core/front_end_screens.hpp:step_decorations",
     "src/core/screen_slide.cpp:(file)"
@@ -12181,6 +12216,7 @@
     "NmX"
    ],
    "native": [
+    "src/core/audio_cpu_credits_loop.cpp:native_audio_hunter_finish_credits_setup",
     "src/core/award.cpp:fade_out_frames, blank_frame, reset_frame, background_tiles_frame, podium_map_frame, podium_tiles_frame, colours_frame, objects_frame, rider_frame, first_fade_in_frame, fade_in_frames",
     "src/core/award.cpp:fade_up",
     "src/core/front_end_screens.hpp:fade_up",
@@ -12292,7 +12328,7 @@
     "NmX"
    ],
    "native": [
-    "src/core/audio_cpu_hunter_entry.cpp:ending_wait",
+    "src/core/audio_cpu_hunter_entry.cpp:native_audio_hunter_ending_wait",
     "src/core/front_end.cpp:waits_for_frame",
     "src/core/front_end_screens.hpp:result_scoring_frame",
     "src/core/hunter_ending.cpp:hunter_ending_waits",
@@ -12319,6 +12355,7 @@
     "NmX"
    ],
    "native": [
+    "src/core/audio_cpu_credits_text.cpp:native_audio_print_credits",
     "src/core/hunter_ending.cpp:show_credits"
    ],
    "observed_entries": {},
@@ -12339,6 +12376,7 @@
     "NmX"
    ],
    "native": [
+    "src/core/audio_cpu_pose_upload.cpp:native_audio_upload_pose_work",
     "src/core/tour_ending_right_column.cpp:bound_off_part",
     "src/core/tour_ending_right_column.cpp:knock_part"
    ],
@@ -12362,6 +12400,11 @@
    "mode_at_entry": [
     "NMX"
    ],
+   "native": [
+    "src/core/audio_cpu_pose_upload.cpp:native_audio_upload_pose_work",
+    "src/core/tour_ending_right_column.cpp:bound_off_part",
+    "src/core/tour_ending_right_column.cpp:knock_part"
+   ],
    "observed_entries": {},
    "start": "$83:AB7C",
    "static_entries": {
@@ -12380,7 +12423,14 @@
     "NmX"
    ],
    "native": [
+    "src/core/audio_cpu_credits_loop.cpp:build_credits_pose",
+    "src/core/audio_cpu_credits_loop.cpp:native_audio_hunter_credits_frame",
+    "src/core/audio_cpu_credits_loop.cpp:native_audio_hunter_finish_credits_setup",
+    "src/core/audio_cpu_credits_setup.cpp:native_audio_hunter_prepare_credits",
     "src/core/audio_cpu_hunter_entry.cpp:native_audio_hunter_first_fade",
+    "src/core/audio_cpu_hunter_reveal.cpp:native_audio_hunter_begin_first_page",
+    "src/core/audio_cpu_hunter_reveal.cpp:native_audio_hunter_begin_second_page",
+    "src/core/audio_cpu_hunter_wait.cpp:native_audio_hunter_timed_frame",
     "src/core/award.cpp:complete_tour",
     "src/core/front_end.hpp:FrontEndScreen",
     "src/core/front_end.hpp:HunterEndingPart",
@@ -14599,19 +14649,19 @@
    "call returns in the calling mode": 1262
   },
   "bytes": 131072,
-  "cited_addresses": 1551,
+  "cited_addresses": 1556,
   "cited_by_class": {
    "data": 25,
-   "inferred": 247,
-   "observed": 980,
-   "unknown": 299
+   "inferred": 249,
+   "observed": 982,
+   "unknown": 300
   },
   "cited_by_position": {
    "dat": 25,
-   "loc": 881,
+   "loc": 883,
    "mid": 19,
-   "sub": 327,
-   "unk": 299
+   "sub": 329,
+   "unk": 300
   },
   "conflicts": 0,
   "data": 92,
@@ -14630,9 +14680,9 @@
   "jump_tables": 2,
   "mode_ambiguities": 7,
   "observed": 41778,
-  "routine_bytes_cited_by_native_code": 50574,
+  "routine_bytes_cited_by_native_code": 50744,
   "routines": 636,
-  "routines_cited_by_native_code": 404,
+  "routines_cited_by_native_code": 409,
   "unknown": 52881,
   "unknown_share": 0.4035
  }

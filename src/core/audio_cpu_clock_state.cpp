@@ -26,14 +26,20 @@ AudioCpuClockState AudioCpuWorkClock::snapshot() const {
     state.auto_joypad_counter = auto_joypad_counter_;
     state.latched_controllers = latched_controllers_;
     state.controller_words = controller_words_;
+    state.reveal_hdma = reveal_hdma_;
     return state;
 }
 void AudioCpuWorkClock::restore(const AudioCpuClockState& state) {
     if ((state.ticks & 1) || state.ticks != state.completed_step_ticks
         || state.scanline != state.ticks / 1364 || state.pending_dma_bytes > 65536
         || state.dma_active || state.in_interrupt || state.auto_joypad_counter > 33
+        || state.reveal_hdma.setup_position < 12 || state.reveal_hdma.setup_position > 18
+        || (state.reveal_hdma.setup_position & 1) || state.reveal_hdma.pending > 2
         || state.ticks > std::numeric_limits<std::uint64_t>::max() / 2050560)
         throw std::invalid_argument("invalid native CPU clock continuation");
+    for (const auto& channel : state.reveal_hdma.channels)
+        if (channel.cursor >= state.reveal_hdma.ram.size())
+            throw std::invalid_argument("invalid native reveal HDMA cursor");
     ticks_ = state.ticks;
     completed_step_ticks_ = state.completed_step_ticks;
     scanline_ = state.scanline;
@@ -53,5 +59,6 @@ void AudioCpuWorkClock::restore(const AudioCpuClockState& state) {
     auto_joypad_counter_ = state.auto_joypad_counter;
     latched_controllers_ = state.latched_controllers;
     controller_words_ = state.controller_words;
+    reveal_hdma_ = state.reveal_hdma;
 }
 } // namespace unirally

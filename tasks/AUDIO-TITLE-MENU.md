@@ -1633,3 +1633,239 @@ records source_changed_during_run=false. The full capability/private regression
 matrix, local sanitizer result, final-tip CI and independent review remain
 required for acceptance. This slice is ready for staged privacy inspection and
 a task commit; no original expectation changed.
+
+### 1 October 11:26 UTC checkpoint
+
+61aa53d0b9d5c8f2a27e2e8d8ce31873ec9c5431 is committed and pushed after staged
+privacy/diff inspection. Source/content expectations are unchanged; only source,
+tests, maps and records are tracked. PR50 remains draft with capability review
+and lifecycle acceptance pending. The README/validation record distinguishes
+the implemented opt-in prototype and call-boundary continuation from full
+product/device/thread acceptance. No merge or milestone tag.
+
+Read the native lifecycle listings' E2CF reveal, AB9A-AC32 page transitions and
+the pinned bsnes CPU timing.cpp/dma.cpp before designing HDMA work. The current
+work clock has no HDMA support. Next freeze existing original page/reset
+endpoints and derive direct channels5/6 setup/run work, then load the identified
+page/credit work metadata. Do not supply original scene clocks as native inputs.
+Last fresh usage25% at11:12,baseline12/stop32,no reset/spending/provider change.
+Next checkpoint11:36,reassessment11:33. Exact-head CI is running, not preclaimed.
+
+### 1 October 11:33 UTC reassessment
+
+PR50 describes the pushed61aa53d slice and its remaining capability gaps.
+Ubuntu/changes checks pass for run36854994081; macOS was pending at11:30.
+The static E2D3/B139 reading finds a page-reveal cue (gain79, effect2) in addition
+to HDMA work. Native reading of25 required graphics entries shows all selected
+page/credit palette/map/tiles are uncompressed; their metadata is in main
+evidence `hunter-graphics-work-read.json`. The first attempted helper import
+named a nonexistent symbol and failed; reading the documented directory bus
+with the existing provenance converter succeeded. No source/data expectation
+change follows that failed command.
+
+The ending's copied110 bytes are followed by repeated HDMA reads of nearby
+RAM. A bounded512-byte WRAM series on the unchanged1850-frame script is running
+before choosing a native table-memory domain. Its capture/integrity and new
+page/reset endpoint freezes precede implementation. Keep this primary/task;
+these are coupled dependencies, not new acceptance tasks or a user blocker.
+Last fresh usage25% at11:12,baseline12/stop32,no reset/spending/provider change.
+Next checkpoint11:43,reassessment12:18. New hardware timing remains unverified.
+
+### 1 October 11:43 UTC checkpoint
+
+The unchanged1850-frame HUNTER capture with a512-byte WRAM series preserves
+state/A/V/final digests, normalized original audio events, PCM and final APU
+(`hunter-hdma-workram-integrity.json`). The adjacent cleared RAM is zero in
+that tested domain. Five page/credits/reset endpoints are frozen before native
+implementation (`cold-cpu-hunter-*-frozen.json`); endpoints are output checks,
+not native timing inputs. The reveal queues gain79/effect2 over the music.
+
+Native direct channel5/6 setup/run work is now being implemented with mutable
+tables, byte line counters, cursors, scanline triggers and bus-only alignment.
+The expanded continuation is explicitly URAU0004; earlier state formats remain
+retained evidence and are rejected, not silently converted. This source is
+unbuilt/unverified at this checkpoint. Joined lifecycle/product/review remain
+open. Fresh usage26% at11:41,baseline12/stop32,ordinary usage allowed;
+no reset/spending/provider change. Next checkpoint11:53,reassessment12:18.
+
+### 1 October 11:53 UTC checkpoint
+
+The new509-entry v31 pack passes extraction/identity/inventory checks; its only
+addition is95 bytes of identified HUNTER graphics work metadata. All508 v30
+entry descriptions/payload identities remain unchanged (inventory SHA256
+945b74512a544739f8ca8d2ab35ea9aa537e73f528b73025acd3b0e8eb8905b0).
+The native direct-HDMa reveal matches the first-page frozen original exactly:
+1,225,156 events,372,735 raw stereo pairs and CPU247564544
+(`native-hunter-page.json`), including gain79/effect2 over continuing music.
+No original event/clock input is used. The typed tables/cursors are URAU0004.
+
+The first focused tooling run had one failed source-table search: the old
+substring selected hunter_audio_required rather than audio_required. A precise
+33-entry declaration search fixes the reader; all3 audio inventory tests pass.
+No frozen payload expectation changed. The second page's two-press wait,
+decoration-counter work and timed wait are implemented and building; original
+press/timed/credits-ready comparisons are next, not preclaimed. Full credits,
+soft reset, canonical v4 splits, visible product and review remain open.
+Last fresh usage26% at11:41,baseline12/stop32,no reset/spending/provider change.
+Next checkpoint12:03,reassessment12:18.
+
+### 1 October 12:01 UTC checkpoint
+
+Three additional original endpoints are exact (`native-hunter-page-waits.json`):
+two-press return CPU298213036/1,360,221 events/448,975 pairs; second-page reveal
+CPU341615464/1,467,760 events/514,317 pairs; timed wait to credits entry
+CPU425456504/1,692,487 events/640,565 pairs. The native decoration counters,
+whole-pad two-consecutive-press rule, original enabled-pad test and byte/word
+ordering produce these results. URAU0004 canonical malformed-state checks pass.
+Credit pose work itself is not yet implemented. A fresh watch at838E3A/8484,
+RAM199/19C and credits/pose boundaries completed in7.44 seconds after reading
+those static listings and bank80 F814-F88C. This watch is original output only;
+its integrity and endpoint freeze precede credits implementation. Native poses
+will use already identified pack headers/reference words and explicit copy/DMA
+work, never the original RAM instructions or a CPU interpreter. Full live/reset,
+v4 fresh-process splits and independent review remain open. Fresh usage26%
+at11:55,baseline12/stop32,no reset/spending/provider change.
+Next checkpoint12:11,reassessment12:18.
+
+### 1 October 12:11 UTC checkpoint
+
+The new credits watch's normalized audio events, raw PCM, final APU and state/A/V
+hashes match the unchanged1850-frame original (`hunter-credits-work-watch-integrity.json`).
+Its endpoint artifact was written successfully before a diagnostic print used
+an incorrectly padded hex key and raised KeyError; the retained capture itself
+is complete. Frozen credits setup ends at CPU444899420, before pose work.
+
+Native credits graphics matches AC6D432377202 and AD25444842364 exactly. The
+first setup comparison fails at the final CPU endpoint by194 clocks, despite
+matching events/PCM; retained `native-hunter-credits-setup-missing-work.json` is
+a failure, not acceptance. Static glyph reading found an omitted large-glyph
+shift and small-glyph transfer; the corrected comparison is running. No expected
+endpoint is adjusted. Pose-copy implementation has not started: the attempted
+atomic patch failed on a changed declaration and applied no files. Next finish
+this frozen setup, then native pose copy/upload and remaining lifecycle work.
+Fresh usage26% at12:05,baseline12/stop32,no reset/spending/provider change.
+Next checkpoint12:21,reassessment12:18. Capability/product/review stay open.
+
+### 1 October 12:18 UTC reassessment
+
+The corrected credits setup is exact at all four native work marks:
+AC6D432377202, AD25444842364, AD33444876556, AD67444899420
+(`native-hunter-credits-setup.json`). The two omitted glyph operations are
+restored from the static reading; original endpoints/payloads remain unchanged.
+The first and second native pose builds also match original endpoints exactly,
+CPU445008034 and445127992 respectively (`native-hunter-first-pose.json`,
+`native-hunter-second-pose.json`). This includes native33-byte RAM copy work,
+five192-byte DMA row uploads and the intervening NMI. The product loads no
+original RAM routine, CPU opcodes or whole-emulator state; pose headers remain
+identified static content from existing pack entries.
+
+Continue the same coupled lifecycle through credits animation and warm reset;
+then freeze fresh-process v4 splits and visible device/controller checks. The
+currently pushed61aa53d slice remains the last durable commit, with new source
+uncommitted until this next bounded slice is checked and maps regenerated.
+No partial capability acceptance/review or merge is claimed. Last fresh usage
+26% at12:14,baseline12/stop32,no reset/spending/provider change.
+Next checkpoint12:28,reassessment13:03. Existing unaccepted scopes remain open.
+
+### 1 October 12:28 UTC checkpoint
+
+The native credits loop entry matches CPU451411026,1,742,677 events and679,626
+raw stereo pairs. The loop-entry original was frozen before implementation
+(`cold-cpu-hunter-credits-loop-frozen.json`); loop exit/reset-ready comparisons
+are running. New native continuation owns the96-frame animation count and
+uses the existing identified48-word credits pose table, with no clock/event
+input. Latest fresh usage26% at12:24,baseline12/stop32,ordinary usage allowed;
+no reset/spending/provider change. Capability/product/review remain open.
+Next checkpoint12:38,reassessment13:03.
+
+### 1 October 12:39 UTC checkpoint
+
+Native credits exit/reset entry also pass CPU553148856/559931912, with1,927,492/
+1,945,832 events and832,790/843,001 raw pairs (`native-hunter-credits-loop.json`).
+The joined warm menu reaches CPU738265952 and all1,111,493 raw pairs exactly.
+Its initial literal transport comparison fails because the native resource-50
+uploader sends zero for executable bytes, as in cold boot. Retain the failure
+(`native-hunter-warm-menu-opaque-code-mismatch.json`). A separately named v2
+projection applies the existing cold policy to exactly4445 warm CPU writes at
+82:80D6 and their4445 IPL port-1 reads: clocks/order/address stay asserted, code
+values are opaque. All2,933,842 projected rows then match; no original raw
+capture, PCM or literal projection is replaced. This explicit projection-policy
+correction needs independent review and is not yet accepted capability evidence.
+
+The full1850-frame tail diagnostic disproves a broad cleared-RAM claim: relative
+bytes110..239 first change at frame1045 in credits. They are zero on every
+frame0..803, covering both reveals (`hunter-hdma-tail-domain.json`). Earlier
+comments/records must be read in that reveal domain, not the entire capture.
+Fresh-process v4 and new transactional state checks are next. Last fresh usage
+27% at12:37,baseline12/stop32; no reset/spending/provider change. All three hosted
+checks pass for pushed61aa53d. No final-tip review/integration/acceptance. The
+first validation patch failed on a formatted context and applied no files; the
+precise retry is building. Next checkpoint12:49,reassessment13:03.
+
+### 1 October 12:51 UTC checkpoint
+
+All eight v4 native menu saves, eight URAP0001/URAU0004 partial-drain saves and
+ten coupled HUNTER saves pass event/PCM/final-state continuation. HUNTER cases
+include retained first_press=1, timed_remaining1100, credits wrap96->0 and
+97->1, reset and warm-title entry. Reports: `native-fresh-process-save-v4.json`,
+`native-playback-fresh-process-save-v4.json`,
+`native-hunter-fresh-process-save-v4.json`. New native event text is verified
+byte-for-byte in gzip before removing plain copies; original captures remain.
+All11 native audio tests pass in2.75s, including new transactional bad-state checks.
+
+A credits press at1297..1300 (three frames earlier) is frozen before comparison;
+on/off instrumentation preserves original state/A/V/PCM/APU/events. Native warm
+return matches CPU736989304,2,931,808 projected rows and1,109,573 raw pairs
+(`native-hunter-warm-variation-v2.json`). The established opaque code-transport
+policy is declared before this comparison. Native source stayed unchanged.
+Next add active reveal call-boundary saves and clear represented reveal RAM at
+the already timed warm WRAM clear, then stable source/maps/checks/commit.
+Native-symbol generation writes1057 citations but reports two unsupported
+record addresses83:A9FB/AAC5; add their identified glyph readings before the
+required tooling check. Last fresh usage27% at12:50,baseline12/stop32; no reset/
+spending/provider change. No capability/live/review acceptance.
+Next checkpoint13:01,reassessment13:03.
+
+### 1 October 13:03 UTC reassessment
+
+Nine fresh-process reveal/lifecycle saves now pass, including active first-page
+frames1/30/74 and second-page1/40, retained press history, animation wrap, reset
+and warm title (`native-hunter-reveal-fresh-process-save-v4.json`). Represented
+reveal RAM clears at the already modeled boot WRAM clear; native event/PCM
+expectations stay unchanged. All41 lab tests pass in7.31s; all540 tooling tests
+pass in96.78s;19 changed core files pass the80-line readability check. Maps pass
+1057 supported citations,53,062 sites,42,700 shared instructions and zero decoding
+disagreements (`static-map-hunter.json`). Private11-race gates are running.
+
+The opt-in SDL producer now uses the same HUNTER page/credits/reset owner, then
+restarts the warm title/menu. The visible1850-update scripted CoreAudio run
+returns successfully and reports1,185,137 source pairs,1,761,280 delivered,
+1,594,126 nonzero,0 underrun,1 native restart (`hunter-live-scripted-result.json`).
+This uses the existing future-controller smoke-test path. It is not real-input
+or listening acceptance. AX bound the visible app; a later screenshot call
+timed out after this bounded run had closed. No screenshot is claimed.
+
+Keep this primary/task. An asynchronous availability question requests the
+physical held-key/listening input that the documented UI API cannot supply;
+continue independent validation and durable source work while waiting. Internal
+research is not a user blocker. Latest fresh usage27% at13:00,baseline12/stop32;
+no reset/spending/provider change. Review and capability acceptance remain open.
+Next checkpoint13:13,reassessment13:48.
+
+
+### 1 October 13:15 UTC checkpoint
+
+The eleven-race wrapper reported a120-second timeout on ZOOM ZOO primary and
+left nine cases without completed reports; two short DRAGSTER regressions
+completed with exact passing reports.
+Each full comparison includes many fresh-process restores, so the wrapper's
+timeout is distinct from its existing30/60-second per-native-run limits. No
+behavioral mismatch was reported, and the nine incomplete cases are not passes.
+Retain these results in `race-hunter/`; retry incomplete comparisons in a fresh
+output directory with a900-second wrapper limit and unchanged native run limits.
+
+Prepare a coherent immutable source candidate for automatic independent review
+while completing full app/presentation/regression checks. The held physical-key
+and listening question remains pending. No product acceptance or merge is
+claimed. Latest weekly telemetry27% at13:12,baseline12/stop32; no reset,
+spending or provider change. Next checkpoint13:25,reassessment13:48.

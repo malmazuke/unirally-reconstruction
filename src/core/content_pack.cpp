@@ -978,6 +978,11 @@ const std::array<RequiredEntry, 89> locked_tracks_required{{
     {"scenery.12.palette", 352, "b2a9aefe13c1dc68454cf0a5c2bedb086c6e162dbea1df1f2ef108347d89ab63"},
 }};
 // Native title/menu audio content (profile v30); R-0075. Executable upload excluded.
+// R-0075: page and credit work metadata, appended without changing v30 payloads.
+const std::array<RequiredEntry, 1> hunter_audio_required{{
+    {"audio.hunter-graphics-work-directory", 95,
+     "f6feefdc31b7ac09dfc62ad2b157a41882e7fbd4efb72ecbf6ab66ea92f3c01a"},
+}};
 const std::array<RequiredEntry, 33> audio_required{{
     {"audio.menu-tables", 621, "e75d7872e341a636dc822616a202db6b8894196471c13d47f1b21d15f38fc407"},
     {"audio.title-score", 2200, "b4e402d0d05207e0ceadc32e8b4ebd4d052677c42f0e36f4ab5883c74ff1eb6b"},
@@ -1110,9 +1115,9 @@ std::array<std::uint8_t, 32> sha256(std::span<const std::uint8_t> source) {
 } // namespace
 
 namespace {
-constexpr std::array<std::string_view, 3> supported_profiles{"classic.pal.crawler.dragster.v1",
-                                                             "classic.pal.crawler.tracks.v29",
-                                                             "classic.pal.crawler.tracks.v30"};
+constexpr std::array<std::string_view, 4> supported_profiles{
+    "classic.pal.crawler.dragster.v1", "classic.pal.crawler.tracks.v29",
+    "classic.pal.crawler.tracks.v30", "classic.pal.crawler.tracks.v31"};
 } // namespace
 
 std::span<const std::string_view> supported_pack_profiles() {
@@ -1129,6 +1134,8 @@ constexpr std::string_view dragster_rules_sha256 =
     "70712c470db436ad95b02d3a6d51f737be7bb5b27689ca0d99a8297bac31d768";
 constexpr std::string_view audio_rules_sha =
     "293039530c6ad250aa072415ea0f9af096532754648029d9ab69e734e0c81cf7";
+constexpr std::string_view hunter_audio_rules_sha =
+    "9bad18735028fa2502328f13e7d50edb5e15d239962c66f914f31856384fc037";
 constexpr std::string_view tracks_start = "classic.crawler.race-start.v2";
 constexpr std::string_view dragster_start = "classic.crawler.dragster.race-start.v1";
 
@@ -1138,7 +1145,7 @@ struct PackRow {
     std::array<std::uint8_t, 32> digest;
 };
 
-enum class PackVariant { dragster, tracks, audio };
+enum class PackVariant { dragster, tracks, audio, hunter_audio };
 struct PackHeader {
     PackVariant variant;
     std::array<std::uint8_t, 32> identity;
@@ -1156,7 +1163,8 @@ PackHeader read_pack_header(const std::vector<std::uint8_t>& bytes, Reader& in) 
         throw std::invalid_argument("Classic pack source ROM identity is unsupported");
     const auto profile = in.text();
     const auto start = in.text();
-    const auto variant = profile == supported_profiles[2] ? PackVariant::audio
+    const auto variant = profile == supported_profiles[3] ? PackVariant::hunter_audio
+                       : profile == supported_profiles[2] ? PackVariant::audio
                        : profile == supported_profiles[1] ? PackVariant::tracks
                                                           : PackVariant::dragster;
     const bool tracks = variant != PackVariant::dragster;
@@ -1165,9 +1173,10 @@ PackHeader read_pack_header(const std::vector<std::uint8_t>& bytes, Reader& in) 
     if (start != (tracks ? tracks_start : dragster_start))
         throw std::invalid_argument("Classic pack start state is unsupported");
     if (rules_identity
-        != hex_digest(variant == PackVariant::audio ? audio_rules_sha
-                      : tracks                      ? two_track_rules_sha
-                                                    : dragster_rules_sha256))
+        != hex_digest(variant == PackVariant::hunter_audio ? hunter_audio_rules_sha
+                      : variant == PackVariant::audio      ? audio_rules_sha
+                      : tracks                             ? two_track_rules_sha
+                                                           : dragster_rules_sha256))
         throw std::invalid_argument("Classic pack extraction-rules identity is unsupported");
     return {variant, rules_identity};
 }
@@ -1199,8 +1208,10 @@ std::vector<RequiredEntry> required_entries(PackVariant variant) {
                              std::span<const RequiredEntry>(options_required),
                              std::span<const RequiredEntry>(league_required)})
         out.insert(out.end(), table.begin(), table.end());
-    if (variant == PackVariant::audio)
+    if (variant == PackVariant::audio || variant == PackVariant::hunter_audio)
         out.insert(out.end(), audio_required.begin(), audio_required.end());
+    if (variant == PackVariant::hunter_audio)
+        out.insert(out.end(), hunter_audio_required.begin(), hunter_audio_required.end());
     return out;
 }
 

@@ -81,13 +81,20 @@ void NativeAudioEngine::emit(char kind, std::uint64_t ticks, std::uint16_t addre
 void NativeAudioEngine::synchronize() {
     if (smp_ticks() * cpu_frequency >= cpu_completed_ * smp_frequency) return;
     try {
-        if (!driver_) {
-            ipl_.run_until(std::numeric_limits<std::uint64_t>::max());
-            if (ipl_.driver_ready())
+        for (;;) {
+            if (!driver_) {
+                ipl_.run_until(std::numeric_limits<std::uint64_t>::max());
                 driver_ = std::make_unique<TitleMenuAudioDriver>(
-                    *score_, *pitch_, *this, AudioTimersState{}, ipl_.state().ticks, true, true);
+                    *score_, *pitch_, *this, ipl_timers_, ipl_.state().ticks, true, true);
+            }
+            driver_->run_until(std::numeric_limits<std::uint64_t>::max());
+            const auto exited = driver_->snapshot();
+            if (!exited.stopped_for_ipl)
+                throw std::logic_error("native audio driver returned before IPL exit");
+            ipl_timers_ = exited.timers;
+            ipl_ = AudioIplHandshake(*this, exited.ticks);
+            driver_.reset();
         }
-        if (driver_) driver_->run_until(std::numeric_limits<std::uint64_t>::max());
     } catch (const CpuYield&) {}
     if (pcm_sink_) collect_pcm();
 }
@@ -122,6 +129,7 @@ AudioEngineState NativeAudioEngine::snapshot() {
     state.cpu_master = cpu_master_;
     state.cpu_completed = cpu_completed_;
     state.ipl = ipl_.state();
+    state.ipl_timers = ipl_timers_;
     state.driver_present = static_cast<bool>(driver_);
     if (driver_) state.driver = driver_->snapshot();
     state.incoming = incoming_;
@@ -141,6 +149,10 @@ void NativeAudioEngine::restore(const AudioEngineState& state) {
     candidate_cpu.restore(state.cpu);
     AudioIplHandshake candidate_ipl(*this);
     candidate_ipl.restore(state.ipl);
+    AudioTimers candidate_timers;
+    candidate_timers.restore(state.ipl_timers);
+    if (state.ipl_timers.ticks > state.ipl.ticks)
+        throw std::invalid_argument("retained timer clock follows IPL");
     std::unique_ptr<TitleMenuAudioDriver> candidate_driver;
     if (state.driver_present) {
         candidate_driver = std::make_unique<TitleMenuAudioDriver>(
@@ -152,6 +164,7 @@ void NativeAudioEngine::restore(const AudioEngineState& state) {
     auto candidate_pcm = state.pending_pcm;
     cpu_.restore(state.cpu);
     ipl_.restore(state.ipl);
+    ipl_timers_ = state.ipl_timers;
     driver_ = std::move(candidate_driver);
     dsp_ = std::move(candidate_dsp);
     cpu_master_ = state.cpu_master;

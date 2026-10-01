@@ -44,6 +44,18 @@ void load_graphics(const ClassicContentPack& pack, std::array<AudioCpuGraphicsAs
         out[ids[i]] = {static_cast<std::uint8_t>(bytes[offset] & 127), word(bytes, offset + 1),
                        word(bytes, offset + 3), (bytes[offset] & 128) != 0};
     }
+    constexpr std::array<unsigned, 19> hunter_ids{0,   6,   7,   8,   9,   10,  11,  14,  58, 93,
+                                                  102, 103, 104, 105, 107, 108, 109, 110, 111};
+    const auto hunter = pack.optional_entry("audio.hunter-graphics-work-directory");
+    if (hunter.empty()) return;
+    if (hunter.size() != hunter_ids.size() * 5)
+        throw std::invalid_argument("HUNTER graphics metadata size differs");
+    for (unsigned i = 0; i < hunter_ids.size(); ++i) {
+        const auto offset = i * 5;
+        out[hunter_ids[i]] = {static_cast<std::uint8_t>(hunter[offset] & 127),
+                              word(hunter, offset + 1), word(hunter, offset + 3),
+                              (hunter[offset] & 128) != 0};
+    }
 }
 } // namespace
 TitleMenuAudioContent title_menu_audio_content(const ClassicContentPack& pack) {
@@ -63,6 +75,12 @@ TitleMenuAudioContent title_menu_audio_content(const ClassicContentPack& pack) {
     out.menu_text = bytes_entry(pack, "front-end.main-menu-text");
     copy_entry(pack, "front-end.character-table", out.characters);
     copy_entry(pack, "front-end.menu-arrow-columns", out.arrow_positions);
+    copy_entry(pack, "front-end.reveal-offsets", out.reveal_offsets);
+    copy_entry(pack, "front-end.reveal-brightness", out.reveal_brightness);
+    copy_entry(pack, "front-end.credits-text", out.credits_text);
+    copy_entry(pack, "front-end.credits-poses", out.credits_poses);
+    out.pose_pointers = bytes_entry(pack, "presentation.rider.pose-pointers.v1");
+    out.pose_frames = bytes_entry(pack, "presentation.rider.pose-frames.v1");
     return out;
 }
 } // namespace unirally

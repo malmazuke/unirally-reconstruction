@@ -2,9 +2,8 @@
 #include <stdexcept>
 
 namespace unirally {
-namespace {
 // $83:A923; R-0075. Poll before each HVBJOY read, without arrow work or OAM.
-void ending_wait(AudioCpuWorkClock& c, AudioCpuQueueState& queue) {
+void native_audio_hunter_ending_wait(AudioCpuWorkClock& c, AudioCpuQueueState& queue) {
     c.save_register();
     c.change_widths();
     for (;;) {
@@ -23,7 +22,6 @@ void ending_wait(AudioCpuWorkClock& c, AudioCpuQueueState& queue) {
     }
     c.restore_register();
     c.return_local();
-}
 }
 // R-0075. Static bank-80 F0D6/F51B/98A4, with fresh HUNTER endpoint watches.
 // The logo flag is a cartridge word; targets and the held Y count wrap at16 bits.
@@ -72,6 +70,9 @@ bool native_audio_hunter_code_frame(AudioCpuWorkClock& c, AudioCpuQueueState& qu
 void native_audio_hunter_first_fade(AudioCpuWorkClock& c, AudioCpuQueueState& queue) {
     c.change_widths();
     c.call_local();
+    native_audio_hunter_fade_down(c, queue);
+}
+void native_audio_hunter_fade_down(AudioCpuWorkClock& c, AudioCpuQueueState& queue) {
     c.save_register();
     c.change_widths();
     c.load_constant();
@@ -79,7 +80,7 @@ void native_audio_hunter_first_fade(AudioCpuWorkClock& c, AudioCpuQueueState& qu
     c.load_constant(2);
     for (unsigned frame = 0; frame < 16; ++frame) {
         c.call_local();
-        ending_wait(c, queue);
+        native_audio_hunter_ending_wait(c, queue);
         c.modify_direct_byte();
         c.read_direct();
         c.store_port();

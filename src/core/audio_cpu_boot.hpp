@@ -25,5 +25,6 @@ std::array<std::uint64_t, 12>
 native_audio_cpu_boot_prefix(const AudioBootAssetSizes& sizes = {},
                              AudioCpuWorkObserver* observer = nullptr);
 std::array<std::uint64_t, 12> native_audio_cpu_boot_prefix(AudioCpuWorkClock& clock,
-                                                           const AudioBootAssetSizes& sizes = {});
+                                                           const AudioBootAssetSizes& sizes = {},
+                                                           bool warm_reset = false);
 } // namespace unirally

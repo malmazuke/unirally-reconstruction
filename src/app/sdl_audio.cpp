@@ -71,6 +71,7 @@ void SdlTitleMenuAudio::report() {
               << " native_audio_delivered_pairs=" << producer_->delivered_pairs()
               << " native_audio_nonzero_pairs=" << nonzero_pairs_.load()
               << " native_audio_underrun_pairs=" << underrun_pairs_.load()
-              << " native_audio_navigation_count=" << producer_->navigation_count() << '\n';
+              << " native_audio_navigation_count=" << producer_->navigation_count()
+              << " native_audio_restart_count=" << producer_->restart_count() << '\n';
 }
 } // namespace unirally::app

@@ -73,6 +73,14 @@ void AudioCpuWorkClock::modify_direct_byte() {
     last_cycle();
     ram_writes();
 }
+void AudioCpuWorkClock::modify_ram_byte() {
+    begin_instruction();
+    rom_reads(3);
+    ram_reads();
+    idle();
+    last_cycle();
+    ram_writes();
+}
 void AudioCpuWorkClock::exchange_accumulator_bytes() {
     begin_instruction();
     rom_reads(1);

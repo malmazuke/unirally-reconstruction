@@ -46,10 +46,11 @@ void clear_ppu_controls(Clock& c) {
     c.load_constant();
     c.store_port();
     c.store_port();
-    c.store_port();
+    c.set_nmi_enabled(false);
     c.load_constant();
     c.store_port();
-    for (unsigned i = 0; i < 11; ++i) c.store_port();
+    for (unsigned i = 0; i < 10; ++i) c.store_port();
+    c.set_reveal_hdma_enabled(false);
     c.store_port();
     c.set_fast_rom(false);
     c.store_port();
@@ -283,14 +284,18 @@ std::array<std::uint64_t, 12> native_audio_cpu_boot_prefix(const AudioBootAssetS
     return native_audio_cpu_boot_prefix(clock, sizes);
 }
 std::array<std::uint64_t, 12> native_audio_cpu_boot_prefix(AudioCpuWorkClock& c,
-                                                           const AudioBootAssetSizes& sizes) {
-    if (c.ticks() != 0 || sizes.palette_bytes != 32 || sizes.tile_bytes != 8192)
+                                                           const AudioBootAssetSizes& sizes,
+                                                           bool warm_reset) {
+    if ((warm_reset ? c.ticks() == 0 : c.ticks() != 0) || sizes.palette_bytes != 32
+        || sizes.tile_bytes != 8192)
         throw std::invalid_argument("unidentified cold audio asset-clock domain");
-    c.idle(22);
-    c.ram_reads();
-    c.idle();
-    c.ram_writes(3);
-    c.rom_reads(2);
+    if (!warm_reset) {
+        c.idle(22);
+        c.ram_reads();
+        c.idle();
+        c.ram_writes(3);
+        c.rom_reads(2);
+    }
     std::array<std::uint64_t, 12> result{};
     unsigned index = 0;
     const auto mark = [&] { result.at(index++) = c.ticks(); };
@@ -300,6 +305,7 @@ std::array<std::uint64_t, 12> native_audio_cpu_boot_prefix(AudioCpuWorkClock& c,
     clear_ppu_controls(c);
     mark();
     clear_work_ram(c);
+    c.clear_reveal_work_ram();
     mark();
     select_asset_directory(c);
     mark();

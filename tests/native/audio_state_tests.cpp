@@ -63,10 +63,44 @@ void check_file_and_transactional_restore() {
     corrupt.push_back(0);
     rejects([&] { unirally::deserialize_title_menu_audio(corrupt); });
     corrupt = bytes;
-    // URAU0003 header8, phase1, action1, identity32, then three CPU clock words8 each.
+    // URAU0004 header8, phase1, action1, identity32, then three CPU clock words8 each.
     constexpr unsigned first_cpu_flag = 8 + 1 + 1 + 32 + 3 * 8;
     corrupt[first_cpu_flag] = 2;
     rejects([&] { unirally::deserialize_title_menu_audio(corrupt); });
+}
+void check_hunter_state_validation() {
+    unirally::TitleMenuAudioContent content;
+    content.score.menu_tables.resize(621);
+    content.score.title_score.resize(2200);
+    Controllers controllers;
+    unirally::NativeTitleMenuAudio audio(content, controllers);
+    const auto before = unirally::serialize_title_menu_audio(audio.snapshot());
+    auto invalid = audio.snapshot();
+    invalid.hunter.credits_frame = 96;
+    rejects([&] { audio.restore(invalid); });
+    invalid = audio.snapshot();
+    invalid.hunter.decorations.wave[7] = 20;
+    rejects([&] { audio.restore(invalid); });
+    invalid = audio.snapshot();
+    invalid.hunter.timed_remaining = 1201;
+    rejects([&] { audio.restore(invalid); });
+    invalid = audio.snapshot();
+    invalid.hunter.first_press = true;
+    rejects([&] { audio.restore(invalid); });
+    invalid = audio.snapshot();
+    invalid.engine.cpu.reveal_hdma.channels[1].cursor = 256;
+    rejects([&] { audio.restore(invalid); });
+    invalid = audio.snapshot();
+    invalid.engine.cpu.reveal_hdma.pending = 3;
+    rejects([&] { audio.restore(invalid); });
+    invalid = audio.snapshot();
+    invalid.engine.cpu.reveal_hdma.setup_position = 13;
+    rejects([&] { audio.restore(invalid); });
+    invalid = audio.snapshot();
+    invalid.engine.ipl_timers.ticks = 2;
+    rejects([&] { audio.restore(invalid); });
+    require(unirally::serialize_title_menu_audio(audio.snapshot()) == before,
+            "invalid HUNTER continuation mutated running audio");
 }
 void check_playback_ownership() {
     unirally::TitleMenuAudioContent content;
@@ -77,7 +111,8 @@ void check_playback_ownership() {
     playback.native().finish_pcm_to(96);
     const auto state = playback.snapshot();
     require(state.output.source_pairs == 3 && state.output.fraction != 0
-                && !state.output.pending.empty(), "combined queue was not exercised");
+                && !state.output.pending.empty(),
+            "combined queue was not exercised");
     const auto bytes = unirally::serialize_title_menu_audio_playback(state);
     playback.restore(unirally::deserialize_title_menu_audio_playback(bytes));
     require(unirally::serialize_title_menu_audio_playback(playback.snapshot()) == bytes,
@@ -105,6 +140,7 @@ int main() {
     try {
         check_file_and_transactional_restore();
         check_playback_ownership();
+        check_hunter_state_validation();
         std::cout << "canonical audio file checks passed\n";
         return 0;
     } catch (const std::exception& error) {

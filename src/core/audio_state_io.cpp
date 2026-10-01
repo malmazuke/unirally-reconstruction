@@ -11,6 +11,8 @@ void visit(audio_state_detail::Archive& a, AudioTimersState& v);
 void visit(audio_state_detail::Archive& a, AudioDriverPendingIo& v);
 void visit(audio_state_detail::Archive& a, AudioDriverContinuation& v);
 void visit(audio_state_detail::Archive& a, AudioDriverSnapshot& v);
+void visit(audio_state_detail::Archive& a, AudioRevealHdmaChannelState& v);
+void visit(audio_state_detail::Archive& a, AudioRevealHdmaState& v);
 void visit(audio_state_detail::Archive& a, AudioCpuClockState& v);
 void visit(audio_state_detail::Archive& a, AudioIplState& v);
 void visit(audio_state_detail::Archive& a, AudioCpuInterruptWorkState& v);
@@ -21,6 +23,8 @@ void visit(audio_state_detail::Archive& a, AudioCpuSceneWorkState& v);
 void visit(audio_state_detail::Archive& a, AudioCpuTitleHoldState& v);
 void visit(audio_state_detail::Archive& a, AudioCpuTextWorkState& v);
 void visit(audio_state_detail::Archive& a, AudioCpuMenuInputState& v);
+void visit(audio_state_detail::Archive& a, AudioCpuDecorationWorkState& v);
+void visit(audio_state_detail::Archive& a, AudioCpuHunterWorkState& v);
 void visit(audio_state_detail::Archive& a, TitleMenuAudioState& v);
 }
 #include "audio_state_archive.hpp"
@@ -70,11 +74,18 @@ void visit(audio_state_detail::Archive& a, AudioDriverSnapshot& v) {
     a.fields(v.score, v.timers, v.ticks, v.command_phase, v.music_counter, v.effect_counter,
              v.update_counter, v.master_volume, v.stopped_for_ipl, v.continuation);
 }
+void visit(audio_state_detail::Archive& a, AudioRevealHdmaChannelState& v) {
+    a.fields(v.cursor, v.line_counter, v.completed, v.transfer);
+}
+void visit(audio_state_detail::Archive& a, AudioRevealHdmaState& v) {
+    a.fields(v.ram, v.channels, v.enabled, v.setup_triggered, v.run_triggered, v.setup_position,
+             v.pending);
+}
 void visit(audio_state_detail::Archive& a, AudioCpuClockState& v) {
     a.fields(v.ticks, v.completed_step_ticks, v.scanline, v.refreshed, v.fast_rom,
              v.pending_dma_bytes, v.dma_active, v.nmi_enabled, v.nmi_valid, v.nmi_line, v.nmi_hold,
              v.nmi_transition, v.nmi_pending, v.irq_lock, v.in_interrupt, v.auto_joypad_enabled,
-             v.auto_joypad_counter, v.latched_controllers, v.controller_words);
+             v.auto_joypad_counter, v.latched_controllers, v.controller_words, v.reveal_hdma);
 }
 void visit(audio_state_detail::Archive& a, AudioIplState& v) {
     a.fields(v.ticks, v.next_access_ticks, v.phase, v.destination, v.clear_index, v.byte_index,
@@ -87,8 +98,8 @@ void visit(audio_state_detail::Archive& a, AudioDspState& v) {
     a.fields(v.clocks, v.hardware);
 }
 void visit(audio_state_detail::Archive& a, AudioEngineState& v) {
-    a.fields(v.cpu, v.cpu_master, v.cpu_completed, v.ipl, v.driver_present, v.driver, v.incoming,
-             v.outgoing, v.interrupt, v.interrupt_count, v.dsp, v.pending_pcm);
+    a.fields(v.cpu, v.cpu_master, v.cpu_completed, v.ipl, v.ipl_timers, v.driver_present, v.driver,
+             v.incoming, v.outgoing, v.interrupt, v.interrupt_count, v.dsp, v.pending_pcm);
 }
 void visit(audio_state_detail::Archive& a, AudioCpuQueueState& v) {
     a.fields(v.parameters, v.commands, v.read_index, v.write_index, v.expected_phase);
@@ -107,15 +118,22 @@ void visit(audio_state_detail::Archive& a, AudioCpuTextWorkState& v) {
 void visit(audio_state_detail::Archive& a, AudioCpuMenuInputState& v) {
     a.fields(v.idle_remaining, v.selection, v.direction_latched, v.controllers);
 }
+void visit(audio_state_detail::Archive& a, AudioCpuDecorationWorkState& v) {
+    a.fields(v.delay, v.pair_step, v.pair_cycle, v.trio_step, v.wave_delay, v.sway, v.wave);
+}
+void visit(audio_state_detail::Archive& a, AudioCpuHunterWorkState& v) {
+    a.fields(v.decorations, v.controllers, v.wait_started, v.first_press, v.timed_started,
+             v.timed_remaining, v.reveal_remaining, v.credits_frame);
+}
 void visit(audio_state_detail::Archive& a, TitleMenuAudioState& v) {
     a.fields(v.phase, v.pending_action, v.content_identity, v.engine, v.queue, v.scene, v.title,
-             v.text, v.menu, v.cartridge, v.hunter_remaining);
+             v.text, v.menu, v.cartridge, v.hunter_remaining, v.hunter);
 }
-// URAU0003 includes owned transport, voice/timer continuation, 64KiB DSP RAM/history
+// URAU0004 includes owned transport, voice/timer continuation, 64KiB DSP RAM/history
 // and unconsumed native PCM. The validated content identity is included; static bytes and future input are excluded.
 std::vector<std::uint8_t> serialize_title_menu_audio(const TitleMenuAudioState& state) {
     audio_state_detail::Archive archive;
-    std::array<std::uint8_t, 8> magic{'U', 'R', 'A', 'U', '0', '0', '0', '3'};
+    std::array<std::uint8_t, 8> magic{'U', 'R', 'A', 'U', '0', '0', '0', '4'};
     auto owned = state;
     archive.fields(magic, owned);
     return archive.take_output();
@@ -124,7 +142,7 @@ TitleMenuAudioState deserialize_title_menu_audio(std::span<const std::uint8_t> b
     audio_state_detail::Archive archive(bytes);
     std::array<std::uint8_t, 8> magic{};
     archive.value(magic);
-    constexpr std::array<std::uint8_t, 8> expected{'U', 'R', 'A', 'U', '0', '0', '0', '3'};
+    constexpr std::array<std::uint8_t, 8> expected{'U', 'R', 'A', 'U', '0', '0', '0', '4'};
     if (magic != expected) throw std::invalid_argument("audio state format differs");
     TitleMenuAudioState state;
     archive.value(state);

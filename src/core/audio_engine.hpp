@@ -25,6 +25,7 @@ struct AudioEngineState {
     AudioCpuClockState cpu;
     std::uint64_t cpu_master = 0, cpu_completed = 0;
     AudioIplState ipl;
+    AudioTimersState ipl_timers;
     bool driver_present = false;
     AudioDriverSnapshot driver;
     std::array<std::uint8_t, 4> incoming{}, outgoing{};
@@ -68,6 +69,7 @@ private:
     AudioCpuWorkClock cpu_{this};
     NativeAudioDsp dsp_;
     AudioIplHandshake ipl_{*this};
+    AudioTimersState ipl_timers_;
     const TitleMenuAudioData* score_;
     const AudioPitchData* pitch_;
     AudioControllerSource* controllers_;

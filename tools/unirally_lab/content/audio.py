@@ -57,3 +57,13 @@ def v30_new_entries(rom: bytes) -> list[dict[str, Any]]:
                 for s in sorted(set(slots) - {255})]
     entries[2]["reading"] = "97 numeric pitch words; R-0075 documents code-as-data aliases85-96"
     return entries
+
+HUNTER_GRAPHICS_WORK_ASSETS = (0, 6, 7, 8, 9, 10, 11, 14, 58, 93, 102, 103,
+                             104, 105, 107, 108, 109, 110, 111)
+
+
+def v31_new_entries(rom: bytes) -> list[dict[str, Any]]:
+    """Identified page/credit graphics work metadata; v30 entries are unchanged."""
+    directory = rom_file_offset(ASSET_DIRECTORY_BUS, len(rom))
+    return [_raw("audio.hunter-graphics-work-directory", rom,
+                 [(directory+5*i, 5) for i in HUNTER_GRAPHICS_WORK_ASSETS])]
