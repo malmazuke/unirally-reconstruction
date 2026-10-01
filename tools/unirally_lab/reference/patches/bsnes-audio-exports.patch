@@ -1,0 +1,603 @@
+diff --git a/bsnes/sfc/controller/controller.cpp b/bsnes/sfc/controller/controller.cpp
+index a68a03785d4e6e0ac991577a8e24214aaa16d6ab..191a60e727d7f3ce5ccc7f3a7dfcada52f243416 100644
+--- a/bsnes/sfc/controller/controller.cpp
++++ b/bsnes/sfc/controller/controller.cpp
+@@ -58,6 +58,7 @@ auto ControllerPort::unload() -> void {
+ }
+ 
+ auto ControllerPort::serialize(serializer& s) -> void {
++  if(device) device->serialize(s);  //unirally-lab
+ }
+ 
+ }
+diff --git a/bsnes/sfc/controller/controller.hpp b/bsnes/sfc/controller/controller.hpp
+index 96bc7c2e1392cb68a595f15ff6fc40399ef3c001..2514b0f032317c93beb39fc53dad2752bbe7b7bc 100644
+--- a/bsnes/sfc/controller/controller.hpp
++++ b/bsnes/sfc/controller/controller.hpp
+@@ -21,6 +21,7 @@ struct Controller {
+   virtual auto latch(bool data) -> void {}
+   virtual auto latch() -> void {}  //light guns
+   virtual auto draw(uint16_t* output, uint pitch, uint width, uint height) -> void {}  //light guns
++  virtual auto serialize(serializer&) -> void {}  //unirally-lab: controller state is part of save states
+ 
+   const uint port;
+ };
+diff --git a/bsnes/sfc/controller/gamepad/gamepad.cpp b/bsnes/sfc/controller/gamepad/gamepad.cpp
+index bdef37e744baa9f6da95e580dac4557db83f57dc..032dcf7d98c9e93e8379b1471ff29ebed283667e 100644
+--- a/bsnes/sfc/controller/gamepad/gamepad.cpp
++++ b/bsnes/sfc/controller/gamepad/gamepad.cpp
+@@ -46,3 +46,13 @@ auto Gamepad::latch(bool data) -> void {
+     r      = platform->inputPoll(port, ID::Device::Gamepad, R);
+   }
+ }
++
++//unirally-lab: the latch state and the buttons captured at the last latch were not serialized upstream,
++//so a state taken inside the auto-joypad poll window restored with the remaining bits reading as zero.
++auto Gamepad::serialize(serializer& s) -> void {
++  s.boolean(latched);
++  s.integer(counter);
++  s.boolean(b); s.boolean(y); s.boolean(select); s.boolean(start);
++  s.boolean(up); s.boolean(down); s.boolean(left); s.boolean(right);
++  s.boolean(a); s.boolean(x); s.boolean(l); s.boolean(r);
++}
+diff --git a/bsnes/sfc/controller/gamepad/gamepad.hpp b/bsnes/sfc/controller/gamepad/gamepad.hpp
+index b28c7ba274116f2dc975f37660a0a810732af74a..59963bf778354e411012578dd647bc6c64b44cbb 100644
+--- a/bsnes/sfc/controller/gamepad/gamepad.hpp
++++ b/bsnes/sfc/controller/gamepad/gamepad.hpp
+@@ -7,6 +7,7 @@ struct Gamepad : Controller {
+ 
+   auto data() -> uint2;
+   auto latch(bool data) -> void;
++  auto serialize(serializer&) -> void override;
+ 
+ private:
+   bool latched;
+diff --git a/bsnes/sfc/cpu/cpu.cpp b/bsnes/sfc/cpu/cpu.cpp
+index b6fec167ae25b01236e158bdbceae5c9b24ce4f4..df00d2c9f378a91efaabd4694af0b2e776627440 100644
+--- a/bsnes/sfc/cpu/cpu.cpp
++++ b/bsnes/sfc/cpu/cpu.cpp
+@@ -34,7 +34,11 @@ auto CPU::Enter() -> void {
+ auto CPU::main() -> void {
+   if(r.wai) return instructionWait();
+   if(r.stp) return instructionStop();
+-  if(!status.interruptPending) return instruction();
++  if(!status.interruptPending) {
++    if(instructionHook) instructionHook();  //unirally-lab
++    if(labAudioInstructionHook) labAudioInstructionHook();
++    return instruction();
++  }
+ 
+   if(status.nmiPending) {
+     status.nmiPending = 0;
+@@ -66,6 +70,7 @@ auto CPU::load() -> bool {
+ }
+ 
+ auto CPU::power(bool reset) -> void {
++  labTicks = 0;
+   WDC65816::power();
+   Thread::create(Enter, system.cpuFrequency());
+   coprocessors.reset();
+diff --git a/bsnes/sfc/cpu/cpu.hpp b/bsnes/sfc/cpu/cpu.hpp
+index 2d79adbcfb4d379c828b7cdf1e76eaca370054fb..e342b1515032ac7a8a2a18b32b34981dd1c4aab0 100644
+--- a/bsnes/sfc/cpu/cpu.hpp
++++ b/bsnes/sfc/cpu/cpu.hpp
+@@ -69,6 +69,9 @@ struct CPU : Processor::WDC65816, Thread, PPUcounter {
+   auto serialize(serializer&) -> void;
+ 
+   uint8 wram[128 * 1024];
++  void (*labAudioInstructionHook)() = nullptr;  //unirally-lab: independent of trace ring
++  uint64 labTicks = 0;  //unirally-lab: observational master-clock counter
++  void (*instructionHook)() = nullptr;  //unirally-lab: called before each executed instruction
+   vector<Thread*> coprocessors;
+ 
+   struct Overclocking {
+diff --git a/bsnes/sfc/cpu/io.cpp b/bsnes/sfc/cpu/io.cpp
+index a4d9a5ec6efe25782fa1cd9185d0c74ee4e78504..3cfbeed58c72ca32d1a1eb33805fc91bce0fa56a 100644
+--- a/bsnes/sfc/cpu/io.cpp
++++ b/bsnes/sfc/cpu/io.cpp
+@@ -4,7 +4,9 @@ auto CPU::readRAM(uint addr, uint8 data) -> uint8 {
+ 
+ auto CPU::readAPU(uint addr, uint8 data) -> uint8 {
+   synchronizeSMP();
+-  return smp.portRead(addr & 3);
++  auto result = smp.portRead(addr & 3);
++  if(smp.labHook) smp.labHook(6, addr & 3, result);
++  return result;
+ }
+ 
+ auto CPU::readCPU(uint addr, uint8 data) -> uint8 {
+@@ -104,7 +106,8 @@ auto CPU::writeRAM(uint addr, uint8 data) -> void {
+ 
+ auto CPU::writeAPU(uint addr, uint8 data) -> void {
+   synchronizeSMP();
+-  return smp.portWrite(addr & 3, data);
++  smp.portWrite(addr & 3, data);
++  if(smp.labHook) smp.labHook(5, addr & 3, data);
+ }
+ 
+ auto CPU::writeCPU(uint addr, uint8 data) -> void {
+diff --git a/bsnes/sfc/cpu/timing.cpp b/bsnes/sfc/cpu/timing.cpp
+index dfc8b7a5c91d47c450c077b57862706b41c320dc..ff58c07242f66c2116fc04b6732ca079582bc88b 100644
+--- a/bsnes/sfc/cpu/timing.cpp
++++ b/bsnes/sfc/cpu/timing.cpp
+@@ -9,6 +9,7 @@ auto CPU::joypadCounter() const -> uint {
+ }
+ 
+ auto CPU::stepOnce() -> void {
++  labTicks += 2;
+   counter.cpu += 2;
+   tick();
+   if(hcounter() & 2) nmiPoll(), irqPoll();
+diff --git a/bsnes/sfc/dsp/dsp.cpp b/bsnes/sfc/dsp/dsp.cpp
+index eb6f78bbf926599ee499e25498961ce9c7ed4313..5f776adecbb7a05475ca4de5c16dea10cc6c0323 100644
+--- a/bsnes/sfc/dsp/dsp.cpp
++++ b/bsnes/sfc/dsp/dsp.cpp
+@@ -8,6 +8,8 @@ DSP dsp;
+ #include "SPC_DSP.cpp"
+ 
+ auto DSP::main() -> void {
++  uint labRunClocks = configuration.hacks.dsp.fast ? 32 : 1;
++  if(labHook) labHook(1, labRunClocks, 0);
+   if(!configuration.hacks.dsp.fast) {
+     spc_dsp.run(1);
+     clock += 2;
+@@ -16,10 +18,12 @@ auto DSP::main() -> void {
+     clock += 2 * 32;
+   }
+ 
++  labClocks += labRunClocks;
+   int count = spc_dsp.sample_count();
+   if(count > 0) {
+     if(!system.runAhead)
+     for(uint n = 0; n < count; n += 2) {
++      if(labHook) labHook(2, (uint16)samplebuffer[n + 0], (uint16)samplebuffer[n + 1]);
+       float left  = samplebuffer[n + 0] / 32768.0f;
+       float right = samplebuffer[n + 1] / 32768.0f;
+       stream->sample(left, right);
+@@ -40,6 +44,7 @@ auto DSP::write(uint8 address, uint8 data) -> void {
+   }
+ 
+   spc_dsp.write(address, data);
++  if(labHook) labHook(3, address, data);
+ }
+ 
+ auto DSP::load() -> bool {
+@@ -48,6 +53,7 @@ auto DSP::load() -> bool {
+ 
+ auto DSP::power(bool reset) -> void {
+   clock = 0;
++  labClocks = 0;
+   stream = Emulator::audio.createStream(2, system.apuFrequency() / 768.0);
+ 
+   if(!reset) {
+diff --git a/bsnes/sfc/dsp/dsp.hpp b/bsnes/sfc/dsp/dsp.hpp
+index 1cc97f052eceaff58e3f40c8718b051738fc8cd0..ad5c40e01c79188e0c7b14e0ebd037a9d8454c72 100644
+--- a/bsnes/sfc/dsp/dsp.hpp
++++ b/bsnes/sfc/dsp/dsp.hpp
+@@ -15,6 +15,9 @@ struct DSP {
+   auto serialize(serializer&) -> void;
+ 
+   int64 clock = 0;
++  //unirally-lab: monotonic counters are observations, never serialized game state.
++  uint64 labClocks = 0;
++  void (*labHook)(uint8 kind, uint16 address, uint16 value) = nullptr;
+ 
+ private:
+   bool fastDSP = false;
+diff --git a/bsnes/sfc/smp/io.cpp b/bsnes/sfc/smp/io.cpp
+index ad1aea65130b3438b2208cf31aa4c367fe349471..83127bcd84c0178bb71755733356845c41c14c65 100644
+--- a/bsnes/sfc/smp/io.cpp
++++ b/bsnes/sfc/smp/io.cpp
+@@ -32,18 +32,22 @@ auto SMP::readIO(uint16 address) -> uint8 {
+ 
+   case 0xf4:  //CPUIO0
+     synchronizeCPU();
++    if(labHook) labHook(8, 0, io.apu0);
+     return io.apu0;
+ 
+   case 0xf5:  //CPUIO1
+     synchronizeCPU();
++    if(labHook) labHook(8, 1, io.apu1);
+     return io.apu1;
+ 
+   case 0xf6:  //CPUIO2
+     synchronizeCPU();
++    if(labHook) labHook(8, 2, io.apu2);
+     return io.apu2;
+ 
+   case 0xf7:  //CPUIO3
+     synchronizeCPU();
++    if(labHook) labHook(8, 3, io.apu3);
+     return io.apu3;
+ 
+   case 0xf8:  //AUXIO4
+@@ -112,12 +116,14 @@ auto SMP::writeIO(uint16 address, uint8 data) -> void {
+ 
+     if(data & 0x10) {
+       synchronizeCPU();
++      if(labHook) labHook(9, 0, 0);
+       io.apu0 = 0x00;
+       io.apu1 = 0x00;
+     }
+ 
+     if(data & 0x20) {
+       synchronizeCPU();
++      if(labHook) labHook(9, 2, 0);
+       io.apu2 = 0x00;
+       io.apu3 = 0x00;
+     }
+@@ -137,21 +143,25 @@ auto SMP::writeIO(uint16 address, uint8 data) -> void {
+   case 0xf4:  //CPUIO0
+     synchronizeCPU();
+     io.cpu0 = data;
++    if(labHook) labHook(7, 0, data);
+     break;
+ 
+   case 0xf5:  //CPUIO1
+     synchronizeCPU();
+     io.cpu1 = data;
++    if(labHook) labHook(7, 1, data);
+     break;
+ 
+   case 0xf6:  //CPUIO2
+     synchronizeCPU();
+     io.cpu2 = data;
++    if(labHook) labHook(7, 2, data);
+     break;
+ 
+   case 0xf7:  //CPUIO3
+     synchronizeCPU();
+     io.cpu3 = data;
++    if(labHook) labHook(7, 3, data);
+     break;
+ 
+   case 0xf8:  //AUXIO4
+diff --git a/bsnes/sfc/smp/memory.cpp b/bsnes/sfc/smp/memory.cpp
+index 32af649e339de684e113dcf8d7659bef5b435bac..e8edea84b4d69e2a4a1d9eabd8823627570b99a0 100644
+--- a/bsnes/sfc/smp/memory.cpp
++++ b/bsnes/sfc/smp/memory.cpp
+@@ -6,7 +6,10 @@ auto SMP::readRAM(uint16 address) -> uint8 {
+ 
+ auto SMP::writeRAM(uint16 address, uint8 data) -> void {
+   //writes to $ffc0-$ffff always go to apuram, even if the iplrom is enabled
+-  if(io.ramWritable && !io.ramDisable) dsp.apuram[address] = data;
++  if(io.ramWritable && !io.ramDisable) {
++    dsp.apuram[address] = data;
++    if(labHook) labHook(4, address, data);
++  }
+ }
+ 
+ auto SMP::idle() -> void {
+diff --git a/bsnes/sfc/smp/smp.cpp b/bsnes/sfc/smp/smp.cpp
+index 4002855a751eeb38dd311a2d7f888284a2f99c3d..674ba59c6c00ce2fedc73479cf9823dd16505fef 100644
+--- a/bsnes/sfc/smp/smp.cpp
++++ b/bsnes/sfc/smp/smp.cpp
+@@ -26,6 +26,10 @@ auto SMP::Enter() -> void {
+ auto SMP::main() -> void {
+   if(r.wait) return instructionWait();
+   if(r.stop) return instructionStop();
++  if(labHook) {
++    labHook(10, r.pc.w, r.ya.w);
++    labHook(11, (uint16)r.x | ((uint16)r.s << 8), (uint8)r.p);
++  }
+   instruction();
+ }
+ 
+@@ -38,6 +42,7 @@ auto SMP::load() -> bool {
+ }
+ 
+ auto SMP::power(bool reset) -> void {
++  labTicks = 0;
+   SPC700::power();
+   create(Enter, system.apuFrequency() / 12.0);
+ 
+diff --git a/bsnes/sfc/smp/smp.hpp b/bsnes/sfc/smp/smp.hpp
+index 4b13dc6ae198ff4e8aa29ba47b70c92a322b80e4..d62c897c5448c5c07ff602d3af7d70fcbd0f95eb 100644
+--- a/bsnes/sfc/smp/smp.hpp
++++ b/bsnes/sfc/smp/smp.hpp
+@@ -19,6 +19,8 @@ struct SMP : Processor::SPC700, Thread {
+   auto serialize(serializer&) -> void;
+ 
+   uint8 iplrom[64];
++  uint64 labTicks = 0;
++  void (*labHook)(uint8 kind, uint16 address, uint16 value) = nullptr;
+ 
+ private:
+   struct IO {
+diff --git a/bsnes/sfc/smp/timing.cpp b/bsnes/sfc/smp/timing.cpp
+index 4f70d561ff88929e405aad869896de7ae5a86432..9053bef1bcf7c6f3f2c2fe727ae10fb1041f9f27 100644
+--- a/bsnes/sfc/smp/timing.cpp
++++ b/bsnes/sfc/smp/timing.cpp
+@@ -33,6 +33,7 @@ auto SMP::waitIdle(maybe<uint16> addr, bool half) -> void {
+ }
+ 
+ auto SMP::step(uint clocks) -> void {
++  labTicks += clocks;  //unirally-lab: includes idle and wait-state ticks
+   clock += clocks * (uint64_t)cpu.frequency;
+   dsp.clock -= clocks;
+   synchronizeDSP();
+@@ -41,6 +42,7 @@ auto SMP::step(uint clocks) -> void {
+ }
+ 
+ auto SMP::stepIdle(uint clocks) -> void {
++  labTicks += clocks;  //unirally-lab: includes idle and wait-state ticks
+   clock += clocks * (uint64_t)cpu.frequency;
+   dsp.clock -= clocks;
+ }
+diff --git a/bsnes/target-libretro/GNUmakefile b/bsnes/target-libretro/GNUmakefile
+index 53ebb7dda5334255417840d33f231189adf59279..3dcc792bd3e9dba8cde99692ae61de1e67edcb3a 100644
+--- a/bsnes/target-libretro/GNUmakefile
++++ b/bsnes/target-libretro/GNUmakefile
+@@ -11,10 +11,11 @@ else ifeq ($(platform), tvos-arm64)
+ 	options += -dynamiclib
+ endif
+ 
+-objects := libretro $(objects)
++objects := libretro unirally $(objects)
+ objects := $(patsubst %,obj/%.o,$(objects))
+ 
+ obj/libretro.o: target-libretro/libretro.cpp
++obj/unirally.o: target-libretro/unirally.cpp
+ 
+ all: $(objects)
+ ifeq ($(platform),linux)
+diff --git a/bsnes/target-libretro/link.T b/bsnes/target-libretro/link.T
+index 9e82b5dd3f8a038b36ff5391c738ca89160a08dd..1bbe92f25fc5a10478f789d7307948fbcab9211d 100644
+--- a/bsnes/target-libretro/link.T
++++ b/bsnes/target-libretro/link.T
+@@ -1,4 +1,4 @@
+ {
+-   global: retro_*;
++   global: retro_*; unirally_*;
+    local: *;
+ };
+diff --git a/bsnes/target-libretro/unirally.cpp b/bsnes/target-libretro/unirally.cpp
+new file mode 100644
+index 0000000000000000000000000000000000000000..80b7bc76da4ea7719fcdf2b55721582377f1c92e
+--- /dev/null
++++ b/bsnes/target-libretro/unirally.cpp
+@@ -0,0 +1,244 @@
++// unirally-lab extensions for the bsnes libretro build.
++// These exports are not part of the libretro API; tools/unirally_lab/reference
++// loads the library directly and uses them for headless capture.
++#include <sfc/sfc.hpp>
++#include <new>
++#include "libretro.h"
++// ---- unirally-lab extensions -------------------------------------------------
++// Laboratory exports used by tools/unirally_lab/reference. They are not part of
++// the libretro API; the Python adapter loads the library directly.
++
++namespace UnirallyLab {
++#pragma pack(push, 1)
++struct Registers {
++	uint32_t pc;      // 24-bit program counter (bank in bits 16-23)
++	uint16_t a, x, y, s, d;
++	uint8_t b, p, e, mdr;
++	uint16_t vcounter, hcounter;
++	uint8_t field, wai, stp, reserved;
++};
++struct TraceEntry {
++	uint32_t pc;
++	uint16_t a, x, y, s, d;
++	uint8_t b, p, e, reserved;
++	uint16_t vcounter, hcounter;
++};
++#pragma pack(pop)
++static TraceEntry* ring = nullptr;
++static size_t ringCapacity = 0, ringHead = 0, ringCount = 0;
++static uint64_t traceTotal = 0;
++
++static void fill(TraceEntry& t) {
++	auto& c = SuperFamicom::cpu;
++	t.pc = (uint32_t)c.r.pc.d; t.a = c.r.a.w; t.x = c.r.x.w; t.y = c.r.y.w; t.s = c.r.s.w; t.d = c.r.d.w;
++	t.b = c.r.b; t.p = (uint8_t)(uint)c.r.p; t.e = c.r.e; t.reserved = 0;
++	t.vcounter = c.vcounter(); t.hcounter = c.hcounter();
++}
++
++static void hook() {
++	fill(ring[ringHead]);
++	ringHead = (ringHead + 1) % ringCapacity;
++	if(ringCount < ringCapacity) ringCount++;
++	traceTotal++;
++}
++}
++
++extern "C" {
++
++RETRO_API uint32_t unirally_api_version() { return 1; }
++
++// id 0: work RAM (128 KiB); id 1: cartridge RAM (save RAM, may be empty)
++RETRO_API void* unirally_memory(unsigned id, size_t* size) {
++	switch(id) {
++	case 0: if(size) *size = sizeof(SuperFamicom::cpu.wram); return SuperFamicom::cpu.wram;
++	case 2: if(size) *size = sizeof(SuperFamicom::dsp.apuram); return SuperFamicom::dsp.apuram;
++	case 1: if(size) *size = SuperFamicom::cartridge.ram.size(); return SuperFamicom::cartridge.ram.data();
++	}
++	if(size) *size = 0;
++	return nullptr;
++}
++
++RETRO_API size_t unirally_cpu_registers(void* out, size_t capacity) {
++	if(!out || capacity < sizeof(UnirallyLab::Registers)) return sizeof(UnirallyLab::Registers);
++	auto& c = SuperFamicom::cpu;
++	UnirallyLab::Registers r = {};
++	r.pc = (uint32_t)c.r.pc.d; r.a = c.r.a.w; r.x = c.r.x.w; r.y = c.r.y.w; r.s = c.r.s.w; r.d = c.r.d.w;
++	r.b = c.r.b; r.p = (uint8_t)(uint)c.r.p; r.e = c.r.e; r.mdr = c.r.mdr;
++	r.vcounter = c.vcounter(); r.hcounter = c.hcounter(); r.field = c.field(); r.wai = c.r.wai; r.stp = c.r.stp;
++	memcpy(out, &r, sizeof r);
++	return sizeof r;
++}
++
++// Reseed the emulator's entropy source so serialized states from identical runs are byte-identical.
++// With "Hacks/Entropy" = "None" the generator never influences emulation; only its serialized state changes.
++RETRO_API void unirally_reseed(uint32_t seed, uint32_t sequence) {
++	SuperFamicom::random.seed(seed, sequence);
++}
++
++// Keep the last `entries` executed instructions (0 disables). Returns false on allocation failure.
++RETRO_API bool unirally_trace_enable(size_t entries) {
++	delete[] UnirallyLab::ring; UnirallyLab::ring = nullptr;
++	UnirallyLab::ringCapacity = UnirallyLab::ringHead = UnirallyLab::ringCount = 0;
++	UnirallyLab::traceTotal = 0;
++	SuperFamicom::cpu.instructionHook = nullptr;
++	if(entries == 0) return true;
++	UnirallyLab::ring = new(std::nothrow) UnirallyLab::TraceEntry[entries];
++	if(!UnirallyLab::ring) return false;
++	UnirallyLab::ringCapacity = entries;
++	SuperFamicom::cpu.instructionHook = &UnirallyLab::hook;
++	return true;
++}
++
++// Copy up to max_entries of the trace window, oldest first. Returns the number copied.
++RETRO_API size_t unirally_trace_read(void* out, size_t max_entries) {
++	size_t n = UnirallyLab::ringCount < max_entries ? UnirallyLab::ringCount : max_entries;
++	auto dst = static_cast<UnirallyLab::TraceEntry*>(out);
++	size_t start = (UnirallyLab::ringHead + UnirallyLab::ringCapacity - UnirallyLab::ringCount) % (UnirallyLab::ringCapacity ? UnirallyLab::ringCapacity : 1);
++	for(size_t i = 0; i < n; i++) dst[i] = UnirallyLab::ring[(start + i) % UnirallyLab::ringCapacity];
++	return n;
++}
++
++// Select bsnes' save-state synchronization method ("Fast" or "Strict", see sfc/system/system.cpp).
++// Returns false for any other value and leaves the setting unchanged.
++RETRO_API bool unirally_set_serialization_method(const char* method) {
++	nall::string value = method ? method : "";
++	if(value != "Fast" && value != "Strict") return false;
++	SuperFamicom::configuration.system.serialization.method = value;
++	return true;
++}
++
++RETRO_API uint64_t unirally_trace_total() { return UnirallyLab::traceTotal; }
++RETRO_API size_t unirally_trace_entry_size() { return sizeof(UnirallyLab::TraceEntry); }
++
++}
++
++// Audio capture ABI 1: append-only per-drain buffer, no core synchronization.
++namespace UnirallyAudioLab {
++#pragma pack(push, 1)
++struct Event {
++  uint64_t sequence, smpTicks, dspClocks;
++  uint64_t cpuTicks;    // ticks at stepOnce, not a converted scheduler timestamp
++  uint32_t pc;         // CPU next PC for CPU kinds; SMP next PC otherwise
++  uint16_t address, value;
++  uint8_t kind, reserved;
++};
++#pragma pack(pop)
++static Event* events = nullptr;
++static size_t capacity = 0, count = 0;
++static uint64_t total = 0, dropped = 0;
++static bool instructions = false;
++static bool cpuInstructions = false;
++static uint32_t watchedCpuPc[64] = {};
++static size_t watchedCpuCount = 0;
++static uint16_t watchedSmpPc[64] = {};
++static size_t watchedSmpCount = 0;
++static bool observedSmpInstruction = false;
++static void hook(uint8_t kind, uint16_t address, uint16_t value) {
++  if(kind == 10) {
++    observedSmpInstruction = instructions;
++    for(size_t i = 0; i < watchedSmpCount; i++) {
++      if(watchedSmpPc[i] == address) observedSmpInstruction = true;
++    }
++    if(!observedSmpInstruction) return;
++  }
++  if(kind == 11 && !observedSmpInstruction) return;
++  auto& s = SuperFamicom::smp;
++  auto& d = SuperFamicom::dsp;
++  auto& c = SuperFamicom::cpu;
++  uint64_t sequence = total++;
++  if(count == capacity) { dropped++; return; }
++  events[count++] = {sequence, s.labTicks, d.labClocks, c.labTicks,
++    kind == 5 || kind == 6 || kind >= 12 ? (uint32_t)c.r.pc.d : (uint32_t)s.r.pc.w,
++    address, value, kind, 0};
++}
++static void cpuInstruction() {
++  auto& c = SuperFamicom::cpu;
++  uint32_t pc = c.r.pc.d;
++  bool observed = cpuInstructions;
++  for(size_t i = 0; i < watchedCpuCount; i++) {
++    if(watchedCpuPc[i] == pc) observed = true;
++  }
++  if(!observed) return;
++  hook(12, c.r.a.w, c.r.x.w);
++  hook(13, c.r.y.w, c.r.s.w);
++  hook(15, (uint16_t)c.r.b | ((uint16_t)c.r.e << 8), (uint8_t)(uint)c.r.p);
++}
++}
++extern "C" {
++RETRO_API uint32_t unirally_audio_api_version() { return 5; }
++RETRO_API uint32_t unirally_audio_byte_order() {
++  uint32_t marker = 1;
++  return *(uint8_t*)&marker == 1 ? 1 : 2;
++}
++RETRO_API int64_t unirally_audio_dsp_balance() { return SuperFamicom::dsp.clock; }
++RETRO_API size_t unirally_audio_event_size() { return sizeof(UnirallyAudioLab::Event); }
++RETRO_API bool unirally_audio_enable(size_t capacity, bool instructions) {
++  using namespace UnirallyAudioLab;
++  SuperFamicom::cpu.labAudioInstructionHook = nullptr;
++  watchedCpuCount = watchedSmpCount = 0;
++  cpuInstructions = false;
++  observedSmpInstruction = false;
++  SuperFamicom::smp.labHook = nullptr;
++  SuperFamicom::dsp.labHook = nullptr;
++  delete[] events; events = nullptr;
++  count = total = dropped = 0; UnirallyAudioLab::capacity = 0;
++  UnirallyAudioLab::instructions = instructions;
++  if(!capacity) return true;
++  events = new(std::nothrow) Event[capacity];
++  if(!events) return false;
++  UnirallyAudioLab::capacity = capacity;
++  SuperFamicom::cpu.labAudioInstructionHook = cpuInstruction;
++  SuperFamicom::smp.labHook = hook;
++  SuperFamicom::dsp.labHook = hook;
++  return true;
++}
++RETRO_API uint64_t unirally_audio_total() { return UnirallyAudioLab::total; }
++RETRO_API uint64_t unirally_audio_dropped() { return UnirallyAudioLab::dropped; }
++RETRO_API size_t unirally_audio_read(void* out, size_t max_entries) {
++  using namespace UnirallyAudioLab;
++  size_t n = count < max_entries ? count : max_entries;
++  if(n && !out) return 0;
++  if(n) memcpy(out, events, n * sizeof(Event));
++  if(n < count) memmove(events, events + n, (count - n) * sizeof(Event));
++  count -= n;
++  return n;
++}
++RETRO_API uint64_t unirally_audio_smp_ticks() { return SuperFamicom::smp.labTicks; }
++RETRO_API uint64_t unirally_audio_dsp_clocks() { return SuperFamicom::dsp.labClocks; }
++RETRO_API double unirally_audio_apu_frequency() { return SuperFamicom::system.apuFrequency(); }
++RETRO_API uint64_t unirally_audio_smp_frequency() { return SuperFamicom::smp.frequency; }
++RETRO_API uint64_t unirally_audio_cpu_frequency() { return SuperFamicom::cpu.frequency; }
++RETRO_API size_t unirally_audio_disassemble(uint16_t address, bool p, char* out, size_t capacity) {
++  auto text = SuperFamicom::smp.disassemble(address, p);
++  size_t needed = text.size() + 1;
++  if(out && capacity >= needed) memcpy(out, (const char*)text, needed);
++  return needed;
++}
++}
++
++extern "C" {
++RETRO_API bool unirally_audio_watch_cpu(const uint32_t* pcs, size_t count) {
++  if(count > 64 || (count && !pcs)) return false;
++  for(size_t i = 0; i < count; i++) if(pcs[i] > 0xffffff) return false;
++  for(size_t i = 0; i < count; i++) UnirallyAudioLab::watchedCpuPc[i] = pcs[i];
++  UnirallyAudioLab::watchedCpuCount = count;
++  return true;
++}
++RETRO_API void unirally_audio_frame_boundary() {
++  auto& c = SuperFamicom::cpu;
++  UnirallyAudioLab::hook(14, c.hcounter(), c.vcounter());
++}
++RETRO_API uint64_t unirally_audio_cpu_ticks() { return SuperFamicom::cpu.labTicks; }
++RETRO_API int64_t unirally_audio_smp_balance() { return SuperFamicom::smp.clock; }
++}
++
++extern "C" RETRO_API bool unirally_audio_watch_smp(const uint16_t* pcs, size_t count) {
++  if(count > 64 || (count && !pcs)) return false;
++  for(size_t i = 0; i < count; i++) UnirallyAudioLab::watchedSmpPc[i] = pcs[i];
++  UnirallyAudioLab::watchedSmpCount = count;
++  return true;
++}
++
++extern "C" RETRO_API void unirally_audio_trace_cpu(bool enabled) {
++  UnirallyAudioLab::cpuInstructions = enabled;
++}

@@ -1,5 +1,24 @@
 # Next session
 
+**2 October 2026 Sydney: AUDIO-TITLE-MENU has passed its bounded live product check on [PR #50](https://github.com/malmazuke/unirally-reconstruction/pull/50).**
+The user heard menu music and navigation sounds in a visible unscripted run.
+The Xbox controller supplied 377 sampled input updates and 32 menu navigation
+changes; SDL delivered 964,841 nonzero stereo pairs. The run also reported
+265,848 underrun pairs. This is audible title/menu acceptance, not continuous
+sound after every menu exit: the bounded producer stops on exits other than
+HUNTER, and the aggregate log does not isolate the shortfall's cause. Source
+`42d2cc8` has accepted tier-1 independent re-review, exact original/native
+menu/HUNTER/warm-return audio, passing eleven frozen race gates with 6,023
+restores, app/presentation checks and hosted macOS/Ubuntu checks including
+Linux sanitizers. Local macOS sanitizer execution timed out. [R-0075](../docs/research/R-0075-title-menu-audio.md)
+and [AUDIO-TITLE-MENU](AUDIO-TITLE-MENU.md) define the precise domain. Audio remains opt-in
+with a v31 pack; other soundtrack and live device saves are outside this result.
+Finish final-tip CI/comments and PR merge if still open; otherwise verify main's
+`artifacts/audio-title-menu-integration/closeout.json`, synchronized `main` and
+cleanup. Then claim [AUDIO-FIRST-RACE](AUDIO-FIRST-RACE.md): continuous native audio through
+ordinary 1P setup, first DRAGSTER race/result and return. No M4 tag, reset,
+spending or provider change is authorized by this task.
+
 **30 September 2026 UTC: [AUDIO-DECISION](https://github.com/malmazuke/unirally-reconstruction/pull/49) defines the next native audio outcome.**
 The stale STUNT-EVENTS queue entry is reconciled: STUNT-EVENT-RACE (#39),
 STUNT-RESULT (#40) and STUNT-HUD (#42) already delivered the nine tour stunt

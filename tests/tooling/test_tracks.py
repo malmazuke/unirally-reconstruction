@@ -13,7 +13,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "tools"))
 
-from unirally_lab.content import front_end as front_end_rules, provenance, tracks  # noqa: E402
+from unirally_lab.content import audio, front_end as front_end_rules, pack, provenance, tracks  # noqa: E402
 
 MANIFEST = ROOT / "tests" / "manifests" / "content" / "track-streams.json"
 # Profile v24 appends the stunt events' four entries per track after every earlier profile's.
@@ -27,9 +27,14 @@ OPTIONS_ENTRIES = len(front_end_rules.OPTIONS_TABLES)
 LEAGUE_ENTRIES = 9
 
 
+def through_league(rules: dict) -> list[dict]:
+    """The unchanged v29 inventory, before v30's audio payloads."""
+    return [entry for entry in rules["entries"] if not entry["id"].startswith("audio.")]
+
+
 def through_options(rules: dict) -> list[dict]:
     """The v28 inventory, before v29's three league streams and six podium assets."""
-    return rules["entries"][:-LEAGUE_ENTRIES]
+    return through_league(rules)[:-LEAGUE_ENTRIES]
 
 
 def legacy_entries(rules: dict) -> list[dict]:
@@ -78,7 +83,7 @@ class LeagueEntryTests(unittest.TestCase):
         import re
         rules = json.loads((ROOT / "tests" / "manifests" / "content" /
                             "classic-crawler-tracks-pack.json").read_text(encoding="utf-8"))
-        added = rules["entries"][-LEAGUE_ENTRIES:]
+        added = through_league(rules)[-LEAGUE_ENTRIES:]
         self.assertEqual(len(through_options(rules)), 466)
         self.assertEqual([e["id"] for e in added], [
             "front-end.league-table-text", "front-end.league-awards-text",
@@ -171,7 +176,7 @@ class PackProfileTests(unittest.TestCase):
             compiled += [(i, int(n), d) for i, n, d in re.findall(r'\{"([^"]+)",\s*(\d+),\s*"([0-9a-f]{64})"\}', table)]
         self.assertEqual(compiled, [(e["id"], e["size"], e["sha256"]) for e in added])
         self.assertIn(hashlib.sha256(rules_path.read_bytes()).hexdigest(), source)
-        self.assertEqual(rules["profile_id"], "classic.pal.crawler.tracks.v29")
+        self.assertEqual(rules["profile_id"], pack.TWO_TRACK_PROFILE)
         ids = {e["id"] for e in added}
         for index in tracks.NEW_RACE_TRACKS + tracks.LOCKED_RACE_TRACKS + tracks.STUNT_TRACKS:
             for part in ("data", "tile-columns", "tile-flags", "bg1-tiles"):
@@ -520,6 +525,49 @@ class TrackedManifestTests(unittest.TestCase):
         for stream in manifest["streams"]:
             self.assertEqual(set(stream["derived"]), {"bg1_tiles", "tile_columns", "tile_flags"})
             self.assertEqual(len(stream["header"]["unnamed_bytes"]["0-2"]), 6)
+
+
+class AudioEntryTests(unittest.TestCase):
+    """v30 adds only identified data and preserves the frozen v29 entries."""
+
+    def test_inventory_and_previous_entries(self) -> None:
+        import hashlib
+        import re
+        rules = json.loads((ROOT / "tests/manifests/content/classic-crawler-tracks-pack.json")
+                           .read_text(encoding="utf-8"))
+        previous = through_league(rules)
+        self.assertEqual(len(previous), 475)
+        previous_bytes = json.dumps(previous, sort_keys=True, separators=(",", ":")).encode()
+        self.assertEqual(hashlib.sha256(previous_bytes).hexdigest(),
+                         "6df6cfce7f83ef8ac93a4e6143f1987244dbb1901dc6a7b5e1fe61618cd487f7")
+        added = rules["entries"][len(previous):len(previous)+33]
+        self.assertEqual(len(added), 33)
+        self.assertTrue(all(e["id"].startswith("audio.") for e in added))
+        self.assertEqual([e["id"] for e in added[12:]],
+                         [f"audio.sample.{i:02d}" for i in
+                          (0, 4, 6, 8, 10, 13, 14, 15, 17, 18, 19, 20, 21, 24, 26, 27,
+                           39, 40, 43, 46, 48)])
+        source = (ROOT / "src/core/content_pack.cpp").read_text(encoding="utf-8")
+        table = source[source.index("33> audio_required{{"):]
+        table = table[:table.index("}};")]
+        compiled = re.findall(r'\{"([^"]+)",\s*(\d+),\s*"([0-9a-f]{64})"\}', table)
+        self.assertEqual(compiled, [(e["id"], str(e["size"]), e["sha256"]) for e in added])
+
+    def test_hunter_metadata_preserves_v30_inventory(self) -> None:
+        import hashlib
+        rules = json.loads((ROOT / "tests/manifests/content/classic-crawler-tracks-pack.json")
+                           .read_text(encoding="utf-8"))
+        previous = rules["entries"][:508]
+        encoded = json.dumps(previous, sort_keys=True, separators=(",", ":")).encode()
+        self.assertEqual(hashlib.sha256(encoded).hexdigest(), "945b74512a544739f8ca8d2ab35ea9aa537e73f528b73025acd3b0e8eb8905b0")
+        self.assertEqual([e["id"] for e in rules["entries"][508:]],
+                         ["audio.hunter-graphics-work-directory"])
+        self.assertEqual(rules["entries"][508]["size"], 95)
+
+    def test_resource_headers_reject_truncation_and_short_length(self) -> None:
+        for rom in (bytes(0x80001), bytes(0x80002), bytes(0x80000) + b"\x05\x00"):
+            with self.assertRaises(ValueError):
+                audio.resource_headers(rom)
 
 
 if __name__ == "__main__":

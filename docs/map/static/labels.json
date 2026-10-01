@@ -310,9 +310,13 @@
   "class": "observed",
   "comment": "routine start",
   "label": "sub_808587",
+  "native": [
+   "src/core/audio_cpu_interrupt.cpp:save_interrupt_caller"
+  ],
   "source_records": [
    "docs/research/R-0006-observed-code-map.md",
    "docs/research/R-0009-m1-acceptance.md",
+   "docs/research/R-0075-title-menu-audio.md",
    "tasks/M1-01.md"
   ]
  },
@@ -323,6 +327,15 @@
   "label": "loc_808589",
   "source_records": [
    "docs/research/R-0006-observed-code-map.md"
+  ]
+ },
+ {
+  "address": "$80:8598",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_808598",
+  "source_records": [
+   "docs/research/R-0075-title-menu-audio.md"
   ]
  },
  {
@@ -684,16 +697,39 @@
   "native": [
    "src/core/front_end.hpp:FrontEndState::boot_start",
    "src/core/front_end_screens.hpp:soft_reset",
-   "src/core/hunter_ending.cpp:(file)"
+   "src/core/hunter_ending.cpp:(file)",
+   "src/core/title_menu_audio.cpp:NativeTitleMenuAudio::restart_title"
   ],
   "source_records": [
    "docs/research/R-0006-observed-code-map.md",
    "docs/research/R-0054-boot-title-main-menu.md",
    "docs/research/R-0064-hunter-ending-and-soft-reset.md",
+   "docs/research/R-0075-title-menu-audio.md",
    "tasks/COVERAGE-ROADMAP.md",
    "tasks/FRONT-END-ENDINGS.md",
    "tasks/HUNTER-ENDING.md",
    "tasks/M1-01.md"
+  ]
+ },
+ {
+  "address": "$80:886A",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80886A",
+  "source_records": [
+   "docs/research/R-0075-title-menu-audio.md"
+  ]
+ },
+ {
+  "address": "$80:887B",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80887B",
+  "native": [
+   "src/core/audio_cpu_menu_reveal.cpp:native_audio_reveal_main_menu"
+  ],
+  "source_records": [
+   "docs/research/R-0075-title-menu-audio.md"
   ]
  },
  {
@@ -716,6 +752,15 @@
   ]
  },
  {
+  "address": "$80:889A",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80889A",
+  "source_records": [
+   "docs/research/R-0075-title-menu-audio.md"
+  ]
+ },
+ {
   "address": "$80:88B2",
   "class": "unknown",
   "comment": "unknown",
@@ -730,7 +775,8 @@
   "comment": "unknown",
   "label": "unk_8088BE",
   "source_records": [
-   "docs/research/R-0054-boot-title-main-menu.md"
+   "docs/research/R-0054-boot-title-main-menu.md",
+   "docs/research/R-0075-title-menu-audio.md"
   ]
  },
  {
@@ -824,8 +870,12 @@
   "class": "observed",
   "comment": "routine start",
   "label": "sub_808C41",
+  "native": [
+   "src/core/audio_cpu_text.cpp:small_glyph_work"
+  ],
   "source_records": [
-   "docs/research/R-0053-result-title-printer.md"
+   "docs/research/R-0053-result-title-printer.md",
+   "docs/research/R-0075-title-menu-audio.md"
   ]
  },
  {
@@ -834,6 +884,7 @@
   "comment": "routine start",
   "label": "sub_808C4E",
   "native": [
+   "src/core/audio_cpu_menu_records.cpp:native_audio_begin_menu_records",
    "src/core/front_end.cpp:check_records",
    "src/core/front_end.hpp:OnePlayerRecords"
   ],
@@ -842,7 +893,32 @@
    "docs/research/R-0055-rider-menu.md",
    "docs/research/R-0056-tour-track-now-playing.md",
    "docs/research/R-0057-one-run-result.md",
-   "docs/research/R-0064-hunter-ending-and-soft-reset.md"
+   "docs/research/R-0064-hunter-ending-and-soft-reset.md",
+   "docs/research/R-0075-title-menu-audio.md"
+  ]
+ },
+ {
+  "address": "$80:8C80",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_808C80",
+  "native": [
+   "src/core/audio_cpu_menu_defaults.cpp:native_audio_menu_first_record_defaults"
+  ],
+  "source_records": [
+   "docs/research/R-0075-title-menu-audio.md"
+  ]
+ },
+ {
+  "address": "$80:8CB6",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_808CB6",
+  "native": [
+   "src/core/audio_cpu_menu_defaults.cpp:native_audio_finish_menu_records"
+  ],
+  "source_records": [
+   "docs/research/R-0075-title-menu-audio.md"
   ]
  },
  {
@@ -1058,10 +1134,12 @@
   "comment": "routine start",
   "label": "sub_8091D1",
   "native": [
+   "src/core/audio_cpu_boot.cpp:reset_cpu",
    "src/core/front_end.cpp:soft_reset"
   ],
   "source_records": [
-   "docs/research/R-0006-observed-code-map.md"
+   "docs/research/R-0006-observed-code-map.md",
+   "docs/research/R-0075-title-menu-audio.md"
   ]
  },
  {
@@ -1101,6 +1179,7 @@
   "comment": "routine start",
   "label": "sub_809318",
   "native": [
+   "src/core/audio_cpu_scene.cpp:upload_oam",
    "src/core/front_end_screens.hpp:copy_oam",
    "src/core/hunter_ending.cpp:enter_hunter_code",
    "src/core/hunter_ending.cpp:reveal_step"
@@ -1136,10 +1215,12 @@
   "comment": "routine start",
   "label": "sub_80937B",
   "native": [
+   "src/core/audio_cpu_menu_reveal.cpp:upload_text_map",
    "src/core/front_end_screens.hpp:load_text"
   ],
   "source_records": [
-   "docs/research/R-0055-rider-menu.md"
+   "docs/research/R-0055-rider-menu.md",
+   "docs/research/R-0075-title-menu-audio.md"
   ]
  },
  {
@@ -1279,6 +1360,18 @@
   ]
  },
  {
+  "address": "$80:96FD",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_8096FD",
+  "native": [
+   "src/core/audio_cpu_menu_defaults.cpp:divide_track_number"
+  ],
+  "source_records": [
+   "docs/research/R-0075-title-menu-audio.md"
+  ]
+ },
+ {
   "address": "$80:974B",
   "class": "observed",
   "comment": "routine start",
@@ -1354,6 +1447,7 @@
   "comment": "routine start",
   "label": "sub_809869",
   "native": [
+   "src/core/audio_cpu_scene.cpp:fade",
    "src/core/front_end.cpp:fade_frames",
    "src/core/race_result.cpp:race_restart_frame",
    "src/core/race_result.cpp:rows_frame, icons_frame, first_fade_frame, fade_frames",
@@ -1364,7 +1458,8 @@
    "docs/research/R-0057-one-run-result.md",
    "docs/research/R-0058-lap-result.md",
    "docs/research/R-0060-pause-exits.md",
-   "docs/research/R-0067-stunt-result.md"
+   "docs/research/R-0067-stunt-result.md",
+   "docs/research/R-0075-title-menu-audio.md"
   ]
  },
  {
@@ -1373,6 +1468,7 @@
   "comment": "routine start",
   "label": "sub_809885",
   "native": [
+   "src/core/audio_cpu_scene.cpp:fade",
    "src/core/front_end.cpp:fade_frames",
    "src/core/front_end.hpp:FrontEndScreen",
    "src/core/now_playing.cpp:(file)",
@@ -1381,6 +1477,15 @@
   "source_records": [
    "docs/research/R-0054-boot-title-main-menu.md",
    "docs/research/R-0056-tour-track-now-playing.md"
+  ]
+ },
+ {
+  "address": "$80:98A3",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_8098A3",
+  "source_records": [
+   "docs/research/R-0075-title-menu-audio.md"
   ]
  },
  {
@@ -1730,11 +1835,49 @@
   ]
  },
  {
+  "address": "$80:A09F",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80A09F",
+  "native": [
+   "src/core/audio_cpu_interrupt.hpp:AudioCpuInterruptWorkState::cartridge_flags, AudioCpuInterruptWorkState::scroll, AudioCpuInterruptWorkState::palette_delay, AudioCpuInterruptWorkState::palette_index"
+  ],
+  "source_records": [
+   "docs/research/R-0075-title-menu-audio.md"
+  ]
+ },
+ {
+  "address": "$80:A0A5",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80A0A5",
+  "native": [
+   "src/core/audio_cpu_interrupt.hpp:AudioCpuInterruptWorkState::cartridge_flags, AudioCpuInterruptWorkState::scroll, AudioCpuInterruptWorkState::palette_delay, AudioCpuInterruptWorkState::palette_index"
+  ],
+  "source_records": [
+   "docs/research/R-0075-title-menu-audio.md"
+  ]
+ },
+ {
+  "address": "$80:A119",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80A119",
+  "native": [
+   "src/core/audio_cpu_queue.cpp:native_audio_bootstrap_queue"
+  ],
+  "source_records": [
+   "docs/research/R-0075-title-menu-audio.md",
+   "tasks/AUDIO-TITLE-MENU.md"
+  ]
+ },
+ {
   "address": "$80:A16A",
   "class": "observed",
   "comment": "routine start",
   "label": "sub_80A16A",
   "native": [
+   "src/core/audio_cpu_title.cpp:native_audio_initialize_title_work",
    "src/core/front_end.cpp:load_main_menu_screen",
    "src/core/front_end.cpp:load_title",
    "src/core/front_end.cpp:parked_x, parked_y",
@@ -1986,12 +2129,14 @@
   "comment": "routine start",
   "label": "sub_80A877",
   "native": [
+   "src/core/audio_cpu_menu_reveal.cpp:upload_menu_font",
    "src/core/front_end.cpp:menu_text_tiles_dma",
    "src/core/front_end_screens.hpp:reload_menu_text_tiles"
   ],
   "source_records": [
    "docs/research/R-0054-boot-title-main-menu.md",
-   "docs/research/R-0055-rider-menu.md"
+   "docs/research/R-0055-rider-menu.md",
+   "docs/research/R-0075-title-menu-audio.md"
   ]
  },
  {
@@ -2000,6 +2145,7 @@
   "comment": "routine start",
   "label": "sub_80A8A8",
   "native": [
+   "src/core/audio_cpu_scene.cpp:native_audio_palette_dma_work",
    "src/core/front_end.cpp:boot_frame_waits",
    "src/core/front_end.cpp:load_main_menu_screen",
    "src/core/front_end.cpp:load_nintendo_screen",
@@ -2057,12 +2203,14 @@
   "comment": "routine start",
   "label": "sub_80ABC8",
   "native": [
+   "src/core/audio_cpu_menu_input.cpp:native_audio_begin_menu_input",
    "src/core/front_end.cpp:first_idle, idle_after_move",
    "src/core/front_end.hpp:FrontEndScreen",
    "src/core/front_end_screens.hpp:start_main_menu"
   ],
   "source_records": [
    "docs/research/R-0054-boot-title-main-menu.md",
+   "docs/research/R-0075-title-menu-audio.md",
    "tasks/COVERAGE-ROADMAP.md",
    "tasks/FRONT-END-MAIN-MENU.md"
   ]
@@ -2073,6 +2221,7 @@
   "comment": "instruction start",
   "label": "loc_80ABE3",
   "native": [
+   "src/core/audio_cpu_menu_input.cpp:native_audio_menu_input_frame",
    "src/core/front_end.cpp:run_main_menu"
   ],
   "source_records": [
@@ -2085,6 +2234,8 @@
   "comment": "instruction start",
   "label": "loc_80ABEB",
   "native": [
+   "src/core/audio_cpu_menu_input.cpp:native_audio_menu_input_frame",
+   "src/core/audio_cpu_menu_input.cpp:test_menu_code",
    "src/core/front_end.cpp:run_main_menu"
   ],
   "source_records": [
@@ -2097,6 +2248,7 @@
   "comment": "instruction start",
   "label": "loc_80AC0F",
   "native": [
+   "src/core/audio_cpu_menu_input.cpp:native_audio_menu_input_frame",
    "src/core/front_end.cpp:run_main_menu"
   ],
   "source_records": [
@@ -2109,6 +2261,8 @@
   "comment": "routine start",
   "label": "sub_80ACD5",
   "native": [
+   "src/core/audio_cpu_menu_reveal.cpp:native_audio_reveal_main_menu",
+   "src/core/audio_cpu_text.cpp:native_audio_begin_menu_text",
    "src/core/front_end.cpp:boot_frame_waits",
    "src/core/front_end.cpp:copy_menu_text",
    "src/core/front_end.hpp:FrontEndScreen",
@@ -2118,7 +2272,8 @@
   ],
   "source_records": [
    "docs/research/R-0054-boot-title-main-menu.md",
-   "docs/research/R-0055-rider-menu.md"
+   "docs/research/R-0055-rider-menu.md",
+   "docs/research/R-0075-title-menu-audio.md"
   ]
  },
  {
@@ -2128,6 +2283,30 @@
   "label": "loc_80ACF1",
   "source_records": [
    "docs/research/R-0054-boot-title-main-menu.md"
+  ]
+ },
+ {
+  "address": "$80:ACF7",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80ACF7",
+  "native": [
+   "src/core/audio_cpu_menu_reveal.cpp:finish_initial_text"
+  ],
+  "source_records": [
+   "docs/research/R-0075-title-menu-audio.md"
+  ]
+ },
+ {
+  "address": "$80:AD0F",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80AD0F",
+  "native": [
+   "src/core/audio_cpu_menu_reveal.cpp:finish_menu_uploads"
+  ],
+  "source_records": [
+   "docs/research/R-0075-title-menu-audio.md"
   ]
  },
  {
@@ -2153,6 +2332,18 @@
   ]
  },
  {
+  "address": "$80:AD43",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_80AD43",
+  "native": [
+   "src/core/audio_cpu_menu_league.cpp:initialize_league"
+  ],
+  "source_records": [
+   "docs/research/R-0075-title-menu-audio.md"
+  ]
+ },
+ {
   "address": "$80:AD47",
   "class": "observed",
   "comment": "routine start",
@@ -2170,10 +2361,25 @@
   "comment": "instruction start",
   "label": "loc_80AD79",
   "native": [
+   "src/core/audio_cpu_menu_league.cpp:initialize_ranking",
    "src/core/league_menu.cpp:reorder_league"
   ],
   "source_records": [
-   "docs/research/R-0006-observed-code-map.md"
+   "docs/research/R-0006-observed-code-map.md",
+   "docs/research/R-0075-title-menu-audio.md"
+  ]
+ },
+ {
+  "address": "$80:AD94",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80AD94",
+  "native": [
+   "src/core/audio_cpu_menu_league.cpp:save_pairing",
+   "src/core/league_menu.cpp:reorder_league"
+  ],
+  "source_records": [
+   "docs/research/R-0075-title-menu-audio.md"
   ]
  },
  {
@@ -2209,6 +2415,7 @@
   "comment": "routine start",
   "label": "sub_80B08C",
   "native": [
+   "src/core/audio_cpu_scene.cpp:native_audio_load_nintendo_graphics",
    "src/core/front_end.cpp:boot_frame_waits",
    "src/core/front_end.cpp:nintendo_palette, nintendo_map, nintendo_tiles",
    "src/core/front_end.cpp:set_early_registers"
@@ -2218,17 +2425,73 @@
   ]
  },
  {
+  "address": "$80:B091",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80B091",
+  "native": [
+   "src/core/audio_cpu_scene.cpp:native_audio_upload_base_palette"
+  ],
+  "source_records": [
+   "docs/research/R-0075-title-menu-audio.md"
+  ]
+ },
+ {
+  "address": "$80:B0CC",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80B0CC",
+  "native": [
+   "src/core/audio_cpu_scene.cpp:native_audio_finish_nintendo_screen"
+  ],
+  "source_records": [
+   "docs/research/R-0075-title-menu-audio.md"
+  ]
+ },
+ {
+  "address": "$80:B0DB",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80B0DB",
+  "source_records": [
+   "docs/research/R-0075-title-menu-audio.md"
+  ]
+ },
+ {
+  "address": "$80:B0F0",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_80B0F0",
+  "native": [
+   "src/core/audio_cpu_interrupt.cpp:restore_interrupt_caller"
+  ],
+  "source_records": [
+   "docs/research/R-0075-title-menu-audio.md"
+  ]
+ },
+ {
+  "address": "$80:B0F9",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80B0F9",
+  "source_records": [
+   "docs/research/R-0075-title-menu-audio.md"
+  ]
+ },
+ {
   "address": "$80:B124",
   "class": "observed",
   "comment": "routine start",
   "label": "sub_80B124",
   "native": [
+   "src/core/audio_cpu_title_hold.cpp:acknowledge_title_code",
    "src/core/front_end.cpp:check_title_code"
   ],
   "source_records": [
    "docs/research/R-0055-rider-menu.md",
    "docs/research/R-0064-hunter-ending-and-soft-reset.md",
-   "docs/research/R-0067-stunt-result.md"
+   "docs/research/R-0067-stunt-result.md",
+   "docs/research/R-0075-title-menu-audio.md"
   ]
  },
  {
@@ -2236,8 +2499,12 @@
   "class": "observed",
   "comment": "routine start",
   "label": "sub_80B139",
+  "native": [
+   "src/core/audio_cpu_hunter_reveal.cpp:reveal_cue"
+  ],
   "source_records": [
-   "docs/research/R-0055-rider-menu.md"
+   "docs/research/R-0055-rider-menu.md",
+   "docs/research/R-0075-title-menu-audio.md"
   ]
  },
  {
@@ -2254,10 +2521,14 @@
   "class": "observed",
   "comment": "routine start",
   "label": "sub_80B178",
+  "native": [
+   "src/core/audio_cpu_menu_input.cpp:enqueue_navigation"
+  ],
   "source_records": [
    "docs/research/R-0054-boot-title-main-menu.md",
    "docs/research/R-0055-rider-menu.md",
-   "docs/research/R-0067-stunt-result.md"
+   "docs/research/R-0067-stunt-result.md",
+   "docs/research/R-0075-title-menu-audio.md"
   ]
  },
  {
@@ -2462,6 +2733,7 @@
   "comment": "routine start",
   "label": "sub_80B612",
   "native": [
+   "src/core/audio_cpu_boot.cpp:clear_vram",
    "src/core/front_end.cpp:soft_reset"
   ],
   "source_records": [
@@ -2512,11 +2784,24 @@
   ]
  },
  {
+  "address": "$80:B6CF",
+  "class": "inferred",
+  "comment": "routine start",
+  "label": "sub_80B6CF",
+  "native": [
+   "src/core/audio_cpu_hunter_wait.cpp:native_audio_ending_press"
+  ],
+  "source_records": [
+   "docs/research/R-0075-title-menu-audio.md"
+  ]
+ },
+ {
   "address": "$80:B6D3",
   "class": "inferred",
   "comment": "routine start",
   "label": "sub_80B6D3",
   "native": [
+   "src/core/audio_cpu_hunter_wait.cpp:native_audio_ending_press",
    "src/core/award.cpp:award_left",
    "src/core/front_end.hpp:HunterEnding::both_pads",
    "src/core/front_end_screens.hpp:any_button_pressed",
@@ -2537,10 +2822,12 @@
   "comment": "routine start",
   "label": "sub_80B71D",
   "native": [
+   "src/core/audio_cpu_menu_input.cpp:test_menu_input",
    "src/core/front_end_screens.hpp:pad_up, pad_down, pad_left, pad_right, pad_select, pad_a, pad_r"
   ],
   "source_records": [
-   "docs/research/R-0054-boot-title-main-menu.md"
+   "docs/research/R-0054-boot-title-main-menu.md",
+   "docs/research/R-0075-title-menu-audio.md"
   ]
  },
  {
@@ -2560,8 +2847,12 @@
   "class": "observed",
   "comment": "routine start",
   "label": "sub_80B76F",
+  "native": [
+   "src/core/audio_cpu_menu_input.cpp:test_menu_input"
+  ],
   "source_records": [
-   "docs/research/R-0054-boot-title-main-menu.md"
+   "docs/research/R-0054-boot-title-main-menu.md",
+   "docs/research/R-0075-title-menu-audio.md"
   ]
  },
  {
@@ -2570,10 +2861,12 @@
   "comment": "routine start",
   "label": "sub_80B794",
   "native": [
+   "src/core/audio_cpu_menu_input.cpp:test_menu_input",
    "src/core/front_end_screens.hpp:pad_up, pad_down, pad_left, pad_right, pad_select, pad_a, pad_r"
   ],
   "source_records": [
-   "docs/research/R-0054-boot-title-main-menu.md"
+   "docs/research/R-0054-boot-title-main-menu.md",
+   "docs/research/R-0075-title-menu-audio.md"
   ]
  },
  {
@@ -3104,11 +3397,13 @@
   "comment": "routine start",
   "label": "sub_80C202",
   "native": [
+   "src/core/audio_cpu_hunter_wait.cpp:native_audio_hunter_page_wait_frame",
    "src/core/front_end.hpp:HunterEnding::press_seen",
    "src/core/hunter_ending.cpp:(file)"
   ],
   "source_records": [
-   "docs/research/R-0064-hunter-ending-and-soft-reset.md"
+   "docs/research/R-0064-hunter-ending-and-soft-reset.md",
+   "docs/research/R-0075-title-menu-audio.md"
   ]
  },
  {
@@ -3117,8 +3412,11 @@
   "comment": "routine start",
   "label": "sub_80C206",
   "native": [
+   "src/core/audio_cpu_hunter_wait.cpp:native_audio_hunter_page_wait_frame",
+   "src/core/front_end.hpp:HunterEnding::press_seen",
    "src/core/front_end.hpp:RaceResult::press_seen",
    "src/core/front_end_screens.hpp:wait_for_result_press",
+   "src/core/hunter_ending.cpp:(file)",
    "src/core/hunter_ending.cpp:first_page_press",
    "src/core/race_result.cpp:(file)",
    "src/core/race_result.cpp:pressed",
@@ -3136,6 +3434,9 @@
   "comment": "instruction start",
   "label": "loc_80C20C",
   "native": [
+   "src/core/audio_cpu_hunter_wait.cpp:native_audio_hunter_page_wait_frame",
+   "src/core/front_end.hpp:HunterEnding::press_seen",
+   "src/core/hunter_ending.cpp:(file)",
    "src/core/hunter_ending.cpp:hunter_ending_waits"
   ],
   "source_records": [
@@ -3148,6 +3449,9 @@
   "comment": "instruction start",
   "label": "loc_80C236",
   "native": [
+   "src/core/audio_cpu_hunter_wait.cpp:native_audio_hunter_page_wait_frame",
+   "src/core/front_end.hpp:HunterEnding::press_seen",
+   "src/core/hunter_ending.cpp:(file)",
    "src/core/hunter_ending.cpp:first_page_press",
    "src/core/race_result.cpp:hide_result_objects",
    "src/core/race_result.cpp:lap_graph_frame"
@@ -3180,6 +3484,7 @@
   "comment": "routine start",
   "label": "sub_80C3BC",
   "native": [
+   "src/core/audio_cpu_text.cpp:print_menu_text_work",
    "src/core/front_end_screens.hpp:print_main_menu",
    "src/core/result_screen.cpp:(file)",
    "src/core/text_printer.hpp:(file)"
@@ -3187,6 +3492,7 @@
   "source_records": [
    "docs/research/R-0053-result-title-printer.md",
    "docs/research/R-0055-rider-menu.md",
+   "docs/research/R-0075-title-menu-audio.md",
    "tasks/FRONT-END-MAIN-MENU.md",
    "tasks/RESULT-TITLE-GLYPHS.md"
   ]
@@ -3231,10 +3537,12 @@
   "comment": "instruction start",
   "label": "loc_80C3FE",
   "native": [
+   "src/core/audio_cpu_text.cpp:print_character_work",
    "src/core/text_printer.cpp:table_entry"
   ],
   "source_records": [
-   "docs/research/R-0054-boot-title-main-menu.md"
+   "docs/research/R-0054-boot-title-main-menu.md",
+   "docs/research/R-0075-title-menu-audio.md"
   ]
  },
  {
@@ -3252,10 +3560,12 @@
   "comment": "instruction start",
   "label": "loc_80C41E",
   "native": [
+   "src/core/audio_cpu_text.cpp:big_glyph_work",
    "src/core/text_printer.cpp:print_big"
   ],
   "source_records": [
-   "docs/research/R-0053-result-title-printer.md"
+   "docs/research/R-0053-result-title-printer.md",
+   "docs/research/R-0075-title-menu-audio.md"
   ]
  },
  {
@@ -3264,6 +3574,7 @@
   "comment": "instruction start",
   "label": "loc_80C431",
   "native": [
+   "src/core/audio_cpu_text.cpp:big_glyph_work",
    "src/core/presentation.hpp:build_dragster_result_map",
    "src/core/result_screen.cpp:build_result_map",
    "src/core/result_screen.cpp:write_result_title",
@@ -3305,12 +3616,26 @@
   "comment": "instruction start",
   "label": "loc_80C4B8",
   "native": [
+   "src/core/audio_cpu_text.cpp:center_text_work",
    "src/core/result_screen.cpp:build_result_map",
    "src/core/text_printer.cpp:centre_on"
   ],
   "source_records": [
    "docs/research/R-0053-result-title-printer.md",
+   "docs/research/R-0075-title-menu-audio.md",
    "tasks/RESULT-TITLE-GLYPHS.md"
+  ]
+ },
+ {
+  "address": "$80:C557",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80C557",
+  "native": [
+   "src/core/audio_cpu_text.cpp:attribute_work"
+  ],
+  "source_records": [
+   "docs/research/R-0075-title-menu-audio.md"
   ]
  },
  {
@@ -3319,10 +3644,12 @@
   "comment": "instruction start",
   "label": "loc_80C56C",
   "native": [
+   "src/core/audio_cpu_text.cpp:small_glyph_print_work",
    "src/core/text_printer.cpp:print_small"
   ],
   "source_records": [
-   "docs/research/R-0053-result-title-printer.md"
+   "docs/research/R-0053-result-title-printer.md",
+   "docs/research/R-0075-title-menu-audio.md"
   ]
  },
  {
@@ -3331,6 +3658,7 @@
   "comment": "instruction start",
   "label": "loc_80C57C",
   "native": [
+   "src/core/audio_cpu_text.cpp:small_glyph_print_work",
    "src/core/result_screen.cpp:small_glyph_tile",
    "src/core/text_printer.cpp:print_small",
    "src/core/text_printer.cpp:small_tile_base, small_lower_row"
@@ -4140,7 +4468,8 @@
    "src/core/race_result.cpp:score_race"
   ],
   "source_records": [
-   "docs/research/R-0059-tour-completion.md"
+   "docs/research/R-0059-tour-completion.md",
+   "docs/research/R-0075-title-menu-audio.md"
   ]
  },
  {
@@ -4149,6 +4478,7 @@
   "comment": "routine start",
   "label": "sub_80D1EC",
   "native": [
+   "src/core/audio_cpu_title_hold.cpp:native_audio_poll_controllers",
    "src/core/front_end.cpp:boot_frame",
    "src/core/front_end.cpp:run_main_menu",
    "src/core/hunter_ending.cpp:first_page_press",
@@ -4162,7 +4492,17 @@
    "docs/research/R-0054-boot-title-main-menu.md",
    "docs/research/R-0055-rider-menu.md",
    "docs/research/R-0056-tour-track-now-playing.md",
-   "docs/research/R-0067-stunt-result.md"
+   "docs/research/R-0067-stunt-result.md",
+   "docs/research/R-0075-title-menu-audio.md"
+  ]
+ },
+ {
+  "address": "$80:D1F9",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80D1F9",
+  "source_records": [
+   "docs/research/R-0075-title-menu-audio.md"
   ]
  },
  {
@@ -4176,7 +4516,8 @@
    "src/core/options_menu.cpp:rename_commit_frame"
   ],
   "source_records": [
-   "docs/research/R-0055-rider-menu.md"
+   "docs/research/R-0055-rider-menu.md",
+   "docs/research/R-0075-title-menu-audio.md"
   ]
  },
  {
@@ -4185,6 +4526,7 @@
   "comment": "routine start",
   "label": "sub_80D20E",
   "native": [
+   "src/core/audio_cpu_menu.cpp:native_audio_menu_first_palette",
    "src/core/front_end.cpp:boot_frame_waits",
    "src/core/front_end.cpp:load_main_menu_screen",
    "src/core/front_end.cpp:menu_objects, menu_objects_high, menu_map, menu_bg2_tiles, menu_bg1_tiles, menu_bg1_tiles_high",
@@ -4199,7 +4541,29 @@
   "source_records": [
    "docs/research/R-0054-boot-title-main-menu.md",
    "docs/research/R-0057-one-run-result.md",
-   "docs/research/R-0059-tour-completion.md"
+   "docs/research/R-0059-tour-completion.md",
+   "docs/research/R-0075-title-menu-audio.md"
+  ]
+ },
+ {
+  "address": "$80:D263",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80D263",
+  "source_records": [
+   "docs/research/R-0075-title-menu-audio.md"
+  ]
+ },
+ {
+  "address": "$80:D2AD",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80D2AD",
+  "native": [
+   "src/core/audio_cpu_menu.cpp:native_audio_menu_oam"
+  ],
+  "source_records": [
+   "docs/research/R-0075-title-menu-audio.md"
   ]
  },
  {
@@ -4208,6 +4572,7 @@
   "comment": "routine start",
   "label": "sub_80D2C1",
   "native": [
+   "src/core/audio_cpu_menu.cpp:reset_menu_sprite_work",
    "src/core/front_end.cpp:lay_out_menu_objects",
    "src/core/front_end.cpp:restore_menu_screen",
    "src/core/front_end_screens.hpp:lay_out_menu_objects"
@@ -4224,6 +4589,7 @@
   "comment": "instruction start",
   "label": "loc_80D2C3",
   "native": [
+   "src/core/audio_cpu_menu.cpp:reset_menu_sprite_work",
    "src/core/front_end.cpp:lay_out_menu_objects",
    "src/core/front_end.cpp:restore_menu_screen",
    "src/core/front_end_screens.hpp:lay_out_menu_objects"
@@ -4238,6 +4604,7 @@
   "comment": "instruction start",
   "label": "loc_80D2CB",
   "native": [
+   "src/core/audio_cpu_menu.cpp:reset_menu_sprite_work",
    "src/core/front_end.cpp:lay_out_menu_objects",
    "src/core/front_end.cpp:restore_menu_screen",
    "src/core/front_end_screens.hpp:lay_out_menu_objects"
@@ -4252,6 +4619,7 @@
   "comment": "instruction start",
   "label": "loc_80D318",
   "native": [
+   "src/core/audio_cpu_menu.cpp:reset_menu_sprite_work",
    "src/core/front_end.cpp:lay_out_menu_objects",
    "src/core/front_end.cpp:restore_menu_screen",
    "src/core/front_end_screens.hpp:lay_out_menu_objects"
@@ -4261,15 +4629,32 @@
   ]
  },
  {
+  "address": "$80:D338",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80D338",
+  "native": [
+   "src/core/audio_cpu_menu.cpp:reset_menu_sprite_work",
+   "src/core/front_end.cpp:lay_out_menu_objects",
+   "src/core/front_end.cpp:restore_menu_screen",
+   "src/core/front_end_screens.hpp:lay_out_menu_objects"
+  ],
+  "source_records": [
+   "docs/research/R-0075-title-menu-audio.md"
+  ]
+ },
+ {
   "address": "$80:D36F",
   "class": "observed",
   "comment": "instruction start",
   "label": "loc_80D36F",
   "native": [
+   "src/core/audio_cpu_menu_records.cpp:native_audio_begin_menu_records",
    "src/core/front_end.cpp:boot_frame_waits"
   ],
   "source_records": [
-   "docs/research/R-0054-boot-title-main-menu.md"
+   "docs/research/R-0054-boot-title-main-menu.md",
+   "docs/research/R-0075-title-menu-audio.md"
   ]
  },
  {
@@ -4674,10 +5059,12 @@
   "comment": "routine start",
   "label": "sub_80E2CF",
   "native": [
+   "src/core/audio_cpu_hunter_reveal.cpp:reveal_page",
    "src/core/hunter_ending.cpp:(file)"
   ],
   "source_records": [
    "docs/research/R-0064-hunter-ending-and-soft-reset.md",
+   "docs/research/R-0075-title-menu-audio.md",
    "tasks/HUNTER-ENDING.md"
   ]
  },
@@ -4687,6 +5074,9 @@
   "comment": "instruction start",
   "label": "loc_80E2D8",
   "native": [
+   "src/core/audio_cpu_hunter_reveal.cpp:copy_reveal_work",
+   "src/core/audio_cpu_hunter_reveal.cpp:reveal_page",
+   "src/core/hunter_ending.cpp:(file)",
    "src/core/hunter_ending.cpp:copy_reveal_tables"
   ],
   "source_records": [
@@ -4699,6 +5089,8 @@
   "comment": "instruction start",
   "label": "loc_80E322",
   "native": [
+   "src/core/audio_cpu_hunter_reveal.cpp:reveal_page",
+   "src/core/hunter_ending.cpp:(file)",
    "src/core/hunter_ending.cpp:hunter_ending_waits",
    "src/core/hunter_ending.cpp:reveal_step"
   ],
@@ -4712,6 +5104,10 @@
   "comment": "instruction start",
   "label": "loc_80E369",
   "native": [
+   "src/core/audio_cpu_hunter_reveal.cpp:native_audio_hunter_reveal_frame",
+   "src/core/audio_cpu_hunter_reveal.cpp:reveal_frame",
+   "src/core/audio_cpu_hunter_reveal.cpp:reveal_page",
+   "src/core/hunter_ending.cpp:(file)",
    "src/core/hunter_ending.cpp:end_reveal",
    "src/core/hunter_ending.cpp:page_load_frame, page_tiles_frame, reveal_steps"
   ],
@@ -5306,10 +5702,12 @@
   "comment": "routine start",
   "label": "sub_80EFD4",
   "native": [
+   "src/core/audio_cpu_menu_league.cpp:sort_ranking",
    "src/core/league_menu.cpp:standings_order"
   ],
   "source_records": [
-   "docs/research/R-0073-league.md"
+   "docs/research/R-0073-league.md",
+   "docs/research/R-0075-title-menu-audio.md"
   ]
  },
  {
@@ -5782,11 +6180,13 @@
   "comment": "routine start",
   "label": "sub_80F52B",
   "native": [
+   "src/core/audio_cpu_menu_reveal.cpp:finish_menu_uploads",
    "src/core/options_menu.cpp:rename_commit_frame",
    "src/core/rider_menu.cpp:main_menu_return_frame"
   ],
   "source_records": [
-   "docs/research/R-0055-rider-menu.md"
+   "docs/research/R-0055-rider-menu.md",
+   "docs/research/R-0075-title-menu-audio.md"
   ]
  },
  {
@@ -5832,6 +6232,7 @@
   "comment": "routine start",
   "label": "sub_80F55F",
   "native": [
+   "src/core/audio_cpu_title.cpp:native_audio_load_title_graphics",
    "src/core/front_end.cpp:load_title",
    "src/core/front_end.cpp:title_palette, title_map, title_tiles"
   ],
@@ -5870,12 +6271,14 @@
   "comment": "instruction start",
   "label": "loc_80F5C0",
   "native": [
+   "src/core/audio_cpu_title_hold.cpp:native_audio_begin_title_hold",
    "src/core/front_end.cpp:check_title_code",
    "src/core/front_end.hpp:FrontEndState::title_code_step",
    "src/core/front_end.hpp:OnePlayerRecords::cheat"
   ],
   "source_records": [
-   "docs/research/R-0064-hunter-ending-and-soft-reset.md"
+   "docs/research/R-0064-hunter-ending-and-soft-reset.md",
+   "docs/research/R-0075-title-menu-audio.md"
   ]
  },
  {
@@ -5884,12 +6287,33 @@
   "comment": "instruction start",
   "label": "loc_80F5E3",
   "native": [
+   "src/core/audio_cpu_title_hold.cpp:apply_title_code",
+   "src/core/audio_cpu_title_hold.cpp:native_audio_begin_title_hold",
    "src/core/front_end.cpp:check_title_code",
    "src/core/front_end.hpp:FrontEndState::title_code_step",
    "src/core/front_end.hpp:OnePlayerRecords::cheat"
   ],
   "source_records": [
-   "docs/research/R-0056-tour-track-now-playing.md"
+   "docs/research/R-0056-tour-track-now-playing.md",
+   "docs/research/R-0075-title-menu-audio.md"
+  ]
+ },
+ {
+  "address": "$80:F614",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80F614",
+  "source_records": [
+   "docs/research/R-0075-title-menu-audio.md"
+  ]
+ },
+ {
+  "address": "$80:F617",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80F617",
+  "source_records": [
+   "docs/research/R-0075-title-menu-audio.md"
   ]
  },
  {
@@ -5910,12 +6334,14 @@
   "comment": "instruction start",
   "label": "loc_80F622",
   "native": [
+   "src/core/audio_cpu_interrupt.cpp:update_title_scroll",
    "src/core/front_end.cpp:check_title_code",
    "src/core/front_end.cpp:scroll_logo",
    "src/core/front_end.hpp:LogoScroll"
   ],
   "source_records": [
-   "docs/research/R-0054-boot-title-main-menu.md"
+   "docs/research/R-0054-boot-title-main-menu.md",
+   "docs/research/R-0075-title-menu-audio.md"
   ]
  },
  {
@@ -5925,6 +6351,15 @@
   "label": "loc_80F63E",
   "source_records": [
    "tasks/M3-02.md"
+  ]
+ },
+ {
+  "address": "$80:F644",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80F644",
+  "source_records": [
+   "docs/research/R-0075-title-menu-audio.md"
   ]
  },
  {
@@ -6140,13 +6575,15 @@
   "comment": "routine start",
   "label": "sub_80F814",
   "native": [
+   "src/core/audio_cpu_pose_upload.cpp:native_audio_upload_pose_work",
    "src/core/award.cpp:upload_rider",
    "src/core/front_end_screens.hpp:upload_pose",
    "src/core/tour_ending_scripts.hpp:upload_built_pose"
   ],
   "source_records": [
    "docs/research/R-0059-tour-completion.md",
-   "docs/research/R-0062-gold-endings.md"
+   "docs/research/R-0062-gold-endings.md",
+   "docs/research/R-0075-title-menu-audio.md"
   ]
  },
  {
@@ -6155,9 +6592,12 @@
   "comment": "routine start",
   "label": "sub_80F818",
   "native": [
+   "src/core/audio_cpu_pose_upload.cpp:native_audio_upload_pose_work",
+   "src/core/award.cpp:upload_rider",
    "src/core/front_end_screens.hpp:upload_pose",
    "src/core/rider_menu.cpp:uni_tiles_word, uni_row_words, tile_words",
-   "src/core/rider_menu.cpp:upload_uni"
+   "src/core/rider_menu.cpp:upload_uni",
+   "src/core/tour_ending_scripts.hpp:upload_built_pose"
   ],
   "source_records": [
    "docs/research/R-0055-rider-menu.md"
@@ -6212,6 +6652,7 @@
   "comment": "routine start",
   "label": "sub_80FA60",
   "native": [
+   "src/core/audio_cpu_interrupt.cpp:update_palette_cycle",
    "src/core/front_end.cpp:step_palette_cycle",
    "src/core/front_end.hpp:PaletteCycle",
    "src/core/presentation.cpp:now_playing_leftover_colours",
@@ -6219,7 +6660,8 @@
   ],
   "source_records": [
    "docs/research/R-0054-boot-title-main-menu.md",
-   "docs/research/R-0068-stunt-hud.md"
+   "docs/research/R-0068-stunt-hud.md",
+   "docs/research/R-0075-title-menu-audio.md"
   ]
  },
  {
@@ -6229,6 +6671,15 @@
   "label": "loc_80FA82",
   "source_records": [
    "docs/research/R-0054-boot-title-main-menu.md"
+  ]
+ },
+ {
+  "address": "$80:FAC9",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80FAC9",
+  "source_records": [
+   "docs/research/R-0075-title-menu-audio.md"
   ]
  },
  {
@@ -6255,11 +6706,35 @@
   ]
  },
  {
+  "address": "$80:FAE3",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80FAE3",
+  "native": [
+   "src/core/audio_cpu_queue.cpp:native_audio_wait_vblank"
+  ],
+  "source_records": [
+   "docs/research/R-0075-title-menu-audio.md",
+   "tasks/AUDIO-TITLE-MENU.md"
+  ]
+ },
+ {
+  "address": "$80:FAF1",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80FAF1",
+  "source_records": [
+   "docs/research/R-0075-title-menu-audio.md",
+   "tasks/AUDIO-TITLE-MENU.md"
+  ]
+ },
+ {
   "address": "$80:FAF5",
   "class": "observed",
   "comment": "routine start",
   "label": "sub_80FAF5",
   "native": [
+   "src/core/audio_cpu_scene.cpp:update_scene_work",
    "src/core/front_end.cpp:quarter_step",
    "src/core/front_end.hpp:MenuArrow"
   ],
@@ -10943,9 +11418,13 @@
   "class": "observed",
   "comment": "routine start",
   "label": "sub_828000",
+  "native": [
+   "src/core/audio_cpu_queue.cpp:native_audio_enqueue"
+  ],
   "source_records": [
    "docs/research/R-0054-boot-title-main-menu.md",
    "docs/research/R-0074-audio-foundation.md",
+   "docs/research/R-0075-title-menu-audio.md",
    "tasks/AUDIO-DECISION.md",
    "tasks/AUDIO-TITLE-MENU.md"
   ]
@@ -10956,6 +11435,7 @@
   "comment": "routine start",
   "label": "sub_828035",
   "native": [
+   "src/core/audio_cpu_queue.cpp:native_audio_poll_queue",
    "src/core/front_end.cpp:return_from_demo"
   ],
   "source_records": [
@@ -11023,7 +11503,8 @@
   "comment": "instruction start",
   "label": "loc_82806D",
   "source_records": [
-   "docs/research/R-0074-audio-foundation.md"
+   "docs/research/R-0074-audio-foundation.md",
+   "docs/research/R-0075-title-menu-audio.md"
   ]
  },
  {
@@ -11057,6 +11538,15 @@
    "tasks/DRAGSTER-CLOCK-LIMIT-review.md",
    "tasks/M4-16-review.md",
    "tasks/M4-16.md"
+  ]
+ },
+ {
+  "address": "$82:808F",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82808F",
+  "source_records": [
+   "tasks/AUDIO-TITLE-MENU.md"
   ]
  },
  {
@@ -11103,6 +11593,15 @@
   "source_records": [
    "docs/research/M4-16-persistent-input-ledger.md",
    "docs/research/R-0007-player-state.md"
+  ]
+ },
+ {
+  "address": "$82:80D6",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_8280D6",
+  "source_records": [
+   "docs/research/R-0075-title-menu-audio.md"
   ]
  },
  {
@@ -11171,6 +11670,15 @@
   "source_records": [
    "docs/research/M4-16-persistent-input-ledger.md",
    "tasks/M4-16-review.md"
+  ]
+ },
+ {
+  "address": "$82:8160",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_828160",
+  "source_records": [
+   "tasks/AUDIO-TITLE-MENU.md"
   ]
  },
  {
@@ -13400,12 +13908,14 @@
   "comment": "routine start",
   "label": "sub_82B183",
   "native": [
+   "src/core/audio_cpu_boot.cpp:native_audio_cpu_upload_graphics_asset",
    "src/core/front_end_screens.hpp:load_vram"
   ],
   "source_records": [
    "docs/content/dragster-segment.md",
    "docs/research/R-0008-track-decode.md",
    "docs/research/R-0054-boot-title-main-menu.md",
+   "docs/research/R-0075-title-menu-audio.md",
    "tasks/FRONT-END-MAIN-MENU.md"
   ]
  },
@@ -13445,6 +13955,7 @@
   "comment": "routine start",
   "label": "sub_82B1DB",
   "native": [
+   "src/core/audio_cpu_boot.cpp:native_audio_cpu_upload_graphics_asset",
    "src/core/front_end_screens.hpp:load_vram"
   ],
   "source_records": [
@@ -13488,6 +13999,7 @@
   "comment": "routine start",
   "label": "sub_82B296",
   "native": [
+   "src/core/audio_cpu_boot.cpp:read_asset_byte",
    "src/core/result_screen.cpp:render_result_background"
   ],
   "source_records": [
@@ -13497,6 +14009,15 @@
    "docs/research/R-0019-dragster-loser-result.md",
    "tasks/M1-03.md",
    "tasks/M3-02.md"
+  ]
+ },
+ {
+  "address": "$82:B2DC",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82B2DC",
+  "source_records": [
+   "docs/research/R-0075-title-menu-audio.md"
   ]
  },
  {
@@ -14277,6 +14798,18 @@
   ]
  },
  {
+  "address": "$83:8484",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_838484",
+  "native": [
+   "src/core/audio_cpu_pose.cpp:copy_pose_tile"
+  ],
+  "source_records": [
+   "docs/research/R-0075-title-menu-audio.md"
+  ]
+ },
+ {
   "address": "$83:8535",
   "class": "unknown",
   "comment": "unknown",
@@ -14709,8 +15242,12 @@
   "class": "observed",
   "comment": "routine start",
   "label": "sub_838AF7",
+  "native": [
+   "src/core/audio_cpu_menu_records.cpp:verify_cartridge_mirror"
+  ],
   "source_records": [
-   "docs/research/R-0054-boot-title-main-menu.md"
+   "docs/research/R-0054-boot-title-main-menu.md",
+   "docs/research/R-0075-title-menu-audio.md"
   ]
  },
  {
@@ -14719,11 +15256,13 @@
   "comment": "routine start",
   "label": "sub_838B23",
   "native": [
+   "src/core/audio_cpu_menu_defaults.cpp:native_audio_reset_menu_selection",
    "src/core/front_end.cpp:check_records",
    "src/core/front_end.cpp:soft_reset"
   ],
   "source_records": [
-   "docs/research/R-0054-boot-title-main-menu.md"
+   "docs/research/R-0054-boot-title-main-menu.md",
+   "docs/research/R-0075-title-menu-audio.md"
   ]
  },
  {
@@ -14732,6 +15271,7 @@
   "comment": "routine start",
   "label": "sub_838B51",
   "native": [
+   "src/core/audio_cpu_menu_records.cpp:clear_menu_text_work_internal",
    "src/core/front_end_screens.hpp:cleared_text",
    "src/core/hunter_ending.cpp:set_up_credits",
    "src/core/rider_menu.cpp:print_rider_menu",
@@ -14739,7 +15279,8 @@
    "src/core/track_menu.cpp:track_menu_entry_frame"
   ],
   "source_records": [
-   "docs/research/R-0055-rider-menu.md"
+   "docs/research/R-0055-rider-menu.md",
+   "docs/research/R-0075-title-menu-audio.md"
   ]
  },
  {
@@ -14759,6 +15300,15 @@
   "source_records": [
    "docs/research/R-0015-native-presentation.md",
    "tasks/M3-02.md"
+  ]
+ },
+ {
+  "address": "$83:8B90",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_838B90",
+  "source_records": [
+   "docs/research/R-0075-title-menu-audio.md"
   ]
  },
  {
@@ -14847,6 +15397,7 @@
   "comment": "routine start",
   "label": "sub_838E3A",
   "native": [
+   "src/core/audio_cpu_pose.cpp:native_audio_build_pose_work",
    "src/core/front_end.hpp:RiderMenu::picture",
    "src/core/front_end.hpp:TourAward::pose",
    "src/core/front_end_screens.hpp:upload_pose",
@@ -14857,7 +15408,8 @@
   "source_records": [
    "docs/research/R-0055-rider-menu.md",
    "docs/research/R-0059-tour-completion.md",
-   "docs/research/R-0062-gold-endings.md"
+   "docs/research/R-0062-gold-endings.md",
+   "docs/research/R-0075-title-menu-audio.md"
   ]
  },
  {
@@ -14895,6 +15447,7 @@
   "comment": "routine start",
   "label": "sub_8390F4",
   "native": [
+   "src/core/audio_cpu_menu_defaults.cpp:write_record_checksums",
    "src/core/front_end.hpp:OnePlayerRecords::statistics",
    "src/core/race_result.cpp:insert_record"
   ],
@@ -14903,6 +15456,7 @@
    "docs/research/R-0060-pause-exits.md",
    "docs/research/R-0065-fifth-win-completion.md",
    "docs/research/R-0067-stunt-result.md",
+   "docs/research/R-0075-title-menu-audio.md",
    "tasks/FIFTH-WIN-COMPLETION.md"
   ]
  },
@@ -14912,6 +15466,7 @@
   "comment": "routine start",
   "label": "sub_8391F7",
   "native": [
+   "src/core/audio_cpu_menu.cpp:native_audio_menu_graphics",
    "src/core/front_end.cpp:load_main_menu_screen",
    "src/core/front_end.cpp:soft_reset",
    "src/core/front_end_screens.hpp:load_object_palette",
@@ -14921,7 +15476,8 @@
   "source_records": [
    "docs/research/R-0054-boot-title-main-menu.md",
    "docs/research/R-0055-rider-menu.md",
-   "docs/research/R-0057-one-run-result.md"
+   "docs/research/R-0057-one-run-result.md",
+   "docs/research/R-0075-title-menu-audio.md"
   ]
  },
  {
@@ -14937,12 +15493,73 @@
   ]
  },
  {
+  "address": "$83:9228",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_839228",
+  "source_records": [
+   "docs/research/R-0075-title-menu-audio.md"
+  ]
+ },
+ {
   "address": "$83:92CC",
   "class": "observed",
   "comment": "routine start",
   "label": "sub_8392CC",
+  "native": [
+   "src/core/audio_cpu_menu_defaults.cpp:copy_default_table"
+  ],
   "source_records": [
-   "docs/research/R-0055-rider-menu.md"
+   "docs/research/R-0055-rider-menu.md",
+   "docs/research/R-0075-title-menu-audio.md"
+  ]
+ },
+ {
+  "address": "$83:92E3",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_8392E3",
+  "native": [
+   "src/core/audio_cpu_menu_defaults.cpp:clear_default_words"
+  ],
+  "source_records": [
+   "docs/research/R-0075-title-menu-audio.md"
+  ]
+ },
+ {
+  "address": "$83:92FA",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_8392FA",
+  "native": [
+   "src/core/audio_cpu_menu_defaults.cpp:copy_default_table"
+  ],
+  "source_records": [
+   "docs/research/R-0075-title-menu-audio.md"
+  ]
+ },
+ {
+  "address": "$83:9311",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_839311",
+  "native": [
+   "src/core/audio_cpu_menu_defaults.cpp:clear_default_words"
+  ],
+  "source_records": [
+   "docs/research/R-0075-title-menu-audio.md"
+  ]
+ },
+ {
+  "address": "$83:9328",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_839328",
+  "native": [
+   "src/core/audio_cpu_menu_defaults.cpp:copy_default_table"
+  ],
+  "source_records": [
+   "docs/research/R-0075-title-menu-audio.md"
   ]
  },
  {
@@ -14951,10 +15568,12 @@
   "comment": "routine start",
   "label": "sub_839340",
   "native": [
+   "src/core/audio_cpu_menu_defaults.cpp:initialize_rider_bests",
    "src/core/front_end.hpp:OnePlayerRecords"
   ],
   "source_records": [
-   "docs/research/R-0056-tour-track-now-playing.md"
+   "docs/research/R-0056-tour-track-now-playing.md",
+   "docs/research/R-0075-title-menu-audio.md"
   ]
  },
  {
@@ -14963,11 +15582,13 @@
   "comment": "routine start",
   "label": "sub_83936E",
   "native": [
+   "src/core/audio_cpu_menu_defaults.cpp:initialize_record_times",
    "src/core/front_end.cpp:cold_start_records",
    "src/core/front_end.hpp:OnePlayerRecords"
   ],
   "source_records": [
-   "docs/research/R-0057-one-run-result.md"
+   "docs/research/R-0057-one-run-result.md",
+   "docs/research/R-0075-title-menu-audio.md"
   ]
  },
  {
@@ -14976,10 +15597,24 @@
   "comment": "routine start",
   "label": "sub_8393D8",
   "native": [
+   "src/core/audio_cpu_menu_defaults.cpp:initialize_record_holders",
    "src/core/front_end.hpp:OnePlayerRecords"
   ],
   "source_records": [
-   "docs/research/R-0056-tour-track-now-playing.md"
+   "docs/research/R-0056-tour-track-now-playing.md",
+   "docs/research/R-0075-title-menu-audio.md"
+  ]
+ },
+ {
+  "address": "$83:93F5",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_8393F5",
+  "native": [
+   "src/core/audio_cpu_menu_league.cpp:native_audio_menu_league_defaults"
+  ],
+  "source_records": [
+   "docs/research/R-0075-title-menu-audio.md"
   ]
  },
  {
@@ -15001,6 +15636,30 @@
   ],
   "source_records": [
    "docs/research/R-0057-one-run-result.md"
+  ]
+ },
+ {
+  "address": "$83:9486",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_839486",
+  "native": [
+   "src/core/audio_cpu_menu_defaults.cpp:initialize_settings"
+  ],
+  "source_records": [
+   "docs/research/R-0075-title-menu-audio.md"
+  ]
+ },
+ {
+  "address": "$83:94A5",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_8394A5",
+  "native": [
+   "src/core/audio_cpu_menu_defaults.cpp:write_cartridge_header"
+  ],
+  "source_records": [
+   "docs/research/R-0075-title-menu-audio.md"
   ]
  },
  {
@@ -15052,8 +15711,12 @@
   "class": "observed",
   "comment": "routine start",
   "label": "sub_839558",
+  "native": [
+   "src/core/audio_cpu_menu_input.cpp:native_audio_begin_menu_input"
+  ],
   "source_records": [
-   "docs/research/R-0055-rider-menu.md"
+   "docs/research/R-0055-rider-menu.md",
+   "docs/research/R-0075-title-menu-audio.md"
   ]
  },
  {
@@ -15102,10 +15765,36 @@
   "comment": "routine start",
   "label": "sub_83963C",
   "native": [
+   "src/core/audio_cpu_menu_league.cpp:read_members",
    "src/core/league_menu.cpp:league_members"
   ],
   "source_records": [
-   "docs/research/R-0073-league.md"
+   "docs/research/R-0073-league.md",
+   "docs/research/R-0075-title-menu-audio.md"
+  ]
+ },
+ {
+  "address": "$83:969F",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_83969F",
+  "native": [
+   "src/core/audio_cpu_menu_league.cpp:read_members"
+  ],
+  "source_records": [
+   "docs/research/R-0075-title-menu-audio.md"
+  ]
+ },
+ {
+  "address": "$83:96BE",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_8396BE",
+  "native": [
+   "src/core/audio_cpu_menu_league.cpp:reorder_members"
+  ],
+  "source_records": [
+   "docs/research/R-0075-title-menu-audio.md"
   ]
  },
  {
@@ -15160,12 +15849,14 @@
   "comment": "routine start",
   "label": "sub_839983",
   "native": [
+   "src/core/audio_cpu_menu_defaults.cpp:initialize_cold_track_work",
    "src/core/now_playing.cpp:race_kind",
    "src/core/tour_menu.cpp:print_tour_menu",
    "src/core/track_menu.cpp:choose_track"
   ],
   "source_records": [
-   "docs/research/R-0056-tour-track-now-playing.md"
+   "docs/research/R-0056-tour-track-now-playing.md",
+   "docs/research/R-0075-title-menu-audio.md"
   ]
  },
  {
@@ -15186,11 +15877,14 @@
   "comment": "routine start",
   "label": "sub_8399F6",
   "native": [
+   "src/core/audio_cpu_scene.cpp:native_audio_load_nintendo_graphics",
+   "src/core/audio_cpu_scene.cpp:native_audio_park_arrow",
    "src/core/front_end.cpp:lay_out_menu_objects",
    "src/core/front_end.cpp:load_nintendo_screen"
   ],
   "source_records": [
-   "docs/research/R-0054-boot-title-main-menu.md"
+   "docs/research/R-0054-boot-title-main-menu.md",
+   "docs/research/R-0075-title-menu-audio.md"
   ]
  },
  {
@@ -15212,6 +15906,8 @@
   "comment": "routine start",
   "label": "sub_839A1E",
   "native": [
+   "src/core/audio_cpu_decorations.cpp:native_audio_step_decorations",
+   "src/core/audio_cpu_scene.hpp:AudioCpuDecorationWorkState",
    "src/core/front_end.hpp:MenuDecorations",
    "src/core/front_end_screens.hpp:step_decorations",
    "src/core/screen_slide.cpp:(file)"
@@ -15221,7 +15917,8 @@
    "docs/research/R-0056-tour-track-now-playing.md",
    "docs/research/R-0057-one-run-result.md",
    "docs/research/R-0058-lap-result.md",
-   "docs/research/R-0067-stunt-result.md"
+   "docs/research/R-0067-stunt-result.md",
+   "docs/research/R-0075-title-menu-audio.md"
   ]
  },
  {
@@ -15462,6 +16159,7 @@
   "comment": "routine start",
   "label": "sub_83A4D2",
   "native": [
+   "src/core/audio_cpu_credits_loop.cpp:native_audio_hunter_finish_credits_setup",
    "src/core/award.cpp:fade_out_frames, blank_frame, reset_frame, background_tiles_frame, podium_map_frame, podium_tiles_frame, colours_frame, objects_frame, rider_frame, first_fade_in_frame, fade_in_frames",
    "src/core/award.cpp:fade_up",
    "src/core/front_end_screens.hpp:fade_up",
@@ -15470,7 +16168,8 @@
   ],
   "source_records": [
    "docs/research/R-0059-tour-completion.md",
-   "docs/research/R-0062-gold-endings.md"
+   "docs/research/R-0062-gold-endings.md",
+   "docs/research/R-0075-title-menu-audio.md"
   ]
  },
  {
@@ -15479,6 +16178,7 @@
   "comment": "routine start",
   "label": "sub_83A4E9",
   "native": [
+   "src/core/audio_cpu_hunter_entry.cpp:native_audio_hunter_first_fade",
    "src/core/award.cpp:fade_down",
    "src/core/award.cpp:fade_out_frames, blank_frame, reset_frame, background_tiles_frame, podium_map_frame, podium_tiles_frame, colours_frame, objects_frame, rider_frame, first_fade_in_frame, fade_in_frames",
    "src/core/front_end_screens.hpp:fade_down",
@@ -15589,6 +16289,7 @@
   "comment": "routine start",
   "label": "sub_83A923",
   "native": [
+   "src/core/audio_cpu_hunter_entry.cpp:native_audio_hunter_ending_wait",
    "src/core/front_end.cpp:waits_for_frame",
    "src/core/front_end_screens.hpp:result_scoring_frame",
    "src/core/hunter_ending.cpp:hunter_ending_waits",
@@ -15600,7 +16301,8 @@
   "source_records": [
    "docs/research/R-0057-one-run-result.md",
    "docs/research/R-0059-tour-completion.md",
-   "docs/research/R-0060-pause-exits.md"
+   "docs/research/R-0060-pause-exits.md",
+   "docs/research/R-0075-title-menu-audio.md"
   ]
  },
  {
@@ -15609,10 +16311,40 @@
   "comment": "routine start",
   "label": "sub_83A93A",
   "native": [
+   "src/core/audio_cpu_credits_text.cpp:native_audio_print_credits",
    "src/core/hunter_ending.cpp:show_credits"
   ],
   "source_records": [
-   "docs/research/R-0064-hunter-ending-and-soft-reset.md"
+   "docs/research/R-0064-hunter-ending-and-soft-reset.md",
+   "docs/research/R-0075-title-menu-audio.md"
+  ]
+ },
+ {
+  "address": "$83:A9FB",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_83A9FB",
+  "native": [
+   "src/core/audio_cpu_credits_text.cpp:native_audio_print_credits",
+   "src/core/audio_cpu_credits_text.cpp:set_position",
+   "src/core/hunter_ending.cpp:show_credits"
+  ],
+  "source_records": [
+   "docs/research/R-0075-title-menu-audio.md"
+  ]
+ },
+ {
+  "address": "$83:AAC5",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_83AAC5",
+  "native": [
+   "src/core/audio_cpu_credits_text.cpp:native_audio_print_credits",
+   "src/core/audio_cpu_credits_text.cpp:small_glyph",
+   "src/core/hunter_ending.cpp:show_credits"
+  ],
+  "source_records": [
+   "docs/research/R-0075-title-menu-audio.md"
   ]
  },
  {
@@ -15621,6 +16353,7 @@
   "comment": "routine start",
   "label": "sub_83AB25",
   "native": [
+   "src/core/audio_cpu_pose_upload.cpp:native_audio_upload_pose_work",
    "src/core/tour_ending_right_column.cpp:bound_off_part",
    "src/core/tour_ending_right_column.cpp:knock_part"
   ],
@@ -15634,6 +16367,7 @@
   "comment": "routine start",
   "label": "sub_83AB9A",
   "native": [
+   "src/core/audio_cpu_hunter_entry.cpp:native_audio_hunter_first_fade",
    "src/core/award.cpp:complete_tour",
    "src/core/front_end.hpp:FrontEndScreen",
    "src/core/front_end.hpp:HunterEndingPart",
@@ -15646,6 +16380,7 @@
    "docs/research/R-0059-tour-completion.md",
    "docs/research/R-0062-gold-endings.md",
    "docs/research/R-0064-hunter-ending-and-soft-reset.md",
+   "docs/research/R-0075-title-menu-audio.md",
    "tasks/FRONT-END-ENDINGS.md",
    "tasks/HUNTER-ENDING.md"
   ]
@@ -15656,6 +16391,7 @@
   "comment": "instruction start",
   "label": "loc_83AB9F",
   "native": [
+   "src/core/audio_cpu_hunter_reveal.cpp:native_audio_hunter_begin_first_page",
    "src/core/hunter_ending.cpp:page_screens, page_mode, page_map, page_tile_bases",
    "src/core/hunter_ending.cpp:set_page_registers"
   ],
@@ -15669,6 +16405,9 @@
   "comment": "instruction start",
   "label": "loc_83ABB3",
   "native": [
+   "src/core/audio_cpu_hunter_reveal.cpp:native_audio_hunter_begin_first_page",
+   "src/core/hunter_ending.cpp:page_screens, page_mode, page_map, page_tile_bases",
+   "src/core/hunter_ending.cpp:set_page_registers",
    "src/core/hunter_ending.cpp:start_hunter_ending"
   ],
   "source_records": [
@@ -15681,7 +16420,10 @@
   "comment": "instruction start",
   "label": "loc_83ABB9",
   "native": [
-   "src/core/hunter_ending.cpp:cheat_page"
+   "src/core/audio_cpu_hunter_reveal.cpp:native_audio_hunter_begin_first_page",
+   "src/core/hunter_ending.cpp:cheat_page",
+   "src/core/hunter_ending.cpp:page_screens, page_mode, page_map, page_tile_bases",
+   "src/core/hunter_ending.cpp:set_page_registers"
   ],
   "source_records": [
    "docs/research/R-0064-hunter-ending-and-soft-reset.md"
@@ -15693,7 +16435,10 @@
   "comment": "instruction start",
   "label": "loc_83ABDA",
   "native": [
-   "src/core/hunter_ending.cpp:daily_news"
+   "src/core/audio_cpu_hunter_reveal.cpp:native_audio_hunter_begin_first_page",
+   "src/core/hunter_ending.cpp:daily_news",
+   "src/core/hunter_ending.cpp:page_screens, page_mode, page_map, page_tile_bases",
+   "src/core/hunter_ending.cpp:set_page_registers"
   ],
   "source_records": [
    "docs/research/R-0064-hunter-ending-and-soft-reset.md"
@@ -15705,6 +16450,7 @@
   "comment": "instruction start",
   "label": "loc_83ABFD",
   "native": [
+   "src/core/audio_cpu_hunter_reveal.cpp:native_audio_hunter_begin_second_page",
    "src/core/hunter_ending.cpp:speedking"
   ],
   "source_records": [
@@ -15717,7 +16463,10 @@
   "comment": "instruction start",
   "label": "loc_83AC1F",
   "native": [
+   "src/core/audio_cpu_hunter_reveal.cpp:native_audio_hunter_begin_second_page",
+   "src/core/audio_cpu_hunter_wait.cpp:native_audio_hunter_timed_frame",
    "src/core/hunter_ending.cpp:(file)",
+   "src/core/hunter_ending.cpp:speedking",
    "src/core/hunter_ending.cpp:timed_wait_pass",
    "src/core/hunter_ending.cpp:timed_wait_passes"
   ],
@@ -15731,8 +16480,13 @@
   "comment": "instruction start",
   "label": "loc_83AC32",
   "native": [
+   "src/core/audio_cpu_credits_setup.cpp:native_audio_hunter_prepare_credits",
+   "src/core/audio_cpu_hunter_wait.cpp:native_audio_hunter_timed_frame",
+   "src/core/hunter_ending.cpp:(file)",
    "src/core/hunter_ending.cpp:credits_setup_frame, credits_shown_frame, lower_pose_frame, credits_fade_in, credits_loop_frame",
-   "src/core/hunter_ending.cpp:set_up_credits"
+   "src/core/hunter_ending.cpp:set_up_credits",
+   "src/core/hunter_ending.cpp:timed_wait_pass",
+   "src/core/hunter_ending.cpp:timed_wait_passes"
   ],
   "source_records": [
    "docs/research/R-0064-hunter-ending-and-soft-reset.md"
@@ -15744,6 +16498,7 @@
   "comment": "instruction start",
   "label": "loc_83AC3B",
   "native": [
+   "src/core/audio_cpu_credits_setup.cpp:native_audio_hunter_prepare_credits",
    "src/core/front_end_screens.hpp:set_menu_registers",
    "src/core/hunter_ending.cpp:credits_setup_frame, credits_shown_frame, lower_pose_frame, credits_fade_in, credits_loop_frame",
    "src/core/hunter_ending.cpp:set_up_credits"
@@ -15758,6 +16513,7 @@
   "comment": "instruction start",
   "label": "loc_83AC6D",
   "native": [
+   "src/core/audio_cpu_credits_setup.cpp:native_audio_hunter_prepare_credits",
    "src/core/hunter_ending.cpp:credits_logo_offset",
    "src/core/hunter_ending.cpp:credits_setup_frame, credits_shown_frame, lower_pose_frame, credits_fade_in, credits_loop_frame",
    "src/core/hunter_ending.cpp:set_up_credits"
@@ -15772,6 +16528,7 @@
   "comment": "instruction start",
   "label": "loc_83ACDD",
   "native": [
+   "src/core/audio_cpu_credits_setup.cpp:native_audio_hunter_prepare_credits",
    "src/core/hunter_ending.cpp:credits_object_colours",
    "src/core/hunter_ending.cpp:credits_setup_frame, credits_shown_frame, lower_pose_frame, credits_fade_in, credits_loop_frame",
    "src/core/hunter_ending.cpp:set_up_credits",
@@ -15787,6 +16544,7 @@
   "comment": "instruction start",
   "label": "loc_83AD33",
   "native": [
+   "src/core/audio_cpu_credits_setup.cpp:native_audio_hunter_prepare_credits",
    "src/core/hunter_ending.cpp:credits_object_colours",
    "src/core/hunter_ending.cpp:credits_object_entries",
    "src/core/hunter_ending.cpp:credits_setup_frame, credits_shown_frame, lower_pose_frame, credits_fade_in, credits_loop_frame",
@@ -15803,6 +16561,7 @@
   "comment": "instruction start",
   "label": "loc_83AD67",
   "native": [
+   "src/core/audio_cpu_credits_setup.cpp:native_audio_hunter_prepare_credits",
    "src/core/hunter_ending.cpp:credits_object_colours",
    "src/core/hunter_ending.cpp:credits_setup_frame, credits_shown_frame, lower_pose_frame, credits_fade_in, credits_loop_frame",
    "src/core/hunter_ending.cpp:set_up_credits",
@@ -15819,6 +16578,10 @@
   "comment": "instruction start",
   "label": "loc_83AD9B",
   "native": [
+   "src/core/audio_cpu_credits_loop.cpp:build_credits_pose",
+   "src/core/audio_cpu_credits_loop.cpp:native_audio_hunter_credits_frame",
+   "src/core/audio_cpu_credits_loop.cpp:native_audio_hunter_finish_credits_setup",
+   "src/core/audio_cpu_credits_setup.cpp:native_audio_hunter_prepare_credits",
    "src/core/hunter_ending.cpp:credits_pass",
    "src/core/hunter_ending.cpp:credits_setup_frame, credits_shown_frame, lower_pose_frame, credits_fade_in, credits_loop_frame",
    "src/core/hunter_ending.cpp:set_up_credits"
@@ -15833,6 +16596,9 @@
   "comment": "instruction start",
   "label": "loc_83ADFA",
   "native": [
+   "src/core/audio_cpu_credits_loop.cpp:build_credits_pose",
+   "src/core/audio_cpu_credits_loop.cpp:native_audio_hunter_credits_frame",
+   "src/core/hunter_ending.cpp:credits_pass",
    "src/core/hunter_ending.cpp:reset_frame"
   ],
   "source_records": [
@@ -19328,10 +20094,12 @@
   "comment": "routine start",
   "label": "sub_83FB41",
   "native": [
+   "src/core/audio_cpu_menu_records.cpp:clear_cartridge",
    "src/core/front_end.cpp:check_records"
   ],
   "source_records": [
-   "docs/research/R-0064-hunter-ending-and-soft-reset.md"
+   "docs/research/R-0064-hunter-ending-and-soft-reset.md",
+   "docs/research/R-0075-title-menu-audio.md"
   ]
  },
  {
@@ -19341,6 +20109,15 @@
   "label": "sub_83FB8A",
   "source_records": [
    "docs/research/R-0060-pause-exits.md"
+  ]
+ },
+ {
+  "address": "$83:FCF5",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_83FCF5",
+  "source_records": [
+   "tasks/AUDIO-TITLE-MENU.md"
   ]
  }
 ]

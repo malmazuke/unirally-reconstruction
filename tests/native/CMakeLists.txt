@@ -84,3 +84,70 @@ add_test(NAME stunt_hud_score_countdown_upload_order COMMAND stunt_hud_tests)
 add_executable(league_tests league_tests.cpp)
 target_link_libraries(league_tests PRIVATE unirally_presentation)
 add_test(NAME league_pairing_awards_bonus_and_wrap COMMAND league_tests)
+
+add_executable(audio_dsp_tests audio_dsp_tests.cpp)
+target_link_libraries(audio_dsp_tests PRIVATE unirally_dsp lab_options)
+add_test(NAME audio_dsp_phase_and_restore COMMAND audio_dsp_tests)
+
+# Private raw-audio diagnostic; not linked into the frontend.
+add_executable(audio_dsp_replay ../../tools/unirally_lab/reference/audio_lab/replay.cpp)
+target_link_libraries(audio_dsp_replay PRIVATE unirally_dsp lab_options)
+
+add_executable(audio_score_runner audio_score_runner.cpp)
+target_link_libraries(audio_score_runner PRIVATE unirally_audio_score)
+add_executable(audio_score_tests audio_score_tests.cpp)
+target_link_libraries(audio_score_tests PRIVATE unirally_audio_score)
+add_test(NAME audio_score_calls_loops_duration_restore COMMAND audio_score_tests)
+
+add_executable(audio_voice_runner audio_voice_runner.cpp)
+target_link_libraries(audio_voice_runner PRIVATE unirally_audio_score lab_options)
+
+add_executable(audio_sequence_runner audio_sequence_runner.cpp)
+target_link_libraries(audio_sequence_runner PRIVATE unirally_audio_score lab_options)
+
+add_executable(audio_voice_tests audio_voice_tests.cpp)
+target_link_libraries(audio_voice_tests PRIVATE unirally_audio_score lab_options)
+add_test(NAME audio_voice_integer_boundaries COMMAND audio_voice_tests)
+
+add_executable(audio_timer_runner audio_timer_runner.cpp)
+target_link_libraries(audio_timer_runner PRIVATE unirally_audio_score lab_options)
+add_executable(audio_timer_tests audio_timer_tests.cpp)
+target_link_libraries(audio_timer_tests PRIVATE unirally_audio_score lab_options)
+add_test(NAME audio_timer_edges_wrap_restore COMMAND audio_timer_tests)
+add_executable(audio_driver_runner audio_driver_runner.cpp)
+target_link_libraries(audio_driver_runner PRIVATE unirally_audio_score unirally_dsp lab_options)
+add_executable(audio_ipl_tests audio_ipl_tests.cpp)
+target_link_libraries(audio_ipl_tests PRIVATE unirally_audio_score lab_options)
+add_test(NAME audio_ipl_pending_phases_and_page_wrap COMMAND audio_ipl_tests)
+add_executable(audio_cpu_boot_tests audio_cpu_boot_tests.cpp)
+target_link_libraries(audio_cpu_boot_tests PRIVATE unirally_audio_score lab_options)
+add_test(NAME audio_cpu_cold_boot_milestones COMMAND audio_cpu_boot_tests)
+add_executable(audio_cpu_ipl_runner audio_cpu_ipl_runner.cpp)
+target_link_libraries(audio_cpu_ipl_runner PRIVATE unirally_audio_score lab_options)
+
+add_executable(audio_driver_tests audio_driver_tests.cpp)
+target_link_libraries(audio_driver_tests PRIVATE unirally_audio_score lab_options)
+add_test(NAME audio_driver_pending_restore_and_cpu_yield COMMAND audio_driver_tests)
+
+add_executable(audio_cpu_upload_runner audio_cpu_upload_runner.cpp)
+target_link_libraries(audio_cpu_upload_runner PRIVATE unirally_audio_score unirally_dsp lab_options)
+add_executable(audio_cpu_queue_tests audio_cpu_queue_tests.cpp)
+target_link_libraries(audio_cpu_queue_tests PRIVATE unirally_audio_score lab_options)
+add_test(NAME audio_cpu_queue_full_busy_wrap_and_order COMMAND audio_cpu_queue_tests)
+
+add_executable(audio_cpu_defaults_tests audio_cpu_defaults_tests.cpp)
+target_link_libraries(audio_cpu_defaults_tests PRIVATE unirally_audio_score lab_options)
+add_test(NAME audio_cpu_defaults_terminal_settings_word COMMAND audio_cpu_defaults_tests)
+
+add_executable(title_menu_audio_runner title_menu_audio_runner.cpp)
+target_link_libraries(title_menu_audio_runner PRIVATE unirally_audio_score lab_options)
+add_executable(audio_state_tests audio_state_tests.cpp)
+target_link_libraries(audio_state_tests PRIVATE unirally_audio_score lab_options)
+add_test(NAME audio_canonical_file_and_transactional_restore COMMAND audio_state_tests)
+
+add_executable(audio_output_tests audio_output_tests.cpp)
+target_link_libraries(audio_output_tests PRIVATE unirally_audio_score lab_options)
+add_test(NAME audio_output_fraction_queue_and_file COMMAND audio_output_tests)
+
+add_executable(audio_playback_runner audio_playback_runner.cpp)
+target_link_libraries(audio_playback_runner PRIVATE unirally_audio_score)

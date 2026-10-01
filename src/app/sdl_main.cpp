@@ -4,6 +4,7 @@
 #include "zoom_zoo_pack.hpp"
 #include "presentation.hpp"
 #include "race_camera.hpp"
+#include "sdl_audio.hpp"
 
 #include <SDL3/SDL.h>
 
@@ -145,6 +146,7 @@ struct Options {
   std::uint32_t maximum_updates{};
   std::optional<std::uint16_t> fixed_controller_mask;
   bool hidden{};
+  bool native_title_menu_audio{};
   unirally::ClassicRaceTrack track{unirally::ClassicRaceTrack::Dragster};
   bool track_given{}; // without --track the app starts at power-on (the front end)
   // The front end's pads by its frame, from a laboratory input script (smoke-test aid).
@@ -208,7 +210,7 @@ void print_help() {
       << "Keyboard: arrows, Z=B, X=Y, A=A, S=X, Q=L, W=R, Enter=Start.\n"
       << "Gamepad: D-pad, South=B, West=Y, East=A, North=X, shoulders=L/R, Start, Back=Select;\n"
       << "the analog stick is not mapped. Either gamepad exits the idle demo.\n"
-      << "Audio is intentionally not implemented in M3.\n";
+      << "Native title/menu audio prototype: --native-title-menu-audio (v31 pack).\n";
 }
 
 std::optional<Options> options(int argc, char **argv) {
@@ -221,6 +223,10 @@ std::optional<Options> options(int argc, char **argv) {
     }
     if (option == "--hidden") {
       result.hidden = true;
+      continue;
+    }
+    if (option == "--native-title-menu-audio") {
+      result.native_title_menu_audio = true;
       continue;
     }
     if (option == "--supported-profiles") {
@@ -254,6 +260,8 @@ std::optional<Options> options(int argc, char **argv) {
     else
       throw std::invalid_argument("unknown option: " + std::string(option));
   }
+  if (result.native_title_menu_audio && result.track_given)
+    throw std::invalid_argument("native title/menu audio starts at power-on");
   if (result.pack.empty())
     throw std::invalid_argument("--content-pack is required; use `project.py frontend run` for first-launch extraction");
   return result;
@@ -316,7 +324,8 @@ int main(int argc, char **argv) try {
   unsigned results_reached=0,result_restarts=0,pause_restarts=0;
 
 
-  if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMEPAD))
+  if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMEPAD |
+                (parsed->native_title_menu_audio ? SDL_INIT_AUDIO : 0U)))
     throw sdl_error("SDL initialization failed");
   SdlQuitter quit;
   const auto flags = SDL_WINDOW_RESIZABLE |
@@ -339,7 +348,8 @@ int main(int argc, char **argv) try {
 
   std::cout << "Classic pack validated: " << parsed->pack << '\n'
             << "PAL scheduler: 50 Hz, maximum catch-up 4 updates\n"
-            << "Audio is intentionally not implemented in M3.\n";
+            << (parsed->native_title_menu_audio ? "Native title/menu audio prototype enabled.\n"
+                                                : "Audio playback disabled.\n");
 
   unirally::app::InputState input;
   Gamepads gamepads(input);
@@ -373,6 +383,9 @@ int main(int argc, char **argv) try {
   // Without --track the session starts at power-on; NOW PLAYING's Race starts the race.
   std::optional<unirally::app::FrontEndSession> front_end;
   if (!parsed->track_given) front_end.emplace(content.pack);
+  std::unique_ptr<unirally::app::SdlTitleMenuAudio> native_audio;
+  if (parsed->native_title_menu_audio)
+    native_audio = std::make_unique<unirally::app::SdlTitleMenuAudio>(content.pack);
   // During a race the front end waits here for the race's result load.
   std::optional<unirally::app::FrontEndSession> waiting_front_end;
   std::uint32_t demo_race_updates = 0;
@@ -388,9 +401,11 @@ int main(int argc, char **argv) try {
           ++focus_loss_nonzero_clears;
         input.clear();
         scheduler.pause(SDL_GetTicksNS());
+        if (native_audio) native_audio->set_paused(true);
         break;
       case SDL_EVENT_WINDOW_FOCUS_GAINED:
         scheduler.resume(SDL_GetTicksNS());
+        if (native_audio) native_audio->set_paused(false);
         break;
       case SDL_EVENT_WINDOW_EXPOSED:
       case SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED: redraw = true; break;
@@ -465,6 +480,16 @@ int main(int argc, char **argv) try {
           ++simultaneous_input_updates;
       } else if (observed_nonzero_input) {
         ++neutral_updates_after_input;
+      }
+      if (native_audio) {
+        std::array<std::uint16_t, 2> words{
+            unirally::app::snes_pad_word(ports[0]), unirally::app::snes_pad_word(ports[1])};
+        if (front_end && !parsed->front_end_inputs.empty()) {
+          const auto row = parsed->front_end_inputs.find(front_end->front_end_frame());
+          if (row == parsed->front_end_inputs.end()) words = {};
+          else words = {row->second.one, row->second.two};
+        }
+        native_audio->submit_frame(updates, words);
       }
       bool race_chosen = false;
       if (front_end && !parsed->front_end_inputs.empty()) {
@@ -632,6 +657,7 @@ int main(int argc, char **argv) try {
     if (running)
       SDL_Delay(1);
   }
+  if (native_audio) native_audio->report();
   if (front_end)
     std::cout << "Front end: frames " << front_end->frames() << "; notices "
               << front_end->notices() << "; returns to the main menu "

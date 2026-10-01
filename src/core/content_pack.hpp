@@ -1,5 +1,6 @@
 #pragma once
 
+#include <array>
 #include <cstdint>
 #include <filesystem>
 #include <span>
@@ -23,6 +24,8 @@ class ClassicContentPack {
 public:
     explicit ClassicContentPack(const std::filesystem::path& path);
     std::span<const std::uint8_t> entry(const std::string& logical_id) const;
+    // Validated rules identity pins every required content payload.
+    const std::array<std::uint8_t, 32>& extraction_identity() const { return identity_; }
     // Empty when this pack profile does not carry the entry.
     std::span<const std::uint8_t> optional_entry(const std::string& logical_id) const;
 
@@ -30,6 +33,7 @@ private:
     struct Entry {
         std::size_t offset{}, size{};
     };
+    std::array<std::uint8_t, 32> identity_{};
     std::vector<std::uint8_t> bytes_;
     std::unordered_map<std::string, Entry> entries_;
 };

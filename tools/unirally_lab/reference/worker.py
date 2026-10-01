@@ -44,6 +44,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 from unirally_lab import EXIT_FAILURE, EXIT_INVALID_INPUT, EXIT_MISSING_PREREQUISITE, EXIT_OK  # noqa: E402
 from unirally_lab.access import derive as access_derive  # noqa: E402
 from unirally_lab.coverage import drain as coverage_drain  # noqa: E402
+from unirally_lab.reference import audio as audio_capture
 from unirally_lab.reference import bsnes  # noqa: E402
 
 SCRIPT_SCHEMA_VERSION = 1
@@ -217,6 +218,9 @@ def sha256_file(path: Path) -> str:
 
 
 def run(args: argparse.Namespace) -> int:
+    if getattr(args, 'audio_out', None) and (args.state_in or args.save_after is not None):
+        print('raw audio capture currently requires uninterrupted cold runs', file=sys.stderr)
+        return EXIT_INVALID_INPUT
     script_path = Path(args.script)
     try:
         script = load_script(script_path)
@@ -403,10 +407,28 @@ def run(args: argparse.Namespace) -> int:
     state_digest = hashlib.sha256()
     state_digest.update(b"initial" + bytes.fromhex(out["initial"]["wram_sha256"]) + bytes.fromhex(out["initial"]["cartridge_ram_sha256"]))
     av_digest = hashlib.sha256()
+    audio = None
+    if getattr(args, 'audio_out', None):
+        try:
+            audio = audio_capture.AudioCapture(core, Path(args.audio_out), args.audio_capacity,
+                args.audio_instructions, set(args.audio_ram_frame or []),
+                {key: out[key] for key in ('core', 'rom', 'script')}, args.audio_cpu_watch, args.audio_smp_watch, args.audio_cpu_instructions)
+        except (bsnes.CoreError, OSError) as exc:
+            print(f'audio capture setup failed: {exc}', file=sys.stderr)
+            core.unload(); shutil.rmtree(system_dir, ignore_errors=True)
+            return EXIT_FAILURE
     for frame in range(start, end):
         for port, buttons in inputs_for_frame(script, frame).items():
             core.set_inputs(port, buttons)
         output = core.run_frame()
+        if audio is not None:
+            try:
+                audio.drain(frame)
+            except bsnes.CoreError as exc:
+                audio.finish('failed', str(exc))
+                print(f'audio capture failed: {exc}', file=sys.stderr)
+                core.unload(); shutil.rmtree(system_dir, ignore_errors=True)
+                return EXIT_FAILURE
         if coverage is not None:
             try:
                 coverage.drain_frame(frame)
@@ -502,6 +524,8 @@ def run(args: argparse.Namespace) -> int:
         out["coverage"] = _write_coverage(Path(args.coverage_out), coverage, out, (start, end - 1))
     if access is not None:
         out["access"] = _write_access(Path(args.access_out), access, out, access_window)
+    if audio is not None:
+        out['audio_capture'] = audio.finish()
     final_state = core.serialize()
     out["final"] = {"wram_sha256": hashlib.sha256(core.wram()).hexdigest(),
                     "cartridge_ram_sha256": hashlib.sha256(core.cartridge_ram()).hexdigest(),
@@ -574,6 +598,15 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--rom")
     parser.add_argument("--script")
     parser.add_argument("--samples-out")
+    parser.add_argument('--audio-out', help='new directory for raw DSP events/PCM/APU observation')
+    parser.add_argument('--audio-capacity', type=int, default=262144)
+    parser.add_argument('--audio-cpu-watch', type=lambda v: int(v, 0), action='append',
+                        help='CPU PC with timed register observations (repeatable, maximum 64)')
+    parser.add_argument('--audio-smp-watch', type=lambda v: int(v, 0), action='append',
+                        help='SPC700 PC with timed register observations (repeatable, maximum 64)')
+    parser.add_argument('--audio-cpu-instructions', action='store_true', help='include every CPU instruction boundary (observation ABI 5)')
+    parser.add_argument('--audio-instructions', action='store_true', help='include SPC700 instruction boundaries')
+    parser.add_argument('--audio-ram-frame', type=int, action='append', help='end-frame APU RAM snapshot (repeatable)')
     parser.add_argument("--state-in")
     parser.add_argument("--save-after", type=int)
     parser.add_argument("--state-out")

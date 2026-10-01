@@ -1,0 +1,118 @@
+#pragma once
+#include "audio_cpu_menu_input.hpp"
+#include "audio_cpu_text.hpp"
+#include "audio_cpu_upload.hpp"
+#include "audio_engine.hpp"
+
+namespace unirally {
+class ClassicContentPack;
+struct TitleMenuAudioContent {
+    std::array<std::uint8_t, 32> identity{};
+    TitleMenuAudioData score;
+    AudioPitchData pitch;
+    AudioCpuUploadData upload;
+    std::array<AudioCpuGraphicsAsset, 128> graphics{};
+    std::array<std::uint8_t, 1158> cartridge_defaults{};
+    std::array<std::uint8_t, 50> track_types{};
+    std::array<std::uint8_t, 12> cartridge_signature{};
+    std::vector<std::uint8_t> menu_text;
+    std::array<std::uint8_t, 256> characters{};
+    std::array<std::uint8_t, 5> arrow_positions{};
+    std::array<std::uint8_t, 72> reveal_offsets{};
+    std::array<std::uint8_t, 38> reveal_brightness{};
+    std::array<std::uint8_t, 17> credits_text{};
+    std::array<std::uint8_t, 96> credits_poses{};
+    std::vector<std::uint8_t> pose_pointers, pose_frames;
+};
+enum class TitleMenuAudioPhase : std::uint8_t {
+    cold,
+    title_hold,
+    title_complete,
+    menu,
+    menu_exit,
+    hunter_entry,
+    hunter_ready,
+    hunter_faded,
+    hunter_first_page,
+    hunter_page_pressed,
+    hunter_timed_wait,
+    hunter_credits_ready,
+    hunter_credits_prepared,
+    hunter_first_pose,
+    hunter_second_pose,
+    hunter_credits_loop,
+    hunter_leaving,
+    hunter_reset_ready,
+    warm_title_hold,
+    warm_title_complete,
+    hunter_first_reveal,
+    hunter_second_reveal
+};
+struct TitleMenuAudioState {
+    TitleMenuAudioPhase phase = TitleMenuAudioPhase::cold;
+    AudioCpuMenuAction pending_action = AudioCpuMenuAction::waiting;
+    std::array<std::uint8_t, 32> content_identity{};
+    AudioEngineState engine;
+    AudioCpuQueueState queue;
+    AudioCpuSceneWorkState scene;
+    AudioCpuTitleHoldState title;
+    AudioCpuTextWorkState text;
+    AudioCpuMenuInputState menu;
+    std::array<std::uint8_t, 8192> cartridge{};
+    std::uint16_t hunter_remaining = 30;
+    AudioCpuHunterWorkState hunter;
+};
+// Semantic call boundaries own all continuation state. Controller words are
+// external future input; identified content stays immutable outside the state.
+class NativeTitleMenuAudio {
+public:
+    NativeTitleMenuAudio(const TitleMenuAudioContent& content, AudioControllerSource& controllers,
+                         AudioEngineEventSink* events = nullptr);
+    void set_pcm_sink(AudioPcmSink* sink) { engine_.set_pcm_sink(sink); }
+    void initialize_title();
+    bool title_frame();
+    void reveal_menu();
+    AudioCpuMenuAction menu_frame();
+    bool hunter_entry_frame();
+    void hunter_first_fade();
+    void hunter_reveal_first_page();
+    void hunter_begin_first_page();
+    bool hunter_reveal_frame();
+    bool hunter_page_wait_frame();
+    void hunter_reveal_second_page();
+    void hunter_begin_second_page();
+    bool hunter_timed_wait_frame();
+    std::array<std::uint64_t, 4> hunter_prepare_credits();
+    void hunter_build_first_pose();
+    void hunter_build_second_pose();
+    void hunter_finish_credits_setup();
+    bool hunter_credits_frame();
+    void hunter_finish_credits();
+    void restart_title();
+    std::uint64_t cpu_ticks() { return engine_.cpu().ticks(); }
+    TitleMenuAudioPhase phase() const { return phase_; }
+    std::uint8_t menu_selection() const { return menu_.selection; }
+    TitleMenuAudioState snapshot();
+    void restore(const TitleMenuAudioState& state);
+    std::vector<std::int16_t> take_pcm() { return engine_.take_pcm(); }
+    void finish_pcm_to(std::uint64_t clocks) { engine_.finish_pcm_to(clocks); }
+
+private:
+    void finish_title_initialization();
+    const TitleMenuAudioContent* content_;
+    NativeAudioEngine engine_;
+    TitleMenuAudioPhase phase_ = TitleMenuAudioPhase::cold;
+    AudioCpuMenuAction pending_action_ = AudioCpuMenuAction::waiting;
+    std::uint16_t hunter_remaining_ = 30;
+    AudioCpuHunterWorkState hunter_;
+    AudioCpuQueueState queue_;
+    AudioCpuSceneWorkState scene_;
+    AudioCpuTitleHoldState title_;
+    AudioCpuTextWorkState text_;
+    AudioCpuMenuInputState menu_;
+    std::array<std::uint8_t, 8192> cartridge_;
+};
+TitleMenuAudioContent title_menu_audio_content(const ClassicContentPack& pack);
+std::vector<std::uint8_t> serialize_title_menu_audio(const TitleMenuAudioState& state);
+TitleMenuAudioState deserialize_title_menu_audio(std::span<const std::uint8_t> bytes);
+} // namespace unirally

@@ -4,14 +4,35 @@ This is the M0 implementation specification. Commands marked implemented in the 
 
 ## Validation by stage
 
-For the upcoming AUDIO-TITLE-MENU, [D-0009](decisions/D-0009-native-audio.md)
-requires a native sound driver/sequencer and isolated DSP model, compared by
-ordered events and raw pre-resampler PCM. [R-0074](research/R-0074-audio-foundation.md)
-establishes only uninterrupted callback hash/count repeatability with the existing
-`reference verify` and CPU `access capture` commands. Raw PCM, APU RAM and DSP-write
-capture interfaces, native audio and device output are not implemented yet.
-These remain coupled prerequisites inside that tier-1 capability task. Existing
-reference restore-audio exclusions and all gameplay gates remain in force.
+AUDIO-TITLE-MENU is validated in its bounded domain under [D-0009](decisions/D-0009-native-audio.md).
+[R-0075](research/R-0075-title-menu-audio.md) records the opt-in raw DSP/PCM/APU
+observer and isolated shared DSP hardware diagnostic. Build its separate core
+with `reference build --lock tools/locks/audio-observation.json`; the ordinary
+reference lock, patch and frozen gameplay evidence remain unchanged. The worker's
+experimental `--audio-out`, `--audio-instructions`, `--audio-cpu-watch`,
+`--audio-smp-watch` and `--audio-ram-frame` options retain cold uninterrupted raw
+evidence; missing ABI, overflow or incompatible restore/runahead fails the capture.
+The older diagnostic score/clock runners take observed scheduling inputs.
+`title_menu_audio_runner` now predicts cold title/menu work from a validated v30/v31
+pack and future controller words only; frozen event/raw PCM and call-boundary
+fresh-process continuation pass in R-0075's bounded domains. The new
+`title_menu_audio_runner` additionally predicts the coupled HUNTER pages, credits
+and warm title/menu restart from v31 identified data; original clocks/events
+are comparison outputs only. Its strict URAU0004 includes reveal HDMA and
+retained timer work. Independent tier-1 review accepts the source and the
+narrowly scoped warm opaque executable-transport correction.
+`audio_playback_runner` also owns modern output fractions and queued PCM.
+The app's opt-in `--native-title-menu-audio` prototype delivers native audio
+through SDL from cold power-on and follows the coupled HUNTER path through
+a warm title/menu restart. Other menu exits stop its bounded producer. A visible
+unscripted controller run and human listening confirm menu music/navigation.
+That run reports 265,848 underrun pairs; it does not prove continuous sound
+after every exit. The default app stays silent. Quiescent native/playback saves
+pass; live device/thread save is outside
+this declared continuation domain. A stream restore needs a quiescent producer and device;
+no OS mixer state is serialized.
+No raw replay is product acceptance. Reference restore-audio exclusions and all
+existing gameplay gates remain in force.
 
 For LEAGUE (R-0073), the current supported Classic pack profile is
 `classic.pal.crawler.tracks.v29` with 475 exact PAL entries. Nine additions hold
