@@ -467,3 +467,81 @@ No reset/spending/provider change. Clock-work source and lookup extension are
 not pushed yet; commit after focused validation and staged-diff inspection.
 PR #50 remains draft; current pushed 807b496 has green hosted checks and lacks
 independent capability review. Checkpoint by 02:09 UTC, reassess by 02:04 UTC.
+
+## 02:09 UTC checkpoint and reassessment
+
+Source slice `3d667bc` is pushed after staged-diff inspection and focused native
+checks. It includes the semantic voice work helper and the identified 97-value
+pitch lookup; neither executes uploaded code. Hosted macOS passes on this head;
+Ubuntu is pending. The earlier 807b496 head has both hosted checks passing.
+PR #50 remains draft and unreviewed.
+
+The 45-minute reassessment is late by five minutes and is recorded explicitly.
+Native score and arithmetic are substantially closed in the conditional domain;
+the coupled critical path is driver scheduling, transfer acknowledgments and
+cold CPU producer timing. Continue inside this task by identifying reset/transfer
+boundaries and closing elapsed score-control work. Do not substitute captured
+timestamps, event playback or a lab-only acceptance. Pack extraction, exact cold
+PCM, full native restore, live output, regressions and fresh tier-1 review remain.
+No worktree cleanup or accepted milestone is appropriate while those are open.
+
+Account sample at 02:07 UTC remains 16% weekly used, startup 12%, boundary 32%,
+reset 1791365217. Preserve the final 20% reserve. No reset, spending, provider
+change or further frontier consultation. Next durable checkpoint by 02:19 UTC;
+next reassessment by 02:54 UTC.
+
+## 02:19 UTC checkpoint
+
+Current pushed `3d667bc` has passing macOS/Ubuntu CI, run 36803954108. Native
+score timing is now an uncommitted candidate: all 16,467 baseline and 16,467 Down
+completed voice-call durations match exactly (`native-score-work-clock.json`).
+The inputs remain observed music/effect/gain commands, update modes and counters.
+Initial branch/call accounting failures are retained as `native-score-work-clock-
+failure01.json` and `score-clock-difference01.txt`; no original result changed.
+
+A fresh 4,000-frame repeat with poll/return/arithmetic/timer-read markers is
+running as `menu-music-steered-clock`. It extends timed-control coverage while
+keeping the pad script and original core options fixed. Next close those controls,
+then native timer counters and command acknowledgments. Cold scheduling, full PCM,
+pack, product output, restore and tier-1 review remain pending. No acceptance
+claim or merge. Latest account reading is 16% from a 12% startup, boundary 32%;
+no reset/spending/provider change. Next checkpoint by 02:29 UTC, reassess by
+02:54 UTC.
+
+## 02:29 UTC checkpoint
+
+Uncommitted native score timing now matches all 106,760 completed voice calls
+in the 4,000-frame steered repeat (`native-score-work-clock-extended.json`), plus
+32,934 calls in the two 700-frame cases. The repeat preserves state/A/V/final
+digests. A fresh 1,800-frame instruction capture closes the later nonzero pitch
+convergence timing; `convergence-clock-reading01.txt` retains the decisive
+reading. The earlier long timing failures remain as failure01/02 reports.
+
+Native timer hardware and an observed-IO-boundary runner are implemented
+candidates; their zero-target, edge, four-bit wrap, CONTROL and object-state
+continuation check passes. Original counter comparisons are running. Score
+work still takes observed command/update boundaries, and no cold scheduling or
+PCM acceptance is claimed. Next connect per-voice output costs, timer-loop work
+and acknowledgments causally. Pack/output/full restore/regressions/review remain.
+Latest quota is 16% used from 12%, stop 32%; no reset/spending/provider change.
+Checkpoint by 02:39 UTC, reassess by 02:54 UTC.
+
+## 02:39 UTC checkpoint
+
+Native timers match all 589,616 completed original counter reads, including
+zero-initialized cold hardware phase (`native-timer-conditional.json`). IO write
+and read boundaries are observed inputs; the driver loop is not yet native.
+Native initialized key masks match 14,073 original writes, all 79,488 per-voice
+output offset/return rows match, and all nine observed music/effect setup
+durations match (`native-driver-work-conditional.json`). Those comparisons use
+the two 700-frame cases and the fresh 1,800-frame full trace.
+
+The source candidate also tracks output-enable state and accumulated key-on/off
+masks. Next close the poll handshake and connect these work functions to a native
+timer/voice/output loop, then remove the conditional cold CPU/loader boundaries.
+No captured timestamp/event playback can enter the product. The app is still
+silent; pack, cold PCM, full restore, live evidence and independent review remain.
+Current changes are not committed yet; finish focused checks, record the source
+and inspect the staged diff before pushing. Latest account sample at 02:36 UTC
+is 16% used from 12%, stop 32%, reset 1791365217. No reset/spending/provider change.
+Next checkpoint by 02:49 UTC, reassess by 02:54 UTC.

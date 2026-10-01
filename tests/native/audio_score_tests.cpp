@@ -44,13 +44,22 @@ int main() {
         unirally::AudioPitchData pitch; pitch.notes[12] = 0x1000; pitch.sample_fraction[0] = 64;
         unirally::TitleMenuAudioScore voiced_continuous(data, &pitch), voiced_restored(data, &pitch);
         voiced_continuous.start_music(1);
+        require(voiced_continuous.take_key_off_pending() == 255 && voiced_continuous.take_key_off_pending() == 0,
+                "music initialization did not accumulate and clear key-off");
         for (std::uint8_t update = 0; update < 9; ++update) voiced_continuous.update_voice(0, false, update);
         require(voiced_continuous.state().voices[0].arithmetic.gain != 0 &&
                 voiced_continuous.state().voices[0].arithmetic.output_pitch == 0x1400,
                 "authored voiced sequence remained silent");
+        require(voiced_continuous.take_key_on_pending() == 1 && voiced_continuous.take_key_off_pending() == 1,
+                "note did not accumulate its voice key masks");
+        require(voiced_continuous.voice_register_work(0).writes_registers,
+                "active voice did not enable register output");
         voiced_continuous.take_reads(); voiced_restored.restore(voiced_continuous.state());
         for (std::uint8_t update = 9; update < 129; ++update) {
-            voiced_continuous.update_voice(0, false, update); voiced_restored.update_voice(0, false, update);
+            const auto work = voiced_continuous.update_voice_timed(0, false, update);
+            const auto restored_work = voiced_restored.update_voice_timed(0, false, update);
+            require(work.ticks == restored_work.ticks && work.polls_commands == restored_work.polls_commands,
+                    "restored native work differs");
             require(voiced_continuous.state() == voiced_restored.state(), "voiced restored state differs");
             require(voiced_continuous.take_reads() == voiced_restored.take_reads(), "voiced restored reads differ");
         }

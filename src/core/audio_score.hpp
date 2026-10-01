@@ -24,11 +24,24 @@ struct AudioScoreRead {
     bool operator==(const AudioScoreRead&) const = default;
 };
 
+// Native work from voice entry 0915 to its next command poll, or to its
+// caller when the stop control returns directly. Units: default SMP ticks.
+struct AudioScoreUpdateWork {
+    std::uint32_t ticks = 0;
+    bool polls_commands = true;
+};
+struct AudioScoreRegisterWork {
+    std::array<std::uint32_t, 6> write_ticks{};
+    std::uint32_t ticks_to_poll = 0;
+    bool writes_registers = false;
+};
+
 // Score-control parameters and per-voice calculation state. Remaining counts
 // are musical/effect updates, independently of the hardware sample clock.
 struct AudioScoreVoice {
     std::uint16_t pointer = 0;
     bool enabled = false;
+    bool output_enabled = false;
     std::uint8_t effect = 255, priority = 255;
     std::uint8_t remaining = 1;  // Unsigned update count; zero wraps to 255.
     bool per_note_pan = false, next_duration_inline = false;
@@ -53,6 +66,7 @@ struct AudioScoreState {
     std::uint32_t random_state = 0x1b09133a;
     std::uint8_t timer2_target = 133;
     std::uint8_t music_gain = 48, effect_gain = 64;
+    std::uint8_t key_on_pending = 0, key_off_pending = 0;
     bool operator==(const AudioScoreState&) const = default;
 };
 
@@ -65,9 +79,16 @@ public:
     explicit TitleMenuAudioScore(const TitleMenuAudioData& data, const AudioPitchData* pitch_data = nullptr);
     void start_music(std::uint8_t program);
     int start_effect(std::uint8_t effect);  // Selected voice, or -1 if rejected.
+    std::uint32_t start_music_timed(std::uint8_t program);
+    std::uint32_t start_effect_timed(std::uint8_t effect);
     void set_volume_gain(bool effects, std::uint8_t gain);
     std::array<std::uint8_t, 6> voice_register_values(std::uint8_t voice) const;
+    AudioScoreRegisterWork voice_register_work(std::uint8_t voice) const;
+    std::uint8_t take_key_on_pending();
+    std::uint8_t take_key_off_pending();
     void update_voice(std::uint8_t voice, bool effect_tick, std::uint8_t update_counter = 0);
+    AudioScoreUpdateWork update_voice_timed(std::uint8_t voice, bool effect_tick,
+                                          std::uint8_t update_counter);
     const AudioScoreState& state() const { return state_; }
     void restore(const AudioScoreState& state);
     std::vector<AudioScoreRead> take_reads();
@@ -77,6 +98,9 @@ private:
     const AudioPitchData* pitch_data_;
     AudioScoreState state_{};
     std::vector<AudioScoreRead> reads_;
+    AudioScoreUpdateWork* measured_work_ = nullptr;
+    void add_work(unsigned ticks);
+    void measure_note_work(const AudioScoreVoice& voice, std::uint8_t note);
     std::uint8_t data_byte(std::uint16_t pointer) const;
     std::uint8_t read_byte(std::uint8_t voice);
     std::uint16_t read_word(std::uint8_t voice);

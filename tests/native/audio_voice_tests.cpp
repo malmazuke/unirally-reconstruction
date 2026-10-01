@@ -59,7 +59,7 @@ int main() {
         timed.convergence_step = 1; rejected = false;
         try { unirally::audio_voice_work_ticks(timed, 1); }
         catch (const std::runtime_error&) { rejected = true; }
-        require(rejected, "unrecovered work timing accepted");
+        require(rejected, "timed convergence accepted missing pitch data");
         std::cout << "native pitch, pan, modulation, envelope and data bounds pass\n";
         return 0;
     } catch (const std::exception& error) { std::cerr << error.what() << '\n'; return 1; }

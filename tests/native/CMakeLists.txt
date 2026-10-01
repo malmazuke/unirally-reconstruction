@@ -108,3 +108,9 @@ target_link_libraries(audio_sequence_runner PRIVATE unirally_audio_score lab_opt
 add_executable(audio_voice_tests audio_voice_tests.cpp)
 target_link_libraries(audio_voice_tests PRIVATE unirally_audio_score lab_options)
 add_test(NAME audio_voice_integer_boundaries COMMAND audio_voice_tests)
+
+add_executable(audio_timer_runner audio_timer_runner.cpp)
+target_link_libraries(audio_timer_runner PRIVATE unirally_audio_score lab_options)
+add_executable(audio_timer_tests audio_timer_tests.cpp)
+target_link_libraries(audio_timer_tests PRIVATE unirally_audio_score lab_options)
+add_test(NAME audio_timer_edges_wrap_restore COMMAND audio_timer_tests)

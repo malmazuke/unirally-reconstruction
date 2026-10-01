@@ -59,7 +59,7 @@ int main(int argc, char** argv) {
             for (auto& value : voice.instrument) value = read_byte();
             voice.scripted_envelope = read_byte() != 0;
             if (timing) {
-                output << unirally::audio_voice_work_ticks(voice, static_cast<std::uint8_t>(counter)) << '\n';
+                output << unirally::audio_voice_work_ticks(voice, static_cast<std::uint8_t>(counter), &data) << '\n';
                 continue;
             }
             unirally::update_audio_voice(voice, data, static_cast<std::uint8_t>(counter));

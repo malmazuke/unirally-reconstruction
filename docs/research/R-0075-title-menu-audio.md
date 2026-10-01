@@ -332,3 +332,60 @@ both new cases; the earlier three-case report stays unchanged at
 `native-register-conditional.json`. The authored bound check now rejects the first
 unidentified index 97, preserving its purpose as the identified domain grows.
 This does not establish write clocks, original scene stop/restart or raw PCM.
+
+## Native driver work and timers
+
+Sequential pinned readings in `driver-clock-readings.lst` and
+`driver-score-clock-readings.lst` are the reading source for driver polling,
+score dispatch, voice reset and output. They are private ROM-derived listings.
+The native score work candidate reproduces all 16,467 completed voice calls in
+each 700-frame original and 106,760 in the 4,000-frame steered original repeat.
+`native-score-work-clock.json` and its `-extended.json` report bind the unchanged
+expected values, native source and commands. Inputs are still observed consumed
+commands, update modes and counters. No whole cold schedule is established.
+
+The later controls exercise random dispatch and nonzero pitch convergence.
+The full 1,800-frame prefix, captured cold without a state seed, identifies the
+convergence branch's elapsed work (`convergence-clock-reading01.txt`). Earlier
+failed timing reports remain retained. Arithmetic from observed pre-update state
+also matches all 33,394 complete long-repeat rows
+(`native-voice-conditional-extended.json`). Scripted envelopes stay outside the
+recovered domain. Neither work function fetches instructions nor uses an observed
+timestamp table.
+
+Native timer hardware starts from zero divider/counter state. Its two 128-tick
+and one 16-tick divider stages, falling-edge target increments, four-bit read/clear
+and CONTROL behavior follow pinned bsnes `sfc/smp/timing.cpp` and `io.cpp`.
+Preserve that implementation's inverted timer-2 reset condition explicitly.
+`native-timer-conditional.json` matches all 74,965 baseline, 74,517 Down and
+440,134 long-repeat reads, 589,616 total. The expected values are inferred from
+the original accumulator immediately after timer ADC, its recorded prior RAM
+value and preceding CLC. IO-write and read clocks remain supplied boundaries.
+This is hardware-phase evidence, not recovered driver-loop scheduling.
+
+Native score state now accumulates key-on/off masks and tracks the original
+voice output-enable flag. `native-driver-work-conditional.json` matches all nine
+music/effect setup durations, 79,488 output-call rows (six write offsets plus the
+next poll, or an inactive return) and 14,073 key-mask values. The domain is the two
+700-frame cases and full 1,800-frame prefix. Observed command, update and output
+entries remain inputs. Authored timer phase/zero-target/wrap/continuation and
+nonzero score/envelope work continuation checks pass; full audio snapshots,
+exact cold PCM and product sound remain pending.
+
+## Original soft-reset sound lifecycle
+
+Read R-0064 and bank-80/bank-83's static listings before designing the capture.
+The cold HUNTER code route (`hunter-code-audio.script.json`) runs 1,850 frames.
+CPU `$80:8858` is reached at master clock 559,931,912. At clock 572,216,704 the
+CPU writes FF to port 0, which the driver acknowledges at SMP tick 55,136,364.
+The `$0487-$04B7` reading and `hunter-reset-stop-sequence.json` show timer-paced
+master-volume subtraction by eight, then key-off FF, CONTROL B0 and DSP FLG E0
+at SMP tick 55,249,128 / DSP clock 27,624,576. This is a loader/reset request,
+not a score music-stop command.
+
+The game jumps through its reset path without resetting the laboratory DSP
+clock. Initialization writes FLG F3 at SMP tick 55,795,198, then FLG 33 at
+58,055,056. A fresh title-music command is consumed at 58,071,522
+(`hunter-code-audio.consumed-commands.json`). Original music continues during
+the ending pages. These facts cover this ROM and pad schedule only; no native
+scene lifecycle, loader duration or full audio acceptance is claimed yet.

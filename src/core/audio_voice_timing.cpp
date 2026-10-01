@@ -28,6 +28,31 @@ unsigned alternation_work(const AudioVoiceArithmetic& voice) {
     if (byte(voice.alternate_remaining - 1U)) return 42;
     return voice.base_note == voice.alternating_note ? 112 : 102;
 }
+unsigned note_slide_work(const AudioVoiceArithmetic& voice) {
+    if (!voice.slide_remaining) return 272;
+    if (byte(voice.slide_remaining - 1U)) return 44;
+    auto target = voice.alternating_note;
+    if (voice.alternate_interval && !byte(voice.alternate_remaining - 1U))
+        target = voice.base_note != target ? voice.base_note : byte(voice.base_note + voice.alternate_interval);
+    if (voice.current_note == target) return 86;
+    if (voice.current_note > target) {
+        const auto after = byte(voice.current_note - voice.slide_amount);
+        return after >= target ? 358U : 382U;
+    }
+    const auto after = byte(unsigned(voice.current_note) + voice.slide_amount);
+    return after < target ? 362U : 378U;
+}
+unsigned convergence_work(const AudioVoiceArithmetic& voice, std::uint16_t target) {
+    if (!voice.convergence_step) return 102;
+    if (voice.base_pitch == target) return 120;
+    if (voice.base_pitch > target) {
+        const unsigned delta = 0xff00U | byte(0U - voice.convergence_step);
+        const auto after = static_cast<std::uint16_t>(voice.base_pitch + delta);
+        return after >= target ? 282U : 356U;
+    }
+    const auto after = static_cast<std::uint16_t>(unsigned(voice.base_pitch) + voice.convergence_step);
+    return after < target ? 278U : 344U;
+}
 unsigned modulation_work(const AudioVoiceArithmetic& voice) {
     if (voice.modulation_delay) return 40;
     if (!voice.modulation_direction) return 44;
@@ -61,12 +86,21 @@ unsigned envelope_work(const AudioVoiceArithmetic& voice) {
 }
 }  // namespace
 
-std::uint32_t audio_voice_work_ticks(const AudioVoiceArithmetic& voice, std::uint8_t update_counter) {
-    if (voice.slide_interval || voice.slide_remaining || voice.convergence_step || voice.scripted_envelope)
+std::uint32_t audio_voice_work_ticks(const AudioVoiceArithmetic& voice, std::uint8_t update_counter,
+                                    const AudioPitchData* pitch_data) {
+    if (voice.scripted_envelope)
         throw std::runtime_error("voice arithmetic leaves the recovered timed domain");
-    // Zero note-space slide: 272; direct pitch copy: 102; scripted-envelope
-    // bypass: 28; six calls between phases: 96; final output-pitch sum: 98.
-    return pan_work(voice, update_counter) + alternation_work(voice) + 272 + modulation_work(voice)
-           + 102 + 28 + envelope_work(voice) + 96 + 98;
+    auto target = voice.target_pitch;
+    if (voice.convergence_step) {
+        if (!pitch_data) throw std::runtime_error("timed convergence requires pitch data");
+        auto advanced = voice;
+        update_audio_voice(advanced, *pitch_data, update_counter);
+        target = advanced.target_pitch;
+    }
+    // Scripted-envelope bypass: 28; six calls between phases: 96; final
+    // output-pitch sum: 98. The value update remains independently callable.
+    return pan_work(voice, update_counter) + alternation_work(voice) + note_slide_work(voice)
+           + modulation_work(voice) + convergence_work(voice, target)
+           + 28 + envelope_work(voice) + 96 + 98;
 }
 }  // namespace unirally
