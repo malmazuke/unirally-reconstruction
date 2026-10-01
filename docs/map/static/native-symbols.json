@@ -1135,6 +1135,7 @@
   {
    "address": "$80:ABC8",
    "native": [
+    "src/core/audio_cpu_menu_input.cpp:native_audio_begin_menu_input",
     "src/core/front_end.cpp:first_idle, idle_after_move",
     "src/core/front_end.hpp:FrontEndScreen",
     "src/core/front_end_screens.hpp:start_main_menu"
@@ -1144,17 +1145,29 @@
   {
    "address": "$80:ABE3",
    "native": [
+    "src/core/audio_cpu_menu_input.cpp:native_audio_menu_input_frame",
     "src/core/front_end.cpp:run_main_menu"
+   ],
+   "range_ends": [
+    "$80:AC2C"
    ],
    "region": "rom"
   },
   {
    "address": "$80:ABEB",
    "native": [
+    "src/core/audio_cpu_menu_input.cpp:test_menu_code",
     "src/core/front_end.cpp:run_main_menu"
    ],
    "range_ends": [
     "$80:AC0A"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:ABFC",
+   "native": [
+    "src/core/audio_cpu_menu_input.cpp:test_menu_code"
    ],
    "region": "rom"
   },
@@ -1165,6 +1178,34 @@
    ],
    "range_ends": [
     "$80:AC14"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:AC39",
+   "native": [
+    "src/core/audio_cpu_menu_input.cpp:move_menu_selection"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:AC50",
+   "native": [
+    "src/core/audio_cpu_menu_input.cpp:update_menu_targets"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:AC83",
+   "native": [
+    "src/core/audio_cpu_menu_input.cpp:move_menu_selection"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:AC9D",
+   "native": [
+    "src/core/audio_cpu_menu_input.cpp:update_menu_targets"
    ],
    "region": "rom"
   },
@@ -1270,6 +1311,13 @@
    "native": [
     "src/core/audio_cpu_title_hold.cpp:acknowledge_title_code",
     "src/core/front_end.cpp:check_title_code"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:B178",
+   "native": [
+    "src/core/audio_cpu_menu_input.cpp:enqueue_navigation"
    ],
    "region": "rom"
   },
@@ -1427,6 +1475,7 @@
   {
    "address": "$80:B71D",
    "native": [
+    "src/core/audio_cpu_menu_input.cpp:test_menu_input",
     "src/core/front_end_screens.hpp:pad_up, pad_down, pad_left, pad_right, pad_select, pad_a, pad_r"
    ],
    "region": "rom"
@@ -1439,8 +1488,16 @@
    "region": "rom"
   },
   {
+   "address": "$80:B76F",
+   "native": [
+    "src/core/audio_cpu_menu_input.cpp:test_menu_input"
+   ],
+   "region": "rom"
+  },
+  {
    "address": "$80:B794",
    "native": [
+    "src/core/audio_cpu_menu_input.cpp:test_menu_input",
     "src/core/front_end_screens.hpp:pad_up, pad_down, pad_left, pad_right, pad_select, pad_a, pad_r"
    ],
    "region": "rom"
@@ -7017,6 +7074,13 @@
    "region": "rom"
   },
   {
+   "address": "$83:9558",
+   "native": [
+    "src/core/audio_cpu_menu_input.cpp:native_audio_begin_menu_input"
+   ],
+   "region": "rom"
+  },
+  {
    "address": "$83:958C",
    "native": [
     "src/core/league_menu.cpp:choose_league_pair",
@@ -12482,6 +12546,47 @@
   "src/core/audio_cpu_menu_defaults.cpp:write_record_checksums": {
    "rom": [
     "$83:90F4"
+   ]
+  },
+  "src/core/audio_cpu_menu_input.cpp:enqueue_navigation": {
+   "rom": [
+    "$80:B178"
+   ]
+  },
+  "src/core/audio_cpu_menu_input.cpp:move_menu_selection": {
+   "rom": [
+    "$80:AC39",
+    "$80:AC83"
+   ]
+  },
+  "src/core/audio_cpu_menu_input.cpp:native_audio_begin_menu_input": {
+   "rom": [
+    "$80:ABC8",
+    "$83:9558"
+   ]
+  },
+  "src/core/audio_cpu_menu_input.cpp:native_audio_menu_input_frame": {
+   "rom": [
+    "$80:ABE3"
+   ]
+  },
+  "src/core/audio_cpu_menu_input.cpp:test_menu_code": {
+   "rom": [
+    "$80:ABEB",
+    "$80:ABFC"
+   ]
+  },
+  "src/core/audio_cpu_menu_input.cpp:test_menu_input": {
+   "rom": [
+    "$80:B71D",
+    "$80:B76F",
+    "$80:B794"
+   ]
+  },
+  "src/core/audio_cpu_menu_input.cpp:update_menu_targets": {
+   "rom": [
+    "$80:AC50",
+    "$80:AC9D"
    ]
   },
   "src/core/audio_cpu_menu_league.cpp:initialize_league": {
@@ -19306,10 +19411,10 @@
   }
  },
  "totals": {
-  "addresses": 1409,
+  "addresses": 1417,
   "io_addresses": 9,
-  "native_symbols": 1070,
-  "rom_addresses": 1041,
+  "native_symbols": 1077,
+  "rom_addresses": 1049,
   "sram_addresses": 49,
   "wram_addresses": 310
  }

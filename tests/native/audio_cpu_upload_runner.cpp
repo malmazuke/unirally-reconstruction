@@ -3,6 +3,7 @@
 #include "audio_cpu_queue.hpp"
 #include "audio_cpu_scene.hpp"
 #include "audio_cpu_text.hpp"
+#include "audio_cpu_menu_input.hpp"
 #include "audio_cpu_upload.hpp"
 #include "audio_driver_dsp.hpp"
 #include "audio_ipl.hpp"
@@ -126,8 +127,14 @@ int main(int argc, char** argv) {
                 "[ready|samples|queue|vblank|frame|palette|load|nintendo|"
                 "title|first-nmi|title-fade|title-hold|title-return|menu-palette|"
                 "menu-graphics|menu-oam|menu-clear|menu-records-first|menu-league|"
-                "menu-records|menu-text|menu-reveal [PCM DSP_CLOCK_LIMIT]]");
-        const bool menu_reveal = argc >= 4 && std::string(argv[3]) == "menu-reveal";
+                "menu-records|menu-text|menu-reveal|menu-input-begin|menu-idle80|menu-down80 [PCM "
+                "DSP_CLOCK_LIMIT]]");
+        const bool menu_down80 = argc >= 4 && std::string(argv[3]) == "menu-down80";
+        const bool menu_idle80 =
+            argc >= 4 && (std::string(argv[3]) == "menu-idle80" || menu_down80);
+        const bool menu_input =
+            argc >= 4 && (std::string(argv[3]) == "menu-input-begin" || menu_idle80);
+        const bool menu_reveal = argc >= 4 && (std::string(argv[3]) == "menu-reveal" || menu_input);
         const bool menu_text = argc >= 4 && (std::string(argv[3]) == "menu-text" || menu_reveal);
         const bool menu_records =
             argc >= 4 && (std::string(argv[3]) == "menu-records" || menu_text);
@@ -197,7 +204,9 @@ int main(int argc, char** argv) {
         std::copy(fraction.begin(), fraction.end(), pitch.sample_fraction.begin());
         std::copy(transpose.begin(), transpose.end(), pitch.sample_transpose.begin());
         Bus bus(output, score, pitch, ready);
-        std::ifstream controller_inputs(root + "/cpu-controller-inputs.txt");
+        std::ifstream controller_inputs(
+            root
+            + (menu_down80 ? "/cpu-controller-inputs-down500.txt" : "/cpu-controller-inputs.txt"));
         unsigned input_frame, input_first, input_second;
         while (controller_inputs >> input_frame >> input_first >> input_second) {
             if (input_frame != bus.controller_schedule.size() || input_first > 65535
@@ -323,6 +332,34 @@ int main(int argc, char** argv) {
                                         if (menu_reveal)
                                             unirally::native_audio_reveal_main_menu(
                                                 clock, state, scene, printer, cartridge);
+                                        if (menu_input) {
+                                            unirally::AudioCpuMenuInputState menu;
+                                            unirally::native_audio_begin_menu_input(
+                                                clock, scene, cartridge, menu);
+                                            const auto positions =
+                                                read(root + "/cpu-menu-arrow-positions.bin");
+                                            if (positions.size() != 5)
+                                                throw std::invalid_argument(
+                                                    "invalid arrow position data");
+                                            if (menu_idle80)
+                                                for (unsigned i = 0; i < 80; ++i) {
+                                                    const auto action =
+                                                        unirally::native_audio_menu_input_frame(
+                                                            clock, state, scene, cartridge, menu,
+                                                            std::span<const std::uint8_t, 5>(
+                                                                positions.data(), 5));
+                                                    if (action
+                                                        != unirally::AudioCpuMenuAction::waiting)
+                                                        throw std::logic_error(
+                                                            "menu loop crossed recovered domain");
+                                                    std::cout << "menu_frame_end=" << clock.ticks()
+                                                              << " pads=" << menu.controllers[0]
+                                                              << ',' << menu.controllers[1] << '\n';
+                                                }
+                                            std::cout
+                                                << "menu_selection=" << unsigned(menu.selection)
+                                                << " menu_idle=" << menu.idle_remaining << '\n';
+                                        }
                                         std::cout << "text_cursor=" << printer.cursor
                                                   << " text_attribute=" << printer.attribute
                                                   << '\n';

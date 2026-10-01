@@ -774,7 +774,8 @@
   "comment": "unknown",
   "label": "unk_8088BE",
   "source_records": [
-   "docs/research/R-0054-boot-title-main-menu.md"
+   "docs/research/R-0054-boot-title-main-menu.md",
+   "docs/research/R-0075-title-menu-audio.md"
   ]
  },
  {
@@ -2200,12 +2201,14 @@
   "comment": "routine start",
   "label": "sub_80ABC8",
   "native": [
+   "src/core/audio_cpu_menu_input.cpp:native_audio_begin_menu_input",
    "src/core/front_end.cpp:first_idle, idle_after_move",
    "src/core/front_end.hpp:FrontEndScreen",
    "src/core/front_end_screens.hpp:start_main_menu"
   ],
   "source_records": [
    "docs/research/R-0054-boot-title-main-menu.md",
+   "docs/research/R-0075-title-menu-audio.md",
    "tasks/COVERAGE-ROADMAP.md",
    "tasks/FRONT-END-MAIN-MENU.md"
   ]
@@ -2216,6 +2219,7 @@
   "comment": "instruction start",
   "label": "loc_80ABE3",
   "native": [
+   "src/core/audio_cpu_menu_input.cpp:native_audio_menu_input_frame",
    "src/core/front_end.cpp:run_main_menu"
   ],
   "source_records": [
@@ -2228,6 +2232,8 @@
   "comment": "instruction start",
   "label": "loc_80ABEB",
   "native": [
+   "src/core/audio_cpu_menu_input.cpp:native_audio_menu_input_frame",
+   "src/core/audio_cpu_menu_input.cpp:test_menu_code",
    "src/core/front_end.cpp:run_main_menu"
   ],
   "source_records": [
@@ -2240,6 +2246,7 @@
   "comment": "instruction start",
   "label": "loc_80AC0F",
   "native": [
+   "src/core/audio_cpu_menu_input.cpp:native_audio_menu_input_frame",
    "src/core/front_end.cpp:run_main_menu"
   ],
   "source_records": [
@@ -2508,6 +2515,9 @@
   "class": "observed",
   "comment": "routine start",
   "label": "sub_80B178",
+  "native": [
+   "src/core/audio_cpu_menu_input.cpp:enqueue_navigation"
+  ],
   "source_records": [
    "docs/research/R-0054-boot-title-main-menu.md",
    "docs/research/R-0055-rider-menu.md",
@@ -2793,10 +2803,12 @@
   "comment": "routine start",
   "label": "sub_80B71D",
   "native": [
+   "src/core/audio_cpu_menu_input.cpp:test_menu_input",
    "src/core/front_end_screens.hpp:pad_up, pad_down, pad_left, pad_right, pad_select, pad_a, pad_r"
   ],
   "source_records": [
-   "docs/research/R-0054-boot-title-main-menu.md"
+   "docs/research/R-0054-boot-title-main-menu.md",
+   "docs/research/R-0075-title-menu-audio.md"
   ]
  },
  {
@@ -2816,8 +2828,12 @@
   "class": "observed",
   "comment": "routine start",
   "label": "sub_80B76F",
+  "native": [
+   "src/core/audio_cpu_menu_input.cpp:test_menu_input"
+  ],
   "source_records": [
-   "docs/research/R-0054-boot-title-main-menu.md"
+   "docs/research/R-0054-boot-title-main-menu.md",
+   "docs/research/R-0075-title-menu-audio.md"
   ]
  },
  {
@@ -2826,10 +2842,12 @@
   "comment": "routine start",
   "label": "sub_80B794",
   "native": [
+   "src/core/audio_cpu_menu_input.cpp:test_menu_input",
    "src/core/front_end_screens.hpp:pad_up, pad_down, pad_left, pad_right, pad_select, pad_a, pad_r"
   ],
   "source_records": [
-   "docs/research/R-0054-boot-title-main-menu.md"
+   "docs/research/R-0054-boot-title-main-menu.md",
+   "docs/research/R-0075-title-menu-audio.md"
   ]
  },
  {
@@ -15623,8 +15641,12 @@
   "class": "observed",
   "comment": "routine start",
   "label": "sub_839558",
+  "native": [
+   "src/core/audio_cpu_menu_input.cpp:native_audio_begin_menu_input"
+  ],
   "source_records": [
-   "docs/research/R-0055-rider-menu.md"
+   "docs/research/R-0055-rider-menu.md",
+   "docs/research/R-0075-title-menu-audio.md"
   ]
  },
  {

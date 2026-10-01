@@ -1246,6 +1246,11 @@
     "NmX"
    ],
    "native": [
+    "src/core/audio_cpu_menu_input.cpp:move_menu_selection",
+    "src/core/audio_cpu_menu_input.cpp:native_audio_begin_menu_input",
+    "src/core/audio_cpu_menu_input.cpp:native_audio_menu_input_frame",
+    "src/core/audio_cpu_menu_input.cpp:test_menu_code",
+    "src/core/audio_cpu_menu_input.cpp:update_menu_targets",
     "src/core/front_end.cpp:first_idle, idle_after_move",
     "src/core/front_end.cpp:run_main_menu",
     "src/core/front_end.hpp:FrontEndScreen",
@@ -1482,6 +1487,9 @@
    "mode_at_entry": [
     "NmX"
    ],
+   "native": [
+    "src/core/audio_cpu_menu_input.cpp:enqueue_navigation"
+   ],
    "observed_entries": {},
    "start": "$80:B178",
    "static_entries": {
@@ -1619,6 +1627,7 @@
     "NmX"
    ],
    "native": [
+    "src/core/audio_cpu_menu_input.cpp:test_menu_input",
     "src/core/front_end_screens.hpp:pad_up, pad_down, pad_left, pad_right, pad_select, pad_a, pad_r"
    ],
    "observed_entries": {},
@@ -1672,6 +1681,9 @@
    "mode_at_entry": [
     "NmX"
    ],
+   "native": [
+    "src/core/audio_cpu_menu_input.cpp:test_menu_input"
+   ],
    "observed_entries": {},
    "start": "$80:B76F",
    "static_entries": {
@@ -1693,6 +1705,7 @@
     "NmX"
    ],
    "native": [
+    "src/core/audio_cpu_menu_input.cpp:test_menu_input",
     "src/core/front_end_screens.hpp:pad_up, pad_down, pad_left, pad_right, pad_select, pad_a, pad_r"
    ],
    "observed_entries": {},
@@ -11632,6 +11645,9 @@
    "mode_at_entry": [
     "NmX"
    ],
+   "native": [
+    "src/core/audio_cpu_menu_input.cpp:native_audio_begin_menu_input"
+   ],
    "observed_entries": {},
    "start": "$83:9558",
    "static_entries": {
@@ -14611,9 +14627,9 @@
   "jump_tables": 2,
   "mode_ambiguities": 7,
   "observed": 41778,
-  "routine_bytes_cited_by_native_code": 50495,
+  "routine_bytes_cited_by_native_code": 50574,
   "routines": 636,
-  "routines_cited_by_native_code": 401,
+  "routines_cited_by_native_code": 404,
   "unknown": 52881,
   "unknown_share": 0.4035
  }

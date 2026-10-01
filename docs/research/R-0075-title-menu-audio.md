@@ -902,3 +902,26 @@ frames, ending before the first interactive menu call. No original producer
 time advances native CPU or SMP; the closing DSP limit clips PCM packaging.
 Product playback, full canonical continuation and interactive/restart
 producers remain open.
+
+## Native interactive menu input, 1 October
+
+Static $80:ABC8-$80:ACD5, $83:9558, $80:B71D/$80:B76F/$80:B794 and
+$80:B178 supply the menu input reading. Native pads are automatic poll words;
+D1EC includes OAM DMA before the two reads. The idle counter wraps as a word,
+the directional release latch suppresses repeat cues, and five arrow targets
+use the identified bytes at $80:88BE (physical 08BE-08C2). Navigation queues
+{8,127} then {2,3}; no original enqueue time enters the producer.
+
+`cold-cpu-menu-input-begin-frozen.json` and `cold-cpu-menu-idle80-frozen.json`
+predate the candidate. Native comparisons pass 1,046,913 and 1,138,321 events,
+268,323 and 319,554 raw pairs respectively. The latter includes 80 menu
+controller/end-clock projections at C=212,250,252. A fresh 500-frame Down
+variation freezes Start300-305/Down450-455 in `cold-cpu500-down.script.json`.
+Instruction observation on/off preserves exact state/A/V/PCM/APU digests
+and all normalized kind1-9 events (`cold-cpu500-down-integrity.json`).
+`cold-cpu-menu-down80-frozen.json` precedes navigation implementation;
+`native-cold-cpu-menu-down80-pcm.json` matches 1,137,795 events, 319,556 pairs,
+80 menu controller/end-clock projections and C=212,250,772. All 111 prior
+title frames also match in both comparisons. These cover first effect/music
+overlap and hold suppression, not retrigger, Up wrap or full lifecycle.
+Product playback, complete canonical save and independent review remain open.

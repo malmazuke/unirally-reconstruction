@@ -1305,3 +1305,26 @@ Reveal checkpoint follow-up: static regeneration passes 53,062 sites and
 checks pass and all 1041 citations have records. Polling D1EC includes its
 OAM DMA callee before automatic pad reads, as the listing states. No expected
 projection changed. This slice is ready for a task-scoped commit.
+
+### 1 October 09:00 UTC checkpoint
+
+98fc2bd is pushed; hosted CI36838881558 passes both hosts. Native interactive
+menu initialization and80 idle loops match the frozen prefix. Fresh Down450-455
+observation on/off is non-perturbing, and the native variation matches all
+1,137,795 events,319,556 raw pairs,80 menu controller/end clocks and the111
+prior title frames. C=212,250,772. Its command ring produces{8,127}/{2,3}
+from sampled input without original event times. Readability passes. New
+menu input source is uncommitted; affected checks/maps remain before commit.
+
+Fresh quota23% at08:53,baseline12/stop32,ordinary usage allowed,reset1791365217.
+No reset/spending/provider change. Next freeze Up wrap/retrigger and long
+steered-menu variations, then recover full canonical continuation and product
+output. Lifecycle restart stays inside this task. Positive special-code,
+attract and confirm transitions are semantic boundaries pending their joined
+audio continuation, not newly accepted gameplay. Next checkpoint09:10,
+reassessment09:18. No acceptance or capability review claimed.
+
+Menu-input follow-up: the three affected CPU checks pass; regenerated static
+metadata checks53,062 sites/42,700 shared instructions with zero disagreements.
+All24 native-symbol checks pass and all1049 citations have records. Inspect
+and commit this bounded slice before the longer withheld comparisons.

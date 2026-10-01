@@ -22,8 +22,8 @@ The four classes partition all 131,072 bytes. **Unknown share: 40.4%** - above D
 | Instructions from observed | 17,569 |
 | Instructions from table | 587 |
 | Routines | 636 |
-| Routines cited by native code | 401 |
-| Routine bytes cited by native code | 50,495 |
+| Routines cited by native code | 404 |
+| Routine bytes cited by native code | 50,574 |
 | Gap sweep candidate instructions | 2,746 |
 | Gap sweep candidate bytes | 6,174 |
 | Jump tables | 2 |
@@ -69,7 +69,7 @@ Cited addresses in `unknown` bytes:
 | $80:84DB | docs/research/R-0010-native-movement.md |
 | $80:84EB | docs/research/R-0010-native-movement.md, docs/research/R-0045-static-code-map.md |
 | $80:88B2 | tasks/COVERAGE-ROADMAP.md |
-| $80:88BE | docs/research/R-0054-boot-title-main-menu.md |
+| $80:88BE | docs/research/R-0054-boot-title-main-menu.md, docs/research/R-0075-title-menu-audio.md |
 | $80:8953 | docs/research/R-0067-stunt-result.md |
 | $80:8B3F | docs/research/R-0073-league.md |
 | $80:8CCB | docs/research/R-0067-stunt-result.md, tasks/STUNT-RESULT.md |
