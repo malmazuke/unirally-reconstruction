@@ -131,3 +131,6 @@ add_test(NAME audio_driver_pending_restore_and_cpu_yield COMMAND audio_driver_te
 
 add_executable(audio_cpu_upload_runner audio_cpu_upload_runner.cpp)
 target_link_libraries(audio_cpu_upload_runner PRIVATE unirally_audio_score lab_options)
+add_executable(audio_cpu_queue_tests audio_cpu_queue_tests.cpp)
+target_link_libraries(audio_cpu_queue_tests PRIVATE unirally_audio_score lab_options)
+add_test(NAME audio_cpu_queue_full_busy_wrap_and_order COMMAND audio_cpu_queue_tests)

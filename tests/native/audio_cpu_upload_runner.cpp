@@ -1,5 +1,6 @@
 #include "audio_cpu_boot.hpp"
 #include "audio_cpu_upload.hpp"
+#include "audio_cpu_queue.hpp"
 #include "audio_ipl.hpp"
 #include <fstream>
 #include <iostream>
@@ -93,8 +94,10 @@ std::vector<std::uint8_t> read(const std::string& path) {
 int main(int argc, char** argv) {
     try {
         if (argc != 3 && argc != 4)
-            throw std::invalid_argument("audio_cpu_upload_runner DATA_DIRECTORY OUTPUT [ready|samples]");
-        const bool samples = argc == 4 && std::string(argv[3]) == "samples";
+            throw std::invalid_argument("audio_cpu_upload_runner DATA_DIRECTORY OUTPUT [ready|samples|queue|vblank]");
+        const bool vblank = argc == 4 && std::string(argv[3]) == "vblank";
+        const bool queue = argc == 4 && (std::string(argv[3]) == "queue" || vblank);
+        const bool samples = argc == 4 && (std::string(argv[3]) == "samples" || queue);
         const bool ready = argc == 4 && (std::string(argv[3]) == "ready" || samples);
         if (argc == 4 && !ready) throw std::invalid_argument("unknown upload mode");
         const std::string root = argv[1]; unirally::AudioCpuUploadData data;
@@ -137,7 +140,16 @@ int main(int argc, char** argv) {
         unirally::native_audio_cpu_uploads(clock, data);
         if (ready) unirally::native_audio_cpu_finish_driver_entry(clock);
         if (samples) unirally::native_audio_cpu_upload_samples(clock, data);
+        if (queue) {
+            unirally::AudioCpuQueueState state;
+            unirally::native_audio_bootstrap_queue(clock, state);
+            if (vblank) unirally::native_audio_wait_vblank(clock, state);
+            std::cout << "queue_read=" << unsigned(state.read_index)
+                      << " queue_write=" << unsigned(state.write_index)
+                      << " expected_phase=" << unsigned(state.expected_phase) << '\n';
+        }
         std::cout << "computed_final_upload_cpu_clock=" << clock.ticks() << '\n';
-        if (!output) throw std::runtime_error("native upload events failed"); return 0;
+        if (!output) throw std::runtime_error("native upload events failed");
+        return 0;
     } catch (const std::exception& error) { std::cerr << error.what() << '\n'; return 1; }
 }

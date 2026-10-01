@@ -922,3 +922,47 @@ after $80:A119, its cue enqueue and receiver calls, to remove observed producer
 entry times. Full canonical CPU continuation/device playback and independent
 capability review remain open. No task completion or user prerequisite.
 Next checkpoint by 05:32 and reassessment remains 05:56 UTC.
+
+### 1 October 05:36 UTC checkpoint
+
+01c92cc (native cold sample transport) is pushed. New original 350-frame
+CPU-full/off captures preserve game state, A/V, raw PCM, final APU RAM and all
+1,876,844 shared event rows (`cold-cpu350-integrity.json`): full observation
+contains 5,051,777 instructions/957 PCs. A local TSV decoder initially shifted
+register fields; its incorrect hash and correction are retained. C/PC columns
+and raw captures were unchanged; no native register logic used bad fields.
+Correct ABI5 mapping is 12(address=A,value=X), 13(Y,S), 15(B|E<<8,P).
+
+Native ring enqueue and first dispatch now match 713,929 frozen projected
+accesses from zero through $80:FAE3 (C=41,365,774). Queue read/write cursors
+are 2/4 and expected phase64 after sending music1/parameter2; initial words
+use high-byte command/low-byte parameter ($0102, $08FF, $077F). No observed
+enqueue/dispatch time enters native work. Changes are uncommitted while the
+next frozen extension exercises PAL vertical-blank polling before $80:FAF1
+(C=41,587,324). Static readings: bank-82 $8000-$807D, bank-80 $A119-$A169
+and $FADF-$FAF1; pinned CPU I/O supplies the hardware blank status reading.
+
+Fresh telemetry at 05:34 is 20% weekly used, ordinary usage allowed, reset
+1791365217, from the 12% baseline. Stop discretionary work at 32%; preserve
+review/recovery reserve. No credit/provider change. Next checkpoint by 05:46,
+reassessment remains 05:56 UTC. CPU continuation, later producer, full save,
+device audio and independent capability review remain open.
+
+### 1 October 05:46 UTC checkpoint
+
+Native ring and first PAL vertical-blank wait match all 714,357 frozen events
+through $80:FAF1 (C=41,587,324), including initial music and effect-gain commands.
+`native-cold-cpu-first-command.json` and `native-cold-cpu-first-vblank.json`
+start from zero, use identified data/native handshakes, and retain the earlier
+opaque executable-payload projection. The music-gain command remains queued
+at this endpoint (read=3/write=4/phase128). The authored ring check passes
+full-drop, busy receiver, FIFO, wrap, phase and header-before-parameter cases;
+these boundaries have no new original gameplay claim. Readability and native
+map regeneration pass. CPU continuation and later frontend work remain open.
+
+CI 36819625073 at 01c92cc passes macOS but fails Ubuntu because the diagnostic
+runner placed `return 0` on the same line as a preceding `if` (misleading
+indentation under GCC/Werror). The line split is included in this source slice;
+no requirement is weakened. Fresh telemetry remains 20% at 05:44 from baseline
+12%, stop32%, reset1791365217. No reset/spending/provider change. Next checkpoint
+by 05:56 and reassessment remains 05:56 UTC.

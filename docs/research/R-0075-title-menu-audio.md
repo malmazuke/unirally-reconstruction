@@ -1,7 +1,8 @@
 # R-0075 - raw title/menu audio observation and hardware isolation
 
 Status: in-progress coupled experiments for AUDIO-TITLE-MENU, 30 September
-2026 UTC. No native driver, audible product or capability acceptance is claimed.
+2026 UTC. Conditional native driver and seedless cold-prefix results are
+recorded below; audible product and capability acceptance remain pending.
 PAL ROM SHA-256 `a1105819d48c04d680c8292bbfa9abbce05224f1bc231afd66af43b7e0a1fd4e`;
 bsnes `7d5aa1e656b9171524d01b1b22917197d8121cb4`, default adapter options,
 Strict synchronization, fresh private save directory per process. The new
@@ -660,3 +661,23 @@ bank-82 $82A5-$8336 and bank-80 $A112-$A115. Seven focused audio checks and
 readability pass; native-symbol metadata remains unchanged. Remaining cold
 frontend enqueue/dispatch work, CPU continuation, complete save/device audio
 and independent capability review remain open.
+
+## Seedless command queue and first vertical-blank wait, 1 October
+
+Verified: `native-cold-cpu-first-command.json` matches all 713,929 projected
+events from zero through $80:FAE3 (C=41,365,774); the initial queue words
+$0102/$08FF/$077F are music1/parameter2, effect-gain255 and music-gain127.
+`native-cold-cpu-first-vblank.json` extends to 714,357 exact events through
+$80:FAF1 (C=41,587,324), including the second dispatch. CPU polling uses
+native queue/acknowledgment state and PAL raster timing, without observed
+producer entry times. Music gain remains queued at the endpoint. Frozen
+original projections predate each extension. The same opaque executable
+payload domain is retained; all clock/order/non-executable values remain exact.
+
+Static routine readings: bank-82 $8000-$807D, bank-80 $A119-$A169 and
+$FADF-$FAF1. Pinned `sfc/cpu/io.cpp` supplies HVBJOY: vertical blank is
+`vcounter >= ppu.vdisp()`, with no NMI edge delay. This domain has no enabled
+NMI/DMA. An authored ring test covers full-drop, busy acknowledgment, FIFO,
+wrap and alternating phase/header-before-parameter ordering; it is not dynamic
+original boundary evidence. Readability and native map checks pass. Later
+frontend work, CPU continuation, complete save and device audio remain open.
