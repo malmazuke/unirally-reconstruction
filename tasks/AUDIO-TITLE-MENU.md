@@ -398,3 +398,21 @@ restore and live output are still unimplemented. No acceptance gate has been
 weakened or frozen expectation changed. Tier-1 review remains pending.
 Latest usage is 15%, startup 12%, boundary 32%, no reset/spending/provider change.
 Checkpoint by 01:39 UTC; reassessment by 02:04 UTC.
+
+## 01:39 UTC checkpoint
+
+Native score/voice source slice `466f2bb` is pushed. Its conditional six-register
+comparison is exact for 629,418 values across baseline, Down and long-steered
+menu evidence. All 10,294 complete voice rows also match from native initialized
+state. Authored integer-boundary and nonzero score/envelope continuation checks
+pass locally. Native-symbol regeneration passes without changing its map.
+Hosted macOS passes, Ubuntu fails in run 36801725844; inspect and fix the exact
+failure before treating CI as passed. No private expectation is rewritten.
+
+Next measure semantic driver work against original elapsed SMP ticks, then
+recover its timers/acknowledgments and cold producer phase. Read bank-80's
+static listing before designing the upcoming main-menu lifecycle capture.
+PR #50 remains draft and unreviewed; cold PCM, pack, output and full restore
+are still pending. Account usage at 01:36 UTC remains 15%, startup 12%,
+boundary 32%, no reset/spending/provider change. Next checkpoint by 01:49 UTC,
+reassessment by 02:04 UTC. Main remains at the task base.

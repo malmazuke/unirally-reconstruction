@@ -166,7 +166,7 @@ void update_audio_voice(AudioVoiceArithmetic& voice, const AudioPitchData& pitch
     update_modulation(voice);
     update_pitch_convergence(voice);
     update_envelope(voice);
-    voice.output_pitch = word(voice.base_pitch + voice.modulation_offset + voice.detune);
+    voice.output_pitch = word(unsigned(voice.base_pitch) + voice.modulation_offset + voice.detune);
 }
 
 // 0C66-0CB9 and 0D19-0D5B. A zero note retains pitch/envelope state. Duration
@@ -178,7 +178,7 @@ void initialize_audio_note(AudioVoiceArithmetic& voice, const AudioPitchData& pi
     if (!note) return;
     if (voice.sample >= pitch_data.sample_transpose.size())
         throw std::runtime_error("sample transpose leaves identified data");
-    voice.base_note = byte(note + pitch_data.sample_transpose[voice.sample] + transpose);
+    voice.base_note = byte(unsigned(note) + pitch_data.sample_transpose[voice.sample] + transpose);
     voice.alternating_note = voice.base_note;
     voice.slide_remaining = voice.slide_interval;
     if (!voice.slide_remaining) {
