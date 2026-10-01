@@ -3099,7 +3099,7 @@
    "native": [
     "src/core/audio_cpu_queue.cpp:native_audio_wait_vblank",
     "src/core/audio_cue.hpp:AudioDispatchSite",
-    "src/core/audio_cued_scenes.cpp:frame_wait_anchor, race_early_anchor, race_late_anchor, countdown_anchor, finish_fade_anchor, race_choice_anchor",
+    "src/core/audio_cued_scenes.cpp:frame_wait_anchor, race_early_anchor, race_late_anchor, countdown_anchor, finish_fade_anchor, race_choice_anchor, pause_anchor",
     "src/core/front_end.cpp:FrameWaits",
     "src/core/front_end.cpp:ends_with_queue_wait",
     "src/core/front_end.hpp:FrontEndState::sound_cues",
@@ -12813,7 +12813,7 @@
    ],
    "native": [
     "src/core/audio_cue.hpp:AudioDispatchSite",
-    "src/core/audio_cued_scenes.cpp:frame_wait_anchor, race_early_anchor, race_late_anchor, countdown_anchor, finish_fade_anchor, race_choice_anchor",
+    "src/core/audio_cued_scenes.cpp:frame_wait_anchor, race_early_anchor, race_late_anchor, countdown_anchor, finish_fade_anchor, race_choice_anchor, pause_anchor",
     "src/core/race_sound.hpp:dispatch",
     "src/core/race_update.cpp:run_pause_menu",
     "src/core/race_update.cpp:update_zoom_zoo",
@@ -14544,6 +14544,8 @@
     "Nmx"
    ],
    "native": [
+    "src/core/audio_cue.hpp:AudioDispatchSite",
+    "src/core/race_sound.hpp:pause_frame",
     "src/core/race_update.cpp:run_pause_menu"
    ],
    "observed_entries": {},
@@ -14584,8 +14586,10 @@
     "NMX"
    ],
    "native": [
+    "src/core/audio_cue.hpp:AudioDispatchSite",
     "src/core/race_result.cpp:quit, restarted",
-    "src/core/race_result.cpp:update_race_for_menus"
+    "src/core/race_result.cpp:update_race_for_menus",
+    "src/core/race_sound.hpp:pause_continue"
    ],
    "observed_entries": {},
    "start": "$83:F8AA",
@@ -14753,18 +14757,18 @@
    "call returns in the calling mode": 1262
   },
   "bytes": 131072,
-  "cited_addresses": 1583,
+  "cited_addresses": 1588,
   "cited_by_class": {
    "data": 25,
-   "inferred": 254,
-   "observed": 1002,
+   "inferred": 258,
+   "observed": 1003,
    "unknown": 302
   },
   "cited_by_position": {
    "dat": 25,
-   "loc": 902,
+   "loc": 906,
    "mid": 19,
-   "sub": 335,
+   "sub": 336,
    "unk": 302
   },
   "conflicts": 0,

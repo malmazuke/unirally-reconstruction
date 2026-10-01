@@ -13,7 +13,7 @@ enum class AudioDispatchSite : std::uint8_t {
     countdown,   // $83:E739, $83:E74F, $83:E785: each countdown update
     finish_fade, // $83:E82C, $83:E830: right after the finish fade's cue
     race_choice, // $80:99BE: NOW PLAYING's Race fades the menu music at once
-    pause,       // $83:F65E-F67A, $83:F68A-F68E, $83:F937-F93B: the race's pause menu
+    pause,       // $83:F65E-F67A, $83:F68A-F68E, $83:F930-F93B: the race's pause menu
 };
 // Sound program sessions the game starts from a running driver ($82:807E).
 enum class AudioSessionLoad : std::uint8_t {

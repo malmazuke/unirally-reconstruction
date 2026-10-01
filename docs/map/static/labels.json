@@ -6855,7 +6855,7 @@
   "label": "sub_80FADF",
   "native": [
    "src/core/audio_cue.hpp:AudioDispatchSite",
-   "src/core/audio_cued_scenes.cpp:frame_wait_anchor, race_early_anchor, race_late_anchor, countdown_anchor, finish_fade_anchor, race_choice_anchor",
+   "src/core/audio_cued_scenes.cpp:frame_wait_anchor, race_early_anchor, race_late_anchor, countdown_anchor, finish_fade_anchor, race_choice_anchor, pause_anchor",
    "src/core/front_end.cpp:FrameWaits",
    "src/core/front_end.cpp:ends_with_queue_wait",
    "src/core/front_end.hpp:FrontEndState::sound_cues",
@@ -17697,6 +17697,19 @@
   ]
  },
  {
+  "address": "$83:CD2A",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_83CD2A",
+  "native": [
+   "src/core/race_update.cpp:run_pause_menu",
+   "src/core/rider_look.cpp:zoom_zoo_update_was_paused"
+  ],
+  "source_records": [
+   "docs/research/R-0076-first-race-audio.md"
+  ]
+ },
+ {
   "address": "$83:CD50",
   "class": "observed",
   "comment": "instruction start",
@@ -17749,7 +17762,7 @@
   "label": "loc_83CD6E",
   "native": [
    "src/core/audio_cue.hpp:AudioDispatchSite",
-   "src/core/audio_cued_scenes.cpp:frame_wait_anchor, race_early_anchor, race_late_anchor, countdown_anchor, finish_fade_anchor, race_choice_anchor",
+   "src/core/audio_cued_scenes.cpp:frame_wait_anchor, race_early_anchor, race_late_anchor, countdown_anchor, finish_fade_anchor, race_choice_anchor, pause_anchor",
    "src/core/race_sound.hpp:dispatch"
   ],
   "source_records": [
@@ -17791,7 +17804,7 @@
   "label": "loc_83CD9F",
   "native": [
    "src/core/audio_cue.hpp:AudioDispatchSite",
-   "src/core/audio_cued_scenes.cpp:frame_wait_anchor, race_early_anchor, race_late_anchor, countdown_anchor, finish_fade_anchor, race_choice_anchor",
+   "src/core/audio_cued_scenes.cpp:frame_wait_anchor, race_early_anchor, race_late_anchor, countdown_anchor, finish_fade_anchor, race_choice_anchor, pause_anchor",
    "src/core/race_sound.hpp:dispatch"
   ],
   "source_records": [
@@ -20455,7 +20468,47 @@
   "comment": "routine start",
   "label": "sub_83F63E",
   "source_records": [
-   "docs/research/R-0060-pause-exits.md"
+   "docs/research/R-0060-pause-exits.md",
+   "docs/research/R-0076-first-race-audio.md"
+  ]
+ },
+ {
+  "address": "$83:F65E",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_83F65E",
+  "native": [
+   "src/core/audio_cue.hpp:AudioDispatchSite",
+   "src/core/race_sound.hpp:pause_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0076-first-race-audio.md"
+  ]
+ },
+ {
+  "address": "$83:F68A",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_83F68A",
+  "native": [
+   "src/core/audio_cue.hpp:AudioDispatchSite",
+   "src/core/race_sound.hpp:pause_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0076-first-race-audio.md"
+  ]
+ },
+ {
+  "address": "$83:F68E",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_83F68E",
+  "native": [
+   "src/core/audio_cue.hpp:AudioDispatchSite",
+   "src/core/race_sound.hpp:pause_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0076-first-race-audio.md"
   ]
  },
  {
@@ -20524,6 +20577,19 @@
   ],
   "source_records": [
    "tasks/RACE-PAUSE-EXITS.md"
+  ]
+ },
+ {
+  "address": "$83:F930",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_83F930",
+  "native": [
+   "src/core/audio_cue.hpp:AudioDispatchSite",
+   "src/core/race_sound.hpp:pause_continue"
+  ],
+  "source_records": [
+   "docs/research/R-0076-first-race-audio.md"
   ]
  },
  {
