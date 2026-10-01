@@ -104,8 +104,8 @@ std::vector<std::uint8_t> read(const std::string& path) {
 int main(int argc, char** argv) {
     try {
         if (argc != 3 && argc != 4)
-            throw std::invalid_argument(
-                "audio_cpu_upload_runner DATA_DIRECTORY OUTPUT [ready|samples|queue|vblank|frame|palette|load]");
+            throw std::invalid_argument("audio_cpu_upload_runner DATA_DIRECTORY OUTPUT "
+                                        "[ready|samples|queue|vblank|frame|palette|load]");
         const bool load = argc == 4 && std::string(argv[3]) == "load";
         const bool palette = argc == 4 && (std::string(argv[3]) == "palette" || load);
         const bool frame = argc == 4 && (std::string(argv[3]) == "frame" || palette);
@@ -175,9 +175,11 @@ int main(int argc, char** argv) {
                         if (id >= assets.size() || bank > 127 || address > 65535 || compressed > 1)
                             throw std::invalid_argument("invalid graphics metadata");
                         assets.at(id) = {static_cast<std::uint8_t>(bank),
-                                        static_cast<std::uint16_t>(address), bytes, compressed != 0};
+                                         static_cast<std::uint16_t>(address), bytes,
+                                         compressed != 0};
                     }
-                    if (!metadata.eof()) throw std::invalid_argument("incomplete graphics metadata");
+                    if (!metadata.eof())
+                        throw std::invalid_argument("incomplete graphics metadata");
                     unirally::native_audio_load_nintendo_graphics(clock, scene, assets[31],
                                                                   assets[80], assets[74]);
                 }

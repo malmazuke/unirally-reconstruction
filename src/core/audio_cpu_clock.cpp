@@ -128,8 +128,9 @@ void AudioCpuWorkClock::write_audio_word(std::uint8_t first_port, std::uint16_t 
     for (unsigned i = 0; i < 2; ++i) {
         begin_bus(6);
         step(6);
-        if (observer_) observer_->write_audio_port(ticks_, static_cast<std::uint8_t>(first_port + i),
-                                                  static_cast<std::uint8_t>(value >> (8 * i)));
+        if (observer_)
+            observer_->write_audio_port(ticks_, static_cast<std::uint8_t>(first_port + i),
+                                        static_cast<std::uint8_t>(value >> (8 * i)));
     }
 }
 std::uint16_t AudioCpuWorkClock::read_audio_ports(std::uint8_t first_port, unsigned bytes) {
@@ -140,8 +141,9 @@ std::uint16_t AudioCpuWorkClock::read_audio_ports(std::uint8_t first_port, unsig
     for (unsigned i = 0; i < bytes; ++i) {
         begin_bus(6);
         step(2);
-        value |= static_cast<std::uint16_t>(unsigned(observer_->read_audio_port(
-            ticks_, static_cast<std::uint8_t>(first_port + i))) << (8 * i));
+        value |= static_cast<std::uint16_t>(
+            unsigned(observer_->read_audio_port(ticks_, static_cast<std::uint8_t>(first_port + i)))
+            << (8 * i));
         step(4);
     }
     return value;

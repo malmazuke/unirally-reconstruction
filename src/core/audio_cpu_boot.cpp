@@ -269,12 +269,14 @@ void begin_sound_upload(Clock& c) {
 }
 }
 void native_audio_cpu_upload_graphics_asset(Clock& c, const AudioCpuGraphicsAsset& asset,
-                                           bool palette) {
+                                            bool palette) {
     if (asset.compressed || asset.address < 0x8000 || asset.bank > 127 || asset.bytes == 0
         || asset.bytes > 65536 || (asset.bytes & 1))
         throw std::invalid_argument("unidentified raw graphics work domain");
-    if (palette) upload_palette(c, asset.bytes, asset.address);
-    else upload_tiles(c, asset.bytes, asset.address);
+    if (palette)
+        upload_palette(c, asset.bytes, asset.address);
+    else
+        upload_tiles(c, asset.bytes, asset.address);
 }
 std::array<std::uint64_t, 12> native_audio_cpu_boot_prefix(const AudioBootAssetSizes& sizes,
                                                            AudioCpuWorkObserver* observer) {
@@ -282,7 +284,7 @@ std::array<std::uint64_t, 12> native_audio_cpu_boot_prefix(const AudioBootAssetS
     return native_audio_cpu_boot_prefix(clock, sizes);
 }
 std::array<std::uint64_t, 12> native_audio_cpu_boot_prefix(AudioCpuWorkClock& c,
-                                                         const AudioBootAssetSizes& sizes) {
+                                                           const AudioBootAssetSizes& sizes) {
     if (c.ticks() != 0 || sizes.palette_bytes != 32 || sizes.tile_bytes != 8192)
         throw std::invalid_argument("unidentified cold audio asset-clock domain");
     c.idle(22);
