@@ -365,7 +365,7 @@ def bind_audio(core: BsnesCore) -> None:
     lib = core._lib
     try:
         lib.unirally_audio_api_version.restype = C.c_uint32
-        if lib.unirally_audio_api_version() not in (1, 2, 3):
+        if lib.unirally_audio_api_version() not in (1, 2, 3, 4):
             raise CoreError('unsupported audio observation ABI')
         lib.unirally_audio_byte_order.restype = C.c_uint32
         if lib.unirally_audio_byte_order() != 1:
@@ -388,6 +388,9 @@ def bind_audio(core: BsnesCore) -> None:
             lib.unirally_audio_frame_boundary.restype = None
             lib.unirally_audio_cpu_ticks.restype = C.c_uint64
             lib.unirally_audio_smp_balance.restype = C.c_int64
+        if lib.unirally_audio_api_version() >= 4:
+            lib.unirally_audio_watch_smp.argtypes = [C.POINTER(C.c_uint16), C.c_size_t]
+            lib.unirally_audio_watch_smp.restype = C.c_bool
     except AttributeError as exc:
         raise CoreMissingError('core lacks the additive audio observation exports') from exc
 

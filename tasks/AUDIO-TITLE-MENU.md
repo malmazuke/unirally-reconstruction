@@ -212,3 +212,77 @@ and the untracked export source; no expectation was changed. The successful
 patch build uses the documented full diff path exclusions and intent-to-add.
 Hosted CI remains the earlier `91c8f05` result, not this uncommitted ABI-3 slice.
 Weekly usage is 13%, startup 12%, boundary 32%; no reset or spending authorized.
+
+## 00:14 UTC checkpoint
+
+Pushed `46d01fc`; hosted macOS/Ubuntu synthetic CI passes at that head
+(run 36794372256). Draft PR #50 remains unaccepted with no tier-1 review.
+The conditional laboratory transport prototype derives bus costs from the
+static map and pinned CPU memory/timing code, including per-scanline DRAM
+refresh. It predicts all 38 retained transfer store clocks, but takes observed
+function entries and readiness as inputs; it is not cold native acceptance.
+Next predict the poll/return paths, producer enqueue phase and native driver
+acknowledgments instead of supplying them from a capture.
+
+Filtered SMP register observation (ABI 4) builds and reduces long traces to
+selected routine boundaries while retaining all hardware/port/RAM events.
+Baseline, Down 450/457, held Down and a 4,000-frame exploration are captured
+in main evidence; validate filtered/full shared observations before use.
+The long unsteered case enters the already-known idle demo after menu timeout,
+so its later audio is outside title/menu coverage. Keep it as exploration,
+not as a title/menu loop gate. Use alternating navigation before idle expires
+for a music-loop experiment within menu.
+
+The Down effect's last score control reaches `$126A`, clears voice tag
+`$010F=FF` at SMP tick 18,771,648, and queues voice-7 KOFF `$5C=80`, written
+at tick 18,771,712. This identifies a bounded terminating cue within 700 frames;
+its data/control/timing recovery is not yet implemented. The exploratory
+handler-table artifact had an erroneous +1 on SPC RTS targets; retain it and
+correct against observed targets before using it. Weekly usage is 14%,
+startup 12%, boundary 32%. No reset/spending/provider change authorized.
+
+## 00:28 UTC checkpoint
+
+The filtered observation matches all 3,241,178/3,240,836 shared hardware/port/RAM
+events, full PCM and sample/A/V/final-state digests in baseline and Down 450.
+Selective traces, old full traces and all four core binaries remain canonical
+main evidence. The long steered menu run sends only the initial music command
+and four navigation effects over 4,000 frames; it stays in menu by moving before
+idle timeout. Score controls and instrument selections are recorded in
+`music-steered-score-audit.json`; these are recovered observations, not yet a
+validated native parser or full musical-loop assertion.
+
+The initial conditional poll model fails 85-95 polls per case due to NMI work.
+A source-derived semantic NMI model now matches every observed boundary in all
+450 handlers, including palette arithmetic and DRAM refresh. Raster/pipeline
+interrupt recognition leaves six poll failures in Down 450 (353,392 of 353,398
+exact); keep the failure report and resolve them. No tolerance is introduced.
+Next close interrupt recognition, then recover producer/OAM/arrow elapsed work
+and native driver acknowledgments. Native driver, pack, output and restore
+remain incomplete; PR #50 stays draft and unreviewed.
+
+Focused tests: eleven observation and five conditional-clock checks pass.
+Latest quota is still 14% used, startup 12%, boundary 32%. The completed second
+consultant's clean isolated checkout can now be removed; it held no evidence.
+
+## 00:34 UTC 45-minute reassessment
+
+The clock prerequisite is advancing: the corrected conditional model matches
+all 2,827,700 poll access clocks across eight diagnostic captures, and all 450
+NMI handlers' five watched boundaries. It uses native PAL raster/pipeline,
+register preservation, palette state and DRAM arithmetic; original function
+entries remain supplied observations. This closes the local poll experiment,
+not cold native producer/driver timing. The six failures were the caller JSL's
+last stack-write edge and are retained in the earlier failed report.
+
+Continue inside AUDIO-TITLE-MENU. Next recover the frame-wait/OAM/arrow/menu
+producer phase, then driver acknowledgment and score timing. Freeze the full
+cold raw-audio horizon and cases before acceptance comparison. A complete
+terminating navigation cue is observed, but the longer title score still needs
+a native parser and its control/instrument boundaries. No extra task or user
+choice is needed. Reassess again within 45 minutes; checkpoint within ten.
+
+Tier 1 and the automatic fresh Sol/medium review remain reserved for the full
+capability candidate. Discretionary boundary remains 32% weekly used from the
+12% startup; latest 14%. No reset, credits, paid API or provider switch. The
+second consultant's clean checkout was removed; no evidence moved from it.

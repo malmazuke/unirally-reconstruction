@@ -158,3 +158,52 @@ score loop, content pack, SDL audio or native restore pass is claimed.
 Ten focused observation tests now pass, including ABI compatibility, watch
 bounds and unforced frame-frontier retention. Hosted synthetic CI passed on
 `91c8f05`; it does not validate these later ABI changes or private raw audio.
+
+## Conditional semantic clock experiments
+
+The filtered ABI-4 SMP watch option `--audio-smp-watch 0xADDRESS` retains
+10/11 register pairs only at selected instructions, with all hardware, RAM and
+port events unchanged. `filtered-integrity.json` proves exact shared events,
+PCM, state/A/V and final-state digests against the earlier baseline and Down.
+Four observation binaries and the original/full/selective traces remain private.
+
+`audio_lab/transport_clock.py` reads no ROM or instruction bytes. Its native
+semantic bus-cost functions derive from static `bank-82.lst` `$8035-$806D` and
+pinned CPU memory/timing code. Given observed function entries and readiness,
+it predicts every store boundary in 38 retained transfers across eight traces.
+This is conditional timing recovery, not a native cold command producer.
+
+The wider prologue experiment initially misses 85-95 polls per case. A new
+trace watches the NMI vector `$00:8587` and hook/return boundaries. All 450 NMI
+handlers match source-derived register preservation, settled-logo processing,
+palette counter/phase arithmetic, four-colour writes and restoration, including
+per-scanline refresh. The first raster/pipeline model leaves six failures:
+a JSL's last eight-clock stack write can see the NMI edge after its final-cycle
+interrupt test, so the target prologue must still recognize that pending edge.
+The corrected model predicts all 2,827,700 receiver-poll access clocks across
+eight captures, without taking captured interrupt timestamps as inputs.
+`receiver-poll-nmi-conditional-v2.json` retains counts and source hash; earlier
+failed reports remain. Original function entry clocks are still inputs.
+
+The source reading is static `bank-80.lst` `$8587-$8598`, `$F622-$F644`,
+`$FA60-$FAC9`, `$B0F0-$B0F9` and the frame wait `$FADF-$FAF4`, plus pinned CPU
+`irq.cpp` and `timing.cpp`. It remains limited to PAL non-interlace, version-2
+CPU, slow ROM, no H/DMA inside these paths, settled downward logo and the tested
+menu history. NMI enable and loading/producer timing are still dependencies.
+
+The Down cue reads its final control at score `$17D3` and enters `$126A`,
+clearing voice-7 tag `$010F=FF` at SMP tick 18,771,648, then writing `$5C=80`
+at tick 18,771,712. This is a bounded terminating effect in the 700-frame domain.
+The first handler-table audit erroneously added one to SPC RTS targets;
+`score-control-dispatch-corrected.json` retains actual targets. Corrected
+score audits distinguish top-level dispatch reads (return `$094B`) from
+parameter reads using dynamic stack state. Raw bytes >=128 in parameter reads
+are not counted as controls.
+
+The 4,000-frame menu-only exploration moves at 450/1500/2500/3500 before idle
+expiry. It contains only initial music start and those four effect starts, with
+11 instrument selections and 30 distinct dispatched controls. The unsteered
+4,000-frame exploration enters the demo and cannot establish title/menu music
+coverage. Neither is a frozen native gate or complete soundtrack assertion.
+Eleven observation and eight conditional-clock unit tests pass; full native
+audio and independent capability review remain pending.

@@ -27,16 +27,21 @@ KINDS = {1: 'dsp_run', 2: 'pcm_pair', 3: 'dsp_write', 4: 'smp_ram_write',
 class AudioCapture:
     """Preallocated core buffer, drained once per frame; loss invalidates capture."""
     def __init__(self, core: bsnes.BsnesCore, directory: Path, capacity: int,
-                 instructions: bool, ram_frames: set[int], identity: dict[str, Any], cpu_watch: list[int] | None = None) -> None:
+                 instructions: bool, ram_frames: set[int], identity: dict[str, Any], cpu_watch: list[int] | None = None,
+                 smp_watch: list[int] | None = None) -> None:
         if not 1 <= capacity <= 1_000_000:
             raise bsnes.CoreError('audio capacity must be in 1..1000000')
         if core.options['bsnes_run_ahead_frames'] != 'OFF':
             raise bsnes.CoreError('audio capture requires run-ahead OFF')
         if len(cpu_watch or []) > 64 or any(not 0 <= pc <= 0xffffff for pc in cpu_watch or []):
             raise bsnes.CoreError('audio CPU watches must be at most 64 24-bit PCs')
+        if len(smp_watch or []) > 64 or any(not 0 <= pc <= 0xffff for pc in smp_watch or []):
+            raise bsnes.CoreError('audio SMP watches must be at most 64 16-bit PCs')
         bsnes.bind_audio(core)
         if cpu_watch and core._lib.unirally_audio_api_version() < 3:
             raise bsnes.CoreError('audio CPU watches require observation ABI 3')
+        if smp_watch and core._lib.unirally_audio_api_version() < 4:
+            raise bsnes.CoreError('audio SMP watches require observation ABI 4')
         directory.mkdir(parents=True, exist_ok=False)
         self.core, self.directory, self.capacity = core, directory, capacity
         self.ram_frames = ram_frames
@@ -48,7 +53,8 @@ class AudioCapture:
         lib = core._lib
         self.data = {'schema_version': 1, 'status': 'incomplete', 'identity': identity,
                      'observation_abi': lib.unirally_audio_api_version(),
-                     'cpu_watch': cpu_watch or [], 'all_smp_instructions': instructions,
+                     'cpu_watch': cpu_watch or [], 'smp_watch': smp_watch or [],
+                     'all_smp_instructions': instructions,
                      'event_layout': '<QQQQIHHBB', 'event_size': bsnes._AUDIO_EVENT.size,
                      'kinds': KINDS, 'pcm_format': 'signed 16-bit little-endian interleaved L/R',
                      'pcm_position': 'wrapper delivery after DSP run, before float/resampling',
@@ -67,6 +73,12 @@ class AudioCapture:
             if not lib.unirally_audio_watch_cpu(watched, len(watched)):
                 self.finish('failed', 'CPU watch setup failed')
                 raise bsnes.CoreError('CPU watch setup failed')
+
+        if lib.unirally_audio_api_version() >= 4:
+            watched = (C.c_uint16 * len(smp_watch or []))(*(smp_watch or []))
+            if not lib.unirally_audio_watch_smp(watched, len(watched)):
+                self.finish('failed', 'SMP watch setup failed')
+                raise bsnes.CoreError('SMP watch setup failed')
 
     def snapshot(self, frame: int) -> None:
         raw = self.core._memory(2)

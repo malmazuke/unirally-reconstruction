@@ -129,3 +129,12 @@ class AudioCaptureTests(unittest.TestCase):
         self.assertEqual(record['frames'][0]['cpu_ticks'], 100)
         self.assertEqual(record['frames'][0]['smp_balance'], -42)
         self.assertEqual(record['kinds_count']['frame_boundary_hv'], 1)
+
+
+    def test_smp_watch_requires_abi_four_and_bounded_addresses(self):
+        with self.assertRaisesRegex(bsnes.CoreError, 'ABI 4'):
+            audio.AudioCapture(self.core, self.directory, 10, False, set(), {}, smp_watch=[0xdf8])
+        for pcs in ([-1], [0x10000], [0] * 65):
+            with self.assertRaisesRegex(bsnes.CoreError, '16-bit'):
+                audio.AudioCapture(self.core, self.directory, 10, False, set(), {}, smp_watch=pcs)
+        self.assertFalse(self.directory.exists())
