@@ -1,13 +1,13 @@
 #include "audio_cpu_boot.hpp"
-#include "audio_cpu_upload.hpp"
 #include "audio_cpu_queue.hpp"
+#include "audio_cpu_upload.hpp"
 #include "audio_ipl.hpp"
+#include <algorithm>
 #include <fstream>
 #include <iostream>
 #include <iterator>
 #include <limits>
 #include <memory>
-#include <algorithm>
 #include <stdexcept>
 
 namespace {
@@ -20,7 +20,8 @@ public:
     std::uint8_t read_port(std::uint64_t ticks, std::uint8_t port) override {
         if (ticks * cpu_frequency >= cpu_completed_ * smp_frequency) throw CpuYield{};
         const auto value = incoming_.at(port);
-        emit('R', ticks, port, value); return value;
+        emit('R', ticks, port, value);
+        return value;
     }
     void write_port(std::uint64_t ticks, std::uint8_t port, std::uint8_t value) override {
         if (ticks * cpu_frequency >= cpu_completed_ * smp_frequency) throw CpuYield{};
@@ -44,22 +45,30 @@ public:
         if (ticks * cpu_frequency > cpu_completed_ * smp_frequency + force_lead) throw CpuYield{};
     }
     void scanline(std::uint64_t ticks, std::uint64_t completed_ticks) override {
-        cpu_master_ = ticks; cpu_completed_ = completed_ticks; synchronize();
+        cpu_master_ = ticks;
+        cpu_completed_ = completed_ticks;
+        synchronize();
     }
     std::uint8_t read_audio_port(std::uint64_t ticks, std::uint8_t port) override {
-        cpu_master_ = cpu_completed_ = ticks; synchronize();
+        cpu_master_ = cpu_completed_ = ticks;
+        synchronize();
         const auto value = outgoing_.at(port);
-        emit('Q', smp_ticks(), port, value); return value;
+        emit('Q', smp_ticks(), port, value);
+        return value;
     }
     void write_audio_port(std::uint64_t ticks, std::uint8_t port, std::uint8_t value) override {
-        cpu_master_ = cpu_completed_ = ticks; synchronize();
+        cpu_master_ = cpu_completed_ = ticks;
+        synchronize();
         incoming_.at(port) = value;
         emit('C', smp_ticks(), port, value);
     }
+
 private:
     static constexpr std::uint64_t cpu_frequency = 21281370, smp_frequency = 2050560;
-    std::ostream& output_; unirally::AudioIplHandshake ipl_;
-    const unirally::TitleMenuAudioData* score_; const unirally::AudioPitchData* pitch_;
+    std::ostream& output_;
+    unirally::AudioIplHandshake ipl_;
+    const unirally::TitleMenuAudioData* score_;
+    const unirally::AudioPitchData* pitch_;
     bool ready_mode_;
     std::unique_ptr<unirally::TitleMenuAudioDriver> driver_;
     std::array<std::uint8_t, 4> incoming_{}, outgoing_{};
@@ -94,16 +103,19 @@ std::vector<std::uint8_t> read(const std::string& path) {
 int main(int argc, char** argv) {
     try {
         if (argc != 3 && argc != 4)
-            throw std::invalid_argument("audio_cpu_upload_runner DATA_DIRECTORY OUTPUT [ready|samples|queue|vblank]");
+            throw std::invalid_argument(
+                "audio_cpu_upload_runner DATA_DIRECTORY OUTPUT [ready|samples|queue|vblank]");
         const bool vblank = argc == 4 && std::string(argv[3]) == "vblank";
         const bool queue = argc == 4 && (std::string(argv[3]) == "queue" || vblank);
         const bool samples = argc == 4 && (std::string(argv[3]) == "samples" || queue);
         const bool ready = argc == 4 && (std::string(argv[3]) == "ready" || samples);
         if (argc == 4 && !ready) throw std::invalid_argument("unknown upload mode");
-        const std::string root = argv[1]; unirally::AudioCpuUploadData data;
+        const std::string root = argv[1];
+        unirally::AudioCpuUploadData data;
         std::ifstream lengths(root + "/cpu-resource-lengths.txt");
         for (auto& length : data.resource_lengths) {
-            unsigned value; if (!(lengths >> value) || value > 65535)
+            unsigned value;
+            if (!(lengths >> value) || value > 65535)
                 throw std::runtime_error("invalid resource length");
             length = static_cast<std::uint16_t>(value);
         }
@@ -115,10 +127,11 @@ int main(int argc, char** argv) {
             std::copy(slots.begin(), slots.end(), data.sample_slots.begin());
             for (const auto sample : slots) {
                 if (sample == 255) continue;
-                if (sample >= data.sample_resources.size()) throw std::invalid_argument("sample index");
+                if (sample >= data.sample_resources.size())
+                    throw std::invalid_argument("sample index");
                 const auto name = std::to_string(sample);
-                data.sample_resources[sample] = read(root + "/cpu-sample-resource-"
-                    + (sample < 10 ? "0" : "") + name + ".bin");
+                data.sample_resources[sample] =
+                    read(root + "/cpu-sample-resource-" + (sample < 10 ? "0" : "") + name + ".bin");
             }
         }
         std::ofstream output(argv[2]);
@@ -132,10 +145,12 @@ int main(int argc, char** argv) {
         if (notes.size() != 194 || fraction.size() != 64 || transpose.size() != 64)
             throw std::invalid_argument("invalid pitch data");
         for (std::size_t i = 0; i < pitch.notes.size(); ++i)
-            pitch.notes[i] = static_cast<std::uint16_t>(notes[2*i] | unsigned(notes[2*i+1]) << 8);
+            pitch.notes[i] =
+                static_cast<std::uint16_t>(notes[2 * i] | unsigned(notes[2 * i + 1]) << 8);
         std::copy(fraction.begin(), fraction.end(), pitch.sample_fraction.begin());
         std::copy(transpose.begin(), transpose.end(), pitch.sample_transpose.begin());
-        Bus bus(output, score, pitch, ready); unirally::AudioCpuWorkClock clock(&bus);
+        Bus bus(output, score, pitch, ready);
+        unirally::AudioCpuWorkClock clock(&bus);
         unirally::native_audio_cpu_boot_prefix(clock);
         unirally::native_audio_cpu_uploads(clock, data);
         if (ready) unirally::native_audio_cpu_finish_driver_entry(clock);
@@ -151,5 +166,8 @@ int main(int argc, char** argv) {
         std::cout << "computed_final_upload_cpu_clock=" << clock.ticks() << '\n';
         if (!output) throw std::runtime_error("native upload events failed");
         return 0;
-    } catch (const std::exception& error) { std::cerr << error.what() << '\n'; return 1; }
+    } catch (const std::exception& error) {
+        std::cerr << error.what() << '\n';
+        return 1;
+    }
 }
