@@ -1,4 +1,5 @@
 #pragma once
+#include <array>
 #include <cstdint>
 
 namespace unirally {
@@ -13,6 +14,7 @@ public:
     virtual void write_audio_port(std::uint64_t master_ticks, std::uint8_t port,
                                   std::uint8_t value) = 0;
     virtual void nonmaskable_interrupt(AudioCpuWorkClock& clock);
+    virtual std::uint16_t controller_input(std::uint64_t master_ticks, unsigned port);
 };
 // Semantic CPU work, in master clocks, for the pinned PAL/version-2 bus.
 // ROM reads account for bus work only: this class reads no ROM/opcode bytes.
@@ -52,6 +54,7 @@ public:
     void exchange_accumulator_bytes();
     void jump_far();
     void set_nmi_enabled(bool enabled);
+    std::uint16_t read_controller(unsigned port);
     void store_port(unsigned bytes = 1, bool long_address = false);
     void branch(bool taken);
     void request_dma(unsigned bytes);
@@ -68,8 +71,12 @@ private:
     bool nmi_enabled_ = false, nmi_valid_ = false, nmi_line_ = false, nmi_hold_ = false;
     bool nmi_transition_ = false, nmi_pending_ = false, irq_lock_ = false;
     bool in_interrupt_ = false;
+    bool auto_joypad_enabled_ = false;
+    unsigned auto_joypad_counter_ = 33;
+    std::array<std::uint16_t, 2> latched_controllers_{}, controller_words_{};
     AudioCpuWorkObserver* observer_;
     void begin_bus(unsigned clocks);
     void poll_nmi();
+    void poll_controllers();
 };
 } // namespace unirally

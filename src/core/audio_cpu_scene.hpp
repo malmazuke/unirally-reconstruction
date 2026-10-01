@@ -14,6 +14,17 @@ struct AudioCpuSceneWorkState {
     std::uint16_t vertical_current = 0, vertical_target = 0;
     bool operator==(const AudioCpuSceneWorkState&) const = default;
 };
+struct AudioCpuTitleHoldState {
+    std::uint16_t remaining = 110;
+    std::uint8_t code_index = 0;
+    std::array<std::uint16_t, 2> controllers{};
+    bool operator==(const AudioCpuTitleHoldState&) const = default;
+};
+void native_audio_begin_title_hold(AudioCpuWorkClock& clock);
+bool native_audio_title_hold_frame(AudioCpuWorkClock& clock, AudioCpuQueueState& queue,
+                                   AudioCpuSceneWorkState& scene, AudioCpuTitleHoldState& state);
+void native_audio_upload_oam(AudioCpuWorkClock& clock);
+std::array<std::uint16_t, 2> native_audio_poll_controllers(AudioCpuWorkClock& clock);
 void native_audio_finish_waited_frame(AudioCpuWorkClock& clock, AudioCpuSceneWorkState& state);
 void native_audio_title_fade(AudioCpuWorkClock& clock, AudioCpuQueueState& queue,
                              AudioCpuSceneWorkState& scene, bool darken);

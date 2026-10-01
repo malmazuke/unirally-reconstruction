@@ -1077,3 +1077,47 @@ input but not the main-menu load; read static D20E-D3xx before a bounded longer
 capture. Fresh telemetry at06:39 remains21% weekly used, ordinary usage allowed,
 reset1791365217,baseline12/stop32. No credit/provider change. Next checkpoint
 by06:51 and reassessment by07:26 UTC. Review/acceptance remain open.
+
+### 1 October 06:52 UTC checkpoint
+
+dd582e7 (native NMI pipeline/title fade and static metadata correction) is
+pushed. Eight focused audio checks and 24 native-symbol tooling checks pass.
+The draft PR description now reports the joined cold result and remaining
+product/save/producer gaps; no acceptance, review, merge or tag is claimed.
+
+Fresh CPU500 full/off observations cover title hold and main-menu load with
+identical state, A/V, PCM, final APU RAM and all 2,451,192 shared kind1-9 rows
+(`cold-cpu500-integrity.json`); full observation has 7,146,239 CPU instructions.
+Static bank-80 D1EC-D1F9/D20E-D338 and B74A/BB9C-BCBF were read before capture.
+The original six Start words are read on physical frames299-304, confirming
+that auto polling after a frame leave latches the next worker input frame.
+Native clock now owns serial auto-poll work; the runner receives a declared
+controller schedule rather than observed port values.
+
+Before native comparison, `cold-cpu-title-hold-frozen.json` fixes 1,007,259
+events,235,622 raw pairs,C=156,499,030 and111 controller/end-clock projections.
+New hold/input source is uncommitted and unverified. Continue from its first
+difference before main-menu work. Fresh usage remains21% at06:52,baseline12/
+stop32,ordinary usage allowed,reset1791365217. No credit/provider change.
+Next checkpoint by07:02; reassessment07:26. Full save/product/review remain open.
+
+### 1 October 07:00 UTC checkpoint
+
+Native automatic serial polling and title hold match all 1,007,259 frozen
+events,235,622 raw pairs,C=156,499,030 and every111 controller/end-clock
+projection. Title fade-out extends to 1,015,110 events,240,101 raw pairs and
+C=159,477,794 at886A. Reports are `native-cold-cpu-title-hold-pcm.json` and
+`native-cold-cpu-title-return-pcm.json`; no expected bytes or clocks changed.
+The Start-only domain does not exercise the newly implemented positive title
+code branch, so it retains no dynamic claim until its own frozen variation.
+All source functions pass readability. Both affected CPU checks and all24
+native-symbol tooling checks pass; regenerated metadata has1016 linked ROM
+citations and zero without records. New source/maps await commit.
+
+CI36826309740 passes macOS/Ubuntu including Linux sanitizers at dd582e7.
+The draft PR remains unreviewed and unaccepted. Next recover main-menu load
+from static D20E-D36F and native resource metadata; NMI stays active during
+loads, so raw graphics helpers need explicit instruction boundaries before
+claiming that domain. Canonical CPU/full save, product playback and capability
+review remain open. Last fresh usage21% at06:52,baseline12/stop32,no reset/
+spending/provider change. Next checkpoint by07:10; reassessment07:26 UTC.

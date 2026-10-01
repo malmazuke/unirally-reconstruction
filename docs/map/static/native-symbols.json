@@ -1186,6 +1186,7 @@
   {
    "address": "$80:B124",
    "native": [
+    "src/core/audio_cpu_title_hold.cpp:acknowledge_title_code",
     "src/core/front_end.cpp:check_title_code"
    ],
    "region": "rom"
@@ -2173,6 +2174,7 @@
   {
    "address": "$80:D1EC",
    "native": [
+    "src/core/audio_cpu_title_hold.cpp:native_audio_poll_controllers",
     "src/core/front_end.cpp:boot_frame",
     "src/core/front_end.cpp:run_main_menu",
     "src/core/hunter_ending.cpp:first_page_press",
@@ -2181,6 +2183,20 @@
     "src/core/stunt_result.cpp:tally_frame",
     "src/core/tour_menu.cpp:tour_menu_frame",
     "src/core/track_menu.cpp:track_menu_frame"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:D1EF",
+   "native": [
+    "src/core/audio_cpu_clock_controllers.cpp:AudioCpuWorkClock::read_controller"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:D1F4",
+   "native": [
+    "src/core/audio_cpu_clock_controllers.cpp:AudioCpuWorkClock::read_controller"
    ],
    "region": "rom"
   },
@@ -3163,6 +3179,7 @@
   {
    "address": "$80:F5C0",
    "native": [
+    "src/core/audio_cpu_title_hold.cpp:native_audio_begin_title_hold",
     "src/core/front_end.cpp:check_title_code",
     "src/core/front_end.hpp:FrontEndState::title_code_step",
     "src/core/front_end.hpp:OnePlayerRecords::cheat"
@@ -3170,6 +3187,20 @@
    "range_ends": [
     "$80:F60D",
     "$80:F612"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:F5C8",
+   "native": [
+    "src/core/audio_cpu_title_hold.cpp:native_audio_title_hold_frame"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:F5E3",
+   "native": [
+    "src/core/audio_cpu_title_hold.cpp:apply_title_code"
    ],
    "region": "rom"
   },
@@ -12128,6 +12159,12 @@
     "$80:91D1"
    ]
   },
+  "src/core/audio_cpu_clock_controllers.cpp:AudioCpuWorkClock::read_controller": {
+   "rom": [
+    "$80:D1EF",
+    "$80:D1F4"
+   ]
+  },
   "src/core/audio_cpu_interrupt.cpp:restore_interrupt_caller": {
    "rom": [
     "$80:B0F0"
@@ -12218,6 +12255,31 @@
   "src/core/audio_cpu_title.cpp:native_audio_load_title_graphics": {
    "rom": [
     "$80:F55F"
+   ]
+  },
+  "src/core/audio_cpu_title_hold.cpp:acknowledge_title_code": {
+   "rom": [
+    "$80:B124"
+   ]
+  },
+  "src/core/audio_cpu_title_hold.cpp:apply_title_code": {
+   "rom": [
+    "$80:F5E3"
+   ]
+  },
+  "src/core/audio_cpu_title_hold.cpp:native_audio_begin_title_hold": {
+   "rom": [
+    "$80:F5C0"
+   ]
+  },
+  "src/core/audio_cpu_title_hold.cpp:native_audio_poll_controllers": {
+   "rom": [
+    "$80:D1EC"
+   ]
+  },
+  "src/core/audio_cpu_title_hold.cpp:native_audio_title_hold_frame": {
+   "rom": [
+    "$80:F5C8"
    ]
   },
   "src/core/award.cpp:(file)": {
@@ -18816,10 +18878,10 @@
   }
  },
  "totals": {
-  "addresses": 1380,
+  "addresses": 1384,
   "io_addresses": 9,
-  "native_symbols": 1020,
-  "rom_addresses": 1012,
+  "native_symbols": 1026,
+  "rom_addresses": 1016,
   "sram_addresses": 49,
   "wram_addresses": 310
  }

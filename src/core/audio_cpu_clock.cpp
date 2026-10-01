@@ -19,9 +19,11 @@ void AudioCpuWorkClock::step(unsigned clocks) {
         if (line != scanline_) {
             scanline_ = line;
             refreshed_ = false;
+            if (scanline_ % 312 == 0) auto_joypad_counter_ = 33;
             if (observer_) observer_->scanline(ticks_, completed_step_ticks_);
         }
         if (ticks_ % 1364 & 2) poll_nmi();
+        if ((ticks_ & 127) == 0) poll_controllers();
     }
     completed_step_ticks_ += clocks;
     const auto refresh_position = 538U - unsigned(scanline_ * 1364 % 8);

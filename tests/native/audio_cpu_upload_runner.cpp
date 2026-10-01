@@ -20,6 +20,11 @@ public:
     std::unique_ptr<DriverDspDiagnostic> dsp;
     unirally::AudioCpuInterruptWorkState interrupt_state;
     unsigned interrupt_count = 0;
+    std::vector<std::array<std::uint16_t, 2>> controller_schedule;
+    std::uint16_t controller_input(std::uint64_t ticks, unsigned port) override {
+        const auto frame = ticks / 425568 + 1;
+        return frame < controller_schedule.size() ? controller_schedule[frame][port] : 0;
+    }
     void nonmaskable_interrupt(unirally::AudioCpuWorkClock& clock) override {
         ++interrupt_count;
         unirally::native_audio_title_interrupt(clock, interrupt_state);
@@ -118,7 +123,9 @@ int main(int argc, char** argv) {
             throw std::invalid_argument("audio_cpu_upload_runner DATA_DIRECTORY OUTPUT "
                                         "[ready|samples|queue|vblank|frame|palette|load|nintendo|"
                                         "title [PCM DSP_CLOCK_LIMIT]]");
-        const bool title_fade = argc >= 4 && std::string(argv[3]) == "title-fade";
+        const bool title_return = argc >= 4 && std::string(argv[3]) == "title-return";
+        const bool title_hold = argc >= 4 && (std::string(argv[3]) == "title-hold" || title_return);
+        const bool title_fade = argc >= 4 && (std::string(argv[3]) == "title-fade" || title_hold);
         const bool first_nmi = argc >= 4 && (std::string(argv[3]) == "first-nmi" || title_fade);
         const bool title = argc >= 4 && (std::string(argv[3]) == "title" || first_nmi);
         const bool nintendo = argc >= 4 && (std::string(argv[3]) == "nintendo" || title);
@@ -170,6 +177,15 @@ int main(int argc, char** argv) {
         std::copy(fraction.begin(), fraction.end(), pitch.sample_fraction.begin());
         std::copy(transpose.begin(), transpose.end(), pitch.sample_transpose.begin());
         Bus bus(output, score, pitch, ready);
+        std::ifstream controller_inputs(root + "/cpu-controller-inputs.txt");
+        unsigned input_frame, input_first, input_second;
+        while (controller_inputs >> input_frame >> input_first >> input_second) {
+            if (input_frame != bus.controller_schedule.size() || input_first > 65535
+                || input_second > 65535)
+                throw std::invalid_argument("invalid native controller schedule");
+            bus.controller_schedule.push_back({static_cast<std::uint16_t>(input_first),
+                                               static_cast<std::uint16_t>(input_second)});
+        }
         if (argc == 6)
             bus.dsp = std::make_unique<DriverDspDiagnostic>(argv[4], std::stoull(argv[5]));
         unirally::AudioCpuWorkClock clock(&bus);
@@ -209,6 +225,23 @@ int main(int argc, char** argv) {
                         unirally::native_audio_first_title_interrupt(clock);
                         if (title_fade)
                             unirally::native_audio_title_fade(clock, state, scene, false);
+                        if (title_hold) {
+                            unirally::AudioCpuTitleHoldState hold;
+                            unirally::native_audio_begin_title_hold(clock);
+                            bool more;
+                            do {
+                                more = unirally::native_audio_title_hold_frame(clock, state, scene,
+                                                                               hold);
+                                std::cout << "title_frame_end=" << clock.ticks()
+                                          << " pads=" << hold.controllers[0] << ','
+                                          << hold.controllers[1] << '\n';
+                            } while (more);
+                        }
+                        if (title_return) {
+                            clock.call_local();
+                            unirally::native_audio_title_fade(clock, state, scene, true);
+                            clock.return_local();
+                        }
                         std::cout << "palette_delay=" << unsigned(bus.interrupt_state.palette_delay)
                                   << " palette_index="
                                   << unsigned(bus.interrupt_state.palette_index) << '\n';

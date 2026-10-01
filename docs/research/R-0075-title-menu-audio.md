@@ -764,3 +764,35 @@ retained; all ordered command/DSP/CONTROL accesses, both clocks and nonopaque
 values remain required. The DSP horizon clips diagnostic packaging only.
 The app remains silent; later title/menu producer work, canonical CPU/full
 save, product output and independent capability review remain open.
+
+## Native automatic controller polling and title hold, 1 October
+
+Verified: fresh CPU500 instruction-full/off captures agree on state, A/V, raw
+PCM, final APU RAM and all 2,451,192 shared kind1-9 rows. Full observation has
+7,146,239 CPU instructions. `cold-cpu500-integrity.json` and retained command
+records bind this to the same PAL ROM/core/ABI5 identity. Static bank-80
+$80:D1EC-$80:D1F9 and $80:D20E-$80:D338 were read before these captures.
+
+`native-cold-cpu-title-hold-pcm.json` matches all 1,007,259 projected events,
+235,622 raw stereo pairs and original C=156,499,030 at $80:F614. All 111
+retained controller-word/frame-end-clock projections also match, including
+the six Start words on physical frames299-304 from script frames300-305.
+Pinned CPU::joypadEdge supplies the 128-clock serial polling, 256-clock start
+window and separately sampled result bytes. The worker leaves at blank and
+installs the next frame's input before polling; native input latches use this
+computed raster/frame relation. Native CPU starts from zero and receives only
+the declared controller schedule, identified data and native handshakes.
+
+`native-cold-cpu-title-return-pcm.json` extends to all 1,015,110 events and
+240,101 raw pairs at C=159,477,794/$80:886A, after the seven-frame fade-out.
+Both extension manifests and the 111 controller projections were frozen
+before their native comparisons. Expected event/sample/controller bytes are
+unchanged. Static $80:F5C0-$80:F617 supplies hold/input/fade work. New hold
+state owns its wrapping counter, code index and sampled controller words.
+The $80:F5E3/$80:B124 code-acknowledgment branch is implemented from that
+reading but has no new dynamic claim in the Start-only domain; freeze a
+positive code schedule before testing it.
+
+Main-menu resource work, canonical complete CPU/audio continuation, pack and
+real device output remain open. These joined cold checks do not accept the
+capability or change the app's silent status.

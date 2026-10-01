@@ -38,6 +38,7 @@ void AudioCpuWorkClock::set_nmi_enabled(bool enabled) {
     store_port();
     if (enabled && !nmi_enabled_ && nmi_line_) nmi_transition_ = true;
     nmi_enabled_ = enabled;
+    auto_joypad_enabled_ = enabled;
     irq_lock_ = true;
 }
 void AudioCpuWorkClock::read_ram(unsigned bytes, bool long_address, bool indexed) {

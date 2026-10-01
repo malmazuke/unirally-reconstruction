@@ -1387,6 +1387,7 @@
     "NmX"
    ],
    "native": [
+    "src/core/audio_cpu_title_hold.cpp:acknowledge_title_code",
     "src/core/front_end.cpp:check_title_code"
    ],
    "observed_entries": {},
@@ -2124,6 +2125,8 @@
     "NmX"
    ],
    "native": [
+    "src/core/audio_cpu_clock_controllers.cpp:AudioCpuWorkClock::read_controller",
+    "src/core/audio_cpu_title_hold.cpp:native_audio_poll_controllers",
     "src/core/front_end.cpp:boot_frame",
     "src/core/front_end.cpp:run_main_menu",
     "src/core/hunter_ending.cpp:first_page_press",
@@ -2761,6 +2764,9 @@
    ],
    "native": [
     "src/core/audio_cpu_title.cpp:native_audio_load_title_graphics",
+    "src/core/audio_cpu_title_hold.cpp:apply_title_code",
+    "src/core/audio_cpu_title_hold.cpp:native_audio_begin_title_hold",
+    "src/core/audio_cpu_title_hold.cpp:native_audio_title_hold_frame",
     "src/core/front_end.cpp:check_title_code",
     "src/core/front_end.cpp:load_title",
     "src/core/front_end.cpp:title_palette, title_map, title_tiles",
@@ -14500,16 +14506,16 @@
    "call returns in the calling mode": 1262
   },
   "bytes": 131072,
-  "cited_addresses": 1521,
+  "cited_addresses": 1526,
   "cited_by_class": {
    "data": 25,
    "inferred": 247,
-   "observed": 950,
+   "observed": 955,
    "unknown": 299
   },
   "cited_by_position": {
    "dat": 25,
-   "loc": 862,
+   "loc": 867,
    "mid": 19,
    "sub": 316,
    "unk": 299

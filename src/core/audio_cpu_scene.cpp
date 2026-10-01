@@ -162,6 +162,9 @@ void fade(Clock& c, AudioCpuQueueState& queue, AudioCpuSceneWorkState& scene, bo
     c.return_local();
 }
 }
+void native_audio_upload_oam(Clock& c) {
+    upload_oam(c);
+}
 void native_audio_title_fade(Clock& c, AudioCpuQueueState& queue, AudioCpuSceneWorkState& scene,
                              bool darken) {
     fade(c, queue, scene, darken);
