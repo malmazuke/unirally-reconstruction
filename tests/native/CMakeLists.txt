@@ -141,6 +141,8 @@ add_test(NAME audio_cpu_defaults_terminal_settings_word COMMAND audio_cpu_defaul
 
 add_executable(title_menu_audio_runner title_menu_audio_runner.cpp)
 target_link_libraries(title_menu_audio_runner PRIVATE unirally_audio_score lab_options)
+add_executable(race_audio_runner race_audio_runner.cpp)
+target_link_libraries(race_audio_runner PRIVATE unirally_audio_score lab_options)
 add_executable(audio_state_tests audio_state_tests.cpp)
 target_link_libraries(audio_state_tests PRIVATE unirally_audio_score lab_options)
 add_test(NAME audio_canonical_file_and_transactional_restore COMMAND audio_state_tests)

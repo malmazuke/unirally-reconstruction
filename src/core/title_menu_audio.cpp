@@ -20,6 +20,7 @@ NativeTitleMenuAudio::NativeTitleMenuAudio(const TitleMenuAudioContent& content,
                                            AudioEngineEventSink* events)
     : content_(&content), engine_(content.score, content.pitch, controllers, events) {
     cartridge_.fill(255);
+    if (content.has_race_set()) engine_.set_race_sound_set(content.race_score);
 }
 // R-0075. Compose the frozen native cold work through F5C8, before its first hold frame.
 void NativeTitleMenuAudio::initialize_title() {
@@ -244,14 +245,24 @@ void NativeTitleMenuAudio::hunter_finish_credits() {
     phase_ = TitleMenuAudioPhase::hunter_reset_ready;
 }
 TitleMenuAudioState NativeTitleMenuAudio::snapshot() {
-    return {phase_, pending_action_, content_->identity, engine_.snapshot(), queue_, scene_, title_,
-            text_,  menu_,           cartridge_,         hunter_remaining_,  hunter_};
+    return {phase_,
+            pending_action_,
+            content_->identity,
+            engine_.snapshot(),
+            queue_,
+            scene_,
+            title_,
+            text_,
+            menu_,
+            cartridge_,
+            hunter_remaining_,
+            hunter_,
+            cued_frame_};
 }
 void NativeTitleMenuAudio::restore(const TitleMenuAudioState& state) {
     if (state.content_identity != content_->identity)
         throw std::invalid_argument("audio state content identity differs");
-    if (state.phase > TitleMenuAudioPhase::hunter_second_reveal
-        || state.pending_action > AudioCpuMenuAction::hunter
+    if (state.phase > TitleMenuAudioPhase::cued || state.pending_action > AudioCpuMenuAction::hunter
         || (state.phase == TitleMenuAudioPhase::hunter_entry && state.hunter_remaining > 30)
         || ((state.phase == TitleMenuAudioPhase::hunter_first_reveal
              || state.phase == TitleMenuAudioPhase::hunter_second_reveal)
@@ -269,6 +280,7 @@ void NativeTitleMenuAudio::restore(const TitleMenuAudioState& state) {
     pending_action_ = state.pending_action;
     hunter_remaining_ = state.hunter_remaining;
     hunter_ = state.hunter;
+    cued_frame_ = state.cued_frame;
     queue_ = state.queue;
     scene_ = state.scene;
     title_ = state.title;

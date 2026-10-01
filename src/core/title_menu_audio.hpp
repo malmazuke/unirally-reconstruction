@@ -2,6 +2,7 @@
 #include "audio_cpu_menu_input.hpp"
 #include "audio_cpu_text.hpp"
 #include "audio_cpu_upload.hpp"
+#include "audio_cue.hpp"
 #include "audio_engine.hpp"
 
 namespace unirally {
@@ -9,6 +10,8 @@ class ClassicContentPack;
 struct TitleMenuAudioContent {
     std::array<std::uint8_t, 32> identity{};
     AudioSoundSet score;
+    AudioSoundSet race_score; // the first race's set; empty before pack v32
+    bool has_race_set() const { return !race_score.tables.empty(); }
     AudioPitchData pitch;
     AudioCpuUploadData upload;
     std::array<AudioCpuGraphicsAsset, 128> graphics{};
@@ -46,7 +49,8 @@ enum class TitleMenuAudioPhase : std::uint8_t {
     warm_title_hold,
     warm_title_complete,
     hunter_first_reveal,
-    hunter_second_reveal
+    hunter_second_reveal,
+    cued // after a menu exit the game reports each frame's queue work (D-0010)
 };
 struct TitleMenuAudioState {
     TitleMenuAudioPhase phase = TitleMenuAudioPhase::cold;
@@ -61,6 +65,7 @@ struct TitleMenuAudioState {
     std::array<std::uint8_t, 8192> cartridge{};
     std::uint16_t hunter_remaining = 30;
     AudioCpuHunterWorkState hunter;
+    std::uint32_t cued_frame = 0; // the last frame cue_frame completed
 };
 // Semantic call boundaries own all continuation state. Controller words are
 // external future input; identified content stays immutable outside the state.
@@ -89,6 +94,9 @@ public:
     bool hunter_credits_frame();
     void hunter_finish_credits();
     void restart_title();
+    // From a 1P/2P/VS/OPTIONS menu exit, run frame `frame`'s queue work at its
+    // frame-anchored clocks and end at that frame's vertical-blank boundary.
+    void cue_frame(std::uint32_t frame, std::span<const AudioCue> cues);
     std::uint64_t cpu_ticks() { return engine_.cpu().ticks(); }
     TitleMenuAudioPhase phase() const { return phase_; }
     std::uint8_t menu_selection() const { return menu_.selection; }
@@ -105,6 +113,9 @@ private:
     AudioCpuMenuAction pending_action_ = AudioCpuMenuAction::waiting;
     std::uint16_t hunter_remaining_ = 30;
     AudioCpuHunterWorkState hunter_;
+    std::uint32_t cued_frame_ = 0;
+    void run_cue(std::uint32_t frame, const AudioCue& cue);
+    void load_session(std::uint32_t frame, AudioSessionLoad load);
     AudioCpuQueueState queue_;
     AudioCpuSceneWorkState scene_;
     AudioCpuTitleHoldState title_;

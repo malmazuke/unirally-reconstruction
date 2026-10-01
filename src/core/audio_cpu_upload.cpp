@@ -15,6 +15,11 @@ void increment_direct(Clock& c, unsigned bytes) {
     c.idle();
     c.ram_writes(bytes);
 }
+std::uint16_t resource_length(const AudioCpuUploadData& data, unsigned index) {
+    return index < data.resource_lengths.size()
+             ? data.resource_lengths[index]
+             : data.race_resource_lengths.at(index - data.resource_lengths.size());
+}
 // Static bank-82 listing 812A-8150; directory lengths are data-format values.
 std::uint16_t select_resource(Clock& c, const AudioCpuUploadData& data, unsigned index) {
     c.call_local();
@@ -34,7 +39,7 @@ std::uint16_t select_resource(Clock& c, const AudioCpuUploadData& data, unsigned
         c.branch(false);
         c.update_register();
         read_resource(c, 2);
-        cursor += data.resource_lengths[i];
+        cursor += resource_length(data, i);
         const bool carry = cursor > 65535;
         c.branch(!carry);
         if (carry) {
@@ -232,21 +237,29 @@ void send_sample_resource(Clock& c, const AudioCpuUploadData& data, unsigned sam
 }
 
 }
-void native_audio_cpu_uploads(AudioCpuWorkClock& c, const AudioCpuUploadData& data) {
-    if (data.resource_lengths[50] != 4445 || data.resource_lengths[53] != 627
-        || data.resource_lengths[57] != 2206 || data.menu_transfer.size() != 627
-        || data.title_transfer.size() != 2206)
-        throw std::invalid_argument("unidentified cold audio upload domain");
+void native_audio_cpu_begin_session(AudioCpuWorkClock& c) {
+    begin_next_transfer(c);
+}
+// $80:A0FC-A10E (title) and $83:CA74-CA89 (first race): driver, tables, score.
+void native_audio_cpu_uploads(AudioCpuWorkClock& c, const AudioCpuUploadData& data,
+                              AudioSoundSetId set) {
+    const bool race = set == AudioSoundSetId::first_race;
+    const unsigned tables = race ? 54 : 53, score = race ? 62 : 57;
+    const auto& tables_bytes = race ? data.race_tables_transfer : data.menu_transfer;
+    const auto& score_bytes = race ? data.race_song_transfer : data.title_transfer;
+    if (resource_length(data, 50) != 4445 || tables_bytes.size() != resource_length(data, tables)
+        || score_bytes.size() != resource_length(data, score) || tables_bytes.empty()
+        || score_bytes.empty())
+        throw std::invalid_argument("unidentified audio upload domain");
     for (unsigned group = 0; group < 3; ++group) {
-        const unsigned index = group == 0 ? 50 : (group == 1 ? 53 : 57);
+        const unsigned index = group == 0 ? 50 : (group == 1 ? tables : score);
         select_resource(c, data, index);
         wait_ipl_ready(c);
         begin_header(c, group == 0 ? 0x400 : (group == 1 ? 0x1600 : 0x1d00));
-        const auto length = data.resource_lengths[index];
+        const auto length = resource_length(data, index);
         for (unsigned offset = 0; offset < length; ++offset) {
-            const auto value = group == 0 ? 0
-                                          : (group == 1 ? data.menu_transfer[offset]
-                                                        : data.title_transfer[offset]);
+            const auto value =
+                group == 0 ? 0 : (group == 1 ? tables_bytes[offset] : score_bytes[offset]);
             send_byte(c, static_cast<std::uint8_t>(offset), static_cast<std::uint8_t>(value),
                       offset + 1 == length);
         }
@@ -286,8 +299,11 @@ void native_audio_cpu_finish_driver_entry(AudioCpuWorkClock& c) {
 }
 // Bank-80 A112/A115 and bank-82 82A5-8327. There are 64 selected slots,
 // including FF holes; each nonempty slot names identified sample data only.
-void native_audio_cpu_upload_samples(AudioCpuWorkClock& c, const AudioCpuUploadData& data) {
-    for (const auto sample : data.sample_slots) {
+void native_audio_cpu_upload_samples(AudioCpuWorkClock& c, const AudioCpuUploadData& data,
+                                     AudioSoundSetId set) {
+    const auto& slots =
+        set == AudioSoundSetId::first_race ? data.race_sample_slots : data.sample_slots;
+    for (const auto sample : slots) {
         if (sample != 255
             && (sample >= 50 || data.resource_lengths[sample] < 6
                 || data.sample_resources[sample].size()
@@ -304,14 +320,14 @@ void native_audio_cpu_upload_samples(AudioCpuWorkClock& c, const AudioCpuUploadD
     c.store_direct();
     c.load_constant();
     std::uint8_t phase = 129;
-    for (unsigned slot = 0; slot < data.sample_slots.size(); ++slot) {
+    for (unsigned slot = 0; slot < slots.size(); ++slot) {
         c.save_register(2);
         c.store_direct(2);
         c.save_register();
         c.rom_reads(1);
         c.idle(2);
         c.rom_reads(5);
-        const auto sample = data.sample_slots[slot];
+        const auto sample = slots[slot];
         send_sample_descriptor(c, phase, sample);
         c.load_constant();
         c.branch(sample != 255);
@@ -325,7 +341,7 @@ void native_audio_cpu_upload_samples(AudioCpuWorkClock& c, const AudioCpuUploadD
         c.restore_register(2);
         c.update_register();
         increment_direct(c, 1);
-        c.branch(slot + 1 < data.sample_slots.size());
+        c.branch(slot + 1 < slots.size());
     }
     c.load_constant();
     c.write_audio_port(2, 128);

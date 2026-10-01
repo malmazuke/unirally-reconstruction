@@ -1,5 +1,6 @@
 #pragma once
 #include "audio_cpu_interrupt.hpp"
+#include "audio_cpu_upload.hpp"
 #include "audio_dsp.hpp"
 #include "audio_ipl.hpp"
 
@@ -33,6 +34,9 @@ struct AudioEngineState {
     std::uint32_t interrupt_count = 0;
     AudioDspState dsp;
     std::vector<std::int16_t> pending_pcm;
+    // The driver's current sound set and the one the CPU's latest session uploads.
+    AudioSoundSetId sound_set = AudioSoundSetId::title,
+                    uploading_sound_set = AudioSoundSetId::title;
 };
 // One native CPU/IPL/sequencer/DSP clock owner. Sources supply controller words
 // only. Event sinks observe output; neither supplies timestamps or commands.
@@ -46,6 +50,11 @@ public:
     NativeAudioEngine& operator=(NativeAudioEngine&&) = delete;
     AudioCpuWorkClock& cpu() { return cpu_; }
     AudioCpuInterruptWorkState& interrupt() { return interrupt_state_; }
+    // The first race's identified set, when the content carries it (pack v32).
+    void set_race_sound_set(const AudioSoundSet& set) { sets_[1] = &set; }
+    // The CPU designates the set its next upload session carries, before the FF request.
+    void begin_sound_set_upload(AudioSoundSetId set);
+    AudioSoundSetId sound_set() const { return active_set_; }
     std::vector<std::int16_t> take_pcm();
     void set_pcm_sink(AudioPcmSink* sink);
     AudioEngineState snapshot();
@@ -70,7 +79,10 @@ private:
     NativeAudioDsp dsp_;
     AudioIplHandshake ipl_{*this};
     AudioTimersState ipl_timers_;
-    const AudioSoundSet* score_;
+    std::array<const AudioSoundSet*, 2> sets_{};
+    AudioSoundSetId active_set_ = AudioSoundSetId::title, uploading_set_ = AudioSoundSetId::title;
+    const AudioSoundSet& set(AudioSoundSetId id) const;
+    void retain_uploading_set();
     const AudioPitchData* pitch_;
     AudioControllerSource* controllers_;
     AudioEngineEventSink* events_;

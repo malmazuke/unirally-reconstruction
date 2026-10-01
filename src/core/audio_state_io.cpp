@@ -102,7 +102,8 @@ void visit(audio_state_detail::Archive& a, AudioDspState& v) {
 }
 void visit(audio_state_detail::Archive& a, AudioEngineState& v) {
     a.fields(v.cpu, v.cpu_master, v.cpu_completed, v.ipl, v.ipl_timers, v.driver_present, v.driver,
-             v.incoming, v.outgoing, v.interrupt, v.interrupt_count, v.dsp, v.pending_pcm);
+             v.incoming, v.outgoing, v.interrupt, v.interrupt_count, v.dsp, v.pending_pcm,
+             v.sound_set, v.uploading_sound_set);
 }
 void visit(audio_state_detail::Archive& a, AudioCpuQueueState& v) {
     a.fields(v.parameters, v.commands, v.read_index, v.write_index, v.expected_phase);
@@ -130,7 +131,7 @@ void visit(audio_state_detail::Archive& a, AudioCpuHunterWorkState& v) {
 }
 void visit(audio_state_detail::Archive& a, TitleMenuAudioState& v) {
     a.fields(v.phase, v.pending_action, v.content_identity, v.engine, v.queue, v.scene, v.title,
-             v.text, v.menu, v.cartridge, v.hunter_remaining, v.hunter);
+             v.text, v.menu, v.cartridge, v.hunter_remaining, v.hunter, v.cued_frame);
 }
 // URAU0005 (race sound sets: flags, volume rate, gain scripts, loaded sample
 // headers) includes owned transport, voice/timer continuation, 64KiB DSP RAM/history

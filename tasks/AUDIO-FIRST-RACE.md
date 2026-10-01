@@ -133,3 +133,29 @@ pass (`$068F-$06B5`) adds to `$DF/$E0` with clamps; commands 6/11
 table; score controls `0xA6-0xA8` clear/test those flags, `0x86` sets the fixed
 duration, and `0x8C` starts a table-driven gain envelope stepped by `$0B42`
 (`$02D0` enable; `$0B8A` skips the software envelope while it is set).
+
+## 1 October 2026 23:50 UTC checkpoint
+
+- `2a6ebd3`: the native driver plays the race sound set. Conditionally on the
+  original CPU's port writes, all 703,154 DSP/port events and 2,562,673 raw
+  pairs of `primary-a` match (R-0076 observation 6; `cond-race-2.json`). It
+  also corrects the software envelope's zero-length decay/release division
+  (observation 5); AUDIO-TITLE-MENU's six frozen comparisons are unchanged
+  (`regression-1.json`). State format URAU0005.
+- Perturbation (`perturb.py`): shifting race command arrivals by up to 50 SMP
+  ticks changes about 160,000 post-race pairs; exact audio does not reconverge
+  after the race. Coverage captures count 12,055 instruction sites through the
+  race load and about 4,700 more in the race. [D-0010](../docs/decisions/D-0010-frame-anchored-sound-commands.md)
+  therefore adopts frame-anchored dispatch clocks outside the cycle-modelled
+  title/menu scenes; it changes this task's PCM criterion from exact to
+  measured (see Acceptance below once rewritten).
+- `c42c537`: pack profile v32 with the race sound set (15 entries; the 509 v31
+  entries pinned by digest).
+- Anchored transport (`audio_cued_scenes.cpp`, `race_audio_runner`): the exact
+  title/menu model runs to the 1P menu exit (frame 620), then per-frame cues.
+  With cues derived from the original's enqueue and dispatch-site watches
+  (`derive_cues.py`, captures `primary-disp1/2`), all 120 commands reach the
+  driver in the original's frames and order; arrival clocks differ by -43,072
+  to +26,596 master clocks; the race upload's first command is exact.
+- Next: native producers in the front end and race engine emitting the same
+  per-frame cues; then the app, saves, variations and gates.
