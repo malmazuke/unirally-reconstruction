@@ -120,12 +120,21 @@ std::vector<std::uint8_t> read(const std::string& path) {
 int main(int argc, char** argv) {
     try {
         if (argc != 3 && argc != 4 && argc != 6)
-            throw std::invalid_argument("audio_cpu_upload_runner DATA_DIRECTORY OUTPUT "
-                                        "[ready|samples|queue|vblank|frame|palette|load|nintendo|"
-                                        "title|first-nmi|title-fade|title-hold|title-return|menu-palette|"
-                                        "menu-graphics|menu-oam [PCM DSP_CLOCK_LIMIT]]");
-        const bool menu_oam = argc >= 4 && std::string(argv[3]) == "menu-oam";
-        const bool menu_graphics = argc >= 4 && (std::string(argv[3]) == "menu-graphics" || menu_oam);
+            throw std::invalid_argument(
+                "audio_cpu_upload_runner DATA_DIRECTORY OUTPUT "
+                "[ready|samples|queue|vblank|frame|palette|load|nintendo|"
+                "title|first-nmi|title-fade|title-hold|title-return|menu-palette|"
+                "menu-graphics|menu-oam|menu-clear [PCM DSP_CLOCK_LIMIT]]");
+        const bool menu_records = argc >= 4 && std::string(argv[3]) == "menu-records";
+        const bool menu_league =
+            argc >= 4 && (std::string(argv[3]) == "menu-league" || menu_records);
+        const bool menu_records_first =
+            argc >= 4 && (std::string(argv[3]) == "menu-records-first" || menu_league);
+        const bool menu_clear =
+            argc >= 4 && (std::string(argv[3]) == "menu-clear" || menu_records_first);
+        const bool menu_oam = argc >= 4 && (std::string(argv[3]) == "menu-oam" || menu_clear);
+        const bool menu_graphics =
+            argc >= 4 && (std::string(argv[3]) == "menu-graphics" || menu_oam);
         const bool menu_palette =
             argc >= 4 && (std::string(argv[3]) == "menu-palette" || menu_graphics);
         const bool title_return =
@@ -267,6 +276,36 @@ int main(int argc, char** argv) {
                             if (menu_graphics)
                                 unirally::native_audio_menu_graphics(clock, scene, menu_assets);
                             if (menu_oam) unirally::native_audio_menu_oam(clock, scene);
+                            if (menu_clear) {
+                                const auto signature = read(root + "/cpu-cartridge-signature.bin");
+                                if (signature.size() != 12)
+                                    throw std::invalid_argument("invalid cartridge signature");
+                                std::array<std::uint8_t, 8192> cartridge;
+                                cartridge.fill(255);
+                                const bool cleared = unirally::native_audio_begin_menu_records(
+                                    clock, state, scene, cartridge,
+                                    std::span<const std::uint8_t, 12>(signature.data(), 12));
+                                if (!cleared) throw std::logic_error("cold cartridge not cleared");
+                                if (menu_records_first) {
+                                    const auto defaults =
+                                        read(root + "/cpu-cartridge-defaults-v2.bin");
+                                    const auto types = read(root + "/cpu-track-types.bin");
+                                    if (defaults.size() != 1158 || types.size() != 50)
+                                        throw std::invalid_argument("invalid cartridge defaults");
+                                    unirally::native_audio_menu_first_record_defaults(
+                                        clock, cartridge,
+                                        std::span<const std::uint8_t, 1158>(defaults.data(), 1158),
+                                        std::span<const std::uint8_t, 50>(types.data(), 50));
+                                    if (menu_league)
+                                        unirally::native_audio_menu_league_defaults(clock,
+                                                                                    cartridge);
+                                    if (menu_records)
+                                        unirally::native_audio_finish_menu_records(
+                                            clock, scene, cartridge,
+                                            std::span<const std::uint8_t, 1158>(defaults.data(),
+                                                                                1158));
+                                }
+                            }
                         }
                         std::cout << "palette_delay=" << unsigned(bus.interrupt_state.palette_delay)
                                   << " palette_index="

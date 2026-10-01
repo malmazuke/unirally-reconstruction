@@ -86,4 +86,41 @@ void AudioCpuWorkClock::jump_far() {
     last_cycle();
     rom_reads(1);
 }
+void AudioCpuWorkClock::modify_direct_word() {
+    begin_instruction();
+    rom_reads(2);
+    ram_reads(2);
+    idle();
+    ram_writes();
+    last_cycle();
+    ram_writes();
+}
+// R-0075; recovered native table copies use the block-move bus pattern in RAM.
+// These reads charge bus work and never fetch or execute original code bytes.
+void AudioCpuWorkClock::move_ram_byte() {
+    begin_instruction();
+    ram_reads(3);
+    ram_reads();
+    ram_writes();
+    idle();
+    last_cycle();
+    idle();
+}
+void AudioCpuWorkClock::read_port(unsigned bytes) {
+    begin_instruction();
+    rom_reads(3);
+    for (unsigned byte = 0; byte < bytes; ++byte) {
+        if (byte + 1 == bytes) last_cycle();
+        begin_bus(6);
+        step(2);
+        irq_lock_ = false;
+        step(4);
+    }
+}
+void AudioCpuWorkClock::branch_long() {
+    begin_instruction();
+    rom_reads(3);
+    last_cycle();
+    idle();
+}
 } // namespace unirally

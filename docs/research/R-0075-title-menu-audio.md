@@ -830,3 +830,47 @@ frames; no original duration, opcode or producer time is a native input.
 The current helper owns only work used by the native scene/audio clock,
 not a separately accepted menu picture. Main-menu return/text/input, product
 playback and canonical CPU continuation remain incomplete.
+
+The cold menu cartridge slice reads static $83:8AF7-$83:8B90 and $83:FB41
+through FB55, $80:D36F/$80:8C4E through 8C80. Native 8 KiB state verifies the
+wrap at 1FFF/2000, restores byte 0, compares the identified 12-byte signature
+and clears all 4096 words on mismatch. `cold-cpu-menu-clear-frozen.json`
+predates its candidate; `native-cold-cpu-menu-clear-pcm.json` matches
+1,031,200 events, 258,851 raw pairs and C=171,925,134. A matching-header branch
+is implemented but untested in this cold domain; its later continuation
+still needs recovery before restart acceptance.
+
+The first default slice reads static $83:9983, $80:96FD, $83:92CC/$83:92FA/
+$83:9328 and $83:92E3/$83:9311/$83:936E/$83:93D8. Its locally extracted
+`cpu-cartridge-defaults.bin` covers only the identified default-data table
+83:8000-8483 (physical 18000-18483); `cpu-track-types.bin` covers the 50
+bytes at 83:A254, with numeric type 0 at index 0. Consumers read only names,
+league masks and times from bounded offsets; no code or producer clocks.
+`cold-cpu-menu-records-first-frozen.json` fixes the data hashes before its
+candidate. `native-cold-cpu-menu-records-first-pcm.json` matches 1,031,290
+events, 259,029 raw pairs and C=172,050,810 before 8CA9. This is audio event/PCM
+evidence during record work, not a newly accepted record-state contract.
+
+League default recovery reads static $83:93F5/$83:963C/$83:969F/$83:96BE
+and $80:AD43/$80:AD79/$80:AD94/$80:EFD4 through F02A. Native membership
+expansion, eight-row unsigned selection sort (replace on equal), RAM block
+copy work and six league loops preserve the original ordering. All cold
+masks are zero; positive membership branches have no dynamic claim here.
+`cold-cpu-menu-league-frozen.json` and `native-cold-cpu-menu-league-pcm.json`
+match 1,031,547 events, 259,375 raw pairs and C=172,266,996 before 8CB6.
+
+The remaining static defaults at $83:9486/$83:9340/$83:94A5/$83:90F4,
+followed by $83:8B23 from $80:8CB6, finish before the menu text call 8878.
+Source inspection found that ten settings words at 8472 extend through 8485.
+The preceding 1156-byte candidate's matching audio is retained as incomplete
+evidence in `native-cold-cpu-menu-records-bounds-gap01.json`; it does not
+validate the out-of-bounds settings read. The v1 input remains unchanged.
+`cpu-cartridge-defaults-v2.bin` extends its identical prefix by two bytes to
+1158, and `cold-cpu-menu-records-frozen-v2.json` freezes the new hash before
+the corrected candidate. Original event/PCM bytes and endpoint are unchanged.
+`native-cold-cpu-menu-records-pcm.json` then matches 1,031,945 events, 259,822
+raw pairs, C=172,562,846 and 111 controller frames with the corrected bounded
+table. The synthetic terminal-word sentinel check passes, as do both affected
+CPU checks. Still no new record-state, audible product or canonical-save claim.
+
+$80:8C80 is the native first-default-table entry named in the cold slice above.

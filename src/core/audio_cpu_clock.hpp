@@ -51,12 +51,16 @@ public:
     void read_rom(unsigned bytes = 1, bool long_address = false, bool indexed = false);
     void read_stack(unsigned bytes = 1);
     void modify_direct_byte();
+    void modify_direct_word();
+    void move_ram_byte();
     void exchange_accumulator_bytes();
     void jump_far();
     void set_nmi_enabled(bool enabled);
     std::uint16_t read_controller(unsigned port);
     void store_port(unsigned bytes = 1, bool long_address = false);
+    void read_port(unsigned bytes = 1);
     void branch(bool taken);
+    void branch_long();
     void request_dma(unsigned bytes);
     void write_audio_port(std::uint8_t port, std::uint8_t value);
     void write_audio_word(std::uint8_t first_port, std::uint16_t value);

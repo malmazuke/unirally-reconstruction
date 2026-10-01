@@ -1174,3 +1174,81 @@ after factoring the shared arrow callee. Static regeneration passes with
 symbol tooling checks pass after regeneration. A premature parallel tooling
 run saw the old map during regeneration and failed its symbol-name check;
 the sequential rerun is the reported pass. No expected result changed.
+
+### 1 October 07:26 UTC reassessment
+
+1355e17 is pushed: menu graphics/OAM and explicit NMI boundaries on raw
+assets, with all frozen menu/Nintendo checks named above. Keep the current
+primary/capability. Native exact progress now reaches the menu layout;
+continue the coupled cartridge check/defaults and text work rather than
+accepting a partial producer. Read static bank-83 8AF7-8B90/FB41-FB55 and
+bank-80 8C4E-8C80 before the next candidate. The new frozen menu-clear
+endpoint uses original C=171,925,134,D=8,283,232, through the8KiB clear.
+Its native candidate is not yet implemented or verified. Cold SRAM and the
+post-restart valid-signature branch must remain distinct. Last telemetry22%
+at07:19,baseline12/stop32,no reset/spending/provider change. Next checkpoint
+07:36,reassessment08:11. Canonical continuation/product/review remain open.
+
+### 1 October 07:36 UTC checkpoint
+
+1355e17 hosted CI36830051179 passes macOS/Ubuntu. Native cartridge clear
+and first default tables pass their frozen comparisons:1,031,200/1,031,290
+events,258,851/259,029 raw pairs andC=171,925,134/172,050,810 respectively.
+No expected event, sample or endpoint changed. Native SRAM is an owned8KiB
+array with explicit mirror and header decisions; the following initializers
+consume identified local tables. New source is uncommitted. R-0075 records
+this partial domain, not product/save or all records acceptance.
+
+Read static83:93F5/963C/96BE and80:AD43/EFD4 throughF02A before league
+default recovery. Cold member masks are six zero words; retain conditional
+bit selection and unsigned tie comparison in the native helper. Freeze its
+original endpoint before implementation. Usage remains22% at07:31,
+baseline12/stop32,ordinary usage allowed,reset1791365217. No reset/spending/
+provider change. Next checkpoint07:46,reassessment08:11. Product/save/review open.
+
+### 1 October 07:46 UTC checkpoint
+
+The native league slice matches1,031,547 events,259,375 raw pairs and
+C=172,266,996. Full record defaults/checksums/reset initially match
+1,031,945 events,259,822 pairs andC=172,562,846, but source inspection finds
+an extracted-table bounds error: ten words at83:8472 include8484/8485,
+beyond the1156-byte input. That initial match is retained as
+`native-cold-cpu-menu-records-bounds-gap01.json` and is incomplete evidence,
+not an accepted pass. Preserve the v1 input and all original events/PCM;
+extract1158 bytes into a separate v2 file, freeze its hash before the
+corrected candidate, and rerun with a focused terminal-word check.
+
+Both affected CPU checks and readability pass before this correction. New
+source remains uncommitted and maps are stale until regenerated. No product/
+save acceptance or capability review yet. Next text work follows a bounded
+corrected record slice. Fresh usage22% at07:46,baseline12/stop32,ordinary usage
+allowed,reset1791365217,no reset/spending/provider change. Next checkpoint
+07:56;reassessment08:11.
+
+Bounds correction follow-up: the1158-byte v2 input has an identical1156-byte
+prefix; all original events,PCM and endpoint stay fixed. Corrected full
+records comparison passes1,031,945 events,259,822 pairs and111 controller
+frames. All three affected CPU checks pass, including the terminal settings
+word sentinel. Native files pass the80-line readability limit. Next regenerate
+static/native metadata and commit this corrected cold record slice, then
+recover menu text from8878. No acceptance, review or merge is claimed.
+
+### 1 October 07:56 UTC checkpoint
+
+Corrected cold menu record candidate and maps await this checkpoint commit.
+The full prefix matches 1,031,945 events, 259,822 raw pairs, C=172,562,846
+and all 111 prior title controller frames. The v2 table extends the original
+identical prefix; its earlier bounds-gap result remains retained and incomplete.
+Three affected CPU checks, readability and all 24 native-symbol tooling checks
+pass. Static regeneration checks 53,062 sites and 42,700 shared instructions
+with zero disagreements; all 1036 native citations now have records.
+A missing explicit 8C80 record citation was added before final regeneration.
+
+Next recover the menu text/intro work from 8878, reading static C3BC-C5C8,
+8C41, D1FA,937B,F52B,A877 as the source of the routines. Existing CPU500
+observations cover the first interactive menu entry, so no new capture is
+needed for this prefix. Positive title-code/member branches and valid-header
+restart still lack dynamic claims. Product playback, full canonical save,
+final native primary/variations and capability review remain open. Last fresh
+telemetry 22% at07:46, baseline12/stop32, no reset/spending/provider change.
+Next checkpoint08:06; reassessment08:11.

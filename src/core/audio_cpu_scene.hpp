@@ -2,6 +2,7 @@
 #include "audio_cpu_boot.hpp"
 #include "audio_cpu_interrupt.hpp"
 #include "audio_cpu_queue.hpp"
+#include <span>
 
 namespace unirally {
 // Reduced frontend state read by FAF5. Word differences wrap before the
@@ -25,6 +26,21 @@ struct AudioCpuTitleHoldState {
 void native_audio_begin_title_hold(AudioCpuWorkClock& clock);
 bool native_audio_title_hold_frame(AudioCpuWorkClock& clock, AudioCpuQueueState& queue,
                                    AudioCpuSceneWorkState& scene, AudioCpuTitleHoldState& state);
+void native_audio_finish_menu_records(AudioCpuWorkClock& clock, AudioCpuSceneWorkState& scene,
+                                      std::array<std::uint8_t, 8192>& cartridge,
+                                      std::span<const std::uint8_t, 1158> defaults);
+void native_audio_reset_menu_selection(AudioCpuWorkClock& clock, AudioCpuSceneWorkState& scene,
+                                       std::array<std::uint8_t, 8192>& cartridge);
+void native_audio_menu_league_defaults(AudioCpuWorkClock& clock,
+                                       std::array<std::uint8_t, 8192>& cartridge);
+void native_audio_menu_first_record_defaults(AudioCpuWorkClock& clock,
+                                             std::array<std::uint8_t, 8192>& cartridge,
+                                             std::span<const std::uint8_t, 1158> defaults,
+                                             std::span<const std::uint8_t, 50> track_types);
+bool native_audio_begin_menu_records(AudioCpuWorkClock& clock, AudioCpuQueueState& queue,
+                                     AudioCpuSceneWorkState& scene,
+                                     std::array<std::uint8_t, 8192>& cartridge,
+                                     std::span<const std::uint8_t, 12> signature);
 void native_audio_park_arrow(AudioCpuWorkClock& clock, AudioCpuSceneWorkState& scene);
 void native_audio_menu_oam(AudioCpuWorkClock& clock, AudioCpuSceneWorkState& scene);
 void native_audio_upload_oam(AudioCpuWorkClock& clock);
