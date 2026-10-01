@@ -34,6 +34,20 @@ no OS mixer state is serialized.
 No raw replay is product acceptance. Reference restore-audio exclusions and all
 existing gameplay gates remain in force.
 
+AUDIO-FIRST-RACE extends native audio past the 1P menu exit under
+[D-0010](decisions/D-0010-frame-anchored-sound-commands.md): the front end and race engine
+report each frame's sound queue work, and the audio side delivers it at declared
+frame-anchored clocks. A v32 pack adds the race sound set. `front_end_runner --sound-cues
+FILE` writes the native cues per frame; `race_audio_runner PACK INPUT CUES EVENTS PCM
+LAST_FRAME DSP_END [OUTPUT_RATE SAVE_FRAME STATE RESTORE]` plays them from power-on (raw
+pairs, or resampled playback with 257-pair drains and fresh-process save/restore). With
+`--native-title-menu-audio` and a v32 pack, the app plays continuous audio from power-on
+through 1P setup, the first race on DRAGSTER, its result and the menus after it; other modes
+and later races stop the cued producer. `--audio-cue-log FILE` keeps the app's cues with
+rotation lines unresolved. [R-0076](research/R-0076-first-race-audio.md) records the
+captured schedules, the exact cue comparisons and the measured (not exact) PCM agreement;
+the laboratory scripts are in main `local/evidence/audio-first-race/`.
+
 For LEAGUE (R-0073), the current supported Classic pack profile is
 `classic.pal.crawler.tracks.v29` with 475 exact PAL entries. Nine additions hold
 three league text streams and six podium assets. The earlier OPTIONS v28's 24 additions
