@@ -1242,3 +1242,24 @@ A visible 1,000-update scripted navigation run reports two navigation events,
 keys. This and the earlier HUNTER device run are scripted delivery observations,
 not physical-input or human-listening evidence. That product criterion remains
 open, so this source review is not task acceptance.
+
+
+### 2 October 2026 Sydney - bounded physical input and listening acceptance
+
+The live run of source `42d2cc8` used the v31 pack and opt-in native audio flag,
+with no future input file or fixed pad mask. The visible main menu was captured
+in the chat. Actual Xbox controller input produced 377 sampled nonzero updates,
+40/40 button events and 32 navigation changes. The user confirmed hearing menu
+music and navigation sounds. SDL delivered 1,063,304 pairs, 964,841 nonzero,
+at 48,000 Hz; native source count was 709,756. Exit 0, no stderr.
+The command, source/binary identities and exact user observation are retained in
+main `artifacts/audio-title-menu-integration/product-physical-42d2cc8.json`.
+
+The same run reported 265,848 underrun pairs. The bounded producer stops at
+ordinary menu exits; the aggregate telemetry cannot isolate this run's exact
+shortfall cause. No zero-underrun, physical keyboard hold or all-exits continuity
+claim follows. HUNTER lifecycle/warm restart acceptance uses its independent
+exact differential and scripted-device evidence, not the human listening reply.
+The bounded title/menu product criterion is now met, with these limits retained.
+Source re-review and the complete regression matrix above remain applicable;
+final records change no implementation or expected result.

@@ -155,6 +155,8 @@ ROLLING-CONTACT (ready) can run at any point; it is race-engine polish.
 
 ## Handoff
 
-- Current next outcome: AUDIO-TITLE-MENU after AUDIO-DECISION integration.
+- Current next outcome: AUDIO-FIRST-RACE after AUDIO-TITLE-MENU PR #50 integration.
+  Title/menu listening is accepted in R-0075's bounded domain; ordinary menu
+  exits and race/result audio remain before soundtrack breadth.
   The original FRONT-END-MAIN-MENU handoff and inventory above remain the
   25 September baseline; they are not a current missing-feature inventory.

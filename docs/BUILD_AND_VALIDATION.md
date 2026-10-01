@@ -4,7 +4,7 @@ This is the M0 implementation specification. Commands marked implemented in the 
 
 ## Validation by stage
 
-AUDIO-TITLE-MENU is in progress under [D-0009](decisions/D-0009-native-audio.md).
+AUDIO-TITLE-MENU is validated in its bounded domain under [D-0009](decisions/D-0009-native-audio.md).
 [R-0075](research/R-0075-title-menu-audio.md) records the opt-in raw DSP/PCM/APU
 observer and isolated shared DSP hardware diagnostic. Build its separate core
 with `reference build --lock tools/locks/audio-observation.json`; the ordinary
@@ -19,13 +19,16 @@ fresh-process continuation pass in R-0075's bounded domains. The new
 `title_menu_audio_runner` additionally predicts the coupled HUNTER pages, credits
 and warm title/menu restart from v31 identified data; original clocks/events
 are comparison outputs only. Its strict URAU0004 includes reveal HDMA and
-retained timer work. These differential experiments remain inside the incomplete
-capability; the warm opaque transport correction awaits independent review.
+retained timer work. Independent tier-1 review accepts the source and the
+narrowly scoped warm opaque executable-transport correction.
 `audio_playback_runner` also owns modern output fractions and queued PCM.
 The app's opt-in `--native-title-menu-audio` prototype delivers native audio
 through SDL from cold power-on and follows the coupled HUNTER path through
-a warm title/menu restart. Other menu exits stop its bounded producer. Physical input/listening acceptance remains open and the default app stays
-silent. Quiescent native/playback saves pass; live device/thread save is outside
+a warm title/menu restart. Other menu exits stop its bounded producer. A visible
+unscripted controller run and human listening confirm menu music/navigation.
+That run reports 265,848 underrun pairs; it does not prove continuous sound
+after every exit. The default app stays silent. Quiescent native/playback saves
+pass; live device/thread save is outside
 this declared continuation domain. A stream restore needs a quiescent producer and device;
 no OS mixer state is serialized.
 No raw replay is product acceptance. Reference restore-audio exclusions and all

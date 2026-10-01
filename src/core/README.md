@@ -379,7 +379,7 @@ words is live. The legacy DRAGSTER
 `update_movement` path and its `URMV` formats remain for the accepted gates.
 
 
-## Native title and menu audio candidate
+## Native title and menu audio
 
 `NativeTitleMenuAudio` owns the PAL CPU bus clock, command queue, recovered
 SPC sequencer, identified local score/sample content and isolated DSP. Its
@@ -394,10 +394,11 @@ and sprite uploads have separate small functions. `audio_state_io.cpp` writes
 URAU0004, including active reveal state, retained IPL timers and complete DSP
 history; `AudioOutput` retains the integer resampling fraction and queued PCM.
 Fresh-process comparisons cover active reveals, first-press history, credits
-wrap and warm restart. Source `42d2cc8` has independent tier-1 source re-review; physical
-input/listening acceptance is still pending.
+wrap and warm restart. Source `42d2cc8` has accepted independent tier-1 source
+re-review and bounded physical controller/listening acceptance in R-0075.
 
 The opt-in desktop flag `--native-title-menu-audio` uses this producer with
 sampled frontend controls and SDL output. Its scripted device run covers the
-HUNTER lifecycle. Physical input/listening acceptance is still pending; other
-menu exits stop this bounded producer and the default app remains silent.
+HUNTER lifecycle. The physical navigation run delivers audible music/effects
+and records 265,848 underrun pairs; its aggregate log does not isolate the cause.
+Other menu exits stop this bounded producer and the default app remains silent.

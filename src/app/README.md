@@ -75,8 +75,10 @@ a fallback frame. Presentation never changes canonical simulation state. See
 display, dependency and first-launch contracts.
 
 
-The candidate option `--native-title-menu-audio` requires a v31 tracks pack and
+The opt-in option `--native-title-menu-audio` requires a v31 tracks pack and
 starts from power-on. Native title/menu music and navigation effects continue
 through the HUNTER pages and credits to a warm title/menu restart. Other menu
 exits stop this bounded audio producer. The default app remains silent; R-0075
-records the exact differential domain and pending physical listening acceptance.
+records the exact differential domain and accepted physical controller/listening
+check. That live run also reports 265,848 underrun pairs; continuous sound
+after every menu exit remains outside the bounded outcome.

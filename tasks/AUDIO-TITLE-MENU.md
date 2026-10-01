@@ -2,8 +2,9 @@
 
 ## Assignment
 
-- Status: in_progress, source reviewed; physical input/listening acceptance
-  pending. Claimed 30 September 2026 UTC after PR #49 verification.
+- Status: validated; bounded physical input/listening accepted 2 October 2026
+  Sydney. Integration through PR #50 and its ignored closeout.
+  Claimed 30 September 2026 UTC after PR #49 verification.
 - Milestone: M4 (original game coverage).
 - Coordinator/primary: `/root`, OpenAI, current Codex session; model identifier
   is not exposed by this runtime. D-0004 Sol/medium project default remains
@@ -1960,3 +1961,58 @@ unchanged. Main `artifacts/audio-title-menu-integration/handoff.json` holds its
 actual Git head, commands, source checks and live command. The PR is draft;
 no acceptance, merge or tag. Fresh usage was 29% at 13:41 from 12%, stop 32%;
 no reset, spending or provider change.
+
+
+### 2 October 2026 Sydney - live product acceptance and integration handoff
+
+At 07:37 Sydney, a fresh unscripted 1,400-update app run used source
+`42d2cc8`, record head `c10b333` and the same SHA-256-bound v31 pack/binary.
+No input file or fixed controller mask was supplied. CUA raised the actual
+window and recorded the main menu with its arrow at OPTIONS in the chat.
+This is a retained screenshot observation and console recording, not a video.
+The connected Xbox Series X Controller generated 40/40 button down/up events
+and 377 gamepad-only nonzero sampled updates. The keyboard count is 0/0;
+this run verifies physical controller input, not physical keyboard holds.
+
+The user replied: "Yep I could hear the menu music, plus navigation sounds".
+The process exited 0 without stderr in 28.77 seconds. It reported 32 navigation
+changes, 709,756 native source pairs, 1,063,304 delivered pairs and 964,841
+nonzero pairs at 48,000 Hz. It also reported 265,848 underrun pairs. Preserve
+that shortfall as an observed limitation; this is not a zero-underrun or
+all-menu-exits continuity pass. The bounded producer returns on selected/idle
+menu exits other than HUNTER. The physical input also includes A/B/X, and its
+aggregate counters do not timestamp an exit or prove the shortfall's cause.
+The listening observation closes only the music/navigation product criterion;
+scene lifecycle remains supported by the separate exact HUNTER evidence and
+scripted zero-underrun device run, not by this user's listening report.
+
+Main `artifacts/audio-title-menu-integration/product-physical-42d2cc8.json`
+retains the exact command, binary/source/input telemetry, visual observation,
+user reply and limits. The raw command, result and transcript are
+`20261002-0736-physical-command.json`, `20261002-0736-physical-result.json` and
+`20261002-0736-physical.log`. Together with the reviewed original/native
+comparisons, this satisfies the declared bounded audible title/menu outcome.
+The default app remains silent; the opt-in flag requires v31. No full soundtrack,
+race audio, arbitrary menu exit audio or live device/thread save is accepted.
+
+The final successor changes records only (tier 3 under D-0008), including the
+next ready task. Source, tests, extraction, build rules and frozen expectations
+remain identical to independently reviewed `42d2cc8`. Both review findings have
+named fixes and accepted re-review. Final-tip hosted checks and all PR bodies/
+line comments must be read before `gh pr merge 50 --merge`; no direct main push.
+The main ignored closeout records the actual final commit, checks, merge and
+main equality after integration, plus task-owned cleanup. All captures and
+reviewer evidence already live under main `local/evidence/audio-title-menu/`;
+logs live under main `artifacts/audio-title-menu-integration/`. Delete this
+task's build output, owned emulator/toolchain copies and primary worktree only
+after verifying the pushed branch is integrated. The reviewer checkout is
+already archived. Preserve every cited capture and the user playtest checkout.
+No capture is moved or deleted merely because the task closes; actual cleanup
+paths and byte counts belong in the closeout.
+
+Next outcome: [AUDIO-FIRST-RACE](AUDIO-FIRST-RACE.md), ordinary 1P setup,
+DRAGSTER race/result and return with continuous native audio. This resolves the
+ordinary exit gap before extending the soundtrack by track. It is preparation,
+not a claim or implementation. Fresh weekly usage at this continuation is 29%,
+from 12% at claim, stop 32%; the review reserve remains intact. No reset,
+spending, provider change, release or M4 milestone tag.
