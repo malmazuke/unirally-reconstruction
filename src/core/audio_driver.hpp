@@ -27,6 +27,8 @@ public:
     void run_until(std::uint64_t ticks);
     std::uint64_t ticks() const { return ticks_; }
     const TitleMenuAudioScore& score() const { return score_; }
+    const AudioTimersState& timers() const { return timers_.state(); }
+    bool returned_to_ipl() const { return stopped_for_ipl_; }
 
 private:
     TitleMenuAudioScore score_;

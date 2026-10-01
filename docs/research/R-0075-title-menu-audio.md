@@ -479,3 +479,52 @@ also remain exact. Four focused native tests and 13 capture-tool tests pass;
 the two dispatcher source files pass the 80-line function-size check. Full
 cold timing, resumable phases, pack, native save, audible app and independent
 review remain pending.
+
+## Native IPL protocol and conditional complete PCM
+
+`ipl-protocol-reading.lst` records the pinned hardware IPL reading from
+bsnes target-libretro/resources.hpp and processor/spc700 timing primitives.
+The native implementation uses named pending handshake phases with byte
+subtraction, page/counter wrap, duplicate end comparison and port dummy reads.
+It fetches no instructions. Uploaded executable bytes are ignored; only
+identified score data is retained from those transfers in DSP RAM. Native
+score logic uses the separately bounded data inputs already described above.
+
+A fixed 100-frame original repeat adds watches for those IPL phases.
+`cold-ipl-observation-integrity.json` verifies all 903,135 normalized old events,
+all non-process/non-observation sample fields, raw PCM and final APU RAM
+remain exact. Only process metadata, observation row count and output path are
+excluded from the sample-record equality. The core/ROM/script/options agree.
+The first 100-frame native comparison matches all 321,790 projected rows.
+
+`native-cold-ipl-primary-conditional.json` starts native SMP work at tick zero
+and computes driver entry 1,725,604. All 620,517 baseline, 620,012 Down and
+1,161,751 long-prefix rows agree, 2,402,280 total. The projection includes every
+completed port read/write and DSP write, IPL direct-page clears, identified
+score uploads and the existing driver clear/sample writes. Other internal RAM
+and executable uploads are excluded. Original CPU port writes at their observed
+SMP boundaries remain conditions; there is no cold native CPU producer claim.
+
+`native-cold-ipl-restart-conditional.json` covers the HUNTER lifecycle: all
+1,407,361 projected rows agree, including native fade, IPL transfer, retained
+timer/DSP clocks and repeated driver initialization. The restart entry is
+computed as SMP tick 55,795,112. The expected original closing tick remains
+exclusive, preserving the pending-port-access boundary described earlier.
+
+`native-cold-pcm-conditional.json` compares each complete original raw capture,
+with the horizon fixed from that capture's sample count before the native run.
+All 448,326 baseline, 448,325 Down and 1,153,125 long-prefix stereo pairs match,
+2,049,776 total. `native-cold-pcm-restart-conditional.json` also matches all
+1,185,137 HUNTER pairs, including the fade, muted reload and restarted title.
+It retains the original SHA-256
+`1a5dc984ef02f66c3897cce84348a6ea301b6a34f98082af9b6a98f5e1a7ce87`.
+No original DSP event/snapshot or post-entry RAM write is an input. CPU writes
+and their timing still are, so this remains conditional SMP/DSP evidence.
+
+The authored sender transfers 258 bytes across a page/counter wrap and checks
+identical continuation events/entry clock from every exercised pending IPL
+phase. Five focused native checks pass. This object-level continuation is not
+a complete fresh-process audio save pass. The native driver still runs whole
+iterations and boot calls; `driver-pending-refactor-frozen.json` records the
+source and complete conditional reports before converting those pending phases.
+Cold CPU work, pack, full native save, audible app and independent review remain.

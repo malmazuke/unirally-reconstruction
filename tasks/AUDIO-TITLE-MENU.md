@@ -704,3 +704,24 @@ full save, audible output, regressions and tier-1 review are open.
 Commit this tested stop/observer/refactor slice after staged inspection, then
 continue the cold handshake. Next checkpoint by 03:56 UTC; reassess by 04:27.
 Quota is 18% from 12%, stop 32%; no reset/spending/provider change.
+
+## 03:56 UTC checkpoint
+
+Tested stop/ABI-5/dispatcher refactor is pushed as cc5250a; separate formatting
+commit 1b74042 is also pushed after focused tests and unchanged primary PCM.
+The draft PR remains unreviewed and unaccepted; current hosted checks are
+being read. Native-symbol regeneration retains 1,004 linked ROM citations.
+
+New resumable IPL hardware-protocol phases start at tick zero and compute the
+original driver entry 1,725,604 without supplying it. The first 100-frame
+conditional comparison matches all 321,790 projected rows. The additional IPL
+watches preserve every original old event and raw PCM; expected process and
+observation metadata differ. A synthetic independent sender transfers 258 bytes
+across a page/counter wrap and passes continuations from every exercised pending
+phase. The original CPU write clocks are still inputs, and the driver itself
+remains synchronous. Expanded comparisons and native reset reload are next.
+
+No product/pack/full-save claim. Cold CPU producer, complete PCM, audible live
+output, regressions and independent tier-1 review remain open. Fresh quota is
+18% from 12%, stop 32%, reset 1791365217; no reset/spending/provider change.
+Next checkpoint by 04:06 UTC; reassessment by 04:27 UTC.

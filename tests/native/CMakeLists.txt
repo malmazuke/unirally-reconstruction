@@ -116,3 +116,6 @@ target_link_libraries(audio_timer_tests PRIVATE unirally_audio_score lab_options
 add_test(NAME audio_timer_edges_wrap_restore COMMAND audio_timer_tests)
 add_executable(audio_driver_runner audio_driver_runner.cpp)
 target_link_libraries(audio_driver_runner PRIVATE unirally_audio_score unirally_dsp lab_options)
+add_executable(audio_ipl_tests audio_ipl_tests.cpp)
+target_link_libraries(audio_ipl_tests PRIVATE unirally_audio_score lab_options)
+add_test(NAME audio_ipl_pending_phases_and_page_wrap COMMAND audio_ipl_tests)

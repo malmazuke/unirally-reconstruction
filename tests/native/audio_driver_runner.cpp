@@ -3,6 +3,7 @@
 // inputs.
 #include "audio_driver.hpp"
 #include "audio_driver_dsp.hpp"
+#include "audio_ipl.hpp"
 #include <algorithm>
 #include <fstream>
 #include <iostream>
@@ -67,8 +68,9 @@ int main(int argc, char** argv) {
     try {
         if (argc != 8 && argc != 9 && argc != 10)
             throw std::runtime_error("audio_driver_runner TABLES TITLE PITCH "
-                                     "FRACTIONS TRANSPOSE INPUT OUTPUT [boot [PCM]]");
-        const bool boot = argc >= 9 && std::string(argv[8]) == "boot";
+                                     "FRACTIONS TRANSPOSE INPUT OUTPUT [boot|ipl [PCM]]");
+        const bool cold_ipl = argc >= 9 && std::string(argv[8]) == "ipl";
+        const bool boot = cold_ipl || (argc >= 9 && std::string(argv[8]) == "boot");
         if (argc >= 9 && !boot) throw std::runtime_error("unknown entry mode");
         const unirally::TitleMenuAudioData score_data{read(argv[1]), read(argv[2])};
         const auto pitch = read(argv[3]), fractions = read(argv[4]), transpose = read(argv[5]);
@@ -86,6 +88,7 @@ int main(int argc, char** argv) {
         if (!input || !bus.output) throw std::runtime_error("cannot open driver input/output");
         std::uint64_t entry;
         input >> entry >> bus.horizon;
+        if (cold_ipl && entry != 0) throw std::runtime_error("IPL starts at power-on tick zero");
         if (argc == 10) {
             if (bus.horizon % 64)
                 throw std::runtime_error("PCM diagnostic needs a complete DSP batch horizon");
@@ -121,11 +124,30 @@ int main(int argc, char** argv) {
         if (!std::is_sorted(bus.inputs.begin(), bus.inputs.end(),
                             [](const auto& a, const auto& b) { return a.ticks < b.ticks; }))
             throw std::runtime_error("CPU writes move backwards");
-        unirally::TitleMenuAudioDriver driver(score_data, data, bus, timers.state(), entry, boot);
-        driver.run_until(bus.horizon);
+        if (cold_ipl) {
+            unirally::AudioIplHandshake ipl(bus);
+            ipl.run_until(bus.horizon);
+            if (!ipl.driver_ready()) throw std::runtime_error("IPL transfer is incomplete");
+            entry = ipl.state().ticks;
+            std::cout << "computed_driver_entry_ticks=" << entry << '\n';
+        }
+        auto driver = std::make_unique<unirally::TitleMenuAudioDriver>(score_data, data, bus,
+                                                                       timers.state(), entry, boot);
+        driver->run_until(bus.horizon);
+        while (cold_ipl && driver->returned_to_ipl() && driver->ticks() < bus.horizon) {
+            unirally::AudioIplHandshake ipl(bus, driver->ticks());
+            ipl.run_until(bus.horizon);
+            if (!ipl.driver_ready()) break;
+            entry = ipl.state().ticks;
+            const auto retained_timers = driver->timers();
+            driver = std::make_unique<unirally::TitleMenuAudioDriver>(score_data, data, bus,
+                                                                      retained_timers, entry, true);
+            std::cout << "computed_restart_entry_ticks=" << entry << '\n';
+            driver->run_until(bus.horizon);
+        }
         if (bus.dsp) bus.dsp->finish();
         if (!bus.output) throw std::runtime_error("driver output failed");
-        std::cout << "computed_end_ticks=" << driver.ticks() << '\n';
+        std::cout << "computed_end_ticks=" << driver->ticks() << '\n';
         return 0;
     } catch (const std::exception& error) {
         std::cerr << error.what() << '\n';
