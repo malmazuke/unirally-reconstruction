@@ -152,34 +152,51 @@ emit the same operations in program order:
   pause sent its fade-in a frame late (the driver had not yet acknowledged the fade-out), so
   each group has its own anchor.
 
-`front_end_runner --sound-cues` on the primary schedule writes 5,791 cues for frames
-620-3,999, equal line for line to `primary.cues.txt` (4,757 without the frame waits); the
-native race initializes at 1,328 as before. Two changed schedules, each captured with both
-dispatch-site watches (`quit-disp1/2`, `loss-disp1/2`), compare the same way:
+`front_end_runner --sound-cues` writes the native cues for frames 620 on; each schedule was
+captured twice with the dispatch-site and enqueue watches (`NAME-disp1/2`) and compares line
+for line with the cues derived from them:
 
 | Schedule | Path | Cues (without waits) | Equal |
 |---|---|---|---|
 | `primary` | 1P DRAGSTER won, result, PICK TRACK | 5,791 (4,757) | yes |
 | `quit` | Start pauses the race at 1,700, Down, Start quits at 1,820 to the menus | 3,092 (2,023) | yes |
 | `loss` | DRAGSTER lost (Right released 2,000-2,999), result left at 5,000 | 7,572 (6,119) | yes |
+| `nav` (reviewer) | `primary` plus rider-menu and PICK TRACK moves | 5,805 | yes |
+| `variety` | rider-menu Up on the top row and Down past the bottom, PICK TOUR moves (a move down sounds twice), both PICK TRACK wraps, a jump with R held (player rotation flag 42), a brake (skid set and clear) | 5,946 (4,807) | yes |
+| `continue` | Start held into the race (the pause opened and CONTINUE taken on consecutive frames), a later pause and CONTINUE | 7,766 | yes |
+| `back` | Y on the rider menu (the back slide), then the race load | 1,319 | yes |
 
-The SDL frontend's scripted 1P primary run (`--audio-cue-log`, rotation lines resolved as
-the audio side does) gives the same 5,791 cues; it reports 3,380 cued frames and no stop.
-CONTINUE's fade-in and the stunt event's beeps follow the static reading only.
+The SDL frontend's scripted 1P primary run (`--audio-cue-log`) gives the same 5,791 cues and
+reports 3,380 cued frames and no stop. Its log keeps the rotation lines unresolved; played
+through `race_audio_runner`, they give PCM and events identical to the resolved cues, and
+saves while the opponent's latch is set (1,600, 1,613, 1,614) continue exactly.
+
+Static readings with no captured case: the slow-checkpoint clear (flag 20 cleared), BRONSEN's
+praise voices 200-215 (no schedule reaches a praised opponent combination) and the stunt
+event's countdown beeps. The app plays the cued scenes only for a first race on DRAGSTER;
+other tracks' loads and anchors are not measured.
 
 ## Measured agreement (D-0010)
 
 `race_audio_runner` plays each schedule from power-on with the native cues (raw 32,040 Hz
 pairs, no original clock or event as input). Commands reach the driver in the original's
-frames and order on all three schedules (primary 120, quit 46, loss 120 commands); arrival
-clocks differ by -43,072 to +50,430 master clocks (about 2 ms). PCM is identical through
-power-on, the title, the main menu and the first 130 setup frames after the 1P exit, and
-first differs at pair 480,386 (frame 750, the first anchored command) on all three. After it
-the waveform is time-shifted, so sample errors are no measure of audible agreement; the
-level of each 20 ms window with signal above -60 dBFS is (`pcm_metrics.py`):
+frames and order on every schedule with its events kept; arrival clocks differ by at most
+about 154,000 master clocks (7 ms), mostly by under 50,000. PCM is identical through power-on,
+the title, the main menu and the setup frames up to the first anchored command (pair 480,386,
+frame 750, or 435,897 and frame 680 when the rider menu is moved). After it the waveform is
+time-shifted, so sample errors are no measure of audible agreement; the level of each 20 ms
+window with signal above -60 dBFS is (`pcm_metrics.py`, `measure.sh`):
 
-| Schedule | Identical pairs | Windows | Median level difference | 90th / 99th percentile | Within 1 dB |
-|---|---|---|---|---|---|
-| `primary` | 891,612 of 2,562,673 | 3,695 | 0.34 dB | 1.69 / 3.32 dB | 77% |
-| `quit` | 934,344 of 1,537,529 | 2,029 | 0.00 dB | 1.18 / 2.39 dB | 87% |
-| `loss` | 892,179 of 3,267,448 | 4,795 | 0.48 dB | 1.71 / 3.35 dB | 74% |
+| Schedule | Commands in frame | Identical pairs | Windows | Median level difference | 90th / 99th percentile | Within 1 dB |
+|---|---|---|---|---|---|---|
+| `primary` | 120 of 120 | 891,612 of 2,562,673 | 3,695 | 0.34 dB | 1.69 / 3.32 dB | 77% |
+| `quit` | 46 of 46 | 934,344 of 1,537,529 | 2,029 | 0.00 dB | 1.18 / 2.39 dB | 87% |
+| `loss` | 120 of 120 | 892,179 of 3,267,448 | 4,795 | 0.48 dB | 1.71 / 3.35 dB | 74% |
+| `variety` | 180 of 180 | 739,370 of 2,626,737 | 3,794 | 0.15 dB | 0.92 / 2.32 dB | 92% |
+| `continue` | 132 of 132 | 865,380 of 2,818,966 | 3,930 | 0.48 dB | 1.78 / 3.27 dB | 70% |
+| `back` | 26 of 26 | 903,880 of 1,089,033 | 1,501 | 0.00 dB | 0.17 / 2.05 dB | 95% |
+| `nav` | (events not kept) | 645,220 of 2,562,671 | 3,695 | 0.08 dB | 0.43 / 0.91 dB | 99% |
+
+The level measure barely registers a missing short effect (the reviewer's `nav` case without
+the navigation sounds also scored a 0.34 dB median); the command and cue comparisons above are
+the producer evidence, and this table only bounds the audible effect of anchored timing.

@@ -167,3 +167,40 @@ duration, and `0x8C` starts a table-driven gain envelope stepped by `$0B42`
   to +26,596 master clocks; the race upload's first command is exact.
 - Next: native producers in the front end and race engine emitting the same
   per-frame cues; then the app, saves, variations and gates.
+
+## 2 October 2026 UTC: candidate, review 1 and its fixes
+
+- Candidate `b5bd54f` (PR #51): app integration, pause cues, playback save/restore mode,
+  URAU0005 restore validation. Frozen gates started 22:48 UTC; build/ctest 41/41 on three
+  presets, synthetic suite, both v1 contracts, nine hidden app runs and the first two
+  differential gates passed before the run was stopped for review 1's changes. The DRAGSTER
+  fuzz gate reported 40/40 aborts ("inconsistent initial ZOOM ZOO announcements"); the
+  reviewer reproduced the same aborts on main `be3a6e0`, so it predates this task. It is a
+  non-pass, offered to the user as its own follow-up task.
+- Review 1 (fresh Claude Opus 5.5 subagent, isolated checkout, PR comment): changes required,
+  2 blocking and 8 advisory findings. The driver arithmetic and cycle costs, the producers it
+  read and 16 withheld save points held. Dispositions, all in `db28f77`:
+  1. Blocking, fixed: the rider menu, PICK TRACK and PICK TOUR navigation sounds.
+  2. Blocking, fixed: BRONSEN's voices 200-215 (reward-path test, 256-byte voice table).
+  3. Fixed: the -256 checkpoint speed clears flag 20.
+  4. Fixed: R-0076 now lists what is static-only; captures removed most of it (below).
+  5. Fixed within a bound: restore rejects a clock more than 16 frames past the cued frame's
+     end; a smaller lag is not detectable from the saved state (recorded in the code).
+  6. Fixed: frame-boundary formula; the pause anchors are listed with their captures.
+  7. Fixed: score flags 64 and up are rejected (unit test).
+  8. Fixed: `race_audio_runner` takes unresolved `R` cues; the app's raw cue log gives
+     PCM and events identical to the resolved cues, and saves at 1600, 1613 and 1614
+     (opponent latch set) continue exactly.
+  9. Fixed: the app plays cued audio only for a first DRAGSTER race.
+  10. Recorded as a non-pass with a follow-up (above).
+- New original schedules (`variety`, `continue`, `back`, each with both dispatch-watch
+  captures) and the reviewer's `nav` all match the native cues line for line. They confirm
+  the PICK TOUR double sound, the rider menu's top/bottom-row sounds, both PICK TRACK wraps,
+  the player's rotation flag 42, skid clears, the back slide and CONTINUE. CONTINUE's
+  single shared pause anchor delivered its fade-in a frame late (continue: 4 of 132
+  commands); separate measured anchors for the pause's three dispatch groups fix it.
+- Measured agreement after the fixes (R-0076 table): every command of every schedule with
+  kept events reaches the driver in the original's frame (primary 120, quit 46, loss 120,
+  variety 180, continue 132, back 26); median per-window level differences 0.00-0.48 dB.
+- Candidate for the second review: `db28f77` plus record-only commits. Frozen gates run in a
+  separate detached checkout (`.worktrees/afr-gates`) so records can change meanwhile.
