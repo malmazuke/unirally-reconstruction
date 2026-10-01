@@ -1,5 +1,24 @@
 # Project state
 
+**1 October 2026 UTC: AUDIO-TITLE-MENU remains in progress on [PR #50](https://github.com/malmazuke/unirally-reconstruction/pull/50).**
+Pushed candidate `c520df4` predicts native cold title/menu audio and the HUNTER
+pages, credits and warm restart. [R-0075](research/R-0075-title-menu-audio.md) records exact original/native events
+and raw PCM, an earlier credits-press variation, nine active reveal/lifecycle
+saves and the explicitly corrected opaque executable transport projection.
+Eight final-format native saves and eight combined playback saves pass; the
+latter match 1,726,556 independently resampled stereo pairs. App tests and both
+v1 presentation contracts pass. Four frozen ZOOM ZOO races passed on c520df4; the remaining seven were
+interrupted after fresh isolated Sol/medium tier-1 review returned two fixes.
+The successor casts pose-mask bytes to unsigned for GCC and requires v31 data
+for the product audio option before opening its device. Re-review, full frozen
+races and successor CI remain required. Local sanitizer execution times
+out and is not a pass. A scripted visible CoreAudio run completes one native
+warm restart with zero underruns. Physical held-key/listening evidence remains
+pending. The opt-in producer is a candidate; default app audio remains silent.
+Resume this same task and its main ignored evidence/checkpoint paths, then
+handle review and final-tip checks before integration. Weekly usage last 28%,
+from 12% at claim, stop 32%; no reset, spending, acceptance or tag.
+
 **30 September 2026 UTC: [AUDIO-DECISION](https://github.com/malmazuke/unirally-reconstruction/pull/49) defines the next native audio outcome.**
 The stale STUNT-EVENTS queue entry is reconciled: STUNT-EVENT-RACE (#39),
 STUNT-RESULT (#40) and STUNT-HUD (#42) already delivered the nine tour stunt

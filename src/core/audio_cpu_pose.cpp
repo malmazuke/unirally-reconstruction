@@ -150,7 +150,7 @@ void native_audio_build_pose_work(Clock& c, std::uint16_t pose,
     const auto frame = std::size_t(pointers[at + 2]) * 32768 + address - 32768;
     if (frame + 4 > frames.size()) throw std::invalid_argument("pose header outside native data");
     unsigned words = 0;
-    for (unsigned i = 0; i < 30; ++i) words += (frames[frame + i / 8] >> (7 - i % 8)) & 1;
+    for (unsigned i = 0; i < 30; ++i) words += (unsigned(frames[frame + i / 8]) >> (7 - i % 8)) & 1;
     if (frame + 4 + words * 2 > frames.size())
         throw std::invalid_argument("pose references outside native data");
     pose_prefix(c);

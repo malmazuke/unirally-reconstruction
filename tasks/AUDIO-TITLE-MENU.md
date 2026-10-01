@@ -1869,3 +1869,42 @@ while completing full app/presentation/regression checks. The held physical-key
 and listening question remains pending. No product acceptance or merge is
 claimed. Latest weekly telemetry27% at13:12,baseline12/stop32; no reset,
 spending or provider change. Next checkpoint13:25,reassessment13:48.
+
+
+### 1 October 13:34 UTC review and portability correction
+
+Immutable source `c520df4fb0d37433d393481cb0eb61c936b3ed0b` is pushed to PR #50.
+Fresh isolated `gpt-5.6-sol`/medium [tier-1 review](https://github.com/malmazuke/unirally-reconstruction/pull/50#pullrequestreview-5379898024)
+returns CHANGES REQUIRED: GCC signed conversion in pose-mask counting and the
+SDL option's advertised v30 path failing when HUNTER needs v31 metadata. The
+correction casts each byte to unsigned before shifting and rejects missing
+HUNTER metadata before opening the audio device; help now names v31. Bounded
+v30 laboratory support stays explicit. Source re-review and successor CI remain
+required. Physical-input/listening acceptance is still absent.
+
+The reviewer independently delayed the first-page press by seven frames, froze
+original expectations before native comparison, and matched CPU 344,594,398,
+1,475,651 projected rows and 518,802 raw pairs. Page-wait 122 fresh-process
+restore matched events, PCM and final state. Its on/off instrumentation matches
+all state/A/V/PCM/APU/event digests. It independently confirmed that the warm
+v2 correction changes only 4,445 CPU port-1 writes and 4,445 matching IPL reads to
+opaque, preserving clocks/order/address; all 2,933,842 rows and 1,111,493 pairs
+match. Review evidence lives in main `local/evidence/audio-title-menu/reviewer-c520df4/`.
+
+Exact-c520 checks: eight canonical native saves and eight combined playback
+saves pass, source_changed=false; output independently matches 1,726,556 pairs
+(`native-fresh-process-save-c520df4.json`,
+`native-playback-fresh-process-save-c520df4.json`). App 41 CTest plus fresh
+repeatability and both v1 presentation contracts/eight cases pass. Hosted
+macOS/changes pass; Ubuntu fails on the compiler warning. Local app-sanitize
+build passes, but CTest 45 s and repeatability time out; neither is a pass.
+
+Four full frozen races pass at c520: ZOOM ZOO primary/idle/opposing-ride/opposing-axes.
+After the review rejected this head, the remaining seven were deliberately
+interrupted before source edits (`race-c520df4-interrupted.json`), not counted
+as passes. Retry the unchanged full eleven modules/restore domains on an
+optimized exact successor instead of spending the remaining matrix on a
+rejected head. Original contracts/tolerances stay frozen. Draft coordinator
+handoffs are held in main artifacts until the source checks are no longer
+running. Last fresh quota 28% at 13:20, baseline 12%/stop 32%; no reset/spending/provider
+change. Next checkpoint 13:44, reassessment 13:48.

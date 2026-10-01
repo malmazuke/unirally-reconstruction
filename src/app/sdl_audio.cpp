@@ -1,9 +1,12 @@
 #include "sdl_audio.hpp"
+#include "content_pack.hpp"
 #include <iostream>
 #include <stdexcept>
 
 namespace unirally::app {
 SdlTitleMenuAudio::SdlTitleMenuAudio(const ClassicContentPack& pack) {
+    if (pack.optional_entry("audio.hunter-graphics-work-directory").empty())
+        throw std::invalid_argument("--native-title-menu-audio requires a v31 content pack");
     SDL_AudioSpec spec{SDL_AUDIO_S16, 2, 48000};
     device_ = SDL_OpenAudioDeviceStream(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, &spec, callback, this);
     if (!device_) throw std::runtime_error(SDL_GetError());

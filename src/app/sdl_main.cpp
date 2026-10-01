@@ -210,7 +210,7 @@ void print_help() {
       << "Keyboard: arrows, Z=B, X=Y, A=A, S=X, Q=L, W=R, Enter=Start.\n"
       << "Gamepad: D-pad, South=B, West=Y, East=A, North=X, shoulders=L/R, Start, Back=Select;\n"
       << "the analog stick is not mapped. Either gamepad exits the idle demo.\n"
-      << "Native title/menu audio prototype: --native-title-menu-audio (v30 pack).\n";
+      << "Native title/menu audio prototype: --native-title-menu-audio (v31 pack).\n";
 }
 
 std::optional<Options> options(int argc, char **argv) {

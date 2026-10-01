@@ -73,3 +73,10 @@ outside the packed tables holds that rider's last drawn pose and is counted as
 a fallback frame. Presentation never changes canonical simulation state. See
 `docs/research/R-0016-minimal-frontend.md` for the exact scheduler, input,
 display, dependency and first-launch contracts.
+
+
+The candidate option `--native-title-menu-audio` requires a v31 tracks pack and
+starts from power-on. Native title/menu music and navigation effects continue
+through the HUNTER pages and credits to a warm title/menu restart. Other menu
+exits stop this bounded audio producer. The default app remains silent; R-0075
+records the exact differential domain and pending physical listening acceptance.
