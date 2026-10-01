@@ -88,12 +88,12 @@ unsigned envelope_work(const AudioVoiceArithmetic& voice) {
         return ticks + (byte(position + 1U) == voice.instrument[2] ? 234U : 214U);
     case 1:
         if (!byte(voice.instrument[4] - position - 1U)) return ticks + 172;
-        return ticks + (voice.instrument[4] ? 212U : 136U);
+        return ticks + 212;
     case 2:
     case 4: return ticks + 10;
     case 3:
         if (!byte(voice.instrument[6] - position - 1U)) return ticks + 136;
-        return ticks + (voice.instrument[6] ? 182U : 116U);
+        return ticks + 182;
     default: throw std::runtime_error("software envelope phase outside timed domain");
     }
 }
@@ -101,8 +101,6 @@ unsigned envelope_work(const AudioVoiceArithmetic& voice) {
 
 std::uint32_t audio_voice_work_ticks(const AudioVoiceArithmetic& voice, std::uint8_t update_counter,
                                      const AudioPitchData* pitch_data) {
-    if (voice.scripted_envelope)
-        throw std::runtime_error("voice arithmetic leaves the recovered timed domain");
     auto target = voice.target_pitch;
     if (voice.convergence_step) {
         if (!pitch_data) throw std::runtime_error("timed convergence requires pitch data");
@@ -110,10 +108,11 @@ std::uint32_t audio_voice_work_ticks(const AudioVoiceArithmetic& voice, std::uin
         update_audio_voice(advanced, *pitch_data, update_counter);
         target = advanced.target_pitch;
     }
-    // Scripted-envelope bypass: 28; six calls between phases: 96; final
-    // output-pitch sum: 98. The value update remains independently callable.
+    // Without a gain script, its bypass is 28 and the software envelope runs.
+    // With one, the score adds the script's own work and the envelope's
+    // bypass is 28. Six calls between phases: 96; output-pitch sum: 98.
+    const unsigned gain_work = voice.scripted_envelope ? 28U : 28U + envelope_work(voice);
     return pan_work(voice, update_counter) + alternation_work(voice) + note_slide_work(voice)
-         + modulation_work(voice) + convergence_work(voice, target) + 28 + envelope_work(voice) + 96
-         + 98;
+         + modulation_work(voice) + convergence_work(voice, target) + gain_work + 96 + 98;
 }
 } // namespace unirally

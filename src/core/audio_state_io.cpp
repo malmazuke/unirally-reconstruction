@@ -48,11 +48,13 @@ void visit(audio_state_detail::Archive& a, AudioScoreVoice& v) {
              v.detune, v.release_relative, v.release_absolute, v.volume, v.pan, v.pan_step,
              v.instrument, v.stack_position, v.pitch_step, v.pitch_delay, v.pitch_rate,
              v.pitch_period, v.pitch_glide, v.pitch_alternate, v.suppress_key_on,
-             v.envelope_mode_c9c, v.restart_envelope, v.volume_gain, v.arithmetic);
+             v.envelope_mode_c9c, v.restart_envelope, v.gain_script, v.gain_script_index,
+             v.gain_script_loop, v.gain_script_period, v.gain_script_countdown, v.volume_gain,
+             v.arithmetic);
 }
 void visit(audio_state_detail::Archive& a, AudioScoreState& v) {
     a.fields(v.voices, v.stack, v.instruments, v.random_state, v.timer2_target, v.music_gain,
-             v.effect_gain, v.key_on_pending, v.key_off_pending);
+             v.effect_gain, v.key_on_pending, v.key_off_pending, v.flags);
 }
 void visit(audio_state_detail::Archive& a, AudioTimerState& v) {
     a.fields(v.divider, v.target_counter, v.output, v.target, v.divider_level, v.line, v.enabled);
@@ -72,7 +74,8 @@ void visit(audio_state_detail::Archive& a, AudioDriverContinuation& v) {
 }
 void visit(audio_state_detail::Archive& a, AudioDriverSnapshot& v) {
     a.fields(v.score, v.timers, v.ticks, v.command_phase, v.music_counter, v.effect_counter,
-             v.update_counter, v.master_volume, v.stopped_for_ipl, v.continuation);
+             v.update_counter, v.master_volume, v.master_volume_rate, v.stopped_for_ipl,
+             v.sample_fraction, v.sample_transpose, v.continuation);
 }
 void visit(audio_state_detail::Archive& a, AudioRevealHdmaChannelState& v) {
     a.fields(v.cursor, v.line_counter, v.completed, v.transfer);
@@ -129,11 +132,12 @@ void visit(audio_state_detail::Archive& a, TitleMenuAudioState& v) {
     a.fields(v.phase, v.pending_action, v.content_identity, v.engine, v.queue, v.scene, v.title,
              v.text, v.menu, v.cartridge, v.hunter_remaining, v.hunter);
 }
-// URAU0004 includes owned transport, voice/timer continuation, 64KiB DSP RAM/history
+// URAU0005 (race sound sets: flags, volume rate, gain scripts, loaded sample
+// headers) includes owned transport, voice/timer continuation, 64KiB DSP RAM/history
 // and unconsumed native PCM. The validated content identity is included; static bytes and future input are excluded.
 std::vector<std::uint8_t> serialize_title_menu_audio(const TitleMenuAudioState& state) {
     audio_state_detail::Archive archive;
-    std::array<std::uint8_t, 8> magic{'U', 'R', 'A', 'U', '0', '0', '0', '4'};
+    std::array<std::uint8_t, 8> magic{'U', 'R', 'A', 'U', '0', '0', '0', '5'};
     auto owned = state;
     archive.fields(magic, owned);
     return archive.take_output();
@@ -142,7 +146,7 @@ TitleMenuAudioState deserialize_title_menu_audio(std::span<const std::uint8_t> b
     audio_state_detail::Archive archive(bytes);
     std::array<std::uint8_t, 8> magic{};
     archive.value(magic);
-    constexpr std::array<std::uint8_t, 8> expected{'U', 'R', 'A', 'U', '0', '0', '0', '4'};
+    constexpr std::array<std::uint8_t, 8> expected{'U', 'R', 'A', 'U', '0', '0', '0', '5'};
     if (magic != expected) throw std::invalid_argument("audio state format differs");
     TitleMenuAudioState state;
     archive.value(state);

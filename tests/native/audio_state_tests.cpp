@@ -25,8 +25,8 @@ void rejects(Action action) {
 }
 void check_file_and_transactional_restore() {
     unirally::TitleMenuAudioContent content;
-    content.score.menu_tables.resize(621);
-    content.score.title_score.resize(2200);
+    content.score.tables.resize(621);
+    content.score.score.resize(2200);
     Controllers controllers;
     unirally::NativeTitleMenuAudio audio(content, controllers);
     auto state = audio.snapshot();
@@ -63,15 +63,15 @@ void check_file_and_transactional_restore() {
     corrupt.push_back(0);
     rejects([&] { unirally::deserialize_title_menu_audio(corrupt); });
     corrupt = bytes;
-    // URAU0004 header8, phase1, action1, identity32, then three CPU clock words8 each.
+    // URAU0005 header8, phase1, action1, identity32, then three CPU clock words8 each.
     constexpr unsigned first_cpu_flag = 8 + 1 + 1 + 32 + 3 * 8;
     corrupt[first_cpu_flag] = 2;
     rejects([&] { unirally::deserialize_title_menu_audio(corrupt); });
 }
 void check_hunter_state_validation() {
     unirally::TitleMenuAudioContent content;
-    content.score.menu_tables.resize(621);
-    content.score.title_score.resize(2200);
+    content.score.tables.resize(621);
+    content.score.score.resize(2200);
     Controllers controllers;
     unirally::NativeTitleMenuAudio audio(content, controllers);
     const auto before = unirally::serialize_title_menu_audio(audio.snapshot());
@@ -104,8 +104,8 @@ void check_hunter_state_validation() {
 }
 void check_playback_ownership() {
     unirally::TitleMenuAudioContent content;
-    content.score.menu_tables.resize(621);
-    content.score.title_score.resize(2200);
+    content.score.tables.resize(621);
+    content.score.score.resize(2200);
     Controllers controllers;
     unirally::NativeTitleMenuAudioPlayback playback(content, controllers, 48000);
     playback.native().finish_pcm_to(96);

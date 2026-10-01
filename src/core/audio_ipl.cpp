@@ -135,12 +135,18 @@ void AudioIplHandshake::receive_byte() {
     default: throw std::logic_error("invalid IPL byte phase");
     }
 }
+void AudioIplHandshake::retain_sound_set(std::uint16_t table_bytes, std::uint16_t score_bytes) {
+    if (table_bytes > 0x700 || score_bytes > 0x1300)
+        throw std::invalid_argument("retained sound set overlaps its neighbour");
+    retained_table_bytes_ = table_bytes;
+    retained_score_bytes_ = score_bytes;
+}
 void AudioIplHandshake::store_byte() {
     const auto address = static_cast<std::uint16_t>(state_.destination + state_.byte_index);
     // Uploaded driver code is not needed by native logic or this DSP-only RAM.
     // Only the separately identified score data is retained from IPL transfers.
-    if ((address >= 0x1600 && address < 0x1600 + 621)
-        || (address >= 0x1d00 && address < 0x1d00 + 2200))
+    if ((address >= 0x1600 && address - 0x1600 < retained_table_bytes_)
+        || (address >= 0x1d00 && address - 0x1d00 < retained_score_bytes_))
         bus_->write_ram(state_.ticks, address, state_.transfer_byte);
     state_.byte_index = byte(state_.byte_index + 1U);
     if (state_.byte_index) {

@@ -150,8 +150,10 @@ void TitleMenuAudioDriver::load_samples() {
             advance(8 + 4 + 4 + 4 + 4);
             const auto fraction = read_upload_byte(phase);
             write_ram(12, word(sample_fraction_table + slot), fraction);
+            record_sample_header(slot, false, fraction);
             const auto transpose = read_upload_byte(phase);
             write_ram(12, word(sample_transpose_table + slot), transpose);
+            record_sample_header(slot, true, transpose);
             load_sample_bytes(phase, cursor);
             advance(8);
         }
@@ -169,6 +171,12 @@ void TitleMenuAudioDriver::load_samples() {
     advance(2);
     write_port(2, 128);
     advance(10);
+}
+// The voice code reads each slot's pitch fraction/transpose from these RAM
+// tables, so a sound set's own sample headers take effect when loaded.
+void TitleMenuAudioDriver::record_sample_header(unsigned slot, bool transpose, std::uint8_t value) {
+    if (planning_) return;
+    (transpose ? pitch_.sample_transpose : pitch_.sample_fraction).at(slot) = value;
 }
 // 0400-0448. Native driver initialization after the IPL's final transfer.
 // The final-transfer tick is still a declared laboratory condition.

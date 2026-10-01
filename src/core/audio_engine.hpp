@@ -38,7 +38,7 @@ struct AudioEngineState {
 // only. Event sinks observe output; neither supplies timestamps or commands.
 class NativeAudioEngine final : public AudioDriverBus, public AudioCpuWorkObserver {
 public:
-    NativeAudioEngine(const TitleMenuAudioData& score, const AudioPitchData& pitch,
+    NativeAudioEngine(const AudioSoundSet& score, const AudioPitchData& pitch,
                       AudioControllerSource& controllers, AudioEngineEventSink* events = nullptr);
     NativeAudioEngine(const NativeAudioEngine&) = delete;
     NativeAudioEngine& operator=(const NativeAudioEngine&) = delete;
@@ -70,7 +70,7 @@ private:
     NativeAudioDsp dsp_;
     AudioIplHandshake ipl_{*this};
     AudioTimersState ipl_timers_;
-    const TitleMenuAudioData* score_;
+    const AudioSoundSet* score_;
     const AudioPitchData* pitch_;
     AudioControllerSource* controllers_;
     AudioEngineEventSink* events_;

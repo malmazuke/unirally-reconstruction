@@ -9,13 +9,16 @@
 
 namespace unirally {
 
-// Identified score data, not an uploaded executable or APU snapshot. R-0075.
+// One identified sound set: the effect/instrument tables uploaded to 1600 and
+// the music score uploaded to 1D00. It is score data, not an uploaded
+// executable or APU snapshot (R-0075; the race set is in AUDIO-FIRST-RACE).
 // Original pointers are 16-bit data-format values; reads outside these two
-// bounded ranges fail. Music instruments 1-36 are copied from the title data.
-struct TitleMenuAudioData {
-    std::vector<std::uint8_t> menu_tables; // 621 bytes, origin 1600
-    std::vector<std::uint8_t> title_score; // 2200 bytes, origin 1D00
+// bounded ranges fail. Music instruments 1-36 are copied from the tables.
+struct AudioSoundSet {
+    std::vector<std::uint8_t> tables; // title/menu 621 bytes, race 1,583
+    std::vector<std::uint8_t> score;  // title 2,200 bytes, first race song 2,457
 };
+std::uint8_t audio_sound_set_byte(const AudioSoundSet& data, std::uint16_t pointer);
 
 struct AudioScoreRead {
     std::uint8_t voice;
@@ -59,6 +62,11 @@ struct AudioScoreVoice {
     std::array<std::uint8_t, 3> pitch_alternate{};
     bool suppress_key_on = false, envelope_mode_c9c = false;
     bool restart_envelope = false;
+    // Control 8C's table-driven gain (SPC 0B42): the table pointer is score
+    // data; the period counts voice updates between table steps.
+    std::uint16_t gain_script = 0;
+    std::uint8_t gain_script_index = 0, gain_script_loop = 0;
+    std::uint8_t gain_script_period = 0, gain_script_countdown = 0;
     std::uint8_t volume_gain = 0;
     AudioVoiceArithmetic arithmetic{};
     bool operator==(const AudioScoreVoice&) const = default;
@@ -72,6 +80,9 @@ struct AudioScoreState {
     std::uint8_t timer2_target = 133;
     std::uint8_t music_gain = 48, effect_gain = 64;
     std::uint8_t key_on_pending = 0, key_off_pending = 0;
+    // Sixty-four flags (SPC 033C-0343) that CPU commands 6/11 clear/set and
+    // score controls A5-A8 change or test; flag n is bit n & 7 of byte n >> 3.
+    std::array<std::uint8_t, 8> flags{};
     bool operator==(const AudioScoreState&) const = default;
 };
 
@@ -81,13 +92,15 @@ struct AudioScoreState {
 // The laboratory runner supplies update modes and consumed command boundaries.
 class TitleMenuAudioScore {
 public:
-    explicit TitleMenuAudioScore(const TitleMenuAudioData& data,
+    explicit TitleMenuAudioScore(const AudioSoundSet& data,
                                  const AudioPitchData* pitch_data = nullptr);
     void start_music(std::uint8_t program);
     int start_effect(std::uint8_t effect); // Selected voice, or -1 if rejected.
     std::uint32_t start_music_timed(std::uint8_t program);
     std::uint32_t start_effect_timed(std::uint8_t effect);
     void set_volume_gain(bool effects, std::uint8_t gain);
+    void set_flag(std::uint8_t flag, bool value);
+    bool flag(std::uint8_t flag) const;
     std::array<std::uint8_t, 6> voice_register_values(std::uint8_t voice) const;
     AudioScoreRegisterWork voice_register_work(std::uint8_t voice) const;
     std::uint8_t take_key_on_pending();
@@ -100,7 +113,7 @@ public:
     std::vector<AudioScoreRead> take_reads();
 
 private:
-    const TitleMenuAudioData* data_;
+    const AudioSoundSet* data_;
     const AudioPitchData* pitch_data_;
     AudioScoreState state_{};
     std::vector<AudioScoreRead> reads_;
@@ -124,6 +137,9 @@ private:
     void apply_instrument_control(std::uint8_t voice, std::uint8_t control);
     void apply_mix_control(std::uint8_t voice, std::uint8_t control);
     void update_arithmetic(std::uint8_t voice, std::uint8_t update_counter);
+    void start_gain_script(std::uint8_t voice);
+    void step_gain_script(std::uint8_t voice);
+    void apply_flag_control(std::uint8_t voice, std::uint8_t control);
 };
 
 } // namespace unirally

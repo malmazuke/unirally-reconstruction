@@ -15,17 +15,31 @@ std::uint16_t word(unsigned value) {
 }
 }
 
-TitleMenuAudioScore::TitleMenuAudioScore(const TitleMenuAudioData& data,
+namespace {
+constexpr std::uint16_t tables_origin = 0x1600, score_origin = 0x1d00, sample_origin = 0x3000;
+constexpr std::size_t instrument_table_offset = 0x22, instrument_table_bytes = 259;
+}
+// R-0075 and AUDIO-FIRST-RACE: each sound set is bounded by its identified
+// upload lengths; the tables end before the score and the score before samples.
+std::uint8_t audio_sound_set_byte(const AudioSoundSet& data, std::uint16_t pointer) {
+    if (pointer >= tables_origin && pointer - tables_origin < data.tables.size())
+        return data.tables[pointer - tables_origin];
+    if (pointer >= score_origin && pointer - score_origin < data.score.size())
+        return data.score[pointer - score_origin];
+    throw std::runtime_error("score pointer outside identified data: " + std::to_string(pointer));
+}
+TitleMenuAudioScore::TitleMenuAudioScore(const AudioSoundSet& data,
                                          const AudioPitchData* pitch_data)
     : data_(&data), pitch_data_(pitch_data) {
-    if (data.menu_tables.size() != 621 || data.title_score.size() != 2200)
-        throw std::invalid_argument("title/menu audio data sizes differ");
-    std::copy_n(data.menu_tables.begin() + 0x22, 259, state_.instruments.begin());
+    if (data.tables.size() < instrument_table_offset + instrument_table_bytes
+        || data.tables.size() > score_origin - tables_origin || data.score.empty()
+        || data.score.size() > sample_origin - score_origin)
+        throw std::invalid_argument("audio sound set sizes leave the identified layout");
+    std::copy_n(data.tables.begin() + instrument_table_offset, instrument_table_bytes,
+                state_.instruments.begin());
 }
 std::uint8_t TitleMenuAudioScore::data_byte(std::uint16_t pointer) const {
-    if (pointer >= 0x1600 && pointer < 0x186d) return data_->menu_tables[pointer - 0x1600];
-    if (pointer >= 0x1d00 && pointer < 0x2598) return data_->title_score[pointer - 0x1d00];
-    throw std::runtime_error("score pointer outside identified data: " + std::to_string(pointer));
+    return audio_sound_set_byte(*data_, pointer);
 }
 std::uint8_t TitleMenuAudioScore::read_byte(std::uint8_t voice_index) {
     auto& voice = state_.voices.at(voice_index);
@@ -61,8 +75,6 @@ AudioScoreUpdateWork TitleMenuAudioScore::update_voice_timed(std::uint8_t index,
 // or captured clocks are inputs. Nonzero scripted pitch data is not recovered.
 void TitleMenuAudioScore::measure_note_work(const AudioScoreVoice& voice, std::uint8_t note) {
     if (!measured_work_) return;
-    if (voice.arithmetic.scripted_envelope)
-        throw std::runtime_error("note initialization leaves the recovered timed domain");
     if (!note)
         add_work(8);
     else {
@@ -70,7 +82,13 @@ void TitleMenuAudioScore::measure_note_work(const AudioScoreVoice& voice, std::u
         add_work(4 + 8 + 4 + 10 + 10 + 4 + 4 + 10 + 16 + 36);
         add_work(12 + 12 + 4 + 10 + 10);
         add_work(voice.arithmetic.slide_interval ? 8U : 4U + 10 + 16 + 198);
-        add_work(16 + 104 + 10 + 8 + 10 + 10 + 16);
+        add_work(16 + 104 + 10);
+        // 0C8F-0CA0: a gain script restarts unless the envelope is held (C9C).
+        if (!voice.arithmetic.scripted_envelope)
+            add_work(8);
+        else
+            add_work(voice.envelope_mode_c9c ? 4U + 10 + 8 : 4U + 10 + 4 + 10 + 10 + 10 + 10);
+        add_work(10 + 10 + 16);
         if (!voice.restart_envelope)
             add_work(28);
         else
@@ -174,6 +192,15 @@ std::uint32_t TitleMenuAudioScore::start_effect_timed(std::uint8_t effect) {
     }
     measured_work_ = nullptr;
     return work.ticks;
+}
+// 1151-1160: flag n is bit n & 7 of table byte n >> 3 (all 64 flags exist).
+void TitleMenuAudioScore::set_flag(std::uint8_t flag, bool value) {
+    const auto mask = byte(1U << (flag & 7));
+    auto& bits = state_.flags[flag >> 3 & 7];
+    bits = value ? byte(bits | mask) : byte(bits & ~unsigned(mask));
+}
+bool TitleMenuAudioScore::flag(std::uint8_t flag) const {
+    return (state_.flags[flag >> 3 & 7] >> (flag & 7) & 1) != 0;
 }
 void TitleMenuAudioScore::set_volume_gain(bool effects, std::uint8_t gain) {
     if (effects)
@@ -299,8 +326,10 @@ void TitleMenuAudioScore::set_instrument(std::uint8_t index, std::uint8_t instru
     if (offset + 7 > state_.instruments.size())
         throw std::runtime_error("instrument outside recovered table");
     std::copy_n(state_.instruments.begin() + offset, 7, state_.voices.at(index).instrument.begin());
+    // 1044-104E: an instrument also ends a gain script (02D0 cleared).
     state_.voices.at(index).envelope_mode_c9c = false;
     state_.voices.at(index).restart_envelope = true;
+    state_.voices.at(index).arithmetic.scripted_envelope = false;
 }
 void TitleMenuAudioScore::update_arithmetic(std::uint8_t index, std::uint8_t update_counter) {
     if (!pitch_data_) return;
@@ -322,6 +351,9 @@ void TitleMenuAudioScore::update_arithmetic(std::uint8_t index, std::uint8_t upd
     if (measured_work_)
         add_work(16 + audio_voice_work_ticks(arithmetic, update_counter, pitch_data_) + 6);
     update_audio_voice(arithmetic, *pitch_data_, update_counter);
+    // 0B42 runs after pitch convergence and before the (bypassed) software
+    // envelope; it changes only the gain and its own table position.
+    if (arithmetic.scripted_envelope) step_gain_script(index);
     voice.volume = arithmetic.volume;
     voice.pan = arithmetic.pan;
     voice.pan_step = arithmetic.pan_step;

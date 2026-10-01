@@ -8,7 +8,7 @@ namespace unirally {
 class ClassicContentPack;
 struct TitleMenuAudioContent {
     std::array<std::uint8_t, 32> identity{};
-    TitleMenuAudioData score;
+    AudioSoundSet score;
     AudioPitchData pitch;
     AudioCpuUploadData upload;
     std::array<AudioCpuGraphicsAsset, 128> graphics{};

@@ -92,8 +92,10 @@ struct AudioDriverSnapshot {
     std::uint64_t ticks = 0;
     std::uint8_t command_phase = 128;
     std::uint8_t music_counter = 0, effect_counter = 0, update_counter = 0;
-    std::uint8_t master_volume = 127;
+    std::uint16_t master_volume = 0x7f00, master_volume_rate = 0; // DF/E0, E1/E2
     bool stopped_for_ipl = false;
+    // Header bytes the sample loader received (FE80/FEC0), per sample slot.
+    std::array<std::uint8_t, 64> sample_fraction{}, sample_transpose{};
     AudioDriverContinuation continuation;
 };
 } // namespace unirally

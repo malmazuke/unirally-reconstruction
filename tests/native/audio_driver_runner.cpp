@@ -58,10 +58,19 @@ public:
             output << "D " << ticks << ' ' << unsigned(reg) << ' ' << unsigned(value) << '\n';
     }
 };
-std::vector<std::uint8_t> read(const char* path) {
+std::vector<std::uint8_t> read(const std::string& path) {
     std::ifstream file(path, std::ios::binary);
     if (!file) throw std::runtime_error("cannot read audio data");
     return {std::istreambuf_iterator<char>(file), {}};
+}
+std::vector<std::string> split(const std::string& list) {
+    std::vector<std::string> parts;
+    std::size_t begin = 0;
+    for (auto end = list.find(','); ; end = list.find(',', begin)) {
+        parts.push_back(list.substr(begin, end - begin));
+        if (end == std::string::npos) return parts;
+        begin = end + 1;
+    }
 }
 } // namespace
 int main(int argc, char** argv) {
@@ -75,7 +84,19 @@ int main(int argc, char** argv) {
         const bool cold_ipl = mode == "ipl" || mode == "ipl-pending" || resume;
         const bool boot = cold_ipl || mode == "boot" || mode == "boot-pending";
         if (mode != "loop" && !boot) throw std::runtime_error("unknown entry mode");
-        const unirally::TitleMenuAudioData score_data{read(argv[1]), read(argv[2])};
+        // Comma-separated lists give one sound set per IPL session, in upload
+        // order; the last set repeats. AUDIO-FIRST-RACE's race session.
+        const auto table_files = split(argv[1]), score_files = split(argv[2]);
+        if (table_files.size() != score_files.size())
+            throw std::runtime_error("sound set table/score lists differ");
+        std::vector<unirally::AudioSoundSet> sets;
+        for (std::size_t i = 0; i < table_files.size(); ++i)
+            sets.push_back({read(table_files[i]), read(score_files[i])});
+        std::size_t session = 0;
+        const auto set_for = [&](std::size_t index) -> const unirally::AudioSoundSet& {
+            return sets[std::min(index, sets.size() - 1)];
+        };
+        const auto& score_data = set_for(0);
         const auto pitch = read(argv[3]), fractions = read(argv[4]), transpose = read(argv[5]);
         if (pitch.size() != 194 || fractions.size() != 64 || transpose.size() != 64)
             throw std::runtime_error("pitch data sizes differ");
@@ -129,6 +150,8 @@ int main(int argc, char** argv) {
             throw std::runtime_error("CPU writes move backwards");
         if (cold_ipl) {
             unirally::AudioIplHandshake ipl(bus);
+            ipl.retain_sound_set(static_cast<std::uint16_t>(score_data.tables.size()),
+                                 static_cast<std::uint16_t>(score_data.score.size()));
             ipl.run_until(bus.horizon);
             if (!ipl.driver_ready()) throw std::runtime_error("IPL transfer is incomplete");
             entry = ipl.state().ticks;
@@ -143,7 +166,7 @@ int main(int argc, char** argv) {
                 driver->run_until(std::min(horizon, bus.horizon));
                 if (horizon >= bus.horizon || driver->returned_to_ipl()) break;
                 const auto saved = driver->snapshot();
-                driver = std::make_unique<unirally::TitleMenuAudioDriver>(score_data, data, bus,
+                driver = std::make_unique<unirally::TitleMenuAudioDriver>(set_for(session), data, bus,
                                                      unirally::AudioTimersState{}, 0, false, true);
                 driver->restore(saved); ++snapshots;
             }
@@ -151,12 +174,15 @@ int main(int argc, char** argv) {
         };
         run_driver();
         while (cold_ipl && driver->returned_to_ipl() && driver->ticks() < bus.horizon) {
+            ++session;
             unirally::AudioIplHandshake ipl(bus, driver->ticks());
+            ipl.retain_sound_set(static_cast<std::uint16_t>(set_for(session).tables.size()),
+                                 static_cast<std::uint16_t>(set_for(session).score.size()));
             ipl.run_until(bus.horizon);
             if (!ipl.driver_ready()) break;
             entry = ipl.state().ticks;
             const auto retained_timers = driver->timers();
-            driver = std::make_unique<unirally::TitleMenuAudioDriver>(score_data, data, bus,
+            driver = std::make_unique<unirally::TitleMenuAudioDriver>(set_for(session), data, bus,
                                                                       retained_timers, entry, true, pending);
             std::cout << "computed_restart_entry_ticks=" << entry << '\n';
             run_driver();

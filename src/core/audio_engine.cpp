@@ -8,7 +8,7 @@ namespace {
 struct CpuYield {};
 constexpr std::uint64_t cpu_frequency = 21281370, smp_frequency = 2050560;
 }
-NativeAudioEngine::NativeAudioEngine(const TitleMenuAudioData& score, const AudioPitchData& pitch,
+NativeAudioEngine::NativeAudioEngine(const AudioSoundSet& score, const AudioPitchData& pitch,
                                      AudioControllerSource& controllers,
                                      AudioEngineEventSink* events)
     : score_(&score), pitch_(&pitch), controllers_(&controllers), events_(events) {}

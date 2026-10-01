@@ -127,7 +127,8 @@ void update_pitch_convergence(AudioVoiceArithmetic& voice) {
 // 0B8A-0C65: seven-byte software envelope. Instrument units are update counts
 // and raw gain values. Phase 2 sustains, phase 4 has completed release.
 void update_envelope(AudioVoiceArithmetic& voice) {
-    if (voice.scripted_envelope) throw std::runtime_error("scripted envelope is not recovered");
+    // 0B8A-0B8D: a gain script (control 8C, stepped by the score) owns GAIN.
+    if (voice.scripted_envelope) return;
     if (voice.remaining && voice.remaining == voice.release_remaining) {
         voice.envelope_phase = 3;
         voice.release_gain = voice.gain;
@@ -150,12 +151,15 @@ void update_envelope(AudioVoiceArithmetic& voice) {
             }
         }
         break;
+    // Phases 1 and 3: 0C13/0C4A branch on the flags of MOV Y,A (the nonzero
+    // remaining step), not on the popped length (POP sets no flags), so a zero
+    // length still divides, with the hardware's divisor-zero quotient.
     case 1:
         if (byte(instrument[4] - voice.envelope_position - 1U) == 0) {
             voice.gain = instrument[5];
             ++voice.envelope_phase;
             voice.envelope_position = 0;
-        } else if (instrument[4]) {
+        } else {
             const unsigned difference = byte(instrument[3] - instrument[5]);
             const unsigned position = byte(instrument[4] - voice.envelope_position - 1U);
             voice.gain =
@@ -169,7 +173,7 @@ void update_envelope(AudioVoiceArithmetic& voice) {
         if (byte(instrument[6] - voice.envelope_position - 1U) == 0) {
             voice.gain = 0;
             ++voice.envelope_phase;
-        } else if (instrument[6]) {
+        } else {
             const unsigned position = byte(instrument[6] - voice.envelope_position - 1U);
             voice.gain = envelope_quotient(unsigned(voice.release_gain) * position, instrument[6]);
             voice.envelope_position = byte(voice.envelope_position + 1U);
