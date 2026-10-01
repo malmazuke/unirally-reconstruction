@@ -976,3 +976,41 @@ that prefix; neither expected data nor native behavior changed.
 These verify call-boundary native continuation in the declared title/menu
 domain. Device/resampler fractions, pack binding, live playback and joined
 scene-stop/restart remain open; no complete product-save claim is made.
+
+### Native content pack and bound continuation - 1 October 09:54 UTC
+
+The v30 rules append33 identified audio entries to the unchanged 475-entry v29
+inventory. Main evidence `audio-pack-extraction-proof.json` compares every new
+payload to the identified loose recovery inputs. The frozen sorted compact v29
+entry-list digest is 6df6cfce7f83ef8ac93a4e6143f1987244dbb1901dc6a7b5e1fe61618cd487f7;
+its rules file is retained as `classic-crawler-tracks-v29-rules.json`.
+New rules SHA-256 is 293039530c6ad250aa072415ea0f9af096532754648029d9ab69e734e0c81cf7.
+The uploaded executable is excluded. Numeric pitch indices 85-96 retain the
+documented data alias; they are interleaved low/high values, never executed.
+Sample resources exclude their length word and retain loop/parameter/BRR data.
+The transfer payloads preserve the original sender's six-byte trailing header
+behavior. Graphics directory entries supply bounded native work metadata.
+
+`title_menu_audio_content` loads only validated logical pack entries. The
+URAU0002 canonical state carries the pack's validated extraction identity. A
+mismatched identity is rejected before engine mutation. URAU0001 files and their
+previous reports remain retained; there is no implicit conversion.
+`native-save-domain-v2-frozen.json` preserves the previous eight split choices
+and original event/PCM identities before v2 continuation comparisons.
+`native-fresh-process-save-v2.json` passes all eight fresh-process cases, with
+identical concatenated events, pending plus new PCM and final canonical state.
+`native-pack-v30.json` additionally passes a pack-only 1380-loop steered run: its
+2,612,233 events, 1,152,477 raw pairs and final state equal the loose-data native
+run, which matches the unchanged original projection. The native command opens
+only the pack and future controller schedule; no ROM, original state/event or
+timestamp is an input. The extraction report is main
+`artifacts/audio-title-menu-integration/pack-v30.json` (508 entries).
+
+Ten focused native audio checks pass, including transactional identity/CPU/DSP
+rejection. The 27 track inventory tests and 15 frontend tooling tests pass. The
+first frontend unittest command lacked PYTHONPATH and failed to import the
+module; rerunning with PYTHONPATH=tools passed. A ctest expression `audio_state`
+matched no tests and is not a pass; the explicit `^audio_` expression ran all 10.
+The new factory/session/archive pass the 80-line readability check. This adds
+content packaging and call-boundary continuation evidence only. SDL device
+output, resampler fractions and joined scene stop/restart remain incomplete.

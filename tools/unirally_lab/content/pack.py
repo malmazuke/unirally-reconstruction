@@ -24,7 +24,8 @@ START_STATE_ID = "classic.crawler.dragster.race-start.v1"
 # v12 (LOCKED-TOURS) the locked tours' race tracks, v13 (TILE-PAIRS-8-12-26) the loop's x steps, v14 (HUNTER-EFFECTS) the HUNTER blink pattern, v15 (FRONT-END-MAIN-MENU) the boot screens and
 # the main menu, v16 (FRONT-END-1P-SETUP) the rider menu, v17 PICK TOUR, PICK TRACK and NOW PLAYING, v18 the one-run result, v19 the lap result, v20 the medal award, v21 the race pairing's tables, v22 the gold endings, v23 HUNTER's ending, v24 (STUNT-EVENT-RACE) the stunt events, v25 (STUNT-RESULT) the stunt result, v26 (STUNT-HUD) NEON's scenery and lighting, v27 (TWO-PLAYER-VS) local-mode menus, and v28 (OPTIONS) its two five-choice menus. The names keep their two-track origin.
 TWO_TRACK_RULES_PATH = "tests/manifests/content/classic-crawler-tracks-pack.json"
-TWO_TRACK_PROFILE = "classic.pal.crawler.tracks.v29"
+TWO_TRACK_PROFILE = "classic.pal.crawler.tracks.v30"
+PREVIOUS_TRACK_PROFILE = "classic.pal.crawler.tracks.v29"
 TWO_TRACK_START = "classic.crawler.race-start.v2"
 
 
@@ -38,7 +39,8 @@ def load_rules(path: Path) -> tuple[dict[str, Any], str]:
     if ((doc.get("schema_version"), doc.get("kind"), doc.get("profile_id"),
          doc.get("start_state_id")) not in
             ((1, "classic_pack_rules", PROFILE_ID, START_STATE_ID),
-             (1, "classic_pack_rules", TWO_TRACK_PROFILE, TWO_TRACK_START))):
+             (1, "classic_pack_rules", TWO_TRACK_PROFILE, TWO_TRACK_START),
+             (1, "classic_pack_rules", PREVIOUS_TRACK_PROFILE, TWO_TRACK_START))):
         raise ValueError("unsupported Classic extraction rules identity")
     rom = doc.get("source_rom")
     if not isinstance(rom, dict) or type(rom.get("size")) is not int or not isinstance(rom.get("sha256"), str):

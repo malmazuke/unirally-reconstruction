@@ -1,4 +1,5 @@
 #pragma once
+#include "content_pack.hpp"
 #include "title_menu_audio.hpp"
 #include <algorithm>
 #include <filesystem>
@@ -20,7 +21,10 @@ inline void load(std::array<std::uint8_t, Size>& out, const std::filesystem::pat
     std::copy(bytes.begin(), bytes.end(), out.begin());
 }
 inline unirally::TitleMenuAudioContent content(const std::filesystem::path& root) {
+    if (std::filesystem::is_regular_file(root))
+        return unirally::title_menu_audio_content(unirally::ClassicContentPack(root));
     unirally::TitleMenuAudioContent data;
+    load(data.identity, root / "cpu-content-identity.bin");
     data.score = {read(root / "menu-tables.bin"), read(root / "title-score.bin")};
     const auto notes = read(root / "pitch-table.bin");
     if (notes.size() != 194) throw std::invalid_argument("invalid pitch input");

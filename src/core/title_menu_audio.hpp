@@ -5,7 +5,9 @@
 #include "audio_engine.hpp"
 
 namespace unirally {
+class ClassicContentPack;
 struct TitleMenuAudioContent {
+    std::array<std::uint8_t, 32> identity{};
     TitleMenuAudioData score;
     AudioPitchData pitch;
     AudioCpuUploadData upload;
@@ -20,6 +22,7 @@ struct TitleMenuAudioContent {
 enum class TitleMenuAudioPhase : std::uint8_t { cold, title_hold, title_complete, menu, menu_exit };
 struct TitleMenuAudioState {
     TitleMenuAudioPhase phase = TitleMenuAudioPhase::cold;
+    std::array<std::uint8_t, 32> content_identity{};
     AudioEngineState engine;
     AudioCpuQueueState queue;
     AudioCpuSceneWorkState scene;
@@ -56,6 +59,7 @@ private:
     AudioCpuMenuInputState menu_;
     std::array<std::uint8_t, 8192> cartridge_;
 };
+TitleMenuAudioContent title_menu_audio_content(const ClassicContentPack& pack);
 std::vector<std::uint8_t> serialize_title_menu_audio(const TitleMenuAudioState& state);
 TitleMenuAudioState deserialize_title_menu_audio(std::span<const std::uint8_t> bytes);
 } // namespace unirally

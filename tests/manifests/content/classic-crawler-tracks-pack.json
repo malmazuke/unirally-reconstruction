@@ -1,12 +1,12 @@
 {
   "schema_version": 1,
   "kind": "classic_pack_rules",
-  "profile_id": "classic.pal.crawler.tracks.v29",
+  "profile_id": "classic.pal.crawler.tracks.v30",
   "source_rom": {
     "size": 2097152,
     "sha256": "a1105819d48c04d680c8292bbfa9abbce05224f1bc231afd66af43b7e0a1fd4e"
   },
-  "rules_id": "classic-crawler-tracks-extraction-v29",
+  "rules_id": "classic-crawler-tracks-extraction-v30",
   "start_state_id": "classic.crawler.race-start.v2",
   "entries": [
     {
@@ -82538,6 +82538,2037 @@
       },
       "size": 32,
       "sha256": "7c4050022226cb77b761a73161ffb534376f30ac1aa8487396aeb8dd313989cf"
+    },
+    {
+      "id": "audio.menu-tables",
+      "source": {
+        "kind": "raw",
+        "pieces": [
+          {
+            "file_offset": 649888,
+            "length": 621
+          }
+        ]
+      },
+      "size": 621,
+      "sha256": "e75d7872e341a636dc822616a202db6b8894196471c13d47f1b21d15f38fc407"
+    },
+    {
+      "id": "audio.title-score",
+      "source": {
+        "kind": "raw",
+        "pieces": [
+          {
+            "file_offset": 655979,
+            "length": 2200
+          }
+        ]
+      },
+      "size": 2200,
+      "sha256": "b4e402d0d05207e0ceadc32e8b4ebd4d052677c42f0e36f4ab5883c74ff1eb6b"
+    },
+    {
+      "id": "audio.pitch-values",
+      "source": {
+        "kind": "raw",
+        "pieces": [
+          {
+            "file_offset": 644797,
+            "length": 1
+          },
+          {
+            "file_offset": 644882,
+            "length": 1
+          },
+          {
+            "file_offset": 644798,
+            "length": 1
+          },
+          {
+            "file_offset": 644883,
+            "length": 1
+          },
+          {
+            "file_offset": 644799,
+            "length": 1
+          },
+          {
+            "file_offset": 644884,
+            "length": 1
+          },
+          {
+            "file_offset": 644800,
+            "length": 1
+          },
+          {
+            "file_offset": 644885,
+            "length": 1
+          },
+          {
+            "file_offset": 644801,
+            "length": 1
+          },
+          {
+            "file_offset": 644886,
+            "length": 1
+          },
+          {
+            "file_offset": 644802,
+            "length": 1
+          },
+          {
+            "file_offset": 644887,
+            "length": 1
+          },
+          {
+            "file_offset": 644803,
+            "length": 1
+          },
+          {
+            "file_offset": 644888,
+            "length": 1
+          },
+          {
+            "file_offset": 644804,
+            "length": 1
+          },
+          {
+            "file_offset": 644889,
+            "length": 1
+          },
+          {
+            "file_offset": 644805,
+            "length": 1
+          },
+          {
+            "file_offset": 644890,
+            "length": 1
+          },
+          {
+            "file_offset": 644806,
+            "length": 1
+          },
+          {
+            "file_offset": 644891,
+            "length": 1
+          },
+          {
+            "file_offset": 644807,
+            "length": 1
+          },
+          {
+            "file_offset": 644892,
+            "length": 1
+          },
+          {
+            "file_offset": 644808,
+            "length": 1
+          },
+          {
+            "file_offset": 644893,
+            "length": 1
+          },
+          {
+            "file_offset": 644809,
+            "length": 1
+          },
+          {
+            "file_offset": 644894,
+            "length": 1
+          },
+          {
+            "file_offset": 644810,
+            "length": 1
+          },
+          {
+            "file_offset": 644895,
+            "length": 1
+          },
+          {
+            "file_offset": 644811,
+            "length": 1
+          },
+          {
+            "file_offset": 644896,
+            "length": 1
+          },
+          {
+            "file_offset": 644812,
+            "length": 1
+          },
+          {
+            "file_offset": 644897,
+            "length": 1
+          },
+          {
+            "file_offset": 644813,
+            "length": 1
+          },
+          {
+            "file_offset": 644898,
+            "length": 1
+          },
+          {
+            "file_offset": 644814,
+            "length": 1
+          },
+          {
+            "file_offset": 644899,
+            "length": 1
+          },
+          {
+            "file_offset": 644815,
+            "length": 1
+          },
+          {
+            "file_offset": 644900,
+            "length": 1
+          },
+          {
+            "file_offset": 644816,
+            "length": 1
+          },
+          {
+            "file_offset": 644901,
+            "length": 1
+          },
+          {
+            "file_offset": 644817,
+            "length": 1
+          },
+          {
+            "file_offset": 644902,
+            "length": 1
+          },
+          {
+            "file_offset": 644818,
+            "length": 1
+          },
+          {
+            "file_offset": 644903,
+            "length": 1
+          },
+          {
+            "file_offset": 644819,
+            "length": 1
+          },
+          {
+            "file_offset": 644904,
+            "length": 1
+          },
+          {
+            "file_offset": 644820,
+            "length": 1
+          },
+          {
+            "file_offset": 644905,
+            "length": 1
+          },
+          {
+            "file_offset": 644821,
+            "length": 1
+          },
+          {
+            "file_offset": 644906,
+            "length": 1
+          },
+          {
+            "file_offset": 644822,
+            "length": 1
+          },
+          {
+            "file_offset": 644907,
+            "length": 1
+          },
+          {
+            "file_offset": 644823,
+            "length": 1
+          },
+          {
+            "file_offset": 644908,
+            "length": 1
+          },
+          {
+            "file_offset": 644824,
+            "length": 1
+          },
+          {
+            "file_offset": 644909,
+            "length": 1
+          },
+          {
+            "file_offset": 644825,
+            "length": 1
+          },
+          {
+            "file_offset": 644910,
+            "length": 1
+          },
+          {
+            "file_offset": 644826,
+            "length": 1
+          },
+          {
+            "file_offset": 644911,
+            "length": 1
+          },
+          {
+            "file_offset": 644827,
+            "length": 1
+          },
+          {
+            "file_offset": 644912,
+            "length": 1
+          },
+          {
+            "file_offset": 644828,
+            "length": 1
+          },
+          {
+            "file_offset": 644913,
+            "length": 1
+          },
+          {
+            "file_offset": 644829,
+            "length": 1
+          },
+          {
+            "file_offset": 644914,
+            "length": 1
+          },
+          {
+            "file_offset": 644830,
+            "length": 1
+          },
+          {
+            "file_offset": 644915,
+            "length": 1
+          },
+          {
+            "file_offset": 644831,
+            "length": 1
+          },
+          {
+            "file_offset": 644916,
+            "length": 1
+          },
+          {
+            "file_offset": 644832,
+            "length": 1
+          },
+          {
+            "file_offset": 644917,
+            "length": 1
+          },
+          {
+            "file_offset": 644833,
+            "length": 1
+          },
+          {
+            "file_offset": 644918,
+            "length": 1
+          },
+          {
+            "file_offset": 644834,
+            "length": 1
+          },
+          {
+            "file_offset": 644919,
+            "length": 1
+          },
+          {
+            "file_offset": 644835,
+            "length": 1
+          },
+          {
+            "file_offset": 644920,
+            "length": 1
+          },
+          {
+            "file_offset": 644836,
+            "length": 1
+          },
+          {
+            "file_offset": 644921,
+            "length": 1
+          },
+          {
+            "file_offset": 644837,
+            "length": 1
+          },
+          {
+            "file_offset": 644922,
+            "length": 1
+          },
+          {
+            "file_offset": 644838,
+            "length": 1
+          },
+          {
+            "file_offset": 644923,
+            "length": 1
+          },
+          {
+            "file_offset": 644839,
+            "length": 1
+          },
+          {
+            "file_offset": 644924,
+            "length": 1
+          },
+          {
+            "file_offset": 644840,
+            "length": 1
+          },
+          {
+            "file_offset": 644925,
+            "length": 1
+          },
+          {
+            "file_offset": 644841,
+            "length": 1
+          },
+          {
+            "file_offset": 644926,
+            "length": 1
+          },
+          {
+            "file_offset": 644842,
+            "length": 1
+          },
+          {
+            "file_offset": 644927,
+            "length": 1
+          },
+          {
+            "file_offset": 644843,
+            "length": 1
+          },
+          {
+            "file_offset": 644928,
+            "length": 1
+          },
+          {
+            "file_offset": 644844,
+            "length": 1
+          },
+          {
+            "file_offset": 644929,
+            "length": 1
+          },
+          {
+            "file_offset": 644845,
+            "length": 1
+          },
+          {
+            "file_offset": 644930,
+            "length": 1
+          },
+          {
+            "file_offset": 644846,
+            "length": 1
+          },
+          {
+            "file_offset": 644931,
+            "length": 1
+          },
+          {
+            "file_offset": 644847,
+            "length": 1
+          },
+          {
+            "file_offset": 644932,
+            "length": 1
+          },
+          {
+            "file_offset": 644848,
+            "length": 1
+          },
+          {
+            "file_offset": 644933,
+            "length": 1
+          },
+          {
+            "file_offset": 644849,
+            "length": 1
+          },
+          {
+            "file_offset": 644934,
+            "length": 1
+          },
+          {
+            "file_offset": 644850,
+            "length": 1
+          },
+          {
+            "file_offset": 644935,
+            "length": 1
+          },
+          {
+            "file_offset": 644851,
+            "length": 1
+          },
+          {
+            "file_offset": 644936,
+            "length": 1
+          },
+          {
+            "file_offset": 644852,
+            "length": 1
+          },
+          {
+            "file_offset": 644937,
+            "length": 1
+          },
+          {
+            "file_offset": 644853,
+            "length": 1
+          },
+          {
+            "file_offset": 644938,
+            "length": 1
+          },
+          {
+            "file_offset": 644854,
+            "length": 1
+          },
+          {
+            "file_offset": 644939,
+            "length": 1
+          },
+          {
+            "file_offset": 644855,
+            "length": 1
+          },
+          {
+            "file_offset": 644940,
+            "length": 1
+          },
+          {
+            "file_offset": 644856,
+            "length": 1
+          },
+          {
+            "file_offset": 644941,
+            "length": 1
+          },
+          {
+            "file_offset": 644857,
+            "length": 1
+          },
+          {
+            "file_offset": 644942,
+            "length": 1
+          },
+          {
+            "file_offset": 644858,
+            "length": 1
+          },
+          {
+            "file_offset": 644943,
+            "length": 1
+          },
+          {
+            "file_offset": 644859,
+            "length": 1
+          },
+          {
+            "file_offset": 644944,
+            "length": 1
+          },
+          {
+            "file_offset": 644860,
+            "length": 1
+          },
+          {
+            "file_offset": 644945,
+            "length": 1
+          },
+          {
+            "file_offset": 644861,
+            "length": 1
+          },
+          {
+            "file_offset": 644946,
+            "length": 1
+          },
+          {
+            "file_offset": 644862,
+            "length": 1
+          },
+          {
+            "file_offset": 644947,
+            "length": 1
+          },
+          {
+            "file_offset": 644863,
+            "length": 1
+          },
+          {
+            "file_offset": 644948,
+            "length": 1
+          },
+          {
+            "file_offset": 644864,
+            "length": 1
+          },
+          {
+            "file_offset": 644949,
+            "length": 1
+          },
+          {
+            "file_offset": 644865,
+            "length": 1
+          },
+          {
+            "file_offset": 644950,
+            "length": 1
+          },
+          {
+            "file_offset": 644866,
+            "length": 1
+          },
+          {
+            "file_offset": 644951,
+            "length": 1
+          },
+          {
+            "file_offset": 644867,
+            "length": 1
+          },
+          {
+            "file_offset": 644952,
+            "length": 1
+          },
+          {
+            "file_offset": 644868,
+            "length": 1
+          },
+          {
+            "file_offset": 644953,
+            "length": 1
+          },
+          {
+            "file_offset": 644869,
+            "length": 1
+          },
+          {
+            "file_offset": 644954,
+            "length": 1
+          },
+          {
+            "file_offset": 644870,
+            "length": 1
+          },
+          {
+            "file_offset": 644955,
+            "length": 1
+          },
+          {
+            "file_offset": 644871,
+            "length": 1
+          },
+          {
+            "file_offset": 644956,
+            "length": 1
+          },
+          {
+            "file_offset": 644872,
+            "length": 1
+          },
+          {
+            "file_offset": 644957,
+            "length": 1
+          },
+          {
+            "file_offset": 644873,
+            "length": 1
+          },
+          {
+            "file_offset": 644958,
+            "length": 1
+          },
+          {
+            "file_offset": 644874,
+            "length": 1
+          },
+          {
+            "file_offset": 644959,
+            "length": 1
+          },
+          {
+            "file_offset": 644875,
+            "length": 1
+          },
+          {
+            "file_offset": 644960,
+            "length": 1
+          },
+          {
+            "file_offset": 644876,
+            "length": 1
+          },
+          {
+            "file_offset": 644961,
+            "length": 1
+          },
+          {
+            "file_offset": 644877,
+            "length": 1
+          },
+          {
+            "file_offset": 644962,
+            "length": 1
+          },
+          {
+            "file_offset": 644878,
+            "length": 1
+          },
+          {
+            "file_offset": 644963,
+            "length": 1
+          },
+          {
+            "file_offset": 644879,
+            "length": 1
+          },
+          {
+            "file_offset": 644964,
+            "length": 1
+          },
+          {
+            "file_offset": 644880,
+            "length": 1
+          },
+          {
+            "file_offset": 644965,
+            "length": 1
+          },
+          {
+            "file_offset": 644881,
+            "length": 1
+          },
+          {
+            "file_offset": 644966,
+            "length": 1
+          },
+          {
+            "file_offset": 644882,
+            "length": 1
+          },
+          {
+            "file_offset": 644967,
+            "length": 1
+          },
+          {
+            "file_offset": 644883,
+            "length": 1
+          },
+          {
+            "file_offset": 644968,
+            "length": 1
+          },
+          {
+            "file_offset": 644884,
+            "length": 1
+          },
+          {
+            "file_offset": 644969,
+            "length": 1
+          },
+          {
+            "file_offset": 644885,
+            "length": 1
+          },
+          {
+            "file_offset": 644970,
+            "length": 1
+          },
+          {
+            "file_offset": 644886,
+            "length": 1
+          },
+          {
+            "file_offset": 644971,
+            "length": 1
+          },
+          {
+            "file_offset": 644887,
+            "length": 1
+          },
+          {
+            "file_offset": 644972,
+            "length": 1
+          },
+          {
+            "file_offset": 644888,
+            "length": 1
+          },
+          {
+            "file_offset": 644973,
+            "length": 1
+          },
+          {
+            "file_offset": 644889,
+            "length": 1
+          },
+          {
+            "file_offset": 644974,
+            "length": 1
+          },
+          {
+            "file_offset": 644890,
+            "length": 1
+          },
+          {
+            "file_offset": 644975,
+            "length": 1
+          },
+          {
+            "file_offset": 644891,
+            "length": 1
+          },
+          {
+            "file_offset": 644976,
+            "length": 1
+          },
+          {
+            "file_offset": 644892,
+            "length": 1
+          },
+          {
+            "file_offset": 644977,
+            "length": 1
+          },
+          {
+            "file_offset": 644893,
+            "length": 1
+          },
+          {
+            "file_offset": 644978,
+            "length": 1
+          }
+        ]
+      },
+      "size": 194,
+      "sha256": "ca67448c1c48710c6bc76c0dddc919e842a14670f31f7948cb0afd3a892fb19a",
+      "reading": "97 numeric pitch words; R-0075 documents code-as-data aliases85-96"
+    },
+    {
+      "id": "audio.resource-lengths",
+      "source": {
+        "kind": "raw",
+        "pieces": [
+          {
+            "file_offset": 524288,
+            "length": 2
+          },
+          {
+            "file_offset": 524312,
+            "length": 2
+          },
+          {
+            "file_offset": 527423,
+            "length": 2
+          },
+          {
+            "file_offset": 529850,
+            "length": 2
+          },
+          {
+            "file_offset": 532133,
+            "length": 2
+          },
+          {
+            "file_offset": 533372,
+            "length": 2
+          },
+          {
+            "file_offset": 534629,
+            "length": 2
+          },
+          {
+            "file_offset": 537668,
+            "length": 2
+          },
+          {
+            "file_offset": 548564,
+            "length": 2
+          },
+          {
+            "file_offset": 550685,
+            "length": 2
+          },
+          {
+            "file_offset": 554336,
+            "length": 2
+          },
+          {
+            "file_offset": 555125,
+            "length": 2
+          },
+          {
+            "file_offset": 562583,
+            "length": 2
+          },
+          {
+            "file_offset": 564371,
+            "length": 2
+          },
+          {
+            "file_offset": 564674,
+            "length": 2
+          },
+          {
+            "file_offset": 570746,
+            "length": 2
+          },
+          {
+            "file_offset": 577673,
+            "length": 2
+          },
+          {
+            "file_offset": 581288,
+            "length": 2
+          },
+          {
+            "file_offset": 583553,
+            "length": 2
+          },
+          {
+            "file_offset": 586178,
+            "length": 2
+          },
+          {
+            "file_offset": 589487,
+            "length": 2
+          },
+          {
+            "file_offset": 590222,
+            "length": 2
+          },
+          {
+            "file_offset": 592802,
+            "length": 2
+          },
+          {
+            "file_offset": 595202,
+            "length": 2
+          },
+          {
+            "file_offset": 597224,
+            "length": 2
+          },
+          {
+            "file_offset": 598850,
+            "length": 2
+          },
+          {
+            "file_offset": 606119,
+            "length": 2
+          },
+          {
+            "file_offset": 606197,
+            "length": 2
+          },
+          {
+            "file_offset": 606293,
+            "length": 2
+          },
+          {
+            "file_offset": 607640,
+            "length": 2
+          },
+          {
+            "file_offset": 607718,
+            "length": 2
+          },
+          {
+            "file_offset": 608561,
+            "length": 2
+          },
+          {
+            "file_offset": 609503,
+            "length": 2
+          },
+          {
+            "file_offset": 612650,
+            "length": 2
+          },
+          {
+            "file_offset": 613502,
+            "length": 2
+          },
+          {
+            "file_offset": 616415,
+            "length": 2
+          },
+          {
+            "file_offset": 618266,
+            "length": 2
+          },
+          {
+            "file_offset": 620018,
+            "length": 2
+          },
+          {
+            "file_offset": 622976,
+            "length": 2
+          },
+          {
+            "file_offset": 625088,
+            "length": 2
+          },
+          {
+            "file_offset": 626516,
+            "length": 2
+          },
+          {
+            "file_offset": 629123,
+            "length": 2
+          },
+          {
+            "file_offset": 629381,
+            "length": 2
+          },
+          {
+            "file_offset": 630737,
+            "length": 2
+          },
+          {
+            "file_offset": 632210,
+            "length": 2
+          },
+          {
+            "file_offset": 633062,
+            "length": 2
+          },
+          {
+            "file_offset": 634274,
+            "length": 2
+          },
+          {
+            "file_offset": 637520,
+            "length": 2
+          },
+          {
+            "file_offset": 638741,
+            "length": 2
+          },
+          {
+            "file_offset": 638783,
+            "length": 2
+          },
+          {
+            "file_offset": 640688,
+            "length": 2
+          },
+          {
+            "file_offset": 645133,
+            "length": 2
+          },
+          {
+            "file_offset": 649578,
+            "length": 2
+          },
+          {
+            "file_offset": 649882,
+            "length": 2
+          },
+          {
+            "file_offset": 650509,
+            "length": 2
+          },
+          {
+            "file_offset": 652098,
+            "length": 2
+          },
+          {
+            "file_offset": 653068,
+            "length": 2
+          },
+          {
+            "file_offset": 655973,
+            "length": 2
+          }
+        ]
+      },
+      "size": 116,
+      "sha256": "c39be0b2366ab39521083effcded7bfbcecc15bcc2c4c969e66b46451c9553bc"
+    },
+    {
+      "id": "audio.menu-transfer",
+      "source": {
+        "kind": "raw",
+        "pieces": [
+          {
+            "file_offset": 649888,
+            "length": 627
+          }
+        ]
+      },
+      "size": 627,
+      "sha256": "e3fb5d2a70d98f323eb273d4d484c893a34a8043c3c418e75071a8709e4c071c"
+    },
+    {
+      "id": "audio.title-transfer",
+      "source": {
+        "kind": "raw",
+        "pieces": [
+          {
+            "file_offset": 655979,
+            "length": 2206
+          }
+        ]
+      },
+      "size": 2206,
+      "sha256": "dd44447d4d0b5d1e4e6bdcbee536b814a8771c1a9b3ca5227ef42345803d0a73"
+    },
+    {
+      "id": "audio.sample-slots",
+      "source": {
+        "kind": "raw",
+        "pieces": [
+          {
+            "file_offset": 130293,
+            "length": 64
+          }
+        ]
+      },
+      "size": 64,
+      "sha256": "12dd26f1219b3688b75139b8e349ae328395741a3dc2e713f98683d0f87a44f1"
+    },
+    {
+      "id": "audio.sample-fractions",
+      "source": {
+        "kind": "raw",
+        "pieces": [
+          {
+            "file_offset": 524292,
+            "length": 1
+          },
+          {
+            "file_offset": 597228,
+            "length": 1
+          },
+          {
+            "file_offset": 625092,
+            "length": 1
+          },
+          {
+            "file_offset": 534633,
+            "length": 1
+          },
+          {
+            "file_offset": 564678,
+            "length": 1
+          },
+          {
+            "file_offset": 554340,
+            "length": 1
+          },
+          {
+            "file_offset": 524292,
+            "length": 1
+          },
+          {
+            "file_offset": 524292,
+            "length": 1
+          },
+          {
+            "file_offset": 586182,
+            "length": 1
+          },
+          {
+            "file_offset": 564375,
+            "length": 1
+          },
+          {
+            "file_offset": 524292,
+            "length": 1
+          },
+          {
+            "file_offset": 630741,
+            "length": 1
+          },
+          {
+            "file_offset": 626520,
+            "length": 1
+          },
+          {
+            "file_offset": 532137,
+            "length": 1
+          },
+          {
+            "file_offset": 524292,
+            "length": 1
+          },
+          {
+            "file_offset": 524292,
+            "length": 1
+          },
+          {
+            "file_offset": 606123,
+            "length": 1
+          },
+          {
+            "file_offset": 606201,
+            "length": 1
+          },
+          {
+            "file_offset": 524292,
+            "length": 1
+          },
+          {
+            "file_offset": 524292,
+            "length": 1
+          },
+          {
+            "file_offset": 638745,
+            "length": 1
+          },
+          {
+            "file_offset": 548568,
+            "length": 1
+          },
+          {
+            "file_offset": 524292,
+            "length": 1
+          },
+          {
+            "file_offset": 581292,
+            "length": 1
+          },
+          {
+            "file_offset": 583557,
+            "length": 1
+          },
+          {
+            "file_offset": 570750,
+            "length": 1
+          },
+          {
+            "file_offset": 589491,
+            "length": 1
+          },
+          {
+            "file_offset": 524292,
+            "length": 1
+          },
+          {
+            "file_offset": 590226,
+            "length": 1
+          },
+          {
+            "file_offset": 524292,
+            "length": 1
+          },
+          {
+            "file_offset": 634278,
+            "length": 1
+          },
+          {
+            "file_offset": 524292,
+            "length": 1
+          },
+          {
+            "file_offset": 524292,
+            "length": 1
+          },
+          {
+            "file_offset": 524292,
+            "length": 1
+          },
+          {
+            "file_offset": 524292,
+            "length": 1
+          },
+          {
+            "file_offset": 524292,
+            "length": 1
+          },
+          {
+            "file_offset": 524292,
+            "length": 1
+          },
+          {
+            "file_offset": 524292,
+            "length": 1
+          },
+          {
+            "file_offset": 524292,
+            "length": 1
+          },
+          {
+            "file_offset": 524292,
+            "length": 1
+          },
+          {
+            "file_offset": 524292,
+            "length": 1
+          },
+          {
+            "file_offset": 524292,
+            "length": 1
+          },
+          {
+            "file_offset": 524292,
+            "length": 1
+          },
+          {
+            "file_offset": 524292,
+            "length": 1
+          },
+          {
+            "file_offset": 524292,
+            "length": 1
+          },
+          {
+            "file_offset": 524292,
+            "length": 1
+          },
+          {
+            "file_offset": 524292,
+            "length": 1
+          },
+          {
+            "file_offset": 524292,
+            "length": 1
+          },
+          {
+            "file_offset": 524292,
+            "length": 1
+          },
+          {
+            "file_offset": 524292,
+            "length": 1
+          },
+          {
+            "file_offset": 524292,
+            "length": 1
+          },
+          {
+            "file_offset": 524292,
+            "length": 1
+          },
+          {
+            "file_offset": 524292,
+            "length": 1
+          },
+          {
+            "file_offset": 524292,
+            "length": 1
+          },
+          {
+            "file_offset": 524292,
+            "length": 1
+          },
+          {
+            "file_offset": 524292,
+            "length": 1
+          },
+          {
+            "file_offset": 524292,
+            "length": 1
+          },
+          {
+            "file_offset": 524292,
+            "length": 1
+          },
+          {
+            "file_offset": 524292,
+            "length": 1
+          },
+          {
+            "file_offset": 524292,
+            "length": 1
+          },
+          {
+            "file_offset": 524292,
+            "length": 1
+          },
+          {
+            "file_offset": 524292,
+            "length": 1
+          },
+          {
+            "file_offset": 524292,
+            "length": 1
+          },
+          {
+            "file_offset": 524292,
+            "length": 1
+          }
+        ]
+      },
+      "size": 64,
+      "sha256": "c3fae8db515aa43543ba6cf0b7dd257d450c219379ba73fd7a529f6f56b2b0b5"
+    },
+    {
+      "id": "audio.sample-transpose",
+      "source": {
+        "kind": "raw",
+        "pieces": [
+          {
+            "file_offset": 524293,
+            "length": 1
+          },
+          {
+            "file_offset": 597229,
+            "length": 1
+          },
+          {
+            "file_offset": 625093,
+            "length": 1
+          },
+          {
+            "file_offset": 534634,
+            "length": 1
+          },
+          {
+            "file_offset": 564679,
+            "length": 1
+          },
+          {
+            "file_offset": 554341,
+            "length": 1
+          },
+          {
+            "file_offset": 524293,
+            "length": 1
+          },
+          {
+            "file_offset": 524293,
+            "length": 1
+          },
+          {
+            "file_offset": 586183,
+            "length": 1
+          },
+          {
+            "file_offset": 564376,
+            "length": 1
+          },
+          {
+            "file_offset": 524293,
+            "length": 1
+          },
+          {
+            "file_offset": 630742,
+            "length": 1
+          },
+          {
+            "file_offset": 626521,
+            "length": 1
+          },
+          {
+            "file_offset": 532138,
+            "length": 1
+          },
+          {
+            "file_offset": 524293,
+            "length": 1
+          },
+          {
+            "file_offset": 524293,
+            "length": 1
+          },
+          {
+            "file_offset": 606124,
+            "length": 1
+          },
+          {
+            "file_offset": 606202,
+            "length": 1
+          },
+          {
+            "file_offset": 524293,
+            "length": 1
+          },
+          {
+            "file_offset": 524293,
+            "length": 1
+          },
+          {
+            "file_offset": 638746,
+            "length": 1
+          },
+          {
+            "file_offset": 548569,
+            "length": 1
+          },
+          {
+            "file_offset": 524293,
+            "length": 1
+          },
+          {
+            "file_offset": 581293,
+            "length": 1
+          },
+          {
+            "file_offset": 583558,
+            "length": 1
+          },
+          {
+            "file_offset": 570751,
+            "length": 1
+          },
+          {
+            "file_offset": 589492,
+            "length": 1
+          },
+          {
+            "file_offset": 524293,
+            "length": 1
+          },
+          {
+            "file_offset": 590227,
+            "length": 1
+          },
+          {
+            "file_offset": 524293,
+            "length": 1
+          },
+          {
+            "file_offset": 634279,
+            "length": 1
+          },
+          {
+            "file_offset": 524293,
+            "length": 1
+          },
+          {
+            "file_offset": 524293,
+            "length": 1
+          },
+          {
+            "file_offset": 524293,
+            "length": 1
+          },
+          {
+            "file_offset": 524293,
+            "length": 1
+          },
+          {
+            "file_offset": 524293,
+            "length": 1
+          },
+          {
+            "file_offset": 524293,
+            "length": 1
+          },
+          {
+            "file_offset": 524293,
+            "length": 1
+          },
+          {
+            "file_offset": 524293,
+            "length": 1
+          },
+          {
+            "file_offset": 524293,
+            "length": 1
+          },
+          {
+            "file_offset": 524293,
+            "length": 1
+          },
+          {
+            "file_offset": 524293,
+            "length": 1
+          },
+          {
+            "file_offset": 524293,
+            "length": 1
+          },
+          {
+            "file_offset": 524293,
+            "length": 1
+          },
+          {
+            "file_offset": 524293,
+            "length": 1
+          },
+          {
+            "file_offset": 524293,
+            "length": 1
+          },
+          {
+            "file_offset": 524293,
+            "length": 1
+          },
+          {
+            "file_offset": 524293,
+            "length": 1
+          },
+          {
+            "file_offset": 524293,
+            "length": 1
+          },
+          {
+            "file_offset": 524293,
+            "length": 1
+          },
+          {
+            "file_offset": 524293,
+            "length": 1
+          },
+          {
+            "file_offset": 524293,
+            "length": 1
+          },
+          {
+            "file_offset": 524293,
+            "length": 1
+          },
+          {
+            "file_offset": 524293,
+            "length": 1
+          },
+          {
+            "file_offset": 524293,
+            "length": 1
+          },
+          {
+            "file_offset": 524293,
+            "length": 1
+          },
+          {
+            "file_offset": 524293,
+            "length": 1
+          },
+          {
+            "file_offset": 524293,
+            "length": 1
+          },
+          {
+            "file_offset": 524293,
+            "length": 1
+          },
+          {
+            "file_offset": 524293,
+            "length": 1
+          },
+          {
+            "file_offset": 524293,
+            "length": 1
+          },
+          {
+            "file_offset": 524293,
+            "length": 1
+          },
+          {
+            "file_offset": 524293,
+            "length": 1
+          },
+          {
+            "file_offset": 524293,
+            "length": 1
+          }
+        ]
+      },
+      "size": 64,
+      "sha256": "318f369f668c08eda7d5493dad971bd07864dcf6726f7119b6f09294eb3227f4"
+    },
+    {
+      "id": "audio.graphics-work-directory",
+      "source": {
+        "kind": "raw",
+        "pieces": [
+          {
+            "file_offset": 78647,
+            "length": 5
+          },
+          {
+            "file_offset": 78652,
+            "length": 5
+          },
+          {
+            "file_offset": 78667,
+            "length": 5
+          },
+          {
+            "file_offset": 78777,
+            "length": 5
+          },
+          {
+            "file_offset": 78782,
+            "length": 5
+          },
+          {
+            "file_offset": 78797,
+            "length": 5
+          },
+          {
+            "file_offset": 78982,
+            "length": 5
+          },
+          {
+            "file_offset": 78987,
+            "length": 5
+          },
+          {
+            "file_offset": 78992,
+            "length": 5
+          },
+          {
+            "file_offset": 79002,
+            "length": 5
+          },
+          {
+            "file_offset": 79012,
+            "length": 5
+          },
+          {
+            "file_offset": 79027,
+            "length": 5
+          },
+          {
+            "file_offset": 79032,
+            "length": 5
+          },
+          {
+            "file_offset": 79042,
+            "length": 5
+          },
+          {
+            "file_offset": 79082,
+            "length": 5
+          },
+          {
+            "file_offset": 79087,
+            "length": 5
+          },
+          {
+            "file_offset": 79097,
+            "length": 5
+          }
+        ]
+      },
+      "size": 85,
+      "sha256": "8754bfb46e13ab0dc9c2fa243f8cf12005303e93328cb261baaea2846f442e77"
+    },
+    {
+      "id": "audio.cartridge-defaults",
+      "source": {
+        "kind": "raw",
+        "pieces": [
+          {
+            "file_offset": 98304,
+            "length": 1158
+          }
+        ]
+      },
+      "size": 1158,
+      "sha256": "c27e45e20e746d23bb1b443fa3e7c5d8cdbf1bbfe75affae80b89a80e77af02d"
+    },
+    {
+      "id": "audio.track-types",
+      "source": {
+        "kind": "raw",
+        "pieces": [
+          {
+            "file_offset": 107092,
+            "length": 50
+          }
+        ]
+      },
+      "size": 50,
+      "sha256": "d9eb1969e8457b372f7ec775b03aefd69a5be9d6d5d5114b6805807577c8695a"
+    },
+    {
+      "id": "audio.sample.00",
+      "source": {
+        "kind": "raw",
+        "pieces": [
+          {
+            "file_offset": 524290,
+            "length": 22
+          }
+        ]
+      },
+      "size": 22,
+      "sha256": "fbdec53bec5c2b25b0ef01a997f71a29f51ca9b0c92a52efea4551ed8ec2f9f0"
+    },
+    {
+      "id": "audio.sample.04",
+      "source": {
+        "kind": "raw",
+        "pieces": [
+          {
+            "file_offset": 532135,
+            "length": 1237
+          }
+        ]
+      },
+      "size": 1237,
+      "sha256": "45bad897721396bf3f72d3646a6e2c8ed01a28e72730a4e63c0cf036d9903105"
+    },
+    {
+      "id": "audio.sample.06",
+      "source": {
+        "kind": "raw",
+        "pieces": [
+          {
+            "file_offset": 534631,
+            "length": 3037
+          }
+        ]
+      },
+      "size": 3037,
+      "sha256": "a207dd9ddea4951fffa6d675d25ad5046e2478d4ee115735cc6bbf05be037850"
+    },
+    {
+      "id": "audio.sample.08",
+      "source": {
+        "kind": "raw",
+        "pieces": [
+          {
+            "file_offset": 548566,
+            "length": 2119
+          }
+        ]
+      },
+      "size": 2119,
+      "sha256": "c79d76bdb2a8e30eae449d98b524db267bc87e11989ad4233ac3dff394f75b2b"
+    },
+    {
+      "id": "audio.sample.10",
+      "source": {
+        "kind": "raw",
+        "pieces": [
+          {
+            "file_offset": 554338,
+            "length": 787
+          }
+        ]
+      },
+      "size": 787,
+      "sha256": "92b900df28082b48cccdef1d2c53efedd71d039ba2688f413a42dd99f0272b05"
+    },
+    {
+      "id": "audio.sample.13",
+      "source": {
+        "kind": "raw",
+        "pieces": [
+          {
+            "file_offset": 564373,
+            "length": 301
+          }
+        ]
+      },
+      "size": 301,
+      "sha256": "af9f10cc63d4711469cc50f6bbe6a4349033257787c48370db16464edeee6a7c"
+    },
+    {
+      "id": "audio.sample.14",
+      "source": {
+        "kind": "raw",
+        "pieces": [
+          {
+            "file_offset": 564676,
+            "length": 6070
+          }
+        ]
+      },
+      "size": 6070,
+      "sha256": "16e324731897072448dae98b08a1b3782687f6802af8cf9d41e066a8c4ebe6c0"
+    },
+    {
+      "id": "audio.sample.15",
+      "source": {
+        "kind": "raw",
+        "pieces": [
+          {
+            "file_offset": 570748,
+            "length": 6925
+          }
+        ]
+      },
+      "size": 6925,
+      "sha256": "b6ca2ab6efe52bf1e6471a77f202206c472188222f1d3ad8d503ed4ce01335bd"
+    },
+    {
+      "id": "audio.sample.17",
+      "source": {
+        "kind": "raw",
+        "pieces": [
+          {
+            "file_offset": 581290,
+            "length": 2263
+          }
+        ]
+      },
+      "size": 2263,
+      "sha256": "1ce3d99274875f114147b4dafbd976056f03c890cddb8d70836a5d18b52ea473"
+    },
+    {
+      "id": "audio.sample.18",
+      "source": {
+        "kind": "raw",
+        "pieces": [
+          {
+            "file_offset": 583555,
+            "length": 2623
+          }
+        ]
+      },
+      "size": 2623,
+      "sha256": "60d19e949fc68713b9a903814c708ac71f20cffab84c9f8a8786b4fcf65b6d78"
+    },
+    {
+      "id": "audio.sample.19",
+      "source": {
+        "kind": "raw",
+        "pieces": [
+          {
+            "file_offset": 586180,
+            "length": 3307
+          }
+        ]
+      },
+      "size": 3307,
+      "sha256": "250d0cf837a12fd310d67a245b79537d68df92432028dd9688a9a3dc650f1ced"
+    },
+    {
+      "id": "audio.sample.20",
+      "source": {
+        "kind": "raw",
+        "pieces": [
+          {
+            "file_offset": 589489,
+            "length": 733
+          }
+        ]
+      },
+      "size": 733,
+      "sha256": "4e04d187fc70752ba6be554b7ca4119208c2ca0fc61338c47e3e86a79d062ab0"
+    },
+    {
+      "id": "audio.sample.21",
+      "source": {
+        "kind": "raw",
+        "pieces": [
+          {
+            "file_offset": 590224,
+            "length": 2578
+          }
+        ]
+      },
+      "size": 2578,
+      "sha256": "2ee6bc6797866c127d746b09e95e79ad4fe5124d71c5d8e50d597c48f160b4f0"
+    },
+    {
+      "id": "audio.sample.24",
+      "source": {
+        "kind": "raw",
+        "pieces": [
+          {
+            "file_offset": 597226,
+            "length": 1624
+          }
+        ]
+      },
+      "size": 1624,
+      "sha256": "e841d78998a127bb890517b000502b892e33e3b2ea2908684b0f108fc689e618"
+    },
+    {
+      "id": "audio.sample.26",
+      "source": {
+        "kind": "raw",
+        "pieces": [
+          {
+            "file_offset": 606121,
+            "length": 76
+          }
+        ]
+      },
+      "size": 76,
+      "sha256": "dc79b7d9ca7f507474f46636d7b73127cd5eb9b6ebbbd4e8427710e0941001a9"
+    },
+    {
+      "id": "audio.sample.27",
+      "source": {
+        "kind": "raw",
+        "pieces": [
+          {
+            "file_offset": 606199,
+            "length": 94
+          }
+        ]
+      },
+      "size": 94,
+      "sha256": "708bd7a9785c720b835ee5a7e6f611fdcaf1ac72fae9e8c8b970abf5f3c3ca50"
+    },
+    {
+      "id": "audio.sample.39",
+      "source": {
+        "kind": "raw",
+        "pieces": [
+          {
+            "file_offset": 625090,
+            "length": 1426
+          }
+        ]
+      },
+      "size": 1426,
+      "sha256": "53bb4cd821a88ac1e92bfd99211495e3809ac030878f820307954a5b3ca38aaf"
+    },
+    {
+      "id": "audio.sample.40",
+      "source": {
+        "kind": "raw",
+        "pieces": [
+          {
+            "file_offset": 626518,
+            "length": 2605
+          }
+        ]
+      },
+      "size": 2605,
+      "sha256": "ac9dc9bf935904b66bf2abeedfa7382b17d54a47d6203c93ccc3a612fd1774bf"
+    },
+    {
+      "id": "audio.sample.43",
+      "source": {
+        "kind": "raw",
+        "pieces": [
+          {
+            "file_offset": 630739,
+            "length": 1471
+          }
+        ]
+      },
+      "size": 1471,
+      "sha256": "525c2d025fe180a62adae3eaed307f111e2c346adcb805267723c450c52eb964"
+    },
+    {
+      "id": "audio.sample.46",
+      "source": {
+        "kind": "raw",
+        "pieces": [
+          {
+            "file_offset": 634276,
+            "length": 3244
+          }
+        ]
+      },
+      "size": 3244,
+      "sha256": "2e650a1719df5560f60a93ae15d40ed28a6b5a76a09160efd105137e76172543"
+    },
+    {
+      "id": "audio.sample.48",
+      "source": {
+        "kind": "raw",
+        "pieces": [
+          {
+            "file_offset": 638743,
+            "length": 40
+          }
+        ]
+      },
+      "size": 40,
+      "sha256": "4ea676529862c96f1188948103c19dfd9a34deaaa770a8163f6b3f39bbd9757e"
     }
   ],
   "description": "Classic content for DRAGSTER and ZOOM ZOO (the v9 entries, unchanged) and, from TRACK-BREADTH part 3, the fourteen other race tracks a cold start reaches: per track its decoded data, tile columns, tile flags and BG1 tiles (track.NN.*, R-0046 observations 1-2), per scenery (track mod 14) its BG2 tiles, BG2 map and race palette (scenery.SS.*, `$82:DC20-DD84`), and the track name table (`$83:9FFA`). Every new entry is ROM content located by the loader's own directories; tools/unirally_lab/content/tracks.py v10_new_entries generates them. From SPECIAL-TILE-RESPONSE (v11): the two 48-byte signed height tables the corkscrew tile steps through ($00:8088 and, for a rolling rider, $00:80B8; R-0047). From LOCKED-TOURS (v12): the twenty race tracks of the five tours a cold start does not list (track.NN.* for 5, 6, 8, 9, 15, 16, 18, 19, 25, 26, 28, 29, 35, 36, 38, 39, 40, 41, 43, 44) and sceneries 1, 8 and 12 (tracks.v12_new_entries). From TILE-PAIRS-8-12-26 (v13): the loop tile's 17 signed x steps by loop step ($81:834C; R-0051). From HUNTER-EFFECTS (v14): the HUNTER tag effects' blink pattern ($83:D3BC) and the HUNTER opponent's sprite palette (asset 26, character 20 + 6, `$82:DDB0-DDBC`; R-0052). From FRONT-END-MAIN-MENU (v15): the content of the boot screens, the title and the main menu: seventeen assets of the directory at `$82:B332` (front-end.asset.NNN) and the tables the front-end code reads in place: the base palette, the text printer's character table, the main menu's text, the arrow's spin frames and columns, and the palette cycle's colours (tools/unirally_lab/content/front_end.py v15_new_entries; R-0054). From FRONT-END-1P-SETUP (v16): the rider menu's content: the riders' sprite palettes (assets 6-21; `$80:A72B` and the HDMA table `$80:CD84` are the same bytes), the riders' name records a cold start copies to SRAM (`$83:800C`), the menu's title (`$80:BCAF`) and the main menu decoration animator's tables (`$83:9AF9`) (tools/unirally_lab/content/front_end.py v16_new_entries; R-0055). From FRONT-END-1P-SETUP part 2 (v17): PICK TOUR's, PICK TRACK's and NOW PLAYING's content: the computer riders', medals', base and marker palettes (assets 22-26, 32-37), the medal and marker object tiles (`$07:D5D8`, `$07:C9D8`), the menus' text and tables, the tour names, the laps by track and the stunt events' qualifying scores (tools/unirally_lab/content/front_end.py v17_new_entries; R-0056). From FRONT-END-1P-CONTINUATION (v18): the one-run result screen's text (`$80:D187`) and trophies (`$80:D17B`) (tools/unirally_lab/content/front_end.py v18_new_entries; R-0057). From FRONT-END-LAP-RESULT (v19): the lap result screen's text: the headings, the graph's axes and times, and \"laps on\" the track (`$80:910F`), the record line (`$80:918F`) and the two riders' rows (`$80:91A1`, `$80:91B9`) (tools/unirally_lab/content/front_end.py v19_new_entries; R-0058). From FRONT-END-TOUR-END (v20): the medal award screen's assets (0x3B, 0x53-0x56, 0x5C, 0x64, 0x65), the medal's second art (`$09:A658`) and the award's tables (`$83:B120`) (tools/unirally_lab/content/front_end.py v20_new_entries; R-0059). From RACE-RIDERS-OPPONENTS (v21): the opponent's catch-up by track (`$83:C8B3`) and the riders' colour math on the race's BG3 ink (`$82:D4DC`) (tools/unirally_lab/content/front_end.py v21_new_entries; R-0061). From FRONT-END-ENDINGS (v22): the gold endings' assets (0x3C, 0x3E-0x43, 0x4C, 0x52, 0x57, 0x5E-0x63) and each tour's ending tables in bank `$83` (tools/unirally_lab/content/front_end.py v22_new_entries; R-0062). From HUNTER-ENDING (v23): HUNTER's gold ending's assets (0x00, 0x3A, 0x5D, 0x66-0x69, 0x6B-0x6F: the newspaper pages, the credits' colours and faces), the pages' HDMA tables (`$80:E37B`, `$80:E3A1`) and the credits' text, poses and objects (`$83:AE01`, `$83:AE12`, `$83:AE72`) (tools/unirally_lab/content/front_end.py v23_new_entries). From STUNT-EVENT-RACE (v24): the nine stunt events' content, per track its decoded data, tile columns, tile flags and BG1 tiles (track.NN.* for 2, 7, 12, 17, 22, 27, 32, 37, 42; their sceneries are already in the pack) (tools/unirally_lab/content/tracks.py v24_new_entries; R-0066). From STUNT-RESULT (v25): the stunt result's heads' colours (assets 0x26-0x39), its nine text streams (`$80:F2EA-F4B4`) and the tally's five cells (`$80:F7E7-F7FA`) (tools/unirally_lab/content/front_end.py v25_new_entries; R-0067). From STUNT-HUD (v26): NEON's scenery (track 42 in one-player play loads scenery 14: BG2 tiles, BG2 map, and a palette whose six-row block is asset 0xA6 six times, `$82:DC22-DCB4`) and the green levels its lighting moves towards (`$83:D1C3`, eight bytes) (tools/unirally_lab/content/tracks.py v26_new_entries; R-0068). From TWO-PLAYER-VS (v27): the four original rider-menu title streams for 2P and VS, including the VS second-choice overwrite at $80:C107 (tools/unirally_lab/content/front_end.py v27_new_entries; R-0071). The human-opponent result adds its fifth row from $80:D1DB (R-0071). The shared local continuation choices, VS CHAMPIONS header and row, and PICK CHALLENGER title come from $80:AE3F-AE80, $80:F9EE-FA5F and $80:C10E (R-0071). From OPTIONS (v28): the five-choice OPTIONS and RECORDS text streams and arrow-column tables at $80:B678, $80:B6CA, $80:D593 and $80:D5E1 (R-0072). The OPTIONS picker, warning, rename prompt and keyboard streams come from $80:D4C5, $80:C1DE, $80:C1AE, $80:D4D2 and $80:A4DB and the SELECT+Y+A instruction at $80:9C77 (R-0072)."

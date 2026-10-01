@@ -44,6 +44,11 @@ void check_file_and_transactional_restore() {
     rejects([&] { audio.restore(invalid); });
     require(unirally::serialize_title_menu_audio(audio.snapshot()) == before,
             "bad DSP continuation mutated running audio");
+    invalid = audio.snapshot();
+    invalid.content_identity[0] ^= 1;
+    rejects([&] { audio.restore(invalid); });
+    require(unirally::serialize_title_menu_audio(audio.snapshot()) == before,
+            "wrong content continuation mutated running audio");
     auto corrupt = bytes;
     corrupt[0] ^= 1;
     rejects([&] { unirally::deserialize_title_menu_audio(corrupt); });
@@ -54,8 +59,8 @@ void check_file_and_transactional_restore() {
     corrupt.push_back(0);
     rejects([&] { unirally::deserialize_title_menu_audio(corrupt); });
     corrupt = bytes;
-    // URAU0001 header8, phase1, then three little-endian CPU clock words8 each.
-    constexpr unsigned first_cpu_flag = 8 + 1 + 3 * 8;
+    // URAU0002 header8, phase1, identity32, then three CPU clock words8 each.
+    constexpr unsigned first_cpu_flag = 8 + 1 + 32 + 3 * 8;
     corrupt[first_cpu_flag] = 2;
     rejects([&] { unirally::deserialize_title_menu_audio(corrupt); });
 }

@@ -977,6 +977,49 @@ const std::array<RequiredEntry, 89> locked_tracks_required{{
      "a9ad06f9426d4971d276a31bc87ca024a3c7ef21efee51037aafbd41a7a148c0"},
     {"scenery.12.palette", 352, "b2a9aefe13c1dc68454cf0a5c2bedb086c6e162dbea1df1f2ef108347d89ab63"},
 }};
+// Native title/menu audio content (profile v30); R-0075. Executable upload excluded.
+const std::array<RequiredEntry, 33> audio_required{{
+    {"audio.menu-tables", 621, "e75d7872e341a636dc822616a202db6b8894196471c13d47f1b21d15f38fc407"},
+    {"audio.title-score", 2200, "b4e402d0d05207e0ceadc32e8b4ebd4d052677c42f0e36f4ab5883c74ff1eb6b"},
+    {"audio.pitch-values", 194, "ca67448c1c48710c6bc76c0dddc919e842a14670f31f7948cb0afd3a892fb19a"},
+    {"audio.resource-lengths", 116,
+     "c39be0b2366ab39521083effcded7bfbcecc15bcc2c4c969e66b46451c9553bc"},
+    {"audio.menu-transfer", 627,
+     "e3fb5d2a70d98f323eb273d4d484c893a34a8043c3c418e75071a8709e4c071c"},
+    {"audio.title-transfer", 2206,
+     "dd44447d4d0b5d1e4e6bdcbee536b814a8771c1a9b3ca5227ef42345803d0a73"},
+    {"audio.sample-slots", 64, "12dd26f1219b3688b75139b8e349ae328395741a3dc2e713f98683d0f87a44f1"},
+    {"audio.sample-fractions", 64,
+     "c3fae8db515aa43543ba6cf0b7dd257d450c219379ba73fd7a529f6f56b2b0b5"},
+    {"audio.sample-transpose", 64,
+     "318f369f668c08eda7d5493dad971bd07864dcf6726f7119b6f09294eb3227f4"},
+    {"audio.graphics-work-directory", 85,
+     "8754bfb46e13ab0dc9c2fa243f8cf12005303e93328cb261baaea2846f442e77"},
+    {"audio.cartridge-defaults", 1158,
+     "c27e45e20e746d23bb1b443fa3e7c5d8cdbf1bbfe75affae80b89a80e77af02d"},
+    {"audio.track-types", 50, "d9eb1969e8457b372f7ec775b03aefd69a5be9d6d5d5114b6805807577c8695a"},
+    {"audio.sample.00", 22, "fbdec53bec5c2b25b0ef01a997f71a29f51ca9b0c92a52efea4551ed8ec2f9f0"},
+    {"audio.sample.04", 1237, "45bad897721396bf3f72d3646a6e2c8ed01a28e72730a4e63c0cf036d9903105"},
+    {"audio.sample.06", 3037, "a207dd9ddea4951fffa6d675d25ad5046e2478d4ee115735cc6bbf05be037850"},
+    {"audio.sample.08", 2119, "c79d76bdb2a8e30eae449d98b524db267bc87e11989ad4233ac3dff394f75b2b"},
+    {"audio.sample.10", 787, "92b900df28082b48cccdef1d2c53efedd71d039ba2688f413a42dd99f0272b05"},
+    {"audio.sample.13", 301, "af9f10cc63d4711469cc50f6bbe6a4349033257787c48370db16464edeee6a7c"},
+    {"audio.sample.14", 6070, "16e324731897072448dae98b08a1b3782687f6802af8cf9d41e066a8c4ebe6c0"},
+    {"audio.sample.15", 6925, "b6ca2ab6efe52bf1e6471a77f202206c472188222f1d3ad8d503ed4ce01335bd"},
+    {"audio.sample.17", 2263, "1ce3d99274875f114147b4dafbd976056f03c890cddb8d70836a5d18b52ea473"},
+    {"audio.sample.18", 2623, "60d19e949fc68713b9a903814c708ac71f20cffab84c9f8a8786b4fcf65b6d78"},
+    {"audio.sample.19", 3307, "250d0cf837a12fd310d67a245b79537d68df92432028dd9688a9a3dc650f1ced"},
+    {"audio.sample.20", 733, "4e04d187fc70752ba6be554b7ca4119208c2ca0fc61338c47e3e86a79d062ab0"},
+    {"audio.sample.21", 2578, "2ee6bc6797866c127d746b09e95e79ad4fe5124d71c5d8e50d597c48f160b4f0"},
+    {"audio.sample.24", 1624, "e841d78998a127bb890517b000502b892e33e3b2ea2908684b0f108fc689e618"},
+    {"audio.sample.26", 76, "dc79b7d9ca7f507474f46636d7b73127cd5eb9b6ebbbd4e8427710e0941001a9"},
+    {"audio.sample.27", 94, "708bd7a9785c720b835ee5a7e6f611fdcaf1ac72fae9e8c8b970abf5f3c3ca50"},
+    {"audio.sample.39", 1426, "53bb4cd821a88ac1e92bfd99211495e3809ac030878f820307954a5b3ca38aaf"},
+    {"audio.sample.40", 2605, "ac9dc9bf935904b66bf2abeedfa7382b17d54a47d6203c93ccc3a612fd1774bf"},
+    {"audio.sample.43", 1471, "525c2d025fe180a62adae3eaed307f111e2c346adcb805267723c450c52eb964"},
+    {"audio.sample.46", 3244, "2e650a1719df5560f60a93ae15d40ed28a6b5a76a09160efd105137e76172543"},
+    {"audio.sample.48", 40, "4ea676529862c96f1188948103c19dfd9a34deaaa770a8163f6b3f39bbd9757e"},
+}};
 constexpr std::string_view two_track_rules_sha =
     "7c3377caa308cbbbe0a7324459f22b70900cf12153b7f78098559f023d75ae9c";
 
@@ -1067,8 +1110,9 @@ std::array<std::uint8_t, 32> sha256(std::span<const std::uint8_t> source) {
 } // namespace
 
 namespace {
-constexpr std::array<std::string_view, 2> supported_profiles{"classic.pal.crawler.dragster.v1",
-                                                             "classic.pal.crawler.tracks.v29"};
+constexpr std::array<std::string_view, 3> supported_profiles{"classic.pal.crawler.dragster.v1",
+                                                             "classic.pal.crawler.tracks.v29",
+                                                             "classic.pal.crawler.tracks.v30"};
 } // namespace
 
 std::span<const std::string_view> supported_pack_profiles() {
@@ -1083,6 +1127,8 @@ constexpr std::string_view pal_rom_sha256 =
     "a1105819d48c04d680c8292bbfa9abbce05224f1bc231afd66af43b7e0a1fd4e";
 constexpr std::string_view dragster_rules_sha256 =
     "70712c470db436ad95b02d3a6d51f737be7bb5b27689ca0d99a8297bac31d768";
+constexpr std::string_view audio_rules_sha =
+    "293039530c6ad250aa072415ea0f9af096532754648029d9ab69e734e0c81cf7";
 constexpr std::string_view tracks_start = "classic.crawler.race-start.v2";
 constexpr std::string_view dragster_start = "classic.crawler.dragster.race-start.v1";
 
@@ -1092,9 +1138,13 @@ struct PackRow {
     std::array<std::uint8_t, 32> digest;
 };
 
-// The header: magic, schema, source ROM, profile and start state, and the extraction
-// rules' identity. Returns true for the tracks profile, false for DRAGSTER v1.
-bool read_pack_header(const std::vector<std::uint8_t>& bytes, Reader& in) {
+enum class PackVariant { dragster, tracks, audio };
+struct PackHeader {
+    PackVariant variant;
+    std::array<std::uint8_t, 32> identity;
+};
+// Validate the source, profile, start and rules before returning the content identity.
+PackHeader read_pack_header(const std::vector<std::uint8_t>& bytes, Reader& in) {
     if (bytes.size() < 12
         || std::string_view(reinterpret_cast<const char*>(bytes.data()), 8) != pack_magic)
         throw std::invalid_argument("Classic pack magic is unsupported");
@@ -1106,21 +1156,27 @@ bool read_pack_header(const std::vector<std::uint8_t>& bytes, Reader& in) {
         throw std::invalid_argument("Classic pack source ROM identity is unsupported");
     const auto profile = in.text();
     const auto start = in.text();
-    const bool tracks = profile == supported_profiles[1];
-    if (profile != supported_profiles[tracks ? 1 : 0])
+    const auto variant = profile == supported_profiles[2] ? PackVariant::audio
+                       : profile == supported_profiles[1] ? PackVariant::tracks
+                                                          : PackVariant::dragster;
+    const bool tracks = variant != PackVariant::dragster;
+    if (profile != supported_profiles[static_cast<unsigned>(variant)])
         throw std::invalid_argument("Classic pack profile is unsupported");
     if (start != (tracks ? tracks_start : dragster_start))
         throw std::invalid_argument("Classic pack start state is unsupported");
-    if (rules_identity != hex_digest(tracks ? two_track_rules_sha : dragster_rules_sha256))
+    if (rules_identity
+        != hex_digest(variant == PackVariant::audio ? audio_rules_sha
+                      : tracks                      ? two_track_rules_sha
+                                                    : dragster_rules_sha256))
         throw std::invalid_argument("Classic pack extraction-rules identity is unsupported");
-    return tracks;
+    return {variant, rules_identity};
 }
 
 // The entries a profile must carry, exactly: DRAGSTER v1's, and for the tracks profile the
 // entries each later profile added.
-std::vector<RequiredEntry> required_entries(bool tracks) {
+std::vector<RequiredEntry> required_entries(PackVariant variant) {
     std::vector<RequiredEntry> out(required.begin(), required.end());
-    if (!tracks) return out;
+    if (variant == PackVariant::dragster) return out;
     for (const auto table : {std::span<const RequiredEntry>(zoom_required),
                              std::span<const RequiredEntry>(tracks_required),
                              std::span<const RequiredEntry>(special_tiles_required),
@@ -1143,6 +1199,8 @@ std::vector<RequiredEntry> required_entries(bool tracks) {
                              std::span<const RequiredEntry>(options_required),
                              std::span<const RequiredEntry>(league_required)})
         out.insert(out.end(), table.begin(), table.end());
+    if (variant == PackVariant::audio)
+        out.insert(out.end(), audio_required.begin(), audio_required.end());
     return out;
 }
 
@@ -1189,8 +1247,9 @@ ClassicContentPack::ClassicContentPack(const std::filesystem::path& path) {
     if (!input) throw std::runtime_error("cannot open Classic content pack: " + path.string());
     bytes_ = {std::istreambuf_iterator<char>(input), std::istreambuf_iterator<char>()};
     Reader in(bytes_);
-    const bool tracks = read_pack_header(bytes_, in);
-    const auto expected = required_entries(tracks);
+    const auto header = read_pack_header(bytes_, in);
+    identity_ = header.identity;
+    const auto expected = required_entries(header.variant);
     const auto rows = read_inventory(in);
     std::uint64_t cursor = in.offset();
     check_inventory(rows, expected);

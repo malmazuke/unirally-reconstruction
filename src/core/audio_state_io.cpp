@@ -108,13 +108,14 @@ void visit(audio_state_detail::Archive& a, AudioCpuMenuInputState& v) {
     a.fields(v.idle_remaining, v.selection, v.direction_latched, v.controllers);
 }
 void visit(audio_state_detail::Archive& a, TitleMenuAudioState& v) {
-    a.fields(v.phase, v.engine, v.queue, v.scene, v.title, v.text, v.menu, v.cartridge);
+    a.fields(v.phase, v.content_identity, v.engine, v.queue, v.scene, v.title, v.text, v.menu,
+             v.cartridge);
 }
-// URAU0001 includes owned transport, voice/timer continuation, 64KiB DSP RAM/history
-// and unconsumed native PCM. Static content and future controller input are excluded.
+// URAU0002 includes owned transport, voice/timer continuation, 64KiB DSP RAM/history
+// and unconsumed native PCM. The validated content identity is included; static bytes and future input are excluded.
 std::vector<std::uint8_t> serialize_title_menu_audio(const TitleMenuAudioState& state) {
     audio_state_detail::Archive archive;
-    std::array<std::uint8_t, 8> magic{'U', 'R', 'A', 'U', '0', '0', '0', '1'};
+    std::array<std::uint8_t, 8> magic{'U', 'R', 'A', 'U', '0', '0', '0', '2'};
     auto owned = state;
     archive.fields(magic, owned);
     return archive.take_output();
@@ -123,7 +124,7 @@ TitleMenuAudioState deserialize_title_menu_audio(std::span<const std::uint8_t> b
     audio_state_detail::Archive archive(bytes);
     std::array<std::uint8_t, 8> magic{};
     archive.value(magic);
-    constexpr std::array<std::uint8_t, 8> expected{'U', 'R', 'A', 'U', '0', '0', '0', '1'};
+    constexpr std::array<std::uint8_t, 8> expected{'U', 'R', 'A', 'U', '0', '0', '0', '2'};
     if (magic != expected) throw std::invalid_argument("audio state format differs");
     TitleMenuAudioState state;
     archive.value(state);

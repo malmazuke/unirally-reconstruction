@@ -1405,3 +1405,60 @@ regeneration verifies53,062 sites/42,700 shared instructions with zero
 disagreements; all1049 citations have records. The engine/session/canonical
 slice is ready for staged inspection and a task commit. Hosted CI at ecbc52e
 is green; final candidate CI remains required after new source is pushed.
+
+### 1 October 09:36 UTC checkpoint
+
+451629f is pushed with shared native ownership/canonical continuation. Eight
+fresh-process splits and all10 native audio checks pass; static/tooling and
+readability checks pass as recorded. Product/device fractions and pack binding
+remain open. Next add a bounded audio pack extraction: identified tables,
+decoded97 numeric pitch entries (including the documented code-as-data alias),
+sample headers/BRR and typed clock-work metadata, excluding uploaded executable
+bytes and original event/time input. Preserve all existing payload identities.
+Then connect native phase work to the visible frontend and SDL output, and
+continue joined scene restart recovery. Fresh quota23% at09:35,baseline12/stop32,
+ordinary usage allowed,reset1791365217,no reset/spending/provider change.
+Next checkpoint09:46,reassessment10:03. Capability review/acceptance open.
+
+### 1 October 09:46 UTC checkpoint
+
+The v30 audio extraction candidate reproduces all 33 private fixture payloads,
+including 97 numeric pitch entries,21 sample resources and typed clock-work
+data. Its existing475 v29 entries are unchanged; the frozen compact sorted
+entry-list SHA-256 is 6df6cfce7f83ef8ac93a4e6143f1987244dbb1901dc6a7b5e1fe61618cd487f7.
+The program resource is excluded. New rules/extractor/compiled inventory are
+uncommitted and have not yet passed the tooling/build checks. Next finish the
+profile compatibility tests, typed content factory and canonical pack binding.
+Last fresh quota 23% at 09:35,baseline 12/stop 32,no reset/spending/provider change.
+Product/device/lifecycle and independent capability review remain open.
+Next checkpoint 09:56,reassessment 10:03.
+
+Pack follow-up: v30 extraction (508 entries), pack-only 1380-loop event/PCM/state
+comparison, eight URAU0002 fresh-process saves, all 10 focused audio checks, 27
+track inventory and 15 frontend tooling tests pass. R-0075 records preserved
+v29/v1 data and the unaltered original expectations. Wrong initial unittest
+module environment and an empty ctest selection are recorded as such, not
+passes. Source is uncommitted pending maps, tooling and staged inspection.
+Hosted CI passed for 451629f (run 36843422524); this new candidate still needs CI.
+
+### 1 October 09:56 UTC checkpoint
+
+Native pack binding/canonical v2 and all focused comparisons pass. Full lab and
+Python tooling suites are running; new source remains uncommitted until their
+results and staged inspection. Static regeneration again validates 53,062 sites
+and 42,700 shared instructions with zero disagreements. The first generation
+ran while this record was edited and reports source_changed_during_run=true;
+`static-map-0954-stable.json` is the stable rerun. No expectation changed.
+
+Fresh quota 24% at 09:56,baseline 12/stop 32,ordinary usage allowed,reset 1791365217;
+no reset/spending/provider change. Next commit/push the content slice, then
+stream native work against observed frontend input and add output queue/device
+continuation. Monolithic cold work must stream its PCM without advancing using
+unknown future controller words; its scheduling is an implementation dependency.
+Scene stop/restart, live audible evidence and independent review remain open.
+Next checkpoint 10:06,reassessment 10:03.
+
+Content validation follow-up: full 539-test Python tooling suite and all 40 lab
+tests pass (pack-tooling.log and pack-lab-tests.log). The v30/identity slice is
+ready for a task-scoped commit after staged inspection. Product remains silent;
+these checks do not close playback, lifecycle or capability review.

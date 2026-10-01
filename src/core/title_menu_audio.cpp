@@ -69,9 +69,12 @@ AudioCpuMenuAction NativeTitleMenuAudio::menu_frame() {
     return action;
 }
 TitleMenuAudioState NativeTitleMenuAudio::snapshot() {
-    return {phase_, engine_.snapshot(), queue_, scene_, title_, text_, menu_, cartridge_};
+    return {phase_, content_->identity, engine_.snapshot(), queue_, scene_, title_, text_,
+            menu_,  cartridge_};
 }
 void NativeTitleMenuAudio::restore(const TitleMenuAudioState& state) {
+    if (state.content_identity != content_->identity)
+        throw std::invalid_argument("audio state content identity differs");
     if (state.phase > TitleMenuAudioPhase::menu_exit || state.scene.phase > 31
         || state.queue.read_index > 15 || state.queue.write_index > 15
         || (state.queue.expected_phase != 64 && state.queue.expected_phase != 128)
