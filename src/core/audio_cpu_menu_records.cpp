@@ -33,7 +33,7 @@ void verify_cartridge_mirror(Clock& c, std::array<std::uint8_t, 8192>& cartridge
     c.return_far();
 }
 // $83:8B51; R-0075. Bit2 requests the 1024-word menu text workspace reset.
-void clear_menu_text_work(Clock& c) {
+void clear_menu_text_work_internal(Clock& c) {
     for (unsigned bit = 0; bit < 3; ++bit) {
         c.update_register();
         c.branch(bit == 2);
@@ -72,6 +72,9 @@ void clear_cartridge(Clock& c, std::array<std::uint8_t, 8192>& cartridge) {
     c.return_far();
 }
 } // namespace
+void native_audio_clear_menu_text_work(Clock& c) {
+    clear_menu_text_work_internal(c);
+}
 // $80:D36F; $80:8C4E; R-0075. Finish layout, check cartridge signature, and on a
 // mismatch stop before the default-record calls at8C80. A matching header returns normally.
 bool native_audio_begin_menu_records(Clock& c, AudioCpuQueueState& queue,
@@ -91,7 +94,7 @@ bool native_audio_begin_menu_records(Clock& c, AudioCpuQueueState& queue,
     c.change_widths();
     c.load_constant();
     c.call_far();
-    clear_menu_text_work(c);
+    native_audio_clear_menu_text_work(c);
     c.read_direct(2);
     c.store_direct(2);
     c.change_widths();

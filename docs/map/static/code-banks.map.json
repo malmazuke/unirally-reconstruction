@@ -347,6 +347,9 @@
    "mode_at_entry": [
     "NmX"
    ],
+   "native": [
+    "src/core/audio_cpu_menu_reveal.cpp:native_audio_reveal_main_menu"
+   ],
    "observed_entries": {},
    "start": "$80:885B",
    "static_entries": {
@@ -387,6 +390,9 @@
    "end": "$80:8C4D",
    "mode_at_entry": [
     "NmX"
+   ],
+   "native": [
+    "src/core/audio_cpu_text.cpp:small_glyph_work"
    ],
    "observed_entries": {},
    "start": "$80:8C41",
@@ -580,6 +586,7 @@
     "NmX"
    ],
    "native": [
+    "src/core/audio_cpu_menu_reveal.cpp:upload_text_map",
     "src/core/front_end_screens.hpp:load_text"
    ],
    "observed_entries": {},
@@ -1191,6 +1198,7 @@
     "NmX"
    ],
    "native": [
+    "src/core/audio_cpu_menu_reveal.cpp:upload_menu_font",
     "src/core/front_end.cpp:menu_text_tiles_dma",
     "src/core/front_end_screens.hpp:reload_menu_text_tiles"
    ],
@@ -1262,6 +1270,10 @@
     "NmX"
    ],
    "native": [
+    "src/core/audio_cpu_menu_reveal.cpp:finish_initial_text",
+    "src/core/audio_cpu_menu_reveal.cpp:finish_menu_uploads",
+    "src/core/audio_cpu_menu_reveal.cpp:native_audio_reveal_main_menu",
+    "src/core/audio_cpu_text.cpp:native_audio_begin_menu_text",
     "src/core/front_end.cpp:boot_frame_waits",
     "src/core/front_end.cpp:copy_menu_text",
     "src/core/front_end.cpp:start_main_menu",
@@ -1997,6 +2009,7 @@
     "NmX"
    ],
    "native": [
+    "src/core/audio_cpu_text.cpp:print_menu_text_work",
     "src/core/front_end_screens.hpp:print_main_menu",
     "src/core/result_screen.cpp:(file)",
     "src/core/text_printer.cpp:end_of_text, position, number, centre, nothing, attribute, rider_name, track_name, race_time, two_digits, place_object, capitals, first_control",
@@ -2715,6 +2728,7 @@
     "NmX"
    ],
    "native": [
+    "src/core/audio_cpu_menu_reveal.cpp:finish_menu_uploads",
     "src/core/options_menu.cpp:rename_commit_frame",
     "src/core/rider_menu.cpp:main_menu_return_frame"
    ],
@@ -11033,7 +11047,7 @@
     "NmX"
    ],
    "native": [
-    "src/core/audio_cpu_menu_records.cpp:clear_menu_text_work",
+    "src/core/audio_cpu_menu_records.cpp:clear_menu_text_work_internal",
     "src/core/front_end_screens.hpp:cleared_text",
     "src/core/hunter_ending.cpp:set_up_credits",
     "src/core/rider_menu.cpp:print_rider_menu",
@@ -14566,16 +14580,16 @@
    "call returns in the calling mode": 1262
   },
   "bytes": 131072,
-  "cited_addresses": 1546,
+  "cited_addresses": 1551,
   "cited_by_class": {
    "data": 25,
    "inferred": 247,
-   "observed": 975,
+   "observed": 980,
    "unknown": 299
   },
   "cited_by_position": {
    "dat": 25,
-   "loc": 876,
+   "loc": 881,
    "mid": 19,
    "sub": 327,
    "unk": 299
@@ -14597,9 +14611,9 @@
   "jump_tables": 2,
   "mode_ambiguities": 7,
   "observed": 41778,
-  "routine_bytes_cited_by_native_code": 50399,
+  "routine_bytes_cited_by_native_code": 50495,
   "routines": 636,
-  "routines_cited_by_native_code": 399,
+  "routines_cited_by_native_code": 401,
   "unknown": 52881,
   "unknown_share": 0.4035
  }

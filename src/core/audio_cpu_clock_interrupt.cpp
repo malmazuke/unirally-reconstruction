@@ -86,6 +86,13 @@ void AudioCpuWorkClock::jump_far() {
     last_cycle();
     rom_reads(1);
 }
+void AudioCpuWorkClock::jump_indirect() {
+    begin_instruction();
+    rom_reads(3);
+    ram_reads();
+    last_cycle();
+    ram_reads();
+}
 void AudioCpuWorkClock::modify_direct_word() {
     begin_instruction();
     rom_reads(2);

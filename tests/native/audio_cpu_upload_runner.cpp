@@ -2,6 +2,7 @@
 #include "audio_cpu_interrupt.hpp"
 #include "audio_cpu_queue.hpp"
 #include "audio_cpu_scene.hpp"
+#include "audio_cpu_text.hpp"
 #include "audio_cpu_upload.hpp"
 #include "audio_driver_dsp.hpp"
 #include "audio_ipl.hpp"
@@ -124,8 +125,12 @@ int main(int argc, char** argv) {
                 "audio_cpu_upload_runner DATA_DIRECTORY OUTPUT "
                 "[ready|samples|queue|vblank|frame|palette|load|nintendo|"
                 "title|first-nmi|title-fade|title-hold|title-return|menu-palette|"
-                "menu-graphics|menu-oam|menu-clear [PCM DSP_CLOCK_LIMIT]]");
-        const bool menu_records = argc >= 4 && std::string(argv[3]) == "menu-records";
+                "menu-graphics|menu-oam|menu-clear|menu-records-first|menu-league|"
+                "menu-records|menu-text|menu-reveal [PCM DSP_CLOCK_LIMIT]]");
+        const bool menu_reveal = argc >= 4 && std::string(argv[3]) == "menu-reveal";
+        const bool menu_text = argc >= 4 && (std::string(argv[3]) == "menu-text" || menu_reveal);
+        const bool menu_records =
+            argc >= 4 && (std::string(argv[3]) == "menu-records" || menu_text);
         const bool menu_league =
             argc >= 4 && (std::string(argv[3]) == "menu-league" || menu_records);
         const bool menu_records_first =
@@ -304,6 +309,24 @@ int main(int argc, char** argv) {
                                             clock, scene, cartridge,
                                             std::span<const std::uint8_t, 1158>(defaults.data(),
                                                                                 1158));
+                                    if (menu_text) {
+                                        const auto text = read(root + "/cpu-menu-text.bin");
+                                        const auto characters =
+                                            read(root + "/cpu-character-table.bin");
+                                        if (characters.size() != 256)
+                                            throw std::invalid_argument("invalid character table");
+                                        unirally::AudioCpuTextWorkState printer;
+                                        unirally::native_audio_begin_menu_text(
+                                            clock, printer, text,
+                                            std::span<const std::uint8_t, 256>(characters.data(),
+                                                                               256));
+                                        if (menu_reveal)
+                                            unirally::native_audio_reveal_main_menu(
+                                                clock, state, scene, printer, cartridge);
+                                        std::cout << "text_cursor=" << printer.cursor
+                                                  << " text_attribute=" << printer.attribute
+                                                  << '\n';
+                                    }
                                 }
                             }
                         }

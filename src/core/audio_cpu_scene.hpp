@@ -26,6 +26,7 @@ struct AudioCpuTitleHoldState {
 void native_audio_begin_title_hold(AudioCpuWorkClock& clock);
 bool native_audio_title_hold_frame(AudioCpuWorkClock& clock, AudioCpuQueueState& queue,
                                    AudioCpuSceneWorkState& scene, AudioCpuTitleHoldState& state);
+void native_audio_clear_menu_text_work(AudioCpuWorkClock& clock);
 void native_audio_finish_menu_records(AudioCpuWorkClock& clock, AudioCpuSceneWorkState& scene,
                                       std::array<std::uint8_t, 8192>& cartridge,
                                       std::span<const std::uint8_t, 1158> defaults);

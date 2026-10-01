@@ -1252,3 +1252,56 @@ restart still lack dynamic claims. Product playback, full canonical save,
 final native primary/variations and capability review remain open. Last fresh
 telemetry 22% at07:46, baseline12/stop32, no reset/spending/provider change.
 Next checkpoint08:06; reassessment08:11.
+
+### 1 October 08:08 UTC checkpoint
+
+4d1439c is pushed. CI36833341266 passes macOS/Ubuntu; the draft PR body
+reports the corrected record prefix and remaining acceptance gaps. PR issue
+and line comments were read at07:52 and are empty; capability review has
+not started. New native text code matches all 1,032,122 frozen events,
+260,044 raw pairs and C=172,720,798 beforeACF7. Its owned cursor727 and
+attribute7168 are diagnostics, not separately compared picture claims.
+All111 prior controller projections match; readability passes.
+
+The first edit script stopped at a wrapped runner anchor after writing core
+files. The runner edit was completed and built before comparison; no stale
+runner result is reported. No original expected bytes/clock changed. New
+text source is uncommitted; maps/affected checks remain before its commit.
+Next text DMA, common menu upload work and reveal to first interactive entry.
+Fresh weekly usage22% at08:08,baseline12/stop32,ordinary usage allowed,
+reset1791365217,no reset/spending/provider change. Next checkpoint08:18;
+45-minute reassessment08:11. Full product/save/variations/review remain open.
+
+### 1 October 08:33 UTC overdue checkpoint and reassessment
+
+The 08:18 checkpoint and08:11 reassessment were missed during design work;
+record the actual time rather than claiming those updates happened. Native
+text remains the latest verified slice; the next frozen reveal target fixes
+1,046,913 events,268,323 pairs,C=178,217,620 andD=8,586,336 before889A.
+The native reveal candidate is now being implemented, not yet compared.
+Keep the same primary/capability and continue interactive menu producers,
+then full save/product/withheld variations. Product phase scheduling and
+serialization ideas are hypotheses only, not implemented capabilities.
+Last actual quota22% at08:08,baseline12/stop32,no reset/spending/provider
+change. Next checkpoint08:43,reassessment09:18. Review reserve remains intact.
+
+### 1 October 08:50 UTC overdue checkpoint
+
+The 08:43 checkpoint is recorded at its actual late time. Native menu reveal
+now matches all 1,046,913 frozen events, 268,323 raw pairs, C=178,217,620
+and all 111 prior controller frames before 889A. Three affected CPU checks
+and text/reveal readability pass. New source is uncommitted; regenerate
+static/native maps and inspect the staged diff before committing this slice.
+Read static ABC8-ACD5, B71D/B76F/B794/B178 and 83:9558 before the interactive
+menu producer. The existing CPU500 baseline covers its first idle loops.
+
+Last actual weekly usage22% at08:36, baseline12/stop32, ordinary usage allowed.
+No reset/spending/provider change. Product audio, complete canonical save,
+full primary/variations and independent capability review remain open.
+Next checkpoint09:00; reassessment09:18.
+
+Reveal checkpoint follow-up: static regeneration passes 53,062 sites and
+42,700 shared instructions with zero disagreements; all 24 native-symbol
+checks pass and all 1041 citations have records. Polling D1EC includes its
+OAM DMA callee before automatic pad reads, as the listing states. No expected
+projection changed. This slice is ready for a task-scoped commit.

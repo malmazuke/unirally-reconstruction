@@ -874,3 +874,31 @@ table. The synthetic terminal-word sentinel check passes, as do both affected
 CPU checks. Still no new record-state, audible product or canonical-save claim.
 
 $80:8C80 is the native first-default-table entry named in the cold slice above.
+
+The next source reading uses static $80:ACD5, $80:D1FA, $80:C3BC through
+C5C8, $80:8C41 and the already recovered $83:8B51 text-work reset. Native
+$80:C4B8 centering retains the byte budget33 and its wrapping subtraction
+before halving; $80:C41E big glyphs occupy two columns, $80:C56C small
+glyphs one. $80:C3FE normalizes printed characters and $80:C557 applies
+the word attribute. Identified inputs `cpu-menu-text.bin` (80:AD1F-AD42)
+and `cpu-character-table.bin` (80:C709,256 bytes) use the same data ranges
+as existing frontend extraction; no opcode/producer times are inputs.
+`cold-cpu-menu-text-frozen.json` fixes both hashes and the original projection
+before candidate implementation. `native-cold-cpu-menu-text-pcm.json`
+matches1,032,122 events,260,044 raw pairs,C=172,720,798 and all111 title
+controller frames. Its cursor727/attribute7168 are owned diagnostics only.
+The initial menu's FF/FB/FC/F9 controls define this helper's tested domain;
+other controls are rejected. Special small-glyph and backquote branches
+have no new dynamic claim in this slice. Product/canonical save remain open.
+
+The reveal slice reads static $80:937B, $80:A877, $80:F52B, $80:AD0F,
+$80:ACF7 and $80:887B through $80:889A. It uploads 2048 text bytes, performs
+the common palette/OAM/font work, fades in and repeats the already drawn menu
+uploads. Its cold intro bit is clear; the positive intro branch is rejected
+pending recovery. `cold-cpu-menu-reveal-frozen.json` precedes implementation.
+`native-cold-cpu-menu-reveal-pcm.json` matches all 1,046,913 events, 268,323
+raw stereo pairs, C=178,217,620, D=8,586,336 and 111 prior title controller
+frames, ending before the first interactive menu call. No original producer
+time advances native CPU or SMP; the closing DSP limit clips PCM packaging.
+Product playback, full canonical continuation and interactive/restart
+producers remain open.

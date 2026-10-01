@@ -55,6 +55,7 @@ public:
     void move_ram_byte();
     void exchange_accumulator_bytes();
     void jump_far();
+    void jump_indirect();
     void set_nmi_enabled(bool enabled);
     std::uint16_t read_controller(unsigned port);
     void store_port(unsigned bytes = 1, bool long_address = false);
