@@ -274,7 +274,8 @@ void NativeTitleMenuAudio::restore(const TitleMenuAudioState& state) {
         || state.title.code_index > 4 || state.menu.selection > 5
         || ((state.phase == TitleMenuAudioPhase::title_hold
              || state.phase == TitleMenuAudioPhase::warm_title_hold)
-            && state.title.remaining > 110))
+            && state.title.remaining > 110)
+        || !valid_cued_state(state))
         throw std::invalid_argument("invalid native title/menu continuation");
     engine_.restore(state.engine);
     phase_ = state.phase;

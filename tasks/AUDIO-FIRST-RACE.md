@@ -73,8 +73,16 @@ later outcomes unless evidence makes them necessary coupled prerequisites.
 
 ## Acceptance and closeout
 
-- Exact declared command/DSP events and raw PCM on frozen primary and changed
-  timing schedules, including the recovered scene boundary commands.
+- Rewritten under [D-0010](../docs/decisions/D-0010-frame-anchored-sound-commands.md)
+  (1 October 2026), which replaced "exact raw PCM" outside the cycle-modelled
+  title/menu scenes:
+  - Native producer commands equal the original's by content, order and
+    frame on the frozen primary and changed schedules, including the
+    recovered scene boundary commands (loads, fades, pause/quit).
+  - Driver, score, samples and DSP are exact for supplied arrivals: all
+    DSP/port events and raw PCM, conditionally on the original's port writes.
+  - Title/menu raw PCM stays exact up to the first anchored command. After it,
+    reports state the measured arrival error and PCM agreement, never "exact".
 - Identified score/instrument/sample extraction with no executable dependency;
   retain source/ROM/core/content identities and exact tested domain.
 - Fresh-process native and partial-drain playback continuation at setup,

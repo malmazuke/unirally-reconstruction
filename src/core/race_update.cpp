@@ -199,6 +199,7 @@ bool run_pause_menu(const ZoomZooState& state, ZoomZooState& next, const Control
     const bool opening = (buttons.start && !state.race.riders[0].finished)
                       || (league_pair && second.start && !state.race.riders[1].finished);
     if (!state.native_initialization || !(state.pause.selection || opening)) return false;
+    race_sound::pause_frame(next, state.pause.selection == 0);
     auto& pause = next.pause;
     auto& whole = next.movement;
     if (!pause.selection) pause.selection = 1;
@@ -215,10 +216,13 @@ bool run_pause_menu(const ZoomZooState& state, ZoomZooState& next, const Control
         pause.released = 1;
     } else if (pause.released) {
         if (negative(pause.selection)) {
+            auto cues = std::move(next.sound_cues); // the quitting update's own sound work
             restart_zoom_zoo(next, content);
+            next.sound_cues = std::move(cues);
             return true;
         }
         pause.selection = 0;
+        race_sound::pause_continue(next);
     }
     ++pause.suspended_updates;
     if (next.fade_level >= first_published_fade && whole.countdown)

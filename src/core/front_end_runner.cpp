@@ -499,8 +499,8 @@ public:
     }
     void write(std::uint32_t frame, const unirally::AudioCueList& cues) {
         if (!out_.is_open()) return;
-        constexpr std::array<const char*, 6> sites{"wait",      "early",  "late",
-                                                   "countdown", "finish", "choice"};
+        constexpr std::array<const char*, 7> sites{"wait",   "early",  "late", "countdown",
+                                                   "finish", "choice", "pause"};
         for (const auto& cue : cues) switch (cue.kind) {
             case unirally::AudioCueKind::enqueue:
                 out_ << frame << " E " << unsigned(cue.command) << ' ' << unsigned(cue.parameter)

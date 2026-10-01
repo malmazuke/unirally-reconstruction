@@ -407,6 +407,7 @@ void run_main_menu(FrontEndState& state, const FrontEndContent& content, FrontEn
     }
     if (state.latches.moved) return;
     state.latches = {.moved = true};
+    play_menu_sound(state, MenuSound::navigate); // $80:AC3F
     menu.idle = idle_after_move;
     if (down) {
         if (++menu.selection >= menu_entries) {

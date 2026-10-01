@@ -11,6 +11,11 @@ struct ZoomZooState;
 // program order (AUDIO-FIRST-RACE, R-0076). Commands are the sound driver's: 2 starts an
 // effect, 3 sets the music fade rate, 6/11 clear/set a score flag that effects test.
 namespace race_sound {
+// $83:F65C-F692: a paused update's eight dispatcher calls; the update that opens the pause also
+// fades the music out (command 3, 0x80) and sends it ($1365 latches that once a pause).
+void pause_frame(ZoomZooState& next, bool opening);
+// $83:F930-F93B: CONTINUE fades the music back in (0x7F) and sends it.
+void pause_continue(ZoomZooState& next);
 // $83:CD6E and $83:CD9F: the race loop's two dispatcher calls.
 void dispatch(ZoomZooState& next, AudioDispatchSite site);
 // $83:E59C-E785: a published countdown update's beep, then its dispatcher call.

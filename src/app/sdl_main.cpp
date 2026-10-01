@@ -1,10 +1,11 @@
 #include "content_pack.hpp"
 #include "frontend.hpp"
 #include "movement.hpp"
-#include "zoom_zoo_pack.hpp"
 #include "presentation.hpp"
 #include "race_camera.hpp"
+#include "race_sound.hpp"
 #include "sdl_audio.hpp"
+#include "zoom_zoo_pack.hpp"
 
 #include <SDL3/SDL.h>
 
@@ -29,9 +30,10 @@ using unirally::app::KeyboardKey;
 template <typename T, void (*Destroy)(T *)> struct SdlDeleter {
   void operator()(T *value) const { Destroy(value); }
 };
-using Window = std::unique_ptr<SDL_Window, SdlDeleter<SDL_Window, SDL_DestroyWindow>>;
-using Renderer =
-    std::unique_ptr<SDL_Renderer, SdlDeleter<SDL_Renderer, SDL_DestroyRenderer>>;
+using Window =
+    std::unique_ptr<SDL_Window, SdlDeleter<SDL_Window, SDL_DestroyWindow>>;
+using Renderer = std::unique_ptr<SDL_Renderer,
+                                 SdlDeleter<SDL_Renderer, SDL_DestroyRenderer>>;
 using Texture =
     std::unique_ptr<SDL_Texture, SdlDeleter<SDL_Texture, SDL_DestroyTexture>>;
 using Gamepad =
@@ -47,37 +49,63 @@ std::runtime_error sdl_error(std::string_view operation) {
 
 std::optional<KeyboardKey> keyboard_key(SDL_Scancode key) {
   switch (key) {
-  case SDL_SCANCODE_Z: return KeyboardKey::Z;
-  case SDL_SCANCODE_X: return KeyboardKey::X;
-  case SDL_SCANCODE_BACKSPACE: return KeyboardKey::Backspace;
-  case SDL_SCANCODE_RETURN: return KeyboardKey::Return;
-  case SDL_SCANCODE_UP: return KeyboardKey::Up;
-  case SDL_SCANCODE_DOWN: return KeyboardKey::Down;
-  case SDL_SCANCODE_LEFT: return KeyboardKey::Left;
-  case SDL_SCANCODE_RIGHT: return KeyboardKey::Right;
-  case SDL_SCANCODE_A: return KeyboardKey::A;
-  case SDL_SCANCODE_S: return KeyboardKey::S;
-  case SDL_SCANCODE_Q: return KeyboardKey::Q;
-  case SDL_SCANCODE_W: return KeyboardKey::W;
-  default: return std::nullopt;
+  case SDL_SCANCODE_Z:
+    return KeyboardKey::Z;
+  case SDL_SCANCODE_X:
+    return KeyboardKey::X;
+  case SDL_SCANCODE_BACKSPACE:
+    return KeyboardKey::Backspace;
+  case SDL_SCANCODE_RETURN:
+    return KeyboardKey::Return;
+  case SDL_SCANCODE_UP:
+    return KeyboardKey::Up;
+  case SDL_SCANCODE_DOWN:
+    return KeyboardKey::Down;
+  case SDL_SCANCODE_LEFT:
+    return KeyboardKey::Left;
+  case SDL_SCANCODE_RIGHT:
+    return KeyboardKey::Right;
+  case SDL_SCANCODE_A:
+    return KeyboardKey::A;
+  case SDL_SCANCODE_S:
+    return KeyboardKey::S;
+  case SDL_SCANCODE_Q:
+    return KeyboardKey::Q;
+  case SDL_SCANCODE_W:
+    return KeyboardKey::W;
+  default:
+    return std::nullopt;
   }
 }
 
 std::optional<GamepadButton> gamepad_button(Uint8 button) {
   switch (button) {
-  case SDL_GAMEPAD_BUTTON_SOUTH: return GamepadButton::South;
-  case SDL_GAMEPAD_BUTTON_WEST: return GamepadButton::West;
-  case SDL_GAMEPAD_BUTTON_BACK: return GamepadButton::Back;
-  case SDL_GAMEPAD_BUTTON_START: return GamepadButton::Start;
-  case SDL_GAMEPAD_BUTTON_DPAD_UP: return GamepadButton::DpadUp;
-  case SDL_GAMEPAD_BUTTON_DPAD_DOWN: return GamepadButton::DpadDown;
-  case SDL_GAMEPAD_BUTTON_DPAD_LEFT: return GamepadButton::DpadLeft;
-  case SDL_GAMEPAD_BUTTON_DPAD_RIGHT: return GamepadButton::DpadRight;
-  case SDL_GAMEPAD_BUTTON_EAST: return GamepadButton::East;
-  case SDL_GAMEPAD_BUTTON_NORTH: return GamepadButton::North;
-  case SDL_GAMEPAD_BUTTON_LEFT_SHOULDER: return GamepadButton::LeftShoulder;
-  case SDL_GAMEPAD_BUTTON_RIGHT_SHOULDER: return GamepadButton::RightShoulder;
-  default: return std::nullopt;
+  case SDL_GAMEPAD_BUTTON_SOUTH:
+    return GamepadButton::South;
+  case SDL_GAMEPAD_BUTTON_WEST:
+    return GamepadButton::West;
+  case SDL_GAMEPAD_BUTTON_BACK:
+    return GamepadButton::Back;
+  case SDL_GAMEPAD_BUTTON_START:
+    return GamepadButton::Start;
+  case SDL_GAMEPAD_BUTTON_DPAD_UP:
+    return GamepadButton::DpadUp;
+  case SDL_GAMEPAD_BUTTON_DPAD_DOWN:
+    return GamepadButton::DpadDown;
+  case SDL_GAMEPAD_BUTTON_DPAD_LEFT:
+    return GamepadButton::DpadLeft;
+  case SDL_GAMEPAD_BUTTON_DPAD_RIGHT:
+    return GamepadButton::DpadRight;
+  case SDL_GAMEPAD_BUTTON_EAST:
+    return GamepadButton::East;
+  case SDL_GAMEPAD_BUTTON_NORTH:
+    return GamepadButton::North;
+  case SDL_GAMEPAD_BUTTON_LEFT_SHOULDER:
+    return GamepadButton::LeftShoulder;
+  case SDL_GAMEPAD_BUTTON_RIGHT_SHOULDER:
+    return GamepadButton::RightShoulder;
+  default:
+    return std::nullopt;
   }
 }
 
@@ -121,7 +149,8 @@ public:
   }
 
   // The port a mapped button reached, if any.
-  std::optional<std::uint8_t> button(SDL_JoystickID id, Uint8 button, bool pressed) {
+  std::optional<std::uint8_t> button(SDL_JoystickID id, Uint8 button,
+                                     bool pressed) {
     const auto port = port_for(id);
     const auto mapped = gamepad_button(button);
     if (!port || !mapped)
@@ -148,15 +177,23 @@ struct Options {
   bool hidden{};
   bool native_title_menu_audio{};
   unirally::ClassicRaceTrack track{unirally::ClassicRaceTrack::Dragster};
-  bool track_given{}; // without --track the app starts at power-on (the front end)
-  // The front end's pads by its frame, from a laboratory input script (smoke-test aid).
+  bool track_given{}; // without --track the app starts at power-on (the front
+                      // end)
+  // The front end's pads by its frame, from a laboratory input script
+  // (smoke-test aid).
   std::map<std::uint32_t, unirally::FrontEndPads> front_end_inputs;
+  // Each frame's submitted sound queue work, as `front_end_runner --sound-cues`
+  // writes it.
+  std::filesystem::path audio_cue_log;
 };
 
-// "frame pad1 pad2" rows, the pads as hex SNES words, as `front_end_runner` reads them.
-std::map<std::uint32_t, unirally::FrontEndPads> read_front_end_inputs(const std::filesystem::path& path) {
+// "frame pad1 pad2" rows, the pads as hex SNES words, as `front_end_runner`
+// reads them.
+std::map<std::uint32_t, unirally::FrontEndPads>
+read_front_end_inputs(const std::filesystem::path &path) {
   std::ifstream in(path);
-  if (!in) throw std::invalid_argument("cannot open --front-end-inputs");
+  if (!in)
+    throw std::invalid_argument("cannot open --front-end-inputs");
   std::map<std::uint32_t, unirally::FrontEndPads> rows;
   std::uint32_t frame{};
   std::string one, two;
@@ -172,15 +209,18 @@ std::array<std::uint16_t, 2> logical_masks(unirally::FrontEndPads pads) {
   std::array<std::uint16_t, 2> masks{};
   for (unsigned bit = 0; bit < 12; ++bit) {
     const auto snes_bit = static_cast<std::uint16_t>(0x8000U >> bit);
-    if (pads.one & snes_bit) masks[0] = static_cast<std::uint16_t>(masks[0] | (1U << bit));
-    if (pads.two & snes_bit) masks[1] = static_cast<std::uint16_t>(masks[1] | (1U << bit));
+    if (pads.one & snes_bit)
+      masks[0] = static_cast<std::uint16_t>(masks[0] | (1U << bit));
+    if (pads.two & snes_bit)
+      masks[1] = static_cast<std::uint16_t>(masks[1] | (1U << bit));
   }
   return masks;
 }
 
 std::uint32_t parse_updates(std::string_view value) {
   std::uint32_t parsed{};
-  const auto result = std::from_chars(value.data(), value.data() + value.size(), parsed);
+  const auto result =
+      std::from_chars(value.data(), value.data() + value.size(), parsed);
   if (result.ec != std::errc{} || result.ptr != value.data() + value.size() ||
       parsed == 0)
     throw std::invalid_argument("--updates requires a positive integer");
@@ -200,17 +240,27 @@ std::uint16_t parse_controller_mask(std::string_view value) {
 
 void print_help() {
   std::cout
-      << "Usage: unirally --content-pack PATH [--track dragster|zoom-zoo|NN] [--updates N] [--hidden]\n"
-      << "       NN: a race track's number (its index in the ROM) with a recovered scenario;\n"
-      << "       not a stunt event (2, 7, 12, 17, 22, 27, 32, 37, 42), which the menus start\n"
-      << "       unirally --supported-profiles   (print the pack profiles this build reads)\n"
-      << "Without --track it starts at power-on: the Nintendo screen, the title and the main menu;\n"
-      << "1P leads to the one-player screens and the race chosen there. With --track it starts in\n"
+      << "Usage: unirally --content-pack PATH [--track dragster|zoom-zoo|NN] "
+         "[--updates N] [--hidden]\n"
+      << "       NN: a race track's number (its index in the ROM) with a "
+         "recovered scenario;\n"
+      << "       not a stunt event (2, 7, 12, 17, 22, 27, 32, 37, 42), which "
+         "the menus start\n"
+      << "       unirally --supported-profiles   (print the pack profiles this "
+         "build reads)\n"
+      << "Without --track it starts at power-on: the Nintendo screen, the "
+         "title and the main menu;\n"
+      << "1P leads to the one-player screens and the race chosen there. With "
+         "--track it starts in\n"
       << "that race. PAL 50 Hz.\n"
       << "Keyboard: arrows, Z=B, X=Y, A=A, S=X, Q=L, W=R, Enter=Start.\n"
-      << "Gamepad: D-pad, South=B, West=Y, East=A, North=X, shoulders=L/R, Start, Back=Select;\n"
+      << "Gamepad: D-pad, South=B, West=Y, East=A, North=X, shoulders=L/R, "
+         "Start, Back=Select;\n"
       << "the analog stick is not mapped. Either gamepad exits the idle demo.\n"
-      << "Native title/menu audio prototype: --native-title-menu-audio (v31 pack).\n";
+      << "Native audio (opt-in): --native-title-menu-audio (v31 pack: title "
+         "and menus; v32: also\n"
+      << "1P setup, the first race, its result and the menus after it; other "
+         "modes stay silent).\n";
 }
 
 std::optional<Options> options(int argc, char **argv) {
@@ -239,15 +289,24 @@ std::optional<Options> options(int argc, char **argv) {
     const std::string_view value(argv[++index]);
     if (option == "--track") {
       result.track_given = true;
-      if(value=="dragster")result.track=unirally::ClassicRaceTrack::Dragster;
-      else if(value=="zoom-zoo")result.track=unirally::ClassicRaceTrack::ZoomZoo;
+      if (value == "dragster")
+        result.track = unirally::ClassicRaceTrack::Dragster;
+      else if (value == "zoom-zoo")
+        result.track = unirally::ClassicRaceTrack::ZoomZoo;
       else {
         unsigned track_index{};
-        const auto parsed_index=std::from_chars(value.data(),value.data()+value.size(),track_index);
-        if(parsed_index.ec!=std::errc{} || parsed_index.ptr!=value.data()+value.size() || track_index>44U ||
-           !unirally::app::native_race_track(unirally::ClassicRaceTrack{static_cast<std::uint8_t>(track_index)}))
-          throw std::invalid_argument("unknown track: use dragster, zoom-zoo or the number of a race track with a recovered scenario (not a stunt event)");
-        result.track=unirally::ClassicRaceTrack{static_cast<std::uint8_t>(track_index)};
+        const auto parsed_index = std::from_chars(
+            value.data(), value.data() + value.size(), track_index);
+        if (parsed_index.ec != std::errc{} ||
+            parsed_index.ptr != value.data() + value.size() ||
+            track_index > 44U ||
+            !unirally::app::native_race_track(unirally::ClassicRaceTrack{
+                static_cast<std::uint8_t>(track_index)}))
+          throw std::invalid_argument(
+              "unknown track: use dragster, zoom-zoo or the number of a race "
+              "track with a recovered scenario (not a stunt event)");
+        result.track =
+            unirally::ClassicRaceTrack{static_cast<std::uint8_t>(track_index)};
       }
     } else if (option == "--content-pack")
       result.pack = value;
@@ -257,18 +316,49 @@ std::optional<Options> options(int argc, char **argv) {
       result.fixed_controller_mask = parse_controller_mask(value);
     else if (option == "--front-end-inputs")
       result.front_end_inputs = read_front_end_inputs(value);
+    else if (option == "--audio-cue-log")
+      result.audio_cue_log = value;
     else
       throw std::invalid_argument("unknown option: " + std::string(option));
   }
   if (result.native_title_menu_audio && result.track_given)
     throw std::invalid_argument("native title/menu audio starts at power-on");
   if (result.pack.empty())
-    throw std::invalid_argument("--content-pack is required; use `project.py frontend run` for first-launch extraction");
+    throw std::invalid_argument("--content-pack is required; use `project.py "
+                                "frontend run` for first-launch extraction");
   return result;
 }
 
-std::string window_title(const std::string& track_name) {
-  return "Unirally \u2014 Classic / "+track_name;
+// The laboratory's cue lines: enqueues, dispatch sites, loads and unresolved
+// rotation cues.
+void write_audio_cues(std::ofstream &out, std::uint32_t frame,
+                      const unirally::AudioCueList &cues) {
+  constexpr std::array<const char *, 7> sites{
+      "wait", "early", "late", "countdown", "finish", "choice", "pause"};
+  for (const auto &cue : cues)
+    switch (cue.kind) {
+    case unirally::AudioCueKind::enqueue:
+      out << frame << " E " << unsigned(cue.command) << ' '
+          << unsigned(cue.parameter) << '\n';
+      break;
+    case unirally::AudioCueKind::dispatch:
+      out << frame << " D " << sites[static_cast<unsigned>(cue.site)] << '\n';
+      break;
+    case unirally::AudioCueKind::load:
+      out << frame << " L "
+          << (cue.load == unirally::AudioSessionLoad::first_race ? "race"
+                                                                 : "title")
+          << '\n';
+      break;
+    case unirally::AudioCueKind::rotation:
+      out << frame << " R " << unsigned(cue.command) << ' '
+          << unsigned(cue.parameter) << '\n';
+      break;
+    }
+}
+
+std::string window_title(const std::string &track_name) {
+  return "Unirally \u2014 Classic / " + track_name;
 }
 
 struct RuntimeContent {
@@ -288,10 +378,9 @@ void draw(SDL_Renderer *renderer, SDL_Texture *texture,
   if (!SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255) ||
       !SDL_RenderClear(renderer))
     throw sdl_error("cannot clear renderer");
-  const SDL_FRect destination{static_cast<float>(view.x),
-                              static_cast<float>(view.y),
-                              static_cast<float>(view.width),
-                              static_cast<float>(view.height)};
+  const SDL_FRect destination{
+      static_cast<float>(view.x), static_cast<float>(view.y),
+      static_cast<float>(view.width), static_cast<float>(view.height)};
   if (!SDL_RenderTexture(renderer, texture, nullptr, &destination))
     throw sdl_error("cannot draw presentation texture");
   if (!SDL_RenderPresent(renderer))
@@ -304,34 +393,41 @@ int main(int argc, char **argv) try {
   if (!parsed)
     return 0;
   RuntimeContent content(parsed->pack); // validate before SDL or gameplay
-  auto track=parsed->track; // NOW PLAYING can choose another race
-  const bool zoom_zoo=track==unirally::ClassicRaceTrack::ZoomZoo;
+  auto track = parsed->track;           // NOW PLAYING can choose another race
+  const bool zoom_zoo = track == unirally::ClassicRaceTrack::ZoomZoo;
   // Both tracks run the shared race engine (R-0038) and are drawn by the shared
   // renderer from their own track content. DRAGSTER's trick, landing, reversal
   // and finish tables are track-independent ROM tables that only the two-track
   // pack carries; the 25-entry DRAGSTER pack cannot play them.
-  if(!zoom_zoo && content.pack.optional_entry("zoom.landing-response-matrices").empty())
-    throw std::invalid_argument("DRAGSTER and the other tracks need the full content pack for jumps, brakes, reversal and tricks; "
-                                "create it from your ROM with: python3 tools/project.py frontend run --track dragster "
-                                "--pack local/classic-pal-crawler-tracks-v28.pack --rom PATH");
-  auto zoom_content=unirally::classic_race_content(content.pack,track);
-  auto race_presentation=unirally::classic_race_presentation_content(content.pack,track);
-  auto zoom_state=unirally::classic_race_start(zoom_content,unirally::classic_race_scenario(track));
-  auto& state=zoom_state.movement;
-  auto zoom_hud_state=zoom_state; // State before the latest update, for the HUD.
-  unsigned restarts=0;
-  // A restart from the stable result proves a completed race; one from the pause menu does not.
-  unsigned results_reached=0,result_restarts=0,pause_restarts=0;
-
+  if (!zoom_zoo &&
+      content.pack.optional_entry("zoom.landing-response-matrices").empty())
+    throw std::invalid_argument(
+        "DRAGSTER and the other tracks need the full content pack for jumps, "
+        "brakes, reversal and tricks; "
+        "create it from your ROM with: python3 tools/project.py frontend run "
+        "--track dragster "
+        "--pack local/classic-pal-crawler-tracks-v28.pack --rom PATH");
+  auto zoom_content = unirally::classic_race_content(content.pack, track);
+  auto race_presentation =
+      unirally::classic_race_presentation_content(content.pack, track);
+  auto zoom_state = unirally::classic_race_start(
+      zoom_content, unirally::classic_race_scenario(track));
+  auto &state = zoom_state.movement;
+  auto zoom_hud_state =
+      zoom_state; // State before the latest update, for the HUD.
+  unsigned restarts = 0;
+  // A restart from the stable result proves a completed race; one from the
+  // pause menu does not.
+  unsigned results_reached = 0, result_restarts = 0, pause_restarts = 0;
 
   if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMEPAD |
                 (parsed->native_title_menu_audio ? SDL_INIT_AUDIO : 0U)))
     throw sdl_error("SDL initialization failed");
   SdlQuitter quit;
-  const auto flags = SDL_WINDOW_RESIZABLE |
-                     (parsed->hidden ? SDL_WINDOW_HIDDEN : 0U);
-  Window window(SDL_CreateWindow(window_title(race_presentation.track_name).c_str(),
-                                 768, 672, flags));
+  const auto flags =
+      SDL_WINDOW_RESIZABLE | (parsed->hidden ? SDL_WINDOW_HIDDEN : 0U);
+  Window window(SDL_CreateWindow(
+      window_title(race_presentation.track_name).c_str(), 768, 672, flags));
   if (!window)
     throw sdl_error("window creation failed");
   if (!SDL_SetWindowMinimumSize(window.get(), 256, 224))
@@ -348,8 +444,9 @@ int main(int argc, char **argv) try {
 
   std::cout << "Classic pack validated: " << parsed->pack << '\n'
             << "PAL scheduler: 50 Hz, maximum catch-up 4 updates\n"
-            << (parsed->native_title_menu_audio ? "Native title/menu audio prototype enabled.\n"
-                                                : "Audio playback disabled.\n");
+            << (parsed->native_title_menu_audio
+                    ? "Native title/menu audio prototype enabled.\n"
+                    : "Audio playback disabled.\n");
 
   unirally::app::InputState input;
   Gamepads gamepads(input);
@@ -368,11 +465,15 @@ int main(int argc, char **argv) try {
   // was recovered, and it is invisible in the other counters, so a live run
   // can otherwise only show the absence of a crash rather than the presence of
   // the repaired path. seen_selectors is a bitmask over selector values 0-7.
-  std::uint32_t opponent_trick_updates{}, opponent_multi_axis_updates{}, seen_selectors{};
-  // Gamepad witnesses, separate from the keyboard so a live run can show which drove it.
-  std::uint32_t gamepad_connections{}, gamepad_button_down_events{}, gamepad_button_up_events{},
-      gamepad_buttons_pressed{}, gamepad_nonzero_updates{}, gamepad_only_updates{},
-      gamepad_pause_openings{}, gamepad_only_restarts{}, gamepad_removals{}, gamepad_removal_active_clears{};
+  std::uint32_t opponent_trick_updates{}, opponent_multi_axis_updates{},
+      seen_selectors{};
+  // Gamepad witnesses, separate from the keyboard so a live run can show which
+  // drove it.
+  std::uint32_t gamepad_connections{}, gamepad_button_down_events{},
+      gamepad_button_up_events{}, gamepad_buttons_pressed{},
+      gamepad_nonzero_updates{}, gamepad_only_updates{},
+      gamepad_pause_openings{}, gamepad_only_restarts{}, gamepad_removals{},
+      gamepad_removal_active_clears{};
   std::uint32_t nonzero_input_updates{}, simultaneous_input_updates{};
   std::uint32_t neutral_updates_after_input{}, focus_loss_events{};
   std::uint32_t focus_loss_nonzero_clears{};
@@ -380,42 +481,70 @@ int main(int argc, char **argv) try {
   std::array<std::uint16_t, 2> last_ports{};
   unirally::app::LivePresentation live_presentation;
   bool reported_held_frame{};
-  // Without --track the session starts at power-on; NOW PLAYING's Race starts the race.
+  // Without --track the session starts at power-on; NOW PLAYING's Race starts
+  // the race.
   std::optional<unirally::app::FrontEndSession> front_end;
-  if (!parsed->track_given) front_end.emplace(content.pack);
+  if (!parsed->track_given)
+    front_end.emplace(content.pack);
   std::unique_ptr<unirally::app::SdlTitleMenuAudio> native_audio;
   if (parsed->native_title_menu_audio)
-    native_audio = std::make_unique<unirally::app::SdlTitleMenuAudio>(content.pack);
+    native_audio =
+        std::make_unique<unirally::app::SdlTitleMenuAudio>(content.pack);
   // During a race the front end waits here for the race's result load.
   std::optional<unirally::app::FrontEndSession> waiting_front_end;
   std::uint32_t demo_race_updates = 0;
   std::uint32_t scripted_race_frame = 0;
+  // Native audio past the 1P menu exit (D-0010): with it, a race waits its
+  // track's measured loading frames, as the original does, while the race's
+  // sound program loads; production stops where the sound domain is not
+  // recovered (another mode, a later race).
+  std::uint32_t race_loading_remaining = 0, race_initialization_frame = 0;
+  bool audio_stopped = false;
+  std::ofstream audio_cue_log;
+  if (!parsed->audio_cue_log.empty()) {
+    audio_cue_log.open(parsed->audio_cue_log);
+    if (!audio_cue_log)
+      throw std::runtime_error("cannot create --audio-cue-log");
+  }
   while (running) {
     SDL_Event event{};
     while (SDL_PollEvent(&event)) {
       switch (event.type) {
-      case SDL_EVENT_QUIT: running = false; break;
+      case SDL_EVENT_QUIT:
+        running = false;
+        break;
       case SDL_EVENT_WINDOW_FOCUS_LOST:
         ++focus_loss_events;
         if (input.snapshot() != std::array<std::uint16_t, 2>{})
           ++focus_loss_nonzero_clears;
         input.clear();
         scheduler.pause(SDL_GetTicksNS());
-        if (native_audio) native_audio->set_paused(true);
+        if (native_audio)
+          native_audio->set_paused(true);
         break;
       case SDL_EVENT_WINDOW_FOCUS_GAINED:
         scheduler.resume(SDL_GetTicksNS());
-        if (native_audio) native_audio->set_paused(false);
+        if (native_audio)
+          native_audio->set_paused(false);
         break;
       case SDL_EVENT_WINDOW_EXPOSED:
-      case SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED: redraw = true; break;
+      case SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED:
+        redraw = true;
+        break;
       case SDL_EVENT_KEY_DOWN:
       case SDL_EVENT_KEY_UP:
-        if(event.type==SDL_EVENT_KEY_DOWN && !event.key.repeat &&
-           event.key.scancode==SDL_SCANCODE_RETURN && zoom_state.result_updates &&
-           zoom_state.result_updates==unirally::stable_result_updates(zoom_state)) {
-          unirally::restart_zoom_zoo(zoom_state,zoom_content);zoom_hud_state=zoom_state;
-          input.clear();live_presentation=unirally::app::LivePresentation{};++restarts;++result_restarts;redraw=true;
+        if (event.type == SDL_EVENT_KEY_DOWN && !event.key.repeat &&
+            event.key.scancode == SDL_SCANCODE_RETURN &&
+            zoom_state.result_updates &&
+            zoom_state.result_updates ==
+                unirally::stable_result_updates(zoom_state)) {
+          unirally::restart_zoom_zoo(zoom_state, zoom_content);
+          zoom_hud_state = zoom_state;
+          input.clear();
+          live_presentation = unirally::app::LivePresentation{};
+          ++restarts;
+          ++result_restarts;
+          redraw = true;
           break;
         }
         if (const auto key = keyboard_key(event.key.scancode)) {
@@ -438,7 +567,8 @@ int main(int argc, char **argv) try {
       case SDL_EVENT_GAMEPAD_BUTTON_DOWN:
       case SDL_EVENT_GAMEPAD_BUTTON_UP: {
         const bool down = event.type == SDL_EVENT_GAMEPAD_BUTTON_DOWN;
-        if (gamepads.button(event.gbutton.which, event.gbutton.button, down) == std::uint8_t{0}) {
+        if (gamepads.button(event.gbutton.which, event.gbutton.button, down) ==
+            std::uint8_t{0}) {
           if (down) {
             ++gamepad_button_down_events;
             if (event.gbutton.button < 32)
@@ -449,7 +579,8 @@ int main(int argc, char **argv) try {
         }
         break;
       }
-      default: break;
+      default:
+        break;
       }
     }
 
@@ -465,9 +596,17 @@ int main(int argc, char **argv) try {
         ++gamepad_only_updates;
       if (parsed->fixed_controller_mask.has_value())
         ports[0] = *parsed->fixed_controller_mask;
-      if (waiting_front_end && waiting_front_end->local_race()
-          && !parsed->front_end_inputs.empty()) {
+      if (waiting_front_end && waiting_front_end->local_race() &&
+          !parsed->front_end_inputs.empty()) {
         const auto row = parsed->front_end_inputs.find(++scripted_race_frame);
+        ports = row == parsed->front_end_inputs.end()
+                    ? std::array<std::uint16_t, 2>{}
+                    : logical_masks(row->second);
+      } else if (waiting_front_end && race_initialization_frame &&
+                 !parsed->front_end_inputs.empty()) {
+        // With native audio a 1P race waits its loading frames, so updates are
+        // frames.
+        const auto row = parsed->front_end_inputs.find(updates);
         ports = row == parsed->front_end_inputs.end()
                     ? std::array<std::uint16_t, 2>{}
                     : logical_masks(row->second);
@@ -481,19 +620,24 @@ int main(int argc, char **argv) try {
       } else if (observed_nonzero_input) {
         ++neutral_updates_after_input;
       }
+      std::array<std::uint16_t, 2> audio_words{};
+      unirally::AudioCueList audio_cues;
       if (native_audio) {
-        std::array<std::uint16_t, 2> words{
-            unirally::app::snes_pad_word(ports[0]), unirally::app::snes_pad_word(ports[1])};
+        audio_words = {unirally::app::snes_pad_word(ports[0]),
+                       unirally::app::snes_pad_word(ports[1])};
         if (front_end && !parsed->front_end_inputs.empty()) {
-          const auto row = parsed->front_end_inputs.find(front_end->front_end_frame());
-          if (row == parsed->front_end_inputs.end()) words = {};
-          else words = {row->second.one, row->second.two};
+          const auto row =
+              parsed->front_end_inputs.find(front_end->front_end_frame());
+          if (row == parsed->front_end_inputs.end())
+            audio_words = {};
+          else
+            audio_words = {row->second.one, row->second.two};
         }
-        native_audio->submit_frame(updates, words);
       }
       bool race_chosen = false;
       if (front_end && !parsed->front_end_inputs.empty()) {
-        const auto row = parsed->front_end_inputs.find(front_end->front_end_frame());
+        const auto row =
+            parsed->front_end_inputs.find(front_end->front_end_frame());
         race_chosen = front_end->update(row == parsed->front_end_inputs.end()
                                             ? unirally::FrontEndPads{}
                                             : row->second);
@@ -501,30 +645,52 @@ int main(int argc, char **argv) try {
         race_chosen = front_end->update(ports);
       }
       if (front_end) {
+        audio_cues = front_end->sound_cues();
+        if (!front_end->one_player_mode())
+          audio_stopped = true;
+        if (race_chosen && native_audio && !audio_stopped) {
+          const auto loading = front_end->race_loading_frames();
+          if (front_end->races() != 0 || loading == 0 || front_end->demo_race())
+            audio_stopped = true;
+          else {
+            race_loading_remaining = loading;
+            race_initialization_frame = updates + loading;
+          }
+        }
         if (race_chosen) {
-          // The race NOW PLAYING chose, if it is not the one the app started with.
-          const auto scenario=front_end->race_scenario();
-          const auto chosen=scenario.track;
-          std::cout << "Front end: race " << unsigned(chosen.index) << " chosen after " << front_end->frames()
-                    << " frames (front-end frame " << front_end->front_end_frame() << "); rider "
-                    << unsigned(scenario.pairing.rider) << " against " << unsigned(scenario.pairing.opponent) << "\n";
-          if(!(chosen==track)) {
-            track=chosen;
-            zoom_content=unirally::classic_race_content(content.pack,chosen);
+          // The race NOW PLAYING chose, if it is not the one the app started
+          // with.
+          const auto scenario = front_end->race_scenario();
+          const auto chosen = scenario.track;
+          std::cout << "Front end: race " << unsigned(chosen.index)
+                    << " chosen after " << front_end->frames()
+                    << " frames (front-end frame "
+                    << front_end->front_end_frame() << "); rider "
+                    << unsigned(scenario.pairing.rider) << " against "
+                    << unsigned(scenario.pairing.opponent) << "\n";
+          if (!(chosen == track)) {
+            track = chosen;
+            zoom_content = unirally::classic_race_content(content.pack, chosen);
           }
           // The pairing's palettes and ink, whatever the track.
-          race_presentation=unirally::classic_race_presentation_content(content.pack,scenario);
-          race_presentation.rider_names=front_end->rider_names();
+          race_presentation = unirally::classic_race_presentation_content(
+              content.pack, scenario);
+          race_presentation.rider_names = front_end->rider_names();
           // NEON shows the colours the menus left (R-0068).
-          if(scenario.neon_lighting) race_presentation.neon_menu_colours=front_end->race_leftover_colours();
-          SDL_SetWindowTitle(window.get(),window_title(race_presentation.track_name).c_str());
-          // A fresh race each time: after a result NOW PLAYING can choose the same track again.
-          zoom_state=unirally::classic_race_start(zoom_content,scenario);
+          if (scenario.neon_lighting)
+            race_presentation.neon_menu_colours =
+                front_end->race_leftover_colours();
+          SDL_SetWindowTitle(
+              window.get(), window_title(race_presentation.track_name).c_str());
+          // A fresh race each time: after a result NOW PLAYING can choose the
+          // same track again.
+          zoom_state = unirally::classic_race_start(zoom_content, scenario);
           zoom_state.league_statistics.enabled = front_end->league_race();
           if (front_end->local_race())
-            scripted_race_frame = front_end->front_end_frame() - 1U
-                                  + front_end->race_loading_frames();
-          if (front_end->local_race()) unirally::initialize_split_cameras(zoom_state);
+            scripted_race_frame = front_end->front_end_frame() - 1U +
+                                  front_end->race_loading_frames();
+          if (front_end->local_race())
+            unirally::initialize_split_cameras(zoom_state);
           if (front_end->demo_race()) {
             if (front_end->race_track() == unirally::ClassicRaceTrack::ZoomZoo)
               unirally::initialize_split_cameras(zoom_state);
@@ -532,80 +698,118 @@ int main(int argc, char **argv) try {
               unirally::initialize_second_camera(zoom_state);
             zoom_state.demo_ai = zoom_state.demo.opponent_hints_active = true;
             zoom_state.pairing = scenario.pairing;
-            if (zoom_state.split_screen) zoom_state.opponent_tier.ai_level = 0;
+            if (zoom_state.split_screen)
+              zoom_state.opponent_tier.ai_level = 0;
             demo_race_updates = 0;
           }
-          zoom_hud_state=zoom_state;
-          live_presentation=unirally::app::LivePresentation{};
-          waiting_front_end=std::move(front_end);
+          zoom_hud_state = zoom_state;
+          live_presentation = unirally::app::LivePresentation{};
+          waiting_front_end = std::move(front_end);
           front_end.reset();
           input.clear();
         }
+      } else if (race_loading_remaining) {
+        --race_loading_remaining;
+        audio_cues =
+            unirally::race_sound::loading(race_initialization_frame - updates);
       } else {
-        const auto previous_simulation_frame=zoom_state.movement.frame;
-        const bool was_paused=zoom_state.pause.selection!=0;
-        const bool at_stable_result=zoom_state.result_updates!=0 &&
-            zoom_state.result_updates==unirally::stable_result_updates(zoom_state);
-        zoom_hud_state=zoom_state;
+        const auto previous_simulation_frame = zoom_state.movement.frame;
+        const bool was_paused = zoom_state.pause.selection != 0;
+        const bool at_stable_result =
+            zoom_state.result_updates != 0 &&
+            zoom_state.result_updates ==
+                unirally::stable_result_updates(zoom_state);
+        zoom_hud_state = zoom_state;
         // A keyboard and an analog stick can report opposing directions that a
         // SNES pad's rocker cannot; update_zoom_zoo drops them for both tracks.
-        const auto buttons=unirally::app::controller_buttons(ports[0]);
-        // A race from the menus ends for them on its result load or its pause menu's second
-        // choice (R-0057, R-0060); a race on its own restarts from either.
+        const auto buttons = unirally::app::controller_buttons(ports[0]);
+        // A race from the menus ends for them on its result load or its pause
+        // menu's second choice (R-0057, R-0060); a race on its own restarts
+        // from either.
         std::optional<unirally::RaceTimes> over;
-        if(waiting_front_end && waiting_front_end->demo_race()) {
-          unirally::update_zoom_zoo(
-              zoom_state, buttons, unirally::app::controller_buttons(ports[1]), zoom_content);
+        if (waiting_front_end && waiting_front_end->demo_race()) {
+          unirally::update_zoom_zoo(zoom_state, buttons,
+                                    unirally::app::controller_buttons(ports[1]),
+                                    zoom_content);
           ++demo_race_updates;
-        } else if(at_stable_result && buttons.start)
-          unirally::restart_zoom_zoo(zoom_state,zoom_content);
-        else if(waiting_front_end) over=unirally::update_race_for_menus(
-            zoom_state,buttons,unirally::app::controller_buttons(ports[1]),zoom_content);
-        else unirally::update_zoom_zoo(zoom_state,buttons,zoom_content);
+        } else if (at_stable_result && buttons.start)
+          unirally::restart_zoom_zoo(zoom_state, zoom_content);
+        else if (waiting_front_end)
+          over = unirally::update_race_for_menus(
+              zoom_state, buttons, unirally::app::controller_buttons(ports[1]),
+              zoom_content);
+        else
+          unirally::update_zoom_zoo(zoom_state, buttons, zoom_content);
         // Selector 0 is a real trick (the flat path's negative-velocity
         // rotation), so the impulse is the activity signal; the selector alone
         // would silently drop it.
-        if(zoom_state.movement.opponent_ai.impulse_countdown) {
-          const auto selector=zoom_state.movement.opponent_ai.trick_selector;
+        audio_cues = zoom_state.sound_cues;
+        if (zoom_state.movement.opponent_ai.impulse_countdown) {
+          const auto selector = zoom_state.movement.opponent_ai.trick_selector;
           ++opponent_trick_updates;
-          if(selector&6U)++opponent_multi_axis_updates;
-          if(selector<8U)seen_selectors|=1U<<selector;
+          if (selector & 6U)
+            ++opponent_multi_axis_updates;
+          if (selector < 8U)
+            seen_selectors |= 1U << selector;
         }
-        if(!was_paused && zoom_state.pause.selection &&
-           (gamepad_mask&unirally::app::button_mask(unirally::app::LogicalButton::Start)))++gamepad_pause_openings;
-        if(!at_stable_result && zoom_state.result_updates &&
-           zoom_state.result_updates==unirally::stable_result_updates(zoom_state))++results_reached;
-        if(zoom_state.movement.frame<previous_simulation_frame) {
-          if(gamepad_only)++gamepad_only_restarts;
-          if(at_stable_result)++result_restarts;
-          else ++pause_restarts;
+        if (!was_paused && zoom_state.pause.selection &&
+            (gamepad_mask &
+             unirally::app::button_mask(unirally::app::LogicalButton::Start)))
+          ++gamepad_pause_openings;
+        if (!at_stable_result && zoom_state.result_updates &&
+            zoom_state.result_updates ==
+                unirally::stable_result_updates(zoom_state))
+          ++results_reached;
+        if (zoom_state.movement.frame < previous_simulation_frame) {
+          if (gamepad_only)
+            ++gamepad_only_restarts;
+          if (at_stable_result)
+            ++result_restarts;
+          else
+            ++pause_restarts;
           // Both keyboard and gamepad navigation replace all simulation/art
-          // state. A physically held Start cannot immediately pause the new race.
-          input.clear();live_presentation=unirally::app::LivePresentation{};++restarts;
-          zoom_hud_state=zoom_state;
+          // state. A physically held Start cannot immediately pause the new
+          // race.
+          input.clear();
+          live_presentation = unirally::app::LivePresentation{};
+          ++restarts;
+          zoom_hud_state = zoom_state;
         } else {
-          live_presentation.observe_update(zoom_hud_state,zoom_state,content.pack);
+          live_presentation.observe_update(zoom_hud_state, zoom_state,
+                                           content.pack);
         }
-        // The race's end for the menus: its result, or NOW PLAYING after a restart (R-0057, R-0058,
-        // R-0060).
-        if(waiting_front_end && waiting_front_end->demo_race() &&
-           zoom_state.demo.exit_requested) {
-          const auto exit_frame = waiting_front_end->front_end_frame() + demo_race_updates - 1U;
-          waiting_front_end->return_from_demo(exit_frame, zoom_state.demo.elapsed);
-          front_end=std::move(waiting_front_end);
+        // The race's end for the menus: its result, or NOW PLAYING after a
+        // restart (R-0057, R-0058, R-0060).
+        if (waiting_front_end && waiting_front_end->demo_race() &&
+            zoom_state.demo.exit_requested) {
+          const auto exit_frame =
+              waiting_front_end->front_end_frame() + demo_race_updates - 1U;
+          waiting_front_end->return_from_demo(exit_frame,
+                                              zoom_state.demo.elapsed);
+          front_end = std::move(waiting_front_end);
           waiting_front_end.reset();
           input.clear();
           std::cout << "Front end: demo returned at front-end frame "
                     << front_end->front_end_frame() << '\n';
-        } else if(waiting_front_end && over) {
-          waiting_front_end->return_from_race(zoom_state,*over);
-          front_end=std::move(waiting_front_end);
+        } else if (waiting_front_end && over) {
+          waiting_front_end->return_from_race(zoom_state, *over);
+          race_initialization_frame = 0;
+          front_end = std::move(waiting_front_end);
           waiting_front_end.reset();
-          // The input is kept: a button held from the race holds a one-run result (`$80:C24C`)
-          // and ends a lap result at its first test (`$80:B6D3`), as in the original.
-          std::cout<<"Front end: race returned at front-end frame "<<front_end->front_end_frame()
-                   <<"; totals "<<over->player_total<<'/'<<over->opponent_total<<'\n';
+          // The input is kept: a button held from the race holds a one-run
+          // result (`$80:C24C`) and ends a lap result at its first test
+          // (`$80:B6D3`), as in the original.
+          std::cout << "Front end: race returned at front-end frame "
+                    << front_end->front_end_frame() << "; totals "
+                    << over->player_total << '/' << over->opponent_total
+                    << '\n';
         }
+      }
+      if (native_audio) {
+        if (audio_cue_log)
+          write_audio_cues(audio_cue_log, updates, audio_cues);
+        native_audio->submit_frame(updates, audio_words, std::move(audio_cues),
+                                   audio_stopped);
       }
       ++updates;
       redraw = true;
@@ -620,10 +824,11 @@ int main(int argc, char **argv) try {
     }
     if (redraw) {
       const auto canonical_before = unirally::serialize_zoom_zoo(zoom_state);
-      const auto live_frame =
-          live_presentation.render_race(zoom_state,zoom_hud_state,race_presentation);
+      const auto live_frame = live_presentation.render_race(
+          zoom_state, zoom_hud_state, race_presentation);
       if (live_frame.used_pose_fallback && !reported_held_frame) {
-        std::cout << "Presentation note: a rider pose outside the packed tables holds that rider's last drawn pose.\n";
+        std::cout << "Presentation note: a rider pose outside the packed "
+                     "tables holds that rider's last drawn pose.\n";
         reported_held_frame = true;
       }
       ++rendered_frames;
@@ -642,9 +847,9 @@ int main(int argc, char **argv) try {
           !zoom_state.race.riders[0].finished) {
         ++identical_fallback_race_redraws;
         ++current_identical_fallback_race_run;
-        longest_identical_fallback_race_run = std::max(
-            longest_identical_fallback_race_run,
-            current_identical_fallback_race_run);
+        longest_identical_fallback_race_run =
+            std::max(longest_identical_fallback_race_run,
+                     current_identical_fallback_race_run);
       } else {
         current_identical_fallback_race_run = 0;
       }
@@ -657,13 +862,15 @@ int main(int argc, char **argv) try {
     if (running)
       SDL_Delay(1);
   }
-  if (native_audio) native_audio->report();
+  if (native_audio)
+    native_audio->report();
   if (front_end)
     std::cout << "Front end: frames " << front_end->frames() << "; notices "
               << front_end->notices() << "; returns to the main menu "
-              << front_end->returns_to_menu() << "; races returned " << front_end->races()
-              << "; in the menus at the end, screen " << front_end->screen()
-              << ", medal on the tour " << front_end->tour_medal() << '\n';
+              << front_end->returns_to_menu() << "; races returned "
+              << front_end->races() << "; in the menus at the end, screen "
+              << front_end->screen() << ", medal on the tour "
+              << front_end->tour_medal() << '\n';
   std::cout << "Presentation frames: " << rendered_frames
             << "; rider-pose fallback frames: " << pose_fallback_frames
             << "; identical consecutive redraws: " << identical_redraws
@@ -671,8 +878,7 @@ int main(int argc, char **argv) try {
             << "; identical fallback race redraws: "
             << identical_fallback_race_redraws
             << "; longest identical fallback race run: "
-            << longest_identical_fallback_race_run
-            << '\n'
+            << longest_identical_fallback_race_run << '\n'
             << "Live input: mapped key down/up " << mapped_key_down_events
             << '/' << mapped_key_up_events << "; nonzero updates "
             << nonzero_input_updates << "; simultaneous updates "
@@ -683,21 +889,29 @@ int main(int argc, char **argv) try {
             << state.frame << "; controller-0 mask " << last_ports[0]
             << "; player x " << state.riders[0].motion.x << "; velocity x "
             << state.riders[0].motion.velocity_x << '\n';
-  if(!(track==unirally::ClassicRaceTrack::ZoomZoo)) {
-    const auto shown=unirally::classic_finish_view(zoom_state);
-    std::cout<<race_presentation.track_name<<" race phase "<<static_cast<unsigned>(shown.phase)
-      <<"; outcome "<<static_cast<unsigned>(shown.outcome)<<'\n';
+  if (!(track == unirally::ClassicRaceTrack::ZoomZoo)) {
+    const auto shown = unirally::classic_finish_view(zoom_state);
+    std::cout << race_presentation.track_name << " race phase "
+              << static_cast<unsigned>(shown.phase) << "; outcome "
+              << static_cast<unsigned>(shown.outcome) << '\n';
   }
-  std::cout<<race_presentation.track_name<<" result updates "<<zoom_state.result_updates<<"; restarts "<<restarts
-      <<"; totals "<<zoom_state.race.total_times[0]<<'/'<<zoom_state.race.total_times[1]
-      <<"; stable results reached "<<results_reached<<"; restarts from result/pause "
-      <<result_restarts<<'/'<<pause_restarts<<'\n';
-  if(track==unirally::ClassicRaceTrack::ZoomZoo) {
-    std::cout<<"Opponent tricks: updates "<<opponent_trick_updates<<"; multi-axis updates "
-             <<opponent_multi_axis_updates<<"; selectors seen";
-    if(!seen_selectors)std::cout<<" none";
-    else for(unsigned s=0;s<8;++s)if(seen_selectors&(1U<<s))std::cout<<' '<<s;
-    std::cout<<'\n';
+  std::cout << race_presentation.track_name << " result updates "
+            << zoom_state.result_updates << "; restarts " << restarts
+            << "; totals " << zoom_state.race.total_times[0] << '/'
+            << zoom_state.race.total_times[1] << "; stable results reached "
+            << results_reached << "; restarts from result/pause "
+            << result_restarts << '/' << pause_restarts << '\n';
+  if (track == unirally::ClassicRaceTrack::ZoomZoo) {
+    std::cout << "Opponent tricks: updates " << opponent_trick_updates
+              << "; multi-axis updates " << opponent_multi_axis_updates
+              << "; selectors seen";
+    if (!seen_selectors)
+      std::cout << " none";
+    else
+      for (unsigned s = 0; s < 8; ++s)
+        if (seen_selectors & (1U << s))
+          std::cout << ' ' << s;
+    std::cout << '\n';
   }
   std::cout << "Gamepad input: connections " << gamepad_connections
             << "; port-0 button down/up " << gamepad_button_down_events << '/'
@@ -706,7 +920,9 @@ int main(int argc, char **argv) try {
     std::cout << " none";
   for (unsigned button = 0; button < 32; ++button)
     if (gamepad_buttons_pressed & (1U << button))
-      std::cout << ' ' << SDL_GetGamepadStringForButton(static_cast<SDL_GamepadButton>(button));
+      std::cout << ' '
+                << SDL_GetGamepadStringForButton(
+                       static_cast<SDL_GamepadButton>(button));
   std::cout << "; nonzero updates " << gamepad_nonzero_updates
             << "; gamepad-only nonzero updates " << gamepad_only_updates
             << "; pause openings " << gamepad_pause_openings

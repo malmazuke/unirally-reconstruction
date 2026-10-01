@@ -134,8 +134,40 @@ emit the same operations in program order:
   side keeps (`$82:A507-A5F3`); each read announcement plays its voice from `$81:C441`
   (`$81:C191-C216` player, `$81:C2D0-C357` opponent; the 72-byte table is pack entry
   `audio.announcement-voices`); then `$83:CD6E` and `$83:CD9F`.
+- Pause (`$83:F63E` from `$83:CD2A`): every paused update calls the dispatcher eight times
+  (`$83:F65E-F67A`); the update that opens the pause also fades the music out (command 3,
+  `0x80`) and dispatches twice (`$83:F68A`, `$83:F68E`), clearing the latch `$1365`. CONTINUE
+  (`$83:F930-F93B`) fades it back in (`0x7F`), dispatches twice and restores `$1365` from
+  `$1369`. A quit keeps the quitting update's cues; the race state is left as it was.
 
 `front_end_runner --sound-cues` on the primary schedule writes 5,791 cues for frames
 620-3,999, equal line for line to `primary.cues.txt` (4,757 without the frame waits); the
-native race initializes at 1,328 as before. The stunt event's beeps follow the static reading
-only; no stunt event, pause or other mode is compared yet.
+native race initializes at 1,328 as before. Two changed schedules, each captured with both
+dispatch-site watches (`quit-disp1/2`, `loss-disp1/2`), compare the same way:
+
+| Schedule | Path | Cues (without waits) | Equal |
+|---|---|---|---|
+| `primary` | 1P DRAGSTER won, result, PICK TRACK | 5,791 (4,757) | yes |
+| `quit` | Start pauses the race at 1,700, Down, Start quits at 1,820 to the menus | 3,092 (2,023) | yes |
+| `loss` | DRAGSTER lost (Right released 2,000-2,999), result left at 5,000 | 7,572 (6,119) | yes |
+
+The SDL frontend's scripted 1P primary run (`--audio-cue-log`, rotation lines resolved as
+the audio side does) gives the same 5,791 cues; it reports 3,380 cued frames and no stop.
+CONTINUE's fade-in and the stunt event's beeps follow the static reading only.
+
+## Measured agreement (D-0010)
+
+`race_audio_runner` plays each schedule from power-on with the native cues (raw 32,040 Hz
+pairs, no original clock or event as input). Commands reach the driver in the original's
+frames and order on all three schedules (primary 120, quit 46, loss 120 commands); arrival
+clocks differ by -43,072 to +50,430 master clocks (about 2 ms). PCM is identical through
+power-on, the title, the main menu and the first 130 setup frames after the 1P exit, and
+first differs at pair 480,386 (frame 750, the first anchored command) on all three. After it
+the waveform is time-shifted, so sample errors are no measure of audible agreement; the
+level of each 20 ms window with signal above -60 dBFS is (`pcm_metrics.py`):
+
+| Schedule | Identical pairs | Windows | Median level difference | 90th / 99th percentile | Within 1 dB |
+|---|---|---|---|---|---|
+| `primary` | 891,612 of 2,562,673 | 3,695 | 0.34 dB | 1.69 / 3.32 dB | 77% |
+| `quit` | 934,344 of 1,537,529 | 2,029 | 0.00 dB | 1.18 / 2.39 dB | 87% |
+| `loss` | 892,179 of 3,267,448 | 4,795 | 0.48 dB | 1.71 / 3.35 dB | 74% |

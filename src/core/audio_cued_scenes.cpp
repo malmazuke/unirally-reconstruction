@@ -15,7 +15,7 @@ constexpr std::uint64_t frame_clocks = 425568, first_frame_boundary = 306900;
 // each session's first FF request.
 constexpr std::uint64_t frame_wait_anchor = 13082, race_early_anchor = 27920,
                         race_late_anchor = 207728, countdown_anchor = 31564,
-                        finish_fade_anchor = 26324, race_choice_anchor = 9908;
+                        finish_fade_anchor = 26324, race_choice_anchor = 9908, pause_anchor = 13012;
 constexpr std::uint64_t first_race_load_anchor = 169072, title_return_load_anchor = 344450;
 
 std::uint64_t frame_start(std::uint32_t frame) {
@@ -33,6 +33,7 @@ std::uint64_t dispatch_anchor(AudioDispatchSite site) {
     case AudioDispatchSite::countdown: return countdown_anchor;
     case AudioDispatchSite::finish_fade: return finish_fade_anchor;
     case AudioDispatchSite::race_choice: return race_choice_anchor;
+    case AudioDispatchSite::pause: return pause_anchor;
     }
     throw std::invalid_argument("unknown audio dispatch site");
 }
@@ -85,6 +86,9 @@ void NativeTitleMenuAudio::run_cue(std::uint32_t frame, const AudioCue& cue) {
     switch (cue.kind) {
     case AudioCueKind::enqueue: enqueue_cue(c, queue_, cue.command, cue.parameter); return;
     case AudioCueKind::dispatch:
+        // A frame wait in a frame the CPU has already left (an upload ran past it) never runs.
+        if (cue.site == AudioDispatchSite::frame_wait && c.ticks() >= frame_start(frame + 1))
+            return;
         idle_until(c, frame_start(frame) + dispatch_anchor(cue.site));
         c.call_far();
         if (cue.site == AudioDispatchSite::frame_wait)
@@ -96,6 +100,17 @@ void NativeTitleMenuAudio::run_cue(std::uint32_t frame, const AudioCue& cue) {
     case AudioCueKind::rotation: rotation_sound(cue.command, cue.parameter != 0); return;
     }
     throw std::invalid_argument("unknown audio cue");
+}
+// Before a menu exit only the title set exists and no frame is cued; a cued scene has ended
+// frame `cued_frame` at or after its vertical-blank boundary.
+bool NativeTitleMenuAudio::valid_cued_state(const TitleMenuAudioState& state) {
+    if (state.phase != TitleMenuAudioPhase::cued)
+        return state.cued_frame == 0 && !state.rotation_sounding[0] && !state.rotation_sounding[1]
+            && state.engine.sound_set == AudioSoundSetId::title
+            && state.engine.uploading_sound_set == AudioSoundSetId::title;
+    constexpr std::uint32_t last_frame = 0xfffffffeU;
+    return state.cued_frame != 0 && state.cued_frame <= last_frame
+        && state.engine.cpu.ticks >= frame_start(state.cued_frame + 1);
 }
 // $82:A507-A5F3: the race keeps a sound latch per rider (`$1003`, `$1005`) and changes the
 // rotation flag (42 player, 43 opponent) and its effect only when the rotation changes.

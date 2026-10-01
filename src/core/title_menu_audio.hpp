@@ -65,7 +65,7 @@ struct TitleMenuAudioState {
     std::array<std::uint8_t, 8192> cartridge{};
     std::uint16_t hunter_remaining = 30;
     AudioCpuHunterWorkState hunter;
-    std::uint32_t cued_frame = 0; // the last frame cue_frame completed
+    std::uint32_t cued_frame = 0;            // the last frame cue_frame completed
     std::array<bool, 2> rotation_sounding{}; // the race's `$1003`/`$1005` sound latches
 };
 // Semantic call boundaries own all continuation state. Controller words are
@@ -100,6 +100,7 @@ public:
     void cue_frame(std::uint32_t frame, std::span<const AudioCue> cues);
     std::uint64_t cpu_ticks() { return engine_.cpu().ticks(); }
     TitleMenuAudioPhase phase() const { return phase_; }
+    std::uint32_t cued_frame() const { return cued_frame_; }
     std::uint8_t menu_selection() const { return menu_.selection; }
     TitleMenuAudioState snapshot();
     void restore(const TitleMenuAudioState& state);
@@ -116,6 +117,7 @@ private:
     AudioCpuHunterWorkState hunter_;
     std::uint32_t cued_frame_ = 0;
     void run_cue(std::uint32_t frame, const AudioCue& cue);
+    static bool valid_cued_state(const TitleMenuAudioState& state);
     void load_session(std::uint32_t frame, AudioSessionLoad load);
     void rotation_sound(unsigned rider, bool rotating);
     std::array<bool, 2> rotation_sounding_{};

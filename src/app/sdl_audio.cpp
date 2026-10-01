@@ -6,7 +6,7 @@
 namespace unirally::app {
 SdlTitleMenuAudio::SdlTitleMenuAudio(const ClassicContentPack& pack) {
     if (pack.optional_entry("audio.hunter-graphics-work-directory").empty())
-        throw std::invalid_argument("--native-title-menu-audio requires a v31 content pack");
+        throw std::invalid_argument("--native-title-menu-audio requires a v31 or later content pack");
     SDL_AudioSpec spec{SDL_AUDIO_S16, 2, 48000};
     device_ = SDL_OpenAudioDeviceStream(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, &spec, callback, this);
     if (!device_) throw std::runtime_error(SDL_GetError());
@@ -51,8 +51,9 @@ void SDLCALL SdlTitleMenuAudio::callback(void* context, SDL_AudioStream* stream,
         self.callback_failed_ = true;
     }
 }
-void SdlTitleMenuAudio::submit_frame(std::uint32_t frame, std::array<std::uint16_t, 2> words) {
-    producer_->submit_frame(frame, words);
+void SdlTitleMenuAudio::submit_frame(std::uint32_t frame, std::array<std::uint16_t, 2> words,
+                                     AudioCueList cues, bool stop) {
+    producer_->submit_frame(frame, words, std::move(cues), stop);
     if (callback_failed_) throw std::runtime_error("native audio device callback failed");
     // Two PAL frames of priming are a host latency policy. They never supply
     // producer clocks or controller words and are not original timing evidence.
@@ -75,6 +76,8 @@ void SdlTitleMenuAudio::report() {
               << " native_audio_nonzero_pairs=" << nonzero_pairs_.load()
               << " native_audio_underrun_pairs=" << underrun_pairs_.load()
               << " native_audio_navigation_count=" << producer_->navigation_count()
-              << " native_audio_restart_count=" << producer_->restart_count() << '\n';
+              << " native_audio_restart_count=" << producer_->restart_count()
+              << " native_audio_cued_frames=" << producer_->cued_frames()
+              << " native_audio_cued_stopped=" << producer_->cued_stopped() << '\n';
 }
 } // namespace unirally::app

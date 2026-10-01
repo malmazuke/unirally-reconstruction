@@ -36,6 +36,21 @@ bool beeps(std::uint16_t countdown, bool stunt_event) {
 void dispatch(ZoomZooState& next, AudioDispatchSite site) {
     next.sound_cues.push_back(audio_dispatch(site));
 }
+void pause_frame(ZoomZooState& next, bool opening) {
+    constexpr unsigned paused_calls = 8;
+    constexpr std::uint8_t pause_fade_out = 0x80;
+    for (unsigned call = 0; call < paused_calls; ++call) dispatch(next, AudioDispatchSite::pause);
+    if (!opening) return;
+    enqueue(next, music_fade, pause_fade_out);
+    dispatch(next, AudioDispatchSite::pause);
+    dispatch(next, AudioDispatchSite::pause);
+}
+void pause_continue(ZoomZooState& next) {
+    constexpr std::uint8_t pause_fade_in = 0x7f;
+    enqueue(next, music_fade, pause_fade_in);
+    dispatch(next, AudioDispatchSite::pause);
+    dispatch(next, AudioDispatchSite::pause);
+}
 void countdown(ZoomZooState& next, std::uint16_t countdown, bool stunt_event) {
     if (beeps(countdown, stunt_event)) enqueue(next, start_effect, countdown_beep);
     if (!stunt_event && countdown == go_beep) enqueue(next, start_effect, countdown_go);

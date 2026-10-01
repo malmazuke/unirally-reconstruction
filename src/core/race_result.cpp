@@ -769,6 +769,7 @@ std::optional<RaceTimes> update_race_for_menus(ZoomZooState& race, const Control
                         ? times.opponent_total
                         : times.player_total;
         total = race.movement.countdown != 0 ? restart : quit; // $83:F8DA-F90B
+        race.sound_cues = std::move(next.sound_cues);          // the race itself is left as it was
         return times;
     }
     race = next;
