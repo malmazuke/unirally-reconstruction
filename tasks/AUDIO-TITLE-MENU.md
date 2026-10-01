@@ -1344,3 +1344,64 @@ queue, then fresh-process continuation and product output. Scene stop/restart
 remains coupled recovery; no audio device or capability acceptance yet. Last
 fresh quota23% at08:53,baseline12/stop32,no reset/spending/provider change.
 Next checkpoint09:16,reassessment09:18.
+
+### 1 October 09:16 UTC checkpoint
+
+ecbc52e is pushed with the unchanged-core withheld menu evidence. The new
+shared native engine owns CPU/IPL/driver/timers/DSP/history and pending PCM.
+Six frozen comparisons, including1380 steered loops, remain exact after
+replacing the runner-only bus with this engine. Readability passes for the
+engine, DSP wrapper and clock-state accessors. New ownership/session source
+is uncommitted; canonical file serialization and fresh-process tests remain.
+
+A checker source-list edit lost a quote and stopped before comparison; its
+old JSON was not a new pass. The corrected scripts completed all six fresh
+comparisons and bind the new source files. The pre-refactor reports remain
+in `audio-system-refactor-frozen.json`; original expectations are unchanged.
+
+Fresh quota23% at09:15,baseline12/stop32,ordinary usage allowed,reset1791365217.
+No reset/spending/provider change. Next canonical state/file continuation,
+then pack/device and joined scene restart. Product remains silent; full
+capability review/acceptance open. Next checkpoint09:26,reassessment09:18.
+
+### 1 October 09:18 UTC reassessment
+
+Keep the current primary and capability. Seedless producer prediction now
+covers the declared menu variations; coupled native ownership and canonical
+serialization compile, with six pre-refactor event/PCM checks unchanged.
+Continue fresh-process state/PCM verification, product packaging/output and
+scene restart recovery. Do not substitute diagnostic or partial producer
+acceptance for the requested audible capability. Last fresh usage23% at09:15,
+baseline12/stop32, review reserve intact, no reset/spending/provider change.
+Next checkpoint09:26; reassessment10:03.
+
+### 1 October 09:26 UTC checkpoint
+
+Native canonical URAU0001 source and the new phase owner compile. The format
+carries CPU raster/NMI/autopoll/DMA state, IPL/driver/timers/voices, DSP RAM
+and history, queue/scene/menu/title/cartridge work and pending PCM. Four
+affected checks pass, including strict file/flag/truncation and transactional
+rejection checks. The new runner's uninterrupted PCM/end CPU match the frozen
+steered1800 run; its first event checker wrongly excluded every N RAM row,
+including the frozen cold-upload prefix. Correct the projection to preserve
+that prefix; no expected event or native code changed for this correction.
+Fresh-process splits are now running and remain unverified at this checkpoint.
+New ownership/serialization source is uncommitted; metadata regeneration and
+staged inspection remain. Last fresh usage23% at09:15,baseline12/stop32,
+no reset/spending/provider change. Next checkpoint09:36,reassessment10:03.
+Product/lifecycle/review remain open.
+
+Canonical follow-up: all eight fresh-process splits pass against the native
+steered1800 run, whose original event/PCM/end-clock comparison also passes.
+Each save parses/re-encodes/restores identically; concatenated events, pending
+plus new PCM and final canonical state are exact. Four affected public checks
+and new-file readability pass. R-0075 records this call-boundary domain and
+remaining device/pack/lifecycle limitations. New source remains uncommitted
+until map regeneration and staged inspection.
+
+Ownership checkpoint follow-up: all10 focused native audio checks pass, along
+with24 native-symbol tooling checks and the80-line readability checks. Static
+regeneration verifies53,062 sites/42,700 shared instructions with zero
+disagreements; all1049 citations have records. The engine/session/canonical
+slice is ready for staged inspection and a task commit. Hosted CI at ecbc52e
+is green; final candidate CI remains required after new source is pushed.

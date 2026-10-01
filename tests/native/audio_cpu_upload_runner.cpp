@@ -5,7 +5,7 @@
 #include "audio_cpu_text.hpp"
 #include "audio_cpu_menu_input.hpp"
 #include "audio_cpu_upload.hpp"
-#include "audio_driver_dsp.hpp"
+#include "audio_engine.hpp"
 #include "audio_ipl.hpp"
 #include <algorithm>
 #include <fstream>
@@ -16,102 +16,23 @@
 #include <stdexcept>
 
 namespace {
-struct CpuYield {};
-class Bus final : public unirally::AudioDriverBus, public unirally::AudioCpuWorkObserver {
+class Controllers final : public unirally::AudioControllerSource {
 public:
-    std::unique_ptr<DriverDspDiagnostic> dsp;
-    unirally::AudioCpuInterruptWorkState interrupt_state;
-    unsigned interrupt_count = 0;
-    std::vector<std::array<std::uint16_t, 2>> controller_schedule;
-    std::uint16_t controller_input(std::uint64_t ticks, unsigned port) override {
+    std::vector<std::array<std::uint16_t, 2>> schedule;
+    std::uint16_t controller_word(std::uint64_t ticks, unsigned port) override {
         const auto frame = ticks / 425568 + 1;
-        return frame < controller_schedule.size() ? controller_schedule[frame][port] : 0;
+        return frame < schedule.size() ? schedule[frame][port] : 0;
     }
-    void nonmaskable_interrupt(unirally::AudioCpuWorkClock& clock) override {
-        ++interrupt_count;
-        unirally::native_audio_title_interrupt(clock, interrupt_state);
+};
+class Events final : public unirally::AudioEngineEventSink {
+public:
+    explicit Events(std::ostream& output) : output_(output) {}
+    void event(char kind, std::uint64_t smp, std::uint64_t cpu,
+               std::uint16_t address, std::uint8_t value) override {
+        output_ << kind << ' ' << smp << ' ' << cpu << ' ' << address << ' ' << unsigned(value) << '\n';
     }
-    Bus(std::ostream& output, const unirally::TitleMenuAudioData& score,
-        const unirally::AudioPitchData& pitch, bool ready_mode)
-        : output_(output), ipl_(*this), score_(&score), pitch_(&pitch), ready_mode_(ready_mode) {}
-    std::uint8_t read_port(std::uint64_t ticks, std::uint8_t port) override {
-        if (ticks * cpu_frequency >= cpu_completed_ * smp_frequency) throw CpuYield{};
-        const auto value = incoming_.at(port);
-        emit('R', ticks, port, value);
-        return value;
-    }
-    void write_port(std::uint64_t ticks, std::uint8_t port, std::uint8_t value) override {
-        if (ticks * cpu_frequency >= cpu_completed_ * smp_frequency) throw CpuYield{};
-        outgoing_.at(port) = value;
-        emit('P', ticks, port, value);
-    }
-    void write_ram(std::uint64_t ticks, std::uint16_t address, std::uint8_t value) override {
-        if (dsp) dsp->write_ram(ticks, address, value);
-        emit('N', ticks, address, value);
-    }
-    void write_dsp(std::uint64_t ticks, std::uint8_t reg, std::uint8_t value) override {
-        if (dsp) dsp->write_register(ticks, reg, value);
-        emit('D', ticks, reg, value);
-    }
-    void clear_ports(std::uint64_t ticks, std::uint8_t port) override {
-        if (ticks * cpu_frequency >= cpu_completed_ * smp_frequency) throw CpuYield{};
-        incoming_.at(port) = incoming_.at(port + 1U) = 0;
-        emit('Z', ticks, port, 0);
-    }
-    unsigned clock_sync_step() const override { return 2; }
-    void advance_clock(std::uint64_t ticks) override {
-        constexpr std::uint64_t force_lead = 768ULL * 24 * 24000000;
-        if (ticks * cpu_frequency > cpu_completed_ * smp_frequency + force_lead) throw CpuYield{};
-    }
-    void scanline(std::uint64_t ticks, std::uint64_t completed_ticks) override {
-        cpu_master_ = ticks;
-        cpu_completed_ = completed_ticks;
-        synchronize();
-    }
-    std::uint8_t read_audio_port(std::uint64_t ticks, std::uint8_t port) override {
-        cpu_master_ = cpu_completed_ = ticks;
-        synchronize();
-        const auto value = outgoing_.at(port);
-        emit('Q', smp_ticks(), port, value);
-        return value;
-    }
-    void write_audio_port(std::uint64_t ticks, std::uint8_t port, std::uint8_t value) override {
-        cpu_master_ = cpu_completed_ = ticks;
-        synchronize();
-        incoming_.at(port) = value;
-        emit('C', smp_ticks(), port, value);
-    }
-
 private:
-    static constexpr std::uint64_t cpu_frequency = 21281370, smp_frequency = 2050560;
     std::ostream& output_;
-    unirally::AudioIplHandshake ipl_;
-    const unirally::TitleMenuAudioData* score_;
-    const unirally::AudioPitchData* pitch_;
-    bool ready_mode_;
-    std::unique_ptr<unirally::TitleMenuAudioDriver> driver_;
-    std::array<std::uint8_t, 4> incoming_{}, outgoing_{};
-    std::uint64_t smp_ticks() const { return driver_ ? driver_->ticks() : ipl_.state().ticks; }
-    std::uint64_t cpu_master_ = 0, cpu_completed_ = 0;
-    void emit(char kind, std::uint64_t ticks, std::uint16_t address, std::uint8_t value) {
-        output_ << kind << ' ' << ticks << ' ' << cpu_master_ << ' ' << address << ' ';
-        output_ << unsigned(value) << '\n';
-    }
-    void synchronize() {
-        if (smp_ticks() * cpu_frequency >= cpu_completed_ * smp_frequency) return;
-        try {
-            if (!driver_) {
-                ipl_.run_until(std::numeric_limits<std::uint64_t>::max());
-                if (ipl_.driver_ready()) {
-                    if (!ready_mode_) throw std::logic_error("upload crossed its domain");
-                    driver_ = std::make_unique<unirally::TitleMenuAudioDriver>(
-                        *score_, *pitch_, *this, unirally::AudioTimersState{}, ipl_.state().ticks,
-                        true, true);
-                }
-            }
-            if (driver_) driver_->run_until(std::numeric_limits<std::uint64_t>::max());
-        } catch (const CpuYield&) {}
-    }
 };
 std::vector<std::uint8_t> read(const std::string& path) {
     std::ifstream file(path, std::ios::binary);
@@ -208,7 +129,9 @@ int main(int argc, char** argv) {
                 static_cast<std::uint16_t>(notes[2 * i] | unsigned(notes[2 * i + 1]) << 8);
         std::copy(fraction.begin(), fraction.end(), pitch.sample_fraction.begin());
         std::copy(transpose.begin(), transpose.end(), pitch.sample_transpose.begin());
-        Bus bus(output, score, pitch, ready);
+        Controllers controllers;
+        Events events(output);
+        unirally::NativeAudioEngine engine(score, pitch, controllers, &events);
         const std::string menu_input_name =
             menu_down80         ? "cpu-controller-inputs-down500.txt"
             : menu_up500        ? "cpu-controller-inputs-up500.txt"
@@ -218,15 +141,13 @@ int main(int argc, char** argv) {
         std::ifstream controller_inputs(root + "/" + menu_input_name);
         unsigned input_frame, input_first, input_second;
         while (controller_inputs >> input_frame >> input_first >> input_second) {
-            if (input_frame != bus.controller_schedule.size() || input_first > 65535
+            if (input_frame != controllers.schedule.size() || input_first > 65535
                 || input_second > 65535)
                 throw std::invalid_argument("invalid native controller schedule");
-            bus.controller_schedule.push_back({static_cast<std::uint16_t>(input_first),
+            controllers.schedule.push_back({static_cast<std::uint16_t>(input_first),
                                                static_cast<std::uint16_t>(input_second)});
         }
-        if (argc == 6)
-            bus.dsp = std::make_unique<DriverDspDiagnostic>(argv[4], std::stoull(argv[5]));
-        unirally::AudioCpuWorkClock clock(&bus);
+        auto& clock = engine.cpu();
         unirally::native_audio_cpu_boot_prefix(clock);
         unirally::native_audio_cpu_uploads(clock, data);
         if (ready) unirally::native_audio_cpu_finish_driver_entry(clock);
@@ -258,7 +179,7 @@ int main(int argc, char** argv) {
                         unirally::native_audio_finish_nintendo_screen(clock, state, scene);
                     if (title)
                         unirally::native_audio_load_title_graphics(
-                            clock, scene, bus.interrupt_state, assets[27], assets[78], assets[72]);
+                            clock, scene, engine.interrupt(), assets[27], assets[78], assets[72]);
                     if (first_nmi) {
                         unirally::native_audio_first_title_interrupt(clock);
                         if (title_fade)
@@ -295,7 +216,7 @@ int main(int argc, char** argv) {
                                                    compressed != 0};
                             }
                             unirally::native_audio_menu_first_palette(
-                                clock, state, scene, bus.interrupt_state, menu_assets[1]);
+                                clock, state, scene, engine.interrupt(), menu_assets[1]);
                             if (menu_graphics)
                                 unirally::native_audio_menu_graphics(clock, scene, menu_assets);
                             if (menu_oam) unirally::native_audio_menu_oam(clock, scene);
@@ -376,10 +297,10 @@ int main(int argc, char** argv) {
                                 }
                             }
                         }
-                        std::cout << "palette_delay=" << unsigned(bus.interrupt_state.palette_delay)
+                        std::cout << "palette_delay=" << unsigned(engine.interrupt().palette_delay)
                                   << " palette_index="
-                                  << unsigned(bus.interrupt_state.palette_index) << '\n';
-                        std::cout << "interrupt_count=" << bus.interrupt_count << '\n';
+                                  << unsigned(engine.interrupt().palette_index) << '\n';
+                        std::cout << "interrupt_count=" << engine.snapshot().interrupt_count << '\n';
                     }
                 }
                 std::cout << "scene_phase=" << unsigned(scene.phase) << '\n';
@@ -389,7 +310,17 @@ int main(int argc, char** argv) {
                       << " expected_phase=" << unsigned(state.expected_phase) << '\n';
         }
         std::cout << "computed_final_upload_cpu_clock=" << clock.ticks() << '\n';
-        if (bus.dsp) bus.dsp->finish();
+        if (argc == 6) {
+            engine.finish_pcm_to(std::stoull(argv[5]));
+            std::ofstream pcm(argv[4], std::ios::binary);
+            if (!pcm) throw std::runtime_error("cannot write native audio PCM");
+            for (const auto sample : engine.take_pcm()) {
+                const auto value = static_cast<std::uint16_t>(sample);
+                pcm.put(static_cast<char>(value & 255));
+                pcm.put(static_cast<char>(value >> 8));
+            }
+            if (!pcm) throw std::runtime_error("native audio PCM write failed");
+        }
         if (!output) throw std::runtime_error("native upload events failed");
         return 0;
     } catch (const std::exception& error) {

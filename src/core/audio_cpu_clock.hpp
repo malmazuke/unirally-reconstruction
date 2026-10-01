@@ -4,6 +4,20 @@
 
 namespace unirally {
 class AudioCpuWorkClock;
+// Native clock continuation at a semantic call boundary. Units: PAL CPU master clocks.
+struct AudioCpuClockState {
+    std::uint64_t ticks = 0, completed_step_ticks = 0, scanline = 0;
+    bool refreshed = false, fast_rom = false;
+    unsigned pending_dma_bytes = 0;
+    bool dma_active = false;
+    bool nmi_enabled = false, nmi_valid = false, nmi_line = false, nmi_hold = false;
+    bool nmi_transition = false, nmi_pending = false, irq_lock = false;
+    bool in_interrupt = false, auto_joypad_enabled = false;
+    unsigned auto_joypad_counter = 33;
+    std::array<std::uint16_t, 2> latched_controllers{}, controller_words{};
+    bool operator==(const AudioCpuClockState&) const = default;
+};
+
 class AudioCpuWorkObserver {
 public:
     virtual ~AudioCpuWorkObserver() = default;
@@ -25,6 +39,8 @@ class AudioCpuWorkClock {
 public:
     explicit AudioCpuWorkClock(AudioCpuWorkObserver* observer = nullptr) : observer_(observer) {}
     std::uint64_t ticks() const { return ticks_; }
+    AudioCpuClockState snapshot() const;
+    void restore(const AudioCpuClockState& state);
     void set_fast_rom(bool enabled) { fast_rom_ = enabled; }
     void step(unsigned clocks);
     // Semantic instruction boundaries and the one-bus-cycle-early NMI test.

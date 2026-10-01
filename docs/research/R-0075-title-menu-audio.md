@@ -941,3 +941,38 @@ product audio, complete save or scene restart.
 
 `audio-system-refactor-frozen.json` freezes these unchanged reports/inputs
 before factoring CPU/SMP/DSP ownership and adding canonical continuation.
+
+## Native clock ownership and canonical continuation, 1 October
+
+`audio-system-refactor-frozen.json` retains pre-refactor reports. The shared
+native engine replaces the runner-only CPU/SMP bus, owns its native clock,
+IPL/driver, timers/voices, DSP RAM/history and pending stereo PCM, and
+preserves all six frozen event/PCM domains above. Static content and future
+controller words remain external immutable/input owners; no original clock,
+opcode, CPU write or state is supplied. Native title/menu phases compose the
+same recovered cold calls at semantic boundaries.
+
+URAU0001 serializes explicit little-endian fields and strict binary flags,
+including CPU raster/refresh/NMI/autopoll/DMA fields, retained driver IO plans,
+queue/scene/title/menu/text/cartridge work, DSP continuation and unconsumed
+PCM. State restore validates separate owners before changing the engine.
+`audio_canonical_file_and_transactional_restore` passes version/truncation/
+trailing-byte/binary-flag checks, signed PCM extremes and rejection of bad CPU
+or DSP state without mutating the running session. No untrusted SPC parser
+or original save-state import is added.
+
+`native-save-domain-frozen.json` freezes the same steered1800 input/horizon
+and eight split choices before comparison. The uninterrupted phase owner
+matches all2,612,233 original projected events,1,152,477 raw pairs and
+C=765,490,044. `native-fresh-process-save.json` passes all eight separate
+processes: cold, title20/title111, menu1/menu30/menu32/menu60/menu1082. Each
+saved file re-encodes identically after parsing and restoration; concatenated
+events, retained-plus-new PCM and final canonical state equal the uninterrupted
+native run. Saved sizes range75,736 to3,922,016 bytes, including pending PCM.
+The first checker wrongly removed all N RAM rows, including the frozen upload
+prefix, and failed before restore cases. Its corrected projection preserves
+that prefix; neither expected data nor native behavior changed.
+
+These verify call-boundary native continuation in the declared title/menu
+domain. Device/resampler fractions, pack binding, live playback and joined
+scene-stop/restart remain open; no complete product-save claim is made.
