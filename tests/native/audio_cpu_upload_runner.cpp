@@ -1,9 +1,10 @@
 #include "audio_cpu_boot.hpp"
+#include "audio_cpu_interrupt.hpp"
 #include "audio_cpu_queue.hpp"
 #include "audio_cpu_scene.hpp"
 #include "audio_cpu_upload.hpp"
-#include "audio_ipl.hpp"
 #include "audio_driver_dsp.hpp"
+#include "audio_ipl.hpp"
 #include <algorithm>
 #include <fstream>
 #include <iostream>
@@ -17,6 +18,12 @@ struct CpuYield {};
 class Bus final : public unirally::AudioDriverBus, public unirally::AudioCpuWorkObserver {
 public:
     std::unique_ptr<DriverDspDiagnostic> dsp;
+    unirally::AudioCpuInterruptWorkState interrupt_state;
+    unsigned interrupt_count = 0;
+    void nonmaskable_interrupt(unirally::AudioCpuWorkClock& clock) override {
+        ++interrupt_count;
+        unirally::native_audio_title_interrupt(clock, interrupt_state);
+    }
     Bus(std::ostream& output, const unirally::TitleMenuAudioData& score,
         const unirally::AudioPitchData& pitch, bool ready_mode)
         : output_(output), ipl_(*this), score_(&score), pitch_(&pitch), ready_mode_(ready_mode) {}
@@ -109,8 +116,11 @@ int main(int argc, char** argv) {
     try {
         if (argc != 3 && argc != 4 && argc != 6)
             throw std::invalid_argument("audio_cpu_upload_runner DATA_DIRECTORY OUTPUT "
-                                        "[ready|samples|queue|vblank|frame|palette|load|nintendo|title [PCM DSP_CLOCK_LIMIT]]");
-        const bool title = argc >= 4 && std::string(argv[3]) == "title";
+                                        "[ready|samples|queue|vblank|frame|palette|load|nintendo|"
+                                        "title [PCM DSP_CLOCK_LIMIT]]");
+        const bool title_fade = argc >= 4 && std::string(argv[3]) == "title-fade";
+        const bool first_nmi = argc >= 4 && (std::string(argv[3]) == "first-nmi" || title_fade);
+        const bool title = argc >= 4 && (std::string(argv[3]) == "title" || first_nmi);
         const bool nintendo = argc >= 4 && (std::string(argv[3]) == "nintendo" || title);
         const bool load = argc >= 4 && (std::string(argv[3]) == "load" || nintendo);
         const bool palette = argc >= 4 && (std::string(argv[3]) == "palette" || load);
@@ -160,7 +170,8 @@ int main(int argc, char** argv) {
         std::copy(fraction.begin(), fraction.end(), pitch.sample_fraction.begin());
         std::copy(transpose.begin(), transpose.end(), pitch.sample_transpose.begin());
         Bus bus(output, score, pitch, ready);
-        if (argc == 6) bus.dsp = std::make_unique<DriverDspDiagnostic>(argv[4], std::stoull(argv[5]));
+        if (argc == 6)
+            bus.dsp = std::make_unique<DriverDspDiagnostic>(argv[4], std::stoull(argv[5]));
         unirally::AudioCpuWorkClock clock(&bus);
         unirally::native_audio_cpu_boot_prefix(clock);
         unirally::native_audio_cpu_uploads(clock, data);
@@ -189,9 +200,20 @@ int main(int argc, char** argv) {
                         throw std::invalid_argument("incomplete graphics metadata");
                     unirally::native_audio_load_nintendo_graphics(clock, scene, assets[31],
                                                                   assets[80], assets[74]);
-                    if (nintendo) unirally::native_audio_finish_nintendo_screen(clock, state, scene);
-                    if (title) unirally::native_audio_load_title_graphics(clock, scene, assets[27],
-                                                                          assets[78], assets[72]);
+                    if (nintendo)
+                        unirally::native_audio_finish_nintendo_screen(clock, state, scene);
+                    if (title)
+                        unirally::native_audio_load_title_graphics(clock, scene, assets[27],
+                                                                   assets[78], assets[72]);
+                    if (first_nmi) {
+                        unirally::native_audio_first_title_interrupt(clock);
+                        if (title_fade)
+                            unirally::native_audio_title_fade(clock, state, scene, false);
+                        std::cout << "palette_delay=" << unsigned(bus.interrupt_state.palette_delay)
+                                  << " palette_index="
+                                  << unsigned(bus.interrupt_state.palette_index) << '\n';
+                        std::cout << "interrupt_count=" << bus.interrupt_count << '\n';
+                    }
                 }
                 std::cout << "scene_phase=" << unsigned(scene.phase) << '\n';
             }

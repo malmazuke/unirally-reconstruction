@@ -5,12 +5,10 @@ namespace unirally {
 namespace {
 using Clock = AudioCpuWorkClock;
 void read_long_ram(Clock& c) {
-    c.rom_reads(4);
-    c.ram_reads();
+    c.read_ram(1, true);
 }
 void exchange_accumulator_bytes(Clock& c) {
-    c.rom_reads(1);
-    c.idle(2);
+    c.exchange_accumulator_bytes();
 }
 void restore_queue_caller(Clock& c) {
     c.change_widths();

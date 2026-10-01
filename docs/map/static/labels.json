@@ -310,9 +310,13 @@
   "class": "observed",
   "comment": "routine start",
   "label": "sub_808587",
+  "native": [
+   "src/core/audio_cpu_interrupt.cpp:save_interrupt_caller"
+  ],
   "source_records": [
    "docs/research/R-0006-observed-code-map.md",
    "docs/research/R-0009-m1-acceptance.md",
+   "docs/research/R-0075-title-menu-audio.md",
    "tasks/M1-01.md"
   ]
  },
@@ -323,6 +327,15 @@
   "label": "loc_808589",
   "source_records": [
    "docs/research/R-0006-observed-code-map.md"
+  ]
+ },
+ {
+  "address": "$80:8598",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_808598",
+  "source_records": [
+   "docs/research/R-0075-title-menu-audio.md"
   ]
  },
  {
@@ -690,6 +703,7 @@
    "docs/research/R-0006-observed-code-map.md",
    "docs/research/R-0054-boot-title-main-menu.md",
    "docs/research/R-0064-hunter-ending-and-soft-reset.md",
+   "docs/research/R-0075-title-menu-audio.md",
    "tasks/COVERAGE-ROADMAP.md",
    "tasks/FRONT-END-ENDINGS.md",
    "tasks/HUNTER-ENDING.md",
@@ -1058,6 +1072,7 @@
   "comment": "routine start",
   "label": "sub_8091D1",
   "native": [
+   "src/core/audio_cpu_boot.cpp:reset_cpu",
    "src/core/front_end.cpp:soft_reset"
   ],
   "source_records": [
@@ -1101,6 +1116,7 @@
   "comment": "routine start",
   "label": "sub_809318",
   "native": [
+   "src/core/audio_cpu_scene.cpp:upload_oam",
    "src/core/front_end_screens.hpp:copy_oam",
    "src/core/hunter_ending.cpp:enter_hunter_code",
    "src/core/hunter_ending.cpp:reveal_step"
@@ -1354,6 +1370,7 @@
   "comment": "routine start",
   "label": "sub_809869",
   "native": [
+   "src/core/audio_cpu_scene.cpp:fade",
    "src/core/front_end.cpp:fade_frames",
    "src/core/race_result.cpp:race_restart_frame",
    "src/core/race_result.cpp:rows_frame, icons_frame, first_fade_frame, fade_frames",
@@ -1364,7 +1381,8 @@
    "docs/research/R-0057-one-run-result.md",
    "docs/research/R-0058-lap-result.md",
    "docs/research/R-0060-pause-exits.md",
-   "docs/research/R-0067-stunt-result.md"
+   "docs/research/R-0067-stunt-result.md",
+   "docs/research/R-0075-title-menu-audio.md"
   ]
  },
  {
@@ -1373,6 +1391,7 @@
   "comment": "routine start",
   "label": "sub_809885",
   "native": [
+   "src/core/audio_cpu_scene.cpp:fade",
    "src/core/front_end.cpp:fade_frames",
    "src/core/front_end.hpp:FrontEndScreen",
    "src/core/now_playing.cpp:(file)",
@@ -1381,6 +1400,15 @@
   "source_records": [
    "docs/research/R-0054-boot-title-main-menu.md",
    "docs/research/R-0056-tour-track-now-playing.md"
+  ]
+ },
+ {
+  "address": "$80:98A3",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_8098A3",
+  "source_records": [
+   "docs/research/R-0075-title-menu-audio.md"
   ]
  },
  {
@@ -1730,11 +1758,49 @@
   ]
  },
  {
+  "address": "$80:A09F",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80A09F",
+  "native": [
+   "src/core/audio_cpu_interrupt.hpp:AudioCpuInterruptWorkState::cartridge_flags, AudioCpuInterruptWorkState::scroll, AudioCpuInterruptWorkState::palette_delay, AudioCpuInterruptWorkState::palette_index"
+  ],
+  "source_records": [
+   "docs/research/R-0075-title-menu-audio.md"
+  ]
+ },
+ {
+  "address": "$80:A0A5",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80A0A5",
+  "native": [
+   "src/core/audio_cpu_interrupt.hpp:AudioCpuInterruptWorkState::cartridge_flags, AudioCpuInterruptWorkState::scroll, AudioCpuInterruptWorkState::palette_delay, AudioCpuInterruptWorkState::palette_index"
+  ],
+  "source_records": [
+   "docs/research/R-0075-title-menu-audio.md"
+  ]
+ },
+ {
+  "address": "$80:A119",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80A119",
+  "native": [
+   "src/core/audio_cpu_queue.cpp:native_audio_bootstrap_queue"
+  ],
+  "source_records": [
+   "docs/research/R-0075-title-menu-audio.md",
+   "tasks/AUDIO-TITLE-MENU.md"
+  ]
+ },
+ {
   "address": "$80:A16A",
   "class": "observed",
   "comment": "routine start",
   "label": "sub_80A16A",
   "native": [
+   "src/core/audio_cpu_title.cpp:initialize_title_work",
    "src/core/front_end.cpp:load_main_menu_screen",
    "src/core/front_end.cpp:load_title",
    "src/core/front_end.cpp:parked_x, parked_y",
@@ -2000,6 +2066,7 @@
   "comment": "routine start",
   "label": "sub_80A8A8",
   "native": [
+   "src/core/audio_cpu_scene.cpp:native_audio_upload_base_palette",
    "src/core/front_end.cpp:boot_frame_waits",
    "src/core/front_end.cpp:load_main_menu_screen",
    "src/core/front_end.cpp:load_nintendo_screen",
@@ -2209,12 +2276,55 @@
   "comment": "routine start",
   "label": "sub_80B08C",
   "native": [
+   "src/core/audio_cpu_scene.cpp:native_audio_load_nintendo_graphics",
    "src/core/front_end.cpp:boot_frame_waits",
    "src/core/front_end.cpp:nintendo_palette, nintendo_map, nintendo_tiles",
    "src/core/front_end.cpp:set_early_registers"
   ],
   "source_records": [
    "docs/research/R-0054-boot-title-main-menu.md"
+  ]
+ },
+ {
+  "address": "$80:B0CC",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80B0CC",
+  "native": [
+   "src/core/audio_cpu_scene.cpp:native_audio_finish_nintendo_screen"
+  ],
+  "source_records": [
+   "docs/research/R-0075-title-menu-audio.md"
+  ]
+ },
+ {
+  "address": "$80:B0DB",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80B0DB",
+  "source_records": [
+   "docs/research/R-0075-title-menu-audio.md"
+  ]
+ },
+ {
+  "address": "$80:B0F0",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_80B0F0",
+  "native": [
+   "src/core/audio_cpu_interrupt.cpp:restore_interrupt_caller"
+  ],
+  "source_records": [
+   "docs/research/R-0075-title-menu-audio.md"
+  ]
+ },
+ {
+  "address": "$80:B0F9",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80B0F9",
+  "source_records": [
+   "docs/research/R-0075-title-menu-audio.md"
   ]
  },
  {
@@ -2257,7 +2367,8 @@
   "source_records": [
    "docs/research/R-0054-boot-title-main-menu.md",
    "docs/research/R-0055-rider-menu.md",
-   "docs/research/R-0067-stunt-result.md"
+   "docs/research/R-0067-stunt-result.md",
+   "docs/research/R-0075-title-menu-audio.md"
   ]
  },
  {
@@ -2462,6 +2573,7 @@
   "comment": "routine start",
   "label": "sub_80B612",
   "native": [
+   "src/core/audio_cpu_boot.cpp:clear_vram",
    "src/core/front_end.cpp:soft_reset"
   ],
   "source_records": [
@@ -5832,6 +5944,7 @@
   "comment": "routine start",
   "label": "sub_80F55F",
   "native": [
+   "src/core/audio_cpu_title.cpp:native_audio_load_title_graphics",
    "src/core/front_end.cpp:load_title",
    "src/core/front_end.cpp:title_palette, title_map, title_tiles"
   ],
@@ -5875,7 +5988,8 @@
    "src/core/front_end.hpp:OnePlayerRecords::cheat"
   ],
   "source_records": [
-   "docs/research/R-0064-hunter-ending-and-soft-reset.md"
+   "docs/research/R-0064-hunter-ending-and-soft-reset.md",
+   "docs/research/R-0075-title-menu-audio.md"
   ]
  },
  {
@@ -5910,12 +6024,14 @@
   "comment": "instruction start",
   "label": "loc_80F622",
   "native": [
+   "src/core/audio_cpu_interrupt.cpp:update_title_scroll",
    "src/core/front_end.cpp:check_title_code",
    "src/core/front_end.cpp:scroll_logo",
    "src/core/front_end.hpp:LogoScroll"
   ],
   "source_records": [
-   "docs/research/R-0054-boot-title-main-menu.md"
+   "docs/research/R-0054-boot-title-main-menu.md",
+   "docs/research/R-0075-title-menu-audio.md"
   ]
  },
  {
@@ -5925,6 +6041,15 @@
   "label": "loc_80F63E",
   "source_records": [
    "tasks/M3-02.md"
+  ]
+ },
+ {
+  "address": "$80:F644",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80F644",
+  "source_records": [
+   "docs/research/R-0075-title-menu-audio.md"
   ]
  },
  {
@@ -6212,6 +6337,7 @@
   "comment": "routine start",
   "label": "sub_80FA60",
   "native": [
+   "src/core/audio_cpu_interrupt.cpp:update_palette_cycle",
    "src/core/front_end.cpp:step_palette_cycle",
    "src/core/front_end.hpp:PaletteCycle",
    "src/core/presentation.cpp:now_playing_leftover_colours",
@@ -6219,7 +6345,8 @@
   ],
   "source_records": [
    "docs/research/R-0054-boot-title-main-menu.md",
-   "docs/research/R-0068-stunt-hud.md"
+   "docs/research/R-0068-stunt-hud.md",
+   "docs/research/R-0075-title-menu-audio.md"
   ]
  },
  {
@@ -6229,6 +6356,15 @@
   "label": "loc_80FA82",
   "source_records": [
    "docs/research/R-0054-boot-title-main-menu.md"
+  ]
+ },
+ {
+  "address": "$80:FAC9",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80FAC9",
+  "source_records": [
+   "docs/research/R-0075-title-menu-audio.md"
   ]
  },
  {
@@ -6255,11 +6391,35 @@
   ]
  },
  {
+  "address": "$80:FAE3",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80FAE3",
+  "native": [
+   "src/core/audio_cpu_queue.cpp:native_audio_wait_vblank"
+  ],
+  "source_records": [
+   "docs/research/R-0075-title-menu-audio.md",
+   "tasks/AUDIO-TITLE-MENU.md"
+  ]
+ },
+ {
+  "address": "$80:FAF1",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80FAF1",
+  "source_records": [
+   "docs/research/R-0075-title-menu-audio.md",
+   "tasks/AUDIO-TITLE-MENU.md"
+  ]
+ },
+ {
   "address": "$80:FAF5",
   "class": "observed",
   "comment": "routine start",
   "label": "sub_80FAF5",
   "native": [
+   "src/core/audio_cpu_scene.cpp:update_scene_work",
    "src/core/front_end.cpp:quarter_step",
    "src/core/front_end.hpp:MenuArrow"
   ],
@@ -10943,9 +11103,13 @@
   "class": "observed",
   "comment": "routine start",
   "label": "sub_828000",
+  "native": [
+   "src/core/audio_cpu_queue.cpp:native_audio_enqueue"
+  ],
   "source_records": [
    "docs/research/R-0054-boot-title-main-menu.md",
    "docs/research/R-0074-audio-foundation.md",
+   "docs/research/R-0075-title-menu-audio.md",
    "tasks/AUDIO-DECISION.md",
    "tasks/AUDIO-TITLE-MENU.md"
   ]
@@ -10956,6 +11120,7 @@
   "comment": "routine start",
   "label": "sub_828035",
   "native": [
+   "src/core/audio_cpu_queue.cpp:native_audio_poll_queue",
    "src/core/front_end.cpp:return_from_demo"
   ],
   "source_records": [
@@ -11023,7 +11188,8 @@
   "comment": "instruction start",
   "label": "loc_82806D",
   "source_records": [
-   "docs/research/R-0074-audio-foundation.md"
+   "docs/research/R-0074-audio-foundation.md",
+   "docs/research/R-0075-title-menu-audio.md"
   ]
  },
  {
@@ -11057,6 +11223,15 @@
    "tasks/DRAGSTER-CLOCK-LIMIT-review.md",
    "tasks/M4-16-review.md",
    "tasks/M4-16.md"
+  ]
+ },
+ {
+  "address": "$82:808F",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82808F",
+  "source_records": [
+   "tasks/AUDIO-TITLE-MENU.md"
   ]
  },
  {
@@ -11171,6 +11346,15 @@
   "source_records": [
    "docs/research/M4-16-persistent-input-ledger.md",
    "tasks/M4-16-review.md"
+  ]
+ },
+ {
+  "address": "$82:8160",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_828160",
+  "source_records": [
+   "tasks/AUDIO-TITLE-MENU.md"
   ]
  },
  {
@@ -13400,6 +13584,7 @@
   "comment": "routine start",
   "label": "sub_82B183",
   "native": [
+   "src/core/audio_cpu_boot.cpp:native_audio_cpu_upload_graphics_asset",
    "src/core/front_end_screens.hpp:load_vram"
   ],
   "source_records": [
@@ -13445,6 +13630,7 @@
   "comment": "routine start",
   "label": "sub_82B1DB",
   "native": [
+   "src/core/audio_cpu_boot.cpp:native_audio_cpu_upload_graphics_asset",
    "src/core/front_end_screens.hpp:load_vram"
   ],
   "source_records": [
@@ -13488,6 +13674,7 @@
   "comment": "routine start",
   "label": "sub_82B296",
   "native": [
+   "src/core/audio_cpu_boot.cpp:read_asset_byte",
    "src/core/result_screen.cpp:render_result_background"
   ],
   "source_records": [
@@ -15186,6 +15373,7 @@
   "comment": "routine start",
   "label": "sub_8399F6",
   "native": [
+   "src/core/audio_cpu_scene.cpp:native_audio_load_nintendo_graphics",
    "src/core/front_end.cpp:lay_out_menu_objects",
    "src/core/front_end.cpp:load_nintendo_screen"
   ],
@@ -19341,6 +19529,15 @@
   "label": "sub_83FB8A",
   "source_records": [
    "docs/research/R-0060-pause-exits.md"
+  ]
+ },
+ {
+  "address": "$83:FCF5",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_83FCF5",
+  "source_records": [
+   "tasks/AUDIO-TITLE-MENU.md"
   ]
  }
 ]

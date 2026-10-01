@@ -731,3 +731,36 @@ all expected events, clocks and PCM bytes remain unchanged.
 
 The app is still silent. No native CPU continuation, full audio save, menu
 producer/NMI lifecycle or device acceptance follows from this cold prefix.
+
+The cold flag setup at $80:A09F-$80:A0A5 clears bit1 of erased FF flags,
+leaving FD for the native title callback. Static bank-80 supplies this reading;
+the cold CPU/register trace supplies its executed branch.
+
+## Native NMI entry and recurring title fade, 1 October
+
+Verified: `native-cold-cpu-first-nmi-pcm.json` extends the cold prefix through
+first title interrupt return at $80:9869, C=106,375,654, matching all872,512
+frozen projected events and160,155 complete raw stereo pairs. Static bank-80
+$80:8587-$80:8598/$80:F622-$80:F644/$80:FA60-$80:FAC9/$80:B0F0-$80:B0F9
+supplies the mirrored bank00 vector wrapper, title scroll, rotating palette
+and return reading. The first attempt was six clocks late because PEA was
+given an idle cycle; pinned instructionPushEffectiveAddress has none. Its
+failed report is `native-cold-cpu-first-nmi-clock-failure01.json`. No expected
+event, CPU clock or sample was changed.
+
+`native-cold-cpu-title-fade-pcm.json` then matches all880,206 events,
+C=109,262,190 and164,501 raw pairs through seven-wait fade return $80:F5C0.
+The native run dispatches eight NMI bodies, including enable during blank.
+`cold-cpu-title-fade-frozen.json` pins this extension before comparison.
+Pinned CPU::nmiPoll/lastCycle/nmitimenUpdate, CPU bus/DMA and PPUcounter supply
+the four-clock polling, two-clock raster lookback, one-bus-cycle-early test,
+IRQ lock and idleIRQ bus-read replacement. Semantic CPU functions call those
+boundaries; they fetch no original opcodes and use no observed producer times.
+PAL noninterlace, slow ROM, one-channel DMA and the native title callback are
+the tested domain. IRQ/HDMA/interlace and other handlers remain outside it.
+
+The same opaque executable-payload projection and identified data inputs are
+retained; all ordered command/DSP/CONTROL accesses, both clocks and nonopaque
+values remain required. The DSP horizon clips diagnostic packaging only.
+The app remains silent; later title/menu producer work, canonical CPU/full
+save, product output and independent capability review remain open.

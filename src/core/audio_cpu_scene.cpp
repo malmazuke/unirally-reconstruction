@@ -5,8 +5,7 @@ namespace unirally {
 namespace {
 using Clock = AudioCpuWorkClock;
 void read_word(Clock& c) {
-    c.rom_reads(3);
-    c.ram_reads(2);
+    c.read_ram(2);
 }
 std::uint16_t read_position_difference(Clock& c, std::uint16_t current, std::uint16_t target) {
     read_word(c);
@@ -34,8 +33,7 @@ void update_horizontal_flags(Clock& c, std::uint16_t position, std::uint8_t& fla
     const bool negative = (position & 0x8000) != 0;
     c.branch(!negative);
     c.change_widths();
-    c.rom_reads(3);
-    c.ram_reads();
+    c.read_ram();
     c.load_constant();
     c.store_ram();
     c.change_widths();
@@ -56,9 +54,7 @@ void update_horizontal(Clock& c, AudioCpuSceneWorkState& state) {
     state.horizontal_current = static_cast<std::uint16_t>(state.horizontal_current + increment);
     c.save_register(2);
     update_horizontal_flags(c, state.horizontal_current, state.first_horizontal_flags);
-    c.rom_reads(2);
-    c.idle();
-    c.ram_reads(2);
+    c.read_stack(2);
     c.update_register();
     c.load_constant(2);
     update_horizontal_flags(c, static_cast<std::uint16_t>(state.horizontal_current + 112),
@@ -101,10 +97,7 @@ void update_scene_work(Clock& c, AudioCpuSceneWorkState& state) {
     if (state.phase > 31) throw std::invalid_argument("invalid frontend phase");
     c.save_register();
     c.change_widths();
-    c.rom_reads(2);
-    c.ram_reads();
-    c.idle();
-    c.ram_writes();
+    c.modify_direct_byte();
     const bool wrapped = state.phase == 0;
     c.branch(!wrapped);
     if (wrapped) {
@@ -117,7 +110,7 @@ void update_scene_work(Clock& c, AudioCpuSceneWorkState& state) {
     c.update_register();
     c.update_register();
     c.change_widths();
-    c.rom_reads(5);
+    c.read_rom(1, true, true);
     c.store_ram();
     c.store_ram();
     c.change_widths();
@@ -143,10 +136,7 @@ void upload_oam(Clock& c) {
     c.return_local();
 }
 void change_direct_byte(Clock& c) {
-    c.rom_reads(2);
-    c.ram_reads();
-    c.idle();
-    c.ram_writes();
+    c.modify_direct_byte();
 }
 // $80:9869; $80:9885; R-0075. Static bank-80 9869-98A3: seven waits, OAM DMA and brightness steps.
 void fade(Clock& c, AudioCpuQueueState& queue, AudioCpuSceneWorkState& scene, bool darken) {
@@ -171,6 +161,10 @@ void fade(Clock& c, AudioCpuQueueState& queue, AudioCpuSceneWorkState& scene, bo
     }
     c.return_local();
 }
+}
+void native_audio_title_fade(Clock& c, AudioCpuQueueState& queue, AudioCpuSceneWorkState& scene,
+                             bool darken) {
+    fade(c, queue, scene, darken);
 }
 void native_audio_finish_waited_frame(Clock& c, AudioCpuSceneWorkState& state) {
     c.call_local();

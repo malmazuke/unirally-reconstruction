@@ -1030,3 +1030,50 @@ and title fade/input work. The original first interrupt enters copied vector
 body at00:8587 after the JSR atF5BD; simply inserting a fixed frame cost is
 not justified. Canonical CPU/full save/product remain open. Next checkpoint
 by06:24; reassessment06:41. Weekly20%, baseline12/stop32, no reset/spending.
+
+### 1 October 06:32 UTC checkpoint
+
+e3a2d45 (corrected title load and joined PCM) is pushed. The first native
+interrupt-body attempt preserves all872,512 frozen events and160,155 PCM
+pairs but ends six CPU clocks late. Pinned instructionPushEffectiveAddress
+has no idle cycle; remove that extra native work and retain
+`native-cold-cpu-first-nmi-clock-failure01.json`. The original first vector
+enters bank00's ROM mirror at8587, correcting the preceding checkpoint's
+word "copied"; no original expected event/clock/PCM changes. Recurring NMI
+last-cycle/raster dispatch remains a separate open experiment.
+
+CI36823945534 fails both hosts on one static-map symbol test: source map now
+names audio_cpu_boot.cpp:reset_cpu alongside front_end.cpp:soft_reset at
+91D1, but the tracked code map still lists only the latter. Preserve the
+log in main artifacts and reconcile regenerated metadata, without weakening
+the test. New interrupt source remains uncommitted. Fresh telemetry at06:29
+is21% weekly used, ordinary usage allowed, reset1791365217, baseline12/stop32.
+No reset/spending/provider change. Next checkpoint by06:42; reassessment06:41.
+Canonical CPU/full save/product and fresh capability review remain open.
+
+### 1 October 06:41 UTC checkpoint and reassessment
+
+First NMI correction and the recurring semantic raster/last-cycle pipeline
+match all872,512/880,206 frozen events and160,155/164,501 PCM pairs through
+first handler return/title fade return respectively. Computed CPU endpoints
+106,375,654/109,262,190 match the original. Title fade dispatches eight native
+NMI bodies. Reports and the retained PEA failure are named in R-0075. The
+CPU observer supplies a native callback, not an opcode stream; CPU cost helpers
+now preserve each last-cycle point and DMA/MMIO lock delay. IRQ/HDMA/interlace
+remain outside the tested domain. Readability passes.
+
+Tracked static map regeneration passes with unchanged four coverage inputs:
+53,062 sites,42,700 shared instructions,zero decoding disagreements. The
+previous CI failure is stale native map metadata, now regenerated; source
+checks are running before commit. One new A09F citation lacked a linked record
+and is explicitly documented before final map regeneration. No expected
+event/sample or test is weakened. Source changes remain uncommitted.
+
+At reassessment, retain the same primary/capability: exact cold progress now
+reaches recurring title interrupts. Next recover auto controller polling and
+the remaining title/main-menu CPU producers, then canonical continuation,
+pack and audible device integration. Existing CPU350 observations cover title
+input but not the main-menu load; read static D20E-D3xx before a bounded longer
+capture. Fresh telemetry at06:39 remains21% weekly used, ordinary usage allowed,
+reset1791365217,baseline12/stop32. No credit/provider change. Next checkpoint
+by06:51 and reassessment by07:26 UTC. Review/acceptance remain open.

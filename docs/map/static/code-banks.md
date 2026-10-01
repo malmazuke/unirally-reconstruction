@@ -22,8 +22,8 @@ The four classes partition all 131,072 bytes. **Unknown share: 40.4%** - above D
 | Instructions from observed | 17,569 |
 | Instructions from table | 587 |
 | Routines | 636 |
-| Routines cited by native code | 383 |
-| Routine bytes cited by native code | 49,945 |
+| Routines cited by native code | 387 |
+| Routine bytes cited by native code | 50,073 |
 | Gap sweep candidate instructions | 2,746 |
 | Gap sweep candidate bytes | 6,174 |
 | Jump tables | 2 |
@@ -45,7 +45,7 @@ The four classes partition all 131,072 bytes. **Unknown share: 40.4%** - above D
 
 ## Cited addresses
 
-1505 distinct code-bank ROM addresses cited by the research, task, inventory and content records (`labels.json`). By position: dat 25, loc 848, mid 19, sub 315, unk 298 (sub routine start, loc instruction start, mid inside an instruction, dat data, unk unknown). By class: data 25, inferred 247, observed 935, unknown 298.
+1521 distinct code-bank ROM addresses cited by the research, task, inventory and content records (`labels.json`). By position: dat 25, loc 862, mid 19, sub 316, unk 299 (sub routine start, loc instruction start, mid inside an instruction, dat data, unk unknown). By class: data 25, inferred 247, observed 950, unknown 299.
 
 Cited addresses in `unknown` bytes:
 
@@ -349,3 +349,4 @@ Cited addresses in `unknown` bytes:
 | $83:C715 | docs/research/R-0062-gold-endings.md |
 | $83:C89A | docs/research/R-0062-gold-endings.md |
 | $83:C8B3 | docs/research/R-0061-riders-and-opponents.md, tasks/RACE-RIDERS-OPPONENTS.md |
+| $83:FCF5 | tasks/AUDIO-TITLE-MENU.md |

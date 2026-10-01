@@ -193,6 +193,13 @@
    "region": "rom"
   },
   {
+   "address": "$80:8587",
+   "native": [
+    "src/core/audio_cpu_interrupt.cpp:save_interrupt_caller"
+   ],
+   "region": "rom"
+  },
+  {
    "address": "$80:8638",
    "native": [
     "src/core/presentation.cpp:race_scroll"
@@ -895,6 +902,16 @@
    "region": "rom"
   },
   {
+   "address": "$80:A09F",
+   "native": [
+    "src/core/audio_cpu_interrupt.hpp:AudioCpuInterruptWorkState::cartridge_flags, AudioCpuInterruptWorkState::scroll, AudioCpuInterruptWorkState::palette_delay, AudioCpuInterruptWorkState::palette_index"
+   ],
+   "range_ends": [
+    "$80:A0A5"
+   ],
+   "region": "rom"
+  },
+  {
    "address": "$80:A119",
    "native": [
     "src/core/audio_cpu_queue.cpp:native_audio_bootstrap_queue"
@@ -1156,6 +1173,13 @@
    "address": "$80:B0CC",
    "native": [
     "src/core/audio_cpu_scene.cpp:native_audio_finish_nintendo_screen"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:B0F0",
+   "native": [
+    "src/core/audio_cpu_interrupt.cpp:restore_interrupt_caller"
    ],
    "region": "rom"
   },
@@ -3159,6 +3183,7 @@
   {
    "address": "$80:F622",
    "native": [
+    "src/core/audio_cpu_interrupt.cpp:update_title_scroll",
     "src/core/front_end.cpp:check_title_code",
     "src/core/front_end.cpp:scroll_logo",
     "src/core/front_end.hpp:LogoScroll"
@@ -3322,6 +3347,7 @@
   {
    "address": "$80:FA60",
    "native": [
+    "src/core/audio_cpu_interrupt.cpp:update_palette_cycle",
     "src/core/front_end.cpp:step_palette_cycle",
     "src/core/front_end.hpp:PaletteCycle",
     "src/core/presentation.cpp:now_playing_leftover_colours",
@@ -12102,6 +12128,31 @@
     "$80:91D1"
    ]
   },
+  "src/core/audio_cpu_interrupt.cpp:restore_interrupt_caller": {
+   "rom": [
+    "$80:B0F0"
+   ]
+  },
+  "src/core/audio_cpu_interrupt.cpp:save_interrupt_caller": {
+   "rom": [
+    "$80:8587"
+   ]
+  },
+  "src/core/audio_cpu_interrupt.cpp:update_palette_cycle": {
+   "rom": [
+    "$80:FA60"
+   ]
+  },
+  "src/core/audio_cpu_interrupt.cpp:update_title_scroll": {
+   "rom": [
+    "$80:F622"
+   ]
+  },
+  "src/core/audio_cpu_interrupt.hpp:AudioCpuInterruptWorkState::cartridge_flags, AudioCpuInterruptWorkState::scroll, AudioCpuInterruptWorkState::palette_delay, AudioCpuInterruptWorkState::palette_index": {
+   "rom": [
+    "$80:A09F"
+   ]
+  },
   "src/core/audio_cpu_queue.cpp:native_audio_bootstrap_queue": {
    "rom": [
     "$80:A119"
@@ -18765,10 +18816,10 @@
   }
  },
  "totals": {
-  "addresses": 1377,
+  "addresses": 1380,
   "io_addresses": 9,
-  "native_symbols": 1015,
-  "rom_addresses": 1009,
+  "native_symbols": 1020,
+  "rom_addresses": 1012,
   "sram_addresses": 49,
   "wram_addresses": 310
  }

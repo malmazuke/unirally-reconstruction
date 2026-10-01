@@ -2,6 +2,7 @@
 #include <cstdint>
 
 namespace unirally {
+class AudioCpuWorkClock;
 class AudioCpuWorkObserver {
 public:
     virtual ~AudioCpuWorkObserver() = default;
@@ -11,10 +12,12 @@ public:
     virtual std::uint8_t read_audio_port(std::uint64_t master_ticks, std::uint8_t port);
     virtual void write_audio_port(std::uint64_t master_ticks, std::uint8_t port,
                                   std::uint8_t value) = 0;
+    virtual void nonmaskable_interrupt(AudioCpuWorkClock& clock);
 };
 // Semantic CPU work, in master clocks, for the pinned PAL/version-2 bus.
 // ROM reads account for bus work only: this class reads no ROM/opcode bytes.
-// The recovered cold domain supports one DMA channel; HDMA/NMI remain open.
+// The recovered cold domain supports one DMA channel and native NMI work;
+// HDMA, IRQ and interlaced raster timing remain outside this clock domain.
 // R-0075. DMA alignment counts bus work separately from DRAM refresh stalls.
 class AudioCpuWorkClock {
 public:
@@ -22,6 +25,10 @@ public:
     std::uint64_t ticks() const { return ticks_; }
     void set_fast_rom(bool enabled) { fast_rom_ = enabled; }
     void step(unsigned clocks);
+    // Semantic instruction boundaries and the one-bus-cycle-early NMI test.
+    // Raw bus helpers do not read or interpret an instruction stream.
+    void begin_instruction();
+    void last_cycle();
     void rom_reads(unsigned count);
     void ram_reads(unsigned count = 1);
     void ram_writes(unsigned count = 1);
@@ -38,6 +45,13 @@ public:
     void store_ram(unsigned bytes = 1, bool long_address = false, bool indexed = false);
     void store_direct(unsigned bytes = 1);
     void read_direct(unsigned bytes = 1);
+    void read_ram(unsigned bytes = 1, bool long_address = false, bool indexed = false);
+    void read_rom(unsigned bytes = 1, bool long_address = false, bool indexed = false);
+    void read_stack(unsigned bytes = 1);
+    void modify_direct_byte();
+    void exchange_accumulator_bytes();
+    void jump_far();
+    void set_nmi_enabled(bool enabled);
     void store_port(unsigned bytes = 1, bool long_address = false);
     void branch(bool taken);
     void request_dma(unsigned bytes);
@@ -51,7 +65,11 @@ private:
     bool refreshed_ = false, fast_rom_ = false;
     unsigned pending_dma_bytes_ = 0;
     bool dma_active_ = false;
+    bool nmi_enabled_ = false, nmi_valid_ = false, nmi_line_ = false, nmi_hold_ = false;
+    bool nmi_transition_ = false, nmi_pending_ = false, irq_lock_ = false;
+    bool in_interrupt_ = false;
     AudioCpuWorkObserver* observer_;
     void begin_bus(unsigned clocks);
+    void poll_nmi();
 };
 } // namespace unirally

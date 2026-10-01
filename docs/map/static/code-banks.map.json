@@ -250,6 +250,9 @@
     "NmX",
     "Nmx"
    ],
+   "native": [
+    "src/core/audio_cpu_interrupt.cpp:save_interrupt_caller"
+   ],
    "observed_entries": {},
    "start": "$80:8587",
    "static_entries": {},
@@ -424,6 +427,7 @@
     "Emx"
    ],
    "native": [
+    "src/core/audio_cpu_boot.cpp:reset_cpu",
     "src/core/front_end.cpp:soft_reset"
    ],
    "observed_entries": {},
@@ -508,6 +512,7 @@
     "NmX"
    ],
    "native": [
+    "src/core/audio_cpu_scene.cpp:upload_oam",
     "src/core/front_end_screens.hpp:copy_oam",
     "src/core/hunter_ending.cpp:enter_hunter_code",
     "src/core/hunter_ending.cpp:reveal_step"
@@ -812,6 +817,7 @@
     "NmX"
    ],
    "native": [
+    "src/core/audio_cpu_scene.cpp:fade",
     "src/core/front_end.cpp:fade_frames",
     "src/core/race_result.cpp:race_restart_frame",
     "src/core/race_result.cpp:rows_frame, icons_frame, first_fade_frame, fade_frames",
@@ -855,6 +861,7 @@
     "NmX"
    ],
    "native": [
+    "src/core/audio_cpu_scene.cpp:fade",
     "src/core/front_end.cpp:fade_frames",
     "src/core/front_end.hpp:FrontEndScreen",
     "src/core/now_playing.cpp:(file)",
@@ -1046,6 +1053,8 @@
     "NmX"
    ],
    "native": [
+    "src/core/audio_cpu_interrupt.hpp:AudioCpuInterruptWorkState::cartridge_flags, AudioCpuInterruptWorkState::scroll, AudioCpuInterruptWorkState::palette_delay, AudioCpuInterruptWorkState::palette_index",
+    "src/core/audio_cpu_queue.cpp:native_audio_bootstrap_queue",
     "src/core/front_end.cpp:boot_frame_number",
     "src/core/front_end.cpp:clear_oam_buffer",
     "src/core/front_end.cpp:early_objects, early_palette",
@@ -1076,6 +1085,7 @@
     "NmX"
    ],
    "native": [
+    "src/core/audio_cpu_title.cpp:initialize_title_work",
     "src/core/front_end.cpp:load_main_menu_screen",
     "src/core/front_end.cpp:load_title",
     "src/core/front_end.cpp:parked_x, parked_y",
@@ -1198,6 +1208,7 @@
     "NmX"
    ],
    "native": [
+    "src/core/audio_cpu_scene.cpp:native_audio_upload_base_palette",
     "src/core/front_end.cpp:boot_frame_waits",
     "src/core/front_end.cpp:load_main_menu_screen",
     "src/core/front_end.cpp:load_nintendo_screen",
@@ -1308,6 +1319,8 @@
     "NmX"
    ],
    "native": [
+    "src/core/audio_cpu_scene.cpp:native_audio_finish_nintendo_screen",
+    "src/core/audio_cpu_scene.cpp:native_audio_load_nintendo_graphics",
     "src/core/front_end.cpp:boot_frame_waits",
     "src/core/front_end.cpp:nintendo_palette, nintendo_map, nintendo_tiles",
     "src/core/front_end.cpp:set_early_registers"
@@ -1330,6 +1343,9 @@
    "mode_at_entry": [
     "NmX",
     "Nmx"
+   ],
+   "native": [
+    "src/core/audio_cpu_interrupt.cpp:restore_interrupt_caller"
    ],
    "observed_entries": {},
    "start": "$80:B0F0",
@@ -1506,6 +1522,7 @@
     "NmX"
    ],
    "native": [
+    "src/core/audio_cpu_boot.cpp:clear_vram",
     "src/core/front_end.cpp:soft_reset"
    ],
    "observed_entries": {},
@@ -2743,6 +2760,7 @@
     "NmX"
    ],
    "native": [
+    "src/core/audio_cpu_title.cpp:native_audio_load_title_graphics",
     "src/core/front_end.cpp:check_title_code",
     "src/core/front_end.cpp:load_title",
     "src/core/front_end.cpp:title_palette, title_map, title_tiles",
@@ -2886,6 +2904,7 @@
     "NmX"
    ],
    "native": [
+    "src/core/audio_cpu_interrupt.cpp:update_palette_cycle",
     "src/core/front_end.cpp:step_palette_cycle",
     "src/core/front_end.hpp:PaletteCycle",
     "src/core/presentation.cpp:now_playing_leftover_colours",
@@ -2979,6 +2998,7 @@
     "NmX"
    ],
    "native": [
+    "src/core/audio_cpu_queue.cpp:native_audio_wait_vblank",
     "src/core/front_end.cpp:FrameWaits",
     "src/core/front_end_screens.hpp:start_hunter_ending",
     "src/core/hunter_ending.cpp:hunter_ending_waits"
@@ -3002,6 +3022,7 @@
     "NmX"
    ],
    "native": [
+    "src/core/audio_cpu_scene.cpp:update_scene_work",
     "src/core/front_end.cpp:quarter_step",
     "src/core/front_end.hpp:MenuArrow"
    ],
@@ -7270,6 +7291,9 @@
     "NMX",
     "NMx"
    ],
+   "native": [
+    "src/core/audio_cpu_queue.cpp:native_audio_enqueue"
+   ],
    "observed_entries": {},
    "start": "$82:8000",
    "static_entries": {
@@ -7357,6 +7381,7 @@
     "NmX"
    ],
    "native": [
+    "src/core/audio_cpu_queue.cpp:native_audio_poll_queue",
     "src/core/front_end.cpp:return_from_demo"
    ],
    "observed_entries": {},
@@ -9553,6 +9578,7 @@
     "NmX"
    ],
    "native": [
+    "src/core/audio_cpu_boot.cpp:native_audio_cpu_upload_graphics_asset",
     "src/core/front_end_screens.hpp:load_vram"
    ],
    "observed_entries": {},
@@ -9638,6 +9664,7 @@
     "NmX"
    ],
    "native": [
+    "src/core/audio_cpu_boot.cpp:native_audio_cpu_upload_graphics_asset",
     "src/core/front_end_screens.hpp:load_vram"
    ],
    "observed_entries": {},
@@ -9664,6 +9691,7 @@
     "NmX"
    ],
    "native": [
+    "src/core/audio_cpu_boot.cpp:read_asset_byte",
     "src/core/result_screen.cpp:render_result_background"
    ],
    "observed_entries": {},
@@ -9703,6 +9731,9 @@
    "end": "$82:B2DC",
    "mode_at_entry": [
     "NmX"
+   ],
+   "native": [
+    "src/core/audio_cpu_boot.cpp:read_asset_descriptor"
    ],
    "observed_entries": {},
    "start": "$82:B2B0",
@@ -11736,6 +11767,7 @@
     "NmX"
    ],
    "native": [
+    "src/core/audio_cpu_scene.cpp:native_audio_load_nintendo_graphics",
     "src/core/front_end.cpp:lay_out_menu_objects",
     "src/core/front_end.cpp:load_nintendo_screen"
    ],
@@ -14468,19 +14500,19 @@
    "call returns in the calling mode": 1262
   },
   "bytes": 131072,
-  "cited_addresses": 1505,
+  "cited_addresses": 1521,
   "cited_by_class": {
    "data": 25,
    "inferred": 247,
-   "observed": 935,
-   "unknown": 298
+   "observed": 950,
+   "unknown": 299
   },
   "cited_by_position": {
    "dat": 25,
-   "loc": 848,
+   "loc": 862,
    "mid": 19,
-   "sub": 315,
-   "unk": 298
+   "sub": 316,
+   "unk": 299
   },
   "conflicts": 0,
   "data": 92,
@@ -14499,9 +14531,9 @@
   "jump_tables": 2,
   "mode_ambiguities": 7,
   "observed": 41778,
-  "routine_bytes_cited_by_native_code": 49945,
+  "routine_bytes_cited_by_native_code": 50073,
   "routines": 636,
-  "routines_cited_by_native_code": 383,
+  "routines_cited_by_native_code": 387,
   "unknown": 52881,
   "unknown_share": 0.4035
  }

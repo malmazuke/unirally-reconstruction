@@ -15,6 +15,8 @@ struct AudioCpuSceneWorkState {
     bool operator==(const AudioCpuSceneWorkState&) const = default;
 };
 void native_audio_finish_waited_frame(AudioCpuWorkClock& clock, AudioCpuSceneWorkState& state);
+void native_audio_title_fade(AudioCpuWorkClock& clock, AudioCpuQueueState& queue,
+                             AudioCpuSceneWorkState& scene, bool darken);
 void native_audio_frame_wait(AudioCpuWorkClock& clock, AudioCpuQueueState& queue,
                              AudioCpuSceneWorkState& scene);
 void native_audio_upload_base_palette(AudioCpuWorkClock& clock, AudioCpuQueueState& queue,
