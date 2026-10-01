@@ -127,11 +127,16 @@ int main(int argc, char** argv) {
                 "[ready|samples|queue|vblank|frame|palette|load|nintendo|"
                 "title|first-nmi|title-fade|title-hold|title-return|menu-palette|"
                 "menu-graphics|menu-oam|menu-clear|menu-records-first|menu-league|"
-                "menu-records|menu-text|menu-reveal|menu-input-begin|menu-idle80|menu-down80 [PCM "
+                "menu-records|menu-text|menu-reveal|menu-input-begin|menu-idle80|menu-down80|menu-"
+                "up500|menu-retrigger500|menu-steered1800 [PCM "
                 "DSP_CLOCK_LIMIT]]");
-        const bool menu_down80 = argc >= 4 && std::string(argv[3]) == "menu-down80";
-        const bool menu_idle80 =
-            argc >= 4 && (std::string(argv[3]) == "menu-idle80" || menu_down80);
+        const std::string menu_case = argc >= 4 ? argv[3] : "";
+        const bool menu_down80 = menu_case == "menu-down80";
+        const bool menu_up500 = menu_case == "menu-up500";
+        const bool menu_retrigger500 = menu_case == "menu-retrigger500";
+        const bool menu_steered1800 = menu_case == "menu-steered1800";
+        const bool menu_idle80 = menu_case == "menu-idle80" || menu_down80 || menu_up500
+                              || menu_retrigger500 || menu_steered1800;
         const bool menu_input =
             argc >= 4 && (std::string(argv[3]) == "menu-input-begin" || menu_idle80);
         const bool menu_reveal = argc >= 4 && (std::string(argv[3]) == "menu-reveal" || menu_input);
@@ -204,9 +209,13 @@ int main(int argc, char** argv) {
         std::copy(fraction.begin(), fraction.end(), pitch.sample_fraction.begin());
         std::copy(transpose.begin(), transpose.end(), pitch.sample_transpose.begin());
         Bus bus(output, score, pitch, ready);
-        std::ifstream controller_inputs(
-            root
-            + (menu_down80 ? "/cpu-controller-inputs-down500.txt" : "/cpu-controller-inputs.txt"));
+        const std::string menu_input_name =
+            menu_down80         ? "cpu-controller-inputs-down500.txt"
+            : menu_up500        ? "cpu-controller-inputs-up500.txt"
+            : menu_retrigger500 ? "cpu-controller-inputs-retrigger500.txt"
+            : menu_steered1800  ? "cpu-controller-inputs-steered1800.txt"
+                                : "cpu-controller-inputs.txt";
+        std::ifstream controller_inputs(root + "/" + menu_input_name);
         unsigned input_frame, input_first, input_second;
         while (controller_inputs >> input_frame >> input_first >> input_second) {
             if (input_frame != bus.controller_schedule.size() || input_first > 65535
@@ -342,7 +351,7 @@ int main(int argc, char** argv) {
                                                 throw std::invalid_argument(
                                                     "invalid arrow position data");
                                             if (menu_idle80)
-                                                for (unsigned i = 0; i < 80; ++i) {
+                                                for (unsigned i = 0; i < (menu_steered1800 ? 1380U : 80U); ++i) {
                                                     const auto action =
                                                         unirally::native_audio_menu_input_frame(
                                                             clock, state, scene, cartridge, menu,

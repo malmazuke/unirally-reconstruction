@@ -1328,3 +1328,19 @@ Menu-input follow-up: the three affected CPU checks pass; regenerated static
 metadata checks53,062 sites/42,700 shared instructions with zero disagreements.
 All24 native-symbol checks pass and all1049 citations have records. Inspect
 and commit this bounded slice before the longer withheld comparisons.
+
+### 1 October 09:06 UTC continuation checkpoint
+
+bfa377b is pushed: first native menu input producer. Up wrap, released-input
+retrigger and 1380 steered menu loops now pass their withheld exact event/PCM
+comparisons with the same core code. R-0075 names counts, horizons, on/off
+integrity and precomparison hashes. The longest run is2,612,233 events and
+1,152,477 raw pairs; full title/menu controller/end clocks match.
+
+Before native system/serialization refactoring, freeze these reports in
+`audio-system-refactor-frozen.json` under main evidence. Continue with one
+owner for CPU clock/phase, native IPL/driver/timers, DSP/RAM/history and PCM
+queue, then fresh-process continuation and product output. Scene stop/restart
+remains coupled recovery; no audio device or capability acceptance yet. Last
+fresh quota23% at08:53,baseline12/stop32,no reset/spending/provider change.
+Next checkpoint09:16,reassessment09:18.

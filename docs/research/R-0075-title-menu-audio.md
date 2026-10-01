@@ -925,3 +925,19 @@ and all normalized kind1-9 events (`cold-cpu500-down-integrity.json`).
 title frames also match in both comparisons. These cover first effect/music
 overlap and hold suppression, not retrigger, Up wrap or full lifecycle.
 Product playback, complete canonical save and independent review remain open.
+
+Further withheld inputs freeze before their comparisons, leaving the same core
+candidate unchanged. `cold-menu-variations-integrity.json` verifies on/off
+state/A/V/PCM/APU and normalized kind1-9 equality for Up450-455, Down450 then
+453-455, and the 1800-frame steered menu (Down450-455, Up1500-1505). Their
+`cold-cpu-menu-*-frozen.json` manifests retain exact input, event, PCM and end
+clock hashes. Native Up wrap/retrigger comparisons match 1,137,832/1,137,577
+events, 319,556/319,555 raw pairs and 80 menu end clocks each. The steered
+comparison matches 2,612,233 events, 1,152,477 pairs and 1380 menu end clocks
+at C=765,490,044, D=36,879,264; all111 prior title frames remain exact.
+This establishes native cold producer prediction in these bounded domains,
+including overlap, hold suppression, Up wrap and retrigger. It does not accept
+product audio, complete save or scene restart.
+
+`audio-system-refactor-frozen.json` freezes these unchanged reports/inputs
+before factoring CPU/SMP/DSP ownership and adding canonical continuation.
