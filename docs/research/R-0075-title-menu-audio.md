@@ -435,3 +435,47 @@ acceptance. Calls can run past the diagnostic closing horizon; resumable
 pending phases and full native audio serialization remain open. The app
 still has no audio output, pack v29 is unchanged, and independent capability
 review/regressions remain required.
+
+## Stop fade, cold CPU observer and frozen dispatcher refactor
+
+The native stop path now handles the observed bulk FF request, acknowledges
+it, waits for timer-2 pulses and subtracts eight from both master volumes.
+It emits key-off FF, CONTROL B0 and FLG E0, then returns to a declared IPL
+boundary. `native-driver-stop-conditional.json` matches all 830,187 completed
+projected rows through the original six-tick jump at SMP 55,249,134.
+`native-driver-stop-pcm-conditional.json` matches all 863,438 raw stereo pairs
+through the fixed DSP horizon 27,630,016 in the muted interval, before the
+first later initialization write. Its prefix SHA-256 is
+`87f9e8b5bf53f11ae32466195679df82edd5bb0c7b4488f39957f7aaa5005582`.
+The first stop comparison included later IPL polls that are still unimplemented;
+`native-driver-stop-includes-ipl-failure01.json` retains those unmatched rows.
+The bounded result is not a complete native reload/restart pass.
+
+The fresh 1,850-frame HUNTER repeat, `hunter-code-audio-clock`, preserves every
+original state/A/V/PCM/final-RAM digest (`hunter-clock-repeat-integrity.json`).
+It adds watches at driver entry, ordinary loop and stop entry. Original CPU
+write boundaries and final IPL driver entry remain conditions in native tests.
+
+Optional observation ABI 5 adds complete CPU instruction/register boundaries.
+Its core SHA-256 is
+`3483e8bcd27b0709758f186d97474c38fee62d66fb43a5b3d2ca51087f4a4539`.
+`cold-cpu100-integrity.json` compares a fixed 100-frame cold script under ABI 4,
+ABI 5 tracing off and ABI 5 tracing on. State, video, callback audio, raw PCM,
+final WRAM/SRAM/APU RAM and serialization metadata agree. All 903,135
+normalized old kind-1-through-9 events also agree exactly. The full CPU capture
+contains 1,585,211 instruction boundaries at 636 distinct PCs. These are
+original research observations, not native product timestamps or acceptance.
+The static bank-80 reset/loading and bank-82 sound listings were read before
+the capture; the default reference patch/lock remains unchanged.
+
+Under D-0003, `score-dispatch-refactor-frozen.json` retains the pre-refactor
+source hashes and reports. The 105-line voice dispatcher is split into note
+initialization and sequence, pitch, instrument and mix controls. The renamed
+`per_note_volume` flag reads the inline volume byte already identified in the
+score format. Repeated native startup checks still match all 2,084,772 rows,
+the extended score check all 106,760 voice-call durations, and the three
+14,300,000-clock PCM prefixes all 1,340,625 pairs. The stop row/PCM checks
+also remain exact. Four focused native tests and 13 capture-tool tests pass;
+the two dispatcher source files pass the 80-line function-size check. Full
+cold timing, resumable phases, pack, native save, audible app and independent
+review remain pending.

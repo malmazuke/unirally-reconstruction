@@ -412,7 +412,7 @@ def run(args: argparse.Namespace) -> int:
         try:
             audio = audio_capture.AudioCapture(core, Path(args.audio_out), args.audio_capacity,
                 args.audio_instructions, set(args.audio_ram_frame or []),
-                {key: out[key] for key in ('core', 'rom', 'script')}, args.audio_cpu_watch, args.audio_smp_watch)
+                {key: out[key] for key in ('core', 'rom', 'script')}, args.audio_cpu_watch, args.audio_smp_watch, args.audio_cpu_instructions)
         except (bsnes.CoreError, OSError) as exc:
             print(f'audio capture setup failed: {exc}', file=sys.stderr)
             core.unload(); shutil.rmtree(system_dir, ignore_errors=True)
@@ -604,6 +604,7 @@ def main(argv: list[str] | None = None) -> int:
                         help='CPU PC with timed register observations (repeatable, maximum 64)')
     parser.add_argument('--audio-smp-watch', type=lambda v: int(v, 0), action='append',
                         help='SPC700 PC with timed register observations (repeatable, maximum 64)')
+    parser.add_argument('--audio-cpu-instructions', action='store_true', help='include every CPU instruction boundary (observation ABI 5)')
     parser.add_argument('--audio-instructions', action='store_true', help='include SPC700 instruction boundaries')
     parser.add_argument('--audio-ram-frame', type=int, action='append', help='end-frame APU RAM snapshot (repeatable)')
     parser.add_argument("--state-in")

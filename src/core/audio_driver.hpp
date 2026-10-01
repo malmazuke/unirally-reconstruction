@@ -36,6 +36,7 @@ private:
     std::uint8_t command_phase_ = 128;
     std::uint8_t music_counter_ = 0, effect_counter_ = 0, update_counter_ = 0;
     std::uint8_t master_volume_ = 127;
+    bool stopped_for_ipl_ = false;
     void advance(unsigned ticks);
     std::uint8_t read_port(std::uint8_t port);
     void write_port(std::uint8_t port, std::uint8_t value);
@@ -54,5 +55,6 @@ private:
     std::uint8_t read_upload_byte(std::uint8_t& phase);
     void load_sample_bytes(std::uint8_t& phase, std::uint16_t& cursor);
     void write_ram(unsigned ticks, std::uint16_t address, std::uint8_t value);
+    void stop_for_ipl();
 };
 } // namespace unirally

@@ -620,3 +620,87 @@ startup slice, stop fade and coupled DSP PCM, then recover those cold CPU/IPL
 conditions. Full native save, pack, audible product, regressions and independent
 review remain. Quota last 17% from 12%, boundary 32%; no reset/spending/provider
 change. Next checkpoint by 03:24 UTC; reassessment by 03:39 UTC.
+
+## 03:24 UTC checkpoint
+
+Source slice 255799a is pushed after staged-diff inspection, focused audio
+checks and unchanged native-symbol regeneration. Native initialization from
+the observed IPL-to-driver entry matches 2,084,772 completed projected rows
+in the three full traces. Coupled native driver/DSP PCM matches all 1,340,625
+stereo-pair comparisons at the fixed 14,300,000-clock horizon. These remain
+conditional on original CPU write times and the final IPL entry; no cold CPU
+producer or audible app acceptance is claimed. PR #50 stays draft/unreviewed,
+and current hosted CI is pending.
+
+A native timer-driven stop fade is an uncommitted candidate. A fresh 1,850-frame
+HUNTER lifecycle repeat adds driver/stop entry markers and is running. Verify its
+non-perturbation and compare the computed fade through the muted IPL boundary.
+The subsequent reload, CPU producer, full native save, pack, audible output,
+regressions and independent tier-1 review remain open. The readability check
+finds one existing candidate function, score update_voice, at 105 lines; split
+its controls under the current frozen conditional checks before acceptance.
+Latest quota at 03:15 is 17% from 12%, stop 32%, reset 1791365217. No reset,
+spending or provider change. Checkpoint by 03:34 UTC; reassess by 03:39 UTC.
+
+## 03:34 UTC checkpoint
+
+Pushed 255799a has passing hosted macOS/Ubuntu checks, run 36810065335.
+The uncommitted native stop fade matches all 830,187 completed projected rows
+through its original jump to IPL at SMP tick 55,249,134 and all 863,438 raw
+stereo pairs through the fixed muted horizon of 27,630,016 DSP clocks.
+`native-driver-stop-conditional.json` and `native-driver-stop-pcm-conditional`
+record this bounded result. The initial stop comparison also included later
+IPL polling, which is not implemented yet; its retained failure records the
+extra original rows. The corrected stop domain ends at the original FLG E0
+write plus the six-tick jump, not at a native-derived success frontier. The
+fresh HUNTER repeat preserves state/A/V/PCM/final-RAM digests.
+
+New opt-in observation ABI 5 adds complete CPU boundary/register capture to
+recover cold producer and loader work. Its private core SHA-256 is
+3483e8bcd27b0709758f186d97474c38fee62d66fb43a5b3d2ca51087f4a4539.
+A first-100-frame cold script runs under old ABI 4, ABI 5 tracing off and ABI 5
+tracing on: all state/A/V/PCM/final-RAM digests and all 903,135 normalized old
+kind-1-through-9 rows are identical (`cold-cpu100-integrity.json`). Full CPU
+trace retains 1,585,211 instructions at 636 distinct PCs, beginning at CPU
+tick 186. Observer build and 13 focused tooling checks pass. The default
+reference lock/patch and frozen expectations remain unchanged.
+
+Next split the 105-line score dispatcher under frozen checks, then recover the
+cold CPU/IPL producer and resumable native audio phases. Pack, real output,
+full native save, regressions and independent review remain open; the app is
+still silent. Latest quota remains 17% from 12%, boundary 32%; no reset,
+spending or provider change. Checkpoint by 03:44 UTC; reassess by 03:39 UTC.
+
+## 03:42 UTC 45-minute reassessment
+
+Current pushed 255799a has passing macOS/Ubuntu hosted checks. Native stop and
+ABI 5 CPU observation remain uncommitted; the score dispatcher has been split
+into note initialization and four identified control groups under a frozen
+pre-refactor evidence manifest. The native build and function-size check pass;
+exact audio comparisons are being repeated before committing this refactor.
+No original expectation or acceptance frontier is regenerated.
+
+Continue cold CPU/IPL timing recovery and explicit resumable semantic phases.
+The first CPU trace covers 636 distinct instruction addresses without perturbing
+original output. It is research evidence, not a timestamp table for the product.
+The existing synchronous driver can overshoot a horizon and has no complete
+portable pending-state save, so it is not yet an app component. Cold producer,
+pack, full PCM, native restore, audible output, regressions and independent
+review remain required. There is no external blocker.
+
+Fresh account sample is 18% used from 12%, discretionary boundary 32%, reset
+1791365217. No reset, spending, provider change or new consultation. Next
+checkpoint by 03:52 UTC; reassessment by 04:27 UTC.
+
+## 03:46 UTC source checkpoint
+
+The frozen dispatcher refactor passes all 2,084,772 startup rows, 106,760
+extended score durations, 1,340,625 primary PCM pair comparisons and the
+830,187 stop rows / 863,438 stop PCM pairs. Original expectations and fixed
+horizons are unchanged. Four focused native and 13 capture tooling checks
+pass. Source remains unaccepted: cold CPU/IPL, resumable audio phases, pack,
+full save, audible output, regressions and tier-1 review are open.
+
+Commit this tested stop/observer/refactor slice after staged inspection, then
+continue the cold handshake. Next checkpoint by 03:56 UTC; reassess by 04:27.
+Quota is 18% from 12%, stop 32%; no reset/spending/provider change.

@@ -46,7 +46,7 @@ struct AudioScoreVoice {
     bool output_enabled = false;
     std::uint8_t effect = 255, priority = 255;
     std::uint8_t remaining = 1;  // Unsigned update count; zero wraps to 255.
-    bool per_note_pan = false, next_duration_inline = false;
+    bool per_note_volume = false, next_duration_inline = false;
     std::uint8_t fixed_duration = 0, sample = 0, transpose = 0, detune = 0;
     std::uint8_t release_relative = 0, release_absolute = 0;
     std::uint8_t volume = 0, pan = 0, pan_step = 0;
@@ -113,6 +113,12 @@ private:
     void push_pointer(std::uint8_t voice);
     std::uint8_t random_choice(std::uint8_t count);
     void set_instrument(std::uint8_t voice, std::uint8_t instrument);
+    void initialize_score_note(std::uint8_t voice, std::uint8_t note, std::uint8_t counter);
+    void apply_score_control(std::uint8_t voice, std::uint8_t control);
+    void apply_sequence_control(std::uint8_t voice, std::uint8_t control);
+    void apply_pitch_control(std::uint8_t voice, std::uint8_t control);
+    void apply_instrument_control(std::uint8_t voice, std::uint8_t control);
+    void apply_mix_control(std::uint8_t voice, std::uint8_t control);
     void update_arithmetic(std::uint8_t voice, std::uint8_t update_counter);
 };
 

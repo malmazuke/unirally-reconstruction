@@ -138,3 +138,20 @@ class AudioCaptureTests(unittest.TestCase):
             with self.assertRaisesRegex(bsnes.CoreError, '16-bit'):
                 audio.AudioCapture(self.core, self.directory, 10, False, set(), {}, smp_watch=pcs)
         self.assertFalse(self.directory.exists())
+
+    def test_all_cpu_trace_requires_abi_five_before_creating_output(self):
+        with self.assertRaisesRegex(bsnes.CoreError, 'ABI 5'):
+            audio.AudioCapture(self.core, self.directory, 10, False, set(), {}, cpu_instructions=True)
+        self.assertFalse(self.directory.exists())
+
+    def test_all_cpu_trace_is_explicitly_enabled_after_buffer_setup(self):
+        lib = self.core._lib
+        lib.unirally_audio_api_version = lambda: 5
+        lib.unirally_audio_watch_cpu = lambda pcs, count: True
+        lib.unirally_audio_watch_smp = lambda pcs, count: True
+        calls = []
+        lib.unirally_audio_trace_cpu = calls.append
+        capture = audio.AudioCapture(self.core, self.directory, 10, False, set(), {}, cpu_instructions=True)
+        self.assertEqual(calls, [True])
+        self.assertTrue(capture.data['all_cpu_instructions'])
+        capture.finish()

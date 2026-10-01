@@ -353,10 +353,10 @@ index 9e82b5dd3f8a038b36ff5391c738ca89160a08dd..1bbe92f25fc5a10478f789d7307948fb
  };
 diff --git a/bsnes/target-libretro/unirally.cpp b/bsnes/target-libretro/unirally.cpp
 new file mode 100644
-index 0000000000000000000000000000000000000000..b8f7afbd67e9b3ea81aaa01e5277f83d3472cccb
+index 0000000000000000000000000000000000000000..80b7bc76da4ea7719fcdf2b55721582377f1c92e
 --- /dev/null
 +++ b/bsnes/target-libretro/unirally.cpp
-@@ -0,0 +1,237 @@
+@@ -0,0 +1,244 @@
 +// unirally-lab extensions for the bsnes libretro build.
 +// These exports are not part of the libretro API; tools/unirally_lab/reference
 +// loads the library directly and uses them for headless capture.
@@ -486,6 +486,7 @@ index 0000000000000000000000000000000000000000..b8f7afbd67e9b3ea81aaa01e5277f83d
 +static size_t capacity = 0, count = 0;
 +static uint64_t total = 0, dropped = 0;
 +static bool instructions = false;
++static bool cpuInstructions = false;
 +static uint32_t watchedCpuPc[64] = {};
 +static size_t watchedCpuCount = 0;
 +static uint16_t watchedSmpPc[64] = {};
@@ -512,17 +513,18 @@ index 0000000000000000000000000000000000000000..b8f7afbd67e9b3ea81aaa01e5277f83d
 +static void cpuInstruction() {
 +  auto& c = SuperFamicom::cpu;
 +  uint32_t pc = c.r.pc.d;
++  bool observed = cpuInstructions;
 +  for(size_t i = 0; i < watchedCpuCount; i++) {
-+    if(watchedCpuPc[i] != pc) continue;
-+    hook(12, c.r.a.w, c.r.x.w);
-+    hook(13, c.r.y.w, c.r.s.w);
-+    hook(15, (uint16_t)c.r.b | ((uint16_t)c.r.e << 8), (uint8_t)(uint)c.r.p);
-+    break;
++    if(watchedCpuPc[i] == pc) observed = true;
 +  }
++  if(!observed) return;
++  hook(12, c.r.a.w, c.r.x.w);
++  hook(13, c.r.y.w, c.r.s.w);
++  hook(15, (uint16_t)c.r.b | ((uint16_t)c.r.e << 8), (uint8_t)(uint)c.r.p);
 +}
 +}
 +extern "C" {
-+RETRO_API uint32_t unirally_audio_api_version() { return 4; }
++RETRO_API uint32_t unirally_audio_api_version() { return 5; }
 +RETRO_API uint32_t unirally_audio_byte_order() {
 +  uint32_t marker = 1;
 +  return *(uint8_t*)&marker == 1 ? 1 : 2;
@@ -533,6 +535,7 @@ index 0000000000000000000000000000000000000000..b8f7afbd67e9b3ea81aaa01e5277f83d
 +  using namespace UnirallyAudioLab;
 +  SuperFamicom::cpu.labAudioInstructionHook = nullptr;
 +  watchedCpuCount = watchedSmpCount = 0;
++  cpuInstructions = false;
 +  observedSmpInstruction = false;
 +  SuperFamicom::smp.labHook = nullptr;
 +  SuperFamicom::dsp.labHook = nullptr;
@@ -593,4 +596,8 @@ index 0000000000000000000000000000000000000000..b8f7afbd67e9b3ea81aaa01e5277f83d
 +  for(size_t i = 0; i < count; i++) UnirallyAudioLab::watchedSmpPc[i] = pcs[i];
 +  UnirallyAudioLab::watchedSmpCount = count;
 +  return true;
++}
++
++extern "C" RETRO_API void unirally_audio_trace_cpu(bool enabled) {
++  UnirallyAudioLab::cpuInstructions = enabled;
 +}

@@ -11,7 +11,7 @@
       "describe": "nightly, after v115; commit dated 2026-05-23",
       "checkout_dir": "bsnes-audio",
       "patch": "tools/unirally_lab/reference/patches/bsnes-audio-exports.patch",
-      "patch_sha256": "a60fc270adf2eb0ff5a544563cea39b2d36bbe01e0239c6504bf0c9f3345b7a8",
+      "patch_sha256": "f681f39294c0104170291159ad829c80f030f2a993b81e5646defa5a84f8e1a0",
       "build": {
         "command": [
           "make",

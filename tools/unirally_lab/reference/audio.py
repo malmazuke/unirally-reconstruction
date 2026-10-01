@@ -28,7 +28,7 @@ class AudioCapture:
     """Preallocated core buffer, drained once per frame; loss invalidates capture."""
     def __init__(self, core: bsnes.BsnesCore, directory: Path, capacity: int,
                  instructions: bool, ram_frames: set[int], identity: dict[str, Any], cpu_watch: list[int] | None = None,
-                 smp_watch: list[int] | None = None) -> None:
+                 smp_watch: list[int] | None = None, cpu_instructions: bool = False) -> None:
         if not 1 <= capacity <= 1_000_000:
             raise bsnes.CoreError('audio capacity must be in 1..1000000')
         if core.options['bsnes_run_ahead_frames'] != 'OFF':
@@ -42,6 +42,8 @@ class AudioCapture:
             raise bsnes.CoreError('audio CPU watches require observation ABI 3')
         if smp_watch and core._lib.unirally_audio_api_version() < 4:
             raise bsnes.CoreError('audio SMP watches require observation ABI 4')
+        if cpu_instructions and core._lib.unirally_audio_api_version() < 5:
+            raise bsnes.CoreError('all CPU instructions require observation ABI 5')
         directory.mkdir(parents=True, exist_ok=False)
         self.core, self.directory, self.capacity = core, directory, capacity
         self.ram_frames = ram_frames
@@ -54,7 +56,7 @@ class AudioCapture:
         self.data = {'schema_version': 1, 'status': 'incomplete', 'identity': identity,
                      'observation_abi': lib.unirally_audio_api_version(),
                      'cpu_watch': cpu_watch or [], 'smp_watch': smp_watch or [],
-                     'all_smp_instructions': instructions,
+                     'all_smp_instructions': instructions, 'all_cpu_instructions': cpu_instructions,
                      'event_layout': '<QQQQIHHBB', 'event_size': bsnes._AUDIO_EVENT.size,
                      'kinds': KINDS, 'pcm_format': 'signed 16-bit little-endian interleaved L/R',
                      'pcm_position': 'wrapper delivery after DSP run, before float/resampling',
@@ -68,6 +70,8 @@ class AudioCapture:
         if not lib.unirally_audio_enable(capacity, instructions):
             self.finish('failed', 'audio buffer allocation failed')
             raise bsnes.CoreError('audio buffer allocation failed')
+        if lib.unirally_audio_api_version() >= 5:
+            lib.unirally_audio_trace_cpu(cpu_instructions)
         if lib.unirally_audio_api_version() >= 3:
             watched = (C.c_uint32 * len(cpu_watch or []))(*(cpu_watch or []))
             if not lib.unirally_audio_watch_cpu(watched, len(watched)):
