@@ -122,8 +122,14 @@ int main(int argc, char** argv) {
         if (argc != 3 && argc != 4 && argc != 6)
             throw std::invalid_argument("audio_cpu_upload_runner DATA_DIRECTORY OUTPUT "
                                         "[ready|samples|queue|vblank|frame|palette|load|nintendo|"
-                                        "title [PCM DSP_CLOCK_LIMIT]]");
-        const bool title_return = argc >= 4 && std::string(argv[3]) == "title-return";
+                                        "title|first-nmi|title-fade|title-hold|title-return|menu-palette|"
+                                        "menu-graphics|menu-oam [PCM DSP_CLOCK_LIMIT]]");
+        const bool menu_oam = argc >= 4 && std::string(argv[3]) == "menu-oam";
+        const bool menu_graphics = argc >= 4 && (std::string(argv[3]) == "menu-graphics" || menu_oam);
+        const bool menu_palette =
+            argc >= 4 && (std::string(argv[3]) == "menu-palette" || menu_graphics);
+        const bool title_return =
+            argc >= 4 && (std::string(argv[3]) == "title-return" || menu_palette);
         const bool title_hold = argc >= 4 && (std::string(argv[3]) == "title-hold" || title_return);
         const bool title_fade = argc >= 4 && (std::string(argv[3]) == "title-fade" || title_hold);
         const bool first_nmi = argc >= 4 && (std::string(argv[3]) == "first-nmi" || title_fade);
@@ -219,8 +225,8 @@ int main(int argc, char** argv) {
                     if (nintendo)
                         unirally::native_audio_finish_nintendo_screen(clock, state, scene);
                     if (title)
-                        unirally::native_audio_load_title_graphics(clock, scene, assets[27],
-                                                                   assets[78], assets[72]);
+                        unirally::native_audio_load_title_graphics(
+                            clock, scene, bus.interrupt_state, assets[27], assets[78], assets[72]);
                     if (first_nmi) {
                         unirally::native_audio_first_title_interrupt(clock);
                         if (title_fade)
@@ -241,6 +247,26 @@ int main(int argc, char** argv) {
                             clock.call_local();
                             unirally::native_audio_title_fade(clock, state, scene, true);
                             clock.return_local();
+                        }
+                        if (menu_palette) {
+                            std::ifstream menu_metadata(root
+                                                        + (menu_graphics
+                                                               ? "/cpu-menu-graphics-assets-v2.txt"
+                                                               : "/cpu-menu-graphics-assets.txt"));
+                            std::array<unirally::AudioCpuGraphicsAsset, 128> menu_assets{};
+                            while (menu_metadata >> id >> bank >> address >> bytes >> compressed) {
+                                if (id >= menu_assets.size() || bank > 127 || address > 65535
+                                    || compressed > 1)
+                                    throw std::invalid_argument("invalid menu resource metadata");
+                                menu_assets[id] = {static_cast<std::uint8_t>(bank),
+                                                   static_cast<std::uint16_t>(address), bytes,
+                                                   compressed != 0};
+                            }
+                            unirally::native_audio_menu_first_palette(
+                                clock, state, scene, bus.interrupt_state, menu_assets[1]);
+                            if (menu_graphics)
+                                unirally::native_audio_menu_graphics(clock, scene, menu_assets);
+                            if (menu_oam) unirally::native_audio_menu_oam(clock, scene);
                         }
                         std::cout << "palette_delay=" << unsigned(bus.interrupt_state.palette_delay)
                                   << " palette_index="

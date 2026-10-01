@@ -1121,3 +1121,56 @@ loads, so raw graphics helpers need explicit instruction boundaries before
 claiming that domain. Canonical CPU/full save, product playback and capability
 review remain open. Last fresh usage21% at06:52,baseline12/stop32,no reset/
 spending/provider change. Next checkpoint by07:10; reassessment07:26 UTC.
+
+### 1 October 07:11 UTC checkpoint
+
+5170576 (native automatic controller polling/title hold) is pushed. The next
+menu-first-palette comparison passes all 1,017,400 events,241,424 raw pairs
+and C=160,342,178 atD263. Before extending it, `cold-cpu-menu-graphics-frozen.json`
+fixes the all-graphics endpoint D2AD,C=171,198,560,D=8,247,936,1,030,090
+events and257,748 raw pairs. First all-graphics native comparison is running.
+Original9202/9205 registers show FFFF/FF at the cold mode read; typed cold
+menu_mode255 selects the default asset2 palette. Mode1's rider selection
+remains outside this cold helper, explicitly rejected until recovered.
+
+The raw loader now marks directory/asset read instruction boundaries, and
+A16A clears native palette counters at its actual final two writes. First
+Nintendo palette work is factored into a shared A8A8 callee; no original time
+constant enters these helpers. Main graphics metadata is versioned separately
+so the first-palette manifest/input identities remain unchanged. New source
+is uncommitted; native-map/readability/affected regressions remain before
+its commit. A runner variable-shadow compile error was corrected; the
+preceding old executable rejected the new mode and produced no result.
+
+Next finish menu OAM/text/intro/input producers, then canonical continuation
+and product audio. The positive title code branch still needs its frozen
+variation. Fresh weekly usage21% at07:06,baseline12/stop32,ordinary usage allowed,
+reset1791365217,no reset/spending/provider change. Next checkpoint by07:21;
+reassessment07:26 UTC. Capability review/acceptance remain open.
+
+The all-graphics comparison subsequently passes: all 1,030,090 events,257,748
+raw pairs,111 prior controller projections and C=171,198,560 match. Native
+interrupt count153 and palette phase3/index0 are computed. No original
+asset duration or producer clock is an input; typed raw lengths and LoROM
+cursors include the bank wrap. Continue menu OAM layout/intro from D2AD.
+
+### 1 October 07:21 UTC checkpoint
+
+CI36827852572 passes both hosts at5170576. The new menu graphics and OAM
+layout match all 1,030,159 frozen events,257,813 raw pairs and computed
+C=171,240,248 beforeD36F. Native interrupt count153 and all111 prior title
+controller frames match. R-0075 names the preimplementation frozen inputs
+and reports. Both affected CPU checks and readability pass; regenerated
+map/tooling checks remain before this source commit. Next native D36F wait,
+menu cartridge validation and text work; static8871/8C4E/ACD5 was read.
+
+Fresh telemetry22% at07:19,baseline12/stop32,ordinary usage allowed,
+reset1791365217. No reset/spending/provider change. Next checkpoint07:31;
+reassessment07:26. Full product/save/capability review remain open.
+
+Menu checkpoint follow-up: the frozen Nintendo PCM regression also passes
+after factoring the shared arrow callee. Static regeneration passes with
+53,062 sites,42,700 shared instructions and zero disagreements; all24 native
+symbol tooling checks pass after regeneration. A premature parallel tooling
+run saw the old map during regeneration and failed its symbol-name check;
+the sequential rerun is the reported pass. No expected result changed.

@@ -180,11 +180,9 @@ void native_audio_frame_wait(Clock& c, AudioCpuQueueState& queue, AudioCpuSceneW
     native_audio_wait_vblank(c, queue);
     native_audio_finish_waited_frame(c, scene);
 }
-// $80:A8A8; R-0075. Starts at B091, ends after the call into 8399F6. A8A8 uploads 216 bytes
-// from the identified base palette; original entry clocks are not inputs.
-void native_audio_upload_base_palette(Clock& c, AudioCpuQueueState& queue,
-                                      AudioCpuSceneWorkState& scene) {
-    c.call_local();
+// $80:A8A8; R-0075. The callee waits, copies OAM and uploads 216 palette bytes.
+void native_audio_palette_dma_work(Clock& c, AudioCpuQueueState& queue,
+                                   AudioCpuSceneWorkState& scene) {
     c.call_local();
     native_audio_frame_wait(c, queue, scene);
     c.call_local();
@@ -203,13 +201,16 @@ void native_audio_upload_base_palette(Clock& c, AudioCpuQueueState& queue,
     }
     c.request_dma(216);
     c.return_local();
+}
+// $80:B091; R-0075. Starts with the palette call and ends after JSL8399F6.
+void native_audio_upload_base_palette(Clock& c, AudioCpuQueueState& queue,
+                                      AudioCpuSceneWorkState& scene) {
+    c.call_local();
+    native_audio_palette_dma_work(c, queue, scene);
     c.call_far();
 }
-// $83:99F6; $80:B08C; R-0075. Static bank-83 99F6-9A1D and bank-80 B098-B0CA; R-0075.
-void native_audio_load_nintendo_graphics(Clock& c, AudioCpuSceneWorkState& scene,
-                                         const AudioCpuGraphicsAsset& palette,
-                                         const AudioCpuGraphicsAsset& map,
-                                         const AudioCpuGraphicsAsset& tiles) {
+// $83:99F6; R-0075. Park both arrow targets and clear their extra work words.
+void native_audio_park_arrow(Clock& c, AudioCpuSceneWorkState& scene) {
     c.call_local();
     c.save_register(2);
     for (unsigned pair = 0; pair < 2; ++pair) {
@@ -224,6 +225,13 @@ void native_audio_load_nintendo_graphics(Clock& c, AudioCpuSceneWorkState& scene
     c.restore_register(2);
     c.return_local();
     c.return_far();
+}
+// $83:99F6; $80:B08C; R-0075. Static bank-83 99F6-9A1D and bank-80 B098-B0CA; R-0075.
+void native_audio_load_nintendo_graphics(Clock& c, AudioCpuSceneWorkState& scene,
+                                         const AudioCpuGraphicsAsset& palette,
+                                         const AudioCpuGraphicsAsset& map,
+                                         const AudioCpuGraphicsAsset& tiles) {
+    native_audio_park_arrow(c, scene);
     for (unsigned i = 0; i < 3; ++i) {
         c.load_constant();
         c.store_port();

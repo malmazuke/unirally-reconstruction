@@ -1809,7 +1809,7 @@
   "comment": "routine start",
   "label": "sub_80A16A",
   "native": [
-   "src/core/audio_cpu_title.cpp:initialize_title_work",
+   "src/core/audio_cpu_title.cpp:native_audio_initialize_title_work",
    "src/core/front_end.cpp:load_main_menu_screen",
    "src/core/front_end.cpp:load_title",
    "src/core/front_end.cpp:parked_x, parked_y",
@@ -2075,7 +2075,7 @@
   "comment": "routine start",
   "label": "sub_80A8A8",
   "native": [
-   "src/core/audio_cpu_scene.cpp:native_audio_upload_base_palette",
+   "src/core/audio_cpu_scene.cpp:native_audio_palette_dma_work",
    "src/core/front_end.cpp:boot_frame_waits",
    "src/core/front_end.cpp:load_main_menu_screen",
    "src/core/front_end.cpp:load_nintendo_screen",
@@ -2292,6 +2292,18 @@
   ],
   "source_records": [
    "docs/research/R-0054-boot-title-main-menu.md"
+  ]
+ },
+ {
+  "address": "$80:B091",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80B091",
+  "native": [
+   "src/core/audio_cpu_scene.cpp:native_audio_upload_base_palette"
+  ],
+  "source_records": [
+   "docs/research/R-0075-title-menu-audio.md"
   ]
  },
  {
@@ -4319,6 +4331,7 @@
   "comment": "routine start",
   "label": "sub_80D20E",
   "native": [
+   "src/core/audio_cpu_menu.cpp:native_audio_menu_first_palette",
    "src/core/front_end.cpp:boot_frame_waits",
    "src/core/front_end.cpp:load_main_menu_screen",
    "src/core/front_end.cpp:menu_objects, menu_objects_high, menu_map, menu_bg2_tiles, menu_bg1_tiles, menu_bg1_tiles_high",
@@ -4338,11 +4351,33 @@
   ]
  },
  {
+  "address": "$80:D263",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80D263",
+  "source_records": [
+   "docs/research/R-0075-title-menu-audio.md"
+  ]
+ },
+ {
+  "address": "$80:D2AD",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80D2AD",
+  "native": [
+   "src/core/audio_cpu_menu.cpp:native_audio_menu_oam"
+  ],
+  "source_records": [
+   "docs/research/R-0075-title-menu-audio.md"
+  ]
+ },
+ {
   "address": "$80:D2C1",
   "class": "observed",
   "comment": "routine start",
   "label": "sub_80D2C1",
   "native": [
+   "src/core/audio_cpu_menu.cpp:reset_menu_sprite_work",
    "src/core/front_end.cpp:lay_out_menu_objects",
    "src/core/front_end.cpp:restore_menu_screen",
    "src/core/front_end_screens.hpp:lay_out_menu_objects"
@@ -4359,6 +4394,7 @@
   "comment": "instruction start",
   "label": "loc_80D2C3",
   "native": [
+   "src/core/audio_cpu_menu.cpp:reset_menu_sprite_work",
    "src/core/front_end.cpp:lay_out_menu_objects",
    "src/core/front_end.cpp:restore_menu_screen",
    "src/core/front_end_screens.hpp:lay_out_menu_objects"
@@ -4373,6 +4409,7 @@
   "comment": "instruction start",
   "label": "loc_80D2CB",
   "native": [
+   "src/core/audio_cpu_menu.cpp:reset_menu_sprite_work",
    "src/core/front_end.cpp:lay_out_menu_objects",
    "src/core/front_end.cpp:restore_menu_screen",
    "src/core/front_end_screens.hpp:lay_out_menu_objects"
@@ -4387,6 +4424,7 @@
   "comment": "instruction start",
   "label": "loc_80D318",
   "native": [
+   "src/core/audio_cpu_menu.cpp:reset_menu_sprite_work",
    "src/core/front_end.cpp:lay_out_menu_objects",
    "src/core/front_end.cpp:restore_menu_screen",
    "src/core/front_end_screens.hpp:lay_out_menu_objects"
@@ -4401,6 +4439,7 @@
   "comment": "instruction start",
   "label": "loc_80D338",
   "native": [
+   "src/core/audio_cpu_menu.cpp:reset_menu_sprite_work",
    "src/core/front_end.cpp:lay_out_menu_objects",
    "src/core/front_end.cpp:restore_menu_screen",
    "src/core/front_end_screens.hpp:lay_out_menu_objects"
@@ -13650,6 +13689,7 @@
    "docs/content/dragster-segment.md",
    "docs/research/R-0008-track-decode.md",
    "docs/research/R-0054-boot-title-main-menu.md",
+   "docs/research/R-0075-title-menu-audio.md",
    "tasks/FRONT-END-MAIN-MENU.md"
   ]
  },
@@ -13743,6 +13783,15 @@
    "docs/research/R-0019-dragster-loser-result.md",
    "tasks/M1-03.md",
    "tasks/M3-02.md"
+  ]
+ },
+ {
+  "address": "$82:B2DC",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82B2DC",
+  "source_records": [
+   "docs/research/R-0075-title-menu-audio.md"
   ]
  },
  {
@@ -15158,6 +15207,7 @@
   "comment": "routine start",
   "label": "sub_8391F7",
   "native": [
+   "src/core/audio_cpu_menu.cpp:native_audio_menu_graphics",
    "src/core/front_end.cpp:load_main_menu_screen",
    "src/core/front_end.cpp:soft_reset",
    "src/core/front_end_screens.hpp:load_object_palette",
@@ -15167,7 +15217,8 @@
   "source_records": [
    "docs/research/R-0054-boot-title-main-menu.md",
    "docs/research/R-0055-rider-menu.md",
-   "docs/research/R-0057-one-run-result.md"
+   "docs/research/R-0057-one-run-result.md",
+   "docs/research/R-0075-title-menu-audio.md"
   ]
  },
  {
@@ -15180,6 +15231,15 @@
   ],
   "source_records": [
    "docs/research/R-0059-tour-completion.md"
+  ]
+ },
+ {
+  "address": "$83:9228",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_839228",
+  "source_records": [
+   "docs/research/R-0075-title-menu-audio.md"
   ]
  },
  {
@@ -15433,11 +15493,13 @@
   "label": "sub_8399F6",
   "native": [
    "src/core/audio_cpu_scene.cpp:native_audio_load_nintendo_graphics",
+   "src/core/audio_cpu_scene.cpp:native_audio_park_arrow",
    "src/core/front_end.cpp:lay_out_menu_objects",
    "src/core/front_end.cpp:load_nintendo_screen"
   ],
   "source_records": [
-   "docs/research/R-0054-boot-title-main-menu.md"
+   "docs/research/R-0054-boot-title-main-menu.md",
+   "docs/research/R-0075-title-menu-audio.md"
   ]
  },
  {

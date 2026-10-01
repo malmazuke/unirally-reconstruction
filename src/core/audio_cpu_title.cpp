@@ -2,11 +2,11 @@
 #include <array>
 
 namespace unirally {
-namespace {
 using Clock = AudioCpuWorkClock;
 // $80:A16A; R-0075. Static bank-80 A16A-A1F1; R-0054/R-0075. Installs the title NMI hook
 // and initializes native frontend target words and cleared work variables.
-void initialize_title_work(Clock& c, AudioCpuSceneWorkState& scene) {
+void native_audio_initialize_title_work(Clock& c, AudioCpuSceneWorkState& scene,
+                                        AudioCpuInterruptWorkState& interrupt) {
     for (unsigned i = 0; i < 2; ++i) {
         c.load_constant(2);
         c.store_direct(2);
@@ -42,18 +42,22 @@ void initialize_title_work(Clock& c, AudioCpuSceneWorkState& scene) {
     c.load_constant(2);
     constexpr std::array<unsigned, 29> clear_widths{2, 1, 2, 1, 2, 1, 2, 2, 1, 2, 2, 2, 2, 2, 2,
                                                     2, 1, 2, 2, 2, 1, 2, 2, 1, 1, 2, 1, 1, 1};
-    for (const auto width : clear_widths) c.store_direct(width);
+    for (unsigned i = 0; i < clear_widths.size() - 2; ++i) c.store_direct(clear_widths[i]);
+    c.store_direct();
+    interrupt.palette_delay = 0;
+    c.store_direct();
+    interrupt.palette_index = 0;
     c.return_local();
-}
 }
 // $80:F55F; R-0075. Static bank-80 8864-8867/F55F-F5B8. Cartridge state selects the tour-level copy.
 // Ends before the write enabling NMI; interrupt handling is a later domain.
 void native_audio_load_title_graphics(AudioCpuWorkClock& c, AudioCpuSceneWorkState& scene,
+                                      AudioCpuInterruptWorkState& interrupt,
                                       const AudioCpuGraphicsAsset& palette,
                                       const AudioCpuGraphicsAsset& map,
                                       const AudioCpuGraphicsAsset& tiles) {
     c.call_local();
-    initialize_title_work(c, scene);
+    native_audio_initialize_title_work(c, scene, interrupt);
     c.call_local();
     c.load_constant();
     c.store_port();

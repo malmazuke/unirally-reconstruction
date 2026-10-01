@@ -4,7 +4,7 @@
 namespace unirally {
 struct AudioCpuInterruptWorkState {
     // $80:A09F-A0A5 clears bit1 of erased FF cartridge flags. A16A clears
-    // scroll/palette counters. Values below belong to native cold state.
+    // palette counters; scroll starts in zeroed WRAM. R-0075.
     std::uint8_t cartridge_flags = 253, scroll = 0, palette_delay = 0, palette_index = 0;
     bool operator==(const AudioCpuInterruptWorkState&) const = default;
 };

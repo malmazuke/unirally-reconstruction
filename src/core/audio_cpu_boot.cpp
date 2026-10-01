@@ -126,7 +126,15 @@ void initialize_frontend_storage(Clock& c) {
     c.call_far();
 }
 // $82:B2B0; R-0075. Bank-82 B2B0-B2DC reads the five-byte asset record. Both cold records use
-// ordinary byte content and do not wrap a source bank in this tested domain.
+// ordinary byte content. The raw loader below also preserves source-bank wrapping.
+void read_asset_directory_value(Clock& c, unsigned bytes) {
+    c.begin_instruction();
+    c.rom_reads(2);
+    c.ram_reads(3);
+    if (bytes > 1) c.rom_reads(bytes - 1);
+    c.last_cycle();
+    c.rom_reads(1);
+}
 void read_asset_descriptor(Clock& c) {
     c.store_direct();
     c.store_direct();
@@ -138,27 +146,19 @@ void read_asset_descriptor(Clock& c) {
     c.read_direct(2);
     c.update_register();
     c.update_register();
-    c.rom_reads(2);
-    c.ram_reads(3);
-    c.rom_reads(2);
+    read_asset_directory_value(c, 2);
     c.update_register();
     c.update_register();
     c.update_register();
-    c.rom_reads(2);
-    c.ram_reads(3);
-    c.rom_reads(2);
+    read_asset_directory_value(c, 2);
     c.store_direct(2);
     c.load_constant(2);
     c.change_widths();
     for (unsigned i = 0; i < 3; ++i) c.update_register();
-    c.rom_reads(2);
-    c.ram_reads(3);
-    c.rom_reads(1);
+    read_asset_directory_value(c, 1);
     c.load_constant();
     c.store_direct();
-    c.rom_reads(2);
-    c.ram_reads(3);
-    c.rom_reads(1);
+    read_asset_directory_value(c, 1);
     c.load_constant();
     c.update_register();
     c.return_local();
@@ -166,9 +166,7 @@ void read_asset_descriptor(Clock& c) {
 // $82:B296; R-0075. B296-B29E reads one byte, increments the word cursor and returns flags.
 void read_asset_byte(Clock& c, std::uint16_t& cursor) {
     c.call_local();
-    c.rom_reads(3);
-    c.idle();
-    c.rom_reads(1);
+    c.read_rom(1, false, true);
     c.update_register();
     const bool wrapped = ++cursor == 0;
     c.branch(wrapped);

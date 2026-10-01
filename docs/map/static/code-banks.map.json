@@ -1085,7 +1085,7 @@
     "NmX"
    ],
    "native": [
-    "src/core/audio_cpu_title.cpp:initialize_title_work",
+    "src/core/audio_cpu_title.cpp:native_audio_initialize_title_work",
     "src/core/front_end.cpp:load_main_menu_screen",
     "src/core/front_end.cpp:load_title",
     "src/core/front_end.cpp:parked_x, parked_y",
@@ -1208,7 +1208,7 @@
     "NmX"
    ],
    "native": [
-    "src/core/audio_cpu_scene.cpp:native_audio_upload_base_palette",
+    "src/core/audio_cpu_scene.cpp:native_audio_palette_dma_work",
     "src/core/front_end.cpp:boot_frame_waits",
     "src/core/front_end.cpp:load_main_menu_screen",
     "src/core/front_end.cpp:load_nintendo_screen",
@@ -1321,6 +1321,7 @@
    "native": [
     "src/core/audio_cpu_scene.cpp:native_audio_finish_nintendo_screen",
     "src/core/audio_cpu_scene.cpp:native_audio_load_nintendo_graphics",
+    "src/core/audio_cpu_scene.cpp:native_audio_upload_base_palette",
     "src/core/front_end.cpp:boot_frame_waits",
     "src/core/front_end.cpp:nintendo_palette, nintendo_map, nintendo_tiles",
     "src/core/front_end.cpp:set_early_registers"
@@ -2178,6 +2179,8 @@
     "NmX"
    ],
    "native": [
+    "src/core/audio_cpu_menu.cpp:native_audio_menu_first_palette",
+    "src/core/audio_cpu_menu.cpp:native_audio_menu_oam",
     "src/core/front_end.cpp:boot_frame_waits",
     "src/core/front_end.cpp:load_main_menu_screen",
     "src/core/front_end.cpp:menu_objects, menu_objects_high, menu_map, menu_bg2_tiles, menu_bg1_tiles, menu_bg1_tiles_high",
@@ -2207,6 +2210,8 @@
     "NmX"
    ],
    "native": [
+    "src/core/audio_cpu_menu.cpp:fill_menu_choice_work",
+    "src/core/audio_cpu_menu.cpp:reset_menu_sprite_work",
     "src/core/front_end.cpp:boot_frame",
     "src/core/front_end.cpp:boot_frame_waits",
     "src/core/front_end.cpp:lay_out_menu_objects",
@@ -9739,7 +9744,7 @@
     "NmX"
    ],
    "native": [
-    "src/core/audio_cpu_boot.cpp:read_asset_descriptor"
+    "src/core/audio_cpu_boot.cpp:read_asset_directory_value"
    ],
    "observed_entries": {},
    "start": "$82:B2B0",
@@ -11255,6 +11260,7 @@
     "NmX"
    ],
    "native": [
+    "src/core/audio_cpu_menu.cpp:native_audio_menu_graphics",
     "src/core/front_end.cpp:load_main_menu_screen",
     "src/core/front_end.cpp:soft_reset",
     "src/core/front_end_screens.hpp:load_object_palette",
@@ -11774,6 +11780,7 @@
    ],
    "native": [
     "src/core/audio_cpu_scene.cpp:native_audio_load_nintendo_graphics",
+    "src/core/audio_cpu_scene.cpp:native_audio_park_arrow",
     "src/core/front_end.cpp:lay_out_menu_objects",
     "src/core/front_end.cpp:load_nintendo_screen"
    ],
@@ -14506,16 +14513,16 @@
    "call returns in the calling mode": 1262
   },
   "bytes": 131072,
-  "cited_addresses": 1526,
+  "cited_addresses": 1531,
   "cited_by_class": {
    "data": 25,
    "inferred": 247,
-   "observed": 955,
+   "observed": 960,
    "unknown": 299
   },
   "cited_by_position": {
    "dat": 25,
-   "loc": 867,
+   "loc": 872,
    "mid": 19,
    "sub": 316,
    "unk": 299

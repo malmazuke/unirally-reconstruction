@@ -796,3 +796,37 @@ positive code schedule before testing it.
 Main-menu resource work, canonical complete CPU/audio continuation, pack and
 real device output remain open. These joined cold checks do not accept the
 capability or change the app's silent status.
+
+## Native menu palette and raw graphics loading, 1 October
+
+Verified: `native-cold-cpu-menu-first-palette-pcm.json` matches all 1,017,400
+events,241,424 raw pairs and C=160,342,178 before $80:D263.
+`native-cold-cpu-menu-graphics-pcm.json` extends to all 1,030,090 events and
+257,748 pairs at C=171,198,560/$80:D2AD. Earlier111 controller/end-clock
+projections remain exact. Frozen manifests predate both native comparisons.
+NMI stays enabled during base-palette DMA, initialization and all transfers.
+Native A16A clears palette counters on the final two work writes; the raw
+loader preserves directory/asset read instruction boundaries and LoROM wrap.
+
+Static bank-80 $80:D20E-$80:D2AD/$80:B091, bank-82 $82:B183-$82:B2DC and
+bank-83 $83:91F7-$83:9228 supply the reading. CPU-full observation at9202/9205
+shows FFFF/FF for the cold erased mode word, so the native mode byte255 takes
+the non-1 asset2 palette path. Identified metadata is versioned privately: the
+original eight-asset file is retained; version2 adds the separately identified
+default rider palette. Native mode1 selection has no claim in this cold helper
+and is explicitly rejected pending its typed palette path.
+
+No expected event, clock, sample or input hash was changed. Product audio,
+full canonical CPU/audio continuation, menu OAM/text/input production and
+independent capability acceptance remain open.
+
+The next cold menu slice reads static bank-80 D2AD-D36F, including sprite
+reset D2C1 and choice work D30B, and factors the existing $83:99F6 arrow
+parking callee without changing its bus order. Frozen before implementation,
+`cold-cpu-menu-oam-frozen.json` ends before D36F at C=171,240,248 and
+D=8,250,016. `native-cold-cpu-menu-oam-pcm.json` matches all 1,030,159
+projected events,257,813 raw stereo pairs and the prior111 title controller
+frames; no original duration, opcode or producer time is a native input.
+The current helper owns only work used by the native scene/audio clock,
+not a separately accepted menu picture. Main-menu return/text/input, product
+playback and canonical CPU continuation remain incomplete.
