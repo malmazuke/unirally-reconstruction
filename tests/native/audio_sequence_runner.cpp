@@ -20,10 +20,10 @@ int main(int argc, char** argv) {
         if (argc == 9 && !registers) throw std::runtime_error("unknown output mode");
         const unirally::TitleMenuAudioData score_data{read(argv[1]), read(argv[2])};
         const auto pitch = read(argv[3]), fractions = read(argv[4]), transpose = read(argv[5]);
-        if (pitch.size() != 170 || fractions.size() != 64 || transpose.size() != 64)
+        if (pitch.size() != 194 || fractions.size() != 64 || transpose.size() != 64)
             throw std::runtime_error("pitch data sizes differ");
         unirally::AudioPitchData data;
-        for (std::size_t i = 0; i < 85; ++i)
+        for (std::size_t i = 0; i < data.notes.size(); ++i)
             data.notes[i] = static_cast<std::uint16_t>(pitch[2*i] | unsigned(pitch[2*i+1]) << 8);
         std::copy(fractions.begin(), fractions.end(), data.sample_fraction.begin());
         std::copy(transpose.begin(), transpose.end(), data.sample_transpose.begin());

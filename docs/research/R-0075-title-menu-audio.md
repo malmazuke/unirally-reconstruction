@@ -298,3 +298,37 @@ for unobserved controls, scripted envelopes or the rest of the soundtrack.
 Hosted macOS/Ubuntu checks pass for dependency/parser head `d60761a`, run
 36799359085. The C++ voice candidate has not yet received hosted or independent
 review. The product remains silent.
+
+## Elapsed work and boundary extension
+
+The semantic voice-work model predicts every elapsed SMP interval from arithmetic
+entry `$09B4` to command polling at `$0992`: 5,139 baseline and 5,155 Down rows.
+`native-voice-work-clock.json` records the C++ runner/source and exact integer
+comparisons. The costs are native semantic work groups under the pinned default
+wait states, not instruction fetching or a captured timestamp table. Pre-update
+state remains an observation in this experiment. Note-space slides, nonzero pitch
+convergence and scripted envelopes remain outside this timed domain, and are
+rejected by the timing helper. The main driver schedule is still unrecovered.
+
+Rapid Down at frames 450 and 453 restarts effect 3 before its first termination;
+native initialized score/voice state predicts all 74,304 compared per-voice DSP
+values. The original main-menu confirm/cancel path (A 450, B 650) uses effects
+2/4 and keeps the music running. The initial native comparison rejects a pitch
+lookup outside 0-84. `native-register-boundary-failure01.json` retains that failure.
+
+A repeat with pitch-function watches preserves state/A/V digests and identifies
+note indices 85, 90, 95 and 96 (`pitch-data-alias-audit.json`). The low-byte lookup
+at `$1407+index` overlaps the high-byte table; the high-byte lookup at `$145C+index`
+also reads bytes at `$14B3-$14BC` used as code by the original. This is dynamically
+observed code-as-data use. The implementation decision is to supply decoded
+numeric pitch values only, with a bound of 97 entries. Those bytes are never
+fetched, decoded or executed by native code, and no uploaded program is supplied.
+Extraction must preserve this explicit alias provenance rather than describe all
+source bytes as exclusively data. A pack rule is not yet implemented.
+
+With the identified numeric lookup extension, confirm/cancel predicts all 112,980
+per-voice DSP values exactly. `native-register-boundary-conditional.json` holds
+both new cases; the earlier three-case report stays unchanged at
+`native-register-conditional.json`. The authored bound check now rejects the first
+unidentified index 97, preserving its purpose as the identified domain grows.
+This does not establish write clocks, original scene stop/restart or raw PCM.

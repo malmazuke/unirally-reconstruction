@@ -1,6 +1,7 @@
 // Laboratory calculation runner. Each row supplies an observed pre-update
 // voice, so this checks arithmetic only, not cold native state or scheduling.
 #include "audio_voice.hpp"
+#include "audio_voice_timing.hpp"
 #include <fstream>
 #include <iostream>
 #include <iterator>
@@ -24,11 +25,13 @@ static std::vector<std::uint8_t*> byte_fields(unirally::AudioVoiceArithmetic& v)
 }
 int main(int argc, char** argv) {
     try {
-        if (argc != 5) throw std::runtime_error("audio_voice_runner PITCH FRACTIONS INPUT OUTPUT");
+        if (argc != 5 && argc != 6) throw std::runtime_error("audio_voice_runner PITCH FRACTIONS INPUT OUTPUT [ticks]");
+        const bool timing = argc == 6 && std::string(argv[5]) == "ticks";
+        if (argc == 6 && !timing) throw std::runtime_error("unknown output mode");
         const auto pitch = read(argv[1]), fractions = read(argv[2]);
-        if (pitch.size() != 170 || fractions.size() != 64) throw std::runtime_error("pitch data sizes differ");
+        if (pitch.size() != 194 || fractions.size() != 64) throw std::runtime_error("pitch data sizes differ");
         unirally::AudioPitchData data;
-        for (std::size_t i = 0; i < 85; ++i)
+        for (std::size_t i = 0; i < data.notes.size(); ++i)
             data.notes[i] = static_cast<std::uint16_t>(pitch[2*i] | unsigned(pitch[2*i+1]) << 8);
         std::copy(fractions.begin(), fractions.end(), data.sample_fraction.begin());
         std::ifstream input(argv[3]); std::ofstream output(argv[4]);
@@ -55,6 +58,10 @@ int main(int argc, char** argv) {
             }
             for (auto& value : voice.instrument) value = read_byte();
             voice.scripted_envelope = read_byte() != 0;
+            if (timing) {
+                output << unirally::audio_voice_work_ticks(voice, static_cast<std::uint8_t>(counter)) << '\n';
+                continue;
+            }
             unirally::update_audio_voice(voice, data, static_cast<std::uint8_t>(counter));
             bool first = true;
             auto write = [&](unsigned value) { if (!first) output << ' '; output << value; first = false; };

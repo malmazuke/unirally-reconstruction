@@ -8,7 +8,7 @@ namespace unirally {
 // Identified lookup values from 1407/145C and sample-header fractional pitch.
 // The table is data; no executable upload or captured voice state is required.
 struct AudioPitchData {
-    std::array<std::uint16_t, 85> notes{};
+    std::array<std::uint16_t, 97> notes{};
     std::array<std::uint8_t, 64> sample_fraction{};
     std::array<std::uint8_t, 64> sample_transpose{};
 };

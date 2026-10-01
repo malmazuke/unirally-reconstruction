@@ -416,3 +416,54 @@ PR #50 remains draft and unreviewed; cold PCM, pack, output and full restore
 are still pending. Account usage at 01:36 UTC remains 15%, startup 12%,
 boundary 32%, no reset/spending/provider change. Next checkpoint by 01:49 UTC,
 reassessment by 02:04 UTC. Main remains at the task base.
+
+## 01:49 UTC checkpoint
+
+Pushed `807b496` makes two promotions explicitly unsigned after GCC rejected
+them; local focused checks and hosted macOS/Ubuntu run 36802193352 pass. The
+failed 466f2bb log remains in the canonical integration artifacts. The semantic
+arithmetic work model matches all 10,294 original elapsed SMP intervals
+(`voice-work-clock.json`), with no timestamp lookup. It is still conditional on
+pre-update state and does not establish the whole driver schedule.
+
+Fresh original captures retain rapid Down at 450/453 and main-menu A at 450,
+B at 650 (`lifecycle-capture-commands.json`). The retrigger predicts all 74,304
+per-voice DSP values exactly (`native-register-boundary-conditional.json`).
+Confirm/cancel sends effects 2/4 and does not stop music. Its cancel sound reaches
+the current pitch lookup bound and the native comparison fails explicitly;
+retain the failure rather than treating it as a covered lifecycle case.
+The earlier three-case report is retained unchanged at
+`native-register-conditional.json` (also copied as the baseline report).
+
+Next port elapsed-work accounting into native functions, recover score-control
+work and driver timers, and capture a real scene transition that stops/restarts
+title music. The data bound failure is internal recovery, not a user blocker.
+Full cold PCM, live output, native audio restore and tier-1 review remain pending.
+Latest usage remains 15%, startup 12%, boundary 32%, no reset/spending/provider
+change. Next checkpoint by 01:59 UTC and reassessment by 02:04 UTC.
+
+## 01:59 UTC checkpoint
+
+The C++ work helper predicts all 10,294 original arithmetic durations exactly
+(`native-voice-work-clock.json`), rejecting unclosed timed branches explicitly.
+The confirm/cancel pitch repeat preserves state/A/V digests and identifies
+indices 85, 90, 95 and 96. They alias the adjacent high-byte table and original
+code bytes as numeric lookup data (`pitch-data-alias-audit.json`). Supply only
+decoded pitch values, never executable behavior; preserve that provenance in
+the future extraction rule. Extending the identified bound to 97 makes all
+112,980 confirm/cancel DSP values exact. The initial bound failure remains;
+the synthetic unidentified-index check moves to 97 for this recorded reason.
+
+After reading R-0064 and the bank-80/bank-83 static listings, a fresh 1,850-frame
+HUNTER code/soft-reset capture is canonical as `hunter-code-audio`, with its
+command and consumed-command reports. It uses the accepted original code-route
+pad schedule, not a state seed. Music persists during the pages; a new title
+music command is consumed after the soft reset at SMP tick 58,071,522. Next
+audit the bulk-transfer/driver-reset path's actual stop and restart boundaries.
+This is lifecycle research; no new native lifecycle or PCM pass is claimed.
+
+Account usage at 01:55 UTC is 16%, startup 12%, boundary 32%, reset 1791365217.
+No reset/spending/provider change. Clock-work source and lookup extension are
+not pushed yet; commit after focused validation and staged-diff inspection.
+PR #50 remains draft; current pushed 807b496 has green hosted checks and lacks
+independent capability review. Checkpoint by 02:09 UTC, reassess by 02:04 UTC.

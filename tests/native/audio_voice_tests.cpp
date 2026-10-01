@@ -1,4 +1,5 @@
 #include "audio_voice.hpp"
+#include "audio_voice_timing.hpp"
 #include <iostream>
 #include <stdexcept>
 
@@ -44,11 +45,21 @@ int main() {
         unirally::update_audio_voice(single, data, 1);
         require(single.gain == 255 && single.envelope_phase == 1,
                 "single-count attack lost the original divisor-zero quotient");
-        single.current_note = single.alternating_note = 85;
+        single.current_note = single.alternating_note = 97;
         bool rejected = false;
         try { unirally::update_audio_voice(single, data, 2); }
         catch (const std::runtime_error&) { rejected = true; }
         require(rejected, "unidentified note lookup accepted");
+
+        unirally::AudioVoiceArithmetic timed;
+        timed.remaining = 4;
+        require(unirally::audio_voice_work_ticks(timed, 1) == 784, "silent arithmetic work differs");
+        timed.volume = 64; timed.pan = 0;
+        require(unirally::audio_voice_work_ticks(timed, 1) == 986, "panned arithmetic work differs");
+        timed.convergence_step = 1; rejected = false;
+        try { unirally::audio_voice_work_ticks(timed, 1); }
+        catch (const std::runtime_error&) { rejected = true; }
+        require(rejected, "unrecovered work timing accepted");
         std::cout << "native pitch, pan, modulation, envelope and data bounds pass\n";
         return 0;
     } catch (const std::exception& error) { std::cerr << error.what() << '\n'; return 1; }

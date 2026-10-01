@@ -46,6 +46,6 @@ add_executable(split_demo_runner split_demo_runner.cpp)
 target_link_libraries(split_demo_runner PRIVATE unirally_presentation)
 
 # Recovered data parser; cold scheduling/voice DSP integration remains in progress.
-add_library(unirally_audio_score STATIC audio_score.cpp audio_voice.cpp)
+add_library(unirally_audio_score STATIC audio_score.cpp audio_voice.cpp audio_voice_timing.cpp)
 target_include_directories(unirally_audio_score PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(unirally_audio_score PUBLIC lab_options)
