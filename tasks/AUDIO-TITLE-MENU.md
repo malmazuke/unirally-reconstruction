@@ -286,3 +286,68 @@ Tier 1 and the automatic fresh Sol/medium review remain reserved for the full
 capability candidate. Discretionary boundary remains 32% weekly used from the
 12% startup; latest 14%. No reset, credits, paid API or provider switch. The
 second consultant's clean checkout was removed; no evidence moved from it.
+
+## 00:45 UTC checkpoint
+
+Hosted macOS/Ubuntu CI passes for pushed `d0675dc` (run 36796940580).
+The PR remains draft and lacks tier-1 review because cold native audio is still
+incomplete. Conditional poll/NMI recovery remains exact in its supplied-entry
+domain. The producer phase and driver acknowledgment are coupled: polling can
+consume another queued command during a voice update, so continue driver
+recovery alongside the native menu bus model instead of treating it as a blocker.
+
+Reading `driver-observed-down-700.lst` identifies separate music/effect entry
+tables, seven-byte instruments and per-voice control/call/loop state. Audit their
+bounded data ranges and the runtime instrument-table copy before extraction;
+full executable upload and captured state remain excluded from the product.
+The two nominal data uploads include six next-record bytes in the observed
+transfer, so payload length alone is not a proven score boundary.
+
+Weekly usage at 00:43 UTC is 14%, startup 12%, discretionary boundary 32%;
+no reset/spending/provider change. Next checkpoint within ten minutes and
+45-minute reassessment by 01:19 UTC. Main is clean and synchronized at the
+original task base; the preexisting playtest checkout is untouched.
+
+## 00:54 UTC checkpoint
+
+The data-only laboratory score parser predicts all 905 baseline, 933 navigation
+and 11,490 long-steered score reads (voice, pointer, byte) exactly. It consumes
+observed voice-update modes and command boundaries, so this is a conditional
+parser result, not cold native audio. All 30 long-run controls are covered,
+including nine random branches, calls/returns, counted loops and inline volume.
+Failed reports retain the first missing silent-program native-state copy and
+the initial reversed RNG byte order; expected reads were unchanged.
+
+Next implement voice arithmetic and command consumption against these controls,
+and adopt the already exact DSP-only diagnostic as a separately linked hardware
+dependency. Preserve the six pinned source files byte-for-byte, their notices
+and LGPL text; record hashes and the shared-library source/build arrangement.
+No CPU source or executable upload will enter that dependency or content.
+The current pack/profile is unchanged and the product is still silent.
+
+Latest quota remains 14% weekly used from 12%; boundary 32%, no reset/spending.
+Next checkpoint by 01:04 UTC, reassess by 01:19 UTC. Draft PR #50 remains
+unaccepted; tier-1 review is reserved for the full capability candidate.
+
+## 01:04 UTC checkpoint
+
+The DSP hardware is now a separate shared-library candidate using six unchanged
+pinned files, preserved notices/license and a documented build/source arrangement.
+Its shared-library replay matches every raw pair and final RAM byte in baseline
+(448,326 pairs) and Down (448,325), against unchanged evidence. Authored nonzero
+BRR/echo tests pass batching, save non-perturbation and fresh-instance continuation.
+The first two-sample adapter buffer failed because upstream switches buffers at
+capacity; four samples fix the adapter. The first replay build failed a strict
+stream-size conversion, then builds with an explicit bounded conversion. Earlier
+failed reports remain. No native sequencer/PCM or audible product pass is claimed.
+
+The conditional data parser and seven authored boundary tests pass, including
+zero duration wrap, calls/loops, separate modes, restore, unsupported controls and
+executable-pointer rejection. The two data ranges total 2,821 nominal bytes,
+with all 1,968 retained score addresses inside them; six upload-overrun bytes per
+record are excluded. No pack revision yet. Next recover voice arithmetic and
+readable C++ driver state, including mid-update command polls, then close causal
+timing and frozen cold raw acceptance. Tier-1 review and live output remain.
+
+At 01:02 UTC weekly usage is 15%, startup 12%, discretionary boundary 32%.
+No reset/spending/provider change. Reassessment remains due by 01:19 UTC.

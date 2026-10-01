@@ -30,6 +30,7 @@ else()
 endif()
 
 add_subdirectory(src/lab)
+add_subdirectory(third_party/spc_dsp)
 add_subdirectory(src/core)
 add_subdirectory(src/app)
 

@@ -207,3 +207,55 @@ expiry. It contains only initial music start and those four effect starts, with
 coverage. Neither is a frozen native gate or complete soundtrack assertion.
 Eleven observation and eight conditional-clock unit tests pass; full native
 audio and independent capability review remain pending.
+
+## Data-only score parser and isolated hardware adapter
+
+`audio_lab/title_menu_score.py` is a laboratory semantic parser. With observed
+voice-update modes and command boundaries supplied, it predicts all 905 baseline,
+933 Down and 11,490 long-steered score reads exactly, comparing voice, pointer
+and byte in order. No captured score read is a parser input. The 30 long-run
+controls include calls/returns, counted loops, instrument copies, inline pan/volume
+parameters and nine random selections. This is conditional algorithm evidence;
+it does not establish cold scheduling, voice arithmetic or ordered DSP output.
+`score-parser-conditional.json` retains source/data hashes and counts; two failed
+reports retain the initial silent-program data assumption and reversed RNG order.
+
+Source readings are private `driver-observed-down-700.lst` and the bounded
+`driver-control-readings.lst`. `$074B-$07FF` selects split music pointers and
+copies 252 bytes into instrument records 1-36, seven bytes each; record 0 stays
+in place. The silent program's copy root is native voice state `$0101`, including
+freshly reset effect tags, rather than another ROM range. `$13DA-$1406` rotates
+`$EF,$EE,$ED,$EC` in that order, so the four random-state bytes form a big-endian
+integer despite their increasing memory addresses. Feedback and output use EC.
+The corrected rule predicts all nine observed random branch choices.
+
+`score-data-boundary.json` identifies nominal data ranges ROM `$09EAA0` (621
+bytes, APU `$1600-$186C`) and `$0A026B` (2,200 bytes, APU `$1D00-$2597`). All
+1,968 distinct retained long-run score-byte addresses lie inside these nominal
+ranges, and neither intersects executed SPC instruction PCs in the full 700-frame
+capture. Reading their tables/control structure and this bounded dynamic evidence
+supports extracting data only. The six next-record bytes transmitted past each
+nominal record are excluded. No whole-game code/data boundary is asserted; pack
+revision and native data integration remain pending.
+
+The six pinned DSP-only sources are copied unchanged under `third_party/spc_dsp`,
+with per-file hashes, original notices and the GNU LGPL 2.1 text. Its README
+records the separate shared-library arrangement and source/build recipe. The
+adapter supplies only Gaussian interpolation selection and a C hardware interface;
+no CPU or original sound program source is linked. It has shared RAM/echo, exact
+DSP phase and native hardware snapshots. This is the D-0009 dependency adoption
+experiment, not a legal compatibility or binary-release claim.
+
+The shared-library diagnostic reproduces all 448,326 baseline and 448,325 Down
+raw stereo pairs and complete final RAM exactly, using the original unchanged
+event streams. Commands are in main `artifacts/audio-title-menu-integration/`
+`dsp-shared-replay.json`. Synthetic hardware tests pass clock batching, save
+non-perturbation, fresh-instance restore and shared echo-memory continuation,
+including nonzero PCM. The first adapter filled its two-sample output buffer,
+causing upstream to switch to its extra buffer before `sample_count`; a four-sample
+capacity fixes that interface error without editing upstream. The failed report
+is retained. This is DSP hardware evidence, not native driver PCM acceptance.
+
+Eleven capture, eight conditional-clock and seven score-boundary unit tests pass.
+The native hardware test passes locally; new hosted checks and independent review
+are still pending. The product remains silent and the task remains incomplete.

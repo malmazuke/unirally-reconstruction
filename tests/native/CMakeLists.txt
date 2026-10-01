@@ -84,3 +84,11 @@ add_test(NAME stunt_hud_score_countdown_upload_order COMMAND stunt_hud_tests)
 add_executable(league_tests league_tests.cpp)
 target_link_libraries(league_tests PRIVATE unirally_presentation)
 add_test(NAME league_pairing_awards_bonus_and_wrap COMMAND league_tests)
+
+add_executable(audio_dsp_tests audio_dsp_tests.cpp)
+target_link_libraries(audio_dsp_tests PRIVATE unirally_dsp lab_options)
+add_test(NAME audio_dsp_phase_and_restore COMMAND audio_dsp_tests)
+
+# Private raw-audio diagnostic; not linked into the frontend.
+add_executable(audio_dsp_replay ../../tools/unirally_lab/reference/audio_lab/replay.cpp)
+target_link_libraries(audio_dsp_replay PRIVATE unirally_dsp lab_options)
