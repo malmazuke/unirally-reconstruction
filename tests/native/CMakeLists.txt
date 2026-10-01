@@ -119,3 +119,8 @@ target_link_libraries(audio_driver_runner PRIVATE unirally_audio_score unirally_
 add_executable(audio_ipl_tests audio_ipl_tests.cpp)
 target_link_libraries(audio_ipl_tests PRIVATE unirally_audio_score lab_options)
 add_test(NAME audio_ipl_pending_phases_and_page_wrap COMMAND audio_ipl_tests)
+add_executable(audio_cpu_boot_tests audio_cpu_boot_tests.cpp)
+target_link_libraries(audio_cpu_boot_tests PRIVATE unirally_audio_score lab_options)
+add_test(NAME audio_cpu_cold_boot_milestones COMMAND audio_cpu_boot_tests)
+add_executable(audio_cpu_ipl_runner audio_cpu_ipl_runner.cpp)
+target_link_libraries(audio_cpu_ipl_runner PRIVATE unirally_audio_score lab_options)

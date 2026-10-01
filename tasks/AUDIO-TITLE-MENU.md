@@ -725,3 +725,66 @@ No product/pack/full-save claim. Cold CPU producer, complete PCM, audible live
 output, regressions and independent tier-1 review remain open. Fresh quota is
 18% from 12%, stop 32%, reset 1791365217; no reset/spending/provider change.
 Next checkpoint by 04:06 UTC; reassessment by 04:27 UTC.
+
+## 04:06 UTC checkpoint
+
+Native IPL/restart source is pushed as ba05578 after staged inspection, five
+focused native checks and unchanged native-symbol regeneration. Earlier head
+1b74042 passes hosted macOS/Ubuntu CI, run 36812608777; ba05578 CI is pending.
+The draft PR description now states complete conditional SMP/DSP results and
+the remaining CPU/product/save gaps. No review or acceptance claim.
+
+Zero-tick native IPL and driver work match 2,402,280 primary projected rows
+and 1,407,361 HUNTER lifecycle rows. Complete conditional raw PCM matches
+2,049,776 primary pairs and 1,185,137 HUNTER pairs, including reload/restart.
+Original CPU writes at observed SMP times are still inputs. Their executable
+upload payloads are consumed only as handshake data and are not retained or
+fetched by native logic. The product has no such input path or sound yet.
+
+Next remove cold CPU timing conditions and convert the synchronous driver to
+portable pending phases under driver-pending-refactor-frozen.json. Full native
+audio serialization, content pack, SDL/live output, regressions and fresh
+tier-1 review remain. Latest quota is 18% from 12%, boundary 32%; no reset,
+spending, provider change or new consultation. Next checkpoint by 04:16 UTC;
+reassess by 04:27 UTC.
+
+## 04:16 UTC checkpoint
+
+Pushed source remains ba05578; new cold CPU work is a private semantic-clock
+prototype, not a native product component yet. The static reset/PPU/WRAM/VRAM/
+asset-loading listings were read before the experiment. It now matches all
+twelve cold milestones from hardware reset tick 186 through the first audio
+CPU write at master clock 12,284,978, without an entry timestamp or instruction
+reader. `native-cold-cpu-prefix-conditional.json` records the prototype hash,
+readings and exact results. It does not recover later producer scheduling.
+
+The first failure omitted the second MMIO byte in the 16-bit VRAM clear; the
+second omitted/misclassified loader register-save work. Both failed reports
+remain retained. Corrected cost/order matches all prior milestones unchanged.
+Next move this semantic clock/work to C++, couple scanline/APU synchronization
+and recover native upload/producer phases. The synchronous driver still needs
+portable pending state, then full native save, pack, audible SDL/live evidence,
+regressions and fresh independent review. No internal checkpoint is a blocker.
+Latest quota is 18% from 12%, stop 32%; no reset/spending/provider change.
+Next checkpoint by 04:26 UTC; reassess by 04:27 UTC.
+
+## 04:27 UTC 45-minute reassessment
+
+Current pushed ba05578 passes hosted macOS/Ubuntu checks, run 36813317760.
+The new C++ cold CPU work is an uncommitted tested slice: all twelve original
+clock milestones match without an entry seed. Coupled native CPU/IPL work also
+matches every one of 65,500 port rows through the first sound write, including
+CPU and SMP clocks and values. There is no original event stream or port timing
+input in this bounded check. The retained first coupling failure identifies one
+local-call bus-order mistake; the corrected pinned order preserves all expected
+rows. New core functions pass the 80-line readability check.
+
+Continue after committing this scoped prefix. Native upload/producer phases and
+resumable driver state still need implementation before the complete conditional
+SMP/DSP results can become a cold capability. The app remains silent; pack, full
+portable audio save, live output, regressions and mandatory independent review
+remain. No internal research dependency or reassessment needs user action.
+
+Fresh quota at 04:24 is 19% used from 12%, discretionary boundary 32%, reset
+1791365217. No reset, spending, provider change or new consultation. Next
+checkpoint by 04:37 UTC; reassessment by 05:12 UTC.

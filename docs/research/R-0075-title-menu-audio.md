@@ -528,3 +528,48 @@ a complete fresh-process audio save pass. The native driver still runs whole
 iterations and boot calls; `driver-pending-refactor-frozen.json` records the
 source and complete conditional reports before converting those pending phases.
 Cold CPU work, pack, full native save, audible app and independent review remain.
+
+## Cold native CPU prefix and coupled first write
+
+The reading sources are main's static bank-80 listing 91D1-9311, B612-B625
+and A09A-A0FC, and bank-82 B183-B1AD, B1DB-B20A, B296-B29E, B2B0-B2DC
+and 807E-808F. Pinned CPU memory/timing and WDC65816 call/return primitives
+provide bus-step order. The complete CPU observer has 431,760 instructions at
+266 distinct PCs before the first sound write. Those are research observations;
+no opcode reader or CPU interpreter enters the native timing model.
+
+The native C++ work clock counts ROM/WRAM/MMIO bus accesses, width/register
+work and calls, with fast-ROM selection, split reads and version-2 PAL refresh.
+Named cold work functions account for reset, PPU-control work, clearing WRAM
+and 32,768 VRAM words, frontend storage, and the two initial asset uploads.
+They model work elapsed for the separately native frontend; they do not write
+game CPU memory or execute those instructions. The supported asset-clock domain
+is the identified 32-byte palette and 8,192-byte tile upload without a source
+bank wrap. Other sizes fail explicitly. Later producers and interrupts remain
+unrecovered; this is not a general CPU model.
+
+`audio_cpu_boot_tests` compares twelve fixed original milestones, from reset
+entry 186 through first audio write 12,284,978, without a supplied entry clock.
+All match. The private prototype's first two failures are retained: the first
+omitted the second byte of the word VRAM write; the second misclassified the
+loader's saved word registers/local call. Corrected work preserves all earlier
+matching milestones. `native-cold-cpu-prefix-conditional.json` records the
+prototype source and results; the C++ check additionally binds the compiled
+source via the coupled report below.
+
+`native-cold-cpu-ipl-prefix.json` couples this native work to the zero-tick IPL
+phases through the first CPU sound write. CPU scanline synchronization occurs
+on its exact two-clock tick before the enclosing bus step updates the CPU/SMP
+balance. SMP resumes until a port read yields to the CPU; the read stays pending
+until CPU work catches up. All 65,500 projected port read/write rows, including
+CPU and SMP clocks and values, match exactly. First CPU FF is at master clock
+12,284,978 / SMP tick 1,183,725. No original timestamp, executable, port input
+or event stream is supplied. The first coupled failure differed in one row's
+CPU stamp; `native-cold-cpu-ipl-prefix-failure01.json` retains it. The native
+local-call work now reads both target bytes before idle/stack stores, matching
+the pinned primitive. No expected row changed.
+
+This closes only the cold prefix through the first write. Complete upload,
+command producers, resumable driver/CPU work, full audio save, pack, audible
+app, regressions and independent review still remain. Earlier complete PCM
+results continue to depend on original CPU writes and clocks.
