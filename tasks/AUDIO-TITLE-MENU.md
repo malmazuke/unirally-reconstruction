@@ -788,3 +788,59 @@ remain. No internal research dependency or reassessment needs user action.
 Fresh quota at 04:24 is 19% used from 12%, discretionary boundary 32%, reset
 1791365217. No reset, spending, provider change or new consultation. Next
 checkpoint by 04:37 UTC; reassessment by 05:12 UTC.
+
+## 04:37 UTC checkpoint
+
+Tested cold-prefix source is pushed as c63bc4f after staged inspection, six
+focused native checks and unchanged native-symbol regeneration. The draft PR
+description includes the seedless 65,500-row prefix and remaining coupled work.
+Current hosted checks are pending.
+
+The driver continuation refactor is now in progress and unverified. It records
+authored semantic phases, computed pending port/timer/DSP/RAM operations and
+score/timer/counter state, rather than serializing a C++ stack. Original driver
+functions remain available for the frozen conditional comparisons until the
+resumable path matches. No app, full-save or new pass is claimed.
+
+Complete the phase functions and repeat original event/PCM comparisons under
+driver-pending-refactor-frozen.json. Then use the pending port boundary to join
+the native CPU upload/producer work. IPL/CPU/DSP coroutine timing, including
+scanline synchronization and the SMP forced-sync guard during long work, must
+remain explicit rather than replaced with converted timestamps. Product pack,
+fresh-process audio save, real audible input, regressions and independent
+review remain open. Quota last 19% from 12%, stop 32%; no reset, spending or
+provider change. Next checkpoint by 04:47 UTC; reassess by 05:12 UTC.
+
+### 1 October 04:47 UTC checkpoint
+
+The pending-phase refactor builds and preserves all 3,809,641 frozen selected
+SMP/DSP/RAM rows across baseline, Down, 1800-frame music and HUNTER restart.
+`native-driver-pending-conditional.json` records original hashes and first
+differences (none). The three primary PCM captures preserve all 2,049,776
+pairs in `native-pending-pcm-conditional.json`; restart PCM is running. Seven
+focused native audio checks pass, including an authored stop with suspension
+before every port read, reconstruction of a new driver object and restoration
+of its pending work. Full native CPU coupling, canonical fresh-process save
+and product audio remain open. This is refactor evidence, not acceptance.
+
+CI 36815276400 passed macOS and Ubuntu for c63bc4f. Fresh account telemetry at
+04:45 remains 19% weekly used, ordinary usage allowed, reset 1791365217, no
+purchase/reset/provider change. The 12% session baseline and 32% discretionary
+stop remain in force; preserve the final 20% review/recovery reserve. Continue
+with sliced restoration comparisons and cold upload transport. The 05:12 UTC
+reassessment is still due.
+
+Restart PCM and sliced object restoration subsequently passed: all 3,234,913
+raw stereo pairs remain exact, and 31,324 driver snapshots across the four
+event domains preserve all 3,809,641 rows. Reports:
+`native-driver-resumed-conditional.json`, `native-resumed-pcm-conditional.json`
+and `native-resumed-pcm-restart-conditional.json`. Readability checks pass after
+splitting register output into its own small update function; regenerated
+native-symbol metadata remains unchanged (1,004 linked citations). This closes
+the driver continuation experiment, not canonical full-save acceptance.
+
+Next experiment reads `artifacts/static-map/bank-82.lst` $82:808F-$82:8160
+(upload directory, IPL byte transfer and data cursor) and removes observed
+CPU writes from the cold transport. The static listing supplies the reading;
+the frozen cold CPU instruction/port traces supply dynamic evidence. Preserve
+clock coupling order and narrow any first divergence before extending coverage.

@@ -24,6 +24,7 @@ bool negative_difference(std::uint8_t expected, std::uint8_t actual) {
 }
 void TitleMenuAudioDriver::write_ram(unsigned ticks, std::uint16_t address, std::uint8_t value) {
     advance(ticks);
+    if (planning_) { queue_io(AudioDriverIoKind::write_ram, address, value); return; }
     bus_->write_ram(ticks_, address, value);
 }
 // 137D-138E: identified register/value initialization table, followed by its
@@ -170,9 +171,9 @@ void TitleMenuAudioDriver::load_samples() {
 // The final-transfer tick is still a declared laboratory condition.
 void TitleMenuAudioDriver::boot() {
     advance(16 + 10);
-    timers_.write_control(48);
-    bus_->clear_ports(ticks_, 0);
-    bus_->clear_ports(ticks_, 2);
+    write_control(48);
+    clear_ports(0);
+    clear_ports(2);
     advance(16);
     initialize_dsp();
     advance(16);

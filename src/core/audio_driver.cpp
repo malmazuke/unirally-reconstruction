@@ -15,17 +15,21 @@ std::uint8_t byte(unsigned value) {
 TitleMenuAudioDriver::TitleMenuAudioDriver(const TitleMenuAudioData& data,
                                            const AudioPitchData& pitch, AudioDriverBus& bus,
                                            const AudioTimersState& timers,
-                                           std::uint64_t entry_ticks, bool driver_boot)
+                                           std::uint64_t entry_ticks, bool driver_boot,
+                                           bool resumable)
     : score_(data, &pitch), bus_(&bus), ticks_(entry_ticks) {
     if (timers.ticks > entry_ticks) throw std::invalid_argument("timer phase follows driver entry");
     timers_.restore(timers);
     timers_.advance_to(entry_ticks);
-    if (driver_boot)
+    resumable_ = resumable;
+    continuation_.phase = driver_boot ? AudioDriverPhase::boot_prefix : AudioDriverPhase::iteration;
+    if (driver_boot && !resumable)
         boot();
-    else
+    else if (!driver_boot)
         score_.start_music(0);
 }
 void TitleMenuAudioDriver::advance(unsigned ticks) {
+    if (planning_) { planned_ticks_ += ticks; return; }
     ticks_ += ticks;
     timers_.advance_to(ticks_);
 }
@@ -36,6 +40,12 @@ std::uint8_t TitleMenuAudioDriver::read_port(std::uint8_t port) {
     return value;
 }
 void TitleMenuAudioDriver::write_port(std::uint8_t port, std::uint8_t value) {
+    if (planning_) {
+        plan_read_port(port);
+        advance(2);
+        queue_io(AudioDriverIoKind::write_port, port, value);
+        return;
+    }
     advance(5);
     bus_->read_port(ticks_, port); // A direct-page store includes the original dummy read.
     advance(3);
@@ -43,18 +53,19 @@ void TitleMenuAudioDriver::write_port(std::uint8_t port, std::uint8_t value) {
 }
 void TitleMenuAudioDriver::write_dsp(unsigned ticks, std::uint8_t reg, std::uint8_t value) {
     advance(ticks);
+    if (planning_) { queue_io(AudioDriverIoKind::write_dsp, reg, value); return; }
     bus_->write_dsp(ticks_, reg, value);
 }
 // 04BA-04C6. Music changes reconfigure both timers, preserving physical phase.
 void TitleMenuAudioDriver::configure_timers() {
     advance(10);
-    timers_.write_control(0);
+    write_control(0);
     advance(10);
-    timers_.write_target(2, music_timer_target);
+    write_target(2, music_timer_target);
     advance(10);
-    timers_.write_target(1, effect_timer_target);
+    write_target(1, effect_timer_target);
     advance(10);
-    timers_.write_control(6);
+    write_control(6);
     advance(10);
 }
 // 0626-063A, 066E-0673. Unrecovered commands fail at the domain boundary.
@@ -199,6 +210,7 @@ void TitleMenuAudioDriver::iteration() {
     }
 }
 void TitleMenuAudioDriver::run_until(std::uint64_t ticks) {
+    if (resumable_) { run_pending_until(ticks); return; }
     try {
         while (ticks_ < ticks && !stopped_for_ipl_) iteration();
     } catch (const DriverReturnedToIpl&) {}
@@ -227,9 +239,9 @@ void TitleMenuAudioDriver::stop_for_ipl() {
     write_port(2, 0);
     write_dsp(4 + 10 + 8, 0x5c, 255);
     advance(4 + 8);
-    timers_.write_control(176);
-    bus_->clear_ports(ticks_, 0);
-    bus_->clear_ports(ticks_, 2);
+    write_control(176);
+    clear_ports(0);
+    clear_ports(2);
     write_dsp(20, 0x6c, 224);
     advance(6);
     stopped_for_ipl_ = true;

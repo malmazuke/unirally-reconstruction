@@ -573,3 +573,32 @@ This closes only the cold prefix through the first write. Complete upload,
 command producers, resumable driver/CPU work, full audio save, pack, audible
 app, regressions and independent review still remain. Earlier complete PCM
 results continue to depend on original CPU writes and clocks.
+
+## Resumable native driver work, 1 October
+
+Implementation decision: the semantic driver also supports explicit,
+pointer-free continuation phases. Each phase computes a bounded hardware-work
+plan; pending port reads are retained when CPU synchronization interrupts an
+access. Sample transfer, stable command polling, timer reads, voice passes and
+stop no longer require a suspended C++ caller stack in this mode. Plans contain
+natively computed work and values, not captured events or original opcodes.
+The synchronous laboratory form remains available for frozen comparisons.
+
+Verified in the same PAL ROM/core/options and four pad domains above:
+`native-driver-pending-conditional.json` and
+`native-driver-resumed-conditional.json` match all 3,809,641 selected original
+SMP/DSP/RAM rows. The resumed run constructs a new driver every 6,371 SMP ticks,
+restoring 31,324 snapshots across the four domains, including both sides of the
+HUNTER restart. `native-pending-pcm-conditional.json` and
+`native-pending-pcm-restart-conditional.json` preserve all 3,234,913 complete
+raw stereo pairs. The corresponding `native-resumed-pcm-*` reports preserve
+the same pairs with repeated object reconstruction. Evidence is under main's
+`local/evidence/audio-title-menu/`; expectations were frozen in
+`driver-pending-refactor-frozen.json` before editing.
+
+Seven focused native audio checks pass. The new authored driver test interrupts
+every port read once, restores a new driver, and checks the complete IO stream,
+timer phase, score state and stop. No full audio save is established: the CPU
+transport, DSP history and output queue still need one canonical owner and a
+fresh-process comparison. Original CPU writes remain conditional inputs here;
+cold upload/producer recovery and audible product integration are still open.

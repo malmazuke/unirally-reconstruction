@@ -68,10 +68,13 @@ int main(int argc, char** argv) {
     try {
         if (argc != 8 && argc != 9 && argc != 10)
             throw std::runtime_error("audio_driver_runner TABLES TITLE PITCH "
-                                     "FRACTIONS TRANSPOSE INPUT OUTPUT [boot|ipl [PCM]]");
-        const bool cold_ipl = argc >= 9 && std::string(argv[8]) == "ipl";
-        const bool boot = cold_ipl || (argc >= 9 && std::string(argv[8]) == "boot");
-        if (argc >= 9 && !boot) throw std::runtime_error("unknown entry mode");
+                                     "FRACTIONS TRANSPOSE INPUT OUTPUT [boot|ipl|boot-pending|ipl-pending|ipl-pending-resume [PCM]]");
+        const std::string mode = argc >= 9 ? argv[8] : "loop";
+        const bool resume = mode == "ipl-pending-resume";
+        const bool pending = mode == "boot-pending" || mode == "ipl-pending" || resume;
+        const bool cold_ipl = mode == "ipl" || mode == "ipl-pending" || resume;
+        const bool boot = cold_ipl || mode == "boot" || mode == "boot-pending";
+        if (mode != "loop" && !boot) throw std::runtime_error("unknown entry mode");
         const unirally::TitleMenuAudioData score_data{read(argv[1]), read(argv[2])};
         const auto pitch = read(argv[3]), fractions = read(argv[4]), transpose = read(argv[5]);
         if (pitch.size() != 194 || fractions.size() != 64 || transpose.size() != 64)
@@ -132,8 +135,21 @@ int main(int argc, char** argv) {
             std::cout << "computed_driver_entry_ticks=" << entry << '\n';
         }
         auto driver = std::make_unique<unirally::TitleMenuAudioDriver>(score_data, data, bus,
-                                                                       timers.state(), entry, boot);
-        driver->run_until(bus.horizon);
+                                                                       timers.state(), entry, boot, pending);
+        const auto run_driver = [&] {
+            if (!resume) { driver->run_until(bus.horizon); return; }
+            unsigned snapshots = 0;
+            for (auto horizon = driver->ticks() + 6371; !driver->returned_to_ipl(); horizon += 6371) {
+                driver->run_until(std::min(horizon, bus.horizon));
+                if (horizon >= bus.horizon || driver->returned_to_ipl()) break;
+                const auto saved = driver->snapshot();
+                driver = std::make_unique<unirally::TitleMenuAudioDriver>(score_data, data, bus,
+                                                     unirally::AudioTimersState{}, 0, false, true);
+                driver->restore(saved); ++snapshots;
+            }
+            std::cout << "driver_restore_count=" << snapshots << '\n';
+        };
+        run_driver();
         while (cold_ipl && driver->returned_to_ipl() && driver->ticks() < bus.horizon) {
             unirally::AudioIplHandshake ipl(bus, driver->ticks());
             ipl.run_until(bus.horizon);
@@ -141,9 +157,9 @@ int main(int argc, char** argv) {
             entry = ipl.state().ticks;
             const auto retained_timers = driver->timers();
             driver = std::make_unique<unirally::TitleMenuAudioDriver>(score_data, data, bus,
-                                                                      retained_timers, entry, true);
+                                                                      retained_timers, entry, true, pending);
             std::cout << "computed_restart_entry_ticks=" << entry << '\n';
-            driver->run_until(bus.horizon);
+            run_driver();
         }
         if (bus.dsp) bus.dsp->finish();
         if (!bus.output) throw std::runtime_error("driver output failed");

@@ -1,6 +1,7 @@
 #pragma once
 #include "audio_score.hpp"
 #include "audio_timers.hpp"
+#include "audio_driver_pending.hpp"
 
 namespace unirally {
 // A bus access is observed at its SMP tick, before any later driver work.
@@ -17,18 +18,21 @@ public:
 
 // Semantic post-upload loop. Its diagnostic entry tick and initial hardware
 // phase are explicit conditions, not a cold product initializer. R-0075.
-// Full iteration calls can pass a requested horizon; adapters retain only
-// events at/before it. A resumable pending-phase representation is still open.
+// The laboratory can compare the original synchronous form with an explicit
+// pending-phase form, which retains a CPU-yielding access until it completes.
 class TitleMenuAudioDriver {
 public:
     TitleMenuAudioDriver(const TitleMenuAudioData& data, const AudioPitchData& pitch,
                          AudioDriverBus& bus, const AudioTimersState& timers,
-                         std::uint64_t entry_ticks, bool driver_boot = false);
+                         std::uint64_t entry_ticks, bool driver_boot = false,
+                         bool resumable = false);
     void run_until(std::uint64_t ticks);
     std::uint64_t ticks() const { return ticks_; }
     const TitleMenuAudioScore& score() const { return score_; }
     const AudioTimersState& timers() const { return timers_.state(); }
     bool returned_to_ipl() const { return stopped_for_ipl_; }
+    AudioDriverSnapshot snapshot() const;
+    void restore(const AudioDriverSnapshot& snapshot);
 
 private:
     TitleMenuAudioScore score_;
@@ -39,6 +43,9 @@ private:
     std::uint8_t music_counter_ = 0, effect_counter_ = 0, update_counter_ = 0;
     std::uint8_t master_volume_ = 127;
     bool stopped_for_ipl_ = false;
+    bool resumable_ = false, planning_ = false;
+    std::uint64_t planned_ticks_ = 0;
+    AudioDriverContinuation continuation_;
     void advance(unsigned ticks);
     std::uint8_t read_port(std::uint8_t port);
     void write_port(std::uint8_t port, std::uint8_t value);
@@ -58,5 +65,26 @@ private:
     void load_sample_bytes(std::uint8_t& phase, std::uint16_t& cursor);
     void write_ram(unsigned ticks, std::uint16_t address, std::uint8_t value);
     void stop_for_ipl();
+    void write_control(std::uint8_t value);
+    void write_target(std::uint8_t timer, std::uint8_t value);
+    void clear_ports(std::uint8_t first_port);
+    void queue_io(AudioDriverIoKind kind, std::uint16_t address, std::uint8_t value = 0);
+    void finish_plan(AudioDriverPhase phase);
+    void plan_read_port(std::uint8_t port);
+    void plan_read_timer(std::uint8_t timer);
+    void plan_descriptor(AudioDriverPhase return_phase);
+    void plan_poll(AudioDriverPhase return_phase);
+    void run_pending_until(std::uint64_t exclusive_ticks);
+    void execute_pending_io(const AudioDriverPendingIo& operation);
+    void plan_phase();
+    void plan_boot_phase();
+    void plan_descriptor_phase();
+    void plan_sample_phase();
+    void plan_bulk_phase();
+    void plan_poll_phase();
+    void plan_main_phase();
+    void plan_update_phase();
+    void plan_output_voice();
+    void plan_stop_phase();
 };
 } // namespace unirally
