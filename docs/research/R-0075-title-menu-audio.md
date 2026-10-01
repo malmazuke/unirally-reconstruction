@@ -113,3 +113,48 @@ The correction isolates audio in its own opt-in lock/checkout/patch and restores
 the original default files byte-for-byte. Historical identities and comparison
 expectations are not relaxed. The test uses the repository tooling import path.
 The new CI result is recorded in the task once available.
+
+## Timed producer observations, 1 October 2026
+
+ABI 2 optionally adds X/SP/P immediately after SPC instruction events. ABI 3
+adds up to 64 watched CPU instruction addresses with A/X, Y/SP and DB/E/P,
+plus one unforced frame-leave H/V record and CPU/SMP/DSP frontier metadata.
+All versions retain the 42-byte event layout and old captures remain supported.
+The additive worker option is repeatable `--audio-cpu-watch 0xADDRESS`.
+Instruction observations are laboratory reading aids, not executable content.
+
+Canonical `menu-base-cpu` and `menu-base-repeat-cpu` repeat every event/PCM byte:
+7,486,497 events and 448,326 raw pairs. Baseline and Down 450 preserve the
+earlier complete sample, A/V and final-state digests. Down 449/450/451/452,
+Up 450 and Down release/retrigger at 450/470 have fresh timed observations;
+commands and identities are in `cpu-capture-commands.json` and
+`cpu-timing-audit.json`. These additional cases are diagnostic, not yet frozen
+native gates or independent withheld evidence.
+
+The static map reading `$80:B178-18C` queues `$087F` then `$0203`; the same
+values are observed in `$82:806D`'s A register and the ordered port 2/3 writes.
+For Down 450 those writes occur at CPU ticks 191,399,968/974 and
+191,412,094/100. Down on consecutive frames changes the second transfer's
+latency: its store-site entry is 2,078, 12,126, 2,630 and 8,422 CPU ticks after
+the first store-site entry for frames 449, 450, 451 and 452. Up follows another
+menu branch and also changes arrival. A constant frame-relative navigation
+offset is rejected by these observations. These are elapsed CPU `stepOnce`
+counts, not an asserted common CPU/APU scheduler timestamp.
+
+Frame-leave CPU ticks advance by 425,568 in the tested late PAL frames, while
+SMP/DSP frontiers vary with the driver's synchronization site and lead. A
+frame can leave in the middle of CPU `step<Clocks>` before its pending SMP
+clock subtraction; consequently the raw CPU/SMP balance relation has an
+in-flight residue. Source reading: pinned `sfc/cpu/timing.cpp`, especially
+`step` and `scanline`. No forced synchronization was added to normalize it.
+
+Implementation decision: recover a reduced semantic producer/transport timing
+model, including queue readiness, poll phase, raster timing and relevant
+interrupt/DMA costs. A common cold-origin DSP horizon can define comparison
+packaging before native gates, but exact command arrival and driver consumption
+still need prediction from native state. No native timing prediction, complete
+score loop, content pack, SDL audio or native restore pass is claimed.
+
+Ten focused observation tests now pass, including ABI compatibility, watch
+bounds and unforced frame-frontier retention. Hosted synthetic CI passed on
+`91c8f05`; it does not validate these later ABI changes or private raw audio.

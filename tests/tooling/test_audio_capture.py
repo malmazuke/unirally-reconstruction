@@ -14,6 +14,7 @@ from unirally_lab.reference import audio, bsnes
 class FakeLib:
     def __init__(self):
         self.total, self.dropped, self.smp, self.dsp, self.balance = 0, 0, 64, 32, 0
+    def unirally_audio_api_version(self): return 2
     def unirally_audio_apu_frequency(self): return 24606720.0
     def unirally_audio_cpu_frequency(self): return 21281370
     def unirally_audio_smp_frequency(self): return 2050560
@@ -96,3 +97,35 @@ class AudioCaptureTests(unittest.TestCase):
         for capacity in (0, -1, 1000001):
             with self.assertRaises(bsnes.CoreError):
                 audio.AudioCapture(self.core, self.directory, capacity, False, set(), {})
+
+
+    def test_cpu_watch_requires_abi_three_before_creating_output(self):
+        with self.assertRaisesRegex(bsnes.CoreError, 'ABI 3'):
+            audio.AudioCapture(self.core, self.directory, 10, False, set(), {}, [0x828035])
+        self.assertFalse(self.directory.exists())
+
+    def test_cpu_watch_bounds_are_rejected_before_creating_output(self):
+        for pcs in ([-1], [0x1000000], [0] * 65):
+            with self.assertRaisesRegex(bsnes.CoreError, '24-bit'):
+                audio.AudioCapture(self.core, self.directory, 10, False, set(), {}, pcs)
+        self.assertFalse(self.directory.exists())
+
+    def test_cpu_frame_frontier_is_retained_without_forcing_synchronization(self):
+        lib = self.core._lib
+        lib.unirally_audio_api_version = lambda: 3
+        lib.unirally_audio_watch_cpu = lambda pcs, count: True
+        lib.unirally_audio_cpu_ticks = lambda: 100
+        lib.unirally_audio_smp_balance = lambda: -42
+        calls = []
+        def boundary():
+            calls.append('boundary'); lib.total += 1
+        lib.unirally_audio_frame_boundary = boundary
+        capture = self.create()
+        with patch.object(bsnes, 'read_audio_raw', return_value=self.event(0, 14, 0, 225)):
+            capture.drain(0)
+        capture.finish()
+        record = json.loads((self.directory / 'audio.json').read_text())
+        self.assertEqual(calls, ['boundary'])
+        self.assertEqual(record['frames'][0]['cpu_ticks'], 100)
+        self.assertEqual(record['frames'][0]['smp_balance'], -42)
+        self.assertEqual(record['kinds_count']['frame_boundary_hv'], 1)

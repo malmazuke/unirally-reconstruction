@@ -53,22 +53,23 @@ index b28c7ba274116f2dc975f37660a0a810732af74a..59963bf778354e411012578dd647bc6c
  private:
    bool latched;
 diff --git a/bsnes/sfc/cpu/cpu.cpp b/bsnes/sfc/cpu/cpu.cpp
-index b6fec167ae25b01236e158bdbceae5c9b24ce4f4..62de6af4d9462f9b32c320bac30126bded58b72c 100644
+index b6fec167ae25b01236e158bdbceae5c9b24ce4f4..df00d2c9f378a91efaabd4694af0b2e776627440 100644
 --- a/bsnes/sfc/cpu/cpu.cpp
 +++ b/bsnes/sfc/cpu/cpu.cpp
-@@ -34,7 +34,10 @@ auto CPU::Enter() -> void {
+@@ -34,7 +34,11 @@ auto CPU::Enter() -> void {
  auto CPU::main() -> void {
    if(r.wai) return instructionWait();
    if(r.stp) return instructionStop();
 -  if(!status.interruptPending) return instruction();
 +  if(!status.interruptPending) {
 +    if(instructionHook) instructionHook();  //unirally-lab
++    if(labAudioInstructionHook) labAudioInstructionHook();
 +    return instruction();
 +  }
  
    if(status.nmiPending) {
      status.nmiPending = 0;
-@@ -66,6 +69,7 @@ auto CPU::load() -> bool {
+@@ -66,6 +70,7 @@ auto CPU::load() -> bool {
  }
  
  auto CPU::power(bool reset) -> void {
@@ -77,13 +78,14 @@ index b6fec167ae25b01236e158bdbceae5c9b24ce4f4..62de6af4d9462f9b32c320bac30126bd
    Thread::create(Enter, system.cpuFrequency());
    coprocessors.reset();
 diff --git a/bsnes/sfc/cpu/cpu.hpp b/bsnes/sfc/cpu/cpu.hpp
-index 2d79adbcfb4d379c828b7cdf1e76eaca370054fb..c515b52cbeceb1460a8499db6b61a11b81000a02 100644
+index 2d79adbcfb4d379c828b7cdf1e76eaca370054fb..e342b1515032ac7a8a2a18b32b34981dd1c4aab0 100644
 --- a/bsnes/sfc/cpu/cpu.hpp
 +++ b/bsnes/sfc/cpu/cpu.hpp
-@@ -69,6 +69,8 @@ struct CPU : Processor::WDC65816, Thread, PPUcounter {
+@@ -69,6 +69,9 @@ struct CPU : Processor::WDC65816, Thread, PPUcounter {
    auto serialize(serializer&) -> void;
  
    uint8 wram[128 * 1024];
++  void (*labAudioInstructionHook)() = nullptr;  //unirally-lab: independent of trace ring
 +  uint64 labTicks = 0;  //unirally-lab: observational master-clock counter
 +  void (*instructionHook)() = nullptr;  //unirally-lab: called before each executed instruction
    vector<Thread*> coprocessors;
@@ -267,18 +269,21 @@ index 32af649e339de684e113dcf8d7659bef5b435bac..e8edea84b4d69e2a4a1d9eabd8823627
  
  auto SMP::idle() -> void {
 diff --git a/bsnes/sfc/smp/smp.cpp b/bsnes/sfc/smp/smp.cpp
-index 4002855a751eeb38dd311a2d7f888284a2f99c3d..f3e529f671dc1943556abfa53974d7b3928fb724 100644
+index 4002855a751eeb38dd311a2d7f888284a2f99c3d..674ba59c6c00ce2fedc73479cf9823dd16505fef 100644
 --- a/bsnes/sfc/smp/smp.cpp
 +++ b/bsnes/sfc/smp/smp.cpp
-@@ -26,6 +26,7 @@ auto SMP::Enter() -> void {
+@@ -26,6 +26,10 @@ auto SMP::Enter() -> void {
  auto SMP::main() -> void {
    if(r.wait) return instructionWait();
    if(r.stop) return instructionStop();
-+  if(labHook) labHook(10, r.pc.w, r.ya.w);
++  if(labHook) {
++    labHook(10, r.pc.w, r.ya.w);
++    labHook(11, (uint16)r.x | ((uint16)r.s << 8), (uint8)r.p);
++  }
    instruction();
  }
  
-@@ -38,6 +39,7 @@ auto SMP::load() -> bool {
+@@ -38,6 +42,7 @@ auto SMP::load() -> bool {
  }
  
  auto SMP::power(bool reset) -> void {
@@ -348,10 +353,10 @@ index 9e82b5dd3f8a038b36ff5391c738ca89160a08dd..1bbe92f25fc5a10478f789d7307948fb
  };
 diff --git a/bsnes/target-libretro/unirally.cpp b/bsnes/target-libretro/unirally.cpp
 new file mode 100644
-index 0000000000000000000000000000000000000000..3b4ad7f9dae52aa80f023a6f5e97503b29260785
+index 0000000000000000000000000000000000000000..c173d96523014d4fc2b403938c3b36e6557cac71
 --- /dev/null
 +++ b/bsnes/target-libretro/unirally.cpp
-@@ -0,0 +1,187 @@
+@@ -0,0 +1,219 @@
 +// unirally-lab extensions for the bsnes libretro build.
 +// These exports are not part of the libretro API; tools/unirally_lab/reference
 +// loads the library directly and uses them for headless capture.
@@ -481,20 +486,33 @@ index 0000000000000000000000000000000000000000..3b4ad7f9dae52aa80f023a6f5e97503b
 +static size_t capacity = 0, count = 0;
 +static uint64_t total = 0, dropped = 0;
 +static bool instructions = false;
++static uint32_t watchedCpuPc[64] = {};
++static size_t watchedCpuCount = 0;
 +static void hook(uint8_t kind, uint16_t address, uint16_t value) {
-+  if(kind == 10 && !instructions) return;
++  if((kind == 10 || kind == 11) && !instructions) return;
 +  auto& s = SuperFamicom::smp;
 +  auto& d = SuperFamicom::dsp;
 +  auto& c = SuperFamicom::cpu;
 +  uint64_t sequence = total++;
 +  if(count == capacity) { dropped++; return; }
 +  events[count++] = {sequence, s.labTicks, d.labClocks, c.labTicks,
-+    kind == 5 || kind == 6 ? (uint32_t)c.r.pc.d : (uint32_t)s.r.pc.w,
++    kind == 5 || kind == 6 || kind >= 12 ? (uint32_t)c.r.pc.d : (uint32_t)s.r.pc.w,
 +    address, value, kind, 0};
++}
++static void cpuInstruction() {
++  auto& c = SuperFamicom::cpu;
++  uint32_t pc = c.r.pc.d;
++  for(size_t i = 0; i < watchedCpuCount; i++) {
++    if(watchedCpuPc[i] != pc) continue;
++    hook(12, c.r.a.w, c.r.x.w);
++    hook(13, c.r.y.w, c.r.s.w);
++    hook(15, (uint16_t)c.r.b | ((uint16_t)c.r.e << 8), (uint8_t)(uint)c.r.p);
++    break;
++  }
 +}
 +}
 +extern "C" {
-+RETRO_API uint32_t unirally_audio_api_version() { return 1; }
++RETRO_API uint32_t unirally_audio_api_version() { return 3; }
 +RETRO_API uint32_t unirally_audio_byte_order() {
 +  uint32_t marker = 1;
 +  return *(uint8_t*)&marker == 1 ? 1 : 2;
@@ -503,6 +521,8 @@ index 0000000000000000000000000000000000000000..3b4ad7f9dae52aa80f023a6f5e97503b
 +RETRO_API size_t unirally_audio_event_size() { return sizeof(UnirallyAudioLab::Event); }
 +RETRO_API bool unirally_audio_enable(size_t capacity, bool instructions) {
 +  using namespace UnirallyAudioLab;
++  SuperFamicom::cpu.labAudioInstructionHook = nullptr;
++  watchedCpuCount = 0;
 +  SuperFamicom::smp.labHook = nullptr;
 +  SuperFamicom::dsp.labHook = nullptr;
 +  delete[] events; events = nullptr;
@@ -512,6 +532,7 @@ index 0000000000000000000000000000000000000000..3b4ad7f9dae52aa80f023a6f5e97503b
 +  events = new(std::nothrow) Event[capacity];
 +  if(!events) return false;
 +  UnirallyAudioLab::capacity = capacity;
++  SuperFamicom::cpu.labAudioInstructionHook = cpuInstruction;
 +  SuperFamicom::smp.labHook = hook;
 +  SuperFamicom::dsp.labHook = hook;
 +  return true;
@@ -538,4 +559,20 @@ index 0000000000000000000000000000000000000000..3b4ad7f9dae52aa80f023a6f5e97503b
 +  if(out && capacity >= needed) memcpy(out, (const char*)text, needed);
 +  return needed;
 +}
++}
++
++extern "C" {
++RETRO_API bool unirally_audio_watch_cpu(const uint32_t* pcs, size_t count) {
++  if(count > 64 || (count && !pcs)) return false;
++  for(size_t i = 0; i < count; i++) if(pcs[i] > 0xffffff) return false;
++  for(size_t i = 0; i < count; i++) UnirallyAudioLab::watchedCpuPc[i] = pcs[i];
++  UnirallyAudioLab::watchedCpuCount = count;
++  return true;
++}
++RETRO_API void unirally_audio_frame_boundary() {
++  auto& c = SuperFamicom::cpu;
++  UnirallyAudioLab::hook(14, c.hcounter(), c.vcounter());
++}
++RETRO_API uint64_t unirally_audio_cpu_ticks() { return SuperFamicom::cpu.labTicks; }
++RETRO_API int64_t unirally_audio_smp_balance() { return SuperFamicom::smp.clock; }
 +}

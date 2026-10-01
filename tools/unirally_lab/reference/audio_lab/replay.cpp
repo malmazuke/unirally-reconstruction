@@ -64,7 +64,7 @@ int main(int argc, char** argv) {
                 break;
             case 3: dsp.write(int(address), int(value)); break;
             case 4: ram.at(address) = uint8_t(value); break;
-            case 5: case 6: case 7: case 8: case 9: case 10: break;
+            case 5: case 6: case 7: case 8: case 9: case 10: case 11: case 12: case 13: case 14: case 15: break;
             default: throw std::runtime_error("unknown event kind");
             }
         }

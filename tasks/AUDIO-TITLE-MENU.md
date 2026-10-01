@@ -145,3 +145,70 @@ unchanged and use new opt-in `tools/locks/audio-observation.json` with
 `bsnes-audio-exports.patch` in `local/emulators/bsnes-audio`; do not rewrite any
 frozen manifest or loosen identity matching. All captures remain canonical main
 evidence. The consultant's read-only checkout is removed; no capture was there.
+
+## 23:47 UTC reassessment and next question
+
+The isolated hardware diagnostic passes, so retain SPC_DSP as the first product
+candidate. New dynamic evidence changes the next clock question: the two 700-frame
+frontiers differ by one raw pair after only Down changes, and native frontend
+currently represents frame/update timing rather than CPU instruction cycles.
+Request one new bounded fresh Astra/medium consultation on how to recover native
+producer command-delivery clocks from original CPU/APU observations without
+original-code execution, captured schedule playback, approximate PCM acceptance
+or weakening the event/sample contract. This is a different question from the
+first capture-ABI consultation. It is read-only in
+`.worktrees/audio-native-clock-consult` at `91c8f05`, limited to ten minutes and
+one active child. Weekly usage is 13%, startup 12%, boundary 32%.
+
+The three cold IPL transfer groups match full contiguous ROM spans dynamically:
+4,445 bytes from `0x9C6B6` to `$0400`, 627 from `0x9EAA0` to `$1600`, and
+2,206 from `0xA026B` to `$1D00`. Each advertised record length includes six
+bytes beyond its nominal record end when used by this upload path. Preserve
+this observation; extracting a whole upload would still admit executable code.
+The sample audit finds 21 BRR payloads, 42,498 bytes total, each block-aligned,
+matching APU memory and its directory loop pointer. Source table `$03:FCF5`
+and the dynamic sample-bank entry at frame 42 identify their record IDs.
+`sample-audit.json` and corrected `upload-groups-corrected.json` retain identities.
+The incorrect first upload grouping used an acknowledgment-PC site instead of
+the store PC and is retained as a failed exploratory artifact, not evidence.
+
+Next detailed trace adds register observations (X/SP/P) at SPC instruction
+boundaries; observation ABI 2 remains 42 bytes per event, and ABI 1 captures stay
+supported and preserved. Repeat native-independent state/A/V checks before
+using those traces to decode score operations. No native capability acceptance.
+
+Hosted macOS/Ubuntu synthetic CI passes on `91c8f05` after isolation correction
+(run 36792397858). This proves the existing ROM-free suite, not private Linux
+raw capture or native audio. The current ABI-2 trace build passes focused checks
+and both 700-frame instruction/register captures keep their earlier sample,
+A/V and final-state digests. Canonical `menu-base-registers` and
+`menu-down-registers` retain them; initial ABI-1 originals stay intact.
+
+## 1 October 2026 00:03 UTC checkpoint
+
+The second bounded Astra/medium consultation is complete. Adopt its next gate:
+predict native producer transfers and driver consumption across varied timing
+before substantial sequencer implementation. The same-frame queue polling and
+CPU/APU synchronization require a reduced causal timing model; captured command
+timestamp lookup, constant frame rounding and executable uploads remain excluded.
+A common cold-origin DSP horizon can remove frame packaging ambiguity, but does
+not establish a matching native trajectory. Its final horizon is not frozen yet.
+
+Observation ABI 3 adds optional CPU register watches and an unforced frame-leave
+raster/CPU/SMP/DSP frontier. Baseline, Down 449/450/451/452, Up 450 and release/
+retrigger captures are canonical main evidence with commands in
+`cpu-capture-commands.json`; the baseline repeats exact complete event/PCM bytes.
+Baseline and Down 450 retain the old sample, A/V and final-state digests. Native
+clock prediction and musical-loop coverage remain pending. First-effect queue
+latency varies strongly with the input frame, so a fixed command offset fails.
+The private `cpu-timing-audit.json` retains exact observations; R-0075 will
+distinguish the timing reading from the resulting implementation decision.
+
+The corrected opt-in core build and seven focused audio-capture checks pass.
+An initial ABI-3 guard incorrectly suppressed all new CPU events when full SPC
+instruction tracing was off; corrected to suppress only kinds 10/11 before
+these captures. Two patch-regeneration attempts failed explicitly on lock shape
+and the untracked export source; no expectation was changed. The successful
+patch build uses the documented full diff path exclusions and intent-to-add.
+Hosted CI remains the earlier `91c8f05` result, not this uncommitted ABI-3 slice.
+Weekly usage is 13%, startup 12%, boundary 32%; no reset or spending authorized.
