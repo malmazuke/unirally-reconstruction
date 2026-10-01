@@ -13,8 +13,8 @@ namespace unirally {
 // Original pointers are 16-bit data-format values; reads outside these two
 // bounded ranges fail. Music instruments 1-36 are copied from the title data.
 struct TitleMenuAudioData {
-    std::vector<std::uint8_t> menu_tables;  // 621 bytes, origin 1600
-    std::vector<std::uint8_t> title_score;  // 2200 bytes, origin 1D00
+    std::vector<std::uint8_t> menu_tables; // 621 bytes, origin 1600
+    std::vector<std::uint8_t> title_score; // 2200 bytes, origin 1D00
 };
 
 struct AudioScoreRead {
@@ -27,7 +27,10 @@ struct AudioScoreRead {
 // Native work from voice entry 0915 to its next command poll, or to its
 // caller when the stop control returns directly. Units: default SMP ticks.
 struct AudioScoreUpdateWork {
-    struct Timer2Write { std::uint32_t ticks; std::uint8_t value; };
+    struct Timer2Write {
+        std::uint32_t ticks;
+        std::uint8_t value;
+    };
     std::uint32_t ticks = 0;
     bool polls_commands = true;
     std::vector<Timer2Write> timer2_writes;
@@ -45,7 +48,7 @@ struct AudioScoreVoice {
     bool enabled = false;
     bool output_enabled = false;
     std::uint8_t effect = 255, priority = 255;
-    std::uint8_t remaining = 1;  // Unsigned update count; zero wraps to 255.
+    std::uint8_t remaining = 1; // Unsigned update count; zero wraps to 255.
     bool per_note_volume = false, next_duration_inline = false;
     std::uint8_t fixed_duration = 0, sample = 0, transpose = 0, detune = 0;
     std::uint8_t release_relative = 0, release_absolute = 0;
@@ -78,9 +81,10 @@ struct AudioScoreState {
 // The laboratory runner supplies update modes and consumed command boundaries.
 class TitleMenuAudioScore {
 public:
-    explicit TitleMenuAudioScore(const TitleMenuAudioData& data, const AudioPitchData* pitch_data = nullptr);
+    explicit TitleMenuAudioScore(const TitleMenuAudioData& data,
+                                 const AudioPitchData* pitch_data = nullptr);
     void start_music(std::uint8_t program);
-    int start_effect(std::uint8_t effect);  // Selected voice, or -1 if rejected.
+    int start_effect(std::uint8_t effect); // Selected voice, or -1 if rejected.
     std::uint32_t start_music_timed(std::uint8_t program);
     std::uint32_t start_effect_timed(std::uint8_t effect);
     void set_volume_gain(bool effects, std::uint8_t gain);
@@ -90,7 +94,7 @@ public:
     std::uint8_t take_key_off_pending();
     void update_voice(std::uint8_t voice, bool effect_tick, std::uint8_t update_counter = 0);
     AudioScoreUpdateWork update_voice_timed(std::uint8_t voice, bool effect_tick,
-                                          std::uint8_t update_counter);
+                                            std::uint8_t update_counter);
     const AudioScoreState& state() const { return state_; }
     void restore(const AudioScoreState& state);
     std::vector<AudioScoreRead> take_reads();
@@ -106,8 +110,8 @@ private:
     std::uint8_t data_byte(std::uint16_t pointer) const;
     std::uint8_t read_byte(std::uint8_t voice);
     std::uint16_t read_word(std::uint8_t voice);
-    void reset_voice(std::uint8_t voice, std::uint16_t pointer,
-                     std::uint8_t effect = 255, std::uint8_t priority = 255);
+    void reset_voice(std::uint8_t voice, std::uint16_t pointer, std::uint8_t effect = 255,
+                     std::uint8_t priority = 255);
     void push_byte(std::uint8_t voice, std::uint8_t value);
     std::uint8_t pop_byte(std::uint8_t voice);
     void push_pointer(std::uint8_t voice);
@@ -122,4 +126,4 @@ private:
     void update_arithmetic(std::uint8_t voice, std::uint8_t update_counter);
 };
 
-}  // namespace unirally
+} // namespace unirally
