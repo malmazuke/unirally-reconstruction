@@ -389,3 +389,49 @@ clock. Initialization writes FLG F3 at SMP tick 55,795,198, then FLG 33 at
 (`hunter-code-audio.consumed-commands.json`). Original music continues during
 the ending pages. These facts cover this ROM and pad schedule only; no native
 scene lifecycle, loader duration or full audio acceptance is claimed yet.
+
+## Native post-IPL initialization and assembled driver loop
+
+The reading is `driver-clock-readings.lst`, `driver-observed-down-700.lst`
+and `instruction-costs-down.json` in the canonical evidence directory.
+The native `audio_driver` files express the port handshake, timer counters,
+score/update/output order and sample loader as named C++ functions. They fetch
+no opcode bytes. The identified 29-pair DSP initialization table at SPC
+138F/13AD is expressed as hardware constants; uploaded executable bytes are
+not an input. The source remains a conditional laboratory component.
+
+On the same PAL ROM/core/options and pad scripts, the post-upload loop computes
+all 1,438,920 completed DSP writes and SMP port reads/writes exactly in the two
+700-frame full traces and the 1,800-frame steered trace. The 4,000-frame
+steered repeat independently matches 1,873,047 such rows. A port access can
+yield to the CPU at its SMP tick before its observer row is emitted, so these
+reports exclude the last observed SMP tick on both sides. The retained
+`native-driver-loop-end-frontier-failure01.json` shows the extra pending read
+when an inclusive frontier was first used. No earlier expected row changed.
+
+`native-driver-boot-conditional.json` extends the computed driver from SPC
+0400, at the observed post-IPL tick 1,725,604, through directory construction,
+42,498 BRR bytes, fraction/transpose parameters and the ordinary loop.
+All 2,084,772 completed DSP/port/selected RAM rows match across those three
+full traces. The RAM projection comprises the native clear and sample data,
+not all internal score fields. The first harness failure and the subsequent
+single two-tick compare-access offset are retained separately. Correcting
+that access within the ten-tick compare preserves its total work.
+
+`native-driver-pcm-conditional.json` couples this native initialization and
+loop to the DSP-only adapter, starting that hardware and its RAM from zero.
+At the predeclared 14,300,000 DSP-clock horizon, all 446,875 raw stereo pairs
+match in each full trace (1,340,625 comparisons, with the longer case's early
+prefix equal to Down). The baseline prefix SHA-256 is
+`34cf53c293f10841b4b1607f328f53e19bce71b07409e3c23e1667353b135141`
+and Down's is `d557f0570606362cc1638b8cba9326c423a5fb64cce7a8ec01f2d26fcd940bed`.
+Native sample writes and DSP register writes are computed; no captured DSP
+events, DSP snapshot or original post-entry RAM writes enter this check.
+
+The final IPL entry tick and CPU writes at their observed SMP boundaries
+remain explicit conditions. These checks therefore establish conditional
+native driver work and PCM, not a cold CPU producer, product audio or task
+acceptance. Calls can run past the diagnostic closing horizon; resumable
+pending phases and full native audio serialization remain open. The app
+still has no audio output, pack v29 is unchanged, and independent capability
+review/regressions remain required.

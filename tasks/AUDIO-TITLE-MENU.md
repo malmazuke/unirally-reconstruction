@@ -545,3 +545,78 @@ Current changes are not committed yet; finish focused checks, record the source
 and inspect the staged diff before pushing. Latest account sample at 02:36 UTC
 is 16% used from 12%, stop 32%, reset 1791365217. No reset/spending/provider change.
 Next checkpoint by 02:49 UTC, reassess by 02:54 UTC.
+
+## 02:49 UTC checkpoint
+
+Source slice `d8b15c7` is pushed after staged-diff inspection, focused native
+checks and unchanged native-symbol regeneration. It carries native score/setup
+work, output-enable/key masks, per-write work offsets, extended convergence
+timing and hardware timers. Repeated primary register comparisons still match
+all 629,418 values exactly. PR #50 remains draft; new hosted checks are pending.
+
+Next build the native semantic driver loop from its source reading, using the
+current components for counters, updates and output. A laboratory comparison
+may still supply the loader completion boundary and CPU bus writes as declared
+conditions while recovering that loop. They cannot become product acceptance
+seeds: cold loader/producer work must subsequently replace them. The product is
+still silent; full cold PCM, pack, native audio restore, live input, regressions
+and tier-1 review remain required. Latest quota is 16% from 12%, stop 32%, reset
+1791365217; no reset/spending/provider change. Checkpoint by 02:59 UTC; 45-minute
+reassessment by 02:54 UTC.
+
+## 02:54 UTC 45-minute reassessment
+
+Current pushed d8b15c7 has passing macOS/Ubuntu hosted checks, run 36807332143.
+The bounded conditional score, timer, output and key-mask checks close separate
+parts of the driver; they still do not establish the cold capability. Continue
+by joining them into explicit native poll/update phases and comparing their
+computed schedule. The first lab check may condition loader completion and CPU
+bus writes, while keeping those inputs outside product acceptance. Then recover
+the cold loader and native CPU producer timing in this same task. Full pack,
+PCM, restore, live output, regressions and independent review remain required.
+
+Fresh quota at 02:53 UTC is 17% weekly used from 12%, discretionary boundary
+32%, reset 1791365217. No reset, spending, provider change or new consultation.
+There is no external blocker; the remaining work is coupled native recovery.
+Next checkpoint by 03:04 UTC; reassessment by 03:39 UTC.
+
+## 03:04 UTC checkpoint
+
+The assembled native post-upload loop matches every completed DSP write, SMP
+port write and port read in the two 700-frame cases and the 1,800-frame steered
+case: 1,438,920 rows (`native-driver-loop-conditional.json`). Its inputs are
+identified score/pitch data, the original upload-completion tick, prior timer IO
+writes and original CPU writes at their observed SMP boundaries. It computes
+poll/update/output scheduling itself. This is conditional driver evidence, not
+cold initialization, CPU producer or PCM acceptance.
+
+The first expanded comparison included the last observed SMP tick and produced
+one additional port read per case. That tick is a pending port-read access at
+which the original yielded to the CPU before logging the read. The retained
+`native-driver-loop-end-frontier-failure01.json` records it. The comparison now
+uses an exclusive closing tick on both sides; every earlier row is unchanged.
+The source is uncommitted. Next extend the steered loop and stop fade, then
+replace conditional loader and CPU boundaries. Product output, full restore,
+pack, regressions and fresh tier-1 review remain. Latest quota is 17% from 12%,
+stop 32%; no reset/spending/provider change. Checkpoint by 03:14 UTC; reassess
+by 03:39 UTC.
+
+## 03:14 UTC checkpoint
+
+The four-thousand-frame steered post-upload loop also matches all 1,873,047
+completed DSP/port rows (`native-driver-loop-extended-conditional.json`).
+Native startup/sample-transfer functions now run from the observed final IPL
+entry into the driver. The first real bootstrap comparison matched 514,680 of
+514,681 rows; its single two-tick port-read offset is retained in
+`native-driver-boot-read-offset-failure01.json`. The fix preserves the total
+compare work and moves only the access within it. Expanded checks are running;
+do not count them as passed before completion. An earlier harness omission of
+its boot mode is separately retained as `native-driver-boot-harness-failure01`.
+
+New source remains uncommitted. It constructs the sample directory and receives
+BRR/parameter data through its own phase handshake, with no instruction reader.
+Original CPU writes and final IPL entry are still conditions. Next validate the
+startup slice, stop fade and coupled DSP PCM, then recover those cold CPU/IPL
+conditions. Full native save, pack, audible product, regressions and independent
+review remain. Quota last 17% from 12%, boundary 32%; no reset/spending/provider
+change. Next checkpoint by 03:24 UTC; reassessment by 03:39 UTC.

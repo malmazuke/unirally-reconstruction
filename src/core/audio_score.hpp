@@ -27,8 +27,10 @@ struct AudioScoreRead {
 // Native work from voice entry 0915 to its next command poll, or to its
 // caller when the stop control returns directly. Units: default SMP ticks.
 struct AudioScoreUpdateWork {
+    struct Timer2Write { std::uint32_t ticks; std::uint8_t value; };
     std::uint32_t ticks = 0;
     bool polls_commands = true;
+    std::vector<Timer2Write> timer2_writes;
 };
 struct AudioScoreRegisterWork {
     std::array<std::uint32_t, 6> write_ticks{};

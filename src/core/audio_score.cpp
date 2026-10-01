@@ -362,7 +362,10 @@ void TitleMenuAudioScore::update_voice(std::uint8_t index, bool effect_tick, std
         }
         case 0xb3: add_work(30); voice.volume = read_byte(index); voice.pan = read_byte(index); break;
         case 0xb4: add_work(18); voice.pan_step = read_byte(index); break;
-        case 0xb6: add_work(14); state_.timer2_target = read_byte(index); break;
+        case 0xb6:
+            state_.timer2_target = read_byte(index); add_work(8);
+            if (measured_work_) measured_work_->timer2_writes.push_back({measured_work_->ticks, state_.timer2_target});
+            add_work(6); break;
         case 0xbc: add_work(18); break;  // Global E9 clear affects later voice updates, not score reads.
         case 0xbd: add_work(18); voice.pan = read_byte(index); break;
         case 0xbe: add_work(18); voice.volume = read_byte(index); break;
