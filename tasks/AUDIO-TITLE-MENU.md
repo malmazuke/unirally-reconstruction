@@ -966,3 +966,26 @@ indentation under GCC/Werror). The line split is included in this source slice;
 no requirement is weakened. Fresh telemetry remains 20% at 05:44 from baseline
 12%, stop32%, reset1791365217. No reset/spending/provider change. Next checkpoint
 by 05:56 and reassessment remains 05:56 UTC.
+
+### 1 October 05:56 UTC checkpoint and reassessment
+
+cb140ee (native ring/first wait) and f091aa6 (separate runner formatting) are
+pushed. Native first-frame scene work matches the original return
+C=41,588,122 with phase31 and 714,357 unchanged projected events. Single-channel
+OAM544/palette216 DMA extension then matches 715,354 rows and C=42,020,908.
+Nintendo graphics load extends the seedless run to 717,169 exact rows and
+C=43,737,552 before fade. Reports are `native-cold-cpu-first-frame.json`,
+`native-cold-cpu-base-palette.json` and `native-cold-cpu-nintendo-load.json`;
+each expected projection/CPU milestone was frozen before its extension.
+Identified raw graphics metadata supplies lengths/LoROM cursors, not timings.
+Static readings: bank-80 FAF5-FBC4/9318-933B/A8A8-A8D3/B08C-B0CA, bank-83
+99F6-9A1D, bank-82 B183-B1AD/B1DB-B20A/B296-B2DC. Pinned DMA/timing code
+supplies activation/alignment/split-read work. Source changes are uncommitted.
+
+At the 45-minute reassessment, retain this same capability and primary. Cold
+frontend recovery is making exact progress; next finish Nintendo fade/hold,
+title load and NMI producer work, then close CPU continuation and full save.
+Do not substitute the conditional SMP result for cold/product acceptance.
+Two focused CPU checks and readability pass. CI36821857866 at f091aa6 is pending.
+Fresh telemetry remains20% at05:55, baseline12/stop32; no credit/provider change.
+Next checkpoint by06:06 and reassessment by06:41 UTC.

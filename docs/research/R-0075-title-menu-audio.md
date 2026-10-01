@@ -681,3 +681,26 @@ NMI/DMA. An authored ring test covers full-drop, busy acknowledgment, FIFO,
 wrap and alternating phase/header-before-parameter ordering; it is not dynamic
 original boundary evidence. Readability and native map checks pass. Later
 frontend work, CPU continuation, complete save and device audio remain open.
+
+## Seedless frontend work and graphics DMA, 1 October
+
+Verified: the first frame's native scene work returns at C=41,588,122, with
+phase31 and equal zero targets, matching the independent CPU observation.
+`native-cold-cpu-first-frame.json` preserves all 714,357 preceding projected
+events. `native-cold-cpu-base-palette.json` extends to 715,354 exact events
+and C=42,020,908, with all three initial audio commands delivered. Native
+CPU models OAM544/palette216 single-channel DMA's one-cycle activation, bus
+alignment and split byte reads. `native-cold-cpu-nintendo-load.json` extends
+to 717,169 exact events and C=43,737,552 before fade, using identified raw
+graphics lengths/cursors for assets31/80/74. Original projections and CPU
+endpoints were frozen before each extension; no observed producer clocks
+enter native execution. No NMI/HDMA domain is yet claimed.
+
+Source readings: static bank-80 FAF5-FBC4/9318-933B/A8A8-A8D3/B08C-B0CA,
+bank-83 99F6-9A1D, bank-82 B183-B1AD/B1DB-B20A/B296-B2DC and pinned
+CPU DMA/timing primitives. R-0054 identifies graphics pieces and OAM/base
+palette sizes. Raw graphics metadata is retained privately in
+`cpu-graphics-assets.json`. No image/executable bytes are needed for this
+work-clock diagnostic. Both focused CPU checks and readability pass.
+Remaining cold scene work, canonical CPU continuation/full save, audio pack
+and device playback still block capability acceptance.

@@ -30,21 +30,29 @@ void AudioCpuWorkClock::step(unsigned clocks) {
 }
 void AudioCpuWorkClock::rom_reads(unsigned count) {
     for (unsigned i = 0; i < count; ++i) {
+        begin_bus(fast_rom_ ? 6U : 8U);
         step(fast_rom_ ? 2U : 4U);
         step(4);
     }
 }
 void AudioCpuWorkClock::ram_reads(unsigned count) {
     for (unsigned i = 0; i < count; ++i) {
+        begin_bus(8);
         step(4);
         step(4);
     }
 }
 void AudioCpuWorkClock::ram_writes(unsigned count) {
-    for (unsigned i = 0; i < count; ++i) step(8);
+    for (unsigned i = 0; i < count; ++i) {
+        begin_bus(8);
+        step(8);
+    }
 }
 void AudioCpuWorkClock::idle(unsigned count) {
-    for (unsigned i = 0; i < count; ++i) step(6);
+    for (unsigned i = 0; i < count; ++i) {
+        begin_bus(6);
+        step(6);
+    }
 }
 void AudioCpuWorkClock::load_constant(unsigned bytes) {
     rom_reads(bytes + 1U);
@@ -105,7 +113,10 @@ void AudioCpuWorkClock::read_direct(unsigned bytes) {
 }
 void AudioCpuWorkClock::store_port(unsigned bytes, bool long_address) {
     rom_reads(long_address ? 4U : 3U);
-    for (unsigned i = 0; i < bytes; ++i) step(6);
+    for (unsigned i = 0; i < bytes; ++i) {
+        begin_bus(6);
+        step(6);
+    }
 }
 void AudioCpuWorkClock::branch(bool taken) {
     rom_reads(2);
@@ -115,6 +126,7 @@ void AudioCpuWorkClock::write_audio_word(std::uint8_t first_port, std::uint16_t 
     if (first_port > 2) throw std::invalid_argument("audio word exceeds ports");
     rom_reads(3);
     for (unsigned i = 0; i < 2; ++i) {
+        begin_bus(6);
         step(6);
         if (observer_) observer_->write_audio_port(ticks_, static_cast<std::uint8_t>(first_port + i),
                                                   static_cast<std::uint8_t>(value >> (8 * i)));
@@ -126,6 +138,7 @@ std::uint16_t AudioCpuWorkClock::read_audio_ports(std::uint8_t first_port, unsig
     rom_reads(3);
     std::uint16_t value = 0;
     for (unsigned i = 0; i < bytes; ++i) {
+        begin_bus(6);
         step(2);
         value |= static_cast<std::uint16_t>(unsigned(observer_->read_audio_port(
             ticks_, static_cast<std::uint8_t>(first_port + i))) << (8 * i));
@@ -136,5 +149,43 @@ std::uint16_t AudioCpuWorkClock::read_audio_ports(std::uint8_t first_port, unsig
 void AudioCpuWorkClock::write_audio_port(std::uint8_t port, std::uint8_t value) {
     store_port();
     if (observer_) observer_->write_audio_port(ticks_, port, value);
+}
+void AudioCpuWorkClock::request_dma(unsigned bytes) {
+    if (bytes == 0 || bytes > 65536 || pending_dma_bytes_)
+        throw std::invalid_argument("invalid single-channel DMA request");
+    pending_dma_bytes_ = bytes;
+    dma_active_ = false;
+}
+// Pinned CPU::dmaEdge/dmaRun/Channel::dmaRun. Enable waits one full CPU
+// bus cycle; then alignment, global/channel setup, split byte reads and
+// final alignment run before the next CPU bus interval.
+void AudioCpuWorkClock::begin_bus(unsigned clocks) {
+    if (!pending_dma_bytes_) return;
+    if (!dma_active_) {
+        dma_active_ = true;
+        return;
+    }
+    const auto bytes = pending_dma_bytes_;
+    pending_dma_bytes_ = 0;
+    const auto alignment = 8U - unsigned(ticks_ & 7);
+    step(alignment);
+    step(8);
+    step(8);
+    for (unsigned i = 0; i < bytes; ++i) {
+        step(4);
+        step(4);
+    }
+    const auto dma_bus_clocks = alignment + 16U + bytes * 8U;
+    step(clocks - dma_bus_clocks % clocks);
+    dma_active_ = false;
+}
+bool AudioCpuWorkClock::read_vertical_blank() {
+    rom_reads(3);
+    begin_bus(6);
+    step(2);
+    // HVBJOY uses the raster directly, without NMI transition delay.
+    const bool blank = (ticks_ / 1364) % 312 >= 225;
+    step(4);
+    return blank;
 }
 } // namespace unirally

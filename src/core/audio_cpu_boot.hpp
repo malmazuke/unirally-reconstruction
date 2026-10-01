@@ -5,6 +5,16 @@
 namespace unirally {
 class AudioCpuWorkObserver;
 class AudioCpuWorkClock;
+struct AudioCpuGraphicsAsset {
+    std::uint8_t bank = 0;
+    std::uint16_t address = 0;
+    unsigned bytes = 0;
+    bool compressed = false;
+};
+// Identified raw graphics metadata controls work and LoROM cursor wrapping.
+// Neither image bytes nor execution clocks are inputs to these clock functions.
+void native_audio_cpu_upload_graphics_asset(AudioCpuWorkClock& clock,
+                                           const AudioCpuGraphicsAsset& asset, bool palette);
 // CPU milestones from hardware power-on through the first sound-upload write.
 // Counts are recovered content-domain values, not observed clock seeds.
 // Subsequent upload/producer work and resumable CPU phases remain open. R-0075.

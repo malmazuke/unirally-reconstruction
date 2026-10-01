@@ -22,15 +22,6 @@ void validate(const AudioCpuQueueState& state) {
     if (state.read_index > 15 || state.write_index > 15 || (state.expected_phase & 63))
         throw std::invalid_argument("invalid audio command queue state");
 }
-bool read_vertical_blank(Clock& c) {
-    c.rom_reads(3);
-    c.step(2);
-    // Pinned CPU HVBJOY uses the current raster, without NMI edge delay.
-    // PAL non-overscan: 312 lines, vertical blank starts at line 225.
-    const bool blank = (c.ticks() / 1364) % 312 >= 225;
-    c.step(4);
-    return blank;
-}
 }
 // Static bank-82 8000-8034: preserve the word, drop on full, publish last.
 bool native_audio_enqueue(Clock& c, AudioCpuQueueState& state, std::uint8_t command,
@@ -153,7 +144,7 @@ void native_audio_bootstrap_queue(Clock& c, AudioCpuQueueState& state) {
 // Static bank-80 FAE3-FAEF; R-0075. Each loop polls the native command ring.
 void native_audio_wait_vblank(Clock& c, AudioCpuQueueState& state) {
     for (;;) {
-        const bool blank = read_vertical_blank(c);
+        const bool blank = c.read_vertical_blank();
         c.branch(blank);
         if (!blank) break;
         c.call_far();
@@ -162,7 +153,7 @@ void native_audio_wait_vblank(Clock& c, AudioCpuQueueState& state) {
     for (;;) {
         c.call_far();
         native_audio_poll_queue(c, state);
-        const bool blank = read_vertical_blank(c);
+        const bool blank = c.read_vertical_blank();
         c.branch(!blank);
         if (blank) break;
     }

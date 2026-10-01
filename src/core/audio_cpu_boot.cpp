@@ -164,13 +164,25 @@ void read_asset_descriptor(Clock& c) {
     c.return_local();
 }
 // B296-B29E reads one byte, increments the word cursor and returns flags.
-void read_asset_byte(Clock& c) {
+void read_asset_byte(Clock& c, std::uint16_t& cursor) {
     c.call_local();
     c.rom_reads(3);
     c.idle();
     c.rom_reads(1);
     c.update_register();
-    c.branch(false);
+    const bool wrapped = ++cursor == 0;
+    c.branch(wrapped);
+    if (wrapped) {
+        c.update_register();
+        c.save_register();
+        c.restore_register();
+        c.update_register();
+        c.save_register();
+        c.restore_register();
+        c.update_register();
+        c.load_constant(2);
+        cursor = 0x8000;
+    }
     c.load_constant();
     c.return_local();
 }
@@ -180,7 +192,7 @@ void finish_asset_upload(Clock& c) {
     c.restore_register();
     c.return_far();
 }
-void upload_palette(Clock& c, unsigned bytes) {
+void upload_palette(Clock& c, unsigned bytes, std::uint16_t cursor = 0x8000) {
     c.save_register();
     c.save_register();
     c.update_register();
@@ -198,9 +210,9 @@ void upload_palette(Clock& c, unsigned bytes) {
     c.read_direct(2);
     c.update_register();
     for (unsigned i = 0; i < bytes / 2; ++i) {
-        read_asset_byte(c);
+        read_asset_byte(c, cursor);
         c.store_port();
-        read_asset_byte(c);
+        read_asset_byte(c, cursor);
         c.store_port();
         c.update_register();
         c.update_register();
@@ -208,7 +220,7 @@ void upload_palette(Clock& c, unsigned bytes) {
     }
     finish_asset_upload(c);
 }
-void upload_tiles(Clock& c, unsigned bytes) {
+void upload_tiles(Clock& c, unsigned bytes, std::uint16_t cursor = 0x8000) {
     c.save_register();
     c.save_register();
     c.update_register();
@@ -226,9 +238,9 @@ void upload_tiles(Clock& c, unsigned bytes) {
     c.read_direct(2);
     c.update_register();
     for (unsigned i = 0; i < bytes / 2; ++i) {
-        read_asset_byte(c);
+        read_asset_byte(c, cursor);
         c.store_port(1, true);
-        read_asset_byte(c);
+        read_asset_byte(c, cursor);
         c.store_port(1, true);
         c.update_register();
         c.update_register();
@@ -255,6 +267,14 @@ void begin_sound_upload(Clock& c) {
     c.load_constant();
     c.write_audio_port(0, 255);
 }
+}
+void native_audio_cpu_upload_graphics_asset(Clock& c, const AudioCpuGraphicsAsset& asset,
+                                           bool palette) {
+    if (asset.compressed || asset.address < 0x8000 || asset.bank > 127 || asset.bytes == 0
+        || asset.bytes > 65536 || (asset.bytes & 1))
+        throw std::invalid_argument("unidentified raw graphics work domain");
+    if (palette) upload_palette(c, asset.bytes, asset.address);
+    else upload_tiles(c, asset.bytes, asset.address);
 }
 std::array<std::uint64_t, 12> native_audio_cpu_boot_prefix(const AudioBootAssetSizes& sizes,
                                                            AudioCpuWorkObserver* observer) {

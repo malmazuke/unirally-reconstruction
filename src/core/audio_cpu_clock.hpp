@@ -14,7 +14,8 @@ public:
 };
 // Semantic CPU work, in master clocks, for the pinned PAL/version-2 bus.
 // ROM reads account for bus work only: this class reads no ROM/opcode bytes.
-// The recovered cold domain has no enabled DMA, HDMA or NMI. R-0075.
+// The recovered cold domain supports one DMA channel; HDMA/NMI remain open.
+// R-0075. DMA alignment counts bus work separately from DRAM refresh stalls.
 class AudioCpuWorkClock {
 public:
     explicit AudioCpuWorkClock(AudioCpuWorkObserver* observer = nullptr) : observer_(observer) {}
@@ -39,13 +40,18 @@ public:
     void read_direct(unsigned bytes = 1);
     void store_port(unsigned bytes = 1, bool long_address = false);
     void branch(bool taken);
+    void request_dma(unsigned bytes);
     void write_audio_port(std::uint8_t port, std::uint8_t value);
     void write_audio_word(std::uint8_t first_port, std::uint16_t value);
     std::uint16_t read_audio_ports(std::uint8_t first_port, unsigned bytes = 1);
+    bool read_vertical_blank();
 
 private:
     std::uint64_t ticks_ = 0, completed_step_ticks_ = 0, scanline_ = 0;
     bool refreshed_ = false, fast_rom_ = false;
+    unsigned pending_dma_bytes_ = 0;
+    bool dma_active_ = false;
     AudioCpuWorkObserver* observer_;
+    void begin_bus(unsigned clocks);
 };
 } // namespace unirally
