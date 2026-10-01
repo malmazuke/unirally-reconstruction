@@ -9,6 +9,12 @@ public:
     virtual ~AudioControllerSource() = default;
     virtual std::uint16_t controller_word(std::uint64_t cpu_ticks, unsigned port) = 0;
 };
+class AudioPcmSink {
+public:
+    virtual ~AudioPcmSink() = default;
+    // Interleaved signed stereo at 32040 pairs/second; observe output only.
+    virtual void append_pcm(std::span<const std::int16_t> samples) = 0;
+};
 class AudioEngineEventSink {
 public:
     virtual ~AudioEngineEventSink() = default;
@@ -33,9 +39,14 @@ class NativeAudioEngine final : public AudioDriverBus, public AudioCpuWorkObserv
 public:
     NativeAudioEngine(const TitleMenuAudioData& score, const AudioPitchData& pitch,
                       AudioControllerSource& controllers, AudioEngineEventSink* events = nullptr);
+    NativeAudioEngine(const NativeAudioEngine&) = delete;
+    NativeAudioEngine& operator=(const NativeAudioEngine&) = delete;
+    NativeAudioEngine(NativeAudioEngine&&) = delete;
+    NativeAudioEngine& operator=(NativeAudioEngine&&) = delete;
     AudioCpuWorkClock& cpu() { return cpu_; }
     AudioCpuInterruptWorkState& interrupt() { return interrupt_state_; }
     std::vector<std::int16_t> take_pcm();
+    void set_pcm_sink(AudioPcmSink* sink);
     AudioEngineState snapshot();
     void restore(const AudioEngineState& state);
     // Laboratory packaging boundary only; product work advances through native accesses.
@@ -61,6 +72,7 @@ private:
     const AudioPitchData* pitch_;
     AudioControllerSource* controllers_;
     AudioEngineEventSink* events_;
+    AudioPcmSink* pcm_sink_ = nullptr;
     std::unique_ptr<TitleMenuAudioDriver> driver_;
     std::array<std::uint8_t, 4> incoming_{}, outgoing_{};
     std::uint64_t cpu_master_ = 0, cpu_completed_ = 0;

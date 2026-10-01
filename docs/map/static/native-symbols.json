@@ -7295,6 +7295,7 @@
   {
    "address": "$83:A4E9",
    "native": [
+    "src/core/audio_cpu_hunter_entry.cpp:native_audio_hunter_first_fade",
     "src/core/award.cpp:fade_down",
     "src/core/award.cpp:fade_out_frames, blank_frame, reset_frame, background_tiles_frame, podium_map_frame, podium_tiles_frame, colours_frame, objects_frame, rider_frame, first_fade_in_frame, fade_in_frames",
     "src/core/front_end_screens.hpp:fade_down",
@@ -7362,6 +7363,7 @@
   {
    "address": "$83:A923",
    "native": [
+    "src/core/audio_cpu_hunter_entry.cpp:ending_wait",
     "src/core/front_end.cpp:waits_for_frame",
     "src/core/front_end_screens.hpp:result_scoring_frame",
     "src/core/hunter_ending.cpp:hunter_ending_waits",
@@ -7390,6 +7392,7 @@
   {
    "address": "$83:AB9A",
    "native": [
+    "src/core/audio_cpu_hunter_entry.cpp:native_audio_hunter_first_fade",
     "src/core/award.cpp:complete_tour",
     "src/core/front_end.hpp:FrontEndScreen",
     "src/core/front_end.hpp:HunterEndingPart",
@@ -12428,6 +12431,17 @@
    "rom": [
     "$80:D1EF",
     "$80:D1F4"
+   ]
+  },
+  "src/core/audio_cpu_hunter_entry.cpp:ending_wait": {
+   "rom": [
+    "$83:A923"
+   ]
+  },
+  "src/core/audio_cpu_hunter_entry.cpp:native_audio_hunter_first_fade": {
+   "rom": [
+    "$83:A4E9",
+    "$83:AB9A"
    ]
   },
   "src/core/audio_cpu_interrupt.cpp:restore_interrupt_caller": {
@@ -19413,7 +19427,7 @@
  "totals": {
   "addresses": 1417,
   "io_addresses": 9,
-  "native_symbols": 1077,
+  "native_symbols": 1079,
   "rom_addresses": 1049,
   "sram_addresses": 49,
   "wram_addresses": 310

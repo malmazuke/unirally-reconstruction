@@ -2,7 +2,7 @@
 #include "audio_cpu_scene.hpp"
 
 namespace unirally {
-enum class AudioCpuMenuAction { waiting, selected, attract, hunter, special_code };
+enum class AudioCpuMenuAction : std::uint8_t { waiting, selected, attract, wipe_ram, hunter };
 struct AudioCpuMenuInputState {
     std::uint16_t idle_remaining = 480;
     std::uint8_t selection = 0;

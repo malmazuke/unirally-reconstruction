@@ -144,3 +144,10 @@ target_link_libraries(title_menu_audio_runner PRIVATE unirally_audio_score lab_o
 add_executable(audio_state_tests audio_state_tests.cpp)
 target_link_libraries(audio_state_tests PRIVATE unirally_audio_score lab_options)
 add_test(NAME audio_canonical_file_and_transactional_restore COMMAND audio_state_tests)
+
+add_executable(audio_output_tests audio_output_tests.cpp)
+target_link_libraries(audio_output_tests PRIVATE unirally_audio_score lab_options)
+add_test(NAME audio_output_fraction_queue_and_file COMMAND audio_output_tests)
+
+add_executable(audio_playback_runner audio_playback_runner.cpp)
+target_link_libraries(audio_playback_runner PRIVATE unirally_audio_score)

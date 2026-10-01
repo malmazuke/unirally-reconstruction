@@ -1,4 +1,5 @@
 #include "audio_title_menu_data.hpp"
+#include "title_menu_audio_playback.hpp"
 #include <iostream>
 #include <limits>
 #include <memory>
@@ -35,53 +36,32 @@ public:
              << '\n';
     }
 };
-class Pcm final : public unirally::AudioPcmSink {
-public:
-    explicit Pcm(std::ostream& file) : file_(file) {}
-    void append_pcm(std::span<const std::int16_t> samples) override {
-        audio_test::write_pcm(file_, samples);
-        ++chunks;
-    }
-    std::uint64_t chunks = 0;
 
-private:
-    std::ostream& file_;
-};
 }
 int main(int argc, char** argv) {
     try {
-        if (argc != 11 && argc != 12)
+        if (argc != 12)
             throw std::invalid_argument(
-                "title_menu_audio_runner DATA INPUT EVENTS PCM MENU_FRAMES DSP_END "
+                "audio_playback_runner DATA INPUT EVENTS PCM MENU_FRAMES DSP_END "
                 "SAVE_PHASE SAVE_FRAME STATE RESTORE (phase: none|cold|title|menu; restore: - or "
-                "file) [--stream-pcm|--hunter-exit|--hunter-entry|--hunter-fade]");
+                "file) OUTPUT_RATE");
         const auto content = audio_test::content(argv[1]);
         Controllers controllers(argv[2]);
         Events events(argv[3]);
         std::ofstream pcm(argv[4], std::ios::binary);
         if (!pcm) throw std::runtime_error("cannot write PCM");
-        unirally::NativeTitleMenuAudio audio(content, controllers, &events);
-        Pcm streamed(pcm);
-        const std::string mode = argc == 12 ? argv[11] : "";
-        const bool hunter = mode == "--hunter-exit" || mode == "--hunter-entry"
-                           || mode == "--hunter-fade";
-        if (argc == 12) {
-            if (mode == "--stream-pcm") {
-                if (std::string(argv[7]) != "none" || std::string(argv[10]) != "-")
-                    throw std::invalid_argument("streamed runner requires uninterrupted input");
-                audio.set_pcm_sink(&streamed);
-            } else if (!hunter) {
-                throw std::invalid_argument("unknown native audio diagnostic mode");
-            }
-        }
+        unirally::NativeTitleMenuAudioPlayback playback(
+            content, controllers, static_cast<std::uint32_t>(std::stoul(argv[11])), &events);
+        auto& audio = playback.native();
+        const auto drain = [&] { audio_test::write_pcm(pcm, playback.take_pairs(257)); };
         unsigned completed_menu = 0;
         if (std::string(argv[10]) != "-") {
             const auto saved = audio_test::read(argv[10]);
-            const auto state = unirally::deserialize_title_menu_audio(saved);
-            if (unirally::serialize_title_menu_audio(state) != saved)
+            const auto state = unirally::deserialize_title_menu_audio_playback(saved);
+            if (unirally::serialize_title_menu_audio_playback(state) != saved)
                 throw std::runtime_error("audio file is not canonical");
-            audio.restore(state);
-            if (unirally::serialize_title_menu_audio(audio.snapshot()) != saved)
+            playback.restore(state);
+            if (unirally::serialize_title_menu_audio_playback(playback.snapshot()) != saved)
                 throw std::runtime_error("restored audio state differs");
             if (audio.phase() == unirally::TitleMenuAudioPhase::menu)
                 completed_menu = static_cast<unsigned>(std::stoul(argv[8]));
@@ -90,7 +70,7 @@ int main(int argc, char** argv) {
         const std::string save_phase = argv[7];
         const auto save_frame = static_cast<unsigned>(std::stoul(argv[8]));
         const auto save = [&] {
-            const auto state = unirally::serialize_title_menu_audio(audio.snapshot());
+            const auto state = unirally::serialize_title_menu_audio_playback(playback.snapshot());
             audio_test::write(argv[9], state);
             std::cout << "saved_cpu_clock=" << audio.cpu_ticks() << " state_bytes=" << state.size()
                       << '\n';
@@ -105,6 +85,7 @@ int main(int argc, char** argv) {
         unsigned title_frames = 0;
         while (audio.phase() == unirally::TitleMenuAudioPhase::title_hold) {
             audio.title_frame();
+            drain();
             ++title_frames;
             if (save_phase == "title" && title_frames == save_frame) {
                 save();
@@ -114,38 +95,22 @@ int main(int argc, char** argv) {
         if (audio.phase() == unirally::TitleMenuAudioPhase::title_complete) audio.reveal_menu();
         while (completed_menu < target && audio.phase() == unirally::TitleMenuAudioPhase::menu) {
             const auto action = audio.menu_frame();
-            if (action != unirally::AudioCpuMenuAction::waiting
-                && !(hunter && action == unirally::AudioCpuMenuAction::hunter))
+            if (action != unirally::AudioCpuMenuAction::waiting)
                 throw std::runtime_error("native menu crossed the tested audio domain");
             ++completed_menu;
+            drain();
             std::cout << "menu_frame_end=" << audio.cpu_ticks() << '\n';
             if (save_phase == "menu" && completed_menu == save_frame) {
                 save();
                 return 0;
             }
         }
-        if (hunter && audio.phase() == unirally::TitleMenuAudioPhase::menu)
-            throw std::runtime_error("HUNTER menu code was not entered");
-        unsigned hunter_frames = 0;
-        if (mode == "--hunter-entry" || mode == "--hunter-fade") {
-            while (audio.phase() == unirally::TitleMenuAudioPhase::menu_exit
-                   || audio.phase() == unirally::TitleMenuAudioPhase::hunter_entry) {
-                audio.hunter_entry_frame();
-                ++hunter_frames;
-                std::cout << "hunter_frame_end=" << audio.cpu_ticks() << '\n';
-                if (save_phase == "hunter" && hunter_frames == save_frame) {
-                    save();
-                    return 0;
-                }
-            }
-        }
-        if (mode == "--hunter-fade" && audio.phase() == unirally::TitleMenuAudioPhase::hunter_ready)
-            audio.hunter_first_fade();
         audio.finish_pcm_to(std::stoull(argv[6]));
-        audio_test::write_pcm(pcm, audio.take_pcm());
-        audio_test::write(argv[9], unirally::serialize_title_menu_audio(audio.snapshot()));
+        playback.snapshot();
+        audio_test::write_pcm(pcm, playback.take_pairs(100000000));
+        audio_test::write(argv[9],
+                          unirally::serialize_title_menu_audio_playback(playback.snapshot()));
         if (!events.file) throw std::runtime_error("native event output failed");
-        std::cout << "pcm_chunks=" << streamed.chunks << '\n';
         std::cout << "computed_cpu_clock=" << audio.cpu_ticks() << '\n';
         return 0;
     } catch (const std::exception& error) {

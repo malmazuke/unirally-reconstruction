@@ -1462,3 +1462,174 @@ Content validation follow-up: full 539-test Python tooling suite and all 40 lab
 tests pass (pack-tooling.log and pack-lab-tests.log). The v30/identity slice is
 ready for a task-scoped commit after staged inspection. Product remains silent;
 these checks do not close playback, lifecycle or capability review.
+
+### 1 October 10:03 UTC reassessment
+
+169a825 is pushed with the validated content pack and bound canonical v2.
+The direct test-file invocation lacked the repository root on PYTHONPATH and
+failed in existing imports; PYTHONPATH=.:tools ran all27 successfully. The
+preceding full539-test tooling and40-test lab suites passed. Next retain the
+exact native waveform while delivering PCM incrementally. Freeze the pack/v2
+reports before this change (incremental-pcm-before.json); the candidate now
+advances DSP from native SMP steps rather than only register/RAM accesses.
+Its original event/PCM and eight fresh-process checks are running, not yet
+claimed. The proposed live producer waits for actual sampled controller frames
+and streams output; no guessed future words or observed duration input.
+
+Keep this capability and primary. Pack/device scheduling and joined lifecycle
+remain internal work; there is no audible acceptance or independent review.
+Fresh usage was24% at09:56,baseline12/stop32,review reserve intact,no reset or
+spending/provider change. Next checkpoint10:06,reassessment10:48.
+
+### 1 October 10:06 UTC checkpoint
+
+Incremental DSP advancement and a PCM output sink preserve the unchanged
+original1380-loop event/PCM projection. All eight fresh-process native saves
+pass (`native-incremental-pcm-save.json`). The pack-only streamed runner also
+matches buffered events, PCM and final state (`native-stream-pcm.json`).
+A modern output converter/queue and URAO0001 continuation are uncommitted;
+the first build rejects three iterator signedness conversions under -Werror.
+Fix explicit iterator offsets, then verify chunk boundaries, signed values,
+fractional continuation and partial device drains before product wiring.
+No original waveform expectation changed. Last fresh quota24% at09:56,
+baseline12/stop32, no reset/spending/provider change. Live playback, joined
+scene lifecycle and independent capability review remain open.
+Next checkpoint10:16,reassessment10:48.
+
+### 1 October 10:16 UTC checkpoint
+
+169a825 passes hosted macOS/Ubuntu CI (run36846294670). The uncommitted output
+converter/URAO0001 queue passes known signed interpolation, five output rates,
+chunking, saved fraction, partial drains and malformed-file rejection. The
+stream prototype blocks native automatic polling until the main loop supplies
+its sampled input frame; SDL drains output only. A diagnostic opt-in flag wires
+it into the app's cold power-on path, with joined post-menu producers still
+outside this prototype. No full product/lifecycle/stream-restore pass is claimed.
+The first app configure lacked Ninja in the shell path and failed; retry with
+the repository's pinned Ninja and pinned SDL FetchContent source is running.
+Last fresh usage24% at09:56,baseline12/stop32,no reset/spending/provider change.
+Next compile and exercise visible audible navigation, then native lifecycle and
+combined stream continuation. Capability review remains open.
+Next checkpoint10:26,reassessment10:48.
+
+### 1 October 10:26 UTC checkpoint
+
+The app builds with pinned SDL/CoreAudio and an opt-in native title/menu stream.
+The visible800-update run delivered753,664 stereo pairs,657,275 nonzero, with
+zero reported underruns. A second1200-update real-key attempt observed Down
+press/release events but zero nonzero sampled updates: both events arrived
+between samples. It reached the idle-demo boundary after the prototype's menu
+producer ended and reported274,032 underrun pairs. This is a failed navigation
+check and an uncovered lifecycle, not a product pass. The UI screenshot showed
+the main menu and later the demo title; no original code executed in the app.
+The UI tool's first ambiguous bundle selection and expired-run timeout are
+retained as such; the successful selection used this task's full app path.
+Logs/commands: audio-live-prototype and audio-live-navigation under main artifacts.
+
+The new lifecycle static listings are in main evidence native-lifecycle-static.
+Read bank80 F0D6/F51B/98A4 and bank83 AB9A/ABDA-AC32 before the next capture.
+The HUNTER route is a coupled stop/restart experiment, not an ending-audio
+accuracy claim. Next freeze its native menu exit/31-frame transition and extend
+through page work/soft reset; keep combined stream save and live navigation open.
+Fresh usage24% at10:23,baseline12/stop32,ordinary usage allowed,reset1791365217;
+no reset/spending/provider change. New output/stream source is uncommitted.
+Next checkpoint10:36,reassessment10:48. Capability review/acceptance open.
+
+### 1 October 10:42 UTC checkpoint
+
+Fresh HUNTER lifecycle captures with observation disabled/enabled preserve
+state, A/V, raw PCM and normalized APU events exactly. Three original endpoints
+are frozen before the new transition code: menu exit,31 waited frames and first
+fade. `hunter-native-lifecycle-integrity.json` and `cold-cpu-hunter-*-frozen.json`
+in main evidence hold the identities. Static bank80 AC0A/F0D6 identifies8430 as
+HUNTER and02B0 as RAM wipe; their provisional enum names were swapped and are
+corrected without changing timing. New native31-frame entry and canonical v3
+fields are uncommitted and unverified. Next build and compare exact endpoints,
+then fresh-process continuation; HDMA/pages/warm soft reset remain unrecovered
+for audio timing. Incremental PCM, output converter and SDL prototype changes
+also remain uncommitted; their earlier focused passes remain bounded as above.
+
+Fresh weekly usage25% at10:42,baseline12/stop32,ordinary usage allowed,
+reset1791365217,no reset/spending/provider change. Capability review/acceptance
+remain open. Next checkpoint10:52,reassessment10:48.
+
+### 1 October 10:48 UTC reassessment
+
+The menu code exit and31-frame HUNTER transition now match all frozen events,
+raw PCM and per-iteration/end CPU clocks. The failed first transition report
+(`native-hunter-entry-missing-interrupt-flag.json`) identifies missing shared
+cartridge flag propagation to the native title NMI; connecting the flag after
+its timed store fixes it without changing expectations. Canonical v3 public
+file/transactional checks pass; a mistaken ctest regex selected no tests and
+is not a pass. Fresh-process v3 splits remain next.
+
+Keep the primary and task. Extend the frozen first fade before pages/HDMA and
+soft reset; those dependencies belong here. HUNTER remains the chosen coupled
+lifecycle because its original reset is already captured and source mapped.
+Output queue/device continuation and successful sampled live navigation remain
+open. Last fresh usage25% at10:42,baseline12/stop32,no reset/spending/provider
+change. Next checkpoint10:52,reassessment11:33; no capability acceptance.
+
+### 1 October 10:53 UTC checkpoint
+
+All three frozen HUNTER endpoints match:1,082,257/1,117,696/1,136,291 ordered
+events and288,176/308,018/318,288 raw stereo pairs, with exact CPU/frame clocks.
+`native-hunter-entry.json` binds source/content and the unchanged originals.
+Canonical v3 steered-menu fresh-process cases are running and remain pending.
+The app rebuild initially named a nonexistent target (`unirally_app`); the
+implemented `unirally` target builds successfully. Retain this failure as such.
+Next add measured native navigation counts to the prototype's live report,
+retry sampled keyboard input and continue owned output/lifecycle state.
+
+Fresh usage25% at10:53,baseline12/stop32,ordinary usage allowed,reset1791365217,
+no reset/spending/provider change. About11GiB free remains; keep captures bounded.
+New streaming/output/HUNTER source is uncommitted. Product lifecycle and
+independent capability review remain open. Next checkpoint11:03,reassessment11:33.
+
+### 1 October 11:04 UTC checkpoint
+
+All eight canonical v3 menu splits and five HUNTER splits pass fresh-process
+event/PCM/final-state continuation. The40-key visible retry again observes
+40/40 key edges and zero sampled input/native navigation changes; retain
+`audio-live-repeated-navigation.log` as a failed live check. It crosses the
+uncovered idle boundary and reports273,008 underrun pairs. No input policy or
+frozen expectation is changed to force this check.
+
+The new combined playback owner/URAP0001 passes owned PCM/count/fraction and
+transactional malformed-state checks. Output restore now rejects inconsistent
+counter/fraction histories; input chunks and queued output have explicit bounds.
+Native engine moves are disabled because retained observers reference its
+address. Next prove fresh-process combined continuation with partial drains,
+then stable maps/source commit before further coupled lifecycle recovery.
+Last fresh usage25% at10:53,baseline12/stop32,no reset/spending/provider change.
+Capability acceptance/review and pages/reset remain open.
+Next checkpoint11:14,reassessment11:33.
+
+### 1 October 11:14 UTC checkpoint
+
+The combined URAP0001 owner passes all eight fresh-process saves with257-pair
+partial drains. Events, converted PCM and final native/output state are exact;
+an independent integer conversion of frozen original raw PCM matches all
+1,726,556 output pairs. Noncold saves retain nonzero fractions and pending queues
+(`native-playback-fresh-process-save.json`). Both owners validate before restore
+mutation; native DSP pair count is bound to output source count. The producer
+prototype now uses this same owner, with mutex-protected callback drains.
+Asynchronous thread-stack/OS mixer save and joined lifecycle remain unaccepted.
+
+The latest source builds in lab/app and all41 lab tests pass. Native symbol/static
+regeneration passes1049 supported citations,53,062 sites and42,700 shared
+instructions with zero disagreements. The initial readability command failed
+shell glob expansion; the structured subprocess retry is running. Full tooling
+checks are next before staged inspection and a task-scoped draft source commit.
+Fresh usage25% at11:12,baseline12/stop32,ordinary usage allowed,reset1791365217;
+no reset/spending/provider change. No review or acceptance is preclaimed.
+Next checkpoint11:24,reassessment11:33. Then resume HUNTER pages/HDMA/reset.
+
+Source-slice validation follow-up: all539 tooling tests pass in83.1 seconds
+(`audio-stream-tooling.json/log`), all41 lab tests pass, and six changed core
+files pass the80-line readability check (`audio-stream-readability.log`; only
+external-header warnings suppressed). Stable static regeneration passes and
+records source_changed_during_run=false. The full capability/private regression
+matrix, local sanitizer result, final-tip CI and independent review remain
+required for acceptance. This slice is ready for staged privacy inspection and
+a task commit; no original expectation changed.

@@ -65,24 +65,48 @@ AudioCpuMenuAction NativeTitleMenuAudio::menu_frame() {
     if (phase_ != TitleMenuAudioPhase::menu) throw std::logic_error("audio menu is not waiting");
     const auto action = native_audio_menu_input_frame(engine_.cpu(), queue_, scene_, cartridge_,
                                                       menu_, content_->arrow_positions);
+    pending_action_ = action;
     if (action != AudioCpuMenuAction::waiting) phase_ = TitleMenuAudioPhase::menu_exit;
     return action;
 }
+bool NativeTitleMenuAudio::hunter_entry_frame() {
+    if (phase_ == TitleMenuAudioPhase::menu_exit && pending_action_ == AudioCpuMenuAction::hunter) {
+        native_audio_begin_hunter_code(engine_.cpu(), scene_, engine_.interrupt(), cartridge_);
+        hunter_remaining_ = 30;
+        phase_ = TitleMenuAudioPhase::hunter_entry;
+    }
+    if (phase_ != TitleMenuAudioPhase::hunter_entry)
+        throw std::logic_error("audio HUNTER entry is not waiting");
+    const bool more =
+        native_audio_hunter_code_frame(engine_.cpu(), queue_, scene_, hunter_remaining_);
+    if (!more) phase_ = TitleMenuAudioPhase::hunter_ready;
+    return more;
+}
+void NativeTitleMenuAudio::hunter_first_fade() {
+    if (phase_ != TitleMenuAudioPhase::hunter_ready)
+        throw std::logic_error("audio HUNTER transition incomplete");
+    native_audio_hunter_first_fade(engine_.cpu(), queue_);
+    phase_ = TitleMenuAudioPhase::hunter_faded;
+}
 TitleMenuAudioState NativeTitleMenuAudio::snapshot() {
-    return {phase_, content_->identity, engine_.snapshot(), queue_, scene_, title_, text_,
-            menu_,  cartridge_};
+    return {phase_, pending_action_, content_->identity, engine_.snapshot(), queue_, scene_, title_,
+            text_,  menu_,           cartridge_,         hunter_remaining_};
 }
 void NativeTitleMenuAudio::restore(const TitleMenuAudioState& state) {
     if (state.content_identity != content_->identity)
         throw std::invalid_argument("audio state content identity differs");
-    if (state.phase > TitleMenuAudioPhase::menu_exit || state.scene.phase > 31
-        || state.queue.read_index > 15 || state.queue.write_index > 15
+    if (state.phase > TitleMenuAudioPhase::hunter_faded
+        || state.pending_action > AudioCpuMenuAction::hunter
+        || (state.phase == TitleMenuAudioPhase::hunter_entry && state.hunter_remaining > 30)
+        || state.scene.phase > 31 || state.queue.read_index > 15 || state.queue.write_index > 15
         || (state.queue.expected_phase != 64 && state.queue.expected_phase != 128)
         || state.title.code_index > 4 || state.menu.selection > 5
         || (state.phase == TitleMenuAudioPhase::title_hold && state.title.remaining > 110))
         throw std::invalid_argument("invalid native title/menu continuation");
     engine_.restore(state.engine);
     phase_ = state.phase;
+    pending_action_ = state.pending_action;
+    hunter_remaining_ = state.hunter_remaining;
     queue_ = state.queue;
     scene_ = state.scene;
     title_ = state.title;

@@ -19,6 +19,7 @@ void NativeAudioEngine::check_cpu_yield(std::uint64_t ticks) const {
     if (ticks * cpu_frequency >= cpu_completed_ * smp_frequency) throw CpuYield{};
 }
 void NativeAudioEngine::advance_clock(std::uint64_t ticks) {
+    dsp_.advance_to(((ticks + 63) / 64) * 32);
     constexpr std::uint64_t force_lead = 768ULL * 24 * 24000000;
     if (ticks * cpu_frequency > cpu_completed_ * smp_frequency + force_lead) throw CpuYield{};
 }
@@ -88,10 +89,24 @@ void NativeAudioEngine::synchronize() {
         }
         if (driver_) driver_->run_until(std::numeric_limits<std::uint64_t>::max());
     } catch (const CpuYield&) {}
+    if (pcm_sink_) collect_pcm();
 }
 void NativeAudioEngine::collect_pcm() {
     auto generated = dsp_.take_pcm();
-    pending_pcm_.insert(pending_pcm_.end(), generated.begin(), generated.end());
+    if (pcm_sink_) {
+        if (!generated.empty()) pcm_sink_->append_pcm(generated);
+    } else {
+        pending_pcm_.insert(pending_pcm_.end(), generated.begin(), generated.end());
+    }
+}
+void NativeAudioEngine::set_pcm_sink(AudioPcmSink* sink) {
+    if (pcm_sink_) throw std::logic_error("native PCM sink already attached");
+    collect_pcm();
+    pcm_sink_ = sink;
+    if (pcm_sink_ && !pending_pcm_.empty()) {
+        pcm_sink_->append_pcm(pending_pcm_);
+        pending_pcm_.clear();
+    }
 }
 std::vector<std::int16_t> NativeAudioEngine::take_pcm() {
     collect_pcm();

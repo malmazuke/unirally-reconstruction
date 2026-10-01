@@ -23,6 +23,12 @@ struct AudioCpuTitleHoldState {
     std::array<std::uint16_t, 2> controllers{};
     bool operator==(const AudioCpuTitleHoldState&) const = default;
 };
+void native_audio_begin_hunter_code(AudioCpuWorkClock& clock, AudioCpuSceneWorkState& scene,
+                                    AudioCpuInterruptWorkState& interrupt,
+                                    std::array<std::uint8_t, 8192>& cartridge);
+bool native_audio_hunter_code_frame(AudioCpuWorkClock& clock, AudioCpuQueueState& queue,
+                                    AudioCpuSceneWorkState& scene, std::uint16_t& remaining);
+void native_audio_hunter_first_fade(AudioCpuWorkClock& clock, AudioCpuQueueState& queue);
 void native_audio_begin_title_hold(AudioCpuWorkClock& clock);
 bool native_audio_title_hold_frame(AudioCpuWorkClock& clock, AudioCpuQueueState& queue,
                                    AudioCpuSceneWorkState& scene, AudioCpuTitleHoldState& state);

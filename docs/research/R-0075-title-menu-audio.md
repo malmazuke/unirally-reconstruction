@@ -1014,3 +1014,75 @@ matched no tests and is not a pass; the explicit `^audio_` expression ran all 10
 The new factory/session/archive pass the 80-line readability check. This adds
 content packaging and call-boundary continuation evidence only. SDL device
 output, resampler fractions and joined scene stop/restart remain incomplete.
+
+## Incremental output and bounded native lifecycle - 1 October 11:10 UTC
+
+The pre-change `incremental-pcm-before.json` preserves the v2 reports. Advancing
+DSP at native SMP step boundaries and delivering generated PCM incrementally
+preserve the steered1800 original event/PCM projection and all eight separate
+process saves (`native-incremental-pcm-save.json`). The pack-only streaming and
+buffered runners also agree (`native-stream-pcm.json`). No original clock/event
+input or waveform expectation is added or changed.
+
+Native modern output uses signed integer linear interpolation from32040 stereo
+pairs/second, with an owned fraction, source history, pending converted pairs
+and source/generated/delivered counters. This is a host output policy, not the
+reference resampler. URAO0001 stores this continuation; URAP0001 combines it
+with URAU0003 native state and requires source pairs to equal generated DSP
+pairs. The engine's retained observers prohibit moving its object. Output
+drains are mutex protected; native work/snapshot/restore require a quiescent
+producer, and restore requires the device stopped as well. The OS mixer is
+outside serialization. Bounds and malformed counter/fraction/CPU/DSP/content
+rejection are explicit and transactional.
+
+`native-playback-save-frozen.json` declares48,000 output pairs/second,257-pair
+drains after each title/menu call and the previous eight split choices.
+`native-playback-fresh-process-save.json` passes all eight fresh-process
+continuations: concatenated events, partially drained plus remaining converted
+PCM and final owned state match uninterrupted native playback. The independent
+integer conversion of the unchanged original raw PCM equals all1,726,556
+converted pairs. Seven noncold saves retain nonzero fractions and queues,
+including1,133,918 pending pairs at menu1082. The initial copied runner omitted
+the playback include and failed to compile; the explicit include fixes that
+build prerequisite. Public canonical/output checks pass. This is call-boundary
+playback continuation, not asynchronous thread-stack or OS device restore.
+
+Static listings in main evidence `native-lifecycle-static/bank-80.lst` and
+`bank-83.lst` supplied the readings F0D6/F51B/98A4,AB9A/A4E9/A923 and E2CF.
+Fresh HUNTER on/off observations preserve all state/A/V, normalized APU events
+and PCM (`hunter-native-lifecycle-integrity.json`). The unchanged1850-frame
+script enters B+Down+L+R on pad1 at450-453, presses pad2 Start at700-703 and
+1000-1003 and pad1 Start at1300-1303. ROM/core/options are the identities above.
+The three original endpoints are frozen before native implementation in
+`cold-cpu-hunter-{exit,ready,first-fade}-frozen.json`.
+
+`native-hunter-entry.json` predicts each endpoint from pack/future input only:
+1,082,257/1,117,696/1,136,291 events,288,176/308,018/318,288 raw pairs and CPU
+clocks191,395,368/204,587,516/211,391,414, with all31 waited iterations exact.
+The first failed transition retained in
+`native-hunter-entry-missing-interrupt-flag.json` missed the F51B cartridge flag
+update used by title NMI. Propagating the flag after its timed store corrects
+the reading without changing expected clocks. Static AC0A identifies8430 as
+HUNTER and ABF9 identifies02B0 as RAM wipe; the provisional enum names were
+swapped and are corrected. URAU0003 owns the pending action and HUNTER count.
+Eight menu and five HUNTER fresh-process saves pass event/PCM/final-state
+continuation (`native-fresh-process-save-v3.json` and
+`native-hunter-fresh-process-save-v3.json`). Earlier format reports/files remain
+retained and are rejected without an implicit conversion. Ending pages/HDMA,
+credits, warm reset and any ending audio accuracy claim remain outside this
+verified prefix; their recovery stays inside the capability task.
+
+The visible SDL prototype waits at automatic controller polling for actual
+frontend samples and feeds a converted queue to CoreAudio. The800-update run
+in main artifacts `audio-live-prototype.log` delivers753,664 pairs,657,275
+nonzero, with zero reported underruns. Two live key checks fail: single Down
+and40 repeated Down presses produce mapped down/up events but zero sampled
+input or native navigation changes. `audio-live-navigation.log` and
+`audio-live-repeated-navigation.log` retain these failures; both eventually
+cross the unrecovered idle boundary and report underruns. UI selection used
+this task's exact app path because multiple installed copies share its ID.
+The CUA documented key API supplies a press/release pair, not a held key.
+No keyboard policy or expectation changes to force the check. These counters
+establish device delivery, not human listening or completed live acceptance.
+The ordinary app remains silent; the prototype, scene lifecycle and full
+capability review are unaccepted.

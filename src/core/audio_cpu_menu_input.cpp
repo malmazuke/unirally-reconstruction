@@ -175,11 +175,11 @@ AudioCpuMenuAction native_audio_menu_input_frame(Clock& c, AudioCpuQueueState& q
     c.change_widths();
     if (test_menu_code(c, state, 0x02b0)) {
         c.branch_long();
-        return AudioCpuMenuAction::hunter;
+        return AudioCpuMenuAction::wipe_ram;
     }
     if (test_menu_code(c, state, 0x8430)) {
         c.branch_long();
-        return AudioCpuMenuAction::special_code;
+        return AudioCpuMenuAction::hunter;
     }
     c.change_widths();
     c.read_direct(2);

@@ -19,9 +19,19 @@ struct TitleMenuAudioContent {
     std::array<std::uint8_t, 256> characters{};
     std::array<std::uint8_t, 5> arrow_positions{};
 };
-enum class TitleMenuAudioPhase : std::uint8_t { cold, title_hold, title_complete, menu, menu_exit };
+enum class TitleMenuAudioPhase : std::uint8_t {
+    cold,
+    title_hold,
+    title_complete,
+    menu,
+    menu_exit,
+    hunter_entry,
+    hunter_ready,
+    hunter_faded
+};
 struct TitleMenuAudioState {
     TitleMenuAudioPhase phase = TitleMenuAudioPhase::cold;
+    AudioCpuMenuAction pending_action = AudioCpuMenuAction::waiting;
     std::array<std::uint8_t, 32> content_identity{};
     AudioEngineState engine;
     AudioCpuQueueState queue;
@@ -30,6 +40,7 @@ struct TitleMenuAudioState {
     AudioCpuTextWorkState text;
     AudioCpuMenuInputState menu;
     std::array<std::uint8_t, 8192> cartridge{};
+    std::uint16_t hunter_remaining = 30;
 };
 // Semantic call boundaries own all continuation state. Controller words are
 // external future input; identified content stays immutable outside the state.
@@ -37,12 +48,16 @@ class NativeTitleMenuAudio {
 public:
     NativeTitleMenuAudio(const TitleMenuAudioContent& content, AudioControllerSource& controllers,
                          AudioEngineEventSink* events = nullptr);
+    void set_pcm_sink(AudioPcmSink* sink) { engine_.set_pcm_sink(sink); }
     void initialize_title();
     bool title_frame();
     void reveal_menu();
     AudioCpuMenuAction menu_frame();
+    bool hunter_entry_frame();
+    void hunter_first_fade();
     std::uint64_t cpu_ticks() { return engine_.cpu().ticks(); }
     TitleMenuAudioPhase phase() const { return phase_; }
+    std::uint8_t menu_selection() const { return menu_.selection; }
     TitleMenuAudioState snapshot();
     void restore(const TitleMenuAudioState& state);
     std::vector<std::int16_t> take_pcm() { return engine_.take_pcm(); }
@@ -52,6 +67,8 @@ private:
     const TitleMenuAudioContent* content_;
     NativeAudioEngine engine_;
     TitleMenuAudioPhase phase_ = TitleMenuAudioPhase::cold;
+    AudioCpuMenuAction pending_action_ = AudioCpuMenuAction::waiting;
+    std::uint16_t hunter_remaining_ = 30;
     AudioCpuQueueState queue_;
     AudioCpuSceneWorkState scene_;
     AudioCpuTitleHoldState title_;
