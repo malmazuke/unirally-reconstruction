@@ -989,3 +989,44 @@ Do not substitute the conditional SMP result for cold/product acceptance.
 Two focused CPU checks and readability pass. CI36821857866 at f091aa6 is pending.
 Fresh telemetry remains20% at05:55, baseline12/stop32; no credit/provider change.
 Next checkpoint by06:06 and reassessment by06:41 UTC.
+
+### 1 October 06:06 UTC checkpoint
+
+b12f8db (native frontend/DMA/load) and f5b35d7 (separate formatting) are pushed.
+Nintendo fade/111-frame hold/fade returns at original C=96,917,470 with all
+861,545 projected events exact. The same seedless CPU/IPL/driver plus DSP-only
+model matches 145,925 complete raw stereo pairs through frozen D=4,669,600
+(`native-cold-cpu-nintendo-pcm.json`), including first nonzero pair63620.
+The DSP horizon only clips diagnostic output; it does not drive CPU or SMP.
+This is the first joined nonzero PCM result without original CPU write inputs.
+The app remains silent, CPU continuation/full save and final capability domain open.
+
+The first title-load attempt's PCM matches160,150 pairs but its CPU/event
+comparison fails: the implementation assumed the $77:10D0 flag was clear.
+The unchanged original instruction trace shows FF and the 16-byte tour-level
+restore branch at F56A-F580. Failure is retained in
+`native-cold-cpu-title-name-failure01.json`. Correct the provisional domain
+wording and model native cold cartridge initialization/flag ownership; no
+expected event, clock or sample may change. Weekly telemetry remains20% at06:05,
+baseline12/stop32, no reset/provider change. Next checkpoint by06:16,
+reassessment remains06:41.
+
+### 1 October 06:14 UTC checkpoint
+
+Corrected title load matches all872,506 frozen projected events, original
+C=106,373,342 and all160,150 raw stereo pairs through D=5,124,800. The same
+old expected bytes remain unchanged; version2 corrects the mistaken flag
+wording only. Pinned Memory::allocate defaults toFF and the initial RAM hash
+in cpu350 samples equals8192 FF bytes. Native scene owns title_levels_pending,
+executes the sixteen-byte level restore conditionally, then clears the flag.
+R-0075 records the failure, corrected reading and exact result.
+
+All eight focused audio checks pass, as do readability and native-map checks
+(1009 cited addresses, zero without records). CI36822613819 passes macOS and
+Ubuntu including hosted Linux sanitizers at f5b35d7. New Nintendo/title source
+and DSP diagnostic extension await this checkpoint's commit. Next recover
+NMI's hardware transition/last-cycle pipeline, its native frontend handler
+and title fade/input work. The original first interrupt enters copied vector
+body at00:8587 after the JSR atF5BD; simply inserting a fixed frame cost is
+not justified. Canonical CPU/full save/product remain open. Next checkpoint
+by06:24; reassessment06:41. Weekly20%, baseline12/stop32, no reset/spending.

@@ -532,6 +532,7 @@
   {
    "address": "$80:91D1",
    "native": [
+    "src/core/audio_cpu_boot.cpp:reset_cpu",
     "src/core/front_end.cpp:soft_reset"
    ],
    "region": "rom"
@@ -547,6 +548,7 @@
   {
    "address": "$80:9318",
    "native": [
+    "src/core/audio_cpu_scene.cpp:upload_oam",
     "src/core/front_end_screens.hpp:copy_oam",
     "src/core/hunter_ending.cpp:enter_hunter_code",
     "src/core/hunter_ending.cpp:reveal_step"
@@ -657,6 +659,7 @@
   {
    "address": "$80:9869",
    "native": [
+    "src/core/audio_cpu_scene.cpp:fade",
     "src/core/front_end.cpp:fade_frames",
     "src/core/race_result.cpp:race_restart_frame",
     "src/core/race_result.cpp:rows_frame, icons_frame, first_fade_frame, fade_frames",
@@ -667,6 +670,7 @@
   {
    "address": "$80:9885",
    "native": [
+    "src/core/audio_cpu_scene.cpp:fade",
     "src/core/front_end.cpp:fade_frames",
     "src/core/front_end.hpp:FrontEndScreen",
     "src/core/now_playing.cpp:(file)",
@@ -891,8 +895,16 @@
    "region": "rom"
   },
   {
+   "address": "$80:A119",
+   "native": [
+    "src/core/audio_cpu_queue.cpp:native_audio_bootstrap_queue"
+   ],
+   "region": "rom"
+  },
+  {
    "address": "$80:A16A",
    "native": [
+    "src/core/audio_cpu_title.cpp:initialize_title_work",
     "src/core/front_end.cpp:load_main_menu_screen",
     "src/core/front_end.cpp:load_title",
     "src/core/front_end.cpp:parked_x, parked_y",
@@ -1050,6 +1062,7 @@
   {
    "address": "$80:A8A8",
    "native": [
+    "src/core/audio_cpu_scene.cpp:native_audio_upload_base_palette",
     "src/core/front_end.cpp:boot_frame_waits",
     "src/core/front_end.cpp:load_main_menu_screen",
     "src/core/front_end.cpp:load_nintendo_screen",
@@ -1132,9 +1145,17 @@
   {
    "address": "$80:B08C",
    "native": [
+    "src/core/audio_cpu_scene.cpp:native_audio_load_nintendo_graphics",
     "src/core/front_end.cpp:boot_frame_waits",
     "src/core/front_end.cpp:nintendo_palette, nintendo_map, nintendo_tiles",
     "src/core/front_end.cpp:set_early_registers"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:B0CC",
+   "native": [
+    "src/core/audio_cpu_scene.cpp:native_audio_finish_nintendo_screen"
    ],
    "region": "rom"
   },
@@ -1267,6 +1288,7 @@
   {
    "address": "$80:B612",
    "native": [
+    "src/core/audio_cpu_boot.cpp:clear_vram",
     "src/core/front_end.cpp:soft_reset"
    ],
    "region": "rom"
@@ -3090,6 +3112,7 @@
   {
    "address": "$80:F55F",
    "native": [
+    "src/core/audio_cpu_title.cpp:native_audio_load_title_graphics",
     "src/core/front_end.cpp:load_title",
     "src/core/front_end.cpp:title_palette, title_map, title_tiles"
    ],
@@ -3316,8 +3339,16 @@
    "region": "rom"
   },
   {
+   "address": "$80:FAE3",
+   "native": [
+    "src/core/audio_cpu_queue.cpp:native_audio_wait_vblank"
+   ],
+   "region": "rom"
+  },
+  {
    "address": "$80:FAF5",
    "native": [
+    "src/core/audio_cpu_scene.cpp:update_scene_work",
     "src/core/front_end.cpp:quarter_step",
     "src/core/front_end.hpp:MenuArrow"
    ],
@@ -5196,8 +5227,16 @@
    "region": "rom"
   },
   {
+   "address": "$82:8000",
+   "native": [
+    "src/core/audio_cpu_queue.cpp:native_audio_enqueue"
+   ],
+   "region": "rom"
+  },
+  {
    "address": "$82:8035",
    "native": [
+    "src/core/audio_cpu_queue.cpp:native_audio_poll_queue",
     "src/core/front_end.cpp:return_from_demo"
    ],
    "region": "rom"
@@ -6070,6 +6109,7 @@
   {
    "address": "$82:B183",
    "native": [
+    "src/core/audio_cpu_boot.cpp:native_audio_cpu_upload_graphics_asset",
     "src/core/front_end_screens.hpp:load_vram"
    ],
    "region": "rom"
@@ -6084,6 +6124,7 @@
   {
    "address": "$82:B1DB",
    "native": [
+    "src/core/audio_cpu_boot.cpp:native_audio_cpu_upload_graphics_asset",
     "src/core/front_end_screens.hpp:load_vram"
    ],
    "region": "rom"
@@ -6091,7 +6132,15 @@
   {
    "address": "$82:B296",
    "native": [
+    "src/core/audio_cpu_boot.cpp:read_asset_byte",
     "src/core/result_screen.cpp:render_result_background"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$82:B2B0",
+   "native": [
+    "src/core/audio_cpu_boot.cpp:read_asset_descriptor"
    ],
    "region": "rom"
   },
@@ -6801,6 +6850,7 @@
   {
    "address": "$83:99F6",
    "native": [
+    "src/core/audio_cpu_scene.cpp:native_audio_load_nintendo_graphics",
     "src/core/front_end.cpp:lay_out_menu_objects",
     "src/core/front_end.cpp:load_nintendo_screen"
    ],
@@ -11885,6 +11935,7 @@
   {
    "address": "$77:10D0",
    "native": [
+    "src/core/audio_cpu_scene.hpp:AudioCpuSceneWorkState::title_levels_pending",
     "src/core/front_end.cpp:check_title_code",
     "src/core/front_end.hpp:HunterEnding::cheat_page",
     "src/core/front_end.hpp:OnePlayerRecords::cheat",
@@ -12023,6 +12074,99 @@
   "src/core/announcements.hpp:first_voice": {
    "rom": [
     "$82:9D47"
+   ]
+  },
+  "src/core/audio_cpu_boot.cpp:clear_vram": {
+   "rom": [
+    "$80:B612"
+   ]
+  },
+  "src/core/audio_cpu_boot.cpp:native_audio_cpu_upload_graphics_asset": {
+   "rom": [
+    "$82:B183",
+    "$82:B1DB"
+   ]
+  },
+  "src/core/audio_cpu_boot.cpp:read_asset_byte": {
+   "rom": [
+    "$82:B296"
+   ]
+  },
+  "src/core/audio_cpu_boot.cpp:read_asset_descriptor": {
+   "rom": [
+    "$82:B2B0"
+   ]
+  },
+  "src/core/audio_cpu_boot.cpp:reset_cpu": {
+   "rom": [
+    "$80:91D1"
+   ]
+  },
+  "src/core/audio_cpu_queue.cpp:native_audio_bootstrap_queue": {
+   "rom": [
+    "$80:A119"
+   ]
+  },
+  "src/core/audio_cpu_queue.cpp:native_audio_enqueue": {
+   "rom": [
+    "$82:8000"
+   ]
+  },
+  "src/core/audio_cpu_queue.cpp:native_audio_poll_queue": {
+   "rom": [
+    "$82:8035"
+   ]
+  },
+  "src/core/audio_cpu_queue.cpp:native_audio_wait_vblank": {
+   "rom": [
+    "$80:FAE3"
+   ]
+  },
+  "src/core/audio_cpu_scene.cpp:fade": {
+   "rom": [
+    "$80:9869",
+    "$80:9885"
+   ]
+  },
+  "src/core/audio_cpu_scene.cpp:native_audio_finish_nintendo_screen": {
+   "rom": [
+    "$80:B0CC"
+   ]
+  },
+  "src/core/audio_cpu_scene.cpp:native_audio_load_nintendo_graphics": {
+   "rom": [
+    "$80:B08C",
+    "$83:99F6"
+   ]
+  },
+  "src/core/audio_cpu_scene.cpp:native_audio_upload_base_palette": {
+   "rom": [
+    "$80:A8A8"
+   ]
+  },
+  "src/core/audio_cpu_scene.cpp:update_scene_work": {
+   "rom": [
+    "$80:FAF5"
+   ]
+  },
+  "src/core/audio_cpu_scene.cpp:upload_oam": {
+   "rom": [
+    "$80:9318"
+   ]
+  },
+  "src/core/audio_cpu_scene.hpp:AudioCpuSceneWorkState::title_levels_pending": {
+   "sram": [
+    "$77:10D0"
+   ]
+  },
+  "src/core/audio_cpu_title.cpp:initialize_title_work": {
+   "rom": [
+    "$80:A16A"
+   ]
+  },
+  "src/core/audio_cpu_title.cpp:native_audio_load_title_graphics": {
+   "rom": [
+    "$80:F55F"
    ]
   },
   "src/core/award.cpp:(file)": {
@@ -18621,10 +18765,10 @@
   }
  },
  "totals": {
-  "addresses": 1372,
+  "addresses": 1377,
   "io_addresses": 9,
-  "native_symbols": 997,
-  "rom_addresses": 1004,
+  "native_symbols": 1015,
+  "rom_addresses": 1009,
   "sram_addresses": 49,
   "wram_addresses": 310
  }

@@ -3,6 +3,7 @@
 #include "audio_cpu_scene.hpp"
 #include "audio_cpu_upload.hpp"
 #include "audio_ipl.hpp"
+#include "audio_driver_dsp.hpp"
 #include <algorithm>
 #include <fstream>
 #include <iostream>
@@ -15,6 +16,7 @@ namespace {
 struct CpuYield {};
 class Bus final : public unirally::AudioDriverBus, public unirally::AudioCpuWorkObserver {
 public:
+    std::unique_ptr<DriverDspDiagnostic> dsp;
     Bus(std::ostream& output, const unirally::TitleMenuAudioData& score,
         const unirally::AudioPitchData& pitch, bool ready_mode)
         : output_(output), ipl_(*this), score_(&score), pitch_(&pitch), ready_mode_(ready_mode) {}
@@ -30,9 +32,11 @@ public:
         emit('P', ticks, port, value);
     }
     void write_ram(std::uint64_t ticks, std::uint16_t address, std::uint8_t value) override {
+        if (dsp) dsp->write_ram(ticks, address, value);
         emit('N', ticks, address, value);
     }
     void write_dsp(std::uint64_t ticks, std::uint8_t reg, std::uint8_t value) override {
+        if (dsp) dsp->write_register(ticks, reg, value);
         emit('D', ticks, reg, value);
     }
     void clear_ports(std::uint64_t ticks, std::uint8_t port) override {
@@ -103,17 +107,19 @@ std::vector<std::uint8_t> read(const std::string& path) {
 }
 int main(int argc, char** argv) {
     try {
-        if (argc != 3 && argc != 4)
+        if (argc != 3 && argc != 4 && argc != 6)
             throw std::invalid_argument("audio_cpu_upload_runner DATA_DIRECTORY OUTPUT "
-                                        "[ready|samples|queue|vblank|frame|palette|load]");
-        const bool load = argc == 4 && std::string(argv[3]) == "load";
-        const bool palette = argc == 4 && (std::string(argv[3]) == "palette" || load);
-        const bool frame = argc == 4 && (std::string(argv[3]) == "frame" || palette);
-        const bool vblank = argc == 4 && (std::string(argv[3]) == "vblank" || frame);
-        const bool queue = argc == 4 && (std::string(argv[3]) == "queue" || vblank);
-        const bool samples = argc == 4 && (std::string(argv[3]) == "samples" || queue);
-        const bool ready = argc == 4 && (std::string(argv[3]) == "ready" || samples);
-        if (argc == 4 && !ready) throw std::invalid_argument("unknown upload mode");
+                                        "[ready|samples|queue|vblank|frame|palette|load|nintendo|title [PCM DSP_CLOCK_LIMIT]]");
+        const bool title = argc >= 4 && std::string(argv[3]) == "title";
+        const bool nintendo = argc >= 4 && (std::string(argv[3]) == "nintendo" || title);
+        const bool load = argc >= 4 && (std::string(argv[3]) == "load" || nintendo);
+        const bool palette = argc >= 4 && (std::string(argv[3]) == "palette" || load);
+        const bool frame = argc >= 4 && (std::string(argv[3]) == "frame" || palette);
+        const bool vblank = argc >= 4 && (std::string(argv[3]) == "vblank" || frame);
+        const bool queue = argc >= 4 && (std::string(argv[3]) == "queue" || vblank);
+        const bool samples = argc >= 4 && (std::string(argv[3]) == "samples" || queue);
+        const bool ready = argc >= 4 && (std::string(argv[3]) == "ready" || samples);
+        if (argc >= 4 && !ready) throw std::invalid_argument("unknown upload mode");
         const std::string root = argv[1];
         unirally::AudioCpuUploadData data;
         std::ifstream lengths(root + "/cpu-resource-lengths.txt");
@@ -154,6 +160,7 @@ int main(int argc, char** argv) {
         std::copy(fraction.begin(), fraction.end(), pitch.sample_fraction.begin());
         std::copy(transpose.begin(), transpose.end(), pitch.sample_transpose.begin());
         Bus bus(output, score, pitch, ready);
+        if (argc == 6) bus.dsp = std::make_unique<DriverDspDiagnostic>(argv[4], std::stoull(argv[5]));
         unirally::AudioCpuWorkClock clock(&bus);
         unirally::native_audio_cpu_boot_prefix(clock);
         unirally::native_audio_cpu_uploads(clock, data);
@@ -182,6 +189,9 @@ int main(int argc, char** argv) {
                         throw std::invalid_argument("incomplete graphics metadata");
                     unirally::native_audio_load_nintendo_graphics(clock, scene, assets[31],
                                                                   assets[80], assets[74]);
+                    if (nintendo) unirally::native_audio_finish_nintendo_screen(clock, state, scene);
+                    if (title) unirally::native_audio_load_title_graphics(clock, scene, assets[27],
+                                                                          assets[78], assets[72]);
                 }
                 std::cout << "scene_phase=" << unsigned(scene.phase) << '\n';
             }
@@ -190,6 +200,7 @@ int main(int argc, char** argv) {
                       << " expected_phase=" << unsigned(state.expected_phase) << '\n';
         }
         std::cout << "computed_final_upload_cpu_clock=" << clock.ticks() << '\n';
+        if (bus.dsp) bus.dsp->finish();
         if (!output) throw std::runtime_error("native upload events failed");
         return 0;
     } catch (const std::exception& error) {

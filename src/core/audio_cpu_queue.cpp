@@ -23,7 +23,7 @@ void validate(const AudioCpuQueueState& state) {
         throw std::invalid_argument("invalid audio command queue state");
 }
 }
-// Static bank-82 8000-8034: preserve the word, drop on full, publish last.
+// $82:8000; R-0075. Static bank-82 8000-8034: preserve the word, drop on full, publish last.
 bool native_audio_enqueue(Clock& c, AudioCpuQueueState& state, std::uint8_t command,
                           std::uint8_t parameter) {
     validate(state);
@@ -66,7 +66,7 @@ bool native_audio_enqueue(Clock& c, AudioCpuQueueState& state, std::uint8_t comm
     c.return_far();
     return true;
 }
-// Static bank-82 8035-807D. Ready/empty decisions use native latches and ring
+// $82:8035; R-0075. Static bank-82 8035-807D. Ready/empty decisions use native latches and ring
 // state. A word store publishes header before parameter, six master clocks apart.
 bool native_audio_poll_queue(Clock& c, AudioCpuQueueState& state) {
     validate(state);
@@ -121,6 +121,7 @@ bool native_audio_poll_queue(Clock& c, AudioCpuQueueState& state) {
     c.return_far();
     return true;
 }
+// $80:A119; R-0075. Initial title music/gain cue words.
 void native_audio_bootstrap_queue(Clock& c, AudioCpuQueueState& state) {
     constexpr std::array<std::array<std::uint8_t, 2>, 3> commands{{{1, 2}, {8, 255}, {7, 127}}};
     for (const auto& pair : commands) {
@@ -141,7 +142,7 @@ void native_audio_bootstrap_queue(Clock& c, AudioCpuQueueState& state) {
     c.call_far();
     native_audio_poll_queue(c, state);
 }
-// Static bank-80 FAE3-FAEF; R-0075. Each loop polls the native command ring.
+// $80:FAE3; R-0075. Static bank-80 FAE3-FAEF. Each loop polls the native command ring.
 void native_audio_wait_vblank(Clock& c, AudioCpuQueueState& state) {
     for (;;) {
         const bool blank = c.read_vertical_blank();

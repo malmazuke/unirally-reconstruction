@@ -704,3 +704,30 @@ palette sizes. Raw graphics metadata is retained privately in
 work-clock diagnostic. Both focused CPU checks and readability pass.
 Remaining cold scene work, canonical CPU continuation/full save, audio pack
 and device playback still block capability acceptance.
+
+## Joined seedless PCM through Nintendo/title load, 1 October
+
+Verified: `native-cold-cpu-nintendo-pcm.json` matches all861,545 projected
+events, C=96,917,470 and every145,925 raw stereo pair through D=4,669,600.
+This includes first nonzero pair63620 and uses native CPU/IPL/driver work
+from zero, not original CPU write inputs. Nintendo fade/hold/fade work comes
+from static $80:9869-$80:98A3/$80:B0CC-$80:B0DB. The DSP-only diagnostic horizon
+clips output packaging and does not advance or seed CPU/SMP work.
+
+`native-cold-cpu-title-pcm.json` extends to all872,506 projected events,
+C=106,373,342 and every160,150 raw pair through D=5,124,800, ending before
+NMI enable. Native A16A initialization and identified graphics assets27/78/72
+include asset72's LoROM cursor wrap. Static readings: bank-80 A16A-A1F1
+and F55F-F5B8; bank-82 B296-B2AB supplies the wrap work.
+
+The first attempt wrongly assumed $77:10D0 was clear. Existing original
+CPU observations show FF at F568 and the sixteen-byte level copy branch.
+Pinned Memory::allocate defaults to FF; fresh capture initial cartridge RAM
+hash equals8192 FF bytes (7d2c7ac4888bfd75cd5f56e8d61f69595121183afc81556c876732fd3782c62f).
+Native cold state now owns that flag, conditionally copies the level work and
+clears it. `native-cold-cpu-title-name-failure01.json` and version1 manifest
+are retained. Version2 corrects only the provisional domain description;
+all expected events, clocks and PCM bytes remain unchanged.
+
+The app is still silent. No native CPU continuation, full audio save, menu
+producer/NMI lifecycle or device acceptance follows from this cold prefix.

@@ -76,7 +76,8 @@ void update_horizontal(Clock& c, AudioCpuSceneWorkState& state) {
     c.change_widths();
 }
 void update_vertical(Clock& c, AudioCpuSceneWorkState& state) {
-    const auto difference = read_position_difference(c, state.vertical_current, state.vertical_target);
+    const auto difference =
+        read_position_difference(c, state.vertical_current, state.vertical_target);
     if (!difference) return;
     const auto increment = divide_difference(c, difference);
     c.store_ram(2);
@@ -95,7 +96,7 @@ void update_vertical(Clock& c, AudioCpuSceneWorkState& state) {
     c.load_constant();
     c.store_ram();
 }
-// Static bank-80 FAF5-FBC4; R-0075. No observed function duration is used.
+// $80:FAF5; R-0075. Static bank-80 FAF5-FBC4. No observed function duration is used.
 void update_scene_work(Clock& c, AudioCpuSceneWorkState& state) {
     if (state.phase > 31) throw std::invalid_argument("invalid frontend phase");
     c.save_register();
@@ -125,7 +126,7 @@ void update_scene_work(Clock& c, AudioCpuSceneWorkState& state) {
     c.restore_register();
     c.return_local();
 }
-// Static bank-80 9318-933B; R-0054 identifies the 544-byte OAM buffer.
+// $80:9318; R-0075. Static bank-80 9318-933B; R-0054 identifies the 544-byte OAM buffer.
 void upload_oam(Clock& c) {
     c.change_widths();
     c.store_port(2);
@@ -141,6 +142,35 @@ void upload_oam(Clock& c) {
     c.request_dma(544);
     c.return_local();
 }
+void change_direct_byte(Clock& c) {
+    c.rom_reads(2);
+    c.ram_reads();
+    c.idle();
+    c.ram_writes();
+}
+// $80:9869; $80:9885; R-0075. Static bank-80 9869-98A3: seven waits, OAM DMA and brightness steps.
+void fade(Clock& c, AudioCpuQueueState& queue, AudioCpuSceneWorkState& scene, bool darken) {
+    if (darken) c.load_constant();
+    c.store_direct();
+    c.load_constant(2);
+    for (unsigned i = 0; i < 7; ++i) {
+        c.call_local();
+        native_audio_frame_wait(c, queue, scene);
+        c.call_local();
+        upload_oam(c);
+        change_direct_byte(c);
+        change_direct_byte(c);
+        c.read_direct();
+        c.store_port();
+        c.update_register();
+        c.branch(i < 6);
+    }
+    if (darken) {
+        c.load_constant();
+        c.store_port();
+    }
+    c.return_local();
+}
 }
 void native_audio_finish_waited_frame(Clock& c, AudioCpuSceneWorkState& state) {
     c.call_local();
@@ -153,7 +183,7 @@ void native_audio_frame_wait(Clock& c, AudioCpuQueueState& queue, AudioCpuSceneW
     native_audio_wait_vblank(c, queue);
     native_audio_finish_waited_frame(c, scene);
 }
-// Starts at B091, ends after the call into 8399F6. A8A8 uploads 216 bytes
+// $80:A8A8; R-0075. Starts at B091, ends after the call into 8399F6. A8A8 uploads 216 bytes
 // from the identified base palette; original entry clocks are not inputs.
 void native_audio_upload_base_palette(Clock& c, AudioCpuQueueState& queue,
                                       AudioCpuSceneWorkState& scene) {
@@ -178,7 +208,7 @@ void native_audio_upload_base_palette(Clock& c, AudioCpuQueueState& queue,
     c.return_local();
     c.call_far();
 }
-// Static bank-83 99F6-9A1D and bank-80 B098-B0CA; R-0075.
+// $83:99F6; $80:B08C; R-0075. Static bank-83 99F6-9A1D and bank-80 B098-B0CA; R-0075.
 void native_audio_load_nintendo_graphics(Clock& c, AudioCpuSceneWorkState& scene,
                                          const AudioCpuGraphicsAsset& palette,
                                          const AudioCpuGraphicsAsset& map,
@@ -217,5 +247,21 @@ void native_audio_load_nintendo_graphics(Clock& c, AudioCpuSceneWorkState& scene
     c.store_port();
     c.store_port();
     c.change_widths();
+}
+// $80:B0CC; R-0075. Static bank-80 B0CC-B0DB; R-0054/R-0075. The hold contains 111 waits.
+void native_audio_finish_nintendo_screen(Clock& c, AudioCpuQueueState& queue,
+                                         AudioCpuSceneWorkState& scene) {
+    c.call_local();
+    fade(c, queue, scene, false);
+    c.load_constant(2);
+    for (unsigned i = 0; i < 111; ++i) {
+        c.call_local();
+        native_audio_frame_wait(c, queue, scene);
+        c.update_register();
+        c.branch(i < 110);
+    }
+    c.call_local();
+    fade(c, queue, scene, true);
+    c.return_local();
 }
 } // namespace unirally

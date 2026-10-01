@@ -5,7 +5,7 @@
 namespace unirally {
 namespace {
 using Clock = AudioCpuWorkClock;
-// Bank-80 listing 91D1-9311; hardware reset work from pinned CPU::main.
+// $80:91D1; R-0075. Bank-80 listing 91D1-9311; hardware reset work from pinned CPU::main.
 void reset_cpu(Clock& c) {
     c.rom_reads(3);
     c.update_register();
@@ -76,7 +76,7 @@ void select_asset_directory(Clock& c) {
     c.rom_reads(3);
     c.call_local();
 }
-// Bank-80 B612-B625 clears 32,768 words using two six-clock MMIO writes.
+// $80:B612; R-0075. Bank-80 B612-B625 clears 32,768 words using two six-clock MMIO writes.
 void clear_vram(Clock& c) {
     c.save_register();
     c.change_widths();
@@ -125,7 +125,7 @@ void initialize_frontend_storage(Clock& c) {
     c.load_constant();
     c.call_far();
 }
-// Bank-82 B2B0-B2DC reads the five-byte asset record. Both cold records use
+// $82:B2B0; R-0075. Bank-82 B2B0-B2DC reads the five-byte asset record. Both cold records use
 // ordinary byte content and do not wrap a source bank in this tested domain.
 void read_asset_descriptor(Clock& c) {
     c.store_direct();
@@ -163,7 +163,7 @@ void read_asset_descriptor(Clock& c) {
     c.update_register();
     c.return_local();
 }
-// B296-B29E reads one byte, increments the word cursor and returns flags.
+// $82:B296; R-0075. B296-B29E reads one byte, increments the word cursor and returns flags.
 void read_asset_byte(Clock& c, std::uint16_t& cursor) {
     c.call_local();
     c.rom_reads(3);
@@ -268,6 +268,7 @@ void begin_sound_upload(Clock& c) {
     c.write_audio_port(0, 255);
 }
 }
+// $82:B183; $82:B1DB; R-0075. Identified raw graphics transport.
 void native_audio_cpu_upload_graphics_asset(Clock& c, const AudioCpuGraphicsAsset& asset,
                                             bool palette) {
     if (asset.compressed || asset.address < 0x8000 || asset.bank > 127 || asset.bytes == 0
