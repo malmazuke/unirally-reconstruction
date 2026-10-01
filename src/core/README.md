@@ -394,7 +394,8 @@ and sprite uploads have separate small functions. `audio_state_io.cpp` writes
 URAU0004, including active reveal state, retained IPL timers and complete DSP
 history; `AudioOutput` retains the integer resampling fraction and queued PCM.
 Fresh-process comparisons cover active reveals, first-press history, credits
-wrap and warm restart. These are candidate results pending independent review.
+wrap and warm restart. Source `42d2cc8` has independent tier-1 source re-review; physical
+input/listening acceptance is still pending.
 
 The opt-in desktop flag `--native-title-menu-audio` uses this producer with
 sampled frontend controls and SDL output. Its scripted device run covers the

@@ -2,7 +2,8 @@
 
 ## Assignment
 
-- Status: in_progress, claimed 30 September 2026 UTC after PR #49 verification.
+- Status: in_progress, source reviewed; physical input/listening acceptance
+  pending. Claimed 30 September 2026 UTC after PR #49 verification.
 - Milestone: M4 (original game coverage).
 - Coordinator/primary: `/root`, OpenAI, current Codex session; model identifier
   is not exposed by this runtime. D-0004 Sol/medium project default remains
@@ -51,7 +52,7 @@ soundtrack, race/ending audio and alternative regions/rates remain later work.
 - ROM/core/patch identities and three retained diagnostic schedules: R-0074.
 - Existing tools: `reference verify`, `access capture`, `coverage disassemble`,
   `coverage static-map`, the native frontend/runners and pack tooling.
-- Not implemented: raw DSP PCM, ordered DSP writes, APU RAM/upload observation,
+- At claim these were not implemented: raw DSP PCM, ordered DSP writes, APU RAM/upload observation,
   native sequencer, hardware-model adapter and audio device output. Implement
   and independently validate these inside this task; do not advertise commands
   before they run.
@@ -1908,3 +1909,54 @@ rejected head. Original contracts/tolerances stay frozen. Draft coordinator
 handoffs are held in main artifacts until the source checks are no longer
 running. Last fresh quota 28% at 13:20, baseline 12%/stop 32%; no reset/spending/provider
 change. Next checkpoint 13:44, reassessment 13:48.
+
+
+### 1 October 13:51 UTC handoff - physical product check remains
+
+Source `42d2cc8d8377a303b26e737afebea0adebd895e5` has accepted
+[Sol/medium source re-review](https://github.com/malmazuke/unirally-reconstruction/pull/50#pullrequestreview-5380064584).
+Both initial findings have a named-fix reply and are independently resolved.
+The reviewer re-ran its delayed press and fresh-process restore, and the warm
+return, against preserved original expectations with exact events/PCM/state.
+All PR conversation/review bodies and line comments were read at 13:46; all
+comments are marked Agent, no user instruction or unanswered finding remains.
+Task acceptance is still open.
+
+- Required CI run 36870139058 passes changes, macOS and Ubuntu on 42d2cc8.
+  Ubuntu's actual Linux sanitizer step succeeds; local macOS CTest/repeatability
+  timeouts remain explicit non-passes. Jobs/steps are retained in main
+  `hosted-42d2cc8-jobs.json`, not inferred from the job name.
+- The full eleven frozen race gates pass with 6,023 fresh-process restore
+  boundaries on the optimized source-bound binary (`race-42d2cc8-release/summary.json`).
+  Originals, contracts, field sets and per-native-process limits are unchanged.
+- The source-head app 41 CTest plus fresh repeatability passes in 4.19 s
+  (`app-42d2cc8.json`); the reviewer independently passes 41/41 too. Both v1
+  presentation contracts/eight cases pass (`v1-42d2cc8/report.json`).
+- v30 product input is rejected before opening the audio device or producing
+  a frame (`product-v30-rejection-42d2cc8.json`). A visible v31 scripted run
+  completes 1,000 updates, 640,541 source pairs, 944,128 delivered, 845,900 nonzero,
+  zero underruns and two navigation events. CUA captured the visible main menu
+  in the chat. The report records mapped live keys 0/0: this proves scripted
+  device delivery, not physical input/listening (`product-v31-navigation-42d2cc8.json`).
+
+Only the product criterion's held physical input/listening result remains.
+The asynchronous readiness question is unanswered. The documented CUA API has
+press/release only; 40 earlier taps produced zero sampled holds. Do not change
+the game's sampled-input policy or describe scripted/PCM checks as physical
+acceptance. When the user is ready, announce a fresh unscripted run, launch the
+existing app with v31, `--native-title-menu-audio --updates 1400`, and have them
+hold Down and then Up for about one second each while the main menu is visible.
+Capture the visible state while the run is alive, retain its command/binary/input
+telemetry and ask for the actual music/navigation sound observation. If this
+reveals a failure, fix and re-review it inside this same task. Otherwise finish
+the product report, current-tip records/CI/comments, merge PR #50 with a merge
+commit, fast-forward main and perform the required task-owned cleanup.
+
+The primary worktree, app/lab builds and all main evidence remain available.
+The independent review checkout is archived through Codex after its clean
+42d2cc8 review; all reviewer captures remain in main evidence. No captured
+evidence was deleted. This record-only successor leaves reviewed source
+unchanged. Main `artifacts/audio-title-menu-integration/handoff.json` holds its
+actual Git head, commands, source checks and live command. The PR is draft;
+no acceptance, merge or tag. Fresh usage was 29% at 13:41 from 12%, stop 32%;
+no reset, spending or provider change.

@@ -1218,3 +1218,27 @@ All41 lab tests,540 tooling tests and19 changed-core80-line checks pass on this
 slice; static regeneration checks53062 sites/42700 shared instructions with zero
 disagreements and1057 supported citations. Full private regressions, physical
 input/listening, final-head hosted checks and independent review remain open.
+
+
+### Reviewed source and remaining product criterion
+
+Source `42d2cc8` has accepted independent tier-1 source re-review in
+[PR #50](https://github.com/malmazuke/unirally-reconstruction/pull/50#pullrequestreview-5380064584).
+The reviewer chose a seven-frame first-page press delay, froze the original
+before comparison and reproduced 1,475,651 projected rows, 518,802 raw pairs
+and a page-wait 122 fresh-process restore. Its warm return independently matches
+2,933,842 rows and 1,111,493 pairs; the reviewed transport correction affects
+only the declared 4,445 executable writes and 4,445 corresponding IPL reads.
+Its original/native artifacts remain in main evidence `reviewer-c520df4/` and
+`reviewer-42d2cc8/`. No original expected audio changed for the source correction.
+
+All eleven frozen race regressions, 6,023 restore boundaries, both v1
+presentation contracts, app component tests and hosted macOS/Ubuntu checks
+including Linux sanitizers pass on this source. The local macOS sanitizer
+timeouts remain non-passes. The corrected SDL option requires v31 metadata
+before opening its audio device; a valid v30 negative launch confirms this.
+A visible 1,000-update scripted navigation run reports two navigation events,
+845,900 nonzero delivered pairs and zero underruns. It has zero mapped live
+keys. This and the earlier HUNTER device run are scripted delivery observations,
+not physical-input or human-listening evidence. That product criterion remains
+open, so this source review is not task acceptance.

@@ -24,9 +24,9 @@ capability; the warm opaque transport correction awaits independent review.
 `audio_playback_runner` also owns modern output fractions and queued PCM.
 The app's opt-in `--native-title-menu-audio` prototype delivers native audio
 through SDL from cold power-on and follows the coupled HUNTER path through
-a warm title/menu restart. Other menu exits stop its bounded producer. Default product
-audio, live navigation and device/thread save acceptance
-remain incomplete. A stream restore needs a quiescent producer and device;
+a warm title/menu restart. Other menu exits stop its bounded producer. Physical input/listening acceptance remains open and the default app stays
+silent. Quiescent native/playback saves pass; live device/thread save is outside
+this declared continuation domain. A stream restore needs a quiescent producer and device;
 no OS mixer state is serialized.
 No raw replay is product acceptance. Reference restore-audio exclusions and all
 existing gameplay gates remain in force.
