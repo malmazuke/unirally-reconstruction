@@ -139,6 +139,8 @@ In order; each becomes ready when the one before it is integrated, unless noted.
     a recovered sound driver/sequencer, identified local score/sample data and
     an isolated DSP model. [AUDIO-TITLE-MENU](AUDIO-TITLE-MENU.md) is the first
     implementation outcome: audible title/menu music and navigation effect.
+    [AUDIO-FIRST-RACE](AUDIO-FIRST-RACE.md) carries it through the first race
+    under D-0010; [AUDIO-ONE-PLAYER](AUDIO-ONE-PLAYER.md) is next.
 
 ROLLING-CONTACT (ready) can run at any point; it is race-engine polish.
 
@@ -155,8 +157,9 @@ ROLLING-CONTACT (ready) can run at any point; it is race-engine polish.
 
 ## Handoff
 
-- Current next outcome: AUDIO-FIRST-RACE after AUDIO-TITLE-MENU PR #50 integration.
-  Title/menu listening is accepted in R-0075's bounded domain; ordinary menu
-  exits and race/result audio remain before soundtrack breadth.
+- Current next outcome: [AUDIO-ONE-PLAYER](AUDIO-ONE-PLAYER.md) after AUDIO-FIRST-RACE
+  PR #51 integration. AUDIO-FIRST-RACE plays native audio from power-on through 1P setup,
+  the first DRAGSTER race, its result and the menus (R-0076, D-0010); later races' songs,
+  other tracks and the rest of the one-player game come next, then the other modes.
   The original FRONT-END-MAIN-MENU handoff and inventory above remain the
   25 September baseline; they are not a current missing-feature inventory.
