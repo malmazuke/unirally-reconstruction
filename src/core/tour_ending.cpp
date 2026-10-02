@@ -65,6 +65,10 @@ constexpr std::uint32_t blank_frame = 16, reset_frame = 89, pattern_tiles_frame 
                         bar_map_frame = 91, fade_in_frames = 15;
 // The way back runs a frame later than after the award (R-0062).
 constexpr std::uint32_t way_back_delay = 1;
+// The sound session starts in the blank frame, as the award's does; from then on the frames
+// wait as the award's do: the one before the reset's, and from the one before the fade in's
+// (R-0077).
+constexpr std::uint32_t sound_upload_frame = blank_frame;
 
 // The screen: BG1 the gold pattern (map 0x53, tiles 0x54, colours 0x57 at CGRAM 0), BG2 the bar
 // (map 0x52 with palette 1 and priority, tiles 0x4C, colours 0x3C at CGRAM 0x10).
@@ -239,6 +243,15 @@ void start_tour_ending(FrontEndState& state) {
     state.script_frame = 0;
 }
 
+bool tour_ending_frame_waits(const FrontEndState& state) {
+    using namespace ending;
+    const auto& layout = endings[state.ending.tour];
+    const auto frame = state.script_frame;
+    if (frame > layout.last_frame) return way_back_frame_waits(frame - layout.last_frame, way_back_delay);
+    return frame < sound_upload_frame || frame == reset_frame - 1
+        || frame >= layout.fade_in_frame - 1;
+}
+
 void tour_ending_frame(FrontEndState& state, const FrontEndContent& content) {
     using namespace ending;
     const auto& layout = endings[state.ending.tour];
@@ -248,6 +261,8 @@ void tour_ending_frame(FrontEndState& state, const FrontEndContent& content) {
                        !layout.late_nmi_hook);
         return;
     }
+    if (frame == sound_upload_frame) // $83:88FD's tour routine calls `$83:A507` first
+        state.sound_cues.push_back(audio_load(AudioSessionLoad::ending));
     if (frame <= blank_frame) {
         fade_down(state, frame);
         return;

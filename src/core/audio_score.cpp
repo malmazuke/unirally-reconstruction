@@ -273,8 +273,10 @@ void TitleMenuAudioScore::start_music(std::uint8_t program) {
 // R-0075, SPC 04CC-052D: reuse matching tags, then free voices, then lowest
 // priority. Descending search and equal-priority replacement order matter.
 int TitleMenuAudioScore::start_effect(std::uint8_t effect) {
-    if (effect >= 32) throw std::invalid_argument("effect outside recovered table");
-    const auto flags = data_byte(word(0x1766U + effect));
+    // An effect at or past the driver's count takes SPC 04C7's unrecovered path.
+    const auto& tables = data_->effects;
+    if (effect >= tables.count) throw std::invalid_argument("effect outside recovered table");
+    const auto flags = data_byte(word(tables.flags + effect));
     add_work(34);
     int selected = -1;
     if ((flags & 128) == 0)
@@ -316,7 +318,7 @@ int TitleMenuAudioScore::start_effect(std::uint8_t effect) {
         add_work(42);
     }
     const auto pointer = word(data_byte(word(0x1726U + effect))
-                              | (unsigned(data_byte(word(0x1746U + effect))) << 8));
+                              | (unsigned(data_byte(word(tables.high + effect))) << 8));
     add_work(130);
     reset_voice(byte(static_cast<unsigned>(selected)), pointer, effect, flags & 127);
     return selected;

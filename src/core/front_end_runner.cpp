@@ -516,7 +516,7 @@ public:
                 if (cue.load == unirally::AudioSessionLoad::race)
                     out_ << "race-" << unsigned(unirally::race_song_resource(cue.parameter));
                 else
-                    out_ << "title";
+                    out_ << unirally::audio_session_name(cue.load);
                 out_ << '\n';
                 break;
             case unirally::AudioCueKind::rotation:

@@ -14,9 +14,18 @@ namespace unirally {
 // executable or APU snapshot (R-0075; the race set is in AUDIO-FIRST-RACE).
 // Original pointers are 16-bit data-format values; reads outside these two
 // bounded ranges fail. Music instruments 1-36 are copied from the tables.
+// The driver's effect tables in the uploaded tables, by effect: pointer low bytes at 1726, high
+// bytes and flags after them. Driver 50 has 32 effects; driver 51, which the gold endings load,
+// has 29 (SPC 04CE `CMP #$1D`, 04D4/0504/0513 flags at 1760, 0523 high bytes at 1743; R-0077).
+struct AudioEffectTables {
+    std::uint8_t count = 32;
+    std::uint16_t high = 0x1746, flags = 0x1766;
+};
+constexpr AudioEffectTables ending_driver_effects{29, 0x1743, 0x1760};
 struct AudioSoundSet {
     std::vector<std::uint8_t> tables; // title/menu 621 bytes, race 1,583
     std::vector<std::uint8_t> score;  // title 2,200 bytes, first race song 2,457
+    AudioEffectTables effects{};      // the driver's (resource 50 unless noted)
 };
 std::uint8_t audio_sound_set_byte(const AudioSoundSet& data, std::uint16_t pointer);
 

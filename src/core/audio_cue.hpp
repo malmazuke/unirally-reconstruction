@@ -1,5 +1,8 @@
 #pragma once
+#include <array>
 #include <cstdint>
+#include <string_view>
+#include <utility>
 #include <vector>
 
 namespace unirally {
@@ -23,7 +26,22 @@ enum class AudioSessionLoad : std::uint8_t {
                   // (`command` the track, `parameter` the counter 0-5), then its music start
                   // and four polls (R-0076, R-0077)
     title_return, // $80:A0F7-A11C after a race: title set, then the title music start
+    award,        // $83:A614-A66B: the medal award's set, its music start and five polls
+    ending,       // $83:A507-A55F: a gold ending's set (driver 51), likewise (R-0077)
+    award_return, // $83:A721-A770 after either: the title set, then the title music start
 };
+// The laboratory cue logs' names of the sessions other than a race's ("race-RESOURCE").
+constexpr std::array<std::pair<AudioSessionLoad, std::string_view>, 4> audio_session_names{{
+    {AudioSessionLoad::title_return, "title"},
+    {AudioSessionLoad::award, "award"},
+    {AudioSessionLoad::ending, "ending"},
+    {AudioSessionLoad::award_return, "title-award"},
+}};
+inline std::string_view audio_session_name(AudioSessionLoad load) {
+    for (const auto& [session, name] : audio_session_names)
+        if (session == load) return name;
+    return "race";
+}
 // $83:CA08-CA1E: the race song by the cartridge counter `$77:10B1` after its increment
 // modulo 6: resources 64, 62, 63, 64, 65, 66 (R-0076 observation 2).
 constexpr std::uint8_t race_song_count = 6;

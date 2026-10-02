@@ -23,8 +23,12 @@ NativeTitleMenuAudio::NativeTitleMenuAudio(const TitleMenuAudioContent& content,
     for (unsigned resource = first_race_song_resource;
          resource < first_race_song_resource + race_song_resources; ++resource)
         if (content.has_race_song(resource))
-            engine_.set_race_sound_set(race_song_sound_set(resource),
-                                       content.race_songs[resource - first_race_song_resource]);
+            engine_.set_sound_set(race_song_sound_set(resource),
+                                  content.race_songs[resource - first_race_song_resource]);
+    if (content.has_screen_sets()) {
+        engine_.set_sound_set(AudioSoundSetId::award, content.award);
+        engine_.set_sound_set(AudioSoundSetId::ending, content.ending);
+    }
 }
 // R-0075. Compose the frozen native cold work through F5C8, before its first hold frame.
 void NativeTitleMenuAudio::initialize_title() {

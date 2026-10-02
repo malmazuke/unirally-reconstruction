@@ -573,7 +573,7 @@ class AudioEntryTests(unittest.TestCase):
         encoded = json.dumps(previous, sort_keys=True, separators=(",", ":")).encode()
         self.assertEqual(hashlib.sha256(encoded).hexdigest(),
                          "89ebcec74150da1ec627fa9d258579880f4402990d105f6bc3d5e3033ca2e446")
-        added = rules["entries"][509:]
+        added = rules["entries"][509:525]
         self.assertEqual([e["id"] for e in added],
                          ["audio.race-resource-lengths", "audio.race-tables", "audio.race-song-1",
                           "audio.race-tables-transfer", "audio.race-song-1-transfer",
@@ -595,7 +595,7 @@ class AudioEntryTests(unittest.TestCase):
         encoded = json.dumps(previous, sort_keys=True, separators=(",", ":")).encode()
         self.assertEqual(hashlib.sha256(encoded).hexdigest(),
                          "f2dff7db50b4fff6db28fd67ffbc3b62bab51b793a7b17b7261c03ace2bea1bb")
-        added = rules["entries"][525:]
+        added = rules["entries"][525:534]
         self.assertEqual([e["id"] for e in added],
                          ["audio.race-song-resource-lengths"]
                          + [name for counter in (2, 3, 4, 5)
@@ -608,6 +608,33 @@ class AudioEntryTests(unittest.TestCase):
             self.assertEqual(transfer["size"], song["size"] + 6)
         source = (ROOT / "src/core/content_pack.cpp").read_text(encoding="utf-8")
         table = source[source.index("race_song_audio_required{{"):]
+        table = table[:table.index("}};")]
+        compiled = re.findall(r'\{"([^"]+)",\s*(\d+),\s*"([0-9a-f]{64})"\}', table)
+        self.assertEqual(compiled, [(e["id"], str(e["size"]), e["sha256"]) for e in added])
+
+    def test_award_and_ending_sets_preserve_v33_inventory(self) -> None:
+        import hashlib
+        import re
+        rules = json.loads((ROOT / "tests/manifests/content/classic-crawler-tracks-pack.json")
+                           .read_text(encoding="utf-8"))
+        previous = rules["entries"][:534]
+        encoded = json.dumps(previous, sort_keys=True, separators=(",", ":")).encode()
+        self.assertEqual(hashlib.sha256(encoded).hexdigest(),
+                         "52a9fbb787d8e6859a8c38f3b43bce3d4c57d0ab86c222711b38c3fde3b5b0d0")
+        added = rules["entries"][534:]
+        for name in ("award", "ending"):
+            for kind in ("tables", "score"):
+                data = next(e for e in added if e["id"] == f"audio.{name}-{kind}")
+                transfer = next(e for e in added if e["id"] == f"audio.{name}-{kind}-transfer")
+                # Each transfer is its resource plus the next record's six header bytes.
+                self.assertEqual(transfer["size"], data["size"] + 6)
+            self.assertEqual(next(e for e in added
+                                  if e["id"] == f"audio.{name}-sample-slots")["size"], 64)
+        # Samples appear once in the pack, each only where a slot table first names it.
+        ids = [e["id"] for e in rules["entries"]]
+        self.assertEqual(len(ids), len(set(ids)))
+        source = (ROOT / "src/core/content_pack.cpp").read_text(encoding="utf-8")
+        table = source[source.index("award_ending_audio_required{{"):]
         table = table[:table.index("}};")]
         compiled = re.findall(r'\{"([^"]+)",\s*(\d+),\s*"([0-9a-f]{64})"\}', table)
         self.assertEqual(compiled, [(e["id"], str(e["size"]), e["sha256"]) for e in added])

@@ -217,8 +217,9 @@ bool ends_with_queue_wait(const FrontEndState& state) {
     if (state.screen == FrontEndScreen::race_result_exit
         && state.script_frame + 1 == result_scoring_frame(state))
         return true;
-    return waits_for_frame(state) || state.screen == FrontEndScreen::tour_award
-        || state.screen == FrontEndScreen::tour_ending;
+    if (state.screen == FrontEndScreen::tour_award) return award_frame_waits(state);
+    if (state.screen == FrontEndScreen::tour_ending) return tour_ending_frame_waits(state);
+    return waits_for_frame(state);
 }
 
 bool waits_for_frame(const FrontEndState& state) {

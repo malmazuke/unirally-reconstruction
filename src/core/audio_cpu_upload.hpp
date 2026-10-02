@@ -14,11 +14,13 @@ enum class AudioSoundSetId : std::uint8_t {
     race_song_63,
     race_song_64,
     race_song_65,
-    race_song_66
+    race_song_66,
+    award, // $83:A614: driver 50, tables 52, score 58 (R-0077)
+    ending // $83:A507: driver 51, tables 55, score 60
 };
-constexpr unsigned first_race_song_resource = 62, race_song_resources = 5;
+constexpr unsigned first_race_song_resource = 62, race_song_resources = 5, sound_set_count = 8;
 inline bool is_race_sound_set(AudioSoundSetId id) {
-    return id != AudioSoundSetId::title;
+    return id >= AudioSoundSetId::race_song_62 && id <= AudioSoundSetId::race_song_66;
 }
 inline AudioSoundSetId race_song_sound_set(unsigned resource) {
     if (resource < first_race_song_resource
@@ -40,6 +42,12 @@ struct AudioCpuUploadData {
     // The songs' transfers by resource 62-66: 62 from v32, the rest from v33 (empty before).
     std::array<std::vector<std::uint8_t>, race_song_resources> race_song_transfers;
     std::array<std::uint8_t, 64> sample_slots{}, race_sample_slots{};
+    // The award's and the endings' tables and score transfers and slots (pack v34; empty before).
+    struct ScreenSet {
+        std::vector<std::uint8_t> tables_transfer, score_transfer;
+        std::array<std::uint8_t, 64> sample_slots{};
+    };
+    ScreenSet award, ending;
     std::array<std::vector<std::uint8_t>, 58> sample_resources;
 };
 // Transport after the session's first native FF write. Ending at the third final

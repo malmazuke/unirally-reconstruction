@@ -19,6 +19,9 @@ struct TitleMenuAudioContent {
             && resource < first_race_song_resource + race_song_resources
             && !race_songs[resource - first_race_song_resource].score.empty();
     }
+    // The medal award's and the gold endings' sets (pack v34; empty before).
+    AudioSoundSet award, ending;
+    bool has_screen_sets() const { return !award.tables.empty(); }
     AudioPitchData pitch;
     AudioCpuUploadData upload;
     std::array<AudioCpuGraphicsAsset, 128> graphics{};

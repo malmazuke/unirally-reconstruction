@@ -168,8 +168,8 @@ void NativeAudioEngine::restore(const AudioEngineState& state) {
         throw std::invalid_argument("invalid native audio engine continuation");
     AudioCpuWorkClock candidate_cpu;
     candidate_cpu.restore(state.cpu);
-    if (state.sound_set > AudioSoundSetId::race_song_66
-        || state.uploading_sound_set > AudioSoundSetId::race_song_66)
+    if (state.sound_set > AudioSoundSetId::ending
+        || state.uploading_sound_set > AudioSoundSetId::ending)
         throw std::invalid_argument("invalid native audio sound set");
     const auto& active = set(state.sound_set);
     const auto& uploading = set(state.uploading_sound_set);

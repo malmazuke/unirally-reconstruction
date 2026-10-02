@@ -50,8 +50,9 @@ public:
     NativeAudioEngine& operator=(NativeAudioEngine&&) = delete;
     AudioCpuWorkClock& cpu() { return cpu_; }
     AudioCpuInterruptWorkState& interrupt() { return interrupt_state_; }
-    // A race song's identified set, when the content carries it (packs v32 and v33).
-    void set_race_sound_set(AudioSoundSetId id, const AudioSoundSet& set) {
+    // A set other than the title's, when the content carries it: the race songs (packs v32 and
+    // v33), the award and the endings (v34).
+    void set_sound_set(AudioSoundSetId id, const AudioSoundSet& set) {
         sets_.at(static_cast<std::size_t>(id)) = &set;
     }
     // The CPU designates the set its next upload session carries, before the FF request.
@@ -81,7 +82,7 @@ private:
     NativeAudioDsp dsp_;
     AudioIplHandshake ipl_{*this};
     AudioTimersState ipl_timers_;
-    std::array<const AudioSoundSet*, 1 + race_song_resources> sets_{};
+    std::array<const AudioSoundSet*, sound_set_count> sets_{};
     AudioSoundSetId active_set_ = AudioSoundSetId::title, uploading_set_ = AudioSoundSetId::title;
     const AudioSoundSet& set(AudioSoundSetId id) const;
     void retain_uploading_set();

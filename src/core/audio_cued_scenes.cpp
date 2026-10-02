@@ -18,6 +18,11 @@ constexpr std::uint64_t frame_wait_anchor = 13082, race_early_anchor = 27920,
                         finish_fade_anchor = 26324, race_choice_anchor = 9908, pause_anchor = 12232,
                         pause_fade_anchor = 17214, pause_continue_anchor = 36340;
 constexpr std::uint64_t title_return_load_anchor = 344450;
+// D-0010 calibration (R-0077): the first FF request of the award's, a gold ending's and the title
+// set's sessions, master clocks after their frame's boundary, the medians of the cold captures'
+// sessions (24 awards, 3 endings, 27 returns). Each follows a frame wait, early in its frame.
+constexpr std::uint64_t award_load_anchor = 2342, ending_load_anchor = 2476,
+                        award_return_load_anchor = 1278;
 constexpr std::uint32_t longest_session_frames = 81;
 // D-0010 calibration by track (R-0077): the race sound session's first FF request's master
 // clocks after its frame's boundary, the medians of six races on each of the five tracks the
@@ -82,6 +87,42 @@ void start_race_music(Clock& c, AudioCpuQueueState& queue, std::uint8_t song_cou
         c.call_far();
         native_audio_poll_queue(c, queue);
     }
+}
+// A session's set and the clock of its first FF request after its frame's boundary.
+struct SessionStart {
+    AudioSoundSetId set;
+    std::uint64_t anchor;
+};
+SessionStart session_start(const AudioCue& cue) {
+    switch (cue.load) {
+    case AudioSessionLoad::race:
+        return {race_song_sound_set(race_song_resource(cue.parameter)),
+                race_load_anchor(cue.command)};
+    case AudioSessionLoad::title_return: return {AudioSoundSetId::title, title_return_load_anchor};
+    case AudioSessionLoad::award: return {AudioSoundSetId::award, award_load_anchor};
+    case AudioSessionLoad::ending: return {AudioSoundSetId::ending, ending_load_anchor};
+    case AudioSessionLoad::award_return:
+        return {AudioSoundSetId::title, award_return_load_anchor};
+    }
+    throw std::invalid_argument("unknown audio session");
+}
+// $83:A644-A66B (the award) and $83:A537-A55F (an ending): effect gain 255, music gain 79, the
+// music start, then five dispatcher calls.
+void start_screen_music(Clock& c, AudioCpuQueueState& queue) {
+    enqueue_cue(c, queue, 8, 255);
+    enqueue_cue(c, queue, 7, 79);
+    enqueue_cue(c, queue, 1, 2);
+    for (unsigned call = 0; call < 5; ++call) {
+        c.call_far();
+        native_audio_poll_queue(c, queue);
+    }
+}
+// $83:A75E-A770 after the title set's samples: the music start, effect gain 255, music gain
+// 127; the first dispatch is the next frame wait's.
+void start_title_music_after_award(Clock& c, AudioCpuQueueState& queue) {
+    enqueue_cue(c, queue, 1, 2);
+    enqueue_cue(c, queue, 8, 255);
+    enqueue_cue(c, queue, 7, 127);
 }
 } // namespace
 
@@ -153,21 +194,21 @@ void NativeTitleMenuAudio::rotation_sound(unsigned rider, bool rotating) {
 // driver-ready entry reinitializes the command ring, dropping queued cues.
 void NativeTitleMenuAudio::load_session(std::uint32_t frame, const AudioCue& cue) {
     auto& c = engine_.cpu();
-    const bool race = cue.load == AudioSessionLoad::race;
-    const auto set = race ? race_song_sound_set(race_song_resource(cue.parameter))
-                          : AudioSoundSetId::title;
-    idle_until(c, frame_start(frame)
-                      + (race ? race_load_anchor(cue.command) : title_return_load_anchor));
-    engine_.begin_sound_set_upload(set);
+    const auto start = session_start(cue);
+    idle_until(c, frame_start(frame) + start.anchor);
+    engine_.begin_sound_set_upload(start.set);
     native_audio_cpu_begin_session(c);
-    native_audio_cpu_uploads(c, content_->upload, set);
+    native_audio_cpu_uploads(c, content_->upload, start.set);
     native_audio_cpu_finish_driver_entry(c);
     queue_ = {};
-    native_audio_cpu_upload_samples(c, content_->upload, set);
+    native_audio_cpu_upload_samples(c, content_->upload, start.set);
     rotation_sounding_ = {}; // the race load clears the race's work RAM
-    if (race)
-        start_race_music(c, queue_, cue.parameter);
-    else
-        native_audio_bootstrap_queue(c, queue_);
+    switch (cue.load) {
+    case AudioSessionLoad::race: start_race_music(c, queue_, cue.parameter); return;
+    case AudioSessionLoad::title_return: native_audio_bootstrap_queue(c, queue_); return;
+    case AudioSessionLoad::award:
+    case AudioSessionLoad::ending: start_screen_music(c, queue_); return;
+    case AudioSessionLoad::award_return: start_title_music_after_award(c, queue_); return;
+    }
 }
 } // namespace unirally

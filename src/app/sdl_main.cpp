@@ -350,7 +350,7 @@ void write_audio_cues(std::ofstream &out, std::uint32_t frame,
       if (cue.load == unirally::AudioSessionLoad::race)
         out << "race-" << unsigned(unirally::race_song_resource(cue.parameter));
       else
-        out << "title";
+        out << unirally::audio_session_name(cue.load);
       out << '\n';
       break;
     case unirally::AudioCueKind::rotation:

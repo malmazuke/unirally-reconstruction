@@ -45,7 +45,8 @@ public:
   }
 };
 // "FRAME E COMMAND PARAMETER", "FRAME D early|late|...|wait", "FRAME L
-// race-RESOURCE|title" (a race load on the schedule's `track`, R-0077), and
+// race-RESOURCE|title|award|ending|title-award" (a race load on the
+// schedule's `track`, R-0077), and
 // the app's unresolved "FRAME R RIDER ROTATING", which the audio side's
 // latches resolve.
 std::uint8_t song_counter_of(const std::string &what) {
@@ -59,6 +60,12 @@ std::uint8_t song_counter_of(const std::string &what) {
         (counter != 0 || resource != 64))
       return counter;
   throw std::invalid_argument("unknown race song in a load cue");
+}
+unirally::AudioSessionLoad session_named(const std::string &what) {
+  for (const auto &[session, name] : unirally::audio_session_names)
+    if (what == name)
+      return session;
+  throw std::invalid_argument("unknown session in a load cue");
 }
 std::map<std::uint32_t, unirally::AudioCueList> read_cues(const char *path,
                                                            std::uint8_t track) {
@@ -100,8 +107,7 @@ std::map<std::uint32_t, unirally::AudioCueList> read_cues(const char *path,
       else if (what.rfind("race", 0) == 0)
         list.push_back(unirally::audio_race_load(track, song_counter_of(what)));
       else
-        list.push_back(
-            unirally::audio_load(unirally::AudioSessionLoad::title_return));
+        list.push_back(unirally::audio_load(session_named(what)));
     } else
       throw std::invalid_argument("unknown cue kind");
   }

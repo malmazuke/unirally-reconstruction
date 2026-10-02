@@ -67,6 +67,26 @@ void load_race_upload(const ClassicContentPack& pack, AudioCpuUploadData& out) {
             out.sample_resources[sample] = bytes_entry(pack, sample_entry(sample).c_str());
     }
 }
+// R-0077, pack v34: the medal award's and the gold endings' sets, which add samples to the pack
+// only where their slots name new ones.
+void load_screen_set(const ClassicContentPack& pack, const std::string& name, AudioSoundSet& set,
+                     AudioCpuUploadData::ScreenSet& upload, AudioCpuUploadData& out) {
+    const auto entry = [&](const char* kind) { return "audio." + name + "-" + kind; };
+    set.tables = bytes_entry(pack, entry("tables").c_str());
+    set.score = bytes_entry(pack, entry("score").c_str());
+    upload.tables_transfer = bytes_entry(pack, entry("tables-transfer").c_str());
+    upload.score_transfer = bytes_entry(pack, entry("score-transfer").c_str());
+    const auto slots = pack.entry(entry("sample-slots").c_str());
+    if (slots.size() != upload.sample_slots.size())
+        throw std::invalid_argument("audio sample slot table size differs");
+    std::copy(slots.begin(), slots.end(), upload.sample_slots.begin());
+    for (const auto sample : upload.sample_slots) {
+        if (sample == 255) continue;
+        if (sample >= 50) throw std::invalid_argument("audio sample resource differs");
+        if (out.sample_resources[sample].empty())
+            out.sample_resources[sample] = bytes_entry(pack, sample_entry(sample).c_str());
+    }
+}
 // R-0075: only identified palette/map/tile metadata used by the native work clock.
 void load_graphics(const ClassicContentPack& pack, std::array<AudioCpuGraphicsAsset, 128>& out) {
     constexpr std::array<unsigned, 17> ids{1,  2,  5,  27, 28, 31, 68, 69, 70,
@@ -111,6 +131,11 @@ TitleMenuAudioContent title_menu_audio_content(const ClassicContentPack& pack) {
                            - first_race_song_resource] = {tables, {song.begin(), song.end()}};
         }
         load_race_upload(pack, out.upload);
+    }
+    if (!pack.optional_entry("audio.award-tables").empty()) {
+        load_screen_set(pack, "award", out.award, out.upload.award, out.upload);
+        load_screen_set(pack, "ending", out.ending, out.upload.ending, out.upload);
+        out.ending.effects = ending_driver_effects;
     }
     load_graphics(pack, out.graphics);
     copy_entry(pack, "audio.cartridge-defaults", out.cartridge_defaults);
