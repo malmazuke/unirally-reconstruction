@@ -11,7 +11,7 @@ one race start and the reset delay from the capture) and on R-0076's seven. Give
 port writes the native IPL, driver and DSP reproduce four full captures write for write and pair
 for pair, `all-gold` included (27,413,906 pairs). Anchored PCM is measured, not exact (D-0010):
 11,496 of 11,526 commands over the 44 track runs reach the driver in the original's frame, median
-level differences 0.11-0.47 dB. Fresh-process saves continue exactly (37 new, R-0076's 23). The
+level differences 0.13-0.34 dB (0.11-0.47 dB over the ten measured schedules of R-0077's table). Fresh-process saves continue exactly (37 new, R-0076's 23). The
 eleven frozen race gates and the race equivalence sweep against main (0 differences in 2,387,105
 updates) pass. Pack profile v34 adds the award's and endings' sets.
 [R-0077](../docs/research/R-0077-one-player-audio.md) and [AUDIO-ONE-PLAYER](AUDIO-ONE-PLAYER.md)

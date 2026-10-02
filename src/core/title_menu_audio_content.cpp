@@ -70,8 +70,8 @@ void load_race_upload(const ClassicContentPack& pack, AudioCpuUploadData& out) {
 // R-0077: an upload replaces only the bytes it transfers, so the sound processor's RAM holds the
 // session's tables and score over what the title set left there. Every race, award and ending
 // session follows the title set's (the menus' or the race return's), so each set is its
-// transfers over the title's. The award's 304 bytes of tables stop short of the driver's
-// effect tables (`$1726` on), which stay the menus'.
+// transfers over the title's. The award's 304 bytes of tables reach only the first ten bytes of
+// the driver's effect tables (`$1726-$172F`); the rest stay the menus'.
 std::vector<std::uint8_t> over_title(std::span<const std::uint8_t> transfer,
                                      std::span<const std::uint8_t> title_transfer) {
     std::vector<std::uint8_t> ram(transfer.begin(), transfer.end());

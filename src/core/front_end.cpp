@@ -931,7 +931,7 @@ void demo_title_frame(FrontEndState& state, const FrontEndContent& content) {
         state.tour_menu.track = second_cycle ? 3 : ClassicRaceTrack::ZoomZoo.index;
         state.rider_menu.rider = second_cycle ? 6 : 4;
         state.now_playing.opponent = second_cycle ? 1 : 14;
-        choose_race_song(state); // the demo's race loads a song too ($83:CA08)
+        // The demo's race keeps the song counter: `$83:C9F6-CA05` skips `$83:CA08` (R-0077).
         state.mode_chosen = true;
         state.screen = FrontEndScreen::race;
     }

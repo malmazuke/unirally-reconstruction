@@ -9238,6 +9238,16 @@
    "region": "rom"
   },
   {
+   "address": "$83:C9F6",
+   "native": [
+    "src/core/front_end.cpp:demo_title_frame"
+   ],
+   "range_ends": [
+    "$83:CA05"
+   ],
+   "region": "rom"
+  },
+  {
    "address": "$83:CA08",
    "native": [
     "src/core/audio_cue.hpp:race_song_count",
@@ -12951,6 +12961,9 @@
    "native": [
     "src/core/title_menu_audio_content.cpp:over_title"
    ],
+   "range_ends": [
+    "$172F"
+   ],
    "region": "wram"
   },
   {
@@ -14566,6 +14579,7 @@
   "src/core/front_end.cpp:demo_title_frame": {
    "rom": [
     "$83:C8E0",
+    "$83:C9F6",
     "$83:CA08"
    ]
   },
@@ -21218,10 +21232,10 @@
   }
  },
  "totals": {
-  "addresses": 1542,
+  "addresses": 1543,
   "io_addresses": 9,
   "native_symbols": 1174,
-  "rom_addresses": 1168,
+  "rom_addresses": 1169,
   "sram_addresses": 50,
   "wram_addresses": 315
  }

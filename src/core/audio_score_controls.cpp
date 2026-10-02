@@ -173,7 +173,7 @@ void TitleMenuAudioScore::apply_random_control(std::uint8_t index, std::uint8_t 
         voice.pointer = word(voice.pointer + byte(2U * choice));
         const auto target = read_word(index);
         const auto rest = byte(count - 1U - choice);
-        voice.pointer = word(voice.pointer + byte(2U * rest) + (rest >> 7U));
+        voice.pointer = word(voice.pointer + byte(2U * rest) + (unsigned{rest} >> 7U));
         push_pointer(index);
         voice.pointer = target;
         break;

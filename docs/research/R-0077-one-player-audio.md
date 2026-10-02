@@ -52,8 +52,10 @@ check and the measurement.
    shows the write at `$83:988A`, frame 4145).
 5. **The medal award's sound set.** `$83:A614` loads driver 50, tables 52, score 58 and the samples
    of `$83:FBF5`, then gains 255 and 79, the music start and five dispatcher calls
-   (`$83:A644-A66B`). The award's medal plays volume 127, effect 1 (`$83:A286`) as `$77:10CB`
-   leaves 0x26 and 0x30 (`$83:B02C-B03A`). Leaving it, `$83:A721` (from `$83:B119`) loads the title set again and
+   (`$83:A644-A66B`). The award's medal enqueues volume 127, effect 1 (`$83:A286`) as `$77:10CB`
+   leaves 0x26 and 0x30 (`$83:B02C-B03A`); the command reaches the driver, but the effect's
+   priority (5) loses every voice to the award's music, so it never sounds, in the original as
+   in native (review of PR #52). Leaving it, `$83:A721` (from `$83:B119`) loads the title set again and
    enqueues the music start and gains 255 and 127 (`$83:A75E-A770`).
 6. **The gold endings' sound set.** `$83:A507` loads driver 51, tables 55, score 60 and the samples
    of `$83:FD35`, then as the award. Driver 51 differs from 50 in five bytes: it has 29 effects
@@ -63,7 +65,8 @@ check and the measurement.
 7. **Upload over the title set.** An upload writes only the bytes it transfers, so the sound
    processor's RAM holds each session's tables and score over the title set's bytes. Every race,
    award and ending session follows the title set (the menus' or the race return's). The award's
-   304 bytes of tables stop short of driver 50's effect tables (`$1726` on), so its effects are the
+   304 bytes of tables reach only the first ten bytes of driver 50's effect tables
+   (`$1726-$172F`, effects 0-9's pointer low bytes); the effects' high bytes and flags are the
    menus' (native reading pointer `$1767` for the medal's effect 1 showed it).
 8. **Each session in its frame.** The award's and the endings' sessions start in their fade's
    blank frame, which `$83:A4E9` leaves without a frame wait (`$83:A4FE-A506`), and their way back's
@@ -99,8 +102,9 @@ at 1300 + 1500k or 1700k, quitting each through the pause menu. `loading.py` rea
 the frames from NOW PLAYING's choice (`D choice`, the fade's last frame) to the session's first FF
 request, the start cue's lead (`E 2 15`, `$82:D84A`, before the request), the frames from the
 request to the race's first update (`D early`) and the request's master clocks after its frame's
-boundary. Every track gives one offset and one lead over its six races, and one upload length for
-each song counter; the request's clock varies by at most 1,772 clocks between one track's races
+boundary. Every track gives one offset and one lead over its six races. Each upload cell is one race:
+song 64 (counters 0 and 3) gives different lengths on tracks 19 and 25, so the table is by
+counter, not by song; the request's clock varies by at most 1,772 clocks between one track's races
 (`loading-tables.json`). Tracks 0-4 keep the first checkpoint's anchors (DRAGSTER's is R-0076's).
 
 | Track | Offset | Lead | Upload by counter 0-5 | Request clock (median, range) |
@@ -248,6 +252,7 @@ ordered DSP-register and SMP-port write and every raw stereo pair:
 | `full-hopper-gold` | boot, three races, two awards, an ending, six title reloads | 1,383,923 | 3,651,888 | equal |
 | `full-all-gold` | boot, 25 races, 16 awards, 8 endings, title reloads, HUNTER's ending, the reset boot | 10,521,739 | 27,413,906 | equal; native writes one more after the capture's end |
 | `full-lap-won` | boot, a three-lap race, the title reload | 1,336,353 | 5,381,791 | equal |
+| `review/full-fifth-win` (the reviewer's) | boot, a race, a title reload, an award with 61 medal commands, the way back | 1,176,515 | 4,036,945 | equal |
 
 Score controls 87, 98, 99, 9A and A4 (observation 10 and below) were found this way: the race
 songs 63-66 use 87; HOPPER's ending's noise uses 98-9A; the lap race uses A4. Control A4

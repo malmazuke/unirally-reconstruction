@@ -14817,18 +14817,18 @@
    "call returns in the calling mode": 1262
   },
   "bytes": 131072,
-  "cited_addresses": 1652,
+  "cited_addresses": 1654,
   "cited_by_class": {
    "data": 25,
    "inferred": 282,
-   "observed": 1014,
+   "observed": 1016,
    "unknown": 331
   },
   "cited_by_position": {
    "dat": 25,
-   "loc": 938,
+   "loc": 939,
    "mid": 19,
-   "sub": 339,
+   "sub": 340,
    "unk": 331
   },
   "conflicts": 0,

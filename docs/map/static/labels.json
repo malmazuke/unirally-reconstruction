@@ -18212,6 +18212,18 @@
   ]
  },
  {
+  "address": "$83:C9F6",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83C9F6",
+  "native": [
+   "src/core/front_end.cpp:demo_title_frame"
+  ],
+  "source_records": [
+   "tasks/AUDIO-ONE-PLAYER.md"
+  ]
+ },
+ {
   "address": "$83:CA08",
   "class": "observed",
   "comment": "instruction start",
@@ -18275,6 +18287,15 @@
   ],
   "source_records": [
    "docs/research/R-0066-stunt-event-race.md"
+  ]
+ },
+ {
+  "address": "$83:CBF2",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_83CBF2",
+  "source_records": [
+   "tasks/AUDIO-ONE-PLAYER.md"
   ]
  },
  {

@@ -174,6 +174,28 @@ holds the observations, the loading table, the producers and the measured domain
   same per-track table, measured on six races of every track.
 - `e023ba8` re-run (`gates-e023ba8-synthetic.out`, `gates-e023ba8-tail.out`): see the PR.
 
+## Review 1, 3 October 2026
+
+Fresh Claude Opus 5.5 subagent in its own clone (comment review on PR #52 of `6ea3656`):
+changes required, two blocking and four record findings. Reproduced: build and ctest, pack v34
+byte-identical, eleven cue comparisons and `all-gold` (`INITS=1`), the `full-hopper-gold`
+conditional check, seven continuation saves. Withheld: `w-restart-quit` and `w-tally-held` equal;
+`w-demo-race` found finding 2. Its outputs are in main `local/evidence/audio-one-player/review/`.
+
+1. Ubuntu CI: `audio_score_controls.cpp` control A4's `rest >> 7U` promoted to `int`
+   (`-Wsign-conversion`). Fixed (`unsigned{rest}`).
+2. The attract demo advanced the song counter (`choose_race_song` in `demo_title_frame`);
+   `$83:C9F6-CA05` jumps to `$83:CBF2` with the demo flag, past `$83:CA08`. Fixed; `w-demo-race`
+   now loads `race-62` at 4249 with cues equal from frame 4000 (the demo's own title reloads stay
+   outside the cued domain).
+3. Records: the award's tables reach `$1726-$172F`; the medal's effect never gets a voice. Fixed in
+   R-0077 observations 5 and 7 and the content comment.
+4. The reviewer's `full-fifth-win` (an award with 61 medal commands) is conditionally equal;
+   added to R-0077's table.
+5. STATE/NEXT_SESSION's level range: corrected to 0.13-0.34 dB for the 44 track runs.
+6. The loading table's cells are single races, by counter (song 64 differs on tracks 19 and 25):
+   stated in R-0077.
+
 ## Acceptance and closeout
 
 - Native cues equal the original's on frozen schedules covering every song,
