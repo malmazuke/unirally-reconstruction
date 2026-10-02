@@ -282,16 +282,14 @@ static RgbFrame render_dragster(const PresentationSample& s, const PresentationC
     // R-0040: with the recovered table family the pose pair is replaced by the
     // original's own per-frame selection. A DRAGSTER v1 pack carries only the two
     // frozen tables, so it keeps the accepted pose-keyed placement unchanged.
-    // A plain sentinel, not the optional: GCC's -O2 flags its guarded dereferences.
-    constexpr unsigned no_window = ~0U;
-    const unsigned window_index = content.window_tables.empty()
-                                      ? no_window
-                                      : dragster_window_table_index(s.movement).value_or(no_window);
+    const auto window_index = content.window_tables.empty()
+                                ? std::optional<unsigned>{}
+                                : dragster_window_table_index(s.movement);
     if (content.window_tables.empty()) {
         if (player_pose == 0x04f9 && opponent_pose == 0x0263)
             render_window_xor(f, content.go_window, window_colour({255, 255, 255}));
-    } else if (window_index <= 6) {
-        render_window_xor(f, dragster_window_table(content.window_tables, window_index),
+    } else if (window_index && *window_index <= 6) {
+        render_window_xor(f, dragster_window_table(content.window_tables, *window_index),
                           window_colour({255, 255, 255}));
     }
     draw_dragster_timer_marks(f, s.movement.timer);
@@ -299,8 +297,8 @@ static RgbFrame render_dragster(const PresentationSample& s, const PresentationC
     if (content.window_tables.empty()) {
         if (player_pose == 0x04fe && opponent_pose == 0x037c)
             render_window_xor(f, content.winner_window, window_colour({98, 98, 255}));
-    } else if (window_index >= 7 && window_index != no_window) {
-        render_window_xor(f, dragster_window_table(content.window_tables, window_index),
+    } else if (window_index && *window_index >= 7) {
+        render_window_xor(f, dragster_window_table(content.window_tables, *window_index),
                           window_colour({98, 98, 255}));
     }
     return f;
