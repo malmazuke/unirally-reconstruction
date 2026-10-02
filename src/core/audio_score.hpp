@@ -43,9 +43,15 @@ struct AudioScoreUpdateWork {
         std::uint32_t ticks;
         std::uint8_t value;
     };
+    // A DSP register the score writes itself (control 9A's noise clock, R-0077).
+    struct DspWrite {
+        std::uint32_t ticks;
+        std::uint8_t reg, value;
+    };
     std::uint32_t ticks = 0;
     bool polls_commands = true;
     std::vector<Timer2Write> timer2_writes;
+    std::vector<DspWrite> dsp_writes;
 };
 struct AudioScoreRegisterWork {
     std::array<std::uint32_t, 6> write_ticks{};
@@ -89,6 +95,9 @@ struct AudioScoreState {
     std::uint8_t timer2_target = 133;
     std::uint8_t music_gain = 48, effect_gain = 64;
     std::uint8_t key_on_pending = 0, key_off_pending = 0;
+    // R-0077, `$D6`: the voices whose output is noise (DSP register 3D, written by the music
+    // pass); controls 98/99 set/clear a voice's bit and a voice's reset clears it (08B4-08B9).
+    std::uint8_t noise_voices = 0;
     // Sixty-four flags (SPC 033C-0343) that CPU commands 6/11 clear/set and
     // score controls A5-A8 change or test; flag n is bit n & 7 of byte n >> 3.
     std::array<std::uint8_t, 8> flags{};
@@ -113,6 +122,7 @@ public:
     std::array<std::uint8_t, 6> voice_register_values(std::uint8_t voice) const;
     AudioScoreRegisterWork voice_register_work(std::uint8_t voice) const;
     std::uint8_t take_key_on_pending();
+    std::uint8_t noise_voices() const { return state_.noise_voices; }
     std::uint8_t take_key_off_pending();
     void update_voice(std::uint8_t voice, bool effect_tick, std::uint8_t update_counter = 0);
     AudioScoreUpdateWork update_voice_timed(std::uint8_t voice, bool effect_tick,

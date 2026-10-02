@@ -65,7 +65,7 @@ void check_file_and_transactional_restore() {
   corrupt.push_back(0);
   rejects([&] { unirally::deserialize_title_menu_audio(corrupt); });
   corrupt = bytes;
-  // URAU0005 header8, phase1, action1, identity32, then three CPU clock words8
+  // URAU0006 header8, phase1, action1, identity32, then three CPU clock words8
   // each.
   constexpr unsigned first_cpu_flag = 8 + 1 + 1 + 32 + 3 * 8;
   corrupt[first_cpu_flag] = 2;
@@ -105,7 +105,7 @@ void check_hunter_state_validation() {
   require(unirally::serialize_title_menu_audio(audio.snapshot()) == before,
           "invalid HUNTER continuation mutated running audio");
 }
-// URAU0005's cued-scene fields round-trip, and restore ties them to the phase
+// URAU0006's cued-scene fields round-trip, and restore ties them to the phase
 // (AUDIO-FIRST-RACE).
 void check_cued_scene_state() {
   unirally::TitleMenuAudioContent content;

@@ -145,6 +145,7 @@ void TitleMenuAudioScore::reset_voice(std::uint8_t index, std::uint16_t pointer,
     voice.priority = priority;
     voice.volume_gain = effect == 255 ? state_.music_gain : state_.effect_gain;
     voice.stack_position = byte(16U * index);
+    state_.noise_voices = byte(state_.noise_voices & ~(1U << index));
     state_.key_off_pending |= byte(1U << index);
 }
 std::uint8_t TitleMenuAudioScore::take_key_on_pending() {

@@ -219,6 +219,23 @@ void TitleMenuAudioScore::apply_instrument_control(std::uint8_t index, std::uint
         add_work(16 + 506 + 6);
         set_instrument(index, read_byte(index));
         break;
+    case 0x9a: {
+        // R-0077, 1064-1073: the noise clock (bits 0-4) into FLG with echo writes off (bit 5).
+        constexpr std::uint8_t flag_register = 0x6c, echo_writes_off = 0x20, clock_bits = 0x1f;
+        const auto value = byte((read_byte(index) & clock_bits) | echo_writes_off);
+        add_work(38);
+        if (measured_work_) measured_work_->dsp_writes.push_back({measured_work_->ticks,
+                                                                  flag_register, value});
+        add_work(6);
+        break;
+    }
+    case 0x98:
+    case 0x99:
+        // R-0077, 1052-1061: the voice's bit of the noise voices `$D6` set (98) or cleared (99).
+        add_work(26);
+        state_.noise_voices = control == 0x98 ? byte(state_.noise_voices | (1U << index))
+                                              : byte(state_.noise_voices & ~(1U << index));
+        break;
     case 0x9b:
     case 0x9c:
         add_work(control == 0x9b ? 50U : 22U);
