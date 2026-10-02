@@ -219,6 +219,7 @@ bool ends_with_queue_wait(const FrontEndState& state) {
         return true;
     if (state.screen == FrontEndScreen::tour_award) return award_frame_waits(state);
     if (state.screen == FrontEndScreen::tour_ending) return tour_ending_frame_waits(state);
+    if (state.screen == FrontEndScreen::hunter_ending) return hunter_ending_queue_waits(state);
     return waits_for_frame(state);
 }
 
@@ -305,6 +306,11 @@ void boot_frame(FrontEndState& state, const FrontEndContent& content, FrontEndPa
     const auto frame = boot_frame_number(state);
     if (!frame) return;
     const auto f = *frame;
+    // After a soft reset the boot's sound program load (`$80:A09A`) stops the running driver
+    // first: a session from a running driver, as after a race (R-0077, `all-gold`).
+    constexpr std::uint32_t reset_sound_load_frame = 28;
+    if (state.after_soft_reset && f == reset_sound_load_frame)
+        state.sound_cues.push_back(audio_load(AudioSessionLoad::reset_boot));
     if (f == 24) {
         clear_oam_buffer(state);
         load_cgram(state, asset(content, early_palette), 0xe0);

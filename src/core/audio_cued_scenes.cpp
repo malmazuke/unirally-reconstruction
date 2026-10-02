@@ -23,12 +23,22 @@ constexpr std::uint64_t title_return_load_anchor = 344450;
 // sessions (24 awards, 3 endings, 27 returns). Each follows a frame wait, early in its frame.
 constexpr std::uint64_t award_load_anchor = 2342, ending_load_anchor = 2476,
                         award_return_load_anchor = 1278;
+// The boot's session after HUNTER's soft reset, from `all-gold`'s one reset.
+constexpr std::uint64_t reset_boot_load_anchor = 371820;
 constexpr std::uint32_t longest_session_frames = 81;
 // D-0010 calibration by track (R-0077): the race sound session's first FF request's master
-// clocks after its frame's boundary, the medians of six races on each of the five tracks the
-// menus reach (DRAGSTER's is R-0076's). The race's content load before the request differs by
-// track and places the request from 70,000 to 306,000 clocks into its frame.
-constexpr std::array<std::uint64_t, 5> race_load_anchors{169072, 124219, 69947, 94109, 306008};
+// clocks after its frame's boundary, the median of six races on each track (DRAGSTER's is
+// R-0076's; tracks 1-4 keep the first checkpoint's). The race's content load before the request
+// places it anywhere in its frame; one track's races differ by at most 1,772 clocks.
+constexpr std::array<std::uint64_t, 45> race_load_anchors{
+    169072, 124219,  69947,  94109, 306008, 404106,  54754,
+    110668, 224075, 245818,  76076, 270156,  69311, 349876,
+    218874, 392136,  38807,  28452, 203698, 140423, 249260,
+      8936, 288078, 380421, 269302, 157932,  93327, 318300,
+    379582,   1142,  46304, 371964,  34262,  90689,  69184,
+    240970, 305180, 125412, 296727, 348187, 264025, 215139,
+    335340, 226994, 225821,
+};
 std::uint64_t race_load_anchor(std::uint8_t track) {
     if (track >= race_load_anchors.size())
         throw std::invalid_argument("no measured race sound load for this track");
@@ -103,6 +113,7 @@ SessionStart session_start(const AudioCue& cue) {
     case AudioSessionLoad::ending: return {AudioSoundSetId::ending, ending_load_anchor};
     case AudioSessionLoad::award_return:
         return {AudioSoundSetId::title, award_return_load_anchor};
+    case AudioSessionLoad::reset_boot: return {AudioSoundSetId::title, reset_boot_load_anchor};
     }
     throw std::invalid_argument("unknown audio session");
 }
@@ -205,7 +216,8 @@ void NativeTitleMenuAudio::load_session(std::uint32_t frame, const AudioCue& cue
     rotation_sounding_ = {}; // the race load clears the race's work RAM
     switch (cue.load) {
     case AudioSessionLoad::race: start_race_music(c, queue_, cue.parameter); return;
-    case AudioSessionLoad::title_return: native_audio_bootstrap_queue(c, queue_); return;
+    case AudioSessionLoad::title_return:
+    case AudioSessionLoad::reset_boot: native_audio_bootstrap_queue(c, queue_); return;
     case AudioSessionLoad::award:
     case AudioSessionLoad::ending: start_screen_music(c, queue_); return;
     case AudioSessionLoad::award_return: start_title_music_after_award(c, queue_); return;

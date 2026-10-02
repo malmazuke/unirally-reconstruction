@@ -234,11 +234,11 @@ void setup(FrontEndState& state, const FrontEndContent& content) {
 }
 
 // The steps of the first three loops end alike: the walk's pose to tile 0x100, the objects,
-// the next walk pose.
-void walk_step(FrontEndState& state, const FrontEndContent& content) {
+// the next walk pose; only the first loop's (`$83:B8EB`) has the walk's footsteps.
+void walk_step(FrontEndState& state, const FrontEndContent& content, bool footsteps) {
     upload_built_pose(state, content, first_pose_word);
     copy_oam(state);
-    walk(state);
+    footsteps ? walk(state) : walk_pose(state);
     ++state.ending.step;
 }
 
@@ -246,7 +246,7 @@ void walk_step(FrontEndState& state, const FrontEndContent& content) {
 // step 0x21 it rises, jumping.
 void ride_in_part(FrontEndState& state, const FrontEndContent& content, unsigned, unsigned wait) {
     if (wait == 1) {
-        walk_step(state, content);
+        walk_step(state, content, true);
         if (state.ending.step < red_uni_rises) return;
         play_screen_sound(state, rise_sound);
         oam_byte(state, red_uni, 1) -= rise;
@@ -260,7 +260,7 @@ void ride_in_part(FrontEndState& state, const FrontEndContent& content, unsigned
 // $83:B91E-B99A: the red uni hits the block, which bumps up, and the ball pops out.
 void bump_part(FrontEndState& state, const FrontEndContent& content, unsigned step, unsigned wait) {
     if (wait == 1) {
-        walk_step(state, content);
+        walk_step(state, content, false);
         return;
     }
     if (step == 0) {
@@ -282,7 +282,7 @@ void ball_falls_part(FrontEndState& state, const FrontEndContent& content, unsig
                      unsigned wait) {
     auto& ending = state.ending;
     if (wait == 1) {
-        walk_step(state, content);
+        walk_step(state, content, false);
         if (ending.step >= ball_falls_from) ++ending.drop;
         return;
     }

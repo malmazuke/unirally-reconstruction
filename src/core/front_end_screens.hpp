@@ -317,6 +317,8 @@ void upload_pose(FrontEndState& state, const FrontEndContent& content, std::uint
 void start_hunter_ending(FrontEndState& state, bool both_pads);
 void hunter_ending_frame(FrontEndState& state, const FrontEndContent& content, FrontEndPads pads);
 bool hunter_ending_waits(const FrontEndState& state);
+// Whether HUNTER's ending's frame just run ended in a wait that polls the sound queue (R-0077).
+bool hunter_ending_queue_waits(const FrontEndState& state);
 // `JML $80:8858`, the power-on entry: the boot again, the records kept.
 void soft_reset(FrontEndState& state);
 // The main menu's code B, Down, L and R (`$80:F0D6`), then a frame of its 31 before the ending.

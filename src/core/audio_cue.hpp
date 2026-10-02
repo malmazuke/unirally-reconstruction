@@ -29,13 +29,16 @@ enum class AudioSessionLoad : std::uint8_t {
     award,        // $83:A614-A66B: the medal award's set, its music start and five polls
     ending,       // $83:A507-A55F: a gold ending's set (driver 51), likewise (R-0077)
     award_return, // $83:A721-A770 after either: the title set, then the title music start
+    reset_boot,   // $80:A09A after a soft reset: the title set from a running driver, as after a
+                  // race (R-0077)
 };
 // The laboratory cue logs' names of the sessions other than a race's ("race-RESOURCE").
-constexpr std::array<std::pair<AudioSessionLoad, std::string_view>, 4> audio_session_names{{
+constexpr std::array<std::pair<AudioSessionLoad, std::string_view>, 5> audio_session_names{{
     {AudioSessionLoad::title_return, "title"},
     {AudioSessionLoad::award, "award"},
     {AudioSessionLoad::ending, "ending"},
     {AudioSessionLoad::award_return, "title-award"},
+    {AudioSessionLoad::reset_boot, "title-reset"},
 }};
 inline std::string_view audio_session_name(AudioSessionLoad load) {
     for (const auto& [session, name] : audio_session_names)

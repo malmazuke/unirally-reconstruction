@@ -598,10 +598,15 @@ void write_loading_frame(const Options& options, const unirally::FrontEndState& 
                          const RaceBetweenMenus& race, std::uint32_t frame,
                          SoundCueLog& sound_cues) {
     const unirally::ClassicRaceTrack track{state.tour_menu.track};
-    sound_cues.write(frame, unirally::race_sound::loading(
-                                race.initialization_frame - frame,
-                                unirally::race_sound_load_timing(track, state.race_song),
-                                track.index, state.race_song));
+    auto timing = unirally::race_sound_load_timing(track, state.race_song);
+    // A given initialization frame (a capture's) changes the session's upload, not its request:
+    // the upload's length varies with the sound processor's state (R-0077).
+    if (timing.upload_frames && race.loading_initialization)
+        timing.upload_frames = static_cast<std::uint32_t>(
+            static_cast<std::int64_t>(timing.upload_frames) + race.initialization_frame
+            - race.loading_initialization);
+    sound_cues.write(frame, unirally::race_sound::loading(race.initialization_frame - frame, timing,
+                                                          track.index, state.race_song));
     if (const auto picture = options.pictures.find(frame); picture != options.pictures.end())
         write_ppm(picture->second, unirally::RgbFrame{});
     if (const auto records = options.records.find(frame); records != options.records.end())

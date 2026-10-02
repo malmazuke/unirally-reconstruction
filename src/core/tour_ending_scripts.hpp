@@ -38,6 +38,9 @@ void run_loop(const Loop& loop, std::uint32_t frame, FrontEndState& state,
 void upload_built_pose(FrontEndState& state, const FrontEndContent& content, unsigned word);
 // $83:B79C: the walk's poses, a new one every second step, 23 in turn, with its footsteps.
 void walk(FrontEndState& state);
+// The same poses without the footsteps, as BOUNDER's bump and ball loops build them inline
+// (`$83:B96F-B988`, `$83:B9D1`).
+void walk_pose(FrontEndState& state);
 // $83:B7B1-B7BE: the walk's footsteps: effect 18 on its pose 0 and effect 19 on pose 11.
 void walk_sound(FrontEndState& state, unsigned walk_pose);
 // A tour's first objects from its table into the OAM buffer.

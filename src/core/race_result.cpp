@@ -689,46 +689,91 @@ ClassicRaceScenario one_player_race_scenario(const FrontEndState& state) {
     return scenario;
 }
 
-// R-0077: frames from NOW PLAYING's choice frame (the fade's last) to the race sound session's
-// first FF request ($83:CA72's `JSL $82:807E`), measured on six races of each track.
-std::uint32_t race_sound_load_offset(ClassicRaceTrack track) {
-    switch (track.index) {
-    case 0: return 42;  // DRAGSTER
-    case 1: return 90;  // ZOOM ZOO
-    case 2: return 49;  // CRAWLER STUNT
-    case 3: return 117; // DUELLER
-    case 4: return 97;  // GOING UP
-    default: return 0;  // not measured
-    }
-}
-// R-0077: frames from that request to the race's first update, by track and song counter. The
-// session uploads the driver, the tables, the song and the samples in one piece of CPU work,
-// and the race's first update follows in the frame after the upload ends, so the song's length
-// (resource 65 is 2,629 bytes, 66 is 1,655) and the request's position in its frame decide the
-// count. Measured on thirty sessions (five tracks, each counter value once, counter 3 twice);
-// counters 0 and 3 both play resource 64.
-std::uint32_t race_sound_upload_frames(ClassicRaceTrack track, std::uint8_t song_counter) {
-    constexpr std::array<std::array<std::uint8_t, race_song_count>, 5> frames{{
-        {79, 80, 79, 79, 81, 79}, // DRAGSTER
-        {79, 80, 79, 79, 81, 79}, // ZOOM ZOO
-        {79, 80, 79, 79, 80, 79}, // CRAWLER STUNT
-        {79, 80, 79, 79, 81, 79}, // DUELLER
-        {80, 81, 80, 80, 81, 79}, // GOING UP
+// Nine tours of five tracks: every track the one-player menus reach.
+constexpr std::size_t classic_race_tracks =
+    (front_end_screens::hunter + 1U) * front_end_screens::tracks_per_tour;
+// R-0077: the race's sound loading on the menus' path, measured on six races of every track
+// from NOW PLAYING (`six-quits[-tN]`): frames from the choice frame (the fade's last) to the
+// race sound session's first FF request (`$83:CA72`'s `JSL $82:807E`), indexed by track.
+constexpr std::array<std::uint8_t, classic_race_tracks> race_sound_load_offsets{
+     42,  90,  49, 117,  97,  90,  88,  50, 110,  73, 131,  81,  57,  90,  55,
+    102,  96,  44,  85,  94,  73,  81,  44,  84,  80,  93,  83,  58,  94,  68,
+     89,  95,  48,  87,  71, 110,  66,  47,  82,  94, 142,  69,  77,  91,  71,
+};
+// The frames from that request to the race's first update, by track and song counter. The
+// session uploads the driver, the tables, the song and the samples in one piece of CPU work, and
+// the race's first update follows in the frame after its polls (two frames after, when they run
+// late in theirs), so the song's length, the request's place in its frame and the upload's own
+// variation decide it; counters 0 and 3 both play resource 64.
+constexpr std::array<std::array<std::uint8_t, race_song_count>, classic_race_tracks>
+    race_sound_upload_frame_table{{
+        {79, 80, 79, 79, 81, 79},
+        {79, 80, 79, 79, 81, 79},
+        {79, 80, 79, 79, 80, 79},
+        {79, 80, 79, 79, 81, 79},
+        {80, 81, 80, 80, 81, 79},
+        {80, 81, 80, 80, 81, 79},
+        {79, 80, 79, 79, 80, 79},
+        {79, 80, 79, 79, 80, 79},
+        {80, 81, 79, 80, 81, 79},
+        {80, 81, 79, 80, 81, 79},
+        {79, 80, 79, 79, 80, 79},
+        {80, 81, 80, 80, 81, 79},
+        {79, 80, 79, 79, 80, 79},
+        {80, 81, 80, 80, 81, 79},
+        {80, 80, 79, 80, 81, 79},
+        {80, 81, 80, 80, 81, 79},
+        {79, 80, 79, 79, 80, 79},
+        {79, 80, 79, 79, 80, 79},
+        {80, 80, 79, 80, 81, 79},
+        {79, 80, 79, 80, 81, 79},
+        {80, 81, 79, 80, 81, 79},
+        {79, 80, 79, 79, 80, 78},
+        {80, 81, 80, 80, 81, 79},
+        {80, 81, 80, 80, 81, 79},
+        {80, 81, 80, 80, 81, 79},
+        {80, 80, 79, 79, 81, 79},
+        {79, 80, 79, 79, 81, 79},
+        {80, 81, 80, 80, 81, 79},
+        {80, 81, 80, 80, 81, 79},
+        {79, 80, 79, 79, 80, 78},
+        {79, 80, 79, 79, 80, 79},
+        {80, 81, 80, 80, 81, 79},
+        {79, 80, 79, 79, 80, 79},
+        {79, 80, 79, 79, 80, 79},
+        {79, 80, 79, 79, 80, 79},
+        {80, 81, 79, 80, 81, 79},
+        {80, 81, 80, 80, 81, 79},
+        {79, 80, 79, 79, 80, 79},
+        {80, 81, 80, 80, 81, 79},
+        {80, 81, 80, 80, 81, 79},
+        {80, 81, 80, 80, 81, 79},
+        {80, 80, 79, 80, 81, 79},
+        {80, 81, 80, 80, 81, 79},
+        {80, 80, 79, 80, 81, 79},
+        {80, 81, 79, 80, 81, 79},
     }};
-    if (track.index >= frames.size()) return 0;
-    return frames[track.index][song_counter % race_song_count];
+// The frames the start's countdown cue (`$82:D84A`) runs before the request.
+constexpr std::array<std::uint8_t, classic_race_tracks> race_start_cue_leads{
+    6, 6, 6, 6, 5, 5, 6, 6, 6, 6, 6, 5, 6, 5, 6,
+    5, 6, 6, 6, 6, 6, 6, 5, 5, 5, 6, 6, 5, 5, 6,
+    6, 5, 6, 6, 6, 6, 5, 6, 5, 5, 5, 6, 5, 6, 6,
+};
+std::uint32_t race_sound_load_offset(ClassicRaceTrack track) {
+    return track.index < race_sound_load_offsets.size() ? race_sound_load_offsets[track.index] : 0;
+}
+std::uint32_t race_sound_upload_frames(ClassicRaceTrack track, std::uint8_t song_counter) {
+    if (track.index >= race_sound_upload_frame_table.size()) return 0;
+    return race_sound_upload_frame_table[track.index][song_counter % race_song_count];
 }
 std::uint32_t race_loading_frames(ClassicRaceTrack track, std::uint8_t song_counter) {
     const auto offset = race_sound_load_offset(track);
     if (offset == 0) return 0;
     return offset + race_sound_upload_frames(track, song_counter) - 1;
 }
-// R-0077: the start's countdown cue ($82:D84A) runs six frames before the sound session's
-// request on DRAGSTER, ZOOM ZOO, CRAWLER STUNT and DUELLER, five on GOING UP.
 RaceSoundLoadTiming race_sound_load_timing(ClassicRaceTrack track, std::uint8_t song_counter) {
-    constexpr std::uint32_t usual_lead = 6, going_up_lead = 5;
-    return {race_sound_upload_frames(track, song_counter),
-            track.index == 4 ? going_up_lead : usual_lead};
+    if (track.index >= race_start_cue_leads.size()) return {};
+    return {race_sound_upload_frames(track, song_counter), race_start_cue_leads[track.index]};
 }
 std::uint32_t race_loading_frames(ClassicRaceTrack track) {
     constexpr std::uint8_t cold_first_race_song = 1; // resource 62 (R-0076)

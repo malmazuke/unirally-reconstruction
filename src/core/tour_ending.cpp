@@ -26,12 +26,21 @@ void walk_sound(FrontEndState& state, unsigned walk_pose) {
     if (walk_pose == second_step_pose) play_screen_sound(state, second_step_sound);
 }
 
+namespace {
+constexpr unsigned walk_poses = 23, pose_stride = 0x40;
+unsigned walk_pose_of(const TourEnding& ending) {
+    return (ending.step >> 1U) % walk_poses;
+}
+} // namespace
+
 void walk(FrontEndState& state) {
-    constexpr unsigned walk_poses = 23, pose_stride = 0x40;
+    walk_sound(state, walk_pose_of(state.ending));
+    walk_pose(state);
+}
+
+void walk_pose(FrontEndState& state) {
     auto& ending = state.ending;
-    const auto walk_pose = (ending.step >> 1U) % walk_poses;
-    walk_sound(state, walk_pose);
-    ending.pose = static_cast<std::uint16_t>(walk_pose * pose_stride);
+    ending.pose = static_cast<std::uint16_t>(walk_pose_of(ending) * pose_stride);
 }
 
 void load_first_objects(FrontEndState& state, std::span<const std::uint8_t> table, std::size_t at,
