@@ -53,7 +53,7 @@ check and the measurement.
 5. **The medal award's sound set.** `$83:A614` loads driver 50, tables 52, score 58 and the samples
    of `$83:FBF5`, then gains 255 and 79, the music start and five dispatcher calls
    (`$83:A644-A66B`). The award's medal plays volume 127, effect 1 (`$83:A286`) as `$77:10CB`
-   leaves 0x26 and 0x30 (`$83:B02C-B03A`). Leaving it, `$83:A721` loads the title set again and
+   leaves 0x26 and 0x30 (`$83:B02C-B03A`). Leaving it, `$83:A721` (from `$83:B119`) loads the title set again and
    enqueues the music start and gains 255 and 127 (`$83:A75E-A770`).
 6. **The gold endings' sound set.** `$83:A507` loads driver 51, tables 55, score 60 and the samples
    of `$83:FD35`, then as the award. Driver 51 differs from 50 in five bytes: it has 29 effects
@@ -93,12 +93,95 @@ check and the measurement.
 
 ## Race loading
 
-[Table pending: per track, the frames from the choice to the session's first FF request, the
-start cue's lead, the race's first update by song counter, and the request's clock.]
+`six-quits` (DRAGSTER) and `six-quits-tN` (track N; `track_schedule.py`: MIKE's level written
+3 after the cold format so every tour opens on both sides) each run six races from NOW PLAYING
+at 1300 + 1500k or 1700k, quitting each through the pause menu. `loading.py` reads, for every race,
+the frames from NOW PLAYING's choice (`D choice`, the fade's last frame) to the session's first FF
+request, the start cue's lead (`E 2 15`, `$82:D84A`, before the request), the frames from the
+request to the race's first update (`D early`) and the request's master clocks after its frame's
+boundary. Every track gives one offset and one lead over its six races, and one upload length for
+each song counter; the request's clock varies by at most 1,772 clocks between one track's races
+(`loading-tables.json`). Tracks 0-4 keep the first checkpoint's anchors (DRAGSTER's is R-0076's).
+
+| Track | Offset | Lead | Upload by counter 0-5 | Request clock (median, range) |
+|---:|---:|---:|---|---|
+| 0 | 42 | 6 | 79 80 79 79 81 79 | 169,144 (168,798-170,034) |
+| 1 | 90 | 6 | 79 80 79 79 81 79 | 124,219 (123,882-125,080) |
+| 2 | 49 | 6 | 79 80 79 79 80 79 | 69,947 (69,762-70,252) |
+| 3 | 117 | 6 | 79 80 79 79 81 79 | 94,109 (93,876-95,330) |
+| 4 | 97 | 5 | 80 81 80 80 81 79 | 306,008 (305,738-306,968) |
+| 5 | 90 | 5 | 80 81 80 80 81 79 | 404,106 (403,864-405,234) |
+| 6 | 88 | 6 | 79 80 79 79 80 79 | 54,754 (54,548-56,248) |
+| 7 | 50 | 6 | 79 80 79 79 80 79 | 110,668 (110,270-111,688) |
+| 8 | 110 | 6 | 80 81 79 80 81 79 | 224,075 (224,016-225,368) |
+| 9 | 73 | 6 | 80 81 79 80 81 79 | 245,818 (245,506-246,754) |
+| 10 | 131 | 6 | 79 80 79 79 80 79 | 76,076 (75,898-77,340) |
+| 11 | 81 | 5 | 80 81 80 80 81 79 | 270,156 (269,814-271,060) |
+| 12 | 57 | 6 | 79 80 79 79 80 79 | 69,311 (69,166-70,234) |
+| 13 | 90 | 5 | 80 81 80 80 81 79 | 349,876 (349,492-351,078) |
+| 14 | 55 | 6 | 80 80 79 80 81 79 | 218,874 (218,584-220,018) |
+| 15 | 102 | 5 | 80 81 80 80 81 79 | 392,136 (392,056-393,326) |
+| 16 | 96 | 6 | 79 80 79 79 80 79 | 38,807 (38,496-39,638) |
+| 17 | 44 | 6 | 79 80 79 79 80 79 | 28,452 (28,246-30,018) |
+| 18 | 85 | 6 | 80 80 79 80 81 79 | 203,698 (203,478-205,240) |
+| 19 | 94 | 6 | 79 80 79 80 81 79 | 140,423 (140,238-141,138) |
+| 20 | 73 | 6 | 80 81 79 80 81 79 | 249,260 (249,068-250,550) |
+| 21 | 81 | 6 | 79 80 79 79 80 78 | 8,936 (8,658-9,974) |
+| 22 | 44 | 5 | 80 81 80 80 81 79 | 288,078 (287,762-289,468) |
+| 23 | 84 | 5 | 80 81 80 80 81 79 | 380,421 (379,958-381,570) |
+| 24 | 80 | 5 | 80 81 80 80 81 79 | 269,302 (268,792-270,548) |
+| 25 | 93 | 6 | 80 80 79 79 81 79 | 157,932 (157,552-159,018) |
+| 26 | 83 | 6 | 79 80 79 79 81 79 | 93,327 (93,070-94,834) |
+| 27 | 58 | 5 | 80 81 80 80 81 79 | 318,300 (317,898-319,454) |
+| 28 | 94 | 5 | 80 81 80 80 81 79 | 379,582 (379,254-380,574) |
+| 29 | 68 | 6 | 79 80 79 79 80 78 | 1,142 (1,014-2,230) |
+| 30 | 89 | 6 | 79 80 79 79 80 79 | 46,304 (45,894-47,268) |
+| 31 | 95 | 5 | 80 81 80 80 81 79 | 371,964 (371,808-372,964) |
+| 32 | 48 | 6 | 79 80 79 79 80 79 | 34,262 (33,948-34,930) |
+| 33 | 87 | 6 | 79 80 79 79 80 79 | 90,689 (90,286-91,922) |
+| 34 | 71 | 6 | 79 80 79 79 80 79 | 69,184 (69,040-70,610) |
+| 35 | 110 | 6 | 80 81 79 80 81 79 | 240,970 (240,648-241,510) |
+| 36 | 66 | 5 | 80 81 80 80 81 79 | 305,180 (304,930-306,252) |
+| 37 | 47 | 6 | 79 80 79 79 80 79 | 125,412 (125,178-126,734) |
+| 38 | 82 | 5 | 80 81 80 80 81 79 | 296,727 (296,666-297,964) |
+| 39 | 94 | 5 | 80 81 80 80 81 79 | 348,187 (347,878-349,182) |
+| 40 | 142 | 5 | 80 81 80 80 81 79 | 264,025 (263,576-264,828) |
+| 41 | 69 | 6 | 80 80 79 80 81 79 | 215,139 (214,922-216,686) |
+| 42 | 77 | 5 | 80 81 80 80 81 79 | 335,340 (335,092-336,678) |
+| 43 | 91 | 6 | 80 80 79 80 81 79 | 226,994 (226,632-227,718) |
+| 44 | 71 | 6 | 80 81 79 80 81 79 | 225,821 (225,262-226,540) |
+
+The upload itself varies with the sound processor's state when the request arrives: on track 35
+with song 62 the session took 33,819,146 master clocks in `six-quits-t35` and 33,771,132 in
+`all-gold`, so the polls ended 14,572 clocks into the 80th frame after the request in one and
+32,548 clocks before it in the other; the race started a frame earlier in `all-gold` (80 frames
+against the table's 81). Of `all-gold`'s 25 races it is the only one off the table. Native's front
+end does not run the sound processor, so its race start follows the table; the laboratory runner
+takes such a race's start from the capture (`--race-initialization`, `race_inits.py`), which moves
+the session's upload, not its request.
 
 ## Native producers
 
-[Pending.]
+The race engine reports, in program order, the effects of observation 3 (`race_sound::effect`):
+mud's entry and exit from the special tiles' update (`SpecialTileUpdate::sound_effect`, the
+counters' return), the corkscrew's first ejection, the long flight's landing from
+`resolve_vertical_contact`'s return, an A turn's brake from `update_reflection_transition`'s
+return, the stunt clock's and the race clock's warnings (`update_stunt_clock`, `timer_warning`)
+and HUNTER's effect starts. The stunt result's passes and totals play the menus' sounds; NOW
+PLAYING keeps its choice's pad word (`NowPlaying::choice_pads`). The award (`tour_award_frame`)
+and the endings (`tour_ending_frame`) report their sessions in their blank frames, and the way
+back its title session; `award_frame_waits`, `tour_ending_frame_waits` and
+`hunter_ending_queue_waits` report the original's waits. The endings' scripts call
+`play_screen_sound` (the `$83:A286-A4D0` helpers) and the shared `walk` its footsteps;
+BOUNDER's bump and ball loops build the walk's pose without them (`walk_pose`). The boot after a
+soft reset reports its session on its frame 28 (`AudioSessionLoad::reset_boot`).
+
+The audio side loads each session at its declared anchor (D-0010): the race's by track
+(`race_load_anchors`), the award's 2,342, an ending's 2,476, the way back's 1,278 and the reset
+boot's 371,820 master clocks after their frames' boundaries (medians of 24 awards, 3 endings and
+27 title sessions; the reset boot's from `all-gold`'s one reset). After the samples the award and
+the endings enqueue gains 255 and 79 and the music start and poll five times; the way back
+enqueues the music start and gains 255 and 127. The sets are composed as observation 7 says.
 
 ## Measured agreement (D-0010)
 
@@ -106,4 +189,19 @@ start cue's lead, the race's first update by song counter, and the request's clo
 
 ## Conditional driver and DSP
 
-[Pending.]
+`cond.sh` feeds a full capture's CPU port writes at their SMP ticks to the native IPL, driver and
+DSP from zero (`audio_driver_runner`, `ipl` mode), each session with its set as the product
+composes it (`sets/`; an ending's tables with driver 51's layout, `@51`), and compares every
+ordered DSP-register and SMP-port write and every raw stereo pair:
+
+| Capture | Sessions | Ordered writes | Raw stereo pairs | Result |
+|---|---|---:|---:|---|
+| `full-six-quits` | boot, six races (songs 62-66, 64 twice), six title reloads | 1,863,797 | 5,702,149 | equal |
+| `full-hopper-gold` | boot, three races, two awards, an ending, six title reloads | 1,383,923 | 3,651,888 | equal |
+| `full-all-gold` | boot, 25 races, 16 awards, 8 endings, title reloads, HUNTER's ending, the reset boot | 10,521,739 | 27,413,906 | equal; native writes one more after the capture's end |
+
+Score controls 87, 98, 99 and 9A (observation 10 and below) were found this way: the race songs
+63-66 use 87; HOPPER's ending's noise uses 98-9A. Control 98/99 (SPC `$1052-$1061`) sets/clears
+the voice's bit of `$D6`, which the music pass writes to DSP register 3D (`$06C0-$06C3`) and a
+voice's reset clears (`$08B4-$08B9`); control 9A (`$1064-$1073`) writes the noise clock with
+echo writes off into FLG from the score.

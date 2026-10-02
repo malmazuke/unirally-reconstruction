@@ -1855,6 +1855,8 @@
   "comment": "routine start",
   "label": "sub_80A09A",
   "native": [
+   "src/core/audio_cue.hpp:AudioSessionLoad",
+   "src/core/front_end.cpp:boot_frame",
    "src/core/front_end.cpp:boot_frame_number",
    "src/core/front_end.cpp:clear_oam_buffer",
    "src/core/front_end.cpp:early_objects, early_palette",
@@ -1914,7 +1916,7 @@
   "comment": "instruction start",
   "label": "loc_80A0FC",
   "native": [
-   "src/core/audio_cpu_upload.cpp:native_audio_cpu_uploads",
+   "src/core/audio_cpu_upload.cpp:upload_of",
    "src/core/audio_cue.hpp:AudioSessionLoad",
    "src/core/race_result.cpp:race_return_frame"
   ],
@@ -2577,6 +2579,19 @@
   ]
  },
  {
+  "address": "$80:B12B",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80B12B",
+  "native": [
+   "src/core/front_end_screens.hpp:MenuSound",
+   "src/core/screen_slide.cpp:play_menu_sound"
+  ],
+  "source_records": [
+   "tasks/AUDIO-ONE-PLAYER.md"
+  ]
+ },
+ {
   "address": "$80:B139",
   "class": "observed",
   "comment": "routine start",
@@ -2620,6 +2635,19 @@
    "docs/research/R-0067-stunt-result.md",
    "docs/research/R-0075-title-menu-audio.md",
    "docs/research/R-0076-first-race-audio.md"
+  ]
+ },
+ {
+  "address": "$80:B17F",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80B17F",
+  "native": [
+   "src/core/front_end_screens.hpp:MenuSound",
+   "src/core/screen_slide.cpp:play_menu_sound"
+  ],
+  "source_records": [
+   "tasks/AUDIO-ONE-PLAYER.md"
   ]
  },
  {
@@ -2949,12 +2977,14 @@
    "src/core/front_end_screens.hpp:start_hunter_ending",
    "src/core/hunter_ending.cpp:ending_press",
    "src/core/race_result.cpp:lap_graph_frame",
-   "src/core/stunt_result.cpp:tally_frame"
+   "src/core/stunt_result.cpp:tally_frame",
+   "src/core/stunt_result.cpp:tally_pass"
   ],
   "source_records": [
    "docs/research/R-0058-lap-result.md",
    "docs/research/R-0059-tour-completion.md",
-   "docs/research/R-0067-stunt-result.md"
+   "docs/research/R-0067-stunt-result.md",
+   "docs/research/R-0077-one-player-audio.md"
   ]
  },
  {
@@ -4695,6 +4725,7 @@
    "src/core/audio_cpu_title_hold.cpp:native_audio_poll_controllers",
    "src/core/front_end.cpp:boot_frame",
    "src/core/front_end.cpp:run_main_menu",
+   "src/core/front_end.hpp:NowPlaying::choice_pads",
    "src/core/hunter_ending.cpp:first_page_press",
    "src/core/now_playing.cpp:now_playing_frame",
    "src/core/rider_menu.cpp:rider_menu_frame",
@@ -5285,6 +5316,21 @@
   ]
  },
  {
+  "address": "$80:E2D5",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_80E2D5",
+  "native": [
+   "src/core/audio_cpu_hunter_reveal.cpp:reveal_page",
+   "src/core/hunter_ending.cpp:(file)",
+   "src/core/hunter_ending.cpp:hunter_ending_queue_waits",
+   "src/core/hunter_ending.cpp:page_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0077-one-player-audio.md"
+  ]
+ },
+ {
   "address": "$80:E2D8",
   "class": "inferred",
   "comment": "instruction start",
@@ -5445,6 +5491,7 @@
   "comment": "instruction start",
   "label": "loc_80E595",
   "native": [
+   "src/core/tour_menu.cpp:reveal_frame",
    "src/core/tour_menu.cpp:reveal_frames",
    "src/core/tour_menu.cpp:tour_menu_entry_frame"
   ],
@@ -5606,7 +5653,8 @@
   "label": "sub_80E730",
   "native": [
    "src/core/tour_menu.cpp:(file)",
-   "src/core/tour_menu.cpp:print_tour_menu"
+   "src/core/tour_menu.cpp:print_tour_menu",
+   "src/core/tour_menu.cpp:reveal_frame"
   ],
   "source_records": [
    "docs/research/R-0056-tour-track-now-playing.md"
@@ -6711,14 +6759,30 @@
   ]
  },
  {
+  "address": "$80:F756",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80F756",
+  "native": [
+   "src/core/front_end.hpp:StuntTally",
+   "src/core/stunt_result.cpp:(file)",
+   "src/core/stunt_result.cpp:second_tally_pass"
+  ],
+  "source_records": [
+   "docs/research/R-0077-one-player-audio.md"
+  ]
+ },
+ {
   "address": "$80:F758",
   "class": "unknown",
   "comment": "unknown",
   "label": "unk_80F758",
   "native": [
+   "src/core/front_end.hpp:NowPlaying::choice_pads",
    "src/core/front_end.hpp:StuntTally",
    "src/core/stunt_result.cpp:(file)",
-   "src/core/stunt_result.cpp:second_tally_pass"
+   "src/core/stunt_result.cpp:second_tally_pass",
+   "src/core/stunt_result.cpp:tally_pass"
   ],
   "source_records": [
    "docs/research/R-0067-stunt-result.md"
@@ -6730,9 +6794,11 @@
   "comment": "unknown",
   "label": "unk_80F75D",
   "native": [
+   "src/core/front_end.hpp:NowPlaying::choice_pads",
    "src/core/front_end.hpp:StuntTally",
    "src/core/stunt_result.cpp:(file)",
-   "src/core/stunt_result.cpp:second_tally_pass"
+   "src/core/stunt_result.cpp:second_tally_pass",
+   "src/core/stunt_result.cpp:tally_pass"
   ],
   "source_records": [
    "docs/research/R-0067-stunt-result.md"
@@ -6781,6 +6847,21 @@
   ],
   "source_records": [
    "docs/research/R-0067-stunt-result.md"
+  ]
+ },
+ {
+  "address": "$80:F7A7",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80F7A7",
+  "native": [
+   "src/core/front_end.hpp:StuntTally",
+   "src/core/stunt_result.cpp:(file)",
+   "src/core/stunt_result.cpp:second_tally_pass",
+   "src/core/stunt_result.cpp:tally_pass"
+  ],
+  "source_records": [
+   "docs/research/R-0077-one-player-audio.md"
   ]
  },
  {
@@ -6992,6 +7073,7 @@
    "src/core/front_end.cpp:ends_with_queue_wait",
    "src/core/front_end.hpp:FrontEndState::sound_cues",
    "src/core/front_end_screens.hpp:start_hunter_ending",
+   "src/core/hunter_ending.cpp:hunter_ending_queue_waits",
    "src/core/hunter_ending.cpp:hunter_ending_waits"
   ],
   "source_records": [
@@ -7614,6 +7696,20 @@
   ]
  },
  {
+  "address": "$81:8690",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_818690",
+  "native": [
+   "src/core/race_update.cpp:begin_rider_update",
+   "src/core/special_tiles.cpp:update_special_tile_counters",
+   "src/core/zoom_zoo_movement.hpp:update_special_tile_counters"
+  ],
+  "source_records": [
+   "docs/research/R-0077-one-player-audio.md"
+  ]
+ },
+ {
   "address": "$81:86EF",
   "class": "observed",
   "comment": "instruction start",
@@ -7677,7 +7773,8 @@
    "src/core/zoom_zoo_movement.hpp:update_corkscrew_tile"
   ],
   "source_records": [
-   "docs/research/R-0047-special-tiles.md"
+   "docs/research/R-0047-special-tiles.md",
+   "docs/research/R-0077-one-player-audio.md"
   ]
  },
  {
@@ -7719,7 +7816,23 @@
    "src/core/zoom_zoo_movement.hpp:update_mud_tile"
   ],
   "source_records": [
-   "docs/research/R-0047-special-tiles.md"
+   "docs/research/R-0047-special-tiles.md",
+   "docs/research/R-0077-one-player-audio.md"
+  ]
+ },
+ {
+  "address": "$81:89A3",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_8189A3",
+  "native": [
+   "src/core/race_sound.hpp:mud_entry",
+   "src/core/special_tiles.cpp:update_mud_tile",
+   "src/core/zoom_zoo_movement.hpp:SpecialTileUpdate::sound_effect",
+   "src/core/zoom_zoo_movement.hpp:update_mud_tile"
+  ],
+  "source_records": [
+   "tasks/AUDIO-ONE-PLAYER.md"
   ]
  },
  {
@@ -8971,6 +9084,46 @@
   ],
   "source_records": [
    "docs/research/R-0011-contact.md"
+  ]
+ },
+ {
+  "address": "$81:942B",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_81942B",
+  "native": [
+   "src/core/vertical_contact.cpp:landing_rotation",
+   "src/core/vertical_contact.hpp:resolve_vertical_contact"
+  ],
+  "source_records": [
+   "docs/research/R-0077-one-player-audio.md"
+  ]
+ },
+ {
+  "address": "$81:9447",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_819447",
+  "native": [
+   "src/core/race_sound.hpp:landing_effect",
+   "src/core/vertical_contact.cpp:ContactStep::landing_sound",
+   "src/core/vertical_contact.cpp:landing_rotation",
+   "src/core/vertical_contact.hpp:resolve_vertical_contact"
+  ],
+  "source_records": [
+   "tasks/AUDIO-ONE-PLAYER.md"
+  ]
+ },
+ {
+  "address": "$81:945B",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_81945B",
+  "native": [
+   "src/core/vertical_contact.cpp:landing_rotation"
+  ],
+  "source_records": [
+   "docs/research/R-0077-one-player-audio.md"
   ]
  },
  {
@@ -10674,6 +10827,19 @@
   ]
  },
  {
+  "address": "$81:C78A",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_81C78A",
+  "native": [
+   "src/core/input_timer.cpp:timer_warning",
+   "src/core/input_timer.hpp:timer_warning"
+  ],
+  "source_records": [
+   "docs/research/R-0077-one-player-audio.md"
+  ]
+ },
+ {
   "address": "$81:C7CE",
   "class": "inferred",
   "comment": "routine start",
@@ -10823,6 +10989,28 @@
   ],
   "source_records": [
    "docs/research/R-0068-stunt-hud.md"
+  ]
+ },
+ {
+  "address": "$81:C8BB",
+  "class": "inferred",
+  "comment": "routine start",
+  "label": "sub_81C8BB",
+  "source_records": [
+   "docs/research/R-0077-one-player-audio.md"
+  ]
+ },
+ {
+  "address": "$81:C8ED",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_81C8ED",
+  "native": [
+   "src/core/race_sound.hpp:clock_warning",
+   "src/core/stunt_event.cpp:warns_last_seconds"
+  ],
+  "source_records": [
+   "tasks/AUDIO-ONE-PLAYER.md"
   ]
  },
  {
@@ -11790,6 +11978,7 @@
    "docs/research/R-0074-audio-foundation.md",
    "docs/research/R-0075-title-menu-audio.md",
    "docs/research/R-0076-first-race-audio.md",
+   "docs/research/R-0077-one-player-audio.md",
    "tasks/AUDIO-DECISION.md",
    "tasks/AUDIO-TITLE-MENU.md"
   ]
@@ -11807,7 +11996,8 @@
   "source_records": [
    "docs/research/R-0070-attract-demo.md",
    "docs/research/R-0074-audio-foundation.md",
-   "docs/research/R-0076-first-race-audio.md"
+   "docs/research/R-0076-first-race-audio.md",
+   "docs/research/R-0077-one-player-audio.md"
   ]
  },
  {
@@ -11883,10 +12073,13 @@
   "native": [
    "src/core/audio_cpu_upload.hpp:native_audio_cpu_begin_session",
    "src/core/audio_cue.hpp:AudioSessionLoad",
-   "src/core/audio_cued_scenes.cpp:NativeTitleMenuAudio::load_session"
+   "src/core/audio_cued_scenes.cpp:NativeTitleMenuAudio::load_session",
+   "src/core/race_result.cpp:race_sound_load_offsets"
   ],
   "source_records": [
-   "docs/research/R-0074-audio-foundation.md"
+   "docs/research/R-0074-audio-foundation.md",
+   "docs/research/R-0077-one-player-audio.md",
+   "tasks/AUDIO-ONE-PLAYER.md"
   ]
  },
  {
@@ -13292,6 +13485,18 @@
   ],
   "source_records": [
    "docs/research/R-0030-zoom-zoo-native-trial.md"
+  ]
+ },
+ {
+  "address": "$82:A3D7",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82A3D7",
+  "native": [
+   "src/core/race_update.cpp:update_reflection_transition"
+  ],
+  "source_records": [
+   "docs/research/R-0077-one-player-audio.md"
   ]
  },
  {
@@ -14839,13 +15044,16 @@
   "comment": "instruction start",
   "label": "loc_82D84A",
   "native": [
+   "src/core/audio_cue.hpp:RaceSoundLoadTiming",
+   "src/core/race_result.cpp:race_start_cue_leads",
    "src/core/race_setup.cpp:classic_crawler_zoom_zoo_start",
    "src/core/race_setup.cpp:start_countdown, base_speed_cap",
    "src/core/race_sound.hpp:loading",
    "src/core/zoom_zoo_movement.hpp:classic_crawler_zoom_zoo_start"
   ],
   "source_records": [
-   "docs/research/R-0076-first-race-audio.md"
+   "docs/research/R-0076-first-race-audio.md",
+   "docs/research/R-0077-one-player-audio.md"
   ]
  },
  {
@@ -15420,7 +15628,7 @@
    "src/core/award.cpp:apply_unlock_rule",
    "src/core/award.cpp:way_back_frame",
    "src/core/front_end.hpp:FrontEndScreen",
-   "src/core/front_end_screens.hpp:way_back_frame"
+   "src/core/front_end_screens.hpp:award_frame_waits"
   ],
   "source_records": [
    "docs/research/R-0059-tour-completion.md",
@@ -15438,7 +15646,7 @@
    "src/core/award.cpp:apply_unlock_rule",
    "src/core/award.cpp:way_back_frame",
    "src/core/front_end.hpp:FrontEndScreen",
-   "src/core/front_end_screens.hpp:way_back_frame"
+   "src/core/front_end_screens.hpp:award_frame_waits"
   ],
   "source_records": [
    "docs/research/R-0059-tour-completion.md"
@@ -15454,7 +15662,7 @@
    "src/core/award.cpp:apply_unlock_rule",
    "src/core/award.cpp:way_back_frame",
    "src/core/front_end.hpp:FrontEndScreen",
-   "src/core/front_end_screens.hpp:way_back_frame"
+   "src/core/front_end_screens.hpp:award_frame_waits"
   ],
   "source_records": [
    "docs/research/R-0059-tour-completion.md"
@@ -15470,7 +15678,7 @@
    "src/core/award.cpp:apply_unlock_rule",
    "src/core/award.cpp:way_back_frame",
    "src/core/front_end.hpp:FrontEndScreen",
-   "src/core/front_end_screens.hpp:way_back_frame"
+   "src/core/front_end_screens.hpp:award_frame_waits"
   ],
   "source_records": [
    "docs/research/R-0059-tour-completion.md"
@@ -15584,7 +15792,8 @@
    "src/core/award.cpp:complete_tour",
    "src/core/front_end.hpp:FrontEndScreen",
    "src/core/front_end.hpp:TourEnding",
-   "src/core/tour_ending.cpp:(file)"
+   "src/core/tour_ending.cpp:(file)",
+   "src/core/tour_ending.cpp:tour_ending_frame"
   ],
   "source_records": [
    "docs/research/R-0057-one-run-result.md",
@@ -16233,11 +16442,23 @@
   "comment": "routine start",
   "label": "sub_83987D",
   "native": [
+   "src/core/front_end.hpp:NowPlaying::choice_pads",
    "src/core/front_end.hpp:SavedMenus",
    "src/core/race_result.cpp:restore_menus"
   ],
   "source_records": [
-   "docs/research/R-0057-one-run-result.md"
+   "docs/research/R-0057-one-run-result.md",
+   "docs/research/R-0077-one-player-audio.md",
+   "tasks/AUDIO-ONE-PLAYER.md"
+  ]
+ },
+ {
+  "address": "$83:988A",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83988A",
+  "source_records": [
+   "docs/research/R-0077-one-player-audio.md"
   ]
  },
  {
@@ -16252,7 +16473,8 @@
   ],
   "source_records": [
    "docs/research/R-0057-one-run-result.md",
-   "docs/research/R-0058-lap-result.md"
+   "docs/research/R-0058-lap-result.md",
+   "docs/research/R-0077-one-player-audio.md"
   ]
  },
  {
@@ -16575,6 +16797,20 @@
   ]
  },
  {
+  "address": "$83:A286",
+  "class": "inferred",
+  "comment": "routine start",
+  "label": "sub_83A286",
+  "native": [
+   "src/core/award.cpp:build_step",
+   "src/core/front_end_screens.hpp:play_screen_sound"
+  ],
+  "source_records": [
+   "docs/research/R-0077-one-player-audio.md",
+   "tasks/AUDIO-ONE-PLAYER.md"
+  ]
+ },
+ {
   "address": "$83:A4D2",
   "class": "inferred",
   "comment": "routine start",
@@ -16583,8 +16819,8 @@
    "src/core/audio_cpu_credits_loop.cpp:native_audio_hunter_finish_credits_setup",
    "src/core/award.cpp:fade_out_frames, blank_frame, reset_frame, background_tiles_frame, podium_map_frame, podium_tiles_frame, colours_frame, objects_frame, rider_frame, first_fade_in_frame, fade_in_frames",
    "src/core/award.cpp:fade_up",
+   "src/core/front_end_screens.hpp:award_frame_waits",
    "src/core/front_end_screens.hpp:fade_up",
-   "src/core/front_end_screens.hpp:way_back_frame",
    "src/core/hunter_ending.cpp:credits_setup_frame, credits_shown_frame, lower_pose_frame, credits_fade_in, credits_loop_frame"
   ],
   "source_records": [
@@ -16602,14 +16838,28 @@
    "src/core/audio_cpu_hunter_entry.cpp:native_audio_hunter_first_fade",
    "src/core/award.cpp:fade_down",
    "src/core/award.cpp:fade_out_frames, blank_frame, reset_frame, background_tiles_frame, podium_map_frame, podium_tiles_frame, colours_frame, objects_frame, rider_frame, first_fade_in_frame, fade_in_frames",
+   "src/core/front_end_screens.hpp:award_frame_waits",
    "src/core/front_end_screens.hpp:fade_down",
-   "src/core/front_end_screens.hpp:way_back_frame",
+   "src/core/hunter_ending.cpp:hunter_ending_queue_waits",
    "src/core/hunter_ending.cpp:page_load_frame, page_tiles_frame, reveal_steps"
   ],
   "source_records": [
    "docs/research/R-0059-tour-completion.md",
    "docs/research/R-0062-gold-endings.md",
-   "docs/research/R-0064-hunter-ending-and-soft-reset.md"
+   "docs/research/R-0064-hunter-ending-and-soft-reset.md",
+   "docs/research/R-0077-one-player-audio.md"
+  ]
+ },
+ {
+  "address": "$83:A4FE",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_83A4FE",
+  "native": [
+   "src/core/award.cpp:sound_upload_frame, exit_sound_upload_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0077-one-player-audio.md"
   ]
  },
  {
@@ -16618,12 +16868,18 @@
   "comment": "unknown",
   "label": "unk_83A507",
   "native": [
+   "src/core/audio_cpu_upload.cpp:upload_of",
+   "src/core/audio_cpu_upload.hpp:AudioSoundSetId",
+   "src/core/audio_cue.hpp:AudioSessionLoad",
    "src/core/front_end_screens.hpp:reset_award_screen",
    "src/core/tour_ending.cpp:(file)",
-   "src/core/tour_ending.cpp:first_loads"
+   "src/core/tour_ending.cpp:first_loads",
+   "src/core/tour_ending.cpp:tour_ending_frame"
   ],
   "source_records": [
-   "docs/research/R-0062-gold-endings.md"
+   "docs/research/R-0062-gold-endings.md",
+   "docs/research/R-0077-one-player-audio.md",
+   "tasks/AUDIO-ONE-PLAYER.md"
   ]
  },
  {
@@ -16645,12 +16901,33 @@
   "comment": "routine start",
   "label": "sub_83A614",
   "native": [
+   "src/core/audio_cpu_upload.cpp:upload_of",
+   "src/core/audio_cpu_upload.hpp:AudioSoundSetId",
+   "src/core/audio_cue.hpp:AudioSessionLoad",
    "src/core/award.cpp:fade_out_frames, blank_frame, reset_frame, background_tiles_frame, podium_map_frame, podium_tiles_frame, colours_frame, objects_frame, rider_frame, first_fade_in_frame, fade_in_frames"
   ],
   "source_records": [
    "docs/research/R-0059-tour-completion.md",
    "docs/research/R-0062-gold-endings.md",
-   "tasks/AUDIO-DECISION.md"
+   "docs/research/R-0077-one-player-audio.md",
+   "tasks/AUDIO-DECISION.md",
+   "tasks/AUDIO-ONE-PLAYER.md"
+  ]
+ },
+ {
+  "address": "$83:A644",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_83A644",
+  "native": [
+   "src/core/audio_cpu_upload.cpp:upload_of",
+   "src/core/audio_cpu_upload.hpp:AudioSoundSetId",
+   "src/core/audio_cue.hpp:AudioSessionLoad",
+   "src/core/audio_cued_scenes.cpp:start_screen_music",
+   "src/core/award.cpp:fade_out_frames, blank_frame, reset_frame, background_tiles_frame, podium_map_frame, podium_tiles_frame, colours_frame, objects_frame, rider_frame, first_fade_in_frame, fade_in_frames"
+  ],
+  "source_records": [
+   "docs/research/R-0077-one-player-audio.md"
   ]
  },
  {
@@ -16671,16 +16948,40 @@
   "comment": "routine start",
   "label": "sub_83A721",
   "native": [
+   "src/core/audio_cpu_upload.cpp:upload_of",
+   "src/core/audio_cue.hpp:AudioSessionLoad",
    "src/core/award.cpp:(file)",
    "src/core/award.cpp:exit_blank_frame, menus_frame, exit_fade_in_frame, pick_tour_frame",
    "src/core/front_end.cpp:restore_menu_screen",
+   "src/core/front_end_screens.hpp:award_frame_waits",
    "src/core/front_end_screens.hpp:restore_menus",
-   "src/core/front_end_screens.hpp:set_menu_registers",
-   "src/core/front_end_screens.hpp:way_back_frame"
+   "src/core/front_end_screens.hpp:set_menu_registers"
   ],
   "source_records": [
    "docs/research/R-0059-tour-completion.md",
-   "docs/research/R-0062-gold-endings.md"
+   "docs/research/R-0062-gold-endings.md",
+   "docs/research/R-0077-one-player-audio.md",
+   "tasks/AUDIO-ONE-PLAYER.md"
+  ]
+ },
+ {
+  "address": "$83:A75E",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_83A75E",
+  "native": [
+   "src/core/audio_cpu_upload.cpp:upload_of",
+   "src/core/audio_cue.hpp:AudioSessionLoad",
+   "src/core/audio_cued_scenes.cpp:start_title_music_after_award",
+   "src/core/award.cpp:(file)",
+   "src/core/award.cpp:exit_blank_frame, menus_frame, exit_fade_in_frame, pick_tour_frame",
+   "src/core/front_end.cpp:restore_menu_screen",
+   "src/core/front_end_screens.hpp:award_frame_waits",
+   "src/core/front_end_screens.hpp:restore_menus",
+   "src/core/front_end_screens.hpp:set_menu_registers"
+  ],
+  "source_records": [
+   "docs/research/R-0077-one-player-audio.md"
   ]
  },
  {
@@ -16712,9 +17013,11 @@
   "native": [
    "src/core/audio_cpu_hunter_entry.cpp:native_audio_hunter_ending_wait",
    "src/core/audio_cue.hpp:AudioDispatchSite",
+   "src/core/award.cpp:award_frame_waits",
    "src/core/front_end.cpp:ends_with_queue_wait",
    "src/core/front_end.cpp:waits_for_frame",
    "src/core/front_end_screens.hpp:result_scoring_frame",
+   "src/core/hunter_ending.cpp:hunter_ending_queue_waits",
    "src/core/hunter_ending.cpp:hunter_ending_waits",
    "src/core/hunter_ending.cpp:timed_wait_pass",
    "src/core/race_result.cpp:race_result_exit_frame",
@@ -17210,6 +17513,19 @@
   ]
  },
  {
+  "address": "$83:B02C",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_83B02C",
+  "native": [
+   "src/core/award.cpp:build_step",
+   "src/core/front_end.hpp:AwardPhase"
+  ],
+  "source_records": [
+   "docs/research/R-0077-one-player-audio.md"
+  ]
+ },
+ {
   "address": "$83:B062",
   "class": "inferred",
   "comment": "instruction start",
@@ -17233,6 +17549,18 @@
   ],
   "source_records": [
    "docs/research/R-0059-tour-completion.md"
+  ]
+ },
+ {
+  "address": "$83:B119",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_83B119",
+  "native": [
+   "src/core/award.cpp:way_back_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0077-one-player-audio.md"
   ]
  },
  {
@@ -17289,6 +17617,54 @@
   ]
  },
  {
+  "address": "$83:B2E9",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_83B2E9",
+  "native": [
+   "src/core/tour_ending_scripts.cpp:roll_start"
+  ],
+  "source_records": [
+   "docs/research/R-0077-one-player-audio.md"
+  ]
+ },
+ {
+  "address": "$83:B32B",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_83B32B",
+  "native": [
+   "src/core/tour_ending_scripts.cpp:roll_end"
+  ],
+  "source_records": [
+   "docs/research/R-0077-one-player-audio.md"
+  ]
+ },
+ {
+  "address": "$83:B374",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_83B374",
+  "native": [
+   "src/core/tour_ending_scripts.cpp:bounce_part"
+  ],
+  "source_records": [
+   "docs/research/R-0077-one-player-audio.md"
+  ]
+ },
+ {
+  "address": "$83:B436",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_83B436",
+  "native": [
+   "src/core/tour_ending_scripts.cpp:pull_over_part"
+  ],
+  "source_records": [
+   "docs/research/R-0077-one-player-audio.md"
+  ]
+ },
+ {
   "address": "$83:B4DF",
   "class": "unknown",
   "comment": "unknown",
@@ -17314,6 +17690,59 @@
   ]
  },
  {
+  "address": "$83:B60C",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_83B60C",
+  "native": [
+   "src/core/tour_ending_scripts.cpp:end",
+   "src/core/tour_ending_scripts.cpp:walk_in_part",
+   "src/core/tour_ending_scripts.cpp:whistle_step, fall_sound_step, first_roll_sound, second_roll_sound"
+  ],
+  "source_records": [
+   "docs/research/R-0077-one-player-audio.md"
+  ]
+ },
+ {
+  "address": "$83:B63F",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_83B63F",
+  "native": [
+   "src/core/tour_ending_scripts.cpp:hit_part",
+   "src/core/tour_ending_scripts.cpp:whistle_step, fall_sound_step, first_roll_sound, second_roll_sound"
+  ],
+  "source_records": [
+   "docs/research/R-0077-one-player-audio.md"
+  ]
+ },
+ {
+  "address": "$83:B695",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_83B695",
+  "native": [
+   "src/core/tour_ending_scripts.cpp:hit_part",
+   "src/core/tour_ending_scripts.cpp:whistle_step, fall_sound_step, first_roll_sound, second_roll_sound"
+  ],
+  "source_records": [
+   "docs/research/R-0077-one-player-audio.md"
+  ]
+ },
+ {
+  "address": "$83:B74E",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_83B74E",
+  "native": [
+   "src/core/tour_ending_scripts.cpp:roll_on_part",
+   "src/core/tour_ending_scripts.cpp:whistle_step, fall_sound_step, first_roll_sound, second_roll_sound"
+  ],
+  "source_records": [
+   "docs/research/R-0077-one-player-audio.md"
+  ]
+ },
+ {
   "address": "$83:B790",
   "class": "unknown",
   "comment": "unknown",
@@ -17335,7 +17764,20 @@
    "src/core/tour_ending_scripts.hpp:walk"
   ],
   "source_records": [
-   "docs/research/R-0062-gold-endings.md"
+   "docs/research/R-0062-gold-endings.md",
+   "docs/research/R-0077-one-player-audio.md"
+  ]
+ },
+ {
+  "address": "$83:B7B1",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_83B7B1",
+  "native": [
+   "src/core/tour_ending_scripts.hpp:walk_sound"
+  ],
+  "source_records": [
+   "docs/research/R-0077-one-player-audio.md"
   ]
  },
  {
@@ -17365,6 +17807,71 @@
   ]
  },
  {
+  "address": "$83:B8FC",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_83B8FC",
+  "native": [
+   "src/core/tour_ending_right_column.cpp:end",
+   "src/core/tour_ending_right_column.cpp:ride_in_part",
+   "src/core/tour_ending_right_column.cpp:rise_sound, bump_sound, ball_sound, ball_gone_sound, bound_sound, second_bound_sound"
+  ],
+  "source_records": [
+   "docs/research/R-0077-one-player-audio.md"
+  ]
+ },
+ {
+  "address": "$83:B918",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_83B918",
+  "native": [
+   "src/core/tour_ending_right_column.cpp:rise_sound, bump_sound, ball_sound, ball_gone_sound, bound_sound, second_bound_sound"
+  ],
+  "source_records": [
+   "docs/research/R-0077-one-player-audio.md"
+  ]
+ },
+ {
+  "address": "$83:BA10",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_83BA10",
+  "native": [
+   "src/core/tour_ending_right_column.cpp:rise_sound, bump_sound, ball_sound, ball_gone_sound, bound_sound, second_bound_sound",
+   "src/core/tour_ending_right_column.cpp:scarf_part"
+  ],
+  "source_records": [
+   "docs/research/R-0077-one-player-audio.md"
+  ]
+ },
+ {
+  "address": "$83:BA6C",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_83BA6C",
+  "native": [
+   "src/core/tour_ending_right_column.cpp:bound_off_part",
+   "src/core/tour_ending_right_column.cpp:rise_sound, bump_sound, ball_sound, ball_gone_sound, bound_sound, second_bound_sound"
+  ],
+  "source_records": [
+   "docs/research/R-0077-one-player-audio.md"
+  ]
+ },
+ {
+  "address": "$83:BB2A",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_83BB2A",
+  "native": [
+   "src/core/tour_ending_right_column.cpp:after_bound_step",
+   "src/core/tour_ending_right_column.cpp:rise_sound, bump_sound, ball_sound, ball_gone_sound, bound_sound, second_bound_sound"
+  ],
+  "source_records": [
+   "docs/research/R-0077-one-player-audio.md"
+  ]
+ },
+ {
   "address": "$83:BB44",
   "class": "unknown",
   "comment": "unknown",
@@ -17387,6 +17894,18 @@
   ],
   "source_records": [
    "docs/research/R-0062-gold-endings.md"
+  ]
+ },
+ {
+  "address": "$83:BCFC",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_83BCFC",
+  "native": [
+   "src/core/tour_ending_right_column.cpp:squash_part"
+  ],
+  "source_records": [
+   "docs/research/R-0077-one-player-audio.md"
   ]
  },
  {
@@ -17427,6 +17946,42 @@
   ]
  },
  {
+  "address": "$83:BFD2",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_83BFD2",
+  "native": [
+   "src/core/tour_ending_right_column.cpp:wobble_part"
+  ],
+  "source_records": [
+   "docs/research/R-0077-one-player-audio.md"
+  ]
+ },
+ {
+  "address": "$83:C07C",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_83C07C",
+  "native": [
+   "src/core/tour_ending_right_column.cpp:knock_part"
+  ],
+  "source_records": [
+   "docs/research/R-0077-one-player-audio.md"
+  ]
+ },
+ {
+  "address": "$83:C0B3",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_83C0B3",
+  "native": [
+   "src/core/tour_ending_right_column.cpp:knock_part"
+  ],
+  "source_records": [
+   "docs/research/R-0077-one-player-audio.md"
+  ]
+ },
+ {
   "address": "$83:C0F6",
   "class": "unknown",
   "comment": "unknown",
@@ -17464,6 +18019,31 @@
   ]
  },
  {
+  "address": "$83:C302",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_83C302",
+  "native": [
+   "src/core/tour_ending_scripts.cpp:fire_part"
+  ],
+  "source_records": [
+   "docs/research/R-0077-one-player-audio.md"
+  ]
+ },
+ {
+  "address": "$83:C3BB",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_83C3BB",
+  "native": [
+   "src/core/tour_ending_scripts.cpp:blast_part",
+   "src/core/tour_ending_scripts.cpp:burn_out_part"
+  ],
+  "source_records": [
+   "docs/research/R-0077-one-player-audio.md"
+  ]
+ },
+ {
   "address": "$83:C458",
   "class": "unknown",
   "comment": "unknown",
@@ -17489,6 +18069,30 @@
   ]
  },
  {
+  "address": "$83:C5C7",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_83C5C7",
+  "native": [
+   "src/core/tour_ending.cpp:script"
+  ],
+  "source_records": [
+   "docs/research/R-0077-one-player-audio.md"
+  ]
+ },
+ {
+  "address": "$83:C5DC",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_83C5DC",
+  "native": [
+   "src/core/tour_ending.cpp:script"
+  ],
+  "source_records": [
+   "docs/research/R-0077-one-player-audio.md"
+  ]
+ },
+ {
   "address": "$83:C6C0",
   "class": "unknown",
   "comment": "unknown",
@@ -17511,6 +18115,44 @@
   ],
   "source_records": [
    "docs/research/R-0062-gold-endings.md"
+  ]
+ },
+ {
+  "address": "$83:C80C",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_83C80C",
+  "native": [
+   "src/core/tour_ending_right_column.cpp:end",
+   "src/core/tour_ending_right_column.cpp:walk_in_part"
+  ],
+  "source_records": [
+   "docs/research/R-0077-one-player-audio.md"
+  ]
+ },
+ {
+  "address": "$83:C825",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_83C825",
+  "native": [
+   "src/core/tour_ending_right_column.cpp:end",
+   "src/core/tour_ending_right_column.cpp:walk_in_part"
+  ],
+  "source_records": [
+   "docs/research/R-0077-one-player-audio.md"
+  ]
+ },
+ {
+  "address": "$83:C86E",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_83C86E",
+  "native": [
+   "src/core/tour_ending_right_column.cpp:hold_part"
+  ],
+  "source_records": [
+   "docs/research/R-0077-one-player-audio.md"
   ]
  },
  {
@@ -17574,8 +18216,15 @@
   "class": "observed",
   "comment": "instruction start",
   "label": "loc_83CA08",
+  "native": [
+   "src/core/audio_cue.hpp:race_song_count",
+   "src/core/front_end.cpp:demo_title_frame",
+   "src/core/front_end.hpp:choose_race_song",
+   "src/core/race_result.cpp:choose_race_song"
+  ],
   "source_records": [
    "docs/research/R-0076-first-race-audio.md",
+   "docs/research/R-0077-one-player-audio.md",
    "tasks/AUDIO-FIRST-RACE.md",
    "tasks/AUDIO-ONE-PLAYER.md"
   ]
@@ -17586,11 +18235,30 @@
   "comment": "routine start",
   "label": "sub_83CA72",
   "native": [
+   "src/core/audio_cpu_upload.cpp:upload_of",
    "src/core/audio_cue.hpp:AudioSessionLoad",
+   "src/core/audio_cued_scenes.cpp:start_race_music",
+   "src/core/race_result.cpp:race_sound_load_offsets",
    "src/core/race_sound.hpp:loading"
   ],
   "source_records": [
-   "docs/research/R-0076-first-race-audio.md"
+   "docs/research/R-0076-first-race-audio.md",
+   "docs/research/R-0077-one-player-audio.md"
+  ]
+ },
+ {
+  "address": "$83:CB6A",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_83CB6A",
+  "native": [
+   "src/core/audio_cpu_upload.cpp:upload_of",
+   "src/core/audio_cue.hpp:AudioSessionLoad",
+   "src/core/audio_cued_scenes.cpp:start_race_music"
+  ],
+  "source_records": [
+   "docs/research/R-0077-one-player-audio.md",
+   "tasks/AUDIO-ONE-PLAYER.md"
   ]
  },
  {
@@ -17599,10 +18267,10 @@
   "comment": "instruction start",
   "label": "loc_83CBD8",
   "native": [
+   "src/core/audio_cpu_upload.cpp:upload_of",
    "src/core/audio_cue.hpp:AudioSessionLoad",
    "src/core/audio_cued_scenes.cpp:start_race_music",
    "src/core/race_setup.cpp:opponent_tier",
-   "src/core/race_sound.hpp:loading",
    "src/core/stunt_event.hpp:rider_passes"
   ],
   "source_records": [
@@ -18073,6 +18741,24 @@
   ],
   "source_records": [
    "docs/research/R-0052-hunter-effects.md"
+  ]
+ },
+ {
+  "address": "$83:CF1C",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_83CF1C",
+  "native": [
+   "src/core/hunter_effects.cpp:priority",
+   "src/core/hunter_effects.cpp:update_hunter_effects",
+   "src/core/presentation.cpp:ClassicRaceHistoryTracker::observe_update",
+   "src/core/race_sound.hpp:hunter_effect_start",
+   "src/core/zoom_zoo_movement.hpp:ClassicRaceScenario::hunter_tour",
+   "src/core/zoom_zoo_movement.hpp:HunterEffects",
+   "src/core/zoom_zoo_movement.hpp:update_hunter_effects"
+  ],
+  "source_records": [
+   "docs/research/R-0077-one-player-audio.md"
   ]
  },
  {
@@ -20807,6 +21493,16 @@
   ]
  },
  {
+  "address": "$83:FBF5",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_83FBF5",
+  "source_records": [
+   "docs/research/R-0077-one-player-audio.md",
+   "tasks/AUDIO-ONE-PLAYER.md"
+  ]
+ },
+ {
   "address": "$83:FC75",
   "class": "unknown",
   "comment": "unknown",
@@ -20816,7 +21512,9 @@
   ],
   "source_records": [
    "docs/research/R-0076-first-race-audio.md",
-   "tasks/AUDIO-FIRST-RACE.md"
+   "docs/research/R-0077-one-player-audio.md",
+   "tasks/AUDIO-FIRST-RACE.md",
+   "tasks/AUDIO-ONE-PLAYER.md"
   ]
  },
  {
@@ -20827,6 +21525,16 @@
   "source_records": [
    "docs/research/R-0076-first-race-audio.md",
    "tasks/AUDIO-TITLE-MENU.md"
+  ]
+ },
+ {
+  "address": "$83:FD35",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_83FD35",
+  "source_records": [
+   "docs/research/R-0077-one-player-audio.md",
+   "tasks/AUDIO-ONE-PLAYER.md"
   ]
  }
 ]
