@@ -1,5 +1,14 @@
 # Next session
 
+**3 October 2026: AUDIO-ONE-PLAYER checkpoint at `6aeee3d` on `task/audio-one-player`
+(pushed, no pull request yet).** Resume in `.worktrees/audio-one-player` from the checkpoint
+section of [AUDIO-ONE-PLAYER](AUDIO-ONE-PLAYER.md): the race's loading follows its song (measured table by
+track and song counter), native plays all six race songs on the five menu tracks with pack
+v33, and native cues equal the original's on six captured schedules. Still open: three race
+effects, the stunt result's sounds, the award/ending/title-reload sessions, HILL CLIMB's
+loading, native-symbols regeneration, R-0077, measurement, continuation, gates, review and
+the PR. Captures and scripts are in main `local/evidence/audio-one-player/`.
+
 **2 October 2026 05:42 UTC: [AUDIO-ONE-PLAYER](AUDIO-ONE-PLAYER.md) is claimed** on `task/audio-one-player`
 in `.worktrees/audio-one-player` from main `df0bf14`, after verifying PR #51's merge, main
 equal to `origin/main` and the AUDIO-FIRST-RACE closeout. Claude Fable 5.1 is the primary; the
