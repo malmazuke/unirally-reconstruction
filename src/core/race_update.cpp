@@ -810,7 +810,7 @@ void update_rider_contact(const ZoomZooState& state, ZoomZooState& next, unsigne
 // $81:C73E-C75B: when the race clock would reach 10:00 it holds 9:59.9 and marks both
 // riders finished, whatever their laps; a stunt event's clock counts down instead. Then the
 // queues, the camera, each rider's contact (the opponent's only when it rides), the
-// visibility, the HUNTER effects and the hints.
+// visibility, the race loop's second dispatcher call, the HUNTER effects and the hints.
 void finish_update(const ZoomZooState& state, ZoomZooState& next,
                    const std::array<RiderOutcome, 2>& outcomes, const ZoomZooContent& content,
                    const ClassicRaceScenario& scenario) {
@@ -872,6 +872,8 @@ void finish_update(const ZoomZooState& state, ZoomZooState& next,
         if (!outcomes[index].contact_skip) update_rider_contact(state, next, index, content);
     if (state.complete_race)
         update_visibility(next, track_geometry(content.movement.sampling.track));
+    // $83:CD9F, the race loop's second dispatcher call, comes before HUNTER's update ($83:CDAA).
+    race_sound::dispatch(next, AudioDispatchSite::race_late);
     update_hunter_effects(next, content.hunter_blink);
     if (state.native_initialization) update_tutorial_hints(next);
     ++whole.frame;
@@ -989,7 +991,6 @@ void update_zoom_zoo(ZoomZooState& state, const ControllerButtons& requested_but
     for (unsigned index = 0; index < rider_passes(scenario, next.split_screen); ++index)
         outcomes[index] = update_rider(state, next, index, active, trick_buttons, content);
     finish_update(state, next, outcomes, content, scenario);
-    race_sound::dispatch(next, AudioDispatchSite::race_late);
     state = next;
 }
 
