@@ -204,6 +204,14 @@ holds the observations, the loading table, the producers and the measured domain
   - **No QUIT in the pause menu.** Its second choice already quits as the original's does
     (R-0060), but native draws its own RESUME / RESTART RACE panel; the original's reads CONTINUE
     GAME and QUIT. Queued as CLASSIC-PAUSE-MENU.
+- Focused review of `231080f` (fresh Claude Opus 5.5 subagent, own clone at `eea32ca`): accept.
+  It reproduced the scripted run (2,896 pairs queued at the end, every drop silent) and found
+  seven non-blocking items. Applied: CI now builds `app-release`; the trim's 0.72-frame
+  conservative anchor is documented; the late-drop test covers 48 kHz, a partial drain, `keep`
+  equal to the ceiling and a restore after a drop; AUDIO-UPLOAD-SPEED's live criterion names a
+  measurable peak level; dropped pairs are noted as delivered. Left as recorded limits: a device
+  clock slower than the game's 47,993 pairs a second by more than about 144 ppm would cut about
+  40 ms of sound every several minutes, and `due` overflows after 52 days at 192 kHz.
 - Live check 2 (`20261003-idle2.json`, `app-release` at `231080f`): no input again (no gamepad
   connected); 45,000 idle updates, not a listening check.
 

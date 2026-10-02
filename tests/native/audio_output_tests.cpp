@@ -87,6 +87,21 @@ void check_late_drop() {
     require(output.drop_late(1000, 40, 20) == 78, "late drop exceeded the queue");
     require(output.state().generated_pairs == output.state().delivered_pairs, "queue not empty");
     rejects([&] { output.drop_late(1000, 20, 40); });
+    // At 48 kHz after a partial drain: the bound counts from the delivered pairs, `keep` may equal
+    // the ceiling, and a dropped queue saves and restores as any drained one.
+    unirally::NativeAudioOutput fast(48000);
+    fast.append_pcm(source);
+    const auto generated = fast.state().generated_pairs;
+    require(fast.take_pairs(30).size() == 60, "partial drain differs");
+    require(fast.drop_late(30 + 50, 50, 50) == 0, "output at its ceiling dropped");
+    require(fast.drop_late(30 + 51, 50, 50) == 1, "keep equal to the ceiling drops one");
+    require(fast.drop_late(30 + 100, 50, 10) == 89, "late drop after a drain differs");
+    require(fast.state().delivered_pairs == 120, "drain and drops not both delivered");
+    const auto bytes = unirally::serialize_audio_output(fast.state());
+    unirally::NativeAudioOutput restored;
+    restored.restore(unirally::deserialize_audio_output(bytes));
+    require(restored.state() == fast.state(), "dropped output does not restore");
+    require(restored.take_pairs(1000).size() / 2 == generated - 120, "restored queue differs");
 }
 }
 int main() {

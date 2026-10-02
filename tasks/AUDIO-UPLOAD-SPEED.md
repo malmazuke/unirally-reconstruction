@@ -41,5 +41,5 @@ write or PCM pair.
 | --- | --- | --- | --- |
 | Speed | Time `load_session` for a race, the title and an ending, debug and optimized | At least 5x real time | JSON |
 | Nothing moves | Conditional checks (`cond.sh full-*`), anchored measurement, continuation, audio unit tests | Identical port, DSP and PCM streams | logs |
-| Live | The app-debug app's scripted race (`hill-complete` inputs) | No audible drop at loads (`native_audio_dropped_late_pairs` silent) | JSON |
+| Live | The app-debug app's scripted race (`hill-complete` inputs), with the dropped pairs' peak level reported (add it to the app's report) | Every drop after the boot's silent (peak 0); the boot alone drops about 10,000 silent pairs | JSON |
 | Review | Tier 1 | Approved | review on the pull request |
