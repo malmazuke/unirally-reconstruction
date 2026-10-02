@@ -52,7 +52,7 @@ void TitleMenuAudioScore::initialize_score_note(std::uint8_t index, std::uint8_t
 }
 // R-0075, 0E03 control table. Control values are the identified score format.
 void TitleMenuAudioScore::apply_score_control(std::uint8_t index, std::uint8_t control) {
-    if (control <= 0x87 || control == 0xa3)
+    if (control <= 0x87 || control == 0xa3 || control == 0xa4)
         apply_sequence_control(index, control);
     else if (control >= 0xa5 && control <= 0xa8)
         apply_flag_control(index, control);
@@ -152,6 +152,21 @@ void TitleMenuAudioScore::apply_sequence_control(std::uint8_t index, std::uint8_
         add_work(22);
         voice.next_duration_inline = true;
         break;
+    case 0xa4: {
+        // R-0077, 1103-113F: a call to one of `count` targets chosen at random: skip to the
+        // choice's word (CLRC drops ASL's carry), read it, skip the table's rest (the carry of
+        // that ASL is added), push the return pointer (1301) and jump.
+        add_work(16 + 682 + 292);
+        const auto count = read_byte(index);
+        const auto choice = random_choice(count);
+        voice.pointer = word(voice.pointer + byte(2U * choice));
+        const auto target = read_word(index);
+        const auto rest = byte(count - 1U - choice);
+        voice.pointer = word(voice.pointer + byte(2U * rest) + (rest >> 7U));
+        push_pointer(index);
+        voice.pointer = target;
+        break;
+    }
     case 0xa3: {
         add_work(16 + 682 + 4 + 8 + 4 + 8 + 6 + 10 + 8 + 4 + 10 + 6 + 42);
         const auto count = read_byte(index);
