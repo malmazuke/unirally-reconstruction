@@ -100,6 +100,44 @@ captures filled the disk once):
   and recover their producers and sets (pack v34); then measurement, continuation, gates,
   review and the PR.
 
+## Checkpoint, 3 October 2026 (Claude Opus 5.5 session, source `ef995c5` + uncommitted records)
+
+This session resumed the Fable 5.1 checkpoint on Claude Opus 5.5 (`claude-opus-5-5`); weekly
+all-models usage 24% at its start, 27% here. Tools moved to main `local/evidence/audio-one-player/`:
+`cues.sh NAME` (native cues vs the original's; `INITS=1` takes each race's start from the capture,
+`NAME.reset-delays.txt` the reset delay), `track_schedule.py`, `track_batch.sh`, `loading.py`,
+`loading_tables.py` (writes `loading-tables.json`), `loading_cpp.py`, `hunter_schedule.py`,
+`race_inits.py`, `cond.sh CAPTURE SESSIONS...` (conditional driver/DSP check), `sessions.py`,
+`upload_len.py`, `dis.py`/`lst.py` (65816 reading aids), `sets/` (each set as the product composes it).
+
+Done and verified since the first checkpoint:
+- Race effects 18/19 (mud), 23 (long flight's flat landing, A turn's braking contact), 26 (stunt
+  clock 0:05-0:00, count-up 9:5x), 27 (corkscrew), 31 (HUNTER effect start); the stunt tally's
+  pass/total sounds (first pass reads NOW PLAYING's choice pads restored by `$83:987D`).
+- Award (driver 50/tables 52/score 58, `$83:FBF5`) and ending (driver 51, tables 55, score 60,
+  `$83:FD35`) sessions, the way back's title reload, the award's medal sound, all eight endings'
+  script sounds (helpers `$83:A286-A4D0`, walk footsteps), HUNTER's page reveal sound, its waits,
+  the soft reset's boot session; PICK TOUR's reveal sound moved after its redraw.
+- Pack profile v34 (award/ending sets, 15 new samples). Each set is its upload over the title
+  set's bytes (the award's tables do not reach the effect tables). Driver 51's effect layout.
+  Score controls 87 (inline duration), 98/99 (noise voices `$D6` to DSP 3D), 9A (noise clock to
+  FLG); audio state URAU0006.
+- Loading measured for all 45 tracks (six races each; `loading-tables.json`).
+- Cue equality, line for line: two-dragster, six-quits, two-races, cont-loss, six-quits-t1..t44
+  (all 45 tracks), lap-won, bowl-lose, bowl-quit, fifth-win, forced-silver, hill-win,
+  hill-complete, hopper-gold, locked-gold, all-gold (58,179 lines; with one race's start and the
+  reset delay 2 from the capture: the upload's length varies with the sound processor's state, so
+  track 35 song 62 took 80 frames there and 81 in six-quits-t35).
+- Conditional exactness (original port writes into native IPL/driver/DSP): full-six-quits
+  (1,863,797 rows, 5,702,149 pairs), full-hopper-gold (1,383,923 / 3,651,888), full-all-gold
+  (10,521,739 / 27,413,906; native adds one row after the capture's end).
+
+Open: `hunter-t41-right`/`hunter-t44-right` captures (HUNTER tag effect 31; native tags twice in
+each) were running; R-0077 is drafted in the worktree (sections pending); anchored measurement
+(`measure.sh`, update to v34 and per-load tracks), fresh-process continuation at race/result/award/
+ending loads, native-symbols and static-map regeneration, D-0010/STATE/README records, gates,
+review, PR.
+
 ## Acceptance and closeout
 
 - Native cues equal the original's on frozen schedules covering every song,
