@@ -11,6 +11,16 @@ struct ZoomZooState;
 // program order (AUDIO-FIRST-RACE, R-0076). Commands are the sound driver's: 2 starts an
 // effect, 3 sets the music fade rate, 6/11 clear/set a score flag that effects test.
 namespace race_sound {
+// Effects started on their own (command 2) by the race's surfaces, landings and clock.
+constexpr std::uint8_t mud_entry = 18;      // $81:89A3: a rider settles into mud
+constexpr std::uint8_t mud_exit = 19;       // $81:86A9: the first update after mud lets go
+constexpr std::uint8_t landing_effect = 23; // $81:9447 a long flight's flat landing,
+                                            // $82:A3F4 an A turn's braking contact
+constexpr std::uint8_t clock_warning = 26;  // $81:C79D, $81:C8ED: the clock's last seconds
+constexpr std::uint8_t corkscrew_ejection = 27; // $81:87D9: a corkscrew's first ejection
+constexpr std::uint8_t hunter_effect_start = 31; // $83:CF1C-D0E4: a HUNTER effect begins
+// Starts `effect` now, in the update's program order.
+void effect(ZoomZooState& next, std::uint8_t effect);
 // $83:F65E-F67A: a paused update's eight dispatcher calls; the update that opens the pause also
 // fades the music out (command 3, 0x80) and sends it at $83:F68A-F68E ($1365 latches that once).
 void pause_frame(ZoomZooState& next, bool opening);

@@ -200,9 +200,11 @@ bool second_tally_pass(FrontEndState& state, const FrontEndContent& content) {
 }
 
 // $80:F680-F751 and `$80:F77F-F7A2`: a pass over the column's five rows. A row below its tally
-// shows one more; a row still at 0 prints its 0 again. When no row rose the column's points go
-// into the total, which is printed, and the wait is the column total's.
-void tally_pass(FrontEndState& state, const FrontEndContent& content) {
+// shows one more; a row still at 0 prints its 0 again. A pass that raised a row plays the move's
+// sound unless a button is pressed (`$80:F758-F75D`, `$80:B6D3`). When no row rose the column's
+// points go into the total, which is printed with the choice's sound (`$80:F7A7`), and the wait
+// is the column total's.
+void tally_pass(FrontEndState& state, const FrontEndContent& content, FrontEndPads pads) {
     auto& tally = state.race_result.tally;
     bool raised = false;
     ResultWords words;
@@ -222,7 +224,10 @@ void tally_pass(FrontEndState& state, const FrontEndContent& content) {
     raised = second_tally_pass(state, content) || raised;
     tally.frames_waited = 0;
     tally.column_total_shown = !raised;
-    if (raised) return;
+    if (raised) {
+        if (!any_button_pressed(pads)) play_menu_sound(state, MenuSound::navigate);
+        return;
+    }
     for (unsigned row = 0; row < trick_family::count; ++row) {
         const auto points = tally_of(state, row, tally.column).points;
         tally.total = static_cast<std::uint16_t>(tally.total + points);
@@ -239,6 +244,7 @@ void tally_pass(FrontEndState& state, const FrontEndContent& content) {
         state.printer.attribute = 0x0400;
         print_stunt(state, content, StuntText::second_total, words);
     }
+    play_menu_sound(state, MenuSound::select);
 }
 
 // A frame of the tally after a pass: the first shows the text and steps the decorations
@@ -268,7 +274,7 @@ void tally_frame(FrontEndState& state, const FrontEndContent& content, FrontEndP
             return;
         }
     }
-    tally_pass(state, content);
+    tally_pass(state, content, pads);
 }
 
 // The frames after the tally: `$80:F7CD-F7D7` and the total printed again, the rider's best score
@@ -343,7 +349,8 @@ void stunt_result_frame(FrontEndState& state, const FrontEndContent& content, Fr
         high_bits(state, 100) =
             state.now_playing.opponent < someone ? four_shown : one_player_marks;
         state.race_result.tally = {};
-        tally_pass(state, content);
+        // The pass reads the pads the menus' work RAM brought back from NOW PLAYING's choice.
+        tally_pass(state, content, {state.now_playing.choice_pads, 0});
         return;
     }
     if (state.race_result.tally.finished_frame == 0) {

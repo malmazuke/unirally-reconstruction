@@ -9,6 +9,7 @@
 #include "stunt_event.hpp"
 
 #include "announcements.hpp"
+#include "race_sound.hpp"
 #include "word_arithmetic.hpp"
 
 #include <cstdint>
@@ -58,6 +59,13 @@ bool count_down_tenth(RaceTimerDigits& clock) {
     return true;
 }
 
+// $81:C8D3-C8ED: a tick that leaves 0:05.0, 0:04.0 ... 0:00.0 on the clock sounds its warning
+// (`CMP #6`, BPL: whole seconds 0-5 with no minutes, tens or tenths).
+bool warns_last_seconds(const RaceTimerDigits& clock) {
+    constexpr std::uint16_t warned_seconds = 6;
+    return !clock.minutes && !clock.tens_seconds && !clock.tenths && clock.seconds < warned_seconds;
+}
+
 // $83:E85C-E862: CMP #1 and BPL, so a count of 0 (or one past 0x8000).
 bool stands_on_ground(const RiderMovementState& rider) {
     return negative(static_cast<std::uint16_t>(rider.contact.unsupported_count - 1U));
@@ -102,8 +110,17 @@ bool stunt_rider_can_finish(const RiderMovementState& rider) {
 
 void update_stunt_clock(ZoomZooState& state, bool running) {
     auto& stunt = state.stunt;
+    auto& clock = state.movement.timer;
     // $81:C7D2-C7D5: once stopped, the clock only tests the riders.
-    if (!stunt.clock_stopped && !(running && count_down_tenth(state.movement.timer))) return;
+    if (!stunt.clock_stopped) {
+        if (!running) return;
+        if (!count_down_tenth(clock)) {
+            // A tick leaves the update counter at 0 ($81:C7E9).
+            if (clock.subframe == 0 && warns_last_seconds(clock))
+                race_sound::effect(state, race_sound::clock_warning);
+            return;
+        }
+    }
     for (unsigned index = 0; index < 2; ++index)
         if (stunt_rider_can_finish(state.movement.riders[index]))
             state.race.riders[index].finished = 1; // $0EFF/$0F01; the times stay 60000

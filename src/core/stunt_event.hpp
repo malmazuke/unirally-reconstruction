@@ -17,6 +17,7 @@ unsigned rider_passes(const ClassicRaceScenario& scenario, bool two_human = fals
 // $81:C7CE-C867, the race clock of a stunt event: once `running` (the start countdown below 68,
 // as a race's clock) it counts down a tenth every five updates. The tick after 0:00.0 stops it;
 // from then on every update finishes each rider that can finish (see stunt_rider_can_finish).
+// Each whole second from 0:05.0 to 0:00.0 sounds the clock's warning (`race_sound`).
 void update_stunt_clock(ZoomZooState& state, bool running);
 // $83:E7C1-E8DD, a stunt event's finish before the race's finish routine: each finished rider
 // that stands on the ground settles (see StuntEvent::settled); once both have finished and

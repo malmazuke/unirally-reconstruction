@@ -36,6 +36,7 @@ bool beeps(std::uint16_t countdown, bool stunt_event) {
 }
 } // namespace
 
+void effect(ZoomZooState& next, std::uint8_t effect) { enqueue(next, start_effect, effect); }
 void dispatch(ZoomZooState& next, AudioDispatchSite site) {
     next.sound_cues.push_back(audio_dispatch(site));
 }

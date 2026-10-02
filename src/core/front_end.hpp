@@ -391,6 +391,10 @@ struct NowPlaying {
     std::uint8_t opponent{0x10};  // $017F: BRONSEN, SILVIA, GOLDWYN (0x11-0x13) or ANTI-UNI 0x14
     std::uint8_t record_holder{}; // $018F
     NowPlayingChoice choice{};
+    // $0072 as the choice's frame read it (`$80:D1EC`): pad 1. The fade reads no pad and the race
+    // keeps the menus' work RAM aside, so the stunt result's first tally pass reads it
+    // (`$83:987D`, `$80:F758`).
+    std::uint16_t choice_pads{};
 };
 
 struct MainMenu {

@@ -431,6 +431,9 @@ struct SpecialTileUpdate {
     bool corkscrew_stepped{};     // $81:8949 stored 1 at $0EA3 (the player's rolling flag)
     std::uint16_t slow_tile{}; // $0F2D: flag pair 8 ran (the slope nudge and pose follow velocity)
     std::uint16_t crank_brake{}; // $0FB1: flag pair 12 ran (the brake path skips the idle step)
+    // The tile's sound effect this update, 0 for none: mud's entry ($81:89A3) or the
+    // corkscrew's first ejection ($81:87D9) (`race_sound`).
+    std::uint8_t sound_effect{};
 };
 // Whether the update that left `tiles` skipped the rider's contact with the track, the
 // transient `contact_skip` above, from the words it leaves: a corkscrew step sets the physics
@@ -438,8 +441,9 @@ struct SpecialTileUpdate {
 // top sets the loop's cooldown to 3 and moves its step on to 2-16. For the presentation, which
 // sees only the states between updates.
 bool special_tiles_skipped_contact(const SpecialTileRider& tiles);
-// $81:8690-86FE: the counters' part of the reset before the tile dispatch.
-void update_special_tile_counters(SpecialTileRider& tiles, ReflectionTransition& transition,
+// $81:8690-86FE: the counters' part of the reset before the tile dispatch. Returns whether
+// mud let the rider go, the update the original sounds its exit ($81:86A9).
+bool update_special_tile_counters(SpecialTileRider& tiles, ReflectionTransition& transition,
                                   std::uint8_t selected_high);
 // $81:871C-875B: the boost tile (flag pair 2), pushing by 0x80 plus `extra`.
 void apply_boost_tile(RiderMovementState& rider, SurfaceTransition& surface, std::uint16_t extra);

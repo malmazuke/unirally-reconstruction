@@ -291,6 +291,7 @@ void now_playing_frame(FrontEndState& state, const FrontEndContent& content, Fro
         step_decorations(state, content);
         return;
     }
+    now.choice_pads = pad;
     if (now.choice != NowPlayingChoice::back)
         play_menu_sound(state, MenuSound::select); // $80:B4A0/B4B1
     hide_icons(state);

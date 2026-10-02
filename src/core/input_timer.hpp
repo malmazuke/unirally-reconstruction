@@ -40,5 +40,9 @@ RaceTimerDigits deserialize_timer(std::span<const std::uint8_t> bytes);
 // Returns true when the original 9:59.9 saturation branch executes. The
 // caller owns its audio flags; this function changes only the five digits.
 bool advance_timer_digits(RaceTimerDigits& state, bool enabled);
+// $81:C78A-C79D: whether an update `advance_timer_digits` took from `before` to `after` sounds
+// the clock's warning: its tenth carried into the seconds and left the clock in 9:50-9:59,
+// the 9:59.9 saturation included.
+bool timer_warning(const RaceTimerDigits& before, const RaceTimerDigits& after, bool enabled);
 
 } // namespace unirally
