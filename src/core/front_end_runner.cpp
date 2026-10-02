@@ -586,6 +586,19 @@ void update_local_race(const Options& options, const unirally::ClassicContentPac
     ++races;
 }
 
+// A frame of the race's content load: its sound load cues, and the requested outputs. The load
+// is forced blank; retain requested pictures instead of silently omitting them from a
+// fixed-frame differential capture (R-0073).
+void write_loading_frame(const Options& options, const unirally::FrontEndState& state,
+                         const RaceBetweenMenus& race, std::uint32_t frame,
+                         SoundCueLog& sound_cues) {
+    sound_cues.write(frame, unirally::race_sound::loading(race.initialization_frame - frame));
+    if (const auto picture = options.pictures.find(frame); picture != options.pictures.end())
+        write_ppm(picture->second, unirally::RgbFrame{});
+    if (const auto records = options.records.find(frame); records != options.records.end())
+        write_records(records->second, state.records);
+}
+
 } // namespace
 
 int main(int argc, char** argv) try {
@@ -629,16 +642,7 @@ int main(int argc, char** argv) try {
                 continue;
             }
             if (frame <= race.initialization_frame) {
-                sound_cues.write(frame,
-                                 unirally::race_sound::loading(race.initialization_frame - frame));
-                // The content load is forced blank; retain requested pictures instead of
-                // silently omitting them from a fixed-frame differential capture (R-0073).
-                if (const auto picture = options.pictures.find(frame);
-                    picture != options.pictures.end())
-                    write_ppm(picture->second, unirally::RgbFrame{});
-                if (const auto records = options.records.find(frame);
-                    records != options.records.end())
-                    write_records(records->second, state.records);
+                write_loading_frame(options, state, race, frame, sound_cues);
                 continue;
             }
             update_local_race(options, pack, content, state, race, race_timeline, restored_local,

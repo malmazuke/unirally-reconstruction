@@ -17863,7 +17863,7 @@
   "comment": "instruction start",
   "label": "loc_83CD50",
   "native": [
-   "src/core/race_update.cpp:update_zoom_zoo"
+   "src/core/race_update.cpp:read_second_rider_controls"
   ],
   "source_records": [
    "docs/research/R-0069-split-screen-race.md",
@@ -17877,7 +17877,7 @@
   "comment": "instruction start",
   "label": "loc_83CD5E",
   "native": [
-   "src/core/race_update.cpp:update_zoom_zoo"
+   "src/core/race_update.cpp:read_second_rider_controls"
   ],
   "source_records": [
    "docs/research/R-0061-riders-and-opponents.md"

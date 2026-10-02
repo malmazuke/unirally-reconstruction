@@ -12815,8 +12815,8 @@
     "src/core/audio_cue.hpp:AudioDispatchSite",
     "src/core/audio_cued_scenes.cpp:frame_wait_anchor, race_early_anchor, race_late_anchor, countdown_anchor, finish_fade_anchor, race_choice_anchor, pause_anchor, pause_fade_anchor, pause_continue_anchor",
     "src/core/race_sound.hpp:dispatch",
+    "src/core/race_update.cpp:read_second_rider_controls",
     "src/core/race_update.cpp:run_pause_menu",
-    "src/core/race_update.cpp:update_zoom_zoo",
     "src/core/rider_look.cpp:zoom_zoo_update_was_paused"
    ],
    "observed_entries": {},

@@ -863,6 +863,39 @@ void finish_update(const ZoomZooState& state, ZoomZooState& next,
     ++whole.frame;
 }
 
+// The second rider's controls for one update: the demo's scripted pads, a second human's pad,
+// an absent stunt opponent or the opponent AI. Returns whether the AI is off this update.
+bool read_second_rider_controls(ZoomZooState& next, const ClassicRaceScenario& scenario,
+                                const ControllerButtons& request,
+                                const ControllerButtons& opponent_buttons,
+                                DemoTrickButtons& demo_buttons) {
+    bool ai_off = next.split_screen || scenario.stunt_event;
+    if (next.demo_ai) {
+        const auto pressed = [](const ControllerButtons& pad) {
+            return pad.a || pad.b || pad.x || pad.y || pad.left_shoulder || pad.right_shoulder
+                || pad.select || pad.start || pad.up || pad.down || pad.left || pad.right;
+        };
+        demo_buttons = update_demo_controllers(next, pressed(request) || pressed(opponent_buttons));
+        // $83:CD50-CD61; ATTRACT-DEMO: the one-view demo runs normal opponent AI
+        // after its demo controls. The split demo suppresses that second pass.
+        if (!next.split_screen) ai_off = update_opponent_controller(next);
+    } else if (next.split_screen) {
+        const auto sample = sample_controller(opponent_buttons);
+        next.opponent_horizontal = sample.horizontal;
+        auto& input = next.reflection[1];
+        input.brake_input = opponent_buttons.y;
+        input.jump_input = opponent_buttons.b;
+        input.rotate_negative_input = opponent_buttons.left_shoulder;
+        input.rotate_positive_input = opponent_buttons.right_shoulder;
+        demo_buttons.a[1] = opponent_buttons.a;
+        demo_buttons.x[1] = opponent_buttons.x;
+    } else if (scenario.stunt_event)
+        release_absent_opponent(next);
+    else
+        ai_off = update_opponent_controller(next);
+    return ai_off;
+}
+
 } // namespace
 
 // The wrong-direction counter counts the rider's active updates moving (16 or more
@@ -921,31 +954,9 @@ void update_zoom_zoo(ZoomZooState& state, const ControllerButtons& requested_but
     if (state.native_initialization && next.pause.released && !player_buttons.start)
         next.pause.released = 0;
     DemoTrickButtons demo_buttons{};
-    bool ai_off = next.split_screen || scenario.stunt_event;
-    if (next.demo_ai) {
-        const auto pressed = [](const ControllerButtons& pad) {
-            return pad.a || pad.b || pad.x || pad.y || pad.left_shoulder || pad.right_shoulder
-                || pad.select || pad.start || pad.up || pad.down || pad.left || pad.right;
-        };
-        demo_buttons = update_demo_controllers(next, pressed(request) || pressed(opponent_buttons));
-        pressed_a = demo_buttons.a[0];
-        // $83:CD50-CD61; ATTRACT-DEMO: the one-view demo runs normal opponent AI
-        // after its demo controls. The split demo suppresses that second pass.
-        if (!next.split_screen) ai_off = update_opponent_controller(next);
-    } else if (next.split_screen) {
-        const auto sample = sample_controller(opponent_buttons);
-        next.opponent_horizontal = sample.horizontal;
-        auto& input = next.reflection[1];
-        input.brake_input = opponent_buttons.y;
-        input.jump_input = opponent_buttons.b;
-        input.rotate_negative_input = opponent_buttons.left_shoulder;
-        input.rotate_positive_input = opponent_buttons.right_shoulder;
-        demo_buttons.a[1] = opponent_buttons.a;
-        demo_buttons.x[1] = opponent_buttons.x;
-    } else if (scenario.stunt_event)
-        release_absent_opponent(next);
-    else
-        ai_off = update_opponent_controller(next);
+    const bool ai_off =
+        read_second_rider_controls(next, scenario, request, opponent_buttons, demo_buttons);
+    if (next.demo_ai) pressed_a = demo_buttons.a[0];
     const bool countdown_holds = run_countdown(
         state, next, scenario.stunt_event ? stunt_countdown : race_countdown, scenario.stunt_event);
     // The opponent's A and X are its selector's bits only on updates the AI stores them;

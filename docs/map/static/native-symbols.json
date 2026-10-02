@@ -8970,7 +8970,7 @@
   {
    "address": "$83:CD50",
    "native": [
-    "src/core/race_update.cpp:update_zoom_zoo"
+    "src/core/race_update.cpp:read_second_rider_controls"
    ],
    "range_ends": [
     "$83:CD61"
@@ -17604,6 +17604,11 @@
     "$0331"
    ]
   },
+  "src/core/race_update.cpp:read_second_rider_controls": {
+   "rom": [
+    "$83:CD50"
+   ]
+  },
   "src/core/race_update.cpp:release_absent_opponent": {
    "rom": [
     "$82:AB6A",
@@ -17769,11 +17774,6 @@
    "wram": [
     "$0DFB",
     "$0DFD"
-   ]
-  },
-  "src/core/race_update.cpp:update_zoom_zoo": {
-   "rom": [
-    "$83:CD50"
    ]
   },
   "src/core/race_update.cpp:wrong_way_warning, wrong_way_repeat": {
