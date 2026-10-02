@@ -1,6 +1,6 @@
 # R-0077 - native audio through the one-player game
 
-Status: in progress for [AUDIO-ONE-PLAYER](../../tasks/AUDIO-ONE-PLAYER.md), 3 October 2026.
+Status: validated for [AUDIO-ONE-PLAYER](../../tasks/AUDIO-ONE-PLAYER.md), 3 October 2026; in review.
 PAL ROM SHA-256 `a1105819d48c04d680c8292bbfa9abbce05224f1bc231afd66af43b7e0a1fd4e`; bsnes
 `7d5aa1e656b9171524d01b1b22917197d8121cb4` with R-0075's audio observation core v5, default
 options, Strict synchronization, a fresh private save directory per process. Private captures and
@@ -183,9 +183,57 @@ boot's 371,820 master clocks after their frames' boundaries (medians of 24 award
 the endings enqueue gains 255 and 79 and the music start and poll five times; the way back
 enqueues the music start and gains 255 and 127. The sets are composed as observation 7 says.
 
+## Native cues
+
+`cues.sh` runs `front_end_runner --sound-cues` on a schedule's inputs and record writes and
+compares with the cues derived from its two captures (frames 620 on). Equal line for line on 60
+schedules: `two-dragster`, `six-quits`, `two-races`, `cont-loss`, `lap-won`, `bowl-lose`,
+`bowl-quit`, `fifth-win`, `forced-silver`, `hill-win`, `hill-complete`, `hopper-gold`,
+`locked-gold`, `hunter-t41-right` and `hunter-t44-right` (two tags each: effect 31 after the late
+dispatch), `six-quits-t1` to `six-quits-t44` (every track, six races each) and `all-gold`
+(58,179 lines through 25 completions, eight gold endings, HUNTER's ending, the soft reset and the
+title after it; with one race's start, track 35's, and the reset delay of 2 frames taken from the
+capture, as the laboratory runner takes them). R-0076's seven schedules stay equal; their
+derived cues name a race load `race`, which the native log now names by song.
+
 ## Measured agreement (D-0010)
 
-[Pending.]
+`measure.sh` plays each schedule's native cues through `race_audio_runner` from power-on (no
+original clock or event as input) and compares the commands reaching the driver and the raw PCM
+with the capture. PCM is identical up to the first anchored command (pair 480,386). Level of each
+20 ms window with signal (`pcm_metrics.py`):
+
+| Schedule | Commands in frame | Identical pairs | Windows | Median level difference | 90th / 99th percentile | Within 1 dB |
+|---|---|---|---|---|---|---|
+| `six-quits` | 258 of 259 | 1,599,144 of 5,702,149 | 7,479 | 0.22 dB | 1.02 / 2.38 dB | 90% |
+| `fifth-win` | 249 of 250 | 1,006,299 of 4,036,945 | 5,815 | 0.36 dB | 1.73 / 3.71 dB | 76% |
+| `hopper-gold` | 181 of 186 | 1,608,891 of 3,651,888 | 4,240 | 0.36 dB | 2.49 / 21.79 dB | 74% |
+| `bowl-lose` | 173 of 173 | 896,961 of 3,460,301 | 5,089 | 0.22 dB | 0.96 / 2.07 dB | 91% |
+| `lap-won` | 171 of 171 | 925,318 of 5,381,791 | 8,044 | 0.47 dB | 2.02 / 3.94 dB | 71% |
+| `locked-gold` | 464 of 476 | 3,603,199 of 10,443,406 | 11,697 | 0.47 dB | 2.10 / 17.46 dB | 71% |
+| `six-quits-t35` | 271 of 271 | 1,831,412 of 7,368,000 | 9,675 | 0.13 dB | 0.54 / 1.51 dB | 97% |
+| `six-quits-t41` | 257 of 257 | 1,528,093 of 7,368,009 | 9,923 | 0.17 dB | 0.72 / 1.85 dB | 95% |
+| `hunter-t41-right` | 182 of 182 | 732,518 of 3,459,677 | 5,062 | 0.11 dB | 0.59 / 1.33 dB | 97% |
+| `all-gold` | 1,600 of 1,627 | 7,858,704 of 27,413,906 | 31,458 | 0.43 dB | 2.04 / 16.24 dB | 73% |
+
+Over the 44 `six-quits-tN` runs 11,496 of 11,526 commands reach the driver in the original's
+frame; their median level differences are 0.13-0.34 dB. Commands off their frame are those queued
+at a session's end or right after it: the session's upload ends earlier or later than the
+original's with the running driver's response to the request (the ending's in `hopper-gold`
+ended 75,700 clocks early, so its music start reached the driver in the session's own frame wait,
+six frames before the original's), and the menus' restore frame after the award waits from the
+generic frame-wait anchor, earlier in its frame than the original (`fifth-win`'s last title
+command a frame early). The wide 99th percentiles of the award and ending schedules are those
+windows. `compare_anchored.py` takes a word store whose bytes are 46 clocks apart (DRAM refresh
+between them) as one command.
+
+## Continuation
+
+`continuation/run2.sh` saves the cued playback after a frame (48 kHz, 257-pair drains), restores
+it in a fresh process and requires the concatenated PCM and events and the final state to equal
+the uninterrupted run's: 26 of 26 saves on `hopper-gold` (inside the race load, the race, the
+title reloads, both awards' sessions and animations, the ending's session and script, and the
+menus) and 11 of 11 on `bowl-lose` (the stunt event and its tally), with R-0076's 23.
 
 ## Conditional driver and DSP
 
@@ -199,9 +247,28 @@ ordered DSP-register and SMP-port write and every raw stereo pair:
 | `full-six-quits` | boot, six races (songs 62-66, 64 twice), six title reloads | 1,863,797 | 5,702,149 | equal |
 | `full-hopper-gold` | boot, three races, two awards, an ending, six title reloads | 1,383,923 | 3,651,888 | equal |
 | `full-all-gold` | boot, 25 races, 16 awards, 8 endings, title reloads, HUNTER's ending, the reset boot | 10,521,739 | 27,413,906 | equal; native writes one more after the capture's end |
+| `full-lap-won` | boot, a three-lap race, the title reload | 1,336,353 | 5,381,791 | equal |
 
-Score controls 87, 98, 99 and 9A (observation 10 and below) were found this way: the race songs
-63-66 use 87; HOPPER's ending's noise uses 98-9A. Control 98/99 (SPC `$1052-$1061`) sets/clears
+Score controls 87, 98, 99, 9A and A4 (observation 10 and below) were found this way: the race
+songs 63-66 use 87; HOPPER's ending's noise uses 98-9A; the lap race uses A4. Control A4
+(`$1103-$113F`) calls one of a table's targets chosen by the driver's random routine (`$13DA`):
+it skips to the choice's word (CLRC drops ASL's carry), reads it, skips the table's rest (that
+ASL's carry is added), pushes the return pointer (`$1301`) and jumps. Control 98/99 (SPC `$1052-$1061`) sets/clears
 the voice's bit of `$D6`, which the music pass writes to DSP register 3D (`$06C0-$06C3`) and a
 voice's reset clears (`$08B4-$08B9`); control 9A (`$1064-$1073`) writes the noise clock with
 echo writes off into FLG from the score.
+
+## Limits
+
+- The product's PCM after the first anchored command is measured, not exact (D-0010).
+- A race's first update follows the measured (track, song) table; the session's upload length
+  varies with the sound processor's state, so the original's race can start a frame earlier or
+  later (one of `all-gold`'s 25 races). The local and league modes keep their earlier measured
+  loading for tracks 0-4 and do not track the song counter.
+- Static readings with no captured case: a corkscrew's ejection (effect 27), the race clock's
+  9:5x warning, the cheat newspaper page's reveal, and R-0076's slow-checkpoint clear and BRONSEN's
+  praise voices. Effects at or past a driver's count take an unrecovered path, which native
+  refuses.
+- The anchors of the award's, the endings', the title reloads' and the reset boot's sessions are
+  medians of 24, 3, 27 and 1 sessions.
+- 2P, VS, league, OPTIONS and the attract demo stop the cued producer.

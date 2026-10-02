@@ -2,10 +2,14 @@
 
 ## Assignment
 
-- Status: claimed 2 October 2026 05:42 UTC (15:42 Sydney) after verifying PR #51
+- Status: validated candidate `e023ba8` (3 October 2026), in tier-1 review on its pull
+  request. Claimed 2 October 2026 05:42 UTC (15:42 Sydney) after verifying PR #51
   merged as `df0bf14`, main equal to `origin/main` and main's
   `artifacts/audio-first-race-integration/closeout.json`
   (`accepted_integrated_and_cleaned`, next ready task AUDIO-ONE-PLAYER).
+- Sessions: Claude Fable 5.1 to the first checkpoint (`c4b4cef`); Claude Opus 5.5
+  (`claude-opus-5-5`) from there to the candidate. Children and reviewer: fresh Claude
+  subagents (D-0004, Anthropic-started task).
 - Primary/coordinator: Claude Code, Claude Fable 5.1 (`claude-fable-5-1`). This task
   starts on Anthropic, so under D-0004 its children and its independent reviewer are
   fresh Claude subagents, not Sol.
@@ -137,6 +141,38 @@ each) were running; R-0077 is drafted in the worktree (sections pending); anchor
 (`measure.sh`, update to v34 and per-load tracks), fresh-process continuation at race/result/award/
 ending loads, native-symbols and static-map regeneration, D-0010/STATE/README records, gates,
 review, PR.
+
+## Candidate `e023ba8`, 3 October 2026
+
+Source candidate `e023ba8` (records follow it). [R-0077](../docs/research/R-0077-one-player-audio.md)
+holds the observations, the loading table, the producers and the measured domain.
+
+- Gates on `ea32eaa` (`local/evidence/audio-one-player/gates.sh`, output
+  `gates-ea32eaa.out` and `gates-ea32eaa-tail.out`): lab-debug, lab-release and app-debug
+  build, ctest 41/41 each; v1 winner and loser contracts pass; eight hidden app runs and the
+  front end's Start-held run pass with no pose fallbacks; the eleven frozen race gates pass with
+  6,023 restores and the same row digests as main; the race equivalence sweep against main
+  `df0bf14` finds 0 differences in 2,387,105 updates (432 runs); AUDIO-TITLE-MENU's six frozen
+  comparisons stay equal; R-0076's continuation 19 + 4 PASS. The DRAGSTER fuzz gate aborts 40 of
+  40 as on main (recorded non-pass, own follow-up). The synthetic suite and the native-symbol
+  check failed there on a stale index (regenerated in `e023ba8`); one function over 80 lines
+  (split in `e023ba8`).
+- Audio on the candidate: native cues equal on 60 schedules (R-0077 "Native cues") and R-0076's
+  seven (its derived cues label race loads `race`); measured agreement (R-0077 table; 11,496 of
+  11,526 commands in frame over the 44 track runs); conditional exactness on four full captures;
+  continuation 26/26 (`hopper-gold`) and 11/11 (`bowl-lose`).
+- Front-end equivalence against main: 149 of 174 manifests equal on `ea32eaa`. `e023ba8`
+  restores the league and local modes' loading (the checkpoint had replaced it with the
+  song-62 formula, which moved 7 league manifests); the remaining differences are one-player
+  runs whose races now start at the measured song table's frame (`template`, `lap-record`,
+  `lap-record-frames`, `forced-silver-bronsen`, `goldwyn`, `bowl-lose`, `bowl-press`,
+  `bowl-quit`, whose quit then catches one more trick) or that now run past tracks main could not
+  load (`all-gold`, `hopper-gold`, `locked-gold`, `reveal`, `shuffler-gold`, `walker-gold`,
+  `hill-win`, `hill-complete`, `track-race`). Where this task captured the same inputs
+  (`bowl-lose`, `bowl-quit`, `hill-win`, `hill-complete`, `hopper-gold`, `locked-gold`,
+  `all-gold`), native cues equal the original's, race starts included; the others follow the
+  same per-track table, measured on six races of every track.
+- `e023ba8` re-run (`gates-e023ba8-synthetic.out`, `gates-e023ba8-tail.out`): see the PR.
 
 ## Acceptance and closeout
 
