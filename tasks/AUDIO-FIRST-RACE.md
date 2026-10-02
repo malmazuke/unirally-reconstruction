@@ -221,3 +221,7 @@ duration, and `0x8C` starts a table-driven gain envelope stepped by `$0B42`
      FAIL lines; a failed save or restore is now reported, and its default saves include the
      load windows (1249-1329, 3458-3527).
   3. Fixed: the stale private measurement record (`measure-review1.txt`) is rewritten.
+- With the 81-frame bound, a fresh-process continuation sweep of 19 saves on the primary
+  (700; 1249, 1250, 1251, 1255, 1260, 1300, 1328, 1329 inside the race load; 1360, 2000,
+  3400; 3458, 3459, 3460, 3500, 3526, 3527 inside the title reload; 3700) passes 19 of 19:
+  saved plus restored PCM and events equal the uninterrupted run, with an equal final state.
