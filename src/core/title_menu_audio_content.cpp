@@ -2,6 +2,7 @@
 #include "title_menu_audio.hpp"
 #include <algorithm>
 #include <stdexcept>
+#include <string>
 
 namespace unirally {
 namespace {
@@ -37,15 +38,27 @@ void load_upload(const ClassicContentPack& pack, AudioCpuUploadData& out) {
 std::string sample_entry(unsigned sample) {
     return "audio.sample." + std::string(sample < 10 ? "0" : "") + std::to_string(sample);
 }
-// R-0076, pack v32: the first race's transfers, directory lengths and samples.
+// R-0076, pack v32: the first race's transfers, directory lengths and samples; R-0077, pack
+// v33: the other four songs (counters 2-5 play resources 63-66) and their directory lengths.
 void load_race_upload(const ClassicContentPack& pack, AudioCpuUploadData& out) {
     const auto lengths = pack.entry("audio.race-resource-lengths");
-    if (lengths.size() != out.race_resource_lengths.size() * 2)
+    const auto song_lengths = pack.optional_entry("audio.race-song-resource-lengths");
+    constexpr unsigned v32_lengths = 5, v33_lengths = 4;
+    if (lengths.size() != v32_lengths * 2
+        || (!song_lengths.empty() && song_lengths.size() != v33_lengths * 2))
         throw std::invalid_argument("audio race directory size differs");
-    for (unsigned i = 0; i < out.race_resource_lengths.size(); ++i)
-        out.race_resource_lengths[i] = word(lengths, i * 2);
+    for (unsigned i = 0; i < v32_lengths; ++i) out.race_resource_lengths[i] = word(lengths, i * 2);
+    for (unsigned i = 0; i < v33_lengths && !song_lengths.empty(); ++i)
+        out.race_resource_lengths[v32_lengths + i] = word(song_lengths, i * 2);
     out.race_tables_transfer = bytes_entry(pack, "audio.race-tables-transfer");
-    out.race_song_transfer = bytes_entry(pack, "audio.race-song-1-transfer");
+    out.race_song_transfers[0] = bytes_entry(pack, "audio.race-song-1-transfer");
+    for (unsigned counter = 2; counter <= 5; ++counter) {
+        const auto name = "audio.race-song-" + std::to_string(counter) + "-transfer";
+        const auto transfer = pack.optional_entry(name.c_str());
+        if (transfer.empty()) continue;
+        out.race_song_transfers[race_song_resource(static_cast<std::uint8_t>(counter))
+                                - first_race_song_resource] = {transfer.begin(), transfer.end()};
+    }
     copy_entry(pack, "audio.race-sample-slots", out.race_sample_slots);
     for (const auto sample : out.race_sample_slots) {
         if (sample == 255) continue;
@@ -88,8 +101,15 @@ TitleMenuAudioContent title_menu_audio_content(const ClassicContentPack& pack) {
     copy_entry(pack, "audio.sample-transpose", out.pitch.sample_transpose);
     load_upload(pack, out.upload);
     if (!pack.optional_entry("audio.race-tables").empty()) {
-        out.race_score = {bytes_entry(pack, "audio.race-tables"),
-                          bytes_entry(pack, "audio.race-song-1")};
+        const auto tables = bytes_entry(pack, "audio.race-tables");
+        out.race_songs[0] = {tables, bytes_entry(pack, "audio.race-song-1")};
+        for (unsigned counter = 2; counter <= 5; ++counter) {
+            const auto name = "audio.race-song-" + std::to_string(counter);
+            const auto song = pack.optional_entry(name.c_str());
+            if (song.empty()) continue;
+            out.race_songs[race_song_resource(static_cast<std::uint8_t>(counter))
+                           - first_race_song_resource] = {tables, {song.begin(), song.end()}};
+        }
         load_race_upload(pack, out.upload);
     }
     load_graphics(pack, out.graphics);

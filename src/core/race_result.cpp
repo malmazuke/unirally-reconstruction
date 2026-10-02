@@ -689,19 +689,65 @@ ClassicRaceScenario one_player_race_scenario(const FrontEndState& state) {
     return scenario;
 }
 
+// R-0077: frames from NOW PLAYING's choice frame (the fade's last) to the race sound session's
+// first FF request ($83:CA72's `JSL $82:807E`), measured on six races of each track.
+std::uint32_t race_sound_load_offset(ClassicRaceTrack track) {
+    switch (track.index) {
+    case 0: return 42;  // DRAGSTER
+    case 1: return 90;  // ZOOM ZOO
+    case 2: return 49;  // CRAWLER STUNT
+    case 3: return 117; // DUELLER
+    case 4: return 97;  // GOING UP
+    default: return 0;  // not measured
+    }
+}
+// R-0077: frames from that request to the race's first update, by track and song counter. The
+// session uploads the driver, the tables, the song and the samples in one piece of CPU work,
+// and the race's first update follows in the frame after the upload ends, so the song's length
+// (resource 65 is 2,629 bytes, 66 is 1,655) and the request's position in its frame decide the
+// count. Measured on thirty sessions (five tracks, each counter value once, counter 3 twice);
+// counters 0 and 3 both play resource 64.
+std::uint32_t race_sound_upload_frames(ClassicRaceTrack track, std::uint8_t song_counter) {
+    constexpr std::array<std::array<std::uint8_t, race_song_count>, 5> frames{{
+        {79, 80, 79, 79, 81, 79}, // DRAGSTER
+        {79, 80, 79, 79, 81, 79}, // ZOOM ZOO
+        {79, 80, 79, 79, 80, 79}, // CRAWLER STUNT
+        {79, 80, 79, 79, 81, 79}, // DUELLER
+        {80, 81, 80, 80, 81, 79}, // GOING UP
+    }};
+    if (track.index >= frames.size()) return 0;
+    return frames[track.index][song_counter % race_song_count];
+}
+std::uint32_t race_loading_frames(ClassicRaceTrack track, std::uint8_t song_counter) {
+    const auto offset = race_sound_load_offset(track);
+    if (offset == 0) return 0;
+    return offset + race_sound_upload_frames(track, song_counter) - 1;
+}
+// R-0077: the start's countdown cue ($82:D84A) runs six frames before the sound session's
+// request on DRAGSTER, ZOOM ZOO, CRAWLER STUNT and DUELLER, five on GOING UP.
+RaceSoundLoadTiming race_sound_load_timing(ClassicRaceTrack track, std::uint8_t song_counter) {
+    constexpr std::uint32_t usual_lead = 6, going_up_lead = 5;
+    return {race_sound_upload_frames(track, song_counter),
+            track.index == 4 ? going_up_lead : usual_lead};
+}
 std::uint32_t race_loading_frames(ClassicRaceTrack track) {
-    if (track == ClassicRaceTrack::Dragster) return 121;
-    if (track == ClassicRaceTrack::ZoomZoo) return 169;
-    if (track.index == 2) return 127; // CRAWLER STUNT loading, R-0073 three-event capture.
-    // R-0073 organic-full-tour-turnaround: DUELLER's gap ends at 23603, with one
-    // additional idle NMI before fade 1 at 23605. GOING UP starts fade 1 at 30060.
-    if (track.index == 3) return 197;
-    if (track.index == 4) return 175;
-    return 0;
+    constexpr std::uint8_t cold_first_race_song = 1; // resource 62 (R-0076)
+    return race_loading_frames(track, cold_first_race_song);
+}
+// $83:CA08-CA1E on the race's sound load: the cartridge counter advances modulo 6 and names
+// the song. Native advances it when the race begins, 42 to 117 frames before the original's
+// load; nothing reads the counter in between (R-0077).
+void choose_race_song(FrontEndState& state) {
+    auto& counter = state.records.race_song_counter;
+    counter = static_cast<std::uint8_t>((counter + 1U) % race_song_count);
+    state.race_song = counter;
 }
 
 std::uint32_t race_loading_frames(const FrontEndState& state) {
     const auto track = ClassicRaceTrack{state.tour_menu.track};
+    // A one-player race's loading follows its song (R-0077); the local modes keep the
+    // measurements of R-0071 and R-0073 below.
+    if (state.mode == FrontEndMode::one_player) return race_loading_frames(track, state.race_song);
     const auto ordinary = race_loading_frames(track);
     // The resumed odd-member DRAGSTER initializes at 11627 in organic-three-clean (R-0073).
     if (state.local_result_seen && state.mode == FrontEndMode::league && state.second_rider >= 16

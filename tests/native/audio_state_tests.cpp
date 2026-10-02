@@ -118,7 +118,7 @@ void check_cued_scene_state() {
   cued.phase = unirally::TitleMenuAudioPhase::cued;
   cued.cued_frame = 3458;
   cued.rotation_sounding = {true, false};
-  cued.engine.sound_set = unirally::AudioSoundSetId::first_race;
+  cued.engine.sound_set = unirally::AudioSoundSetId::race_song_62;
   cued.engine.uploading_sound_set = unirally::AudioSoundSetId::title;
   cued.engine.driver.master_volume = 0x7f00;
   cued.engine.driver.master_volume_rate = 0xfc00; // falling by 0x400 an update
@@ -127,7 +127,7 @@ void check_cued_scene_state() {
   require(decoded.cued_frame == 3458 && decoded.rotation_sounding[0] &&
               !decoded.rotation_sounding[1] &&
               decoded.engine.sound_set ==
-                  unirally::AudioSoundSetId::first_race &&
+                  unirally::AudioSoundSetId::race_song_62 &&
               decoded.engine.driver.master_volume_rate == 0xfc00 &&
               unirally::serialize_title_menu_audio(decoded) == bytes,
           "cued scene fields changed in the file");
@@ -145,7 +145,7 @@ void check_cued_scene_state() {
   invalid.rotation_sounding[1] = true;
   rejects([&] { audio.restore(invalid); });
   invalid = audio.snapshot();
-  invalid.engine.uploading_sound_set = unirally::AudioSoundSetId::first_race;
+  invalid.engine.uploading_sound_set = unirally::AudioSoundSetId::race_song_62;
   rejects([&] { audio.restore(invalid); });
   require(unirally::serialize_title_menu_audio(audio.snapshot()) == before,
           "invalid cued continuation mutated running audio");

@@ -35,8 +35,11 @@ void rotation(ZoomZooState& next, unsigned rider, bool rotating);
 void announcement_voice(ZoomZooState& next, unsigned rider, std::uint8_t event,
                         std::span<const std::uint8_t> voices);
 // The race's load before its first update, by frames left until the native initialization:
-// the start's countdown cue ($82:D84A), which the upload's queue reset drops, then the race
-// sound set's upload ($83:CA72). D-0010 calibration from R-0076's DRAGSTER load.
-AudioCueList loading(std::uint32_t frames_to_initialization);
+// the start's countdown cue ($82:D84A), which the upload's queue reset drops, `start_cue_lead`
+// frames before the race sound set's upload ($83:CA72), which ends `upload_frames` - 1 frames
+// before the initialization (`race_sound_load_timing`, R-0077). The load names the track and
+// the song.
+AudioCueList loading(std::uint32_t frames_to_initialization, RaceSoundLoadTiming timing,
+                     std::uint8_t track, std::uint8_t song_counter);
 } // namespace race_sound
 } // namespace unirally

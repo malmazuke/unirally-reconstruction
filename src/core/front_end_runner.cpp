@@ -512,9 +512,12 @@ public:
                 break;
             case unirally::AudioCueKind::load:
                 rotating_ = {};
-                out_ << frame << " L "
-                     << (cue.load == unirally::AudioSessionLoad::first_race ? "race" : "title")
-                     << '\n';
+                out_ << frame << " L ";
+                if (cue.load == unirally::AudioSessionLoad::race)
+                    out_ << "race-" << unsigned(unirally::race_song_resource(cue.parameter));
+                else
+                    out_ << "title";
+                out_ << '\n';
                 break;
             case unirally::AudioCueKind::rotation:
                 if (rotating_[cue.command] == (cue.parameter != 0)) break;
@@ -592,7 +595,11 @@ void update_local_race(const Options& options, const unirally::ClassicContentPac
 void write_loading_frame(const Options& options, const unirally::FrontEndState& state,
                          const RaceBetweenMenus& race, std::uint32_t frame,
                          SoundCueLog& sound_cues) {
-    sound_cues.write(frame, unirally::race_sound::loading(race.initialization_frame - frame));
+    const unirally::ClassicRaceTrack track{state.tour_menu.track};
+    sound_cues.write(frame, unirally::race_sound::loading(
+                                race.initialization_frame - frame,
+                                unirally::race_sound_load_timing(track, state.race_song),
+                                track.index, state.race_song));
     if (const auto picture = options.pictures.find(frame); picture != options.pictures.end())
         write_ppm(picture->second, unirally::RgbFrame{});
     if (const auto records = options.records.find(frame); records != options.records.end())

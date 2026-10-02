@@ -17,8 +17,18 @@ constexpr std::uint64_t frame_wait_anchor = 13082, race_early_anchor = 27920,
                         race_late_anchor = 207728, countdown_anchor = 31564,
                         finish_fade_anchor = 26324, race_choice_anchor = 9908, pause_anchor = 12232,
                         pause_fade_anchor = 17214, pause_continue_anchor = 36340;
-constexpr std::uint64_t first_race_load_anchor = 169072, title_return_load_anchor = 344450;
+constexpr std::uint64_t title_return_load_anchor = 344450;
 constexpr std::uint32_t longest_session_frames = 81;
+// D-0010 calibration by track (R-0077): the race sound session's first FF request's master
+// clocks after its frame's boundary, the medians of six races on each of the five tracks the
+// menus reach (DRAGSTER's is R-0076's). The race's content load before the request differs by
+// track and places the request from 70,000 to 306,000 clocks into its frame.
+constexpr std::array<std::uint64_t, 5> race_load_anchors{169072, 124219, 69947, 94109, 306008};
+std::uint64_t race_load_anchor(std::uint8_t track) {
+    if (track >= race_load_anchors.size())
+        throw std::invalid_argument("no measured race sound load for this track");
+    return race_load_anchors[track];
+}
 
 std::uint64_t frame_start(std::uint32_t frame) {
     return first_frame_boundary + (std::uint64_t(frame) - 1) * frame_clocks;
@@ -47,11 +57,13 @@ void enqueue_cue(Clock& c, AudioCpuQueueState& queue, std::uint8_t command,
     c.call_far();
     native_audio_enqueue(c, queue, command, parameter);
 }
-// $83:CA94-CBEE after the race samples: effect and music gains, the music start,
-// then four dispatcher calls before the race loop.
-void start_race_music(Clock& c, AudioCpuQueueState& queue) {
+// $83:CA4F-CBEE after the race samples: effect and music gains, the music start,
+// then four dispatcher calls before the race loop. Song counter 4's branch ($83:CB6A) sets
+// the music gain to 255 where the other five set 127 (R-0077).
+void start_race_music(Clock& c, AudioCpuQueueState& queue, std::uint8_t song_counter) {
+    constexpr std::uint8_t usual_music_gain = 127, loud_music_gain = 255, loud_counter = 4;
     enqueue_cue(c, queue, 8, 255);
-    enqueue_cue(c, queue, 7, 127);
+    enqueue_cue(c, queue, 7, song_counter == loud_counter ? loud_music_gain : usual_music_gain);
     c.load_constant(2);
     c.store_ram(2);
     c.store_ram(2);
@@ -100,7 +112,7 @@ void NativeTitleMenuAudio::run_cue(std::uint32_t frame, const AudioCue& cue) {
         else
             native_audio_poll_queue(c, queue_);
         return;
-    case AudioCueKind::load: load_session(frame, cue.load); return;
+    case AudioCueKind::load: load_session(frame, cue); return;
     case AudioCueKind::rotation: rotation_sound(cue.command, cue.parameter != 0); return;
     }
     throw std::invalid_argument("unknown audio cue");
@@ -139,11 +151,13 @@ void NativeTitleMenuAudio::rotation_sound(unsigned rider, bool rotating) {
 // $82:807E from a running driver: its FF request stops the driver, the IPL then
 // takes the session's driver, tables, score and samples (R-0075/R-0076). The
 // driver-ready entry reinitializes the command ring, dropping queued cues.
-void NativeTitleMenuAudio::load_session(std::uint32_t frame, AudioSessionLoad load) {
+void NativeTitleMenuAudio::load_session(std::uint32_t frame, const AudioCue& cue) {
     auto& c = engine_.cpu();
-    const bool race = load == AudioSessionLoad::first_race;
-    const auto set = race ? AudioSoundSetId::first_race : AudioSoundSetId::title;
-    idle_until(c, frame_start(frame) + (race ? first_race_load_anchor : title_return_load_anchor));
+    const bool race = cue.load == AudioSessionLoad::race;
+    const auto set = race ? race_song_sound_set(race_song_resource(cue.parameter))
+                          : AudioSoundSetId::title;
+    idle_until(c, frame_start(frame)
+                      + (race ? race_load_anchor(cue.command) : title_return_load_anchor));
     engine_.begin_sound_set_upload(set);
     native_audio_cpu_begin_session(c);
     native_audio_cpu_uploads(c, content_->upload, set);
@@ -152,7 +166,7 @@ void NativeTitleMenuAudio::load_session(std::uint32_t frame, AudioSessionLoad lo
     native_audio_cpu_upload_samples(c, content_->upload, set);
     rotation_sounding_ = {}; // the race load clears the race's work RAM
     if (race)
-        start_race_music(c, queue_);
+        start_race_music(c, queue_, cue.parameter);
     else
         native_audio_bootstrap_queue(c, queue_);
 }

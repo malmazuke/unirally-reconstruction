@@ -149,6 +149,8 @@ public:
   std::uint32_t race_loading_frames() const {
     return unirally::race_loading_frames(state_);
   }
+  // The song counter value the race now loading plays (R-0077).
+  std::uint8_t race_song() const { return state_.race_song; }
   std::span<const std::uint8_t> rider_names() const { return state_.records.rider_names; }
   // The race NOW PLAYING chose, with its rider, opponent and tutorial hints.
   ClassicRaceScenario race_scenario() const {

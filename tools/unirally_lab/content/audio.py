@@ -100,3 +100,24 @@ def v32_new_entries(rom: bytes) -> list[dict[str, Any]]:
     # readers voice events 0-71 and 200-255 (`$81:C238`'s bit-7 test; R-0076).
     entries.append(_raw("audio.announcement-voices", rom, [(ANNOUNCEMENT_VOICES, 256)]))
     return entries
+
+
+# $83:CA08-CA1E: the cartridge counter `$77:10B1` after its increment modulo 6 names the race
+# song: resources 64, 62, 63, 64, 65, 66 (R-0076 observation 2). Song 1 (62) is v32's entry.
+RACE_SONGS_BY_COUNTER = (64, 62, 63, 64, 65, 66)
+
+
+def v33_new_entries(rom: bytes) -> list[dict[str, Any]]:
+    """The other race songs (R-0077); v32 entries are unchanged.
+
+    Resources 63-66 are the songs the counter values 2-5 play (counter 0 plays 64, song 3's
+    resource); each transfer carries the next record's six header bytes, as song 1's does.
+    The directory lengths of 63-66 extend v32's 58-62 for the upload's resource walk.
+    """
+    resources = resource_headers(rom, 67)
+    entries = [_raw("audio.race-song-resource-lengths", rom, [(at, 2) for at, _ in resources[63:67]])]
+    for counter in (2, 3, 4, 5):
+        at, length = resources[RACE_SONGS_BY_COUNTER[counter]]
+        entries.append(_raw(f"audio.race-song-{counter}", rom, [(at + 6, length - 6)]))
+        entries.append(_raw(f"audio.race-song-{counter}-transfer", rom, [(at + 6, length)]))
+    return entries

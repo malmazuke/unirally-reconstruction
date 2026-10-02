@@ -19,9 +19,18 @@ enum class AudioDispatchSite : std::uint8_t {
 };
 // Sound program sessions the game starts from a running driver ($82:807E).
 enum class AudioSessionLoad : std::uint8_t {
-    first_race,   // $83:CA72-CBEE: race set, then its music start and four polls
+    race,         // $83:CA2D-CBEE: the race set with the song the cartridge counter names
+                  // (`command` the track, `parameter` the counter 0-5), then its music start
+                  // and four polls (R-0076, R-0077)
     title_return, // $80:A0F7-A11C after a race: title set, then the title music start
 };
+// $83:CA08-CA1E: the race song by the cartridge counter `$77:10B1` after its increment
+// modulo 6: resources 64, 62, 63, 64, 65, 66 (R-0076 observation 2).
+constexpr std::uint8_t race_song_count = 6;
+inline std::uint8_t race_song_resource(std::uint8_t song_counter) {
+    constexpr std::uint8_t resources[race_song_count] = {64, 62, 63, 64, 65, 66};
+    return resources[song_counter % race_song_count];
+}
 // `rotation`: a rider's rotation state (`command` the rider, `parameter` 1 rotating); the
 // audio side keeps the original's sound latches and enqueues only on a change.
 enum class AudioCueKind : std::uint8_t { enqueue, dispatch, load, rotation };
@@ -29,7 +38,7 @@ struct AudioCue {
     AudioCueKind kind = AudioCueKind::enqueue;
     std::uint8_t command = 0, parameter = 0; // enqueue: `$82:8000`'s cue word
     AudioDispatchSite site = AudioDispatchSite::frame_wait;
-    AudioSessionLoad load = AudioSessionLoad::first_race;
+    AudioSessionLoad load = AudioSessionLoad::race;
     bool operator==(const AudioCue&) const = default;
 };
 inline AudioCue audio_enqueue(std::uint8_t command, std::uint8_t parameter) {
@@ -45,5 +54,16 @@ inline AudioCue audio_rotation(unsigned rider, bool rotating) {
 inline AudioCue audio_load(AudioSessionLoad load) {
     return {AudioCueKind::load, 0, 0, AudioDispatchSite::frame_wait, load};
 }
+inline AudioCue audio_race_load(std::uint8_t track, std::uint8_t song_counter) {
+    return {AudioCueKind::load, track, song_counter, AudioDispatchSite::frame_wait,
+            AudioSessionLoad::race};
+}
 using AudioCueList = std::vector<AudioCue>;
+// A race's sound load timing on the menus' path (R-0077; `race_sound_load_timing`): the frames
+// from the sound session's first request to the race's first update, and the frames the
+// start's countdown cue ($82:D84A) runs before that request.
+struct RaceSoundLoadTiming {
+    std::uint32_t upload_frames = 0; // 0: the track's loading is not measured
+    std::uint32_t start_cue_lead = 0;
+};
 } // namespace unirally

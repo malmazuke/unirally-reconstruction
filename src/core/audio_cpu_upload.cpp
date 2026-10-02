@@ -240,13 +240,14 @@ void send_sample_resource(Clock& c, const AudioCpuUploadData& data, unsigned sam
 void native_audio_cpu_begin_session(AudioCpuWorkClock& c) {
     begin_next_transfer(c);
 }
-// $80:A0FC-A10E (title) and $83:CA74-CA89 (first race): driver, tables, score.
+// $80:A0FC-A10E (title) and $83:CA2D-CB9D (a race, by song): driver, tables, score.
 void native_audio_cpu_uploads(AudioCpuWorkClock& c, const AudioCpuUploadData& data,
                               AudioSoundSetId set) {
-    const bool race = set == AudioSoundSetId::first_race;
-    const unsigned tables = race ? 54 : 53, score = race ? 62 : 57;
+    const bool race = is_race_sound_set(set);
+    const unsigned tables = race ? 54 : 53, score = race ? race_song_resource_of(set) : 57;
     const auto& tables_bytes = race ? data.race_tables_transfer : data.menu_transfer;
-    const auto& score_bytes = race ? data.race_song_transfer : data.title_transfer;
+    const auto& score_bytes =
+        race ? data.race_song_transfers[score - first_race_song_resource] : data.title_transfer;
     if (resource_length(data, 50) != 4445 || tables_bytes.size() != resource_length(data, tables)
         || score_bytes.size() != resource_length(data, score) || tables_bytes.empty()
         || score_bytes.empty())
@@ -301,8 +302,7 @@ void native_audio_cpu_finish_driver_entry(AudioCpuWorkClock& c) {
 // including FF holes; each nonempty slot names identified sample data only.
 void native_audio_cpu_upload_samples(AudioCpuWorkClock& c, const AudioCpuUploadData& data,
                                      AudioSoundSetId set) {
-    const auto& slots =
-        set == AudioSoundSetId::first_race ? data.race_sample_slots : data.sample_slots;
+    const auto& slots = is_race_sound_set(set) ? data.race_sample_slots : data.sample_slots;
     for (const auto sample : slots) {
         if (sample != 255
             && (sample >= 50 || data.resource_lengths[sample] < 6

@@ -45,9 +45,23 @@ public:
   }
 };
 // "FRAME E COMMAND PARAMETER", "FRAME D early|late|...|wait", "FRAME L
-// race|title", and the app's unresolved "FRAME R RIDER ROTATING", which the
-// audio side's latches resolve.
-std::map<std::uint32_t, unirally::AudioCueList> read_cues(const char *path) {
+// race-RESOURCE|title" (a race load on the schedule's `track`, R-0077), and
+// the app's unresolved "FRAME R RIDER ROTATING", which the audio side's
+// latches resolve.
+std::uint8_t song_counter_of(const std::string &what) {
+  // "race" alone is the first race of a cold cartridge (AUDIO-FIRST-RACE's
+  // logs); "race-NN" names the song's resource.
+  if (what == "race")
+    return 1;
+  const auto resource = std::stoul(what.substr(5));
+  for (std::uint8_t counter = 0; counter < unirally::race_song_count; ++counter)
+    if (unirally::race_song_resource(counter) == resource &&
+        (counter != 0 || resource != 64))
+      return counter;
+  throw std::invalid_argument("unknown race song in a load cue");
+}
+std::map<std::uint32_t, unirally::AudioCueList> read_cues(const char *path,
+                                                           std::uint8_t track) {
   std::ifstream file(path);
   if (!file)
     throw std::runtime_error("cannot read cue file");
@@ -83,10 +97,11 @@ std::map<std::uint32_t, unirally::AudioCueList> read_cues(const char *path) {
             : what == "pause-continue"
                 ? unirally::AudioDispatchSite::pause_continue
                 : unirally::AudioDispatchSite::frame_wait));
+      else if (what.rfind("race", 0) == 0)
+        list.push_back(unirally::audio_race_load(track, song_counter_of(what)));
       else
-        list.push_back(unirally::audio_load(
-            what == "race" ? unirally::AudioSessionLoad::first_race
-                           : unirally::AudioSessionLoad::title_return));
+        list.push_back(
+            unirally::audio_load(unirally::AudioSessionLoad::title_return));
     } else
       throw std::invalid_argument("unknown cue kind");
   }
@@ -95,16 +110,23 @@ std::map<std::uint32_t, unirally::AudioCueList> read_cues(const char *path) {
 } // namespace
 int main(int argc, char **argv) {
   try {
-    if (argc != 8 && argc != 12)
+    // An optional trailing TRACK (0-4, default 0) names the track of every
+    // race load in the cue file, for its sound session's anchor (R-0077).
+    const bool with_track = argc == 9 || argc == 13;
+    if (argc != 8 && argc != 12 && !with_track)
       throw std::invalid_argument(
           "race_audio_runner PACK INPUT CUES EVENTS PCM LAST_FRAME DSP_END "
-          "[OUTPUT_RATE SAVE_FRAME STATE RESTORE] (save 0: none; restore: - or "
-          "file)");
+          "[OUTPUT_RATE SAVE_FRAME STATE RESTORE] [TRACK] (save 0: none; "
+          "restore: - or file)");
+    if (with_track)
+      --argc;
+    const auto track = static_cast<std::uint8_t>(
+        with_track ? std::stoul(argv[argc]) : 0U);
     const auto content = audio_test::content(argv[1]);
     if (!content.has_race_set())
       throw std::invalid_argument("pack lacks the race sound set");
     Controllers controllers(argv[2]);
-    const auto cues = read_cues(argv[3]);
+    const auto cues = read_cues(argv[3], track);
     Events events(argv[4]);
     std::ofstream pcm(argv[5], std::ios::binary);
     if (!pcm)

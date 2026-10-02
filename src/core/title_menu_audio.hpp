@@ -10,8 +10,15 @@ class ClassicContentPack;
 struct TitleMenuAudioContent {
     std::array<std::uint8_t, 32> identity{};
     AudioSoundSet score;
-    AudioSoundSet race_score; // the first race's set; empty before pack v32
-    bool has_race_set() const { return !race_score.tables.empty(); }
+    // The race set with each of its songs, by resource 62-66 (R-0077): 62 from pack v32, the
+    // others from v33; empty before the pack carries them.
+    std::array<AudioSoundSet, race_song_resources> race_songs;
+    bool has_race_set() const { return !race_songs[0].tables.empty(); }
+    bool has_race_song(unsigned resource) const {
+        return resource >= first_race_song_resource
+            && resource < first_race_song_resource + race_song_resources
+            && !race_songs[resource - first_race_song_resource].score.empty();
+    }
     AudioPitchData pitch;
     AudioCpuUploadData upload;
     std::array<AudioCpuGraphicsAsset, 128> graphics{};
@@ -118,7 +125,7 @@ private:
     std::uint32_t cued_frame_ = 0;
     void run_cue(std::uint32_t frame, const AudioCue& cue);
     static bool valid_cued_state(const TitleMenuAudioState& state);
-    void load_session(std::uint32_t frame, AudioSessionLoad load);
+    void load_session(std::uint32_t frame, const AudioCue& cue);
     void rotation_sound(unsigned rider, bool rotating);
     std::array<bool, 2> rotation_sounding_{};
     AudioCpuQueueState queue_;

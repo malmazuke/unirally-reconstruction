@@ -586,6 +586,32 @@ class AudioEntryTests(unittest.TestCase):
         compiled = re.findall(r'\{"([^"]+)",\s*(\d+),\s*"([0-9a-f]{64})"\}', table)
         self.assertEqual(compiled, [(e["id"], str(e["size"]), e["sha256"]) for e in added])
 
+    def test_race_songs_preserve_v32_inventory(self) -> None:
+        import hashlib
+        import re
+        rules = json.loads((ROOT / "tests/manifests/content/classic-crawler-tracks-pack.json")
+                           .read_text(encoding="utf-8"))
+        previous = rules["entries"][:525]
+        encoded = json.dumps(previous, sort_keys=True, separators=(",", ":")).encode()
+        self.assertEqual(hashlib.sha256(encoded).hexdigest(),
+                         "f2dff7db50b4fff6db28fd67ffbc3b62bab51b793a7b17b7261c03ace2bea1bb")
+        added = rules["entries"][525:]
+        self.assertEqual([e["id"] for e in added],
+                         ["audio.race-song-resource-lengths"]
+                         + [name for counter in (2, 3, 4, 5)
+                            for name in (f"audio.race-song-{counter}",
+                                         f"audio.race-song-{counter}-transfer")])
+        # Each transfer is its song plus the next record's six header bytes.
+        for counter in (2, 3, 4, 5):
+            song = next(e for e in added if e["id"] == f"audio.race-song-{counter}")
+            transfer = next(e for e in added if e["id"] == f"audio.race-song-{counter}-transfer")
+            self.assertEqual(transfer["size"], song["size"] + 6)
+        source = (ROOT / "src/core/content_pack.cpp").read_text(encoding="utf-8")
+        table = source[source.index("race_song_audio_required{{"):]
+        table = table[:table.index("}};")]
+        compiled = re.findall(r'\{"([^"]+)",\s*(\d+),\s*"([0-9a-f]{64})"\}', table)
+        self.assertEqual(compiled, [(e["id"], str(e["size"]), e["sha256"]) for e in added])
+
     def test_resource_headers_reject_truncation_and_short_length(self) -> None:
         for rom in (bytes(0x80001), bytes(0x80002), bytes(0x80000) + b"\x05\x00"):
             with self.assertRaises(ValueError):

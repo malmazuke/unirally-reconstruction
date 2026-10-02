@@ -13,12 +13,13 @@ constexpr std::uint8_t checkpoint_flag = 20, first_skid_flag = 21;
 constexpr std::uint8_t finish_fade_rate = 0xa0;
 constexpr std::uint16_t finish_fade_from = 180; // $83:E820 `CMP #$B4`
 // $83:E5E7/E639/E68B/E6ED: a race beeps as the countdown first falls below these and sounds
-// GO below the last; $83:E5BA/E5C2/E5CA: a stunt event (`$77:074B` 2) beeps as each range
-// starts (above 220, then 220, 160 and 100) and has no GO.
+// GO below the last; $83:E5BA/E5C2/E5CA: a stunt event (`$77:074B` 2) beeps as each of the
+// first three ranges starts (above 220, then 220 and 160) and has no GO; its last range
+// (100 and below, `$83:E6DE`) is silent (R-0077, six CRAWLER STUNT starts).
 constexpr std::uint16_t first_beep = 249, second_beep = 189, third_beep = 129, go_beep = 69;
-constexpr std::uint16_t stunt_second_beep = 220, stunt_third_beep = 160, stunt_fourth_beep = 100;
+constexpr std::uint16_t stunt_second_beep = 220, stunt_third_beep = 160;
 // Every start begins its countdown at 270 ($82:D841), so a stunt event's first range starts
-// on that value's update. No stunt event is compared in R-0076: a static reading only.
+// on that value's update.
 constexpr std::uint16_t countdown_start = 270;
 // $81:828E-829D: a speed of 256 or more sets the checkpoint flag; a negative speed sets it only
 // below -256 (`CMP #$FF00` leaves N clear for -256 itself); any other speed clears it.
@@ -31,7 +32,7 @@ bool beeps(std::uint16_t countdown, bool stunt_event) {
     if (!stunt_event)
         return countdown == first_beep || countdown == second_beep || countdown == third_beep;
     return countdown == countdown_start || countdown == stunt_second_beep
-        || countdown == stunt_third_beep || countdown == stunt_fourth_beep;
+        || countdown == stunt_third_beep;
 }
 } // namespace
 
@@ -102,11 +103,13 @@ void announcement_voice(ZoomZooState& next, unsigned rider, std::uint8_t event,
     enqueue(next, set_flag, static_cast<std::uint8_t>(index + (entry >> 2U)));
     enqueue(next, start_effect, voice_effect);
 }
-AudioCueList loading(std::uint32_t frames_to_initialization) {
-    constexpr std::uint32_t start_setup = 85, sound_upload = 79;
-    if (frames_to_initialization == start_setup)
+AudioCueList loading(std::uint32_t frames_to_initialization, RaceSoundLoadTiming timing,
+                     std::uint8_t track, std::uint8_t song_counter) {
+    if (timing.upload_frames == 0) return {};
+    const auto sound_upload = timing.upload_frames - 1;
+    if (frames_to_initialization == sound_upload + timing.start_cue_lead)
         return {audio_enqueue(start_effect, countdown_beep)};
-    if (frames_to_initialization == sound_upload) return {audio_load(AudioSessionLoad::first_race)};
+    if (frames_to_initialization == sound_upload) return {audio_race_load(track, song_counter)};
     return {};
 }
 } // namespace unirally::race_sound
