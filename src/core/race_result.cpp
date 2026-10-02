@@ -775,9 +775,18 @@ RaceSoundLoadTiming race_sound_load_timing(ClassicRaceTrack track, std::uint8_t 
     if (track.index >= race_start_cue_leads.size()) return {};
     return {race_sound_upload_frames(track, song_counter), race_start_cue_leads[track.index]};
 }
+// The local and league modes' loading (R-0057, R-0058, R-0071, R-0073), measured on their own
+// paths before the song table: DRAGSTER's and ZOOM ZOO's are the song-62 values, the others the
+// songs their captures played. Those modes do not track the song counter yet (R-0077).
 std::uint32_t race_loading_frames(ClassicRaceTrack track) {
-    constexpr std::uint8_t cold_first_race_song = 1; // resource 62 (R-0076)
-    return race_loading_frames(track, cold_first_race_song);
+    if (track == ClassicRaceTrack::Dragster) return 121;
+    if (track == ClassicRaceTrack::ZoomZoo) return 169;
+    if (track.index == 2) return 127; // CRAWLER STUNT loading, R-0073 three-event capture.
+    // R-0073 organic-full-tour-turnaround: DUELLER's gap ends at 23603, with one
+    // additional idle NMI before fade 1 at 23605. GOING UP starts fade 1 at 30060.
+    if (track.index == 3) return 197;
+    if (track.index == 4) return 175;
+    return 0;
 }
 // $83:CA08-CA1E on the race's sound load: the cartridge counter advances modulo 6 and names
 // the song. Native advances it when the race begins, 42 to 117 frames before the original's

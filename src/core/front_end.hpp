@@ -567,9 +567,9 @@ ClassicRaceScenario one_player_race_scenario(const FrontEndState& state);
 // The frames between NOW PLAYING's fade and a race's initialization on the laboratory's menu path
 // (R-0057, R-0058, R-0077): the race's content load until its sound session's first FF request
 // (`race_sound_load_offset`, by track) plus the session's upload until the race's first update
-// (`race_sound_upload_frames`, by track and song), less one. 0 for a track not measured. The
-// one-argument form is the first race of a cold cartridge (song counter 1, resource 62):
-// DRAGSTER's 121, ZOOM ZOO's 169.
+// (`race_sound_upload_frames`, by track and song), less one; a one-player race's (state form).
+// The one-argument form keeps the local and league modes' measurements for tracks 0-4 (0 for
+// the others), which those modes use until they track the song counter.
 std::uint32_t race_loading_frames(ClassicRaceTrack track);
 std::uint32_t race_loading_frames(ClassicRaceTrack track, std::uint8_t song_counter);
 std::uint32_t race_loading_frames(const FrontEndState& state);

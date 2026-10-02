@@ -152,6 +152,7 @@ private:
     void initialize_score_note(std::uint8_t voice, std::uint8_t note, std::uint8_t counter);
     void apply_score_control(std::uint8_t voice, std::uint8_t control);
     void apply_sequence_control(std::uint8_t voice, std::uint8_t control);
+    void apply_random_control(std::uint8_t voice, std::uint8_t control);
     void apply_pitch_control(std::uint8_t voice, std::uint8_t control);
     void apply_instrument_control(std::uint8_t voice, std::uint8_t control);
     void apply_mix_control(std::uint8_t voice, std::uint8_t control);

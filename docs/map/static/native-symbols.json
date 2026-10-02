@@ -9428,7 +9428,8 @@
    "native": [
     "src/core/audio_cue.hpp:AudioDispatchSite",
     "src/core/audio_cued_scenes.cpp:frame_wait_anchor, race_early_anchor, race_late_anchor, countdown_anchor, finish_fade_anchor, race_choice_anchor, pause_anchor, pause_fade_anchor, pause_continue_anchor",
-    "src/core/race_sound.hpp:dispatch"
+    "src/core/race_sound.hpp:dispatch",
+    "src/core/race_update.cpp:finish_update"
    ],
    "region": "rom"
   },
@@ -9436,6 +9437,7 @@
    "address": "$83:CDAA",
    "native": [
     "src/core/hunter_effects.cpp:update_hunter_effects",
+    "src/core/race_update.cpp:finish_update",
     "src/core/race_update.cpp:run_skipped_update"
    ],
    "region": "rom"
@@ -18212,7 +18214,9 @@
   "src/core/race_update.cpp:finish_update": {
    "rom": [
     "$81:C5D5",
-    "$81:C73E"
+    "$81:C73E",
+    "$83:CD9F",
+    "$83:CDAA"
    ]
   },
   "src/core/race_update.cpp:loop_top_step, cartridge_options, split_demo_options": {

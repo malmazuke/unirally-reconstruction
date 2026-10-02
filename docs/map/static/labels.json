@@ -18621,7 +18621,8 @@
   "native": [
    "src/core/audio_cue.hpp:AudioDispatchSite",
    "src/core/audio_cued_scenes.cpp:frame_wait_anchor, race_early_anchor, race_late_anchor, countdown_anchor, finish_fade_anchor, race_choice_anchor, pause_anchor, pause_fade_anchor, pause_continue_anchor",
-   "src/core/race_sound.hpp:dispatch"
+   "src/core/race_sound.hpp:dispatch",
+   "src/core/race_update.cpp:finish_update"
   ],
   "source_records": [
    "docs/research/R-0076-first-race-audio.md",
@@ -18644,6 +18645,7 @@
   "label": "sub_83CDAA",
   "native": [
    "src/core/hunter_effects.cpp:update_hunter_effects",
+   "src/core/race_update.cpp:finish_update",
    "src/core/race_update.cpp:run_skipped_update"
   ],
   "source_records": [

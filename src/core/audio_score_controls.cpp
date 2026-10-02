@@ -52,8 +52,10 @@ void TitleMenuAudioScore::initialize_score_note(std::uint8_t index, std::uint8_t
 }
 // R-0075, 0E03 control table. Control values are the identified score format.
 void TitleMenuAudioScore::apply_score_control(std::uint8_t index, std::uint8_t control) {
-    if (control <= 0x87 || control == 0xa3 || control == 0xa4)
+    if (control <= 0x87)
         apply_sequence_control(index, control);
+    else if (control == 0xa3 || control == 0xa4)
+        apply_random_control(index, control);
     else if (control >= 0xa5 && control <= 0xa8)
         apply_flag_control(index, control);
     else if (control == 0x8c || (control >= 0x97 && control <= 0xa2))
@@ -152,6 +154,15 @@ void TitleMenuAudioScore::apply_sequence_control(std::uint8_t index, std::uint8_
         add_work(22);
         voice.next_duration_inline = true;
         break;
+    default: reject_score_control(control);
+    }
+}
+
+// 10EA-1102 (A3) and 1103-113F (A4): a jump or a call to one of a table's targets, chosen by the
+// driver's random routine (13DA).
+void TitleMenuAudioScore::apply_random_control(std::uint8_t index, std::uint8_t control) {
+    auto& voice = state_.voices.at(index);
+    switch (control) {
     case 0xa4: {
         // R-0077, 1103-113F: a call to one of `count` targets chosen at random: skip to the
         // choice's word (CLRC drops ASL's carry), read it, skip the table's rest (the carry of
