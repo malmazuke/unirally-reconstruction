@@ -54,6 +54,11 @@ std::uint64_t NativeTitleMenuAudioPlayback::delivered_pairs() {
     std::lock_guard lock(output_mutex_);
     return output_.state().delivered_pairs;
 }
+std::size_t NativeTitleMenuAudioPlayback::drop_late_output(std::uint64_t due, std::size_t ceiling,
+                                                           std::size_t keep) {
+    std::lock_guard lock(output_mutex_);
+    return output_.drop_late(due, ceiling, keep);
+}
 namespace {
 constexpr std::array<std::uint8_t, 8> playback_magic{'U', 'R', 'A', 'P', '0', '0', '0', '1'};
 }

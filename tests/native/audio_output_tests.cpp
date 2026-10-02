@@ -72,12 +72,29 @@ void check_chunking_restore_and_rejection() {
         rejects([&] { unirally::deserialize_audio_output(trailing); });
     }
 }
+// The host's late-output trim: nothing within the ceiling, then oldest first down to `keep`,
+// never more than is queued; dropped pairs count as delivered.
+void check_late_drop() {
+    unirally::NativeAudioOutput output(32040); // one output pair per source pair
+    std::vector<std::int16_t> source;
+    for (int i = 0; i < 101; ++i) source.insert(source.end(), {std::int16_t(i), std::int16_t(-i)});
+    output.append_pcm(source);
+    require(output.state().generated_pairs == 100, "rate-equal output pair count differs");
+    require(output.drop_late(40, 40, 20) == 0, "output within its ceiling dropped");
+    require(output.drop_late(41, 40, 20) == 21, "late output not dropped to its keep");
+    require(output.state().delivered_pairs == 21, "dropped pairs not counted as delivered");
+    require(output.take_pairs(1) == std::vector<std::int16_t>{21, -21}, "drop not oldest first");
+    require(output.drop_late(1000, 40, 20) == 78, "late drop exceeded the queue");
+    require(output.state().generated_pairs == output.state().delivered_pairs, "queue not empty");
+    rejects([&] { output.drop_late(1000, 20, 40); });
+}
 }
 int main() {
     try {
         check_known_interpolation();
         check_chunking_restore_and_rejection();
-        std::cout << "audio output fraction, queue and file checks passed\n";
+        check_late_drop();
+        std::cout << "audio output fraction, queue, late-drop and file checks passed\n";
         return 0;
     } catch (const std::exception& error) {
         std::cerr << error.what() << '\n';

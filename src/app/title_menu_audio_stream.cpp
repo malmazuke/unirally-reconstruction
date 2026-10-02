@@ -7,7 +7,8 @@ struct StreamStopped {};
 }
 TitleMenuAudioStream::TitleMenuAudioStream(const ClassicContentPack& pack,
                                            std::uint32_t output_rate)
-    : content_(title_menu_audio_content(pack)), playback_(content_, *this, output_rate) {
+    : content_(title_menu_audio_content(pack)), output_rate_(output_rate),
+      playback_(content_, *this, output_rate) {
     producer_ = std::thread([this] { run(); });
 }
 TitleMenuAudioStream::~TitleMenuAudioStream() {
@@ -40,6 +41,13 @@ std::uint16_t TitleMenuAudioStream::controller_word(std::uint64_t ticks, unsigne
     available_.wait(lock, [&] { return stopping_ || frame < frames_.size(); });
     if (stopping_) throw StreamStopped{};
     return frames_.at(static_cast<std::size_t>(frame)).words.at(port);
+}
+std::size_t TitleMenuAudioStream::trim_late_output(std::uint32_t frame, std::size_t ceiling,
+                                                   std::size_t keep) {
+    constexpr std::uint64_t frame_clocks = 425568, master_clock = 21281370; // PAL
+    if (frame == 0) return 0;
+    const auto due = (std::uint64_t{frame} - 1) * frame_clocks * output_rate_ / master_clock;
+    return playback_.drop_late_output(due, ceiling, keep);
 }
 std::vector<std::int16_t> TitleMenuAudioStream::take_pairs(std::size_t maximum) {
     return playback_.take_pairs(maximum);

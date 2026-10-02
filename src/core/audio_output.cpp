@@ -80,6 +80,14 @@ std::vector<std::int16_t> NativeAudioOutput::take_pairs(std::size_t maximum) {
     state_.delivered_pairs += count / 2;
     return out;
 }
+std::size_t NativeAudioOutput::drop_late(std::uint64_t due, std::size_t ceiling,
+                                         std::size_t keep) {
+    if (keep > ceiling) throw std::invalid_argument("late output keeps more than its ceiling");
+    if (due <= state_.delivered_pairs + ceiling) return 0;
+    const auto late = due - state_.delivered_pairs - keep;
+    const auto pending = state_.pending.size() / 2;
+    return take_pairs(late < pending ? static_cast<std::size_t>(late) : pending).size() / 2;
+}
 void NativeAudioOutput::restore(const AudioOutputState& state) {
     validate(state);
     auto candidate = state;

@@ -21,6 +21,11 @@ public:
     void check_failure();
     std::uint64_t source_pairs();
     std::uint64_t delivered_pairs();
+    // Host latency policy, not original timing: output pair n plays the producer's clock at
+    // n / rate seconds, and the game submitting `frame` has reached that frame's start. Drops
+    // output running more than `ceiling` pairs late (a slow start or a stalled producer) to
+    // `keep` pairs late; returns the pairs dropped.
+    std::size_t trim_late_output(std::uint32_t frame, std::size_t ceiling, std::size_t keep);
     std::uint64_t navigation_count() const { return navigation_count_.load(); }
     std::uint64_t restart_count() const { return restart_count_.load(); }
     std::uint64_t cued_frames() const { return cued_frames_.load(); }
@@ -28,6 +33,7 @@ public:
 
 private:
     TitleMenuAudioContent content_;
+    std::uint32_t output_rate_;
     NativeTitleMenuAudioPlayback playback_;
     std::mutex input_mutex_;
     std::condition_variable available_;

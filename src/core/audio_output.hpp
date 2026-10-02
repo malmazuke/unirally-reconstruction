@@ -18,6 +18,10 @@ public:
     // device caller; the native queue never inserts invented source samples.
     std::vector<std::int16_t> take_pairs(std::size_t maximum);
     const AudioOutputState& state() const { return state_; }
+    // Host latency policy: once the next pair to drain runs more than `ceiling` pairs behind
+    // pair `due` (the time the game has reached), drops queued pairs, oldest first, until it is
+    // `keep` behind or the queue is empty. Dropped pairs count as delivered; returns them.
+    std::size_t drop_late(std::uint64_t due, std::size_t ceiling, std::size_t keep);
     void restore(const AudioOutputState& state);
 
 private:
