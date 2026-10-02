@@ -54,7 +54,7 @@ void visit(audio_state_detail::Archive& a, AudioScoreVoice& v) {
 }
 void visit(audio_state_detail::Archive& a, AudioScoreState& v) {
     a.fields(v.voices, v.stack, v.instruments, v.random_state, v.timer2_target, v.music_gain,
-             v.effect_gain, v.key_on_pending, v.key_off_pending, v.flags);
+             v.effect_gain, v.key_on_pending, v.key_off_pending, v.noise_voices, v.flags);
 }
 void visit(audio_state_detail::Archive& a, AudioTimerState& v) {
     a.fields(v.divider, v.target_counter, v.output, v.target, v.divider_level, v.line, v.enabled);
@@ -134,12 +134,12 @@ void visit(audio_state_detail::Archive& a, TitleMenuAudioState& v) {
              v.text, v.menu, v.cartridge, v.hunter_remaining, v.hunter, v.cued_frame,
              v.rotation_sounding);
 }
-// URAU0005 (race sound sets: flags, volume rate, gain scripts, loaded sample
-// headers) includes owned transport, voice/timer continuation, 64KiB DSP RAM/history
+// URAU0006 (R-0077: the noise voices; URAU0005: race sound sets' flags, volume rate, gain
+// scripts, loaded sample headers) includes owned transport, voice/timer continuation, 64KiB DSP RAM/history
 // and unconsumed native PCM. The validated content identity is included; static bytes and future input are excluded.
 std::vector<std::uint8_t> serialize_title_menu_audio(const TitleMenuAudioState& state) {
     audio_state_detail::Archive archive;
-    std::array<std::uint8_t, 8> magic{'U', 'R', 'A', 'U', '0', '0', '0', '5'};
+    std::array<std::uint8_t, 8> magic{'U', 'R', 'A', 'U', '0', '0', '0', '6'};
     auto owned = state;
     archive.fields(magic, owned);
     return archive.take_output();
@@ -148,7 +148,7 @@ TitleMenuAudioState deserialize_title_menu_audio(std::span<const std::uint8_t> b
     audio_state_detail::Archive archive(bytes);
     std::array<std::uint8_t, 8> magic{};
     archive.value(magic);
-    constexpr std::array<std::uint8_t, 8> expected{'U', 'R', 'A', 'U', '0', '0', '0', '5'};
+    constexpr std::array<std::uint8_t, 8> expected{'U', 'R', 'A', 'U', '0', '0', '0', '6'};
     if (magic != expected) throw std::invalid_argument("audio state format differs");
     TitleMenuAudioState state;
     archive.value(state);

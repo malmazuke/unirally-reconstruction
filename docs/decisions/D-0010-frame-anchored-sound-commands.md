@@ -49,6 +49,18 @@ transport delivers them at **declared frame-anchored CPU clocks**:
 - A cycle-exact CPU model of a scene remains possible later work. It is not required for
   audio acceptance, and anchors must be replaced, not mixed, if one is added.
 
+## Later evidence (R-0077)
+
+Across the one-player game the anchors hold per scene and per track (one race's request clock
+varies by at most 1,772 clocks over six races), but an upload's length varies by tens of
+thousands of clocks with the running driver's state when the FF request arrives. Two
+consequences follow and are measured, not removed: a race's first update can fall a frame
+earlier or later than the measured (track, song) table when the session's polls end near a frame
+boundary (one of `all-gold`'s 25 races), and a command queued at a session's end can reach the
+driver a frame wait earlier or later than in the original (the ending's start in `hopper-gold`,
+six frames early). The game's frames do not depend on the audio, so the front end keeps the
+table; the laboratory takes a race's start from its capture where they differ.
+
 ## Alternatives rejected
 
 - **Cost shadow of every scene** (the AUDIO-TITLE-MENU method): exact, but roughly a second

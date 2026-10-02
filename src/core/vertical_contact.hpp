@@ -22,8 +22,9 @@ VerticalContactSummary summarize_vertical_contact(const FlatContactContent& cont
 
 // Original signed slope response, using byte shift/multiplier tables at
 // PAL $00:822B/$00:824B. Velocities are 16-bit patterns in 1/32 position units.
-// This component rejects unrecovered landing transforms transactionally.
-void resolve_vertical_contact(RiderContactState& rider, ContactMotion& motion,
+// This component rejects unrecovered landing transforms transactionally. Returns whether a
+// long flight's flat landing sounded effect 23 ($81:942B-9447, `race_sound::landing_effect`).
+bool resolve_vertical_contact(RiderContactState& rider, ContactMotion& motion,
                               const VerticalContactSummary& summary, const ContactContext& context,
                               std::span<const std::uint8_t> shifts,
                               std::span<const std::uint8_t> multipliers,

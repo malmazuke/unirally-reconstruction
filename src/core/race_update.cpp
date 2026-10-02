@@ -296,26 +296,28 @@ struct RiderOutcome {
     unsigned reward{}; // the opponent's published event (capture-restored races)
 };
 
-void update_reflection_transition(RiderMovementState& rider, ReflectionTransition& transition,
+bool update_reflection_transition(RiderMovementState& rider, ReflectionTransition& transition,
                                   unsigned horizontal, bool inactive_phase,
                                   std::span<const std::uint8_t> table, bool manual = false,
                                   const SpecialTileRider& tiles = {}) {
     // $82:A35B-A49E: A permits a direction-selected turn while airborne, including a turn
     // toward the current facing. Contact A halves velocity. $82:A35D-A362: the corkscrew's
-    // reflection lock skips it all.
-    if (tiles.reflection_lock) return;
+    // reflection lock skips it all. Returns whether contact A braked, which sounds effect 23
+    // ($82:A3D7-A3F4).
+    if (tiles.reflection_lock) return false;
     const bool manual_airborne = rider.contact.unsupported_count == airborne_updates
                               && !transition.step && !(rider.contact.selected_high & high_tile)
                               && manual && horizontal != direction::neutral;
     if (!(rider.contact.unsupported_count == airborne_updates && transition.step)
         && !manual_airborne && !rider.contact.recontact && !inactive_phase)
-        return;
+        return false;
     if (!transition.step && !manual_airborne
         && (horizontal == direction::neutral
             || (horizontal == direction::right && rider.pose.reflected)
             || (horizontal == direction::left && !rider.pose.reflected)))
-        return;
-    if (manual && rider.contact.recontact) {
+        return false;
+    const bool braked = manual && rider.contact.recontact;
+    if (braked) {
         const auto velocity = rider.motion.velocity_x;
         rider.motion.velocity_x =
             static_cast<std::uint16_t>((velocity >> 1U) | (velocity & 0x8000U));
@@ -323,7 +325,7 @@ void update_reflection_transition(RiderMovementState& rider, ReflectionTransitio
     }
     if (!transition.step) {
         // $82:A403-A410: a pose override or the corkscrew latch holds the facing.
-        if (transition.pose_override || tiles.corkscrew_latch) return;
+        if (transition.pose_override || tiles.corkscrew_latch) return braked;
         if (rider.pose.reflected) {
             rider.pose.reflected_orientation =
                 static_cast<std::uint16_t>(64 - rider.pose.reflected_orientation) & 63U;
@@ -349,6 +351,7 @@ void update_reflection_transition(RiderMovementState& rider, ReflectionTransitio
             static_cast<std::uint16_t>(transition.pose_base + transition.step + reflection_poses);
         transition.step = add_word(transition.step, 1);
     }
+    return braked;
 }
 
 void integrate_zoom_axis(std::uint16_t& position, std::uint16_t velocity, std::uint16_t& residue) {
@@ -376,7 +379,8 @@ void begin_rider_update(ZoomZooState& next, unsigned index, const ZoomZooContent
     decay_idle_wobble(rider, surface.mode != 0);
     surface.mode = 0;
     rider.launch_override = 0;
-    update_special_tile_counters(tiles, transition, rider.contact.selected_high);
+    if (update_special_tile_counters(tiles, transition, rider.contact.selected_high))
+        race_sound::effect(next, race_sound::mud_exit);
 }
 
 // $81:82BB-82F3: the selected tile's flag pair, through the table at $81:82F5 unless the
@@ -525,10 +529,11 @@ unsigned run_tricks_and_landing(const ZoomZooState& state, ZoomZooState& next, u
     auto& rider = next.movement.riders[index];
     auto& transition = next.reflection[index];
     const auto& surface = next.surface[index];
-    if (index == 0)
-        update_reflection_transition(
+    if (index == 0
+        && update_reflection_transition(
             rider, transition, horizontal, index != active, content.reflection_pose_table,
-            state.native_initialization && buttons.player_a, next.special_tiles[index]);
+            state.native_initialization && buttons.player_a, next.special_tiles[index]))
+        race_sound::effect(next, race_sound::landing_effect);
     // The opponent's X is its trick selector's bit 2 ($0323), retained state, so it
     // re-derives each update for as long as the impulse holds.
     if (state.native_initialization && index == active)
@@ -709,6 +714,7 @@ RiderOutcome update_rider(const ZoomZooState& state, ZoomZooState& next, unsigne
     // Transient words of this update: $0F3B and $0F3F (mud), $0F5B (corkscrew).
     SpecialTileUpdate special{};
     int animation_override = run_tile(next, index, horizontal, content, special);
+    if (special.sound_effect) race_sound::effect(next, special.sound_effect);
     RiderOutcome outcome{special.contact_skip, 0};
     bool throttle_target = false;
     outcome.reward =
@@ -716,10 +722,12 @@ RiderOutcome update_rider(const ZoomZooState& state, ZoomZooState& next, unsigne
     if (index == active)
         run_active_controls(state, next, index, horizontal, buttons, special, animation_override);
     update_rolling_mode(rider, surface.mode != 0);
-    if (index == 1)
-        update_reflection_transition(rider, transition, horizontal, index != active,
-                                     content.reflection_pose_table,
-                                     state.native_initialization && buttons.opponent_a(), tiles);
+    if (index == 1
+        && update_reflection_transition(rider, transition, horizontal, index != active,
+                                        content.reflection_pose_table,
+                                        state.native_initialization && buttons.opponent_a(),
+                                        tiles))
+        race_sound::effect(next, race_sound::landing_effect);
     // $82:98D6: the corkscrew's physics hold skips the whole drive routine, brake latch
     // included, and leaves $0E7B as the other rider set it.
     if (!tiles.physics_hold) {
@@ -778,7 +786,7 @@ void update_rider_contact(const ZoomZooState& state, ZoomZooState& next, unsigne
     if (content.slope_coefficients.size() != 18 && content.slope_coefficients.size() != 128)
         throw std::invalid_argument("ZOOM ZOO slope coefficients missing");
     const bool surface_mode = next.surface[index].mode != 0;
-    resolve_vertical_contact(
+    const bool landing_sound = resolve_vertical_contact(
         rider.contact, rider.motion, summary,
         {whole.contact_phase, index == 1, next.surface[index].mode,
          next.split_screen ? split_demo_options : cartridge_options,
@@ -790,6 +798,7 @@ void update_rider_contact(const ZoomZooState& state, ZoomZooState& next, unsigne
         content.landing_matrices,
         index == 0 ? whole.player_input.horizontal : next.opponent_horizontal,
         rider.pose.pose_index, rider.pose.reflected);
+    if (landing_sound) race_sound::effect(next, race_sound::landing_effect);
     next.surface[index].leading_support =
         rider.contact.auxiliary_flag == 1 ? false : summary.leading_support;
     if (index == 0) next.player_contact_palette = lowest_palette(samples);
@@ -801,16 +810,21 @@ void update_rider_contact(const ZoomZooState& state, ZoomZooState& next, unsigne
 // $81:C73E-C75B: when the race clock would reach 10:00 it holds 9:59.9 and marks both
 // riders finished, whatever their laps; a stunt event's clock counts down instead. Then the
 // queues, the camera, each rider's contact (the opponent's only when it rides), the
-// visibility, the HUNTER effects and the hints.
+// visibility, the race loop's second dispatcher call, the HUNTER effects and the hints.
 void finish_update(const ZoomZooState& state, ZoomZooState& next,
                    const std::array<RiderOutcome, 2>& outcomes, const ZoomZooContent& content,
                    const ClassicRaceScenario& scenario) {
     auto& whole = next.movement;
     const bool clock_running = whole.countdown < clock_running_below;
-    if (scenario.stunt_event)
+    if (scenario.stunt_event) {
         update_stunt_clock(next, clock_running);
-    else if (advance_timer_digits(whole.timer, clock_running) && state.native_initialization)
-        for (auto& rider : next.race.riders) rider.finished = 1;
+    } else {
+        const auto before = whole.timer;
+        if (advance_timer_digits(whole.timer, clock_running) && state.native_initialization)
+            for (auto& rider : next.race.riders) rider.finished = 1;
+        if (timer_warning(before, whole.timer, clock_running))
+            race_sound::effect(next, race_sound::clock_warning);
+    }
     if (state.native_initialization) {
         const auto read_before = next.player_announcements.queue.read_cursor;
         show_next_player_announcement(next, content.movement, content.captions);
@@ -858,6 +872,8 @@ void finish_update(const ZoomZooState& state, ZoomZooState& next,
         if (!outcomes[index].contact_skip) update_rider_contact(state, next, index, content);
     if (state.complete_race)
         update_visibility(next, track_geometry(content.movement.sampling.track));
+    // $83:CD9F, the race loop's second dispatcher call, comes before HUNTER's update ($83:CDAA).
+    race_sound::dispatch(next, AudioDispatchSite::race_late);
     update_hunter_effects(next, content.hunter_blink);
     if (state.native_initialization) update_tutorial_hints(next);
     ++whole.frame;
@@ -975,7 +991,6 @@ void update_zoom_zoo(ZoomZooState& state, const ControllerButtons& requested_but
     for (unsigned index = 0; index < rider_passes(scenario, next.split_screen); ++index)
         outcomes[index] = update_rider(state, next, index, active, trick_buttons, content);
     finish_update(state, next, outcomes, content, scenario);
-    race_sound::dispatch(next, AudioDispatchSite::race_late);
     state = next;
 }
 

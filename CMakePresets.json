@@ -57,6 +57,14 @@
       }
     },
     {
+      "name": "app-release",
+      "displayName": "Desktop frontend optimized with pinned SDL3",
+      "inherits": "lab-release",
+      "cacheVariables": {
+        "LAB_BUILD_APP": "ON"
+      }
+    },
+    {
       "name": "app-sanitize",
       "displayName": "Desktop frontend with sanitizers and pinned SDL3",
       "inherits": "lab-sanitize",
@@ -85,6 +93,10 @@
     {
       "name": "app-debug",
       "configurePreset": "app-debug"
+    },
+    {
+      "name": "app-release",
+      "configurePreset": "app-release"
     },
     {
       "name": "app-sanitize",
@@ -123,6 +135,13 @@
     {
       "name": "app-debug",
       "configurePreset": "app-debug",
+      "output": {
+        "outputOnFailure": true
+      }
+    },
+    {
+      "name": "app-release",
+      "configurePreset": "app-release",
       "output": {
         "outputOnFailure": true
       }

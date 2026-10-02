@@ -1009,6 +1009,62 @@ const std::array<RequiredEntry, 16> race_audio_required{{
     {"audio.announcement-voices", 256,
      "3ddda4ddf6245c12a91cc74951946dc5de014bbf58e96a13412ffa507672d357"},
 }};
+// The other race songs (profile v33): the directory lengths of resources 63-66 and the songs
+// the counter values 2-5 play, each with its transfer. R-0077.
+const std::array<RequiredEntry, 9> race_song_audio_required{{
+    {"audio.race-song-resource-lengths", 8,
+     "0f39af462437c316b0d9dc8f34b5734233ac934ccd5b8cbf2d8cdeeea661aac9"},
+    {"audio.race-song-2", 1853, "0bf293d0ee3eb1c4f4257a049513ebbb71b6e72066ece8a3331e9f49df39f21d"},
+    {"audio.race-song-2-transfer", 1859,
+     "7456af9cdb36cced47fa5d95cce9a446987df2d3401a30d35ca45ed0149a3872"},
+    {"audio.race-song-3", 1981, "cbb3ddace071913dba0eeb0ed00fdf0fd8659a75b8215c8a2f095020f18e4325"},
+    {"audio.race-song-3-transfer", 1987,
+     "40e5f15f8836911a964a005f85d0d5fce72460cf6a715fb6294ce49e596421a7"},
+    {"audio.race-song-4", 2623, "0a90f83b85038a549283ba5ae027565730ab6a09851e740f89713518c9165448"},
+    {"audio.race-song-4-transfer", 2629,
+     "0dda6ebd4fc2594f6f0b511f5924d242b3c7101ee5a7d6d55af9a66e90f6d418"},
+    {"audio.race-song-5", 1649, "44415f8535834ba892c5bc4f7b65480bd1040c83a3fd960128d5f5c1f7e6e359"},
+    {"audio.race-song-5-transfer", 1655,
+     "99261847ddca43a04c02c0339532dc325031cc17759425b9942e034128bc90f4"},
+}};
+// The medal award's and the gold endings' sound sets (profile v34): their tables and scores
+// with their transfers, their sample slot tables and the further samples they name. R-0077.
+const std::array<RequiredEntry, 27> award_ending_audio_required{{
+    {"audio.award-tables", 298, "d82c312886b9c92e5d8dbf13673f263111721483ba89c9da78bd677211cf63db"},
+    {"audio.award-tables-transfer", 304,
+     "05d575048f312a3ebf7536d11357a38b217a498923a071f57afd5b8b9fbb8054"},
+    {"audio.award-score", 1592, "9b83bdba0143019422b21ea9fe54e70ea68159f5b12e0af7d4dfd60518801e2c"},
+    {"audio.award-score-transfer", 1598,
+     "e2e32206610da66d1afd7fb0b486566adf2bf4211fb42f615ca50059dd3e6a03"},
+    {"audio.award-sample-slots", 64,
+     "8d4e4bfa27d9e3471fabdce635dfd21ff8ce39ae7aea9a8dc9180533d5e0e4c3"},
+    {"audio.sample.07", 10894, "c197c41bb9fd0eea0d7edc3c1b096127848b417c2ebda63f08eb259204d1629b"},
+    {"audio.sample.41", 256, "b7a8e48e4683ad07105018e2de98f4f1e361e57aed84eaf0be833d692bb7b873"},
+    {"audio.ending-tables", 964,
+     "9c1572587b52a198edae4714e98e1f70b346a577065c730fb8924752f4479a66"},
+    {"audio.ending-tables-transfer", 970,
+     "790e1d6c80e8e296b4e433df2ac1d261d2636f03306300a1b11ff076d6947a73"},
+    {"audio.ending-score", 532, "67c2d31dc02a3cd835e98516f458bebb05b18701b03c4c16ee9ee7a2d4d726a7"},
+    {"audio.ending-score-transfer", 538,
+     "a63327ea54e3eea4bf399e93336e5b12d4b469e4e051af67d7da23dc81bf6620"},
+    {"audio.ending-sample-slots", 64,
+     "e4479b21aad06acd4f26749ab30842f5ae2bc746fcc5fc8ce60f1866c06a2ba0"},
+    {"audio.sample.01", 3109, "c646a709fdc2a7783bdcdf4f22a16d99797a3e943ffdaec2a09e43f39e41c546"},
+    {"audio.sample.03", 2281, "80fb34919726069e46c155d30495e2404bcc2cb202c4791a1e9abc87751d31f5"},
+    {"audio.sample.05", 1255, "aba4555435011baa1471b9e34f7ae52648952ea213209c6a54cc291290a3fc60"},
+    {"audio.sample.09", 3649, "fb73badec84d2268c00d58dddf1bb3082c9edbbabe09b8f860d062a4cdb6b327"},
+    {"audio.sample.11", 7456, "25dee156d02e1ddbee9443b372094cd008ddb7b8ca2fc4033b10d642e237a418"},
+    {"audio.sample.12", 1786, "4974c12328b2d5598a0288b0104cfc536f166a20bbcdee2680ef1288b3f8e59d"},
+    {"audio.sample.22", 2398, "f0cd0116e91e73e10161e37f73d6f64b1717fd675f91b323de1255222c183bf6"},
+    {"audio.sample.29", 76, "f1e4a3b880caa82a499e45c7dd2f4776a0ade8527115057a59b6c63599148c52"},
+    {"audio.sample.30", 841, "fc8c2fc0a466e29487fde356613db388f621ee4df56a6cdc28da1556802e1989"},
+    {"audio.sample.35", 1849, "33b1b13eff60864c55d7abc7230ab87e8168f8300d25f86a178905d4cfffe8e5"},
+    {"audio.sample.36", 1750, "c99b9269196ee8e1b73a7b90eb9bd17b0ef669642efe0279bb6ab5a5eb75f114"},
+    {"audio.sample.38", 2110, "1e4e0c9d937e9b9cea1db8a4a23766cb1025669b81c5efc59e288768859d32d0"},
+    {"audio.sample.44", 850, "d6017d84d7d83c81703abdee4fc2434cffed9cf30c3b5f8589ab2368caa8d8bc"},
+    {"audio.sample.45", 1210, "9beb7da51741ff2ce9b8de27f4963d5725bfe2e3caf3b70fc88c802eb616473b"},
+    {"audio.sample.49", 1903, "886f271ae1dad83851a20da42d4a032cf34bd01f5fd2e14e163126ca955c9e21"},
+}};
 const std::array<RequiredEntry, 33> audio_required{{
     {"audio.menu-tables", 621, "e75d7872e341a636dc822616a202db6b8894196471c13d47f1b21d15f38fc407"},
     {"audio.title-score", 2200, "b4e402d0d05207e0ceadc32e8b4ebd4d052677c42f0e36f4ab5883c74ff1eb6b"},
@@ -1141,10 +1197,11 @@ std::array<std::uint8_t, 32> sha256(std::span<const std::uint8_t> source) {
 } // namespace
 
 namespace {
-constexpr std::array<std::string_view, 5> supported_profiles{
+constexpr std::array<std::string_view, 7> supported_profiles{
     "classic.pal.crawler.dragster.v1", "classic.pal.crawler.tracks.v29",
-    "classic.pal.crawler.tracks.v30", "classic.pal.crawler.tracks.v31",
-    "classic.pal.crawler.tracks.v32"};
+    "classic.pal.crawler.tracks.v30",  "classic.pal.crawler.tracks.v31",
+    "classic.pal.crawler.tracks.v32",  "classic.pal.crawler.tracks.v33",
+    "classic.pal.crawler.tracks.v34"};
 } // namespace
 
 std::span<const std::string_view> supported_pack_profiles() {
@@ -1165,6 +1222,10 @@ constexpr std::string_view race_audio_rules_sha =
     "00d7a342ebdc8b8cfcaac9159c503de1204f5e4f6b1637fbc5d0fa262b51fd08";
 constexpr std::string_view hunter_audio_rules_sha =
     "9bad18735028fa2502328f13e7d50edb5e15d239962c66f914f31856384fc037";
+constexpr std::string_view race_songs_rules_sha =
+    "fef3879e558471c082c82ee4816b5773872c1464b38b055e89d4377756a0df74";
+constexpr std::string_view award_ending_rules_sha =
+    "93eed031745e5b7771d786fa65931cf1dbb3ff462d4df1ef376b68b0aedd2cbc";
 constexpr std::string_view tracks_start = "classic.crawler.race-start.v2";
 constexpr std::string_view dragster_start = "classic.crawler.dragster.race-start.v1";
 
@@ -1174,7 +1235,15 @@ struct PackRow {
     std::array<std::uint8_t, 32> digest;
 };
 
-enum class PackVariant { dragster, tracks, audio, hunter_audio, race_audio };
+enum class PackVariant {
+    dragster,
+    tracks,
+    audio,
+    hunter_audio,
+    race_audio,
+    race_songs,
+    award_ending_audio
+};
 struct PackHeader {
     PackVariant variant;
     std::array<std::uint8_t, 32> identity;
@@ -1192,7 +1261,9 @@ PackHeader read_pack_header(const std::vector<std::uint8_t>& bytes, Reader& in) 
         throw std::invalid_argument("Classic pack source ROM identity is unsupported");
     const auto profile = in.text();
     const auto start = in.text();
-    const auto variant = profile == supported_profiles[4] ? PackVariant::race_audio
+    const auto variant = profile == supported_profiles[6] ? PackVariant::award_ending_audio
+                       : profile == supported_profiles[5] ? PackVariant::race_songs
+                       : profile == supported_profiles[4] ? PackVariant::race_audio
                        : profile == supported_profiles[3] ? PackVariant::hunter_audio
                        : profile == supported_profiles[2] ? PackVariant::audio
                        : profile == supported_profiles[1] ? PackVariant::tracks
@@ -1203,7 +1274,9 @@ PackHeader read_pack_header(const std::vector<std::uint8_t>& bytes, Reader& in) 
     if (start != (tracks ? tracks_start : dragster_start))
         throw std::invalid_argument("Classic pack start state is unsupported");
     if (rules_identity
-        != hex_digest(variant == PackVariant::race_audio     ? race_audio_rules_sha
+        != hex_digest(variant == PackVariant::award_ending_audio ? award_ending_rules_sha
+                      : variant == PackVariant::race_songs   ? race_songs_rules_sha
+                      : variant == PackVariant::race_audio   ? race_audio_rules_sha
                       : variant == PackVariant::hunter_audio ? hunter_audio_rules_sha
                       : variant == PackVariant::audio        ? audio_rules_sha
                       : tracks                               ? two_track_rules_sha
@@ -1243,8 +1316,13 @@ std::vector<RequiredEntry> required_entries(PackVariant variant) {
         out.insert(out.end(), audio_required.begin(), audio_required.end());
     if (variant >= PackVariant::hunter_audio)
         out.insert(out.end(), hunter_audio_required.begin(), hunter_audio_required.end());
-    if (variant == PackVariant::race_audio)
+    if (variant >= PackVariant::race_audio)
         out.insert(out.end(), race_audio_required.begin(), race_audio_required.end());
+    if (variant >= PackVariant::race_songs)
+        out.insert(out.end(), race_song_audio_required.begin(), race_song_audio_required.end());
+    if (variant == PackVariant::award_ending_audio)
+        out.insert(out.end(), award_ending_audio_required.begin(),
+                   award_ending_audio_required.end());
     return out;
 }
 

@@ -55,6 +55,14 @@ bool advance_timer_digits(RaceTimerDigits& state, bool enabled) {
     return true;
 }
 
+bool timer_warning(const RaceTimerDigits& before, const RaceTimerDigits& after, bool enabled) {
+    // $81:C707 skips the warning unless the tenths wrapped; every path past it ends at the
+    // test of 9 minutes and 5 tens ($81:C78A-C798).
+    constexpr std::uint16_t last_subframe = 4, last_tenth = 9, last_minute = 9, last_tens = 5;
+    return enabled && before.subframe == last_subframe && before.tenths == last_tenth
+        && after.minutes == last_minute && after.tens_seconds == last_tens;
+}
+
 TimerBytes serialize_timer(const RaceTimerDigits& state) {
     validate(state);
     const std::array words{state.minutes, state.tens_seconds, state.seconds, state.tenths,

@@ -19,6 +19,8 @@ public:
     std::vector<std::int16_t> take_pairs(std::size_t maximum);
     std::uint64_t source_pairs();
     std::uint64_t delivered_pairs();
+    // NativeAudioOutput::drop_late under the output lock.
+    std::size_t drop_late_output(std::uint64_t due, std::size_t ceiling, std::size_t keep);
     TitleMenuAudioPlaybackState snapshot();
     void restore(const TitleMenuAudioPlaybackState& state);
 

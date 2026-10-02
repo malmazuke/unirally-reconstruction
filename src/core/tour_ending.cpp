@@ -19,10 +19,28 @@ void upload_built_pose(FrontEndState& state, const FrontEndContent& content, uns
     upload_pose(state, content, state.ending.pose, word);
 }
 
+void walk_sound(FrontEndState& state, unsigned walk_pose) {
+    constexpr unsigned first_step_pose = 0, second_step_pose = 11;
+    constexpr std::uint8_t first_step_sound = 18, second_step_sound = 19;
+    if (walk_pose == first_step_pose) play_screen_sound(state, first_step_sound);
+    if (walk_pose == second_step_pose) play_screen_sound(state, second_step_sound);
+}
+
+namespace {
+constexpr unsigned walk_poses = 23, pose_stride = 0x40;
+unsigned walk_pose_of(const TourEnding& ending) {
+    return (ending.step >> 1U) % walk_poses;
+}
+} // namespace
+
 void walk(FrontEndState& state) {
-    constexpr unsigned walk_poses = 23, pose_stride = 0x40;
+    walk_sound(state, walk_pose_of(state.ending));
+    walk_pose(state);
+}
+
+void walk_pose(FrontEndState& state) {
     auto& ending = state.ending;
-    ending.pose = static_cast<std::uint16_t>(((ending.step >> 1U) % walk_poses) * pose_stride);
+    ending.pose = static_cast<std::uint16_t>(walk_pose_of(ending) * pose_stride);
 }
 
 void load_first_objects(FrontEndState& state, std::span<const std::uint8_t> table, std::size_t at,
@@ -65,6 +83,10 @@ constexpr std::uint32_t blank_frame = 16, reset_frame = 89, pattern_tiles_frame 
                         bar_map_frame = 91, fade_in_frames = 15;
 // The way back runs a frame later than after the award (R-0062).
 constexpr std::uint32_t way_back_delay = 1;
+// The sound session starts in the blank frame, as the award's does; from then on the frames
+// wait as the award's do: the one before the reset's, and from the one before the fade in's
+// (R-0077).
+constexpr std::uint32_t sound_upload_frame = blank_frame;
 
 // The screen: BG1 the gold pattern (map 0x53, tiles 0x54, colours 0x57 at CGRAM 0), BG2 the bar
 // (map 0x52 with palette 1 and priority, tiles 0x4C, colours 0x3C at CGRAM 0x10).
@@ -180,7 +202,10 @@ void script(FrontEndState& state, const FrontEndContent& content, std::uint32_t 
             --oam_byte(state, uni, 0);
             return;
         }
-        // After the last step: the nugget hidden, the flash's objects shown, colour math on.
+        // After the last step: effect 26 (`$83:C5DC`; `$83:C5C7`'s test of step 0x60 branches to
+        // its own next instruction), the nugget hidden, the flash's objects shown, colour math on.
+        constexpr std::uint8_t flash_sound = 26;
+        play_screen_sound(state, flash_sound);
         high_bits(state, 0) = flash_high;
         high_bits(state, first_flash) = four_shown;
         state.registers.colour_select = 0;
@@ -239,6 +264,15 @@ void start_tour_ending(FrontEndState& state) {
     state.script_frame = 0;
 }
 
+bool tour_ending_frame_waits(const FrontEndState& state) {
+    using namespace ending;
+    const auto& layout = endings[state.ending.tour];
+    const auto frame = state.script_frame;
+    if (frame > layout.last_frame) return way_back_frame_waits(frame - layout.last_frame, way_back_delay);
+    return frame < sound_upload_frame || frame == reset_frame - 1
+        || frame >= layout.fade_in_frame - 1;
+}
+
 void tour_ending_frame(FrontEndState& state, const FrontEndContent& content) {
     using namespace ending;
     const auto& layout = endings[state.ending.tour];
@@ -248,6 +282,8 @@ void tour_ending_frame(FrontEndState& state, const FrontEndContent& content) {
                        !layout.late_nmi_hook);
         return;
     }
+    if (frame == sound_upload_frame) // $83:88FD's tour routine calls `$83:A507` first
+        state.sound_cues.push_back(audio_load(AudioSessionLoad::ending));
     if (frame <= blank_frame) {
         fade_down(state, frame);
         return;

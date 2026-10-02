@@ -346,10 +346,13 @@ void write_audio_cues(std::ofstream &out, std::uint32_t frame,
       out << frame << " D " << sites[static_cast<unsigned>(cue.site)] << '\n';
       break;
     case unirally::AudioCueKind::load:
-      out << frame << " L "
-          << (cue.load == unirally::AudioSessionLoad::first_race ? "race"
-                                                                 : "title")
-          << '\n';
+      out << frame << " L ";
+      if (cue.load == unirally::AudioSessionLoad::race)
+        out << "race-" << unsigned(unirally::race_song_resource(cue.parameter))
+            << " t" << unsigned(cue.command);
+      else
+        out << unirally::audio_session_name(cue.load);
+      out << '\n';
       break;
     case unirally::AudioCueKind::rotation:
       out << frame << " R " << unsigned(cue.command) << ' '
@@ -497,8 +500,8 @@ int main(int argc, char **argv) try {
   std::uint32_t scripted_race_frame = 0;
   // Native audio past the 1P menu exit (D-0010): with it, a race waits its
   // track's measured loading frames, as the original does, while the race's
-  // sound program loads; production stops where the sound domain is not
-  // recovered (another mode, a later race).
+  // sound program loads (R-0077: every track and song); production stops
+  // where the sound domain is not recovered (another mode, the demo).
   std::uint32_t race_loading_remaining = 0, race_initialization_frame = 0;
   bool audio_stopped = false;
   std::ofstream audio_cue_log;
@@ -650,13 +653,11 @@ int main(int argc, char **argv) try {
         if (!front_end->one_player_mode())
           audio_stopped = true;
         if (race_chosen && native_audio && !audio_stopped) {
-          // The cued producer and its calibration are R-0076's: the first
-          // race of a run, on DRAGSTER. Any other race stops the audio.
+          // The cued producer covers the one-player races the menus reach,
+          // every one with a measured loading (R-0076, R-0077); the demo's
+          // race stops the audio.
           const auto loading = front_end->race_loading_frames();
-          if (front_end->races() != 0 || loading == 0 ||
-              front_end->demo_race() ||
-              !(front_end->race_scenario().track ==
-                unirally::ClassicRaceTrack::Dragster))
+          if (loading == 0 || front_end->demo_race())
             audio_stopped = true;
           else {
             race_loading_remaining = loading;
@@ -716,8 +717,12 @@ int main(int argc, char **argv) try {
         }
       } else if (race_loading_remaining) {
         --race_loading_remaining;
-        audio_cues =
-            unirally::race_sound::loading(race_initialization_frame - updates);
+        const auto loading_track = waiting_front_end->race_track();
+        const auto loading_song = waiting_front_end->race_song();
+        audio_cues = unirally::race_sound::loading(
+            race_initialization_frame - updates,
+            unirally::race_sound_load_timing(loading_track, loading_song),
+            loading_track.index, loading_song);
       } else {
         const auto previous_simulation_frame = zoom_state.movement.frame;
         const bool was_paused = zoom_state.pause.selection != 0;

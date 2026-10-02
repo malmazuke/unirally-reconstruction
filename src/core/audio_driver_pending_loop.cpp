@@ -139,7 +139,7 @@ void TitleMenuAudioDriver::plan_update_phase() {
             advance(apply_master_volume_rate());
             write_dsp(20, 0x4c, score_.take_key_on_pending());
             advance(10);
-            write_dsp(20, 0x3d, 0);
+            write_dsp(20, 0x3d, score_.noise_voices()); // 06C0-06C3, `$D6`
         }
         state.voice = 0;
         finish_plan(AudioDriverPhase::score_voice);
@@ -152,6 +152,13 @@ void TitleMenuAudioDriver::plan_update_phase() {
             advance(target.ticks - elapsed);
             write_target(2, target.value);
             elapsed = target.ticks;
+        }
+        // Control 9A's write and control B6's are not ordered against each other here.
+        if (!work.dsp_writes.empty() && !work.timer2_writes.empty())
+            throw std::runtime_error("unrecovered score update with timer and DSP writes");
+        for (const auto& dsp : work.dsp_writes) {
+            write_dsp(dsp.ticks - elapsed, dsp.reg, dsp.value);
+            elapsed = dsp.ticks;
         }
         advance(work.ticks - elapsed);
         if (work.polls_commands)

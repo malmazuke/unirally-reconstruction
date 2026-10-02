@@ -43,12 +43,15 @@ constexpr std::uint8_t high_tile = 0x80;
 
 // $81:8690-86FE, the special-tile part of the per-update reset that runs
 // before the tile dispatch ($81:858E from $82:8C3A / $82:9124).
-void update_special_tile_counters(SpecialTileRider& tiles, ReflectionTransition& transition,
+bool update_special_tile_counters(SpecialTileRider& tiles, ReflectionTransition& transition,
                                   std::uint8_t selected_high) {
-    if (tiles.mud_cooldown)
+    bool left_mud = false;
+    if (tiles.mud_cooldown) {
         --tiles.mud_cooldown;
-    else if (tiles.mud_exit_pending)
-        tiles.mud_exit_pending = 0; // and sound 0x213
+    } else if (tiles.mud_exit_pending) {
+        tiles.mud_exit_pending = 0;
+        left_mud = true;
+    }
     // With no corkscrew in the previous update the step, the corkscrew's
     // poses 0x600-0x60F and, off an inverted contact, the float all end.
     if (!tiles.corkscrew_latch) {
@@ -62,6 +65,7 @@ void update_special_tile_counters(SpecialTileRider& tiles, ReflectionTransition&
                               ? static_cast<std::uint16_t>(tiles.corkscrew_latch + 1U)
                               : 0;
     if (tiles.physics_hold) --tiles.physics_hold;
+    return left_mud;
 }
 
 bool special_tiles_skipped_contact(const SpecialTileRider& tiles) {
@@ -87,13 +91,15 @@ void apply_boost_tile(RiderMovementState& rider, SurfaceTransition& surface, std
 }
 
 // $81:8999-89F6, flag pair 14 (mud). Entering halves velocity x with an
-// arithmetic shift and stops vertical motion (the original also queues sound
-// 0x212); every update on it holds both counters at 4 and brakes by 5 unless
-// velocity x is already within 48 of zero (0xFFD0-0x002F, N-flag compares).
+// arithmetic shift, stops vertical motion and sounds effect 18; every update
+// on it holds both counters at 4 and brakes by 5 unless velocity x is already
+// within 48 of zero (0xFFD0-0x002F, N-flag compares).
 void update_mud_tile(RiderMovementState& rider, SpecialTileRider& tiles, SurfaceTransition& surface,
                      SpecialTileUpdate& special) {
+    constexpr std::uint8_t mud_entry_sound = 18; // $81:89A0: 0x212
     auto& velocity = rider.motion.velocity_x;
     if (!tiles.mud_cooldown) {
+        special.sound_effect = mud_entry_sound;
         velocity = static_cast<std::uint16_t>((velocity >> 1U) | (velocity & 0x8000U));
         rider.motion.velocity_y = 0;
     }
@@ -120,7 +126,10 @@ void update_corkscrew_tile(RiderMovementState& rider, SpecialTileRider& tiles,
                            SurfaceTransition& surface, ReflectionTransition& transition,
                            SpecialTileUpdate& special, std::span<const std::uint8_t> heights) {
     const auto eject = [&] {
-        // $81:87D1-87F5; a first ejection also queues sound 0x21B.
+        // $81:87D1-87F5; a first ejection, from a latch that is not negative, also sounds
+        // effect 27 ($81:87D6: 0x21B).
+        constexpr std::uint8_t ejection_sound = 27;
+        if (!negative(tiles.corkscrew_latch)) special.sound_effect = ejection_sound;
         tiles.corkscrew_latch = ejection_latch;
         apply_boost_tile(rider, surface, ejection_extra);
         tiles.corkscrew_step = ejected;

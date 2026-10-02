@@ -44,25 +44,31 @@ void setup(FrontEndState& state, const FrontEndContent& content) {
     state.ending.step = 0;
 }
 
-// $83:B2CD: the uni rolls a pixel left; from step 0x1D the turtle follows, walking.
+// $83:B2CD: the uni rolls a pixel left; from step 0x1D the turtle follows, walking, with effect
+// 12 on each of its tiles but the first (`$83:B2E9-B2EB`).
 void roll_start(FrontEndState& state, const FrontEndContent& content) {
+    constexpr std::uint8_t turtle_step_sound = 12;
     --oam_byte(state, uni, 0);
     const auto step = state.ending.step;
     if (step < turtle_starts) return;
     --oam_byte(state, turtle_top, 0);
     --oam_byte(state, turtle_bottom, 0);
-    const auto tile = table_byte(content.ending_tables[tour], turtle_tiles_at + ((step & 6U) >> 1));
+    const auto turtle_tile = (step & 6U) >> 1;
+    if (turtle_tile) play_screen_sound(state, turtle_step_sound);
+    const auto tile = table_byte(content.ending_tables[tour], turtle_tiles_at + turtle_tile);
     oam_byte(state, turtle_top, 2) = tile;
     oam_byte(state, turtle_bottom, 2) = static_cast<std::uint8_t>(tile + lower_tile_row);
 }
 
-// $83:B301: the wheel turns backwards: the walk's poses counted down from step 0x100.
+// $83:B301: the wheel turns backwards: the walk's poses counted down from step 0x100, with the
+// walk's two sounds (`$83:B32B-B338`, see walk_sound).
 void roll_end(FrontEndState& state, const FrontEndContent& content) {
     auto& ending = state.ending;
     upload_built_pose(state, content, first_pose_word);
     copy_oam(state);
-    ending.pose =
-        static_cast<std::uint16_t>((((0x100U - ending.step) >> 1) % walk_poses) * pose_stride);
+    const auto walk_pose = ((0x100U - ending.step) >> 1) % walk_poses;
+    walk_sound(state, walk_pose);
+    ending.pose = static_cast<std::uint16_t>(walk_pose * pose_stride);
     ++ending.step;
     if (ending.step >= red_uni_drops) oam_byte(state, red_uni, 1) += bounce_height;
 }
@@ -71,14 +77,17 @@ void roll_part(FrontEndState& state, const FrontEndContent& content, unsigned, u
     wait == 0 ? roll_start(state, content) : roll_end(state, content);
 }
 
-// $83:B374-B3D7: the red uni is put back on the ground and bounces up out of sight while the
-// uni's poses 0x621 on play.
+// $83:B374-B3D7: effects 1 and 21; the red uni is put back on the ground and bounces up out of
+// sight while the uni's poses 0x621 on play.
 void bounce_part(FrontEndState& state, const FrontEndContent& content, unsigned step,
                  unsigned wait) {
+    constexpr std::uint8_t landing_sound = 1, bounce_sound = 21;
     auto& ending = state.ending;
     auto& red_uni_y = oam_byte(state, red_uni, 1);
     if (wait == 0) {
         if (step == 0) {
+            play_screen_sound(state, landing_sound);
+            play_screen_sound(state, bounce_sound);
             ending.step = 0;
             red_uni_y = ground_y;
         }
@@ -124,9 +133,11 @@ void tongue_out_part(FrontEndState& state, const FrontEndContent& content, unsig
     set_eating_tiles(state, content);
 }
 
-// $83:B436-B486: the tongue pulls the uni over (poses 0x1390 on), turned and moved to it.
+// $83:B436-B486: effect 13, then the tongue pulls the uni over (poses 0x1390 on), turned and
+// moved to it.
 void pull_over_part(FrontEndState& state, const FrontEndContent& content, unsigned step,
                     unsigned wait) {
+    constexpr std::uint8_t pull_sound = 13;
     auto& ending = state.ending;
     if (wait == 1) return;
     if (wait == 2) {
@@ -136,6 +147,7 @@ void pull_over_part(FrontEndState& state, const FrontEndContent& content, unsign
         return;
     }
     if (step == 0) {
+        play_screen_sound(state, pull_sound);
         ending.step = 0;
         oam_byte(state, uni, 3) = pulled_attr;
         oam_byte(state, uni, 0) = pulled_x;
@@ -193,6 +205,11 @@ constexpr std::uint16_t arrow_flies = 0x70, fall_poses = 0xa5e, red_uni_shown = 
                         wobble_poses = 0x13b8, roll_poses = 0x13c0, roll_count = 0x43,
                         held_step = 0x27, held_pose = 6;
 constexpr std::uint8_t arrow_speed = 7, arrow_drift = 2, red_uni_speed = 3;
+// $83:B60C-B615, $83:B63F, $83:B695-B69E, $83:B74E-B763: the arrow's whistle as the walk reaches
+// step 0x60, its hit, the uni's fall at step 0x10, and the red uni's roll at counts 0x0D and 0x1C.
+constexpr std::uint16_t whistle_step = 0x60, fall_sound_step = 0x10, first_roll_sound = 0x0d,
+                        second_roll_sound = 0x1c;
+constexpr std::uint8_t whistle_sound = 3, hit_sound = 2, fall_sound = 4, roll_sound = 5;
 
 void setup(FrontEndState& state, const FrontEndContent& content) {
     load_first_objects(state, content.ending_tables[tour], 0, first_objects);
@@ -214,6 +231,7 @@ void walk_in_part(FrontEndState& state, const FrontEndContent& content, unsigned
     upload_built_pose(state, content, first_pose_word);
     copy_oam(state);
     walk(state);
+    if (ending.step == whistle_step) play_screen_sound(state, whistle_sound);
     ++ending.step;
     if (ending.step >= arrow_flies) oam_byte(state, arrow, 0) += arrow_speed;
 }
@@ -223,7 +241,9 @@ void walk_in_part(FrontEndState& state, const FrontEndContent& content, unsigned
 void hit_part(FrontEndState& state, const FrontEndContent& content, unsigned step, unsigned wait) {
     auto& ending = state.ending;
     if (wait == 0) {
-        if (step == 0) ending.step = ending.drop = 0;
+        if (step != 0) return;
+        play_screen_sound(state, hit_sound);
+        ending.step = ending.drop = 0;
         return;
     }
     if (wait == 1) {
@@ -235,6 +255,7 @@ void hit_part(FrontEndState& state, const FrontEndContent& content, unsigned ste
     oam_byte(state, arrow, 1) += static_cast<std::uint8_t>((ending.drop & 0xffU) >> 2);
     oam_byte(state, arrow, 0) -= arrow_drift;
     ending.pose = static_cast<std::uint16_t>(fall_poses + ending.step);
+    if (ending.step == fall_sound_step) play_screen_sound(state, fall_sound);
     ++ending.step;
 }
 
@@ -269,6 +290,8 @@ void roll_on_part(FrontEndState& state, const FrontEndContent& content, unsigned
     copy_oam(state);
     const auto pose_step = ending.step == held_step ? held_pose : ending.step >> 1;
     ending.pose = static_cast<std::uint16_t>(roll_poses + pose_step);
+    if (ending.count == first_roll_sound || ending.count == second_roll_sound)
+        play_screen_sound(state, roll_sound);
     if (ending.count >= roll_count) return;
     ++ending.count;
     if (ending.step != held_step) ++ending.step;
@@ -364,8 +387,9 @@ void turn_part(FrontEndState& state, const FrontEndContent& content, unsigned st
     if (!first) ++ending.step;
 }
 
-// $83:C302-C338: the flame's tiles, a new pair every second step.
+// $83:C302-C338: effect 16, then the flame's tiles, a new pair every second step.
 void fire_part(FrontEndState& state, const FrontEndContent& content, unsigned step, unsigned wait) {
+    constexpr std::uint8_t fire_sound = 16;
     auto& ending = state.ending;
     if (wait == 1) return;
     if (wait == 2) {
@@ -373,7 +397,10 @@ void fire_part(FrontEndState& state, const FrontEndContent& content, unsigned st
         ++ending.step;
         return;
     }
-    if (step == 0) ending.step = 0;
+    if (step == 0) {
+        play_screen_sound(state, fire_sound);
+        ending.step = 0;
+    }
     const auto tile =
         table_byte(content.ending_tables[tour], flame_tiles_at + ((ending.step & 0xffU) >> 1));
     oam_byte(state, flame, 2) = tile;
@@ -425,11 +452,13 @@ void blast_up_part(FrontEndState& state, const FrontEndContent& content, unsigne
                [](std::uint16_t s) { return static_cast<std::uint16_t>(blast_poses + (s >> 1)); });
 }
 
-// $83:C3BB: the blast's object and the flame hidden, the burnt uni's poses (0x140F on, held at
-// the eighth) go to the uni's own tiles (0x100) while the red uni fires on.
+// $83:C3BB: effect 20, the blast's object and the flame hidden, the burnt uni's poses (0x140F on,
+// held at the eighth) go to the uni's own tiles (0x100) while the red uni fires on.
 void burn_out_part(FrontEndState& state, const FrontEndContent& content, unsigned step,
                    unsigned wait) {
+    constexpr std::uint8_t burn_sound = 20;
     if (step == 0 && wait == 1) {
+        play_screen_sound(state, burn_sound);
         state.ending.step = 0;
         high_bits(state, 0) = burnt_high;
     }

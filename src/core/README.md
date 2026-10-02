@@ -391,11 +391,21 @@ the exact original/native domains and the opaque executable transport projection
 `audio_cpu_clock_hdma.cpp` models the two reveal channels' cursor, line counter,
 transfer flags and pending bus work. Page decoration, credits text, pose building
 and sprite uploads have separate small functions. `audio_state_io.cpp` writes
-URAU0005, including active reveal state, retained IPL timers, complete DSP
-history and the race sound set's flags, volume rate and gain scripts (R-0076); `AudioOutput` retains the integer resampling fraction and queued PCM.
+URAU0006, including active reveal state, retained IPL timers, complete DSP
+history, the race sound set's flags, volume rate and gain scripts (R-0076) and
+the noise voices (R-0077); `AudioOutput` retains the integer resampling fraction and queued PCM.
 Fresh-process comparisons cover active reveals, first-press history, credits
 wrap and warm restart. Source `42d2cc8` has accepted independent tier-1 source
 re-review and bounded physical controller/listening acceptance in R-0075.
+
+After a one-player menu exit the producer runs cued frames (D-0010,
+`audio_cued_scenes.cpp`): the front end and the race engine report each
+frame's sound queue work in program order (`AudioCue`; `race_sound.hpp` for
+the race's producers), and the audio side delivers dispatches and session
+loads at declared frame-anchored clocks. Sessions cover every race song on
+all 45 tracks, the medal award, the gold endings (driver 51's effect layout)
+and the title set's reloads, including the boot after HUNTER's soft reset;
+each set is its upload over the title set's bytes (R-0076, R-0077).
 
 The opt-in desktop flag `--native-title-menu-audio` uses this producer with
 sampled frontend controls and SDL output. Its scripted device run covers the

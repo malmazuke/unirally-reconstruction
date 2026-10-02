@@ -157,6 +157,13 @@ void TitleMenuAudioDriver::update_score_voice(std::uint8_t voice, bool effects) 
         timers_.write_target(2, target.value);
         elapsed = target.ticks;
     }
+    // Control 9A's write and control B6's are not ordered against each other here.
+    if (!work.dsp_writes.empty() && !work.timer2_writes.empty())
+        throw std::runtime_error("unrecovered score update with timer and DSP writes");
+    for (const auto& dsp : work.dsp_writes) {
+        write_dsp(dsp.ticks - elapsed, dsp.reg, dsp.value);
+        elapsed = dsp.ticks;
+    }
     advance(work.ticks - elapsed);
     if (work.polls_commands) poll_commands();
 }
@@ -193,8 +200,8 @@ unsigned TitleMenuAudioDriver::apply_master_volume_rate() {
     return rising ? 10U + 4 + 4 + 10 + 10 + 4 + 10 + 10 + 4 + 10 + 8
                   : 10U + 4 + 8 + 10 + 10 + 4 + 10 + 10 + 4 + 10;
 }
-// 067E-074A. Both update modes share the counter and output pass. The bounded
-// title/menu domain has no global fade/ramp or noise command.
+// 067E-074A. Both update modes share the counter and output pass; the music pass also writes the
+// noise voices (R-0077).
 void TitleMenuAudioDriver::update_voices(bool effects) {
     advance(8 + 6);
     update_counter_ = byte(update_counter_ + 1U);
@@ -205,7 +212,7 @@ void TitleMenuAudioDriver::update_voices(bool effects) {
         advance(apply_master_volume_rate());
         write_dsp(20, 0x4c, score_.take_key_on_pending());
         advance(10);
-        write_dsp(20, 0x3d, 0);
+        write_dsp(20, 0x3d, score_.noise_voices()); // 06C0-06C3, `$D6`
     }
     for (std::uint8_t voice = 0; voice < 8; ++voice) update_score_voice(voice, effects);
     write_dsp(34, 0x5c, score_.take_key_off_pending());

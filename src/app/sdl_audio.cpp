@@ -53,6 +53,12 @@ void SDLCALL SdlTitleMenuAudio::callback(void* context, SDL_AudioStream* stream,
 }
 void SdlTitleMenuAudio::submit_frame(std::uint32_t frame, std::array<std::uint16_t, 2> words,
                                      AudioCueList cues, bool stop) {
+    // Host latency policy: output more than four PAL frames behind the game is dropped to two
+    // behind. A slow producer start once left every later sound 17 frames late. Dropped pairs
+    // count in native_audio_delivered_pairs as well as native_audio_dropped_late_pairs.
+    const std::size_t frame_pairs = rate_ / 50;
+    if (resumed_)
+        dropped_late_pairs_ += producer_->trim_late_output(frame, 4 * frame_pairs, 2 * frame_pairs);
     producer_->submit_frame(frame, words, std::move(cues), stop);
     if (callback_failed_) throw std::runtime_error("native audio device callback failed");
     // Two PAL frames of priming are a host latency policy. They never supply
@@ -75,6 +81,7 @@ void SdlTitleMenuAudio::report() {
               << " native_audio_delivered_pairs=" << producer_->delivered_pairs()
               << " native_audio_nonzero_pairs=" << nonzero_pairs_.load()
               << " native_audio_underrun_pairs=" << underrun_pairs_.load()
+              << " native_audio_dropped_late_pairs=" << dropped_late_pairs_
               << " native_audio_navigation_count=" << producer_->navigation_count()
               << " native_audio_restart_count=" << producer_->restart_count()
               << " native_audio_cued_frames=" << producer_->cued_frames()

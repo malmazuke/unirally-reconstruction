@@ -167,6 +167,7 @@ struct ContactStep {
     ContactMotion& moved;
     unsigned magnitude{}; // the surface angle's magnitude, 0-31
     unsigned flag_pair{};
+    bool landing_sound{}; // $81:9444-9447: the landing sounds effect 23
 };
 
 constexpr std::uint16_t airborne_count = 9; // the unsupported count's ceiling
@@ -222,8 +223,8 @@ int coarse_landing_angle(const ContactStep& s) {
 // the surface target) against the direction of arrival; every comparison is on signed
 // original words. A rider arriving across the surface turns by up to 2 with its speed; one
 // arriving along it decays its responses. Off the leading support the response becomes an
-// orientation impulse, and a long flight (120 updates or more) landing nearly flat on its
-// back takes the long-airtime matrix. Returns whether it does.
+// orientation impulse; a long flight (120 updates or more) landing nearly flat sounds
+// effect 23, and on its back takes the long-airtime matrix. Returns whether it does.
 bool landing_rotation(ContactStep& s, int coarse, unsigned pose_index, bool reflected) {
     const auto& summary = s.summary;
     int pose_direction = static_cast<int>(pose_index & 63U);
@@ -270,8 +271,10 @@ bool landing_rotation(ContactStep& s, int coarse, unsigned pose_index, bool refl
         s.moved.orientation_impulse =
             response < 0 ? static_cast<std::uint16_t>(0U - impulse) : impulse;
     }
-    if (s.context.mode == 0 && summary.angle < 30 && summary.angle >= -30
-        && s.incoming.unsupported_duration >= long_airtime && pose_direction >= 32) {
+    // $81:942B-9447: the sound before $81:945B's test of the pose.
+    s.landing_sound = s.context.mode == 0 && summary.angle < 30 && summary.angle >= -30
+                   && s.incoming.unsupported_duration >= long_airtime;
+    if (s.landing_sound && pose_direction >= 32) {
         s.moved.response_a = static_cast<std::uint16_t>(response < 0 ? 1 : -1);
         return true;
     }
@@ -442,8 +445,8 @@ void correct_position(ContactStep& s) {
 } // namespace
 
 // One update of a rider's contact with vertical columns: the counters, then support (a wall,
-// a landing or a slope), then the position correction.
-void resolve_vertical_contact(RiderContactState& rider, ContactMotion& motion,
+// a landing or a slope), then the position correction. Returns whether a landing sounded.
+bool resolve_vertical_contact(RiderContactState& rider, ContactMotion& motion,
                               const VerticalContactSummary& probed, const ContactContext& context,
                               std::span<const std::uint8_t> shifts,
                               std::span<const std::uint8_t> multipliers,
@@ -472,7 +475,7 @@ void resolve_vertical_contact(RiderContactState& rider, ContactMotion& motion,
             | static_cast<std::uint8_t>(incoming.unsupported_duration + 1U));
         next.unsupported_count = counted(incoming.unsupported_count);
         rider = next;
-        return;
+        return false;
     }
     ContactStep step{summary,
                      context,
@@ -493,5 +496,6 @@ void resolve_vertical_contact(RiderContactState& rider, ContactMotion& motion,
     correct_position(step);
     rider = next;
     motion = moved;
+    return step.landing_sound;
 }
 } // namespace unirally

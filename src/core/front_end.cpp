@@ -217,8 +217,10 @@ bool ends_with_queue_wait(const FrontEndState& state) {
     if (state.screen == FrontEndScreen::race_result_exit
         && state.script_frame + 1 == result_scoring_frame(state))
         return true;
-    return waits_for_frame(state) || state.screen == FrontEndScreen::tour_award
-        || state.screen == FrontEndScreen::tour_ending;
+    if (state.screen == FrontEndScreen::tour_award) return award_frame_waits(state);
+    if (state.screen == FrontEndScreen::tour_ending) return tour_ending_frame_waits(state);
+    if (state.screen == FrontEndScreen::hunter_ending) return hunter_ending_queue_waits(state);
+    return waits_for_frame(state);
 }
 
 bool waits_for_frame(const FrontEndState& state) {
@@ -304,6 +306,11 @@ void boot_frame(FrontEndState& state, const FrontEndContent& content, FrontEndPa
     const auto frame = boot_frame_number(state);
     if (!frame) return;
     const auto f = *frame;
+    // After a soft reset the boot's sound program load (`$80:A09A`) stops the running driver
+    // first: a session from a running driver, as after a race (R-0077, `all-gold`).
+    constexpr std::uint32_t reset_sound_load_frame = 28;
+    if (state.after_soft_reset && f == reset_sound_load_frame)
+        state.sound_cues.push_back(audio_load(AudioSessionLoad::reset_boot));
     if (f == 24) {
         clear_oam_buffer(state);
         load_cgram(state, asset(content, early_palette), 0xe0);
@@ -924,6 +931,7 @@ void demo_title_frame(FrontEndState& state, const FrontEndContent& content) {
         state.tour_menu.track = second_cycle ? 3 : ClassicRaceTrack::ZoomZoo.index;
         state.rider_menu.rider = second_cycle ? 6 : 4;
         state.now_playing.opponent = second_cycle ? 1 : 14;
+        // The demo's race keeps the song counter: `$83:C9F6-CA05` skips `$83:CA08` (R-0077).
         state.mode_chosen = true;
         state.screen = FrontEndScreen::race;
     }
