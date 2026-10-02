@@ -19,10 +19,19 @@ void upload_built_pose(FrontEndState& state, const FrontEndContent& content, uns
     upload_pose(state, content, state.ending.pose, word);
 }
 
+void walk_sound(FrontEndState& state, unsigned walk_pose) {
+    constexpr unsigned first_step_pose = 0, second_step_pose = 11;
+    constexpr std::uint8_t first_step_sound = 18, second_step_sound = 19;
+    if (walk_pose == first_step_pose) play_screen_sound(state, first_step_sound);
+    if (walk_pose == second_step_pose) play_screen_sound(state, second_step_sound);
+}
+
 void walk(FrontEndState& state) {
     constexpr unsigned walk_poses = 23, pose_stride = 0x40;
     auto& ending = state.ending;
-    ending.pose = static_cast<std::uint16_t>(((ending.step >> 1U) % walk_poses) * pose_stride);
+    const auto walk_pose = (ending.step >> 1U) % walk_poses;
+    walk_sound(state, walk_pose);
+    ending.pose = static_cast<std::uint16_t>(walk_pose * pose_stride);
 }
 
 void load_first_objects(FrontEndState& state, std::span<const std::uint8_t> table, std::size_t at,
@@ -184,7 +193,10 @@ void script(FrontEndState& state, const FrontEndContent& content, std::uint32_t 
             --oam_byte(state, uni, 0);
             return;
         }
-        // After the last step: the nugget hidden, the flash's objects shown, colour math on.
+        // After the last step: effect 26 (`$83:C5DC`; `$83:C5C7`'s test of step 0x60 branches to
+        // its own next instruction), the nugget hidden, the flash's objects shown, colour math on.
+        constexpr std::uint8_t flash_sound = 26;
+        play_screen_sound(state, flash_sound);
         high_bits(state, 0) = flash_high;
         high_bits(state, first_flash) = four_shown;
         state.registers.colour_select = 0;

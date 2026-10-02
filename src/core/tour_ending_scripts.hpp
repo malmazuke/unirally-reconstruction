@@ -36,8 +36,10 @@ void run_loop(const Loop& loop, std::uint32_t frame, FrontEndState& state,
 
 // $80:F814 (after a wait, `$83:A923`): the pose built last (`TourEnding::pose`) sent to `word`.
 void upload_built_pose(FrontEndState& state, const FrontEndContent& content, unsigned word);
-// $83:B79C: the walk's poses, a new one every second step, 23 in turn.
+// $83:B79C: the walk's poses, a new one every second step, 23 in turn, with its footsteps.
 void walk(FrontEndState& state);
+// $83:B7B1-B7BE: the walk's footsteps: effect 18 on its pose 0 and effect 19 on pose 11.
+void walk_sound(FrontEndState& state, unsigned walk_pose);
 // A tour's first objects from its table into the OAM buffer.
 void load_first_objects(FrontEndState& state, std::span<const std::uint8_t> table, std::size_t at,
                         unsigned entries);
