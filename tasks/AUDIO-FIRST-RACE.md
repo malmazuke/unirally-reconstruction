@@ -2,7 +2,9 @@
 
 ## Assignment
 
-- Status: claimed 1 October 2026 21:02 UTC (2 October Sydney) after verifying
+- Status: validated 2 October 2026 Sydney: tier-1 review accepted `20bf98b`, gates and
+  CI pass (fuzz a recorded non-pass that predates the task), live listening done.
+  Integration through PR #51 and its ignored closeout. Claimed 1 October 2026 21:02 UTC (2 October Sydney) after verifying
   PR #50's merge, main `be3a6e0` equal to `origin/main` and main's
   `artifacts/audio-title-menu-integration/closeout.json`.
 - Primary/coordinator: Claude Code, Claude Opus 5.5 (`claude-opus-5-5`). This
@@ -20,9 +22,10 @@
   starting provider under D-0004. Record fresh usage, actual model settings,
   the 20-point discretionary boundary and final 20% review/recovery reserve.
   No reset, spending or provider move is authorized by this preparation.
-- Reviewer: automatically dispatch fresh explicit Sol/medium in an isolated
-  checkout, freeze a coherent source candidate, obtain independently chosen
-  cases and handle findings/re-review without asking the user to launch it.
+- Reviewer: automatically dispatch a fresh reviewer in an isolated checkout,
+  freeze a coherent source candidate, obtain independently chosen cases and
+  handle findings/re-review without asking the user to launch it. Under D-0004
+  this Anthropic-started task used a fresh Claude Opus 5.5 subagent, not Sol.
 - Dependencies: merged AUDIO-TITLE-MENU, D-0009, R-0075, accepted ordinary 1P
   setup/race/result/continuation and the pinned PAL ROM/reference identities.
 - Owned scope: native audio producers and work clock, affected sequencer/data
@@ -225,3 +228,24 @@ duration, and `0x8C` starts a table-driven gain envelope stepped by `$0B42`
   (700; 1249, 1250, 1251, 1255, 1260, 1300, 1328, 1329 inside the race load; 1360, 2000,
   3400; 3458, 3459, 3460, 3500, 3526, 3527 inside the title reload; 3700) passes 19 of 19:
   saved plus restored PCM and events equal the uninterrupted run, with an equal final state.
+
+## 2 October 2026: live physical run and listening (source `20bf98b`)
+
+- Command and report: main `artifacts/audio-first-race-integration/20261002-live.json`
+  (`local/evidence/audio-first-race/live.py`): the visible app with
+  `--native-title-menu-audio`, the v32 pack and `--audio-cue-log`; the user played with the
+  Xbox controller (71 button presses, 1,705 nonzero input updates, one pause opened). They
+  chose DRAGSTER after 1,312 front-end frames, lost it (totals 4,349/3,358), returned to the
+  menus and then chose BOWL, where the cued producer stopped as designed (a second race).
+- The user's report: "Everything worked as expected", with one open question: whether menu
+  sounds play with a slight delay when moving between options, to be confirmed against the
+  original ROM. The native commands reach the driver in the original's frames (R-0076); the
+  remaining delay is host output latency: AUDIO-TITLE-MENU's two-PAL-frame priming (40 ms)
+  plus SDL's device buffer, a declared host policy and not original timing.
+- Counters: 3,664 cued frames, 2,794,602 source pairs (87.22 s), 4,186,669 delivered and
+  3,892,844 nonzero pairs, 340,435 underrun pairs (7.09 s). The producer ended at the BOWL
+  choice (front-end frame 4,363, 87.26 s of game time), and the device ran 94.31 s in all
+  (delivered plus underrun); so the underruns are the ended producer's intentional silence
+  after the stop, and runtime underruns during play come out near zero by this arithmetic,
+  which assumes 50 Hz pacing up to the stop; the counters are not time-resolved, so this is
+  an inference, not a per-moment observation.
