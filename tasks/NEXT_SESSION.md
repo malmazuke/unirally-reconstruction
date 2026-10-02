@@ -10,10 +10,12 @@ the driver in the original's frame. PCM is measured, not exact, after the first
 anchored command: median per-20 ms level differences are 0.00-0.48 dB. Given
 the original's port writes, the driver and DSP are exact.
 Nineteen fresh-process saves continue exactly, including saves inside both sound loads.
-Eleven frozen race gates, the race and front-end equivalence sweeps against
-main, the v1 contracts and macOS/Ubuntu CI with Linux sanitizers pass. The
-DRAGSTER fuzz gate fails on main too; it is a recorded non-pass with its own follow-up.
-A fresh Claude Opus 5.5 reviewer accepted `20bf98b` after two rounds of changes. In a visible
+On source `21827fb`, all eleven frozen race gates pass with 6,023 restores. The race
+equivalence sweep against main finds 0 differences in 2,387,105 updates, and the
+front-end sweep finds 174 of 174 schedules equal. The v1 contracts and macOS/Ubuntu CI
+with Linux sanitizers also pass. The DRAGSTER fuzz gate fails on main too; it is a
+recorded non-pass with its own follow-up. A fresh Claude Opus 5.5 reviewer accepted
+`21827fb` after two rounds of changes. In a visible
 controller run the user heard music, menu effects and race sound "as expected".
 They asked whether menu sounds lag slightly; native commands match the original's
 frames, so any remaining delay is the declared host output latency.

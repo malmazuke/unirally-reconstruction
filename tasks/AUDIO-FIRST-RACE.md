@@ -2,7 +2,7 @@
 
 ## Assignment
 
-- Status: validated 2 October 2026 Sydney: tier-1 review accepted `20bf98b`, gates and
+- Status: validated 2 October 2026 Sydney: tier-1 review accepted `21827fb`, gates and
   CI pass (fuzz a recorded non-pass that predates the task), live listening done.
   Integration through PR #51 and its ignored closeout. Claimed 1 October 2026 21:02 UTC (2 October Sydney) after verifying
   PR #50's merge, main `be3a6e0` equal to `origin/main` and main's
@@ -249,3 +249,27 @@ duration, and `0x8C` starts a table-driven gain envelope stepped by `$0B42`
   after the stop, and runtime underruns during play come out near zero by this arithmetic,
   which assumes 50 Hz pacing up to the stop; the counters are not time-resolved, so this is
   an inference, not a per-moment observation.
+
+## 2 October 2026 UTC: final candidate `21827fb`
+
+- The first full gate run (`db28f77`) found two functions this task had pushed over the 80-line
+  size rule (`update_zoom_zoo`, `front_end_runner`'s `main`; main `be3a6e0` has neither).
+  `21827fb` extracts the second rider's controls and a race-loading frame's outputs as pure
+  moves; the reviewer accepted it on reading, and the equivalence sweeps below confirm it.
+- Full gates on `21827fb` (main `local/evidence/audio-first-race/gates-21827fb.out`,
+  02:15-03:52 UTC):
+  - Builds and ctest: 41/41 on lab-debug, lab-release and app-debug.
+  - Synthetic suite, both v1 presentation contracts and nine hidden app runs (0 pose
+    fallbacks) pass.
+  - All eleven differential race gates pass, with 6,023 restores.
+  - The race equivalence sweep against main finds 0 differences in 432 runs and 2,387,105
+    updates, with 1,290 restarts and 2,538 pictures.
+  - The front-end equivalence sweep finds 174 of 174 schedules equal (1,257,821 frames).
+  - Audio: the seven cue comparisons are equal, the anchored measurements are as in R-0076,
+    AUDIO-TITLE-MENU's six frozen comparisons are unchanged, and the continuation saves pass
+    19/19 plus 4/4.
+  - Tooling 541 tests; size rule 0 functions over 80 lines; native-symbols current.
+  - Fuzz: 40/40 aborts, as on main (non-pass, follow-up offered).
+  - Local ASan presets are unavailable on this host; Linux CI ran them.
+- CI on `21827fb` (run 36954757998): macOS and Ubuntu pass, including the Linux sanitizer
+  build and test. Later commits change records only.
