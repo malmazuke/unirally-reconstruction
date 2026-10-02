@@ -185,7 +185,27 @@ holds the observations, the loading table, the producers and the measured domain
   equal, `full-lap-won` and `full-fifth-win` conditionally equal.
 - Live check: a first visible run (`artifacts/audio-one-player-integration/20261003-live.json`)
   received no input (no gamepad, no keys): 45,000 idle updates through the title and attract
-  demo, not a listening check. The user's listening run is pending.
+  demo, not a listening check.
+- Live check 1 (`20261003-live.json`, `app-debug` at `f6af55d`, 207 s): the user played tracks
+  20, 22 (HILL CLIMB, a stunt event) and 24 on a gamepad (274 presses, two pauses, one quit).
+  Native cues ran throughout (9,742 cued frames, never stopped). The user heard three faults:
+  - **Every sound late.** The output queue held 16,300-17,400 pairs (345 ms) from the title on:
+    the debug build's producer booted 17 frames after the game, and nothing gave that back.
+    Fixed at `231080f` by a host latency policy: output pair n plays the producer's clock at
+    n / rate, and output more than four frames behind the game's frame is dropped to two behind.
+    A scripted HILL CLIMB run (`hill-complete`'s inputs) then holds 17-70 ms. A sound-set upload
+    runs the native IPL at about 1.07x real time optimized and 0.8x in debug (every port access
+    synchronizes, and the sound processor yields by exception), so debug builds fall behind at
+    each load and drop the race music's first 0.66 s. The new `app-release` preset is the build
+    to play; there every drop is silence (the boot's, then each upload's: peak 0).
+  - **The stunt countdown's first beep and GO.** Native matches the original: three beeps (270,
+    220, 160) and no GO sound. In the original's own PCM (`six-quits-t22-disp1`) the first beep
+    lands on the race music's first frame (1432-1436), so it sounds like the music's opening hit.
+  - **No QUIT in the pause menu.** Its second choice already quits as the original's does
+    (R-0060), but native draws its own RESUME / RESTART RACE panel; the original's reads CONTINUE
+    GAME and QUIT. Queued as CLASSIC-PAUSE-MENU.
+- Live check 2 (`20261003-idle2.json`, `app-release` at `231080f`): no input again (no gamepad
+  connected); 45,000 idle updates, not a listening check.
 
 ## Review 1, 3 October 2026
 

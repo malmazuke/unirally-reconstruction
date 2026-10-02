@@ -82,3 +82,12 @@ exits stop this bounded audio producer. The default app remains silent; R-0075
 records the exact differential domain and accepted physical controller/listening
 check. That live run also reports 265,848 underrun pairs; continuous sound
 after every menu exit remains outside the bounded outcome.
+
+Play with native audio in the optimized build, `python3 tools/project.py build --preset
+app-release` (`build/app-release/src/app/unirally.app`). A sound-set upload runs the native IPL
+at about 1.07x real time there and about 0.8x in `app-debug`, which then falls behind at every
+race load. Output is a host latency policy, not original timing: output pair n plays the
+producer's clock at n / rate seconds, and once it runs more than four PAL frames behind the frame
+the game submits, the oldest queued pairs are dropped until it is two behind
+(`native_audio_dropped_late_pairs`). In the optimized build that drops the boot's and each
+upload's silence only (AUDIO-ONE-PLAYER).
