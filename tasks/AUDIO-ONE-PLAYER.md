@@ -2,9 +2,18 @@
 
 ## Assignment
 
-- Status: ready, prepared by AUDIO-FIRST-RACE on 2 October 2026 Sydney.
-  Claim only after AUDIO-FIRST-RACE's PR #51 is merged and its closeout in
-  main `artifacts/audio-first-race-integration/closeout.json` agrees.
+- Status: claimed 2 October 2026 05:42 UTC (15:42 Sydney) after verifying PR #51
+  merged as `df0bf14`, main equal to `origin/main` and main's
+  `artifacts/audio-first-race-integration/closeout.json`
+  (`accepted_integrated_and_cleaned`, next ready task AUDIO-ONE-PLAYER).
+- Primary/coordinator: Claude Code, Claude Fable 5.1 (`claude-fable-5-1`). This task
+  starts on Anthropic, so under D-0004 its children and its independent reviewer are
+  fresh Claude subagents, not Sol.
+- Quota at claim: Claude weekly all-models 16% (14% at this session's start), five-hour
+  54%. D-0004 checkpoint at a 20-point increase (36%); the user's standing rule allows
+  continuing to 80% weekly, with the last 20% reserved for review and recovery.
+- Branch/worktree: `task/audio-one-player`, `.worktrees/audio-one-player`, from main
+  `df0bf14` (pack v32, the three presets built, ctest not yet rerun here).
 - Milestone: M4 (original game coverage); not the complete M4 gate.
 - Tier: 1. New sound producers, song selection state, content extraction and
   scene continuation require the full D-0006 review process.

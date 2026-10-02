@@ -1,5 +1,12 @@
 # Project state
 
+**2 October 2026 05:42 UTC: [AUDIO-ONE-PLAYER](../tasks/AUDIO-ONE-PLAYER.md) is claimed** on `task/audio-one-player`
+in `.worktrees/audio-one-player` from main `df0bf14`, after verifying PR #51's merge, main
+equal to `origin/main` and the AUDIO-FIRST-RACE closeout. Claude Fable 5.1 is the primary; the
+task's children and its reviewer stay on Anthropic (D-0004). Weekly usage at claim 16%
+(checkpoint boundary 36%, standing rule 80%). Evidence goes to main
+`local/evidence/audio-one-player/`. No M4 tag, reset, spending or provider change is authorized.
+
 **2 October 2026 Sydney: AUDIO-FIRST-RACE is reviewed and live-checked on [PR #51](https://github.com/malmazuke/unirally-reconstruction/pull/51).**
 Native audio now runs from power-on through 1P setup, the first DRAGSTER race,
 its pause menu and result, and the menus after it. The front end and race engine
