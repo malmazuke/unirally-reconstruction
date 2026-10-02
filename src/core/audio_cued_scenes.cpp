@@ -18,7 +18,7 @@ constexpr std::uint64_t frame_wait_anchor = 13082, race_early_anchor = 27920,
                         finish_fade_anchor = 26324, race_choice_anchor = 9908, pause_anchor = 12232,
                         pause_fade_anchor = 17214, pause_continue_anchor = 36340;
 constexpr std::uint64_t first_race_load_anchor = 169072, title_return_load_anchor = 344450;
-constexpr std::uint32_t longest_session_frames = 16;
+constexpr std::uint32_t longest_session_frames = 81;
 
 std::uint64_t frame_start(std::uint32_t frame) {
     return first_frame_boundary + (std::uint64_t(frame) - 1) * frame_clocks;
@@ -112,8 +112,9 @@ bool NativeTitleMenuAudio::valid_cued_state(const TitleMenuAudioState& state) {
         return state.cued_frame == 0 && !state.rotation_sounding[0] && !state.rotation_sounding[1]
             && state.engine.sound_set == AudioSoundSetId::title
             && state.engine.uploading_sound_set == AudioSoundSetId::title;
-    // Only an upload session runs the clock past a frame's end; the longest, the race load,
-    // starts in frame 1249 and ends in 1260 (R-0076), so a clock further ahead names a lagging
+    // Only an upload session runs the clock past a frame's end. The longest, the race load
+    // with its samples, starts in frame 1249 and leaves the clock in frame 1329, 79.8 frames
+    // past that frame's end (the title reload: 68.3), so a clock 81 frames ahead names a lagging
     // frame. A lag within one session's length is not detectable from the saved state.
     constexpr std::uint32_t last_frame = 0xfffffffeU - longest_session_frames;
     const auto ticks = state.engine.cpu.ticks;

@@ -184,8 +184,9 @@ duration, and `0x8C` starts a table-driven gain envelope stepped by `$0B42`
   2. Blocking, fixed: BRONSEN's voices 200-215 (reward-path test, 256-byte voice table).
   3. Fixed: the -256 checkpoint speed clears flag 20.
   4. Fixed: R-0076 now lists what is static-only; captures removed most of it (below).
-  5. Fixed within a bound: restore rejects a clock more than 16 frames past the cued frame's
-     end; a smaller lag is not detectable from the saved state (recorded in the code).
+  5. Fixed within a bound: restore rejects a clock too far past the cued frame's end; a
+     smaller lag is not detectable from the saved state (recorded in the code). The first
+     bound (16 frames) was wrong; see review 2.
   6. Fixed: frame-boundary formula; the pause anchors are listed with their captures.
   7. Fixed: score flags 64 and up are rejected (unit test).
   8. Fixed: `race_audio_runner` takes unresolved `R` cues; the app's raw cue log gives
@@ -204,3 +205,19 @@ duration, and `0x8C` starts a table-driven gain envelope stepped by `$0B42`
   variety 180, continue 132, back 26); median per-window level differences 0.00-0.48 dB.
 - Candidate for the second review: `db28f77` plus record-only commits. Frozen gates run in a
   separate detached checkout (`.worktrees/afr-gates`) so records can change meanwhile.
+
+## 2 October 2026 UTC: review 2
+
+- Re-review of `ff4845d` (same reviewer, resumed): changes required, 1 blocking and 2
+  advisory findings. Every review-1 fix was confirmed against the listings and by running it;
+  the reviewer's two new captures (`rev2`: another rider, a pause during the countdown,
+  Start held; `rev3`: six NOW PLAYING navigation sounds) match the native cues (6,256 of
+  6,256; all 35 non-wait cues), and rev2's 128 commands all arrive in frame.
+  1. Blocking, fixed: the 16-frame restore bound counted only the driver/score transfer.
+     The sample upload keeps the clock busy until frame 1329 after the race load (79.8 frames
+     past the load frame's end) and 68.3 frames after the title reload, so every save inside
+     a load was refused. The bound is now 81 frames, from those measurements.
+  2. Fixed: `continuation/run.sh` exited at the first failed restore under `set -e`, hiding
+     FAIL lines; a failed save or restore is now reported, and its default saves include the
+     load windows (1249-1329, 3458-3527).
+  3. Fixed: the stale private measurement record (`measure-review1.txt`) is rewritten.
