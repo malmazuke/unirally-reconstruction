@@ -15,7 +15,7 @@ static std::vector<std::uint8_t> read(const char* path) {
 int main(int argc, char** argv) {
     try {
         if (argc != 5) throw std::runtime_error("audio_score_runner TABLES TITLE COMMANDS OUT_READS");
-        const unirally::TitleMenuAudioData data{read(argv[1]), read(argv[2])};
+        const unirally::AudioSoundSet data{read(argv[1]), read(argv[2])};
         unirally::TitleMenuAudioScore score(data);
         std::ifstream input(argv[3]); std::ofstream output(argv[4], std::ios::binary);
         if (!input || !output) throw std::runtime_error("cannot open command/output file");

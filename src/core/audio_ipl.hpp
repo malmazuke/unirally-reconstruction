@@ -43,10 +43,14 @@ public:
     const AudioIplState& state() const { return state_; }
     void restore(const AudioIplState& state);
     bool driver_ready() const { return state_.phase == AudioIplPhase::driver_ready; }
+    // The current sound set's identified table/score lengths, retained in DSP
+    // RAM from the transfers to 1600 and 1D00. Defaults: the title/menu set.
+    void retain_sound_set(std::uint16_t table_bytes, std::uint16_t score_bytes);
 
 private:
     AudioDriverBus* bus_;
     AudioIplState state_;
+    std::uint16_t retained_table_bytes_ = 621, retained_score_bytes_ = 2200;
     void schedule(AudioIplPhase phase, unsigned ticks);
     void step();
     void clear_page();

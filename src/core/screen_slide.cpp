@@ -2,6 +2,7 @@
 // menu's decoration animator (`$83:9A1E`) that the forward slide and PICK TOUR run (R-0055).
 #include "front_end_screens.hpp"
 
+#include <array>
 #include <utility>
 
 namespace unirally::front_end_screens {
@@ -58,7 +59,20 @@ void step_decorations(FrontEndState& state, const FrontEndContent& content) {
     oam_byte(state, 103, 0) = static_cast<std::uint8_t>(0x18 + sway_right);
 }
 
+void play_menu_sound(FrontEndState& state, MenuSound sound) {
+    struct Cue {
+        std::uint8_t volume, effect;
+    };
+    // $80:B10F, B124, B139, B14E, B178: volume 63 or 79 (127 for a move), then the effect.
+    constexpr std::array<Cue, 5> cues{{{63, 6}, {63, 4}, {79, 2}, {79, 1}, {127, 3}}};
+    constexpr std::uint8_t effect_volume = 8, start_effect = 2;
+    const auto cue = cues[static_cast<unsigned>(sound)];
+    state.sound_cues.push_back(audio_enqueue(effect_volume, cue.volume));
+    state.sound_cues.push_back(audio_enqueue(start_effect, cue.effect));
+}
+
 void start_slide(FrontEndState& state, const FrontEndContent& content, bool back) {
+    play_menu_sound(state, back ? MenuSound::back_slide : MenuSound::forward_slide);
     auto& slide = state.slide;
     slide.back = back;
     slide.countdown = slide_passes;

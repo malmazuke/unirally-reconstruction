@@ -8,10 +8,25 @@ namespace {
 struct CpuYield {};
 constexpr std::uint64_t cpu_frequency = 21281370, smp_frequency = 2050560;
 }
-NativeAudioEngine::NativeAudioEngine(const TitleMenuAudioData& score, const AudioPitchData& pitch,
+NativeAudioEngine::NativeAudioEngine(const AudioSoundSet& score, const AudioPitchData& pitch,
                                      AudioControllerSource& controllers,
                                      AudioEngineEventSink* events)
-    : score_(&score), pitch_(&pitch), controllers_(&controllers), events_(events) {}
+    : sets_{&score, nullptr}, pitch_(&pitch), controllers_(&controllers), events_(events) {}
+const AudioSoundSet& NativeAudioEngine::set(AudioSoundSetId id) const {
+    const auto* found = sets_.at(static_cast<std::size_t>(id));
+    if (!found) throw std::invalid_argument("audio content lacks this sound set");
+    return *found;
+}
+void NativeAudioEngine::begin_sound_set_upload(AudioSoundSetId id) {
+    set(id);
+    uploading_set_ = id;
+    if (!driver_) retain_uploading_set();
+}
+void NativeAudioEngine::retain_uploading_set() {
+    const auto& uploading = set(uploading_set_);
+    ipl_.retain_sound_set(static_cast<std::uint16_t>(uploading.tables.size()),
+                          static_cast<std::uint16_t>(uploading.score.size()));
+}
 std::uint64_t NativeAudioEngine::smp_ticks() const {
     return driver_ ? driver_->ticks() : ipl_.state().ticks;
 }
@@ -84,8 +99,9 @@ void NativeAudioEngine::synchronize() {
         for (;;) {
             if (!driver_) {
                 ipl_.run_until(std::numeric_limits<std::uint64_t>::max());
+                active_set_ = uploading_set_;
                 driver_ = std::make_unique<TitleMenuAudioDriver>(
-                    *score_, *pitch_, *this, ipl_timers_, ipl_.state().ticks, true, true);
+                    set(active_set_), *pitch_, *this, ipl_timers_, ipl_.state().ticks, true, true);
             }
             driver_->run_until(std::numeric_limits<std::uint64_t>::max());
             const auto exited = driver_->snapshot();
@@ -93,6 +109,7 @@ void NativeAudioEngine::synchronize() {
                 throw std::logic_error("native audio driver returned before IPL exit");
             ipl_timers_ = exited.timers;
             ipl_ = AudioIplHandshake(*this, exited.ticks);
+            retain_uploading_set();
             driver_.reset();
         }
     } catch (const CpuYield&) {}
@@ -138,6 +155,8 @@ AudioEngineState NativeAudioEngine::snapshot() {
     state.interrupt_count = interrupt_count_;
     state.dsp = dsp_.snapshot();
     state.pending_pcm = pending_pcm_;
+    state.sound_set = active_set_;
+    state.uploading_sound_set = uploading_set_;
     return state;
 }
 void NativeAudioEngine::restore(const AudioEngineState& state) {
@@ -147,8 +166,15 @@ void NativeAudioEngine::restore(const AudioEngineState& state) {
         throw std::invalid_argument("invalid native audio engine continuation");
     AudioCpuWorkClock candidate_cpu;
     candidate_cpu.restore(state.cpu);
+    if (state.sound_set > AudioSoundSetId::first_race
+        || state.uploading_sound_set > AudioSoundSetId::first_race)
+        throw std::invalid_argument("invalid native audio sound set");
+    const auto& active = set(state.sound_set);
+    const auto& uploading = set(state.uploading_sound_set);
     AudioIplHandshake candidate_ipl(*this);
     candidate_ipl.restore(state.ipl);
+    candidate_ipl.retain_sound_set(static_cast<std::uint16_t>(uploading.tables.size()),
+                                   static_cast<std::uint16_t>(uploading.score.size()));
     AudioTimers candidate_timers;
     candidate_timers.restore(state.ipl_timers);
     if (state.ipl_timers.ticks > state.ipl.ticks)
@@ -156,7 +182,7 @@ void NativeAudioEngine::restore(const AudioEngineState& state) {
     std::unique_ptr<TitleMenuAudioDriver> candidate_driver;
     if (state.driver_present) {
         candidate_driver = std::make_unique<TitleMenuAudioDriver>(
-            *score_, *pitch_, *this, AudioTimersState{}, 0, false, true);
+            active, *pitch_, *this, AudioTimersState{}, 0, false, true);
         candidate_driver->restore(state.driver);
     }
     NativeAudioDsp candidate_dsp;
@@ -164,6 +190,8 @@ void NativeAudioEngine::restore(const AudioEngineState& state) {
     auto candidate_pcm = state.pending_pcm;
     cpu_.restore(state.cpu);
     ipl_.restore(state.ipl);
+    ipl_.retain_sound_set(static_cast<std::uint16_t>(uploading.tables.size()),
+                          static_cast<std::uint16_t>(uploading.score.size()));
     ipl_timers_ = state.ipl_timers;
     driver_ = std::move(candidate_driver);
     dsp_ = std::move(candidate_dsp);
@@ -174,5 +202,7 @@ void NativeAudioEngine::restore(const AudioEngineState& state) {
     interrupt_state_ = state.interrupt;
     interrupt_count_ = state.interrupt_count;
     pending_pcm_ = std::move(candidate_pcm);
+    active_set_ = state.sound_set;
+    uploading_set_ = state.uploading_sound_set;
 }
 } // namespace unirally

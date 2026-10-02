@@ -56,4 +56,11 @@ constexpr unsigned first_voice_of(unsigned character) {
     return first_voice + (character >> 1U) * voices_per_character_pair;
 }
 
+// $81:C238 is CMP #$48 then BMI: it tests bit 7 of the 8-bit difference event - 72, not a
+// signed comparison, so events 0-71 take the reward path and so do 200-255; 72-199 are
+// voices. BRONSEN's voices 200-215 reach the reward path this way. Do not rewrite it as
+// event < 72, nor as int8(event) < 72, which would also take 128-199 (R-0035).
+constexpr bool takes_reward_path(std::uint8_t event) {
+    return (static_cast<std::uint8_t>(event - first_voice) & 0x80U) != 0;
+}
 } // namespace unirally::announcement

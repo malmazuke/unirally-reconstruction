@@ -18,7 +18,8 @@ TitleMenuAudioStream::~TitleMenuAudioStream() {
     available_.notify_all();
     if (producer_.joinable()) producer_.join();
 }
-void TitleMenuAudioStream::submit_frame(std::uint32_t frame, std::array<std::uint16_t, 2> words) {
+void TitleMenuAudioStream::submit_frame(std::uint32_t frame, std::array<std::uint16_t, 2> words,
+                                        AudioCueList cues, bool stop) {
     {
         std::lock_guard lock(input_mutex_);
         if (frame != frames_.size())
@@ -28,7 +29,7 @@ void TitleMenuAudioStream::submit_frame(std::uint32_t frame, std::array<std::uin
             if ((word & 0x0c00) == 0x0c00) word &= 0xf3ff;
             if ((word & 0x0300) == 0x0300) word &= 0xfcff;
         }
-        frames_.push_back(words);
+        frames_.push_back({words, std::move(cues), stop});
     }
     available_.notify_all();
     check_failure();
@@ -38,7 +39,7 @@ std::uint16_t TitleMenuAudioStream::controller_word(std::uint64_t ticks, unsigne
     std::unique_lock lock(input_mutex_);
     available_.wait(lock, [&] { return stopping_ || frame < frames_.size(); });
     if (stopping_) throw StreamStopped{};
-    return frames_.at(static_cast<std::size_t>(frame)).at(port);
+    return frames_.at(static_cast<std::size_t>(frame)).words.at(port);
 }
 std::vector<std::int16_t> TitleMenuAudioStream::take_pairs(std::size_t maximum) {
     return playback_.take_pairs(maximum);
@@ -85,6 +86,29 @@ void TitleMenuAudioStream::run_hunter() {
     native.reveal_menu();
     ++restart_count_;
 }
+// D-0010: from the 1P exit's frame on, run each frame's reported queue work. Production stops
+// (silence) where the game reports a scene outside the recovered sound domain.
+void TitleMenuAudioStream::run_cued() {
+    auto& native = playback_.native();
+    constexpr std::uint64_t frame_clocks = 425568, first_frame_boundary = 306900;
+    auto frame =
+        static_cast<std::uint32_t>((native.cpu_ticks() - first_frame_boundary) / frame_clocks + 1);
+    for (;; ++frame) {
+        FrameInput input;
+        {
+            std::unique_lock lock(input_mutex_);
+            available_.wait(lock, [&] { return stopping_ || frame < frames_.size(); });
+            if (stopping_) throw StreamStopped{};
+            input = frames_.at(frame);
+        }
+        if (input.stop) {
+            cued_stopped_ = true;
+            return;
+        }
+        native.cue_frame(frame, input.cues);
+        ++cued_frames_;
+    }
+}
 void TitleMenuAudioStream::run() {
     try {
         auto& native = playback_.native();
@@ -93,6 +117,12 @@ void TitleMenuAudioStream::run() {
         native.reveal_menu();
         for (;;) {
             const auto action = run_menu();
+            constexpr std::uint8_t one_player = 0; // the main menu's first entry
+            if (action == AudioCpuMenuAction::selected && native.menu_selection() == one_player
+                && content_.has_race_set()) {
+                run_cued();
+                break;
+            }
             if (action != AudioCpuMenuAction::hunter) break;
             run_hunter();
         }

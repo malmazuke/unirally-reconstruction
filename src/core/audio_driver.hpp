@@ -26,7 +26,7 @@ public:
 // pending-phase form, which retains a CPU-yielding access until it completes.
 class TitleMenuAudioDriver {
 public:
-    TitleMenuAudioDriver(const TitleMenuAudioData& data, const AudioPitchData& pitch,
+    TitleMenuAudioDriver(const AudioSoundSet& data, const AudioPitchData& pitch,
                          AudioDriverBus& bus, const AudioTimersState& timers,
                          std::uint64_t entry_ticks, bool driver_boot = false,
                          bool resumable = false);
@@ -39,13 +39,17 @@ public:
     void restore(const AudioDriverSnapshot& snapshot);
 
 private:
+    AudioPitchData pitch_;
     TitleMenuAudioScore score_;
     AudioTimers timers_;
     AudioDriverBus* bus_;
     std::uint64_t ticks_;
     std::uint8_t command_phase_ = 128;
     std::uint8_t music_counter_ = 0, effect_counter_ = 0, update_counter_ = 0;
-    std::uint8_t master_volume_ = 127;
+    // Music master volume word DF/E0 (the DSP receives E0) and its per-update
+    // signed rate E1/E2, set by command 3. AUDIO-FIRST-RACE.
+    std::uint16_t master_volume_ = 0x7f00, master_volume_rate_ = 0;
+
     bool stopped_for_ipl_ = false;
     bool resumable_ = false, planning_ = false;
     std::uint64_t planned_ticks_ = 0;
@@ -58,6 +62,11 @@ private:
     void configure_timers();
     void execute_command(std::uint8_t command, std::uint8_t parameter);
     void update_voices(bool effects);
+    unsigned apply_master_volume_rate();
+    std::uint8_t master_volume_register() const {
+        return static_cast<std::uint8_t>(master_volume_ >> 8);
+    }
+    void record_sample_header(unsigned slot, bool transpose, std::uint8_t value);
     void update_score_voice(std::uint8_t voice, bool effects);
     void output_voice(std::uint8_t voice);
     void iteration();

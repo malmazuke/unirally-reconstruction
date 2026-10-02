@@ -1,4 +1,5 @@
 #pragma once
+#include "audio_cue.hpp"
 #include "movement.hpp"
 
 namespace unirally {
@@ -380,6 +381,9 @@ struct ZoomZooState {
     // word's bits 10-12) among the ten cells the player's latest contact sampled
     // ($81:8B75-8BB3), which NEON's lighting follows (R-0068). The setup leaves 0.
     std::uint8_t player_contact_palette{};
+    // Not serialized: this update's sound queue work in program order (R-0076). Each update
+    // starts it empty; the caller hands it to the audio side.
+    AudioCueList sound_cues;
 };
 struct ZoomZooContent {
     MovementContent movement;
@@ -408,6 +412,9 @@ struct ZoomZooContent {
     // front-end.qualifying-scores (`$83:A218`), a word per tour and medal level: the stunt
     // events' qualifying scores; empty in packs before profile v17, which hold no stunt event.
     std::span<const std::uint8_t> qualifying_scores;
+    // audio.announcement-voices (`$81:C441`), a byte per 8-bit announcement event: its voice
+    // (R-0076); empty in packs before profile v32, whose races are silent.
+    std::span<const std::uint8_t> announcement_voices;
 };
 // $82:9715–979D: count active updates opposing the track direction, with
 // original wrapped word comparisons at velocities -16 and +16 (1/32 units).

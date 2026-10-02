@@ -135,7 +135,8 @@ void TitleMenuAudioDriver::plan_update_phase() {
         write_port(3, update_counter_);
         advance(6 + (state.effects ? 8U : 4U));
         if (!state.effects) {
-            advance(32);
+            advance(6 + 8);
+            advance(apply_master_volume_rate());
             write_dsp(20, 0x4c, score_.take_key_on_pending());
             advance(10);
             write_dsp(20, 0x3d, 0);
@@ -168,8 +169,8 @@ void TitleMenuAudioDriver::plan_update_phase() {
         state.voice = 0;
         write_dsp(34, 0x5c, score_.take_key_off_pending());
         advance(10);
-        write_dsp(24, 0x0c, master_volume_);
-        write_dsp(18, 0x1c, master_volume_);
+        write_dsp(24, 0x0c, master_volume_register());
+        write_dsp(18, 0x1c, master_volume_register());
         finish_plan(AudioDriverPhase::output_voice);
         break;
     case AudioDriverPhase::output_voice: plan_output_voice(); break;
@@ -219,7 +220,7 @@ void TitleMenuAudioDriver::plan_stop_phase() {
         advance(6);
         plan_read_timer(2);
         advance(6);
-        state.stop_volume = master_volume_;
+        state.stop_volume = master_volume_register();
         finish_plan(AudioDriverPhase::stop_wait);
         break;
     case AudioDriverPhase::stop_wait:

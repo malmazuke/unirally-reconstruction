@@ -126,8 +126,11 @@ void TitleMenuAudioDriver::run_pending_until(std::uint64_t exclusive_ticks) {
 }
 AudioDriverSnapshot TitleMenuAudioDriver::snapshot() const {
     if (!resumable_ || planning_) throw std::logic_error("driver has no stable pending state");
-    return {score_.state(),  timers_.state(), ticks_,         command_phase_,   music_counter_,
-            effect_counter_, update_counter_, master_volume_, stopped_for_ipl_, continuation_};
+    return {score_.state(),   timers_.state(),        ticks_,
+            command_phase_,   music_counter_,         effect_counter_,
+            update_counter_,  master_volume_,         master_volume_rate_,
+            stopped_for_ipl_, pitch_.sample_fraction, pitch_.sample_transpose,
+            continuation_};
 }
 void TitleMenuAudioDriver::restore(const AudioDriverSnapshot& state) {
     const auto& pending = state.continuation;
@@ -155,6 +158,9 @@ void TitleMenuAudioDriver::restore(const AudioDriverSnapshot& state) {
     effect_counter_ = state.effect_counter;
     update_counter_ = state.update_counter;
     master_volume_ = state.master_volume;
+    master_volume_rate_ = state.master_volume_rate;
+    pitch_.sample_fraction = state.sample_fraction;
+    pitch_.sample_transpose = state.sample_transpose;
     stopped_for_ipl_ = state.stopped_for_ipl;
     continuation_ = pending;
 }

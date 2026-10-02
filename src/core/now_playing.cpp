@@ -236,6 +236,7 @@ void move_now_playing_arrow(FrontEndState& state, std::uint16_t pad) {
     if (state.latches.moved) return;
     target = to;
     state.latches = {.moved = true};
+    play_menu_sound(state, MenuSound::navigate); // $80:B4DE, $80:B4F1
 }
 
 } // namespace
@@ -290,6 +291,8 @@ void now_playing_frame(FrontEndState& state, const FrontEndContent& content, Fro
         step_decorations(state, content);
         return;
     }
+    if (now.choice != NowPlayingChoice::back)
+        play_menu_sound(state, MenuSound::select); // $80:B4A0/B4B1
     hide_icons(state);
     high_bits(state, 112) = high_bits(state, first_mark) = four_hidden;
     switch (now.choice) {
@@ -318,6 +321,11 @@ void race_fade_frame(FrontEndState& state) {
     if (state.script_frame < fade_frames) return;
     state.registers.force_blank = true;
     state.mode_chosen = true;
+    // $80:99B7-99BE: the race fades the menu music (rate -112 * 8) and sends it at once. Its
+    // exception, `$77:10AD` = 5, is never set from NOW PLAYING.
+    constexpr std::uint8_t music_fade = 3, race_fade_rate = 0x90;
+    state.sound_cues.push_back(audio_enqueue(music_fade, race_fade_rate));
+    state.sound_cues.push_back(audio_dispatch(AudioDispatchSite::race_choice));
     // $83:9894 (`$80:9A27`): the menus' words saved for the race's return.
     state.saved = {state.menu,        state.cycle,       state.logo.offset, state.slide,
                    state.decorations, state.latches,     state.rider_menu,  state.tour_menu,

@@ -22,6 +22,7 @@
 #include "race_camera.hpp"
 #include "race_demo_controls.hpp"
 #include "race_progress.hpp"
+#include "race_sound.hpp"
 #include "reward_queue.hpp"
 #include "rider_motion.hpp"
 #include "rider_pose.hpp"
@@ -198,6 +199,7 @@ bool run_pause_menu(const ZoomZooState& state, ZoomZooState& next, const Control
     const bool opening = (buttons.start && !state.race.riders[0].finished)
                       || (league_pair && second.start && !state.race.riders[1].finished);
     if (!state.native_initialization || !(state.pause.selection || opening)) return false;
+    race_sound::pause_frame(next, state.pause.selection == 0);
     auto& pause = next.pause;
     auto& whole = next.movement;
     if (!pause.selection) pause.selection = 1;
@@ -214,10 +216,13 @@ bool run_pause_menu(const ZoomZooState& state, ZoomZooState& next, const Control
         pause.released = 1;
     } else if (pause.released) {
         if (negative(pause.selection)) {
+            auto cues = std::move(next.sound_cues); // the quitting update's own sound work
             restart_zoom_zoo(next, content);
+            next.sound_cues = std::move(cues);
             return true;
         }
         pause.selection = 0;
+        race_sound::pause_continue(next);
     }
     ++pause.suspended_updates;
     if (next.fade_level >= first_published_fade && whole.countdown)
@@ -234,11 +239,13 @@ bool run_pause_menu(const ZoomZooState& state, ZoomZooState& next, const Control
 // window loses its start boost, and one not braking once they release the riders spends it.
 // Until then (and before the fade publishes the pad) both riders brake and neither jumps, and
 // $83:E7A2-E7BF releases their A ($031D/$031F) and X ($0321/$0323); returns true while it does.
-bool run_countdown(const ZoomZooState& state, ZoomZooState& next, const CountdownPhases& phases) {
+bool run_countdown(const ZoomZooState& state, ZoomZooState& next, const CountdownPhases& phases,
+                   bool stunt_event) {
     auto& whole = next.movement;
     if (!state.native_initialization || !whole.countdown) return false;
     const bool published = next.fade_level >= first_published_fade;
     if (published) {
+        race_sound::countdown(next, whole.countdown, stunt_event);
         if (whole.countdown < phases.boost_drop_below && whole.countdown > boost_drop_last)
             for (unsigned i = 0; i < 2; ++i)
                 if (!next.reflection[i].brake_input) next.start_boost[i] = 0;
@@ -546,25 +553,28 @@ unsigned run_tricks_and_landing(const ZoomZooState& state, ZoomZooState& next, u
 // keep it ($82:A4DC-A4E9, R-0047); no rotation clears it. Otherwise it turns 2 a update, 1
 // while A is held ($82:A49F-A5F9; the opponent's A is its trick selector's bit 1).
 // `$0F89` ($0E6F) is guarded zero.
-void update_rotation(RiderMovementState& rider, const ReflectionTransition& transition,
-                     const SurfaceTransition& surface, const SpecialTileRider& tiles,
-                     bool holding_a) {
+// What the rotation routine did to the rotation, which its sound follows ($82:A5F9 leaves
+// both alone).
+enum class RotationChange { unchanged, cleared, rotating };
+RotationChange update_rotation(RiderMovementState& rider, const ReflectionTransition& transition,
+                               const SurfaceTransition& surface, const SpecialTileRider& tiles,
+                               bool holding_a) {
     const bool clear =
         tiles.corkscrew_latch
         || (transition.rotate_negative_input && transition.rotate_positive_input)
         || (std::abs(static_cast<std::int16_t>(rider.contact.surface_angle)) < shallow_slope
             && rider.contact.unsupported_count < airborne_updates);
-    if (clear) {
+    if (clear
+        || (!surface.mode && !surface.leading_support && !transition.rotate_negative_input
+            && !transition.rotate_positive_input)) {
         rider.motion.response_b = 0;
-    } else if (surface.mode || surface.leading_support) {
-    } else if (!transition.rotate_negative_input && !transition.rotate_positive_input) {
-        rider.motion.response_b = 0;
-    } else {
-        rider.motion.response_b = static_cast<std::uint16_t>((rider.motion.response_b & 0xff00U)
-                                                             | (transition.rotate_negative_input
-                                                                    ? (holding_a ? 255U : 254U)
-                                                                    : (holding_a ? 1U : 2U)));
+        return RotationChange::cleared;
     }
+    if (surface.mode || surface.leading_support) return RotationChange::unchanged;
+    rider.motion.response_b = static_cast<std::uint16_t>(
+        (rider.motion.response_b & 0xff00U)
+        | (transition.rotate_negative_input ? (holding_a ? 255U : 254U) : (holding_a ? 1U : 2U)));
+    return RotationChange::rotating;
 }
 
 // The controls a rider applies on its active update: the direction latch, the standing
@@ -612,7 +622,9 @@ void run_active_controls(const ZoomZooState& state, ZoomZooState& next, unsigned
     }
     const bool holding_a =
         index == 0 ? buttons.player_a : (state.native_initialization && buttons.opponent_a());
-    update_rotation(rider, transition, surface, tiles, holding_a);
+    if (const auto change = update_rotation(rider, transition, surface, tiles, holding_a);
+        change != RotationChange::unchanged)
+        race_sound::rotation(next, index, change == RotationChange::rotating);
     const auto previous_wrong_direction = transition.wrong_direction_counter;
     transition.wrong_direction_counter = next_wrong_direction_counter(
         previous_wrong_direction, rider.motion.velocity_x, rider.progress.marker_word, horizontal,
@@ -711,12 +723,16 @@ RiderOutcome update_rider(const ZoomZooState& state, ZoomZooState& next, unsigne
     // $82:98D6: the corkscrew's physics hold skips the whole drive routine, brake latch
     // included, and leaves $0E7B as the other rider set it.
     if (!tiles.physics_hold) {
+        const auto skid_before = next.charge_announced[index];
         update_drive(rider, transition, horizontal, animation_override, throttle_target,
                      next.charge_announced[index], surface.leading_support != 0,
                      state.native_initialization && next.rolls[index].bounce_active != 0,
                      special.drive_step ? special.drive_step : drive_step,
                      tiles.mud_cooldown != 0 || special.crank_brake);
         next.drive_target_latch = throttle_target ? 0 : 1;
+        // $0D53/$0D55 changes only with its skid sound ($82:99B8, 99EC, 9A26, 9A49).
+        if (next.charge_announced[index] != skid_before)
+            race_sound::brake_skid(next, index, next.charge_announced[index] != 0);
     }
     update_idle_pose(
         rider, next.drive_target_latch && !surface.leading_support && transition.pose_override == 0,
@@ -795,8 +811,14 @@ void finish_update(const ZoomZooState& state, ZoomZooState& next,
         update_stunt_clock(next, clock_running);
     else if (advance_timer_digits(whole.timer, clock_running) && state.native_initialization)
         for (auto& rider : next.race.riders) rider.finished = 1;
-    if (state.native_initialization)
+    if (state.native_initialization) {
+        const auto read_before = next.player_announcements.queue.read_cursor;
         show_next_player_announcement(next, content.movement, content.captions);
+        const auto& queue = next.player_announcements.queue;
+        if (queue.read_cursor != read_before)
+            race_sound::announcement_voice(next, 0, queue.entries[queue.read_cursor],
+                                           content.announcement_voices);
+    }
     const auto previous_write = state.movement.rewards.write_cursor;
     const bool queued_scoring_event =
         whole.rewards.write_cursor != previous_write
@@ -815,6 +837,9 @@ void finish_update(const ZoomZooState& state, ZoomZooState& next,
                                   state.native_initialization
                                       ? std::span<std::uint8_t>{next.learned_weights[1]}
                                       : std::span<std::uint8_t>{});
+    if (previous_reward_cursor != whole.rewards.read_cursor)
+        race_sound::announcement_voice(next, 1, whole.rewards.entries[whole.rewards.read_cursor],
+                                       content.announcement_voices);
     if (next.league_statistics.enabled && previous_reward_cursor != whole.rewards.read_cursor) {
         const auto event = whole.rewards.entries[whole.rewards.read_cursor];
         if (event < announcement::wrong_way) next.league_statistics.opponent_hints_over = true;
@@ -836,6 +861,39 @@ void finish_update(const ZoomZooState& state, ZoomZooState& next,
     update_hunter_effects(next, content.hunter_blink);
     if (state.native_initialization) update_tutorial_hints(next);
     ++whole.frame;
+}
+
+// The second rider's controls for one update: the demo's scripted pads, a second human's pad,
+// an absent stunt opponent or the opponent AI. Returns whether the AI is off this update.
+bool read_second_rider_controls(ZoomZooState& next, const ClassicRaceScenario& scenario,
+                                const ControllerButtons& request,
+                                const ControllerButtons& opponent_buttons,
+                                DemoTrickButtons& demo_buttons) {
+    bool ai_off = next.split_screen || scenario.stunt_event;
+    if (next.demo_ai) {
+        const auto pressed = [](const ControllerButtons& pad) {
+            return pad.a || pad.b || pad.x || pad.y || pad.left_shoulder || pad.right_shoulder
+                || pad.select || pad.start || pad.up || pad.down || pad.left || pad.right;
+        };
+        demo_buttons = update_demo_controllers(next, pressed(request) || pressed(opponent_buttons));
+        // $83:CD50-CD61; ATTRACT-DEMO: the one-view demo runs normal opponent AI
+        // after its demo controls. The split demo suppresses that second pass.
+        if (!next.split_screen) ai_off = update_opponent_controller(next);
+    } else if (next.split_screen) {
+        const auto sample = sample_controller(opponent_buttons);
+        next.opponent_horizontal = sample.horizontal;
+        auto& input = next.reflection[1];
+        input.brake_input = opponent_buttons.y;
+        input.jump_input = opponent_buttons.b;
+        input.rotate_negative_input = opponent_buttons.left_shoulder;
+        input.rotate_positive_input = opponent_buttons.right_shoulder;
+        demo_buttons.a[1] = opponent_buttons.a;
+        demo_buttons.x[1] = opponent_buttons.x;
+    } else if (scenario.stunt_event)
+        release_absent_opponent(next);
+    else
+        ai_off = update_opponent_controller(next);
+    return ai_off;
 }
 
 } // namespace
@@ -861,6 +919,7 @@ std::uint16_t next_wrong_direction_counter(std::uint16_t previous, std::uint16_t
 
 void update_zoom_zoo(ZoomZooState& state, const ControllerButtons& requested_buttons,
                      const ControllerButtons& second_port, const ZoomZooContent& content) {
+    state.sound_cues.clear();
     const auto request = gate_controller(state, requested_buttons);
     validate_zoom_zoo_content_state(state, content);
     const auto scenario = classic_race_scenario(state.track);
@@ -895,33 +954,11 @@ void update_zoom_zoo(ZoomZooState& state, const ControllerButtons& requested_but
     if (state.native_initialization && next.pause.released && !player_buttons.start)
         next.pause.released = 0;
     DemoTrickButtons demo_buttons{};
-    bool ai_off = next.split_screen || scenario.stunt_event;
-    if (next.demo_ai) {
-        const auto pressed = [](const ControllerButtons& pad) {
-            return pad.a || pad.b || pad.x || pad.y || pad.left_shoulder || pad.right_shoulder
-                || pad.select || pad.start || pad.up || pad.down || pad.left || pad.right;
-        };
-        demo_buttons = update_demo_controllers(next, pressed(request) || pressed(opponent_buttons));
-        pressed_a = demo_buttons.a[0];
-        // $83:CD50-CD61; ATTRACT-DEMO: the one-view demo runs normal opponent AI
-        // after its demo controls. The split demo suppresses that second pass.
-        if (!next.split_screen) ai_off = update_opponent_controller(next);
-    } else if (next.split_screen) {
-        const auto sample = sample_controller(opponent_buttons);
-        next.opponent_horizontal = sample.horizontal;
-        auto& input = next.reflection[1];
-        input.brake_input = opponent_buttons.y;
-        input.jump_input = opponent_buttons.b;
-        input.rotate_negative_input = opponent_buttons.left_shoulder;
-        input.rotate_positive_input = opponent_buttons.right_shoulder;
-        demo_buttons.a[1] = opponent_buttons.a;
-        demo_buttons.x[1] = opponent_buttons.x;
-    } else if (scenario.stunt_event)
-        release_absent_opponent(next);
-    else
-        ai_off = update_opponent_controller(next);
-    const bool countdown_holds =
-        run_countdown(state, next, scenario.stunt_event ? stunt_countdown : race_countdown);
+    const bool ai_off =
+        read_second_rider_controls(next, scenario, request, opponent_buttons, demo_buttons);
+    if (next.demo_ai) pressed_a = demo_buttons.a[0];
+    const bool countdown_holds = run_countdown(
+        state, next, scenario.stunt_event ? stunt_countdown : race_countdown, scenario.stunt_event);
     // The opponent's A and X are its selector's bits only on updates the AI stores them;
     // with the AI off both stay released (R-0048).
     const TrickButtons trick_buttons{
@@ -931,12 +968,14 @@ void update_zoom_zoo(ZoomZooState& state, const ControllerButtons& requested_but
         : next.split_screen ? unsigned(demo_buttons.a[1]) * 2U + unsigned(demo_buttons.x[1]) * 4U
                             : (unsigned(whole.opponent_ai.trick_selector) & (ai_off ? ~6U : ~0U))};
     if (state.complete_race) update_finish(next, content);
+    race_sound::dispatch(next, AudioDispatchSite::race_early);
     const unsigned active = whole.progress_phase ? 0U : 1U;
     lower_announcement_cooldowns(next, scenario);
     std::array<RiderOutcome, 2> outcomes{};
     for (unsigned index = 0; index < rider_passes(scenario, next.split_screen); ++index)
         outcomes[index] = update_rider(state, next, index, active, trick_buttons, content);
     finish_update(state, next, outcomes, content, scenario);
+    race_sound::dispatch(next, AudioDispatchSite::race_late);
     state = next;
 }
 

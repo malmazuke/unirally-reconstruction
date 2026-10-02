@@ -207,6 +207,7 @@ bool FrontEndSession::update(const std::array<std::uint16_t, 2> &ports) {
 
 bool FrontEndSession::update(FrontEndPads pads) {
   ++frames_;
+  state_.sound_cues.clear();
   if (notice_frames_) {
     if (--notice_frames_ == 0) {
       const auto records = state_.records;

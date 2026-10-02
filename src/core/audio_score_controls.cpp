@@ -28,6 +28,11 @@ void TitleMenuAudioScore::initialize_score_note(std::uint8_t index, std::uint8_t
                               voice.pitch_delay, voice.pitch_period, voice.pitch_step,
                               voice.restart_envelope && !voice.envelope_mode_c9c);
     }
+    // 0C8F-0CA0: a note restarts an active gain script unless held by C9C.
+    if (note && voice.arithmetic.scripted_envelope && !voice.envelope_mode_c9c) {
+        voice.gain_script_index = voice.gain_script_loop = 0;
+        voice.gain_script_countdown = voice.gain_script_period;
+    }
     if (note && !voice.suppress_key_on) {
         const auto mask = byte(1U << index);
         state_.key_on_pending |= mask;
@@ -47,14 +52,43 @@ void TitleMenuAudioScore::initialize_score_note(std::uint8_t index, std::uint8_t
 }
 // R-0075, 0E03 control table. Control values are the identified score format.
 void TitleMenuAudioScore::apply_score_control(std::uint8_t index, std::uint8_t control) {
-    if (control <= 0x85 || control == 0xa3)
+    if (control <= 0x86 || control == 0xa3)
         apply_sequence_control(index, control);
+    else if (control >= 0xa5 && control <= 0xa8)
+        apply_flag_control(index, control);
+    else if (control == 0x8c || (control >= 0x97 && control <= 0xa2))
+        apply_instrument_control(index, control);
     else if (control <= 0x96)
         apply_pitch_control(index, control);
-    else if (control <= 0xa2)
-        apply_instrument_control(index, control);
     else
         apply_mix_control(index, control);
+}
+
+// AUDIO-FIRST-RACE, 1142-11A4: set/clear a flag, or jump (as control 81) when
+// a flag is set (A7) or clear (A8), otherwise skip the two-byte target.
+void TitleMenuAudioScore::apply_flag_control(std::uint8_t index, std::uint8_t control) {
+    constexpr unsigned flag_lookup = 84; // 1151-115F and its call
+    auto& voice = state_.voices.at(index);
+    const auto selected = read_byte(index);
+    switch (control) {
+    case 0xa5:
+        add_work(flag_lookup + 10 + 12 + 6);
+        set_flag(selected, true);
+        return;
+    case 0xa6:
+        add_work(flag_lookup + 4 + 10 + 12 + 6);
+        set_flag(selected, false);
+        return;
+    default: break;
+    }
+    const bool jumps = flag(selected) == (control == 0xa7);
+    if (jumps) {
+        add_work(flag_lookup + 10 + 4 + 6 + 42);
+        voice.pointer = read_word(index);
+    } else {
+        add_work(flag_lookup + 10 + 8 + 54);
+        voice.pointer = word(voice.pointer + 2U);
+    }
 }
 
 void TitleMenuAudioScore::apply_sequence_control(std::uint8_t index, std::uint8_t control) {
@@ -108,6 +142,10 @@ void TitleMenuAudioScore::apply_sequence_control(std::uint8_t index, std::uint8_
         }
         break;
     }
+    case 0x86:
+        add_work(18);
+        voice.fixed_duration = read_byte(index);
+        break;
     case 0xa3: {
         add_work(16 + 682 + 4 + 8 + 4 + 8 + 6 + 10 + 8 + 4 + 10 + 6 + 42);
         const auto count = read_byte(index);
@@ -170,6 +208,7 @@ void TitleMenuAudioScore::apply_pitch_control(std::uint8_t index, std::uint8_t c
 void TitleMenuAudioScore::apply_instrument_control(std::uint8_t index, std::uint8_t control) {
     auto& voice = state_.voices.at(index);
     switch (control) {
+    case 0x8c: start_gain_script(index); break;
     case 0x97:
         add_work(16 + 506 + 6);
         set_instrument(index, read_byte(index));
@@ -178,7 +217,10 @@ void TitleMenuAudioScore::apply_instrument_control(std::uint8_t index, std::uint
     case 0x9c:
         add_work(control == 0x9b ? 50U : 22U);
         voice.envelope_mode_c9c = control == 0x9c;
-        if (control == 0x9b) voice.restart_envelope = true;
+        if (control == 0x9b) {
+            voice.restart_envelope = true;
+            voice.arithmetic.scripted_envelope = false; // 107E-1083 clears 02D0
+        }
         break;
     case 0x9e:
     case 0x9f:
@@ -188,8 +230,9 @@ void TitleMenuAudioScore::apply_instrument_control(std::uint8_t index, std::uint
     case 0xa2:
         add_work(330);
         for (auto& parameter : voice.instrument) parameter = read_byte(index);
-        voice.envelope_mode_c9c = false;
+        voice.envelope_mode_c9c = false; // 10E7 continues at control 9B's 107E
         voice.restart_envelope = true;
+        voice.arithmetic.scripted_envelope = false;
         break;
 
     default: reject_score_control(control);

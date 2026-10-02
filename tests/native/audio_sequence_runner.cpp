@@ -23,7 +23,7 @@ int main(int argc, char** argv) {
         const bool masks = argc == 9 && std::string(argv[8]) == "masks";
         if (argc == 9 && !registers && !ticks && !command_ticks && !register_ticks && !masks)
             throw std::runtime_error("unknown output mode");
-        const unirally::TitleMenuAudioData score_data{read(argv[1]), read(argv[2])};
+        const unirally::AudioSoundSet score_data{read(argv[1]), read(argv[2])};
         const auto pitch = read(argv[3]), fractions = read(argv[4]), transpose = read(argv[5]);
         if (pitch.size() != 194 || fractions.size() != 64 || transpose.size() != 64)
             throw std::runtime_error("pitch data sizes differ");

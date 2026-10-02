@@ -7,11 +7,11 @@ static void require(bool result, const char* message) {
 }
 int main() {
     try {
-        unirally::TitleMenuAudioData data{std::vector<std::uint8_t>(621), std::vector<std::uint8_t>(2200)};
+        unirally::AudioSoundSet data{std::vector<std::uint8_t>(621), std::vector<std::uint8_t>(2200)};
         // Eight entry pointers select the authored call/loop sequence.
-        for (unsigned voice = 0; voice < 8; ++voice) data.menu_tables[4 * voice + 3] = 0x1d;
+        for (unsigned voice = 0; voice < 8; ++voice) data.tables[4 * voice + 3] = 0x1d;
         const std::uint8_t sequence[]{0x82, 6, 0x1d, 0x80, 0, 0, 0x84, 2, 12, 1, 0x85, 0x83};
-        std::copy(std::begin(sequence), std::end(sequence), data.title_score.begin());
+        std::copy(std::begin(sequence), std::end(sequence), data.score.begin());
         unirally::TitleMenuAudioScore continuous(data), restored(data);
         continuous.start_music(1);
         continuous.update_voice(0, false);
@@ -31,16 +31,21 @@ int main() {
         try { restored.restore(snapshot); } catch (const std::invalid_argument&) { rejected = true; }
         require(rejected, "invalid stack accepted");
         // A zero duration is 256 updates, not an immediate next-note dispatch.
-        data.title_score[0] = 12; data.title_score[1] = 0; data.title_score[2] = 0x80;
+        data.score[0] = 12; data.score[1] = 0; data.score[2] = 0x80;
         unirally::TitleMenuAudioScore zero(data); zero.start_music(1); zero.update_voice(0, false);
         for (unsigned update = 0; update < 255; ++update) zero.update_voice(0, false);
         require(zero.state().voices[0].enabled, "zero duration did not wrap");
         zero.update_voice(0, false); require(!zero.state().voices[0].enabled, "zero duration never ended");
+        // The 64 score flags (AUDIO-FIRST-RACE): 63 is the last; 64 would index past the table.
+        zero.set_flag(63, true); require(zero.flag(63) && !zero.flag(55), "flag 63 not its own bit");
+        bool flag_rejected = false;
+        try { zero.set_flag(64, true); } catch (const std::invalid_argument&) { flag_rejected = true; }
+        require(flag_rejected && !zero.flag(0), "flag 64 aliased onto flag 0");
 
         // Restore while a nonzero software envelope and score loop are active.
         const std::uint8_t voiced[]{0xb3, 64, 128, 0xa2, 1, 0, 3, 127, 5, 80, 6,
                                     12, 30, 0x81, 11, 0x1d};
-        std::copy(std::begin(voiced), std::end(voiced), data.title_score.begin());
+        std::copy(std::begin(voiced), std::end(voiced), data.score.begin());
         unirally::AudioPitchData pitch; pitch.notes[12] = 0x1000; pitch.sample_fraction[0] = 64;
         unirally::TitleMenuAudioScore voiced_continuous(data, &pitch), voiced_restored(data, &pitch);
         voiced_continuous.start_music(1);

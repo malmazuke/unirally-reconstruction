@@ -391,8 +391,8 @@ the exact original/native domains and the opaque executable transport projection
 `audio_cpu_clock_hdma.cpp` models the two reveal channels' cursor, line counter,
 transfer flags and pending bus work. Page decoration, credits text, pose building
 and sprite uploads have separate small functions. `audio_state_io.cpp` writes
-URAU0004, including active reveal state, retained IPL timers and complete DSP
-history; `AudioOutput` retains the integer resampling fraction and queued PCM.
+URAU0005, including active reveal state, retained IPL timers, complete DSP
+history and the race sound set's flags, volume rate and gain scripts (R-0076); `AudioOutput` retains the integer resampling fraction and queued PCM.
 Fresh-process comparisons cover active reveals, first-press history, credits
 wrap and warm restart. Source `42d2cc8` has accepted independent tier-1 source
 re-review and bounded physical controller/listening acceptance in R-0075.

@@ -124,6 +124,9 @@ public:
   bool update(FrontEndPads pads);
   // The front end's own frame since power-on (notices do not count).
   std::uint32_t front_end_frame() const { return state_.frame; }
+  // This frame's sound queue work (R-0076), empty on a notice's frames.
+  const AudioCueList &sound_cues() const { return state_.sound_cues; }
+  bool one_player_mode() const { return state_.mode == FrontEndMode::one_player; }
   RgbFrame frame() const;
   std::uint32_t frames() const { return frames_; }
   std::uint32_t notices() const { return notices_; }

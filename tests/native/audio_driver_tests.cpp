@@ -46,7 +46,7 @@ unirally::AudioTimersState initial_timers() {
     return timers.state();
 }
 void check_continuations() {
-    const unirally::TitleMenuAudioData data{std::vector<std::uint8_t>(621),
+    const unirally::AudioSoundSet data{std::vector<std::uint8_t>(621),
                                            std::vector<std::uint8_t>(2200)};
     const unirally::AudioPitchData pitch;
     Bus continuous_bus, interrupted_bus; interrupted_bus.interrupt_reads = true; interrupted_bus.interrupt_clock = true;

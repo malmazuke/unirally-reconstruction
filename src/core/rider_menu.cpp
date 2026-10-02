@@ -217,17 +217,21 @@ void move_arrow_row(FrontEndState& state, int step) {
 
 // $80:CC52-CD46. Left and Right only act on a change of column; Up and Down move once a press
 // and stop at the first and last rows. A move down ends the pass; a move up skips Down.
-// Returns true when a rider is chosen or Y or X pressed.
+// Returns true when a rider is chosen or Y or X pressed. A column change and every new Up or
+// Down press play the navigation sound ($80:CC5E, $80:CC7F, $80:CCA1, $80:CCE1), Up and Down
+// before their first/last row test.
 bool read_rider_menu_pad(FrontEndState& state, std::uint16_t pad) {
     auto& menu = state.rider_menu;
     auto& latches = state.latches;
     auto& attributes = arrow_attribute(state);
     if ((pad & pad_left) && !(attributes & arrow_mirror)) {
+        play_menu_sound(state, MenuSound::navigate);
         attributes = static_cast<std::uint8_t>(attributes | arrow_mirror);
         state.arrow.target_x = left_column_x;
         set_arrow_palette(state);
     }
     if ((pad & pad_right) && (attributes & arrow_mirror)) {
+        play_menu_sound(state, MenuSound::navigate);
         attributes = static_cast<std::uint8_t>(attributes & ~arrow_mirror);
         state.arrow.target_x = right_column_x;
         set_arrow_palette(state);
@@ -237,6 +241,7 @@ bool read_rider_menu_pad(FrontEndState& state, std::uint16_t pad) {
         latches.up = false;
     } else if (!latches.up) {
         latches.up = true;
+        play_menu_sound(state, MenuSound::navigate);
         if (menu.row > 0) {
             move_arrow_row(state, -1);
             moved_up = true;
@@ -247,6 +252,7 @@ bool read_rider_menu_pad(FrontEndState& state, std::uint16_t pad) {
             latches.down = false;
         } else if (!latches.down) {
             latches.down = true;
+            play_menu_sound(state, MenuSound::navigate);
             if (menu.row < riders / 2 - 1) {
                 move_arrow_row(state, 1);
                 return false;
@@ -414,6 +420,7 @@ void rider_menu_frame(FrontEndState& state, const FrontEndContent& content, Fron
     // $80:BBB8-BBEE for a choice ($80:BC9B for Y), then $80:F4E9, which stops the HDMA at once.
     state.one_player = !state.rider_menu.back && state.mode == FrontEndMode::one_player;
     if (!state.rider_menu.back) {
+        play_menu_sound(state, MenuSound::select);
         if (state.rider_menu.purpose == RiderMenuPurpose::normal) send_arrow_off(state);
         if (state.rider_menu.second) {
             state.second_rider = state.menu.selection;

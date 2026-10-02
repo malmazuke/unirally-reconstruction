@@ -500,6 +500,10 @@ void wait_for_result_press(FrontEndState& state, const FrontEndContent& content,
 }
 
 void race_return_frame(FrontEndState& state, const FrontEndContent& content) {
+    // $80:A0F7: the race's sound program gives way to the title's again (R-0076).
+    constexpr std::uint32_t sound_upload_frame = 4;
+    if (state.script_frame == sound_upload_frame)
+        state.sound_cues.push_back(audio_load(AudioSessionLoad::title_return));
     switch (state.script_frame) {
     case menu_screen_frame: load_main_menu_screen(state, content); return;
     case objects_frame: lay_out_menu_objects(state); return;
@@ -588,7 +592,10 @@ void race_result_frame(FrontEndState& state, const FrontEndContent& content, Fro
     if (frame <= last_fade_frame) {
         state.registers.brightness = static_cast<std::uint8_t>(2 * (frame - first_fade_frame + 1));
         state.registers.force_blank = false;
-        if (frame == last_fade_frame && result.times.lap_race) start_lap_graph(state, content);
+        if (frame == last_fade_frame) {
+            if (result.times.lap_race) start_lap_graph(state, content);
+            play_menu_sound(state, MenuSound::result); // $80:9596
+        }
         return;
     }
     if (result.times.lap_race)
@@ -762,6 +769,7 @@ std::optional<RaceTimes> update_race_for_menus(ZoomZooState& race, const Control
                         ? times.opponent_total
                         : times.player_total;
         total = race.movement.countdown != 0 ? restart : quit; // $83:F8DA-F90B
+        race.sound_cues = std::move(next.sound_cues);          // the race itself is left as it was
         return times;
     }
     race = next;

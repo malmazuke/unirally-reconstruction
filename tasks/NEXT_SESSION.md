@@ -1,5 +1,29 @@
 # Next session
 
+**2 October 2026 Sydney: AUDIO-FIRST-RACE is reviewed and live-checked on [PR #51](https://github.com/malmazuke/unirally-reconstruction/pull/51).**
+Native audio now runs from power-on through 1P setup, the first DRAGSTER race,
+its pause menu and result, and the menus after it. The front end and race engine
+report each frame's sound queue work; the audio side delivers it at declared
+frame-anchored clocks ([D-0010](../docs/decisions/D-0010-frame-anchored-sound-commands.md)). Native cues equal the
+original's line for line on nine captured schedules, and every command reaches
+the driver in the original's frame. PCM is measured, not exact, after the first
+anchored command: median per-20 ms level differences are 0.00-0.48 dB. Given
+the original's port writes, the driver and DSP are exact.
+Nineteen fresh-process saves continue exactly, including saves inside both sound loads.
+On source `21827fb`, all eleven frozen race gates pass with 6,023 restores. The race
+equivalence sweep against main finds 0 differences in 2,387,105 updates, and the
+front-end sweep finds 174 of 174 schedules equal. The v1 contracts and macOS/Ubuntu CI
+with Linux sanitizers also pass. The DRAGSTER fuzz gate fails on main too; it is a
+recorded non-pass with its own follow-up. A fresh Claude Opus 5.5 reviewer accepted
+`21827fb` after two rounds of changes. In a visible
+controller run the user heard music, menu effects and race sound "as expected".
+They asked whether menu sounds lag slightly; native commands match the original's
+frames, so any remaining delay is the declared host output latency.
+[R-0076](../docs/research/R-0076-first-race-audio.md) and [AUDIO-FIRST-RACE](AUDIO-FIRST-RACE.md) define the domain.
+Audio stays opt-in with a v32 pack. Later races, other tracks and modes stop the
+cued producer. Verify main `artifacts/audio-first-race-integration/closeout.json`, then claim
+[AUDIO-ONE-PLAYER](AUDIO-ONE-PLAYER.md). No M4 tag, reset, spending or provider change is authorized.
+
 **2 October 2026 Sydney: AUDIO-TITLE-MENU has passed its bounded live product check on [PR #50](https://github.com/malmazuke/unirally-reconstruction/pull/50).**
 The user heard menu music and navigation sounds in a visible unscripted run.
 The Xbox controller supplied 377 sampled input updates and 32 menu navigation

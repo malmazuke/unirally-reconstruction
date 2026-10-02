@@ -116,7 +116,7 @@ int main(int argc, char** argv) {
         }
         std::ofstream output(argv[2]);
         if (!output) throw std::runtime_error("cannot write native upload events");
-        const unirally::TitleMenuAudioData score{read(root + "/menu-tables.bin"),
+        const unirally::AudioSoundSet score{read(root + "/menu-tables.bin"),
                                                  read(root + "/title-score.bin")};
         unirally::AudioPitchData pitch;
         const auto notes = read(root + "/pitch-table.bin");

@@ -149,21 +149,37 @@ void aim_tour_arrow(FrontEndState& state, const FrontEndContent& content) {
 void move_tour_cursor(FrontEndState& state, const FrontEndContent& content, std::uint16_t pad) {
     auto& cursor = state.tour_menu.cursor;
     auto& latches = state.latches;
-    if ((pad & pad_left) && cursor % 2 == 1) --cursor;
-    if ((pad & pad_right) && cursor % 2 == 0 && tour_open(state, content, cursor + 1U)) ++cursor;
+    // Each move plays the navigation sound ($80:E654, $80:E669, $80:E683); a move down plays it
+    // twice ($80:E69D and $80:E6AB around the HUNTER clamp).
+    const auto navigate = [&state] { play_menu_sound(state, MenuSound::navigate); };
+    if ((pad & pad_left) && cursor % 2 == 1) {
+        --cursor;
+        navigate();
+    }
+    if ((pad & pad_right) && cursor % 2 == 0 && tour_open(state, content, cursor + 1U)) {
+        ++cursor;
+        navigate();
+    }
     if (!(pad & pad_up)) {
         latches.up = false;
     } else if (!latches.up) {
         latches.up = true;
         const auto to = static_cast<std::uint8_t>(cursor - 2);
-        if (tour_open(state, content, to)) cursor = to;
+        if (tour_open(state, content, to)) {
+            cursor = to;
+            navigate();
+        }
     }
     if (!(pad & (pad_down | pad_select))) {
         latches.down = false;
     } else if (!latches.down) {
         latches.down = true;
         const auto to = static_cast<std::uint8_t>(cursor + 2);
-        if (tour_open(state, content, to)) cursor = to;
+        if (tour_open(state, content, to)) {
+            cursor = to;
+            navigate();
+            navigate();
+        }
     }
 }
 
@@ -295,6 +311,7 @@ void tour_menu_entry_frame(FrontEndState& state, const FrontEndContent& content)
             level_of(state) = pending; // $80:E580-E58E: the level revealed, nothing pending
             pending = 0;
             menu.revealing = true;
+            play_menu_sound(state, MenuSound::select); // $80:E595
             return;
         }
         show_medal_entries(state);

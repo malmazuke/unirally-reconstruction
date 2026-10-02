@@ -6,18 +6,17 @@ namespace unirally {
 namespace {
 struct DriverReturnedToIpl {};
 constexpr std::uint8_t counter_threshold = 4, counter_clip = 6;
-constexpr std::uint8_t normal_master_volume = 127, music_timer_target = 133,
-                       effect_timer_target = 20;
+constexpr std::uint16_t full_master_volume = 0x7f00;
+constexpr std::uint8_t music_timer_target = 133, effect_timer_target = 20;
 std::uint8_t byte(unsigned value) {
     return static_cast<std::uint8_t>(value);
 }
 }
-TitleMenuAudioDriver::TitleMenuAudioDriver(const TitleMenuAudioData& data,
-                                           const AudioPitchData& pitch, AudioDriverBus& bus,
-                                           const AudioTimersState& timers,
+TitleMenuAudioDriver::TitleMenuAudioDriver(const AudioSoundSet& data, const AudioPitchData& pitch,
+                                           AudioDriverBus& bus, const AudioTimersState& timers,
                                            std::uint64_t entry_ticks, bool driver_boot,
                                            bool resumable)
-    : score_(data, &pitch), bus_(&bus), ticks_(entry_ticks) {
+    : pitch_(pitch), score_(data, &pitch_), bus_(&bus), ticks_(entry_ticks) {
     if (timers.ticks > entry_ticks) throw std::invalid_argument("timer phase follows driver entry");
     timers_.restore(timers);
     timers_.advance_to(entry_ticks);
@@ -80,15 +79,27 @@ void TitleMenuAudioDriver::execute_command(std::uint8_t command, std::uint8_t pa
     case 1:
         advance(24);
         advance(score_.start_music_timed(byte(parameter - 1U)));
-        master_volume_ = normal_master_volume;
+        master_volume_ = full_master_volume;
         advance(16);
         configure_timers();
         advance(14);
         break;
     case 2:
         advance(16 + score_.start_effect_timed(parameter));
-        master_volume_ = normal_master_volume;
+        master_volume_ = full_master_volume;
         advance(34);
+        break;
+    case 3:
+        // 063B-0650: sign-extend, then shift the word left three times.
+        master_volume_rate_ =
+            static_cast<std::uint16_t>(((parameter & 128 ? 0xff00U : 0U) | parameter) << 3);
+        advance(86);
+        break;
+    case 6:
+    case 11:
+        // 0656-066D: the flag lookup (1151) then clear (6) or set (11).
+        score_.set_flag(parameter, command == 11);
+        advance(command == 11 ? 120U : 124U);
         break;
     case 7:
     case 8:
@@ -166,6 +177,22 @@ void TitleMenuAudioDriver::output_voice(std::uint8_t voice) {
     advance(work.ticks_to_poll - elapsed);
     poll_commands();
 }
+// 068F-06B5. The music pass adds the signed rate to the volume word. Leaving
+// 0000-7FFF stops the rate, with the high byte set to 7F (rising) or 00
+// (falling) and the sum's low byte kept. Returns the elapsed work.
+unsigned TitleMenuAudioDriver::apply_master_volume_rate() {
+    if (!master_volume_rate_) return 10 + 8;
+    const auto sum = static_cast<std::uint16_t>(master_volume_ + master_volume_rate_);
+    const bool rising = (master_volume_rate_ & 0x8000) == 0;
+    if (!(sum & 0x8000)) {
+        master_volume_ = sum;
+        return rising ? 10U + 4 + 4 + 10 + 10 + 8 + 10 + 8 : 10U + 4 + 8 + 10 + 10 + 8 + 10;
+    }
+    master_volume_rate_ = 0;
+    master_volume_ = static_cast<std::uint16_t>((rising ? 0x7f00U : 0U) | (sum & 255));
+    return rising ? 10U + 4 + 4 + 10 + 10 + 4 + 10 + 10 + 4 + 10 + 8
+                  : 10U + 4 + 8 + 10 + 10 + 4 + 10 + 10 + 4 + 10;
+}
 // 067E-074A. Both update modes share the counter and output pass. The bounded
 // title/menu domain has no global fade/ramp or noise command.
 void TitleMenuAudioDriver::update_voices(bool effects) {
@@ -174,7 +201,8 @@ void TitleMenuAudioDriver::update_voices(bool effects) {
     write_port(3, update_counter_);
     advance(6 + (effects ? 8U : 4U));
     if (!effects) {
-        advance(6 + 8 + 10 + 8);
+        advance(6 + 8);
+        advance(apply_master_volume_rate());
         write_dsp(20, 0x4c, score_.take_key_on_pending());
         advance(10);
         write_dsp(20, 0x3d, 0);
@@ -182,8 +210,8 @@ void TitleMenuAudioDriver::update_voices(bool effects) {
     for (std::uint8_t voice = 0; voice < 8; ++voice) update_score_voice(voice, effects);
     write_dsp(34, 0x5c, score_.take_key_off_pending());
     advance(10);
-    write_dsp(24, 0x0c, master_volume_);
-    write_dsp(18, 0x1c, master_volume_);
+    write_dsp(24, 0x0c, master_volume_register());
+    write_dsp(18, 0x1c, master_volume_register());
     for (std::uint8_t voice = 0; voice < 8; ++voice) output_voice(voice);
     write_dsp(20, 0x5c, 0);
     advance(10);
@@ -230,7 +258,7 @@ void TitleMenuAudioDriver::stop_for_ipl() {
     advance(6);
     timers_.read_output(2);
     advance(6);
-    auto volume = master_volume_;
+    auto volume = master_volume_register();
     while (true) {
         std::uint8_t pulse = 0;
         do {

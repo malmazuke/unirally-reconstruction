@@ -153,6 +153,10 @@ void step_decorations(FrontEndState& state, const FrontEndContent& content);
 // A slide's first pass, before its frame wait; then each pass after its wait, with the next
 // pass's work. `slide_frame` is true once the halves have swapped.
 void start_slide(FrontEndState& state, const FrontEndContent& content, bool back);
+// The menus' sound helpers ($80:B10F-B18C), each an effect volume (command 8) then an effect
+// (command 2) on the sound queue (R-0076): the result's, a choice's, the slides' and a move's.
+enum class MenuSound : std::uint8_t { result, select, forward_slide, back_slide, navigate };
+void play_menu_sound(FrontEndState& state, MenuSound sound);
 bool slide_frame(FrontEndState& state, const FrontEndContent& content);
 
 // rider_menu.cpp: 1P chosen on the main menu (`$80:BB9C`), or Y or X on PICK TOUR (`$80:BBA3`,

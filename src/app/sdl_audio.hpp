@@ -9,7 +9,8 @@ class SdlTitleMenuAudio {
 public:
     explicit SdlTitleMenuAudio(const ClassicContentPack& pack);
     ~SdlTitleMenuAudio();
-    void submit_frame(std::uint32_t frame, std::array<std::uint16_t, 2> words);
+    void submit_frame(std::uint32_t frame, std::array<std::uint16_t, 2> words,
+                      AudioCueList cues = {}, bool stop = false);
     void report();
     void set_paused(bool paused);
 

@@ -48,10 +48,12 @@ void TitleMenuAudioDriver::plan_sample_phase() {
         break;
     case AudioDriverPhase::fraction_received:
         write_ram(12, word(0xfe80U + state.slot), value);
+        pitch_.sample_fraction.at(state.slot) = value;
         plan_descriptor(AudioDriverPhase::transpose_received);
         break;
     case AudioDriverPhase::transpose_received:
         write_ram(12, word(0xfec0U + state.slot), value);
+        pitch_.sample_transpose.at(state.slot) = value;
         finish_plan(AudioDriverPhase::bulk_begin);
         break;
     case AudioDriverPhase::slot_finished:

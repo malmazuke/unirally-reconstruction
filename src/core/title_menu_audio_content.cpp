@@ -34,6 +34,26 @@ void load_upload(const ClassicContentPack& pack, AudioCpuUploadData& out) {
         out.sample_resources[sample] = bytes_entry(pack, name.c_str());
     }
 }
+std::string sample_entry(unsigned sample) {
+    return "audio.sample." + std::string(sample < 10 ? "0" : "") + std::to_string(sample);
+}
+// R-0076, pack v32: the first race's transfers, directory lengths and samples.
+void load_race_upload(const ClassicContentPack& pack, AudioCpuUploadData& out) {
+    const auto lengths = pack.entry("audio.race-resource-lengths");
+    if (lengths.size() != out.race_resource_lengths.size() * 2)
+        throw std::invalid_argument("audio race directory size differs");
+    for (unsigned i = 0; i < out.race_resource_lengths.size(); ++i)
+        out.race_resource_lengths[i] = word(lengths, i * 2);
+    out.race_tables_transfer = bytes_entry(pack, "audio.race-tables-transfer");
+    out.race_song_transfer = bytes_entry(pack, "audio.race-song-1-transfer");
+    copy_entry(pack, "audio.race-sample-slots", out.race_sample_slots);
+    for (const auto sample : out.race_sample_slots) {
+        if (sample == 255) continue;
+        if (sample >= 50) throw std::invalid_argument("audio sample resource differs");
+        if (out.sample_resources[sample].empty())
+            out.sample_resources[sample] = bytes_entry(pack, sample_entry(sample).c_str());
+    }
+}
 // R-0075: only identified palette/map/tile metadata used by the native work clock.
 void load_graphics(const ClassicContentPack& pack, std::array<AudioCpuGraphicsAsset, 128>& out) {
     constexpr std::array<unsigned, 17> ids{1,  2,  5,  27, 28, 31, 68, 69, 70,
@@ -67,6 +87,11 @@ TitleMenuAudioContent title_menu_audio_content(const ClassicContentPack& pack) {
     copy_entry(pack, "audio.sample-fractions", out.pitch.sample_fraction);
     copy_entry(pack, "audio.sample-transpose", out.pitch.sample_transpose);
     load_upload(pack, out.upload);
+    if (!pack.optional_entry("audio.race-tables").empty()) {
+        out.race_score = {bytes_entry(pack, "audio.race-tables"),
+                          bytes_entry(pack, "audio.race-song-1")};
+        load_race_upload(pack, out.upload);
+    }
     load_graphics(pack, out.graphics);
     copy_entry(pack, "audio.cartridge-defaults", out.cartridge_defaults);
     copy_entry(pack, "audio.track-types", out.track_types);

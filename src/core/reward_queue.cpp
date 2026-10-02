@@ -67,14 +67,6 @@ std::uint16_t display_updates(const RewardQueueState& queue) {
     return static_cast<std::uint16_t>(std::max(shortest_display, longest_display - saved));
 }
 
-// $81:C238 is CMP #$48 then BMI: it tests bit 7 of the 8-bit difference event - 72, not a
-// signed comparison, so events 0-71 take the reward path and so do 200-255; 72-199 are
-// voices. BRONSEN's voices 200-215 reach the reward path this way. Do not rewrite it as
-// event < 72, nor as int8(event) < 72, which would also take 128-199 (R-0035).
-bool takes_reward_path(std::uint8_t event) {
-    return (static_cast<std::uint8_t>(event - announcement::first_voice) & 0x80U) != 0;
-}
-
 bool is_opponent_voice(std::uint8_t event) {
     return event >= announcement::first_opponent_voice
         && event <= announcement::last_opponent_voice;
@@ -97,7 +89,7 @@ std::uint8_t* legacy_reward_weight(RewardQueueState& queue, std::uint8_t event,
 std::uint8_t* opponent_reward_weight(RewardQueueState& queue, std::uint8_t event,
                                      std::span<const std::uint8_t> classes,
                                      std::span<std::uint8_t> learned_weights) {
-    if (!takes_reward_path(event)) return nullptr;
+    if (!announcement::takes_reward_path(event)) return nullptr;
     require(event != 0, "reward queue holds no published event");
     if (event <= classes.size()) {
         if (classes[event - 1] == no_reward_class) return nullptr;

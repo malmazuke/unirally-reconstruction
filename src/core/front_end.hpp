@@ -4,6 +4,7 @@
 // frame as the original shows them. The state mirrors the original's where it is observable (the
 // arrow, the palette cycle, the menus' words, the OAM buffer, the text map) so it can be compared
 // with captures.
+#include "audio_cue.hpp"
 #include "presentation.hpp"
 #include "rider_object.hpp"
 #include "snes_screen.hpp"
@@ -524,6 +525,9 @@ struct FrontEndState {
     std::uint8_t demo_return_wait{}; // extra blank frames after an interrupted demo (R-0070)
     bool demo_return_interrupted{};
     bool mode_chosen{};
+    // This frame's sound queue work in program order, ending with its `$80:FADF` frame wait
+    // (AUDIO-FIRST-RACE, R-0076); each update starts it empty, the caller hands it on.
+    AudioCueList sound_cues;
     bool local_result_seen{}; // a local result has returned in this session (R-0071)
     // For 1P, once NOW PLAYING's Race has faded out: the race is `tour_menu.track` for
     // `rider_menu.rider` against `now_playing.opponent`.
