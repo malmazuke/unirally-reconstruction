@@ -9,6 +9,8 @@
 #include <iostream>
 #include <iterator>
 #include <stdexcept>
+#include <string>
+#include <string_view>
 #include <vector>
 
 namespace {
@@ -85,13 +87,22 @@ int main(int argc, char** argv) {
         const bool boot = cold_ipl || mode == "boot" || mode == "boot-pending";
         if (mode != "loop" && !boot) throw std::runtime_error("unknown entry mode");
         // Comma-separated lists give one sound set per IPL session, in upload
-        // order; the last set repeats. AUDIO-FIRST-RACE's race session.
+        // order; the last set repeats. AUDIO-FIRST-RACE's race session. A tables
+        // file named with the suffix "@51" is a gold ending's, whose session
+        // loads driver 51 and its effect tables (R-0077).
         const auto table_files = split(argv[1]), score_files = split(argv[2]);
         if (table_files.size() != score_files.size())
             throw std::runtime_error("sound set table/score lists differ");
         std::vector<unirally::AudioSoundSet> sets;
-        for (std::size_t i = 0; i < table_files.size(); ++i)
-            sets.push_back({read(table_files[i]), read(score_files[i])});
+        for (std::size_t i = 0; i < table_files.size(); ++i) {
+            constexpr std::string_view ending_driver = "@51";
+            auto tables = table_files[i];
+            const bool ending = tables.size() > ending_driver.size() &&
+                                tables.ends_with(ending_driver);
+            if (ending) tables.resize(tables.size() - ending_driver.size());
+            sets.push_back({read(tables), read(score_files[i])});
+            if (ending) sets.back().effects = unirally::ending_driver_effects;
+        }
         std::size_t session = 0;
         const auto set_for = [&](std::size_t index) -> const unirally::AudioSoundSet& {
             return sets[std::min(index, sets.size() - 1)];

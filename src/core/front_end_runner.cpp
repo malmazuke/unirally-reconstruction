@@ -488,7 +488,8 @@ void check_local_restore(const unirally::ZoomZooState& race_state,
 }
 
 // AUDIO-FIRST-RACE: each frame's sound queue work, one cue a line ("FRAME E COMMAND PARAMETER",
-// "FRAME D SITE", "FRAME L race|title"), rotation cues resolved through the audio side's latches
+// "FRAME D SITE", "FRAME L race-RESOURCE tTRACK|title|award|ending|title-award"), rotation cues
+// resolved through the audio side's latches
 // so that the lines compare with the original's enqueue and dispatch watches (R-0076).
 class SoundCueLog {
 public:
@@ -514,7 +515,8 @@ public:
                 rotating_ = {};
                 out_ << frame << " L ";
                 if (cue.load == unirally::AudioSessionLoad::race)
-                    out_ << "race-" << unsigned(unirally::race_song_resource(cue.parameter));
+                    out_ << "race-" << unsigned(unirally::race_song_resource(cue.parameter))
+                         << " t" << unsigned(cue.command);
                 else
                     out_ << unirally::audio_session_name(cue.load);
                 out_ << '\n';

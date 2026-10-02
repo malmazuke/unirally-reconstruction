@@ -52,7 +52,7 @@ void TitleMenuAudioScore::initialize_score_note(std::uint8_t index, std::uint8_t
 }
 // R-0075, 0E03 control table. Control values are the identified score format.
 void TitleMenuAudioScore::apply_score_control(std::uint8_t index, std::uint8_t control) {
-    if (control <= 0x86 || control == 0xa3)
+    if (control <= 0x87 || control == 0xa3)
         apply_sequence_control(index, control);
     else if (control >= 0xa5 && control <= 0xa8)
         apply_flag_control(index, control);
@@ -145,6 +145,12 @@ void TitleMenuAudioScore::apply_sequence_control(std::uint8_t index, std::uint8_
     case 0x86:
         add_work(18);
         voice.fixed_duration = read_byte(index);
+        break;
+    case 0x87:
+        // R-0077, 0F34-0F39: the next note reads its duration inline (`$0231`, which 0D5C-0D68
+        // tests and clears) even under a fixed duration. The race songs 63-66 use it.
+        add_work(22);
+        voice.next_duration_inline = true;
         break;
     case 0xa3: {
         add_work(16 + 682 + 4 + 8 + 4 + 8 + 6 + 10 + 8 + 4 + 10 + 6 + 42);

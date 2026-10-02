@@ -191,7 +191,10 @@ bool page_frame(FrontEndState& state, const FrontEndContent& content, std::uint3
         return false;
     }
     if (frame == page_tiles_frame) load_vram(state, asset(content, page.tiles), page_tiles_word);
-    if (frame + 1 == page.reveal_frame) copy_reveal_tables(state, content);
+    if (frame + 1 == page.reveal_frame) {
+        play_menu_sound(state, MenuSound::forward_slide); // $80:E2D5, before the copy
+        copy_reveal_tables(state, content);
+    }
     if (frame < page.reveal_frame) return false;
     const auto step = frame - page.reveal_frame;
     if (step <= reveal_steps) {

@@ -104,8 +104,18 @@ std::map<std::uint32_t, unirally::AudioCueList> read_cues(const char *path,
             : what == "pause-continue"
                 ? unirally::AudioDispatchSite::pause_continue
                 : unirally::AudioDispatchSite::frame_wait));
-      else if (what.rfind("race", 0) == 0)
-        list.push_back(unirally::audio_race_load(track, song_counter_of(what)));
+      else if (what.rfind("race", 0) == 0) {
+        // The native logs name the load's track ("tN"); the original's derived
+        // cues do not, and take the schedule's.
+        auto load_track = track;
+        if (file.peek() == ' ' && (file >> std::ws).peek() == 't') {
+          std::string named;
+          file >> named;
+          load_track = static_cast<std::uint8_t>(std::stoul(named.substr(1)));
+        }
+        list.push_back(
+            unirally::audio_race_load(load_track, song_counter_of(what)));
+      }
       else
         list.push_back(unirally::audio_load(session_named(what)));
     } else
@@ -116,8 +126,8 @@ std::map<std::uint32_t, unirally::AudioCueList> read_cues(const char *path,
 } // namespace
 int main(int argc, char **argv) {
   try {
-    // An optional trailing TRACK (0-4, default 0) names the track of every
-    // race load in the cue file, for its sound session's anchor (R-0077).
+    // An optional trailing TRACK (default 0) names the track of the race
+    // loads whose line names none, for their sessions' anchors (R-0077).
     const bool with_track = argc == 9 || argc == 13;
     if (argc != 8 && argc != 12 && !with_track)
       throw std::invalid_argument(

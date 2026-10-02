@@ -67,15 +67,28 @@ void load_race_upload(const ClassicContentPack& pack, AudioCpuUploadData& out) {
             out.sample_resources[sample] = bytes_entry(pack, sample_entry(sample).c_str());
     }
 }
+// R-0077: an upload replaces only the bytes it transfers, so the sound processor's RAM holds the
+// session's tables and score over what the title set left there. Every race, award and ending
+// session follows the title set's (the menus' or the race return's), so each set is its
+// transfers over the title's. The award's 304 bytes of tables stop short of the driver's
+// effect tables (`$1726` on), which stay the menus'.
+std::vector<std::uint8_t> over_title(std::span<const std::uint8_t> transfer,
+                                     std::span<const std::uint8_t> title_transfer) {
+    std::vector<std::uint8_t> ram(transfer.begin(), transfer.end());
+    if (title_transfer.size() > ram.size())
+        ram.insert(ram.end(), title_transfer.begin() + static_cast<std::ptrdiff_t>(ram.size()),
+                   title_transfer.end());
+    return ram;
+}
 // R-0077, pack v34: the medal award's and the gold endings' sets, which add samples to the pack
 // only where their slots name new ones.
 void load_screen_set(const ClassicContentPack& pack, const std::string& name, AudioSoundSet& set,
                      AudioCpuUploadData::ScreenSet& upload, AudioCpuUploadData& out) {
     const auto entry = [&](const char* kind) { return "audio." + name + "-" + kind; };
-    set.tables = bytes_entry(pack, entry("tables").c_str());
-    set.score = bytes_entry(pack, entry("score").c_str());
     upload.tables_transfer = bytes_entry(pack, entry("tables-transfer").c_str());
     upload.score_transfer = bytes_entry(pack, entry("score-transfer").c_str());
+    set.tables = over_title(upload.tables_transfer, out.menu_transfer);
+    set.score = over_title(upload.score_transfer, out.title_transfer);
     const auto slots = pack.entry(entry("sample-slots").c_str());
     if (slots.size() != upload.sample_slots.size())
         throw std::invalid_argument("audio sample slot table size differs");
@@ -121,16 +134,16 @@ TitleMenuAudioContent title_menu_audio_content(const ClassicContentPack& pack) {
     copy_entry(pack, "audio.sample-transpose", out.pitch.sample_transpose);
     load_upload(pack, out.upload);
     if (!pack.optional_entry("audio.race-tables").empty()) {
-        const auto tables = bytes_entry(pack, "audio.race-tables");
-        out.race_songs[0] = {tables, bytes_entry(pack, "audio.race-song-1")};
-        for (unsigned counter = 2; counter <= 5; ++counter) {
-            const auto name = "audio.race-song-" + std::to_string(counter);
-            const auto song = pack.optional_entry(name.c_str());
-            if (song.empty()) continue;
-            out.race_songs[race_song_resource(static_cast<std::uint8_t>(counter))
-                           - first_race_song_resource] = {tables, {song.begin(), song.end()}};
-        }
         load_race_upload(pack, out.upload);
+        const auto& upload = out.upload;
+        const auto tables = over_title(upload.race_tables_transfer, upload.menu_transfer);
+        for (unsigned resource = first_race_song_resource;
+             resource < first_race_song_resource + race_song_resources; ++resource) {
+            const auto& song = upload.race_song_transfers[resource - first_race_song_resource];
+            if (song.empty()) continue;
+            out.race_songs[resource - first_race_song_resource] = {
+                tables, over_title(song, upload.title_transfer)};
+        }
     }
     if (!pack.optional_entry("audio.award-tables").empty()) {
         load_screen_set(pack, "award", out.award, out.upload.award, out.upload);
