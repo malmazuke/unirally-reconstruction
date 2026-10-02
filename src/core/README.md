@@ -398,6 +398,15 @@ Fresh-process comparisons cover active reveals, first-press history, credits
 wrap and warm restart. Source `42d2cc8` has accepted independent tier-1 source
 re-review and bounded physical controller/listening acceptance in R-0075.
 
+After a one-player menu exit the producer runs cued frames (D-0010,
+`audio_cued_scenes.cpp`): the front end and the race engine report each
+frame's sound queue work in program order (`AudioCue`; `race_sound.hpp` for
+the race's producers), and the audio side delivers dispatches and session
+loads at declared frame-anchored clocks. Sessions cover every race song on
+all 45 tracks, the medal award, the gold endings (driver 51's effect layout)
+and the title set's reloads, including the boot after HUNTER's soft reset;
+each set is its upload over the title set's bytes (R-0076, R-0077).
+
 The opt-in desktop flag `--native-title-menu-audio` uses this producer with
 sampled frontend controls and SDL output. Its scripted device run covers the
 HUNTER lifecycle. The physical navigation run delivers audible music/effects

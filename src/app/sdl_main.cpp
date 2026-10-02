@@ -500,8 +500,8 @@ int main(int argc, char **argv) try {
   std::uint32_t scripted_race_frame = 0;
   // Native audio past the 1P menu exit (D-0010): with it, a race waits its
   // track's measured loading frames, as the original does, while the race's
-  // sound program loads; production stops where the sound domain is not
-  // recovered (another mode, a later race).
+  // sound program loads (R-0077: every track and song); production stops
+  // where the sound domain is not recovered (another mode, the demo).
   std::uint32_t race_loading_remaining = 0, race_initialization_frame = 0;
   bool audio_stopped = false;
   std::ofstream audio_cue_log;
@@ -653,9 +653,9 @@ int main(int argc, char **argv) try {
         if (!front_end->one_player_mode())
           audio_stopped = true;
         if (race_chosen && native_audio && !audio_stopped) {
-          // The cued producer covers the one-player races the menus reach
-          // with a measured loading (R-0076, R-0077); a race outside them
-          // stops the audio.
+          // The cued producer covers the one-player races the menus reach,
+          // every one with a measured loading (R-0076, R-0077); the demo's
+          // race stops the audio.
           const auto loading = front_end->race_loading_frames();
           if (loading == 0 || front_end->demo_race())
             audio_stopped = true;
