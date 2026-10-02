@@ -22,10 +22,13 @@ constexpr std::size_t instrument_table_offset = 0x22, instrument_table_bytes = 2
 // R-0075 and AUDIO-FIRST-RACE: each sound set is bounded by its identified
 // upload lengths; the tables end before the score and the score before samples.
 std::uint8_t audio_sound_set_byte(const AudioSoundSet& data, std::uint16_t pointer) {
-    if (pointer >= tables_origin && pointer - tables_origin < data.tables.size())
-        return data.tables[pointer - tables_origin];
-    if (pointer >= score_origin && pointer - score_origin < data.score.size())
-        return data.score[pointer - score_origin];
+    const auto offset = [pointer](std::uint16_t origin) {
+        return static_cast<std::size_t>(pointer - origin);
+    };
+    if (pointer >= tables_origin && offset(tables_origin) < data.tables.size())
+        return data.tables[offset(tables_origin)];
+    if (pointer >= score_origin && offset(score_origin) < data.score.size())
+        return data.score[offset(score_origin)];
     throw std::runtime_error("score pointer outside identified data: " + std::to_string(pointer));
 }
 TitleMenuAudioScore::TitleMenuAudioScore(const AudioSoundSet& data,

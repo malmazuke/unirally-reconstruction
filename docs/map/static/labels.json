@@ -10210,6 +10210,7 @@
    "src/core/reward_queue.cpp:update_opponent_announcements"
   ],
   "source_records": [
+   "docs/research/R-0076-first-race-audio.md",
    "tasks/NATIVE-READABILITY.md"
   ]
  },
@@ -10308,6 +10309,19 @@
   "native": [
    "src/core/race_sound.hpp:announcement_voice",
    "src/core/race_state_io.cpp:last_queue_slot"
+  ],
+  "source_records": [
+   "docs/research/R-0076-first-race-audio.md"
+  ]
+ },
+ {
+  "address": "$81:C2DA",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_81C2DA",
+  "native": [
+   "src/core/race_sound.cpp:announcement_voice",
+   "src/core/race_sound.hpp:announcement_voice"
   ],
   "source_records": [
    "docs/research/R-0076-first-race-audio.md"
@@ -17562,7 +17576,8 @@
   "label": "loc_83CA08",
   "source_records": [
    "docs/research/R-0076-first-race-audio.md",
-   "tasks/AUDIO-FIRST-RACE.md"
+   "tasks/AUDIO-FIRST-RACE.md",
+   "tasks/AUDIO-ONE-PLAYER.md"
   ]
  },
  {
@@ -20718,6 +20733,32 @@
   "comment": "instruction start",
   "label": "loc_83F930",
   "native": [
+   "src/core/race_sound.hpp:pause_continue"
+  ],
+  "source_records": [
+   "docs/research/R-0076-first-race-audio.md"
+  ]
+ },
+ {
+  "address": "$83:F937",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_83F937",
+  "native": [
+   "src/core/audio_cue.hpp:AudioDispatchSite",
+   "src/core/race_sound.hpp:pause_continue"
+  ],
+  "source_records": [
+   "docs/research/R-0076-first-race-audio.md"
+  ]
+ },
+ {
+  "address": "$83:F93B",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_83F93B",
+  "native": [
+   "src/core/audio_cue.hpp:AudioDispatchSite",
    "src/core/race_sound.hpp:pause_continue"
   ],
   "source_records": [

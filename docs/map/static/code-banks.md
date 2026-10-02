@@ -45,7 +45,7 @@ The four classes partition all 131,072 bytes. **Unknown share: 40.4%** - above D
 
 ## Cited addresses
 
-1599 distinct code-bank ROM addresses cited by the research, task, inventory and content records (`labels.json`). By position: dat 25, loc 917, mid 19, sub 336, unk 302 (sub routine start, loc instruction start, mid inside an instruction, dat data, unk unknown). By class: data 25, inferred 268, observed 1004, unknown 302.
+1602 distinct code-bank ROM addresses cited by the research, task, inventory and content records (`labels.json`). By position: dat 25, loc 920, mid 19, sub 336, unk 302 (sub routine start, loc instruction start, mid inside an instruction, dat data, unk unknown). By class: data 25, inferred 270, observed 1005, unknown 302.
 
 Cited addresses in `unknown` bytes:
 

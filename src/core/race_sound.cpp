@@ -85,7 +85,8 @@ void rotation(ZoomZooState& next, unsigned rider, bool rotating) {
 void announcement_voice(ZoomZooState& next, unsigned rider, std::uint8_t event,
                         std::span<const std::uint8_t> voices) {
     constexpr std::uint8_t silent = 0xff;
-    if (!event || !announcement::takes_reward_path(event) || event >= voices.size()) return;
+    if (!event || !announcement::takes_reward_path(event) || std::size_t{event} >= voices.size())
+        return;
     const auto entry = voices[event];
     if (entry == silent) return;
     if (entry & 0x80U) {

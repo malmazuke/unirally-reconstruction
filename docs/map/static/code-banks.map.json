@@ -14757,16 +14757,16 @@
    "call returns in the calling mode": 1262
   },
   "bytes": 131072,
-  "cited_addresses": 1599,
+  "cited_addresses": 1602,
   "cited_by_class": {
    "data": 25,
-   "inferred": 268,
-   "observed": 1004,
+   "inferred": 270,
+   "observed": 1005,
    "unknown": 302
   },
   "cited_by_position": {
    "dat": 25,
-   "loc": 917,
+   "loc": 920,
    "mid": 19,
    "sub": 336,
    "unk": 302
