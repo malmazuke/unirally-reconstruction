@@ -172,7 +172,20 @@ holds the observations, the loading table, the producers and the measured domain
   (`bowl-lose`, `bowl-quit`, `hill-win`, `hill-complete`, `hopper-gold`, `locked-gold`,
   `all-gold`), native cues equal the original's, race starts included; the others follow the
   same per-track table, measured on six races of every track.
-- `e023ba8` re-run (`gates-e023ba8-synthetic.out`, `gates-e023ba8-tail.out`): see the PR.
+- Re-run on `e023ba8` and, for the front-end sweep and tooling, `d9fc4e4`'s binaries
+  (`gates-e023ba8-synthetic.out`, `gates-e023ba8-tail.out`): synthetic suite passed; native cues
+  equal on the 60 schedules; measurement as R-0077; conditional checks equal on
+  `full-six-quits`, `full-hopper-gold`, `full-lap-won`; continuation 26/26, 11/11 and R-0076's
+  19 + 4; AUDIO-TITLE-MENU's six comparisons equal; front-end sweep 156 of 174 equal, the 18
+  others the one-player runs listed above plus `crawler-gold`; tooling tests 543 OK; no function
+  over 80 lines; native-symbol index current. Race code is unchanged since `ea32eaa`, whose
+  eleven gates and race sweep stand. Hosted CI (macOS, Ubuntu with sanitizers) passes on
+  `d9fc4e4`.
+- Review 2 (same reviewer, `d9fc4e4`): accept; all six findings resolved, the withheld cases
+  equal, `full-lap-won` and `full-fifth-win` conditionally equal.
+- Live check: a first visible run (`artifacts/audio-one-player-integration/20261003-live.json`)
+  received no input (no gamepad, no keys): 45,000 idle updates through the title and attract
+  demo, not a listening check. The user's listening run is pending.
 
 ## Review 1, 3 October 2026
 
