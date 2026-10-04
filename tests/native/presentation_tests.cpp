@@ -219,7 +219,7 @@ void pause_menu() {
     unsigned count = 0;
     for (unsigned y = row * 8 - 1; y < row * 8 + 7; ++y)
       for (unsigned x = column * 8; x < column * 8 + 8; ++x) count += ink.test(y * 256 + x) ? 1U : 0U;
-    return std::pair{count, ink.count()};
+    return std::pair{count, static_cast<unsigned>(ink.count())};
   };
   // Twelve letters and four, two rows each, and the two halves of the "<".
   require(inked(1, "quit", 9, 5) == std::pair{64U, (12U + 4U + 1U) * 2U * 64U});
