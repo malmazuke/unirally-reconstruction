@@ -214,6 +214,14 @@ holds the observations, the loading table, the producers and the measured domain
   40 ms of sound every several minutes, and `due` overflows after 52 days at 192 kHz.
 - Live check 2 (`20261003-idle2.json`, `app-release` at `231080f`): no input again (no gamepad
   connected); 45,000 idle updates, not a listening check.
+- CI's new `app-release` step met GCC's `-Wmaybe-uninitialized` false positive on guarded
+  `std::optional` reads twice (GCC bug 80635); GCC now builds with `-Wno-maybe-uninitialized`
+  (`46ba2ce`), and hosted macOS and Ubuntu CI pass there.
+- **Live check 3, accepted** (`20261005-live.json`, `app-release` at `46ba2ce`, 132 s): the user
+  played HILL CLIMB (track 22, a stunt event) on a gamepad (146 presses) and reported "Works
+  perfectly". Source pairs 4,222,750, delivered 6,323,959 (2,133 pairs, 44 ms, queued at the
+  end against 17,525 in live check 1), nonzero 6,020,351, underrun 8,853, dropped late 15,756,
+  cued frames 5,952, never stopped.
 
 ## Review 1, 3 October 2026
 

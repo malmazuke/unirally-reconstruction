@@ -1,6 +1,6 @@
 # Project state
 
-**3 October 2026: AUDIO-ONE-PLAYER candidate `e023ba8` is in tier-1 review on its pull request.**
+**5 October 2026: AUDIO-ONE-PLAYER is accepted (tier 1, #52) and integrated by merge commit.**
 Native audio now follows the whole one-player game: every race song on all 45 tracks with the
 race's measured loading, the race's surface, landing, clock and HUNTER effect sounds, the stunt
 result's tally, the medal award and the eight gold endings with their own sound sets (driver 51
@@ -17,8 +17,12 @@ updates) pass. Pack profile v34 adds the award's and endings' sets.
 [R-0077](research/R-0077-one-player-audio.md) and [AUDIO-ONE-PLAYER](../tasks/AUDIO-ONE-PLAYER.md)
 define the domain and limits: an upload's length varies with the sound processor's state, so a
 race's start can differ by a frame from the measured table (D-0010's new section); 2P, VS,
-league, OPTIONS and the demo still stop the cued producer. No M4 tag, reset, spending or
-provider change is authorized.
+league, OPTIONS and the demo still stop the cued producer. The live check found every sound 17
+frames late; the app now drops output more than four frames behind the game to two behind (a host
+policy), and the new `app-release` preset is the build to play: the user's third run, HILL CLIMB
+on a gamepad, "works perfectly" with 44 ms queued at its end. Next ready: CLASSIC-PAUSE-MENU,
+AUDIO-UPLOAD-SPEED, ROLLING-CONTACT, PORTABLE-CORE-IDENTITY, ATTRACT-DEMO. No M4 tag, reset,
+spending or provider change is authorized.
 
 **3 October 2026: AUDIO-ONE-PLAYER checkpoint at `6aeee3d` on `task/audio-one-player`
 (pushed, no pull request yet).** Resume in `.worktrees/audio-one-player` from the checkpoint
