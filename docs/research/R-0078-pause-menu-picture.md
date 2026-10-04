@@ -86,11 +86,11 @@ original's was (R-0060's `compare.py` rule), and compares every captured picture
 | `countdown` (1440-1719) | 280 | 110 | 40 | 280 |
 | `split` (2580-2899) | 320 | 60 | 20 | 320 |
 | R-0060 `quit` | 206 | 21 | 15 | 206 |
-| R-0060 `restart` | 271 | | | 271 |
+| R-0060 `restart` | 271 | 28 | 23 | 271 |
 | R-0060 `lapquit` (ZOOM ZOO lap race) | 184 | 17 | 11 | 184 |
 
-1,931 of 1,931 pictures are equal, the menu's frames, the race's around them and the menus'
-after the quits. Before the change the 350 paused pictures of `menu` all differed (about 55,700
+1,931 of 1,931 pictures are equal: 586 with the menu open (239 with QUIT chosen), the race's
+around them and the menus' after the quits. Before the change the 350 paused pictures of `menu` all differed (about 55,700
 pixels each) and the unpaused 320 were already equal; before the clear was followed, `split`
 differed on the 95 pictures 2650-2744, in the split's cells only.
 
