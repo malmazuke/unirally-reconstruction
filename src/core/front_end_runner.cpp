@@ -488,7 +488,8 @@ void check_local_restore(const unirally::ZoomZooState& race_state,
 }
 
 // AUDIO-FIRST-RACE: each frame's sound queue work, one cue a line ("FRAME E COMMAND PARAMETER",
-// "FRAME D SITE", "FRAME L race|title"), rotation cues resolved through the audio side's latches
+// "FRAME D SITE", "FRAME L race-RESOURCE tTRACK|title|award|ending|title-award"), rotation cues
+// resolved through the audio side's latches
 // so that the lines compare with the original's enqueue and dispatch watches (R-0076).
 class SoundCueLog {
 public:
@@ -512,9 +513,13 @@ public:
                 break;
             case unirally::AudioCueKind::load:
                 rotating_ = {};
-                out_ << frame << " L "
-                     << (cue.load == unirally::AudioSessionLoad::first_race ? "race" : "title")
-                     << '\n';
+                out_ << frame << " L ";
+                if (cue.load == unirally::AudioSessionLoad::race)
+                    out_ << "race-" << unsigned(unirally::race_song_resource(cue.parameter))
+                         << " t" << unsigned(cue.command);
+                else
+                    out_ << unirally::audio_session_name(cue.load);
+                out_ << '\n';
                 break;
             case unirally::AudioCueKind::rotation:
                 if (rotating_[cue.command] == (cue.parameter != 0)) break;
@@ -592,7 +597,16 @@ void update_local_race(const Options& options, const unirally::ClassicContentPac
 void write_loading_frame(const Options& options, const unirally::FrontEndState& state,
                          const RaceBetweenMenus& race, std::uint32_t frame,
                          SoundCueLog& sound_cues) {
-    sound_cues.write(frame, unirally::race_sound::loading(race.initialization_frame - frame));
+    const unirally::ClassicRaceTrack track{state.tour_menu.track};
+    auto timing = unirally::race_sound_load_timing(track, state.race_song);
+    // A given initialization frame (a capture's) changes the session's upload, not its request:
+    // the upload's length varies with the sound processor's state (R-0077).
+    if (timing.upload_frames && race.loading_initialization)
+        timing.upload_frames = static_cast<std::uint32_t>(
+            static_cast<std::int64_t>(timing.upload_frames) + race.initialization_frame
+            - race.loading_initialization);
+    sound_cues.write(frame, unirally::race_sound::loading(race.initialization_frame - frame, timing,
+                                                          track.index, state.race_song));
     if (const auto picture = options.pictures.find(frame); picture != options.pictures.end())
         write_ppm(picture->second, unirally::RgbFrame{});
     if (const auto records = options.records.find(frame); records != options.records.end())

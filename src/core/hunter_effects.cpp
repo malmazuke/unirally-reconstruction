@@ -8,6 +8,7 @@
 #include "hunter_effects.hpp"
 
 #include "announcements.hpp"
+#include "race_sound.hpp"
 #include "reward_queue.hpp"
 #include "word_arithmetic.hpp"
 #include "zoom_zoo_movement.hpp"
@@ -200,14 +201,15 @@ void update_hunter_effects(ZoomZooState& state, std::span<const std::uint8_t> bl
         hunter.active = 1;
     }
     // The first set flag in priority order runs and clears the others. On the update it
-    // starts it is announced at the front of the queue ($81:C55B), and every effect but
-    // hedgehog speed names its HUD message ($12AF). Sound 0x21F is not played.
+    // starts it is announced at the front of the queue ($81:C55B), every effect but hedgehog
+    // speed names its HUD message ($12AF), and effect 31 sounds ($83:CF1C-D0E4).
     for (const auto effect : priority) {
         if (!hunter.effect[effect]) continue;
         if (hunter.effect[effect] == 1) {
             hunter.effect[effect] = 2;
             push_front_player_announcement(state, announcement_of[effect]);
             if (effect != hunter_effect::hedgehog_speed) hunter.message = announcement_of[effect];
+            race_sound::effect(state, race_sound::hunter_effect_start);
         }
         for (unsigned other = 0; other < hunter_effect::count; ++other)
             if (other != effect) hunter.effect[other] = 0;

@@ -291,6 +291,7 @@ void now_playing_frame(FrontEndState& state, const FrontEndContent& content, Fro
         step_decorations(state, content);
         return;
     }
+    now.choice_pads = pad;
     if (now.choice != NowPlayingChoice::back)
         play_menu_sound(state, MenuSound::select); // $80:B4A0/B4B1
     hide_icons(state);
@@ -326,6 +327,7 @@ void race_fade_frame(FrontEndState& state) {
     constexpr std::uint8_t music_fade = 3, race_fade_rate = 0x90;
     state.sound_cues.push_back(audio_enqueue(music_fade, race_fade_rate));
     state.sound_cues.push_back(audio_dispatch(AudioDispatchSite::race_choice));
+    choose_race_song(state);
     // $83:9894 (`$80:9A27`): the menus' words saved for the race's return.
     state.saved = {state.menu,        state.cycle,       state.logo.offset, state.slide,
                    state.decorations, state.latches,     state.rider_menu,  state.tour_menu,

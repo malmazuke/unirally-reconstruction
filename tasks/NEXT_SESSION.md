@@ -1,5 +1,45 @@
 # Next session
 
+**5 October 2026: AUDIO-ONE-PLAYER is accepted (tier 1, #52) and integrated by merge commit.**
+Native audio now follows the whole one-player game: every race song on all 45 tracks with the
+race's measured loading, the race's surface, landing, clock and HUNTER effect sounds, the stunt
+result's tally, the medal award and the eight gold endings with their own sound sets (driver 51
+for the endings), HUNTER's ending and the soft reset's boot, and the title set's reloads. Native
+cues equal the original's line for line on 60 captured schedules (all 45 tracks' six-race runs,
+a lap race, stunt events, awards, endings, two HUNTER tags, and `all-gold`'s 25 completions with
+one race start and the reset delay from the capture) and on R-0076's seven. Given the original's
+port writes the native IPL, driver and DSP reproduce four full captures write for write and pair
+for pair, `all-gold` included (27,413,906 pairs). Anchored PCM is measured, not exact (D-0010):
+11,496 of 11,526 commands over the 44 track runs reach the driver in the original's frame, median
+level differences 0.13-0.34 dB (0.11-0.47 dB over the ten measured schedules of R-0077's table). Fresh-process saves continue exactly (37 new, R-0076's 23). The
+eleven frozen race gates and the race equivalence sweep against main (0 differences in 2,387,105
+updates) pass. Pack profile v34 adds the award's and endings' sets.
+[R-0077](../docs/research/R-0077-one-player-audio.md) and [AUDIO-ONE-PLAYER](AUDIO-ONE-PLAYER.md)
+define the domain and limits: an upload's length varies with the sound processor's state, so a
+race's start can differ by a frame from the measured table (D-0010's new section); 2P, VS,
+league, OPTIONS and the demo still stop the cued producer. The live check found every sound 17
+frames late; the app now drops output more than four frames behind the game to two behind (a host
+policy), and the new `app-release` preset is the build to play: the user's third run, HILL CLIMB
+on a gamepad, "works perfectly" with 44 ms queued at its end. Next ready: CLASSIC-PAUSE-MENU,
+AUDIO-UPLOAD-SPEED, ROLLING-CONTACT, PORTABLE-CORE-IDENTITY, ATTRACT-DEMO. No M4 tag, reset,
+spending or provider change is authorized.
+
+**3 October 2026: AUDIO-ONE-PLAYER checkpoint at `6aeee3d` on `task/audio-one-player`
+(pushed, no pull request yet).** Resume in `.worktrees/audio-one-player` from the checkpoint
+section of [AUDIO-ONE-PLAYER](AUDIO-ONE-PLAYER.md): the race's loading follows its song (measured table by
+track and song counter), native plays all six race songs on the five menu tracks with pack
+v33, and native cues equal the original's on six captured schedules. Still open: three race
+effects, the stunt result's sounds, the award/ending/title-reload sessions, HILL CLIMB's
+loading, native-symbols regeneration, R-0077, measurement, continuation, gates, review and
+the PR. Captures and scripts are in main `local/evidence/audio-one-player/`.
+
+**2 October 2026 05:42 UTC: [AUDIO-ONE-PLAYER](AUDIO-ONE-PLAYER.md) is claimed** on `task/audio-one-player`
+in `.worktrees/audio-one-player` from main `df0bf14`, after verifying PR #51's merge, main
+equal to `origin/main` and the AUDIO-FIRST-RACE closeout. Claude Fable 5.1 is the primary; the
+task's children and its reviewer stay on Anthropic (D-0004). Weekly usage at claim 16%
+(checkpoint boundary 36%, standing rule 80%). Evidence goes to main
+`local/evidence/audio-one-player/`. No M4 tag, reset, spending or provider change is authorized.
+
 **2 October 2026 Sydney: AUDIO-FIRST-RACE is reviewed and live-checked on [PR #51](https://github.com/malmazuke/unirally-reconstruction/pull/51).**
 Native audio now runs from power-on through 1P setup, the first DRAGSTER race,
 its pause menu and result, and the menus after it. The front end and race engine

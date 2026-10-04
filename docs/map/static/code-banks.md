@@ -22,8 +22,8 @@ The four classes partition all 131,072 bytes. **Unknown share: 40.4%** - above D
 | Instructions from observed | 17,569 |
 | Instructions from table | 587 |
 | Routines | 636 |
-| Routines cited by native code | 418 |
-| Routine bytes cited by native code | 51,268 |
+| Routines cited by native code | 422 |
+| Routine bytes cited by native code | 51,457 |
 | Gap sweep candidate instructions | 2,746 |
 | Gap sweep candidate bytes | 6,174 |
 | Jump tables | 2 |
@@ -45,7 +45,7 @@ The four classes partition all 131,072 bytes. **Unknown share: 40.4%** - above D
 
 ## Cited addresses
 
-1602 distinct code-bank ROM addresses cited by the research, task, inventory and content records (`labels.json`). By position: dat 25, loc 920, mid 19, sub 336, unk 302 (sub routine start, loc instruction start, mid inside an instruction, dat data, unk unknown). By class: data 25, inferred 270, observed 1005, unknown 302.
+1654 distinct code-bank ROM addresses cited by the research, task, inventory and content records (`labels.json`). By position: dat 25, loc 939, mid 19, sub 340, unk 331 (sub routine start, loc instruction start, mid inside an instruction, dat data, unk unknown). By class: data 25, inferred 282, observed 1016, unknown 331.
 
 Cited addresses in `unknown` bytes:
 
@@ -256,11 +256,13 @@ Cited addresses in `unknown` bytes:
 | $80:F680 | docs/research/R-0067-stunt-result.md |
 | $80:F68F | docs/research/R-0067-stunt-result.md |
 | $80:F755 | docs/research/R-0067-stunt-result.md |
+| $80:F756 | docs/research/R-0077-one-player-audio.md |
 | $80:F758 | docs/research/R-0067-stunt-result.md |
 | $80:F75D | docs/research/R-0067-stunt-result.md |
 | $80:F765 | docs/research/R-0067-stunt-result.md |
 | $80:F775 | docs/research/R-0067-stunt-result.md |
 | $80:F77F | docs/research/R-0067-stunt-result.md |
+| $80:F7A7 | docs/research/R-0077-one-player-audio.md |
 | $80:F7AD | docs/research/R-0067-stunt-result.md |
 | $80:F7C4 | docs/research/R-0067-stunt-result.md |
 | $80:F7CB | docs/research/R-0067-stunt-result.md |
@@ -326,30 +328,57 @@ Cited addresses in `unknown` bytes:
 | $83:A1DA | docs/research/R-0008-track-decode.md |
 | $83:A218 | docs/research/R-0066-stunt-event-race.md |
 | $83:A254 | docs/research/R-0056-tour-track-now-playing.md |
-| $83:A507 | docs/research/R-0062-gold-endings.md |
+| $83:A507 | docs/research/R-0062-gold-endings.md, docs/research/R-0077-one-player-audio.md, tasks/AUDIO-ONE-PLAYER.md |
 | $83:A575 | docs/research/R-0062-gold-endings.md |
 | $83:A9FB | docs/research/R-0075-title-menu-audio.md |
 | $83:AE01 | docs/research/R-0064-hunter-ending-and-soft-reset.md |
 | $83:B1EB | docs/research/R-0062-gold-endings.md |
+| $83:B2E9 | docs/research/R-0077-one-player-audio.md |
+| $83:B32B | docs/research/R-0077-one-player-audio.md |
+| $83:B374 | docs/research/R-0077-one-player-audio.md |
+| $83:B436 | docs/research/R-0077-one-player-audio.md |
 | $83:B4DF | docs/research/R-0062-gold-endings.md |
 | $83:B506 | docs/research/R-0062-gold-endings.md |
+| $83:B60C | docs/research/R-0077-one-player-audio.md |
+| $83:B63F | docs/research/R-0077-one-player-audio.md |
+| $83:B695 | docs/research/R-0077-one-player-audio.md |
+| $83:B74E | docs/research/R-0077-one-player-audio.md |
 | $83:B790 | docs/research/R-0062-gold-endings.md |
-| $83:B79C | docs/research/R-0062-gold-endings.md |
+| $83:B79C | docs/research/R-0062-gold-endings.md, docs/research/R-0077-one-player-audio.md |
+| $83:B7B1 | docs/research/R-0077-one-player-audio.md |
 | $83:B7D2 | docs/research/R-0062-gold-endings.md |
 | $83:B8CB | docs/research/R-0062-gold-endings.md |
+| $83:B8FC | docs/research/R-0077-one-player-audio.md |
+| $83:B918 | docs/research/R-0077-one-player-audio.md |
+| $83:BA10 | docs/research/R-0077-one-player-audio.md |
+| $83:BA6C | docs/research/R-0077-one-player-audio.md |
+| $83:BB2A | docs/research/R-0077-one-player-audio.md |
 | $83:BB44 | docs/research/R-0062-gold-endings.md |
 | $83:BB80 | docs/research/R-0062-gold-endings.md |
+| $83:BCFC | docs/research/R-0077-one-player-audio.md |
 | $83:BE9A | docs/research/R-0062-gold-endings.md |
 | $83:BEBA | docs/research/R-0062-gold-endings.md |
 | $83:BED0 | docs/research/R-0062-gold-endings.md |
+| $83:BFD2 | docs/research/R-0077-one-player-audio.md |
+| $83:C07C | docs/research/R-0077-one-player-audio.md |
+| $83:C0B3 | docs/research/R-0077-one-player-audio.md |
 | $83:C0F6 | docs/research/R-0062-gold-endings.md |
 | $83:C11E | docs/research/R-0062-gold-endings.md |
 | $83:C126 | docs/research/R-0062-gold-endings.md |
+| $83:C302 | docs/research/R-0077-one-player-audio.md |
+| $83:C3BB | docs/research/R-0077-one-player-audio.md |
 | $83:C458 | docs/research/R-0062-gold-endings.md |
 | $83:C49C | docs/research/R-0062-gold-endings.md |
+| $83:C5C7 | docs/research/R-0077-one-player-audio.md |
+| $83:C5DC | docs/research/R-0077-one-player-audio.md |
 | $83:C6C0 | docs/research/R-0062-gold-endings.md |
 | $83:C715 | docs/research/R-0062-gold-endings.md |
+| $83:C80C | docs/research/R-0077-one-player-audio.md |
+| $83:C825 | docs/research/R-0077-one-player-audio.md |
+| $83:C86E | docs/research/R-0077-one-player-audio.md |
 | $83:C89A | docs/research/R-0062-gold-endings.md |
 | $83:C8B3 | docs/research/R-0061-riders-and-opponents.md, tasks/RACE-RIDERS-OPPONENTS.md |
-| $83:FC75 | docs/research/R-0076-first-race-audio.md, tasks/AUDIO-FIRST-RACE.md |
+| $83:FBF5 | docs/research/R-0077-one-player-audio.md, tasks/AUDIO-ONE-PLAYER.md |
+| $83:FC75 | docs/research/R-0076-first-race-audio.md, docs/research/R-0077-one-player-audio.md, tasks/AUDIO-FIRST-RACE.md, tasks/AUDIO-ONE-PLAYER.md |
 | $83:FCF5 | docs/research/R-0076-first-race-audio.md, tasks/AUDIO-TITLE-MENU.md |
+| $83:FD35 | docs/research/R-0077-one-player-audio.md, tasks/AUDIO-ONE-PLAYER.md |

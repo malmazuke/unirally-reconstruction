@@ -22,7 +22,10 @@ if(MSVC)
 else()
   target_compile_options(lab_options INTERFACE
     -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wshadow
-    $<$<BOOL:${LAB_WARNINGS_AS_ERRORS}>:-Werror>)
+    $<$<BOOL:${LAB_WARNINGS_AS_ERRORS}>:-Werror>
+    # GCC's optimized builds report std::optional values read behind their own guard as
+    # uninitialized (GCC bug 80635); app-release on Ubuntu met it twice.
+    $<$<CXX_COMPILER_ID:GNU>:-Wno-maybe-uninitialized>)
   if(LAB_SANITIZERS)
     target_compile_options(lab_options INTERFACE -fsanitize=address,undefined -fno-omit-frame-pointer)
     target_link_options(lab_options INTERFACE -fsanitize=address,undefined)

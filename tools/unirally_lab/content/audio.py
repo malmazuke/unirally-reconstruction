@@ -100,3 +100,59 @@ def v32_new_entries(rom: bytes) -> list[dict[str, Any]]:
     # readers voice events 0-71 and 200-255 (`$81:C238`'s bit-7 test; R-0076).
     entries.append(_raw("audio.announcement-voices", rom, [(ANNOUNCEMENT_VOICES, 256)]))
     return entries
+
+
+# $83:CA08-CA1E: the cartridge counter `$77:10B1` after its increment modulo 6 names the race
+# song: resources 64, 62, 63, 64, 65, 66 (R-0076 observation 2). Song 1 (62) is v32's entry.
+RACE_SONGS_BY_COUNTER = (64, 62, 63, 64, 65, 66)
+
+
+def v33_new_entries(rom: bytes) -> list[dict[str, Any]]:
+    """The other race songs (R-0077); v32 entries are unchanged.
+
+    Resources 63-66 are the songs the counter values 2-5 play (counter 0 plays 64, song 3's
+    resource); each transfer carries the next record's six header bytes, as song 1's does.
+    The directory lengths of 63-66 extend v32's 58-62 for the upload's resource walk.
+    """
+    resources = resource_headers(rom, 67)
+    entries = [_raw("audio.race-song-resource-lengths", rom, [(at, 2) for at, _ in resources[63:67]])]
+    for counter in (2, 3, 4, 5):
+        at, length = resources[RACE_SONGS_BY_COUNTER[counter]]
+        entries.append(_raw(f"audio.race-song-{counter}", rom, [(at + 6, length - 6)]))
+        entries.append(_raw(f"audio.race-song-{counter}-transfer", rom, [(at + 6, length)]))
+    return entries
+
+
+AWARD_SAMPLE_SLOTS = 0x1fbf5  # $83:FBF5, the medal award's sound load ($83:A63D)
+ENDING_SAMPLE_SLOTS = 0x1fd35  # $83:FD35, a gold ending's sound load ($83:A530)
+# The award's set (`$83:A614`): driver 50, tables 52, score 58; a gold ending's (`$83:A507`):
+# driver 51, tables 55, score 60 (R-0077). Driver 51 is native code like 50.
+AWARD_RESOURCES = (52, 58)
+ENDING_RESOURCES = (55, 60)
+
+
+def v34_new_entries(rom: bytes) -> list[dict[str, Any]]:
+    """The medal award's and the gold endings' sound sets (R-0077); v33 entries are unchanged.
+
+    Each tables and score resource is kept twice, as the earlier sets are: its data, and its
+    transfer, which also carries the next record's six header bytes. Only the samples their
+    slots add to the title and race sets are new entries.
+    """
+    resources = resource_headers(rom, 67)
+    known = set(rom[0x1fcf5:0x1fd35]) | set(rom[RACE_SAMPLE_SLOTS:RACE_SAMPLE_SLOTS + 64])
+    entries: list[dict[str, Any]] = []
+    added: set[int] = set()
+    for name, (tables, score), slots_at in (("award", AWARD_RESOURCES, AWARD_SAMPLE_SLOTS),
+                                            ("ending", ENDING_RESOURCES, ENDING_SAMPLE_SLOTS)):
+        slots = rom[slots_at:slots_at + 64]
+        if len(slots) != 64 or any(s != 255 and s >= 50 for s in slots):
+            raise ValueError(f"unidentified {name} sample selection")
+        for kind, index in (("tables", tables), ("score", score)):
+            at, length = resources[index]
+            entries.append(_raw(f"audio.{name}-{kind}", rom, [(at + 6, length - 6)]))
+            entries.append(_raw(f"audio.{name}-{kind}-transfer", rom, [(at + 6, length)]))
+        entries.append(_raw(f"audio.{name}-sample-slots", rom, [(slots_at, 64)]))
+        for s in sorted(set(slots) - known - added - {255}):
+            entries.append(_raw(f"audio.sample.{s:02d}", rom, [(resources[s][0] + 2, resources[s][1] - 2)]))
+            added.add(s)
+    return entries

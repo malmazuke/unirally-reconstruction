@@ -225,8 +225,9 @@ void return_to_tour_menu(FrontEndState& state, bool slides_back) {
 }
 
 // A reveal (`$80:E580-E5A2`) redraws the screen after the slide at the new level: the medal
-// tiles, `$80:A858`'s two frames with the tours printed, and the text sent to the shown half; the
-// rest of the entry follows four frames later (R-0062). False past the four frames.
+// tiles, `$80:A858`'s two frames with the tours printed and the choice's sound, and the text sent
+// to the shown half; the rest of the entry follows four frames later (R-0062, R-0077). False
+// past the four frames.
 constexpr std::uint32_t reveal_frames = 4;
 bool reveal_frame(FrontEndState& state, const FrontEndContent& content, std::uint32_t step) {
     switch (step) {
@@ -239,6 +240,7 @@ bool reveal_frame(FrontEndState& state, const FrontEndContent& content, std::uin
         copy_oam(state);
         load_cgram(state, asset(content, base_palette_high), 0x40);
         print_tour_menu(state, content);
+        play_menu_sound(state, MenuSound::select); // $80:E595, after `$80:E730`'s redraw
         return true;
     case 3:
         copy_oam(state);
@@ -311,7 +313,6 @@ void tour_menu_entry_frame(FrontEndState& state, const FrontEndContent& content)
             level_of(state) = pending; // $80:E580-E58E: the level revealed, nothing pending
             pending = 0;
             menu.revealing = true;
-            play_menu_sound(state, MenuSound::select); // $80:E595
             return;
         }
         show_medal_entries(state);

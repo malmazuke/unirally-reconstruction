@@ -23,6 +23,9 @@ constexpr std::uint32_t fade_out_frames = 15, blank_frame = 16, reset_frame = 97
 // the menus' screen at `menus_frame`), the fade in, and PICK TOUR on its last frame.
 constexpr std::uint32_t exit_blank_frame = 16, menus_frame = 117, exit_fade_in_frame = 118,
                         pick_tour_frame = 132;
+// The fade out ends in forced blank without a frame wait (`$83:A4FE-A506`), so each sound session
+// starts in the blank frame itself (R-0077).
+constexpr std::uint32_t sound_upload_frame = blank_frame, exit_sound_upload_frame = exit_blank_frame;
 
 // The award's assets (profile v20).
 constexpr unsigned background_map = 0x53, background_tiles = 0x54, podium_map = 0x65,
@@ -121,8 +124,10 @@ void upload_rider(FrontEndState& state, const FrontEndContent& content) {
     upload_pose(state, content, state.award.pose);
 }
 
-// $83:B004-B062: a step's build; false for the reset step, which only tests the pads.
+// $83:B004-B062: a step's build; false for the reset step, which only tests the pads. The medal
+// sounds as `$77:10CB` leaves 0x26 and 0x30 (`$83:B02C-B03A`): effect 1 at volume 127 (`$83:A286`).
 bool build_step(FrontEndState& state, const FrontEndContent& content) {
+    constexpr std::int16_t second_ring = 0x30;
     auto& award = state.award;
     const auto tables = content.award_tables;
     const auto step = static_cast<std::uint16_t>(award.step + 1);
@@ -133,6 +138,8 @@ bool build_step(FrontEndState& state, const FrontEndContent& content) {
     }
     award.step = step;
     award.pose = word_of(tables, poses_at + 2U * step);
+    if (award.medal_step == repeat_medal || award.medal_step == second_ring)
+        play_screen_sound(state, 1);
     const auto medal_step = ++award.medal_step;
     if (medal_step >= 0) {
         if (medal_step < landed)
@@ -272,6 +279,8 @@ void tour_award_frame(FrontEndState& state, const FrontEndContent& content, Fron
     auto& award = state.award;
     const auto frame = state.script_frame;
     if (award.exit_frame == 0) {
+        if (frame == sound_upload_frame) // $83:AEFB
+            state.sound_cues.push_back(audio_load(AudioSessionLoad::award));
         if (frame <= blank_frame) {
             fade_down(state, frame);
             return;
@@ -323,6 +332,8 @@ void tour_award_frame(FrontEndState& state, const FrontEndContent& content, Fron
 
 void way_back_frame(FrontEndState& state, const FrontEndContent& content, std::uint32_t exit,
                     std::uint32_t delay, bool hook_at_once) {
+    if (exit == exit_sound_upload_frame) // $83:B119
+        state.sound_cues.push_back(audio_load(AudioSessionLoad::award_return));
     if (exit <= exit_blank_frame) {
         fade_down(state, exit);
         return;
@@ -340,6 +351,23 @@ void way_back_frame(FrontEndState& state, const FrontEndContent& content, std::u
         // TOUR forward and PICK TRACK back (`$80:E92F`); otherwise the other way round.
         return_to_tour_menu(state, !state.track_menu.returning);
     }
+}
+
+// The award's frames that end in `$83:A923`'s frame wait, as the original's dispatcher watches
+// show them (R-0077): none from the session's frame until the frame before the reset's, which
+// waits, then none until the frame before the fade in's first, and every frame from it.
+bool award_frame_waits(const FrontEndState& state) {
+    const auto& award = state.award;
+    if (award.exit_frame == 0) {
+        const auto frame = state.script_frame;
+        return frame < sound_upload_frame || frame == reset_frame - 1
+            || frame >= first_fade_in_frame - 1;
+    }
+    return way_back_frame_waits(award.exit_frame - 1, 0);
+}
+// The way back's: none from the session's frame until the menus' screen.
+bool way_back_frame_waits(std::uint32_t exit, std::uint32_t delay) {
+    return exit < exit_sound_upload_frame || exit >= menus_frame + delay;
 }
 
 // $83:88D1-$80:BC7E after PICK TOUR's return from a completion: `$80:A858` (two frames), then

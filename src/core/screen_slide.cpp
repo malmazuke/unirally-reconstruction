@@ -3,6 +3,7 @@
 #include "front_end_screens.hpp"
 
 #include <array>
+#include <stdexcept>
 #include <utility>
 
 namespace unirally::front_end_screens {
@@ -69,6 +70,16 @@ void play_menu_sound(FrontEndState& state, MenuSound sound) {
     const auto cue = cues[static_cast<unsigned>(sound)];
     state.sound_cues.push_back(audio_enqueue(effect_volume, cue.volume));
     state.sound_cues.push_back(audio_enqueue(start_effect, cue.effect));
+}
+
+void play_screen_sound(FrontEndState& state, std::uint8_t effect) {
+    constexpr std::uint8_t effect_volume = 8, start_effect = 2, helpers = 28;
+    if (effect == 0 || effect > helpers) throw std::invalid_argument("no sound helper plays this");
+    const std::uint8_t volume = (effect == 1 || effect == 13 || effect >= 17) ? 127
+                              : effect <= 3                                  ? 63
+                                                                             : 79;
+    state.sound_cues.push_back(audio_enqueue(effect_volume, volume));
+    state.sound_cues.push_back(audio_enqueue(start_effect, effect));
 }
 
 void start_slide(FrontEndState& state, const FrontEndContent& content, bool back) {

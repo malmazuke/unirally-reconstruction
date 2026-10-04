@@ -157,6 +157,9 @@ void start_slide(FrontEndState& state, const FrontEndContent& content, bool back
 // (command 2) on the sound queue (R-0076): the result's, a choice's, the slides' and a move's.
 enum class MenuSound : std::uint8_t { result, select, forward_slide, back_slide, navigate };
 void play_menu_sound(FrontEndState& state, MenuSound sound);
+// The award's and endings' sound helpers ($83:A286-A4D0), one for each effect 1-28: its volume
+// (127 for effects 1, 13 and 17-28, 63 for 2 and 3, otherwise 79), then the effect (R-0077).
+void play_screen_sound(FrontEndState& state, std::uint8_t effect);
 bool slide_frame(FrontEndState& state, const FrontEndContent& content);
 
 // rider_menu.cpp: 1P chosen on the main menu (`$80:BB9C`), or Y or X on PICK TOUR (`$80:BBA3`,
@@ -292,12 +295,17 @@ void run_nmi_hook(FrontEndState& state, const FrontEndContent& content);
 // runs `delay` (1) frame later. NMI's hook first runs in the frame the menus' screen comes back
 // when `hook_at_once` (after most endings), else a frame later (after the award, and after
 // WALKER's and JUMPER's endings); why is not recovered (R-0062).
+// Whether the award's frame just run ends in a frame wait; the way back's, by its frame and delay.
+bool award_frame_waits(const FrontEndState& state);
+bool way_back_frame_waits(std::uint32_t exit, std::uint32_t delay);
 void way_back_frame(FrontEndState& state, const FrontEndContent& content, std::uint32_t exit,
                     std::uint32_t delay, bool hook_at_once);
 // A gold medal's ending (R-0062).
 void start_tour_ending(FrontEndState& state);
 bool has_tour_ending(unsigned tour);
 void tour_ending_frame(FrontEndState& state, const FrontEndContent& content);
+// Whether the ending's frame just run ends in a frame wait (R-0077).
+bool tour_ending_frame_waits(const FrontEndState& state);
 // $83:8E3A and `$80:F814` to VRAM word `word`: pose `pose` into six columns of object tiles a
 // row, five rows 0x100 words apart.
 void upload_pose(FrontEndState& state, const FrontEndContent& content, std::uint16_t pose,
@@ -309,6 +317,8 @@ void upload_pose(FrontEndState& state, const FrontEndContent& content, std::uint
 void start_hunter_ending(FrontEndState& state, bool both_pads);
 void hunter_ending_frame(FrontEndState& state, const FrontEndContent& content, FrontEndPads pads);
 bool hunter_ending_waits(const FrontEndState& state);
+// Whether HUNTER's ending's frame just run ended in a wait that polls the sound queue (R-0077).
+bool hunter_ending_queue_waits(const FrontEndState& state);
 // `JML $80:8858`, the power-on entry: the boot again, the records kept.
 void soft_reset(FrontEndState& state);
 // The main menu's code B, Down, L and R (`$80:F0D6`), then a frame of its 31 before the ending.

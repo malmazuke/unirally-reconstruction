@@ -240,6 +240,9 @@ struct OnePlayerRecords {
     // saved at `$77:10E3` and clears the flag.
     bool cheat{};
     std::array<std::uint8_t, 16> levels_before_cheat{}; // $77:10E3 + rider
+    // $77:10B1: the race song counter, 0 after a cold start; every race's sound load
+    // increments it modulo 6 and plays the song it names (`race_song_resource`, R-0076).
+    std::uint8_t race_song_counter{};
 };
 OnePlayerRecords cold_start_records();
 
@@ -388,6 +391,10 @@ struct NowPlaying {
     std::uint8_t opponent{0x10};  // $017F: BRONSEN, SILVIA, GOLDWYN (0x11-0x13) or ANTI-UNI 0x14
     std::uint8_t record_holder{}; // $018F
     NowPlayingChoice choice{};
+    // $0072 as the choice's frame read it (`$80:D1EC`): pad 1. The fade reads no pad and the race
+    // keeps the menus' work RAM aside, so the stunt result's first tally pass reads it
+    // (`$83:987D`, `$80:F758`).
+    std::uint16_t choice_pads{};
 };
 
 struct MainMenu {
@@ -529,6 +536,9 @@ struct FrontEndState {
     // (AUDIO-FIRST-RACE, R-0076); each update starts it empty, the caller hands it on.
     AudioCueList sound_cues;
     bool local_result_seen{}; // a local result has returned in this session (R-0071)
+    // The song counter value the race now loading or last loaded plays (`race_song_resource`):
+    // the records' counter after its increment on the race's start (R-0077).
+    std::uint8_t race_song{};
     // For 1P, once NOW PLAYING's Race has faded out: the race is `tour_menu.track` for
     // `rider_menu.rider` against `now_playing.opponent`.
     FrontEndMode mode{};
@@ -555,9 +565,20 @@ RgbFrame render_front_end(const FrontEndState& state);
 ClassicRaceScenario one_player_race_scenario(const FrontEndState& state);
 
 // The frames between NOW PLAYING's fade and a race's initialization on the laboratory's menu path
-// (R-0057, R-0058): DRAGSTER's 121, ZOOM ZOO's 169; 0 for a track not measured.
+// (R-0057, R-0058, R-0077): the race's content load until its sound session's first FF request
+// (`race_sound_load_offset`, by track) plus the session's upload until the race's first update
+// (`race_sound_upload_frames`, by track and song), less one; a one-player race's (state form).
+// The one-argument form keeps the local and league modes' measurements for tracks 0-4 (0 for
+// the others), which those modes use until they track the song counter.
 std::uint32_t race_loading_frames(ClassicRaceTrack track);
+std::uint32_t race_loading_frames(ClassicRaceTrack track, std::uint8_t song_counter);
 std::uint32_t race_loading_frames(const FrontEndState& state);
+std::uint32_t race_sound_load_offset(ClassicRaceTrack track);
+std::uint32_t race_sound_upload_frames(ClassicRaceTrack track, std::uint8_t song_counter);
+// The race's load cues' timing for the audio side (`race_sound::loading`).
+RaceSoundLoadTiming race_sound_load_timing(ClassicRaceTrack track, std::uint8_t song_counter);
+// On a race's start: the records' song counter advances and names the race's song ($83:CA08).
+void choose_race_song(FrontEndState& state);
 
 // The times the menus take from a native race on its result load's first update: the totals,
 // and for a lap race (its scenario's race mode 1) both riders' lap slots.

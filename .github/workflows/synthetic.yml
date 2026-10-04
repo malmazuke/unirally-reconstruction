@@ -131,6 +131,10 @@ jobs:
         if: needs.changes.outputs.docs_only != 'true'
         run: python3 tools/project.py test --suite synthetic --preset app-debug --artifacts artifacts/ci/test-app-debug --report artifacts/ci/test-app-debug.json --timeout 600 --no-python-tests
 
+      - name: Build optimized frontend (app-release, the build to play with native audio)
+        if: needs.changes.outputs.docs_only != 'true'
+        run: python3 tools/project.py build --preset app-release --timeout 900 --report artifacts/ci/build-app-release.json
+
       - name: Check frontend runtime link and help
         if: needs.changes.outputs.docs_only != 'true'
         run: |

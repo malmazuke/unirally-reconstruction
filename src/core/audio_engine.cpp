@@ -11,7 +11,9 @@ constexpr std::uint64_t cpu_frequency = 21281370, smp_frequency = 2050560;
 NativeAudioEngine::NativeAudioEngine(const AudioSoundSet& score, const AudioPitchData& pitch,
                                      AudioControllerSource& controllers,
                                      AudioEngineEventSink* events)
-    : sets_{&score, nullptr}, pitch_(&pitch), controllers_(&controllers), events_(events) {}
+    : pitch_(&pitch), controllers_(&controllers), events_(events) {
+    sets_[0] = &score;
+}
 const AudioSoundSet& NativeAudioEngine::set(AudioSoundSetId id) const {
     const auto* found = sets_.at(static_cast<std::size_t>(id));
     if (!found) throw std::invalid_argument("audio content lacks this sound set");
@@ -166,8 +168,8 @@ void NativeAudioEngine::restore(const AudioEngineState& state) {
         throw std::invalid_argument("invalid native audio engine continuation");
     AudioCpuWorkClock candidate_cpu;
     candidate_cpu.restore(state.cpu);
-    if (state.sound_set > AudioSoundSetId::first_race
-        || state.uploading_sound_set > AudioSoundSetId::first_race)
+    if (state.sound_set > AudioSoundSetId::ending
+        || state.uploading_sound_set > AudioSoundSetId::ending)
         throw std::invalid_argument("invalid native audio sound set");
     const auto& active = set(state.sound_set);
     const auto& uploading = set(state.uploading_sound_set);

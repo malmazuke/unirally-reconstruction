@@ -191,7 +191,10 @@ bool page_frame(FrontEndState& state, const FrontEndContent& content, std::uint3
         return false;
     }
     if (frame == page_tiles_frame) load_vram(state, asset(content, page.tiles), page_tiles_word);
-    if (frame + 1 == page.reveal_frame) copy_reveal_tables(state, content);
+    if (frame + 1 == page.reveal_frame) {
+        play_menu_sound(state, MenuSound::forward_slide); // $80:E2D5, before the copy
+        copy_reveal_tables(state, content);
+    }
     if (frame < page.reveal_frame) return false;
     const auto step = frame - page.reveal_frame;
     if (step <= reveal_steps) {
@@ -369,6 +372,25 @@ bool hunter_ending_waits(const FrontEndState& state) {
     if (frame < page.reveal_frame) return false;
     if (frame < first_wait_frame(ending)) return true;
     return ending.part == HunterEndingPart::first_page && !ending.cheat_page;
+}
+
+// The frames that end in a wait which polls the sound queue, `$80:FADF`'s or `$83:A923`'s, as
+// the original's dispatcher watches show them (`all-gold`, R-0077): a part's first frame and its
+// fade (`$83:A4E9`, 1-15); not the blank frame's loads, nor a page's tile copies before its
+// reveal, nor the credits' loads before frame 46; every frame from the one before the reveal's
+// first picture (its tables' copy and sound, `$80:E2D5`) or frame 46 on.
+bool hunter_ending_queue_waits(const FrontEndState& state) {
+    constexpr std::uint32_t last_fade_frame = page_load_frame - 1, credits_waits_from = 46;
+    const auto& ending = state.hunter;
+    const auto frame = part_frame(state, state.script_frame);
+    if (frame <= last_fade_frame) return true;
+    switch (ending.part) {
+    case HunterEndingPart::first_page:
+    case HunterEndingPart::second_page: return frame + 1 >= page_of(ending).reveal_frame;
+    case HunterEndingPart::credits: return frame >= credits_waits_from;
+    case HunterEndingPart::leaving: return false;
+    }
+    return false;
 }
 
 } // namespace unirally::front_end_screens

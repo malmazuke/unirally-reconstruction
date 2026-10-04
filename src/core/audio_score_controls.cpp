@@ -52,8 +52,10 @@ void TitleMenuAudioScore::initialize_score_note(std::uint8_t index, std::uint8_t
 }
 // R-0075, 0E03 control table. Control values are the identified score format.
 void TitleMenuAudioScore::apply_score_control(std::uint8_t index, std::uint8_t control) {
-    if (control <= 0x86 || control == 0xa3)
+    if (control <= 0x87)
         apply_sequence_control(index, control);
+    else if (control == 0xa3 || control == 0xa4)
+        apply_random_control(index, control);
     else if (control >= 0xa5 && control <= 0xa8)
         apply_flag_control(index, control);
     else if (control == 0x8c || (control >= 0x97 && control <= 0xa2))
@@ -146,6 +148,36 @@ void TitleMenuAudioScore::apply_sequence_control(std::uint8_t index, std::uint8_
         add_work(18);
         voice.fixed_duration = read_byte(index);
         break;
+    case 0x87:
+        // R-0077, 0F34-0F39: the next note reads its duration inline (`$0231`, which 0D5C-0D68
+        // tests and clears) even under a fixed duration. The race songs 63-66 use it.
+        add_work(22);
+        voice.next_duration_inline = true;
+        break;
+    default: reject_score_control(control);
+    }
+}
+
+// 10EA-1102 (A3) and 1103-113F (A4): a jump or a call to one of a table's targets, chosen by the
+// driver's random routine (13DA).
+void TitleMenuAudioScore::apply_random_control(std::uint8_t index, std::uint8_t control) {
+    auto& voice = state_.voices.at(index);
+    switch (control) {
+    case 0xa4: {
+        // R-0077, 1103-113F: a call to one of `count` targets chosen at random: skip to the
+        // choice's word (CLRC drops ASL's carry), read it, skip the table's rest (the carry of
+        // that ASL is added), push the return pointer (1301) and jump.
+        add_work(16 + 682 + 292);
+        const auto count = read_byte(index);
+        const auto choice = random_choice(count);
+        voice.pointer = word(voice.pointer + byte(2U * choice));
+        const auto target = read_word(index);
+        const auto rest = byte(count - 1U - choice);
+        voice.pointer = word(voice.pointer + byte(2U * rest) + (unsigned{rest} >> 7U));
+        push_pointer(index);
+        voice.pointer = target;
+        break;
+    }
     case 0xa3: {
         add_work(16 + 682 + 4 + 8 + 4 + 8 + 6 + 10 + 8 + 4 + 10 + 6 + 42);
         const auto count = read_byte(index);
@@ -212,6 +244,23 @@ void TitleMenuAudioScore::apply_instrument_control(std::uint8_t index, std::uint
     case 0x97:
         add_work(16 + 506 + 6);
         set_instrument(index, read_byte(index));
+        break;
+    case 0x9a: {
+        // R-0077, 1064-1073: the noise clock (bits 0-4) into FLG with echo writes off (bit 5).
+        constexpr std::uint8_t flag_register = 0x6c, echo_writes_off = 0x20, clock_bits = 0x1f;
+        const auto value = byte((read_byte(index) & clock_bits) | echo_writes_off);
+        add_work(38);
+        if (measured_work_) measured_work_->dsp_writes.push_back({measured_work_->ticks,
+                                                                  flag_register, value});
+        add_work(6);
+        break;
+    }
+    case 0x98:
+    case 0x99:
+        // R-0077, 1052-1061: the voice's bit of the noise voices `$D6` set (98) or cleared (99).
+        add_work(26);
+        state_.noise_voices = control == 0x98 ? byte(state_.noise_voices | (1U << index))
+                                              : byte(state_.noise_voices & ~(1U << index));
         break;
     case 0x9b:
     case 0x9c:

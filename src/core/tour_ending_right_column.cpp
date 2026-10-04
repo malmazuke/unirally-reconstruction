@@ -98,11 +98,12 @@ void drop_part(FrontEndState& state, const FrontEndContent& content, unsigned st
     set_elephant_tile(state, content, ((ending.count & 0xffU) >> 1) & 3U);
 }
 
-// $83:BCFC-BD7E: the elephant lands on the uni. The red uni moves to tile 0x108 (its ride poses
-// sent there) so that the uni under the elephant can take the squashed poses (0x13DC on) at tile
-// 0x100; the first frame of each pair copies no objects.
+// $83:BCFC-BD7E: the elephant lands on the uni with effect 14. The red uni moves to tile 0x108
+// (its ride poses sent there) so that the uni under the elephant can take the squashed poses
+// (0x13DC on) at tile 0x100; the first frame of each pair copies no objects.
 void squash_part(FrontEndState& state, const FrontEndContent& content, unsigned step,
                  unsigned wait) {
+    constexpr std::uint8_t landing_sound = 14;
     auto& ending = state.ending;
     if (wait == 1) {
         upload_built_pose(state, content, second_pose_word);
@@ -117,6 +118,7 @@ void squash_part(FrontEndState& state, const FrontEndContent& content, unsigned 
         return;
     }
     if (step == 0) {
+        play_screen_sound(state, landing_sound);
         ending.step = ending.count = 0;
         oam_byte(state, red_uni, 2) = second_pose_tile;
         oam_byte(state, uni, 3) = squashed_attr;
@@ -212,6 +214,10 @@ constexpr std::uint16_t red_uni_shown = 0x17, red_uni_rises = 0x21, ball_falls_f
                         scarf_poses = 0x1384, sink_poses = 0x13d4, bound_rise = 0x0c,
                         second_bound = 0x15, last_sink_pose = 7;
 constexpr std::uint32_t setup_frame = 93;
+// Its sounds: the jump's rise on each step from 0x21 (`$83:B8FC`), the bump (`$83:B918-B91B`),
+// the ball gone (`$83:BA10`), each bound (`$83:BA6C`, `$83:BB2A-B2D`).
+constexpr std::uint8_t rise_sound = 7, bump_sound = 8, ball_sound = 9, ball_gone_sound = 10,
+                       bound_sound = 7, second_bound_sound = 11;
 // $83:B8B9, $83:B925, $83:B9A7, $83:BA26 and $83:BA87 (which ends on t').
 constexpr Loop ride_in{108, 38, 1}, bump{ride_in.end(), 7, 1}, ball_falls{bump.end(), 14, 1},
     scarf{ball_falls.end(), 18, 2}, bound_off{scarf.end(), 48, 2};
@@ -228,11 +234,11 @@ void setup(FrontEndState& state, const FrontEndContent& content) {
 }
 
 // The steps of the first three loops end alike: the walk's pose to tile 0x100, the objects,
-// the next walk pose.
-void walk_step(FrontEndState& state, const FrontEndContent& content) {
+// the next walk pose; only the first loop's (`$83:B8EB`) has the walk's footsteps.
+void walk_step(FrontEndState& state, const FrontEndContent& content, bool footsteps) {
     upload_built_pose(state, content, first_pose_word);
     copy_oam(state);
-    walk(state);
+    footsteps ? walk(state) : walk_pose(state);
     ++state.ending.step;
 }
 
@@ -240,8 +246,10 @@ void walk_step(FrontEndState& state, const FrontEndContent& content) {
 // step 0x21 it rises, jumping.
 void ride_in_part(FrontEndState& state, const FrontEndContent& content, unsigned, unsigned wait) {
     if (wait == 1) {
-        walk_step(state, content);
-        if (state.ending.step >= red_uni_rises) oam_byte(state, red_uni, 1) -= rise;
+        walk_step(state, content, true);
+        if (state.ending.step < red_uni_rises) return;
+        play_screen_sound(state, rise_sound);
+        oam_byte(state, red_uni, 1) -= rise;
         return;
     }
     oam_byte(state, uni, 0) -= ride_speed;
@@ -252,10 +260,14 @@ void ride_in_part(FrontEndState& state, const FrontEndContent& content, unsigned
 // $83:B91E-B99A: the red uni hits the block, which bumps up, and the ball pops out.
 void bump_part(FrontEndState& state, const FrontEndContent& content, unsigned step, unsigned wait) {
     if (wait == 1) {
-        walk_step(state, content);
+        walk_step(state, content, false);
         return;
     }
-    if (step == 0) state.ending.step = 0;
+    if (step == 0) {
+        play_screen_sound(state, bump_sound);
+        play_screen_sound(state, ball_sound);
+        state.ending.step = 0;
+    }
     const auto table = content.ending_tables[tour];
     const auto at = bump_steps_at + bump_step_bytes * (state.ending.step & 0xffU);
     oam_byte(state, red_uni, 0) = table_byte(table, at);
@@ -270,7 +282,7 @@ void ball_falls_part(FrontEndState& state, const FrontEndContent& content, unsig
                      unsigned wait) {
     auto& ending = state.ending;
     if (wait == 1) {
-        walk_step(state, content);
+        walk_step(state, content, false);
         if (ending.step >= ball_falls_from) ++ending.drop;
         return;
     }
@@ -286,6 +298,7 @@ void scarf_part(FrontEndState& state, const FrontEndContent& content, unsigned s
                 unsigned wait) {
     auto& ending = state.ending;
     if (wait == 0 && step == 0) {
+        play_screen_sound(state, ball_gone_sound);
         ending.step = 0;
         high_bits(state, bumped_block) = ball_gone_high;
         oam_byte(state, red_uni, 2) = second_pose_tile;
@@ -301,14 +314,19 @@ void scarf_part(FrontEndState& state, const FrontEndContent& content, unsigned s
     ++oam_byte(state, red_uni, 0);
 }
 
-// $83:BAED-BB36 after each step of the bound: at step 0x15 the red uni bounds again, and from it
-// the uni's sinking poses (0x13D4 on, held at the eighth) are built in the second buffer.
+// $83:BAED-BB36 after each step of the bound: at step 0x15 the red uni bounds again, with its
+// two sounds, and from it the uni's sinking poses (0x13D4 on, held at the eighth) are built in
+// the second buffer.
 void after_bound_step(FrontEndState& state) {
     auto& ending = state.ending;
     set_low_byte(ending.drop, ending.drop - 1U);
     ++ending.step;
     if (ending.step < second_bound || ending.step >= bound_off.steps) return;
-    if (ending.step == second_bound) set_low_byte(ending.drop, bound_rise);
+    if (ending.step == second_bound) {
+        play_screen_sound(state, bound_sound);
+        play_screen_sound(state, second_bound_sound);
+        set_low_byte(ending.drop, bound_rise);
+    }
     ending.second_pose = static_cast<std::uint16_t>(sink_poses + ending.count);
     if ((ending.count & 0xffU) < last_sink_pose) set_low_byte(ending.count, ending.count + 1U);
 }
@@ -332,6 +350,7 @@ void bound_off_part(FrontEndState& state, const FrontEndContent& content, unsign
         return;
     }
     if (step == 0) {
+        play_screen_sound(state, bound_sound);
         ending.step = ending.count = 0;
         set_low_byte(ending.drop, bound_rise);
         oam_byte(state, red_uni, 2) = second_pose_tile;
@@ -395,13 +414,15 @@ void walk_in_part(FrontEndState& state, const FrontEndContent& content, unsigned
     if (ending.step >= weight_drops) oam_byte(state, weight, 1) += drop_speed;
 }
 
-// $83:C86E-C88E: the weight lands (back up a step) and the uni under it is hidden.
+// $83:C86E-C88E: the weight lands with effect 24 (back up a step) and the uni under it is hidden.
 void hold_part(FrontEndState& state, const FrontEndContent&, unsigned step, unsigned wait) {
+    constexpr std::uint8_t landing_sound = 24;
     if (wait == 1) {
         copy_oam(state);
         return;
     }
     if (step > 0) return;
+    play_screen_sound(state, landing_sound);
     oam_byte(state, weight, 1) -= drop_speed;
     high_bits(state, 0) = squashed_high;
 }
@@ -454,11 +475,16 @@ void walk_in_part(FrontEndState& state, const FrontEndContent& content, unsigned
     ++state.ending.step;
 }
 
-// $83:BFD2-C020: the uni wobbles (the table's sixteen poses in turn), a pose every second frame.
+// $83:BFD2-C020: effect 17, then the uni wobbles (the table's sixteen poses in turn), a pose
+// every second frame.
 void wobble_part(FrontEndState& state, const FrontEndContent& content, unsigned step,
                  unsigned wait) {
+    constexpr std::uint8_t wobble_sound = 17;
     auto& ending = state.ending;
-    if (wait == 0 && step == 0) ending.step = ending.count = 0;
+    if (wait == 0 && step == 0) {
+        play_screen_sound(state, wobble_sound);
+        ending.step = ending.count = 0;
+    }
     if (wait != 2) return;
     upload_built_pose(state, content, first_pose_word);
     copy_oam(state);
@@ -479,9 +505,11 @@ std::uint8_t tumble_step(std::uint16_t rise) {
 // $83:C022-C0E7: the red uni cartwheels in (poses 0x13B5 counted down, seventeen in turn, at
 // tile 0x108), shown from step 0x0B; from step 0x1B the uni is knocked away, rising then falling
 // by `$77:10A7`, its poses from 0 on in the second buffer, sent to tile 0x100 every step
-// (`$83:AB25`). `$77:10CB` counts the knocked steps to 0x2C.
+// (`$83:AB25`). `$77:10CB` counts the knocked steps to 0x2C. Each cartwheel's first pose sounds
+// effect 15 (`$83:C07C-C081`), the knock effect 2 (`$83:C0B3-C0B5`).
 void knock_part(FrontEndState& state, const FrontEndContent& content, unsigned step,
                 unsigned wait) {
+    constexpr std::uint8_t cartwheel_sound = 15, knock_sound = 2;
     auto& ending = state.ending;
     if (wait == 0) {
         if (step == 0) {
@@ -495,10 +523,13 @@ void knock_part(FrontEndState& state, const FrontEndContent& content, unsigned s
     upload_built_pose(state, content, second_pose_word);
     upload_pose(state, content, ending.second_pose, first_pose_word);
     copy_oam(state);
-    ending.pose = static_cast<std::uint16_t>(cartwheel_poses - ending.step % cartwheel_pose_count);
+    const auto cartwheel_pose = ending.step % cartwheel_pose_count;
+    if (cartwheel_pose == 0) play_screen_sound(state, cartwheel_sound);
+    ending.pose = static_cast<std::uint16_t>(cartwheel_poses - cartwheel_pose);
     ending.second_pose = ending.count;
     ++ending.step;
     if (ending.step < knocked_from) return;
+    if (ending.step == knocked_from) play_screen_sound(state, knock_sound);
     ++oam_byte(state, uni, 0);
     oam_byte(state, uni, 1) += tumble_step(ending.drop);
     ++ending.drop;

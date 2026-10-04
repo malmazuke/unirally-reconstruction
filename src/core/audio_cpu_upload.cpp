@@ -236,30 +236,55 @@ void send_sample_resource(Clock& c, const AudioCpuUploadData& data, unsigned sam
     ++phase;
 }
 
+// The resources a session sends and the bytes of its tables and score transfers.
+struct SetUpload {
+    unsigned driver, tables, score;
+    const std::vector<std::uint8_t>& tables_bytes;
+    const std::vector<std::uint8_t>& score_bytes;
+    const std::array<std::uint8_t, 64>& slots;
+};
+// $80:A0FC-A10E (title), $83:CA2D-CB9D (a race, by song), $83:A614 (the award), $83:A507 (a gold
+// ending; its driver is resource 51) and $83:A721 (the title set again after either).
+SetUpload upload_of(const AudioCpuUploadData& data, AudioSoundSetId set) {
+    if (is_race_sound_set(set)) {
+        const auto score = race_song_resource_of(set);
+        return {50, 54, score, data.race_tables_transfer,
+                data.race_song_transfers[score - first_race_song_resource],
+                data.race_sample_slots};
+    }
+    if (set == AudioSoundSetId::award)
+        return {50, 52, 58, data.award.tables_transfer, data.award.score_transfer,
+                data.award.sample_slots};
+    if (set == AudioSoundSetId::ending)
+        return {51, 55, 60, data.ending.tables_transfer, data.ending.score_transfer,
+                data.ending.sample_slots};
+    return {50, 53, 57, data.menu_transfer, data.title_transfer, data.sample_slots};
 }
+} // namespace
+
 void native_audio_cpu_begin_session(AudioCpuWorkClock& c) {
     begin_next_transfer(c);
 }
-// $80:A0FC-A10E (title) and $83:CA74-CA89 (first race): driver, tables, score.
+// Driver, tables, score: each through the IPL to 0400, 1600 and 1D00.
 void native_audio_cpu_uploads(AudioCpuWorkClock& c, const AudioCpuUploadData& data,
                               AudioSoundSetId set) {
-    const bool race = set == AudioSoundSetId::first_race;
-    const unsigned tables = race ? 54 : 53, score = race ? 62 : 57;
-    const auto& tables_bytes = race ? data.race_tables_transfer : data.menu_transfer;
-    const auto& score_bytes = race ? data.race_song_transfer : data.title_transfer;
-    if (resource_length(data, 50) != 4445 || tables_bytes.size() != resource_length(data, tables)
-        || score_bytes.size() != resource_length(data, score) || tables_bytes.empty()
-        || score_bytes.empty())
+    const auto upload = upload_of(data, set);
+    if (resource_length(data, upload.driver) != 4445
+        || upload.tables_bytes.size() != resource_length(data, upload.tables)
+        || upload.score_bytes.size() != resource_length(data, upload.score)
+        || upload.tables_bytes.empty() || upload.score_bytes.empty())
         throw std::invalid_argument("unidentified audio upload domain");
     for (unsigned group = 0; group < 3; ++group) {
-        const unsigned index = group == 0 ? 50 : (group == 1 ? tables : score);
+        const unsigned index =
+            group == 0 ? upload.driver : (group == 1 ? upload.tables : upload.score);
         select_resource(c, data, index);
         wait_ipl_ready(c);
         begin_header(c, group == 0 ? 0x400 : (group == 1 ? 0x1600 : 0x1d00));
         const auto length = resource_length(data, index);
         for (unsigned offset = 0; offset < length; ++offset) {
-            const auto value =
-                group == 0 ? 0 : (group == 1 ? tables_bytes[offset] : score_bytes[offset]);
+            const auto value = group == 0   ? 0
+                             : group == 1 ? upload.tables_bytes[offset]
+                                          : upload.score_bytes[offset];
             send_byte(c, static_cast<std::uint8_t>(offset), static_cast<std::uint8_t>(value),
                       offset + 1 == length);
         }
@@ -301,8 +326,7 @@ void native_audio_cpu_finish_driver_entry(AudioCpuWorkClock& c) {
 // including FF holes; each nonempty slot names identified sample data only.
 void native_audio_cpu_upload_samples(AudioCpuWorkClock& c, const AudioCpuUploadData& data,
                                      AudioSoundSetId set) {
-    const auto& slots =
-        set == AudioSoundSetId::first_race ? data.race_sample_slots : data.sample_slots;
+    const auto& slots = upload_of(data, set).slots;
     for (const auto sample : slots) {
         if (sample != 255
             && (sample >= 50 || data.resource_lengths[sample] < 6

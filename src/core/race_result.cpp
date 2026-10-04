@@ -689,6 +689,95 @@ ClassicRaceScenario one_player_race_scenario(const FrontEndState& state) {
     return scenario;
 }
 
+// Nine tours of five tracks: every track the one-player menus reach.
+constexpr std::size_t classic_race_tracks =
+    (front_end_screens::hunter + 1U) * front_end_screens::tracks_per_tour;
+// R-0077: the race's sound loading on the menus' path, measured on six races of every track
+// from NOW PLAYING (`six-quits[-tN]`): frames from the choice frame (the fade's last) to the
+// race sound session's first FF request (`$83:CA72`'s `JSL $82:807E`), indexed by track.
+constexpr std::array<std::uint8_t, classic_race_tracks> race_sound_load_offsets{
+     42,  90,  49, 117,  97,  90,  88,  50, 110,  73, 131,  81,  57,  90,  55,
+    102,  96,  44,  85,  94,  73,  81,  44,  84,  80,  93,  83,  58,  94,  68,
+     89,  95,  48,  87,  71, 110,  66,  47,  82,  94, 142,  69,  77,  91,  71,
+};
+// The frames from that request to the race's first update, by track and song counter. The
+// session uploads the driver, the tables, the song and the samples in one piece of CPU work, and
+// the race's first update follows in the frame after its polls (two frames after, when they run
+// late in theirs), so the song's length, the request's place in its frame and the upload's own
+// variation decide it; counters 0 and 3 both play resource 64.
+constexpr std::array<std::array<std::uint8_t, race_song_count>, classic_race_tracks>
+    race_sound_upload_frame_table{{
+        {79, 80, 79, 79, 81, 79},
+        {79, 80, 79, 79, 81, 79},
+        {79, 80, 79, 79, 80, 79},
+        {79, 80, 79, 79, 81, 79},
+        {80, 81, 80, 80, 81, 79},
+        {80, 81, 80, 80, 81, 79},
+        {79, 80, 79, 79, 80, 79},
+        {79, 80, 79, 79, 80, 79},
+        {80, 81, 79, 80, 81, 79},
+        {80, 81, 79, 80, 81, 79},
+        {79, 80, 79, 79, 80, 79},
+        {80, 81, 80, 80, 81, 79},
+        {79, 80, 79, 79, 80, 79},
+        {80, 81, 80, 80, 81, 79},
+        {80, 80, 79, 80, 81, 79},
+        {80, 81, 80, 80, 81, 79},
+        {79, 80, 79, 79, 80, 79},
+        {79, 80, 79, 79, 80, 79},
+        {80, 80, 79, 80, 81, 79},
+        {79, 80, 79, 80, 81, 79},
+        {80, 81, 79, 80, 81, 79},
+        {79, 80, 79, 79, 80, 78},
+        {80, 81, 80, 80, 81, 79},
+        {80, 81, 80, 80, 81, 79},
+        {80, 81, 80, 80, 81, 79},
+        {80, 80, 79, 79, 81, 79},
+        {79, 80, 79, 79, 81, 79},
+        {80, 81, 80, 80, 81, 79},
+        {80, 81, 80, 80, 81, 79},
+        {79, 80, 79, 79, 80, 78},
+        {79, 80, 79, 79, 80, 79},
+        {80, 81, 80, 80, 81, 79},
+        {79, 80, 79, 79, 80, 79},
+        {79, 80, 79, 79, 80, 79},
+        {79, 80, 79, 79, 80, 79},
+        {80, 81, 79, 80, 81, 79},
+        {80, 81, 80, 80, 81, 79},
+        {79, 80, 79, 79, 80, 79},
+        {80, 81, 80, 80, 81, 79},
+        {80, 81, 80, 80, 81, 79},
+        {80, 81, 80, 80, 81, 79},
+        {80, 80, 79, 80, 81, 79},
+        {80, 81, 80, 80, 81, 79},
+        {80, 80, 79, 80, 81, 79},
+        {80, 81, 79, 80, 81, 79},
+    }};
+// The frames the start's countdown cue (`$82:D84A`) runs before the request.
+constexpr std::array<std::uint8_t, classic_race_tracks> race_start_cue_leads{
+    6, 6, 6, 6, 5, 5, 6, 6, 6, 6, 6, 5, 6, 5, 6,
+    5, 6, 6, 6, 6, 6, 6, 5, 5, 5, 6, 6, 5, 5, 6,
+    6, 5, 6, 6, 6, 6, 5, 6, 5, 5, 5, 6, 5, 6, 6,
+};
+std::uint32_t race_sound_load_offset(ClassicRaceTrack track) {
+    return track.index < race_sound_load_offsets.size() ? race_sound_load_offsets[track.index] : 0;
+}
+std::uint32_t race_sound_upload_frames(ClassicRaceTrack track, std::uint8_t song_counter) {
+    if (track.index >= race_sound_upload_frame_table.size()) return 0;
+    return race_sound_upload_frame_table[track.index][song_counter % race_song_count];
+}
+std::uint32_t race_loading_frames(ClassicRaceTrack track, std::uint8_t song_counter) {
+    const auto offset = race_sound_load_offset(track);
+    if (offset == 0) return 0;
+    return offset + race_sound_upload_frames(track, song_counter) - 1;
+}
+RaceSoundLoadTiming race_sound_load_timing(ClassicRaceTrack track, std::uint8_t song_counter) {
+    if (track.index >= race_start_cue_leads.size()) return {};
+    return {race_sound_upload_frames(track, song_counter), race_start_cue_leads[track.index]};
+}
+// The local and league modes' loading (R-0057, R-0058, R-0071, R-0073), measured on their own
+// paths before the song table: DRAGSTER's and ZOOM ZOO's are the song-62 values, the others the
+// songs their captures played. Those modes do not track the song counter yet (R-0077).
 std::uint32_t race_loading_frames(ClassicRaceTrack track) {
     if (track == ClassicRaceTrack::Dragster) return 121;
     if (track == ClassicRaceTrack::ZoomZoo) return 169;
@@ -699,9 +788,20 @@ std::uint32_t race_loading_frames(ClassicRaceTrack track) {
     if (track.index == 4) return 175;
     return 0;
 }
+// $83:CA08-CA1E on the race's sound load: the cartridge counter advances modulo 6 and names
+// the song. Native advances it when the race begins, 42 to 117 frames before the original's
+// load; nothing reads the counter in between (R-0077).
+void choose_race_song(FrontEndState& state) {
+    auto& counter = state.records.race_song_counter;
+    counter = static_cast<std::uint8_t>((counter + 1U) % race_song_count);
+    state.race_song = counter;
+}
 
 std::uint32_t race_loading_frames(const FrontEndState& state) {
     const auto track = ClassicRaceTrack{state.tour_menu.track};
+    // A one-player race's loading follows its song (R-0077); the local modes keep the
+    // measurements of R-0071 and R-0073 below.
+    if (state.mode == FrontEndMode::one_player) return race_loading_frames(track, state.race_song);
     const auto ordinary = race_loading_frames(track);
     // The resumed odd-member DRAGSTER initializes at 11627 in organic-three-clean (R-0073).
     if (state.local_result_seen && state.mode == FrontEndMode::league && state.second_rider >= 16
