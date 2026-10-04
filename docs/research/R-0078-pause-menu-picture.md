@@ -18,9 +18,10 @@ picture, in a one-player race:
   once the fade is done). A paused update then writes 0x87 (forced blank, `$83:F695-F69C`) while
   it writes VRAM, and 0x07 before it returns (`$83:F962-F979`), all inside the vertical blank, so
   the picture of every paused update shows at brightness 7. The update that confirms CONTINUE GAME
-  writes 0x0F instead (`$83:F945-F956`) and its picture is at full brightness. [C: in `menu` the
-  Start press on 1700 dims picture 1700 itself, mean level 140 to 46; the confirming press on
-  1920 restores picture 1920]
+  writes 0x0F instead (`$83:F945-F956`) and its picture is at full brightness, even during the
+  fade-in; the next NMI goes back to the fade's value. [C: in `menu` the Start press on 1700 dims
+  picture 1700 itself, mean level 140 to 46; the confirming press on 1920 restores picture 1920;
+  in the review's `fadein`, CONTINUE GAME on 1346 with the fade at 8 shows at full brightness]
 - **The words.** Fifteen BG3 map words from `$83:F616` at VRAM 0x18A8 (the map at 0x1800: row 5,
   column 8), " CONTINUE GAME " with a blank 0x79 at each end, and four from `$83:F636` at 0x18ED
   (row 7, column 13), "QUIT"; each glyph's lower half, tile + 0x10, goes 0x20 words further on
@@ -32,6 +33,9 @@ picture, in a one-player race:
   The choice follows `$0EF3` (native `pause.selection`: 1 CONTINUE GAME, 0xFFFF QUIT). [C]
 - **The HUD under them.** The menu's words replace whatever the HUD had in those cells: a split
   time on rows 5-6 is hidden while the menu is open. [C: `split` 2590-2649, `+0:03:6` under it]
+- **The window members over them.** The words are in BG3, so a window member covers them as it
+  covers the HUD (ZOOM-ZOO-WINDOW-EFFECTS). [C: the review's `fadein` 1440, the countdown digit
+  over "CON" and the "<" on the picture that opens the menu]
 - **CONTINUE GAME clears its rows.** `$83:F915-F92C` writes 129 zero words from `$130F`, 0x18A8 to
   0x1928: row 5 from column 8 to row 9 column 8. Tile 0 shows nothing, so the player's centred
   cells and an up arrow's rows 5-6 stay blank until the HUD queue writes the cells again or the
@@ -50,10 +54,14 @@ races keep M4-16's authored panel (below).
 
 ## Native
 
-- `render_classic_race` draws a one-player race whose update was paused at brightness 7, removes
-  the HUD's and caption's ink from the menu's cells (`classic_pause_menu_cells`), draws the riders
-  and window members, then the menu (`draw_classic_pause_menu`) in the caption's font and ink.
-- `ClassicRaceHudClock` follows the clear: the update that closes the menu marks the player's
+- `render_classic_race` draws a one-player race whose update was paused at brightness 7, and the
+  picture of the update that closed the menu at 15 (`classic_pause_menu_closed`: the menu's count
+  of updates moved on and no choice is left, which a HUNTER effect's skipped update and the
+  standalone restart are not). It removes the HUD's and caption's ink from the menu's cells
+  (`classic_pause_menu_cells`), draws the menu there (`draw_classic_pause_menu`) in the caption's
+  font and ink, then the riders and the window members as before. Native draws the words in the
+  HUD's place, under the riders; no capture shows a rider under them.
+- `ClassicRaceHudClock` follows the clear: the update that closes the menu (the same test) marks the player's
   cells cleared on that picture (`player_cells_cleared`) and takes the up arrow's rows 5-6 down;
   the queue's next write of the player's cells, and the NMI's next arrow redraw, put them back.
 - The second line is the original's "quit" in a race from the menus, where it ends the race as
@@ -88,11 +96,24 @@ original's was (R-0060's `compare.py` rule), and compares every captured picture
 | R-0060 `quit` | 206 | 21 | 15 | 206 |
 | R-0060 `restart` | 271 | 28 | 23 | 271 |
 | R-0060 `lapquit` (ZOOM ZOO lap race) | 184 | 17 | 11 | 184 |
+| review `fadein` (1320-1519) | 200 | | | 200 |
+| review `zoomlap` (ZOOM ZOO lap race, 1340-3599) | 2,260 | | | 2,259 |
 
-1,931 of 1,931 pictures are equal: 586 with the menu open (239 with QUIT chosen), the race's
-around them and the menus' after the quits. Before the change the 350 paused pictures of `menu` all differed (about 55,700
+The primary's six captures: 1,931 of 1,931 pictures are equal: 586 with the menu open (239 with
+QUIT chosen), the race's around them and the menus' after the quits. The reviewer's two withheld
+captures (`review/`): `fadein` (DRAGSTER: the menu opened during the fade-in, CONTINUE GAME there
+with Start held, the cursor across the fade's end, the menu opened under a countdown digit, QUIT)
+and `zoomlap` (ZOOM ZOO lap race: nine pauses with the cursor moved down and up and CONTINUE GAME,
+then QUIT). `zoomlap`'s one difference, 4 pixels on the unpaused picture 1801, is the left arrow's
+chevron drawn over the rider's wheel where the original shows the wheel; main's renderer draws the
+same 4 pixels (checked with the runner change alone), so it is an existing layering gap of the
+arrow, not this change's. Before the change the 350 paused pictures of `menu` all differed (about 55,700
 pixels each) and the unpaused 320 were already equal; before the clear was followed, `split`
-differed on the 95 pictures 2650-2744, in the split's cells only.
+differed on the 95 pictures 2650-2744, in the split's cells only. The first review found three
+more: on `fadein` the window digit drawn under the words (1440, 214 pixels) and CONTINUE GAME
+during the fade-in at the fade's brightness (1346-1347, every pixel); and, from the listing, a
+HUNTER effect's skipped update taken for the menu closing, which blanked a split time (a native
+probe; `$83:CC9A-CCA2` skips the whole update, menu included).
 
 ## Not covered
 
@@ -102,6 +123,6 @@ differed on the 95 pictures 2650-2744, in the split's cells only.
   2's Start in every two-pad race (`$83:CD05`, R-0060): a state change, outside this tier-2 task.
 - **The up arrow.** Its cells under the menu and its rows cleared by CONTINUE GAME follow the
   listing and a native test; no capture pauses while it shows.
-- **A pause during the fade-in.** The paused update writes 7 whatever the fade (`$83:F964`), and
-  native does the same; no capture opens the menu before the fade ends.
+- **HUNTER's skipped updates** with a split time showing are covered by a native test only.
+- **The left arrow over a rider** (`zoomlap` 1801): an existing gap, outside the pause.
 - The `$0545` name cheat's 500-frame picture (R-0060).

@@ -2,7 +2,6 @@
 
 #include "picture.hpp"
 #include "presentation.hpp"
-#include "rider_look.hpp"
 #include "zoom_zoo_movement.hpp"
 #include <algorithm>
 #include <array>
@@ -242,9 +241,7 @@ void ClassicRaceHudClock::observe_update(const ZoomZooState& previous,
 // arrow redraw and the queue's next write of the cells put them back (R-0078).
 void ClassicRaceHudClock::clear_after_pause(const ZoomZooState& previous,
                                             const ZoomZooState& updated) {
-    const bool closed =
-        zoom_zoo_update_was_paused(previous, updated) && updated.pause.selection == 0;
-    if (!closed || updated.split_screen) return;
+    if (!classic_pause_menu_closed(previous, updated)) return;
     for (auto* hud : {&on_screen_, &latest_}) {
         hud->player_cells_cleared = true;
         if (hud->arrow && hud->arrow->direction == ClassicRaceArrow::Direction::Up)
@@ -774,6 +771,11 @@ void draw_split_hud(RgbFrame& frame, const ZoomZooState& state,
 constexpr unsigned pause_first_row = 5, pause_second_row = 7, pause_first_column = 8,
                    pause_second_column = 13, pause_cursor_column = 24;
 constexpr unsigned pause_first_choice_cells = 15, pause_second_choice_cells = 4;
+
+bool classic_pause_menu_closed(const ZoomZooState& previous, const ZoomZooState& updated) {
+    return !updated.split_screen && updated.pause.selection == 0
+        && updated.pause.suspended_updates > previous.pause.suspended_updates;
+}
 
 Bg3Cells classic_pause_menu_cells() {
     Bg3Cells cells;

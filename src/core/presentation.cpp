@@ -719,8 +719,8 @@ void dim_finished_league_views(RgbFrame& frame, const ZoomZooState& state,
     }
 }
 
-// $83:F964: INIDISP while the race is paused.
-constexpr unsigned paused_brightness = 7;
+// $83:F964: INIDISP while the race is paused; $83:F947 when the menu closes.
+constexpr unsigned paused_brightness = 7, full_brightness = 15;
 
 // Puts the backgrounds back in BG3 cells another writer holds, and clears their ink.
 void restore_bg3_cells(RgbFrame& frame, const RgbFrame& backgrounds, const Bg3Cells& cells,
@@ -736,6 +736,21 @@ void restore_bg3_cells(RgbFrame& frame, const RgbFrame& backgrounds, const Bg3Ce
                 frame.pixels[at * 3 + channel] = backgrounds.pixels[at * 3 + channel];
             inked.reset(at);
         }
+}
+
+// The picture's INIDISP brightness. NMI $80:883F-8849 writes it from the preceding update's
+// $0FF1, clamping (fade-15) at zero; $83:CCC1-CCC9 increments $0FF1 once per race update. Scaling
+// converted pixels made mid-fade frames too bright: green 15 at brightness 8 is 47 in the
+// original, not 64. $83:F695-F69C and $83:F962-F979: a paused update writes 7 after the NMI's, so
+// a one-player race shows at brightness 7 while its menu is open, and the update that closes it
+// writes 15 ($83:F945-F956), even during the fade-in (R-0078).
+unsigned race_picture_brightness(const ZoomZooState& state, const ZoomZooState* previous_update,
+                                 const ClassicRaceScenario& scenario) {
+    if (state.pause.selection != 0 && !state.split_screen) return paused_brightness;
+    if (previous_update && classic_pause_menu_closed(*previous_update, state))
+        return full_brightness;
+    const unsigned prior_fade = classic_race_prior_fade(state, previous_update, scenario);
+    return prior_fade > 15U ? prior_fade - 15U : 0U;
 }
 
 // The pause menu over the finished picture: the original's in a one-player race (R-0078), the
@@ -789,16 +804,8 @@ RgbFrame render_classic_race(const ZoomZooState& state,
     if (const auto result = visible_race_result(state, content)) return *result;
     RgbFrame frame{};
     const auto vram = race_vram(content);
-    // NMI $80:883F-8849 writes INIDISP from the preceding update's $0FF1, clamping (fade-15)
-    // at zero; $83:CCC1-CCC9 increments $0FF1 once per race update. Scaling converted pixels
-    // made mid-fade frames too bright: green 15 at brightness 8 is 47 in the original, not 64.
-    const unsigned prior_fade = classic_race_prior_fade(state, previous_update, scenario);
-    // $83:F695-F69C and $83:F962-F979: a paused update writes INIDISP 7 after the NMI's, so the
-    // whole picture of a one-player race shows at brightness 7 while its menu is open (R-0078).
     const bool classic_pause = state.pause.selection != 0 && !state.split_screen;
-    const auto brightness = classic_pause    ? paused_brightness
-                          : prior_fade > 15U ? prior_fade - 15U
-                                             : 0U;
+    const auto brightness = race_picture_brightness(state, previous_update, scenario);
     // Picture N shows the objects of update N-1, like the scroll; without a previous update
     // the riders are drawn from this state, one update ahead.
     const auto& rider_source = previous_update ? *previous_update : state;
@@ -835,8 +842,12 @@ RgbFrame render_classic_race(const ZoomZooState& state,
                          history ? history->opponent_caption_event : 0U, caption_ink);
     };
     if (!state.split_screen) draw_hud();
-    if (backgrounds)
+    // The menu's words go in the HUD's layer, under the riders and the window members: on the
+    // picture that opens the menu during the countdown the digit's window covers them (R-0078).
+    if (backgrounds) {
         restore_bg3_cells(frame, *backgrounds, classic_pause_menu_cells(), caption_ink);
+        draw_pause_menu(frame, state, content, brightness, bg3_ink, caption_ink);
+    }
     const RaceObjectMath math{caption_ink, neon_green ? &vram : nullptr, &scroll};
     draw_race_riders(frame, rider_source, content, history, colours, scroll.flip, bg1_above_objects,
                      math);
@@ -856,7 +867,7 @@ RgbFrame render_classic_race(const ZoomZooState& state,
         for (int y = 111; y <= 112; ++y)
             for (int x = 0; x < 256; ++x) pixel(frame, x, y, {0, 0, 0});
     dim_finished_league_views(frame, rider_source, scenario);
-    if (state.pause.selection)
+    if (state.pause.selection && state.split_screen)
         draw_pause_menu(frame, state, content, brightness, bg3_ink, caption_ink);
     return frame;
 }

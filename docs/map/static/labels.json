@@ -682,7 +682,7 @@
   "comment": "instruction start",
   "label": "loc_80883F",
   "native": [
-   "src/core/presentation.cpp:render_classic_race"
+   "src/core/presentation.cpp:race_picture_brightness"
   ],
   "source_records": [
    "docs/research/R-0078-pause-menu-picture.md",
@@ -18448,6 +18448,7 @@
   ],
   "source_records": [
    "docs/research/R-0052-hunter-effects.md",
+   "docs/research/R-0078-pause-menu-picture.md",
    "tasks/HUNTER-EFFECTS.md"
   ]
  },
@@ -18483,7 +18484,7 @@
   "comment": "instruction start",
   "label": "loc_83CCC1",
   "native": [
-   "src/core/presentation.cpp:render_classic_race",
+   "src/core/presentation.cpp:race_picture_brightness",
    "src/core/race_windows.cpp:classic_race_prior_fade"
   ],
   "source_records": [
@@ -18545,6 +18546,7 @@
    "docs/research/R-0073-league.md",
    "docs/research/R-0078-pause-menu-picture.md",
    "tasks/CLASSIC-PAUSE-MENU.md",
+   "tasks/SPLIT-PAUSE-MENU.md",
    "tasks/ZOOM-ZOO-WINDOW-EFFECTS.md"
   ]
  },
@@ -21340,7 +21342,8 @@
   "comment": "data",
   "label": "dat_83F516",
   "source_records": [
-   "docs/research/R-0078-pause-menu-picture.md"
+   "docs/research/R-0078-pause-menu-picture.md",
+   "tasks/SPLIT-PAUSE-MENU.md"
   ]
  },
  {
@@ -21352,7 +21355,8 @@
    "src/core/race_hud.cpp:draw_classic_pause_menu"
   ],
   "source_records": [
-   "docs/research/R-0078-pause-menu-picture.md"
+   "docs/research/R-0078-pause-menu-picture.md",
+   "tasks/CLASSIC-PAUSE-MENU.md"
   ]
  },
  {
@@ -21364,7 +21368,8 @@
    "src/core/race_hud.cpp:draw_classic_pause_menu"
   ],
   "source_records": [
-   "docs/research/R-0078-pause-menu-picture.md"
+   "docs/research/R-0078-pause-menu-picture.md",
+   "tasks/CLASSIC-PAUSE-MENU.md"
   ]
  },
  {
@@ -21376,7 +21381,8 @@
    "docs/research/R-0060-pause-exits.md",
    "docs/research/R-0076-first-race-audio.md",
    "docs/research/R-0078-pause-menu-picture.md",
-   "tasks/CLASSIC-PAUSE-MENU.md"
+   "tasks/CLASSIC-PAUSE-MENU.md",
+   "tasks/SPLIT-PAUSE-MENU.md"
   ]
  },
  {
@@ -21424,10 +21430,22 @@
   "comment": "instruction start",
   "label": "loc_83F695",
   "native": [
-   "src/core/presentation.cpp:render_classic_race"
+   "src/core/presentation.cpp:race_picture_brightness"
   ],
   "source_records": [
    "docs/research/R-0078-pause-menu-picture.md"
+  ]
+ },
+ {
+  "address": "$83:F6B9",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_83F6B9",
+  "native": [
+   "src/core/race_hud.cpp:pause_first_row, pause_second_row, pause_first_column, pause_second_column, pause_cursor_column"
+  ],
+  "source_records": [
+   "tasks/SPLIT-PAUSE-MENU.md"
   ]
  },
  {
@@ -21451,7 +21469,8 @@
    "docs/research/R-0060-pause-exits.md",
    "docs/research/R-0073-league.md",
    "docs/research/R-0078-pause-menu-picture.md",
-   "tasks/LEAGUE.md"
+   "tasks/LEAGUE.md",
+   "tasks/SPLIT-PAUSE-MENU.md"
   ]
  },
  {
@@ -21491,7 +21510,8 @@
   "source_records": [
    "docs/research/R-0060-pause-exits.md",
    "docs/research/R-0073-league.md",
-   "tasks/RACE-PAUSE-EXITS.md"
+   "tasks/RACE-PAUSE-EXITS.md",
+   "tasks/SPLIT-PAUSE-MENU.md"
   ]
  },
  {
@@ -21540,10 +21560,12 @@
   "label": "loc_83F915",
   "native": [
    "src/core/presentation.hpp:ClassicHudPublished::player_cells_cleared",
-   "src/core/race_hud.cpp:ClassicRaceHudClock::clear_after_pause"
+   "src/core/race_hud.cpp:ClassicRaceHudClock::clear_after_pause",
+   "src/core/race_hud.hpp:classic_pause_menu_closed"
   ],
   "source_records": [
-   "docs/research/R-0078-pause-menu-picture.md"
+   "docs/research/R-0078-pause-menu-picture.md",
+   "tasks/CLASSIC-PAUSE-MENU.md"
   ]
  },
  {
@@ -21552,6 +21574,9 @@
   "comment": "instruction start",
   "label": "loc_83F930",
   "native": [
+   "src/core/presentation.hpp:ClassicHudPublished::player_cells_cleared",
+   "src/core/race_hud.cpp:ClassicRaceHudClock::clear_after_pause",
+   "src/core/race_hud.hpp:classic_pause_menu_closed",
    "src/core/race_sound.hpp:pause_continue"
   ],
   "source_records": [
@@ -21565,6 +21590,9 @@
   "label": "loc_83F937",
   "native": [
    "src/core/audio_cue.hpp:AudioDispatchSite",
+   "src/core/presentation.hpp:ClassicHudPublished::player_cells_cleared",
+   "src/core/race_hud.cpp:ClassicRaceHudClock::clear_after_pause",
+   "src/core/race_hud.hpp:classic_pause_menu_closed",
    "src/core/race_sound.hpp:pause_continue"
   ],
   "source_records": [
@@ -21578,6 +21606,9 @@
   "label": "loc_83F93B",
   "native": [
    "src/core/audio_cue.hpp:AudioDispatchSite",
+   "src/core/presentation.hpp:ClassicHudPublished::player_cells_cleared",
+   "src/core/race_hud.cpp:ClassicRaceHudClock::clear_after_pause",
+   "src/core/race_hud.hpp:classic_pause_menu_closed",
    "src/core/race_sound.hpp:pause_continue"
   ],
   "source_records": [
@@ -21589,6 +21620,12 @@
   "class": "inferred",
   "comment": "instruction start",
   "label": "loc_83F945",
+  "native": [
+   "src/core/presentation.cpp:race_picture_brightness",
+   "src/core/presentation.hpp:ClassicHudPublished::player_cells_cleared",
+   "src/core/race_hud.cpp:ClassicRaceHudClock::clear_after_pause",
+   "src/core/race_hud.hpp:classic_pause_menu_closed"
+  ],
   "source_records": [
    "docs/research/R-0078-pause-menu-picture.md"
   ]
@@ -21599,20 +21636,7 @@
   "comment": "routine start",
   "label": "sub_83F962",
   "native": [
-   "src/core/presentation.cpp:render_classic_race"
-  ],
-  "source_records": [
-   "docs/research/R-0078-pause-menu-picture.md"
-  ]
- },
- {
-  "address": "$83:F964",
-  "class": "inferred",
-  "comment": "instruction start",
-  "label": "loc_83F964",
-  "native": [
-   "src/core/presentation.cpp:paused_brightness",
-   "src/core/presentation.cpp:render_classic_race"
+   "src/core/presentation.cpp:race_picture_brightness"
   ],
   "source_records": [
    "docs/research/R-0078-pause-menu-picture.md"

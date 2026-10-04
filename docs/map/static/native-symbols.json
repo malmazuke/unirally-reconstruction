@@ -318,7 +318,7 @@
   {
    "address": "$80:883F",
    "native": [
-    "src/core/presentation.cpp:render_classic_race"
+    "src/core/presentation.cpp:race_picture_brightness"
    ],
    "range_ends": [
     "$80:8849"
@@ -9395,7 +9395,7 @@
   {
    "address": "$83:CCC1",
    "native": [
-    "src/core/presentation.cpp:render_classic_race",
+    "src/core/presentation.cpp:race_picture_brightness",
     "src/core/race_windows.cpp:classic_race_prior_fade"
    ],
    "range_ends": [
@@ -10539,7 +10539,7 @@
   {
    "address": "$83:F695",
    "native": [
-    "src/core/presentation.cpp:render_classic_race"
+    "src/core/presentation.cpp:race_picture_brightness"
    ],
    "range_ends": [
     "$83:F69C"
@@ -10601,10 +10601,12 @@
    "address": "$83:F915",
    "native": [
     "src/core/presentation.hpp:ClassicHudPublished::player_cells_cleared",
-    "src/core/race_hud.cpp:ClassicRaceHudClock::clear_after_pause"
+    "src/core/race_hud.cpp:ClassicRaceHudClock::clear_after_pause",
+    "src/core/race_hud.hpp:classic_pause_menu_closed"
    ],
    "range_ends": [
-    "$83:F92C"
+    "$83:F92C",
+    "$83:F95F"
    ],
    "region": "rom"
   },
@@ -10630,9 +10632,26 @@
    "region": "rom"
   },
   {
+   "address": "$83:F945",
+   "native": [
+    "src/core/presentation.cpp:race_picture_brightness"
+   ],
+   "range_ends": [
+    "$83:F956"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:F947",
+   "native": [
+    "src/core/presentation.cpp:paused_brightness, full_brightness"
+   ],
+   "region": "rom"
+  },
+  {
    "address": "$83:F962",
    "native": [
-    "src/core/presentation.cpp:render_classic_race"
+    "src/core/presentation.cpp:race_picture_brightness"
    ],
    "range_ends": [
     "$83:F979"
@@ -10642,7 +10661,7 @@
   {
    "address": "$83:F964",
    "native": [
-    "src/core/presentation.cpp:paused_brightness"
+    "src/core/presentation.cpp:paused_brightness, full_brightness"
    ],
    "region": "rom"
   },
@@ -12381,7 +12400,7 @@
   {
    "address": "$0FF1",
    "native": [
-    "src/core/presentation.cpp:render_classic_race",
+    "src/core/presentation.cpp:race_picture_brightness",
     "src/core/presentation.hpp:classic_race_prior_fade",
     "src/core/race_hud.cpp:race_nmi_fade",
     "src/core/race_windows.cpp:classic_race_prior_fade",
@@ -16934,9 +16953,22 @@
     "$80:FA60"
    ]
   },
-  "src/core/presentation.cpp:paused_brightness": {
+  "src/core/presentation.cpp:paused_brightness, full_brightness": {
    "rom": [
+    "$83:F947",
     "$83:F964"
+   ]
+  },
+  "src/core/presentation.cpp:race_picture_brightness": {
+   "rom": [
+    "$80:883F",
+    "$83:CCC1",
+    "$83:F695",
+    "$83:F945",
+    "$83:F962"
+   ],
+   "wram": [
+    "$0FF1"
    ]
   },
   "src/core/presentation.cpp:race_scroll": {
@@ -16954,14 +16986,7 @@
   },
   "src/core/presentation.cpp:render_classic_race": {
    "rom": [
-    "$80:87A7",
-    "$80:883F",
-    "$83:CCC1",
-    "$83:F695",
-    "$83:F962"
-   ],
-   "wram": [
-    "$0FF1"
+    "$80:87A7"
    ]
   },
   "src/core/presentation.hpp:ClassicHudCellRequest": {
@@ -17577,6 +17602,11 @@
   "src/core/race_hud.hpp:classic_pause_menu_cells": {
    "rom": [
     "$83:F794"
+   ]
+  },
+  "src/core/race_hud.hpp:classic_pause_menu_closed": {
+   "rom": [
+    "$83:F915"
    ]
   },
   "src/core/race_progress.cpp:classic_race_player_won": {
@@ -21352,10 +21382,10 @@
   }
  },
  "totals": {
-  "addresses": 1552,
+  "addresses": 1554,
   "io_addresses": 9,
-  "native_symbols": 1180,
-  "rom_addresses": 1178,
+  "native_symbols": 1182,
+  "rom_addresses": 1180,
   "sram_addresses": 50,
   "wram_addresses": 315
  }

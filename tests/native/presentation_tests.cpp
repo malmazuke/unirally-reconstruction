@@ -267,6 +267,17 @@ void pause_clears_player_cells() {
   require(unirally::classic_race_hud_text(crossing, zoom, std::nullopt, queue.published())
               .player_cells.empty());
   require(!run(true).published().player_cells_cleared);
+  // A HUNTER effect's skipped update runs no menu ($83:CC9A-CCA2, R-0052), and a standalone
+  // restart starts the menu's count again: neither closes it.
+  auto skipping = crossing;
+  skipping.hunter.skip_update = 1;
+  require(!unirally::classic_pause_menu_closed(skipping, crossing));
+  auto paused = crossing, restarted = crossing;
+  paused.pause.suspended_updates = 5;
+  require(!unirally::classic_pause_menu_closed(paused, restarted));
+  auto closed = paused;
+  closed.pause.suspended_updates = 6;
+  require(unirally::classic_pause_menu_closed(paused, closed));
 }
 
 // RACE-OFFSCREEN-ARROW: the caption is the HUD queue's last task, so a caption consumed on
