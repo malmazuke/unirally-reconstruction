@@ -719,6 +719,47 @@ void dim_finished_league_views(RgbFrame& frame, const ZoomZooState& state,
     }
 }
 
+// $83:F964: INIDISP while the race is paused.
+constexpr unsigned paused_brightness = 7;
+
+// Puts the backgrounds back in BG3 cells another writer holds, and clears their ink.
+void restore_bg3_cells(RgbFrame& frame, const RgbFrame& backgrounds, const Bg3Cells& cells,
+                       std::bitset<256 * 224>& inked) {
+    // A tilemap row r shows on lines 8r - 1 to 8r + 6 (R-0042).
+    for (int y = 0; y < 224; ++y)
+        for (int x = 0; x < 256; ++x) {
+            const auto row = static_cast<unsigned>(y + 1) / 8U,
+                       column = static_cast<unsigned>(x) / 8U;
+            if (row >= 28 || !cells.test(row * 32U + column)) continue;
+            const auto at = static_cast<std::size_t>(y) * 256 + static_cast<std::size_t>(x);
+            for (std::size_t channel = 0; channel < 3; ++channel)
+                frame.pixels[at * 3 + channel] = backgrounds.pixels[at * 3 + channel];
+            inked.reset(at);
+        }
+}
+
+// The pause menu over the finished picture: the original's in a one-player race (R-0078), the
+// authored panel over a split-screen one (M4-16).
+void draw_pause_menu(RgbFrame& frame, const ZoomZooState& state,
+                     const ClassicRacePresentationContent& content, unsigned brightness,
+                     std::array<std::uint8_t, 3> bg3_ink, std::bitset<256 * 224>& caption_ink) {
+    using Choice = ClassicRacePresentationContent::PauseSecondChoice;
+    if (!state.split_screen) {
+        draw_classic_pause_menu(frame, content, state.pause.selection,
+                                content.pause_second_choice == Choice::quit ? "quit" : "restart",
+                                bg3_ink, caption_ink);
+        return;
+    }
+    // Authored UI has no CGRAM entry; fade it through the same 1.5 output curve.
+    const auto ui_scale = std::pow(brightness / 15.0, 1.5);
+    const auto ui = [ui_scale](std::array<std::uint8_t, 3> rgb) {
+        for (auto& channel : rgb)
+            channel = static_cast<std::uint8_t>(std::lround(channel * ui_scale));
+        return rgb;
+    };
+    draw_race_pause_menu(frame, state.pause.selection, ui({15, 30, 30}), ui({255, 240, 220}));
+}
+
 } // namespace
 
 std::optional<RgbFrame> visible_race_result(const ZoomZooState& state,
@@ -752,7 +793,12 @@ RgbFrame render_classic_race(const ZoomZooState& state,
     // at zero; $83:CCC1-CCC9 increments $0FF1 once per race update. Scaling converted pixels
     // made mid-fade frames too bright: green 15 at brightness 8 is 47 in the original, not 64.
     const unsigned prior_fade = classic_race_prior_fade(state, previous_update, scenario);
-    const auto brightness = prior_fade > 15U ? prior_fade - 15U : 0U;
+    // $83:F695-F69C and $83:F962-F979: a paused update writes INIDISP 7 after the NMI's, so the
+    // whole picture of a one-player race shows at brightness 7 while its menu is open (R-0078).
+    const bool classic_pause = state.pause.selection != 0 && !state.split_screen;
+    const auto brightness = classic_pause    ? paused_brightness
+                          : prior_fade > 15U ? prior_fade - 15U
+                                             : 0U;
     // Picture N shows the objects of update N-1, like the scroll; without a previous update
     // the riders are drawn from this state, one update ahead.
     const auto& rider_source = previous_update ? *previous_update : state;
@@ -764,14 +810,6 @@ RgbFrame render_classic_race(const ZoomZooState& state,
     // colour math leaves BG3 out: the ink is colour 27 itself (R-0068).
     const auto bg3_ink =
         neon_green ? colour(cgram, bg3_ink_colour) : race_ink_rgb(content, brightness);
-    // Authored UI has no CGRAM entry; fade it through the same 1.5 output curve.
-    const auto ui_scale = std::pow(brightness / 15.0, 1.5);
-    const auto ui = [ui_scale](std::array<std::uint8_t, 3> rgb) {
-        for (auto& channel : rgb)
-            channel = static_cast<std::uint8_t>(std::lround(channel * ui_scale));
-        return rgb;
-    };
-    const std::array<std::uint8_t, 3> ink = ui({255, 240, 220});
     const auto scroll = race_scroll(state, content, previous_update, history);
     const auto second_scroll =
         state.split_screen
@@ -787,6 +825,8 @@ RgbFrame render_classic_race(const ZoomZooState& state,
     std::bitset<256 * 224> caption_ink;
     const auto hud =
         history ? std::optional<ClassicHudPublished>(history->published_hud) : std::nullopt;
+    // The menu's words replace the HUD's in the cells it writes: keep the backgrounds there.
+    const auto backgrounds = classic_pause ? std::optional<RgbFrame>(frame) : std::nullopt;
     draw_classic_caption(frame, rider_source, content, hud, bg3_ink, caption_ink);
     const auto draw_hud = [&] {
         draw_classic_hud(frame, rider_source, content,
@@ -795,6 +835,8 @@ RgbFrame render_classic_race(const ZoomZooState& state,
                          history ? history->opponent_caption_event : 0U, caption_ink);
     };
     if (!state.split_screen) draw_hud();
+    if (backgrounds)
+        restore_bg3_cells(frame, *backgrounds, classic_pause_menu_cells(), caption_ink);
     const RaceObjectMath math{caption_ink, neon_green ? &vram : nullptr, &scroll};
     draw_race_riders(frame, rider_source, content, history, colours, scroll.flip, bg1_above_objects,
                      math);
@@ -815,7 +857,7 @@ RgbFrame render_classic_race(const ZoomZooState& state,
             for (int x = 0; x < 256; ++x) pixel(frame, x, y, {0, 0, 0});
     dim_finished_league_views(frame, rider_source, scenario);
     if (state.pause.selection)
-        draw_race_pause_menu(frame, state.pause.selection, ui({15, 30, 30}), ink);
+        draw_pause_menu(frame, state, content, brightness, bg3_ink, caption_ink);
     return frame;
 }
 

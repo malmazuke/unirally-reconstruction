@@ -2,20 +2,23 @@
 
 ## Assignment
 
-- Status: ready (prepared 3 October 2026 by the AUDIO-ONE-PLAYER session, from the user's live
-  check).
+- Status: **claimed** 5 October 2026 (prepared 3 October 2026 by the AUDIO-ONE-PLAYER session,
+  from the user's live check), on main `cbbd9ba` after verifying PR #52's merge, main equal to
+  `origin/main` and `artifacts/audio-one-player-integration/closeout.json`.
 - Milestone: M4 breadth
 - Coordinator: the claiming session is coordinator, primary and integrator
 - Task provider (fixed for all children; record any user-initiated platform change): Anthropic
-- Worker/session/runtime/model: to be recorded at claim
+- Worker/session/runtime/model: Claude Code desktop app, Claude Opus 5.5 (`claude-opus-5-5`); one
+  session is coordinator, primary and integrator
 - Actual model/reasoning effort, routing rationale and frontier escalation question (if any):
   the claiming session's model at default effort; **tier 2** (presentation only).
 - Provider quota window/baseline timestamp, used/remaining or unknown, reserve and session
-  allowance (D-0004): sample at claim.
+  allowance (D-0004): at claim (5 October 2026 08:50 Sydney, 4 October 21:50 UTC) the 5-hour window was 14%
+  used and the weekly window 34% (Fable weekly 40%); standing rule: continue until weekly 80%.
 - Reviewer (primary automatically spawns fresh model/effort, isolated checkout; no user
   trigger): a fresh Anthropic subagent with a withheld capture.
 - Dependencies and evidence of acceptance: RACE-PAUSE-EXITS (R-0060), M4-16 (R-0035).
-- Base commit: the `main` tip at claim.
+- Base commit: `cbbd9ba` (main at claim).
 - Branch and isolated worktree: `task/classic-pause-menu` in `.worktrees/classic-pause-menu`.
 - Owned paths and shared interfaces: `draw_race_pause_menu` and its callers in
   `src/core/presentation.*`, the pack rules if new tiles are needed, native tests, a research

@@ -140,10 +140,13 @@ int draw_timeline_frame(const char* pack_path, const char* timeline, const char*
         || frame != unirally::classic_race_scenario(previous.track).initialization_frame)
         throw std::invalid_argument("timeline must begin at the native race initialization");
     if (target <= frame) throw std::invalid_argument("frame must follow the timeline's first row");
-    const auto content = unirally::classic_race_presentation_content(
+    auto content = unirally::classic_race_presentation_content(
         pack, pairing ? unirally::classic_race_scenario(previous.track, pairing->riders,
                                                         pairing->tutorial_hints)
                       : unirally::classic_race_scenario(previous.track));
+    // These timelines are races on their own, whose pause menu restarts.
+    content.pause_second_choice =
+        unirally::ClassicRacePresentationContent::PauseSecondChoice::restart;
     while (std::getline(input, line)) {
         const auto previous_frame = frame;
         auto state = parse_timeline_row(line, frame, pairing, palettes);
@@ -174,7 +177,9 @@ int draw_state(const char* pack_path, const char* state_path, const char* out,
     // field (R-0043). This debug form is the only caller without the
     // history: the app and the --timeline form above both keep the tracker.
     const auto previous = previous_path ? load_state(previous_path) : state;
-    const auto content = unirally::classic_race_presentation_content(pack, state.track);
+    auto content = unirally::classic_race_presentation_content(pack, state.track);
+    content.pause_second_choice =
+        unirally::ClassicRacePresentationContent::PauseSecondChoice::restart;
     write_frame(out, unirally::render_classic_race(state, content, &previous));
     return 0;
 }

@@ -414,6 +414,10 @@ int main(int argc, char **argv) try {
   auto zoom_content = unirally::classic_race_content(content.pack, track);
   auto race_presentation =
       unirally::classic_race_presentation_content(content.pack, track);
+  // The race on its own restarts from the pause menu; a race from the menus
+  // takes fresh content, which quits.
+  race_presentation.pause_second_choice =
+      unirally::ClassicRacePresentationContent::PauseSecondChoice::restart;
   auto zoom_state = unirally::classic_race_start(
       zoom_content, unirally::classic_race_scenario(track));
   auto &state = zoom_state.movement;

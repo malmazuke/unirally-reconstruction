@@ -14605,6 +14605,8 @@
    ],
    "native": [
     "src/core/audio_cue.hpp:AudioDispatchSite",
+    "src/core/presentation.cpp:render_classic_race",
+    "src/core/race_hud.cpp:pause_first_row, pause_second_row, pause_first_column, pause_second_column, pause_cursor_column",
     "src/core/race_sound.hpp:pause_frame",
     "src/core/race_update.cpp:run_pause_menu"
    ],
@@ -14628,6 +14630,10 @@
    "mode_at_entry": [
     "NMX"
    ],
+   "native": [
+    "src/core/race_hud.cpp:pause_first_row, pause_second_row, pause_first_column, pause_second_column, pause_cursor_column",
+    "src/core/race_hud.hpp:classic_pause_menu_cells"
+   ],
    "observed_entries": {},
    "start": "$83:F794",
    "static_entries": {
@@ -14647,6 +14653,8 @@
    ],
    "native": [
     "src/core/audio_cue.hpp:AudioDispatchSite",
+    "src/core/presentation.hpp:ClassicHudPublished::player_cells_cleared",
+    "src/core/race_hud.cpp:ClassicRaceHudClock::clear_after_pause",
     "src/core/race_result.cpp:quit, restarted",
     "src/core/race_result.cpp:update_race_for_menus",
     "src/core/race_sound.hpp:pause_continue"
@@ -14668,6 +14676,10 @@
    "end": "$83:F97B",
    "mode_at_entry": [
     "NMX"
+   ],
+   "native": [
+    "src/core/presentation.cpp:paused_brightness",
+    "src/core/presentation.cpp:render_classic_race"
    ],
    "observed_entries": {},
    "start": "$83:F962",
@@ -14817,18 +14829,18 @@
    "call returns in the calling mode": 1262
   },
   "bytes": 131072,
-  "cited_addresses": 1654,
+  "cited_addresses": 1666,
   "cited_by_class": {
-   "data": 25,
-   "inferred": 282,
-   "observed": 1016,
+   "data": 28,
+   "inferred": 290,
+   "observed": 1017,
    "unknown": 331
   },
   "cited_by_position": {
-   "dat": 25,
-   "loc": 939,
+   "dat": 28,
+   "loc": 946,
    "mid": 19,
-   "sub": 340,
+   "sub": 342,
    "unk": 331
   },
   "conflicts": 0,
@@ -14848,9 +14860,9 @@
   "jump_tables": 2,
   "mode_ambiguities": 7,
   "observed": 41778,
-  "routine_bytes_cited_by_native_code": 51457,
+  "routine_bytes_cited_by_native_code": 51761,
   "routines": 636,
-  "routines_cited_by_native_code": 422,
+  "routines_cited_by_native_code": 424,
   "unknown": 52881,
   "unknown_share": 0.4035
  }

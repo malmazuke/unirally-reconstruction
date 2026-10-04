@@ -7,6 +7,7 @@
 #include <bitset>
 #include <cstdint>
 #include <optional>
+#include <string_view>
 
 namespace unirally {
 
@@ -20,5 +21,18 @@ void draw_classic_hud(RgbFrame& frame, const ZoomZooState& state,
                       const std::optional<ClassicHudPublished>& published,
                       std::array<std::uint8_t, 3> ink, std::array<std::uint8_t, 3> opponent_ink,
                       unsigned opponent_caption_event, std::bitset<256 * 224>& inked);
+
+// The BG3 tilemap's cells, 32 columns by 28 rows, as one bit each.
+using Bg3Cells = std::bitset<32 * 28>;
+// The cells the paused race's menu writes in the upper view (`$83:F794-F8A7`, R-0078): rows 5-6
+// from column 8 (" continue game "), rows 7-8 from column 13 (the second choice) and column 24
+// of rows 5-8 (the cursor and its blank). Its words replace whatever the HUD had there.
+Bg3Cells classic_pause_menu_cells();
+// The paused race's menu over the picture: the two choices and the "<" beside `selection` (1 the
+// first, 0xFFFF the second), in the caption's font and ink. `second_choice` is the original's
+// "quit", or the standalone race's "restart".
+void draw_classic_pause_menu(RgbFrame& frame, const ClassicRacePresentationContent& content,
+                             std::uint16_t selection, std::string_view second_choice,
+                             std::array<std::uint8_t, 3> ink, std::bitset<256 * 224>& inked);
 
 } // namespace unirally
