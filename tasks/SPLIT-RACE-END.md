@@ -44,6 +44,25 @@ result load for 2P, VS and league pairs, against captures where the riders finis
 | 2 (17:45-17:50) | Native's league-only rule generalizes | `update_finish`: `!split_screen \|\| riders[1].finished`; `split_compare.py` gains `$0F0F` | `zzap` 6,073 race frames, 0 differences (was ending at 7856); `twop`, `twop-plain`, `league` unchanged | VS first (below) |
 | 3 (17:55-18:10) | VS forces the second rider finished 360 updates after the first | Captures `vs-idle` (VS, pad 2 idle, 5,200 frames, images 3900-5199) and `zzap-long` (the review's 2P run to 8,800 frames) in main `local/evidence/split-race-end/` | `vs-idle`: pad 1 finishes on 3985; `$0F07` = 359 on 3987 and falls by one every update; at 0 on 4347 `$0F01` = 0xFFFF (rider 1 forced finished), `$0F09` starts at 359 the same way, and `$0F0F` counts 1 on 4348 to 240 on 4587 (result load); `$0F03`/`$0F05` cycle 7-24 every other update while a rider is finished (finish animation?) | Implement after the listing reader's report (`$0F03-$0F0B` meanings, which native fields exist) |
 
+## Plan (from the listing report, main `local/evidence/split-race-end/listing-report.md`)
+
+1. Race state: a `versus` flag (`$77:0750` bit 2, set at race setup from the front end's VS mode;
+   measure a league race's bit 2 before assuming it clear) and each rider's banner driver
+   (`$0F03`/`$0F05` index, `$0F07`/`$0F09` life) in `ZoomZooState`. Serialize: VS split states take
+   their own layout letters (2P and league states keep their bytes); the drivers' words only while
+   live, size-detected like `pause.lower_view`.
+2. `update_finish`: per finished rider in order 0 then 1, the brake/pose block, then the driver
+   (outside `finish_rider`'s phase-1 return): reset the life to 360 while the index is 0, decrement
+   every update, step the index on `$0300` = 1 updates (7..24), cross-gated (a live driver of the
+   other rider waits); at life 0, in VS, force the other rider finished (0xFFFF, no time: laps,
+   totals and digits untouched); rider 0 forcing rider 1 lets rider 1's block run that update.
+3. Serializer guards: `finished` may be 0xFFFF and "finished with laps left" in a VS state.
+4. `ClassicWindowPointer` reads the state's drivers instead of its own copy (the forced rider's
+   driver starts the same update).
+5. Evidence: `vs-idle` and `zzap-long` with `split_compare.py` past the race's end (both finish
+   flags, `$0F0F`, `$0F03-$0F09`) and through the result; TWO-PLAYER-VS's and LEAGUE's manifests
+   in the front-end sweep; R-0081; gates; tier-1 review.
+
 ## Handoff (checkpoint, 5 October 2026 about 17:55 Sydney)
 
 - Worktree `.worktrees/split-race-end`, branch `task/split-race-end`, base `321e3d9`. Uncommitted at
