@@ -502,6 +502,9 @@ struct ClassicRacePresentationContent {
     std::span<const std::uint8_t> captions;
     // The 2bpp 128-tile sheet the captions are drawn with, already in the pack.
     std::span<const std::uint8_t> caption_font;
+    // R-0079: a league pair's sixteen pause messages, sixteen ASCII bytes by rider (`$83:F516`,
+    // profile v35); empty in an older pack, which then shows none.
+    std::span<const std::uint8_t> pause_messages;
     // Sixteen-byte records used by the split race's rider labels.
     std::span<const std::uint8_t> rider_names;
     // The countdown's transition member, 5 + `$1229`, which race initialization

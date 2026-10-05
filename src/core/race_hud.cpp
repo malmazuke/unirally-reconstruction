@@ -797,6 +797,40 @@ Bg3Cells classic_pause_menu_cells(bool lower_view) {
     return cells;
 }
 
+bool classic_pause_shows_message(const ZoomZooState& state) {
+    return state.pause.selection != 0 && state.league_statistics.enabled && state.split_screen
+        && !state.movement.countdown && !state.race.riders[0].finished
+        && !state.race.riders[1].finished;
+}
+
+constexpr unsigned pause_message_cells = 16;
+
+Bg3Cells classic_pause_message_cells(bool lower_view) {
+    const unsigned row = pause_first_row + (lower_view ? pause_lower_view_rows : 0U);
+    Bg3Cells cells;
+    for (unsigned column = pause_first_column; column < pause_first_column + pause_message_cells;
+         ++column) {
+        cells.set(row * 32U + column);
+        cells.set((row + 1U) * 32U + column);
+    }
+    return cells;
+}
+
+void draw_classic_pause_message(RgbFrame& frame, const ClassicRacePresentationContent& content,
+                                std::uint8_t rider, bool lower_view,
+                                std::array<std::uint8_t, 3> ink, std::bitset<256 * 224>& inked) {
+    const auto font = content.caption_font;
+    const auto at = std::size_t{rider} * pause_message_cells;
+    if (font.size() != 2048 || content.pause_messages.size() < at + pause_message_cells) return;
+    // $83:F731-F764: a space is tile 0x80, which draws nothing; `!` and `"` and the letters take
+    // the caption alphabet's tiles ($80:8223, $80:8224, $80:81FE).
+    std::string line;
+    for (const auto byte : content.pause_messages.subspan(at, pause_message_cells))
+        line.push_back(static_cast<char>(byte));
+    draw_bg3_text(frame, font, pause_first_column,
+                  pause_first_row + (lower_view ? pause_lower_view_rows : 0U), line, ink, inked);
+}
+
 void draw_classic_pause_menu(RgbFrame& frame, const ClassicRacePresentationContent& content,
                              std::uint16_t selection, std::string_view second_choice,
                              bool lower_view, std::array<std::uint8_t, 3> ink,

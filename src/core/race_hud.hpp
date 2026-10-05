@@ -29,6 +29,14 @@ using Bg3Cells = std::bitset<32 * 28>;
 // (the cursor and its blank); in the lower view of a split race the same 14 rows further down
 // (R-0079). Its words replace whatever the HUD had there.
 Bg3Cells classic_pause_menu_cells(bool lower_view);
+// $83:F6FD-F791: a league pair's pause after the start countdown, with neither human finished,
+// shows only a message, the pauser's rider's entry of `$83:F516`, in row 5 (or 19) from column
+// 8: those sixteen cells are all it writes (R-0079).
+bool classic_pause_shows_message(const ZoomZooState& state);
+Bg3Cells classic_pause_message_cells(bool lower_view);
+void draw_classic_pause_message(RgbFrame& frame, const ClassicRacePresentationContent& content,
+                                std::uint8_t rider, bool lower_view,
+                                std::array<std::uint8_t, 3> ink, std::bitset<256 * 224>& inked);
 // $83:F915-F95F: whether this update ran the menu and closed it (CONTINUE GAME, or a
 // reopening while Start is still held): the menu's own count of updates moved on and no choice
 // is left. A HUNTER effect's skipped update (R-0052) runs no menu, and the standalone race's

@@ -256,6 +256,7 @@ classic_race_presentation_content(const ClassicContentPack& pack,
     // R-0042: the caption table, likewise one table for both tracks.
     content.captions = pack.entry("presentation.classic.captions.v1");
     content.caption_font = pack.entry("presentation.classic.font.v1");
+    content.pause_messages = pack.optional_entry("presentation.race.pause-messages.v1");
     content.rider_names = pack.entry("front-end.rider-names");
     content.track = classic_track_data(pack, track);
     content.window_transition_member = classic_window_transition_member(content.track);
@@ -753,17 +754,24 @@ unsigned race_picture_brightness(const ZoomZooState& state, const ZoomZooState* 
     return prior_fade > 15U ? prior_fade - 15U : 0U;
 }
 
-// The original's pause menu (R-0078): in the view of the pad that paused, in that view's ink
-// (R-0079).
+// The original's pause menu (R-0078), or a league pair's message: in the view of the pad that
+// paused, in that view's ink (R-0079).
 void draw_pause_menu(RgbFrame& frame, const ZoomZooState& state,
                      const ClassicRacePresentationContent& content,
                      std::array<std::uint8_t, 3> upper_ink, std::array<std::uint8_t, 3> lower_ink,
                      std::bitset<256 * 224>& caption_ink) {
     using Choice = ClassicRacePresentationContent::PauseSecondChoice;
     const bool lower = state.pause.lower_view;
+    const auto ink = lower ? lower_ink : upper_ink;
+    if (classic_pause_shows_message(state)) {
+        // $83:F6D3/F6F3: the pauser's rider, pad 1's or pad 2's.
+        const auto rider = lower ? state.pairing.opponent : state.pairing.rider;
+        draw_classic_pause_message(frame, content, rider, lower, ink, caption_ink);
+        return;
+    }
     draw_classic_pause_menu(frame, content, state.pause.selection,
                             content.pause_second_choice == Choice::quit ? "quit" : "restart", lower,
-                            lower ? lower_ink : upper_ink, caption_ink);
+                            ink, caption_ink);
 }
 
 } // namespace
@@ -825,7 +833,9 @@ RgbFrame render_classic_race(const ZoomZooState& state,
         history ? std::optional<ClassicHudPublished>(history->published_hud) : std::nullopt;
     // The menu's words replace the HUD's in the cells it writes: keep the backgrounds there.
     const auto backgrounds = paused ? std::optional<RgbFrame>(frame) : std::nullopt;
-    const auto menu_cells = classic_pause_menu_cells(state.pause.lower_view);
+    const auto menu_cells = classic_pause_shows_message(state)
+                              ? classic_pause_message_cells(state.pause.lower_view)
+                              : classic_pause_menu_cells(state.pause.lower_view);
     const auto lower_ink = race_ink_rgb(content, brightness, true);
     draw_classic_caption(frame, rider_source, content, hud, bg3_ink, caption_ink);
     const auto draw_hud = [&] {

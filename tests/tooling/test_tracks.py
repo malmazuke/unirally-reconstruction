@@ -25,11 +25,13 @@ NEON_ENTRIES = 4
 LOCAL_MODE_ENTRIES = len(front_end_rules.LOCAL_MODE_TABLES)
 OPTIONS_ENTRIES = len(front_end_rules.OPTIONS_TABLES)
 LEAGUE_ENTRIES = 9
+V34_ENTRIES = 561  # the whole v34 inventory, before v35's pause messages
 
 
 def through_league(rules: dict) -> list[dict]:
-    """The unchanged v29 inventory, before v30's audio payloads."""
-    return [entry for entry in rules["entries"] if not entry["id"].startswith("audio.")]
+    """The unchanged v29 inventory, before v30's audio payloads and v35's pause messages."""
+    return [entry for entry in rules["entries"][:V34_ENTRIES]
+            if not entry["id"].startswith("audio.")]
 
 
 def through_options(rules: dict) -> list[dict]:
@@ -621,7 +623,7 @@ class AudioEntryTests(unittest.TestCase):
         encoded = json.dumps(previous, sort_keys=True, separators=(",", ":")).encode()
         self.assertEqual(hashlib.sha256(encoded).hexdigest(),
                          "52a9fbb787d8e6859a8c38f3b43bce3d4c57d0ab86c222711b38c3fde3b5b0d0")
-        added = rules["entries"][534:]
+        added = rules["entries"][534:V34_ENTRIES]
         for name in ("award", "ending"):
             for kind in ("tables", "score"):
                 data = next(e for e in added if e["id"] == f"audio.{name}-{kind}")
@@ -635,6 +637,26 @@ class AudioEntryTests(unittest.TestCase):
         self.assertEqual(len(ids), len(set(ids)))
         source = (ROOT / "src/core/content_pack.cpp").read_text(encoding="utf-8")
         table = source[source.index("award_ending_audio_required{{"):]
+        table = table[:table.index("}};")]
+        compiled = re.findall(r'\{"([^"]+)",\s*(\d+),\s*"([0-9a-f]{64})"\}', table)
+        self.assertEqual(compiled, [(e["id"], str(e["size"]), e["sha256"]) for e in added])
+
+    def test_pause_messages_preserve_v34_inventory(self) -> None:
+        import hashlib
+        import re
+        rules = json.loads((ROOT / "tests/manifests/content/classic-crawler-tracks-pack.json")
+                           .read_text(encoding="utf-8"))
+        previous = rules["entries"][:V34_ENTRIES]
+        encoded = json.dumps(previous, sort_keys=True, separators=(",", ":")).encode()
+        self.assertEqual(hashlib.sha256(encoded).hexdigest(),
+                         "24e0c8e51b2a05d426f3c6176446bf84bf9723b32207c23929c605d5bce396ff")
+        added = rules["entries"][V34_ENTRIES:]
+        # $83:F516: sixteen messages of sixteen bytes, one by rider (R-0079).
+        self.assertEqual([(e["id"], e["size"], e["source"]) for e in added],
+                         [("presentation.race.pause-messages.v1", 256,
+                           {"kind": "raw", "pieces": [{"file_offset": 0x1F516, "length": 256}]})])
+        source = (ROOT / "src/core/content_pack.cpp").read_text(encoding="utf-8")
+        table = source[source.index("pause_messages_required{{"):]
         table = table[:table.index("}};")]
         compiled = re.findall(r'\{"([^"]+)",\s*(\d+),\s*"([0-9a-f]{64})"\}', table)
         self.assertEqual(compiled, [(e["id"], str(e["size"]), e["sha256"]) for e in added])
