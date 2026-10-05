@@ -104,7 +104,7 @@ Pictures (`classify.py`): a differing picture is classed by where its pixels lie
 | `twop-plain` | | | | 177 | 353 |
 
 The racing pictures that differ are the three gaps below, the results' medal icons (R-0071) and,
-in `vs2`, NOW PLAYING after the restart ("Not covered"). The pictures with
+in `vs2` and `league-restart` (7596-7601), NOW PLAYING after the restart ("Not covered"). The pictures with
 the menu open are equal except where three existing gaps of the split race show, which a race with
 no pause shows too: in `twop-plain` the candidate's 530 pictures are byte-identical to main's, and
 353 of them differ from the original in the same way.
