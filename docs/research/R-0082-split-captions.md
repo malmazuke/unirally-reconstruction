@@ -1,7 +1,7 @@
 # R-0082 - Rider 1's tutorial hints and the split HUD's field chain
 
 Status: implemented on `task/split-captions` ([SPLIT-CAPTIONS](../../tasks/SPLIT-CAPTIONS.md)),
-5 October 2026. PAL ROM SHA-256
+5 October 2026; accepted (tier 1, PR #57). PAL ROM SHA-256
 `a1105819d48c04d680c8292bbfa9abbce05224f1bc231afd66af43b7e0a1fd4e`, audited bsnes core
 `7d5aa1e656b9171524d01b1b22917197d8121cb4`. It closes the caption differences that
 [R-0080](R-0080-split-hud.md) left in two-human split races.
@@ -176,5 +176,7 @@ The split NMI `$81:D853` services one field a frame. Order, with each field's re
 - **Rider 1's stunt score field** (`$12CB`) in a split stunt event is not modelled; no capture
   reaches one.
 - **A pause message's `!`** keeps the caption's glyph.
+- **A league pair's stunt state may hold 120 at any time**, not only after the finish. Only a
+  forged state reaches this, since the stunt finish's flag is read after the base layout's checks.
 - **Whether the chain runs during a pause** is not established. No field was pending in any
   captured pause.

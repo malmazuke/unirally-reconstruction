@@ -1,5 +1,34 @@
 # Project state
 
+**6 October 2026: SPLIT-CAPTIONS is accepted (tier 1, #57) and integrated by merge commit.**
+A two-human split race's HUD text now matches the original's throughout the race:
+- **Rider 1's tutorial hints.** Rider 1 has its own hints, from its own tutorial bit (never for
+  MIKE, an oddity of the original), in its own queue every 300 updates. Its first scoring event
+  ends them, and its bit is written back in 2P, VS and league pairs.
+- **The split field chain.** The split HUD writes one field a frame in the original's order, so
+  captions and the lower clock land on the original's frames.
+- **CONTINUE.** It clears the pauser's view.
+- **The ink over the riders.** In races from the menus, the HUD ink takes the riders' colour math.
+- **Smaller fixes.** Rider 1's splits keep their sign, and a pause message's quote draws nothing.
+
+Results:
+- Rider 1's queue equals the original's on every race frame of all 18 split captures.
+- No picture is worse than main.
+  - `twop-plain` goes from 238 to 530 of 530 equal pictures, `league` from 410 to 710 of 710,
+    and `zzap` from 5,093 to 6,064 of 6,074.
+  - The review's withheld `mike1` and `p2pause` have 2,695 of 2,700 and 2,892 of 2,900 equal.
+- The eleven frozen gates and the race sweep equal main (432 runs, 0 differences).
+- The 51 differing front-end manifests are all two-human races or league runs. Race state
+  differs in rider 1's hints and what they hold up; a league race against the computer differs
+  only in the wrapper's last byte, now "hints over".
+
+The remaining race-time differences are the riders under the ink, queued as
+[SPLIT-RIDERS-UNDER-INK](../tasks/SPLIT-RIDERS-UNDER-INK.md).
+[R-0082](research/R-0082-split-captions.md) and [SPLIT-CAPTIONS](../tasks/SPLIT-CAPTIONS.md)
+define the domain. Next ready: SPLIT-RIDERS-UNDER-INK, TWO-HUMAN-RESTART, AUDIO-UPLOAD-SPEED,
+ROLLING-CONTACT, PORTABLE-CORE-IDENTITY, ATTRACT-DEMO. No M4 tag, reset, spending or provider
+change is authorized.
+
 **5 October 2026: SPLIT-RACE-END is accepted (tier 1, #56) and integrated by merge commit.**
 A two-human race now ends as the original's does: the finish display counts only once both riders
 have finished (`$83:E7C3`), so 2P and league pairs race on until the second rider finishes, and VS

@@ -2,7 +2,8 @@
 
 ## Assignment
 
-- Status: **claimed** 5 October 2026 by the session that closed SPLIT-RACE-END, on main `6d8d823`
+- Status: **accepted** 6 October 2026 (tier 1, [PR #57](https://github.com/malmazuke/unirally-reconstruction/pull/57));
+  claimed 5 October 2026 by the session that closed SPLIT-RACE-END, on main `6d8d823`
   after that task's merge (main equal to `origin/main`, closeout written). Prepared the same day by
   the SPLIT-HUD-GAPS session, from R-0080's remaining caption differences.
 - Milestone: M4 breadth
@@ -77,3 +78,49 @@ The listing reading is main `local/evidence/split-captions/listing-report.md` (a
 Remaining race-time differences are the riders under the ink (R-0082, "Not covered"): a pad-2-idle
 rider 1's look in `vs-idle`, a 2-pixel upper-body strip in a few pictures, and rider 0's sprite
 near the split line once; none is HUD text.
+
+## Gates
+
+`local/evidence/split-captions/gates.sh` runs against main `6d8d823`'s binaries
+(`local/evidence/split-captions/base-6d8d823/`). The final head's run is `gates-35ca787.out`, after
+`gates-9e744a4.out`.
+- Presets and ctest: 41 of 41 on each of the four.
+- Synthetic suite, v1 contracts and eight hidden runs: pass.
+- The eleven differential gates: pass.
+- Race sweep: 432 runs, 0 differences.
+- Cues: all seven identical to main.
+- Tooling: 544 OK.
+- Rules: no function over 80 lines; native-symbols passes.
+- Fuzz: 40 aborts, as on main.
+- Every split capture's words, rider 1's queue included: 0 differences.
+- Restores: equal.
+
+Front-end sweep: 128 of 179 manifests equal. The other 51 are TWO-PLAYER-VS's 22 and LEAGUE's 29,
+checked by `fe_rows.py` and `fe_pictures.py`.
+- League races against the computer differ only in the wrapper's last byte.
+- Two-human races differ in rider 1's queue, its hints byte, and what the hints hold up: rider 1's
+  rewards and finish pose. `vs-late` checks that against the original, with 0 race-time picture
+  differences.
+- Against the originals' frames: 36 pictures are better, 325 equal and 9 worse. All 9 worse are
+  pictures where native already shows another scene (5,766-57,197 pixels off on main), and the
+  candidate adds rider 1's hint text there.
+- Pictures by capture: `measure-9e744a4/` (all eighteen, none worse than main).
+
+## Review and integration
+
+- Reviewer: a fresh Claude Opus 5.5 subagent in its own clone, tier 1, with preregistered cases.
+- Round 1 on `9e744a4`: changes requested.
+  - Blocking: a league pair's stunt event can end rider 1's hints with its hold at up to 118
+    (`$83:E8B9`), which the reader refused. Fixed in `d64b357`, with a test.
+  - Low findings, fixed in `35ca787`: the full-queue drop, the CONTINUE clear with history that
+    starts mid-menu, the restore probe for ZOOM ZOO, and named offsets.
+  - Records added to R-0082: the league-vs-computer wrapper byte and the residue's extent.
+  - The review's withheld captures, `mike1` (rider 1 MIKE: the quirk confirmed) and `p2pause`
+    (pad 2 pausing during the hints), are equal in words on every race frame. They are in main
+    `local/evidence/split-captions/review/`.
+- Round 2 on `35ca787`: approved.
+  - One low point left: a pair's stunt state may hold 120 at any time, not only after the finish,
+    which only a forged state reaches. It is recorded, not narrowed: the stunt finish's flag is
+    read after the base layout's checks.
+- Integration: merged by merge commit after the final head's checks; closeout in main
+  `artifacts/split-captions-integration/closeout.json`.
