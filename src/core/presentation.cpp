@@ -30,6 +30,9 @@ namespace {
 // to the sprite's red (draw_race_riders, R-0042).
 constexpr std::uint8_t bg3_ink_colour = 27;
 constexpr unsigned ink_red_add = 13;
+// $82:D57F-D607: channel 5's colour math table gives lines 0-110 the upper view's entry and the
+// lines from 111 the lower view's.
+constexpr int split_view_line = 111;
 // OBJ palettes 3 and 4 in CGRAM bytes: the player's and the opponent's sprite colours.
 constexpr std::size_t rider_palette_at = 352, opponent_palette_at = 384, sprite_palette_size = 32;
 // $82:D4DC: four bytes a rider.
@@ -562,7 +565,17 @@ struct RaceObjectMath {
     const std::bitset<256 * 224>& caption_ink;
     const std::array<std::uint8_t, 65536>* neon_vram{};
     const RaceScroll* scroll{};
+    // $82:D57F-D607: channel 5 sets each view's CGADSUB from its rider's `$82:D4DC` entry; bit 7
+    // subtracts the object from the ink instead of adding it (TONY's, R-0080). A one-view race
+    // has only the upper view.
+    bool upper_subtracts{}, lower_subtracts{}, split{};
 };
+
+// Bit 7 of a rider's CGADSUB byte, the fourth of its `$82:D4DC` entry: subtract.
+bool colour_math_subtracts(std::span<const std::uint8_t> entry) {
+    constexpr std::size_t cgadsub = 3;
+    return entry.size() > cgadsub && (entry[cgadsub] & 0x80U) != 0;
+}
 
 std::array<std::uint8_t, 3> rider_pixel(const RaceColours& colours, const RaceObjectMath& math,
                                         std::uint8_t index, int x, int y) {
@@ -575,9 +588,15 @@ std::array<std::uint8_t, 3> rider_pixel(const RaceColours& colours, const RaceOb
             below ? colour_word(colours.lit, static_cast<std::uint8_t>(below)) : std::uint16_t{};
         word = subtract_colour(colour_word(colours.lit, index), sub);
     } else if (math.caption_ink.test(at)) {
+        // The ink (CGRAM 27, red 13) is in front; the colour math adds or subtracts the object
+        // behind it ($2130 = 2, the sub screen the objects).
         const auto object = colour_word(colours.lit, index);
-        word = static_cast<std::uint16_t>((object & ~31U)
-                                          | std::min<unsigned>(31U, (object & 31U) + ink_red_add));
+        const bool subtracts =
+            math.split && y >= split_view_line ? math.lower_subtracts : math.upper_subtracts;
+        word = subtracts ? subtract_colour(std::uint16_t{ink_red_add}, object)
+                         : static_cast<std::uint16_t>(
+                               (object & ~31U)
+                               | std::min<unsigned>(31U, (object & 31U) + ink_red_add));
     } else {
         return colour(colours.shown, index);
     }
@@ -697,15 +716,14 @@ std::uint8_t five_bit_channel(std::uint8_t value) {
     return inverse[value];
 }
 
-void dim_finished_league_views(RgbFrame& frame, const ZoomZooState& updated,
-                               const ZoomZooState* previous_update,
-                               const ClassicRaceScenario& scenario) {
-    // $83:E8F0/EA82 publish brightness 7 separately for finished split views, from the update the
-    // picture's objects come from. R-0073 neutral STUNT: both bytes are 7 at original frame 21700.
-    // $83:F695-F6A4 and $83:F947-F950 write both views' bytes: no view is dimmed again while the
-    // menu is open, nor on the picture that closes it (R-0079).
+void dim_finished_views(RgbFrame& frame, const ZoomZooState& updated,
+                        const ZoomZooState* previous_update, const ClassicRaceScenario& scenario) {
+    // $83:E8E0/EA72 publish brightness 7 separately for a finished split view, in every split race
+    // (R-0080), from the update the picture's objects come from. R-0073 neutral STUNT: both bytes
+    // are 7 at original frame 21700. $83:F695-F6A4 and $83:F947-F950 write both views' bytes: no
+    // view is dimmed again while the menu is open, nor on the picture that closes it (R-0079).
     const auto& state = previous_update ? *previous_update : updated;
-    if (!state.split_screen || !state.league_statistics.enabled || updated.pause.selection
+    if (!state.split_screen || updated.pause.selection
         || (previous_update && classic_pause_menu_closed(*previous_update, updated)))
         return;
     for (unsigned view = 0; view < 2; ++view) {
@@ -857,7 +875,12 @@ RgbFrame render_classic_race(const ZoomZooState& state,
         restore_bg3_cells(frame, *backgrounds, menu_cells, caption_ink);
         draw_pause_menu(frame, state, content, bg3_ink, lower_ink, caption_ink);
     }
-    const RaceObjectMath math{caption_ink, neon_green ? &vram : nullptr, &scroll};
+    const RaceObjectMath math{caption_ink,
+                              neon_green ? &vram : nullptr,
+                              &scroll,
+                              colour_math_subtracts(content.rider_colour_math),
+                              colour_math_subtracts(content.opponent_colour_math),
+                              state.split_screen};
     draw_race_riders(frame, rider_source, content, history, colours, scroll.flip, bg1_above_objects,
                      math);
     // The split's HUD tile priority covers both riders at the lap-banner overlap; the menu's
@@ -880,7 +903,7 @@ RgbFrame render_classic_race(const ZoomZooState& state,
     if (state.split_screen)
         for (int y = 111; y <= 112; ++y)
             for (int x = 0; x < 256; ++x) pixel(frame, x, y, {0, 0, 0});
-    dim_finished_league_views(frame, state, previous_update, scenario);
+    dim_finished_views(frame, state, previous_update, scenario);
     return frame;
 }
 

@@ -704,7 +704,10 @@ void draw_split_hud(RgbFrame& frame, const ZoomZooState& state,
                           : !content.scenario.tour_race
                               ? std::string("race")
                               : std::to_string(lap) + "/" + std::to_string(content.scenario.laps);
-    draw_bg3_text(frame, font, 2, 15, lower_left, opponent_ink, inked);
+    // $81:D192-D4DB writes the lower "race" or lap from column 2, and `$0D17`'s "finish" from
+    // column 1, as above (R-0080).
+    draw_bg3_text(frame, font, lower_left == "finish" ? 1U : 2U, 15, lower_left, opponent_ink,
+                  inked);
     auto bottom_timer = classic_hud_timer(state);
     if (!content.scenario.stunt_event && state.movement.timer.subframe == 0 && bottom_timer.tenths)
         --bottom_timer.tenths;
@@ -723,7 +726,10 @@ void draw_split_hud(RgbFrame& frame, const ZoomZooState& state,
             }
         }
     }
-    draw_bg3_text(frame, font, 24, 15, classic_hud_clock(bottom_timer), opponent_ink, inked);
+    // $81:824B and $81:E13B-E1C2: rider 1's last crossing blanks its clock, which is not
+    // rewritten while it is finished ($81:C6F0-C6F8, R-0080).
+    if (!(opponent.finished && opponent.laps_remaining == 0))
+        draw_bg3_text(frame, font, 24, 15, classic_hud_clock(bottom_timer), opponent_ink, inked);
     draw_bg3_text(frame, font, 13, 3, hud.player_cells, ink, inked);
     draw_bg3_text(frame, font, 13, 17, hud.opponent_cells, opponent_ink, inked);
     if (const auto caption = classic_caption_text(opponent_caption_event, content.captions)) {
