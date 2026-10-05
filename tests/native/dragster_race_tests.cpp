@@ -8,6 +8,7 @@
 #include <array>
 #include <span>
 #include <stdexcept>
+#include <utility>
 #include <vector>
 
 static void require(bool value) {if(!value)throw std::runtime_error("DRAGSTER race expectation failed");}
@@ -295,6 +296,19 @@ int main() {
     rejects([&]{(void)deserialize_zoom_zoo(std::span(forced_bytes).first(830));});
     auto member=forced_bytes;member[830]=6;rejects([&]{(void)deserialize_zoom_zoo(member);});
     auto both_live=forced_bytes;both_live[832]=1;rejects([&]{(void)deserialize_zoom_zoo(both_live);});
+    // R-0083: the trailer's look block (from byte 784: ten words a rider, then both head points)
+    // refuses what the look step cannot write.
+    for(const auto& [at,value]:std::array<std::pair<std::size_t,std::uint8_t>,6>{{
+            {784,49},  // head past the 48 head frames
+            {801,1},   // the sequence target's high byte
+            {788,2},   // looking back is a flag
+            {794,2},   // the sequence cursor past its end
+            {803,0},   // (paired with 802 below: sequence number 6)
+            {824,2}}}) { // a head point's presence is a flag
+        auto bad=forced_bytes;bad[at]=value;
+        if(at==803) bad[802]=6;
+        rejects([&]{(void)deserialize_zoom_zoo(bad);});
+    }
     auto stray=player_done;stray.race.banners[0]={8,300};rejects([&]{(void)serialize_zoom_zoo(stray);});
     // A split state's display counts only once both have finished; a league wrapper holds no VS state.
     require(serialize_zoom_zoo(deserialize_zoom_zoo(serialize_zoom_zoo(two_player)))==serialize_zoom_zoo(two_player));

@@ -345,14 +345,20 @@ bool rider_look_state_valid(const RiderLookState& look) {
     // $83:EC2E holds a side overlay base per head frame: 48 words.
     constexpr std::uint16_t head_frames = (sequence_range_table - side_overlay_base_table) / 2U;
     constexpr std::uint16_t sequence_span = look_table_bytes - sequence_bytes;
-    for (const auto& rider : look.riders) {
-        const auto low = [](std::uint16_t word) { return word & 0xffU; };
+    // A resting glance timer counts up from -64 at most; a glance counts up to the rider's limit.
+    constexpr std::uint16_t longest_rest = 0x10000U - 0x40U;
+    for (std::size_t index = 0; index < look.riders.size(); ++index) {
+        const auto& rider = look.riders[index];
+        const std::uint16_t glance_limit =
+            index == 0 ? player_glance_updates : opponent_glance_updates;
+        // The cursor is read as a word ($17:C614 + cursor) while it is below its end.
         if (rider.head > head_frames || rider.target > head_frames
-            || low(rider.sequence_target) > head_frames
+            || rider.sequence_target > head_frames || rider.looking_back > 1
+            || (rider.glance_timer >= glance_limit && rider.glance_timer < longest_rest)
             || rider.sequence_number >= scripted_sequences
             || rider.distance_step > distance_steps_end || (rider.sequence_cursor & 1U)
-            || (rider.sequence_end & 1U) || rider.sequence_cursor > sequence_span
-            || rider.sequence_end > sequence_span)
+            || (rider.sequence_end & 1U) || rider.sequence_end > sequence_span
+            || rider.sequence_cursor > rider.sequence_end)
             return false;
     }
     return true;

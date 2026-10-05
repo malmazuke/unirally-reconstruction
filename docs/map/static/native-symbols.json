@@ -25,6 +25,7 @@
    "address": "$17:C614",
    "native": [
     "src/core/content_pack.cpp:zoom_required",
+    "src/core/rider_look.cpp:rider_look_state_valid",
     "src/core/rider_look.cpp:sequence_bytes",
     "src/core/rider_look.hpp:RiderLookTables::bytes"
    ],
@@ -19715,6 +19716,7 @@
   },
   "src/core/rider_look.cpp:rider_look_state_valid": {
    "rom": [
+    "$17:C614",
     "$83:EC2E"
    ]
   },

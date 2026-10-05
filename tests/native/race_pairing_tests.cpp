@@ -261,6 +261,42 @@ void rider_one_hints() {
             && !announcement::ends_opponent_hints(149));
 }
 
+// R-0083: the end of rider 1's scripted glance clears its idle latch
+// ($82:87AD), which the race update's look step writes. Riders out of each
+// other's view and both contacts skipped (the corkscrew's hold), so the look
+// reads its stored head points and zeroed look tables.
+void glance_end_clears_the_latch() {
+  SyntheticRace race;
+  std::array<std::uint8_t, 594> tables{};
+  race.content.look_tables = tables;
+  auto state = classic_race_start(
+      race.content, classic_local_race_scenario(ClassicRaceTrack::Dragster,
+                                                {1, 2}, true, false));
+  initialize_split_cameras(state);
+  state.movement.contact_phase = 0; // rider 1's look step
+  state.movement.riders[1].motion.y =
+      static_cast<std::uint16_t>(state.movement.riders[0].motion.y + 0x400U);
+  for (auto &tiles : state.special_tiles)
+    tiles.physics_hold = 8;
+  state.look.head_offsets = {RiderHeadOffset{}, RiderHeadOffset{}};
+  auto &look = state.look.riders[1];
+  look.head = 5;
+  look.glance_timer = 0xffc0; // resting
+  look.sequence_number = 1;
+  look.sequence_cursor = look.sequence_end = 130;
+  look.sequence_delay = 2;
+  state.movement.riders[1].idle_pose.cycle_latched = 1;
+  auto running = state;
+  advance_rider_look(running, race.content);
+  require(running.movement.riders[1].idle_pose.cycle_latched == 1 &&
+          running.look.riders[1].sequence_cursor == 130);
+  look.sequence_delay = 1;
+  advance_rider_look(state, race.content);
+  require(state.movement.riders[1].idle_pose.cycle_latched == 0 &&
+          state.look.riders[1].sequence_cursor == 0 &&
+          state.look.riders[1].sequence_end == 0);
+}
+
 int main() {
     pairings_the_menus_choose();
     opponent_tiers();
@@ -271,5 +307,6 @@ int main() {
     restarts_keep_the_pairing();
     paired_states_read_back();
     rider_one_hints();
+    glance_end_clears_the_latch();
     return 0;
 }

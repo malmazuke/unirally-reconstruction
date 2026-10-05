@@ -83,7 +83,8 @@ void step_rider_head(RiderLook& look);
 void advance_rider_look(ZoomZooState& updated, const ZoomZooContent& content);
 
 // Whether a stored look holds what the look step can write: heads and targets among the 48 head
-// frames, a sequence number below six, and a sequence cursor and end inside the sequence bytes.
+// frames, a looking-back flag, a glance timer resting or below its limit, a sequence number
+// below six, and an even sequence cursor at or below its end inside the sequence bytes.
 bool rider_look_state_valid(const RiderLookState& look);
 
 // True when the update from `previous` to `updated` was diverted by the pause

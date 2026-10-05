@@ -56,12 +56,16 @@ pictures below; register values from R-0082]
     and y. The two-view sizes become 830 and 882, the one-view demo's 1,004. Every two-view state
     layout changes size, and the VS and lower-view suffixes keep their order.
   - A league wrapper carries the block before its last byte.
-  - The reader refuses a look the step cannot write (`rider_look_state_valid`): heads and targets
-    past the 48 head frames, a sequence number of six or more, an odd sequence cursor or end, or
-    one outside the sequence bytes.
-  - One-player layouts are unchanged. A restored one-player state starts its look empty, so its
-    overlays rebuild over the next updates, as the picture history's did before. R-0036's
-    argument keeps its race words exact.
+  - The reader refuses a look the step cannot write (`rider_look_state_valid`): heads, targets or
+    a sequence target past the 48 head frames, a looking-back flag over 1, a glance timer neither
+    resting (-64 to -1) nor below the rider's limit, a sequence number of six or more, an odd
+    sequence cursor or end, an end outside the sequence bytes, or a cursor past its end.
+  - The one-player race layouts are unchanged. A league wrapper grows by the block whatever its
+    race, so a one-player league state goes from 852 to 898 bytes. A restored one-player race
+    state starts its look empty, so its overlays rebuild over the next updates, as the picture
+    history's did before. R-0036's argument keeps its race words exact.
+  - The split demo runner's restore probe, which counts its controller words from the state's
+    end, steps over the look block.
 - **The ink.** `draw_race_riders` skips a rider pixel behind a BG1 priority tile only where no ink
   covers it.
 - **The runner.** `front_end_runner --look-timeline FILE` writes both riders' look words after
@@ -90,7 +94,13 @@ pictures below; register values from R-0082]
   | `p2pause` | 2,892 | 2,900 of 2,900 |
 
   No picture is worse.
-- **Tests.** `dragster_race_tests` covers the new state sizes and refusals.
+- **Tests.** `dragster_race_tests` covers the new state sizes and the look block's refusals.
+  `race_pairing_tests` covers the latch clear at a glance's end, and that the latch stays set
+  while the glance runs.
+- **The review's withheld `idle2`**, a 2P ZOOM ZOO race with pad 2 idle throughout and a pause in
+  one of rider 1's glances: words and look are equal on all 5,973 race frames, through nine
+  latch clears. 5,974 of 5,974 pictures are equal (main 2,320). Rider 0's clear is never
+  reached, as R-0036 argues.
 
 ## Not covered
 
