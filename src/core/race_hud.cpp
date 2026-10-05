@@ -716,8 +716,11 @@ void draw_split_arrow(RgbFrame& frame, std::span<const std::uint8_t> font,
                       const ClassicRaceArrow& arrow, bool lower, std::array<std::uint8_t, 3> ink,
                       std::bitset<256 * 224>& inked) {
     using Direction = ClassicRaceArrow::Direction;
-    const unsigned side_row = lower ? 20U : 6U, up_row = lower ? 15U : 2U,
-                   down_row = lower ? 25U : 11U;
+    constexpr unsigned upper_side_row = 6, lower_side_row = 20, upper_up_row = 2, lower_up_row = 15,
+                       upper_down_row = 11, lower_down_row = 25;
+    const unsigned side_row = lower ? lower_side_row : upper_side_row,
+                   up_row = lower ? lower_up_row : upper_up_row,
+                   down_row = lower ? lower_down_row : upper_down_row;
     for (unsigned chevron = 0; chevron < arrow.chevrons; ++chevron) {
         if (arrow.direction == Direction::Right || arrow.direction == Direction::Left) {
             const bool right = arrow.direction == Direction::Right;

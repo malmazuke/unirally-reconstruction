@@ -20836,7 +20836,8 @@
    "src/core/stunt_event.hpp:update_stunt_finish"
   ],
   "source_records": [
-   "docs/research/R-0040-dragster-window-effects.md"
+   "docs/research/R-0040-dragster-window-effects.md",
+   "tasks/SPLIT-RACE-END.md"
   ]
  },
  {
@@ -21062,7 +21063,8 @@
   ],
   "source_records": [
    "docs/research/R-0017-opponent-first-audit.md",
-   "docs/research/R-0040-dragster-window-effects.md"
+   "docs/research/R-0040-dragster-window-effects.md",
+   "tasks/SPLIT-RACE-END.md"
   ]
  },
  {

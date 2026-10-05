@@ -24,7 +24,9 @@ A split race's NMI runs `$81:D853` instead of the one-player `$81:E8C9` when `$0
   NMI (`$81:DB10-DDA4`). Side arrows grow from column 28 leftward or column 5 rightward on rows 6-7
   (20-21 below); the up arrow from row 2 (15 below), its middle rows skipped while that rider's
   cells show (`$0D19`, `$0D1B`); the down arrow from row 11 (25 below). The length is
-  `classic_arrow_chevrons`'. [L; C: the lower arrows of `twop`, `zz2p`]
+  `classic_arrow_chevrons`'. [L; C for the side arrows: the lower arrows of `twop`, `zz2p`, and the
+  review's `zzap`, 3,403 pictures with a side arrow at lengths 1-3 both ways, all equal; the up and
+  down rows are the listing's alone]
 - **Colour math.** `$2105` = 0x19 puts BG3 in front; `$2130` = 2 makes the sub screen (the objects)
   the math's second operand. Channel 5's table (`$82:D57F-D607`) gives lines 0-110 the upper
   rider's `$82:D4DC` entry and lines from 111 the lower rider's; every entry adds except TONY's
@@ -43,7 +45,9 @@ A split race's NMI runs `$81:D853` instead of the one-player `$81:E8C9` when `$0
 - `ClassicRaceHudClock` keeps `lower_arrow` (`classic_race_lower_arrow`), redrawn every update;
   `draw_split_arrow` draws both views' arrows at the split rows and full length.
 - `RaceObjectMath` carries each view's CGADSUB; `rider_pixel` subtracts where the view's rider's
-  entry says so (in one-player play too: TONY as the player).
+  entry says so (in one-player play too: TONY as the player, untested there). In a split race it
+  reaches only the ink drawn before the riders (rider 0's caption, the pause menu): the split HUD,
+  rider 1's caption among it, is still drawn over the riders as flat ink (below).
 - `dim_finished_views` dims a finished view in every split race; the lower clock is blank after
   rider 1's crossing and the lower "finish" starts at column 1.
 
@@ -66,7 +70,9 @@ differing pixels lie), state words unchanged (0 differences on every race frame)
 | review `leaguecpu` | 50 | 0 | 0 | 41 | 0 | 0 |
 
 Before this task (R-0079): 731 paused pictures equal, 197 caption-only, 187 other; now 970, 145
-and 0. Without a pause, `twop-plain` goes from 177 to 238 equal pictures and loses every class
+and 0. The review's withheld `zzap` (2P ZOOM ZOO to both finishes, no pause, main
+`local/evidence/split-hud-gaps/review/`): 5,830 race frames with 0 word differences; 4,940 of 6,074
+pictures equal (main's renderer: 1,272), none worse than main's. Without a pause, `twop-plain` goes from 177 to 238 equal pictures and loses every class
 but captions. The split demo's 326 retained pictures (R-0069) stay equal (`demo_recheck.py`), as
 do R-0078's one-player pause captures.
 
@@ -77,9 +83,19 @@ do R-0078's one-player pause captures.
   rider 1 gets in its own queue and native's engine queues only in the demo (race state); and the
   split chain's upload order (left fields, top clock, bottom clock, top cells, bottom cells, stunt
   scores, top caption, bottom caption), so that a caption lands a picture off.
-- **Upload timing at a finish** (`drfin` 3967-3968, `leaguefin` 8961-8963): the lower fields follow
-  the split chain, not the state's own picture; and **the split CONTINUE clear** (`leaguefin`
-  9050-9053: the lower arrow's cells blank on the closing pictures). Both with SPLIT-CAPTIONS.
+- **Upload timing** at a finish (`drfin` 3967-3968, `leaguefin` 8961-8963) and of the centred
+  cells and the lower clock (`zzap`, 15 pictures): the lower fields follow the split chain, not the
+  state's own picture; **the split CONTINUE clear** (`leaguefin` 9050-9053: the lower arrow's cells
+  blank on the closing pictures); **the split HUD over the riders**: drawn as flat ink where the
+  original adds or subtracts the object behind it (`zzap`: rider 1's WIPEOUT, 5115-5129; drawing it
+  before the riders mends 68 pictures and breaks 6 of the split demo's, so the rule for two humans
+  is not recovered); and **the lower cells' sign** (`zzap` 7155-7271: "+" in the original, "-" in
+  native, as on main). All with SPLIT-CAPTIONS.
+- **A two-human race's end**: native ends `zzap` 241 frames after rider 0 finishes (7856), the
+  original races on until rider 1 finishes (8067); queued as [SPLIT-RACE-END](../../tasks/SPLIT-RACE-END.md)
+  (tier 1, as on main).
+- The lower clock at a 10:00 time-out (the listing: the top shows 9:59:9, the bottom keeps its
+  digits) is not captured.
 - The results' icons (R-0071) and NOW PLAYING after a two-human restart (TWO-HUMAN-RESTART).
 - A split race with `$77:0750` bit 3 clear outside the demo, where the lower view uses the
   player's colour math entry; the stunt score fields in a split race (rows 11-12 and 25-26).

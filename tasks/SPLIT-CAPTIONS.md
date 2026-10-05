@@ -37,8 +37,14 @@ The same chain times the lower fields at a finish (`drfin` 3967-3968, `leaguefin
 the split CONTINUE clear (the pauser's rows from `$130F`, 129 words) takes the lower arrow's cells
 on the closing pictures (`leaguefin` 9050-9053).
 
-Recover rider 1's hint queue in two-human races, the split chain and the split clear, and make
-every caption cell of R-0079's and R-0080's captures exact. One-player play does not move.
+The split HUD is also still drawn over the riders as flat ink where the original applies the
+view's colour math to the object behind it (R-0080: drawing it before the riders mends 68 of the
+review's `zzap` pictures and breaks 6 of the split demo's), and the lower centred cells show "-"
+where the original shows "+" (`zzap` 7155-7271).
+
+Recover rider 1's hint queue in two-human races, the split chain, the split clear, the split
+HUD's layering and the lower cells' sign, and make every caption and HUD cell of R-0079's and
+R-0080's captures exact. One-player play does not move.
 
 ## Acceptance
 
