@@ -7958,9 +7958,11 @@
     "NMX"
    ],
    "native": [
+    "src/core/rider_look.cpp:advance_rider_look",
     "src/core/rider_look.cpp:head_point",
     "src/core/rider_look.cpp:run_scripted_glances",
-    "src/core/rider_look.hpp:advance_rider_look"
+    "src/core/rider_look.hpp:advance_rider_look",
+    "src/core/zoom_zoo_movement.hpp:ZoomZooState::look"
    ],
    "observed_entries": {},
    "start": "$82:851D",
@@ -8115,9 +8117,11 @@
     "NMX"
    ],
    "native": [
+    "src/core/rider_look.cpp:advance_rider_look",
     "src/core/rider_look.cpp:head_point",
     "src/core/rider_look.cpp:run_scripted_glances",
-    "src/core/rider_look.hpp:advance_rider_look"
+    "src/core/rider_look.hpp:advance_rider_look",
+    "src/core/zoom_zoo_movement.hpp:ZoomZooState::look"
    ],
    "observed_entries": {},
    "start": "$82:8748",
@@ -12959,7 +12963,9 @@
     "src/core/race_update.cpp:read_second_rider_controls",
     "src/core/race_update.cpp:run_pause_menu",
     "src/core/race_update.cpp:update_zoom_zoo",
-    "src/core/rider_look.cpp:zoom_zoo_update_was_paused"
+    "src/core/rider_look.cpp:zoom_zoo_update_was_paused",
+    "src/core/rider_look.hpp:advance_rider_look",
+    "src/core/zoom_zoo_movement.hpp:ZoomZooState::look"
    ],
    "observed_entries": {},
    "start": "$83:CD2A",
