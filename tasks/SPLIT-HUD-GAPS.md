@@ -2,19 +2,22 @@
 
 ## Assignment
 
-- Status: ready (prepared 5 October 2026 by the SPLIT-PAUSE-MENU session, from R-0079's split
-  picture classes and R-0071's residual).
+- Status: **claimed** 5 October 2026 by the session that closed SPLIT-PAUSE-MENU, on main
+  `52f7a79` after that task's merge (main equal to `origin/main`, closeout written). Prepared the
+  same day from R-0079's split picture classes and R-0071's residual.
 - Milestone: M4 breadth
 - Coordinator: the claiming session is coordinator, primary and integrator
-- Task provider (fixed for all children; record any user-initiated platform change): to be
-  recorded at claim
-- Worker/session/runtime/model: to be recorded at claim
+- Task provider (fixed for all children; record any user-initiated platform change): Anthropic
+- Worker/session/runtime/model: Claude Code desktop app, Claude Opus 5.5 (`claude-opus-5-5`); one
+  session is coordinator, primary and integrator; a read-only Claude Opus 5.5 subagent reads the
+  split HUD listing
 - Actual model/reasoning effort, routing rationale: **tier 2** (D-0008: presentation on recovered
   layers; the HUD history is presentation-only).
-- Provider quota window (D-0004): sample at claim.
+- Provider quota window (D-0004): at claim (5 October 2026 about 14:50 Sydney) weekly 40%,
+  five-hour 7%; standing rule: continue until weekly 80%.
 - Reviewer: one independent round with a withheld capture.
 - Dependencies: SPLIT-PAUSE-MENU (R-0079), TWO-PLAYER-VS (R-0071), LEAGUE (R-0073).
-- Base commit: the `main` tip at claim.
+- Base commit: `52f7a79` (main at claim).
 - Branch and isolated worktree: `task/split-hud-gaps` in `.worktrees/split-hud-gaps`.
 - Owned paths: `src/core/race_hud.*` (the split HUD), `src/core/presentation.*` (object colour
   math), native tests, a research record, this record, `docs/STATE.md`, `tasks/README.md`,
