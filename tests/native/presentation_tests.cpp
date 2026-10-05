@@ -4,6 +4,7 @@
 #include "result_screen.hpp"
 #include "zoom_zoo_movement.hpp"
 #include <bitset>
+#include <optional>
 #include <stdexcept>
 #include <string>
 #include <string_view>
@@ -311,6 +312,62 @@ void pause_clears_player_cells() {
   auto closed = paused;
   closed.pause.suspended_updates = 6;
   require(unirally::classic_pause_menu_closed(paused, closed));
+}
+
+// R-0080: a split race's arrows. Rider 1's shows in the lower view when it trails; each view's
+// side arrow grows on its own rows (6-7 above, 20-21 below) from column 28 or 5, the up arrow
+// from row 2 (15 below).
+void split_arrows() {
+  using Direction = unirally::ClassicRaceArrow::Direction;
+  unirally::ZoomZooState previous{}, updated{};
+  previous.split_screen = updated.split_screen = true;
+  updated.movement.riders[0].progress.transition_count = 30;
+  updated.movement.riders[1].progress.transition_count = 0; // rider 1 trails by 30
+  previous.movement.riders[1].progress.marker_word = 0x4000; // left
+  const auto lower = unirally::classic_race_lower_arrow(previous, updated, 0);
+  require(lower && lower->direction == Direction::Left && lower->chevrons == 3);
+  require(!unirally::classic_race_arrow(previous, updated, 0)); // rider 0 leads: no upper arrow
+  auto level = updated;
+  level.movement.riders[1].progress.transition_count = 31; // the same pair
+  require(!unirally::classic_race_lower_arrow(previous, level, 0));
+  auto finished = updated;
+  finished.race.riders[1].finished = 1;
+  require(!unirally::classic_race_lower_arrow(previous, finished, 0));
+
+  std::vector<std::uint8_t> font(2048, 0xff), names(256, 'a');
+  unirally::ClassicRacePresentationContent content{};
+  content.caption_font = font;
+  content.rider_names = names;
+  content.scenario = unirally::classic_race_scenario(unirally::ClassicRaceTrack::Dragster);
+  const auto cells = [&](std::optional<unirally::ClassicRaceArrow> upper,
+                         std::optional<unirally::ClassicRaceArrow> lower_view) {
+    unirally::RgbFrame frame{};
+    std::bitset<256 * 224> inked;
+    unirally::ClassicHudPublished published{};
+    published.arrow = upper;
+    published.lower_arrow = lower_view;
+    unirally::ZoomZooState state{};
+    state.split_screen = true;
+    state.pairing = {0, 1}; // two humans: both names are in the sixteen-rider table
+    unirally::draw_classic_hud(frame, state, content, std::nullopt, published, {255, 0, 0},
+                               {0, 255, 0}, 0, inked);
+    return inked;
+  };
+  const auto base = cells(std::nullopt, std::nullopt);
+  const auto added = [&](const std::bitset<256 * 224>& with, unsigned column, unsigned row) {
+    unsigned count = 0;
+    for (unsigned y = row * 8 - 1; y < row * 8 + 7; ++y)
+      for (unsigned x = column * 8; x < column * 8 + 8; ++x)
+        count += with.test(y * 256 + x) && !base.test(y * 256 + x) ? 1U : 0U;
+    return count;
+  };
+  const auto right3 = cells(std::nullopt, unirally::ClassicRaceArrow{Direction::Right, 3, false});
+  require(added(right3, 26, 20) == 64 && added(right3, 28, 21) == 64 && added(right3, 25, 20) == 0
+          && added(right3, 28, 6) == 0);
+  const auto left2 = cells(unirally::ClassicRaceArrow{Direction::Left, 2, false}, std::nullopt);
+  require(added(left2, 5, 6) == 64 && added(left2, 6, 7) == 64 && added(left2, 7, 6) == 0);
+  const auto up = cells(std::nullopt, unirally::ClassicRaceArrow{Direction::Up, 3, true});
+  require(added(up, 15, 15) == 64 && added(up, 16, 15) == 64 && added(up, 15, 16) == 0);
 }
 
 // RACE-OFFSCREEN-ARROW: the caption is the HUD queue's last task, so a caption consumed on
@@ -1859,6 +1916,7 @@ int main() {
   arrow_redraw();
   arrow_drawing();
   caption_queue();
+  split_arrows();
   pause_menu();
   pause_clears_player_cells();
 

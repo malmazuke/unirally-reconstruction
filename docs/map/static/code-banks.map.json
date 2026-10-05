@@ -3178,8 +3178,9 @@
    ],
    "native": [
     "src/core/presentation.hpp:ClassicRaceHudClock",
+    "src/core/race_hud.cpp:(file)",
     "src/core/race_hud.cpp:ClassicRaceHudClock::request_fields",
-    "src/core/race_hud.cpp:classic_race_arrow",
+    "src/core/race_hud.cpp:draw_split_hud",
     "src/core/race_progress.cpp:cross_start_line",
     "src/core/race_progress.cpp:update_checkpoints",
     "src/core/zoom_zoo_movement.hpp:ClassicRaceScenario::tour_race"
@@ -5910,6 +5911,7 @@
     "src/core/input_timer.cpp:advance_timer_digits",
     "src/core/input_timer.cpp:timer_warning",
     "src/core/race_hud.cpp:classic_hud_left_field",
+    "src/core/race_hud.cpp:draw_split_hud",
     "src/core/race_state_io.cpp:check_lap_clocks",
     "src/core/race_update.cpp:finish_update",
     "src/core/result_screen.cpp:check_result_composition"
@@ -6304,6 +6306,9 @@
    "mode_at_entry": [
     "NMX"
    ],
+   "native": [
+    "src/core/race_hud.cpp:draw_split_hud"
+   ],
    "observed_entries": {},
    "start": "$81:D398",
    "static_entries": {
@@ -6450,6 +6455,9 @@
    "mode_at_entry": [
     "NmX"
    ],
+   "native": [
+    "src/core/race_hud.cpp:draw_split_arrow"
+   ],
    "observed_entries": {},
    "start": "$81:D853",
    "static_entries": {
@@ -6466,6 +6474,9 @@
    "end": "$81:D935",
    "mode_at_entry": [
     "NMX"
+   ],
+   "native": [
+    "src/core/race_hud.cpp:draw_split_arrow"
    ],
    "observed_entries": {},
    "start": "$81:D8D9",
@@ -6485,6 +6496,9 @@
    "mode_at_entry": [
     "NMX"
    ],
+   "native": [
+    "src/core/race_hud.cpp:draw_split_arrow"
+   ],
    "observed_entries": {},
    "start": "$81:D936",
    "static_entries": {
@@ -6501,6 +6515,9 @@
    "end": "$81:DB0F",
    "mode_at_entry": [
     "NMX"
+   ],
+   "native": [
+    "src/core/race_hud.cpp:draw_split_arrow"
    ],
    "observed_entries": {},
    "start": "$81:DA4F",
@@ -6527,6 +6544,11 @@
    "mode_at_entry": [
     "NMX"
    ],
+   "native": [
+    "src/core/presentation.hpp:ClassicHudPublished::lower_arrow",
+    "src/core/race_hud.cpp:ClassicRaceHudClock::redraw_arrow",
+    "src/core/race_hud.cpp:draw_split_arrow"
+   ],
    "observed_entries": {},
    "start": "$81:DB10",
    "static_entries": {
@@ -6543,6 +6565,11 @@
    "end": "$81:DBCC",
    "mode_at_entry": [
     "NMX"
+   ],
+   "native": [
+    "src/core/presentation.hpp:ClassicHudPublished::lower_arrow",
+    "src/core/race_hud.cpp:ClassicRaceHudClock::redraw_arrow",
+    "src/core/race_hud.cpp:draw_split_arrow"
    ],
    "observed_entries": {},
    "start": "$81:DB70",
@@ -6563,6 +6590,11 @@
    "mode_at_entry": [
     "NMX"
    ],
+   "native": [
+    "src/core/presentation.hpp:ClassicHudPublished::lower_arrow",
+    "src/core/race_hud.cpp:ClassicRaceHudClock::redraw_arrow",
+    "src/core/race_hud.cpp:draw_split_arrow"
+   ],
    "observed_entries": {},
    "start": "$81:DBCD",
    "static_entries": {
@@ -6579,6 +6611,11 @@
    "end": "$81:DDA6",
    "mode_at_entry": [
     "NMX"
+   ],
+   "native": [
+    "src/core/presentation.hpp:ClassicHudPublished::lower_arrow",
+    "src/core/race_hud.cpp:ClassicRaceHudClock::redraw_arrow",
+    "src/core/race_hud.cpp:draw_split_arrow"
    ],
    "observed_entries": {},
    "start": "$81:DCE6",
@@ -6723,6 +6760,9 @@
    "end": "$81:E1C7",
    "mode_at_entry": [
     "NMX"
+   ],
+   "native": [
+    "src/core/race_hud.cpp:draw_split_hud"
    ],
    "observed_entries": {},
    "start": "$81:E12E",
@@ -6897,6 +6937,10 @@
    "mode_at_entry": [
     "NMX"
    ],
+   "native": [
+    "src/core/race_hud.cpp:draw_classic_caption",
+    "src/core/race_hud.cpp:draw_split_hud"
+   ],
    "observed_entries": {},
    "start": "$81:E831",
    "static_entries": {
@@ -6991,8 +7035,8 @@
     "src/core/presentation.hpp:classic_arrow_chevrons",
     "src/core/race_hud.cpp:ClassicRaceHudClock::redraw_arrow",
     "src/core/race_hud.cpp:classic_arrow_chevrons",
-    "src/core/race_hud.cpp:classic_race_arrow",
-    "src/core/race_hud.cpp:draw_classic_arrow"
+    "src/core/race_hud.cpp:draw_classic_arrow",
+    "src/core/race_hud.cpp:trailing_rider_arrow"
    ],
    "observed_entries": {},
    "start": "$81:E9AC",
@@ -8617,7 +8661,9 @@
    ],
    "native": [
     "src/core/presentation.hpp:classic_race_arrow",
-    "src/core/race_hud.cpp:classic_race_arrow"
+    "src/core/presentation.hpp:classic_race_lower_arrow",
+    "src/core/race_hud.cpp:(file)",
+    "src/core/race_hud.cpp:trailing_rider_arrow"
    ],
    "observed_entries": {},
    "start": "$82:9822",
@@ -10479,6 +10525,8 @@
     "Nmx"
    ],
    "native": [
+    "src/core/presentation.cpp:RaceObjectMath::upper_subtracts, RaceObjectMath::lower_subtracts, RaceObjectMath::split",
+    "src/core/presentation.cpp:split_view_line",
     "src/core/presentation.hpp:ClassicRacePresentationContent::rider_colour_math",
     "src/core/presentation.hpp:classic_race_ink"
    ],
@@ -14100,7 +14148,7 @@
    ],
    "native": [
     "src/core/movement.hpp:finish_speed_toward_zero",
-    "src/core/presentation.cpp:dim_finished_league_views",
+    "src/core/presentation.cpp:dim_finished_views",
     "src/core/race_progress.cpp:classic_race_player_won",
     "src/core/race_progress.cpp:finish_announcement",
     "src/core/race_progress.cpp:finish_rider",
@@ -14129,6 +14177,7 @@
     "NMX"
    ],
    "native": [
+    "src/core/presentation.cpp:dim_finished_views",
     "src/core/race_progress.cpp:classic_race_player_won",
     "src/core/race_progress.cpp:finish_rider",
     "src/core/race_progress.cpp:update_finish",
@@ -14154,6 +14203,7 @@
     "NmX"
    ],
    "native": [
+    "src/core/presentation.cpp:dim_finished_views",
     "src/core/presentation.hpp:dragster_window_table_index",
     "src/core/race_progress.cpp:classic_race_player_won",
     "src/core/race_progress.cpp:update_finish",
@@ -14180,7 +14230,7 @@
    ],
    "native": [
     "src/core/movement.cpp:update_movement",
-    "src/core/presentation.cpp:dim_finished_league_views",
+    "src/core/presentation.cpp:dim_finished_views",
     "src/core/race_progress.cpp:classic_race_player_won",
     "src/core/race_progress.cpp:finish_rider",
     "src/core/race_progress.cpp:update_finish",
@@ -14207,6 +14257,7 @@
     "NMX"
    ],
    "native": [
+    "src/core/presentation.cpp:dim_finished_views",
     "src/core/race_progress.cpp:classic_race_player_won",
     "src/core/race_progress.cpp:update_finish",
     "src/core/race_windows.cpp:ClassicWindowPointer::observe_update",
@@ -14231,6 +14282,7 @@
     "NmX"
    ],
    "native": [
+    "src/core/presentation.cpp:dim_finished_views",
     "src/core/race_progress.cpp:classic_race_player_won",
     "src/core/race_progress.cpp:update_finish",
     "src/core/race_windows.cpp:ClassicWindowPointer::observe_update",
@@ -14261,6 +14313,7 @@
     "NMX"
    ],
    "native": [
+    "src/core/presentation.cpp:dim_finished_views",
     "src/core/race_progress.cpp:classic_race_player_won",
     "src/core/race_progress.cpp:update_finish",
     "src/core/race_windows.cpp:ClassicWindowPointer::observe_update",
@@ -14607,7 +14660,7 @@
    ],
    "native": [
     "src/core/audio_cue.hpp:AudioDispatchSite",
-    "src/core/presentation.cpp:dim_finished_league_views",
+    "src/core/presentation.cpp:dim_finished_views",
     "src/core/presentation.cpp:draw_pause_menu",
     "src/core/presentation.cpp:race_picture_brightness",
     "src/core/race_hud.cpp:draw_classic_pause_message",
@@ -14662,7 +14715,7 @@
    ],
    "native": [
     "src/core/audio_cue.hpp:AudioDispatchSite",
-    "src/core/presentation.cpp:dim_finished_league_views",
+    "src/core/presentation.cpp:dim_finished_views",
     "src/core/presentation.cpp:paused_brightness, full_brightness",
     "src/core/presentation.cpp:race_picture_brightness",
     "src/core/presentation.hpp:ClassicHudPublished::player_cells_cleared",
@@ -14842,18 +14895,18 @@
    "call returns in the calling mode": 1262
   },
   "bytes": 131072,
-  "cited_addresses": 1678,
+  "cited_addresses": 1685,
   "cited_by_class": {
    "data": 31,
-   "inferred": 295,
-   "observed": 1020,
+   "inferred": 299,
+   "observed": 1023,
    "unknown": 332
   },
   "cited_by_position": {
    "dat": 31,
-   "loc": 953,
+   "loc": 959,
    "mid": 19,
-   "sub": 343,
+   "sub": 344,
    "unk": 332
   },
   "conflicts": 0,
@@ -14873,9 +14926,9 @@
   "jump_tables": 2,
   "mode_ambiguities": 7,
   "observed": 41778,
-  "routine_bytes_cited_by_native_code": 51761,
+  "routine_bytes_cited_by_native_code": 53756,
   "routines": 636,
-  "routines_cited_by_native_code": 424,
+  "routines_cited_by_native_code": 435,
   "unknown": 52881,
   "unknown_share": 0.4035
  }

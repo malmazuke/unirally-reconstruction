@@ -202,23 +202,38 @@ unsigned classic_arrow_chevrons(std::uint16_t lead, unsigned race_nmis) {
 // 2) blanks it every update ($82:98B7-98C8, R-0068), so it shows no arrow. The finished flag is
 // this update's when the player crossed the line (`$81:823B` runs first); the 10:00 time-out
 // sets it after the word is written, so there the arrow stays one update longer.
-std::optional<ClassicRaceArrow>
-classic_race_arrow(const ZoomZooState& previous, const ZoomZooState& updated, unsigned race_nmis) {
+namespace {
+// One rider's arrow (`rider` 0 the player above, 1 the lower view's), as $82:9822 computes it.
+std::optional<ClassicRaceArrow> trailing_rider_arrow(const ZoomZooState& previous,
+                                                     const ZoomZooState& updated,
+                                                     unsigned race_nmis, std::size_t rider) {
     if (classic_race_scenario(updated.track).stunt_event) return std::nullopt;
-    const auto& player = updated.movement.riders[0].progress;
-    const auto own = player.transition_count;
-    const auto other = updated.movement.riders[1].progress.transition_count;
+    const auto& progress = updated.movement.riders[rider].progress;
+    const auto own = progress.transition_count;
+    const auto other = updated.movement.riders[1U - rider].progress.transition_count;
     const bool behind = (static_cast<std::uint16_t>(own - other) & 0x8000U) != 0;
     if ((own >> 1U) == (other >> 1U) || !behind) return std::nullopt;
-    const auto& rider = updated.race.riders[0];
-    const bool crossed = rider.finished && rider.laps_remaining == 0;
-    if (crossed || previous.race.riders[0].finished) return std::nullopt;
+    const auto& lap = updated.race.riders[rider];
+    const bool crossed = lap.finished && lap.laps_remaining == 0;
+    if (crossed || previous.race.riders[rider].finished) return std::nullopt;
     // $81:E9DE: nothing is drawn after a rejected transition.
-    if (player.transition_rejected) return std::nullopt;
-    const auto marker = previous.movement.riders[0].progress.marker_word;
+    if (progress.transition_rejected) return std::nullopt;
+    const auto marker = previous.movement.riders[rider].progress.marker_word;
     return ClassicRaceArrow{
         static_cast<ClassicRaceArrow::Direction>(marker >> 14U),
         classic_arrow_chevrons(static_cast<std::uint16_t>(other - own), race_nmis)};
+}
+} // namespace
+
+std::optional<ClassicRaceArrow>
+classic_race_arrow(const ZoomZooState& previous, const ZoomZooState& updated, unsigned race_nmis) {
+    return trailing_rider_arrow(previous, updated, race_nmis, 0);
+}
+
+std::optional<ClassicRaceArrow> classic_race_lower_arrow(const ZoomZooState& previous,
+                                                         const ZoomZooState& updated,
+                                                         unsigned race_nmis) {
+    return trailing_rider_arrow(previous, updated, race_nmis, 1);
 }
 
 // One update of the HUD's text layer: the NMI's counter and arrow, then what the update asks
@@ -254,6 +269,14 @@ void ClassicRaceHudClock::clear_after_pause(const ZoomZooState& previous,
 // as it is; otherwise it takes down the arrow it drew last and draws the one the update asks
 // for. The up arrow's rows 5-6 are skipped while the player's centred cells show (`$0D19`).
 void ClassicRaceHudClock::redraw_arrow(const ZoomZooState& previous, const ZoomZooState& updated) {
+    // $81:DB10-DDA4: a split race's lower arrow is redrawn every NMI; its rows 16-17 are skipped
+    // while rider 1's cells show (`$0D1B`, R-0080).
+    if (updated.split_screen) {
+        latest_.lower_arrow = classic_race_lower_arrow(previous, updated, race_nmis_);
+        if (latest_.lower_arrow
+            && latest_.lower_arrow->direction == ClassicRaceArrow::Direction::Up)
+            latest_.lower_arrow->middle_rows_covered = latest_.opponent_cells.has_value();
+    }
     if (updated.movement.progress_phase == 0) return;
     latest_.arrow = classic_race_arrow(previous, updated, race_nmis_);
     if (latest_.arrow && latest_.arrow->direction == ClassicRaceArrow::Direction::Up)
@@ -408,9 +431,9 @@ void ClassicRaceHudClock::service_one_field(const ZoomZooState& updated) {
     }
     // The player's cells, drawn or blanked, overwrite an up arrow's rows 5-6.
     const auto cover_arrow = [this](std::size_t rider) {
-        if (rider == 0 && latest_.arrow
-            && latest_.arrow->direction == ClassicRaceArrow::Direction::Up)
-            latest_.arrow->middle_rows_covered = true;
+        auto& arrow = rider == 0 ? latest_.arrow : latest_.lower_arrow;
+        if (arrow && arrow->direction == ClassicRaceArrow::Direction::Up)
+            arrow->middle_rows_covered = true;
     };
     for (std::size_t rider = 0; rider < 2; ++rider) {
         auto& cell = pending_.cells[rider];
@@ -674,17 +697,48 @@ void draw_classic_caption(RgbFrame& frame, const ZoomZooState& published,
                               : classic_caption_entry(published, content.captions);
     if (!selected) return;
     const auto entry = *selected;
-    // $81:F322/$81:F33C write sixteen characters to columns 8-23 of rows 10-11.
+    // $81:F322/$81:F33C write sixteen characters to columns 8-23 of rows 10-11; a split race's
+    // NMI writes rider 0's to rows 5-6 ($81:E831-E877, R-0080).
     std::string line;
     for (unsigned column = 0; column < 16; ++column)
         line.push_back(static_cast<char>(entry[column]));
-    draw_bg3_text(frame, font, 8, 10, line, ink, inked);
+    draw_bg3_text(frame, font, 8, published.split_screen ? 5 : 10, line, ink, inked);
 }
 
 // R-0043: the HUD's four fields, on the same layer, in the same font and the
 // same colour as the caption. The original's own tilemap rows and columns:
 // the left field and the clock on rows 2-3, the player's finish time on rows
 // 5-6 and the opponent's on rows 20-21, both from column 13.
+// $81:D872-DDA4: a split race's arrows (R-0080). The side arrows grow from column 28 leftward or
+// from column 5 rightward on rows 6-7 above and 20-21 below; the up arrow down from row 2 (15
+// below), its middle rows skipped under the cells; the down arrow down from row 11 (25 below).
+void draw_split_arrow(RgbFrame& frame, std::span<const std::uint8_t> font,
+                      const ClassicRaceArrow& arrow, bool lower, std::array<std::uint8_t, 3> ink,
+                      std::bitset<256 * 224>& inked) {
+    using Direction = ClassicRaceArrow::Direction;
+    constexpr unsigned upper_side_row = 6, lower_side_row = 20, upper_up_row = 2, lower_up_row = 15,
+                       upper_down_row = 11, lower_down_row = 25;
+    const unsigned side_row = lower ? lower_side_row : upper_side_row,
+                   up_row = lower ? lower_up_row : upper_up_row,
+                   down_row = lower ? lower_down_row : upper_down_row;
+    for (unsigned chevron = 0; chevron < arrow.chevrons; ++chevron) {
+        if (arrow.direction == Direction::Right || arrow.direction == Direction::Left) {
+            const bool right = arrow.direction == Direction::Right;
+            const unsigned column = right ? right_arrow_end - chevron : left_arrow_column + chevron;
+            const unsigned tile = right ? right_chevron : left_chevron;
+            draw_bg3_tile(frame, font, column, side_row, tile, ink, inked);
+            draw_bg3_tile(frame, font, column, side_row + 1U, tile + lower_half, ink, inked);
+            continue;
+        }
+        const bool up = arrow.direction == Direction::Up;
+        if (up && chevron > 0 && arrow.middle_rows_covered) break;
+        const unsigned row = (up ? up_row : down_row) + chevron;
+        const unsigned tile = up ? up_chevron : down_chevron;
+        draw_bg3_tile(frame, font, vertical_arrow_column, row, tile, ink, inked);
+        draw_bg3_tile(frame, font, vertical_arrow_column + 1U, row, tile + 1U, ink, inked);
+    }
+}
+
 void draw_split_hud(RgbFrame& frame, const ZoomZooState& state,
                     const ClassicRacePresentationContent& content, const ClassicHudText& hud,
                     const std::optional<ClassicHudPublished>& published,
@@ -704,7 +758,10 @@ void draw_split_hud(RgbFrame& frame, const ZoomZooState& state,
                           : !content.scenario.tour_race
                               ? std::string("race")
                               : std::to_string(lap) + "/" + std::to_string(content.scenario.laps);
-    draw_bg3_text(frame, font, 2, 15, lower_left, opponent_ink, inked);
+    // $81:D192-D4DB writes the lower "race" or lap from column 2, and `$0D17`'s "finish" from
+    // column 1, as above (R-0080).
+    draw_bg3_text(frame, font, lower_left == "finish" ? 1U : 2U, 15, lower_left, opponent_ink,
+                  inked);
     auto bottom_timer = classic_hud_timer(state);
     if (!content.scenario.stunt_event && state.movement.timer.subframe == 0 && bottom_timer.tenths)
         --bottom_timer.tenths;
@@ -723,15 +780,18 @@ void draw_split_hud(RgbFrame& frame, const ZoomZooState& state,
             }
         }
     }
-    draw_bg3_text(frame, font, 24, 15, classic_hud_clock(bottom_timer), opponent_ink, inked);
+    // $81:824B and $81:E13B-E1C2: rider 1's last crossing blanks its clock, which is not
+    // rewritten while it is finished ($81:C6F0-C6F8, R-0080).
+    if (!(opponent.finished && opponent.laps_remaining == 0))
+        draw_bg3_text(frame, font, 24, 15, classic_hud_clock(bottom_timer), opponent_ink, inked);
     draw_bg3_text(frame, font, 13, 3, hud.player_cells, ink, inked);
     draw_bg3_text(frame, font, 13, 17, hud.opponent_cells, opponent_ink, inked);
+    // $81:E87C-E8C5: rider 1's caption, all sixteen cells from column 8 of rows 19-20 (R-0080).
     if (const auto caption = classic_caption_text(opponent_caption_event, content.captions)) {
         std::string line;
         for (unsigned column = 0; column < 16; ++column)
             line.push_back(static_cast<char>((*caption)[column]));
-        line.erase(0, line.find_first_not_of(' '));
-        draw_bg3_text(frame, font, 13, 19, line, opponent_ink, inked);
+        draw_bg3_text(frame, font, 8, 19, line, opponent_ink, inked);
     }
     const auto name = [&](unsigned rider) {
         std::string result;
@@ -749,21 +809,11 @@ void draw_split_hud(RgbFrame& frame, const ZoomZooState& state,
                   inked);
     draw_bg3_text(frame, font, 30U - static_cast<unsigned>(bottom_name.size()), 25, bottom_name,
                   opponent_ink, inked);
-    auto arrow =
+    const auto arrow =
         published ? published->arrow : classic_arrow_without_history(state, content.scenario);
-    if (arrow) {
-        // $81:EB44-EB83's split tilemap moves the side arrow into the top
-        // 112-line view. The captured right-arrow phase has one chevron.
-        if (arrow->direction == ClassicRaceArrow::Direction::Right
-            || arrow->direction == ClassicRaceArrow::Direction::Left) {
-            const bool right = arrow->direction == ClassicRaceArrow::Direction::Right;
-            const unsigned tile = right ? right_chevron : left_chevron;
-            const unsigned column = right ? right_arrow_end : left_arrow_column;
-            draw_bg3_tile(frame, font, column, 6, tile, ink, inked);
-            draw_bg3_tile(frame, font, column, 7, tile + lower_half, ink, inked);
-        } else
-            draw_classic_arrow(frame, font, *arrow, ink, inked);
-    }
+    if (arrow) draw_split_arrow(frame, font, *arrow, false, ink, inked);
+    if (published && published->lower_arrow)
+        draw_split_arrow(frame, font, *published->lower_arrow, true, opponent_ink, inked);
 }
 
 // $83:F6B9-F6D0 places the menu at VRAM 0x18A8 and 0x18ED (the map at 0x1800: row 5 column 8 and

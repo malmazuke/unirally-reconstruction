@@ -691,6 +691,7 @@
   "comment": "instruction start",
   "label": "loc_808803",
   "source_records": [
+   "docs/research/R-0080-split-hud.md",
    "tasks/SPLIT-HUD-GAPS.md"
   ]
  },
@@ -7390,7 +7391,7 @@
   "comment": "instruction start",
   "label": "loc_81823B",
   "native": [
-   "src/core/race_hud.cpp:classic_race_arrow",
+   "src/core/race_hud.cpp:(file)",
    "src/core/race_progress.cpp:update_checkpoints"
   ],
   "source_records": [
@@ -7398,6 +7399,19 @@
    "docs/research/R-0013-native-finish-reference-freeze.md",
    "docs/research/R-0017-opponent-first-audit.md",
    "tasks/M3-00.md"
+  ]
+ },
+ {
+  "address": "$81:824B",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_81824B",
+  "native": [
+   "src/core/race_hud.cpp:draw_split_hud",
+   "src/core/race_progress.cpp:update_checkpoints"
+  ],
+  "source_records": [
+   "docs/research/R-0080-split-hud.md"
   ]
  },
  {
@@ -10235,6 +10249,21 @@
   ]
  },
  {
+  "address": "$81:BEF1",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_81BEF1",
+  "native": [
+   "src/core/presentation.hpp:classic_caption_entry",
+   "src/core/race_hud.cpp:ClassicRaceHudClock::request_caption",
+   "src/core/race_hud.cpp:classic_caption_entry",
+   "src/core/reward_queue.cpp:show_next_player_announcement"
+  ],
+  "source_records": [
+   "tasks/SPLIT-CAPTIONS.md"
+  ]
+ },
+ {
   "address": "$81:BF32",
   "class": "observed",
   "comment": "routine start",
@@ -10308,6 +10337,15 @@
    "docs/research/R-0042-stunt-name-captions.md",
    "tasks/CLASSIC-STUNT-NAMES-review.md",
    "tasks/CLASSIC-STUNT-NAMES.md"
+  ]
+ },
+ {
+  "address": "$81:C05C",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_81C05C",
+  "source_records": [
+   "tasks/SPLIT-CAPTIONS.md"
   ]
  },
  {
@@ -11374,7 +11412,21 @@
   "label": "sub_81D853",
   "source_records": [
    "docs/research/R-0079-two-pad-pause.md",
+   "docs/research/R-0080-split-hud.md",
+   "tasks/SPLIT-CAPTIONS.md",
    "tasks/SPLIT-HUD-GAPS.md"
+  ]
+ },
+ {
+  "address": "$81:D872",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_81D872",
+  "native": [
+   "src/core/race_hud.cpp:draw_split_arrow"
+  ],
+  "source_records": [
+   "docs/research/R-0080-split-hud.md"
   ]
  },
  {
@@ -11382,8 +11434,25 @@
   "class": "inferred",
   "comment": "routine start",
   "label": "sub_81D936",
+  "native": [
+   "src/core/race_hud.cpp:draw_split_arrow"
+  ],
   "source_records": [
    "tasks/STATIC-CODE-MAP.md"
+  ]
+ },
+ {
+  "address": "$81:DB10",
+  "class": "inferred",
+  "comment": "routine start",
+  "label": "sub_81DB10",
+  "native": [
+   "src/core/presentation.hpp:ClassicHudPublished::lower_arrow",
+   "src/core/race_hud.cpp:ClassicRaceHudClock::redraw_arrow",
+   "src/core/race_hud.cpp:draw_split_arrow"
+  ],
+  "source_records": [
+   "docs/research/R-0080-split-hud.md"
   ]
  },
  {
@@ -11393,6 +11462,18 @@
   "label": "loc_81E11C",
   "source_records": [
    "tasks/CLASSIC-RACE-HUD.md"
+  ]
+ },
+ {
+  "address": "$81:E13B",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_81E13B",
+  "native": [
+   "src/core/race_hud.cpp:draw_split_hud"
+  ],
+  "source_records": [
+   "docs/research/R-0080-split-hud.md"
   ]
  },
  {
@@ -11451,10 +11532,26 @@
   "class": "inferred",
   "comment": "routine start",
   "label": "sub_81E831",
+  "native": [
+   "src/core/race_hud.cpp:draw_classic_caption"
+  ],
   "source_records": [
    "docs/research/R-0061-riders-and-opponents.md",
    "docs/research/R-0063-race-arrow-and-bg3-uploads.md",
+   "docs/research/R-0080-split-hud.md",
    "tasks/RACE-OFFSCREEN-ARROW.md"
+  ]
+ },
+ {
+  "address": "$81:E87C",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_81E87C",
+  "native": [
+   "src/core/race_hud.cpp:draw_split_hud"
+  ],
+  "source_records": [
+   "docs/research/R-0080-split-hud.md"
   ]
  },
  {
@@ -11466,7 +11563,8 @@
    "src/core/presentation.hpp:ClassicRaceHudClock"
   ],
   "source_records": [
-   "docs/research/R-0063-race-arrow-and-bg3-uploads.md"
+   "docs/research/R-0063-race-arrow-and-bg3-uploads.md",
+   "docs/research/R-0080-split-hud.md"
   ]
  },
  {
@@ -11945,6 +12043,7 @@
    "src/core/race_hud.cpp:ClassicRaceHudClock::service_one_field"
   ],
   "source_records": [
+   "docs/research/R-0080-split-hud.md",
    "tasks/SPLIT-HUD-GAPS.md"
   ]
  },
@@ -13125,10 +13224,14 @@
   "label": "sub_829822",
   "native": [
    "src/core/presentation.hpp:classic_race_arrow",
-   "src/core/race_hud.cpp:classic_race_arrow"
+   "src/core/presentation.hpp:classic_race_lower_arrow",
+   "src/core/race_hud.cpp:(file)",
+   "src/core/race_hud.cpp:trailing_rider_arrow"
   ],
   "source_records": [
-   "docs/research/R-0063-race-arrow-and-bg3-uploads.md"
+   "docs/research/R-0063-race-arrow-and-bg3-uploads.md",
+   "docs/research/R-0080-split-hud.md",
+   "tasks/SPLIT-HUD-GAPS.md"
   ]
  },
  {
@@ -13137,7 +13240,7 @@
   "comment": "instruction start",
   "label": "loc_8298B7",
   "native": [
-   "src/core/race_hud.cpp:classic_race_arrow"
+   "src/core/race_hud.cpp:(file)"
   ],
   "source_records": [
    "docs/research/R-0068-stunt-hud.md"
@@ -15003,12 +15106,16 @@
   "comment": "unknown",
   "label": "unk_82D4DC",
   "native": [
+   "src/core/presentation.cpp:RaceObjectMath::upper_subtracts, RaceObjectMath::lower_subtracts, RaceObjectMath::split",
    "src/core/presentation.cpp:colour_math_size",
+   "src/core/presentation.cpp:colour_math_subtracts",
    "src/core/presentation.hpp:ClassicRacePresentationContent::rider_colour_math"
   ],
   "source_records": [
    "docs/research/R-0061-riders-and-opponents.md",
-   "tasks/RACE-RIDERS-OPPONENTS.md"
+   "docs/research/R-0080-split-hud.md",
+   "tasks/RACE-RIDERS-OPPONENTS.md",
+   "tasks/SPLIT-HUD-GAPS.md"
   ]
  },
  {
@@ -15047,11 +15154,15 @@
   "comment": "instruction start",
   "label": "loc_82D57F",
   "native": [
+   "src/core/presentation.cpp:RaceObjectMath::upper_subtracts, RaceObjectMath::lower_subtracts, RaceObjectMath::split",
+   "src/core/presentation.cpp:split_view_line",
    "src/core/presentation.hpp:ClassicRacePresentationContent::rider_colour_math",
    "src/core/presentation.hpp:classic_race_ink"
   ],
   "source_records": [
-   "docs/research/R-0061-riders-and-opponents.md"
+   "docs/research/R-0061-riders-and-opponents.md",
+   "docs/research/R-0080-split-hud.md",
+   "tasks/SPLIT-HUD-GAPS.md"
   ]
  },
  {
@@ -20279,7 +20390,8 @@
    "src/core/stunt_event.hpp:update_stunt_finish"
   ],
   "source_records": [
-   "docs/research/R-0066-stunt-event-race.md"
+   "docs/research/R-0066-stunt-event-race.md",
+   "tasks/SPLIT-HUD-GAPS.md"
   ]
  },
  {
@@ -20475,6 +20587,7 @@
   "comment": "routine start",
   "label": "sub_83E8E0",
   "native": [
+   "src/core/presentation.cpp:dim_finished_views",
    "src/core/race_progress.cpp:classic_race_player_won",
    "src/core/race_progress.cpp:update_finish",
    "src/core/race_windows.cpp:ClassicWindowPointer::observe_update",
@@ -20483,7 +20596,9 @@
   "source_records": [
    "docs/research/R-0049-race-finish-breadth.md",
    "docs/research/R-0066-stunt-event-race.md",
-   "docs/research/R-0068-stunt-hud.md"
+   "docs/research/R-0068-stunt-hud.md",
+   "docs/research/R-0080-split-hud.md",
+   "tasks/SPLIT-HUD-GAPS.md"
   ]
  },
  {
@@ -20492,7 +20607,7 @@
   "comment": "instruction start",
   "label": "loc_83E8F0",
   "native": [
-   "src/core/presentation.cpp:dim_finished_league_views",
+   "src/core/presentation.cpp:dim_finished_views",
    "src/core/race_progress.cpp:classic_race_player_won",
    "src/core/race_progress.cpp:update_finish",
    "src/core/race_windows.cpp:ClassicWindowPointer::observe_update",
@@ -20510,6 +20625,7 @@
   "comment": "instruction start",
   "label": "loc_83E8F8",
   "native": [
+   "src/core/presentation.cpp:dim_finished_views",
    "src/core/race_progress.cpp:classic_race_player_won",
    "src/core/race_progress.cpp:update_finish",
    "src/core/race_windows.cpp:ClassicWindowPointer::observe_update",
@@ -20526,6 +20642,7 @@
   "comment": "instruction start",
   "label": "loc_83E908",
   "native": [
+   "src/core/presentation.cpp:dim_finished_views",
    "src/core/race_progress.cpp:classic_race_player_won",
    "src/core/race_progress.cpp:update_finish",
    "src/core/race_windows.cpp:ClassicWindowPointer::observe_update",
@@ -20543,6 +20660,7 @@
   "label": "loc_83E90D",
   "native": [
    "src/core/movement.hpp:finish_speed_toward_zero",
+   "src/core/presentation.cpp:dim_finished_views",
    "src/core/race_progress.cpp:classic_race_player_won",
    "src/core/race_progress.cpp:finish_rider",
    "src/core/race_progress.cpp:update_finish",
@@ -20565,6 +20683,7 @@
   "label": "mid_83E91A",
   "native": [
    "src/core/movement.hpp:finish_speed_toward_zero",
+   "src/core/presentation.cpp:dim_finished_views",
    "src/core/race_progress.cpp:classic_race_player_won",
    "src/core/race_progress.cpp:finish_rider",
    "src/core/race_progress.cpp:update_finish",
@@ -20583,6 +20702,7 @@
   "label": "mid_83E932",
   "native": [
    "src/core/movement.hpp:finish_speed_toward_zero",
+   "src/core/presentation.cpp:dim_finished_views",
    "src/core/race_progress.cpp:classic_race_player_won",
    "src/core/race_progress.cpp:finish_rider",
    "src/core/race_progress.cpp:update_finish",
@@ -20602,6 +20722,7 @@
   "comment": "instruction start",
   "label": "loc_83E940",
   "native": [
+   "src/core/presentation.cpp:dim_finished_views",
    "src/core/race_progress.cpp:classic_race_player_won",
    "src/core/race_progress.cpp:update_finish",
    "src/core/race_windows.cpp:ClassicWindowPointer::observe_update",
@@ -20618,6 +20739,7 @@
   "comment": "instruction start",
   "label": "loc_83E958",
   "native": [
+   "src/core/presentation.cpp:dim_finished_views",
    "src/core/race_progress.cpp:classic_race_player_won",
    "src/core/race_progress.cpp:update_finish",
    "src/core/race_windows.cpp:ClassicWindowPointer::observe_update",
@@ -20633,6 +20755,7 @@
   "comment": "instruction start",
   "label": "loc_83EA19",
   "native": [
+   "src/core/presentation.cpp:dim_finished_views",
    "src/core/presentation.hpp:dragster_window_table_index",
    "src/core/race_progress.cpp:classic_race_player_won",
    "src/core/race_progress.cpp:update_finish",
@@ -20652,6 +20775,7 @@
   "comment": "instruction start",
   "label": "loc_83EA42",
   "native": [
+   "src/core/presentation.cpp:dim_finished_views",
    "src/core/presentation.hpp:dragster_window_table_index",
    "src/core/race_progress.cpp:classic_race_player_won",
    "src/core/race_progress.cpp:update_finish",
@@ -20669,6 +20793,7 @@
   "comment": "instruction start",
   "label": "loc_83EA58",
   "native": [
+   "src/core/presentation.cpp:dim_finished_views",
    "src/core/presentation.hpp:dragster_window_table_index",
    "src/core/race_progress.cpp:classic_race_player_won",
    "src/core/race_progress.cpp:update_finish",
@@ -20686,6 +20811,7 @@
   "comment": "instruction start",
   "label": "loc_83EA5B",
   "native": [
+   "src/core/presentation.cpp:dim_finished_views",
    "src/core/presentation.hpp:dragster_window_table_index",
    "src/core/race_progress.cpp:classic_race_player_won",
    "src/core/race_progress.cpp:update_finish",
@@ -20703,13 +20829,15 @@
   "comment": "instruction start",
   "label": "loc_83EA5D",
   "native": [
+   "src/core/presentation.cpp:dim_finished_views",
    "src/core/race_progress.cpp:classic_race_player_won",
    "src/core/race_progress.cpp:update_finish",
    "src/core/race_windows.cpp:ClassicWindowPointer::observe_update",
    "src/core/stunt_event.hpp:update_stunt_finish"
   ],
   "source_records": [
-   "docs/research/R-0040-dragster-window-effects.md"
+   "docs/research/R-0040-dragster-window-effects.md",
+   "tasks/SPLIT-RACE-END.md"
   ]
  },
  {
@@ -20719,6 +20847,7 @@
   "label": "sub_83EA72",
   "native": [
    "src/core/movement.cpp:update_movement",
+   "src/core/presentation.cpp:dim_finished_views",
    "src/core/race_progress.cpp:classic_race_player_won",
    "src/core/race_progress.cpp:update_finish",
    "src/core/race_windows.cpp:ClassicWindowPointer::observe_update",
@@ -20727,7 +20856,9 @@
   "source_records": [
    "docs/research/R-0017-m3-acceptance.md",
    "docs/research/R-0017-opponent-first-audit.md",
-   "tasks/M3-04.md"
+   "docs/research/R-0080-split-hud.md",
+   "tasks/M3-04.md",
+   "tasks/SPLIT-HUD-GAPS.md"
   ]
  },
  {
@@ -20737,7 +20868,7 @@
   "label": "loc_83EA82",
   "native": [
    "src/core/movement.cpp:update_movement",
-   "src/core/presentation.cpp:dim_finished_league_views",
+   "src/core/presentation.cpp:dim_finished_views",
    "src/core/race_progress.cpp:classic_race_player_won",
    "src/core/race_progress.cpp:update_finish",
    "src/core/race_windows.cpp:ClassicWindowPointer::observe_update",
@@ -20754,6 +20885,7 @@
   "label": "loc_83EA8A",
   "native": [
    "src/core/movement.cpp:update_movement",
+   "src/core/presentation.cpp:dim_finished_views",
    "src/core/race_progress.cpp:classic_race_player_won",
    "src/core/race_progress.cpp:update_finish",
    "src/core/race_windows.cpp:ClassicWindowPointer::observe_update",
@@ -20770,6 +20902,7 @@
   "label": "loc_83EA8F",
   "native": [
    "src/core/movement.cpp:update_movement",
+   "src/core/presentation.cpp:dim_finished_views",
    "src/core/race_progress.cpp:classic_race_player_won",
    "src/core/race_progress.cpp:update_finish",
    "src/core/race_windows.cpp:ClassicWindowPointer::observe_update",
@@ -20786,6 +20919,7 @@
   "label": "loc_83EA9A",
   "native": [
    "src/core/movement.cpp:update_movement",
+   "src/core/presentation.cpp:dim_finished_views",
    "src/core/race_progress.cpp:classic_race_player_won",
    "src/core/race_progress.cpp:update_finish",
    "src/core/race_windows.cpp:ClassicWindowPointer::observe_update",
@@ -20802,6 +20936,7 @@
   "label": "loc_83EA9F",
   "native": [
    "src/core/movement.cpp:update_movement",
+   "src/core/presentation.cpp:dim_finished_views",
    "src/core/race_progress.cpp:classic_race_player_won",
    "src/core/race_progress.cpp:finish_rider",
    "src/core/race_progress.cpp:update_finish",
@@ -20820,6 +20955,7 @@
   "label": "loc_83EAAA",
   "native": [
    "src/core/movement.cpp:update_movement",
+   "src/core/presentation.cpp:dim_finished_views",
    "src/core/race_progress.cpp:classic_race_player_won",
    "src/core/race_progress.cpp:update_finish",
    "src/core/race_windows.cpp:ClassicWindowPointer::observe_update",
@@ -20836,6 +20972,7 @@
   "label": "loc_83EAC3",
   "native": [
    "src/core/movement.cpp:update_movement",
+   "src/core/presentation.cpp:dim_finished_views",
    "src/core/race_progress.cpp:classic_race_player_won",
    "src/core/race_progress.cpp:update_finish",
    "src/core/race_windows.cpp:ClassicWindowPointer::observe_update",
@@ -20852,6 +20989,7 @@
   "comment": "instruction start",
   "label": "loc_83EAD2",
   "native": [
+   "src/core/presentation.cpp:dim_finished_views",
    "src/core/race_progress.cpp:classic_race_player_won",
    "src/core/race_progress.cpp:update_finish",
    "src/core/race_windows.cpp:ClassicWindowPointer::observe_update",
@@ -20868,6 +21006,7 @@
   "comment": "instruction start",
   "label": "loc_83EAEA",
   "native": [
+   "src/core/presentation.cpp:dim_finished_views",
    "src/core/race_progress.cpp:classic_race_player_won",
    "src/core/race_progress.cpp:update_finish",
    "src/core/race_windows.cpp:ClassicWindowPointer::observe_update",
@@ -20883,6 +21022,7 @@
   "comment": "routine start",
   "label": "sub_83EBA3",
   "native": [
+   "src/core/presentation.cpp:dim_finished_views",
    "src/core/race_progress.cpp:classic_race_player_won",
    "src/core/race_progress.cpp:update_finish",
    "src/core/race_windows.cpp:ClassicWindowPointer::observe_update",
@@ -20898,6 +21038,7 @@
   "comment": "instruction start",
   "label": "loc_83EBB0",
   "native": [
+   "src/core/presentation.cpp:dim_finished_views",
    "src/core/race_progress.cpp:classic_race_player_won",
    "src/core/race_progress.cpp:update_finish",
    "src/core/race_windows.cpp:ClassicWindowPointer::observe_update",
@@ -20914,6 +21055,7 @@
   "comment": "instruction start",
   "label": "loc_83EBCB",
   "native": [
+   "src/core/presentation.cpp:dim_finished_views",
    "src/core/race_progress.cpp:classic_race_player_won",
    "src/core/race_progress.cpp:update_finish",
    "src/core/race_windows.cpp:ClassicWindowPointer::observe_update",
@@ -20921,7 +21063,8 @@
   ],
   "source_records": [
    "docs/research/R-0017-opponent-first-audit.md",
-   "docs/research/R-0040-dragster-window-effects.md"
+   "docs/research/R-0040-dragster-window-effects.md",
+   "tasks/SPLIT-RACE-END.md"
   ]
  },
  {
@@ -20930,6 +21073,7 @@
   "comment": "routine start",
   "label": "sub_83EC13",
   "native": [
+   "src/core/presentation.cpp:dim_finished_views",
    "src/core/race_progress.cpp:classic_race_player_won",
    "src/core/race_progress.cpp:update_finish",
    "src/core/race_windows.cpp:ClassicWindowPointer::observe_update",
@@ -21539,7 +21683,7 @@
   "comment": "instruction start",
   "label": "loc_83F695",
   "native": [
-   "src/core/presentation.cpp:dim_finished_league_views",
+   "src/core/presentation.cpp:dim_finished_views",
    "src/core/presentation.cpp:race_picture_brightness"
   ],
   "source_records": [
@@ -21797,7 +21941,7 @@
   "comment": "instruction start",
   "label": "loc_83F947",
   "native": [
-   "src/core/presentation.cpp:dim_finished_league_views",
+   "src/core/presentation.cpp:dim_finished_views",
    "src/core/presentation.cpp:paused_brightness, full_brightness",
    "src/core/presentation.cpp:race_picture_brightness",
    "src/core/presentation.hpp:ClassicHudPublished::player_cells_cleared",
