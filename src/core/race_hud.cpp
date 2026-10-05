@@ -243,6 +243,7 @@ void ClassicRaceHudClock::observe_update(const ZoomZooState& previous,
     on_screen_ = latest_;
     clear_after_pause(previous, updated);
     if (updated.fade_level >= race_nmi_fade) ++race_nmis_;
+    hold_lower_clock(previous, updated);
     redraw_arrow(previous, updated);
     request_fields(previous, updated);
     if (classic_race_scenario(updated.track).stunt_event) request_stunt_fields(previous, updated);
@@ -263,6 +264,15 @@ void ClassicRaceHudClock::clear_after_pause(const ZoomZooState& previous,
         if (hud->arrow && hud->arrow->direction == ClassicRaceArrow::Direction::Up)
             hud->arrow->middle_rows_covered = true;
     }
+}
+
+// $81:C6D1-C6DC: rider 1's clock is rewritten only while it is unfinished, so a VS race's forced
+// finish of rider 1 leaves the digits the update before wrote (R-0081).
+void ClassicRaceHudClock::hold_lower_clock(const ZoomZooState& previous,
+                                           const ZoomZooState& updated) {
+    if (updated.split_screen && !previous.race.riders[1].finished
+        && updated.race.riders[1].finished == forced_finish)
+        latest_.lower_clock = classic_split_lower_clock(previous);
 }
 
 // $81:E8E8-$81:EB83: after an update whose progress phase is clear the NMI leaves the arrow
@@ -420,8 +430,9 @@ void ClassicRaceHudClock::service_one_field(const ZoomZooState& updated) {
     }
     // `$034D` is positive while the digits the timer keeps differ from the ones the cells
     // hold; the handler writes them and returns. Once blanked they are never rewritten,
-    // because the race clock has stopped.
-    if (!latest_.clock_blanked) {
+    // because the race clock has stopped. $81:C6F0-C6F8 sets it only while the player is
+    // unfinished, so a VS race's forced finish leaves the last digits written (R-0081).
+    if (!latest_.clock_blanked && updated.race.riders[0].finished != forced_finish) {
         auto digits = classic_hud_clock(classic_hud_timer(updated));
         if (latest_.clock != digits || pending_.clock_rewrite) {
             latest_.clock = std::move(digits);
@@ -739,6 +750,31 @@ void draw_split_arrow(RgbFrame& frame, std::span<const std::uint8_t> font,
     }
 }
 
+// The lower view's clock: the second timer is one tick behind the first in the captured PAL
+// demo's two-view race.
+std::string classic_split_lower_clock(const ZoomZooState& state) {
+    auto bottom_timer = classic_hud_timer(state);
+    const bool stunt_event = classic_race_scenario(state.track).stunt_event;
+    if (!stunt_event && state.movement.timer.subframe == 0 && bottom_timer.tenths)
+        --bottom_timer.tenths;
+    else if (!stunt_event && state.movement.timer.subframe == 0
+             && (bottom_timer.seconds || bottom_timer.tens_seconds || bottom_timer.minutes)) {
+        bottom_timer.tenths = 9;
+        if (bottom_timer.seconds)
+            --bottom_timer.seconds;
+        else {
+            bottom_timer.seconds = 9;
+            if (bottom_timer.tens_seconds)
+                --bottom_timer.tens_seconds;
+            else {
+                bottom_timer.tens_seconds = 5;
+                --bottom_timer.minutes;
+            }
+        }
+    }
+    return classic_hud_clock(bottom_timer);
+}
+
 void draw_split_hud(RgbFrame& frame, const ZoomZooState& state,
                     const ClassicRacePresentationContent& content, const ClassicHudText& hud,
                     const std::optional<ClassicHudPublished>& published,
@@ -762,28 +798,13 @@ void draw_split_hud(RgbFrame& frame, const ZoomZooState& state,
     // column 1, as above (R-0080).
     draw_bg3_text(frame, font, lower_left == "finish" ? 1U : 2U, 15, lower_left, opponent_ink,
                   inked);
-    auto bottom_timer = classic_hud_timer(state);
-    if (!content.scenario.stunt_event && state.movement.timer.subframe == 0 && bottom_timer.tenths)
-        --bottom_timer.tenths;
-    else if (!content.scenario.stunt_event && state.movement.timer.subframe == 0
-             && (bottom_timer.seconds || bottom_timer.tens_seconds || bottom_timer.minutes)) {
-        bottom_timer.tenths = 9;
-        if (bottom_timer.seconds)
-            --bottom_timer.seconds;
-        else {
-            bottom_timer.seconds = 9;
-            if (bottom_timer.tens_seconds)
-                --bottom_timer.tens_seconds;
-            else {
-                bottom_timer.tens_seconds = 5;
-                --bottom_timer.minutes;
-            }
-        }
-    }
     // $81:824B and $81:E13B-E1C2: rider 1's last crossing blanks its clock, which is not
-    // rewritten while it is finished ($81:C6F0-C6F8, R-0080).
-    if (!(opponent.finished && opponent.laps_remaining == 0))
-        draw_bg3_text(frame, font, 24, 15, classic_hud_clock(bottom_timer), opponent_ink, inked);
+    // rewritten while it is finished ($81:C6D1-C6DC, R-0080): a VS race's forced finish leaves
+    // the last one written (R-0081).
+    if (opponent.finished == forced_finish && published && published->lower_clock)
+        draw_bg3_text(frame, font, 24, 15, *published->lower_clock, opponent_ink, inked);
+    else if (!(opponent.finished && opponent.laps_remaining == 0))
+        draw_bg3_text(frame, font, 24, 15, classic_split_lower_clock(state), opponent_ink, inked);
     draw_bg3_text(frame, font, 13, 3, hud.player_cells, ink, inked);
     draw_bg3_text(frame, font, 13, 17, hud.opponent_cells, opponent_ink, inked);
     // $81:E87C-E8C5: rider 1's caption, all sixteen cells from column 8 of rows 19-20 (R-0080).

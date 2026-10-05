@@ -5345,9 +5345,20 @@
    "region": "rom"
   },
   {
+   "address": "$81:C6D1",
+   "native": [
+    "src/core/race_hud.cpp:ClassicRaceHudClock::hold_lower_clock",
+    "src/core/race_hud.cpp:draw_split_hud"
+   ],
+   "range_ends": [
+    "$81:C6DC"
+   ],
+   "region": "rom"
+  },
+  {
    "address": "$81:C6F0",
    "native": [
-    "src/core/race_hud.cpp:draw_split_hud"
+    "src/core/race_hud.cpp:ClassicRaceHudClock::service_one_field"
    ],
    "range_ends": [
     "$81:C6F8"
@@ -10263,10 +10274,11 @@
   {
    "address": "$83:E7C3",
    "native": [
-    "src/core/race_progress.cpp:update_finish"
+    "src/core/race_progress.cpp:update_finish",
+    "src/core/race_state_io.cpp:check_split_finish_display"
    ],
    "range_ends": [
-    "$83:E7EA"
+    "$83:E7E4"
    ],
    "region": "rom"
   },
@@ -10435,13 +10447,34 @@
    "region": "rom"
   },
   {
+   "address": "$83:EA11",
+   "native": [
+    "src/core/race_progress.cpp:drive_banner",
+    "src/core/zoom_zoo_movement.hpp:ZoomZooBannerDriver"
+   ],
+   "range_ends": [
+    "$83:EA72"
+   ],
+   "region": "rom"
+  },
+  {
    "address": "$83:EA19",
    "native": [
     "src/core/presentation.hpp:dragster_window_table_index",
-    "src/core/race_windows.cpp:winner_window_first, winner_window_cycle, winner_window_life_updates"
+    "src/core/race_windows.cpp:winner_window_first, winner_window_cycle, winner_window_life_updates",
+    "src/core/zoom_zoo_movement.hpp:first_banner, last_banner, banner_life_updates"
    ],
    "range_ends": [
     "$83:EA5B"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:EA69",
+   "native": [
+    "src/core/presentation.cpp:dim_finished_views",
+    "src/core/race_windows.cpp:ClassicWindowPointer::observe_update",
+    "src/core/zoom_zoo_movement.hpp:forced_finish"
    ],
    "region": "rom"
   },
@@ -10470,6 +10503,24 @@
    ],
    "range_ends": [
     "$83:EAE7"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:EBA3",
+   "native": [
+    "src/core/race_progress.cpp:drive_banner",
+    "src/core/zoom_zoo_movement.hpp:ZoomZooBannerDriver"
+   ],
+   "range_ends": [
+    "$83:EC13"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:EBD7",
+   "native": [
+    "src/core/zoom_zoo_movement.hpp:forced_finish"
    ],
    "region": "rom"
   },
@@ -11301,6 +11352,7 @@
     "src/core/flat_contact.hpp:ContactContext::phase",
     "src/core/presentation.hpp:classic_countdown_window",
     "src/core/race_demo_controls.cpp:demo_rider",
+    "src/core/race_progress.cpp:odd_race_update",
     "src/core/race_windows.cpp:ClassicWindowPointer::observe_update",
     "src/core/race_windows.cpp:classic_countdown_window",
     "src/core/race_windows.cpp:window_table_index_for",
@@ -12130,6 +12182,7 @@
   {
    "address": "$0DE1",
    "native": [
+    "src/core/race_progress.cpp:update_finish",
     "src/core/stunt_event.hpp:rider_passes",
     "src/core/zoom_zoo_movement.hpp:ZoomZooRaceState::second_camera",
     "src/core/zoom_zoo_movement.hpp:ZoomZooState::split_screen"
@@ -12332,7 +12385,8 @@
    "address": "$0F03",
    "native": [
     "src/core/presentation.hpp:ClassicWindowPointer",
-    "src/core/race_windows.cpp:winner_window_first, winner_window_cycle, winner_window_life_updates"
+    "src/core/race_windows.cpp:winner_window_first, winner_window_cycle, winner_window_life_updates",
+    "src/core/zoom_zoo_movement.hpp:ZoomZooBannerDriver"
    ],
    "region": "wram"
   },
@@ -12340,7 +12394,8 @@
    "address": "$0F05",
    "native": [
     "src/core/presentation.hpp:ClassicWindowPointer",
-    "src/core/race_windows.cpp:winner_window_first, winner_window_cycle, winner_window_life_updates"
+    "src/core/race_windows.cpp:winner_window_first, winner_window_cycle, winner_window_life_updates",
+    "src/core/zoom_zoo_movement.hpp:ZoomZooBannerDriver"
    ],
    "region": "wram"
   },
@@ -12349,7 +12404,8 @@
    "native": [
     "src/core/presentation.hpp:ClassicWindowPointer",
     "src/core/race_windows.cpp:ClassicWindowPointer::observe_update",
-    "src/core/race_windows.cpp:winner_window_first, winner_window_cycle, winner_window_life_updates"
+    "src/core/race_windows.cpp:winner_window_first, winner_window_cycle, winner_window_life_updates",
+    "src/core/zoom_zoo_movement.hpp:ZoomZooBannerDriver"
    ],
    "region": "wram"
   },
@@ -12358,7 +12414,8 @@
    "native": [
     "src/core/presentation.hpp:ClassicWindowPointer",
     "src/core/race_windows.cpp:ClassicWindowPointer::observe_update",
-    "src/core/race_windows.cpp:winner_window_first, winner_window_cycle, winner_window_life_updates"
+    "src/core/race_windows.cpp:winner_window_first, winner_window_cycle, winner_window_life_updates",
+    "src/core/zoom_zoo_movement.hpp:ZoomZooBannerDriver"
    ],
    "region": "wram"
   },
@@ -13557,7 +13614,8 @@
    "address": "$77:0750",
    "native": [
     "src/core/flat_contact.hpp:ContactContext::cartridge_options",
-    "src/core/race_update.cpp:loop_top_step, cartridge_options, split_demo_options"
+    "src/core/race_update.cpp:loop_top_step, cartridge_options, split_demo_options",
+    "src/core/zoom_zoo_movement.hpp:ZoomZooState::versus"
    ],
    "region": "sram"
   },
@@ -17138,6 +17196,7 @@
   "src/core/presentation.cpp:dim_finished_views": {
    "rom": [
     "$83:E8E0",
+    "$83:EA69",
     "$83:EA72",
     "$83:F695",
     "$83:F947"
@@ -17659,6 +17718,11 @@
     "$11BD"
    ]
   },
+  "src/core/race_hud.cpp:ClassicRaceHudClock::hold_lower_clock": {
+   "rom": [
+    "$81:C6D1"
+   ]
+  },
   "src/core/race_hud.cpp:ClassicRaceHudClock::redraw_arrow": {
    "rom": [
     "$81:DB10",
@@ -17711,6 +17775,7 @@
   },
   "src/core/race_hud.cpp:ClassicRaceHudClock::service_one_field": {
    "rom": [
+    "$81:C6F0",
     "$81:EB91",
     "$81:EB93",
     "$81:EB98",
@@ -17845,7 +17910,7 @@
   "src/core/race_hud.cpp:draw_split_hud": {
    "rom": [
     "$81:824B",
-    "$81:C6F0",
+    "$81:C6D1",
     "$81:D192",
     "$81:D1B2",
     "$81:E13B",
@@ -17928,6 +17993,12 @@
     "$0D15"
    ]
   },
+  "src/core/race_progress.cpp:drive_banner": {
+   "rom": [
+    "$83:EA11",
+    "$83:EBA3"
+   ]
+  },
   "src/core/race_progress.cpp:finish_announcement": {
    "rom": [
     "$83:E967"
@@ -17954,6 +18025,11 @@
    "rom": [
     "$80:F88D",
     "$83:904A"
+   ]
+  },
+  "src/core/race_progress.cpp:odd_race_update": {
+   "wram": [
+    "$0300"
    ]
   },
   "src/core/race_progress.cpp:pass_checkpoint": {
@@ -17986,6 +18062,9 @@
     "$82:8953",
     "$83:E7C3",
     "$83:E8E0"
+   ],
+   "wram": [
+    "$0DE1"
    ]
   },
   "src/core/race_result.cpp:(file)": {
@@ -18579,6 +18658,11 @@
     "$82:9B69"
    ]
   },
+  "src/core/race_state_io.cpp:check_split_finish_display": {
+   "rom": [
+    "$83:E7C3"
+   ]
+  },
   "src/core/race_state_io.cpp:check_stunt_content": {
    "rom": [
     "$82:D7FD",
@@ -18910,7 +18994,8 @@
   "src/core/race_windows.cpp:ClassicWindowPointer::observe_update": {
    "rom": [
     "$83:E898",
-    "$83:E8E0"
+    "$83:E8E0",
+    "$83:EA69"
    ],
    "wram": [
     "$0300",
@@ -21512,6 +21597,18 @@
     "$77:07BB"
    ]
   },
+  "src/core/zoom_zoo_movement.hpp:ZoomZooBannerDriver": {
+   "rom": [
+    "$83:EA11",
+    "$83:EBA3"
+   ],
+   "wram": [
+    "$0F03",
+    "$0F05",
+    "$0F07",
+    "$0F09"
+   ]
+  },
   "src/core/zoom_zoo_movement.hpp:ZoomZooContent::announcement_voices": {
    "rom": [
     "$81:C441"
@@ -21622,6 +21719,11 @@
     "$0DE1"
    ]
   },
+  "src/core/zoom_zoo_movement.hpp:ZoomZooState::versus": {
+   "sram": [
+    "$77:0750"
+   ]
+  },
   "src/core/zoom_zoo_movement.hpp:apply_boost_tile": {
    "rom": [
     "$81:871C"
@@ -21648,6 +21750,17 @@
    "wram": [
     "$0C73",
     "$0E7B"
+   ]
+  },
+  "src/core/zoom_zoo_movement.hpp:first_banner, last_banner, banner_life_updates": {
+   "rom": [
+    "$83:EA19"
+   ]
+  },
+  "src/core/zoom_zoo_movement.hpp:forced_finish": {
+   "rom": [
+    "$83:EA69",
+    "$83:EBD7"
    ]
   },
   "src/core/zoom_zoo_movement.hpp:next_wrong_direction_counter": {
@@ -21703,10 +21816,10 @@
   }
  },
  "totals": {
-  "addresses": 1575,
+  "addresses": 1580,
   "io_addresses": 10,
-  "native_symbols": 1198,
-  "rom_addresses": 1199,
+  "native_symbols": 1206,
+  "rom_addresses": 1204,
   "sram_addresses": 50,
   "wram_addresses": 316
  }

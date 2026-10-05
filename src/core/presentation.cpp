@@ -739,7 +739,10 @@ void dim_finished_views(RgbFrame& frame, const ZoomZooState& updated,
         || (previous_update && classic_pause_menu_closed(*previous_update, updated)))
         return;
     for (unsigned view = 0; view < 2; ++view) {
-        if (!state.race.riders[view].finished
+        // A VS race's forced finish of rider 1 runs its block in the update that forces it
+        // ($83:EA69, R-0081).
+        const bool forced_now = view == 1 && updated.race.riders[1].finished == forced_finish;
+        if ((!state.race.riders[view].finished && !forced_now)
             || (scenario.stunt_event && !state.stunt.finish_display))
             continue;
         for (unsigned y = view * 112; y < (view + 1) * 112; ++y)

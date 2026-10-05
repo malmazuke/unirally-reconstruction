@@ -70,12 +70,24 @@ struct ZoomZooCamera {
 // A lap slot or total not run holds 60000 (0xEA60), as the cartridge's records do; the
 // result screens show it as NO TIME.
 constexpr std::uint16_t no_time = 60000;
+// $83:EA69/$83:EBD7: the finished flag of a rider a VS race finishes when the other rider's
+// banner ends; its laps, times and digits stay as they were (R-0081).
+constexpr std::uint16_t forced_finish = 0xffff;
 
 // A slot's first-seen flag keeps bit 7 set until a rider first crosses the slot.
 inline bool slot_not_yet_crossed(std::uint8_t first_seen_flag) {
     return (first_seen_flag & 0x80U) != 0;
 }
 
+// A finished rider's banner driver ($0F03/$0F07 and $0F05/$0F09, $83:EA11 and $83:EBA3): the
+// banner's member, 0 until its first step, then 7..24, and its life in updates.
+struct ZoomZooBannerDriver {
+    std::uint16_t index{}, life{};
+    bool operator==(const ZoomZooBannerDriver&) const = default;
+};
+// Its members and life ($83:EA19-EA5B): the index cycles 7..24; the life is set to 360 while the
+// index is 0 and counted down in the same run, so a stored life is at most 359.
+constexpr std::uint16_t first_banner = 7, last_banner = 24, banner_life_updates = 360;
 struct ZoomZooRaceState {
     ZoomZooCamera camera;
     // $041F/$0423, $04FB/$04FF, $0555: the second rider's camera only while
@@ -93,6 +105,9 @@ struct ZoomZooRaceState {
     std::array<std::array<std::uint16_t, 10>, 2> lap_times;
     std::array<std::uint16_t, 2> total_times{};
     std::uint16_t provisional_1225{}, provisional_1227{}, finish_delay{};
+    // Followed only in a VS race, where the end of one rider's banner finishes the other; the
+    // picture keeps its own copy in every race (`ClassicWindowPointer`).
+    std::array<ZoomZooBannerDriver, 2> banners{};
 };
 struct ZoomZooResult {
     std::uint16_t graph_minimum{}, graph_maximum{};
@@ -341,6 +356,7 @@ struct ZoomZooState {
     ClassicRaceTrack track{ClassicRaceTrack::ZoomZoo}; // Serialized as the state magic.
     bool split_screen{}; // $0DE1; separate native demo/two-player state format pending.
     bool demo_ai{};      // $7E:212C; controls both riders in a split demo.
+    bool versus{};       // $77:0750 bit 2: a VS race from the menus (R-0081).
     DemoControllers demo;
     ZoomZooPause pause;
     std::array<ZoomZooRoll, 2> rolls{};

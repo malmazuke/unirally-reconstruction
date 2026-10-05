@@ -314,6 +314,47 @@ void pause_clears_player_cells() {
   require(unirally::classic_pause_menu_closed(paused, closed));
 }
 
+// R-0081: a VS race's forced finish of rider 1 stops its clock's rewrites: the
+// lower clock keeps the text the update before the force left, while the timer
+// runs on.
+void split_forced_clock() {
+  unirally::ZoomZooState previous{}, updated{};
+  previous.split_screen = updated.split_screen = true;
+  previous.movement.timer.seconds = updated.movement.timer.seconds = 3;
+  previous.movement.timer.subframe = updated.movement.timer.subframe = 1;
+  updated.race.riders[1].finished = unirally::forced_finish;
+  unirally::ClassicRaceHudClock queue;
+  queue.observe_update(previous, updated);
+  auto later = updated;
+  later.movement.timer.seconds = 7;
+  queue.observe_update(updated, later);
+  const auto clock = queue.published().lower_clock;
+  require(clock && *clock == unirally::classic_split_lower_clock(previous));
+  require(*clock != unirally::classic_split_lower_clock(later));
+  // The player forced (rider 1 first): its clock's digits are no longer
+  // rewritten
+  // ($81:C6F0-C6F8).
+  unirally::ClassicRaceHudClock top;
+  top.observe_update(previous, previous);
+  top.observe_update(previous, previous);
+  const auto held = top.published().clock;
+  require(held.has_value());
+  auto forced_player = later;
+  forced_player.race.riders[1].finished = 0;
+  forced_player.race.riders[0].finished = unirally::forced_finish;
+  top.observe_update(previous, forced_player);
+  top.observe_update(forced_player, forced_player);
+  top.observe_update(forced_player, forced_player);
+  require(top.published().clock == held);
+  // Rider 1's own finish keeps no clock: its crossing blanks it.
+  auto crossed = updated;
+  crossed.race.riders[1].finished = 1;
+  unirally::ClassicRaceHudClock blank;
+  blank.observe_update(previous, crossed);
+  blank.observe_update(crossed, crossed);
+  require(!blank.published().lower_clock);
+}
+
 // R-0080: a split race's arrows. Rider 1's shows in the lower view when it trails; each view's
 // side arrow grows on its own rows (6-7 above, 20-21 below) from column 28 or 5, the up arrow
 // from row 2 (15 below).
@@ -1917,6 +1958,7 @@ int main() {
   arrow_drawing();
   caption_queue();
   split_arrows();
+  split_forced_clock();
   pause_menu();
   pause_clears_player_cells();
 

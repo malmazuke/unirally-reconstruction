@@ -90,10 +90,16 @@ void ClassicWindowPointer::observe_update(const ZoomZooState& previous, const Zo
             return !previous.stunt.finish_display && updated.stunt.finish_display;
         return !previous.race.riders[rider].finished && updated.race.riders[rider].finished;
     };
+    // A VS race's forced finish of the opponent runs its block in the update that forces it, after
+    // the player's driver has died ($83:EA69, R-0081): that driver runs at once.
     for (std::size_t rider = 0; rider < 2 && pending_count_ < pending_.size(); ++rider)
         if (armed(rider)) {
             drivers_[rider] = {};
-            pending_[pending_count_++] = rider;
+            if (rider == 1 && updated.race.riders[1].finished == forced_finish
+                && ordered_ < order_.size())
+                order_[ordered_++] = rider;
+            else
+                pending_[pending_count_++] = rider;
         }
     // $0300 counts from race start: 0 at the initialization boundary. Its
     // parity is the frame's only when that boundary is even, as on DRAGSTER

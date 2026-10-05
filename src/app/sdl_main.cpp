@@ -697,6 +697,7 @@ int main(int argc, char **argv) try {
           // same track again.
           zoom_state = unirally::classic_race_start(zoom_content, scenario);
           zoom_state.league_statistics.enabled = front_end->league_race();
+          zoom_state.versus = front_end->versus_race();
           if (front_end->local_race())
             scripted_race_frame = front_end->front_end_frame() - 1U +
                                   front_end->race_loading_frames();

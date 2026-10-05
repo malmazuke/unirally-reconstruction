@@ -5910,6 +5910,8 @@
    "native": [
     "src/core/input_timer.cpp:advance_timer_digits",
     "src/core/input_timer.cpp:timer_warning",
+    "src/core/race_hud.cpp:ClassicRaceHudClock::hold_lower_clock",
+    "src/core/race_hud.cpp:ClassicRaceHudClock::service_one_field",
     "src/core/race_hud.cpp:classic_hud_left_field",
     "src/core/race_hud.cpp:draw_split_hud",
     "src/core/race_state_io.cpp:check_lap_clocks",
@@ -14094,6 +14096,7 @@
    ],
    "native": [
     "src/core/race_progress.cpp:update_finish",
+    "src/core/race_state_io.cpp:check_split_finish_display",
     "src/core/stunt_event.hpp:update_stunt_finish"
    ],
    "observed_entries": {},
@@ -14115,7 +14118,6 @@
    ],
    "native": [
     "src/core/audio_cue.hpp:AudioDispatchSite",
-    "src/core/race_progress.cpp:update_finish",
     "src/core/race_sound.cpp:finish_fade_from",
     "src/core/race_sound.cpp:finish_fade_rate",
     "src/core/race_sound.hpp:finish_fade",
@@ -14206,10 +14208,14 @@
     "src/core/presentation.cpp:dim_finished_views",
     "src/core/presentation.hpp:dragster_window_table_index",
     "src/core/race_progress.cpp:classic_race_player_won",
+    "src/core/race_progress.cpp:drive_banner",
     "src/core/race_progress.cpp:update_finish",
     "src/core/race_windows.cpp:ClassicWindowPointer::observe_update",
     "src/core/race_windows.cpp:winner_window_first, winner_window_cycle, winner_window_life_updates",
-    "src/core/stunt_event.hpp:update_stunt_finish"
+    "src/core/stunt_event.hpp:update_stunt_finish",
+    "src/core/zoom_zoo_movement.hpp:ZoomZooBannerDriver",
+    "src/core/zoom_zoo_movement.hpp:first_banner, last_banner, banner_life_updates",
+    "src/core/zoom_zoo_movement.hpp:forced_finish"
    ],
    "observed_entries": {},
    "start": "$83:EA11",
@@ -14232,11 +14238,13 @@
     "src/core/movement.cpp:update_movement",
     "src/core/presentation.cpp:dim_finished_views",
     "src/core/race_progress.cpp:classic_race_player_won",
+    "src/core/race_progress.cpp:drive_banner",
     "src/core/race_progress.cpp:finish_rider",
     "src/core/race_progress.cpp:update_finish",
     "src/core/race_windows.cpp:ClassicWindowPointer::observe_update",
     "src/core/stunt_event.hpp:stunt_finish_announcement",
-    "src/core/stunt_event.hpp:update_stunt_finish"
+    "src/core/stunt_event.hpp:update_stunt_finish",
+    "src/core/zoom_zoo_movement.hpp:ZoomZooBannerDriver"
    ],
    "observed_entries": {},
    "start": "$83:EA72",
@@ -14284,9 +14292,12 @@
    "native": [
     "src/core/presentation.cpp:dim_finished_views",
     "src/core/race_progress.cpp:classic_race_player_won",
+    "src/core/race_progress.cpp:drive_banner",
     "src/core/race_progress.cpp:update_finish",
     "src/core/race_windows.cpp:ClassicWindowPointer::observe_update",
-    "src/core/stunt_event.hpp:update_stunt_finish"
+    "src/core/stunt_event.hpp:update_stunt_finish",
+    "src/core/zoom_zoo_movement.hpp:ZoomZooBannerDriver",
+    "src/core/zoom_zoo_movement.hpp:forced_finish"
    ],
    "observed_entries": {},
    "start": "$83:EBA3",
@@ -14315,9 +14326,11 @@
    "native": [
     "src/core/presentation.cpp:dim_finished_views",
     "src/core/race_progress.cpp:classic_race_player_won",
+    "src/core/race_progress.cpp:drive_banner",
     "src/core/race_progress.cpp:update_finish",
     "src/core/race_windows.cpp:ClassicWindowPointer::observe_update",
-    "src/core/stunt_event.hpp:update_stunt_finish"
+    "src/core/stunt_event.hpp:update_stunt_finish",
+    "src/core/zoom_zoo_movement.hpp:ZoomZooBannerDriver"
    ],
    "observed_entries": {},
    "start": "$83:EC13",
@@ -14895,18 +14908,18 @@
    "call returns in the calling mode": 1262
   },
   "bytes": 131072,
-  "cited_addresses": 1685,
+  "cited_addresses": 1689,
   "cited_by_class": {
    "data": 31,
    "inferred": 299,
-   "observed": 1023,
+   "observed": 1027,
    "unknown": 332
   },
   "cited_by_position": {
    "dat": 31,
-   "loc": 959,
+   "loc": 962,
    "mid": 19,
-   "sub": 344,
+   "sub": 345,
    "unk": 332
   },
   "conflicts": 0,

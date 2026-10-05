@@ -211,6 +211,8 @@ struct ClassicHudPublished {
     std::optional<ClassicRaceArrow> arrow{};
     // A split race's lower view: rider 1's arrow, redrawn by every NMI (`$81:DB10-DDA4`, R-0080).
     std::optional<ClassicRaceArrow> lower_arrow{};
+    // The lower view's clock as the last rewrite before a VS race's forced finish left it.
+    std::optional<std::string> lower_clock{};
     // The caption table entry (1-255) the caption cells show, 0 while blank.
     unsigned caption_event{};
     // A stunt event's score cells, columns 23-25: the setup's `0` until the NMI writes a score.
@@ -248,6 +250,8 @@ std::optional<ClassicRaceArrow> classic_race_lower_arrow(const ZoomZooState& pre
 // reads the constant $80:8220 where the player's writer reads `$11BB`).
 std::string classic_hud_crossing_text(const std::array<std::uint16_t, 5>& time_digits);
 std::array<std::uint8_t, 4> classic_hud_clock_digits(const RaceTimerDigits& timer);
+// The lower view's clock text from `state`, one tick behind the first.
+std::string classic_split_lower_clock(const ZoomZooState& state);
 std::string classic_hud_split_text(const std::array<std::uint8_t, 4>& clock,
                                    const std::array<std::uint8_t, 4>& stored);
 // One centred field's pending request, as `$0349`/`$034B` hold it: nothing,
@@ -362,6 +366,7 @@ private:
                                         const ZoomZooState& updated);
     void service_one_field(const ZoomZooState& updated);
     void redraw_arrow(const ZoomZooState& previous, const ZoomZooState& updated);
+    void hold_lower_clock(const ZoomZooState& previous, const ZoomZooState& updated);
     void clear_after_pause(const ZoomZooState& previous, const ZoomZooState& updated);
     void request_caption(const ZoomZooState& previous, const ZoomZooState& updated);
 };
