@@ -5376,6 +5376,13 @@
    "region": "rom"
   },
   {
+   "address": "$81:C5D0",
+   "native": [
+    "src/core/race_update.cpp:finish_update"
+   ],
+   "region": "rom"
+  },
+  {
    "address": "$81:C5D5",
    "native": [
     "src/core/announcements.hpp:ends_opponent_hints",
@@ -10527,6 +10534,13 @@
    "region": "rom"
   },
   {
+   "address": "$83:E8B9",
+   "native": [
+    "src/core/race_state_io.cpp:check_opponent_queue"
+   ],
+   "region": "rom"
+  },
+  {
    "address": "$83:E8DA",
    "native": [
     "src/core/stunt_event.cpp:update_stunt_finish"
@@ -13331,6 +13345,7 @@
   {
    "address": "$12E5",
    "native": [
+    "src/core/race_state_io.cpp:trailer_hints_at",
     "src/core/stunt_event.cpp:update_stunt_finish",
     "src/core/zoom_zoo_movement.hpp:ClassicRaceScenario::opponent_tutorial_hints",
     "src/core/zoom_zoo_movement.hpp:ZoomZooOpponentHints"
@@ -18939,7 +18954,8 @@
    "rom": [
     "$81:C27B",
     "$82:DB87",
-    "$83:E1F1"
+    "$83:E1F1",
+    "$83:E8B9"
    ]
   },
   "src/core/race_state_io.cpp:check_opponent_suppression": {
@@ -19018,6 +19034,11 @@
     "$83:E874"
    ]
   },
+  "src/core/race_state_io.cpp:trailer_hints_at": {
+   "wram": [
+    "$12E5"
+   ]
+  },
   "src/core/race_state_io.cpp:validate_split_demo_words": {
    "rom": [
     "$83:E2C4"
@@ -19069,6 +19090,7 @@
   },
   "src/core/race_update.cpp:finish_update": {
    "rom": [
+    "$81:C5D0",
     "$81:C5D5",
     "$81:C73E",
     "$83:CD9F",
@@ -22146,10 +22168,10 @@
   }
  },
  "totals": {
-  "addresses": 1606,
+  "addresses": 1608,
   "io_addresses": 11,
-  "native_symbols": 1217,
-  "rom_addresses": 1220,
+  "native_symbols": 1218,
+  "rom_addresses": 1222,
   "sram_addresses": 50,
   "wram_addresses": 325
  }

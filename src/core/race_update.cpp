@@ -844,8 +844,10 @@ void finish_update(const ZoomZooState& state, ZoomZooState& next,
     }
     // $81:C5D5-C5E1: rider 1's first scoring event, as it is queued, ends its tutorial hints and
     // their wait, so it is consumed on this update (R-0069, R-0082).
-    bool queued_scoring_event =
-        outcomes[1].reward && announcement::ends_opponent_hints(outcomes[1].reward);
+    // $81:C5D0: a full queue drops the event before the test.
+    bool queued_scoring_event = outcomes[1].reward
+                             && whole.rewards.write_cursor != whole.rewards.read_cursor
+                             && announcement::ends_opponent_hints(outcomes[1].reward);
     for (auto slot = state.movement.rewards.write_cursor; slot != whole.rewards.write_cursor;
          slot = static_cast<std::uint8_t>((slot + 1U) % whole.rewards.entries.size()))
         queued_scoring_event =

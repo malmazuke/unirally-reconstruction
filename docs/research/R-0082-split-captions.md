@@ -32,8 +32,11 @@ Tags: **[L]** listing only, **[C]** confirmed in a capture.
   - [C] `twop-plain`: queued on 2278, 2578 and 2878; taken on 2279, 2339, 2399 and later frames.
 - **Hold.** A take holds 120 while the hints run (`$81:C0A5-C0CA`), as the player's do.
 - **End.** Queueing an event ends the hints when bit 7 of the byte `event - 22` is set: scoring
-  events and voices from 150 (`$81:C5D5-C5E1`). It zeroes the hold and clears `$12E5`. [C:
-  `zzap` 3452]
+  events and voices from 150 (`$81:C5D5-C5E1`). It zeroes the hold and clears `$12E5`. A full
+  queue drops the event before that test (`$81:C5D0`). [C: `zzap` 3452; the full queue L]
+- **A stunt event's finish** clears `$12E5` too (`$83:E8B9`) but leaves the hold, so up to 120 can
+  remain after the hints. [L; the review's repro on `organic-stunt-tricks` with rider 1's bit
+  cleared]
 - **Write-back.** `$83:CEB1-CEC5` writes rider 1's bit into the cartridge in every update while
   its hints are off, outside the demo. [C: `zzap`, from 3452]
 - **The split demo** runs the same code. Its rider 1's first scoring event (frame 1740) comes
@@ -103,13 +106,19 @@ The split NMI `$81:D853` services one field a frame. Order, with each field's re
   - The counter and group are derived on reading from the race clock while the hints run, as the
     player's are checked (`check_hint_timeline`).
   - The reader reads the flag before the base layout's checks (`TrailerFlags`), so the opponent
-    queue's hold may be 120. It refuses hints for a rider 1 who is MIKE, or for a computer.
+    queue's hold may be 120 while the hints run, or in a stunt event with a human rider 1. It
+    refuses hints for a rider 1 who is MIKE, or for a computer.
+  - A league race against the computer now writes the wrapper's last byte as 1 throughout: rider
+    1's hints are over because a computer never has them. Main wrote 0 there until the computer's
+    first scoring event; that byte was the old field's own invention. Main's states from those
+    frames are refused now, and no race behaves differently.
 - **The HUD.** `ClassicRaceHudClock` runs the split chain.
   - Its pieces are `request_split_fields`, `service_split_clock` and `service_cells`, and rider
     1's caption is serviced last.
   - It publishes the lower clock and rider 1's caption. `draw_split_hud` draws them, from the
     state only without history.
-  - `clear_after_pause` follows the split clear from the view the menu last opened in.
+  - `clear_after_pause` follows the split clear from the view the menu is open in, and on a
+    held Start's later closes from the view it was last open in.
 - **The ink.** A split race with `demo_ai` clear draws its HUD before the riders, into the colour
   math's mask.
 - **The sign.** `crossing_cell` keeps the minus for one view only.
@@ -146,13 +155,20 @@ The split NMI `$81:D853` services one field a frame. Order, with each field's re
   - `dragster_race_tests`: the flag's bytes and their refusals.
   - `presentation_tests`: the chain's lower clock and its blank.
 
+- **The review's withheld captures** are in main `local/evidence/split-captions/review/`:
+  - `mike1`, a rider 1 who is MIKE: confirms the quirk (`$12E9` = 0). Its words are equal on 2,573
+    race frames, and 2,695 of 2,700 pictures are equal (main 2,577).
+  - `p2pause`, pad 2 pausing twice during the hints: its words are equal on 2,773 race frames, and
+    2,892 of 2,900 pictures are equal (main 1,191).
+
 ## Not covered
 
 - **The riders under the ink.** These are not HUD text:
   - a pad-2-idle rider 1's look (seat and head) differs from the original's in `vs-idle` (446
     race pictures) and `league-idle` (3);
-  - a 2-pixel strip of a rider's upper body under the ink is drawn without the ink's colour math
-    in a few pictures (`zzap` 9, `zz2p` 3, `leaguefin` 1);
+  - parts of a rider under the ink (strips and patches of up to 21 pixels, in the caption rows as
+    well) show flat ink where the original shows the rider's colours, in a few pictures (`zzap` 9,
+    `zz2p` 3, `leaguefin` 1, and 13 in the review's captures, 9 of them identical on main);
   - rider 0's sprite shows near the split line in one `zzap` picture (6317).
 - **The player's hint ending.** It uses `< 22`, where the listing's test also ends the hints on
   voices from 150. This is not captured for one-player play, so the player's test is unchanged;

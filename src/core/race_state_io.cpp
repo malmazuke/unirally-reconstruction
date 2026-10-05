@@ -50,6 +50,11 @@ constexpr std::size_t native_race_size = 742, extended_size = 794, other_track_s
 // A two-view state appends the second camera, two demo controllers, and the
 // pairing/tier which a one-player restore normally derives from its menus.
 constexpr std::size_t split_trailer_size = 42;
+// The split trailer's byte of rider 1's tutorial hints (`$12E5`, R-0082).
+constexpr std::size_t trailer_hints_at = 31;
+// A league pair's wrapper: its header, and the trailer after the payload, whose last byte is
+// rider 1's hints over.
+constexpr std::size_t league_header_size = 13, league_trailer_size = 97;
 constexpr std::size_t split_race_size = native_race_size + split_trailer_size;
 constexpr std::size_t extended_split_size = extended_size + split_trailer_size;
 constexpr std::size_t special_tiles_size = 52, hunter_effects_size = 62;
@@ -1243,9 +1248,10 @@ ZoomZooState deserialize_race(std::span<const std::uint8_t> bytes,
                                           : pairing;
         if (local_dragster && pairing)
             refuse_unless(*pairing == *human, "local race pairing differs from state trailer");
-        auto state = deserialize_race(base, one_view ? std::nullopt : human, tutorial_hints,
-                                      opponent_catch_up, initialization_frame,
-                                      TrailerFlags{suffixes.versus, bytes[base_size + 31] != 0});
+        auto state = deserialize_race(
+            base, one_view ? std::nullopt : human, tutorial_hints, opponent_catch_up,
+            initialization_frame,
+            TrailerFlags{suffixes.versus, bytes[base_size + trailer_hints_at] != 0});
         state =
             read_demo_trailer(std::move(state), bytes.subspan(base_size), one_view, local_dragster);
         refuse_unless(state.demo_ai || !state.opponent_hints.active || state.pairing.opponent != 0,
@@ -1274,19 +1280,22 @@ std::optional<ZoomZooState> deserialize_league_race(std::span<const std::uint8_t
     const auto size = header.u16();
     const RacePairing pairing{header.u8(), header.u8()};
     const auto split = header.flag();
-    const bool lower_view = bytes.size() == 13U + size + 97U + lower_view_size;
-    refuse_unless(size <= 1006 && size >= 742 && (bytes.size() == 13U + size + 97U || lower_view),
-                  "league race wrapper width differs");
+    const bool lower_view =
+        bytes.size() == league_header_size + size + league_trailer_size + lower_view_size;
+    refuse_unless(
+        size <= 1006 && size >= 742
+            && (bytes.size() == league_header_size + size + league_trailer_size || lower_view),
+        "league race wrapper width differs");
     // The wrapper's last byte before the lower view: rider 1's hints over.
-    const bool opponent_hints = bytes[13U + size + 96U] == 0;
-    auto state = deserialize_race(bytes.subspan(13, size), pairing, true, {}, std::nullopt,
-                                  TrailerFlags{false, opponent_hints});
+    const bool opponent_hints = bytes[league_header_size + size + league_trailer_size - 1U] == 0;
+    auto state = deserialize_race(bytes.subspan(league_header_size, size), pairing, true, {},
+                                  std::nullopt, TrailerFlags{false, opponent_hints});
     refuse_unless(!state.versus, "a league race is not a VS race");
     refuse_unless(state.native_initialization && !state.demo_ai && pairing.rider < rider_characters
                       && split == (pairing.opponent < rider_characters)
                       && pairing.rider != pairing.opponent,
                   "league race wrapper pairing differs");
-    Reader trailer{bytes.subspan(13U + size)};
+    Reader trailer{bytes.subspan(league_header_size + size)};
     auto& camera = state.race.second_camera;
     for (auto* word : {&camera.x, &camera.y, &camera.velocity_x, &camera.velocity_y,
                        &camera.lookahead, &camera.screen_xy})

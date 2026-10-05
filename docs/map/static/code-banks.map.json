@@ -14162,6 +14162,7 @@
     "src/core/race_sound.cpp:finish_fade_from",
     "src/core/race_sound.cpp:finish_fade_rate",
     "src/core/race_sound.hpp:finish_fade",
+    "src/core/race_state_io.cpp:check_opponent_queue",
     "src/core/race_state_io.cpp:read_stunt_event",
     "src/core/race_state_io.cpp:stunt_settled_fall",
     "src/core/race_windows.cpp:ClassicWindowPointer::observe_update",
@@ -14949,16 +14950,16 @@
    "call returns in the calling mode": 1262
   },
   "bytes": 131072,
-  "cited_addresses": 1699,
+  "cited_addresses": 1701,
   "cited_by_class": {
    "data": 31,
-   "inferred": 301,
-   "observed": 1034,
+   "inferred": 302,
+   "observed": 1035,
    "unknown": 333
   },
   "cited_by_position": {
    "dat": 31,
-   "loc": 967,
+   "loc": 969,
    "mid": 20,
    "sub": 348,
    "unk": 333

@@ -484,10 +484,16 @@ void check_local_restore(const unirally::ZoomZooState& race_state,
         }
         return false;
     };
+    // The trailer's last two bytes: the split flag and demo_ai. A ZOOM ZOO two-view state may be
+    // the split demo's (R-0069), so only DRAGSTER refuses demo AI; any two-view state refuses a
+    // clear split flag.
+    const auto trailer_end = saved.size() - lower_view - versus;
     auto invalid = saved;
-    invalid[invalid.size() - 1 - lower_view - versus] = 1; // the trailer's last byte: demo_ai
-    // A ZOOM ZOO two-view state may be the split demo's (R-0069), so only DRAGSTER refuses it.
+    invalid[trailer_end - 1] = 1;
     if (dragster && !refused(invalid)) throw std::runtime_error("local save accepted demo AI");
+    invalid = saved;
+    invalid[trailer_end - 2] = 0;
+    if (!refused(invalid)) throw std::runtime_error("local save accepted a clear split flag");
     if (lower_view) {
         invalid = saved;
         invalid.back() = 2;
@@ -495,7 +501,7 @@ void check_local_restore(const unirally::ZoomZooState& race_state,
     }
     if (versus) {
         invalid = saved;
-        invalid[784] = 6; // rider 0's banner index: 0 or 7..24
+        invalid[trailer_end] = 6; // rider 0's banner index, first in the VS block: 0 or 7..24
         if (!refused(invalid)) throw std::runtime_error("local save accepted a banner index of 6");
     }
     auto extended = race_state;

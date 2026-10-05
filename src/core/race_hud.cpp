@@ -259,15 +259,16 @@ void ClassicRaceHudClock::observe_update(const ZoomZooState& previous,
 // arrow redraw and the queue's next write of the cells put them back (R-0078).
 void ClassicRaceHudClock::clear_after_pause(const ZoomZooState& previous,
                                             const ZoomZooState& updated) {
-    // `$130F` keeps the row the menu last opened at until it opens again.
-    if (previous.pause.selection == 0 && updated.pause.selection != 0)
-        menu_lower_view_ = updated.pause.lower_view;
+    // `$130F` keeps the row the menu last opened at until it opens again; a held Start closes
+    // the menu again on later updates from the same row.
+    if (updated.pause.selection != 0) menu_lower_view_ = updated.pause.lower_view;
     if (!classic_pause_menu_closed(previous, updated)) return;
     // In a split race the same 129 words start at the menu's own row (`$130F`: 0x18A8 for pad
     // 1's, 0x1A68 for pad 2's), so they take that view's caption, which stays blank until its
     // next upload, and its side arrow, until the NMI next redraws it (R-0082).
     if (updated.split_screen) {
-        const bool lower = menu_lower_view_;
+        const bool lower =
+            previous.pause.selection != 0 ? previous.pause.lower_view : menu_lower_view_;
         for (auto* hud : {&on_screen_, &latest_}) {
             (lower ? hud->opponent_caption_event : hud->caption_event) = 0;
             auto& arrow = lower ? hud->lower_arrow : hud->arrow;
