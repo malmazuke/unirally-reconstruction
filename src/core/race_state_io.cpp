@@ -387,12 +387,15 @@ void read_player_announcements(Reader& in, ZoomZooPlayerAnnouncements& a) {
 
 // The opponent's queue fields, stored in the movement prefix, are bounded like the
 // player's: $82:DB87-DB94 seeds both banks from one template and $81:C27B-C280 only halves
-// toward 1. Its cooldown tops out at 40, or 120 while rider 1's tutorial hints run (R-0082). $83:E1F1 masks the sloped trick
-// selector with 7 and the flat path writes only 0 or 1; a forged 14 would alias onto 6.
-void check_opponent_queue(const ZoomZooState& state) {
+// toward 1. Its cooldown tops out at 40, or 120 while rider 1's tutorial hints run; a stunt
+// event's finish ends them ($83:E8B9) and leaves the hold, so a stunt event with a human rider 1
+// may hold 120 too (R-0082). $83:E1F1 masks the sloped trick selector with 7 and the flat path
+// writes only 0 or 1; a forged 14 would alias onto 6.
+void check_opponent_queue(const ZoomZooState& state, const ClassicRaceScenario& scenario) {
     const auto& o = state.movement.rewards;
-    refuse_unless(o.cooldown <= (state.opponent_hints.active ? longest_player_cooldown
-                                                             : longest_opponent_cooldown)
+    const bool hint_hold = state.opponent_hints.active
+                        || (scenario.stunt_event && scenario.pairing.opponent < rider_characters);
+    refuse_unless(o.cooldown <= (hint_hold ? longest_player_cooldown : longest_opponent_cooldown)
                       && reachable_event_one_weight(o.event_one_weight),
                   "invalid ZOOM ZOO opponent reward queue state");
     refuse_unless(state.movement.opponent_ai.trick_selector <= highest_trick_selector,
@@ -599,7 +602,7 @@ void check_lap_times(const ZoomZooState& state, const ClassicRaceScenario& scena
 void read_native_race(Reader& in, ZoomZooState& state, const ClassicRaceScenario& scenario) {
     read_result_and_charges(in, state);
     read_player_announcements(in, state.player_announcements);
-    check_opponent_queue(state);
+    check_opponent_queue(state, scenario);
     check_start_and_result(state, scenario);
     read_rolls(in, state, scenario);
     read_learned_weights(in, state);
