@@ -2,18 +2,21 @@
 
 ## Assignment
 
-- Status: ready (prepared 6 October 2026 by the SPLIT-CAPTIONS session, from R-0082's remaining
-  race-time differences).
+- Status: **claimed** 6 October 2026 by the session that closed SPLIT-CAPTIONS, on main `ec05ea7`
+  after that task's merge (main equal to `origin/main`, closeout written). Prepared the same day
+  from R-0082's remaining race-time differences.
 - Milestone: M4 breadth
 - Coordinator: the claiming session is coordinator, primary and integrator
-- Task provider: to be recorded at claim
-- Worker/session/runtime/model: to be recorded at claim
+- Task provider: Anthropic
+- Worker/session/runtime/model: Claude Code desktop app, Claude Opus 5.5 (`claude-opus-5-5`); one
+  session as coordinator, primary and integrator
 - Actual model/reasoning effort, routing rationale: **tier 2** (D-0008), if the cause is the rider
   look's presentation history (`ClassicRaceHistoryTracker`, R-0036); escalate to tier 1 if it is
   race state.
-- Provider quota window (D-0004): sample at claim.
+- Provider quota window (D-0004): at claim weekly 52%, five-hour 23%; standing rule: continue
+  until weekly 80%.
 - Dependencies: SPLIT-CAPTIONS (R-0082), R-0036 (rider look overlays).
-- Base commit: the `main` tip at claim.
+- Base commit: main `ec05ea7`.
 - Branch and isolated worktree: `task/split-riders-under-ink` in `.worktrees/split-riders-under-ink`.
 - Owned paths: the rider look and overlay code (`src/core/presentation.cpp`, the look tables),
   native tests, a research record, this record, `docs/STATE.md`, `tasks/README.md`,
