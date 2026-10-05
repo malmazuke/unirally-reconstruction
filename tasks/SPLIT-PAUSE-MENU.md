@@ -2,21 +2,23 @@
 
 ## Assignment
 
-- Status: ready (prepared 5 October 2026 by the CLASSIC-PAUSE-MENU session, from R-0078's
-  "Not covered").
+- Status: **claimed** 5 October 2026 by the session that closed CLASSIC-PAUSE-MENU, on main
+  `98326d1` after that task's merge (main equal to `origin/main`, closeout written). Prepared the
+  same day from R-0078's "Not covered".
 - Milestone: M4 breadth
 - Coordinator: the claiming session is coordinator, primary and integrator
-- Task provider (fixed for all children; record any user-initiated platform change): to be
-  recorded at claim
-- Worker/session/runtime/model: to be recorded at claim
+- Task provider (fixed for all children; record any user-initiated platform change): Anthropic
+- Worker/session/runtime/model: Claude Code desktop app, Claude Opus 5.5 (`claude-opus-5-5`); one
+  session is coordinator, primary and integrator
 - Actual model/reasoning effort, routing rationale and frontier escalation question (if any):
   **tier 1** (D-0008): who may pause, and whose total a quit writes, are race state and ordering.
 - Provider quota window/baseline timestamp, used/remaining or unknown, reserve and session
-  allowance (D-0004): sample at claim.
+  allowance (D-0004): at claim (5 October 2026 about 11:20 Sydney) the weekly window was 36% and
+  the five-hour window 28%; standing rule: continue until weekly 80%.
 - Reviewer: the full D-0006 process for tier 1.
 - Dependencies and evidence of acceptance: CLASSIC-PAUSE-MENU (R-0078), RACE-PAUSE-EXITS (R-0060),
   TWO-PLAYER-VS, LEAGUE (R-0073).
-- Base commit: the `main` tip at claim.
+- Base commit: `98326d1` (main at claim).
 - Branch and isolated worktree: `task/split-pause-menu` in `.worktrees/split-pause-menu`.
 - Owned paths and shared interfaces: `run_pause_menu` (`src/core/race_update.cpp`), the pause
   state if the pauser must be kept, `update_race_for_menus`, the pause picture in
