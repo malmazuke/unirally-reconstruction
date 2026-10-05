@@ -674,11 +674,12 @@ void draw_classic_caption(RgbFrame& frame, const ZoomZooState& published,
                               : classic_caption_entry(published, content.captions);
     if (!selected) return;
     const auto entry = *selected;
-    // $81:F322/$81:F33C write sixteen characters to columns 8-23 of rows 10-11.
+    // $81:F322/$81:F33C write sixteen characters to columns 8-23 of rows 10-11; a split race's
+    // NMI writes rider 0's to rows 5-6 ($81:E831-E877, R-0080).
     std::string line;
     for (unsigned column = 0; column < 16; ++column)
         line.push_back(static_cast<char>(entry[column]));
-    draw_bg3_text(frame, font, 8, 10, line, ink, inked);
+    draw_bg3_text(frame, font, 8, published.split_screen ? 5 : 10, line, ink, inked);
 }
 
 // R-0043: the HUD's four fields, on the same layer, in the same font and the
@@ -732,12 +733,12 @@ void draw_split_hud(RgbFrame& frame, const ZoomZooState& state,
         draw_bg3_text(frame, font, 24, 15, classic_hud_clock(bottom_timer), opponent_ink, inked);
     draw_bg3_text(frame, font, 13, 3, hud.player_cells, ink, inked);
     draw_bg3_text(frame, font, 13, 17, hud.opponent_cells, opponent_ink, inked);
+    // $81:E87C-E8C5: rider 1's caption, all sixteen cells from column 8 of rows 19-20 (R-0080).
     if (const auto caption = classic_caption_text(opponent_caption_event, content.captions)) {
         std::string line;
         for (unsigned column = 0; column < 16; ++column)
             line.push_back(static_cast<char>((*caption)[column]));
-        line.erase(0, line.find_first_not_of(' '));
-        draw_bg3_text(frame, font, 13, 19, line, opponent_ink, inked);
+        draw_bg3_text(frame, font, 8, 19, line, opponent_ink, inked);
     }
     const auto name = [&](unsigned rider) {
         std::string result;
