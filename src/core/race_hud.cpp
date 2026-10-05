@@ -970,11 +970,14 @@ void draw_classic_pause_message(RgbFrame& frame, const ClassicRacePresentationCo
     const auto font = content.caption_font;
     const auto at = std::size_t{rider} * pause_message_cells;
     if (font.size() != 2048 || content.pause_messages.size() < at + pause_message_cells) return;
-    // $83:F731-F764: a space is tile 0x80, which draws nothing; `!` and `"` and the letters take
-    // the caption alphabet's tiles ($80:8223, $80:8224, $80:81FE).
+    // $83:F731-F764: a space is tile 0x80, which draws nothing; the letters take the caption
+    // alphabet's tiles ($80:81FE). `!` and `"` load `$80:8223` and `$80:8224` as words, so the
+    // next byte lands in the tile word's high bits: `"` is tile 0x261, past the font, and shows
+    // nothing (`league`, rider 9's "mellowin", R-0082). `!` (tile 0x160) is not captured, so
+    // it keeps the caption's glyph.
     std::string line;
     for (const auto byte : content.pause_messages.subspan(at, pause_message_cells))
-        line.push_back(static_cast<char>(byte));
+        line.push_back(byte == '"' ? ' ' : static_cast<char>(byte));
     draw_bg3_text(frame, font, pause_first_column,
                   pause_first_row + (lower_view ? pause_lower_view_rows : 0U), line, ink, inked);
 }
