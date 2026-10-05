@@ -697,11 +697,17 @@ std::uint8_t five_bit_channel(std::uint8_t value) {
     return inverse[value];
 }
 
-void dim_finished_league_views(RgbFrame& frame, const ZoomZooState& state,
+void dim_finished_league_views(RgbFrame& frame, const ZoomZooState& updated,
+                               const ZoomZooState* previous_update,
                                const ClassicRaceScenario& scenario) {
-    // $83:E8F0/EA82 publish brightness 7 separately for finished split views.
-    // R-0073 neutral STUNT: both bytes are 7 at original frame 21700.
-    if (!state.split_screen || !state.league_statistics.enabled) return;
+    // $83:E8F0/EA82 publish brightness 7 separately for finished split views, from the update the
+    // picture's objects come from. R-0073 neutral STUNT: both bytes are 7 at original frame 21700.
+    // $83:F695-F6A4 and $83:F947-F950 write both views' bytes: no view is dimmed again while the
+    // menu is open, nor on the picture that closes it (R-0079).
+    const auto& state = previous_update ? *previous_update : updated;
+    if (!state.split_screen || !state.league_statistics.enabled || updated.pause.selection
+        || (previous_update && classic_pause_menu_closed(*previous_update, updated)))
+        return;
     for (unsigned view = 0; view < 2; ++view) {
         if (!state.race.riders[view].finished
             || (scenario.stunt_event && !state.stunt.finish_display))
@@ -874,10 +880,7 @@ RgbFrame render_classic_race(const ZoomZooState& state,
     if (state.split_screen)
         for (int y = 111; y <= 112; ++y)
             for (int x = 0; x < 256; ++x) pixel(frame, x, y, {0, 0, 0});
-    // $83:F695-F6A4 and $83:F947-F950 write both views' brightness bytes: a finished view is not
-    // dimmed again while the menu is open, nor on the picture that closes it (R-0079).
-    if (!paused && !(previous_update && classic_pause_menu_closed(*previous_update, state)))
-        dim_finished_league_views(frame, rider_source, scenario);
+    dim_finished_league_views(frame, state, previous_update, scenario);
     return frame;
 }
 

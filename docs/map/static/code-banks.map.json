@@ -14607,9 +14607,9 @@
    ],
    "native": [
     "src/core/audio_cue.hpp:AudioDispatchSite",
+    "src/core/presentation.cpp:dim_finished_league_views",
     "src/core/presentation.cpp:draw_pause_menu",
     "src/core/presentation.cpp:race_picture_brightness",
-    "src/core/presentation.cpp:render_classic_race",
     "src/core/race_hud.cpp:draw_classic_pause_message",
     "src/core/race_hud.cpp:pause_first_row, pause_second_row, pause_first_column, pause_second_column, pause_cursor_column",
     "src/core/race_hud.cpp:pause_lower_view_rows",
@@ -14662,9 +14662,9 @@
    ],
    "native": [
     "src/core/audio_cue.hpp:AudioDispatchSite",
+    "src/core/presentation.cpp:dim_finished_league_views",
     "src/core/presentation.cpp:paused_brightness, full_brightness",
     "src/core/presentation.cpp:race_picture_brightness",
-    "src/core/presentation.cpp:render_classic_race",
     "src/core/presentation.hpp:ClassicHudPublished::player_cells_cleared",
     "src/core/race_hud.cpp:ClassicRaceHudClock::clear_after_pause",
     "src/core/race_hud.hpp:classic_pause_menu_closed",

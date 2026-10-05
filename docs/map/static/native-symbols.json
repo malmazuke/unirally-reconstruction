@@ -10591,8 +10591,8 @@
   {
    "address": "$83:F695",
    "native": [
-    "src/core/presentation.cpp:race_picture_brightness",
-    "src/core/presentation.cpp:render_classic_race"
+    "src/core/presentation.cpp:dim_finished_league_views",
+    "src/core/presentation.cpp:race_picture_brightness"
    ],
    "range_ends": [
     "$83:F69C",
@@ -10765,8 +10765,8 @@
   {
    "address": "$83:F947",
    "native": [
-    "src/core/presentation.cpp:paused_brightness, full_brightness",
-    "src/core/presentation.cpp:render_classic_race"
+    "src/core/presentation.cpp:dim_finished_league_views",
+    "src/core/presentation.cpp:paused_brightness, full_brightness"
    ],
    "range_ends": [
     "$83:F950"
@@ -17039,7 +17039,9 @@
   "src/core/presentation.cpp:dim_finished_league_views": {
    "rom": [
     "$83:E8F0",
-    "$83:EA82"
+    "$83:EA82",
+    "$83:F695",
+    "$83:F947"
    ]
   },
   "src/core/presentation.cpp:draw_pause_menu": {
@@ -17123,9 +17125,7 @@
   },
   "src/core/presentation.cpp:render_classic_race": {
    "rom": [
-    "$80:87A7",
-    "$83:F695",
-    "$83:F947"
+    "$80:87A7"
    ]
   },
   "src/core/presentation.hpp:ClassicHudCellRequest": {

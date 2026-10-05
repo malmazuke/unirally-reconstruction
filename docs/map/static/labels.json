@@ -21539,8 +21539,8 @@
   "comment": "instruction start",
   "label": "loc_83F695",
   "native": [
-   "src/core/presentation.cpp:race_picture_brightness",
-   "src/core/presentation.cpp:render_classic_race"
+   "src/core/presentation.cpp:dim_finished_league_views",
+   "src/core/presentation.cpp:race_picture_brightness"
   ],
   "source_records": [
    "docs/research/R-0078-pause-menu-picture.md",
@@ -21797,9 +21797,9 @@
   "comment": "instruction start",
   "label": "loc_83F947",
   "native": [
+   "src/core/presentation.cpp:dim_finished_league_views",
    "src/core/presentation.cpp:paused_brightness, full_brightness",
    "src/core/presentation.cpp:race_picture_brightness",
-   "src/core/presentation.cpp:render_classic_race",
    "src/core/presentation.hpp:ClassicHudPublished::player_cells_cleared",
    "src/core/race_hud.cpp:ClassicRaceHudClock::clear_after_pause",
    "src/core/race_hud.hpp:classic_pause_menu_closed"
