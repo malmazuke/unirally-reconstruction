@@ -20,7 +20,8 @@ In the review's `zzap` (2P ZOOM ZOO, main `local/evidence/split-hud-gaps/review/
 race 241 frames after rider 0 finishes (7856), as a one-player race's finish display does; the
 original keeps both riders racing until rider 1 finishes (8067), and in VS forces the other rider
 finished 360 updates after the first (`$83:EA5D-EA69`, `$83:EBCB-EBD7`, R-0080's listing report).
-TWO-PLAYER-VS's captures had both riders finish together. Recover the two-human finish and
+TWO-PLAYER-VS's accepted captures did not reach this case (not yet checked against their work
+RAM). Recover the two-human finish and
 result load for 2P, VS and league pairs, against captures where the riders finish far apart.
 
 ## Acceptance

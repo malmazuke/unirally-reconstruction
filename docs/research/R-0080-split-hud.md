@@ -1,7 +1,7 @@
 # R-0080 - The split race's HUD: caption places, arrows, colour math and finished views
 
 Status: implemented on `task/split-hud-gaps` ([SPLIT-HUD-GAPS](../../tasks/SPLIT-HUD-GAPS.md)),
-5 October 2026; in review. PAL ROM SHA-256
+5 October 2026; accepted (tier 2, PR #55). PAL ROM SHA-256
 `a1105819d48c04d680c8292bbfa9abbce05224f1bc231afd66af43b7e0a1fd4e`, audited bsnes core
 `7d5aa1e656b9171524d01b1b22917197d8121cb4`. It closes most of the split-race picture gaps that
 [R-0071](R-0071-two-player-versus.md) and [R-0079](R-0079-two-pad-pause.md) measured; the captures

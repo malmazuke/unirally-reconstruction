@@ -2,7 +2,8 @@
 
 ## Assignment
 
-- Status: **claimed** 5 October 2026 by the session that closed SPLIT-PAUSE-MENU, on main
+- Status: **accepted** 5 October 2026 (tier 2, [PR #55](https://github.com/malmazuke/unirally-reconstruction/pull/55));
+  claimed the same day by the session that closed SPLIT-PAUSE-MENU, on main
   `52f7a79` after that task's merge (main equal to `origin/main`, closeout written). Prepared the
   same day from R-0079's split picture classes and R-0071's residual.
 - Milestone: M4 breadth
@@ -75,4 +76,37 @@ the static listing for `$81:D853-E8C8`.
 4. Captions: the player's at row 5 in a split race; rider 1's queue followed in
    `ClassicRaceHudClock` and drawn at row 19 from column 8; the split chain's upload priority.
 5. Arrows: the trailing rider's arrow in its own view, split rows, bottom redrawn every NMI.
+
+## Handoff
+
+- Source candidate `9e5df31` (gated); the head adds a test fix (`5879295`), named arrow rows
+  (`aafa43a`, no picture moves: the re-review's counts equal) and records.
+  [PR #55](https://github.com/malmazuke/unirally-reconstruction/pull/55).
+- Gates (`local/evidence/split-hud-gaps/gates.sh` on a detached checkout of `9e5df31`, logs in main
+  `artifacts/split-hud-gaps-integration/gates-9e5df31/`): four presets build, ctest 41/41 each;
+  synthetic suite passed; v1 contracts pass; hidden app runs pass with no pose fallbacks; the eleven
+  frozen race gates pass with 6,023 restores and the same row digests; race sweep against main
+  `cbbd9ba`: 2,387,105 updates identical, its 400 differing pictures all with the menu open; the
+  front-end sweep's 239 differing pictures (47 manifests) are all two-pad race frames, state equal
+  but for SPLIT-PAUSE-MENU's lower-view byte; the split demo's 326 pictures equal; R-0078's and
+  R-0079's captures as in R-0080; cues identical to main; tooling 544 OK; rules clean. Fuzz aborts
+  40/40 as on main.
+- Hosted CI: `9e5df31`'s Ubuntu job aborted in `presentation_tests` (the new test's default pairing
+  read past the name table under libstdc++'s bounds checks; reproduced with libc++ hardening),
+  fixed in `5879295`; CI passes on `5879295` and `aafa43a`.
+- Queued: SPLIT-CAPTIONS (tier 1), SPLIT-RACE-END (tier 1).
+- Usage: weekly 40% at claim and at the records.
+
+## Review and integration
+
+- Reviewer: a fresh Claude Opus 5.5 subagent, tier 2. Round 1 on `9e5df31`: reproduced R-0080's
+  table and the demo check; its withheld `zzap` (2P ZOOM ZOO to both finishes; main
+  `local/evidence/split-hud-gaps/review/`) has 0 state differences over 5,830 race frames and 4,940
+  of 6,074 pictures equal (main's renderer 1,272), every side arrow equal. Findings: the split HUD
+  still flat over the riders (a fix breaks 6 demo pictures; recorded, SPLIT-CAPTIONS); a two-human
+  race ending 241 frames early (as on main; SPLIT-RACE-END); the lower cells' sign (as on main;
+  SPLIT-CAPTIONS); record precision; the test's name-table read (fixed); unnamed rows (named).
+- Round 2 on `aafa43a`: approved; two record nits fixed in the head.
+- Integration: merged by merge commit after the final head's checks; closeout in main
+  `artifacts/split-hud-gaps-integration/closeout.json`.
 

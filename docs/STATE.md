@@ -1,5 +1,21 @@
 # Project state
 
+**5 October 2026: SPLIT-HUD-GAPS is accepted (tier 2, #55) and integrated by merge commit.**
+A split race's HUD now follows the original's split routine: each rider's caption in its own view,
+the trailing rider's arrow in its own view at the split rows and full length, each view's colour
+math under its ink (TONY's subtracts), a finished view dimmed in every split race, and the lower
+clock blank once rider 1 finishes. Over R-0079's eleven captures the paused pictures go from 731
+equal to 970, with none differing outside caption cells; a race without a pause loses every class
+but captions; the reviewer's 2P ZOOM ZOO run has 4,940 of 6,074 pictures equal (main 1,272), every
+side arrow exact. Race state, the eleven frozen gates, the race sweep, the split demo's pictures
+and all one-player screens are unchanged. [R-0080](research/R-0080-split-hud.md) and
+[SPLIT-HUD-GAPS](../tasks/SPLIT-HUD-GAPS.md) define the domain. Queued:
+[SPLIT-CAPTIONS](../tasks/SPLIT-CAPTIONS.md) (tier 1: rider 1's tutorial hints, the split upload
+order, the HUD's layering and lower sign) and [SPLIT-RACE-END](../tasks/SPLIT-RACE-END.md) (tier 1:
+native ends a two-human race when the first rider's finish display ends). Next ready:
+SPLIT-CAPTIONS, SPLIT-RACE-END, TWO-HUMAN-RESTART, AUDIO-UPLOAD-SPEED, ROLLING-CONTACT,
+PORTABLE-CORE-IDENTITY, ATTRACT-DEMO. No M4 tag, reset, spending or provider change is authorized.
+
 **5 October 2026: SPLIT-PAUSE-MENU is accepted (tier 1, #54) and integrated by merge commit.**
 Either player now pauses a two-pad race (2P, VS, a league pair) as in the original: pad 2's Start
 opens the menu in pad 2's view, the release waits for both Starts, a quit or restart goes to the
