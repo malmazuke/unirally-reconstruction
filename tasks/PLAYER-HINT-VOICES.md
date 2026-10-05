@@ -2,7 +2,8 @@
 
 ## Assignment
 
-- Status: accepted (tier 3, research only; records by pull request).
+- Status: accepted (tier 3, research only), by pull request #59
+  (https://github.com/malmazuke/unirally-reconstruction/pull/59).
 - Milestone: M4 breadth.
 - Coordinator: this session (primary and integrator), assigned by the user on 6 October 2026
   from SPLIT-CAPTIONS' listing report (main `local/evidence/split-captions/listing-report.md`,
