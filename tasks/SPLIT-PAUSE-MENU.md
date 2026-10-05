@@ -54,3 +54,26 @@ already writes split race pictures).
 | Picture | Native split pause frames against the captures | Pixel-exact with the menu or message shown | JSON |
 | Nothing else moves | Gates, race and front-end sweeps, R-0078's captures | Unchanged outside two-pad pauses | gate logs |
 | Review | Tier 1 | Approved | review on the pull request |
+
+## Evidence and attempts
+
+All times 5 October 2026, Sydney. Captures and scripts in main `local/evidence/split-pause-menu/`;
+[R-0079](../docs/research/R-0079-two-pad-pause.md) holds the observations and numbers.
+
+| Attempt | Hypothesis | Experiment | Observation | Next decision |
+| --- | --- | --- | --- | --- |
+| 1 (11:25-11:35) | 2P and VS pause from either pad; league messages are the only difference | Captures `twop`, `vs` (pads 1 and 2 in and after the countdown), the menu routine's sites watched | Both pads open the menu; pad 2's in the lower view (`$83:F6D9`); no messages in 2P or VS; my Down + Start after the countdown was pad 1's QUIT | Native: pad 2's Start, release, view, quit |
+| 2 (11:35-11:45) | Pad 2 in every two-pad race, both Starts for the release, the confirming pad's total | `run_pause_menu`, the release, `update_race_for_menus`; `split_compare.py` (pause words, countdown, camera, laps, finish flags, checkpoint counts) | Main diverges from `twop`'s 2200; the candidate matches every compared word on `twop` and `vs` | Capture pad 2's quit and restart |
+| 3 (11:45-11:55) | Pad 2's totals and the menus' return | `twop2` (pad 2's quit), `vs2` (pad 2's countdown restart) | State equal; `vs2` went to a result with MARTIN `::00.02` where the original restarts: `$80:88DD` tests both totals, native only a league's | Test both totals in 2P and VS |
+| 4 (11:55-12:00) | The split picture is R-0078's in the pauser's view | Menu cells and words 14 rows down for the lower view, its ink, under the riders, split HUD kept out of the cells; restore checks with pad 2's menu open | Paused pictures equal except where a caption, the lower arrow or the lower colour math (existing gaps) shows; `twop-plain`: the candidate's 530 pictures byte-identical to main's | League pairs |
+| 5 (12:00-12:10) | League pairs pause the same way and show messages after the countdown | `league` (my countdown pauses froze the countdown, so the first post-countdown pause was a restart: kept as `league-restart`, recaptured later); pack v35 with `$83:F516`; `draw_classic_pause_message` | State equal on both; message cells exact for pad 1 (0 of 81,920 pixels) and both pads; pad 2's only the lower colour math (960 pixels) | Records, gates, review |
+
+## Handoff
+
+- Head: the records commit after `6302d37` on `task/split-pause-menu` (not yet pushed).
+- Unresolved, queued: the split race's tutorial captions, lower arrow and lower colour math
+  (pre-existing, R-0071), the split CONTINUE clear, and NOW PLAYING after a two-human restart
+  (R-0079's "Not covered").
+- Next: gates (`local/evidence/split-pause-menu/gates.sh` on a detached checkout), the tier-1
+  review, the pull request.
+

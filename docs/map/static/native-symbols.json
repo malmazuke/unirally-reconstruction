@@ -113,6 +113,13 @@
    "region": "rom"
   },
   {
+   "address": "$80:81FE",
+   "native": [
+    "src/core/race_hud.cpp:draw_classic_pause_message"
+   ],
+   "region": "rom"
+  },
+  {
    "address": "$80:821F",
    "native": [
     "src/core/race_hud.cpp:classic_caption_tile"
@@ -124,6 +131,20 @@
    "native": [
     "src/core/presentation.hpp:classic_hud_crossing_text",
     "src/core/race_hud.cpp:ClassicRaceHudClock::crossing_cell"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:8223",
+   "native": [
+    "src/core/race_hud.cpp:draw_classic_pause_message"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:8224",
+   "native": [
+    "src/core/race_hud.cpp:draw_classic_pause_message"
    ],
    "region": "rom"
   },
@@ -6818,9 +6839,11 @@
   {
    "address": "$82:AB6F",
    "native": [
-    "src/core/opponent_ai.cpp:update_opponent_controller"
+    "src/core/opponent_ai.cpp:update_opponent_controller",
+    "src/core/race_update.cpp:run_pause_menu"
    ],
    "range_ends": [
+    "$82:AB86",
     "$82:AB8B"
    ],
    "region": "rom"
@@ -9415,6 +9438,26 @@
    "region": "rom"
   },
   {
+   "address": "$83:CD0F",
+   "native": [
+    "src/core/race_update.cpp:run_pause_menu"
+   ],
+   "range_ends": [
+    "$83:CD1C"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:CD39",
+   "native": [
+    "src/core/race_update.cpp:update_zoom_zoo"
+   ],
+   "range_ends": [
+    "$83:CD4B"
+   ],
+   "region": "rom"
+  },
+  {
    "address": "$83:CD50",
    "native": [
     "src/core/race_update.cpp:read_second_rider_controls"
@@ -10501,6 +10544,15 @@
    "region": "rom"
   },
   {
+   "address": "$83:F516",
+   "native": [
+    "src/core/content_pack.cpp:pause_messages_required",
+    "src/core/presentation.hpp:ClassicRacePresentationContent::pause_messages",
+    "src/core/race_hud.hpp:classic_pause_shows_message"
+   ],
+   "region": "rom"
+  },
+  {
    "address": "$83:F616",
    "native": [
     "src/core/race_hud.cpp:draw_classic_pause_menu"
@@ -10547,6 +10599,26 @@
    "region": "rom"
   },
   {
+   "address": "$83:F6AF",
+   "native": [
+    "src/core/race_update.cpp:run_pause_menu"
+   ],
+   "range_ends": [
+    "$83:F6F3"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:F6B4",
+   "native": [
+    "src/core/zoom_zoo_movement.hpp:ZoomZooPause::lower_view"
+   ],
+   "range_ends": [
+    "$83:F6F3"
+   ],
+   "region": "rom"
+  },
+  {
    "address": "$83:F6B9",
    "native": [
     "src/core/race_hud.cpp:pause_first_row, pause_second_row, pause_first_column, pause_second_column, pause_cursor_column"
@@ -10557,12 +10629,47 @@
    "region": "rom"
   },
   {
+   "address": "$83:F6D3",
+   "native": [
+    "src/core/presentation.cpp:draw_pause_menu"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:F6D9",
+   "native": [
+    "src/core/race_hud.cpp:pause_lower_view_rows"
+   ],
+   "range_ends": [
+    "$83:F6F3"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:F6F3",
+   "native": [
+    "src/core/presentation.cpp:draw_pause_menu"
+   ],
+   "region": "rom"
+  },
+  {
    "address": "$83:F6FD",
    "native": [
+    "src/core/race_hud.hpp:classic_pause_shows_message",
     "src/core/race_update.cpp:run_pause_menu"
    ],
    "range_ends": [
     "$83:F791"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:F731",
+   "native": [
+    "src/core/race_hud.cpp:draw_classic_pause_message"
+   ],
+   "range_ends": [
+    "$83:F764"
    ],
    "region": "rom"
   },
@@ -10579,10 +10686,22 @@
   {
    "address": "$83:F807",
    "native": [
-    "src/core/race_hud.cpp:pause_first_row, pause_second_row, pause_first_column, pause_second_column, pause_cursor_column"
+    "src/core/race_hud.cpp:pause_first_row, pause_second_row, pause_first_column, pause_second_column, pause_cursor_column",
+    "src/core/race_update.cpp:run_pause_menu"
    ],
    "range_ends": [
+    "$83:F82E",
     "$83:F8A7"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:F8D5",
+   "native": [
+    "src/core/race_result.cpp:update_race_for_menus"
+   ],
+   "range_ends": [
+    "$83:F8EB"
    ],
    "region": "rom"
   },
@@ -14520,6 +14639,11 @@
     "$81:8476"
    ]
   },
+  "src/core/content_pack.cpp:pause_messages_required": {
+   "rom": [
+    "$83:F516"
+   ]
+  },
   "src/core/content_pack.cpp:special_tiles_required": {
    "rom": [
     "$80:8088",
@@ -16911,6 +17035,12 @@
     "$83:EA82"
    ]
   },
+  "src/core/presentation.cpp:draw_pause_menu": {
+   "rom": [
+    "$83:F6D3",
+    "$83:F6F3"
+   ]
+  },
   "src/core/presentation.cpp:draw_race_backgrounds": {
    "rom": [
     "$80:87B6",
@@ -17122,6 +17252,11 @@
   "src/core/presentation.hpp:ClassicRacePresentationContent::neon_menu_colours": {
    "rom": [
     "$80:FA60"
+   ]
+  },
+  "src/core/presentation.hpp:ClassicRacePresentationContent::pause_messages": {
+   "rom": [
+    "$83:F516"
    ]
   },
   "src/core/presentation.hpp:ClassicRacePresentationContent::race_palette_cycle": {
@@ -17564,6 +17699,14 @@
     "$83:F636"
    ]
   },
+  "src/core/race_hud.cpp:draw_classic_pause_message": {
+   "rom": [
+    "$80:81FE",
+    "$80:8223",
+    "$80:8224",
+    "$83:F731"
+   ]
+  },
   "src/core/race_hud.cpp:draw_split_hud": {
    "rom": [
     "$81:D1B2",
@@ -17574,6 +17717,11 @@
    "rom": [
     "$83:F6B9",
     "$83:F807"
+   ]
+  },
+  "src/core/race_hud.cpp:pause_lower_view_rows": {
+   "rom": [
+    "$83:F6D9"
    ]
   },
   "src/core/race_hud.cpp:race_nmi_fade": {
@@ -17607,6 +17755,12 @@
   "src/core/race_hud.hpp:classic_pause_menu_closed": {
    "rom": [
     "$83:F915"
+   ]
+  },
+  "src/core/race_hud.hpp:classic_pause_shows_message": {
+   "rom": [
+    "$83:F516",
+    "$83:F6FD"
    ]
   },
   "src/core/race_progress.cpp:classic_race_player_won": {
@@ -17938,6 +18092,7 @@
   },
   "src/core/race_result.cpp:update_race_for_menus": {
    "rom": [
+    "$83:F8D5",
     "$83:F8DA"
    ]
   },
@@ -18473,8 +18628,12 @@
   },
   "src/core/race_update.cpp:run_pause_menu": {
    "rom": [
+    "$82:AB6F",
     "$83:CD05",
-    "$83:F6FD"
+    "$83:CD0F",
+    "$83:F6AF",
+    "$83:F6FD",
+    "$83:F807"
    ]
   },
   "src/core/race_update.cpp:run_physics": {
@@ -18583,6 +18742,11 @@
    "wram": [
     "$0DFB",
     "$0DFD"
+   ]
+  },
+  "src/core/race_update.cpp:update_zoom_zoo": {
+   "rom": [
+    "$83:CD39"
    ]
   },
   "src/core/race_update.cpp:wrong_way_warning, wrong_way_repeat": {
@@ -21232,6 +21396,11 @@
     "$83:A218"
    ]
   },
+  "src/core/zoom_zoo_movement.hpp:ZoomZooPause::lower_view": {
+   "rom": [
+    "$83:F6B4"
+   ]
+  },
   "src/core/zoom_zoo_movement.hpp:ZoomZooPause::selection, ZoomZooPause::released": {
    "wram": [
     "$0EF3",
@@ -21382,10 +21551,10 @@
   }
  },
  "totals": {
-  "addresses": 1554,
+  "addresses": 1567,
   "io_addresses": 9,
-  "native_symbols": 1182,
-  "rom_addresses": 1180,
+  "native_symbols": 1190,
+  "rom_addresses": 1193,
   "sram_addresses": 50,
   "wram_addresses": 315
  }

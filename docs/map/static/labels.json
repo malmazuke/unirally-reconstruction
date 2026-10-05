@@ -82,6 +82,18 @@
   ]
  },
  {
+  "address": "$80:81FE",
+  "class": "data",
+  "comment": "data",
+  "label": "dat_8081FE",
+  "native": [
+   "src/core/race_hud.cpp:draw_classic_pause_message"
+  ],
+  "source_records": [
+   "docs/research/R-0079-two-pad-pause.md"
+  ]
+ },
+ {
   "address": "$80:8200",
   "class": "data",
   "comment": "data",
@@ -114,6 +126,30 @@
   "source_records": [
    "docs/research/R-0044-classic-split-time.md",
    "tasks/CLASSIC-SPLIT-TIME.md"
+  ]
+ },
+ {
+  "address": "$80:8223",
+  "class": "data",
+  "comment": "data",
+  "label": "dat_808223",
+  "native": [
+   "src/core/race_hud.cpp:draw_classic_pause_message"
+  ],
+  "source_records": [
+   "docs/research/R-0079-two-pad-pause.md"
+  ]
+ },
+ {
+  "address": "$80:8224",
+  "class": "data",
+  "comment": "data",
+  "label": "dat_808224",
+  "native": [
+   "src/core/race_hud.cpp:draw_classic_pause_message"
+  ],
+  "source_records": [
+   "docs/research/R-0079-two-pad-pause.md"
   ]
  },
  {
@@ -795,6 +831,7 @@
    "docs/research/R-0057-one-run-result.md",
    "docs/research/R-0058-lap-result.md",
    "docs/research/R-0060-pause-exits.md",
+   "docs/research/R-0079-two-pad-pause.md",
    "tasks/FRONT-END-LAP-RESULT.md",
    "tasks/RACE-PAUSE-EXITS.md"
   ]
@@ -3310,7 +3347,8 @@
    "src/core/race_result.cpp:race_restart_frame"
   ],
   "source_records": [
-   "docs/research/R-0060-pause-exits.md"
+   "docs/research/R-0060-pause-exits.md",
+   "docs/research/R-0079-two-pad-pause.md"
   ]
  },
  {
@@ -11306,6 +11344,15 @@
   ]
  },
  {
+  "address": "$81:D853",
+  "class": "inferred",
+  "comment": "routine start",
+  "label": "sub_81D853",
+  "source_records": [
+   "docs/research/R-0079-two-pad-pause.md"
+  ]
+ },
+ {
   "address": "$81:D936",
   "class": "inferred",
   "comment": "routine start",
@@ -14389,10 +14436,12 @@
   "label": "sub_82AB6F",
   "native": [
    "src/core/opponent_ai.cpp:update_opponent_controller",
-   "src/core/race_update.cpp:release_absent_opponent"
+   "src/core/race_update.cpp:release_absent_opponent",
+   "src/core/race_update.cpp:run_pause_menu"
   ],
   "source_records": [
    "docs/research/R-0048-race-guards.md",
+   "docs/research/R-0079-two-pad-pause.md",
    "tasks/RACE-GUARDS.md"
   ]
  },
@@ -18449,6 +18498,7 @@
   "source_records": [
    "docs/research/R-0052-hunter-effects.md",
    "docs/research/R-0078-pause-menu-picture.md",
+   "tasks/CLASSIC-PAUSE-MENU.md",
    "tasks/HUNTER-EFFECTS.md"
   ]
  },
@@ -18545,6 +18595,7 @@
    "docs/research/R-0060-pause-exits.md",
    "docs/research/R-0073-league.md",
    "docs/research/R-0078-pause-menu-picture.md",
+   "docs/research/R-0079-two-pad-pause.md",
    "tasks/CLASSIC-PAUSE-MENU.md",
    "tasks/SPLIT-PAUSE-MENU.md",
    "tasks/ZOOM-ZOO-WINDOW-EFFECTS.md"
@@ -18561,6 +18612,18 @@
   ],
   "source_records": [
    "docs/research/R-0076-first-race-audio.md"
+  ]
+ },
+ {
+  "address": "$83:CD39",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83CD39",
+  "native": [
+   "src/core/race_update.cpp:update_zoom_zoo"
+  ],
+  "source_records": [
+   "docs/research/R-0079-two-pad-pause.md"
   ]
  },
  {
@@ -21341,8 +21404,14 @@
   "class": "data",
   "comment": "data",
   "label": "dat_83F516",
+  "native": [
+   "src/core/content_pack.cpp:pause_messages_required",
+   "src/core/presentation.hpp:ClassicRacePresentationContent::pause_messages",
+   "src/core/race_hud.hpp:classic_pause_shows_message"
+  ],
   "source_records": [
    "docs/research/R-0078-pause-menu-picture.md",
+   "docs/research/R-0079-two-pad-pause.md",
    "tasks/SPLIT-PAUSE-MENU.md"
   ]
  },
@@ -21382,6 +21451,7 @@
    "docs/research/R-0076-first-race-audio.md",
    "docs/research/R-0078-pause-menu-picture.md",
    "tasks/CLASSIC-PAUSE-MENU.md",
+   "tasks/NEXT_SESSION.md",
    "tasks/SPLIT-PAUSE-MENU.md"
   ]
  },
@@ -21437,12 +21507,26 @@
   ]
  },
  {
+  "address": "$83:F6AF",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_83F6AF",
+  "native": [
+   "src/core/race_update.cpp:run_pause_menu"
+  ],
+  "source_records": [
+   "docs/research/R-0079-two-pad-pause.md"
+  ]
+ },
+ {
   "address": "$83:F6B9",
   "class": "inferred",
   "comment": "instruction start",
   "label": "loc_83F6B9",
   "native": [
-   "src/core/race_hud.cpp:pause_first_row, pause_second_row, pause_first_column, pause_second_column, pause_cursor_column"
+   "src/core/race_hud.cpp:pause_first_row, pause_second_row, pause_first_column, pause_second_column, pause_cursor_column",
+   "src/core/race_update.cpp:run_pause_menu",
+   "src/core/zoom_zoo_movement.hpp:ZoomZooPause::lower_view"
   ],
   "source_records": [
    "tasks/SPLIT-PAUSE-MENU.md"
@@ -21453,8 +21537,14 @@
   "class": "inferred",
   "comment": "instruction start",
   "label": "loc_83F6D9",
+  "native": [
+   "src/core/race_hud.cpp:pause_lower_view_rows",
+   "src/core/race_update.cpp:run_pause_menu",
+   "src/core/zoom_zoo_movement.hpp:ZoomZooPause::lower_view"
+  ],
   "source_records": [
-   "docs/research/R-0078-pause-menu-picture.md"
+   "docs/research/R-0078-pause-menu-picture.md",
+   "docs/research/R-0079-two-pad-pause.md"
   ]
  },
  {
@@ -21463,12 +21553,14 @@
   "comment": "instruction start",
   "label": "loc_83F6FD",
   "native": [
+   "src/core/race_hud.hpp:classic_pause_shows_message",
    "src/core/race_update.cpp:run_pause_menu"
   ],
   "source_records": [
    "docs/research/R-0060-pause-exits.md",
    "docs/research/R-0073-league.md",
    "docs/research/R-0078-pause-menu-picture.md",
+   "docs/research/R-0079-two-pad-pause.md",
    "tasks/LEAGUE.md",
    "tasks/SPLIT-PAUSE-MENU.md"
   ]
@@ -21486,16 +21578,43 @@
   ]
  },
  {
+  "address": "$83:F807",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_83F807",
+  "native": [
+   "src/core/race_hud.cpp:pause_first_row, pause_second_row, pause_first_column, pause_second_column, pause_cursor_column",
+   "src/core/race_hud.hpp:classic_pause_menu_cells",
+   "src/core/race_update.cpp:run_pause_menu"
+  ],
+  "source_records": [
+   "docs/research/R-0079-two-pad-pause.md"
+  ]
+ },
+ {
   "address": "$83:F831",
   "class": "inferred",
   "comment": "instruction start",
   "label": "loc_83F831",
   "native": [
    "src/core/race_hud.cpp:pause_first_row, pause_second_row, pause_first_column, pause_second_column, pause_cursor_column",
-   "src/core/race_hud.hpp:classic_pause_menu_cells"
+   "src/core/race_hud.hpp:classic_pause_menu_cells",
+   "src/core/race_update.cpp:run_pause_menu"
   ],
   "source_records": [
    "docs/research/R-0078-pause-menu-picture.md"
+  ]
+ },
+ {
+  "address": "$83:F8D5",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_83F8D5",
+  "native": [
+   "src/core/race_result.cpp:update_race_for_menus"
+  ],
+  "source_records": [
+   "docs/research/R-0079-two-pad-pause.md"
   ]
  },
  {
