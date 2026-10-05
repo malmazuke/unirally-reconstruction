@@ -92,7 +92,19 @@ Main's native, given `twop`'s pads, diverges from frame 2200, where pad 2 pauses
 saves (`front_end_runner --restore-check`) round-trip and continue equal at nine frames of `twop`,
 `twop2` and `vs2`, five of them with pad 2's menu open, and refuse a lower-view byte of 2.
 
-Pictures (`classify.py`): a differing picture is classed by where its pixels lie. The pictures with
+Pictures (`classify.py`): a differing picture is classed by where its pixels lie.
+
+| Capture | Paused: equal | caption cells only | arrow or colour math | Racing: equal | differing |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| `twop`, `vs` | 155 each | 0 | 0 | 292 each | 563 each |
+| `twop2` | 0 | 60 | 40 | 108 | 502 |
+| `vs2` | 40 | 0 | 0 | 159 | 311 |
+| `league` | 61 | 120 | 44 | 262 | 223 |
+| `league-restart` | 101 | 0 | 44 | 459 | 6 |
+| `twop-plain` | | | | 177 | 353 |
+
+The racing pictures that differ are the three gaps below, the results' medal icons (R-0071) and,
+in `vs2`, NOW PLAYING after the restart ("Not covered"). The pictures with
 the menu open are equal except where three existing gaps of the split race show, which a race with
 no pause shows too: in `twop-plain` the candidate's 530 pictures are byte-identical to main's, and
 353 of them differ from the original in the same way.
