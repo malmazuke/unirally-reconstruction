@@ -137,7 +137,8 @@
    "src/core/race_hud.cpp:draw_classic_pause_message"
   ],
   "source_records": [
-   "docs/research/R-0079-two-pad-pause.md"
+   "docs/research/R-0079-two-pad-pause.md",
+   "docs/research/R-0082-split-captions.md"
   ]
  },
  {
@@ -149,7 +150,8 @@
    "src/core/race_hud.cpp:draw_classic_pause_message"
   ],
   "source_records": [
-   "docs/research/R-0079-two-pad-pause.md"
+   "docs/research/R-0079-two-pad-pause.md",
+   "docs/research/R-0082-split-captions.md"
   ]
  },
  {
@@ -1294,6 +1296,18 @@
   "source_records": [
    "tasks/COVERAGE-ROADMAP.md",
    "tasks/SPLIT-SCREEN-RACE.md"
+  ]
+ },
+ {
+  "address": "$80:942D",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80942D",
+  "native": [
+   "src/core/presentation.cpp:render_classic_race"
+  ],
+  "source_records": [
+   "docs/research/R-0082-split-captions.md"
   ]
  },
  {
@@ -4861,6 +4875,18 @@
    "docs/research/R-0057-one-run-result.md",
    "docs/research/R-0059-tour-completion.md",
    "docs/research/R-0075-title-menu-audio.md"
+  ]
+ },
+ {
+  "address": "$80:D241",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80D241",
+  "native": [
+   "src/core/presentation.cpp:render_classic_race"
+  ],
+  "source_records": [
+   "docs/research/R-0082-split-captions.md"
   ]
  },
  {
@@ -10265,10 +10291,12 @@
   "native": [
    "src/core/presentation.hpp:classic_caption_entry",
    "src/core/race_hud.cpp:ClassicRaceHudClock::request_caption",
+   "src/core/race_hud.cpp:ClassicRaceHudClock::request_split_fields",
    "src/core/race_hud.cpp:classic_caption_entry",
    "src/core/reward_queue.cpp:show_next_player_announcement"
   ],
   "source_records": [
+   "docs/research/R-0082-split-captions.md",
    "tasks/SPLIT-CAPTIONS.md"
   ]
  },
@@ -10296,6 +10324,18 @@
   ],
   "source_records": [
    "tasks/HUNTER-EFFECTS.md"
+  ]
+ },
+ {
+  "address": "$81:BFB9",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_81BFB9",
+  "native": [
+   "src/core/race_hud.cpp:ClassicRaceHudClock::request_split_fields"
+  ],
+  "source_records": [
+   "docs/research/R-0082-split-captions.md"
   ]
  },
  {
@@ -10353,8 +10393,24 @@
   "class": "observed",
   "comment": "instruction start",
   "label": "loc_81C05C",
+  "native": [
+   "src/core/race_hud.cpp:ClassicRaceHudClock::request_split_fields"
+  ],
   "source_records": [
+   "docs/research/R-0082-split-captions.md",
    "tasks/SPLIT-CAPTIONS.md"
+  ]
+ },
+ {
+  "address": "$81:C0A5",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_81C0A5",
+  "native": [
+   "src/core/reward_queue.cpp:update_opponent_announcements"
+  ],
+  "source_records": [
+   "docs/research/R-0082-split-captions.md"
   ]
  },
  {
@@ -10660,10 +10716,13 @@
   "comment": "instruction start",
   "label": "loc_81C5D5",
   "native": [
-   "src/core/race_update.cpp:finish_update"
+   "src/core/announcements.hpp:ends_opponent_hints",
+   "src/core/race_update.cpp:finish_update",
+   "src/core/zoom_zoo_movement.hpp:ZoomZooOpponentHints"
   ],
   "source_records": [
-   "docs/research/R-0069-split-screen-race.md"
+   "docs/research/R-0069-split-screen-race.md",
+   "docs/research/R-0082-split-captions.md"
   ]
  },
  {
@@ -10740,11 +10799,11 @@
   "label": "loc_81C6D1",
   "native": [
    "src/core/input_timer.cpp:advance_timer_digits",
-   "src/core/race_hud.cpp:ClassicRaceHudClock::hold_lower_clock",
-   "src/core/race_hud.cpp:draw_split_hud"
+   "src/core/race_hud.cpp:ClassicRaceHudClock::request_split_fields"
   ],
   "source_records": [
    "docs/research/R-0081-split-race-end.md",
+   "docs/research/R-0082-split-captions.md",
    "tasks/SPLIT-RACE-END.md"
   ]
  },
@@ -11448,9 +11507,13 @@
   "class": "inferred",
   "comment": "routine start",
   "label": "sub_81D853",
+  "native": [
+   "src/core/race_hud.cpp:ClassicRaceHudClock::service_one_field"
+  ],
   "source_records": [
    "docs/research/R-0079-two-pad-pause.md",
    "docs/research/R-0080-split-hud.md",
+   "docs/research/R-0082-split-captions.md",
    "tasks/SPLIT-CAPTIONS.md",
    "tasks/SPLIT-HUD-GAPS.md"
   ]
@@ -11498,6 +11561,9 @@
   "class": "inferred",
   "comment": "instruction start",
   "label": "loc_81E11C",
+  "native": [
+   "src/core/race_hud.cpp:ClassicRaceHudClock::service_split_clock"
+  ],
   "source_records": [
    "tasks/CLASSIC-RACE-HUD.md"
   ]
@@ -11508,6 +11574,7 @@
   "comment": "instruction start",
   "label": "loc_81E13B",
   "native": [
+   "src/core/race_hud.cpp:ClassicRaceHudClock::service_split_clock",
    "src/core/race_hud.cpp:draw_split_hud"
   ],
   "source_records": [
@@ -11537,9 +11604,13 @@
   "class": "inferred",
   "comment": "routine start",
   "label": "sub_81E49F",
+  "native": [
+   "src/core/race_hud.cpp:ClassicRaceHudClock::crossing_cell"
+  ],
   "source_records": [
    "docs/research/R-0061-riders-and-opponents.md",
    "docs/research/R-0063-race-arrow-and-bg3-uploads.md",
+   "docs/research/R-0082-split-captions.md",
    "tasks/RACE-OFFSCREEN-ARROW.md"
   ]
  },
@@ -11586,6 +11657,7 @@
   "comment": "instruction start",
   "label": "loc_81E87C",
   "native": [
+   "src/core/race_hud.cpp:ClassicRaceHudClock::service_one_field",
    "src/core/race_hud.cpp:draw_split_hud"
   ],
   "source_records": [
@@ -15320,6 +15392,53 @@
   ]
  },
  {
+  "address": "$82:D930",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82D930",
+  "native": [
+   "src/core/race_setup.cpp:classic_crawler_zoom_zoo_start",
+   "src/core/race_setup.cpp:start_countdown, base_speed_cap",
+   "src/core/zoom_zoo_movement.hpp:ZoomZooOpponentHints",
+   "src/core/zoom_zoo_movement.hpp:classic_crawler_zoom_zoo_start"
+  ],
+  "source_records": [
+   "docs/research/R-0082-split-captions.md"
+  ]
+ },
+ {
+  "address": "$82:D93E",
+  "class": "observed",
+  "comment": "inside the instruction at $82:D93D",
+  "label": "mid_82D93E",
+  "native": [
+   "src/core/race_setup.cpp:classic_crawler_zoom_zoo_start",
+   "src/core/race_setup.cpp:classic_race_start",
+   "src/core/race_setup.cpp:start_countdown, base_speed_cap",
+   "src/core/zoom_zoo_movement.hpp:ZoomZooOpponentHints",
+   "src/core/zoom_zoo_movement.hpp:classic_crawler_zoom_zoo_start"
+  ],
+  "source_records": [
+   "docs/research/R-0082-split-captions.md"
+  ]
+ },
+ {
+  "address": "$82:D943",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_82D943",
+  "native": [
+   "src/core/race_setup.cpp:classic_crawler_zoom_zoo_start",
+   "src/core/race_setup.cpp:classic_race_start",
+   "src/core/race_setup.cpp:start_countdown, base_speed_cap",
+   "src/core/zoom_zoo_movement.hpp:ZoomZooOpponentHints",
+   "src/core/zoom_zoo_movement.hpp:classic_crawler_zoom_zoo_start"
+  ],
+  "source_records": [
+   "docs/research/R-0082-split-captions.md"
+  ]
+ },
+ {
   "address": "$82:D94C",
   "class": "observed",
   "comment": "instruction start",
@@ -15331,6 +15450,7 @@
    "src/core/race_setup.cpp:restart_zoom_zoo",
    "src/core/race_setup.cpp:start_countdown, base_speed_cap",
    "src/core/zoom_zoo_movement.hpp:ClassicRaceScenario::tutorial_hints",
+   "src/core/zoom_zoo_movement.hpp:ZoomZooOpponentHints",
    "src/core/zoom_zoo_movement.hpp:classic_crawler_zoom_zoo_start"
   ],
   "source_records": [
@@ -18959,10 +19079,12 @@
   "label": "sub_83CDBC",
   "native": [
    "src/core/reward_queue.cpp:hint_interval",
-   "src/core/reward_queue.cpp:update_tutorial_hints"
+   "src/core/reward_queue.cpp:update_player_tutorial_hints",
+   "src/core/reward_queue.hpp:update_tutorial_hints"
   ],
   "source_records": [
-   "docs/research/R-0052-hunter-effects.md"
+   "docs/research/R-0052-hunter-effects.md",
+   "docs/research/R-0082-split-captions.md"
   ]
  },
  {
@@ -18975,10 +19097,40 @@
    "src/core/race_result.cpp:begin_race_return",
    "src/core/race_setup.cpp:restart_zoom_zoo",
    "src/core/reward_queue.cpp:hint_interval",
-   "src/core/reward_queue.cpp:update_tutorial_hints"
+   "src/core/reward_queue.cpp:update_player_tutorial_hints",
+   "src/core/reward_queue.hpp:update_tutorial_hints"
   ],
   "source_records": [
    "docs/research/R-0061-riders-and-opponents.md"
+  ]
+ },
+ {
+  "address": "$83:CE43",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_83CE43",
+  "native": [
+   "src/core/reward_queue.cpp:hint_interval",
+   "src/core/reward_queue.cpp:update_opponent_tutorial_hints",
+   "src/core/reward_queue.cpp:update_player_tutorial_hints",
+   "src/core/reward_queue.hpp:update_tutorial_hints",
+   "src/core/zoom_zoo_movement.hpp:ZoomZooOpponentHints"
+  ],
+  "source_records": [
+   "docs/research/R-0082-split-captions.md"
+  ]
+ },
+ {
+  "address": "$83:CEB1",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_83CEB1",
+  "native": [
+   "src/core/race_result.cpp:begin_race_return",
+   "src/core/race_setup.cpp:restart_zoom_zoo"
+  ],
+  "source_records": [
+   "docs/research/R-0082-split-captions.md"
   ]
  },
  {
@@ -20447,6 +20599,7 @@
    "docs/research/R-0073-league.md",
    "docs/research/R-0081-split-race-end.md",
    "tasks/LEAGUE.md",
+   "tasks/NEXT_SESSION.md",
    "tasks/SPLIT-RACE-END.md"
   ]
  },
@@ -20914,6 +21067,7 @@
   "source_records": [
    "docs/research/R-0040-dragster-window-effects.md",
    "docs/research/R-0081-split-race-end.md",
+   "tasks/NEXT_SESSION.md",
    "tasks/SPLIT-RACE-END.md"
   ]
  },
@@ -21152,6 +21306,7 @@
    "docs/research/R-0017-opponent-first-audit.md",
    "docs/research/R-0040-dragster-window-effects.md",
    "docs/research/R-0081-split-race-end.md",
+   "tasks/NEXT_SESSION.md",
    "tasks/SPLIT-RACE-END.md"
   ]
  },
@@ -21842,6 +21997,20 @@
   ]
  },
  {
+  "address": "$83:F752",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_83F752",
+  "native": [
+   "src/core/race_hud.cpp:draw_classic_pause_message",
+   "src/core/race_hud.hpp:classic_pause_shows_message",
+   "src/core/race_update.cpp:run_pause_menu"
+  ],
+  "source_records": [
+   "docs/research/R-0082-split-captions.md"
+  ]
+ },
+ {
   "address": "$83:F794",
   "class": "inferred",
   "comment": "routine start",
@@ -21960,6 +22129,7 @@
   ],
   "source_records": [
    "docs/research/R-0078-pause-menu-picture.md",
+   "docs/research/R-0082-split-captions.md",
    "tasks/CLASSIC-PAUSE-MENU.md"
   ]
  },

@@ -802,6 +802,29 @@ void draw_pause_menu(RgbFrame& frame, const ZoomZooState& state,
                             ink, caption_ink);
 }
 
+// Over the riders: the channel-6 window member, the split's dividing lines and the finished
+// views' dimming.
+void draw_window_and_views(RgbFrame& frame, const ZoomZooState& state,
+                           const ClassicRacePresentationContent& content,
+                           const ZoomZooState* previous_update, const ClassicRaceHistory* history,
+                           const std::array<std::uint8_t, 512>& cgram) {
+    // Every member covers both objects as well as the backgrounds: inside the window the
+    // original shows the flat window colour and nothing else (ZOOM-ZOO-WINDOW-EFFECTS:
+    // start-line frames 1450, 1583 and 1649 of the M4-16 primary and countdown-pause originals
+    // with a rider under the countdown sign and the GO letters, and the opponent-won banner
+    // over the riding player on 6724-6800 of the countdown pause). R-0040's "0-6 before the
+    // riders" came from DRAGSTER frames with no rider under those members; on its release-3213
+    // race the opponent sits under the digits on 57 frames, all of which this order matches.
+    const auto window_index = race_window_member(state, content, history);
+    if (window_index)
+        render_window_xor(frame, dragster_window_table(content.window_tables, *window_index),
+                          colour(cgram, 0));
+    if (state.split_screen)
+        for (int y = 111; y <= 112; ++y)
+            for (int x = 0; x < 256; ++x) pixel(frame, x, y, {0, 0, 0});
+    dim_finished_views(frame, state, previous_update, content.scenario);
+}
+
 } // namespace
 
 std::optional<RgbFrame> visible_race_result(const ZoomZooState& state,
@@ -851,8 +874,6 @@ RgbFrame render_classic_race(const ZoomZooState& state,
             : std::nullopt;
     const auto bg1_above_objects = draw_race_backgrounds(frame, vram, cgram, content, scroll,
                                                          second_scroll ? &*second_scroll : nullptr);
-    const auto window_index = race_window_member(state, content, history);
-    const auto window_colour = colour(cgram, 0);
     // The caption (R-0042) and the HUD (R-0043) are BG3, drawn over the track and under the
     // riders; where no sprite covers the ink it is the flat colour, which matches the original
     // on every other measured frame.
@@ -894,20 +915,7 @@ RgbFrame render_classic_race(const ZoomZooState& state,
         draw_hud();
         if (under_hud) restore_bg3_cells(frame, *under_hud, menu_cells, caption_ink);
     }
-    // Every member covers both objects as well as the backgrounds: inside the window the
-    // original shows the flat window colour and nothing else (ZOOM-ZOO-WINDOW-EFFECTS:
-    // start-line frames 1450, 1583 and 1649 of the M4-16 primary and countdown-pause originals
-    // with a rider under the countdown sign and the GO letters, and the opponent-won banner
-    // over the riding player on 6724-6800 of the countdown pause). R-0040's "0-6 before the
-    // riders" came from DRAGSTER frames with no rider under those members; on its release-3213
-    // race the opponent sits under the digits on 57 frames, all of which this order matches.
-    if (window_index)
-        render_window_xor(frame, dragster_window_table(content.window_tables, *window_index),
-                          window_colour);
-    if (state.split_screen)
-        for (int y = 111; y <= 112; ++y)
-            for (int x = 0; x < 256; ++x) pixel(frame, x, y, {0, 0, 0});
-    dim_finished_views(frame, state, previous_update, scenario);
+    draw_window_and_views(frame, state, content, previous_update, history, cgram);
     return frame;
 }
 

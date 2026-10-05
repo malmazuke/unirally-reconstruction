@@ -22,8 +22,8 @@ The four classes partition all 131,072 bytes. **Unknown share: 40.4%** - above D
 | Instructions from observed | 17,569 |
 | Instructions from table | 587 |
 | Routines | 636 |
-| Routines cited by native code | 435 |
-| Routine bytes cited by native code | 53,756 |
+| Routines cited by native code | 443 |
+| Routine bytes cited by native code | 54,814 |
 | Gap sweep candidate instructions | 2,746 |
 | Gap sweep candidate bytes | 6,174 |
 | Jump tables | 2 |
@@ -45,7 +45,7 @@ The four classes partition all 131,072 bytes. **Unknown share: 40.4%** - above D
 
 ## Cited addresses
 
-1689 distinct code-bank ROM addresses cited by the research, task, inventory and content records (`labels.json`). By position: dat 31, loc 962, mid 19, sub 345, unk 332 (sub routine start, loc instruction start, mid inside an instruction, dat data, unk unknown). By class: data 31, inferred 299, observed 1027, unknown 332.
+1699 distinct code-bank ROM addresses cited by the research, task, inventory and content records (`labels.json`). By position: dat 31, loc 967, mid 20, sub 348, unk 333 (sub routine start, loc instruction start, mid inside an instruction, dat data, unk unknown). By class: data 31, inferred 301, observed 1034, unknown 333.
 
 Cited addresses in `unknown` bytes:
 
@@ -87,6 +87,7 @@ Cited addresses in `unknown` bytes:
 | $80:91A1 | docs/research/R-0058-lap-result.md, tasks/FRONT-END-LAP-RESULT.md |
 | $80:91B9 | docs/research/R-0058-lap-result.md, tasks/FRONT-END-LAP-RESULT.md |
 | $80:93FB | tasks/COVERAGE-ROADMAP.md, tasks/SPLIT-SCREEN-RACE.md |
+| $80:942D | docs/research/R-0082-split-captions.md |
 | $80:95A5 | docs/research/R-0067-stunt-result.md |
 | $80:97DD | docs/research/R-0056-tour-track-now-playing.md |
 | $80:9801 | docs/research/R-0056-tour-track-now-playing.md |

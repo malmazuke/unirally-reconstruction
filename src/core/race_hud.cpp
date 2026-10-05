@@ -469,6 +469,40 @@ ClassicHudCellRequest ClassicRaceHudClock::crossing_cell(const ZoomZooState& pre
     return cell;
 }
 
+// The centred cells, the player's then rider 1's (`$0349`, `$034B`). Returns whether one was
+// written, which spends the NMI.
+bool ClassicRaceHudClock::service_cells(const ZoomZooState& updated) {
+    // The player's cells, drawn or blanked, overwrite an up arrow's rows 5-6.
+    const auto cover_arrow = [this](std::size_t rider) {
+        auto& arrow = rider == 0 ? latest_.arrow : latest_.lower_arrow;
+        if (arrow && arrow->direction == ClassicRaceArrow::Direction::Up)
+            arrow->middle_rows_covered = true;
+    };
+    for (std::size_t rider = 0; rider < 2; ++rider) {
+        auto& cell = pending_.cells[rider];
+        auto& held = rider == 0 ? latest_.player_cells : latest_.opponent_cells;
+        if (cell.kind == ClassicHudCellRequest::Kind::Draw) {
+            held = cell.text;
+            cell = {};
+            cover_arrow(rider);
+            if (rider == 0) latest_.player_cells_cleared = false;
+            return true;
+        }
+        if (cell.kind == ClassicHudCellRequest::Kind::Blank) {
+            cell = {};
+            // A finished rider's cells are never blanked, and the handler goes on to the next
+            // field without spending the update.
+            if (!updated.race.riders[rider].finished) {
+                held.reset();
+                cover_arrow(rider);
+                if (rider == 0) latest_.player_cells_cleared = false;
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
 // Service the first pending field and stop, as $81:F357 does: the left field, the clock's
 // blanking, the clock's digits, each rider's cells, then the caption. A split race's chain
 // (`$81:D853`, R-0082) puts the bottom clock after the top one and rider 1's caption last, and
@@ -509,34 +543,7 @@ void ClassicRaceHudClock::service_one_field(const ZoomZooState& updated) {
         }
     }
     if (split && service_split_clock(updated)) return;
-    // The player's cells, drawn or blanked, overwrite an up arrow's rows 5-6.
-    const auto cover_arrow = [this](std::size_t rider) {
-        auto& arrow = rider == 0 ? latest_.arrow : latest_.lower_arrow;
-        if (arrow && arrow->direction == ClassicRaceArrow::Direction::Up)
-            arrow->middle_rows_covered = true;
-    };
-    for (std::size_t rider = 0; rider < 2; ++rider) {
-        auto& cell = pending_.cells[rider];
-        auto& held = rider == 0 ? latest_.player_cells : latest_.opponent_cells;
-        if (cell.kind == ClassicHudCellRequest::Kind::Draw) {
-            held = cell.text;
-            cell = {};
-            cover_arrow(rider);
-            if (rider == 0) latest_.player_cells_cleared = false;
-            return;
-        }
-        if (cell.kind == ClassicHudCellRequest::Kind::Blank) {
-            cell = {};
-            // A finished rider's cells are never blanked, and the handler goes on to the next
-            // field without spending the update.
-            if (!updated.race.riders[rider].finished) {
-                held.reset();
-                cover_arrow(rider);
-                if (rider == 0) latest_.player_cells_cleared = false;
-                return;
-            }
-        }
-    }
+    if (service_cells(updated)) return;
     // $81:F28B-F303: a stunt event's score field, before the caption.
     if (pending_.score) {
         latest_.score_cells = stunt_score_cells(score_buffer_, latest_.score_cells);

@@ -376,6 +376,7 @@ private:
                                         const ZoomZooState& updated);
     void service_one_field(const ZoomZooState& updated);
     bool service_split_clock(const ZoomZooState& updated);
+    bool service_cells(const ZoomZooState& updated);
     void redraw_arrow(const ZoomZooState& previous, const ZoomZooState& updated);
     void request_split_fields(const ZoomZooState& previous, const ZoomZooState& updated);
     void clear_after_pause(const ZoomZooState& previous, const ZoomZooState& updated);

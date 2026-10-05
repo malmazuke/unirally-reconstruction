@@ -57,3 +57,23 @@ R-0080's captures exact. One-player play does not move.
 | Pictures | `classify.py` over R-0079's captures | No caption class left | JSON |
 | Nothing else moves | Gates, sweeps | Unchanged in one-player play | gate logs |
 | Review | Tier 1 | Approved | review on the pull request |
+
+## Evidence and attempts
+
+The listing reading is main `local/evidence/split-captions/listing-report.md` (a reader subagent,
+22:15-22:35 Sydney); the measurements are main `local/evidence/split-captions/measure.py` and
+`measure-83649c0/`, against main 6d8d823's binaries (`base-6d8d823/`).
+
+| Attempt | Hypothesis | Experiment | Observation | Next decision |
+| --- | --- | --- | --- | --- |
+| 1 | The split cell writer reads the sign | `crossing_cell` keeps the minus for one view only | `zzap` 205 pictures better, 1 worse (7154, the chain's timing) | Layering |
+| 2 | A race from the menus makes the objects the sub screen ($212D = 0x10) | Split HUD before the riders unless `demo_ai` | Split demo 326/326 equal; no change on captures without a rider under the ink | Rider 1's hints |
+| 3 | Rider 1 has its own hints (`$12E5`, `$12ED`, `$12F1`) | `opponent_hints` in race state; rider 1's group timer, hold, queue-time end, write-back | Rider 1's queue equal on every race frame of all 18 split captures (main: 240-622 frames differ); `twop-plain` 238 → 516 pictures | Restores |
+| 4 | The reader needs the flag before the base checks | `TrailerFlags`; counter derived from the clock; runner's restore check takes layouts F/G | Restores equal on `twop-plain`, `league`, `zzap` | The chain |
+| 5 | The split chain ($81:D853) | `request_split_fields`, `service_split_clock`, rider 1's caption last | `twop-plain` 530/530; `league` 618 with 13 worse after a pad-2 close | The split clear |
+| 6 | CONTINUE clears the view the menu last opened in | `clear_after_pause` for split races, `$130F` remembered | `league` 670, `leaguefin` 120/121, no picture worse anywhere | Messages |
+| 7 | A message's `"` is tile 0x261 | Draw nothing for it | `league` 710/710 | Records, gates, review |
+
+Remaining race-time differences are the riders under the ink (R-0082, "Not covered"): a pad-2-idle
+rider 1's look in `vs-idle`, a 2-pixel upper-body strip in a few pictures, and rider 0's sprite
+near the split line once; none is HUD text.
