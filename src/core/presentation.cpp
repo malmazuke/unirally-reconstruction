@@ -722,7 +722,7 @@ void dim_finished_league_views(RgbFrame& frame, const ZoomZooState& state,
 // $83:F964: INIDISP while the race is paused; $83:F947 when the menu closes.
 constexpr unsigned paused_brightness = 7, full_brightness = 15;
 
-// Puts the backgrounds back in BG3 cells another writer holds, and clears their ink.
+// Puts an earlier picture's pixels back in BG3 cells another writer holds, and clears their ink.
 void restore_bg3_cells(RgbFrame& frame, const RgbFrame& backgrounds, const Bg3Cells& cells,
                        std::bitset<256 * 224>& inked) {
     // A tilemap row r shows on lines 8r - 1 to 8r + 6 (R-0042).
@@ -742,37 +742,28 @@ void restore_bg3_cells(RgbFrame& frame, const RgbFrame& backgrounds, const Bg3Ce
 // $0FF1, clamping (fade-15) at zero; $83:CCC1-CCC9 increments $0FF1 once per race update. Scaling
 // converted pixels made mid-fade frames too bright: green 15 at brightness 8 is 47 in the
 // original, not 64. $83:F695-F69C and $83:F962-F979: a paused update writes 7 after the NMI's, so
-// a one-player race shows at brightness 7 while its menu is open, and the update that closes it
-// writes 15 ($83:F945-F956), even during the fade-in (R-0078).
+// the race, both views of a split one, shows at brightness 7 while its menu is open, and the
+// update that closes it writes 15 ($83:F945-F956), even during the fade-in (R-0078, R-0079).
 unsigned race_picture_brightness(const ZoomZooState& state, const ZoomZooState* previous_update,
                                  const ClassicRaceScenario& scenario) {
-    if (state.pause.selection != 0 && !state.split_screen) return paused_brightness;
+    if (state.pause.selection != 0) return paused_brightness;
     if (previous_update && classic_pause_menu_closed(*previous_update, state))
         return full_brightness;
     const unsigned prior_fade = classic_race_prior_fade(state, previous_update, scenario);
     return prior_fade > 15U ? prior_fade - 15U : 0U;
 }
 
-// The pause menu over the finished picture: the original's in a one-player race (R-0078), the
-// authored panel over a split-screen one (M4-16).
+// The original's pause menu (R-0078): in the view of the pad that paused, in that view's ink
+// (R-0079).
 void draw_pause_menu(RgbFrame& frame, const ZoomZooState& state,
-                     const ClassicRacePresentationContent& content, unsigned brightness,
-                     std::array<std::uint8_t, 3> bg3_ink, std::bitset<256 * 224>& caption_ink) {
+                     const ClassicRacePresentationContent& content,
+                     std::array<std::uint8_t, 3> upper_ink, std::array<std::uint8_t, 3> lower_ink,
+                     std::bitset<256 * 224>& caption_ink) {
     using Choice = ClassicRacePresentationContent::PauseSecondChoice;
-    if (!state.split_screen) {
-        draw_classic_pause_menu(frame, content, state.pause.selection,
-                                content.pause_second_choice == Choice::quit ? "quit" : "restart",
-                                bg3_ink, caption_ink);
-        return;
-    }
-    // Authored UI has no CGRAM entry; fade it through the same 1.5 output curve.
-    const auto ui_scale = std::pow(brightness / 15.0, 1.5);
-    const auto ui = [ui_scale](std::array<std::uint8_t, 3> rgb) {
-        for (auto& channel : rgb)
-            channel = static_cast<std::uint8_t>(std::lround(channel * ui_scale));
-        return rgb;
-    };
-    draw_race_pause_menu(frame, state.pause.selection, ui({15, 30, 30}), ui({255, 240, 220}));
+    const bool lower = state.pause.lower_view;
+    draw_classic_pause_menu(frame, content, state.pause.selection,
+                            content.pause_second_choice == Choice::quit ? "quit" : "restart", lower,
+                            lower ? lower_ink : upper_ink, caption_ink);
 }
 
 } // namespace
@@ -804,7 +795,7 @@ RgbFrame render_classic_race(const ZoomZooState& state,
     if (const auto result = visible_race_result(state, content)) return *result;
     RgbFrame frame{};
     const auto vram = race_vram(content);
-    const bool classic_pause = state.pause.selection != 0 && !state.split_screen;
+    const bool paused = state.pause.selection != 0;
     const auto brightness = race_picture_brightness(state, previous_update, scenario);
     // Picture N shows the objects of update N-1, like the scroll; without a previous update
     // the riders are drawn from this state, one update ahead.
@@ -833,26 +824,33 @@ RgbFrame render_classic_race(const ZoomZooState& state,
     const auto hud =
         history ? std::optional<ClassicHudPublished>(history->published_hud) : std::nullopt;
     // The menu's words replace the HUD's in the cells it writes: keep the backgrounds there.
-    const auto backgrounds = classic_pause ? std::optional<RgbFrame>(frame) : std::nullopt;
+    const auto backgrounds = paused ? std::optional<RgbFrame>(frame) : std::nullopt;
+    const auto menu_cells = classic_pause_menu_cells(state.pause.lower_view);
+    const auto lower_ink = race_ink_rgb(content, brightness, true);
     draw_classic_caption(frame, rider_source, content, hud, bg3_ink, caption_ink);
     const auto draw_hud = [&] {
         draw_classic_hud(frame, rider_source, content,
                          history ? history->opponent_finish_frame : std::nullopt, hud, bg3_ink,
-                         race_ink_rgb(content, brightness, true),
-                         history ? history->opponent_caption_event : 0U, caption_ink);
+                         lower_ink, history ? history->opponent_caption_event : 0U, caption_ink);
     };
     if (!state.split_screen) draw_hud();
     // The menu's words go in the HUD's layer, under the riders and the window members: on the
-    // picture that opens the menu during the countdown the digit's window covers them (R-0078).
+    // picture that opens the menu during the countdown the digit's window covers them (R-0078),
+    // and a split race's riders cover them (R-0079).
     if (backgrounds) {
-        restore_bg3_cells(frame, *backgrounds, classic_pause_menu_cells(), caption_ink);
-        draw_pause_menu(frame, state, content, brightness, bg3_ink, caption_ink);
+        restore_bg3_cells(frame, *backgrounds, menu_cells, caption_ink);
+        draw_pause_menu(frame, state, content, bg3_ink, lower_ink, caption_ink);
     }
     const RaceObjectMath math{caption_ink, neon_green ? &vram : nullptr, &scroll};
     draw_race_riders(frame, rider_source, content, history, colours, scroll.flip, bg1_above_objects,
                      math);
-    // The split's HUD tile priority covers both riders at the lap-banner overlap.
-    if (state.split_screen) draw_hud();
+    // The split's HUD tile priority covers both riders at the lap-banner overlap; the menu's
+    // cells keep the menu.
+    if (state.split_screen) {
+        const auto under_hud = paused ? std::optional<RgbFrame>(frame) : std::nullopt;
+        draw_hud();
+        if (under_hud) restore_bg3_cells(frame, *under_hud, menu_cells, caption_ink);
+    }
     // Every member covers both objects as well as the backgrounds: inside the window the
     // original shows the flat window colour and nothing else (ZOOM-ZOO-WINDOW-EFFECTS:
     // start-line frames 1450, 1583 and 1649 of the M4-16 primary and countdown-pause originals
@@ -867,19 +865,7 @@ RgbFrame render_classic_race(const ZoomZooState& state,
         for (int y = 111; y <= 112; ++y)
             for (int x = 0; x < 256; ++x) pixel(frame, x, y, {0, 0, 0});
     dim_finished_league_views(frame, rider_source, scenario);
-    if (state.pause.selection && state.split_screen)
-        draw_pause_menu(frame, state, content, brightness, bg3_ink, caption_ink);
     return frame;
-}
-
-void draw_race_pause_menu(RgbFrame& frame, std::uint16_t selection,
-                          std::array<std::uint8_t, 3> panel, std::array<std::uint8_t, 3> ink) {
-    for (auto& channel : frame.pixels) channel = static_cast<std::uint8_t>(channel / 2U);
-    rect(frame, 55, 74, 146, 74, panel);
-    ui_text(frame, 109, 83, "PAUSED", ink);
-    ui_text(frame, 73, 101, selection == 1 ? "> RESUME" : "  RESUME", ink);
-    ui_text(frame, 73, 115, selection == 0xffffU ? "> RESTART RACE" : "  RESTART RACE", ink);
-    ui_text(frame, 68, 135, "UP DOWN - ENTER", ink);
 }
 
 PresentationContent dragster_presentation_content(const ClassicContentPack& pack) {

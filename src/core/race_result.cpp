@@ -42,6 +42,12 @@ constexpr std::uint16_t no_row = 0xea62; // sorts after every time
 // one-player play.
 constexpr std::uint16_t quit = 0xea61, restarted = 0xea62;
 
+// The modes whose race has a human on each pad: 2P, VS and a league's pairs.
+bool two_human_mode(FrontEndMode mode) {
+    return mode == FrontEndMode::league || mode == FrontEndMode::two_player
+        || mode == FrontEndMode::versus;
+}
+
 // The result's objects (`$80:951C`, `$80:CE90`): the two riders' large marks (entries 30 and 31);
 // the row icons (104-108); the new-best markers (96-99); the 1P mark (100, 102) and the 2P mark
 // (101, 103), which moves to its row: 24 lines a row from line 0x58.
@@ -533,9 +539,10 @@ void race_return_frame(FrontEndState& state, const FrontEndContent& content) {
         state.slide.scroll = 0;
         state.registers.bg[1].hofs = state.registers.bg[1].vofs = 0;
         state.logo.raised = true;
-        // $80:88DD: a restart from the race's pause menu (0xEA62) skips the result.
+        // $80:88DD: a restart from the race's pause menu (0xEA62) skips the result, whichever
+        // human's total holds it (R-0079; a computer opponent's is never the pause menu's).
         if (state.race_result.times.player_total == restarted
-            || (state.mode == FrontEndMode::league
+            || (two_human_mode(state.mode)
                 && state.race_result.times.opponent_total == restarted)) {
             state.text.words.fill(cleared_text); // $80:88F8
             state.screen = FrontEndScreen::race_restart;
@@ -865,9 +872,8 @@ std::optional<RaceTimes> update_race_for_menus(ZoomZooState& race, const Control
     // only a restart clears, is back to 0.
     if (race.pause.suspended_updates != 0 && next.pause.suspended_updates == 0) {
         auto times = race_times(race);
-        auto& total = race.league_statistics.enabled && race.split_screen && !first.start
-                        ? times.opponent_total
-                        : times.player_total;
+        // $83:F8D5-F8EB: the pad whose Start confirmed: pad 1's if it holds it, else pad 2's.
+        auto& total = race.split_screen && !first.start ? times.opponent_total : times.player_total;
         total = race.movement.countdown != 0 ? restart : quit; // $83:F8DA-F90B
         race.sound_cues = std::move(next.sound_cues);          // the race itself is left as it was
         return times;

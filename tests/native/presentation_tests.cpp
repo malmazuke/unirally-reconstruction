@@ -201,7 +201,7 @@ void arrow_drawing() {
 // CLASSIC-PAUSE-MENU (R-0078): the paused one-player race's menu, where it writes and what it
 // draws with a font whose every tile is solid.
 void pause_menu() {
-  const auto cells = unirally::classic_pause_menu_cells();
+  const auto cells = unirally::classic_pause_menu_cells(false);
   require(cells.count() == 2 * 15 + 2 * 4 + 4);
   const auto held = [&cells](unsigned column, unsigned row) { return cells.test(row * 32 + column); };
   require(held(8, 5) && held(22, 6) && !held(23, 5) && !held(7, 5)); // " continue game "
@@ -211,10 +211,10 @@ void pause_menu() {
   unirally::ClassicRacePresentationContent content{};
   content.caption_font = font;
   const auto inked = [&](std::uint16_t selection, std::string_view second, unsigned column,
-                         unsigned row) {
+                         unsigned row, bool lower = false) {
     unirally::RgbFrame frame{};
     std::bitset<256 * 224> ink;
-    unirally::draw_classic_pause_menu(frame, content, selection, second, {231, 0, 0}, ink);
+    unirally::draw_classic_pause_menu(frame, content, selection, second, lower, {231, 0, 0}, ink);
     // A tilemap row r shows on lines 8r - 1 to 8r + 6.
     unsigned count = 0;
     for (unsigned y = row * 8 - 1; y < row * 8 + 7; ++y)
@@ -231,6 +231,12 @@ void pause_menu() {
   require(inked(1, "restart", 12, 7).first == 64 && inked(1, "restart", 18, 8).first == 64);
   require(inked(1, "restart", 11, 7).first == 0 && inked(1, "restart", 19, 7).first == 0);
   require(inked(1, "restart", 0, 0).second == (12U + 7U + 1U) * 2U * 64U);
+  // Pad 2's menu, 14 rows down in the lower view (R-0079).
+  const auto lower = unirally::classic_pause_menu_cells(true);
+  require(lower.count() == cells.count() && lower.test(19 * 32 + 8) && lower.test(22 * 32 + 24)
+          && !lower.test(5 * 32 + 8));
+  require(inked(1, "quit", 9, 19, true).first == 64 && inked(1, "quit", 9, 5, true).first == 0);
+  require(inked(0xffff, "quit", 24, 21, true).first == 64);
 }
 
 // $83:F915-F92C: closing the menu clears the player's cells until the queue writes them again;

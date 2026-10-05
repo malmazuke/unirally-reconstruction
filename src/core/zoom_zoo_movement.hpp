@@ -113,6 +113,9 @@ struct ZoomZooPause {
     std::uint16_t selection{},
         released{}; // $0EF3: 0/racing, 1/resume, -1/authored restart (original Retire); $0EF5.
     std::uint32_t suspended_updates{}, suspended_countdown_updates{}; // Semantic update clocks.
+    // $83:F6B4-F6F3: the menu sits in the lower view (VRAM 0x1A68) because pad 2's Start opened
+    // it without pad 1's. Two-pad races only, and only while the menu is open.
+    bool lower_view{};
 };
 // $83:E254-E55B: the idle demo's two computer riders. The four per-rider words
 // are $1377/$1379, $137B/$137D, $137F/$1381 and $1383/$1385; elapsed is $1387.

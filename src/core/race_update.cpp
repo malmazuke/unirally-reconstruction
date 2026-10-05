@@ -187,31 +187,39 @@ ControllerButtons release_settled_player(const ZoomZooState& state, ZoomZooState
 }
 
 // $83:CD05-CD35: the pause menu takes the update once the controller and phase clocks are
-// sampled; the race, the AI, the queues and the hints wait. Start opens it (unless the
-// player has finished); up and down choose; releasing and pressing Start again resumes, or
-// restarts the race from RESTART RACE, this menu's authored choice. A race from the menus is
-// ended there instead, as the original's QUIT (`update_race_for_menus`, R-0060). Returns true
-// when it took the update.
+// sampled; the race, the AI, the queues and the hints wait. Start opens it (unless that pad's
+// rider has finished): pad 1's always, pad 2's in a two-pad race, where port 2 is a pad
+// ($83:CD0F-CD1C; in a one-player race `$82:AB6F-AB86` keeps it clear). Up and down choose;
+// releasing and pressing Start again resumes, or restarts the race from RESTART RACE, this
+// menu's authored choice. A race from the menus is ended there instead, as the original's QUIT
+// (`update_race_for_menus`, R-0060). Returns true when it took the update.
 bool run_pause_menu(const ZoomZooState& state, ZoomZooState& next, const ControllerButtons& buttons,
                     const ControllerButtons& second, const ZoomZooContent& content) {
-    const bool league_pair = state.league_statistics.enabled && state.split_screen;
-    const bool start = buttons.start || (league_pair && second.start);
+    const bool two_pads = state.split_screen; // the caller leaves the demo's computer riders out
+    const bool league_pair = state.league_statistics.enabled && two_pads;
+    const bool start = buttons.start || (two_pads && second.start);
     const bool opening = (buttons.start && !state.race.riders[0].finished)
-                      || (league_pair && second.start && !state.race.riders[1].finished);
+                      || (two_pads && second.start && !state.race.riders[1].finished);
     if (!state.native_initialization || !(state.pause.selection || opening)) return false;
     race_sound::pause_frame(next, state.pause.selection == 0);
     auto& pause = next.pause;
     auto& whole = next.movement;
-    if (!pause.selection) pause.selection = 1;
+    // $83:F6AF-F6F3: an update that finds the menu closed places it by who holds Start: the upper
+    // view when pad 1 does, else the lower.
+    if (!pause.selection) {
+        pause.selection = 1;
+        pause.lower_view = two_pads && !buttons.start;
+    }
     // $83:F6FD-F791: two unfinished humans see only a pause message after the countdown.
     const bool message_only = league_pair && !whole.countdown && !state.race.riders[0].finished
                            && !state.race.riders[1].finished;
+    // $83:F807-F82E: pad 1's vertical axis chooses, and pad 2's when pad 1's is centred.
     if (message_only)
         pause.selection = 1;
     else if (whole.player_input.vertical != direction::neutral)
         pause.selection = whole.player_input.vertical ? 0xffff : 1;
-    else if (league_pair && (second.up || second.down))
-        pause.selection = second.down ? 0xffff : 1;
+    else if (two_pads && (second.up || second.down))
+        pause.selection = second.up ? 1 : 0xffff;
     if (!start) {
         pause.released = 1;
     } else if (pause.released) {
@@ -222,6 +230,7 @@ bool run_pause_menu(const ZoomZooState& state, ZoomZooState& next, const Control
             return true;
         }
         pause.selection = 0;
+        pause.lower_view = false;
         race_sound::pause_continue(next);
     }
     ++pause.suspended_updates;
@@ -967,7 +976,9 @@ void update_zoom_zoo(ZoomZooState& state, const ControllerButtons& requested_but
         state = next;
         return;
     }
-    if (state.native_initialization && next.pause.released && !player_buttons.start)
+    // $83:CD39-CD4B: the release clears once no pad holds Start (port 2 is clear in one-player).
+    if (state.native_initialization && next.pause.released && !player_buttons.start
+        && !(state.split_screen && opponent_buttons.start))
         next.pause.released = 0;
     DemoTrickButtons demo_buttons{};
     const bool ai_off =
