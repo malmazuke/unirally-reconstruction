@@ -348,6 +348,7 @@ void split_arrows() {
     published.lower_arrow = lower_view;
     unirally::ZoomZooState state{};
     state.split_screen = true;
+    state.pairing = {0, 1}; // two humans: both names are in the sixteen-rider table
     unirally::draw_classic_hud(frame, state, content, std::nullopt, published, {255, 0, 0},
                                {0, 255, 0}, 0, inked);
     return inked;
