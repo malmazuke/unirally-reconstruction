@@ -1,7 +1,7 @@
 # R-0081 - When a two-human race ends: both finishes, and VS's forced finish
 
 Status: implemented on `task/split-race-end` ([SPLIT-RACE-END](../../tasks/SPLIT-RACE-END.md)),
-5 October 2026. PAL ROM SHA-256
+5 October 2026; accepted (tier 1, PR #56). PAL ROM SHA-256
 `a1105819d48c04d680c8292bbfa9abbce05224f1bc231afd66af43b7e0a1fd4e`, audited bsnes core
 `7d5aa1e656b9171524d01b1b22917197d8121cb4`. The listing reading is main
 `local/evidence/split-race-end/listing-report.md`. The captures are in main

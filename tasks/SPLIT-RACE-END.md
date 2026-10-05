@@ -2,7 +2,8 @@
 
 ## Assignment
 
-- Status: **claimed** 5 October 2026 by the session that closed SPLIT-HUD-GAPS, on main `321e3d9`
+- Status: **accepted** 5 October 2026 (tier 1, [PR #56](https://github.com/malmazuke/unirally-reconstruction/pull/56));
+  claimed the same day by the session that closed SPLIT-HUD-GAPS, on main `321e3d9`
   after that task's merge (main equal to `origin/main`, closeout written). Prepared the same day
   from SPLIT-HUD-GAPS's review (R-0080).
 - Milestone: M4 breadth
@@ -94,3 +95,46 @@ window pointer keeps its own copy and only starts a forced rider 1's driver in t
   manifest, main `local/evidence/split-hud-gaps/review/zzap.json`, to about 8700 frames); the front-
   end sweep will show TWO-PLAYER-VS's and LEAGUE's manifests moving only where the riders finish
   apart; R-0081; gates; tier-1 review; PR.
+
+## Gates
+
+`local/evidence/split-race-end/gates.sh` against main `321e3d9`'s binaries
+(`local/evidence/split-race-end/base-321e3d9/`); the final head's run is
+`gates-cf5ed6a.out`, with `gates-32d051e.out` before it.
+- Presets and ctest: 41 of 41 on each of the four presets.
+- Synthetic suite, v1 contracts and eight hidden runs: all pass.
+- The eleven differential gates: all pass.
+- Race sweep: 432 runs, 0 differences.
+- Cues: all seven identical to main.
+- Tooling: 544 OK.
+- Rules: no function over 80 lines; native-symbols passes.
+- Fuzz: 40 aborts, as on main.
+- Front-end sweep: 169 of 179 equal. The other ten are all TWO-PLAYER-VS's
+  (`summary-32d051e.txt`):
+  - the nine VS manifests end and draw as on main, and their rows are main's plus the VS block;
+  - `mode-1-first-right` (2P, pad 2 idle) races on past main's 4226, as the original's frame 5000
+    shows; frame 5499 has 0 differing pixels, against main's 56,647.
+- The thirteen earlier split captures and the four race-end captures: 0 word differences.
+- Every restore checked equal.
+
+## Review and integration
+
+- Reviewer: a fresh Claude Opus 5.5 subagent in its own clone, tier 1, with preregistered cases.
+- Round 1 on `ba07f88`: early findings.
+  - Its withheld `vs-opp` (rider 1 first, `local/evidence/split-race-end/review/`) had equal race
+    words, but 238 pictures had the player's clock running on. `$81:C6F0` is the player's gate,
+    `$81:C6D1` rider 1's.
+  - The static map and native-symbol index were stale (CI red).
+  - Both were fixed in `32d051e`.
+- Review of `32d051e`: approved.
+  - The withheld captures `vs-opp`, `vs-late` (the second finish within the driver's life) and
+    `vs-later` (a forced rider with a lap left): 0 word and driver differences.
+  - Twelve restores equal.
+  - States other than VS match main byte for byte.
+  - Ten malformed VS blocks refused.
+  - Low findings: the reader's display-count rule, the league wrapper's VS state, the banner
+    constants defined three times, the lower-clock step, and two record notes. All were fixed in
+    `cf5ed6a` except the evidence-comment nits.
+- Round 2 on `cf5ed6a`: approved, nothing new.
+- Integration: merged by merge commit after the final head's checks; closeout in main
+  `artifacts/split-race-end-integration/closeout.json`.

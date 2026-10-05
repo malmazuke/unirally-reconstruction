@@ -1,5 +1,25 @@
 # Next session
 
+**5 October 2026: SPLIT-RACE-END is accepted (tier 1, #56) and integrated by merge commit.**
+A two-human race now ends as the original's does: the finish display counts only once both riders
+have finished (`$83:E7C3`), so 2P and league pairs race on until the second rider finishes, and VS
+finishes the second rider with no time when the first finisher's banner ends, 360 updates after
+its first odd update (`$83:EA5D`/`$83:EBCB`). VS keeps both banner drivers in race state, and its
+split saves grow by 8 bytes; every other layout is byte-identical. The forced rider's view dims
+and its clock freezes. Four captures equal the original's race words to the result:
+- `vs-idle`, VS with pad 2 idle;
+- the review's `vs-opp`, rider 1 first;
+- `zzap-long`, 2P to 8,308 frames;
+- `league-idle`, a league pair that waits.
+
+The result loads on the original's frame, and restores across the force are byte-identical. The
+eleven frozen gates, the race sweep (432 runs, 0 differences) and 169 of 179 front-end manifests
+equal main. The other ten are TWO-PLAYER-VS's: the VS block in the state, and mode-1's 2P race
+now running on as the original's does. [R-0081](../docs/research/R-0081-split-race-end.md) and
+[SPLIT-RACE-END](SPLIT-RACE-END.md) define the domain. Next ready: SPLIT-CAPTIONS,
+TWO-HUMAN-RESTART, AUDIO-UPLOAD-SPEED, ROLLING-CONTACT, PORTABLE-CORE-IDENTITY, ATTRACT-DEMO. No
+M4 tag, reset, spending or provider change is authorized.
+
 **5 October 2026: SPLIT-HUD-GAPS is accepted (tier 2, #55) and integrated by merge commit.**
 A split race's HUD now follows the original's split routine: each rider's caption in its own view,
 the trailing rider's arrow in its own view at the split rows and full length, each view's colour
