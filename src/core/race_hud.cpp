@@ -272,6 +272,9 @@ void ClassicRaceHudClock::redraw_arrow(const ZoomZooState& previous, const ZoomZ
     // $81:DB10-DDA4: a split race's lower arrow is redrawn every NMI; its rows 16-17 are skipped
     // while rider 1's cells show (`$0D1B`, R-0080).
     if (updated.split_screen) {
+        // $81:C6F0-C6F8: a VS race's forced finish of rider 1 stops its clock's rewrites (R-0081).
+        if (!previous.race.riders[1].finished && updated.race.riders[1].finished == forced_finish)
+            latest_.lower_clock = classic_split_lower_clock(previous);
         latest_.lower_arrow = classic_race_lower_arrow(previous, updated, race_nmis_);
         if (latest_.lower_arrow
             && latest_.lower_arrow->direction == ClassicRaceArrow::Direction::Up)
@@ -739,6 +742,31 @@ void draw_split_arrow(RgbFrame& frame, std::span<const std::uint8_t> font,
     }
 }
 
+// The lower view's clock: the second timer is one tick behind the first in the captured PAL
+// demo's two-view race.
+std::string classic_split_lower_clock(const ZoomZooState& state) {
+    auto bottom_timer = classic_hud_timer(state);
+    const bool stunt_event = classic_race_scenario(state.track).stunt_event;
+    if (!stunt_event && state.movement.timer.subframe == 0 && bottom_timer.tenths)
+        --bottom_timer.tenths;
+    else if (!stunt_event && state.movement.timer.subframe == 0
+             && (bottom_timer.seconds || bottom_timer.tens_seconds || bottom_timer.minutes)) {
+        bottom_timer.tenths = 9;
+        if (bottom_timer.seconds)
+            --bottom_timer.seconds;
+        else {
+            bottom_timer.seconds = 9;
+            if (bottom_timer.tens_seconds)
+                --bottom_timer.tens_seconds;
+            else {
+                bottom_timer.tens_seconds = 5;
+                --bottom_timer.minutes;
+            }
+        }
+    }
+    return classic_hud_clock(bottom_timer);
+}
+
 void draw_split_hud(RgbFrame& frame, const ZoomZooState& state,
                     const ClassicRacePresentationContent& content, const ClassicHudText& hud,
                     const std::optional<ClassicHudPublished>& published,
@@ -762,28 +790,13 @@ void draw_split_hud(RgbFrame& frame, const ZoomZooState& state,
     // column 1, as above (R-0080).
     draw_bg3_text(frame, font, lower_left == "finish" ? 1U : 2U, 15, lower_left, opponent_ink,
                   inked);
-    auto bottom_timer = classic_hud_timer(state);
-    if (!content.scenario.stunt_event && state.movement.timer.subframe == 0 && bottom_timer.tenths)
-        --bottom_timer.tenths;
-    else if (!content.scenario.stunt_event && state.movement.timer.subframe == 0
-             && (bottom_timer.seconds || bottom_timer.tens_seconds || bottom_timer.minutes)) {
-        bottom_timer.tenths = 9;
-        if (bottom_timer.seconds)
-            --bottom_timer.seconds;
-        else {
-            bottom_timer.seconds = 9;
-            if (bottom_timer.tens_seconds)
-                --bottom_timer.tens_seconds;
-            else {
-                bottom_timer.tens_seconds = 5;
-                --bottom_timer.minutes;
-            }
-        }
-    }
     // $81:824B and $81:E13B-E1C2: rider 1's last crossing blanks its clock, which is not
-    // rewritten while it is finished ($81:C6F0-C6F8, R-0080).
-    if (!(opponent.finished && opponent.laps_remaining == 0))
-        draw_bg3_text(frame, font, 24, 15, classic_hud_clock(bottom_timer), opponent_ink, inked);
+    // rewritten while it is finished ($81:C6F0-C6F8, R-0080): a VS race's forced finish leaves
+    // the last one written (R-0081).
+    if (opponent.finished == forced_finish && published && published->lower_clock)
+        draw_bg3_text(frame, font, 24, 15, *published->lower_clock, opponent_ink, inked);
+    else if (!(opponent.finished && opponent.laps_remaining == 0))
+        draw_bg3_text(frame, font, 24, 15, classic_split_lower_clock(state), opponent_ink, inked);
     draw_bg3_text(frame, font, 13, 3, hud.player_cells, ink, inked);
     draw_bg3_text(frame, font, 13, 17, hud.opponent_cells, opponent_ink, inked);
     // $81:E87C-E8C5: rider 1's caption, all sixteen cells from column 8 of rows 19-20 (R-0080).

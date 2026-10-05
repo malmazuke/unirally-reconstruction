@@ -408,6 +408,7 @@ std::string start_race(RaceBetweenMenus& race, const unirally::ClassicContentPac
     race.content = unirally::classic_race_content(pack, scenario.track);
     race.state = unirally::classic_race_start(*race.content, scenario);
     race.state.league_statistics.enabled = front_end.mode == unirally::FrontEndMode::league;
+    race.state.versus = front_end.mode == unirally::FrontEndMode::versus;
     if (local) unirally::initialize_split_cameras(race.state);
     race.presentation = unirally::classic_race_presentation_content(pack, scenario);
     race.presentation->rider_names = front_end.records.rider_names;
@@ -463,9 +464,11 @@ void check_local_restore(const unirally::ZoomZooState& race_state,
         return;
     }
     const auto saved = unirally::serialize_zoom_zoo(race_state);
-    // Pad 2's open pause menu appends one byte after the trailer (R-0079).
+    // A VS race appends its banner drivers after the trailer (R-0081), pad 2's open pause menu
+    // one byte after them (R-0079).
     const auto lower_view = race_state.pause.lower_view ? 1U : 0U;
-    if (saved.size() != 784 + lower_view || saved[7] != 'H')
+    const auto versus = race_state.versus ? 8U : 0U;
+    if (saved.size() != 784 + versus + lower_view || saved[7] != 'H')
         throw std::runtime_error("local DRAGSTER save is not layout H");
     restored = unirally::deserialize_zoom_zoo(saved);
     if (unirally::serialize_zoom_zoo(*restored) != saved)
@@ -479,17 +482,22 @@ void check_local_restore(const unirally::ZoomZooState& race_state,
         return false;
     };
     auto invalid = saved;
-    invalid[invalid.size() - 1 - lower_view] = 1; // the trailer's last byte: demo_ai, zero here
+    invalid[invalid.size() - 1 - lower_view - versus] = 1; // the trailer's last byte: demo_ai
     if (!refused(invalid)) throw std::runtime_error("local save accepted demo AI");
     if (lower_view) {
         invalid = saved;
         invalid.back() = 2;
         if (!refused(invalid)) throw std::runtime_error("local save accepted a lower view of 2");
     }
+    if (versus) {
+        invalid = saved;
+        invalid[784] = 6; // rider 0's banner index: 0 or 7..24
+        if (!refused(invalid)) throw std::runtime_error("local save accepted a banner index of 6");
+    }
     auto extended = race_state;
     extended.special_tiles[0].mud_cooldown = 1;
     const auto extended_saved = unirally::serialize_zoom_zoo(extended);
-    if (extended_saved.size() != 836 + lower_view || extended_saved[7] != 'I'
+    if (extended_saved.size() != 836 + versus + lower_view || extended_saved[7] != 'I'
         || unirally::serialize_zoom_zoo(unirally::deserialize_zoom_zoo(extended_saved))
                != extended_saved)
         throw std::runtime_error("extended local DRAGSTER save failed round-trip");

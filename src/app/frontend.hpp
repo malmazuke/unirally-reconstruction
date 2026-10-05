@@ -136,6 +136,7 @@ public:
   unsigned screen() const { return static_cast<unsigned>(state_.screen); }
   bool demo_race() const { return state_.mode == FrontEndMode::demo; }
   bool league_race() const { return state_.mode == FrontEndMode::league; }
+  bool versus_race() const { return state_.mode == FrontEndMode::versus; }
   bool local_race() const {
     return state_.mode == FrontEndMode::two_player || state_.mode == FrontEndMode::versus
            || (state_.mode == FrontEndMode::league && state_.second_rider < 16);

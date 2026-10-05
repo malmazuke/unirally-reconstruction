@@ -37,12 +37,21 @@ constexpr unsigned winner_pose = 1, loser_pose = 2;
 // hundredths; $80:F88D publishes the totals at 107 (108 on the mode-0 DRAGSTER screen).
 constexpr unsigned graph_update = 106, totals_update = 107, dragster_totals_update = 108;
 constexpr std::uint16_t smallest_graph_range = 200;
+// The banner driver's members and life ($83:EA19-EA5B).
+constexpr std::uint16_t first_banner = 7, last_banner = 24, banner_life_updates = 360;
 
 // $0304 during the update that produces frame whole.frame + 1: the update's number counted
 // from the race's initialization boundary, mod 3.
 unsigned race_update_phase(const ZoomZooState& state) {
     const auto boundary = classic_race_scenario(state.track).initialization_frame;
     return (state.movement.frame + 1U - boundary) % 3U;
+}
+
+// $0300 during the update that produces frame whole.frame + 1: set on every other update
+// from the race's initialization boundary.
+bool odd_race_update(const ZoomZooState& state) {
+    const auto boundary = classic_race_scenario(state.track).initialization_frame;
+    return ((state.movement.frame + 1U - boundary) & 1U) != 0U;
 }
 
 bool finished_first(std::uint16_t own, std::uint16_t other) {
@@ -123,6 +132,26 @@ void finish_rider(ZoomZooState& state, unsigned index, const ZoomZooContent& con
     step_finish_pose(pose, input, content);
 }
 
+// $83:EA11-EA72 and $83:EBA3-EC13: a finished rider's banner driver, on every update of its
+// finish block. It waits while the other rider's driver lives. With its index still 0 its life
+// is set to 360; a live driver counts down and steps its index on odd updates. Once the life is
+// spent, a VS race finishes the other rider without a time (R-0081).
+void drive_banner(ZoomZooState& state, unsigned index) {
+    auto& driver = state.race.banners[index];
+    if (state.race.banners[1 - index].life) return;
+    if (driver.index == 0) driver.life = banner_life_updates;
+    if (driver.life == 0) {
+        state.race.riders[1 - index].finished = forced_finish;
+        return;
+    }
+    --driver.life;
+    if (odd_race_update(state))
+        driver.index =
+            static_cast<std::uint16_t>(driver.index == 0             ? first_banner + 1U
+                                       : driver.index == last_banner ? first_banner
+                                                                     : driver.index + 1U);
+}
+
 // The start line: its first crossing starts the race; each later one records the lap's time
 // in its slot (the crossing's hundredths come from the contact phase), announces the last
 // lap on a tour race ($81:8197-81A3), and on the last lap finishes the rider. $0D15 holds
@@ -196,24 +225,28 @@ void pass_checkpoint(ZoomZooState& state, unsigned index, unsigned checkpoint) {
 } // namespace
 
 // $83:E8E0-EC13 and $82:8953-89C2: the finish display counts to 240 once the player has
-// finished (a stunt event's once its display has started), and each finished rider brakes and
-// poses. The finish pose feeds the collision
-// sample.
+// finished (a split race's once both riders have, a stunt event's once its display has started),
+// and each finished rider brakes and poses. The finish pose feeds the collision sample. In a VS
+// race each finished rider's banner driver runs too; when the player's ends the opponent's block
+// runs in the same update, when the opponent's ends the player's waits for the next.
 void update_finish(ZoomZooState& state, const ZoomZooContent& content) {
     // A stunt event first waits for both riders to stand and its queues to empty (R-0066).
     if (classic_race_scenario(state.track).stunt_event && !update_stunt_finish(state)) return;
     // $83:E7C3-E7E4: a split race (`$0DE1`) starts the display only once both riders have
     // finished, a one-view race once the player has (R-0073, R-0081).
-    const bool finish_display_ready = state.race.riders[0].finished
-                                   && (!state.split_screen || state.race.riders[1].finished);
+    const bool finish_display_ready =
+        state.race.riders[0].finished && (!state.split_screen || state.race.riders[1].finished);
     if (finish_display_ready) {
         if (state.race.finish_delay == finish_display_updates)
             throw std::invalid_argument("race result loading outside frozen finish display");
         ++state.race.finish_delay;
         race_sound::finish_fade(state);
     }
-    for (unsigned index = 0; index < 2; ++index)
-        if (state.race.riders[index].finished) finish_rider(state, index, content);
+    for (unsigned index = 0; index < 2; ++index) {
+        if (!state.race.riders[index].finished) continue;
+        finish_rider(state, index, content);
+        if (state.versus) drive_banner(state, index);
+    }
 }
 
 // $81:8050-82B6: the checkpoint tile under a rider (flag pair 20), unless the rider has

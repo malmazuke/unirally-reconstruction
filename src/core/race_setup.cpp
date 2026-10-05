@@ -340,9 +340,10 @@ void restart_zoom_zoo(ZoomZooState& state, const ZoomZooContent& content) {
     }
     const bool split = state.split_screen;
     const bool demo_ai = state.demo_ai;
-    const bool league = state.league_statistics.enabled;
+    const bool league = state.league_statistics.enabled, versus = state.versus;
     state = classic_race_start(content, scenario);
     state.league_statistics.enabled = league;
+    state.versus = versus;
     if (split) initialize_split_cameras(state);
     state.demo_ai = demo_ai;
     state.demo.opponent_hints_active = demo_ai;

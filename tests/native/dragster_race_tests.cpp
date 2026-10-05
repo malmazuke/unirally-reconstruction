@@ -2,9 +2,11 @@
 // geometry, scenario values, state identity and the physical D-pad adapter.
 #include "front_end.hpp"
 #include "race_camera.hpp"
+#include "race_progress.hpp"
 #include "zoom_zoo_movement.hpp"
 #include <algorithm>
 #include <array>
+#include <span>
 #include <stdexcept>
 #include <vector>
 
@@ -248,4 +250,48 @@ int main() {
     require(league.pause.selection==1);
     update_zoom_zoo(league,down_only,content);
     require(league.pause.selection==1);
+
+    // R-0081: a split race shows its finish display only once both riders have finished. In VS
+    // ($77:0750 bit 2) the first finisher's banner driver, 360 updates from its first odd update,
+    // then finishes the other rider without a time (0xFFFF); in 2P the race waits. (The finish
+    // routine alone, with a finish pose table of one pose that loops.)
+    const std::array<std::uint8_t,12> looping_pose{0,0,0xce,0xc7,0xce,0xc7,0,1,0,0x80,0,0};
+    auto finish_content=content;finish_content.finish_poses=looping_pose;
+    const auto finish_update=[&](ZoomZooState& state){update_finish(state,finish_content);++state.movement.frame;};
+    auto player_done=local;player_done.fade_level=30;player_done.movement.countdown=0;
+    player_done.player_announcements.hints_active=0;
+    player_done.race.riders[0].finished=1;player_done.race.riders[0].laps_remaining=0;
+    player_done.race.lap_times[0][0]=player_done.race.total_times[0]=3601;
+    auto two_player=player_done;
+    for(unsigned update=0;update<600;++update) finish_update(two_player);
+    require(!two_player.race.riders[1].finished && !two_player.race.finish_delay);
+    require(two_player.race.banners==(std::array<ZoomZooBannerDriver,2>{}));
+    auto versus=player_done;versus.versus=true;
+    unsigned updates=0;
+    while(!versus.race.riders[1].finished && updates<400) {finish_update(versus);++updates;}
+    // The player's block runs first, so the opponent's driver starts in the same update.
+    require((updates==361 || updates==362) && versus.race.riders[1].finished==forced_finish);
+    require(versus.race.banners[0].index>=7 && !versus.race.banners[0].life && versus.race.banners[1].life==359);
+    require(!versus.race.finish_delay && versus.race.total_times[1]==no_time && versus.race.riders[1].laps_remaining);
+    const auto forced_bytes=serialize_zoom_zoo(versus);
+    require(forced_bytes.size()==792 && forced_bytes[7]=='H');
+    require(serialize_zoom_zoo(deserialize_zoom_zoo(forced_bytes))==forced_bytes);
+    finish_update(versus);
+    require(versus.race.finish_delay==1);
+    // Without the drivers the forced flag is refused; so are a stray member, two live drivers,
+    // and drivers in a race that is not VS.
+    rejects([&]{(void)deserialize_zoom_zoo(std::span(forced_bytes).first(784));});
+    auto member=forced_bytes;member[784]=6;rejects([&]{(void)deserialize_zoom_zoo(member);});
+    auto both_live=forced_bytes;both_live[786]=1;rejects([&]{(void)deserialize_zoom_zoo(both_live);});
+    auto stray=player_done;stray.race.banners[0]={8,300};rejects([&]{(void)serialize_zoom_zoo(stray);});
+    // The opponent finishing first forces the player, whose block runs on the next update.
+    auto opponent_first=local;opponent_first.fade_level=30;opponent_first.movement.countdown=0;opponent_first.versus=true;
+    opponent_first.race.riders[1].finished=1;opponent_first.race.riders[1].laps_remaining=0;
+    opponent_first.race.lap_times[1][0]=opponent_first.race.total_times[1]=3601;
+    updates=0;
+    while(!opponent_first.race.riders[0].finished && updates<400) {finish_update(opponent_first);++updates;}
+    require((updates==361 || updates==362) && opponent_first.race.riders[0].finished==forced_finish);
+    require(opponent_first.race.banners[0]==ZoomZooBannerDriver{});
+    finish_update(opponent_first);
+    require(opponent_first.race.banners[0].life==359 && opponent_first.race.finish_delay==1);
 }
