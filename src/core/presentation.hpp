@@ -366,6 +366,7 @@ private:
                                         const ZoomZooState& updated);
     void service_one_field(const ZoomZooState& updated);
     void redraw_arrow(const ZoomZooState& previous, const ZoomZooState& updated);
+    void hold_lower_clock(const ZoomZooState& previous, const ZoomZooState& updated);
     void clear_after_pause(const ZoomZooState& previous, const ZoomZooState& updated);
     void request_caption(const ZoomZooState& previous, const ZoomZooState& updated);
 };

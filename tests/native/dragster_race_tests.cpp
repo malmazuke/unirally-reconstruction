@@ -284,6 +284,15 @@ int main() {
     auto member=forced_bytes;member[784]=6;rejects([&]{(void)deserialize_zoom_zoo(member);});
     auto both_live=forced_bytes;both_live[786]=1;rejects([&]{(void)deserialize_zoom_zoo(both_live);});
     auto stray=player_done;stray.race.banners[0]={8,300};rejects([&]{(void)serialize_zoom_zoo(stray);});
+    // A split state's display counts only once both have finished; a league wrapper holds no VS state.
+    require(serialize_zoom_zoo(deserialize_zoom_zoo(serialize_zoom_zoo(two_player)))==serialize_zoom_zoo(two_player));
+    auto counting_early=two_player;counting_early.race.finish_delay=1;
+    rejects([&]{(void)deserialize_zoom_zoo(serialize_zoom_zoo(counting_early));});
+    std::vector<std::uint8_t> wrapped{'U','R','L','G','0','0','0','1',
+        static_cast<std::uint8_t>(forced_bytes.size()&0xffU),static_cast<std::uint8_t>(forced_bytes.size()>>8U),0,1,1};
+    wrapped.insert(wrapped.end(),forced_bytes.begin(),forced_bytes.end());
+    wrapped.resize(wrapped.size()+97);
+    rejects([&]{(void)deserialize_zoom_zoo(wrapped);});
     // The opponent finishing first forces the player, whose block runs on the next update.
     auto opponent_first=local;opponent_first.fade_level=30;opponent_first.movement.countdown=0;opponent_first.versus=true;
     opponent_first.race.riders[1].finished=1;opponent_first.race.riders[1].laps_remaining=0;

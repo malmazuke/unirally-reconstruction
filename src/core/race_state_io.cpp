@@ -59,7 +59,7 @@ constexpr std::size_t one_view_demo_size = other_track_size + split_trailer_size
 constexpr std::size_t lower_view_size = 1;
 // A VS race's two banner drivers, index and life each.
 constexpr std::size_t versus_block_size = 8;
-constexpr std::uint16_t first_banner = 7, last_banner = 24, longest_banner_life = 359;
+constexpr std::uint16_t longest_banner_life = banner_life_updates - 1;
 constexpr std::array<std::uint8_t, 8> race_state_magic{'U', 'R', 'Z', 'Z', '0', '0', '0', '1'};
 // The layout letter in byte 7 of the identity.
 constexpr std::uint8_t sustained_layout = '2', complete_race_layout = '3', native_race_layout = 'B';
@@ -1010,6 +1010,15 @@ void validate_split_demo_words(const DemoControllers& demo) {
                       "split demo controller words are invalid");
 }
 
+// $83:E7C3-E7E4: a split race's finish display counts only once both riders have finished
+// (R-0081).
+void check_split_finish_display(const ZoomZooState& state) {
+    const auto& riders = state.race.riders;
+    refuse_unless(!state.split_screen || !state.race.finish_delay
+                      || (riders[0].finished && riders[1].finished),
+                  "a split race's finish display counts before both riders have finished");
+}
+
 // A VS race's banner drivers: each idle (0, 0) until its rider finishes, its index 0 or 7..24 and
 // its life under 360, never two alive at once, and a forced finish only after the other rider's
 // driver has ended (R-0081).
@@ -1215,6 +1224,7 @@ ZoomZooState deserialize_race(std::span<const std::uint8_t> bytes,
                                       opponent_catch_up, initialization_frame, suffixes.versus);
         state =
             read_demo_trailer(std::move(state), bytes.subspan(base_size), one_view, local_dragster);
+        check_split_finish_display(state);
         Reader in{whole.subspan(bytes.size())};
         if (suffixes.versus) read_versus_block(in, state);
         if (suffixes.lower_view) read_lower_view(in, state);
@@ -1239,6 +1249,7 @@ std::optional<ZoomZooState> deserialize_league_race(std::span<const std::uint8_t
     refuse_unless(size <= 1006 && size >= 742 && (bytes.size() == 13U + size + 97U || lower_view),
                   "league race wrapper width differs");
     auto state = deserialize_race(bytes.subspan(13, size), pairing, true, {});
+    refuse_unless(!state.versus, "a league race is not a VS race");
     refuse_unless(state.native_initialization && !state.demo_ai && pairing.rider < rider_characters
                       && split == (pairing.opponent < rider_characters)
                       && pairing.rider != pairing.opponent,
@@ -1255,6 +1266,7 @@ std::optional<ZoomZooState> deserialize_league_race(std::span<const std::uint8_t
                 && std::abs(static_cast<std::int16_t>(camera.velocity_y)) <= fastest_camera),
         "league second camera state invalid");
     state.split_screen = split;
+    check_split_finish_display(state);
     state.league_statistics.enabled = true;
     for (auto& counts : state.league_statistics.tricks)
         for (auto& count : counts) count = trailer.u8();

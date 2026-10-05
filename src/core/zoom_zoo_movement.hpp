@@ -85,6 +85,9 @@ struct ZoomZooBannerDriver {
     std::uint16_t index{}, life{};
     bool operator==(const ZoomZooBannerDriver&) const = default;
 };
+// Its members and life ($83:EA19-EA5B): the index cycles 7..24; the life is set to 360 while the
+// index is 0 and counted down in the same run, so a stored life is at most 359.
+constexpr std::uint16_t first_banner = 7, last_banner = 24, banner_life_updates = 360;
 struct ZoomZooRaceState {
     ZoomZooCamera camera;
     // $041F/$0423, $04FB/$04FF, $0555: the second rider's camera only while

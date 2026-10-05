@@ -5910,7 +5910,7 @@
    "native": [
     "src/core/input_timer.cpp:advance_timer_digits",
     "src/core/input_timer.cpp:timer_warning",
-    "src/core/race_hud.cpp:ClassicRaceHudClock::redraw_arrow",
+    "src/core/race_hud.cpp:ClassicRaceHudClock::hold_lower_clock",
     "src/core/race_hud.cpp:ClassicRaceHudClock::service_one_field",
     "src/core/race_hud.cpp:classic_hud_left_field",
     "src/core/race_hud.cpp:draw_split_hud",
@@ -14096,6 +14096,7 @@
    ],
    "native": [
     "src/core/race_progress.cpp:update_finish",
+    "src/core/race_state_io.cpp:check_split_finish_display",
     "src/core/stunt_event.hpp:update_stunt_finish"
    ],
    "observed_entries": {},
@@ -14208,12 +14209,12 @@
     "src/core/presentation.hpp:dragster_window_table_index",
     "src/core/race_progress.cpp:classic_race_player_won",
     "src/core/race_progress.cpp:drive_banner",
-    "src/core/race_progress.cpp:first_banner, last_banner, banner_life_updates",
     "src/core/race_progress.cpp:update_finish",
     "src/core/race_windows.cpp:ClassicWindowPointer::observe_update",
     "src/core/race_windows.cpp:winner_window_first, winner_window_cycle, winner_window_life_updates",
     "src/core/stunt_event.hpp:update_stunt_finish",
     "src/core/zoom_zoo_movement.hpp:ZoomZooBannerDriver",
+    "src/core/zoom_zoo_movement.hpp:first_banner, last_banner, banner_life_updates",
     "src/core/zoom_zoo_movement.hpp:forced_finish"
    ],
    "observed_entries": {},

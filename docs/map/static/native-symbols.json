@@ -5347,7 +5347,7 @@
   {
    "address": "$81:C6D1",
    "native": [
-    "src/core/race_hud.cpp:ClassicRaceHudClock::redraw_arrow",
+    "src/core/race_hud.cpp:ClassicRaceHudClock::hold_lower_clock",
     "src/core/race_hud.cpp:draw_split_hud"
    ],
    "range_ends": [
@@ -10274,7 +10274,8 @@
   {
    "address": "$83:E7C3",
    "native": [
-    "src/core/race_progress.cpp:update_finish"
+    "src/core/race_progress.cpp:update_finish",
+    "src/core/race_state_io.cpp:check_split_finish_display"
    ],
    "range_ends": [
     "$83:E7E4"
@@ -10460,8 +10461,8 @@
    "address": "$83:EA19",
    "native": [
     "src/core/presentation.hpp:dragster_window_table_index",
-    "src/core/race_progress.cpp:first_banner, last_banner, banner_life_updates",
-    "src/core/race_windows.cpp:winner_window_first, winner_window_cycle, winner_window_life_updates"
+    "src/core/race_windows.cpp:winner_window_first, winner_window_cycle, winner_window_life_updates",
+    "src/core/zoom_zoo_movement.hpp:first_banner, last_banner, banner_life_updates"
    ],
    "range_ends": [
     "$83:EA5B"
@@ -17717,9 +17718,13 @@
     "$11BD"
    ]
   },
+  "src/core/race_hud.cpp:ClassicRaceHudClock::hold_lower_clock": {
+   "rom": [
+    "$81:C6D1"
+   ]
+  },
   "src/core/race_hud.cpp:ClassicRaceHudClock::redraw_arrow": {
    "rom": [
-    "$81:C6D1",
     "$81:DB10",
     "$81:E8E8"
    ],
@@ -18014,11 +18019,6 @@
    ],
    "wram": [
     "$0304"
-   ]
-  },
-  "src/core/race_progress.cpp:first_banner, last_banner, banner_life_updates": {
-   "rom": [
-    "$83:EA19"
    ]
   },
   "src/core/race_progress.cpp:graph_update, totals_update, dragster_totals_update": {
@@ -18656,6 +18656,11 @@
    "rom": [
     "$82:95D5",
     "$82:9B69"
+   ]
+  },
+  "src/core/race_state_io.cpp:check_split_finish_display": {
+   "rom": [
+    "$83:E7C3"
    ]
   },
   "src/core/race_state_io.cpp:check_stunt_content": {
@@ -21747,6 +21752,11 @@
     "$0E7B"
    ]
   },
+  "src/core/zoom_zoo_movement.hpp:first_banner, last_banner, banner_life_updates": {
+   "rom": [
+    "$83:EA19"
+   ]
+  },
   "src/core/zoom_zoo_movement.hpp:forced_finish": {
    "rom": [
     "$83:EA69",
@@ -21808,7 +21818,7 @@
  "totals": {
   "addresses": 1580,
   "io_addresses": 10,
-  "native_symbols": 1204,
+  "native_symbols": 1206,
   "rom_addresses": 1204,
   "sram_addresses": 50,
   "wram_addresses": 316

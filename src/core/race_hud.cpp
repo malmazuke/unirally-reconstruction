@@ -243,6 +243,7 @@ void ClassicRaceHudClock::observe_update(const ZoomZooState& previous,
     on_screen_ = latest_;
     clear_after_pause(previous, updated);
     if (updated.fade_level >= race_nmi_fade) ++race_nmis_;
+    hold_lower_clock(previous, updated);
     redraw_arrow(previous, updated);
     request_fields(previous, updated);
     if (classic_race_scenario(updated.track).stunt_event) request_stunt_fields(previous, updated);
@@ -265,6 +266,15 @@ void ClassicRaceHudClock::clear_after_pause(const ZoomZooState& previous,
     }
 }
 
+// $81:C6D1-C6DC: rider 1's clock is rewritten only while it is unfinished, so a VS race's forced
+// finish of rider 1 leaves the digits the update before wrote (R-0081).
+void ClassicRaceHudClock::hold_lower_clock(const ZoomZooState& previous,
+                                           const ZoomZooState& updated) {
+    if (updated.split_screen && !previous.race.riders[1].finished
+        && updated.race.riders[1].finished == forced_finish)
+        latest_.lower_clock = classic_split_lower_clock(previous);
+}
+
 // $81:E8E8-$81:EB83: after an update whose progress phase is clear the NMI leaves the arrow
 // as it is; otherwise it takes down the arrow it drew last and draws the one the update asks
 // for. The up arrow's rows 5-6 are skipped while the player's centred cells show (`$0D19`).
@@ -272,9 +282,6 @@ void ClassicRaceHudClock::redraw_arrow(const ZoomZooState& previous, const ZoomZ
     // $81:DB10-DDA4: a split race's lower arrow is redrawn every NMI; its rows 16-17 are skipped
     // while rider 1's cells show (`$0D1B`, R-0080).
     if (updated.split_screen) {
-        // $81:C6D1-C6DC: a VS race's forced finish of rider 1 stops its clock's rewrites (R-0081).
-        if (!previous.race.riders[1].finished && updated.race.riders[1].finished == forced_finish)
-            latest_.lower_clock = classic_split_lower_clock(previous);
         latest_.lower_arrow = classic_race_lower_arrow(previous, updated, race_nmis_);
         if (latest_.lower_arrow
             && latest_.lower_arrow->direction == ClassicRaceArrow::Direction::Up)

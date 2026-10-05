@@ -37,8 +37,6 @@ constexpr unsigned winner_pose = 1, loser_pose = 2;
 // hundredths; $80:F88D publishes the totals at 107 (108 on the mode-0 DRAGSTER screen).
 constexpr unsigned graph_update = 106, totals_update = 107, dragster_totals_update = 108;
 constexpr std::uint16_t smallest_graph_range = 200;
-// The banner driver's members and life ($83:EA19-EA5B).
-constexpr std::uint16_t first_banner = 7, last_banner = 24, banner_life_updates = 360;
 
 // $0304 during the update that produces frame whole.frame + 1: the update's number counted
 // from the race's initialization boundary, mod 3.

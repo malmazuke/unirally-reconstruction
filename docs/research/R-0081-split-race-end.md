@@ -80,6 +80,8 @@ Tags: **[L]** listing only, **[C]** confirmed in a capture.
   - It refuses the following: an index outside 0 and 7..24; a life over 359; a driver for an
     unfinished rider; two live drivers; a forced finish whose other driver has not ended.
   - Writing refuses drivers outside VS, and VS outside a two-pad race.
+  - Reading also refuses a split state whose display counts before both riders have finished,
+    and a league wrapper holding a VS state (review round 2).
 - Picture:
   - `dim_finished_views` dims a forced rider 1's view from the forcing update's picture.
   - `ClassicRaceHudClock` keeps the lower clock text as the forcing update's predecessor left it
@@ -127,6 +129,9 @@ Tags: **[L]** listing only, **[C]** confirmed in a capture.
   `classic_opponent_finish_frame`) still derives the banner from finish frames. A forced finish
   has no finish time, so after a forced finish such a state shows the banner the finish frames
   give. It also draws the running lower clock, since the frozen text is presentation history.
+- The same fallback takes the player's finish frame from `finish_delay`. In a split race that
+  delay now counts from the second rider's finish, so the fallback dates both drivers from the
+  later finish. A picture with history (`ClassicWindowPointer`) is unaffected.
 - `ClassicWindowPointer` keeps its own copy of the drivers. Making it read race state needs the
   drivers in every race's state, which changes the one-player layouts.
 - The remaining picture classes are SPLIT-CAPTIONS' (rider 1's tutorial captions, HUD ink over the
