@@ -577,6 +577,18 @@ bool colour_math_subtracts(std::span<const std::uint8_t> entry) {
     return entry.size() > cgadsub && (entry[cgadsub] & 0x80U) != 0;
 }
 
+RaceObjectMath race_object_math(const std::bitset<256 * 224>& caption_ink,
+                                const std::array<std::uint8_t, 65536>* neon_vram,
+                                const RaceScroll& scroll,
+                                const ClassicRacePresentationContent& content, bool split) {
+    return {caption_ink,
+            neon_vram,
+            &scroll,
+            colour_math_subtracts(content.rider_colour_math),
+            colour_math_subtracts(content.opponent_colour_math),
+            split};
+}
+
 std::array<std::uint8_t, 3> rider_pixel(const RaceColours& colours, const RaceObjectMath& math,
                                         std::uint8_t index, int x, int y) {
     const auto at = static_cast<std::size_t>(y) * 256 + static_cast<std::size_t>(x);
@@ -593,10 +605,10 @@ std::array<std::uint8_t, 3> rider_pixel(const RaceColours& colours, const RaceOb
         const auto object = colour_word(colours.lit, index);
         const bool subtracts =
             math.split && y >= split_view_line ? math.lower_subtracts : math.upper_subtracts;
-        word = subtracts ? subtract_colour(std::uint16_t{ink_red_add}, object)
-                         : static_cast<std::uint16_t>(
-                               (object & ~31U)
-                               | std::min<unsigned>(31U, (object & 31U) + ink_red_add));
+        word = subtracts
+                 ? subtract_colour(std::uint16_t{ink_red_add}, object)
+                 : static_cast<std::uint16_t>(
+                       (object & ~31U) | std::min<unsigned>(31U, (object & 31U) + ink_red_add));
     } else {
         return colour(colours.shown, index);
     }
@@ -875,12 +887,8 @@ RgbFrame render_classic_race(const ZoomZooState& state,
         restore_bg3_cells(frame, *backgrounds, menu_cells, caption_ink);
         draw_pause_menu(frame, state, content, bg3_ink, lower_ink, caption_ink);
     }
-    const RaceObjectMath math{caption_ink,
-                              neon_green ? &vram : nullptr,
-                              &scroll,
-                              colour_math_subtracts(content.rider_colour_math),
-                              colour_math_subtracts(content.opponent_colour_math),
-                              state.split_screen};
+    const auto math = race_object_math(caption_ink, neon_green ? &vram : nullptr, scroll, content,
+                                       state.split_screen);
     draw_race_riders(frame, rider_source, content, history, colours, scroll.flip, bg1_above_objects,
                      math);
     // The split's HUD tile priority covers both riders at the lap-banner overlap; the menu's

@@ -209,6 +209,8 @@ struct ClassicHudPublished {
     bool player_cells_cleared{};
     // The direction arrow the NMI last drew, nothing while none shows.
     std::optional<ClassicRaceArrow> arrow{};
+    // A split race's lower view: rider 1's arrow, redrawn by every NMI (`$81:DB10-DDA4`, R-0080).
+    std::optional<ClassicRaceArrow> lower_arrow{};
     // The caption table entry (1-255) the caption cells show, 0 while blank.
     unsigned caption_event{};
     // A stunt event's score cells, columns 23-25: the setup's `0` until the NMI writes a score.
@@ -228,6 +230,12 @@ unsigned classic_arrow_chevrons(std::uint16_t lead, unsigned race_nmis);
 // update's contact (`previous`).
 std::optional<ClassicRaceArrow> classic_race_arrow(const ZoomZooState& previous,
                                                    const ZoomZooState& updated, unsigned race_nmis);
+// $82:9822's mirror for a split race's lower view: rider 1's arrow while it trails rider 0 by a
+// pair of transitions, has not finished and was not rejected, its direction rider 1's marker
+// before the update (R-0080).
+std::optional<ClassicRaceArrow> classic_race_lower_arrow(const ZoomZooState& previous,
+                                                         const ZoomZooState& updated,
+                                                         unsigned race_nmis);
 // R-0044: the centred fields' content. A crossing publishes the crossing
 // clock digits `$0E43,y..` (native `time_digits`) as `M:SS:th`. A checkpoint
 // the other rider has already passed publishes the difference between the
