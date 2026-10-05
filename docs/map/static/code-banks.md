@@ -22,8 +22,8 @@ The four classes partition all 131,072 bytes. **Unknown share: 40.4%** - above D
 | Instructions from observed | 17,569 |
 | Instructions from table | 587 |
 | Routines | 636 |
-| Routines cited by native code | 424 |
-| Routine bytes cited by native code | 51,761 |
+| Routines cited by native code | 435 |
+| Routine bytes cited by native code | 53,756 |
 | Gap sweep candidate instructions | 2,746 |
 | Gap sweep candidate bytes | 6,174 |
 | Jump tables | 2 |
@@ -45,7 +45,7 @@ The four classes partition all 131,072 bytes. **Unknown share: 40.4%** - above D
 
 ## Cited addresses
 
-1678 distinct code-bank ROM addresses cited by the research, task, inventory and content records (`labels.json`). By position: dat 31, loc 953, mid 19, sub 343, unk 332 (sub routine start, loc instruction start, mid inside an instruction, dat data, unk unknown). By class: data 31, inferred 295, observed 1020, unknown 332.
+1685 distinct code-bank ROM addresses cited by the research, task, inventory and content records (`labels.json`). By position: dat 31, loc 959, mid 19, sub 344, unk 332 (sub routine start, loc instruction start, mid inside an instruction, dat data, unk unknown). By class: data 31, inferred 299, observed 1023, unknown 332.
 
 Cited addresses in `unknown` bytes:
 
@@ -293,7 +293,7 @@ Cited addresses in `unknown` bytes:
 | $82:A2DB | docs/research/R-0030-zoom-zoo-native-trial.md |
 | $82:B332 | docs/content/dragster-segment.md, docs/research/R-0008-track-decode.md, docs/research/R-0046-track-breadth-matrix.md, docs/research/R-0054-boot-title-main-menu.md, tasks/M1-03.md, tasks/TRACK-BREADTH.md |
 | $82:B7DD | docs/content/dragster-segment.md, docs/research/R-0008-track-decode.md, docs/research/R-0021-zoom-zoo-content-contract.md, docs/research/R-0046-track-breadth-matrix.md, tasks/M1-03.md, tasks/M4-03.md |
-| $82:D4DC | docs/research/R-0061-riders-and-opponents.md, tasks/RACE-RIDERS-OPPONENTS.md |
+| $82:D4DC | docs/research/R-0061-riders-and-opponents.md, docs/research/R-0080-split-hud.md, tasks/RACE-RIDERS-OPPONENTS.md, tasks/SPLIT-HUD-GAPS.md |
 | $82:DC12 | docs/research/R-0046-track-breadth-matrix.md, tasks/TRACK-BREADTH.md |
 | $83:8000 | docs/research/R-0064-hunter-ending-and-soft-reset.md |
 | $83:800C | docs/research/R-0055-rider-menu.md |

@@ -33,8 +33,12 @@ cells (R-0080), for two reasons:
    bottom cells, stunt scores, top caption, bottom caption; native's `ClassicRaceHudClock` follows
    the one-player chain, so a caption change can land a picture off.
 
-Recover rider 1's hint queue in two-human races and the split chain, and make every caption cell
-of R-0079's and R-0080's captures exact. One-player play does not move.
+The same chain times the lower fields at a finish (`drfin` 3967-3968, `leaguefin` 8961-8963), and
+the split CONTINUE clear (the pauser's rows from `$130F`, 129 words) takes the lower arrow's cells
+on the closing pictures (`leaguefin` 9050-9053).
+
+Recover rider 1's hint queue in two-human races, the split chain and the split clear, and make
+every caption cell of R-0079's and R-0080's captures exact. One-player play does not move.
 
 ## Acceptance
 

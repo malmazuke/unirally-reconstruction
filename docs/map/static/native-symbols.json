@@ -3943,7 +3943,14 @@
   {
    "address": "$81:823B",
    "native": [
-    "src/core/race_hud.cpp:classic_race_arrow"
+    "src/core/race_hud.cpp:(file)"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$81:824B",
+   "native": [
+    "src/core/race_hud.cpp:draw_split_hud"
    ],
    "region": "rom"
   },
@@ -5338,6 +5345,16 @@
    "region": "rom"
   },
   {
+   "address": "$81:C6F0",
+   "native": [
+    "src/core/race_hud.cpp:draw_split_hud"
+   ],
+   "range_ends": [
+    "$81:C6F8"
+   ],
+   "region": "rom"
+  },
+  {
    "address": "$81:C707",
    "native": [
     "src/core/input_timer.cpp:timer_warning"
@@ -5622,6 +5639,16 @@
    "region": "rom"
   },
   {
+   "address": "$81:D192",
+   "native": [
+    "src/core/race_hud.cpp:draw_split_hud"
+   ],
+   "range_ends": [
+    "$81:D4DB"
+   ],
+   "region": "rom"
+  },
+  {
    "address": "$81:D1B2",
    "native": [
     "src/core/race_hud.cpp:draw_split_hud"
@@ -5655,6 +5682,57 @@
    ],
    "range_ends": [
     "$81:D816"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$81:D872",
+   "native": [
+    "src/core/race_hud.cpp:draw_split_arrow"
+   ],
+   "range_ends": [
+    "$81:DDA4"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$81:DB10",
+   "native": [
+    "src/core/presentation.hpp:ClassicHudPublished::lower_arrow",
+    "src/core/race_hud.cpp:ClassicRaceHudClock::redraw_arrow"
+   ],
+   "range_ends": [
+    "$81:DDA4"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$81:E13B",
+   "native": [
+    "src/core/race_hud.cpp:draw_split_hud"
+   ],
+   "range_ends": [
+    "$81:E1C2"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$81:E831",
+   "native": [
+    "src/core/race_hud.cpp:draw_classic_caption"
+   ],
+   "range_ends": [
+    "$81:E877"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$81:E87C",
+   "native": [
+    "src/core/race_hud.cpp:draw_split_hud"
+   ],
+   "range_ends": [
+    "$81:E8C5"
    ],
    "region": "rom"
   },
@@ -5699,7 +5777,7 @@
   {
    "address": "$81:E9DE",
    "native": [
-    "src/core/race_hud.cpp:classic_race_arrow"
+    "src/core/race_hud.cpp:trailing_rider_arrow"
    ],
    "region": "rom"
   },
@@ -6290,14 +6368,16 @@
    "address": "$82:9822",
    "native": [
     "src/core/presentation.hpp:classic_race_arrow",
-    "src/core/race_hud.cpp:classic_race_arrow"
+    "src/core/presentation.hpp:classic_race_lower_arrow",
+    "src/core/race_hud.cpp:(file)",
+    "src/core/race_hud.cpp:trailing_rider_arrow"
    ],
    "region": "rom"
   },
   {
    "address": "$82:98B7",
    "native": [
-    "src/core/race_hud.cpp:classic_race_arrow"
+    "src/core/race_hud.cpp:(file)"
    ],
    "range_ends": [
     "$82:98C8"
@@ -6966,7 +7046,9 @@
   {
    "address": "$82:D4DC",
    "native": [
+    "src/core/presentation.cpp:RaceObjectMath::upper_subtracts, RaceObjectMath::lower_subtracts, RaceObjectMath::split",
     "src/core/presentation.cpp:colour_math_size",
+    "src/core/presentation.cpp:colour_math_subtracts",
     "src/core/presentation.hpp:ClassicRacePresentationContent::rider_colour_math"
    ],
    "region": "rom"
@@ -6974,11 +7056,14 @@
   {
    "address": "$82:D57F",
    "native": [
+    "src/core/presentation.cpp:RaceObjectMath::upper_subtracts, RaceObjectMath::lower_subtracts, RaceObjectMath::split",
+    "src/core/presentation.cpp:split_view_line",
     "src/core/presentation.hpp:ClassicRacePresentationContent::rider_colour_math",
     "src/core/presentation.hpp:classic_race_ink"
    ],
    "range_ends": [
-    "$82:D5FB"
+    "$82:D5FB",
+    "$82:D607"
    ],
    "region": "rom"
   },
@@ -10288,6 +10373,7 @@
   {
    "address": "$83:E8E0",
    "native": [
+    "src/core/presentation.cpp:dim_finished_views",
     "src/core/race_progress.cpp:classic_race_player_won",
     "src/core/race_progress.cpp:update_finish",
     "src/core/race_windows.cpp:ClassicWindowPointer::observe_update",
@@ -10295,13 +10381,6 @@
    ],
    "range_ends": [
     "$83:EC13"
-   ],
-   "region": "rom"
-  },
-  {
-   "address": "$83:E8F0",
-   "native": [
-    "src/core/presentation.cpp:dim_finished_league_views"
    ],
    "region": "rom"
   },
@@ -10369,17 +10448,11 @@
   {
    "address": "$83:EA72",
    "native": [
-    "src/core/movement.cpp:update_movement"
+    "src/core/movement.cpp:update_movement",
+    "src/core/presentation.cpp:dim_finished_views"
    ],
    "range_ends": [
     "$83:EAC3"
-   ],
-   "region": "rom"
-  },
-  {
-   "address": "$83:EA82",
-   "native": [
-    "src/core/presentation.cpp:dim_finished_league_views"
    ],
    "region": "rom"
   },
@@ -10591,7 +10664,7 @@
   {
    "address": "$83:F695",
    "native": [
-    "src/core/presentation.cpp:dim_finished_league_views",
+    "src/core/presentation.cpp:dim_finished_views",
     "src/core/presentation.cpp:race_picture_brightness"
    ],
    "range_ends": [
@@ -10765,7 +10838,7 @@
   {
    "address": "$83:F947",
    "native": [
-    "src/core/presentation.cpp:dim_finished_league_views",
+    "src/core/presentation.cpp:dim_finished_views",
     "src/core/presentation.cpp:paused_brightness, full_brightness"
    ],
    "range_ends": [
@@ -11887,7 +11960,8 @@
    "native": [
     "src/core/presentation.hpp:ClassicRaceHudClock",
     "src/core/race_hud.cpp:ClassicRaceHudClock::request_fields",
-    "src/core/race_hud.cpp:ClassicRaceHudClock::service_one_field"
+    "src/core/race_hud.cpp:ClassicRaceHudClock::service_one_field",
+    "src/core/race_hud.cpp:draw_split_hud"
    ],
    "region": "wram"
   },
@@ -11897,6 +11971,13 @@
     "src/core/presentation.hpp:ClassicHudPublished::player_cells_cleared",
     "src/core/race_hud.cpp:ClassicRaceHudClock::redraw_arrow",
     "src/core/race_hud.cpp:draw_classic_hud"
+   ],
+   "region": "wram"
+  },
+  {
+   "address": "$0D1B",
+   "native": [
+    "src/core/race_hud.cpp:ClassicRaceHudClock::redraw_arrow"
    ],
    "region": "wram"
   },
@@ -12509,7 +12590,7 @@
   {
    "address": "$0FD5",
    "native": [
-    "src/core/race_hud.cpp:classic_race_arrow"
+    "src/core/race_hud.cpp:(file)"
    ],
    "region": "wram"
   },
@@ -13750,6 +13831,13 @@
    "address": "$00:212E",
    "native": [
     "src/core/snes_screen.hpp:SnesVideoRegisters::object_window_one_inverted"
+   ],
+   "region": "io"
+  },
+  {
+   "address": "$00:2130",
+   "native": [
+    "src/core/presentation.cpp:rider_pixel"
    ],
    "region": "io"
   },
@@ -17005,6 +17093,12 @@
     "$80:87AC"
    ]
   },
+  "src/core/presentation.cpp:RaceObjectMath::upper_subtracts, RaceObjectMath::lower_subtracts, RaceObjectMath::split": {
+   "rom": [
+    "$82:D4DC",
+    "$82:D57F"
+   ]
+  },
   "src/core/presentation.cpp:apply_neon_colours": {
    "rom": [
     "$80:87BB",
@@ -17036,10 +17130,15 @@
     "$82:D4DC"
    ]
   },
-  "src/core/presentation.cpp:dim_finished_league_views": {
+  "src/core/presentation.cpp:colour_math_subtracts": {
    "rom": [
-    "$83:E8F0",
-    "$83:EA82",
+    "$82:D4DC"
+   ]
+  },
+  "src/core/presentation.cpp:dim_finished_views": {
+   "rom": [
+    "$83:E8E0",
+    "$83:EA72",
     "$83:F695",
     "$83:F947"
    ]
@@ -17128,6 +17227,16 @@
     "$80:87A7"
    ]
   },
+  "src/core/presentation.cpp:rider_pixel": {
+   "io": [
+    "$00:2130"
+   ]
+  },
+  "src/core/presentation.cpp:split_view_line": {
+   "rom": [
+    "$82:D57F"
+   ]
+  },
   "src/core/presentation.hpp:ClassicHudCellRequest": {
    "wram": [
     "$0349",
@@ -17140,6 +17249,11 @@
    ],
    "wram": [
     "$0EFB"
+   ]
+  },
+  "src/core/presentation.hpp:ClassicHudPublished::lower_arrow": {
+   "rom": [
+    "$81:DB10"
    ]
   },
   "src/core/presentation.hpp:ClassicHudPublished::player_cells_cleared": {
@@ -17380,6 +17494,11 @@
     "$82:D57F"
    ]
   },
+  "src/core/presentation.hpp:classic_race_lower_arrow": {
+   "rom": [
+    "$82:9822"
+   ]
+  },
   "src/core/presentation.hpp:classic_race_prior_fade": {
    "wram": [
     "$0FF1"
@@ -17512,6 +17631,16 @@
     "$83:E254"
    ]
   },
+  "src/core/race_hud.cpp:(file)": {
+   "rom": [
+    "$81:823B",
+    "$82:9822",
+    "$82:98B7"
+   ],
+   "wram": [
+    "$0FD5"
+   ]
+  },
   "src/core/race_hud.cpp:ClassicRaceHudClock::clear_after_pause": {
    "rom": [
     "$83:F915"
@@ -17532,10 +17661,12 @@
   },
   "src/core/race_hud.cpp:ClassicRaceHudClock::redraw_arrow": {
    "rom": [
+    "$81:DB10",
     "$81:E8E8"
    ],
    "wram": [
-    "$0D19"
+    "$0D19",
+    "$0D1B"
    ]
   },
   "src/core/race_hud.cpp:ClassicRaceHudClock::request_caption": {
@@ -17664,17 +17795,6 @@
     "$0E2F"
    ]
   },
-  "src/core/race_hud.cpp:classic_race_arrow": {
-   "rom": [
-    "$81:823B",
-    "$81:E9DE",
-    "$82:9822",
-    "$82:98B7"
-   ],
-   "wram": [
-    "$0FD5"
-   ]
-  },
   "src/core/race_hud.cpp:classic_race_hud_text": {
    "rom": [
     "$81:ECCF"
@@ -17693,6 +17813,7 @@
   },
   "src/core/race_hud.cpp:draw_classic_caption": {
    "rom": [
+    "$81:E831",
     "$81:F322",
     "$81:F33C"
    ]
@@ -17716,10 +17837,23 @@
     "$83:F731"
    ]
   },
+  "src/core/race_hud.cpp:draw_split_arrow": {
+   "rom": [
+    "$81:D872"
+   ]
+  },
   "src/core/race_hud.cpp:draw_split_hud": {
    "rom": [
+    "$81:824B",
+    "$81:C6F0",
+    "$81:D192",
     "$81:D1B2",
+    "$81:E13B",
+    "$81:E87C",
     "$81:EB44"
+   ],
+   "wram": [
+    "$0D17"
    ]
   },
   "src/core/race_hud.cpp:pause_first_row, pause_second_row, pause_first_column, pause_second_column, pause_cursor_column": {
@@ -17754,6 +17888,12 @@
    "wram": [
     "$12F7",
     "$12FB"
+   ]
+  },
+  "src/core/race_hud.cpp:trailing_rider_arrow": {
+   "rom": [
+    "$81:E9DE",
+    "$82:9822"
    ]
   },
   "src/core/race_hud.hpp:classic_pause_menu_cells": {
@@ -21563,11 +21703,11 @@
   }
  },
  "totals": {
-  "addresses": 1567,
-  "io_addresses": 9,
-  "native_symbols": 1190,
-  "rom_addresses": 1193,
+  "addresses": 1575,
+  "io_addresses": 10,
+  "native_symbols": 1198,
+  "rom_addresses": 1199,
   "sram_addresses": 50,
-  "wram_addresses": 315
+  "wram_addresses": 316
  }
 }
