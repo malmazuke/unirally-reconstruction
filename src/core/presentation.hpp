@@ -488,10 +488,8 @@ public:
                 on_screen_neon_green_,
                 clock_.published().opponent_caption_event};
     }
-    const RiderLookState& look() const { return look_; }
 
 private:
-    RiderLookState look_{};
     ZoomZooRiderOverlays latest_{}, on_screen_{};
     bool latest_barf_{}, on_screen_barf_{}, latest_flip_prior_{}, on_screen_flip_prior_{};
     std::optional<std::uint32_t> opponent_finish_frame_{};

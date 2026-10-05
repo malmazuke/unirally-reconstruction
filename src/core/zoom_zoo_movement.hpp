@@ -1,6 +1,7 @@
 #pragma once
 #include "audio_cue.hpp"
 #include "movement.hpp"
+#include "rider_look.hpp"
 
 namespace unirally {
 struct ReflectionTransition {
@@ -376,6 +377,9 @@ struct ZoomZooState {
     ZoomZooResult result;
     ZoomZooPlayerAnnouncements player_announcements;
     ZoomZooOpponentHints opponent_hints;
+    // The riders' look (R-0036): `$83:CDA6` runs it last in each race update, and the end of a
+    // scripted glance clears the rider's idle latch (`$82:857F`/`$82:87AD`, R-0083).
+    RiderLookState look;
     std::array<std::uint16_t, 2> charge_announced{}; // $0D53/$0D55, audio latch only.
     std::uint16_t fade_level{};
     std::uint16_t result_updates{};
@@ -445,6 +449,9 @@ struct ZoomZooContent {
     // audio.announcement-voices (`$81:C441`), a byte per 8-bit announcement event: its voice
     // (R-0076); empty in packs before profile v32, whose races are silent.
     std::span<const std::uint8_t> announcement_voices;
+    // presentation.rider.look-tables.v1: the riders' look (R-0036), whose scripted glance clears
+    // a rider's idle latch when it ends; empty for loose content, which runs no look.
+    std::span<const std::uint8_t> look_tables;
 };
 // $82:9715–979D: count active updates opposing the track direction, with
 // original wrapped word comparisons at velocities -16 and +16 (1/32 units).

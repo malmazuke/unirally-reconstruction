@@ -71,15 +71,15 @@ std::array<std::optional<std::uint16_t>, 2> rider_overlay_poses(const RiderLookS
 // upward, which join at 9/18, 2/26 and 7/34.
 void step_rider_head(RiderLook& look);
 
-// $82:836D-$82:8926 for the race update that produced `updated`. Only one
+// $82:836D-$82:8926, run by the race update ($83:CDA6) on `updated.look`. Only one
 // rider steps per update: the player on odd contact phases, the opponent on
 // even ones. Each rider whose contact ran in that update first stores its head
 // offset (`$0DFB`/`$0DFD` skip it; `$0B8E`/`$0B90`, which also do, are clear
 // throughout a race; the opponent's `$0C6D == 0` skip at $81:8E58 is taken only
-// in a stunt event, whose opponent's head point stays zero). The caller skips
-// updates the pause menu diverted.
-void advance_rider_look(RiderLookState& look, const ZoomZooState& updated,
-                        const ZoomZooContent& content, const RiderLookTables& tables);
+// in a stunt event, whose opponent's head point stays zero). The end of a
+// scripted glance clears that rider's idle latch (R-0083). Content without the
+// look tables runs no look.
+void advance_rider_look(ZoomZooState& updated, const ZoomZooContent& content);
 
 // True when the update from `previous` to `updated` was diverted by the pause
 // menu, which does not run the look, overlay or window-driver steps: the

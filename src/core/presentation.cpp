@@ -137,7 +137,6 @@ std::array<std::uint8_t, 32> now_playing_leftover_colours(const ClassicContentPa
 } // namespace
 
 void ClassicRaceHistoryTracker::reset() {
-    look_ = {};
     latest_ = {};
     on_screen_ = {};
     latest_barf_ = on_screen_barf_ = latest_flip_prior_ = on_screen_flip_prior_ = false;
@@ -175,10 +174,8 @@ void ClassicRaceHistoryTracker::observe_update(const ZoomZooState& previous,
     window_.observe_update(previous, updated, *transition_member_);
     clock_.observe_update(previous, updated);
     if (updated.result_updates || zoom_zoo_update_was_paused(previous, updated)) return;
-    const auto tables = rider_look_tables(pack);
-    const auto engine = classic_race_content(pack, updated.track);
-    latest_.pose = rider_overlay_poses(look_, updated, tables);
-    advance_rider_look(look_, updated, engine, tables);
+    // The overlays come from the look before this update's step: the previous state's (R-0083).
+    latest_.pose = rider_overlay_poses(previous.look, updated, rider_look_tables(pack));
 }
 
 void load_other_track_presentation_content(ClassicRacePresentationContent& content,

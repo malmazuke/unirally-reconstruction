@@ -17,13 +17,13 @@ target_link_libraries(unirally_speed_limits PUBLIC lab_options)
 add_library(unirally_movement STATIC
     movement.cpp content_pack.cpp rider_motion.cpp rider_pose.cpp reward_queue.cpp
     opponent_ai.cpp race_demo_controls.cpp hunter_effects.cpp trick_roll.cpp race_progress.cpp race_sound.cpp race_camera.cpp
-    special_tiles.cpp stunt_event.cpp race_setup.cpp race_state_io.cpp race_update.cpp)
+    special_tiles.cpp stunt_event.cpp race_setup.cpp race_state_io.cpp race_update.cpp rider_look.cpp)
 target_include_directories(unirally_movement PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(unirally_movement PUBLIC unirally_contact unirally_input_timer unirally_speed_limits unirally_sampling lab_options)
 add_executable(movement_runner movement_runner.cpp)
 target_link_libraries(movement_runner PRIVATE unirally_movement)
 add_library(unirally_presentation STATIC presentation.cpp picture.cpp result_screen.cpp dragster_picture.cpp
-            race_windows.cpp race_hud.cpp neon_lighting.cpp rider_object.cpp rider_look.cpp snes_screen.cpp
+            race_windows.cpp race_hud.cpp neon_lighting.cpp rider_object.cpp snes_screen.cpp
             text_printer.cpp front_end.cpp rider_menu.cpp screen_slide.cpp tour_menu.cpp
             track_menu.cpp now_playing.cpp race_result.cpp local_modes.cpp options_menu.cpp league_menu.cpp league_completion.cpp lap_result.cpp stunt_result.cpp
             award.cpp
