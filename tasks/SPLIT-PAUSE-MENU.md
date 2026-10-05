@@ -2,7 +2,8 @@
 
 ## Assignment
 
-- Status: **claimed** 5 October 2026 by the session that closed CLASSIC-PAUSE-MENU, on main
+- Status: **accepted** 5 October 2026 (tier 1, [PR #54](https://github.com/malmazuke/unirally-reconstruction/pull/54));
+  claimed the same day by the session that closed CLASSIC-PAUSE-MENU, on main
   `98326d1` after that task's merge (main equal to `origin/main`, closeout written). Prepared the
   same day from R-0078's "Not covered".
 - Milestone: M4 breadth
@@ -72,10 +73,49 @@ All times 5 October 2026, Sydney. Captures and scripts in main `local/evidence/s
 
 ## Handoff
 
-- Head: the records commit after `6302d37` on `task/split-pause-menu` (not yet pushed).
-- Unresolved, queued: the split race's tutorial captions, lower arrow and lower colour math
-  (pre-existing, R-0071), the split CONTINUE clear, and NOW PLAYING after a two-human restart
-  (R-0079's "Not covered").
-- Next: gates (`local/evidence/split-pause-menu/gates.sh` on a detached checkout), the tier-1
-  review, the pull request.
+- Source candidate `01c1552` on `task/split-pause-menu` (the head after it changes two comments and
+  an include's order, and the records). [PR #54](https://github.com/malmazuke/unirally-reconstruction/pull/54).
+- Gates, `local/evidence/split-pause-menu/gates.sh` on a detached checkout of `01c1552`
+  (`gates-01c1552.out`, logs in main `artifacts/split-pause-menu-integration/gates-01c1552/`):
+  lab-debug, lab-release, app-debug and app-release build, ctest 41/41 each; synthetic suite passed;
+  v1 winner and loser contracts pass; eight hidden app runs and the front end's Start-held run pass
+  with no pose fallbacks; the eleven frozen race gates pass with 6,023 restores and the same row
+  digests as main's last run; tooling 544 tests OK; no function over 80 lines; native-symbols
+  passes. The DRAGSTER fuzz gate aborts 40 of 40 as on main (recorded non-pass, its own follow-up).
+- Race sweep against main `cbbd9ba` (main v34, candidate v35): 432 runs, 2,387,105 updates and
+  1,290 restarts identical; its 400 differing pictures are all frames with the menu open
+  (`classify_sweep.py`).
+- Front-end sweep against main (`classic-pause-menu/fe_equivalence.py`): 169 of 179 manifests equal;
+  in the other ten every differing picture is a frame with the menu open (`classify_fe.py`), and
+  only `league/organic-quit-second` differs in state: 250 rows, 8000-8249, each only the appended
+  lower-view byte while pad 2's menu is open.
+- R-0076's seven cue schedules: byte-identical to main's. R-0078's eight captures unchanged
+  (1,931/1,931 and the review's 2,459/2,460). The two-pad captures and nine restore checks as in
+  R-0079. Hosted CI passes on `b01db5f` and `01c1552`; `1de5b34`'s Ubuntu build failed (GCC 13
+  `-O2` on the restore check's vector copy), fixed in `b01db5f`.
+- An earlier gate run on `1de5b34` was stopped after ten of the eleven state gates (all passing)
+  when the review's state fixes superseded it (`gates-1de5b34-stopped/`).
+- Unavailable: local sanitizer presets (macOS 27 host; Linux CI covers them).
+- Usage: weekly 36% at claim, 40% at the records; five-hour 7% (after a reset).
+- Next: SPLIT-HUD-GAPS (tier 2) and TWO-HUMAN-RESTART, queued here, or the other ready tasks.
 
+## Review and integration
+
+- Reviewer: a fresh Claude Opus 5.5 subagent in its own clone, tier 1, with preregistered cases (a
+  withheld capture, restore checks, serialization against main, one-player regression). Round 1 on
+  `1de5b34` ([PR #54](https://github.com/malmazuke/unirally-reconstruction/pull/54)): changes
+  requested. Its four captures (`zz2p`, `drfin`, `leaguefin`, `leaguecpu`) matched in state
+  everywhere; 27 restore checks passed; states without pad 2's open menu were byte-identical to
+  main's. Findings: the red Ubuntu build (fixed in `b01db5f`); the message in every league race,
+  against the computer too (`leaguecpu`); a league pair's finished view dimmed twice while paused
+  and on the closing picture (`leaguefin`); no CI test of the new state rules; record corrections.
+  Fixed in `6e1836e` and `01c1552` (attempt 6); the agent reply answers each.
+- Round 2 on `01c1552`: approved. It broke each rule in turn and saw a test fail for five; the
+  finished-view rule is checked by `leaguefin` only. All 37 LEAGUE schedules give main's output.
+  Minor items: no test of the release while pad 2's finished rider holds Start (listing only, no
+  capture reaches it; ROM-free content cannot run that update), two comments still saying "a league
+  pair's message", an include out of order: the last two fixed in the head after `01c1552`.
+- Integration: merged by merge commit after the final head's checks; the merge, synchronized `main`
+  and cleanup are in main `artifacts/split-pause-menu-integration/closeout.json`.
+- Scope still unverified: R-0079's "Not covered" (the split CONTINUE clear, NOW PLAYING after a
+  two-human restart, the split HUD gaps queued as SPLIT-HUD-GAPS, other tracks' two-pad races).

@@ -760,7 +760,7 @@ unsigned race_picture_brightness(const ZoomZooState& state, const ZoomZooState* 
     return prior_fade > 15U ? prior_fade - 15U : 0U;
 }
 
-// The original's pause menu (R-0078), or a league pair's message: in the view of the pad that
+// The original's pause menu (R-0078), or a league race's message: in the view of the pad that
 // paused, in that view's ink (R-0079).
 void draw_pause_menu(RgbFrame& frame, const ZoomZooState& state,
                      const ClassicRacePresentationContent& content,

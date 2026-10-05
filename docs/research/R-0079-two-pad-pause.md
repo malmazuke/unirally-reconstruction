@@ -1,7 +1,7 @@
 # R-0079 - The pause in two-pad races
 
 Status: implemented on `task/split-pause-menu` ([SPLIT-PAUSE-MENU](../../tasks/SPLIT-PAUSE-MENU.md)),
-5 October 2026; in review. PAL ROM SHA-256
+5 October 2026; accepted (tier 1, PR #54). PAL ROM SHA-256
 `a1105819d48c04d680c8292bbfa9abbce05224f1bc231afd66af43b7e0a1fd4e`, audited bsnes core
 `7d5aa1e656b9171524d01b1b22917197d8121cb4` (library `e59bf88d4fc9`), Strict serialization. Private
 captures and scripts are in main `local/evidence/split-pause-menu/`. It extends
@@ -60,7 +60,7 @@ Tags: **[L]** listing only, **[C]** confirmed in a capture below.
 - `pause.lower_view` is race state: a two-pad state appends one byte, always 1, only while it is
   set, so every state without pad 2's open menu keeps its bytes; a league pair's wrapper does the
   same. The reader refuses the byte without an open menu in a two-pad race.
-- The picture: `render_classic_race` draws the original's menu, or a league pair's message, in the
+- The picture: `render_classic_race` draws the original's menu, or a league race's message, in the
   pauser's view (`classic_pause_menu_cells`, `classic_pause_message_cells`), keeps the split HUD
   (drawn after the riders) out of those cells, and dims split races too. M4-16's authored panel is
   gone. A league pair's finished view is not dimmed again while paused, nor on the closing
