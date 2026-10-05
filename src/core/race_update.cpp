@@ -842,21 +842,22 @@ void finish_update(const ZoomZooState& state, ZoomZooState& next,
             race_sound::announcement_voice(next, 0, queue.entries[queue.read_cursor],
                                            content.announcement_voices);
     }
-    const auto previous_write = state.movement.rewards.write_cursor;
-    const bool queued_scoring_event =
-        whole.rewards.write_cursor != previous_write
-        && whole.rewards.entries[previous_write] < announcement::wrong_way;
-    if (next.demo_ai && next.demo.opponent_hints_active
-        && (queued_scoring_event
-            || (outcomes[1].reward && outcomes[1].reward < announcement::wrong_way))) {
-        // $81:C5D5-C5E1: the second rider's first scoring event interrupts
-        // the tutorial wait and is consumed on this update (R-0069).
+    // $81:C5D5-C5E1: rider 1's first scoring event, as it is queued, ends its tutorial hints and
+    // their wait, so it is consumed on this update (R-0069, R-0082).
+    bool queued_scoring_event =
+        outcomes[1].reward && announcement::ends_opponent_hints(outcomes[1].reward);
+    for (auto slot = state.movement.rewards.write_cursor; slot != whole.rewards.write_cursor;
+         slot = static_cast<std::uint8_t>((slot + 1U) % whole.rewards.entries.size()))
+        queued_scoring_event =
+            queued_scoring_event || announcement::ends_opponent_hints(whole.rewards.entries[slot]);
+    if (next.opponent_hints.active && queued_scoring_event) {
         whole.rewards.cooldown = 0;
-        next.demo.opponent_hints_active = false;
+        next.opponent_hints.active = false;
     }
     const auto previous_reward_cursor = whole.rewards.read_cursor;
     const auto previous_reward_total = whole.rewards.feature_total;
-    update_opponent_announcements(whole, outcomes[1].reward, content.movement,
+    update_opponent_announcements(whole, outcomes[1].reward, next.opponent_hints.active,
+                                  content.movement,
                                   state.native_initialization
                                       ? std::span<std::uint8_t>{next.learned_weights[1]}
                                       : std::span<std::uint8_t>{});
@@ -865,7 +866,6 @@ void finish_update(const ZoomZooState& state, ZoomZooState& next,
                                        content.announcement_voices);
     if (next.league_statistics.enabled && previous_reward_cursor != whole.rewards.read_cursor) {
         const auto event = whole.rewards.entries[whole.rewards.read_cursor];
-        if (event < announcement::wrong_way) next.league_statistics.opponent_hints_over = true;
         if (event == announcement::wipeout) ++next.league_statistics.wipeouts[1];
         if (event < announcement::wrong_way && event != 0
             && content.movement.rotation_class[event - 1] != 255) {

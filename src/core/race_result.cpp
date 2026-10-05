@@ -663,7 +663,9 @@ void begin_race_return(FrontEndState& state, const FrontEndContent& content, std
     if (times.tutorial_hints_over)
         state.records.tutorial_bits = static_cast<std::uint16_t>(state.records.tutorial_bits
                                                                  | (1U << state.rider_menu.rider));
-    if (state.mode == FrontEndMode::league && state.second_rider < 16
+    // $83:CEB1-CEC5 sets rider 1's bit while its hints are off, outside the demo, in every
+    // two-human race; MIKE's bit `$12E9` stays 0 (R-0082).
+    if (two_human_mode(state.mode) && state.second_rider != 0 && state.second_rider < 16
         && times.opponent_tutorial_hints_over)
         state.records.tutorial_bits =
             static_cast<std::uint16_t>(state.records.tutorial_bits | (1U << state.second_rider));
@@ -838,7 +840,7 @@ RaceTimes race_times(const ZoomZooState& race) {
         result.league_wipeouts = race.league_statistics.wipeouts;
     }
     result.tutorial_hints_over = race.player_announcements.hints_active == 0;
-    result.opponent_tutorial_hints_over = race.league_statistics.opponent_hints_over;
+    result.opponent_tutorial_hints_over = !race.opponent_hints.active;
     // A stunt event's scores ($77:07BB, $77:0825) and the player's tallies (R-0066).
     result.stunt_event = classic_race_scenario(race.track).stunt_event;
     if (result.stunt_event) {

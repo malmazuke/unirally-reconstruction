@@ -140,7 +140,7 @@ void reward_opponent(MovementState& state, std::uint8_t& weight, std::uint8_t ev
 // and reward it. `learned_weights` is the opponent's bank for events 2-26; the legacy
 // DRAGSTER and M4-12 to M4-15 states never serialized it and pass it empty.
 void update_opponent_announcements(MovementState& state, unsigned published_event,
-                                   const MovementContent& content,
+                                   bool hints_active, const MovementContent& content,
                                    std::span<std::uint8_t> learned_weights) {
     require(content.rotation_reward.size() >= 2 && !content.rotation_class.empty(),
             "rotation reward content has the wrong size");
@@ -161,7 +161,8 @@ void update_opponent_announcements(MovementState& state, unsigned published_even
             ? legacy_reward_weight(queue, event, content.rotation_class)
             : opponent_reward_weight(queue, event, content.rotation_class, learned_weights);
     if (weight && *weight) reward_opponent(state, *weight, event, content);
-    queue.cooldown = display_updates(queue);
+    // $81:C0A5-C0CA: 120 while rider 1's hints run, as the player's.
+    queue.cooldown = hints_active ? hint_display : display_updates(queue);
 }
 
 // A full queue (write cursor at the read cursor) drops the event.
@@ -402,9 +403,11 @@ void lower_announcement_cooldowns(ZoomZooState& state, const ClassicRaceScenario
     lower(state.movement.rewards.cooldown);
 }
 
+namespace {
+
 // $83:CDBC-CE43: while the tutorial hints are on, every 300 updates queue the next group
 // of four. The race start sets the first count to 30.
-void update_tutorial_hints(ZoomZooState& state) {
+void update_player_tutorial_hints(ZoomZooState& state) {
     auto& announcements = state.player_announcements;
     if (!announcements.hints_active) return;
     if (++announcements.hint_updates != hint_interval) return;
@@ -415,6 +418,26 @@ void update_tutorial_hints(ZoomZooState& state) {
         queue_player_announcement(
             state, announcement::first_hint
                        + announcement::hints_per_group * announcements.hint_group + i);
+}
+
+// $83:CE43-CEAF: rider 1's hints, the same way into its own queue, counted from 0 (R-0082).
+void update_opponent_tutorial_hints(ZoomZooState& state) {
+    auto& hints = state.opponent_hints;
+    if (!hints.active) return;
+    if (++hints.updates != hint_interval) return;
+    hints.updates = 0;
+    hints.group = static_cast<std::uint16_t>((hints.group + 1U) & hint_groups_mask);
+    for (unsigned i = 0; i < announcement::hints_per_group; ++i)
+        queue_opponent_announcement(
+            state.movement,
+            announcement::first_hint + announcement::hints_per_group * hints.group + i);
+}
+
+} // namespace
+
+void update_tutorial_hints(ZoomZooState& state) {
+    update_player_tutorial_hints(state);
+    update_opponent_tutorial_hints(state);
 }
 
 } // namespace unirally

@@ -536,7 +536,7 @@ void update_movement(MovementState& state, const ControllerButtons& player_butto
         if (index == 1) opponent_event_one = event_one;
     }
     (void)advance_timer_digits(state.timer, timer_enabled);
-    update_opponent_announcements(state, opponent_event_one, content, {});
+    update_opponent_announcements(state, opponent_event_one, false, content, {});
     update_contacts_and_finish(state, content, timer_at_start);
     ++state.frame;
 }

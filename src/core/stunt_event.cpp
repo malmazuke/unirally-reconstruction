@@ -96,7 +96,7 @@ bool update_stunt_finish(ZoomZooState& state) {
     // $83:E8B6 clears $12E3 and $12E5; $12E5, a second human's hints, is only ever set with one
     // ($82:D96F), so one player has only $12E3.
     state.player_announcements.hints_active = 0;
-    if (state.league_statistics.enabled) state.league_statistics.opponent_hints_over = true;
+    state.opponent_hints.active = false;
     if (queue_empty(state.player_announcements.queue) && queue_empty(state.movement.rewards))
         stunt.finish_display = 1; // $83:E8DA
     return false;

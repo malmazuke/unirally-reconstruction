@@ -708,7 +708,7 @@ int main(int argc, char **argv) try {
               unirally::initialize_split_cameras(zoom_state);
             else
               unirally::initialize_second_camera(zoom_state);
-            zoom_state.demo_ai = zoom_state.demo.opponent_hints_active = true;
+            zoom_state.demo_ai = zoom_state.opponent_hints.active = true;
             zoom_state.pairing = scenario.pairing;
             if (zoom_state.split_screen)
               zoom_state.opponent_tier.ai_level = 0;

@@ -190,13 +190,14 @@ ClassicRaceScenario classic_race_scenario(ClassicRaceTrack track, RacePairing pa
 }
 
 ClassicRaceScenario classic_local_race_scenario(ClassicRaceTrack track, RacePairing pairing,
-                                                bool tutorial_hints) {
+                                                bool tutorial_hints, bool opponent_tutorial_hints) {
     if (pairing.rider >= rider_characters || pairing.opponent >= rider_characters
         || pairing.rider == pairing.opponent)
         throw std::invalid_argument("local race requires two distinct human riders");
     auto scenario = classic_race_scenario(track);
     scenario.pairing = pairing;
     scenario.tutorial_hints = tutorial_hints;
+    scenario.opponent_tutorial_hints = opponent_tutorial_hints;
     return scenario;
 }
 
@@ -315,6 +316,9 @@ ZoomZooState classic_race_start(const ZoomZooContent& content,
                   weights.begin());
     state.player_announcements.hints_active = scenario.tutorial_hints ? 1 : 0; // $82:D94C-D96F
     state.player_announcements.hint_updates = first_hint_phase;
+    // $82:D93E-D94C: rider 1's bit is `1 << character` only for characters 1-15; for MIKE the
+    // branch at $82:D943 skips the store, so a rider 1 who is MIKE never has hints (R-0082).
+    state.opponent_hints.active = scenario.opponent_tutorial_hints && scenario.pairing.opponent != 0;
     state.race.checkpoint_seen.fill(checkpoint_unseen);
     return state;
 }
@@ -328,10 +332,14 @@ void restart_zoom_zoo(ZoomZooState& state, const ZoomZooContent& content) {
     // $82:D94C reads the rider's tutorial bit again, which $83:CE2C set in the cartridge RAM
     // when the hints ended: the restart's hints run only if they still were.
     const bool hints = state.player_announcements.hints_active != 0;
+    // Rider 1's bit likewise ($83:CEB1, R-0082); the demo writes no bit back, so its rider 1's
+    // hints run again.
+    const bool opponent_hints = state.demo_ai || state.opponent_hints.active;
     // The race's setup reads the same medal again ($80:99ED): the qualifying score stays.
     const auto qualifying_score = state.stunt.qualifying_score;
     auto scenario = state.split_screen && !state.demo_ai
-                      ? classic_local_race_scenario(state.track, state.pairing, hints)
+                      ? classic_local_race_scenario(state.track, state.pairing, hints,
+                                                    opponent_hints)
                   : state.demo_ai ? classic_race_scenario(state.track)
                                   : classic_race_scenario(state.track, state.pairing, hints);
     if (state.demo_ai) {
@@ -346,7 +354,7 @@ void restart_zoom_zoo(ZoomZooState& state, const ZoomZooContent& content) {
     state.versus = versus;
     if (split) initialize_split_cameras(state);
     state.demo_ai = demo_ai;
-    state.demo.opponent_hints_active = demo_ai;
+    state.opponent_hints.active = opponent_hints;
     state.stunt.qualifying_score = qualifying_score;
 }
 

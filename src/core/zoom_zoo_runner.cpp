@@ -325,7 +325,7 @@ int main(int argc, char** argv) try {
         if (options.split_screen) {
             unirally::initialize_split_cameras(state);
             state.demo_ai = true;
-            state.demo.opponent_hints_active = true;
+            state.opponent_hints.active = true;
             state.pairing = {4, 14};
             state.opponent_tier.ai_level = 0;
         }
