@@ -341,6 +341,23 @@ void advance_rider_look(ZoomZooState& updated, const ZoomZooContent& content) {
         updated.movement.riders[rider].idle_pose.cycle_latched = 0;
 }
 
+bool rider_look_state_valid(const RiderLookState& look) {
+    // $83:EC2E holds a side overlay base per head frame: 48 words.
+    constexpr std::uint16_t head_frames = (sequence_range_table - side_overlay_base_table) / 2U;
+    constexpr std::uint16_t sequence_span = look_table_bytes - sequence_bytes;
+    for (const auto& rider : look.riders) {
+        const auto low = [](std::uint16_t word) { return word & 0xffU; };
+        if (rider.head > head_frames || rider.target > head_frames
+            || low(rider.sequence_target) > head_frames
+            || rider.sequence_number >= scripted_sequences
+            || rider.distance_step > distance_steps_end || (rider.sequence_cursor & 1U)
+            || (rider.sequence_end & 1U) || rider.sequence_cursor > sequence_span
+            || rider.sequence_end > sequence_span)
+            return false;
+    }
+    return true;
+}
+
 bool zoom_zoo_update_was_paused(const ZoomZooState& previous, const ZoomZooState& updated) {
     // The engine counts every update the menu diverts ($83:CD05-CD35): the one
     // that opens it, those with it open, the one that resumes, and any after

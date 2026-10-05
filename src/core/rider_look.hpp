@@ -81,6 +81,10 @@ void step_rider_head(RiderLook& look);
 // look tables runs no look.
 void advance_rider_look(ZoomZooState& updated, const ZoomZooContent& content);
 
+// Whether a stored look holds what the look step can write: heads and targets among the 48 head
+// frames, a sequence number below six, and a sequence cursor and end inside the sequence bytes.
+bool rider_look_state_valid(const RiderLookState& look);
+
 // True when the update from `previous` to `updated` was diverted by the pause
 // menu, which does not run the look, overlay or window-driver steps: the
 // engine's suspended-update clock advanced. That covers updates after the

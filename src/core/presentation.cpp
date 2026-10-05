@@ -656,10 +656,13 @@ void draw_race_riders(RgbFrame& frame, const ZoomZooState& rider_source,
                 if (rider_source.split_screen && (static_cast<unsigned>(y >= 112) != viewport))
                     return;
                 const auto at = static_cast<std::size_t>(y) * 256 + static_cast<std::size_t>(x);
-                if (bg1_above_objects[at] && !raised) return;
                 // NEON: BG3's ink (priority tiles) is in front of the objects, which a race's
                 // colour math shows through (rider_pixel); NEON's leaves BG3 out (R-0068).
                 if (math.neon_vram && math.caption_ink.test(at)) return;
+                // The ink is in front of BG1 too, and its colour math takes the sub screen, the
+                // objects alone ($212D = 0x10): a rider behind a BG1 priority tile still shows
+                // through the ink (R-0083).
+                if (bg1_above_objects[at] && !raised && !math.caption_ink.test(at)) return;
                 const auto index = static_cast<std::uint8_t>(object_palette + value);
                 pixel(frame, x, y, rider_pixel(colours, math, index, x, y));
             });

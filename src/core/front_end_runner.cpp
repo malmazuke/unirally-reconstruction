@@ -452,9 +452,9 @@ void write_look(std::ofstream& out, std::uint32_t frame, const unirally::RiderLo
     if (!out.is_open()) return;
     out << frame;
     for (const auto& r : look.riders)
-        for (const auto word : {r.head, r.target, r.looking_back, r.distance_step, r.glance_timer,
-                                r.sequence_cursor, r.sequence_end, r.sequence_delay,
-                                r.sequence_target, r.sequence_number})
+        for (const auto word :
+             {r.head, r.target, r.looking_back, r.distance_step, r.glance_timer, r.sequence_cursor,
+              r.sequence_end, r.sequence_delay, r.sequence_target, r.sequence_number})
             out << ' ' << std::hex << word << std::dec;
     out << '\n';
 }
@@ -487,7 +487,7 @@ void check_local_restore(const unirally::ZoomZooState& race_state,
     const auto versus = race_state.versus ? 8U : 0U;
     // DRAGSTER's two-pad layouts are H and I, ZOOM ZOO's F and G.
     const bool dragster = race_state.track == unirally::ClassicRaceTrack::Dragster;
-    if (saved.size() != 784 + versus + lower_view || saved[7] != (dragster ? 'H' : 'F'))
+    if (saved.size() != 830 + versus + lower_view || saved[7] != (dragster ? 'H' : 'F'))
         throw std::runtime_error("local save is not layout H or F");
     restored = unirally::deserialize_zoom_zoo(saved);
     if (unirally::serialize_zoom_zoo(*restored) != saved)
@@ -500,15 +500,16 @@ void check_local_restore(const unirally::ZoomZooState& race_state,
         }
         return false;
     };
-    // The trailer's last two bytes: the split flag and demo_ai. A ZOOM ZOO two-view state may be
-    // the split demo's (R-0069), so only DRAGSTER refuses demo AI; any two-view state refuses a
-    // clear split flag.
+    // The split flag and demo_ai come before the trailer's look block (R-0083). A ZOOM ZOO
+    // two-view state may be the split demo's (R-0069), so only DRAGSTER refuses demo AI; any
+    // two-view state refuses a clear split flag.
+    constexpr std::size_t look_block = 46;
     const auto trailer_end = saved.size() - lower_view - versus;
     auto invalid = saved;
-    invalid[trailer_end - 1] = 1;
+    invalid[trailer_end - look_block - 1] = 1;
     if (dragster && !refused(invalid)) throw std::runtime_error("local save accepted demo AI");
     invalid = saved;
-    invalid[trailer_end - 2] = 0;
+    invalid[trailer_end - look_block - 2] = 0;
     if (!refused(invalid)) throw std::runtime_error("local save accepted a clear split flag");
     if (lower_view) {
         invalid = saved;
@@ -523,7 +524,7 @@ void check_local_restore(const unirally::ZoomZooState& race_state,
     auto extended = race_state;
     extended.special_tiles[0].mud_cooldown = 1;
     const auto extended_saved = unirally::serialize_zoom_zoo(extended);
-    if (extended_saved.size() != 836 + versus + lower_view
+    if (extended_saved.size() != 882 + versus + lower_view
         || extended_saved[7] != (dragster ? 'I' : 'G')
         || unirally::serialize_zoom_zoo(unirally::deserialize_zoom_zoo(extended_saved))
                != extended_saved)
