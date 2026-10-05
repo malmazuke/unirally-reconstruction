@@ -387,7 +387,9 @@ void ClassicRaceHudClock::request_stunt_fields(const ZoomZooState& previous,
 // opponent's crossing of the same update. The opponent's writer ($81:F1B5-F1C6) takes its
 // first cell from the constant $80:8220, the minus glyph, and never reads the sign byte
 // `$11BD`; the player's ($81:EF5E-EF6E) reads `$11BB`: measured on every opponent split of
-// the M4-16 primary (14 pixels a frame until this was applied).
+// the M4-16 primary (14 pixels a frame until this was applied). The split chain's writer
+// (`$81:E49F-E6F3`) reads `$11BD` in both layouts, so a split race shows rider 1's own sign
+// (R-0082).
 ClassicHudCellRequest ClassicRaceHudClock::crossing_cell(const ZoomZooState& previous,
                                                          std::size_t rider,
                                                          const ZoomZooState& updated) {
@@ -404,7 +406,7 @@ ClassicHudCellRequest ClassicRaceHudClock::crossing_cell(const ZoomZooState& pre
     if (!stored) return {}; // no history of the slot: leave the cells
     ClassicHudCellRequest cell{ClassicHudCellRequest::Kind::Draw,
                                classic_hud_split_text(clock, *slot_times_[slot])};
-    if (rider == 1) cell.text[0] = '-';
+    if (rider == 1 && !updated.split_screen) cell.text[0] = '-';
     return cell;
 }
 

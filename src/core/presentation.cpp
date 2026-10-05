@@ -882,7 +882,11 @@ RgbFrame render_classic_race(const ZoomZooState& state,
                          history ? history->opponent_finish_frame : std::nullopt, hud, bg3_ink,
                          lower_ink, history ? history->opponent_caption_event : 0U, caption_ink);
     };
-    if (!state.split_screen) draw_hud();
+    // $80:D241 makes the objects the sub screen ($212D = 0x10) for a race from the menus, so a
+    // rider under the HUD's ink shows through its colour math, as under the caption; the idle
+    // demo leaves $212D = 0 (`$80:942D`), so its split HUD is flat ink over the riders (R-0082).
+    const bool hud_over_riders = state.split_screen && state.demo_ai;
+    if (!hud_over_riders) draw_hud();
     // The menu's words go in the HUD's layer, under the riders and the window members: on the
     // picture that opens the menu during the countdown the digit's window covers them (R-0078),
     // and a split race's riders cover them (R-0079).
@@ -894,9 +898,9 @@ RgbFrame render_classic_race(const ZoomZooState& state,
                                        state.split_screen);
     draw_race_riders(frame, rider_source, content, history, colours, scroll.flip, bg1_above_objects,
                      math);
-    // The split's HUD tile priority covers both riders at the lap-banner overlap; the menu's
-    // cells keep the menu.
-    if (state.split_screen) {
+    // The split demo's HUD tile priority covers both riders at the lap-banner overlap; the
+    // menu's cells keep the menu.
+    if (hud_over_riders) {
         const auto under_hud = paused ? std::optional<RgbFrame>(frame) : std::nullopt;
         draw_hud();
         if (under_hud) restore_bg3_cells(frame, *under_hud, menu_cells, caption_ink);
