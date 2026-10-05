@@ -56,3 +56,20 @@ the static listing for `$81:D853-E8C8`.
 | Pictures | `classify.py` over R-0079's captures | No caption, arrow or colour-math class left | JSON |
 | Nothing else moves | Gates, sweeps, R-0078/R-0079 captures | Unchanged elsewhere | gate logs |
 | Review | Tier 2 | Approved with a withheld capture | review on the pull request |
+
+## Evidence and attempts
+
+| Attempt | Hypothesis | Experiment | Observation | Next decision |
+| --- | --- | --- | --- | --- |
+| 1 (14:50-15:05) | The five gaps trace to the split HUD NMI `$81:D853` and the split colour/brightness HDMA | A read-only subagent read `$81:D853-E8C8`, `$82:9822`, `$82:D57F-D64B`, `$83:E7C1-EBD7` (report: main `local/evidence/split-hud-gaps/listing-report.md`) | Captions: rider 0's `$0EA7` at rows 5-6 and rider 1's `$0EC7` at rows 19-20 from column 8, in a split chain that also serves the bottom clock and cells; arrows for whichever rider trails, in its own view, split rows for up/down; colour math per view from `$82:D4DC` by rider (TONY, rider 9, subtracts); a finished view dims in every split race (`$83:E8E0`, `$83:EA72`), not only a league's; the bottom clock blanks when rider 1 finishes; the bottom "finish" at column 1 | Implement in this order, each checked on `twop-plain`, `twop`, `league`, `zz2p`, `drfin` with `classify.py` |
+
+## Plan (from attempt 1)
+
+1. Colour math per view (`RaceObjectMath`/`rider_pixel`: CGRAM 27 plus or minus the object by the
+   view's `$82:D4DC` entry; add mode unchanged).
+2. Finished views dim in every split race (`dim_finished_league_views`).
+3. Finished split HUD: bottom clock blank once rider 1 finishes; bottom "finish" at column 1.
+4. Captions: the player's at row 5 in a split race; rider 1's queue followed in
+   `ClassicRaceHudClock` and drawn at row 19 from column 8; the split chain's upload priority.
+5. Arrows: the trailing rider's arrow in its own view, split rows, bottom redrawn every NMI.
+
