@@ -1,5 +1,22 @@
 # Project state
 
+**5 October 2026: SPLIT-PAUSE-MENU is accepted (tier 1, #54) and integrated by merge commit.**
+Either player now pauses a two-pad race (2P, VS, a league pair) as in the original: pad 2's Start
+opens the menu in pad 2's view, the release waits for both Starts, a quit or restart goes to the
+confirming pad's total, and either human's restart returns to NOW PLAYING. Every league race,
+against the computer too, shows the pauser's rider's message after the countdown (pack v35 adds the
+table). The authored pause panel is gone; split races dim to brightness 7 like one-player ones.
+The pause words, countdown, camera, laps and finish flags equal the original's on 11,348 race
+frames of eleven captures (four of them the reviewer's); 731 paused pictures are equal and the
+others differ only where existing split-race gaps show, queued as
+[SPLIT-HUD-GAPS](../tasks/SPLIT-HUD-GAPS.md). The eleven frozen race gates, the race sweep and 169
+of 179 front-end manifests equal main (the other ten differ only in paused pictures and, in one,
+the new lower-view byte). [R-0079](research/R-0079-two-pad-pause.md) and
+[SPLIT-PAUSE-MENU](../tasks/SPLIT-PAUSE-MENU.md) define the domain;
+[TWO-HUMAN-RESTART](../tasks/TWO-HUMAN-RESTART.md) holds the menus after a two-human restart. Next
+ready: SPLIT-HUD-GAPS, TWO-HUMAN-RESTART, AUDIO-UPLOAD-SPEED, ROLLING-CONTACT,
+PORTABLE-CORE-IDENTITY, ATTRACT-DEMO. No M4 tag, reset, spending or provider change is authorized.
+
 **5 October 2026: CLASSIC-PAUSE-MENU is accepted (tier 2, #53) and integrated by merge commit.**
 Pausing a one-player race now shows the original's pause picture: the whole screen at brightness 7
 and CONTINUE GAME / QUIT with a "<" in the race's text layer (`$83:F63E-F979`), the HUD hidden

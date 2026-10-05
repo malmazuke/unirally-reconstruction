@@ -502,6 +502,9 @@ struct ClassicRacePresentationContent {
     std::span<const std::uint8_t> captions;
     // The 2bpp 128-tile sheet the captions are drawn with, already in the pack.
     std::span<const std::uint8_t> caption_font;
+    // R-0079: a league pair's sixteen pause messages, sixteen ASCII bytes by rider (`$83:F516`,
+    // profile v35); empty in an older pack, which then shows none.
+    std::span<const std::uint8_t> pause_messages;
     // Sixteen-byte records used by the split race's rider labels.
     std::span<const std::uint8_t> rider_names;
     // The countdown's transition member, 5 + `$1229`, which race initialization
@@ -591,11 +594,6 @@ RgbFrame render_classic_race(const ZoomZooState& state,
                              const ClassicRacePresentationContent& content,
                              const ZoomZooState* previous_update = nullptr,
                              const ClassicRaceHistory* history = nullptr);
-// Authored pause menu over a split-screen race picture (M4-16): the picture is halved, then
-// RESUME / RESTART RACE is drawn with the selection marker. One-player races show the
-// original's menu instead (R-0078).
-void draw_race_pause_menu(RgbFrame& frame, std::uint16_t selection,
-                          std::array<std::uint8_t, 3> panel, std::array<std::uint8_t, 3> ink);
 // The accepted DRAGSTER v1 presentation entries (M3-02, M4-01); the race
 // palette cycle and window family are optional (DRAGSTER v1 packs keep the
 // accepted pose-keyed colours and windows). Only the frozen v1 contracts and

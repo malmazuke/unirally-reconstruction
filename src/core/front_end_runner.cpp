@@ -30,6 +30,7 @@
 #include <iostream>
 #include <map>
 #include <optional>
+#include <span>
 #include <sstream>
 #include <stdexcept>
 #include <string>
@@ -462,24 +463,33 @@ void check_local_restore(const unirally::ZoomZooState& race_state,
         return;
     }
     const auto saved = unirally::serialize_zoom_zoo(race_state);
-    if (saved.size() != 784 || saved[7] != 'H')
+    // Pad 2's open pause menu appends one byte after the trailer (R-0079).
+    const auto lower_view = race_state.pause.lower_view ? 1U : 0U;
+    if (saved.size() != 784 + lower_view || saved[7] != 'H')
         throw std::runtime_error("local DRAGSTER save is not layout H");
     restored = unirally::deserialize_zoom_zoo(saved);
     if (unirally::serialize_zoom_zoo(*restored) != saved)
         throw std::runtime_error("local DRAGSTER save did not round-trip");
+    const auto refused = [](std::span<const std::uint8_t> bytes) {
+        try {
+            (void)unirally::deserialize_zoom_zoo(bytes);
+        } catch (const std::invalid_argument&) {
+            return true;
+        }
+        return false;
+    };
     auto invalid = saved;
-    invalid.back() = 1; // The last trailer byte is demo_ai, zero for local riders.
-    bool refused = false;
-    try {
-        (void)unirally::deserialize_zoom_zoo(invalid);
-    } catch (const std::invalid_argument&) {
-        refused = true;
+    invalid[invalid.size() - 1 - lower_view] = 1; // the trailer's last byte: demo_ai, zero here
+    if (!refused(invalid)) throw std::runtime_error("local save accepted demo AI");
+    if (lower_view) {
+        invalid = saved;
+        invalid.back() = 2;
+        if (!refused(invalid)) throw std::runtime_error("local save accepted a lower view of 2");
     }
-    if (!refused) throw std::runtime_error("local save accepted demo AI");
     auto extended = race_state;
     extended.special_tiles[0].mud_cooldown = 1;
     const auto extended_saved = unirally::serialize_zoom_zoo(extended);
-    if (extended_saved.size() != 836 || extended_saved[7] != 'I'
+    if (extended_saved.size() != 836 + lower_view || extended_saved[7] != 'I'
         || unirally::serialize_zoom_zoo(unirally::deserialize_zoom_zoo(extended_saved))
                != extended_saved)
         throw std::runtime_error("extended local DRAGSTER save failed round-trip");

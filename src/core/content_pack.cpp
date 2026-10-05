@@ -1065,6 +1065,11 @@ const std::array<RequiredEntry, 27> award_ending_audio_required{{
     {"audio.sample.45", 1210, "9beb7da51741ff2ce9b8de27f4963d5725bfe2e3caf3b70fc88c802eb616473b"},
     {"audio.sample.49", 1903, "886f271ae1dad83851a20da42d4a032cf34bd01f5fd2e14e163126ca955c9e21"},
 }};
+// The race's pause messages, sixteen bytes by rider (`$83:F516`, profile v35). R-0079.
+const std::array<RequiredEntry, 1> pause_messages_required{{
+    {"presentation.race.pause-messages.v1", 256,
+     "6eea0cb2598c54e8f3bcb49ca47984e22c4313f240761b182e2ddcdcf3a49a20"},
+}};
 const std::array<RequiredEntry, 33> audio_required{{
     {"audio.menu-tables", 621, "e75d7872e341a636dc822616a202db6b8894196471c13d47f1b21d15f38fc407"},
     {"audio.title-score", 2200, "b4e402d0d05207e0ceadc32e8b4ebd4d052677c42f0e36f4ab5883c74ff1eb6b"},
@@ -1197,11 +1202,11 @@ std::array<std::uint8_t, 32> sha256(std::span<const std::uint8_t> source) {
 } // namespace
 
 namespace {
-constexpr std::array<std::string_view, 7> supported_profiles{
+constexpr std::array<std::string_view, 8> supported_profiles{
     "classic.pal.crawler.dragster.v1", "classic.pal.crawler.tracks.v29",
     "classic.pal.crawler.tracks.v30",  "classic.pal.crawler.tracks.v31",
     "classic.pal.crawler.tracks.v32",  "classic.pal.crawler.tracks.v33",
-    "classic.pal.crawler.tracks.v34"};
+    "classic.pal.crawler.tracks.v34",  "classic.pal.crawler.tracks.v35"};
 } // namespace
 
 std::span<const std::string_view> supported_pack_profiles() {
@@ -1226,6 +1231,8 @@ constexpr std::string_view race_songs_rules_sha =
     "fef3879e558471c082c82ee4816b5773872c1464b38b055e89d4377756a0df74";
 constexpr std::string_view award_ending_rules_sha =
     "93eed031745e5b7771d786fa65931cf1dbb3ff462d4df1ef376b68b0aedd2cbc";
+constexpr std::string_view pause_messages_rules_sha =
+    "c8a1e4267b48c8fda51fa963ed534456e67ebf724d8047c97d5709434f54cdc5";
 constexpr std::string_view tracks_start = "classic.crawler.race-start.v2";
 constexpr std::string_view dragster_start = "classic.crawler.dragster.race-start.v1";
 
@@ -1242,7 +1249,8 @@ enum class PackVariant {
     hunter_audio,
     race_audio,
     race_songs,
-    award_ending_audio
+    award_ending_audio,
+    pause_messages
 };
 struct PackHeader {
     PackVariant variant;
@@ -1261,7 +1269,8 @@ PackHeader read_pack_header(const std::vector<std::uint8_t>& bytes, Reader& in) 
         throw std::invalid_argument("Classic pack source ROM identity is unsupported");
     const auto profile = in.text();
     const auto start = in.text();
-    const auto variant = profile == supported_profiles[6] ? PackVariant::award_ending_audio
+    const auto variant = profile == supported_profiles[7] ? PackVariant::pause_messages
+                       : profile == supported_profiles[6] ? PackVariant::award_ending_audio
                        : profile == supported_profiles[5] ? PackVariant::race_songs
                        : profile == supported_profiles[4] ? PackVariant::race_audio
                        : profile == supported_profiles[3] ? PackVariant::hunter_audio
@@ -1274,13 +1283,14 @@ PackHeader read_pack_header(const std::vector<std::uint8_t>& bytes, Reader& in) 
     if (start != (tracks ? tracks_start : dragster_start))
         throw std::invalid_argument("Classic pack start state is unsupported");
     if (rules_identity
-        != hex_digest(variant == PackVariant::award_ending_audio ? award_ending_rules_sha
-                      : variant == PackVariant::race_songs   ? race_songs_rules_sha
-                      : variant == PackVariant::race_audio   ? race_audio_rules_sha
-                      : variant == PackVariant::hunter_audio ? hunter_audio_rules_sha
-                      : variant == PackVariant::audio        ? audio_rules_sha
-                      : tracks                               ? two_track_rules_sha
-                                                             : dragster_rules_sha256))
+        != hex_digest(variant == PackVariant::pause_messages       ? pause_messages_rules_sha
+                      : variant == PackVariant::award_ending_audio ? award_ending_rules_sha
+                      : variant == PackVariant::race_songs         ? race_songs_rules_sha
+                      : variant == PackVariant::race_audio         ? race_audio_rules_sha
+                      : variant == PackVariant::hunter_audio       ? hunter_audio_rules_sha
+                      : variant == PackVariant::audio              ? audio_rules_sha
+                      : tracks                                     ? two_track_rules_sha
+                                                                   : dragster_rules_sha256))
         throw std::invalid_argument("Classic pack extraction-rules identity is unsupported");
     return {variant, rules_identity};
 }
@@ -1320,9 +1330,11 @@ std::vector<RequiredEntry> required_entries(PackVariant variant) {
         out.insert(out.end(), race_audio_required.begin(), race_audio_required.end());
     if (variant >= PackVariant::race_songs)
         out.insert(out.end(), race_song_audio_required.begin(), race_song_audio_required.end());
-    if (variant == PackVariant::award_ending_audio)
+    if (variant >= PackVariant::award_ending_audio)
         out.insert(out.end(), award_ending_audio_required.begin(),
                    award_ending_audio_required.end());
+    if (variant == PackVariant::pause_messages)
+        out.insert(out.end(), pause_messages_required.begin(), pause_messages_required.end());
     return out;
 }
 

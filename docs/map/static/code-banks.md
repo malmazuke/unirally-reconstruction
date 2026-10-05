@@ -45,7 +45,7 @@ The four classes partition all 131,072 bytes. **Unknown share: 40.4%** - above D
 
 ## Cited addresses
 
-1666 distinct code-bank ROM addresses cited by the research, task, inventory and content records (`labels.json`). By position: dat 28, loc 946, mid 19, sub 342, unk 331 (sub routine start, loc instruction start, mid inside an instruction, dat data, unk unknown). By class: data 28, inferred 290, observed 1017, unknown 331.
+1678 distinct code-bank ROM addresses cited by the research, task, inventory and content records (`labels.json`). By position: dat 31, loc 953, mid 19, sub 343, unk 332 (sub routine start, loc instruction start, mid inside an instruction, dat data, unk unknown). By class: data 31, inferred 295, observed 1020, unknown 332.
 
 Cited addresses in `unknown` bytes:
 
@@ -132,6 +132,7 @@ Cited addresses in `unknown` bytes:
 | $80:BD1F | docs/research/R-0057-one-run-result.md |
 | $80:BDD4 | tasks/COVERAGE-ROADMAP.md, tasks/LEAGUE.md |
 | $80:BE3F | docs/research/R-0057-one-run-result.md |
+| $80:BE48 | docs/research/R-0079-two-pad-pause.md |
 | $80:BE76 | docs/research/R-0073-league.md |
 | $80:BEC6 | docs/research/R-0073-league.md |
 | $80:BF49 | docs/research/R-0071-two-player-versus.md, tasks/COVERAGE-ROADMAP.md, tasks/NEXT_SESSION.md, tasks/TWO-PLAYER-VS.md |

@@ -9476,7 +9476,8 @@
    ],
    "native": [
     "src/core/opponent_ai.cpp:update_opponent_controller",
-    "src/core/race_update.cpp:release_absent_opponent"
+    "src/core/race_update.cpp:release_absent_opponent",
+    "src/core/race_update.cpp:run_pause_menu"
    ],
    "observed_entries": {},
    "start": "$82:AB6F",
@@ -12875,6 +12876,7 @@
     "src/core/race_update.cpp:finish_update",
     "src/core/race_update.cpp:read_second_rider_controls",
     "src/core/race_update.cpp:run_pause_menu",
+    "src/core/race_update.cpp:update_zoom_zoo",
     "src/core/rider_look.cpp:zoom_zoo_update_was_paused"
    ],
    "observed_entries": {},
@@ -14605,10 +14607,16 @@
    ],
    "native": [
     "src/core/audio_cue.hpp:AudioDispatchSite",
+    "src/core/presentation.cpp:dim_finished_league_views",
+    "src/core/presentation.cpp:draw_pause_menu",
     "src/core/presentation.cpp:race_picture_brightness",
+    "src/core/race_hud.cpp:draw_classic_pause_message",
     "src/core/race_hud.cpp:pause_first_row, pause_second_row, pause_first_column, pause_second_column, pause_cursor_column",
+    "src/core/race_hud.cpp:pause_lower_view_rows",
+    "src/core/race_hud.hpp:classic_pause_shows_message",
     "src/core/race_sound.hpp:pause_frame",
-    "src/core/race_update.cpp:run_pause_menu"
+    "src/core/race_update.cpp:run_pause_menu",
+    "src/core/zoom_zoo_movement.hpp:ZoomZooPause::lower_view"
    ],
    "observed_entries": {},
    "start": "$83:F63E",
@@ -14632,7 +14640,8 @@
    ],
    "native": [
     "src/core/race_hud.cpp:pause_first_row, pause_second_row, pause_first_column, pause_second_column, pause_cursor_column",
-    "src/core/race_hud.hpp:classic_pause_menu_cells"
+    "src/core/race_hud.hpp:classic_pause_menu_cells",
+    "src/core/race_update.cpp:run_pause_menu"
    ],
    "observed_entries": {},
    "start": "$83:F794",
@@ -14653,6 +14662,7 @@
    ],
    "native": [
     "src/core/audio_cue.hpp:AudioDispatchSite",
+    "src/core/presentation.cpp:dim_finished_league_views",
     "src/core/presentation.cpp:paused_brightness, full_brightness",
     "src/core/presentation.cpp:race_picture_brightness",
     "src/core/presentation.hpp:ClassicHudPublished::player_cells_cleared",
@@ -14832,19 +14842,19 @@
    "call returns in the calling mode": 1262
   },
   "bytes": 131072,
-  "cited_addresses": 1666,
+  "cited_addresses": 1678,
   "cited_by_class": {
-   "data": 28,
-   "inferred": 290,
-   "observed": 1017,
-   "unknown": 331
+   "data": 31,
+   "inferred": 295,
+   "observed": 1020,
+   "unknown": 332
   },
   "cited_by_position": {
-   "dat": 28,
-   "loc": 946,
+   "dat": 31,
+   "loc": 953,
    "mid": 19,
-   "sub": 342,
-   "unk": 331
+   "sub": 343,
+   "unk": 332
   },
   "conflicts": 0,
   "data": 92,
