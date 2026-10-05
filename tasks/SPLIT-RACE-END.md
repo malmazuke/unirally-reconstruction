@@ -36,11 +36,29 @@ result load for 2P, VS and league pairs, against captures where the riders finis
 | Nothing else moves | Gates, sweeps | Unchanged in one-player play | gate logs |
 | Review | Tier 1 | Approved | review on the pull request |
 
-## Handoff
+## Evidence and attempts
 
-- First experiment: the review's `zzap` (main `local/evidence/split-hud-gaps/review/zzap`, 2P ZOOM
-  ZOO; rider 0 finishes about 7615, rider 1 at 8067) through `split_compare.py` extended past the
-  race's end, to find the first differing word after rider 0's finish (`$0F0F`, the finish display,
-  `$0EFF`/`$0F01`); read `$83:E7C1-EBD7` (R-0080's listing report, section 4) and the finish
-  display/result load (`$83:F642`, `$0F0F` = 0xF0) for the two-human rule.
+| Attempt | Hypothesis | Experiment | Observation | Next decision |
+| --- | --- | --- | --- | --- |
+| 1 (17:30-17:45) | A split race starts its finish display only when both riders have finished | `zzap`'s work RAM; `$83:E7C1-E803` | `$0F0F` counts from 8067, rider 1's finish, not rider 0's at 7615. `$83:E7C3`: with `$0DE1` (split) set the count needs `$0EFF` and `$0F01`, else only `$0EFF` | Apply to every split race |
+| 2 (17:45-17:50) | Native's league-only rule generalizes | `update_finish`: `!split_screen \|\| riders[1].finished`; `split_compare.py` gains `$0F0F` | `zzap` 6,073 race frames, 0 differences (was ending at 7856); `twop`, `twop-plain`, `league` unchanged | VS first (below) |
 
+## Handoff (checkpoint, 5 October 2026 about 17:55 Sydney)
+
+- Worktree `.worktrees/split-race-end`, branch `task/split-race-end`, base `321e3d9`. Uncommitted at
+  this record: the `update_finish` change (rule above), committed with this record as WIP; not
+  pushed.
+- **Blocking before a PR: VS's forced finish.** `$83:EA11-EA6F` (rider 0 finished, path on updates
+  with `$0304` bit 0 set): `$0F09` set skips; `$0F03` = 0 starts `$0F07` = 0x168 (360); each pass
+  decrements `$0F07`; at 0, if `$77:0750` bit 2 (VS), `$0F01` = 0xFFFF (rider 1 forced finished) and
+  `$11FD` = 0xDB4E. `$83:EBCB-EBD7` mirrors it for rider 0. Native has no counter and no VS flag in
+  the race state, so with the new rule a VS race whose second rider never finishes would never end.
+  Read `$83:E8E0-EA72` and `$83:EA72-EC13` fully (what `$0F03`, `$0F05`, `$0F09`, `$0F0B` are; which
+  updates decrement), add the counter (race state: likely serialized only while live, as
+  `pause.lower_view`) and the VS flag to the race, then capture VS with pad 2 idle (TWO-PLAYER-VS's
+  `mode-2-both-right` with port 2's Right removed; `local/evidence/split-pause-menu/make_split.py`
+  can drop events by editing) through the result.
+- Then: a 2P capture through the result with the finishes far apart (extend the review's `zzap`
+  manifest, main `local/evidence/split-hud-gaps/review/zzap.json`, to about 8700 frames); the front-
+  end sweep will show TWO-PLAYER-VS's and LEAGUE's manifests moving only where the riders finish
+  apart; R-0081; gates; tier-1 review; PR.

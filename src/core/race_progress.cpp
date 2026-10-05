@@ -202,11 +202,10 @@ void pass_checkpoint(ZoomZooState& state, unsigned index, unsigned checkpoint) {
 void update_finish(ZoomZooState& state, const ZoomZooContent& content) {
     // A stunt event first waits for both riders to stand and its queues to empty (R-0066).
     if (classic_race_scenario(state.track).stunt_event && !update_stunt_finish(state)) return;
-    // $83:E7C3-E7EA; R-0073: the split display waits for both riders. The league
-    // opt-in preserves earlier serialized one-player and local acceptance domains.
+    // $83:E7C3-E7E4: a split race (`$0DE1`) starts the display only once both riders have
+    // finished, a one-view race once the player has (R-0073, R-0081).
     const bool finish_display_ready = state.race.riders[0].finished
-                                   && (!(state.league_statistics.enabled && state.split_screen)
-                                       || state.race.riders[1].finished);
+                                   && (!state.split_screen || state.race.riders[1].finished);
     if (finish_display_ready) {
         if (state.race.finish_delay == finish_display_updates)
             throw std::invalid_argument("race result loading outside frozen finish display");
