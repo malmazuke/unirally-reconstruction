@@ -94,7 +94,8 @@ int main(int argc, char **argv) try {
   if (pack_path.empty()) throw std::invalid_argument("--content-pack is required");
   const unirally::ClassicContentPack pack(pack_path);
   const auto content = unirally::dragster_race_content(pack);
-  const auto presentation = unirally::classic_race_presentation_content(pack, unirally::ClassicRaceTrack::Dragster);
+  auto presentation = unirally::classic_race_presentation_content(pack, unirally::ClassicRaceTrack::Dragster);
+  presentation.pause_second_choice = unirally::ClassicRacePresentationContent::PauseSecondChoice::restart;
   unsigned aborts = 0, total_races = 0, total_updates = 0, total_renders = 0, pause_restarts = 0;
   for (unsigned seed = first_seed; seed < first_seed + seeds; ++seed) {
     const unsigned style = seed % 3U;

@@ -408,10 +408,8 @@ std::string start_race(RaceBetweenMenus& race, const unirally::ClassicContentPac
     race.state = unirally::classic_race_start(*race.content, scenario);
     race.state.league_statistics.enabled = front_end.mode == unirally::FrontEndMode::league;
     if (local) unirally::initialize_split_cameras(race.state);
-    if (local) {
-        race.presentation = unirally::classic_race_presentation_content(pack, scenario);
-        race.presentation->rider_names = front_end.records.rider_names;
-    }
+    race.presentation = unirally::classic_race_presentation_content(pack, scenario);
+    race.presentation->rider_names = front_end.records.rider_names;
     race.history = {};
     race.loading_initialization = loading_frames ? front_end.frame - 1 + loading_frames : 0;
     // The race keeps its scenario's frame label, which its own clocks count from; the runner
@@ -573,14 +571,15 @@ void update_local_race(const Options& options, const unirally::ClassicContentPac
             throw std::runtime_error("local save continuation diverged at "
                                      + std::to_string(frame));
     }
-    if (local) {
+    // A one-player race keeps its picture history only when pictures are asked for.
+    if (local || !options.pictures.empty()) {
         race.history.observe_update(previous, race.state, pack);
         const auto shown = race.history.on_screen();
         if (const auto picture = options.pictures.find(frame); picture != options.pictures.end())
             write_ppm(picture->second, unirally::render_classic_race(race.state, *race.presentation,
                                                                      &previous, &shown));
-        write_race_state(race_timeline, frame, race.state);
     }
+    if (local) write_race_state(race_timeline, frame, race.state);
     if (!over) return;
     const auto& times = *over;
     unirally::return_from_race(front_end, content, frame, times);

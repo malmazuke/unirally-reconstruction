@@ -226,12 +226,27 @@ classic_race_arrow(const ZoomZooState& previous, const ZoomZooState& updated, un
 void ClassicRaceHudClock::observe_update(const ZoomZooState& previous,
                                          const ZoomZooState& updated) {
     on_screen_ = latest_;
+    clear_after_pause(previous, updated);
     if (updated.fade_level >= race_nmi_fade) ++race_nmis_;
     redraw_arrow(previous, updated);
     request_fields(previous, updated);
     if (classic_race_scenario(updated.track).stunt_event) request_stunt_fields(previous, updated);
     request_caption(previous, updated);
     service_one_field(updated);
+}
+
+// $83:F915-F92C: a paused update that closes the menu (CONTINUE GAME, or a reopening while Start
+// is still held) zeroes the map from row 5 column 8 to row 9 column 8 after the NMI, so this
+// picture already shows the player's cells and an up arrow's rows 5-6 blank. The NMI's next
+// arrow redraw and the queue's next write of the cells put them back (R-0078).
+void ClassicRaceHudClock::clear_after_pause(const ZoomZooState& previous,
+                                            const ZoomZooState& updated) {
+    if (!classic_pause_menu_closed(previous, updated)) return;
+    for (auto* hud : {&on_screen_, &latest_}) {
+        hud->player_cells_cleared = true;
+        if (hud->arrow && hud->arrow->direction == ClassicRaceArrow::Direction::Up)
+            hud->arrow->middle_rows_covered = true;
+    }
 }
 
 // $81:E8E8-$81:EB83: after an update whose progress phase is clear the NMI leaves the arrow
@@ -403,6 +418,7 @@ void ClassicRaceHudClock::service_one_field(const ZoomZooState& updated) {
             held = cell.text;
             cell = {};
             cover_arrow(rider);
+            if (rider == 0) latest_.player_cells_cleared = false;
             return;
         }
         if (cell.kind == ClassicHudCellRequest::Kind::Blank) {
@@ -412,6 +428,7 @@ void ClassicRaceHudClock::service_one_field(const ZoomZooState& updated) {
             if (!updated.race.riders[rider].finished) {
                 held.reset();
                 cover_arrow(rider);
+                if (rider == 0) latest_.player_cells_cleared = false;
                 return;
             }
         }
@@ -465,7 +482,8 @@ ClassicHudText classic_race_hud_text(const ZoomZooState& previous_update,
         if (!published->clock_blanked)
             hud.clock = published->clock ? *published->clock
                                          : classic_hud_clock(classic_hud_timer(previous_update));
-        hud.player_cells = published->player_cells.value_or("");
+        hud.player_cells =
+            published->player_cells_cleared ? "" : published->player_cells.value_or("");
         hud.opponent_cells = published->opponent_cells.value_or("");
         return hud;
     }
@@ -745,6 +763,54 @@ void draw_split_hud(RgbFrame& frame, const ZoomZooState& state,
         } else
             draw_classic_arrow(frame, font, *arrow, ink, inked);
     }
+}
+
+// $83:F6B9-F6D0 places the menu at VRAM 0x18A8 and 0x18ED (the map at 0x1800: row 5 column 8 and
+// row 7 column 13) when pad 1 paused; $83:F807-F8A7 puts tile 0x46 ("<", the left chevron)
+// in column 24 beside the choice and the blank 0x59 beside the other.
+constexpr unsigned pause_first_row = 5, pause_second_row = 7, pause_first_column = 8,
+                   pause_second_column = 13, pause_cursor_column = 24;
+constexpr unsigned pause_first_choice_cells = 15, pause_second_choice_cells = 4;
+
+bool classic_pause_menu_closed(const ZoomZooState& previous, const ZoomZooState& updated) {
+    return !updated.split_screen && updated.pause.selection == 0
+        && updated.pause.suspended_updates > previous.pause.suspended_updates;
+}
+
+Bg3Cells classic_pause_menu_cells() {
+    Bg3Cells cells;
+    const auto hold = [&cells](unsigned column, unsigned row, unsigned count) {
+        for (unsigned at = column; at < column + count; ++at) {
+            cells.set(row * 32U + at);
+            cells.set((row + 1U) * 32U + at);
+        }
+    };
+    hold(pause_first_column, pause_first_row, pause_first_choice_cells);
+    hold(pause_second_column, pause_second_row, pause_second_choice_cells);
+    hold(pause_cursor_column, pause_first_row, 1);
+    hold(pause_cursor_column, pause_second_row, 1);
+    return cells;
+}
+
+void draw_classic_pause_menu(RgbFrame& frame, const ClassicRacePresentationContent& content,
+                             std::uint16_t selection, std::string_view second_choice,
+                             std::array<std::uint8_t, 3> ink, std::bitset<256 * 224>& inked) {
+    const auto font = content.caption_font;
+    if (font.size() != 2048) return;
+    // $83:F616: a blank (0x79), "continue game" and a blank; $83:F636: "quit". The standalone
+    // race's "restart" is centred under the first line instead.
+    constexpr std::string_view first_choice = "continue game";
+    constexpr unsigned first_choice_column = pause_first_column + 1U;
+    draw_bg3_text(frame, font, first_choice_column, pause_first_row, first_choice, ink, inked);
+    const auto centred = static_cast<unsigned>(first_choice.size() - second_choice.size()) / 2U;
+    const auto second_column =
+        second_choice == "quit" ? pause_second_column : first_choice_column + centred;
+    draw_bg3_text(frame, font, second_column, pause_second_row, second_choice, ink, inked);
+    // The selection is 1 for the first choice and 0xFFFF for the second.
+    const unsigned cursor_row = selection & 0x8000U ? pause_second_row : pause_first_row;
+    draw_bg3_tile(frame, font, pause_cursor_column, cursor_row, left_chevron, ink, inked);
+    draw_bg3_tile(frame, font, pause_cursor_column, cursor_row + 1U, left_chevron + lower_half, ink,
+                  inked);
 }
 
 void draw_classic_hud(RgbFrame& frame, const ZoomZooState& state,

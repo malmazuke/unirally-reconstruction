@@ -3,8 +3,10 @@
 #include "race_hud.hpp"
 #include "result_screen.hpp"
 #include "zoom_zoo_movement.hpp"
+#include <bitset>
 #include <stdexcept>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 namespace {
@@ -194,6 +196,88 @@ void arrow_drawing() {
   // No chevrons: nothing drawn below the HUD row at all (a one-chevron arrow is seen there).
   require(inked_below_hud({Direction::Right, 0, false}) == 0);
   require(inked_below_hud({Direction::Right, 1, false}) == 8 * 16);
+}
+
+// CLASSIC-PAUSE-MENU (R-0078): the paused one-player race's menu, where it writes and what it
+// draws with a font whose every tile is solid.
+void pause_menu() {
+  const auto cells = unirally::classic_pause_menu_cells();
+  require(cells.count() == 2 * 15 + 2 * 4 + 4);
+  const auto held = [&cells](unsigned column, unsigned row) { return cells.test(row * 32 + column); };
+  require(held(8, 5) && held(22, 6) && !held(23, 5) && !held(7, 5)); // " continue game "
+  require(held(13, 7) && held(16, 8) && !held(12, 7) && !held(17, 8)); // "quit"
+  require(held(24, 5) && held(24, 8) && !held(15, 4) && !held(15, 9)); // the cursor column
+  std::vector<std::uint8_t> font(2048, 0xff);
+  unirally::ClassicRacePresentationContent content{};
+  content.caption_font = font;
+  const auto inked = [&](std::uint16_t selection, std::string_view second, unsigned column,
+                         unsigned row) {
+    unirally::RgbFrame frame{};
+    std::bitset<256 * 224> ink;
+    unirally::draw_classic_pause_menu(frame, content, selection, second, {231, 0, 0}, ink);
+    // A tilemap row r shows on lines 8r - 1 to 8r + 6.
+    unsigned count = 0;
+    for (unsigned y = row * 8 - 1; y < row * 8 + 7; ++y)
+      for (unsigned x = column * 8; x < column * 8 + 8; ++x) count += ink.test(y * 256 + x) ? 1U : 0U;
+    return std::pair{count, static_cast<unsigned>(ink.count())};
+  };
+  // Twelve letters and four, two rows each, and the two halves of the "<".
+  require(inked(1, "quit", 9, 5) == std::pair{64U, (12U + 4U + 1U) * 2U * 64U});
+  require(inked(1, "quit", 8, 5).first == 0 && inked(1, "quit", 22, 6).first == 0);
+  require(inked(1, "quit", 24, 5).first == 64 && inked(1, "quit", 24, 7).first == 0);
+  require(inked(0xffff, "quit", 24, 7).first == 64 && inked(0xffff, "quit", 24, 6).first == 0);
+  require(inked(1, "quit", 13, 7).first == 64 && inked(1, "quit", 17, 7).first == 0);
+  // The standalone race's "restart", centred under the first line: columns 12-18.
+  require(inked(1, "restart", 12, 7).first == 64 && inked(1, "restart", 18, 8).first == 64);
+  require(inked(1, "restart", 11, 7).first == 0 && inked(1, "restart", 19, 7).first == 0);
+  require(inked(1, "restart", 0, 0).second == (12U + 7U + 1U) * 2U * 64U);
+}
+
+// $83:F915-F92C: closing the menu clears the player's cells until the queue writes them again;
+// the cells' `$0D19` still keeps the up arrow off rows 5-6. A split race keeps its cells.
+void pause_clears_player_cells() {
+  const auto zoom = unirally::classic_race_scenario(unirally::ClassicRaceTrack::ZoomZoo);
+  unirally::ZoomZooState racing{};
+  racing.fade_level = 30;
+  racing.race.riders[0].laps_remaining = 2;
+  auto crossing = racing;
+  crossing.race.riders[0].next_checkpoint = 1;
+  crossing.race.riders[0].checkpoint_display_countdown = 120;
+  crossing.race.riders[0].time_digits = {0, 3, 1, 2, 3};
+  const auto run = [&](bool split) {
+    unirally::ClassicRaceHudClock queue;
+    auto before = racing, at = crossing;
+    before.split_screen = at.split_screen = split;
+    queue.observe_update(before, before);
+    queue.observe_update(before, before); // the clock digits are written
+    queue.observe_update(before, at);     // the crossing's cells are drawn
+    queue.observe_update(at, at);
+    require(queue.published().player_cells.has_value() && !queue.published().player_cells_cleared);
+    auto opened = at, resumed = at;
+    opened.pause.selection = 1;
+    opened.pause.suspended_updates = 1;
+    resumed.pause.suspended_updates = 2;
+    queue.observe_update(at, opened);
+    require(!queue.published().player_cells_cleared); // the menu covers them; nothing is cleared
+    queue.observe_update(opened, resumed);             // CONTINUE GAME, shown in this picture
+    return queue;
+  };
+  auto queue = run(false);
+  require(queue.published().player_cells_cleared && queue.published().player_cells.has_value());
+  require(unirally::classic_race_hud_text(crossing, zoom, std::nullopt, queue.published())
+              .player_cells.empty());
+  require(!run(true).published().player_cells_cleared);
+  // A HUNTER effect's skipped update runs no menu ($83:CC9A-CCA2, R-0052), and a standalone
+  // restart starts the menu's count again: neither closes it.
+  auto skipping = crossing;
+  skipping.hunter.skip_update = 1;
+  require(!unirally::classic_pause_menu_closed(skipping, crossing));
+  auto paused = crossing, restarted = crossing;
+  paused.pause.suspended_updates = 5;
+  require(!unirally::classic_pause_menu_closed(paused, restarted));
+  auto closed = paused;
+  closed.pause.suspended_updates = 6;
+  require(unirally::classic_pause_menu_closed(paused, closed));
 }
 
 // RACE-OFFSCREEN-ARROW: the caption is the HUD queue's last task, so a caption consumed on
@@ -1742,5 +1826,7 @@ int main() {
   arrow_redraw();
   arrow_drawing();
   caption_queue();
+  pause_menu();
+  pause_clears_player_cells();
 
 }

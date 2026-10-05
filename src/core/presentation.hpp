@@ -203,6 +203,10 @@ struct ClassicHudPublished {
     bool clock_blanked{};
     // What the two centred fields hold, nothing while blank.
     std::optional<std::string> player_cells{}, opponent_cells{};
+    // $83:F915-F92C: confirming CONTINUE GAME in a one-player race zeroes the menu's map rows,
+    // the player's cells among them, until the queue next writes those cells; what they hold
+    // (`$0D19`, which keeps an up arrow off rows 5-6) is unchanged (R-0078).
+    bool player_cells_cleared{};
     // The direction arrow the NMI last drew, nothing while none shows.
     std::optional<ClassicRaceArrow> arrow{};
     // The caption table entry (1-255) the caption cells show, 0 while blank.
@@ -350,6 +354,7 @@ private:
                                         const ZoomZooState& updated);
     void service_one_field(const ZoomZooState& updated);
     void redraw_arrow(const ZoomZooState& previous, const ZoomZooState& updated);
+    void clear_after_pause(const ZoomZooState& previous, const ZoomZooState& updated);
     void request_caption(const ZoomZooState& previous, const ZoomZooState& updated);
 };
 // Presentation-only $0D45/$0D47 upper-body overlay frames. The original
@@ -527,6 +532,10 @@ struct ClassicRacePresentationContent {
     // alone gives NOW PLAYING's with the cycle at phase 0, where the laboratory's menu route
     // leaves it.
     std::array<std::uint8_t, 32> neon_menu_colours{};
+    // The pause menu's second choice. A race from the menus shows the original's "quit", which
+    // ends the race for them (R-0060); the standalone race restarts in place (M4-16) and says so.
+    enum class PauseSecondChoice { quit, restart };
+    PauseSecondChoice pause_second_choice{PauseSecondChoice::quit};
 };
 // R-0068, NEON (track 42 in one-player play, `$12D1`): $83:D1EE-D247 moves the green level
 // `$12D3` towards `levels[palette]` (presentation.neon.green-levels, `$83:D1C3`; `palette` is the
@@ -582,8 +591,9 @@ RgbFrame render_classic_race(const ZoomZooState& state,
                              const ClassicRacePresentationContent& content,
                              const ZoomZooState* previous_update = nullptr,
                              const ClassicRaceHistory* history = nullptr);
-// Authored standalone pause menu over a race picture (M4-16): the picture is
-// halved, then RESUME / RESTART RACE is drawn with the selection marker.
+// Authored pause menu over a split-screen race picture (M4-16): the picture is halved, then
+// RESUME / RESTART RACE is drawn with the selection marker. One-player races show the
+// original's menu instead (R-0078).
 void draw_race_pause_menu(RgbFrame& frame, std::uint16_t selection,
                           std::array<std::uint8_t, 3> panel, std::array<std::uint8_t, 3> ink);
 // The accepted DRAGSTER v1 presentation entries (M3-02, M4-01); the race
