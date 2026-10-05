@@ -856,11 +856,10 @@ void finish_update(const ZoomZooState& state, ZoomZooState& next,
     }
     const auto previous_reward_cursor = whole.rewards.read_cursor;
     const auto previous_reward_total = whole.rewards.feature_total;
-    update_opponent_announcements(whole, outcomes[1].reward, next.opponent_hints.active,
-                                  content.movement,
-                                  state.native_initialization
-                                      ? std::span<std::uint8_t>{next.learned_weights[1]}
-                                      : std::span<std::uint8_t>{});
+    update_opponent_announcements(
+        whole, outcomes[1].reward, next.opponent_hints.active, content.movement,
+        state.native_initialization ? std::span<std::uint8_t>{next.learned_weights[1]}
+                                    : std::span<std::uint8_t>{});
     if (previous_reward_cursor != whole.rewards.read_cursor)
         race_sound::announcement_voice(next, 1, whole.rewards.entries[whole.rewards.read_cursor],
                                        content.announcement_voices);

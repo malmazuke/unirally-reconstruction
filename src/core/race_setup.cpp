@@ -318,7 +318,8 @@ ZoomZooState classic_race_start(const ZoomZooContent& content,
     state.player_announcements.hint_updates = first_hint_phase;
     // $82:D93E-D94C: rider 1's bit is `1 << character` only for characters 1-15; for MIKE the
     // branch at $82:D943 skips the store, so a rider 1 who is MIKE never has hints (R-0082).
-    state.opponent_hints.active = scenario.opponent_tutorial_hints && scenario.pairing.opponent != 0;
+    state.opponent_hints.active =
+        scenario.opponent_tutorial_hints && scenario.pairing.opponent != 0;
     state.race.checkpoint_seen.fill(checkpoint_unseen);
     return state;
 }
@@ -337,11 +338,11 @@ void restart_zoom_zoo(ZoomZooState& state, const ZoomZooContent& content) {
     const bool opponent_hints = state.demo_ai || state.opponent_hints.active;
     // The race's setup reads the same medal again ($80:99ED): the qualifying score stays.
     const auto qualifying_score = state.stunt.qualifying_score;
-    auto scenario = state.split_screen && !state.demo_ai
-                      ? classic_local_race_scenario(state.track, state.pairing, hints,
-                                                    opponent_hints)
-                  : state.demo_ai ? classic_race_scenario(state.track)
-                                  : classic_race_scenario(state.track, state.pairing, hints);
+    auto scenario =
+        state.split_screen && !state.demo_ai
+            ? classic_local_race_scenario(state.track, state.pairing, hints, opponent_hints)
+        : state.demo_ai ? classic_race_scenario(state.track)
+                        : classic_race_scenario(state.track, state.pairing, hints);
     if (state.demo_ai) {
         scenario.pairing = state.pairing;
         scenario.tutorial_hints = hints;

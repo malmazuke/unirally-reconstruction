@@ -428,9 +428,9 @@ void update_opponent_tutorial_hints(ZoomZooState& state) {
     hints.updates = 0;
     hints.group = static_cast<std::uint16_t>((hints.group + 1U) & hint_groups_mask);
     for (unsigned i = 0; i < announcement::hints_per_group; ++i)
-        queue_opponent_announcement(
-            state.movement,
-            announcement::first_hint + announcement::hints_per_group * hints.group + i);
+        queue_opponent_announcement(state.movement,
+                                    announcement::first_hint
+                                        + announcement::hints_per_group * hints.group + i);
 }
 
 } // namespace
