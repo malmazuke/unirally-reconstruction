@@ -1,5 +1,7 @@
 #include "race_hud.hpp"
 
+#include "announcements.hpp"
+
 #include "picture.hpp"
 #include "presentation.hpp"
 #include "zoom_zoo_movement.hpp"
@@ -243,11 +245,11 @@ void ClassicRaceHudClock::observe_update(const ZoomZooState& previous,
     on_screen_ = latest_;
     clear_after_pause(previous, updated);
     if (updated.fade_level >= race_nmi_fade) ++race_nmis_;
-    hold_lower_clock(previous, updated);
     redraw_arrow(previous, updated);
     request_fields(previous, updated);
     if (classic_race_scenario(updated.track).stunt_event) request_stunt_fields(previous, updated);
     request_caption(previous, updated);
+    if (updated.split_screen) request_split_fields(previous, updated);
     service_one_field(updated);
 }
 
@@ -257,8 +259,25 @@ void ClassicRaceHudClock::observe_update(const ZoomZooState& previous,
 // arrow redraw and the queue's next write of the cells put them back (R-0078).
 void ClassicRaceHudClock::clear_after_pause(const ZoomZooState& previous,
                                             const ZoomZooState& updated) {
-    // A split race's clear is not followed (R-0079's "Not covered").
-    if (updated.split_screen || !classic_pause_menu_closed(previous, updated)) return;
+    // `$130F` keeps the row the menu last opened at until it opens again.
+    if (previous.pause.selection == 0 && updated.pause.selection != 0)
+        menu_lower_view_ = updated.pause.lower_view;
+    if (!classic_pause_menu_closed(previous, updated)) return;
+    // In a split race the same 129 words start at the menu's own row (`$130F`: 0x18A8 for pad
+    // 1's, 0x1A68 for pad 2's), so they take that view's caption, which stays blank until its
+    // next upload, and its side arrow, until the NMI next redraws it (R-0082).
+    if (updated.split_screen) {
+        const bool lower = menu_lower_view_;
+        for (auto* hud : {&on_screen_, &latest_}) {
+            (lower ? hud->opponent_caption_event : hud->caption_event) = 0;
+            auto& arrow = lower ? hud->lower_arrow : hud->arrow;
+            if (arrow
+                && (arrow->direction == ClassicRaceArrow::Direction::Left
+                    || arrow->direction == ClassicRaceArrow::Direction::Right))
+                arrow.reset();
+        }
+        return;
+    }
     for (auto* hud : {&on_screen_, &latest_}) {
         hud->player_cells_cleared = true;
         if (hud->arrow && hud->arrow->direction == ClassicRaceArrow::Direction::Up)
@@ -266,13 +285,53 @@ void ClassicRaceHudClock::clear_after_pause(const ZoomZooState& previous,
     }
 }
 
-// $81:C6D1-C6DC: rider 1's clock is rewritten only while it is unfinished, so a VS race's forced
-// finish of rider 1 leaves the digits the update before wrote (R-0081).
-void ClassicRaceHudClock::hold_lower_clock(const ZoomZooState& previous,
-                                           const ZoomZooState& updated) {
-    if (updated.split_screen && !previous.race.riders[1].finished
-        && updated.race.riders[1].finished == forced_finish)
-        latest_.lower_clock = classic_split_lower_clock(previous);
+// A split race's own requests (R-0082):
+// - `$034F`, rider 1's clock: `$81:C6D1-C6DC` asks for its digits on the update after the top
+//   clock's tick (`$0E29` = 1) while rider 1 is unfinished, so a VS race's forced finish leaves
+//   the last digits written; its last crossing asks for the blank (`$81:824E`). A stunt event's
+//   count-down clock asks for both clocks together ($81:C7EE-C7F1).
+// - `$0EE9`, rider 1's caption: its consumer (`$81:BEF1-BF31`) takes an event into `$0EC7`
+//   (`$81:C05C-C0A0`), or, on its first dry look after a take (`$11C3`), copies the blank
+//   message (`$81:BFB9-BFD0`).
+void ClassicRaceHudClock::request_split_fields(const ZoomZooState& previous,
+                                               const ZoomZooState& updated) {
+    const auto& before = previous.race.riders[1];
+    const auto& after = updated.race.riders[1];
+    if (before.laps_remaining != 0 && after.laps_remaining == 0) pending_.lower_clock_blank = true;
+    const bool stunt_event = classic_race_scenario(updated.track).stunt_event;
+    const auto& timer = updated.movement.timer;
+    if (!after.finished
+        && (stunt_event ? latest_.lower_clock != classic_hud_clock(classic_hud_timer(updated))
+                        : timer.subframe == 1U))
+        pending_.lower_clock = true;
+    const auto& queue_before = previous.movement.rewards;
+    const auto& queue_after = updated.movement.rewards;
+    if (queue_after.read_cursor != queue_before.read_cursor) {
+        opponent_caption_buffer_ = queue_after.entries[queue_after.read_cursor];
+        opponent_consumed_since_blank_ = true;
+    } else if (queue_before.cooldown <= 2U && queue_after.cooldown == announcement::empty_queue_wait
+               && opponent_consumed_since_blank_) {
+        opponent_caption_buffer_ = 0;
+        opponent_consumed_since_blank_ = false;
+    } else {
+        return;
+    }
+    pending_.opponent_caption = true;
+}
+
+// The split chain's clocks (`$81:E014-E245`): the top clock's blank or digits, then the
+// bottom clock's. Returns whether one was written, which spends the NMI.
+bool ClassicRaceHudClock::service_split_clock(const ZoomZooState& updated) {
+    if (pending_.lower_clock_blank) {
+        latest_.lower_clock_blanked = true;
+        pending_.lower_clock_blank = pending_.lower_clock = false;
+        return true;
+    }
+    if (!pending_.lower_clock) return false;
+    pending_.lower_clock = false;
+    if (latest_.lower_clock_blanked) return false;
+    latest_.lower_clock = classic_hud_clock(classic_hud_timer(updated));
+    return true;
 }
 
 // $81:E8E8-$81:EB83: after an update whose progress phase is clear the NMI leaves the arrow
@@ -411,9 +470,16 @@ ClassicHudCellRequest ClassicRaceHudClock::crossing_cell(const ZoomZooState& pre
 }
 
 // Service the first pending field and stop, as $81:F357 does: the left field, the clock's
-// blanking, the clock's digits, each rider's cells, then the caption.
+// blanking, the clock's digits, each rider's cells, then the caption. A split race's chain
+// (`$81:D853`, R-0082) puts the bottom clock after the top one and rider 1's caption last, and
+// always clears the left field, whose handler writes both views.
 void ClassicRaceHudClock::service_one_field(const ZoomZooState& updated) {
     const bool finished = updated.race.riders[0].laps_remaining == 0;
+    const bool split = updated.split_screen;
+    if (pending_.left && split) {
+        pending_.left = false;
+        return;
+    }
     if (pending_.left) {
         // `$81:EB91` takes `finish` once the laps are gone and `$81:EB98` jumps to the
         // lap-number writer on a tour race; both paths end at `$81:ECBC`, which clears the flag
@@ -442,6 +508,7 @@ void ClassicRaceHudClock::service_one_field(const ZoomZooState& updated) {
             return;
         }
     }
+    if (split && service_split_clock(updated)) return;
     // The player's cells, drawn or blanked, overwrite an up arrow's rows 5-6.
     const auto cover_arrow = [this](std::size_t rider) {
         auto& arrow = rider == 0 ? latest_.arrow : latest_.lower_arrow;
@@ -480,6 +547,12 @@ void ClassicRaceHudClock::service_one_field(const ZoomZooState& updated) {
     if (pending_.caption) {
         latest_.caption_event = caption_buffer_;
         pending_.caption = false;
+        return;
+    }
+    // $81:E87C-E8C5, the split chain's last: rider 1's caption.
+    if (pending_.opponent_caption) {
+        latest_.opponent_caption_event = opponent_caption_buffer_;
+        pending_.opponent_caption = false;
     }
 }
 
@@ -800,13 +873,15 @@ void draw_split_hud(RgbFrame& frame, const ZoomZooState& state,
     // column 1, as above (R-0080).
     draw_bg3_text(frame, font, lower_left == "finish" ? 1U : 2U, 15, lower_left, opponent_ink,
                   inked);
-    // $81:824B and $81:E13B-E1C2: rider 1's last crossing blanks its clock, which is not
-    // rewritten while it is finished ($81:C6D1-C6DC, R-0080): a VS race's forced finish leaves
-    // the last one written (R-0081).
-    if (opponent.finished == forced_finish && published && published->lower_clock)
-        draw_bg3_text(frame, font, 24, 15, *published->lower_clock, opponent_ink, inked);
-    else if (!(opponent.finished && opponent.laps_remaining == 0))
+    // The lower clock as the split chain last wrote it (R-0082); without that history, from the
+    // state: one tick behind the top, blank once rider 1 has crossed its last line ($81:824B,
+    // $81:E13B-E1C2, R-0080).
+    if (published && (published->lower_clock || published->lower_clock_blanked)) {
+        if (!published->lower_clock_blanked)
+            draw_bg3_text(frame, font, 24, 15, *published->lower_clock, opponent_ink, inked);
+    } else if (!(opponent.finished && opponent.laps_remaining == 0)) {
         draw_bg3_text(frame, font, 24, 15, classic_split_lower_clock(state), opponent_ink, inked);
+    }
     draw_bg3_text(frame, font, 13, 3, hud.player_cells, ink, inked);
     draw_bg3_text(frame, font, 13, 17, hud.opponent_cells, opponent_ink, inked);
     // $81:E87C-E8C5: rider 1's caption, all sixteen cells from column 8 of rows 19-20 (R-0080).

@@ -147,7 +147,6 @@ void ClassicRaceHistoryTracker::reset() {
     transition_member_.reset();
     neon_green_.reset();
     on_screen_neon_green_.reset();
-    pending_opponent_caption_ = latest_opponent_caption_ = on_screen_opponent_caption_ = 0;
 }
 
 void ClassicRaceHistoryTracker::observe_update(const ZoomZooState& previous,
@@ -156,16 +155,6 @@ void ClassicRaceHistoryTracker::observe_update(const ZoomZooState& previous,
     // R-0036: update N builds its objects with overlays chosen from the look
     // state before its own look step; picture N+1 shows them.
     on_screen_ = latest_;
-    on_screen_opponent_caption_ = latest_opponent_caption_;
-    latest_opponent_caption_ = pending_opponent_caption_;
-    if (updated.split_screen) {
-        const auto& before = previous.movement.rewards;
-        const auto& after = updated.movement.rewards;
-        if (after.read_cursor != before.read_cursor)
-            pending_opponent_caption_ = after.entries[after.read_cursor];
-        else if (before.cooldown <= 2 && after.cooldown == announcement::empty_queue_wait)
-            pending_opponent_caption_ = 0;
-    }
     on_screen_barf_ = latest_barf_;
     on_screen_flip_prior_ = latest_flip_prior_;
     latest_flip_prior_ = previous.hunter.blink != 0;
