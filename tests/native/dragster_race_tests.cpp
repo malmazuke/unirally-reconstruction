@@ -1,7 +1,9 @@
 // ROM-free checks for DRAGSTER on the shared race engine (R-0038): playfield
 // geometry, scenario values, state identity and the physical D-pad adapter.
 #include "front_end.hpp"
+#include "race_camera.hpp"
 #include "zoom_zoo_movement.hpp"
+#include <algorithm>
 #include <array>
 #include <stdexcept>
 #include <vector>
@@ -179,4 +181,71 @@ int main() {
     auto waiting=quitting;
     over=update_race_for_menus(waiting,nothing,content);
     require(!over && waiting.pause.suspended_updates==6);
+
+    // R-0079: a two-pad race (2P on DRAGSTER) pauses from either pad ($83:CD05-CD28): pad 2's
+    // opening puts the menu in the lower view; pad 1's axis chooses before pad 2's; the release
+    // waits for both Starts ($83:CD39-CD4B). The pads publish once the fade has.
+    auto local=start; // a local race's pairing and tier (R-0071)
+    local.pairing={0,1};local.opponent_tier={0,0,0x60};
+    initialize_split_cameras(local);
+    auto racing=local;racing.fade_level=30;
+    ControllerButtons second_start{};second_start.start=true;
+    auto opened=racing;
+    update_zoom_zoo(opened,nothing,second_start,content);
+    require(opened.pause.selection==1 && opened.pause.lower_view && opened.pause.suspended_updates==1);
+    auto upper=racing;
+    update_zoom_zoo(upper,confirm,second_start,content);
+    require(upper.pause.selection==1 && !upper.pause.lower_view);
+    ControllerButtons down1{},up2{};down1.down=true;up2.up=true;
+    auto chosen=opened;
+    update_zoom_zoo(chosen,down1,up2,content);
+    require(chosen.pause.selection==0xffffU);
+    chosen=opened;
+    update_zoom_zoo(chosen,nothing,up2,content);
+    require(chosen.pause.selection==1);
+    auto resumed=opened;
+    update_zoom_zoo(resumed,nothing,content);
+    require(resumed.pause.released==1);
+    update_zoom_zoo(resumed,nothing,second_start,content);
+    require(resumed.pause.selection==0 && !resumed.pause.lower_view && resumed.pause.released==1);
+    update_zoom_zoo(resumed,nothing,second_start,content); // reopened and closed at once
+    require(resumed.pause.selection==0 && resumed.pause.released==1 && resumed.pause.suspended_updates==4);
+    // $83:F8D5-F912: QUIT (in the countdown, a restart) writes the confirming pad's total, pad
+    // 1's when both hold Start.
+    auto local_quit=opened;local_quit.pause.selection=0xffffU;local_quit.pause.released=1;
+    over=update_race_for_menus(local_quit,nothing,second_start,content);
+    require(over && over->opponent_total==0xea62 && over->player_total!=0xea62);
+    local_quit=opened;local_quit.pause.selection=0xffffU;local_quit.pause.released=1;
+    over=update_race_for_menus(local_quit,confirm,second_start,content);
+    require(over && over->player_total==0xea62 && over->opponent_total!=0xea62);
+    // The lower view is one more byte, 1, only while it is set; a stray or other byte is refused,
+    // and so is a lower view without two pads. (A paused update from the start state, before the
+    // countdown runs.)
+    auto saved=local;saved.movement.frame+=1;saved.fade_level=1;saved.pause.selection=1;saved.pause.suspended_updates=1;
+    saved.pause.lower_view=true;
+    const auto open_bytes=serialize_zoom_zoo(saved);
+    require(open_bytes.size()==785 && open_bytes.back()==1);
+    require(serialize_zoom_zoo(deserialize_zoom_zoo(open_bytes))==open_bytes);
+    auto upper_saved=saved;upper_saved.pause.lower_view=false;
+    const auto upper_bytes=serialize_zoom_zoo(upper_saved);
+    require(upper_bytes.size()==784 && std::equal(upper_bytes.begin(),upper_bytes.end(),open_bytes.begin()));
+    auto two=open_bytes;two.back()=2;rejects([&]{(void)deserialize_zoom_zoo(two);});
+    auto closed=serialize_zoom_zoo(local);closed.push_back(1);rejects([&]{(void)deserialize_zoom_zoo(closed);});
+    auto one_view=saved;one_view.split_screen=false;rejects([&]{(void)serialize_zoom_zoo(one_view);});
+    // A league pair's wrapper carries the same byte at its end.
+    auto pair_saved=saved;pair_saved.league_statistics.enabled=true;
+    const auto pair_bytes=serialize_zoom_zoo(pair_saved);
+    require(pair_bytes.back()==1 && serialize_zoom_zoo(deserialize_zoom_zoo(pair_bytes))==pair_bytes);
+    auto pair_closed=upper_saved;pair_closed.league_statistics.enabled=true;
+    require(serialize_zoom_zoo(pair_closed).size()+1==pair_bytes.size());
+    auto unpaused=local;unpaused.league_statistics.enabled=true;
+    auto stray_unpaused=serialize_zoom_zoo(unpaused);stray_unpaused.push_back(1);
+    rejects([&]{(void)deserialize_zoom_zoo(stray_unpaused);});
+    // $83:F6FD-F791: a league race against the computer shows only a message after the countdown:
+    // Down does not move the choice, so Start resumes rather than quits.
+    auto league=start;league.fade_level=30;league.movement.countdown=0;league.league_statistics.enabled=true;
+    update_zoom_zoo(league,confirm,content);
+    require(league.pause.selection==1);
+    update_zoom_zoo(league,down_only,content);
+    require(league.pause.selection==1);
 }

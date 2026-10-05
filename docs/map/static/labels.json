@@ -686,6 +686,15 @@
   ]
  },
  {
+  "address": "$80:8803",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_808803",
+  "source_records": [
+   "tasks/SPLIT-HUD-GAPS.md"
+  ]
+ },
+ {
   "address": "$80:8816",
   "class": "observed",
   "comment": "instruction start",
@@ -833,7 +842,9 @@
    "docs/research/R-0060-pause-exits.md",
    "docs/research/R-0079-two-pad-pause.md",
    "tasks/FRONT-END-LAP-RESULT.md",
-   "tasks/RACE-PAUSE-EXITS.md"
+   "tasks/RACE-PAUSE-EXITS.md",
+   "tasks/SPLIT-PAUSE-MENU.md",
+   "tasks/TWO-HUMAN-RESTART.md"
   ]
  },
  {
@@ -3348,7 +3359,8 @@
   ],
   "source_records": [
    "docs/research/R-0060-pause-exits.md",
-   "docs/research/R-0079-two-pad-pause.md"
+   "docs/research/R-0079-two-pad-pause.md",
+   "tasks/TWO-HUMAN-RESTART.md"
   ]
  },
  {
@@ -3503,6 +3515,18 @@
   ],
   "source_records": [
    "docs/research/R-0057-one-run-result.md"
+  ]
+ },
+ {
+  "address": "$80:BE48",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80BE48",
+  "native": [
+   "src/core/league_menu.cpp:(file)"
+  ],
+  "source_records": [
+   "docs/research/R-0079-two-pad-pause.md"
   ]
  },
  {
@@ -11349,7 +11373,8 @@
   "comment": "routine start",
   "label": "sub_81D853",
   "source_records": [
-   "docs/research/R-0079-two-pad-pause.md"
+   "docs/research/R-0079-two-pad-pause.md",
+   "tasks/SPLIT-HUD-GAPS.md"
   ]
  },
  {
@@ -11908,6 +11933,19 @@
    "docs/research/R-0052-hunter-effects.md",
    "tasks/CLASSIC-STUNT-NAMES-review.md",
    "tasks/HUNTER-EFFECTS.md"
+  ]
+ },
+ {
+  "address": "$81:F311",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_81F311",
+  "native": [
+   "src/core/presentation.hpp:ClassicRaceHudClock",
+   "src/core/race_hud.cpp:ClassicRaceHudClock::service_one_field"
+  ],
+  "source_records": [
+   "tasks/SPLIT-HUD-GAPS.md"
   ]
  },
  {
@@ -20462,6 +20500,7 @@
   ],
   "source_records": [
    "docs/research/R-0073-league.md",
+   "docs/research/R-0079-two-pad-pause.md",
    "tasks/LEAGUE.md"
   ]
  },
@@ -21500,10 +21539,12 @@
   "comment": "instruction start",
   "label": "loc_83F695",
   "native": [
-   "src/core/presentation.cpp:race_picture_brightness"
+   "src/core/presentation.cpp:race_picture_brightness",
+   "src/core/presentation.cpp:render_classic_race"
   ],
   "source_records": [
-   "docs/research/R-0078-pause-menu-picture.md"
+   "docs/research/R-0078-pause-menu-picture.md",
+   "docs/research/R-0079-two-pad-pause.md"
   ]
  },
  {
@@ -21544,7 +21585,8 @@
   ],
   "source_records": [
    "docs/research/R-0078-pause-menu-picture.md",
-   "docs/research/R-0079-two-pad-pause.md"
+   "docs/research/R-0079-two-pad-pause.md",
+   "tasks/SPLIT-PAUSE-MENU.md"
   ]
  },
  {
@@ -21614,7 +21656,8 @@
    "src/core/race_result.cpp:update_race_for_menus"
   ],
   "source_records": [
-   "docs/research/R-0079-two-pad-pause.md"
+   "docs/research/R-0079-two-pad-pause.md",
+   "tasks/SPLIT-PAUSE-MENU.md"
   ]
  },
  {
@@ -21629,8 +21672,7 @@
   "source_records": [
    "docs/research/R-0060-pause-exits.md",
    "docs/research/R-0073-league.md",
-   "tasks/RACE-PAUSE-EXITS.md",
-   "tasks/SPLIT-PAUSE-MENU.md"
+   "tasks/RACE-PAUSE-EXITS.md"
   ]
  },
  {
@@ -21747,6 +21789,23 @@
   ],
   "source_records": [
    "docs/research/R-0078-pause-menu-picture.md"
+  ]
+ },
+ {
+  "address": "$83:F947",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_83F947",
+  "native": [
+   "src/core/presentation.cpp:paused_brightness, full_brightness",
+   "src/core/presentation.cpp:race_picture_brightness",
+   "src/core/presentation.cpp:render_classic_race",
+   "src/core/presentation.hpp:ClassicHudPublished::player_cells_cleared",
+   "src/core/race_hud.cpp:ClassicRaceHudClock::clear_after_pause",
+   "src/core/race_hud.hpp:classic_pause_menu_closed"
+  ],
+  "source_records": [
+   "docs/research/R-0079-two-pad-pause.md"
   ]
  },
  {

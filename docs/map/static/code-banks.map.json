@@ -14609,6 +14609,7 @@
     "src/core/audio_cue.hpp:AudioDispatchSite",
     "src/core/presentation.cpp:draw_pause_menu",
     "src/core/presentation.cpp:race_picture_brightness",
+    "src/core/presentation.cpp:render_classic_race",
     "src/core/race_hud.cpp:draw_classic_pause_message",
     "src/core/race_hud.cpp:pause_first_row, pause_second_row, pause_first_column, pause_second_column, pause_cursor_column",
     "src/core/race_hud.cpp:pause_lower_view_rows",
@@ -14663,6 +14664,7 @@
     "src/core/audio_cue.hpp:AudioDispatchSite",
     "src/core/presentation.cpp:paused_brightness, full_brightness",
     "src/core/presentation.cpp:race_picture_brightness",
+    "src/core/presentation.cpp:render_classic_race",
     "src/core/presentation.hpp:ClassicHudPublished::player_cells_cleared",
     "src/core/race_hud.cpp:ClassicRaceHudClock::clear_after_pause",
     "src/core/race_hud.hpp:classic_pause_menu_closed",
@@ -14840,19 +14842,19 @@
    "call returns in the calling mode": 1262
   },
   "bytes": 131072,
-  "cited_addresses": 1674,
+  "cited_addresses": 1678,
   "cited_by_class": {
    "data": 31,
-   "inferred": 294,
-   "observed": 1018,
-   "unknown": 331
+   "inferred": 295,
+   "observed": 1020,
+   "unknown": 332
   },
   "cited_by_position": {
    "dat": 31,
-   "loc": 950,
+   "loc": 953,
    "mid": 19,
    "sub": 343,
-   "unk": 331
+   "unk": 332
   },
   "conflicts": 0,
   "data": 92,

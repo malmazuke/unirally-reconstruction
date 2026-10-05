@@ -774,6 +774,19 @@ void race_result_tests() {
   require(restart.screen == FrontEndScreen::now_playing_entry &&
           restart.registers.brightness == 14 &&
           restart.records.statistics[0][0] == 0 && !restart.records.race_lost);
+  // R-0079: in 2P or VS a restart in pad 2's total goes back to NOW PLAYING too ($80:88DD);
+  // a one-player computer opponent's 0xEA62 is not the pause menu's.
+  for (const auto mode : {unirally::FrontEndMode::two_player, unirally::FrontEndMode::versus}) {
+    auto second = to_race();
+    second.mode = mode;
+    unirally::return_from_race(second, content, 5000, {0xea60, 0xea62});
+    run(second, content, 104);
+    require(second.screen == FrontEndScreen::race_restart);
+  }
+  auto computer = to_race();
+  unirally::return_from_race(computer, content, 5000, {3357, 0xea62});
+  run(computer, content, 104);
+  require(computer.screen != FrontEndScreen::race_restart);
   // R-0061: a race whose tutorial hints ended sets its rider's bit ($83:CE2C).
   auto hints_over = to_race();
   unirally::RaceTimes over_times{0xea61, 0xea60};

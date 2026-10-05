@@ -10591,10 +10591,12 @@
   {
    "address": "$83:F695",
    "native": [
-    "src/core/presentation.cpp:race_picture_brightness"
+    "src/core/presentation.cpp:race_picture_brightness",
+    "src/core/presentation.cpp:render_classic_race"
    ],
    "range_ends": [
-    "$83:F69C"
+    "$83:F69C",
+    "$83:F6A4"
    ],
    "region": "rom"
   },
@@ -10763,7 +10765,11 @@
   {
    "address": "$83:F947",
    "native": [
-    "src/core/presentation.cpp:paused_brightness, full_brightness"
+    "src/core/presentation.cpp:paused_brightness, full_brightness",
+    "src/core/presentation.cpp:render_classic_race"
+   ],
+   "range_ends": [
+    "$83:F950"
    ],
    "region": "rom"
   },
@@ -13619,7 +13625,8 @@
    "native": [
     "src/core/front_end.cpp:check_records",
     "src/core/front_end.hpp:FrontEndState::one_player",
-    "src/core/now_playing.cpp:race_fade_frame"
+    "src/core/now_playing.cpp:race_fade_frame",
+    "src/core/race_update.cpp:run_pause_menu"
    ],
    "region": "sram"
   },
@@ -17116,7 +17123,9 @@
   },
   "src/core/presentation.cpp:render_classic_race": {
    "rom": [
-    "$80:87A7"
+    "$80:87A7",
+    "$83:F695",
+    "$83:F947"
    ]
   },
   "src/core/presentation.hpp:ClassicHudCellRequest": {
@@ -18634,6 +18643,9 @@
     "$83:F6AF",
     "$83:F6FD",
     "$83:F807"
+   ],
+   "sram": [
+    "$77:10AD"
    ]
   },
   "src/core/race_update.cpp:run_physics": {

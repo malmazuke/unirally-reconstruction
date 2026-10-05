@@ -874,7 +874,10 @@ RgbFrame render_classic_race(const ZoomZooState& state,
     if (state.split_screen)
         for (int y = 111; y <= 112; ++y)
             for (int x = 0; x < 256; ++x) pixel(frame, x, y, {0, 0, 0});
-    dim_finished_league_views(frame, rider_source, scenario);
+    // $83:F695-F6A4 and $83:F947-F950 write both views' brightness bytes: a finished view is not
+    // dimmed again while the menu is open, nor on the picture that closes it (R-0079).
+    if (!paused && !(previous_update && classic_pause_menu_closed(*previous_update, state)))
+        dim_finished_league_views(frame, rider_source, scenario);
     return frame;
 }
 

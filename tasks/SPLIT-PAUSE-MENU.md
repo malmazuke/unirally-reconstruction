@@ -33,8 +33,9 @@ In a two-pad race (2P, VS, a league pair) the original reads pad 2's Start as we
 (`$83:F6B9-F6F3`: VRAM 0x18A8/0x18ED for pad 1, 0x1A68/0x1AAD for pad 2), and, in the menu modes
 whose `$77:10AD` has bit 2, shows one of eight pause messages by the pauser's rider instead once
 the countdown is over and nobody has finished (`$83:F6FD-F791`, text at `$83:F516`). A quit writes
-the pauser's total (`$83:F8DA-F912`). Native lets only a league pair's second pad pause and draws
-M4-16's authored panel over every split race.
+the confirming pad's total (`$83:F8D5-F912`; corrected at review: not the pauser's). Native lets
+only a league pair's second pad pause and draws M4-16's authored panel over every split race.
+(Review round 1 also found the messages in every league race, a human's or the computer's.)
 
 Recover and implement the pause in two-pad races from the menus: who may pause, the menu's
 half, the messages, the picture (dimming included) and the quit's totals, against captures of
@@ -67,6 +68,7 @@ All times 5 October 2026, Sydney. Captures and scripts in main `local/evidence/s
 | 3 (11:45-11:55) | Pad 2's totals and the menus' return | `twop2` (pad 2's quit), `vs2` (pad 2's countdown restart) | State equal; `vs2` went to a result with MARTIN `::00.02` where the original restarts: `$80:88DD` tests both totals, native only a league's | Test both totals in 2P and VS |
 | 4 (11:55-12:00) | The split picture is R-0078's in the pauser's view | Menu cells and words 14 rows down for the lower view, its ink, under the riders, split HUD kept out of the cells; restore checks with pad 2's menu open | Paused pictures equal except where a caption, the lower arrow or the lower colour math (existing gaps) shows; `twop-plain`: the candidate's 530 pictures byte-identical to main's | League pairs |
 | 5 (12:00-12:10) | League pairs pause the same way and show messages after the countdown | `league` (my countdown pauses froze the countdown, so the first post-countdown pause was a restart: kept as `league-restart`, recaptured later); pack v35 with `$83:F516`; `draw_classic_pause_message` | State equal on both; message cells exact for pad 1 (0 of 81,920 pixels) and both pads; pad 2's only the lower colour math (960 pixels) | Records, gates, review |
+| 6 (13:20-13:55) | Review round 1's findings hold | Message in every league race; no second dimming of a finished view while paused or on the closing picture; ROM-free tests of pad 2's opening, the axis order, the release, the confirming pad's total, the lower-view byte (written, round-tripped, refused) in local and league states, and 2P/VS restarts back to NOW PLAYING; records corrected | The review's `leaguecpu` 91/91 pictures; `leaguefin`'s paused pictures from about 23,600 differing pixels to about 520, all in existing gaps; every capture's state still equal | Re-run the gates on the candidate; re-review |
 
 ## Handoff
 

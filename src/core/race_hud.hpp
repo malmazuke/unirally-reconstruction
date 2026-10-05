@@ -29,9 +29,9 @@ using Bg3Cells = std::bitset<32 * 28>;
 // (the cursor and its blank); in the lower view of a split race the same 14 rows further down
 // (R-0079). Its words replace whatever the HUD had there.
 Bg3Cells classic_pause_menu_cells(bool lower_view);
-// $83:F6FD-F791: a league pair's pause after the start countdown, with neither human finished,
-// shows only a message, the pauser's rider's entry of `$83:F516`, in row 5 (or 19) from column
-// 8: those sixteen cells are all it writes (R-0079).
+// $83:F6FD-F791: a league race's pause after the start countdown, against a human or the
+// computer, with neither rider finished, shows only a message, the pauser's rider's entry of
+// `$83:F516`, in row 5 (or 19) from column 8: those sixteen cells are all it writes (R-0079).
 bool classic_pause_shows_message(const ZoomZooState& state);
 Bg3Cells classic_pause_message_cells(bool lower_view);
 void draw_classic_pause_message(RgbFrame& frame, const ClassicRacePresentationContent& content,

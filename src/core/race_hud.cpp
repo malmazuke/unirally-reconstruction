@@ -798,7 +798,7 @@ Bg3Cells classic_pause_menu_cells(bool lower_view) {
 }
 
 bool classic_pause_shows_message(const ZoomZooState& state) {
-    return state.pause.selection != 0 && state.league_statistics.enabled && state.split_screen
+    return state.pause.selection != 0 && state.league_statistics.enabled
         && !state.movement.countdown && !state.race.riders[0].finished
         && !state.race.riders[1].finished;
 }

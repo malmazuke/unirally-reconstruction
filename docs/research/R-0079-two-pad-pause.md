@@ -31,19 +31,27 @@ Tags: **[L]** listing only, **[C]** confirmed in a capture below.
   when pad 1 holds Start at the confirming press, else into pad 2's (`$77:07D3`). `$80:88DD` sends
   either total's 0xEA62 back to NOW PLAYING. [C: `twop2` 2840, pad 2 quits, totals 60000/60001, the
   result shows MARTIN QUIT; `vs2` 2140, pad 2 restarts during the countdown, NOW PLAYING]
-- **League messages.** In the menu modes whose `$77:10AD` has bit 2 (a league's pairs; not 2P or
-  VS), after the countdown with neither human finished, `$83:F6FD-F791` writes only a message: the
+- **League messages.** In every league race (`$77:10AD` = 4, written once for the league at
+  `$80:BE48`; not 2P or VS), a pair's or a human's against the computer, after the countdown with
+  neither rider finished, `$83:F6FD-F791` writes only a message: the
   pauser's rider's sixteen bytes of `$83:F516` (eight messages, the table twice, by rider) in row 5
   (or 19) from column 8, characters through the caption alphabet (`$80:81FE`; `!` `$80:8223`, `"`
   `$80:8224`, a space tile 0x80). `$0EF3` stays 1, so Start only resumes. [C: `league` 7500, COLIN
-  (7) "interlude" above; 7600, TONY (9) "mellowin'" below; 7700, both pads at once: pad 1's]
+  (7) "interlude" above; 7600, TONY (9) "mellowin'" below; 7700, both pads at once: pad 1's; the
+  review's `leaguecpu`, CRAIG (11) against the computer: "timeout", and Down does not move the
+  choice]
 - **The picture.** As in one-player play (R-0078): brightness 7 over both views while open, 15 on
   the picture that closes it; the words in the pauser's view, in that view's ink (red above, the
-  lower view's own below), under both riders. [C]
+  lower view's own below), under both riders. `$83:F695-F6A4` and `$83:F947-F950` write both views'
+  brightness bytes (`$7E:2065`, `$7E:2069`), so a league pair's finished view, which `$83:E8F0`
+  otherwise keeps at 7, is at the paused 7 like the other while the menu is open and at 15 on the
+  closing picture, until the next race update publishes 7 again. [C: the review's `leaguefin`
+  9000-9053]
 
 ## Native
 
-- `run_pause_menu` takes pad 2's Start in every two-pad race (`state.split_screen`; the demo's
+- `run_pause_menu` shows only the message in every league race after the countdown with neither
+  rider finished (before this task, only in a pair's). It takes pad 2's Start in every two-pad race (`state.split_screen`; the demo's
   computer riders never reach it), records the menu's view in `pause.lower_view` on an opening,
   clears it on CONTINUE GAME, and lets pad 2's axis choose when pad 1's is centred. The update
   clears the release only when neither pad holds Start. `update_race_for_menus` writes the
@@ -55,8 +63,9 @@ Tags: **[L]** listing only, **[C]** confirmed in a capture below.
 - The picture: `render_classic_race` draws the original's menu, or a league pair's message, in the
   pauser's view (`classic_pause_menu_cells`, `classic_pause_message_cells`), keeps the split HUD
   (drawn after the riders) out of those cells, and dims split races too. M4-16's authored panel is
-  gone. Pack profile v35 adds the messages (`presentation.race.pause-messages.v1`); with an older
-  pack a message draws nothing.
+  gone. A league pair's finished view is not dimmed again while paused, nor on the closing
+  picture. Pack profile v35 adds the messages (`presentation.race.pause-messages.v1`); with an
+  older pack a message draws nothing.
 - Not followed: the CONTINUE GAME clear in a split race (the 129 words from the pauser's
   `$130F`), which `ClassicRaceHudClock` follows only in one-player play.
 
@@ -88,9 +97,19 @@ countdown, the camera, both riders' laps, finish flags and checkpoint display co
 | `league-restart` | 412 | 0 | 7440, pad 1's restart |
 | `twop-plain` | 921 | 0 | none |
 
-Main's native, given `twop`'s pads, diverges from frame 2200, where pad 2 pauses. Fresh-process
-saves (`front_end_runner --restore-check`) round-trip and continue equal at nine frames of `twop`,
-`twop2` and `vs2`, five of them with pad 2's menu open, and refuse a lower-view byte of 2.
+The review's withheld captures (`review/`): `zz2p` (2P on ZOOM ZOO: both pads' Start on one frame,
+pad 1's axis over pad 2's, held Starts, pad 1 confirming pad 2's menu), `drfin` (2P DRAGSTER after
+pad 2 finished: pad 2's Start opens nothing, the finished pad 2 confirms QUIT), `leaguefin` (a pair
+after COLIN finished) and `leaguecpu` (a league race against the computer): 694, 2,037 and 2,071
+race frames compared, 0 differences (`leaguecpu`'s race against the computer writes no timeline;
+its 91 pictures are all equal).
+
+Main's native, given `twop`'s pads, diverges from frame 2200, where pad 2 pauses. Saves
+(`front_end_runner --restore-check`: serialized, read back and continued in the same process)
+round-trip and continue equal at nine frames of `twop`, `twop2` and `vs2`, five of them with pad
+2's menu open, and refuse a lower-view byte of 2; the review adds 27 more across 2P, VS and league
+pairs. The check takes DRAGSTER two-pad races and league wrappers; it refuses a ZOOM ZOO 2P
+state (layout F).
 
 Pictures (`classify.py`): a differing picture is classed by where its pixels lie.
 
@@ -102,6 +121,14 @@ Pictures (`classify.py`): a differing picture is classed by where its pixels lie
 | `league` | 61 | 120 | 44 | 262 | 223 |
 | `league-restart` | 101 | 0 | 44 | 459 | 6 |
 | `twop-plain` | | | | 177 | 353 |
+| review `zz2p` | 169 | 1 | 0 | 665 | 445 |
+| review `drfin` | 0 | 0 | 25 | 108 | 667 |
+| review `leaguefin` | 0 | 16 | 34 | 0 | 71 |
+| review `leaguecpu` | 50 | 0 | 0 | 41 | 0 |
+
+In all, 731 paused pictures are equal, 197 differ only in caption cells and 187 in the other
+existing gaps: `drfin`'s 25 in the finished lower view's HUD cells, `leaguefin`'s 34 in cells the
+picture just before the pause already differs in, and two cells under the riders.
 
 The racing pictures that differ are the three gaps below, the results' medal icons (R-0071) and,
 in `vs2` and `league-restart` (7596-7601), NOW PLAYING after the restart ("Not covered"). The pictures with
@@ -113,7 +140,8 @@ no pause shows too: in `twop-plain` the candidate's 530 pictures are byte-identi
    and 19-20, where the menu and the messages also go; native prints the player's in the one-player
    rows 10-11 and the lower rider's not at all (R-0071's residual). The original's menu and message
    replace the pauser's caption, so a paused picture differs only in the other view's.
-2. A lower-view side arrow in column 28 of rows 20-21 that native does not draw.
+2. A lower-view side arrow in column 28 of rows 20-21 (column 5 on ZOOM ZOO) that native does not
+   draw.
 3. Where the lower view's rider covers that view's BG3 ink, the original darkens the rider
    (`league` 7201-7244, 37 pixels; 7600-7639, 24 a picture); native adds the upper view's red
    (R-0042). No 2P or VS paused picture shows the difference.
@@ -129,6 +157,6 @@ gap 3's 960 pixels.
 - **After a two-human restart** the original re-enters NOW PLAYING through `$80:BC36-BC45`, inside
   the one-player handler: its NOW PLAYING then shows no win counts (`vs2` 2289 on, up to 1,183
   pixels), and the later flow is not captured. Native shows the counts.
-- The three split-race gaps above, and the 2P result's medal icons (R-0071).
-- A pause opened by both pads at once in the countdown, pad 2's message while pad 1 has finished,
-  and other tracks' two-pad races (only DRAGSTER is captured).
+- The three split-race gaps above, the 2P result's medal icons (R-0071), a 2P finished view's
+  darkening and the finished split HUD (`drfin`): queued as SPLIT-HUD-GAPS.
+- Two-pad races on tracks other than DRAGSTER and ZOOM ZOO, and a ZOOM ZOO 2P save.

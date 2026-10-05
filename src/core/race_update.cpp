@@ -196,7 +196,6 @@ ControllerButtons release_settled_player(const ZoomZooState& state, ZoomZooState
 bool run_pause_menu(const ZoomZooState& state, ZoomZooState& next, const ControllerButtons& buttons,
                     const ControllerButtons& second, const ZoomZooContent& content) {
     const bool two_pads = state.split_screen; // the caller leaves the demo's computer riders out
-    const bool league_pair = state.league_statistics.enabled && two_pads;
     const bool start = buttons.start || (two_pads && second.start);
     const bool opening = (buttons.start && !state.race.riders[0].finished)
                       || (two_pads && second.start && !state.race.riders[1].finished);
@@ -210,9 +209,10 @@ bool run_pause_menu(const ZoomZooState& state, ZoomZooState& next, const Control
         pause.selection = 1;
         pause.lower_view = two_pads && !buttons.start;
     }
-    // $83:F6FD-F791: two unfinished humans see only a pause message after the countdown.
-    const bool message_only = league_pair && !whole.countdown && !state.race.riders[0].finished
-                           && !state.race.riders[1].finished;
+    // $83:F6FD-F791: a league race (`$77:10AD` bit 2, against a human or the computer) shows only a
+    // pause message after the countdown while neither rider has finished (R-0079).
+    const bool message_only = state.league_statistics.enabled && !whole.countdown
+                           && !state.race.riders[0].finished && !state.race.riders[1].finished;
     // $83:F807-F82E: pad 1's vertical axis chooses, and pad 2's when pad 1's is centred.
     if (message_only)
         pause.selection = 1;
