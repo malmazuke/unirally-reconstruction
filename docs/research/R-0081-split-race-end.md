@@ -52,9 +52,14 @@ Tags: **[L]** listing only, **[C]** confirmed in a capture.
 - **League pairs wait too.** A league pair's `$77:0750` takes bit 2 only from `$77:0742`
   (`$80:9A05-9A0B`) [L], and a league pair does not set it. [C: `league-idle`: rider 0 finishes on
   8960, its driver is spent on 9320, and rider 1 is still unfinished at 9499]
-- **The lower clock.** `$81:C6F0-C6F8` does not rewrite rider 1's clock while its flag is set. A
-  forced finish therefore leaves the last clock written, the one before the force, frozen there.
-  [C: `vs-idle` shows 0:43:2 from 4347]
+- **The clocks.** The clock routine asks for each rider's clock to be rewritten only while that
+  rider is unfinished:
+  - rider 1's through `$81:C6D1-C6DC` (`$0F01`, `$034F`);
+  - the player's through `$81:C6F0-C6F8` (`$0EFF`, `$034D`).
+
+  A forced finish therefore leaves the forced rider's last clock written, the one before the
+  force, frozen there. [L; C: `vs-idle` shows rider 1's clock at 0:43:2 from 4347; the review's
+  `vs-opp`, rider 1 first, shows the player's at 0:43:2 from 4348]
 
 ## Native
 
@@ -78,7 +83,8 @@ Tags: **[L]** listing only, **[C]** confirmed in a capture.
 - Picture:
   - `dim_finished_views` dims a forced rider 1's view from the forcing update's picture.
   - `ClassicRaceHudClock` keeps the lower clock text as the forcing update's predecessor left it
-    (`ClassicHudPublished::lower_clock`), and `draw_split_hud` draws that.
+    (`ClassicHudPublished::lower_clock`), and `draw_split_hud` draws that. Its queue stops
+    rewriting the player's clock once the player is forced (review round 1).
   - `ClassicWindowPointer` starts a forced rider 1's driver in the forcing update. The picture's
     window follows its own copy of the drivers in every race, as before.
 
@@ -92,6 +98,7 @@ Tags: **[L]** listing only, **[C]** confirmed in a capture.
 | `vs-idle` | 2,610 | 0 | 4588 (S+601) | 296 of 1,300 | 496 in rider 1's caption rows (its tutorial captions and their ink over the rider); 4 split upload timing (3931, 3986-3988); 504 the results' icons |
 | `zzap-long` | 6,282 | 0 | 8308 | 403 of 800 | 11 caption rows; 2 split upload timing at rider 1's finish (8068-8069); 384 the results' icons |
 | `league-idle` | 2,471 | 0 | none by 9499, as the original | 0 of 3 | 3 caption rows |
+| review `vs-opp` (VS, pad 2 first, pad 1 idle) | 2,610 | 0 | 4588 | 231 of 1,300 | 562 caption rows; 3 split upload timing (3931, 3986-3987); 504 the results' icons |
 
 - On main, `zzap-long` ended at 7856 and `vs-idle` 241 frames after 3985.
 - Restore: a VS state saved at 3990, 4347, 4348, 4400 or 4587 resumes byte-identical to the end
@@ -109,8 +116,10 @@ Tags: **[L]** listing only, **[C]** confirmed in a capture.
 
 ## Not covered
 
-- **Rider 1 forcing rider 0**, the listing's order, is not captured. The unit test follows the
-  listing. Native's picture then dims rider 0's view from the next update, as for a crossing.
+- **Rider 1 forcing rider 0** was captured by the tier-1 review. Its `vs-opp` capture is in the
+  reviewer's scratchpad; it is withheld, not part of this record's evidence. On `ba07f88` its
+  race words matched, but 238 pictures (4350-4587) showed the player's clock running on. The
+  player's clock gate (`$81:C6F0`) fixed that, and the numbers above are after the fix.
 - **A second rider finishing on its own while the first driver lives**, then being forced over
   its real finish (`$83:EA5D` writes 0xFFFF over 1). This is inferred and not captured; native
   does the same.

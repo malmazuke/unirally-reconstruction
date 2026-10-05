@@ -331,6 +331,21 @@ void split_forced_clock() {
   const auto clock = queue.published().lower_clock;
   require(clock && *clock == unirally::classic_split_lower_clock(previous));
   require(*clock != unirally::classic_split_lower_clock(later));
+  // The player forced (rider 1 first): its clock's digits are no longer
+  // rewritten
+  // ($81:C6F0-C6F8).
+  unirally::ClassicRaceHudClock top;
+  top.observe_update(previous, previous);
+  top.observe_update(previous, previous);
+  const auto held = top.published().clock;
+  require(held.has_value());
+  auto forced_player = later;
+  forced_player.race.riders[1].finished = 0;
+  forced_player.race.riders[0].finished = unirally::forced_finish;
+  top.observe_update(previous, forced_player);
+  top.observe_update(forced_player, forced_player);
+  top.observe_update(forced_player, forced_player);
+  require(top.published().clock == held);
   // Rider 1's own finish keeps no clock: its crossing blanks it.
   auto crossed = updated;
   crossed.race.riders[1].finished = 1;

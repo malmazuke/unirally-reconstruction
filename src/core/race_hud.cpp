@@ -272,7 +272,7 @@ void ClassicRaceHudClock::redraw_arrow(const ZoomZooState& previous, const ZoomZ
     // $81:DB10-DDA4: a split race's lower arrow is redrawn every NMI; its rows 16-17 are skipped
     // while rider 1's cells show (`$0D1B`, R-0080).
     if (updated.split_screen) {
-        // $81:C6F0-C6F8: a VS race's forced finish of rider 1 stops its clock's rewrites (R-0081).
+        // $81:C6D1-C6DC: a VS race's forced finish of rider 1 stops its clock's rewrites (R-0081).
         if (!previous.race.riders[1].finished && updated.race.riders[1].finished == forced_finish)
             latest_.lower_clock = classic_split_lower_clock(previous);
         latest_.lower_arrow = classic_race_lower_arrow(previous, updated, race_nmis_);
@@ -423,8 +423,9 @@ void ClassicRaceHudClock::service_one_field(const ZoomZooState& updated) {
     }
     // `$034D` is positive while the digits the timer keeps differ from the ones the cells
     // hold; the handler writes them and returns. Once blanked they are never rewritten,
-    // because the race clock has stopped.
-    if (!latest_.clock_blanked) {
+    // because the race clock has stopped. $81:C6F0-C6F8 sets it only while the player is
+    // unfinished, so a VS race's forced finish leaves the last digits written (R-0081).
+    if (!latest_.clock_blanked && updated.race.riders[0].finished != forced_finish) {
         auto digits = classic_hud_clock(classic_hud_timer(updated));
         if (latest_.clock != digits || pending_.clock_rewrite) {
             latest_.clock = std::move(digits);
@@ -791,7 +792,7 @@ void draw_split_hud(RgbFrame& frame, const ZoomZooState& state,
     draw_bg3_text(frame, font, lower_left == "finish" ? 1U : 2U, 15, lower_left, opponent_ink,
                   inked);
     // $81:824B and $81:E13B-E1C2: rider 1's last crossing blanks its clock, which is not
-    // rewritten while it is finished ($81:C6F0-C6F8, R-0080): a VS race's forced finish leaves
+    // rewritten while it is finished ($81:C6D1-C6DC, R-0080): a VS race's forced finish leaves
     // the last one written (R-0081).
     if (opponent.finished == forced_finish && published && published->lower_clock)
         draw_bg3_text(frame, font, 24, 15, *published->lower_clock, opponent_ink, inked);
