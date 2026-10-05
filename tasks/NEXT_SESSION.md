@@ -1,5 +1,22 @@
 # Next session
 
+**5 October 2026: CLASSIC-PAUSE-MENU is accepted (tier 2, #53) and integrated by merge commit.**
+Pausing a one-player race now shows the original's pause picture: the whole screen at brightness 7
+and CONTINUE GAME / QUIT with a "<" in the race's text layer (`$83:F63E-F979`), the HUD hidden
+under the words, a countdown digit's window over them, and CONTINUE GAME clearing the player's
+split cells until the HUD queue writes them again. In the live check the user could not find how
+to quit; QUIT now says what the second choice does from the menus (R-0060). The standalone
+`--track` race restarts from the same menu and labels it RESTART. Native pictures equal the
+original's on 1,931 of 1,931 frames of six captures (586 with the menu open) and on the
+reviewer's two withheld captures (200/200, and 2,259/2,260 where the one difference is an
+existing arrow gap main draws too). Race state is unchanged: the eleven frozen gates, 2,387,105
+updates of the race sweep and 179 front-end manifests equal main; the sweep's only differing
+pictures are 400 with the menu open. [R-0078](../docs/research/R-0078-pause-menu-picture.md) and
+[CLASSIC-PAUSE-MENU](CLASSIC-PAUSE-MENU.md) define the domain; split-screen pauses (pad 2,
+the pause messages) are the new tier-1 [SPLIT-PAUSE-MENU](SPLIT-PAUSE-MENU.md). Next
+ready: SPLIT-PAUSE-MENU, AUDIO-UPLOAD-SPEED, ROLLING-CONTACT, PORTABLE-CORE-IDENTITY,
+ATTRACT-DEMO. No M4 tag, reset, spending or provider change is authorized.
+
 **5 October 2026: AUDIO-ONE-PLAYER is accepted (tier 1, #52) and integrated by merge commit.**
 Native audio now follows the whole one-player game: every race song on all 45 tracks with the
 race's measured loading, the race's surface, landing, clock and HUNTER effect sounds, the stunt

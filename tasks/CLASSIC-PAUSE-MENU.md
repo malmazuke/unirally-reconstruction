@@ -2,8 +2,9 @@
 
 ## Assignment
 
-- Status: **claimed** 5 October 2026 (prepared 3 October 2026 by the AUDIO-ONE-PLAYER session,
-  from the user's live check), on main `cbbd9ba` after verifying PR #52's merge, main equal to
+- Status: **accepted** 5 October 2026 (tier 2, [PR #53](https://github.com/malmazuke/unirally-reconstruction/pull/53));
+  claimed the same day (prepared 3 October 2026 by the AUDIO-ONE-PLAYER session, from the user's
+  live check), on main `cbbd9ba` after verifying PR #52's merge, main equal to
   `origin/main` and `artifacts/audio-one-player-integration/closeout.json`.
 - Milestone: M4 breadth
 - Coordinator: the claiming session is coordinator, primary and integrator
@@ -87,19 +88,57 @@ All times 5 October 2026, Sydney. Captures and scripts in main `local/evidence/c
 
 ## Handoff
 
-- Head: `c505074` (implementation, R-0078, regenerated maps) on `task/classic-pause-menu`, pushed;
-  [PR #53](https://github.com/malmazuke/unirally-reconstruction/pull/53) open as a draft.
-- Verified: R-0078's table; `presentation_tests` covers the menu's cells and drawing and the clear
-  (both labels, a split race keeping its cells); clang-tidy finds no function over 80 lines;
-  `coverage native-symbols --check` passes with no uncited address.
-- Gates: `local/evidence/classic-pause-menu/gates.sh` run on a detached checkout of `c505074`
-  (`.worktrees/classic-pause-menu-gates`), output `gates-c505074.out`; base binaries for the
-  sweeps are main `cbbd9ba`'s lab-release build, kept in `base-cbbd9ba/`.
-- Review round 1 (Claude Opus 5.5 subagent, fresh clone at `c505074`): changes requested, three
-  findings, posted on PR #53; its report, trial patch, probe and withheld captures `fadein` and
-  `zoomlap` are kept in main `local/evidence/classic-pause-menu/review/`. All three are applied
-  (attempt 5).
-- The gate script's v1 contract lines were blank on `c505074` (the contract tool resolves the
-  `local` symlink and refuses fixtures outside the checkout); both contracts were run by hand on the
-  same checkout with fixtures under its `artifacts/` and pass. `gates-v2.sh` keeps them there.
+- Source candidate `291eb3f` on `task/classic-pause-menu` (implementation `c505074`, the GCC test
+  fix `a38d513`, the review's fixes `291eb3f`); records follow it with no source change.
+  [PR #53](https://github.com/malmazuke/unirally-reconstruction/pull/53).
+- Verified: R-0078's table (the primary's six captures 1,931/1,931; the review's `fadein` 200/200,
+  `zoomlap` 2,259/2,260 with an existing arrow gap); `presentation_tests` covers the menu's cells
+  and drawing, the clear, a split race, a HUNTER skip and the standalone restart.
+- Gates, `local/evidence/classic-pause-menu/gates.sh` on a detached checkout of `c505074`
+  (`gates-c505074.out`, logs in main `artifacts/classic-pause-menu-integration/gates-c505074/`):
+  lab-debug, lab-release, app-debug and app-release build, ctest 41/41 each; synthetic suite passed;
+  v1 winner and loser contracts pass (run by hand with the fixtures under the checkout: the script's
+  lines were blank because the contract tool resolves the `local` symlink and refuses fixtures
+  outside the checkout; `gates-v2.sh` fixes this, `v1-c505074/`); eight hidden app runs and the
+  front end's Start-held run pass with no pose fallbacks; the eleven frozen race gates pass with
+  6,023 restores and the same row digests as AUDIO-ONE-PLAYER's; the DRAGSTER fuzz gate aborts 40
+  of 40 as on main (recorded non-pass, its own follow-up); tooling 543 tests OK; no function over 80
+  lines; native-symbols check passes.
+- Gates, `gates-v2.sh` with `DIFFERENTIAL=0` on a detached checkout of `291eb3f`
+  (`gates-291eb3f.out`, logs in `artifacts/classic-pause-menu-integration/gates-291eb3f/`): the
+  same builds, ctest, synthetic suite, v1 contracts, hidden runs, tooling and rules pass. The fuzz
+  gate and the eleven state gates are cited from `c505074`: the source diff `c505074..291eb3f`
+  touches only `presentation.cpp` and `race_hud.*`, which those runners do not draw with.
+- Race equivalence sweep against main `cbbd9ba`'s binaries (both pack v34), on both candidates:
+  432 runs, 2,387,105 updates and 1,290 restarts identical; 179 runs differ only in pictures, and
+  `classify_sweep.py` finds every one of the 400 differing pictures on an update with the menu open
+  (the random schedules press Start), none elsewhere.
+- Front-end sweep against main `cbbd9ba` (`fe_equivalence.py`): 179 of 179 manifests equal in exit
+  status, state rows, stderr and race timeline, and 2,302 of 2,302 pictures both runners write; 308
+  one-player race pictures only the candidate writes.
+- R-0076's seven cue schedules: the candidate's cues are byte-identical to main's (the original
+  comparison script reports a difference on main too since AUDIO-ONE-PLAYER's cues).
+- Hosted CI (macOS, Ubuntu with sanitizers) passes on `a38d513` and `291eb3f`; `c505074`'s Ubuntu
+  job failed to compile the new test under GCC (`std::pair<unsigned, size_t>` against
+  `std::pair<unsigned, unsigned>`), fixed in `a38d513`.
+- Unavailable: local sanitizer presets (macOS 27 host; Linux CI covers them).
+- Usage: weekly 34% at claim, 36% at the records; five-hour 28%.
+- Next: SPLIT-PAUSE-MENU (tier 1, queued here), or the other ready tasks.
 
+## Review and integration
+
+- Reviewer: a fresh Claude Opus 5.5 subagent in its own clone, tier 2. Round 1 on `c505074`
+  ([review](https://github.com/malmazuke/unirally-reconstruction/pull/53)): changes requested. It
+  reproduced R-0078's table, made two withheld captures (`fadein`, `zoomlap`) and found three
+  faults: the countdown digit's window must cover the words on the picture that opens the menu
+  (`fadein` 1440, 214 pixels); CONTINUE GAME during the fade-in must show at full brightness
+  (`fadein` 1346-1347); a HUNTER effect's skipped update was taken for the menu closing and blanked
+  a split time (native probe; `$83:CC9A-CCA2`). All three fixed in `291eb3f` (attempt 5); the agent
+  reply on the pull request answers each.
+- Round 2 on `291eb3f`: approved. `fadein` 200/200, `zoomlap` 2,259/2,260 (the existing 1801 arrow
+  gap), the six primary captures equal, ctest 41/41, rules clean. Its note on an uncaptured pause
+  during a HUNTER skipping effect is in R-0078's "Not covered".
+- Integration: merged by merge commit after the final head's checks; the merge, synchronized `main`
+  and cleanup are in main `artifacts/classic-pause-menu-integration/closeout.json`.
+- Scope still unverified: R-0078's "Not covered" (split-screen pauses, now SPLIT-PAUSE-MENU; the up
+  arrow under the menu; a pause during a HUNTER skipping effect; the left arrow over a rider).

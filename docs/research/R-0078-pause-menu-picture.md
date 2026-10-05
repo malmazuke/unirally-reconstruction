@@ -1,7 +1,7 @@
 # R-0078 - The one-player race's pause menu picture
 
 Status: implemented on `task/classic-pause-menu` ([CLASSIC-PAUSE-MENU](../../tasks/CLASSIC-PAUSE-MENU.md)),
-5 October 2026; in review. PAL ROM SHA-256
+5 October 2026; accepted (tier 2, PR #53). PAL ROM SHA-256
 `a1105819d48c04d680c8292bbfa9abbce05224f1bc231afd66af43b7e0a1fd4e`, audited bsnes core
 `7d5aa1e656b9171524d01b1b22917197d8121cb4` (library `e59bf88d4fc9`), Strict serialization. Private
 captures and scripts are in main `local/evidence/classic-pause-menu/`. It completes the picture
@@ -123,6 +123,8 @@ probe; `$83:CC9A-CCA2` skips the whole update, menu included).
   2's Start in every two-pad race (`$83:CD05`, R-0060): a state change, outside this tier-2 task.
 - **The up arrow.** Its cells under the menu and its rows cleared by CONTINUE GAME follow the
   listing and a native test; no capture pauses while it shows.
-- **HUNTER's skipped updates** with a split time showing are covered by a native test only.
+- **HUNTER's skipped updates** with a split time showing are covered by a native test only. A
+  pause while a HUNTER effect is skipping updates is not captured: if the original skips the menu
+  on those updates too, its picture there would show at the fade's brightness, where native draws 7.
 - **The left arrow over a rider** (`zoomlap` 1801): an existing gap, outside the pause.
 - The `$0545` name cheat's 500-frame picture (R-0060).
