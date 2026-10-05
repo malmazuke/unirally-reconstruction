@@ -14,9 +14,12 @@
   24%; standing rule: continue until weekly 80%.
 - Dependencies: TWO-PLAYER-VS (R-0071), SPLIT-HUD-GAPS (R-0080).
 - Branch and isolated worktree: `task/split-race-end` in `.worktrees/split-race-end`.
-- Owned paths: the race's finish and result-load code (`src/core/race_update.cpp`,
-  `src/core/race_result.cpp`), native tests, a research record, this record, `docs/STATE.md`,
-  `tasks/README.md`, `tasks/NEXT_SESSION.md`.
+- Owned paths: the race's finish (`src/core/race_progress.cpp`), race state and its serializer
+  (`src/core/zoom_zoo_movement.hpp`, `src/core/race_state_io.cpp`, `src/core/race_setup.cpp`), the
+  forced finish's picture (`src/core/presentation.*`, `src/core/race_hud.cpp`,
+  `src/core/race_windows.cpp`), the VS flag's setters (`src/core/front_end_runner.cpp`,
+  `src/app/frontend.hpp`, `src/app/sdl_main.cpp`), native tests, R-0081, this record,
+  `docs/STATE.md`, `tasks/README.md`, `tasks/NEXT_SESSION.md`.
 
 ## Outcome and boundaries
 
@@ -43,8 +46,10 @@ result load for 2P, VS and league pairs, against captures where the riders finis
 | 1 (17:30-17:45) | A split race starts its finish display only when both riders have finished | `zzap`'s work RAM; `$83:E7C1-E803` | `$0F0F` counts from 8067, rider 1's finish, not rider 0's at 7615. `$83:E7C3`: with `$0DE1` (split) set the count needs `$0EFF` and `$0F01`, else only `$0EFF` | Apply to every split race |
 | 2 (17:45-17:50) | Native's league-only rule generalizes | `update_finish`: `!split_screen \|\| riders[1].finished`; `split_compare.py` gains `$0F0F` | `zzap` 6,073 race frames, 0 differences (was ending at 7856); `twop`, `twop-plain`, `league` unchanged | VS first (below) |
 | 3 (17:55-18:10) | VS forces the second rider finished 360 updates after the first | Captures `vs-idle` (VS, pad 2 idle, 5,200 frames, images 3900-5199) and `zzap-long` (the review's 2P run to 8,800 frames) in main `local/evidence/split-race-end/` | `vs-idle`: pad 1 finishes on 3985; `$0F07` = 359 on 3987 and falls by one every update; at 0 on 4347 `$0F01` = 0xFFFF (rider 1 forced finished), `$0F09` starts at 359 the same way, and `$0F0F` counts 1 on 4348 to 240 on 4587 (result load); `$0F03`/`$0F05` cycle 7-24 every other update while a rider is finished (finish animation?) | Implement after the listing reader's report (`$0F03-$0F0B` meanings, which native fields exist) |
+| 4 (18:10-18:50) | The listing's drivers in race state, run in VS only, end a VS race | `drive_banner` after each `finish_rider`; `versus` set by the front end; VS split states append the drivers | `vs-idle`: 0 word differences, the race returns at 4588 as the original's; `zzap-long` 0, returns at 8308; R-0079's and the reviews' thirteen captures still 0 | Pictures |
+| 5 (18:50-19:05) | The forced finish's picture follows | `boxes.py` on both captures | Two gaps on `vs-idle`: the lower view undimmed on 4347 (the forced rider's block runs that update) and the lower clock running on (0:44:6 against 0:43:2 at 4420; `$81:C6F0` skips its rewrite). Fixed in `dim_finished_views` and `ClassicHudPublished::lower_clock`; the rest is SPLIT-CAPTIONS' classes and the results' icons | League bit 2 |
 
-## Plan (from the listing report, main `local/evidence/split-race-end/listing-report.md`)
+## Plan as first written (from the listing report, main `local/evidence/split-race-end/listing-report.md`)
 
 1. Race state: a `versus` flag (`$77:0750` bit 2, set at race setup from the front end's VS mode;
    measure a league race's bit 2 before assuming it clear) and each rider's banner driver
@@ -63,7 +68,12 @@ result load for 2P, VS and league pairs, against captures where the riders finis
    flags, `$0F0F`, `$0F03-$0F09`) and through the result; TWO-PLAYER-VS's and LEAGUE's manifests
    in the front-end sweep; R-0081; gates; tier-1 review.
 
-## Handoff (checkpoint, 5 October 2026 about 17:55 Sydney)
+Departures from the plan: the drivers run in race state only in VS and only VS states carry them
+(8 bytes after the split trailer, detected by size), so every other layout keeps its bytes; the
+window pointer keeps its own copy and only starts a forced rider 1's driver in the same update
+(R-0081, "Not covered").
+
+## Handoff (checkpoint, 5 October 2026 about 17:55 Sydney; superseded by the attempts above)
 
 - Worktree `.worktrees/split-race-end`, branch `task/split-race-end`, base `321e3d9`. Uncommitted at
   this record: the `update_finish` change (rule above), committed with this record as WIP; not

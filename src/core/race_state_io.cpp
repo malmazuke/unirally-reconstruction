@@ -904,6 +904,29 @@ std::vector<std::uint8_t> serialize_league_race(const ZoomZooState& state) {
     if (state.pause.lower_view) put8(bytes, 1);
     return bytes;
 }
+
+// A two-view state: its base layout's letter for the split layouts, the split trailer, a VS race's
+// banner drivers and the lower view's byte.
+void write_split_state(std::vector<std::uint8_t>& bytes, const ZoomZooState& state) {
+    const bool local_dragster = state.track == ClassicRaceTrack::Dragster && !state.demo_ai;
+    refuse_unless(state.native_initialization
+                      && (state.track == ClassicRaceTrack::ZoomZoo || local_dragster),
+                  "split race state requires native ZOOM ZOO or local DRAGSTER initialization");
+    refuse_unless(bytes.size() == native_race_size || bytes.size() == extended_size,
+                  "split race base layout is unsupported");
+    bytes[7] = local_dragster                   ? bytes.size() == native_race_size
+                                                    ? local_dragster_split_layout
+                                                    : extended_local_dragster_split_layout
+             : bytes.size() == native_race_size ? split_layout
+                                                : extended_split_layout;
+    write_split_trailer(bytes, state);
+    if (state.versus)
+        for (const auto& driver : state.race.banners) {
+            put16(bytes, driver.index);
+            put16(bytes, driver.life);
+        }
+    if (state.pause.lower_view) put8(bytes, 1);
+}
 } // namespace
 
 std::vector<std::uint8_t> serialize_zoom_zoo(const ZoomZooState& state) {
@@ -970,24 +993,7 @@ std::vector<std::uint8_t> serialize_zoom_zoo(const ZoomZooState& state) {
         bytes[7] = one_view_demo_layout;
         write_split_trailer(bytes, state);
     } else if (state.split_screen) {
-        const bool local_dragster = state.track == ClassicRaceTrack::Dragster && !state.demo_ai;
-        refuse_unless(state.native_initialization
-                          && (state.track == ClassicRaceTrack::ZoomZoo || local_dragster),
-                      "split race state requires native ZOOM ZOO or local DRAGSTER initialization");
-        refuse_unless(bytes.size() == native_race_size || bytes.size() == extended_size,
-                      "split race base layout is unsupported");
-        bytes[7] = local_dragster                   ? bytes.size() == native_race_size
-                                                        ? local_dragster_split_layout
-                                                        : extended_local_dragster_split_layout
-                 : bytes.size() == native_race_size ? split_layout
-                                                    : extended_split_layout;
-        write_split_trailer(bytes, state);
-        if (state.versus)
-            for (const auto& driver : state.race.banners) {
-                put16(bytes, driver.index);
-                put16(bytes, driver.life);
-            }
-        if (state.pause.lower_view) put8(bytes, 1);
+        write_split_state(bytes, state);
     }
     return bytes;
 }
