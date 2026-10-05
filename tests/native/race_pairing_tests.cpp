@@ -5,6 +5,8 @@
 #include "front_end.hpp"
 #include "opponent_ai.hpp"
 #include "presentation.hpp"
+#include "race_camera.hpp"
+#include "reward_queue.hpp"
 #include "zoom_zoo_movement.hpp"
 #include <array>
 #include <cstdint>
@@ -232,6 +234,33 @@ void paired_states_read_back() {
 
 } // namespace
 
+// R-0082: in a two-human race rider 1 has tutorial hints of its own, from its own bit, unless
+// it is MIKE; its groups come every 300 updates from 0, thirty updates after the player's, into
+// its own queue. A split state keeps the flag in its trailer and recovers the count from the clock.
+void rider_one_hints() {
+    SyntheticRace race;
+    const auto dragster = ClassicRaceTrack::Dragster;
+    auto state = classic_race_start(race.content, classic_local_race_scenario(dragster, {1, 2}, true, true));
+    initialize_split_cameras(state);
+    require(state.opponent_hints.active);
+    require(!classic_race_start(race.content, classic_local_race_scenario(dragster, {1, 0}, true, true))
+                 .opponent_hints.active);
+    require(!classic_race_start(race.content, classic_local_race_scenario(dragster, {1, 2}, true, false))
+                 .opponent_hints.active);
+    for (unsigned update = 0; update < 270; ++update) update_tutorial_hints(state);
+    require(state.player_announcements.queue.entries[1] == announcement::first_hint + 4
+            && state.movement.rewards.write_cursor == 1);
+    for (unsigned update = 270; update < 300; ++update) update_tutorial_hints(state);
+    require(state.movement.rewards.write_cursor == 5 && state.opponent_hints.group == 1);
+    for (unsigned slot = 1; slot < 5; ++slot)
+        require(state.movement.rewards.entries[slot] == announcement::first_hint + 3 + slot);
+    // Queueing ends them on a scoring event or a voice from 150, never on a hint or a lower voice.
+    require(announcement::ends_opponent_hints(1) && announcement::ends_opponent_hints(21)
+            && announcement::ends_opponent_hints(150) && announcement::ends_opponent_hints(255));
+    require(!announcement::ends_opponent_hints(22) && !announcement::ends_opponent_hints(40)
+            && !announcement::ends_opponent_hints(149));
+}
+
 int main() {
     pairings_the_menus_choose();
     opponent_tiers();
@@ -241,5 +270,6 @@ int main() {
     menus_pass_the_tutorial_bit();
     restarts_keep_the_pairing();
     paired_states_read_back();
+    rider_one_hints();
     return 0;
 }
