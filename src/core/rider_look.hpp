@@ -3,10 +3,11 @@
 //
 // Each rider turns its seat and head toward the other rider, glances back
 // after a while, or follows a scripted glance while its idle cycle is latched.
-// The original keeps this state outside the race simulation (the words listed
-// on RiderLook): nothing in gameplay reads it, so the serialized race state
-// does not carry it. It only selects the upper-body overlay frame composed into
-// each rider object.
+// It selects the upper-body overlay frame composed into each rider object, and
+// the end of a scripted glance clears the rider's idle latch, so the race
+// update runs it on its own state (`ZoomZooState::look`, R-0083). Two-view
+// states carry it; the one-player layouts do not (R-0036: the clear cannot
+// happen in one-player play).
 //
 // The per-rider words below keep the original 16-bit bit patterns.
 #include <array>

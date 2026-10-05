@@ -10,16 +10,19 @@
 - Task provider: Anthropic
 - Worker/session/runtime/model: Claude Code desktop app, Claude Opus 5.5 (`claude-opus-5-5`); one
   session as coordinator, primary and integrator
-- Actual model/reasoning effort, routing rationale: **tier 2** (D-0008), if the cause is the rider
-  look's presentation history (`ClassicRaceHistoryTracker`, R-0036); escalate to tier 1 if it is
-  race state.
+- Actual model/reasoning effort, routing rationale: prepared as tier 2. **Escalated to tier 1**
+  (D-0008) on 6 October 2026: the look's end of a scripted glance clears a rider's idle latch, a
+  race-state word, so the look moved into race state and the serialized two-view states.
 - Provider quota window (D-0004): at claim weekly 52%, five-hour 23%; standing rule: continue
   until weekly 80%.
 - Dependencies: SPLIT-CAPTIONS (R-0082), R-0036 (rider look overlays).
 - Base commit: main `ec05ea7`.
 - Branch and isolated worktree: `task/split-riders-under-ink` in `.worktrees/split-riders-under-ink`.
-- Owned paths: the rider look and overlay code (`src/core/presentation.cpp`, the look tables),
-  native tests, a research record, this record, `docs/STATE.md`, `tasks/README.md`,
+- Owned paths: the rider look (`src/core/rider_look.*`, moved into the engine library), race state
+  and its serializer (`src/core/zoom_zoo_movement.hpp`, `src/core/zoom_zoo_pack.hpp`,
+  `src/core/race_update.cpp`, `src/core/race_state_io.cpp`), the picture (`src/core/presentation.*`),
+  the runners (`src/core/front_end_runner.cpp`, `src/core/zoom_zoo_runner.cpp`), native tests,
+  R-0083 and R-0036's note, `src/core/README.md`, this record, `docs/STATE.md`, `tasks/README.md`,
   `tasks/NEXT_SESSION.md`.
 
 ## Outcome and boundaries
@@ -50,3 +53,17 @@ equal. One-player play must not move.
 | Pictures | `measure.py` over the split captures | No race-time differing picture | JSON |
 | Nothing else moves | Gates, sweeps | Unchanged in one-player play | gate logs |
 | Review | Tier 2 (or 1) | Approved | review on the pull request |
+
+## Evidence and attempts
+
+Tools are in main `local/evidence/split-riders-under-ink/`. Base binaries are main ec05ea7's
+(`base-ec05ea7/`).
+
+| Attempt | Hypothesis | Experiment | Observation | Next decision |
+| --- | --- | --- | --- | --- |
+| 1 | The idle rider 1's pose is its look | `look_compare.py` (runner `--look-timeline`) on `vs-idle` | Rider 0 equal throughout. Rider 1 diverges on 2722: native starts its second scripted glance; the original's `$0D5D` latch was cleared on 2720 at the first glance's end (`$82:87AD`) and re-latches on 2810. | The look is race state: tier 1 |
+| 2 | The engine runs the look and clears the latch | `ZoomZooState::look`, `advance_rider_look` at `$83:CDA6`, the latch clear; the history reads the previous state's look | The look equals the original's on 5 captures; `vs-idle` 350 → 796 equal pictures, `league-idle` 3/3 | Ink over BG1 |
+| 3 | A rider behind a BG1 priority tile still shows through the ink (sub screen = objects) | Skip the BG1 test where ink covers | `leaguefin` 121/121, `zz2p` +3, `zzap` 6,073/6,074, `mike1`/`p2pause` all equal | Serialization |
+| 4 | Two-view states must carry the look | A 46-byte look block in the split trailer and the league wrapper, with guards | Restores across the clear equal; 20 captures equal in words (with `$0D5B`/`$0D5D`) and look on every race frame | Records, gates, review |
+
+Left: `zzap` 6317, 22 pixels of rider 0's seat in the lower view (R-0083, "Not covered").
