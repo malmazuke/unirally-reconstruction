@@ -2,18 +2,21 @@
 
 ## Assignment
 
-- Status: ready (prepared 5 October 2026 by the SPLIT-HUD-GAPS session, from R-0080's remaining
-  caption differences).
+- Status: **claimed** 5 October 2026 by the session that closed SPLIT-RACE-END, on main `6d8d823`
+  after that task's merge (main equal to `origin/main`, closeout written). Prepared the same day by
+  the SPLIT-HUD-GAPS session, from R-0080's remaining caption differences.
 - Milestone: M4 breadth
 - Coordinator: the claiming session is coordinator, primary and integrator
-- Task provider: to be recorded at claim
-- Worker/session/runtime/model: to be recorded at claim
+- Task provider: Anthropic
+- Worker/session/runtime/model: Claude Code desktop app, Claude Opus 5.5 (`claude-opus-5-5`); one
+  session as coordinator, primary and integrator
 - Actual model/reasoning effort, routing rationale: **tier 1** (D-0008): rider 1's announcement
   queue (`movement.rewards`) is serialized race state.
-- Provider quota window (D-0004): sample at claim.
+- Provider quota window (D-0004): at claim (5 October 2026 about 22:10 Sydney) weekly 47%, five-hour
+  29%; standing rule: continue until weekly 80%.
 - Dependencies: SPLIT-HUD-GAPS (R-0080), TWO-PLAYER-VS (R-0071), LEAGUE (R-0073), the split demo's
   opponent hints (R-0069).
-- Base commit: the `main` tip at claim.
+- Base commit: main `6d8d823`.
 - Branch and isolated worktree: `task/split-captions` in `.worktrees/split-captions`.
 - Owned paths: `src/core/race_update.cpp` and the announcement queue code (rider 1's hints),
   `ClassicRaceHudClock` and `ClassicRaceHistoryTracker` (the split upload chain), native tests, a
