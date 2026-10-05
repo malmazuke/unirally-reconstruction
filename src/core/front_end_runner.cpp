@@ -35,6 +35,7 @@
 #include <string>
 #include <tuple>
 #include <utility>
+#include <span>
 #include <vector>
 
 namespace {
@@ -469,7 +470,7 @@ void check_local_restore(const unirally::ZoomZooState& race_state,
     restored = unirally::deserialize_zoom_zoo(saved);
     if (unirally::serialize_zoom_zoo(*restored) != saved)
         throw std::runtime_error("local DRAGSTER save did not round-trip");
-    const auto refused = [](std::vector<std::uint8_t> bytes) {
+    const auto refused = [](std::span<const std::uint8_t> bytes) {
         try {
             (void)unirally::deserialize_zoom_zoo(bytes);
         } catch (const std::invalid_argument&) {
@@ -478,7 +479,7 @@ void check_local_restore(const unirally::ZoomZooState& race_state,
         return false;
     };
     auto invalid = saved;
-    invalid[783] = 1; // The trailer's last byte is demo_ai, zero for local riders.
+    invalid[invalid.size() - 1 - lower_view] = 1; // the trailer's last byte: demo_ai, zero here
     if (!refused(invalid)) throw std::runtime_error("local save accepted demo AI");
     if (lower_view) {
         invalid = saved;
