@@ -83,7 +83,7 @@ int main(int argc, char** argv) try {
     const auto content = unirally::classic_race_content(pack, scenario.track);
     auto state = unirally::classic_race_start(content, scenario);
     unirally::initialize_split_cameras(state);
-    state.demo_ai = state.demo.opponent_hints_active = true;
+    state.demo_ai = state.opponent_hints.active = true;
     state.pairing = {4, 14}; // $77:0748/$77:0749 at the frame-1448 boundary.
     state.opponent_tier.ai_level = 0;
     scenario.pairing = state.pairing;

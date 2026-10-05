@@ -384,7 +384,7 @@ std::string start_race(RaceBetweenMenus& race, const unirally::ClassicContentPac
             unirally::initialize_split_cameras(race.state);
         else
             unirally::initialize_second_camera(race.state);
-        race.state.demo_ai = race.state.demo.opponent_hints_active = true;
+        race.state.demo_ai = race.state.opponent_hints.active = true;
         if (split) race.state.opponent_tier.ai_level = 0;
         race.presentation = unirally::classic_race_presentation_content(pack, scenario);
         race.presentation->rider_names = front_end.records.rider_names;
@@ -401,7 +401,8 @@ std::string start_race(RaceBetweenMenus& race, const unirally::ClassicContentPac
         local ? unirally::classic_local_race_scenario(
                     unirally::ClassicRaceTrack{front_end.tour_menu.track},
                     {front_end.rider_menu.rider, front_end.second_rider},
-                    ((front_end.records.tutorial_bits >> front_end.rider_menu.rider) & 1U) == 0)
+                    ((front_end.records.tutorial_bits >> front_end.rider_menu.rider) & 1U) == 0,
+                    ((front_end.records.tutorial_bits >> front_end.second_rider) & 1U) == 0)
               : unirally::one_player_race_scenario(front_end);
     const auto loading_frames = unirally::race_loading_frames(front_end);
     if (loading_frames == 0 && initialization == 0) return "its loading time is not known";
@@ -468,8 +469,10 @@ void check_local_restore(const unirally::ZoomZooState& race_state,
     // one byte after them (R-0079).
     const auto lower_view = race_state.pause.lower_view ? 1U : 0U;
     const auto versus = race_state.versus ? 8U : 0U;
-    if (saved.size() != 784 + versus + lower_view || saved[7] != 'H')
-        throw std::runtime_error("local DRAGSTER save is not layout H");
+    // DRAGSTER's two-pad layouts are H and I, ZOOM ZOO's F and G.
+    const bool dragster = race_state.track == unirally::ClassicRaceTrack::Dragster;
+    if (saved.size() != 784 + versus + lower_view || saved[7] != (dragster ? 'H' : 'F'))
+        throw std::runtime_error("local save is not layout H or F");
     restored = unirally::deserialize_zoom_zoo(saved);
     if (unirally::serialize_zoom_zoo(*restored) != saved)
         throw std::runtime_error("local DRAGSTER save did not round-trip");
@@ -481,9 +484,16 @@ void check_local_restore(const unirally::ZoomZooState& race_state,
         }
         return false;
     };
+    // The trailer's last two bytes: the split flag and demo_ai. A ZOOM ZOO two-view state may be
+    // the split demo's (R-0069), so only DRAGSTER refuses demo AI; any two-view state refuses a
+    // clear split flag.
+    const auto trailer_end = saved.size() - lower_view - versus;
     auto invalid = saved;
-    invalid[invalid.size() - 1 - lower_view - versus] = 1; // the trailer's last byte: demo_ai
-    if (!refused(invalid)) throw std::runtime_error("local save accepted demo AI");
+    invalid[trailer_end - 1] = 1;
+    if (dragster && !refused(invalid)) throw std::runtime_error("local save accepted demo AI");
+    invalid = saved;
+    invalid[trailer_end - 2] = 0;
+    if (!refused(invalid)) throw std::runtime_error("local save accepted a clear split flag");
     if (lower_view) {
         invalid = saved;
         invalid.back() = 2;
@@ -491,13 +501,14 @@ void check_local_restore(const unirally::ZoomZooState& race_state,
     }
     if (versus) {
         invalid = saved;
-        invalid[784] = 6; // rider 0's banner index: 0 or 7..24
+        invalid[trailer_end] = 6; // rider 0's banner index, first in the VS block: 0 or 7..24
         if (!refused(invalid)) throw std::runtime_error("local save accepted a banner index of 6");
     }
     auto extended = race_state;
     extended.special_tiles[0].mud_cooldown = 1;
     const auto extended_saved = unirally::serialize_zoom_zoo(extended);
-    if (extended_saved.size() != 836 + versus + lower_view || extended_saved[7] != 'I'
+    if (extended_saved.size() != 836 + versus + lower_view
+        || extended_saved[7] != (dragster ? 'I' : 'G')
         || unirally::serialize_zoom_zoo(unirally::deserialize_zoom_zoo(extended_saved))
                != extended_saved)
         throw std::runtime_error("extended local DRAGSTER save failed round-trip");

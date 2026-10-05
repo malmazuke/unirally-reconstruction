@@ -211,10 +211,13 @@ struct ClassicHudPublished {
     std::optional<ClassicRaceArrow> arrow{};
     // A split race's lower view: rider 1's arrow, redrawn by every NMI (`$81:DB10-DDA4`, R-0080).
     std::optional<ClassicRaceArrow> lower_arrow{};
-    // The lower view's clock as the last rewrite before a VS race's forced finish left it.
+    // A split race's lower clock as the split chain last wrote it (`$034F`, R-0082): nothing
+    // until its first write, and blank from rider 1's last crossing.
     std::optional<std::string> lower_clock{};
-    // The caption table entry (1-255) the caption cells show, 0 while blank.
-    unsigned caption_event{};
+    bool lower_clock_blanked{};
+    // The caption table entry (1-255) the caption cells show, 0 while blank; rider 1's in a
+    // split race's lower view (`$0EE9`, R-0082).
+    unsigned caption_event{}, opponent_caption_event{};
     // A stunt event's score cells, columns 23-25: the setup's `0` until the NMI writes a score.
     std::array<char, 3> score_cells{' ', ' ', '0'};
     bool operator==(const ClassicHudPublished&) const = default;
@@ -322,8 +325,8 @@ public:
         pending_ = {};
         slot_times_ = {};
         race_nmis_ = 0;
-        caption_buffer_ = 0;
-        consumed_since_blank_ = false;
+        caption_buffer_ = opponent_caption_buffer_ = 0;
+        consumed_since_blank_ = opponent_consumed_since_blank_ = menu_lower_view_ = false;
         score_buffer_ = 0;
     }
     void observe_update(const ZoomZooState& previous, const ZoomZooState& updated);
@@ -339,6 +342,8 @@ private:
         // ($81:C7EC, then $81:C830 skips the cells' update), so the NMI rewrites what the cells
         // hold and spends the update. `score`: `$12C9`, a stunt event's score field.
         bool left{}, clock_blank{}, clock_rewrite{}, score{}, caption{};
+        // A split race's `$034F` (digits or, at rider 1's last crossing, blank) and `$0EE9`.
+        bool lower_clock{}, lower_clock_blank{}, opponent_caption{};
         std::array<ClassicHudCellRequest, 2> cells{};
     };
     ClassicHudPublished latest_{}, on_screen_{};
@@ -351,6 +356,11 @@ private:
     // been consumed since the last blank was written.
     unsigned caption_buffer_{};
     bool consumed_since_blank_{};
+    // Rider 1's in a split race: `$0EC7` as its caption table entry, and `$11C3`.
+    unsigned opponent_caption_buffer_{};
+    bool opponent_consumed_since_blank_{};
+    // `$130F`: the pause menu last opened in the lower view.
+    bool menu_lower_view_{};
     // `$12B9`: the score the update last split into `$12BD/$12C1/$12C5` for the NMI.
     std::uint16_t score_buffer_{};
     // The clock the first rider through each slot stored, minutes, tens,
@@ -365,8 +375,10 @@ private:
     ClassicHudCellRequest crossing_cell(const ZoomZooState& previous, std::size_t rider,
                                         const ZoomZooState& updated);
     void service_one_field(const ZoomZooState& updated);
+    bool service_split_clock(const ZoomZooState& updated);
+    bool service_cells(const ZoomZooState& updated);
     void redraw_arrow(const ZoomZooState& previous, const ZoomZooState& updated);
-    void hold_lower_clock(const ZoomZooState& previous, const ZoomZooState& updated);
+    void request_split_fields(const ZoomZooState& previous, const ZoomZooState& updated);
     void clear_after_pause(const ZoomZooState& previous, const ZoomZooState& updated);
     void request_caption(const ZoomZooState& previous, const ZoomZooState& updated);
 };
@@ -399,7 +411,7 @@ struct ClassicRaceHistory {
     // R-0068: NEON's green level (`$12D3`) as the update before the picture left it; the NMI
     // writes it into colour 113. Nothing for a caller without the history.
     std::optional<std::uint8_t> neon_green{};
-    unsigned opponent_caption_event{}; // Split HUD's delayed lower caption.
+    unsigned opponent_caption_event{}; // The split chain's lower caption (R-0082).
 };
 // The countdown's transition member for a track: 5 + `$1229`, which
 // $83:CC05-CC08 latches at race initialization from the player's reflection
@@ -474,7 +486,7 @@ public:
                 on_screen_barf_,
                 on_screen_flip_prior_,
                 on_screen_neon_green_,
-                on_screen_opponent_caption_};
+                clock_.published().opponent_caption_event};
     }
     const RiderLookState& look() const { return look_; }
 
@@ -492,7 +504,6 @@ private:
     // after it shows it) and after the update on screen; the setup leaves 0. Nothing on another
     // track.
     std::optional<std::uint8_t> neon_green_{}, on_screen_neon_green_{};
-    unsigned pending_opponent_caption_{}, latest_opponent_caption_{}, on_screen_opponent_caption_{};
 };
 // The content one track's race is drawn from, selected by track from the pack.
 // Every span is pack content; the scenario and geometry come from the engine.

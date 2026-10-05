@@ -147,7 +147,6 @@ void ClassicRaceHistoryTracker::reset() {
     transition_member_.reset();
     neon_green_.reset();
     on_screen_neon_green_.reset();
-    pending_opponent_caption_ = latest_opponent_caption_ = on_screen_opponent_caption_ = 0;
 }
 
 void ClassicRaceHistoryTracker::observe_update(const ZoomZooState& previous,
@@ -156,16 +155,6 @@ void ClassicRaceHistoryTracker::observe_update(const ZoomZooState& previous,
     // R-0036: update N builds its objects with overlays chosen from the look
     // state before its own look step; picture N+1 shows them.
     on_screen_ = latest_;
-    on_screen_opponent_caption_ = latest_opponent_caption_;
-    latest_opponent_caption_ = pending_opponent_caption_;
-    if (updated.split_screen) {
-        const auto& before = previous.movement.rewards;
-        const auto& after = updated.movement.rewards;
-        if (after.read_cursor != before.read_cursor)
-            pending_opponent_caption_ = after.entries[after.read_cursor];
-        else if (before.cooldown <= 2 && after.cooldown == announcement::empty_queue_wait)
-            pending_opponent_caption_ = 0;
-    }
     on_screen_barf_ = latest_barf_;
     on_screen_flip_prior_ = latest_flip_prior_;
     latest_flip_prior_ = previous.hunter.blink != 0;
@@ -813,6 +802,29 @@ void draw_pause_menu(RgbFrame& frame, const ZoomZooState& state,
                             ink, caption_ink);
 }
 
+// Over the riders: the channel-6 window member, the split's dividing lines and the finished
+// views' dimming.
+void draw_window_and_views(RgbFrame& frame, const ZoomZooState& state,
+                           const ClassicRacePresentationContent& content,
+                           const ZoomZooState* previous_update, const ClassicRaceHistory* history,
+                           const std::array<std::uint8_t, 512>& cgram) {
+    // Every member covers both objects as well as the backgrounds: inside the window the
+    // original shows the flat window colour and nothing else (ZOOM-ZOO-WINDOW-EFFECTS:
+    // start-line frames 1450, 1583 and 1649 of the M4-16 primary and countdown-pause originals
+    // with a rider under the countdown sign and the GO letters, and the opponent-won banner
+    // over the riding player on 6724-6800 of the countdown pause). R-0040's "0-6 before the
+    // riders" came from DRAGSTER frames with no rider under those members; on its release-3213
+    // race the opponent sits under the digits on 57 frames, all of which this order matches.
+    const auto window_index = race_window_member(state, content, history);
+    if (window_index)
+        render_window_xor(frame, dragster_window_table(content.window_tables, *window_index),
+                          colour(cgram, 0));
+    if (state.split_screen)
+        for (int y = 111; y <= 112; ++y)
+            for (int x = 0; x < 256; ++x) pixel(frame, x, y, {0, 0, 0});
+    dim_finished_views(frame, state, previous_update, content.scenario);
+}
+
 } // namespace
 
 std::optional<RgbFrame> visible_race_result(const ZoomZooState& state,
@@ -862,8 +874,6 @@ RgbFrame render_classic_race(const ZoomZooState& state,
             : std::nullopt;
     const auto bg1_above_objects = draw_race_backgrounds(frame, vram, cgram, content, scroll,
                                                          second_scroll ? &*second_scroll : nullptr);
-    const auto window_index = race_window_member(state, content, history);
-    const auto window_colour = colour(cgram, 0);
     // The caption (R-0042) and the HUD (R-0043) are BG3, drawn over the track and under the
     // riders; where no sprite covers the ink it is the flat colour, which matches the original
     // on every other measured frame.
@@ -882,7 +892,11 @@ RgbFrame render_classic_race(const ZoomZooState& state,
                          history ? history->opponent_finish_frame : std::nullopt, hud, bg3_ink,
                          lower_ink, history ? history->opponent_caption_event : 0U, caption_ink);
     };
-    if (!state.split_screen) draw_hud();
+    // $80:D241 makes the objects the sub screen ($212D = 0x10) for a race from the menus, so a
+    // rider under the HUD's ink shows through its colour math, as under the caption; the idle
+    // demo leaves $212D = 0 (`$80:942D`), so its split HUD is flat ink over the riders (R-0082).
+    const bool hud_over_riders = state.split_screen && state.demo_ai;
+    if (!hud_over_riders) draw_hud();
     // The menu's words go in the HUD's layer, under the riders and the window members: on the
     // picture that opens the menu during the countdown the digit's window covers them (R-0078),
     // and a split race's riders cover them (R-0079).
@@ -894,27 +908,14 @@ RgbFrame render_classic_race(const ZoomZooState& state,
                                        state.split_screen);
     draw_race_riders(frame, rider_source, content, history, colours, scroll.flip, bg1_above_objects,
                      math);
-    // The split's HUD tile priority covers both riders at the lap-banner overlap; the menu's
-    // cells keep the menu.
-    if (state.split_screen) {
+    // The split demo's HUD tile priority covers both riders at the lap-banner overlap; the
+    // menu's cells keep the menu.
+    if (hud_over_riders) {
         const auto under_hud = paused ? std::optional<RgbFrame>(frame) : std::nullopt;
         draw_hud();
         if (under_hud) restore_bg3_cells(frame, *under_hud, menu_cells, caption_ink);
     }
-    // Every member covers both objects as well as the backgrounds: inside the window the
-    // original shows the flat window colour and nothing else (ZOOM-ZOO-WINDOW-EFFECTS:
-    // start-line frames 1450, 1583 and 1649 of the M4-16 primary and countdown-pause originals
-    // with a rider under the countdown sign and the GO letters, and the opponent-won banner
-    // over the riding player on 6724-6800 of the countdown pause). R-0040's "0-6 before the
-    // riders" came from DRAGSTER frames with no rider under those members; on its release-3213
-    // race the opponent sits under the digits on 57 frames, all of which this order matches.
-    if (window_index)
-        render_window_xor(frame, dragster_window_table(content.window_tables, *window_index),
-                          window_colour);
-    if (state.split_screen)
-        for (int y = 111; y <= 112; ++y)
-            for (int x = 0; x < 256; ++x) pixel(frame, x, y, {0, 0, 0});
-    dim_finished_views(frame, state, previous_update, scenario);
+    draw_window_and_views(frame, state, content, previous_update, history, cgram);
     return frame;
 }
 

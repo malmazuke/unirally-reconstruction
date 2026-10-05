@@ -336,6 +336,25 @@ void league_state_guards() {
     bad = saved;
     bad.back() = 2;
     rejects([&] { (void)deserialize_zoom_zoo(bad); }, "opponent tutorial flag boolean");
+    // R-0082: a stunt event's finish ends rider 1's hints and leaves its hold ($83:E8B9), so a
+    // pair's stunt state keeps a hold of up to 120; a pair's race without hints does not.
+    auto held = state;
+    held.movement.rewards.cooldown = 118;
+    const auto held_saved = serialize_zoom_zoo(held);
+    require(serialize_zoom_zoo(deserialize_zoom_zoo(held_saved)) == held_saved,
+            "a stunt event's hold after rider 1's hints");
+    SyntheticStunt race_content;
+    race_content.header[2] = 0; // a race's clock counts up
+    auto race = classic_race_start(race_content.content,
+                                   classic_local_race_scenario(ClassicRaceTrack{3}, {7, 9}));
+    race.split_screen = true;
+    race.league_statistics.enabled = true;
+    require(serialize_zoom_zoo(deserialize_zoom_zoo(serialize_zoom_zoo(race)))
+                == serialize_zoom_zoo(race),
+            "a pair's race round trip");
+    race.movement.rewards.cooldown = 118;
+    rejects([&] { (void)deserialize_zoom_zoo(serialize_zoom_zoo(race)); },
+            "a race's hold of 118 without hints");
 }
 
 void league_finish_waits_for_both() {

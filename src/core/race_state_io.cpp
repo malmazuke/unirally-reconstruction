@@ -50,6 +50,11 @@ constexpr std::size_t native_race_size = 742, extended_size = 794, other_track_s
 // A two-view state appends the second camera, two demo controllers, and the
 // pairing/tier which a one-player restore normally derives from its menus.
 constexpr std::size_t split_trailer_size = 42;
+// The split trailer's byte of rider 1's tutorial hints (`$12E5`, R-0082).
+constexpr std::size_t trailer_hints_at = 31;
+// A league pair's wrapper: its header, and the trailer after the payload, whose last byte is
+// rider 1's hints over.
+constexpr std::size_t league_header_size = 13, league_trailer_size = 97;
 constexpr std::size_t split_race_size = native_race_size + split_trailer_size;
 constexpr std::size_t extended_split_size = extended_size + split_trailer_size;
 constexpr std::size_t special_tiles_size = 52, hunter_effects_size = 62;
@@ -57,6 +62,11 @@ constexpr std::size_t stunt_event_size = 90, stunt_track_size = other_track_size
 constexpr std::size_t one_view_demo_size = other_track_size + split_trailer_size;
 // The byte a two-pad state appends while pad 2's pause menu is open (`pause.lower_view`).
 constexpr std::size_t lower_view_size = 1;
+// Flags a two-view state's trailer or a league wrapper holds that the base layout's checks need:
+// a VS race (R-0081) and rider 1's tutorial hints (R-0082).
+struct TrailerFlags {
+    bool versus{}, opponent_hints{};
+};
 // A VS race's two banner drivers, index and life each.
 constexpr std::size_t versus_block_size = 8;
 constexpr std::uint16_t longest_banner_life = banner_life_updates - 1;
@@ -208,7 +218,7 @@ void write_split_trailer(std::vector<std::uint8_t>& bytes, const ZoomZooState& s
         for (auto value : words) put16(bytes, value);
     put16(bytes, state.demo.elapsed);
     put8(bytes, state.demo.exit_requested);
-    put8(bytes, state.demo.opponent_hints_active);
+    put8(bytes, state.opponent_hints.active);
     put8(bytes, state.pairing.rider);
     put8(bytes, state.pairing.opponent);
     for (auto value : {state.opponent_tier.ai_level, state.opponent_tier.catch_up,
@@ -382,11 +392,15 @@ void read_player_announcements(Reader& in, ZoomZooPlayerAnnouncements& a) {
 
 // The opponent's queue fields, stored in the movement prefix, are bounded like the
 // player's: $82:DB87-DB94 seeds both banks from one template and $81:C27B-C280 only halves
-// toward 1. Its cooldown tops out at 40, with no tutorial. $83:E1F1 masks the sloped trick
-// selector with 7 and the flat path writes only 0 or 1; a forged 14 would alias onto 6.
-void check_opponent_queue(const ZoomZooState& state) {
+// toward 1. Its cooldown tops out at 40, or 120 while rider 1's tutorial hints run; a stunt
+// event's finish ends them ($83:E8B9) and leaves the hold, so a stunt event with a human rider 1
+// may hold 120 too (R-0082). $83:E1F1 masks the sloped trick selector with 7 and the flat path
+// writes only 0 or 1; a forged 14 would alias onto 6.
+void check_opponent_queue(const ZoomZooState& state, const ClassicRaceScenario& scenario) {
     const auto& o = state.movement.rewards;
-    refuse_unless(o.cooldown <= longest_opponent_cooldown
+    const bool hint_hold = state.opponent_hints.active
+                        || (scenario.stunt_event && scenario.pairing.opponent < rider_characters);
+    refuse_unless(o.cooldown <= (hint_hold ? longest_player_cooldown : longest_opponent_cooldown)
                       && reachable_event_one_weight(o.event_one_weight),
                   "invalid ZOOM ZOO opponent reward queue state");
     refuse_unless(state.movement.opponent_ai.trick_selector <= highest_trick_selector,
@@ -593,7 +607,7 @@ void check_lap_times(const ZoomZooState& state, const ClassicRaceScenario& scena
 void read_native_race(Reader& in, ZoomZooState& state, const ClassicRaceScenario& scenario) {
     read_result_and_charges(in, state);
     read_player_announcements(in, state.player_announcements);
-    check_opponent_queue(state);
+    check_opponent_queue(state, scenario);
     check_start_and_result(state, scenario);
     read_rolls(in, state, scenario);
     read_learned_weights(in, state);
@@ -644,7 +658,7 @@ void check_controls_and_horizon(const ZoomZooState& state, const ClassicRaceScen
 ZoomZooState deserialize_classic_race(
     std::span<const std::uint8_t> bytes, ClassicRaceTrack track, std::optional<RacePairing> pairing,
     bool tutorial_hints, std::span<const std::uint8_t> opponent_catch_up,
-    std::optional<std::uint32_t> initialization_frame = std::nullopt, bool versus = false) {
+    std::optional<std::uint32_t> initialization_frame = std::nullopt, TrailerFlags flags = {}) {
     auto scenario = pairing && pairing->opponent < rider_characters
                       ? classic_local_race_scenario(track, *pairing, tutorial_hints)
                   : pairing ? classic_race_scenario(track, *pairing, tutorial_hints)
@@ -673,7 +687,8 @@ ZoomZooState deserialize_classic_race(
     std::copy(movement_state_magic.begin(), movement_state_magic.end(), prefix.begin());
     ZoomZooState state;
     state.track = track;
-    state.versus = versus;
+    state.versus = flags.versus;
+    state.opponent_hints.active = flags.opponent_hints;
     state.pairing = scenario.pairing;
     state.opponent_tier = opponent_tier(scenario, opponent_catch_up);
     state.native_initialization = native_initialization;
@@ -900,7 +915,7 @@ std::vector<std::uint8_t> serialize_league_race(const ZoomZooState& state) {
         for (const auto count : counts) put8(bytes, count);
     for (const auto count : state.league_statistics.wipeouts) put16(bytes, count);
     for (const auto points : state.league_statistics.opponent_points) put16(bytes, points);
-    put_bool(bytes, state.league_statistics.opponent_hints_over);
+    put_bool(bytes, !state.opponent_hints.active); // rider 1's hints over
     if (state.pause.lower_view) put8(bytes, 1);
     return bytes;
 }
@@ -1010,6 +1025,19 @@ void validate_split_demo_words(const DemoControllers& demo) {
                       "split demo controller words are invalid");
 }
 
+// Rider 1's hint counter and group are not stored: while its hints run they follow the race's
+// unpaused updates from 0, as the player's follow them from 30 (check_hint_timeline, R-0082).
+void derive_opponent_hint_clock(ZoomZooState& state, std::uint32_t initialization_frame) {
+    auto& hints = state.opponent_hints;
+    hints.updates = hints.group = 0;
+    if (!hints.active) return;
+    refuse_unless(state.movement.frame >= initialization_frame + state.pause.suspended_updates,
+                  "rider 1's hint clock is before the race's initialization");
+    const auto clock = state.movement.frame - initialization_frame - state.pause.suspended_updates;
+    hints.updates = static_cast<std::uint16_t>(clock % hint_interval);
+    hints.group = static_cast<std::uint16_t>((clock / hint_interval) % hint_groups);
+}
+
 // $83:E7C3-E7E4: a split race's finish display counts only once both riders have finished
 // (R-0081).
 void check_split_finish_display(const ZoomZooState& state) {
@@ -1067,7 +1095,7 @@ ZoomZooState read_demo_trailer(ZoomZooState state, std::span<const std::uint8_t>
     const auto exit_requested = in.u8(), hints_active = in.u8();
     refuse_unless(exit_requested <= 1 && hints_active <= 1, "split demo flags are invalid");
     state.demo.exit_requested = exit_requested != 0;
-    state.demo.opponent_hints_active = hints_active != 0;
+    state.opponent_hints.active = hints_active != 0;
     state.pairing = {in.u8(), in.u8()};
     state.opponent_tier.ai_level = in.u16();
     state.opponent_tier.catch_up = in.u16();
@@ -1111,16 +1139,16 @@ ZoomZooState deserialize_native_race(std::span<const std::uint8_t> bytes,
                                      std::optional<RacePairing> pairing, bool tutorial_hints,
                                      std::span<const std::uint8_t> opponent_catch_up,
                                      std::optional<std::uint32_t> initialization_frame,
-                                     bool versus = false) {
+                                     TrailerFlags flags = {}) {
     const auto track = identified_track(bytes);
     if (!track)
         return deserialize_classic_race(bytes, ClassicRaceTrack::ZoomZoo, pairing, tutorial_hints,
-                                        opponent_catch_up, initialization_frame, versus);
+                                        opponent_catch_up, initialization_frame, flags);
     std::vector<std::uint8_t> shared(bytes.begin(), bytes.begin() + native_race_size);
     const auto zoom_zoo_magic = classic_race_state_magic(ClassicRaceTrack::ZoomZoo);
     std::copy(zoom_zoo_magic.begin(), zoom_zoo_magic.end(), shared.begin());
     auto state = deserialize_classic_race(shared, *track, pairing, tutorial_hints,
-                                          opponent_catch_up, initialization_frame, versus);
+                                          opponent_catch_up, initialization_frame, flags);
     if (bytes.size() == native_race_size) return state;
     Reader tiles{bytes.subspan(native_race_size, special_tiles_size)};
     read_special_tiles(tiles, state);
@@ -1170,7 +1198,7 @@ ZoomZooState deserialize_race(std::span<const std::uint8_t> bytes,
                               std::optional<RacePairing> pairing, bool tutorial_hints,
                               std::span<const std::uint8_t> opponent_catch_up,
                               std::optional<std::uint32_t> initialization_frame = std::nullopt,
-                              bool versus = false) {
+                              TrailerFlags flags = {}) {
     const auto suffixes = split_suffixes(bytes.size());
     const auto whole = bytes;
     bytes = bytes.first(bytes.size() - suffixes.size());
@@ -1220,10 +1248,17 @@ ZoomZooState deserialize_race(std::span<const std::uint8_t> bytes,
                                           : pairing;
         if (local_dragster && pairing)
             refuse_unless(*pairing == *human, "local race pairing differs from state trailer");
-        auto state = deserialize_race(base, one_view ? std::nullopt : human, tutorial_hints,
-                                      opponent_catch_up, initialization_frame, suffixes.versus);
+        auto state = deserialize_race(
+            base, one_view ? std::nullopt : human, tutorial_hints, opponent_catch_up,
+            initialization_frame,
+            TrailerFlags{suffixes.versus, bytes[base_size + trailer_hints_at] != 0});
         state =
             read_demo_trailer(std::move(state), bytes.subspan(base_size), one_view, local_dragster);
+        refuse_unless(state.demo_ai || !state.opponent_hints.active || state.pairing.opponent != 0,
+                      "a rider 1 who is MIKE has no tutorial hints");
+        derive_opponent_hint_clock(
+            state,
+            initialization_frame.value_or(classic_race_scenario(state.track).initialization_frame));
         check_split_finish_display(state);
         Reader in{whole.subspan(bytes.size())};
         if (suffixes.versus) read_versus_block(in, state);
@@ -1232,7 +1267,7 @@ ZoomZooState deserialize_race(std::span<const std::uint8_t> bytes,
         return state;
     }
     return deserialize_native_race(bytes, pairing, tutorial_hints, opponent_catch_up,
-                                   initialization_frame, versus);
+                                   initialization_frame, flags);
 }
 } // namespace
 
@@ -1245,16 +1280,22 @@ std::optional<ZoomZooState> deserialize_league_race(std::span<const std::uint8_t
     const auto size = header.u16();
     const RacePairing pairing{header.u8(), header.u8()};
     const auto split = header.flag();
-    const bool lower_view = bytes.size() == 13U + size + 97U + lower_view_size;
-    refuse_unless(size <= 1006 && size >= 742 && (bytes.size() == 13U + size + 97U || lower_view),
-                  "league race wrapper width differs");
-    auto state = deserialize_race(bytes.subspan(13, size), pairing, true, {});
+    const bool lower_view =
+        bytes.size() == league_header_size + size + league_trailer_size + lower_view_size;
+    refuse_unless(
+        size <= 1006 && size >= 742
+            && (bytes.size() == league_header_size + size + league_trailer_size || lower_view),
+        "league race wrapper width differs");
+    // The wrapper's last byte before the lower view: rider 1's hints over.
+    const bool opponent_hints = bytes[league_header_size + size + league_trailer_size - 1U] == 0;
+    auto state = deserialize_race(bytes.subspan(league_header_size, size), pairing, true, {},
+                                  std::nullopt, TrailerFlags{false, opponent_hints});
     refuse_unless(!state.versus, "a league race is not a VS race");
     refuse_unless(state.native_initialization && !state.demo_ai && pairing.rider < rider_characters
                       && split == (pairing.opponent < rider_characters)
                       && pairing.rider != pairing.opponent,
                   "league race wrapper pairing differs");
-    Reader trailer{bytes.subspan(13U + size)};
+    Reader trailer{bytes.subspan(league_header_size + size)};
     auto& camera = state.race.second_camera;
     for (auto* word : {&camera.x, &camera.y, &camera.velocity_x, &camera.velocity_y,
                        &camera.lookahead, &camera.screen_xy})
@@ -1272,7 +1313,10 @@ std::optional<ZoomZooState> deserialize_league_race(std::span<const std::uint8_t
         for (auto& count : counts) count = trailer.u8();
     for (auto& count : state.league_statistics.wipeouts) count = trailer.u16();
     for (auto& points : state.league_statistics.opponent_points) points = trailer.u16();
-    state.league_statistics.opponent_hints_over = trailer.flag();
+    state.opponent_hints.active = !trailer.flag();
+    refuse_unless(!state.opponent_hints.active || (split && pairing.opponent != 0),
+                  "only a human rider 1 other than MIKE has tutorial hints");
+    derive_opponent_hint_clock(state, classic_race_scenario(state.track).initialization_frame);
     if (lower_view) read_lower_view(trailer, state);
     trailer.require_end();
     return state;

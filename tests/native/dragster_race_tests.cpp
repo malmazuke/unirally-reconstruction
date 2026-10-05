@@ -234,6 +234,18 @@ int main() {
     auto two=open_bytes;two.back()=2;rejects([&]{(void)deserialize_zoom_zoo(two);});
     auto closed=serialize_zoom_zoo(local);closed.push_back(1);rejects([&]{(void)deserialize_zoom_zoo(closed);});
     auto one_view=saved;one_view.split_screen=false;rejects([&]{(void)serialize_zoom_zoo(one_view);});
+    // R-0082: rider 1's tutorial hints ride in the trailer's flag (a league pair's in its last
+    // byte, "over"); their count comes back from the clock. A rider 1 who is MIKE has none.
+    auto hinted=saved;hinted.opponent_hints.active=true;
+    const auto hinted_bytes=serialize_zoom_zoo(hinted);
+    const auto hinted_read=deserialize_zoom_zoo(hinted_bytes);
+    require(hinted_read.opponent_hints==hinted.opponent_hints && serialize_zoom_zoo(hinted_read)==hinted_bytes);
+    auto hinted_mike=hinted;hinted_mike.pairing={1,0};
+    rejects([&]{(void)deserialize_zoom_zoo(serialize_zoom_zoo(hinted_mike));});
+    auto hinted_pair=hinted;hinted_pair.league_statistics.enabled=true;
+    const auto hinted_pair_bytes=serialize_zoom_zoo(hinted_pair);
+    require(hinted_pair_bytes[hinted_pair_bytes.size()-2]==0
+            && deserialize_zoom_zoo(hinted_pair_bytes).opponent_hints.active);
     // A league pair's wrapper carries the same byte at its end.
     auto pair_saved=saved;pair_saved.league_statistics.enabled=true;
     const auto pair_bytes=serialize_zoom_zoo(pair_saved);

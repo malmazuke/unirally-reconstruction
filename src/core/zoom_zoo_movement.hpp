@@ -118,6 +118,15 @@ struct ZoomZooPlayerAnnouncements {
     RewardQueueState queue;
     std::uint16_t hints_active{}, hint_updates{}, hint_group{}, empty_display{};
 };
+// Rider 1's tutorial hints in a two-human race or the split demo (R-0082): `$12E5` is set at the
+// race's setup when rider 1's own bit is clear in `$77:1116` ($82:D930-D96F); every 300 updates
+// `$83:CE43-CEAF` queues its next group of four into rider 1's queue (`$12ED` counts from 0,
+// `$12F1` is the group); its first scoring event ends them ($81:C5D5-C5E1).
+struct ZoomZooOpponentHints {
+    bool active{};
+    std::uint16_t updates{}, group{};
+    bool operator==(const ZoomZooOpponentHints&) const = default;
+};
 struct ZoomZooRoll {
     // $829398-9714. Word step is signed; all other values retain original bits.
     std::uint16_t input_latched{}, prior_orientation{}, prior_reflection{}, pose_base{};
@@ -137,8 +146,7 @@ struct ZoomZooPause {
 struct DemoControllers {
     std::array<std::uint16_t, 2> trick_bits{}, rotation_window{}, turnaround{}, airborne_rotation{};
     std::uint16_t elapsed{};
-    bool exit_requested{};        // $12B3
-    bool opponent_hints_active{}; // $12E5: first scoring event clears the queue wait.
+    bool exit_requested{}; // $12B3
 };
 // The race engine was first recovered on ZOOM ZOO, hence the ZoomZoo names.
 // DRAGSTER runs the same original routines with its own track content and
@@ -196,6 +204,8 @@ struct ClassicRaceScenario {
     // `$12E3` at the start ($82:D94C-D96F): the player's tutorial hints run unless its rider's
     // bit is set in the cartridge RAM's `$77:1116`, which a race sets once its hints end.
     bool tutorial_hints{true};
+    // `$12E5` at the start: rider 1's, by its own bit, in a two-human race (R-0082).
+    bool opponent_tutorial_hints{};
     // Race mode 2, a stunt event (`$83:99AD-99B8`: place 2 of every tour; R-0066): a solo run
     // against the header's clock for points, the opponent switched off (StuntEvent).
     bool stunt_event{};
@@ -234,7 +244,8 @@ ClassicRaceScenario classic_race_scenario(ClassicRaceTrack track, RacePairing pa
 // The local modes pair two distinct human riders; unlike the one-player factory, this
 // leaves the opponent's AI tier at zero (R-0071, DRAGSTER capture).
 ClassicRaceScenario classic_local_race_scenario(ClassicRaceTrack track, RacePairing pairing,
-                                                bool tutorial_hints = true);
+                                                bool tutorial_hints = true,
+                                                bool opponent_tutorial_hints = false);
 bool classic_race_has_scenario(ClassicRaceTrack track);
 // $81:A304-A51B: decoded track byte 13 selects one of the fixed playfields of
 // 16,384 64-unit coarse cells. Zero selects 1,024 columns (DRAGSTER) and 0x40
@@ -346,7 +357,6 @@ struct StuntEvent {
 // League bonuses read twenty wrapping byte counts and two wipeout words; R-0073.
 struct LeagueRaceStatistics {
     bool enabled{};
-    bool opponent_hints_over{};
     std::array<std::array<std::uint8_t, 20>, 2> tricks{};
     std::array<std::uint16_t, 2> wipeouts{};
     std::array<std::uint16_t, 20> opponent_points{};
@@ -365,6 +375,7 @@ struct ZoomZooState {
     bool native_initialization{};
     ZoomZooResult result;
     ZoomZooPlayerAnnouncements player_announcements;
+    ZoomZooOpponentHints opponent_hints;
     std::array<std::uint16_t, 2> charge_announced{}; // $0D53/$0D55, audio latch only.
     std::uint16_t fade_level{};
     std::uint16_t result_updates{};

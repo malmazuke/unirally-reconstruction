@@ -314,22 +314,27 @@ void pause_clears_player_cells() {
   require(unirally::classic_pause_menu_closed(paused, closed));
 }
 
-// R-0081: a VS race's forced finish of rider 1 stops its clock's rewrites: the
-// lower clock keeps the text the update before the force left, while the timer
-// runs on.
+// R-0081, R-0082: the split chain writes rider 1's clock the update after the
+// top clock's tick ($81:C6D1-C6DC) while rider 1 is unfinished, so a VS race's
+// forced finish leaves the last digits written while the timer runs on.
 void split_forced_clock() {
   unirally::ZoomZooState previous{}, updated{};
-  previous.split_screen = updated.split_screen = true;
-  previous.movement.timer.seconds = updated.movement.timer.seconds = 3;
-  previous.movement.timer.subframe = updated.movement.timer.subframe = 1;
-  updated.race.riders[1].finished = unirally::forced_finish;
+  previous.split_screen = true;
+  previous.movement.timer.seconds = 3;
+  previous.movement.timer.subframe = 1;
   unirally::ClassicRaceHudClock queue;
-  queue.observe_update(previous, updated);
-  auto later = updated;
-  later.movement.timer.seconds = 7;
-  queue.observe_update(updated, later);
+  for (int update = 0; update < 3; ++update)
+    queue.observe_update(previous, previous); // the top clock, then the bottom
   const auto clock = queue.published().lower_clock;
   require(clock && *clock == unirally::classic_split_lower_clock(previous));
+  updated = previous;
+  updated.race.riders[1].finished = unirally::forced_finish;
+  auto later = updated;
+  later.movement.timer.seconds = 7;
+  queue.observe_update(previous, updated);
+  for (int update = 0; update < 3; ++update)
+    queue.observe_update(later, later);
+  require(queue.published().lower_clock == clock);
   require(*clock != unirally::classic_split_lower_clock(later));
   // The player forced (rider 1 first): its clock's digits are no longer
   // rewritten
@@ -346,13 +351,16 @@ void split_forced_clock() {
   top.observe_update(forced_player, forced_player);
   top.observe_update(forced_player, forced_player);
   require(top.published().clock == held);
-  // Rider 1's own finish keeps no clock: its crossing blanks it.
-  auto crossed = updated;
+  // Rider 1's own last crossing blanks its clock ($81:824E).
+  auto on_last_lap = previous;
+  on_last_lap.race.riders[1].laps_remaining = 1;
+  auto crossed = previous;
   crossed.race.riders[1].finished = 1;
   unirally::ClassicRaceHudClock blank;
-  blank.observe_update(previous, crossed);
-  blank.observe_update(crossed, crossed);
-  require(!blank.published().lower_clock);
+  blank.observe_update(on_last_lap, crossed);
+  for (int update = 0; update < 3; ++update)
+    blank.observe_update(crossed, crossed);
+  require(blank.published().lower_clock_blanked);
 }
 
 // R-0080: a split race's arrows. Rider 1's shows in the lower view when it trails; each view's

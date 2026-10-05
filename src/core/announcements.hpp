@@ -38,6 +38,12 @@ inline constexpr std::uint8_t wobble_mode_on = 33;
 inline constexpr std::uint8_t control_reversed = 34;
 inline constexpr std::uint8_t effect_over = 35;
 
+// $81:C5D5-C5E1: queueing an event ends rider 1's tutorial hints when bit 7 of the byte
+// `event - 22` is set: the scoring events below "wrong way" and the voices from 150 (R-0082).
+constexpr bool ends_opponent_hints(unsigned event) {
+    return ((event - wrong_way) & 0x80U) != 0;
+}
+
 // 40-71: the tutorial hints, shown four at a time.
 inline constexpr std::uint8_t first_hint = 40;
 inline constexpr unsigned hints_per_group = 4;

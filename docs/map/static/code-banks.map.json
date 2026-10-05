@@ -2260,6 +2260,7 @@
     "src/core/front_end_screens.hpp:restore_menus",
     "src/core/front_end_screens.hpp:set_menu_registers",
     "src/core/front_end_screens.hpp:upload_last_frame, menu_screen_frame, restore_frame",
+    "src/core/presentation.cpp:render_classic_race",
     "src/core/race_result.cpp:objects_frame, tiles_frame, palette_low_frame, palette_high_frame",
     "src/core/race_result.cpp:race_return_frame"
    ],
@@ -3180,6 +3181,7 @@
     "src/core/presentation.hpp:ClassicRaceHudClock",
     "src/core/race_hud.cpp:(file)",
     "src/core/race_hud.cpp:ClassicRaceHudClock::request_fields",
+    "src/core/race_hud.cpp:ClassicRaceHudClock::request_split_fields",
     "src/core/race_hud.cpp:draw_split_hud",
     "src/core/race_progress.cpp:cross_start_line",
     "src/core/race_progress.cpp:update_checkpoints",
@@ -5335,6 +5337,7 @@
    "native": [
     "src/core/presentation.hpp:classic_caption_entry",
     "src/core/race_hud.cpp:ClassicRaceHudClock::request_caption",
+    "src/core/race_hud.cpp:ClassicRaceHudClock::request_split_fields",
     "src/core/race_hud.cpp:classic_caption_entry",
     "src/core/reward_queue.cpp:show_next_player_announcement"
    ],
@@ -5378,6 +5381,9 @@
    "mode_at_entry": [
     "Nmx"
    ],
+   "native": [
+    "src/core/race_hud.cpp:ClassicRaceHudClock::request_split_fields"
+   ],
    "observed_entries": {},
    "start": "$81:BFB9",
    "static_entries": {
@@ -5415,8 +5421,10 @@
    ],
    "native": [
     "src/core/race_hud.cpp:ClassicRaceHudClock::request_caption",
+    "src/core/race_hud.cpp:ClassicRaceHudClock::request_split_fields",
     "src/core/reward_queue.cpp:longest_display, display_saved_per_waiting, shortest_display",
-    "src/core/reward_queue.cpp:show_next_player_announcement"
+    "src/core/reward_queue.cpp:show_next_player_announcement",
+    "src/core/reward_queue.cpp:update_opponent_announcements"
    ],
    "observed_entries": {},
    "start": "$81:BFD4",
@@ -5727,10 +5735,12 @@
     "NMX"
    ],
    "native": [
+    "src/core/announcements.hpp:ends_opponent_hints",
     "src/core/race_hud.cpp:ClassicRaceHudClock::request_caption",
     "src/core/race_state_io.cpp:check_queued_events",
     "src/core/race_update.cpp:finish_update",
-    "src/core/reward_queue.cpp:queue_player_announcement"
+    "src/core/reward_queue.cpp:queue_player_announcement",
+    "src/core/zoom_zoo_movement.hpp:ZoomZooOpponentHints"
    ],
    "observed_entries": {},
    "start": "$81:C59C",
@@ -5910,10 +5920,9 @@
    "native": [
     "src/core/input_timer.cpp:advance_timer_digits",
     "src/core/input_timer.cpp:timer_warning",
-    "src/core/race_hud.cpp:ClassicRaceHudClock::hold_lower_clock",
+    "src/core/race_hud.cpp:ClassicRaceHudClock::request_split_fields",
     "src/core/race_hud.cpp:ClassicRaceHudClock::service_one_field",
     "src/core/race_hud.cpp:classic_hud_left_field",
-    "src/core/race_hud.cpp:draw_split_hud",
     "src/core/race_state_io.cpp:check_lap_clocks",
     "src/core/race_update.cpp:finish_update",
     "src/core/result_screen.cpp:check_result_composition"
@@ -5995,6 +6004,7 @@
    ],
    "native": [
     "src/core/presentation.hpp:ClassicRaceHudClock::Pending::left, ClassicRaceHudClock::Pending::clock_blank, ClassicRaceHudClock::Pending::clock_rewrite, ClassicRaceHudClock::Pending::score, ClassicRaceHudClock::Pending::caption",
+    "src/core/race_hud.cpp:ClassicRaceHudClock::request_split_fields",
     "src/core/race_hud.cpp:classic_hud_timer",
     "src/core/race_state_io.cpp:stopped_stunt_clock",
     "src/core/stunt_event.cpp:count_digit_down",
@@ -6458,6 +6468,7 @@
     "NmX"
    ],
    "native": [
+    "src/core/race_hud.cpp:ClassicRaceHudClock::service_one_field",
     "src/core/race_hud.cpp:draw_split_arrow"
    ],
    "observed_entries": {},
@@ -6729,6 +6740,9 @@
    "mode_at_entry": [
     "NMX"
    ],
+   "native": [
+    "src/core/race_hud.cpp:ClassicRaceHudClock::service_split_clock"
+   ],
    "observed_entries": {},
    "start": "$81:E014",
    "static_entries": {
@@ -6745,6 +6759,9 @@
    "end": "$81:E12D",
    "mode_at_entry": [
     "NMX"
+   ],
+   "native": [
+    "src/core/race_hud.cpp:ClassicRaceHudClock::service_split_clock"
    ],
    "observed_entries": {},
    "start": "$81:E0AE",
@@ -6764,6 +6781,7 @@
     "NMX"
    ],
    "native": [
+    "src/core/race_hud.cpp:ClassicRaceHudClock::service_split_clock",
     "src/core/race_hud.cpp:draw_split_hud"
    ],
    "observed_entries": {},
@@ -6782,6 +6800,9 @@
    "end": "$81:E247",
    "mode_at_entry": [
     "NMX"
+   ],
+   "native": [
+    "src/core/race_hud.cpp:ClassicRaceHudClock::service_split_clock"
    ],
    "observed_entries": {},
    "start": "$81:E1C8",
@@ -6852,6 +6873,9 @@
    "mode_at_entry": [
     "NMX"
    ],
+   "native": [
+    "src/core/race_hud.cpp:ClassicRaceHudClock::crossing_cell"
+   ],
    "observed_entries": {},
    "start": "$81:E49F",
    "static_entries": {
@@ -6869,6 +6893,9 @@
    "mode_at_entry": [
     "NMX"
    ],
+   "native": [
+    "src/core/race_hud.cpp:ClassicRaceHudClock::crossing_cell"
+   ],
    "observed_entries": {},
    "start": "$81:E544",
    "static_entries": {
@@ -6885,6 +6912,9 @@
    "end": "$81:E6F5",
    "mode_at_entry": [
     "NMX"
+   ],
+   "native": [
+    "src/core/race_hud.cpp:ClassicRaceHudClock::crossing_cell"
    ],
    "observed_entries": {},
    "start": "$81:E621",
@@ -6940,6 +6970,7 @@
     "NMX"
    ],
    "native": [
+    "src/core/race_hud.cpp:ClassicRaceHudClock::service_one_field",
     "src/core/race_hud.cpp:draw_classic_caption",
     "src/core/race_hud.cpp:draw_split_hud"
    ],
@@ -10686,6 +10717,7 @@
     "src/core/stunt_event.cpp:update_stunt_finish",
     "src/core/zoom_zoo_movement.hpp:ClassicRaceScenario::laps",
     "src/core/zoom_zoo_movement.hpp:ClassicRaceScenario::tutorial_hints",
+    "src/core/zoom_zoo_movement.hpp:ZoomZooOpponentHints",
     "src/core/zoom_zoo_movement.hpp:classic_crawler_zoom_zoo_start"
    ],
    "observed_entries": {},
@@ -12988,7 +13020,8 @@
    ],
    "native": [
     "src/core/reward_queue.cpp:hint_interval",
-    "src/core/reward_queue.cpp:update_tutorial_hints"
+    "src/core/reward_queue.cpp:update_player_tutorial_hints",
+    "src/core/reward_queue.hpp:update_tutorial_hints"
    ],
    "observed_entries": {},
    "start": "$83:CDBC",
@@ -13012,7 +13045,8 @@
     "src/core/race_result.cpp:begin_race_return",
     "src/core/race_setup.cpp:restart_zoom_zoo",
     "src/core/reward_queue.cpp:hint_interval",
-    "src/core/reward_queue.cpp:update_tutorial_hints"
+    "src/core/reward_queue.cpp:update_player_tutorial_hints",
+    "src/core/reward_queue.hpp:update_tutorial_hints"
    ],
    "observed_entries": {},
    "start": "$83:CE2C",
@@ -13033,7 +13067,10 @@
    ],
    "native": [
     "src/core/reward_queue.cpp:hint_interval",
-    "src/core/reward_queue.cpp:update_tutorial_hints"
+    "src/core/reward_queue.cpp:update_opponent_tutorial_hints",
+    "src/core/reward_queue.cpp:update_player_tutorial_hints",
+    "src/core/reward_queue.hpp:update_tutorial_hints",
+    "src/core/zoom_zoo_movement.hpp:ZoomZooOpponentHints"
    ],
    "observed_entries": {},
    "start": "$83:CE43",
@@ -13051,6 +13088,10 @@
    "end": "$83:CEC7",
    "mode_at_entry": [
     "NMX"
+   ],
+   "native": [
+    "src/core/race_result.cpp:begin_race_return",
+    "src/core/race_setup.cpp:restart_zoom_zoo"
    ],
    "observed_entries": {},
    "start": "$83:CEB1",
@@ -14121,6 +14162,7 @@
     "src/core/race_sound.cpp:finish_fade_from",
     "src/core/race_sound.cpp:finish_fade_rate",
     "src/core/race_sound.hpp:finish_fade",
+    "src/core/race_state_io.cpp:check_opponent_queue",
     "src/core/race_state_io.cpp:read_stunt_event",
     "src/core/race_state_io.cpp:stunt_settled_fall",
     "src/core/race_windows.cpp:ClassicWindowPointer::observe_update",
@@ -14908,19 +14950,19 @@
    "call returns in the calling mode": 1262
   },
   "bytes": 131072,
-  "cited_addresses": 1689,
+  "cited_addresses": 1701,
   "cited_by_class": {
    "data": 31,
-   "inferred": 299,
-   "observed": 1027,
-   "unknown": 332
+   "inferred": 302,
+   "observed": 1035,
+   "unknown": 333
   },
   "cited_by_position": {
    "dat": 31,
-   "loc": 962,
-   "mid": 19,
-   "sub": 345,
-   "unk": 332
+   "loc": 969,
+   "mid": 20,
+   "sub": 348,
+   "unk": 333
   },
   "conflicts": 0,
   "data": 92,
@@ -14939,9 +14981,9 @@
   "jump_tables": 2,
   "mode_ambiguities": 7,
   "observed": 41778,
-  "routine_bytes_cited_by_native_code": 53756,
+  "routine_bytes_cited_by_native_code": 54814,
   "routines": 636,
-  "routines_cited_by_native_code": 435,
+  "routines_cited_by_native_code": 443,
   "unknown": 52881,
   "unknown_share": 0.4035
  }
