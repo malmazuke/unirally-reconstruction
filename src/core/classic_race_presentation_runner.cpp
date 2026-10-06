@@ -1,6 +1,7 @@
 #include "content_pack.hpp"
 #include "presentation.hpp"
 #include "zoom_zoo_movement.hpp"
+#include "zoom_zoo_pack.hpp"
 #include <charconv>
 #include <fstream>
 #include <iostream>
@@ -121,6 +122,19 @@ int print_window_indices(const char* pack_path, const char* timeline) {
     return 0;
 }
 
+// A one-player state's layout does not carry the riders' look (R-0083), so a replay steps it
+// itself, as the race update does, onto each row after the first; two-view states, the one-view
+// demo's and league wrappers carry their own. The row's idle latch stays as recorded.
+void replay_look(const unirally::ZoomZooState& previous, unirally::ZoomZooState& state,
+                 const unirally::ZoomZooContent& engine) {
+    if (state.split_screen || state.demo_ai || state.league_statistics.enabled) return;
+    state.look = previous.look;
+    if (state.result_updates || unirally::zoom_zoo_update_was_paused(previous, state)) return;
+    auto stepped = state;
+    unirally::advance_rider_look(stepped, engine);
+    state.look = stepped.look;
+}
+
 // Replays consecutive native states from the timeline's first row so the rider look overlays
 // (R-0036) and the opponent's finish frame (R-0040) follow the race, then draws FRAME.
 int draw_timeline_frame(const char* pack_path, const char* timeline, const char* frame_text,
@@ -147,11 +161,13 @@ int draw_timeline_frame(const char* pack_path, const char* timeline, const char*
     // These timelines are races on their own, whose pause menu restarts.
     content.pause_second_choice =
         unirally::ClassicRacePresentationContent::PauseSecondChoice::restart;
+    const auto engine = unirally::classic_race_content(pack, previous.track);
     while (std::getline(input, line)) {
         const auto previous_frame = frame;
         auto state = parse_timeline_row(line, frame, pairing, palettes);
         if (frame != previous_frame + 1U)
             throw std::invalid_argument("timeline rows must be consecutive");
+        replay_look(previous, state, engine);
         history.observe_update(previous, state, pack);
         if (frame == target) {
             const auto on_screen = history.on_screen();

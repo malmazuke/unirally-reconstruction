@@ -844,6 +844,7 @@
    "docs/research/R-0058-lap-result.md",
    "docs/research/R-0060-pause-exits.md",
    "docs/research/R-0079-two-pad-pause.md",
+   "docs/research/R-0084-two-human-restart.md",
    "tasks/FRONT-END-LAP-RESULT.md",
    "tasks/RACE-PAUSE-EXITS.md",
    "tasks/SPLIT-PAUSE-MENU.md",
@@ -1285,7 +1286,8 @@
    "src/core/rider_menu.cpp:rider_menu_frame"
   ],
   "source_records": [
-   "docs/research/R-0055-rider-menu.md"
+   "docs/research/R-0055-rider-menu.md",
+   "docs/research/R-0084-two-human-restart.md"
   ]
  },
  {
@@ -1535,7 +1537,8 @@
    "docs/research/R-0058-lap-result.md",
    "docs/research/R-0060-pause-exits.md",
    "docs/research/R-0067-stunt-result.md",
-   "docs/research/R-0075-title-menu-audio.md"
+   "docs/research/R-0075-title-menu-audio.md",
+   "docs/research/R-0084-two-human-restart.md"
   ]
  },
  {
@@ -2764,6 +2767,19 @@
   ]
  },
  {
+  "address": "$80:B297",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80B297",
+  "native": [
+   "src/core/now_playing.cpp:print_now_playing"
+  ],
+  "source_records": [
+   "docs/research/R-0084-two-human-restart.md",
+   "tasks/TWO-HUMAN-RESTART.md"
+  ]
+ },
+ {
   "address": "$80:B31F",
   "class": "observed",
   "comment": "instruction start",
@@ -2931,6 +2947,19 @@
   ],
   "source_records": [
    "docs/research/R-0056-tour-track-now-playing.md"
+  ]
+ },
+ {
+  "address": "$80:B50A",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80B50A",
+  "native": [
+   "src/core/now_playing.cpp:print_now_playing",
+   "src/core/now_playing.cpp:title_at, versus_at, record_at, hi_score_at, qualifying_at, race_exit_at, picture_place_at"
+  ],
+  "source_records": [
+   "docs/research/R-0084-two-human-restart.md"
   ]
  },
  {
@@ -3384,6 +3413,7 @@
   "source_records": [
    "docs/research/R-0060-pause-exits.md",
    "docs/research/R-0079-two-pad-pause.md",
+   "docs/research/R-0084-two-human-restart.md",
    "tasks/TWO-HUMAN-RESTART.md"
   ]
  },
@@ -3426,6 +3456,7 @@
   "comment": "instruction start",
   "label": "loc_80BC59",
   "source_records": [
+   "docs/research/R-0084-two-human-restart.md",
    "tasks/FRONT-END-1P-CONTINUATION.md",
    "tasks/FRONT-END-1P-SETUP.md"
   ]
@@ -3508,12 +3539,49 @@
   ]
  },
  {
+  "address": "$80:BD1C",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80BD1C",
+  "native": [
+   "src/core/rider_menu.cpp:rider_menu_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0084-two-human-restart.md"
+  ]
+ },
+ {
   "address": "$80:BD1F",
   "class": "unknown",
   "comment": "unknown",
   "label": "unk_80BD1F",
+  "native": [
+   "src/core/rider_menu.cpp:rider_menu_frame"
+  ],
   "source_records": [
    "docs/research/R-0057-one-run-result.md"
+  ]
+ },
+ {
+  "address": "$80:BD5D",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80BD5D",
+  "native": [
+   "src/core/race_result.cpp:race_restart_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0084-two-human-restart.md",
+   "tasks/TWO-HUMAN-RESTART.md"
+  ]
+ },
+ {
+  "address": "$80:BD80",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80BD80",
+  "source_records": [
+   "docs/research/R-0084-two-human-restart.md"
   ]
  },
  {
@@ -3626,6 +3694,28 @@
   "label": "unk_80BF9F",
   "source_records": [
    "docs/research/R-0057-one-run-result.md"
+  ]
+ },
+ {
+  "address": "$80:BFE0",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80BFE0",
+  "native": [
+   "src/core/race_result.cpp:race_restart_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0084-two-human-restart.md",
+   "tasks/TWO-HUMAN-RESTART.md"
+  ]
+ },
+ {
+  "address": "$80:C00D",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80C00D",
+  "source_records": [
+   "docs/research/R-0084-two-human-restart.md"
   ]
  },
  {
@@ -6650,7 +6740,8 @@
   ],
   "source_records": [
    "docs/research/R-0057-one-run-result.md",
-   "docs/research/R-0060-pause-exits.md"
+   "docs/research/R-0060-pause-exits.md",
+   "docs/research/R-0084-two-human-restart.md"
   ]
  },
  {
@@ -7405,7 +7496,7 @@
    "src/core/race_progress.cpp:update_checkpoints"
   ],
   "source_records": [
-   "docs/research/R-0083-player-hints-and-voices.md"
+   "docs/research/R-0085-player-hints-and-voices.md"
   ]
  },
  {
@@ -10745,7 +10836,7 @@
    "src/core/reward_queue.cpp:queue_player_announcement"
   ],
   "source_records": [
-   "docs/research/R-0083-player-hints-and-voices.md"
+   "docs/research/R-0085-player-hints-and-voices.md"
   ]
  },
  {
@@ -10758,7 +10849,7 @@
    "src/core/reward_queue.cpp:queue_player_announcement"
   ],
   "source_records": [
-   "docs/research/R-0083-player-hints-and-voices.md",
+   "docs/research/R-0085-player-hints-and-voices.md",
    "tasks/PLAYER-HINT-VOICES.md"
   ]
  },
@@ -10772,7 +10863,7 @@
    "src/core/reward_queue.cpp:queue_player_announcement"
   ],
   "source_records": [
-   "docs/research/R-0083-player-hints-and-voices.md"
+   "docs/research/R-0085-player-hints-and-voices.md"
   ]
  },
  {
@@ -10786,7 +10877,7 @@
    "src/core/reward_queue.cpp:queue_player_announcement"
   ],
   "source_records": [
-   "docs/research/R-0083-player-hints-and-voices.md"
+   "docs/research/R-0085-player-hints-and-voices.md"
   ]
  },
  {
@@ -10814,7 +10905,7 @@
   "source_records": [
    "docs/research/R-0069-split-screen-race.md",
    "docs/research/R-0082-split-captions.md",
-   "docs/research/R-0083-player-hints-and-voices.md"
+   "docs/research/R-0085-player-hints-and-voices.md"
   ]
  },
  {
@@ -12746,6 +12837,7 @@
   ],
   "source_records": [
    "docs/research/R-0036-zoom-zoo-rider-objects.md",
+   "docs/research/R-0083-split-riders-under-ink.md",
    "tasks/M4-16.md"
   ]
  },
@@ -12783,11 +12875,14 @@
   "comment": "instruction start",
   "label": "loc_82857F",
   "native": [
+   "src/core/rider_look.cpp:advance_rider_look",
    "src/core/rider_look.cpp:head_point",
-   "src/core/rider_look.hpp:advance_rider_look"
+   "src/core/rider_look.hpp:advance_rider_look",
+   "src/core/zoom_zoo_movement.hpp:ZoomZooState::look"
   ],
   "source_records": [
    "docs/research/R-0036-zoom-zoo-rider-objects.md",
+   "docs/research/R-0083-split-riders-under-ink.md",
    "tasks/M4-16-review.md",
    "tasks/M4-16.md"
   ]
@@ -12824,13 +12919,18 @@
   "comment": "instruction start",
   "label": "loc_8287AD",
   "native": [
+   "src/core/rider_look.cpp:advance_rider_look",
    "src/core/rider_look.cpp:head_point",
-   "src/core/rider_look.hpp:advance_rider_look"
+   "src/core/rider_look.hpp:advance_rider_look",
+   "src/core/zoom_zoo_movement.hpp:ZoomZooState::look"
   ],
   "source_records": [
    "docs/research/R-0036-zoom-zoo-rider-objects.md",
+   "docs/research/R-0083-split-riders-under-ink.md",
    "tasks/M4-16-review.md",
-   "tasks/M4-16.md"
+   "tasks/M4-16.md",
+   "tasks/NEXT_SESSION.md",
+   "tasks/SPLIT-RIDERS-UNDER-INK.md"
   ]
  },
  {
@@ -12861,6 +12961,7 @@
   ],
   "source_records": [
    "docs/research/R-0036-zoom-zoo-rider-objects.md",
+   "docs/research/R-0083-split-riders-under-ink.md",
    "tasks/M4-16.md"
   ]
  },
@@ -12875,6 +12976,15 @@
   "source_records": [
    "docs/research/R-0036-zoom-zoo-rider-objects.md",
    "tasks/M4-16.md"
+  ]
+ },
+ {
+  "address": "$82:894F",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_82894F",
+  "source_records": [
+   "docs/research/R-0084-two-human-restart.md"
   ]
  },
  {
@@ -13654,7 +13764,7 @@
    "src/core/reward_queue.cpp:announce_landing_tricks"
   ],
   "source_records": [
-   "docs/research/R-0083-player-hints-and-voices.md"
+   "docs/research/R-0085-player-hints-and-voices.md"
   ]
  },
  {
@@ -13667,7 +13777,7 @@
    "src/core/reward_queue.cpp:announce_landing_tricks"
   ],
   "source_records": [
-   "docs/research/R-0083-player-hints-and-voices.md"
+   "docs/research/R-0085-player-hints-and-voices.md"
   ]
  },
  {
@@ -13680,7 +13790,7 @@
    "src/core/reward_queue.cpp:announce_landing_tricks"
   ],
   "source_records": [
-   "docs/research/R-0083-player-hints-and-voices.md"
+   "docs/research/R-0085-player-hints-and-voices.md"
   ]
  },
  {
@@ -13706,7 +13816,7 @@
    "src/core/reward_queue.cpp:announce_landing_tricks"
   ],
   "source_records": [
-   "docs/research/R-0083-player-hints-and-voices.md"
+   "docs/research/R-0085-player-hints-and-voices.md"
   ]
  },
  {
@@ -13750,7 +13860,7 @@
    "src/core/reward_queue.cpp:announce_landing_tricks"
   ],
   "source_records": [
-   "docs/research/R-0083-player-hints-and-voices.md"
+   "docs/research/R-0085-player-hints-and-voices.md"
   ]
  },
  {
@@ -13764,7 +13874,7 @@
    "src/core/reward_queue.cpp:announce_landing_tricks"
   ],
   "source_records": [
-   "docs/research/R-0083-player-hints-and-voices.md"
+   "docs/research/R-0085-player-hints-and-voices.md"
   ]
  },
  {
@@ -13787,7 +13897,7 @@
   "label": "unk_829DB6",
   "source_records": [
    "docs/research/R-0011-motion.md",
-   "docs/research/R-0083-player-hints-and-voices.md"
+   "docs/research/R-0085-player-hints-and-voices.md"
   ]
  },
  {
@@ -18787,13 +18897,33 @@
    "src/core/audio_cue.hpp:race_song_count",
    "src/core/front_end.cpp:demo_title_frame",
    "src/core/front_end.hpp:choose_race_song",
-   "src/core/race_result.cpp:choose_race_song"
+   "src/core/race_result.cpp:choose_race_song",
+   "src/core/race_setup.cpp:restart_zoom_zoo",
+   "src/core/zoom_zoo_movement.hpp:ClassicRaceScenario::race_counter"
   ],
   "source_records": [
    "docs/research/R-0076-first-race-audio.md",
    "docs/research/R-0077-one-player-audio.md",
+   "docs/research/R-0084-two-human-restart.md",
    "tasks/AUDIO-FIRST-RACE.md",
    "tasks/AUDIO-ONE-PLAYER.md"
+  ]
+ },
+ {
+  "address": "$83:CA18",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83CA18",
+  "native": [
+   "src/core/audio_cue.hpp:race_song_count",
+   "src/core/front_end.cpp:demo_title_frame",
+   "src/core/front_end.hpp:choose_race_song",
+   "src/core/race_result.cpp:choose_race_song",
+   "src/core/race_setup.cpp:restart_zoom_zoo",
+   "src/core/zoom_zoo_movement.hpp:ClassicRaceScenario::race_counter"
+  ],
+  "source_records": [
+   "docs/research/R-0084-two-human-restart.md"
   ]
  },
  {
@@ -19228,8 +19358,16 @@
   "class": "observed",
   "comment": "instruction start",
   "label": "loc_83CDA6",
+  "native": [
+   "src/core/race_update.cpp:finish_update",
+   "src/core/rider_look.hpp:advance_rider_look",
+   "src/core/zoom_zoo_movement.hpp:ZoomZooState::look"
+  ],
   "source_records": [
-   "docs/research/R-0036-zoom-zoo-rider-objects.md"
+   "docs/research/R-0036-zoom-zoo-rider-objects.md",
+   "docs/research/R-0083-split-riders-under-ink.md",
+   "tasks/NEXT_SESSION.md",
+   "tasks/SPLIT-RIDERS-UNDER-INK.md"
   ]
  },
  {
@@ -21148,6 +21286,23 @@
   ]
  },
  {
+  "address": "$83:E999",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_83E999",
+  "native": [
+   "src/core/presentation.cpp:dim_finished_views",
+   "src/core/race_progress.cpp:classic_race_player_won",
+   "src/core/race_progress.cpp:finish_rider",
+   "src/core/race_progress.cpp:update_finish",
+   "src/core/race_windows.cpp:ClassicWindowPointer::observe_update",
+   "src/core/stunt_event.hpp:update_stunt_finish"
+  ],
+  "source_records": [
+   "docs/research/R-0084-two-human-restart.md"
+  ]
+ },
+ {
   "address": "$83:EA11",
   "class": "observed",
   "comment": "routine start",
@@ -21453,6 +21608,22 @@
   ]
  },
  {
+  "address": "$83:EB2B",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83EB2B",
+  "native": [
+   "src/core/presentation.cpp:dim_finished_views",
+   "src/core/race_progress.cpp:classic_race_player_won",
+   "src/core/race_progress.cpp:update_finish",
+   "src/core/race_windows.cpp:ClassicWindowPointer::observe_update",
+   "src/core/stunt_event.hpp:update_stunt_finish"
+  ],
+  "source_records": [
+   "docs/research/R-0084-two-human-restart.md"
+  ]
+ },
+ {
   "address": "$83:EBA3",
   "class": "observed",
   "comment": "routine start",
@@ -21537,6 +21708,7 @@
   "label": "dat_83EC2E",
   "native": [
    "src/core/content_pack.cpp:zoom_required",
+   "src/core/rider_look.cpp:rider_look_state_valid",
    "src/core/rider_look.cpp:side_overlay_base_table",
    "src/core/rider_look.hpp:RiderLookTables::bytes"
   ],

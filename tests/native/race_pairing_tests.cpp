@@ -195,6 +195,13 @@ void restarts_keep_the_pairing() {
     auto again = state;
     restart_zoom_zoo(again, race.content);
     require(again.player_announcements.hints_active == 1 && again.pairing == state.pairing);
+    // R-0084: a race restarted on its own keeps `$77:10B1`; the menus' next
+    // race counts it.
+    require(state.race_counter == 1 && again.race_counter == 1);
+    auto later = state;
+    later.race_counter = 5;
+    restart_zoom_zoo(later, race.content);
+    require(later.race_counter == 5);
     state.player_announcements.hints_active = 0;
     restart_zoom_zoo(state, race.content);
     require(state.player_announcements.hints_active == 0);
@@ -218,6 +225,19 @@ void paired_states_read_back() {
     // SILVIA's tier needs the table; without the pairing the word is not BRONSEN's.
     rejects([&] { (void)deserialize_zoom_zoo(bytes, {0, opponent::silvia}, true, {}); });
     rejects([&] { (void)deserialize_zoom_zoo(bytes); });
+    // R-0084: the one-player layout carries no race counter; the menus' is
+    // taken.
+    state.race_counter = 2;
+    const auto second = serialize_zoom_zoo(state);
+    require(second == bytes);
+    require(
+        deserialize_zoom_zoo(second, {0, opponent::silvia}, true, race.table, 2)
+            .race_counter == 2);
+    require(read.race_counter == 1);
+    rejects([&] {
+      (void)deserialize_zoom_zoo(second, {0, opponent::silvia}, true,
+                                 race.table, 6);
+    });
     // BRONSEN's word is 0 or 30.
     state.pairing = {0, opponent::bronsen};
     state.opponent_tier = opponent_tier(classic_race_scenario(ClassicRaceTrack::Dragster), {});
@@ -261,6 +281,42 @@ void rider_one_hints() {
             && !announcement::ends_opponent_hints(149));
 }
 
+// R-0083: the end of rider 1's scripted glance clears its idle latch
+// ($82:87AD), which the race update's look step writes. Riders out of each
+// other's view and both contacts skipped (the corkscrew's hold), so the look
+// reads its stored head points and zeroed look tables.
+void glance_end_clears_the_latch() {
+  SyntheticRace race;
+  std::array<std::uint8_t, 594> tables{};
+  race.content.look_tables = tables;
+  auto state = classic_race_start(
+      race.content, classic_local_race_scenario(ClassicRaceTrack::Dragster,
+                                                {1, 2}, true, false));
+  initialize_split_cameras(state);
+  state.movement.contact_phase = 0; // rider 1's look step
+  state.movement.riders[1].motion.y =
+      static_cast<std::uint16_t>(state.movement.riders[0].motion.y + 0x400U);
+  for (auto &tiles : state.special_tiles)
+    tiles.physics_hold = 8;
+  state.look.head_offsets = {RiderHeadOffset{}, RiderHeadOffset{}};
+  auto &look = state.look.riders[1];
+  look.head = 5;
+  look.glance_timer = 0xffc0; // resting
+  look.sequence_number = 1;
+  look.sequence_cursor = look.sequence_end = 130;
+  look.sequence_delay = 2;
+  state.movement.riders[1].idle_pose.cycle_latched = 1;
+  auto running = state;
+  advance_rider_look(running, race.content);
+  require(running.movement.riders[1].idle_pose.cycle_latched == 1 &&
+          running.look.riders[1].sequence_cursor == 130);
+  look.sequence_delay = 1;
+  advance_rider_look(state, race.content);
+  require(state.movement.riders[1].idle_pose.cycle_latched == 0 &&
+          state.look.riders[1].sequence_cursor == 0 &&
+          state.look.riders[1].sequence_end == 0);
+}
+
 int main() {
     pairings_the_menus_choose();
     opponent_tiers();
@@ -271,5 +327,6 @@ int main() {
     restarts_keep_the_pairing();
     paired_states_read_back();
     rider_one_hints();
+    glance_end_clears_the_latch();
     return 0;
 }

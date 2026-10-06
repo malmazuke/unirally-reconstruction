@@ -42,10 +42,10 @@ std::uint16_t TitleMenuAudioStream::controller_word(std::uint64_t ticks, unsigne
     if (stopping_) throw StreamStopped{};
     return frames_.at(static_cast<std::size_t>(frame)).words.at(port);
 }
-std::size_t TitleMenuAudioStream::trim_late_output(std::uint32_t frame, std::size_t ceiling,
-                                                   std::size_t keep) {
+AudioLateDrop TitleMenuAudioStream::trim_late_output(std::uint32_t frame, std::size_t ceiling,
+                                                     std::size_t keep) {
     constexpr std::uint64_t frame_clocks = 425568, master_clock = 21281370; // PAL
-    if (frame == 0) return 0;
+    if (frame == 0) return {};
     const auto due = (std::uint64_t{frame} - 1) * frame_clocks * output_rate_ / master_clock;
     return playback_.drop_late_output(due, ceiling, keep);
 }

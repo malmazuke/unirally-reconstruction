@@ -15,7 +15,7 @@
 - Base commit: main `ec05ea7`.
 - Branch and worktree: `claude/zealous-mestorf-1bd239` in
   `.claude/worktrees/zealous-mestorf-1bd239`.
-- Owned paths: `docs/research/R-0083-player-hints-and-voices.md`, this record, the R-0061
+- Owned paths: `docs/research/R-0085-player-hints-and-voices.md`, this record, the R-0061
   "not recovered" item, `tasks/README.md`.
 
 ## Outcome and boundaries
@@ -27,7 +27,7 @@ native's `event < wrong_way` does not. The work: capture such a race, check `$12
 
 Result: no divergence. A voice is always queued after its landing's trick event (1-21), and that
 event ends the hints. Native already equals the original. See
-[R-0083](../docs/research/R-0083-player-hints-and-voices.md). Out of scope: changing
+[R-0085](../docs/research/R-0085-player-hints-and-voices.md). Out of scope: changing
 `queue_player_announcement` to the bit-7 form for readability alone (tier 1 for no behavior
 change).
 

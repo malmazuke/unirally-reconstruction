@@ -1,5 +1,69 @@
 # Project state
 
+**6 October 2026: AUDIO-UPLOAD-SPEED is accepted (tier 1, #61) and integrated by merge commit.**
+Sound-set uploads (race, title, award, ending) are now well above real time: at least 16x in
+optimized builds and 6.5x in debug, from 1.2x and 0.8x.
+- **Why it was slow.** The native sound processor yielded to the CPU by throwing an exception at
+  every port access, and unwinding took most of the time.
+- **Fix.** The IPL and driver ask before each port access whether the CPU takes control and stop
+  with a return.
+- **Results.** Every native audio event and PCM pair equals main's on all 65 cued schedules, and
+  the checks against the original are unchanged. Debug builds now keep up: a scripted HILL CLIMB
+  run in `app-debug` drops only the boot's silence, and the app reports each drop's peak level.
+
+**No standing rule to chain tasks** (D-0004, 6 October 2026). The "until weekly usage reaches 80%"
+instruction was for one weekend. A session finishes the task in hand and stops; it claims another
+only when the user asks. Ready tasks: ROLLING-CONTACT, PORTABLE-CORE-IDENTITY, ATTRACT-DEMO. No M4
+tag, reset, spending or provider change is authorized.
+
+**6 October 2026: TWO-HUMAN-RESTART is accepted (tier 1, #60) and integrated by merge commit.**
+What happens after QUIT restarts a two-human race in its countdown:
+- **The restart.** The original goes back to the same mode's own NOW PLAYING, with mode,
+  pairing and VS flags unchanged. Native already did this. R-0079 had named the one-player
+  handler; R-0084 corrects it.
+- **NOW PLAYING's counts.** They print in 2P only, from the session's wins, and 2P's second rider
+  choice resets them. VS never shows them, restarted or not.
+- **Finish poses.** The cartridge race counter `$77:10B1` counts every race, aborted ones too, and
+  picks the pose tables. Native now carries it as race state, so any race after a session's
+  second, one-player included, takes tables 3-6. Two-view saves and league wrappers gain a byte.
+
+Results:
+- VS, 2P and league restarts and a VS control match the original's race words on every race frame.
+  The restarted races' finishes now match too.
+- The front-end sweep's pictures against the originals: 6 better, none worse.
+- The eleven frozen gates and the race sweep equal main.
+
+The remaining picture gaps also show on main. They and four listed limits are in
+[R-0084](research/R-0084-two-human-restart.md), which with
+[TWO-HUMAN-RESTART](../tasks/TWO-HUMAN-RESTART.md) defines the domain. Next ready: AUDIO-UPLOAD-SPEED,
+ROLLING-CONTACT, PORTABLE-CORE-IDENTITY, ATTRACT-DEMO. No M4 tag, reset, spending or provider
+change is authorized.
+
+**6 October 2026: SPLIT-RIDERS-UNDER-INK is accepted (tier 1, #58) and integrated by merge commit.**
+The riders' look animation (their seat and head) is now race state.
+- **Why.** In the original, the end of a rider's scripted glance clears that rider's idle latch
+  (`$82:87AD`). R-0036 showed that can't happen in one-player play, but an idle human rider 1
+  reaches it. Native kept the look in picture history only, so the latch never cleared and an
+  idle rider 1's pose drifted from the original's.
+- **Look.** The race update now runs the look at `$83:CDA6` and clears the latch.
+- **Saves.** Two-view saves and league wrappers carry the look (46 bytes); one-player race layouts
+  are unchanged.
+- **Ink over BG1.** The split HUD's ink now shows a rider behind a BG1 priority tile, as the
+  original's colour math does.
+
+Results:
+- All 21 split captures, including the review's withheld `idle2`, equal the original on every
+  race frame: race words, both idle latches and both riders' look.
+- `vs-idle` goes from 350 to 796 equal pictures (every race-time picture), `idle2` from 2,320 to
+  5,974 of 5,974, and `leaguefin`, `mike1` and `p2pause` are now exact.
+- The eleven frozen gates and the race sweep equal main.
+
+One `zzap` picture (22 pixels at the split line) remains open in
+[R-0083](research/R-0083-split-riders-under-ink.md), which with
+[SPLIT-RIDERS-UNDER-INK](../tasks/SPLIT-RIDERS-UNDER-INK.md) defines the domain. Next ready:
+TWO-HUMAN-RESTART, AUDIO-UPLOAD-SPEED, ROLLING-CONTACT, PORTABLE-CORE-IDENTITY, ATTRACT-DEMO. No
+M4 tag, reset, spending or provider change is authorized.
+
 **6 October 2026: SPLIT-CAPTIONS is accepted (tier 1, #57) and integrated by merge commit.**
 A two-human split race's HUD text now matches the original's throughout the race:
 - **Rider 1's tutorial hints.** Rider 1 has its own hints, from its own tutorial bit (never for

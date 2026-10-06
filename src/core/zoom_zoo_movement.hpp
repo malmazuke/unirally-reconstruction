@@ -1,6 +1,7 @@
 #pragma once
 #include "audio_cue.hpp"
 #include "movement.hpp"
+#include "rider_look.hpp"
 
 namespace unirally {
 struct ReflectionTransition {
@@ -201,6 +202,10 @@ struct ClassicRaceScenario {
     // The rider and opponent: MIKE against BRONSEN (ANTI-UNI on the HUNTER tour) unless the
     // menus chose others.
     RacePairing pairing{};
+    // `$77:10B1` once this race's setup has counted it ($83:CA08-CA18, modulo 6): every race's
+    // sound load counts, an aborted one's too, and a cold start's first race has 1. Its even half
+    // picks the finish poses' pair of tables (R-0084).
+    std::uint8_t race_counter{1};
     // `$12E3` at the start ($82:D94C-D96F): the player's tutorial hints run unless its rider's
     // bit is set in the cartridge RAM's `$77:1116`, which a race sets once its hints end.
     bool tutorial_hints{true};
@@ -376,6 +381,9 @@ struct ZoomZooState {
     ZoomZooResult result;
     ZoomZooPlayerAnnouncements player_announcements;
     ZoomZooOpponentHints opponent_hints;
+    // The riders' look (R-0036): `$83:CDA6` runs it last in each race update, and the end of a
+    // scripted glance clears the rider's idle latch (`$82:857F`/`$82:87AD`, R-0083).
+    RiderLookState look;
     std::array<std::uint16_t, 2> charge_announced{}; // $0D53/$0D55, audio latch only.
     std::uint16_t fade_level{};
     std::uint16_t result_updates{};
@@ -407,6 +415,9 @@ struct ZoomZooState {
     // setup. A deserialized race is MIKE's against the track's usual opponent.
     RacePairing pairing{};
     OpponentTier opponent_tier{};
+    // `$77:10B1` (ClassicRaceScenario::race_counter). Two-view states and league wrappers carry
+    // it; a deserialized one-player race has a cold start's first race's 1.
+    std::uint8_t race_counter{1};
     // Not serialized, and read only by the picture: `$12CF`, the lowest BG1 palette (a cell
     // word's bits 10-12) among the ten cells the player's latest contact sampled
     // ($81:8B75-8BB3), which NEON's lighting follows (R-0068). The setup leaves 0.
@@ -445,6 +456,9 @@ struct ZoomZooContent {
     // audio.announcement-voices (`$81:C441`), a byte per 8-bit announcement event: its voice
     // (R-0076); empty in packs before profile v32, whose races are silent.
     std::span<const std::uint8_t> announcement_voices;
+    // presentation.rider.look-tables.v1: the riders' look (R-0036), whose scripted glance clears
+    // a rider's idle latch when it ends; empty for loose content, which runs no look.
+    std::span<const std::uint8_t> look_tables;
 };
 // $82:9715–979D: count active updates opposing the track direction, with
 // original wrapped word comparisons at velocities -16 and +16 (1/32 units).
@@ -500,9 +514,12 @@ ZoomZooState deserialize_zoom_zoo(std::span<const std::uint8_t> bytes);
 // whose rider's tutorial hints had ended before it started: the layouts carry neither, nor the
 // opponent's tier, which SILVIA's and GOLDWYN's take from `opponent_catch_up`
 // (race.opponent-catch-up).
+// A one-player layout carries no race counter `$77:10B1` either (R-0084): the menus' own,
+// `race_counter`, is taken; two-view and league states carry theirs.
 ZoomZooState deserialize_zoom_zoo(std::span<const std::uint8_t> bytes, RacePairing pairing,
                                   bool tutorial_hints,
-                                  std::span<const std::uint8_t> opponent_catch_up);
+                                  std::span<const std::uint8_t> opponent_catch_up,
+                                  std::uint8_t race_counter = 1);
 // $82:D7C6-DBD6, authenticated track header and one-player three-lap scenario.
 ZoomZooState classic_crawler_zoom_zoo_start(const ZoomZooContent& content);
 // The same initializer for the one-player, one-lap CRAWLER/DRAGSTER race.

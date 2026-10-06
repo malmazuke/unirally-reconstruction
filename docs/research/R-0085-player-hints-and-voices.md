@@ -1,4 +1,4 @@
-# R-0083 - A player voice from 150 and the end of the tutorial hints
+# R-0085 - A player voice from 150 and the end of the tutorial hints
 
 Status: research result, no native change
 ([PLAYER-HINT-VOICES](../../tasks/PLAYER-HINT-VOICES.md)), 6 October 2026, on main `ec05ea7`.

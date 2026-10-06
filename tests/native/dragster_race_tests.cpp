@@ -8,6 +8,7 @@
 #include <array>
 #include <span>
 #include <stdexcept>
+#include <utility>
 #include <vector>
 
 static void require(bool value) {if(!value)throw std::runtime_error("DRAGSTER race expectation failed");}
@@ -226,11 +227,11 @@ int main() {
     auto saved=local;saved.movement.frame+=1;saved.fade_level=1;saved.pause.selection=1;saved.pause.suspended_updates=1;
     saved.pause.lower_view=true;
     const auto open_bytes=serialize_zoom_zoo(saved);
-    require(open_bytes.size()==785 && open_bytes.back()==1);
+    require(open_bytes.size()==832 && open_bytes.back()==1);
     require(serialize_zoom_zoo(deserialize_zoom_zoo(open_bytes))==open_bytes);
     auto upper_saved=saved;upper_saved.pause.lower_view=false;
     const auto upper_bytes=serialize_zoom_zoo(upper_saved);
-    require(upper_bytes.size()==784 && std::equal(upper_bytes.begin(),upper_bytes.end(),open_bytes.begin()));
+    require(upper_bytes.size()==831 && std::equal(upper_bytes.begin(),upper_bytes.end(),open_bytes.begin()));
     auto two=open_bytes;two.back()=2;rejects([&]{(void)deserialize_zoom_zoo(two);});
     auto closed=serialize_zoom_zoo(local);closed.push_back(1);rejects([&]{(void)deserialize_zoom_zoo(closed);});
     auto one_view=saved;one_view.split_screen=false;rejects([&]{(void)serialize_zoom_zoo(one_view);});
@@ -286,15 +287,42 @@ int main() {
     require(versus.race.banners[0].index>=7 && !versus.race.banners[0].life && versus.race.banners[1].life==359);
     require(!versus.race.finish_delay && versus.race.total_times[1]==no_time && versus.race.riders[1].laps_remaining);
     const auto forced_bytes=serialize_zoom_zoo(versus);
-    require(forced_bytes.size()==792 && forced_bytes[7]=='H');
+    require(forced_bytes.size()==839 && forced_bytes[7]=='H');
     require(serialize_zoom_zoo(deserialize_zoom_zoo(forced_bytes))==forced_bytes);
     finish_update(versus);
     require(versus.race.finish_delay==1);
+    // R-0084: the trailer's last byte is the race counter, 0-5.
+    require(forced_bytes[830]==1);
+    auto counter_six=forced_bytes;counter_six[830]=6;rejects([&]{(void)deserialize_zoom_zoo(counter_six);});
+    // The winner's pose kind 1 belongs to counters 0 and 1 only.
+    require(versus.race.finish_pose[0].kind==1);
+    auto counter_zero=forced_bytes;counter_zero[830]=0;(void)deserialize_zoom_zoo(counter_zero);
+    auto counter_two=forced_bytes;counter_two[830]=2;rejects([&]{(void)deserialize_zoom_zoo(counter_two);});
+    // A league wrapper carries the counter before its last byte, rider 1's hints over.
+    auto counted_league=local;counted_league.league_statistics.enabled=true;counted_league.race_counter=3;
+    const auto league_bytes=serialize_zoom_zoo(counted_league);
+    require(league_bytes[league_bytes.size()-2]==3);
+    require(serialize_zoom_zoo(deserialize_zoom_zoo(league_bytes))==league_bytes);
+    auto league_six=league_bytes;league_six[league_bytes.size()-2]=6;
+    rejects([&]{(void)deserialize_zoom_zoo(league_six);});
     // Without the drivers the forced flag is refused; so are a stray member, two live drivers,
     // and drivers in a race that is not VS.
-    rejects([&]{(void)deserialize_zoom_zoo(std::span(forced_bytes).first(784));});
-    auto member=forced_bytes;member[784]=6;rejects([&]{(void)deserialize_zoom_zoo(member);});
-    auto both_live=forced_bytes;both_live[786]=1;rejects([&]{(void)deserialize_zoom_zoo(both_live);});
+    rejects([&]{(void)deserialize_zoom_zoo(std::span(forced_bytes).first(831));});
+    auto member=forced_bytes;member[831]=6;rejects([&]{(void)deserialize_zoom_zoo(member);});
+    auto both_live=forced_bytes;both_live[833]=1;rejects([&]{(void)deserialize_zoom_zoo(both_live);});
+    // R-0083: the trailer's look block (from byte 784: ten words a rider, then both head points)
+    // refuses what the look step cannot write.
+    for(const auto& [at,value]:std::array<std::pair<std::size_t,std::uint8_t>,6>{{
+            {784,49},  // head past the 48 head frames
+            {801,1},   // the sequence target's high byte
+            {788,2},   // looking back is a flag
+            {794,2},   // the sequence cursor past its end
+            {803,0},   // (paired with 802 below: sequence number 6)
+            {824,2}}}) { // a head point's presence is a flag
+        auto bad=forced_bytes;bad[at]=value;
+        if(at==803) bad[802]=6;
+        rejects([&]{(void)deserialize_zoom_zoo(bad);});
+    }
     auto stray=player_done;stray.race.banners[0]={8,300};rejects([&]{(void)serialize_zoom_zoo(stray);});
     // A split state's display counts only once both have finished; a league wrapper holds no VS state.
     require(serialize_zoom_zoo(deserialize_zoom_zoo(serialize_zoom_zoo(two_player)))==serialize_zoom_zoo(two_player));
@@ -315,4 +343,20 @@ int main() {
     require(opponent_first.race.banners[0]==ZoomZooBannerDriver{});
     finish_update(opponent_first);
     require(opponent_first.race.banners[0].life==359 && opponent_first.race.finish_delay==1);
+    // R-0084: the race counter `$77:10B1` picks the finish poses' pair of tables: 0-1 gives
+    // 1/2, 2-3 gives 3/4, 4-5 gives 5/6 (winner first). Seven table pointers, then one loop.
+    std::array<std::uint8_t,20> six_tables{};
+    for(unsigned kind=1;kind<7;++kind){six_tables[2*kind]=0xd6;six_tables[2*kind+1]=0xc7;}
+    six_tables[15]=1;six_tables[17]=0x80;
+    auto six_content=content;six_content.finish_poses=six_tables;
+    for(const auto& [counter,winner]:std::array<std::pair<std::uint8_t,std::uint16_t>,4>{{{1,1},{2,3},{3,3},{5,5}}}){
+        auto counted=player_done;counted.race_counter=counter;
+        for(unsigned update=0;update<6;++update){update_finish(counted,six_content);++counted.movement.frame;}
+        require(counted.race.finish_pose[0].active && counted.race.finish_pose[0].kind==winner);
+    }
+    // The loser's kind is the pair's second: a VS race's forced loser at counter 3 takes 4.
+    auto forced_loser=player_done;forced_loser.versus=true;forced_loser.race_counter=3;
+    for(unsigned update=0;update<420;++update){update_finish(forced_loser,six_content);++forced_loser.movement.frame;}
+    require(forced_loser.race.finish_pose[0].kind==3 && forced_loser.race.finish_pose[1].active
+            && forced_loser.race.finish_pose[1].kind==4);
 }

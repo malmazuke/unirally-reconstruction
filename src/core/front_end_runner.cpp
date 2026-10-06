@@ -42,7 +42,7 @@ namespace {
 
 struct Options {
     std::filesystem::path pack, inputs;
-    std::filesystem::path race_timeline, sound_cues;
+    std::filesystem::path race_timeline, look_timeline, sound_cues;
     std::uint32_t frames{};
     std::map<std::uint32_t, std::filesystem::path> pictures, records, vram;
     // The original's race initialization frames, in race order, from a capture: the loading time
@@ -148,6 +148,8 @@ Options parse_options(int argc, char** argv) {
             options.inputs = value();
         else if (option == "--race-timeline")
             options.race_timeline = value();
+        else if (option == "--look-timeline")
+            options.look_timeline = value();
         else if (option == "--sound-cues")
             options.sound_cues = value();
         else if (option == "--picture") {
@@ -397,13 +399,14 @@ std::string start_race(RaceBetweenMenus& race, const unirally::ClassicContentPac
         front_end.mode == unirally::FrontEndMode::two_player
         || front_end.mode == unirally::FrontEndMode::versus
         || (front_end.mode == unirally::FrontEndMode::league && front_end.second_rider < 16);
-    const auto scenario =
+    auto scenario =
         local ? unirally::classic_local_race_scenario(
                     unirally::ClassicRaceTrack{front_end.tour_menu.track},
                     {front_end.rider_menu.rider, front_end.second_rider},
                     ((front_end.records.tutorial_bits >> front_end.rider_menu.rider) & 1U) == 0,
                     ((front_end.records.tutorial_bits >> front_end.second_rider) & 1U) == 0)
               : unirally::one_player_race_scenario(front_end);
+    scenario.race_counter = front_end.race_song; // `$77:10B1` after this race's count (R-0084)
     const auto loading_frames = unirally::race_loading_frames(front_end);
     if (loading_frames == 0 && initialization == 0) return "its loading time is not known";
     race.content = unirally::classic_race_content(pack, scenario.track);
@@ -443,6 +446,20 @@ void update_demo_race(const Options& options, const unirally::ClassicContentPack
     print_state(frame, front_end);
 }
 
+// The two riders' look words (R-0036) as the picture history holds them after a two-pad race's
+// update: per rider $0D49 head, $1259 target, $1269, $126D, $1271, $0D5F, $0D63, $0D67, $125D and
+// $0D6F, as hex words.
+void write_look(std::ofstream& out, std::uint32_t frame, const unirally::RiderLookState& look) {
+    if (!out.is_open()) return;
+    out << frame;
+    for (const auto& r : look.riders)
+        for (const auto word :
+             {r.head, r.target, r.looking_back, r.distance_step, r.glance_timer, r.sequence_cursor,
+              r.sequence_end, r.sequence_delay, r.sequence_target, r.sequence_number})
+            out << ' ' << std::hex << word << std::dec;
+    out << '\n';
+}
+
 void write_race_state(std::ofstream& out, std::uint32_t frame,
                       const unirally::ZoomZooState& state) {
     if (!out.is_open()) return;
@@ -471,7 +488,7 @@ void check_local_restore(const unirally::ZoomZooState& race_state,
     const auto versus = race_state.versus ? 8U : 0U;
     // DRAGSTER's two-pad layouts are H and I, ZOOM ZOO's F and G.
     const bool dragster = race_state.track == unirally::ClassicRaceTrack::Dragster;
-    if (saved.size() != 784 + versus + lower_view || saved[7] != (dragster ? 'H' : 'F'))
+    if (saved.size() != 831 + versus + lower_view || saved[7] != (dragster ? 'H' : 'F'))
         throw std::runtime_error("local save is not layout H or F");
     restored = unirally::deserialize_zoom_zoo(saved);
     if (unirally::serialize_zoom_zoo(*restored) != saved)
@@ -484,15 +501,16 @@ void check_local_restore(const unirally::ZoomZooState& race_state,
         }
         return false;
     };
-    // The trailer's last two bytes: the split flag and demo_ai. A ZOOM ZOO two-view state may be
-    // the split demo's (R-0069), so only DRAGSTER refuses demo AI; any two-view state refuses a
-    // clear split flag.
+    // The split flag and demo_ai come before the trailer's look block (R-0083). A ZOOM ZOO
+    // two-view state may be the split demo's (R-0069), so only DRAGSTER refuses demo AI; any
+    // two-view state refuses a clear split flag.
+    constexpr std::size_t look_block = 46 + 1; // the look, then the race counter (R-0084)
     const auto trailer_end = saved.size() - lower_view - versus;
     auto invalid = saved;
-    invalid[trailer_end - 1] = 1;
+    invalid[trailer_end - look_block - 1] = 1;
     if (dragster && !refused(invalid)) throw std::runtime_error("local save accepted demo AI");
     invalid = saved;
-    invalid[trailer_end - 2] = 0;
+    invalid[trailer_end - look_block - 2] = 0;
     if (!refused(invalid)) throw std::runtime_error("local save accepted a clear split flag");
     if (lower_view) {
         invalid = saved;
@@ -507,7 +525,7 @@ void check_local_restore(const unirally::ZoomZooState& race_state,
     auto extended = race_state;
     extended.special_tiles[0].mud_cooldown = 1;
     const auto extended_saved = unirally::serialize_zoom_zoo(extended);
-    if (extended_saved.size() != 836 + versus + lower_view
+    if (extended_saved.size() != 883 + versus + lower_view
         || extended_saved[7] != (dragster ? 'I' : 'G')
         || unirally::serialize_zoom_zoo(unirally::deserialize_zoom_zoo(extended_saved))
                != extended_saved)
@@ -580,6 +598,7 @@ void write_frame_outputs(const Options& options, std::uint32_t frame,
 void update_local_race(const Options& options, const unirally::ClassicContentPack& pack,
                        const unirally::FrontEndContent& content, unirally::FrontEndState& front_end,
                        RaceBetweenMenus& race, std::ofstream& race_timeline,
+                       std::ofstream& look_timeline,
                        std::optional<unirally::ZoomZooState>& restored_local, std::size_t& races,
                        std::uint32_t frame, unirally::FrontEndPads pads) {
     const auto previous = race.state;
@@ -603,6 +622,7 @@ void update_local_race(const Options& options, const unirally::ClassicContentPac
     // A one-player race keeps its picture history only when pictures are asked for.
     if (local || !options.pictures.empty()) {
         race.history.observe_update(previous, race.state, pack);
+        if (local) write_look(look_timeline, frame, race.state.look);
         const auto shown = race.history.on_screen();
         if (const auto picture = options.pictures.find(frame); picture != options.pictures.end())
             write_ppm(picture->second, unirally::render_classic_race(race.state, *race.presentation,
@@ -645,10 +665,14 @@ void write_loading_frame(const Options& options, const unirally::FrontEndState& 
 
 int main(int argc, char** argv) try {
     const auto options = parse_options(argc, argv);
-    std::ofstream race_timeline;
+    std::ofstream race_timeline, look_timeline;
     if (!options.race_timeline.empty()) {
         race_timeline.open(options.race_timeline);
         if (!race_timeline) throw std::runtime_error("cannot create race timeline");
+    }
+    if (!options.look_timeline.empty()) {
+        look_timeline.open(options.look_timeline);
+        if (!look_timeline) throw std::runtime_error("cannot create look timeline");
     }
     const unirally::ClassicContentPack pack(options.pack);
     const auto content = unirally::front_end_content(pack);
@@ -687,8 +711,8 @@ int main(int argc, char** argv) try {
                 write_loading_frame(options, state, race, frame, sound_cues);
                 continue;
             }
-            update_local_race(options, pack, content, state, race, race_timeline, restored_local,
-                              races, frame, pads);
+            update_local_race(options, pack, content, state, race, race_timeline, look_timeline,
+                              restored_local, races, frame, pads);
             sound_cues.write(frame, race.state.sound_cues);
         } else if (state.mode_chosen) {
             break;

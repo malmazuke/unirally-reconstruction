@@ -83,11 +83,12 @@ records the exact differential domain and accepted physical controller/listening
 check. That live run also reports 265,848 underrun pairs; continuous sound
 after every menu exit remains outside the bounded outcome.
 
-Play with native audio in the optimized build, `python3 tools/project.py build --preset
-app-release` (`build/app-release/src/app/unirally.app`). A sound-set upload runs the native IPL
-at about 1.07x real time there and about 0.8x in `app-debug`, which then falls behind at every
-race load. Output is a host latency policy, not original timing: output pair n plays the
-producer's clock at n / rate seconds, and once it runs more than four PAL frames behind the frame
-the game submits, the oldest queued pairs are dropped until it is two behind
-(`native_audio_dropped_late_pairs`). In the optimized build that drops the boot's and each
-upload's silence only (AUDIO-ONE-PLAYER).
+Native audio plays in either build. A sound-set upload runs the native IPL and driver at about
+16x real time in `app-release` and 6.5x in `app-debug` (AUDIO-UPLOAD-SPEED; 1.2x and 0.8x
+before, when the sound processor yielded by exception). Output is a host latency policy, not
+original timing: output pair n plays the producer's clock at n / rate seconds, and once it runs
+more than four PAL frames behind the frame the game submits, the oldest queued pairs are dropped
+until it is two behind (`native_audio_dropped_late_pairs`). The report gives the first drop (the
+boot's) and every later one apart, each with its peak level (`native_audio_first_drop_*`,
+`native_audio_later_drop*`; peak 0 is silence). A scripted HILL CLIMB run in `app-debug` drops
+only the boot's silence.

@@ -14,9 +14,19 @@ struct Event {
 struct Bus final : unirally::AudioDriverBus {
     std::vector<Event> events;
     bool interrupt_reads = false, resume_read = false, interrupt_clock = false;
-    unsigned clock_sync_step() const override { return interrupt_clock ? 2U : 0U; }
-    void advance_clock(std::uint64_t ticks) override {
+    // AUDIO-UPLOAD-SPEED: yields by return, before every port access once and at one clock visit.
+    bool return_yields = false, return_clock = false;
+    mutable bool yielded = false;
+    bool yield_due(std::uint64_t) const override {
+        if (!return_yields) return false;
+        yielded = !yielded;
+        return yielded;
+    }
+    unsigned clock_sync_step() const override { return interrupt_clock || return_clock ? 2U : 0U; }
+    bool advance_clock(std::uint64_t ticks) override {
         if (interrupt_clock && ticks >= 54322) { interrupt_clock = false; throw CpuYield{}; }
+        if (return_clock && ticks >= 54322) { return_clock = false; return true; }
+        return false;
     }
     std::uint8_t read_port(std::uint64_t ticks, std::uint8_t port) override {
         if (interrupt_reads && !resume_read) { resume_read = true; throw CpuYield{}; }
@@ -87,6 +97,24 @@ void check_continuations() {
     require(std::any_of(continuous_bus.events.begin(), continuous_bus.events.end(),
             [](const auto& e) { return e.kind == 'D' && e.address == 0x6c && e.value == 224; }),
             "stop did not disable the DSP");
+    // The same yields by return: run_until returns with the access pending, and the next call
+    // makes it; a clock visit's yield keeps its deferred timer step.
+    Bus returning_bus; returning_bus.return_yields = true; returning_bus.return_clock = true;
+    unirally::TitleMenuAudioDriver returning(data, pitch, returning_bus, initial_timers(), 0,
+                                             false, true);
+    unsigned returns = 0; bool saw_returned_timer = false;
+    while (!returning.returned_to_ipl() && returns < 100000) {
+        returning.run_until(300000);
+        if (returning.returned_to_ipl()) break;
+        ++returns;
+        if (returning.snapshot().continuation.deferred_timer_step) saw_returned_timer = true;
+    }
+    require(returning.returned_to_ipl() && returns > 100, "too few yields by return");
+    require(saw_returned_timer, "a clock visit's yield by return was not tested");
+    require(returning_bus.events == continuous_bus.events, "a yield by return duplicated or lost IO");
+    const auto returned = returning.snapshot();
+    require(expected.score == returned.score && expected.timers == returned.timers
+            && expected.ticks == returned.ticks, "a yield by return changed score or timer phase");
 }
 }
 int main() {

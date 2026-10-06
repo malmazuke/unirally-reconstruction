@@ -49,12 +49,17 @@ constexpr std::size_t first_layout_size = 395, sustained_size = 423, complete_ra
 constexpr std::size_t native_race_size = 742, extended_size = 794, other_track_size = 916;
 // A two-view state appends the second camera, two demo controllers, and the
 // pairing/tier which a one-player restore normally derives from its menus.
-constexpr std::size_t split_trailer_size = 42;
+// The riders' look (R-0083): ten words a rider, then each head point's presence, x and y.
+constexpr std::size_t look_block_size = 46;
+// The race counter `$77:10B1` (R-0084), a byte after the look block.
+constexpr std::size_t race_counter_size = 1;
+constexpr std::size_t split_trailer_size = 42 + look_block_size + race_counter_size;
 // The split trailer's byte of rider 1's tutorial hints (`$12E5`, R-0082).
 constexpr std::size_t trailer_hints_at = 31;
 // A league pair's wrapper: its header, and the trailer after the payload, whose last byte is
 // rider 1's hints over.
-constexpr std::size_t league_header_size = 13, league_trailer_size = 97;
+constexpr std::size_t league_header_size = 13,
+                      league_trailer_size = 97 + look_block_size + race_counter_size;
 constexpr std::size_t split_race_size = native_race_size + split_trailer_size;
 constexpr std::size_t extended_split_size = extended_size + split_trailer_size;
 constexpr std::size_t special_tiles_size = 52, hunter_effects_size = 62;
@@ -91,7 +96,9 @@ constexpr std::uint16_t one_view_camera_x = 0x0530, one_view_camera_y = 0x0120;
 constexpr std::uint16_t one_view_camera_oam = 0x2065;
 constexpr RacePairing one_view_demo_pairing{6, 1};
 constexpr OpponentTier one_view_demo_opponent_tier{0xf1, 0, 0x60};
-constexpr unsigned last_finish_pose_one = 48, last_finish_pose_two = 88;
+// Each finish pose table's last selector, kinds 1-6 (the tables at $17:C7C8, R-0084).
+constexpr std::array<unsigned, 7> last_finish_pose{0, 48, 88, 32, 22, 16, 13};
+constexpr std::uint8_t race_counter_limit = 6;
 constexpr unsigned lap_slots = 10;
 // The native start: 30 fade updates, a 4-update delay, a 270-update countdown, start boosts
 // of 384 until it reaches 128; the tutorial hints every 300 updates from 30, eight groups.
@@ -208,6 +215,43 @@ void write_special_tiles(std::vector<std::uint8_t>& bytes, const ZoomZooState& s
     put16(bytes, state.opponent_turnaround);
 }
 
+void write_look(std::vector<std::uint8_t>& bytes, const RiderLookState& look) {
+    for (const auto& r : look.riders)
+        for (const auto word :
+             {r.head, r.target, r.looking_back, r.distance_step, r.glance_timer, r.sequence_cursor,
+              r.sequence_end, r.sequence_delay, r.sequence_target, r.sequence_number})
+            put16(bytes, word);
+    for (const auto& offset : look.head_offsets) {
+        put8(bytes, offset ? 1U : 0U);
+        put8(bytes, offset ? offset->x : 0U);
+        put8(bytes, offset ? offset->y : 0U);
+    }
+}
+
+void read_look(Reader& in, RiderLookState& look) {
+    for (auto& r : look.riders)
+        for (auto* word : {&r.head, &r.target, &r.looking_back, &r.distance_step, &r.glance_timer,
+                           &r.sequence_cursor, &r.sequence_end, &r.sequence_delay,
+                           &r.sequence_target, &r.sequence_number})
+            *word = in.u16();
+    for (auto& offset : look.head_offsets) {
+        const auto present = in.u8(), x = in.u8(), y = in.u8();
+        refuse_unless(present <= 1 && (present || (!x && !y)), "a rider's head point is invalid");
+        offset = present ? std::optional<RiderHeadOffset>{RiderHeadOffset{x, y}} : std::nullopt;
+    }
+    refuse_unless(rider_look_state_valid(look), "the riders' look is invalid");
+}
+
+// `$77:10B1` (R-0084): 0-5, and a finish pose already chosen from its pair of tables.
+void read_race_counter(Reader& in, ZoomZooState& state) {
+    state.race_counter = in.u8();
+    refuse_unless(state.race_counter < race_counter_limit, "the race counter is invalid");
+    const unsigned pair = state.race_counter & ~1U;
+    for (const auto& pose : state.race.finish_pose)
+        refuse_unless(!pose.kind || pose.kind == pair + 1U || pose.kind == pair + 2U,
+                      "a finish pose is not from the race counter's tables");
+}
+
 void write_split_trailer(std::vector<std::uint8_t>& bytes, const ZoomZooState& state) {
     const auto& camera = state.race.second_camera;
     for (auto value : {camera.x, camera.y, camera.velocity_x, camera.velocity_y, camera.lookahead,
@@ -226,6 +270,8 @@ void write_split_trailer(std::vector<std::uint8_t>& bytes, const ZoomZooState& s
         put16(bytes, value);
     put8(bytes, state.split_screen);
     put8(bytes, state.demo_ai);
+    write_look(bytes, state.look);
+    put8(bytes, state.race_counter);
 }
 
 void write_hunter_effects(std::vector<std::uint8_t>& bytes, const HunterEffects& h) {
@@ -295,11 +341,11 @@ void read_race_riders(Reader& in, ZoomZooState& state, const ClassicRaceScenario
 void check_finish_poses(const ZoomZooRaceState& race) {
     for (unsigned index = 0; index < 2; ++index) {
         const auto& pose = race.finish_pose[index];
-        const unsigned limit = pose.kind == 1 ? last_finish_pose_one
-                             : pose.kind == 2 ? last_finish_pose_two
-                                              : 0U;
+        const unsigned limit =
+            pose.kind < last_finish_pose.size() ? last_finish_pose[pose.kind] : 0U;
         refuse_unless(!((pose.active && !race.riders[index].finished) || pose.selector > limit
-                        || pose.kind > 2 || pose.locked > 1 || pose.active > 1
+                        || pose.kind >= last_finish_pose.size() || pose.locked > 1
+                        || pose.active > 1
                         || (pose.active ? (!pose.kind || !pose.locked)
                                         : (pose.kind || pose.locked || pose.selector))),
                       "ZOOM ZOO finish pose state invalid");
@@ -915,6 +961,8 @@ std::vector<std::uint8_t> serialize_league_race(const ZoomZooState& state) {
         for (const auto count : counts) put8(bytes, count);
     for (const auto count : state.league_statistics.wipeouts) put16(bytes, count);
     for (const auto points : state.league_statistics.opponent_points) put16(bytes, points);
+    write_look(bytes, state.look);
+    put8(bytes, state.race_counter);
     put_bool(bytes, !state.opponent_hints.active); // rider 1's hints over
     if (state.pause.lower_view) put8(bytes, 1);
     return bytes;
@@ -1108,6 +1156,8 @@ ZoomZooState read_demo_trailer(ZoomZooState state, std::span<const std::uint8_t>
                   "demo race mode flags are invalid");
     state.split_screen = !one_view;
     state.demo_ai = demo_ai != 0;
+    read_look(in, state.look);
+    read_race_counter(in, state);
     in.require_end();
     validate_split_demo_words(state.demo);
     const bool camera_valid =
@@ -1313,6 +1363,8 @@ std::optional<ZoomZooState> deserialize_league_race(std::span<const std::uint8_t
         for (auto& count : counts) count = trailer.u8();
     for (auto& count : state.league_statistics.wipeouts) count = trailer.u16();
     for (auto& points : state.league_statistics.opponent_points) points = trailer.u16();
+    read_look(trailer, state.look);
+    read_race_counter(trailer, state);
     state.opponent_hints.active = !trailer.flag();
     refuse_unless(!state.opponent_hints.active || (split && pairing.opponent != 0),
                   "only a human rider 1 other than MIKE has tutorial hints");
@@ -1330,12 +1382,18 @@ ZoomZooState deserialize_zoom_zoo(std::span<const std::uint8_t> bytes) {
 
 ZoomZooState deserialize_zoom_zoo(std::span<const std::uint8_t> bytes, RacePairing pairing,
                                   bool tutorial_hints,
-                                  std::span<const std::uint8_t> opponent_catch_up) {
+                                  std::span<const std::uint8_t> opponent_catch_up,
+                                  std::uint8_t race_counter) {
     if (const auto league = deserialize_league_race(bytes)) {
         refuse_unless(league->pairing == pairing, "league pairing differs from caller");
         return *league;
     }
-    return deserialize_race(bytes, pairing, tutorial_hints, opponent_catch_up);
+    auto state = deserialize_race(bytes, pairing, tutorial_hints, opponent_catch_up);
+    if (!state.split_screen && !state.demo_ai) {
+        refuse_unless(race_counter < race_counter_limit, "the race counter is invalid");
+        state.race_counter = race_counter;
+    }
+    return state;
 }
 
 void validate_zoom_zoo_content_state(const ZoomZooState& state, const ZoomZooContent& content) {

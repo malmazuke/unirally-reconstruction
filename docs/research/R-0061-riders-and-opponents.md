@@ -161,7 +161,7 @@ and `goldwyn` 5600, 10500 and 13390.
 
 - **The player's voices past 87.** Riders 2-11 and 13-15's voices are from the listing. Native
   computes them with the same expression as the opponent's, which GOLDWYN's 219 confirms.
-  - Rider 12's 171 is captured since R-0083 (6 October 2026): a WALKER race whose first landing
+  - Rider 12's 171 is captured since R-0085 (6 October 2026): a WALKER race whose first landing
     is a combination, equal to native on every update.
 - **The cartridge RAM class counters** that the opponent's out-of-table voices increment
   (`$81:C253-C258`) are not modelled, as for BRONSEN (R-0035).

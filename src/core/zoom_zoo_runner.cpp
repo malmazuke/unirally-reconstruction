@@ -186,22 +186,10 @@ struct LooseContent {
                                                  reward,
                                                  reward_class,
                                                  {masks, decrements}};
-        return {movement,
-                coefficients,
-                reflection,
-                landing,
-                finish_poses,
-                roll_poses,
-                roll_directions,
-                weights,
-                combinations,
-                {},
-                {},
-                {},
-                {},
-                {},
-                {},
-                {}};
+        return {
+            movement, coefficients, reflection, landing, finish_poses, roll_poses, roll_directions,
+            weights,  combinations, {},         {},      {},           {},         {},
+            {},       {},           {}};
     }
 };
 

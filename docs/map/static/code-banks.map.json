@@ -7958,9 +7958,11 @@
     "NMX"
    ],
    "native": [
+    "src/core/rider_look.cpp:advance_rider_look",
     "src/core/rider_look.cpp:head_point",
     "src/core/rider_look.cpp:run_scripted_glances",
-    "src/core/rider_look.hpp:advance_rider_look"
+    "src/core/rider_look.hpp:advance_rider_look",
+    "src/core/zoom_zoo_movement.hpp:ZoomZooState::look"
    ],
    "observed_entries": {},
    "start": "$82:851D",
@@ -8115,9 +8117,11 @@
     "NMX"
    ],
    "native": [
+    "src/core/rider_look.cpp:advance_rider_look",
     "src/core/rider_look.cpp:head_point",
     "src/core/rider_look.cpp:run_scripted_glances",
-    "src/core/rider_look.hpp:advance_rider_look"
+    "src/core/rider_look.hpp:advance_rider_look",
+    "src/core/zoom_zoo_movement.hpp:ZoomZooState::look"
    ],
    "observed_entries": {},
    "start": "$82:8748",
@@ -12716,7 +12720,9 @@
     "src/core/front_end.hpp:choose_race_song",
     "src/core/front_end.hpp:return_from_race",
     "src/core/race_result.cpp:(file)",
-    "src/core/race_result.cpp:choose_race_song"
+    "src/core/race_result.cpp:choose_race_song",
+    "src/core/race_setup.cpp:restart_zoom_zoo",
+    "src/core/zoom_zoo_movement.hpp:ClassicRaceScenario::race_counter"
    ],
    "observed_entries": {},
    "start": "$83:C998",
@@ -12959,7 +12965,9 @@
     "src/core/race_update.cpp:read_second_rider_controls",
     "src/core/race_update.cpp:run_pause_menu",
     "src/core/race_update.cpp:update_zoom_zoo",
-    "src/core/rider_look.cpp:zoom_zoo_update_was_paused"
+    "src/core/rider_look.cpp:zoom_zoo_update_was_paused",
+    "src/core/rider_look.hpp:advance_rider_look",
+    "src/core/zoom_zoo_movement.hpp:ZoomZooState::look"
    ],
    "observed_entries": {},
    "start": "$83:CD2A",
@@ -14950,19 +14958,19 @@
    "call returns in the calling mode": 1262
   },
   "bytes": 131072,
-  "cited_addresses": 1714,
+  "cited_addresses": 1725,
   "cited_by_class": {
    "data": 31,
-   "inferred": 310,
-   "observed": 1040,
-   "unknown": 333
+   "inferred": 311,
+   "observed": 1044,
+   "unknown": 339
   },
   "cited_by_position": {
    "dat": 31,
-   "loc": 980,
+   "loc": 984,
    "mid": 20,
-   "sub": 350,
-   "unk": 333
+   "sub": 351,
+   "unk": 339
   },
   "conflicts": 0,
   "data": 92,

@@ -39,6 +39,8 @@ struct AudioIplState {
 class AudioIplHandshake {
 public:
     explicit AudioIplHandshake(AudioDriverBus& bus, std::uint64_t entry_ticks = 0);
+    // Runs until the driver is ready, the clock limit, or a port access the CPU takes control
+    // before (the bus's `yield_due`).
     void run_until(std::uint64_t exclusive_ticks);
     const AudioIplState& state() const { return state_; }
     void restore(const AudioIplState& state);
@@ -53,6 +55,7 @@ private:
     std::uint16_t retained_table_bytes_ = 621, retained_score_bytes_ = 2200;
     void schedule(AudioIplPhase phase, unsigned ticks);
     void step();
+    bool accesses_port() const;
     void clear_page();
     void ready_ports();
     void receive_header();

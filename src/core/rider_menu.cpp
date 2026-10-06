@@ -425,6 +425,9 @@ void rider_menu_frame(FrontEndState& state, const FrontEndContent& content, Fron
         if (state.rider_menu.second) {
             state.second_rider = state.menu.selection;
             state.now_playing.opponent = state.second_rider;
+            // $80:BD1C-BD23: 2P's second choice starts the session's wins at 0 (R-0084).
+            if (state.mode == FrontEndMode::two_player)
+                state.records.player_wins = state.records.opponent_wins = 0;
         } else {
             state.rider_menu.rider = state.menu.selection;
             state.now_playing.opponent = someone; // $80:BBC3

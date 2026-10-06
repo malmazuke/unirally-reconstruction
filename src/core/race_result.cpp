@@ -573,7 +573,9 @@ void race_restart_frame(FrontEndState& state) {
     constexpr std::uint32_t last_fade_frame = 8;
     state.registers.brightness = static_cast<std::uint8_t>(2 * (frame - 1));
     state.registers.force_blank = false;
-    if (frame == last_fade_frame) enter_now_playing(state); // $80:BC36-BC45
+    // Each handler loops back to its own NOW PLAYING: 1P `$80:BC36-BC45`, 2P `$80:BD5D`, VS
+    // `$80:BFE0`, with its mode, pairing and flags as they were (R-0084).
+    if (frame == last_fade_frame) enter_now_playing(state);
 }
 
 void race_result_frame(FrontEndState& state, const FrontEndContent& content, FrontEndPads pads) {
