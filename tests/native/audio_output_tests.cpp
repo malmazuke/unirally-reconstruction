@@ -73,18 +73,21 @@ void check_chunking_restore_and_rejection() {
     }
 }
 // The host's late-output trim: nothing within the ceiling, then oldest first down to `keep`,
-// never more than is queued; dropped pairs count as delivered.
+// never more than is queued; dropped pairs count as delivered. Each drop reports its peak level.
 void check_late_drop() {
     unirally::NativeAudioOutput output(32040); // one output pair per source pair
     std::vector<std::int16_t> source;
     for (int i = 0; i < 101; ++i) source.insert(source.end(), {std::int16_t(i), std::int16_t(-i)});
     output.append_pcm(source);
     require(output.state().generated_pairs == 100, "rate-equal output pair count differs");
-    require(output.drop_late(40, 40, 20) == 0, "output within its ceiling dropped");
-    require(output.drop_late(41, 40, 20) == 21, "late output not dropped to its keep");
+    require(output.drop_late(40, 40, 20).pairs == 0, "output within its ceiling dropped");
+    const auto first = output.drop_late(41, 40, 20);
+    require(first.pairs == 21, "late output not dropped to its keep");
+    require(first.peak == 20, "a drop's peak is not its largest absolute sample");
     require(output.state().delivered_pairs == 21, "dropped pairs not counted as delivered");
     require(output.take_pairs(1) == std::vector<std::int16_t>{21, -21}, "drop not oldest first");
-    require(output.drop_late(1000, 40, 20) == 78, "late drop exceeded the queue");
+    const auto rest = output.drop_late(1000, 40, 20);
+    require(rest.pairs == 78 && rest.peak == 99, "late drop exceeded the queue");
     require(output.state().generated_pairs == output.state().delivered_pairs, "queue not empty");
     rejects([&] { output.drop_late(1000, 20, 40); });
     // At 48 kHz after a partial drain: the bound counts from the delivered pairs, `keep` may equal
@@ -93,9 +96,9 @@ void check_late_drop() {
     fast.append_pcm(source);
     const auto generated = fast.state().generated_pairs;
     require(fast.take_pairs(30).size() == 60, "partial drain differs");
-    require(fast.drop_late(30 + 50, 50, 50) == 0, "output at its ceiling dropped");
-    require(fast.drop_late(30 + 51, 50, 50) == 1, "keep equal to the ceiling drops one");
-    require(fast.drop_late(30 + 100, 50, 10) == 89, "late drop after a drain differs");
+    require(fast.drop_late(30 + 50, 50, 50).pairs == 0, "output at its ceiling dropped");
+    require(fast.drop_late(30 + 51, 50, 50).pairs == 1, "keep equal to the ceiling drops one");
+    require(fast.drop_late(30 + 100, 50, 10).pairs == 89, "late drop after a drain differs");
     require(fast.state().delivered_pairs == 120, "drain and drops not both delivered");
     const auto bytes = unirally::serialize_audio_output(fast.state());
     unirally::NativeAudioOutput restored;

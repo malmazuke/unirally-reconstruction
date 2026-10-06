@@ -19,7 +19,10 @@ private:
     std::unique_ptr<TitleMenuAudioStream> producer_;
     std::atomic<bool> callback_failed_{false};
     std::atomic<std::uint64_t> underrun_pairs_{0}, nonzero_pairs_{0};
-    std::uint64_t dropped_late_pairs_ = 0;
+    // The first late drop (the boot's) apart from every later one: pairs, peak level and count.
+    std::uint64_t dropped_late_pairs_ = 0, first_drop_pairs_ = 0, later_drop_pairs_ = 0;
+    std::uint16_t first_drop_peak_ = 0, later_drop_peak_ = 0;
+    std::uint32_t later_drops_ = 0;
     std::uint32_t rate_ = 0;
     bool resumed_ = false;
     static void SDLCALL callback(void* context, SDL_AudioStream* stream, int additional_bytes,

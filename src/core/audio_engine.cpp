@@ -32,13 +32,17 @@ void NativeAudioEngine::retain_uploading_set() {
 std::uint64_t NativeAudioEngine::smp_ticks() const {
     return driver_ ? driver_->ticks() : ipl_.state().ticks;
 }
+// The IPL and driver ask `yield_due` before each port access; this is the fallback.
 void NativeAudioEngine::check_cpu_yield(std::uint64_t ticks) const {
-    if (ticks * cpu_frequency >= cpu_completed_ * smp_frequency) throw CpuYield{};
+    if (yield_due(ticks)) throw CpuYield{};
 }
-void NativeAudioEngine::advance_clock(std::uint64_t ticks) {
+bool NativeAudioEngine::yield_due(std::uint64_t ticks) const {
+    return ticks * cpu_frequency >= cpu_completed_ * smp_frequency;
+}
+bool NativeAudioEngine::advance_clock(std::uint64_t ticks) {
     dsp_.advance_to(((ticks + 63) / 64) * 32);
     constexpr std::uint64_t force_lead = 768ULL * 24 * 24000000;
-    if (ticks * cpu_frequency > cpu_completed_ * smp_frequency + force_lead) throw CpuYield{};
+    return ticks * cpu_frequency > cpu_completed_ * smp_frequency + force_lead;
 }
 std::uint8_t NativeAudioEngine::read_port(std::uint64_t ticks, std::uint8_t port) {
     check_cpu_yield(ticks);
@@ -94,21 +98,23 @@ void NativeAudioEngine::emit(char kind, std::uint64_t ticks, std::uint16_t addre
                              std::uint8_t value) {
     if (events_) events_->event(kind, ticks, cpu_master_, address, value);
 }
-// R-0075. CPU scanline/IO boundaries resume a retained native SMP access.
+// R-0075. CPU scanline/IO boundaries resume a retained native SMP access. The IPL and driver
+// return where the CPU takes control (AUDIO-UPLOAD-SPEED: a return, not an exception, which cost
+// most of an upload's time).
 void NativeAudioEngine::synchronize() {
     if (smp_ticks() * cpu_frequency >= cpu_completed_ * smp_frequency) return;
     try {
         for (;;) {
             if (!driver_) {
                 ipl_.run_until(std::numeric_limits<std::uint64_t>::max());
+                if (!ipl_.driver_ready()) break;
                 active_set_ = uploading_set_;
                 driver_ = std::make_unique<TitleMenuAudioDriver>(
                     set(active_set_), *pitch_, *this, ipl_timers_, ipl_.state().ticks, true, true);
             }
             driver_->run_until(std::numeric_limits<std::uint64_t>::max());
+            if (!driver_->returned_to_ipl()) break;
             const auto exited = driver_->snapshot();
-            if (!exited.stopped_for_ipl)
-                throw std::logic_error("native audio driver returned before IPL exit");
             ipl_timers_ = exited.timers;
             ipl_ = AudioIplHandshake(*this, exited.ticks);
             retain_uploading_set();

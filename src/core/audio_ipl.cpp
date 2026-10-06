@@ -19,6 +19,8 @@ void AudioIplHandshake::run_until(std::uint64_t exclusive_ticks) {
     if (exclusive_ticks < state_.ticks) throw std::invalid_argument("IPL clock moves backwards");
     while (!driver_ready() && state_.next_access_ticks < exclusive_ticks) {
         state_.ticks = state_.next_access_ticks;
+        // A port access the CPU takes control before stays pending at its tick.
+        if (accesses_port() && bus_->yield_due(state_.ticks)) return;
         step();
     }
 }
@@ -166,6 +168,11 @@ void AudioIplHandshake::enter_destination() {
         schedule(AudioIplPhase::driver_ready, 0);
     else
         throw std::runtime_error("IPL destination outside identified title/menu protocol");
+}
+bool AudioIplHandshake::accesses_port() const {
+    const auto phase = state_.phase;
+    return phase != AudioIplPhase::clear_page && phase != AudioIplPhase::store_byte
+        && phase != AudioIplPhase::enter_destination && phase != AudioIplPhase::driver_ready;
 }
 void AudioIplHandshake::step() {
     const auto phase = state_.phase;

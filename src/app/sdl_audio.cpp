@@ -57,8 +57,19 @@ void SdlTitleMenuAudio::submit_frame(std::uint32_t frame, std::array<std::uint16
     // behind. A slow producer start once left every later sound 17 frames late. Dropped pairs
     // count in native_audio_delivered_pairs as well as native_audio_dropped_late_pairs.
     const std::size_t frame_pairs = rate_ / 50;
-    if (resumed_)
-        dropped_late_pairs_ += producer_->trim_late_output(frame, 4 * frame_pairs, 2 * frame_pairs);
+    if (resumed_) {
+        const auto drop = producer_->trim_late_output(frame, 4 * frame_pairs, 2 * frame_pairs);
+        // The first drop is reported apart: the producer's start, the boot's in every run so far.
+        if (drop.pairs && !dropped_late_pairs_) {
+            first_drop_pairs_ = drop.pairs;
+            first_drop_peak_ = drop.peak;
+        } else if (drop.pairs) {
+            later_drop_pairs_ += drop.pairs;
+            later_drop_peak_ = std::max(later_drop_peak_, drop.peak);
+            ++later_drops_;
+        }
+        dropped_late_pairs_ += drop.pairs;
+    }
     producer_->submit_frame(frame, words, std::move(cues), stop);
     if (callback_failed_) throw std::runtime_error("native audio device callback failed");
     // Two PAL frames of priming are a host latency policy. They never supply
@@ -82,6 +93,11 @@ void SdlTitleMenuAudio::report() {
               << " native_audio_nonzero_pairs=" << nonzero_pairs_.load()
               << " native_audio_underrun_pairs=" << underrun_pairs_.load()
               << " native_audio_dropped_late_pairs=" << dropped_late_pairs_
+              << " native_audio_first_drop_pairs=" << first_drop_pairs_
+              << " native_audio_first_drop_peak=" << first_drop_peak_
+              << " native_audio_later_drops=" << later_drops_
+              << " native_audio_later_drop_pairs=" << later_drop_pairs_
+              << " native_audio_later_drop_peak=" << later_drop_peak_
               << " native_audio_navigation_count=" << producer_->navigation_count()
               << " native_audio_restart_count=" << producer_->restart_count()
               << " native_audio_cued_frames=" << producer_->cued_frames()

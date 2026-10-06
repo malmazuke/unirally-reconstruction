@@ -12,7 +12,11 @@ public:
     // Coupled hardware can request bounded clock visits between accesses.
     // A visit may suspend before the matching timer step, like pinned SMP::step.
     virtual unsigned clock_sync_step() const { return 0; }
-    virtual void advance_clock(std::uint64_t) {}
+    // True when the CPU takes control at this visit (the SMP suspends there).
+    virtual bool advance_clock(std::uint64_t) { return false; }
+    // True when the CPU takes control before a port access at this tick. The access is retried
+    // when the SMP resumes; a bus may instead throw from the access itself.
+    virtual bool yield_due(std::uint64_t) const { return false; }
     virtual std::uint8_t read_port(std::uint64_t ticks, std::uint8_t port) = 0;
     virtual void write_port(std::uint64_t ticks, std::uint8_t port, std::uint8_t value) = 0;
     virtual void write_dsp(std::uint64_t ticks, std::uint8_t reg, std::uint8_t value) = 0;
@@ -88,7 +92,7 @@ private:
     void plan_descriptor(AudioDriverPhase return_phase);
     void plan_poll(AudioDriverPhase return_phase);
     void run_pending_until(std::uint64_t exclusive_ticks);
-    void advance_pending_clock(std::uint64_t ticks);
+    bool advance_pending_clock(std::uint64_t ticks);
     void execute_pending_io(const AudioDriverPendingIo& operation);
     void plan_phase();
     void plan_boot_phase();

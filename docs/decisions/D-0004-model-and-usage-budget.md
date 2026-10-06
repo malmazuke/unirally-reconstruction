@@ -2,6 +2,16 @@
 
 Status: adopted, 12 September 2026. Reassess from measured accepted work.
 
+## No standing rule to chain tasks - 6 October 2026
+
+The user's "keep working until weekly usage reaches 50%" (25 September 2026) and "80%"
+(26 September 2026, for a weekend away) applied to those sessions only. Sessions had kept them as
+a standing rule and chained seven tasks over a day and a half. The user corrected this: "Stop
+after the current task is complete". A session finishes the task in hand (review, merge and
+closeout) and stops; it claims another only when the user asks for one, and any bound the user
+gives applies to that request alone. Task records that cite "standing rule: continue until
+weekly 80%" record what the session believed then, not a rule.
+
 ## OPTIONS continuation override - 30 September 2026
 
 After the incomplete OPTIONS handoff at 80% weekly usage, the user instructed:
