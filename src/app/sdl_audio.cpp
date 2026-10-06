@@ -59,6 +59,7 @@ void SdlTitleMenuAudio::submit_frame(std::uint32_t frame, std::array<std::uint16
     const std::size_t frame_pairs = rate_ / 50;
     if (resumed_) {
         const auto drop = producer_->trim_late_output(frame, 4 * frame_pairs, 2 * frame_pairs);
+        // The first drop is reported apart: the producer's start, the boot's in every run so far.
         if (drop.pairs && !dropped_late_pairs_) {
             first_drop_pairs_ = drop.pairs;
             first_drop_peak_ = drop.peak;

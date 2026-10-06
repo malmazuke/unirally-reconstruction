@@ -1,5 +1,21 @@
 # Next session
 
+**6 October 2026: AUDIO-UPLOAD-SPEED is accepted (tier 1, #61) and integrated by merge commit.**
+Sound-set uploads (race, title, award, ending) are now well above real time: at least 16x in
+optimized builds and 6.5x in debug, from 1.2x and 0.8x.
+- **Why it was slow.** The native sound processor yielded to the CPU by throwing an exception at
+  every port access, and unwinding took most of the time.
+- **Fix.** The IPL and driver ask before each port access whether the CPU takes control and stop
+  with a return.
+- **Results.** Every native audio event and PCM pair equals main's on all 65 cued schedules, and
+  the checks against the original are unchanged. Debug builds now keep up: a scripted HILL CLIMB
+  run in `app-debug` drops only the boot's silence, and the app reports each drop's peak level.
+
+**No standing rule to chain tasks** (D-0004, 6 October 2026). The "until weekly usage reaches 80%"
+instruction was for one weekend. A session finishes the task in hand and stops; it claims another
+only when the user asks. Ready tasks: ROLLING-CONTACT, PORTABLE-CORE-IDENTITY, ATTRACT-DEMO. No M4
+tag, reset, spending or provider change is authorized.
+
 **6 October 2026: TWO-HUMAN-RESTART is accepted (tier 1, #60) and integrated by merge commit.**
 What happens after QUIT restarts a two-human race in its countdown:
 - **The restart.** The original goes back to the same mode's own NOW PLAYING, with mode,

@@ -2,7 +2,8 @@
 
 ## Assignment
 
-- Status: **claimed** 6 October 2026 by the session that closed TWO-HUMAN-RESTART, on main
+- Status: **accepted** 6 October 2026 (tier 1, [PR #61](https://github.com/malmazuke/unirally-reconstruction/pull/61));
+  claimed 6 October 2026 by the session that closed TWO-HUMAN-RESTART, on main
   `1b3a08a` after that task's merge (main equal to `origin/main`, closeout written). Prepared
   3 October 2026 by the AUDIO-ONE-PLAYER session, from its live check.
 - Milestone: M4 breadth
@@ -23,7 +24,8 @@
 - Base commit: main `1b3a08a`.
 - Branch and isolated worktree: `task/audio-upload-speed` in `.worktrees/audio-upload-speed`.
 - Owned paths and shared interfaces: the native audio engine, IPL handshake and driver run loops,
-  native tests, this record, `docs/STATE.md`, `tasks/README.md`, `tasks/NEXT_SESSION.md`.
+  the app's audio output report (`src/app/sdl_audio.*`, `title_menu_audio_stream.*`, its README),
+  native tests, D-0004's new section, this record, `docs/STATE.md`, `tasks/README.md`, `tasks/NEXT_SESSION.md`.
 - Claim/lease/heartbeat/checkpoint location: this record.
 - Session time limit, concurrency allocation and actual spend authorization if relevant: one
   worker plus the review subagent; no monetary spend.
@@ -94,3 +96,24 @@ temporary build of `1b3a08a` with this task's runner).
 - **Live** (`live-app-debug.json`): `app-debug`, hidden, `hill-complete`'s inputs. 2,815 pairs
   dropped at the boot, peak 0; no later drop; no underrun.
 - Tooling 544 OK; no function over 80 lines; the address index is current.
+
+## Review and integration
+
+- Reviewer: a fresh Claude Opus 5.5 subagent in its own clone, tier 1, with preregistered cases.
+  Approved `18f5f34`.
+  - Equivalence holds from the code. Its scratch build that aborts on the exception fallback ran
+    `variety` and `hopper-gold` equal to main's, so the fallback is never taken.
+  - Withheld streams: AUDIO-FIRST-RACE's six schedules are equal (optimized; two also in debug).
+  - Saves inside upload sessions are byte-equal to main's, and every resume matches.
+  - Speed: `six-quits` 17.50x and 6.64x, `locked-gold` 17.17x and 6.52x, against main's 1.24x and
+    0.89x.
+  - Live: the same as the primary's run.
+- Findings, none blocking:
+  - No ctest exercised the return path. Added: `audio_ipl_tests` and `audio_driver_tests` now run
+    a bus that yields by return before every port access, and at one clock visit; events and state
+    must equal the uninterrupted run's. Removing either port check, or the clock visit's return,
+    fails them.
+  - Nits fixed: `<algorithm>` in the runner, a long comment line, the first drop's comment, the
+    owned paths.
+- Integration: merged by merge commit after the final head's checks; closeout in main
+  `artifacts/audio-upload-speed-integration/closeout.json`.

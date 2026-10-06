@@ -4,6 +4,7 @@
 // cue file; no original clock, event or PCM is an input.
 #include "audio_title_menu_data.hpp"
 #include "title_menu_audio_playback.hpp"
+#include <algorithm>
 #include <chrono>
 #include <cstdlib>
 #include <iostream>

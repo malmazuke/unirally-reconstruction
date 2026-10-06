@@ -20,6 +20,14 @@ struct SenderBus final : unirally::AudioDriverBus {
     std::vector<Event> events;
     std::uint64_t pending_tick = 0;
     unsigned bytes_sent = 0;
+    // AUDIO-UPLOAD-SPEED: the CPU takes control before every port access once, by return.
+    bool yield_every_port = false;
+    mutable bool yielded = false;
+    bool yield_due(std::uint64_t) const override {
+        if (!yield_every_port) return false;
+        yielded = !yielded;
+        return yielded;
+    }
     enum class SenderPhase { waiting_ready, header, data, finish, done } phase{};
     void update(std::uint64_t ticks) {
         if (!pending_tick || ticks < pending_tick) return;
@@ -99,6 +107,22 @@ void check_phase_continuations() {
         require(resumed_sender.events == sender.events, "resumed bus events differ");
     }
     require(snapshots.size() >= 19, "too few pending phases exercised");
+    // A yield by return leaves the access pending at its tick; the next run makes it.
+    SenderBus yielding_sender;
+    yielding_sender.yield_every_port = true;
+    unirally::AudioIplHandshake yielding(yielding_sender);
+    unsigned returns = 0;
+    while (!yielding.driver_ready() && returns < 100000) {
+        yielding.run_until(100000);
+        if (!yielding.driver_ready()) {
+            ++returns;
+            require(yielding.state().ticks == yielding.state().next_access_ticks,
+                    "a yielded access is not pending at its tick");
+        }
+    }
+    require(yielding.driver_ready() && returns > 500, "too few yields by return");
+    require(yielding_sender.events == sender.events, "a yield by return duplicated or lost IO");
+    require(yielding.state().ticks == original.state().ticks, "yielded entry clock differs");
     auto invalid = original.state();
     invalid.next_access_ticks = invalid.ticks - 1;
     bool rejected = false;
