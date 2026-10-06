@@ -514,9 +514,12 @@ ZoomZooState deserialize_zoom_zoo(std::span<const std::uint8_t> bytes);
 // whose rider's tutorial hints had ended before it started: the layouts carry neither, nor the
 // opponent's tier, which SILVIA's and GOLDWYN's take from `opponent_catch_up`
 // (race.opponent-catch-up).
+// A one-player layout carries no race counter `$77:10B1` either (R-0084): the menus' own,
+// `race_counter`, is taken; two-view and league states carry theirs.
 ZoomZooState deserialize_zoom_zoo(std::span<const std::uint8_t> bytes, RacePairing pairing,
                                   bool tutorial_hints,
-                                  std::span<const std::uint8_t> opponent_catch_up);
+                                  std::span<const std::uint8_t> opponent_catch_up,
+                                  std::uint8_t race_counter = 1);
 // $82:D7C6-DBD6, authenticated track header and one-player three-lap scenario.
 ZoomZooState classic_crawler_zoom_zoo_start(const ZoomZooContent& content);
 // The same initializer for the one-player, one-lap CRAWLER/DRAGSTER race.

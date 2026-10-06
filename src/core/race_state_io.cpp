@@ -1382,12 +1382,18 @@ ZoomZooState deserialize_zoom_zoo(std::span<const std::uint8_t> bytes) {
 
 ZoomZooState deserialize_zoom_zoo(std::span<const std::uint8_t> bytes, RacePairing pairing,
                                   bool tutorial_hints,
-                                  std::span<const std::uint8_t> opponent_catch_up) {
+                                  std::span<const std::uint8_t> opponent_catch_up,
+                                  std::uint8_t race_counter) {
     if (const auto league = deserialize_league_race(bytes)) {
         refuse_unless(league->pairing == pairing, "league pairing differs from caller");
         return *league;
     }
-    return deserialize_race(bytes, pairing, tutorial_hints, opponent_catch_up);
+    auto state = deserialize_race(bytes, pairing, tutorial_hints, opponent_catch_up);
+    if (!state.split_screen && !state.demo_ai) {
+        refuse_unless(race_counter < race_counter_limit, "the race counter is invalid");
+        state.race_counter = race_counter;
+    }
+    return state;
 }
 
 void validate_zoom_zoo_content_state(const ZoomZooState& state, const ZoomZooContent& content) {

@@ -351,10 +351,10 @@ void restart_zoom_zoo(ZoomZooState& state, const ZoomZooContent& content) {
     const bool split = state.split_screen;
     const bool demo_ai = state.demo_ai;
     const bool league = state.league_statistics.enabled, versus = state.versus;
-    // The restarted race's setup counts `$77:10B1` again ($83:CA08-CA18, R-0084).
-    constexpr unsigned race_counter_modulus = 6;
-    scenario.race_counter =
-        static_cast<std::uint8_t>((state.race_counter + 1U) % race_counter_modulus);
+    // A race restarted on its own keeps `$77:10B1`. From the menus a restart ends the race, and
+    // the next race's setup counts it ($83:CA08-CA18) through the front end's `race_song`
+    // (R-0084).
+    scenario.race_counter = state.race_counter;
     state = classic_race_start(content, scenario);
     state.league_statistics.enabled = league;
     state.versus = versus;

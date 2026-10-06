@@ -83,13 +83,22 @@ see Evidence]
 
 - **The race counter.** `ClassicRaceScenario::race_counter` and `ZoomZooState::race_counter` hold
   `$77:10B1` after this race's count: the front end's `race_song`, set by `start_race` and the
-  app's race scenario. A restart's scenario takes the next count modulo 6.
+  app's race scenario. From the menus a restart ends the race (0xEA62), and the next race's
+  setup counts on through `race_song`, so the aborted race counts as in the original.
+- **A restart on its own** (`restart_zoom_zoo`: the standalone runner, the app's result Enter,
+  the fuzz runner) keeps the counter. It has no menus and no setup to count, and the frozen gates
+  require such a restart to equal a fresh race. The first version counted here, and all eleven
+  frozen gates failed their restart check (review, 68c3256).
 - **The finish poses.** `finish_rider` takes kind `(counter & ~1)` + 1 or + 2. The state reader
   accepts kinds 1-6, each up to its table's last selector (48, 88, 32, 22, 16, 13 for tables 1-6;
   table 2's limit is lenient, as before).
 - **Serialization.** Two-view states carry the counter byte after the look block: sizes 831 and
-  883. A league wrapper carries it before its last byte. A one-player state starts at 1. The reader
-  refuses a counter of 6 or more, and a pose kind outside the counter's pair.
+  883. A league wrapper carries it before its last byte. The reader refuses a counter of 6 or
+  more, and a pose kind outside the counter's pair.
+- **One-player layouts** are unchanged and carry no counter, as they carry no pairing: the
+  restore that takes the menus' pairing takes their counter too (`deserialize_zoom_zoo`'s
+  `race_counter`, refused at 6 or more). Without menus a one-player state reads with 1, so a
+  restored later race that has not yet locked its finish poses would take tables 1 and 2.
 - **NOW PLAYING.** The counts print in 2P only, from `records.player_wins` and `opponent_wins`
   through `FD`. 2P's second choice zeroes them.
 - **The restart** already re-entered NOW PLAYING in its own mode at r + 112. Only the comments
