@@ -32,6 +32,13 @@
    "region": "rom"
   },
   {
+   "address": "$17:C7C8",
+   "native": [
+    "src/core/race_state_io.cpp:last_finish_pose"
+   ],
+   "region": "rom"
+  },
+  {
    "address": "$17:C7D6",
    "native": [
     "src/core/movement.cpp:update_opponent_finish_pose",
@@ -1460,6 +1467,16 @@
    "region": "rom"
   },
   {
+   "address": "$80:B297",
+   "native": [
+    "src/core/now_playing.cpp:print_now_playing"
+   ],
+   "range_ends": [
+    "$80:B2B9"
+   ],
+   "region": "rom"
+  },
+  {
    "address": "$80:B31F",
    "native": [
     "src/core/now_playing.cpp:opponent_for",
@@ -1570,6 +1587,13 @@
    ],
    "range_ends": [
     "$80:B57D"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:B50A",
+   "native": [
+    "src/core/now_playing.cpp:print_now_playing"
    ],
    "region": "rom"
   },
@@ -1825,6 +1849,23 @@
    "region": "rom"
   },
   {
+   "address": "$80:BD1C",
+   "native": [
+    "src/core/rider_menu.cpp:rider_menu_frame"
+   ],
+   "range_ends": [
+    "$80:BD23"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:BD5D",
+   "native": [
+    "src/core/race_result.cpp:race_restart_frame"
+   ],
+   "region": "rom"
+  },
+  {
    "address": "$80:BDD4",
    "native": [
     "src/core/league_menu.cpp:(file)"
@@ -1861,6 +1902,13 @@
    ],
    "range_ends": [
     "$80:BEE2"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:BFE0",
+   "native": [
+    "src/core/race_result.cpp:race_restart_frame"
    ],
    "region": "rom"
   },
@@ -9523,9 +9571,12 @@
     "src/core/audio_cue.hpp:race_song_count",
     "src/core/front_end.cpp:demo_title_frame",
     "src/core/front_end.hpp:choose_race_song",
-    "src/core/race_result.cpp:choose_race_song"
+    "src/core/race_result.cpp:choose_race_song",
+    "src/core/race_setup.cpp:restart_zoom_zoo",
+    "src/core/zoom_zoo_movement.hpp:ClassicRaceScenario::race_counter"
    ],
    "range_ends": [
+    "$83:CA18",
     "$83:CA1E"
    ],
    "region": "rom"
@@ -10621,6 +10672,16 @@
    "region": "rom"
   },
   {
+   "address": "$83:E999",
+   "native": [
+    "src/core/race_progress.cpp:finish_rider"
+   ],
+   "range_ends": [
+    "$83:EA0D"
+   ],
+   "region": "rom"
+  },
+  {
    "address": "$83:E9C8",
    "native": [
     "src/core/race_progress.cpp:finish_rider"
@@ -11322,6 +11383,7 @@
    "address": "$00B2",
    "native": [
     "src/core/front_end.hpp:StuntTally::shown",
+    "src/core/now_playing.cpp:print_now_playing",
     "src/core/race_result.cpp:print_rows",
     "src/core/stunt_result.cpp:ResultWords",
     "src/core/track_menu.cpp:first_track_word",
@@ -11335,6 +11397,7 @@
   {
    "address": "$00B4",
    "native": [
+    "src/core/now_playing.cpp:print_now_playing",
     "src/core/track_menu.cpp:first_track_word"
    ],
    "region": "wram"
@@ -14024,14 +14087,16 @@
   {
    "address": "$77:10A9",
    "native": [
-    "src/core/front_end.hpp:OnePlayerRecords::player_wins"
+    "src/core/front_end.hpp:OnePlayerRecords::player_wins",
+    "src/core/now_playing.cpp:print_now_playing"
    ],
    "region": "sram"
   },
   {
    "address": "$77:10AB",
    "native": [
-    "src/core/front_end.hpp:OnePlayerRecords::opponent_wins"
+    "src/core/front_end.hpp:OnePlayerRecords::opponent_wins",
+    "src/core/now_playing.cpp:print_now_playing"
    ],
    "region": "sram"
   },
@@ -14049,7 +14114,13 @@
    "address": "$77:10B1",
    "native": [
     "src/core/audio_cue.hpp:race_song_count",
-    "src/core/front_end.hpp:OnePlayerRecords::race_song_counter"
+    "src/core/front_end.hpp:OnePlayerRecords::race_song_counter",
+    "src/core/front_end_runner.cpp:start_race",
+    "src/core/race_setup.cpp:restart_zoom_zoo",
+    "src/core/race_state_io.cpp:race_counter_size",
+    "src/core/race_state_io.cpp:read_race_counter",
+    "src/core/zoom_zoo_movement.hpp:ClassicRaceScenario::race_counter",
+    "src/core/zoom_zoo_movement.hpp:ZoomZooState::race_counter"
    ],
    "region": "sram"
   },
@@ -16215,6 +16286,11 @@
     "$008F"
    ]
   },
+  "src/core/front_end_runner.cpp:start_race": {
+   "sram": [
+    "$77:10B1"
+   ]
+  },
   "src/core/front_end_runner.cpp:write_look": {
    "wram": [
     "$0D49",
@@ -17158,9 +17234,17 @@
   "src/core/now_playing.cpp:print_now_playing": {
    "rom": [
     "$80:B19A",
+    "$80:B297",
+    "$80:B50A",
     "$83:9EEB"
    ],
+   "sram": [
+    "$77:10A9",
+    "$77:10AB"
+   ],
    "wram": [
+    "$00B2",
+    "$00B4",
     "$00B6"
    ]
   },
@@ -18380,6 +18464,7 @@
     "$82:8959",
     "$83:CCAB",
     "$83:E90D",
+    "$83:E999",
     "$83:E9C8",
     "$83:E9F8",
     "$83:EA9F"
@@ -18551,7 +18636,9 @@
    "rom": [
     "$80:8903",
     "$80:9869",
-    "$80:BC36"
+    "$80:BC36",
+    "$80:BD5D",
+    "$80:BFE0"
    ]
   },
   "src/core/race_result.cpp:race_result_exit_frame": {
@@ -18804,8 +18891,12 @@
    "rom": [
     "$80:99ED",
     "$82:D94C",
+    "$83:CA08",
     "$83:CE2C",
     "$83:CEB1"
+   ],
+   "sram": [
+    "$77:10B1"
    ]
   },
   "src/core/race_setup.cpp:start_clock": {
@@ -19044,14 +19135,29 @@
     "$83:9EEB"
    ]
   },
+  "src/core/race_state_io.cpp:last_finish_pose": {
+   "rom": [
+    "$17:C7C8"
+   ]
+  },
   "src/core/race_state_io.cpp:last_queue_slot": {
    "rom": [
     "$81:C2CC"
    ]
   },
+  "src/core/race_state_io.cpp:race_counter_size": {
+   "sram": [
+    "$77:10B1"
+   ]
+  },
   "src/core/race_state_io.cpp:reachable_event_one_weight": {
    "rom": [
     "$82:D7A4"
+   ]
+  },
+  "src/core/race_state_io.cpp:read_race_counter": {
+   "sram": [
+    "$77:10B1"
    ]
   },
   "src/core/race_state_io.cpp:read_rolls": {
@@ -19964,6 +20070,7 @@
     "$80:BBC3",
     "$80:BBD6",
     "$80:BC9B",
+    "$80:BD1C",
     "$80:D1EC",
     "$80:F4E9"
    ],
@@ -21635,6 +21742,14 @@
     "$12E5"
    ]
   },
+  "src/core/zoom_zoo_movement.hpp:ClassicRaceScenario::race_counter": {
+   "rom": [
+    "$83:CA08"
+   ],
+   "sram": [
+    "$77:10B1"
+   ]
+  },
   "src/core/zoom_zoo_movement.hpp:ClassicRaceScenario::stunt_event": {
    "rom": [
     "$83:99AD"
@@ -22138,6 +22253,11 @@
     "$12CF"
    ]
   },
+  "src/core/zoom_zoo_movement.hpp:ZoomZooState::race_counter": {
+   "sram": [
+    "$77:10B1"
+   ]
+  },
   "src/core/zoom_zoo_movement.hpp:ZoomZooState::split_screen": {
    "wram": [
     "$0DE1"
@@ -22240,10 +22360,10 @@
   }
  },
  "totals": {
-  "addresses": 1611,
+  "addresses": 1618,
   "io_addresses": 11,
-  "native_symbols": 1221,
-  "rom_addresses": 1225,
+  "native_symbols": 1227,
+  "rom_addresses": 1232,
   "sram_addresses": 50,
   "wram_addresses": 325
  }

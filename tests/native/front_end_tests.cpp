@@ -574,6 +574,27 @@ void rider_menu_tests() {
   run(state, content, 3);
   require(state.screen == FrontEndScreen::tour_menu_entry &&
           !state.mode_chosen && state.rider_menu.rider == 1);
+  // R-0084: 2P's second choice, on pad 2, starts the session's wins at 0
+  // ($80:BD1C-BD23); VS's keeps them.
+  for (const auto mode :
+       {unirally::FrontEndMode::two_player, unirally::FrontEndMode::versus}) {
+    auto pick = unirally::start_front_end();
+    run(pick, content, 430);
+    run(pick, content, 1, {0x1000, 0});
+    run(pick, content, 42);
+    require(pick.screen == FrontEndScreen::rider_menu);
+    pick.mode = mode;
+    pick.rider_menu.second = true;
+    pick.records.player_wins = 2;
+    pick.records.opponent_wins = 5;
+    run(pick, content, 1, {0, 0x0100});
+    run(pick, content, 1, {0, 0x8000});
+    require(pick.screen == FrontEndScreen::rider_menu_exit &&
+            pick.second_rider == 1);
+    const bool zeroed = mode == unirally::FrontEndMode::two_player;
+    require((pick.records.player_wins == 0 &&
+             pick.records.opponent_wins == 0) == zeroed);
+  }
 }
 
 // Runs until the screen changes to `screen` (at most `limit` frames), holding
@@ -782,6 +803,23 @@ void race_result_tests() {
     unirally::return_from_race(second, content, 5000, {0xea60, 0xea62});
     run(second, content, 104);
     require(second.screen == FrontEndScreen::race_restart);
+    // R-0084: back at its own NOW PLAYING, whose text in 2P depends on the
+    // session's wins ($80:B297-B2B9) and in VS does not. The digits get tiles
+    // of their own here.
+    auto digits = content;
+    std::vector<std::uint8_t> characters(content.character_table.begin(),
+                                         content.character_table.end());
+    for (unsigned digit = 0; digit < 10; ++digit)
+      characters['0' + digit] = static_cast<std::uint8_t>(20 + digit);
+    digits.character_table = characters;
+    auto other = second;
+    other.records.player_wins = 3;
+    other.records.opponent_wins = 4;
+    require(run_to(second, digits, FrontEndScreen::now_playing) &&
+            second.mode == mode);
+    require(run_to(other, digits, FrontEndScreen::now_playing));
+    require((second.text.words != other.text.words) ==
+            (mode == unirally::FrontEndMode::two_player));
   }
   auto computer = to_race();
   unirally::return_from_race(computer, content, 5000, {3357, 0xea62});

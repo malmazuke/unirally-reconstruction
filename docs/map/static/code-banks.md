@@ -45,7 +45,7 @@ The four classes partition all 131,072 bytes. **Unknown share: 40.4%** - above D
 
 ## Cited addresses
 
-1701 distinct code-bank ROM addresses cited by the research, task, inventory and content records (`labels.json`). By position: dat 31, loc 969, mid 20, sub 348, unk 333 (sub routine start, loc instruction start, mid inside an instruction, dat data, unk unknown). By class: data 31, inferred 302, observed 1035, unknown 333.
+1712 distinct code-bank ROM addresses cited by the research, task, inventory and content records (`labels.json`). By position: dat 31, loc 973, mid 20, sub 349, unk 339 (sub routine start, loc instruction start, mid inside an instruction, dat data, unk unknown). By class: data 31, inferred 303, observed 1039, unknown 339.
 
 Cited addresses in `unknown` bytes:
 
@@ -121,6 +121,7 @@ Cited addresses in `unknown` bytes:
 | $80:AF54 | docs/research/R-0073-league.md |
 | $80:B205 | docs/research/R-0056-tour-track-now-playing.md |
 | $80:B4F6 | docs/research/R-0056-tour-track-now-playing.md |
+| $80:B50A | docs/research/R-0084-two-human-restart.md |
 | $80:B53D | docs/research/R-0056-tour-track-now-playing.md |
 | $80:B626 | docs/research/R-0072-options.md, tasks/COVERAGE-ROADMAP.md, tasks/OPTIONS.md |
 | $80:B66D | tasks/OPTIONS.md |
@@ -130,7 +131,10 @@ Cited addresses in `unknown` bytes:
 | $80:BCBF | docs/research/R-0071-two-player-versus.md, tasks/COVERAGE-ROADMAP.md, tasks/NEXT_SESSION.md, tasks/TWO-PLAYER-VS.md |
 | $80:BCFB | docs/research/R-0071-two-player-versus.md |
 | $80:BD02 | docs/research/R-0071-two-player-versus.md |
+| $80:BD1C | docs/research/R-0084-two-human-restart.md |
 | $80:BD1F | docs/research/R-0057-one-run-result.md |
+| $80:BD5D | docs/research/R-0084-two-human-restart.md |
+| $80:BD80 | docs/research/R-0084-two-human-restart.md |
 | $80:BDD4 | tasks/COVERAGE-ROADMAP.md, tasks/LEAGUE.md |
 | $80:BE3F | docs/research/R-0057-one-run-result.md |
 | $80:BE48 | docs/research/R-0079-two-pad-pause.md |
@@ -141,6 +145,8 @@ Cited addresses in `unknown` bytes:
 | $80:BF8A | docs/research/R-0071-two-player-versus.md |
 | $80:BF94 | docs/research/R-0071-two-player-versus.md |
 | $80:BF9F | docs/research/R-0057-one-run-result.md |
+| $80:BFE0 | docs/research/R-0084-two-human-restart.md |
+| $80:C00D | docs/research/R-0084-two-human-restart.md |
 | $80:C10E | docs/research/R-0071-two-player-versus.md |
 | $80:C12A | docs/research/R-0072-options.md |
 | $80:C1DE | docs/research/R-0072-options.md |

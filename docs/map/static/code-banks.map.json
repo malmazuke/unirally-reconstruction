@@ -12720,7 +12720,9 @@
     "src/core/front_end.hpp:choose_race_song",
     "src/core/front_end.hpp:return_from_race",
     "src/core/race_result.cpp:(file)",
-    "src/core/race_result.cpp:choose_race_song"
+    "src/core/race_result.cpp:choose_race_song",
+    "src/core/race_setup.cpp:restart_zoom_zoo",
+    "src/core/zoom_zoo_movement.hpp:ClassicRaceScenario::race_counter"
    ],
    "observed_entries": {},
    "start": "$83:C998",
@@ -14956,19 +14958,19 @@
    "call returns in the calling mode": 1262
   },
   "bytes": 131072,
-  "cited_addresses": 1701,
+  "cited_addresses": 1712,
   "cited_by_class": {
    "data": 31,
-   "inferred": 302,
-   "observed": 1035,
-   "unknown": 333
+   "inferred": 303,
+   "observed": 1039,
+   "unknown": 339
   },
   "cited_by_position": {
    "dat": 31,
-   "loc": 969,
+   "loc": 973,
    "mid": 20,
-   "sub": 348,
-   "unk": 333
+   "sub": 349,
+   "unk": 339
   },
   "conflicts": 0,
   "data": 92,
