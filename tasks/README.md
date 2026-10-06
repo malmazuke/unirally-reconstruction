@@ -94,7 +94,7 @@ The coordinator maintains the status registry below. Work orders further below d
 | SPLIT-CAPTIONS | accepted (tier 1, #57): rider 1's tutorial hints in two-human races and the split HUD's field chain, CONTINUE clear, layering and lower sign (R-0082) | [Rider 1's tutorial hints and the split HUD's upload order](SPLIT-CAPTIONS.md) |
 | SPLIT-RACE-END | accepted (tier 1, #56): a two-human race runs until both riders finish; VS forces the second (R-0081) | [A two-human race runs until both have finished](SPLIT-RACE-END.md) |
 | SPLIT-RIDERS-UNDER-INK | accepted (tier 1, #58): the riders' look as race state (its latch clear) and the riders under a split race's HUD text (R-0083) | [The riders under a split race's HUD text](SPLIT-RIDERS-UNDER-INK.md) |
-| TWO-HUMAN-RESTART | ready (tier 1 or 2): the menus after a two-human race's countdown restart (R-0079) | [The menus after a two-human race's restart](TWO-HUMAN-RESTART.md) |
+| TWO-HUMAN-RESTART | claimed (tier 1 or 2): the menus after a two-human race's countdown restart (R-0079) | [The menus after a two-human race's restart](TWO-HUMAN-RESTART.md) |
 | AUDIO-UPLOAD-SPEED | ready (tier 1): sound-set uploads at 5x real time or better, so debug builds keep up at race loads | [A sound-set upload well above real time](AUDIO-UPLOAD-SPEED.md) |
 | ROLLING-CONTACT | ready | [A rolling rider's second contact after a long shoulder rotation (HUNTER-EFFECTS review)](ROLLING-CONTACT.md) |
 | PORTABLE-CORE-IDENTITY | ready (tier 2): the reference core accepted by its source and its pinned outputs, not one binary hash; no pack can be built from a ROM on Linux today | [The laboratory and the pack build on any host that builds the pinned core](PORTABLE-CORE-IDENTITY.md) |
