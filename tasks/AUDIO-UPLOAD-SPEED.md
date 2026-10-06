@@ -2,20 +2,23 @@
 
 ## Assignment
 
-- Status: ready (prepared 3 October 2026 by the AUDIO-ONE-PLAYER session, from its live check).
+- Status: **claimed** 6 October 2026 by the session that closed TWO-HUMAN-RESTART, on main
+  `1b3a08a` after that task's merge (main equal to `origin/main`, closeout written). Prepared
+  3 October 2026 by the AUDIO-ONE-PLAYER session, from its live check.
 - Milestone: M4 breadth
 - Coordinator: the claiming session is coordinator, primary and integrator
 - Task provider (fixed for all children; record any user-initiated platform change): Anthropic
-- Worker/session/runtime/model: to be recorded at claim
+- Worker/session/runtime/model: Claude Code desktop app, Claude Opus 5.5 (`claude-opus-5-5`); one
+  session as coordinator, primary and integrator
 - Actual model/reasoning effort, routing rationale and frontier escalation question (if any):
   the claiming session's model at default effort; **tier 1** (`src/core/audio_engine.cpp`, the
   IPL and driver run loops).
 - Provider quota window/baseline timestamp, used/remaining or unknown, reserve and session
-  allowance (D-0004): sample at claim.
+  allowance (D-0004): at claim weekly 61%, five-hour 6%; standing rule: continue until weekly 80%.
 - Reviewer (primary automatically spawns fresh model/effort, isolated checkout; no user
   trigger): a fresh Anthropic subagent.
 - Dependencies and evidence of acceptance: AUDIO-ONE-PLAYER (R-0077).
-- Base commit: the `main` tip at claim.
+- Base commit: main `1b3a08a`.
 - Branch and isolated worktree: `task/audio-upload-speed` in `.worktrees/audio-upload-speed`.
 - Owned paths and shared interfaces: the native audio engine, IPL handshake and driver run loops,
   native tests, this record, `docs/STATE.md`, `tasks/README.md`, `tasks/NEXT_SESSION.md`.
