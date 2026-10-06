@@ -273,6 +273,7 @@ ZoomZooState classic_race_start(const ZoomZooContent& content,
     ZoomZooState state{};
     state.track = scenario.track;
     state.pairing = scenario.pairing;
+    state.race_counter = scenario.race_counter;
     state.opponent_tier = opponent_tier(scenario, content.opponent_catch_up);
     state.native_initialization = state.complete_race = state.sustained = true;
     auto& movement = state.movement;
@@ -350,6 +351,10 @@ void restart_zoom_zoo(ZoomZooState& state, const ZoomZooContent& content) {
     const bool split = state.split_screen;
     const bool demo_ai = state.demo_ai;
     const bool league = state.league_statistics.enabled, versus = state.versus;
+    // The restarted race's setup counts `$77:10B1` again ($83:CA08-CA18, R-0084).
+    constexpr unsigned race_counter_modulus = 6;
+    scenario.race_counter =
+        static_cast<std::uint8_t>((state.race_counter + 1U) % race_counter_modulus);
     state = classic_race_start(content, scenario);
     state.league_statistics.enabled = league;
     state.versus = versus;

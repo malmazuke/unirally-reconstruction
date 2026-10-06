@@ -223,7 +223,7 @@ struct OnePlayerRecords {
     // $77:0230 + 8 * rider: races, wins, losses without a time, stunt points. Sixteen riders; a
     // computer opponent keeps none (`$77:02B0` is their checksum, `$83:90F4`).
     std::array<std::array<std::uint16_t, 4>, 16> statistics{};
-    std::uint16_t player_wins{};   // $77:10A9: the player's wins; nothing recovered reads it
+    std::uint16_t player_wins{};   // $77:10A9: the player's wins; 2P's NOW PLAYING prints both
     std::uint16_t opponent_wins{}; // $77:10AB: a rider opponent's wins
     bool race_lost{};              // $77:0742 bit 12: the last race was lost
     // $77:1073: 3 from a rider's choice (0 before, after a cold start), one less after a loss;

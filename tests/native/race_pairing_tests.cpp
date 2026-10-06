@@ -195,6 +195,12 @@ void restarts_keep_the_pairing() {
     auto again = state;
     restart_zoom_zoo(again, race.content);
     require(again.player_announcements.hints_active == 1 && again.pairing == state.pairing);
+    // R-0084: the restarted race's setup counts `$77:10B1` on, modulo 6.
+    require(state.race_counter == 1 && again.race_counter == 2);
+    auto last = state;
+    last.race_counter = 5;
+    restart_zoom_zoo(last, race.content);
+    require(last.race_counter == 0);
     state.player_announcements.hints_active = 0;
     restart_zoom_zoo(state, race.content);
     require(state.player_announcements.hints_active == 0);

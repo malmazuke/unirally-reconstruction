@@ -120,8 +120,10 @@ void finish_rider(ZoomZooState& state, unsigned index, const ZoomZooContent& con
         && ((queue.write_cursor - queue.read_cursor - 1U) & 31U) != 0)
         return;
     pose.active = 1;
-    // A draw takes the winner's pose ($83:E9C8-E9DF joins the winner's path at $83:E9F8).
-    const unsigned kind = result == announcement::loser ? loser_pose : winner_pose;
+    // A draw takes the winner's pose ($83:E9C8-E9DF joins the winner's path at $83:E9F8). The
+    // race counter's even half picks the pair of tables: 1/2, 3/4 or 5/6 ($83:E999-EA0D, R-0084).
+    const unsigned pair = state.race_counter & ~1U;
+    const unsigned kind = pair + (result == announcement::loser ? loser_pose : winner_pose);
     if (pose.kind != kind && !pose.locked) {
         pose.kind = static_cast<std::uint16_t>(kind);
         pose.selector = 0;

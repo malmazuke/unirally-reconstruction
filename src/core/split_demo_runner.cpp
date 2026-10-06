@@ -32,9 +32,9 @@ void check_split_save_words(const std::vector<std::uint8_t>& saved) {
     if (unirally::serialize_zoom_zoo(restored) != saved)
         throw std::runtime_error("split state did not round-trip");
     // The trailer has camera words, then four pairs of controller words, and ends with the
-    // riders' 46-byte look block (R-0083). An all-ones value is impossible for every controller
-    // word in either layout.
-    constexpr unsigned look_block = 46;
+    // riders' 46-byte look block (R-0083) and the race counter (R-0084). An all-ones value is
+    // impossible for every controller word in either layout.
+    constexpr unsigned look_block = 46 + 1;
     for (const unsigned from_end : {30U, 28U, 26U, 24U, 22U, 20U, 18U, 16U}) {
         auto impossible = saved;
         impossible[impossible.size() - look_block - from_end] = 0xff;

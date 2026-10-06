@@ -132,8 +132,15 @@ void print_now_playing(FrontEndState& state, const FrontEndContent& content) {
     }
     state.text.words.fill(cleared_text);
     std::uint16_t qualifying_score{}; // `$00B6`, the stunt events' FD
+    // $80:B297-B2B9: 2P's NOW PLAYING prints this session's wins (`$77:10A9`, `$77:10AB`) through
+    // FD from `$00B2`/`$00B4` ($80:B50A); VS's prints none (R-0084).
+    constexpr std::uint16_t player_wins_at = 0xb2, opponent_wins_at = 0xb4;
     TextVariables variables;
-    variables.word = [&](std::uint16_t) { return qualifying_score; };
+    variables.word = [&](std::uint16_t address) -> std::uint16_t {
+        if (address == player_wins_at) return state.records.player_wins;
+        if (address == opponent_wins_at) return state.records.opponent_wins;
+        return qualifying_score;
+    };
     variables.place_object = [&](unsigned object, unsigned position) {
         place_printed_object(state, object, position);
     };
@@ -149,10 +156,11 @@ void print_now_playing(FrontEndState& state, const FrontEndContent& content) {
     draw_tour_picture(state, content, state.tour_menu.tour,
                       word_at(content.now_playing_text, picture_place_at) / 2U);
     print_line(name_line(state, content, state.rider_menu.rider, 0), rider_row);
-    if (state.mode == FrontEndMode::two_player || state.mode == FrontEndMode::versus) {
-        const auto wins = state.records.statistics[state.rider_menu.rider][1];
-        const std::array<std::uint8_t, 5> count{0xfe, 29, rider_row,
-                                                static_cast<std::uint8_t>('0' + wins % 10), 0xff};
+    const bool session_wins = state.mode == FrontEndMode::two_player;
+    constexpr std::uint8_t wins_column = 0x19;
+    if (session_wins) {
+        const std::array<std::uint8_t, 7> count{0xfe,           wins_column, rider_row, 0xfd,
+                                                player_wins_at, 0x00,        0xff};
         print(count);
     }
     print(stream_at(content, versus_at));
@@ -171,10 +179,9 @@ void print_now_playing(FrontEndState& state, const FrontEndContent& content) {
         if (state.mode == FrontEndMode::one_player && state.tour_menu.tour >= hunter)
             now.opponent = anti_uni;
         print_line(name_line(state, content, now.opponent, 1), opponent_row);
-        if (state.mode == FrontEndMode::two_player || state.mode == FrontEndMode::versus) {
-            const auto wins = state.records.statistics[now.opponent][1];
-            const std::array<std::uint8_t, 5> count{
-                0xfe, 29, opponent_row, static_cast<std::uint8_t>('0' + wins % 10), 0xff};
+        if (session_wins) {
+            const std::array<std::uint8_t, 7> count{
+                0xfe, wins_column, opponent_row, 0xfd, opponent_wins_at, 0x00, 0xff};
             print(count);
         }
     }

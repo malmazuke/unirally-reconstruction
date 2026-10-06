@@ -202,6 +202,10 @@ struct ClassicRaceScenario {
     // The rider and opponent: MIKE against BRONSEN (ANTI-UNI on the HUNTER tour) unless the
     // menus chose others.
     RacePairing pairing{};
+    // `$77:10B1` once this race's setup has counted it ($83:CA08-CA18, modulo 6): every race's
+    // sound load counts, an aborted one's too, and a cold start's first race has 1. Its even half
+    // picks the finish poses' pair of tables (R-0084).
+    std::uint8_t race_counter{1};
     // `$12E3` at the start ($82:D94C-D96F): the player's tutorial hints run unless its rider's
     // bit is set in the cartridge RAM's `$77:1116`, which a race sets once its hints end.
     bool tutorial_hints{true};
@@ -411,6 +415,9 @@ struct ZoomZooState {
     // setup. A deserialized race is MIKE's against the track's usual opponent.
     RacePairing pairing{};
     OpponentTier opponent_tier{};
+    // `$77:10B1` (ClassicRaceScenario::race_counter). Two-view states and league wrappers carry
+    // it; a deserialized one-player race has a cold start's first race's 1.
+    std::uint8_t race_counter{1};
     // Not serialized, and read only by the picture: `$12CF`, the lowest BG1 palette (a cell
     // word's bits 10-12) among the ten cells the player's latest contact sampled
     // ($81:8B75-8BB3), which NEON's lighting follows (R-0068). The setup leaves 0.

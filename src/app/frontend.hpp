@@ -162,13 +162,19 @@ public:
       if (!split) scenario.initialization_frame = state_.frame - 1U;
       return scenario;
     }
-    if (local_race())
-      return classic_local_race_scenario(
-          ClassicRaceTrack{state_.tour_menu.track},
-          {state_.rider_menu.rider, state_.second_rider},
-          ((state_.records.tutorial_bits >> state_.rider_menu.rider) & 1U) == 0,
-          ((state_.records.tutorial_bits >> state_.second_rider) & 1U) == 0);
-    return one_player_race_scenario(state_);
+    auto scenario =
+        local_race()
+            ? classic_local_race_scenario(
+                  ClassicRaceTrack{state_.tour_menu.track},
+                  {state_.rider_menu.rider, state_.second_rider},
+                  ((state_.records.tutorial_bits >> state_.rider_menu.rider) &
+                   1U) == 0,
+                  ((state_.records.tutorial_bits >> state_.second_rider) &
+                   1U) == 0)
+            : one_player_race_scenario(state_);
+    scenario.race_counter =
+        state_.race_song; // `$77:10B1` after this race's count (R-0084)
+    return scenario;
   }
   // Colours 96-111 as the menus leave them to the race: NEON (track 42) never reloads or cycles
   // them (R-0068).
