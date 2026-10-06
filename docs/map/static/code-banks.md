@@ -133,7 +133,7 @@ Cited addresses in `unknown` bytes:
 | $80:BD02 | docs/research/R-0071-two-player-versus.md |
 | $80:BD1C | docs/research/R-0084-two-human-restart.md |
 | $80:BD1F | docs/research/R-0057-one-run-result.md |
-| $80:BD5D | docs/research/R-0084-two-human-restart.md |
+| $80:BD5D | docs/research/R-0084-two-human-restart.md, tasks/TWO-HUMAN-RESTART.md |
 | $80:BD80 | docs/research/R-0084-two-human-restart.md |
 | $80:BDD4 | tasks/COVERAGE-ROADMAP.md, tasks/LEAGUE.md |
 | $80:BE3F | docs/research/R-0057-one-run-result.md |
@@ -145,7 +145,7 @@ Cited addresses in `unknown` bytes:
 | $80:BF8A | docs/research/R-0071-two-player-versus.md |
 | $80:BF94 | docs/research/R-0071-two-player-versus.md |
 | $80:BF9F | docs/research/R-0057-one-run-result.md |
-| $80:BFE0 | docs/research/R-0084-two-human-restart.md |
+| $80:BFE0 | docs/research/R-0084-two-human-restart.md, tasks/TWO-HUMAN-RESTART.md |
 | $80:C00D | docs/research/R-0084-two-human-restart.md |
 | $80:C10E | docs/research/R-0071-two-player-versus.md |
 | $80:C12A | docs/research/R-0072-options.md |

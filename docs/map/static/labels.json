@@ -2775,7 +2775,8 @@
    "src/core/now_playing.cpp:print_now_playing"
   ],
   "source_records": [
-   "docs/research/R-0084-two-human-restart.md"
+   "docs/research/R-0084-two-human-restart.md",
+   "tasks/TWO-HUMAN-RESTART.md"
   ]
  },
  {
@@ -3570,7 +3571,8 @@
    "src/core/race_result.cpp:race_restart_frame"
   ],
   "source_records": [
-   "docs/research/R-0084-two-human-restart.md"
+   "docs/research/R-0084-two-human-restart.md",
+   "tasks/TWO-HUMAN-RESTART.md"
   ]
  },
  {
@@ -3703,7 +3705,8 @@
    "src/core/race_result.cpp:race_restart_frame"
   ],
   "source_records": [
-   "docs/research/R-0084-two-human-restart.md"
+   "docs/research/R-0084-two-human-restart.md",
+   "tasks/TWO-HUMAN-RESTART.md"
   ]
  },
  {

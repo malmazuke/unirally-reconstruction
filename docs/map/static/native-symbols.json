@@ -14120,7 +14120,8 @@
     "src/core/race_state_io.cpp:race_counter_size",
     "src/core/race_state_io.cpp:read_race_counter",
     "src/core/zoom_zoo_movement.hpp:ClassicRaceScenario::race_counter",
-    "src/core/zoom_zoo_movement.hpp:ZoomZooState::race_counter"
+    "src/core/zoom_zoo_movement.hpp:ZoomZooState::race_counter",
+    "src/core/zoom_zoo_movement.hpp:deserialize_zoom_zoo"
    ],
    "region": "sram"
   },
@@ -22296,6 +22297,11 @@
     "$0E7B"
    ]
   },
+  "src/core/zoom_zoo_movement.hpp:deserialize_zoom_zoo": {
+   "sram": [
+    "$77:10B1"
+   ]
+  },
   "src/core/zoom_zoo_movement.hpp:first_banner, last_banner, banner_life_updates": {
    "rom": [
     "$83:EA19"
@@ -22362,7 +22368,7 @@
  "totals": {
   "addresses": 1618,
   "io_addresses": 11,
-  "native_symbols": 1227,
+  "native_symbols": 1228,
   "rom_addresses": 1232,
   "sram_addresses": 50,
   "wram_addresses": 325
