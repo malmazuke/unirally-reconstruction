@@ -31,12 +31,14 @@ void check_split_save_words(const std::vector<std::uint8_t>& saved) {
     const auto restored = unirally::deserialize_zoom_zoo(saved);
     if (unirally::serialize_zoom_zoo(restored) != saved)
         throw std::runtime_error("split state did not round-trip");
-    // The 42-byte trailer has camera words, then four pairs of controller words.
-    // An all-ones value is impossible for every controller word in either layout.
+    // The trailer has camera words, then four pairs of controller words, and ends with the
+    // riders' 46-byte look block (R-0083). An all-ones value is impossible for every controller
+    // word in either layout.
+    constexpr unsigned look_block = 46;
     for (const unsigned from_end : {30U, 28U, 26U, 24U, 22U, 20U, 18U, 16U}) {
         auto impossible = saved;
-        impossible[impossible.size() - from_end] = 0xff;
-        impossible[impossible.size() - from_end + 1] = 0xff;
+        impossible[impossible.size() - look_block - from_end] = 0xff;
+        impossible[impossible.size() - look_block - from_end + 1] = 0xff;
         bool refused = false;
         try {
             (void)unirally::deserialize_zoom_zoo(impossible);
@@ -47,8 +49,8 @@ void check_split_save_words(const std::vector<std::uint8_t>& saved) {
     }
     for (const unsigned from_end : {26U, 24U}) {
         auto impossible = saved;
-        impossible[impossible.size() - from_end] = 49;
-        impossible[impossible.size() - from_end + 1] = 0;
+        impossible[impossible.size() - look_block - from_end] = 49;
+        impossible[impossible.size() - look_block - from_end + 1] = 0;
         bool refused = false;
         try {
             (void)unirally::deserialize_zoom_zoo(impossible);

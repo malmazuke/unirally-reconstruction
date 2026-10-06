@@ -884,6 +884,8 @@ void finish_update(const ZoomZooState& state, ZoomZooState& next,
         update_visibility(next, track_geometry(content.movement.sampling.track));
     // $83:CD9F, the race loop's second dispatcher call, comes before HUNTER's update ($83:CDAA).
     race_sound::dispatch(next, AudioDispatchSite::race_late);
+    // $83:CDA6: the riders' look, last before HUNTER's update (R-0036).
+    advance_rider_look(next, content);
     update_hunter_effects(next, content.hunter_blink);
     if (state.native_initialization) update_tutorial_hints(next);
     ++whole.frame;

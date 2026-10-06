@@ -12666,6 +12666,7 @@
   ],
   "source_records": [
    "docs/research/R-0036-zoom-zoo-rider-objects.md",
+   "docs/research/R-0083-split-riders-under-ink.md",
    "tasks/M4-16.md"
   ]
  },
@@ -12703,11 +12704,14 @@
   "comment": "instruction start",
   "label": "loc_82857F",
   "native": [
+   "src/core/rider_look.cpp:advance_rider_look",
    "src/core/rider_look.cpp:head_point",
-   "src/core/rider_look.hpp:advance_rider_look"
+   "src/core/rider_look.hpp:advance_rider_look",
+   "src/core/zoom_zoo_movement.hpp:ZoomZooState::look"
   ],
   "source_records": [
    "docs/research/R-0036-zoom-zoo-rider-objects.md",
+   "docs/research/R-0083-split-riders-under-ink.md",
    "tasks/M4-16-review.md",
    "tasks/M4-16.md"
   ]
@@ -12744,13 +12748,17 @@
   "comment": "instruction start",
   "label": "loc_8287AD",
   "native": [
+   "src/core/rider_look.cpp:advance_rider_look",
    "src/core/rider_look.cpp:head_point",
-   "src/core/rider_look.hpp:advance_rider_look"
+   "src/core/rider_look.hpp:advance_rider_look",
+   "src/core/zoom_zoo_movement.hpp:ZoomZooState::look"
   ],
   "source_records": [
    "docs/research/R-0036-zoom-zoo-rider-objects.md",
+   "docs/research/R-0083-split-riders-under-ink.md",
    "tasks/M4-16-review.md",
-   "tasks/M4-16.md"
+   "tasks/M4-16.md",
+   "tasks/SPLIT-RIDERS-UNDER-INK.md"
   ]
  },
  {
@@ -12781,6 +12789,7 @@
   ],
   "source_records": [
    "docs/research/R-0036-zoom-zoo-rider-objects.md",
+   "docs/research/R-0083-split-riders-under-ink.md",
    "tasks/M4-16.md"
   ]
  },
@@ -19054,8 +19063,15 @@
   "class": "observed",
   "comment": "instruction start",
   "label": "loc_83CDA6",
+  "native": [
+   "src/core/race_update.cpp:finish_update",
+   "src/core/rider_look.hpp:advance_rider_look",
+   "src/core/zoom_zoo_movement.hpp:ZoomZooState::look"
+  ],
   "source_records": [
-   "docs/research/R-0036-zoom-zoo-rider-objects.md"
+   "docs/research/R-0036-zoom-zoo-rider-objects.md",
+   "docs/research/R-0083-split-riders-under-ink.md",
+   "tasks/SPLIT-RIDERS-UNDER-INK.md"
   ]
  },
  {
@@ -20785,7 +20801,8 @@
    "src/core/zoom_zoo_movement.hpp:StuntEvent::finish_display"
   ],
   "source_records": [
-   "docs/research/R-0082-split-captions.md"
+   "docs/research/R-0082-split-captions.md",
+   "tasks/SPLIT-CAPTIONS.md"
   ]
  },
  {
@@ -21362,6 +21379,7 @@
   "label": "dat_83EC2E",
   "native": [
    "src/core/content_pack.cpp:zoom_required",
+   "src/core/rider_look.cpp:rider_look_state_valid",
    "src/core/rider_look.cpp:side_overlay_base_table",
    "src/core/rider_look.hpp:RiderLookTables::bytes"
   ],

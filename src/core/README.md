@@ -310,11 +310,13 @@ row. `project_rider_oam` reproduces `$82:ACAC` for the one-player race
 (reflection is the horizontal flip) and `draw_rider_object` draws with the
 PPU's vertical wrap. Unknown poses and references throw.
 
-`rider_look.hpp/.cpp` reproduces the presentation-only look animation
-(`$82:836D-$82:8926`) and overlay choice (`$83:EC8E`). The serialized race
-does not carry its state, so `ClassicRaceHistoryTracker` in `presentation.hpp`
-follows consecutive updates for the live frontend and the runner's
-`--timeline` mode; it also keeps the channel-6 window pointer as the
+`rider_look.hpp/.cpp` reproduces the look animation (`$82:836D-$82:8926`) and
+overlay choice (`$83:EC8E`). The race update runs the look last
+(`$83:CDA6`); the end of a scripted glance clears that rider's idle latch, so the look is race
+state (`ZoomZooState::look`, R-0083). Two-view states and league wrappers carry it; the
+one-player layouts do not, which only leaves a restored one-player state's overlays to rebuild.
+`ClassicRaceHistoryTracker` in `presentation.hpp` takes the overlays from the previous state's
+look for the live frontend and the runner's `--timeline` mode; it also keeps the channel-6 window pointer as the
 original's drivers choose it and the vblank publishes it (`ClassicWindowPointer`:
 the countdown word before each update, the update parity, one banner driver
 per rider with a 360-update life; a paused update disables it), and the frame on which the

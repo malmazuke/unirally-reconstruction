@@ -159,9 +159,9 @@ Private evidence under `.worktrees/m4-16-rider-art/artifacts/m4-16-rider-art/`
   has no look history and draws pose frames without overlays; `--timeline`
   replays from the native initialization and is exact.
 - `$82:857F`/`$82:87AD` clear the gameplay idle-cycle latch when a scripted
-  glance sequence ends. Native movement does not model that write; no frozen
-  timeline starts a sequence (`$0D6F/$0D71` stay 0), so it is unexercised and
-  could diverge in live play.
+  glance sequence ends. No frozen one-player timeline starts a sequence
+  (`$0D6F/$0D71` stay 0). A two-human race's idle rider 1 does, so the look is
+  now race state and the clear is modelled ([R-0083](R-0083-split-riders-under-ink.md)).
 - Other OBJs (countdown digits, start arrow and ring, off-screen arrows, hints,
   finish flags) remain the declared omissions; where they cover a rider the
   original pixel differs.

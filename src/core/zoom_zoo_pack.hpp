@@ -38,7 +38,8 @@ inline ZoomZooContent zoom_zoo_content(const ClassicContentPack& pack) {
         pack.entry("presentation.classic.captions.v1"),
         pack.optional_entry("race.opponent-catch-up"),
         pack.optional_entry("front-end.qualifying-scores"),
-        pack.optional_entry("audio.announcement-voices")};
+        pack.optional_entry("audio.announcement-voices"),
+        pack.optional_entry("presentation.rider.look-tables.v1")};
 }
 // DRAGSTER on the shared race engine (R-0038): the shared content with the
 // track, its tile columns and tile flags replaced by DRAGSTER's own entries.

@@ -223,15 +223,15 @@ Aim glance_back(RiderLook& look, std::size_t rider, const ZoomZooState& updated,
 
 // $82:852B / $82:8756: scripted glances while the idle cycle is latched, from the sequence
 // table; $82:8927, which starts the next sequence, is reached only from the opponent's copy
-// of this routine.
-void run_scripted_glances(RiderLook& look, std::size_t rider, const ZoomZooState& updated,
+// of this routine. Returns whether a sequence ended, which clears the rider's idle latch.
+bool run_scripted_glances(RiderLook& look, std::size_t rider, const ZoomZooState& updated,
                           const RiderLookTables& tables) {
     const bool latched = updated.movement.riders[rider].idle_pose.cycle_latched != 0;
     if (!latched || (look.sequence_cursor == 0 && look.head != 0)) {
         look.sequence_cursor = look.sequence_end = look.sequence_delay = 0;
         look.sequence_target = look.target = 0;
         step_rider_head(look);
-        return;
+        return false;
     }
     if (look.sequence_cursor == 0 && rider == 1) {
         look.sequence_number = wrap(look.sequence_number + 1U);
@@ -243,11 +243,12 @@ void run_scripted_glances(RiderLook& look, std::size_t rider, const ZoomZooState
     }
     look.target = look.sequence_target;
     look.sequence_delay = wrap(look.sequence_delay - 1U);
+    bool ended = false;
     if (look.sequence_delay == 0) {
         if (look.sequence_cursor == look.sequence_end) {
-            // The original also clears the rider's idle-cycle latch here.
             look.sequence_cursor = look.sequence_end = look.sequence_delay = 0;
             look.sequence_target = look.target = 0;
+            ended = true;
         } else {
             const auto entry = table_word(tables, sequence_bytes + look.sequence_cursor);
             // Eight-bit stores: only the low bytes change.
@@ -260,11 +261,12 @@ void run_scripted_glances(RiderLook& look, std::size_t rider, const ZoomZooState
         }
     }
     step_rider_head(look);
+    return ended;
 }
 
 // One rider's look for an update: at the other rider when it is in view, else back at it
 // for a while, else a scripted glance; the head then steps toward the target.
-void look_for_rider(RiderLookState& state, std::size_t rider, const ZoomZooState& updated,
+bool look_for_rider(RiderLookState& state, std::size_t rider, const ZoomZooState& updated,
                     const ZoomZooContent& content, const RiderLookTables& tables) {
     auto& look = state.riders[rider];
     auto& player_look = state.riders[0];
@@ -283,9 +285,9 @@ void look_for_rider(RiderLookState& state, std::size_t rider, const ZoomZooState
     }
     if (look.target != 0) {
         step_rider_head(look);
-        return;
+        return false;
     }
-    run_scripted_glances(look, rider, updated, tables);
+    return run_scripted_glances(look, rider, updated, tables);
 }
 
 } // namespace
@@ -318,8 +320,10 @@ std::array<std::optional<std::uint16_t>, 2> rider_overlay_poses(const RiderLookS
     return poses;
 }
 
-void advance_rider_look(RiderLookState& look, const ZoomZooState& updated,
-                        const ZoomZooContent& content, const RiderLookTables& tables) {
+void advance_rider_look(ZoomZooState& updated, const ZoomZooContent& content) {
+    if (content.look_tables.empty()) return;
+    const RiderLookTables tables{content.look_tables};
+    auto& look = updated.look;
     // A stunt event skips the opponent's contact ($81:8E53-8E5D, R-0066), so its head point
     // keeps the zero the race's setup left (`$1267/$1268` stay 0 in bowl-lose and hill-win,
     // R-0068), while both riders' look steps still run.
@@ -331,7 +335,33 @@ void advance_rider_look(RiderLookState& look, const ZoomZooState& updated,
             && !special_tiles_skipped_contact(updated.special_tiles[rider]))
             look.head_offsets[rider] = contact_head_offset(updated, rider, content);
     const std::size_t rider = updated.movement.contact_phase != 0 ? 0 : 1;
-    look_for_rider(look, rider, updated, content, tables);
+    // $82:857F / $82:87AD: the end of a scripted glance clears the rider's idle latch, which
+    // the next update's idle routine reads (R-0036, R-0083).
+    if (look_for_rider(look, rider, updated, content, tables))
+        updated.movement.riders[rider].idle_pose.cycle_latched = 0;
+}
+
+bool rider_look_state_valid(const RiderLookState& look) {
+    // $83:EC2E holds a side overlay base per head frame: 48 words.
+    constexpr std::uint16_t head_frames = (sequence_range_table - side_overlay_base_table) / 2U;
+    constexpr std::uint16_t sequence_span = look_table_bytes - sequence_bytes;
+    // A resting glance timer counts up from -64 at most; a glance counts up to the rider's limit.
+    constexpr std::uint16_t longest_rest = 0x10000U - 0x40U;
+    for (std::size_t index = 0; index < look.riders.size(); ++index) {
+        const auto& rider = look.riders[index];
+        const std::uint16_t glance_limit =
+            index == 0 ? player_glance_updates : opponent_glance_updates;
+        // The cursor is read as a word ($17:C614 + cursor) while it is below its end.
+        if (rider.head > head_frames || rider.target > head_frames
+            || rider.sequence_target > head_frames || rider.looking_back > 1
+            || (rider.glance_timer >= glance_limit && rider.glance_timer < longest_rest)
+            || rider.sequence_number >= scripted_sequences
+            || rider.distance_step > distance_steps_end || (rider.sequence_cursor & 1U)
+            || (rider.sequence_end & 1U) || rider.sequence_end > sequence_span
+            || rider.sequence_cursor > rider.sequence_end)
+            return false;
+    }
+    return true;
 }
 
 bool zoom_zoo_update_was_paused(const ZoomZooState& previous, const ZoomZooState& updated) {

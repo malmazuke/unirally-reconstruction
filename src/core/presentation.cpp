@@ -137,7 +137,6 @@ std::array<std::uint8_t, 32> now_playing_leftover_colours(const ClassicContentPa
 } // namespace
 
 void ClassicRaceHistoryTracker::reset() {
-    look_ = {};
     latest_ = {};
     on_screen_ = {};
     latest_barf_ = on_screen_barf_ = latest_flip_prior_ = on_screen_flip_prior_ = false;
@@ -175,10 +174,8 @@ void ClassicRaceHistoryTracker::observe_update(const ZoomZooState& previous,
     window_.observe_update(previous, updated, *transition_member_);
     clock_.observe_update(previous, updated);
     if (updated.result_updates || zoom_zoo_update_was_paused(previous, updated)) return;
-    const auto tables = rider_look_tables(pack);
-    const auto engine = classic_race_content(pack, updated.track);
-    latest_.pose = rider_overlay_poses(look_, updated, tables);
-    advance_rider_look(look_, updated, engine, tables);
+    // The overlays come from the look before this update's step: the previous state's (R-0083).
+    latest_.pose = rider_overlay_poses(previous.look, updated, rider_look_tables(pack));
 }
 
 void load_other_track_presentation_content(ClassicRacePresentationContent& content,
@@ -659,10 +656,13 @@ void draw_race_riders(RgbFrame& frame, const ZoomZooState& rider_source,
                 if (rider_source.split_screen && (static_cast<unsigned>(y >= 112) != viewport))
                     return;
                 const auto at = static_cast<std::size_t>(y) * 256 + static_cast<std::size_t>(x);
-                if (bg1_above_objects[at] && !raised) return;
                 // NEON: BG3's ink (priority tiles) is in front of the objects, which a race's
                 // colour math shows through (rider_pixel); NEON's leaves BG3 out (R-0068).
                 if (math.neon_vram && math.caption_ink.test(at)) return;
+                // The ink is in front of BG1 too, and its colour math takes the sub screen, the
+                // objects alone ($212D = 0x10): a rider behind a BG1 priority tile still shows
+                // through the ink (R-0083).
+                if (bg1_above_objects[at] && !raised && !math.caption_ink.test(at)) return;
                 const auto index = static_cast<std::uint8_t>(object_palette + value);
                 pixel(frame, x, y, rider_pixel(colours, math, index, x, y));
             });

@@ -93,7 +93,7 @@ The coordinator maintains the status registry below. Work orders further below d
 | SPLIT-HUD-GAPS | accepted (tier 2, #55): the split race's caption places, both views' arrows, each view's colour math, finished views, the lower clock (R-0080) | [The split race's captions, lower arrow and lower colour math](SPLIT-HUD-GAPS.md) |
 | SPLIT-CAPTIONS | accepted (tier 1, #57): rider 1's tutorial hints in two-human races and the split HUD's field chain, CONTINUE clear, layering and lower sign (R-0082) | [Rider 1's tutorial hints and the split HUD's upload order](SPLIT-CAPTIONS.md) |
 | SPLIT-RACE-END | accepted (tier 1, #56): a two-human race runs until both riders finish; VS forces the second (R-0081) | [A two-human race runs until both have finished](SPLIT-RACE-END.md) |
-| SPLIT-RIDERS-UNDER-INK | ready (tier 2): an idle rider 1's look and the riders' parts under a split race's HUD text (R-0082) | [The riders under a split race's HUD text](SPLIT-RIDERS-UNDER-INK.md) |
+| SPLIT-RIDERS-UNDER-INK | accepted (tier 1, #58): the riders' look as race state (its latch clear) and the riders under a split race's HUD text (R-0083) | [The riders under a split race's HUD text](SPLIT-RIDERS-UNDER-INK.md) |
 | TWO-HUMAN-RESTART | ready (tier 1 or 2): the menus after a two-human race's countdown restart (R-0079) | [The menus after a two-human race's restart](TWO-HUMAN-RESTART.md) |
 | AUDIO-UPLOAD-SPEED | ready (tier 1): sound-set uploads at 5x real time or better, so debug builds keep up at race loads | [A sound-set upload well above real time](AUDIO-UPLOAD-SPEED.md) |
 | ROLLING-CONTACT | ready | [A rolling rider's second contact after a long shoulder rotation (HUNTER-EFFECTS review)](ROLLING-CONTACT.md) |
