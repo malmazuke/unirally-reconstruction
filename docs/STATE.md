@@ -1,5 +1,28 @@
 # Project state
 
+**6 October 2026: TWO-HUMAN-RESTART is accepted (tier 1, #60) and integrated by merge commit.**
+What happens after QUIT restarts a two-human race in its countdown:
+- **The restart.** The original goes back to the same mode's own NOW PLAYING, with mode,
+  pairing and VS flags unchanged. Native already did this. R-0079 had named the one-player
+  handler; R-0084 corrects it.
+- **NOW PLAYING's counts.** They print in 2P only, from the session's wins, and 2P's second rider
+  choice resets them. VS never shows them, restarted or not.
+- **Finish poses.** The cartridge race counter `$77:10B1` counts every race, aborted ones too, and
+  picks the pose tables. Native now carries it as race state, so any race after a session's
+  second, one-player included, takes tables 3-6. Two-view saves and league wrappers gain a byte.
+
+Results:
+- VS, 2P and league restarts and a VS control match the original's race words on every race frame.
+  The restarted races' finishes now match too.
+- The front-end sweep's pictures against the originals: 6 better, none worse.
+- The eleven frozen gates and the race sweep equal main.
+
+The remaining picture gaps also show on main. They and four listed limits are in
+[R-0084](research/R-0084-two-human-restart.md), which with
+[TWO-HUMAN-RESTART](../tasks/TWO-HUMAN-RESTART.md) defines the domain. Next ready: AUDIO-UPLOAD-SPEED,
+ROLLING-CONTACT, PORTABLE-CORE-IDENTITY, ATTRACT-DEMO. No M4 tag, reset, spending or provider
+change is authorized.
+
 **6 October 2026: SPLIT-RIDERS-UNDER-INK is accepted (tier 1, #58) and integrated by merge commit.**
 The riders' look animation (their seat and head) is now race state.
 - **Why.** In the original, the end of a rider's scripted glance clears that rider's idle latch

@@ -154,9 +154,9 @@ gap 3's 960 pixels.
 
 - **The CONTINUE GAME clear in a split race**: the original zeroes the pauser's rows 5-9 (or 19-23)
   from column 8, taking the split HUD's cells there until they are rewritten; native keeps them.
-- **After a two-human restart** the original re-enters NOW PLAYING through `$80:BC36-BC45`, inside
-  the one-player handler: its NOW PLAYING then shows no win counts (`vs2` 2289 on, up to 1,183
-  pixels), and the later flow is not captured. Native shows the counts.
+- **After a two-human restart** the original re-enters its own handler's NOW PLAYING; VS's never
+  shows win counts. This record first said the one-player handler's `$80:BC36-BC45`, which
+  [R-0084](R-0084-two-human-restart.md) corrects (TWO-HUMAN-RESTART).
 - The three split-race gaps above, the 2P result's medal icons (R-0071), a 2P finished view's
   darkening and the finished split HUD (`drfin`): queued as SPLIT-HUD-GAPS.
 - Two-pad races on tracks other than DRAGSTER and ZOOM ZOO, and a ZOOM ZOO 2P save.

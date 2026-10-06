@@ -195,6 +195,13 @@ void restarts_keep_the_pairing() {
     auto again = state;
     restart_zoom_zoo(again, race.content);
     require(again.player_announcements.hints_active == 1 && again.pairing == state.pairing);
+    // R-0084: a race restarted on its own keeps `$77:10B1`; the menus' next
+    // race counts it.
+    require(state.race_counter == 1 && again.race_counter == 1);
+    auto later = state;
+    later.race_counter = 5;
+    restart_zoom_zoo(later, race.content);
+    require(later.race_counter == 5);
     state.player_announcements.hints_active = 0;
     restart_zoom_zoo(state, race.content);
     require(state.player_announcements.hints_active == 0);
@@ -218,6 +225,19 @@ void paired_states_read_back() {
     // SILVIA's tier needs the table; without the pairing the word is not BRONSEN's.
     rejects([&] { (void)deserialize_zoom_zoo(bytes, {0, opponent::silvia}, true, {}); });
     rejects([&] { (void)deserialize_zoom_zoo(bytes); });
+    // R-0084: the one-player layout carries no race counter; the menus' is
+    // taken.
+    state.race_counter = 2;
+    const auto second = serialize_zoom_zoo(state);
+    require(second == bytes);
+    require(
+        deserialize_zoom_zoo(second, {0, opponent::silvia}, true, race.table, 2)
+            .race_counter == 2);
+    require(read.race_counter == 1);
+    rejects([&] {
+      (void)deserialize_zoom_zoo(second, {0, opponent::silvia}, true,
+                                 race.table, 6);
+    });
     // BRONSEN's word is 0 or 30.
     state.pairing = {0, opponent::bronsen};
     state.opponent_tier = opponent_tier(classic_race_scenario(ClassicRaceTrack::Dragster), {});
