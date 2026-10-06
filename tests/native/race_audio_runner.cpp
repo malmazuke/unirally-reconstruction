@@ -4,6 +4,8 @@
 // cue file; no original clock, event or PCM is an input.
 #include "audio_title_menu_data.hpp"
 #include "title_menu_audio_playback.hpp"
+#include <chrono>
+#include <cstdlib>
 #include <iostream>
 #include <map>
 #include <memory>
@@ -34,9 +36,16 @@ public:
 class Events final : public unirally::AudioEngineEventSink {
 public:
   std::ofstream file;
-  explicit Events(const char *path) : file(path) {
+  // EVENTS "-" attaches no sink, as the app runs (timing).
+  explicit Events(const char *path) {
+    if (std::string(path) == "-")
+      return;
+    file.open(path);
     if (!file)
       throw std::runtime_error("cannot write native events");
+  }
+  unirally::AudioEngineEventSink *sink() {
+    return file.is_open() ? this : nullptr;
   }
   void event(char kind, std::uint64_t smp, std::uint64_t cpu,
              std::uint16_t address, std::uint8_t value) override {
@@ -156,10 +165,10 @@ int main(int argc, char **argv) {
     if (argc == 12)
       playback = std::make_unique<unirally::NativeTitleMenuAudioPlayback>(
           content, controllers, static_cast<std::uint32_t>(std::stoul(argv[8])),
-          &events);
+          events.sink());
     else
       raw = std::make_unique<unirally::NativeTitleMenuAudio>(
-          content, controllers, &events);
+          content, controllers, events.sink());
     auto &audio = playback ? playback->native() : *raw;
     const auto save_frame =
         argc == 12 ? static_cast<std::uint32_t>(std::stoul(argv[9])) : 0U;
@@ -197,10 +206,30 @@ int main(int argc, char **argv) {
       std::cout << "menu_exit_action=" << unsigned(action)
                 << " cpu_clock=" << exit_clock << " frame=" << first << '\n';
     }
+    // AUDIO-UPLOAD-SPEED: with UNIRALLY_LOAD_TIMES=FILE, each frame with a
+    // load cue writes "FRAME WALL_NS CPU_TICKS" (its upload session's cost).
+    std::ofstream load_times;
+    if (const char *path = std::getenv("UNIRALLY_LOAD_TIMES"))
+      load_times.open(path);
     for (auto frame = first; frame <= last; ++frame) {
       const auto found = cues.find(frame);
-      audio.cue_frame(frame, found == cues.end() ? unirally::AudioCueList{}
-                                                 : found->second);
+      const auto &frame_cues =
+          found == cues.end() ? unirally::AudioCueList{} : found->second;
+      const bool timed =
+          load_times.is_open() &&
+          std::any_of(frame_cues.begin(), frame_cues.end(),
+                      [](const auto &cue) {
+                        return cue.kind == unirally::AudioCueKind::load;
+                      });
+      const auto ticks_before = audio.cpu_ticks();
+      const auto wall_before = std::chrono::steady_clock::now();
+      audio.cue_frame(frame, frame_cues);
+      if (timed)
+        load_times << frame << ' '
+                   << std::chrono::duration_cast<std::chrono::nanoseconds>(
+                          std::chrono::steady_clock::now() - wall_before)
+                          .count()
+                   << ' ' << audio.cpu_ticks() - ticks_before << '\n';
       drain();
       if (frame == save_frame) {
         const auto state =
@@ -220,7 +249,7 @@ int main(int argc, char **argv) {
                                       playback->snapshot()));
     } else
       audio_test::write_pcm(pcm, audio.take_pcm());
-    if (!events.file)
+    if (events.sink() && !events.file)
       throw std::runtime_error("native event output failed");
     std::cout << "computed_cpu_clock=" << audio.cpu_ticks() << '\n';
     return 0;

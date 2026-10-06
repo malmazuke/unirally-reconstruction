@@ -15,8 +15,9 @@ struct Bus final : unirally::AudioDriverBus {
     std::vector<Event> events;
     bool interrupt_reads = false, resume_read = false, interrupt_clock = false;
     unsigned clock_sync_step() const override { return interrupt_clock ? 2U : 0U; }
-    void advance_clock(std::uint64_t ticks) override {
+    bool advance_clock(std::uint64_t ticks) override {
         if (interrupt_clock && ticks >= 54322) { interrupt_clock = false; throw CpuYield{}; }
+        return false;
     }
     std::uint8_t read_port(std::uint64_t ticks, std::uint8_t port) override {
         if (interrupt_reads && !resume_read) { resume_read = true; throw CpuYield{}; }

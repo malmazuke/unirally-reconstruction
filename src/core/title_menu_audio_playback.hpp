@@ -20,7 +20,7 @@ public:
     std::uint64_t source_pairs();
     std::uint64_t delivered_pairs();
     // NativeAudioOutput::drop_late under the output lock.
-    std::size_t drop_late_output(std::uint64_t due, std::size_t ceiling, std::size_t keep);
+    AudioLateDrop drop_late_output(std::uint64_t due, std::size_t ceiling, std::size_t keep);
     TitleMenuAudioPlaybackState snapshot();
     void restore(const TitleMenuAudioPlaybackState& state);
 

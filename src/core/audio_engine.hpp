@@ -65,7 +65,8 @@ public:
     // Laboratory packaging boundary only; product work advances through native accesses.
     void finish_pcm_to(std::uint64_t dsp_clocks);
     unsigned clock_sync_step() const override { return 2; }
-    void advance_clock(std::uint64_t ticks) override;
+    bool advance_clock(std::uint64_t ticks) override;
+    bool yield_due(std::uint64_t ticks) const override;
     std::uint8_t read_port(std::uint64_t ticks, std::uint8_t port) override;
     void write_port(std::uint64_t ticks, std::uint8_t port, std::uint8_t value) override;
     void write_ram(std::uint64_t ticks, std::uint16_t address, std::uint8_t value) override;
