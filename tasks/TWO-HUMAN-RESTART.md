@@ -76,7 +76,7 @@ head's run is `gates-551a777.out`.
 - **Front-end sweep:** 121 of 179 manifests equal. The others differ in three ways:
   - the counter byte in two-view, league and demo state rows;
   - later league races' finish poses, which now match the original's work RAM (R-0084);
-  - `goldwyn`'s fourth-race finish picture.
+  - `goldwyn`'s third-race finish picture (counter 3, tables 3 and 4).
 
   Against the originals' frames 6 pictures are better and none worse (`fe-pictures-551a777.txt`,
   `rows-551a777.txt`).

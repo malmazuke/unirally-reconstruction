@@ -126,8 +126,9 @@ Gates on `551a777` (`gates-551a777.out` beside the captures):
   - In seven league manifests a later race's finish also takes other poses. The original's
     work RAM there has the counter at 3 and kinds 3 and 4 (`organic-stunt-tricks` 22100), or 3 and
     3 (`organic-three-events` 21700). Native now takes 3 where main took 1.
-  - In `goldwyn` the only change is the picture at 13000, the finish of the session's fourth
-    race (tables 5 and 6); it has no original frames.
+  - In `goldwyn` the only change is the picture at 13000, the finish of the session's third
+    race (counter 3, tables 3 and 4). The manifest keeps no original frames; the review's capture
+    of it shows `$10B1` = 3 and kinds 3/4.
   - Against the originals' frames (`fe-pictures-551a777.txt`) 6 pictures are better and none
     worse.
 - **Unchanged:** the eleven frozen gates, the race sweep (432 runs, 0 differences), the cues and
