@@ -2,7 +2,8 @@
 
 ## Assignment
 
-- Status: **claimed** 6 October 2026 by the session that closed SPLIT-CAPTIONS, on main `ec05ea7`
+- Status: **accepted** 6 October 2026 (tier 1, [PR #58](https://github.com/malmazuke/unirally-reconstruction/pull/58));
+  claimed 6 October 2026 by the session that closed SPLIT-CAPTIONS, on main `ec05ea7`
   after that task's merge (main equal to `origin/main`, closeout written). Prepared the same day
   from R-0082's remaining race-time differences.
 - Milestone: M4 breadth
@@ -67,3 +68,43 @@ Tools are in main `local/evidence/split-riders-under-ink/`. Base binaries are ma
 | 4 | Two-view states must carry the look | A 46-byte look block in the split trailer and the league wrapper, with guards | Restores across the clear equal; 20 captures equal in words (with `$0D5B`/`$0D5D`) and look on every race frame | Records, gates, review |
 
 Left: `zzap` 6317, 22 pixels of rider 0's seat in the lower view (R-0083, "Not covered").
+
+## Gates
+
+`local/evidence/split-riders-under-ink/gates.sh` runs against main `ec05ea7`'s binaries. The final
+head's run is `gates-56479ce.out`, after `gates-6e6b20e.out`. The machine was shut down during one
+run of 56479ce, which was re-run whole.
+- Presets and ctest: 41 of 41 on each of the four.
+- Synthetic suite, v1 contracts and hidden runs: pass.
+- The eleven differential gates: pass.
+- Race sweep: 432 runs, 0 differences.
+- Every split capture's words (rider 1's queue and both idle latches included), the look, and the
+  restores: 0 differences.
+- Cues: identical to main.
+- Tooling: OK.
+- Rules: no function over 80 lines.
+- Fuzz: 40 aborts, as on main.
+
+Front-end sweep: 122 of 179 manifests equal. Of the others:
+- The attract demo's and the coverage idle manifests differ only in their state rows, which now
+  carry the look block. No picture differs.
+- The remaining 51 are SPLIT-CAPTIONS' league and TWO-PLAYER-VS set. Against the originals'
+  frames (`fe-pictures-6e6b20e.txt`) the pictures that moved are 11 better and none worse.
+
+## Review and integration
+
+- Reviewer: a fresh Claude Opus 5.5 subagent in its own clone, tier 1, with preregistered cases.
+- Early finding: one-player `--timeline` replays had lost their overlays. Fixed in 2817afa:
+  428/428 and 997/997 pictures equal main's.
+- Round 1 on `6e6b20e`: changes requested.
+  - The split demo runner's restore probe was hit by the look block.
+  - The look guard accepted words that later threw.
+  - Tests and two records were missing.
+  - The withheld `idle2` (2P ZOOM ZOO, pad 2 idle, a pause in a glance) was equal in words and look
+    on all 5,973 race frames through ten latch clears, with 5,974/5,974 pictures equal (main
+    2,320).
+  - All fixed in `56479ce`.
+- Round 2 on `56479ce`: approved. Two nits are recorded: the clear count, and the glance timer's
+  0xFFC0.
+- Integration: merged by merge commit after the final head's checks; closeout in main
+  `artifacts/split-riders-under-ink-integration/closeout.json`.

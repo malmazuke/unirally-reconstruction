@@ -1,5 +1,30 @@
 # Project state
 
+**6 October 2026: SPLIT-RIDERS-UNDER-INK is accepted (tier 1, #58) and integrated by merge commit.**
+The riders' look animation (their seat and head) is now race state.
+- **Why.** In the original, the end of a rider's scripted glance clears that rider's idle latch
+  (`$82:87AD`). R-0036 showed that can't happen in one-player play, but an idle human rider 1
+  reaches it. Native kept the look in picture history only, so the latch never cleared and an
+  idle rider 1's pose drifted from the original's.
+- **Look.** The race update now runs the look at `$83:CDA6` and clears the latch.
+- **Saves.** Two-view saves and league wrappers carry the look (46 bytes); one-player race layouts
+  are unchanged.
+- **Ink over BG1.** The split HUD's ink now shows a rider behind a BG1 priority tile, as the
+  original's colour math does.
+
+Results:
+- All 21 split captures, including the review's withheld `idle2`, equal the original on every
+  race frame: race words, both idle latches and both riders' look.
+- `vs-idle` goes from 350 to 796 equal pictures (every race-time picture), `idle2` from 2,320 to
+  5,974 of 5,974, and `leaguefin`, `mike1` and `p2pause` are now exact.
+- The eleven frozen gates and the race sweep equal main.
+
+One `zzap` picture (22 pixels at the split line) remains open in
+[R-0083](research/R-0083-split-riders-under-ink.md), which with
+[SPLIT-RIDERS-UNDER-INK](../tasks/SPLIT-RIDERS-UNDER-INK.md) defines the domain. Next ready:
+TWO-HUMAN-RESTART, AUDIO-UPLOAD-SPEED, ROLLING-CONTACT, PORTABLE-CORE-IDENTITY, ATTRACT-DEMO. No
+M4 tag, reset, spending or provider change is authorized.
+
 **6 October 2026: SPLIT-CAPTIONS is accepted (tier 1, #57) and integrated by merge commit.**
 A two-human split race's HUD text now matches the original's throughout the race:
 - **Rider 1's tutorial hints.** Rider 1 has its own hints, from its own tutorial bit (never for

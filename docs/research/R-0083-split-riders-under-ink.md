@@ -1,7 +1,8 @@
 # R-0083 - The riders' look as race state, and riders under the ink
 
 Status: implemented on `task/split-riders-under-ink`
-([SPLIT-RIDERS-UNDER-INK](../../tasks/SPLIT-RIDERS-UNDER-INK.md)), 6 October 2026. PAL ROM SHA-256
+([SPLIT-RIDERS-UNDER-INK](../../tasks/SPLIT-RIDERS-UNDER-INK.md)), 6 October 2026; accepted (tier 1,
+PR #58). PAL ROM SHA-256
 `a1105819d48c04d680c8292bbfa9abbce05224f1bc231afd66af43b7e0a1fd4e`, audited bsnes core
 `7d5aa1e656b9171524d01b1b22917197d8121cb4`.
 
@@ -98,11 +99,15 @@ pictures below; register values from R-0082]
   `race_pairing_tests` covers the latch clear at a glance's end, and that the latch stays set
   while the glance runs.
 - **The review's withheld `idle2`**, a 2P ZOOM ZOO race with pad 2 idle throughout and a pause in
-  one of rider 1's glances: words and look are equal on all 5,973 race frames, through nine
+  one of rider 1's glances: words and look are equal on all 5,973 race frames, through ten
   latch clears. 5,974 of 5,974 pictures are equal (main 2,320). Rider 0's clear is never
   reached, as R-0036 argues.
 
 ## Not covered
+
+- **The glance timer's guard** accepts 0xFFC0. The resting timer starts at minus the update
+  counter's low six bits, so the lowest it is ever written is 0xFFC1. Only a forged state reaches
+  that one extra value.
 
 - **One picture.** `zzap` 6317: in the lower view, rider 0's seat shows 22 pixels further right in
   native.
