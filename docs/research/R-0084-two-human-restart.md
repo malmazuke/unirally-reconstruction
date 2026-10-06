@@ -1,7 +1,8 @@
 # R-0084 - A two-human race's restart, and the race counter's finish poses
 
 Status: implemented on `task/two-human-restart`
-([TWO-HUMAN-RESTART](../../tasks/TWO-HUMAN-RESTART.md)), 6 October 2026. PAL ROM SHA-256
+([TWO-HUMAN-RESTART](../../tasks/TWO-HUMAN-RESTART.md)), 6 October 2026; accepted (tier 1,
+PR #60). PAL ROM SHA-256
 `a1105819d48c04d680c8292bbfa9abbce05224f1bc231afd66af43b7e0a1fd4e`, audited bsnes core
 `7d5aa1e656b9171524d01b1b22917197d8121cb4`.
 
@@ -106,12 +107,51 @@ see Evidence]
 
 ## Evidence
 
-(Filled in from the gates.)
+Gates on `551a777` (`gates-551a777.out` beside the captures):
+- **Race words and the look** equal the original's on every race frame of the four captures:
+  `vs-restart` 2,331, `twop-restart` 2,855, `league-restart` 2,506 and `vs-control` 2,168. Every
+  earlier split capture stays equal too.
+- **Restores** are byte-identical to the end: `vs-restart` at 2700 and 4600, `twop-restart` at
+  3200 and 4600, `league-restart` at 8600 and 9800 (a league wrapper; the restarted race runs with
+  counter 2).
+- **Pictures.** The restarted races' finishes (`vs-restart` and `twop-restart` 4530-4743,
+  `league-restart` 9732-9870) now equal the original's. Everything that still differs differs
+  the same on main's binary:
+  - NOW PLAYING's arrows and icons;
+  - the result icons and the slides after the result, the same in `vs-control`;
+  - the league result's icons and one transition (11301-11358).
+- **Front-end sweep against main.** 121 of 179 manifests are equal (`rows-551a777.txt`):
+  - In 57 of the 58 others the two-view, league and one-view demo state rows differ by the
+    counter byte.
+  - In seven league manifests a later race's finish also takes other poses. The original's
+    work RAM there has the counter at 3 and kinds 3 and 4 (`organic-stunt-tricks` 22100), or 3 and
+    3 (`organic-three-events` 21700). Native now takes 3 where main took 1.
+  - In `goldwyn` the only change is the picture at 13000, the finish of the session's fourth
+    race (tables 5 and 6); it has no original frames.
+  - Against the originals' frames (`fe-pictures-551a777.txt`) 6 pictures are better and none
+    worse.
+- **Unchanged:** the eleven frozen gates, the race sweep (432 runs, 0 differences), the cues and
+  the pause menu's pictures.
+- **Tests.**
+  - `front_end_tests`: the restart's NOW PLAYING in 2P and VS, and 2P's second choice.
+  - `dragster_race_tests`: the counter's winner and loser kinds, its byte in the split trailer and
+    the league wrapper, and the refusals (6 or more, a pose outside the counter's pair).
+  - `race_pairing_tests`: a restart on its own keeps the counter; the menus' restore takes theirs.
 
 ## Not covered
 
 - NOW PLAYING's arrow and icon animation, R-0071's known residual, in 2P and VS alike.
 - The pre-existing front-end gaps after the result, the same in the control: the result's icons,
   the result → VS CHAMPIONS and → PICK CHALLENGER slides, the 2P result → continuation slide.
+- **Tables 5 and 6** (counter 4 or 5, a session's fifth and sixth races) are read from the
+  listing only. Their bounds are checked against the pack, but no capture shows a 5/6 pose.
+- **The attract demo** keeps counter 1. The original's demo skips the count (`$83:CA08`) but
+  reads the cartridge's `$10B1`, so a demo shown after two or more races would take tables 3-6
+  if a demo rider finished. No capture shows a demo rider finishing.
+- **A one-player state's poses** are not checked against the caller's counter. The two-view
+  reader refuses a locked pose outside its counter's pair; a one-player state with counter 1 and
+  kinds 3/4 reads. No product path restores a one-player race.
+- **SAME TRACK after a 2P result** (the review's capture): the original starts the DRAGSTER race
+  one frame earlier than native's loading predicts (7127 against 7128). Not this task's change.
 - The legacy DRAGSTER movement engine (`movement.cpp`, the v1 contracts' first races) keeps table
   1 for its opponent. No product race runs it.

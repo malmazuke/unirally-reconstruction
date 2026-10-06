@@ -294,6 +294,17 @@ int main() {
     // R-0084: the trailer's last byte is the race counter, 0-5.
     require(forced_bytes[830]==1);
     auto counter_six=forced_bytes;counter_six[830]=6;rejects([&]{(void)deserialize_zoom_zoo(counter_six);});
+    // The winner's pose kind 1 belongs to counters 0 and 1 only.
+    require(versus.race.finish_pose[0].kind==1);
+    auto counter_zero=forced_bytes;counter_zero[830]=0;(void)deserialize_zoom_zoo(counter_zero);
+    auto counter_two=forced_bytes;counter_two[830]=2;rejects([&]{(void)deserialize_zoom_zoo(counter_two);});
+    // A league wrapper carries the counter before its last byte, rider 1's hints over.
+    auto counted_league=local;counted_league.league_statistics.enabled=true;counted_league.race_counter=3;
+    const auto league_bytes=serialize_zoom_zoo(counted_league);
+    require(league_bytes[league_bytes.size()-2]==3);
+    require(serialize_zoom_zoo(deserialize_zoom_zoo(league_bytes))==league_bytes);
+    auto league_six=league_bytes;league_six[league_bytes.size()-2]=6;
+    rejects([&]{(void)deserialize_zoom_zoo(league_six);});
     // Without the drivers the forced flag is refused; so are a stray member, two live drivers,
     // and drivers in a race that is not VS.
     rejects([&]{(void)deserialize_zoom_zoo(std::span(forced_bytes).first(831));});
@@ -343,4 +354,9 @@ int main() {
         for(unsigned update=0;update<6;++update){update_finish(counted,six_content);++counted.movement.frame;}
         require(counted.race.finish_pose[0].active && counted.race.finish_pose[0].kind==winner);
     }
+    // The loser's kind is the pair's second: a VS race's forced loser at counter 3 takes 4.
+    auto forced_loser=player_done;forced_loser.versus=true;forced_loser.race_counter=3;
+    for(unsigned update=0;update<420;++update){update_finish(forced_loser,six_content);++forced_loser.movement.frame;}
+    require(forced_loser.race.finish_pose[0].kind==3 && forced_loser.race.finish_pose[1].active
+            && forced_loser.race.finish_pose[1].kind==4);
 }

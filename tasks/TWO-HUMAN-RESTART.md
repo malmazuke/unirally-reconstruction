@@ -2,7 +2,8 @@
 
 ## Assignment
 
-- Status: **claimed** 6 October 2026 by the session that closed SPLIT-RIDERS-UNDER-INK, on main
+- Status: **accepted** 6 October 2026 (tier 1, [PR #60](https://github.com/malmazuke/unirally-reconstruction/pull/60));
+  claimed 6 October 2026 by the session that closed SPLIT-RIDERS-UNDER-INK, on main
   `ad74dbf` after that task's merge (main equal to `origin/main`, closeout written). Prepared
   5 October 2026 by the SPLIT-PAUSE-MENU session, from R-0079's "Not covered".
 - Milestone: M4 breadth
@@ -10,8 +11,9 @@
 - Task provider: Anthropic
 - Worker/session/runtime/model: Claude Code desktop app, Claude Opus 5.5 (`claude-opus-5-5`); one
   session as coordinator, primary and integrator
-- Actual model/reasoning effort, routing rationale: **tier 1** if the menus' flow or saved records
-  change (D-0008), tier 2 if only NOW PLAYING's picture does; decide from the first capture.
+- Actual model/reasoning effort, routing rationale: **tier 1** (D-0008). The first captures showed
+  the finish poses depend on the race counter `$77:10B1`, which became race state and a byte in
+  two-view states and league wrappers.
 - Provider quota window (D-0004): at claim weekly 58%, five-hour 11%; standing rule: continue
   until weekly 80%.
 - Dependencies: SPLIT-PAUSE-MENU (R-0079), RACE-PAUSE-EXITS (R-0060), TWO-PLAYER-VS (R-0071).
@@ -54,3 +56,49 @@ Captures and tools are in main `local/evidence/two-human-restart/`. Base binarie
 The pictures still differing, all equal on main's binary too: NOW PLAYING's arrows and icons
 (R-0071's residual), the result icons, the result → VS CHAMPIONS, → PICK CHALLENGER and 2P
 → continuation slides (in the control as well), the league result's icons.
+
+## Gates
+
+`local/evidence/two-human-restart/gates.sh` runs against main `ad74dbf`'s binaries. The final
+head's run is `gates-551a777.out`.
+- **68c3256** failed all eleven frozen gates: `restart_zoom_zoo` counted the race counter, so a
+  restart no longer equalled a fresh race (found by the reviewer). 406223f keeps the counter in a
+  restart on its own, and 551a777 regenerates the address index.
+- **On 551a777:**
+  - presets and ctest: 41 of 41 on each of the four;
+  - synthetic suite, v1 contracts and hidden runs: pass;
+  - the eleven frozen gates: pass;
+  - race sweep: 432 runs, 0 differences;
+  - every split capture's words, look and restores, and the four restart captures': 0
+    differences;
+  - cues identical to main; tooling OK; no function over 80 lines; the address index is current;
+  - fuzz: 40 aborts, as on main.
+- **Front-end sweep:** 121 of 179 manifests equal. The others differ in three ways:
+  - the counter byte in two-view, league and demo state rows;
+  - later league races' finish poses, which now match the original's work RAM (R-0084);
+  - `goldwyn`'s fourth-race finish picture.
+
+  Against the originals' frames 6 pictures are better and none worse (`fe-pictures-551a777.txt`,
+  `rows-551a777.txt`).
+
+## Review and integration
+
+- Reviewer: a fresh Claude Opus 5.5 subagent in its own clone, tier 1, with preregistered cases.
+- On 68c3256 it found that a restart on its own counted the counter, which failed every frozen
+  gate's restart check. 406223f fixed that, and 551a777 fixed the stale address index it reported.
+- Approved `551a777`. The withheld captures:
+  - one-player, two DRAGSTER races: the second takes kinds 4/3 in the original; 988 of 988
+    pictures are equal (main differs on 80);
+  - 2P SAME TRACK with pad 1 QUIT in the second race's countdown: words equal on 4,425 race
+    frames. The pictures differ from main only at the 47 finish-pose pictures, which now match
+    the original, and NOW PLAYING's text is exact.
+  - Six restores with counters 2 and 3: equal. Every layout's counter byte is where claimed.
+- Findings, none blocking:
+  - R-0084's Evidence was a placeholder; it is now filled in.
+  - Four limits were missing from "Not covered" and are now recorded: tables 5/6 are listing-only;
+    the attract demo keeps counter 1; one-player poses are not checked against the caller's
+    counter; SAME TRACK starts one frame earlier in the original.
+  - Tests for the loser kind, the pair refusal and the league byte: added to
+    `dragster_race_tests` after the approval. The reviewer confirmed this tests-only delta.
+- Integration: merged by merge commit after the final head's checks; closeout in main
+  `artifacts/two-human-restart-integration/closeout.json`.
