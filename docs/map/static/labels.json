@@ -7488,6 +7488,18 @@
   ]
  },
  {
+  "address": "$81:81BA",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_8181BA",
+  "native": [
+   "src/core/race_progress.cpp:update_checkpoints"
+  ],
+  "source_records": [
+   "docs/research/R-0085-player-hints-and-voices.md"
+  ]
+ },
+ {
   "address": "$81:81E3",
   "class": "observed",
   "comment": "instruction start",
@@ -10802,6 +10814,73 @@
   ]
  },
  {
+  "address": "$81:C598",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_81C598",
+  "native": [
+   "src/core/race_state_io.cpp:check_queued_events",
+   "src/core/reward_queue.cpp:queue_player_announcement"
+  ],
+  "source_records": [
+   "tasks/PLAYER-HINT-VOICES.md"
+  ]
+ },
+ {
+  "address": "$81:C5A8",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_81C5A8",
+  "native": [
+   "src/core/race_state_io.cpp:check_queued_events",
+   "src/core/reward_queue.cpp:queue_player_announcement"
+  ],
+  "source_records": [
+   "docs/research/R-0085-player-hints-and-voices.md"
+  ]
+ },
+ {
+  "address": "$81:C5B0",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_81C5B0",
+  "native": [
+   "src/core/race_state_io.cpp:check_queued_events",
+   "src/core/reward_queue.cpp:queue_player_announcement"
+  ],
+  "source_records": [
+   "docs/research/R-0085-player-hints-and-voices.md",
+   "tasks/PLAYER-HINT-VOICES.md"
+  ]
+ },
+ {
+  "address": "$81:C5B4",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_81C5B4",
+  "native": [
+   "src/core/race_state_io.cpp:check_queued_events",
+   "src/core/reward_queue.cpp:queue_player_announcement"
+  ],
+  "source_records": [
+   "docs/research/R-0085-player-hints-and-voices.md"
+  ]
+ },
+ {
+  "address": "$81:C5B9",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_81C5B9",
+  "native": [
+   "src/core/race_hud.cpp:ClassicRaceHudClock::request_caption",
+   "src/core/race_state_io.cpp:check_queued_events",
+   "src/core/reward_queue.cpp:queue_player_announcement"
+  ],
+  "source_records": [
+   "docs/research/R-0085-player-hints-and-voices.md"
+  ]
+ },
+ {
   "address": "$81:C5D0",
   "class": "observed",
   "comment": "instruction start",
@@ -10825,7 +10904,8 @@
   ],
   "source_records": [
    "docs/research/R-0069-split-screen-race.md",
-   "docs/research/R-0082-split-captions.md"
+   "docs/research/R-0082-split-captions.md",
+   "docs/research/R-0085-player-hints-and-voices.md"
   ]
  },
  {
@@ -13649,6 +13729,19 @@
   ]
  },
  {
+  "address": "$82:9B69",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_829B69",
+  "native": [
+   "src/core/race_state_io.cpp:check_rolls",
+   "src/core/reward_queue.cpp:announce_landing_tricks"
+  ],
+  "source_records": [
+   "tasks/PLAYER-HINT-VOICES.md"
+  ]
+ },
+ {
   "address": "$82:9B87",
   "class": "observed",
   "comment": "instruction start",
@@ -13662,6 +13755,45 @@
   ]
  },
  {
+  "address": "$82:9C6D",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_829C6D",
+  "native": [
+   "src/core/race_state_io.cpp:check_rolls",
+   "src/core/reward_queue.cpp:announce_landing_tricks"
+  ],
+  "source_records": [
+   "docs/research/R-0085-player-hints-and-voices.md"
+  ]
+ },
+ {
+  "address": "$82:9CA3",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_829CA3",
+  "native": [
+   "src/core/race_state_io.cpp:check_rolls",
+   "src/core/reward_queue.cpp:announce_landing_tricks"
+  ],
+  "source_records": [
+   "docs/research/R-0085-player-hints-and-voices.md"
+  ]
+ },
+ {
+  "address": "$82:9CEA",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_829CEA",
+  "native": [
+   "src/core/race_state_io.cpp:check_rolls",
+   "src/core/reward_queue.cpp:announce_landing_tricks"
+  ],
+  "source_records": [
+   "docs/research/R-0085-player-hints-and-voices.md"
+  ]
+ },
+ {
   "address": "$82:9CF8",
   "class": "observed",
   "comment": "instruction start",
@@ -13672,6 +13804,19 @@
   ],
   "source_records": [
    "docs/research/R-0011-motion.md"
+  ]
+ },
+ {
+  "address": "$82:9D35",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_829D35",
+  "native": [
+   "src/core/race_state_io.cpp:check_rolls",
+   "src/core/reward_queue.cpp:announce_landing_tricks"
+  ],
+  "source_records": [
+   "docs/research/R-0085-player-hints-and-voices.md"
   ]
  },
  {
@@ -13705,6 +13850,34 @@
   ]
  },
  {
+  "address": "$82:9D64",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_829D64",
+  "native": [
+   "src/core/race_state_io.cpp:check_rolls",
+   "src/core/reward_queue.cpp:announce_combination",
+   "src/core/reward_queue.cpp:announce_landing_tricks"
+  ],
+  "source_records": [
+   "docs/research/R-0085-player-hints-and-voices.md"
+  ]
+ },
+ {
+  "address": "$82:9D70",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_829D70",
+  "native": [
+   "src/core/race_state_io.cpp:check_rolls",
+   "src/core/reward_queue.cpp:announce_combination",
+   "src/core/reward_queue.cpp:announce_landing_tricks"
+  ],
+  "source_records": [
+   "docs/research/R-0085-player-hints-and-voices.md"
+  ]
+ },
+ {
   "address": "$82:9D7F",
   "class": "observed",
   "comment": "instruction start",
@@ -13723,7 +13896,8 @@
   "comment": "unknown",
   "label": "unk_829DB6",
   "source_records": [
-   "docs/research/R-0011-motion.md"
+   "docs/research/R-0011-motion.md",
+   "docs/research/R-0085-player-hints-and-voices.md"
   ]
  },
  {

@@ -159,10 +159,10 @@ and `goldwyn` 5600, 10500 and 13390.
 
 ## Not recovered
 
-- **The player's voices past 87.** No capture has a player trick combination (no
-  `track_reference` capture in the evidence queues a player voice), so riders 2-15's voices are
-  from the listing.
-  Native computes them with the same expression as the opponent's, which GOLDWYN's 219 confirms.
+- **The player's voices past 87.** Riders 2-11 and 13-15's voices are from the listing. Native
+  computes them with the same expression as the opponent's, which GOLDWYN's 219 confirms.
+  - Rider 12's 171 is captured since R-0085 (6 October 2026): a WALKER race whose first landing
+    is a combination, equal to native on every update.
 - **The cartridge RAM class counters** that the opponent's out-of-table voices increment
   (`$81:C253-C258`) are not modelled, as for BRONSEN (R-0035).
 - **ANTI-UNI against another rider** on HUNTER's tracks has no capture. Its parts (the rider's
