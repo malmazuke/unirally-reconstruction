@@ -2,20 +2,25 @@
 
 ## Assignment
 
-- Status: ready (prepared 25 September 2026 by the HUNTER-EFFECTS session, from its review).
+- Status: **in progress**, claimed 9 October 2026 (8 October 20:30 UTC) at the user's "Next task", on
+  main `5da988e` (equal to `origin/main`). Prepared 25 September 2026 by the HUNTER-EFFECTS
+  session, from its review. Chosen over PORTABLE-CORE-IDENTITY (tier 2 tooling) because it is a
+  gameplay divergence in shared contact code; ATTRACT-DEMO is an OpenAI task (D-0004).
 - Milestone: M4 breadth
 - Coordinator: the claiming session is coordinator, primary and integrator
 - Task provider (fixed for all children; record any user-initiated platform change): Anthropic
-- Worker/session/runtime/model: to be recorded at claim
+- Worker/session/runtime/model: Claude Code desktop app, Claude Opus 5.5 (`claude-opus-5-5`); one
+  session as coordinator, primary and integrator
 - Actual model/reasoning effort, routing rationale and frontier escalation question (if any):
   the claiming session's model at default effort; **tier 1** (`src/core/vertical_contact.cpp`,
   movement).
 - Provider quota window/baseline timestamp, used/remaining or unknown, reserve and session
-  allowance (D-0004): sample at claim.
+  allowance (D-0004): at claim (8 October 2026 20:27 UTC) weekly 0%, five-hour 0%. No standing
+  rule to chain tasks: this session stops after this task.
 - Reviewer (primary automatically spawns fresh model/effort, isolated checkout; no user
   trigger): a fresh Anthropic subagent with a withheld capture.
 - Dependencies and evidence of acceptance: HUNTER-EFFECTS (R-0052).
-- Base commit: the `main` tip at claim.
+- Base commit: main `5da988e`.
 - Branch and isolated worktree: `task/rolling-contact` in `.worktrees/rolling-contact`.
 - Owned paths and shared interfaces: the contact and pose code, native tests, a research
   record, this record, `docs/STATE.md`, `tasks/README.md`, `tasks/NEXT_SESSION.md`.
@@ -48,6 +53,13 @@ HUNTER-EFFECTS' closeout), pack v14, the listings under `artifacts/static-map/`.
 | Match | `track_reference explore` on the capture; a withheld rolling capture | Exact past 1,737 | JSON |
 | Nothing accepted moves | Gates, v1 contracts, hidden runs, fuzz, ctest, synthetic | Unchanged digests | gate logs |
 | Review | Tier 1 | Approved with a withheld capture | review on the pull request |
+
+## Baseline at claim
+
+On main `5da988e`, lab-debug, pack v35: `track_reference explore` on `w-rev-buttons` is exact for
+1,737 updates; the first divergence is update 1,737 (frame 3,128), `player.velocity_y` 72 native
+against 0 original, as HUNTER-EFFECTS recorded with pack v14/v15. The disk had 9.6 GB free at
+claim, so captures here stay small and are stripped after use.
 
 ## Handoff
 
