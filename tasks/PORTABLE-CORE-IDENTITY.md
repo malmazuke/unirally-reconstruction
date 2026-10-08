@@ -2,22 +2,25 @@
 
 ## Assignment
 
-- Status: **ready**. Queued 27 September 2026 (UTC) from a cloud session that recorded gameplay
-  video on Linux (the user's request).
+- Status: **in progress**, claimed 9 October 2026 (8 October 23:40 UTC) on main `56424c6`, after
+  ROLLING-CONTACT, at the user's request to chain the remaining ready tasks. Queued 27 September
+  2026 (UTC) from a cloud session that recorded gameplay video on Linux (the user's request).
 - Milestone: tooling (no milestone; it serves every later task that runs the reference core)
 - Coordinator: the claiming session is coordinator, primary and integrator
 - Task provider (fixed for all children; record any user-initiated platform change): Anthropic
-- Worker/session/runtime/model: recorded at claim
+- Worker/session/runtime/model: Claude Code desktop app, Claude Opus 5.5 (`claude-opus-5-5`); one
+  session as coordinator, primary and integrator
 - Actual model/reasoning effort, routing rationale and frontier escalation question (if any):
   **tier 2** (tooling and manifests; no gameplay arithmetic changes). A reviewer escalates if a
   frozen reference result changes.
 - Provider quota window/baseline timestamp, used/remaining or unknown, reserve and session
-  allowance (D-0004): recorded at claim.
+  allowance (D-0004): at claim weekly 1%, five-hour 8% (8 October 22:47 UTC). The user asked to
+  chain this task and ATTRACT-DEMO.
 - Reviewer (primary automatically spawns fresh model/effort, isolated checkout; no user
   trigger): a fresh Anthropic subagent.
 - Dependencies and evidence of acceptance: M0-03 (the pinned bsnes lock), M3-02A (the content
   pack and its extraction).
-- Base commit: the `main` tip at claim.
+- Base commit: main `56424c6`.
 - Branch and isolated worktree: `task/portable-core-identity` in
   `.worktrees/portable-core-identity`.
 - Owned paths and shared interfaces: `tools/unirally_lab/reference/`,
@@ -72,7 +75,9 @@ Windows.
 - The supported ROM, SHA-256 `a1105819d48c04d680c8292bbfa9abbce05224f1bc231afd66af43b7e0a1fd4e`
   (user-supplied; never tracked).
 - The pinned bsnes lock in `tools/locks/emulators.json`; `reference build` fetches and builds it.
-- A Linux host (Ubuntu 24.04, x86_64) and the macOS host, to show both accepted.
+- A Linux host (Ubuntu 24.04, x86_64) and the macOS host, to show both accepted. At claim the
+  local Linux host is Docker Desktop's `ubuntu:24.04` on aarch64 (this Mac); the x86_64 result is
+  the cloud session's attempts 1-2.
 
 ## Acceptance
 
