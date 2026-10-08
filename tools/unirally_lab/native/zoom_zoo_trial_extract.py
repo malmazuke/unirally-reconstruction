@@ -9,17 +9,19 @@ import json
 import tempfile
 from pathlib import Path
 from .zoom_zoo_trial import content_inventory, check_content
-from .zoom_zoo_trial_reference import ROOT, ROM_SHA, CORE_SHA, PRIMARY_SHA, sha
+from .zoom_zoo_trial_reference import ROOT, ROM_SHA, PRIMARY_SHA, sha
 from .zoom_zoo_contact import extract_content
 from ..reference.bsnes import BsnesCore
 from ..reference.worker import inputs_for_frame
 from ..replay.manifest import derive_script
+from ..reference.core_identity import accepted_reference, require_core
 
 def extract(out,library):
     if out.exists() and any(out.iterdir()):raise ValueError('refusing to overwrite nonempty extraction')
     rom_path=Path((ROOT/'local/rom-location.txt').read_text().strip());rom=rom_path.read_bytes()
     manifest=(ROOT/'tests/manifests/replay/race-crawler-zoom-zoo-3300.json').read_bytes()
-    if sha(rom)!=ROM_SHA or sha(library.read_bytes())!=CORE_SHA or sha(manifest)!=PRIMARY_SHA:raise ValueError('extraction identity differs')
+    core_sha=require_core(library)
+    if sha(rom)!=ROM_SHA or sha(manifest)!=PRIMARY_SHA:raise ValueError('extraction identity differs')
     extract_content(ROOT/'tests/manifests/content/zoom-zoo-reference-contract.json',rom_path,out)
     inventory=content_inventory()
     entries=json.loads((ROOT/'tests/manifests/content/classic-crawler-dragster-pack.json').read_text())['entries']
@@ -44,7 +46,7 @@ def extract(out,library):
         finally:core.unload()
     (out/'landing-response-matrices.bin').write_bytes(data)
     check_content(out)
-    report={'kind':'m4_12_static_extraction','rom_sha256':ROM_SHA,'core_sha256':CORE_SHA,'original_last_frame':1297,'first_race_update':1377,'items':inventory}
+    report={'kind':'m4_12_static_extraction','rom_sha256':ROM_SHA,'core_sha256':core_sha,'original_last_frame':1297,'first_race_update':1377,'items':inventory}
     (out/'trial-content.json').write_text(json.dumps(report,indent=2)+'\n');return report
 
 def main():

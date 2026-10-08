@@ -37,7 +37,8 @@ import tempfile
 from .zoom_zoo_opponent_reward_probe import _row
 from .zoom_zoo_playable import ROLL_WORDS
 from .zoom_zoo_trial import BUTTONS
-from .zoom_zoo_trial_reference import ROOT, ROM_SHA, CORE_SHA, PRIMARY_SHA, sha, digest
+from .zoom_zoo_trial_reference import ROOT, ROM_SHA, PRIMARY_SHA, sha, digest
+from ..reference.core_identity import accepted_reference, require_core
 
 FEATURE_TOTAL = 0x825         # cartridge $770825, the opponent's accumulated reward.
 SELECTOR = 0xc75              # $0C75 trick selector.
@@ -67,12 +68,13 @@ def probe(reference: Path, core_path: Path, frame: int, through: int, out: Path)
     if not 1650 < frame < through <= 6400:
         raise ValueError('probe window must sit inside the raced domain')
     document = json.loads((reference/'reference.json').read_text())
-    if (document['rom_sha256'], document['core_sha256'], document['manifest_sha256']) != (ROM_SHA, CORE_SHA, PRIMARY_SHA):
+    if (document['rom_sha256'], document['manifest_sha256']) != (ROM_SHA, PRIMARY_SHA) or not accepted_reference(document['core_sha256']):
         raise ValueError('probe requires the frozen primary original identity')
     if document['frames'][0] != 1207 or digest(document['timeline']) != document['timeline_sha256']:
         raise ValueError('original timeline identity differs')
     rom_path = Path((ROOT/'local/rom-location.txt').read_text().strip())
-    if sha(rom_path.read_bytes()) != ROM_SHA or sha(core_path.read_bytes()) != CORE_SHA:
+    core_sha = require_core(core_path)
+    if sha(rom_path.read_bytes()) != ROM_SHA:
         raise ValueError('probe identity mismatch')
     guards = json.loads((ROOT/'tests/manifests/native/zoom-zoo-race-guards.reference.json').read_text())['items']
     out.mkdir(parents=True)
@@ -165,7 +167,7 @@ def probe(reference: Path, core_path: Path, frame: int, through: int, out: Path)
                                  'natural race never reaches. Only the gate is forced; the selector and every '
                                  'later value are the original\'s own. Not native initialization, not a seeded '
                                  'playable fallback, and not a start-to-result acceptance case.'),
-                          rom_sha256=ROM_SHA, core_sha256=CORE_SHA,
+                          rom_sha256=ROM_SHA, core_sha256=core_sha,
                           timeline_sha256=document['timeline_sha256'], state_bytes=742,
                           intervention=intervention, frames=[frame, through],
                           seed_sha256=sha(seed), rows_sha256=digest(rows), rows=rows, observations=captured)

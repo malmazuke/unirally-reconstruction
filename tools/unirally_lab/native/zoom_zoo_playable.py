@@ -10,11 +10,12 @@ import json
 from pathlib import Path
 import subprocess
 import tempfile
-from .zoom_zoo_trial_reference import ROOT,ROM_SHA,CORE_SHA,PRIMARY_SHA,sha,digest
+from .zoom_zoo_trial_reference import ROOT,ROM_SHA,PRIMARY_SHA,sha,digest
 from .zoom_zoo_race_reference import project
 from .zoom_zoo_race import restore_frames
 from .zoom_zoo_trial import BUTTONS
 from ..content.pack import load_rules,validate_pack,TWO_TRACK_RULES_PATH
+from ..reference.core_identity import accepted_reference, require_core
 
 
 ROLL_WORDS=[0x1215,0x123f,0x121b,0x1221,0x124f,0xfdf,0x1009,0x42f,0x433,0x42b,0x54b,0x124b]
@@ -24,7 +25,7 @@ HINTS_ACTIVE = 624
 
 def original(directory, *, allow_incomplete=False):
     document=json.loads((directory/'reference.json').read_text())
-    if (document['rom_sha256'],document['core_sha256'],document['manifest_sha256'])!=(ROM_SHA,CORE_SHA,PRIMARY_SHA):
+    if (document['rom_sha256'],document['manifest_sha256'])!=(ROM_SHA,PRIMARY_SHA) or not accepted_reference(document['core_sha256']):
         raise ValueError('original identity differs')
     first,last=document['frames']
     if first!=1207 or len(document['timeline'])!=last+1 or digest(document['timeline'])!=document['timeline_sha256']:
@@ -100,7 +101,7 @@ def freeze(a,b,out):
     if left!=right or rows!=other or events!=repeated:raise ValueError('two original runs differ')
     result=dict(kind='m4_16_playable_freeze',frames=[1376,left['frames'][1]],state_bytes=742,
                 original_sha256=digest(left),rows_sha256=digest(rows),events=events,
-                timeline_sha256=left['timeline_sha256'],rom_sha256=ROM_SHA,core_sha256=CORE_SHA,
+                timeline_sha256=left['timeline_sha256'],rom_sha256=ROM_SHA,core_sha256=left['core_sha256'],
                 result_inventory='Race bytes are original projections until loading; thereafter frozen archive is checked against surviving SRAM lap/totals. Graph extrema at SRAM106f/1071 and published totals618/61a are independently projected every frame. Load count is a semantic clock. Tour records excluded by fresh-scenario restart.')
     out.write_text(json.dumps(result,indent=2)+'\n');return result
 
@@ -113,7 +114,7 @@ def compare(a,b,contract,binary,pack,out):
     if reference!=repeat or rows!=other or events!=other_events:raise ValueError('original repeats differ')
     expected_inventory=dict(kind='m4_16_playable_freeze',frames=[1376,reference['frames'][1]],state_bytes=742,
                             original_sha256=digest(reference),rows_sha256=digest(rows),events=events,
-                            timeline_sha256=reference['timeline_sha256'],rom_sha256=ROM_SHA,core_sha256=CORE_SHA)
+                            timeline_sha256=reference['timeline_sha256'],rom_sha256=ROM_SHA,core_sha256=reference['core_sha256'])
     if any(frozen.get(key)!=value for key,value in expected_inventory.items()):
         raise ValueError('frozen original inventory differs')
     rules,rules_sha=load_rules(ROOT/TWO_TRACK_RULES_PATH);validate_pack(pack.read_bytes(),rules,rules_sha)

@@ -9,10 +9,11 @@ import argparse
 import json
 from pathlib import Path
 import tempfile
-from .zoom_zoo_trial_reference import ROOT, ROM_SHA, CORE_SHA, PRIMARY_SHA, sha, digest
+from .zoom_zoo_trial_reference import ROOT, ROM_SHA, PRIMARY_SHA, sha, digest
 from ..reference.bsnes import BsnesCore, BUTTONS
 from ..reference.worker import inputs_for_frame
 from ..replay.manifest import derive_script
+from ..reference.core_identity import accepted_reference, require_core
 
 ADDRESSES = [0x415,0x419,0xbbb,0xbb3,0x54b,0xb93,0xb97,0xfc5,0xfc9,0xfcd,
              0xfd1,0xeff,0xf0f,0xe57,0x11d9,0x11df,0xd39,0x4c3]
@@ -39,7 +40,8 @@ def capture(out, library, case, horizon, keep_wram=False, policy=None):
     if not 3299 <= horizon <= 100000: raise ValueError('exploration horizon 3299..100000')
     raw=(ROOT/'tests/manifests/replay/race-crawler-zoom-zoo-3300.json').read_bytes()
     rom=Path((ROOT/'local/rom-location.txt').read_text().strip())
-    if (sha(raw),sha(library.read_bytes()),sha(rom.read_bytes())) != (PRIMARY_SHA,CORE_SHA,ROM_SHA):
+    core_sha=require_core(library)
+    if (sha(raw),sha(rom.read_bytes())) != (PRIMARY_SHA,ROM_SHA):
         raise ValueError('reference identity differs')
     script=derive_script(json.loads(raw)); inputs=timeline(case,horizon,script)
     inventory=json.loads((ROOT/'tests/manifests/native/zoom-zoo-sustained-guards.reference.json').read_text())['items']
@@ -86,7 +88,7 @@ def capture(out, library, case, horizon, keep_wram=False, policy=None):
         case={'id':policy,'changes':changes}
         out.with_suffix('.case.json').write_text(json.dumps(case,indent=2)+'\n')
     result={'kind':'m4_15_original_exploration','case':case,'frames':[1649,horizon],
-            'rom_sha256':ROM_SHA,'core_sha256':CORE_SHA,'manifest_sha256':PRIMARY_SHA,
+            'rom_sha256':ROM_SHA,'core_sha256':core_sha,'manifest_sha256':PRIMARY_SHA,
             'timeline_sha256':digest(inputs),'seed_wram_sha256':seed,'addresses':ADDRESSES,
             'rows':rows,'wram_sha256':hashes,'new_constant_transitions':changed}
     out.write_text(json.dumps(result,separators=(',',':'))+'\n')

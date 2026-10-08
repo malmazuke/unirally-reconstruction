@@ -26,13 +26,14 @@ import json
 from pathlib import Path
 import subprocess
 import tempfile
-from .zoom_zoo_trial_reference import ROOT, ROM_SHA, CORE_SHA, sha, digest
+from .zoom_zoo_trial_reference import ROOT, ROM_SHA, sha, digest
 from .zoom_zoo_race_reference import project
 from .zoom_zoo_playable import ROLL_WORDS
 from .classic_race_layout import describe, special_tile_bytes, checkpoint_tail_bytes, hunter_bytes, hud_captions, stunt_event_bytes
 from ..content.commands import write_track_override
 from ..reference.bsnes import BsnesCore, BUTTONS, frame_png
 from .zoom_zoo_trial import BUTTONS as RUNNER_BUTTONS  # the runner's controller-row bit order
+from ..reference.core_identity import accepted_reference, require_core
 
 FIRST_RECORDED_FRAME = 1100
 MENU_STARTS = ((300, 305), (620, 625), (750, 755), (900, 905))
@@ -154,7 +155,8 @@ def capture(core_path, out, track, horizon, frame_images=(), tour_row=0, hold=No
     if any(b not in BUTTONS for _, buttons in segments(hold) for b in buttons):
         raise ValueError(f'a held input names buttons from {BUTTONS}')
     rom = Path((ROOT/'local/rom-location.txt').read_text().strip())
-    if (sha(core_path.read_bytes()), sha(rom.read_bytes())) != (CORE_SHA, ROM_SHA):
+    core_sha = require_core(core_path)
+    if sha(rom.read_bytes()) != ROM_SHA:
         raise ValueError('original identities differ')
     if (tour_column or tour_row == 4) and not unlock_tours:
         raise ValueError('a locked tour needs --unlock-tours')
@@ -200,7 +202,7 @@ def capture(core_path, out, track, horizon, frame_images=(), tour_row=0, hold=No
                   initialization_frame=boundary, tour_row=tour_row, tour_column=tour_column, unlock_tours=unlock_tours,
                   **(dict(rider=rider, sram_preload=[[a, v] for a, v in sram]) if rider or sram else {}),
                   preload_sram_sha256=sha(preload) if preload is not None else None,
-                  hold=hold, menu_events=menu_events(track, tour_row, tour_column, rider), rom_sha256=ROM_SHA, core_sha256=CORE_SHA,
+                  hold=hold, menu_events=menu_events(track, tour_row, tour_column, rider), rom_sha256=ROM_SHA, core_sha256=core_sha,
                   timeline_sha256=digest(inputs), timeline=inputs, wram_sha256=hashes, sram_sha256=cartridge_hashes, video=video)
     (out/'reference.json').write_text(json.dumps(report, separators=(',', ':'))+'\n')
     return dict(position=track, tour_row=tour_row, initialization_frame=boundary, wram=digest(hashes), sram=digest(cartridge_hashes), video=digest(video))
@@ -224,7 +226,7 @@ def original_rows(directory):
     reuses race WRAM, so the last race row is archived and only the result clock, the graph
     extrema and published totals (SRAM) advance, as in `zoom_zoo_playable` (R-0049)."""
     document = json.loads((directory/'reference.json').read_text())
-    if (document['rom_sha256'], document['core_sha256']) != (ROM_SHA, CORE_SHA):
+    if document['rom_sha256'] != ROM_SHA or not accepted_reference(document['core_sha256']):
         raise ValueError('original identity differs')
     first, last = document['frames']
     boundary = document['initialization_frame']

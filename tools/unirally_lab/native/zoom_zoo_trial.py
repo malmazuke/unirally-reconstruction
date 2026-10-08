@@ -10,7 +10,8 @@ import shutil
 import subprocess
 import tempfile
 from pathlib import Path
-from .zoom_zoo_trial_reference import ROOT, ROM_SHA, CORE_SHA, PRIMARY_SHA, sha, digest, project, guards
+from .zoom_zoo_trial_reference import ROOT, ROM_SHA, PRIMARY_SHA, sha, digest, project, guards
+from ..reference.core_identity import accepted_reference, require_core
 
 BUTTONS=('b','y','select','start','up','down','left','right','a','x','l','r')
 
@@ -48,7 +49,8 @@ def capture(case,out,library,extra_guards=None):
     if out.exists():raise ValueError('refusing to overwrite reference')
     raw=(ROOT/'tests/manifests/replay/race-crawler-zoom-zoo-3300.json').read_bytes()
     rom=Path((ROOT/'local/rom-location.txt').read_text().strip())
-    if sha(raw)!=PRIMARY_SHA or sha(library.read_bytes())!=CORE_SHA or sha(rom.read_bytes())!=ROM_SHA:raise ValueError('reference identity differs')
+    core_sha=require_core(library)
+    if sha(raw)!=PRIMARY_SHA or sha(rom.read_bytes())!=ROM_SHA:raise ValueError('reference identity differs')
     script=derive_script(json.loads(raw));rows=[];guard_rows=[];whole=[]
     out.parent.mkdir(parents=True,exist_ok=True)
     with tempfile.TemporaryDirectory(prefix='zz-reference-',dir=out.parent) as directory:
@@ -73,7 +75,7 @@ def capture(case,out,library,extra_guards=None):
     expected=contract()
     if sha(bytes.fromhex(rows[0])[:394])!=expected['seed_sha256']:raise ValueError('case seed differs')
     if any(g!=expected['guards'] for g in guard_rows):raise ValueError('case changed excluded mode guard')
-    result={'kind':'m4_12_case_reference','case':case,'case_sha256':digest(case),'rom_sha256':ROM_SHA,'core_sha256':CORE_SHA,'rows':rows,'rows_sha256':digest(rows),'wram_sha256':whole,'guards':guard_rows[0]}
+    result={'kind':'m4_12_case_reference','case':case,'case_sha256':digest(case),'rom_sha256':ROM_SHA,'core_sha256':core_sha,'rows':rows,'rows_sha256':digest(rows),'wram_sha256':whole,'guards':guard_rows[0]}
     if extra_guards is not None:result['extra_guards']={f'{a:04x}':v for a,v in extra_guards.items()}
     out.write_text(json.dumps(result,indent=2)+'\n')
     return {'frames':201,'rows_sha256':result['rows_sha256']}
@@ -104,7 +106,7 @@ def compare(reference,repeat,binary,content,out):
     if a!=b:raise ValueError('fresh reference processes differ')
     case=a['case'];rows=a['rows']
     if a['case_sha256']!=digest(case) or a['rows_sha256']!=digest(rows) or len(rows)!=201:raise ValueError('reference integrity differs')
-    if a['rom_sha256']!=ROM_SHA or a['core_sha256']!=CORE_SHA:raise ValueError('reference identity differs')
+    if a['rom_sha256']!=ROM_SHA or not accepted_reference(a['core_sha256']):raise ValueError('reference identity differs')
     if sha(bytes.fromhex(rows[0])[:394])!=contract()['seed_sha256']:raise ValueError('reference seed differs')
     if case=={'id':'primary','changes':[]}:
         expected=json.loads((ROOT/'tests/manifests/native/zoom-zoo-trial-retained-oam.reference.json').read_text())['state_sha256']

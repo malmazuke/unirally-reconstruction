@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "core": "bsnes",
+  "commit": "7d5aa1e656b9171524d01b1b22917197d8121cb4",
+  "patch_sha256": "a719f5ffe2222dad4c1ab04336633319ad85004f74e32fc14893a058be333885",
+  "note": "Reference core libraries built from the lock's commit and patch whose outputs were checked against the pinned results (PORTABLE-CORE-IDENTITY, D-0001). The hash is provenance: another compiler, SDK or build path gives another hash for the same source. A library is added after `python3 -m tools.unirally_lab.native.core_check` passes on a stored capture and the pack's landing-matrix entry reproduces its rules SHA-256 with it.",
+  "libraries": [
+    {
+      "sha256": "e59bf88d4fc922c9fe3b5438e65ff3a6909d24e1628f0f87141c8de17699a91b",
+      "platform": "macOS 15.7.2 arm64",
+      "compiler": "Apple clang version 17.0.0 (clang-1700.4.4.1)",
+      "built_utc": "2026-09-12T21:34:13Z",
+      "checked_by": "the library every frozen reference since 12 September 2026 was captured with; the pack rules' landing-matrix SHA-256 229eda89 was extracted with it"
+    }
+  ]
+}

@@ -10,8 +10,9 @@ import ctypes
 import json
 from pathlib import Path
 import tempfile
-from .zoom_zoo_playable import original, ROM_SHA, CORE_SHA, sha
+from .zoom_zoo_playable import original, ROM_SHA, sha
 from ..reference.bsnes import BsnesCore
+from ..reference.core_identity import accepted_reference, require_core
 
 
 def probe(reference, core_path, out):
@@ -21,7 +22,8 @@ def probe(reference, core_path, out):
     if document['variation']['id'] != 'm4-16-constant-left':
         raise ValueError('probe requires the frozen constant-left case')
     rom_path = Path(Path('local/rom-location.txt').read_text().strip())
-    if sha(rom_path.read_bytes()) != ROM_SHA or sha(core_path.read_bytes()) != CORE_SHA:
+    core_sha = require_core(core_path)
+    if sha(rom_path.read_bytes()) != ROM_SHA:
         raise ValueError('probe identity mismatch')
     out.mkdir(parents=True)
     with tempfile.TemporaryDirectory(dir=out) as directory:
@@ -48,7 +50,7 @@ def probe(reference, core_path, out):
             for name, data in [('before', before), ('modified', modified), ('after', after)]:
                 (out/(name+'.wram')).write_bytes(data)
             report = dict(kind='artificial_original_counter_probe', acceptance=False,
-                          rom_sha256=ROM_SHA, core_sha256=CORE_SHA, timeline_sha256=document['timeline_sha256'],
+                          rom_sha256=ROM_SHA, core_sha256=core_sha, timeline_sha256=document['timeline_sha256'],
                           intervention={'before_frame':1997, 'address':0xe57, 'value':179, 'width':2},
                           before_sha256=sha(before), modified_sha256=sha(modified), after_sha256=sha(after),
                           counter_after=int.from_bytes(after[0xe57:0xe59], 'little'),

@@ -12,7 +12,7 @@ import json
 from pathlib import Path
 import subprocess
 import tempfile
-from .zoom_zoo_trial_reference import ROOT, ROM_SHA, CORE_SHA, sha, digest
+from .zoom_zoo_trial_reference import ROOT, ROM_SHA, sha, digest
 from .zoom_zoo_race_reference import project
 from .zoom_zoo_race import restore_frames
 from .zoom_zoo_trial import BUTTONS
@@ -20,6 +20,7 @@ from .zoom_zoo_playable import ROLL_WORDS
 from .dragster_playable_reference import INITIALIZATION_FRAME, FIRST_RECORDED_FRAME, MENU_MANIFEST
 from .classic_race_layout import describe
 from ..content.pack import load_rules, validate_pack, TWO_TRACK_RULES_PATH
+from ..reference.core_identity import accepted_reference, require_core
 
 MAGIC = b'URDG0001'
 # ZOOM ZOO applies its constant-domain guards from end-1649, the M4-12 seed.
@@ -48,7 +49,7 @@ def guard_items():
 
 def original(directory, *, allow_incomplete=False, collect_guards=False):
     document = json.loads((directory/'reference.json').read_text())
-    if (document['rom_sha256'], document['core_sha256']) != (ROM_SHA, CORE_SHA):
+    if document['rom_sha256'] != ROM_SHA or not accepted_reference(document['core_sha256']):
         raise ValueError('original identity differs')
     if document['menu_manifest'] != MENU_MANIFEST or document['menu_manifest_sha256'] != sha((ROOT/MENU_MANIFEST).read_bytes()):
         raise ValueError('original menu identity differs')
@@ -197,7 +198,7 @@ def explore(reference, binary, pack):
 def inventory(document, rows, events):
     return dict(kind='dragster_ordinary_controls_freeze', case=document['case'], frames=[INITIALIZATION_FRAME, document['frames'][1]],
                 state_bytes=742, original_sha256=digest(document), rows_sha256=digest(rows), events=events,
-                timeline_sha256=document['timeline_sha256'], rom_sha256=ROM_SHA, core_sha256=CORE_SHA,
+                timeline_sha256=document['timeline_sha256'], rom_sha256=ROM_SHA, core_sha256=document['core_sha256'],
                 menu_manifest_sha256=document['menu_manifest_sha256'],
                 guards_sha256=sha((ROOT/GUARDS_PATH).read_bytes()), guard_overrides_sha256=sha((ROOT/GUARD_OVERRIDES_PATH).read_bytes()))
 

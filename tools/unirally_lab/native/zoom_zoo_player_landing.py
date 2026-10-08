@@ -11,7 +11,8 @@ import shutil
 import subprocess
 import tempfile
 from . import zoom_zoo_trial as trial
-from .zoom_zoo_trial_reference import ROOT, ROM_SHA, CORE_SHA, sha, digest
+from .zoom_zoo_trial_reference import ROOT, ROM_SHA, sha, digest
+from ..reference.core_identity import accepted_reference, require_core
 
 EXTRA_GUARDS = {0x132b: 0}  # $81:94B9 player landing matrix override is inactive.
 
@@ -31,7 +32,7 @@ def authenticate(reference, repeat):
     a = json.loads(reference.read_text())
     if a != json.loads(repeat.read_text()):
         raise ValueError('fresh reference processes differ')
-    if a['rom_sha256'] != ROM_SHA or a['core_sha256'] != CORE_SHA:
+    if a['rom_sha256'] != ROM_SHA or not accepted_reference(a['core_sha256']):
         raise ValueError('reference identity differs')
     if a.get('extra_guards') != {'132b': 0}:
         raise ValueError('player landing guard was not authenticated')
@@ -58,7 +59,7 @@ def freeze(reference, repeat, out):
         raise ValueError('case does not cover a player landing plus 100 updates')
     result = {'kind': 'm4_13_player_landing_freeze', 'case': a['case'],
               'frames': [1649, 1849], 'state_bytes': 395,
-              'rom_sha256': ROM_SHA, 'core_sha256': CORE_SHA,
+              'rom_sha256': ROM_SHA, 'core_sha256': a['core_sha256'],
               'landing_frames': landings, 'post_landing_updates': 1849-landings[0],
               'restores': sorted({f for landing in landings for f in (landing-1, landing)}),
               'rows_sha256': a['rows_sha256'],

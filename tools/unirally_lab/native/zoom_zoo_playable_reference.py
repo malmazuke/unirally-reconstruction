@@ -9,10 +9,11 @@ import argparse
 import json
 from pathlib import Path
 import tempfile
-from .zoom_zoo_trial_reference import ROOT, ROM_SHA, CORE_SHA, PRIMARY_SHA, sha, digest
+from .zoom_zoo_trial_reference import ROOT, ROM_SHA, PRIMARY_SHA, sha, digest
 from .zoom_zoo_race_explore import timeline
 from ..reference.bsnes import BsnesCore, BUTTONS, frame_png
 from ..replay.manifest import derive_script
+from ..reference.core_identity import accepted_reference, require_core
 
 
 def case_timeline(raw, horizon, post_events, variation=None):
@@ -70,7 +71,8 @@ def capture(core_path, out, horizon, post_events, variation=None):
         raise ValueError('fresh output directory required')
     raw = (ROOT/'tests/manifests/replay/race-crawler-zoom-zoo-3300.json').read_bytes()
     rom = Path((ROOT/'local/rom-location.txt').read_text().strip())
-    if (sha(raw), sha(core_path.read_bytes()), sha(rom.read_bytes())) != (PRIMARY_SHA, CORE_SHA, ROM_SHA):
+    core_sha = require_core(core_path)
+    if (sha(raw), sha(rom.read_bytes())) != (PRIMARY_SHA, ROM_SHA):
         raise ValueError('original identities differ')
     inputs = case_timeline(raw, horizon, post_events, variation)
     out.mkdir(parents=True)
@@ -97,7 +99,7 @@ def capture(core_path, out, horizon, post_events, variation=None):
         finally:
             core.unload()
     report = dict(kind='m4_16_original_boundary_exploration', frames=[1207,horizon],
-                  rom_sha256=ROM_SHA, core_sha256=CORE_SHA, manifest_sha256=PRIMARY_SHA,
+                  rom_sha256=ROM_SHA, core_sha256=core_sha, manifest_sha256=PRIMARY_SHA,
                   timeline_sha256=digest(inputs), timeline=inputs, post_events=post_events, variation=variation,
                   wram_sha256=hashes, sram_sha256=cartridge_hashes, video=video)
     (out/'reference.json').write_text(json.dumps(report,separators=(',',':'))+'\n')

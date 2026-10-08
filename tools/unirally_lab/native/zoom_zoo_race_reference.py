@@ -8,7 +8,8 @@ from __future__ import annotations
 import argparse
 import json
 from pathlib import Path
-from .zoom_zoo_trial_reference import sha,digest,ROOT,ROM_SHA,CORE_SHA,PRIMARY_SHA
+from .zoom_zoo_trial_reference import sha,digest,ROOT,ROM_SHA,PRIMARY_SHA
+from ..reference.core_identity import accepted_reference
 from .zoom_zoo_sustained import sustained_project
 
 RIDER_WORDS=[('laps_remaining',0xefb),('checkpoint',0x119f),('next_checkpoint',0x11a3),
@@ -36,7 +37,7 @@ def project(wram,sram,frame):
 
 def rows(path):
     reference=json.loads(path.read_text());result=[]
-    if (reference['rom_sha256'],reference['core_sha256'],reference['manifest_sha256'])!=(ROM_SHA,CORE_SHA,PRIMARY_SHA):raise ValueError('reference identity differs')
+    if (reference['rom_sha256'],reference['manifest_sha256'])!=(ROM_SHA,PRIMARY_SHA) or not accepted_reference(reference['core_sha256']):raise ValueError('reference identity differs')
     guards=json.loads((ROOT/'tests/manifests/native/zoom-zoo-race-guards.reference.json').read_text())['items']
     if reference['frames'][0]!=1649 or not 3299<=reference['frames'][1]<=9999:raise ValueError('race reference horizon invalid')
     if len(reference['wram_sha256'])!=reference['frames'][1]-1648:raise ValueError('reference frame inventory incomplete')
