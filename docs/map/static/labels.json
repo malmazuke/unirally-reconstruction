@@ -9190,7 +9190,20 @@
   "source_records": [
    "docs/research/R-0011-contact.md",
    "docs/research/R-0033-sustained-traversal.md",
+   "docs/research/R-0086-rolling-contact.md",
    "tasks/SPECIAL-TILE-RESPONSE.md"
+  ]
+ },
+ {
+  "address": "$81:9265",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_819265",
+  "native": [
+   "src/core/vertical_contact.cpp:support"
+  ],
+  "source_records": [
+   "docs/research/R-0086-rolling-contact.md"
   ]
  },
  {
@@ -9519,8 +9532,21 @@
   "class": "observed",
   "comment": "instruction start",
   "label": "loc_8196B6",
+  "native": [
+   "src/core/vertical_contact.cpp:follow_slope"
+  ],
   "source_records": [
+   "docs/research/R-0086-rolling-contact.md",
    "tasks/M4-06-review.md"
+  ]
+ },
+ {
+  "address": "$81:96B9",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_8196B9",
+  "source_records": [
+   "docs/research/R-0086-rolling-contact.md"
   ]
  },
  {
@@ -9529,7 +9555,35 @@
   "comment": "instruction start",
   "label": "loc_8196CD",
   "source_records": [
+   "docs/research/R-0086-rolling-contact.md",
    "tasks/M4-06-review.md"
+  ]
+ },
+ {
+  "address": "$81:96D0",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_8196D0",
+  "source_records": [
+   "docs/research/R-0086-rolling-contact.md"
+  ]
+ },
+ {
+  "address": "$81:96E1",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_8196E1",
+  "source_records": [
+   "docs/research/R-0086-rolling-contact.md"
+  ]
+ },
+ {
+  "address": "$81:96E5",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_8196E5",
+  "source_records": [
+   "docs/research/R-0086-rolling-contact.md"
   ]
  },
  {
@@ -9571,6 +9625,7 @@
    "docs/research/R-0010-native-movement.md",
    "docs/research/R-0011-contact.md",
    "docs/research/R-0029-zoom-zoo-vertical-velocity.md",
+   "docs/research/R-0086-rolling-contact.md",
    "tasks/M4-06-review.md",
    "tasks/M4-07.md",
    "tasks/M4-11-rereview.md",
@@ -9651,13 +9706,26 @@
   ]
  },
  {
+  "address": "$81:97CC",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_8197CC",
+  "source_records": [
+   "docs/research/R-0086-rolling-contact.md"
+  ]
+ },
+ {
   "address": "$81:97DB",
   "class": "observed",
   "comment": "instruction start",
   "label": "loc_8197DB",
+  "native": [
+   "src/core/vertical_contact.cpp:follow_slope"
+  ],
   "source_records": [
    "docs/inventory/M4-07-reflected-vertical.md",
    "docs/research/R-0025-zoom-zoo-reflected-vertical-contact.md",
+   "docs/research/R-0086-rolling-contact.md",
    "tasks/M4-07-review.md"
   ]
  },

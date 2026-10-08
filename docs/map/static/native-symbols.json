@@ -4767,6 +4767,13 @@
    "region": "rom"
   },
   {
+   "address": "$81:96B6",
+   "native": [
+    "src/core/vertical_contact.cpp:follow_slope"
+   ],
+   "region": "rom"
+  },
+  {
    "address": "$81:96FA",
    "native": [
     "src/core/vertical_contact.cpp:follow_slope"
@@ -4780,6 +4787,13 @@
    "address": "$81:96FF",
    "native": [
     "src/core/vertical_contact.cpp:apply_tile_pair"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$81:97DB",
+   "native": [
+    "src/core/vertical_contact.cpp:follow_slope"
    ],
    "region": "rom"
   },
@@ -12874,6 +12888,13 @@
    "address": "$0FA7",
    "native": [
     "src/core/zoom_zoo_movement.hpp:SpecialTileRider::corkscrew_step"
+   ],
+   "region": "wram"
+  },
+  {
+   "address": "$0FA9",
+   "native": [
+    "src/core/vertical_contact.cpp:follow_slope"
    ],
    "region": "wram"
   },
@@ -21637,7 +21658,12 @@
   },
   "src/core/vertical_contact.cpp:follow_slope": {
    "rom": [
-    "$81:96FA"
+    "$81:96B6",
+    "$81:96FA",
+    "$81:97DB"
+   ],
+   "wram": [
+    "$0FA9"
    ]
   },
   "src/core/vertical_contact.cpp:land": {
@@ -22366,11 +22392,11 @@
   }
  },
  "totals": {
-  "addresses": 1618,
+  "addresses": 1621,
   "io_addresses": 11,
   "native_symbols": 1228,
-  "rom_addresses": 1232,
+  "rom_addresses": 1234,
   "sram_addresses": 50,
-  "wram_addresses": 325
+  "wram_addresses": 326
  }
 }

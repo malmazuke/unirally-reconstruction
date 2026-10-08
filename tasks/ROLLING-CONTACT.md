@@ -61,10 +61,23 @@ On main `5da988e`, lab-debug, pack v35: `track_reference explore` on `w-rev-butt
 against 0 original, as HUNTER-EFFECTS recorded with pack v14/v15. The disk had 9.6 GB free at
 claim, so captures here stay small and are stripped after use.
 
+## Evidence and attempts
+
+Captures, the access capture, the search tools and main's binaries (`base-5da988e/`) are in main
+`local/evidence/rolling-contact/`; the scratch scripts (`side.py`, `trace.py`, `search.py`,
+`capture_seed.py`, `hit_tiles.py`, `debug.patch`) are copied there at closeout.
+
+| Attempt | Hypothesis | Experiment | Observation | Next decision |
+| --- | --- | --- | --- | --- |
+| 1 | The divergence is in the contact step of update 1,737 | A temporary native trace of the player's contact (`debug.patch`) against the capture's WRAM | Native: supported, not leading, angle 24, high tile `$C50E`, incoming velocity (-36, -112), unsupported 2; the inverted-face test zeroes velocity x, then the slope sets velocity y 72 from the incoming -36. Original: (0, 0) | Read the listing |
+| 2 | The slope reads the scratch velocity x after the stop | `$81:924E-9275`, `$81:9610-97E4` | `$81:96B6 LDA $0FA9` reads the word `$81:9265-9275` cleared | Fix `follow_slope`; confirm dynamically |
+| 3 | The original executes that path at 3,128 | `access capture` of the same inputs (`w-rev-buttons.json`), PCs `$81:9265`, `$81:96B6`, `$81:96CD`, `$81:970B`, `$81:97E4`; `$0200-$1FFF` equal to the reference on frames 1,391-3,135 | `$81:9265` runs once, at 3,128, A = `$FFDC`; the shifted value at `$81:96CD` is 0; `$81:970B` stores 0 | Native reads `moved.velocity_x` |
+| 4 | Native is exact past 1,737 | `track_reference explore` | 2,210 of 2,210 | Find other reaches of the branch |
+| 5 | Other schedules reach it | `search.py`: main against the fix on random schedules, tracks 2-44 | The race sweep never reaches it; 10 of 2,064 search schedules do (tracks 12, 14, 21, 40, 41, 42) | Capture the original on four |
+| 6 | The fix holds on other tracks and on the unmirrored face | `seed7-a`/`-b` (41), `t14-seed23`, `t21-seed20`, `t14-seed28` | Main diverges on each at the searched update; the fix is exact to each end (910, 925, 2,334, 1,675). The unmirrored face gives velocity y -1, as predicted | Gates, review |
+
 ## Handoff
 
-- Exact next experiment/command: `python3 -m tools.unirally_lab.native.track_reference explore
-  --reference local/evidence/hunter-effects/review-withheld/w-rev-buttons --binary
-  build/lab-debug/src/core/zoom_zoo_runner --pack local/classic-pal-crawler-tracks-v15.pack
-  --scenario classic.track.41 --out <json>`, then read the contact words (`$0F33`, `$0F2B`,
-  `$0F55`, `$0F57`, `$0FAB`) on frames 3,120-3,128.
+- Cause and fix: [R-0086](../docs/research/R-0086-rolling-contact.md). Next: the gates
+  (`local/evidence/rolling-contact/gates.sh` with `EXPLORE_CAPTURES` set to the five captures and
+  HUNTER-EFFECTS' other withheld captures), then the tier 1 review with a withheld capture.

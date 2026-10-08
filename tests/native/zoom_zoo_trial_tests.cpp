@@ -379,4 +379,19 @@ int main() {
     require(motion.velocity_x==48 && motion.velocity_y==40 && rider.recontact);
     require(rider.unsupported_count==0 && rider.unsupported_duration==0);
 
+    // R-0086: rising into a mirrored high face ($C5) with velocity x negative stops the rider
+    // ($81:9265-9275), and the slope then reads the stopped velocity x ($81:96B6), so velocity
+    // y follows from zero. The same arrival at an unmirrored high face ($85) keeps velocity x,
+    // and velocity y follows from it, negated for the high tile.
+    full_shifts[24]=2;full_multipliers[24]=2;
+    for(const std::uint8_t high:{std::uint8_t{0xc5},std::uint8_t{0x85}}) {
+        rider={};rider.unsupported_count=2;rider.unsupported_duration=2;
+        motion={};motion.velocity_x=0xffdc;motion.velocity_y=0xff90;
+        summary={};summary.supported=true;summary.any_nonnegative_probe=true;summary.angle=24;
+        summary.selected_high=high;summary.selected_word=static_cast<std::uint16_t>(high<<8U|0x0e);
+        resolve_vertical_contact(rider,motion,summary,{1,false,1,0xc200},full_shifts,full_multipliers);
+        require(rider.unsupported_count==0 && !rider.recontact);
+        if(high==0xc5) require(motion.velocity_x==0 && motion.velocity_y==0);
+        else require(motion.velocity_x==0xffdc && motion.velocity_y==18);
+    }
 }

@@ -345,6 +345,8 @@ void land(ContactStep& s, unsigned horizontal, unsigned pose_index, bool reflect
 // Continued contact on a slope: the responses clear on the ordinary phase, and off the
 // leading support velocity y follows the slope (the shift and multiplier tables by angle;
 // $81:96FA-970B: under surface mode pair 8 keeps it) and velocity x takes half the angle.
+// Both read velocity x as support() left it ($0FA9 at $81:96B6 and $81:97DB): after an
+// inverted face has stopped it, velocity y follows from zero (R-0086).
 void follow_slope(ContactStep& s, std::span<const std::uint8_t> shifts,
                   std::span<const std::uint8_t> multipliers) {
     const auto& summary = s.summary;
@@ -352,7 +354,7 @@ void follow_slope(ContactStep& s, std::span<const std::uint8_t> shifts,
         s.moved.response_a = 0;
         s.moved.response_b = 0;
     }
-    const auto shifted = arithmetic_shift(s.motion.velocity_x, byte(shifts, s.magnitude));
+    const auto shifted = arithmetic_shift(s.moved.velocity_x, byte(shifts, s.magnitude));
     const auto product =
         static_cast<std::uint16_t>(static_cast<unsigned>(shifted) * byte(multipliers, s.magnitude));
     if (!summary.leading_support && s.magnitude < slope_response_limit
@@ -366,7 +368,7 @@ void follow_slope(ContactStep& s, std::span<const std::uint8_t> shifts,
     if (!summary.leading_support && s.magnitude < steep_angle
         && !(summary.selected_high & high_tile))
         s.moved.velocity_x =
-            static_cast<std::uint16_t>(static_cast<int>(s.motion.velocity_x) + contribution);
+            static_cast<std::uint16_t>(static_cast<int>(s.moved.velocity_x) + contribution);
 }
 
 // $81:92FE-9309 sends a full steep landing straight to the correction; the vertical-to-

@@ -127,7 +127,10 @@ Pack profile v14 adds the blink table and the opponent palette.
   natively and 0 in the original. It is the second contact of a rolling rider after a 32-update
   shoulder-button rotation; no HUNTER word is read there, so it is attributed to the shared
   contact code ([ROLLING-CONTACT](../../tasks/ROLLING-CONTACT.md)). "All 36 race tracks match"
-  holds for the sweeps and the held captures, not for that input.
+  holds for the sweeps and the held captures, not for that input. Resolved by
+  [R-0086](R-0086-rolling-contact.md) (9 October 2026): the slope after an inverted face stopped
+  the rider read the velocity x from before the stop; the capture is now exact on all 2,210
+  updates.
 - The sound `$021F` is not played (audio is a declared omission).
 - Cartridge option bit 3's variants (the opponent queue push, event `$24`, `$82:B15E`) are
   outside the domain.
