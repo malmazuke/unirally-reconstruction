@@ -4086,6 +4086,9 @@
     "NMX",
     "NMx"
    ],
+   "native": [
+    "src/core/vertical_contact.cpp:follow_slope"
+   ],
    "observed_entries": {},
    "start": "$81:97B7",
    "static_entries": {
@@ -14958,16 +14961,16 @@
    "call returns in the calling mode": 1262
   },
   "bytes": 131072,
-  "cited_addresses": 1725,
+  "cited_addresses": 1731,
   "cited_by_class": {
    "data": 31,
    "inferred": 311,
-   "observed": 1044,
+   "observed": 1050,
    "unknown": 339
   },
   "cited_by_position": {
    "dat": 31,
-   "loc": 984,
+   "loc": 990,
    "mid": 20,
    "sub": 351,
    "unk": 339
@@ -14989,9 +14992,9 @@
   "jump_tables": 2,
   "mode_ambiguities": 7,
   "observed": 41778,
-  "routine_bytes_cited_by_native_code": 54814,
+  "routine_bytes_cited_by_native_code": 54859,
   "routines": 636,
-  "routines_cited_by_native_code": 443,
+  "routines_cited_by_native_code": 444,
   "unknown": 52881,
   "unknown_share": 0.4035
  }
