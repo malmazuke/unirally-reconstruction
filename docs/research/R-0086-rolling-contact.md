@@ -70,7 +70,12 @@ word for both, to follow the listing.
   | `t21-seed20` | 21 | 2,129 (3,496) | `$C64C`, angle 8 | 135 | 0 | 2,334 of 2,334 |
   | `t14-seed28` | 14 | 1,356 (2,732) | `$822C`, angle -24 | 55 | -1 | 1,675 of 1,675 |
 
-  The first four are mirrored faces met with velocity x negative. `t14-seed28` is an unmirrored
+  The tier 1 review ran its own search (2,150 schedules, rotation-heavy, 6 hits) and captured two
+  withheld cases in `local/evidence/rolling-contact/review/`: `t23-seed1022` (track 23, which this
+  search never reached; main diverges at 2,011, velocity y 2 against 0; the fix is exact on 2,162
+  of 2,162) and `t40-seed2008` (HUNTER 40; main at 847, 8 against 0; exact on 998 of 998).
+
+  The first four in the table are mirrored faces met with velocity x negative. `t14-seed28` is an unmirrored
   face met with velocity x not negative: the stop leaves 0, the negative angle's correction
   (`$81:96E5-96EA`, `1 - product`) makes it 1, and the high tile negates it to -1, as the
   original shows.
@@ -80,11 +85,14 @@ word for both, to follow the listing.
 `follow_slope` (`src/core/vertical_contact.cpp`) shifts `moved.velocity_x`, the velocity x after
 `support()`'s inverted-face test, and adds the angle's half to it.
 
-- `track_reference explore` on the five captures: exact to the end of each (above). Main's
-  binary diverges on each at the update named.
+- `track_reference explore` on the five captures and the review's two: exact to the end of each
+  (above). Main's binary diverges on each at the update named. HUNTER-EFFECTS' 15 withheld and
+  47 held captures stay exact to their end, and the every-track sweeps (track-breadth-2, the
+  locked tours) give the same rows as main.
 - A unit test (`zoom_zoo_trial_tests`) rises into a mirrored and an unmirrored high face with
   velocity x negative: the mirrored one ends with velocity (0, 0), the unmirrored with velocity x
-  kept and velocity y 18. It fails on main's code.
+  kept and velocity y 18. A third case stops at the unmirrored face with velocity x 36 and angle
+  -24 and ends with velocity (0, -1). The test fails on main's code.
 - The race equivalence sweep (432 runs, 2,387,105 updates, 1,290 restarts, 2,538 pictures)
   equals main: none of its schedules reaches the branch.
 
@@ -93,6 +101,8 @@ word for both, to follow the listing.
 - The changed result needs a supported, non-leading continued contact with an angle magnitude
   below 26 (of 31) on a high tile whose inverted face stops a rising rider. The captures cover
   the player on tracks 14, 21 and 41, mirrored and unmirrored faces and positive and negative
-  angles.
-- The opponent runs the same contact code; no capture shows the opponent on this branch.
+  angles, and the review's captures add tracks 23 and 40.
+- The opponent runs the same contact code; no capture shows the opponent on this branch. The
+  review's native sweep with the player released (121 races, every track and every opponent the
+  runner accepts) found no difference between main and the fix.
 - Track 12's hit (a stunt event) and tracks 40 and 42 are native search results only.

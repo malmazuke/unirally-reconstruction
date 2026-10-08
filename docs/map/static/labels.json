@@ -9191,6 +9191,8 @@
    "docs/research/R-0011-contact.md",
    "docs/research/R-0033-sustained-traversal.md",
    "docs/research/R-0086-rolling-contact.md",
+   "tasks/NEXT_SESSION.md",
+   "tasks/ROLLING-CONTACT.md",
    "tasks/SPECIAL-TILE-RESPONSE.md"
   ]
  },
@@ -9203,7 +9205,8 @@
    "src/core/vertical_contact.cpp:support"
   ],
   "source_records": [
-   "docs/research/R-0086-rolling-contact.md"
+   "docs/research/R-0086-rolling-contact.md",
+   "tasks/ROLLING-CONTACT.md"
   ]
  },
  {
@@ -9472,6 +9475,7 @@
   "source_records": [
    "docs/research/R-0011-contact.md",
    "docs/research/R-0047-special-tiles.md",
+   "tasks/ROLLING-CONTACT.md",
    "tasks/SPECIAL-TILE-RESPONSE.md"
   ]
  },
@@ -9485,6 +9489,7 @@
   ],
   "source_records": [
    "docs/research/R-0047-special-tiles.md",
+   "tasks/ROLLING-CONTACT.md",
    "tasks/SPECIAL-TILE-RESPONSE.md"
   ]
  },
@@ -9537,7 +9542,9 @@
   ],
   "source_records": [
    "docs/research/R-0086-rolling-contact.md",
-   "tasks/M4-06-review.md"
+   "tasks/M4-06-review.md",
+   "tasks/NEXT_SESSION.md",
+   "tasks/ROLLING-CONTACT.md"
   ]
  },
  {
@@ -9556,7 +9563,8 @@
   "label": "loc_8196CD",
   "source_records": [
    "docs/research/R-0086-rolling-contact.md",
-   "tasks/M4-06-review.md"
+   "tasks/M4-06-review.md",
+   "tasks/ROLLING-CONTACT.md"
   ]
  },
  {
@@ -9630,7 +9638,8 @@
    "tasks/M4-07.md",
    "tasks/M4-11-rereview.md",
    "tasks/M4-11-review.md",
-   "tasks/M4-11.md"
+   "tasks/M4-11.md",
+   "tasks/ROLLING-CONTACT.md"
   ]
  },
  {
@@ -9726,7 +9735,8 @@
    "docs/inventory/M4-07-reflected-vertical.md",
    "docs/research/R-0025-zoom-zoo-reflected-vertical-contact.md",
    "docs/research/R-0086-rolling-contact.md",
-   "tasks/M4-07-review.md"
+   "tasks/M4-07-review.md",
+   "tasks/ROLLING-CONTACT.md"
   ]
  },
  {
@@ -9748,7 +9758,8 @@
   "source_records": [
    "docs/research/R-0011-contact.md",
    "docs/research/R-0033-sustained-traversal.md",
-   "docs/research/R-0051-loop-and-tile-pairs.md"
+   "docs/research/R-0051-loop-and-tile-pairs.md",
+   "tasks/ROLLING-CONTACT.md"
   ]
  },
  {

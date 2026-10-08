@@ -394,4 +394,12 @@ int main() {
         if(high==0xc5) require(motion.velocity_x==0 && motion.velocity_y==0);
         else require(motion.velocity_x==0xffdc && motion.velocity_y==18);
     }
+    // The unmirrored face stops velocity x that is not negative (t14-seed28): on a negative
+    // angle the slope's `1 - product` makes 1 of the zero, negated for the high tile.
+    rider={};rider.unsupported_count=2;rider.unsupported_duration=2;
+    motion={};motion.velocity_x=36;motion.velocity_y=0xff90;
+    summary={};summary.supported=true;summary.any_nonnegative_probe=true;summary.angle=-24;
+    summary.selected_high=0x85;summary.selected_word=0x850e;
+    resolve_vertical_contact(rider,motion,summary,{1,false,1,0xc200},full_shifts,full_multipliers);
+    require(motion.velocity_x==0 && motion.velocity_y==0xffff);
 }

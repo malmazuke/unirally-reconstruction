@@ -2,10 +2,12 @@
 
 ## Assignment
 
-- Status: **in progress**, claimed 9 October 2026 (8 October 20:30 UTC) at the user's "Next task", on
-  main `5da988e` (equal to `origin/main`). Prepared 25 September 2026 by the HUNTER-EFFECTS
-  session, from its review. Chosen over PORTABLE-CORE-IDENTITY (tier 2 tooling) because it is a
-  gameplay divergence in shared contact code; ATTRACT-DEMO is an OpenAI task (D-0004).
+- Status: **accepted** 9 October 2026 (tier 1,
+  [PR #62](https://github.com/malmazuke/unirally-reconstruction/pull/62)); claimed 9 October 2026
+  (8 October 20:30 UTC) at the user's "Next task", on main `5da988e` (equal to `origin/main`).
+  Prepared 25 September 2026 by the HUNTER-EFFECTS session, from its review. Chosen over
+  PORTABLE-CORE-IDENTITY (tier 2 tooling) because it is a gameplay divergence in shared contact
+  code; ATTRACT-DEMO is an OpenAI task (D-0004).
 - Milestone: M4 breadth
 - Coordinator: the claiming session is coordinator, primary and integrator
 - Task provider (fixed for all children; record any user-initiated platform change): Anthropic
@@ -18,7 +20,8 @@
   allowance (D-0004): at claim (8 October 2026 20:27 UTC) weekly 0%, five-hour 0%. No standing
   rule to chain tasks: this session stops after this task.
 - Reviewer (primary automatically spawns fresh model/effort, isolated checkout; no user
-  trigger): a fresh Anthropic subagent with a withheld capture.
+  trigger): a fresh Claude Opus 5.5 subagent in `.worktrees/rolling-contact-review` at `cd712f5`,
+  with its own search and two withheld captures; review on the pull request.
 - Dependencies and evidence of acceptance: HUNTER-EFFECTS (R-0052).
 - Base commit: main `5da988e`.
 - Branch and isolated worktree: `task/rolling-contact` in `.worktrees/rolling-contact`.
@@ -76,8 +79,43 @@ Captures, the access capture, the search tools and main's binaries (`base-5da988
 | 5 | Other schedules reach it | `search.py`: main against the fix on random schedules, tracks 2-44 | The race sweep never reaches it; 10 of 2,064 search schedules do (tracks 12, 14, 21, 40, 41, 42) | Capture the original on four |
 | 6 | The fix holds on other tracks and on the unmirrored face | `seed7-a`/`-b` (41), `t14-seed23`, `t21-seed20`, `t14-seed28` | Main diverges on each at the searched update; the fix is exact to each end (910, 925, 2,334, 1,675). The unmirrored face gives velocity y -1, as predicted | Gates, review |
 
+## Gates
+
+`local/evidence/rolling-contact/gates.sh` against main `5da988e`'s binaries (`base-5da988e/`),
+pack v35; output `gates-cd712f5.out`, directory `gates-cd712f5/` (main checkout, after closeout).
+On `cd712f5`, tree clean at start and end (20:57-22:46 UTC):
+- presets and ctest: 41 of 41 on each of lab-debug, lab-release, app-debug and app-release;
+  synthetic suite, v1 contracts, hidden runs (8 tracks and the front end): pass;
+- the eleven frozen gates: pass with their recorded row digests;
+- race sweep: 432 runs, 2,387,105 updates, 0 differences; front-end sweep: 179 of 179 equal;
+- every split, race-end, look and restart capture: 0 word differences; cues identical to main;
+- track captures: this task's four, HUNTER-EFFECTS' 15 withheld and 47 held captures all exact
+  to their end (`explore-summary.txt`; the script's one-line summary had a quoting bug, so the
+  JSONs were read directly); the track-breadth-2 and locked-tour sweeps give main's rows;
+- tooling 544 tests OK; no function over 80 lines; the address index is current;
+- fuzz: 40 aborts, as on main (recorded non-pass).
+ASan presets are unavailable on this host (macOS 27); Linux CI covers them. Hosted CI on
+`cd712f5`: changes, lab (ubuntu-24.04) and lab (macos-15) pass.
+
+## Review
+
+[Agent review (Claude Opus 5.5, tier 1) of cd712f5](https://github.com/malmazuke/unirally-reconstruction/pull/62#pullrequestreview-5462918673):
+**approved**. It rebuilt, reran ctest, reproduced all five captures with the fix and with main's
+binary, checked the listing (every reader of `$0FA9` after the stop; `$81:966F` unreachable;
+the `$81:97DB` half never meets the stop), and captured two withheld cases from its own search:
+`t23-seed1022` (track 23) and `t40-seed2008` (track 40), exact with the fix, main diverging at
+2,011 and 847. Three advisories, all handled in the closing commit: an unmirrored stop case in
+the unit test (added), the opponent sweep's null result in R-0086 (added), and re-bootstrapping
+the main checkout after the review worktree goes (done at closeout).
+
 ## Handoff
 
-- Cause and fix: [R-0086](../docs/research/R-0086-rolling-contact.md). Next: the gates
-  (`local/evidence/rolling-contact/gates.sh` with `EXPLORE_CAPTURES` set to the five captures and
-  HUNTER-EFFECTS' other withheld captures), then the tier 1 review with a withheld capture.
+- Cause and fix: [R-0086](../docs/research/R-0086-rolling-contact.md). Integrated by PR #62;
+  the closeout (`artifacts/rolling-contact-integration/closeout.json` in the main checkout) holds
+  the merge commit, the check runs and the cleanup list.
+- At closeout: the scratch scripts and the review's scripts are copied to
+  `local/evidence/rolling-contact/` (`review/` for the reviewer's), the gate directory and its
+  output move there, both worktrees and their build output are removed, the branch is deleted
+  by GitHub on merge, and `python3 tools/project.py bootstrap` is rerun in the main checkout.
+- Open: no capture shows the opponent on this branch; tracks 12 and 42 reach it only in the
+  native search.

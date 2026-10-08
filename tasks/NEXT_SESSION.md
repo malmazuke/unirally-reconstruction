@@ -1,5 +1,24 @@
 # Next session
 
+**9 October 2026: ROLLING-CONTACT is accepted (tier 1, #62) and integrated by merge commit.**
+A rider rising into the underside of a high tile now leaves it as in the original.
+- **Cause.** The contact routine stops the rider's horizontal motion at an inverted face
+  (`$81:924E-9275`), then sets velocity y from the slope using the stopped velocity x
+  (`$81:96B6`, `$0FA9`). Native used the velocity x from before the stop.
+- **Fix.** `follow_slope` reads the velocity x that the inverted-face test left.
+
+Results:
+- HUNTER-EFFECTS' `w-rev-buttons` goes from 1,737 to 2,210 of 2,210 exact updates.
+- Six more original captures on tracks 14, 21, 23, 40 and 41 (two of them the review's withheld)
+  are exact to the end; main diverges on each where the fix changes velocity y.
+- The eleven frozen gates, the race sweep (432 runs, 0 differences), the front-end sweep (179 of
+  179) equal main, and HUNTER-EFFECTS' 62 track captures stay exact.
+
+[R-0086](../docs/research/R-0086-rolling-contact.md) and [ROLLING-CONTACT](ROLLING-CONTACT.md)
+define the domain; no capture shows the opponent on this branch. No standing rule to chain tasks:
+this session stops here. Ready tasks: PORTABLE-CORE-IDENTITY, ATTRACT-DEMO (OpenAI). No M4 tag,
+reset, spending or provider change is authorized.
+
 **6 October 2026: AUDIO-UPLOAD-SPEED is accepted (tier 1, #61) and integrated by merge commit.**
 Sound-set uploads (race, title, award, ending) are now well above real time: at least 16x in
 optimized builds and 6.5x in debug, from 1.2x and 0.8x.
