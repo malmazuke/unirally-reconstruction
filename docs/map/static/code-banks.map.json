@@ -9540,6 +9540,7 @@
     "Nmx"
    ],
    "native": [
+    "src/core/race_demo_controls.cpp:demo_rider",
     "src/core/race_update.cpp:release_absent_opponent",
     "src/core/zoom_zoo_movement.hpp:StuntEvent::settled"
    ],
@@ -9562,6 +9563,7 @@
    ],
    "native": [
     "src/core/opponent_ai.cpp:update_opponent_controller",
+    "src/core/race_demo_controls.cpp:demo_rider",
     "src/core/race_update.cpp:release_absent_opponent",
     "src/core/race_update.cpp:run_pause_menu"
    ],
@@ -11979,6 +11981,7 @@
     "NmX"
    ],
    "native": [
+    "src/core/front_end.cpp:choose_idle_demo",
     "src/core/front_end.hpp:SavedMenus",
     "src/core/lap_result.cpp:saved_word_under_opponent_best",
     "src/core/now_playing.cpp:race_fade_frame"
@@ -12696,7 +12699,8 @@
     "NmX"
    ],
    "native": [
-    "src/core/front_end.cpp:demo_title_frame",
+    "src/core/front_end.cpp:choose_idle_demo",
+    "src/core/front_end.hpp:OnePlayerRecords::demo_split",
     "src/core/front_end.hpp:return_from_race",
     "src/core/race_result.cpp:(file)"
    ],
@@ -12720,9 +12724,9 @@
    "native": [
     "src/core/audio_cue.hpp:race_song_count",
     "src/core/front_end.cpp:demo_title_frame",
+    "src/core/front_end.cpp:idle_demo_loading_frames",
     "src/core/front_end.hpp:choose_race_song",
-    "src/core/front_end.hpp:return_from_race",
-    "src/core/race_result.cpp:(file)",
+    "src/core/front_end_runner.cpp:start_race",
     "src/core/race_result.cpp:choose_race_song",
     "src/core/race_setup.cpp:restart_zoom_zoo",
     "src/core/zoom_zoo_movement.hpp:ClassicRaceScenario::race_counter"
@@ -13616,6 +13620,7 @@
     "src/core/opponent_ai.cpp:stalled_against_slope",
     "src/core/opponent_ai.cpp:steep_slope, stalled_displacement",
     "src/core/opponent_ai.cpp:update_opponent_controller",
+    "src/core/race_setup.cpp:opponent_tier",
     "src/core/race_state_io.cpp:check_opponent_queue",
     "src/core/race_state_io.cpp:check_opponent_suppression",
     "src/core/race_state_io.cpp:spin_steps",
@@ -14961,19 +14966,19 @@
    "call returns in the calling mode": 1262
   },
   "bytes": 131072,
-  "cited_addresses": 1731,
+  "cited_addresses": 1739,
   "cited_by_class": {
    "data": 31,
-   "inferred": 311,
-   "observed": 1050,
-   "unknown": 339
+   "inferred": 316,
+   "observed": 1052,
+   "unknown": 340
   },
   "cited_by_position": {
    "dat": 31,
-   "loc": 990,
+   "loc": 997,
    "mid": 20,
    "sub": 351,
-   "unk": 339
+   "unk": 340
   },
   "conflicts": 0,
   "data": 92,

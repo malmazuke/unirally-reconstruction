@@ -132,3 +132,17 @@ Open:
   all 34 cycles of `cold-102000` equal the original on every race frame, race words (bytes
   12-564) and the 42-byte demo trailer.
 - Next: the state formats (open item 1), then pictures, gates, review.
+
+## Review candidate - 9 October 2026
+
+- Formats (`f796c7c`): split demo J on a track's 916-byte base; one-view 8 on any one-view track,
+  K/L on DRAGSTER; the reader dispatches equal sizes by family and letter, takes the trailer's
+  pairing and checks the tier and the rotation's view. A one-view demo's parked second camera is
+  its track's own place (R-0070's 0x0530/0x0120 is track 3's), so the reader checks only its OAM
+  word and speeds. `front_end_runner --restore-check` now covers demos: 9 cycles round-trip and
+  continue to the exit.
+- Pictures: 906 of 1,006 retained pictures equal; the classes are R-0087's and are queued as
+  [DEMO-PICTURES](DEMO-PICTURES.md) (tier 2).
+- Records: [R-0087](../docs/research/R-0087-idle-demo-rotation.md).
+- Gates: `local/evidence/idle-demo-cycles/gates.sh` against main `c9f0361`'s binaries
+  (`base-c9f0361/`), with this task's lap, restores and pictures.

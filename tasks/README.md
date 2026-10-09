@@ -83,6 +83,7 @@ The coordinator maintains the status registry below. Work orders further below d
 | SPLIT-SCREEN-RACE | reviewed in #43 (tier 1): the first idle split ZOOM ZOO demo, two native viewports and rider controls; integration result in its closeout | [A race with two visible riders](SPLIT-SCREEN-RACE.md) |
 | ATTRACT-DEMO | accepted (tier 1, #44, 29 September 2026): the second idle demo cycle, one-player track 3; this row and the record's status were not updated at the time (corrected 9 October 2026) | [The next idle demo cycle](ATTRACT-DEMO.md) |
 | IDLE-DEMO-ROTATION | in progress (tier 1), claimed 9 October 2026: every idle demo after the second (R-0070's later cycles) | [Every idle demo after the second](IDLE-DEMO-ROTATION.md) |
+| DEMO-PICTURES | ready (tier 2): the idle demos' remaining picture classes (R-0087) | [The idle demos' remaining picture differences](DEMO-PICTURES.md) |
 | LEAGUE | reviewed and integrated by PR #48 (tier 1): first CRAWLER tournament, six-slot scoring projection and continuation; closeout in main artifacts | [Native league tournament](LEAGUE.md) |
 | STUNT-EVENTS | fulfilled by #39/#40/#42; tier-3 queue reconciliation in AUDIO-DECISION, no new gameplay domain | [The delivered stunt outcome](STUNT-EVENTS.md) |
 | AUDIO-DECISION | PR #49, tier 3: native audio architecture, cold callback observations and first capability task; integration in its closeout | [Choose the native audio path and its evidence](AUDIO-DECISION.md) |
