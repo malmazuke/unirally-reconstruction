@@ -1075,13 +1075,13 @@ std::vector<std::uint8_t> serialize_zoom_zoo(const ZoomZooState& state) {
     }
     if (state.demo_ai && !state.split_screen) {
         const bool dragster = state.track == ClassicRaceTrack::Dragster;
-        refuse_unless(state.native_initialization && idle_demo_track(state.track)
-                          && !idle_demo_split_track(state.track)
-                          && (dragster ? bytes.size() == native_race_size
-                                             || bytes.size() == extended_size
-                                       : bytes.size() == other_track_size),
-                      "one-view demo state requires a one-view idle demo track");
-        bytes[7] = !dragster                          ? one_view_demo_layout
+        refuse_unless(
+            state.native_initialization && idle_demo_track(state.track)
+                && !idle_demo_split_track(state.track)
+                && (dragster ? bytes.size() == native_race_size || bytes.size() == extended_size
+                             : bytes.size() == other_track_size),
+            "one-view demo state requires a one-view idle demo track");
+        bytes[7] = !dragster                        ? one_view_demo_layout
                  : bytes.size() == native_race_size ? dragster_one_view_layout
                                                     : extended_dragster_one_view_layout;
         write_split_trailer(bytes, state);
@@ -1209,25 +1209,24 @@ ZoomZooState read_demo_trailer(ZoomZooState state, std::span<const std::uint8_t>
         if (!one_view) tier.ai_level = 0;
         return tier;
     };
-    const bool demo_pairing = state.pairing.rider < rider_characters
-                           && state.pairing.opponent < rider_characters
-                           && (one_view ? state.pairing.opponent == 1
-                                        : state.pairing.rider != state.pairing.opponent);
-    refuse_unless(
-        state.native_initialization && state.demo.elapsed <= 0x076c && camera_valid
-            && (one_view ? state.demo_ai && idle_demo_track(state.track)
-                               && !idle_demo_split_track(state.track) && demo_pairing
-                               && state.opponent_tier == demo_tier()
-                : local_dragster ? state.track == ClassicRaceTrack::Dragster
-                                       && state.pairing.rider < rider_characters
-                                       && state.pairing.opponent < rider_characters
-                                       && state.pairing.rider != state.pairing.opponent
-                                       && state.opponent_tier == OpponentTier{0, 0, 0x60}
-                                       && state.demo.elapsed == 0 && !state.demo.exit_requested
-                                 : state.demo_ai && idle_demo_track(state.track)
-                                       && idle_demo_split_track(state.track) && demo_pairing
-                                       && state.opponent_tier == demo_tier()),
-        "demo race state is outside its recovered domain");
+    const bool demo_pairing =
+        state.pairing.rider < rider_characters && state.pairing.opponent < rider_characters
+        && (one_view ? state.pairing.opponent == 1 : state.pairing.rider != state.pairing.opponent);
+    refuse_unless(state.native_initialization && state.demo.elapsed <= 0x076c && camera_valid
+                      && (one_view ? state.demo_ai && idle_demo_track(state.track)
+                                         && !idle_demo_split_track(state.track) && demo_pairing
+                                         && state.opponent_tier == demo_tier()
+                          : local_dragster
+                              ? state.track == ClassicRaceTrack::Dragster
+                                    && state.pairing.rider < rider_characters
+                                    && state.pairing.opponent < rider_characters
+                                    && state.pairing.rider != state.pairing.opponent
+                                    && state.opponent_tier == OpponentTier{0, 0, 0x60}
+                                    && state.demo.elapsed == 0 && !state.demo.exit_requested
+                              : state.demo_ai && idle_demo_track(state.track)
+                                    && idle_demo_split_track(state.track) && demo_pairing
+                                    && state.opponent_tier == demo_tier()),
+                  "demo race state is outside its recovered domain");
     return state;
 }
 
@@ -1318,9 +1317,10 @@ ZoomZooState deserialize_race(std::span<const std::uint8_t> bytes,
         const bool dragster_one_view =
             dragster_family
             && letter == (extended ? extended_dragster_one_view_layout : dragster_one_view_layout);
-        const bool local_dragster =
-            dragster_family && letter == (extended ? extended_local_dragster_split_layout
-                                                   : local_dragster_split_layout);
+        const bool local_dragster = dragster_family
+                                 && letter
+                                        == (extended ? extended_local_dragster_split_layout
+                                                     : local_dragster_split_layout);
         const bool zoom_zoo_split =
             zoom_zoo_family && letter == (extended ? extended_split_layout : split_layout);
         refuse_unless(other_one_view || other_split || dragster_one_view || local_dragster
@@ -1353,7 +1353,8 @@ ZoomZooState deserialize_race(std::span<const std::uint8_t> bytes,
         if (local_dragster && pairing)
             refuse_unless(*pairing == trailer_pairing,
                           "local race pairing differs from state trailer");
-        TrailerFlags base_flags{suffixes.versus, bytes[base_size + trailer_hints_at] != 0, std::nullopt};
+        TrailerFlags base_flags{suffixes.versus, bytes[base_size + trailer_hints_at] != 0,
+                                std::nullopt};
         if (!local_dragster) base_flags.demo_pairing = trailer_pairing;
         auto state = deserialize_race(
             base, local_dragster ? std::optional<RacePairing>{trailer_pairing} : std::nullopt,

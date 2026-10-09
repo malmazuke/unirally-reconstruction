@@ -866,10 +866,10 @@ void return_from_demo(FrontEndState& state, std::uint32_t exit_frame, std::uint1
     // R-0087: after the races on these tracks the timer's return holds its frame 100 once. The
     // original's sound transfer there runs longer; its cause in the sound processor is open.
     constexpr std::array<std::uint8_t, 3> held_return_tracks{20, 24, 36};
-    state.demo_return_held = !state.demo_return_interrupted
-                          && std::find(held_return_tracks.begin(), held_return_tracks.end(),
-                                       state.tour_menu.track)
-                                 != held_return_tracks.end();
+    state.demo_return_held =
+        !state.demo_return_interrupted
+        && std::find(held_return_tracks.begin(), held_return_tracks.end(), state.tour_menu.track)
+               != held_return_tracks.end();
     state.mode_chosen = false;
     state.registers.force_blank = true;
     state.line_registers.clear();
