@@ -78,3 +78,13 @@ Outside: the race state (exact), audio, the titles the sound processor shortens 
 - Remaining: the title wave (about 8,500 pixels around title frames 140-200, 27 pictures), two title
   starts (57,057 at cycles 10 and 17, 5,265 at title frame 203), small race sprite differences
   (1-107 pixels), 1,536 at 92,500 and 768 at 101,600.
+
+## Checkpoint - 9 October 2026 06:00 UTC
+
+- **Title wave fixed.** Native's wave band was a picture ahead in every title after the first: the
+  extra frame of those titles is a held frame 133 while the sound program loads, before the wave
+  starts at 134 (the short titles of R-0087 lose exactly this hold). Native now holds it (unless a
+  laboratory replay marks the title short), and the fade (452) and the choice (451) keep the first
+  title's script frames. The lap's race words stay exact (34 of 34); pictures 963 of 1,006 equal.
+- Remaining: two title starts (57,057 pixels at 28,400 and 49,700: cycles 10 and 17, title frame
+  about 3) and small race sprite differences (1-107 pixels, 41 pictures).

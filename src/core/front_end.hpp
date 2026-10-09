@@ -545,8 +545,8 @@ struct FrontEndState {
     // A laboratory replay of a capture's title that loads a frame sooner (R-0087): the sound
     // processor's state shortens some titles, and nothing native predicts which.
     bool demo_title_short{};
-    bool
-        demo_title_was_short{}; // this cycle's title was a short one: its return has no NMI pending
+    // This cycle's title was a short one, so its return has no NMI pending; it has passed frame 133.
+    bool demo_title_was_short{}, demo_title_held{};
     std::uint8_t demo_return_wait{}; // extra blank frames after an interrupted demo (R-0070)
     bool demo_return_interrupted{};
     bool mode_chosen{};
