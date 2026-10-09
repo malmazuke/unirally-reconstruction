@@ -1,5 +1,5 @@
 find_package(Threads REQUIRED)
-add_library(unirally_frontend STATIC frontend.cpp title_menu_audio_stream.cpp)
+add_library(unirally_frontend STATIC frontend.cpp save_file.cpp title_menu_audio_stream.cpp)
 target_include_directories(unirally_frontend PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(unirally_frontend PUBLIC unirally_presentation unirally_audio_score Threads::Threads lab_options)
 add_executable(live_presentation_runner live_presentation_runner.cpp)

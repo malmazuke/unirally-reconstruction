@@ -1,4 +1,6 @@
 #include "frontend.hpp"
+
+#include "cartridge_ram.hpp"
 #include "content_pack.hpp"
 #include "result_screen.hpp"
 #include "rider_object.hpp"
@@ -183,8 +185,16 @@ std::uint16_t snes_pad_word(std::uint16_t mask) {
   return word;
 }
 
-FrontEndSession::FrontEndSession(const ClassicContentPack &pack)
-    : content_(front_end_content(pack)) {}
+FrontEndSession::FrontEndSession(const ClassicContentPack &pack,
+                                 const std::optional<CartridgeImage> &cartridge)
+    : content_(front_end_content(pack)) {
+  if (cartridge)
+    insert_cartridge(state_, *cartridge);
+}
+
+CartridgeImage FrontEndSession::cartridge() const {
+  return cartridge_image(state_);
+}
 
 bool native_race_track(ClassicRaceTrack track) {
   // A stunt event from --track would end on the race's own Classic result screen, not the

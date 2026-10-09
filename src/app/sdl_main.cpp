@@ -4,6 +4,7 @@
 #include "presentation.hpp"
 #include "race_camera.hpp"
 #include "race_sound.hpp"
+#include "save_file.hpp"
 #include "sdl_audio.hpp"
 #include "zoom_zoo_pack.hpp"
 
@@ -185,6 +186,9 @@ struct Options {
   // Each frame's submitted sound queue work, as `front_end_runner --sound-cues`
   // writes it.
   std::filesystem::path audio_cue_log;
+  // The cartridge RAM kept between runs (SAVE-FILES): loaded at power-on,
+  // written whenever it changes.
+  std::filesystem::path save_file;
 };
 
 // "frame pad1 pad2" rows, the pads as hex SNES words, as `front_end_runner`
@@ -260,7 +264,12 @@ void print_help() {
       << "Native audio (opt-in): --native-title-menu-audio (v31 pack: title "
          "and menus; v32: also\n"
       << "1P setup, the first race, its result and the menus after it; other "
-         "modes stay silent).\n";
+         "modes stay silent).\n"
+      << "Saves: --save-file PATH keeps the cartridge RAM (records, players, "
+         "leagues, open tours)\n"
+      << "between runs, loaded at power-on and written when it changes; an "
+         "emulator's 8 KiB save\n"
+      << "of this ROM loads too.\n";
 }
 
 std::optional<Options> options(int argc, char **argv) {
@@ -318,11 +327,15 @@ std::optional<Options> options(int argc, char **argv) {
       result.front_end_inputs = read_front_end_inputs(value);
     else if (option == "--audio-cue-log")
       result.audio_cue_log = value;
+    else if (option == "--save-file")
+      result.save_file = value;
     else
       throw std::invalid_argument("unknown option: " + std::string(option));
   }
   if (result.native_title_menu_audio && result.track_given)
     throw std::invalid_argument("native title/menu audio starts at power-on");
+  if (!result.save_file.empty() && result.track_given)
+    throw std::invalid_argument("a save file needs the front end (no --track)");
   if (result.pack.empty())
     throw std::invalid_argument("--content-pack is required; use `project.py "
                                 "frontend run` for first-launch extraction");
@@ -491,13 +504,19 @@ int main(int argc, char **argv) try {
   bool reported_held_frame{};
   // Without --track the session starts at power-on; NOW PLAYING's Race starts
   // the race.
+  std::optional<unirally::app::SaveFile> save_file;
+  std::optional<unirally::CartridgeImage> saved;
+  if (!parsed->save_file.empty()) {
+    save_file.emplace(parsed->save_file);
+    saved = save_file->loaded();
+  }
   std::optional<unirally::app::FrontEndSession> front_end;
   if (!parsed->track_given)
-    front_end.emplace(content.pack);
+    front_end.emplace(content.pack, saved);
   std::unique_ptr<unirally::app::SdlTitleMenuAudio> native_audio;
   if (parsed->native_title_menu_audio)
     native_audio =
-        std::make_unique<unirally::app::SdlTitleMenuAudio>(content.pack);
+        std::make_unique<unirally::app::SdlTitleMenuAudio>(content.pack, saved);
   // During a race the front end waits here for the race's result load.
   std::optional<unirally::app::FrontEndSession> waiting_front_end;
   std::uint32_t demo_race_updates = 0;
@@ -832,6 +851,9 @@ int main(int argc, char **argv) try {
       }
       ++updates;
       redraw = true;
+      if (save_file && (front_end || waiting_front_end))
+        save_file->store(front_end ? front_end->cartridge()
+                                   : waiting_front_end->cartridge());
       if (parsed->maximum_updates != 0 && updates >= parsed->maximum_updates) {
         running = false;
         break;

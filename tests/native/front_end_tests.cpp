@@ -3,6 +3,7 @@
 // main menu's and the one-player screens' rules and the one-run result, on
 // synthetic content (no ROM). The captures' frame-by-frame agreement
 // is the laboratory's.
+#include "cartridge_ram.hpp"
 #include "front_end.hpp"
 #include "front_end_screens.hpp"
 #include "snes_screen.hpp"
@@ -1707,6 +1708,43 @@ void stunt_result_tests() {
 
 } // namespace
 
+// SAVE-FILES (R-0090): a cold start leaves the signed image; power-on with it keeps its records
+// and skips the wipe's three frames; an image without the signature is wiped.
+void save_file_tests() {
+  std::vector<std::vector<std::uint8_t>> storage;
+  auto content = synthetic_content(storage);
+  storage.emplace_back(1158, 0);
+  const std::string signature = "TESTsignatur";
+  std::copy(signature.begin(), signature.end(), storage.back().begin());
+  content.cartridge_defaults = storage.back();
+  storage.emplace_back(50, 0);
+  content.track_types = storage.back();
+  auto cold = unirally::start_front_end();
+  run(cold, content, 420);
+  require(!cold.records_kept && cold.menu.idle == 480);
+  require(unirally::has_signature(cold.cartridge, content));
+  auto image = unirally::cartridge_image(cold);
+  image[0x069c] = 2;    // rider 0's medal on the first tour
+  image[0x10d3] = 3;    // rider 0's tours all open
+  image[0x0e70] = 0x5a; // a byte native keeps no field for
+  auto warm = unirally::start_front_end();
+  unirally::insert_cartridge(warm, image);
+  run(warm, content, 420);
+  require(warm.records_kept && warm.menu.idle == 477);
+  require(warm.records.medals[0] == 2 && warm.records.tour_levels[0] == 3);
+  auto saved = image;
+  saved[0x1fff] = 0x56; // the boot's mirror test
+  require(unirally::cartridge_image(warm) == saved);
+  require(unirally::records_from_cartridge(saved).medals[0] == 2);
+  auto unsigned_image = image;
+  unsigned_image[0] ^= 0xff;
+  auto wiped = unirally::start_front_end();
+  unirally::insert_cartridge(wiped, unsigned_image);
+  run(wiped, content, 420);
+  require(!wiped.records_kept && wiped.records.medals[0] == 0);
+  require(unirally::cartridge_image(wiped) == unirally::cartridge_image(cold));
+}
+
 int main() try {
   text_printer_tests();
   text_variable_tests();
@@ -1726,6 +1764,7 @@ int main() try {
   soft_reset_tests(2);
   title_code_tests();
   code_route_tests();
+  save_file_tests();
   return 0;
 } catch (const std::exception &error) {
   std::fprintf(stderr, "%s\n", error.what());

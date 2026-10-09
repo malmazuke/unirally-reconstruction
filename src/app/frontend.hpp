@@ -115,7 +115,11 @@ private:
 // (R-0069). LEAGUE, OPTIONS and unavailable scenarios show a short notice.
 class FrontEndSession {
 public:
-  explicit FrontEndSession(const ClassicContentPack &pack);
+  // `cartridge`: the cartridge RAM power-on finds (a save file), or none.
+  explicit FrontEndSession(const ClassicContentPack &pack,
+                           const std::optional<CartridgeImage> &cartridge = {});
+  // The cartridge RAM now, to save (cartridge_ram.hpp).
+  CartridgeImage cartridge() const;
   // One PAL frame from the two ports' masks (`button_mask` bits). True once a
   // race with a native scenario is chosen: `race_scenario()`.
   bool update(const std::array<std::uint16_t, 2> &ports);
