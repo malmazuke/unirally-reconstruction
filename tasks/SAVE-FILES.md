@@ -2,8 +2,12 @@
 
 ## Assignment
 
-- Status: **ready**, queued 9 October 2026 by [COVERAGE-GAPS](COVERAGE-GAPS.md) (R-0089, queue
-  item 1). Unclaimed.
+- Status: **in progress**, claimed 9 October 2026 (08:15 UTC) on main `3191228`, in the session the
+  user asked to keep working until weekly usage reaches 50% (8% at claim). Queued the same day by
+  [COVERAGE-GAPS](COVERAGE-GAPS.md) (R-0089, queue item 1).
+- Worker: Claude Code desktop app, Claude Opus 5.5 (`claude-opus-5-5`); coordinator, primary and
+  integrator. Branch `task/save-files` in `.worktrees/save-files`.
+- Task provider: Anthropic.
 - Milestone: M4 (original game coverage).
 - Review tier: **1** (D-0008: it changes the state the game boots with and the bytes it keeps).
 - Dependencies: OPTIONS (R-0072), LEAGUE (R-0073), FRONT-END-1P-CONTINUATION (R-0057).

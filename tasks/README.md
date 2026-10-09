@@ -87,7 +87,7 @@ The coordinator maintains the status registry below. Work orders further below d
 | IDLE-DEMO-ROTATION | accepted (tier 1, #64): every idle demo after the second; the rotation, its timing and state formats (R-0087) | [Every idle demo after the second](IDLE-DEMO-ROTATION.md) |
 | DEMO-PICTURES | accepted (tier 1, #65): the idle demos' GO, idle-menu palette and title-wave pictures (R-0088) | [The idle demos' remaining picture differences](DEMO-PICTURES.md) |
 | COVERAGE-GAPS | accepted (tier 3, #66): coverage of the captured corpus, what native lacks, and the queue toward it (R-0089) | [What the original still does that native does not](COVERAGE-GAPS.md) |
-| SAVE-FILES | ready (tier 1), queued 9 October 2026 by COVERAGE-GAPS: the cartridge RAM as the original's image, saved between app runs | [The cartridge RAM saved between app runs](SAVE-FILES.md) |
+| SAVE-FILES | in progress (tier 1), claimed 9 October 2026: the cartridge RAM as the original's image, saved between app runs | [The cartridge RAM saved between app runs](SAVE-FILES.md) |
 | LEAGUE | reviewed and integrated by PR #48 (tier 1): first CRAWLER tournament, six-slot scoring projection and continuation; closeout in main artifacts | [Native league tournament](LEAGUE.md) |
 | STUNT-EVENTS | fulfilled by #39/#40/#42; tier-3 queue reconciliation in AUDIO-DECISION, no new gameplay domain | [The delivered stunt outcome](STUNT-EVENTS.md) |
 | AUDIO-DECISION | PR #49, tier 3: native audio architecture, cold callback observations and first capability task; integration in its closeout | [Choose the native audio path and its evidence](AUDIO-DECISION.md) |
