@@ -82,8 +82,12 @@ The coordinator maintains the status registry below. Work orders further below d
 | STUNT-HUD | integrated by #42 (tier 1): a stunt event's race picture; NEON; pack v26 | [A stunt event's race picture](STUNT-HUD.md) |
 | SPLIT-SCREEN-RACE | reviewed in #43 (tier 1): the first idle split ZOOM ZOO demo, two native viewports and rider controls; integration result in its closeout | [A race with two visible riders](SPLIT-SCREEN-RACE.md) |
 | ATTRACT-DEMO | accepted (tier 1, #44, 29 September 2026): the second idle demo cycle, one-player track 3; this row and the record's status were not updated at the time (corrected 9 October 2026) | [The next idle demo cycle](ATTRACT-DEMO.md) |
+| TWO-PLAYER-VS | accepted (tier 1, #45, 29 September 2026): both local two-rider modes from the main menu through race, result and return; row added 9 October 2026 | [Local two-rider modes](TWO-PLAYER-VS.md) |
+| OPTIONS | accepted (tier 1, #46, 30 September 2026): the options menu, records and editors (R-0072); row added 9 October 2026 | [Native options and records menus](OPTIONS.md) |
 | IDLE-DEMO-ROTATION | accepted (tier 1, #64): every idle demo after the second; the rotation, its timing and state formats (R-0087) | [Every idle demo after the second](IDLE-DEMO-ROTATION.md) |
 | DEMO-PICTURES | accepted (tier 1, #65): the idle demos' GO, idle-menu palette and title-wave pictures (R-0088) | [The idle demos' remaining picture differences](DEMO-PICTURES.md) |
+| COVERAGE-GAPS | accepted (tier 3, #66): coverage of the captured corpus, what native lacks, and the queue toward it (R-0089) | [What the original still does that native does not](COVERAGE-GAPS.md) |
+| SAVE-FILES | ready (tier 1), queued 9 October 2026 by COVERAGE-GAPS: the cartridge RAM as the original's image, saved between app runs | [The cartridge RAM saved between app runs](SAVE-FILES.md) |
 | LEAGUE | reviewed and integrated by PR #48 (tier 1): first CRAWLER tournament, six-slot scoring projection and continuation; closeout in main artifacts | [Native league tournament](LEAGUE.md) |
 | STUNT-EVENTS | fulfilled by #39/#40/#42; tier-3 queue reconciliation in AUDIO-DECISION, no new gameplay domain | [The delivered stunt outcome](STUNT-EVENTS.md) |
 | AUDIO-DECISION | PR #49, tier 3: native audio architecture, cold callback observations and first capability task; integration in its closeout | [Choose the native audio path and its evidence](AUDIO-DECISION.md) |

@@ -2363,6 +2363,8 @@
   ],
   "source_records": [
    "docs/research/R-0054-boot-title-main-menu.md",
+   "docs/research/R-0089-coverage-gaps.md",
+   "tasks/COVERAGE-GAPS.md",
    "tasks/COVERAGE-ROADMAP.md",
    "tasks/FRONT-END-MAIN-MENU.md"
   ]
@@ -2374,6 +2376,15 @@
   "label": "unk_80A9FA",
   "source_records": [
    "docs/research/R-0054-boot-title-main-menu.md"
+  ]
+ },
+ {
+  "address": "$80:AAFA",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80AAFA",
+  "source_records": [
+   "docs/research/R-0089-coverage-gaps.md"
   ]
  },
  {
@@ -3184,6 +3195,15 @@
   "label": "sub_80B8F1",
   "source_records": [
    "docs/research/R-0056-tour-track-now-playing.md"
+  ]
+ },
+ {
+  "address": "$80:B93C",
+  "class": "inferred",
+  "comment": "routine start",
+  "label": "sub_80B93C",
+  "source_records": [
+   "docs/research/R-0089-coverage-gaps.md"
   ]
  },
  {
@@ -6296,6 +6316,7 @@
   ],
   "source_records": [
    "docs/research/R-0054-boot-title-main-menu.md",
+   "tasks/COVERAGE-GAPS.md",
    "tasks/COVERAGE-ROADMAP.md",
    "tasks/FRONT-END-MAIN-MENU.md"
   ]
@@ -7675,7 +7696,8 @@
    "src/core/race_update.cpp:tile_behavior_under"
   ],
   "source_records": [
-   "docs/research/R-0045-static-code-map.md"
+   "docs/research/R-0045-static-code-map.md",
+   "docs/research/R-0089-coverage-gaps.md"
   ]
  },
  {
@@ -7710,6 +7732,18 @@
   ]
  },
  {
+  "address": "$81:831D",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_81831D",
+  "native": [
+   "src/core/race_update.cpp:run_push_tile"
+  ],
+  "source_records": [
+   "docs/research/R-0089-coverage-gaps.md"
+  ]
+ },
+ {
   "address": "$81:834C",
   "class": "data",
   "comment": "data",
@@ -7739,6 +7773,19 @@
   ]
  },
  {
+  "address": "$81:83E7",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_8183E7",
+  "native": [
+   "src/core/special_tiles.cpp:update_loop_tile",
+   "src/core/zoom_zoo_movement.hpp:update_loop_tile"
+  ],
+  "source_records": [
+   "docs/research/R-0089-coverage-gaps.md"
+  ]
+ },
+ {
   "address": "$81:84AC",
   "class": "observed",
   "comment": "routine start",
@@ -7759,7 +7806,8 @@
    "src/core/race_update.cpp:run_lift_tile"
   ],
   "source_records": [
-   "docs/research/R-0047-special-tiles.md"
+   "docs/research/R-0047-special-tiles.md",
+   "docs/research/R-0089-coverage-gaps.md"
   ]
  },
  {
@@ -7785,6 +7833,18 @@
    "docs/research/R-0047-special-tiles.md",
    "docs/research/R-0051-loop-and-tile-pairs.md",
    "tasks/TILE-PAIRS-8-12-26.md"
+  ]
+ },
+ {
+  "address": "$81:8565",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_818565",
+  "native": [
+   "src/core/race_update.cpp:run_slow_tile"
+  ],
+  "source_records": [
+   "docs/research/R-0089-coverage-gaps.md"
   ]
  },
  {
@@ -8012,7 +8072,8 @@
   ],
   "source_records": [
    "docs/research/R-0047-special-tiles.md",
-   "docs/research/R-0051-loop-and-tile-pairs.md"
+   "docs/research/R-0051-loop-and-tile-pairs.md",
+   "docs/research/R-0089-coverage-gaps.md"
   ]
  },
  {
@@ -10485,6 +10546,15 @@
   ]
  },
  {
+  "address": "$81:BB7A",
+  "class": "inferred",
+  "comment": "routine start",
+  "label": "sub_81BB7A",
+  "source_records": [
+   "docs/research/R-0089-coverage-gaps.md"
+  ]
+ },
+ {
   "address": "$81:BEA8",
   "class": "observed",
   "comment": "routine start",
@@ -10877,6 +10947,15 @@
   ],
   "source_records": [
    "docs/research/R-0068-stunt-hud.md"
+  ]
+ },
+ {
+  "address": "$81:C3DC",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_81C3DC",
+  "source_records": [
+   "docs/research/R-0089-coverage-gaps.md"
   ]
  },
  {
@@ -11830,6 +11909,18 @@
   ]
  },
  {
+  "address": "$81:D8D9",
+  "class": "inferred",
+  "comment": "routine start",
+  "label": "sub_81D8D9",
+  "native": [
+   "src/core/race_hud.cpp:draw_split_arrow"
+  ],
+  "source_records": [
+   "docs/research/R-0089-coverage-gaps.md"
+  ]
+ },
+ {
   "address": "$81:D936",
   "class": "inferred",
   "comment": "routine start",
@@ -11838,7 +11929,20 @@
    "src/core/race_hud.cpp:draw_split_arrow"
   ],
   "source_records": [
+   "docs/research/R-0089-coverage-gaps.md",
    "tasks/STATIC-CODE-MAP.md"
+  ]
+ },
+ {
+  "address": "$81:DA4F",
+  "class": "inferred",
+  "comment": "routine start",
+  "label": "sub_81DA4F",
+  "native": [
+   "src/core/race_hud.cpp:draw_split_arrow"
+  ],
+  "source_records": [
+   "docs/research/R-0089-coverage-gaps.md"
   ]
  },
  {
@@ -11853,6 +11957,34 @@
   ],
   "source_records": [
    "docs/research/R-0080-split-hud.md"
+  ]
+ },
+ {
+  "address": "$81:DB70",
+  "class": "inferred",
+  "comment": "routine start",
+  "label": "sub_81DB70",
+  "native": [
+   "src/core/presentation.hpp:ClassicHudPublished::lower_arrow",
+   "src/core/race_hud.cpp:ClassicRaceHudClock::redraw_arrow",
+   "src/core/race_hud.cpp:draw_split_arrow"
+  ],
+  "source_records": [
+   "docs/research/R-0089-coverage-gaps.md"
+  ]
+ },
+ {
+  "address": "$81:DCE6",
+  "class": "inferred",
+  "comment": "routine start",
+  "label": "sub_81DCE6",
+  "native": [
+   "src/core/presentation.hpp:ClassicHudPublished::lower_arrow",
+   "src/core/race_hud.cpp:ClassicRaceHudClock::redraw_arrow",
+   "src/core/race_hud.cpp:draw_split_arrow"
+  ],
+  "source_records": [
+   "docs/research/R-0089-coverage-gaps.md"
   ]
  },
  {
@@ -11986,6 +12118,32 @@
   ],
   "source_records": [
    "docs/research/R-0078-pause-menu-picture.md"
+  ]
+ },
+ {
+  "address": "$81:E94F",
+  "class": "inferred",
+  "comment": "routine start",
+  "label": "sub_81E94F",
+  "native": [
+   "src/core/race_hud.cpp:ClassicRaceHudClock::redraw_arrow"
+  ],
+  "source_records": [
+   "docs/research/R-0089-coverage-gaps.md"
+  ]
+ },
+ {
+  "address": "$81:E9AC",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_81E9AC",
+  "native": [
+   "src/core/presentation.hpp:classic_arrow_chevrons",
+   "src/core/race_hud.cpp:ClassicRaceHudClock::redraw_arrow",
+   "src/core/race_hud.cpp:classic_arrow_chevrons"
+  ],
+  "source_records": [
+   "docs/research/R-0089-coverage-gaps.md"
   ]
  },
  {
@@ -15308,6 +15466,7 @@
    "docs/content/dragster-segment.md",
    "docs/research/R-0008-track-decode.md",
    "docs/research/R-0054-boot-title-main-menu.md",
+   "docs/research/R-0089-coverage-gaps.md",
    "tasks/FRONT-END-MAIN-MENU.md"
   ]
  },
@@ -15403,6 +15562,7 @@
    "docs/research/R-0008-track-decode.md",
    "docs/research/R-0046-track-breadth-matrix.md",
    "docs/research/R-0054-boot-title-main-menu.md",
+   "docs/research/R-0089-coverage-gaps.md",
    "tasks/M1-03.md",
    "tasks/TRACK-BREADTH.md"
   ]
@@ -15435,6 +15595,15 @@
   ]
  },
  {
+  "address": "$82:B8AE",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_82B8AE",
+  "source_records": [
+   "docs/research/R-0089-coverage-gaps.md"
+  ]
+ },
+ {
   "address": "$82:B907",
   "class": "observed",
   "comment": "instruction start",
@@ -15454,6 +15623,33 @@
    "docs/content/dragster-segment.md",
    "docs/research/R-0008-track-decode.md",
    "tasks/M1-03.md"
+  ]
+ },
+ {
+  "address": "$82:BFC9",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_82BFC9",
+  "source_records": [
+   "docs/research/R-0089-coverage-gaps.md"
+  ]
+ },
+ {
+  "address": "$82:C53D",
+  "class": "inferred",
+  "comment": "routine start",
+  "label": "sub_82C53D",
+  "source_records": [
+   "docs/research/R-0089-coverage-gaps.md"
+  ]
+ },
+ {
+  "address": "$82:CFF3",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_82CFF3",
+  "source_records": [
+   "docs/research/R-0089-coverage-gaps.md"
   ]
  },
  {
@@ -16053,6 +16249,15 @@
   "source_records": [
    "docs/research/R-0052-hunter-effects.md",
    "docs/research/R-0061-riders-and-opponents.md"
+  ]
+ },
+ {
+  "address": "$82:DDDE",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_82DDDE",
+  "source_records": [
+   "docs/research/R-0089-coverage-gaps.md"
   ]
  },
  {
@@ -19800,6 +20005,7 @@
   "source_records": [
    "docs/research/R-0052-hunter-effects.md",
    "docs/research/R-0068-stunt-hud.md",
+   "docs/research/R-0089-coverage-gaps.md",
    "tasks/HUNTER-EFFECTS.md"
   ]
  },
@@ -22850,6 +23056,24 @@
   "label": "loc_83FAAE",
   "source_records": [
    "tasks/LOCKED-TOURS.md"
+  ]
+ },
+ {
+  "address": "$83:FADC",
+  "class": "inferred",
+  "comment": "routine start",
+  "label": "sub_83FADC",
+  "source_records": [
+   "docs/research/R-0089-coverage-gaps.md"
+  ]
+ },
+ {
+  "address": "$83:FB31",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_83FB31",
+  "source_records": [
+   "docs/research/R-0089-coverage-gaps.md"
   ]
  },
  {

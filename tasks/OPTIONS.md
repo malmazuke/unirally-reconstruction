@@ -2,7 +2,8 @@
 
 ## Assignment
 
-- Status: claimed 29 September 2026 20:48 UTC; bounded native implementation validated on PR #46, integration pending.
+- Status: **accepted** (tier 1, [#46](https://github.com/malmazuke/unirally-reconstruction/pull/46), merged 30 September 2026);
+  this status was not updated at the time (corrected 9 October 2026 by COVERAGE-GAPS). Claimed 29 September 2026 20:48 UTC.
 - Milestone: M4 original-game coverage, after TWO-PLAYER-VS and before LEAGUE in [COVERAGE-ROADMAP](COVERAGE-ROADMAP.md).
 - Base: `f2da955d08e754a6af82af33a4411e1dc9a6198b`, synchronized local and remote `main` after [PR #45](https://github.com/malmazuke/unirally-reconstruction/pull/45).
 - Branch and isolated checkout: `codex/options`, `.worktrees/options`.

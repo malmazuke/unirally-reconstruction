@@ -2,7 +2,8 @@
 
 ## Assignment
 
-- Status: **tier-1 review accepted**; see [PR #45](https://github.com/malmazuke/unirally-reconstruction/pull/45) for integration state. Claimed 29 September 2026 11:31 UTC after ATTRACT-DEMO merged in [PR #44](https://github.com/malmazuke/unirally-reconstruction/pull/44).
+- Status: **accepted** (tier 1, [PR #45](https://github.com/malmazuke/unirally-reconstruction/pull/45), merged 29 September 2026;
+  status corrected 9 October 2026 by COVERAGE-GAPS). Claimed 29 September 2026 11:31 UTC after ATTRACT-DEMO merged in [PR #44](https://github.com/malmazuke/unirally-reconstruction/pull/44).
 - Milestone: M4 original-game coverage; next outcome in [COVERAGE-ROADMAP](COVERAGE-ROADMAP.md).
 - Base: `5df56c6d6b80433aafd0d08ee0df8f572893c281` (`main` and `origin/main` at claim).
 - Branch and isolated worktree: `codex/two-player-vs`, `.worktrees/two-player-vs`.
