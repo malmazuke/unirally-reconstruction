@@ -8,7 +8,8 @@
 - Worker: Claude Code desktop app, Claude Opus 5.5 (`claude-opus-5-5`); coordinator, primary and
   integrator. Branch `task/demo-pictures` in `.worktrees/demo-pictures`.
 - Milestone: M4 coverage of the main menu's idle mode.
-- Review tier: **2** (presentation on recovered state; the race words and timing are exact).
+- Review tier: **1** (raised at the candidate from the queued 2: the title's held frame and the
+  return's pending NMI change front-end timing in `src/core`, though the race words stay exact).
 - Task provider: Anthropic (the queuing session's).
 - Dependencies: IDLE-DEMO-ROTATION (R-0087).
 
@@ -96,3 +97,5 @@ Outside: the race state (exact), audio, the titles the sound processor shortens 
 - Gates: `local/evidence/idle-demo-cycles/gates-pictures.sh` against main `6be4093`'s binaries
   (`base-6be4093/`). The GO change must leave every window gate and sweep picture equal: from the
   menus `$0300` is the old parity.
+- The window pointer's synthetic test (`presentation_tests.cpp`) now drives `$0300` as the engine
+  does (alternating every frame, pauses too); it had relied on the frame parity.
