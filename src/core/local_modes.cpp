@@ -99,18 +99,23 @@ void local_continue_frame(FrontEndState& state, const FrontEndContent& content, 
     const auto pad = pads.one;
     if (!(pad & pad_up)) state.latches.up = false;
     if (!(pad & pad_down)) state.latches.down = false;
+    // The original's menu is `$80:B93C`'s (from $80:ADE3), whose every move plays the navigation
+    // sound ($80:B9B1 Up, $80:BA13 Down).
     if ((pad & pad_up) && !state.latches.up) {
         state.latches.up = true;
+        play_menu_sound(state, MenuSound::navigate);
         if (state.menu.selection > 0) --state.menu.selection;
     } else if ((pad & pad_down) && !state.latches.down) {
         state.latches.down = true;
+        play_menu_sound(state, MenuSound::navigate);
         if (state.menu.selection + 1 < choices) ++state.menu.selection;
     }
     state.arrow.target_y =
         static_cast<std::uint16_t>(continue_first_y + state.menu.selection * continue_row_y);
     if (!(pad & choose_buttons)) return;
     switch (state.menu.selection) {
-    case 0: // NEXT TRACK
+    case 0: // NEXT TRACK, with the select sound ($80:AEAD)
+        play_menu_sound(state, MenuSound::select);
         state.tour_menu.track = static_cast<std::uint8_t>(state.tour_menu.track + 1);
         enter_now_playing(state);
         return;

@@ -263,8 +263,8 @@ void print_help() {
       << "the analog stick is not mapped. Either gamepad exits the idle demo.\n"
       << "Native audio (opt-in): --native-title-menu-audio (v31 pack: title "
          "and menus; v32: also\n"
-      << "1P setup, the first race, its result and the menus after it; other "
-         "modes stay silent).\n"
+      << "the one-player game, 2P, VS, LEAGUE and OPTIONS; the idle demo stays "
+         "silent).\n"
       << "Saves: --save-file PATH keeps the cartridge RAM (records, players, "
          "leagues, open tours)\n"
       << "between runs, loaded at power-on and written when it changes; an "
@@ -671,12 +671,12 @@ int main(int argc, char **argv) try {
       }
       if (front_end) {
         audio_cues = front_end->sound_cues();
-        if (!front_end->one_player_mode())
+        if (!front_end->cued_audio_mode())
           audio_stopped = true;
         if (race_chosen && native_audio && !audio_stopped) {
-          // The cued producer covers the one-player races the menus reach,
-          // every one with a measured loading (R-0076, R-0077); the demo's
-          // race stops the audio.
+          // The cued producer covers the races the menus reach with a measured
+          // loading (R-0076, R-0077: every one-player race, local and league
+          // races on tracks 0-4); any other stops the audio.
           const auto loading = front_end->race_loading_frames();
           if (loading == 0 || front_end->demo_race())
             audio_stopped = true;

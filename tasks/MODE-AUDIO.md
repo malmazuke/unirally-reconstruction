@@ -28,3 +28,30 @@ VS, league, OPTIONS and the idle demos stop the cued producer and go silent (R-0
 - The app's producer runs through those modes; anchored PCM measured on some of them (D-0010).
 - The audio model's warm power-on reads the save's cheat flag and `$10AD` like its soft reset
   (SAVE-FILES' advisory).
+
+## Decisions
+
+- The idle demo's sound is split off as DEMO-AUDIO (queued): native's demo reports no cues at all
+  (title set loads at each demo's title, the race's dispatches with that set), a separate piece of
+  work from the menus' sounds, which this task covers.
+- SAVE-FILES' audio advisory (the warm power-on's title work) stays open: changing it needs a
+  warm-boot audio capture to check against, and the cold path's timing is validated as it is.
+
+## Checkpoint - 10 October 2026 15:00 UTC
+
+- Six schedules captured (R-0091's table) with dispatcher and enqueue-site watches; tools in main
+  `local/evidence/mode-audio/`.
+- Native: the split race's finish fade site (`finish2`, `$83:E7F2-E7FD`); the menus' sounds in
+  OPTIONS, the keyboard, the league's slots, members and awards, the picks and the two-player
+  continuation, with `$80:B0FA`'s refusal as `MenuSound::refused`; the second player's menu
+  slides silently. The placement of the menus' sounds was done by an implementation subagent and
+  checked here (the five schedules' cues, eight R-0077 schedules, the runner's rows unchanged
+  against main's binary).
+- The app keeps the cued producer past any main menu choice but the idle demo.
+- Cues: OPTIONS equal; 2P, VS and league differ only where their slides do (recorded residuals).
+  PCM: `options-rename` 99.6% and `twop-next` 95.7% of windows within 1 dB.
+
+## Review candidate
+
+- Records: [R-0091](../docs/research/R-0091-mode-audio.md).
+- Gates: `local/evidence/mode-audio/gates.sh` against main `a54341a`'s binaries.

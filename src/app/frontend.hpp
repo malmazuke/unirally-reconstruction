@@ -131,6 +131,12 @@ public:
   // This frame's sound queue work (R-0076), empty on a notice's frames.
   const AudioCueList &sound_cues() const { return state_.sound_cues; }
   bool one_player_mode() const { return state_.mode == FrontEndMode::one_player; }
+  // The modes whose sound work the front end reports (MODE-AUDIO): all but the idle
+  // demo and the WIPE RAM code.
+  bool cued_audio_mode() const {
+    return state_.mode != FrontEndMode::demo &&
+           state_.mode != FrontEndMode::wipe_ram_code;
+  }
   RgbFrame frame() const;
   std::uint32_t frames() const { return frames_; }
   std::uint32_t notices() const { return notices_; }

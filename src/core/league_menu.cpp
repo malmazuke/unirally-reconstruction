@@ -285,8 +285,13 @@ void finish_league_pair(FrontEndState& state, const FrontEndContent& content) {
 }
 
 void league_awards_frame(FrontEndState& state, const FrontEndContent& content, FrontEndPads pads) {
+    // The awards slide in at $80:8B28 (`$80:E27E`, its sound on the third frame; native prints
+    // them in place), and the result's sound follows 41 frames after the tally ($80:B051).
+    constexpr std::uint32_t slide_sound_frame = 3, result_frame = 85;
     copy_oam(state);
     step_decorations(state, content);
+    if (state.script_frame == slide_sound_frame) play_menu_sound(state, MenuSound::back_slide);
+    if (state.script_frame == result_frame) play_menu_sound(state, MenuSound::result);
     if (state.script_frame == 45) {
         const auto slot = state.league.slot;
         reorder_league(state);

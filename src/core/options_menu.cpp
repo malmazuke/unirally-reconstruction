@@ -45,6 +45,7 @@ void move_choice(FrontEndState& state, std::span<const std::uint8_t> columns, Fr
     }
     if (state.latches.moved) return;
     state.latches.moved = true;
+    play_menu_sound(state, MenuSound::navigate); // $80:BA13 (Down), $80:B9B1 (Up)
     auto& row = state.menu.selection;
     row = static_cast<std::uint8_t>(down ? (row + 1U) % count : (row + count - 1U) % count);
     aim_choice(state, columns);
@@ -177,6 +178,7 @@ void league_slots_frame(FrontEndState& state, const FrontEndContent& content, Fr
         return;
     }
     if (!(pad & choose_buttons)) return;
+    play_menu_sound(state, MenuSound::select); // $80:9F15
     state.league.slot = state.menu.selection;
     if (state.mode == FrontEndMode::league) {
         choose_league_slot(state, content);
@@ -1027,8 +1029,14 @@ std::uint8_t stored_character(std::uint8_t key) {
     return key;
 }
 
+// $80:A416-A445: the last character erased with the result's sound, or the refusal's when the
+// name is empty.
 void erase_keyboard_character(FrontEndState& state, const FrontEndContent& content) {
-    if (state.keyboard.length == 0) return;
+    if (state.keyboard.length == 0) {
+        play_menu_sound(state, MenuSound::refused); // $80:A41A
+        return;
+    }
+    play_menu_sound(state, MenuSound::result); // $80:A420
     --state.keyboard.length;
     --state.printer.position;
     constexpr std::array<std::uint8_t, 2> dot{'.', 0xff};
@@ -1050,6 +1058,10 @@ void rename_keyboard_frame(FrontEndState& state, const FrontEndContent& content,
     const auto pad = pads.one;
     const auto pressed = static_cast<std::uint16_t>(pad & ~editor.previous_buttons);
     editor.previous_buttons = pad;
+    // Each move plays the navigation sound: $80:A2BA (Left), $80:A2F9 (Right), $80:A34A (Up),
+    // $80:A326 (Down).
+    if (pressed & (pad_left | pad_right | pad_up | pad_down))
+        play_menu_sound(state, MenuSound::navigate);
     if (pressed & pad_left) {
         editor.offset_x =
             editor.offset_x == 0 ? -192 : static_cast<std::int16_t>(editor.offset_x + 16);
@@ -1077,7 +1089,11 @@ void rename_keyboard_frame(FrontEndState& state, const FrontEndContent& content,
     state.arrow.target_y = static_cast<std::uint16_t>((31 - editor.offset_y) * 16);
     const auto key = keyboard_key(editor, content.keyboard_text);
     if (key == 0x40) { // OK at $80:A52A
-        if (editor.length == 0) return;
+        if (editor.length == 0) {
+            play_menu_sound(state, MenuSound::refused); // $80:A493 to $80:A41A
+            return;
+        }
+        play_menu_sound(state, MenuSound::select); // $80:A495
         editor.scratch[editor.length] = editor.scratch[editor.length + 1] = 0xff;
         state.screen = FrontEndScreen::rename_commit;
         return;
@@ -1086,6 +1102,7 @@ void rename_keyboard_frame(FrontEndState& state, const FrontEndContent& content,
         erase_keyboard_character(state, content);
         return;
     }
+    play_menu_sound(state, MenuSound::result); // $80:A449, before the length test
     if (editor.length >= 8) return;
     editor.scratch[editor.length] = stored_character(key);
     const std::array<std::uint8_t, 2> shown{editor.scratch[editor.length], 0xff};

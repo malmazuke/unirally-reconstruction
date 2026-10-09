@@ -22,8 +22,8 @@ The four classes partition all 131,072 bytes. **Unknown share: 40.4%** - above D
 | Instructions from observed | 17,569 |
 | Instructions from table | 587 |
 | Routines | 636 |
-| Routines cited by native code | 444 |
-| Routine bytes cited by native code | 54,859 |
+| Routines cited by native code | 445 |
+| Routine bytes cited by native code | 55,161 |
 | Gap sweep candidate instructions | 2,746 |
 | Gap sweep candidate bytes | 6,174 |
 | Jump tables | 2 |
@@ -45,7 +45,7 @@ The four classes partition all 131,072 bytes. **Unknown share: 40.4%** - above D
 
 ## Cited addresses
 
-1766 distinct code-bank ROM addresses cited by the research, task, inventory and content records (`labels.json`). By position: dat 31, loc 1008, mid 20, sub 362, unk 345 (sub routine start, loc instruction start, mid inside an instruction, dat data, unk unknown). By class: data 31, inferred 334, observed 1056, unknown 345.
+1792 distinct code-bank ROM addresses cited by the research, task, inventory and content records (`labels.json`). By position: dat 31, loc 1010, mid 20, sub 362, unk 369 (sub routine start, loc instruction start, mid inside an instruction, dat data, unk unknown). By class: data 31, inferred 336, observed 1056, unknown 369.
 
 Cited addresses in `unknown` bytes:
 
@@ -71,6 +71,7 @@ Cited addresses in `unknown` bytes:
 | $80:88B2 | tasks/COVERAGE-ROADMAP.md |
 | $80:88BE | docs/research/R-0054-boot-title-main-menu.md, docs/research/R-0075-title-menu-audio.md |
 | $80:8953 | docs/research/R-0067-stunt-result.md |
+| $80:8B28 | docs/research/R-0091-mode-audio.md |
 | $80:8B3F | docs/research/R-0073-league.md |
 | $80:8CCB | docs/research/R-0067-stunt-result.md, tasks/STUNT-RESULT.md |
 | $80:8D6E | docs/research/R-0057-one-run-result.md, docs/research/R-0058-lap-result.md, tasks/FRONT-END-LAP-RESULT.md, tasks/NEXT_SESSION.md |
@@ -102,13 +103,23 @@ Cited addresses in `unknown` bytes:
 | $80:9E3C | docs/research/R-0073-league.md |
 | $80:9E57 | docs/research/R-0072-options.md |
 | $80:9EF7 | docs/research/R-0072-options.md |
+| $80:9F15 | docs/research/R-0091-mode-audio.md |
 | $80:9F21 | docs/research/R-0090-save-files.md |
 | $80:A1F2 | docs/research/R-0072-options.md |
 | $80:A207 | docs/research/R-0072-options.md |
 | $80:A212 | docs/research/R-0072-options.md |
 | $80:A231 | docs/research/R-0072-options.md |
 | $80:A29B | docs/research/R-0072-options.md |
+| $80:A2BA | docs/research/R-0091-mode-audio.md |
+| $80:A2F9 | docs/research/R-0091-mode-audio.md |
+| $80:A326 | docs/research/R-0091-mode-audio.md |
+| $80:A34A | docs/research/R-0091-mode-audio.md |
 | $80:A3A0 | docs/research/R-0072-options.md |
+| $80:A416 | docs/research/R-0091-mode-audio.md |
+| $80:A420 | docs/research/R-0091-mode-audio.md |
+| $80:A449 | docs/research/R-0091-mode-audio.md |
+| $80:A493 | docs/research/R-0091-mode-audio.md |
+| $80:A495 | docs/research/R-0091-mode-audio.md |
 | $80:A4DD | docs/research/R-0072-options.md |
 | $80:A4F1 | docs/research/R-0072-options.md |
 | $80:A501 | docs/research/R-0072-options.md |
@@ -123,7 +134,10 @@ Cited addresses in `unknown` bytes:
 | $80:AD1F | docs/research/R-0054-boot-title-main-menu.md, tasks/FRONT-END-MAIN-MENU.md |
 | $80:ADE3 | docs/research/R-0071-two-player-versus.md |
 | $80:AE3F | docs/research/R-0071-two-player-versus.md |
+| $80:AEAD | docs/research/R-0091-mode-audio.md |
 | $80:AF54 | docs/research/R-0073-league.md |
+| $80:B051 | docs/research/R-0091-mode-audio.md |
+| $80:B0FA | docs/research/R-0091-mode-audio.md, tasks/MODE-AUDIO.md |
 | $80:B205 | docs/research/R-0056-tour-track-now-playing.md |
 | $80:B4F6 | docs/research/R-0056-tour-track-now-playing.md |
 | $80:B50A | docs/research/R-0084-two-human-restart.md |
@@ -132,10 +146,14 @@ Cited addresses in `unknown` bytes:
 | $80:B66D | tasks/OPTIONS.md |
 | $80:B66E | docs/research/R-0072-options.md, tasks/OPTIONS.md |
 | $80:B6C2 | docs/research/R-0072-options.md |
+| $80:B8C4 | docs/research/R-0091-mode-audio.md |
+| $80:B916 | docs/research/R-0091-mode-audio.md |
 | $80:BCAF | docs/research/R-0055-rider-menu.md |
 | $80:BCBF | docs/research/R-0071-two-player-versus.md, tasks/COVERAGE-ROADMAP.md, tasks/NEXT_SESSION.md, tasks/TWO-PLAYER-VS.md |
+| $80:BCDB | docs/research/R-0091-mode-audio.md |
+| $80:BCEF | docs/research/R-0091-mode-audio.md |
 | $80:BCFB | docs/research/R-0071-two-player-versus.md |
-| $80:BD02 | docs/research/R-0071-two-player-versus.md |
+| $80:BD02 | docs/research/R-0071-two-player-versus.md, docs/research/R-0091-mode-audio.md |
 | $80:BD1C | docs/research/R-0084-two-human-restart.md |
 | $80:BD1F | docs/research/R-0057-one-run-result.md |
 | $80:BD5D | docs/research/R-0084-two-human-restart.md, tasks/TWO-HUMAN-RESTART.md |
@@ -146,14 +164,19 @@ Cited addresses in `unknown` bytes:
 | $80:BE76 | docs/research/R-0073-league.md |
 | $80:BEC6 | docs/research/R-0073-league.md |
 | $80:BF49 | docs/research/R-0071-two-player-versus.md, tasks/COVERAGE-ROADMAP.md, tasks/NEXT_SESSION.md, tasks/TWO-PLAYER-VS.md |
+| $80:BF5C | docs/research/R-0091-mode-audio.md |
+| $80:BF79 | docs/research/R-0091-mode-audio.md |
 | $80:BF85 | docs/research/R-0071-two-player-versus.md |
-| $80:BF8A | docs/research/R-0071-two-player-versus.md |
+| $80:BF8A | docs/research/R-0071-two-player-versus.md, docs/research/R-0091-mode-audio.md |
 | $80:BF94 | docs/research/R-0071-two-player-versus.md |
 | $80:BF9F | docs/research/R-0057-one-run-result.md |
 | $80:BFE0 | docs/research/R-0084-two-human-restart.md, tasks/TWO-HUMAN-RESTART.md |
 | $80:C00D | docs/research/R-0084-two-human-restart.md |
+| $80:C0B1 | docs/research/R-0091-mode-audio.md |
+| $80:C0BD | docs/research/R-0091-mode-audio.md |
 | $80:C10E | docs/research/R-0071-two-player-versus.md |
 | $80:C12A | docs/research/R-0072-options.md |
+| $80:C13D | docs/research/R-0091-mode-audio.md |
 | $80:C1DE | docs/research/R-0072-options.md |
 | $80:C3DC | docs/research/R-0053-result-title-printer.md |
 | $80:C456 | docs/research/R-0056-tour-track-now-playing.md |
@@ -198,6 +221,7 @@ Cited addresses in `unknown` bytes:
 | $80:D383 | docs/research/R-0054-boot-title-main-menu.md |
 | $80:D3F5 | docs/research/R-0073-league.md |
 | $80:D448 | docs/research/R-0072-options.md |
+| $80:D45B | docs/research/R-0091-mode-audio.md |
 | $80:D468 | docs/research/R-0072-options.md |
 | $80:D494 | docs/research/R-0072-options.md |
 | $80:D4BF | docs/research/R-0072-options.md |
