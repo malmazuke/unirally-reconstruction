@@ -13,7 +13,7 @@ from .zoom_zoo_trial_reference import ROOT, ROM_SHA, PRIMARY_SHA, sha, digest
 from ..reference.bsnes import BsnesCore, BUTTONS
 from ..reference.worker import inputs_for_frame
 from ..replay.manifest import derive_script
-from ..reference.core_identity import accepted_reference, require_core
+from ..reference.core_identity import require_core
 
 ADDRESSES = [0x415,0x419,0xbbb,0xbb3,0x54b,0xb93,0xb97,0xfc5,0xfc9,0xfcd,
              0xfd1,0xeff,0xf0f,0xe57,0x11d9,0x11df,0xd39,0x4c3]

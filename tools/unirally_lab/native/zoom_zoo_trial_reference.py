@@ -15,12 +15,13 @@ from .prepare import canonical_seed
 from ..reference.bsnes import BsnesCore
 from ..reference.worker import inputs_for_frame
 from ..replay.manifest import derive_script
-from ..reference.core_identity import accepted_reference, require_core
+from ..reference.core_identity import require_core
 
 ROOT=Path(__file__).resolve().parents[3]
 ROM_SHA='a1105819d48c04d680c8292bbfa9abbce05224f1bc231afd66af43b7e0a1fd4e'
 # The library every frozen reference was captured with: provenance, not the running core's identity
-# (core_identity accepts any library built from the lock's source; PORTABLE-CORE-IDENTITY).
+# (core_identity accepts any library built from the lock's source; PORTABLE-CORE-IDENTITY). No tool
+# here reads it; earlier tasks' evidence scripts under local/evidence still import it.
 CORE_SHA='e59bf88d4fc922c9fe3b5438e65ff3a6909d24e1628f0f87141c8de17699a91b'
 PRIMARY_SHA='acd29bfb72aeaad0791923e22e17a791f5c182220f64b6686dd687984411aefd'
 # Additional future-affecting state found by the dispatcher read/writer audit.

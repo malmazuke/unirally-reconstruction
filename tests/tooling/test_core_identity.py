@@ -15,6 +15,7 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
 
 from tools.unirally_lab.content import pack  # noqa: E402
+from tools.unirally_lab.native import core_check  # noqa: E402
 from tools.unirally_lab.reference import core_identity  # noqa: E402
 
 LOCK = json.loads((ROOT / "tools/locks/emulators.json").read_text())
@@ -94,6 +95,31 @@ class CoreIdentityTest(unittest.TestCase):
         for sha, item in libraries.items():
             self.assertRegex(sha, "^[0-9a-f]{64}$")
             self.assertTrue(item.get("platform") and item.get("checked_by"), sha)
+
+
+class CoreCheckTest(unittest.TestCase):
+    """core_check compares only against a capture another, verified library made."""
+
+    def capture(self, core_sha256: str) -> Path:
+        directory = Path(tempfile.mkdtemp())
+        self.addCleanup(lambda: __import__("shutil").rmtree(directory))
+        (directory / "reference.json").write_text(json.dumps(dict(
+            kind="track_breadth_original", rom_sha256=core_check.ROM_SHA, core_sha256=core_sha256)))
+        return directory
+
+    def test_a_capture_from_an_unverified_library_is_refused(self) -> None:
+        library = self.capture("0" * 64) / "reference.json"
+        with self.assertRaisesRegex(ValueError, "not verified"):
+            core_check.check(library, self.capture("1" * 64))
+
+    def test_a_library_cannot_verify_itself(self) -> None:
+        verified = next(iter(core_identity.verified_cores()))
+        library = Path(tempfile.mkdtemp()) / "lib"
+        self.addCleanup(lambda: __import__("shutil").rmtree(library.parent))
+        library.write_bytes(b"x")
+        with mock.patch.object(core_check, "sha256_file", return_value=verified):
+            with self.assertRaisesRegex(ValueError, "library under test"):
+                core_check.check(library, self.capture(verified))
 
 
 class OutputPinTest(unittest.TestCase):

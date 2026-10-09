@@ -1,5 +1,27 @@
 # Next session
 
+**9 October 2026: PORTABLE-CORE-IDENTITY is accepted (tier 2, #63) and integrated by merge commit.**
+The laboratory accepts the reference core by its source, not by one binary hash, so Linux (and a
+rebuilt Mac core) can build the pack from a ROM and run the reference tools.
+- **Why.** 16 tools compared the core library's SHA-256 with the Mac's `e59bf88d`. The hash also
+  depends on the compiler, SDK and build path: Linux builds differ, and so does a rebuild of the
+  same source on this Mac today.
+- **Now.** `core_identity` accepts a library `reference build` made from the lock's commit and
+  patch, or one in `tools/locks/verified-cores.json`; `core_check` compares a library's run of a
+  stored capture with it frame by frame. D-0001 records the reading.
+
+Results:
+- Ubuntu 24.04 aarch64 and x86_64 (Docker) build the v35 pack from the ROM byte-identical to the
+  Mac's (`a12a41ec`), and the app runs on it.
+- The Linux libraries reproduce stored Mac captures on every frame, and on aarch64 the eleven
+  frozen gates pass with the Mac's row digests. On the Mac nothing moved.
+
+[PORTABLE-CORE-IDENTITY](PORTABLE-CORE-IDENTITY.md) lists the limits (frozen gates read
+the stored Mac captures; save states stay library-specific). ATTRACT-DEMO, listed as ready since
+29 September, was in fact accepted then (#44); its record is corrected. Next, at the user's
+request: the idle demo cycles after the second (R-0070's open "later cycles"). No M4 tag, reset,
+spending or provider change is authorized.
+
 **9 October 2026: ROLLING-CONTACT is accepted (tier 1, #62) and integrated by merge commit.**
 A rider rising into the underside of a high tile now leaves it as in the original.
 - **Cause.** The contact routine stops the rider's horizontal motion at an inverted face

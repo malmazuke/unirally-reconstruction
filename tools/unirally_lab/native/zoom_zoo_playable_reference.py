@@ -13,7 +13,7 @@ from .zoom_zoo_trial_reference import ROOT, ROM_SHA, PRIMARY_SHA, sha, digest
 from .zoom_zoo_race_explore import timeline
 from ..reference.bsnes import BsnesCore, BUTTONS, frame_png
 from ..replay.manifest import derive_script
-from ..reference.core_identity import accepted_reference, require_core
+from ..reference.core_identity import require_core
 
 
 def case_timeline(raw, horizon, post_events, variation=None):

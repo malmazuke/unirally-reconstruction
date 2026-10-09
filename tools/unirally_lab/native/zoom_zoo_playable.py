@@ -15,7 +15,7 @@ from .zoom_zoo_race_reference import project
 from .zoom_zoo_race import restore_frames
 from .zoom_zoo_trial import BUTTONS
 from ..content.pack import load_rules,validate_pack,TWO_TRACK_RULES_PATH
-from ..reference.core_identity import accepted_reference, require_core
+from ..reference.core_identity import accepted_reference
 
 
 ROLL_WORDS=[0x1215,0x123f,0x121b,0x1221,0x124f,0xfdf,0x1009,0x42f,0x433,0x42b,0x54b,0x124b]

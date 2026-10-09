@@ -18,27 +18,34 @@ from .track_reference import FIRST_RECORDED_FRAME, unlocked_sram
 from .zoom_zoo_trial_reference import ROOT, ROM_SHA, sha
 from ..reference.bsnes import BsnesCore
 from ..reference.commands import sha256_file
-from ..reference.core_identity import lock_source, source_built_library
+from ..reference.core_identity import lock_source, source_built_library, verified_cores
 
 
 def check(core_path: Path, capture: Path, to_frame: int | None = None) -> dict:
     document = json.loads((capture / 'reference.json').read_text())
     if document.get('kind') != 'track_breadth_original' or document['rom_sha256'] != ROM_SHA:
         raise ValueError('a track_reference capture of the supported ROM is required')
+    library_sha = sha256_file(core_path)
+    # The comparison is evidence only against a capture an already verified library made, and
+    # another library than the one under test: a library cannot verify itself.
+    if document['core_sha256'] not in verified_cores():
+        raise ValueError(f"the capture was made with library {document['core_sha256'][:16]}, which is not verified")
+    if document['core_sha256'] == library_sha:
+        raise ValueError('the capture was made with the library under test; check it against another library\'s capture')
     rom = Path((ROOT / 'local/rom-location.txt').read_text().strip())
     if sha(rom.read_bytes()) != ROM_SHA:
         raise ValueError('the ROM differs from the supported one')
     first, last = document['frames']
     last = min(last, to_frame) if to_frame is not None else last
     timeline = document['timeline']
-    unlock, preload = document.get('unlock_tours', False), [tuple(p) for p in document.get('sram_preload', [])]
-    image = unlocked_sram(core_path, rom, unlock, preload) if unlock or preload else None
-    if image is not None and sha(image) != document['preload_sram_sha256']:
-        return dict(status='failed', mismatch='preload cartridge RAM', frame=None)
-    library_sha = sha256_file(core_path)
     result = dict(status='passed', core_sha256=library_sha, reference_core_sha256=document['core_sha256'],
                   source_built=library_sha == source_built_library(), lock_source=lock_source(),
                   capture=str(capture), frames=[first, last], compared=0, mismatch=None, frame=None)
+    unlock, preload = document.get('unlock_tours', False), [tuple(p) for p in document.get('sram_preload', [])]
+    image = unlocked_sram(core_path, rom, unlock, preload) if unlock or preload else None
+    if image is not None and sha(image) != document['preload_sram_sha256']:
+        result.update(status='failed', mismatch='preload cartridge RAM', compared=0)
+        return result
     with tempfile.TemporaryDirectory() as directory:
         if image is not None:
             (Path(directory) / (rom.stem + '.srm')).write_bytes(image)

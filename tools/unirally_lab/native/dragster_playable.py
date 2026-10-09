@@ -20,7 +20,7 @@ from .zoom_zoo_playable import ROLL_WORDS
 from .dragster_playable_reference import INITIALIZATION_FRAME, FIRST_RECORDED_FRAME, MENU_MANIFEST
 from .classic_race_layout import describe
 from ..content.pack import load_rules, validate_pack, TWO_TRACK_RULES_PATH
-from ..reference.core_identity import accepted_reference, require_core
+from ..reference.core_identity import accepted_reference
 
 MAGIC = b'URDG0001'
 # ZOOM ZOO applies its constant-domain guards from end-1649, the M4-12 seed.

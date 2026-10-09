@@ -19,7 +19,7 @@ from .zoom_zoo_trial_reference import ROOT, ROM_SHA, sha, digest
 from ..reference.bsnes import BsnesCore, BUTTONS, frame_png
 from ..reference.worker import inputs_for_frame
 from ..replay.manifest import derive_script
-from ..reference.core_identity import accepted_reference, require_core
+from ..reference.core_identity import require_core
 
 MENU_MANIFEST = 'tests/manifests/replay/race-crawler-dragster-3000.json'
 INITIALIZATION_FRAME = 1328

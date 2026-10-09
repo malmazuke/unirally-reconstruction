@@ -2,7 +2,9 @@
 
 ## Assignment
 
-- Status: **in progress**, claimed 9 October 2026 (8 October 23:40 UTC) on main `56424c6`, after
+- Status: **accepted** 9 October 2026 (tier 2,
+  [PR #63](https://github.com/malmazuke/unirally-reconstruction/pull/63)); claimed 9 October 2026
+  (8 October 23:40 UTC) on main `56424c6`, after
   ROLLING-CONTACT, at the user's request to chain the remaining ready tasks. Queued 27 September
   2026 (UTC) from a cloud session that recorded gameplay video on Linux (the user's request).
 - Milestone: tooling (no milestone; it serves every later task that runs the reference core)
@@ -17,7 +19,8 @@
   allowance (D-0004): at claim weekly 1%, five-hour 8% (8 October 22:47 UTC). The user asked to
   chain this task and ATTRACT-DEMO.
 - Reviewer (primary automatically spawns fresh model/effort, isolated checkout; no user
-  trigger): a fresh Anthropic subagent.
+  trigger): a fresh Claude Opus 5.5 subagent in `.worktrees/portable-core-identity-review` at
+  `c5f9047`; review on the pull request.
 - Dependencies and evidence of acceptance: M0-03 (the pinned bsnes lock), M3-02A (the content
   pack and its extraction).
 - Base commit: main `56424c6`.
@@ -110,24 +113,51 @@ a recorded set of verified libraries, because stored captures name the library t
 a reader on another host can check a foreign hash only against a list. Logs are in main
 `local/evidence/portable-core-identity/` after closeout.
 
+## Gates
+
+- **Mac** (`local/evidence/portable-core-identity/gates.sh` on `c5f9047`, output
+  `gates-c5f9047.out`, tree clean at start and end): lab-debug ctest 41 of 41; the synthetic suite
+  and 552 tooling tests pass; the eleven differential gates pass with their recorded row digests;
+  `track_reference explore` exact on `seed7-a` (910), `t21-seed20` (2,334) and `w-rev-buttons`
+  (2,210); a fresh capture through the changed `capture()` equals the stored `seed7-a` on frames
+  1,100-1,500 and records `e59bf88d`; the candidate's `frontend run --rom` creates the v35 pack
+  `a12a41ec...`, the existing pack's bytes.
+- **Linux aarch64** (Docker `ubuntu:24.04`, `artifacts/pci/linux/run.sh` at `644ab7b`, the same tool
+  code): the eleven differential gates against the Mac's stored captures pass with the Mac's row
+  digests; 552 tooling tests pass.
+- **Hosted CI** on `c5f9047`: changes, lab (ubuntu-24.04) and lab (macos-15) pass. Hosted CI has no
+  ROM, so the Linux runs above are the documented local check.
+- Limit, not a failure: the frozen gates' inventories record their captures' library (part of each
+  capture document's digest), so they accept only captures made with `e59bf88d`. Linux runs them on
+  the stored Mac captures; a capture made again on another host would need a refreeze.
+
+## Review
+
+[Agent review (Claude Opus 5.5, tier 2) of c5f9047](https://github.com/malmazuke/unirally-reconstruction/pull/63#pullrequestreview-5464530221):
+**approved**. The reviewer reran the tooling suite, built the lock's source itself (Apple clang 17:
+yet another hash, `6a0262c4...`; `core_check` equal on `held/p1-right` and the ROLLING-CONTACT
+review's `t40-seed2008`, and a capture with one altered video hash failed at frame 1,400), and
+reproduced the Linux library `f0bfd766...` and pack `a12a41ec...` in its own container. Findings,
+all handled in the closing commit:
+- S1, a library could verify itself against its own capture: `core_check` now refuses a capture
+  from an unverified library or from the library under test (two tests).
+- S2, the frozen gates' limit above was unstated: now in this record, BUILD_AND_VALIDATION and
+  D-0001.
+- S3, a preload mismatch crashed the report: the result now carries every field.
+- Advisories: unused imports trimmed; `CORE_SHA` kept and documented (earlier evidence scripts
+  import it); D-0001's wording; `ca-certificates` added to the Linux install line; audio is not
+  compared by `core_check` (documented). The listed `3f092254` came from a scratchpad build path,
+  so it is a verified library, not a reproducible build.
+
 ## Handoff
 
-- Current base/head commit and uncommitted state: observed at `e01aaaa`, queued on `0173cbb`;
-  nothing implemented.
-- Verified findings: the two attempts above.
-- Current hypothesis and failed approaches: every host that builds the lock's commit and patch
-  runs the same emulation; the binary hash only tells the compiler apart.
-- Exact next experiment/command: on the Mac, `shasum -a 256 local/classic-pal-crawler-tracks-v23.pack`
-  (if still present), compared with `9054090d...`; then list every check that compares a core hash (`rg -n
-  "CORE_SHA|core_sha256|library_sha256" tools tests`) and sort them into identity checks and
-  provenance records.
-- Remaining dependencies: a Linux host with the ROM for the acceptance run (a cloud session with
-  the ROM uploaded works).
-- Runtime needs (network, build time, fixtures, memory): GitHub for the core's and SDL3's
-  sources; the core builds in about 30 s on 4 cores.
-
-## Review and integration
-
-- Reviewer and independent reproduction/withheld-case results: at claim.
-- Scope still unverified: whether the macOS hash is stable across Xcode versions (if not, the
-  Mac is exposed to the same failure after a toolchain update).
+- Integrated by PR #63; the closeout (`artifacts/portable-core-identity-integration/closeout.json`
+  in the main checkout) holds the merge commit, the check runs and the cleanup list.
+- At closeout: `artifacts/pci/` (the Linux logs and run scripts) moves to
+  `local/evidence/portable-core-identity/`, both worktrees go, and `python3 tools/project.py
+  bootstrap` is rerun in the main checkout.
+- Answered: the Mac's hash is not stable (attempt 4), so the Mac was exposed to the same failure
+  after any rebuild; identity by source removes it.
+- Open: save states stay tied to the exact library that wrote them; the cloud session's x86_64
+  library `668e3219...` is not listed (only part of its hash was recorded); a host that wants to
+  capture new frozen references needs a refreeze decision.

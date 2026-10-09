@@ -36,8 +36,8 @@ M0-03 had to prove, for the identified PAL ROM, headless load and identification
 ## Core identity across hosts (9 October 2026, PORTABLE-CORE-IDENTITY)
 
 This decision pins the core by its source, the commit and the tracked patch above. The laboratory
-had read that as one binary: 16 tools compared the running library's SHA-256 with the macOS
-library `e59bf88d...`. A library built from the same source has another hash on another host
+had read that as one binary: 16 tools compared the running library's SHA-256, or the one a stored
+capture recorded, with the macOS library `e59bf88d...`. A library built from the same source has another hash on another host
 (Linux x86_64 and aarch64, GCC 13) and even on this Mac today (Apple clang 17.0.0 under macOS 27
 gives `3f092254...`; Homebrew clang 19 gives `ee7bb1b4...`), so every other build was refused
 although it behaves identically.
@@ -47,8 +47,10 @@ from the lock's commit and patch, or when it is listed in `tools/locks/verified-
 its outputs were checked. The library hash stays in every record as provenance. Equal behaviour is
 shown by output pins, not by the hash: the pack rules' SHA-256 of the landing matrices extracted by
 running the core, the frozen gates, and `core_check`, which replays a stored capture's inputs and
-compares every frame's work RAM, cartridge RAM and video hashes. Save states remain tied to the
-exact library that wrote them.
+compares every frame's work RAM, cartridge RAM and video hashes against a capture another verified
+library made. The frozen gates' inventories keep the library of their captures, so they read the
+stored Mac captures on any host; a capture made again elsewhere needs a refreeze. Save states remain
+tied to the exact library that wrote them.
 
 ## Alternatives considered
 

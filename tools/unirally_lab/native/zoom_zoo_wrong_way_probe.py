@@ -12,7 +12,7 @@ from pathlib import Path
 import tempfile
 from .zoom_zoo_playable import original, ROM_SHA, sha
 from ..reference.bsnes import BsnesCore
-from ..reference.core_identity import accepted_reference, require_core
+from ..reference.core_identity import require_core
 
 
 def probe(reference, core_path, out):

@@ -12,7 +12,7 @@ import subprocess
 import tempfile
 from . import zoom_zoo_trial as trial
 from .zoom_zoo_trial_reference import ROOT, ROM_SHA, sha, digest
-from ..reference.core_identity import accepted_reference, require_core
+from ..reference.core_identity import accepted_reference
 
 EXTRA_GUARDS = {0x132b: 0}  # $81:94B9 player landing matrix override is inactive.
 

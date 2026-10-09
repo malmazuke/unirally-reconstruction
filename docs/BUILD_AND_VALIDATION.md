@@ -179,11 +179,11 @@ Use a headless build with no window/audio requirement for core checks. Container
 ### Linux hosts
 
 Ubuntu 24.04 (x86_64 or aarch64) builds the laboratory, the pinned core and the SDL3 app with the
-same commands as macOS. Install `python3`, `git`, `build-essential` (GCC 13), `pkg-config` and the
+same commands as macOS. Install `python3`, `git`, `ca-certificates`, `build-essential` (GCC 13), `pkg-config` and the
 X11 development packages the pinned SDL3 needs (CI's workflow installs the same):
 
 ```bash
-sudo apt-get install -y --no-install-recommends python3 git build-essential pkg-config libx11-dev libxext-dev libxrandr-dev libxcursor-dev libxfixes-dev libxi-dev libxss-dev libxtst-dev libxkbcommon-dev
+sudo apt-get install -y --no-install-recommends python3 git ca-certificates build-essential pkg-config libx11-dev libxext-dev libxrandr-dev libxcursor-dev libxfixes-dev libxi-dev libxss-dev libxtst-dev libxkbcommon-dev
 ```
 
 Then `python3 tools/project.py bootstrap`, `reference build`, and `frontend run --rom PATH` to
@@ -214,8 +214,15 @@ digests, and the cross-host check below.
 python3 -m tools.unirally_lab.native.core_check --core local/emulators/bsnes/bsnes/out/bsnes_libretro.so --capture <capture dir> --out <json>
 ```
 
-Save states (`reference` states with a `.state.json` sidecar) still name the exact library that
-wrote them, and the worker refuses a state from another library.
+`core_check` refuses a capture whose library is unverified or is the library under test. It
+compares work RAM, cartridge RAM and video; audio and sound-processor-only state are not compared.
+
+Limits: the frozen gates' inventories record the library their captures were made with
+(`core_sha256`, part of each capture document's digest), so they accept only those captures
+(`e59bf88d...`). Another host runs them on the stored Mac captures, as PORTABLE-CORE-IDENTITY's
+Linux run did; a capture made again on another host would need a refreeze. Save states
+(`reference` states with a `.state.json` sidecar) still name the exact library that wrote them,
+and the worker refuses a state from another library.
 
 ### Worktree cache and report layout
 

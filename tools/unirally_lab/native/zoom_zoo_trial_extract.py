@@ -14,7 +14,7 @@ from .zoom_zoo_contact import extract_content
 from ..reference.bsnes import BsnesCore
 from ..reference.worker import inputs_for_frame
 from ..replay.manifest import derive_script
-from ..reference.core_identity import accepted_reference, require_core
+from ..reference.core_identity import require_core
 
 def extract(out,library):
     if out.exists() and any(out.iterdir()):raise ValueError('refusing to overwrite nonempty extraction')
