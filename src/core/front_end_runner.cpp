@@ -1,7 +1,8 @@
 // FRONT-END-MAIN-MENU laboratory runner: the native front end from power-on, frame by frame.
 //
 // usage: front_end_runner --content-pack PACK --frames N [--inputs FILE] [--picture FRAME OUT.ppm]...
-//                         [--records FRAME OUT.bin]... [--race-initialization FRAME]...
+//                         [--records FRAME OUT.bin]... [--cartridge-in IMAGE.bin]
+//                         [--race-initialization FRAME]...
 //                         [--reset-upload-delay FRAMES]...
 //                         [--record-write FRAME OFFSET BYTE]...
 //
@@ -9,11 +10,12 @@
 // without a row has both pads released. Each frame prints one line: the frame, the arrow (spin,
 // x, target x, y, target y), the menu (idle, selection, latch), the palette cycle (delay, phase),
 // the OAM buffer ($0A00, 544 bytes) and CGRAM, in hex, for comparison with a capture's work RAM.
-// `--records` writes the one-player records after that frame as the original keeps them in
-// cartridge RAM (8 KiB, `$77:0000`), the words native does not keep left 0.
+// `--records` writes the cartridge RAM after that frame as native keeps it (8 KiB, `$77:0000`,
+// cartridge_ram.hpp); `--cartridge-in` is the image power-on finds (SAVE-FILES).
 // `--record-write` sets one record byte at its cartridge RAM offset (hex): a name
 // `$77:000C-016B`, done track `$77:1075-10A6` or medal `$77:069C-073B`.
 // Writes happen after FRAME, as in the bounded reference interventions (R-0065).
+#include "cartridge_ram.hpp"
 #include "content_pack.hpp"
 #include "front_end.hpp"
 #include "presentation.hpp"
@@ -28,6 +30,7 @@
 #include <filesystem>
 #include <fstream>
 #include <iostream>
+#include <iterator>
 #include <map>
 #include <optional>
 #include <span>
@@ -55,6 +58,7 @@ struct Options {
     std::vector<std::uint32_t> short_demo_titles;
     std::optional<std::uint32_t> human_after;
     std::optional<std::uint32_t> restore_check;
+    std::filesystem::path cartridge_in; // a saved cartridge RAM image the boot finds
     // Record bytes written after a frame: the frame, the cartridge RAM offset and the byte.
     std::vector<std::tuple<std::uint32_t, std::uint32_t, std::uint8_t>> record_writes;
 };
@@ -170,6 +174,8 @@ Options parse_options(int argc, char** argv) {
             unirally::OnePlayerRecords check;
             set_record_byte(check, offset, byte); // refuses an offset native keeps no record for
             options.record_writes.emplace_back(frame, offset, byte);
+        } else if (option == "--cartridge-in") {
+            options.cartridge_in = value();
         } else if (option == "--records") {
             const auto frame = static_cast<std::uint32_t>(std::stoul(value()));
             options.records[frame] = value();
@@ -186,7 +192,7 @@ Options parse_options(int argc, char** argv) {
     if (options.pack.empty() || options.frames == 0)
         throw std::invalid_argument("usage: front_end_runner --content-pack PACK --frames N "
                                     "[--inputs FILE] [--picture FRAME OUT.ppm]... "
-                                    "[--records FRAME OUT.bin]... "
+                                    "[--records FRAME OUT.bin]... [--cartridge-in IMAGE.bin] "
                                     "[--race-initialization FRAME]... "
                                     "[--human-after FRAME] "
                                     "[--restore-check FRAME] "
@@ -216,70 +222,22 @@ void write_ppm(const std::filesystem::path& path, const unirally::RgbFrame& fram
     if (!out) throw std::runtime_error("cannot write front-end picture");
 }
 
-// The records at their cartridge RAM addresses (front_end.hpp's OnePlayerRecords).
-void write_records(const std::filesystem::path& path, const unirally::OnePlayerRecords& records) {
-    std::array<std::uint8_t, 0x2000> image{};
-    const auto put_word = [&](std::size_t at, std::uint16_t value) {
-        image[at] = static_cast<std::uint8_t>(value);
-        image[at + 1] = static_cast<std::uint8_t>(value >> 8U);
-    };
-    std::copy(records.rider_names.begin(), records.rider_names.end(), image.begin() + 0x000c);
-    std::uint16_t name_checksum = 0;
-    for (std::size_t at = 0; at < records.rider_names.size(); at += 2)
-        name_checksum = static_cast<std::uint16_t>(
-            name_checksum + records.rider_names[at]
-            + (static_cast<std::uint16_t>(records.rider_names[at + 1]) << 8U));
-    put_word(0x016c, name_checksum);
-    std::copy(records.league_names.begin(), records.league_names.end(), image.begin() + 0x016e);
-    std::uint16_t league_checksum = 0;
-    for (std::size_t at = 0; at < records.league_names.size(); at += 2)
-        league_checksum = static_cast<std::uint16_t>(
-            league_checksum + records.league_names[at]
-            + (static_cast<std::uint16_t>(records.league_names[at + 1]) << 8U));
-    put_word(0x022e, league_checksum);
-    for (std::size_t slot = 0; slot < records.league_members.size(); ++slot)
-        put_word(0x02b2 + 2 * slot, records.league_members[slot]);
-    put_word(0x02be, records.active_league_members);
-    for (std::size_t slot = 0; slot < records.league_scores.size(); ++slot)
-        for (std::size_t row = 0; row < records.league_scores[slot].size(); ++row) {
-            put_word(0x02c0 + 32 * slot + 4 * row, records.league_played[slot][row]);
-            put_word(0x02c0 + 32 * slot + 4 * row + 2, records.league_scores[slot][row]);
-            image[0x05e8 + 8 * slot + row] = records.league_pairings[slot][row];
-            put_word(0x0618 + 16 * slot + 2 * row, records.league_event_totals[slot][row]);
-        }
-    for (std::size_t slot = 0; slot < records.league_members.size(); ++slot) {
-        image[0x0678 + slot] = records.league_pair_cursor[slot];
-        image[0x067e + slot] = records.league_tracks[slot];
-        put_word(0x0684 + 4 * slot, records.league_best[slot]);
-        put_word(0x0686 + 4 * slot, records.league_best_holder[slot]);
-    }
-    for (std::size_t k = 0; k < records.tour_levels.size(); ++k)
-        image[0x10d3 + k] = records.tour_levels[k];
-    for (std::size_t k = 0; k < records.medals.size(); ++k) image[0x069c + k] = records.medals[k];
-    for (std::size_t k = 0; k < records.tracks_done.size(); ++k)
-        image[0x1075 + k] = records.tracks_done[k];
-    for (std::size_t k = 0; k < records.best.size(); ++k) put_word(0x0829 + 2 * k, records.best[k]);
-    constexpr std::array<std::size_t, 3> times{0x0422, 0x0486, 0x04ea},
-        holders{0x0550, 0x0582, 0x05b4};
-    for (std::size_t place = 0; place < 3; ++place)
-        for (std::size_t track = 0; track < 50; ++track) {
-            put_word(times[place] + 2 * track, records.record_times[place][track]);
-            image[holders[place] + track] = records.record_holders[place][track];
-        }
-    for (std::size_t rider = 0; rider < records.statistics.size(); ++rider)
-        for (std::size_t k = 0; k < 4; ++k)
-            put_word(0x0230 + 8 * rider + 2 * k, records.statistics[rider][k]);
-    put_word(0x0742, static_cast<std::uint16_t>((records.race_lost ? 0x1000 : 0)
-                                                | (records.league_naming ? 0x0002 : 0)
-                                                | (records.league_cycle_complete ? 0x2000 : 0)));
-    put_word(0x10a9, records.player_wins);
-    put_word(0x10ab, records.opponent_wins);
-    put_word(0x1073, records.tries);
-    put_word(0x1116, records.tutorial_bits);
-    image[0x10fd] = records.pending_reveal;
-    image[0x10d0] = records.cheat ? 1 : 0;
-    for (std::size_t k = 0; k < records.levels_before_cheat.size(); ++k)
-        image[0x10e3 + k] = records.levels_before_cheat[k];
+// Power-on, with the cartridge RAM `--cartridge-in` gives (SAVE-FILES).
+unirally::FrontEndState start_state(const Options& options) {
+    auto state = unirally::start_front_end();
+    if (options.cartridge_in.empty()) return state;
+    std::ifstream in(options.cartridge_in, std::ios::binary);
+    if (!in)
+        throw std::runtime_error("cannot read --cartridge-in " + options.cartridge_in.string());
+    const std::vector<std::uint8_t> image((std::istreambuf_iterator<char>(in)),
+                                          std::istreambuf_iterator<char>());
+    unirally::insert_cartridge(state, image);
+    return state;
+}
+
+// The cartridge RAM as native keeps it (cartridge_ram.hpp).
+void write_records(const std::filesystem::path& path, const unirally::FrontEndState& state) {
+    const auto image = unirally::cartridge_image(state);
     std::ofstream out(path, std::ios::binary);
     out.write(reinterpret_cast<const char*>(image.data()),
               static_cast<std::streamsize>(image.size()));
@@ -601,8 +559,8 @@ public:
                 rotating_ = {};
                 out_ << frame << " L ";
                 if (cue.load == unirally::AudioSessionLoad::race)
-                    out_ << "race-" << unsigned(unirally::race_song_resource(cue.parameter))
-                         << " t" << unsigned(cue.command);
+                    out_ << "race-" << unsigned(unirally::race_song_resource(cue.parameter)) << " t"
+                         << unsigned(cue.command);
                 else
                     out_ << unirally::audio_session_name(cue.load);
                 out_ << '\n';
@@ -628,7 +586,7 @@ void write_frame_outputs(const Options& options, std::uint32_t frame,
     if (const auto picture = options.pictures.find(frame); picture != options.pictures.end())
         write_ppm(picture->second, unirally::render_front_end(state));
     if (const auto at = options.records.find(frame); at != options.records.end())
-        write_records(at->second, state.records);
+        write_records(at->second, state);
     if (const auto at = options.vram.find(frame); at != options.vram.end()) {
         std::ofstream out(at->second, std::ios::binary);
         out.write(reinterpret_cast<const char*>(state.video.vram.data()),
@@ -691,15 +649,15 @@ void write_loading_frame(const Options& options, const unirally::FrontEndState& 
     // A given initialization frame (a capture's) changes the session's upload, not its request:
     // the upload's length varies with the sound processor's state (R-0077).
     if (timing.upload_frames && race.loading_initialization)
-        timing.upload_frames = static_cast<std::uint32_t>(
-            static_cast<std::int64_t>(timing.upload_frames) + race.initialization_frame
-            - race.loading_initialization);
+        timing.upload_frames =
+            static_cast<std::uint32_t>(static_cast<std::int64_t>(timing.upload_frames)
+                                       + race.initialization_frame - race.loading_initialization);
     sound_cues.write(frame, unirally::race_sound::loading(race.initialization_frame - frame, timing,
                                                           track.index, state.race_song));
     if (const auto picture = options.pictures.find(frame); picture != options.pictures.end())
         write_ppm(picture->second, unirally::RgbFrame{});
     if (const auto records = options.records.find(frame); records != options.records.end())
-        write_records(records->second, state.records);
+        write_records(records->second, state);
 }
 
 } // namespace
@@ -718,7 +676,7 @@ int main(int argc, char** argv) try {
     const unirally::ClassicContentPack pack(options.pack);
     const auto content = unirally::front_end_content(pack);
     const auto inputs = read_inputs(options.inputs);
-    auto state = unirally::start_front_end();
+    auto state = start_state(options);
     RaceBetweenMenus race;
     std::optional<unirally::ZoomZooState> restored_local;
     std::size_t races = 0, resets = 0;
@@ -772,7 +730,7 @@ int main(int argc, char** argv) try {
                 if (const auto at = options.pictures.find(frame); at != options.pictures.end())
                     write_ppm(at->second, unirally::RgbFrame{});
             if (const auto at = options.records.find(frame); at != options.records.end())
-                write_records(at->second, state.records);
+                write_records(at->second, state);
         }
     }
     // A mode chosen; for 1P the race NOW PLAYING chose.

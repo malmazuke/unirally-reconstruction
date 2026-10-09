@@ -30,6 +30,10 @@ NativeTitleMenuAudio::NativeTitleMenuAudio(const TitleMenuAudioContent& content,
         engine_.set_sound_set(AudioSoundSetId::ending, content.ending);
     }
 }
+void NativeTitleMenuAudio::insert_cartridge(std::span<const std::uint8_t, 8192> image) {
+    if (phase_ != TitleMenuAudioPhase::cold) throw std::logic_error("audio already initialized");
+    std::copy(image.begin(), image.end(), cartridge_.begin());
+}
 // R-0075. Compose the frozen native cold work through F5C8, before its first hold frame.
 void NativeTitleMenuAudio::initialize_title() {
     if (phase_ != TitleMenuAudioPhase::cold) throw std::logic_error("audio already initialized");

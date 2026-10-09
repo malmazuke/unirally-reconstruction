@@ -5,10 +5,12 @@ namespace unirally::app {
 namespace {
 struct StreamStopped {};
 }
-TitleMenuAudioStream::TitleMenuAudioStream(const ClassicContentPack& pack,
-                                           std::uint32_t output_rate)
+TitleMenuAudioStream::TitleMenuAudioStream(
+    const ClassicContentPack& pack, std::uint32_t output_rate,
+    const std::optional<std::array<std::uint8_t, 8192>>& cartridge)
     : content_(title_menu_audio_content(pack)), output_rate_(output_rate),
       playback_(content_, *this, output_rate) {
+    if (cartridge) playback_.native().insert_cartridge(*cartridge);
     producer_ = std::thread([this] { run(); });
 }
 TitleMenuAudioStream::~TitleMenuAudioStream() {

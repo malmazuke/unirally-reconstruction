@@ -85,6 +85,9 @@ public:
     NativeTitleMenuAudio(const TitleMenuAudioContent& content, AudioControllerSource& controllers,
                          AudioEngineEventSink* events = nullptr);
     void set_pcm_sink(AudioPcmSink* sink) { engine_.set_pcm_sink(sink); }
+    // Before initialize_title: the cartridge RAM power-on finds (a save file, SAVE-FILES), so the
+    // boot's signature check (`$80:8C4E`) keeps it and skips the defaults' work.
+    void insert_cartridge(std::span<const std::uint8_t, 8192> image);
     void initialize_title();
     bool title_frame();
     void reveal_menu();

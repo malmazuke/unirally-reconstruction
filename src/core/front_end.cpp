@@ -1,5 +1,6 @@
 #include "front_end.hpp"
 
+#include "cartridge_ram.hpp"
 #include "content_pack.hpp"
 #include "front_end_screens.hpp"
 #include "text_printer.hpp"
@@ -196,12 +197,17 @@ constexpr std::array<FrameWaits, 5> boot_frame_waits{{
 // The boot's frame: the frames since power-on, or since a soft reset. After a reset the sound
 // program's upload (`$80:A09A`) ends `reset_upload_delay` frames later than at power-on, so the
 // boot's frames 97-403 come that much later; the records' wipe (404-406), which the reset does not
-// need, is skipped (HUNTER-ENDING). Empty on the frames the upload adds.
+// need, is skipped (HUNTER-ENDING), as it is when power-on finds a saved image (SAVE-FILES).
+// Empty on the frames the upload adds.
 std::optional<std::uint32_t> boot_frame_number(const FrontEndState& state) {
     constexpr std::uint32_t wipe_frames = 3;
     const auto delay = state.reset_upload_delay;
     const auto frame = state.frame - state.boot_start;
-    if (!state.after_soft_reset || frame < nintendo_registers_frame) return frame;
+    if (!state.after_soft_reset) {
+        if (frame <= menu_map_filled_frame || !state.records_kept) return frame;
+        return frame + wipe_frames;
+    }
+    if (frame < nintendo_registers_frame) return frame;
     if (frame < nintendo_registers_frame + delay) return std::nullopt;
     if (frame <= menu_map_filled_frame + delay) return frame - delay;
     return frame - delay + wipe_frames;
@@ -281,12 +287,22 @@ void check_title_code(FrontEndState& state, std::uint16_t pad) {
     records.cheat = true;
 }
 
-// $80:8C4E (boot frame 403): cartridge RAM that does not start with the signature `$83:8000` is
-// wiped to a cold start's records (`$83:FB41`, frames 403-405). Native's power-on has no records
-// of its own, so it always wipes; after a soft reset the signature is there. Then `$83:8B23`
-// clears the one-player flag `$77:10AD` and the pending reveal.
+// $80:8C4E (boot frame 403): after the mirror test, which leaves `$56` at `$77:1FFF` ($83:8AF7),
+// cartridge RAM that does not start with the signature `$83:8000` is wiped to a cold start's
+// (`$83:FB41`, frames 403-405). After a soft reset, or with a saved image, the signature is there
+// and the records stay (SAVE-FILES). Then `$83:8B23` clears the one-player flag `$77:10AD` and
+// the pending reveal.
 void check_records(FrontEndState& state, const FrontEndContent& content) {
-    if (!state.after_soft_reset) {
+    constexpr std::size_t mirror_test_byte = 0x1fff;
+    state.cartridge[mirror_test_byte] = 0x56;
+    if (state.after_soft_reset) {
+        state.records_kept = true;
+    } else if (has_signature(state.cartridge, content)) {
+        state.records_kept = true; // insert_cartridge read its fields
+    } else {
+        // Content without the defaults (the synthetic tests' own) leaves the image zeroed.
+        state.cartridge =
+            content.cartridge_defaults.empty() ? CartridgeImage{} : cold_start_cartridge(content);
         state.records = cold_start_records();
         if (content.rider_names.size() != state.records.rider_names.size())
             throw std::invalid_argument("the original rider-name table has the wrong size");
@@ -298,6 +314,7 @@ void check_records(FrontEndState& state, const FrontEndContent& content) {
                   state.records.league_names.begin());
     }
     state.one_player = false;
+    state.cartridge[one_player_mode] = state.cartridge[one_player_mode + 1] = 0; // `$83:8B3B`
     state.records.pending_reveal = 0;
 }
 
@@ -717,6 +734,12 @@ std::string asset_name(unsigned id) {
 
 namespace {
 
+// The cartridge RAM's defaults and the track kinds they read (SAVE-FILES).
+void load_cartridge_content(FrontEndContent& content, const ClassicContentPack& pack) {
+    content.cartridge_defaults = pack.entry("audio.cartridge-defaults");
+    content.track_types = pack.entry("audio.track-types");
+}
+
 void load_options_content(FrontEndContent& content, const ClassicContentPack& pack) {
     content.options_menu_text = pack.entry("front-end.options-menu-text");
     content.options_arrow_columns = pack.entry("front-end.options-arrow-columns");
@@ -762,6 +785,7 @@ FrontEndContent front_end_content(const ClassicContentPack& pack) {
     content.arrow_frames = pack.entry("front-end.arrow-frames");
     content.menu_arrow_columns = pack.entry("front-end.menu-arrow-columns");
     content.cycle_colours = pack.entry("front-end.cycle-colours");
+    load_cartridge_content(content, pack);
     for (unsigned id = 6; id <= 21; ++id) content.assets[id] = pack.entry(asset_name(id));
     content.rider_names = pack.entry("front-end.rider-names");
     content.rider_menu_title = pack.entry("front-end.pick-rider-title");
@@ -1028,6 +1052,7 @@ void soft_reset(FrontEndState& state) {
     reset.frame = reset.boot_start = state.frame;
     reset.after_soft_reset = true;
     reset.records = state.records;
+    reset.cartridge = state.cartridge;
     reset.one_player = state.one_player;
     reset.video.cgram = state.video.cgram;
     reset.video.oam = state.video.oam;

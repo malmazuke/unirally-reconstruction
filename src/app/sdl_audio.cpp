@@ -4,7 +4,8 @@
 #include <stdexcept>
 
 namespace unirally::app {
-SdlTitleMenuAudio::SdlTitleMenuAudio(const ClassicContentPack& pack) {
+SdlTitleMenuAudio::SdlTitleMenuAudio(const ClassicContentPack& pack,
+                                     const std::optional<std::array<std::uint8_t, 8192>>& cartridge) {
     if (pack.optional_entry("audio.hunter-graphics-work-directory").empty())
         throw std::invalid_argument("--native-title-menu-audio requires a v31 or later content pack");
     SDL_AudioSpec spec{SDL_AUDIO_S16, 2, 48000};
@@ -20,7 +21,7 @@ SdlTitleMenuAudio::SdlTitleMenuAudio(const ClassicContentPack& pack) {
         if (!SDL_SetAudioStreamFormat(device_, &spec, nullptr))
             throw std::runtime_error(SDL_GetError());
         rate_ = static_cast<std::uint32_t>(spec.freq);
-        producer_ = std::make_unique<TitleMenuAudioStream>(pack, rate_);
+        producer_ = std::make_unique<TitleMenuAudioStream>(pack, rate_, cartridge);
     } catch (...) {
         SDL_DestroyAudioStream(device_);
         device_ = nullptr;

@@ -7,7 +7,8 @@
 namespace unirally::app {
 class SdlTitleMenuAudio {
 public:
-    explicit SdlTitleMenuAudio(const ClassicContentPack& pack);
+    SdlTitleMenuAudio(const ClassicContentPack& pack,
+                      const std::optional<std::array<std::uint8_t, 8192>>& cartridge = {});
     ~SdlTitleMenuAudio();
     void submit_frame(std::uint32_t frame, std::array<std::uint16_t, 2> words,
                       AudioCueList cues = {}, bool stop = false);

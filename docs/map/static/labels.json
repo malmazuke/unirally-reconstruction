@@ -938,8 +938,10 @@
   "label": "sub_808C4E",
   "native": [
    "src/core/audio_cpu_menu_records.cpp:native_audio_begin_menu_records",
+   "src/core/cartridge_ram.hpp:has_signature",
    "src/core/front_end.cpp:check_records",
-   "src/core/front_end.hpp:OnePlayerRecords"
+   "src/core/front_end.hpp:OnePlayerRecords",
+   "src/core/title_menu_audio.hpp:NativeTitleMenuAudio::insert_cartridge"
   ],
   "source_records": [
    "docs/research/R-0054-boot-title-main-menu.md",
@@ -947,7 +949,8 @@
    "docs/research/R-0056-tour-track-now-playing.md",
    "docs/research/R-0057-one-run-result.md",
    "docs/research/R-0064-hunter-ending-and-soft-reset.md",
-   "docs/research/R-0075-title-menu-audio.md"
+   "docs/research/R-0075-title-menu-audio.md",
+   "docs/research/R-0090-save-files.md"
   ]
  },
  {
@@ -956,7 +959,8 @@
   "comment": "instruction start",
   "label": "loc_808C80",
   "native": [
-   "src/core/audio_cpu_menu_defaults.cpp:native_audio_menu_first_record_defaults"
+   "src/core/audio_cpu_menu_defaults.cpp:native_audio_menu_first_record_defaults",
+   "src/core/cartridge_ram.hpp:cold_start_cartridge"
   ],
   "source_records": [
    "docs/research/R-0075-title-menu-audio.md"
@@ -968,7 +972,9 @@
   "comment": "instruction start",
   "label": "loc_808CB6",
   "native": [
-   "src/core/audio_cpu_menu_defaults.cpp:native_audio_finish_menu_records"
+   "src/core/audio_cpu_menu_defaults.cpp:native_audio_finish_menu_records",
+   "src/core/audio_cpu_menu_defaults.cpp:native_audio_menu_first_record_defaults",
+   "src/core/cartridge_ram.hpp:cold_start_cartridge"
   ],
   "source_records": [
    "docs/research/R-0075-title-menu-audio.md"
@@ -1748,7 +1754,17 @@
    "src/core/now_playing.cpp:race_fade_frame"
   ],
   "source_records": [
-   "docs/research/R-0057-one-run-result.md"
+   "docs/research/R-0057-one-run-result.md",
+   "docs/research/R-0090-save-files.md"
+  ]
+ },
+ {
+  "address": "$80:9A3F",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_809A3F",
+  "source_records": [
+   "docs/research/R-0090-save-files.md"
   ]
  },
  {
@@ -1961,6 +1977,18 @@
   ]
  },
  {
+  "address": "$80:9F21",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_809F21",
+  "native": [
+   "src/core/options_menu.cpp:enter_league_slots"
+  ],
+  "source_records": [
+   "docs/research/R-0090-save-files.md"
+  ]
+ },
+ {
   "address": "$80:A09A",
   "class": "observed",
   "comment": "routine start",
@@ -2002,7 +2030,8 @@
   "comment": "instruction start",
   "label": "loc_80A0A5",
   "native": [
-   "src/core/audio_cpu_interrupt.hpp:AudioCpuInterruptWorkState::cartridge_flags, AudioCpuInterruptWorkState::scroll, AudioCpuInterruptWorkState::palette_delay, AudioCpuInterruptWorkState::palette_index"
+   "src/core/audio_cpu_interrupt.hpp:AudioCpuInterruptWorkState::cartridge_flags, AudioCpuInterruptWorkState::scroll, AudioCpuInterruptWorkState::palette_delay, AudioCpuInterruptWorkState::palette_index",
+   "src/core/cartridge_ram.cpp:insert_cartridge"
   ],
   "source_records": [
    "docs/research/R-0075-title-menu-audio.md"
@@ -3368,6 +3397,7 @@
   "comment": "instruction start",
   "label": "loc_80BBEE",
   "native": [
+   "src/core/cartridge_ram.cpp:cartridge_image",
    "src/core/rider_menu.cpp:rider_menu_frame"
   ],
   "source_records": [
@@ -6816,11 +6846,13 @@
   "label": "sub_80F55F",
   "native": [
    "src/core/audio_cpu_title.cpp:native_audio_load_title_graphics",
+   "src/core/cartridge_ram.cpp:insert_cartridge",
    "src/core/front_end.cpp:load_title",
    "src/core/front_end.cpp:title_palette, title_map, title_tiles"
   ],
   "source_records": [
-   "docs/research/R-0054-boot-title-main-menu.md"
+   "docs/research/R-0054-boot-title-main-menu.md",
+   "docs/research/R-0090-save-files.md"
   ]
  },
  {
@@ -16408,10 +16440,15 @@
   "comment": "unknown",
   "label": "unk_838000",
   "native": [
-   "src/core/front_end.cpp:check_records"
+   "src/core/cartridge_ram.cpp:cartridge_defaults_bytes, track_count",
+   "src/core/cartridge_ram.hpp:has_signature",
+   "src/core/front_end.cpp:check_records",
+   "src/core/front_end.hpp:FrontEndContent::cartridge_defaults, FrontEndContent::track_types"
   ],
   "source_records": [
-   "docs/research/R-0064-hunter-ending-and-soft-reset.md"
+   "docs/research/R-0064-hunter-ending-and-soft-reset.md",
+   "docs/research/R-0090-save-files.md",
+   "tasks/SAVE-FILES.md"
   ]
  },
  {
@@ -16867,16 +16904,30 @@
   ]
  },
  {
+  "address": "$83:89EF",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_8389EF",
+  "native": [
+   "src/core/cartridge_ram.cpp:cartridge_image"
+  ],
+  "source_records": [
+   "docs/research/R-0090-save-files.md"
+  ]
+ },
+ {
   "address": "$83:8AF7",
   "class": "observed",
   "comment": "routine start",
   "label": "sub_838AF7",
   "native": [
-   "src/core/audio_cpu_menu_records.cpp:verify_cartridge_mirror"
+   "src/core/audio_cpu_menu_records.cpp:verify_cartridge_mirror",
+   "src/core/front_end.cpp:check_records"
   ],
   "source_records": [
    "docs/research/R-0054-boot-title-main-menu.md",
-   "docs/research/R-0075-title-menu-audio.md"
+   "docs/research/R-0075-title-menu-audio.md",
+   "docs/research/R-0090-save-files.md"
   ]
  },
  {
@@ -16892,6 +16943,19 @@
   "source_records": [
    "docs/research/R-0054-boot-title-main-menu.md",
    "docs/research/R-0075-title-menu-audio.md"
+  ]
+ },
+ {
+  "address": "$83:8B3B",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_838B3B",
+  "native": [
+   "src/core/cartridge_ram.hpp:one_player_mode",
+   "src/core/front_end.cpp:check_records"
+  ],
+  "source_records": [
+   "docs/research/R-0090-save-files.md"
   ]
  },
  {
@@ -17077,6 +17141,8 @@
   "label": "sub_8390F4",
   "native": [
    "src/core/audio_cpu_menu_defaults.cpp:write_record_checksums",
+   "src/core/cartridge_ram.cpp:cartridge_image",
+   "src/core/cartridge_ram.cpp:checksum",
    "src/core/front_end.hpp:OnePlayerRecords::statistics",
    "src/core/race_result.cpp:insert_record"
   ],
@@ -17115,10 +17181,12 @@
   "comment": "routine start",
   "label": "sub_8391FB",
   "native": [
+   "src/core/cartridge_ram.cpp:insert_cartridge",
    "src/core/front_end.cpp:restore_menu_screen"
   ],
   "source_records": [
-   "docs/research/R-0059-tour-completion.md"
+   "docs/research/R-0059-tour-completion.md",
+   "docs/research/R-0090-save-files.md"
   ]
  },
  {
@@ -17358,7 +17426,8 @@
    "src/core/league_menu.cpp:restore_league_pair"
   ],
   "source_records": [
-   "docs/research/R-0073-league.md"
+   "docs/research/R-0073-league.md",
+   "docs/research/R-0090-save-files.md"
   ]
  },
  {
@@ -23083,11 +23152,13 @@
   "label": "sub_83FB41",
   "native": [
    "src/core/audio_cpu_menu_records.cpp:clear_cartridge",
+   "src/core/cartridge_ram.hpp:cold_start_cartridge",
    "src/core/front_end.cpp:check_records"
   ],
   "source_records": [
    "docs/research/R-0064-hunter-ending-and-soft-reset.md",
-   "docs/research/R-0075-title-menu-audio.md"
+   "docs/research/R-0075-title-menu-audio.md",
+   "docs/research/R-0090-save-files.md"
   ]
  },
  {

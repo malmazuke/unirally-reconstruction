@@ -50,6 +50,9 @@ struct FrontEndContent {
     std::span<const std::uint8_t> rename_who_title, define_player_who_title;
     std::span<const std::uint8_t> define_player_warning, define_player_confirm_prompt;
     std::span<const std::uint8_t> rename_prompt, keyboard_text;
+    // The cartridge RAM's defaults from `$83:8000` (its signature first) and the track kinds
+    // the defaults read (SAVE-FILES).
+    std::span<const std::uint8_t> cartridge_defaults, track_types;
     std::span<const std::uint8_t> league_slot_text, league_names, league_warning, league_title,
         league_minimum, league_maximum, league_prompt, league_table_text, league_awards_text,
         league_continue_text;
@@ -254,6 +257,9 @@ struct OnePlayerRecords {
     std::uint8_t demo_split{};
 };
 OnePlayerRecords cold_start_records();
+
+// The cartridge RAM, `$77:0000-1FFF` (cartridge_ram.hpp).
+using CartridgeImage = std::array<std::uint8_t, 0x2000>;
 
 // PICK TOUR ($80:E550): the tours in two columns of four, HUNTER below. The cursor is 2 * row +
 // column; 8 is HUNTER, 9 HUNTER reached from the right column.
@@ -501,6 +507,15 @@ struct FrontEndState {
     std::uint32_t boot_start{};
     bool after_soft_reset{};
     std::uint32_t reset_upload_delay{3};
+    // The cartridge RAM's bytes native keeps no field for (cartridge_ram.hpp): what power-on
+    // finds (`$FF` in the reference core, or a saved image), then the cold start's or the saved
+    // image's. `records_kept`: the boot found the signature and skipped the wipe (SAVE-FILES).
+    CartridgeImage cartridge = [] {
+        CartridgeImage image;
+        image.fill(0xff);
+        return image;
+    }();
+    bool records_kept{};
     std::uint8_t title_code_step{}; // the title code's words matched so far (`$80:F5C0`)
     FrontEndScreen screen{};
     std::uint32_t script_frame{}; // frames since the current script began

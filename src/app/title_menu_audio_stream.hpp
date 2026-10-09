@@ -4,6 +4,7 @@
 #include <condition_variable>
 #include <exception>
 #include <mutex>
+#include <optional>
 #include <thread>
 
 namespace unirally::app {
@@ -13,7 +14,9 @@ namespace unirally::app {
 // the producer instead (D-0010); `stop` ends production where it is not recovered.
 class TitleMenuAudioStream final : private AudioControllerSource {
 public:
-    explicit TitleMenuAudioStream(const ClassicContentPack& pack, std::uint32_t output_rate);
+    // `cartridge`: the saved cartridge RAM power-on finds, or none (SAVE-FILES).
+    TitleMenuAudioStream(const ClassicContentPack& pack, std::uint32_t output_rate,
+                         const std::optional<std::array<std::uint8_t, 8192>>& cartridge = {});
     ~TitleMenuAudioStream();
     void submit_frame(std::uint32_t frame, std::array<std::uint16_t, 2> words,
                       AudioCueList cues = {}, bool stop = false);

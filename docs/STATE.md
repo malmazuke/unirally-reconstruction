@@ -1,5 +1,24 @@
 # Project state
 
+**10 October 2026: SAVE-FILES is accepted (tier 1, #67) and integrated by merge commit.**
+The app keeps the game's cartridge RAM between runs: `unirally --save-file PATH` (or `frontend run
+--save-file PATH`). Records, player names, leagues, medals and open tours survive a restart.
+- **The file** is the original's 8 KiB image, so an emulator's save of the ROM loads too. Native
+  reads its fields at power-on, as the original does; at the boot's check an image with the
+  signature `$83:8000` keeps them and the boot skips the wipe, anything else is wiped.
+- **Cold starts** are unchanged, and native's cold image now equals the original's byte for byte.
+
+Results:
+- Perturbing saved images showed which bytes a later boot reads; over the 236 corpus runs every
+  record field is equal at every compared frame in 130, the rest being write timing, one overlap
+  and other modes' gaps (league, two-human restart, VS mode 2), queued to their tasks.
+- Warm boots from the original's saves show the same screens; pictures differ only around the
+  sound program's handshakes (14,809 of 18,750 every-5th pictures equal), a known class.
+- Every frozen gate, the race and front-end sweeps and all capture comparisons equal main.
+
+[R-0090](research/R-0090-save-files.md) defines the domain and the limits (a few transient bytes
+keep the boot's values in a native save). Next ready: MODE-AUDIO (R-0089's queue item 2).
+
 **9 October 2026: COVERAGE-GAPS is accepted (tier 3, #66) and integrated by merge commit.**
 The coverage roadmap's queue was done, so this task measured what is left. Every captured
 scenario behind the accepted tasks (236 captures, 1.67 million frames) was run again with
