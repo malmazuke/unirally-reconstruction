@@ -168,3 +168,72 @@ def validate_document(data: Any) -> dict[str, Any]:
     if sum(s[3] for s in data["sites"]) != ins["total"]:
         raise ValueError("site counts must sum to instructions.total")
     return data
+
+
+def merge_documents(docs: list[dict[str, Any]], scenario_id: str, sources: list[dict[str, Any]]) -> dict[str, Any]:
+    """One coverage document for several complete captures of the same ROM and core (DATA-COVERAGE).
+
+    The runs are laid end to end on one frame axis in the given order: per-frame counts and watch
+    series are concatenated, and a site's first frame is its first in the earliest run that
+    executes it, offset by the frames before that run. Site and pair counts are summed; no pair
+    joins the last site of one run to the first of the next. ``first_site`` is the first run's,
+    ``tail_sites`` and ``last_site`` the last run's. ``sources`` (path and SHA-256 of each input,
+    in order) is recorded as ``merged_from``. Raises ValueError when the inputs disagree."""
+    if not docs or len(docs) != len(sources):
+        raise ValueError("merge needs one source entry per coverage document, and at least one")
+    first = docs[0]
+    rom = first["rom"]
+    core_key = ("name", "commit", "patch_sha256", "sha256")
+    core = {k: first["core"].get(k) for k in core_key}
+    watch_addresses = first.get("watch", {}).get("addresses", [])
+    for i, d in enumerate(docs):
+        if d.get("status") != "complete":
+            raise ValueError(f"input {i} is not complete: {d.get('status')!r}")
+        if d["rom"] != rom:
+            raise ValueError(f"input {i} is of another ROM")
+        if {k: d["core"].get(k) for k in core_key} != core:
+            raise ValueError(f"input {i} is of another core")
+        if d.get("watch", {}).get("addresses", []) != watch_addresses:
+            raise ValueError(f"input {i} watches other addresses")
+    sites: dict[tuple[int, int, int], list[int]] = {}
+    pairs: Counter[tuple[int, ...]] = Counter()
+    per_frame: list[int] = []
+    watch: dict[str, list[int]] = {str(a): [] for a in watch_addresses}
+    offset = 0
+    for d in docs:
+        for pc, mode, bank, count, first_frame in d["sites"]:
+            key = (pc, mode, bank)
+            cur = sites.get(key)
+            if cur is None:
+                sites[key] = [count, offset + first_frame]
+            else:
+                cur[0] += count
+        for p in d["pairs"]:
+            pairs[tuple(p[:6])] += p[6]
+        per_frame.extend(d["instructions"]["per_frame"])
+        for a in watch:
+            watch[a].extend(d["watch"]["per_frame"][a])
+        offset += d["frames"]["count"]
+    last = docs[-1]
+    return {
+        "schema_version": COVERAGE_SCHEMA_VERSION,
+        "kind": "instruction_coverage",
+        "scenario_id": scenario_id,
+        "status": "complete",
+        "failure": None,
+        "rom": rom,
+        "core": first["core"],
+        "ring_capacity": max(d["ring_capacity"] for d in docs),
+        "frames": {"start": 0, "end": offset - 1, "count": offset},
+        "instructions": {"initial_total": first["instructions"]["initial_total"], "total": sum(per_frame),
+                         "max_frame_delta": max(d["instructions"]["max_frame_delta"] for d in docs), "per_frame": per_frame},
+        "site_fields": first["site_fields"],
+        "sites": [[pc, mode, bank, v[0], v[1]] for (pc, mode, bank), v in sorted(sites.items())],
+        "pair_fields": first["pair_fields"],
+        "pairs": [[*k, n] for k, n in sorted(pairs.items())],
+        "first_site": first.get("first_site"),
+        "last_site": last.get("last_site"),
+        "tail_sites": last.get("tail_sites", []),
+        "watch": {"addresses": list(watch_addresses), "per_frame": watch},
+        "merged_from": sources,
+    }

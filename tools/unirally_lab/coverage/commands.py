@@ -137,10 +137,59 @@ def cmd_capture(args: argparse.Namespace) -> int:
     return _finish(rep, args, replaycmd._status_from_checks(rep))
 
 
+# --------------------------------------------------------------- merge
+
+
+def cmd_merge(args: argparse.Namespace) -> int:
+    rep = reportmod.Report(sys.argv, task_id=args.task)
+    paths = [Path(p) for p in (args.coverage or [])]
+    if args.coverage_list:
+        listed = Path(args.coverage_list)
+        if not listed.is_file():
+            rep.add_check("coverage_available", "missing", detail=f"{listed} not found")
+            return _finish(rep, args, EXIT_MISSING_PREREQUISITE)
+        paths += [Path(line.strip()) for line in listed.read_text(encoding="utf-8").splitlines() if line.strip()]
+    if not paths:
+        rep.add_check("coverage_available", "failed", detail="no --coverage or --coverage-list")
+        return _finish(rep, args, EXIT_INVALID_INPUT)
+    docs, sources = [], []
+    for path in paths:
+        if not path.is_file():
+            rep.add_check("coverage_available", "missing", detail=f"{path} not found")
+            return _finish(rep, args, EXIT_MISSING_PREREQUISITE)
+        try:
+            docs.append(drain.validate_document(json.loads(path.read_text(encoding="utf-8"))))
+        except (OSError, ValueError) as exc:
+            rep.add_check("coverage_available", "failed", detail=f"{path}: {exc}")
+            return _finish(rep, args, EXIT_INVALID_INPUT)
+        sha = refcmd.sha256_file(path)
+        rep.add_input("coverage", path, sha, scenario_id=docs[-1].get("scenario_id"))
+        sources.append({"path": str(path), "sha256": sha, "scenario_id": docs[-1].get("scenario_id"), "frames": docs[-1]["frames"]["count"]})
+    rep.add_check("coverage_available", "passed", detail=f"{len(docs)} coverage file(s)")
+    try:
+        merged = drain.validate_document(drain.merge_documents(docs, args.scenario, sources))
+    except ValueError as exc:
+        rep.add_check("inputs_agree", "failed", detail=str(exc))
+        return _finish(rep, args, EXIT_INVALID_INPUT)
+    rep.add_check("inputs_agree", "passed", detail="one ROM, one core, complete captures, the same watched addresses")
+    out = Path(args.out)
+    out.parent.mkdir(parents=True, exist_ok=True)
+    sha = _write_coverage(out, merged)
+    rep.add_check("coverage_written", "passed", detail=f"{out} sha256 {sha[:16]}; {len(merged['sites'])} sites, {len(merged['pairs'])} pairs, "
+                                                     f"{merged['frames']['count']} frames")
+    rep.data["coverage"] = {"path": str(out), "sha256": sha, "scenario_id": args.scenario, "inputs": len(docs),
+                            "frames": merged["frames"]["count"], "instructions": merged["instructions"]["total"], "sites": len(merged["sites"])}
+    return _finish(rep, args, replaycmd._status_from_checks(rep))
+
+
 # ----------------------------------------------------------------- map
 
 
-def regeneration_command(scenario_id: str) -> str:
+def regeneration_command(scenario_id: str, merged: bool = False) -> str:
+    if merged:
+        return (f"python3 tools/project.py coverage merge --coverage-list <the inputs of merged_from> --scenario {scenario_id} "
+                f"--out <coverage.json> && python3 tools/project.py coverage map --coverage <coverage.json> "
+                f"--out docs/map/{scenario_id}.map.json --summary docs/map/{scenario_id}.md")
     return (f"python3 tools/project.py coverage capture --manifest tests/manifests/replay/{scenario_id}.json --out artifacts/coverage/{scenario_id} "
             f"&& python3 tools/project.py coverage map --coverage artifacts/coverage/{scenario_id}/coverage.json "
             f"--out docs/map/{scenario_id}.map.json --summary docs/map/{scenario_id}.md")
@@ -195,7 +244,7 @@ def cmd_map(args: argparse.Namespace) -> int:
     rom_bytes = rom.read_bytes()
     core = {k: cov["core"].get(k) for k in ("name", "commit", "patch_sha256", "sha256", "serialization_method")}
     core["library_sha256"] = core.pop("sha256")
-    doc, detail = derive.build_map(cov, rom_bytes, scenario, core, coverage_sha, regeneration_command(scenario), observed["header"]["offset"])
+    doc, detail = derive.build_map(cov, rom_bytes, scenario, core, coverage_sha, regeneration_command(scenario, "merged_from" in cov), observed["header"]["offset"])
 
     baseline = None
     if args.baseline:
@@ -475,6 +524,15 @@ def register(sub: argparse._SubParsersAction) -> None:
     mp.add_argument("--report", help="write the JSON run report here")
     mp.add_argument("--task", help="task ID to record in the report")
     mp.set_defaults(func=cmd_map)
+
+    merge = csub.add_parser("merge", help="one coverage document from several complete captures, laid end to end (DATA-COVERAGE)")
+    merge.add_argument("--coverage", action="append", help="coverage.json written by `coverage capture` (repeatable, in order)")
+    merge.add_argument("--coverage-list", help="file listing coverage.json paths, one per line, after any --coverage")
+    merge.add_argument("--scenario", required=True, help="scenario id of the merged document")
+    merge.add_argument("--out", required=True, help="merged coverage.json to write")
+    merge.add_argument("--report", help="write the JSON run report here")
+    merge.add_argument("--task", help="task ID to record in the report")
+    merge.set_defaults(func=cmd_merge)
 
     maps_default = str(ROOT / "docs" / "map")
     dis = csub.add_parser("disassemble", help="static listing of banks $80-$83 from the ROM and the tracked maps (ignored output)")
