@@ -64,3 +64,17 @@ Outside: the race state (exact), audio, the titles the sound processor shortens 
   the first return differs again. Next: read the hook (`$80:FA60`, R-0070's trace at 5103-5117 for
   the interrupted return) and model the first step, then check cycle 1's return, the interrupted
   returns' frozen pictures (`local/evidence/attract-demo/interrupt-*`), and rerun `pictures.py`.
+
+## Checkpoint - 9 October 2026 05:45 UTC
+
+- **Idle menu palette fixed.** The original's hook (`$80:FA60`) steps like native's, but on the
+  timer's demo return `$00C8/$00C9` go 0/0, then 5/3: the hook runs twice on its first frame (an
+  NMI pending when NMIs are enabled). Exceptions: the first demo's return and every cycle whose
+  title was short (cycles 1, 13, 16, 18, 21, 33 of `cold-102000`) step once, so the sound
+  processor's timing decides both. Native: `PaletteCycle::pending_nmi` on the timer return unless
+  it is the first or the cycle's title was short (`demo_title_was_short`, known only from a
+  capture's `--short-demo-title`; the product takes every title as long). All 16,432 idle-menu
+  frames' `$00C8/$00C9` equal; pictures 939 of 1,006 equal.
+- Remaining: the title wave (about 8,500 pixels around title frames 140-200, 27 pictures), two title
+  starts (57,057 at cycles 10 and 17, 5,265 at title frame 203), small race sprite differences
+  (1-107 pixels), 1,536 at 92,500 and 768 at 101,600.

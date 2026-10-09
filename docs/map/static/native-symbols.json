@@ -11502,7 +11502,8 @@
    "address": "$00C8",
    "native": [
     "src/core/front_end.cpp:demo_return_frame",
-    "src/core/front_end.hpp:PaletteCycle::delay"
+    "src/core/front_end.hpp:PaletteCycle::delay",
+    "src/core/front_end.hpp:PaletteCycle::pending_nmi"
    ],
    "region": "wram"
   },
@@ -11511,6 +11512,7 @@
    "native": [
     "src/core/front_end.cpp:choose_idle_demo",
     "src/core/front_end.cpp:demo_return_frame",
+    "src/core/front_end.hpp:PaletteCycle::pending_nmi",
     "src/core/front_end.hpp:PaletteCycle::phase"
    ],
    "region": "wram"
@@ -16123,6 +16125,12 @@
   "src/core/front_end.hpp:PaletteCycle::delay": {
    "wram": [
     "$00C8"
+   ]
+  },
+  "src/core/front_end.hpp:PaletteCycle::pending_nmi": {
+   "wram": [
+    "$00C8",
+    "$00C9"
    ]
   },
   "src/core/front_end.hpp:PaletteCycle::phase": {
@@ -22529,7 +22537,7 @@
  "totals": {
   "addresses": 1629,
   "io_addresses": 11,
-  "native_symbols": 1233,
+  "native_symbols": 1234,
   "rom_addresses": 1239,
   "sram_addresses": 53,
   "wram_addresses": 326

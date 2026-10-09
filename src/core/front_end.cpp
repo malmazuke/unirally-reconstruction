@@ -464,6 +464,10 @@ void set_tile_bases(SnesVideoRegisters& registers, std::uint8_t nba) {
 void run_nmi_hook(FrontEndState& state, const FrontEndContent& content) {
     scroll_logo(state);
     step_palette_cycle(state, content);
+    if (state.cycle.pending_nmi) {
+        state.cycle.pending_nmi = false;
+        step_palette_cycle(state, content);
+    }
 }
 
 // $80:A09A (frame 24): every OAM entry at (1, 1), every high bit 0x55; the early loads.
@@ -996,14 +1000,17 @@ void demo_return_frame(FrontEndState& state, const FrontEndContent& content) {
         state.cycle.running = false;
         state.cycle.delay = state.cycle.phase = 0;
     }
-    // The interrupted return enables the palette hook one picture earlier
-    // (R-0070, $00C8/$00C9 trace at frames 5103-5117).
+    // The interrupted return enables the palette hook one picture earlier (R-0070, $00C8/$00C9
+    // trace at frames 5103-5117); the timer's return has an NMI pending (DEMO-PICTURES).
     if (frame == (state.demo_return_interrupted ? 100U : 101U)) {
         state.cycle.running = true;
+        state.cycle.pending_nmi =
+            !state.demo_return_interrupted && state.demo_cycles > 1 && !state.demo_title_was_short;
     }
     if (frame == 102) state.arrow.spin = 4;
     if (within(frame, 109, fade_frames)) fade(state, frame, 109, true);
     if (frame == 118) {
+        state.demo_title_was_short = false;
         start_main_menu(state);
     }
 }
@@ -1120,6 +1127,7 @@ void update_front_end(FrontEndState& state, const FrontEndContent& content, Fron
     if (state.screen == FrontEndScreen::demo_title && state.demo_title_short
         && state.script_frame == 133) {
         state.demo_title_short = false;
+        state.demo_title_was_short = true;
         ++state.script_frame;
     }
     keep_line_writes(state);

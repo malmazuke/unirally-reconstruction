@@ -98,6 +98,10 @@ struct PaletteCycle {
     std::int8_t delay{}; // $00C8: frames to the next step, 6 down to 0
     std::int8_t phase{}; // $00C9: 3 down to 0
     bool running{};      // the NMI hook is installed and NMIs are enabled
+    // The timer's demo return enables NMIs with one already pending, and the hook's first frame
+    // runs it twice (`$00C8/$00C9` go 0/0, then 5/3), except after the first demo and in a cycle
+    // whose title was short: the sound processor's timing decides both (DEMO-PICTURES).
+    bool pending_nmi{};
 };
 
 // The NMI hook `$80:F622` slides the main menu's logo (BG1) up while a screen is on top of it
@@ -541,6 +545,8 @@ struct FrontEndState {
     // A laboratory replay of a capture's title that loads a frame sooner (R-0087): the sound
     // processor's state shortens some titles, and nothing native predicts which.
     bool demo_title_short{};
+    bool
+        demo_title_was_short{}; // this cycle's title was a short one: its return has no NMI pending
     std::uint8_t demo_return_wait{}; // extra blank frames after an interrupted demo (R-0070)
     bool demo_return_interrupted{};
     bool mode_chosen{};
