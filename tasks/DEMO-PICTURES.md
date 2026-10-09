@@ -38,3 +38,14 @@ Outside: the race state (exact), audio, the titles the sound processor shortens 
   against `go-c4` and the accepted ZOOM ZOO/DRAGSTER window gates, then rerun `pictures.py`.
 - Then the title wave (24 of 151, also on main), the idle menu (17 of 158, also on main), two title
   starts (cycles 10 and 17) and the small sprite differences.
+
+## Checkpoint - 9 October 2026 05:05 UTC
+
+- **GO fixed** (`race_windows.cpp`): the GO table's choice reads the race state's `$0300`
+  (`movement.contact_phase`), equal to the old updates-since-boundary parity from the menus, and
+  right in the idle demos, whose races start with whatever phase the demo leaves. `go-c4` now
+  equal on frames 10,840-10,900; the lap's pictures go from 906 to 922 of 1,006 equal (every
+  19,155/18,889-pixel GO picture). Not yet gated (the window gates and sweeps must stay equal).
+- Remaining: idle menu (about 23,300 pixels, 20 pictures, also on main), title wave (about 8,500,
+  24, also on main), two title starts (57,057 at cycles 10 and 17, with 5,265 at title frame 203),
+  small sprite differences (1-107 pixels), and 1,536 at 92,500 and 768 at 101,600.

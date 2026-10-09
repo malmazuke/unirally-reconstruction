@@ -14047,6 +14047,7 @@
     "src/core/race_sound.hpp:countdown",
     "src/core/race_update.cpp:CountdownPhases",
     "src/core/race_update.cpp:run_countdown",
+    "src/core/race_windows.cpp:ClassicWindowPointer::observe_update",
     "src/core/race_windows.cpp:classic_countdown_window",
     "src/core/race_windows.cpp:classic_window_transition_member",
     "src/core/race_windows.cpp:dragster_window_transition_index"

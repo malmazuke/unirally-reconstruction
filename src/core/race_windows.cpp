@@ -101,10 +101,10 @@ void ClassicWindowPointer::observe_update(const ZoomZooState& previous, const Zo
             else
                 pending_[pending_count_++] = rider;
         }
-    // $0300 counts from race start: 0 at the initialization boundary. Its
-    // parity is the frame's only when that boundary is even, as on DRAGSTER
-    // and ZOOM ZOO; six cold-start tracks start on an odd frame (part 3 review).
-    const bool parity_set = ((updated.movement.frame - scenario.initialization_frame) & 1U) != 0U;
+    // $83:E728 reads $0300 itself. From the menus it is 0 at the initialization boundary, so its
+    // parity is the updates since then (six cold-start tracks start on an odd frame, part 3
+    // review); an idle demo's race starts with whatever phase the demo leaves (DEMO-PICTURES).
+    const bool parity_set = updated.movement.contact_phase != 0U;
     std::optional<unsigned> request;
     for (std::size_t i = 0; i < ordered_ && !request; ++i) {
         auto& driver = drivers_[order_[i]];

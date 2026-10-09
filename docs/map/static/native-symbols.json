@@ -10514,6 +10514,7 @@
   {
    "address": "$83:E728",
    "native": [
+    "src/core/race_windows.cpp:ClassicWindowPointer::observe_update",
     "src/core/race_windows.cpp:classic_countdown_window"
    ],
    "region": "rom"
@@ -19636,6 +19637,7 @@
   },
   "src/core/race_windows.cpp:ClassicWindowPointer::observe_update": {
    "rom": [
+    "$83:E728",
     "$83:E898",
     "$83:E8E0",
     "$83:EA69"

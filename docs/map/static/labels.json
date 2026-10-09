@@ -20938,11 +20938,13 @@
    "src/core/race_sound.hpp:countdown",
    "src/core/race_update.cpp:CountdownPhases",
    "src/core/race_update.cpp:run_countdown",
+   "src/core/race_windows.cpp:ClassicWindowPointer::observe_update",
    "src/core/race_windows.cpp:classic_countdown_window"
   ],
   "source_records": [
    "docs/research/R-0040-dragster-window-effects.md",
-   "tasks/CLASSIC-PRESENTATION-UNIFICATION-review.md"
+   "tasks/CLASSIC-PRESENTATION-UNIFICATION-review.md",
+   "tasks/DEMO-PICTURES.md"
   ]
  },
  {
