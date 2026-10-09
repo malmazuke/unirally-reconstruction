@@ -2733,10 +2733,38 @@
   ]
  },
  {
+  "address": "$80:AA96",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80AA96",
+  "native": [
+   "src/core/front_end.cpp:wipe_cartridge",
+   "src/core/front_end_screens.hpp:wipe_cartridge",
+   "src/core/wipe_ram.cpp:wipe_ram_warning_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0092-wipe-ram.md"
+  ]
+ },
+ {
   "address": "$80:AA97",
   "class": "unknown",
   "comment": "unknown",
   "label": "unk_80AA97",
+  "native": [
+   "src/core/front_end.cpp:wipe_cartridge",
+   "src/core/front_end_screens.hpp:wipe_cartridge",
+   "src/core/wipe_ram.cpp:wipe_ram_warning_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0092-wipe-ram.md"
+  ]
+ },
+ {
+  "address": "$80:AAA3",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80AAA3",
   "native": [
    "src/core/front_end.cpp:wipe_cartridge",
    "src/core/front_end_screens.hpp:wipe_cartridge",
@@ -3718,6 +3746,42 @@
   ],
   "source_records": [
    "docs/research/R-0089-coverage-gaps.md",
+   "docs/research/R-0092-wipe-ram.md"
+  ]
+ },
+ {
+  "address": "$80:B983",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_80B983",
+  "source_records": [
+   "docs/research/R-0092-wipe-ram.md"
+  ]
+ },
+ {
+  "address": "$80:B988",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_80B988",
+  "source_records": [
+   "docs/research/R-0092-wipe-ram.md"
+  ]
+ },
+ {
+  "address": "$80:B992",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_80B992",
+  "source_records": [
+   "docs/research/R-0092-wipe-ram.md"
+  ]
+ },
+ {
+  "address": "$80:B997",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_80B997",
+  "source_records": [
    "docs/research/R-0092-wipe-ram.md"
   ]
  },

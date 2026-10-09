@@ -21,8 +21,9 @@ SAVE-FILES' saved images through the wipe (`warm/`).
 - **The menu.** Left+A+L+R on either pad (`$02B0`, R-0054) leads to `$80:A9B4`: `$AC` = 1, `$9D` = 1,
   the entries "WIPE RAM" and "MAIN MENU" (`$80:A9FE`, arrow columns `$80:AA19`) printed by
   `$80:EF4D-EF88` (last entry first, `$80:EF5D`, `$80:EF73`) on the code's frame and slid in under
-  the logo from the next. The loop is the shared `$80:B93C-BA69`: Y or X first, then B, Start or A
-  (`$80:B99C`, `$80:B9A9`), then Down or Select (`$80:B9D9`), then Up; each pass that stays turns
+  the logo from the next. The loop is the shared `$80:B93C-BA69`: Y or X first, then B, Start or A,
+  then Down or Select, then Up (the tests at `$80:B983`, `$80:B988`, `$80:B992`, `$80:B997`;
+  their branches at `$80:B99C`, `$80:B9A9`, `$80:B9D9`); each pass that stays turns
   the done-track markers (`$80:EB23`, `$77:10A7`). MAIN MENU (`$80:A9CD`) returns to the main loop
   (`$80:A9EB-A9F7`). [L, C]
 - **The warning** (`$80:AA1B-AA62`): the logo raised, the text at `$80:AAF9` printed ("- WARNING -
@@ -32,7 +33,8 @@ SAVE-FILES' saved images through the wipe (`warm/`).
   cancels, the cancel tested first, so Select+Y+A+B cancels. [L, C]
 - **The reset** (`$80:AA64-AABA`): `$83:FB41` clears the 8 KiB, `$CA`, `$CC`, `$CE` and `$D0` are
   cleared, and the cold start's defaults run (`$80:8C74`, `$80:8C4E-8CCA`, `$83:9983-99C1` with
-  `$83:9987`; the 8-bit DEC/INC of `$77:074C` at `$80:AA97`/`$80:AAA4` changes nothing). The image
+  `$83:9987`; the 8-bit DEC and INC of `$77:074C` at `$80:AA96`/`$80:AAA3`, stored at
+  `$80:AA97`/`$80:AAA4`, change nothing). The image
   right after equals `cold_start_cartridge` byte for byte, from a cold start and from the three
   saved images. It spans the press frame and two more without a frame wait; "INITIALISING BATTERY
   RAM" (`$80:AB9E`) prints on the second and shows a frame later, with the logo down (`$0742`
@@ -54,6 +56,8 @@ SAVE-FILES' saved images through the wipe (`warm/`).
 
 - `$10A7` is neither written to nor read from the image (R-0090): after a menu visit a native save
   keeps the boot's value, and a warm boot's hidden marker tiles start from 0.
+- The reset clears `$CA` with `$CC`, `$CE` and `$D0`; native keeps no field for `$CA`, and no
+  capture shows an effect.
 - `$0742` bits 9 and 10 (which pad the menus read) are not modelled; native reads both, as its
   main menu does.
 - The app's audio hand-off on the code is compared through the runner's cues, not live.

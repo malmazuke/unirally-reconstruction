@@ -15030,19 +15030,19 @@
    "call returns in the calling mode": 1262
   },
   "bytes": 131072,
-  "cited_addresses": 1827,
+  "cited_addresses": 1833,
   "cited_by_class": {
    "data": 31,
-   "inferred": 344,
+   "inferred": 348,
    "observed": 1058,
-   "unknown": 394
+   "unknown": 396
   },
   "cited_by_position": {
    "dat": 31,
-   "loc": 1019,
+   "loc": 1023,
    "mid": 20,
    "sub": 363,
-   "unk": 394
+   "unk": 396
   },
   "conflicts": 0,
   "data": 92,

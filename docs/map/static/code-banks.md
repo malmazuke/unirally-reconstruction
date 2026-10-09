@@ -45,7 +45,7 @@ The four classes partition all 131,072 bytes. **Unknown share: 40.4%** - above D
 
 ## Cited addresses
 
-1827 distinct code-bank ROM addresses cited by the research, task, inventory and content records (`labels.json`). By position: dat 31, loc 1019, mid 20, sub 363, unk 394 (sub routine start, loc instruction start, mid inside an instruction, dat data, unk unknown). By class: data 31, inferred 344, observed 1058, unknown 394.
+1833 distinct code-bank ROM addresses cited by the research, task, inventory and content records (`labels.json`). By position: dat 31, loc 1023, mid 20, sub 363, unk 396 (sub routine start, loc instruction start, mid inside an instruction, dat data, unk unknown). By class: data 31, inferred 348, observed 1058, unknown 396.
 
 Cited addresses in `unknown` bytes:
 
@@ -139,7 +139,9 @@ Cited addresses in `unknown` bytes:
 | $80:AA38 | docs/research/R-0092-wipe-ram.md |
 | $80:AA42 | docs/research/R-0092-wipe-ram.md |
 | $80:AA64 | docs/research/R-0092-wipe-ram.md |
+| $80:AA96 | docs/research/R-0092-wipe-ram.md |
 | $80:AA97 | docs/research/R-0092-wipe-ram.md |
+| $80:AAA3 | docs/research/R-0092-wipe-ram.md |
 | $80:AAA4 | docs/research/R-0092-wipe-ram.md |
 | $80:AAD7 | docs/research/R-0092-wipe-ram.md |
 | $80:AAF9 | docs/research/R-0092-wipe-ram.md |
