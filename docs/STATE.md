@@ -1,5 +1,27 @@
 # Project state
 
+**9 October 2026: DEMO-PICTURES is accepted (tier 1, #65) and integrated by merge commit.**
+The idle demos' pictures now match the original far more closely: 963 of 1,006 retained pictures
+of a cold lap are equal, up from 906.
+- **GO.** The countdown's GO is chosen on the race's own contact phase `$0300`, not the updates
+  since the race began. That was wrong in a demo race, and in HUNTER races, where a skipped update
+  leaves the phase alone (track 41's winner banner now matches on 104 of 104 pictures).
+- **The menu after a demo.** The palette hook runs twice on its first frame after a timer return
+  (an NMI is pending), except after the first demo and in cycles with a short title. All 16,432
+  idle-menu frames' palette words equal the original's.
+- **The title's wave.** Every title after the first holds one blank frame before the wave starts.
+
+Results:
+- The lap's race words stay exact on 34 of 34 cycles; a withheld 49-cycle lap confirms the palette
+  rule on all 24,470 idle-menu frames.
+- The eleven frozen gates, the race sweep, every split, pause and menu picture, the cue schedules
+  and the original's track sweeps equal main; the three attract-demo manifests change as expected.
+
+Not covered: two title starts (cycles 10 and 17) where the sound processor keeps the menu six
+frames longer, and 41 small race sprite pictures also on main.
+[R-0088](research/R-0088-demo-pictures.md) defines the domain. No task is queued: the coverage
+roadmap's queue is done, so next is a fresh inventory of what native still does not cover.
+
 **9 October 2026: IDLE-DEMO-ROTATION is accepted (tier 1, #64) and integrated by merge commit.**
 The main menu's idle demos now play the original's whole rotation instead of stopping after two.
 - **Rotation.** The demos take the race tracks below 40 in turn, skipping the stunt events

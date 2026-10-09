@@ -2,7 +2,8 @@
 
 ## Assignment
 
-- Status: **in progress**, claimed 9 October 2026 (04:30 UTC) on main `6be4093`, in the session the
+- Status: **accepted** 9 October 2026 (tier 1, [#65](https://github.com/malmazuke/unirally-reconstruction/pull/65)),
+  integrated by merge commit. Claimed 9 October 2026 (04:30 UTC) on main `6be4093`, in the session the
   user asked to keep working until weekly usage reaches 50% (5% at claim). Queued the same day by
   IDLE-DEMO-ROTATION, from R-0087's picture classes.
 - Worker: Claude Code desktop app, Claude Opus 5.5 (`claude-opus-5-5`); coordinator, primary and
