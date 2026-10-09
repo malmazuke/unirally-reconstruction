@@ -2,7 +2,8 @@
 
 ## Assignment
 
-- Status: **in progress**, claimed 9 October 2026 (08:15 UTC) on main `3191228`, in the session the
+- Status: **accepted** 10 October 2026 (tier 1, [#67](https://github.com/malmazuke/unirally-reconstruction/pull/67)),
+  integrated by merge commit. Claimed 9 October 2026 (08:15 UTC) on main `3191228`, in the session the
   user asked to keep working until weekly usage reaches 50% (8% at claim). Queued the same day by
   [COVERAGE-GAPS](COVERAGE-GAPS.md) (R-0089, queue item 1).
 - Worker: Claude Code desktop app, Claude Opus 5.5 (`claude-opus-5-5`); coordinator, primary and
@@ -113,3 +114,15 @@ stores.
 - Tooling tests 554 passed; native symbols current. Two functions were over 80 lines
   (`front_end_content`, the runner's `main`): split in the follow-up commit, which moves lines into
   two helpers and changes no behaviour; its gates are rerun below.
+
+## Gates - head `9b5e075` (`local/evidence/save-files/gates-9b5e075.out`)
+
+- The same suite as on `4ed4a71`, all passing with the same results; functions over 80 lines 0.
+
+## Handoff
+
+- Next: MODE-AUDIO (R-0089 queue item 2), with this task's audio advisory (the audio model's warm
+  power-on title work).
+- Queued from here (R-0090): the league's bests, tutorial bits and slot-two run to LEAGUE-TOURS;
+  the two-human restart's records and VS mode 2's counters to TWO-HUMAN-STUNTS; `$10D0`, `$0742`
+  bit 13 and the unmodelled bytes to CARTRIDGE-OPTION-BITS.
