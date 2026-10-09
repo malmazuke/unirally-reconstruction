@@ -20,11 +20,18 @@ this record 906 were equal; now 963.
   the boundary) but not in an idle demo, whose race starts with whatever phase the demo leaves.
   `go-c4` (every second frame of cycle 4's GO) differed by 19,155 pixels on every frame of updates
   214-274; with `$0300` read from the race state it is equal. [L, C]
+  The same change corrects the HUNTER tour's races: a skipped update (`$83:CCA2` to `$CDAA`)
+  passes over the toggle at `$83:CCE7` while the frame advances, so main's winner banner was out of
+  phase on track 41. The review's withheld `hunter-41-right` matches on 104 of 104 pictures (main
+  49). Every other one-player track's windows are identical to main's over 517 runs, and the
+  two-pad races' 8,065 pictures too (review). [L, C]
 - **The menu's palette cycle after a timer return.** The hook (`$80:FA60`: `DEC $C8`, below 0 set
   6 and step `$C9`) runs twice on its first frame: `$00C8/$00C9` go 0/0, then 5/3. An NMI is
   pending when the return enables them. Exceptions: the first demo's return and every cycle whose
   title was short step once, so the sound processor's timing decides both. Native was a picture
-  behind through every idle period; now all 16,432 idle-menu frames' `$00C8/$00C9` equal. [L, C]
+  behind through every idle period; now all 16,432 idle-menu frames' `$00C8/$00C9` equal. The
+  review's withheld `lap2-150000` (49 cycles) confirms it on data the rule was not fitted to: its
+  new short titles (cycles 37 and 45) step once, and all 24,470 idle-menu frames equal. [L, C]
 - **The title's wave.** Every title after the first holds its blank frame 133 once while the
   sound program loads; the wave starts at 134 a picture later. The short titles of R-0087 are
   exactly those without the hold. Native was a picture ahead (about 8,500 pixels at title frames

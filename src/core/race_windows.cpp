@@ -101,9 +101,10 @@ void ClassicWindowPointer::observe_update(const ZoomZooState& previous, const Zo
             else
                 pending_[pending_count_++] = rider;
         }
-    // $83:E728 reads $0300 itself. From the menus it is 0 at the initialization boundary, so its
-    // parity is the updates since then (six cold-start tracks start on an odd frame, part 3
-    // review); an idle demo's race starts with whatever phase the demo leaves (DEMO-PICTURES).
+    // $83:E728 reads $0300 itself (R-0088). From the menus it is 0 at the initialization boundary
+    // and follows the frames (six cold-start tracks start on an odd frame, part 3 review), but a
+    // HUNTER skipped update passes over its toggle ($83:CCA2 to $CDAA, past $83:CCE7) and an idle
+    // demo's race starts with whatever phase the demo leaves.
     const bool parity_set = updated.movement.contact_phase != 0U;
     std::optional<unsigned> request;
     for (std::size_t i = 0; i < ordered_ && !request; ++i) {

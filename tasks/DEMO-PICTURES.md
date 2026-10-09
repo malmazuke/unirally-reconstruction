@@ -99,3 +99,34 @@ Outside: the race state (exact), audio, the titles the sound processor shortens 
   menus `$0300` is the old parity.
 - The window pointer's synthetic test (`presentation_tests.cpp`) now drives `$0300` as the engine
   does (alternating every frame, pauses too); it had relied on the frame parity.
+
+## Gates - head `b45e483` (`local/evidence/idle-demo-cycles/gates-pictures-b45e483.out`)
+
+- Four presets build, ctest 41 of 41 each (ASan presets unavailable on this host; Linux CI covers
+  them); synthetic suite, v1 contracts, eight hidden app runs and the front end passed. Fuzz as on
+  main (40 seeds, recorded non-pass).
+- Eleven differential gates passed with main's row digests; race equivalence sweep 432 runs, 0
+  differences; R-0076's seven cue schedules identical to main's; every track's original sweeps
+  (track-breadth-2, locked tours) give main's rows.
+- Front-end sweep 176 of 179 equal: the three `attract-demo` manifests differ in state, as
+  expected (they run through a demo return, whose palette step and title hold this task changes).
+  Every split, pause and menu capture's pictures equal (menu 670, countdown 280, split 320,
+  fade-in 200, zoom lap 2,260, quit 206, restart 271, lap quit 184); R-0069's split demo pictures
+  0 differing.
+- Idle demo lap: 34 of 34 cycles exact with trailers, nine demo restores reach their exits,
+  pictures 963 of 1,006 equal.
+- Tooling tests 554 passed; functions over 80 lines 0; native symbols passed; dirty 0 at the end.
+
+## Review - round 1
+
+- Independent review approved
+  ([#65](https://github.com/malmazuke/unirally-reconstruction/pull/65#pullrequestreview-5465921329)),
+  withholding `hunter-41-right` and `lap2-150000` (49 cycles). Should-fix: the records did not say
+  the `$0300` change also corrects HUNTER races, where a skipped update (`$83:CCA2` to `$CDAA`)
+  passes over the toggle at `$83:CCE7` (track 41's winner banner, 104 of 104 pictures, main 49).
+  Done in R-0088 and the `race_windows.cpp` comment.
+- Advisories done: the runner's `--short-demo-title 1` no longer marks the second title (the first
+  title has no hold; a 40,000-frame run is byte-identical with and without it); the hold frame is
+  `demo_title_hold_frame`; the fade and choice frames are `constexpr`; comments cite R-0088.
+- After the fixes (source only, behaviour unchanged for every gate input): lab-release ctest 41 of
+  41, lap 34 of 34 exact, pictures 963 of 1,006.

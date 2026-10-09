@@ -9760,6 +9760,13 @@
    "region": "rom"
   },
   {
+   "address": "$83:CCA2",
+   "native": [
+    "src/core/race_windows.cpp:ClassicWindowPointer::observe_update"
+   ],
+   "region": "rom"
+  },
+  {
    "address": "$83:CCAB",
    "native": [
     "src/core/race_progress.cpp:finish_rider"
@@ -9787,6 +9794,13 @@
    ],
    "range_ends": [
     "$83:CCC9"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:CCE7",
+   "native": [
+    "src/core/race_windows.cpp:ClassicWindowPointer::observe_update"
    ],
    "region": "rom"
   },
@@ -19645,6 +19659,8 @@
   },
   "src/core/race_windows.cpp:ClassicWindowPointer::observe_update": {
    "rom": [
+    "$83:CCA2",
+    "$83:CCE7",
     "$83:E728",
     "$83:E898",
     "$83:E8E0",
@@ -22535,10 +22551,10 @@
   }
  },
  "totals": {
-  "addresses": 1629,
+  "addresses": 1631,
   "io_addresses": 11,
   "native_symbols": 1234,
-  "rom_addresses": 1239,
+  "rom_addresses": 1241,
   "sram_addresses": 53,
   "wram_addresses": 326
  }

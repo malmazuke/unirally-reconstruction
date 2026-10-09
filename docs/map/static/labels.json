@@ -19308,6 +19308,20 @@
   ]
  },
  {
+  "address": "$83:CCA2",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_83CCA2",
+  "native": [
+   "src/core/race_update.cpp:run_skipped_update",
+   "src/core/race_windows.cpp:ClassicWindowPointer::observe_update"
+  ],
+  "source_records": [
+   "docs/research/R-0088-demo-pictures.md",
+   "tasks/DEMO-PICTURES.md"
+  ]
+ },
+ {
   "address": "$83:CCAB",
   "class": "observed",
   "comment": "instruction start",
@@ -19369,8 +19383,13 @@
   "class": "observed",
   "comment": "instruction start",
   "label": "loc_83CCE7",
+  "native": [
+   "src/core/race_windows.cpp:ClassicWindowPointer::observe_update"
+  ],
   "source_records": [
    "docs/research/R-0011-speed.md",
+   "docs/research/R-0088-demo-pictures.md",
+   "tasks/DEMO-PICTURES.md",
    "tasks/DRAGSTER-WINDOW-EFFECTS-review.md"
   ]
  },

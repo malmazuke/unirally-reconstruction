@@ -100,7 +100,7 @@ struct PaletteCycle {
     bool running{};      // the NMI hook is installed and NMIs are enabled
     // The timer's demo return enables NMIs with one already pending, and the hook's first frame
     // runs it twice (`$00C8/$00C9` go 0/0, then 5/3), except after the first demo and in a cycle
-    // whose title was short: the sound processor's timing decides both (DEMO-PICTURES).
+    // whose title was short: the sound processor's timing decides both (R-0088).
     bool pending_nmi{};
 };
 
@@ -573,6 +573,8 @@ FrontEndState start_front_end();
 // One frame: its vblank's work, in the original's order. Once a mode is chosen (for 1P, a race)
 // the state stops.
 void update_front_end(FrontEndState& state, const FrontEndContent& content, FrontEndPads pads);
+// The blank title frame every idle demo title after the first holds once (R-0088).
+inline constexpr std::uint32_t demo_title_hold_frame = 133;
 // Return from an idle demo race on the original's exit frame.
 void return_from_demo(FrontEndState& state, std::uint32_t exit_frame, std::uint16_t demo_elapsed);
 // The frame the last update produced.
