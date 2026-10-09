@@ -97,8 +97,18 @@ Windows.
 | 1 | The v23 pack can be built from the ROM in a Linux cloud container | `frontend run --track dragster --pack local/classic-pal-crawler-tracks-v23.pack --rom ...` at `e01aaaa`, Ubuntu 24.04 x86_64, GCC 13.3.0 | `supported_rom` failed: `landing_matrix` raised "pre-race extractor core identity differs". `reference build` produced `bsnes_libretro.so` `668e3219...1c650489ad6959ddd7dce8812ad9c3e315` from commit `7d5aa1e6` with the lock's patch | Try the extraction with this core, checked by the output pin |
 | 2 | The Linux core, built from the same source, extracts the same bytes | A scratch copy of `landing_matrix` accepting the Linux library hash (user-approved, not committed), then the pack built with `pack.build_pack` and `validate_pack` | The extracted 1,512 bytes hash to `229eda89d8f29fd9daf2b2f9247e98e244a7683511d82bfa6abdc6d3ef69782b`, the rules' pin. The pack validated: profile `classic.pal.crawler.tracks.v23`, 371 entries, 4,448,960 bytes, SHA-256 `9054090d4a8b2144bfab6034f0aa6523eb57d1bba3f0fdaa1bb7e649771f6088`. The SDL3 app played the menus and two DRAGSTER races on it | The binary hash is not needed for correctness here; this task |
 
-The pack's SHA-256 above is from Linux only; comparing it with a Mac-built v23 pack (the rules at
-`e01aaaa`) is the cheapest first check. The scratch scripts and the pack stayed in the cloud container.
+| 3 | The Mac's v23 pack equals the Linux one | `shasum -a 256 local/classic-pal-crawler-tracks-v23.pack` (9 October) | `9054090d...71f6088`: the same bytes | Sort the hash checks |
+| 4 | The Mac's own library hash is stable | The lock's source rebuilt in the scratchpad today (macOS 27): Homebrew clang 19 and Apple clang 17.0.0 (the compiler `lab-core.json` records) | `ee7bb1b4...` and `3f092254...`, neither `e59bf88d`: every check would refuse a rebuild on this Mac too | Identity by source; check behaviour by output |
+| 5 | Two kinds of check | `git grep` of the hash in tools | 16 tools: running checks (the library before it runs) and stored checks (a capture's recorded `core_sha256`). Stored checks pass anywhere for Mac captures; they block only fresh captures on another host | `core_identity` for both; `core_check` for behaviour |
+| 6 | A rebuilt library behaves identically | `core_check` (new): replay a stored capture's inputs, compare every frame's WRAM, SRAM and video hash | Installed `e59bf88d` and rebuilt `3f092254` both equal on all 1,201 frames of `seed7-a`; `3f092254` also extracts landing matrices `229eda89` | Linux |
+| 7 | Linux builds and runs everything from the ROM | Docker `ubuntu:24.04` aarch64, GCC 13.3 (`artifacts/pci/linux/run.sh`): bootstrap, `reference build`, `frontend run --rom`, `core_check`, app-debug, the eleven gates against the Mac's captures | Library `f0bfd766...`; the v35 pack (562 entries) is `a12a41ec...`, byte-identical to the Mac's; `core_check` equal on four captures (1,201-2,601 frames); the app runs 600 hidden updates (`SDL_VIDEO_DRIVER=offscreen`); gates below | x86_64 |
+| 8 | x86_64 too | The same in `--platform linux/amd64` (emulated) | Library `b3fb5ff5...` (the cloud session's x86_64 build of the same source was `668e3219...`); the same pack `a12a41ec...`; `core_check` equal on two captures; the app reaches the same state at update 600 | Verified list |
+
+Attempts 1-2 ran in a cloud container (its scripts and pack stayed there); 3-8 on this Mac and its
+Docker Desktop. Decision (recorded in D-0001, "Core identity across hosts"): identity by source with
+a recorded set of verified libraries, because stored captures name the library that made them and
+a reader on another host can check a foreign hash only against a list. Logs are in main
+`local/evidence/portable-core-identity/` after closeout.
 
 ## Handoff
 

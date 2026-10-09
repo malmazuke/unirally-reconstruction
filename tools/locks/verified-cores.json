@@ -11,6 +11,27 @@
       "compiler": "Apple clang version 17.0.0 (clang-1700.4.4.1)",
       "built_utc": "2026-09-12T21:34:13Z",
       "checked_by": "the library every frozen reference since 12 September 2026 was captured with; the pack rules' landing-matrix SHA-256 229eda89 was extracted with it"
+    },
+    {
+      "sha256": "3f092254064c9ef3bf4f04953e7913a6f901f79194aa5c8cb2556236e33ace3e",
+      "platform": "macOS 27.0 arm64",
+      "compiler": "Apple clang version 17.0.0 (clang-1700.4.4.1)",
+      "built_utc": "2026-10-08T23:47Z",
+      "checked_by": "PORTABLE-CORE-IDENTITY: core_check equal on seed7-a (1,201 frames); landing matrices 229eda89"
+    },
+    {
+      "sha256": "f0bfd7667816775d26e3f78f7ffcec22f5c883f20a4d0f2ff468ddd84d4b3f78",
+      "platform": "Ubuntu 24.04 aarch64 (Docker Desktop)",
+      "compiler": "c++ (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0",
+      "built_utc": "2026-10-08T23:59Z",
+      "checked_by": "PORTABLE-CORE-IDENTITY: core_check equal on seed7-a, t14-seed23, t21-seed20 and w-rev-buttons; the v35 pack built with it equals the Mac's (a12a41ec)"
+    },
+    {
+      "sha256": "b3fb5ff53c6c2cca080c570f5f38f1259fdd54502e5a4520352afa7af5b85000",
+      "platform": "Ubuntu 24.04 x86_64 (Docker Desktop, emulated)",
+      "compiler": "c++ (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0",
+      "built_utc": "2026-10-09T00:14Z",
+      "checked_by": "PORTABLE-CORE-IDENTITY: core_check equal on seed7-a and w-rev-buttons; the v35 pack built with it equals the Mac's (a12a41ec)"
     }
   ]
 }
