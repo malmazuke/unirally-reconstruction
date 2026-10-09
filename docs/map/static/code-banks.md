@@ -45,7 +45,7 @@ The four classes partition all 131,072 bytes. **Unknown share: 40.4%** - above D
 
 ## Cited addresses
 
-1803 distinct code-bank ROM addresses cited by the research, task, inventory and content records (`labels.json`). By position: dat 31, loc 1010, mid 20, sub 362, unk 380 (sub routine start, loc instruction start, mid inside an instruction, dat data, unk unknown). By class: data 31, inferred 336, observed 1056, unknown 380.
+1833 distinct code-bank ROM addresses cited by the research, task, inventory and content records (`labels.json`). By position: dat 31, loc 1023, mid 20, sub 363, unk 396 (sub routine start, loc instruction start, mid inside an instruction, dat data, unk unknown). By class: data 31, inferred 348, observed 1058, unknown 396.
 
 Cited addresses in `unknown` bytes:
 
@@ -130,8 +130,24 @@ Cited addresses in `unknown` bytes:
 | $80:A68D | docs/research/R-0073-league.md |
 | $80:A72B | docs/research/R-0055-rider-menu.md |
 | $80:A8D4 | docs/research/R-0054-boot-title-main-menu.md |
-| $80:A9FA | docs/research/R-0054-boot-title-main-menu.md |
+| $80:A9E7 | docs/research/R-0092-wipe-ram.md |
+| $80:A9FA | docs/research/R-0054-boot-title-main-menu.md, tasks/WIPE-RAM.md |
+| $80:A9FE | docs/research/R-0092-wipe-ram.md |
+| $80:AA19 | docs/research/R-0092-wipe-ram.md |
+| $80:AA1B | docs/research/R-0092-wipe-ram.md |
+| $80:AA35 | docs/research/R-0092-wipe-ram.md |
+| $80:AA38 | docs/research/R-0092-wipe-ram.md |
+| $80:AA42 | docs/research/R-0092-wipe-ram.md |
+| $80:AA64 | docs/research/R-0092-wipe-ram.md |
+| $80:AA96 | docs/research/R-0092-wipe-ram.md |
+| $80:AA97 | docs/research/R-0092-wipe-ram.md |
+| $80:AAA3 | docs/research/R-0092-wipe-ram.md |
+| $80:AAA4 | docs/research/R-0092-wipe-ram.md |
+| $80:AAD7 | docs/research/R-0092-wipe-ram.md |
+| $80:AAF9 | docs/research/R-0092-wipe-ram.md |
 | $80:AAFA | docs/research/R-0089-coverage-gaps.md |
+| $80:AB9E | docs/research/R-0092-wipe-ram.md |
+| $80:ABB9 | docs/research/R-0092-wipe-ram.md |
 | $80:AD1F | docs/research/R-0054-boot-title-main-menu.md, tasks/FRONT-END-MAIN-MENU.md |
 | $80:ADE3 | docs/research/R-0071-two-player-versus.md |
 | $80:AE3F | docs/research/R-0071-two-player-versus.md |

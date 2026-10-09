@@ -26,6 +26,7 @@ LOCAL_MODE_ENTRIES = len(front_end_rules.LOCAL_MODE_TABLES)
 OPTIONS_ENTRIES = len(front_end_rules.OPTIONS_TABLES)
 LEAGUE_ENTRIES = 9
 V34_ENTRIES = 561  # the whole v34 inventory, before v35's pause messages
+V35_ENTRIES = 562  # the whole v35 inventory, before v36's WIPE RAM text
 
 
 def through_league(rules: dict) -> list[dict]:
@@ -650,13 +651,34 @@ class AudioEntryTests(unittest.TestCase):
         encoded = json.dumps(previous, sort_keys=True, separators=(",", ":")).encode()
         self.assertEqual(hashlib.sha256(encoded).hexdigest(),
                          "24e0c8e51b2a05d426f3c6176446bf84bf9723b32207c23929c605d5bce396ff")
-        added = rules["entries"][V34_ENTRIES:]
+        added = rules["entries"][V34_ENTRIES:V35_ENTRIES]
         # $83:F516: sixteen messages of sixteen bytes, one by rider (R-0079).
         self.assertEqual([(e["id"], e["size"], e["source"]) for e in added],
                          [("presentation.race.pause-messages.v1", 256,
                            {"kind": "raw", "pieces": [{"file_offset": 0x1F516, "length": 256}]})])
         source = (ROOT / "src/core/content_pack.cpp").read_text(encoding="utf-8")
         table = source[source.index("pause_messages_required{{"):]
+        table = table[:table.index("}};")]
+        compiled = re.findall(r'\{"([^"]+)",\s*(\d+),\s*"([0-9a-f]{64})"\}', table)
+        self.assertEqual(compiled, [(e["id"], str(e["size"]), e["sha256"]) for e in added])
+
+    def test_wipe_ram_text_preserves_v35_inventory(self) -> None:
+        import hashlib
+        import re
+        rules = json.loads((ROOT / "tests/manifests/content/classic-crawler-tracks-pack.json")
+                           .read_text(encoding="utf-8"))
+        previous = rules["entries"][:V35_ENTRIES]
+        encoded = json.dumps(previous, sort_keys=True, separators=(",", ":")).encode()
+        self.assertEqual(hashlib.sha256(encoded).hexdigest(),
+                         "9f7b258d01bef9b6a8d49becf41c12d2de7e50ca2fb1647ed3b48c32b8a74217")
+        added = rules["entries"][V35_ENTRIES:]
+        # $80:A9FE, $80:AA19 and $80:AAF9-ABC7: the WIPE RAM menu's text (R-0092).
+        self.assertEqual([(e["id"], e["size"], e["source"]) for e in added],
+                         [(table[0], table[2], {"kind": "raw", "pieces": [
+                             {"file_offset": table[1] - 0x808000, "length": table[2]}]})
+                          for table in front_end_rules.WIPE_RAM_TABLES])
+        source = (ROOT / "src/core/content_pack.cpp").read_text(encoding="utf-8")
+        table = source[source.index("wipe_ram_required{{"):]
         table = table[:table.index("}};")]
         compiled = re.findall(r'\{"([^"]+)",\s*(\d+),\s*"([0-9a-f]{64})"\}', table)
         self.assertEqual(compiled, [(e["id"], str(e["size"]), e["sha256"]) for e in added])

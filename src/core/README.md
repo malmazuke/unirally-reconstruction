@@ -112,6 +112,7 @@ the public interface; `front_end_screens.hpp` is internal to the front end.
 | `lap_result.cpp` | A lap race's result (R-0058): the graph's build and animation, the best laps and the streams |
 | `award.cpp` | A tour's completion (R-0059): the medal award screen and its animation, the menus' restore, the unlock rule, PICK TOUR and on to PICK TRACK |
 | `hunter_ending.cpp` | HUNTER's gold ending (HUNTER-ENDING): the newspaper pages and their HDMA reveal, the waits, the credits and the soft reset |
+| `wipe_ram.cpp` | The main menu's WIPE RAM code (R-0092): the WIPE RAM and MAIN MENU menu, the warning, the cartridge RAM's reset or its cancel, their messages and the waits for a press |
 | `front_end_runner.cpp` | The laboratory runner: the state by frame and pictures, for comparison with captures; the native race between the menus |
 
 ## Track sampling

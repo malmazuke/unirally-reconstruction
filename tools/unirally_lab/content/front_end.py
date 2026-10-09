@@ -354,3 +354,20 @@ def v29_new_entries(rom: bytes) -> list[dict[str, Any]]:
                table_entry(rom, "front-end.league-continue-text", 0x80FC05, 36)]
     return entries + [_raw(f"front-end.asset.{asset:03d}", rom, [_asset_piece(rom, asset)])
                       for asset in (0x7f, 0x80, 0x91, 0x92, 0xa2, 0xa3)]
+
+
+# Profile v36 (WIPE-RAM, R-0092): the main menu's Left+A+L+R code opens a two-entry menu
+# (`$80:A9B4`). `$80:EF4D` prints the streams the pointers at `$80:A9FA` name, WIPE RAM
+# (`$80:A9FE`) and MAIN MENU (`$80:AA0A`); `$80:B93C` aims the arrow at the columns `$AE` names
+# (`$80:AA19`). The WIPE RAM entry prints the warning (`$80:AAF9`), then either
+# "initialising battery ram" (`$80:AB9E`) or "nothing done" (`$80:ABB9`).
+WIPE_RAM_TABLES = (
+    ("front-end.wipe-ram-menu-text", 0x80A9FE, 25),
+    ("front-end.wipe-ram-arrow-columns", 0x80AA19, 2),
+    ("front-end.wipe-ram-messages", 0x80AAF9, 207),
+)
+
+
+def v36_new_entries(rom: bytes) -> list[dict[str, Any]]:
+    """The WIPE RAM menu's and messages' content (R-0092)."""
+    return [table_entry(rom, *table) for table in WIPE_RAM_TABLES]

@@ -34,7 +34,9 @@ it goes back to NOW PLAYING, after it the result shows QUIT and the race counts 
 A race started with `--track` still restarts from it. The first idle demo runs a two-view
 ZOOM ZOO race, then the next idle demo runs one-view track 3; both return to the main menu
 (R-0069, R-0070). 2P and VS use two human controllers through their races and
-result menus (R-0071). LEAGUE and OPTIONS still show a notice and return to the main menu
+result menus (R-0071). The main menu's Left+A+L+R code opens the WIPE RAM menu, whose
+Select+Y+A answer puts the cartridge RAM (and the save file) back to a cold start's (R-0092; with
+a pack older than v36 the code shows a notice). LEAGUE and OPTIONS still show a notice and return to the main menu
 as it first appeared, so the rider and tour chosen last start over (the original keeps them);
 the records are kept. `--track dragster|zoom-zoo|NN` starts directly in that
 race instead (not a stunt event, whose result only the menus show).

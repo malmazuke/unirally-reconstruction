@@ -962,7 +962,22 @@
    "docs/research/R-0057-one-run-result.md",
    "docs/research/R-0064-hunter-ending-and-soft-reset.md",
    "docs/research/R-0075-title-menu-audio.md",
-   "docs/research/R-0090-save-files.md"
+   "docs/research/R-0090-save-files.md",
+   "docs/research/R-0092-wipe-ram.md"
+  ]
+ },
+ {
+  "address": "$80:8C74",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_808C74",
+  "native": [
+   "src/core/front_end.cpp:wipe_cartridge",
+   "src/core/front_end_screens.hpp:wipe_cartridge",
+   "src/core/wipe_ram.cpp:wipe_ram_warning_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0092-wipe-ram.md"
   ]
  },
  {
@@ -972,7 +987,10 @@
   "label": "loc_808C80",
   "native": [
    "src/core/audio_cpu_menu_defaults.cpp:native_audio_menu_first_record_defaults",
-   "src/core/cartridge_ram.hpp:cold_start_cartridge"
+   "src/core/cartridge_ram.hpp:cold_start_cartridge",
+   "src/core/front_end.cpp:wipe_cartridge",
+   "src/core/front_end_screens.hpp:wipe_cartridge",
+   "src/core/wipe_ram.cpp:wipe_ram_warning_frame"
   ],
   "source_records": [
    "docs/research/R-0075-title-menu-audio.md"
@@ -986,7 +1004,10 @@
   "native": [
    "src/core/audio_cpu_menu_defaults.cpp:native_audio_finish_menu_records",
    "src/core/audio_cpu_menu_defaults.cpp:native_audio_menu_first_record_defaults",
-   "src/core/cartridge_ram.hpp:cold_start_cartridge"
+   "src/core/cartridge_ram.hpp:cold_start_cartridge",
+   "src/core/front_end.cpp:wipe_cartridge",
+   "src/core/front_end_screens.hpp:wipe_cartridge",
+   "src/core/wipe_ram.cpp:wipe_ram_warning_frame"
   ],
   "source_records": [
    "docs/research/R-0075-title-menu-audio.md"
@@ -1253,7 +1274,8 @@
    "src/core/audio_cpu_scene.cpp:upload_oam",
    "src/core/front_end_screens.hpp:copy_oam",
    "src/core/hunter_ending.cpp:enter_hunter_code",
-   "src/core/hunter_ending.cpp:reveal_step"
+   "src/core/hunter_ending.cpp:reveal_step",
+   "src/core/wipe_ram.cpp:wipe_ram_menu_entry_frame"
   ],
   "source_records": [
    "docs/research/R-0054-boot-title-main-menu.md"
@@ -1301,7 +1323,9 @@
   "label": "sub_8093A5",
   "native": [
    "src/core/race_result.cpp:show_icons",
-   "src/core/rider_menu.cpp:rider_menu_frame"
+   "src/core/rider_menu.cpp:rider_menu_frame",
+   "src/core/wipe_ram.cpp:wipe_ram_answer_frame",
+   "src/core/wipe_ram.cpp:wipe_ram_menu_entry_frame"
   ],
   "source_records": [
    "docs/research/R-0055-rider-menu.md",
@@ -2539,14 +2563,69 @@
   "comment": "instruction start",
   "label": "loc_80A9B4",
   "native": [
-   "src/core/front_end.hpp:FrontEndMode"
+   "src/core/front_end.hpp:FrontEndMode",
+   "src/core/front_end.hpp:FrontEndScreen",
+   "src/core/front_end.hpp:WipeRamMenu",
+   "src/core/wipe_ram.cpp:(file)"
   ],
   "source_records": [
    "docs/research/R-0054-boot-title-main-menu.md",
    "docs/research/R-0089-coverage-gaps.md",
+   "docs/research/R-0092-wipe-ram.md",
    "tasks/COVERAGE-GAPS.md",
    "tasks/COVERAGE-ROADMAP.md",
-   "tasks/FRONT-END-MAIN-MENU.md"
+   "tasks/FRONT-END-MAIN-MENU.md",
+   "tasks/WIPE-RAM.md"
+  ]
+ },
+ {
+  "address": "$80:A9B8",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_80A9B8",
+  "native": [
+   "src/core/wipe_ram.cpp:wipe_ram_answer_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0092-wipe-ram.md"
+  ]
+ },
+ {
+  "address": "$80:A9CD",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_80A9CD",
+  "native": [
+   "src/core/wipe_ram.cpp:wipe_ram_menu_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0092-wipe-ram.md"
+  ]
+ },
+ {
+  "address": "$80:A9E7",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80A9E7",
+  "native": [
+   "src/core/wipe_ram.cpp:wipe_ram_answer_frame",
+   "src/core/wipe_ram.cpp:wipe_ram_menu_entry_frame",
+   "src/core/wipe_ram.cpp:wipe_ram_menu_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0092-wipe-ram.md"
+  ]
+ },
+ {
+  "address": "$80:A9EB",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_80A9EB",
+  "native": [
+   "src/core/wipe_ram.cpp:wipe_ram_menu_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0092-wipe-ram.md"
   ]
  },
  {
@@ -2555,7 +2634,183 @@
   "comment": "unknown",
   "label": "unk_80A9FA",
   "source_records": [
-   "docs/research/R-0054-boot-title-main-menu.md"
+   "docs/research/R-0054-boot-title-main-menu.md",
+   "tasks/WIPE-RAM.md"
+  ]
+ },
+ {
+  "address": "$80:A9FE",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80A9FE",
+  "native": [
+   "src/core/content_pack.cpp:wipe_ram_required",
+   "src/core/front_end.hpp:FrontEndContent::wipe_ram_menu_text, FrontEndContent::wipe_ram_arrow_columns, FrontEndContent::wipe_ram_messages"
+  ],
+  "source_records": [
+   "docs/research/R-0092-wipe-ram.md"
+  ]
+ },
+ {
+  "address": "$80:AA19",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80AA19",
+  "native": [
+   "src/core/content_pack.cpp:wipe_ram_required",
+   "src/core/front_end.hpp:FrontEndContent::wipe_ram_menu_text, FrontEndContent::wipe_ram_arrow_columns, FrontEndContent::wipe_ram_messages"
+  ],
+  "source_records": [
+   "docs/research/R-0092-wipe-ram.md"
+  ]
+ },
+ {
+  "address": "$80:AA1B",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80AA1B",
+  "native": [
+   "src/core/front_end.hpp:FrontEndScreen",
+   "src/core/wipe_ram.cpp:wipe_ram_menu_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0092-wipe-ram.md"
+  ]
+ },
+ {
+  "address": "$80:AA35",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80AA35",
+  "native": [
+   "src/core/front_end.hpp:FrontEndScreen",
+   "src/core/wipe_ram.cpp:wipe_ram_menu_frame",
+   "src/core/wipe_ram.cpp:wipe_ram_warning_entry_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0092-wipe-ram.md"
+  ]
+ },
+ {
+  "address": "$80:AA38",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80AA38",
+  "native": [
+   "src/core/front_end.hpp:FrontEndScreen",
+   "src/core/wipe_ram.cpp:wipe_ram_warning_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0092-wipe-ram.md"
+  ]
+ },
+ {
+  "address": "$80:AA42",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80AA42",
+  "native": [
+   "src/core/front_end.hpp:FrontEndScreen",
+   "src/core/wipe_ram.cpp:cancel_buttons, reset_buttons",
+   "src/core/wipe_ram.cpp:wipe_ram_warning_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0092-wipe-ram.md"
+  ]
+ },
+ {
+  "address": "$80:AA64",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80AA64",
+  "native": [
+   "src/core/front_end.cpp:wipe_cartridge",
+   "src/core/front_end_screens.hpp:wipe_cartridge",
+   "src/core/wipe_ram.cpp:wipe_ram_warning_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0092-wipe-ram.md"
+  ]
+ },
+ {
+  "address": "$80:AA96",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80AA96",
+  "native": [
+   "src/core/front_end.cpp:wipe_cartridge",
+   "src/core/front_end_screens.hpp:wipe_cartridge",
+   "src/core/wipe_ram.cpp:wipe_ram_warning_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0092-wipe-ram.md"
+  ]
+ },
+ {
+  "address": "$80:AA97",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80AA97",
+  "native": [
+   "src/core/front_end.cpp:wipe_cartridge",
+   "src/core/front_end_screens.hpp:wipe_cartridge",
+   "src/core/wipe_ram.cpp:wipe_ram_warning_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0092-wipe-ram.md"
+  ]
+ },
+ {
+  "address": "$80:AAA3",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80AAA3",
+  "native": [
+   "src/core/front_end.cpp:wipe_cartridge",
+   "src/core/front_end_screens.hpp:wipe_cartridge",
+   "src/core/wipe_ram.cpp:wipe_ram_warning_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0092-wipe-ram.md"
+  ]
+ },
+ {
+  "address": "$80:AAA4",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80AAA4",
+  "native": [
+   "src/core/front_end.cpp:wipe_cartridge",
+   "src/core/front_end_screens.hpp:wipe_cartridge",
+   "src/core/wipe_ram.cpp:wipe_ram_warning_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0092-wipe-ram.md"
+  ]
+ },
+ {
+  "address": "$80:AAD7",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80AAD7",
+  "native": [
+   "src/core/wipe_ram.cpp:cancel_reset"
+  ],
+  "source_records": [
+   "docs/research/R-0092-wipe-ram.md"
+  ]
+ },
+ {
+  "address": "$80:AAF9",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80AAF9",
+  "native": [
+   "src/core/content_pack.cpp:wipe_ram_required",
+   "src/core/front_end.hpp:FrontEndContent::wipe_ram_menu_text, FrontEndContent::wipe_ram_arrow_columns, FrontEndContent::wipe_ram_messages"
+  ],
+  "source_records": [
+   "docs/research/R-0092-wipe-ram.md"
   ]
  },
  {
@@ -2563,8 +2818,38 @@
   "class": "unknown",
   "comment": "unknown",
   "label": "unk_80AAFA",
+  "native": [
+   "src/core/content_pack.cpp:wipe_ram_required",
+   "src/core/front_end.hpp:FrontEndContent::wipe_ram_menu_text, FrontEndContent::wipe_ram_arrow_columns, FrontEndContent::wipe_ram_messages"
+  ],
   "source_records": [
    "docs/research/R-0089-coverage-gaps.md"
+  ]
+ },
+ {
+  "address": "$80:AB9E",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80AB9E",
+  "native": [
+   "src/core/content_pack.cpp:wipe_ram_required",
+   "src/core/front_end.hpp:FrontEndContent::wipe_ram_menu_text, FrontEndContent::wipe_ram_arrow_columns, FrontEndContent::wipe_ram_messages"
+  ],
+  "source_records": [
+   "docs/research/R-0092-wipe-ram.md"
+  ]
+ },
+ {
+  "address": "$80:ABB9",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80ABB9",
+  "native": [
+   "src/core/content_pack.cpp:wipe_ram_required",
+   "src/core/front_end.hpp:FrontEndContent::wipe_ram_menu_text, FrontEndContent::wipe_ram_arrow_columns, FrontEndContent::wipe_ram_messages"
+  ],
+  "source_records": [
+   "docs/research/R-0092-wipe-ram.md"
   ]
  },
  {
@@ -2609,7 +2894,8 @@
    "src/core/front_end.cpp:run_main_menu"
   ],
   "source_records": [
-   "docs/research/R-0054-boot-title-main-menu.md"
+   "docs/research/R-0054-boot-title-main-menu.md",
+   "tasks/WIPE-RAM.md"
   ]
  },
  {
@@ -3366,7 +3652,8 @@
   "label": "sub_80B71D",
   "native": [
    "src/core/audio_cpu_menu_input.cpp:test_menu_input",
-   "src/core/front_end_screens.hpp:pad_up, pad_down, pad_left, pad_right, pad_select, pad_a, pad_r"
+   "src/core/front_end_screens.hpp:pad_up, pad_down, pad_left, pad_right, pad_select, pad_a, pad_r",
+   "src/core/wipe_ram.cpp:wipe_ram_menu_frame"
   ],
   "source_records": [
    "docs/research/R-0054-boot-title-main-menu.md",
@@ -3379,7 +3666,8 @@
   "comment": "routine start",
   "label": "sub_80B74A",
   "native": [
-   "src/core/front_end_screens.hpp:pad_up, pad_down, pad_left, pad_right, pad_select, pad_a, pad_r"
+   "src/core/front_end_screens.hpp:pad_up, pad_down, pad_left, pad_right, pad_select, pad_a, pad_r",
+   "src/core/wipe_ram.cpp:wipe_ram_menu_frame"
   ],
   "source_records": [
    "docs/research/R-0056-tour-track-now-playing.md"
@@ -3449,10 +3737,76 @@
   "comment": "routine start",
   "label": "sub_80B93C",
   "native": [
-   "src/core/local_modes.cpp:local_continue_frame"
+   "src/core/front_end.hpp:FrontEndScreen",
+   "src/core/local_modes.cpp:local_continue_frame",
+   "src/core/wipe_ram.cpp:aim_at_entry",
+   "src/core/wipe_ram.cpp:first_row_y, row_height",
+   "src/core/wipe_ram.cpp:wipe_ram_menu_entry_frame",
+   "src/core/wipe_ram.cpp:wipe_ram_menu_frame"
   ],
   "source_records": [
-   "docs/research/R-0089-coverage-gaps.md"
+   "docs/research/R-0089-coverage-gaps.md",
+   "docs/research/R-0092-wipe-ram.md"
+  ]
+ },
+ {
+  "address": "$80:B983",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_80B983",
+  "source_records": [
+   "docs/research/R-0092-wipe-ram.md"
+  ]
+ },
+ {
+  "address": "$80:B988",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_80B988",
+  "source_records": [
+   "docs/research/R-0092-wipe-ram.md"
+  ]
+ },
+ {
+  "address": "$80:B992",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_80B992",
+  "source_records": [
+   "docs/research/R-0092-wipe-ram.md"
+  ]
+ },
+ {
+  "address": "$80:B997",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_80B997",
+  "source_records": [
+   "docs/research/R-0092-wipe-ram.md"
+  ]
+ },
+ {
+  "address": "$80:B99C",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_80B99C",
+  "native": [
+   "src/core/wipe_ram.cpp:move_entry"
+  ],
+  "source_records": [
+   "docs/research/R-0092-wipe-ram.md"
+  ]
+ },
+ {
+  "address": "$80:B9A9",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_80B9A9",
+  "native": [
+   "src/core/wipe_ram.cpp:move_entry"
+  ],
+  "source_records": [
+   "docs/research/R-0092-wipe-ram.md"
   ]
  },
  {
@@ -3462,10 +3816,24 @@
   "label": "loc_80B9B1",
   "native": [
    "src/core/local_modes.cpp:local_continue_frame",
-   "src/core/options_menu.cpp:move_choice"
+   "src/core/options_menu.cpp:move_choice",
+   "src/core/wipe_ram.cpp:move_entry"
   ],
   "source_records": [
    "docs/research/R-0091-mode-audio.md"
+  ]
+ },
+ {
+  "address": "$80:B9D9",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_80B9D9",
+  "native": [
+   "src/core/wipe_ram.cpp:aim_at_entry",
+   "src/core/wipe_ram.cpp:move_entry"
+  ],
+  "source_records": [
+   "docs/research/R-0092-wipe-ram.md"
   ]
  },
  {
@@ -3475,7 +3843,9 @@
   "label": "loc_80BA13",
   "native": [
    "src/core/local_modes.cpp:local_continue_frame",
-   "src/core/options_menu.cpp:move_choice"
+   "src/core/options_menu.cpp:move_choice",
+   "src/core/wipe_ram.cpp:aim_at_entry",
+   "src/core/wipe_ram.cpp:move_entry"
   ],
   "source_records": [
    "docs/research/R-0091-mode-audio.md"
@@ -4220,17 +4590,21 @@
    "src/core/audio_cpu_hunter_wait.cpp:native_audio_hunter_page_wait_frame",
    "src/core/front_end.hpp:HunterEnding::press_seen",
    "src/core/front_end.hpp:RaceResult::press_seen",
+   "src/core/front_end.hpp:WipeRamMenu",
+   "src/core/front_end.hpp:WipeRamMenu::press_seen",
    "src/core/front_end_screens.hpp:wait_for_result_press",
    "src/core/hunter_ending.cpp:(file)",
    "src/core/hunter_ending.cpp:first_page_press",
    "src/core/race_result.cpp:(file)",
    "src/core/race_result.cpp:pressed",
    "src/core/race_result.cpp:wait_for_result_press",
-   "src/core/stunt_result.cpp:after_tally_frame"
+   "src/core/stunt_result.cpp:after_tally_frame",
+   "src/core/wipe_ram.cpp:waited_for_press"
   ],
   "source_records": [
    "docs/research/R-0057-one-run-result.md",
-   "docs/research/R-0067-stunt-result.md"
+   "docs/research/R-0067-stunt-result.md",
+   "docs/research/R-0092-wipe-ram.md"
   ]
  },
  {
@@ -4259,7 +4633,8 @@
    "src/core/hunter_ending.cpp:(file)",
    "src/core/hunter_ending.cpp:first_page_press",
    "src/core/race_result.cpp:hide_result_objects",
-   "src/core/race_result.cpp:lap_graph_frame"
+   "src/core/race_result.cpp:lap_graph_frame",
+   "src/core/wipe_ram.cpp:hide_entries_30_to_35"
   ],
   "source_records": [
    "docs/research/R-0057-one-run-result.md",
@@ -4273,14 +4648,18 @@
   "label": "sub_80C24C",
   "native": [
    "src/core/front_end.hpp:RaceResult::released",
+   "src/core/front_end.hpp:WipeRamMenu",
+   "src/core/front_end.hpp:WipeRamMenu::released",
    "src/core/front_end_screens.hpp:wait_for_result_press",
    "src/core/race_result.cpp:(file)",
    "src/core/race_result.cpp:wait_for_result_press",
-   "src/core/stunt_result.cpp:after_tally_frame"
+   "src/core/stunt_result.cpp:after_tally_frame",
+   "src/core/wipe_ram.cpp:waited_for_press"
   ],
   "source_records": [
    "docs/research/R-0057-one-run-result.md",
-   "docs/research/R-0067-stunt-result.md"
+   "docs/research/R-0067-stunt-result.md",
+   "docs/research/R-0092-wipe-ram.md"
   ]
  },
  {
@@ -5343,7 +5722,10 @@
    "src/core/rider_menu.cpp:rider_menu_frame",
    "src/core/stunt_result.cpp:tally_frame",
    "src/core/tour_menu.cpp:tour_menu_frame",
-   "src/core/track_menu.cpp:track_menu_frame"
+   "src/core/track_menu.cpp:track_menu_frame",
+   "src/core/wipe_ram.cpp:wipe_ram_answer_frame",
+   "src/core/wipe_ram.cpp:wipe_ram_menu_frame",
+   "src/core/wipe_ram.cpp:wipe_ram_warning_frame"
   ],
   "source_records": [
    "docs/research/R-0054-boot-title-main-menu.md",
@@ -6662,10 +7044,14 @@
   "comment": "routine start",
   "label": "sub_80EB23",
   "native": [
-   "src/core/track_menu.cpp:turn_markers"
+   "src/core/front_end_screens.hpp:turn_markers",
+   "src/core/track_menu.cpp:turn_markers",
+   "src/core/wipe_ram.cpp:wipe_ram_menu_entry_frame",
+   "src/core/wipe_ram.cpp:wipe_ram_menu_frame"
   ],
   "source_records": [
-   "docs/research/R-0056-tour-track-now-playing.md"
+   "docs/research/R-0056-tour-track-now-playing.md",
+   "docs/research/R-0092-wipe-ram.md"
   ]
  },
  {
@@ -6778,10 +7164,37 @@
   "comment": "routine start",
   "label": "sub_80EF4D",
   "native": [
-   "src/core/options_menu.cpp:enter_options_menu"
+   "src/core/front_end.hpp:FrontEndScreen",
+   "src/core/options_menu.cpp:enter_options_menu",
+   "src/core/wipe_ram.cpp:print_wipe_ram_menu"
   ],
   "source_records": [
-   "docs/research/R-0072-options.md"
+   "docs/research/R-0072-options.md",
+   "docs/research/R-0092-wipe-ram.md"
+  ]
+ },
+ {
+  "address": "$80:EF5D",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_80EF5D",
+  "native": [
+   "src/core/wipe_ram.cpp:print_wipe_ram_menu"
+  ],
+  "source_records": [
+   "docs/research/R-0092-wipe-ram.md"
+  ]
+ },
+ {
+  "address": "$80:EF73",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_80EF73",
+  "native": [
+   "src/core/wipe_ram.cpp:wipe_ram_menu_entry_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0092-wipe-ram.md"
   ]
  },
  {
@@ -7271,7 +7684,8 @@
   "label": "sub_80F51B",
   "native": [
    "src/core/hunter_ending.cpp:enter_hunter_code",
-   "src/core/rider_menu.cpp:enter_rider_menu"
+   "src/core/rider_menu.cpp:enter_rider_menu",
+   "src/core/wipe_ram.cpp:wipe_ram_menu_frame"
   ],
   "source_records": [
    "docs/research/R-0055-rider-menu.md"
@@ -7285,7 +7699,8 @@
   "native": [
    "src/core/audio_cpu_menu_reveal.cpp:finish_menu_uploads",
    "src/core/options_menu.cpp:rename_commit_frame",
-   "src/core/rider_menu.cpp:main_menu_return_frame"
+   "src/core/rider_menu.cpp:main_menu_return_frame",
+   "src/core/wipe_ram.cpp:cancel_reset"
   ],
   "source_records": [
    "docs/research/R-0055-rider-menu.md",
@@ -17637,7 +18052,8 @@
    "src/core/cartridge_ram.cpp:cartridge_image",
    "src/core/cartridge_ram.cpp:checksum",
    "src/core/front_end.hpp:OnePlayerRecords::statistics",
-   "src/core/race_result.cpp:insert_record"
+   "src/core/race_result.cpp:insert_record",
+   "src/core/wipe_ram.cpp:reset_busy_frames"
   ],
   "source_records": [
    "docs/research/R-0057-one-run-result.md",
@@ -18064,7 +18480,20 @@
   "source_records": [
    "docs/research/R-0056-tour-track-now-playing.md",
    "docs/research/R-0075-title-menu-audio.md",
+   "docs/research/R-0092-wipe-ram.md",
    "tasks/IDLE-DEMO-ROTATION.md"
+  ]
+ },
+ {
+  "address": "$83:9987",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_839987",
+  "native": [
+   "src/core/front_end.cpp:wipe_cartridge"
+  ],
+  "source_records": [
+   "docs/research/R-0092-wipe-ram.md"
   ]
  },
  {
@@ -18118,7 +18547,8 @@
    "src/core/audio_cpu_scene.hpp:AudioCpuDecorationWorkState",
    "src/core/front_end.hpp:MenuDecorations",
    "src/core/front_end_screens.hpp:step_decorations",
-   "src/core/screen_slide.cpp:(file)"
+   "src/core/screen_slide.cpp:(file)",
+   "src/core/wipe_ram.cpp:wipe_ram_answer_frame"
   ],
   "source_records": [
    "docs/research/R-0055-rider-menu.md",
@@ -23653,12 +24083,15 @@
   "native": [
    "src/core/audio_cpu_menu_records.cpp:clear_cartridge",
    "src/core/cartridge_ram.hpp:cold_start_cartridge",
-   "src/core/front_end.cpp:check_records"
+   "src/core/front_end.cpp:check_records",
+   "src/core/front_end.cpp:wipe_cartridge",
+   "src/core/wipe_ram.cpp:reset_busy_frames"
   ],
   "source_records": [
    "docs/research/R-0064-hunter-ending-and-soft-reset.md",
    "docs/research/R-0075-title-menu-audio.md",
-   "docs/research/R-0090-save-files.md"
+   "docs/research/R-0090-save-files.md",
+   "docs/research/R-0092-wipe-ram.md"
   ]
  },
  {

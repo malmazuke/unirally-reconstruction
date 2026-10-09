@@ -1,5 +1,17 @@
 # Next session
 
+**10 October 2026: WIPE-RAM is accepted (tier 1, #69) and integrated by merge commit.**
+The main menu's hidden code, Left+A+L+R, now opens the original's WIPE RAM menu instead of a
+notice: WIPE RAM shows the warning, Select+Y+A resets the cartridge RAM to its factory state and
+any other button cancels; MAIN MENU returns. The reset shares the boot's own wipe, and the app's
+save file holds the result. Pack profile v36 adds the menu's and messages' text.
+
+Results: eight captures of the original equal on every compared frame (12,349 frames) and every
+sound cue; from three saved images the image after the reset equals the original's byte for
+byte; the review's seven withheld captures equal too. Every frozen gate and sweep equals main.
+[R-0092](../docs/research/R-0092-wipe-ram.md) defines the domain. Next in this session's lane:
+CREDITS-NAME; DATA-COVERAGE runs in a parallel session.
+
 **10 October 2026: MODE-AUDIO is accepted (tier 1, #68) and integrated by merge commit.**
 With `--native-title-menu-audio` the app now plays native audio through 2P, VS, LEAGUE and
 OPTIONS, not only the one-player game.
@@ -17,7 +29,7 @@ Results:
 - Every frozen gate and sweep equals main.
 
 [R-0091](../docs/research/R-0091-mode-audio.md) defines the domain. Queued: DEMO-AUDIO (the idle demos
-are still silent) and MENU-INPUT (menu input read from the listing and not native). Next ready:
+are still silent) and MENU-INPUT (menu input read from the listing and not native). Next:
 WIPE-RAM (R-0089's queue item 3).
 
 **10 October 2026: SAVE-FILES is accepted (tier 1, #67) and integrated by merge commit.**
