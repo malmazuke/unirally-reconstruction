@@ -158,12 +158,12 @@ public:
   // The race NOW PLAYING chose, with its rider, opponent and tutorial hints.
   ClassicRaceScenario race_scenario() const {
     if (demo_race()) {
-      const bool split = state_.demo_split_race;
       auto scenario = classic_race_scenario(ClassicRaceTrack{state_.tour_menu.track});
       scenario.pairing = {state_.rider_menu.rider, state_.now_playing.opponent};
       // The demo's setup skips the race count (`$83:C9F6-CA05`): `$77:10B1` as it stands.
       scenario.race_counter = state_.records.race_song_counter;
-      if (!split) scenario.initialization_frame = state_.frame - 1U;
+      // Labelled by its absolute frame: a demo state's clock gives its start (R-0087).
+      scenario.initialization_frame = state_.frame - 1U;
       return scenario;
     }
     auto scenario =

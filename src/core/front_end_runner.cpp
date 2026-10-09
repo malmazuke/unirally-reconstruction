@@ -371,6 +371,8 @@ struct RaceBetweenMenus {
     unirally::ZoomZooState state{};
     std::uint32_t initialization_frame{};
     std::uint32_t loading_initialization{}; // the frame the track's loading gives, if measured
+    // An idle demo restored from its own serialized state at `--restore-check`, run alongside.
+    std::optional<unirally::ZoomZooState> restored_demo;
 };
 
 // Why a race is not run (the run stops there): its loading time on this path is not known. Empty
@@ -385,7 +387,8 @@ std::string start_race(RaceBetweenMenus& race, const unirally::ClassicContentPac
         scenario.pairing = {front_end.rider_menu.rider, front_end.now_playing.opponent};
         // The demo's setup skips the race count (`$83:C9F6-CA05`): `$77:10B1` as it stands.
         scenario.race_counter = front_end.records.race_song_counter;
-        if (!split) scenario.initialization_frame = front_end.frame - 1U;
+        // Labelled by its absolute frame: a demo state's clock gives its start (R-0087).
+        scenario.initialization_frame = front_end.frame - 1U;
         race.content = unirally::classic_race_content(pack, scenario.track);
         race.state = unirally::classic_race_start(*race.content, scenario);
         if (split)
@@ -439,6 +442,20 @@ void update_demo_race(const Options& options, const unirally::ClassicContentPack
     const auto previous = race.state;
     unirally::update_zoom_zoo(race.state, race_buttons(pads.one), race_buttons(pads.two),
                               *race.content);
+    // A restore check: the state saved on its frame reads back to the same bytes, and the
+    // restored race continues in step with the running one until the demo ends.
+    if (race.restored_demo) {
+        unirally::update_zoom_zoo(*race.restored_demo, race_buttons(pads.one),
+                                  race_buttons(pads.two), *race.content);
+        if (unirally::serialize_zoom_zoo(*race.restored_demo)
+            != unirally::serialize_zoom_zoo(race.state))
+            throw std::runtime_error("demo save continuation diverged at " + std::to_string(frame));
+    } else if (options.restore_check == frame) {
+        const auto saved = unirally::serialize_zoom_zoo(race.state);
+        race.restored_demo = unirally::deserialize_zoom_zoo(saved);
+        if (unirally::serialize_zoom_zoo(*race.restored_demo) != saved)
+            throw std::runtime_error("demo save failed round-trip");
+    }
     race.history.observe_update(previous, race.state, pack);
     if (const auto picture = options.pictures.find(frame); picture != options.pictures.end()) {
         const auto shown = race.history.on_screen();
@@ -446,6 +463,8 @@ void update_demo_race(const Options& options, const unirally::ClassicContentPack
                   unirally::render_classic_race(race.state, *race.presentation, &previous, &shown));
     }
     if (race.state.demo.exit_requested) {
+        if (race.restored_demo) std::cerr << "demo restore continued to the exit at " << frame << '\n';
+        race.restored_demo.reset();
         unirally::return_from_demo(front_end, frame, race.state.demo.elapsed);
         race.content.reset();
         race.presentation.reset();
