@@ -6,7 +6,7 @@ Usage: worker.py --core LIB --rom ROM --script S --samples-out OUT
                  [--fields F] [--stop-after-frame N] [--wram-dump-out P]
                  [--coverage-out P [--coverage-ring N]] [--frame-image N ...] [--frame-image-dir D]
                  [--access-out P [--access-ring N] [--access-from-frame N] [--access-to-frame N]
-                  [--access-watch-address A ...] [--access-watch-pc P ...]
+                  [--access-watch-address A ...] [--access-watch-pc P ...] [--access-resolve-rmw]
                   [--wram-series-out P --wram-series-range START LENGTH [--wram-series-every N]]]
 
 The M1-02 options (``--access-*``, ``--wram-series-*``) are additive in the
@@ -355,7 +355,8 @@ def run(args: argparse.Namespace) -> int:
             series = None
             if args.wram_series_out:
                 series = (args.wram_series_range[0], args.wram_series_range[1], args.wram_series_every, Path(args.wram_series_out))
-            access = access_derive.AccessDrain(rom.read_bytes(), ring_capacity, args.access_watch_address, args.access_watch_pc, series)
+            access = access_derive.AccessDrain(rom.read_bytes(), ring_capacity, args.access_watch_address, args.access_watch_pc, series,
+                                                    resolve_rmw=args.access_resolve_rmw)
     elif trace_entries:
         core.trace_enable(trace_entries)
     access_seen_total = core.trace_total() if access is not None else 0
@@ -631,6 +632,8 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--access-to-frame", type=int, help="M1-02: last frame of the access derivation window (default: the last frame run)")
     parser.add_argument("--access-watch-address", type=lambda v: int(v, 0), action="append",
                         help="M1-02: 24-bit address whose accesses are logged per frame with values (repeatable)")
+    parser.add_argument("--access-resolve-rmw", action="store_true",
+                        help="compute read-modify-write results from their resolved old values (access.derive)")
     parser.add_argument("--access-watch-pc", type=lambda v: int(v, 0), action="append",
                         help="M1-02: 24-bit pc whose registers are logged at every execution (repeatable)")
     parser.add_argument("--wram-series-out", help="M1-02: binary file receiving the work RAM range of --wram-series-range every --wram-series-every frames")
