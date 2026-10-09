@@ -402,6 +402,13 @@
    "region": "rom"
   },
   {
+   "address": "$80:8B28",
+   "native": [
+    "src/core/league_menu.cpp:league_awards_frame"
+   ],
+   "region": "rom"
+  },
+  {
    "address": "$80:8B3F",
    "native": [
     "src/core/league_menu.cpp:print_awards"
@@ -971,6 +978,34 @@
    "region": "rom"
   },
   {
+   "address": "$80:9D5A",
+   "native": [
+    "src/core/rider_menu.cpp:read_league_members_pad"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:9D84",
+   "native": [
+    "src/core/rider_menu.cpp:read_league_members_pad"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:9DD5",
+   "native": [
+    "src/core/rider_menu.cpp:read_league_members_pad"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:9DF2",
+   "native": [
+    "src/core/rider_menu.cpp:read_league_members_pad"
+   ],
+   "region": "rom"
+  },
+  {
    "address": "$80:9E0F",
    "native": [
     "src/core/options_menu.cpp:enter_league_editor"
@@ -1005,6 +1040,13 @@
    ],
    "range_ends": [
     "$80:9F73"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:9F15",
+   "native": [
+    "src/core/options_menu.cpp:league_slots_frame"
    ],
    "region": "rom"
   },
@@ -1125,12 +1167,86 @@
    "region": "rom"
   },
   {
+   "address": "$80:A2BA",
+   "native": [
+    "src/core/options_menu.cpp:rename_keyboard_frame"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:A2F9",
+   "native": [
+    "src/core/options_menu.cpp:rename_keyboard_frame"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:A326",
+   "native": [
+    "src/core/options_menu.cpp:rename_keyboard_frame"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:A34A",
+   "native": [
+    "src/core/options_menu.cpp:rename_keyboard_frame"
+   ],
+   "region": "rom"
+  },
+  {
    "address": "$80:A3A0",
    "native": [
     "src/core/options_menu.cpp:rename_keyboard_frame"
    ],
    "range_ends": [
     "$80:A3BC"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:A416",
+   "native": [
+    "src/core/options_menu.cpp:erase_keyboard_character"
+   ],
+   "range_ends": [
+    "$80:A445"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:A41A",
+   "native": [
+    "src/core/options_menu.cpp:erase_keyboard_character",
+    "src/core/options_menu.cpp:rename_keyboard_frame"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:A420",
+   "native": [
+    "src/core/options_menu.cpp:erase_keyboard_character"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:A449",
+   "native": [
+    "src/core/options_menu.cpp:rename_keyboard_frame"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:A493",
+   "native": [
+    "src/core/options_menu.cpp:rename_keyboard_frame"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:A495",
+   "native": [
+    "src/core/options_menu.cpp:rename_keyboard_frame"
    ],
    "region": "rom"
   },
@@ -1399,6 +1515,27 @@
    "region": "rom"
   },
   {
+   "address": "$80:ADE3",
+   "native": [
+    "src/core/local_modes.cpp:local_continue_frame"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:AEAD",
+   "native": [
+    "src/core/local_modes.cpp:local_continue_frame"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:B051",
+   "native": [
+    "src/core/league_menu.cpp:league_awards_frame"
+   ],
+   "region": "rom"
+  },
+  {
    "address": "$80:B08C",
    "native": [
     "src/core/audio_cpu_scene.cpp:native_audio_load_nintendo_graphics",
@@ -1426,6 +1563,14 @@
    "address": "$80:B0F0",
    "native": [
     "src/core/audio_cpu_interrupt.cpp:restore_interrupt_caller"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:B0FA",
+   "native": [
+    "src/core/front_end_screens.hpp:MenuSound",
+    "src/core/screen_slide.cpp:play_menu_sound"
    ],
    "region": "rom"
   },
@@ -1708,6 +1853,29 @@
    "region": "rom"
   },
   {
+   "address": "$80:B93C",
+   "native": [
+    "src/core/local_modes.cpp:local_continue_frame"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:B9B1",
+   "native": [
+    "src/core/local_modes.cpp:local_continue_frame",
+    "src/core/options_menu.cpp:move_choice"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:BA13",
+   "native": [
+    "src/core/local_modes.cpp:local_continue_frame",
+    "src/core/options_menu.cpp:move_choice"
+   ],
+   "region": "rom"
+  },
+  {
    "address": "$80:BA6A",
    "native": [
     "src/core/track_menu.cpp:open_track_menu",
@@ -1767,6 +1935,7 @@
   {
    "address": "$80:BBB8",
    "native": [
+    "src/core/rider_menu.cpp:pick_plays_select",
     "src/core/rider_menu.cpp:rider_menu_frame"
    ],
    "range_ends": [
@@ -1888,6 +2057,27 @@
    "region": "rom"
   },
   {
+   "address": "$80:BCDB",
+   "native": [
+    "src/core/rider_menu.cpp:pick_plays_select"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:BCEF",
+   "native": [
+    "src/core/rider_menu.cpp:rider_menu_entry_frame"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:BD02",
+   "native": [
+    "src/core/rider_menu.cpp:pick_plays_select"
+   ],
+   "region": "rom"
+  },
+  {
    "address": "$80:BD1C",
    "native": [
     "src/core/rider_menu.cpp:rider_menu_frame"
@@ -1945,9 +2135,47 @@
    "region": "rom"
   },
   {
+   "address": "$80:BF5C",
+   "native": [
+    "src/core/rider_menu.cpp:pick_plays_select"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:BF79",
+   "native": [
+    "src/core/rider_menu.cpp:rider_menu_entry_frame"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:BF8A",
+   "native": [
+    "src/core/rider_menu.cpp:pick_plays_select"
+   ],
+   "region": "rom"
+  },
+  {
    "address": "$80:BFE0",
    "native": [
     "src/core/race_result.cpp:race_restart_frame"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:C0B1",
+   "native": [
+    "src/core/front_end_screens.hpp:MenuSound"
+   ],
+   "range_ends": [
+    "$80:C0BB"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:C0BD",
+   "native": [
+    "src/core/rider_menu.cpp:pick_plays_select"
    ],
    "region": "rom"
   },
@@ -1958,6 +2186,13 @@
    ],
    "range_ends": [
     "$80:C1EA"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:C13D",
+   "native": [
+    "src/core/rider_menu.cpp:pick_plays_select"
    ],
    "region": "rom"
   },
@@ -2427,6 +2662,13 @@
    "region": "rom"
   },
   {
+   "address": "$80:CBC3",
+   "native": [
+    "src/core/rider_menu.cpp:rider_menu_entry_frame"
+   ],
+   "region": "rom"
+  },
+  {
    "address": "$80:CBC8",
    "native": [
     "src/core/front_end.hpp:FrontEndScreen",
@@ -2757,6 +2999,13 @@
    "region": "rom"
   },
   {
+   "address": "$80:D45B",
+   "native": [
+    "src/core/rider_menu.cpp:pick_plays_select"
+   ],
+   "region": "rom"
+  },
+  {
    "address": "$80:D468",
    "native": [
     "src/core/front_end.hpp:FrontEndScreen",
@@ -2927,6 +3176,20 @@
    "region": "rom"
   },
   {
+   "address": "$80:DBF8",
+   "native": [
+    "src/core/options_menu.cpp:records_detail_frame"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:DC05",
+   "native": [
+    "src/core/options_menu.cpp:records_detail_frame"
+   ],
+   "region": "rom"
+  },
+  {
    "address": "$80:DDE3",
    "native": [
     "src/core/options_menu.cpp:set_bar_objects"
@@ -2954,7 +3217,9 @@
    "address": "$80:E233",
    "native": [
     "src/core/front_end.hpp:ScreenSlide",
+    "src/core/front_end_screens.hpp:start_slide",
     "src/core/rider_menu.cpp:(file)",
+    "src/core/rider_menu.cpp:rider_menu_entry_frame",
     "src/core/screen_slide.cpp:(file)",
     "src/core/screen_slide.cpp:slide_passes, accelerate_from, decelerate_below"
    ],
@@ -2964,6 +3229,8 @@
    "address": "$80:E27E",
    "native": [
     "src/core/front_end.hpp:ScreenSlide",
+    "src/core/front_end_screens.hpp:start_slide",
+    "src/core/league_menu.cpp:league_awards_frame",
     "src/core/rider_menu.cpp:(file)",
     "src/core/screen_slide.cpp:(file)",
     "src/core/screen_slide.cpp:slide_passes, accelerate_from, decelerate_below"
@@ -3055,6 +3322,20 @@
    "address": "$80:E3A1",
    "native": [
     "src/core/front_end.hpp:FrontEndContent::reveal_brightness, FrontEndContent::reveal_offsets, FrontEndContent::credits_text, FrontEndContent::credits_poses, FrontEndContent::credits_objects"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:E492",
+   "native": [
+    "src/core/options_menu.cpp:update_track_records"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:E4C6",
+   "native": [
+    "src/core/options_menu.cpp:update_track_records"
    ],
    "region": "rom"
   },
@@ -3373,7 +3654,32 @@
   {
    "address": "$80:EB76",
    "native": [
+    "src/core/options_menu.cpp:records_detail_entry_frame",
     "src/core/options_menu.cpp:track_records_hdma"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:EB78",
+   "native": [
+    "src/core/options_menu.cpp:records_detail_entry_frame"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:EC8A",
+   "native": [
+    "src/core/options_menu.cpp:records_detail_entry_frame"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:ECC4",
+   "native": [
+    "src/core/options_menu.cpp:update_track_records"
+   ],
+   "range_ends": [
+    "$80:ECC7"
    ],
    "region": "rom"
   },
@@ -3639,6 +3945,7 @@
     "src/core/front_end.hpp:FrontEndScreen",
     "src/core/rider_menu.cpp:(file)",
     "src/core/rider_menu.cpp:menu_text_palette, early_palette",
+    "src/core/rider_menu.cpp:pick_plays_select",
     "src/core/rider_menu.cpp:rider_menu_frame"
    ],
    "region": "rom"
@@ -10645,11 +10952,28 @@
   {
    "address": "$83:E7F2",
    "native": [
+    "src/core/race_sound.cpp:finish_fade",
     "src/core/race_sound.cpp:finish_fade_rate",
     "src/core/race_sound.hpp:finish_fade"
    ],
    "range_ends": [
+    "$83:E7FD",
     "$83:E830"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:E7F9",
+   "native": [
+    "src/core/audio_cue.hpp:AudioDispatchSite",
+    "src/core/audio_cued_scenes.cpp:split_finish_fade_anchor"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:E7FD",
+   "native": [
+    "src/core/audio_cue.hpp:AudioDispatchSite"
    ],
    "region": "rom"
   },
@@ -11351,7 +11675,7 @@
   {
    "address": "$0056",
    "native": [
-    "src/core/screen_slide.cpp:start_slide"
+    "src/core/screen_slide.cpp:start_silent_slide"
    ],
    "region": "wram"
   },
@@ -15140,6 +15464,8 @@
     "$83:E739",
     "$83:E74F",
     "$83:E785",
+    "$83:E7F9",
+    "$83:E7FD",
     "$83:E82C",
     "$83:E830",
     "$83:F65E",
@@ -15190,6 +15516,11 @@
     "$80:FADF",
     "$83:CD6E",
     "$83:CD9F"
+   ]
+  },
+  "src/core/audio_cued_scenes.cpp:split_finish_fade_anchor": {
+   "rom": [
+    "$83:E7F9"
    ]
   },
   "src/core/audio_cued_scenes.cpp:start_race_music": {
@@ -16672,7 +17003,9 @@
   },
   "src/core/front_end_screens.hpp:MenuSound": {
    "rom": [
-    "$80:B10F"
+    "$80:B0FA",
+    "$80:B10F",
+    "$80:C0B1"
    ]
   },
   "src/core/front_end_screens.hpp:any_button_pressed": {
@@ -16950,6 +17283,12 @@
   "src/core/front_end_screens.hpp:start_result_screen": {
    "rom": [
     "$80:951C"
+   ]
+  },
+  "src/core/front_end_screens.hpp:start_slide": {
+   "rom": [
+    "$80:E233",
+    "$80:E27E"
    ]
   },
   "src/core/front_end_screens.hpp:step_decorations": {
@@ -17450,6 +17789,13 @@
     "$80:BE00"
    ]
   },
+  "src/core/league_menu.cpp:league_awards_frame": {
+   "rom": [
+    "$80:8B28",
+    "$80:B051",
+    "$80:E27E"
+   ]
+  },
   "src/core/league_menu.cpp:league_members": {
    "rom": [
     "$83:963C"
@@ -17489,6 +17835,15 @@
   "src/core/league_menu.cpp:standings_order": {
    "rom": [
     "$80:EFD4"
+   ]
+  },
+  "src/core/local_modes.cpp:local_continue_frame": {
+   "rom": [
+    "$80:ADE3",
+    "$80:AEAD",
+    "$80:B93C",
+    "$80:B9B1",
+    "$80:BA13"
    ]
   },
   "src/core/movement.cpp:update_movement": {
@@ -17768,6 +18123,13 @@
     "$00DC"
    ]
   },
+  "src/core/options_menu.cpp:erase_keyboard_character": {
+   "rom": [
+    "$80:A416",
+    "$80:A41A",
+    "$80:A420"
+   ]
+  },
   "src/core/options_menu.cpp:high_score_leaders": {
    "rom": [
     "$80:D8C1"
@@ -17787,6 +18149,11 @@
     "$80:A511"
    ]
   },
+  "src/core/options_menu.cpp:league_slots_frame": {
+   "rom": [
+    "$80:9F15"
+   ]
+  },
   "src/core/options_menu.cpp:league_warning_frame": {
    "rom": [
     "$80:9D0B"
@@ -17795,6 +18162,12 @@
   "src/core/options_menu.cpp:load_high_score_palettes": {
    "rom": [
     "$80:D917"
+   ]
+  },
+  "src/core/options_menu.cpp:move_choice": {
+   "rom": [
+    "$80:B9B1",
+    "$80:BA13"
    ]
   },
   "src/core/options_menu.cpp:position_keyboard_cursor": {
@@ -17836,6 +18209,13 @@
     "$80:D6D5"
    ]
   },
+  "src/core/options_menu.cpp:records_detail_entry_frame": {
+   "rom": [
+    "$80:EB76",
+    "$80:EB78",
+    "$80:EC8A"
+   ]
+  },
   "src/core/options_menu.cpp:records_detail_exit_frame": {
    "rom": [
     "$80:D9B7"
@@ -17843,7 +18223,9 @@
   },
   "src/core/options_menu.cpp:records_detail_frame": {
    "rom": [
-    "$80:D9AC"
+    "$80:D9AC",
+    "$80:DBF8",
+    "$80:DC05"
    ]
   },
   "src/core/options_menu.cpp:rename_commit_frame": {
@@ -17860,7 +18242,15 @@
    "rom": [
     "$80:A231",
     "$80:A29B",
+    "$80:A2BA",
+    "$80:A2F9",
+    "$80:A326",
+    "$80:A34A",
     "$80:A3A0",
+    "$80:A41A",
+    "$80:A449",
+    "$80:A493",
+    "$80:A495",
     "$80:A52A"
    ]
   },
@@ -17885,6 +18275,13 @@
     "$80:EB76",
     "$80:ECD1",
     "$80:ECF7"
+   ]
+  },
+  "src/core/options_menu.cpp:update_track_records": {
+   "rom": [
+    "$80:E492",
+    "$80:E4C6",
+    "$80:ECC4"
    ]
   },
   "src/core/picture.cpp:render_window_xor": {
@@ -19335,6 +19732,11 @@
     "$81:828E"
    ]
   },
+  "src/core/race_sound.cpp:finish_fade": {
+   "rom": [
+    "$83:E7F2"
+   ]
+  },
   "src/core/race_sound.cpp:finish_fade_from": {
    "rom": [
     "$83:E820"
@@ -20405,10 +20807,31 @@
     "$80:CB0C"
    ]
   },
+  "src/core/rider_menu.cpp:pick_plays_select": {
+   "rom": [
+    "$80:BBB8",
+    "$80:BCDB",
+    "$80:BD02",
+    "$80:BF5C",
+    "$80:BF8A",
+    "$80:C0BD",
+    "$80:C13D",
+    "$80:D45B",
+    "$80:F4E9"
+   ]
+  },
   "src/core/rider_menu.cpp:print_rider_menu": {
    "rom": [
     "$80:95AB",
     "$83:8B51"
+   ]
+  },
+  "src/core/rider_menu.cpp:read_league_members_pad": {
+   "rom": [
+    "$80:9D5A",
+    "$80:9D84",
+    "$80:9DD5",
+    "$80:9DF2"
    ]
   },
   "src/core/rider_menu.cpp:read_rider_menu_pad": {
@@ -20425,7 +20848,11 @@
   },
   "src/core/rider_menu.cpp:rider_menu_entry_frame": {
    "rom": [
-    "$80:9BC4"
+    "$80:9BC4",
+    "$80:BCEF",
+    "$80:BF79",
+    "$80:CBC3",
+    "$80:E233"
    ]
   },
   "src/core/rider_menu.cpp:rider_menu_exit_frame": {
@@ -20705,6 +21132,7 @@
   },
   "src/core/screen_slide.cpp:play_menu_sound": {
    "rom": [
+    "$80:B0FA",
     "$80:B10F",
     "$80:B124",
     "$80:B139",
@@ -20718,7 +21146,7 @@
     "$80:E27E"
    ]
   },
-  "src/core/screen_slide.cpp:start_slide": {
+  "src/core/screen_slide.cpp:start_silent_slide": {
    "wram": [
     "$0056"
    ]
@@ -22745,10 +23173,10 @@
   }
  },
  "totals": {
-  "addresses": 1644,
+  "addresses": 1687,
   "io_addresses": 11,
-  "native_symbols": 1245,
-  "rom_addresses": 1245,
+  "native_symbols": 1257,
+  "rom_addresses": 1288,
   "sram_addresses": 54,
   "wram_addresses": 334
  }

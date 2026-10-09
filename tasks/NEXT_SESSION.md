@@ -1,5 +1,25 @@
 # Next session
 
+**10 October 2026: MODE-AUDIO is accepted (tier 1, #68) and integrated by merge commit.**
+With `--native-title-menu-audio` the app now plays native audio through 2P, VS, LEAGUE and
+OPTIONS, not only the one-player game.
+- **The menus' sounds.** Native was silent in those menus; every move, choice, slide, keyboard
+  key, league member and award sound and refusal now plays at the original's call, and TRACK
+  RECORDS and PLAYER SCORES too. A split race's finish fade has its own call site.
+- **The app** keeps its audio producer running past any main menu choice but the idle demo.
+
+Results:
+- Captured from the original: OPTIONS' schedules and five of the review's are equal line for
+  line; 2P, VS and league differ on 2-4 frames each, all at slides whose pictures already differ
+  there. R-0077's one-player schedules stay equal.
+- Through the audio runner: OPTIONS rename 99.6% and a 2P race 95.7% of 20 ms windows within
+  1 dB of the original.
+- Every frozen gate and sweep equals main.
+
+[R-0091](../docs/research/R-0091-mode-audio.md) defines the domain. Queued: DEMO-AUDIO (the idle demos
+are still silent) and MENU-INPUT (menu input read from the listing and not native). Next ready:
+WIPE-RAM (R-0089's queue item 3).
+
 **10 October 2026: SAVE-FILES is accepted (tier 1, #67) and integrated by merge commit.**
 The app keeps the game's cartridge RAM between runs: `unirally --save-file PATH` (or `frontend run
 --save-file PATH`). Records, player names, leagues, medals and open tours survive a restart.
@@ -17,7 +37,7 @@ Results:
 - Every frozen gate, the race and front-end sweeps and all capture comparisons equal main.
 
 [R-0090](../docs/research/R-0090-save-files.md) defines the domain and the limits (a few transient bytes
-keep the boot's values in a native save). Next ready: MODE-AUDIO (R-0089's queue item 2).
+keep the boot's values in a native save). Next: MODE-AUDIO (R-0089's queue item 2).
 
 **9 October 2026: COVERAGE-GAPS is accepted (tier 3, #66) and integrated by merge commit.**
 The coverage roadmap's queue was done, so this task measured what is left. Every captured

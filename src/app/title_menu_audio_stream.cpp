@@ -127,9 +127,10 @@ void TitleMenuAudioStream::run() {
         native.reveal_menu();
         for (;;) {
             const auto action = run_menu();
-            constexpr std::uint8_t one_player = 0; // the main menu's first entry
-            if (action == AudioCpuMenuAction::selected && native.menu_selection() == one_player
-                && content_.has_race_set()) {
+            // Any of the main menu's entries (1P, 2P, VS, LEAGUE, OPTIONS): from its exit the
+            // game reports every frame's sound work (D-0010, MODE-AUDIO). The idle demo is not
+            // covered (DEMO-AUDIO).
+            if (action == AudioCpuMenuAction::selected && content_.has_race_set()) {
                 run_cued();
                 break;
             }

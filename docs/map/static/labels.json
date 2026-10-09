@@ -907,6 +907,18 @@
   ]
  },
  {
+  "address": "$80:8B28",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_808B28",
+  "native": [
+   "src/core/league_menu.cpp:league_awards_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0091-mode-audio.md"
+  ]
+ },
+ {
   "address": "$80:8B3F",
   "class": "unknown",
   "comment": "unknown",
@@ -1977,6 +1989,19 @@
   ]
  },
  {
+  "address": "$80:9F15",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_809F15",
+  "native": [
+   "src/core/options_menu.cpp:enter_league_slots",
+   "src/core/options_menu.cpp:league_slots_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0091-mode-audio.md"
+  ]
+ },
+ {
   "address": "$80:9F21",
   "class": "unknown",
   "comment": "unknown",
@@ -1986,6 +2011,15 @@
   ],
   "source_records": [
    "docs/research/R-0090-save-files.md"
+  ]
+ },
+ {
+  "address": "$80:9F7A",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_809F7A",
+  "source_records": [
+   "docs/research/R-0091-mode-audio.md"
   ]
  },
  {
@@ -2171,6 +2205,58 @@
   ]
  },
  {
+  "address": "$80:A2BA",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80A2BA",
+  "native": [
+   "src/core/front_end.hpp:KeyboardEditor",
+   "src/core/options_menu.cpp:rename_keyboard_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0091-mode-audio.md"
+  ]
+ },
+ {
+  "address": "$80:A2F9",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80A2F9",
+  "native": [
+   "src/core/front_end.hpp:KeyboardEditor",
+   "src/core/options_menu.cpp:rename_keyboard_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0091-mode-audio.md"
+  ]
+ },
+ {
+  "address": "$80:A326",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80A326",
+  "native": [
+   "src/core/front_end.hpp:KeyboardEditor",
+   "src/core/options_menu.cpp:rename_keyboard_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0091-mode-audio.md"
+  ]
+ },
+ {
+  "address": "$80:A34A",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80A34A",
+  "native": [
+   "src/core/front_end.hpp:KeyboardEditor",
+   "src/core/options_menu.cpp:rename_keyboard_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0091-mode-audio.md"
+  ]
+ },
+ {
   "address": "$80:A3A0",
   "class": "unknown",
   "comment": "unknown",
@@ -2181,6 +2267,71 @@
   ],
   "source_records": [
    "docs/research/R-0072-options.md"
+  ]
+ },
+ {
+  "address": "$80:A416",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80A416",
+  "native": [
+   "src/core/front_end.hpp:KeyboardEditor",
+   "src/core/options_menu.cpp:erase_keyboard_character"
+  ],
+  "source_records": [
+   "docs/research/R-0091-mode-audio.md"
+  ]
+ },
+ {
+  "address": "$80:A420",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80A420",
+  "native": [
+   "src/core/front_end.hpp:KeyboardEditor",
+   "src/core/options_menu.cpp:erase_keyboard_character"
+  ],
+  "source_records": [
+   "docs/research/R-0091-mode-audio.md"
+  ]
+ },
+ {
+  "address": "$80:A449",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80A449",
+  "native": [
+   "src/core/front_end.hpp:KeyboardEditor",
+   "src/core/options_menu.cpp:rename_keyboard_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0091-mode-audio.md"
+  ]
+ },
+ {
+  "address": "$80:A493",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80A493",
+  "native": [
+   "src/core/front_end.hpp:KeyboardEditor",
+   "src/core/options_menu.cpp:rename_keyboard_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0091-mode-audio.md"
+  ]
+ },
+ {
+  "address": "$80:A495",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80A495",
+  "native": [
+   "src/core/front_end.hpp:KeyboardEditor",
+   "src/core/options_menu.cpp:rename_keyboard_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0091-mode-audio.md"
   ]
  },
  {
@@ -2606,6 +2757,9 @@
   "class": "unknown",
   "comment": "unknown",
   "label": "unk_80ADE3",
+  "native": [
+   "src/core/local_modes.cpp:local_continue_frame"
+  ],
   "source_records": [
    "docs/research/R-0071-two-player-versus.md"
   ]
@@ -2620,12 +2774,37 @@
   ]
  },
  {
+  "address": "$80:AEAD",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80AEAD",
+  "native": [
+   "src/core/local_modes.cpp:local_continue_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0091-mode-audio.md"
+  ]
+ },
+ {
   "address": "$80:AF54",
   "class": "unknown",
   "comment": "unknown",
   "label": "unk_80AF54",
   "source_records": [
    "docs/research/R-0073-league.md"
+  ]
+ },
+ {
+  "address": "$80:B051",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80B051",
+  "native": [
+   "src/core/league_menu.cpp:league_awards_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0091-mode-audio.md",
+   "tasks/MENU-INPUT.md"
   ]
  },
  {
@@ -2698,6 +2877,21 @@
   ]
  },
  {
+  "address": "$80:B0FA",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80B0FA",
+  "native": [
+   "src/core/front_end_screens.hpp:MenuSound",
+   "src/core/screen_slide.cpp:play_menu_sound"
+  ],
+  "source_records": [
+   "docs/research/R-0091-mode-audio.md",
+   "tasks/MENU-INPUT.md",
+   "tasks/MODE-AUDIO.md"
+  ]
+ },
+ {
   "address": "$80:B10F",
   "class": "observed",
   "comment": "routine start",
@@ -2707,7 +2901,8 @@
    "src/core/screen_slide.cpp:play_menu_sound"
   ],
   "source_records": [
-   "docs/research/R-0076-first-race-audio.md"
+   "docs/research/R-0076-first-race-audio.md",
+   "docs/research/R-0091-mode-audio.md"
   ]
  },
  {
@@ -3214,7 +3409,19 @@
   ],
   "source_records": [
    "docs/research/R-0054-boot-title-main-menu.md",
-   "docs/research/R-0075-title-menu-audio.md"
+   "docs/research/R-0075-title-menu-audio.md",
+   "docs/research/R-0091-mode-audio.md",
+   "tasks/MENU-INPUT.md"
+  ]
+ },
+ {
+  "address": "$80:B8C4",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80B8C4",
+  "source_records": [
+   "docs/research/R-0091-mode-audio.md",
+   "tasks/MENU-INPUT.md"
   ]
  },
  {
@@ -3227,12 +3434,51 @@
   ]
  },
  {
+  "address": "$80:B916",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80B916",
+  "source_records": [
+   "docs/research/R-0091-mode-audio.md",
+   "tasks/MENU-INPUT.md"
+  ]
+ },
+ {
   "address": "$80:B93C",
   "class": "inferred",
   "comment": "routine start",
   "label": "sub_80B93C",
+  "native": [
+   "src/core/local_modes.cpp:local_continue_frame"
+  ],
   "source_records": [
    "docs/research/R-0089-coverage-gaps.md"
+  ]
+ },
+ {
+  "address": "$80:B9B1",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_80B9B1",
+  "native": [
+   "src/core/local_modes.cpp:local_continue_frame",
+   "src/core/options_menu.cpp:move_choice"
+  ],
+  "source_records": [
+   "docs/research/R-0091-mode-audio.md"
+  ]
+ },
+ {
+  "address": "$80:BA13",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_80BA13",
+  "native": [
+   "src/core/local_modes.cpp:local_continue_frame",
+   "src/core/options_menu.cpp:move_choice"
+  ],
+  "source_records": [
+   "docs/research/R-0091-mode-audio.md"
   ]
  },
  {
@@ -3333,11 +3579,13 @@
   "comment": "instruction start",
   "label": "loc_80BBB8",
   "native": [
+   "src/core/rider_menu.cpp:pick_plays_select",
    "src/core/rider_menu.cpp:rider_menu_frame"
   ],
   "source_records": [
    "docs/research/R-0055-rider-menu.md",
-   "docs/research/R-0076-first-race-audio.md"
+   "docs/research/R-0076-first-race-audio.md",
+   "docs/research/R-0091-mode-audio.md"
   ]
  },
  {
@@ -3346,6 +3594,7 @@
   "comment": "instruction start",
   "label": "loc_80BBC3",
   "native": [
+   "src/core/rider_menu.cpp:pick_plays_select",
    "src/core/rider_menu.cpp:rider_menu_frame"
   ],
   "source_records": [
@@ -3358,6 +3607,7 @@
   "comment": "instruction start",
   "label": "loc_80BBD6",
   "native": [
+   "src/core/rider_menu.cpp:pick_plays_select",
    "src/core/rider_menu.cpp:rider_menu_frame"
   ],
   "source_records": [
@@ -3372,6 +3622,7 @@
   "comment": "instruction start",
   "label": "loc_80BBDC",
   "native": [
+   "src/core/rider_menu.cpp:pick_plays_select",
    "src/core/rider_menu.cpp:rider_menu_frame"
   ],
   "source_records": [
@@ -3385,6 +3636,7 @@
   "label": "loc_80BBE3",
   "native": [
    "src/core/front_end.cpp:cold_start_records",
+   "src/core/rider_menu.cpp:pick_plays_select",
    "src/core/rider_menu.cpp:rider_menu_frame"
   ],
   "source_records": [
@@ -3398,6 +3650,7 @@
   "label": "loc_80BBEE",
   "native": [
    "src/core/cartridge_ram.cpp:cartridge_image",
+   "src/core/rider_menu.cpp:pick_plays_select",
    "src/core/rider_menu.cpp:rider_menu_frame"
   ],
   "source_records": [
@@ -3606,6 +3859,30 @@
   ]
  },
  {
+  "address": "$80:BCDB",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80BCDB",
+  "native": [
+   "src/core/rider_menu.cpp:pick_plays_select"
+  ],
+  "source_records": [
+   "docs/research/R-0091-mode-audio.md"
+  ]
+ },
+ {
+  "address": "$80:BCEF",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80BCEF",
+  "native": [
+   "src/core/rider_menu.cpp:rider_menu_entry_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0091-mode-audio.md"
+  ]
+ },
+ {
   "address": "$80:BCFB",
   "class": "unknown",
   "comment": "unknown",
@@ -3619,8 +3896,12 @@
   "class": "unknown",
   "comment": "unknown",
   "label": "unk_80BD02",
+  "native": [
+   "src/core/rider_menu.cpp:pick_plays_select"
+  ],
   "source_records": [
-   "docs/research/R-0071-two-player-versus.md"
+   "docs/research/R-0071-two-player-versus.md",
+   "docs/research/R-0091-mode-audio.md"
   ]
  },
  {
@@ -3746,6 +4027,30 @@
   ]
  },
  {
+  "address": "$80:BF5C",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80BF5C",
+  "native": [
+   "src/core/rider_menu.cpp:pick_plays_select"
+  ],
+  "source_records": [
+   "docs/research/R-0091-mode-audio.md"
+  ]
+ },
+ {
+  "address": "$80:BF79",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80BF79",
+  "native": [
+   "src/core/rider_menu.cpp:rider_menu_entry_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0091-mode-audio.md"
+  ]
+ },
+ {
   "address": "$80:BF85",
   "class": "unknown",
   "comment": "unknown",
@@ -3759,8 +4064,12 @@
   "class": "unknown",
   "comment": "unknown",
   "label": "unk_80BF8A",
+  "native": [
+   "src/core/rider_menu.cpp:pick_plays_select"
+  ],
   "source_records": [
-   "docs/research/R-0071-two-player-versus.md"
+   "docs/research/R-0071-two-player-versus.md",
+   "docs/research/R-0091-mode-audio.md"
   ]
  },
  {
@@ -3804,6 +4113,31 @@
   ]
  },
  {
+  "address": "$80:C0B1",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80C0B1",
+  "native": [
+   "src/core/front_end_screens.hpp:MenuSound"
+  ],
+  "source_records": [
+   "docs/research/R-0091-mode-audio.md",
+   "tasks/MENU-INPUT.md"
+  ]
+ },
+ {
+  "address": "$80:C0BD",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80C0BD",
+  "native": [
+   "src/core/rider_menu.cpp:pick_plays_select"
+  ],
+  "source_records": [
+   "docs/research/R-0091-mode-audio.md"
+  ]
+ },
+ {
   "address": "$80:C10E",
   "class": "unknown",
   "comment": "unknown",
@@ -3822,6 +4156,19 @@
   ],
   "source_records": [
    "docs/research/R-0072-options.md"
+  ]
+ },
+ {
+  "address": "$80:C13D",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80C13D",
+  "native": [
+   "src/core/options_menu.cpp:enter_define_player_warning",
+   "src/core/rider_menu.cpp:pick_plays_select"
+  ],
+  "source_records": [
+   "docs/research/R-0091-mode-audio.md"
   ]
  },
  {
@@ -4656,10 +5003,13 @@
   "comment": "instruction start",
   "label": "loc_80CBC3",
   "native": [
-   "src/core/rider_menu.cpp:open_rider_menu"
+   "src/core/rider_menu.cpp:open_rider_menu",
+   "src/core/rider_menu.cpp:rider_menu_entry_frame"
   ],
   "source_records": [
-   "docs/research/R-0055-rider-menu.md"
+   "docs/research/R-0055-rider-menu.md",
+   "docs/research/R-0091-mode-audio.md",
+   "tasks/MENU-INPUT.md"
   ]
  },
  {
@@ -5261,6 +5611,18 @@
   ]
  },
  {
+  "address": "$80:D45B",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80D45B",
+  "native": [
+   "src/core/rider_menu.cpp:pick_plays_select"
+  ],
+  "source_records": [
+   "docs/research/R-0091-mode-audio.md"
+  ]
+ },
+ {
   "address": "$80:D468",
   "class": "unknown",
   "comment": "unknown",
@@ -5494,6 +5856,32 @@
   ]
  },
  {
+  "address": "$80:DBF8",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80DBF8",
+  "native": [
+   "src/core/options_menu.cpp:print_player_scores",
+   "src/core/options_menu.cpp:records_detail_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0091-mode-audio.md"
+  ]
+ },
+ {
+  "address": "$80:DC05",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80DC05",
+  "native": [
+   "src/core/options_menu.cpp:print_player_scores",
+   "src/core/options_menu.cpp:records_detail_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0091-mode-audio.md"
+  ]
+ },
+ {
   "address": "$80:DDE3",
   "class": "unknown",
   "comment": "unknown",
@@ -5531,6 +5919,43 @@
   ]
  },
  {
+  "address": "$80:DF37",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80DF37",
+  "native": [
+   "src/core/options_menu.cpp:print_group_scores"
+  ],
+  "source_records": [
+   "docs/research/R-0091-mode-audio.md",
+   "tasks/MENU-INPUT.md"
+  ]
+ },
+ {
+  "address": "$80:DF46",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80DF46",
+  "native": [
+   "src/core/options_menu.cpp:print_group_scores"
+  ],
+  "source_records": [
+   "docs/research/R-0091-mode-audio.md"
+  ]
+ },
+ {
+  "address": "$80:DF6C",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80DF6C",
+  "native": [
+   "src/core/options_menu.cpp:print_group_scores"
+  ],
+  "source_records": [
+   "docs/research/R-0091-mode-audio.md"
+  ]
+ },
+ {
   "address": "$80:E043",
   "class": "unknown",
   "comment": "unknown",
@@ -5549,7 +5974,9 @@
   "label": "sub_80E233",
   "native": [
    "src/core/front_end.hpp:ScreenSlide",
+   "src/core/front_end_screens.hpp:start_slide",
    "src/core/rider_menu.cpp:(file)",
+   "src/core/rider_menu.cpp:rider_menu_entry_frame",
    "src/core/screen_slide.cpp:(file)",
    "src/core/screen_slide.cpp:slide_passes, accelerate_from, decelerate_below"
   ],
@@ -5565,6 +5992,8 @@
   "label": "sub_80E27E",
   "native": [
    "src/core/front_end.hpp:ScreenSlide",
+   "src/core/front_end_screens.hpp:start_slide",
+   "src/core/league_menu.cpp:league_awards_frame",
    "src/core/rider_menu.cpp:(file)",
    "src/core/screen_slide.cpp:(file)",
    "src/core/screen_slide.cpp:slide_passes, accelerate_from, decelerate_below"
@@ -5673,6 +6102,30 @@
   ],
   "source_records": [
    "docs/research/R-0064-hunter-ending-and-soft-reset.md"
+  ]
+ },
+ {
+  "address": "$80:E492",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80E492",
+  "native": [
+   "src/core/options_menu.cpp:update_track_records"
+  ],
+  "source_records": [
+   "docs/research/R-0091-mode-audio.md"
+  ]
+ },
+ {
+  "address": "$80:E4C6",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80E4C6",
+  "native": [
+   "src/core/options_menu.cpp:update_track_records"
+  ],
+  "source_records": [
+   "docs/research/R-0091-mode-audio.md"
   ]
  },
  {
@@ -6230,10 +6683,47 @@
   "comment": "unknown",
   "label": "unk_80EB76",
   "native": [
+   "src/core/options_menu.cpp:records_detail_entry_frame",
    "src/core/options_menu.cpp:track_records_hdma"
   ],
   "source_records": [
    "docs/research/R-0072-options.md"
+  ]
+ },
+ {
+  "address": "$80:EB78",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80EB78",
+  "native": [
+   "src/core/options_menu.cpp:records_detail_entry_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0091-mode-audio.md"
+  ]
+ },
+ {
+  "address": "$80:EC8A",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80EC8A",
+  "native": [
+   "src/core/options_menu.cpp:records_detail_entry_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0091-mode-audio.md"
+  ]
+ },
+ {
+  "address": "$80:ECC4",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80ECC4",
+  "native": [
+   "src/core/options_menu.cpp:update_track_records"
+  ],
+  "source_records": [
+   "docs/research/R-0091-mode-audio.md"
   ]
  },
  {
@@ -6754,6 +7244,7 @@
    "src/core/front_end.hpp:FrontEndScreen",
    "src/core/rider_menu.cpp:(file)",
    "src/core/rider_menu.cpp:menu_text_palette, early_palette",
+   "src/core/rider_menu.cpp:pick_plays_select",
    "src/core/rider_menu.cpp:rider_menu_frame"
   ],
   "source_records": [
@@ -12775,6 +13266,7 @@
    "docs/research/R-0075-title-menu-audio.md",
    "docs/research/R-0076-first-race-audio.md",
    "docs/research/R-0077-one-player-audio.md",
+   "docs/research/R-0091-mode-audio.md",
    "tasks/AUDIO-DECISION.md",
    "tasks/AUDIO-TITLE-MENU.md"
   ]
@@ -16448,6 +16940,7 @@
   "source_records": [
    "docs/research/R-0064-hunter-ending-and-soft-reset.md",
    "docs/research/R-0090-save-files.md",
+   "tasks/NEXT_SESSION.md",
    "tasks/SAVE-FILES.md"
   ]
  },
@@ -21444,12 +21937,15 @@
   "comment": "instruction start",
   "label": "loc_83E7F2",
   "native": [
+   "src/core/race_sound.cpp:finish_fade",
    "src/core/race_sound.cpp:finish_fade_rate",
    "src/core/race_sound.hpp:finish_fade",
    "src/core/stunt_event.hpp:update_stunt_finish"
   ],
   "source_records": [
-   "docs/research/R-0076-first-race-audio.md"
+   "docs/research/R-0076-first-race-audio.md",
+   "docs/research/R-0091-mode-audio.md",
+   "tasks/MODE-AUDIO.md"
   ]
  },
  {
@@ -21458,6 +21954,7 @@
   "comment": "instruction start",
   "label": "loc_83E803",
   "native": [
+   "src/core/race_sound.cpp:finish_fade",
    "src/core/race_sound.cpp:finish_fade_rate",
    "src/core/race_sound.hpp:finish_fade",
    "src/core/stunt_event.hpp:update_stunt_finish"
@@ -21472,6 +21969,7 @@
   "comment": "instruction start",
   "label": "loc_83E808",
   "native": [
+   "src/core/race_sound.cpp:finish_fade",
    "src/core/race_sound.cpp:finish_fade_rate",
    "src/core/race_sound.hpp:finish_fade",
    "src/core/stunt_event.hpp:update_stunt_finish"
@@ -21486,6 +21984,7 @@
   "comment": "instruction start",
   "label": "loc_83E81D",
   "native": [
+   "src/core/race_sound.cpp:finish_fade",
    "src/core/race_sound.cpp:finish_fade_rate",
    "src/core/race_sound.hpp:finish_fade",
    "src/core/stunt_event.hpp:update_stunt_finish"
@@ -21503,6 +22002,7 @@
   "label": "loc_83E82C",
   "native": [
    "src/core/audio_cue.hpp:AudioDispatchSite",
+   "src/core/race_sound.cpp:finish_fade",
    "src/core/race_sound.cpp:finish_fade_rate",
    "src/core/race_sound.hpp:finish_fade",
    "src/core/stunt_event.hpp:update_stunt_finish"

@@ -291,24 +291,42 @@ bool read_league_members_pad(FrontEndState& state, const FrontEndContent& conten
     (void)read_rider_menu_pad(state, pad & (pad_left | pad_right | pad_up | pad_down));
     const unsigned rider =
         state.rider_menu.row * 2U + (state.arrow.target_x == right_column_x ? 1U : 0U);
-    if (pressed & (0x4000U | 0x8000U)) { // Y or B
+    // Y or B marks or unmarks the rider, with the result's sound ($80:9D5A, $80:9D84).
+    if (pressed & (0x4000U | 0x8000U)) {
+        play_menu_sound(state, MenuSound::result);
         mark_league_member(state, rider);
         state.menu.selection = static_cast<std::uint8_t>(rider);
         load_text(state, state.slide.shown_half);
         return false;
     }
-    if (!(pressed & 0x1000U)) return false; // Start finishes a valid selection
+    constexpr std::uint16_t pad_start = 0x1000;
+    if (!(pad & pad_start)) return false; // Start finishes a valid selection
     const auto count = std::popcount(state.league.members);
     if (count < 2 || count > 8) {
+        // $80:9DD5, $80:9DF2: refused, and the message printed again, on every frame that Start
+        // is held; the reprint leaves the same text.
+        play_menu_sound(state, MenuSound::refused);
+        if (!(pressed & pad_start)) return false;
         print_text(state.text, state.printer,
                    count < 2 ? content.league_minimum : content.league_maximum,
                    content.character_table);
         load_text(state, state.slide.shown_half);
         return false;
     }
+    if (!(pressed & pad_start)) return false;
     state.records.league_members[state.league.slot] = state.league.members;
     reset_league(state);
     return true;
+}
+
+// A rider pick's select sound: 1P `$80:BBB8`, 2P `$80:BCDB` and `$80:BD02`, VS `$80:BF8A` and
+// the challenger's `$80:C0BD`. VS's first pick plays it before testing for Y (`$80:BF5C`). DEFINE
+// and RENAME PLAYER's picks go to `$80:F4E9` without it ($80:C13D, $80:D45B).
+bool pick_plays_select(const FrontEndState& state) {
+    const auto& menu = state.rider_menu;
+    if (menu.purpose != RiderMenuPurpose::normal) return false;
+    if (!menu.back) return true;
+    return state.mode == FrontEndMode::versus && !menu.second && !menu.challenger;
 }
 
 // $80:CB04's first lines, before its first frame wait.
@@ -375,7 +393,12 @@ void rider_menu_entry_frame(FrontEndState& state, const FrontEndContent& content
         return;
     case 3:
         upload_uni(state, content);
-        start_slide(state, content, state.rider_menu.returning);
+        // The second player's pick re-enters the loop at $80:CBC3 (2P `$80:BCEF`, VS
+        // `$80:BF79`), past `$80:E233` and its sound.
+        if (state.rider_menu.second)
+            start_silent_slide(state, content, state.rider_menu.returning);
+        else
+            start_slide(state, content, state.rider_menu.returning);
         if (state.rider_menu.purpose == RiderMenuPurpose::league_members) {
             state.arrow.x = 0x00fd;
             state.arrow.y = 0x0580;
@@ -419,8 +442,8 @@ void rider_menu_frame(FrontEndState& state, const FrontEndContent& content, Fron
     }
     // $80:BBB8-BBEE for a choice ($80:BC9B for Y), then $80:F4E9, which stops the HDMA at once.
     state.one_player = !state.rider_menu.back && state.mode == FrontEndMode::one_player;
+    if (pick_plays_select(state)) play_menu_sound(state, MenuSound::select);
     if (!state.rider_menu.back) {
-        play_menu_sound(state, MenuSound::select);
         if (state.rider_menu.purpose == RiderMenuPurpose::normal) send_arrow_off(state);
         if (state.rider_menu.second) {
             state.second_rider = state.menu.selection;

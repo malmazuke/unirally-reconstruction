@@ -1847,6 +1847,10 @@
    "mode_at_entry": [
     "NmX"
    ],
+   "native": [
+    "src/core/local_modes.cpp:local_continue_frame",
+    "src/core/options_menu.cpp:move_choice"
+   ],
    "observed_entries": {},
    "start": "$80:B93C",
    "static_entries": {
@@ -1896,6 +1900,7 @@
     "src/core/front_end_screens.hpp:return_to_tour_menu",
     "src/core/race_result.cpp:race_restart_frame",
     "src/core/rider_menu.cpp:(file)",
+    "src/core/rider_menu.cpp:pick_plays_select",
     "src/core/rider_menu.cpp:rider_menu_frame",
     "src/core/tour_menu.cpp:(file)",
     "src/core/tour_menu.cpp:return_to_tour_menu",
@@ -2116,6 +2121,7 @@
     "src/core/rider_menu.cpp:open_rider_menu",
     "src/core/rider_menu.cpp:open_rider_menu_entry",
     "src/core/rider_menu.cpp:read_rider_menu_pad",
+    "src/core/rider_menu.cpp:rider_menu_entry_frame",
     "src/core/rider_menu.cpp:set_arrow_palette",
     "src/core/rider_menu.cpp:shadow_group",
     "src/core/rider_menu.cpp:split_row"
@@ -2359,7 +2365,9 @@
    ],
    "native": [
     "src/core/front_end.hpp:ScreenSlide",
+    "src/core/front_end_screens.hpp:start_slide",
     "src/core/rider_menu.cpp:(file)",
+    "src/core/rider_menu.cpp:rider_menu_entry_frame",
     "src/core/screen_slide.cpp:(file)",
     "src/core/screen_slide.cpp:slide_passes, accelerate_from, decelerate_below"
    ],
@@ -2386,6 +2394,8 @@
    ],
    "native": [
     "src/core/front_end.hpp:ScreenSlide",
+    "src/core/front_end_screens.hpp:start_slide",
+    "src/core/league_menu.cpp:league_awards_frame",
     "src/core/rider_menu.cpp:(file)",
     "src/core/screen_slide.cpp:(file)",
     "src/core/screen_slide.cpp:slide_passes, accelerate_from, decelerate_below"
@@ -2750,6 +2760,7 @@
     "src/core/front_end.hpp:FrontEndScreen",
     "src/core/rider_menu.cpp:(file)",
     "src/core/rider_menu.cpp:menu_text_palette, early_palette",
+    "src/core/rider_menu.cpp:pick_plays_select",
     "src/core/rider_menu.cpp:rider_menu_frame"
    ],
    "observed_entries": {},
@@ -14188,6 +14199,8 @@
    ],
    "native": [
     "src/core/audio_cue.hpp:AudioDispatchSite",
+    "src/core/audio_cued_scenes.cpp:split_finish_fade_anchor",
+    "src/core/race_sound.cpp:finish_fade",
     "src/core/race_sound.cpp:finish_fade_from",
     "src/core/race_sound.cpp:finish_fade_rate",
     "src/core/race_sound.hpp:finish_fade",
@@ -14980,19 +14993,19 @@
    "call returns in the calling mode": 1262
   },
   "bytes": 131072,
-  "cited_addresses": 1766,
+  "cited_addresses": 1803,
   "cited_by_class": {
    "data": 31,
-   "inferred": 334,
+   "inferred": 336,
    "observed": 1056,
-   "unknown": 345
+   "unknown": 380
   },
   "cited_by_position": {
    "dat": 31,
-   "loc": 1008,
+   "loc": 1010,
    "mid": 20,
    "sub": 362,
-   "unk": 345
+   "unk": 380
   },
   "conflicts": 0,
   "data": 92,
@@ -15011,9 +15024,9 @@
   "jump_tables": 2,
   "mode_ambiguities": 7,
   "observed": 41778,
-  "routine_bytes_cited_by_native_code": 54859,
+  "routine_bytes_cited_by_native_code": 55161,
   "routines": 636,
-  "routines_cited_by_native_code": 444,
+  "routines_cited_by_native_code": 445,
   "unknown": 52881,
   "unknown_share": 0.4035
  }

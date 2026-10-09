@@ -42,8 +42,9 @@ FILE` writes the native cues per frame; `race_audio_runner PACK INPUT CUES EVENT
 LAST_FRAME DSP_END [OUTPUT_RATE SAVE_FRAME STATE RESTORE]` plays them from power-on (raw
 pairs, or resampled playback with 257-pair drains and fresh-process save/restore). With
 `--native-title-menu-audio` and a v32 pack, the app plays continuous audio from power-on
-through 1P setup, the first race on DRAGSTER, its result and the menus after it; other modes
-and later races stop the cued producer. `--audio-cue-log FILE` keeps the app's cues with
+through 1P setup, the first race on DRAGSTER, its result and the menus after it; since
+MODE-AUDIO ([R-0091](research/R-0091-mode-audio.md)) also through 2P, VS, LEAGUE and OPTIONS,
+while the idle demo stops the cued producer. `--audio-cue-log FILE` keeps the app's cues with
 rotation lines unresolved. [R-0076](research/R-0076-first-race-audio.md) records the
 captured schedules, the exact cue comparisons and the measured (not exact) PCM agreement;
 the laboratory scripts are in main `local/evidence/audio-first-race/`.

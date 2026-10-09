@@ -151,11 +151,23 @@ bool step_down(std::uint8_t& counter, std::uint8_t last);
 // tiles of entries 104-111 and the columns of entries 100-103.
 void step_decorations(FrontEndState& state, const FrontEndContent& content);
 // A slide's first pass, before its frame wait; then each pass after its wait, with the next
-// pass's work. `slide_frame` is true once the halves have swapped.
+// pass's work. `slide_frame` is true once the halves have swapped. `start_slide` plays the
+// slide's sound first ($80:E233, $80:E27E); `start_silent_slide` is the same pass without it.
 void start_slide(FrontEndState& state, const FrontEndContent& content, bool back);
+void start_silent_slide(FrontEndState& state, const FrontEndContent& content, bool back);
 // The menus' sound helpers ($80:B10F-B18C), each an effect volume (command 8) then an effect
 // (command 2) on the sound queue (R-0076): the result's, a choice's, the slides' and a move's.
-enum class MenuSound : std::uint8_t { result, select, forward_slide, back_slide, navigate };
+// `refused` is $80:B0FA, a move's cue from its own helper, played where a choice is turned down:
+// an empty name, a league of fewer than two or more than eight. The original also plays it when
+// the champion is picked as challenger ($80:C0B1-C0BB); native does not refuse that pick.
+enum class MenuSound : std::uint8_t {
+    result,
+    select,
+    forward_slide,
+    back_slide,
+    navigate,
+    refused
+};
 void play_menu_sound(FrontEndState& state, MenuSound sound);
 // The award's and endings' sound helpers ($83:A286-A4D0), one for each effect 1-28: its volume
 // (127 for effects 1, 13 and 17-28, 63 for 2 and 3, otherwise 79), then the effect (R-0077).

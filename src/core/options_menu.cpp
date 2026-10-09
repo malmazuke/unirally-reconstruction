@@ -45,6 +45,7 @@ void move_choice(FrontEndState& state, std::span<const std::uint8_t> columns, Fr
     }
     if (state.latches.moved) return;
     state.latches.moved = true;
+    play_menu_sound(state, MenuSound::navigate); // $80:BA13 (Down), $80:B9B1 (Up)
     auto& row = state.menu.selection;
     row = static_cast<std::uint8_t>(down ? (row + 1U) % count : (row + count - 1U) % count);
     aim_choice(state, columns);
@@ -177,6 +178,7 @@ void league_slots_frame(FrontEndState& state, const FrontEndContent& content, Fr
         return;
     }
     if (!(pad & choose_buttons)) return;
+    play_menu_sound(state, MenuSound::select); // $80:9F15
     state.league.slot = state.menu.selection;
     if (state.mode == FrontEndMode::league) {
         choose_league_slot(state, content);
@@ -673,6 +675,11 @@ void load_high_score_palettes(FrontEndState& state, const FrontEndContent& conte
 
 void records_detail_entry_frame(FrontEndState& state, const FrontEndContent& content) {
     if (state.records_detail.category == 0) {
+        // TRACK RECORDS opens with a wipe ($80:EB76) that plays the forward slide's sound at its
+        // start ($80:EB78) and again as the grid scrolls in ($80:EC8A).
+        constexpr std::uint32_t grid_scroll_frame = 68;
+        if (state.script_frame == 1 || state.script_frame == grid_scroll_frame)
+            play_menu_sound(state, MenuSound::forward_slide);
         copy_oam(state);
         if (state.script_frame == 1) {
             print_track_records(state, content);
@@ -731,6 +738,10 @@ void update_track_records(FrontEndState& state, const FrontEndContent& content, 
     // the current input then advances the HDMA scroll for the next one.
     print_track_selected_times(state, content);
     if (state.script_frame > 3) step_decorations(state, content);
+    // The wipe ends with the result's sound after its last wait ($80:ECC4-ECC7), six frames into
+    // native's loop.
+    constexpr std::uint32_t wipe_result_frame = 6;
+    if (state.script_frame == wipe_result_frame) play_menu_sound(state, MenuSound::result);
     constexpr std::array<std::uint8_t, 12> scroll_steps{1, 2, 2, 3, 4, 5, 4, 4, 2, 2, 2, 1};
     const auto pad = pads.one;
     const bool down = (pad & (pad_down | pad_select)) != 0;
@@ -746,6 +757,7 @@ void update_track_records(FrontEndState& state, const FrontEndContent& content, 
     if (!right && !left) state.latches.up = false;
     if ((right || left) && !state.latches.up) {
         state.latches.up = true;
+        play_menu_sound(state, MenuSound::navigate); // $80:E4C6 (Right), $80:E492 (Left)
         auto& column = state.records_detail.rider;
         column = static_cast<std::uint8_t>(right ? (column + 1U) % 5U : (column + 4U) % 5U);
         state.arrow.target_x = static_cast<std::uint16_t>(0x0600 + column * 0x180);
@@ -827,6 +839,7 @@ void records_detail_frame(FrontEndState& state, const FrontEndContent& content, 
         if (!down && !up) state.latches.moved = false;
         if ((down || up) && !state.latches.moved) {
             state.latches.moved = true;
+            play_menu_sound(state, MenuSound::result); // $80:DBF8 (Down), $80:DC05 (Up)
             auto& rider = state.records_detail.rider;
             rider = static_cast<std::uint8_t>(down ? (rider + 15U) & 15U : (rider + 1U) & 15U);
             state.text.words.fill(cleared_text);
@@ -1027,8 +1040,14 @@ std::uint8_t stored_character(std::uint8_t key) {
     return key;
 }
 
+// $80:A416-A445: the last character erased with the result's sound, or the refusal's when the
+// name is empty.
 void erase_keyboard_character(FrontEndState& state, const FrontEndContent& content) {
-    if (state.keyboard.length == 0) return;
+    if (state.keyboard.length == 0) {
+        play_menu_sound(state, MenuSound::refused); // $80:A41A
+        return;
+    }
+    play_menu_sound(state, MenuSound::result); // $80:A420
     --state.keyboard.length;
     --state.printer.position;
     constexpr std::array<std::uint8_t, 2> dot{'.', 0xff};
@@ -1050,6 +1069,10 @@ void rename_keyboard_frame(FrontEndState& state, const FrontEndContent& content,
     const auto pad = pads.one;
     const auto pressed = static_cast<std::uint16_t>(pad & ~editor.previous_buttons);
     editor.previous_buttons = pad;
+    // Each move plays the navigation sound: $80:A2BA (Left), $80:A2F9 (Right), $80:A34A (Up),
+    // $80:A326 (Down).
+    if (pressed & (pad_left | pad_right | pad_up | pad_down))
+        play_menu_sound(state, MenuSound::navigate);
     if (pressed & pad_left) {
         editor.offset_x =
             editor.offset_x == 0 ? -192 : static_cast<std::int16_t>(editor.offset_x + 16);
@@ -1077,7 +1100,11 @@ void rename_keyboard_frame(FrontEndState& state, const FrontEndContent& content,
     state.arrow.target_y = static_cast<std::uint16_t>((31 - editor.offset_y) * 16);
     const auto key = keyboard_key(editor, content.keyboard_text);
     if (key == 0x40) { // OK at $80:A52A
-        if (editor.length == 0) return;
+        if (editor.length == 0) {
+            play_menu_sound(state, MenuSound::refused); // $80:A493 to $80:A41A
+            return;
+        }
+        play_menu_sound(state, MenuSound::select); // $80:A495
         editor.scratch[editor.length] = editor.scratch[editor.length + 1] = 0xff;
         state.screen = FrontEndScreen::rename_commit;
         return;
@@ -1086,6 +1113,7 @@ void rename_keyboard_frame(FrontEndState& state, const FrontEndContent& content,
         erase_keyboard_character(state, content);
         return;
     }
+    play_menu_sound(state, MenuSound::result); // $80:A449, before the length test
     if (editor.length >= 8) return;
     editor.scratch[editor.length] = stored_character(key);
     const std::array<std::uint8_t, 2> shown{editor.scratch[editor.length], 0xff};
