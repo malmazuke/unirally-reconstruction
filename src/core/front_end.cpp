@@ -373,10 +373,6 @@ void run_main_menu(FrontEndState& state, const FrontEndContent& content, FrontEn
     if (menu.idle == 0) {
         menu.selection = static_cast<std::uint8_t>(FrontEndMode::demo);
         state.mode = FrontEndMode::demo;
-        if (state.demo_cycles >= 2) {
-            state.mode_chosen = true; // Later cycles are outside the recovered domain.
-            return;
-        }
         state.screen = FrontEndScreen::demo_title;
         return;
     }
@@ -876,6 +872,44 @@ void return_from_demo(FrontEndState& state, std::uint32_t exit_frame, std::uint1
 
 namespace {
 
+// The idle demos take the race tracks below HUNTER's in turn (R-0087): `$80:949D-94B2` advances
+// `$77:10C8` modulo 40 and again while the track is a stunt event (race mode 2, every tour's
+// third track). `$83:C912-C994` flips `$77:1115` between a split race and a one-view one; the
+// rider is the track plus the race counter `$77:10B1` plus the menu's palette-cycle phase `$00C9`
+// (saved by `$83:9894` as `$77:0F34`), modulo 16. A split race's opponent is the track less
+// both, or 13 more when that is the rider; a one-view race keeps the mode's opponent 1
+// (`$80:9496`).
+void choose_idle_demo(FrontEndState& state) {
+    constexpr unsigned demo_tracks = 40, stunt_place = 2, riders = 16;
+    auto& records = state.records;
+    do records.demo_track = static_cast<std::uint8_t>((records.demo_track + 1U) % demo_tracks);
+    while (records.demo_track % front_end_screens::tracks_per_tour == stunt_place);
+    // `$83:C8EF-C8FB` and `$83:C91C-C92A` put a counter outside its range back to 0.
+    const unsigned counter =
+        records.race_song_counter < race_song_count ? records.race_song_counter : 0;
+    if (records.demo_split > 1) records.demo_split = 0;
+    records.demo_split = static_cast<std::uint8_t>(1U - records.demo_split);
+    const unsigned track = records.demo_track;
+    const unsigned phase = static_cast<std::uint8_t>(state.cycle.phase);
+    state.tour_menu.track = records.demo_track;
+    state.demo_split_race = records.demo_split != 0;
+    state.rider_menu.rider = static_cast<std::uint8_t>((track + counter + phase) % riders);
+    state.now_playing.opponent = 1;
+    if (state.demo_split_race) {
+        auto opponent = (track - counter - phase) % riders;
+        if (opponent == state.rider_menu.rider) opponent = (opponent + 13U) % riders;
+        state.now_playing.opponent = static_cast<std::uint8_t>(opponent);
+    }
+}
+
+// The frames from the demo's choice to its race's initialization (R-0087): the menus' sound-load
+// offset for the track (R-0077's measurement, the loading before `$83:CA08`), then 7. The demo
+// skips the sound session itself (`$83:C9F6-CA05`). Equal on all 34 cycles of a cold lap.
+std::uint32_t idle_demo_loading_frames(ClassicRaceTrack track) {
+    constexpr std::uint32_t after_sound_load_offset = 7;
+    return race_sound_load_offset(track) + after_sound_load_offset;
+}
+
 // The original's idle title has a 31-line brightness wave. Its 16-level
 // profile repeats every picture, moving three lines down the display. The
 // region above the wave is bright; below it the display is blank (R-0069).
@@ -916,21 +950,19 @@ void demo_title_frame(FrontEndState& state, const FrontEndContent& content) {
             state.line_registers.push_back({static_cast<std::uint8_t>(wave_start + wave.size()),
                                             SnesLineRegisterName::display, 0x80});
     }
-    // R-0070: the second title holds full brightness one picture longer.
-    const auto fade_start = state.demo_cycles == 1 ? 453U : 452U;
+    // R-0070: every title after the first holds full brightness one picture longer (R-0087).
+    const auto fade_start = state.demo_cycles ? 453U : 452U;
     if (frame >= fade_start && frame < fade_start + 6U)
         state.registers.brightness = static_cast<std::uint8_t>(13U - 2U * (frame - fade_start));
     if (frame >= fade_start + 6U) {
         state.registers.force_blank = true;
         state.cycle.running = false;
     }
-    // $83:C8E0-C9F4; ATTRACT-DEMO: the second cold idle cycle loads track 3,
-    // rider 6 against rider 1 after the title's 28 additional loading frames.
-    const bool second_cycle = state.demo_cycles == 1;
-    if (frame == (second_cycle ? 576U : 548U)) {
-        state.tour_menu.track = second_cycle ? 3 : ClassicRaceTrack::ZoomZoo.index;
-        state.rider_menu.rider = second_cycle ? 6 : 4;
-        state.now_playing.opponent = second_cycle ? 1 : 14;
+    // The race setup chooses the demo on the frame it writes the track (`$77:074A`), one picture
+    // later after the first title, and the race starts when the track has loaded (R-0087).
+    const auto choice_frame = state.demo_cycles ? 452U : 451U;
+    if (frame == choice_frame) choose_idle_demo(state);
+    if (frame == choice_frame + idle_demo_loading_frames(ClassicRaceTrack{state.tour_menu.track})) {
         // The demo's race keeps the song counter: `$83:C9F6-CA05` skips `$83:CA08` (R-0077).
         state.mode_chosen = true;
         state.screen = FrontEndScreen::race;

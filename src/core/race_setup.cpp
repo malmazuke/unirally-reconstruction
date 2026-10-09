@@ -196,6 +196,7 @@ ClassicRaceScenario classic_local_race_scenario(ClassicRaceTrack track, RacePair
         throw std::invalid_argument("local race requires two distinct human riders");
     auto scenario = classic_race_scenario(track);
     scenario.pairing = pairing;
+    scenario.two_humans = true;
     scenario.tutorial_hints = tutorial_hints;
     scenario.opponent_tutorial_hints = opponent_tutorial_hints;
     return scenario;
@@ -206,8 +207,11 @@ OpponentTier opponent_tier(const ClassicRaceScenario& scenario,
     // A stunt event's AI flag `$0C6D` is already clear ($83:CBD8), so $83:CC0B skips the tier,
     // HUNTER's included: level 0, no catch-up, and the non-zero mode's bound 0x48 ($83:CC72).
     if (scenario.stunt_event) return {0, 0, lap_adjustment_limit};
-    if (scenario.pairing.opponent < rider_characters)
+    if (scenario.two_humans)
         return {0, 0, scenario.tour_race ? lap_adjustment_limit : one_run_adjustment_limit};
+    // A computer opponent that is a rider character (the one-view idle demo's, R-0070, R-0087)
+    // takes the same subtraction: character 1 gives level 0xF1, above every tested level, so its
+    // launch suppresses for 60 ($83:E175).
     if (scenario.hunter_tour) return hunter_tier;
     OpponentTier tier;
     tier.ai_level = static_cast<std::uint8_t>(scenario.pairing.opponent - opponent_level_base);

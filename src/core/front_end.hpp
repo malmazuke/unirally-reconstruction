@@ -243,6 +243,11 @@ struct OnePlayerRecords {
     // $77:10B1: the race song counter, 0 after a cold start; every race's sound load
     // increments it modulo 6 and plays the song it names (`race_song_resource`, R-0076).
     std::uint8_t race_song_counter{};
+    // $77:10C8: the last idle demo's track; the next is the following race track below 40
+    // (`$80:949D-94B2`, R-0087).
+    std::uint8_t demo_track{};
+    // $77:1115: 1 when the last idle demo was a split race; each demo flips it (`$83:C91C-C937`).
+    std::uint8_t demo_split{};
 };
 OnePlayerRecords cold_start_records();
 
@@ -529,6 +534,7 @@ struct FrontEndState {
     SavedMenus saved{};         // during a race and its return
     bool one_player{};          // $77:10AD = 1: 1P from a rider's choice to the main menu's return
     std::uint8_t demo_cycles{}; // completed idle races since power-on (ATTRACT-DEMO)
+    bool demo_split_race{};     // the idle demo now loading or running is a split race ($0DE1)
     std::uint8_t demo_return_wait{}; // extra blank frames after an interrupted demo (R-0070)
     bool demo_return_interrupted{};
     bool mode_chosen{};

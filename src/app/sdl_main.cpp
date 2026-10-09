@@ -704,7 +704,7 @@ int main(int argc, char **argv) try {
           if (front_end->local_race())
             unirally::initialize_split_cameras(zoom_state);
           if (front_end->demo_race()) {
-            if (front_end->race_track() == unirally::ClassicRaceTrack::ZoomZoo)
+            if (front_end->demo_split_race())
               unirally::initialize_split_cameras(zoom_state);
             else
               unirally::initialize_second_camera(zoom_state);

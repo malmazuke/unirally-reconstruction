@@ -375,10 +375,12 @@ struct RaceBetweenMenus {
 std::string start_race(RaceBetweenMenus& race, const unirally::ClassicContentPack& pack,
                        const unirally::FrontEndState& front_end, std::uint32_t initialization) {
     if (front_end.mode == unirally::FrontEndMode::demo) {
-        const bool split = front_end.demo_cycles == 0;
+        const bool split = front_end.demo_split_race;
         auto scenario =
             unirally::classic_race_scenario(unirally::ClassicRaceTrack{front_end.tour_menu.track});
         scenario.pairing = {front_end.rider_menu.rider, front_end.now_playing.opponent};
+        // The demo's setup skips the race count (`$83:C9F6-CA05`): `$77:10B1` as it stands.
+        scenario.race_counter = front_end.records.race_song_counter;
         if (!split) scenario.initialization_frame = front_end.frame - 1U;
         race.content = unirally::classic_race_content(pack, scenario.track);
         race.state = unirally::classic_race_start(*race.content, scenario);
