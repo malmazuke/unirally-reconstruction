@@ -29,8 +29,9 @@ import tempfile
 from .zoom_zoo_playable import ROLL_WORDS
 from .zoom_zoo_trial import BUTTONS
 from .zoom_zoo_race_reference import project
-from .zoom_zoo_trial_reference import ROOT, ROM_SHA, CORE_SHA, PRIMARY_SHA, sha, digest
+from .zoom_zoo_trial_reference import ROOT, ROM_SHA, PRIMARY_SHA, sha, digest
 from ..reference.bsnes import BsnesCore
+from ..reference.core_identity import accepted_reference, require_core
 
 OPPONENT_ENTRIES = 0xceb      # $0CEB-$0D0A, 32 ring entries.
 OPPONENT_READ = 0xd11         # $0D11 read cursor.
@@ -80,12 +81,13 @@ def probe(reference: Path, core_path: Path, event: int, before_frame: int, throu
     if not 1650 < before_frame < through <= 6400:
         raise ValueError('probe window must sit inside the raced domain')
     document = json.loads((reference/'reference.json').read_text())
-    if (document['rom_sha256'], document['core_sha256'], document['manifest_sha256']) != (ROM_SHA, CORE_SHA, PRIMARY_SHA):
+    if (document['rom_sha256'], document['manifest_sha256']) != (ROM_SHA, PRIMARY_SHA) or not accepted_reference(document['core_sha256']):
         raise ValueError('probe requires the frozen primary original identity')
     if document['frames'][0] != 1207 or digest(document['timeline']) != document['timeline_sha256']:
         raise ValueError('original timeline identity differs')
     rom_path = Path((ROOT/'local/rom-location.txt').read_text().strip())
-    if sha(rom_path.read_bytes()) != ROM_SHA or sha(core_path.read_bytes()) != CORE_SHA:
+    core_sha = require_core(core_path)
+    if sha(rom_path.read_bytes()) != ROM_SHA:
         raise ValueError('probe identity mismatch')
     guards = json.loads((ROOT/'tests/manifests/native/zoom-zoo-race-guards.reference.json').read_text())['items']
     out.mkdir(parents=True)
@@ -174,7 +176,7 @@ def probe(reference: Path, core_path: Path, event: int, before_frame: int, throu
                           scope=('Internal $81C219-C2C9 recovery evidence for reward events the natural primary '
                                  'never reaches. Not native initialization, not a seeded playable fallback, '
                                  'and not a start-to-result acceptance case.'),
-                          rom_sha256=ROM_SHA, core_sha256=CORE_SHA,
+                          rom_sha256=ROM_SHA, core_sha256=core_sha,
                           timeline_sha256=document['timeline_sha256'], state_bytes=742,
                           intervention=intervention, frames=[before_frame, through],
                           seed_sha256=sha(seed), rows_sha256=digest(rows), rows=rows, observations=captured)

@@ -12,11 +12,11 @@ import subprocess
 import sys
 import tempfile
 from ..reference.bsnes import BsnesCore
+from ..reference.core_identity import require_core
 from ..reference.worker import inputs_for_frame
 from ..replay.manifest import derive_script
 
 ROOT=Path(__file__).resolve().parents[3]
-CORE_SHA='e59bf88d4fc922c9fe3b5438e65ff3a6909d24e1628f0f87141c8de17699a91b'
 ROM_SHA='a1105819d48c04d680c8292bbfa9abbce05224f1bc231afd66af43b7e0a1fd4e'
 
 
@@ -31,8 +31,9 @@ def main():
     library=ROOT/f'local/emulators/bsnes/bsnes/out/bsnes_libretro.{suffix}'
     if not library.exists():
         subprocess.run([sys.executable,str(ROOT/'tools/project.py'),'reference','build'],cwd=ROOT,check=True,timeout=600)
-    if hashlib.sha256(library.read_bytes()).hexdigest()!=CORE_SHA:
-        raise ValueError('pre-race extractor core identity differs')
+    # Any library built from the lock's source runs here; the pack rules' SHA-256 of the extracted
+    # bytes is the evidence of equal behaviour (pack.build_pack, PORTABLE-CORE-IDENTITY).
+    require_core(library)
     script=derive_script(json.loads((ROOT/'tests/manifests/replay/race-crawler-zoom-zoo-3300.json').read_text()))
     with tempfile.TemporaryDirectory(dir=args.out.parent) as directory:
         core=BsnesCore(library,Path(directory),{})

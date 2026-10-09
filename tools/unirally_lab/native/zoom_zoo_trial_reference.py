@@ -15,9 +15,13 @@ from .prepare import canonical_seed
 from ..reference.bsnes import BsnesCore
 from ..reference.worker import inputs_for_frame
 from ..replay.manifest import derive_script
+from ..reference.core_identity import require_core
 
 ROOT=Path(__file__).resolve().parents[3]
 ROM_SHA='a1105819d48c04d680c8292bbfa9abbce05224f1bc231afd66af43b7e0a1fd4e'
+# The library every frozen reference was captured with: provenance, not the running core's identity
+# (core_identity accepts any library built from the lock's source; PORTABLE-CORE-IDENTITY). No tool
+# here reads it; earlier tasks' evidence scripts under local/evidence still import it.
 CORE_SHA='e59bf88d4fc922c9fe3b5438e65ff3a6909d24e1628f0f87141c8de17699a91b'
 PRIMARY_SHA='acd29bfb72aeaad0791923e22e17a791f5c182220f64b6686dd687984411aefd'
 # Additional future-affecting state found by the dispatcher read/writer audit.
@@ -65,7 +69,8 @@ def capture(access_dir:Path,out:Path)->dict:
     if sha(raw)!=PRIMARY_SHA:raise ValueError('primary replay identity differs')
     if samples['sample_digest']!=manifest['expected']['sample_digest']:raise ValueError('sample identity differs')
     library=Path(samples['core']['library']);rom=Path((ROOT/'local/rom-location.txt').read_text().strip())
-    if sha(library.read_bytes())!=CORE_SHA or sha(rom.read_bytes())!=ROM_SHA:raise ValueError('ROM/core identity differs')
+    core_sha=require_core(library)
+    if sha(rom.read_bytes())!=ROM_SHA:raise ValueError('ROM/core identity differs')
     script=derive_script(manifest);rows=[];observed_guards=[]
     out.parent.mkdir(parents=True,exist_ok=True)
     with tempfile.TemporaryDirectory(prefix='m4-12-reference-',dir=out.parent) as directory:
@@ -82,7 +87,7 @@ def capture(access_dir:Path,out:Path)->dict:
         finally:core.unload()
     changed={k:sorted({g[k] for g in observed_guards}) for k in observed_guards[0] if len({g[k] for g in observed_guards})>1}
     result={'schema_version':1,'kind':'m4_12_reference_projection','frames':[1649,1849],
-            'rom_sha256':ROM_SHA,'core_sha256':CORE_SHA,'manifest_sha256':PRIMARY_SHA,
+            'rom_sha256':ROM_SHA,'core_sha256':core_sha,'manifest_sha256':PRIMARY_SHA,
             'layout':{'movement_prefix_bytes':333,'movement_layout_source':'src/core/movement.cpp:write_rider/serialize_movement_state',
                       'rider_extra':RIDER_EXTRA,'transition_rejection_addresses':[0xfd1,0xfd3],'opponent_horizontal_address':0x31b},
             'guards':observed_guards[0],'changed_guards':changed,'rows_sha256':digest(rows),'rows':rows}

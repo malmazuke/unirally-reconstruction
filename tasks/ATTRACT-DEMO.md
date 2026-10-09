@@ -2,7 +2,10 @@
 
 ## Assignment
 
-- Status: **in progress**, claimed 29 September 2026 09:03 UTC after PR #43 merged.
+- Status: **accepted** 29 September 2026, merged by
+  [PR #44](https://github.com/malmazuke/unirally-reconstruction/pull/44) at `5df56c6` (status
+  corrected 9 October 2026; it read "in progress" after the merge). Claimed 29 September 2026
+  09:03 UTC after PR #43 merged.
 - Milestone: M4 coverage of the original main menu's idle modes.
 - Dependency: [SPLIT-SCREEN-RACE](SPLIT-SCREEN-RACE.md) and its first-cycle evidence
   [R-0069](../docs/research/R-0069-split-screen-race.md).

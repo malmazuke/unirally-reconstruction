@@ -10,7 +10,8 @@ from pathlib import Path
 import subprocess
 import tempfile
 from . import zoom_zoo_trial as trial
-from .zoom_zoo_trial_reference import ROOT, ROM_SHA, CORE_SHA, PRIMARY_SHA, sha, digest, project, guards
+from .zoom_zoo_trial_reference import ROOT, ROM_SHA, PRIMARY_SHA, sha, digest, project, guards
+from ..reference.core_identity import accepted_reference, require_core
 
 RIDER_EXTRA = [('surface_mode', 0xb93), ('mode_angle', 0xb97), ('tile_mode_0b9b', 0xb9b),
                ('leading_support', 0xbab), ('tile_pose_0de3', 0xde3),
@@ -63,7 +64,8 @@ def capture(out, library, horizon=3299, case=None):
     case = case or {'id': 'continuous-right', 'changes': []}
     raw = (ROOT/'tests/manifests/replay/race-crawler-zoom-zoo-3300.json').read_bytes()
     rom = Path((ROOT/'local/rom-location.txt').read_text().strip())
-    if sha(raw) != PRIMARY_SHA or sha(library.read_bytes()) != CORE_SHA or sha(rom.read_bytes()) != ROM_SHA:
+    core_sha = require_core(library)
+    if sha(raw) != PRIMARY_SHA or sha(rom.read_bytes()) != ROM_SHA:
         raise ValueError('reference identity differs')
     script = derive_script(json.loads(raw))
     constant_inventory=json.loads((ROOT/'tests/manifests/native/zoom-zoo-sustained-guards.reference.json').read_text())['items']
@@ -98,7 +100,7 @@ def capture(out, library, horizon=3299, case=None):
     if sha(seed[:394]) != trial.contract()['seed_sha256']:
         raise ValueError('authentic seed differs')
     result = {'kind': 'm4_14_reference', 'frames': [1649, horizon], 'case': case,
-              'rom_sha256': ROM_SHA, 'core_sha256': CORE_SHA, 'manifest_sha256': PRIMARY_SHA,
+              'rom_sha256': ROM_SHA, 'core_sha256': core_sha, 'manifest_sha256': PRIMARY_SHA,
               'rows': rows, 'rows_sha256': digest(rows), 'wram_sha256': whole,
               'guard_rows': guard_rows, 'constant_inventory_sha256': digest(constant_inventory)}
     out.write_text(json.dumps(result, indent=2) + '\n')
@@ -135,7 +137,7 @@ def authenticate(reference, repeat):
     a = json.loads(reference.read_text())
     if a != json.loads(repeat.read_text()):
         raise ValueError('fresh reference processes differ')
-    if (a['rom_sha256'],a['core_sha256'],a['manifest_sha256']) != (ROM_SHA,CORE_SHA,PRIMARY_SHA):
+    if (a['rom_sha256'],a['manifest_sha256']) != (ROM_SHA,PRIMARY_SHA) or not accepted_reference(a['core_sha256']):
         raise ValueError('reference identities differ')
     expected_guards=json.loads((ROOT/'tests/manifests/native/zoom-zoo-sustained-guards.reference.json').read_text())['items']
     if a.get('constant_inventory_sha256')!=digest(expected_guards):

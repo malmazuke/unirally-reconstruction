@@ -176,6 +176,54 @@ Pin compiler/tool versions, emulator commit and patches, Python dependencies and
 
 Use a headless build with no window/audio requirement for core checks. Containerized Linux is useful for repeatability, but a container must not be a prerequisite for the native macOS tools. Cache downloads/builds; do not redownload or rebuild everything for every agent. Verify the clean-setup path in an isolated environment before describing it as reproducible.
 
+### Linux hosts
+
+Ubuntu 24.04 (x86_64 or aarch64) builds the laboratory, the pinned core and the SDL3 app with the
+same commands as macOS. Install `python3`, `git`, `ca-certificates`, `build-essential` (GCC 13), `pkg-config` and the
+X11 development packages the pinned SDL3 needs (CI's workflow installs the same):
+
+```bash
+sudo apt-get install -y --no-install-recommends python3 git ca-certificates build-essential pkg-config libx11-dev libxext-dev libxrandr-dev libxcursor-dev libxfixes-dev libxi-dev libxss-dev libxtst-dev libxkbcommon-dev
+```
+
+Then `python3 tools/project.py bootstrap`, `reference build`, and `frontend run --rom PATH` to
+create the pack. A host without a display (a container) runs the app hidden with
+`SDL_VIDEO_DRIVER=offscreen SDL_AUDIO_DRIVER=dummy`. The ROM stays outside the repository; a
+container mounts it read-only. PORTABLE-CORE-IDENTITY's run on Docker's `ubuntu:24.04` (aarch64)
+created the same v35 pack bytes as the Mac and passed the eleven differential gates against the
+Mac's captures.
+
+### The reference core's identity
+
+The reference core is identified by its source, the lock's bsnes commit and tracked patch
+(D-0001). A built library's SHA-256 also depends on the compiler, SDK and build path: the same
+source rebuilt on the same Mac with the same Apple clang gives another hash. So the hash is
+provenance, and `tools/unirally_lab/reference/core_identity.py` accepts a library when
+`lab-core.json` shows `reference build` built it from the lock's commit and patch (and it is
+unchanged since), or when it is listed in `tools/locks/verified-cores.json`. A stored capture
+records the library it was made with (`core_sha256`); it is accepted when that library is verified
+or is this host's own source-built library. Behaviour is checked by output pins: each pack entry's
+rules SHA-256 (the landing matrices `229eda89...` are extracted by running the core), frozen
+digests, and the cross-host check below.
+
+```bash
+# Replay a stored track_reference capture's inputs on a core library and compare every recorded
+# frame's work RAM, cartridge RAM and video hash with the stored ones (status=passed or the first
+# mismatch). A library that passes and reproduces the landing-matrix pin may be added to
+# tools/locks/verified-cores.json.
+python3 -m tools.unirally_lab.native.core_check --core local/emulators/bsnes/bsnes/out/bsnes_libretro.so --capture <capture dir> --out <json>
+```
+
+`core_check` refuses a capture whose library is unverified or is the library under test. It
+compares work RAM, cartridge RAM and video; audio and sound-processor-only state are not compared.
+
+Limits: the frozen gates' inventories record the library their captures were made with
+(`core_sha256`, part of each capture document's digest), so they accept only those captures
+(`e59bf88d...`). Another host runs them on the stored Mac captures, as PORTABLE-CORE-IDENTITY's
+Linux run did; a capture made again on another host would need a refreeze. Save states
+(`reference` states with a `.state.json` sidecar) still name the exact library that wrote them,
+and the worker refuses a state from another library.
+
 ### Worktree cache and report layout
 
 M4-12's corrected layout keeps `local/` and `artifacts/` as real directories

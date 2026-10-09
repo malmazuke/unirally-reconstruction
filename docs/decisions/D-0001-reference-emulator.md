@@ -31,7 +31,26 @@ M0-03 had to prove, for the identified PAL ROM, headless load and identification
 - Save states (`retro_serialize`, 290457 bytes for this ROM with the patch's gamepad state) are specific to the pinned core build; the sidecar records the core, ROM, script and method digests and the worker refuses a state from any other combination. A cold-start input script remains the regenerable form.
 - Each run must use a private save directory: the core writes cartridge RAM to `<base name>.srm` at unload and reloads it at the next load, which changed the outcome of a later run at frame 228 before the fix.
 - The core runs with `bsnes_ppu_fast=ON` and `bsnes_dsp_fast=ON` (upstream defaults). Whether the cycle-accurate PPU changes any gameplay-visible state for this game is unverified; switching would change the reference and must be recorded through the lock and scripts.
-- Only the macOS arm64 build of the core is verified. A Linux build of the pinned core is the natural next infrastructure step (ROM-free, so it can run in CI).
+- Only the macOS arm64 build of the core is verified. A Linux build of the pinned core is the natural next infrastructure step (ROM-free, so it can run in CI). (Superseded 9 October 2026: see "Core identity across hosts".)
+
+## Core identity across hosts (9 October 2026, PORTABLE-CORE-IDENTITY)
+
+This decision pins the core by its source, the commit and the tracked patch above. The laboratory
+had read that as one binary: 16 tools compared the running library's SHA-256, or the one a stored
+capture recorded, with the macOS library `e59bf88d...`. A library built from the same source has another hash on another host
+(Linux x86_64 and aarch64, GCC 13) and even on this Mac today (Apple clang 17.0.0 under macOS 27
+gives `3f092254...`; Homebrew clang 19 gives `ee7bb1b4...`), so every other build was refused
+although it behaves identically.
+
+The reading now matches the text: a library is the reference core when `reference build` built it
+from the lock's commit and patch, or when it is listed in `tools/locks/verified-cores.json` after
+its outputs were checked. The library hash stays in every record as provenance. Equal behaviour is
+shown by output pins, not by the hash: the pack rules' SHA-256 of the landing matrices extracted by
+running the core, the frozen gates, and `core_check`, which replays a stored capture's inputs and
+compares every frame's work RAM, cartridge RAM and video hashes against a capture another verified
+library made. The frozen gates' inventories keep the library of their captures, so they read the
+stored Mac captures on any host; a capture made again elsewhere needs a refreeze. Save states remain
+tied to the exact library that wrote them.
 
 ## Alternatives considered
 

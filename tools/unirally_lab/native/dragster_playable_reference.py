@@ -15,10 +15,11 @@ import argparse
 import json
 from pathlib import Path
 import tempfile
-from .zoom_zoo_trial_reference import ROOT, ROM_SHA, CORE_SHA, sha, digest
+from .zoom_zoo_trial_reference import ROOT, ROM_SHA, sha, digest
 from ..reference.bsnes import BsnesCore, BUTTONS, frame_png
 from ..reference.worker import inputs_for_frame
 from ..replay.manifest import derive_script
+from ..reference.core_identity import require_core
 
 MENU_MANIFEST = 'tests/manifests/replay/race-crawler-dragster-3000.json'
 INITIALIZATION_FRAME = 1328
@@ -73,7 +74,8 @@ def capture(core_path, out, case, horizon, frame_images=()):
         raise ValueError('fresh output directory required')
     raw, _ = menu_identity()
     rom = Path((ROOT/'local/rom-location.txt').read_text().strip())
-    if (sha(core_path.read_bytes()), sha(rom.read_bytes())) != (CORE_SHA, ROM_SHA):
+    core_sha = require_core(core_path)
+    if sha(rom.read_bytes()) != ROM_SHA:
         raise ValueError('original identities differ')
     inputs = timeline(case, horizon)
     out.mkdir(parents=True)
@@ -100,7 +102,7 @@ def capture(core_path, out, case, horizon, frame_images=()):
         finally:
             core.unload()
     report = dict(kind='dragster_ordinary_controls_original', case=case, frames=[FIRST_RECORDED_FRAME, horizon],
-                  initialization_frame=INITIALIZATION_FRAME, rom_sha256=ROM_SHA, core_sha256=CORE_SHA,
+                  initialization_frame=INITIALIZATION_FRAME, rom_sha256=ROM_SHA, core_sha256=core_sha,
                   menu_manifest=MENU_MANIFEST, menu_manifest_sha256=sha(raw),
                   timeline_sha256=digest(inputs), timeline=inputs,
                   wram_sha256=hashes, sram_sha256=cartridge_hashes, video=video)
