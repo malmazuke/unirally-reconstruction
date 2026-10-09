@@ -535,6 +535,12 @@ struct FrontEndState {
     bool one_player{};          // $77:10AD = 1: 1P from a rider's choice to the main menu's return
     std::uint8_t demo_cycles{}; // completed idle races since power-on (ATTRACT-DEMO)
     bool demo_split_race{};     // the idle demo now loading or running is a split race ($0DE1)
+    // After a timer exit from the demo races on tracks 20, 24 and 36 the menu's return holds its
+    // frame 100 one picture longer (R-0087, measured on two cold laps).
+    bool demo_return_held{};
+    // A laboratory replay of a capture's title that loads a frame sooner (R-0087): the sound
+    // processor's state shortens some titles, and nothing native predicts which.
+    bool demo_title_short{};
     std::uint8_t demo_return_wait{}; // extra blank frames after an interrupted demo (R-0070)
     bool demo_return_interrupted{};
     bool mode_chosen{};

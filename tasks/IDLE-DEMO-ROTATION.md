@@ -115,3 +115,20 @@ Open:
    title, then decide between modelling it from native audio and a measured schedule.
 3. Cycle 3's divergence at update 823.
 4. Pictures (retained every 100 frames), audio is out of scope, the app path (`sdl_main.cpp`).
+
+## Checkpoint - 9 October 2026 04:10 UTC
+
+- **Timing jitter measured** (`timing_capture.py`, `timing-200000.json`: two laps, 66 cycles).
+  The return to the menu's idle count holds its frame 100 once after the timer exits of the races
+  on tracks 20, 24 and 36, in both laps (native: `demo_return_held`). The title is 452 rather than
+  453 frames on 6 cycles of lap 1 and 4 of lap 2, not the same ones: the first wait for the sound
+  processor (`$82:8097`, after the driver reset at title frame 58) ends a frame sooner
+  (`access-title-c12`/`-c13`). Native keeps 453; `front_end_runner --short-demo-title CYCLE`
+  replays a capture's short titles (the frame passes title frame 134).
+- **Fixes:** rider 1's hints never run for MIKE in the demo (cycle 15, track 19); a demo rider
+  whose marker switches the AI off is left neutral, because the pads are read first (cycles 3, 21
+  and 27; tracks 4, 26 and 34).
+- **Result** (probe build with the state guards relaxed, `--short-demo-title 13 16 18 21 33`):
+  all 34 cycles of `cold-102000` equal the original on every race frame, race words (bytes
+  12-564) and the 42-byte demo trailer.
+- Next: the state formats (open item 1), then pictures, gates, review.

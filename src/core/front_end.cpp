@@ -863,6 +863,13 @@ void return_from_demo(FrontEndState& state, std::uint32_t exit_frame, std::uint1
     // $83:E267-E276 calls $82:8035 twice before testing a late pad press.
     // The observed late-press return has one fewer blank picture.
     state.demo_return_wait = state.demo_return_interrupted ? (demo_elapsed >= 0x0714 ? 1 : 2) : 0;
+    // R-0087: after the races on these tracks the timer's return holds its frame 100 once. The
+    // original's sound transfer there runs longer; its cause in the sound processor is open.
+    constexpr std::array<std::uint8_t, 3> held_return_tracks{20, 24, 36};
+    state.demo_return_held = !state.demo_return_interrupted
+                          && std::find(held_return_tracks.begin(), held_return_tracks.end(),
+                                       state.tour_menu.track)
+                                 != held_return_tracks.end();
     state.mode_chosen = false;
     state.registers.force_blank = true;
     state.line_registers.clear();
@@ -1098,6 +1105,18 @@ void update_front_end(FrontEndState& state, const FrontEndContent& content, Fron
         --state.demo_return_wait;
         ++state.frame;
         return;
+    }
+    if (state.screen == FrontEndScreen::demo_return && state.demo_return_held
+        && state.script_frame == 100) {
+        state.demo_return_held = false;
+        ++state.frame;
+        return;
+    }
+    // A short title (laboratory replay, R-0087) passes its frame 134 within frame 133's picture.
+    if (state.screen == FrontEndScreen::demo_title && state.demo_title_short
+        && state.script_frame == 133) {
+        state.demo_title_short = false;
+        ++state.script_frame;
     }
     keep_line_writes(state);
     // NMIs are enabled at the end of the title's loads (`$80:F5B8`); the hook runs from then on:

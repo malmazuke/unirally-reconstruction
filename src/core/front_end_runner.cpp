@@ -51,6 +51,8 @@ struct Options {
     // After each soft reset in turn, how much later the sound program's upload ends than at
     // power-on (HUNTER-ENDING); native's own is 3.
     std::vector<std::uint32_t> reset_upload_delays;
+    // Idle demo cycles (1 = the first) whose title loads a frame sooner in a capture (R-0087).
+    std::vector<std::uint32_t> short_demo_titles;
     std::optional<std::uint32_t> human_after;
     std::optional<std::uint32_t> restore_check;
     // Record bytes written after a frame: the frame, the cartridge RAM offset and the byte.
@@ -157,6 +159,8 @@ Options parse_options(int argc, char** argv) {
             options.pictures[frame] = value();
         } else if (option == "--race-initialization") {
             options.race_initializations.push_back(static_cast<std::uint32_t>(std::stoul(value())));
+        } else if (option == "--short-demo-title") {
+            options.short_demo_titles.push_back(static_cast<std::uint32_t>(std::stoul(value())));
         } else if (option == "--reset-upload-delay") {
             options.reset_upload_delays.push_back(static_cast<std::uint32_t>(std::stoul(value())));
         } else if (option == "--record-write") {
@@ -388,7 +392,9 @@ std::string start_race(RaceBetweenMenus& race, const unirally::ClassicContentPac
             unirally::initialize_split_cameras(race.state);
         else
             unirally::initialize_second_camera(race.state);
-        race.state.demo_ai = race.state.opponent_hints.active = true;
+        race.state.demo_ai = true;
+        // Rider 1's hints run in the demo, but never for MIKE (rider 0, R-0082, R-0087).
+        race.state.opponent_hints.active = race.state.pairing.opponent != 0;
         if (split) race.state.opponent_tier.ai_level = 0;
         race.presentation = unirally::classic_race_presentation_content(pack, scenario);
         race.presentation->rider_names = front_end.records.rider_names;
@@ -719,6 +725,11 @@ int main(int argc, char** argv) try {
         } else if (state.mode_chosen) {
             break;
         } else {
+            if (state.screen == unirally::FrontEndScreen::demo_title && state.script_frame < 133
+                && std::find(options.short_demo_titles.begin(), options.short_demo_titles.end(),
+                             state.demo_cycles + 1U)
+                       != options.short_demo_titles.end())
+                state.demo_title_short = true;
             unirally::update_front_end(state, content, pads);
             sound_cues.write(frame, state.sound_cues);
             const bool reset = state.after_soft_reset && state.boot_start + 1 == state.frame;

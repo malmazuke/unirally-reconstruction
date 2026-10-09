@@ -708,7 +708,9 @@ int main(int argc, char **argv) try {
               unirally::initialize_split_cameras(zoom_state);
             else
               unirally::initialize_second_camera(zoom_state);
-            zoom_state.demo_ai = zoom_state.opponent_hints.active = true;
+            zoom_state.demo_ai = true;
+            // Rider 1's hints run in the demo, but never for MIKE (R-0082, R-0087).
+            zoom_state.opponent_hints.active = scenario.pairing.opponent != 0;
             zoom_state.pairing = scenario.pairing;
             if (zoom_state.split_screen)
               zoom_state.opponent_tier.ai_level = 0;
