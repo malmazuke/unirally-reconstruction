@@ -88,6 +88,7 @@ The coordinator maintains the status registry below. Work orders further below d
 | DEMO-PICTURES | accepted (tier 1, #65): the idle demos' GO, idle-menu palette and title-wave pictures (R-0088) | [The idle demos' remaining picture differences](DEMO-PICTURES.md) |
 | COVERAGE-GAPS | accepted (tier 3, #66): coverage of the captured corpus, what native lacks, and the queue toward it (R-0089) | [What the original still does that native does not](COVERAGE-GAPS.md) |
 | SAVE-FILES | accepted (tier 1, #67): the cartridge RAM as the original's image, `--save-file` between app runs (R-0090) | [The cartridge RAM saved between app runs](SAVE-FILES.md) |
+| MODE-AUDIO | in progress (tier 1), claimed 10 October 2026: native audio in 2P, VS, league, OPTIONS and the idle demos | [Native audio in the other modes](MODE-AUDIO.md) |
 | LEAGUE | reviewed and integrated by PR #48 (tier 1): first CRAWLER tournament, six-slot scoring projection and continuation; closeout in main artifacts | [Native league tournament](LEAGUE.md) |
 | STUNT-EVENTS | fulfilled by #39/#40/#42; tier-3 queue reconciliation in AUDIO-DECISION, no new gameplay domain | [The delivered stunt outcome](STUNT-EVENTS.md) |
 | AUDIO-DECISION | PR #49, tier 3: native audio architecture, cold callback observations and first capability task; integration in its closeout | [Choose the native audio path and its evidence](AUDIO-DECISION.md) |
