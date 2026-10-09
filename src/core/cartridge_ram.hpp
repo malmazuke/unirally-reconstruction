@@ -9,6 +9,9 @@
 
 namespace unirally {
 
+// `$77:10AD`: the mode the main menu last chose; the boot clears it (`$83:8B3B`).
+inline constexpr std::size_t one_player_mode = 0x10ad;
+
 // The image a cold start leaves on boot frame 405: the wipe (`$83:FB41`) and the defaults
 // (`$80:8C80-8CC2`), signature first.
 CartridgeImage cold_start_cartridge(const FrontEndContent& content);
@@ -23,8 +26,9 @@ CartridgeImage cartridge_image(const FrontEndState& state);
 // The records' fields read from an image.
 OnePlayerRecords records_from_cartridge(const CartridgeImage& image);
 
-// Before the first frame: the cartridge RAM the boot will find. An image with the signature
-// keeps its records (as after a soft reset); any other is wiped to a cold start's.
+// Before the first frame: the cartridge RAM the boot will find, its fields read at once, as the
+// original reads them from power-on. At the boot's check an image with the signature keeps them
+// (as after a soft reset); any other is wiped to a cold start's.
 void insert_cartridge(FrontEndState& state, std::span<const std::uint8_t> image);
 
 } // namespace unirally

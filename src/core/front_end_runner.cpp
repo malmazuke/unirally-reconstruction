@@ -666,6 +666,8 @@ int main(int argc, char** argv) try {
     auto state = unirally::start_front_end();
     if (!options.cartridge_in.empty()) {
         std::ifstream in(options.cartridge_in, std::ios::binary);
+        if (!in)
+            throw std::runtime_error("cannot read --cartridge-in " + options.cartridge_in.string());
         const std::vector<std::uint8_t> image((std::istreambuf_iterator<char>(in)),
                                               std::istreambuf_iterator<char>());
         unirally::insert_cartridge(state, image);

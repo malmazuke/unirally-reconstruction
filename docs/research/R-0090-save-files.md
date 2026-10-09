@@ -29,6 +29,12 @@ Tags: **[L]** listing only, **[C]** confirmed in a capture.
   and the records stay. Otherwise `$83:FB41` clears all 8 KiB and the defaults are written on
   frames 403-405. A kept image skips those three frames, as after a soft reset: the main menu's
   idle count starts on frame 416 instead of 419. [L, C]
+- **From power-on.** The original reads cartridge RAM before the check: the title reads the
+  cheat flag `$10D0` and puts back the levels (`$80:F55F`), and `$83:91FB` gives the arrow the
+  rider's colours while `$10AD` is 1 (a save made after a one-player race). Native reads an
+  image's fields when it goes in (`insert_cartridge`), so a session that ends before the check
+  saves them unchanged; the check then keeps them or wipes them, and clears `$10AD-10AE`
+  (`$83:8B3B`). Native keeps `$10AD` as whether it is 1. [L, C]
 - **The cold image.** Native builds it with the audio model's own default writes (R-0075). Its
   image after frame 429 equals the original's byte for byte. [C]
 - **What a later boot reads.** Each range where native's image differed from the original's
@@ -37,6 +43,8 @@ Tags: **[L]** listing only, **[C]** confirmed in a capture.
   - Read before they are written: the signature, the names and league names, the record times,
     the personal bests, `$0742-0743` (the mode word), `$074C-074F`, `$10A7`, `$10AD`, `$10B1`,
     `$10C8`, `$10D0`, `$1115` and `$1116-1117`.
+  - Read, but not by these scripts: nothing found by the review's five further saves and five
+    scripts (renames, PICK TOUR, OPTIONS scores and tables, HUNTER's ending, the title code).
   - Never read: the checksums `$02B0`, `$0420`, `$054E`, `$05E6`, `$073C` and `$0E69` (only
     `$016C` has a reader, `$83:89EF`), the copy of work RAM `$0000-019D` that every race start
     makes at `$0E6B` and the race's end restores (`$80:9A27`, `$80:9A3F`), the race's own words
@@ -75,7 +83,8 @@ Tags: **[L]** listing only, **[C]** confirmed in a capture.
 ## Not covered
 
 - Bytes native keeps no field for stay as loaded or as the cold start left them: `$0742` bits 2,
-  3, 5, 8, 9 and 10, `$074C-074F`, `$10A7` and `$10AD`. A later boot reads them. Each is rewritten
+  3, 5, 8, 9 and 10, `$074C-074F`, `$10A7`, and `$10AD`'s values other than 1 (2P, VS, league,
+  the demo). A later boot reads them. Each is rewritten
   on the paths the warm boots took, but a native save leaves them at the boot's values, not the
   session's.
 - League and VS races clear `$10CF-10D0` (`$83:958C`), so the title code's levels stay after them;
@@ -83,6 +92,9 @@ Tags: **[L]** listing only, **[C]** confirmed in a capture.
   keeps it. Both read from the listing.
 - The sound program's handshake lengths after a warm power-on (above).
 - A save taken during a race lacks what the original writes during it until the race returns.
+- Twelve corpus manifests write cartridge RAM during their run (`cartridge_ram_writes`, such as
+  OPTIONS' populated records); the image sweep ran them without those writes on both sides, so
+  they test a cold start's path.
 
 ## Queued
 

@@ -298,10 +298,7 @@ void check_records(FrontEndState& state, const FrontEndContent& content) {
     if (state.after_soft_reset) {
         state.records_kept = true;
     } else if (has_signature(state.cartridge, content)) {
-        state.records_kept = true;
-        state.records = records_from_cartridge(state.cartridge);
-        // Every boot clears `$77:0742` bit 1 before the check (`$80:A0A5`).
-        state.records.league_naming = false;
+        state.records_kept = true; // insert_cartridge read its fields
     } else {
         // Content without the defaults (the synthetic tests' own) leaves the image zeroed.
         state.cartridge =
@@ -317,6 +314,7 @@ void check_records(FrontEndState& state, const FrontEndContent& content) {
                   state.records.league_names.begin());
     }
     state.one_player = false;
+    state.cartridge[one_player_mode] = state.cartridge[one_player_mode + 1] = 0; // `$83:8B3B`
     state.records.pending_reveal = 0;
 }
 

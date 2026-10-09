@@ -1039,7 +1039,7 @@
   {
    "address": "$80:A0A5",
    "native": [
-    "src/core/front_end.cpp:check_records"
+    "src/core/cartridge_ram.cpp:insert_cartridge"
    ],
    "region": "rom"
   },
@@ -1798,6 +1798,13 @@
    ],
    "range_ends": [
     "$80:BBE5"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:BBEE",
+   "native": [
+    "src/core/cartridge_ram.cpp:cartridge_image"
    ],
    "region": "rom"
   },
@@ -3684,6 +3691,7 @@
    "address": "$80:F55F",
    "native": [
     "src/core/audio_cpu_title.cpp:native_audio_load_title_graphics",
+    "src/core/cartridge_ram.cpp:insert_cartridge",
     "src/core/front_end.cpp:load_title",
     "src/core/front_end.cpp:title_palette, title_map, title_tiles"
    ],
@@ -7604,6 +7612,7 @@
   {
    "address": "$83:8000",
    "native": [
+    "src/core/cartridge_ram.cpp:cartridge_defaults_bytes, track_count",
     "src/core/cartridge_ram.hpp:has_signature",
     "src/core/front_end.cpp:check_records",
     "src/core/front_end.hpp:FrontEndContent::cartridge_defaults, FrontEndContent::track_types"
@@ -7784,6 +7793,14 @@
    "region": "rom"
   },
   {
+   "address": "$83:8B3B",
+   "native": [
+    "src/core/cartridge_ram.hpp:one_player_mode",
+    "src/core/front_end.cpp:check_records"
+   ],
+   "region": "rom"
+  },
+  {
    "address": "$83:8B51",
    "native": [
     "src/core/audio_cpu_menu_records.cpp:clear_menu_text_work_internal",
@@ -7900,6 +7917,7 @@
   {
    "address": "$83:91FB",
    "native": [
+    "src/core/cartridge_ram.cpp:insert_cartridge",
     "src/core/front_end.cpp:restore_menu_screen"
    ],
    "region": "rom"
@@ -12145,6 +12163,13 @@
    "region": "wram"
   },
   {
+   "address": "$0742",
+   "native": [
+    "src/core/cartridge_ram.cpp:insert_cartridge"
+   ],
+   "region": "wram"
+  },
+  {
    "address": "$0A00",
    "native": [
     "src/core/front_end.hpp:FrontEndState::oam_buffer",
@@ -13197,6 +13222,14 @@
    "region": "wram"
   },
   {
+   "address": "$10AD",
+   "native": [
+    "src/core/cartridge_ram.cpp:cartridge_image",
+    "src/core/cartridge_ram.cpp:insert_cartridge"
+   ],
+   "region": "wram"
+  },
+  {
    "address": "$10CB",
    "native": [
     "src/core/front_end.hpp:TourEnding"
@@ -14055,7 +14088,6 @@
   {
    "address": "$77:0742",
    "native": [
-    "src/core/front_end.cpp:check_records",
     "src/core/front_end.hpp:LogoScroll::raised",
     "src/core/front_end.hpp:OnePlayerRecords::league_cycle_complete",
     "src/core/front_end.hpp:OnePlayerRecords::league_naming",
@@ -14278,6 +14310,7 @@
   {
    "address": "$77:10AD",
    "native": [
+    "src/core/cartridge_ram.hpp:one_player_mode",
     "src/core/front_end.cpp:check_records",
     "src/core/front_end.hpp:FrontEndState::one_player",
     "src/core/now_playing.cpp:race_fade_frame",
@@ -15327,8 +15360,14 @@
     "$00AC"
    ]
   },
+  "src/core/cartridge_ram.cpp:cartridge_defaults_bytes, track_count": {
+   "rom": [
+    "$83:8000"
+   ]
+  },
   "src/core/cartridge_ram.cpp:cartridge_image": {
    "rom": [
+    "$80:BBEE",
     "$83:89EF",
     "$83:90F4"
    ],
@@ -15338,12 +15377,24 @@
     "$054E",
     "$05E6",
     "$073C",
-    "$0E69"
+    "$0E69",
+    "$10AD"
    ]
   },
   "src/core/cartridge_ram.cpp:checksum": {
    "rom": [
     "$83:90F4"
+   ]
+  },
+  "src/core/cartridge_ram.cpp:insert_cartridge": {
+   "rom": [
+    "$80:A0A5",
+    "$80:F55F",
+    "$83:91FB"
+   ],
+   "wram": [
+    "$0742",
+    "$10AD"
    ]
   },
   "src/core/cartridge_ram.hpp:(file)": {
@@ -15361,6 +15412,14 @@
    "rom": [
     "$80:8C4E",
     "$83:8000"
+   ]
+  },
+  "src/core/cartridge_ram.hpp:one_player_mode": {
+   "rom": [
+    "$83:8B3B"
+   ],
+   "sram": [
+    "$77:10AD"
    ]
   },
   "src/core/content_pack.cpp:front_end_required": {
@@ -15505,14 +15564,13 @@
   "src/core/front_end.cpp:check_records": {
    "rom": [
     "$80:8C4E",
-    "$80:A0A5",
     "$83:8000",
     "$83:8AF7",
     "$83:8B23",
+    "$83:8B3B",
     "$83:FB41"
    ],
    "sram": [
-    "$77:0742",
     "$77:10AD",
     "$77:1FFF"
    ]
@@ -22687,11 +22745,11 @@
   }
  },
  "totals": {
-  "addresses": 1640,
+  "addresses": 1644,
   "io_addresses": 11,
-  "native_symbols": 1242,
-  "rom_addresses": 1243,
+  "native_symbols": 1245,
+  "rom_addresses": 1245,
   "sram_addresses": 54,
-  "wram_addresses": 332
+  "wram_addresses": 334
  }
 }

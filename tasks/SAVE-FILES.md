@@ -71,3 +71,18 @@ stores.
   (`base-3191228/`). The cold path must not move: every frozen gate, sweep and capture as on main.
 - Review tier 1: it changes the boot's state and timing when an image is found, and the app writes
   files.
+
+## Review - round 1 (returned)
+
+- [Review](https://github.com/malmazuke/unirally-reconstruction/pull/67#pullrequestreview-5468330240)
+  on `8702bf3`: return. Blockers: (1) a session that ended before boot frame 404 saved blank
+  records (native read the image only at the check); (2) the title code entered with a save, and
+  a save made with the cheat on, differed from the original (the same cause). Should-fix: (3)
+  `$10AD` = 1 in a one-player save colours the menu arrow; native drew the menu's colours.
+  Advisories: the twelve corpus manifests that write cartridge RAM ran without the writes; the
+  runner's message for a missing `--cartridge-in`; the test's place and format, literal sizes.
+- Fixed: `insert_cartridge` reads the image's fields at power-on; the check keeps or wipes them
+  and clears `$10AD-10AE`; the image writes `$10AD` from `one_player`. The review's failing
+  cases now match on every picture (`m149`, `m043` with the title code; the cheat save with three
+  scripts; `xad`; `m025`), and a run ended at 100, 402 or 403 frames leaves the save unchanged.
+  The advisories are done; the gate run on `8702bf3` was stopped at the differential gates.

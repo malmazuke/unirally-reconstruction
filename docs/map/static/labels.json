@@ -2031,7 +2031,7 @@
   "label": "loc_80A0A5",
   "native": [
    "src/core/audio_cpu_interrupt.hpp:AudioCpuInterruptWorkState::cartridge_flags, AudioCpuInterruptWorkState::scroll, AudioCpuInterruptWorkState::palette_delay, AudioCpuInterruptWorkState::palette_index",
-   "src/core/front_end.cpp:check_records"
+   "src/core/cartridge_ram.cpp:insert_cartridge"
   ],
   "source_records": [
    "docs/research/R-0075-title-menu-audio.md"
@@ -3397,6 +3397,7 @@
   "comment": "instruction start",
   "label": "loc_80BBEE",
   "native": [
+   "src/core/cartridge_ram.cpp:cartridge_image",
    "src/core/rider_menu.cpp:rider_menu_frame"
   ],
   "source_records": [
@@ -6845,11 +6846,13 @@
   "label": "sub_80F55F",
   "native": [
    "src/core/audio_cpu_title.cpp:native_audio_load_title_graphics",
+   "src/core/cartridge_ram.cpp:insert_cartridge",
    "src/core/front_end.cpp:load_title",
    "src/core/front_end.cpp:title_palette, title_map, title_tiles"
   ],
   "source_records": [
-   "docs/research/R-0054-boot-title-main-menu.md"
+   "docs/research/R-0054-boot-title-main-menu.md",
+   "docs/research/R-0090-save-files.md"
   ]
  },
  {
@@ -16437,6 +16440,7 @@
   "comment": "unknown",
   "label": "unk_838000",
   "native": [
+   "src/core/cartridge_ram.cpp:cartridge_defaults_bytes, track_count",
    "src/core/cartridge_ram.hpp:has_signature",
    "src/core/front_end.cpp:check_records",
    "src/core/front_end.hpp:FrontEndContent::cartridge_defaults, FrontEndContent::track_types"
@@ -16942,6 +16946,19 @@
   ]
  },
  {
+  "address": "$83:8B3B",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_838B3B",
+  "native": [
+   "src/core/cartridge_ram.hpp:one_player_mode",
+   "src/core/front_end.cpp:check_records"
+  ],
+  "source_records": [
+   "docs/research/R-0090-save-files.md"
+  ]
+ },
+ {
   "address": "$83:8B51",
   "class": "observed",
   "comment": "routine start",
@@ -17164,10 +17181,12 @@
   "comment": "routine start",
   "label": "sub_8391FB",
   "native": [
+   "src/core/cartridge_ram.cpp:insert_cartridge",
    "src/core/front_end.cpp:restore_menu_screen"
   ],
   "source_records": [
-   "docs/research/R-0059-tour-completion.md"
+   "docs/research/R-0059-tour-completion.md",
+   "docs/research/R-0090-save-files.md"
   ]
  },
  {

@@ -9,6 +9,10 @@
 namespace unirally {
 namespace {
 
+// `$83:8000`: the signature, the default records and the option words (pack entry
+// `audio.cartridge-defaults`); one track kind per track (`audio.track-types`).
+constexpr std::size_t cartridge_defaults_bytes = 1158, track_count = 50;
+
 // One pass over every field native keeps, at its cartridge RAM address (front_end.hpp's
 // OnePlayerRecords). `Codec` either stores the fields into the image or loads them from it, so
 // the two directions cannot disagree.
@@ -95,16 +99,19 @@ struct Load {
 } // namespace
 
 CartridgeImage cold_start_cartridge(const FrontEndContent& content) {
-    if (content.cartridge_defaults.size() != 1158 || content.track_types.size() != 50)
+    if (content.cartridge_defaults.size() != cartridge_defaults_bytes
+        || content.track_types.size() != track_count)
         throw std::invalid_argument("the pack has no cartridge defaults");
     // The audio work model performs the original's default writes (R-0075); its clock is
     // discarded here.
     CartridgeImage image{};
     AudioCpuWorkClock clock;
     AudioCpuSceneWorkState scene;
-    const std::span<const std::uint8_t, 1158> defaults{content.cartridge_defaults.data(), 1158};
+    const std::span<const std::uint8_t, cartridge_defaults_bytes> defaults{
+        content.cartridge_defaults.data(), cartridge_defaults_bytes};
     native_audio_menu_first_record_defaults(
-        clock, image, defaults, std::span<const std::uint8_t, 50>{content.track_types.data(), 50});
+        clock, image, defaults,
+        std::span<const std::uint8_t, track_count>{content.track_types.data(), track_count});
     native_audio_menu_league_defaults(clock, image);
     native_audio_finish_menu_records(clock, scene, image, defaults);
     return image;
@@ -138,6 +145,11 @@ CartridgeImage cartridge_image(const FrontEndState& state) {
     // `$0E69`) are not read and keep what the boot left (R-0090).
     store.word(0x016c, checksum(image, 0x000c, 176));
     store.word(0x022e, checksum(image, 0x016e, 96));
+    // `$10AD` is the mode (1 for one-player, `$80:BBEE`); native keeps only whether it is 1.
+    if (state.one_player)
+        image[one_player_mode] = 1;
+    else if (image[one_player_mode] == 1)
+        image[one_player_mode] = 0;
     return image;
 }
 
@@ -153,6 +165,12 @@ void insert_cartridge(FrontEndState& state, std::span<const std::uint8_t> image)
         throw std::invalid_argument("a cartridge RAM image is 8192 bytes");
     if (state.frame != 0) throw std::logic_error("the cartridge goes in before power-on");
     std::copy(image.begin(), image.end(), state.cartridge.begin());
+    // The original reads cartridge RAM from power-on: the title's code and cheat flag before the
+    // boot's check (`$80:F55F`), `$10AD` for the arrow's colours (`$83:91FB`). The check then
+    // keeps these fields or wipes them (front_end.cpp's check_records).
+    state.records = records_from_cartridge(state.cartridge);
+    state.records.league_naming = false; // `$80:A0A5` clears `$0742` bit 1 on every boot
+    state.one_player = state.cartridge[one_player_mode] == 1;
 }
 
 } // namespace unirally

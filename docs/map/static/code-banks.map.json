@@ -1076,9 +1076,9 @@
     "src/core/audio_cpu_queue.cpp:native_audio_bootstrap_queue",
     "src/core/audio_cpu_upload.cpp:upload_of",
     "src/core/audio_cue.hpp:AudioSessionLoad",
+    "src/core/cartridge_ram.cpp:insert_cartridge",
     "src/core/front_end.cpp:boot_frame",
     "src/core/front_end.cpp:boot_frame_number",
-    "src/core/front_end.cpp:check_records",
     "src/core/front_end.cpp:clear_oam_buffer",
     "src/core/front_end.cpp:early_objects, early_palette",
     "src/core/front_end.cpp:set_early_registers",
@@ -1887,6 +1887,7 @@
     "NmX"
    ],
    "native": [
+    "src/core/cartridge_ram.cpp:cartridge_image",
     "src/core/front_end.cpp:cold_start_records",
     "src/core/front_end.hpp:FrontEndScreen",
     "src/core/front_end_screens.hpp:enter_rider_menu",
@@ -2862,6 +2863,7 @@
     "src/core/audio_cpu_title_hold.cpp:apply_title_code",
     "src/core/audio_cpu_title_hold.cpp:native_audio_begin_title_hold",
     "src/core/audio_cpu_title_hold.cpp:native_audio_title_hold_frame",
+    "src/core/cartridge_ram.cpp:insert_cartridge",
     "src/core/front_end.cpp:check_title_code",
     "src/core/front_end.cpp:load_title",
     "src/core/front_end.cpp:title_palette, title_map, title_tiles",
@@ -11240,6 +11242,7 @@
    ],
    "native": [
     "src/core/audio_cpu_menu_defaults.cpp:native_audio_reset_menu_selection",
+    "src/core/cartridge_ram.hpp:one_player_mode",
     "src/core/front_end.cpp:check_records",
     "src/core/front_end.cpp:soft_reset"
    ],
@@ -11548,6 +11551,7 @@
     "NmX"
    ],
    "native": [
+    "src/core/cartridge_ram.cpp:insert_cartridge",
     "src/core/front_end.cpp:restore_menu_screen"
    ],
    "observed_entries": {},
@@ -14976,16 +14980,16 @@
    "call returns in the calling mode": 1262
   },
   "bytes": 131072,
-  "cited_addresses": 1765,
+  "cited_addresses": 1766,
   "cited_by_class": {
    "data": 31,
    "inferred": 334,
-   "observed": 1055,
+   "observed": 1056,
    "unknown": 345
   },
   "cited_by_position": {
    "dat": 31,
-   "loc": 1007,
+   "loc": 1008,
    "mid": 20,
    "sub": 362,
    "unk": 345
