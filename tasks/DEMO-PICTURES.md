@@ -25,3 +25,16 @@ native's (`pictures.py`, with `--short-demo-title 13 16 18 21 33`). Find and fix
 - small sprite differences in races (4-107 pixels).
 
 Outside: the race state (exact), audio, the titles the sound processor shortens (R-0087).
+
+## Checkpoint - 9 October 2026 04:50 UTC
+
+- **GO letters.** Dense capture `local/evidence/idle-demo-cycles/go-c4` (cycle 4, track 5, race start
+  10,626; every second frame 10,840-10,920) against native: every frame of updates 214-274
+  differs by 19,155 pixels (the original shows the GO window's "G" member where native shows the
+  "O"), equal from update 276. `$83:E728` picks the GO table on the `$0300` contact phase; native's
+  `race_windows.cpp:107` derives it as `(frame - scenario.initialization_frame) & 1`, which assumes
+  the accepted races' phase at the boundary. Next: derive `parity_set` from the race state's
+  `movement.contact_phase` (exact in every demo race, R-0087), check which phase value is member 3
+  against `go-c4` and the accepted ZOOM ZOO/DRAGSTER window gates, then rerun `pictures.py`.
+- Then the title wave (24 of 151, also on main), the idle menu (17 of 158, also on main), two title
+  starts (cycles 10 and 17) and the small sprite differences.
