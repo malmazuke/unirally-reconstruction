@@ -2,7 +2,11 @@
 
 ## Assignment
 
-- Status: **ready** (queued 9 October 2026 by IDLE-DEMO-ROTATION, from R-0087's picture classes).
+- Status: **in progress**, claimed 9 October 2026 (04:30 UTC) on main `6be4093`, in the session the
+  user asked to keep working until weekly usage reaches 50% (5% at claim). Queued the same day by
+  IDLE-DEMO-ROTATION, from R-0087's picture classes.
+- Worker: Claude Code desktop app, Claude Opus 5.5 (`claude-opus-5-5`); coordinator, primary and
+  integrator. Branch `task/demo-pictures` in `.worktrees/demo-pictures`.
 - Milestone: M4 coverage of the main menu's idle mode.
 - Review tier: **2** (presentation on recovered state; the race words and timing are exact).
 - Task provider: Anthropic (the queuing session's).
