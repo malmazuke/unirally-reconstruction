@@ -2,7 +2,8 @@
 
 ## Assignment
 
-- Status: **in progress**, claimed 10 October 2026 on main `a54341a`, in the session the user asked
+- Status: **accepted** 10 October 2026 (tier 1, [#68](https://github.com/malmazuke/unirally-reconstruction/pull/68)),
+  integrated by merge commit. Claimed 10 October 2026 on main `a54341a`, in the session the user asked
   to keep working until weekly usage reaches 50% (10% at claim). Queued by
   [COVERAGE-GAPS](COVERAGE-GAPS.md) (R-0089, queue item 2).
 - Worker: Claude Code desktop app, Claude Opus 5.5 (`claude-opus-5-5`); coordinator, primary and
@@ -69,3 +70,30 @@ VS, league, OPTIONS and the idle demos stop the cued producer and go silent (R-0
   TABLES' Up/Down need input native lacks and go to MENU-INPUT with the continuation's wrap;
   R-0091 corrected; DEMO-AUDIO and MENU-INPUT have records and registry rows; gates.sh refuses a
   baseline that cannot run; the comment and the helper fixed.
+
+## Review - round 2 (approved)
+
+- [Review](https://github.com/malmazuke/unirally-reconstruction/pull/68#pullrequestreview-5471851772)
+  on `7a846ad`: approve. TRACK RECORDS and PLAYER SCORES equal; no regressions on the review's
+  and the author's schedules; runner rows identical to main's on 23 schedules; the baseline's
+  start check works. Advisories done after the gates: the TRACK RECORDS exit limit is confirmed
+  in a capture (`rv-track-return`), and the baseline binaries' stale rpath is deleted.
+
+## Gates - head `7a846ad` (`local/evidence/mode-audio/gates-7a846ad.out`)
+
+- Four presets build, ctest 41 of 41 each (ASan presets unavailable on this host; Linux CI covers
+  them); synthetic suite, v1 contracts, eight hidden app runs and the front end passed. Fuzz as on
+  main (40 seeds, recorded non-pass).
+- Eleven differential gates with main's row digests; race sweep 432 runs, 0 differences; the
+  front-end sweep 179 of 179 manifests equal main's runner; every pause, split, two-pad, race-end
+  and restart comparison as recorded; the original's track sweeps give main's rows; R-0076's cue
+  schedules identical to main's; the idle demo lap 34 of 34 exact.
+- MODE-AUDIO: `options-rename` and `options-league` equal; `twop-next` 2, `vs-champions` 4 and
+  `league-two` 2 differing frames (R-0091); twelve R-0077 one-player schedules equal; the cold
+  cartridge image equal.
+- Tooling tests 554 passed; functions over 80 lines 0; native symbols current. The runs on
+  `9f7554d` were stopped (a broken baseline, then review round 1).
+
+## Handoff
+
+- Next: R-0089's queue item 3, WIPE-RAM; DEMO-AUDIO and MENU-INPUT are queued.

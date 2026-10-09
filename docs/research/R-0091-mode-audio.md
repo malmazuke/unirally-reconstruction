@@ -86,8 +86,8 @@ Six schedules from corpus manifests:
 - The slide residuals' sounds keep their slides' frames (and PICK CHALLENGER's direction).
 - GROUP TABLES' Up and Down change the tour shown and play the result (`$80:DF37-DF77`,
   `$80:DF46`, `$80:DF6C`); native has no Up or Down there (MENU-INPUT). Leaving TRACK RECORDS
-  plays a forward slide in the original (`$80:9F7A-9F7F`), not captured; native's return plays a
-  back slide. TRACK RECORDS' and PLAYER SCORES' entries keep frame-wait differences that are
+  plays a forward slide in the original (`$80:9F7A-9F7F`), native's return a back slide two frames
+  later (the review's `rv-track-return`: 1500 against 1502; main the same). [C] TRACK RECORDS' and PLAYER SCORES' entries keep frame-wait differences that are
   also on main.
 - Once the idle demo has started, the app's native audio stays stopped for the session.
 - Read from the listing while placing the sounds, not native: the keyboard's Start goes straight
