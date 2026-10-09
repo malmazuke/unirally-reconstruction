@@ -441,6 +441,12 @@ synthetic_content(std::vector<std::vector<std::uint8_t>> &storage) {
   content.stunt_tally_cells = bytes({0xfb, 0xf0, 0xb2, 0, 0xff, 0xfb, 0xf0, 0xb4, 0, 0xff,
                                      0xfb, 0xf0, 0xb6, 0, 0xff, 0xfb, 0xf0, 0xb8, 0, 0xff,
                                      0xfb, 0xf0, 0xba, 0, 0xff});
+  // The WIPE RAM menu (profile v36): its two entries, their columns 4 and 3,
+  // and the warning and the two answers' messages.
+  content.wipe_ram_menu_text = bytes({0xfc, 0x0a, 'A', 0xff, 0xfc, 0x0d, 'A', 0xff});
+  content.wipe_ram_arrow_columns = bytes({4, 3});
+  content.wipe_ram_messages =
+      bytes({0xfc, 0x02, 'A', 0xff, 0xfc, 0x0c, 'A', 0xff, 0xfc, 0x0d, 'A', 0xff});
   return content;
 }
 
@@ -1759,6 +1765,79 @@ void save_file_tests() {
   require(unirally::cartridge_image(wiped) == unirally::cartridge_image(cold));
 }
 
+// WIPE-RAM (R-0092): Left+A+L+R on the main menu opens WIPE RAM and MAIN
+// MENU; WIPE RAM's warning cancels on B and wipes on exactly Select+Y+A; each
+// answer waits for a press and slides the menu back in.
+void wipe_ram_tests() {
+  using unirally::FrontEndScreen;
+  std::vector<std::vector<std::uint8_t>> storage;
+  const auto content = synthetic_content(storage);
+  constexpr std::uint16_t code = 0x02b0, choose = 0x0080, down = 0x0400,
+                          up = 0x0800, reset = 0x6080, cancel = 0x8000;
+  auto state = unirally::start_front_end();
+  run(state, content, 430);
+  // Pad 2's code: the menu slides in, nothing is chosen.
+  require(run_to(state, content, FrontEndScreen::wipe_ram_menu, {0, code}));
+  require(!state.mode_chosen && state.mode == unirally::FrontEndMode::wipe_ram);
+  require(state.menu.selection == 0 && state.arrow.target_x == 4U << 7U &&
+          state.arrow.target_y == 0x0580);
+  // Down to MAIN MENU, a release, Up back to WIPE RAM.
+  run(state, content, 2, {down, 0});
+  require(state.menu.selection == 1 && state.arrow.target_x == 3U << 7U &&
+          state.arrow.target_y == 0x0700);
+  run(state, content, 1);
+  run(state, content, 1, {up, 0});
+  require(state.menu.selection == 0 && state.arrow.target_y == 0x0580);
+  // WIPE RAM: the logo goes up and the warning slides in.
+  require(run_to(state, content, FrontEndScreen::wipe_ram_warning, {choose, 0}));
+  require(state.logo.raised && state.arrow.target_x == 0xfd00);
+  // Y, A, or Select+Y alone neither wipe nor cancel.
+  run(state, content, 1, {0x4000, 0});
+  run(state, content, 1, {choose, 0});
+  run(state, content, 1, {0x6000, 0});
+  require(state.screen == FrontEndScreen::wipe_ram_warning);
+  // Exactly Select+Y+A on pad 1 wipes: the records are a cold start's again.
+  auto cold = unirally::start_front_end();
+  run(cold, content, 430);
+  state.records.medals[0] = 3;
+  state.records.tour_levels[0] = 2;
+  state.track_menu.marker_step = 5;
+  run(state, content, 1, {reset, 0});
+  require(state.screen == FrontEndScreen::wipe_ram_answer && state.wipe_ram.reset);
+  require(state.records.medals[0] == 0 && state.records.tour_levels[0] == 0);
+  require(unirally::cartridge_image(state) == unirally::cartridge_image(cold));
+  require(!state.logo.raised); // `$77:0742` bit 1 wiped: the logo comes down
+  // Two busy frames without a frame wait (the arrow does not spin), then the
+  // message; a held press, a release and two frames of a press go back.
+  const auto spin = state.arrow.spin;
+  run(state, content, 2, {reset, 0});
+  require(state.arrow.spin == spin);
+  run(state, content, 20, {reset, 0});
+  require(state.screen == FrontEndScreen::wipe_ram_answer);
+  run(state, content, 1);
+  run(state, content, 1, {0x1000, 0});
+  require(state.screen == FrontEndScreen::wipe_ram_answer);
+  run(state, content, 1, {0x1000, 0});
+  require(state.screen == FrontEndScreen::wipe_ram_menu_entry &&
+          state.wipe_ram.returning);
+  require(run_to(state, content, FrontEndScreen::wipe_ram_menu));
+  require(state.slide.back && state.menu.selection == 0);
+  // B on the warning cancels: "nothing done", the logo lowered, the records
+  // kept.
+  require(run_to(state, content, FrontEndScreen::wipe_ram_warning, {choose, 0}));
+  state.records.medals[0] = 3;
+  run(state, content, 1, {cancel, 0});
+  require(state.screen == FrontEndScreen::wipe_ram_answer && !state.wipe_ram.reset);
+  require(!state.logo.raised && state.records.medals[0] == 3);
+  run(state, content, 2);
+  run(state, content, 2, {choose, 0});
+  require(run_to(state, content, FrontEndScreen::wipe_ram_menu));
+  // MAIN MENU goes back to the main menu.
+  run(state, content, 1, {down, 0});
+  require(run_to(state, content, FrontEndScreen::main_menu, {choose, 0}));
+  require(state.records.medals[0] == 3 && !state.mode_chosen);
+}
+
 } // namespace
 
 int main() try {
@@ -1781,6 +1860,7 @@ int main() try {
   title_code_tests();
   code_route_tests();
   save_file_tests();
+  wipe_ram_tests();
   return 0;
 } catch (const std::exception &error) {
   std::fprintf(stderr, "%s\n", error.what());

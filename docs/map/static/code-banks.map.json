@@ -419,8 +419,11 @@
     "src/core/cartridge_ram.hpp:cold_start_cartridge",
     "src/core/cartridge_ram.hpp:has_signature",
     "src/core/front_end.cpp:check_records",
+    "src/core/front_end.cpp:wipe_cartridge",
     "src/core/front_end.hpp:OnePlayerRecords",
-    "src/core/title_menu_audio.hpp:NativeTitleMenuAudio::insert_cartridge"
+    "src/core/front_end_screens.hpp:wipe_cartridge",
+    "src/core/title_menu_audio.hpp:NativeTitleMenuAudio::insert_cartridge",
+    "src/core/wipe_ram.cpp:wipe_ram_warning_frame"
    ],
    "observed_entries": {},
    "start": "$80:8C4E",
@@ -528,7 +531,8 @@
     "src/core/audio_cpu_scene.cpp:upload_oam",
     "src/core/front_end_screens.hpp:copy_oam",
     "src/core/hunter_ending.cpp:enter_hunter_code",
-    "src/core/hunter_ending.cpp:reveal_step"
+    "src/core/hunter_ending.cpp:reveal_step",
+    "src/core/wipe_ram.cpp:wipe_ram_menu_entry_frame"
    ],
    "observed_entries": {},
    "start": "$80:9318",
@@ -635,7 +639,9 @@
    ],
    "native": [
     "src/core/race_result.cpp:show_icons",
-    "src/core/rider_menu.cpp:rider_menu_frame"
+    "src/core/rider_menu.cpp:rider_menu_frame",
+    "src/core/wipe_ram.cpp:wipe_ram_answer_frame",
+    "src/core/wipe_ram.cpp:wipe_ram_menu_entry_frame"
    ],
    "observed_entries": {},
    "start": "$80:93A5",
@@ -1661,7 +1667,8 @@
    ],
    "native": [
     "src/core/audio_cpu_menu_input.cpp:test_menu_input",
-    "src/core/front_end_screens.hpp:pad_up, pad_down, pad_left, pad_right, pad_select, pad_a, pad_r"
+    "src/core/front_end_screens.hpp:pad_up, pad_down, pad_left, pad_right, pad_select, pad_a, pad_r",
+    "src/core/wipe_ram.cpp:wipe_ram_menu_frame"
    ],
    "observed_entries": {},
    "start": "$80:B71D",
@@ -1692,7 +1699,8 @@
     "NmX"
    ],
    "native": [
-    "src/core/front_end_screens.hpp:pad_up, pad_down, pad_left, pad_right, pad_select, pad_a, pad_r"
+    "src/core/front_end_screens.hpp:pad_up, pad_down, pad_left, pad_right, pad_select, pad_a, pad_r",
+    "src/core/wipe_ram.cpp:wipe_ram_menu_frame"
    ],
    "observed_entries": {},
    "start": "$80:B74A",
@@ -1848,8 +1856,14 @@
     "NmX"
    ],
    "native": [
+    "src/core/front_end.hpp:FrontEndScreen",
     "src/core/local_modes.cpp:local_continue_frame",
-    "src/core/options_menu.cpp:move_choice"
+    "src/core/options_menu.cpp:move_choice",
+    "src/core/wipe_ram.cpp:aim_at_entry",
+    "src/core/wipe_ram.cpp:first_row_y, row_height",
+    "src/core/wipe_ram.cpp:move_entry",
+    "src/core/wipe_ram.cpp:wipe_ram_menu_entry_frame",
+    "src/core/wipe_ram.cpp:wipe_ram_menu_frame"
    ],
    "observed_entries": {},
    "start": "$80:B93C",
@@ -1977,6 +1991,8 @@
     "src/core/audio_cpu_hunter_wait.cpp:native_audio_hunter_page_wait_frame",
     "src/core/front_end.hpp:HunterEnding::press_seen",
     "src/core/front_end.hpp:RaceResult::press_seen",
+    "src/core/front_end.hpp:WipeRamMenu",
+    "src/core/front_end.hpp:WipeRamMenu::press_seen",
     "src/core/front_end_screens.hpp:wait_for_result_press",
     "src/core/hunter_ending.cpp:(file)",
     "src/core/hunter_ending.cpp:first_page_press",
@@ -1986,7 +2002,9 @@
     "src/core/race_result.cpp:lap_graph_frame",
     "src/core/race_result.cpp:pressed",
     "src/core/race_result.cpp:wait_for_result_press",
-    "src/core/stunt_result.cpp:after_tally_frame"
+    "src/core/stunt_result.cpp:after_tally_frame",
+    "src/core/wipe_ram.cpp:hide_entries_30_to_35",
+    "src/core/wipe_ram.cpp:waited_for_press"
    ],
    "observed_entries": {},
    "start": "$80:C206",
@@ -2007,10 +2025,13 @@
    ],
    "native": [
     "src/core/front_end.hpp:RaceResult::released",
+    "src/core/front_end.hpp:WipeRamMenu",
+    "src/core/front_end.hpp:WipeRamMenu::released",
     "src/core/front_end_screens.hpp:wait_for_result_press",
     "src/core/race_result.cpp:(file)",
     "src/core/race_result.cpp:wait_for_result_press",
-    "src/core/stunt_result.cpp:after_tally_frame"
+    "src/core/stunt_result.cpp:after_tally_frame",
+    "src/core/wipe_ram.cpp:waited_for_press"
    ],
    "observed_entries": {},
    "start": "$80:C24C",
@@ -2217,7 +2238,10 @@
     "src/core/rider_menu.cpp:rider_menu_frame",
     "src/core/stunt_result.cpp:tally_frame",
     "src/core/tour_menu.cpp:tour_menu_frame",
-    "src/core/track_menu.cpp:track_menu_frame"
+    "src/core/track_menu.cpp:track_menu_frame",
+    "src/core/wipe_ram.cpp:wipe_ram_answer_frame",
+    "src/core/wipe_ram.cpp:wipe_ram_menu_frame",
+    "src/core/wipe_ram.cpp:wipe_ram_warning_frame"
    ],
    "observed_entries": {},
    "start": "$80:D1EC",
@@ -2648,7 +2672,10 @@
     "NmX"
    ],
    "native": [
-    "src/core/track_menu.cpp:turn_markers"
+    "src/core/front_end_screens.hpp:turn_markers",
+    "src/core/track_menu.cpp:turn_markers",
+    "src/core/wipe_ram.cpp:wipe_ram_menu_entry_frame",
+    "src/core/wipe_ram.cpp:wipe_ram_menu_frame"
    ],
    "observed_entries": {},
    "start": "$80:EB23",
@@ -2668,7 +2695,10 @@
     "NmX"
    ],
    "native": [
-    "src/core/options_menu.cpp:enter_options_menu"
+    "src/core/front_end.hpp:FrontEndScreen",
+    "src/core/options_menu.cpp:enter_options_menu",
+    "src/core/wipe_ram.cpp:print_wipe_ram_menu",
+    "src/core/wipe_ram.cpp:wipe_ram_menu_entry_frame"
    ],
    "observed_entries": {},
    "start": "$80:EF4D",
@@ -2783,7 +2813,8 @@
    ],
    "native": [
     "src/core/hunter_ending.cpp:enter_hunter_code",
-    "src/core/rider_menu.cpp:enter_rider_menu"
+    "src/core/rider_menu.cpp:enter_rider_menu",
+    "src/core/wipe_ram.cpp:wipe_ram_menu_frame"
    ],
    "observed_entries": {},
    "start": "$80:F51B",
@@ -2805,7 +2836,8 @@
    "native": [
     "src/core/audio_cpu_menu_reveal.cpp:finish_menu_uploads",
     "src/core/options_menu.cpp:rename_commit_frame",
-    "src/core/rider_menu.cpp:main_menu_return_frame"
+    "src/core/rider_menu.cpp:main_menu_return_frame",
+    "src/core/wipe_ram.cpp:cancel_reset"
    ],
    "observed_entries": {},
    "start": "$80:F52B",
@@ -11495,7 +11527,8 @@
     "src/core/cartridge_ram.cpp:cartridge_image",
     "src/core/cartridge_ram.cpp:checksum",
     "src/core/front_end.hpp:OnePlayerRecords::statistics",
-    "src/core/race_result.cpp:insert_record"
+    "src/core/race_result.cpp:insert_record",
+    "src/core/wipe_ram.cpp:reset_busy_frames"
    ],
    "observed_entries": {},
    "start": "$83:90F4",
@@ -12071,6 +12104,7 @@
     "NmX"
    ],
    "native": [
+    "src/core/front_end.cpp:wipe_cartridge",
     "src/core/zoom_zoo_movement.hpp:ClassicRaceScenario::stunt_event"
    ],
    "observed_entries": {},
@@ -12148,7 +12182,8 @@
     "src/core/audio_cpu_scene.hpp:AudioCpuDecorationWorkState",
     "src/core/front_end.hpp:MenuDecorations",
     "src/core/front_end_screens.hpp:step_decorations",
-    "src/core/screen_slide.cpp:(file)"
+    "src/core/screen_slide.cpp:(file)",
+    "src/core/wipe_ram.cpp:wipe_ram_answer_frame"
    ],
    "observed_entries": {},
    "start": "$83:9A1E",
@@ -14941,7 +14976,9 @@
    "native": [
     "src/core/audio_cpu_menu_records.cpp:clear_cartridge",
     "src/core/cartridge_ram.hpp:cold_start_cartridge",
-    "src/core/front_end.cpp:check_records"
+    "src/core/front_end.cpp:check_records",
+    "src/core/front_end.cpp:wipe_cartridge",
+    "src/core/wipe_ram.cpp:reset_busy_frames"
    ],
    "observed_entries": {},
    "start": "$83:FB41",
@@ -14993,19 +15030,19 @@
    "call returns in the calling mode": 1262
   },
   "bytes": 131072,
-  "cited_addresses": 1803,
+  "cited_addresses": 1827,
   "cited_by_class": {
    "data": 31,
-   "inferred": 336,
-   "observed": 1056,
-   "unknown": 380
+   "inferred": 344,
+   "observed": 1058,
+   "unknown": 394
   },
   "cited_by_position": {
    "dat": 31,
-   "loc": 1010,
+   "loc": 1019,
    "mid": 20,
-   "sub": 362,
-   "unk": 380
+   "sub": 363,
+   "unk": 394
   },
   "conflicts": 0,
   "data": 92,

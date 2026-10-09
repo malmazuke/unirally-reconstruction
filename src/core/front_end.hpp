@@ -74,12 +74,16 @@ struct FrontEndContent {
     // The stunt result (profile v25): its nine text streams (`$80:F2EA-F4B4`) and the tally's five
     // cells (`$80:F7E7-F7FA`); its head colours are assets 0x26 + rider.
     std::span<const std::uint8_t> stunt_result_text, stunt_tally_cells;
+    // The WIPE RAM menu (profile v36): its two streams, WIPE RAM then MAIN MENU (`$80:A9FE`),
+    // its arrow columns (`$80:AA19`), and the warning, "initialising battery ram" and "nothing
+    // done" (`$80:AAF9-ABC7`). Empty in an older pack, where the code is refused.
+    std::span<const std::uint8_t> wipe_ram_menu_text, wipe_ram_arrow_columns, wipe_ram_messages;
 };
 FrontEndContent front_end_content(const ClassicContentPack& pack);
 
 // The main menu's entries, in `$009B` order (COVERAGE-ROADMAP), and the demo it starts when idle;
-// then where the main menu's WIPE RAM code leads (not a `$009B` value): its menu (`$80:A9B4`).
-// The other code plays HUNTER's ending in the front end (`$80:F0D6`, HUNTER-ENDING).
+// then where the main menu's WIPE RAM code leads (not a `$009B` value): its menu (`$80:A9B4`,
+// R-0092). The other code plays HUNTER's ending in the front end (`$80:F0D6`, HUNTER-ENDING).
 enum class FrontEndMode : std::uint8_t {
     one_player,
     two_player,
@@ -87,7 +91,7 @@ enum class FrontEndMode : std::uint8_t {
     league,
     options,
     demo,
-    wipe_ram_code
+    wipe_ram
 };
 
 // The menu arrow ($80:FAF5): position and target in sixteenths of a pixel, and its spin.
@@ -417,6 +421,15 @@ struct MainMenu {
     std::int16_t idle{};      // $0089: frames left before the demo
 };
 
+// The WIPE RAM menu and its warning (`$80:A9B4`, R-0092): the answer, and the press waits after
+// its message (`$80:C24C`, `$80:C206`).
+struct WipeRamMenu {
+    bool returning{};  // $00AC != 1: the menu slides back in (after an answer)
+    bool reset{};      // the answer was Select+Y+A: the cartridge RAM was wiped
+    bool released{};   // `$80:C24C` has seen both pads released
+    bool press_seen{}; // `$80:C206` saw a press on the last frame
+};
+
 // Where the front end is. The boot, the steps between screens and the way back to the main menu
 // are scripts of fixed frames, counted by `FrontEndState::script_frame`.
 enum class FrontEndScreen : std::uint8_t {
@@ -478,6 +491,11 @@ enum class FrontEndScreen : std::uint8_t {
     records_detail_entry,
     records_detail,
     records_detail_exit,
+    wipe_ram_menu_entry,    // $80:A9B4 and $80:EF4D: WIPE RAM and MAIN MENU slid in
+    wipe_ram_menu,          // $80:B93C's loop
+    wipe_ram_warning_entry, // $80:AA1B-AA35: the warning slid in, the logo up
+    wipe_ram_warning,       // $80:AA38-AA62: Select+Y+A wipes, most other buttons cancel
+    wipe_ram_answer,        // the wipe, then its message or "nothing done", and a press
 };
 
 // What `$83:9894` saves before a race (work RAM `$0000-$019D`) and `$83:987D` puts back after
@@ -539,6 +557,7 @@ struct FrontEndState {
     KeyboardEditor keyboard{};
     LeagueSetup league{};
     RecordsDetail records_detail{};
+    WipeRamMenu wipe_ram{};
     std::array<std::uint8_t, 256> options_upper_palette{}; // pre-picker CGRAM colours $80-$FF
     bool options_palette_saved{};
     std::uint8_t second_rider{}; // $017F, second human chosen by port 2 (R-0071)

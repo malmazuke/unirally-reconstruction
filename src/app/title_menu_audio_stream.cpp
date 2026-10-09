@@ -127,10 +127,11 @@ void TitleMenuAudioStream::run() {
         native.reveal_menu();
         for (;;) {
             const auto action = run_menu();
-            // Any of the main menu's entries (1P, 2P, VS, LEAGUE, OPTIONS): from its exit the
-            // game reports every frame's sound work (D-0010, MODE-AUDIO). The idle demo is not
-            // covered (DEMO-AUDIO).
-            if (action == AudioCpuMenuAction::selected && content_.has_race_set()) {
+            // Any of the main menu's entries (1P, 2P, VS, LEAGUE, OPTIONS) or the WIPE RAM
+            // code: from its exit the game reports every frame's sound work (D-0010,
+            // MODE-AUDIO, WIPE-RAM). The idle demo is not covered (DEMO-AUDIO).
+            if ((action == AudioCpuMenuAction::selected || action == AudioCpuMenuAction::wipe_ram)
+                && content_.has_race_set()) {
                 run_cued();
                 break;
             }

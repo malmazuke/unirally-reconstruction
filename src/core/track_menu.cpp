@@ -99,17 +99,6 @@ void lay_out_markers(FrontEndState& state, const FrontEndContent& content) {
             set_oam_x_high(state, first_marker + k, true); // $83:961E
 }
 
-// $80:EB23, before each frame wait: the markers turn, entries 64, 66 and 68 half a cycle from
-// 65 and 67.
-void turn_markers(FrontEndState& state, const FrontEndContent& content) {
-    auto& step = state.track_menu.marker_step;
-    step = step == 0 ? marker_steps - 1 : static_cast<std::uint8_t>(step - 1);
-    for (const unsigned entry : {64U, 66U, 68U})
-        oam_byte(state, entry, 2) = content.marker_tiles[step];
-    for (const unsigned entry : {65U, 67U})
-        oam_byte(state, entry, 2) = content.marker_tiles[step + marker_half_cycle];
-}
-
 // $80:E9AA-E9CC and $80:BA6A: the arrow on the chosen track, or the next one not yet won. With
 // all five won the original's search never ends (`$80:E9B6-E9CA`); native refuses it (R-0056).
 void open_track_menu(FrontEndState& state, const FrontEndContent& content) {
@@ -185,6 +174,17 @@ void choose_track(FrontEndState& state) {
 }
 
 } // namespace
+
+// $80:EB23, before each frame wait: the markers turn, entries 64, 66 and 68 half a cycle from
+// 65 and 67.
+void turn_markers(FrontEndState& state, const FrontEndContent& content) {
+    auto& step = state.track_menu.marker_step;
+    step = step == 0 ? marker_steps - 1 : static_cast<std::uint8_t>(step - 1);
+    for (const unsigned entry : {64U, 66U, 68U})
+        oam_byte(state, entry, 2) = content.marker_tiles[step];
+    for (const unsigned entry : {65U, 67U})
+        oam_byte(state, entry, 2) = content.marker_tiles[step + marker_half_cycle];
+}
 
 void enter_track_menu(FrontEndState& state, bool returning) {
     // $80:E84F-E876.

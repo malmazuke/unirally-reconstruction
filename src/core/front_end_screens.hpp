@@ -257,6 +257,9 @@ void enter_track_menu(FrontEndState& state, bool returning);
 void track_menu_entry_frame(FrontEndState& state, const FrontEndContent& content);
 void track_menu_frame(FrontEndState& state, const FrontEndContent& content, FrontEndPads pads);
 void track_menu_exit_frame(FrontEndState& state, const FrontEndContent& content);
+// $80:EB23, before each frame wait of PICK TRACK and the two-entry menus: the done-track markers
+// turn (`$77:10A7`).
+void turn_markers(FrontEndState& state, const FrontEndContent& content);
 
 // now_playing.cpp: NOW PLAYING after a track is chosen, and Race's fade.
 void enter_now_playing(FrontEndState& state);
@@ -342,6 +345,23 @@ void hunter_code_frame(FrontEndState& state);
 void build_lap_result(FrontEndState& state, const FrontEndContent& content);
 void print_lap_result(FrontEndState& state, const FrontEndContent& content);
 void step_lap_graph(FrontEndState& state);
+// The cartridge RAM wiped to a cold start's, and the records with it: the boot's (`$80:8C74`)
+// and the WIPE RAM menu's (`$80:AA64`).
+void wipe_cartridge(FrontEndState& state, const FrontEndContent& content);
+
+// wipe_ram.cpp: the main menu's WIPE RAM code (R-0092). `enter_wipe_ram_menu` is false when the
+// pack has no WIPE RAM text (an older profile).
+bool enter_wipe_ram_menu(FrontEndState& state, const FrontEndContent& content);
+void print_wipe_ram_menu(FrontEndState& state, const FrontEndContent& content);
+void wipe_ram_menu_entry_frame(FrontEndState& state, const FrontEndContent& content);
+void wipe_ram_menu_frame(FrontEndState& state, const FrontEndContent& content, FrontEndPads pads);
+void wipe_ram_warning_entry_frame(FrontEndState& state, const FrontEndContent& content);
+void wipe_ram_warning_frame(FrontEndState& state, const FrontEndContent& content,
+                            FrontEndPads pads);
+void wipe_ram_answer_frame(FrontEndState& state, const FrontEndContent& content, FrontEndPads pads);
+// Whether the answer's next frame starts after a frame wait: not during the wipe's busy frames.
+bool wipe_ram_answer_waits(const FrontEndState& state);
+
 // $80:9017: the unsigned minimum of the ten lap slots, zero slots not skipped, the result's best
 // lap; `$80:C868`: the minimum of the slots that are not zero, from 0xEA62, the records' best lap.
 std::uint16_t best_lap(const std::array<std::uint16_t, 10>& laps);

@@ -111,8 +111,9 @@ private:
 };
 
 // The app's front end: power-on, native 1P, 2P and VS menu-race paths, their
-// results and continuations (R-0054-R-0058, R-0071), and the idle demo
-// (R-0069). LEAGUE, OPTIONS and unavailable scenarios show a short notice.
+// results and continuations (R-0054-R-0058, R-0071), the idle demo (R-0069)
+// and the WIPE RAM menu (R-0092). Unavailable scenarios, and the WIPE RAM code
+// with a pack older than v36, show a short notice.
 class FrontEndSession {
 public:
   // `cartridge`: the cartridge RAM power-on finds (a save file), or none.
@@ -131,12 +132,9 @@ public:
   // This frame's sound queue work (R-0076), empty on a notice's frames.
   const AudioCueList &sound_cues() const { return state_.sound_cues; }
   bool one_player_mode() const { return state_.mode == FrontEndMode::one_player; }
-  // The modes whose sound work the front end reports (MODE-AUDIO): all but the idle
-  // demo and the WIPE RAM code.
-  bool cued_audio_mode() const {
-    return state_.mode != FrontEndMode::demo &&
-           state_.mode != FrontEndMode::wipe_ram_code;
-  }
+  // The modes whose sound work the front end reports (MODE-AUDIO, WIPE-RAM): all but
+  // the idle demo.
+  bool cued_audio_mode() const { return state_.mode != FrontEndMode::demo; }
   RgbFrame frame() const;
   std::uint32_t frames() const { return frames_; }
   std::uint32_t notices() const { return notices_; }

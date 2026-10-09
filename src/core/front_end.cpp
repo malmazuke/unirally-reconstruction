@@ -257,6 +257,7 @@ bool waits_for_frame(const FrontEndState& state) {
     if (state.screen == FrontEndScreen::records_detail_entry && next == 1) return false;
     if (state.screen == FrontEndScreen::league_podium_entry) return next <= 7;
     if (state.screen == FrontEndScreen::league_podium) return false;
+    if (state.screen == FrontEndScreen::wipe_ram_answer) return wipe_ram_answer_waits(state);
     if (state.screen == FrontEndScreen::league_podium_exit)
         return next == upload_last_frame + 2 || next == menu_screen_frame + 2
             || next >= restore_frame + 2;
@@ -300,23 +301,41 @@ void check_records(FrontEndState& state, const FrontEndContent& content) {
     } else if (has_signature(state.cartridge, content)) {
         state.records_kept = true; // insert_cartridge read its fields
     } else {
-        // Content without the defaults (the synthetic tests' own) leaves the image zeroed.
-        state.cartridge =
-            content.cartridge_defaults.empty() ? CartridgeImage{} : cold_start_cartridge(content);
-        state.records = cold_start_records();
-        if (content.rider_names.size() != state.records.rider_names.size())
-            throw std::invalid_argument("the original rider-name table has the wrong size");
-        std::copy(content.rider_names.begin(), content.rider_names.end(),
-                  state.records.rider_names.begin());
-        if (content.league_names.size() != state.records.league_names.size())
-            throw std::invalid_argument("the original league-name table has the wrong size");
-        std::copy(content.league_names.begin(), content.league_names.end(),
-                  state.records.league_names.begin());
+        wipe_cartridge(state, content);
     }
     state.one_player = false;
     state.cartridge[one_player_mode] = state.cartridge[one_player_mode + 1] = 0; // `$83:8B3B`
     state.records.pending_reveal = 0;
 }
+
+} // namespace
+
+// $80:8C74-8CC2, and the WIPE RAM menu's `$80:AA64-AAB4` (R-0092): all 8 KiB cleared
+// (`$83:FB41`), `$00CA`, `$00CC`, `$00CE` and `$00D0` cleared, and a cold start's records written,
+// checksums last. The WIPE RAM menu's copy changes `$77:074C` with an 8-bit DEC and INC where the
+// boot's are 16-bit; both put it back, and the image is the same. The wipe clears `$77:0742` bit 1
+// (the logo slides down) and `$77:10A7` (the markers' step).
+void wipe_cartridge(FrontEndState& state, const FrontEndContent& content) {
+    // Content without the defaults (the synthetic tests' own) leaves the image zeroed.
+    state.cartridge =
+        content.cartridge_defaults.empty() ? CartridgeImage{} : cold_start_cartridge(content);
+    state.records = cold_start_records();
+    if (content.rider_names.size() != state.records.rider_names.size())
+        throw std::invalid_argument("the original rider-name table has the wrong size");
+    std::copy(content.rider_names.begin(), content.rider_names.end(),
+              state.records.rider_names.begin());
+    if (content.league_names.size() != state.records.league_names.size())
+        throw std::invalid_argument("the original league-name table has the wrong size");
+    std::copy(content.league_names.begin(), content.league_names.end(),
+              state.records.league_names.begin());
+    state.league.slot = 0;            // $00CC
+    state.tour_menu.track = 0;        // $00CE
+    state.tour_menu.tour = 0;         // $00D0: `$83:9987` sets it to the track over 5
+    state.logo.raised = false;        // $77:0742 bit 1
+    state.track_menu.marker_step = 0; // $77:10A7
+}
+
+namespace {
 
 // The boot's scripted work for one frame, after the NMI and the frame wait.
 void boot_frame(FrontEndState& state, const FrontEndContent& content, FrontEndPads pads) {
@@ -377,8 +396,9 @@ void run_main_menu(FrontEndState& state, const FrontEndContent& content, FrontEn
     // (`$80:ABEB-AC0A`).
     const auto entered = [&](std::uint16_t code) { return pads.one == code || pads.two == code; };
     if (entered(wipe_ram_code)) {
-        state.mode_chosen = true;
-        state.mode = FrontEndMode::wipe_ram_code;
+        if (enter_wipe_ram_menu(state, content)) return;
+        state.mode_chosen = true; // an older pack, without the menu's text
+        state.mode = FrontEndMode::wipe_ram;
         return;
     }
     if (entered(hunter_ending_code)) {
@@ -772,6 +792,17 @@ void load_options_content(FrontEndContent& content, const ClassicContentPack& pa
     content.group_scores_empty = pack.entry("front-end.group-scores-empty");
 }
 
+// STUNT-RESULT (profile v25): the stunt result's heads' colours (asset 0x26 + rider) and texts.
+// WIPE-RAM (profile v36, R-0092): the WIPE RAM menu's text, empty in an older pack.
+void load_late_screens_content(FrontEndContent& content, const ClassicContentPack& pack) {
+    for (unsigned id = 0x26; id <= 0x39; ++id) content.assets[id] = pack.entry(asset_name(id));
+    content.stunt_result_text = pack.entry("front-end.stunt-result-text");
+    content.stunt_tally_cells = pack.entry("front-end.stunt-tally-cells");
+    content.wipe_ram_menu_text = pack.optional_entry("front-end.wipe-ram-menu-text");
+    content.wipe_ram_arrow_columns = pack.optional_entry("front-end.wipe-ram-arrow-columns");
+    content.wipe_ram_messages = pack.optional_entry("front-end.wipe-ram-messages");
+}
+
 } // namespace
 
 FrontEndContent front_end_content(const ClassicContentPack& pack) {
@@ -849,10 +880,7 @@ FrontEndContent front_end_content(const ClassicContentPack& pack) {
     content.credits_text = pack.entry("front-end.credits-text");
     content.credits_poses = pack.entry("front-end.credits-poses");
     content.credits_objects = pack.entry("front-end.credits-objects");
-    // STUNT-RESULT (profile v25): the stunt result's heads' colours (asset 0x26 + rider) and texts.
-    for (unsigned id = 0x26; id <= 0x39; ++id) content.assets[id] = pack.entry(asset_name(id));
-    content.stunt_result_text = pack.entry("front-end.stunt-result-text");
-    content.stunt_tally_cells = pack.entry("front-end.stunt-tally-cells");
+    load_late_screens_content(content, pack);
     return content;
 }
 
@@ -1128,6 +1156,13 @@ void dispatch_front_end_screen(FrontEndState& state, const FrontEndContent& cont
     case FrontEndScreen::records_detail_entry: records_detail_entry_frame(state, content); break;
     case FrontEndScreen::records_detail: records_detail_frame(state, content, physical); break;
     case FrontEndScreen::records_detail_exit: records_detail_exit_frame(state, content); break;
+    case FrontEndScreen::wipe_ram_menu_entry: wipe_ram_menu_entry_frame(state, content); break;
+    case FrontEndScreen::wipe_ram_menu: wipe_ram_menu_frame(state, content, physical); break;
+    case FrontEndScreen::wipe_ram_warning_entry:
+        wipe_ram_warning_entry_frame(state, content);
+        break;
+    case FrontEndScreen::wipe_ram_warning: wipe_ram_warning_frame(state, content, physical); break;
+    case FrontEndScreen::wipe_ram_answer: wipe_ram_answer_frame(state, content, physical); break;
     }
 }
 
