@@ -71,3 +71,47 @@ as measured); 2P and VS menu paths.
 | Demo races | Each cycle's race words and sampled pictures against the original | Equal, or each difference named and bounded | JSON |
 | Nothing else moves | Gates, sweeps, the first two cycles' captures | Unchanged | gate logs |
 | Review | Tier 1 | Approved with withheld captures | review on the pull request |
+
+## Checkpoint - 9 October 2026 02:45 UTC (commit `3dcaac4`)
+
+Evidence (main checkout `local/evidence/idle-demo-cycles/`):
+- `cold-30000`, `cold-102000`: `split-screen-race/capture_demo.py` cold captures (Start 300-305,
+  pads released), work RAM `$0000-$21FF` and cartridge RAM every frame, pictures every 100 frames
+  (1,400-101,900). `cold-102000` covers 34 cycles: a whole lap of 32 races and the wrap.
+- `cycles.py CAPTURE` writes `cycles.json` (per cycle: track write, `$11C5` = 270, exit
+  `$12B3`, track, view, pairing; `initialization` = the frame `$212C` is set).
+- `compare_cycles.py CAPTURE NATIVE_TIMELINE OUT`: native `--race-timeline` rows (bytes 12-564)
+  against `zoom_zoo_race_reference.project` of the capture, per cycle.
+
+Verified (dynamic, `cold-102000`):
+- The rotation and pairing above hold for all 34 cycles; `$77:0F34` is 3 at every setup.
+- The race starts (`$212C`) exactly the track's `race_sound_load_offset` + 7 frames after the
+  track write, on all 34 cycles (`$11C5` = 270 comes 5 or 6 frames earlier, by the cue lead).
+- Each race runs 1,900 updates to its exit.
+
+Native at `3dcaac4` (with the serialization guards relaxed in a scratch build,
+`artifacts/idr/probe-guards.patch`): cycles 1, 2 and 4-12 equal the original on all 1,901 race
+frames; cycle 3 (track 4, split) differs at update 823 (`opponent_horizontal` 1 against 0, the
+opponent's velocity x); from cycle 13 native starts 1-2 frames late (below).
+
+Found on the way: main's second demo had regressed since 7c301dd (TWO-PLAYER-VS), differing from
+R-0070's frozen `second-race-reference.txt` on 1,651 of 1,901 rows (`ai.suppression_counter` 60
+against 30): `opponent_tier` gave every opponent below 16 the human tier. Fixed by the scenario's
+`two_humans` flag; cycle 2 is exact again.
+
+Open:
+1. **State formats.** `race_state_io.cpp` refuses a split state off ZOOM ZOO/local DRAGSTER and a
+   one-view demo state off track 3 (pairing {6,1} and tier `{0xF1,0,0x60}` hard-coded in the
+   reader). Generalize: split demo on the 15 other split tracks (base 916, new layout letter),
+   one-view demo on the 15 other one-view tracks and DRAGSTER (base 742/794, new letters, sizes
+   collide with split layouts, so dispatch by letter); tier from `opponent_tier`; the view must
+   match the track's place in the cold rotation; second-camera checks per track.
+2. **Menu timing jitter.** In the original the race exit to the next track write is 1,050-1,052
+   frames: the return to the menu's idle count is 118 or 119 frames (119 after the races on tracks
+   20, 24, 36) and the title 453 or 452 frames (452 before tracks 16, 20, 23, 26 and the second
+   track 1). The title's extra frame lies around its frame 134, where the blank loading phase
+   ends. Hypothesis: the sound program's upload handshake (R-0077 measured such variation for the
+   race session). Next: an access capture of the APU ports `$2140-$2143` over a 452 and a 453
+   title, then decide between modelling it from native audio and a measured schedule.
+3. Cycle 3's divergence at update 823.
+4. Pictures (retained every 100 frames), audio is out of scope, the app path (`sdl_main.cpp`).
