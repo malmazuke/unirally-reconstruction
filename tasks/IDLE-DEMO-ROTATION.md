@@ -2,7 +2,9 @@
 
 ## Assignment
 
-- Status: **in progress**, claimed 9 October 2026 (01:30 UTC) on main `c9f0361`. The user asked
+- Status: **accepted** 9 October 2026 (tier 1,
+  [PR #64](https://github.com/malmazuke/unirally-reconstruction/pull/64)); claimed 9 October 2026
+  (01:30 UTC) on main `c9f0361`. The user asked
   this session to continue to "the two remaining ready tasks", PORTABLE-CORE-IDENTITY and
   ATTRACT-DEMO, then to keep working until weekly usage reaches 50%. ATTRACT-DEMO's outcome (the
   second idle demo) had been accepted by PR #44 on 29 September, with its status left stale; its
@@ -164,3 +166,31 @@ findings 3 and 4. Handled in the next commit:
 - A6, citations: `$80:948C-94B8`, `$80:949C-94B8`, opponent 1 at `$80:9491`.
 - A8, `demo_cycles` saturates at 255; A9, the tier comment moved to the computer branch.
 - A7 (a view the cold rotation does not give is refused by the formats) stays a stated limit.
+
+## Gates and review round 2
+
+`local/evidence/idle-demo-cycles/gates.sh` on `7232c7a` against main `c9f0361`'s binaries
+(`gates-7232c7a.out`, tree clean at start and end):
+- presets and ctest 41 of 41 on four presets; synthetic suite, v1 contracts and hidden runs pass;
+  fuzz 40 aborts, as on main (recorded non-pass);
+- the eleven frozen gates keep their row digests; race sweep 432 runs, 0 differences; every split,
+  race-end, look and restart capture and the two-pad restores, 0 differences; cues identical to
+  main; the every-track sweeps give main's rows; 554 tooling tests; no function over 80 lines;
+- the lap: 34 of 34 cycles exact (race words and trailer), 9 demo restores to the exit, 906 of 1,006
+  pictures equal; the R-0069 split demo pictures 0 differing;
+- front-end sweep: 174 of 179 equal. The other five are the expected ones: three ATTRACT-DEMO
+  manifests run the second demo, whose tier is repaired (R-0070's frozen reference is exact
+  again), and `coverage-roadmap/idle` and `title-idle` now continue past the second demo.
+
+[Agent review (Claude Opus 5.5, tier 1) of 7232c7a](https://github.com/malmazuke/unirally-reconstruction/pull/64#pullrequestreview-5465074496):
+**approved**; M1 (two-pad restores), M2 (function size), S3/S4 (W1 now track 0 and counter 0, the
+race exact on 1,901 frames) verified, W2 rerun exact. Its advisories: R-0087 now names the
+corrupt-cartridge limit (a split DRAGSTER demo cannot be saved); one comment wrapped. Outside this
+diff, on corrupt cartridges only: `choose_race_song` turns a race counter of 7 into 2 where the
+original resets it first; `--record-write` cannot preset `$77:10B1`, `$10C8` or `$1115`.
+
+## Handoff
+
+- Closeout (`artifacts/idle-demo-rotation-integration/closeout.json` in the main checkout): the merge
+  commit, the check runs and the cleanup list. Evidence stays in `local/evidence/idle-demo-cycles/`.
+- Next: [DEMO-PICTURES](DEMO-PICTURES.md) (tier 2).

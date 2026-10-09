@@ -77,6 +77,8 @@ rotation (66 cycles).
 
 ## Not covered
 
-Audio; pad presses in cycles after the second; the menus' sound handshake that shortens titles;
-a cartridge whose `$77:10C8` or `$77:1115` was left by an interrupted lap is covered by the same
-rule but not captured.
+Audio; pad presses in cycles after the second; the menus' sound handshake that shortens titles.
+A cartridge whose `$77:10C8` or `$77:1115` holds other values follows the same rule: the review's
+W2 (race counter 5, track counter 19, view 1) matched natively on all 5 cycles. Out-of-range bytes
+(W1) can give a view the cold rotation never gives a track (a split DRAGSTER demo): native plays
+it as the original does, but the state formats refuse to save it.

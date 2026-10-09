@@ -881,8 +881,8 @@ void return_from_demo(FrontEndState& state, std::uint32_t exit_frame, std::uint1
 namespace {
 
 // The idle demos take the race tracks below HUNTER's in turn (R-0087): `$80:949C-94B8` advances
-// `$77:10C8`, from 0 again at 40, and again while the track is a stunt event (race mode 2, every tour's
-// third track). `$83:C912-C994` flips `$77:1115` between a split race and a one-view one; the
+// `$77:10C8`, from 0 again at 40, and again while the track is a stunt event (race mode 2, every
+// tour's third track). `$83:C912-C994` flips `$77:1115` between a split race and a one-view one; the
 // rider is the track plus the race counter `$77:10B1` plus the menu's palette-cycle phase `$00C9`
 // (saved by `$83:9894` as `$77:0F34`), modulo 16. A split race's opponent is the track less
 // both, or 13 more when that is the rider; a one-view race keeps the mode's opponent 1

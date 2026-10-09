@@ -14966,19 +14966,19 @@
    "call returns in the calling mode": 1262
   },
   "bytes": 131072,
-  "cited_addresses": 1739,
+  "cited_addresses": 1741,
   "cited_by_class": {
    "data": 31,
    "inferred": 316,
    "observed": 1052,
-   "unknown": 340
+   "unknown": 342
   },
   "cited_by_position": {
    "dat": 31,
    "loc": 997,
    "mid": 20,
    "sub": 351,
-   "unk": 340
+   "unk": 342
   },
   "conflicts": 0,
   "data": 92,

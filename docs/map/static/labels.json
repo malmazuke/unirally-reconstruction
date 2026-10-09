@@ -1323,6 +1323,31 @@
   ]
  },
  {
+  "address": "$80:9491",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_809491",
+  "native": [
+   "src/core/front_end.cpp:choose_idle_demo"
+  ],
+  "source_records": [
+   "tasks/IDLE-DEMO-ROTATION.md"
+  ]
+ },
+ {
+  "address": "$80:949C",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80949C",
+  "native": [
+   "src/core/front_end.cpp:choose_idle_demo",
+   "src/core/front_end.hpp:OnePlayerRecords::demo_track"
+  ],
+  "source_records": [
+   "tasks/IDLE-DEMO-ROTATION.md"
+  ]
+ },
+ {
   "address": "$80:951C",
   "class": "observed",
   "comment": "routine start",
@@ -18976,7 +19001,8 @@
    "src/core/front_end.cpp:choose_idle_demo"
   ],
   "source_records": [
-   "docs/research/R-0087-idle-demo-rotation.md"
+   "docs/research/R-0087-idle-demo-rotation.md",
+   "tasks/IDLE-DEMO-ROTATION.md"
   ]
  },
  {
