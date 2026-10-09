@@ -9760,6 +9760,13 @@
    "region": "rom"
   },
   {
+   "address": "$83:CCA2",
+   "native": [
+    "src/core/race_windows.cpp:ClassicWindowPointer::observe_update"
+   ],
+   "region": "rom"
+  },
+  {
    "address": "$83:CCAB",
    "native": [
     "src/core/race_progress.cpp:finish_rider"
@@ -9787,6 +9794,13 @@
    ],
    "range_ends": [
     "$83:CCC9"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:CCE7",
+   "native": [
+    "src/core/race_windows.cpp:ClassicWindowPointer::observe_update"
    ],
    "region": "rom"
   },
@@ -10514,6 +10528,7 @@
   {
    "address": "$83:E728",
    "native": [
+    "src/core/race_windows.cpp:ClassicWindowPointer::observe_update",
     "src/core/race_windows.cpp:classic_countdown_window"
    ],
    "region": "rom"
@@ -11501,7 +11516,8 @@
    "address": "$00C8",
    "native": [
     "src/core/front_end.cpp:demo_return_frame",
-    "src/core/front_end.hpp:PaletteCycle::delay"
+    "src/core/front_end.hpp:PaletteCycle::delay",
+    "src/core/front_end.hpp:PaletteCycle::pending_nmi"
    ],
    "region": "wram"
   },
@@ -11510,6 +11526,7 @@
    "native": [
     "src/core/front_end.cpp:choose_idle_demo",
     "src/core/front_end.cpp:demo_return_frame",
+    "src/core/front_end.hpp:PaletteCycle::pending_nmi",
     "src/core/front_end.hpp:PaletteCycle::phase"
    ],
    "region": "wram"
@@ -16124,6 +16141,12 @@
     "$00C8"
    ]
   },
+  "src/core/front_end.hpp:PaletteCycle::pending_nmi": {
+   "wram": [
+    "$00C8",
+    "$00C9"
+   ]
+  },
   "src/core/front_end.hpp:PaletteCycle::phase": {
    "wram": [
     "$00C9"
@@ -19636,6 +19659,9 @@
   },
   "src/core/race_windows.cpp:ClassicWindowPointer::observe_update": {
    "rom": [
+    "$83:CCA2",
+    "$83:CCE7",
+    "$83:E728",
     "$83:E898",
     "$83:E8E0",
     "$83:EA69"
@@ -22525,10 +22551,10 @@
   }
  },
  "totals": {
-  "addresses": 1629,
+  "addresses": 1631,
   "io_addresses": 11,
-  "native_symbols": 1233,
-  "rom_addresses": 1239,
+  "native_symbols": 1234,
+  "rom_addresses": 1241,
   "sram_addresses": 53,
   "wram_addresses": 326
  }

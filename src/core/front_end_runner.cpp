@@ -440,7 +440,9 @@ std::string start_race(RaceBetweenMenus& race, const unirally::ClassicContentPac
 void update_front_end(const Options& options, unirally::FrontEndState& state,
                       const unirally::FrontEndContent& content, unirally::FrontEndPads pads) {
     const auto& titles = options.short_demo_titles;
-    if (state.screen == unirally::FrontEndScreen::demo_title && state.script_frame < 133
+    // The first title has no hold to shorten (R-0088).
+    if (state.screen == unirally::FrontEndScreen::demo_title && state.demo_cycles != 0
+        && state.script_frame < unirally::demo_title_hold_frame
         && std::find(titles.begin(), titles.end(), state.demo_cycles + 1U) != titles.end())
         state.demo_title_short = true;
     unirally::update_front_end(state, content, pads);

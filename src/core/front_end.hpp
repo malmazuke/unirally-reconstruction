@@ -98,6 +98,10 @@ struct PaletteCycle {
     std::int8_t delay{}; // $00C8: frames to the next step, 6 down to 0
     std::int8_t phase{}; // $00C9: 3 down to 0
     bool running{};      // the NMI hook is installed and NMIs are enabled
+    // The timer's demo return enables NMIs with one already pending, and the hook's first frame
+    // runs it twice (`$00C8/$00C9` go 0/0, then 5/3), except after the first demo and in a cycle
+    // whose title was short: the sound processor's timing decides both (R-0088).
+    bool pending_nmi{};
 };
 
 // The NMI hook `$80:F622` slides the main menu's logo (BG1) up while a screen is on top of it
@@ -541,6 +545,8 @@ struct FrontEndState {
     // A laboratory replay of a capture's title that loads a frame sooner (R-0087): the sound
     // processor's state shortens some titles, and nothing native predicts which.
     bool demo_title_short{};
+    // This cycle's title was a short one, so its return has no NMI pending; it has passed frame 133.
+    bool demo_title_was_short{}, demo_title_held{};
     std::uint8_t demo_return_wait{}; // extra blank frames after an interrupted demo (R-0070)
     bool demo_return_interrupted{};
     bool mode_chosen{};
@@ -567,6 +573,8 @@ FrontEndState start_front_end();
 // One frame: its vblank's work, in the original's order. Once a mode is chosen (for 1P, a race)
 // the state stops.
 void update_front_end(FrontEndState& state, const FrontEndContent& content, FrontEndPads pads);
+// The blank title frame every idle demo title after the first holds once (R-0088).
+inline constexpr std::uint32_t demo_title_hold_frame = 133;
 // Return from an idle demo race on the original's exit frame.
 void return_from_demo(FrontEndState& state, std::uint32_t exit_frame, std::uint16_t demo_elapsed);
 // The frame the last update produced.

@@ -1765,6 +1765,8 @@ int main() {
         for (std::uint32_t frame = 1329; frame <= last; ++frame) {
           auto next = current;
           next.movement.frame = frame;
+          // `$0300`, which the GO choice reads, alternates every frame from the boundary, pauses too.
+          next.movement.contact_phase = static_cast<std::uint8_t>((frame - 1328U) & 1U);
           next.pause.selection = 0;
           for (const auto &[open, close] : script.pauses)
             if (frame >= open && frame <= close) next.pause.selection = 1;

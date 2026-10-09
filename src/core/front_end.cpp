@@ -464,6 +464,10 @@ void set_tile_bases(SnesVideoRegisters& registers, std::uint8_t nba) {
 void run_nmi_hook(FrontEndState& state, const FrontEndContent& content) {
     scroll_logo(state);
     step_palette_cycle(state, content);
+    if (state.cycle.pending_nmi) {
+        state.cycle.pending_nmi = false;
+        step_palette_cycle(state, content);
+    }
 }
 
 // $80:A09A (frame 24): every OAM entry at (1, 1), every high bit 0x55; the early loads.
@@ -961,17 +965,16 @@ void demo_title_frame(FrontEndState& state, const FrontEndContent& content) {
             state.line_registers.push_back({static_cast<std::uint8_t>(wave_start + wave.size()),
                                             SnesLineRegisterName::display, 0x80});
     }
-    // R-0070: every title after the first holds full brightness one picture longer (R-0087).
-    const auto fade_start = state.demo_cycles ? 453U : 452U;
+    constexpr unsigned fade_start = 452;
     if (frame >= fade_start && frame < fade_start + 6U)
         state.registers.brightness = static_cast<std::uint8_t>(13U - 2U * (frame - fade_start));
     if (frame >= fade_start + 6U) {
         state.registers.force_blank = true;
         state.cycle.running = false;
     }
-    // The race setup chooses the demo on the frame it writes the track (`$77:074A`), one picture
-    // later after the first title, and the race starts when the track has loaded (R-0087).
-    const auto choice_frame = state.demo_cycles ? 452U : 451U;
+    // The race setup chooses the demo on the frame it writes the track (`$77:074A`), and the race
+    // starts when the track has loaded (R-0087).
+    constexpr unsigned choice_frame = 451;
     if (frame == choice_frame) choose_idle_demo(state);
     if (frame == choice_frame + idle_demo_loading_frames(ClassicRaceTrack{state.tour_menu.track})) {
         // The demo's race keeps the song counter: `$83:C9F6-CA05` skips `$83:CA08` (R-0077).
@@ -996,14 +999,17 @@ void demo_return_frame(FrontEndState& state, const FrontEndContent& content) {
         state.cycle.running = false;
         state.cycle.delay = state.cycle.phase = 0;
     }
-    // The interrupted return enables the palette hook one picture earlier
-    // (R-0070, $00C8/$00C9 trace at frames 5103-5117).
+    // The interrupted return enables the palette hook one picture earlier (R-0070, $00C8/$00C9
+    // trace at frames 5103-5117); the timer's return has an NMI pending (R-0088).
     if (frame == (state.demo_return_interrupted ? 100U : 101U)) {
         state.cycle.running = true;
+        state.cycle.pending_nmi =
+            !state.demo_return_interrupted && state.demo_cycles > 1 && !state.demo_title_was_short;
     }
     if (frame == 102) state.arrow.spin = 4;
     if (within(frame, 109, fade_frames)) fade(state, frame, 109, true);
     if (frame == 118) {
+        state.demo_title_was_short = state.demo_title_held = false;
         start_main_menu(state);
     }
 }
@@ -1116,11 +1122,18 @@ void update_front_end(FrontEndState& state, const FrontEndContent& content, Fron
         ++state.frame;
         return;
     }
-    // A short title (laboratory replay, R-0087) passes its frame 134 within frame 133's picture.
-    if (state.screen == FrontEndScreen::demo_title && state.demo_title_short
-        && state.script_frame == 133) {
+    // Every title after the first holds its blank frame 133 once while the sound program loads,
+    // unless the sound processor ends that wait a frame sooner (a laboratory replay's short title,
+    // R-0087); the wave, the fade and the choice follow a picture later (R-0088).
+    if (state.screen == FrontEndScreen::demo_title && state.script_frame == demo_title_hold_frame
+        && state.demo_cycles != 0 && !state.demo_title_held) {
+        state.demo_title_held = true;
+        state.demo_title_was_short = state.demo_title_short;
         state.demo_title_short = false;
-        ++state.script_frame;
+        if (!state.demo_title_was_short) {
+            ++state.frame;
+            return;
+        }
     }
     keep_line_writes(state);
     // NMIs are enabled at the end of the title's loads (`$80:F5B8`); the hook runs from then on:
