@@ -1,5 +1,20 @@
 # Project state
 
+**9 October 2026: COVERAGE-GAPS is accepted (tier 3, #66) and integrated by merge commit.**
+The coverage roadmap's queue was done, so this task measured what is left. Every captured
+scenario behind the accepted tasks (236 captures, 1.67 million frames) was run again with
+instruction coverage.
+- They execute 85.7% of the known code in banks `$80-$83` and 600 of its 636 routines. The rest
+  is mostly unrolled loop tails, HUNTER's effects (captured another way) and listing-only
+  branches, plus four features: an unused-looking compressed graphics format, the "credits"
+  name cheat, the WIPE RAM menu and HUD fields for values never shown.
+- The records' own limits add the larger missing features: the app keeps no saves between runs,
+  2P, VS, league, OPTIONS and the idle demos are silent, two-human stunt events are refused, and
+  league covers its first tour only.
+
+[R-0089](research/R-0089-coverage-gaps.md) has the inventory and a nine-task queue. Next ready:
+[SAVE-FILES](../tasks/SAVE-FILES.md).
+
 **9 October 2026: DEMO-PICTURES is accepted (tier 1, #65) and integrated by merge commit.**
 The idle demos' pictures now match the original far more closely: 963 of 1,006 retained pictures
 of a cold lap are equal, up from 906.
@@ -19,8 +34,8 @@ Results:
 
 Not covered: two title starts (cycles 10 and 17) where the sound processor keeps the menu six
 frames longer, and 41 small race sprite pictures also on main.
-[R-0088](research/R-0088-demo-pictures.md) defines the domain. No task is queued: the coverage
-roadmap's queue is done, so next is a fresh inventory of what native still does not cover.
+[R-0088](research/R-0088-demo-pictures.md) defines the domain. Next: COVERAGE-GAPS, a fresh inventory
+of what native still does not cover.
 
 **9 October 2026: IDLE-DEMO-ROTATION is accepted (tier 1, #64) and integrated by merge commit.**
 The main menu's idle demos now play the original's whole rotation instead of stopping after two.
