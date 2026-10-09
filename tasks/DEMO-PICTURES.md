@@ -49,3 +49,18 @@ Outside: the race state (exact), audio, the titles the sound processor shortens 
 - Remaining: idle menu (about 23,300 pixels, 20 pictures, also on main), title wave (about 8,500,
   24, also on main), two title starts (57,057 at cycles 10 and 17, with 5,265 at title frame 203),
   small sprite differences (1-107 pixels), and 1,536 at 92,500 and 768 at 101,600.
+
+## Checkpoint - 9 October 2026 05:25 UTC (uncommitted source change in the worktree)
+
+- **Idle menu class = the palette cycle's phase.** Frame 7,000's 23,287 pixels are the checkered
+  background's colours. Comparing `$00C8/$00C9` (delay/phase) of `cold-102000` with
+  `front_end_runner`'s per-frame columns 10-11 over every idle period (exit + 100 to the next
+  title): at main (hook enabled at return frame 101 on the timer path) native is one frame behind
+  on every frame (6525: original 5/3, native 6/3). With the hook at frame 100 (the uncommitted
+  edit in `front_end.cpp`'s `demo_return_frame`) every later return matches except its first
+  frame (exit + 101: original 0/0, native 6/3; exit + 102: both 5/3), and the first demo's return
+  differs for 497 frames from 3,449.
+- So the original's first hook step leaves delay 5, not 6 (or runs twice), on the timer return;
+  the first return differs again. Next: read the hook (`$80:FA60`, R-0070's trace at 5103-5117 for
+  the interrupted return) and model the first step, then check cycle 1's return, the interrupted
+  returns' frozen pictures (`local/evidence/attract-demo/interrupt-*`), and rerun `pictures.py`.
