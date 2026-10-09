@@ -88,3 +88,11 @@ Outside: the race state (exact), audio, the titles the sound processor shortens 
   title's script frames. The lap's race words stay exact (34 of 34); pictures 963 of 1,006 equal.
 - Remaining: two title starts (57,057 pixels at 28,400 and 49,700: cycles 10 and 17, title frame
   about 3) and small race sprite differences (1-107 pixels, 41 pictures).
+
+## Review candidate
+
+- Records: [R-0088](../docs/research/R-0088-demo-pictures.md). Pictures 963 of 1,006 equal (from
+  906); the lap's race words stay exact on 34 of 34 cycles.
+- Gates: `local/evidence/idle-demo-cycles/gates-pictures.sh` against main `6be4093`'s binaries
+  (`base-6be4093/`). The GO change must leave every window gate and sweep picture equal: from the
+  menus `$0300` is the old parity.
