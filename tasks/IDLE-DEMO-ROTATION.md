@@ -51,7 +51,7 @@ as measured); 2P and VS menu paths.
 
 ## Static reading at claim (to be confirmed dynamically)
 
-- `$80:948D-94B2` (mode 5, unclassified bytes in the static map): rider 3 and opponent 1 into
+- `$80:948C-94B8` (mode 5, unclassified bytes in the static map): rider 3 and opponent 1 into
   `$017D/$017F`, mode 5 into `$77:10AD`, then the track counter `$77:10C8` + 1, wrapped at 40, into
   `$CE`, repeated while the track is a stunt event (race mode 2 from `$83:9983`).
 - `$83:9894` copies the direct page `$0000-$019D` to `$77:0E6B`, so `$77:0F34` is `$00C9`, the
@@ -146,3 +146,21 @@ Open:
 - Records: [R-0087](../docs/research/R-0087-idle-demo-rotation.md).
 - Gates: `local/evidence/idle-demo-cycles/gates.sh` against main `c9f0361`'s binaries
   (`base-c9f0361/`), with this task's lap, restores and pictures.
+
+## Review round 1
+
+[Agent review (Claude Opus 5.5, tier 1) of fad4356](https://github.com/malmazuke/unirally-reconstruction/pull/64#pullrequestreview-5465033379):
+returned. Its withheld W2 (cartridge RAM mid-rotation: race counter 5, track counter 19, view 1)
+matched natively on all 5 cycles and 8,402 frames, with restores; W1 (out-of-range bytes) found
+findings 3 and 4. Handled in the next commit:
+- M1, two-pad ZOOM ZOO saves (F/G) no longer loaded: the reader now treats a state as a demo only
+  when its trailer's demo flag is set; `zzap` @3000/5600 and `zz2p` @2400 restore with no
+  differences again.
+- M2, two functions over 80 lines: the demo clock moved to `idle_demo_initialization`, the short
+  title to the runner's `update_front_end`.
+- S3, the track counter: 0 from 40 up (`CMP #$28`, `BCC`), not modulo 40.
+- S4, an out-of-range race counter is stored back as 0 (`$83:C8EF-C8FB`).
+- S5, formatting of the new lines (two runner lines unformatted at base are left as they were).
+- A6, citations: `$80:948C-94B8`, `$80:949C-94B8`, opponent 1 at `$80:9491`.
+- A8, `demo_cycles` saturates at 255; A9, the tier comment moved to the computer branch.
+- A7 (a view the cold rotation does not give is refused by the formats) stays a stated limit.

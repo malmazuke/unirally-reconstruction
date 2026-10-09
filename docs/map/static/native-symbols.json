@@ -652,20 +652,21 @@
    "region": "rom"
   },
   {
-   "address": "$80:9496",
+   "address": "$80:9491",
    "native": [
     "src/core/front_end.cpp:choose_idle_demo"
    ],
    "region": "rom"
   },
   {
-   "address": "$80:949D",
+   "address": "$80:949C",
    "native": [
     "src/core/front_end.cpp:choose_idle_demo",
     "src/core/front_end.hpp:OnePlayerRecords::demo_track"
    ],
    "range_ends": [
-    "$80:94B2"
+    "$80:94A7",
+    "$80:94B8"
    ],
    "region": "rom"
   },
@@ -15391,8 +15392,8 @@
   },
   "src/core/front_end.cpp:choose_idle_demo": {
    "rom": [
-    "$80:9496",
-    "$80:949D",
+    "$80:9491",
+    "$80:949C",
     "$83:9894",
     "$83:C8EF",
     "$83:C912",
@@ -15978,7 +15979,7 @@
   },
   "src/core/front_end.hpp:OnePlayerRecords::demo_track": {
    "rom": [
-    "$80:949D"
+    "$80:949C"
    ],
    "sram": [
     "$77:10C8"

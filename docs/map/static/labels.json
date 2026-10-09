@@ -1313,10 +1313,10 @@
   ]
  },
  {
-  "address": "$80:948D",
+  "address": "$80:948C",
   "class": "unknown",
   "comment": "unknown",
-  "label": "unk_80948D",
+  "label": "unk_80948C",
   "source_records": [
    "docs/research/R-0087-idle-demo-rotation.md",
    "tasks/IDLE-DEMO-ROTATION.md"

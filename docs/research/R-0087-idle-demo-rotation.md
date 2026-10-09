@@ -16,7 +16,7 @@ rotation (66 cycles).
 
 ## The rotation
 
-- **Track.** The mode-5 handler (`$80:948D-94B2`, unclassified bytes in the static map) sets rider
+- **Track.** The mode-5 handler (`$80:948C-94B8`, unclassified bytes in the static map) sets rider
   3 and opponent 1 (`$017D/$017F`), mode 5 (`$77:10AD`), then advances the cartridge counter
   `$77:10C8` by 1, wrapping at 40, into `$CE`, again while the track is a stunt event (race mode
   2). So the demos take tracks 1, 3, 4, 5, 6, 8, ..., 39, 0 and repeat: 32 races a lap, never

@@ -56,6 +56,8 @@ constexpr std::size_t race_counter_size = 1;
 constexpr std::size_t split_trailer_size = 42 + look_block_size + race_counter_size;
 // The split trailer's byte of rider 1's tutorial hints (`$12E5`, R-0082).
 constexpr std::size_t trailer_hints_at = 31;
+// The split trailer's demo flag, its 42nd byte.
+constexpr std::size_t split_demo_flag_at = 41;
 // A league pair's wrapper: its header, and the trailer after the payload, whose last byte is
 // rider 1's hints over.
 constexpr std::size_t league_header_size = 13,
@@ -1212,21 +1214,23 @@ ZoomZooState read_demo_trailer(ZoomZooState state, std::span<const std::uint8_t>
     const bool demo_pairing =
         state.pairing.rider < rider_characters && state.pairing.opponent < rider_characters
         && (one_view ? state.pairing.opponent == 1 : state.pairing.rider != state.pairing.opponent);
-    refuse_unless(state.native_initialization && state.demo.elapsed <= 0x076c && camera_valid
-                      && (one_view ? state.demo_ai && idle_demo_track(state.track)
-                                         && !idle_demo_split_track(state.track) && demo_pairing
-                                         && state.opponent_tier == demo_tier()
-                          : local_dragster
-                              ? state.track == ClassicRaceTrack::Dragster
-                                    && state.pairing.rider < rider_characters
-                                    && state.pairing.opponent < rider_characters
-                                    && state.pairing.rider != state.pairing.opponent
-                                    && state.opponent_tier == OpponentTier{0, 0, 0x60}
-                                    && state.demo.elapsed == 0 && !state.demo.exit_requested
-                              : state.demo_ai && idle_demo_track(state.track)
-                                    && idle_demo_split_track(state.track) && demo_pairing
-                                    && state.opponent_tier == demo_tier()),
-                  "demo race state is outside its recovered domain");
+    refuse_unless(
+        state.native_initialization && state.demo.elapsed <= 0x076c && camera_valid
+            && (one_view ? state.demo_ai && idle_demo_track(state.track)
+                               && !idle_demo_split_track(state.track) && demo_pairing
+                               && state.opponent_tier == demo_tier()
+                : local_dragster ? state.track == ClassicRaceTrack::Dragster
+                                       && state.pairing.rider < rider_characters
+                                       && state.pairing.opponent < rider_characters
+                                       && state.pairing.rider != state.pairing.opponent
+                                       && state.opponent_tier == OpponentTier{0, 0, 0x60}
+                                       && state.demo.elapsed == 0 && !state.demo.exit_requested
+                : state.demo_ai ? idle_demo_track(state.track) && idle_demo_split_track(state.track)
+                                      && demo_pairing && state.opponent_tier == demo_tier()
+                                : state.track == ClassicRaceTrack::ZoomZoo
+                                      && state.pairing.rider < rider_characters
+                                      && state.pairing.opponent < rider_characters),
+        "demo race state is outside its recovered domain");
     return state;
 }
 
@@ -1289,6 +1293,18 @@ SplitSuffixes split_suffixes(std::size_t size) {
     return suffixes;
 }
 
+// An idle demo's clock counts its updates since the race began (R-0070, R-0087).
+std::uint32_t idle_demo_initialization(std::span<const std::uint8_t> bytes, std::size_t base_size) {
+    const std::uint32_t frame = std::uint32_t(bytes[8]) | (std::uint32_t(bytes[9]) << 8U)
+                              | (std::uint32_t(bytes[10]) << 16U)
+                              | (std::uint32_t(bytes[11]) << 24U);
+    const auto elapsed = unsigned(bytes[base_size + 28]) | (unsigned(bytes[base_size + 29]) << 8U);
+    const auto exit = unsigned(bytes[base_size + 30]);
+    refuse_unless(exit <= 1 && frame >= elapsed + exit,
+                  "idle demo clock is outside its recovered domain");
+    return frame - elapsed - exit;
+}
+
 ZoomZooState deserialize_race(std::span<const std::uint8_t> bytes,
                               std::optional<RacePairing> pairing, bool tutorial_hints,
                               std::span<const std::uint8_t> opponent_catch_up,
@@ -1330,18 +1346,9 @@ ZoomZooState deserialize_race(std::span<const std::uint8_t> bytes,
         const auto base_size = other_family ? other_track_size
                              : extended     ? extended_size
                                             : native_race_size;
-        if (!local_dragster) {
-            // An idle demo's clock counts its updates: the race began that many frames before.
-            const std::uint32_t frame = std::uint32_t(bytes[8]) | (std::uint32_t(bytes[9]) << 8U)
-                                      | (std::uint32_t(bytes[10]) << 16U)
-                                      | (std::uint32_t(bytes[11]) << 24U);
-            const auto elapsed =
-                unsigned(bytes[base_size + 28]) | (unsigned(bytes[base_size + 29]) << 8U);
-            const auto exit = unsigned(bytes[base_size + 30]);
-            refuse_unless(exit <= 1 && frame >= elapsed + exit,
-                          "idle demo clock is outside its recovered domain");
-            initialization_frame = frame - elapsed - exit;
-        }
+        // The trailer's last byte is the demo flag; a two-pad ZOOM ZOO race shares the demo's F/G.
+        const bool demo = !local_dragster && bytes[base_size + split_demo_flag_at] != 0;
+        if (demo) initialization_frame = idle_demo_initialization(bytes, base_size);
         const auto base_view = bytes.first(base_size);
         std::vector<std::uint8_t> base(base_view.begin(), base_view.end());
         base[7] = other_family ? '6'
@@ -1355,10 +1362,13 @@ ZoomZooState deserialize_race(std::span<const std::uint8_t> bytes,
                           "local race pairing differs from state trailer");
         TrailerFlags base_flags{suffixes.versus, bytes[base_size + trailer_hints_at] != 0,
                                 std::nullopt};
-        if (!local_dragster) base_flags.demo_pairing = trailer_pairing;
-        auto state = deserialize_race(
-            base, local_dragster ? std::optional<RacePairing>{trailer_pairing} : std::nullopt,
-            tutorial_hints, opponent_catch_up, initialization_frame, base_flags);
+        if (demo) base_flags.demo_pairing = trailer_pairing;
+        auto state =
+            deserialize_race(base,
+                             local_dragster ? std::optional<RacePairing>{trailer_pairing}
+                             : demo         ? std::nullopt
+                                            : pairing,
+                             tutorial_hints, opponent_catch_up, initialization_frame, base_flags);
         state =
             read_demo_trailer(std::move(state), bytes.subspan(base_size), one_view, local_dragster);
         refuse_unless(!state.opponent_hints.active || state.pairing.opponent != 0,

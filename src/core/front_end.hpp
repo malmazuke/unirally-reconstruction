@@ -244,7 +244,7 @@ struct OnePlayerRecords {
     // increments it modulo 6 and plays the song it names (`race_song_resource`, R-0076).
     std::uint8_t race_song_counter{};
     // $77:10C8: the last idle demo's track; the next is the following race track below 40
-    // (`$80:949D-94B2`, R-0087).
+    // (`$80:949C-94B8`, R-0087).
     std::uint8_t demo_track{};
     // $77:1115: 1 when the last idle demo was a split race; each demo flips it (`$83:C91C-C937`).
     std::uint8_t demo_split{};

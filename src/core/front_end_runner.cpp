@@ -435,6 +435,17 @@ std::string start_race(RaceBetweenMenus& race, const unirally::ClassicContentPac
     return {};
 }
 
+// One front-end frame, first marking a capture's idle-demo title that loaded a frame sooner
+// (`--short-demo-title`, R-0087).
+void update_front_end(const Options& options, unirally::FrontEndState& state,
+                      const unirally::FrontEndContent& content, unirally::FrontEndPads pads) {
+    const auto& titles = options.short_demo_titles;
+    if (state.screen == unirally::FrontEndScreen::demo_title && state.script_frame < 133
+        && std::find(titles.begin(), titles.end(), state.demo_cycles + 1U) != titles.end())
+        state.demo_title_short = true;
+    unirally::update_front_end(state, content, pads);
+}
+
 void update_demo_race(const Options& options, const unirally::ClassicContentPack& pack,
                       unirally::FrontEndState& front_end, RaceBetweenMenus& race,
                       std::uint32_t frame, unirally::FrontEndPads pads, std::size_t& races) {
@@ -463,7 +474,8 @@ void update_demo_race(const Options& options, const unirally::ClassicContentPack
                   unirally::render_classic_race(race.state, *race.presentation, &previous, &shown));
     }
     if (race.state.demo.exit_requested) {
-        if (race.restored_demo) std::cerr << "demo restore continued to the exit at " << frame << '\n';
+        if (race.restored_demo)
+            std::cerr << "demo restore continued to the exit at " << frame << '\n';
         race.restored_demo.reset();
         unirally::return_from_demo(front_end, frame, race.state.demo.elapsed);
         race.content.reset();
@@ -744,12 +756,7 @@ int main(int argc, char** argv) try {
         } else if (state.mode_chosen) {
             break;
         } else {
-            if (state.screen == unirally::FrontEndScreen::demo_title && state.script_frame < 133
-                && std::find(options.short_demo_titles.begin(), options.short_demo_titles.end(),
-                             state.demo_cycles + 1U)
-                       != options.short_demo_titles.end())
-                state.demo_title_short = true;
-            unirally::update_front_end(state, content, pads);
+            update_front_end(options, state, content, pads);
             sound_cues.write(frame, state.sound_cues);
             const bool reset = state.after_soft_reset && state.boot_start + 1 == state.frame;
             if (reset && resets < options.reset_upload_delays.size())

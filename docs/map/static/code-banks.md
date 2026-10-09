@@ -88,7 +88,7 @@ Cited addresses in `unknown` bytes:
 | $80:91B9 | docs/research/R-0058-lap-result.md, tasks/FRONT-END-LAP-RESULT.md |
 | $80:93FB | tasks/COVERAGE-ROADMAP.md, tasks/SPLIT-SCREEN-RACE.md |
 | $80:942D | docs/research/R-0082-split-captions.md |
-| $80:948D | docs/research/R-0087-idle-demo-rotation.md, tasks/IDLE-DEMO-ROTATION.md |
+| $80:948C | docs/research/R-0087-idle-demo-rotation.md, tasks/IDLE-DEMO-ROTATION.md |
 | $80:95A5 | docs/research/R-0067-stunt-result.md |
 | $80:97DD | docs/research/R-0056-tour-track-now-playing.md |
 | $80:9801 | docs/research/R-0056-tour-track-now-playing.md |

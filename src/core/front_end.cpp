@@ -853,7 +853,8 @@ FrontEndState start_front_end() {
 }
 
 void return_from_demo(FrontEndState& state, std::uint32_t exit_frame, std::uint16_t demo_elapsed) {
-    ++state.demo_cycles;
+    // Saturates: only the first title differs (R-0070, R-0087).
+    if (state.demo_cycles < 255) ++state.demo_cycles;
     state.frame = exit_frame + 1U;
     state.screen = FrontEndScreen::demo_return;
     state.script_frame = 0;
@@ -879,21 +880,24 @@ void return_from_demo(FrontEndState& state, std::uint32_t exit_frame, std::uint1
 
 namespace {
 
-// The idle demos take the race tracks below HUNTER's in turn (R-0087): `$80:949D-94B2` advances
-// `$77:10C8` modulo 40 and again while the track is a stunt event (race mode 2, every tour's
+// The idle demos take the race tracks below HUNTER's in turn (R-0087): `$80:949C-94B8` advances
+// `$77:10C8`, from 0 again at 40, and again while the track is a stunt event (race mode 2, every tour's
 // third track). `$83:C912-C994` flips `$77:1115` between a split race and a one-view one; the
 // rider is the track plus the race counter `$77:10B1` plus the menu's palette-cycle phase `$00C9`
 // (saved by `$83:9894` as `$77:0F34`), modulo 16. A split race's opponent is the track less
 // both, or 13 more when that is the rider; a one-view race keeps the mode's opponent 1
-// (`$80:9496`).
+// (`$80:9491`).
 void choose_idle_demo(FrontEndState& state) {
     constexpr unsigned demo_tracks = 40, stunt_place = 2, riders = 16;
     auto& records = state.records;
-    do records.demo_track = static_cast<std::uint8_t>((records.demo_track + 1U) % demo_tracks);
-    while (records.demo_track % front_end_screens::tracks_per_tour == stunt_place);
-    // `$83:C8EF-C8FB` and `$83:C91C-C92A` put a counter outside its range back to 0.
-    const unsigned counter =
-        records.race_song_counter < race_song_count ? records.race_song_counter : 0;
+    // `$80:949C-94A7`: one more, and 0 from 40 up (`CMP #$28`, `BCC`), not a modulo.
+    do {
+        const unsigned next = records.demo_track + 1U;
+        records.demo_track = static_cast<std::uint8_t>(next < demo_tracks ? next : 0);
+    } while (records.demo_track % front_end_screens::tracks_per_tour == stunt_place);
+    // `$83:C8EF-C8FB` and `$83:C91C-C92A` store a counter outside its range back as 0.
+    if (records.race_song_counter >= race_song_count) records.race_song_counter = 0;
+    const unsigned counter = records.race_song_counter;
     if (records.demo_split > 1) records.demo_split = 0;
     records.demo_split = static_cast<std::uint8_t>(1U - records.demo_split);
     const unsigned track = records.demo_track;

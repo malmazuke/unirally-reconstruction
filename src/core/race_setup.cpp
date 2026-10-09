@@ -209,10 +209,10 @@ OpponentTier opponent_tier(const ClassicRaceScenario& scenario,
     if (scenario.stunt_event) return {0, 0, lap_adjustment_limit};
     if (scenario.two_humans)
         return {0, 0, scenario.tour_race ? lap_adjustment_limit : one_run_adjustment_limit};
-    // A computer opponent that is a rider character (the one-view idle demo's, R-0070, R-0087)
-    // takes the same subtraction: character 1 gives level 0xF1, above every tested level, so its
-    // launch suppresses for 60 ($83:E175).
     if (scenario.hunter_tour) return hunter_tier;
+    // A computer opponent that is a rider character (the one-view idle demo's, R-0070, R-0087)
+    // takes this subtraction too: character 1 gives level 0xF1, above every tested level, so its
+    // launch suppresses for 60 ($83:E175).
     OpponentTier tier;
     tier.ai_level = static_cast<std::uint8_t>(scenario.pairing.opponent - opponent_level_base);
     if (tier.ai_level == 2 || tier.ai_level == 3) {
