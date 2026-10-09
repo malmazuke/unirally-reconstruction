@@ -36,7 +36,9 @@ bool beeps(std::uint16_t countdown, bool stunt_event) {
 }
 } // namespace
 
-void effect(ZoomZooState& next, std::uint8_t effect) { enqueue(next, start_effect, effect); }
+void effect(ZoomZooState& next, std::uint8_t effect) {
+    enqueue(next, start_effect, effect);
+}
 void dispatch(ZoomZooState& next, AudioDispatchSite site) {
     next.sound_cues.push_back(audio_dispatch(site));
 }
@@ -63,8 +65,11 @@ void countdown(ZoomZooState& next, std::uint16_t countdown, bool stunt_event) {
 void finish_fade(ZoomZooState& next) {
     if (next.race.finish_delay < finish_fade_from) return;
     enqueue(next, music_fade, finish_fade_rate);
-    dispatch(next, AudioDispatchSite::finish_fade);
-    dispatch(next, AudioDispatchSite::finish_fade);
+    // A split race's display has its own copy of the fade (`$83:E7F2-E7FD`).
+    const auto site =
+        next.split_screen ? AudioDispatchSite::split_finish_fade : AudioDispatchSite::finish_fade;
+    dispatch(next, site);
+    dispatch(next, site);
 }
 void checkpoint(ZoomZooState& next, std::uint16_t velocity_x) {
     const auto speed = static_cast<std::int16_t>(velocity_x);

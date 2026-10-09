@@ -307,7 +307,7 @@ Cited addresses in `unknown` bytes:
 | $82:B7DD | docs/content/dragster-segment.md, docs/research/R-0008-track-decode.md, docs/research/R-0021-zoom-zoo-content-contract.md, docs/research/R-0046-track-breadth-matrix.md, tasks/M1-03.md, tasks/M4-03.md |
 | $82:D4DC | docs/research/R-0061-riders-and-opponents.md, docs/research/R-0080-split-hud.md, tasks/RACE-RIDERS-OPPONENTS.md, tasks/SPLIT-HUD-GAPS.md |
 | $82:DC12 | docs/research/R-0046-track-breadth-matrix.md, tasks/TRACK-BREADTH.md |
-| $83:8000 | docs/research/R-0064-hunter-ending-and-soft-reset.md, docs/research/R-0090-save-files.md, tasks/SAVE-FILES.md |
+| $83:8000 | docs/research/R-0064-hunter-ending-and-soft-reset.md, docs/research/R-0090-save-files.md, tasks/NEXT_SESSION.md, tasks/SAVE-FILES.md |
 | $83:800C | docs/research/R-0055-rider-menu.md |
 | $83:8535 | docs/research/R-0045-static-code-map.md, tasks/STATIC-CODE-MAP.md |
 | $83:87E9 | docs/research/R-0057-one-run-result.md |

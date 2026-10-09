@@ -10645,11 +10645,28 @@
   {
    "address": "$83:E7F2",
    "native": [
+    "src/core/race_sound.cpp:finish_fade",
     "src/core/race_sound.cpp:finish_fade_rate",
     "src/core/race_sound.hpp:finish_fade"
    ],
    "range_ends": [
+    "$83:E7FD",
     "$83:E830"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:E7F9",
+   "native": [
+    "src/core/audio_cue.hpp:AudioDispatchSite",
+    "src/core/audio_cued_scenes.cpp:split_finish_fade_anchor"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:E7FD",
+   "native": [
+    "src/core/audio_cue.hpp:AudioDispatchSite"
    ],
    "region": "rom"
   },
@@ -15140,6 +15157,8 @@
     "$83:E739",
     "$83:E74F",
     "$83:E785",
+    "$83:E7F9",
+    "$83:E7FD",
     "$83:E82C",
     "$83:E830",
     "$83:F65E",
@@ -15190,6 +15209,11 @@
     "$80:FADF",
     "$83:CD6E",
     "$83:CD9F"
+   ]
+  },
+  "src/core/audio_cued_scenes.cpp:split_finish_fade_anchor": {
+   "rom": [
+    "$83:E7F9"
    ]
   },
   "src/core/audio_cued_scenes.cpp:start_race_music": {
@@ -19335,6 +19359,11 @@
     "$81:828E"
    ]
   },
+  "src/core/race_sound.cpp:finish_fade": {
+   "rom": [
+    "$83:E7F2"
+   ]
+  },
   "src/core/race_sound.cpp:finish_fade_from": {
    "rom": [
     "$83:E820"
@@ -22745,10 +22774,10 @@
   }
  },
  "totals": {
-  "addresses": 1644,
+  "addresses": 1646,
   "io_addresses": 11,
-  "native_symbols": 1245,
-  "rom_addresses": 1245,
+  "native_symbols": 1247,
+  "rom_addresses": 1247,
   "sram_addresses": 54,
   "wram_addresses": 334
  }

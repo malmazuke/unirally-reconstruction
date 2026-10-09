@@ -71,6 +71,15 @@ std::uint8_t song_counter_of(const std::string &what) {
       return counter;
   throw std::invalid_argument("unknown race song in a load cue");
 }
+
+// A cue log's site name (audio_cue.hpp), the frame wait for any other.
+unirally::AudioDispatchSite dispatch_site(const std::string &name) {
+  const auto &names = unirally::audio_dispatch_site_names;
+  const auto at = std::find(names.begin(), names.end(), name);
+  return at == names.end() ? unirally::AudioDispatchSite::frame_wait
+                           : static_cast<unirally::AudioDispatchSite>(at - names.begin());
+}
+
 unirally::AudioSessionLoad session_named(const std::string &what) {
   for (const auto &[session, name] : unirally::audio_session_names)
     if (what == name)
@@ -103,17 +112,7 @@ std::map<std::uint32_t, unirally::AudioCueList> read_cues(const char *path,
       std::string what;
       file >> what;
       if (kind == "D")
-        list.push_back(unirally::audio_dispatch(
-            what == "early"        ? unirally::AudioDispatchSite::race_early
-            : what == "late"       ? unirally::AudioDispatchSite::race_late
-            : what == "countdown"  ? unirally::AudioDispatchSite::countdown
-            : what == "finish"     ? unirally::AudioDispatchSite::finish_fade
-            : what == "choice"     ? unirally::AudioDispatchSite::race_choice
-            : what == "pause"      ? unirally::AudioDispatchSite::pause
-            : what == "pause-fade" ? unirally::AudioDispatchSite::pause_fade
-            : what == "pause-continue"
-                ? unirally::AudioDispatchSite::pause_continue
-                : unirally::AudioDispatchSite::frame_wait));
+        list.push_back(unirally::audio_dispatch(dispatch_site(what)));
       else if (what.rfind("race", 0) == 0) {
         // The native logs name the load's track ("tN"); the original's derived
         // cues do not, and take the schedule's.

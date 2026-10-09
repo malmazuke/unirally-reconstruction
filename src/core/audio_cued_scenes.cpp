@@ -17,6 +17,8 @@ constexpr std::uint64_t frame_wait_anchor = 13082, race_early_anchor = 27920,
                         race_late_anchor = 207728, countdown_anchor = 31564,
                         finish_fade_anchor = 26324, race_choice_anchor = 9908, pause_anchor = 12232,
                         pause_fade_anchor = 17214, pause_continue_anchor = 36340;
+// MODE-AUDIO: a split race's finish fade (`$83:E7F9`), the median of the `twop-next` 2P race's 61.
+constexpr std::uint64_t split_finish_fade_anchor = 26966;
 constexpr std::uint64_t title_return_load_anchor = 344450;
 // D-0010 calibration (R-0077): the first FF request of the award's, a gold ending's and the title
 // set's sessions, master clocks after their frame's boundary, the medians of the cold captures'
@@ -31,13 +33,10 @@ constexpr std::uint32_t longest_session_frames = 81;
 // R-0076's; tracks 1-4 keep the first checkpoint's). The race's content load before the request
 // places it anywhere in its frame; one track's races differ by at most 1,772 clocks.
 constexpr std::array<std::uint64_t, 45> race_load_anchors{
-    169072, 124219,  69947,  94109, 306008, 404106,  54754,
-    110668, 224075, 245818,  76076, 270156,  69311, 349876,
-    218874, 392136,  38807,  28452, 203698, 140423, 249260,
-      8936, 288078, 380421, 269302, 157932,  93327, 318300,
-    379582,   1142,  46304, 371964,  34262,  90689,  69184,
-    240970, 305180, 125412, 296727, 348187, 264025, 215139,
-    335340, 226994, 225821,
+    169072, 124219, 69947,  94109,  306008, 404106, 54754,  110668, 224075, 245818, 76076,  270156,
+    69311,  349876, 218874, 392136, 38807,  28452,  203698, 140423, 249260, 8936,   288078, 380421,
+    269302, 157932, 93327,  318300, 379582, 1142,   46304,  371964, 34262,  90689,  69184,  240970,
+    305180, 125412, 296727, 348187, 264025, 215139, 335340, 226994, 225821,
 };
 std::uint64_t race_load_anchor(std::uint8_t track) {
     if (track >= race_load_anchors.size())
@@ -63,6 +62,7 @@ std::uint64_t dispatch_anchor(AudioDispatchSite site) {
     case AudioDispatchSite::pause: return pause_anchor;
     case AudioDispatchSite::pause_fade: return pause_fade_anchor;
     case AudioDispatchSite::pause_continue: return pause_continue_anchor;
+    case AudioDispatchSite::split_finish_fade: return split_finish_fade_anchor;
     }
     throw std::invalid_argument("unknown audio dispatch site");
 }
@@ -111,8 +111,7 @@ SessionStart session_start(const AudioCue& cue) {
     case AudioSessionLoad::title_return: return {AudioSoundSetId::title, title_return_load_anchor};
     case AudioSessionLoad::award: return {AudioSoundSetId::award, award_load_anchor};
     case AudioSessionLoad::ending: return {AudioSoundSetId::ending, ending_load_anchor};
-    case AudioSessionLoad::award_return:
-        return {AudioSoundSetId::title, award_return_load_anchor};
+    case AudioSessionLoad::award_return: return {AudioSoundSetId::title, award_return_load_anchor};
     case AudioSessionLoad::reset_boot: return {AudioSoundSetId::title, reset_boot_load_anchor};
     }
     throw std::invalid_argument("unknown audio session");

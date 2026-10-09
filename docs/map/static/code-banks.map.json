@@ -14188,6 +14188,8 @@
    ],
    "native": [
     "src/core/audio_cue.hpp:AudioDispatchSite",
+    "src/core/audio_cued_scenes.cpp:split_finish_fade_anchor",
+    "src/core/race_sound.cpp:finish_fade",
     "src/core/race_sound.cpp:finish_fade_from",
     "src/core/race_sound.cpp:finish_fade_rate",
     "src/core/race_sound.hpp:finish_fade",

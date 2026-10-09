@@ -346,9 +346,6 @@ std::optional<Options> options(int argc, char **argv) {
 // rotation cues.
 void write_audio_cues(std::ofstream &out, std::uint32_t frame,
                       const unirally::AudioCueList &cues) {
-  constexpr std::array<const char *, 9> sites{
-      "wait",   "early", "late",       "countdown",     "finish",
-      "choice", "pause", "pause-fade", "pause-continue"};
   for (const auto &cue : cues)
     switch (cue.kind) {
     case unirally::AudioCueKind::enqueue:
@@ -356,7 +353,8 @@ void write_audio_cues(std::ofstream &out, std::uint32_t frame,
           << unsigned(cue.parameter) << '\n';
       break;
     case unirally::AudioCueKind::dispatch:
-      out << frame << " D " << sites[static_cast<unsigned>(cue.site)] << '\n';
+      out << frame << " D " << unirally::audio_dispatch_site_name(cue.site)
+          << '\n';
       break;
     case unirally::AudioCueKind::load:
       out << frame << " L ";

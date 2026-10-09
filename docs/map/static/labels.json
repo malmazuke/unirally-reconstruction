@@ -16448,6 +16448,7 @@
   "source_records": [
    "docs/research/R-0064-hunter-ending-and-soft-reset.md",
    "docs/research/R-0090-save-files.md",
+   "tasks/NEXT_SESSION.md",
    "tasks/SAVE-FILES.md"
   ]
  },
@@ -21444,6 +21445,7 @@
   "comment": "instruction start",
   "label": "loc_83E7F2",
   "native": [
+   "src/core/race_sound.cpp:finish_fade",
    "src/core/race_sound.cpp:finish_fade_rate",
    "src/core/race_sound.hpp:finish_fade",
    "src/core/stunt_event.hpp:update_stunt_finish"
@@ -21458,6 +21460,7 @@
   "comment": "instruction start",
   "label": "loc_83E803",
   "native": [
+   "src/core/race_sound.cpp:finish_fade",
    "src/core/race_sound.cpp:finish_fade_rate",
    "src/core/race_sound.hpp:finish_fade",
    "src/core/stunt_event.hpp:update_stunt_finish"
@@ -21472,6 +21475,7 @@
   "comment": "instruction start",
   "label": "loc_83E808",
   "native": [
+   "src/core/race_sound.cpp:finish_fade",
    "src/core/race_sound.cpp:finish_fade_rate",
    "src/core/race_sound.hpp:finish_fade",
    "src/core/stunt_event.hpp:update_stunt_finish"
@@ -21486,6 +21490,7 @@
   "comment": "instruction start",
   "label": "loc_83E81D",
   "native": [
+   "src/core/race_sound.cpp:finish_fade",
    "src/core/race_sound.cpp:finish_fade_rate",
    "src/core/race_sound.hpp:finish_fade",
    "src/core/stunt_event.hpp:update_stunt_finish"
@@ -21503,6 +21508,7 @@
   "label": "loc_83E82C",
   "native": [
    "src/core/audio_cue.hpp:AudioDispatchSite",
+   "src/core/race_sound.cpp:finish_fade",
    "src/core/race_sound.cpp:finish_fade_rate",
    "src/core/race_sound.hpp:finish_fade",
    "src/core/stunt_event.hpp:update_stunt_finish"
