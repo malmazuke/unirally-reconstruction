@@ -1,5 +1,26 @@
 # Next session
 
+**9 October 2026: IDLE-DEMO-ROTATION is accepted (tier 1, #64) and integrated by merge commit.**
+The main menu's idle demos now play the original's whole rotation instead of stopping after two.
+- **Rotation.** The demos take the race tracks below 40 in turn, skipping the stunt events
+  (`$77:10C8`), alternate split and one-view races (`$77:1115`), and pair the riders from the track,
+  the race counter and the menu's palette phase. Each race starts the track's sound-load offset
+  plus 7 frames after the choice. New state formats save every demo race.
+- **Fixes on the way.** The second demo had regressed since 7c301dd (its computer opponent took the
+  human tier; 1,651 of 1,901 rows differed from R-0070's reference): repaired. MIKE gets no hints as
+  rider 1, and a rider whose marker switches the AI off is left neutral.
+
+Results:
+- A cold lap (34 cycles, 102,000 frames) equals the original on every race frame with the
+  capture's short titles replayed; the rotation and race starts hold over two laps (66 cycles).
+- The eleven frozen gates, the race sweep and 174 of 179 front-end manifests equal main; the other
+  five are the repaired second demo and idle runs that now continue.
+
+The menus' sound handshake shortens some titles by a frame unpredictably; native keeps the common
+length. 906 of 1,006 retained pictures are equal; the classes are queued as
+[DEMO-PICTURES](DEMO-PICTURES.md). [R-0087](../docs/research/R-0087-idle-demo-rotation.md) defines
+the domain. Next ready: DEMO-PICTURES.
+
 **9 October 2026: PORTABLE-CORE-IDENTITY is accepted (tier 2, #63) and integrated by merge commit.**
 The laboratory accepts the reference core by its source, not by one binary hash, so Linux (and a
 rebuilt Mac core) can build the pack from a ROM and run the reference tools.

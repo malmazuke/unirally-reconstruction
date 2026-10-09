@@ -25,7 +25,12 @@ void demo_rider(ZoomZooState& state, unsigned index, DemoTrickButtons& buttons) 
         index == 0 ? state.movement.player_input.horizontal : state.opponent_horizontal;
     transition.brake_input = transition.rotate_negative_input = transition.rotate_positive_input =
         transition.jump_input = 0;
-    if (rider.progress.marker_word & ai_off) return;
+    // The pads are read first (`$82:AB6A`; the demo holds none), so a marker that switches the AI
+    // off leaves the rider's direction neutral (R-0087: tracks 4, 26 and 34).
+    if (rider.progress.marker_word & ai_off) {
+        horizontal = direction::neutral;
+        return;
+    }
     horizontal = (rider.progress.marker_word & leftward) ? direction::left : direction::right;
     if (control.turnaround[index]) {
         horizontal = static_cast<std::uint8_t>(2U - horizontal);

@@ -56,6 +56,8 @@ constexpr std::size_t race_counter_size = 1;
 constexpr std::size_t split_trailer_size = 42 + look_block_size + race_counter_size;
 // The split trailer's byte of rider 1's tutorial hints (`$12E5`, R-0082).
 constexpr std::size_t trailer_hints_at = 31;
+// The split trailer's demo flag, its 42nd byte.
+constexpr std::size_t split_demo_flag_at = 41;
 // A league pair's wrapper: its header, and the trailer after the payload, whose last byte is
 // rider 1's hints over.
 constexpr std::size_t league_header_size = 13,
@@ -71,6 +73,7 @@ constexpr std::size_t lower_view_size = 1;
 // a VS race (R-0081) and rider 1's tutorial hints (R-0082).
 struct TrailerFlags {
     bool versus{}, opponent_hints{};
+    std::optional<RacePairing> demo_pairing; // an idle demo's riders, from its trailer
 };
 // A VS race's two banner drivers, index and life each.
 constexpr std::size_t versus_block_size = 8;
@@ -83,6 +86,25 @@ constexpr std::uint8_t split_layout = 'F', extended_split_layout = 'G';
 constexpr std::uint8_t local_dragster_split_layout = 'H',
                        extended_local_dragster_split_layout = 'I';
 constexpr std::uint8_t one_view_demo_layout = '8';
+// R-0087: the idle demos on the other tracks. A split demo on a track's 916-byte base; a one-view
+// demo on DRAGSTER's 742- or 794-byte one, whose sizes equal the split layouts'.
+constexpr std::uint8_t other_split_demo_layout = 'J';
+constexpr std::uint8_t dragster_one_view_layout = 'K', extended_dragster_one_view_layout = 'L';
+
+// R-0087: a cold cartridge's idle demos take the race tracks below 40 in turn from track 1, the
+// first a split race and then alternately. A lap holds 32 races, so each track keeps its view.
+bool idle_demo_track(ClassicRaceTrack track) {
+    constexpr unsigned demo_tracks = 40, tracks_per_tour = 5, stunt_place = 2;
+    return track.index < demo_tracks && track.index % tracks_per_tour != stunt_place;
+}
+bool idle_demo_split_track(ClassicRaceTrack track) {
+    constexpr unsigned last_place = 40, tracks_per_tour = 5, stunt_place = 2;
+    const unsigned place = track.index == 0 ? last_place : track.index;
+    unsigned races_before = 0;
+    for (unsigned k = 1; k < place; ++k)
+        if (k % tracks_per_tour != stunt_place) ++races_before;
+    return races_before % 2 == 0;
+}
 // DRAGSTER's one lap and ZOOM ZOO's three reach only the first 20 of the 80 checkpoint flags.
 constexpr unsigned shared_checkpoint_flags = 20, checkpoint_flags = 80;
 constexpr std::uint8_t checkpoint_unseen = 255;
@@ -91,11 +113,8 @@ constexpr std::uint8_t checkpoint_unseen = 255;
 constexpr std::uint16_t checkpoints_per_lap = 4, longest_checkpoint_display = 120;
 constexpr std::uint16_t finish_display_updates = 240, fastest_camera = 16;
 constexpr std::uint16_t zoom_zoo_camera_x_limit = 0x3fff;
-// R-0070: track 3's one-view demo holds the unused second position and OAM.
-constexpr std::uint16_t one_view_camera_x = 0x0530, one_view_camera_y = 0x0120;
+// R-0070: a one-view demo holds the unused second camera's OAM word.
 constexpr std::uint16_t one_view_camera_oam = 0x2065;
-constexpr RacePairing one_view_demo_pairing{6, 1};
-constexpr OpponentTier one_view_demo_opponent_tier{0xf1, 0, 0x60};
 // Each finish pose table's last selector, kinds 1-6 (the tables at $17:C7C8, R-0084).
 constexpr std::array<unsigned, 7> last_finish_pose{0, 48, 88, 32, 22, 16, 13};
 constexpr std::uint8_t race_counter_limit = 6;
@@ -709,10 +728,8 @@ ZoomZooState deserialize_classic_race(
                       ? classic_local_race_scenario(track, *pairing, tutorial_hints)
                   : pairing ? classic_race_scenario(track, *pairing, tutorial_hints)
                             : classic_race_scenario(track);
-    if (initialization_frame) {
-        scenario.initialization_frame = *initialization_frame;
-        if (track.index == 3) scenario.pairing = one_view_demo_pairing; // R-0070.
-    }
+    if (initialization_frame) scenario.initialization_frame = *initialization_frame;
+    if (flags.demo_pairing) scenario.pairing = *flags.demo_pairing; // the demo's (R-0087)
     const auto magic = race_state_magic;
     // Read only once the size is known to hold the identity.
     const auto family = [&] { return std::equal(magic.begin(), magic.begin() + 7, bytes.begin()); };
@@ -972,9 +989,18 @@ std::vector<std::uint8_t> serialize_league_race(const ZoomZooState& state) {
 // banner drivers and the lower view's byte.
 void write_split_state(std::vector<std::uint8_t>& bytes, const ZoomZooState& state) {
     const bool local_dragster = state.track == ClassicRaceTrack::Dragster && !state.demo_ai;
+    const bool other_demo = state.demo_ai && state.track != ClassicRaceTrack::ZoomZoo;
     refuse_unless(state.native_initialization
-                      && (state.track == ClassicRaceTrack::ZoomZoo || local_dragster),
-                  "split race state requires native ZOOM ZOO or local DRAGSTER initialization");
+                      && (state.track == ClassicRaceTrack::ZoomZoo || local_dragster
+                          || (other_demo && idle_demo_track(state.track)
+                              && idle_demo_split_track(state.track))),
+                  "split race state requires native ZOOM ZOO, local DRAGSTER or a split idle demo");
+    if (other_demo) {
+        refuse_unless(bytes.size() == other_track_size, "split demo base layout is unsupported");
+        bytes[7] = other_split_demo_layout;
+        write_split_trailer(bytes, state);
+        return;
+    }
     refuse_unless(bytes.size() == native_race_size || bytes.size() == extended_size,
                   "split race base layout is unsupported");
     bytes[7] = local_dragster                   ? bytes.size() == native_race_size
@@ -1050,10 +1076,16 @@ std::vector<std::uint8_t> serialize_zoom_zoo(const ZoomZooState& state) {
             bytes[7] = extended_dragster_layout;
     }
     if (state.demo_ai && !state.split_screen) {
-        refuse_unless(state.native_initialization && state.track.index == 3
-                          && bytes.size() == other_track_size,
-                      "one-view demo state requires the recovered track 3 race");
-        bytes[7] = one_view_demo_layout;
+        const bool dragster = state.track == ClassicRaceTrack::Dragster;
+        refuse_unless(
+            state.native_initialization && idle_demo_track(state.track)
+                && !idle_demo_split_track(state.track)
+                && (dragster ? bytes.size() == native_race_size || bytes.size() == extended_size
+                             : bytes.size() == other_track_size),
+            "one-view demo state requires a one-view idle demo track");
+        bytes[7] = !dragster                        ? one_view_demo_layout
+                 : bytes.size() == native_race_size ? dragster_one_view_layout
+                                                    : extended_dragster_one_view_layout;
         write_split_trailer(bytes, state);
     } else if (state.split_screen) {
         write_split_state(bytes, state);
@@ -1161,26 +1193,43 @@ ZoomZooState read_demo_trailer(ZoomZooState state, std::span<const std::uint8_t>
     in.require_end();
     validate_split_demo_words(state.demo);
     const bool camera_valid =
-        one_view ? camera.x == one_view_camera_x && camera.y == one_view_camera_y
-                       && camera.screen_xy == one_view_camera_oam
+        // A one-view demo parks the unused second camera at its track's own place (R-0070 track 3's
+        // 0x0530/0x0120; R-0087 the others), which only the track's content knows.
+        one_view ? camera.screen_xy == one_view_camera_oam
                        && std::abs(static_cast<std::int16_t>(camera.velocity_x)) <= fastest_camera
                        && std::abs(static_cast<std::int16_t>(camera.velocity_y)) <= fastest_camera
-                 : (local_dragster || camera.x <= zoom_zoo_camera_x_limit)
+                 : (local_dragster || state.track != ClassicRaceTrack::ZoomZoo
+                    || camera.x <= zoom_zoo_camera_x_limit)
                        && std::abs(static_cast<std::int16_t>(camera.velocity_x)) <= fastest_camera
                        && std::abs(static_cast<std::int16_t>(camera.velocity_y)) <= fastest_camera;
+    // An idle demo's computer opponent keeps the tier its character gives (the one-view race's
+    // rider 1 is character 1, level 0xF1); a split demo's AI level is 0 (R-0069, R-0087).
+    auto demo_tier = [&] {
+        auto scenario = classic_race_scenario(state.track);
+        scenario.pairing = state.pairing;
+        auto tier = opponent_tier(scenario, {});
+        if (!one_view) tier.ai_level = 0;
+        return tier;
+    };
+    const bool demo_pairing =
+        state.pairing.rider < rider_characters && state.pairing.opponent < rider_characters
+        && (one_view ? state.pairing.opponent == 1 : state.pairing.rider != state.pairing.opponent);
     refuse_unless(
         state.native_initialization && state.demo.elapsed <= 0x076c && camera_valid
-            && (one_view ? state.track.index == 3 && state.pairing == one_view_demo_pairing
-                               && state.opponent_tier == one_view_demo_opponent_tier
+            && (one_view ? state.demo_ai && idle_demo_track(state.track)
+                               && !idle_demo_split_track(state.track) && demo_pairing
+                               && state.opponent_tier == demo_tier()
                 : local_dragster ? state.track == ClassicRaceTrack::Dragster
                                        && state.pairing.rider < rider_characters
                                        && state.pairing.opponent < rider_characters
                                        && state.pairing.rider != state.pairing.opponent
                                        && state.opponent_tier == OpponentTier{0, 0, 0x60}
                                        && state.demo.elapsed == 0 && !state.demo.exit_requested
-                                 : state.track == ClassicRaceTrack::ZoomZoo
-                                       && state.pairing.rider < rider_characters
-                                       && state.pairing.opponent < rider_characters),
+                : state.demo_ai ? idle_demo_track(state.track) && idle_demo_split_track(state.track)
+                                      && demo_pairing && state.opponent_tier == demo_tier()
+                                : state.track == ClassicRaceTrack::ZoomZoo
+                                      && state.pairing.rider < rider_characters
+                                      && state.pairing.opponent < rider_characters),
         "demo race state is outside its recovered domain");
     return state;
 }
@@ -1244,6 +1293,18 @@ SplitSuffixes split_suffixes(std::size_t size) {
     return suffixes;
 }
 
+// An idle demo's clock counts its updates since the race began (R-0070, R-0087).
+std::uint32_t idle_demo_initialization(std::span<const std::uint8_t> bytes, std::size_t base_size) {
+    const std::uint32_t frame = std::uint32_t(bytes[8]) | (std::uint32_t(bytes[9]) << 8U)
+                              | (std::uint32_t(bytes[10]) << 16U)
+                              | (std::uint32_t(bytes[11]) << 24U);
+    const auto elapsed = unsigned(bytes[base_size + 28]) | (unsigned(bytes[base_size + 29]) << 8U);
+    const auto exit = unsigned(bytes[base_size + 30]);
+    refuse_unless(exit <= 1 && frame >= elapsed + exit,
+                  "idle demo clock is outside its recovered domain");
+    return frame - elapsed - exit;
+}
+
 ZoomZooState deserialize_race(std::span<const std::uint8_t> bytes,
                               std::optional<RacePairing> pairing, bool tutorial_hints,
                               std::span<const std::uint8_t> opponent_catch_up,
@@ -1254,57 +1315,63 @@ ZoomZooState deserialize_race(std::span<const std::uint8_t> bytes,
     bytes = bytes.first(bytes.size() - suffixes.size());
     if (bytes.size() == split_race_size || bytes.size() == extended_split_size
         || bytes.size() == one_view_demo_size) {
-        const bool one_view = bytes.size() == one_view_demo_size;
+        // The layouts share sizes; the family and the letter tell them apart (R-0087).
         const bool extended = bytes.size() == extended_split_size;
-        const bool local_dragster =
-            !one_view
-            && std::equal(bytes.begin(), bytes.begin() + 7,
-                          classic_race_state_magic(ClassicRaceTrack::Dragster).begin());
-        const auto expected = one_view       ? one_view_demo_layout
-                            : local_dragster ? extended ? extended_local_dragster_split_layout
-                                                        : local_dragster_split_layout
-                            : extended       ? extended_split_layout
-                                             : split_layout;
-        const bool identity =
-            one_view
-                ? std::equal(bytes.begin(), bytes.begin() + 7,
-                             classic_race_state_magic(ClassicRaceTrack{3}).begin())
-                : local_dragster
-                      || std::equal(bytes.begin(), bytes.begin() + 7, race_state_magic.begin());
-        refuse_unless(identity && bytes[7] == expected, "demo race state identity/width differs");
-        const auto base_size = one_view ? other_track_size
-                             : extended ? extended_size
-                                        : native_race_size;
-        if (one_view) {
-            const std::uint32_t frame = std::uint32_t(bytes[8]) | (std::uint32_t(bytes[9]) << 8U)
-                                      | (std::uint32_t(bytes[10]) << 16U)
-                                      | (std::uint32_t(bytes[11]) << 24U);
-            const auto elapsed =
-                unsigned(bytes[base_size + 28]) | (unsigned(bytes[base_size + 29]) << 8U);
-            const auto exit = unsigned(bytes[base_size + 30]);
-            refuse_unless(exit <= 1 && frame >= elapsed + exit,
-                          "one-view demo clock is outside its recovered domain");
-            initialization_frame = frame - elapsed - exit;
-        }
+        const auto family_is = [&](const std::array<std::uint8_t, 8>& magic) {
+            return std::equal(bytes.begin(), bytes.begin() + 7, magic.begin());
+        };
+        const bool other_family = bytes.size() == one_view_demo_size && bytes[0] == 'U'
+                               && bytes[1] == 'R' && bytes[2] == 'T' && bytes[3] == 'R'
+                               && bytes[4] >= '0' && bytes[4] <= '9' && bytes[5] >= '0'
+                               && bytes[5] <= '9' && bytes[6] == '0';
+        const bool dragster_family =
+            !other_family && family_is(classic_race_state_magic(ClassicRaceTrack::Dragster));
+        const bool zoom_zoo_family = !other_family && family_is(race_state_magic);
+        const auto letter = bytes[7];
+        const bool other_one_view = other_family && letter == one_view_demo_layout;
+        const bool other_split = other_family && letter == other_split_demo_layout;
+        const bool dragster_one_view =
+            dragster_family
+            && letter == (extended ? extended_dragster_one_view_layout : dragster_one_view_layout);
+        const bool local_dragster = dragster_family
+                                 && letter
+                                        == (extended ? extended_local_dragster_split_layout
+                                                     : local_dragster_split_layout);
+        const bool zoom_zoo_split =
+            zoom_zoo_family && letter == (extended ? extended_split_layout : split_layout);
+        refuse_unless(other_one_view || other_split || dragster_one_view || local_dragster
+                          || zoom_zoo_split,
+                      "demo race state identity/width differs");
+        const bool one_view = other_one_view || dragster_one_view;
+        const auto base_size = other_family ? other_track_size
+                             : extended     ? extended_size
+                                            : native_race_size;
+        // The trailer's last byte is the demo flag; a two-pad ZOOM ZOO race shares the demo's F/G.
+        const bool demo = !local_dragster && bytes[base_size + split_demo_flag_at] != 0;
+        if (demo) initialization_frame = idle_demo_initialization(bytes, base_size);
         const auto base_view = bytes.first(base_size);
         std::vector<std::uint8_t> base(base_view.begin(), base_view.end());
-        base[7] = one_view ? '6'
-                : local_dragster
+        base[7] = other_family ? '6'
+                : dragster_family
                     ? extended ? extended_dragster_layout : dragster_race_state_magic[7]
                 : extended ? extended_zoom_zoo_layout
                            : native_race_layout;
-        const auto human = local_dragster ? std::optional<RacePairing>{RacePairing{
-                                                bytes[base_size + 32], bytes[base_size + 33]}}
-                                          : pairing;
+        const RacePairing trailer_pairing{bytes[base_size + 32], bytes[base_size + 33]};
         if (local_dragster && pairing)
-            refuse_unless(*pairing == *human, "local race pairing differs from state trailer");
-        auto state = deserialize_race(
-            base, one_view ? std::nullopt : human, tutorial_hints, opponent_catch_up,
-            initialization_frame,
-            TrailerFlags{suffixes.versus, bytes[base_size + trailer_hints_at] != 0});
+            refuse_unless(*pairing == trailer_pairing,
+                          "local race pairing differs from state trailer");
+        TrailerFlags base_flags{suffixes.versus, bytes[base_size + trailer_hints_at] != 0,
+                                std::nullopt};
+        if (demo) base_flags.demo_pairing = trailer_pairing;
+        auto state =
+            deserialize_race(base,
+                             local_dragster ? std::optional<RacePairing>{trailer_pairing}
+                             : demo         ? std::nullopt
+                                            : pairing,
+                             tutorial_hints, opponent_catch_up, initialization_frame, base_flags);
         state =
             read_demo_trailer(std::move(state), bytes.subspan(base_size), one_view, local_dragster);
-        refuse_unless(state.demo_ai || !state.opponent_hints.active || state.pairing.opponent != 0,
+        refuse_unless(!state.opponent_hints.active || state.pairing.opponent != 0,
                       "a rider 1 who is MIKE has no tutorial hints");
         derive_opponent_hint_clock(
             state,
@@ -1339,7 +1406,7 @@ std::optional<ZoomZooState> deserialize_league_race(std::span<const std::uint8_t
     // The wrapper's last byte before the lower view: rider 1's hints over.
     const bool opponent_hints = bytes[league_header_size + size + league_trailer_size - 1U] == 0;
     auto state = deserialize_race(bytes.subspan(league_header_size, size), pairing, true, {},
-                                  std::nullopt, TrailerFlags{false, opponent_hints});
+                                  std::nullopt, TrailerFlags{false, opponent_hints, std::nullopt});
     refuse_unless(!state.versus, "a league race is not a VS race");
     refuse_unless(state.native_initialization && !state.demo_ai && pairing.rider < rider_characters
                       && split == (pairing.opponent < rider_characters)

@@ -700,6 +700,8 @@ build/app-debug/src/core/classic_race_presentation_runner local/classic-pal-craw
 # the menu, the palette cycle, the OAM buffer and CGRAM in hex, and pictures of the named frames. FILE rows are
 # "frame pad1 pad2" in hex SNES pad words. After each soft reset (HUNTER's ending) --reset-upload-delay gives, in turn,
 # how many frames later than at power-on the sound program's upload ends, read from a capture (native's own is 3).
+# --short-demo-title CYCLE (repeatable) replays a capture's idle-demo title that loads a frame sooner (R-0087: the
+# sound processor's state shortens some titles; cycle 1 is the first demo). --restore-check FRAME also covers idle demos.
 # --record-write replays a manifest's cartridge RAM write (FIFTH-WIN-COMPLETION): after FRAME, the done track or
 # medal at OFFSET (hex, `$77:1075-10A6` or `$77:069C-073B`) becomes BYTE (hex).
 build/lab-release/src/core/front_end_runner --content-pack local/classic-pal-crawler-tracks-v26.pack --frames 1000 [--inputs FILE] [--picture FRAME OUT.ppm] [--reset-upload-delay FRAMES]... [--record-write FRAME OFFSET BYTE]...

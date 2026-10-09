@@ -51,6 +51,8 @@ struct Options {
     // After each soft reset in turn, how much later the sound program's upload ends than at
     // power-on (HUNTER-ENDING); native's own is 3.
     std::vector<std::uint32_t> reset_upload_delays;
+    // Idle demo cycles (1 = the first) whose title loads a frame sooner in a capture (R-0087).
+    std::vector<std::uint32_t> short_demo_titles;
     std::optional<std::uint32_t> human_after;
     std::optional<std::uint32_t> restore_check;
     // Record bytes written after a frame: the frame, the cartridge RAM offset and the byte.
@@ -157,6 +159,8 @@ Options parse_options(int argc, char** argv) {
             options.pictures[frame] = value();
         } else if (option == "--race-initialization") {
             options.race_initializations.push_back(static_cast<std::uint32_t>(std::stoul(value())));
+        } else if (option == "--short-demo-title") {
+            options.short_demo_titles.push_back(static_cast<std::uint32_t>(std::stoul(value())));
         } else if (option == "--reset-upload-delay") {
             options.reset_upload_delays.push_back(static_cast<std::uint32_t>(std::stoul(value())));
         } else if (option == "--record-write") {
@@ -367,6 +371,8 @@ struct RaceBetweenMenus {
     unirally::ZoomZooState state{};
     std::uint32_t initialization_frame{};
     std::uint32_t loading_initialization{}; // the frame the track's loading gives, if measured
+    // An idle demo restored from its own serialized state at `--restore-check`, run alongside.
+    std::optional<unirally::ZoomZooState> restored_demo;
 };
 
 // Why a race is not run (the run stops there): its loading time on this path is not known. Empty
@@ -375,18 +381,23 @@ struct RaceBetweenMenus {
 std::string start_race(RaceBetweenMenus& race, const unirally::ClassicContentPack& pack,
                        const unirally::FrontEndState& front_end, std::uint32_t initialization) {
     if (front_end.mode == unirally::FrontEndMode::demo) {
-        const bool split = front_end.demo_cycles == 0;
+        const bool split = front_end.demo_split_race;
         auto scenario =
             unirally::classic_race_scenario(unirally::ClassicRaceTrack{front_end.tour_menu.track});
         scenario.pairing = {front_end.rider_menu.rider, front_end.now_playing.opponent};
-        if (!split) scenario.initialization_frame = front_end.frame - 1U;
+        // The demo's setup skips the race count (`$83:C9F6-CA05`): `$77:10B1` as it stands.
+        scenario.race_counter = front_end.records.race_song_counter;
+        // Labelled by its absolute frame: a demo state's clock gives its start (R-0087).
+        scenario.initialization_frame = front_end.frame - 1U;
         race.content = unirally::classic_race_content(pack, scenario.track);
         race.state = unirally::classic_race_start(*race.content, scenario);
         if (split)
             unirally::initialize_split_cameras(race.state);
         else
             unirally::initialize_second_camera(race.state);
-        race.state.demo_ai = race.state.opponent_hints.active = true;
+        race.state.demo_ai = true;
+        // Rider 1's hints run in the demo, but never for MIKE (rider 0, R-0082, R-0087).
+        race.state.opponent_hints.active = race.state.pairing.opponent != 0;
         if (split) race.state.opponent_tier.ai_level = 0;
         race.presentation = unirally::classic_race_presentation_content(pack, scenario);
         race.presentation->rider_names = front_end.records.rider_names;
@@ -424,6 +435,17 @@ std::string start_race(RaceBetweenMenus& race, const unirally::ClassicContentPac
     return {};
 }
 
+// One front-end frame, first marking a capture's idle-demo title that loaded a frame sooner
+// (`--short-demo-title`, R-0087).
+void update_front_end(const Options& options, unirally::FrontEndState& state,
+                      const unirally::FrontEndContent& content, unirally::FrontEndPads pads) {
+    const auto& titles = options.short_demo_titles;
+    if (state.screen == unirally::FrontEndScreen::demo_title && state.script_frame < 133
+        && std::find(titles.begin(), titles.end(), state.demo_cycles + 1U) != titles.end())
+        state.demo_title_short = true;
+    unirally::update_front_end(state, content, pads);
+}
+
 void update_demo_race(const Options& options, const unirally::ClassicContentPack& pack,
                       unirally::FrontEndState& front_end, RaceBetweenMenus& race,
                       std::uint32_t frame, unirally::FrontEndPads pads, std::size_t& races) {
@@ -431,6 +453,20 @@ void update_demo_race(const Options& options, const unirally::ClassicContentPack
     const auto previous = race.state;
     unirally::update_zoom_zoo(race.state, race_buttons(pads.one), race_buttons(pads.two),
                               *race.content);
+    // A restore check: the state saved on its frame reads back to the same bytes, and the
+    // restored race continues in step with the running one until the demo ends.
+    if (race.restored_demo) {
+        unirally::update_zoom_zoo(*race.restored_demo, race_buttons(pads.one),
+                                  race_buttons(pads.two), *race.content);
+        if (unirally::serialize_zoom_zoo(*race.restored_demo)
+            != unirally::serialize_zoom_zoo(race.state))
+            throw std::runtime_error("demo save continuation diverged at " + std::to_string(frame));
+    } else if (options.restore_check == frame) {
+        const auto saved = unirally::serialize_zoom_zoo(race.state);
+        race.restored_demo = unirally::deserialize_zoom_zoo(saved);
+        if (unirally::serialize_zoom_zoo(*race.restored_demo) != saved)
+            throw std::runtime_error("demo save failed round-trip");
+    }
     race.history.observe_update(previous, race.state, pack);
     if (const auto picture = options.pictures.find(frame); picture != options.pictures.end()) {
         const auto shown = race.history.on_screen();
@@ -438,6 +474,9 @@ void update_demo_race(const Options& options, const unirally::ClassicContentPack
                   unirally::render_classic_race(race.state, *race.presentation, &previous, &shown));
     }
     if (race.state.demo.exit_requested) {
+        if (race.restored_demo)
+            std::cerr << "demo restore continued to the exit at " << frame << '\n';
+        race.restored_demo.reset();
         unirally::return_from_demo(front_end, frame, race.state.demo.elapsed);
         race.content.reset();
         race.presentation.reset();
@@ -717,7 +756,7 @@ int main(int argc, char** argv) try {
         } else if (state.mode_chosen) {
             break;
         } else {
-            unirally::update_front_end(state, content, pads);
+            update_front_end(options, state, content, pads);
             sound_cues.write(frame, state.sound_cues);
             const bool reset = state.after_soft_reset && state.boot_start + 1 == state.frame;
             if (reset && resets < options.reset_upload_delays.size())

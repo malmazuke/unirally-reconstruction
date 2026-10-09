@@ -202,6 +202,9 @@ struct ClassicRaceScenario {
     // The rider and opponent: MIKE against BRONSEN (ANTI-UNI on the HUNTER tour) unless the
     // menus chose others.
     RacePairing pairing{};
+    // Two human riders (2P, VS, a league pair): the opponent takes no computer tier. A computer
+    // opponent may still be a rider character: the one-view idle demo's is character 1 (R-0087).
+    bool two_humans{};
     // `$77:10B1` once this race's setup has counted it ($83:CA08-CA18, modulo 6): every race's
     // sound load counts, an aborted one's too, and a cold start's first race has 1. Its even half
     // picks the finish poses' pair of tables (R-0084).

@@ -45,7 +45,7 @@ The four classes partition all 131,072 bytes. **Unknown share: 40.4%** - above D
 
 ## Cited addresses
 
-1731 distinct code-bank ROM addresses cited by the research, task, inventory and content records (`labels.json`). By position: dat 31, loc 990, mid 20, sub 351, unk 339 (sub routine start, loc instruction start, mid inside an instruction, dat data, unk unknown). By class: data 31, inferred 311, observed 1050, unknown 339.
+1741 distinct code-bank ROM addresses cited by the research, task, inventory and content records (`labels.json`). By position: dat 31, loc 997, mid 20, sub 351, unk 342 (sub routine start, loc instruction start, mid inside an instruction, dat data, unk unknown). By class: data 31, inferred 316, observed 1052, unknown 342.
 
 Cited addresses in `unknown` bytes:
 
@@ -88,6 +88,9 @@ Cited addresses in `unknown` bytes:
 | $80:91B9 | docs/research/R-0058-lap-result.md, tasks/FRONT-END-LAP-RESULT.md |
 | $80:93FB | tasks/COVERAGE-ROADMAP.md, tasks/SPLIT-SCREEN-RACE.md |
 | $80:942D | docs/research/R-0082-split-captions.md |
+| $80:948C | docs/research/R-0087-idle-demo-rotation.md, tasks/IDLE-DEMO-ROTATION.md |
+| $80:9491 | tasks/IDLE-DEMO-ROTATION.md |
+| $80:949C | tasks/IDLE-DEMO-ROTATION.md |
 | $80:95A5 | docs/research/R-0067-stunt-result.md |
 | $80:97DD | docs/research/R-0056-tour-track-now-playing.md |
 | $80:9801 | docs/research/R-0056-tour-track-now-playing.md |

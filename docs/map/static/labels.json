@@ -1313,6 +1313,41 @@
   ]
  },
  {
+  "address": "$80:948C",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80948C",
+  "source_records": [
+   "docs/research/R-0087-idle-demo-rotation.md",
+   "tasks/IDLE-DEMO-ROTATION.md"
+  ]
+ },
+ {
+  "address": "$80:9491",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_809491",
+  "native": [
+   "src/core/front_end.cpp:choose_idle_demo"
+  ],
+  "source_records": [
+   "tasks/IDLE-DEMO-ROTATION.md"
+  ]
+ },
+ {
+  "address": "$80:949C",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80949C",
+  "native": [
+   "src/core/front_end.cpp:choose_idle_demo",
+   "src/core/front_end.hpp:OnePlayerRecords::demo_track"
+  ],
+  "source_records": [
+   "tasks/IDLE-DEMO-ROTATION.md"
+  ]
+ },
+ {
   "address": "$80:951C",
   "class": "observed",
   "comment": "routine start",
@@ -12685,6 +12720,16 @@
   ]
  },
  {
+  "address": "$82:8097",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_828097",
+  "source_records": [
+   "docs/research/R-0087-idle-demo-rotation.md",
+   "tasks/IDLE-DEMO-ROTATION.md"
+  ]
+ },
+ {
   "address": "$82:809C",
   "class": "observed",
   "comment": "instruction start",
@@ -15049,10 +15094,12 @@
   "comment": "instruction start",
   "label": "loc_82AB6A",
   "native": [
+   "src/core/race_demo_controls.cpp:demo_rider",
    "src/core/race_update.cpp:release_absent_opponent"
   ],
   "source_records": [
-   "docs/research/R-0066-stunt-event-race.md"
+   "docs/research/R-0066-stunt-event-race.md",
+   "docs/research/R-0087-idle-demo-rotation.md"
   ]
  },
  {
@@ -15062,6 +15109,7 @@
   "label": "sub_82AB6F",
   "native": [
    "src/core/opponent_ai.cpp:update_opponent_controller",
+   "src/core/race_demo_controls.cpp:demo_rider",
    "src/core/race_update.cpp:release_absent_opponent",
    "src/core/race_update.cpp:run_pause_menu"
   ],
@@ -17211,6 +17259,7 @@
   "comment": "routine start",
   "label": "sub_839894",
   "native": [
+   "src/core/front_end.cpp:choose_idle_demo",
    "src/core/front_end.hpp:SavedMenus",
    "src/core/lap_result.cpp:saved_word_under_opponent_best",
    "src/core/now_playing.cpp:race_fade_frame"
@@ -17218,7 +17267,9 @@
   "source_records": [
    "docs/research/R-0057-one-run-result.md",
    "docs/research/R-0058-lap-result.md",
-   "docs/research/R-0077-one-player-audio.md"
+   "docs/research/R-0077-one-player-audio.md",
+   "docs/research/R-0087-idle-demo-rotation.md",
+   "tasks/IDLE-DEMO-ROTATION.md"
   ]
  },
  {
@@ -17243,7 +17294,8 @@
   ],
   "source_records": [
    "docs/research/R-0056-tour-track-now-playing.md",
-   "docs/research/R-0075-title-menu-audio.md"
+   "docs/research/R-0075-title-menu-audio.md",
+   "tasks/IDLE-DEMO-ROTATION.md"
   ]
  },
  {
@@ -18931,7 +18983,6 @@
   "comment": "routine start",
   "label": "sub_83C8E0",
   "native": [
-   "src/core/front_end.cpp:demo_title_frame",
    "src/core/front_end.hpp:return_from_race",
    "src/core/race_result.cpp:(file)"
   ],
@@ -18942,15 +18993,60 @@
   ]
  },
  {
+  "address": "$83:C8EF",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83C8EF",
+  "native": [
+   "src/core/front_end.cpp:choose_idle_demo"
+  ],
+  "source_records": [
+   "docs/research/R-0087-idle-demo-rotation.md",
+   "tasks/IDLE-DEMO-ROTATION.md"
+  ]
+ },
+ {
+  "address": "$83:C912",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_83C912",
+  "native": [
+   "src/core/front_end.cpp:choose_idle_demo"
+  ],
+  "source_records": [
+   "tasks/IDLE-DEMO-ROTATION.md"
+  ]
+ },
+ {
+  "address": "$83:C91C",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_83C91C",
+  "native": [
+   "src/core/front_end.cpp:choose_idle_demo",
+   "src/core/front_end.hpp:OnePlayerRecords::demo_split"
+  ],
+  "source_records": [
+   "docs/research/R-0087-idle-demo-rotation.md"
+  ]
+ },
+ {
+  "address": "$83:C94A",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_83C94A",
+  "native": [
+   "src/core/front_end.cpp:choose_idle_demo"
+  ],
+  "source_records": [
+   "docs/research/R-0087-idle-demo-rotation.md"
+  ]
+ },
+ {
   "address": "$83:C9AC",
   "class": "inferred",
   "comment": "instruction start",
   "label": "loc_83C9AC",
-  "native": [
-   "src/core/front_end.cpp:demo_title_frame",
-   "src/core/front_end.hpp:return_from_race",
-   "src/core/race_result.cpp:(file)"
-  ],
   "source_records": [
    "tasks/RACE-PAUSE-EXITS.md"
   ]
@@ -18961,9 +19057,12 @@
   "comment": "instruction start",
   "label": "loc_83C9F6",
   "native": [
-   "src/core/front_end.cpp:demo_title_frame"
+   "src/core/front_end.cpp:demo_title_frame",
+   "src/core/front_end.cpp:idle_demo_loading_frames",
+   "src/core/front_end_runner.cpp:start_race"
   ],
   "source_records": [
+   "docs/research/R-0087-idle-demo-rotation.md",
    "tasks/AUDIO-ONE-PLAYER.md"
   ]
  },
@@ -18975,6 +19074,7 @@
   "native": [
    "src/core/audio_cue.hpp:race_song_count",
    "src/core/front_end.cpp:demo_title_frame",
+   "src/core/front_end.cpp:idle_demo_loading_frames",
    "src/core/front_end.hpp:choose_race_song",
    "src/core/race_result.cpp:choose_race_song",
    "src/core/race_setup.cpp:restart_zoom_zoo",
@@ -18996,6 +19096,7 @@
   "native": [
    "src/core/audio_cue.hpp:race_song_count",
    "src/core/front_end.cpp:demo_title_frame",
+   "src/core/front_end.cpp:idle_demo_loading_frames",
    "src/core/front_end.hpp:choose_race_song",
    "src/core/race_result.cpp:choose_race_song",
    "src/core/race_setup.cpp:restart_zoom_zoo",
@@ -20101,10 +20202,12 @@
    "src/core/opponent_ai.cpp:jump_at_marker",
    "src/core/opponent_ai.cpp:opponent_launches",
    "src/core/opponent_ai.cpp:update_opponent_controller",
+   "src/core/race_setup.cpp:opponent_tier",
    "src/core/race_state_io.cpp:check_opponent_suppression"
   ],
   "source_records": [
-   "docs/research/R-0061-riders-and-opponents.md"
+   "docs/research/R-0061-riders-and-opponents.md",
+   "docs/research/R-0087-idle-demo-rotation.md"
   ]
  },
  {
@@ -20265,6 +20368,21 @@
   ]
  },
  {
+  "address": "$83:E2EB",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_83E2EB",
+  "native": [
+   "src/core/race_demo_controls.cpp:(file)",
+   "src/core/race_demo_controls.hpp:(file)",
+   "src/core/race_state_io.cpp:validate_split_demo_words",
+   "src/core/zoom_zoo_movement.hpp:DemoControllers"
+  ],
+  "source_records": [
+   "docs/research/R-0087-idle-demo-rotation.md"
+  ]
+ },
+ {
   "address": "$83:E303",
   "class": "inferred",
   "comment": "instruction start",
@@ -20325,6 +20443,21 @@
   ],
   "source_records": [
    "docs/research/R-0069-split-screen-race.md"
+  ]
+ },
+ {
+  "address": "$83:E42F",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_83E42F",
+  "native": [
+   "src/core/race_demo_controls.cpp:(file)",
+   "src/core/race_demo_controls.hpp:(file)",
+   "src/core/race_state_io.cpp:validate_split_demo_words",
+   "src/core/zoom_zoo_movement.hpp:DemoControllers"
+  ],
+  "source_records": [
+   "docs/research/R-0087-idle-demo-rotation.md"
   ]
  },
  {
