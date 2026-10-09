@@ -45,7 +45,7 @@ The four classes partition all 131,072 bytes. **Unknown share: 40.4%** - above D
 
 ## Cited addresses
 
-1792 distinct code-bank ROM addresses cited by the research, task, inventory and content records (`labels.json`). By position: dat 31, loc 1010, mid 20, sub 362, unk 369 (sub routine start, loc instruction start, mid inside an instruction, dat data, unk unknown). By class: data 31, inferred 336, observed 1056, unknown 369.
+1803 distinct code-bank ROM addresses cited by the research, task, inventory and content records (`labels.json`). By position: dat 31, loc 1010, mid 20, sub 362, unk 380 (sub routine start, loc instruction start, mid inside an instruction, dat data, unk unknown). By class: data 31, inferred 336, observed 1056, unknown 380.
 
 Cited addresses in `unknown` bytes:
 
@@ -105,6 +105,7 @@ Cited addresses in `unknown` bytes:
 | $80:9EF7 | docs/research/R-0072-options.md |
 | $80:9F15 | docs/research/R-0091-mode-audio.md |
 | $80:9F21 | docs/research/R-0090-save-files.md |
+| $80:9F7A | docs/research/R-0091-mode-audio.md |
 | $80:A1F2 | docs/research/R-0072-options.md |
 | $80:A207 | docs/research/R-0072-options.md |
 | $80:A212 | docs/research/R-0072-options.md |
@@ -136,8 +137,8 @@ Cited addresses in `unknown` bytes:
 | $80:AE3F | docs/research/R-0071-two-player-versus.md |
 | $80:AEAD | docs/research/R-0091-mode-audio.md |
 | $80:AF54 | docs/research/R-0073-league.md |
-| $80:B051 | docs/research/R-0091-mode-audio.md |
-| $80:B0FA | docs/research/R-0091-mode-audio.md, tasks/MODE-AUDIO.md |
+| $80:B051 | docs/research/R-0091-mode-audio.md, tasks/MENU-INPUT.md |
+| $80:B0FA | docs/research/R-0091-mode-audio.md, tasks/MENU-INPUT.md, tasks/MODE-AUDIO.md |
 | $80:B205 | docs/research/R-0056-tour-track-now-playing.md |
 | $80:B4F6 | docs/research/R-0056-tour-track-now-playing.md |
 | $80:B50A | docs/research/R-0084-two-human-restart.md |
@@ -146,8 +147,8 @@ Cited addresses in `unknown` bytes:
 | $80:B66D | tasks/OPTIONS.md |
 | $80:B66E | docs/research/R-0072-options.md, tasks/OPTIONS.md |
 | $80:B6C2 | docs/research/R-0072-options.md |
-| $80:B8C4 | docs/research/R-0091-mode-audio.md |
-| $80:B916 | docs/research/R-0091-mode-audio.md |
+| $80:B8C4 | docs/research/R-0091-mode-audio.md, tasks/MENU-INPUT.md |
+| $80:B916 | docs/research/R-0091-mode-audio.md, tasks/MENU-INPUT.md |
 | $80:BCAF | docs/research/R-0055-rider-menu.md |
 | $80:BCBF | docs/research/R-0071-two-player-versus.md, tasks/COVERAGE-ROADMAP.md, tasks/NEXT_SESSION.md, tasks/TWO-PLAYER-VS.md |
 | $80:BCDB | docs/research/R-0091-mode-audio.md |
@@ -172,7 +173,7 @@ Cited addresses in `unknown` bytes:
 | $80:BF9F | docs/research/R-0057-one-run-result.md |
 | $80:BFE0 | docs/research/R-0084-two-human-restart.md, tasks/TWO-HUMAN-RESTART.md |
 | $80:C00D | docs/research/R-0084-two-human-restart.md |
-| $80:C0B1 | docs/research/R-0091-mode-audio.md |
+| $80:C0B1 | docs/research/R-0091-mode-audio.md, tasks/MENU-INPUT.md |
 | $80:C0BD | docs/research/R-0091-mode-audio.md |
 | $80:C10E | docs/research/R-0071-two-player-versus.md |
 | $80:C12A | docs/research/R-0072-options.md |
@@ -240,12 +241,19 @@ Cited addresses in `unknown` bytes:
 | $80:DB2B | docs/research/R-0072-options.md |
 | $80:DB4E | docs/research/R-0072-options.md |
 | $80:DB9E | docs/research/R-0072-options.md |
+| $80:DBF8 | docs/research/R-0091-mode-audio.md |
+| $80:DC05 | docs/research/R-0091-mode-audio.md |
 | $80:DDE3 | docs/research/R-0072-options.md |
 | $80:DE2E | docs/research/R-0072-options.md |
 | $80:DEB5 | docs/research/R-0072-options.md |
+| $80:DF37 | docs/research/R-0091-mode-audio.md, tasks/MENU-INPUT.md |
+| $80:DF46 | docs/research/R-0091-mode-audio.md |
+| $80:DF6C | docs/research/R-0091-mode-audio.md |
 | $80:E043 | docs/research/R-0072-options.md |
 | $80:E37B | docs/research/R-0064-hunter-ending-and-soft-reset.md |
 | $80:E3A1 | docs/research/R-0064-hunter-ending-and-soft-reset.md |
+| $80:E492 | docs/research/R-0091-mode-audio.md |
+| $80:E4C6 | docs/research/R-0091-mode-audio.md |
 | $80:E708 | docs/research/R-0056-tour-track-now-playing.md |
 | $80:E7C4 | docs/research/R-0056-tour-track-now-playing.md |
 | $80:E7FB | docs/research/R-0056-tour-track-now-playing.md |
@@ -258,6 +266,9 @@ Cited addresses in `unknown` bytes:
 | $80:EA58 | docs/research/R-0056-tour-track-now-playing.md |
 | $80:EB61 | docs/research/R-0056-tour-track-now-playing.md |
 | $80:EB76 | docs/research/R-0072-options.md |
+| $80:EB78 | docs/research/R-0091-mode-audio.md |
+| $80:EC8A | docs/research/R-0091-mode-audio.md |
+| $80:ECC4 | docs/research/R-0091-mode-audio.md |
 | $80:ECD1 | docs/research/R-0072-options.md |
 | $80:ECF7 | docs/research/R-0072-options.md |
 | $80:EEF2 | docs/research/R-0072-options.md |

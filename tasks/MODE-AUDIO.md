@@ -1,4 +1,4 @@
-# MODE-AUDIO - native audio in 2P, VS, league, OPTIONS and the idle demos
+# MODE-AUDIO - native audio in 2P, VS, league and OPTIONS
 
 ## Assignment
 
@@ -55,3 +55,17 @@ VS, league, OPTIONS and the idle demos stop the cued producer and go silent (R-0
 
 - Records: [R-0091](../docs/research/R-0091-mode-audio.md).
 - Gates: `local/evidence/mode-audio/gates.sh` against main `a54341a`'s binaries.
+
+## Review - round 1 (returned)
+
+- [Review](https://github.com/malmazuke/unirally-reconstruction/pull/68#pullrequestreview-5471714773)
+  on `9f7554d`: return. Blocker: the RECORDS detail screens were silent (TRACK RECORDS' entry,
+  table and Left/Right; PLAYER SCORES' Down/Up). Should-fix: the gates' baseline binaries could
+  not start (their DSP library lived in the removed build tree; fixed mid-review, the run
+  restarted and then stopped for this round); R-0091's wording on PICK CHALLENGER and GROUP
+  TABLES. Advisories: the continuation menu's wrap, the refusal comment, the demo stopping the
+  app's audio for the session, the queued tasks only in prose, one unformatted helper.
+- Done: TRACK RECORDS' and PLAYER SCORES' sounds (the review's schedules now equal); GROUP
+  TABLES' Up/Down need input native lacks and go to MENU-INPUT with the continuation's wrap;
+  R-0091 corrected; DEMO-AUDIO and MENU-INPUT have records and registry rows; gates.sh refuses a
+  baseline that cannot run; the comment and the helper fixed.

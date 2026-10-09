@@ -2014,6 +2014,15 @@
   ]
  },
  {
+  "address": "$80:9F7A",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_809F7A",
+  "source_records": [
+   "docs/research/R-0091-mode-audio.md"
+  ]
+ },
+ {
   "address": "$80:A09A",
   "class": "observed",
   "comment": "routine start",
@@ -2794,7 +2803,8 @@
    "src/core/league_menu.cpp:league_awards_frame"
   ],
   "source_records": [
-   "docs/research/R-0091-mode-audio.md"
+   "docs/research/R-0091-mode-audio.md",
+   "tasks/MENU-INPUT.md"
   ]
  },
  {
@@ -2877,6 +2887,7 @@
   ],
   "source_records": [
    "docs/research/R-0091-mode-audio.md",
+   "tasks/MENU-INPUT.md",
    "tasks/MODE-AUDIO.md"
   ]
  },
@@ -3398,7 +3409,9 @@
   ],
   "source_records": [
    "docs/research/R-0054-boot-title-main-menu.md",
-   "docs/research/R-0075-title-menu-audio.md"
+   "docs/research/R-0075-title-menu-audio.md",
+   "docs/research/R-0091-mode-audio.md",
+   "tasks/MENU-INPUT.md"
   ]
  },
  {
@@ -3407,7 +3420,8 @@
   "comment": "unknown",
   "label": "unk_80B8C4",
   "source_records": [
-   "docs/research/R-0091-mode-audio.md"
+   "docs/research/R-0091-mode-audio.md",
+   "tasks/MENU-INPUT.md"
   ]
  },
  {
@@ -3425,7 +3439,8 @@
   "comment": "unknown",
   "label": "unk_80B916",
   "source_records": [
-   "docs/research/R-0091-mode-audio.md"
+   "docs/research/R-0091-mode-audio.md",
+   "tasks/MENU-INPUT.md"
   ]
  },
  {
@@ -4102,8 +4117,12 @@
   "class": "unknown",
   "comment": "unknown",
   "label": "unk_80C0B1",
+  "native": [
+   "src/core/front_end_screens.hpp:MenuSound"
+  ],
   "source_records": [
-   "docs/research/R-0091-mode-audio.md"
+   "docs/research/R-0091-mode-audio.md",
+   "tasks/MENU-INPUT.md"
   ]
  },
  {
@@ -4989,7 +5008,8 @@
   ],
   "source_records": [
    "docs/research/R-0055-rider-menu.md",
-   "docs/research/R-0091-mode-audio.md"
+   "docs/research/R-0091-mode-audio.md",
+   "tasks/MENU-INPUT.md"
   ]
  },
  {
@@ -5836,6 +5856,32 @@
   ]
  },
  {
+  "address": "$80:DBF8",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80DBF8",
+  "native": [
+   "src/core/options_menu.cpp:print_player_scores",
+   "src/core/options_menu.cpp:records_detail_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0091-mode-audio.md"
+  ]
+ },
+ {
+  "address": "$80:DC05",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80DC05",
+  "native": [
+   "src/core/options_menu.cpp:print_player_scores",
+   "src/core/options_menu.cpp:records_detail_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0091-mode-audio.md"
+  ]
+ },
+ {
   "address": "$80:DDE3",
   "class": "unknown",
   "comment": "unknown",
@@ -5870,6 +5916,43 @@
   ],
   "source_records": [
    "docs/research/R-0072-options.md"
+  ]
+ },
+ {
+  "address": "$80:DF37",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80DF37",
+  "native": [
+   "src/core/options_menu.cpp:print_group_scores"
+  ],
+  "source_records": [
+   "docs/research/R-0091-mode-audio.md",
+   "tasks/MENU-INPUT.md"
+  ]
+ },
+ {
+  "address": "$80:DF46",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80DF46",
+  "native": [
+   "src/core/options_menu.cpp:print_group_scores"
+  ],
+  "source_records": [
+   "docs/research/R-0091-mode-audio.md"
+  ]
+ },
+ {
+  "address": "$80:DF6C",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80DF6C",
+  "native": [
+   "src/core/options_menu.cpp:print_group_scores"
+  ],
+  "source_records": [
+   "docs/research/R-0091-mode-audio.md"
   ]
  },
  {
@@ -6019,6 +6102,30 @@
   ],
   "source_records": [
    "docs/research/R-0064-hunter-ending-and-soft-reset.md"
+  ]
+ },
+ {
+  "address": "$80:E492",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80E492",
+  "native": [
+   "src/core/options_menu.cpp:update_track_records"
+  ],
+  "source_records": [
+   "docs/research/R-0091-mode-audio.md"
+  ]
+ },
+ {
+  "address": "$80:E4C6",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80E4C6",
+  "native": [
+   "src/core/options_menu.cpp:update_track_records"
+  ],
+  "source_records": [
+   "docs/research/R-0091-mode-audio.md"
   ]
  },
  {
@@ -6576,10 +6683,47 @@
   "comment": "unknown",
   "label": "unk_80EB76",
   "native": [
+   "src/core/options_menu.cpp:records_detail_entry_frame",
    "src/core/options_menu.cpp:track_records_hdma"
   ],
   "source_records": [
    "docs/research/R-0072-options.md"
+  ]
+ },
+ {
+  "address": "$80:EB78",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80EB78",
+  "native": [
+   "src/core/options_menu.cpp:records_detail_entry_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0091-mode-audio.md"
+  ]
+ },
+ {
+  "address": "$80:EC8A",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80EC8A",
+  "native": [
+   "src/core/options_menu.cpp:records_detail_entry_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0091-mode-audio.md"
+  ]
+ },
+ {
+  "address": "$80:ECC4",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80ECC4",
+  "native": [
+   "src/core/options_menu.cpp:update_track_records"
+  ],
+  "source_records": [
+   "docs/research/R-0091-mode-audio.md"
   ]
  },
  {

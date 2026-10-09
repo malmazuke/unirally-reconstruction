@@ -158,7 +158,8 @@ void start_silent_slide(FrontEndState& state, const FrontEndContent& content, bo
 // The menus' sound helpers ($80:B10F-B18C), each an effect volume (command 8) then an effect
 // (command 2) on the sound queue (R-0076): the result's, a choice's, the slides' and a move's.
 // `refused` is $80:B0FA, a move's cue from its own helper, played where a choice is turned down:
-// an empty name, a league of fewer than two or more than eight, the champion as challenger.
+// an empty name, a league of fewer than two or more than eight. The original also plays it when
+// the champion is picked as challenger ($80:C0B1-C0BB); native does not refuse that pick.
 enum class MenuSound : std::uint8_t {
     result,
     select,

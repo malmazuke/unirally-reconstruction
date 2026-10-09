@@ -2163,6 +2163,16 @@
    "region": "rom"
   },
   {
+   "address": "$80:C0B1",
+   "native": [
+    "src/core/front_end_screens.hpp:MenuSound"
+   ],
+   "range_ends": [
+    "$80:C0BB"
+   ],
+   "region": "rom"
+  },
+  {
    "address": "$80:C0BD",
    "native": [
     "src/core/rider_menu.cpp:pick_plays_select"
@@ -3166,6 +3176,20 @@
    "region": "rom"
   },
   {
+   "address": "$80:DBF8",
+   "native": [
+    "src/core/options_menu.cpp:records_detail_frame"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:DC05",
+   "native": [
+    "src/core/options_menu.cpp:records_detail_frame"
+   ],
+   "region": "rom"
+  },
+  {
    "address": "$80:DDE3",
    "native": [
     "src/core/options_menu.cpp:set_bar_objects"
@@ -3298,6 +3322,20 @@
    "address": "$80:E3A1",
    "native": [
     "src/core/front_end.hpp:FrontEndContent::reveal_brightness, FrontEndContent::reveal_offsets, FrontEndContent::credits_text, FrontEndContent::credits_poses, FrontEndContent::credits_objects"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:E492",
+   "native": [
+    "src/core/options_menu.cpp:update_track_records"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:E4C6",
+   "native": [
+    "src/core/options_menu.cpp:update_track_records"
    ],
    "region": "rom"
   },
@@ -3616,7 +3654,32 @@
   {
    "address": "$80:EB76",
    "native": [
+    "src/core/options_menu.cpp:records_detail_entry_frame",
     "src/core/options_menu.cpp:track_records_hdma"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:EB78",
+   "native": [
+    "src/core/options_menu.cpp:records_detail_entry_frame"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:EC8A",
+   "native": [
+    "src/core/options_menu.cpp:records_detail_entry_frame"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:ECC4",
+   "native": [
+    "src/core/options_menu.cpp:update_track_records"
+   ],
+   "range_ends": [
+    "$80:ECC7"
    ],
    "region": "rom"
   },
@@ -16941,7 +17004,8 @@
   "src/core/front_end_screens.hpp:MenuSound": {
    "rom": [
     "$80:B0FA",
-    "$80:B10F"
+    "$80:B10F",
+    "$80:C0B1"
    ]
   },
   "src/core/front_end_screens.hpp:any_button_pressed": {
@@ -18145,6 +18209,13 @@
     "$80:D6D5"
    ]
   },
+  "src/core/options_menu.cpp:records_detail_entry_frame": {
+   "rom": [
+    "$80:EB76",
+    "$80:EB78",
+    "$80:EC8A"
+   ]
+  },
   "src/core/options_menu.cpp:records_detail_exit_frame": {
    "rom": [
     "$80:D9B7"
@@ -18152,7 +18223,9 @@
   },
   "src/core/options_menu.cpp:records_detail_frame": {
    "rom": [
-    "$80:D9AC"
+    "$80:D9AC",
+    "$80:DBF8",
+    "$80:DC05"
    ]
   },
   "src/core/options_menu.cpp:rename_commit_frame": {
@@ -18202,6 +18275,13 @@
     "$80:EB76",
     "$80:ECD1",
     "$80:ECF7"
+   ]
+  },
+  "src/core/options_menu.cpp:update_track_records": {
+   "rom": [
+    "$80:E492",
+    "$80:E4C6",
+    "$80:ECC4"
    ]
   },
   "src/core/picture.cpp:render_window_xor": {
@@ -23093,10 +23173,10 @@
   }
  },
  "totals": {
-  "addresses": 1679,
+  "addresses": 1687,
   "io_addresses": 11,
-  "native_symbols": 1255,
-  "rom_addresses": 1280,
+  "native_symbols": 1257,
+  "rom_addresses": 1288,
   "sram_addresses": 54,
   "wram_addresses": 334
  }

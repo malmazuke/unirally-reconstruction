@@ -675,6 +675,11 @@ void load_high_score_palettes(FrontEndState& state, const FrontEndContent& conte
 
 void records_detail_entry_frame(FrontEndState& state, const FrontEndContent& content) {
     if (state.records_detail.category == 0) {
+        // TRACK RECORDS opens with a wipe ($80:EB76) that plays the forward slide's sound at its
+        // start ($80:EB78) and again as the grid scrolls in ($80:EC8A).
+        constexpr std::uint32_t grid_scroll_frame = 68;
+        if (state.script_frame == 1 || state.script_frame == grid_scroll_frame)
+            play_menu_sound(state, MenuSound::forward_slide);
         copy_oam(state);
         if (state.script_frame == 1) {
             print_track_records(state, content);
@@ -733,6 +738,10 @@ void update_track_records(FrontEndState& state, const FrontEndContent& content, 
     // the current input then advances the HDMA scroll for the next one.
     print_track_selected_times(state, content);
     if (state.script_frame > 3) step_decorations(state, content);
+    // The wipe ends with the result's sound after its last wait ($80:ECC4-ECC7), six frames into
+    // native's loop.
+    constexpr std::uint32_t wipe_result_frame = 6;
+    if (state.script_frame == wipe_result_frame) play_menu_sound(state, MenuSound::result);
     constexpr std::array<std::uint8_t, 12> scroll_steps{1, 2, 2, 3, 4, 5, 4, 4, 2, 2, 2, 1};
     const auto pad = pads.one;
     const bool down = (pad & (pad_down | pad_select)) != 0;
@@ -748,6 +757,7 @@ void update_track_records(FrontEndState& state, const FrontEndContent& content, 
     if (!right && !left) state.latches.up = false;
     if ((right || left) && !state.latches.up) {
         state.latches.up = true;
+        play_menu_sound(state, MenuSound::navigate); // $80:E4C6 (Right), $80:E492 (Left)
         auto& column = state.records_detail.rider;
         column = static_cast<std::uint8_t>(right ? (column + 1U) % 5U : (column + 4U) % 5U);
         state.arrow.target_x = static_cast<std::uint16_t>(0x0600 + column * 0x180);
@@ -829,6 +839,7 @@ void records_detail_frame(FrontEndState& state, const FrontEndContent& content, 
         if (!down && !up) state.latches.moved = false;
         if ((down || up) && !state.latches.moved) {
             state.latches.moved = true;
+            play_menu_sound(state, MenuSound::result); // $80:DBF8 (Down), $80:DC05 (Up)
             auto& rider = state.records_detail.rider;
             rider = static_cast<std::uint8_t>(down ? (rider + 15U) & 15U : (rider + 1U) & 15U);
             state.text.words.fill(cleared_text);

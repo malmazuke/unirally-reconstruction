@@ -35,6 +35,10 @@ Six schedules from corpus manifests:
   than eight riders). Native called none of them outside the one-player screens. Now: [L, C]
   - OPTIONS, RECORDS and the league slots: a move (`$80:B9B1` Up, `$80:BA13` Down), the slot's
     choice (`$80:9F15`).
+  - TRACK RECORDS: its wipe's slide sounds on entry (`$80:EB78`) and 67 frames later
+    (`$80:EC8A`), the result when the table is drawn (`$80:ECC4-ECC7`), a move for Left and Right
+    (`$80:E492`, `$80:E4C6`). PLAYER SCORES: the result for each Down or Up (`$80:DBF8`,
+    `$80:DC05`).
   - The keyboard: each direction (`$80:A2BA`, `$80:A2F9`, `$80:A326`, `$80:A34A`), a character
     typed (`$80:A449`, before the length test), a deletion (`$80:A420`), OK (`$80:A495`), and
     the refusal of an empty name (`$80:A493`, `$80:A416-A41A`).
@@ -51,12 +55,16 @@ Six schedules from corpus manifests:
 - **The split race's finish fade** has its own copy at `$83:E7F2-E7FD`; native reports it as its
   own site (`finish2`), anchored at 26,966 master clocks after its frame's boundary, the median
   of `twop-next`'s 61 calls (25,450-33,920). [C]
-- **Cues.** `options-rename` (1,765 lines) and `options-league` (1,496) are equal line for line.
-  `twop-next` differs on 2 frames of 10,259 lines, `vs-champions` on 4 of 9,421, `league-two` on
-  2 of 13,834: each a slide's sound a frame or more from the original's because the slide itself
-  starts there, R-0071's, R-0084's and R-0073's recorded picture residuals (the continuation's
-  slide a frame late, VS CHAMPIONS' back slide 7 frames early, PICK CHALLENGER's slide, the league
-  table after the awards). The one-player schedules of R-0077 stay equal. [C]
+- **Cues.** `options-rename` (1,765 lines) and `options-league` (1,496) are equal line for line,
+  and so are five of the review's schedules (TRACK RECORDS, PLAYER SCORES, DEFINE PLAYER, the
+  keyboard's refusals, a league's refused member counts). `twop-next` differs on 2 frames of
+  10,259 lines, `vs-champions` on 4 of 9,421, `league-two` on 2 of 13,834, the review's GROUP
+  TABLES on 4: each a slide's sound away from the original's because the slide itself is (R-0071's,
+  R-0084's and R-0073's recorded picture residuals, also on main): the continuation's slide a
+  frame late, VS CHAMPIONS' back slide 7 frames early, the league table after the awards 2 early,
+  GROUP TABLES' entry and exit a frame or two off. At PICK CHALLENGER native also slides forward,
+  with the forward sound, a frame before the original's back slide and its back sound. The
+  one-player schedules of R-0077 stay equal. [C]
 - **Measured agreement** (`measure.sh`, a third capture of the schedule with DSP rows): [C]
 
 | Schedule | Commands in frame | Identical pairs | Windows | Median level difference | 90th / 99th percentile | Within 1 dB |
@@ -75,12 +83,18 @@ Six schedules from corpus manifests:
 ## Not covered
 
 - The demo's sound (above).
-- The slide residuals' sounds keep their slides' frames.
+- The slide residuals' sounds keep their slides' frames (and PICK CHALLENGER's direction).
+- GROUP TABLES' Up and Down change the tour shown and play the result (`$80:DF37-DF77`,
+  `$80:DF46`, `$80:DF6C`); native has no Up or Down there (MENU-INPUT). Leaving TRACK RECORDS
+  plays a forward slide in the original (`$80:9F7A-9F7F`), not captured; native's return plays a
+  back slide. TRACK RECORDS' and PLAYER SCORES' entries keep frame-wait differences that are
+  also on main.
+- Once the idle demo has started, the app's native audio stays stopped for the session.
 - Read from the listing while placing the sounds, not native: the keyboard's Start goes straight
   to OK (`$80:B916`) and held directions repeat; the league member picker takes A as well as
   Start (`$80:B8C4`) and marks with B, Y or X; VS refuses the champion as challenger
   (`$80:C0B1-C0BB`, with the refusal's sound); the awards take a press only after `$80:B051`;
-  and the original's second-player menu does not slide at all. Queued with CARTRIDGE-OPTION-BITS'
-  menu work (R-0089 item 7) as MENU-INPUT.
+  the original's second-player menu does not slide at all; the two-player continuation menu
+  wraps at its ends; PLAYER SCORES' Down also takes Select (`$80:B794`). Queued as MENU-INPUT.
 - SAVE-FILES' advisory: the audio model's warm power-on title work (R-0090) is still open.
 - PCM measured on two schedules only.

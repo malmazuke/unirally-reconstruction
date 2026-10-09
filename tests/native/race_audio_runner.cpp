@@ -76,8 +76,9 @@ std::uint8_t song_counter_of(const std::string &what) {
 unirally::AudioDispatchSite dispatch_site(const std::string &name) {
   const auto &names = unirally::audio_dispatch_site_names;
   const auto at = std::find(names.begin(), names.end(), name);
-  return at == names.end() ? unirally::AudioDispatchSite::frame_wait
-                           : static_cast<unirally::AudioDispatchSite>(at - names.begin());
+  return at == names.end()
+             ? unirally::AudioDispatchSite::frame_wait
+             : static_cast<unirally::AudioDispatchSite>(at - names.begin());
 }
 
 unirally::AudioSessionLoad session_named(const std::string &what) {

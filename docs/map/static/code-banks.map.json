@@ -14993,19 +14993,19 @@
    "call returns in the calling mode": 1262
   },
   "bytes": 131072,
-  "cited_addresses": 1792,
+  "cited_addresses": 1803,
   "cited_by_class": {
    "data": 31,
    "inferred": 336,
    "observed": 1056,
-   "unknown": 369
+   "unknown": 380
   },
   "cited_by_position": {
    "dat": 31,
    "loc": 1010,
    "mid": 20,
    "sub": 362,
-   "unk": 369
+   "unk": 380
   },
   "conflicts": 0,
   "data": 92,
