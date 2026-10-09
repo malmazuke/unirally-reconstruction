@@ -86,3 +86,30 @@ stores.
   cases now match on every picture (`m149`, `m043` with the title code; the cheat save with three
   scripts; `xad`; `m025`), and a run ended at 100, 402 or 403 frames leaves the save unchanged.
   The advisories are done; the gate run on `8702bf3` was stopped at the differential gates.
+
+## Review - round 2 (approved)
+
+- [Review](https://github.com/malmazuke/unirally-reconstruction/pull/67#pullrequestreview-5468474061)
+  on `4ed4a71`: approve. Every round-1 finding verified fixed (early quits at 1-410 updates on four
+  saves, the title code and cheat saves on every picture, the arrow's colours), the cold path
+  unchanged on 8 manifests, five unsigned or garbage images still wiped as the original wipes
+  them, and the app round trip exact. Two advisories, recorded in R-0090: `$0742` bit 1 is cleared
+  at power-on, not frame 24; the audio model's warm power-on does not read the cheat flag and
+  `$10AD` (queued to MODE-AUDIO).
+
+## Gates - head `4ed4a71` (`local/evidence/save-files/gates-4ed4a71.out`)
+
+- Four presets build, ctest 41 of 41 each (ASan presets unavailable on this host; Linux CI covers
+  them); synthetic suite, v1 contracts, eight hidden app runs and the front end passed. Fuzz as on
+  main (40 seeds, recorded non-pass).
+- Eleven differential gates passed with main's row digests; race equivalence sweep 432 runs, 0
+  differences; the front-end sweep 179 of 179 manifests equal main's runner; every pause, split,
+  two-pad, race-end, look and restart comparison as recorded; the original's track sweeps give
+  main's rows; R-0076's cue schedules identical; the idle demo lap 34 of 34 exact, 963 pictures.
+- SAVE-FILES: the cold image at frame 429 equals the original's; the image sweep as R-0090; the
+  warm sweep 14,809 of 18,750 pictures, end images agreeing on the record bytes in 20 of 21 (the
+  VS race's personal best, R-0090); the app with no save file and with the all-gold save writes
+  the runner's image.
+- Tooling tests 554 passed; native symbols current. Two functions were over 80 lines
+  (`front_end_content`, the runner's `main`): split in the follow-up commit, which moves lines into
+  two helpers and changes no behaviour; its gates are rerun below.

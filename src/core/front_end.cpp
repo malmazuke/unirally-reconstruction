@@ -734,6 +734,12 @@ std::string asset_name(unsigned id) {
 
 namespace {
 
+// The cartridge RAM's defaults and the track kinds they read (SAVE-FILES).
+void load_cartridge_content(FrontEndContent& content, const ClassicContentPack& pack) {
+    content.cartridge_defaults = pack.entry("audio.cartridge-defaults");
+    content.track_types = pack.entry("audio.track-types");
+}
+
 void load_options_content(FrontEndContent& content, const ClassicContentPack& pack) {
     content.options_menu_text = pack.entry("front-end.options-menu-text");
     content.options_arrow_columns = pack.entry("front-end.options-arrow-columns");
@@ -779,8 +785,7 @@ FrontEndContent front_end_content(const ClassicContentPack& pack) {
     content.arrow_frames = pack.entry("front-end.arrow-frames");
     content.menu_arrow_columns = pack.entry("front-end.menu-arrow-columns");
     content.cycle_colours = pack.entry("front-end.cycle-colours");
-    content.cartridge_defaults = pack.entry("audio.cartridge-defaults");
-    content.track_types = pack.entry("audio.track-types");
+    load_cartridge_content(content, pack);
     for (unsigned id = 6; id <= 21; ++id) content.assets[id] = pack.entry(asset_name(id));
     content.rider_names = pack.entry("front-end.rider-names");
     content.rider_menu_title = pack.entry("front-end.pick-rider-title");

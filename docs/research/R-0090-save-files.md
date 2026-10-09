@@ -90,7 +90,11 @@ Tags: **[L]** listing only, **[C]** confirmed in a capture.
 - League and VS races clear `$10CF-10D0` (`$83:958C`), so the title code's levels stay after them;
   native keeps the flag. Leaving the league slot screen clears `$0742` bit 13 (`$80:9F21`); native
   keeps it. Both read from the listing.
-- The sound program's handshake lengths after a warm power-on (above).
+- The sound program's handshake lengths after a warm power-on (above). The native audio model's
+  warm power-on also does not yet take the save's cheat flag and `$10AD` into its title work, as
+  its soft reset does (`title_menu_audio.cpp`); the review's audio runs finished without error.
+- Native clears `$0742` bit 1 when the image goes in, the original on boot frame 24: a session
+  that ends in its first 24 frames saves that bit cleared. Every boot clears it.
 - A save taken during a race lacks what the original writes during it until the race returns.
 - Twelve corpus manifests write cartridge RAM during their run (`cartridge_ram_writes`, such as
   OPTIONS' populated records); the image sweep ran them without those writes on both sides, so
@@ -100,7 +104,8 @@ Tags: **[L]** listing only, **[C]** confirmed in a capture.
 
 The other modes' gaps go to their queued tasks (R-0089): the league's bests, tutorial bits and
 slot-two run to LEAGUE-TOURS; the two-human restart's records and VS mode 2's counters to
-TWO-HUMAN-STUNTS; `$10D0`, bit 13 and the unmodelled bytes to CARTRIDGE-OPTION-BITS.
+TWO-HUMAN-STUNTS; `$10D0`, bit 13 and the unmodelled bytes to CARTRIDGE-OPTION-BITS; the audio
+model's warm title work to MODE-AUDIO.
 
 ## Reproduction
 

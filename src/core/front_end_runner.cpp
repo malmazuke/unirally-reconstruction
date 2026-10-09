@@ -222,6 +222,19 @@ void write_ppm(const std::filesystem::path& path, const unirally::RgbFrame& fram
     if (!out) throw std::runtime_error("cannot write front-end picture");
 }
 
+// Power-on, with the cartridge RAM `--cartridge-in` gives (SAVE-FILES).
+unirally::FrontEndState start_state(const Options& options) {
+    auto state = unirally::start_front_end();
+    if (options.cartridge_in.empty()) return state;
+    std::ifstream in(options.cartridge_in, std::ios::binary);
+    if (!in)
+        throw std::runtime_error("cannot read --cartridge-in " + options.cartridge_in.string());
+    const std::vector<std::uint8_t> image((std::istreambuf_iterator<char>(in)),
+                                          std::istreambuf_iterator<char>());
+    unirally::insert_cartridge(state, image);
+    return state;
+}
+
 // The cartridge RAM as native keeps it (cartridge_ram.hpp).
 void write_records(const std::filesystem::path& path, const unirally::FrontEndState& state) {
     const auto image = unirally::cartridge_image(state);
@@ -663,15 +676,7 @@ int main(int argc, char** argv) try {
     const unirally::ClassicContentPack pack(options.pack);
     const auto content = unirally::front_end_content(pack);
     const auto inputs = read_inputs(options.inputs);
-    auto state = unirally::start_front_end();
-    if (!options.cartridge_in.empty()) {
-        std::ifstream in(options.cartridge_in, std::ios::binary);
-        if (!in)
-            throw std::runtime_error("cannot read --cartridge-in " + options.cartridge_in.string());
-        const std::vector<std::uint8_t> image((std::istreambuf_iterator<char>(in)),
-                                              std::istreambuf_iterator<char>());
-        unirally::insert_cartridge(state, image);
-    }
+    auto state = start_state(options);
     RaceBetweenMenus race;
     std::optional<unirally::ZoomZooState> restored_local;
     std::size_t races = 0, resets = 0;
