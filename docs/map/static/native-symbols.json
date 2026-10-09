@@ -422,15 +422,21 @@
    "address": "$80:8C4E",
    "native": [
     "src/core/audio_cpu_menu_records.cpp:native_audio_begin_menu_records",
+    "src/core/cartridge_ram.hpp:has_signature",
     "src/core/front_end.cpp:check_records",
-    "src/core/front_end.hpp:OnePlayerRecords"
+    "src/core/front_end.hpp:OnePlayerRecords",
+    "src/core/title_menu_audio.hpp:NativeTitleMenuAudio::insert_cartridge"
    ],
    "region": "rom"
   },
   {
    "address": "$80:8C80",
    "native": [
-    "src/core/audio_cpu_menu_defaults.cpp:native_audio_menu_first_record_defaults"
+    "src/core/audio_cpu_menu_defaults.cpp:native_audio_menu_first_record_defaults",
+    "src/core/cartridge_ram.hpp:cold_start_cartridge"
+   ],
+   "range_ends": [
+    "$80:8CC2"
    ],
    "region": "rom"
   },
@@ -1027,6 +1033,13 @@
    ],
    "range_ends": [
     "$80:A0A5"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:A0A5",
+   "native": [
+    "src/core/front_end.cpp:check_records"
    ],
    "region": "rom"
   },
@@ -7591,7 +7604,9 @@
   {
    "address": "$83:8000",
    "native": [
-    "src/core/front_end.cpp:check_records"
+    "src/core/cartridge_ram.hpp:has_signature",
+    "src/core/front_end.cpp:check_records",
+    "src/core/front_end.hpp:FrontEndContent::cartridge_defaults, FrontEndContent::track_types"
    ],
    "region": "rom"
   },
@@ -7745,9 +7760,17 @@
    "region": "rom"
   },
   {
+   "address": "$83:89EF",
+   "native": [
+    "src/core/cartridge_ram.cpp:cartridge_image"
+   ],
+   "region": "rom"
+  },
+  {
    "address": "$83:8AF7",
    "native": [
-    "src/core/audio_cpu_menu_records.cpp:verify_cartridge_mirror"
+    "src/core/audio_cpu_menu_records.cpp:verify_cartridge_mirror",
+    "src/core/front_end.cpp:check_records"
    ],
    "region": "rom"
   },
@@ -7855,6 +7878,8 @@
    "address": "$83:90F4",
    "native": [
     "src/core/audio_cpu_menu_defaults.cpp:write_record_checksums",
+    "src/core/cartridge_ram.cpp:cartridge_image",
+    "src/core/cartridge_ram.cpp:checksum",
     "src/core/front_end.hpp:OnePlayerRecords::statistics",
     "src/core/race_result.cpp:insert_record"
    ],
@@ -11253,6 +11278,7 @@
    "address": "$83:FB41",
    "native": [
     "src/core/audio_cpu_menu_records.cpp:clear_cartridge",
+    "src/core/cartridge_ram.hpp:cold_start_cartridge",
     "src/core/front_end.cpp:check_records"
    ],
    "region": "rom"
@@ -11680,6 +11706,13 @@
    "region": "wram"
   },
   {
+   "address": "$02B0",
+   "native": [
+    "src/core/cartridge_ram.cpp:cartridge_image"
+   ],
+   "region": "wram"
+  },
+  {
    "address": "$02BE",
    "native": [
     "src/core/vertical_contact.cpp:summarize_vertical_contact"
@@ -11936,6 +11969,13 @@
    "region": "wram"
   },
   {
+   "address": "$0420",
+   "native": [
+    "src/core/cartridge_ram.cpp:cartridge_image"
+   ],
+   "region": "wram"
+  },
+  {
    "address": "$0423",
    "native": [
     "src/core/zoom_zoo_movement.hpp:ZoomZooRaceState::second_camera"
@@ -12020,6 +12060,13 @@
    "region": "wram"
   },
   {
+   "address": "$054E",
+   "native": [
+    "src/core/cartridge_ram.cpp:cartridge_image"
+   ],
+   "region": "wram"
+  },
+  {
    "address": "$0555",
    "native": [
     "src/core/zoom_zoo_movement.hpp:ZoomZooRaceState::second_camera"
@@ -12080,6 +12127,20 @@
    "address": "$0572",
    "native": [
     "src/core/vertical_contact.cpp:apply_landing_matrix"
+   ],
+   "region": "wram"
+  },
+  {
+   "address": "$05E6",
+   "native": [
+    "src/core/cartridge_ram.cpp:cartridge_image"
+   ],
+   "region": "wram"
+  },
+  {
+   "address": "$073C",
+   "native": [
+    "src/core/cartridge_ram.cpp:cartridge_image"
    ],
    "region": "wram"
   },
@@ -12654,6 +12715,13 @@
    "address": "$0E58",
    "native": [
     "src/core/front_end.hpp:LapGraphDot"
+   ],
+   "region": "wram"
+  },
+  {
+   "address": "$0E69",
+   "native": [
+    "src/core/cartridge_ram.cpp:cartridge_image"
    ],
    "region": "wram"
   },
@@ -13859,7 +13927,12 @@
   {
    "address": "$77:0000",
    "native": [
+    "src/core/cartridge_ram.hpp:(file)",
+    "src/core/front_end.hpp:CartridgeImage",
     "src/core/front_end_runner.cpp:(file)"
+   ],
+   "range_ends": [
+    "$77:1FFF"
    ],
    "region": "sram"
   },
@@ -13982,6 +14055,7 @@
   {
    "address": "$77:0742",
    "native": [
+    "src/core/front_end.cpp:check_records",
     "src/core/front_end.hpp:LogoScroll::raised",
     "src/core/front_end.hpp:OnePlayerRecords::league_cycle_complete",
     "src/core/front_end.hpp:OnePlayerRecords::league_naming",
@@ -14324,6 +14398,13 @@
     "src/core/zoom_zoo_movement.hpp:ClassicRaceScenario::tutorial_hints",
     "src/core/zoom_zoo_movement.hpp:ZoomZooOpponentHints",
     "src/core/zoom_zoo_runner.cpp:Options::rider, Options::opponent"
+   ],
+   "region": "sram"
+  },
+  {
+   "address": "$77:1FFF",
+   "native": [
+    "src/core/front_end.cpp:check_records"
    ],
    "region": "sram"
   },
@@ -15246,6 +15327,42 @@
     "$00AC"
    ]
   },
+  "src/core/cartridge_ram.cpp:cartridge_image": {
+   "rom": [
+    "$83:89EF",
+    "$83:90F4"
+   ],
+   "wram": [
+    "$02B0",
+    "$0420",
+    "$054E",
+    "$05E6",
+    "$073C",
+    "$0E69"
+   ]
+  },
+  "src/core/cartridge_ram.cpp:checksum": {
+   "rom": [
+    "$83:90F4"
+   ]
+  },
+  "src/core/cartridge_ram.hpp:(file)": {
+   "sram": [
+    "$77:0000"
+   ]
+  },
+  "src/core/cartridge_ram.hpp:cold_start_cartridge": {
+   "rom": [
+    "$80:8C80",
+    "$83:FB41"
+   ]
+  },
+  "src/core/cartridge_ram.hpp:has_signature": {
+   "rom": [
+    "$80:8C4E",
+    "$83:8000"
+   ]
+  },
   "src/core/content_pack.cpp:front_end_required": {
    "rom": [
     "$82:B332"
@@ -15388,12 +15505,16 @@
   "src/core/front_end.cpp:check_records": {
    "rom": [
     "$80:8C4E",
+    "$80:A0A5",
     "$83:8000",
+    "$83:8AF7",
     "$83:8B23",
     "$83:FB41"
    ],
    "sram": [
-    "$77:10AD"
+    "$77:0742",
+    "$77:10AD",
+    "$77:1FFF"
    ]
   },
   "src/core/front_end.cpp:check_title_code": {
@@ -15635,9 +15756,19 @@
     "$83:AFF6"
    ]
   },
+  "src/core/front_end.hpp:CartridgeImage": {
+   "sram": [
+    "$77:0000"
+   ]
+  },
   "src/core/front_end.hpp:FrontEndContent::award_tables, FrontEndContent::award_medal_art": {
    "rom": [
     "$83:B120"
+   ]
+  },
+  "src/core/front_end.hpp:FrontEndContent::cartridge_defaults, FrontEndContent::track_types": {
+   "rom": [
+    "$83:8000"
    ]
   },
   "src/core/front_end.hpp:FrontEndContent::ending_tables": {
@@ -20987,6 +21118,11 @@
     "$80:8858"
    ]
   },
+  "src/core/title_menu_audio.hpp:NativeTitleMenuAudio::insert_cartridge": {
+   "rom": [
+    "$80:8C4E"
+   ]
+  },
   "src/core/title_menu_audio.hpp:TitleMenuAudioState::rotation_sounding": {
    "wram": [
     "$1003",
@@ -22551,11 +22687,11 @@
   }
  },
  "totals": {
-  "addresses": 1631,
+  "addresses": 1640,
   "io_addresses": 11,
-  "native_symbols": 1234,
-  "rom_addresses": 1241,
-  "sram_addresses": 53,
-  "wram_addresses": 326
+  "native_symbols": 1242,
+  "rom_addresses": 1243,
+  "sram_addresses": 54,
+  "wram_addresses": 332
  }
 }

@@ -11,10 +11,12 @@ SaveFile::SaveFile(std::filesystem::path path) : path_(std::move(path)) {
   if (!std::filesystem::exists(path_))
     return;
   std::ifstream in(path_, std::ios::binary);
+  if (!in)
+    throw std::runtime_error("cannot read the save file: " + path_.string());
   const std::vector<char> bytes((std::istreambuf_iterator<char>(in)),
                                 std::istreambuf_iterator<char>());
   CartridgeImage image{};
-  if (!in.eof() || bytes.size() != image.size())
+  if (bytes.size() != image.size())
     throw std::runtime_error("a save file is 8192 bytes: " + path_.string());
   std::copy(bytes.begin(), bytes.end(), image.begin());
   loaded_ = written_ = image;

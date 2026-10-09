@@ -44,3 +44,30 @@ and several bytes have only provisional meanings (R-0072, R-0067).
 
 The WIPE RAM menu (queue item 3, which builds on this image) and any change to what the game
 stores.
+
+## Checkpoint - 9 October 2026 11:30 UTC
+
+- **Measured first.** Native's lab image (`front_end_runner --records`) against the original's over
+  the R-0089 corpus: 458 bytes differed somewhere. A perturbation of each range in saved images
+  found which a later boot reads (R-0090). The boot keeps an image that starts with the signature
+  `$83:8000` and wipes any other.
+- **Native.** `src/core/cartridge_ram.{hpp,cpp}`: `cartridge_image` writes every field native keeps
+  at its address over `FrontEndState::cartridge` (the bytes native keeps no field for, as loaded
+  or as the cold start left them); `cold_start_cartridge` runs the audio model's default writes
+  (byte-equal to the original's image after frame 429); `insert_cartridge` sets the image power-on
+  finds. `check_records` keeps a signed image's records (`records_kept`) and the boot skips the
+  wipe's three frames, as after a soft reset. The runner takes `--cartridge-in`; `--records`
+  writes the whole image. The app takes `--save-file` (and `frontend run --save-file`), loads it
+  at power-on, hands it to the audio model too and writes it whenever it changes.
+- **Results.** Every record field equal at every compared frame in 130 of 236 corpus runs; the
+  rest are write timing, the `$0618` overlap and other modes' gaps (league, two-human restart, VS
+  mode 2). Warm boots from three of the original's saves show the same screens; pictures differ
+  around the sound handshakes (14,809 of 18,750 every-5th pictures equal), a known class.
+
+## Review candidate
+
+- Records: [R-0090](../docs/research/R-0090-save-files.md).
+- Gates: `local/evidence/save-files/gates.sh` against main `3191228`'s binaries
+  (`base-3191228/`). The cold path must not move: every frozen gate, sweep and capture as on main.
+- Review tier 1: it changes the boot's state and timing when an image is found, and the app writes
+  files.

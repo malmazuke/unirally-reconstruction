@@ -48,6 +48,14 @@ rotation lines unresolved. [R-0076](research/R-0076-first-race-audio.md) records
 captured schedules, the exact cue comparisons and the measured (not exact) PCM agreement;
 the laboratory scripts are in main `local/evidence/audio-first-race/`.
 
+SAVE-FILES keeps the cartridge RAM between runs ([R-0090](research/R-0090-save-files.md)):
+`unirally --save-file PATH` (or `project.py frontend run --save-file PATH`) loads the 8 KiB image
+at power-on and writes it, through a temporary file and a rename, whenever it changes. An image
+with the signature `$83:8000` keeps its records, as the original's boot does; any other is wiped
+to a cold start's. An emulator's save of the ROM loads too. `front_end_runner --cartridge-in
+IMAGE` boots from an image and `--records FRAME OUT.bin` writes the whole image; the laboratory
+scripts are in main `local/evidence/save-files/`.
+
 For LEAGUE (R-0073), the current supported Classic pack profile is
 `classic.pal.crawler.tracks.v29` with 475 exact PAL entries. Nine additions hold
 three league text streams and six podium assets. The earlier OPTIONS v28's 24 additions

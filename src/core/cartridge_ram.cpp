@@ -117,11 +117,27 @@ bool has_signature(const CartridgeImage& image, const FrontEndContent& content) 
                       content.cartridge_defaults.begin());
 }
 
+namespace {
+// The sum of `words` little-endian words from `first`, wrapping (`$83:90F4`).
+std::uint16_t checksum(const CartridgeImage& image, std::size_t first, std::size_t words) {
+    std::uint16_t sum = 0;
+    for (std::size_t k = 0; k < words; ++k)
+        sum = static_cast<std::uint16_t>(sum + image.at(first + 2 * k)
+                                         + (image.at(first + 2 * k + 1) << 8U));
+    return sum;
+}
+} // namespace
+
 CartridgeImage cartridge_image(const FrontEndState& state) {
     auto image = state.cartridge;
     auto records = state.records;
     Store store{image};
     transfer_records(store, records);
+    // The names' checksums, which the original rewrites with the names (`$83:90F4`); `$83:89EF`
+    // reads the riders'. Its other checksums (`$02B0`, `$0420`, `$054E`, `$05E6`, `$073C`,
+    // `$0E69`) are not read and keep what the boot left (R-0090).
+    store.word(0x016c, checksum(image, 0x000c, 176));
+    store.word(0x022e, checksum(image, 0x016e, 96));
     return image;
 }
 

@@ -416,8 +416,11 @@
     "src/core/audio_cpu_menu_defaults.cpp:native_audio_finish_menu_records",
     "src/core/audio_cpu_menu_defaults.cpp:native_audio_menu_first_record_defaults",
     "src/core/audio_cpu_menu_records.cpp:native_audio_begin_menu_records",
+    "src/core/cartridge_ram.hpp:cold_start_cartridge",
+    "src/core/cartridge_ram.hpp:has_signature",
     "src/core/front_end.cpp:check_records",
-    "src/core/front_end.hpp:OnePlayerRecords"
+    "src/core/front_end.hpp:OnePlayerRecords",
+    "src/core/title_menu_audio.hpp:NativeTitleMenuAudio::insert_cartridge"
    ],
    "observed_entries": {},
    "start": "$80:8C4E",
@@ -1075,6 +1078,7 @@
     "src/core/audio_cue.hpp:AudioSessionLoad",
     "src/core/front_end.cpp:boot_frame",
     "src/core/front_end.cpp:boot_frame_number",
+    "src/core/front_end.cpp:check_records",
     "src/core/front_end.cpp:clear_oam_buffer",
     "src/core/front_end.cpp:early_objects, early_palette",
     "src/core/front_end.cpp:set_early_registers",
@@ -11214,7 +11218,8 @@
     "NmX"
    ],
    "native": [
-    "src/core/audio_cpu_menu_records.cpp:verify_cartridge_mirror"
+    "src/core/audio_cpu_menu_records.cpp:verify_cartridge_mirror",
+    "src/core/front_end.cpp:check_records"
    ],
    "observed_entries": {},
    "start": "$83:8AF7",
@@ -11473,6 +11478,8 @@
    ],
    "native": [
     "src/core/audio_cpu_menu_defaults.cpp:write_record_checksums",
+    "src/core/cartridge_ram.cpp:cartridge_image",
+    "src/core/cartridge_ram.cpp:checksum",
     "src/core/front_end.hpp:OnePlayerRecords::statistics",
     "src/core/race_result.cpp:insert_record"
    ],
@@ -14916,6 +14923,7 @@
    ],
    "native": [
     "src/core/audio_cpu_menu_records.cpp:clear_cartridge",
+    "src/core/cartridge_ram.hpp:cold_start_cartridge",
     "src/core/front_end.cpp:check_records"
    ],
    "observed_entries": {},
@@ -14968,19 +14976,19 @@
    "call returns in the calling mode": 1262
   },
   "bytes": 131072,
-  "cited_addresses": 1762,
+  "cited_addresses": 1765,
   "cited_by_class": {
    "data": 31,
    "inferred": 334,
-   "observed": 1054,
-   "unknown": 343
+   "observed": 1055,
+   "unknown": 345
   },
   "cited_by_position": {
    "dat": 31,
-   "loc": 1006,
+   "loc": 1007,
    "mid": 20,
    "sub": 362,
-   "unk": 343
+   "unk": 345
   },
   "conflicts": 0,
   "data": 92,

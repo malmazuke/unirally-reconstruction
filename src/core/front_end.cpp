@@ -300,6 +300,8 @@ void check_records(FrontEndState& state, const FrontEndContent& content) {
     } else if (has_signature(state.cartridge, content)) {
         state.records_kept = true;
         state.records = records_from_cartridge(state.cartridge);
+        // Every boot clears `$77:0742` bit 1 before the check (`$80:A0A5`).
+        state.records.league_naming = false;
     } else {
         // Content without the defaults (the synthetic tests' own) leaves the image zeroed.
         state.cartridge =

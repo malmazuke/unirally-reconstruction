@@ -1727,13 +1727,16 @@ void save_file_tests() {
   image[0x069c] = 2;    // rider 0's medal on the first tour
   image[0x10d3] = 3;    // rider 0's tours all open
   image[0x0e70] = 0x5a; // a byte native keeps no field for
+  image[0x0742] |= 0x02; // bit 1, which every boot clears
   auto warm = unirally::start_front_end();
   unirally::insert_cartridge(warm, image);
   run(warm, content, 420);
   require(warm.records_kept && warm.menu.idle == 477);
   require(warm.records.medals[0] == 2 && warm.records.tour_levels[0] == 3);
+  require(!warm.records.league_naming);
   auto saved = image;
   saved[0x1fff] = 0x56; // the boot's mirror test
+  saved[0x0742] &= 0xfd;
   require(unirally::cartridge_image(warm) == saved);
   require(unirally::records_from_cartridge(saved).medals[0] == 2);
   auto unsigned_image = image;

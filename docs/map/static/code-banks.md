@@ -45,7 +45,7 @@ The four classes partition all 131,072 bytes. **Unknown share: 40.4%** - above D
 
 ## Cited addresses
 
-1762 distinct code-bank ROM addresses cited by the research, task, inventory and content records (`labels.json`). By position: dat 31, loc 1006, mid 20, sub 362, unk 343 (sub routine start, loc instruction start, mid inside an instruction, dat data, unk unknown). By class: data 31, inferred 334, observed 1054, unknown 343.
+1765 distinct code-bank ROM addresses cited by the research, task, inventory and content records (`labels.json`). By position: dat 31, loc 1007, mid 20, sub 362, unk 345 (sub routine start, loc instruction start, mid inside an instruction, dat data, unk unknown). By class: data 31, inferred 334, observed 1055, unknown 345.
 
 Cited addresses in `unknown` bytes:
 
@@ -102,6 +102,7 @@ Cited addresses in `unknown` bytes:
 | $80:9E3C | docs/research/R-0073-league.md |
 | $80:9E57 | docs/research/R-0072-options.md |
 | $80:9EF7 | docs/research/R-0072-options.md |
+| $80:9F21 | docs/research/R-0090-save-files.md |
 | $80:A1F2 | docs/research/R-0072-options.md |
 | $80:A207 | docs/research/R-0072-options.md |
 | $80:A212 | docs/research/R-0072-options.md |
@@ -306,7 +307,7 @@ Cited addresses in `unknown` bytes:
 | $82:B7DD | docs/content/dragster-segment.md, docs/research/R-0008-track-decode.md, docs/research/R-0021-zoom-zoo-content-contract.md, docs/research/R-0046-track-breadth-matrix.md, tasks/M1-03.md, tasks/M4-03.md |
 | $82:D4DC | docs/research/R-0061-riders-and-opponents.md, docs/research/R-0080-split-hud.md, tasks/RACE-RIDERS-OPPONENTS.md, tasks/SPLIT-HUD-GAPS.md |
 | $82:DC12 | docs/research/R-0046-track-breadth-matrix.md, tasks/TRACK-BREADTH.md |
-| $83:8000 | docs/research/R-0064-hunter-ending-and-soft-reset.md |
+| $83:8000 | docs/research/R-0064-hunter-ending-and-soft-reset.md, docs/research/R-0090-save-files.md, tasks/SAVE-FILES.md |
 | $83:800C | docs/research/R-0055-rider-menu.md |
 | $83:8535 | docs/research/R-0045-static-code-map.md, tasks/STATIC-CODE-MAP.md |
 | $83:87E9 | docs/research/R-0057-one-run-result.md |
@@ -320,12 +321,13 @@ Cited addresses in `unknown` bytes:
 | $83:88E1 | docs/research/R-0065-fifth-win-completion.md, docs/research/R-0066-stunt-event-race.md, docs/research/R-0067-stunt-result.md, tasks/STUNT-RESULT.md |
 | $83:88F1 | docs/research/R-0065-fifth-win-completion.md, docs/research/R-0067-stunt-result.md |
 | $83:88F4 | docs/research/R-0067-stunt-result.md |
+| $83:89EF | docs/research/R-0090-save-files.md |
 | $83:8D5D | docs/research/R-0058-lap-result.md, tasks/FRONT-END-LAP-RESULT.md |
 | $83:8E1C | docs/research/R-0056-tour-track-now-playing.md |
 | $83:8E26 | docs/research/R-0056-tour-track-now-playing.md |
 | $83:8FDE | docs/research/R-0072-options.md |
 | $83:904A | docs/research/R-0038-dragster-ordinary-controls.md, docs/research/R-0058-lap-result.md, tasks/FRONT-END-LAP-RESULT.md |
-| $83:958C | docs/research/R-0073-league.md |
+| $83:958C | docs/research/R-0073-league.md, docs/research/R-0090-save-files.md |
 | $83:95CA | docs/research/R-0073-league.md |
 | $83:98B8 | docs/research/R-0067-stunt-result.md |
 | $83:9AF9 | docs/research/R-0055-rider-menu.md |
