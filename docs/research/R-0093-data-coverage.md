@@ -201,6 +201,13 @@ Tags: **[L]** listing only, **[C]** confirmed in a capture, **[R]** stated by an
   re-measured the corpus: no frame of the 1,666,993 needed a second round, every one of the 236
   reduced runs is byte-identical to this record's, and `aggregate.py` gives the same totals byte
   for byte. The figures above stand.
+- **Register stores out of order (PR #74 review finding 4), measured:** the derivation applied a
+  register store resolved through a pointer to its DMA parameter shadow after every direct store
+  of the frame, so a DMA enable stored that way would log the frame's last channel parameters.
+  [ACCESS-REGISTER-ORDER](../../tasks/ACCESS-REGISTER-ORDER.md) applies them in instruction order
+  and re-measured the corpus: no access record has a resolved register store (every register
+  store is direct, 20,255,397 DMA log entries), every one of the 236 reduced runs is
+  byte-identical, and `aggregate.py` gives the same totals byte for byte. The figures above stand.
 - **Coarse attribution:** per-pc attribution uses each pc's minimum and maximum address, so a
   routine that reads two far-apart tables is listed against everything between them. The read
   bitmaps themselves are exact.

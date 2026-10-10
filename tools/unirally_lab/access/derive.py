@@ -25,6 +25,9 @@ and after a bounded number of rounds any resolution that read a byte still
 changing is dropped. Only the kept round's kept resolutions reach the record:
 their accesses, ROM reads, stored values, labels, register shadow, DMA log and
 watch log (ACCESS-ROUND-READS); ``resolution_rounds`` counts frames by rounds.
+The frame's register stores, direct and kept resolved, reach the register
+shadow and the DMA log in instruction order once the kept round is recorded
+(ACCESS-REGISTER-ORDER).
 With ``resolve_rmw`` (``access capture --resolve-rmw``, DATA-COVERAGE) a
 read-modify-write's result is computed from the byte's resolved old value and
 the instruction's own registers (INC, DEC, ASL, LSR; ROL and ROR with the
@@ -332,6 +335,7 @@ class AccessDrain:
         self.non_rom_pcs: Counter[int] = Counter()
         self.dma_log: list[list[Any]] = []
         self._regs = bytearray(0x4400)
+        self._register_stores: list[tuple[int, int, int, int, int]] = []   # this frame's (seq, pc, off, width, value)
         self.per_frame: list[int] = []
         self.per_frame_accesses: list[int] = []
         self.per_frame_unresolved: list[int] = []
@@ -445,6 +449,11 @@ class AccessDrain:
             self.unresolved_stores += m
         self.wram_code_unresolved.update(rnd["wram_code_unresolved"])
         unresolved = rnd["unresolved"]
+        # Direct stores were recorded in the first pass and resolved ones only now: apply them in
+        # instruction order (a stable sort keeps an instruction's own stores in their order).
+        for seq, pc, off, width, value in sorted(self._register_stores, key=itemgetter(0)):
+            self._register_write(frame, seq, pc, off, width, value)
+        self._register_stores = []
 
         # ---- aggregation
         self.counts.update(keys)
@@ -609,7 +618,7 @@ class AccessDrain:
         if kind in _WRITE_KINDS:
             if not append_writes(writes, seq, address, width, wrap, value, rmw) and value is not None \
                     and 0x2000 <= off < 0x4400 and (bank <= 0x3F or 0x80 <= bank <= 0xBF):
-                self._register_write(frame, seq, pc, off, width, value)
+                self._register_stores.append((seq, pc, off, width, value))
         if self._watch_set:
             watch_hit = None
             if width == 1:
