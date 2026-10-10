@@ -319,6 +319,29 @@ bool read_league_members_pad(FrontEndState& state, const FrontEndContent& conten
     return true;
 }
 
+// $80:BCDB-BCEF (2P) and `$80:BF5C-BF79` (VS): the first pick is kept (`$017D`), pad 2 alone
+// reads the menu (`$83:952E`), the second title is printed over the first in the half on screen,
+// and the menu's loop goes on from `$80:CBC3`: no slide, the arrow and the uni picture as they
+// were (R-0095).
+bool picks_second_in_place(const FrontEndState& state) {
+    const auto& menu = state.rider_menu;
+    return (state.mode == FrontEndMode::two_player || state.mode == FrontEndMode::versus)
+        && menu.purpose == RiderMenuPurpose::normal && !menu.second && !menu.challenger
+        && !menu.back;
+}
+
+void pick_second_in_place(FrontEndState& state, const FrontEndContent& content) {
+    play_menu_sound(state, MenuSound::select);
+    state.rider_menu.rider = state.menu.selection;
+    state.rider_menu.second = true;
+    state.rider_menu.text_to_shown = true;
+    print_text(state.text, state.printer,
+               state.mode == FrontEndMode::two_player ? content.two_player_second_title
+                                                      : content.versus_second_title,
+               content.character_table);
+    choose_next_picture(state.rider_menu);
+}
+
 // A rider pick's select sound: 1P `$80:BBB8`, 2P `$80:BCDB` and `$80:BD02`, VS `$80:BF8A` and
 // the challenger's `$80:C0BD`. VS's first pick plays it before testing for Y (`$80:BF5C`). DEFINE
 // and RENAME PLAYER's picks go to `$80:F4E9` without it ($80:C13D, $80:D45B).
@@ -334,6 +357,7 @@ void open_rider_menu_entry(FrontEndState& state) {
     if (state.rider_menu.purpose != RiderMenuPurpose::league_members)
         state.menu.selection = state.rider_menu.rider; // $80:CB07
     state.latches = {};                                // $80:CB0C
+    state.rider_menu.text_to_shown = false;
     state.screen = FrontEndScreen::rider_menu_entry;
 }
 
@@ -430,8 +454,10 @@ void rider_menu_frame(FrontEndState& state, const FrontEndContent& content, Fron
     high_bits(state, shadow_group) = four_hidden;
     copy_oam(state); // $80:D1EC, which also reads the pads
     load_rider_palettes(state, content);
-    // $80:93A5: the text again, to the half it was first shown in (`$005A`), now hidden.
-    load_text(state, state.slide.hidden_half);
+    // $80:93A5: the text again, to the half it was first shown in (`$005A`), now hidden; after
+    // 2P's or VS's first pick, to the half on screen.
+    load_text(state,
+              state.rider_menu.text_to_shown ? state.slide.shown_half : state.slide.hidden_half);
     upload_uni(state, content);
     const bool league = state.rider_menu.purpose == RiderMenuPurpose::league_members;
     const bool pad_two = state.rider_menu.second
@@ -460,6 +486,10 @@ void rider_menu_frame(FrontEndState& state, const FrontEndContent& content, Fron
                                                              : state.second_rider)) {
         play_menu_sound(state, MenuSound::refused);
         choose_next_picture(state.rider_menu);
+        return;
+    }
+    if (picks_second_in_place(state)) {
+        pick_second_in_place(state, content);
         return;
     }
     // $80:BBB8-BBEE for a choice ($80:BC9B for Y), then $80:F4E9, which stops the HDMA at once.

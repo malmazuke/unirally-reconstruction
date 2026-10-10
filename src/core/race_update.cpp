@@ -245,10 +245,15 @@ bool run_pause_menu(const ZoomZooState& state, ZoomZooState& next, const Control
     ++pause.suspended_updates;
     if (next.fade_level >= first_published_fade && whole.countdown)
         ++pause.suspended_countdown_updates;
-    next.opponent_horizontal = direction::neutral;
+    // $82:AB5C-AB91: the reader, before the menu, leaves rider 1's words as port 2 gave them: a
+    // second pad's in a two-pad race, cleared otherwise (R-0095).
+    const auto port_two = two_pads ? second : ControllerButtons{};
+    next.opponent_horizontal = sample_controller(port_two).horizontal;
     auto& opponent = next.reflection[1];
-    opponent.brake_input = opponent.jump_input = opponent.rotate_negative_input =
-        opponent.rotate_positive_input = 0;
+    opponent.brake_input = port_two.y;
+    opponent.jump_input = port_two.b;
+    opponent.rotate_negative_input = port_two.left_shoulder;
+    opponent.rotate_positive_input = port_two.right_shoulder;
     ++whole.frame;
     return true;
 }

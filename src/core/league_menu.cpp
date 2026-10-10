@@ -286,13 +286,14 @@ void finish_league_pair(FrontEndState& state, const FrontEndContent& content) {
 
 void league_awards_frame(FrontEndState& state, const FrontEndContent& content, FrontEndPads pads) {
     // The awards slide in at $80:8B28 (`$80:E27E`, its sound on the third frame; native prints
-    // them in place), and the result's sound follows 41 frames after the tally ($80:B051).
-    constexpr std::uint32_t slide_sound_frame = 3, result_frame = 85;
+    // them in place), and the result's sound follows 41 frames after the tally ($80:B051). The
+    // back slide steps no decorations: they step from its end on (R-0095).
+    constexpr std::uint32_t slide_sound_frame = 3, slid_in_frame = 45, result_frame = 85;
     copy_oam(state);
-    step_decorations(state, content);
+    if (state.script_frame >= slid_in_frame) step_decorations(state, content);
     if (state.script_frame == slide_sound_frame) play_menu_sound(state, MenuSound::back_slide);
     if (state.script_frame == result_frame) play_menu_sound(state, MenuSound::result);
-    if (state.script_frame == 45) {
+    if (state.script_frame == slid_in_frame) {
         const auto slot = state.league.slot;
         reorder_league(state);
         state.records.league_pair_cursor[slot] = 0;
@@ -301,7 +302,8 @@ void league_awards_frame(FrontEndState& state, const FrontEndContent& content, F
         if (state.records.league_tracks[slot] % tracks_per_tour == 0)
             state.records.league_cycle_complete = true;
     }
-    if (state.script_frame > 45 && any_button_pressed(pads)) enter_league_table(state, content);
+    if (state.script_frame > slid_in_frame && any_button_pressed(pads))
+        enter_league_table(state, content);
 }
 
 void choose_league_slot(FrontEndState& state, const FrontEndContent& content) {

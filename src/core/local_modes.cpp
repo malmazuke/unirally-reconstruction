@@ -12,12 +12,26 @@
 namespace unirally::front_end_screens {
 namespace {
 
-constexpr std::uint8_t choices = 5, ranking_rows = 8;
-constexpr std::uint16_t continue_x = 0x0100, continue_first_y = 0x0580, continue_row_y = 0x0180;
+constexpr std::uint8_t ranking_rows = 8;
+constexpr unsigned menu_text_palette = 28;
+// The continuation's items, NEXT TRACK to QUIT: `$009D`, the last, 4 ($80:ADFC); the arrow's
+// columns (8-pixel units) from `$80:AE81`; y is (24 * item + 0x58) * 16 ($80:B962-B975), each
+// move 0x180 from the last target, past the last item from 0x400 (`$80:BA1F`).
+constexpr std::uint8_t last_choice = 4;
+constexpr std::array<std::uint8_t, last_choice + 1> choice_columns{2, 2, 0, 1, 8};
+constexpr std::uint16_t row_spacing = 0x0180, wrap_top_y = 0x0400;
+
+std::uint16_t choice_x(unsigned item) {
+    return static_cast<std::uint16_t>(choice_columns[item] * 128U);
+}
+
+std::uint16_t choice_y(unsigned item) {
+    return static_cast<std::uint16_t>((24 * item + 0x58) * 16);
+}
 
 void print_continue(FrontEndState& state, const FrontEndContent& content) {
     state.text.words.fill(cleared_text);
-    for (unsigned row = 0; row < choices; ++row) {
+    for (unsigned row = 0; row <= last_choice; ++row) {
         const auto stream = nth_string(content.local_continue_text, row);
         print_text(state.text, state.printer, {stream.data(), stream.size() + 1},
                    content.character_table);
@@ -108,8 +122,10 @@ void enter_local_continue(FrontEndState& state) {
 
 void local_continue_entry_frame(FrontEndState& state, const FrontEndContent& content) {
     switch (state.script_frame) {
-    case 1:
+    case 1: // $80:ADE5-ADF4: the object and text palettes again (VS CHAMPIONS' rows took them)
         copy_oam(state);
+        load_object_palette(state, content); // $83:91F7
+        load_cgram(state, asset(content, menu_text_palette), 0xd0);
         print_continue(state, content);
         return;
     case 2:
@@ -119,36 +135,80 @@ void local_continue_entry_frame(FrontEndState& state, const FrontEndContent& con
         start_slide(state, content, false);
         return;
     default:
-        if (!slide_frame(state, content)) return;
-        state.arrow.target_x = continue_x;
-        state.arrow.target_y = continue_first_y;
-        state.latches = {};
-        state.screen = FrontEndScreen::local_continue;
+        if (slide_frame(state, content)) state.screen = FrontEndScreen::local_continue;
     }
 }
 
+namespace {
+
+// $80:B93C: the cursor on NEXT TRACK and the arrow sent to it.
+void open_local_continue(FrontEndState& state) {
+    state.menu.selection = 0;
+    state.latches = {};
+    state.arrow.target_x = choice_x(0);
+    state.arrow.target_y = choice_y(0);
+}
+
+// $80:B983-BA5E, the generic list menu's moves (R-0095): Down (or Select) before Up, once a
+// press, wrapping past either end, each with the navigation sound (`$80:B178`).
+void move_continue_cursor(FrontEndState& state, std::uint16_t pad) {
+    auto& selection = state.menu.selection;
+    auto& target_y = state.arrow.target_y;
+    const bool down = (pad & (pad_down | pad_select)) != 0, is_up = !down && (pad & pad_up) != 0;
+    if (!down && !is_up) {
+        state.latches.moved = false;
+        return;
+    }
+    if (state.latches.moved) return;
+    state.latches.moved = true;
+    play_menu_sound(state, MenuSound::navigate);
+    if (down) {
+        if (++selection > last_choice) {
+            selection = 0;
+            target_y = wrap_top_y;
+        }
+        target_y = static_cast<std::uint16_t>(target_y + row_spacing);
+    } else {
+        if (selection-- == 0) {
+            selection = last_choice;
+            target_y = choice_y(last_choice + 1U);
+        }
+        target_y = static_cast<std::uint16_t>(target_y - row_spacing);
+    }
+    state.arrow.target_x = choice_x(selection);
+}
+
+} // namespace
+
+// After the slide `$80:A858`'s two frames (the base palette's halves), then the generic list
+// menu's loop (`$80:B93C`, from $80:AE0F), which turns the PICK TRACK markers (`$80:EB23`) and does
+// not step the decorations (R-0095).
 void local_continue_frame(FrontEndState& state, const FrontEndContent& content, FrontEndPads pads) {
-    copy_oam(state);
-    step_decorations(state, content);
+    if (state.script_frame <= 2) {
+        copy_oam(state);
+        if (state.script_frame == 1) {
+            load_cgram(state, asset(content, base_palette_low), 0);
+            return;
+        }
+        load_cgram(state, asset(content, base_palette_high), 0x40);
+        open_local_continue(state);
+        turn_markers(state, content);
+        return;
+    }
+    copy_oam(state); // $80:D1EC
     // The menu's tests take either pad the gate lets in (`$80:B6D3-B82B`, R-0095).
     const auto pad = static_cast<std::uint16_t>((state.pad_one_ignored ? 0U : pads.one)
                                                 | (state.pad_two_ignored ? 0U : pads.two));
-    if (!(pad & pad_up)) state.latches.up = false;
-    if (!(pad & pad_down)) state.latches.down = false;
-    // The original's menu is `$80:B93C`'s (from $80:ADE3), whose every move plays the navigation
-    // sound ($80:B9B1 Up, $80:BA13 Down).
-    if ((pad & pad_up) && !state.latches.up) {
-        state.latches.up = true;
-        play_menu_sound(state, MenuSound::navigate);
-        if (state.menu.selection > 0) --state.menu.selection;
-    } else if ((pad & pad_down) && !state.latches.down) {
-        state.latches.down = true;
-        play_menu_sound(state, MenuSound::navigate);
-        if (state.menu.selection + 1 < choices) ++state.menu.selection;
+    // $80:B74A, then $80:AE12-AE1A: Y or X leaves the loop and comes straight back, no move.
+    if (pad & back_buttons) {
+        turn_markers(state, content);
+        return;
     }
-    state.arrow.target_y =
-        static_cast<std::uint16_t>(continue_first_y + state.menu.selection * continue_row_y);
-    if (!(pad & choose_buttons)) return;
+    if (!(pad & choose_buttons)) { // $80:B71D
+        move_continue_cursor(state, pad);
+        turn_markers(state, content);
+        return;
+    }
     state.pad_one_ignored = state.pad_two_ignored = false; // $80:C0E0, `$83:9558`
     switch (state.menu.selection) {
     case 0: // NEXT TRACK, with the select sound ($80:AEAD)

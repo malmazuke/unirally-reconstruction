@@ -238,10 +238,12 @@ void print_result(FrontEndState& state, const FrontEndContent& content) {
     if (state.now_playing.opponent < someone)
         print_text(state.text, state.printer, content.result_fifth_row, content.character_table,
                    &variables);
-    // A computer opponent has no row: its 2P mark goes (`$80:D0FE`).
-    high_bits(state, 108) = four_hidden;
-    if (state.now_playing.opponent >= someone)
+    // A computer opponent has no row: its 2P mark goes (`$80:D0EF-D108`); a human's stays, with
+    // the fifth row's icon (entry 108) shown (R-0095).
+    if (state.now_playing.opponent >= someone) {
+        high_bits(state, 108) = four_hidden;
         for (const unsigned entry : {101U, 103U}) oam_byte(state, entry, 1) = off_screen_line;
+    }
     high_bits(state, 100) = four_shown;
 }
 

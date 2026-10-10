@@ -779,7 +779,8 @@
     "src/core/tour_menu.cpp:(file)",
     "src/core/tour_menu.cpp:first_medal_palette",
     "src/core/tour_menu.cpp:lay_out_medals",
-    "src/core/tour_menu.cpp:show_medal_entries"
+    "src/core/tour_menu.cpp:show_medal_entries",
+    "src/core/tour_menu.cpp:tour_menu_entry_frame"
    ],
    "observed_entries": {},
    "start": "$80:974B",
@@ -1195,6 +1196,7 @@
     "src/core/award.cpp:award_return_frame",
     "src/core/front_end.hpp:FrontEndScreen",
     "src/core/front_end_screens.hpp:first_rider_palette, base_palette_low, base_palette_high",
+    "src/core/local_modes.cpp:local_continue_frame",
     "src/core/presentation.cpp:now_playing_leftover_colours",
     "src/core/race_result.cpp:race_result_exit_frame",
     "src/core/tour_menu.cpp:return_to_tour_menu",
@@ -1526,6 +1528,7 @@
    "native": [
     "src/core/audio_cpu_menu_input.cpp:enqueue_navigation",
     "src/core/front_end_screens.hpp:MenuSound",
+    "src/core/local_modes.cpp:move_continue_cursor",
     "src/core/screen_slide.cpp:play_menu_sound"
    ],
    "observed_entries": {},
@@ -1954,7 +1957,10 @@
    ],
    "native": [
     "src/core/front_end.hpp:FrontEndScreen",
+    "src/core/local_modes.cpp:last_choice",
     "src/core/local_modes.cpp:local_continue_frame",
+    "src/core/local_modes.cpp:move_continue_cursor",
+    "src/core/local_modes.cpp:open_local_continue",
     "src/core/options_menu.cpp:move_choice",
     "src/core/wipe_ram.cpp:aim_at_entry",
     "src/core/wipe_ram.cpp:first_row_y, row_height",
@@ -2243,6 +2249,7 @@
     "src/core/rider_menu.cpp:left_column_x, right_column_x",
     "src/core/rider_menu.cpp:open_rider_menu",
     "src/core/rider_menu.cpp:open_rider_menu_entry",
+    "src/core/rider_menu.cpp:picks_second_in_place",
     "src/core/rider_menu.cpp:read_rider_menu_pad",
     "src/core/rider_menu.cpp:rider_menu_entry_frame",
     "src/core/rider_menu.cpp:set_arrow_palette",
@@ -2337,6 +2344,7 @@
     "src/core/front_end.hpp:NowPlaying::choice_pads",
     "src/core/front_end.hpp:StuntTally::pads",
     "src/core/hunter_ending.cpp:first_page_press",
+    "src/core/local_modes.cpp:local_continue_frame",
     "src/core/now_playing.cpp:now_playing_frame",
     "src/core/rider_menu.cpp:rider_menu_frame",
     "src/core/stunt_result.cpp:end_tally",
@@ -2730,10 +2738,12 @@
     "src/core/track_menu.cpp:choose_track",
     "src/core/track_menu.cpp:enter_track_menu",
     "src/core/track_menu.cpp:first_marker",
+    "src/core/track_menu.cpp:last_item",
     "src/core/track_menu.cpp:lay_out_markers",
     "src/core/track_menu.cpp:open_track_menu",
     "src/core/track_menu.cpp:print_medal",
     "src/core/track_menu.cpp:print_track_menu",
+    "src/core/track_menu.cpp:track_menu_entry_frame",
     "src/core/track_menu.cpp:track_menu_exit_frame",
     "src/core/track_menu.cpp:track_menu_frame"
    ],
@@ -2779,6 +2789,7 @@
    ],
    "native": [
     "src/core/front_end_screens.hpp:turn_markers",
+    "src/core/local_modes.cpp:local_continue_frame",
     "src/core/track_menu.cpp:turn_markers",
     "src/core/wipe_ram.cpp:wipe_ram_menu_entry_frame",
     "src/core/wipe_ram.cpp:wipe_ram_menu_frame"
@@ -9713,6 +9724,7 @@
     "src/core/race_demo_controls.cpp:demo_rider",
     "src/core/race_update.cpp:release_absent_opponent",
     "src/core/race_update.cpp:release_settled_opponent",
+    "src/core/race_update.cpp:run_pause_menu",
     "src/core/zoom_zoo_movement.hpp:StuntEvent::settled"
    ],
    "observed_entries": {},
@@ -11094,6 +11106,7 @@
     "NMX"
    ],
    "native": [
+    "src/core/front_end_screens.hpp:podium_arrow_late",
     "src/core/league_completion.cpp:league_podium_frame"
    ],
    "observed_entries": {},
@@ -11718,6 +11731,7 @@
     "src/core/front_end.cpp:load_main_menu_screen",
     "src/core/front_end.cpp:soft_reset",
     "src/core/front_end_screens.hpp:load_object_palette",
+    "src/core/local_modes.cpp:local_continue_entry_frame",
     "src/core/rider_menu.cpp:menu_text_palette, early_palette",
     "src/core/rider_menu.cpp:rider_menu_exit_frame"
    ],
@@ -12167,6 +12181,7 @@
    "native": [
     "src/core/front_end.hpp:NowPlaying::choice_pads",
     "src/core/front_end.hpp:SavedMenus",
+    "src/core/league_completion.cpp:league_podium_exit_frame",
     "src/core/race_result.cpp:restore_menus"
    ],
    "observed_entries": {},
@@ -15215,19 +15230,19 @@
    "call returns in the calling mode": 1262
   },
   "bytes": 131072,
-  "cited_addresses": 1862,
+  "cited_addresses": 1912,
   "cited_by_class": {
    "data": 33,
-   "inferred": 362,
-   "observed": 1068,
-   "unknown": 399
+   "inferred": 368,
+   "observed": 1078,
+   "unknown": 433
   },
   "cited_by_position": {
    "dat": 33,
-   "loc": 1041,
+   "loc": 1055,
    "mid": 21,
-   "sub": 368,
-   "unk": 399
+   "sub": 370,
+   "unk": 433
   },
   "conflicts": 0,
   "data": 92,

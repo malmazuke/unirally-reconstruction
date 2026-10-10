@@ -166,6 +166,9 @@ struct RiderMenu {
     bool back{};              // left with Y or X rather than chosen
     bool returning{};         // entered back from PICK TOUR ($00AC != 2): slides back in
     bool second{};            // 2P/VS: port 2 chooses a distinct second rider (R-0071)
+    // `$005A` is `$00AA`, the shown half: after 2P's or VS's first pick the second title is
+    // printed in place and the loop's text goes to the half on screen (R-0095).
+    bool text_to_shown{};
     // VS after the champions (`$80:C054-C0C2`, R-0095): the race's loser picks a challenger into
     // its own slot, with its own pad (`$83:952E`/`$83:9543`); the winner cannot be picked.
     bool challenger{};

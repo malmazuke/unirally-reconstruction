@@ -58,3 +58,16 @@ the records differing after a two-human restart (`$0422`, `$0486`, `$0829`, `$08
   4. Rider 1's horizontal input while pad 2 has paused the race (48 frames).
   5. The front-end sweep against main (24 of 179 differed before the last fixes) must be rerun and
      classified; R-0095 must cite the 31 addresses the native-symbols check lists.
+
+## Checkpoint - second pass
+
+- The subagent's second pass: the second pick in place (`$80:CBC3`), PICK TOUR/TRACK and the
+  continuation for two humans, the result's entry 108, pad 2's words during a pause, the league
+  podium arrow and POINT AWARDS' decorations. Item 1 (DOWNER) is a hardware timing effect
+  (R-0095's Not covered). Results and sweeps in `checks/pass2/` (R-0095).
+
+## Review candidate
+
+- Records: [R-0095](../docs/research/R-0095-two-human-stunts.md). Pack v38.
+- Gates: `local/evidence/two-human-stunts/gates.sh` (from CREDITS-NAME's) against main `ef8e440`'s
+  binaries (`base-ef8e440/`), pack v37 for main and v38 for the candidate, under the shared lock.

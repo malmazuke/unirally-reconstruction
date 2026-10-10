@@ -45,7 +45,7 @@ The four classes partition all 131,072 bytes. **Unknown share: 40.4%** - above D
 
 ## Cited addresses
 
-1862 distinct code-bank ROM addresses cited by the research, task, inventory and content records (`labels.json`). By position: dat 33, loc 1041, mid 21, sub 368, unk 399 (sub routine start, loc instruction start, mid inside an instruction, dat data, unk unknown). By class: data 33, inferred 362, observed 1068, unknown 399.
+1912 distinct code-bank ROM addresses cited by the research, task, inventory and content records (`labels.json`). By position: dat 33, loc 1055, mid 21, sub 370, unk 433 (sub routine start, loc instruction start, mid inside an instruction, dat data, unk unknown). By class: data 33, inferred 368, observed 1078, unknown 433.
 
 Cited addresses in `unknown` bytes:
 
@@ -72,7 +72,7 @@ Cited addresses in `unknown` bytes:
 | $80:88B2 | tasks/COVERAGE-ROADMAP.md |
 | $80:88BE | docs/research/R-0054-boot-title-main-menu.md, docs/research/R-0075-title-menu-audio.md |
 | $80:8953 | docs/research/R-0067-stunt-result.md |
-| $80:8B28 | docs/research/R-0091-mode-audio.md |
+| $80:8B28 | docs/research/R-0091-mode-audio.md, docs/research/R-0095-two-human-stunts.md |
 | $80:8B3F | docs/research/R-0073-league.md |
 | $80:8CCB | docs/research/R-0067-stunt-result.md, tasks/STUNT-RESULT.md |
 | $80:8D6E | docs/research/R-0057-one-run-result.md, docs/research/R-0058-lap-result.md, tasks/FRONT-END-LAP-RESULT.md, tasks/NEXT_SESSION.md |
@@ -94,6 +94,7 @@ Cited addresses in `unknown` bytes:
 | $80:9491 | tasks/IDLE-DEMO-ROTATION.md |
 | $80:949C | tasks/IDLE-DEMO-ROTATION.md |
 | $80:95A5 | docs/research/R-0067-stunt-result.md |
+| $80:9719 | docs/research/R-0095-two-human-stunts.md |
 | $80:97DD | docs/research/R-0056-tour-track-now-playing.md |
 | $80:9801 | docs/research/R-0056-tour-track-now-playing.md |
 | $80:9AB2 | docs/research/R-0072-options.md |
@@ -150,8 +151,12 @@ Cited addresses in `unknown` bytes:
 | $80:AB9E | docs/research/R-0092-wipe-ram.md |
 | $80:ABB9 | docs/research/R-0092-wipe-ram.md |
 | $80:AD1F | docs/research/R-0054-boot-title-main-menu.md, tasks/FRONT-END-MAIN-MENU.md |
-| $80:ADE3 | docs/research/R-0071-two-player-versus.md |
+| $80:ADE3 | docs/research/R-0071-two-player-versus.md, docs/research/R-0095-two-human-stunts.md |
+| $80:ADE5 | docs/research/R-0095-two-human-stunts.md |
+| $80:ADFC | docs/research/R-0095-two-human-stunts.md |
+| $80:AE12 | docs/research/R-0095-two-human-stunts.md |
 | $80:AE3F | docs/research/R-0071-two-player-versus.md |
+| $80:AE81 | docs/research/R-0095-two-human-stunts.md |
 | $80:AEAD | docs/research/R-0091-mode-audio.md |
 | $80:AF54 | docs/research/R-0073-league.md |
 | $80:B051 | docs/research/R-0091-mode-audio.md, tasks/MENU-INPUT.md |
@@ -168,7 +173,7 @@ Cited addresses in `unknown` bytes:
 | $80:B916 | docs/research/R-0091-mode-audio.md, tasks/MENU-INPUT.md |
 | $80:BCAF | docs/research/R-0055-rider-menu.md |
 | $80:BCBF | docs/research/R-0071-two-player-versus.md, tasks/COVERAGE-ROADMAP.md, tasks/NEXT_SESSION.md, tasks/TWO-PLAYER-VS.md |
-| $80:BCDB | docs/research/R-0091-mode-audio.md |
+| $80:BCDB | docs/research/R-0091-mode-audio.md, docs/research/R-0095-two-human-stunts.md, tasks/TWO-HUMAN-STUNTS.md |
 | $80:BCEF | docs/research/R-0091-mode-audio.md |
 | $80:BCFB | docs/research/R-0071-two-player-versus.md |
 | $80:BD02 | docs/research/R-0071-two-player-versus.md, docs/research/R-0091-mode-audio.md |
@@ -176,8 +181,10 @@ Cited addresses in `unknown` bytes:
 | $80:BD1F | docs/research/R-0057-one-run-result.md |
 | $80:BD5D | docs/research/R-0084-two-human-restart.md, tasks/TWO-HUMAN-RESTART.md |
 | $80:BD80 | docs/research/R-0084-two-human-restart.md |
+| $80:BD98 | docs/research/R-0095-two-human-stunts.md |
 | $80:BDD4 | tasks/COVERAGE-ROADMAP.md, tasks/LEAGUE.md |
 | $80:BE3F | docs/research/R-0057-one-run-result.md |
+| $80:BE45 | docs/research/R-0095-two-human-stunts.md |
 | $80:BE48 | docs/research/R-0079-two-pad-pause.md |
 | $80:BE76 | docs/research/R-0073-league.md |
 | $80:BEC6 | docs/research/R-0073-league.md |
@@ -190,9 +197,19 @@ Cited addresses in `unknown` bytes:
 | $80:BF9F | docs/research/R-0057-one-run-result.md |
 | $80:BFE0 | docs/research/R-0084-two-human-restart.md, tasks/TWO-HUMAN-RESTART.md |
 | $80:C00D | docs/research/R-0084-two-human-restart.md |
-| $80:C0B1 | docs/research/R-0091-mode-audio.md, tasks/MENU-INPUT.md |
+| $80:C026 | docs/research/R-0095-two-human-stunts.md |
+| $80:C02C | docs/research/R-0095-two-human-stunts.md |
+| $80:C048 | docs/research/R-0095-two-human-stunts.md |
+| $80:C04A | docs/research/R-0095-two-human-stunts.md |
+| $80:C051 | docs/research/R-0095-two-human-stunts.md |
+| $80:C054 | docs/research/R-0095-two-human-stunts.md |
+| $80:C087 | docs/research/R-0095-two-human-stunts.md |
+| $80:C09C | docs/research/R-0095-two-human-stunts.md |
+| $80:C0B1 | docs/research/R-0091-mode-audio.md, docs/research/R-0095-two-human-stunts.md, tasks/MENU-INPUT.md |
 | $80:C0BD | docs/research/R-0091-mode-audio.md |
+| $80:C0C0 | docs/research/R-0095-two-human-stunts.md |
 | $80:C10E | docs/research/R-0071-two-player-versus.md |
+| $80:C120 | docs/research/R-0095-two-human-stunts.md |
 | $80:C12A | docs/research/R-0072-options.md |
 | $80:C13D | docs/research/R-0091-mode-audio.md |
 | $80:C1DE | docs/research/R-0072-options.md |
@@ -291,7 +308,8 @@ Cited addresses in `unknown` bytes:
 | $80:EEF2 | docs/research/R-0072-options.md |
 | $80:EF3D | docs/research/R-0072-options.md, tasks/OPTIONS.md |
 | $80:EF89 | docs/research/R-0072-options.md, tasks/OPTIONS.md |
-| $80:F0EE | docs/research/R-0057-one-run-result.md, docs/research/R-0058-lap-result.md, docs/research/R-0066-stunt-event-race.md, docs/research/R-0067-stunt-result.md, tasks/STUNT-RESULT.md |
+| $80:F02B | docs/research/R-0095-two-human-stunts.md |
+| $80:F0EE | docs/research/R-0057-one-run-result.md, docs/research/R-0058-lap-result.md, docs/research/R-0066-stunt-event-race.md, docs/research/R-0067-stunt-result.md, docs/research/R-0095-two-human-stunts.md, tasks/STUNT-RESULT.md, tasks/TWO-HUMAN-STUNTS.md |
 | $80:F0F3 | docs/research/R-0067-stunt-result.md |
 | $80:F0FC | docs/research/R-0067-stunt-result.md |
 | $80:F116 | docs/research/R-0067-stunt-result.md |
@@ -303,7 +321,7 @@ Cited addresses in `unknown` bytes:
 | $80:F249 | docs/research/R-0067-stunt-result.md |
 | $80:F24F | docs/research/R-0067-stunt-result.md |
 | $80:F26F | docs/research/R-0067-stunt-result.md |
-| $80:F283 | docs/research/R-0067-stunt-result.md |
+| $80:F283 | docs/research/R-0067-stunt-result.md, docs/research/R-0095-two-human-stunts.md |
 | $80:F2AE | docs/research/R-0067-stunt-result.md |
 | $80:F2EA | docs/research/R-0067-stunt-result.md |
 | $80:F3E0 | docs/research/R-0067-stunt-result.md |
@@ -315,11 +333,12 @@ Cited addresses in `unknown` bytes:
 | $80:F491 | docs/research/R-0067-stunt-result.md |
 | $80:F4A3 | docs/research/R-0067-stunt-result.md |
 | $80:F4B4 | docs/research/R-0067-stunt-result.md |
-| $80:F4B5 | docs/research/R-0067-stunt-result.md |
+| $80:F4B5 | docs/research/R-0067-stunt-result.md, docs/research/R-0095-two-human-stunts.md |
 | $80:F618 | docs/research/R-0054-boot-title-main-menu.md |
-| $80:F669 | docs/research/R-0067-stunt-result.md |
+| $80:F669 | docs/research/R-0067-stunt-result.md, docs/research/R-0095-two-human-stunts.md, tasks/TWO-HUMAN-STUNTS.md |
 | $80:F680 | docs/research/R-0067-stunt-result.md |
 | $80:F68F | docs/research/R-0067-stunt-result.md |
+| $80:F69D | docs/research/R-0095-two-human-stunts.md |
 | $80:F755 | docs/research/R-0067-stunt-result.md |
 | $80:F756 | docs/research/R-0077-one-player-audio.md |
 | $80:F758 | docs/research/R-0067-stunt-result.md |
@@ -333,6 +352,13 @@ Cited addresses in `unknown` bytes:
 | $80:F7CB | docs/research/R-0067-stunt-result.md |
 | $80:F7E7 | docs/research/R-0067-stunt-result.md |
 | $80:F7FB | docs/research/R-0067-stunt-result.md |
+| $80:F8E7 | docs/research/R-0095-two-human-stunts.md |
+| $80:F905 | docs/research/R-0095-two-human-stunts.md |
+| $80:F949 | docs/research/R-0095-two-human-stunts.md |
+| $80:F974 | docs/research/R-0095-two-human-stunts.md |
+| $80:F9A5 | docs/research/R-0095-two-human-stunts.md |
+| $80:F9DB | docs/research/R-0095-two-human-stunts.md |
+| $80:F9E4 | docs/research/R-0095-two-human-stunts.md |
 | $80:F9EE | docs/research/R-0071-two-player-versus.md |
 | $80:FACD | docs/research/R-0054-boot-title-main-menu.md |
 | $80:FBC5 | docs/research/R-0054-boot-title-main-menu.md |
@@ -379,14 +405,22 @@ Cited addresses in `unknown` bytes:
 | $83:8E26 | docs/research/R-0056-tour-track-now-playing.md |
 | $83:8FDE | docs/research/R-0072-options.md |
 | $83:904A | docs/research/R-0038-dragster-ordinary-controls.md, docs/research/R-0058-lap-result.md, tasks/FRONT-END-LAP-RESULT.md |
+| $83:9229 | docs/research/R-0095-two-human-stunts.md |
+| $83:925E | docs/research/R-0095-two-human-stunts.md |
+| $83:92B0 | docs/research/R-0095-two-human-stunts.md |
+| $83:952E | docs/research/R-0095-two-human-stunts.md |
+| $83:956D | docs/research/R-0095-two-human-stunts.md |
 | $83:958C | docs/research/R-0073-league.md, docs/research/R-0090-save-files.md |
 | $83:95CA | docs/research/R-0073-league.md |
 | $83:98B8 | docs/research/R-0067-stunt-result.md |
+| $83:99C2 | docs/research/R-0095-two-human-stunts.md |
 | $83:9AF9 | docs/research/R-0055-rider-menu.md |
 | $83:9B01 | docs/research/R-0055-rider-menu.md |
 | $83:9B09 | docs/research/R-0055-rider-menu.md |
 | $83:9B13 | docs/research/R-0055-rider-menu.md |
 | $83:9B27 | docs/research/R-0055-rider-menu.md, docs/research/R-0056-tour-track-now-playing.md |
+| $83:9BE1 | docs/research/R-0095-two-human-stunts.md |
+| $83:9D80 | docs/research/R-0095-two-human-stunts.md |
 | $83:9EC8 | docs/research/R-0057-one-run-result.md, docs/research/R-0065-fifth-win-completion.md |
 | $83:9F96 | docs/research/R-0053-result-title-printer.md, tasks/LOCKED-TOURS.md |
 | $83:9FFA | docs/research/R-0046-track-breadth-matrix.md, docs/research/R-0053-result-title-printer.md, tasks/LOCKED-TOURS.md, tasks/TRACK-BREADTH.md |

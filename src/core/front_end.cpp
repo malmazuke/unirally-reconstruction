@@ -266,9 +266,13 @@ bool waits_for_frame(const FrontEndState& state) {
     if (state.screen == FrontEndScreen::league_podium) return false;
     if (state.screen == FrontEndScreen::wipe_ram_answer) return wipe_ram_answer_waits(state);
     if (state.screen == FrontEndScreen::credits_picture) return credits_picture_waits(state);
-    if (state.screen == FrontEndScreen::league_podium_exit)
-        return next == upload_last_frame + 2 || next == menu_screen_frame + 2
-            || next >= restore_frame + 2;
+    // The podium's way back is the race's return two frames later; its arrow can turn a frame
+    // later still (podium_arrow_late, R-0095).
+    if (state.screen == FrontEndScreen::league_podium_exit) {
+        const std::uint32_t late = podium_arrow_late(state) ? 1 : 0;
+        return next == upload_last_frame + 2 + late || next == menu_screen_frame + 2 + late
+            || next >= restore_frame + 2 + 2 * late;
+    }
     // Every other screen after the boot waits for each frame.
     if (state.screen != FrontEndScreen::boot) return true;
     const auto frame = boot_frame_number(state);

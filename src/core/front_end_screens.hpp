@@ -38,6 +38,12 @@ inline constexpr std::uint8_t someone = 0x10;
 // arrow on the sound upload's last frame and `$80:D20E`'s first, then from the OAM copy on
 // (the restore frame).
 inline constexpr std::uint32_t upload_last_frame = 74, menu_screen_frame = 75, restore_frame = 101;
+// The podium's way back (R-0095): left on the podium's phase 2 or 3 (`$82:DF06`), its arrow turns
+// and comes back a frame later than on phase 0 or 1. Measured on four podium presses a frame
+// apart (organic-cycle-five and its podium-press variants) and organic-full-tour-turnaround.
+inline bool podium_arrow_late(const FrontEndState& state) {
+    return (state.league.podium_phase & 2U) != 0;
+}
 // The result screen's third frame, its tail (`$80:9579`); after a lap result's second frame's
 // overrun it starts without a frame wait.
 inline constexpr std::uint32_t result_tail_frame = 3;
