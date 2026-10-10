@@ -24,11 +24,13 @@ resolution read has the same resolved writes the round was resolved against),
 and after a bounded number of rounds any resolution that read a byte still
 changing is dropped. Only the kept round's kept resolutions reach the record:
 their accesses, ROM reads, stored values, labels, register shadow, DMA log and
-watch log (ACCESS-ROUND-READS); ``resolution_rounds`` counts frames by rounds. With ``resolve_rmw`` (``access capture --resolve-rmw``,
-DATA-COVERAGE) a read-modify-write's result is computed from the byte's
-resolved old value and the instruction's own registers (INC, DEC, ASL, LSR;
-ROL and ROR with the carry in P; TSB and TRB with A), so a pointer advanced by
-INC stays resolved; an RMW whose old value is unresolved stays unresolved. What the record cannot show at all is listed in
+watch log (ACCESS-ROUND-READS); ``resolution_rounds`` counts frames by rounds.
+With ``resolve_rmw`` (``access capture --resolve-rmw``, DATA-COVERAGE) a
+read-modify-write's result is computed from the byte's resolved old value and
+the instruction's own registers (INC, DEC, ASL, LSR; ROL and ROR with the
+carry in P; TSB and TRB with A), so a pointer advanced by INC stays resolved;
+an RMW whose old value is unresolved stays unresolved. What the record cannot
+show at all is listed in
 ``residual``: writes through unresolved pointers (which could hit any byte,
 so every resolution carries this caveat), DMA engine transfers (only their
 parameter stores are recorded, see ``dma_log``) and VRAM/CGRAM/OAM contents.
