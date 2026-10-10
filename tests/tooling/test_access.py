@@ -693,6 +693,48 @@ class ResolutionRoundTests(unittest.TestCase):
         self.assertEqual(doc["resolution_rounds"], [[1, 2]])
 
 
+def register_rom() -> bytes:
+    rom = bytearray(0x10000)
+    prog = bytes([
+        0x87, 0x80,              # 8000 STA [$80]        resolved store to $00:4302 (channel 0 A1T low)
+        0x8D, 0x0B, 0x42,        # 8002 STA $420B        direct MDMAEN
+        0x8D, 0x02, 0x43,        # 8005 STA $4302        direct channel 0 A1T low
+        0x87, 0x84,              # 8008 STA [$84]        resolved store to $00:420B (MDMAEN)
+    ])
+    rom[0:len(prog)] = prog
+    return bytes(rom)
+
+
+def run_registers(program: list[tuple[int, int]]):
+    """One frame of ``register_rom``: (pc, 8-bit A) entries with DBR $00; [$80] = $00:4302, [$84] = $00:420B."""
+    rom = register_rom()
+    ring = StubRing()
+    for pc, a in program:
+        ring.execute(pc, a=a, d=0, b=0x00, p=0x20)
+    wram = bytearray(derive.WRAM_SIZE)
+    wram[0x80:0x83] = bytes([0x02, 0x43, 0x00])
+    wram[0x84:0x87] = bytes([0x0B, 0x42, 0x00])
+    d = derive.AccessDrain(rom, 16)
+    d.set_previous_wram(bytes(wram))
+    d.drain_frame(0, ring.raw(), bytes(wram))
+    doc = d.document({"rom": {"sha256": "a" * 64, "size": len(rom)}, "core": {"name": "stub"}, "script": {"frames": 1}, "status": "complete"}, (0, 0))
+    return derive.validate_document(doc)
+
+
+class RegisterOrderTests(unittest.TestCase):
+    """Register stores reach the DMA parameter shadow in instruction order, resolved or direct (ACCESS-REGISTER-ORDER)."""
+
+    def test_a_resolved_parameter_store_before_a_direct_enable(self) -> None:
+        doc = run_registers([(0x8000, 0x34), (0x8002, 0x01)])
+        self.assertEqual([(seq, pc, reg) for _f, seq, pc, reg, _v, _c in doc["dma_log"]], [(1, 0x8002, "MDMAEN")])
+        self.assertEqual(doc["dma_log"][0][5]["0"]["A1T"], 0x34)
+
+    def test_a_resolved_enable_before_a_direct_parameter_change(self) -> None:
+        doc = run_registers([(0x8005, 0x11), (0x8008, 0x01), (0x8005, 0x22), (0x8002, 0x01)])
+        log = [(seq, pc, reg, channels["0"]["A1T"]) for _f, seq, pc, reg, _v, channels in doc["dma_log"]]
+        self.assertEqual(log, [(1, 0x8008, "MDMAEN", 0x11), (3, 0x8002, "MDMAEN", 0x22)])
+
+
 class WorkerAndCliTests(unittest.TestCase):
     def test_worker_rejects_bad_access_arguments(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
