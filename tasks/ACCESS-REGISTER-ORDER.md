@@ -2,7 +2,7 @@
 
 ## Assignment
 
-- Status: **in_progress**. Claimed 10 October 2026 20:01 UTC (11 October local) at the user's request, on
+- Status: **review**. Claimed 10 October 2026 20:01 UTC (11 October local) at the user's request, on
   `task/access-round-reads` `1375c9d` (PR #74, ACCESS-ROUND-READS, accepted in its record and
   not yet merged at claim; this branch takes main once #74 merges). Weekly usage at claim 36%
   (5-hour window 10%).
@@ -60,7 +60,23 @@ still leaves no register store.
     entries, seq 1 with `A1T` `$11` and seq 3 with `$22` (before: seq 3 first, both `$22`).
 - `python3 -m unittest discover -s tests/tooling -t tests/tooling`: 574 tests OK (two need the
   checkout's `artifacts/` directory to exist).
-- **Corpus re-measure**: running (`local/evidence/access-register-order/captures.sh`).
+- **Corpus re-measure** (`local/evidence/access-register-order/`, run at head `426c9a7`
+  (`tools/` as in `d6278f2`, the fix), R-0089's manifests, 8 jobs under
+  `heavy-run.sh`, 20:04-21:43 UTC 10 October):
+  - 236 runs kept (004 fails by design; 103-106 kept under `followup.sh`'s rule), 1,666,993 frames,
+    every frame resolved in one round, 0 conflict bytes, 0 dropped, 0 unresolved accesses;
+  - **resolved register stores: 0.** No access record has a write row with a resolution label at
+    a register address (`$2000-$43FF` of banks `$00-$3F`/`$80-$BF`): every register store in the
+    corpus is a direct store, so the fix cannot change any of the 20,255,397 DMA log entries. The
+    counter is checked on `RegisterOrderTests`' frame, where it finds both resolved stores
+    (`$8000` to `$4302`, `$8008` to `$420B`);
+  - every reduced run (`runs/NNN.json`) is byte-identical to ACCESS-ROUND-READS's, which are
+    byte-identical to R-0093's (`compare.py`, `compare.out`);
+  - `aggregate.py` with R-0093's inputs (profile v36 rules from `6b6790a`) writes `aggregate.json`
+    (SHA-256 prefix `0234e7c2faa6d456`) and `aggregate.out` byte-identical to R-0093's: 1,562,774
+    of 2,097,152 ROM bytes read (CPU 904,803, DMA 678,967, HDMA 22,748).
+- **Difference: none.** The defect needs a register store through a resolved pointer or from work
+  RAM code, and the corpus has none. R-0093's limits now say so.
 
 ## Reproduction
 
@@ -68,7 +84,22 @@ From the task checkout with `local/` linked to the main checkout's:
 
 ```
 local/locks/heavy-run.sh ACCESS-REGISTER-ORDER local/evidence/access-register-order/captures.sh 8
+python3 local/evidence/access-register-order/compare.py
+git show 6b6790a:tests/manifests/content/classic-crawler-tracks-pack.json > pack-v36.json
+python3 local/evidence/access-register-order/aggregate.py <ROM> pack-v36.json local/evidence/access-register-order/aggregate.json
+cmp local/evidence/access-register-order/aggregate.json local/evidence/data-coverage/aggregate.json
 ```
+
+`aggregate.py` and `track_assets.json` are copies of DATA-COVERAGE's (identical by `cmp`);
+`aggregate.py` reads the runs beside it. `captures.sh` is ACCESS-ROUND-READS's with `regs/NNN.json`
+(resolved register stores, DMA log length and digest, resolution counts) in place of `rounds/`.
+
+## Not covered
+
+- A corpus frame with a resolved register store: none exists, so the ordering is checked by the
+  synthetic tests only.
+- What resolution cannot see stays as R-0093 states: writes through unresolved pointers, DMA into
+  work RAM, and HDMA tables in work RAM.
 
 ## Review and integration
 

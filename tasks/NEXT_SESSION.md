@@ -1,5 +1,13 @@
 # Next session
 
+**11 October 2026: ACCESS-REGISTER-ORDER is in review (tier 2) on `task/access-register-order`.**
+The access derivation now applies the frame's register stores to its DMA parameter shadow in
+instruction order. Before, a store resolved through a pointer reached the shadow after every
+direct store of the frame, so a DMA enable stored that way logged the frame's last channel
+parameters. Two synthetic tests fail before the fix. R-0089's corpus re-measured (236 runs): no
+record has a resolved register store, every reduced run and R-0093's totals are byte-identical,
+so R-0093 stands. [ACCESS-REGISTER-ORDER](ACCESS-REGISTER-ORDER.md) has the details.
+
 **10 October 2026: ACCESS-ROUND-READS is accepted (tier 2, #74) and integrated by merge commit.**
 The access derivation now records only the resolution round it keeps. Before, a round discarded for
 a conflict, or a resolution dropped after the last round, left its ROM reads (and stored values,
