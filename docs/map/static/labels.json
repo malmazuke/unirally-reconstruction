@@ -17209,14 +17209,40 @@
   ]
  },
  {
-  "address": "$82:DC40",
+  "address": "$82:DC2E",
   "class": "inferred",
   "comment": "instruction start",
-  "label": "loc_82DC40",
+  "label": "loc_82DC2E",
   "native": [
    "src/core/content_pack.cpp:tracks_required",
    "src/core/presentation.cpp:load_other_track_presentation_content",
    "src/core/race_setup.cpp:stunt_scenario"
+  ],
+  "source_records": [
+   "docs/research/R-0093-data-coverage.md"
+  ]
+ },
+ {
+  "address": "$82:DC57",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82DC57",
+  "native": [
+   "src/core/content_pack.cpp:tracks_required",
+   "src/core/presentation.cpp:load_other_track_presentation_content"
+  ],
+  "source_records": [
+   "docs/research/R-0093-data-coverage.md"
+  ]
+ },
+ {
+  "address": "$82:DC65",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82DC65",
+  "native": [
+   "src/core/content_pack.cpp:tracks_required",
+   "src/core/presentation.cpp:load_other_track_presentation_content"
   ],
   "source_records": [
    "docs/research/R-0093-data-coverage.md"
@@ -24167,6 +24193,15 @@
   "class": "inferred",
   "comment": "instruction start",
   "label": "loc_83FB06",
+  "source_records": [
+   "docs/research/R-0093-data-coverage.md"
+  ]
+ },
+ {
+  "address": "$83:FB10",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_83FB10",
   "source_records": [
    "docs/research/R-0093-data-coverage.md"
   ]

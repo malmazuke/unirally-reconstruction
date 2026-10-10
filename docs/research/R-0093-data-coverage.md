@@ -92,8 +92,14 @@ Tags: **[L]** listing only, **[C]** confirmed in a capture, **[R]** stated by an
   - `$81:BB7A`, the unpacker R-0089 counted as never run, is its VRAM twin. It has the same
     18-byte header skip, writes to video memory, and its only caller is `$82:B219`, the compressed
     branch of the VRAM copier `$82:B1DB` [L].
-  - No call site asks that copier for a flagged entry. 29 call sites pass constants up to `$92`,
-    and the two computed ones are bounded to `$70-$7D` and `$82-$8F` (`$82:DC40-DC65`) [L].
+  - No call site asks that copier for a flagged entry. The listing regenerated from this corpus
+    has 69 call sites: 67 pass constants up to `$C0` (the credits picture at `$83:FB10`/`FB1A`),
+    and 2 compute an index (`$82:DC57`, `$82:DC65`) [L].
+  - The computed index is a value mod 14 plus `$70` or `$82`, or 14 itself when bit 3 of
+    `$77:0750` is clear (`$82:DC2E-DC3D`, which also sets `$12D1`). So it stays within `$70-$7E`
+    and `$82-$90` [L].
+  - Entries `$7E` and `$90` are the packed but never-read `scenery.14` backdrop. Which option
+    selects it belongs to CARTRIDGE-OPTION-BITS.
   - So R-0089's "second graphics format" is the track format, and `$81:BB7A` looks unreachable in
     the shipped game. It is not a missing feature.
 - **Which tracks load.** The corpus loads 25 of the 45 track streams in full: 0-6, 8-11, 13-16,
@@ -123,18 +129,22 @@ Tags: **[L]** listing only, **[C]** confirmed in a capture, **[R]** stated by an
   - They load only in the 9-11 runs that reach an idle demo (attract-demo, idle-demo-cycles, and
     league or VS runs left idle) [C].
   - This is content [DEMO-AUDIO](../../tasks/DEMO-AUDIO.md) will need.
-- **The sound program (11,603 bytes).** Four blocks are uploaded by `$82:809C-80BA`:
+- **The rest of the sound uploads (11,603 bytes).** These are the unpacked parts of the uploads
+  that `$82:809C-80BA` streams to the sound processor. The upload headers sit at `$93:C6B0`,
+  `$93:EA9A` and `$94:8265` (review). The bytes lie between the packed pitch values, tables and
+  scores:
 
-| Source | Bytes |
-| --- | ---: |
-| `$93:C6B2` | 4,107 |
-| `$93:D773` | 154 |
-| `$93:D80F` | 4,443 |
-| `$93:F712` | 2,899 |
+| Source | Bytes | Read by |
+| --- | ---: | --- |
+| `$93:C6B2` | 4,107 | every run |
+| `$93:D773` | 154 | every run |
+| `$93:D80F` | 4,443 | every run (5 in full) |
+| `$93:F712` | 2,899 | 10 runs: the nine idle-demo runs plus 053, which reaches the demo's start |
 
-  - They sit beside the packed `audio.pitch-values` and score tables [C].
-  - D-0009 reimplements the sound driver natively, so its SPC700 code is not extracted by design
-    [R].
+  - D-0009 reimplements the sound driver natively, so the driver's own bytes are not extracted
+    by design [R].
+  - The table does not separate driver code from data the native driver may still need. That
+    question belongs to DEMO-AUDIO for `$93:F712`, and to D-0009's audits for the rest.
 - **The rest (188 bytes):** single words and 3-byte pieces in `$84` and `$97`, read by the asset
   copier `$82:B296` and table walks [C].
 - **Unread and unpacked asset entries** [C]:
@@ -175,7 +185,7 @@ Tags: **[L]** listing only, **[C]** confirmed in a capture, **[R]** stated by an
   - All 2,612 tracked ranges tile.
 - **Routines:** the map now holds 759 routines (was 636). Native code cites 528 of them, covering
   69,068 routine bytes.
-- **Map size:** the corpus map is 1,149,309 bytes. M1-01 keeps a tracked map under about 1 MiB.
+- **Map size:** the corpus map is 1,149,327 bytes. M1-01 keeps a tracked map under about 1 MiB.
   - A corpus reaching most of the code banks passes 1 MiB however it is split (half the corpus
     gave 1,091,108 bytes).
   - So `coverage map` allows 2 MiB for a map of merged coverage only.
@@ -185,6 +195,13 @@ Tags: **[L]** listing only, **[C]** confirmed in a capture, **[R]** stated by an
 - **HDMA tables in work RAM:** 3,321,994 HDMA channel activations used a table in work RAM, which
   `extract.py` cannot walk without per-frame work RAM. ROM data their indirect entries point to
   is not counted.
+- **Possible leak from discarded resolution rounds (review finding 4):** the access derivation
+  records a round's ROM reads in the bitmap before it knows whether the round will be discarded
+  for a conflict. A frame that needed a second round can mark addresses its final resolution
+  does not read. Pre-existing in `derive.py`'s `_record`; not quantified over the corpus. The
+  review's ground-truth check (run 003: every one of 7,290 sound-upload loads equals the ROM bytes
+  at its resolved address) found no wrong address. A follow-up task fixes the derivation and
+  remeasures.
 - **Coarse attribution:** per-pc attribution uses each pc's minimum and maximum address, so a
   routine that reads two far-apart tables is listed against everything between them. The read
   bitmaps themselves are exact.
@@ -192,6 +209,10 @@ Tags: **[L]** listing only, **[C]** confirmed in a capture, **[R]** stated by an
   the corpus. "Never read" means never read by these 236 runs.
 
 ## Reproduction
+
+Since this task the static map has five tracked maps, so `coverage static-map` and
+`coverage disassemble` need five raw captures: STATIC-CODE-MAP's four and
+`local/evidence/data-coverage/corpus-coverage.json`.
 
 From the data-coverage checkout, with `local/` linked to the main checkout's, under
 `local/locks/heavy-run.sh`:

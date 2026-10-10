@@ -18688,16 +18688,16 @@
    "call returns in the calling mode": 2454
   },
   "bytes": 131072,
-  "cited_addresses": 1841,
+  "cited_addresses": 1844,
   "cited_by_class": {
    "data": 14,
-   "inferred": 61,
-   "observed": 1589,
+   "inferred": 62,
+   "observed": 1591,
    "unknown": 177
   },
   "cited_by_position": {
    "dat": 14,
-   "loc": 1203,
+   "loc": 1206,
    "mid": 28,
    "sub": 419,
    "unk": 177

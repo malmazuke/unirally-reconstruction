@@ -280,6 +280,14 @@ class MergeTests(unittest.TestCase):
         self.assertEqual((m["first_site"], m["last_site"]), (a["first_site"], b["last_site"]))
         self.assertEqual((m["scenario_id"], m["merged_from"]), ("corpus", sources))
 
+    def test_first_frames_count_from_each_run_start(self) -> None:
+        a = drained([[0x8000]])
+        b = drained([[0x8100], [0x8200]])
+        b["frames"] = {"start": 100, "end": 101, "count": 2}
+        b["sites"] = [[pc, m, bank, n, first + 100] for pc, m, bank, n, first in b["sites"]]
+        m = drain.merge_documents([a, b], "corpus", [{"path": "a"}, {"path": "b"}])
+        self.assertEqual({s[0]: s[4] for s in m["sites"]}, {0x8000: 0, 0x8100: 1, 0x8200: 2})
+
     def test_inputs_must_agree(self) -> None:
         a = drained([[0x8000]])
         src = [{"path": "a"}, {"path": "b"}]
@@ -544,7 +552,7 @@ class TrackedMapTests(unittest.TestCase):
                 self.assertEqual(len(doc["entry_points"]), t["entry_points"])
                 self.assertEqual(len(doc["vectors"]), 12)
                 # M1-01's 1 MiB; a map of merged coverage (DATA-COVERAGE, R-0093) may take 2 MiB.
-                self.assertLessEqual(path.stat().st_size, (2 if doc["coverage"].get("merged_runs") else 1) << 20)
+                self.assertLessEqual(path.stat().st_size, (2 if doc["coverage"].get("merged_runs", 0) > 1 else 1) << 20)
                 self.assertEqual(derive.dump_map(doc), path.read_text())
                 for key in ("opcode", "mnemonic", "bytes_hex"):
                     self.assertNotIn(f'"{key}"', path.read_text())

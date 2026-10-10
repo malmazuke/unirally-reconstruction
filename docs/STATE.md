@@ -6,11 +6,12 @@ It measures which ROM data the original reads over R-0089's 236-run corpus: 1,56
 - **The flagged entries are the tracks.** R-0089's 45 flagged directory entries are the 45 track
   streams. The never-run `$81:BB7A` sits on a branch no call site reaches.
 - **A second directory.** `$82:B7DD` holds the track scenery directory, 41 entries.
-- **Read but not extracted.** The demo's sound set (samples 02, 23, 34) and the sound program,
-  which D-0009 reimplements.
+- **Read but not extracted.** The demo's sound set (samples 02, 23, 34) and the rest of the
+  sound uploads, around the driver D-0009 reimplements.
 - **Unread and unpacked.** The credits-cheat picture, now in CREDITS-NAME's PR, and bank `$A2`.
 - **Static map.** Regenerated with a merged corpus map, its unknown share falls from 40.4% to
-  24.0%.
+  24.0%. Since this task, `coverage static-map` and `disassemble` need a fifth raw capture:
+  `local/evidence/data-coverage/corpus-coverage.json`.
 [R-0093](research/R-0093-data-coverage.md) and [DATA-COVERAGE](../tasks/DATA-COVERAGE.md) have the details. It ran beside the
 WIPE-RAM/CREDITS-NAME lane, sharing heavy runs through `local/locks/heavy-run.sh`.
 

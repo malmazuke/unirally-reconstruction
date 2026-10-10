@@ -310,7 +310,7 @@ def cmd_map(args: argparse.Namespace) -> int:
     # M1-01 keeps a tracked map under about 1 MiB. A merged corpus (DATA-COVERAGE) reaches most of the
     # code banks, and its entry points and static references alone pass 1 MiB however it is split,
     # so a map of merged coverage may take 2 MiB.
-    limit_mib = 2 if doc["coverage"].get("merged_runs") else 1
+    limit_mib = 2 if doc["coverage"].get("merged_runs", 0) > 1 else 1
     size_ok = out.stat().st_size <= (limit_mib << 20)
     rep.add_check("map_written", "passed" if size_ok else "failed",
                   detail=f"{out} ({out.stat().st_size} bytes, limit {limit_mib} MiB); {len(doc['ranges'])} ranges, {len(doc['entry_points'])} entry points, "

@@ -175,7 +175,7 @@ def merge_documents(docs: list[dict[str, Any]], scenario_id: str, sources: list[
 
     The runs are laid end to end on one frame axis in the given order: per-frame counts and watch
     series are concatenated, and a site's first frame is its first in the earliest run that
-    executes it, offset by the frames before that run. Site and pair counts are summed; no pair
+    executes it, counted from that run's own first frame and offset by the frames before it. Site and pair counts are summed; no pair
     joins the last site of one run to the first of the next. ``first_site`` is the first run's,
     ``tail_sites`` and ``last_site`` the last run's. ``sources`` (path and SHA-256 of each input,
     in order) is recorded as ``merged_from``. Raises ValueError when the inputs disagree."""
@@ -201,11 +201,12 @@ def merge_documents(docs: list[dict[str, Any]], scenario_id: str, sources: list[
     watch: dict[str, list[int]] = {str(a): [] for a in watch_addresses}
     offset = 0
     for d in docs:
+        start = d["frames"]["start"]
         for pc, mode, bank, count, first_frame in d["sites"]:
             key = (pc, mode, bank)
             cur = sites.get(key)
             if cur is None:
-                sites[key] = [count, offset + first_frame]
+                sites[key] = [count, offset + first_frame - start]
             else:
                 cur[0] += count
         for p in d["pairs"]:
