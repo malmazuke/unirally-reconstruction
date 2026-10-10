@@ -19,12 +19,18 @@ recorded write touched the byte in the frame (``end_of_frame``). A byte whose
 last preceding recorded write has an unknown value (read-modify-write, block
 move, unresolved store) stays unresolved. Resolved accesses that write may
 invalidate other resolutions of the same frame; the frame is re-resolved
-until stable, and after a bounded number of rounds any resolution touched by
-such a write is dropped. With ``resolve_rmw`` (``access capture --resolve-rmw``,
-DATA-COVERAGE) a read-modify-write's result is computed from the byte's
-resolved old value and the instruction's own registers (INC, DEC, ASL, LSR;
-ROL and ROR with the carry in P; TSB and TRB with A), so a pointer advanced by
-INC stays resolved; an RMW whose old value is unresolved stays unresolved. What the record cannot show at all is listed in
+against the writes of the previous round until stable (every byte a
+resolution read has the same resolved writes the round was resolved against),
+and after a bounded number of rounds any resolution that read a byte still
+changing is dropped. Only the kept round's kept resolutions reach the record:
+their accesses, ROM reads, stored values, labels, register shadow, DMA log and
+watch log (ACCESS-ROUND-READS); ``resolution_rounds`` counts frames by rounds.
+With ``resolve_rmw`` (``access capture --resolve-rmw``, DATA-COVERAGE) a
+read-modify-write's result is computed from the byte's resolved old value and
+the instruction's own registers (INC, DEC, ASL, LSR; ROL and ROR with the
+carry in P; TSB and TRB with A), so a pointer advanced by INC stays resolved;
+an RMW whose old value is unresolved stays unresolved. What the record cannot
+show at all is listed in
 ``residual``: writes through unresolved pointers (which could hit any byte,
 so every resolution carries this caveat), DMA engine transfers (only their
 parameter stores are recorded, see ``dma_log``) and VRAM/CGRAM/OAM contents.
@@ -114,6 +120,54 @@ def is_register(address: int) -> bool:
     bank = address >> 16
     off = address & 0xFFFF
     return 0x2000 <= off < 0x6000 and (bank <= 0x3F or 0x80 <= bank <= 0xBF)
+
+
+def append_writes(writes: dict[int, list[tuple[int, Any]]], seq: int, address: int, width: int, wrap: int, value: int | None,
+                  rmw: tuple[str, int, int] | None = None) -> bool:
+    """Append a store's bytes at ``seq`` to the per-byte write lists; False when ``address`` is not work RAM.
+
+    With ``rmw`` (mnemonic, A, carry) the bytes are the RMW's computed result (``resolve_rmw``)."""
+    woff = wram_offset(address)
+    if woff is None:
+        return False
+    if rmw is not None:
+        offs = tuple(wram_offset(ba) for ba in byte_addresses(address, width, wrap))
+        if all(o is not None for o in offs):
+            op = RmwOp(seq, rmw[0], width, rmw[1], rmw[2], offs)   # type: ignore[arg-type]
+            for k, wo in enumerate(offs):
+                writes.setdefault(wo, []).append((seq, RmwByte(op, k)))
+            return True
+    if width == 1:
+        lst = writes.get(woff)
+        if lst is None:
+            writes[woff] = [(seq, value)]
+        else:
+            lst.append((seq, value))
+        return True
+    for k, ba in enumerate(byte_addresses(address, width, wrap)):
+        wo = wram_offset(ba)
+        if wo is None:
+            continue
+        bv = None if value is None else (value >> (8 * k)) & 0xFF
+        lst = writes.get(wo)
+        if lst is None:
+            writes[wo] = [(seq, bv)]
+        else:
+            lst.append((seq, bv))
+    return True
+
+
+def _written(lst: list[tuple[int, Any]] | None) -> tuple:
+    """A byte's write list in a form two rounds can compare (an RMW by its instruction, not its object)."""
+    if not lst:
+        return ()
+    out = []
+    for seq, v in sorted(lst, key=itemgetter(0)):
+        if isinstance(v, RmwByte):
+            op = v.op
+            v = ("rmw", op.mnemonic, op.width, op.a, op.carry, op.offsets, v.k)
+        out.append((seq, v))
+    return tuple(out)
 
 
 class RmwOp:
@@ -289,6 +343,7 @@ class AccessDrain:
         self.decode_failures: Counter[int] = Counter()
         self.resolution_conflicts = 0
         self.resolution_dropped = 0
+        self.resolution_rounds: Counter[int] = Counter()   # rounds a frame took -> frames
 
     # ------------------------------------------------------------------ frames
 
@@ -353,32 +408,43 @@ class AccessDrain:
                 deferred.append((i, pc, mode, addressing, b, item))
 
         # ---- resolution rounds
+        # A round records nothing: it returns its resolutions, and only the kept round's kept
+        # resolutions are recorded below, so a discarded round leaves no ROM read, value or store.
         resolver = Resolver(writes, self.prev_wram, wram_end)
+        previous: dict[int, list[tuple[int, Any]]] = {}
         rounds = 0
         while True:
             rounds += 1
-            rnd = self._resolve_round(entries, n, frame, resolver, wram_code, deferred)
-            conflict = (rnd["touched"] | resolver.rmw_read) & set(rnd["writes"])
+            rnd = self._resolve_round(entries, n, resolver, wram_code, deferred)
+            produced = rnd["writes"]
+            conflict = {o for o in rnd["touched"] | resolver.rmw_read if _written(produced.get(o)) != _written(previous.get(o))}
             if conflict and rounds < MAX_RESOLVE_ROUNDS:
-                # A resolved access wrote a byte that some resolution read from the frame's
-                # work RAM images: merge the round's writes and resolve again from scratch.
-                for off, lst in rnd["writes"].items():
-                    merged = writes.get(off, []) + lst
-                    merged.sort(key=itemgetter(0))
-                    writes[off] = merged
+                # The round's resolved accesses write a byte some resolution read, and differently
+                # from the writes it was resolved against: resolve again against the frame's
+                # recorded writes plus this round's.
+                merged = dict(writes)
+                for off, lst in produced.items():
+                    merged[off] = sorted(writes.get(off, []) + lst, key=itemgetter(0))
+                resolver.writes = merged
                 resolver.invalidate()
+                previous = produced
                 continue
             if conflict:
                 self.resolution_conflicts += len(conflict)
                 self._drop_conflicting(rnd, conflict)
             break
+        self.resolution_rounds[rounds] += 1
+        scratch: dict[int, list[tuple[int, Any]]] = {}
+        for _offsets, _label_index, seq, pc, mode, addressing, lab, accs in rnd["resolved"]:
+            for acc, rmw in accs:
+                record(keys, scratch, frame, seq, pc, mode, addressing, acc, label=lab, rmw=rmw)
         for pc, addressing, lab in rnd["labels"]:
             self.resolutions[(pc, addressing, lab)] += 1
         for pc, m in rnd["unresolved_store_pcs"].items():
             self.unresolved_store_pcs[pc] += m
             self.unresolved_stores += m
+        self.wram_code_unresolved.update(rnd["wram_code_unresolved"])
         unresolved = rnd["unresolved"]
-        keys.extend(rnd["keys"])
 
         # ---- aggregation
         self.counts.update(keys)
@@ -392,34 +458,36 @@ class AccessDrain:
         self.prev_wram = bytes(wram_end)
         return n
 
-    def _resolve_round(self, entries: list[tuple], n: int, frame: int, resolver: "Resolver", wram_code: list[tuple],
+    def _resolve_round(self, entries: list[tuple], n: int, resolver: "Resolver", wram_code: list[tuple],
                        deferred: list[tuple]) -> dict[str, Any]:
         """One resolution pass over the frame's work RAM code entries and deferred indirect items.
 
-        Returns the produced keys, the writes those accesses make, the (pc, addressing,
-        label) records, the bytes every resolution read, and the unresolved counts.
-        Each produced key is tagged with the resolution it came from so that a conflict
-        can drop exactly the affected accesses."""
-        keys: list[int] = []
-        round_writes: dict[int, list[tuple[int, int | None]]] = {}
+        Records nothing. Returns the resolutions (the work RAM bytes each read, its index in
+        the labels, and the accesses to record if the round is kept), the writes those accesses
+        make, the (pc, addressing, label) records, the bytes every resolution read, and the
+        unresolved counts. An indirect item of resolved work RAM code also counts the code's
+        bytes as read, so dropping the code drops the item's access too."""
+        resolved: list[tuple] = []     # (offsets read, label index, seq, pc, mode, addressing, label, [(acc, rmw)])
+        round_writes: dict[int, list[tuple[int, Any]]] = {}
         labels: list[tuple[int, int, int]] = []
         touched: set[int] = set()
-        origin: list[tuple[int, frozenset[int], int]] = []   # (first key index, offsets read, label index)
         unresolved = 0
         unresolved_store_pcs: Counter[int] = Counter()
+        wram_code_unresolved: Counter[int] = Counter()
         lengths = _LENGTHS
         addressing_of = _ADDRESSING
-        pending = list(deferred)
+        pending = [(*d, frozenset()) for d in deferred]
         for seq, index in wram_code:
             ent = entries[index]
             pc = ent[0]
             mode = (4 if ent[8] else 0) | (2 if ent[7] & 0x20 else 0) | (1 if ent[7] & 0x10 else 0)
             woff = wram_offset(pc)
+            touched.add(woff)    # read even when unresolved: a later round's write may resolve it
             opcode, worst = resolver.byte(woff, seq)
             if opcode is None:
                 unresolved += 1
                 labels.append((pc, -1, 3))
-                self.wram_code_unresolved[pc] += 1
+                wram_code_unresolved[pc] += 1
                 continue
             length = lengths[mode][opcode]
             offsets = [(woff + k) & (WRAM_SIZE - 1) for k in range(length)]
@@ -436,19 +504,23 @@ class AccessDrain:
             if worst == 3:
                 unresolved += 1
                 labels.append((pc, -1, 3))
-                self.wram_code_unresolved[pc] += 1
+                wram_code_unresolved[pc] += 1
                 continue
             nxt = entries[index + 1] if index + 1 < n else None
             accesses, items = modes.decode(opcode, bytes(operand_bytes), pc, ent[1], ent[2], ent[3], ent[4], ent[5], ent[6], ent[7], ent[8], nxt)
             addressing = addressing_of[opcode]
-            origin.append((len(keys), frozenset(offsets), len(labels)))
-            labels.append((pc, addressing, worst))
+            code = frozenset(offsets)
+            accs = []
             for acc in accesses:
-                self._record(keys, round_writes, frame, seq, pc, mode, addressing, acc, label=worst,
-                             rmw=(TABLE[opcode][0], ent[1], ent[7] & 1) if acc[0] == RMW and self.resolve_rmw else None)
+                rmw = (TABLE[opcode][0], ent[1], ent[7] & 1) if acc[0] == RMW and self.resolve_rmw else None
+                accs.append((acc, rmw))
+                if acc[0] in _WRITE_KINDS:
+                    append_writes(round_writes, seq, acc[1], acc[2], acc[4], acc[3], rmw)
+            resolved.append((code, len(labels), seq, pc, mode, addressing, worst, accs))
+            labels.append((pc, addressing, worst))
             for item in items:
-                pending.append((seq, pc, mode, addressing, ent[6], item))
-        for seq, pc, mode, addressing, dbr, item in pending:
+                pending.append((seq, pc, mode, addressing, ent[6], item, code))
+        for seq, pc, mode, addressing, dbr, item, code in pending:
             paddr, pwidth, pwrap, _index, _use_dbr, kind, width, value = item
             offsets = [wram_offset(ba) for ba in byte_addresses(paddr, pwidth, pwrap)]
             pointer = None
@@ -463,28 +535,29 @@ class AccessDrain:
                     unresolved_store_pcs[pc] += 1
                 continue
             acc = modes.resolve_with_bank(item, pointer, dbr)
-            origin.append((len(keys), frozenset(offsets), len(labels)))
+            if acc[0] in _WRITE_KINDS:
+                append_writes(round_writes, seq, acc[1], acc[2], acc[4], acc[3])
+            resolved.append((frozenset(offsets) | code, len(labels), seq, pc, mode, addressing, lab, [(acc, None)]))
             labels.append((pc, addressing, lab))
-            self._record(keys, round_writes, frame, seq, pc, mode, addressing, acc, label=lab)
-        return {"keys": keys, "writes": round_writes, "labels": labels, "touched": touched, "origin": origin,
-                "unresolved": unresolved, "unresolved_store_pcs": unresolved_store_pcs}
+        return {"resolved": resolved, "writes": round_writes, "labels": labels, "touched": touched,
+                "unresolved": unresolved, "unresolved_store_pcs": unresolved_store_pcs, "wram_code_unresolved": wram_code_unresolved}
 
     def _drop_conflicting(self, rnd: dict[str, Any], conflict: set[int]) -> None:
-        """Remove the accesses of every resolution that read a byte the round itself wrote."""
-        keys = rnd["keys"]
-        origin = rnd["origin"]
-        bounds = [o[0] for o in origin] + [len(keys)]
-        keep: list[int] = []
+        """Drop every resolution that read a byte whose resolved writes were still changing.
+
+        A dropped store counts as an unresolved store, like a store through an unresolved pointer."""
+        keep: list[tuple] = []
         dropped = 0
-        for j, (start, offsets, label_index) in enumerate(origin):
-            segment = keys[start:bounds[j + 1]]
-            if offsets & conflict:
+        for res in rnd["resolved"]:
+            if res[0] & conflict:
                 dropped += 1
-                pc, addressing, _lab = rnd["labels"][label_index]
-                rnd["labels"][label_index] = (pc, addressing, 3)
+                pc, addressing, _lab = rnd["labels"][res[1]]
+                rnd["labels"][res[1]] = (pc, addressing, 3)
+                if any(acc[0] in _WRITE_KINDS for acc, _rmw in res[7]):
+                    rnd["unresolved_store_pcs"][pc] += 1    # a dropped store could have hit any byte
                 continue
-            keep.extend(segment)
-        rnd["keys"] = keep
+            keep.append(res)
+        rnd["resolved"] = keep
         rnd["unresolved"] += dropped
         self.resolution_dropped += dropped
 
@@ -534,34 +607,8 @@ class AccessDrain:
                 else:
                     self.values_truncated.add(key)
         if kind in _WRITE_KINDS:
-            woff = wram_offset(address)
-            if woff is not None and rmw is not None:
-                offs = tuple(wram_offset(ba) for ba in byte_addresses(address, width, wrap))
-                if all(o is not None for o in offs):
-                    op = RmwOp(seq, rmw[0], width, rmw[1], rmw[2], offs)   # type: ignore[arg-type]
-                    for k, wo in enumerate(offs):
-                        writes.setdefault(wo, []).append((seq, RmwByte(op, k)))
-                    woff = None
-                    rmw = None
-            if woff is not None:
-                if width == 1:
-                    lst = writes.get(woff)
-                    if lst is None:
-                        writes[woff] = [(seq, value)]
-                    else:
-                        lst.append((seq, value))
-                else:
-                    for k, ba in enumerate(byte_addresses(address, width, wrap)):
-                        wo = wram_offset(ba)
-                        if wo is None:
-                            continue
-                        bv = None if value is None else (value >> (8 * k)) & 0xFF
-                        lst = writes.get(wo)
-                        if lst is None:
-                            writes[wo] = [(seq, bv)]
-                        else:
-                            lst.append((seq, bv))
-            elif value is not None and 0x2000 <= off < 0x4400 and (bank <= 0x3F or 0x80 <= bank <= 0xBF):
+            if not append_writes(writes, seq, address, width, wrap, value, rmw) and value is not None \
+                    and 0x2000 <= off < 0x4400 and (bank <= 0x3F or 0x80 <= bank <= 0xBF):
                 self._register_write(frame, seq, pc, off, width, value)
         if self._watch_set:
             watch_hit = None
@@ -700,6 +747,7 @@ class AccessDrain:
             "resolutions": resolutions,
             "resolution_conflict_bytes": self.resolution_conflicts,
             "resolutions_dropped": self.resolution_dropped,
+            "resolution_rounds": [[r, n] for r, n in sorted(self.resolution_rounds.items())],
             "residual": {
                 "unresolved_total": sum(self.per_frame_unresolved),
                 "unresolved_stores": self.unresolved_stores,

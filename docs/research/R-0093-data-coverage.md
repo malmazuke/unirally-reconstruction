@@ -195,13 +195,12 @@ Tags: **[L]** listing only, **[C]** confirmed in a capture, **[R]** stated by an
 - **HDMA tables in work RAM:** 3,321,994 HDMA channel activations used a table in work RAM, which
   `extract.py` cannot walk without per-frame work RAM. ROM data their indirect entries point to
   is not counted.
-- **Possible leak from discarded resolution rounds (review finding 4):** the access derivation
-  records a round's ROM reads in the bitmap before it knows whether the round will be discarded
-  for a conflict. A frame that needed a second round can mark addresses its final resolution
-  does not read. Pre-existing in `derive.py`'s `_record`; not quantified over the corpus. The
-  review's ground-truth check (run 003: every one of 7,290 sound-upload loads equals the ROM bytes
-  at its resolved address) found no wrong address. A follow-up task fixes the derivation and
-  remeasures.
+- **Discarded resolution rounds (review finding 4), measured:** the access derivation recorded a
+  round's ROM reads before it knew whether the round would be discarded for a conflict.
+  [ACCESS-ROUND-READS](../../tasks/ACCESS-ROUND-READS.md) records only the kept round and
+  re-measured the corpus: no frame of the 1,666,993 needed a second round, every one of the 236
+  reduced runs is byte-identical to this record's, and `aggregate.py` gives the same totals byte
+  for byte. The figures above stand.
 - **Coarse attribution:** per-pc attribution uses each pc's minimum and maximum address, so a
   routine that reads two far-apart tables is listed against everything between them. The read
   bitmaps themselves are exact.
