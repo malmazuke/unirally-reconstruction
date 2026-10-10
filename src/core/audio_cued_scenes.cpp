@@ -20,8 +20,9 @@ constexpr std::uint64_t frame_wait_anchor = 13082, race_early_anchor = 27920,
 // MODE-AUDIO: a split race's finish fade (`$83:E7F9`), the median of the `twop-next` 2P race's 61.
 constexpr std::uint64_t split_finish_fade_anchor = 26966;
 // DEMO-AUDIO (R-0096): the idle demo race's fade-out (`$83:E26E`) and the first FF request of
-// the demo's session at its title (`$80:9443`), the medians of the demo captures' calls.
-constexpr std::uint64_t demo_fade_anchor = 29116, demo_load_anchor = 123158;
+// the demo's session at its title (`$80:9443`), the medians of `demo-long`'s 1,672 calls (19
+// races) and 20 sessions.
+constexpr std::uint64_t demo_fade_anchor = 30027, demo_load_anchor = 123288;
 constexpr std::uint64_t title_return_load_anchor = 344450;
 // D-0010 calibration (R-0077): the first FF request of the award's, a gold ending's and the title
 // set's sessions, master clocks after their frame's boundary, the medians of the cold captures'

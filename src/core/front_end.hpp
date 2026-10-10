@@ -591,6 +591,7 @@ struct FrontEndState {
     // This cycle's title was a short one, so its return has no NMI pending; it has passed frame 133.
     bool demo_title_was_short{}, demo_title_held{};
     std::uint8_t demo_return_wait{}; // extra blank frames after an interrupted demo (R-0070)
+    std::uint8_t demo_return_blank{}; // the way back's extra blank frames in all (R-0096)
     bool demo_return_interrupted{};
     bool mode_chosen{};
     // This frame's sound queue work in program order, ending with its `$80:FADF` frame wait

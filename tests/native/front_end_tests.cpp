@@ -2042,6 +2042,29 @@ void demo_sound_tests() {
           unirally::AudioCueList{audio_load(AudioSessionLoad::demo)});
   require(cues_of_frame(state, content, 4080).empty());
   require(cues_of_frame(state, content, 4081) == slide && state.demo_title_held);
+  // A pad exit's two blank frames follow the way back's session, five frames
+  // after the exit; its frame 101 waits too.
+  auto pad = unirally::start_front_end();
+  run(pad, content, 1449);
+  unirally::return_from_demo(pad, 5000, 476);
+  require(cues_of_frame(pad, content, 5005) ==
+          unirally::AudioCueList{audio_load(AudioSessionLoad::title_return)});
+  require(cues_of_frame(pad, content, 5102).empty());
+  require(cues_of_frame(pad, content, 5103) ==
+          unirally::AudioCueList{audio_dispatch(AudioDispatchSite::frame_wait)});
+  // After the timer's exit from track 20 the session's upload runs a frame
+  // longer: its two waits come a frame later (R-0087).
+  auto held = unirally::start_front_end();
+  run(held, content, 1449);
+  held.tour_menu.track = 20;
+  unirally::return_from_demo(held, 49098,
+                             unirally::front_end_screens::idle_demo_timer_exit);
+  const unirally::AudioCueList wait{
+      audio_dispatch(AudioDispatchSite::frame_wait)};
+  require(held.demo_return_held && cues_of_frame(held, content, 49172).empty());
+  require(cues_of_frame(held, content, 49173) == wait &&
+          cues_of_frame(held, content, 49174) == wait &&
+          cues_of_frame(held, content, 49175).empty());
   // The race fades the music out on every update from its warning (elapsed
   // 0x714) on, before the pad test; the timer's exit update does not.
   const unirally::AudioCueList fade{

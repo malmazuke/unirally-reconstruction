@@ -225,8 +225,8 @@ bool waits_for_frame(const FrontEndState& state);
 // leave the arrow alone (the award's, the ending's, and `$83:879A`'s before the result's
 // scoring) poll it too. A race's frames are its own.
 bool ends_with_queue_wait(const FrontEndState& state) {
-    if (state.screen == FrontEndScreen::race || demo_title_wait_moves(state)) return false;
-    if (demo_return_wait_added(state)) return true;
+    if (state.screen == FrontEndScreen::race || demo_frame_wait_dropped(state)) return false;
+    if (demo_frame_wait_added(state)) return true;
     if (state.screen == FrontEndScreen::race_result_exit
         && state.script_frame + 1 == result_scoring_frame(state))
         return true;
@@ -937,6 +937,7 @@ void front_end_screens::begin_demo_return(FrontEndState& state, std::uint16_t de
     // $83:E267-E276 calls $82:8035 twice before testing a late pad press.
     // The observed late-press return has one fewer blank picture.
     state.demo_return_wait = state.demo_return_interrupted ? (demo_elapsed >= 0x0714 ? 1 : 2) : 0;
+    state.demo_return_blank = state.demo_return_wait;
     // R-0087: after the races on these tracks the timer's return holds its frame 100 once. The
     // original's sound transfer there runs longer; its cause in the sound processor is open.
     constexpr std::array<std::uint8_t, 3> held_return_tracks{20, 24, 36};

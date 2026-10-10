@@ -1154,7 +1154,7 @@
    "address": "$80:A0F7",
    "native": [
     "src/core/audio_cue.hpp:AudioSessionLoad",
-    "src/core/demo_sound.cpp:return_session_frame",
+    "src/core/demo_sound.cpp:return_session_frames",
     "src/core/race_result.cpp:race_return_frame"
    ],
    "range_ends": [
@@ -4532,6 +4532,7 @@
    "native": [
     "src/core/audio_cue.hpp:AudioDispatchSite",
     "src/core/audio_cued_scenes.cpp:frame_wait_anchor, race_early_anchor, race_late_anchor, countdown_anchor, finish_fade_anchor, race_choice_anchor, pause_anchor, pause_fade_anchor, pause_continue_anchor",
+    "src/core/demo_sound.cpp:return_first_wait",
     "src/core/front_end.cpp:FrameWaits",
     "src/core/front_end.cpp:ends_with_queue_wait",
     "src/core/front_end.hpp:FrontEndState::sound_cues",
@@ -16610,7 +16611,12 @@
     "$80:B139"
    ]
   },
-  "src/core/demo_sound.cpp:return_session_frame": {
+  "src/core/demo_sound.cpp:return_first_wait": {
+   "rom": [
+    "$80:FADF"
+   ]
+  },
+  "src/core/demo_sound.cpp:return_session_frames": {
    "rom": [
     "$80:A0F7"
    ]
@@ -24310,7 +24316,7 @@
  "totals": {
   "addresses": 1751,
   "io_addresses": 11,
-  "native_symbols": 1322,
+  "native_symbols": 1323,
   "rom_addresses": 1346,
   "sram_addresses": 57,
   "wram_addresses": 337
