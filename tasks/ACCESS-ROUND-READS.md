@@ -2,7 +2,7 @@
 
 ## Assignment
 
-- Status: **in review** (tier 2). Claimed 10 October 2026 08:10 UTC at the user's request, on
+- Status: **accepted** (tier 2, #74). Claimed 10 October 2026 08:10 UTC at the user's request, on
   `task/data-coverage` `fefe661` (PR #71, DATA-COVERAGE, open and approved at claim). #71 merged
   at that head (main `2b1bd99`), and the branch was rebased onto it. Weekly usage at claim 31% (5-hour window 66%).
 - Worker: Claude Code desktop app, Claude Opus 5.5 (`claude-opus-5-5`); coordinator, primary and
@@ -126,3 +126,13 @@ cmp local/evidence/access-round-reads/aggregate.json local/evidence/data-coverag
   measured; offered as a separate task.
 - What resolution cannot see stays as R-0093 states: writes through unresolved pointers, DMA into
   work RAM, and HDMA tables in work RAM.
+
+## Review and integration
+
+- Tier 2, one independent round: a fresh Claude Opus reviewer in its own worktree, comment review
+  on #74 of `071886d`. Verdict: one small fix returned. It re-captured runs 032 and 209 (both
+  byte-identical to the evidence), captured run 051 with main and the head (equal records apart
+  from `resolution_rounds`), and tried its own 3-round, child-drop and round-limit frames. Its four
+  findings are answered on #74 and fixed in `6dcf487` (see "What changed" and "Not covered");
+  they act on no corpus frame, so no re-review.
+- Integrated by merge commit once the required checks passed.

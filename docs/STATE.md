@@ -1,5 +1,18 @@
 # Project state
 
+**10 October 2026: ACCESS-ROUND-READS is accepted (tier 2, #74) and integrated by merge commit.**
+The access derivation now records only the resolution round it keeps. Before, a round discarded for
+a conflict, or a resolution dropped after the last round, left its ROM reads (and stored values,
+register stores and DMA log entries) in the record. A round is now kept once it reproduces the
+writes it was resolved against, so a frame that settles in two or three rounds keeps its accesses
+instead of dropping them; records count frames by rounds (`resolution_rounds`).
+
+Results: R-0089's corpus re-measured (236 runs, 1,666,993 frames): no frame needed more than one
+round, every reduced run and R-0093's totals are byte-identical, so R-0093 stands. Nine synthetic
+tests cover the multi-round paths. Offered as a separate task: resolved register stores reach the
+DMA log's register shadow after the frame's direct stores.
+[ACCESS-ROUND-READS](../tasks/ACCESS-ROUND-READS.md) has the details.
+
 **10 October 2026: CREDITS-NAME is accepted (tier 1, #70) and integrated by merge commit.**
 The two rider-name cheats are native. Rename rider 0 "credits" and the next race shows the
 original's 500-frame credits picture and ends as a restart; rename it "faedine" and the next
