@@ -19,6 +19,9 @@ constexpr std::uint64_t frame_wait_anchor = 13082, race_early_anchor = 27920,
                         pause_fade_anchor = 17214, pause_continue_anchor = 36340;
 // MODE-AUDIO: a split race's finish fade (`$83:E7F9`), the median of the `twop-next` 2P race's 61.
 constexpr std::uint64_t split_finish_fade_anchor = 26966;
+// DEMO-AUDIO (R-0096): the idle demo race's fade-out (`$83:E26E`) and the first FF request of
+// the demo's session at its title (`$80:9443`), the medians of the demo captures' calls.
+constexpr std::uint64_t demo_fade_anchor = 29116, demo_load_anchor = 123158;
 constexpr std::uint64_t title_return_load_anchor = 344450;
 // D-0010 calibration (R-0077): the first FF request of the award's, a gold ending's and the title
 // set's sessions, master clocks after their frame's boundary, the medians of the cold captures'
@@ -63,6 +66,7 @@ std::uint64_t dispatch_anchor(AudioDispatchSite site) {
     case AudioDispatchSite::pause_fade: return pause_fade_anchor;
     case AudioDispatchSite::pause_continue: return pause_continue_anchor;
     case AudioDispatchSite::split_finish_fade: return split_finish_fade_anchor;
+    case AudioDispatchSite::demo_fade: return demo_fade_anchor;
     }
     throw std::invalid_argument("unknown audio dispatch site");
 }
@@ -113,6 +117,7 @@ SessionStart session_start(const AudioCue& cue) {
     case AudioSessionLoad::ending: return {AudioSoundSetId::ending, ending_load_anchor};
     case AudioSessionLoad::award_return: return {AudioSoundSetId::title, award_return_load_anchor};
     case AudioSessionLoad::reset_boot: return {AudioSoundSetId::title, reset_boot_load_anchor};
+    case AudioSessionLoad::demo: return {AudioSoundSetId::demo, demo_load_anchor};
     }
     throw std::invalid_argument("unknown audio session");
 }
@@ -127,9 +132,9 @@ void start_screen_music(Clock& c, AudioCpuQueueState& queue) {
         native_audio_poll_queue(c, queue);
     }
 }
-// $83:A75E-A770 after the title set's samples: the music start, effect gain 255, music gain
-// 127; the first dispatch is the next frame wait's.
-void start_title_music_after_award(Clock& c, AudioCpuQueueState& queue) {
+// $83:A75E-A770 after the title set's samples, and $80:9460-9471 after the idle demo's: the
+// music start, effect gain 255, music gain 127; the first dispatch is the next frame wait's.
+void start_music_at_full_gain(Clock& c, AudioCpuQueueState& queue) {
     enqueue_cue(c, queue, 1, 2);
     enqueue_cue(c, queue, 8, 255);
     enqueue_cue(c, queue, 7, 127);
@@ -219,7 +224,8 @@ void NativeTitleMenuAudio::load_session(std::uint32_t frame, const AudioCue& cue
     case AudioSessionLoad::reset_boot: native_audio_bootstrap_queue(c, queue_); return;
     case AudioSessionLoad::award:
     case AudioSessionLoad::ending: start_screen_music(c, queue_); return;
-    case AudioSessionLoad::award_return: start_title_music_after_award(c, queue_); return;
+    case AudioSessionLoad::award_return:
+    case AudioSessionLoad::demo: start_music_at_full_gain(c, queue_); return;
     }
 }
 } // namespace unirally

@@ -716,6 +716,7 @@ int main(int argc, char** argv) try {
                 if (frame <= race.initialization_frame) continue;
                 update_demo_race(options, pack, state, race, frame, pads, races);
                 write_race_state(race_timeline, frame, race.state);
+                sound_cues.write(frame, race.state.sound_cues);
                 continue;
             }
             if (frame <= race.initialization_frame) {

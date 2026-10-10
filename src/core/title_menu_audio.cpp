@@ -29,6 +29,7 @@ NativeTitleMenuAudio::NativeTitleMenuAudio(const TitleMenuAudioContent& content,
         engine_.set_sound_set(AudioSoundSetId::award, content.award);
         engine_.set_sound_set(AudioSoundSetId::ending, content.ending);
     }
+    if (content.has_demo_set()) engine_.set_sound_set(AudioSoundSetId::demo, content.demo);
 }
 void NativeTitleMenuAudio::insert_cartridge(std::span<const std::uint8_t, 8192> image) {
     if (phase_ != TitleMenuAudioPhase::cold) throw std::logic_error("audio already initialized");

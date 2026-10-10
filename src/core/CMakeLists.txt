@@ -27,6 +27,7 @@ add_library(unirally_presentation STATIC presentation.cpp picture.cpp result_scr
             text_printer.cpp front_end.cpp cartridge_ram.cpp rider_menu.cpp screen_slide.cpp tour_menu.cpp
             track_menu.cpp now_playing.cpp race_result.cpp local_modes.cpp options_menu.cpp wipe_ram.cpp credits_name.cpp league_menu.cpp league_completion.cpp lap_result.cpp stunt_result.cpp
             award.cpp
+            demo_sound.cpp
             tour_ending.cpp
             tour_ending_scripts.cpp tour_ending_right_column.cpp
             hunter_ending.cpp)

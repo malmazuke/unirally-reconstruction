@@ -68,6 +68,27 @@ int main() {
             require(voiced_continuous.state() == voiced_restored.state(), "voiced restored state differs");
             require(voiced_continuous.take_reads() == voiced_restored.take_reads(), "voiced restored reads differ");
         }
+        // DEMO-AUDIO (R-0096): control 94 sets a note-space slide, its amount then its interval;
+        // the next note counts the interval down (0C80, then 0A70 in the same update) and moves
+        // by the amount each time it runs out; 95 turns the slide off for the next note.
+        const std::uint8_t sliding[]{0x94, 2, 3, 12, 4, 0x95, 24, 4, 0x80};
+        std::copy(std::begin(sliding), std::end(sliding), data.score.begin());
+        pitch.notes[2] = 0x0800;
+        pitch.notes[24] = 0x2000;
+        unirally::TitleMenuAudioScore slide(data, &pitch);
+        slide.start_music(1);
+        slide.update_voice(0, false, 0);
+        const auto& slid = slide.state().voices[0].arithmetic;
+        require(slid.slide_amount == 2 && slid.slide_interval == 3 && slid.slide_remaining == 2 &&
+                    slid.current_note == 0 && slid.alternating_note == 12,
+                "control 94 did not set the note's slide");
+        slide.update_voice(0, false, 1);
+        slide.update_voice(0, false, 2);
+        require(slide.state().voices[0].arithmetic.current_note == 2, "the slide did not step");
+        for (std::uint8_t update = 3; update <= 4; ++update) slide.update_voice(0, false, update);
+        require(slide.state().voices[0].arithmetic.slide_interval == 0 &&
+                    slide.state().voices[0].arithmetic.slide_remaining == 0,
+                "control 95 did not end the slide");
         std::cout << "native score calls, loops, unsigned duration and restore pass\n";
         return 0;
     } catch (const std::exception& error) { std::cerr << error.what() << '\n'; return 1; }

@@ -100,6 +100,22 @@ void load_screen_set(const ClassicContentPack& pack, const std::string& name, Au
             out.sample_resources[sample] = bytes_entry(pack, sample_entry(sample).c_str());
     }
 }
+// R-0096, pack v39: the idle demo's set ($80:9440-9459) uploads the award's tables with its own
+// score (resource 56) and sample slots (`$83:FC35`); it follows the title set's, like the others.
+void load_demo_set(const ClassicContentPack& pack, AudioSoundSet& set, AudioCpuUploadData& out) {
+    auto& upload = out.demo;
+    upload.tables_transfer = out.award.tables_transfer;
+    upload.score_transfer = bytes_entry(pack, "audio.demo-score-transfer");
+    set.tables = over_title(upload.tables_transfer, out.menu_transfer);
+    set.score = over_title(upload.score_transfer, out.title_transfer);
+    copy_entry(pack, "audio.demo-sample-slots", upload.sample_slots);
+    for (const auto sample : upload.sample_slots) {
+        if (sample == 255) continue;
+        if (sample >= 50) throw std::invalid_argument("audio sample resource differs");
+        if (out.sample_resources[sample].empty())
+            out.sample_resources[sample] = bytes_entry(pack, sample_entry(sample).c_str());
+    }
+}
 // R-0075: only identified palette/map/tile metadata used by the native work clock.
 void load_graphics(const ClassicContentPack& pack, std::array<AudioCpuGraphicsAsset, 128>& out) {
     constexpr std::array<unsigned, 17> ids{1,  2,  5,  27, 28, 31, 68, 69, 70,
@@ -150,6 +166,7 @@ TitleMenuAudioContent title_menu_audio_content(const ClassicContentPack& pack) {
         load_screen_set(pack, "ending", out.ending, out.upload.ending, out.upload);
         out.ending.effects = ending_driver_effects;
     }
+    if (!pack.optional_entry("audio.demo-score").empty()) load_demo_set(pack, out.demo, out.upload);
     load_graphics(pack, out.graphics);
     copy_entry(pack, "audio.cartridge-defaults", out.cartridge_defaults);
     copy_entry(pack, "audio.track-types", out.track_types);

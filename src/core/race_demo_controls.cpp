@@ -1,6 +1,7 @@
 // $83:E254-E55B: the idle demo drives both split-screen riders by the track's
 // markers. The two paths are the same routine on adjacent rider words.
 #include "race_demo_controls.hpp"
+#include "race_sound.hpp"
 
 #include <cstdint>
 
@@ -98,9 +99,9 @@ DemoTrickButtons update_demo_controllers(ZoomZooState& state, bool pad_pressed) 
         return {};
     }
     ++demo.elapsed;
-    // $83:E267-E276 sends a fade/sound sequence after this point; its visual
-    // state is handled by the demo transition, not the race controller.
-    (void)warning_at;
+    // $83:E262-E272: from the warning on, every update fades the music out, before the pad test
+    // (R-0096). Its picture is the demo transition's, not the race controller's.
+    if (demo.elapsed >= warning_at) race_sound::demo_fade(state);
     if (pad_pressed) {
         demo.exit_requested = true;
         return {};

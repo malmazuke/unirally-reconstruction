@@ -1091,6 +1091,19 @@ const std::array<RequiredEntry, 4> credits_name_required{{
      "9bdcf67cbf32b5c067828f8de5240b1693905f9d8d84dc8bd06a1c920d5758a8"},
     {"front-end.asset.193", 32, "3bca8aa8b19241b88da7c8faf90ec5be3737f016378eb2eb14e40cf01ebea388"},
 }};
+// The idle demo's sound set (profile v39): its score (resource 56, `$93:F712`) with its
+// transfer, its sample slot table (`$83:FC35`) and the three samples it adds; its tables are the
+// award's. R-0096.
+const std::array<RequiredEntry, 6> demo_audio_required{{
+    {"audio.demo-score", 2899, "e98ab242349e8dce9b18b138db8eebc59bb17f85e2ea0b3a519ccf5df1d18c6b"},
+    {"audio.demo-score-transfer", 2905,
+     "2c4915c8d976e041fef6012189d7e88f390b7679fa75a8f45696818dd8d9345c"},
+    {"audio.demo-sample-slots", 64,
+     "960fd76d62a9b985ca50c1d1504aa98e8ec746ebfec7dd6cd71039bef6e32d2f"},
+    {"audio.sample.02", 2425, "b97d2762d8790871772d59d75031d2303fdbd3e70dcd6377d1d64b252cfeaf8b"},
+    {"audio.sample.23", 2020, "d7c50f16a909074560a585ee508709ce4c31eb2cd7b59c3538960a5fbeeacdbb"},
+    {"audio.sample.34", 2911, "f1b4bf29f5cae8df030f5b960c301f80da4cdf1901d9f571387a8cedac7457dd"},
+}};
 const std::array<RequiredEntry, 33> audio_required{{
     {"audio.menu-tables", 621, "e75d7872e341a636dc822616a202db6b8894196471c13d47f1b21d15f38fc407"},
     {"audio.title-score", 2200, "b4e402d0d05207e0ceadc32e8b4ebd4d052677c42f0e36f4ab5883c74ff1eb6b"},
@@ -1223,12 +1236,13 @@ std::array<std::uint8_t, 32> sha256(std::span<const std::uint8_t> source) {
 } // namespace
 
 namespace {
-constexpr std::array<std::string_view, 10> supported_profiles{
+constexpr std::array<std::string_view, 11> supported_profiles{
     "classic.pal.crawler.dragster.v1", "classic.pal.crawler.tracks.v29",
     "classic.pal.crawler.tracks.v30",  "classic.pal.crawler.tracks.v31",
     "classic.pal.crawler.tracks.v32",  "classic.pal.crawler.tracks.v33",
     "classic.pal.crawler.tracks.v34",  "classic.pal.crawler.tracks.v35",
-    "classic.pal.crawler.tracks.v36",  "classic.pal.crawler.tracks.v37"};
+    "classic.pal.crawler.tracks.v36",  "classic.pal.crawler.tracks.v37",
+    "classic.pal.crawler.tracks.v39"};
 } // namespace
 
 std::span<const std::string_view> supported_pack_profiles() {
@@ -1257,6 +1271,8 @@ constexpr std::string_view pause_messages_rules_sha =
     "c8a1e4267b48c8fda51fa963ed534456e67ebf724d8047c97d5709434f54cdc5";
 constexpr std::string_view credits_name_rules_sha =
     "5de464a25ad6f9b637b77b9781437a65630dd32e8d7e6eba243c47b577609df3";
+constexpr std::string_view demo_audio_rules_sha =
+    "a7e04baf74a89d7d9ecff2a902bfd9fd9d828dde29d6970497288b46ee5200d9";
 constexpr std::string_view wipe_ram_rules_sha =
     "2197ac131df15667004640dd5f2b62cf4fdbad7b5dfd9e5033a39a525754a089";
 constexpr std::string_view tracks_start = "classic.crawler.race-start.v2";
@@ -1278,7 +1294,8 @@ enum class PackVariant {
     award_ending_audio,
     pause_messages,
     wipe_ram,
-    credits_name
+    credits_name,
+    demo_audio
 };
 struct PackHeader {
     PackVariant variant;
@@ -1297,23 +1314,25 @@ PackHeader read_pack_header(const std::vector<std::uint8_t>& bytes, Reader& in) 
         throw std::invalid_argument("Classic pack source ROM identity is unsupported");
     const auto profile = in.text();
     const auto start = in.text();
-    const auto variant = profile == supported_profiles[9] ? PackVariant::credits_name
-                       : profile == supported_profiles[8] ? PackVariant::wipe_ram
-                       : profile == supported_profiles[7] ? PackVariant::pause_messages
-                       : profile == supported_profiles[6] ? PackVariant::award_ending_audio
-                       : profile == supported_profiles[5] ? PackVariant::race_songs
-                       : profile == supported_profiles[4] ? PackVariant::race_audio
-                       : profile == supported_profiles[3] ? PackVariant::hunter_audio
-                       : profile == supported_profiles[2] ? PackVariant::audio
-                       : profile == supported_profiles[1] ? PackVariant::tracks
-                                                          : PackVariant::dragster;
+    const auto variant = profile == supported_profiles[10] ? PackVariant::demo_audio
+                       : profile == supported_profiles[9]  ? PackVariant::credits_name
+                       : profile == supported_profiles[8]  ? PackVariant::wipe_ram
+                       : profile == supported_profiles[7]  ? PackVariant::pause_messages
+                       : profile == supported_profiles[6]  ? PackVariant::award_ending_audio
+                       : profile == supported_profiles[5]  ? PackVariant::race_songs
+                       : profile == supported_profiles[4]  ? PackVariant::race_audio
+                       : profile == supported_profiles[3]  ? PackVariant::hunter_audio
+                       : profile == supported_profiles[2]  ? PackVariant::audio
+                       : profile == supported_profiles[1]  ? PackVariant::tracks
+                                                           : PackVariant::dragster;
     const bool tracks = variant != PackVariant::dragster;
     if (profile != supported_profiles[static_cast<unsigned>(variant)])
         throw std::invalid_argument("Classic pack profile is unsupported");
     if (start != (tracks ? tracks_start : dragster_start))
         throw std::invalid_argument("Classic pack start state is unsupported");
     if (rules_identity
-        != hex_digest(variant == PackVariant::credits_name         ? credits_name_rules_sha
+        != hex_digest(variant == PackVariant::demo_audio           ? demo_audio_rules_sha
+                      : variant == PackVariant::credits_name       ? credits_name_rules_sha
                       : variant == PackVariant::wipe_ram           ? wipe_ram_rules_sha
                       : variant == PackVariant::pause_messages     ? pause_messages_rules_sha
                       : variant == PackVariant::award_ending_audio ? award_ending_rules_sha
@@ -1369,8 +1388,10 @@ std::vector<RequiredEntry> required_entries(PackVariant variant) {
         out.insert(out.end(), pause_messages_required.begin(), pause_messages_required.end());
     if (variant >= PackVariant::wipe_ram)
         out.insert(out.end(), wipe_ram_required.begin(), wipe_ram_required.end());
-    if (variant == PackVariant::credits_name)
+    if (variant >= PackVariant::credits_name)
         out.insert(out.end(), credits_name_required.begin(), credits_name_required.end());
+    if (variant == PackVariant::demo_audio)
+        out.insert(out.end(), demo_audio_required.begin(), demo_audio_required.end());
     return out;
 }
 

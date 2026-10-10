@@ -156,3 +156,34 @@ def v34_new_entries(rom: bytes) -> list[dict[str, Any]]:
             entries.append(_raw(f"audio.sample.{s:02d}", rom, [(resources[s][0] + 2, resources[s][1] - 2)]))
             added.add(s)
     return entries
+
+
+DEMO_SAMPLE_SLOTS = 0x1fc35  # $83:FC35, the idle demo's sound load ($80:9459)
+# The idle demo's set (`$80:9440-9455`): driver 50, tables 52 (the award's, pack v34) and score
+# 56, whose data is the block at `$93:F712` (R-0093, R-0096).
+DEMO_SCORE_RESOURCE = 56
+
+
+def v39_new_entries(rom: bytes) -> list[dict[str, Any]]:
+    """The idle demo's sound set (R-0096); v37 entries are unchanged.
+
+    The score resource is kept twice, as the earlier sets' are: its data, and its transfer,
+    which also carries the next record's six header bytes. The tables are the award's (v34).
+    Only the samples its slots add to the title, race, award and ending sets are new entries.
+    """
+    resources = resource_headers(rom, 67)
+    slots = rom[DEMO_SAMPLE_SLOTS:DEMO_SAMPLE_SLOTS + 64]
+    if len(slots) != 64 or any(s != 255 and s >= 50 for s in slots):
+        raise ValueError("unidentified demo sample selection")
+    known = set()
+    for slots_at in (0x1fcf5, RACE_SAMPLE_SLOTS, AWARD_SAMPLE_SLOTS, ENDING_SAMPLE_SLOTS):
+        known |= set(rom[slots_at:slots_at + 64])
+    at, length = resources[DEMO_SCORE_RESOURCE]
+    entries = [
+        _raw("audio.demo-score", rom, [(at + 6, length - 6)]),
+        _raw("audio.demo-score-transfer", rom, [(at + 6, length)]),
+        _raw("audio.demo-sample-slots", rom, [(DEMO_SAMPLE_SLOTS, 64)]),
+    ]
+    entries += [_raw(f"audio.sample.{s:02d}", rom, [(resources[s][0] + 2, resources[s][1] - 2)])
+                for s in sorted(set(slots) - known - {255})]
+    return entries

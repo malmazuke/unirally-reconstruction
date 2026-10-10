@@ -687,6 +687,46 @@
    "region": "rom"
   },
   {
+   "address": "$80:9440",
+   "native": [
+    "src/core/audio_cpu_upload.cpp:upload_of",
+    "src/core/audio_cpu_upload.hpp:AudioSoundSetId",
+    "src/core/audio_cue.hpp:AudioSessionLoad",
+    "src/core/demo_sound.cpp:demo_session_frame",
+    "src/core/title_menu_audio_content.cpp:load_demo_set"
+   ],
+   "range_ends": [
+    "$80:9455",
+    "$80:9459",
+    "$80:9471"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:9443",
+   "native": [
+    "src/core/audio_cued_scenes.cpp:demo_fade_anchor, demo_load_anchor"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:9460",
+   "native": [
+    "src/core/audio_cued_scenes.cpp:start_music_at_full_gain"
+   ],
+   "range_ends": [
+    "$80:9471"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$80:9477",
+   "native": [
+    "src/core/demo_sound.cpp:demo_title_sounds"
+   ],
+   "region": "rom"
+  },
+  {
    "address": "$80:9491",
    "native": [
     "src/core/front_end.cpp:choose_idle_demo"
@@ -1114,6 +1154,7 @@
    "address": "$80:A0F7",
    "native": [
     "src/core/audio_cue.hpp:AudioSessionLoad",
+    "src/core/demo_sound.cpp:return_session_frame",
     "src/core/race_result.cpp:race_return_frame"
    ],
    "range_ends": [
@@ -1750,6 +1791,7 @@
    "address": "$80:B139",
    "native": [
     "src/core/audio_cpu_hunter_reveal.cpp:reveal_cue",
+    "src/core/demo_sound.cpp:demo_title_sounds",
     "src/core/screen_slide.cpp:play_menu_sound"
    ],
    "region": "rom"
@@ -3453,6 +3495,7 @@
   {
    "address": "$80:E2D5",
    "native": [
+    "src/core/demo_sound.cpp:title_will_hold",
     "src/core/hunter_ending.cpp:hunter_ending_queue_waits",
     "src/core/hunter_ending.cpp:page_frame"
    ],
@@ -3482,6 +3525,7 @@
   {
    "address": "$80:E322",
    "native": [
+    "src/core/demo_sound.cpp:title_will_hold",
     "src/core/hunter_ending.cpp:hunter_ending_waits",
     "src/core/hunter_ending.cpp:reveal_step"
    ],
@@ -7967,7 +8011,8 @@
    "native": [
     "src/core/audio_cue.hpp:RaceSoundLoadTiming",
     "src/core/race_result.cpp:race_start_cue_leads",
-    "src/core/race_sound.hpp:loading"
+    "src/core/race_sound.hpp:loading",
+    "src/core/race_sound.hpp:start_cue"
    ],
    "region": "rom"
   },
@@ -8996,7 +9041,7 @@
   {
    "address": "$83:A75E",
    "native": [
-    "src/core/audio_cued_scenes.cpp:start_title_music_after_award"
+    "src/core/audio_cued_scenes.cpp:start_music_at_full_gain"
    ],
    "range_ends": [
     "$83:A770"
@@ -11044,13 +11089,40 @@
    "region": "rom"
   },
   {
-   "address": "$83:E267",
+   "address": "$83:E262",
    "native": [
-    "src/core/front_end.cpp:front_end_screens::begin_demo_return",
     "src/core/race_demo_controls.cpp:update_demo_controllers"
    ],
    "range_ends": [
+    "$83:E272"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:E267",
+   "native": [
+    "src/core/front_end.cpp:front_end_screens::begin_demo_return",
+    "src/core/race_sound.cpp:demo_fade",
+    "src/core/race_sound.hpp:demo_fade"
+   ],
+   "range_ends": [
+    "$83:E272",
     "$83:E276"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:E26E",
+   "native": [
+    "src/core/audio_cue.hpp:AudioDispatchSite",
+    "src/core/audio_cued_scenes.cpp:demo_fade_anchor, demo_load_anchor"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:E272",
+   "native": [
+    "src/core/audio_cue.hpp:AudioDispatchSite"
    ],
    "region": "rom"
   },
@@ -12118,9 +12190,24 @@
    "region": "rom"
   },
   {
+   "address": "$83:FC35",
+   "native": [
+    "src/core/content_pack.cpp:demo_audio_required",
+    "src/core/title_menu_audio_content.cpp:load_demo_set"
+   ],
+   "region": "rom"
+  },
+  {
    "address": "$83:FC75",
    "native": [
     "src/core/audio_cpu_upload.hpp:AudioSoundSetId"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$93:F712",
+   "native": [
+    "src/core/content_pack.cpp:demo_audio_required"
    ],
    "region": "rom"
   },
@@ -12543,6 +12630,27 @@
    "address": "$0231",
    "native": [
     "src/core/audio_score_controls.cpp:TitleMenuAudioScore::apply_sequence_control"
+   ],
+   "region": "wram"
+  },
+  {
+   "address": "$0271",
+   "native": [
+    "src/core/audio_score_controls.cpp:TitleMenuAudioScore::apply_pitch_control"
+   ],
+   "region": "wram"
+  },
+  {
+   "address": "$0280",
+   "native": [
+    "src/core/audio_score_controls.cpp:TitleMenuAudioScore::apply_pitch_control"
+   ],
+   "region": "wram"
+  },
+  {
+   "address": "$0281",
+   "native": [
+    "src/core/audio_score_controls.cpp:TitleMenuAudioScore::apply_pitch_control"
    ],
    "region": "wram"
   },
@@ -15983,6 +16091,7 @@
   },
   "src/core/audio_cpu_upload.cpp:upload_of": {
    "rom": [
+    "$80:9440",
     "$80:A0FC",
     "$83:A507",
     "$83:A614",
@@ -15992,6 +16101,7 @@
   },
   "src/core/audio_cpu_upload.hpp:AudioSoundSetId": {
    "rom": [
+    "$80:9440",
     "$83:A507",
     "$83:A614",
     "$83:FC75"
@@ -16015,6 +16125,8 @@
     "$83:A923",
     "$83:CD6E",
     "$83:CD9F",
+    "$83:E26E",
+    "$83:E272",
     "$83:E739",
     "$83:E74F",
     "$83:E785",
@@ -16029,6 +16141,7 @@
   },
   "src/core/audio_cue.hpp:AudioSessionLoad": {
    "rom": [
+    "$80:9440",
     "$80:A09A",
     "$80:A0F7",
     "$82:807E",
@@ -16065,6 +16178,12 @@
     "$1005"
    ]
   },
+  "src/core/audio_cued_scenes.cpp:demo_fade_anchor, demo_load_anchor": {
+   "rom": [
+    "$80:9443",
+    "$83:E26E"
+   ]
+  },
   "src/core/audio_cued_scenes.cpp:frame_wait_anchor, race_early_anchor, race_late_anchor, countdown_anchor, finish_fade_anchor, race_choice_anchor, pause_anchor, pause_fade_anchor, pause_continue_anchor": {
    "rom": [
     "$80:FADF",
@@ -16075,6 +16194,12 @@
   "src/core/audio_cued_scenes.cpp:split_finish_fade_anchor": {
    "rom": [
     "$83:E7F9"
+   ]
+  },
+  "src/core/audio_cued_scenes.cpp:start_music_at_full_gain": {
+   "rom": [
+    "$80:9460",
+    "$83:A75E"
    ]
   },
   "src/core/audio_cued_scenes.cpp:start_race_music": {
@@ -16089,9 +16214,11 @@
     "$83:A644"
    ]
   },
-  "src/core/audio_cued_scenes.cpp:start_title_music_after_award": {
-   "rom": [
-    "$83:A75E"
+  "src/core/audio_score_controls.cpp:TitleMenuAudioScore::apply_pitch_control": {
+   "wram": [
+    "$0271",
+    "$0280",
+    "$0281"
    ]
   },
   "src/core/audio_score_controls.cpp:TitleMenuAudioScore::apply_sequence_control": {
@@ -16313,6 +16440,12 @@
     "$83:FB56"
    ]
   },
+  "src/core/content_pack.cpp:demo_audio_required": {
+   "rom": [
+    "$83:FC35",
+    "$93:F712"
+   ]
+  },
   "src/core/content_pack.cpp:front_end_required": {
    "rom": [
     "$82:B332"
@@ -16464,6 +16597,28 @@
   "src/core/credits_name.cpp:restart_total": {
    "rom": [
     "$83:C9AC"
+   ]
+  },
+  "src/core/demo_sound.cpp:demo_session_frame": {
+   "rom": [
+    "$80:9440"
+   ]
+  },
+  "src/core/demo_sound.cpp:demo_title_sounds": {
+   "rom": [
+    "$80:9477",
+    "$80:B139"
+   ]
+  },
+  "src/core/demo_sound.cpp:return_session_frame": {
+   "rom": [
+    "$80:A0F7"
+   ]
+  },
+  "src/core/demo_sound.cpp:title_will_hold": {
+   "rom": [
+    "$80:E2D5",
+    "$80:E322"
    ]
   },
   "src/core/flat_contact.cpp:coarse_landing_angle": {
@@ -19671,7 +19826,7 @@
   "src/core/race_demo_controls.cpp:update_demo_controllers": {
    "rom": [
     "$83:E256",
-    "$83:E267"
+    "$83:E262"
    ]
   },
   "src/core/race_demo_controls.hpp:(file)": {
@@ -20533,6 +20688,11 @@
     "$82:D841"
    ]
   },
+  "src/core/race_sound.cpp:demo_fade": {
+   "rom": [
+    "$83:E267"
+   ]
+  },
   "src/core/race_sound.cpp:fast_checkpoint": {
    "rom": [
     "$81:828E"
@@ -20605,6 +20765,11 @@
     "$11C5"
    ]
   },
+  "src/core/race_sound.hpp:demo_fade": {
+   "rom": [
+    "$83:E267"
+   ]
+  },
   "src/core/race_sound.hpp:dispatch": {
    "rom": [
     "$83:CD6E",
@@ -20664,6 +20829,11 @@
    "wram": [
     "$1003",
     "$1005"
+   ]
+  },
+  "src/core/race_sound.hpp:start_cue": {
+   "rom": [
+    "$82:D84A"
    ]
   },
   "src/core/race_state_io.cpp:(file)": {
@@ -22451,6 +22621,12 @@
     "$1005"
    ]
   },
+  "src/core/title_menu_audio_content.cpp:load_demo_set": {
+   "rom": [
+    "$80:9440",
+    "$83:FC35"
+   ]
+  },
   "src/core/title_menu_audio_content.cpp:over_title": {
    "wram": [
     "$1726"
@@ -24132,11 +24308,11 @@
   }
  },
  "totals": {
-  "addresses": 1739,
+  "addresses": 1751,
   "io_addresses": 11,
-  "native_symbols": 1311,
-  "rom_addresses": 1337,
+  "native_symbols": 1322,
+  "rom_addresses": 1346,
   "sram_addresses": 57,
-  "wram_addresses": 334
+  "wram_addresses": 337
  }
 }
