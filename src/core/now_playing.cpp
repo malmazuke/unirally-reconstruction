@@ -286,8 +286,8 @@ void now_playing_entry_frame(FrontEndState& state, const FrontEndContent& conten
 
 void now_playing_frame(FrontEndState& state, const FrontEndContent& content, FrontEndPads pads) {
     auto& now = state.now_playing;
-    copy_oam(state); // $80:D1EC
-    const auto pad = pads.one;
+    copy_oam(state);                          // $80:D1EC
+    const auto pad = gated_pads(state, pads); // R-0095
     move_now_playing_arrow(state, pad);
     if (pad & back_buttons)
         now.choice = NowPlayingChoice::back;
@@ -307,10 +307,15 @@ void now_playing_frame(FrontEndState& state, const FrontEndContent& content, Fro
     case NowPlayingChoice::back:
         if (state.mode == FrontEndMode::league)
             enter_league_table(state, content);
+        else if (returns_to_continuation(state, FrontEndScreen::now_playing))
+            return_to_local_continue(state, content); // $80:AED3-AEDA
         else
             enter_track_menu(state, true);
         return;
-    case NowPlayingChoice::race: state.screen = FrontEndScreen::race_fade; return;
+    case NowPlayingChoice::race:
+        state.continuation_back = FrontEndScreen::boot;
+        state.screen = FrontEndScreen::race_fade;
+        return;
     default: // Exit: the main loop prints the main menu again and slides it back in (`$80:ACD5`)
         print_main_menu(state, content);
         state.menu.selection = 0;

@@ -332,9 +332,10 @@ void tour_menu_frame(FrontEndState& state, const FrontEndContent& content, Front
     auto& menu = state.tour_menu;
     copy_oam(state); // $80:D1EC
     step_decorations(state, content);
-    move_tour_cursor(state, content, pads.one);
-    const bool choose = (pads.one & choose_buttons) != 0;
-    const bool back = (pads.one & back_buttons) != 0;
+    const auto pad = gated_pads(state, pads); // R-0095
+    move_tour_cursor(state, content, pad);
+    const bool choose = (pad & choose_buttons) != 0;
+    const bool back = (pad & back_buttons) != 0;
     if (!choose && !back) {
         aim_tour_arrow(state, content);
         return;
@@ -367,6 +368,10 @@ void tour_menu_frame(FrontEndState& state, const FrontEndContent& content, Front
             } else
                 enter_league_table(state, content);
         }
+        return;
+    }
+    if (back && returns_to_continuation(state, FrontEndScreen::tour_menu)) {
+        return_to_local_continue(state, content); // $80:AF24-AF2B
         return;
     }
     if (back) {

@@ -328,11 +328,11 @@ void update_stunt_records(FrontEndState& state) {
     const auto player = times.player_score, other = times.opponent_score;
     constexpr std::size_t races = 0, wins = 1, stunt_points = 3;
     const auto track = track_of(state);
-    bool placed = false;
+    std::uint8_t placed = 0;
     const auto add_points = [&](std::uint8_t who, std::uint16_t score) {
         auto& points = records.statistics[who][stunt_points];
         points = static_cast<std::uint16_t>(points + score);
-        if (score != 0) placed = insert_stunt_record(records, track, score, who) || placed;
+        if (score != 0 && insert_stunt_record(records, track, score, who)) ++placed;
     };
     const auto add_player = [&] { add_points(rider, player); };
     const auto add_opponent = [&] {
@@ -355,7 +355,7 @@ void update_stunt_records(FrontEndState& state) {
         add_player();
         add_opponent();
     }
-    state.race_result.record_placed = placed;
+    state.race_result.records_placed = placed;
 }
 
 // $80:C786: races and wins by rider, and the times into the records: for a one-run race
@@ -377,9 +377,9 @@ void update_records(FrontEndState& state) {
     constexpr std::size_t races = 0, wins = 1, no_time_losses = 2;
     const auto track = track_of(state);
     // A time goes into the records unless it is no time, which counts a loss without one.
-    bool placed = false;
+    std::uint8_t placed = 0;
     const auto insert = [&](std::uint16_t time, std::uint8_t who) {
-        placed = insert_record(records, track, time, who) || placed;
+        if (insert_record(records, track, time, who)) ++placed;
     };
     const auto record = [&](std::uint8_t who, std::uint16_t time) {
         if (time >= no_time)
@@ -409,7 +409,7 @@ void update_records(FrontEndState& state) {
     }
     // A placed time's checksums run `$80:C786` past its frame's end, so the scoring waits a frame
     // more (R-0060).
-    state.race_result.record_placed = placed;
+    state.race_result.records_placed = placed;
 }
 
 // $83:9229-92CB, a VS result's counts (`$80:C04A`, before the statistics; R-0095): a race for

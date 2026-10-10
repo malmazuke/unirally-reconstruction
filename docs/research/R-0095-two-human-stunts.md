@@ -46,6 +46,24 @@ CLIMB and DOWNER (track 32), a zero-score VS tie, a 2P pad-2 QUIT, the VS challe
   wrapping Down/Up with one latch, Y/X ignored, the markers turning. `$80:9719`, `$80:BD98` set up
   the two-human races. League: the podium's arrow restores a frame later on phases 2 and 3, and
   POINT AWARDS step the decorations only from script frame 45 (`$80:8B28`). [L, C]
+- **Which pad the menus read.** Every menu test goes through the `$77:0742` gate (`$80:B6D3-B82B`,
+  `$80:B8F1`). The main menu opens both pads (`$80:ABC8`); a rider pick from it takes pad 1 alone
+  (`$80:BBA5` 1P, `$80:BCC8` 2P, `$80:BF4E` VS), 2P's and VS's second pick pad 2 alone (`$80:BCEB`,
+  `$80:BF6B`), and both pads open again after it (`$80:BD08`, `$80:BFB7`). So NOW PLAYING, PICK
+  TOUR and PICK TRACK take either pad with two humans or in a league, pad 1 in 1P. [L, C]
+- **Y from a screen the continuation opened** returns to the continuation (`$80:ADFA`): NOW
+  PLAYING after NEXT or SAME TRACK (`$80:AECE-AEDA`, `$80:AED3`), PICK TRACK after SELECT TRACK
+  (`$80:AEF3-AF03`, `$80:AEFC`), PICK TOUR after SELECT TOUR (`$80:AF1B-AF2B`, `$80:AF24`). The
+  menu prints in the frame the screen returns and slides back in without palette reloads, the
+  arrow where it was. SELECT TOUR opens PICK TOUR with a forward slide and without `$80:A858`. [L, C]
+- **When a print runs past its frame.** `$80:C786` starts about 19 scanlines into its frame; the
+  checksum routine `$83:90F4` takes about 165 scanlines and runs once at the end plus once per
+  time or score placed in the records; the header, sort and first row take about 181 more before
+  `$80:FADF` waits. With exactly one placing VS CHAMPIONS' first row falls in the header's frame,
+  with none or two a frame later. In a league about 176 scanlines of points and awards printing
+  come first, so two placings push the scoring a frame on. The awards press counts only on two
+  frames running after the result sound (`$80:C206`); after it a frame wait, the palettes and an
+  OAM copy, and the table prints in the next frame (`$80:B05B-B079`, then `$80:A547`). [L, C]
 - **Race loading.** Every mode's race loading follows the song table (`$83:CD14-CD1C`), which
   explains R-0071's and R-0073's measured lengths and R-0090's two-human restart record
   differences (a one-frame loading error). [C]
@@ -62,8 +80,17 @@ CLIMB and DOWNER (track 32), a zero-score VS tie, a 2P pad-2 QUIT, the VS challe
   multiplier helper `$81:B67C` (from `$81:8F7C`) writes `$211B` low then high; at scanline 112 the
   split HDMA writes a register sharing the mode-7 latch between the two, so M7A becomes `$021C`
   instead of `$0202`. Reproducing it needs CPU cycle timing.
-- League: the table's entry slide and arrow start two frames early after the awards (main's medal
-  bug used to cancel it); four league manifests are a frame further from the original on one
-  frame each.
+- League: after organic-three's first pair the original ends `$80:A547`'s table print at scanline
+  224, dot 742, one scanline before vblank, misses that frame's wait and starts the table slide a
+  frame late (the same prefix in organic-three, -clean, -complete and organic-odd-resume, which
+  explains their frames 11200, 15400 and 13400). Predicting it needs CPU cycle counting. Main's
+  medal bug used to cancel it, so these four manifests are a frame further from the original on
+  those frames; organic-stunt-tricks, -three-events and -two-race are now equal on every frame.
+- A 2P or VS result also writes the league totals: `$80:F88D` stores at `$0618 + 16 x slot + 2 x
+  the pair cursor`, the cursor read as a word from `$0678` whose high byte is the next slot's.
+  Native leaves `$77:0618`/`$061A` at 0, so a second two-human race's result words differ.
+- One-frame print overruns: VS CHAMPIONS' header frame with two placings and the lap results'
+  first frame (race RAM in the text buffer); W2b frame 15672 (the rename keyboard, 256 px).
 - Tracks 7, 17, 27, 37 and 42 with two humans (locked tours) and a race tie are not captured.
-- `$073E-0741` and `$10A7` are not kept; twop-restart's `$106C` at 8399 differs.
+- `$073E-0741` and `$10A7` are not kept; `$106C` differs after a VS result (twop-restart at 8399,
+  the review's W2, W2b and W3), and `$1116` at W1's frame 4000.

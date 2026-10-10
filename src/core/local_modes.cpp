@@ -117,11 +117,28 @@ void print_champion_row(FrontEndState& state, const FrontEndContent& content, un
 void enter_local_continue(FrontEndState& state) {
     state.menu.selection = 0;
     state.latches = {};
+    state.continuation_back = FrontEndScreen::boot;
+    state.continuation_returning = false;
     state.screen = FrontEndScreen::local_continue_entry;
 }
 
+bool returns_to_continuation(const FrontEndState& state, FrontEndScreen from) {
+    return state.mode != FrontEndMode::league && state.continuation_back == from;
+}
+
+// $80:ADFA: back from a choice, in the frame the choice's screen returns, the menu printed again
+// without `$80:ADE5-ADF4`'s palettes, then slid back in (`$80:EF81`) with the arrow left where it
+// was (R-0095).
+void return_to_local_continue(FrontEndState& state, const FrontEndContent& content) {
+    enter_local_continue(state);
+    state.continuation_returning = true;
+    print_continue(state, content);
+}
+
 void local_continue_entry_frame(FrontEndState& state, const FrontEndContent& content) {
-    switch (state.script_frame) {
+    // Back from a choice the menu is already printed: the slide starts a frame earlier.
+    const auto frame = state.script_frame + (state.continuation_returning ? 1 : 0);
+    switch (frame) {
     case 1: // $80:ADE5-ADF4: the object and text palettes again (VS CHAMPIONS' rows took them)
         copy_oam(state);
         load_object_palette(state, content); // $83:91F7
@@ -129,10 +146,11 @@ void local_continue_entry_frame(FrontEndState& state, const FrontEndContent& con
         print_continue(state, content);
         return;
     case 2:
-        copy_oam(state);
+        // Back from a choice the OAM is copied next in the slide's first pass (R-0095).
+        if (!state.continuation_returning) copy_oam(state);
         load_text(state, state.slide.hidden_half);
-        send_arrow_off(state);
-        start_slide(state, content, false);
+        if (!state.continuation_returning) send_arrow_off(state);
+        start_slide(state, content, state.continuation_returning);
         return;
     default:
         if (slide_frame(state, content)) state.screen = FrontEndScreen::local_continue;
@@ -197,8 +215,7 @@ void local_continue_frame(FrontEndState& state, const FrontEndContent& content, 
     }
     copy_oam(state); // $80:D1EC
     // The menu's tests take either pad the gate lets in (`$80:B6D3-B82B`, R-0095).
-    const auto pad = static_cast<std::uint16_t>((state.pad_one_ignored ? 0U : pads.one)
-                                                | (state.pad_two_ignored ? 0U : pads.two));
+    const auto pad = gated_pads(state, pads);
     // $80:B74A, then $80:AE12-AE1A: Y or X leaves the loop and comes straight back, no move.
     if (pad & back_buttons) {
         turn_markers(state, content);
@@ -209,21 +226,25 @@ void local_continue_frame(FrontEndState& state, const FrontEndContent& content, 
         turn_markers(state, content);
         return;
     }
-    state.pad_one_ignored = state.pad_two_ignored = false; // $80:C0E0, `$83:9558`
+    gate_pads(state, true, true); // $80:C0E0
     switch (state.menu.selection) {
     case 0: // NEXT TRACK, with the select sound ($80:AEAD)
         play_menu_sound(state, MenuSound::select);
         state.tour_menu.track = static_cast<std::uint8_t>(state.tour_menu.track + 1);
         enter_now_playing(state);
+        state.continuation_back = FrontEndScreen::now_playing;
         return;
     case 1: // SAME TRACK
         enter_now_playing(state);
+        state.continuation_back = FrontEndScreen::now_playing;
         return;
     case 2: // SELECT TRACK
         enter_track_menu(state, false);
+        state.continuation_back = FrontEndScreen::track_menu;
         return;
-    case 3: // SELECT TOUR
-        enter_tour_menu(state);
+    case 3: // SELECT TOUR: `$00AC` = 2, `$80:E550` with neither `$80:A858` nor `$80:A82B` before it
+        return_to_tour_menu(state, false);
+        state.continuation_back = FrontEndScreen::tour_menu;
         return;
     default: // QUIT
         print_main_menu(state, content);
@@ -249,18 +270,18 @@ void enter_vs_champions(FrontEndState& state, const FrontEndContent& content) {
     state.screen = FrontEndScreen::vs_champions_entry;
 }
 
-// The header's printing and the ranking run past the frame's end into the next (R-0095: the
-// captured results placed a record, so `$80:C786` also ran long); then the rows, one a frame,
-// then `$80:937B` and the slide back in (`$80:E27E`), after which the icons show
-// (`$80:F9DB-F9DE`).
+// The header's printing and the ranking, which may run past the frame's end into the next
+// (`champions_overrun_frames`); then the rows, one a frame, then `$80:937B` and the slide back in
+// (`$80:E27E`), after which the icons show (`$80:F9DB-F9DE`).
 void vs_champions_entry_frame(FrontEndState& state, const FrontEndContent& content) {
+    const auto overrun = champions_overrun_frames(state);
     const auto frame = state.script_frame;
-    if (frame == champions_overrun_frame) return;
-    if (frame <= champions_overrun_frame + ranking_rows) {
-        print_champion_row(state, content, frame - champions_overrun_frame - 1);
+    if (frame <= overrun) return;
+    if (frame <= overrun + ranking_rows) {
+        print_champion_row(state, content, frame - overrun - 1);
         return;
     }
-    if (frame == champions_overrun_frame + ranking_rows + 1) {
+    if (frame == overrun + ranking_rows + 1) {
         load_text(state, state.slide.hidden_half);
         start_slide(state, content, true);
         return;

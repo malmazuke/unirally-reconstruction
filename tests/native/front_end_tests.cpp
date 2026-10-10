@@ -614,6 +614,9 @@ void rider_menu_tests() {
     require(pick.screen == FrontEndScreen::rider_menu);
     pick.mode = mode;
     pick.rider_menu.second = true;
+    // The second pick reads pad 2 alone ($80:BCEB, $80:BF6B; R-0095).
+    pick.pad_one_ignored = true;
+    pick.pad_two_ignored = false;
     pick.records.player_wins = 2;
     pick.records.opponent_wins = 5;
     run(pick, content, 1, {0, 0x0100});
@@ -888,7 +891,7 @@ void race_result_tests() {
   run(slow, content, 1);
   require(slow.screen == FrontEndScreen::track_menu_entry &&
           slow.records.tracks_done[0] == 1 &&
-          !slow.race_result.record_placed);
+          slow.race_result.records_placed == 0);
   // No time: a loss without one, and no record.
   auto timeless = to_race();
   unirally::return_from_race(timeless, content, 5000, {0xea60, 4000});

@@ -239,8 +239,8 @@ void track_menu_frame(FrontEndState& state, const FrontEndContent& content, Fron
         turn_markers(state, content);
         return;
     }
-    copy_oam(state); // $80:D1EC
-    const auto pad = pads.one;
+    copy_oam(state);                          // $80:D1EC
+    const auto pad = gated_pads(state, pads); // R-0095
     menu.back = (pad & back_buttons) != 0;
     if (menu.back || (pad & choose_buttons)) {
         if (!menu.back && menu.cursor == medal_line) {
@@ -273,6 +273,10 @@ void track_menu_exit_frame(FrontEndState& state, const FrontEndContent& content)
     if (state.records.race_lost) { // $80:EA14-EA2E
         state.records.race_lost = false;
         --state.records.tries;
+    }
+    if (state.track_menu.back && returns_to_continuation(state, FrontEndScreen::track_menu)) {
+        return_to_local_continue(state, content); // $80:AEFC-AF03
+        return;
     }
     if (state.track_menu.back) {
         // `$80:BC22-BC34` would clear the run's tracks when the medal to race for is not the

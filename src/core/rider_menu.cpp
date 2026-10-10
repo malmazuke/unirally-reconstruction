@@ -335,6 +335,7 @@ void pick_second_in_place(FrontEndState& state, const FrontEndContent& content) 
     state.rider_menu.rider = state.menu.selection;
     state.rider_menu.second = true;
     state.rider_menu.text_to_shown = true;
+    gate_pads(state, false, true); // $80:BCEB, $80:BF6B
     print_text(state.text, state.printer,
                state.mode == FrontEndMode::two_player ? content.two_player_second_title
                                                       : content.versus_second_title,
@@ -369,6 +370,8 @@ void enter_rider_menu(FrontEndState& state) {
     state.rider_menu.returning = false;
     state.rider_menu.second = false;
     state.rider_menu.challenger = false;
+    if (state.rider_menu.purpose == RiderMenuPurpose::normal)
+        gate_pads(state, true, false); // $80:BBA5, $80:BCC8, $80:BF4E
     open_rider_menu_entry(state);
 }
 
@@ -386,8 +389,8 @@ void enter_vs_challenger(FrontEndState& state) {
     state.rider_menu.challenger = true;
     state.rider_menu.challenger_for_rider_one = player_won_versus(state.race_result.times);
     // $80:C087 (`$83:952E`, pad 2 only) or $80:C09C (`$83:9543`, pad 1 only).
-    state.pad_one_ignored = state.rider_menu.challenger_for_rider_one;
-    state.pad_two_ignored = !state.rider_menu.challenger_for_rider_one;
+    gate_pads(state, !state.rider_menu.challenger_for_rider_one,
+              state.rider_menu.challenger_for_rider_one);
     state.logo.raised = true;
     open_rider_menu_entry(state);
 }
@@ -460,10 +463,10 @@ void rider_menu_frame(FrontEndState& state, const FrontEndContent& content, Fron
               state.rider_menu.text_to_shown ? state.slide.shown_half : state.slide.hidden_half);
     upload_uni(state, content);
     const bool league = state.rider_menu.purpose == RiderMenuPurpose::league_members;
-    const bool pad_two = state.rider_menu.second
-                      || (state.rider_menu.challenger && state.rider_menu.challenger_for_rider_one);
+    const bool normal = state.rider_menu.purpose == RiderMenuPurpose::normal;
     const bool finished = league ? read_league_members_pad(state, content, pads.one)
-                                 : read_rider_menu_pad(state, pad_two ? pads.two : pads.one);
+                        : normal ? read_rider_menu_pad(state, gated_pads(state, pads))
+                                 : read_rider_menu_pad(state, pads.one);
     if (!finished) {
         choose_next_picture(state.rider_menu);
         return;
@@ -504,6 +507,7 @@ void rider_menu_frame(FrontEndState& state, const FrontEndContent& content, Fron
             // $80:BD1C-BD23: 2P's second choice starts the session's wins at 0 (R-0084).
             if (state.mode == FrontEndMode::two_player && state.rider_menu.second)
                 state.records.player_wins = state.records.opponent_wins = 0;
+            if (state.rider_menu.second) gate_pads(state, true, true); // $80:BD08, $80:BFB7
         } else if (state.rider_menu.challenger) {
             state.rider_menu.rider = state.menu.selection; // $80:C0C0-C0C2 into `$017D`
         } else {

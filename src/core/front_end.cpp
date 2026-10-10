@@ -257,7 +257,8 @@ bool waits_for_frame(const FrontEndState& state) {
     // So does the stunt result's (R-0067).
     if (state.screen == FrontEndScreen::stunt_result)
         return next != stunt_text_frame || !stunt_text_runs_over(state);
-    if (state.screen == FrontEndScreen::vs_champions_entry) return next != champions_overrun_frame;
+    if (state.screen == FrontEndScreen::vs_champions_entry)
+        return champions_overrun_frames(state) == 0 || next != 1;
     // $80:D494-D4BF runs through the name save and return without a frame wait.
     if (state.screen == FrontEndScreen::rename_return) return false;
     if (state.screen == FrontEndScreen::define_player_after_confirm) return false;
@@ -743,7 +744,9 @@ void reload_menu_text_tiles(FrontEndState& state, const FrontEndContent& content
 
 void start_main_menu(FrontEndState& state) {
     state.screen = FrontEndScreen::main_menu;
-    state.one_player = false; // $80:AD18
+    state.one_player = false;     // $80:AD18
+    gate_pads(state, true, true); // $80:ABC8
+    state.continuation_back = FrontEndScreen::boot;
     state.menu.selection = 0;
     state.menu.idle = first_idle;
     state.latches = {};

@@ -281,15 +281,54 @@ void finish_league_pair(FrontEndState& state, const FrontEndContent& content) {
     }
     award_points(state, content);
     print_awards(state, content);
+    state.league.awards_press_seen = state.league.awards_left = false;
     state.screen = FrontEndScreen::league_awards;
 }
+
+namespace {
+
+// $80:B05B-B079 (R-0095): after the result's sound `$80:C206` waits for a press of any button of
+// either pad on two frames running, each frame copying the OAM and stepping the decorations; then
+// the icons 104-111 hidden and, after a frame wait, the text and object palettes again and an OAM
+// copy, and the table printed (`$80:A547`) in that frame.
+// The awards' frames: the back slide's end (`$80:8B28`) and the result's sound (`$80:B051`).
+constexpr std::uint32_t awards_slid_in_frame = 45, awards_result_frame = 85;
+
+void leave_league_awards(FrontEndState& state, const FrontEndContent& content, FrontEndPads pads) {
+    constexpr unsigned menu_text_palette = 28;
+    auto& league = state.league;
+    if (league.awards_left) {
+        league.awards_left = false;
+        load_cgram(state, asset(content, menu_text_palette), 0xd0);
+        load_object_palette(state, content); // $83:91F7
+        enter_league_table(state, content);
+        return;
+    }
+    if (state.script_frame <= awards_result_frame) {
+        league.awards_press_seen = false;
+        return;
+    }
+    const bool press = pads.one != 0 || pads.two != 0;
+    if (press && league.awards_press_seen) {
+        high_bits(state, 104) = high_bits(state, 108) = four_hidden;
+        league.awards_left = true;
+    }
+    league.awards_press_seen = press;
+}
+
+} // namespace
 
 void league_awards_frame(FrontEndState& state, const FrontEndContent& content, FrontEndPads pads) {
     // The awards slide in at $80:8B28 (`$80:E27E`, its sound on the third frame; native prints
     // them in place), and the result's sound follows 41 frames after the tally ($80:B051). The
     // back slide steps no decorations: they step from its end on (R-0095).
-    constexpr std::uint32_t slide_sound_frame = 3, slid_in_frame = 45, result_frame = 85;
+    constexpr std::uint32_t slide_sound_frame = 3, slid_in_frame = awards_slid_in_frame,
+                            result_frame = awards_result_frame;
     copy_oam(state);
+    if (state.league.awards_left) { // the frame after the press: no decorations
+        leave_league_awards(state, content, pads);
+        return;
+    }
     if (state.script_frame >= slid_in_frame) step_decorations(state, content);
     if (state.script_frame == slide_sound_frame) play_menu_sound(state, MenuSound::back_slide);
     if (state.script_frame == result_frame) play_menu_sound(state, MenuSound::result);
@@ -302,8 +341,7 @@ void league_awards_frame(FrontEndState& state, const FrontEndContent& content, F
         if (state.records.league_tracks[slot] % tracks_per_tour == 0)
             state.records.league_cycle_complete = true;
     }
-    if (state.script_frame > slid_in_frame && any_button_pressed(pads))
-        enter_league_table(state, content);
+    leave_league_awards(state, content, pads);
 }
 
 void choose_league_slot(FrontEndState& state, const FrontEndContent& content) {

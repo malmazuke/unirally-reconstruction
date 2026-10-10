@@ -69,5 +69,20 @@ the records differing after a two-human restart (`$0422`, `$0486`, `$0829`, `$08
 ## Review candidate
 
 - Records: [R-0095](../docs/research/R-0095-two-human-stunts.md). Pack v38.
-- Gates: `local/evidence/two-human-stunts/gates.sh` (from CREDITS-NAME's) against main `ef8e440`'s
+- Gates: `local/evidence/two-human-stunts/gates.sh` (from CREDITS-NAME's; since review round 1 it also runs `pass3/checks3.sh`) against main `ef8e440`'s
   binaries (`base-ef8e440/`), pack v37 for main and v38 for the candidate, under the shared lock.
+
+## Review round 1 (PR #72, approved with should-fix)
+
+- Fixed in the third pass, each reproduced on the review's captures (`local/evidence/two-human-stunts/pass3/`):
+  pad 2 on NOW PLAYING, PICK TOUR and PICK TRACK through the `$0742` gate (W2's pad-2 B at 9850);
+  Y from a screen the continuation opened (W1 equal on every menu frame); VS CHAMPIONS' row frame
+  from the number of records placed (W2b's VS CHAMPIONS equal); `front_end_runner --restore-check`
+  for layout M (the review's 11 checks pass, now in `pass3/checks3.sh`).
+- Advisories: the league limit is now exact (R-0095's Not covered: a one-scanline table print
+  overrun in organic-three's prefix; the awards press and league scoring fixed), and the second
+  race's result words are recorded as the `$0618` league-total write. organic-stunt-tricks,
+  -three-events and -two-race league frames are equal; organic-full-tour-turnaround 31/35 (main 28).
+- Reruns on the final code: race sweep 432 runs 0 differences; front-end sweep 112/179 equal, the
+  same 67 differing, none further from the original but the four organic-three manifests; league
+  frozen 0 px; R-0076 cues identical to main; this task's five cue schedules equal the original.

@@ -200,6 +200,7 @@ struct LeagueSetup {
     std::array<std::uint16_t, 3> podium_poses{0x0a45, 0x0a4d, 0x0a55};
     std::uint16_t podium_phase{};
     bool after_podium{}; // $80:BEC6-BEE2: a tour choice goes straight to NOW PLAYING
+    bool awards_press_seen{}, awards_left{}; // `$80:C206`'s press on two frames running
 };
 
 struct RecordsDetail {
@@ -413,9 +414,11 @@ struct StuntTally {
 // (`$80:F0EE`), its tally and the one-run result's waits.
 struct RaceResult {
     RaceTimes times{};
-    bool released{};      // `$80:C24C` has seen both pads released
-    bool press_seen{};    // `$80:C206` saw a press on the last frame
-    bool record_placed{}; // `$80:C786` placed a time or score in the track's top three
+    bool released{};   // `$80:C24C` has seen both pads released
+    bool press_seen{}; // `$80:C206` saw a press on the last frame
+    // How many times or scores `$80:C786` placed in the track's top three; each placing runs the
+    // checksums (`$83:90F4`) again.
+    std::uint8_t records_placed{};
     std::array<LapGraphDot, 20> dots{}; // the player's laps, then the opponent's
     StuntTally tally{};                 // a stunt result's
 };
@@ -590,11 +593,21 @@ struct FrontEndState {
     std::array<std::uint8_t, 256> options_upper_palette{}; // pre-picker CGRAM colours $80-$FF
     bool options_palette_saved{};
     std::uint8_t second_rider{}; // $017F, second human chosen by port 2 (R-0071)
-    // $77:0742 bits 9 and 10, the menus' pad gate: the pad tests (`$80:B6D3-B82B`) skip pad 1
-    // while bit 9 is set and pad 2 while bit 10 is. A VS challenger's pick leaves only the
-    // picking pad (`$83:952E`, `$83:9543`) through the continuation, which then lets both in again
-    // (`$83:9558`, $80:C0E0). Native follows it on those screens (R-0095).
+    // $77:0742 bits 9 and 10, the menus' pad gate: the pad tests (`$80:B6D3-B82B`, `$80:B8F1`)
+    // skip pad 1 while bit 9 is set and pad 2 while bit 10 is. `$83:9543` leaves pad 1 alone,
+    // `$83:952E` pad 2 alone, `$83:9558` lets both in: the main menu opens both ($80:ABC8); a
+    // rider pick from it takes pad 1 ($80:BBA5, $80:BCC8, $80:BF4E), 2P's and VS's second pick
+    // pad 2 ($80:BCEB, $80:BF6B), and after it both again ($80:BD08, $80:BFB7), so PICK TOUR,
+    // PICK TRACK and NOW PLAYING take either pad with two humans (and in a league) and pad 1 in
+    // 1P. A VS challenger's pick takes the picking pad ($80:C087, $80:C09C) until the
+    // continuation's choice ($80:C0E0). R-0095.
     bool pad_one_ignored{}, pad_two_ignored{};
+    // The two-human continuation's way back (R-0095): Y on the first screen a choice opened
+    // returns to the continuation with the menu's back slide ($80:ADFA, `$00AC` = 2): NOW PLAYING
+    // after NEXT or SAME TRACK ($80:AECE-AEDA), PICK TRACK after SELECT TRACK ($80:AEF3-AF03),
+    // PICK TOUR after SELECT TOUR ($80:AF1B-AF2B).
+    FrontEndScreen continuation_back{FrontEndScreen::boot};
+    bool continuation_returning{};
     OnePlayerRecords records = cold_start_records();
     TourMenu tour_menu{};
     TrackMenu track_menu{};
