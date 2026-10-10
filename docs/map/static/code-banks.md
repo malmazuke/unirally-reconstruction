@@ -46,7 +46,7 @@ The four classes partition all 131,072 bytes. **Unknown share: 24.0%**.
 
 ## Cited addresses
 
-1833 distinct code-bank ROM addresses cited by the research, task, inventory and content records (`labels.json`). By position: dat 14, loc 1198, mid 28, sub 416, unk 177 (sub routine start, loc instruction start, mid inside an instruction, dat data, unk unknown). By class: data 14, inferred 58, observed 1584, unknown 177.
+1841 distinct code-bank ROM addresses cited by the research, task, inventory and content records (`labels.json`). By position: dat 14, loc 1203, mid 28, sub 419, unk 177 (sub routine start, loc instruction start, mid inside an instruction, dat data, unk unknown). By class: data 14, inferred 61, observed 1589, unknown 177.
 
 Cited addresses in `unknown` bytes:
 
@@ -179,8 +179,8 @@ Cited addresses in `unknown` bytes:
 | $82:835B | docs/research/R-0036-zoom-zoo-rider-objects.md, docs/research/R-0045-static-code-map.md |
 | $82:9DB6 | docs/research/R-0011-motion.md, docs/research/R-0085-player-hints-and-voices.md |
 | $82:A2DB | docs/research/R-0030-zoom-zoo-native-trial.md |
-| $82:B332 | docs/content/dragster-segment.md, docs/research/R-0008-track-decode.md, docs/research/R-0046-track-breadth-matrix.md, docs/research/R-0054-boot-title-main-menu.md, docs/research/R-0089-coverage-gaps.md, tasks/DATA-COVERAGE.md, tasks/M1-03.md, tasks/TRACK-BREADTH.md |
-| $82:B7DD | docs/content/dragster-segment.md, docs/research/R-0008-track-decode.md, docs/research/R-0021-zoom-zoo-content-contract.md, docs/research/R-0046-track-breadth-matrix.md, tasks/M1-03.md, tasks/M4-03.md |
+| $82:B332 | docs/content/dragster-segment.md, docs/research/R-0008-track-decode.md, docs/research/R-0046-track-breadth-matrix.md, docs/research/R-0054-boot-title-main-menu.md, docs/research/R-0089-coverage-gaps.md, docs/research/R-0093-data-coverage.md, tasks/DATA-COVERAGE.md, tasks/M1-03.md, tasks/TRACK-BREADTH.md |
+| $82:B7DD | docs/content/dragster-segment.md, docs/research/R-0008-track-decode.md, docs/research/R-0021-zoom-zoo-content-contract.md, docs/research/R-0046-track-breadth-matrix.md, docs/research/R-0093-data-coverage.md, tasks/DATA-COVERAGE.md, tasks/M1-03.md, tasks/M4-03.md, tasks/NEXT_SESSION.md |
 | $82:D4DC | docs/research/R-0061-riders-and-opponents.md, docs/research/R-0080-split-hud.md, tasks/RACE-RIDERS-OPPONENTS.md, tasks/SPLIT-HUD-GAPS.md |
 | $82:DC12 | docs/research/R-0046-track-breadth-matrix.md, tasks/TRACK-BREADTH.md |
 | $83:8000 | docs/research/R-0064-hunter-ending-and-soft-reset.md, docs/research/R-0090-save-files.md, tasks/NEXT_SESSION.md, tasks/SAVE-FILES.md |

@@ -4,7 +4,7 @@
   "scenario_id": "data-coverage-corpus",
   "rom": {"sha256":"a1105819d48c04d680c8292bbfa9abbce05224f1bc231afd66af43b7e0a1fd4e","size":2097152},
   "core": {"commit":"7d5aa1e656b9171524d01b1b22917197d8121cb4","library_sha256":"e59bf88d4fc922c9fe3b5438e65ff3a6909d24e1628f0f87141c8de17699a91b","name":"bsnes","patch_sha256":"a719f5ffe2222dad4c1ab04336633319ad85004f74e32fc14893a058be333885","serialization_method":"Strict"},
-  "coverage": {"first_site":{"address":"$00:8858","mode":"Emx"},"frames":{"count":1666993,"end":1666992,"start":0},"instructions":25734735782,"max_frame_delta":21074,"ring_capacity":262144,"sha256":"60d4d2626bdfc398d6962ea35ed90754d39c36b43636b5da0258cc628f8f5950"},
+  "coverage": {"first_site":{"address":"$00:8858","mode":"Emx"},"frames":{"count":1666993,"end":1666992,"start":0},"instructions":25734735782,"max_frame_delta":21074,"merged_runs":236,"ring_capacity":262144,"sha256":"60d4d2626bdfc398d6962ea35ed90754d39c36b43636b5da0258cc628f8f5950"},
   "regeneration_command": "python3 tools/project.py coverage merge --coverage-list <the inputs of merged_from> --scenario data-coverage-corpus --out <coverage.json> && python3 tools/project.py coverage map --coverage <coverage.json> --out docs/map/data-coverage-corpus.map.json --summary docs/map/data-coverage-corpus.md",
   "mapping_rule": "LoROM (bsnes board LOROM-RAM#A): banks $00-$6F and $80-$EF, offsets $8000-$FFFF; ROM offset = ((bank & $7F) << 15 | (address & $7FFF)) mod ROM size",
   "mode_notation": "E/N = emulation/native; m/M = 8/16-bit accumulator; x/X = 8/16-bit index (from the pre-instruction P and E)",

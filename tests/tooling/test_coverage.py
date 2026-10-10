@@ -543,7 +543,8 @@ class TrackedMapTests(unittest.TestCase):
                 self.assertEqual(sum(r["opcode_bytes"] for r in doc["ranges"]), sum(b["opcode_bytes"] for b in doc["banks"]))
                 self.assertEqual(len(doc["entry_points"]), t["entry_points"])
                 self.assertEqual(len(doc["vectors"]), 12)
-                self.assertLessEqual(path.stat().st_size, 1 << 20)
+                # M1-01's 1 MiB; a map of merged coverage (DATA-COVERAGE, R-0093) may take 2 MiB.
+                self.assertLessEqual(path.stat().st_size, (2 if doc["coverage"].get("merged_runs") else 1) << 20)
                 self.assertEqual(derive.dump_map(doc), path.read_text())
                 for key in ("opcode", "mnemonic", "bytes_hex"):
                     self.assertNotIn(f'"{key}"', path.read_text())

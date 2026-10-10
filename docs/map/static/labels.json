@@ -10931,7 +10931,8 @@
   ],
   "source_records": [
    "docs/research/R-0010-native-movement.md",
-   "docs/research/R-0011-contact.md"
+   "docs/research/R-0011-contact.md",
+   "docs/research/R-0093-data-coverage.md"
   ]
  },
  {
@@ -11434,6 +11435,8 @@
    "docs/research/R-0009-m1-acceptance.md",
    "docs/research/R-0020-zoom-zoo-reference.md",
    "docs/research/R-0046-track-breadth-matrix.md",
+   "docs/research/R-0093-data-coverage.md",
+   "tasks/DATA-COVERAGE.md",
    "tasks/M1-03.md"
   ]
  },
@@ -11475,6 +11478,15 @@
   ]
  },
  {
+  "address": "$81:BB60",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_81BB60",
+  "source_records": [
+   "docs/research/R-0093-data-coverage.md"
+  ]
+ },
+ {
   "address": "$81:BB79",
   "class": "observed",
   "comment": "instruction start",
@@ -11489,7 +11501,10 @@
   "comment": "routine start",
   "label": "sub_81BB7A",
   "source_records": [
-   "docs/research/R-0089-coverage-gaps.md"
+   "docs/research/R-0089-coverage-gaps.md",
+   "docs/research/R-0093-data-coverage.md",
+   "tasks/DATA-COVERAGE.md",
+   "tasks/NEXT_SESSION.md"
   ]
  },
  {
@@ -13834,7 +13849,8 @@
   "comment": "instruction start",
   "label": "loc_82809C",
   "source_records": [
-   "docs/research/M4-16-persistent-input-ledger.md"
+   "docs/research/M4-16-persistent-input-ledger.md",
+   "docs/research/R-0093-data-coverage.md"
   ]
  },
  {
@@ -13871,7 +13887,8 @@
   "label": "loc_8280D1",
   "source_records": [
    "docs/research/M4-16-persistent-input-ledger.md",
-   "docs/research/R-0007-player-state.md"
+   "docs/research/R-0007-player-state.md",
+   "tasks/DATA-COVERAGE.md"
   ]
  },
  {
@@ -13948,6 +13965,8 @@
   "label": "sub_828151",
   "source_records": [
    "docs/research/M4-16-persistent-input-ledger.md",
+   "docs/research/R-0093-data-coverage.md",
+   "tasks/DATA-COVERAGE.md",
    "tasks/M4-16-review.md"
   ]
  },
@@ -13977,7 +13996,9 @@
   "comment": "instruction start",
   "label": "loc_8282D4",
   "source_records": [
-   "docs/research/M4-16-persistent-input-ledger.md"
+   "docs/research/M4-16-persistent-input-ledger.md",
+   "docs/research/R-0093-data-coverage.md",
+   "tasks/DEMO-AUDIO.md"
   ]
  },
  {
@@ -13996,7 +14017,10 @@
   "label": "loc_8282F0",
   "source_records": [
    "docs/research/M4-16-persistent-input-ledger.md",
-   "docs/research/R-0007-player-state.md"
+   "docs/research/R-0007-player-state.md",
+   "docs/research/R-0093-data-coverage.md",
+   "tasks/DATA-COVERAGE.md",
+   "tasks/DEMO-AUDIO.md"
   ]
  },
  {
@@ -16406,6 +16430,7 @@
    "docs/research/R-0008-track-decode.md",
    "docs/research/R-0054-boot-title-main-menu.md",
    "docs/research/R-0089-coverage-gaps.md",
+   "docs/research/R-0093-data-coverage.md",
    "tasks/FRONT-END-MAIN-MENU.md"
   ]
  },
@@ -16438,6 +16463,15 @@
   ]
  },
  {
+  "address": "$82:B219",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_82B219",
+  "source_records": [
+   "docs/research/R-0093-data-coverage.md"
+  ]
+ },
+ {
   "address": "$82:B296",
   "class": "observed",
   "comment": "routine start",
@@ -16451,8 +16485,18 @@
    "docs/research/R-0008-track-decode.md",
    "docs/research/R-0015-native-presentation.md",
    "docs/research/R-0019-dragster-loser-result.md",
+   "docs/research/R-0093-data-coverage.md",
    "tasks/M1-03.md",
    "tasks/M3-02.md"
+  ]
+ },
+ {
+  "address": "$82:B2AC",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_82B2AC",
+  "source_records": [
+   "docs/research/R-0093-data-coverage.md"
   ]
  },
  {
@@ -16474,6 +16518,8 @@
    "docs/research/R-0008-track-decode.md",
    "docs/research/R-0020-zoom-zoo-reference.md",
    "docs/research/R-0046-track-breadth-matrix.md",
+   "docs/research/R-0093-data-coverage.md",
+   "tasks/DATA-COVERAGE.md",
    "tasks/FRONT-END-MAIN-MENU.md"
   ]
  },
@@ -16502,6 +16548,7 @@
    "docs/research/R-0046-track-breadth-matrix.md",
    "docs/research/R-0054-boot-title-main-menu.md",
    "docs/research/R-0089-coverage-gaps.md",
+   "docs/research/R-0093-data-coverage.md",
    "tasks/DATA-COVERAGE.md",
    "tasks/M1-03.md",
    "tasks/TRACK-BREADTH.md"
@@ -16517,8 +16564,11 @@
    "docs/research/R-0008-track-decode.md",
    "docs/research/R-0021-zoom-zoo-content-contract.md",
    "docs/research/R-0046-track-breadth-matrix.md",
+   "docs/research/R-0093-data-coverage.md",
+   "tasks/DATA-COVERAGE.md",
    "tasks/M1-03.md",
-   "tasks/M4-03.md"
+   "tasks/M4-03.md",
+   "tasks/NEXT_SESSION.md"
   ]
  },
  {
@@ -16551,6 +16601,7 @@
   "source_records": [
    "docs/content/dragster-segment.md",
    "docs/research/R-0008-track-decode.md",
+   "docs/research/R-0093-data-coverage.md",
    "tasks/M1-03.md"
   ]
  },
@@ -16563,6 +16614,15 @@
    "docs/content/dragster-segment.md",
    "docs/research/R-0008-track-decode.md",
    "tasks/M1-03.md"
+  ]
+ },
+ {
+  "address": "$82:BE0E",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82BE0E",
+  "source_records": [
+   "docs/research/R-0093-data-coverage.md"
   ]
  },
  {
@@ -17149,6 +17209,20 @@
   ]
  },
  {
+  "address": "$82:DC40",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_82DC40",
+  "native": [
+   "src/core/content_pack.cpp:tracks_required",
+   "src/core/presentation.cpp:load_other_track_presentation_content",
+   "src/core/race_setup.cpp:stunt_scenario"
+  ],
+  "source_records": [
+   "docs/research/R-0093-data-coverage.md"
+  ]
+ },
+ {
   "address": "$82:DC7C",
   "class": "inferred",
   "comment": "instruction start",
@@ -17271,7 +17345,28 @@
    "src/core/zoom_zoo_movement.hpp:ClassicRaceTrack"
   ],
   "source_records": [
-   "docs/research/R-0046-track-breadth-matrix.md"
+   "docs/research/R-0046-track-breadth-matrix.md",
+   "docs/research/R-0093-data-coverage.md",
+   "tasks/DATA-COVERAGE.md"
+  ]
+ },
+ {
+  "address": "$82:E17A",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82E17A",
+  "source_records": [
+   "docs/research/R-0093-data-coverage.md",
+   "tasks/DATA-COVERAGE.md"
+  ]
+ },
+ {
+  "address": "$82:E19F",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_82E19F",
+  "source_records": [
+   "docs/research/R-0093-data-coverage.md"
   ]
  },
  {
@@ -24065,6 +24160,15 @@
   "label": "sub_83FADC",
   "source_records": [
    "docs/research/R-0089-coverage-gaps.md"
+  ]
+ },
+ {
+  "address": "$83:FB06",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_83FB06",
+  "source_records": [
+   "docs/research/R-0093-data-coverage.md"
   ]
  },
  {
