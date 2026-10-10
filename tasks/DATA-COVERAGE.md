@@ -2,9 +2,10 @@
 
 ## Assignment
 
-- Status: **in review** (tier 2). Claimed 9 October 2026 21:26 UTC on main `33f3645`, by the
-  session the user asked to run beside the WIPE-RAM session (R-0089's queue item 9). Weekly usage
-  at claim 15%. Rebased on main `6b6790a` (WIPE-RAM) after the captures.
+- Status: **accepted** 10 October 2026 (tier 2, [#71](https://github.com/malmazuke/unirally-reconstruction/pull/71)), integrated by merge commit `2b1bd99`.
+  Claimed 9 October 2026 21:26 UTC on main `33f3645`, by the session the user asked to run beside the WIPE-RAM session (R-0089's queue item 9). Weekly usage
+  at claim 15%.
+  Rebased on main `6b6790a` (WIPE-RAM) after the captures, and merged with main `ef8e440` (CREDITS-NAME).
 - Worker: Claude Code desktop app, Claude Opus 5.5 (`claude-opus-5-5`); coordinator, primary and
   integrator. Branch `task/data-coverage` in `.worktrees/data-coverage`.
 - Milestone: M4 (original game coverage).
@@ -129,8 +130,10 @@ Tracked:
 
 ## Handoff
 
-- Branch `task/data-coverage` on main `6b6790a`.
-- **Next:** hosted CI on the final head, then merge (PR #71).
+- Integrated: PR #71 merged as `2b1bd99` from head `fefe661`, with hosted checks passing on that head.
+  The closeout is in main `artifacts/data-coverage-integration/closeout.json`.
+- **Follow-up:** ACCESS-ROUND-READS (review finding 4) fixes the derivation and remeasures. It runs
+  in its own session, stacked on this branch.
 - **Follow-up for other tasks:**
   - DEMO-AUDIO needs samples 02/23/34 and the `$93:F712` block (noted in its record).
   - Bank `$A2` and the unreferenced assets are open questions for RACE-LISTING-BRANCHES and

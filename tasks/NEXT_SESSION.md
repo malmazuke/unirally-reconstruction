@@ -11,7 +11,7 @@ Results: the credits picture equal on all 800 pictures and 3,676 sound cues; "fa
 equal on every race row (one-view and the review's split demo, 2,201 rows); every frozen gate and
 sweep equals main. The split picture's HUNTER effects are queued as SPLIT-HUNTER-PICTURES.
 [R-0094](../docs/research/R-0094-name-cheats.md) defines the domain. Pack profile v37.
-**10 October 2026: DATA-COVERAGE is in review (tier 2) on `task/data-coverage`.**
+**10 October 2026: DATA-COVERAGE is accepted (tier 2, #71) and integrated by merge commit.**
 It measures which ROM data the original reads over R-0089's 236-run corpus: 1,562,774 of
 2,097,152 bytes, with 0 unresolved accesses after the new `access capture --resolve-rmw`. Findings:
 - **The flagged entries are the tracks.** R-0089's 45 flagged directory entries are the 45 track
