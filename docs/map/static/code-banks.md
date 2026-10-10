@@ -22,8 +22,8 @@ The four classes partition all 131,072 bytes. **Unknown share: 40.4%** - above D
 | Instructions from observed | 17,569 |
 | Instructions from table | 587 |
 | Routines | 636 |
-| Routines cited by native code | 445 |
-| Routine bytes cited by native code | 55,161 |
+| Routines cited by native code | 454 |
+| Routine bytes cited by native code | 55,854 |
 | Gap sweep candidate instructions | 2,746 |
 | Gap sweep candidate bytes | 6,174 |
 | Jump tables | 2 |
@@ -45,7 +45,7 @@ The four classes partition all 131,072 bytes. **Unknown share: 40.4%** - above D
 
 ## Cited addresses
 
-1833 distinct code-bank ROM addresses cited by the research, task, inventory and content records (`labels.json`). By position: dat 31, loc 1023, mid 20, sub 363, unk 396 (sub routine start, loc instruction start, mid inside an instruction, dat data, unk unknown). By class: data 31, inferred 348, observed 1058, unknown 396.
+1859 distinct code-bank ROM addresses cited by the research, task, inventory and content records (`labels.json`). By position: dat 33, loc 1039, mid 20, sub 368, unk 399 (sub routine start, loc instruction start, mid inside an instruction, dat data, unk unknown). By class: data 33, inferred 359, observed 1068, unknown 399.
 
 Cited addresses in `unknown` bytes:
 
@@ -68,6 +68,7 @@ Cited addresses in `unknown` bytes:
 | $80:84CB | docs/research/R-0010-native-movement.md, tasks/NATIVE-READABILITY.md |
 | $80:84DB | docs/research/R-0010-native-movement.md |
 | $80:84EB | docs/research/R-0010-native-movement.md, docs/research/R-0045-static-code-map.md |
+| $80:85A4 | docs/research/R-0094-name-cheats.md |
 | $80:88B2 | tasks/COVERAGE-ROADMAP.md |
 | $80:88BE | docs/research/R-0054-boot-title-main-menu.md, docs/research/R-0075-title-menu-audio.md |
 | $80:8953 | docs/research/R-0067-stunt-result.md |
@@ -443,6 +444,8 @@ Cited addresses in `unknown` bytes:
 | $83:C86E | docs/research/R-0077-one-player-audio.md |
 | $83:C89A | docs/research/R-0062-gold-endings.md |
 | $83:C8B3 | docs/research/R-0061-riders-and-opponents.md, tasks/RACE-RIDERS-OPPONENTS.md |
+| $83:FB56 | docs/research/R-0094-name-cheats.md |
+| $83:FB70 | docs/research/R-0094-name-cheats.md |
 | $83:FBF5 | docs/research/R-0077-one-player-audio.md, tasks/AUDIO-ONE-PLAYER.md |
 | $83:FC75 | docs/research/R-0076-first-race-audio.md, docs/research/R-0077-one-player-audio.md, tasks/AUDIO-FIRST-RACE.md, tasks/AUDIO-ONE-PLAYER.md |
 | $83:FCF5 | docs/research/R-0076-first-race-audio.md, tasks/AUDIO-TITLE-MENU.md |

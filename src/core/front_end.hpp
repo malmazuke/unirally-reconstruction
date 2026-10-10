@@ -78,6 +78,10 @@ struct FrontEndContent {
     // its arrow columns (`$80:AA19`), and the warning, "initialising battery ram" and "nothing
     // done" (`$80:AAF9-ABC7`). Empty in an older pack, where the code is refused.
     std::span<const std::uint8_t> wipe_ram_menu_text, wipe_ram_arrow_columns, wipe_ram_messages;
+    // The rider-name cheats (profile v37, R-0094): the names each race's setup tests and the name
+    // it writes (`$83:FB56-FB89`); the credits picture is assets 0xBF (tiles), 0xC0 (map) and 0xC1
+    // (colours). Empty in an older pack, where no name is a cheat.
+    std::span<const std::uint8_t> name_cheats;
 };
 FrontEndContent front_end_content(const ClassicContentPack& pack);
 
@@ -259,6 +263,10 @@ struct OnePlayerRecords {
     std::uint8_t demo_track{};
     // $77:1115: 1 when the last idle demo was a split race; each demo flips it (`$83:C91C-C937`).
     std::uint8_t demo_split{};
+    // $77:111A: the races left that run HUNTER's tag effects and opponent tier on any track. A
+    // first rider named "faedine" sets 3 at a race's setup, each setup first counts one down
+    // (`$83:FB8A`), and the idle demo clears it (`$83:C914`; R-0094).
+    std::uint8_t hunter_races{};
 };
 OnePlayerRecords cold_start_records();
 
@@ -496,6 +504,7 @@ enum class FrontEndScreen : std::uint8_t {
     wipe_ram_warning_entry, // $80:AA1B-AA35: the warning slid in, the logo up
     wipe_ram_warning,       // $80:AA38-AA62: Select+Y+A wipes, most other buttons cancel
     wipe_ram_answer,        // the wipe, then its message or "nothing done", and a press
+    credits_picture,        // $83:FAE0: a first rider named "credits": the picture, then a restart
 };
 
 // What `$83:9894` saves before a race (work RAM `$0000-$019D`) and `$83:987D` puts back after
@@ -617,6 +626,9 @@ RgbFrame render_front_end(const FrontEndState& state);
 // The race NOW PLAYING chose: its track, the rider PICK YOUR UNI chose against NOW PLAYING's
 // opponent, and the tutorial hints unless the records hold the rider's bit (R-0061).
 ClassicRaceScenario one_player_race_scenario(const FrontEndState& state);
+// $82:D978: the race now starting (from NOW PLAYING or the idle demo) runs HUNTER's tag effects
+// and tier on any track, because `$77:111A-111B` is not zero (the name "faedine", R-0094).
+bool hunter_races_running(const FrontEndState& state);
 
 // The frames between NOW PLAYING's fade and a race's initialization on the laboratory's menu path
 // (R-0057, R-0058, R-0077): the race's content load until its sound session's first FF request

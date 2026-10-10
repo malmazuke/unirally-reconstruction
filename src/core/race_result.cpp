@@ -657,8 +657,14 @@ void begin_race_return(FrontEndState& state, const FrontEndContent& content, std
                        const RaceTimes& times) {
     if (state.screen != FrontEndScreen::race)
         throw std::logic_error("the front end is not waiting for a race");
-    state.mode_chosen = false;
     state.frame = frame;
+    start_race_return(state, content, times);
+    ++state.frame;
+}
+
+void start_race_return(FrontEndState& state, const FrontEndContent& content,
+                       const RaceTimes& times) {
+    state.mode_chosen = false;
     state.race_result = {};
     state.race_result.times = times;
     // $83:CE2C set the rider's bit when the race's hints ended.
@@ -674,7 +680,6 @@ void begin_race_return(FrontEndState& state, const FrontEndContent& content, std
     state.screen = FrontEndScreen::race_return;
     state.script_frame = 0;
     early_loads(state, content);
-    ++state.frame;
 }
 
 void begin_menu_restore(FrontEndState& state, const FrontEndContent& content) {
@@ -697,6 +702,7 @@ ClassicRaceScenario one_player_race_scenario(const FrontEndState& state) {
                                           ((state.records.tutorial_bits >> rider) & 1U) == 0);
     // A stunt event's qualifying score, by the rider's best medal on the tour ($80:99ED).
     scenario.best_medal = front_end_screens::best_medal(state);
+    scenario.hunter_tour = scenario.hunter_tour || hunter_races_running(state);
     return scenario;
 }
 

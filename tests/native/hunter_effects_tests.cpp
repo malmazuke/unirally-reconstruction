@@ -52,6 +52,7 @@ int main() {
     for (const unsigned track : {42U, 41U}) {
         ZoomZooState state{};
         state.track = ClassicRaceTrack{static_cast<std::uint8_t>(track)};
+        state.hunter_tour = true; // `$131F` on tracks 40 on, NEON's too ($82:D978)
         state.movement.riders[0].progress.transition_count = 4;
         state.movement.riders[1].progress.transition_count = 1;
         update_hunter_effects(state, blink);
@@ -153,6 +154,53 @@ int main() {
         require(bytes.size()==916 && deserialize_zoom_zoo(bytes).hunter==state.hunter);
         auto bad=bytes;bad[854+2*2+2*6]=3;rejects([&]{(void)deserialize_zoom_zoo(bad);}); // effect 6 = 3
         rejects([&]{update_hunter_effects(state,std::span<const std::uint8_t>{});});
+    }
+    // R-0094: while the name "faedine"'s races last, `$131F` is set on any track ($82:D978): the
+    // tier and the tag effects run on DRAGSTER as on HUNTER's tracks.
+    {
+        auto scenario=classic_race_scenario(ClassicRaceTrack::Dragster);
+        require(!scenario.hunter_tour);
+        scenario.hunter_tour=true;
+        auto state=classic_race_start(content(),scenario);
+        require((state.hunter_tour && state.opponent_tier==OpponentTier{3,0x40,0x60}));
+        auto& riders=state.movement.riders;
+        riders[0].motion.x=0x404;riders[1].motion.x=0x408;riders[0].motion.y=riders[1].motion.y=0x300;
+        riders[0].progress.transition_count=5;riders[1].progress.transition_count=3;
+        auto tagged=state;
+        update_hunter_effects(tagged,blink);
+        require(tagged.hunter.active==1 && tagged.hunter.effect[4]==2);
+        auto& h=state.hunter;h.latched=h.active=1;h.effect[4]=2;h.timer[4]=300;
+        // Its state is wrapped (URHF0001): a flag, DRAGSTER's own 742 bytes, then the effects,
+        // which DRAGSTER's layout has no room for; it reads back to the same state and tier.
+        const auto bytes=serialize_zoom_zoo(state);
+        require(bytes.size()==8+1+742+62 && bytes[2]=='H' && bytes[3]=='F' && bytes[8]==1);
+        const auto back=deserialize_zoom_zoo(bytes);
+        require(back.hunter_tour && back.hunter==state.hunter && back.track==ClassicRaceTrack::Dragster);
+        require(back.opponent_tier==state.opponent_tier && serialize_zoom_zoo(back)==bytes);
+        // A wrapper's flag is 0 or 1, and says whether the layout lacks the effects.
+        auto bad=bytes;bad[8]=2;rejects([&]{(void)deserialize_zoom_zoo(bad);});
+        bad=bytes;bad[8]=0;rejects([&]{(void)deserialize_zoom_zoo(bad);});
+        // Without the wrapper the effects are refused, as off the HUNTER tour.
+        state.hunter_tour=false;
+        rejects([&]{(void)serialize_zoom_zoo(state);});
+    }
+    // Another track's layout holds the effects itself: the wrapper adds only its flag. A HUNTER
+    // track sets the flag itself and is never wrapped.
+    {
+        auto scenario=classic_race_scenario(ClassicRaceTrack{11});
+        scenario.hunter_tour=true;
+        auto state=classic_race_start(content(),scenario);
+        state.hunter.latched=state.hunter.active=1;state.hunter.effect[1]=2;
+        const auto bytes=serialize_zoom_zoo(state);
+        require(bytes.size()==8+1+916 && bytes[8]==0);
+        const auto back=deserialize_zoom_zoo(bytes);
+        require(back.hunter_tour && back.hunter==state.hunter && serialize_zoom_zoo(back)==bytes);
+        auto hunter=classic_race_start(content(),classic_race_scenario(ClassicRaceTrack{41}));
+        auto wrapped=bytes;
+        const auto own=serialize_zoom_zoo(hunter);
+        require(own.size()==916);
+        wrapped.resize(9);wrapped.insert(wrapped.end(),own.begin(),own.end());
+        rejects([&]{(void)deserialize_zoom_zoo(wrapped);});
     }
     return 0;
 }

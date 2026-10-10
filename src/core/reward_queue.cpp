@@ -351,7 +351,7 @@ void show_next_player_announcement(ZoomZooState& state, const MovementContent& c
     if (queue.cooldown) return;
     const auto slot = next_slot(queue.read_cursor);
     const auto scenario = classic_race_scenario(state.track);
-    const bool hunter = scenario.hunter_tour;
+    const bool hunter = state.hunter_tour;
     if (slot == queue.write_cursor) {
         if (!announcements.empty_display) {
             if (hunter) show_hunter_message(state);

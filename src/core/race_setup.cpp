@@ -276,6 +276,7 @@ ZoomZooState classic_race_start(const ZoomZooContent& content,
     if (track.size() < 11) throw std::invalid_argument("ZOOM ZOO track header missing");
     ZoomZooState state{};
     state.track = scenario.track;
+    state.hunter_tour = scenario.hunter_tour;
     state.pairing = scenario.pairing;
     state.race_counter = scenario.race_counter;
     state.opponent_tier = opponent_tier(scenario, content.opponent_catch_up);
@@ -355,6 +356,8 @@ void restart_zoom_zoo(ZoomZooState& state, const ZoomZooContent& content) {
     const bool split = state.split_screen;
     const bool demo_ai = state.demo_ai;
     const bool league = state.league_statistics.enabled, versus = state.versus;
+    // A race restarted on its own keeps its `$131F`; from the menus a restart is a new setup.
+    scenario.hunter_tour = state.hunter_tour;
     // A race restarted on its own keeps `$77:10B1`. From the menus a restart ends the race, and
     // the next race's setup counts it ($83:CA08-CA18) through the front end's `race_song`
     // (R-0084).

@@ -371,3 +371,21 @@ WIPE_RAM_TABLES = (
 def v36_new_entries(rom: bytes) -> list[dict[str, Any]]:
     """The WIPE RAM menu's and messages' content (R-0092)."""
     return [table_entry(rom, *table) for table in WIPE_RAM_TABLES]
+
+
+# Profile v37 (CREDITS-NAME, R-0094): each race's setup (`$83:FB8A`) compares the first rider's
+# name with "credits" (`$83:FB56`) and "faedine" (`$83:FB70`) and writes "mike____" FF FF
+# (`$83:FB66`, `$83:FB80`) over it: the four strings, 52 bytes. "credits" brings up the
+# programmers' picture (`$83:FAE0`): colours asset 0xC1 at CGRAM 0, its map 0xC0 at VRAM word 0,
+# its tiles 0xBF at 0x1000.
+CREDITS_NAME_ASSETS = (0xBF, 0xC0, 0xC1)
+CREDITS_NAME_TABLES = (
+    ("front-end.name-cheats", 0x83FB56, 52),
+)
+
+
+def v37_new_entries(rom: bytes) -> list[dict[str, Any]]:
+    """The name cheats' strings and the credits picture's assets (R-0094)."""
+    entries = [table_entry(rom, *table) for table in CREDITS_NAME_TABLES]
+    return entries + [_raw(f"front-end.asset.{asset:03d}", rom, [_asset_piece(rom, asset)])
+                      for asset in CREDITS_NAME_ASSETS]

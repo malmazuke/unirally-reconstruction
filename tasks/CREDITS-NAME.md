@@ -17,8 +17,8 @@
 ## Why
 
 Each race's setup runs `$83:FB8A` (from `$83:C99E`). A first rider renamed "credits" shows a
-500-frame picture and the race ends as a restart (R-0060); one renamed "faedine" turns HUNTER's
-tag effects off for the next three races. Both names then become "mike". Native has neither.
+500-frame picture and the race ends as a restart (R-0060); one renamed "faedine" gives the next
+three races, on any track, HUNTER's tag effects and opponent tier. Both names then become "mike". Native has neither.
 Notes from the ROM's bytes: main `local/evidence/credits-name/notes.md`.
 
 ## Outcome
@@ -26,3 +26,15 @@ Notes from the ROM's bytes: main `local/evidence/credits-name/notes.md`.
 - Both cheats native and frame-exact against captures of the original: the rename in OPTIONS,
   the race setups, the credits picture and its restart, HUNTER's races with and without the
   counter, the counter's countdown and the demo's clear of it.
+
+## Checkpoint - 10 October 2026
+
+- Implemented by an implementation subagent and checked here (the `credits` comparison and the
+  `faedine-zoom` race rerun: equal as R-0094 says). Its reading corrected the queued note:
+  "faedine" turns HUNTER mode on for every track for three races, not off.
+- Records: [R-0094](../docs/research/R-0094-name-cheats.md). Pack profile v37.
+
+## Review candidate
+
+- Gates: `local/evidence/credits-name/gates.sh` against main `6b6790a`'s binaries (pack v36 for
+  main, v37 for the candidate), under the shared heavy-run lock.

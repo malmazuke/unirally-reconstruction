@@ -190,8 +190,7 @@ void run_effect(ZoomZooState& state, unsigned effect, std::span<const std::uint8
 void update_hunter_effects(ZoomZooState& state, std::span<const std::uint8_t> blink) {
     // $83:CECB-CED3: with `$12D1` set (NEON, track 42 in one-player play, R-0068) the update runs
     // NEON's lighting ($83:D1CA) and returns through $83:D103: no tag, no effect.
-    const auto scenario = classic_race_scenario(state.track);
-    if (!scenario.hunter_tour || scenario.neon_lighting) return;
+    if (!state.hunter_tour || classic_race_scenario(state.track).neon_lighting) return;
     if (blink.size() != blink_table_size)
         throw std::invalid_argument("HUNTER blink pattern is missing");
     auto& hunter = state.hunter;
