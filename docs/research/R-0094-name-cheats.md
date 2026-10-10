@@ -17,8 +17,8 @@ frame images, work RAM per frame, a sound schedule) and in-process replays of th
 
 ## Findings
 
-- **The test.** Every race's setup (`$83:C8E0`, all modes and the idle demo; the call at
-  `$83:C8E4`/`$83:C9E4`) runs `$83:FB8A`: `$77:111A` = its value less one, kept within 0-3
+- **The test.** Every race's setup (`$83:C8E0`, all modes and the idle demo, entered at
+  `$83:C8E4`/`$83:C9E4`) calls `$83:FB8A` at `$83:C99E`: `$77:111A` = its value less one, kept within 0-3
   (`$83:FB8C-FB9B`, `$83:FB95`); `$0545` = 0; rider 0's name (`$77:000C`) is compared over 7 bytes
   with "credits" (`$83:FB56`, `$83:FBAE`): a match sets `$0545` = 1 (`$83:FBBA`) and the name
   becomes "mike____" (`$83:FB66`). Otherwise "faedine" (`$83:FB70`, `$83:FBD5`) sets `$77:111A` = 3
@@ -31,12 +31,19 @@ frame images, work RAM per frame, a sound schedule) and in-process replays of th
   `$83:FB1D`), shown through the race's NMI hook (`$80:85A4`, `$80:FAF8`): brightness 1 at C+16
   (C the first blank frame after the menu's fade), 2-14 to C+23, then the hook's count to 15,
   held 501 frames (`$83:FB31-FB39`), faded out C+525-531; `$82:DF05` then ends the race as
-  R-0060's restart. The rest of the race path (`$82:D4C4`, `$82:D6E7`, `$82:D7C2`) is skipped.
+  R-0060's restart. `$82:D6E7` and `$82:D7C2` run before the test on every setup; the race's load
+  after it (`$82:D4C4`) is skipped.
   After a demo's credits picture the main menu returns a frame later than after a timed exit. [C]
 - **"faedine".** `$82:D978` reads `$77:111A` as a word: nonzero sets `$131F` = 1 on any track
   (zero: tracks 40 and up only), so for three races every track runs HUNTER's tag effects (R-0052)
   and its opponent tier (R-0050: level 3, `$40`, `$60`). `faedine-count`: `$77:111A` 3, 2, 1, 0
   and `$131F` 1, 1, 1, 0 over four setups. [L, C]
+- **Two views.** In a race with two views (`$77:0750` bit 3: the split demo, 2P, VS, a two-view
+  league) an announcement pushed to the front of the player's queue goes to the front of the
+  opponent's too (`$81:C579-C594`, entries `$0CEB`, cursors `$0D11/$0D13`), and the screen flip is
+  named "invisible unis" (`$24`, `$83:CEE8-CF0F`), R-0052's open variants. No split race ran
+  HUNTER's effects before this cheat; the review's `demo-faedine-0` (a split ZOOM ZOO demo with
+  tags) found both. [L, C]
 - **Native** (`src/core/credits_name.cpp`): the test at each race start (NOW PLAYING's fade, the
   demo's title), the picture screen, the restart, `OnePlayerRecords::hunter_races` (`$77:111A`,
   saved in the cartridge image) and `ZoomZooState::hunter_tour` (`$131F`) in place of the track
@@ -54,8 +61,11 @@ frame images, work RAM per frame, a sound schedule) and in-process replays of th
 
 - Native renames the rider when the race's setup begins, the original seven frames later; nothing
   reads the name between.
-- A split demo forced into HUNTER mode (renamed "faedine" before idling into one) is reasoned from
-  the listing, not captured; only `credits` has a sound schedule.
+- Two-view races in HUNTER mode: the review's split demo is equal through its race but for its
+  last update (the demo's exit: the camera and `$2054`); no 2P, VS or league race with a tag is
+  captured. Only `credits` has a sound schedule. `front_end_runner --restore-check` refuses a
+  two-pad race forced into HUNTER mode (its layouts H and F have no wrapper); the one-player and
+  demo wrappers restore exactly.
 - The demo's one-frame-later return after a credits picture is measured on one warm boot.
 - Differences these captures show that main also has: OPTIONS' hidden OAM bytes and rename return
   text, the idle demo's start after OPTIONS or a warm boot, the demo's rider word `$017D`, 2P menus

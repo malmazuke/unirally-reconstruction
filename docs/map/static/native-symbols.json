@@ -6004,6 +6004,16 @@
    "region": "rom"
   },
   {
+   "address": "$81:C579",
+   "native": [
+    "src/core/reward_queue.cpp:push_front_player_announcement"
+   ],
+   "range_ends": [
+    "$81:C594"
+   ],
+   "region": "rom"
+  },
+  {
    "address": "$81:C598",
    "native": [
     "src/core/race_state_io.cpp:check_queued_events",
@@ -10649,6 +10659,17 @@
    "region": "rom"
   },
   {
+   "address": "$83:CEE8",
+   "native": [
+    "src/core/announcements.hpp:invisible_unis",
+    "src/core/hunter_effects.cpp:update_hunter_effects"
+   ],
+   "range_ends": [
+    "$83:CF0F"
+   ],
+   "region": "rom"
+  },
+  {
    "address": "$83:CF1C",
    "native": [
     "src/core/hunter_effects.cpp:update_hunter_effects",
@@ -13203,6 +13224,7 @@
   {
    "address": "$0CEB",
    "native": [
+    "src/core/reward_queue.cpp:push_front_player_announcement",
     "src/core/reward_queue.cpp:update_opponent_announcements"
    ],
    "region": "wram"
@@ -13219,6 +13241,7 @@
    "address": "$0D11",
    "native": [
     "src/core/race_hud.cpp:classic_caption_entry",
+    "src/core/reward_queue.cpp:push_front_player_announcement",
     "src/core/reward_queue.cpp:update_opponent_announcements"
    ],
    "region": "wram"
@@ -13227,6 +13250,7 @@
    "address": "$0D13",
    "native": [
     "src/core/race_hud.cpp:classic_caption_entry",
+    "src/core/reward_queue.cpp:push_front_player_announcement",
     "src/core/reward_queue.cpp:update_opponent_announcements"
    ],
    "region": "wram"
@@ -14964,7 +14988,9 @@
    "address": "$77:0750",
    "native": [
     "src/core/flat_contact.hpp:ContactContext::cartridge_options",
+    "src/core/hunter_effects.cpp:update_hunter_effects",
     "src/core/race_update.cpp:loop_top_step, cartridge_options, split_demo_options",
+    "src/core/reward_queue.cpp:push_front_player_announcement",
     "src/core/zoom_zoo_movement.hpp:ZoomZooState::versus"
    ],
    "region": "sram"
@@ -15381,6 +15407,11 @@
   "src/core/announcements.hpp:first_voice": {
    "rom": [
     "$82:9D47"
+   ]
+  },
+  "src/core/announcements.hpp:invisible_unis": {
+   "rom": [
+    "$83:CEE8"
    ]
   },
   "src/core/announcements.hpp:takes_reward_path": {
@@ -18139,9 +18170,13 @@
     "$83:CDAA",
     "$83:CEC9",
     "$83:CECB",
+    "$83:CEE8",
     "$83:CF1C",
     "$83:D103",
     "$83:D1CA"
+   ],
+   "sram": [
+    "$77:0750"
    ],
    "wram": [
     "$12AF",
@@ -21230,7 +21265,16 @@
   },
   "src/core/reward_queue.cpp:push_front_player_announcement": {
    "rom": [
-    "$81:C55B"
+    "$81:C55B",
+    "$81:C579"
+   ],
+   "sram": [
+    "$77:0750"
+   ],
+   "wram": [
+    "$0CEB",
+    "$0D11",
+    "$0D13"
    ]
   },
   "src/core/reward_queue.cpp:queue_player_announcement": {
@@ -24073,10 +24117,10 @@
   }
  },
  "totals": {
-  "addresses": 1736,
+  "addresses": 1738,
   "io_addresses": 11,
-  "native_symbols": 1310,
-  "rom_addresses": 1334,
+  "native_symbols": 1311,
+  "rom_addresses": 1336,
   "sram_addresses": 57,
   "wram_addresses": 334
  }

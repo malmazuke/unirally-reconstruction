@@ -38,3 +38,16 @@ Notes from the ROM's bytes: main `local/evidence/credits-name/notes.md`.
 
 - Gates: `local/evidence/credits-name/gates.sh` against main `6b6790a`'s binaries (pack v36 for
   main, v37 for the candidate), under the shared heavy-run lock.
+
+## Review - round 1 (returned)
+
+- [Review](https://github.com/malmazuke/unirally-reconstruction/pull/70#pullrequestreview-5476961169)
+  on `6d31dae`: return. Blocker: a split race in HUNTER mode diverged at its first tag (update 449
+  of the review's `demo-faedine-0`): the original also pushes the announcement into the
+  opponent's queue (`$81:C579-C594`). Should-fix: R-0094's call site, the setup routines it called
+  skipped, and no captured two-pad tag. Advisories: restore checks of two-pad HUNTER races, the
+  brightness constant, a pre-existing runner stop after a pause quit.
+- Fixed: the opponent's queue; and the screen flip's two-view name `$24` ("invisible unis",
+  `$83:CEE8-CF0F`), which the same case then showed. `demo-faedine-0` now agrees through update
+  2001 (its last update, the demo's exit, differs in the camera and `$2054`). R-0094 corrected;
+  the brightness expression named.

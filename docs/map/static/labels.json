@@ -11974,6 +11974,21 @@
   ]
  },
  {
+  "address": "$81:C579",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_81C579",
+  "native": [
+   "src/core/hunter_effects.cpp:update_hunter_effects",
+   "src/core/race_hud.cpp:ClassicRaceHudClock::request_caption",
+   "src/core/reward_queue.cpp:push_front_player_announcement"
+  ],
+  "source_records": [
+   "docs/research/R-0094-name-cheats.md",
+   "tasks/CREDITS-NAME.md"
+  ]
+ },
+ {
   "address": "$81:C598",
   "class": "observed",
   "comment": "routine start",
@@ -20383,6 +20398,7 @@
   "comment": "instruction start",
   "label": "loc_83C99E",
   "source_records": [
+   "docs/research/R-0094-name-cheats.md",
    "tasks/CREDITS-NAME.md"
   ]
  },
@@ -21069,6 +21085,25 @@
   ],
   "source_records": [
    "docs/research/R-0052-hunter-effects.md"
+  ]
+ },
+ {
+  "address": "$83:CEE8",
+  "class": "inferred",
+  "comment": "inside the instruction at $83:CEE7",
+  "label": "mid_83CEE8",
+  "native": [
+   "src/core/announcements.hpp:invisible_unis",
+   "src/core/hunter_effects.cpp:priority",
+   "src/core/hunter_effects.cpp:update_hunter_effects",
+   "src/core/presentation.cpp:ClassicRaceHistoryTracker::observe_update",
+   "src/core/zoom_zoo_movement.hpp:ClassicRaceScenario::hunter_tour",
+   "src/core/zoom_zoo_movement.hpp:HunterEffects",
+   "src/core/zoom_zoo_movement.hpp:update_hunter_effects"
+  ],
+  "source_records": [
+   "docs/research/R-0094-name-cheats.md",
+   "tasks/CREDITS-NAME.md"
   ]
  },
  {

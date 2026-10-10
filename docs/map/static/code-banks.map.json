@@ -13232,6 +13232,7 @@
     "NmX"
    ],
    "native": [
+    "src/core/announcements.hpp:invisible_unis",
     "src/core/hunter_effects.cpp:priority",
     "src/core/hunter_effects.cpp:update_hunter_effects",
     "src/core/presentation.cpp:ClassicRaceHistoryTracker::observe_update",
@@ -15087,17 +15088,17 @@
    "call returns in the calling mode": 1262
   },
   "bytes": 131072,
-  "cited_addresses": 1859,
+  "cited_addresses": 1861,
   "cited_by_class": {
    "data": 33,
-   "inferred": 359,
+   "inferred": 361,
    "observed": 1068,
    "unknown": 399
   },
   "cited_by_position": {
    "dat": 33,
-   "loc": 1039,
-   "mid": 20,
+   "loc": 1040,
+   "mid": 21,
    "sub": 368,
    "unk": 399
   },

@@ -91,8 +91,10 @@ void load_picture(FrontEndState& state, const FrontEndContent& content) {
 std::uint8_t picture_brightness(std::uint32_t frame) {
     if (frame <= first_shown_frame) return 1; // the hook's first count
     if (frame < first_held_frame) return static_cast<std::uint8_t>(2 * (frame - first_shown_frame));
+    // Then the hook's own count, one a frame since the frame before the picture showed, to 15.
     if (frame < first_fade_out_frame)
-        return static_cast<std::uint8_t>(std::min<std::uint32_t>(brightest, frame - brightest));
+        return static_cast<std::uint8_t>(
+            std::min<std::uint32_t>(brightest, frame - (first_shown_frame - 1)));
     return static_cast<std::uint8_t>(first_fade_out_brightness
                                      - 2 * (frame - first_fade_out_frame));
 }

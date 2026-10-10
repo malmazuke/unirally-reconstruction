@@ -29,6 +29,8 @@ inline constexpr std::uint8_t loser = 39;
 
 // The HUNTER tour's effects (R-0052), 27-34, and the blank caption of an effect's end.
 inline constexpr std::uint8_t screen_flip_on = 27;
+// A two-view race's name for the screen flip ($83:CEE8-CF0F, R-0052's "invisible unis").
+inline constexpr std::uint8_t invisible_unis = 36;
 inline constexpr std::uint8_t hedgehog_speed = 28;
 inline constexpr std::uint8_t slow_motion_on = 29;
 inline constexpr std::uint8_t power_bounce_on = 30;

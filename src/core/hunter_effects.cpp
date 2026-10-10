@@ -206,8 +206,13 @@ void update_hunter_effects(ZoomZooState& state, std::span<const std::uint8_t> bl
         if (!hunter.effect[effect]) continue;
         if (hunter.effect[effect] == 1) {
             hunter.effect[effect] = 2;
-            push_front_player_announcement(state, announcement_of[effect]);
-            if (effect != hunter_effect::hedgehog_speed) hunter.message = announcement_of[effect];
+            // A race with two views (`$77:0750` bit 3) names the screen flip "invisible unis"
+            // ($83:CEE8-CF0F; R-0094).
+            const auto name = effect == hunter_effect::screen_flip && state.split_screen
+                                ? announcement::invisible_unis
+                                : announcement_of[effect];
+            push_front_player_announcement(state, name);
+            if (effect != hunter_effect::hedgehog_speed) hunter.message = name;
             race_sound::effect(state, race_sound::hunter_effect_start);
         }
         for (unsigned other = 0; other < hunter_effect::count; ++other)

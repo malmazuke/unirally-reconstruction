@@ -385,13 +385,21 @@ void show_next_player_announcement(ZoomZooState& state, const MovementContent& c
 }
 
 // $81:C55B-C597: an announcement at the front of the player's queue, written at the read
-// cursor, which then steps back, so it shows next. A full queue (read at the write
-// cursor) takes nothing.
+// cursor, which then steps back, so it shows next; in a race with two views (`$77:0750` bit 3,
+// $81:C579-C594) the same at the front of the opponent's queue (entries $0CEB, cursors
+// $0D11/$0D13). A full queue (read at the write cursor) takes nothing.
 void push_front_player_announcement(ZoomZooState& state, unsigned event) {
-    auto& queue = state.player_announcements.queue;
-    if (queue.read_cursor == queue.write_cursor) return;
-    queue.entries[queue.read_cursor] = static_cast<std::uint8_t>(event);
-    queue.read_cursor = static_cast<std::uint8_t>((queue.read_cursor - 1U) & queue_slots_mask);
+    const auto push_front = [event](auto& entries, std::uint8_t& read_cursor,
+                                    std::uint8_t write_cursor) {
+        if (read_cursor == write_cursor) return;
+        entries[read_cursor] = static_cast<std::uint8_t>(event);
+        read_cursor = static_cast<std::uint8_t>((read_cursor - 1U) & queue_slots_mask);
+    };
+    auto& player = state.player_announcements.queue;
+    push_front(player.entries, player.read_cursor, player.write_cursor);
+    if (!state.split_screen) return;
+    auto& opponent = state.movement.rewards;
+    push_front(opponent.entries, opponent.read_cursor, opponent.write_cursor);
 }
 
 void lower_announcement_cooldowns(ZoomZooState& state, const ClassicRaceScenario& scenario) {
