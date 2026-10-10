@@ -1321,7 +1321,8 @@
   "label": "sub_80937B",
   "native": [
    "src/core/audio_cpu_menu_reveal.cpp:upload_text_map",
-   "src/core/front_end_screens.hpp:load_text"
+   "src/core/front_end_screens.hpp:load_text",
+   "src/core/local_modes.cpp:vs_champions_entry_frame"
   ],
   "source_records": [
    "docs/research/R-0055-rider-menu.md",
@@ -1619,7 +1620,7 @@
    "src/core/front_end.cpp:fade_frames",
    "src/core/race_result.cpp:race_restart_frame",
    "src/core/race_result.cpp:rows_frame, icons_frame, first_fade_frame, fade_frames",
-   "src/core/stunt_result.cpp:build_frame, print_frame, first_fade_frame, fade_frames"
+   "src/core/stunt_result.cpp:build_frame, print_frame, fade_frames"
   ],
   "source_records": [
    "docs/research/R-0054-boot-title-main-menu.md",
@@ -1853,6 +1854,9 @@
   "class": "observed",
   "comment": "instruction start",
   "label": "loc_809A7D",
+  "native": [
+   "src/core/race_result.cpp:apply_quit_scores"
+  ],
   "source_records": [
    "docs/research/R-0067-stunt-result.md"
   ]
@@ -3059,7 +3063,8 @@
   "comment": "unknown",
   "label": "unk_80ADE3",
   "native": [
-   "src/core/local_modes.cpp:local_continue_frame"
+   "src/core/local_modes.cpp:local_continue_frame",
+   "src/core/race_result.cpp:race_result_exit_frame"
   ],
   "source_records": [
    "docs/research/R-0071-two-player-versus.md"
@@ -3645,13 +3650,16 @@
   "native": [
    "src/core/audio_cpu_hunter_wait.cpp:native_audio_ending_press",
    "src/core/award.cpp:award_left",
+   "src/core/front_end.hpp:FrontEndState::pad_one_ignored, FrontEndState::pad_two_ignored",
    "src/core/front_end.hpp:HunterEnding::both_pads",
    "src/core/front_end_screens.hpp:any_button_pressed",
    "src/core/front_end_screens.hpp:start_hunter_ending",
    "src/core/hunter_ending.cpp:ending_press",
+   "src/core/local_modes.cpp:local_continue_frame",
    "src/core/race_result.cpp:lap_graph_frame",
    "src/core/stunt_result.cpp:tally_frame",
-   "src/core/stunt_result.cpp:tally_pass"
+   "src/core/stunt_result.cpp:tally_pass",
+   "src/core/stunt_result.cpp:tally_press"
   ],
   "source_records": [
    "docs/research/R-0058-lap-result.md",
@@ -3666,8 +3674,20 @@
   "comment": "routine start",
   "label": "sub_80B71D",
   "native": [
+   "src/core/audio_cpu_hunter_wait.cpp:native_audio_ending_press",
    "src/core/audio_cpu_menu_input.cpp:test_menu_input",
+   "src/core/award.cpp:award_left",
+   "src/core/front_end.hpp:FrontEndState::pad_one_ignored, FrontEndState::pad_two_ignored",
+   "src/core/front_end.hpp:HunterEnding::both_pads",
+   "src/core/front_end_screens.hpp:any_button_pressed",
    "src/core/front_end_screens.hpp:pad_up, pad_down, pad_left, pad_right, pad_select, pad_a, pad_r",
+   "src/core/front_end_screens.hpp:start_hunter_ending",
+   "src/core/hunter_ending.cpp:ending_press",
+   "src/core/local_modes.cpp:local_continue_frame",
+   "src/core/race_result.cpp:lap_graph_frame",
+   "src/core/stunt_result.cpp:tally_frame",
+   "src/core/stunt_result.cpp:tally_pass",
+   "src/core/stunt_result.cpp:tally_press",
    "src/core/wipe_ram.cpp:wipe_ram_menu_frame"
   ],
   "source_records": [
@@ -3681,7 +3701,19 @@
   "comment": "routine start",
   "label": "sub_80B74A",
   "native": [
+   "src/core/audio_cpu_hunter_wait.cpp:native_audio_ending_press",
+   "src/core/award.cpp:award_left",
+   "src/core/front_end.hpp:FrontEndState::pad_one_ignored, FrontEndState::pad_two_ignored",
+   "src/core/front_end.hpp:HunterEnding::both_pads",
+   "src/core/front_end_screens.hpp:any_button_pressed",
    "src/core/front_end_screens.hpp:pad_up, pad_down, pad_left, pad_right, pad_select, pad_a, pad_r",
+   "src/core/front_end_screens.hpp:start_hunter_ending",
+   "src/core/hunter_ending.cpp:ending_press",
+   "src/core/local_modes.cpp:local_continue_frame",
+   "src/core/race_result.cpp:lap_graph_frame",
+   "src/core/stunt_result.cpp:tally_frame",
+   "src/core/stunt_result.cpp:tally_pass",
+   "src/core/stunt_result.cpp:tally_press",
    "src/core/wipe_ram.cpp:wipe_ram_menu_frame"
   ],
   "source_records": [
@@ -3694,7 +3726,19 @@
   "comment": "routine start",
   "label": "sub_80B76F",
   "native": [
-   "src/core/audio_cpu_menu_input.cpp:test_menu_input"
+   "src/core/audio_cpu_hunter_wait.cpp:native_audio_ending_press",
+   "src/core/audio_cpu_menu_input.cpp:test_menu_input",
+   "src/core/award.cpp:award_left",
+   "src/core/front_end.hpp:FrontEndState::pad_one_ignored, FrontEndState::pad_two_ignored",
+   "src/core/front_end.hpp:HunterEnding::both_pads",
+   "src/core/front_end_screens.hpp:any_button_pressed",
+   "src/core/front_end_screens.hpp:start_hunter_ending",
+   "src/core/hunter_ending.cpp:ending_press",
+   "src/core/local_modes.cpp:local_continue_frame",
+   "src/core/race_result.cpp:lap_graph_frame",
+   "src/core/stunt_result.cpp:tally_frame",
+   "src/core/stunt_result.cpp:tally_pass",
+   "src/core/stunt_result.cpp:tally_press"
   ],
   "source_records": [
    "docs/research/R-0054-boot-title-main-menu.md",
@@ -3707,8 +3751,20 @@
   "comment": "routine start",
   "label": "sub_80B794",
   "native": [
+   "src/core/audio_cpu_hunter_wait.cpp:native_audio_ending_press",
    "src/core/audio_cpu_menu_input.cpp:test_menu_input",
-   "src/core/front_end_screens.hpp:pad_up, pad_down, pad_left, pad_right, pad_select, pad_a, pad_r"
+   "src/core/award.cpp:award_left",
+   "src/core/front_end.hpp:FrontEndState::pad_one_ignored, FrontEndState::pad_two_ignored",
+   "src/core/front_end.hpp:HunterEnding::both_pads",
+   "src/core/front_end_screens.hpp:any_button_pressed",
+   "src/core/front_end_screens.hpp:pad_up, pad_down, pad_left, pad_right, pad_select, pad_a, pad_r",
+   "src/core/front_end_screens.hpp:start_hunter_ending",
+   "src/core/hunter_ending.cpp:ending_press",
+   "src/core/local_modes.cpp:local_continue_frame",
+   "src/core/race_result.cpp:lap_graph_frame",
+   "src/core/stunt_result.cpp:tally_frame",
+   "src/core/stunt_result.cpp:tally_pass",
+   "src/core/stunt_result.cpp:tally_press"
   ],
   "source_records": [
    "docs/research/R-0054-boot-title-main-menu.md",
@@ -4481,6 +4537,7 @@
   "comment": "unknown",
   "label": "unk_80BFE0",
   "native": [
+   "src/core/local_modes.cpp:vs_rematch_frame",
    "src/core/race_result.cpp:race_restart_frame"
   ],
   "source_records": [
@@ -4503,7 +4560,10 @@
   "comment": "unknown",
   "label": "unk_80C0B1",
   "native": [
-   "src/core/front_end_screens.hpp:MenuSound"
+   "src/core/front_end.hpp:RiderMenu::challenger",
+   "src/core/front_end_screens.hpp:MenuSound",
+   "src/core/rider_menu.cpp:player_won_versus",
+   "src/core/rider_menu.cpp:rider_menu_frame"
   ],
   "source_records": [
    "docs/research/R-0091-mode-audio.md",
@@ -4516,7 +4576,9 @@
   "comment": "unknown",
   "label": "unk_80C0BD",
   "native": [
-   "src/core/rider_menu.cpp:pick_plays_select"
+   "src/core/front_end.hpp:RiderMenu::challenger",
+   "src/core/rider_menu.cpp:pick_plays_select",
+   "src/core/rider_menu.cpp:player_won_versus"
   ],
   "source_records": [
    "docs/research/R-0091-mode-audio.md"
@@ -4610,6 +4672,8 @@
    "src/core/front_end_screens.hpp:wait_for_result_press",
    "src/core/hunter_ending.cpp:(file)",
    "src/core/hunter_ending.cpp:first_page_press",
+   "src/core/local_modes.cpp:vs_champions_frame",
+   "src/core/local_modes.cpp:vs_rematch_frame",
    "src/core/race_result.cpp:(file)",
    "src/core/race_result.cpp:pressed",
    "src/core/race_result.cpp:wait_for_result_press",
@@ -4647,6 +4711,8 @@
    "src/core/front_end.hpp:HunterEnding::press_seen",
    "src/core/hunter_ending.cpp:(file)",
    "src/core/hunter_ending.cpp:first_page_press",
+   "src/core/local_modes.cpp:vs_champions_frame",
+   "src/core/local_modes.cpp:vs_rematch_frame",
    "src/core/race_result.cpp:hide_result_objects",
    "src/core/race_result.cpp:lap_graph_frame",
    "src/core/wipe_ram.cpp:hide_entries_30_to_35"
@@ -4666,6 +4732,7 @@
    "src/core/front_end.hpp:WipeRamMenu",
    "src/core/front_end.hpp:WipeRamMenu::released",
    "src/core/front_end_screens.hpp:wait_for_result_press",
+   "src/core/local_modes.cpp:vs_rematch_frame",
    "src/core/race_result.cpp:(file)",
    "src/core/race_result.cpp:wait_for_result_press",
    "src/core/stunt_result.cpp:after_tally_frame",
@@ -4978,6 +5045,7 @@
   "native": [
    "src/core/front_end.hpp:RaceResult::record_placed",
    "src/core/front_end_screens.hpp:result_scoring_frame",
+   "src/core/local_modes.cpp:vs_champions_entry_frame",
    "src/core/race_result.cpp:(file)",
    "src/core/race_result.cpp:race_result_exit_frame",
    "src/core/race_result.cpp:update_records"
@@ -5732,9 +5800,11 @@
    "src/core/front_end.cpp:boot_frame",
    "src/core/front_end.cpp:run_main_menu",
    "src/core/front_end.hpp:NowPlaying::choice_pads",
+   "src/core/front_end.hpp:StuntTally::pads",
    "src/core/hunter_ending.cpp:first_page_press",
    "src/core/now_playing.cpp:now_playing_frame",
    "src/core/rider_menu.cpp:rider_menu_frame",
+   "src/core/stunt_result.cpp:end_tally",
    "src/core/stunt_result.cpp:tally_frame",
    "src/core/tour_menu.cpp:tour_menu_frame",
    "src/core/track_menu.cpp:track_menu_frame",
@@ -6391,7 +6461,9 @@
    "src/core/front_end.hpp:ScreenSlide",
    "src/core/front_end_screens.hpp:start_slide",
    "src/core/league_menu.cpp:league_awards_frame",
+   "src/core/local_modes.cpp:vs_champions_entry_frame",
    "src/core/rider_menu.cpp:(file)",
+   "src/core/rider_menu.cpp:enter_vs_challenger",
    "src/core/screen_slide.cpp:(file)",
    "src/core/screen_slide.cpp:slide_passes, accelerate_from, decelerate_below"
   ],
@@ -7385,8 +7457,9 @@
    "src/core/front_end.hpp:RaceResult",
    "src/core/race_setup.cpp:stunt_stable_result",
    "src/core/stunt_result.cpp:(file)",
-   "src/core/stunt_result.cpp:record_icons_high, record_icon_high, one_player_marks, stunt_best_markers",
-   "src/core/stunt_result.cpp:start_stunt_result"
+   "src/core/stunt_result.cpp:record_icons_high, record_icon_high, one_player_marks, stunt_best_markers, second_rider_icons_high, second_rider_marks, second_best_markers",
+   "src/core/stunt_result.cpp:start_stunt_result",
+   "src/core/stunt_result.cpp:stunt_result_frame"
   ],
   "source_records": [
    "docs/research/R-0067-stunt-result.md"
@@ -7402,6 +7475,7 @@
    "src/core/front_end.hpp:RaceResult",
    "src/core/race_setup.cpp:stunt_stable_result",
    "src/core/stunt_result.cpp:(file)",
+   "src/core/stunt_result.cpp:end_tally",
    "src/core/stunt_result.cpp:start_stunt_result"
   ],
   "source_records": [
@@ -7418,7 +7492,7 @@
    "src/core/front_end.hpp:RaceResult",
    "src/core/race_setup.cpp:stunt_stable_result",
    "src/core/stunt_result.cpp:(file)",
-   "src/core/stunt_result.cpp:after_tally_frame",
+   "src/core/stunt_result.cpp:end_tally",
    "src/core/stunt_result.cpp:start_stunt_result"
   ],
   "source_records": [
@@ -7435,6 +7509,7 @@
    "src/core/front_end.hpp:RaceResult",
    "src/core/race_setup.cpp:stunt_stable_result",
    "src/core/stunt_result.cpp:(file)",
+   "src/core/stunt_result.cpp:after_tally_frame",
    "src/core/stunt_result.cpp:start_stunt_result"
   ],
   "source_records": [
@@ -7452,6 +7527,7 @@
    "src/core/race_setup.cpp:stunt_stable_result",
    "src/core/stunt_result.cpp:(file)",
    "src/core/stunt_result.cpp:after_tally_frame",
+   "src/core/stunt_result.cpp:against_computer",
    "src/core/stunt_result.cpp:start_stunt_result"
   ],
   "source_records": [
@@ -7469,6 +7545,7 @@
    "src/core/race_setup.cpp:stunt_stable_result",
    "src/core/stunt_result.cpp:(file)",
    "src/core/stunt_result.cpp:after_tally_frame",
+   "src/core/stunt_result.cpp:against_computer",
    "src/core/stunt_result.cpp:start_stunt_result"
   ],
   "source_records": [
@@ -7483,8 +7560,11 @@
   "native": [
    "src/core/front_end.hpp:FrontEndScreen",
    "src/core/front_end.hpp:RaceResult",
+   "src/core/front_end.hpp:StuntTally",
    "src/core/race_setup.cpp:stunt_stable_result",
    "src/core/stunt_result.cpp:(file)",
+   "src/core/stunt_result.cpp:after_tally_frame",
+   "src/core/stunt_result.cpp:start_second_tally",
    "src/core/stunt_result.cpp:start_stunt_result"
   ],
   "source_records": [
@@ -7501,6 +7581,7 @@
    "src/core/front_end.hpp:RaceResult",
    "src/core/race_setup.cpp:stunt_stable_result",
    "src/core/stunt_result.cpp:(file)",
+   "src/core/stunt_result.cpp:end_tally",
    "src/core/stunt_result.cpp:start_stunt_result"
   ],
   "source_records": [
@@ -7527,6 +7608,7 @@
   "label": "unk_80F3E0",
   "native": [
    "src/core/front_end.hpp:FrontEndContent::stunt_result_text, FrontEndContent::stunt_tally_cells",
+   "src/core/front_end_screens.hpp:stunt_text_frame",
    "src/core/stunt_result.cpp:StuntText"
   ],
   "source_records": [
@@ -7540,7 +7622,8 @@
   "label": "unk_80F44F",
   "native": [
    "src/core/front_end.hpp:FrontEndContent::stunt_result_text, FrontEndContent::stunt_tally_cells",
-   "src/core/stunt_result.cpp:StuntText"
+   "src/core/stunt_result.cpp:StuntText",
+   "src/core/stunt_result.cpp:tally_pass"
   ],
   "source_records": [
    "docs/research/R-0067-stunt-result.md"
@@ -7553,7 +7636,8 @@
   "label": "unk_80F456",
   "native": [
    "src/core/front_end.hpp:FrontEndContent::stunt_result_text, FrontEndContent::stunt_tally_cells",
-   "src/core/stunt_result.cpp:StuntText"
+   "src/core/stunt_result.cpp:StuntText",
+   "src/core/stunt_result.cpp:tally_pass"
   ],
   "source_records": [
    "docs/research/R-0067-stunt-result.md"
@@ -7642,6 +7726,10 @@
   "class": "unknown",
   "comment": "unknown",
   "label": "unk_80F4B5",
+  "native": [
+   "src/core/stunt_result.cpp:end_tally",
+   "src/core/stunt_result.cpp:menu_text_attribute"
+  ],
   "source_records": [
    "docs/research/R-0067-stunt-result.md"
   ]
@@ -7905,8 +7993,7 @@
   "label": "unk_80F669",
   "native": [
    "src/core/front_end.hpp:StuntTally",
-   "src/core/stunt_result.cpp:(file)",
-   "src/core/stunt_result.cpp:second_tally_pass"
+   "src/core/stunt_result.cpp:(file)"
   ],
   "source_records": [
    "docs/research/R-0067-stunt-result.md"
@@ -7920,7 +8007,6 @@
   "native": [
    "src/core/front_end.hpp:StuntTally",
    "src/core/stunt_result.cpp:(file)",
-   "src/core/stunt_result.cpp:second_tally_pass",
    "src/core/stunt_result.cpp:tally_pass"
   ],
   "source_records": [
@@ -7935,8 +8021,7 @@
   "native": [
    "src/core/front_end.hpp:StuntTally",
    "src/core/stunt_result.cpp:(file)",
-   "src/core/stunt_result.cpp:first_cell, cell_columns, cell_rows",
-   "src/core/stunt_result.cpp:second_tally_pass",
+   "src/core/stunt_result.cpp:first_cell, cell_columns, cell_rows, second_rider_cells",
    "src/core/stunt_result.cpp:tally_pass"
   ],
   "source_records": [
@@ -7950,8 +8035,7 @@
   "label": "unk_80F755",
   "native": [
    "src/core/front_end.hpp:StuntTally",
-   "src/core/stunt_result.cpp:(file)",
-   "src/core/stunt_result.cpp:second_tally_pass"
+   "src/core/stunt_result.cpp:(file)"
   ],
   "source_records": [
    "docs/research/R-0067-stunt-result.md"
@@ -7964,8 +8048,7 @@
   "label": "unk_80F756",
   "native": [
    "src/core/front_end.hpp:StuntTally",
-   "src/core/stunt_result.cpp:(file)",
-   "src/core/stunt_result.cpp:second_tally_pass"
+   "src/core/stunt_result.cpp:(file)"
   ],
   "source_records": [
    "docs/research/R-0077-one-player-audio.md"
@@ -7980,7 +8063,6 @@
    "src/core/front_end.hpp:NowPlaying::choice_pads",
    "src/core/front_end.hpp:StuntTally",
    "src/core/stunt_result.cpp:(file)",
-   "src/core/stunt_result.cpp:second_tally_pass",
    "src/core/stunt_result.cpp:tally_pass"
   ],
   "source_records": [
@@ -7996,7 +8078,6 @@
    "src/core/front_end.hpp:NowPlaying::choice_pads",
    "src/core/front_end.hpp:StuntTally",
    "src/core/stunt_result.cpp:(file)",
-   "src/core/stunt_result.cpp:second_tally_pass",
    "src/core/stunt_result.cpp:tally_pass"
   ],
   "source_records": [
@@ -8011,7 +8092,6 @@
   "native": [
    "src/core/front_end.hpp:StuntTally",
    "src/core/stunt_result.cpp:(file)",
-   "src/core/stunt_result.cpp:second_tally_pass",
    "src/core/stunt_result.cpp:tally_frame"
   ],
   "source_records": [
@@ -8026,8 +8106,7 @@
   "native": [
    "src/core/front_end.hpp:StuntTally",
    "src/core/stunt_result.cpp:(file)",
-   "src/core/stunt_result.cpp:pass_wait_frames, column_wait_frames",
-   "src/core/stunt_result.cpp:second_tally_pass"
+   "src/core/stunt_result.cpp:pass_wait_frames, column_wait_frames"
   ],
   "source_records": [
    "docs/research/R-0067-stunt-result.md"
@@ -8041,7 +8120,6 @@
   "native": [
    "src/core/front_end.hpp:StuntTally",
    "src/core/stunt_result.cpp:(file)",
-   "src/core/stunt_result.cpp:second_tally_pass",
    "src/core/stunt_result.cpp:tally_pass"
   ],
   "source_records": [
@@ -8056,7 +8134,6 @@
   "native": [
    "src/core/front_end.hpp:StuntTally",
    "src/core/stunt_result.cpp:(file)",
-   "src/core/stunt_result.cpp:second_tally_pass",
    "src/core/stunt_result.cpp:tally_pass"
   ],
   "source_records": [
@@ -8071,7 +8148,6 @@
   "native": [
    "src/core/front_end.hpp:StuntTally",
    "src/core/stunt_result.cpp:(file)",
-   "src/core/stunt_result.cpp:second_tally_pass",
    "src/core/stunt_result.cpp:tally_frame"
   ],
   "source_records": [
@@ -8086,7 +8162,6 @@
   "native": [
    "src/core/front_end.hpp:StuntTally",
    "src/core/stunt_result.cpp:(file)",
-   "src/core/stunt_result.cpp:second_tally_pass",
    "src/core/stunt_result.cpp:tally_frame"
   ],
   "source_records": [
@@ -8101,7 +8176,6 @@
   "native": [
    "src/core/front_end.hpp:StuntTally",
    "src/core/stunt_result.cpp:(file)",
-   "src/core/stunt_result.cpp:second_tally_pass",
    "src/core/stunt_result.cpp:tally_frame"
   ],
   "source_records": [
@@ -8116,8 +8190,7 @@
   "native": [
    "src/core/front_end.hpp:FrontEndContent::stunt_result_text, FrontEndContent::stunt_tally_cells",
    "src/core/front_end.hpp:StuntTally",
-   "src/core/stunt_result.cpp:(file)",
-   "src/core/stunt_result.cpp:second_tally_pass"
+   "src/core/stunt_result.cpp:(file)"
   ],
   "source_records": [
    "docs/research/R-0067-stunt-result.md"
@@ -8131,7 +8204,6 @@
   "native": [
    "src/core/front_end.hpp:StuntTally",
    "src/core/stunt_result.cpp:(file)",
-   "src/core/stunt_result.cpp:second_tally_pass",
    "src/core/stunt_result.cpp:tally_frame"
   ],
   "source_records": [
@@ -11707,7 +11779,7 @@
   "label": "loc_81C111",
   "native": [
    "src/core/race_hud.cpp:classic_caption_tile",
-   "src/core/race_state_io.cpp:read_stunt_event",
+   "src/core/race_state_io.cpp:read_tallies",
    "src/core/reward_queue.cpp:show_next_player_announcement",
    "src/core/reward_queue.cpp:update_opponent_announcements",
    "src/core/stunt_event.cpp:tally_stunt_trick",
@@ -11740,7 +11812,7 @@
   "label": "loc_81C173",
   "native": [
    "src/core/race_hud.cpp:classic_caption_tile",
-   "src/core/race_state_io.cpp:read_stunt_event",
+   "src/core/race_state_io.cpp:read_tallies",
    "src/core/reward_queue.cpp:show_next_player_announcement",
    "src/core/reward_queue.cpp:update_opponent_announcements",
    "src/core/stunt_event.hpp:tally_stunt_trick"
@@ -11780,7 +11852,9 @@
   "label": "loc_81C238",
   "native": [
    "src/core/announcements.hpp:takes_reward_path",
-   "src/core/reward_queue.cpp:update_opponent_announcements"
+   "src/core/race_update.cpp:count_opponent_trick",
+   "src/core/reward_queue.cpp:update_opponent_announcements",
+   "src/core/zoom_zoo_movement.hpp:StuntEvent::opponent_tallies"
   ],
   "source_records": [
    "docs/research/R-0076-first-race-audio.md",
@@ -11793,8 +11867,11 @@
   "comment": "instruction start",
   "label": "loc_81C241",
   "native": [
+   "src/core/announcements.hpp:takes_reward_path",
+   "src/core/race_update.cpp:count_opponent_trick",
    "src/core/reward_queue.cpp:opponent_reward_weight",
-   "src/core/reward_queue.cpp:update_opponent_announcements"
+   "src/core/reward_queue.cpp:update_opponent_announcements",
+   "src/core/zoom_zoo_movement.hpp:StuntEvent::opponent_tallies"
   ],
   "source_records": [
    "docs/research/R-0033-sustained-traversal.md"
@@ -11806,7 +11883,13 @@
   "comment": "instruction start",
   "label": "loc_81C253",
   "native": [
-   "src/core/reward_queue.cpp:update_opponent_announcements"
+   "src/core/announcements.hpp:takes_reward_path",
+   "src/core/race_state_io.cpp:league_opponent_tallies",
+   "src/core/race_state_io.cpp:read_tallies",
+   "src/core/race_update.cpp:count_opponent_trick",
+   "src/core/reward_queue.cpp:update_opponent_announcements",
+   "src/core/stunt_event.hpp:tally_stunt_trick",
+   "src/core/zoom_zoo_movement.hpp:StuntEvent::opponent_tallies"
   ],
   "source_records": [
    "docs/research/R-0061-riders-and-opponents.md"
@@ -11818,7 +11901,13 @@
   "comment": "instruction start",
   "label": "loc_81C25C",
   "native": [
-   "src/core/reward_queue.cpp:update_opponent_announcements"
+   "src/core/announcements.hpp:takes_reward_path",
+   "src/core/race_state_io.cpp:league_opponent_tallies",
+   "src/core/race_state_io.cpp:read_tallies",
+   "src/core/race_update.cpp:count_opponent_trick",
+   "src/core/reward_queue.cpp:update_opponent_announcements",
+   "src/core/stunt_event.hpp:tally_stunt_trick",
+   "src/core/zoom_zoo_movement.hpp:StuntEvent::opponent_tallies"
   ],
   "source_records": [
    "docs/research/R-0052-hunter-effects.md"
@@ -11830,8 +11919,14 @@
   "comment": "instruction start",
   "label": "loc_81C260",
   "native": [
+   "src/core/announcements.hpp:takes_reward_path",
+   "src/core/race_state_io.cpp:league_opponent_tallies",
+   "src/core/race_state_io.cpp:read_tallies",
+   "src/core/race_update.cpp:count_opponent_trick",
    "src/core/reward_queue.cpp:opponent_reward_weight",
-   "src/core/reward_queue.cpp:update_opponent_announcements"
+   "src/core/reward_queue.cpp:update_opponent_announcements",
+   "src/core/stunt_event.hpp:tally_stunt_trick",
+   "src/core/zoom_zoo_movement.hpp:StuntEvent::opponent_tallies"
   ],
   "source_records": [
    "docs/research/R-0022-zoom-zoo-riding-reference.md"
@@ -11843,7 +11938,13 @@
   "comment": "instruction start",
   "label": "loc_81C274",
   "native": [
-   "src/core/reward_queue.cpp:update_opponent_announcements"
+   "src/core/announcements.hpp:takes_reward_path",
+   "src/core/race_state_io.cpp:league_opponent_tallies",
+   "src/core/race_state_io.cpp:read_tallies",
+   "src/core/race_update.cpp:count_opponent_trick",
+   "src/core/reward_queue.cpp:update_opponent_announcements",
+   "src/core/stunt_event.hpp:tally_stunt_trick",
+   "src/core/zoom_zoo_movement.hpp:StuntEvent::opponent_tallies"
   ],
   "source_records": [
    "docs/research/R-0022-zoom-zoo-riding-reference.md"
@@ -11855,8 +11956,14 @@
   "comment": "instruction start",
   "label": "loc_81C280",
   "native": [
+   "src/core/announcements.hpp:takes_reward_path",
    "src/core/race_state_io.cpp:check_opponent_queue",
-   "src/core/reward_queue.cpp:update_opponent_announcements"
+   "src/core/race_state_io.cpp:league_opponent_tallies",
+   "src/core/race_state_io.cpp:read_tallies",
+   "src/core/race_update.cpp:count_opponent_trick",
+   "src/core/reward_queue.cpp:update_opponent_announcements",
+   "src/core/stunt_event.hpp:tally_stunt_trick",
+   "src/core/zoom_zoo_movement.hpp:StuntEvent::opponent_tallies"
   ],
   "source_records": [
    "docs/research/R-0022-zoom-zoo-riding-reference.md"
@@ -11868,7 +11975,13 @@
   "comment": "instruction start",
   "label": "loc_81C286",
   "native": [
-   "src/core/reward_queue.cpp:update_opponent_announcements"
+   "src/core/announcements.hpp:takes_reward_path",
+   "src/core/race_state_io.cpp:league_opponent_tallies",
+   "src/core/race_state_io.cpp:read_tallies",
+   "src/core/race_update.cpp:count_opponent_trick",
+   "src/core/reward_queue.cpp:update_opponent_announcements",
+   "src/core/stunt_event.hpp:tally_stunt_trick",
+   "src/core/zoom_zoo_movement.hpp:StuntEvent::opponent_tallies"
   ],
   "source_records": [
    "docs/research/R-0011-motion.md"
@@ -11919,6 +12032,9 @@
   "class": "inferred",
   "comment": "instruction start",
   "label": "loc_81C3DC",
+  "native": [
+   "src/core/race_hud.cpp:ClassicRaceHudClock::request_stunt_fields"
+  ],
   "source_records": [
    "docs/research/R-0089-coverage-gaps.md"
   ]
@@ -12440,7 +12556,7 @@
   "comment": "instruction start",
   "label": "loc_81C7EC",
   "native": [
-   "src/core/presentation.hpp:ClassicRaceHudClock::Pending::left, ClassicRaceHudClock::Pending::clock_blank, ClassicRaceHudClock::Pending::clock_rewrite, ClassicRaceHudClock::Pending::score, ClassicRaceHudClock::Pending::caption",
+   "src/core/presentation.hpp:ClassicRaceHudClock::Pending::left, ClassicRaceHudClock::Pending::clock_blank, ClassicRaceHudClock::Pending::clock_rewrite, ClassicRaceHudClock::Pending::score, ClassicRaceHudClock::Pending::opponent_score, ClassicRaceHudClock::Pending::caption",
    "src/core/stunt_event.cpp:count_down_tenth",
    "src/core/stunt_event.hpp:update_stunt_clock"
   ],
@@ -12468,7 +12584,7 @@
   "comment": "instruction start",
   "label": "loc_81C830",
   "native": [
-   "src/core/presentation.hpp:ClassicRaceHudClock::Pending::left, ClassicRaceHudClock::Pending::clock_blank, ClassicRaceHudClock::Pending::clock_rewrite, ClassicRaceHudClock::Pending::score, ClassicRaceHudClock::Pending::caption",
+   "src/core/presentation.hpp:ClassicRaceHudClock::Pending::left, ClassicRaceHudClock::Pending::clock_blank, ClassicRaceHudClock::Pending::clock_rewrite, ClassicRaceHudClock::Pending::score, ClassicRaceHudClock::Pending::opponent_score, ClassicRaceHudClock::Pending::caption",
    "src/core/race_hud.cpp:classic_hud_timer",
    "src/core/race_state_io.cpp:stopped_stunt_clock",
    "src/core/stunt_event.cpp:count_down_tenth",
@@ -12486,7 +12602,7 @@
   "comment": "instruction start",
   "label": "loc_81C836",
   "native": [
-   "src/core/presentation.hpp:ClassicRaceHudClock::Pending::left, ClassicRaceHudClock::Pending::clock_blank, ClassicRaceHudClock::Pending::clock_rewrite, ClassicRaceHudClock::Pending::score, ClassicRaceHudClock::Pending::caption",
+   "src/core/presentation.hpp:ClassicRaceHudClock::Pending::left, ClassicRaceHudClock::Pending::clock_blank, ClassicRaceHudClock::Pending::clock_rewrite, ClassicRaceHudClock::Pending::score, ClassicRaceHudClock::Pending::opponent_score, ClassicRaceHudClock::Pending::caption",
    "src/core/race_hud.cpp:classic_hud_timer",
    "src/core/race_state_io.cpp:stopped_stunt_clock",
    "src/core/stunt_event.cpp:count_down_tenth",
@@ -12504,7 +12620,7 @@
   "comment": "instruction start",
   "label": "loc_81C838",
   "native": [
-   "src/core/presentation.hpp:ClassicRaceHudClock::Pending::left, ClassicRaceHudClock::Pending::clock_blank, ClassicRaceHudClock::Pending::clock_rewrite, ClassicRaceHudClock::Pending::score, ClassicRaceHudClock::Pending::caption",
+   "src/core/presentation.hpp:ClassicRaceHudClock::Pending::left, ClassicRaceHudClock::Pending::clock_blank, ClassicRaceHudClock::Pending::clock_rewrite, ClassicRaceHudClock::Pending::score, ClassicRaceHudClock::Pending::opponent_score, ClassicRaceHudClock::Pending::caption",
    "src/core/race_hud.cpp:classic_hud_timer",
    "src/core/race_state_io.cpp:stopped_stunt_clock",
    "src/core/stunt_event.cpp:count_down_tenth",
@@ -12523,7 +12639,7 @@
   "comment": "instruction start",
   "label": "loc_81C864",
   "native": [
-   "src/core/presentation.hpp:ClassicRaceHudClock::Pending::left, ClassicRaceHudClock::Pending::clock_blank, ClassicRaceHudClock::Pending::clock_rewrite, ClassicRaceHudClock::Pending::score, ClassicRaceHudClock::Pending::caption",
+   "src/core/presentation.hpp:ClassicRaceHudClock::Pending::left, ClassicRaceHudClock::Pending::clock_blank, ClassicRaceHudClock::Pending::clock_rewrite, ClassicRaceHudClock::Pending::score, ClassicRaceHudClock::Pending::opponent_score, ClassicRaceHudClock::Pending::caption",
    "src/core/race_hud.cpp:classic_hud_timer",
    "src/core/race_state_io.cpp:stopped_stunt_clock",
    "src/core/stunt_event.cpp:count_down_tenth",
@@ -13041,6 +13157,10 @@
   "class": "inferred",
   "comment": "routine start",
   "label": "sub_81E79B",
+  "native": [
+   "src/core/presentation.hpp:split_stunt_score_cells",
+   "src/core/race_hud.cpp:ClassicRaceHudClock::service_one_field"
+  ],
   "source_records": [
    "docs/research/R-0061-riders-and-opponents.md",
    "docs/research/R-0063-race-arrow-and-bg3-uploads.md",
@@ -16223,6 +16343,7 @@
   "comment": "instruction start",
   "label": "loc_82AB62",
   "native": [
+   "src/core/race_update.cpp:release_settled_opponent",
    "src/core/zoom_zoo_movement.hpp:StuntEvent::settled"
   ],
   "source_records": [
@@ -16236,7 +16357,9 @@
   "label": "loc_82AB6A",
   "native": [
    "src/core/race_demo_controls.cpp:demo_rider",
-   "src/core/race_update.cpp:release_absent_opponent"
+   "src/core/race_update.cpp:release_absent_opponent",
+   "src/core/race_update.cpp:release_settled_opponent",
+   "src/core/zoom_zoo_movement.hpp:StuntEvent::settled"
   ],
   "source_records": [
    "docs/research/R-0066-stunt-event-race.md",
@@ -16252,7 +16375,9 @@
    "src/core/opponent_ai.cpp:update_opponent_controller",
    "src/core/race_demo_controls.cpp:demo_rider",
    "src/core/race_update.cpp:release_absent_opponent",
-   "src/core/race_update.cpp:run_pause_menu"
+   "src/core/race_update.cpp:release_settled_opponent",
+   "src/core/race_update.cpp:run_pause_menu",
+   "src/core/zoom_zoo_movement.hpp:StuntEvent::settled"
   ],
   "source_records": [
    "docs/research/R-0048-race-guards.md",
@@ -17968,7 +18093,8 @@
   "native": [
    "src/core/audio_cpu_menu_defaults.cpp:native_audio_reset_menu_selection",
    "src/core/front_end.cpp:check_records",
-   "src/core/front_end.cpp:soft_reset"
+   "src/core/front_end.cpp:soft_reset",
+   "src/core/front_end.hpp:OnePlayerRecords::versus_races, OnePlayerRecords::versus_wins, OnePlayerRecords::versus_today"
   ],
   "source_records": [
    "docs/research/R-0054-boot-title-main-menu.md",
@@ -18399,7 +18525,7 @@
    "src/core/front_end_screens.hpp:swapped_object_tiles_word",
    "src/core/race_result.cpp:rows_frame, icons_frame, first_fade_frame, fade_frames",
    "src/core/race_result.cpp:start_result_screen",
-   "src/core/stunt_result.cpp:build_frame, print_frame, first_fade_frame, fade_frames",
+   "src/core/stunt_result.cpp:build_frame, print_frame, fade_frames",
    "src/core/track_menu.cpp:track_menu_exit_frame"
   ],
   "source_records": [
@@ -18428,7 +18554,10 @@
   "comment": "routine start",
   "label": "sub_839543",
   "native": [
-   "src/core/front_end_screens.hpp:pad_up, pad_down, pad_left, pad_right, pad_select, pad_a, pad_r"
+   "src/core/front_end.hpp:FrontEndState::pad_one_ignored, FrontEndState::pad_two_ignored",
+   "src/core/front_end.hpp:RiderMenu::challenger",
+   "src/core/front_end_screens.hpp:pad_up, pad_down, pad_left, pad_right, pad_select, pad_a, pad_r",
+   "src/core/rider_menu.cpp:enter_vs_challenger"
   ],
   "source_records": [
    "docs/research/R-0055-rider-menu.md"
@@ -18440,7 +18569,9 @@
   "comment": "routine start",
   "label": "sub_839558",
   "native": [
-   "src/core/audio_cpu_menu_input.cpp:native_audio_begin_menu_input"
+   "src/core/audio_cpu_menu_input.cpp:native_audio_begin_menu_input",
+   "src/core/front_end.hpp:FrontEndState::pad_one_ignored, FrontEndState::pad_two_ignored",
+   "src/core/local_modes.cpp:local_continue_frame"
   ],
   "source_records": [
    "docs/research/R-0055-rider-menu.md",
@@ -18745,7 +18876,8 @@
   "comment": "routine start",
   "label": "sub_839E47",
   "native": [
-   "src/core/front_end_screens.hpp:personal_best"
+   "src/core/front_end_screens.hpp:personal_best",
+   "src/core/stunt_result.cpp:end_tally"
   ],
   "source_records": [
    "docs/research/R-0058-lap-result.md",

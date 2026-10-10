@@ -348,10 +348,22 @@ void enter_rider_menu(FrontEndState& state) {
     open_rider_menu_entry(state);
 }
 
+// $80:C054-C08D: the player wins a race with a total under rider 1's, and a stunt event with a
+// score at least rider 1's (`$77:07BB`, `$77:0825`).
+bool player_won_versus(const RaceTimes& times) {
+    return times.stunt_event ? times.player_score >= times.opponent_score
+                             : times.player_total < times.opponent_total;
+}
+
 void enter_vs_challenger(FrontEndState& state) {
-    state.rider_menu.returning = false;
+    // `$00AC` is not 2 here, so `$80:CB42-CB48` slides the menu back in (`$80:E27E`, R-0095).
+    state.rider_menu.returning = true;
     state.rider_menu.second = false;
     state.rider_menu.challenger = true;
+    state.rider_menu.challenger_for_rider_one = player_won_versus(state.race_result.times);
+    // $80:C087 (`$83:952E`, pad 2 only) or $80:C09C (`$83:9543`, pad 1 only).
+    state.pad_one_ignored = state.rider_menu.challenger_for_rider_one;
+    state.pad_two_ignored = !state.rider_menu.challenger_for_rider_one;
     state.logo.raised = true;
     open_rider_menu_entry(state);
 }
@@ -422,9 +434,10 @@ void rider_menu_frame(FrontEndState& state, const FrontEndContent& content, Fron
     load_text(state, state.slide.hidden_half);
     upload_uni(state, content);
     const bool league = state.rider_menu.purpose == RiderMenuPurpose::league_members;
-    const bool finished =
-        league ? read_league_members_pad(state, content, pads.one)
-               : read_rider_menu_pad(state, state.rider_menu.second ? pads.two : pads.one);
+    const bool pad_two = state.rider_menu.second
+                      || (state.rider_menu.challenger && state.rider_menu.challenger_for_rider_one);
+    const bool finished = league ? read_league_members_pad(state, content, pads.one)
+                                 : read_rider_menu_pad(state, pad_two ? pads.two : pads.one);
     if (!finished) {
         choose_next_picture(state.rider_menu);
         return;
@@ -440,17 +453,29 @@ void rider_menu_frame(FrontEndState& state, const FrontEndContent& content, Fron
         choose_next_picture(state.rider_menu);
         return;
     }
+    // $80:C0B1-C0BB: the winner picked as challenger is refused with a move's sound.
+    if (state.rider_menu.challenger && !state.rider_menu.back
+        && state.menu.selection
+               == (state.rider_menu.challenger_for_rider_one ? state.rider_menu.rider
+                                                             : state.second_rider)) {
+        play_menu_sound(state, MenuSound::refused);
+        choose_next_picture(state.rider_menu);
+        return;
+    }
     // $80:BBB8-BBEE for a choice ($80:BC9B for Y), then $80:F4E9, which stops the HDMA at once.
     state.one_player = !state.rider_menu.back && state.mode == FrontEndMode::one_player;
     if (pick_plays_select(state)) play_menu_sound(state, MenuSound::select);
     if (!state.rider_menu.back) {
         if (state.rider_menu.purpose == RiderMenuPurpose::normal) send_arrow_off(state);
-        if (state.rider_menu.second) {
+        if (state.rider_menu.second
+            || (state.rider_menu.challenger && state.rider_menu.challenger_for_rider_one)) {
             state.second_rider = state.menu.selection;
             state.now_playing.opponent = state.second_rider;
             // $80:BD1C-BD23: 2P's second choice starts the session's wins at 0 (R-0084).
-            if (state.mode == FrontEndMode::two_player)
+            if (state.mode == FrontEndMode::two_player && state.rider_menu.second)
                 state.records.player_wins = state.records.opponent_wins = 0;
+        } else if (state.rider_menu.challenger) {
+            state.rider_menu.rider = state.menu.selection; // $80:C0C0-C0C2 into `$017D`
         } else {
             state.rider_menu.rider = state.menu.selection;
             state.now_playing.opponent = someone; // $80:BBC3
@@ -502,7 +527,7 @@ void rider_menu_exit_frame(FrontEndState& state, const FrontEndContent& content)
     if (state.rider_menu.challenger) {
         state.rider_menu.challenger = false;
         if (back)
-            enter_vs_champions(state);
+            enter_vs_champions(state, content);
         else
             enter_local_continue(state);
         return;

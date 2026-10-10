@@ -30,3 +30,31 @@ the records differing after a two-human restart (`$0422`, `$0486`, `$0829`, `$08
   frame-exact against captures of the original, with the cartridge RAM's fields (records,
   statistics, VS counters) equal.
 - The two-human restart's records and VS mode 2's counters equal the original's.
+
+## Checkpoint - 10 October 2026 (implementation subagent's first pass, committed as WIP)
+
+- Implemented: rider 1's stunt tallies (`StuntEvent::opponent_tallies`, `$77:07D5-0824`), its
+  release once settled (`$82:AB62-AB8E`), the split HUD's two scores, save layout `URTRnn0M`, the
+  stunt result rewritten after `$80:F0EE-F2E9`/`$80:F669` (two riders' columns; it also fixes main's
+  one-player stunt result regression from LEAGUE: STUNT-RESULT's five captures now equal), both
+  riders' quit words, VS counters `$77:0380/0382/0400` and `$77:10F9/10FB`, VS CHAMPIONS ranking,
+  REMATCH on a tie (pack v38: `front-end.vs-rematch-text`), the challenger pick, every mode's race
+  loading from the song table (R-0090's two-human restart record differences came from a one-frame
+  loading error and are now equal).
+- Evidence: main `local/evidence/two-human-stunts/` (nine captures, `checks.sh`,
+  `checks/run1.out`, `base-ef8e440/`), sound schedules in `two-human-stunts-audio/`.
+- Results: race rows equal on six captures (2P/VS BOWL, JUMPS, HILL CLIMB, a zero-score tie);
+  result text/objects, continuation, VS CHAMPIONS, challenger, REMATCH equal; cartridge RAM record
+  fields equal; five sound schedules equal.
+- Open before review:
+  1. VS DOWNER (track 32): rider 1's landing at frame 3558 (vertical velocity -288 native, -308
+     original; no landing-matrix row gives -308).
+  2. Frozen league picture `organic-full-tour-turnaround` frame 38500 now differs (the podium exit's
+     arrow a frame early, previously hidden by the old stunt result's late arrow); the league
+     frozen gate needs the v29 pack (missing locally).
+  3. 2P/VS pictures' animated objects (result, NOW PLAYING, VS CHAMPIONS) differ by 105-1369 pixels:
+     native's second-rider pick slides; the original reprints PICK ANOTHER in place
+     (`$80:BCDB-BCEF`). Probably MENU-INPUT's (`$80:CBC3`) item.
+  4. Rider 1's horizontal input while pad 2 has paused the race (48 frames).
+  5. The front-end sweep against main (24 of 179 differed before the last fixes) must be rerun and
+     classified; R-0095 must cite the 31 addresses the native-symbols check lists.

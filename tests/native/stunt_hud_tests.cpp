@@ -50,6 +50,14 @@ void score_cells() {
     require(stunt_qualifying_text(245) == "245", "a qualifying score from 100");
     require(stunt_qualifying_text(5) == "05 ", "the tens digit is always written");
     require(stunt_qualifying_text(100) == "100", "zero tens and units");
+    // R-0095, $81:E705-E82E: a split race's cells start at column 2, each written cell moving the
+    // next right; nothing is written before the first score.
+    const std::array<char, 3> blank{' ', ' ', ' '};
+    require(text(split_stunt_score_cells(8, blank)) == "8  ", "one digit from column 2");
+    require(text(split_stunt_score_cells(24, split_stunt_score_cells(8, blank))) == "24 ",
+            "two digits over one");
+    require(text(split_stunt_score_cells(105, blank)) == "105", "three digits");
+    require(text(split_stunt_score_cells(7, {'1', '2', '3'})) == "723", "past the digits, theirs");
 }
 
 // $83:E5E2, $83:E634, $83:E686, $83:E6E8: no transition member, each digit from its phase's first

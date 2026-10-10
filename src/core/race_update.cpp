@@ -186,6 +186,15 @@ ControllerButtons release_settled_player(const ZoomZooState& state, ZoomZooState
     return {};
 }
 
+// $82:AB62-AB8E: port 2's reader does the same for a settled rider 1 ($12E1), which in a stunt
+// event only a second human rides; the split demo's computer riders read their own controls
+// ($82:AB5C-AB60). Returns what rider 1's buttons are (R-0095).
+ControllerButtons release_settled_opponent(const ZoomZooState& next,
+                                           const ControllerButtons& buttons) {
+    if (!next.stunt.settled[1] || next.demo_ai) return buttons;
+    return {};
+}
+
 // $83:CD05-CD35: the pause menu takes the update once the controller and phase clocks are
 // sampled; the race, the AI, the queues and the hints wait. Start opens it (unless that pad's
 // rider has finished): pad 1's always, pad 2's in a two-pad race, where port 2 is a pad
@@ -734,8 +743,7 @@ RiderOutcome update_rider(const ZoomZooState& state, ZoomZooState& next, unsigne
     if (index == 1
         && update_reflection_transition(rider, transition, horizontal, index != active,
                                         content.reflection_pose_table,
-                                        state.native_initialization && buttons.opponent_a(),
-                                        tiles))
+                                        state.native_initialization && buttons.opponent_a(), tiles))
         race_sound::effect(next, race_sound::landing_effect);
     // $82:98D6: the corkscrew's physics hold skips the whole drive routine, brake latch
     // included, and leaves $0E7B as the other rider set it.
@@ -816,6 +824,30 @@ void update_rider_contact(const ZoomZooState& state, ZoomZooState& next, unsigne
     observe_track_markers(rider.progress, samples);
 }
 
+// Rider 1's queue took an event this update: a league counts its tricks and wipeouts (R-0073),
+// and in a stunt event a trick of a reward class goes into rider 1's tallies ($81:C238-C2C3,
+// R-0095), with the points its reward paid; only a second human shows one.
+void count_opponent_trick(ZoomZooState& next, std::uint16_t previous_reward_total,
+                          const MovementContent& content, const ClassicRaceScenario& scenario) {
+    const auto& rewards = next.movement.rewards;
+    const auto event = rewards.entries[rewards.read_cursor];
+    const auto paid = static_cast<std::uint16_t>(rewards.feature_total - previous_reward_total);
+    if (next.league_statistics.enabled && event == announcement::wipeout)
+        ++next.league_statistics.wipeouts[1];
+    if (event == 0 || event >= announcement::wrong_way || content.rotation_class[event - 1] == 255)
+        return;
+    const auto trick_class = content.rotation_class[event - 1];
+    if (next.league_statistics.enabled) {
+        const auto cell = trick_class / 2U;
+        ++next.league_statistics.tricks[1].at(cell);
+        auto& points = next.league_statistics.opponent_points.at(cell);
+        points = static_cast<std::uint16_t>(points + paid);
+    }
+    if (scenario.stunt_event)
+        tally_stunt_trick(next.stunt.opponent_tallies, trick_class,
+                          static_cast<std::uint8_t>(paid));
+}
+
 // $81:C73E-C75B: when the race clock would reach 10:00 it holds 9:59.9 and marks both
 // riders finished, whatever their laps; a stunt event's clock counts down instead. Then the
 // queues, the camera, each rider's contact (the opponent's only when it rides), the
@@ -865,18 +897,8 @@ void finish_update(const ZoomZooState& state, ZoomZooState& next,
     if (previous_reward_cursor != whole.rewards.read_cursor)
         race_sound::announcement_voice(next, 1, whole.rewards.entries[whole.rewards.read_cursor],
                                        content.announcement_voices);
-    if (next.league_statistics.enabled && previous_reward_cursor != whole.rewards.read_cursor) {
-        const auto event = whole.rewards.entries[whole.rewards.read_cursor];
-        if (event == announcement::wipeout) ++next.league_statistics.wipeouts[1];
-        if (event < announcement::wrong_way && event != 0
-            && content.movement.rotation_class[event - 1] != 255) {
-            const auto cell = content.movement.rotation_class[event - 1] / 2U;
-            ++next.league_statistics.tricks[1].at(cell);
-            auto& points = next.league_statistics.opponent_points.at(cell);
-            points = static_cast<std::uint16_t>(points + whole.rewards.feature_total
-                                                - previous_reward_total);
-        }
-    }
+    if (previous_reward_cursor != whole.rewards.read_cursor)
+        count_opponent_trick(next, previous_reward_total, content.movement, scenario);
     if (state.complete_race) update_camera(next, track_geometry(content.movement.sampling.track));
     for (unsigned index = 0; index < rider_passes(scenario, next.split_screen); ++index)
         if (!outcomes[index].contact_skip) update_rider_contact(state, next, index, content);
@@ -974,7 +996,8 @@ void update_zoom_zoo(ZoomZooState& state, const ControllerButtons& requested_but
     const auto player_buttons = release_settled_player(state, next, buttons);
     bool pressed_a = read_player_buttons(next, player_buttons,
                                          state.hunter.effect[hunter_effect::control_reversed] != 0);
-    const auto opponent_buttons = with_physical_dpad(gate_controller(state, second_port));
+    const auto opponent_buttons =
+        release_settled_opponent(next, with_physical_dpad(gate_controller(state, second_port)));
     if (!state.demo_ai && run_pause_menu(state, next, player_buttons, opponent_buttons, content)) {
         state = next;
         return;

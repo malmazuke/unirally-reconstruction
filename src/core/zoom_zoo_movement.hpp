@@ -345,6 +345,8 @@ namespace trick_family {
 inline constexpr unsigned roll = 0, flip = 1, twist = 2, z_flip = 3, mega = 4, count = 5;
 inline constexpr unsigned columns = 4;
 } // namespace trick_family
+// A rider's tallies, a row per family and a column per count (x1-x4).
+using StuntTallies = std::array<std::array<TrickTally, trick_family::columns>, trick_family::count>;
 struct StuntEvent {
     // $77:0753: the score to reach, set at the race's setup ($80:99ED) from the tour and the
     // rider's best medal on it (`front-end.qualifying-scores`).
@@ -360,7 +362,11 @@ struct StuntEvent {
     // $83:E87A-E885). From then on its vertical velocity is held at 128 each update and its
     // controls are released ($82:AA7D-AAA1, $82:AB62-AB67).
     std::array<std::uint16_t, 2> settled{};
-    std::array<std::array<TrickTally, trick_family::columns>, trick_family::count> tallies{};
+    StuntTallies tallies{};
+    // $77:07D5-0824: rider 1's tallies, which its queue's consumer counts the same way
+    // ($81:C238-C2C3, R-0095). Only a second human shows tricks, so they stay 0 in one-player
+    // play.
+    StuntTallies opponent_tallies{};
     bool operator==(const StuntEvent&) const = default;
 };
 // League bonuses read twenty wrapping byte counts and two wipeout words; R-0073.

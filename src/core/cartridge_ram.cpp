@@ -54,6 +54,13 @@ void transfer_records(Codec& at, OnePlayerRecords& records) {
     at.word(0x1073, records.tries);
     for (std::size_t k = 0; k < records.tracks_done.size(); ++k)
         at.byte(0x1075 + k, records.tracks_done[k]);
+    for (std::size_t rider = 0; rider < records.versus_races.size(); ++rider) {
+        at.word(0x0380 + 4 * rider, records.versus_races[rider]);
+        at.word(0x0382 + 4 * rider, records.versus_wins[rider]);
+        at.word(0x0400 + 2 * rider, records.versus_today[rider]);
+    }
+    at.word(0x10f9, records.versus_percentage_races);
+    at.word(0x10fb, records.versus_percentage_wins);
     at.word(0x10a9, records.player_wins);
     at.word(0x10ab, records.opponent_wins);
     at.byte(0x10b1, records.race_song_counter);

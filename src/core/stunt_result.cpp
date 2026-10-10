@@ -1,7 +1,9 @@
-// A stunt event's result screen (R-0067): `$80:951C`'s type-2 builder `$80:F0EE-F2E9`, the trick
-// tally `$80:F669-F813`, the rider's best score, then the one-run result's waits for a press. The
-// race's return before it and the way out after it are the one-run result's (race_result.cpp,
-// R-0057); the records and scoring on the way out are the stunt event's (`$80:C948`, `$83:88E1`).
+// A stunt event's result screen (R-0067, R-0095): `$80:951C`'s type-2 builder `$80:F0EE-F2E9`,
+// the trick tally `$80:F669-F813` and the rider's best score; then against the computer the
+// qualifying score, or with a second human (2P, VS, a league's pair) rider 1's own tally and best
+// below the player's; then the one-run result's waits for a press. The race's return before it
+// and the way out after it are the one-run result's (race_result.cpp, R-0057); the records and
+// scoring on the way out are the stunt event's (`$80:C948`, `$83:88E1`).
 #include "front_end_screens.hpp"
 #include "text_printer.hpp"
 
@@ -14,38 +16,47 @@ namespace unirally::front_end_screens {
 namespace {
 
 // The result's frames from its first (`$83:94D0`'s wait): the objects and the streams, whose
-// printing runs past the frame's end (R-0067), so the text's upload and the decorations come in
-// the third frame without a frame wait; then `$80:9869`'s fade, brightness 2, 4, ..., 14, and the
-// tally's first pass in the fade's last frame.
-constexpr std::uint32_t build_frame = 1, print_frame = 2, first_fade_frame = 4, fade_frames = 7;
-constexpr std::uint32_t tally_start_frame = first_fade_frame + fade_frames - 1;
+// printing in one-player play runs past the frame's end (R-0067), so the text's upload and the
+// decorations come in the third frame without a frame wait (with two riders in the second,
+// R-0095); then `$80:9869`'s fade, brightness 2, 4, ..., 14, and the tally's first pass in the
+// fade's last frame.
+constexpr std::uint32_t build_frame = 1, print_frame = 2, fade_frames = 7;
+std::uint32_t first_fade_frame(const FrontEndState& state) {
+    return stunt_text_runs_over(state) ? stunt_text_frame + 1 : print_frame + 1;
+}
+std::uint32_t tally_start_frame(const FrontEndState& state) {
+    return first_fade_frame(state) + fade_frames - 1;
+}
 
 // The streams of front-end.stunt-result-text, in ROM order.
 enum class StuntText : unsigned {
     table,             // $80:F2EA: the title, the columns x1-x4, 1p 2p, the rows and their zeros
     one_player_dashes, // $80:F3E0: dashes over every 2P cell
     total,             // $80:F44F: the running total at row 22
-    second_total,      // $80:F456: the 2P rider's total at row 24 (not recovered)
+    second_total,      // $80:F456: rider 1's running total at row 24
     qualify,           // $80:F45D: `qualify   :` and the qualifying score at row 24
     record_line,       // $80:F471: the record holder's name and record at row 20
-    rider_line,        // $80:F47F: the rider's line at row 22, two players
+    rider_line,        // $80:F47F: the rider's line at row 22 in palette 0, two riders
     one_player_rider,  // $80:F491: the rider's line at row 22 in palette 7, one player
-    second_rider_line, // $80:F4A3: the 2P rider's line at row 24 (not recovered)
+    second_rider_line, // $80:F4A3: rider 1's line at row 24 in palette 1
 };
 
 // The direct-page words the streams print (`F7`, `F8`, `FD`, `F0`).
-constexpr std::uint16_t track_word = 0xce, rider_word = 0x17d, holder_word = 0xbe,
-                        record_or_total_word = 0xc0, first_shown_word = 0xb2,
+constexpr std::uint16_t track_word = 0xce, rider_word = 0x17d, second_rider_word = 0x17f,
+                        holder_word = 0xbe, record_or_total_word = 0xc0, first_shown_word = 0xb2,
                         qualifying_word = first_shown_word;
 
 // The tally's first cell, row 9 column 7 (`$80:F68F-F6A6`): six columns a tally column, two text
-// rows a trick row.
-constexpr unsigned first_cell = 9 * 32 + 7, cell_columns = 6, cell_rows = 64;
+// rows a trick row; rider 1's cells three columns right of the player's (`$80:F69D-F6A3`).
+constexpr unsigned first_cell = 9 * 32 + 7, cell_columns = 6, cell_rows = 64,
+                   second_rider_cells = 3;
 // A pass's wait and a column total's (`$80:F775`, `$80:F7B9`: Y = 6 and 12, one frame more).
 constexpr std::uint8_t pass_wait_frames = 7, column_wait_frames = 13;
+// $80:F4B5, after rider 1's lines: the printer's palette 7 again.
+constexpr std::uint16_t menu_text_attribute = 7U << 10U;
 
-// The objects `$80:F116-F19C` lays out: the markers 96-99 beside the rider's score, the 1P and 2P
-// marks 100-103 beside its line, the icons 104-106 beside the record, entry 112.
+// The objects `$80:F116-F19C` lays out: the markers 96-99 beside the riders' scores, the 1P and
+// 2P marks 100-103 beside their lines, the icons 104-106 beside the record, entry 112.
 constexpr std::uint8_t marker_column = 0xc4, marker_attributes = 0x17, icon_column = 0x7f;
 constexpr std::array<std::uint8_t, 4> marker_lines{0xb0, 0xc0, 0xb0, 0xc0};
 constexpr std::array<std::uint8_t, 4> mark_lines{0xaf, 0xc0, 0xaf, 0xc0};
@@ -53,10 +64,13 @@ constexpr std::array<std::uint8_t, 4> mark_attributes{0x11, 0x13, 0x11, 0x13};
 constexpr std::array<std::uint8_t, 3> icon_lines{0xaf, 0xbf, 0x9f};
 constexpr std::uint8_t record_icon_line = 0xa1;
 // The high table: 104 and 106 shown, 105 and 107 hidden (0x44); 112 shown, 113-115 hidden
-// (0x54). `$80:F209` shows the 1P mark, 100 and 102 (0xCC); `$80:F23F` the new-best markers 96
-// and 98 (0x66).
+// (0x54). `$80:F209` shows the 1P mark, 100 and 102 (`AND #$CC`); `$80:F23F` the player's
+// new-best markers 96 and 98 (`AND #$66`). Rider 1's tally (`$80:F289-F293`) writes 0x40 for
+// 104-107 and shows its 2P mark, 101 and 103 (`AND #$33`); its new best shows 97 and 99
+// (`$80:F2C4-F2C9`, `AND #$33`).
 constexpr std::uint8_t record_icons_high = 0x44, record_icon_high = 0x54, one_player_marks = 0xcc,
-                       stunt_best_markers = 0x66;
+                       stunt_best_markers = 0x66, second_rider_icons_high = 0x40,
+                       second_rider_marks = 0x33, second_best_markers = 0x33;
 // Colours: asset 0x22 at 0xB0 (`$80:F0F3`), the heads (asset 0x26 + rider) at 0 and 0x10, and the
 // record holder's colours at 0xA0.
 constexpr unsigned marker_palette_asset = 0x22, marker_palette_colour = 0xb0,
@@ -87,7 +101,7 @@ void print_stunt(FrontEndState& state, const FrontEndContent& content,
     variables.word = [&](std::uint16_t address) -> std::uint16_t {
         if (address == track_word) return track_of(state);
         if (address == rider_word) return state.rider_menu.rider;
-        if (address == 0x017f) return state.now_playing.opponent;
+        if (address == second_rider_word) return state.now_playing.opponent;
         if (address == holder_word) return words.holder;
         if (address == record_or_total_word) return words.record_or_total;
         if (address == qualifying_word && words.qualifying_score) return *words.qualifying_score;
@@ -108,11 +122,18 @@ void print_stunt(FrontEndState& state, const FrontEndContent& content, StuntText
                 words);
 }
 
+bool against_computer(const FrontEndState& state) { // $80:F24F: `$77:0749` from 0x10
+    return state.now_playing.opponent >= someone;
+}
+
+// $80:B6D3 in the tally: pad 1's twelve buttons, and pad 2's while `$77:0742` bit 10 is clear,
+// which it is outside one-player play.
+bool tally_press(const FrontEndState& state, FrontEndPads pads) {
+    return any_button_pressed(pads, !state.one_player);
+}
+
 // $80:F0EE-F0F9 after the one-run result's common part (`$80:951C-955A`).
 void start_stunt_result(FrontEndState& state, const FrontEndContent& content) {
-    if (state.mode != FrontEndMode::league
-        && (!state.one_player || state.now_playing.opponent < someone))
-        throw std::logic_error("a stunt result for two players ($80:F283) is not recovered");
     start_result_screen(state, content);
     load_cgram(state, asset(content, marker_palette_asset), marker_palette_colour);
 }
@@ -136,8 +157,7 @@ void lay_out_stunt_objects(FrontEndState& state, const FrontEndContent& content)
         oam_byte(state, 104 + k, 0) = icon_column;
         oam_byte(state, 104 + k, 1) = icon_lines[k];
     }
-    high_bits(state, 104) =
-        state.now_playing.opponent < someone ? hidden_bit(107) : record_icons_high;
+    high_bits(state, 104) = record_icons_high;
     oam_byte(state, 112, 0) = marker_column;
     oam_byte(state, 112, 1) = record_icon_line;
     oam_byte(state, 112, 3) = marker_attributes;
@@ -145,7 +165,8 @@ void lay_out_stunt_objects(FrontEndState& state, const FrontEndContent& content)
 }
 
 // $80:F19F-F1F1: the record holder's colours, the logo held up (`$80:F53F`), and the streams: the
-// table, the record line, the 1P dashes and the rider's line.
+// table, the record line, then in one-player play (`$77:10AD` = 1) the 1P dashes and the rider's
+// line in palette 7, otherwise the rider's line in palette 0 (`$80:F1D8-F1F1`).
 void print_stunt_screen(FrontEndState& state, const FrontEndContent& content) {
     lay_out_stunt_objects(state, content);
     const auto track = track_of(state);
@@ -156,12 +177,11 @@ void print_stunt_screen(FrontEndState& state, const FrontEndContent& content) {
     raise_logo(state);
     print_stunt(state, content, StuntText::table, words);
     print_stunt(state, content, StuntText::record_line, words);
-    if (state.now_playing.opponent < someone) {
-        print_stunt(state, content, StuntText::rider_line, words);
-        print_stunt(state, content, StuntText::second_rider_line, words);
-    } else {
+    if (state.one_player) {
         print_stunt(state, content, StuntText::one_player_dashes, words);
         print_stunt(state, content, StuntText::one_player_rider, words);
+    } else {
+        print_stunt(state, content, StuntText::rider_line, words);
     }
 }
 
@@ -172,78 +192,46 @@ void show_stunt_text(FrontEndState& state, const FrontEndContent& content) {
     step_decorations(state, content);
 }
 
-const TrickTally& tally_of(const FrontEndState& state, unsigned row, unsigned column) {
-    return state.race_result.times.player_tallies[row][column];
-}
-
-// $80:F669-F813: the second human's blue cells share the player's pass and wait.
-bool second_tally_pass(FrontEndState& state, const FrontEndContent& content) {
-    if (state.now_playing.opponent >= someone) return false;
-    auto& tally = state.race_result.tally;
-    bool raised = false;
-    ResultWords words;
-    for (unsigned row = 0; row < trick_family::count; ++row) {
-        auto& shown = tally.second_shown[row];
-        const bool rises =
-            shown < state.race_result.times.opponent_tallies[row][tally.column].shown;
-        if (rises) {
-            ++shown;
-            raised = true;
-        }
-        if (!rises && shown != 0) continue;
-        words.shown = tally.second_shown;
-        state.printer.position = first_cell + 3 + cell_columns * tally.column + cell_rows * row;
-        state.printer.attribute = 0x0400;
-        print_stunt(state, content, stream_of(content.stunt_tally_cells, row), words);
-    }
-    return raised;
+// The tallies the current tally counts up: the player's (`$77:076B`) or rider 1's (`$77:07D5`).
+const StuntTallies& tallies_of(const FrontEndState& state) {
+    const auto& times = state.race_result.times;
+    return state.race_result.tally.rider == 0 ? times.player_tallies : times.opponent_tallies;
 }
 
 // $80:F680-F751 and `$80:F77F-F7A2`: a pass over the column's five rows. A row below its tally
 // shows one more; a row still at 0 prints its 0 again. A pass that raised a row plays the move's
 // sound unless a button is pressed (`$80:F758-F75D`, `$80:B6D3`). When no row rose the column's
-// points go into the total, which is printed with the choice's sound (`$80:F7A7`), and the wait
-// is the column total's.
+// points go into the total, which is printed (`$80:F44F` or rider 1's `$80:F456`, `$0060`) with
+// the choice's sound (`$80:F7A7`), and the wait is the column total's. The cells and totals take
+// the printer's palette as the last line printed left it.
 void tally_pass(FrontEndState& state, const FrontEndContent& content, FrontEndPads pads) {
     auto& tally = state.race_result.tally;
+    const auto& tallies = tallies_of(state);
+    const unsigned first = first_cell + (tally.rider ? second_rider_cells : 0U);
     bool raised = false;
     ResultWords words;
     for (unsigned row = 0; row < trick_family::count; ++row) {
         auto& shown = tally.shown[row];
-        const bool rises = shown < tally_of(state, row, tally.column).shown;
+        const bool rises = shown < tallies[row][tally.column].shown;
         if (rises) {
             ++shown;
             raised = true;
         }
         if (!rises && shown != 0) continue;
         words.shown = tally.shown;
-        state.printer.position = first_cell + cell_columns * tally.column + cell_rows * row;
-        state.printer.attribute = 0;
+        state.printer.position = first + cell_columns * tally.column + cell_rows * row;
         print_stunt(state, content, stream_of(content.stunt_tally_cells, row), words);
     }
-    raised = second_tally_pass(state, content) || raised;
     tally.frames_waited = 0;
     tally.column_total_shown = !raised;
     if (raised) {
-        if (!any_button_pressed(pads)) play_menu_sound(state, MenuSound::navigate);
+        if (!tally_press(state, pads)) play_menu_sound(state, MenuSound::navigate);
         return;
     }
-    for (unsigned row = 0; row < trick_family::count; ++row) {
-        const auto points = tally_of(state, row, tally.column).points;
-        tally.total = static_cast<std::uint16_t>(tally.total + points);
-    }
+    for (unsigned row = 0; row < trick_family::count; ++row)
+        tally.total = static_cast<std::uint16_t>(tally.total + tallies[row][tally.column].points);
     words.record_or_total = tally.total;
-    state.printer.attribute = 0;
-    print_stunt(state, content, StuntText::total, words);
-    if (state.now_playing.opponent < someone) {
-        for (unsigned row = 0; row < trick_family::count; ++row)
-            tally.second_total = static_cast<std::uint16_t>(
-                tally.second_total
-                + state.race_result.times.opponent_tallies[row][tally.column].points);
-        words.record_or_total = tally.second_total;
-        state.printer.attribute = 0x0400;
-        print_stunt(state, content, StuntText::second_total, words);
-    }
+    print_stunt(state, content, tally.rider ? StuntText::second_total : StuntText::total, words);
     play_menu_sound(state, MenuSound::select);
 }
 
@@ -261,14 +249,13 @@ void tally_frame(FrontEndState& state, const FrontEndContent& content, FrontEndP
     }
     copy_oam(state);
     const auto wait = tally.column_total_shown ? column_wait_frames : pass_wait_frames;
-    if (tally.frames_waited <= wait && !any_button_pressed(pads)) { // $80:F7FB
+    if (tally.frames_waited <= wait && !tally_press(state, pads)) { // $80:F7FB
         step_decorations(state, content);
         return;
     }
     if (tally.column_total_shown) {
         ++tally.column;
         tally.shown.fill(0);
-        tally.second_shown.fill(0);
         if (tally.column == trick_family::columns) {
             tally.finished_frame = state.script_frame;
             return;
@@ -277,47 +264,71 @@ void tally_frame(FrontEndState& state, const FrontEndContent& content, FrontEndP
     tally_pass(state, content, pads);
 }
 
-// The frames after the tally: `$80:F7CD-F7D7` and the total printed again, the rider's best score
-// (`$80:F222-F244`: kept when higher, the new-best markers shown); then the qualifying score
-// (`$80:F24F-F272`, a computer opponent), then `$80:F88D`'s score history and checksums, which
-// native does not keep (R-0067); then the one-run result's waits (`$80:C24C`, `$80:C206`).
+// $80:F7CD-F7D7 at a tally's end, a frame after its last wait: the text, the decorations and the
+// pads (`$80:D1EC`, kept for rider 1's first pass); then the total printed again and the rider's
+// best score `$77:0829 + 2 x (50 x rider + track)` (`$83:9E47`), kept when the score is higher,
+// unsigned, with its new-best markers shown: the player's (`$80:F21C-F244`) or rider 1's
+// (`$80:F2A1-F2C9`, then `$80:F4B5`'s palette 7).
+void end_tally(FrontEndState& state, const FrontEndContent& content, FrontEndPads pads) {
+    auto& result = state.race_result;
+    load_text(state, state.slide.shown_half);
+    step_decorations(state, content);
+    copy_oam(state);
+    result.tally.pads = pads.one;
+    result.tally.second_pads = pads.two;
+    const bool second = result.tally.rider != 0;
+    ResultWords words;
+    words.record_or_total = result.tally.total;
+    print_stunt(state, content, second ? StuntText::second_total : StuntText::total, words);
+    const auto rider = second ? state.now_playing.opponent : state.rider_menu.rider;
+    const auto score = second ? result.times.opponent_score : result.times.player_score;
+    auto& best = personal_best(state.records, rider, track_of(state));
+    if (score > best) {
+        best = score;
+        high_bits(state, 96) &= second ? second_best_markers : stunt_best_markers;
+    }
+    if (second) state.printer.attribute = menu_text_attribute;
+}
+
+// $80:F283-F29E: rider 1's line in palette 1, its icons and 2P mark, and its tally from x1 with
+// its first pass, which reads the pads the player's tally's end read.
+void start_second_tally(FrontEndState& state, const FrontEndContent& content) {
+    print_stunt(state, content, StuntText::second_rider_line, {});
+    high_bits(state, 104) = second_rider_icons_high;
+    high_bits(state, 100) &= second_rider_marks;
+    const FrontEndPads pads{state.race_result.tally.pads, state.race_result.tally.second_pads};
+    state.race_result.tally = {};
+    state.race_result.tally.rider = 1;
+    tally_pass(state, content, pads);
+}
+
+// The frames after a tally (see end_tally). After the player's, a frame wait (`$80:F249`) and the
+// text; then against the computer (`$77:0749` from 0x10) the qualifying score (`$80:F24F-F272`,
+// not in a league, `$77:10AD` = 4), a frame wait and the text, and `$80:F88D`'s score history
+// and checksums, which native does not keep (R-0067); against a second human its tally
+// (`$80:F283`). After rider 1's, a frame wait (`$80:F2D4`), the text and `$80:F88D`. Then the
+// one-run result's waits (`$80:C24C`, `$80:C206`).
 void after_tally_frame(FrontEndState& state, const FrontEndContent& content, FrontEndPads pads) {
     auto& result = state.race_result;
     const auto after = state.script_frame - result.tally.finished_frame;
     if (after == 1) {
-        load_text(state, state.slide.shown_half);
-        step_decorations(state, content);
-        copy_oam(state);
-        ResultWords words;
-        words.record_or_total = result.tally.total;
-        state.printer.attribute = 0;
-        print_stunt(state, content, StuntText::total, words);
-        auto& best = personal_best(state.records, state.rider_menu.rider, track_of(state));
-        if (result.times.player_score > best) {
-            best = result.times.player_score;
-            high_bits(state, 96) &= stunt_best_markers;
-        }
+        end_tally(state, content, pads);
         return;
     }
+    const bool second = result.tally.rider != 0;
+    const bool qualifying_line = !second && state.mode != FrontEndMode::league;
     if (after == 2) {
         load_text(state, state.slide.shown_half);
-        ResultWords words;
-        if (state.now_playing.opponent < someone) {
-            words.record_or_total = result.times.opponent_score;
-            state.printer.attribute = 0x0400;
-            print_stunt(state, content, StuntText::second_total, words);
-            auto& best = personal_best(state.records, state.now_playing.opponent, track_of(state));
-            if (result.times.opponent_score > best) {
-                best = result.times.opponent_score;
-                high_bits(state, 96) &= 0x99;
-            }
-        } else {
+        if (!second && !against_computer(state)) {
+            start_second_tally(state, content);
+        } else if (qualifying_line) {
+            ResultWords words;
             words.qualifying_score = tour_qualifying_score(state, content); // $80:F259, `$83:9EEB`
             print_stunt(state, content, StuntText::qualify, words);
         }
         return;
     }
-    if (after == 3) {
+    if (after == 3 && qualifying_line) { // $80:F26F-F272
         load_text(state, state.slide.shown_half);
         return;
     }
@@ -335,19 +346,20 @@ void stunt_result_frame(FrontEndState& state, const FrontEndContent& content, Fr
     }
     if (frame == print_frame) {
         print_stunt_screen(state, content);
+        if (!stunt_text_runs_over(state)) show_stunt_text(state, content);
         return;
     }
-    if (frame == stunt_text_frame) {
+    if (frame == stunt_text_frame && stunt_text_runs_over(state)) {
         show_stunt_text(state, content);
         return;
     }
-    if (frame <= tally_start_frame) {
+    if (frame <= tally_start_frame(state)) {
         copy_oam(state);
-        state.registers.brightness = static_cast<std::uint8_t>(2 * (frame - first_fade_frame + 1));
+        state.registers.brightness =
+            static_cast<std::uint8_t>(2 * (frame - first_fade_frame(state) + 1));
         state.registers.force_blank = false;
-        if (frame < tally_start_frame) return;
-        high_bits(state, 100) =
-            state.now_playing.opponent < someone ? four_shown : one_player_marks;
+        if (frame < tally_start_frame(state)) return;
+        high_bits(state, 100) &= one_player_marks; // $80:F209
         state.race_result.tally = {};
         // The pass reads the pads the menus' work RAM brought back from NOW PLAYING's choice.
         tally_pass(state, content, {state.now_playing.choice_pads, 0});

@@ -923,6 +923,7 @@ void clear_defined_player(FrontEndState& state) {
     std::fill_n(records.rider_names.begin() + static_cast<std::size_t>(rider) * 16, 8,
                 std::uint8_t{'_'});
     records.statistics[rider].fill(0);
+    records.versus_today[rider] = records.versus_races[rider] = records.versus_wins[rider] = 0;
     records.tour_levels[rider] = 0;
     const auto cold = cold_start_records();
     for (unsigned track = 0; track < 50; ++track)

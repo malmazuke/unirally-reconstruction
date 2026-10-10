@@ -255,7 +255,9 @@ bool waits_for_frame(const FrontEndState& state) {
     if (state.screen == FrontEndScreen::race_result && state.race_result.times.lap_race)
         return next != result_tail_frame;
     // So does the stunt result's (R-0067).
-    if (state.screen == FrontEndScreen::stunt_result) return next != stunt_text_frame;
+    if (state.screen == FrontEndScreen::stunt_result)
+        return next != stunt_text_frame || !stunt_text_runs_over(state);
+    if (state.screen == FrontEndScreen::vs_champions_entry) return next != champions_overrun_frame;
     // $80:D494-D4BF runs through the name save and return without a frame wait.
     if (state.screen == FrontEndScreen::rename_return) return false;
     if (state.screen == FrontEndScreen::define_player_after_confirm) return false;
@@ -297,8 +299,8 @@ void check_title_code(FrontEndState& state, std::uint16_t pad) {
 // $80:8C4E (boot frame 403): after the mirror test, which leaves `$56` at `$77:1FFF` ($83:8AF7),
 // cartridge RAM that does not start with the signature `$83:8000` is wiped to a cold start's
 // (`$83:FB41`, frames 403-405). After a soft reset, or with a saved image, the signature is there
-// and the records stay (SAVE-FILES). Then `$83:8B23` clears the one-player flag `$77:10AD` and
-// the pending reveal.
+// and the records stay (SAVE-FILES). Then `$83:8B23` clears today's VS wins (`$77:0400-041F`,
+// R-0095), the one-player flag `$77:10AD` and the pending reveal.
 void check_records(FrontEndState& state, const FrontEndContent& content) {
     constexpr std::size_t mirror_test_byte = 0x1fff;
     state.cartridge[mirror_test_byte] = 0x56;
@@ -309,6 +311,7 @@ void check_records(FrontEndState& state, const FrontEndContent& content) {
     } else {
         wipe_cartridge(state, content);
     }
+    state.records.versus_today.fill(0);
     state.one_player = false;
     state.cartridge[one_player_mode] = state.cartridge[one_player_mode + 1] = 0; // `$83:8B3B`
     state.records.pending_reveal = 0;
@@ -736,8 +739,7 @@ void reload_menu_text_tiles(FrontEndState& state, const FrontEndContent& content
 
 void start_main_menu(FrontEndState& state) {
     state.screen = FrontEndScreen::main_menu;
-    state.one_player = false;        // $80:AD18
-    state.local_result_seen = false; // A fresh local run uses its first-race loading timing.
+    state.one_player = false; // $80:AD18
     state.menu.selection = 0;
     state.menu.idle = first_idle;
     state.latches = {};
@@ -866,6 +868,7 @@ FrontEndContent front_end_content(const ClassicContentPack& pack) {
     content.vs_champions_header = pack.entry("front-end.vs-champions-header");
     content.vs_champions_row = pack.entry("front-end.vs-champions-row");
     content.pick_challenger_title = pack.entry("front-end.pick-challenger-title");
+    content.vs_rematch_text = pack.optional_entry("front-end.vs-rematch-text"); // v38
     load_options_content(content, pack);
     content.result_icons = pack.entry("front-end.result-icons");
     content.lap_result_text = pack.entry("front-end.lap-result-text");
@@ -1150,6 +1153,7 @@ void dispatch_front_end_screen(FrontEndState& state, const FrontEndContent& cont
     case FrontEndScreen::local_continue: local_continue_frame(state, content, physical); break;
     case FrontEndScreen::vs_champions_entry: vs_champions_entry_frame(state, content); break;
     case FrontEndScreen::vs_champions: vs_champions_frame(state, content, physical); break;
+    case FrontEndScreen::vs_rematch: vs_rematch_frame(state, content, physical); break;
     case FrontEndScreen::options_entry: options_entry_frame(state, content); break;
     case FrontEndScreen::options_return: options_return_frame(state, content); break;
     case FrontEndScreen::options_menu: options_menu_frame(state, content, physical); break;

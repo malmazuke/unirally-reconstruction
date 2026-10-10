@@ -378,7 +378,7 @@ void show_next_player_announcement(ZoomZooState& state, const MovementContent& c
         }
         // The original tallies every race's tricks; only a stunt event's result reads them.
         if (scenario.stunt_event)
-            tally_stunt_trick(state.stunt, content.rotation_class[event - 1], paid);
+            tally_stunt_trick(state.stunt.tallies, content.rotation_class[event - 1], paid);
     }
     queue.cooldown = announcements.hints_active ? hint_display : display_updates(queue);
     announcements.empty_display = 0;
