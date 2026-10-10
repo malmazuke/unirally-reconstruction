@@ -553,6 +553,8 @@ def round_rom() -> bytes:
         0x87, 0x80,              # 8002 STA [$80]        resolved store to $7E:0063: the later write
         0xE6, 0x63,              # 8004 INC $63          16-bit RMW of the pointer (resolve_rmw)
         0x87, 0x63,              # 8006 STA [$63]        store through the pointer
+        0xEE, 0x00, 0x30,        # 8008 INC $3000        RMW of a work RAM code byte (its value unknown without resolve_rmw)
+        0x87, 0x90,              # 800B STA [$90]        store through a second pointer
     ])
     rom[0:len(prog)] = prog
     return bytes(rom)
@@ -618,12 +620,59 @@ class ResolutionRoundTests(unittest.TestCase):
     def test_a_discarded_round_leaves_no_register_store(self) -> None:
         # STA [$63] goes to $00:420B in the first round (end-of-frame pointer) and to $00:1000 at the store.
         program = [(0x8006, {"a": 0x01, "p": 0x20}), (0x8002, {"a": 0x420B})]
-        doc = run_rounds(program, {0x63: bytes([0x00, 0x10, 0x00]), 0x80: bytes([0x63, 0x00, 0x7E])},
-                         {0x63: bytes([0x0B, 0x42, 0x00]), 0x80: bytes([0x63, 0x00, 0x7E])})
+        images = ({0x63: bytes([0x00, 0x10, 0x00]), 0x80: bytes([0x63, 0x00, 0x7E])},
+                  {0x63: bytes([0x0B, 0x42, 0x00]), 0x80: bytes([0x63, 0x00, 0x7E])})
+        doc = run_rounds(program, *images)
         self.assertEqual(doc["dma_log"], [])
         rows = {(r["pc"], r["kind"], r["address"]): r for r in acmd.access_rows(doc)}
         self.assertEqual(rows[(0x8006, "write", 0x001000)]["values"], [0x01])
         self.assertNotIn((0x8006, "write", 0x00420B), rows)
+        self.assertEqual(doc["residual"]["unresolved_stores"], 0)
+        # Dropped after one round, the store leaves nothing and counts as an unresolved store.
+        with unittest.mock.patch.object(derive, "MAX_RESOLVE_ROUNDS", 1):
+            doc = run_rounds(program, *images)
+        self.assertEqual(doc["dma_log"], [])
+        self.assertFalse([r for r in acmd.access_rows(doc) if r["pc"] == 0x8006 and r["kind"] == "write"])
+        self.assertEqual(doc["residual"]["unresolved_store_pcs"], [[0x8006, 1]])
+
+    def test_a_chain_settles_in_three_rounds(self) -> None:
+        # STA [$80] (seq 2) writes the pointer STA [$90] (seq 1) used, so the first round sends that store to
+        # $7E:0063 (the end-of-frame pointer) and the second round reads LDA [$63] (seq 0) through it ($01:9000).
+        # The second round sends the store to $7E:0070, its pointer at the store; the third reads $01:8000.
+        program = [(0x8000, {}), (0x800B, {"a": 0x9000}), (0x8002, {"a": 0x0063})]
+        doc = run_rounds(program, {0x63: bytes([0x00, 0x80, 0x01]), 0x80: bytes([0x90, 0x00, 0x7E]), 0x90: bytes([0x70, 0x00, 0x7E])},
+                         {0x63: bytes([0x00, 0x80, 0x01]), 0x80: bytes([0x90, 0x00, 0x7E]), 0x90: bytes([0x63, 0x00, 0x7E]),
+                          0x70: bytes([0x00, 0x90])})
+        self.assertEqual(doc["rom_read_ranges"], [[0x8000, 2]])
+        self.assertEqual(doc["resolution_rounds"], [[3, 1]])
+        self.assertEqual((doc["per_frame_unresolved"], doc["resolutions_dropped"]), ([0], 0))
+        rows = {(r["pc"], r["kind"], r["address"]): r for r in acmd.access_rows(doc)}
+        self.assertIn((0x800B, "write", 0x7E0070), rows)
+        self.assertNotIn((0x800B, "write", 0x7E0063), rows)
+
+    def test_an_unresolved_opcode_byte_is_read(self) -> None:
+        # PR #74 review finding 1. INC $3000 leaves the work RAM code's opcode byte unknown (no resolve_rmw);
+        # STA [$80] then stores LDA long's opcode there before the code runs, so the code resolves in a second round.
+        program = [(0x8008, {"p": 0x20}), (0x8002, {"a": 0xAF, "p": 0x20}), (0x7E3000, {"p": 0x20})]
+        images = {0x80: bytes([0x00, 0x30, 0x7E]), 0x3001: bytes([0x00, 0x80, 0x01])}
+        doc = run_rounds(program, images, {**images, 0x3000: bytes([0xAF])})
+        self.assertEqual(doc["rom_read_ranges"], [[0x8000, 1]])
+        self.assertEqual(doc["resolution_rounds"], [[2, 1]])
+        self.assertEqual(doc["per_frame_unresolved"], [0])
+
+    def test_an_indirect_access_of_dropped_work_ram_code_is_dropped(self) -> None:
+        # Work RAM code (seq 0) is rewritten by STA [$80] (seq 1): the first round decodes the end-of-frame bytes
+        # LDA [$63] ($01:9000), the second the start-of-frame bytes LDA [$66] ($01:8000).
+        program = [(0x7E3000, {}), (0x8002, {"a": 0x63A7})]
+        common = {0x63: bytes([0x00, 0x90, 0x01, 0x00, 0x80, 0x01]), 0x80: bytes([0x00, 0x30, 0x7E])}
+        images = ({**common, 0x3000: bytes([0xA7, 0x66])}, {**common, 0x3000: bytes([0xA7, 0x63])})
+        doc = run_rounds(program, *images)
+        self.assertEqual(doc["rom_read_ranges"], [[0x8000, 2]])
+        self.assertEqual(doc["resolution_rounds"], [[2, 1]])
+        with unittest.mock.patch.object(derive, "MAX_RESOLVE_ROUNDS", 1):
+            doc = run_rounds(program, *images)
+        self.assertEqual(doc["rom_read_ranges"], [])                 # the code is dropped, and its LDA [$63] with it
+        self.assertEqual(doc["resolutions_dropped"], 2)
 
     def test_an_rmw_of_a_resolved_store_settles(self) -> None:
         # PR #71 review finding 4: STA [$80] stores $9000 to the pointer, INC $63 makes it $9001, LDA [$63] reads $01:9001.

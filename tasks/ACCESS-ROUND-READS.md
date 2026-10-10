@@ -43,8 +43,8 @@ Out of scope: what a resolution cannot see (writes through unresolved pointers, 
   accesses make. After the last round, `drain_frame` passes the kept round's kept resolutions
   through `_record` once. A round discarded for a conflict, or a resolution `_drop_conflicting`
   drops, now leaves no ROM read (`rom_reads`, `rom_bitmap`), stored value, label, register shadow,
-  DMA log or watch log entry, and the work RAM code's unresolved count is taken from the kept round
-  only (it was counted once per round).
+  DMA log or watch log entry. (The internal count of unresolved work RAM code, which is not in the
+  document, is also taken from the kept round only.)
 - **A round is stable when it reproduces its inputs** (decision, recorded here). Before, a frame
   stayed in conflict while any resolved write touched a byte some resolution read, even when the
   next round resolved it consistently, so every such frame ran to `MAX_RESOLVE_ROUNDS` and dropped
@@ -57,14 +57,18 @@ Out of scope: what a resolution cannot see (writes through unresolved pointers, 
   to `$01:9001`, its value at the load.
 - **An indirect access of resolved work RAM code** counts the code's bytes as read, so it is
   dropped with the code.
+- **Review round 1** (`gh pr review` comment on #74 of `071886d`): a work RAM code entry whose
+  opcode byte is unresolved now counts that byte as read, so a later round's write to it makes the
+  round unstable (before, the round could be kept with the access unresolved); a dropped resolved
+  store now counts in `unresolved_stores`, like a store through an unresolved pointer.
 - **`resolution_rounds`** in the access record: frames by the rounds they took (additive field,
   schema version unchanged). The store-list part of `_record` is now the module function
   `append_writes`, shared with the rounds.
 
 ## Results
 
-- **Tests** (`tests/tooling/test_access.py`, `ResolutionRoundTests`, 6 new; commit `f295cb6`
-  adds them before the fix, where all six fail):
+- **Tests** (`tests/tooling/test_access.py`, `ResolutionRoundTests`, 9 new; commit `f295cb6`
+  adds the first six before the fix, where all six fail):
   - the task's case: `LDA [$63]` before `STA [$80]` writes the pointer. The first round takes the
     end-of-frame pointer `$01:9000`; the record kept it beside the correct `$01:8000` (before:
     `rom_read_ranges` `[[0x8000, 2], [0x9000, 2]]` and the load dropped). After: `[[0x8000, 2]]`,
@@ -74,7 +78,12 @@ Out of scope: what a resolution cannot see (writes through unresolved pointers, 
   - a discarded round's store through a pointer to `$00:420B` leaves no DMA log entry and no row;
   - the review's reproduction with `--resolve-rmw`: reads `$01:9001` only; dropped, it reads
     nothing (before: both `$01:8001` and `$01:9001`);
-  - frames without a conflict take one round.
+  - frames without a conflict take one round;
+  - review round 1 adds: a chain of two resolved stores that settles in three rounds; an
+    unresolved opcode byte that a resolved store fills (fails before the round-1 fix: the access
+    stayed unresolved); work RAM code rewritten later in the frame, whose `LDA [dp]` must drop
+    with the code when one round is allowed (fails if the code's bytes are left out of the
+    child's read set); the dropped store counting as unresolved (fails before the round-1 fix).
 - `python3 -m unittest discover -s tests/tooling -t tests/tooling`: 569 tests OK (two need the
   checkout's `artifacts/` directory to exist).
 - **Corpus re-measure** (`local/evidence/access-round-reads/`, tools at `d5e24cc`
@@ -87,7 +96,9 @@ Out of scope: what a resolution cannot see (writes through unresolved pointers, 
   - `aggregate.py` with R-0093's inputs (profile v36 rules from `6b6790a`) writes
     `aggregate.json` and `aggregate.out` byte-identical to R-0093's: 1,562,774 of 2,097,152 ROM
     bytes read (CPU 904,803, DMA 678,967, HDMA 22,748), 1,551,791 of 1,966,080 in the data banks.
-  - **Difference: none.** The leak needed a multi-round frame, and the corpus has none. R-0093's
+  - The review round 1 changes act only on frames with an unresolved work RAM opcode or a dropped
+  resolution; the corpus has neither (0 unresolved accesses, 0 drops), so the re-measure stands.
+- **Difference: none.** The leak needed a multi-round frame, and the corpus has none. R-0093's
     note on the leak now says so.
 
 ## Reproduction
@@ -109,5 +120,9 @@ cmp local/evidence/access-round-reads/aggregate.json local/evidence/data-coverag
 
 - A corpus frame that exercises the multi-round path: none exists, so the new round logic is
   checked by the synthetic tests only.
+- Older than this task (review round 1, finding 4): resolved register stores reach the register
+  shadow after all of the frame's direct stores, so a DMA enable stored through a resolved pointer
+  logs the frame's last channel parameters, not those at its store. The corpus effect is not
+  measured; offered as a separate task.
 - What resolution cannot see stays as R-0093 states: writes through unresolved pointers, DMA into
   work RAM, and HDMA tables in work RAM.

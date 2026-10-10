@@ -482,6 +482,7 @@ class AccessDrain:
             pc = ent[0]
             mode = (4 if ent[8] else 0) | (2 if ent[7] & 0x20 else 0) | (1 if ent[7] & 0x10 else 0)
             woff = wram_offset(pc)
+            touched.add(woff)    # read even when unresolved: a later round's write may resolve it
             opcode, worst = resolver.byte(woff, seq)
             if opcode is None:
                 unresolved += 1
@@ -542,7 +543,9 @@ class AccessDrain:
                 "unresolved": unresolved, "unresolved_store_pcs": unresolved_store_pcs, "wram_code_unresolved": wram_code_unresolved}
 
     def _drop_conflicting(self, rnd: dict[str, Any], conflict: set[int]) -> None:
-        """Drop every resolution that read a byte whose resolved writes were still changing."""
+        """Drop every resolution that read a byte whose resolved writes were still changing.
+
+        A dropped store counts as an unresolved store, like a store through an unresolved pointer."""
         keep: list[tuple] = []
         dropped = 0
         for res in rnd["resolved"]:
@@ -550,6 +553,8 @@ class AccessDrain:
                 dropped += 1
                 pc, addressing, _lab = rnd["labels"][res[1]]
                 rnd["labels"][res[1]] = (pc, addressing, 3)
+                if any(acc[0] in _WRITE_KINDS for acc, _rmw in res[7]):
+                    rnd["unresolved_store_pcs"][pc] += 1    # a dropped store could have hit any byte
                 continue
             keep.append(res)
         rnd["resolved"] = keep
