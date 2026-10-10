@@ -156,7 +156,7 @@ class FrontendLaunchTests(unittest.TestCase):
         with mock.patch.object(commands, "ROOT", self.root):
             default = commands.default_pack_path(rules)
             self.assertEqual(default.parent, local.resolve())
-            self.assertIn("tracks-v37", default.name)
+            self.assertIn("tracks-v38", default.name)
             report = self.root / "none.json"
             self.assertEqual(commands.cmd_run(self.args(pack=None, rules=str(rules_path), report=str(report))),
                              EXIT_MISSING_PREREQUISITE)

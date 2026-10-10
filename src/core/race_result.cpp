@@ -87,13 +87,25 @@ void restore_menus(FrontEndState& state) { // $83:987D
 
 namespace {
 
-// $80:9A50-9A79 on the return: a quit (0xEA61, the pause menu's) scores nothing and gives the
-// opponent a point (and a MEGA x1 trick, only a second player's tally shows). A race's totals
-// are not changed; only a stunt event reads the scores.
+// $80:9A50-9AA4 on the return: a quit (0xEA61, the pause menu's) scores nothing and gives the
+// other rider a point and a MEGA x1 trick (its count and points words each one more): the
+// player's quit (`$80:9A5B-9A79`) rider 1, and pad 2's quit in a two-human race
+// (`$80:9A86-9AA4`, R-0095) the player. A race's totals are not changed; only a stunt event
+// reads the scores and tallies.
 void apply_quit_scores(RaceTimes& times) {
-    if (times.player_total != quit) return;
-    times.player_score = 0;
-    ++times.opponent_score;
+    const auto give_point = [](std::uint16_t& score, TrickTally& mega_x1) {
+        ++score;
+        ++mega_x1.shown;
+        ++mega_x1.points;
+    };
+    if (times.player_total == quit) {
+        times.player_score = 0;
+        give_point(times.opponent_score, times.opponent_tallies[trick_family::mega][0]);
+    }
+    if (times.opponent_total == quit) {
+        times.opponent_score = 0;
+        give_point(times.player_score, times.player_tallies[trick_family::mega][0]);
+    }
 }
 
 // $80:A09A: forced blank, the logo's slide flag cleared, NMI off, the early loads.
@@ -226,10 +238,12 @@ void print_result(FrontEndState& state, const FrontEndContent& content) {
     if (state.now_playing.opponent < someone)
         print_text(state.text, state.printer, content.result_fifth_row, content.character_table,
                    &variables);
-    // A computer opponent has no row: its 2P mark goes (`$80:D0FE`).
-    high_bits(state, 108) = four_hidden;
-    if (state.now_playing.opponent >= someone)
+    // A computer opponent has no row: its 2P mark goes (`$80:D0EF-D108`); a human's stays, with
+    // the fifth row's icon (entry 108) shown (R-0095).
+    if (state.now_playing.opponent >= someone) {
+        high_bits(state, 108) = four_hidden;
         for (const unsigned entry : {101U, 103U}) oam_byte(state, entry, 1) = off_screen_line;
+    }
     high_bits(state, 100) = four_shown;
 }
 
@@ -396,6 +410,32 @@ void update_records(FrontEndState& state) {
     // A placed time's checksums run `$80:C786` past its frame's end, so the scoring waits a frame
     // more (R-0060).
     state.race_result.record_placed = placed;
+}
+
+// $83:9229-92CB, a VS result's counts (`$80:C04A`, before the statistics; R-0095): a race for
+// both riders, then a win and a win today for the winner: in a race the lower total, in a stunt
+// event the higher score, and for both riders on a tie. The riders are `$77:0748` and `$77:0749`
+// & 15.
+void count_versus_result(FrontEndState& state) {
+    auto& records = state.records;
+    constexpr unsigned rider_bits = 0x0f;
+    const unsigned rider = state.rider_menu.rider & rider_bits;
+    const unsigned opponent = state.now_playing.opponent & rider_bits;
+    ++records.versus_races[rider];
+    ++records.versus_races[opponent];
+    const auto& times = state.race_result.times;
+    const auto win = [&](unsigned who) { // $83:92B0
+        ++records.versus_today[who];
+        ++records.versus_wins[who];
+    };
+    // $83:925E-9276, unsigned compares.
+    const bool stunt = times.stunt_event;
+    const bool tie = stunt ? times.player_score == times.opponent_score
+                           : times.player_total == times.opponent_total;
+    const bool player_ahead = stunt ? times.player_score > times.opponent_score
+                                    : times.player_total < times.opponent_total;
+    if (player_ahead || tie) win(rider);
+    if (!player_ahead) win(opponent);
 }
 
 // $83:88D3-88DD and `$83:88E1-88F6`, the win test by race mode: a race is won with a total
@@ -623,21 +663,32 @@ void race_result_exit_frame(FrontEndState& state, const FrontEndContent& content
         load_object_palette(state, content);
         load_cgram(state, asset(content, menu_text_palette), 0xd0);
         state.registers.obsel = 0x63;
+        if (state.mode == FrontEndMode::versus && versus_tie(state.race_result.times)) {
+            enter_vs_rematch(state, content);
+            return;
+        }
+        if (state.mode == FrontEndMode::versus) count_versus_result(state);
         update_records(state);
-        if (state.mode != FrontEndMode::one_player) state.local_result_seen = true;
         if (state.mode == FrontEndMode::one_player) state.records.tries = 3;
-        return;
     }
+    // VS CHAMPIONS (`$80:F8E7`, from $80:C051) starts in the frame the records end, and 2P's
+    // continuation (`$80:ADE3`, from $80:BD98) prints after that frame's wait (R-0095).
+    if (frame + 1 == result_scoring_frame(state)) {
+        if (state.mode == FrontEndMode::versus) {
+            enter_vs_champions(state, content);
+            return;
+        }
+        if (state.mode == FrontEndMode::two_player) {
+            enter_local_continue(state);
+            return;
+        }
+    }
+    if (frame == 1) return;
     if (frame < scoring) return; // `$80:C786`'s overrun: no wait, no OAM copy
     copy_oam(state);
     if (state.mode != FrontEndMode::one_player) {
         if (frame == scoring) {
-            if (state.mode == FrontEndMode::league)
-                finish_league_pair(state, content);
-            else if (state.mode == FrontEndMode::versus)
-                enter_vs_champions(state);
-            else
-                enter_local_continue(state);
+            if (state.mode == FrontEndMode::league) finish_league_pair(state, content);
         }
         return;
     }
@@ -713,9 +764,9 @@ constexpr std::size_t classic_race_tracks =
 // from NOW PLAYING (`six-quits[-tN]`): frames from the choice frame (the fade's last) to the
 // race sound session's first FF request (`$83:CA72`'s `JSL $82:807E`), indexed by track.
 constexpr std::array<std::uint8_t, classic_race_tracks> race_sound_load_offsets{
-     42,  90,  49, 117,  97,  90,  88,  50, 110,  73, 131,  81,  57,  90,  55,
-    102,  96,  44,  85,  94,  73,  81,  44,  84,  80,  93,  83,  58,  94,  68,
-     89,  95,  48,  87,  71, 110,  66,  47,  82,  94, 142,  69,  77,  91,  71,
+    42,  90, 49, 117, 97, 90,  88, 50, 110, 73, 131, 81, 57, 90, 55,
+    102, 96, 44, 85,  94, 73,  81, 44, 84,  80, 93,  83, 58, 94, 68,
+    89,  95, 48, 87,  71, 110, 66, 47, 82,  94, 142, 69, 77, 91, 71,
 };
 // The frames from that request to the race's first update, by track and song counter. The
 // session uploads the driver, the tables, the song and the samples in one piece of CPU work, and
@@ -724,57 +775,26 @@ constexpr std::array<std::uint8_t, classic_race_tracks> race_sound_load_offsets{
 // variation decide it; counters 0 and 3 both play resource 64.
 constexpr std::array<std::array<std::uint8_t, race_song_count>, classic_race_tracks>
     race_sound_upload_frame_table{{
-        {79, 80, 79, 79, 81, 79},
-        {79, 80, 79, 79, 81, 79},
-        {79, 80, 79, 79, 80, 79},
-        {79, 80, 79, 79, 81, 79},
-        {80, 81, 80, 80, 81, 79},
-        {80, 81, 80, 80, 81, 79},
-        {79, 80, 79, 79, 80, 79},
-        {79, 80, 79, 79, 80, 79},
-        {80, 81, 79, 80, 81, 79},
-        {80, 81, 79, 80, 81, 79},
-        {79, 80, 79, 79, 80, 79},
-        {80, 81, 80, 80, 81, 79},
-        {79, 80, 79, 79, 80, 79},
-        {80, 81, 80, 80, 81, 79},
-        {80, 80, 79, 80, 81, 79},
-        {80, 81, 80, 80, 81, 79},
-        {79, 80, 79, 79, 80, 79},
-        {79, 80, 79, 79, 80, 79},
-        {80, 80, 79, 80, 81, 79},
-        {79, 80, 79, 80, 81, 79},
-        {80, 81, 79, 80, 81, 79},
-        {79, 80, 79, 79, 80, 78},
-        {80, 81, 80, 80, 81, 79},
-        {80, 81, 80, 80, 81, 79},
-        {80, 81, 80, 80, 81, 79},
-        {80, 80, 79, 79, 81, 79},
-        {79, 80, 79, 79, 81, 79},
-        {80, 81, 80, 80, 81, 79},
-        {80, 81, 80, 80, 81, 79},
-        {79, 80, 79, 79, 80, 78},
-        {79, 80, 79, 79, 80, 79},
-        {80, 81, 80, 80, 81, 79},
-        {79, 80, 79, 79, 80, 79},
-        {79, 80, 79, 79, 80, 79},
-        {79, 80, 79, 79, 80, 79},
-        {80, 81, 79, 80, 81, 79},
-        {80, 81, 80, 80, 81, 79},
-        {79, 80, 79, 79, 80, 79},
-        {80, 81, 80, 80, 81, 79},
-        {80, 81, 80, 80, 81, 79},
-        {80, 81, 80, 80, 81, 79},
-        {80, 80, 79, 80, 81, 79},
-        {80, 81, 80, 80, 81, 79},
-        {80, 80, 79, 80, 81, 79},
-        {80, 81, 79, 80, 81, 79},
+        {79, 80, 79, 79, 81, 79}, {79, 80, 79, 79, 81, 79}, {79, 80, 79, 79, 80, 79},
+        {79, 80, 79, 79, 81, 79}, {80, 81, 80, 80, 81, 79}, {80, 81, 80, 80, 81, 79},
+        {79, 80, 79, 79, 80, 79}, {79, 80, 79, 79, 80, 79}, {80, 81, 79, 80, 81, 79},
+        {80, 81, 79, 80, 81, 79}, {79, 80, 79, 79, 80, 79}, {80, 81, 80, 80, 81, 79},
+        {79, 80, 79, 79, 80, 79}, {80, 81, 80, 80, 81, 79}, {80, 80, 79, 80, 81, 79},
+        {80, 81, 80, 80, 81, 79}, {79, 80, 79, 79, 80, 79}, {79, 80, 79, 79, 80, 79},
+        {80, 80, 79, 80, 81, 79}, {79, 80, 79, 80, 81, 79}, {80, 81, 79, 80, 81, 79},
+        {79, 80, 79, 79, 80, 78}, {80, 81, 80, 80, 81, 79}, {80, 81, 80, 80, 81, 79},
+        {80, 81, 80, 80, 81, 79}, {80, 80, 79, 79, 81, 79}, {79, 80, 79, 79, 81, 79},
+        {80, 81, 80, 80, 81, 79}, {80, 81, 80, 80, 81, 79}, {79, 80, 79, 79, 80, 78},
+        {79, 80, 79, 79, 80, 79}, {80, 81, 80, 80, 81, 79}, {79, 80, 79, 79, 80, 79},
+        {79, 80, 79, 79, 80, 79}, {79, 80, 79, 79, 80, 79}, {80, 81, 79, 80, 81, 79},
+        {80, 81, 80, 80, 81, 79}, {79, 80, 79, 79, 80, 79}, {80, 81, 80, 80, 81, 79},
+        {80, 81, 80, 80, 81, 79}, {80, 81, 80, 80, 81, 79}, {80, 80, 79, 80, 81, 79},
+        {80, 81, 80, 80, 81, 79}, {80, 80, 79, 80, 81, 79}, {80, 81, 79, 80, 81, 79},
     }};
 // The frames the start's countdown cue (`$82:D84A`) runs before the request.
 constexpr std::array<std::uint8_t, classic_race_tracks> race_start_cue_leads{
-    6, 6, 6, 6, 5, 5, 6, 6, 6, 6, 6, 5, 6, 5, 6,
-    5, 6, 6, 6, 6, 6, 6, 5, 5, 5, 6, 6, 5, 5, 6,
-    6, 5, 6, 6, 6, 6, 5, 6, 5, 5, 5, 6, 5, 6, 6,
+    6, 6, 6, 6, 5, 5, 6, 6, 6, 6, 6, 5, 6, 5, 6, 5, 6, 6, 6, 6, 6, 6, 5,
+    5, 5, 6, 6, 5, 5, 6, 6, 5, 6, 6, 6, 6, 5, 6, 5, 5, 5, 6, 5, 6, 6,
 };
 std::uint32_t race_sound_load_offset(ClassicRaceTrack track) {
     return track.index < race_sound_load_offsets.size() ? race_sound_load_offsets[track.index] : 0;
@@ -792,9 +812,9 @@ RaceSoundLoadTiming race_sound_load_timing(ClassicRaceTrack track, std::uint8_t 
     if (track.index >= race_start_cue_leads.size()) return {};
     return {race_sound_upload_frames(track, song_counter), race_start_cue_leads[track.index]};
 }
-// The local and league modes' loading (R-0057, R-0058, R-0071, R-0073), measured on their own
-// paths before the song table: DRAGSTER's and ZOOM ZOO's are the song-62 values, the others the
-// songs their captures played. Those modes do not track the song counter yet (R-0077).
+// The races' loading before the song table (R-0057, R-0058, R-0071, R-0073), measured on their
+// own paths: DRAGSTER's and ZOOM ZOO's are the song-62 values, the others the songs their captures
+// played. Only a caller without the menus' song counter takes them.
 std::uint32_t race_loading_frames(ClassicRaceTrack track) {
     if (track == ClassicRaceTrack::Dragster) return 121;
     if (track == ClassicRaceTrack::ZoomZoo) return 169;
@@ -816,20 +836,17 @@ void choose_race_song(FrontEndState& state) {
 
 std::uint32_t race_loading_frames(const FrontEndState& state) {
     const auto track = ClassicRaceTrack{state.tour_menu.track};
-    // A one-player race's loading follows its song (R-0077); the local modes keep the
-    // measurements of R-0071 and R-0073 below.
-    if (state.mode == FrontEndMode::one_player) return race_loading_frames(track, state.race_song);
-    const auto ordinary = race_loading_frames(track);
-    // The resumed odd-member DRAGSTER initializes at 11627 in organic-three-clean (R-0073).
-    if (state.local_result_seen && state.mode == FrontEndMode::league && state.second_rider >= 16
-        && track == ClassicRaceTrack::Dragster)
-        return ordinary - 1;
-    // The measured cold local ZOOM ZOO entry uses 169 frames. After a local
-    // DRAGSTER result, NEXT TRACK reaches the same countdown one frame earlier.
-    if (state.local_result_seen && state.mode != FrontEndMode::one_player
-        && track == ClassicRaceTrack::ZoomZoo)
-        return ordinary - 1;
-    return ordinary;
+    // Every race from the menus loads by its song (R-0077), the two-human and league races too:
+    // the table gives R-0071's and R-0073's measured lengths at the counts their races ran with
+    // (DRAGSTER's 121 at 1, ZOOM ZOO's 169 at 1 and 168 after a first race, BOWL's 127 at 3), and
+    // R-0095's two-human restart (DRAGSTER at 2: 120) and BOWL first (128).
+    switch (state.mode) {
+    case FrontEndMode::one_player:
+    case FrontEndMode::two_player:
+    case FrontEndMode::versus:
+    case FrontEndMode::league: return race_loading_frames(track, state.race_song);
+    default: return race_loading_frames(track);
+    }
 }
 
 RaceTimes race_times(const ZoomZooState& race) {
@@ -849,20 +866,13 @@ RaceTimes race_times(const ZoomZooState& race) {
     }
     result.tutorial_hints_over = race.player_announcements.hints_active == 0;
     result.opponent_tutorial_hints_over = !race.opponent_hints.active;
-    // A stunt event's scores ($77:07BB, $77:0825) and the player's tallies (R-0066).
+    // A stunt event's scores ($77:07BB, $77:0825) and both riders' tallies (R-0066, R-0095).
     result.stunt_event = classic_race_scenario(race.track).stunt_event;
     if (result.stunt_event) {
         result.player_score = race.player_announcements.queue.feature_total;
         result.opponent_score = race.movement.rewards.feature_total;
         result.player_tallies = race.stunt.tallies;
-        if (race.league_statistics.enabled)
-            for (unsigned row = 0; row < trick_family::count; ++row)
-                for (unsigned column = 0; column < trick_family::columns; ++column) {
-                    const auto cell = row * trick_family::columns + column;
-                    result.opponent_tallies[row][column] = {
-                        race.league_statistics.tricks[1][cell],
-                        race.league_statistics.opponent_points[cell]};
-                }
+        result.opponent_tallies = race.stunt.opponent_tallies;
     }
     return result;
 }

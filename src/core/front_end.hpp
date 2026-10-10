@@ -44,6 +44,8 @@ struct FrontEndContent {
     std::span<const std::uint8_t> result_fifth_row; // $80:D1DB, human opponent (R-0071)
     std::span<const std::uint8_t> local_continue_text, vs_champions_header, vs_champions_row,
         pick_challenger_title;
+    // $80:C120: a VS tie's REMATCH (profile v38, R-0095).
+    std::span<const std::uint8_t> vs_rematch_text;
     // OPTIONS and RECORDS' five original text streams and per-row arrow columns (R-0072).
     std::span<const std::uint8_t> options_menu_text, options_arrow_columns;
     std::span<const std::uint8_t> records_menu_text, records_arrow_columns;
@@ -156,16 +158,22 @@ struct MenuLatches {
 enum class RiderMenuPurpose : std::uint8_t { normal, rename_player, define_player, league_members };
 
 struct RiderMenu {
-    std::uint8_t rider{};       // $017D: the rider chosen last; the arrow starts on it
-    std::uint8_t row{};         // $000E
-    std::uint16_t intro{};      // $0076: the uni's build-up, picture intro / 2; 0 once it loops
-    std::uint8_t idle_step{};   // $0190: the loop's step, 39 down to 0
-    std::uint16_t picture{};    // the uni picture built for the next frame ($83:8E3A)
-    bool back{};                // left with Y or X rather than chosen
-    bool returning{};           // entered back from PICK TOUR ($00AC != 2): slides back in
-    bool second{};              // 2P/VS: port 2 chooses a distinct second rider (R-0071)
-    bool challenger{};          // VS: port 1 reselects the first rider after champions
-    RiderMenuPurpose purpose{}; // OPTIONS reuses the picker for an existing player
+    std::uint8_t rider{};     // $017D: the rider chosen last; the arrow starts on it
+    std::uint8_t row{};       // $000E
+    std::uint16_t intro{};    // $0076: the uni's build-up, picture intro / 2; 0 once it loops
+    std::uint8_t idle_step{}; // $0190: the loop's step, 39 down to 0
+    std::uint16_t picture{};  // the uni picture built for the next frame ($83:8E3A)
+    bool back{};              // left with Y or X rather than chosen
+    bool returning{};         // entered back from PICK TOUR ($00AC != 2): slides back in
+    bool second{};            // 2P/VS: port 2 chooses a distinct second rider (R-0071)
+    // `$005A` is `$00AA`, the shown half: after 2P's or VS's first pick the second title is
+    // printed in place and the loop's text goes to the half on screen (R-0095).
+    bool text_to_shown{};
+    // VS after the champions (`$80:C054-C0C2`, R-0095): the race's loser picks a challenger into
+    // its own slot, with its own pad (`$83:952E`/`$83:9543`); the winner cannot be picked.
+    bool challenger{};
+    bool challenger_for_rider_one{}; // the player won: pad 2 picks rider 1 (`$017F`)
+    RiderMenuPurpose purpose{};      // OPTIONS reuses the picker for an existing player
 };
 
 // $80:A1F2-A529: the shared four-row name keyboard. Offsets are signed pixel steps;
@@ -238,6 +246,14 @@ struct OnePlayerRecords {
     // $77:0230 + 8 * rider: races, wins, losses without a time, stunt points. Sixteen riders; a
     // computer opponent keeps none (`$77:02B0` is their checksum, `$83:90F4`).
     std::array<std::array<std::uint16_t, 4>, 16> statistics{};
+    // VS (R-0095): races `$77:0380 + 4 * rider` and wins `$77:0382 + 4 * rider`, which every VS
+    // result counts (`$83:9229`), and today's wins `$77:0400 + 2 * rider`, which every boot
+    // clears (`$83:8B23`); VS CHAMPIONS ranks and shows them. Defining a player clears its own
+    // (`$83:9BE1-9BF9`).
+    std::array<std::uint16_t, 16> versus_races{}, versus_wins{}, versus_today{};
+    // $77:10F9 and $77:10FB: the races and wins VS CHAMPIONS last took a percentage from
+    // (`$80:F974-F986`, `$83:9D80`), as they were left halved.
+    std::uint16_t versus_percentage_races{}, versus_percentage_wins{};
     std::uint16_t player_wins{};   // $77:10A9: the player's wins; 2P's NOW PLAYING prints both
     std::uint16_t opponent_wins{}; // $77:10AB: a rider opponent's wins
     bool race_lost{};              // $77:0742 bit 12: the last race was lost
@@ -377,16 +393,19 @@ struct HunterEnding {
 
 // The stunt result's tally (`$80:F669-F813`), column by column (x1 to x4): each pass raises every
 // row's shown count by one towards its tally; a pass that raises none adds the column's points to
-// the total. Each pass waits 7 frames and each column's total 13, less after a press.
+// the total. Each pass waits 7 frames and each column's total 13, less after a press. The player's
+// tally runs first; with two humans rider 1's runs after it, three columns to the right
+// (`$80:F283-F2A4`, R-0095).
 struct StuntTally {
+    std::uint8_t rider{};  // whose tally: 0 the player's (X = 0), 1 rider 1's (X = 0x6A)
     std::uint8_t column{}; // 3 - `$0076`: 0-3 (x1-x4), 4 once all are added
     std::array<std::uint16_t, trick_family::count> shown{}; // $00B2-$00BA, by row
-    std::array<std::uint16_t, trick_family::count> second_shown{};
-    std::uint16_t second_total{};
-    std::uint16_t total{};          // $00C0: the columns added so far
+    std::uint16_t total{};                                  // $00C0: the columns added so far
     std::uint8_t frames_waited{};   // frames since the last pass (or column total)
     bool column_total_shown{};      // the wait is the column total's (`$80:F7B9`), not a pass's
     std::uint32_t finished_frame{}; // the script frame the last column's wait ended, 0 before
+    std::uint16_t pads{};           // pad 1's word as `$80:D1EC` last read it (`$0072`)
+    std::uint16_t second_pads{};    // pad 2's (`$0074`)
 };
 
 // The result screen (`$80:951C`): the one-run result (`$80:CE90`) and its waits for a press, the
@@ -505,6 +524,7 @@ enum class FrontEndScreen : std::uint8_t {
     wipe_ram_warning,       // $80:AA38-AA62: Select+Y+A wipes, most other buttons cancel
     wipe_ram_answer,        // the wipe, then its message or "nothing done", and a press
     credits_picture,        // $83:FAE0: a first rider named "credits": the picture, then a restart
+    vs_rematch,             // $80:C02C: a VS tie, REMATCH and a press, then NOW PLAYING again
 };
 
 // What `$83:9894` saves before a race (work RAM `$0000-$019D`) and `$83:987D` puts back after
@@ -570,6 +590,11 @@ struct FrontEndState {
     std::array<std::uint8_t, 256> options_upper_palette{}; // pre-picker CGRAM colours $80-$FF
     bool options_palette_saved{};
     std::uint8_t second_rider{}; // $017F, second human chosen by port 2 (R-0071)
+    // $77:0742 bits 9 and 10, the menus' pad gate: the pad tests (`$80:B6D3-B82B`) skip pad 1
+    // while bit 9 is set and pad 2 while bit 10 is. A VS challenger's pick leaves only the
+    // picking pad (`$83:952E`, `$83:9543`) through the continuation, which then lets both in again
+    // (`$83:9558`, $80:C0E0). Native follows it on those screens (R-0095).
+    bool pad_one_ignored{}, pad_two_ignored{};
     OnePlayerRecords records = cold_start_records();
     TourMenu tour_menu{};
     TrackMenu track_menu{};
@@ -596,7 +621,6 @@ struct FrontEndState {
     // This frame's sound queue work in program order, ending with its `$80:FADF` frame wait
     // (AUDIO-FIRST-RACE, R-0076); each update starts it empty, the caller hands it on.
     AudioCueList sound_cues;
-    bool local_result_seen{}; // a local result has returned in this session (R-0071)
     // The song counter value the race now loading or last loaded plays (`race_song_resource`):
     // the records' counter after its increment on the race's start (R-0077).
     std::uint8_t race_song{};

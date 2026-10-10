@@ -28,6 +28,7 @@ LEAGUE_ENTRIES = 9
 V34_ENTRIES = 561  # the whole v34 inventory, before v35's pause messages
 V35_ENTRIES = 562  # the whole v35 inventory, before v36's WIPE RAM text
 V36_ENTRIES = 565  # the whole v36 inventory, before v37's name cheats
+V37_ENTRIES = 569  # the whole v37 inventory, before v38's REMATCH
 
 
 def through_league(rules: dict) -> list[dict]:
@@ -693,7 +694,7 @@ class AudioEntryTests(unittest.TestCase):
         encoded = json.dumps(previous, sort_keys=True, separators=(",", ":")).encode()
         self.assertEqual(hashlib.sha256(encoded).hexdigest(),
                          "e94689508901fecd9644443a3e1803f8cf23411c0edfc41735a00c860e7fccac")
-        added = rules["entries"][V36_ENTRIES:]
+        added = rules["entries"][V36_ENTRIES:V37_ENTRIES]
         # $83:FB56-FB89, the name cheats' strings, then assets 0xBF-0xC1, the credits
         # picture (R-0094).
         self.assertEqual([(e["id"], e["size"]) for e in added],
@@ -704,6 +705,28 @@ class AudioEntryTests(unittest.TestCase):
             {"file_offset": 0x1FB56, "length": 52}]})
         source = (ROOT / "src/core/content_pack.cpp").read_text(encoding="utf-8")
         table = source[source.index("credits_name_required{{"):]
+        table = table[:table.index("}};")]
+        compiled = re.findall(r'\{"([^"]+)",\s*(\d+),\s*"([0-9a-f]{64})"\}', table)
+        self.assertEqual(compiled, [(e["id"], str(e["size"]), e["sha256"]) for e in added])
+
+    def test_vs_rematch_preserves_v37_inventory(self) -> None:
+        import hashlib
+        import re
+        rules = json.loads((ROOT / "tests/manifests/content/classic-crawler-tracks-pack.json")
+                           .read_text(encoding="utf-8"))
+        previous = rules["entries"][:V37_ENTRIES]
+        encoded = json.dumps(previous, sort_keys=True, separators=(",", ":")).encode()
+        self.assertEqual(hashlib.sha256(encoded).hexdigest(),
+                         "effb7714ee1fc6c7a655d07d21b19db9c2afbc0aa49a5ef9b8494ceaf6a522e7")
+        added = rules["entries"][V37_ENTRIES:]
+        # $80:C120, a VS tie's REMATCH (R-0095).
+        self.assertEqual([(e["id"], e["size"], e["source"]) for e in added],
+                         [("front-end.vs-rematch-text", 10,
+                           {"kind": "raw", "pieces": [{"file_offset": 0x4120, "length": 10}]})])
+        self.assertEqual([table[0] for table in front_end_rules.VS_REMATCH_TABLES],
+                         ["front-end.vs-rematch-text"])
+        source = (ROOT / "src/core/content_pack.cpp").read_text(encoding="utf-8")
+        table = source[source.index("two_human_stunts_required{{"):]
         table = table[:table.index("}};")]
         compiled = re.findall(r'\{"([^"]+)",\s*(\d+),\s*"([0-9a-f]{64})"\}', table)
         self.assertEqual(compiled, [(e["id"], str(e["size"]), e["sha256"]) for e in added])

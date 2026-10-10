@@ -519,17 +519,26 @@ void main_menu_tests() {
           idle.screen == unirally::FrontEndScreen::race && idle.frame == 1449);
 }
 
+// R-0095: the two-human and league races load by their song as one-player races do; the table
+// gives the lengths R-0071 and R-0073 measured at the counts their races ran with.
 void new_local_run_loading_tests() {
   auto state = unirally::start_front_end();
   state.mode = unirally::FrontEndMode::two_player;
   state.tour_menu.track = unirally::ClassicRaceTrack::ZoomZoo.index;
+  state.race_song = 1;
   require(unirally::race_loading_frames(state) == 169);
-  state.local_result_seen = true;
+  state.race_song = 2; // NEXT TRACK after a first race
   require(unirally::race_loading_frames(state) == 168);
-  unirally::front_end_screens::start_main_menu(state);
-  require(!state.local_result_seen);
   state.mode = unirally::FrontEndMode::versus;
-  require(unirally::race_loading_frames(state) == 169);
+  state.tour_menu.track = unirally::ClassicRaceTrack::Dragster.index;
+  require(unirally::race_loading_frames(state) == 120); // a restart's second race
+  state.race_song = 1;
+  require(unirally::race_loading_frames(state) == 121);
+  state.mode = unirally::FrontEndMode::league;
+  state.tour_menu.track = 2; // BOWL
+  require(unirally::race_loading_frames(state) == 128);
+  state.race_song = 3;
+  require(unirally::race_loading_frames(state) == 127);
 }
 
 void rider_menu_tests() {
@@ -1725,6 +1734,157 @@ void stunt_result_tests() {
   require(run_to(completes, content, FrontEndScreen::tour_award, {}, 4));
 }
 
+// R-0095: a stunt event with two humans. The result runs a frame earlier (no 1P dashes to
+// print), the player's tally, then rider 1's three columns right with its own best; then 2P's
+// continuation, or VS's counts, CHAMPIONS and the loser's challenger; a VS tie's REMATCH.
+unirally::RaceTimes two_human_stunt_times(std::uint16_t player, std::uint16_t opponent) {
+  auto times = stunt_times(player);
+  times.opponent_score = opponent;
+  times.opponent_tallies[2][0] = {1, 8}; // TWST x1 once for 8
+  return times;
+}
+
+unirally::FrontEndState two_human_stunt(const unirally::FrontEndContent &content,
+                                        unirally::FrontEndMode mode, std::uint16_t player,
+                                        std::uint16_t opponent) {
+  using unirally::FrontEndScreen;
+  auto state = unirally::start_front_end();
+  run(state, content, 430);
+  require(run_to(state, content, FrontEndScreen::rider_menu, {0x1000, 0}));
+  require(run_to(state, content, FrontEndScreen::tour_menu, {0x8000, 0}));
+  require(run_to(state, content, FrontEndScreen::track_menu, {0x1000, 0}));
+  require(run_to(state, content, FrontEndScreen::now_playing, {0x1000, 0}));
+  require(run_to(state, content, FrontEndScreen::race, {0x1000, 0}));
+  state.mode = mode;
+  state.one_player = false;
+  state.second_rider = 2;
+  state.tour_menu.track = state.saved.tour_menu.track = 2;
+  state.now_playing.opponent = state.saved.now_playing.opponent = 2;
+  unirally::return_from_race(state, content, 5000, two_human_stunt_times(player, opponent));
+  require(run_to(state, content, FrontEndScreen::stunt_result, {}, 104));
+  return state;
+}
+
+// Runs to the result's waits and leaves it with A on two frames.
+void leave_stunt_result(unirally::FrontEndState &state, const unirally::FrontEndContent &content) {
+  run(state, content, 400);
+  require(state.screen == unirally::FrontEndScreen::stunt_result);
+  run(state, content, 2, {0x0080, 0});
+  require(state.screen == unirally::FrontEndScreen::race_result_exit);
+}
+
+// The local modes' streams (profile v27) and REMATCH (v38), one letter each.
+void add_local_mode_text(unirally::FrontEndContent &content,
+                         std::vector<std::vector<std::uint8_t>> &storage) {
+  storage.push_back({'A', 0xff, 'A', 0xff, 'A', 0xff, 'A', 0xff, 'A', 0xff});
+  content.local_continue_text = storage.back();
+  storage.push_back({0xfc, 0x02, 'A', 0xff});
+  content.vs_champions_header = content.pick_challenger_title = storage.back();
+  storage.push_back({0xfe, 0x02, 0x08, 'A', 0xff});
+  content.vs_champions_row = storage.back();
+  storage.push_back({0xfc, 0x0d, 'A', 0xff});
+  content.vs_rematch_text = storage.back();
+}
+
+void two_human_stunt_tests() {
+  using unirally::FrontEndMode;
+  using unirally::FrontEndScreen;
+  std::vector<std::vector<std::uint8_t>> storage;
+  auto content = synthetic_content(storage);
+  storage.push_back({60, 0, 130, 0, 250, 0});
+  content.qualifying_scores = storage.back();
+  add_local_mode_text(content, storage);
+  auto twop = two_human_stunt(content, FrontEndMode::two_player, 49, 8);
+  const auto &tally = twop.race_result.tally;
+  // The tally's first pass in the ninth frame, the fade's last.
+  run(twop, content, 8);
+  require(twop.registers.brightness == 12 && tally.shown[0] == 0);
+  run(twop, content, 1);
+  require(twop.registers.brightness == 14 && tally.rider == 0 && tally.shown[0] == 1);
+  // The player's tally takes the 1P result's 80 frames; then its best, and rider 1's tally's
+  // first pass a frame later: TWST x1.
+  run(twop, content, 80);
+  require(tally.rider == 0 && tally.finished_frame == 89 && twop.records.best[2] == 0);
+  run(twop, content, 1);
+  require(twop.records.best[2] == 49);
+  run(twop, content, 1);
+  require(tally.rider == 1 && tally.column == 0 && tally.shown[2] == 1 && tally.total == 0);
+  // Its best is rider 2's (`$77:0829 + 2 x (50 x 2 + 2)`), its markers 97 and 99.
+  while (twop.race_result.tally.finished_frame == 0) run(twop, content, 1);
+  require(tally.total == 8 && twop.records.best[102] == 0);
+  run(twop, content, 1);
+  require(twop.records.best[102] == 8 && (twop.oam_buffer[512 + 24] & 0xcc) == 0);
+  leave_stunt_result(twop, content);
+  require(run_to(twop, content, FrontEndScreen::local_continue_entry, {}, 4));
+  const auto &records = twop.records;
+  require(records.statistics[0][0] == 1 && records.statistics[0][1] == 1 &&
+          records.statistics[0][3] == 49 && records.statistics[2][0] == 1 &&
+          records.statistics[2][1] == 0 && records.statistics[2][3] == 8 &&
+          records.record_times[0][2] == 49 && records.record_holders[0][2] == 0 &&
+          records.record_times[1][2] == 8 && records.record_holders[1][2] == 2 &&
+          records.versus_races[0] == 0);
+  // VS: the counts by `$83:9229`, CHAMPIONS (the header, then a row a frame from the frame
+  // after it), a press on two frames, and the loser's (rider 1's) pick on pad 2.
+  auto vs = two_human_stunt(content, FrontEndMode::versus, 49, 8);
+  leave_stunt_result(vs, content);
+  require(run_to(vs, content, FrontEndScreen::vs_champions_entry, {}, 4));
+  require(vs.records.versus_races[0] == 1 && vs.records.versus_races[2] == 1 &&
+          vs.records.versus_wins[0] == 1 && vs.records.versus_today[0] == 1 &&
+          vs.records.versus_wins[2] == 0);
+  require(run_to(vs, content, FrontEndScreen::vs_champions, {}, 200));
+  // The last row with a win left its words (`$77:10F9`, `$77:10FB`): MIKE's 1 of 1.
+  require(vs.records.versus_percentage_wins == 1 && vs.records.versus_percentage_races == 0);
+  run(vs, content, 1, {0x1000, 0});
+  require(vs.screen == FrontEndScreen::vs_champions);
+  run(vs, content, 1, {0x1000, 0});
+  require(vs.screen == FrontEndScreen::rider_menu_entry && vs.rider_menu.challenger &&
+          vs.rider_menu.challenger_for_rider_one && vs.pad_one_ignored &&
+          !vs.pad_two_ignored);
+  require(run_to(vs, content, FrontEndScreen::rider_menu, {}, 100));
+  // Pad 1 is not the loser's; pad 2's pick of the winner, MIKE, is refused.
+  run(vs, content, 2, {0x1000, 0});
+  require(vs.screen == FrontEndScreen::rider_menu);
+  run(vs, content, 2, {0, 0x1000});
+  require(vs.screen == FrontEndScreen::rider_menu);
+  run(vs, content, 1, {0, 0x0100});
+  run(vs, content, 1);
+  run(vs, content, 1, {0, 0x1000});
+  require(vs.screen == FrontEndScreen::rider_menu_exit && vs.second_rider != 0 &&
+          vs.second_rider == vs.menu.selection && vs.rider_menu.rider == 0);
+  // A tie counts nothing: REMATCH, then NOW PLAYING after a release and a press.
+  auto tie = two_human_stunt(content, FrontEndMode::versus, 8, 8);
+  leave_stunt_result(tie, content);
+  require(run_to(tie, content, FrontEndScreen::vs_rematch, {}, 4));
+  require(tie.records.versus_races[0] == 0 && tie.records.statistics[0][0] == 0 &&
+          tie.records.record_times[0][2] == 0);
+  run(tie, content, 3);
+  run(tie, content, 1, {0x0080, 0});
+  require(tie.screen == FrontEndScreen::vs_rematch);
+  run(tie, content, 1, {0x0080, 0});
+  require(tie.screen == FrontEndScreen::now_playing_entry);
+}
+
+// R-0095: VS CHAMPIONS' order (`$80:F02B`): most wins today first, the riders without a win
+// after them; a percentage halves wins of 655 and more with the races (`$83:9D80`).
+void versus_ranking_tests() {
+  std::vector<std::vector<std::uint8_t>> storage;
+  auto content = synthetic_content(storage);
+  add_local_mode_text(content, storage);
+  auto state = unirally::start_front_end();
+  run(state, content, 430);
+  state.records.versus_today[5] = 3;
+  state.records.versus_today[9] = 3;
+  state.records.versus_today[2] = 7;
+  state.records.versus_races[2] = 1000;
+  state.records.versus_wins[2] = 700;
+  state.mode = unirally::FrontEndMode::versus;
+  unirally::front_end_screens::enter_vs_champions(state, content);
+  state.script_frame = 0; // as the frame that enters it leaves it
+  run(state, content, 2);
+  require(state.records.versus_percentage_races == 500 &&
+          state.records.versus_percentage_wins == 350);
+}
+
 // SAVE-FILES (R-0090): a cold start leaves the signed image; power-on with it
 // keeps its records and skips the wipe's three frames; an image without the
 // signature is wiped.
@@ -2011,6 +2171,8 @@ int main() try {
   one_player_setup_tests();
   race_result_tests();
   stunt_result_tests();
+  two_human_stunt_tests();
+  versus_ranking_tests();
   lap_result_tests();
   award_tests();
   ending_tests();

@@ -315,6 +315,14 @@ void tour_menu_entry_frame(FrontEndState& state, const FrontEndContent& content)
             menu.revealing = true;
             return;
         }
+        // $80:E5A5-E5AD: only one-player play shows the medals (`$80:974B`); with two humans the
+        // menu's loop starts in the slide's last frame (R-0095).
+        if (!state.one_player) {
+            menu.cursor = menu.tour;
+            aim_tour_arrow(state, content);
+            state.screen = FrontEndScreen::tour_menu;
+            return;
+        }
         show_medal_entries(state);
         return;
     }

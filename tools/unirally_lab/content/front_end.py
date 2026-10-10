@@ -389,3 +389,15 @@ def v37_new_entries(rom: bytes) -> list[dict[str, Any]]:
     entries = [table_entry(rom, *table) for table in CREDITS_NAME_TABLES]
     return entries + [_raw(f"front-end.asset.{asset:03d}", rom, [_asset_piece(rom, asset)])
                       for asset in CREDITS_NAME_ASSETS]
+
+
+# Profile v38 (TWO-HUMAN-STUNTS, R-0095): a VS race or stunt event that ends in a tie
+# (`$83:99C2`) counts nothing and prints REMATCH (`$80:C120`, `$80:C02C`) before NOW PLAYING.
+VS_REMATCH_TABLES = (
+    ("front-end.vs-rematch-text", 0x80C120, None),
+)
+
+
+def v38_new_entries(rom: bytes) -> list[dict[str, Any]]:
+    """A VS tie's REMATCH (R-0095)."""
+    return [table_entry(rom, *table) for table in VS_REMATCH_TABLES]

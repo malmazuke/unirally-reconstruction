@@ -38,6 +38,12 @@ inline constexpr std::uint8_t someone = 0x10;
 // arrow on the sound upload's last frame and `$80:D20E`'s first, then from the OAM copy on
 // (the restore frame).
 inline constexpr std::uint32_t upload_last_frame = 74, menu_screen_frame = 75, restore_frame = 101;
+// The podium's way back (R-0095): left on the podium's phase 2 or 3 (`$82:DF06`), its arrow turns
+// and comes back a frame later than on phase 0 or 1. Measured on four podium presses a frame
+// apart (organic-cycle-five and its podium-press variants) and organic-full-tour-turnaround.
+inline bool podium_arrow_late(const FrontEndState& state) {
+    return (state.league.podium_phase & 2U) != 0;
+}
 // The result screen's third frame, its tail (`$80:9579`); after a lap result's second frame's
 // overrun it starts without a frame wait.
 inline constexpr std::uint32_t result_tail_frame = 3;
@@ -94,9 +100,14 @@ std::uint8_t best_medal(const FrontEndState& state);
 std::uint16_t tour_qualifying_score(const FrontEndState& state, const FrontEndContent& content);
 // $80:F53F: the logo held up.
 void raise_logo(FrontEndState& state);
-// A stunt result's third frame (R-0067): its streams' printing ran past the second frame's end,
-// so the text's upload starts without a frame wait.
+// A stunt result's third frame (R-0067): in one-player play its streams' printing ran past the
+// second frame's end, so the text's upload starts without a frame wait. Without the 1P dashes
+// (`$80:F3E0`) the printing ends inside the second frame, which then shows the text, and the
+// result runs a frame earlier from there (R-0095).
 inline constexpr std::uint32_t stunt_text_frame = 3;
+inline bool stunt_text_runs_over(const FrontEndState& state) {
+    return state.one_player;
+}
 
 // $83:A721 after the award: the menus' registers, colours, VRAM, text and objects as `$80:D20E`
 // leaves them, without its reset of the menus' words; the logo held up; NMI on.
@@ -159,7 +170,7 @@ void start_silent_slide(FrontEndState& state, const FrontEndContent& content, bo
 // (command 2) on the sound queue (R-0076): the result's, a choice's, the slides' and a move's.
 // `refused` is $80:B0FA, a move's cue from its own helper, played where a choice is turned down:
 // an empty name, a league of fewer than two or more than eight. The original also plays it when
-// the champion is picked as challenger ($80:C0B1-C0BB); native does not refuse that pick.
+// the champion is picked as challenger ($80:C0B1-C0BB).
 enum class MenuSound : std::uint8_t {
     result,
     select,
@@ -188,7 +199,15 @@ void enter_vs_challenger(FrontEndState& state);
 void enter_local_continue(FrontEndState& state);
 void local_continue_entry_frame(FrontEndState& state, const FrontEndContent& content);
 void local_continue_frame(FrontEndState& state, const FrontEndContent& content, FrontEndPads pads);
-void enter_vs_champions(FrontEndState& state);
+void enter_vs_champions(FrontEndState& state, const FrontEndContent& content);
+// $83:99C2 (`$80:C026`): a VS race whose totals, or stunt event whose scores, are equal is no
+// contest: it counts nothing and shows REMATCH (`$80:C02C`).
+bool versus_tie(const RaceTimes& times);
+void enter_vs_rematch(FrontEndState& state, const FrontEndContent& content);
+void vs_rematch_frame(FrontEndState& state, const FrontEndContent& content, FrontEndPads pads);
+// VS CHAMPIONS' first frame after its header (R-0095): the header's printing ran into it, so it
+// starts without a frame wait.
+inline constexpr std::uint32_t champions_overrun_frame = 1;
 void vs_champions_entry_frame(FrontEndState& state, const FrontEndContent& content);
 void vs_champions_frame(FrontEndState& state, const FrontEndContent& content, FrontEndPads pads);
 
