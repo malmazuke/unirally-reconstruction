@@ -1,5 +1,14 @@
 # Next session
 
+**11 October 2026: EVIDENCE-RETENTION frees 88 GiB of disk (131 GB of files) under [D-0011](../docs/decisions/D-0011-evidence-retention.md).**
+On the user's instruction, captures that no current gate, in-flight task, recently merged task
+or tool reference reads are deleted, and their recipes are kept: manifests, capture scripts,
+settings, digests, and every file under 1 MiB. 2,594 files in 75 folders went. The 26
+gate-read folders, the protected folders and 32 folders without a recognisable recipe stay. A
+capture a record cites can be regenerated from its recipe and checked against its digests.
+[GATES-AGAINST-MAIN](GATES-AGAINST-MAIN.md) is queued (tier 1) to compare changes against accepted native code
+rather than stored captures of the original. See [EVIDENCE-RETENTION](EVIDENCE-RETENTION.md).
+
 **10 October 2026: CREDITS-NAME is accepted (tier 1, #70) and integrated by merge commit.**
 The two rider-name cheats are native. Rename rider 0 "credits" and the next race shows the
 original's 500-frame credits picture and ends as a restart; rename it "faedine" and the next

@@ -95,6 +95,8 @@ The coordinator maintains the status registry below. Work orders further below d
 | CREDITS-NAME | accepted (tier 1, #70): the rider-name cheats "credits" and "faedine" (R-0094); pack v37 | [The rider-name cheats](CREDITS-NAME.md) |
 | SPLIT-HUNTER-PICTURES | queued (tier 2) by CREDITS-NAME (R-0094): HUNTER's effects in a two-view race's picture | [HUNTER's effects in a split picture](SPLIT-HUNTER-PICTURES.md) |
 | DATA-COVERAGE | accepted (tier 2, #71): which ROM data the original reads over R-0089's corpus, the two asset directories, what native does not extract, and the static map regenerated from the corpus (R-0093) | [Which data the original reads](DATA-COVERAGE.md) |
+| EVIDENCE-RETENTION | done (tier 3): historical captures deleted, recipes kept (D-0011); 131 GB of files, 88 GiB of disk freed | [Delete historical captures, keep their recipes](EVIDENCE-RETENTION.md) |
+| GATES-AGAINST-MAIN | queued (tier 1) by EVIDENCE-RETENTION: compare changes against accepted native code, regenerate the original's captures on demand | [Check changes against accepted native code](GATES-AGAINST-MAIN.md) |
 | LEAGUE | reviewed and integrated by PR #48 (tier 1): first CRAWLER tournament, six-slot scoring projection and continuation; closeout in main artifacts | [Native league tournament](LEAGUE.md) |
 | STUNT-EVENTS | fulfilled by #39/#40/#42; tier-3 queue reconciliation in AUDIO-DECISION, no new gameplay domain | [The delivered stunt outcome](STUNT-EVENTS.md) |
 | AUDIO-DECISION | PR #49, tier 3: native audio architecture, cold callback observations and first capability task; integration in its closeout | [Choose the native audio path and its evidence](AUDIO-DECISION.md) |
