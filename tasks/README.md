@@ -89,7 +89,7 @@ The coordinator maintains the status registry below. Work orders further below d
 | COVERAGE-GAPS | accepted (tier 3, #66): coverage of the captured corpus, what native lacks, and the queue toward it (R-0089) | [What the original still does that native does not](COVERAGE-GAPS.md) |
 | SAVE-FILES | accepted (tier 1, #67): the cartridge RAM as the original's image, `--save-file` between app runs (R-0090) | [The cartridge RAM saved between app runs](SAVE-FILES.md) |
 | MODE-AUDIO | accepted (tier 1, #68): native audio through 2P, VS, league and OPTIONS (R-0091); the idle demos split off as DEMO-AUDIO | [Native audio in the other modes](MODE-AUDIO.md) |
-| DEMO-AUDIO | queued (tier 1) by MODE-AUDIO (R-0091): the idle demos' sound (title set loads, the demo races' cues); the app stops its audio at the first demo | [The idle demos' sound](DEMO-AUDIO.md) |
+| DEMO-AUDIO | claimed 11 October 2026 (tier 1); queued by MODE-AUDIO (R-0091): the idle demos' sound (title set loads, the demo races' cues); the app stops its audio at the first demo | [The idle demos' sound](DEMO-AUDIO.md) |
 | MENU-INPUT | queued (tier 1) by MODE-AUDIO (R-0091): menu input read from the listing and not native (keyboard Start and auto-repeat, the league picker's buttons, VS refusing the champion, the continuation menu's wrap) | [Menu input the listing shows](MENU-INPUT.md) |
 | WIPE-RAM | accepted (tier 1, #69): the main menu's hidden WIPE RAM menu, its warning and the factory reset (R-0092); pack v36 | [The hidden WIPE RAM menu](WIPE-RAM.md) |
 | CREDITS-NAME | accepted (tier 1, #70): the rider-name cheats "credits" and "faedine" (R-0094); pack v37 | [The rider-name cheats](CREDITS-NAME.md) |

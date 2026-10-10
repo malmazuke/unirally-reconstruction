@@ -2,7 +2,14 @@
 
 ## Assignment
 
-- Status: **queued** 10 October 2026 by [MODE-AUDIO](MODE-AUDIO.md) (R-0091). Unclaimed.
+- Status: **claimed** 11 October 2026 on main `2c42589` by the session that ran DATA-COVERAGE and
+  EVIDENCE-RETENTION (Claude Code desktop app, Claude Opus 5.5 `claude-opus-5-5`; coordinator and
+  integrator; a worker subagent implements). Queued 10 October by [MODE-AUDIO](MODE-AUDIO.md)
+  (R-0091). Weekly usage at claim 42%.
+- Branch `task/demo-audio` in `.worktrees/demo-audio`; evidence in main `local/evidence/demo-audio/`.
+  Research record R-0096; pack profile v39 (agreed with the TWO-HUMAN-STUNTS session, which takes v38).
+- Parallel work (agreed 11 October): TWO-HUMAN-STUNTS changes no audio file; its `content_pack.cpp`
+  change will need a small rebase. Heavy runs take `local/locks/heavy-run.sh`.
 - Milestone: M4 (original game coverage).
 - Review tier: **1** (the demo's sound cues and the app's audio producer, D-0010).
 - Dependencies: MODE-AUDIO (R-0091), IDLE-DEMO-ROTATION (R-0087), AUDIO-ONE-PLAYER (R-0077).
