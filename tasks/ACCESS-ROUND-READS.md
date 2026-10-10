@@ -3,8 +3,8 @@
 ## Assignment
 
 - Status: **in review** (tier 2). Claimed 10 October 2026 08:10 UTC at the user's request, on
-  `task/data-coverage` `fefe661` (PR #71, DATA-COVERAGE, open and approved at claim). The branch
-  moves onto main once #71 merges. Weekly usage at claim 31% (5-hour window 66%).
+  `task/data-coverage` `fefe661` (PR #71, DATA-COVERAGE, open and approved at claim). #71 merged
+  at that head (main `2b1bd99`), and the branch was rebased onto it. Weekly usage at claim 31% (5-hour window 66%).
 - Worker: Claude Code desktop app, Claude Opus 5.5 (`claude-opus-5-5`); coordinator, primary and
   integrator. Branch `task/access-round-reads` in `.claude/worktrees/competent-albattani-fce0d6`.
 - Milestone: M4 (original game coverage), laboratory tooling.
@@ -63,7 +63,7 @@ Out of scope: what a resolution cannot see (writes through unresolved pointers, 
 
 ## Results
 
-- **Tests** (`tests/tooling/test_access.py`, `ResolutionRoundTests`, 6 new; commit `9565249`
+- **Tests** (`tests/tooling/test_access.py`, `ResolutionRoundTests`, 6 new; commit `f295cb6`
   adds them before the fix, where all six fail):
   - the task's case: `LDA [$63]` before `STA [$80]` writes the pointer. The first round takes the
     end-of-frame pointer `$01:9000`; the record kept it beside the correct `$01:8000` (before:
@@ -77,7 +77,8 @@ Out of scope: what a resolution cannot see (writes through unresolved pointers, 
   - frames without a conflict take one round.
 - `python3 -m unittest discover -s tests/tooling -t tests/tooling`: 569 tests OK (two need the
   checkout's `artifacts/` directory to exist).
-- **Corpus re-measure** (`local/evidence/access-round-reads/`, tools at `d2692bb`, R-0089's
+- **Corpus re-measure** (`local/evidence/access-round-reads/`, tools at `d5e24cc`
+  (run as `d2692bb` before the rebase; `tools/` and `tests/` identical), R-0089's
   manifests, 10 jobs under `heavy-run.sh`, 09:56-11:09 UTC):
   - 236 runs kept (004 fails by design; 103-106 kept under `followup.sh`'s rule), 1,666,993 frames;
   - **frames that needed more than one round: 0.** Every frame resolved in one round, with 0
