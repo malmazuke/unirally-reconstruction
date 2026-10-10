@@ -8,44 +8,45 @@ Each routine and label cited by native code names its native symbols (`native`),
 
 | Bank | Observed | Inferred | Data | Unknown |
 | --- | ---: | ---: | ---: | ---: |
-| $80 | 8,394 | 3,279 | 25 | 21,070 |
-| $81 | 13,202 | 12,700 | 35 | 6,831 |
-| $82 | 13,109 | 9,504 | 0 | 10,155 |
-| $83 | 7,073 | 10,838 | 32 | 14,825 |
-| All | 41,778 | 36,321 | 92 | 52,881 |
+| $80 | 22,855 | 1,434 | 24 | 8,455 |
+| $81 | 22,785 | 3,259 | 34 | 6,690 |
+| $82 | 19,822 | 2,791 | 0 | 10,155 |
+| $83 | 21,375 | 5,253 | 16 | 6,124 |
+| All | 86,837 | 12,737 | 74 | 31,424 |
 
-The four classes partition all 131,072 bytes. **Unknown share: 40.4%** - above D-0008's one-quarter revisit trigger, so no further heuristics are added; the unknown regions are targets for dynamic capture.
+The four classes partition all 131,072 bytes. **Unknown share: 24.0%**.
 
 | Measure | Value |
 | --- | ---: |
-| Instructions from descent | 13,910 |
-| Instructions from observed | 17,569 |
-| Instructions from table | 587 |
-| Routines | 636 |
-| Routines cited by native code | 445 |
-| Routine bytes cited by native code | 55,161 |
-| Gap sweep candidate instructions | 2,746 |
-| Gap sweep candidate bytes | 6,174 |
+| Instructions from descent | 5,343 |
+| Instructions from observed | 35,735 |
+| Instructions from table | 65 |
+| Routines | 759 |
+| Routines cited by native code | 528 |
+| Routine bytes cited by native code | 69,068 |
+| Gap sweep candidate instructions | 647 |
+| Gap sweep candidate bytes | 1,341 |
 | Jump tables | 2 |
-| Mode ambiguities | 7 |
+| Mode ambiguities | 6 |
 | Conflicts | 0 |
 | Data references into code | 0 |
-| Absolute operands with unknown data bank | 4,232 |
+| Absolute operands with unknown data bank | 1,024 |
 | Descent stopped: implausible opcode | 3 |
-| Assumption used: call returns in the calling mode | 1,262 |
+| Assumption used: call returns in the calling mode | 2,454 |
 
 ## Agreement with the observations
 
 | Map | Ranges | One tiling | Several | Not fixed by tiling | Checked against sites | Disagreements |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
 | boot-start-600 | 75 | 51 | 24 | 320 | 1765 | 0 |
+| data-coverage-corpus | 592 | 355 | 237 | 8108 | 27634 | 0 |
 | race-crawler-dragster-12000-continuous-right-fields | 679 | 525 | 154 | 2003 | 14113 | 0 |
 | race-crawler-dragster-3000 | 675 | 538 | 137 | 1739 | 12988 | 0 |
 | race-crawler-zoom-zoo-3300 | 591 | 444 | 147 | 2117 | 13834 | 0 |
 
 ## Cited addresses
 
-1833 distinct code-bank ROM addresses cited by the research, task, inventory and content records (`labels.json`). By position: dat 31, loc 1023, mid 20, sub 363, unk 396 (sub routine start, loc instruction start, mid inside an instruction, dat data, unk unknown). By class: data 31, inferred 348, observed 1058, unknown 396.
+1833 distinct code-bank ROM addresses cited by the research, task, inventory and content records (`labels.json`). By position: dat 14, loc 1198, mid 28, sub 416, unk 177 (sub routine start, loc instruction start, mid inside an instruction, dat data, unk unknown). By class: data 14, inferred 58, observed 1584, unknown 177.
 
 Cited addresses in `unknown` bytes:
 
@@ -68,65 +69,23 @@ Cited addresses in `unknown` bytes:
 | $80:84CB | docs/research/R-0010-native-movement.md, tasks/NATIVE-READABILITY.md |
 | $80:84DB | docs/research/R-0010-native-movement.md |
 | $80:84EB | docs/research/R-0010-native-movement.md, docs/research/R-0045-static-code-map.md |
+| $80:84FB | docs/research/R-0010-native-movement.md |
+| $80:850B | tasks/NATIVE-READABILITY.md |
 | $80:88B2 | tasks/COVERAGE-ROADMAP.md |
 | $80:88BE | docs/research/R-0054-boot-title-main-menu.md, docs/research/R-0075-title-menu-audio.md |
-| $80:8953 | docs/research/R-0067-stunt-result.md |
-| $80:8B28 | docs/research/R-0091-mode-audio.md |
-| $80:8B3F | docs/research/R-0073-league.md |
-| $80:8CCB | docs/research/R-0067-stunt-result.md, tasks/STUNT-RESULT.md |
-| $80:8D6E | docs/research/R-0057-one-run-result.md, docs/research/R-0058-lap-result.md, tasks/FRONT-END-LAP-RESULT.md, tasks/NEXT_SESSION.md |
-| $80:8D70 | docs/research/R-0058-lap-result.md |
-| $80:8DD9 | docs/research/R-0058-lap-result.md |
-| $80:8E0D | docs/research/R-0058-lap-result.md |
-| $80:8F4C | docs/research/R-0058-lap-result.md |
-| $80:8FA8 | docs/research/R-0058-lap-result.md |
-| $80:8FFD | docs/research/R-0058-lap-result.md |
-| $80:9017 | docs/research/R-0058-lap-result.md |
-| $80:90AF | docs/research/R-0058-lap-result.md |
 | $80:910F | docs/research/R-0058-lap-result.md, tasks/FRONT-END-LAP-RESULT.md |
 | $80:918F | docs/research/R-0058-lap-result.md, tasks/FRONT-END-LAP-RESULT.md |
 | $80:91A1 | docs/research/R-0058-lap-result.md, tasks/FRONT-END-LAP-RESULT.md |
 | $80:91B9 | docs/research/R-0058-lap-result.md, tasks/FRONT-END-LAP-RESULT.md |
-| $80:93FB | tasks/COVERAGE-ROADMAP.md, tasks/SPLIT-SCREEN-RACE.md |
-| $80:942D | docs/research/R-0082-split-captions.md |
-| $80:948C | docs/research/R-0087-idle-demo-rotation.md, tasks/IDLE-DEMO-ROTATION.md |
-| $80:9491 | tasks/IDLE-DEMO-ROTATION.md |
-| $80:949C | tasks/IDLE-DEMO-ROTATION.md |
 | $80:95A5 | docs/research/R-0067-stunt-result.md |
 | $80:97DD | docs/research/R-0056-tour-track-now-playing.md |
 | $80:9801 | docs/research/R-0056-tour-track-now-playing.md |
-| $80:9AB2 | docs/research/R-0072-options.md |
-| $80:9B79 | docs/research/R-0072-options.md, tasks/LEAGUE.md |
-| $80:9BC4 | docs/research/R-0072-options.md |
-| $80:9D0B | docs/research/R-0055-rider-menu.md |
 | $80:9E0F | docs/research/R-0072-options.md |
-| $80:9E3C | docs/research/R-0073-league.md |
-| $80:9E57 | docs/research/R-0072-options.md |
-| $80:9EF7 | docs/research/R-0072-options.md |
-| $80:9F15 | docs/research/R-0091-mode-audio.md |
-| $80:9F21 | docs/research/R-0090-save-files.md |
-| $80:9F7A | docs/research/R-0091-mode-audio.md |
-| $80:A1F2 | docs/research/R-0072-options.md |
-| $80:A207 | docs/research/R-0072-options.md |
-| $80:A212 | docs/research/R-0072-options.md |
-| $80:A231 | docs/research/R-0072-options.md |
-| $80:A29B | docs/research/R-0072-options.md |
-| $80:A2BA | docs/research/R-0091-mode-audio.md |
-| $80:A2F9 | docs/research/R-0091-mode-audio.md |
-| $80:A326 | docs/research/R-0091-mode-audio.md |
-| $80:A34A | docs/research/R-0091-mode-audio.md |
-| $80:A3A0 | docs/research/R-0072-options.md |
-| $80:A416 | docs/research/R-0091-mode-audio.md |
-| $80:A420 | docs/research/R-0091-mode-audio.md |
-| $80:A449 | docs/research/R-0091-mode-audio.md |
-| $80:A493 | docs/research/R-0091-mode-audio.md |
-| $80:A495 | docs/research/R-0091-mode-audio.md |
 | $80:A4DD | docs/research/R-0072-options.md |
 | $80:A4F1 | docs/research/R-0072-options.md |
 | $80:A501 | docs/research/R-0072-options.md |
 | $80:A511 | docs/research/R-0072-options.md |
 | $80:A52A | docs/research/R-0072-options.md |
-| $80:A5B2 | docs/research/R-0073-league.md |
 | $80:A68D | docs/research/R-0073-league.md |
 | $80:A72B | docs/research/R-0055-rider-menu.md |
 | $80:A8D4 | docs/research/R-0054-boot-title-main-menu.md |
@@ -149,84 +108,18 @@ Cited addresses in `unknown` bytes:
 | $80:AB9E | docs/research/R-0092-wipe-ram.md |
 | $80:ABB9 | docs/research/R-0092-wipe-ram.md |
 | $80:AD1F | docs/research/R-0054-boot-title-main-menu.md, tasks/FRONT-END-MAIN-MENU.md |
-| $80:ADE3 | docs/research/R-0071-two-player-versus.md |
 | $80:AE3F | docs/research/R-0071-two-player-versus.md |
-| $80:AEAD | docs/research/R-0091-mode-audio.md |
-| $80:AF54 | docs/research/R-0073-league.md |
-| $80:B051 | docs/research/R-0091-mode-audio.md, tasks/MENU-INPUT.md |
-| $80:B0FA | docs/research/R-0091-mode-audio.md, tasks/MENU-INPUT.md, tasks/MODE-AUDIO.md |
 | $80:B205 | docs/research/R-0056-tour-track-now-playing.md |
 | $80:B4F6 | docs/research/R-0056-tour-track-now-playing.md |
 | $80:B50A | docs/research/R-0084-two-human-restart.md |
 | $80:B53D | docs/research/R-0056-tour-track-now-playing.md |
-| $80:B626 | docs/research/R-0072-options.md, tasks/COVERAGE-ROADMAP.md, tasks/OPTIONS.md |
-| $80:B66D | tasks/OPTIONS.md |
 | $80:B66E | docs/research/R-0072-options.md, tasks/OPTIONS.md |
 | $80:B6C2 | docs/research/R-0072-options.md |
-| $80:B8C4 | docs/research/R-0091-mode-audio.md, tasks/MENU-INPUT.md |
-| $80:B916 | docs/research/R-0091-mode-audio.md, tasks/MENU-INPUT.md |
 | $80:BCAF | docs/research/R-0055-rider-menu.md |
-| $80:BCBF | docs/research/R-0071-two-player-versus.md, tasks/COVERAGE-ROADMAP.md, tasks/NEXT_SESSION.md, tasks/TWO-PLAYER-VS.md |
-| $80:BCDB | docs/research/R-0091-mode-audio.md |
-| $80:BCEF | docs/research/R-0091-mode-audio.md |
-| $80:BCFB | docs/research/R-0071-two-player-versus.md |
-| $80:BD02 | docs/research/R-0071-two-player-versus.md, docs/research/R-0091-mode-audio.md |
-| $80:BD1C | docs/research/R-0084-two-human-restart.md |
-| $80:BD1F | docs/research/R-0057-one-run-result.md |
-| $80:BD5D | docs/research/R-0084-two-human-restart.md, tasks/TWO-HUMAN-RESTART.md |
-| $80:BD80 | docs/research/R-0084-two-human-restart.md |
-| $80:BDD4 | tasks/COVERAGE-ROADMAP.md, tasks/LEAGUE.md |
-| $80:BE3F | docs/research/R-0057-one-run-result.md |
-| $80:BE48 | docs/research/R-0079-two-pad-pause.md |
-| $80:BE76 | docs/research/R-0073-league.md |
-| $80:BEC6 | docs/research/R-0073-league.md |
-| $80:BF49 | docs/research/R-0071-two-player-versus.md, tasks/COVERAGE-ROADMAP.md, tasks/NEXT_SESSION.md, tasks/TWO-PLAYER-VS.md |
-| $80:BF5C | docs/research/R-0091-mode-audio.md |
-| $80:BF79 | docs/research/R-0091-mode-audio.md |
-| $80:BF85 | docs/research/R-0071-two-player-versus.md |
-| $80:BF8A | docs/research/R-0071-two-player-versus.md, docs/research/R-0091-mode-audio.md |
-| $80:BF94 | docs/research/R-0071-two-player-versus.md |
-| $80:BF9F | docs/research/R-0057-one-run-result.md |
-| $80:BFE0 | docs/research/R-0084-two-human-restart.md, tasks/TWO-HUMAN-RESTART.md |
-| $80:C00D | docs/research/R-0084-two-human-restart.md |
-| $80:C0B1 | docs/research/R-0091-mode-audio.md, tasks/MENU-INPUT.md |
-| $80:C0BD | docs/research/R-0091-mode-audio.md |
 | $80:C10E | docs/research/R-0071-two-player-versus.md |
-| $80:C12A | docs/research/R-0072-options.md |
-| $80:C13D | docs/research/R-0091-mode-audio.md |
 | $80:C1DE | docs/research/R-0072-options.md |
 | $80:C3DC | docs/research/R-0053-result-title-printer.md |
-| $80:C456 | docs/research/R-0056-tour-track-now-playing.md |
-| $80:C474 | docs/research/R-0067-stunt-result.md |
-| $80:C675 | docs/research/R-0072-options.md |
-| $80:C67D | docs/research/R-0072-options.md |
-| $80:C7C4 | docs/research/R-0057-one-run-result.md |
-| $80:C7EE | docs/research/R-0057-one-run-result.md |
-| $80:C800 | docs/research/R-0057-one-run-result.md |
-| $80:C81C | docs/research/R-0057-one-run-result.md |
-| $80:C82F | docs/research/R-0057-one-run-result.md |
-| $80:C850 | docs/research/R-0057-one-run-result.md |
-| $80:C868 | docs/research/R-0058-lap-result.md, tasks/FRONT-END-LAP-RESULT.md |
-| $80:C8BA | docs/research/R-0058-lap-result.md |
-| $80:C8C5 | docs/research/R-0058-lap-result.md |
-| $80:C8D0 | docs/research/R-0058-lap-result.md |
-| $80:C8E8 | docs/research/R-0058-lap-result.md, docs/research/R-0060-pause-exits.md |
-| $80:C902 | docs/research/R-0058-lap-result.md |
-| $80:C913 | docs/research/R-0058-lap-result.md |
-| $80:C932 | docs/research/R-0058-lap-result.md |
-| $80:C948 | docs/research/R-0067-stunt-result.md, tasks/STUNT-RESULT.md |
-| $80:C950 | tasks/LOCKED-TOURS.md |
-| $80:C95C | docs/research/R-0067-stunt-result.md |
-| $80:C967 | docs/research/R-0067-stunt-result.md |
-| $80:C97E | docs/research/R-0067-stunt-result.md |
-| $80:C984 | docs/research/R-0067-stunt-result.md |
-| $80:C9AB | docs/research/R-0067-stunt-result.md |
-| $80:C9D7 | docs/research/R-0057-one-run-result.md, docs/research/R-0060-pause-exits.md |
-| $80:CA74 | docs/research/R-0057-one-run-result.md, docs/research/R-0067-stunt-result.md |
-| $80:CA83 | docs/research/R-0057-one-run-result.md, docs/research/R-0067-stunt-result.md |
-| $80:CA9B | docs/research/R-0057-one-run-result.md |
-| $80:CAAA | docs/research/R-0057-one-run-result.md, docs/research/R-0067-stunt-result.md |
-| $80:CAC5 | docs/research/R-0057-one-run-result.md, docs/research/R-0067-stunt-result.md |
+| $80:C709 | docs/research/R-0046-track-breadth-matrix.md, docs/research/R-0053-result-title-printer.md, tasks/RESULT-TITLE-GLYPHS.md |
 | $80:CD47 | docs/research/R-0055-rider-menu.md |
 | $80:CD5C | docs/research/R-0055-rider-menu.md |
 | $80:CD84 | docs/research/R-0055-rider-menu.md |
@@ -236,74 +129,24 @@ Cited addresses in `unknown` bytes:
 | $80:D1DB | tasks/TWO-PLAYER-VS.md |
 | $80:D37B | docs/research/R-0055-rider-menu.md |
 | $80:D383 | docs/research/R-0054-boot-title-main-menu.md |
-| $80:D3F5 | docs/research/R-0073-league.md |
-| $80:D448 | docs/research/R-0072-options.md |
-| $80:D45B | docs/research/R-0091-mode-audio.md |
-| $80:D468 | docs/research/R-0072-options.md |
-| $80:D494 | docs/research/R-0072-options.md |
-| $80:D4BF | docs/research/R-0072-options.md |
 | $80:D4C5 | docs/research/R-0072-options.md |
-| $80:D525 | docs/research/R-0072-options.md |
-| $80:D566 | docs/research/R-0072-options.md |
-| $80:D5E6 | docs/research/R-0072-options.md, tasks/OPTIONS.md |
-| $80:D699 | docs/research/R-0072-options.md, tasks/OPTIONS.md |
-| $80:D7CD | docs/research/R-0072-options.md |
-| $80:D8C1 | docs/research/R-0072-options.md |
-| $80:D917 | docs/research/R-0072-options.md |
-| $80:D9AC | docs/research/R-0072-options.md |
-| $80:D9B7 | docs/research/R-0072-options.md |
 | $80:D9D8 | docs/research/R-0072-options.md |
-| $80:DACF | docs/research/R-0072-options.md |
-| $80:DB2B | docs/research/R-0072-options.md |
-| $80:DB4E | docs/research/R-0072-options.md |
-| $80:DB9E | docs/research/R-0072-options.md |
-| $80:DBF8 | docs/research/R-0091-mode-audio.md |
-| $80:DC05 | docs/research/R-0091-mode-audio.md |
 | $80:DDE3 | docs/research/R-0072-options.md |
-| $80:DE2E | docs/research/R-0072-options.md |
-| $80:DEB5 | docs/research/R-0072-options.md |
-| $80:DF37 | docs/research/R-0091-mode-audio.md, tasks/MENU-INPUT.md |
-| $80:DF46 | docs/research/R-0091-mode-audio.md |
-| $80:DF6C | docs/research/R-0091-mode-audio.md |
-| $80:E043 | docs/research/R-0072-options.md |
 | $80:E37B | docs/research/R-0064-hunter-ending-and-soft-reset.md |
 | $80:E3A1 | docs/research/R-0064-hunter-ending-and-soft-reset.md |
-| $80:E492 | docs/research/R-0091-mode-audio.md |
-| $80:E4C6 | docs/research/R-0091-mode-audio.md |
 | $80:E708 | docs/research/R-0056-tour-track-now-playing.md |
 | $80:E7C4 | docs/research/R-0056-tour-track-now-playing.md |
 | $80:E7FB | docs/research/R-0056-tour-track-now-playing.md |
 | $80:E80F | docs/research/R-0056-tour-track-now-playing.md |
 | $80:E824 | docs/research/R-0056-tour-track-now-playing.md |
 | $80:E82E | docs/research/R-0056-tour-track-now-playing.md |
-| $80:E83E | docs/research/R-0056-tour-track-now-playing.md |
 | $80:E842 | docs/research/R-0056-tour-track-now-playing.md |
 | $80:EA40 | docs/research/R-0056-tour-track-now-playing.md |
 | $80:EA58 | docs/research/R-0056-tour-track-now-playing.md |
 | $80:EB61 | docs/research/R-0056-tour-track-now-playing.md |
-| $80:EB76 | docs/research/R-0072-options.md |
-| $80:EB78 | docs/research/R-0091-mode-audio.md |
-| $80:EC8A | docs/research/R-0091-mode-audio.md |
-| $80:ECC4 | docs/research/R-0091-mode-audio.md |
 | $80:ECD1 | docs/research/R-0072-options.md |
 | $80:ECF7 | docs/research/R-0072-options.md |
-| $80:EEF2 | docs/research/R-0072-options.md |
 | $80:EF3D | docs/research/R-0072-options.md, tasks/OPTIONS.md |
-| $80:EF89 | docs/research/R-0072-options.md, tasks/OPTIONS.md |
-| $80:F0EE | docs/research/R-0057-one-run-result.md, docs/research/R-0058-lap-result.md, docs/research/R-0066-stunt-event-race.md, docs/research/R-0067-stunt-result.md, tasks/STUNT-RESULT.md |
-| $80:F0F3 | docs/research/R-0067-stunt-result.md |
-| $80:F0FC | docs/research/R-0067-stunt-result.md |
-| $80:F116 | docs/research/R-0067-stunt-result.md |
-| $80:F1A8 | docs/research/R-0067-stunt-result.md |
-| $80:F1F4 | docs/research/R-0067-stunt-result.md |
-| $80:F209 | docs/research/R-0067-stunt-result.md |
-| $80:F21C | docs/research/R-0067-stunt-result.md |
-| $80:F222 | docs/research/R-0067-stunt-result.md |
-| $80:F249 | docs/research/R-0067-stunt-result.md |
-| $80:F24F | docs/research/R-0067-stunt-result.md |
-| $80:F26F | docs/research/R-0067-stunt-result.md |
-| $80:F283 | docs/research/R-0067-stunt-result.md |
-| $80:F2AE | docs/research/R-0067-stunt-result.md |
 | $80:F2EA | docs/research/R-0067-stunt-result.md |
 | $80:F3E0 | docs/research/R-0067-stunt-result.md |
 | $80:F44F | docs/research/R-0067-stunt-result.md |
@@ -316,37 +159,19 @@ Cited addresses in `unknown` bytes:
 | $80:F4B4 | docs/research/R-0067-stunt-result.md |
 | $80:F4B5 | docs/research/R-0067-stunt-result.md |
 | $80:F618 | docs/research/R-0054-boot-title-main-menu.md |
-| $80:F669 | docs/research/R-0067-stunt-result.md |
-| $80:F680 | docs/research/R-0067-stunt-result.md |
-| $80:F68F | docs/research/R-0067-stunt-result.md |
-| $80:F755 | docs/research/R-0067-stunt-result.md |
-| $80:F756 | docs/research/R-0077-one-player-audio.md |
-| $80:F758 | docs/research/R-0067-stunt-result.md |
-| $80:F75D | docs/research/R-0067-stunt-result.md |
-| $80:F765 | docs/research/R-0067-stunt-result.md |
-| $80:F775 | docs/research/R-0067-stunt-result.md |
-| $80:F77F | docs/research/R-0067-stunt-result.md |
-| $80:F7A7 | docs/research/R-0077-one-player-audio.md |
-| $80:F7AD | docs/research/R-0067-stunt-result.md |
-| $80:F7C4 | docs/research/R-0067-stunt-result.md |
-| $80:F7CB | docs/research/R-0067-stunt-result.md |
 | $80:F7E7 | docs/research/R-0067-stunt-result.md |
-| $80:F7FB | docs/research/R-0067-stunt-result.md |
 | $80:F9EE | docs/research/R-0071-two-player-versus.md |
 | $80:FACD | docs/research/R-0054-boot-title-main-menu.md |
 | $80:FBC5 | docs/research/R-0054-boot-title-main-menu.md |
-| $80:FBD5 | docs/research/R-0073-league.md |
 | $80:FC2F | docs/research/R-0073-league.md |
-| $80:FC32 | docs/research/R-0073-league.md |
 | $80:FC5C | docs/research/R-0056-tour-track-now-playing.md |
 | $80:FFC0 | docs/research/R-0001-rom-identity.md, docs/research/R-0045-static-code-map.md |
 | $81:A342 | docs/research/R-0046-track-breadth-matrix.md |
 | $81:A343 | docs/research/R-0046-track-breadth-matrix.md, docs/research/R-0066-stunt-event-race.md |
 | $81:A388 | docs/research/R-0046-track-breadth-matrix.md |
-| $81:A3C7 | docs/research/R-0046-track-breadth-matrix.md |
-| $81:A406 | docs/research/R-0046-track-breadth-matrix.md |
 | $81:BA4B | docs/research/R-0008-track-decode.md, tasks/M1-03.md |
 | $81:C441 | docs/research/R-0076-first-race-audio.md |
+| $81:C493 | docs/research/R-0011-motion.md |
 | $81:C50A | docs/research/R-0011-motion.md, docs/research/R-0066-stunt-event-race.md |
 | $81:CC17 | docs/research/R-0048-race-guards.md |
 | $82:833B | docs/research/R-0036-zoom-zoo-rider-objects.md, docs/research/R-0045-static-code-map.md |
@@ -354,7 +179,7 @@ Cited addresses in `unknown` bytes:
 | $82:835B | docs/research/R-0036-zoom-zoo-rider-objects.md, docs/research/R-0045-static-code-map.md |
 | $82:9DB6 | docs/research/R-0011-motion.md, docs/research/R-0085-player-hints-and-voices.md |
 | $82:A2DB | docs/research/R-0030-zoom-zoo-native-trial.md |
-| $82:B332 | docs/content/dragster-segment.md, docs/research/R-0008-track-decode.md, docs/research/R-0046-track-breadth-matrix.md, docs/research/R-0054-boot-title-main-menu.md, docs/research/R-0089-coverage-gaps.md, tasks/M1-03.md, tasks/TRACK-BREADTH.md |
+| $82:B332 | docs/content/dragster-segment.md, docs/research/R-0008-track-decode.md, docs/research/R-0046-track-breadth-matrix.md, docs/research/R-0054-boot-title-main-menu.md, docs/research/R-0089-coverage-gaps.md, tasks/DATA-COVERAGE.md, tasks/M1-03.md, tasks/TRACK-BREADTH.md |
 | $82:B7DD | docs/content/dragster-segment.md, docs/research/R-0008-track-decode.md, docs/research/R-0021-zoom-zoo-content-contract.md, docs/research/R-0046-track-breadth-matrix.md, tasks/M1-03.md, tasks/M4-03.md |
 | $82:D4DC | docs/research/R-0061-riders-and-opponents.md, docs/research/R-0080-split-hud.md, tasks/RACE-RIDERS-OPPONENTS.md, tasks/SPLIT-HUD-GAPS.md |
 | $82:DC12 | docs/research/R-0046-track-breadth-matrix.md, tasks/TRACK-BREADTH.md |
@@ -362,87 +187,44 @@ Cited addresses in `unknown` bytes:
 | $83:800C | docs/research/R-0055-rider-menu.md |
 | $83:8535 | docs/research/R-0045-static-code-map.md, tasks/STATIC-CODE-MAP.md |
 | $83:87E9 | docs/research/R-0057-one-run-result.md |
-| $83:87F5 | docs/research/R-0065-fifth-win-completion.md |
-| $83:87FB | docs/research/R-0065-fifth-win-completion.md |
-| $83:8801 | docs/research/R-0065-fifth-win-completion.md |
-| $83:8805 | docs/research/R-0065-fifth-win-completion.md |
-| $83:8815 | docs/research/R-0065-fifth-win-completion.md |
-| $83:88D3 | docs/research/R-0058-lap-result.md, docs/research/R-0065-fifth-win-completion.md |
-| $83:88DD | docs/research/R-0065-fifth-win-completion.md |
-| $83:88E1 | docs/research/R-0065-fifth-win-completion.md, docs/research/R-0066-stunt-event-race.md, docs/research/R-0067-stunt-result.md, tasks/STUNT-RESULT.md |
-| $83:88F1 | docs/research/R-0065-fifth-win-completion.md, docs/research/R-0067-stunt-result.md |
-| $83:88F4 | docs/research/R-0067-stunt-result.md |
+| $83:88F7 | docs/research/R-0065-fifth-win-completion.md, docs/research/R-0067-stunt-result.md |
+| $83:88FD | docs/research/R-0057-one-run-result.md, docs/research/R-0059-tour-completion.md, docs/research/R-0062-gold-endings.md, tasks/FRONT-END-ENDINGS.md, tasks/FRONT-END-TOUR-END.md |
 | $83:89EF | docs/research/R-0090-save-files.md |
-| $83:8D5D | docs/research/R-0058-lap-result.md, tasks/FRONT-END-LAP-RESULT.md |
 | $83:8E1C | docs/research/R-0056-tour-track-now-playing.md |
 | $83:8E26 | docs/research/R-0056-tour-track-now-playing.md |
-| $83:8FDE | docs/research/R-0072-options.md |
-| $83:904A | docs/research/R-0038-dragster-ordinary-controls.md, docs/research/R-0058-lap-result.md, tasks/FRONT-END-LAP-RESULT.md |
-| $83:958C | docs/research/R-0073-league.md, docs/research/R-0090-save-files.md |
-| $83:95CA | docs/research/R-0073-league.md |
-| $83:98B8 | docs/research/R-0067-stunt-result.md |
 | $83:9AF9 | docs/research/R-0055-rider-menu.md |
 | $83:9B01 | docs/research/R-0055-rider-menu.md |
 | $83:9B09 | docs/research/R-0055-rider-menu.md |
 | $83:9B13 | docs/research/R-0055-rider-menu.md |
 | $83:9B27 | docs/research/R-0055-rider-menu.md, docs/research/R-0056-tour-track-now-playing.md |
-| $83:9EC8 | docs/research/R-0057-one-run-result.md, docs/research/R-0065-fifth-win-completion.md |
+| $83:9B31 | docs/research/R-0055-rider-menu.md |
 | $83:9F96 | docs/research/R-0053-result-title-printer.md, tasks/LOCKED-TOURS.md |
 | $83:9FFA | docs/research/R-0046-track-breadth-matrix.md, docs/research/R-0053-result-title-printer.md, tasks/LOCKED-TOURS.md, tasks/TRACK-BREADTH.md |
 | $83:A1B4 | docs/research/R-0056-tour-track-now-playing.md |
 | $83:A1DA | docs/research/R-0008-track-decode.md |
 | $83:A218 | docs/research/R-0066-stunt-event-race.md |
 | $83:A254 | docs/research/R-0056-tour-track-now-playing.md |
-| $83:A507 | docs/research/R-0062-gold-endings.md, docs/research/R-0077-one-player-audio.md, tasks/AUDIO-ONE-PLAYER.md |
-| $83:A575 | docs/research/R-0062-gold-endings.md |
-| $83:A9FB | docs/research/R-0075-title-menu-audio.md |
 | $83:AE01 | docs/research/R-0064-hunter-ending-and-soft-reset.md |
-| $83:B1EB | docs/research/R-0062-gold-endings.md |
-| $83:B2E9 | docs/research/R-0077-one-player-audio.md |
-| $83:B32B | docs/research/R-0077-one-player-audio.md |
-| $83:B374 | docs/research/R-0077-one-player-audio.md |
-| $83:B436 | docs/research/R-0077-one-player-audio.md |
+| $83:AE12 | docs/research/R-0064-hunter-ending-and-soft-reset.md |
+| $83:AE72 | docs/research/R-0064-hunter-ending-and-soft-reset.md |
+| $83:B120 | docs/research/R-0059-tour-completion.md |
+| $83:B129 | docs/research/R-0059-tour-completion.md |
+| $83:B142 | docs/research/R-0059-tour-completion.md |
+| $83:B1B6 | docs/research/R-0059-tour-completion.md |
 | $83:B4DF | docs/research/R-0062-gold-endings.md |
-| $83:B506 | docs/research/R-0062-gold-endings.md |
-| $83:B60C | docs/research/R-0077-one-player-audio.md |
-| $83:B63F | docs/research/R-0077-one-player-audio.md |
-| $83:B695 | docs/research/R-0077-one-player-audio.md |
-| $83:B74E | docs/research/R-0077-one-player-audio.md |
 | $83:B790 | docs/research/R-0062-gold-endings.md |
-| $83:B79C | docs/research/R-0062-gold-endings.md, docs/research/R-0077-one-player-audio.md |
-| $83:B7B1 | docs/research/R-0077-one-player-audio.md |
-| $83:B7D2 | docs/research/R-0062-gold-endings.md |
-| $83:B8CB | docs/research/R-0062-gold-endings.md |
-| $83:B8FC | docs/research/R-0077-one-player-audio.md |
-| $83:B918 | docs/research/R-0077-one-player-audio.md |
-| $83:BA10 | docs/research/R-0077-one-player-audio.md |
-| $83:BA6C | docs/research/R-0077-one-player-audio.md |
-| $83:BB2A | docs/research/R-0077-one-player-audio.md |
 | $83:BB44 | docs/research/R-0062-gold-endings.md |
-| $83:BB80 | docs/research/R-0062-gold-endings.md |
-| $83:BCFC | docs/research/R-0077-one-player-audio.md |
 | $83:BE9A | docs/research/R-0062-gold-endings.md |
-| $83:BEBA | docs/research/R-0062-gold-endings.md |
-| $83:BED0 | docs/research/R-0062-gold-endings.md |
-| $83:BFD2 | docs/research/R-0077-one-player-audio.md |
-| $83:C07C | docs/research/R-0077-one-player-audio.md |
-| $83:C0B3 | docs/research/R-0077-one-player-audio.md |
 | $83:C0F6 | docs/research/R-0062-gold-endings.md |
-| $83:C11E | docs/research/R-0062-gold-endings.md |
-| $83:C126 | docs/research/R-0062-gold-endings.md |
-| $83:C302 | docs/research/R-0077-one-player-audio.md |
-| $83:C3BB | docs/research/R-0077-one-player-audio.md |
 | $83:C458 | docs/research/R-0062-gold-endings.md |
-| $83:C49C | docs/research/R-0062-gold-endings.md |
-| $83:C5C7 | docs/research/R-0077-one-player-audio.md |
-| $83:C5DC | docs/research/R-0077-one-player-audio.md |
 | $83:C6C0 | docs/research/R-0062-gold-endings.md |
-| $83:C715 | docs/research/R-0062-gold-endings.md |
-| $83:C80C | docs/research/R-0077-one-player-audio.md |
-| $83:C825 | docs/research/R-0077-one-player-audio.md |
-| $83:C86E | docs/research/R-0077-one-player-audio.md |
 | $83:C89A | docs/research/R-0062-gold-endings.md |
 | $83:C8B3 | docs/research/R-0061-riders-and-opponents.md, tasks/RACE-RIDERS-OPPONENTS.md |
+| $83:E55C | docs/research/R-0040-dragster-window-effects.md, tasks/DRAGSTER-WINDOW-EFFECTS-review.md, tasks/DRAGSTER-WINDOW-EFFECTS.md |
+| $83:EC2E | docs/research/R-0036-zoom-zoo-rider-objects.md |
+| $83:F516 | docs/research/R-0078-pause-menu-picture.md, docs/research/R-0079-two-pad-pause.md, tasks/SPLIT-PAUSE-MENU.md |
+| $83:F616 | docs/research/R-0078-pause-menu-picture.md, tasks/CLASSIC-PAUSE-MENU.md |
+| $83:F636 | docs/research/R-0078-pause-menu-picture.md, tasks/CLASSIC-PAUSE-MENU.md |
 | $83:FBF5 | docs/research/R-0077-one-player-audio.md, tasks/AUDIO-ONE-PLAYER.md |
 | $83:FC75 | docs/research/R-0076-first-race-audio.md, docs/research/R-0077-one-player-audio.md, tasks/AUDIO-FIRST-RACE.md, tasks/AUDIO-ONE-PLAYER.md |
 | $83:FCF5 | docs/research/R-0076-first-race-audio.md, tasks/AUDIO-TITLE-MENU.md |

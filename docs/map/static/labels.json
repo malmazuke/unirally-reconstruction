@@ -303,9 +303,9 @@
  },
  {
   "address": "$80:84FB",
-  "class": "data",
-  "comment": "data",
-  "label": "dat_8084FB",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_8084FB",
   "native": [
    "src/core/track_progress.cpp:transition_table_stride"
   ],
@@ -315,9 +315,9 @@
  },
  {
   "address": "$80:850B",
-  "class": "data",
-  "comment": "data",
-  "label": "dat_80850B",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80850B",
   "native": [
    "src/core/track_progress.cpp:transition_table_stride"
   ],
@@ -467,7 +467,7 @@
  },
  {
   "address": "$80:86E9",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_8086E9",
   "source_records": [
@@ -477,7 +477,7 @@
  },
  {
   "address": "$80:86EC",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_8086EC",
   "source_records": [
@@ -486,7 +486,7 @@
  },
  {
   "address": "$80:86EF",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_8086EF",
   "source_records": [
@@ -495,7 +495,7 @@
  },
  {
   "address": "$80:86F3",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_8086F3",
   "source_records": [
@@ -505,7 +505,7 @@
  },
  {
   "address": "$80:86FA",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_8086FA",
   "source_records": [
@@ -515,7 +515,7 @@
  },
  {
   "address": "$80:86FD",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_8086FD",
   "source_records": [
@@ -524,7 +524,7 @@
  },
  {
   "address": "$80:8702",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_808702",
   "source_records": [
@@ -853,7 +853,7 @@
  },
  {
   "address": "$80:88F8",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_8088F8",
   "native": [
@@ -868,7 +868,7 @@
  },
  {
   "address": "$80:8903",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_808903",
   "native": [
@@ -884,7 +884,7 @@
  },
  {
   "address": "$80:8914",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_808914",
   "native": [
@@ -899,18 +899,18 @@
  },
  {
   "address": "$80:8953",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_808953",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_808953",
   "source_records": [
    "docs/research/R-0067-stunt-result.md"
   ]
  },
  {
   "address": "$80:8B28",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_808B28",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_808B28",
   "native": [
    "src/core/league_menu.cpp:league_awards_frame"
   ],
@@ -920,9 +920,9 @@
  },
  {
   "address": "$80:8B3F",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_808B3F",
+  "class": "observed",
+  "comment": "inside the instruction at $80:8B3E",
+  "label": "mid_808B3F",
   "native": [
    "src/core/league_menu.cpp:print_awards"
   ],
@@ -1015,9 +1015,9 @@
  },
  {
   "address": "$80:8CCB",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_808CCB",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_808CCB",
   "native": [
    "src/core/race_result.cpp:insert_stunt_record"
   ],
@@ -1028,9 +1028,9 @@
  },
  {
   "address": "$80:8D6E",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_808D6E",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_808D6E",
   "native": [
    "src/core/front_end.hpp:RaceResult",
    "src/core/lap_result.cpp:(file)",
@@ -1045,9 +1045,9 @@
  },
  {
   "address": "$80:8D70",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_808D70",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_808D70",
   "native": [
    "src/core/front_end.hpp:RaceResult",
    "src/core/lap_result.cpp:(file)",
@@ -1060,9 +1060,9 @@
  },
  {
   "address": "$80:8DD9",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_808DD9",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_808DD9",
   "native": [
    "src/core/front_end.hpp:RaceResult",
    "src/core/lap_result.cpp:(file)",
@@ -1075,9 +1075,9 @@
  },
  {
   "address": "$80:8E0D",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_808E0D",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_808E0D",
   "native": [
    "src/core/front_end.hpp:RaceResult",
    "src/core/lap_result.cpp:(file)",
@@ -1091,9 +1091,9 @@
  },
  {
   "address": "$80:8F4C",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_808F4C",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_808F4C",
   "native": [
    "src/core/front_end.hpp:RaceResult",
    "src/core/lap_result.cpp:(file)",
@@ -1106,9 +1106,9 @@
  },
  {
   "address": "$80:8FA8",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_808FA8",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_808FA8",
   "native": [
    "src/core/front_end.hpp:RaceResult",
    "src/core/lap_result.cpp:(file)",
@@ -1121,9 +1121,9 @@
  },
  {
   "address": "$80:8FFD",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_808FFD",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_808FFD",
   "native": [
    "src/core/front_end.cpp:waits_for_frame",
    "src/core/front_end.hpp:RaceResult",
@@ -1137,9 +1137,9 @@
  },
  {
   "address": "$80:9017",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_809017",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_809017",
   "native": [
    "src/core/front_end.cpp:waits_for_frame",
    "src/core/front_end.hpp:RaceResult",
@@ -1155,9 +1155,9 @@
  },
  {
   "address": "$80:90AF",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_8090AF",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_8090AF",
   "native": [
    "src/core/front_end.cpp:waits_for_frame",
    "src/core/front_end.hpp:RaceResult",
@@ -1254,7 +1254,7 @@
  },
  {
   "address": "$80:9314",
-  "class": "inferred",
+  "class": "observed",
   "comment": "routine start",
   "label": "sub_809314",
   "native": [
@@ -1334,9 +1334,9 @@
  },
  {
   "address": "$80:93FB",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_8093FB",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_8093FB",
   "source_records": [
    "tasks/COVERAGE-ROADMAP.md",
    "tasks/SPLIT-SCREEN-RACE.md"
@@ -1344,9 +1344,9 @@
  },
  {
   "address": "$80:942D",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80942D",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80942D",
   "native": [
    "src/core/presentation.cpp:render_classic_race"
   ],
@@ -1356,9 +1356,9 @@
  },
  {
   "address": "$80:948C",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80948C",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80948C",
   "source_records": [
    "docs/research/R-0087-idle-demo-rotation.md",
    "tasks/IDLE-DEMO-ROTATION.md"
@@ -1366,9 +1366,9 @@
  },
  {
   "address": "$80:9491",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_809491",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_809491",
   "native": [
    "src/core/front_end.cpp:choose_idle_demo"
   ],
@@ -1378,9 +1378,9 @@
  },
  {
   "address": "$80:949C",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80949C",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80949C",
   "native": [
    "src/core/front_end.cpp:choose_idle_demo",
    "src/core/front_end.hpp:OnePlayerRecords::demo_track"
@@ -1583,7 +1583,7 @@
  },
  {
   "address": "$80:9805",
-  "class": "inferred",
+  "class": "observed",
   "comment": "routine start",
   "label": "sub_809805",
   "native": [
@@ -1660,7 +1660,7 @@
  },
  {
   "address": "$80:98B3",
-  "class": "inferred",
+  "class": "observed",
   "comment": "routine start",
   "label": "sub_8098B3",
   "native": [
@@ -1677,7 +1677,7 @@
  },
  {
   "address": "$80:98C9",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_8098C9",
   "native": [
@@ -1689,7 +1689,7 @@
  },
  {
   "address": "$80:9980",
-  "class": "inferred",
+  "class": "observed",
   "comment": "routine start",
   "label": "sub_809980",
   "native": [
@@ -1823,7 +1823,7 @@
  },
  {
   "address": "$80:9A5B",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_809A5B",
   "native": [
@@ -1856,9 +1856,9 @@
  },
  {
   "address": "$80:9AB2",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_809AB2",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_809AB2",
   "source_records": [
    "docs/research/R-0072-options.md"
   ]
@@ -1906,9 +1906,9 @@
  },
  {
   "address": "$80:9B79",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_809B79",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_809B79",
   "native": [
    "src/core/text_printer.cpp:league_name",
    "src/core/text_printer.cpp:print_text"
@@ -1932,9 +1932,9 @@
  },
  {
   "address": "$80:9BC4",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_809BC4",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_809BC4",
   "native": [
    "src/core/front_end.hpp:LeagueSetup",
    "src/core/rider_menu.cpp:rider_menu_entry_frame"
@@ -1945,9 +1945,9 @@
  },
  {
   "address": "$80:9D0B",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_809D0B",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_809D0B",
   "native": [
    "src/core/front_end.hpp:LeagueSetup",
    "src/core/options_menu.cpp:league_warning_frame",
@@ -1973,9 +1973,9 @@
  },
  {
   "address": "$80:9E3C",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_809E3C",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_809E3C",
   "native": [
    "src/core/front_end.hpp:LeagueSetup",
    "src/core/front_end.hpp:LeagueSetup::marker_column, LeagueSetup::marker_row",
@@ -1988,9 +1988,9 @@
  },
  {
   "address": "$80:9E57",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_809E57",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_809E57",
   "native": [
    "src/core/front_end.hpp:LeagueSetup",
    "src/core/options_menu.cpp:enter_league_editor",
@@ -2002,9 +2002,9 @@
  },
  {
   "address": "$80:9EF7",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_809EF7",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_809EF7",
   "native": [
    "src/core/options_menu.cpp:enter_league_slots"
   ],
@@ -2014,9 +2014,9 @@
  },
  {
   "address": "$80:9F15",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_809F15",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_809F15",
   "native": [
    "src/core/options_menu.cpp:enter_league_slots",
    "src/core/options_menu.cpp:league_slots_frame"
@@ -2027,9 +2027,9 @@
  },
  {
   "address": "$80:9F21",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_809F21",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_809F21",
   "native": [
    "src/core/options_menu.cpp:enter_league_slots"
   ],
@@ -2039,9 +2039,9 @@
  },
  {
   "address": "$80:9F7A",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_809F7A",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_809F7A",
   "source_records": [
    "docs/research/R-0091-mode-audio.md"
   ]
@@ -2165,9 +2165,9 @@
  },
  {
   "address": "$80:A1F2",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80A1F2",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_80A1F2",
   "native": [
    "src/core/front_end.hpp:KeyboardEditor"
   ],
@@ -2177,9 +2177,9 @@
  },
  {
   "address": "$80:A207",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80A207",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80A207",
   "native": [
    "src/core/front_end.hpp:KeyboardEditor",
    "src/core/options_menu.cpp:enter_rename_editor"
@@ -2190,9 +2190,9 @@
  },
  {
   "address": "$80:A212",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80A212",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80A212",
   "native": [
    "src/core/front_end.hpp:KeyboardEditor",
    "src/core/options_menu.cpp:initialize_keyboard_cursor"
@@ -2203,9 +2203,9 @@
  },
  {
   "address": "$80:A231",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80A231",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80A231",
   "native": [
    "src/core/front_end.hpp:KeyboardEditor",
    "src/core/options_menu.cpp:initialize_keyboard_cursor",
@@ -2217,9 +2217,9 @@
  },
  {
   "address": "$80:A29B",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80A29B",
+  "class": "observed",
+  "comment": "inside the instruction at $80:A29A",
+  "label": "mid_80A29B",
   "native": [
    "src/core/front_end.hpp:KeyboardEditor",
    "src/core/options_menu.cpp:rename_keyboard_frame"
@@ -2230,9 +2230,9 @@
  },
  {
   "address": "$80:A2BA",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80A2BA",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_80A2BA",
   "native": [
    "src/core/front_end.hpp:KeyboardEditor",
    "src/core/options_menu.cpp:rename_keyboard_frame"
@@ -2243,9 +2243,9 @@
  },
  {
   "address": "$80:A2F9",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80A2F9",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80A2F9",
   "native": [
    "src/core/front_end.hpp:KeyboardEditor",
    "src/core/options_menu.cpp:rename_keyboard_frame"
@@ -2256,9 +2256,9 @@
  },
  {
   "address": "$80:A326",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80A326",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80A326",
   "native": [
    "src/core/front_end.hpp:KeyboardEditor",
    "src/core/options_menu.cpp:rename_keyboard_frame"
@@ -2269,9 +2269,9 @@
  },
  {
   "address": "$80:A34A",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80A34A",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80A34A",
   "native": [
    "src/core/front_end.hpp:KeyboardEditor",
    "src/core/options_menu.cpp:rename_keyboard_frame"
@@ -2282,9 +2282,9 @@
  },
  {
   "address": "$80:A3A0",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80A3A0",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80A3A0",
   "native": [
    "src/core/front_end.hpp:KeyboardEditor",
    "src/core/options_menu.cpp:rename_keyboard_frame"
@@ -2295,9 +2295,9 @@
  },
  {
   "address": "$80:A416",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80A416",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80A416",
   "native": [
    "src/core/front_end.hpp:KeyboardEditor",
    "src/core/options_menu.cpp:erase_keyboard_character"
@@ -2308,9 +2308,9 @@
  },
  {
   "address": "$80:A420",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80A420",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80A420",
   "native": [
    "src/core/front_end.hpp:KeyboardEditor",
    "src/core/options_menu.cpp:erase_keyboard_character"
@@ -2321,9 +2321,9 @@
  },
  {
   "address": "$80:A449",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80A449",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80A449",
   "native": [
    "src/core/front_end.hpp:KeyboardEditor",
    "src/core/options_menu.cpp:rename_keyboard_frame"
@@ -2334,9 +2334,9 @@
  },
  {
   "address": "$80:A493",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80A493",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80A493",
   "native": [
    "src/core/front_end.hpp:KeyboardEditor",
    "src/core/options_menu.cpp:rename_keyboard_frame"
@@ -2347,9 +2347,9 @@
  },
  {
   "address": "$80:A495",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80A495",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80A495",
   "native": [
    "src/core/front_end.hpp:KeyboardEditor",
    "src/core/options_menu.cpp:rename_keyboard_frame"
@@ -2424,9 +2424,9 @@
  },
  {
   "address": "$80:A5B2",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80A5B2",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80A5B2",
   "native": [
    "src/core/league_menu.cpp:print_standings"
   ],
@@ -3040,9 +3040,9 @@
  },
  {
   "address": "$80:ADE3",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80ADE3",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_80ADE3",
   "native": [
    "src/core/local_modes.cpp:local_continue_frame"
   ],
@@ -3061,9 +3061,9 @@
  },
  {
   "address": "$80:AEAD",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80AEAD",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80AEAD",
   "native": [
    "src/core/local_modes.cpp:local_continue_frame"
   ],
@@ -3073,18 +3073,18 @@
  },
  {
   "address": "$80:AF54",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80AF54",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_80AF54",
   "source_records": [
    "docs/research/R-0073-league.md"
   ]
  },
  {
   "address": "$80:B051",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80B051",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80B051",
   "native": [
    "src/core/league_menu.cpp:league_awards_frame"
   ],
@@ -3164,9 +3164,9 @@
  },
  {
   "address": "$80:B0FA",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80B0FA",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_80B0FA",
   "native": [
    "src/core/front_end_screens.hpp:MenuSound",
    "src/core/screen_slide.cpp:play_menu_sound"
@@ -3240,7 +3240,7 @@
  },
  {
   "address": "$80:B14E",
-  "class": "inferred",
+  "class": "observed",
   "comment": "routine start",
   "label": "sub_80B14E",
   "native": [
@@ -3432,7 +3432,7 @@
  },
  {
   "address": "$80:B4A0",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_80B4A0",
   "native": [
@@ -3458,7 +3458,7 @@
  },
  {
   "address": "$80:B4D4",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_80B4D4",
   "native": [
@@ -3471,7 +3471,7 @@
  },
  {
   "address": "$80:B4DE",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_80B4DE",
   "native": [
@@ -3483,7 +3483,7 @@
  },
  {
   "address": "$80:B4F1",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_80B4F1",
   "native": [
@@ -3569,9 +3569,9 @@
  },
  {
   "address": "$80:B626",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80B626",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80B626",
   "native": [
    "src/core/front_end.hpp:FrontEndScreen",
    "src/core/options_menu.cpp:enter_options_menu"
@@ -3584,9 +3584,9 @@
  },
  {
   "address": "$80:B66D",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80B66D",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80B66D",
   "source_records": [
    "tasks/OPTIONS.md"
   ]
@@ -3612,7 +3612,7 @@
  },
  {
   "address": "$80:B6CF",
-  "class": "inferred",
+  "class": "observed",
   "comment": "routine start",
   "label": "sub_80B6CF",
   "native": [
@@ -3624,7 +3624,7 @@
  },
  {
   "address": "$80:B6D3",
-  "class": "inferred",
+  "class": "observed",
   "comment": "routine start",
   "label": "sub_80B6D3",
   "native": [
@@ -3704,9 +3704,9 @@
  },
  {
   "address": "$80:B8C4",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80B8C4",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_80B8C4",
   "source_records": [
    "docs/research/R-0091-mode-audio.md",
    "tasks/MENU-INPUT.md"
@@ -3723,9 +3723,9 @@
  },
  {
   "address": "$80:B916",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80B916",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_80B916",
   "source_records": [
    "docs/research/R-0091-mode-audio.md",
    "tasks/MENU-INPUT.md"
@@ -3733,7 +3733,7 @@
  },
  {
   "address": "$80:B93C",
-  "class": "inferred",
+  "class": "observed",
   "comment": "routine start",
   "label": "sub_80B93C",
   "native": [
@@ -3751,7 +3751,7 @@
  },
  {
   "address": "$80:B983",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_80B983",
   "source_records": [
@@ -3760,7 +3760,7 @@
  },
  {
   "address": "$80:B988",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_80B988",
   "source_records": [
@@ -3769,7 +3769,7 @@
  },
  {
   "address": "$80:B992",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_80B992",
   "source_records": [
@@ -3778,7 +3778,7 @@
  },
  {
   "address": "$80:B997",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_80B997",
   "source_records": [
@@ -3787,7 +3787,7 @@
  },
  {
   "address": "$80:B99C",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_80B99C",
   "native": [
@@ -3838,7 +3838,7 @@
  },
  {
   "address": "$80:BA13",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_80BA13",
   "native": [
@@ -3891,7 +3891,7 @@
  },
  {
   "address": "$80:BAE3",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_80BAE3",
   "native": [
@@ -4051,7 +4051,7 @@
  },
  {
   "address": "$80:BC03",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_80BC03",
   "native": [
@@ -4100,7 +4100,7 @@
  },
  {
   "address": "$80:BC22",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_80BC22",
   "native": [
@@ -4139,7 +4139,7 @@
  },
  {
   "address": "$80:BC4D",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_80BC4D",
   "native": [
@@ -4171,7 +4171,7 @@
  },
  {
   "address": "$80:BC68",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_80BC68",
   "native": [
@@ -4183,7 +4183,7 @@
  },
  {
   "address": "$80:BC7B",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_80BC7B",
   "native": [
@@ -4195,7 +4195,7 @@
  },
  {
   "address": "$80:BC9B",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_80BC9B",
   "native": [
@@ -4218,9 +4218,9 @@
  },
  {
   "address": "$80:BCBF",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80BCBF",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80BCBF",
   "source_records": [
    "docs/research/R-0071-two-player-versus.md",
    "tasks/COVERAGE-ROADMAP.md",
@@ -4230,9 +4230,9 @@
  },
  {
   "address": "$80:BCDB",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80BCDB",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80BCDB",
   "native": [
    "src/core/rider_menu.cpp:pick_plays_select"
   ],
@@ -4242,9 +4242,9 @@
  },
  {
   "address": "$80:BCEF",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80BCEF",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80BCEF",
   "native": [
    "src/core/rider_menu.cpp:rider_menu_entry_frame"
   ],
@@ -4254,18 +4254,18 @@
  },
  {
   "address": "$80:BCFB",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80BCFB",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80BCFB",
   "source_records": [
    "docs/research/R-0071-two-player-versus.md"
   ]
  },
  {
   "address": "$80:BD02",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80BD02",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80BD02",
   "native": [
    "src/core/rider_menu.cpp:pick_plays_select"
   ],
@@ -4276,9 +4276,9 @@
  },
  {
   "address": "$80:BD1C",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80BD1C",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80BD1C",
   "native": [
    "src/core/rider_menu.cpp:rider_menu_frame"
   ],
@@ -4288,9 +4288,9 @@
  },
  {
   "address": "$80:BD1F",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80BD1F",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80BD1F",
   "native": [
    "src/core/rider_menu.cpp:rider_menu_frame"
   ],
@@ -4300,9 +4300,9 @@
  },
  {
   "address": "$80:BD5D",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80BD5D",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80BD5D",
   "native": [
    "src/core/race_result.cpp:race_restart_frame"
   ],
@@ -4313,18 +4313,18 @@
  },
  {
   "address": "$80:BD80",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80BD80",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80BD80",
   "source_records": [
    "docs/research/R-0084-two-human-restart.md"
   ]
  },
  {
   "address": "$80:BDD4",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80BDD4",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80BDD4",
   "native": [
    "src/core/league_menu.cpp:(file)"
   ],
@@ -4335,9 +4335,9 @@
  },
  {
   "address": "$80:BE3F",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80BE3F",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80BE3F",
   "native": [
    "src/core/league_menu.cpp:(file)"
   ],
@@ -4347,9 +4347,9 @@
  },
  {
   "address": "$80:BE48",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80BE48",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80BE48",
   "native": [
    "src/core/league_menu.cpp:(file)"
   ],
@@ -4359,9 +4359,9 @@
  },
  {
   "address": "$80:BE76",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80BE76",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80BE76",
   "native": [
    "src/core/league_completion.cpp:(file)",
    "src/core/league_menu.cpp:(file)"
@@ -4372,9 +4372,9 @@
  },
  {
   "address": "$80:BEC6",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80BEC6",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80BEC6",
   "native": [
    "src/core/front_end.hpp:LeagueSetup::after_podium",
    "src/core/league_completion.cpp:(file)",
@@ -4386,9 +4386,9 @@
  },
  {
   "address": "$80:BF49",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80BF49",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80BF49",
   "source_records": [
    "docs/research/R-0071-two-player-versus.md",
    "tasks/COVERAGE-ROADMAP.md",
@@ -4398,9 +4398,9 @@
  },
  {
   "address": "$80:BF5C",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80BF5C",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80BF5C",
   "native": [
    "src/core/rider_menu.cpp:pick_plays_select"
   ],
@@ -4410,9 +4410,9 @@
  },
  {
   "address": "$80:BF79",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80BF79",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80BF79",
   "native": [
    "src/core/rider_menu.cpp:rider_menu_entry_frame"
   ],
@@ -4422,18 +4422,18 @@
  },
  {
   "address": "$80:BF85",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80BF85",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80BF85",
   "source_records": [
    "docs/research/R-0071-two-player-versus.md"
   ]
  },
  {
   "address": "$80:BF8A",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80BF8A",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80BF8A",
   "native": [
    "src/core/rider_menu.cpp:pick_plays_select"
   ],
@@ -4444,27 +4444,27 @@
  },
  {
   "address": "$80:BF94",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80BF94",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80BF94",
   "source_records": [
    "docs/research/R-0071-two-player-versus.md"
   ]
  },
  {
   "address": "$80:BF9F",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80BF9F",
+  "class": "observed",
+  "comment": "inside the instruction at $80:BF9C",
+  "label": "mid_80BF9F",
   "source_records": [
    "docs/research/R-0057-one-run-result.md"
   ]
  },
  {
   "address": "$80:BFE0",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80BFE0",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80BFE0",
   "native": [
    "src/core/race_result.cpp:race_restart_frame"
   ],
@@ -4475,18 +4475,18 @@
  },
  {
   "address": "$80:C00D",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80C00D",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80C00D",
   "source_records": [
    "docs/research/R-0084-two-human-restart.md"
   ]
  },
  {
   "address": "$80:C0B1",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80C0B1",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80C0B1",
   "native": [
    "src/core/front_end_screens.hpp:MenuSound"
   ],
@@ -4497,9 +4497,9 @@
  },
  {
   "address": "$80:C0BD",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80C0BD",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80C0BD",
   "native": [
    "src/core/rider_menu.cpp:pick_plays_select"
   ],
@@ -4518,9 +4518,9 @@
  },
  {
   "address": "$80:C12A",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80C12A",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80C12A",
   "native": [
    "src/core/options_menu.cpp:enter_define_player_warning"
   ],
@@ -4530,9 +4530,9 @@
  },
  {
   "address": "$80:C13D",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80C13D",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80C13D",
   "native": [
    "src/core/options_menu.cpp:enter_define_player_warning",
    "src/core/rider_menu.cpp:pick_plays_select"
@@ -4568,7 +4568,7 @@
  },
  {
   "address": "$80:C202",
-  "class": "inferred",
+  "class": "observed",
   "comment": "routine start",
   "label": "sub_80C202",
   "native": [
@@ -4583,7 +4583,7 @@
  },
  {
   "address": "$80:C206",
-  "class": "inferred",
+  "class": "observed",
   "comment": "routine start",
   "label": "sub_80C206",
   "native": [
@@ -4609,7 +4609,7 @@
  },
  {
   "address": "$80:C20C",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_80C20C",
   "native": [
@@ -4624,7 +4624,7 @@
  },
  {
   "address": "$80:C236",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_80C236",
   "native": [
@@ -4772,9 +4772,9 @@
  },
  {
   "address": "$80:C456",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80C456",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80C456",
   "native": [
    "src/core/text_printer.cpp:print_text"
   ],
@@ -4784,9 +4784,9 @@
  },
  {
   "address": "$80:C474",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80C474",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80C474",
   "native": [
    "src/core/text_printer.cpp:print_text"
   ],
@@ -4890,9 +4890,9 @@
  },
  {
   "address": "$80:C675",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80C675",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80C675",
   "native": [
    "src/core/text_printer.cpp:print_name_operand",
    "src/core/text_printer.cpp:print_text"
@@ -4903,9 +4903,9 @@
  },
  {
   "address": "$80:C67D",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80C67D",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80C67D",
   "native": [
    "src/core/text_printer.cpp:print_name_operand",
    "src/core/text_printer.cpp:print_text"
@@ -4941,9 +4941,9 @@
  },
  {
   "address": "$80:C709",
-  "class": "data",
-  "comment": "data",
-  "label": "dat_80C709",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_80C709",
   "native": [
    "src/core/result_screen.cpp:(file)",
    "src/core/result_screen.cpp:result_title_glyph",
@@ -4957,7 +4957,7 @@
  },
  {
   "address": "$80:C786",
-  "class": "inferred",
+  "class": "observed",
   "comment": "routine start",
   "label": "sub_80C786",
   "native": [
@@ -4975,9 +4975,9 @@
  },
  {
   "address": "$80:C7C4",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80C7C4",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80C7C4",
   "native": [
    "src/core/race_result.cpp:update_records"
   ],
@@ -4987,9 +4987,9 @@
  },
  {
   "address": "$80:C7EE",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80C7EE",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_80C7EE",
   "native": [
    "src/core/race_result.cpp:update_records"
   ],
@@ -4999,9 +4999,9 @@
  },
  {
   "address": "$80:C800",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80C800",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_80C800",
   "native": [
    "src/core/race_result.cpp:update_records"
   ],
@@ -5011,9 +5011,9 @@
  },
  {
   "address": "$80:C81C",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80C81C",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_80C81C",
   "native": [
    "src/core/race_result.cpp:update_records"
   ],
@@ -5023,9 +5023,9 @@
  },
  {
   "address": "$80:C82F",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80C82F",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_80C82F",
   "native": [
    "src/core/race_result.cpp:update_records"
   ],
@@ -5035,9 +5035,9 @@
  },
  {
   "address": "$80:C850",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80C850",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_80C850",
   "native": [
    "src/core/race_result.cpp:update_records"
   ],
@@ -5047,9 +5047,9 @@
  },
  {
   "address": "$80:C868",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80C868",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80C868",
   "native": [
    "src/core/front_end_screens.hpp:best_lap",
    "src/core/race_result.cpp:update_records"
@@ -5061,27 +5061,27 @@
  },
  {
   "address": "$80:C8BA",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80C8BA",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80C8BA",
   "source_records": [
    "docs/research/R-0058-lap-result.md"
   ]
  },
  {
   "address": "$80:C8C5",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80C8C5",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80C8C5",
   "source_records": [
    "docs/research/R-0058-lap-result.md"
   ]
  },
  {
   "address": "$80:C8D0",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80C8D0",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80C8D0",
   "native": [
    "src/core/race_result.cpp:update_records"
   ],
@@ -5091,9 +5091,9 @@
  },
  {
   "address": "$80:C8E8",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80C8E8",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_80C8E8",
   "native": [
    "src/core/race_result.cpp:update_records"
   ],
@@ -5104,9 +5104,9 @@
  },
  {
   "address": "$80:C902",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80C902",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_80C902",
   "native": [
    "src/core/race_result.cpp:update_records"
   ],
@@ -5116,9 +5116,9 @@
  },
  {
   "address": "$80:C913",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80C913",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_80C913",
   "native": [
    "src/core/race_result.cpp:update_records"
   ],
@@ -5128,18 +5128,18 @@
  },
  {
   "address": "$80:C932",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80C932",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_80C932",
   "source_records": [
    "docs/research/R-0058-lap-result.md"
   ]
  },
  {
   "address": "$80:C948",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80C948",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80C948",
   "native": [
    "src/core/race_result.cpp:update_records",
    "src/core/race_result.cpp:update_stunt_records",
@@ -5152,9 +5152,9 @@
  },
  {
   "address": "$80:C950",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80C950",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80C950",
   "native": [
    "src/core/race_result.cpp:update_records",
    "src/core/race_result.cpp:update_stunt_records",
@@ -5166,9 +5166,9 @@
  },
  {
   "address": "$80:C95C",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80C95C",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80C95C",
   "native": [
    "src/core/race_result.cpp:update_records",
    "src/core/race_result.cpp:update_stunt_records",
@@ -5180,9 +5180,9 @@
  },
  {
   "address": "$80:C967",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80C967",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80C967",
   "native": [
    "src/core/race_result.cpp:update_records",
    "src/core/race_result.cpp:update_stunt_records",
@@ -5194,9 +5194,9 @@
  },
  {
   "address": "$80:C97E",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80C97E",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80C97E",
   "native": [
    "src/core/race_result.cpp:update_records",
    "src/core/race_result.cpp:update_stunt_records",
@@ -5208,9 +5208,9 @@
  },
  {
   "address": "$80:C984",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80C984",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_80C984",
   "native": [
    "src/core/race_result.cpp:update_records",
    "src/core/race_result.cpp:update_stunt_records",
@@ -5222,9 +5222,9 @@
  },
  {
   "address": "$80:C9AB",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80C9AB",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_80C9AB",
   "native": [
    "src/core/race_result.cpp:update_records",
    "src/core/race_result.cpp:update_stunt_records",
@@ -5236,9 +5236,9 @@
  },
  {
   "address": "$80:C9D7",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80C9D7",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_80C9D7",
   "native": [
    "src/core/race_result.cpp:insert_record"
   ],
@@ -5249,9 +5249,9 @@
  },
  {
   "address": "$80:CA74",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80CA74",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_80CA74",
   "native": [
    "src/core/race_result.cpp:update_records",
    "src/core/race_result.cpp:update_stunt_records"
@@ -5263,9 +5263,9 @@
  },
  {
   "address": "$80:CA83",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80CA83",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_80CA83",
   "native": [
    "src/core/race_result.cpp:update_records",
    "src/core/race_result.cpp:update_stunt_records"
@@ -5277,18 +5277,18 @@
  },
  {
   "address": "$80:CA9B",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80CA9B",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_80CA9B",
   "source_records": [
    "docs/research/R-0057-one-run-result.md"
   ]
  },
  {
   "address": "$80:CAAA",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80CAAA",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_80CAAA",
   "native": [
    "src/core/race_result.cpp:update_records",
    "src/core/race_result.cpp:update_stunt_records"
@@ -5300,9 +5300,9 @@
  },
  {
   "address": "$80:CAC5",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80CAC5",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_80CAC5",
   "native": [
    "src/core/race_result.cpp:update_records",
    "src/core/race_result.cpp:update_stunt_records"
@@ -5379,8 +5379,8 @@
  {
   "address": "$80:CBC3",
   "class": "observed",
-  "comment": "instruction start",
-  "label": "loc_80CBC3",
+  "comment": "routine start",
+  "label": "sub_80CBC3",
   "native": [
    "src/core/rider_menu.cpp:open_rider_menu",
    "src/core/rider_menu.cpp:rider_menu_entry_frame"
@@ -5443,7 +5443,7 @@
  },
  {
   "address": "$80:CC5E",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_80CC5E",
   "native": [
@@ -5455,7 +5455,7 @@
  },
  {
   "address": "$80:CC7F",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_80CC7F",
   "native": [
@@ -5467,7 +5467,7 @@
  },
  {
   "address": "$80:CCA1",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_80CCA1",
   "native": [
@@ -5479,7 +5479,7 @@
  },
  {
   "address": "$80:CCE1",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_80CCE1",
   "native": [
@@ -5692,7 +5692,7 @@
  },
  {
   "address": "$80:D1E8",
-  "class": "inferred",
+  "class": "observed",
   "comment": "routine start",
   "label": "sub_80D1E8",
   "native": [
@@ -5961,9 +5961,9 @@
  },
  {
   "address": "$80:D3F5",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80D3F5",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80D3F5",
   "native": [
    "src/core/league_menu.cpp:reset_league"
   ],
@@ -5985,18 +5985,18 @@
  },
  {
   "address": "$80:D448",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80D448",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80D448",
   "source_records": [
    "docs/research/R-0072-options.md"
   ]
  },
  {
   "address": "$80:D45B",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80D45B",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80D45B",
   "native": [
    "src/core/rider_menu.cpp:pick_plays_select"
   ],
@@ -6006,9 +6006,9 @@
  },
  {
   "address": "$80:D468",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80D468",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80D468",
   "native": [
    "src/core/front_end.hpp:FrontEndScreen",
    "src/core/options_menu.cpp:enter_rename_editor"
@@ -6019,9 +6019,9 @@
  },
  {
   "address": "$80:D494",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80D494",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80D494",
   "native": [
    "src/core/front_end.cpp:waits_for_frame"
   ],
@@ -6031,9 +6031,9 @@
  },
  {
   "address": "$80:D4BF",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80D4BF",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80D4BF",
   "native": [
    "src/core/front_end.cpp:waits_for_frame",
    "src/core/options_menu.cpp:rename_commit_frame"
@@ -6053,7 +6053,7 @@
  },
  {
   "address": "$80:D503",
-  "class": "inferred",
+  "class": "observed",
   "comment": "routine start",
   "label": "sub_80D503",
   "source_records": [
@@ -6062,9 +6062,9 @@
  },
  {
   "address": "$80:D525",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80D525",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80D525",
   "native": [
    "src/core/front_end.hpp:FrontEndScreen",
    "src/core/options_menu.cpp:enter_records_menu"
@@ -6075,9 +6075,9 @@
  },
  {
   "address": "$80:D566",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80D566",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80D566",
   "native": [
    "src/core/front_end.hpp:FrontEndScreen"
   ],
@@ -6087,9 +6087,9 @@
  },
  {
   "address": "$80:D5E6",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80D5E6",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80D5E6",
   "native": [
    "src/core/options_menu.cpp:print_track_records"
   ],
@@ -6100,9 +6100,9 @@
  },
  {
   "address": "$80:D699",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80D699",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80D699",
   "native": [
    "src/core/options_menu.cpp:print_track_records",
    "src/core/options_menu.cpp:print_track_selected_times"
@@ -6114,9 +6114,9 @@
  },
  {
   "address": "$80:D7CD",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80D7CD",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80D7CD",
   "native": [
    "src/core/options_menu.cpp:print_high_scores"
   ],
@@ -6126,9 +6126,9 @@
  },
  {
   "address": "$80:D8C1",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80D8C1",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80D8C1",
   "native": [
    "src/core/options_menu.cpp:high_score_leaders",
    "src/core/options_menu.cpp:print_high_scores"
@@ -6139,9 +6139,9 @@
  },
  {
   "address": "$80:D917",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80D917",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80D917",
   "native": [
    "src/core/options_menu.cpp:load_high_score_palettes",
    "src/core/options_menu.cpp:print_high_scores"
@@ -6152,9 +6152,9 @@
  },
  {
   "address": "$80:D9AC",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80D9AC",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80D9AC",
   "native": [
    "src/core/options_menu.cpp:print_high_scores",
    "src/core/options_menu.cpp:records_detail_frame"
@@ -6165,9 +6165,9 @@
  },
  {
   "address": "$80:D9B7",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80D9B7",
+  "class": "observed",
+  "comment": "inside the instruction at $80:D9B5",
+  "label": "mid_80D9B7",
   "native": [
    "src/core/options_menu.cpp:print_high_scores",
    "src/core/options_menu.cpp:records_detail_exit_frame",
@@ -6191,9 +6191,9 @@
  },
  {
   "address": "$80:DACF",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80DACF",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80DACF",
   "native": [
    "src/core/options_menu.cpp:print_player_scores"
   ],
@@ -6203,9 +6203,9 @@
  },
  {
   "address": "$80:DB2B",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80DB2B",
+  "class": "observed",
+  "comment": "inside the instruction at $80:DB29",
+  "label": "mid_80DB2B",
   "native": [
    "src/core/options_menu.cpp:print_player_scores"
   ],
@@ -6215,9 +6215,9 @@
  },
  {
   "address": "$80:DB4E",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80DB4E",
+  "class": "observed",
+  "comment": "inside the instruction at $80:DB4C",
+  "label": "mid_80DB4E",
   "native": [
    "src/core/options_menu.cpp:print_player_scores"
   ],
@@ -6227,9 +6227,9 @@
  },
  {
   "address": "$80:DB9E",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80DB9E",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80DB9E",
   "native": [
    "src/core/options_menu.cpp:print_player_scores"
   ],
@@ -6239,9 +6239,9 @@
  },
  {
   "address": "$80:DBF8",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80DBF8",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80DBF8",
   "native": [
    "src/core/options_menu.cpp:print_player_scores",
    "src/core/options_menu.cpp:records_detail_frame"
@@ -6252,9 +6252,9 @@
  },
  {
   "address": "$80:DC05",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80DC05",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80DC05",
   "native": [
    "src/core/options_menu.cpp:print_player_scores",
    "src/core/options_menu.cpp:records_detail_frame"
@@ -6278,9 +6278,9 @@
  },
  {
   "address": "$80:DE2E",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80DE2E",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80DE2E",
   "native": [
    "src/core/options_menu.cpp:print_group_scores"
   ],
@@ -6290,9 +6290,9 @@
  },
  {
   "address": "$80:DEB5",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80DEB5",
+  "class": "observed",
+  "comment": "inside the instruction at $80:DEB3",
+  "label": "mid_80DEB5",
   "native": [
    "src/core/options_menu.cpp:print_group_scores"
   ],
@@ -6302,9 +6302,9 @@
  },
  {
   "address": "$80:DF37",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80DF37",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80DF37",
   "native": [
    "src/core/options_menu.cpp:print_group_scores"
   ],
@@ -6315,9 +6315,9 @@
  },
  {
   "address": "$80:DF46",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80DF46",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_80DF46",
   "native": [
    "src/core/options_menu.cpp:print_group_scores"
   ],
@@ -6327,9 +6327,9 @@
  },
  {
   "address": "$80:DF6C",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80DF6C",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_80DF6C",
   "native": [
    "src/core/options_menu.cpp:print_group_scores"
   ],
@@ -6339,9 +6339,9 @@
  },
  {
   "address": "$80:E043",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80E043",
+  "class": "observed",
+  "comment": "inside the instruction at $80:E042",
+  "label": "mid_80E043",
   "native": [
    "src/core/options_menu.cpp:set_bar_objects"
   ],
@@ -6369,7 +6369,7 @@
  },
  {
   "address": "$80:E27E",
-  "class": "inferred",
+  "class": "observed",
   "comment": "routine start",
   "label": "sub_80E27E",
   "native": [
@@ -6387,7 +6387,7 @@
  },
  {
   "address": "$80:E2CF",
-  "class": "inferred",
+  "class": "observed",
   "comment": "routine start",
   "label": "sub_80E2CF",
   "native": [
@@ -6402,7 +6402,7 @@
  },
  {
   "address": "$80:E2D5",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_80E2D5",
   "native": [
@@ -6417,7 +6417,7 @@
  },
  {
   "address": "$80:E2D8",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_80E2D8",
   "native": [
@@ -6432,7 +6432,7 @@
  },
  {
   "address": "$80:E322",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_80E322",
   "native": [
@@ -6447,7 +6447,7 @@
  },
  {
   "address": "$80:E369",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_80E369",
   "native": [
@@ -6488,9 +6488,9 @@
  },
  {
   "address": "$80:E492",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80E492",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_80E492",
   "native": [
    "src/core/options_menu.cpp:update_track_records"
   ],
@@ -6500,9 +6500,9 @@
  },
  {
   "address": "$80:E4C6",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80E4C6",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80E4C6",
   "native": [
    "src/core/options_menu.cpp:update_track_records"
   ],
@@ -6512,7 +6512,7 @@
  },
  {
   "address": "$80:E54C",
-  "class": "inferred",
+  "class": "observed",
   "comment": "routine start",
   "label": "sub_80E54C",
   "native": [
@@ -6555,7 +6555,7 @@
  },
  {
   "address": "$80:E55B",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_80E55B",
   "native": [
@@ -6581,7 +6581,7 @@
  },
  {
   "address": "$80:E588",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_80E588",
   "native": [
@@ -6596,7 +6596,7 @@
  },
  {
   "address": "$80:E595",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_80E595",
   "native": [
@@ -6651,7 +6651,7 @@
  },
  {
   "address": "$80:E63D",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_80E63D",
   "native": [
@@ -6663,7 +6663,7 @@
  },
  {
   "address": "$80:E654",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_80E654",
   "native": [
@@ -6675,7 +6675,7 @@
  },
  {
   "address": "$80:E669",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_80E669",
   "native": [
@@ -6687,7 +6687,7 @@
  },
  {
   "address": "$80:E683",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_80E683",
   "native": [
@@ -6699,7 +6699,7 @@
  },
  {
   "address": "$80:E69D",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_80E69D",
   "native": [
@@ -6711,7 +6711,7 @@
  },
  {
   "address": "$80:E6AB",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_80E6AB",
   "native": [
@@ -6840,9 +6840,9 @@
  },
  {
   "address": "$80:E83E",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80E83E",
+  "class": "data",
+  "comment": "data",
+  "label": "dat_80E83E",
   "source_records": [
    "docs/research/R-0056-tour-track-now-playing.md"
   ]
@@ -7026,7 +7026,7 @@
  },
  {
   "address": "$80:EA8F",
-  "class": "inferred",
+  "class": "observed",
   "comment": "routine start",
   "label": "sub_80EA8F",
   "native": [
@@ -7065,9 +7065,9 @@
  },
  {
   "address": "$80:EB76",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80EB76",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_80EB76",
   "native": [
    "src/core/options_menu.cpp:records_detail_entry_frame",
    "src/core/options_menu.cpp:track_records_hdma"
@@ -7078,9 +7078,9 @@
  },
  {
   "address": "$80:EB78",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80EB78",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80EB78",
   "native": [
    "src/core/options_menu.cpp:records_detail_entry_frame"
   ],
@@ -7090,9 +7090,9 @@
  },
  {
   "address": "$80:EC8A",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80EC8A",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80EC8A",
   "native": [
    "src/core/options_menu.cpp:records_detail_entry_frame"
   ],
@@ -7102,9 +7102,9 @@
  },
  {
   "address": "$80:ECC4",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80ECC4",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80ECC4",
   "native": [
    "src/core/options_menu.cpp:update_track_records"
   ],
@@ -7138,9 +7138,9 @@
  },
  {
   "address": "$80:EEF2",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80EEF2",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_80EEF2",
   "native": [
    "src/core/options_menu.cpp:track_grid_half"
   ],
@@ -7160,7 +7160,7 @@
  },
  {
   "address": "$80:EF4D",
-  "class": "inferred",
+  "class": "observed",
   "comment": "routine start",
   "label": "sub_80EF4D",
   "native": [
@@ -7175,7 +7175,7 @@
  },
  {
   "address": "$80:EF5D",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_80EF5D",
   "native": [
@@ -7187,7 +7187,7 @@
  },
  {
   "address": "$80:EF73",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_80EF73",
   "native": [
@@ -7199,9 +7199,9 @@
  },
  {
   "address": "$80:EF89",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80EF89",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_80EF89",
   "native": [
    "src/core/options_menu.cpp:print_group_scores"
   ],
@@ -7238,7 +7238,7 @@
  },
  {
   "address": "$80:F0D6",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_80F0D6",
   "native": [
@@ -7256,9 +7256,9 @@
  },
  {
   "address": "$80:F0EE",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80F0EE",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80F0EE",
   "native": [
    "src/core/front_end.hpp:FrontEndScreen",
    "src/core/front_end.hpp:RaceResult",
@@ -7276,9 +7276,9 @@
  },
  {
   "address": "$80:F0F3",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80F0F3",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80F0F3",
   "native": [
    "src/core/front_end.hpp:FrontEndScreen",
    "src/core/front_end.hpp:RaceResult",
@@ -7293,9 +7293,9 @@
  },
  {
   "address": "$80:F0FC",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80F0FC",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80F0FC",
   "native": [
    "src/core/front_end.hpp:FrontEndScreen",
    "src/core/front_end.hpp:RaceResult",
@@ -7310,9 +7310,9 @@
  },
  {
   "address": "$80:F116",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80F116",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80F116",
   "native": [
    "src/core/front_end.hpp:FrontEndScreen",
    "src/core/front_end.hpp:RaceResult",
@@ -7328,9 +7328,9 @@
  },
  {
   "address": "$80:F1A8",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80F1A8",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80F1A8",
   "native": [
    "src/core/front_end.hpp:FrontEndScreen",
    "src/core/front_end.hpp:RaceResult",
@@ -7345,9 +7345,9 @@
  },
  {
   "address": "$80:F1F4",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80F1F4",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80F1F4",
   "native": [
    "src/core/front_end.hpp:FrontEndScreen",
    "src/core/front_end.hpp:RaceResult",
@@ -7362,9 +7362,9 @@
  },
  {
   "address": "$80:F209",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80F209",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80F209",
   "native": [
    "src/core/front_end.hpp:FrontEndScreen",
    "src/core/front_end.hpp:RaceResult",
@@ -7379,9 +7379,9 @@
  },
  {
   "address": "$80:F21C",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80F21C",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80F21C",
   "native": [
    "src/core/front_end.hpp:FrontEndScreen",
    "src/core/front_end.hpp:RaceResult",
@@ -7395,9 +7395,9 @@
  },
  {
   "address": "$80:F222",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80F222",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80F222",
   "native": [
    "src/core/front_end.hpp:FrontEndScreen",
    "src/core/front_end.hpp:RaceResult",
@@ -7412,9 +7412,9 @@
  },
  {
   "address": "$80:F249",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80F249",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80F249",
   "native": [
    "src/core/front_end.hpp:FrontEndScreen",
    "src/core/front_end.hpp:RaceResult",
@@ -7428,9 +7428,9 @@
  },
  {
   "address": "$80:F24F",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80F24F",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80F24F",
   "native": [
    "src/core/front_end.hpp:FrontEndScreen",
    "src/core/front_end.hpp:RaceResult",
@@ -7445,9 +7445,9 @@
  },
  {
   "address": "$80:F26F",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80F26F",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80F26F",
   "native": [
    "src/core/front_end.hpp:FrontEndScreen",
    "src/core/front_end.hpp:RaceResult",
@@ -7462,9 +7462,9 @@
  },
  {
   "address": "$80:F283",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80F283",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80F283",
   "native": [
    "src/core/front_end.hpp:FrontEndScreen",
    "src/core/front_end.hpp:RaceResult",
@@ -7478,9 +7478,9 @@
  },
  {
   "address": "$80:F2AE",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80F2AE",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80F2AE",
   "native": [
    "src/core/front_end.hpp:FrontEndScreen",
    "src/core/front_end.hpp:RaceResult",
@@ -7633,7 +7633,7 @@
  },
  {
   "address": "$80:F4B8",
-  "class": "inferred",
+  "class": "observed",
   "comment": "routine start",
   "label": "sub_80F4B8",
   "native": [
@@ -7709,7 +7709,7 @@
  },
  {
   "address": "$80:F53B",
-  "class": "inferred",
+  "class": "observed",
   "comment": "routine start",
   "label": "sub_80F53B",
   "native": [
@@ -7804,7 +7804,7 @@
  },
  {
   "address": "$80:F5E3",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_80F5E3",
   "native": [
@@ -7885,9 +7885,9 @@
  },
  {
   "address": "$80:F669",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80F669",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_80F669",
   "native": [
    "src/core/front_end.hpp:StuntTally",
    "src/core/stunt_result.cpp:(file)",
@@ -7899,9 +7899,9 @@
  },
  {
   "address": "$80:F680",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80F680",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80F680",
   "native": [
    "src/core/front_end.hpp:StuntTally",
    "src/core/stunt_result.cpp:(file)",
@@ -7914,9 +7914,9 @@
  },
  {
   "address": "$80:F68F",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80F68F",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80F68F",
   "native": [
    "src/core/front_end.hpp:StuntTally",
    "src/core/stunt_result.cpp:(file)",
@@ -7930,9 +7930,9 @@
  },
  {
   "address": "$80:F755",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80F755",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80F755",
   "native": [
    "src/core/front_end.hpp:StuntTally",
    "src/core/stunt_result.cpp:(file)",
@@ -7944,9 +7944,9 @@
  },
  {
   "address": "$80:F756",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80F756",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80F756",
   "native": [
    "src/core/front_end.hpp:StuntTally",
    "src/core/stunt_result.cpp:(file)",
@@ -7958,9 +7958,9 @@
  },
  {
   "address": "$80:F758",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80F758",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80F758",
   "native": [
    "src/core/front_end.hpp:NowPlaying::choice_pads",
    "src/core/front_end.hpp:StuntTally",
@@ -7974,9 +7974,9 @@
  },
  {
   "address": "$80:F75D",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80F75D",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80F75D",
   "native": [
    "src/core/front_end.hpp:NowPlaying::choice_pads",
    "src/core/front_end.hpp:StuntTally",
@@ -7990,9 +7990,9 @@
  },
  {
   "address": "$80:F765",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80F765",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80F765",
   "native": [
    "src/core/front_end.hpp:StuntTally",
    "src/core/stunt_result.cpp:(file)",
@@ -8005,9 +8005,9 @@
  },
  {
   "address": "$80:F775",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80F775",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80F775",
   "native": [
    "src/core/front_end.hpp:StuntTally",
    "src/core/stunt_result.cpp:(file)",
@@ -8020,9 +8020,9 @@
  },
  {
   "address": "$80:F77F",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80F77F",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80F77F",
   "native": [
    "src/core/front_end.hpp:StuntTally",
    "src/core/stunt_result.cpp:(file)",
@@ -8035,9 +8035,9 @@
  },
  {
   "address": "$80:F7A7",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80F7A7",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80F7A7",
   "native": [
    "src/core/front_end.hpp:StuntTally",
    "src/core/stunt_result.cpp:(file)",
@@ -8050,9 +8050,9 @@
  },
  {
   "address": "$80:F7AD",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80F7AD",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80F7AD",
   "native": [
    "src/core/front_end.hpp:StuntTally",
    "src/core/stunt_result.cpp:(file)",
@@ -8065,9 +8065,9 @@
  },
  {
   "address": "$80:F7C4",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80F7C4",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80F7C4",
   "native": [
    "src/core/front_end.hpp:StuntTally",
    "src/core/stunt_result.cpp:(file)",
@@ -8080,9 +8080,9 @@
  },
  {
   "address": "$80:F7CB",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80F7CB",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80F7CB",
   "native": [
    "src/core/front_end.hpp:StuntTally",
    "src/core/stunt_result.cpp:(file)",
@@ -8110,9 +8110,9 @@
  },
  {
   "address": "$80:F7FB",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80F7FB",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_80F7FB",
   "native": [
    "src/core/front_end.hpp:StuntTally",
    "src/core/stunt_result.cpp:(file)",
@@ -8125,7 +8125,7 @@
  },
  {
   "address": "$80:F814",
-  "class": "inferred",
+  "class": "observed",
   "comment": "routine start",
   "label": "sub_80F814",
   "native": [
@@ -8334,9 +8334,9 @@
  },
  {
   "address": "$80:FBD5",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80FBD5",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_80FBD5",
   "source_records": [
    "docs/research/R-0073-league.md"
   ]
@@ -8355,9 +8355,9 @@
  },
  {
   "address": "$80:FC32",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_80FC32",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80FC32",
   "native": [
    "src/core/league_completion.cpp:league_continue_frame"
   ],
@@ -8472,7 +8472,7 @@
  },
  {
   "address": "$81:81AE",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_8181AE",
   "native": [
@@ -8485,7 +8485,7 @@
  },
  {
   "address": "$81:81BA",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_8181BA",
   "native": [
@@ -8657,7 +8657,7 @@
  },
  {
   "address": "$81:8316",
-  "class": "inferred",
+  "class": "observed",
   "comment": "routine start",
   "label": "sub_818316",
   "native": [
@@ -8697,7 +8697,7 @@
  },
  {
   "address": "$81:837E",
-  "class": "inferred",
+  "class": "observed",
   "comment": "routine start",
   "label": "sub_81837E",
   "native": [
@@ -8761,7 +8761,7 @@
  },
  {
   "address": "$81:8554",
-  "class": "inferred",
+  "class": "observed",
   "comment": "routine start",
   "label": "sub_818554",
   "native": [
@@ -9016,7 +9016,7 @@
  },
  {
   "address": "$81:87C2",
-  "class": "inferred",
+  "class": "observed",
   "comment": "routine start",
   "label": "sub_8187C2",
   "native": [
@@ -9030,7 +9030,7 @@
  },
  {
   "address": "$81:8949",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_818949",
   "native": [
@@ -9045,7 +9045,7 @@
  },
  {
   "address": "$81:8950",
-  "class": "inferred",
+  "class": "observed",
   "comment": "routine start",
   "label": "sub_818950",
   "native": [
@@ -9059,7 +9059,7 @@
  },
  {
   "address": "$81:8999",
-  "class": "inferred",
+  "class": "observed",
   "comment": "routine start",
   "label": "sub_818999",
   "native": [
@@ -9073,7 +9073,7 @@
  },
  {
   "address": "$81:89A3",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_8189A3",
   "native": [
@@ -9088,7 +9088,7 @@
  },
  {
   "address": "$81:89F7",
-  "class": "inferred",
+  "class": "observed",
   "comment": "routine start",
   "label": "sub_8189F7",
   "native": [
@@ -10268,7 +10268,7 @@
  },
  {
   "address": "$81:92C5",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_8192C5",
   "source_records": [
@@ -11052,7 +11052,7 @@
  },
  {
   "address": "$81:A0D4",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_81A0D4",
   "native": [
@@ -11147,9 +11147,9 @@
  },
  {
   "address": "$81:A3C7",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_81A3C7",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_81A3C7",
   "native": [
    "src/core/presentation.cpp:draw_race_backgrounds",
    "src/core/race_setup.cpp:track_geometry",
@@ -11162,9 +11162,9 @@
  },
  {
   "address": "$81:A406",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_81A406",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_81A406",
   "native": [
    "src/core/presentation.cpp:draw_race_backgrounds",
    "src/core/race_setup.cpp:track_geometry",
@@ -11197,7 +11197,7 @@
  },
  {
   "address": "$81:A483",
-  "class": "inferred",
+  "class": "observed",
   "comment": "routine start",
   "label": "sub_81A483",
   "native": [
@@ -11675,7 +11675,7 @@
  },
  {
   "address": "$81:C111",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_81C111",
   "native": [
@@ -11693,7 +11693,7 @@
  },
  {
   "address": "$81:C12A",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_81C12A",
   "native": [
@@ -11708,7 +11708,7 @@
  },
  {
   "address": "$81:C173",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_81C173",
   "native": [
@@ -11912,9 +11912,9 @@
  },
  {
   "address": "$81:C493",
-  "class": "data",
-  "comment": "data",
-  "label": "dat_81C493",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_81C493",
   "source_records": [
    "docs/research/R-0011-motion.md"
   ]
@@ -11931,7 +11931,7 @@
  },
  {
   "address": "$81:C55B",
-  "class": "inferred",
+  "class": "observed",
   "comment": "routine start",
   "label": "sub_81C55B",
   "native": [
@@ -11988,7 +11988,7 @@
  },
  {
   "address": "$81:C5B4",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_81C5B4",
   "native": [
@@ -12001,7 +12001,7 @@
  },
  {
   "address": "$81:C5B9",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_81C5B9",
   "native": [
@@ -12203,7 +12203,7 @@
  },
  {
   "address": "$81:C737",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_81C737",
   "native": [
@@ -12215,7 +12215,7 @@
  },
  {
   "address": "$81:C73E",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_81C73E",
   "native": [
@@ -12237,7 +12237,7 @@
  },
  {
   "address": "$81:C741",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_81C741",
   "native": [
@@ -12253,7 +12253,7 @@
  },
  {
   "address": "$81:C743",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_81C743",
   "native": [
@@ -12269,7 +12269,7 @@
  },
  {
   "address": "$81:C74F",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_81C74F",
   "native": [
@@ -12285,7 +12285,7 @@
  },
  {
   "address": "$81:C755",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_81C755",
   "native": [
@@ -12301,7 +12301,7 @@
  },
  {
   "address": "$81:C758",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_81C758",
   "native": [
@@ -12317,7 +12317,7 @@
  },
  {
   "address": "$81:C75B",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_81C75B",
   "native": [
@@ -12333,7 +12333,7 @@
  },
  {
   "address": "$81:C75E",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_81C75E",
   "source_records": [
@@ -12355,7 +12355,7 @@
  },
  {
   "address": "$81:C7CE",
-  "class": "inferred",
+  "class": "observed",
   "comment": "routine start",
   "label": "sub_81C7CE",
   "native": [
@@ -12367,7 +12367,7 @@
  },
  {
   "address": "$81:C7D2",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_81C7D2",
   "native": [
@@ -12380,7 +12380,7 @@
  },
  {
   "address": "$81:C7DE",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_81C7DE",
   "native": [
@@ -12394,7 +12394,7 @@
  },
  {
   "address": "$81:C7EC",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_81C7EC",
   "native": [
@@ -12408,7 +12408,7 @@
  },
  {
   "address": "$81:C7F4",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_81C7F4",
   "native": [
@@ -12422,7 +12422,7 @@
  },
  {
   "address": "$81:C830",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_81C830",
   "native": [
@@ -12440,7 +12440,7 @@
  },
  {
   "address": "$81:C836",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_81C836",
   "native": [
@@ -12458,7 +12458,7 @@
  },
  {
   "address": "$81:C838",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_81C838",
   "native": [
@@ -12477,7 +12477,7 @@
  },
  {
   "address": "$81:C864",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_81C864",
   "native": [
@@ -12495,7 +12495,7 @@
  },
  {
   "address": "$81:C86A",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_81C86A",
   "native": [
@@ -12507,7 +12507,7 @@
  },
  {
   "address": "$81:C8BB",
-  "class": "inferred",
+  "class": "observed",
   "comment": "routine start",
   "label": "sub_81C8BB",
   "source_records": [
@@ -12516,7 +12516,7 @@
  },
  {
   "address": "$81:C8ED",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_81C8ED",
   "native": [
@@ -12676,7 +12676,7 @@
  },
  {
   "address": "$81:CD41",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_81CD41",
   "source_records": [
@@ -12685,7 +12685,7 @@
  },
  {
   "address": "$81:CDB8",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_81CDB8",
   "native": [
@@ -12699,7 +12699,7 @@
  },
  {
   "address": "$81:CFF6",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_81CFF6",
   "source_records": [
@@ -12709,7 +12709,7 @@
  },
  {
   "address": "$81:D1B2",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_81D1B2",
   "native": [
@@ -12721,7 +12721,7 @@
  },
  {
   "address": "$81:D30C",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_81D30C",
   "native": [
@@ -12808,7 +12808,7 @@
  },
  {
   "address": "$81:D771",
-  "class": "inferred",
+  "class": "observed",
   "comment": "routine start",
   "label": "sub_81D771",
   "native": [
@@ -12820,7 +12820,7 @@
  },
  {
   "address": "$81:D853",
-  "class": "inferred",
+  "class": "observed",
   "comment": "routine start",
   "label": "sub_81D853",
   "native": [
@@ -12836,7 +12836,7 @@
  },
  {
   "address": "$81:D872",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_81D872",
   "native": [
@@ -12860,7 +12860,7 @@
  },
  {
   "address": "$81:D936",
-  "class": "inferred",
+  "class": "observed",
   "comment": "routine start",
   "label": "sub_81D936",
   "native": [
@@ -12873,7 +12873,7 @@
  },
  {
   "address": "$81:DA4F",
-  "class": "inferred",
+  "class": "observed",
   "comment": "routine start",
   "label": "sub_81DA4F",
   "native": [
@@ -12885,7 +12885,7 @@
  },
  {
   "address": "$81:DB10",
-  "class": "inferred",
+  "class": "observed",
   "comment": "routine start",
   "label": "sub_81DB10",
   "native": [
@@ -12899,7 +12899,7 @@
  },
  {
   "address": "$81:DB70",
-  "class": "inferred",
+  "class": "observed",
   "comment": "routine start",
   "label": "sub_81DB70",
   "native": [
@@ -12913,7 +12913,7 @@
  },
  {
   "address": "$81:DCE6",
-  "class": "inferred",
+  "class": "observed",
   "comment": "routine start",
   "label": "sub_81DCE6",
   "native": [
@@ -12927,7 +12927,7 @@
  },
  {
   "address": "$81:E11C",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_81E11C",
   "native": [
@@ -12939,7 +12939,7 @@
  },
  {
   "address": "$81:E13B",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_81E13B",
   "native": [
@@ -12952,7 +12952,7 @@
  },
  {
   "address": "$81:E263",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_81E263",
   "source_records": [
@@ -12961,7 +12961,7 @@
  },
  {
   "address": "$81:E471",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_81E471",
   "source_records": [
@@ -12970,7 +12970,7 @@
  },
  {
   "address": "$81:E49F",
-  "class": "inferred",
+  "class": "observed",
   "comment": "routine start",
   "label": "sub_81E49F",
   "native": [
@@ -12985,7 +12985,7 @@
  },
  {
   "address": "$81:E6F6",
-  "class": "inferred",
+  "class": "observed",
   "comment": "routine start",
   "label": "sub_81E6F6",
   "source_records": [
@@ -12996,7 +12996,7 @@
  },
  {
   "address": "$81:E79B",
-  "class": "inferred",
+  "class": "observed",
   "comment": "routine start",
   "label": "sub_81E79B",
   "source_records": [
@@ -13007,7 +13007,7 @@
  },
  {
   "address": "$81:E831",
-  "class": "inferred",
+  "class": "observed",
   "comment": "routine start",
   "label": "sub_81E831",
   "native": [
@@ -13022,7 +13022,7 @@
  },
  {
   "address": "$81:E87C",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_81E87C",
   "native": [
@@ -13500,7 +13500,7 @@
  },
  {
   "address": "$81:F1B5",
-  "class": "inferred",
+  "class": "observed",
   "comment": "routine start",
   "label": "sub_81F1B5",
   "native": [
@@ -14125,7 +14125,7 @@
  },
  {
   "address": "$82:8768",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_828768",
   "native": [
@@ -14138,7 +14138,7 @@
  },
  {
   "address": "$82:87AD",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_8287AD",
   "native": [
@@ -14190,7 +14190,7 @@
  },
  {
   "address": "$82:8927",
-  "class": "inferred",
+  "class": "observed",
   "comment": "routine start",
   "label": "sub_828927",
   "native": [
@@ -14637,7 +14637,7 @@
  },
  {
   "address": "$82:9439",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_829439",
   "native": [
@@ -14653,7 +14653,7 @@
  },
  {
   "address": "$82:959B",
-  "class": "inferred",
+  "class": "observed",
   "comment": "routine start",
   "label": "sub_82959B",
   "native": [
@@ -14979,7 +14979,7 @@
  },
  {
   "address": "$82:9C6D",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_829C6D",
   "native": [
@@ -14992,7 +14992,7 @@
  },
  {
   "address": "$82:9CA3",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_829CA3",
   "native": [
@@ -15005,7 +15005,7 @@
  },
  {
   "address": "$82:9CEA",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_829CEA",
   "native": [
@@ -15044,7 +15044,7 @@
  },
  {
   "address": "$82:9D3A",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_829D3A",
   "native": [
@@ -15058,7 +15058,7 @@
  },
  {
   "address": "$82:9D47",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_829D47",
   "native": [
@@ -15074,7 +15074,7 @@
  },
  {
   "address": "$82:9D64",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_829D64",
   "native": [
@@ -15088,7 +15088,7 @@
  },
  {
   "address": "$82:9D70",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_829D70",
   "native": [
@@ -15211,7 +15211,7 @@
  },
  {
   "address": "$82:A201",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_82A201",
   "native": [
@@ -15816,7 +15816,7 @@
  },
  {
   "address": "$82:A84F",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_82A84F",
   "native": [
@@ -16295,7 +16295,7 @@
  },
  {
   "address": "$82:ADAB",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_82ADAB",
   "native": [
@@ -16320,7 +16320,7 @@
  },
  {
   "address": "$82:AEF5",
-  "class": "inferred",
+  "class": "observed",
   "comment": "routine start",
   "label": "sub_82AEF5",
   "source_records": [
@@ -16338,7 +16338,7 @@
  },
  {
   "address": "$82:B15E",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_82B15E",
   "source_records": [
@@ -16502,6 +16502,7 @@
    "docs/research/R-0046-track-breadth-matrix.md",
    "docs/research/R-0054-boot-title-main-menu.md",
    "docs/research/R-0089-coverage-gaps.md",
+   "tasks/DATA-COVERAGE.md",
    "tasks/M1-03.md",
    "tasks/TRACK-BREADTH.md"
   ]
@@ -16575,7 +16576,7 @@
  },
  {
   "address": "$82:C53D",
-  "class": "inferred",
+  "class": "observed",
   "comment": "routine start",
   "label": "sub_82C53D",
   "source_records": [
@@ -16984,7 +16985,7 @@
  },
  {
   "address": "$82:D943",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_82D943",
   "native": [
@@ -17192,7 +17193,7 @@
  },
  {
   "address": "$82:DDDE",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_82DDDE",
   "source_records": [
@@ -17201,7 +17202,7 @@
  },
  {
   "address": "$82:DF06",
-  "class": "inferred",
+  "class": "observed",
   "comment": "routine start",
   "label": "sub_82DF06",
   "native": [
@@ -17213,7 +17214,7 @@
  },
  {
   "address": "$82:DF9E",
-  "class": "inferred",
+  "class": "observed",
   "comment": "routine start",
   "label": "sub_82DF9E",
   "native": [
@@ -17226,7 +17227,7 @@
  },
  {
   "address": "$82:DFF4",
-  "class": "inferred",
+  "class": "observed",
   "comment": "routine start",
   "label": "sub_82DFF4",
   "native": [
@@ -17238,7 +17239,7 @@
  },
  {
   "address": "$82:E103",
-  "class": "inferred",
+  "class": "observed",
   "comment": "routine start",
   "label": "sub_82E103",
   "native": [
@@ -17392,7 +17393,7 @@
  },
  {
   "address": "$83:879A",
-  "class": "inferred",
+  "class": "observed",
   "comment": "routine start",
   "label": "sub_83879A",
   "native": [
@@ -17417,7 +17418,7 @@
  },
  {
   "address": "$83:87B6",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_8387B6",
   "native": [
@@ -17430,7 +17431,7 @@
  },
  {
   "address": "$83:87BB",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_8387BB",
   "source_records": [
@@ -17439,7 +17440,7 @@
  },
  {
   "address": "$83:87C0",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_8387C0",
   "source_records": [
@@ -17457,36 +17458,36 @@
  },
  {
   "address": "$83:87F5",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_8387F5",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_8387F5",
   "source_records": [
    "docs/research/R-0065-fifth-win-completion.md"
   ]
  },
  {
   "address": "$83:87FB",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_8387FB",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_8387FB",
   "source_records": [
    "docs/research/R-0065-fifth-win-completion.md"
   ]
  },
  {
   "address": "$83:8801",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_838801",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_838801",
   "source_records": [
    "docs/research/R-0065-fifth-win-completion.md"
   ]
  },
  {
   "address": "$83:8805",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_838805",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_838805",
   "native": [
    "src/core/race_result.cpp:score_race"
   ],
@@ -17496,16 +17497,16 @@
  },
  {
   "address": "$83:8815",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_838815",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_838815",
   "source_records": [
    "docs/research/R-0065-fifth-win-completion.md"
   ]
  },
  {
   "address": "$83:881B",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_83881B",
   "native": [
@@ -17522,7 +17523,7 @@
  },
  {
   "address": "$83:8827",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_838827",
   "native": [
@@ -17535,7 +17536,7 @@
  },
  {
   "address": "$83:8832",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_838832",
   "native": [
@@ -17549,7 +17550,7 @@
  },
  {
   "address": "$83:883E",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_83883E",
   "native": [
@@ -17564,7 +17565,7 @@
  },
  {
   "address": "$83:8853",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_838853",
   "native": [
@@ -17582,7 +17583,7 @@
  },
  {
   "address": "$83:8899",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_838899",
   "native": [
@@ -17598,7 +17599,7 @@
  },
  {
   "address": "$83:88AD",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_8388AD",
   "native": [
@@ -17614,7 +17615,7 @@
  },
  {
   "address": "$83:88C1",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_8388C1",
   "native": [
@@ -17630,7 +17631,7 @@
  },
  {
   "address": "$83:88D1",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_8388D1",
   "native": [
@@ -17645,9 +17646,9 @@
  },
  {
   "address": "$83:88D3",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_8388D3",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_8388D3",
   "native": [
    "src/core/race_result.cpp:race_won"
   ],
@@ -17658,9 +17659,9 @@
  },
  {
   "address": "$83:88DD",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_8388DD",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_8388DD",
   "native": [
    "src/core/race_result.cpp:race_won"
   ],
@@ -17670,9 +17671,9 @@
  },
  {
   "address": "$83:88E1",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_8388E1",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_8388E1",
   "native": [
    "src/core/race_progress.cpp:classic_race_player_won",
    "src/core/race_result.cpp:race_won",
@@ -17688,9 +17689,9 @@
  },
  {
   "address": "$83:88F1",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_8388F1",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_8388F1",
   "native": [
    "src/core/race_progress.cpp:classic_race_player_won",
    "src/core/race_result.cpp:race_won",
@@ -17704,9 +17705,9 @@
  },
  {
   "address": "$83:88F4",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_8388F4",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_8388F4",
   "native": [
    "src/core/race_progress.cpp:classic_race_player_won",
    "src/core/race_result.cpp:race_won",
@@ -17719,9 +17720,9 @@
  },
  {
   "address": "$83:88F7",
-  "class": "data",
-  "comment": "data",
-  "label": "dat_8388F7",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_8388F7",
   "source_records": [
    "docs/research/R-0065-fifth-win-completion.md",
    "docs/research/R-0067-stunt-result.md"
@@ -17729,9 +17730,9 @@
  },
  {
   "address": "$83:88FD",
-  "class": "data",
-  "comment": "data",
-  "label": "dat_8388FD",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_8388FD",
   "native": [
    "src/core/award.cpp:complete_tour",
    "src/core/front_end.hpp:FrontEndScreen",
@@ -17779,7 +17780,7 @@
  },
  {
   "address": "$83:895B",
-  "class": "inferred",
+  "class": "observed",
   "comment": "routine start",
   "label": "sub_83895B",
   "native": [
@@ -17792,7 +17793,7 @@
  },
  {
   "address": "$83:8967",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_838967",
   "source_records": [
@@ -17914,7 +17915,7 @@
  },
  {
   "address": "$83:8BE7",
-  "class": "inferred",
+  "class": "observed",
   "comment": "routine start",
   "label": "sub_838BE7",
   "native": [
@@ -17941,9 +17942,9 @@
  },
  {
   "address": "$83:8D5D",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_838D5D",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_838D5D",
   "native": [
    "src/core/lap_result.cpp:graph_line"
   ],
@@ -18015,9 +18016,9 @@
  },
  {
   "address": "$83:8FDE",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_838FDE",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_838FDE",
   "native": [
    "src/core/options_menu.cpp:score_bar_targets"
   ],
@@ -18027,9 +18028,9 @@
  },
  {
   "address": "$83:904A",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_83904A",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_83904A",
   "native": [
    "src/core/lap_result.cpp:GraphScale",
    "src/core/lap_result.cpp:graph_height, minimum_range",
@@ -18327,9 +18328,9 @@
  },
  {
   "address": "$83:958C",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_83958C",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_83958C",
   "native": [
    "src/core/league_menu.cpp:choose_league_pair",
    "src/core/league_menu.cpp:restore_league_pair"
@@ -18341,9 +18342,9 @@
  },
  {
   "address": "$83:95CA",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_8395CA",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_8395CA",
   "native": [
    "src/core/league_menu.cpp:choose_league_pair",
    "src/core/league_menu.cpp:restore_league_pair"
@@ -18459,9 +18460,9 @@
  },
  {
   "address": "$83:98B8",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_8398B8",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_8398B8",
   "source_records": [
    "docs/research/R-0067-stunt-result.md"
   ]
@@ -18610,9 +18611,9 @@
  },
  {
   "address": "$83:9B31",
-  "class": "data",
-  "comment": "data",
-  "label": "dat_839B31",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_839B31",
   "source_records": [
    "docs/research/R-0055-rider-menu.md"
   ]
@@ -18644,9 +18645,9 @@
  },
  {
   "address": "$83:9EC8",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_839EC8",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_839EC8",
   "native": [
    "src/core/race_result.cpp:score_race"
   ],
@@ -18711,7 +18712,7 @@
  },
  {
   "address": "$83:9F30",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_839F30",
   "native": [
@@ -18793,7 +18794,7 @@
  },
  {
   "address": "$83:A286",
-  "class": "inferred",
+  "class": "observed",
   "comment": "routine start",
   "label": "sub_83A286",
   "native": [
@@ -18807,7 +18808,7 @@
  },
  {
   "address": "$83:A4D2",
-  "class": "inferred",
+  "class": "observed",
   "comment": "routine start",
   "label": "sub_83A4D2",
   "native": [
@@ -18826,7 +18827,7 @@
  },
  {
   "address": "$83:A4E9",
-  "class": "inferred",
+  "class": "observed",
   "comment": "routine start",
   "label": "sub_83A4E9",
   "native": [
@@ -18847,7 +18848,7 @@
  },
  {
   "address": "$83:A4FE",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_83A4FE",
   "native": [
@@ -18859,9 +18860,9 @@
  },
  {
   "address": "$83:A507",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_83A507",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_83A507",
   "native": [
    "src/core/audio_cpu_upload.cpp:upload_of",
    "src/core/audio_cpu_upload.hpp:AudioSoundSetId",
@@ -18879,9 +18880,9 @@
  },
  {
   "address": "$83:A575",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_83A575",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83A575",
   "native": [
    "src/core/front_end_screens.hpp:reset_award_screen",
    "src/core/tour_ending.cpp:blank_frame, reset_frame, pattern_tiles_frame, bar_map_frame, fade_in_frames"
@@ -18892,7 +18893,7 @@
  },
  {
   "address": "$83:A614",
-  "class": "inferred",
+  "class": "observed",
   "comment": "routine start",
   "label": "sub_83A614",
   "native": [
@@ -18911,7 +18912,7 @@
  },
  {
   "address": "$83:A644",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_83A644",
   "native": [
@@ -18927,7 +18928,7 @@
  },
  {
   "address": "$83:A67F",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_83A67F",
   "native": [
@@ -18939,7 +18940,7 @@
  },
  {
   "address": "$83:A721",
-  "class": "inferred",
+  "class": "observed",
   "comment": "routine start",
   "label": "sub_83A721",
   "native": [
@@ -18961,7 +18962,7 @@
  },
  {
   "address": "$83:A75E",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_83A75E",
   "native": [
@@ -18981,7 +18982,7 @@
  },
  {
   "address": "$83:A8A2",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_83A8A2",
   "source_records": [
@@ -18990,7 +18991,7 @@
  },
  {
   "address": "$83:A90E",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_83A90E",
   "native": [
@@ -19002,7 +19003,7 @@
  },
  {
   "address": "$83:A923",
-  "class": "inferred",
+  "class": "observed",
   "comment": "routine start",
   "label": "sub_83A923",
   "native": [
@@ -19029,7 +19030,7 @@
  },
  {
   "address": "$83:A93A",
-  "class": "inferred",
+  "class": "observed",
   "comment": "routine start",
   "label": "sub_83A93A",
   "native": [
@@ -19043,9 +19044,9 @@
  },
  {
   "address": "$83:A9FB",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_83A9FB",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83A9FB",
   "native": [
    "src/core/audio_cpu_credits_text.cpp:native_audio_print_credits",
    "src/core/audio_cpu_credits_text.cpp:set_position",
@@ -19057,7 +19058,7 @@
  },
  {
   "address": "$83:AAC5",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_83AAC5",
   "native": [
@@ -19071,7 +19072,7 @@
  },
  {
   "address": "$83:AB25",
-  "class": "inferred",
+  "class": "observed",
   "comment": "routine start",
   "label": "sub_83AB25",
   "native": [
@@ -19085,7 +19086,7 @@
  },
  {
   "address": "$83:AB9A",
-  "class": "inferred",
+  "class": "observed",
   "comment": "routine start",
   "label": "sub_83AB9A",
   "native": [
@@ -19109,7 +19110,7 @@
  },
  {
   "address": "$83:AB9F",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_83AB9F",
   "native": [
@@ -19123,7 +19124,7 @@
  },
  {
   "address": "$83:ABB3",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_83ABB3",
   "native": [
@@ -19138,7 +19139,7 @@
  },
  {
   "address": "$83:ABB9",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_83ABB9",
   "native": [
@@ -19153,7 +19154,7 @@
  },
  {
   "address": "$83:ABDA",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_83ABDA",
   "native": [
@@ -19168,7 +19169,7 @@
  },
  {
   "address": "$83:ABFD",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_83ABFD",
   "native": [
@@ -19181,7 +19182,7 @@
  },
  {
   "address": "$83:AC1F",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_83AC1F",
   "native": [
@@ -19198,7 +19199,7 @@
  },
  {
   "address": "$83:AC32",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_83AC32",
   "native": [
@@ -19216,7 +19217,7 @@
  },
  {
   "address": "$83:AC3B",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_83AC3B",
   "native": [
@@ -19231,7 +19232,7 @@
  },
  {
   "address": "$83:AC6D",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_83AC6D",
   "native": [
@@ -19246,7 +19247,7 @@
  },
  {
   "address": "$83:ACDD",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_83ACDD",
   "native": [
@@ -19262,7 +19263,7 @@
  },
  {
   "address": "$83:AD33",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_83AD33",
   "native": [
@@ -19279,7 +19280,7 @@
  },
  {
   "address": "$83:AD67",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_83AD67",
   "native": [
@@ -19296,7 +19297,7 @@
  },
  {
   "address": "$83:AD9B",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_83AD9B",
   "native": [
@@ -19314,7 +19315,7 @@
  },
  {
   "address": "$83:ADFA",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_83ADFA",
   "native": [
@@ -19341,9 +19342,9 @@
  },
  {
   "address": "$83:AE12",
-  "class": "data",
-  "comment": "data",
-  "label": "dat_83AE12",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_83AE12",
   "native": [
    "src/core/front_end.hpp:FrontEndContent::reveal_brightness, FrontEndContent::reveal_offsets, FrontEndContent::credits_text, FrontEndContent::credits_poses, FrontEndContent::credits_objects"
   ],
@@ -19353,9 +19354,9 @@
  },
  {
   "address": "$83:AE72",
-  "class": "data",
-  "comment": "data",
-  "label": "dat_83AE72",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_83AE72",
   "native": [
    "src/core/front_end.hpp:FrontEndContent::reveal_brightness, FrontEndContent::reveal_offsets, FrontEndContent::credits_text, FrontEndContent::credits_poses, FrontEndContent::credits_objects"
   ],
@@ -19365,7 +19366,7 @@
  },
  {
   "address": "$83:AEF6",
-  "class": "inferred",
+  "class": "observed",
   "comment": "routine start",
   "label": "sub_83AEF6",
   "native": [
@@ -19382,7 +19383,7 @@
  },
  {
   "address": "$83:AF4B",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_83AF4B",
   "native": [
@@ -19397,7 +19398,7 @@
  },
  {
   "address": "$83:AF54",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_83AF54",
   "native": [
@@ -19412,7 +19413,7 @@
  },
  {
   "address": "$83:AF69",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_83AF69",
   "native": [
@@ -19427,7 +19428,7 @@
  },
  {
   "address": "$83:AF72",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_83AF72",
   "native": [
@@ -19442,7 +19443,7 @@
  },
  {
   "address": "$83:AF96",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_83AF96",
   "native": [
@@ -19457,7 +19458,7 @@
  },
  {
   "address": "$83:AFBA",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_83AFBA",
   "native": [
@@ -19472,7 +19473,7 @@
  },
  {
   "address": "$83:AFE8",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_83AFE8",
   "native": [
@@ -19484,7 +19485,7 @@
  },
  {
   "address": "$83:AFF6",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_83AFF6",
   "native": [
@@ -19496,7 +19497,7 @@
  },
  {
   "address": "$83:B004",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_83B004",
   "native": [
@@ -19509,7 +19510,7 @@
  },
  {
   "address": "$83:B02C",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_83B02C",
   "native": [
@@ -19522,7 +19523,7 @@
  },
  {
   "address": "$83:B062",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_83B062",
   "native": [
@@ -19536,7 +19537,7 @@
  },
  {
   "address": "$83:B096",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_83B096",
   "native": [
@@ -19548,7 +19549,7 @@
  },
  {
   "address": "$83:B119",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_83B119",
   "native": [
@@ -19560,9 +19561,9 @@
  },
  {
   "address": "$83:B120",
-  "class": "data",
-  "comment": "data",
-  "label": "dat_83B120",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_83B120",
   "native": [
    "src/core/award.cpp:first_entries_at, bounce_at, poses_at, medal_tiles_at",
    "src/core/front_end.hpp:FrontEndContent::award_tables, FrontEndContent::award_medal_art"
@@ -19573,36 +19574,36 @@
  },
  {
   "address": "$83:B129",
-  "class": "data",
-  "comment": "data",
-  "label": "dat_83B129",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_83B129",
   "source_records": [
    "docs/research/R-0059-tour-completion.md"
   ]
  },
  {
   "address": "$83:B142",
-  "class": "data",
-  "comment": "data",
-  "label": "dat_83B142",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_83B142",
   "source_records": [
    "docs/research/R-0059-tour-completion.md"
   ]
  },
  {
   "address": "$83:B1B6",
-  "class": "data",
-  "comment": "data",
-  "label": "dat_83B1B6",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_83B1B6",
   "source_records": [
    "docs/research/R-0059-tour-completion.md"
   ]
  },
  {
   "address": "$83:B1EB",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_83B1EB",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_83B1EB",
   "native": [
    "src/core/tour_ending.cpp:endings",
    "src/core/tour_ending_scripts.cpp:(file)"
@@ -19613,9 +19614,9 @@
  },
  {
   "address": "$83:B2E9",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_83B2E9",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83B2E9",
   "native": [
    "src/core/tour_ending_scripts.cpp:roll_start"
   ],
@@ -19625,9 +19626,9 @@
  },
  {
   "address": "$83:B32B",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_83B32B",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83B32B",
   "native": [
    "src/core/tour_ending_scripts.cpp:roll_end"
   ],
@@ -19637,9 +19638,9 @@
  },
  {
   "address": "$83:B374",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_83B374",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83B374",
   "native": [
    "src/core/tour_ending_scripts.cpp:bounce_part"
   ],
@@ -19649,9 +19650,9 @@
  },
  {
   "address": "$83:B436",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_83B436",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83B436",
   "native": [
    "src/core/tour_ending_scripts.cpp:pull_over_part"
   ],
@@ -19673,9 +19674,9 @@
  },
  {
   "address": "$83:B506",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_83B506",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_83B506",
   "native": [
    "src/core/tour_ending.cpp:endings",
    "src/core/tour_ending_scripts.cpp:(file)"
@@ -19686,9 +19687,9 @@
  },
  {
   "address": "$83:B60C",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_83B60C",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83B60C",
   "native": [
    "src/core/tour_ending_scripts.cpp:end",
    "src/core/tour_ending_scripts.cpp:walk_in_part",
@@ -19700,9 +19701,9 @@
  },
  {
   "address": "$83:B63F",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_83B63F",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83B63F",
   "native": [
    "src/core/tour_ending_scripts.cpp:hit_part",
    "src/core/tour_ending_scripts.cpp:whistle_step, fall_sound_step, first_roll_sound, second_roll_sound"
@@ -19713,9 +19714,9 @@
  },
  {
   "address": "$83:B695",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_83B695",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83B695",
   "native": [
    "src/core/tour_ending_scripts.cpp:hit_part",
    "src/core/tour_ending_scripts.cpp:whistle_step, fall_sound_step, first_roll_sound, second_roll_sound"
@@ -19726,9 +19727,9 @@
  },
  {
   "address": "$83:B74E",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_83B74E",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83B74E",
   "native": [
    "src/core/tour_ending_scripts.cpp:roll_on_part",
    "src/core/tour_ending_scripts.cpp:whistle_step, fall_sound_step, first_roll_sound, second_roll_sound"
@@ -19751,9 +19752,9 @@
  },
  {
   "address": "$83:B79C",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_83B79C",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_83B79C",
   "native": [
    "src/core/tour_ending_right_column.cpp:walk_in_part",
    "src/core/tour_ending_scripts.hpp:walk"
@@ -19765,9 +19766,9 @@
  },
  {
   "address": "$83:B7B1",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_83B7B1",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83B7B1",
   "native": [
    "src/core/tour_ending_scripts.hpp:walk_sound"
   ],
@@ -19777,9 +19778,9 @@
  },
  {
   "address": "$83:B7D2",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_83B7D2",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_83B7D2",
   "native": [
    "src/core/tour_ending.cpp:endings",
    "src/core/tour_ending_right_column.cpp:(file)"
@@ -19790,9 +19791,9 @@
  },
  {
   "address": "$83:B8CB",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_83B8CB",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83B8CB",
   "native": [
    "src/core/tour_ending_right_column.cpp:end",
    "src/core/tour_ending_right_column.cpp:ride_in_part"
@@ -19803,9 +19804,9 @@
  },
  {
   "address": "$83:B8FC",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_83B8FC",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83B8FC",
   "native": [
    "src/core/tour_ending_right_column.cpp:end",
    "src/core/tour_ending_right_column.cpp:ride_in_part",
@@ -19817,9 +19818,9 @@
  },
  {
   "address": "$83:B918",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_83B918",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83B918",
   "native": [
    "src/core/tour_ending_right_column.cpp:rise_sound, bump_sound, ball_sound, ball_gone_sound, bound_sound, second_bound_sound"
   ],
@@ -19829,9 +19830,9 @@
  },
  {
   "address": "$83:BA10",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_83BA10",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83BA10",
   "native": [
    "src/core/tour_ending_right_column.cpp:rise_sound, bump_sound, ball_sound, ball_gone_sound, bound_sound, second_bound_sound",
    "src/core/tour_ending_right_column.cpp:scarf_part"
@@ -19842,9 +19843,9 @@
  },
  {
   "address": "$83:BA6C",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_83BA6C",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83BA6C",
   "native": [
    "src/core/tour_ending_right_column.cpp:bound_off_part",
    "src/core/tour_ending_right_column.cpp:rise_sound, bump_sound, ball_sound, ball_gone_sound, bound_sound, second_bound_sound"
@@ -19855,9 +19856,9 @@
  },
  {
   "address": "$83:BB2A",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_83BB2A",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83BB2A",
   "native": [
    "src/core/tour_ending_right_column.cpp:after_bound_step",
    "src/core/tour_ending_right_column.cpp:rise_sound, bump_sound, ball_sound, ball_gone_sound, bound_sound, second_bound_sound"
@@ -19880,9 +19881,9 @@
  },
  {
   "address": "$83:BB80",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_83BB80",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_83BB80",
   "native": [
    "src/core/tour_ending.cpp:endings",
    "src/core/tour_ending_right_column.cpp:(file)"
@@ -19893,9 +19894,9 @@
  },
  {
   "address": "$83:BCFC",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_83BCFC",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83BCFC",
   "native": [
    "src/core/tour_ending_right_column.cpp:squash_part"
   ],
@@ -19917,9 +19918,9 @@
  },
  {
   "address": "$83:BEBA",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_83BEBA",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_83BEBA",
   "native": [
    "src/core/tour_ending_right_column.cpp:scroll_pattern"
   ],
@@ -19929,9 +19930,9 @@
  },
  {
   "address": "$83:BED0",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_83BED0",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_83BED0",
   "native": [
    "src/core/tour_ending.cpp:endings",
    "src/core/tour_ending_right_column.cpp:(file)"
@@ -19942,9 +19943,9 @@
  },
  {
   "address": "$83:BFD2",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_83BFD2",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83BFD2",
   "native": [
    "src/core/tour_ending_right_column.cpp:wobble_part"
   ],
@@ -19954,9 +19955,9 @@
  },
  {
   "address": "$83:C07C",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_83C07C",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83C07C",
   "native": [
    "src/core/tour_ending_right_column.cpp:knock_part"
   ],
@@ -19966,9 +19967,9 @@
  },
  {
   "address": "$83:C0B3",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_83C0B3",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83C0B3",
   "native": [
    "src/core/tour_ending_right_column.cpp:knock_part"
   ],
@@ -19990,9 +19991,9 @@
  },
  {
   "address": "$83:C11E",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_83C11E",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_83C11E",
   "native": [
    "src/core/tour_ending.cpp:endings",
    "src/core/tour_ending_scripts.cpp:(file)"
@@ -20003,9 +20004,9 @@
  },
  {
   "address": "$83:C126",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_83C126",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83C126",
   "native": [
    "src/core/tour_ending_scripts.hpp:clear_third_pose_tiles"
   ],
@@ -20015,9 +20016,9 @@
  },
  {
   "address": "$83:C302",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_83C302",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83C302",
   "native": [
    "src/core/tour_ending_scripts.cpp:fire_part"
   ],
@@ -20027,9 +20028,9 @@
  },
  {
   "address": "$83:C3BB",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_83C3BB",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83C3BB",
   "native": [
    "src/core/tour_ending_scripts.cpp:blast_part",
    "src/core/tour_ending_scripts.cpp:burn_out_part"
@@ -20052,9 +20053,9 @@
  },
  {
   "address": "$83:C49C",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_83C49C",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_83C49C",
   "native": [
    "src/core/tour_ending.cpp:(file)",
    "src/core/tour_ending.cpp:endings"
@@ -20065,9 +20066,9 @@
  },
  {
   "address": "$83:C5C7",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_83C5C7",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83C5C7",
   "native": [
    "src/core/tour_ending.cpp:script"
   ],
@@ -20077,9 +20078,9 @@
  },
  {
   "address": "$83:C5DC",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_83C5DC",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83C5DC",
   "native": [
    "src/core/tour_ending.cpp:script"
   ],
@@ -20101,9 +20102,9 @@
  },
  {
   "address": "$83:C715",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_83C715",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_83C715",
   "native": [
    "src/core/tour_ending.cpp:endings",
    "src/core/tour_ending_right_column.cpp:(file)"
@@ -20114,9 +20115,9 @@
  },
  {
   "address": "$83:C80C",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_83C80C",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83C80C",
   "native": [
    "src/core/tour_ending_right_column.cpp:end",
    "src/core/tour_ending_right_column.cpp:walk_in_part"
@@ -20127,9 +20128,9 @@
  },
  {
   "address": "$83:C825",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_83C825",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83C825",
   "native": [
    "src/core/tour_ending_right_column.cpp:end",
    "src/core/tour_ending_right_column.cpp:walk_in_part"
@@ -20140,9 +20141,9 @@
  },
  {
   "address": "$83:C86E",
-  "class": "unknown",
-  "comment": "unknown",
-  "label": "unk_83C86E",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83C86E",
   "native": [
    "src/core/tour_ending_right_column.cpp:hold_part"
   ],
@@ -20206,7 +20207,7 @@
  },
  {
   "address": "$83:C912",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_83C912",
   "native": [
@@ -20218,7 +20219,7 @@
  },
  {
   "address": "$83:C91C",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_83C91C",
   "native": [
@@ -20231,7 +20232,7 @@
  },
  {
   "address": "$83:C94A",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_83C94A",
   "native": [
@@ -20324,7 +20325,7 @@
  },
  {
   "address": "$83:CB6A",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_83CB6A",
   "native": [
@@ -20339,7 +20340,7 @@
  },
  {
   "address": "$83:CBD8",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_83CBD8",
   "native": [
@@ -20364,7 +20365,7 @@
  },
  {
   "address": "$83:CBFC",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_83CBFC",
   "source_records": [
@@ -20424,7 +20425,7 @@
  },
  {
   "address": "$83:CC20",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_83CC20",
   "native": [
@@ -20784,7 +20785,7 @@
  },
  {
   "address": "$83:CDB1",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_83CDB1",
   "native": [
@@ -20811,7 +20812,7 @@
  },
  {
   "address": "$83:CE2C",
-  "class": "inferred",
+  "class": "observed",
   "comment": "routine start",
   "label": "sub_83CE2C",
   "native": [
@@ -20857,7 +20858,7 @@
  },
  {
   "address": "$83:CEC9",
-  "class": "inferred",
+  "class": "observed",
   "comment": "routine start",
   "label": "sub_83CEC9",
   "native": [
@@ -20876,7 +20877,7 @@
  },
  {
   "address": "$83:CECB",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_83CECB",
   "native": [
@@ -20892,7 +20893,7 @@
  },
  {
   "address": "$83:CED9",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_83CED9",
   "native": [
@@ -20927,7 +20928,7 @@
  },
  {
   "address": "$83:D103",
-  "class": "inferred",
+  "class": "observed",
   "comment": "routine start",
   "label": "sub_83D103",
   "native": [
@@ -20943,7 +20944,7 @@
  },
  {
   "address": "$83:D104",
-  "class": "inferred",
+  "class": "observed",
   "comment": "routine start",
   "label": "sub_83D104",
   "native": [
@@ -21073,7 +21074,7 @@
  },
  {
   "address": "$83:D28A",
-  "class": "inferred",
+  "class": "observed",
   "comment": "routine start",
   "label": "sub_83D28A",
   "native": [
@@ -21413,7 +21414,7 @@
  },
  {
   "address": "$83:E175",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_83E175",
   "native": [
@@ -21431,7 +21432,7 @@
  },
  {
   "address": "$83:E17D",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_83E17D",
   "native": [
@@ -21512,7 +21513,7 @@
  },
  {
   "address": "$83:E254",
-  "class": "inferred",
+  "class": "observed",
   "comment": "routine start",
   "label": "sub_83E254",
   "native": [
@@ -21528,7 +21529,7 @@
  },
  {
   "address": "$83:E256",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_83E256",
   "native": [
@@ -21543,7 +21544,7 @@
  },
  {
   "address": "$83:E267",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_83E267",
   "native": [
@@ -21559,7 +21560,7 @@
  },
  {
   "address": "$83:E2BB",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_83E2BB",
   "native": [
@@ -21573,7 +21574,7 @@
  },
  {
   "address": "$83:E2C4",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_83E2C4",
   "native": [
@@ -21588,7 +21589,7 @@
  },
  {
   "address": "$83:E2EB",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_83E2EB",
   "native": [
@@ -21603,7 +21604,7 @@
  },
  {
   "address": "$83:E303",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_83E303",
   "native": [
@@ -21618,7 +21619,7 @@
  },
  {
   "address": "$83:E389",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_83E389",
   "native": [
@@ -21634,7 +21635,7 @@
  },
  {
   "address": "$83:E3E3",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_83E3E3",
   "native": [
@@ -21651,7 +21652,7 @@
  },
  {
   "address": "$83:E417",
-  "class": "inferred",
+  "class": "observed",
   "comment": "routine start",
   "label": "sub_83E417",
   "native": [
@@ -21666,7 +21667,7 @@
  },
  {
   "address": "$83:E42F",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_83E42F",
   "native": [
@@ -21681,7 +21682,7 @@
  },
  {
   "address": "$83:E4CD",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_83E4CD",
   "native": [
@@ -21696,9 +21697,9 @@
  },
  {
   "address": "$83:E55C",
-  "class": "data",
-  "comment": "data",
-  "label": "dat_83E55C",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_83E55C",
   "native": [
    "src/core/content_pack.cpp:zoom_required",
    "src/core/race_windows.cpp:window_table_stride, window_table_body, window_table_count"
@@ -22363,7 +22364,7 @@
  },
  {
   "address": "$83:E7F2",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_83E7F2",
   "native": [
@@ -22443,7 +22444,7 @@
  },
  {
   "address": "$83:E856",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_83E856",
   "native": [
@@ -22457,7 +22458,7 @@
  },
  {
   "address": "$83:E85C",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_83E85C",
   "native": [
@@ -22472,7 +22473,7 @@
  },
  {
   "address": "$83:E874",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_83E874",
   "native": [
@@ -22486,7 +22487,7 @@
  },
  {
   "address": "$83:E87A",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_83E87A",
   "native": [
@@ -22499,7 +22500,7 @@
  },
  {
   "address": "$83:E898",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_83E898",
   "native": [
@@ -22513,7 +22514,7 @@
  },
  {
   "address": "$83:E8B6",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_83E8B6",
   "native": [
@@ -22528,7 +22529,7 @@
  },
  {
   "address": "$83:E8B9",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_83E8B9",
   "native": [
@@ -22544,7 +22545,7 @@
  },
  {
   "address": "$83:E8DA",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_83E8DA",
   "native": [
@@ -22695,7 +22696,7 @@
  },
  {
   "address": "$83:E940",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_83E940",
   "native": [
@@ -22712,7 +22713,7 @@
  },
  {
   "address": "$83:E958",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_83E958",
   "native": [
@@ -22728,7 +22729,7 @@
  },
  {
   "address": "$83:E999",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_83E999",
   "native": [
@@ -22850,7 +22851,7 @@
  },
  {
   "address": "$83:EA5D",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_83EA5D",
   "native": [
@@ -23017,7 +23018,7 @@
  },
  {
   "address": "$83:EAD2",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_83EAD2",
   "native": [
@@ -23034,7 +23035,7 @@
  },
  {
   "address": "$83:EAEA",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_83EAEA",
   "native": [
@@ -23085,7 +23086,7 @@
  },
  {
   "address": "$83:EBB0",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_83EBB0",
   "native": [
@@ -23104,7 +23105,7 @@
  },
  {
   "address": "$83:EBCB",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_83EBCB",
   "native": [
@@ -23144,9 +23145,9 @@
  },
  {
   "address": "$83:EC2E",
-  "class": "data",
-  "comment": "data",
-  "label": "dat_83EC2E",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_83EC2E",
   "native": [
    "src/core/content_pack.cpp:zoom_required",
    "src/core/rider_look.cpp:rider_look_state_valid",
@@ -23317,7 +23318,7 @@
  },
  {
   "address": "$83:F0FB",
-  "class": "inferred",
+  "class": "observed",
   "comment": "routine start",
   "label": "sub_83F0FB",
   "source_records": [
@@ -23587,7 +23588,7 @@
  },
  {
   "address": "$83:F311",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_83F311",
   "native": [
@@ -23644,9 +23645,9 @@
  },
  {
   "address": "$83:F516",
-  "class": "data",
-  "comment": "data",
-  "label": "dat_83F516",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_83F516",
   "native": [
    "src/core/content_pack.cpp:pause_messages_required",
    "src/core/presentation.hpp:ClassicRacePresentationContent::pause_messages",
@@ -23660,9 +23661,9 @@
  },
  {
   "address": "$83:F616",
-  "class": "data",
-  "comment": "data",
-  "label": "dat_83F616",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_83F616",
   "native": [
    "src/core/race_hud.cpp:draw_classic_pause_menu"
   ],
@@ -23673,9 +23674,9 @@
  },
  {
   "address": "$83:F636",
-  "class": "data",
-  "comment": "data",
-  "label": "dat_83F636",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_83F636",
   "native": [
    "src/core/race_hud.cpp:draw_classic_pause_menu"
   ],
@@ -23700,7 +23701,7 @@
  },
  {
   "address": "$83:F65E",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_83F65E",
   "native": [
@@ -23713,7 +23714,7 @@
  },
  {
   "address": "$83:F68A",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_83F68A",
   "native": [
@@ -23726,7 +23727,7 @@
  },
  {
   "address": "$83:F68E",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_83F68E",
   "native": [
@@ -23739,7 +23740,7 @@
  },
  {
   "address": "$83:F695",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_83F695",
   "native": [
@@ -23753,7 +23754,7 @@
  },
  {
   "address": "$83:F6AF",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_83F6AF",
   "native": [
@@ -23765,7 +23766,7 @@
  },
  {
   "address": "$83:F6B9",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_83F6B9",
   "native": [
@@ -23779,7 +23780,7 @@
  },
  {
   "address": "$83:F6D9",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_83F6D9",
   "native": [
@@ -23795,7 +23796,7 @@
  },
  {
   "address": "$83:F6FD",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_83F6FD",
   "native": [
@@ -23813,7 +23814,7 @@
  },
  {
   "address": "$83:F752",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_83F752",
   "native": [
@@ -23827,7 +23828,7 @@
  },
  {
   "address": "$83:F794",
-  "class": "inferred",
+  "class": "observed",
   "comment": "routine start",
   "label": "sub_83F794",
   "native": [
@@ -23839,7 +23840,7 @@
  },
  {
   "address": "$83:F807",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_83F807",
   "native": [
@@ -23853,7 +23854,7 @@
  },
  {
   "address": "$83:F831",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_83F831",
   "native": [
@@ -23867,7 +23868,7 @@
  },
  {
   "address": "$83:F8D5",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_83F8D5",
   "native": [
@@ -23880,7 +23881,7 @@
  },
  {
   "address": "$83:F8DA",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_83F8DA",
   "native": [
@@ -23895,7 +23896,7 @@
  },
  {
   "address": "$83:F8EB",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_83F8EB",
   "native": [
@@ -23908,7 +23909,7 @@
  },
  {
   "address": "$83:F901",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_83F901",
   "native": [
@@ -23921,7 +23922,7 @@
  },
  {
   "address": "$83:F90B",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_83F90B",
   "native": [
@@ -23934,7 +23935,7 @@
  },
  {
   "address": "$83:F915",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_83F915",
   "native": [
@@ -23950,7 +23951,7 @@
  },
  {
   "address": "$83:F930",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_83F930",
   "native": [
@@ -23965,7 +23966,7 @@
  },
  {
   "address": "$83:F937",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_83F937",
   "native": [
@@ -23981,7 +23982,7 @@
  },
  {
   "address": "$83:F93B",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_83F93B",
   "native": [
@@ -23997,7 +23998,7 @@
  },
  {
   "address": "$83:F945",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_83F945",
   "native": [
@@ -24012,7 +24013,7 @@
  },
  {
   "address": "$83:F947",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_83F947",
   "native": [
@@ -24029,7 +24030,7 @@
  },
  {
   "address": "$83:F962",
-  "class": "inferred",
+  "class": "observed",
   "comment": "routine start",
   "label": "sub_83F962",
   "native": [
@@ -24050,7 +24051,7 @@
  },
  {
   "address": "$83:FAAE",
-  "class": "inferred",
+  "class": "observed",
   "comment": "instruction start",
   "label": "loc_83FAAE",
   "source_records": [
