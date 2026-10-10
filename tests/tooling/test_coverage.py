@@ -249,6 +249,60 @@ class DrainTests(unittest.TestCase):
             self.assertEqual(worker.main(common + ["--coverage-out", str(Path(tmp) / "c.json"), "--frame-image", "0"]), EXIT_MISSING_PREREQUISITE)
 
 
+def drained(frames: list[list[int]], watch: list[int] | None = None, core: dict | None = None) -> dict:
+    ring = StubRing(16)
+    d = drain.FrameDrain(ring, 16, watch=watch)
+    for i, pcs in enumerate(frames):
+        for pc in pcs:
+            ring.execute(pc)
+        d.drain_frame(i)
+    doc = d.document({"rom": {"sha256": "a" * 64, "size": 1}, "core": core or {"name": "bsnes", "commit": "c"}, "script": {}},
+                     (0, len(frames) - 1))
+    doc["status"] = "complete"
+    return drain.validate_document(doc)
+
+
+class MergeTests(unittest.TestCase):
+    def test_runs_are_laid_end_to_end(self) -> None:
+        a = drained([[0x8000, 0x8003], [0x8005]], watch=[0x8000])
+        b = drained([[0x8100], [0x8000, 0x8003], [0x8000]], watch=[0x8000])
+        sources = [{"path": "a", "sha256": "1"}, {"path": "b", "sha256": "2"}]
+        m = drain.validate_document(drain.merge_documents([a, b], "corpus", sources))
+        self.assertEqual(m["frames"], {"start": 0, "end": 4, "count": 5})
+        self.assertEqual(m["instructions"]["per_frame"], [2, 1, 1, 2, 1])
+        sites = {s[0]: (s[3], s[4]) for s in m["sites"]}
+        self.assertEqual(sites[0x8000], (3, 0))       # counts summed; first frame from the earliest run
+        self.assertEqual(sites[0x8100], (1, 2))       # b's frame 0 is frame 2 on the merged axis
+        pairs = {(p[0], p[3]): p[6] for p in m["pairs"]}
+        self.assertEqual(pairs[(0x8000, 0x8003)], 2)
+        self.assertNotIn((0x8005, 0x8100), pairs)     # no pair across the runs
+        self.assertEqual(m["watch"]["per_frame"]["32768"], [1, 0, 0, 1, 1])
+        self.assertEqual((m["first_site"], m["last_site"]), (a["first_site"], b["last_site"]))
+        self.assertEqual((m["scenario_id"], m["merged_from"]), ("corpus", sources))
+
+    def test_first_frames_count_from_each_run_start(self) -> None:
+        a = drained([[0x8000]])
+        b = drained([[0x8100], [0x8200]])
+        b["frames"] = {"start": 100, "end": 101, "count": 2}
+        b["sites"] = [[pc, m, bank, n, first + 100] for pc, m, bank, n, first in b["sites"]]
+        m = drain.merge_documents([a, b], "corpus", [{"path": "a"}, {"path": "b"}])
+        self.assertEqual({s[0]: s[4] for s in m["sites"]}, {0x8000: 0, 0x8100: 1, 0x8200: 2})
+
+    def test_inputs_must_agree(self) -> None:
+        a = drained([[0x8000]])
+        src = [{"path": "a"}, {"path": "b"}]
+        for label, other in {
+            "core": drained([[0x8000]], core={"name": "bsnes", "commit": "d"}),
+            "watch": drained([[0x8000]], watch=[0x8000]),
+            "status": dict(drained([[0x8000]]), status="overflow"),
+            "rom": dict(drained([[0x8000]]), rom={"sha256": "b" * 64, "size": 1}),
+        }.items():
+            with self.subTest(case=label), self.assertRaises(ValueError):
+                drain.merge_documents([a, other], "corpus", src)
+        with self.assertRaises(ValueError):
+            drain.merge_documents([a], "corpus", src)
+
+
 class FramePngTests(unittest.TestCase):
     def test_png_structure_and_pixels(self) -> None:
         import zlib
@@ -497,7 +551,8 @@ class TrackedMapTests(unittest.TestCase):
                 self.assertEqual(sum(r["opcode_bytes"] for r in doc["ranges"]), sum(b["opcode_bytes"] for b in doc["banks"]))
                 self.assertEqual(len(doc["entry_points"]), t["entry_points"])
                 self.assertEqual(len(doc["vectors"]), 12)
-                self.assertLessEqual(path.stat().st_size, 1 << 20)
+                # M1-01's 1 MiB; a map of merged coverage (DATA-COVERAGE, R-0093) may take 2 MiB.
+                self.assertLessEqual(path.stat().st_size, (2 if doc["coverage"].get("merged_runs", 0) > 1 else 1) << 20)
                 self.assertEqual(derive.dump_map(doc), path.read_text())
                 for key in ("opcode", "mnemonic", "bytes_hex"):
                     self.assertNotIn(f'"{key}"', path.read_text())

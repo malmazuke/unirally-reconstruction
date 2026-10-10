@@ -95,6 +95,8 @@ def cmd_capture(args: argparse.Namespace) -> int:
         cmd += ["--access-watch-address", f"0x{a:06X}"]
     for a in watch_pcs:
         cmd += ["--access-watch-pc", f"0x{a:06X}"]
+    if args.resolve_rmw:
+        cmd += ["--access-resolve-rmw"]
     series_out = None
     if args.wram_series_range:
         try:
@@ -307,6 +309,9 @@ def register(sub: argparse._SubParsersAction) -> None:
     capture.add_argument("--watch-pc", action="append", help="pc whose registers are logged at every execution (repeatable)")
     capture.add_argument("--wram-series-range", nargs=2, metavar=("START", "LENGTH"), help="work RAM offset and length written as a binary series")
     capture.add_argument("--wram-series-every", type=int, help="frame stride of the series (default 1)")
+    capture.add_argument("--resolve-rmw", action="store_true",
+                         help="compute read-modify-write results (INC, DEC, shifts, rotates with P's carry, TSB/TRB with A) from "
+                              "their resolved old values, so pointers advanced by INC stay resolved (default: an RMW's result is unknown)")
     capture.add_argument("--ring", type=int, default=DEFAULT_RING, help=f"trace ring capacity (default {DEFAULT_RING})")
     capture.add_argument("--frame-image", type=int, action="append", help="write this frame's video output as PNG under <out>/frames (repeatable)")
     capture.add_argument("--rom", help="ROM file; defaults to the path in local/rom-location.txt")

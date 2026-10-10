@@ -1,5 +1,35 @@
 # Project state
 
+**11 October 2026: ACCESS-REGISTER-ORDER is accepted (tier 2, #75) and integrated by merge commit.**
+The access derivation now applies the frame's register stores to its DMA parameter shadow in
+instruction order. Before, a store resolved through a pointer reached the shadow after every
+direct store of the frame, so a DMA enable stored that way logged the frame's last channel
+parameters. Two synthetic tests fail before the fix; the independent review approved. R-0089's corpus re-measured (236 runs): no
+record has a resolved register store, every reduced run and R-0093's totals are byte-identical,
+so R-0093 stands. [ACCESS-REGISTER-ORDER](../tasks/ACCESS-REGISTER-ORDER.md) has the details.
+
+**11 October 2026: ACCESS-ROUND-READS is accepted (tier 2, #74) and integrated by merge commit.**
+The access derivation now records only the resolution round it keeps. Before, a round discarded for
+a conflict, or a resolution dropped after the last round, left its ROM reads (and stored values,
+register stores and DMA log entries) in the record. A round is now kept once it reproduces the
+writes it was resolved against, so a frame that settles in two or three rounds keeps its accesses
+instead of dropping them; records count frames by rounds (`resolution_rounds`).
+
+Results: R-0089's corpus re-measured (236 runs, 1,666,993 frames): no frame needed more than one
+round, every reduced run and R-0093's totals are byte-identical, so R-0093 stands. Nine synthetic
+tests cover the multi-round paths. Offered as a separate task: resolved register stores reach the
+DMA log's register shadow after the frame's direct stores.
+[ACCESS-ROUND-READS](../tasks/ACCESS-ROUND-READS.md) has the details.
+
+**11 October 2026: EVIDENCE-RETENTION frees 88 GiB of disk (131 GB of files) under [D-0011](decisions/D-0011-evidence-retention.md).**
+On the user's instruction, captures that no current gate, in-flight task, recently merged task
+or tool reference reads are deleted, and their recipes are kept: manifests, capture scripts,
+settings, digests, and every file under 1 MiB. 2,594 files in 75 folders went. The 26
+gate-read folders, the protected folders and 32 folders without a recognisable recipe stay. A
+capture a record cites can be regenerated from its recipe and checked against its digests.
+[GATES-AGAINST-MAIN](../tasks/GATES-AGAINST-MAIN.md) is queued (tier 1) to compare changes against accepted native code
+rather than stored captures of the original. See [EVIDENCE-RETENTION](../tasks/EVIDENCE-RETENTION.md).
+
 **10 October 2026: CREDITS-NAME is accepted (tier 1, #70) and integrated by merge commit.**
 The two rider-name cheats are native. Rename rider 0 "credits" and the next race shows the
 original's 500-frame credits picture and ends as a restart; rename it "faedine" and the next
@@ -11,6 +41,20 @@ Results: the credits picture equal on all 800 pictures and 3,676 sound cues; "fa
 equal on every race row (one-view and the review's split demo, 2,201 rows); every frozen gate and
 sweep equals main. The split picture's HUNTER effects are queued as SPLIT-HUNTER-PICTURES.
 [R-0094](research/R-0094-name-cheats.md) defines the domain. Pack profile v37.
+**10 October 2026: DATA-COVERAGE is accepted (tier 2, #71) and integrated by merge commit.**
+It measures which ROM data the original reads over R-0089's 236-run corpus: 1,562,774 of
+2,097,152 bytes, with 0 unresolved accesses after the new `access capture --resolve-rmw`. Findings:
+- **The flagged entries are the tracks.** R-0089's 45 flagged directory entries are the 45 track
+  streams. The never-run `$81:BB7A` sits on a branch no call site reaches.
+- **A second directory.** `$82:B7DD` holds the track scenery directory, 41 entries.
+- **Read but not extracted.** The demo's sound set (samples 02, 23, 34) and the rest of the
+  sound uploads, around the driver D-0009 reimplements.
+- **Unread and unpacked.** The credits-cheat picture, now in CREDITS-NAME's PR, and bank `$A2`.
+- **Static map.** Regenerated with a merged corpus map, its unknown share falls from 40.4% to
+  24.0%. Since this task, `coverage static-map` and `disassemble` need a fifth raw capture:
+  `local/evidence/data-coverage/corpus-coverage.json`.
+[R-0093](research/R-0093-data-coverage.md) and [DATA-COVERAGE](../tasks/DATA-COVERAGE.md) have the details. It ran beside the
+WIPE-RAM/CREDITS-NAME lane, sharing heavy runs through `local/locks/heavy-run.sh`.
 
 **10 October 2026: WIPE-RAM is accepted (tier 1, #69) and integrated by merge commit.**
 The main menu's hidden code, Left+A+L+R, now opens the original's WIPE RAM menu instead of a
