@@ -2,31 +2,31 @@
  "banks": [
   {
    "bank": "$80",
-   "data": 25,
-   "inferred": 3279,
-   "observed": 8394,
-   "unknown": 21070
+   "data": 24,
+   "inferred": 1434,
+   "observed": 22855,
+   "unknown": 8455
   },
   {
    "bank": "$81",
-   "data": 35,
-   "inferred": 12700,
-   "observed": 13202,
-   "unknown": 6831
+   "data": 34,
+   "inferred": 3259,
+   "observed": 22785,
+   "unknown": 6690
   },
   {
    "bank": "$82",
    "data": 0,
-   "inferred": 9504,
-   "observed": 13109,
+   "inferred": 2791,
+   "observed": 19822,
    "unknown": 10155
   },
   {
    "bank": "$83",
-   "data": 32,
-   "inferred": 10838,
-   "observed": 7073,
-   "unknown": 14825
+   "data": 16,
+   "inferred": 5253,
+   "observed": 21375,
+   "unknown": 6124
   }
  ],
  "classes": {
@@ -43,6 +43,11 @@
     "coverage_sha256": "1e6c02747d7c1003df42567e7a3e16f65c58f6ea853f59c9c7c6b6142adb8ca6",
     "path": "docs/map/boot-start-600.map.json",
     "scenario_id": "boot-start-600"
+   },
+   {
+    "coverage_sha256": "60d4d2626bdfc398d6962ea35ed90754d39c36b43636b5da0258cc628f8f5950",
+    "path": "docs/map/data-coverage-corpus.map.json",
+    "scenario_id": "data-coverage-corpus"
    },
    {
     "coverage_sha256": "7654ac204a7a130f66a0dfe8228cf367dd88a35ffc7b2eec5a16ac3f3839337e",
@@ -65,6 +70,7 @@
   "raw_coverage_sha256": [
    "1e6c02747d7c1003df42567e7a3e16f65c58f6ea853f59c9c7c6b6142adb8ca6",
    "476de96fa13b2cff31166037d654c5724634d280de0945ae4baf10e1d9ccd41d",
+   "60d4d2626bdfc398d6962ea35ed90754d39c36b43636b5da0258cc628f8f5950",
    "7654ac204a7a130f66a0dfe8228cf367dd88a35ffc7b2eec5a16ac3f3839337e",
    "a075220e58ecd3550c7700b13ca42b7b8792e2101dfb65d61c1d90ad8bf813d1"
   ]
@@ -83,16 +89,6 @@
  ],
  "kind": "static_code_map",
  "mode_ambiguities": [
-  {
-   "address": "$80:93CB",
-   "modes": [
-    "NMX",
-    "NMx",
-    "NmX",
-    "Nmx"
-   ],
-   "reason": "gap sweep: decodes differently under different modes"
-  },
   {
    "address": "$80:E7C4",
    "modes": [
@@ -163,6 +159,16 @@
     "scenario_id": "boot-start-600",
     "several_tilings": 24,
     "shared_instructions_checked_against_sites": 1765
+   },
+   {
+    "disagreements": 0,
+    "instructions_not_fixed_by_tiling": 8108,
+    "no_tiling": 0,
+    "one_tiling": 355,
+    "ranges": 592,
+    "scenario_id": "data-coverage-corpus",
+    "several_tilings": 237,
+    "shared_instructions_checked_against_sites": 27634
    },
    {
     "disagreements": 0,
@@ -321,7 +327,8 @@
    "class": "observed",
    "end": "$80:885A",
    "mode_at_entry": [
-    "Emx"
+    "Emx",
+    "NmX"
    ],
    "native": [
     "src/core/front_end.hpp:FrontEndState::boot_start",
@@ -339,17 +346,14 @@
    ]
   },
   {
-   "bytes": 83,
+   "bytes": 29,
    "callers": [
     "$80:9311"
    ],
    "class": "observed",
-   "end": "$80:88AD",
+   "end": "$80:8877",
    "mode_at_entry": [
     "NmX"
-   ],
-   "native": [
-    "src/core/audio_cpu_menu_reveal.cpp:native_audio_reveal_main_menu"
    ],
    "observed_entries": {},
    "start": "$80:885B",
@@ -361,7 +365,30 @@
   {
    "bytes": 58,
    "callers": [
-    "$80:BC59"
+    "$80:94E8"
+   ],
+   "class": "observed",
+   "end": "$80:88B1",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "native": [
+    "src/core/audio_cpu_menu_reveal.cpp:native_audio_reveal_main_menu"
+   ],
+   "observed_entries": {},
+   "start": "$80:8878",
+   "static_entries": {
+    "JMP": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 58,
+   "callers": [
+    "$80:BC59",
+    "$80:BD80",
+    "$80:BF12",
+    "$80:C00D"
    ],
    "class": "observed",
    "end": "$80:8916",
@@ -378,6 +405,27 @@
    "observed_entries": {},
    "start": "$80:88DD",
    "static_entries": {
+    "JSR": 4
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 600,
+   "callers": [
+    "$80:AFF2"
+   ],
+   "class": "observed",
+   "end": "$80:8B6E",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "native": [
+    "src/core/league_menu.cpp:league_awards_frame",
+    "src/core/league_menu.cpp:print_awards"
+   ],
+   "observed_entries": {},
+   "start": "$80:8917",
+   "static_entries": {
     "JSR": 1
    },
    "vectors": []
@@ -385,7 +433,8 @@
   {
    "bytes": 13,
    "callers": [
-    "$80:C4DC"
+    "$80:C4DC",
+    "$80:C521"
    ],
    "class": "observed",
    "end": "$80:8C4D",
@@ -398,7 +447,7 @@
    "observed_entries": {},
    "start": "$80:8C41",
    "static_entries": {
-    "JSR": 1
+    "JSR": 2
    },
    "vectors": []
   },
@@ -433,6 +482,41 @@
    "vectors": []
   },
   {
+   "bytes": 1092,
+   "callers": [
+    "$80:C9A7",
+    "$80:C9D3"
+   ],
+   "class": "observed",
+   "end": "$80:910E",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "native": [
+    "src/core/front_end.cpp:waits_for_frame",
+    "src/core/front_end.hpp:RaceResult",
+    "src/core/front_end_screens.hpp:best_lap",
+    "src/core/front_end_screens.hpp:player_best_markers",
+    "src/core/lap_result.cpp:(file)",
+    "src/core/lap_result.cpp:LapWords",
+    "src/core/lap_result.cpp:build_lap_result",
+    "src/core/lap_result.cpp:graph_line",
+    "src/core/lap_result.cpp:graph_object_sizes",
+    "src/core/lap_result.cpp:opponent_best_markers",
+    "src/core/lap_result.cpp:opponent_dots, record_line, record_line_entries",
+    "src/core/lap_result.cpp:print_lap_result",
+    "src/core/lap_result.cpp:saved_word_under_opponent_best",
+    "src/core/race_result.cpp:insert_stunt_record",
+    "src/core/race_result.cpp:start_result"
+   ],
+   "observed_entries": {},
+   "start": "$80:8CCB",
+   "static_entries": {
+    "JSR": 2
+   },
+   "vectors": []
+  },
+  {
    "bytes": 11,
    "callers": [
     "$80:8858"
@@ -440,7 +524,8 @@
    "class": "observed",
    "end": "$80:91DB",
    "mode_at_entry": [
-    "Emx"
+    "Emx",
+    "NmX"
    ],
    "native": [
     "src/core/audio_cpu_boot.cpp:reset_cpu",
@@ -474,9 +559,55 @@
    "bytes": 4,
    "callers": [
     "$83:A901",
-    "$83:AD63"
+    "$83:AD63",
+    "$83:B29B",
+    "$83:B30A",
+    "$83:B39F",
+    "$83:B3AF",
+    "$83:B422",
+    "$83:B474",
+    "$83:B4B9",
+    "$83:B5AD",
+    "$83:B5FE",
+    "$83:B65B",
+    "$83:B6DA",
+    "$83:B729",
+    "$83:B887",
+    "$83:B8E0",
+    "$83:B964",
+    "$83:B9C6",
+    "$83:BA2E",
+    "$83:BA41",
+    "$83:BAA6",
+    "$83:BAC4",
+    "$83:BC30",
+    "$83:BC89",
+    "$83:BCDB",
+    "$83:BD5D",
+    "$83:BDB5",
+    "$83:BE06",
+    "$83:BE43",
+    "$83:BF6E",
+    "$83:BFB6",
+    "$83:BFF3",
+    "$83:C060",
+    "$83:C1FD",
+    "$83:C24E",
+    "$83:C2AE",
+    "$83:C2D7",
+    "$83:C329",
+    "$83:C354",
+    "$83:C387",
+    "$83:C3DC",
+    "$83:C40F",
+    "$83:C57B",
+    "$83:C5B5",
+    "$83:C5FE",
+    "$83:C7C5",
+    "$83:C808",
+    "$83:C889"
    ],
-   "class": "inferred",
+   "class": "observed",
    "end": "$80:9317",
    "mode_at_entry": [
     "NmX"
@@ -488,28 +619,39 @@
    "observed_entries": {},
    "start": "$80:9314",
    "static_entries": {
-    "JSL": 2
+    "JSL": 48
    },
    "vectors": []
   },
   {
    "bytes": 36,
    "callers": [
+    "$80:8B22",
     "$80:9314",
     "$80:97D9",
     "$80:9871",
     "$80:988F",
+    "$80:9CA2",
+    "$80:9CE9",
+    "$80:9FDA",
+    "$80:A04C",
     "$80:A84F",
     "$80:A85B",
     "$80:A86A",
     "$80:A89B",
     "$80:A8AB",
+    "$80:ADE8",
+    "$80:B076",
     "$80:B3E5",
     "$80:CB11",
     "$80:CB22",
     "$80:D1EC",
     "$80:D372",
+    "$80:D90B",
+    "$80:D9BB",
+    "$80:DB56",
     "$80:E258",
+    "$80:E29F",
     "$80:E335",
     "$80:E56A",
     "$80:E59B",
@@ -517,6 +659,13 @@
     "$80:E929",
     "$80:EA0D",
     "$80:EAF2",
+    "$80:EC0B",
+    "$80:EC20",
+    "$80:EC47",
+    "$80:EC62",
+    "$80:EC76",
+    "$80:EC94",
+    "$80:ECCD",
     "$80:F0E4",
     "$80:F4D2",
     "$80:F4F5",
@@ -537,7 +686,7 @@
    "observed_entries": {},
    "start": "$80:9318",
    "static_entries": {
-    "JSR": 26
+    "JSR": 44
    },
    "vectors": []
   },
@@ -566,7 +715,7 @@
    "callers": [
     "$80:B600"
    ],
-   "class": "inferred",
+   "class": "observed",
    "end": "$80:937A",
    "mode_at_entry": [
     "NMX"
@@ -581,12 +730,25 @@
   {
    "bytes": 38,
    "callers": [
+    "$80:8B25",
+    "$80:9BEB",
+    "$80:9CEC",
+    "$80:9E6B",
+    "$80:A66C",
     "$80:ACFA",
     "$80:B429",
+    "$80:C15F",
     "$80:CB25",
+    "$80:D47A",
+    "$80:D90E",
+    "$80:DB9B",
+    "$80:DBD9",
+    "$80:DE9B",
+    "$80:DEE1",
     "$80:E56D",
     "$80:E92C",
-    "$80:EF78"
+    "$80:EF78",
+    "$80:F9D5"
    ],
    "class": "observed",
    "end": "$80:93A0",
@@ -600,7 +762,7 @@
    "observed_entries": {},
    "start": "$80:937B",
    "static_entries": {
-    "JSR": 6
+    "JSR": 19
    },
    "vectors": []
   },
@@ -610,7 +772,7 @@
     "$83:A837",
     "$83:AD2F"
    ],
-   "class": "inferred",
+   "class": "observed",
    "end": "$80:93A4",
    "mode_at_entry": [
     "NmX"
@@ -628,9 +790,30 @@
     "$80:890A",
     "$80:93A1",
     "$80:9585",
+    "$80:9F8F",
+    "$80:9F9E",
+    "$80:9FB9",
+    "$80:A236",
+    "$80:B058",
+    "$80:C03F",
     "$80:CC17",
+    "$80:DB0F",
+    "$80:DB26",
     "$80:E5A2",
-    "$80:EAF9"
+    "$80:EAF9",
+    "$80:EBE2",
+    "$80:EBF1",
+    "$80:EC08",
+    "$80:EC5F",
+    "$80:EC73",
+    "$80:ECCA",
+    "$80:F1F8",
+    "$80:F24C",
+    "$80:F272",
+    "$80:F2D7",
+    "$80:F769",
+    "$80:F7AD",
+    "$80:F7D0"
    ],
    "class": "observed",
    "end": "$80:93CA",
@@ -646,14 +829,39 @@
    "observed_entries": {},
    "start": "$80:93A5",
    "static_entries": {
-    "JSR": 6
+    "JSR": 27
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 288,
+   "callers": [
+    "$80:D700"
+   ],
+   "class": "observed",
+   "end": "$80:94EA",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "native": [
+    "src/core/front_end.cpp:choose_idle_demo",
+    "src/core/front_end.hpp:OnePlayerRecords::demo_track",
+    "src/core/presentation.cpp:render_classic_race"
+   ],
+   "observed_entries": {},
+   "start": "$80:93CB",
+   "static_entries": {
+    "JSR": 1
    },
    "vectors": []
   },
   {
    "bytes": 137,
    "callers": [
-    "$80:BC5E"
+    "$80:BC5E",
+    "$80:BD85",
+    "$80:BF1F",
+    "$80:C016"
    ],
    "class": "observed",
    "end": "$80:95A4",
@@ -678,13 +886,14 @@
    "observed_entries": {},
    "start": "$80:951C",
    "static_entries": {
-    "JSR": 1
+    "JSR": 4
    },
    "vectors": []
   },
   {
    "bytes": 115,
    "callers": [
+    "$80:9CA9",
     "$80:CB14"
    ],
    "class": "observed",
@@ -699,13 +908,14 @@
    "observed_entries": {},
    "start": "$80:95AB",
    "static_entries": {
-    "JSR": 1
+    "JSR": 2
    },
    "vectors": []
   },
   {
    "bytes": 216,
    "callers": [
+    "$80:9D08",
     "$80:CB5A"
    ],
    "class": "observed",
@@ -719,7 +929,7 @@
    "observed_entries": {},
    "start": "$80:9625",
    "static_entries": {
-    "JSR": 1
+    "JSR": 2
    },
    "vectors": []
   },
@@ -749,6 +959,7 @@
    "bytes": 24,
    "callers": [
     "$80:96FD",
+    "$80:D6AB",
     "$80:E9AE"
    ],
    "class": "observed",
@@ -759,6 +970,45 @@
    ],
    "observed_entries": {},
    "start": "$80:9701",
+   "static_entries": {
+    "JSR": 3
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 4,
+   "callers": [
+    "$80:D8A2",
+    "$83:8F58",
+    "$83:903F",
+    "$83:91F0",
+    "$83:9DAB"
+   ],
+   "class": "observed",
+   "end": "$80:971C",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$80:9719",
+   "static_entries": {
+    "JSL": 5
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 46,
+   "callers": [
+    "$80:9719",
+    "$80:9B08"
+   ],
+   "class": "observed",
+   "end": "$80:974A",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$80:971D",
    "static_entries": {
     "JSR": 2
    },
@@ -790,9 +1040,12 @@
   {
    "bytes": 96,
    "callers": [
-    "$80:BC68"
+    "$80:BC68",
+    "$80:BD8F",
+    "$80:BF29",
+    "$80:C020"
    ],
-   "class": "inferred",
+   "class": "observed",
    "end": "$80:9864",
    "mode_at_entry": [
     "NmX"
@@ -804,7 +1057,7 @@
    "observed_entries": {},
    "start": "$80:9805",
    "static_entries": {
-    "JSR": 1
+    "JSR": 4
    },
    "vectors": []
   },
@@ -833,7 +1086,9 @@
     "$80:9593",
     "$80:9865",
     "$80:B0CC",
-    "$80:F5BD"
+    "$80:F206",
+    "$80:F5BD",
+    "$80:FBEB"
    ],
    "class": "observed",
    "end": "$80:9880",
@@ -851,7 +1106,7 @@
    "observed_entries": {},
    "start": "$80:9869",
    "static_entries": {
-    "JSR": 6
+    "JSR": 8
    },
    "vectors": []
   },
@@ -875,9 +1130,16 @@
   {
    "bytes": 31,
    "callers": [
+    "$80:93FD",
+    "$80:94B9",
+    "$80:94D1",
     "$80:9881",
     "$80:B0D8",
     "$80:BC53",
+    "$80:BD7A",
+    "$80:BEB5",
+    "$80:BF0C",
+    "$80:C007",
     "$80:F614"
    ],
    "class": "observed",
@@ -897,7 +1159,7 @@
    "observed_entries": {},
    "start": "$80:9885",
    "static_entries": {
-    "JSR": 4
+    "JSR": 11
    },
    "vectors": []
   },
@@ -905,9 +1167,18 @@
    "bytes": 15,
    "callers": [
     "$80:9A43",
+    "$80:9C40",
+    "$80:B03C",
     "$80:BBBB",
+    "$80:BD30",
+    "$80:BFAB",
+    "$80:C0D7",
     "$80:CB28",
-    "$80:F0DB"
+    "$80:D911",
+    "$80:DB12",
+    "$80:DE29",
+    "$80:F0DB",
+    "$80:F8EA"
    ],
    "class": "observed",
    "end": "$80:98B2",
@@ -921,16 +1192,19 @@
    "observed_entries": {},
    "start": "$80:98A4",
    "static_entries": {
-    "JSR": 4
+    "JSR": 13
    },
    "vectors": []
   },
   {
    "bytes": 205,
    "callers": [
-    "$80:BC61"
+    "$80:BC61",
+    "$80:BD88",
+    "$80:BF22",
+    "$80:C019"
    ],
-   "class": "inferred",
+   "class": "observed",
    "end": "$80:997F",
    "mode_at_entry": [
     "NmX"
@@ -946,7 +1220,7 @@
    "observed_entries": {},
    "start": "$80:98B3",
    "static_entries": {
-    "JSR": 1
+    "JSR": 4
    },
    "vectors": []
   },
@@ -956,7 +1230,7 @@
     "$80:991C",
     "$80:9929"
    ],
-   "class": "inferred",
+   "class": "observed",
    "end": "$80:999E",
    "mode_at_entry": [
     "NMX"
@@ -973,9 +1247,30 @@
    "vectors": []
   },
   {
+   "bytes": 5,
+   "callers": [
+    "$80:BEB8"
+   ],
+   "class": "observed",
+   "end": "$80:99A3",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$80:999F",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
    "bytes": 270,
    "callers": [
-    "$80:BC56"
+    "$80:94C7",
+    "$80:BC56",
+    "$80:BD7D",
+    "$80:BF0F",
+    "$80:C00A"
    ],
    "class": "observed",
    "end": "$80:9AB1",
@@ -998,6 +1293,23 @@
    "observed_entries": {},
    "start": "$80:99A4",
    "static_entries": {
+    "JSR": 5
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 125,
+   "callers": [
+    "$80:EFCF"
+   ],
+   "class": "observed",
+   "end": "$80:9B2E",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$80:9AB2",
+   "static_entries": {
     "JSR": 1
    },
    "vectors": []
@@ -1006,6 +1318,12 @@
    "bytes": 38,
    "callers": [
     "$80:B582",
+    "$80:C28C",
+    "$80:C2B8",
+    "$80:C2E4",
+    "$80:C339",
+    "$80:C36D",
+    "$80:C3A1",
     "$80:C603"
    ],
    "class": "observed",
@@ -1023,7 +1341,7 @@
    "observed_entries": {},
    "start": "$80:9B2F",
    "static_entries": {
-    "JSR": 2
+    "JSR": 8
    },
    "vectors": []
   },
@@ -1050,16 +1368,39 @@
    "vectors": []
   },
   {
-   "bytes": 36,
+   "bytes": 39,
+   "callers": [
+    "$80:C6AD"
+   ],
+   "class": "observed",
+   "end": "$80:9B9F",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "native": [
+    "src/core/text_printer.cpp:league_name",
+    "src/core/text_printer.cpp:print_text"
+   ],
+   "observed_entries": {},
+   "start": "$80:9B79",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 171,
    "callers": [
     "$80:E8D1"
    ],
    "class": "observed",
-   "end": "$80:9BC3",
+   "end": "$80:9C4A",
    "mode_at_entry": [
     "NmX"
    ],
    "native": [
+    "src/core/front_end.hpp:LeagueSetup",
+    "src/core/rider_menu.cpp:rider_menu_entry_frame",
     "src/core/track_menu.cpp:print_track_menu"
    ],
    "observed_entries": {},
@@ -1070,9 +1411,115 @@
    "vectors": []
   },
   {
+   "bytes": 385,
+   "callers": [
+    "$80:9C3A"
+   ],
+   "class": "observed",
+   "end": "$80:9E0E",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "native": [
+    "src/core/front_end.hpp:LeagueSetup",
+    "src/core/options_menu.cpp:league_warning_frame",
+    "src/core/rider_menu.cpp:mark_league_member",
+    "src/core/rider_menu.cpp:read_league_members_pad",
+    "src/core/rider_menu.cpp:rider_menu_entry_frame"
+   ],
+   "observed_entries": {},
+   "start": "$80:9C8E",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 129,
+   "callers": [
+    "$80:9CD5",
+    "$80:9D63",
+    "$80:9D8D"
+   ],
+   "class": "observed",
+   "end": "$80:9EBC",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "native": [
+    "src/core/front_end.hpp:LeagueSetup",
+    "src/core/front_end.hpp:LeagueSetup::marker_column, LeagueSetup::marker_row",
+    "src/core/options_menu.cpp:enter_league_editor",
+    "src/core/rider_menu.cpp:rider_menu_entry_frame"
+   ],
+   "observed_entries": {},
+   "start": "$80:9E3C",
+   "static_entries": {
+    "JSR": 3
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 49,
+   "callers": [
+    "$80:9BCE",
+    "$80:BDE1"
+   ],
+   "class": "observed",
+   "end": "$80:9F27",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "native": [
+    "src/core/options_menu.cpp:enter_league_slots",
+    "src/core/options_menu.cpp:league_slots_frame"
+   ],
+   "observed_entries": {},
+   "start": "$80:9EF7",
+   "static_entries": {
+    "JSR": 2
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 179,
+   "callers": [
+    "$80:D725"
+   ],
+   "class": "observed",
+   "end": "$80:A02C",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$80:9F7A",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 101,
+   "callers": [
+    "$80:EC1A"
+   ],
+   "class": "observed",
+   "end": "$80:A095",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$80:A031",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
    "bytes": 208,
    "callers": [
     "$80:885E",
+    "$80:94D4",
     "$80:9A37"
    ],
    "class": "observed",
@@ -1102,7 +1549,7 @@
    "observed_entries": {},
    "start": "$80:A09A",
    "static_entries": {
-    "JSR": 2
+    "JSR": 3
    },
    "vectors": []
   },
@@ -1132,6 +1579,51 @@
    "vectors": []
   },
   {
+   "bytes": 399,
+   "callers": [
+    "$80:9E7C",
+    "$80:D48B"
+   ],
+   "class": "observed",
+   "end": "$80:A380",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "native": [
+    "src/core/front_end.hpp:KeyboardEditor",
+    "src/core/options_menu.cpp:enter_rename_editor",
+    "src/core/options_menu.cpp:initialize_keyboard_cursor",
+    "src/core/options_menu.cpp:rename_keyboard_frame"
+   ],
+   "observed_entries": {},
+   "start": "$80:A1F2",
+   "static_entries": {
+    "JSR": 2
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 326,
+   "callers": [
+    "$80:BE57"
+   ],
+   "class": "observed",
+   "end": "$80:A68C",
+   "mode_at_entry": [
+    "NMX",
+    "NmX"
+   ],
+   "native": [
+    "src/core/league_menu.cpp:print_standings"
+   ],
+   "observed_entries": {},
+   "start": "$80:A547",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
    "bytes": 38,
    "callers": [
     "$80:CC14"
@@ -1155,7 +1647,11 @@
    "bytes": 45,
    "callers": [
     "$80:9A46",
-    "$80:BBFA"
+    "$80:BBFA",
+    "$80:BD39",
+    "$80:BE1B",
+    "$80:BFB4",
+    "$80:EC7F"
    ],
    "class": "observed",
    "end": "$80:A857",
@@ -1172,7 +1668,7 @@
    "observed_entries": {},
    "start": "$80:A82B",
    "static_entries": {
-    "JSR": 2
+    "JSR": 6
    },
    "vectors": []
   },
@@ -1180,10 +1676,15 @@
    "bytes": 31,
    "callers": [
     "$80:9A49",
+    "$80:AE0C",
     "$80:B197",
     "$80:BBF7",
     "$80:BC7B",
-    "$80:E73B"
+    "$80:BD36",
+    "$80:BE18",
+    "$80:BFB1",
+    "$80:E73B",
+    "$80:EC82"
    ],
    "class": "observed",
    "end": "$80:A876",
@@ -1203,14 +1704,16 @@
    "observed_entries": {},
    "start": "$80:A858",
    "static_entries": {
-    "JSR": 5
+    "JSR": 10
    },
    "vectors": []
   },
   {
    "bytes": 45,
    "callers": [
-    "$80:AD15"
+    "$80:9FA1",
+    "$80:AD15",
+    "$80:BF3D"
    ],
    "class": "observed",
    "end": "$80:A8A3",
@@ -1225,16 +1728,19 @@
    "observed_entries": {},
    "start": "$80:A877",
    "static_entries": {
-    "JSR": 1
+    "JSR": 3
    },
    "vectors": []
   },
   {
    "bytes": 44,
    "callers": [
+    "$80:9FA4",
     "$80:AD12",
     "$80:B091",
-    "$80:D211"
+    "$80:BF3A",
+    "$80:D211",
+    "$80:DC1E"
    ],
    "class": "observed",
    "end": "$80:A8D3",
@@ -1251,7 +1757,7 @@
    "observed_entries": {},
    "start": "$80:A8A8",
    "static_entries": {
-    "JSR": 3
+    "JSR": 6
    },
    "vectors": []
   },
@@ -1337,12 +1843,16 @@
   {
    "bytes": 156,
    "callers": [
-    "$80:AD43"
+    "$80:9C3D",
+    "$80:AD43",
+    "$80:AFF5",
+    "$80:D3F5"
    ],
    "class": "observed",
    "end": "$80:ADE2",
    "mode_at_entry": [
-    "NMX"
+    "NMX",
+    "NmX"
    ],
    "native": [
     "src/core/audio_cpu_menu_league.cpp:initialize_ranking",
@@ -1351,6 +1861,47 @@
    ],
    "observed_entries": {},
    "start": "$80:AD47",
+   "static_entries": {
+    "JSR": 4
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 82,
+   "callers": [
+    "$80:BD98",
+    "$80:C0DD"
+   ],
+   "class": "observed",
+   "end": "$80:AE34",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "native": [
+    "src/core/local_modes.cpp:local_continue_frame"
+   ],
+   "observed_entries": {},
+   "start": "$80:ADE3",
+   "static_entries": {
+    "JSR": 2
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 294,
+   "callers": [
+    "$80:BF32"
+   ],
+   "class": "observed",
+   "end": "$80:B079",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "native": [
+    "src/core/league_menu.cpp:league_awards_frame"
+   ],
+   "observed_entries": {},
+   "start": "$80:AF54",
    "static_entries": {
     "JSR": 1
    },
@@ -1384,6 +1935,7 @@
   {
    "bytes": 10,
    "callers": [
+    "$80:8610",
     "$80:8854",
     "$80:FAC9"
    ],
@@ -1399,7 +1951,32 @@
    "observed_entries": {},
    "start": "$80:B0F0",
    "static_entries": {
-    "JML": 2
+    "JML": 3
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 21,
+   "callers": [
+    "$80:9DD5",
+    "$80:9DF2",
+    "$80:A41A",
+    "$80:BE08",
+    "$80:C0B5"
+   ],
+   "class": "observed",
+   "end": "$80:B10E",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "native": [
+    "src/core/front_end_screens.hpp:MenuSound",
+    "src/core/screen_slide.cpp:play_menu_sound"
+   ],
+   "observed_entries": {},
+   "start": "$80:B0FA",
+   "static_entries": {
+    "JSR": 5
    },
    "vectors": []
   },
@@ -1407,7 +1984,17 @@
    "bytes": 21,
    "callers": [
     "$80:9596",
-    "$80:EB02"
+    "$80:9D5A",
+    "$80:9D84",
+    "$80:A420",
+    "$80:A449",
+    "$80:B051",
+    "$80:DBF8",
+    "$80:DC05",
+    "$80:DF46",
+    "$80:DF6C",
+    "$80:EB02",
+    "$80:ECC7"
    ],
    "class": "observed",
    "end": "$80:B123",
@@ -1421,18 +2008,27 @@
    "observed_entries": {},
    "start": "$80:B10F",
    "static_entries": {
-    "JSR": 2
+    "JSR": 12
    },
    "vectors": []
   },
   {
    "bytes": 21,
    "callers": [
+    "$80:9F15",
+    "$80:A495",
+    "$80:AEAD",
     "$80:B4A0",
     "$80:B4B1",
     "$80:BBB8",
+    "$80:BCDB",
+    "$80:BD02",
+    "$80:BF5C",
+    "$80:BF8A",
+    "$80:C0BD",
     "$80:E595",
-    "$80:F60D"
+    "$80:F60D",
+    "$80:F7A7"
    ],
    "class": "observed",
    "end": "$80:B138",
@@ -1448,15 +2044,18 @@
    "observed_entries": {},
    "start": "$80:B124",
    "static_entries": {
-    "JSR": 5
+    "JSR": 14
    },
    "vectors": []
   },
   {
    "bytes": 21,
    "callers": [
+    "$80:9F7F",
     "$80:E233",
-    "$80:E2D5"
+    "$80:E2D5",
+    "$80:EB78",
+    "$80:EC8A"
    ],
    "class": "observed",
    "end": "$80:B14D",
@@ -1471,7 +2070,7 @@
    "observed_entries": {},
    "start": "$80:B139",
    "static_entries": {
-    "JSR": 2
+    "JSR": 5
    },
    "vectors": []
   },
@@ -1480,7 +2079,7 @@
    "callers": [
     "$80:E27E"
    ],
-   "class": "inferred",
+   "class": "observed",
    "end": "$80:B162",
    "mode_at_entry": [
     "NmX"
@@ -1499,6 +2098,10 @@
   {
    "bytes": 21,
    "callers": [
+    "$80:A2BA",
+    "$80:A2F9",
+    "$80:A326",
+    "$80:A34A",
     "$80:AC3F",
     "$80:AC89",
     "$80:B4DE",
@@ -1511,11 +2114,14 @@
     "$80:CC7F",
     "$80:CCA1",
     "$80:CCE1",
+    "$80:E492",
+    "$80:E4C6",
     "$80:E654",
     "$80:E669",
     "$80:E683",
     "$80:E69D",
-    "$80:E6AB"
+    "$80:E6AB",
+    "$80:F75D"
    ],
    "class": "observed",
    "end": "$80:B18C",
@@ -1530,14 +2136,20 @@
    "observed_entries": {},
    "start": "$80:B178",
    "static_entries": {
-    "JSR": 17
+    "JSR": 24
    },
    "vectors": []
   },
   {
    "bytes": 114,
    "callers": [
-    "$80:BC45"
+    "$80:AED0",
+    "$80:AF06",
+    "$80:AF3F",
+    "$80:BC45",
+    "$80:BD5D",
+    "$80:BEFD",
+    "$80:BFE0"
    ],
    "class": "observed",
    "end": "$80:B1FE",
@@ -1553,7 +2165,7 @@
    "observed_entries": {},
    "start": "$80:B18D",
    "static_entries": {
-    "JSR": 1
+    "JSR": 7
    },
    "vectors": []
   },
@@ -1582,18 +2194,20 @@
    "vectors": []
   },
   {
-   "bytes": 20,
+   "bytes": 92,
    "callers": [
     "$80:885B"
    ],
    "class": "observed",
-   "end": "$80:B625",
+   "end": "$80:B66D",
    "mode_at_entry": [
     "NmX"
    ],
    "native": [
     "src/core/audio_cpu_boot.cpp:clear_vram",
-    "src/core/front_end.cpp:soft_reset"
+    "src/core/front_end.cpp:soft_reset",
+    "src/core/front_end.hpp:FrontEndScreen",
+    "src/core/options_menu.cpp:enter_options_menu"
    ],
    "observed_entries": {},
    "start": "$80:B612",
@@ -1609,7 +2223,7 @@
     "$83:ADE5",
     "$83:AFFB"
    ],
-   "class": "inferred",
+   "class": "observed",
    "end": "$80:B6D2",
    "mode_at_entry": [
     "NmX"
@@ -1627,13 +2241,17 @@
   {
    "bytes": 37,
    "callers": [
+    "$80:9484",
     "$80:9976",
-    "$80:B6CF"
+    "$80:B6CF",
+    "$80:F758",
+    "$80:F7FE"
    ],
-   "class": "inferred",
+   "class": "observed",
    "end": "$80:B6F7",
    "mode_at_entry": [
-    "NMX"
+    "NMX",
+    "NmX"
    ],
    "native": [
     "src/core/audio_cpu_hunter_wait.cpp:native_audio_ending_press",
@@ -1649,18 +2267,39 @@
    "observed_entries": {},
    "start": "$80:B6D3",
    "static_entries": {
-    "JSR": 2
+    "JSR": 5
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 37,
+   "callers": [
+    "$80:DBF1"
+   ],
+   "class": "observed",
+   "end": "$80:B71C",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$80:B6F8",
+   "static_entries": {
+    "JSR": 1
    },
    "vectors": []
   },
   {
    "bytes": 45,
    "callers": [
+    "$80:A28F",
     "$80:AC18",
+    "$80:AE1C",
     "$80:B487",
     "$80:B988",
     "$80:BAB4",
     "$80:CD14",
+    "$80:D70F",
+    "$80:DF85",
     "$80:E62A"
    ],
    "class": "observed",
@@ -1676,29 +2315,56 @@
    "observed_entries": {},
    "start": "$80:B71D",
    "static_entries": {
-    "JSR": 6
+    "JSR": 10
    },
    "vectors": []
   },
   {
    "bytes": 37,
    "callers": [
+    "$80:9BD1",
+    "$80:9F0C",
+    "$80:A287",
     "$80:A9D1",
+    "$80:AE12",
+    "$80:AED3",
+    "$80:AEFC",
+    "$80:AF09",
+    "$80:AF24",
+    "$80:AF35",
+    "$80:AF42",
     "$80:B482",
+    "$80:B643",
     "$80:B983",
     "$80:BAAF",
     "$80:BC12",
     "$80:BC1D",
     "$80:BC48",
     "$80:BC81",
+    "$80:BD4D",
+    "$80:BD58",
+    "$80:BD60",
+    "$80:BDE8",
+    "$80:BE31",
+    "$80:BE5A",
+    "$80:BEC9",
+    "$80:BF00",
+    "$80:BFD0",
+    "$80:BFDB",
+    "$80:BFE3",
+    "$80:BFFD",
     "$80:CD19",
     "$80:CD3B",
+    "$80:D546",
+    "$80:D714",
+    "$80:DF80",
     "$80:E632",
     "$80:E9D1"
    ],
    "class": "observed",
    "end": "$80:B76E",
    "mode_at_entry": [
+    "NMX",
     "NmX"
    ],
    "native": [
@@ -1708,7 +2374,7 @@
    "observed_entries": {},
    "start": "$80:B74A",
    "static_entries": {
-    "JSR": 12
+    "JSR": 38
    },
    "vectors": []
   },
@@ -1718,6 +2384,8 @@
     "$80:AC25",
     "$80:B997",
     "$80:BAC9",
+    "$80:DBE7",
+    "$80:DF37",
     "$80:E614"
    ],
    "class": "observed",
@@ -1731,7 +2399,7 @@
    "observed_entries": {},
    "start": "$80:B76F",
    "static_entries": {
-    "JSR": 4
+    "JSR": 6
    },
    "vectors": []
   },
@@ -1741,6 +2409,8 @@
     "$80:AC20",
     "$80:B992",
     "$80:BAC4",
+    "$80:DBEC",
+    "$80:DF5D",
     "$80:E61F"
    ],
    "class": "observed",
@@ -1755,15 +2425,17 @@
    "observed_entries": {},
    "start": "$80:B794",
    "static_entries": {
-    "JSR": 4
+    "JSR": 6
    },
    "vectors": []
   },
   {
    "bytes": 37,
    "callers": [
+    "$80:A25F",
     "$80:B476",
     "$80:CC52",
+    "$80:E483",
     "$80:E60A"
    ],
    "class": "observed",
@@ -1774,15 +2446,17 @@
    "observed_entries": {},
    "start": "$80:B7B9",
    "static_entries": {
-    "JSR": 3
+    "JSR": 5
    },
    "vectors": []
   },
   {
    "bytes": 37,
    "callers": [
+    "$80:A267",
     "$80:B471",
     "$80:CC73",
+    "$80:E4B7",
     "$80:E60F"
    ],
    "class": "observed",
@@ -1793,14 +2467,17 @@
    "observed_entries": {},
    "start": "$80:B7DE",
    "static_entries": {
-    "JSR": 3
+    "JSR": 5
    },
    "vectors": []
   },
   {
    "bytes": 45,
    "callers": [
-    "$80:CC92"
+    "$80:A26F",
+    "$80:CC92",
+    "$80:E449",
+    "$80:E47A"
    ],
    "class": "observed",
    "end": "$80:B82F",
@@ -1810,14 +2487,17 @@
    "observed_entries": {},
    "start": "$80:B803",
    "static_entries": {
-    "JSR": 1
+    "JSR": 4
    },
    "vectors": []
   },
   {
    "bytes": 37,
    "callers": [
-    "$80:CCD2"
+    "$80:A277",
+    "$80:CCD2",
+    "$80:E44E",
+    "$80:E473"
    ],
    "class": "observed",
    "end": "$80:B854",
@@ -1826,6 +2506,23 @@
    ],
    "observed_entries": {},
    "start": "$80:B830",
+   "static_entries": {
+    "JSR": 4
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 45,
+   "callers": [
+    "$80:9D22"
+   ],
+   "class": "observed",
+   "end": "$80:B8F0",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$80:B8C4",
    "static_entries": {
     "JSR": 1
    },
@@ -1849,29 +2546,97 @@
    "vectors": []
   },
   {
-   "bytes": 302,
+   "bytes": 37,
    "callers": [
-    "$80:A9CA"
+    "$80:A27F"
    ],
-   "class": "inferred",
-   "end": "$80:BA69",
+   "class": "observed",
+   "end": "$80:B93A",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$80:B916",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 2,
+   "callers": [
+    "$80:A9CA",
+    "$80:AE0F",
+    "$80:B63C",
+    "$80:D53F",
+    "$80:FBEE"
+   ],
+   "class": "observed",
+   "end": "$80:B93D",
    "mode_at_entry": [
     "NmX"
    ],
    "native": [
     "src/core/front_end.hpp:FrontEndScreen",
     "src/core/local_modes.cpp:local_continue_frame",
-    "src/core/options_menu.cpp:move_choice",
     "src/core/wipe_ram.cpp:aim_at_entry",
     "src/core/wipe_ram.cpp:first_row_y, row_height",
-    "src/core/wipe_ram.cpp:move_entry",
     "src/core/wipe_ram.cpp:wipe_ram_menu_entry_frame",
     "src/core/wipe_ram.cpp:wipe_ram_menu_frame"
    ],
    "observed_entries": {},
    "start": "$80:B93C",
    "static_entries": {
+    "JSR": 5
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 60,
+   "callers": [
+    "$80:9F09"
+   ],
+   "class": "observed",
+   "end": "$80:B979",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "native": [
+    "src/core/front_end.hpp:FrontEndScreen",
+    "src/core/local_modes.cpp:local_continue_frame",
+    "src/core/wipe_ram.cpp:aim_at_entry",
+    "src/core/wipe_ram.cpp:first_row_y, row_height",
+    "src/core/wipe_ram.cpp:wipe_ram_menu_entry_frame",
+    "src/core/wipe_ram.cpp:wipe_ram_menu_frame"
+   ],
+   "observed_entries": {},
+   "start": "$80:B93E",
+   "static_entries": {
     "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 240,
+   "callers": [
+    "$80:AE17",
+    "$80:BE0F"
+   ],
+   "class": "observed",
+   "end": "$80:BA69",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "native": [
+    "src/core/local_modes.cpp:local_continue_frame",
+    "src/core/options_menu.cpp:move_choice",
+    "src/core/wipe_ram.cpp:aim_at_entry",
+    "src/core/wipe_ram.cpp:move_entry"
+   ],
+   "observed_entries": {},
+   "start": "$80:B97A",
+   "static_entries": {
+    "JSR": 2
    },
    "vectors": []
   },
@@ -1963,7 +2728,7 @@
     "$83:997D",
     "$83:ABF9"
    ],
-   "class": "inferred",
+   "class": "observed",
    "end": "$80:C205",
    "mode_at_entry": [
     "NmX"
@@ -1983,9 +2748,15 @@
   {
    "bytes": 70,
    "callers": [
-    "$80:C202"
+    "$80:A689",
+    "$80:B05B",
+    "$80:C045",
+    "$80:C202",
+    "$80:D9B2",
+    "$80:DC18",
+    "$80:F9E1"
    ],
-   "class": "inferred",
+   "class": "observed",
    "end": "$80:C24B",
    "mode_at_entry": [
     "NmX"
@@ -2012,14 +2783,16 @@
    "observed_entries": {},
    "start": "$80:C206",
    "static_entries": {
-    "JSR": 1
+    "JSR": 7
    },
    "vectors": []
   },
   {
    "bytes": 29,
    "callers": [
-    "$80:95A1"
+    "$80:95A1",
+    "$80:C042",
+    "$80:DB9E"
    ],
    "class": "observed",
    "end": "$80:C268",
@@ -2039,6 +2812,40 @@
    "observed_entries": {},
    "start": "$80:C24C",
    "static_entries": {
+    "JSR": 3
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 133,
+   "callers": [
+    "$80:D6D0"
+   ],
+   "class": "inferred",
+   "end": "$80:C2ED",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$80:C269",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 157,
+   "callers": [
+    "$80:D6CB"
+   ],
+   "class": "observed",
+   "end": "$80:C3AA",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$80:C30E",
+   "static_entries": {
     "JSR": 1
    },
    "vectors": []
@@ -2046,8 +2853,36 @@
   {
    "bytes": 32,
    "callers": [
+    "$80:8922",
+    "$80:8A38",
+    "$80:8ADA",
+    "$80:8B4D",
+    "$80:8B55",
+    "$80:8B5D",
+    "$80:8FD5",
+    "$80:9078",
+    "$80:907E",
+    "$80:90A4",
+    "$80:90AA",
+    "$80:90F8",
     "$80:95DD",
     "$80:9608",
+    "$80:9BDF",
+    "$80:9BE5",
+    "$80:9CAF",
+    "$80:9CDB",
+    "$80:9D6F",
+    "$80:9D93",
+    "$80:9DDB",
+    "$80:9DF8",
+    "$80:9E5F",
+    "$80:9E65",
+    "$80:A437",
+    "$80:A489",
+    "$80:A4BE",
+    "$80:A558",
+    "$80:A637",
+    "$80:A64A",
     "$80:ACF4",
     "$80:B1CE",
     "$80:B28B",
@@ -2062,12 +2897,54 @@
     "$80:B393",
     "$80:B3D1",
     "$80:B3D7",
+    "$80:BCE8",
+    "$80:BF76",
+    "$80:C035",
+    "$80:C153",
+    "$80:C159",
+    "$80:C278",
+    "$80:C27E",
+    "$80:C292",
+    "$80:C2A4",
+    "$80:C2AA",
+    "$80:C2BE",
+    "$80:C2D0",
+    "$80:C2D6",
+    "$80:C2EA",
+    "$80:C311",
+    "$80:C325",
+    "$80:C32B",
+    "$80:C33F",
+    "$80:C345",
+    "$80:C359",
+    "$80:C35F",
+    "$80:C373",
+    "$80:C379",
+    "$80:C38D",
+    "$80:C393",
+    "$80:C3A7",
+    "$80:C46D",
+    "$80:C48B",
     "$80:C619",
     "$80:C66E",
+    "$80:C6B4",
     "$80:C6CE",
     "$80:CB1C",
     "$80:D0EC",
     "$80:D0F9",
+    "$80:D46E",
+    "$80:D474",
+    "$80:D63F",
+    "$80:D694",
+    "$80:D8FD",
+    "$80:DB05",
+    "$80:DB85",
+    "$80:DC6C",
+    "$80:DE35",
+    "$80:DE47",
+    "$80:DE6B",
+    "$80:DE85",
+    "$80:DF32",
     "$80:E760",
     "$80:E766",
     "$80:E76C",
@@ -2080,7 +2957,31 @@
     "$80:EADC",
     "$80:EAE4",
     "$80:EAEC",
-    "$80:EF6B"
+    "$80:EC02",
+    "$80:EDC9",
+    "$80:EE21",
+    "$80:EE79",
+    "$80:EF1C",
+    "$80:EF2F",
+    "$80:EF6B",
+    "$80:F1CF",
+    "$80:F1D5",
+    "$80:F1E3",
+    "$80:F1E9",
+    "$80:F1F1",
+    "$80:F21F",
+    "$80:F26C",
+    "$80:F286",
+    "$80:F2A4",
+    "$80:F2D1",
+    "$80:F6C3",
+    "$80:F6E5",
+    "$80:F707",
+    "$80:F729",
+    "$80:F74B",
+    "$80:F7A2",
+    "$80:F8FE",
+    "$80:F9A2"
    ],
    "class": "observed",
    "end": "$80:C3DB",
@@ -2098,16 +2999,19 @@
    "observed_entries": {},
    "start": "$80:C3BC",
    "static_entries": {
-    "JSR": 35
+    "JSR": 129
    },
    "vectors": []
   },
   {
    "bytes": 56,
    "callers": [
-    "$80:BC6E"
+    "$80:BC6E",
+    "$80:BD95",
+    "$80:BF2F",
+    "$80:C04E"
    ],
-   "class": "inferred",
+   "class": "observed",
    "end": "$80:C7BD",
    "mode_at_entry": [
     "NmX"
@@ -2122,17 +3026,398 @@
    "observed_entries": {},
    "start": "$80:C786",
    "static_entries": {
+    "JSR": 4
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 28,
+   "callers": [
+    "$80:C7E9"
+   ],
+   "class": "observed",
+   "end": "$80:C81B",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "native": [
+    "src/core/race_result.cpp:update_records"
+   ],
+   "observed_entries": {},
+   "start": "$80:C800",
+   "static_entries": {
     "JSR": 1
    },
    "vectors": []
   },
   {
-   "bytes": 579,
+   "bytes": 19,
    "callers": [
-    "$80:BBAC"
+    "$80:C7DB",
+    "$80:C7F4"
    ],
    "class": "observed",
-   "end": "$80:CD46",
+   "end": "$80:C82E",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "native": [
+    "src/core/race_result.cpp:update_records"
+   ],
+   "observed_entries": {},
+   "start": "$80:C81C",
+   "static_entries": {
+    "JSR": 2
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 33,
+   "callers": [
+    "$80:C7DE"
+   ],
+   "class": "observed",
+   "end": "$80:C84F",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "native": [
+    "src/core/race_result.cpp:update_records"
+   ],
+   "observed_entries": {},
+   "start": "$80:C82F",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 152,
+   "callers": [
+    "$80:C7E6",
+    "$80:C7F7"
+   ],
+   "class": "observed",
+   "end": "$80:C8E7",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "native": [
+    "src/core/front_end_screens.hpp:best_lap",
+    "src/core/race_result.cpp:update_records"
+   ],
+   "observed_entries": {},
+   "start": "$80:C850",
+   "static_entries": {
+    "JSR": 2
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 26,
+   "callers": [
+    "$80:C8CB"
+   ],
+   "class": "observed",
+   "end": "$80:C901",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "native": [
+    "src/core/race_result.cpp:update_records"
+   ],
+   "observed_entries": {},
+   "start": "$80:C8E8",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 17,
+   "callers": [
+    "$80:C8BD",
+    "$80:C8D6"
+   ],
+   "class": "observed",
+   "end": "$80:C912",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "native": [
+    "src/core/race_result.cpp:update_records"
+   ],
+   "observed_entries": {},
+   "start": "$80:C902",
+   "static_entries": {
+    "JSR": 2
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 31,
+   "callers": [
+    "$80:C8C0"
+   ],
+   "class": "observed",
+   "end": "$80:C931",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "native": [
+    "src/core/race_result.cpp:update_records"
+   ],
+   "observed_entries": {},
+   "start": "$80:C913",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 82,
+   "callers": [
+    "$80:C8C8",
+    "$80:C8D9"
+   ],
+   "class": "observed",
+   "end": "$80:C983",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "native": [
+    "src/core/race_result.cpp:update_records",
+    "src/core/race_result.cpp:update_stunt_records",
+    "src/core/stunt_result.cpp:(file)"
+   ],
+   "observed_entries": {},
+   "start": "$80:C932",
+   "static_entries": {
+    "JSR": 2
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 39,
+   "callers": [
+    "$80:C962",
+    "$80:C96A",
+    "$80:C978"
+   ],
+   "class": "observed",
+   "end": "$80:C9AA",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "native": [
+    "src/core/race_result.cpp:update_records",
+    "src/core/race_result.cpp:update_stunt_records",
+    "src/core/stunt_result.cpp:(file)"
+   ],
+   "observed_entries": {},
+   "start": "$80:C984",
+   "static_entries": {
+    "JSR": 3
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 44,
+   "callers": [
+    "$80:C95F",
+    "$80:C96D",
+    "$80:C97B"
+   ],
+   "class": "observed",
+   "end": "$80:C9D6",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "native": [
+    "src/core/race_result.cpp:update_records",
+    "src/core/race_result.cpp:update_stunt_records",
+    "src/core/stunt_result.cpp:(file)"
+   ],
+   "observed_entries": {},
+   "start": "$80:C9AB",
+   "static_entries": {
+    "JSR": 3
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 157,
+   "callers": [
+    "$80:C814",
+    "$80:C82B",
+    "$80:C848",
+    "$80:C864",
+    "$80:C8FA",
+    "$80:C90F",
+    "$80:C92A",
+    "$80:C944"
+   ],
+   "class": "observed",
+   "end": "$80:CA73",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "native": [
+    "src/core/race_result.cpp:insert_record"
+   ],
+   "observed_entries": {},
+   "start": "$80:C9D7",
+   "static_entries": {
+    "JSR": 8
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 15,
+   "callers": [
+    "$80:C7C6",
+    "$80:C8A8",
+    "$80:C94A"
+   ],
+   "class": "observed",
+   "end": "$80:CA82",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "native": [
+    "src/core/race_result.cpp:update_records",
+    "src/core/race_result.cpp:update_stunt_records"
+   ],
+   "observed_entries": {},
+   "start": "$80:CA74",
+   "static_entries": {
+    "JSR": 3
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 24,
+   "callers": [
+    "$80:C7D8",
+    "$80:C7EE",
+    "$80:C8BA",
+    "$80:C8D0",
+    "$80:C967",
+    "$80:C972"
+   ],
+   "class": "observed",
+   "end": "$80:CA9A",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "native": [
+    "src/core/race_result.cpp:update_records",
+    "src/core/race_result.cpp:update_stunt_records"
+   ],
+   "observed_entries": {},
+   "start": "$80:CA83",
+   "static_entries": {
+    "JSR": 6
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 15,
+   "callers": [
+    "$80:C818",
+    "$80:C8FE"
+   ],
+   "class": "observed",
+   "end": "$80:CAA9",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$80:CA9B",
+   "static_entries": {
+    "JSR": 2
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 27,
+   "callers": [
+    "$80:C7C9",
+    "$80:C8AB",
+    "$80:C94D"
+   ],
+   "class": "observed",
+   "end": "$80:CAC4",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "native": [
+    "src/core/race_result.cpp:update_records",
+    "src/core/race_result.cpp:update_stunt_records"
+   ],
+   "observed_entries": {},
+   "start": "$80:CAAA",
+   "static_entries": {
+    "JSR": 3
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 36,
+   "callers": [
+    "$80:C7E3",
+    "$80:C7F1",
+    "$80:C8C5",
+    "$80:C8D3",
+    "$80:C95C",
+    "$80:C975"
+   ],
+   "class": "observed",
+   "end": "$80:CAE8",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "native": [
+    "src/core/race_result.cpp:update_records",
+    "src/core/race_result.cpp:update_stunt_records"
+   ],
+   "observed_entries": {},
+   "start": "$80:CAC5",
+   "static_entries": {
+    "JSR": 6
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 27,
+   "callers": [
+    "$80:C84C",
+    "$80:C92E"
+   ],
+   "class": "inferred",
+   "end": "$80:CB03",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$80:CAE9",
+   "static_entries": {
+    "JSR": 2
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 191,
+   "callers": [
+    "$80:BBAC",
+    "$80:BCCF",
+    "$80:BF59",
+    "$80:C0A5",
+    "$80:C136",
+    "$80:D454"
+   ],
+   "class": "observed",
+   "end": "$80:CBC2",
    "mode_at_entry": [
     "NmX"
    ],
@@ -2140,10 +3425,40 @@
     "src/core/front_end.hpp:FrontEndScreen",
     "src/core/front_end.hpp:RiderMenuPurpose",
     "src/core/rider_menu.cpp:(file)",
-    "src/core/rider_menu.cpp:choose_next_picture",
     "src/core/rider_menu.cpp:left_column_x, right_column_x",
     "src/core/rider_menu.cpp:open_rider_menu",
-    "src/core/rider_menu.cpp:open_rider_menu_entry",
+    "src/core/rider_menu.cpp:open_rider_menu_entry"
+   ],
+   "observed_entries": {},
+   "start": "$80:CB04",
+   "static_entries": {
+    "JSR": 6
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 388,
+   "callers": [
+    "$80:9D1F",
+    "$80:9D78",
+    "$80:9D9C",
+    "$80:9DEC",
+    "$80:9E09",
+    "$80:BCEF",
+    "$80:BF79",
+    "$80:C0B8"
+   ],
+   "class": "observed",
+   "end": "$80:CD46",
+   "mode_at_entry": [
+    "NMX",
+    "NmX"
+   ],
+   "native": [
+    "src/core/front_end.hpp:FrontEndScreen",
+    "src/core/rider_menu.cpp:(file)",
+    "src/core/rider_menu.cpp:choose_next_picture",
+    "src/core/rider_menu.cpp:open_rider_menu",
     "src/core/rider_menu.cpp:read_rider_menu_pad",
     "src/core/rider_menu.cpp:rider_menu_entry_frame",
     "src/core/rider_menu.cpp:set_arrow_palette",
@@ -2151,9 +3466,9 @@
     "src/core/rider_menu.cpp:split_row"
    ],
    "observed_entries": {},
-   "start": "$80:CB04",
+   "start": "$80:CBC3",
    "static_entries": {
-    "JSR": 1
+    "JSR": 8
    },
    "vectors": []
   },
@@ -2190,7 +3505,7 @@
     "$83:AFB6",
     "$83:B06E"
    ],
-   "class": "inferred",
+   "class": "observed",
    "end": "$80:D1EB",
    "mode_at_entry": [
     "NmX"
@@ -2212,18 +3527,31 @@
   {
    "bytes": 14,
    "callers": [
+    "$80:9481",
     "$80:9971",
+    "$80:9C04",
+    "$80:A22E",
+    "$80:A239",
     "$80:ABE6",
+    "$80:B046",
     "$80:B46E",
     "$80:B980",
     "$80:BAAC",
+    "$80:C178",
     "$80:C20F",
     "$80:C225",
     "$80:C255",
     "$80:CC11",
     "$80:D1E8",
+    "$80:D703",
+    "$80:DBDC",
+    "$80:DEDE",
     "$80:E603",
-    "$80:F5CD"
+    "$80:F5CD",
+    "$80:F770",
+    "$80:F7B4",
+    "$80:F7D7",
+    "$80:F80B"
    ],
    "class": "observed",
    "end": "$80:D1F9",
@@ -2249,15 +3577,17 @@
    "observed_entries": {},
    "start": "$80:D1EC",
    "static_entries": {
-    "JSR": 12
+    "JSR": 25
    },
    "vectors": []
   },
   {
    "bytes": 16,
    "callers": [
+    "$80:9E59",
     "$80:ACE2",
-    "$80:ACEE"
+    "$80:ACEE",
+    "$80:D468"
    ],
    "class": "observed",
    "end": "$80:D209",
@@ -2272,7 +3602,7 @@
    "observed_entries": {},
    "start": "$80:D1FA",
    "static_entries": {
-    "JSR": 2
+    "JSR": 4
    },
    "vectors": []
   },
@@ -2280,6 +3610,8 @@
    "bytes": 179,
    "callers": [
     "$80:886A",
+    "$80:9405",
+    "$80:94D7",
     "$80:9A3A"
    ],
    "class": "observed",
@@ -2305,7 +3637,7 @@
    "observed_entries": {},
    "start": "$80:D20E",
    "static_entries": {
-    "JSR": 2
+    "JSR": 4
    },
    "vectors": []
   },
@@ -2339,54 +3671,138 @@
    "vectors": []
   },
   {
-   "bytes": 40,
+   "bytes": 149,
    "callers": [
-    "$80:B4A3",
-    "$80:B4B4"
+    "$80:9C37"
    ],
    "class": "observed",
-   "end": "$80:D447",
+   "end": "$80:D41F",
    "mode_at_entry": [
     "NmX"
    ],
    "native": [
-    "src/core/now_playing.cpp:hide_icons"
+    "src/core/league_menu.cpp:reset_league"
    ],
    "observed_entries": {},
-   "start": "$80:D420",
-   "static_entries": {
-    "JSR": 2
-   },
-   "vectors": []
-  },
-  {
-   "bytes": 34,
-   "callers": [
-    "$80:8897"
-   ],
-   "class": "inferred",
-   "end": "$80:D524",
-   "mode_at_entry": [
-    "NmX"
-   ],
-   "observed_entries": {},
-   "start": "$80:D503",
+   "start": "$80:D38B",
    "static_entries": {
     "JSR": 1
    },
    "vectors": []
   },
   {
-   "bytes": 75,
+   "bytes": 165,
    "callers": [
+    "$80:B4A3",
+    "$80:B4B4",
+    "$80:D722",
+    "$80:D9B5",
+    "$80:DC21"
+   ],
+   "class": "observed",
+   "end": "$80:D4C4",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "native": [
+    "src/core/front_end.cpp:waits_for_frame",
+    "src/core/front_end.hpp:FrontEndScreen",
+    "src/core/now_playing.cpp:hide_icons",
+    "src/core/options_menu.cpp:enter_rename_editor",
+    "src/core/options_menu.cpp:rename_commit_frame",
+    "src/core/rider_menu.cpp:pick_plays_select"
+   ],
+   "observed_entries": {},
+   "start": "$80:D420",
+   "static_entries": {
+    "JSR": 5
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 126,
+   "callers": [
+    "$80:8897",
+    "$80:DC37",
+    "$80:DFA9"
+   ],
+   "class": "observed",
+   "end": "$80:D580",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "native": [
+    "src/core/front_end.hpp:FrontEndScreen",
+    "src/core/options_menu.cpp:enter_records_menu"
+   ],
+   "observed_entries": {},
+   "start": "$80:D503",
+   "static_entries": {
+    "JSR": 3
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 87,
+   "callers": [
+    "$80:DC7A"
+   ],
+   "class": "observed",
+   "end": "$80:DCF0",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "native": [
+    "src/core/options_menu.cpp:print_player_scores"
+   ],
+   "observed_entries": {},
+   "start": "$80:DC9A",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 99,
+   "callers": [
+    "$80:DFC8"
+   ],
+   "class": "observed",
+   "end": "$80:E04A",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "native": [
+    "src/core/options_menu.cpp:print_group_scores",
+    "src/core/options_menu.cpp:set_bar_objects"
+   ],
+   "observed_entries": {},
+   "start": "$80:DFE8",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 30,
+   "callers": [
+    "$80:9BEE",
+    "$80:9CFB",
+    "$80:9E6E",
+    "$80:A67A",
     "$80:B42C",
+    "$80:C162",
     "$80:CB4D",
+    "$80:D47D",
+    "$80:D914",
+    "$80:DB15",
+    "$80:DEA6",
     "$80:E576",
     "$80:E93A",
     "$80:EF85"
    ],
    "class": "observed",
-   "end": "$80:E27D",
+   "end": "$80:E250",
    "mode_at_entry": [
     "NmX"
    ],
@@ -2401,20 +3817,44 @@
    "observed_entries": {},
    "start": "$80:E233",
    "static_entries": {
-    "JSR": 5
+    "JSR": 14
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 45,
+   "callers": [
+    "$80:DC97",
+    "$80:DFE5"
+   ],
+   "class": "observed",
+   "end": "$80:E27D",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$80:E251",
+   "static_entries": {
+    "JMP": 2
    },
    "vectors": []
   },
   {
    "bytes": 30,
    "callers": [
+    "$80:8B28",
+    "$80:A675",
     "$80:AD0A",
     "$80:CB48",
+    "$80:D9D4",
+    "$80:DC24",
+    "$80:DFA6",
     "$80:E57B",
     "$80:E935",
-    "$80:EF81"
+    "$80:EF81",
+    "$80:F9D8"
    ],
-   "class": "inferred",
+   "class": "observed",
    "end": "$80:E29B",
    "mode_at_entry": [
     "NmX"
@@ -2430,7 +3870,25 @@
    "observed_entries": {},
    "start": "$80:E27E",
    "static_entries": {
-    "JSR": 5
+    "JSR": 11
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 51,
+   "callers": [
+    "$80:DCEE",
+    "$80:E048"
+   ],
+   "class": "observed",
+   "end": "$80:E2CE",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$80:E29C",
+   "static_entries": {
+    "JMP": 2
    },
    "vectors": []
   },
@@ -2441,7 +3899,7 @@
     "$83:ABF5",
     "$83:AC1B"
    ],
-   "class": "inferred",
+   "class": "observed",
    "end": "$80:E2D2",
    "mode_at_entry": [
     "NmX"
@@ -2460,9 +3918,10 @@
   {
    "bytes": 168,
    "callers": [
+    "$80:9477",
     "$80:E2CF"
    ],
-   "class": "inferred",
+   "class": "observed",
    "end": "$80:E37A",
    "mode_at_entry": [
     "NmX"
@@ -2485,6 +3944,26 @@
    "observed_entries": {},
    "start": "$80:E2D3",
    "static_entries": {
+    "JSR": 2
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 333,
+   "callers": [
+    "$80:D719"
+   ],
+   "class": "observed",
+   "end": "$80:E535",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "native": [
+    "src/core/options_menu.cpp:update_track_records"
+   ],
+   "observed_entries": {},
+   "start": "$80:E3E9",
+   "static_entries": {
     "JSR": 1
    },
    "vectors": []
@@ -2494,7 +3973,7 @@
    "callers": [
     "$83:88CD"
    ],
-   "class": "inferred",
+   "class": "observed",
    "end": "$80:E54F",
    "mode_at_entry": [
     "NmX"
@@ -2512,7 +3991,12 @@
   {
    "bytes": 397,
    "callers": [
+    "$80:AF21",
     "$80:BC0B",
+    "$80:BD46",
+    "$80:BE2E",
+    "$80:BEC6",
+    "$80:BFC9",
     "$80:E54C"
    ],
    "class": "observed",
@@ -2541,7 +4025,7 @@
    "observed_entries": {},
    "start": "$80:E550",
    "static_entries": {
-    "JSR": 2
+    "JSR": 7
    },
    "vectors": []
   },
@@ -2611,8 +4095,12 @@
   {
    "bytes": 483,
    "callers": [
+    "$80:AEF9",
+    "$80:AF32",
     "$80:BC1A",
-    "$80:BC7E"
+    "$80:BC7E",
+    "$80:BD55",
+    "$80:BFD8"
    ],
    "class": "observed",
    "end": "$80:EA30",
@@ -2637,7 +4125,7 @@
    "observed_entries": {},
    "start": "$80:E84E",
    "static_entries": {
-    "JSR": 2
+    "JSR": 6
    },
    "vectors": []
   },
@@ -2646,7 +4134,7 @@
    "callers": [
     "$80:E9DC"
    ],
-   "class": "inferred",
+   "class": "observed",
    "end": "$80:EB05",
    "mode_at_entry": [
     "NmX"
@@ -2688,11 +4176,90 @@
    "vectors": []
   },
   {
+   "bytes": 347,
+   "callers": [
+    "$80:D60B"
+   ],
+   "class": "observed",
+   "end": "$80:ECD0",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "native": [
+    "src/core/options_menu.cpp:records_detail_entry_frame",
+    "src/core/options_menu.cpp:track_records_hdma",
+    "src/core/options_menu.cpp:update_track_records"
+   ],
+   "observed_entries": {},
+   "start": "$80:EB76",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 450,
+   "callers": [
+    "$80:EC69",
+    "$80:ECB4"
+   ],
+   "class": "observed",
+   "end": "$80:EEDE",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$80:ED1D",
+   "static_entries": {
+    "JSR": 2
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 69,
+   "callers": [
+    "$80:EDD9",
+    "$80:EDE4",
+    "$80:EDEF",
+    "$80:EDFA",
+    "$80:EE05",
+    "$80:EE31",
+    "$80:EE3C",
+    "$80:EE47",
+    "$80:EE52",
+    "$80:EE5D",
+    "$80:EE89",
+    "$80:EE94",
+    "$80:EE9F",
+    "$80:EEAA",
+    "$80:EEB5"
+   ],
+   "class": "observed",
+   "end": "$80:EF36",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "native": [
+    "src/core/options_menu.cpp:track_grid_half"
+   ],
+   "observed_entries": {},
+   "start": "$80:EEF2",
+   "static_entries": {
+    "JSR": 15
+   },
+   "vectors": []
+  },
+  {
    "bytes": 60,
    "callers": [
-    "$80:A9C7"
+    "$80:9F06",
+    "$80:A9C7",
+    "$80:AE09",
+    "$80:B639",
+    "$80:D53C",
+    "$80:FBE8"
    ],
-   "class": "inferred",
+   "class": "observed",
    "end": "$80:EF88",
    "mode_at_entry": [
     "NmX"
@@ -2706,6 +4273,26 @@
    "observed_entries": {},
    "start": "$80:EF4D",
    "static_entries": {
+    "JSR": 6
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 75,
+   "callers": [
+    "$80:DE3C"
+   ],
+   "class": "observed",
+   "end": "$80:EFD3",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "native": [
+    "src/core/options_menu.cpp:print_group_scores"
+   ],
+   "observed_entries": {},
+   "start": "$80:EF89",
+   "static_entries": {
     "JSR": 1
    },
    "vectors": []
@@ -2713,7 +4300,10 @@
   {
    "bytes": 87,
    "callers": [
-    "$80:AD8D"
+    "$80:898C",
+    "$80:A595",
+    "$80:AD8D",
+    "$80:EFC8"
    ],
    "class": "observed",
    "end": "$80:F02A",
@@ -2727,40 +4317,73 @@
    "observed_entries": {},
    "start": "$80:EFD4",
    "static_entries": {
-    "JSR": 1
+    "JSR": 4
    },
    "vectors": []
   },
   {
-   "bytes": 108,
+   "bytes": 87,
    "callers": [
-    "$80:CF51"
+    "$80:F925"
    ],
    "class": "observed",
-   "end": "$80:F0ED",
+   "end": "$80:F081",
    "mode_at_entry": [
     "NMX"
    ],
-   "native": [
-    "src/core/front_end.hpp:FrontEndMode",
-    "src/core/front_end.hpp:FrontEndScreen",
-    "src/core/front_end_screens.hpp:enter_hunter_code",
-    "src/core/hunter_ending.cpp:enter_hunter_code",
-    "src/core/race_result.cpp:sorted_rows"
-   ],
    "observed_entries": {},
-   "start": "$80:F082",
+   "start": "$80:F02B",
    "static_entries": {
     "JSR": 1
    },
    "vectors": []
   },
   {
+   "bytes": 616,
+   "callers": [
+    "$80:8991",
+    "$80:CF51"
+   ],
+   "class": "observed",
+   "end": "$80:F2E9",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "native": [
+    "src/core/front_end.hpp:FrontEndMode",
+    "src/core/front_end.hpp:FrontEndScreen",
+    "src/core/front_end.hpp:RaceResult",
+    "src/core/front_end_screens.hpp:enter_hunter_code",
+    "src/core/hunter_ending.cpp:enter_hunter_code",
+    "src/core/race_result.cpp:sorted_rows",
+    "src/core/race_setup.cpp:stunt_stable_result",
+    "src/core/stunt_result.cpp:(file)",
+    "src/core/stunt_result.cpp:ResultWords",
+    "src/core/stunt_result.cpp:after_tally_frame",
+    "src/core/stunt_result.cpp:lay_out_stunt_objects",
+    "src/core/stunt_result.cpp:marker_column, marker_attributes, icon_column",
+    "src/core/stunt_result.cpp:marker_palette_asset, marker_palette_colour, first_head_asset, rider_head_colour, opponent_head_colour, holder_palette_colour",
+    "src/core/stunt_result.cpp:print_stunt_screen",
+    "src/core/stunt_result.cpp:record_icons_high, record_icon_high, one_player_marks, stunt_best_markers",
+    "src/core/stunt_result.cpp:show_stunt_text",
+    "src/core/stunt_result.cpp:start_stunt_result"
+   ],
+   "observed_entries": {},
+   "start": "$80:F082",
+   "static_entries": {
+    "JSR": 2
+   },
+   "vectors": []
+  },
+  {
    "bytes": 49,
    "callers": [
-    "$80:BC6B"
+    "$80:BC6B",
+    "$80:BD92",
+    "$80:BF2C",
+    "$80:C023"
    ],
-   "class": "inferred",
+   "class": "observed",
    "end": "$80:F4E8",
    "mode_at_entry": [
     "NmX"
@@ -2774,15 +4397,23 @@
    "observed_entries": {},
    "start": "$80:F4B8",
    "static_entries": {
-    "JSR": 1
+    "JSR": 4
    },
    "vectors": []
   },
   {
    "bytes": 50,
    "callers": [
+    "$80:9DCF",
     "$80:BBF4",
-    "$80:BCA1"
+    "$80:BCA1",
+    "$80:BD33",
+    "$80:BDA6",
+    "$80:BFAE",
+    "$80:C0DA",
+    "$80:C0EB",
+    "$80:C13D",
+    "$80:D45B"
    ],
    "class": "observed",
    "end": "$80:F51A",
@@ -2799,14 +4430,22 @@
    "observed_entries": {},
    "start": "$80:F4E9",
    "static_entries": {
-    "JSR": 2
+    "JSR": 10
    },
    "vectors": []
   },
   {
    "bytes": 16,
    "callers": [
+    "$80:9C34",
     "$80:BB9E",
+    "$80:BCC1",
+    "$80:BDD6",
+    "$80:BE4E",
+    "$80:BF4B",
+    "$80:C12C",
+    "$80:D44A",
+    "$80:D54B",
     "$80:F0D8"
    ],
    "class": "observed",
@@ -2822,14 +4461,21 @@
    "observed_entries": {},
    "start": "$80:F51B",
    "static_entries": {
-    "JSR": 2
+    "JSR": 10
    },
    "vectors": []
   },
   {
    "bytes": 16,
    "callers": [
-    "$80:AD0F"
+    "$80:9EB3",
+    "$80:AD0F",
+    "$80:C146",
+    "$80:C1AA",
+    "$80:D464",
+    "$80:D4C1",
+    "$80:D561",
+    "$80:D71F"
    ],
    "class": "observed",
    "end": "$80:F53A",
@@ -2845,7 +4491,7 @@
    "observed_entries": {},
    "start": "$80:F52B",
    "static_entries": {
-    "JSR": 1
+    "JSR": 8
    },
    "vectors": []
   },
@@ -2854,7 +4500,7 @@
    "callers": [
     "$83:A905"
    ],
-   "class": "inferred",
+   "class": "observed",
    "end": "$80:F53E",
    "mode_at_entry": [
     "NmX"
@@ -2874,6 +4520,8 @@
    "callers": [
     "$80:8907",
     "$80:9555",
+    "$80:BEBB",
+    "$80:F1C9",
     "$80:F53B"
    ],
    "class": "observed",
@@ -2890,7 +4538,7 @@
    "observed_entries": {},
    "start": "$80:F53F",
    "static_entries": {
-    "JSR": 3
+    "JSR": 5
    },
    "vectors": []
   },
@@ -2925,6 +4573,85 @@
    "vectors": []
   },
   {
+   "bytes": 371,
+   "callers": [
+    "$80:F219",
+    "$80:F29E"
+   ],
+   "class": "observed",
+   "end": "$80:F7DB",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "native": [
+    "src/core/front_end.hpp:NowPlaying::choice_pads",
+    "src/core/front_end.hpp:StuntTally",
+    "src/core/front_end.hpp:StuntTally::column_total_shown",
+    "src/core/stunt_result.cpp:(file)",
+    "src/core/stunt_result.cpp:after_tally_frame",
+    "src/core/stunt_result.cpp:first_cell, cell_columns, cell_rows",
+    "src/core/stunt_result.cpp:pass_wait_frames, column_wait_frames",
+    "src/core/stunt_result.cpp:second_tally_pass",
+    "src/core/stunt_result.cpp:tally_frame",
+    "src/core/stunt_result.cpp:tally_pass"
+   ],
+   "observed_entries": {},
+   "start": "$80:F669",
+   "static_entries": {
+    "JSR": 2
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 11,
+   "callers": [
+    "$80:F6C9",
+    "$80:F6EB",
+    "$80:F70D",
+    "$80:F72F"
+   ],
+   "class": "observed",
+   "end": "$80:F7E6",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "native": [
+    "src/core/front_end.hpp:StuntTally",
+    "src/core/stunt_result.cpp:(file)",
+    "src/core/stunt_result.cpp:second_tally_pass"
+   ],
+   "observed_entries": {},
+   "start": "$80:F7DC",
+   "static_entries": {
+    "JSR": 4
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 25,
+   "callers": [
+    "$80:F778",
+    "$80:F7BC"
+   ],
+   "class": "observed",
+   "end": "$80:F813",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "native": [
+    "src/core/front_end.hpp:StuntTally",
+    "src/core/stunt_result.cpp:(file)",
+    "src/core/stunt_result.cpp:second_tally_pass",
+    "src/core/stunt_result.cpp:tally_frame"
+   ],
+   "observed_entries": {},
+   "start": "$80:F7FB",
+   "static_entries": {
+    "JSR": 2
+   },
+   "vectors": []
+  },
+  {
    "bytes": 4,
    "callers": [
     "$83:AD7A",
@@ -2932,11 +4659,57 @@
     "$83:ADD5",
     "$83:AFCD",
     "$83:B06A",
-    "$83:B0F2"
+    "$83:B0F2",
+    "$83:B2B2",
+    "$83:B2BB",
+    "$83:B306",
+    "$83:B3AB",
+    "$83:B470",
+    "$83:B5C4",
+    "$83:B5DB",
+    "$83:B5FA",
+    "$83:B657",
+    "$83:B6D6",
+    "$83:B725",
+    "$83:B89E",
+    "$83:B8A7",
+    "$83:B8DC",
+    "$83:B960",
+    "$83:B9C2",
+    "$83:BA3D",
+    "$83:BAC0",
+    "$83:BC47",
+    "$83:BC50",
+    "$83:BC85",
+    "$83:BCD7",
+    "$83:BD33",
+    "$83:BD59",
+    "$83:BDB1",
+    "$83:BE02",
+    "$83:BE3F",
+    "$83:BF85",
+    "$83:BFB2",
+    "$83:BFEF",
+    "$83:C054",
+    "$83:C214",
+    "$83:C22B",
+    "$83:C24A",
+    "$83:C2AA",
+    "$83:C2D3",
+    "$83:C350",
+    "$83:C383",
+    "$83:C3D8",
+    "$83:C40B",
+    "$83:C592",
+    "$83:C5B1",
+    "$83:C7DC",
+    "$83:C7E5",
+    "$83:C804"
    ],
-   "class": "inferred",
+   "class": "observed",
    "end": "$80:F817",
    "mode_at_entry": [
+    "NMX",
     "NmX"
    ],
    "native": [
@@ -2948,7 +4721,7 @@
    "observed_entries": {},
    "start": "$80:F814",
    "static_entries": {
-    "JSL": 6
+    "JSL": 51
    },
    "vectors": []
   },
@@ -2962,6 +4735,7 @@
    "class": "observed",
    "end": "$80:F86E",
    "mode_at_entry": [
+    "NMX",
     "NmX"
    ],
    "native": [
@@ -3008,8 +4782,12 @@
   {
    "bytes": 44,
    "callers": [
+    "$80:908B",
+    "$80:9107",
     "$80:D151",
-    "$80:D15F"
+    "$80:D15F",
+    "$80:F27F",
+    "$80:F2E6"
    ],
    "class": "observed",
    "end": "$80:F8B8",
@@ -3025,7 +4803,7 @@
    "observed_entries": {},
    "start": "$80:F88D",
    "static_entries": {
-    "JSR": 2
+    "JSR": 6
    },
    "vectors": []
   },
@@ -3049,6 +4827,23 @@
    "start": "$80:F8B9",
    "static_entries": {
     "JSR": 2
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 263,
+   "callers": [
+    "$80:C051"
+   ],
+   "class": "observed",
+   "end": "$80:F9ED",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$80:F8E7",
+   "static_entries": {
+    "JSR": 1
    },
    "vectors": []
   },
@@ -3100,12 +4895,30 @@
    "callers": [
     "$80:887E",
     "$80:8900",
+    "$80:8A91",
+    "$80:8B1F",
+    "$80:8FFA",
+    "$80:947E",
     "$80:9761",
     "$80:977F",
     "$80:97D6",
     "$80:986E",
     "$80:988C",
     "$80:996E",
+    "$80:9BE8",
+    "$80:9C01",
+    "$80:9C2B",
+    "$80:9C9F",
+    "$80:9CE6",
+    "$80:9E68",
+    "$80:9F88",
+    "$80:9FBC",
+    "$80:9FD7",
+    "$80:A026",
+    "$80:A049",
+    "$80:A20F",
+    "$80:A231",
+    "$80:A669",
     "$80:A84C",
     "$80:A858",
     "$80:A867",
@@ -3113,6 +4926,9 @@
     "$80:A8A8",
     "$80:ABE3",
     "$80:ACF7",
+    "$80:ADE5",
+    "$80:B043",
+    "$80:B066",
     "$80:B08E",
     "$80:B0D2",
     "$80:B3E2",
@@ -3120,6 +4936,9 @@
     "$80:B46B",
     "$80:B97D",
     "$80:BAA9",
+    "$80:C038",
+    "$80:C15C",
+    "$80:C175",
     "$80:C20C",
     "$80:C222",
     "$80:C252",
@@ -3131,7 +4950,26 @@
     "$80:D110",
     "$80:D20E",
     "$80:D36F",
+    "$80:D477",
+    "$80:D5E8",
+    "$80:D6D9",
+    "$80:D908",
+    "$80:D917",
+    "$80:D94E",
+    "$80:D985",
+    "$80:D9B8",
+    "$80:DADA",
+    "$80:DB0C",
+    "$80:DB23",
+    "$80:DB53",
+    "$80:DB8C",
+    "$80:DBD6",
+    "$80:DC1B",
+    "$80:DDFE",
+    "$80:DE98",
+    "$80:DEDB",
     "$80:E255",
+    "$80:E29C",
     "$80:E322",
     "$80:E332",
     "$80:E369",
@@ -3142,12 +4980,30 @@
     "$80:E926",
     "$80:EA0A",
     "$80:EAEF",
+    "$80:EBDF",
+    "$80:EC05",
+    "$80:EC1D",
+    "$80:EC32",
+    "$80:EC5C",
+    "$80:EC70",
+    "$80:EC91",
+    "$80:ECC4",
     "$80:EF75",
     "$80:F0E1",
+    "$80:F0F9",
+    "$80:F249",
+    "$80:F26F",
+    "$80:F2D4",
     "$80:F4CF",
     "$80:F4EF",
     "$80:F4F8",
     "$80:F5CA",
+    "$80:F762",
+    "$80:F7AA",
+    "$80:F7CD",
+    "$80:F808",
+    "$80:F959",
+    "$80:F9D2",
     "$80:FADB",
     "$83:8B9E"
    ],
@@ -3171,7 +5027,7 @@
    "start": "$80:FADF",
    "static_entries": {
     "JSL": 1,
-    "JSR": 51
+    "JSR": 112
    },
    "vectors": []
   },
@@ -3193,6 +5049,23 @@
    ],
    "observed_entries": {},
    "start": "$80:FAF5",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 42,
+   "callers": [
+    "$80:BEBE"
+   ],
+   "class": "observed",
+   "end": "$80:FBFE",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$80:FBD5",
    "static_entries": {
     "JSR": 1
    },
@@ -3372,7 +5245,7 @@
    "callers": [
     "$81:82F0"
    ],
-   "class": "inferred",
+   "class": "observed",
    "end": "$81:834B",
    "mode_at_entry": [
     "NMX"
@@ -3392,7 +5265,7 @@
    "callers": [
     "$81:82F0"
    ],
-   "class": "inferred",
+   "class": "observed",
    "end": "$81:840E",
    "mode_at_entry": [
     "NMX"
@@ -3413,7 +5286,7 @@
    "callers": [
     "$81:838A"
    ],
-   "class": "inferred",
+   "class": "observed",
    "end": "$81:848F",
    "mode_at_entry": [
     "NMX"
@@ -3436,7 +5309,7 @@
     "$81:83E4",
     "$81:840C"
    ],
-   "class": "inferred",
+   "class": "observed",
    "end": "$81:84A4",
    "mode_at_entry": [
     "NMX"
@@ -3457,7 +5330,7 @@
    "callers": [
     "$81:8414"
    ],
-   "class": "inferred",
+   "class": "observed",
    "end": "$81:84AA",
    "mode_at_entry": [
     "NMX"
@@ -3480,7 +5353,7 @@
     "$81:83C4",
     "$81:83EC"
    ],
-   "class": "inferred",
+   "class": "observed",
    "end": "$81:84AB",
    "mode_at_entry": [
     "NMX"
@@ -3558,7 +5431,7 @@
    "callers": [
     "$81:82F0"
    ],
-   "class": "inferred",
+   "class": "observed",
    "end": "$81:858D",
    "mode_at_entry": [
     "NMX"
@@ -3672,7 +5545,7 @@
    "callers": [
     "$81:82F0"
    ],
-   "class": "inferred",
+   "class": "observed",
    "end": "$81:894E",
    "mode_at_entry": [
     "NMX"
@@ -3701,7 +5574,7 @@
     "$81:8857",
     "$81:88B2"
    ],
-   "class": "inferred",
+   "class": "observed",
    "end": "$81:894F",
    "mode_at_entry": [
     "NMX"
@@ -3722,7 +5595,7 @@
    "callers": [
     "$81:82F0"
    ],
-   "class": "inferred",
+   "class": "observed",
    "end": "$81:8998",
    "mode_at_entry": [
     "NMX"
@@ -3742,7 +5615,7 @@
    "callers": [
     "$81:82F0"
    ],
-   "class": "inferred",
+   "class": "observed",
    "end": "$81:89F6",
    "mode_at_entry": [
     "NMX"
@@ -3765,7 +5638,7 @@
    "callers": [
     "$81:82F0"
    ],
-   "class": "inferred",
+   "class": "observed",
    "end": "$81:8A29",
    "mode_at_entry": [
     "NMX"
@@ -4412,12 +6285,12 @@
    "vectors": []
   },
   {
-   "bytes": 30,
+   "bytes": 46,
    "callers": [
     "$81:A300"
    ],
    "class": "observed",
-   "end": "$81:A321",
+   "end": "$81:A331",
    "mode_at_entry": [
     "NMX"
    ],
@@ -4431,6 +6304,52 @@
    "start": "$81:A304",
    "static_entries": {
     "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 63,
+   "callers": [
+    "$81:A32F"
+   ],
+   "class": "observed",
+   "end": "$81:A405",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "native": [
+    "src/core/presentation.cpp:draw_race_backgrounds",
+    "src/core/race_setup.cpp:track_geometry",
+    "src/core/rider_object.hpp:project_rider_oam",
+    "src/core/zoom_zoo_movement.hpp:TrackGeometry"
+   ],
+   "observed_entries": {},
+   "start": "$81:A3C7",
+   "static_entries": {
+    "JMP": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 63,
+   "callers": [
+    "$81:A327"
+   ],
+   "class": "observed",
+   "end": "$81:A444",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "native": [
+    "src/core/presentation.cpp:draw_race_backgrounds",
+    "src/core/race_setup.cpp:track_geometry",
+    "src/core/rider_object.hpp:project_rider_oam",
+    "src/core/zoom_zoo_movement.hpp:TrackGeometry"
+   ],
+   "observed_entries": {},
+   "start": "$81:A406",
+   "static_entries": {
+    "JMP": 1
    },
    "vectors": []
   },
@@ -4462,7 +6381,7 @@
    "callers": [
     "$81:A317"
    ],
-   "class": "inferred",
+   "class": "observed",
    "end": "$81:A4C0",
    "mode_at_entry": [
     "NMX"
@@ -4481,12 +6400,12 @@
    "vectors": []
   },
   {
-   "bytes": 91,
+   "bytes": 62,
    "callers": [
     "$81:A30F"
    ],
    "class": "observed",
-   "end": "$81:A51B",
+   "end": "$81:A4FE",
    "mode_at_entry": [
     "NMX"
    ],
@@ -4500,6 +6419,30 @@
    "start": "$81:A4C1",
    "static_entries": {
     "JMP": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 29,
+   "callers": [
+    "$81:A403",
+    "$81:A442"
+   ],
+   "class": "observed",
+   "end": "$81:A51B",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "native": [
+    "src/core/presentation.cpp:draw_race_backgrounds",
+    "src/core/race_setup.cpp:track_geometry",
+    "src/core/rider_object.hpp:project_rider_oam",
+    "src/core/zoom_zoo_movement.hpp:TrackGeometry"
+   ],
+   "observed_entries": {},
+   "start": "$81:A4FF",
+   "static_entries": {
+    "JMP": 2
    },
    "vectors": []
   },
@@ -4756,7 +6699,7 @@
    "callers": [
     "$81:A5AD"
    ],
-   "class": "inferred",
+   "class": "observed",
    "end": "$81:B26F",
    "mode_at_entry": [
     "NMX"
@@ -5694,7 +7637,7 @@
     "$83:D4D2",
     "$83:D50C"
    ],
-   "class": "inferred",
+   "class": "observed",
    "end": "$81:C55E",
    "mode_at_entry": [
     "NMX"
@@ -5716,7 +7659,7 @@
    "callers": [
     "$81:C55B"
    ],
-   "class": "inferred",
+   "class": "observed",
    "end": "$81:C597",
    "mode_at_entry": [
     "NMX"
@@ -5934,7 +7877,7 @@
    "callers": [
     "$81:C69D"
    ],
-   "class": "inferred",
+   "class": "observed",
    "end": "$81:C6BE",
    "mode_at_entry": [
     "NMX"
@@ -6053,7 +7996,7 @@
    "callers": [
     "$81:C6BC"
    ],
-   "class": "inferred",
+   "class": "observed",
    "end": "$81:C89F",
    "mode_at_entry": [
     "NMX"
@@ -6084,9 +8027,10 @@
    "callers": [
     "$81:C80F"
    ],
-   "class": "inferred",
+   "class": "observed",
    "end": "$81:C8BA",
    "mode_at_entry": [
+    "NMX",
     "NmX"
    ],
    "observed_entries": {},
@@ -6101,9 +8045,10 @@
    "callers": [
     "$81:C7FD"
    ],
-   "class": "inferred",
+   "class": "observed",
    "end": "$81:C8F0",
    "mode_at_entry": [
+    "NMX",
     "NmX"
    ],
    "native": [
@@ -6125,9 +8070,10 @@
     "$81:C88A",
     "$81:C8A5"
    ],
-   "class": "inferred",
+   "class": "observed",
    "end": "$81:C8F3",
    "mode_at_entry": [
+    "NMX",
     "NmX"
    ],
    "observed_entries": {},
@@ -6312,7 +8258,7 @@
    "callers": [
     "$81:D026"
    ],
-   "class": "inferred",
+   "class": "observed",
    "end": "$81:D191",
    "mode_at_entry": [
     "NMX"
@@ -6329,7 +8275,7 @@
    "callers": [
     "$81:D0F1"
    ],
-   "class": "inferred",
+   "class": "observed",
    "end": "$81:D28E",
    "mode_at_entry": [
     "NMX"
@@ -6349,7 +8295,7 @@
    "callers": [
     "$81:D20A"
    ],
-   "class": "inferred",
+   "class": "observed",
    "end": "$81:D397",
    "mode_at_entry": [
     "NMX"
@@ -6369,7 +8315,7 @@
    "callers": [
     "$81:D20F"
    ],
-   "class": "inferred",
+   "class": "observed",
    "end": "$81:D4DD",
    "mode_at_entry": [
     "NMX"
@@ -6390,7 +8336,7 @@
     "$81:D28C",
     "$81:D395"
    ],
-   "class": "inferred",
+   "class": "observed",
    "end": "$81:D526",
    "mode_at_entry": [
     "NMX"
@@ -6462,7 +8408,7 @@
    "callers": [
     "$81:D689"
    ],
-   "class": "inferred",
+   "class": "observed",
    "end": "$81:D816",
    "mode_at_entry": [
     "NMX"
@@ -6518,7 +8464,7 @@
    "callers": [
     "$80:8808"
    ],
-   "class": "inferred",
+   "class": "observed",
    "end": "$81:D8D8",
    "mode_at_entry": [
     "NmX"
@@ -6560,7 +8506,7 @@
     "$81:D885",
     "$81:D8B3"
    ],
-   "class": "inferred",
+   "class": "observed",
    "end": "$81:DA4E",
    "mode_at_entry": [
     "NMX"
@@ -6580,7 +8526,7 @@
    "callers": [
     "$81:D97D"
    ],
-   "class": "inferred",
+   "class": "observed",
    "end": "$81:DB0F",
    "mode_at_entry": [
     "NMX"
@@ -6608,7 +8554,7 @@
     "$81:DA62",
     "$81:DAC4"
    ],
-   "class": "inferred",
+   "class": "observed",
    "end": "$81:DB6F",
    "mode_at_entry": [
     "NMX"
@@ -6630,7 +8576,7 @@
    "callers": [
     "$81:DB20"
    ],
-   "class": "inferred",
+   "class": "observed",
    "end": "$81:DBCC",
    "mode_at_entry": [
     "NMX"
@@ -6654,7 +8600,7 @@
     "$81:DB49",
     "$81:DB6D"
    ],
-   "class": "inferred",
+   "class": "observed",
    "end": "$81:DCE5",
    "mode_at_entry": [
     "NMX"
@@ -6676,7 +8622,7 @@
    "callers": [
     "$81:DC14"
    ],
-   "class": "inferred",
+   "class": "observed",
    "end": "$81:DDA6",
    "mode_at_entry": [
     "NMX"
@@ -6705,7 +8651,7 @@
     "$81:DCF9",
     "$81:DD5B"
    ],
-   "class": "inferred",
+   "class": "observed",
    "end": "$81:DE88",
    "mode_at_entry": [
     "NMX"
@@ -6722,7 +8668,7 @@
    "callers": [
     "$81:DDC3"
    ],
-   "class": "inferred",
+   "class": "observed",
    "end": "$81:DEDC",
    "mode_at_entry": [
     "NMX"
@@ -6740,7 +8686,7 @@
     "$81:DDB9",
     "$81:DE86"
    ],
-   "class": "inferred",
+   "class": "observed",
    "end": "$81:DFB2",
    "mode_at_entry": [
     "NMX"
@@ -6757,7 +8703,7 @@
    "callers": [
     "$81:DEE7"
    ],
-   "class": "inferred",
+   "class": "observed",
    "end": "$81:E00D",
    "mode_at_entry": [
     "NMX"
@@ -6774,7 +8720,7 @@
    "callers": [
     "$81:DEEA"
    ],
-   "class": "inferred",
+   "class": "observed",
    "end": "$81:E013",
    "mode_at_entry": [
     "NMX"
@@ -6791,7 +8737,7 @@
    "callers": [
     "$81:DDAC"
    ],
-   "class": "inferred",
+   "class": "observed",
    "end": "$81:E0AD",
    "mode_at_entry": [
     "NMX"
@@ -6811,7 +8757,7 @@
    "callers": [
     "$81:E01E"
    ],
-   "class": "inferred",
+   "class": "observed",
    "end": "$81:E12D",
    "mode_at_entry": [
     "NMX"
@@ -6831,7 +8777,7 @@
    "callers": [
     "$81:E019"
    ],
-   "class": "inferred",
+   "class": "observed",
    "end": "$81:E1C7",
    "mode_at_entry": [
     "NMX"
@@ -6852,7 +8798,7 @@
    "callers": [
     "$81:E138"
    ],
-   "class": "inferred",
+   "class": "observed",
    "end": "$81:E247",
    "mode_at_entry": [
     "NMX"
@@ -6872,7 +8818,7 @@
    "callers": [
     "$81:E133"
    ],
-   "class": "inferred",
+   "class": "observed",
    "end": "$81:E2EC",
    "mode_at_entry": [
     "NMX"
@@ -6889,7 +8835,7 @@
    "callers": [
     "$81:E252"
    ],
-   "class": "inferred",
+   "class": "observed",
    "end": "$81:E3C9",
    "mode_at_entry": [
     "NMX"
@@ -6906,7 +8852,7 @@
    "callers": [
     "$81:E2F2"
    ],
-   "class": "inferred",
+   "class": "observed",
    "end": "$81:E49E",
    "mode_at_entry": [
     "NMX"
@@ -6924,7 +8870,7 @@
     "$81:E24D",
     "$81:E25A"
    ],
-   "class": "inferred",
+   "class": "observed",
    "end": "$81:E543",
    "mode_at_entry": [
     "NMX"
@@ -6944,7 +8890,7 @@
    "callers": [
     "$81:E4A9"
    ],
-   "class": "inferred",
+   "class": "observed",
    "end": "$81:E620",
    "mode_at_entry": [
     "NMX"
@@ -6964,7 +8910,7 @@
    "callers": [
     "$81:E549"
    ],
-   "class": "inferred",
+   "class": "observed",
    "end": "$81:E6F5",
    "mode_at_entry": [
     "NMX"
@@ -6985,7 +8931,7 @@
     "$81:E4A4",
     "$81:E4B1"
    ],
-   "class": "inferred",
+   "class": "observed",
    "end": "$81:E79A",
    "mode_at_entry": [
     "NMX"
@@ -7002,7 +8948,7 @@
    "callers": [
     "$81:E70A"
    ],
-   "class": "inferred",
+   "class": "observed",
    "end": "$81:E830",
    "mode_at_entry": [
     "NMX"
@@ -7020,7 +8966,7 @@
     "$81:E702",
     "$81:E7A0"
    ],
-   "class": "inferred",
+   "class": "observed",
    "end": "$81:E8C7",
    "mode_at_entry": [
     "NMX"
@@ -7055,7 +9001,7 @@
     "$81:E798",
     "$81:E82E"
    ],
-   "class": "inferred",
+   "class": "observed",
    "end": "$81:E8C8",
    "mode_at_entry": [
     "NMX"
@@ -7378,7 +9324,7 @@
    "callers": [
     "$81:F0DD"
    ],
-   "class": "inferred",
+   "class": "observed",
    "end": "$81:F28A",
    "mode_at_entry": [
     "NMX"
@@ -7453,10 +9399,15 @@
   {
    "bytes": 53,
    "callers": [
+    "$80:9463",
+    "$80:946A",
+    "$80:9471",
     "$80:99BA",
     "$80:A11C",
     "$80:A123",
     "$80:A12A",
+    "$80:B101",
+    "$80:B108",
     "$80:B116",
     "$80:B11D",
     "$80:B12B",
@@ -7520,6 +9471,51 @@
     "$82:E0BC",
     "$83:A28D",
     "$83:A294",
+    "$83:A2A2",
+    "$83:A2A9",
+    "$83:A2B7",
+    "$83:A2BE",
+    "$83:A2CC",
+    "$83:A2D3",
+    "$83:A2E1",
+    "$83:A2E8",
+    "$83:A30B",
+    "$83:A312",
+    "$83:A320",
+    "$83:A327",
+    "$83:A335",
+    "$83:A33C",
+    "$83:A34A",
+    "$83:A351",
+    "$83:A35F",
+    "$83:A366",
+    "$83:A374",
+    "$83:A37B",
+    "$83:A389",
+    "$83:A390",
+    "$83:A39E",
+    "$83:A3A5",
+    "$83:A3B3",
+    "$83:A3BA",
+    "$83:A3C8",
+    "$83:A3CF",
+    "$83:A3DD",
+    "$83:A3E4",
+    "$83:A3F2",
+    "$83:A3F9",
+    "$83:A407",
+    "$83:A40E",
+    "$83:A41C",
+    "$83:A423",
+    "$83:A431",
+    "$83:A438",
+    "$83:A470",
+    "$83:A477",
+    "$83:A49A",
+    "$83:A4A1",
+    "$83:A53A",
+    "$83:A541",
+    "$83:A548",
     "$83:A647",
     "$83:A64E",
     "$83:A655",
@@ -7570,7 +9566,7 @@
    "observed_entries": {},
    "start": "$82:8000",
    "static_entries": {
-    "JSL": 103
+    "JSL": 153
    },
    "vectors": []
   },
@@ -7612,6 +9608,11 @@
     "$82:E0F6",
     "$82:E0FA",
     "$82:E0FE",
+    "$83:A54C",
+    "$83:A550",
+    "$83:A554",
+    "$83:A558",
+    "$83:A55C",
     "$83:A659",
     "$83:A65D",
     "$83:A661",
@@ -7661,19 +9662,25 @@
    "observed_entries": {},
    "start": "$82:8035",
    "static_entries": {
-    "JSL": 69
+    "JSL": 74
    },
    "vectors": []
   },
   {
    "bytes": 4,
    "callers": [
+    "$80:9443",
+    "$80:944C",
+    "$80:9455",
     "$80:A0FC",
     "$80:A105",
     "$80:A10E",
     "$82:E07C",
     "$82:E085",
     "$82:E08E",
+    "$83:A51A",
+    "$83:A523",
+    "$83:A52C",
     "$83:A627",
     "$83:A630",
     "$83:A639",
@@ -7713,7 +9720,7 @@
    "observed_entries": {},
    "start": "$82:807E",
    "static_entries": {
-    "JSL": 30
+    "JSL": 36
    },
    "vectors": []
   },
@@ -7813,8 +9820,10 @@
   {
    "bytes": 4,
    "callers": [
+    "$80:945C",
     "$80:A115",
     "$82:E095",
+    "$83:A533",
     "$83:A640",
     "$83:A75A",
     "$83:CA4B",
@@ -7832,7 +9841,7 @@
    "observed_entries": {},
    "start": "$82:82A5",
    "static_entries": {
-    "JSL": 10
+    "JSL": 12
    },
    "vectors": []
   },
@@ -8344,7 +10353,7 @@
    "callers": [
     "$82:8768"
    ],
-   "class": "inferred",
+   "class": "observed",
    "end": "$82:894E",
    "mode_at_entry": [
     "NMX"
@@ -8484,7 +10493,7 @@
    "callers": [
     "$82:93AD"
    ],
-   "class": "inferred",
+   "class": "observed",
    "end": "$82:955E",
    "mode_at_entry": [
     "NMX"
@@ -8507,7 +10516,7 @@
    "callers": [
     "$82:94D4"
    ],
-   "class": "inferred",
+   "class": "observed",
    "end": "$82:959A",
    "mode_at_entry": [
     "NMX"
@@ -8530,7 +10539,7 @@
    "callers": [
     "$82:94DC"
    ],
-   "class": "inferred",
+   "class": "observed",
    "end": "$82:95BE",
    "mode_at_entry": [
     "NMX"
@@ -8555,7 +10564,7 @@
     "$82:954A",
     "$82:9598"
    ],
-   "class": "inferred",
+   "class": "observed",
    "end": "$82:9635",
    "mode_at_entry": [
     "NMX"
@@ -8580,7 +10589,7 @@
     "$82:95AB",
     "$82:95B6"
    ],
-   "class": "inferred",
+   "class": "observed",
    "end": "$82:965D",
    "mode_at_entry": [
     "NMX"
@@ -8603,7 +10612,7 @@
    "callers": [
     "$82:93A5"
    ],
-   "class": "inferred",
+   "class": "observed",
    "end": "$82:96C2",
    "mode_at_entry": [
     "NMX"
@@ -8628,7 +10637,7 @@
    "callers": [
     "$82:963E"
    ],
-   "class": "inferred",
+   "class": "observed",
    "end": "$82:9713",
    "mode_at_entry": [
     "NMX"
@@ -8799,6 +10808,7 @@
    "class": "observed",
    "end": "$82:9A2A",
    "mode_at_entry": [
+    "NMX",
     "NMx"
    ],
    "native": [
@@ -8970,7 +10980,8 @@
    "class": "observed",
    "end": "$82:9D96",
    "mode_at_entry": [
-    "NMX"
+    "NMX",
+    "NmX"
    ],
    "native": [
     "src/core/race_state_io.cpp:check_rolls",
@@ -9547,6 +11558,7 @@
    "class": "observed",
    "end": "$82:AA74",
    "mode_at_entry": [
+    "NMX",
     "NmX"
    ],
    "native": [
@@ -9567,6 +11579,7 @@
    "class": "observed",
    "end": "$82:AB5B",
    "mode_at_entry": [
+    "NMX",
     "NmX"
    ],
    "native": [
@@ -9714,10 +11727,10 @@
    "callers": [
     "$82:ADB3"
    ],
-   "class": "inferred",
+   "class": "observed",
    "end": "$82:AE7D",
    "mode_at_entry": [
-    "NMX"
+    "NmX"
    ],
    "observed_entries": {},
    "start": "$82:AE61",
@@ -9734,7 +11747,7 @@
     "$82:AEB3",
     "$82:AEBB"
    ],
-   "class": "inferred",
+   "class": "observed",
    "end": "$82:B059",
    "mode_at_entry": [
     "NMX"
@@ -9756,7 +11769,8 @@
    "class": "observed",
    "end": "$82:B153",
    "mode_at_entry": [
-    "NMX"
+    "NMX",
+    "NmX"
    ],
    "observed_entries": {},
    "start": "$82:B05A",
@@ -9774,6 +11788,7 @@
    "class": "observed",
    "end": "$82:B182",
    "mode_at_entry": [
+    "NMX",
     "NmX"
    ],
    "observed_entries": {},
@@ -9786,6 +11801,10 @@
   {
    "bytes": 43,
    "callers": [
+    "$80:8AA9",
+    "$80:8FBE",
+    "$80:9002",
+    "$80:9412",
     "$80:952C",
     "$80:953A",
     "$80:9769",
@@ -9794,6 +11813,8 @@
     "$80:A0DC",
     "$80:A863",
     "$80:A872",
+    "$80:ADF4",
+    "$80:B06E",
     "$80:B0AC",
     "$80:B3F8",
     "$80:B40F",
@@ -9804,12 +11825,38 @@
     "$80:D174",
     "$80:D25F",
     "$80:D26D",
+    "$80:D5F0",
+    "$80:D5F9",
+    "$80:D602",
+    "$80:D6E4",
+    "$80:D6F0",
+    "$80:D6FC",
+    "$80:D928",
+    "$80:D938",
+    "$80:D948",
+    "$80:D95F",
+    "$80:D96F",
+    "$80:D97F",
+    "$80:D996",
+    "$80:D9A6",
+    "$80:D9C7",
+    "$80:D9D0",
+    "$80:DAE2",
+    "$80:DB97",
+    "$80:DE06",
     "$80:E88D",
     "$80:E8A1",
+    "$80:EC3A",
+    "$80:EC43",
+    "$80:F0F5",
+    "$80:F105",
+    "$80:F112",
+    "$80:F1B9",
     "$80:F4DE",
     "$80:F507",
     "$80:F510",
     "$80:F5A2",
+    "$80:F968",
     "$82:DC73",
     "$82:DC82",
     "$82:DC8C",
@@ -9846,6 +11893,8 @@
     "$82:E068",
     "$83:9210",
     "$83:9223",
+    "$83:A605",
+    "$83:A60F",
     "$83:A712",
     "$83:A71C",
     "$83:A7C0",
@@ -9869,6 +11918,44 @@
     "$83:AF30",
     "$83:AF77",
     "$83:AF89",
+    "$83:B20E",
+    "$83:B21C",
+    "$83:B225",
+    "$83:B22E",
+    "$83:B269",
+    "$83:B529",
+    "$83:B537",
+    "$83:B540",
+    "$83:B57B",
+    "$83:B7F5",
+    "$83:B803",
+    "$83:B80C",
+    "$83:B815",
+    "$83:B850",
+    "$83:BBA3",
+    "$83:BBB1",
+    "$83:BBBA",
+    "$83:BBC3",
+    "$83:BBFE",
+    "$83:BEF3",
+    "$83:BF01",
+    "$83:BF0A",
+    "$83:BF45",
+    "$83:C16B",
+    "$83:C179",
+    "$83:C182",
+    "$83:C18B",
+    "$83:C1C6",
+    "$83:C4E9",
+    "$83:C4F7",
+    "$83:C500",
+    "$83:C509",
+    "$83:C544",
+    "$83:C738",
+    "$83:C746",
+    "$83:C74F",
+    "$83:C758",
+    "$83:C793",
     "$83:FB09"
    ],
    "class": "observed",
@@ -9884,7 +11971,7 @@
    "observed_entries": {},
    "start": "$82:B183",
    "static_entries": {
-    "JSL": 84
+    "JSL": 156
    },
    "vectors": []
   },
@@ -9892,9 +11979,25 @@
    "bytes": 45,
    "callers": [
     "$83:AF3E",
-    "$83:AF65"
+    "$83:AF65",
+    "$83:B23E",
+    "$83:B257",
+    "$83:B550",
+    "$83:B569",
+    "$83:B825",
+    "$83:B83E",
+    "$83:BBD3",
+    "$83:BBEC",
+    "$83:BF1A",
+    "$83:BF33",
+    "$83:C19B",
+    "$83:C1B4",
+    "$83:C519",
+    "$83:C532",
+    "$83:C768",
+    "$83:C781"
    ],
-   "class": "inferred",
+   "class": "observed",
    "end": "$82:B1DA",
    "mode_at_entry": [
     "NmX"
@@ -9905,13 +12008,15 @@
    "observed_entries": {},
    "start": "$82:B1AE",
    "static_entries": {
-    "JSL": 2
+    "JSL": 18
    },
    "vectors": []
   },
   {
    "bytes": 74,
    "callers": [
+    "$80:941B",
+    "$80:9424",
     "$80:A0E5",
     "$80:B0B5",
     "$80:B0BE",
@@ -9954,6 +12059,29 @@
     "$83:AF50",
     "$83:AF6E",
     "$83:AF92",
+    "$83:B247",
+    "$83:B260",
+    "$83:B277",
+    "$83:B559",
+    "$83:B572",
+    "$83:B589",
+    "$83:B82E",
+    "$83:B847",
+    "$83:B85E",
+    "$83:BBDC",
+    "$83:BBF5",
+    "$83:BC0C",
+    "$83:BF23",
+    "$83:BF3C",
+    "$83:C1A4",
+    "$83:C1BD",
+    "$83:C1D4",
+    "$83:C522",
+    "$83:C53B",
+    "$83:C552",
+    "$83:C771",
+    "$83:C78A",
+    "$83:C7A1",
     "$83:FB13",
     "$83:FB1D"
    ],
@@ -9970,7 +12098,7 @@
    "observed_entries": {},
    "start": "$82:B1DB",
    "static_entries": {
-    "JSL": 44
+    "JSL": 69
    },
    "vectors": []
   },
@@ -10062,6 +12190,7 @@
   {
    "bytes": 4,
    "callers": [
+    "$80:85CD",
     "$80:865F"
    ],
    "class": "observed",
@@ -10075,7 +12204,7 @@
    "observed_entries": {},
    "start": "$82:B8AA",
    "static_entries": {
-    "JSL": 1
+    "JSL": 2
    },
    "vectors": []
   },
@@ -10101,7 +12230,7 @@
    "callers": [
     "$82:B8DF"
    ],
-   "class": "inferred",
+   "class": "observed",
    "end": "$82:D194",
    "mode_at_entry": [
     "NMx"
@@ -10397,17 +12526,19 @@
   {
    "bytes": 4,
    "callers": [
+    "$80:85C9",
     "$80:8652"
    ],
    "class": "observed",
    "end": "$82:D359",
    "mode_at_entry": [
-    "NMX"
+    "NMX",
+    "NmX"
    ],
    "observed_entries": {},
    "start": "$82:D356",
    "static_entries": {
-    "JSL": 1
+    "JSL": 2
    },
    "vectors": []
   },
@@ -10419,7 +12550,8 @@
    "class": "observed",
    "end": "$82:D37D",
    "mode_at_entry": [
-    "NMX"
+    "NMX",
+    "NmX"
    ],
    "observed_entries": {},
    "start": "$82:D35A",
@@ -10498,6 +12630,7 @@
    "class": "observed",
    "end": "$82:D49A",
    "mode_at_entry": [
+    "NMX",
     "NmX"
    ],
    "observed_entries": {},
@@ -10515,6 +12648,7 @@
    "class": "observed",
    "end": "$82:D4A7",
    "mode_at_entry": [
+    "NMX",
     "NmX"
    ],
    "observed_entries": {},
@@ -10603,6 +12737,7 @@
    "class": "observed",
    "end": "$82:D4DB",
    "mode_at_entry": [
+    "NMx",
     "Nmx"
    ],
    "observed_entries": {},
@@ -10620,6 +12755,7 @@
    "class": "observed",
    "end": "$82:D6E2",
    "mode_at_entry": [
+    "NMx",
     "Nmx"
    ],
    "native": [
@@ -10681,7 +12817,8 @@
    "class": "observed",
    "end": "$82:D7A3",
    "mode_at_entry": [
-    "NMx"
+    "NMx",
+    "NmX"
    ],
    "native": [
     "src/core/presentation.cpp:draw_race_riders",
@@ -10891,7 +13028,7 @@
    "callers": [
     "$83:C9C1"
    ],
-   "class": "inferred",
+   "class": "observed",
    "end": "$82:DDD0",
    "mode_at_entry": [
     "Nmx"
@@ -10908,7 +13045,7 @@
    "callers": [
     "$82:DDCD"
    ],
-   "class": "inferred",
+   "class": "observed",
    "end": "$82:DE05",
    "mode_at_entry": [
     "Nmx"
@@ -10928,9 +13065,10 @@
    "callers": [
     "$82:DF02"
    ],
-   "class": "inferred",
+   "class": "observed",
    "end": "$82:DF04",
    "mode_at_entry": [
+    "NMX",
     "NmX"
    ],
    "observed_entries": {},
@@ -10948,10 +13086,10 @@
     "$82:DE50",
     "$82:DE5B"
    ],
-   "class": "inferred",
+   "class": "observed",
    "end": "$82:DF05",
    "mode_at_entry": [
-    "NmX"
+    "NMx"
    ],
    "native": [
     "src/core/credits_name.cpp:credits_picture_frame"
@@ -10968,10 +13106,10 @@
    "callers": [
     "$82:DE5E"
    ],
-   "class": "inferred",
+   "class": "observed",
    "end": "$82:DF9D",
    "mode_at_entry": [
-    "NMX"
+    "NMx"
    ],
    "native": [
     "src/core/league_completion.cpp:league_podium_frame"
@@ -10988,10 +13126,10 @@
    "callers": [
     "$82:DDF4"
    ],
-   "class": "inferred",
+   "class": "observed",
    "end": "$82:DFF3",
    "mode_at_entry": [
-    "NmX"
+    "NMX"
    ],
    "native": [
     "src/core/league_completion.cpp:league_podium_frame",
@@ -11009,7 +13147,7 @@
    "callers": [
     "$82:DDEA"
    ],
-   "class": "inferred",
+   "class": "observed",
    "end": "$82:E06E",
    "mode_at_entry": [
     "NmX"
@@ -11029,10 +13167,10 @@
    "callers": [
     "$82:DDFA"
    ],
-   "class": "inferred",
+   "class": "observed",
    "end": "$82:E102",
    "mode_at_entry": [
-    "NmX"
+    "Nmx"
    ],
    "observed_entries": {},
    "start": "$82:E06F",
@@ -11046,10 +13184,10 @@
    "callers": [
     "$82:DDF7"
    ],
-   "class": "inferred",
+   "class": "observed",
    "end": "$82:E12A",
    "mode_at_entry": [
-    "NmX"
+    "NMX"
    ],
    "native": [
     "src/core/league_completion.cpp:setup_podium"
@@ -11155,12 +13293,63 @@
    "vectors": []
   },
   {
-   "bytes": 56,
+   "bytes": 4,
+   "callers": [
+    "$80:A4B2"
+   ],
+   "class": "observed",
+   "end": "$83:84DC",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$83:84D9",
+   "static_entries": {
+    "JSL": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 88,
+   "callers": [
+    "$83:84D9"
+   ],
+   "class": "observed",
+   "end": "$83:8534",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$83:84DD",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 33,
+   "callers": [
+    "$83:850A"
+   ],
+   "class": "observed",
+   "end": "$83:8799",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$83:8779",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 79,
    "callers": [
     "$80:BC77"
    ],
-   "class": "inferred",
-   "end": "$83:87D1",
+   "class": "observed",
+   "end": "$83:87E8",
    "mode_at_entry": [
     "NmX"
    ],
@@ -11242,7 +13431,7 @@
     "$83:881D",
     "$83:8957"
    ],
-   "class": "inferred",
+   "class": "observed",
    "end": "$83:8970",
    "mode_at_entry": [
     "NmX"
@@ -11260,6 +13449,7 @@
   {
    "bytes": 31,
    "callers": [
+    "$80:94E3",
     "$80:9A4C"
    ],
    "class": "observed",
@@ -11273,7 +13463,7 @@
    "observed_entries": {},
    "start": "$83:89BA",
    "static_entries": {
-    "JSL": 1
+    "JSL": 2
    },
    "vectors": []
   },
@@ -11325,14 +13515,31 @@
    "bytes": 76,
    "callers": [
     "$80:88FC",
+    "$80:891B",
     "$80:8C53",
     "$80:955A",
     "$80:95B6",
+    "$80:9BD8",
+    "$80:9C30",
+    "$80:9F84",
+    "$80:A551",
     "$80:B1C7",
+    "$80:C02E",
+    "$80:C14C",
+    "$80:C1A1",
     "$80:D204",
+    "$80:D68D",
+    "$80:D7D1",
+    "$80:DAFE",
+    "$80:DE2E",
     "$80:E740",
     "$80:E880",
+    "$80:EBDB",
+    "$80:EC4C",
+    "$80:EC7B",
     "$80:EF57",
+    "$80:F8F7",
+    "$83:A5A6",
     "$83:A6B3",
     "$83:A82F",
     "$83:AC37"
@@ -11353,7 +13560,7 @@
    "observed_entries": {},
    "start": "$83:8B51",
    "static_entries": {
-    "JSL": 12
+    "JSL": 29
    },
    "vectors": []
   },
@@ -11382,9 +13589,13 @@
     "$80:B235",
     "$80:B243",
     "$80:B26C",
+    "$80:B27A",
     "$80:B3BC",
     "$80:B3C8",
     "$80:B5DF",
+    "$80:EDC2",
+    "$80:EE1A",
+    "$80:EE72",
     "$83:8C8F",
     "$83:8CA2"
    ],
@@ -11397,7 +13608,7 @@
    "observed_entries": {},
    "start": "$83:8BC9",
    "static_entries": {
-    "JSL": 8
+    "JSL": 12
    },
    "vectors": []
   },
@@ -11422,9 +13633,11 @@
   {
    "bytes": 148,
    "callers": [
-    "$80:B5F2"
+    "$80:B5F2",
+    "$80:C463",
+    "$80:C481"
    ],
-   "class": "inferred",
+   "class": "observed",
    "end": "$83:8C7A",
    "mode_at_entry": [
     "NMX"
@@ -11436,7 +13649,7 @@
    "observed_entries": {},
    "start": "$83:8BE7",
    "static_entries": {
-    "JSL": 1
+    "JSL": 3
    },
    "vectors": []
   },
@@ -11444,6 +13657,9 @@
    "bytes": 4,
    "callers": [
     "$80:B5D8",
+    "$80:C31C",
+    "$80:C350",
+    "$80:C384",
     "$80:C6C5"
    ],
    "class": "observed",
@@ -11457,7 +13673,7 @@
    "observed_entries": {},
    "start": "$83:8C7B",
    "static_entries": {
-    "JSL": 2
+    "JSL": 5
    },
    "vectors": []
   },
@@ -11479,16 +13695,57 @@
    "vectors": []
   },
   {
+   "bytes": 4,
+   "callers": [
+    "$80:8DC2",
+    "$80:8E44",
+    "$80:8E83"
+   ],
+   "class": "observed",
+   "end": "$83:8D60",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "native": [
+    "src/core/lap_result.cpp:graph_line"
+   ],
+   "observed_entries": {},
+   "start": "$83:8D5D",
+   "static_entries": {
+    "JSL": 3
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 46,
+   "callers": [
+    "$83:8D5D"
+   ],
+   "class": "observed",
+   "end": "$83:8D8E",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$83:8D61",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
    "bytes": 131,
    "callers": [
     "$80:B293",
     "$80:E781",
     "$80:E79B",
-    "$80:E8B8"
+    "$80:E8B8",
+    "$80:ED8E"
    ],
    "class": "observed",
    "end": "$83:8E11",
    "mode_at_entry": [
+    "NMX",
     "NmX"
    ],
    "native": [
@@ -11498,7 +13755,7 @@
    "observed_entries": {},
    "start": "$83:8D8F",
    "static_entries": {
-    "JSL": 4
+    "JSL": 5
    },
    "vectors": []
   },
@@ -11512,11 +13769,47 @@
     "$83:ADAE",
     "$83:ADC9",
     "$83:AFC4",
-    "$83:B026"
+    "$83:B026",
+    "$83:B2A9",
+    "$83:B344",
+    "$83:B3C5",
+    "$83:B461",
+    "$83:B5BB",
+    "$83:B5D2",
+    "$83:B68F",
+    "$83:B6F3",
+    "$83:B748",
+    "$83:B7CC",
+    "$83:B895",
+    "$83:B988",
+    "$83:B9EA",
+    "$83:BA58",
+    "$83:BADE",
+    "$83:BB14",
+    "$83:BC3E",
+    "$83:BD4D",
+    "$83:BE93",
+    "$83:BF7C",
+    "$83:BF93",
+    "$83:C00E",
+    "$83:C08D",
+    "$83:C09F",
+    "$83:C20B",
+    "$83:C222",
+    "$83:C2C5",
+    "$83:C2EE",
+    "$83:C377",
+    "$83:C39E",
+    "$83:C3FF",
+    "$83:C42E",
+    "$83:C589",
+    "$83:C7D3",
+    "$83:C83E"
    ],
    "class": "observed",
    "end": "$83:8EFD",
    "mode_at_entry": [
+    "NMX",
     "NmX"
    ],
    "native": [
@@ -11531,21 +13824,86 @@
    "observed_entries": {},
    "start": "$83:8E3A",
    "static_entries": {
-    "JSL": 8
+    "JSL": 43
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 332,
+   "callers": [
+    "$80:DB59"
+   ],
+   "class": "observed",
+   "end": "$83:9049",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "native": [
+    "src/core/options_menu.cpp:score_bar_targets"
+   ],
+   "observed_entries": {},
+   "start": "$83:8EFE",
+   "static_entries": {
+    "JSL": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 170,
+   "callers": [
+    "$80:8D9B"
+   ],
+   "class": "observed",
+   "end": "$83:90F3",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "native": [
+    "src/core/lap_result.cpp:GraphScale",
+    "src/core/lap_result.cpp:graph_height, minimum_range",
+    "src/core/presentation.cpp:render_authored_result",
+    "src/core/race_progress.cpp:graph_update, totals_update, dragster_totals_update",
+    "src/core/zoom_zoo_movement.hpp:ClassicRaceScenario::tour_race"
+   ],
+   "observed_entries": {},
+   "start": "$83:904A",
+   "static_entries": {
+    "JSL": 1
    },
    "vectors": []
   },
   {
    "bytes": 4,
    "callers": [
+    "$80:8B1B",
     "$80:8CC2",
+    "$80:8D15",
+    "$80:8D46",
+    "$80:8D67",
+    "$80:910A",
+    "$80:9EAD",
+    "$80:9EB6",
+    "$80:AFEB",
+    "$80:B038",
+    "$80:C7FA",
+    "$80:C8DC",
+    "$80:C97E",
+    "$80:CA1F",
+    "$80:CA4E",
+    "$80:CA6D",
+    "$80:D41B",
+    "$80:D4BB",
     "$80:F8B4",
-    "$83:88C9"
+    "$83:87E4",
+    "$83:8815",
+    "$83:88C9",
+    "$83:9C42"
    ],
    "class": "observed",
    "end": "$83:90F7",
    "mode_at_entry": [
-    "NMX"
+    "NMX",
+    "NmX"
    ],
    "native": [
     "src/core/audio_cpu_menu_defaults.cpp:write_record_checksums",
@@ -11558,7 +13916,7 @@
    "observed_entries": {},
    "start": "$83:90F4",
    "static_entries": {
-    "JSL": 3
+    "JSL": 23
    },
    "vectors": []
   },
@@ -11570,7 +13928,8 @@
    "class": "observed",
    "end": "$83:91CB",
    "mode_at_entry": [
-    "NMX"
+    "NMX",
+    "NmX"
    ],
    "observed_entries": {},
    "start": "$83:90F8",
@@ -11580,9 +13939,30 @@
    "vectors": []
   },
   {
+   "bytes": 39,
+   "callers": [
+    "$83:8F91",
+    "$83:8FCF"
+   ],
+   "class": "observed",
+   "end": "$83:91F6",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$83:91D0",
+   "static_entries": {
+    "JSR": 2
+   },
+   "vectors": []
+  },
+  {
    "bytes": 4,
    "callers": [
+    "$80:ADEB",
+    "$80:B072",
     "$80:D263",
+    "$80:D9BE",
     "$80:F4D5",
     "$80:F4FE"
    ],
@@ -11603,7 +13983,7 @@
    "observed_entries": {},
    "start": "$83:91F7",
    "static_entries": {
-    "JSL": 3
+    "JSL": 6
    },
    "vectors": []
   },
@@ -11627,6 +14007,43 @@
    "start": "$83:91FB",
    "static_entries": {
     "JSR": 2
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 135,
+   "callers": [
+    "$80:C04A"
+   ],
+   "class": "observed",
+   "end": "$83:92AF",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$83:9229",
+   "static_entries": {
+    "JSL": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 28,
+   "callers": [
+    "$83:9283",
+    "$83:9291",
+    "$83:929F",
+    "$83:92AB"
+   ],
+   "class": "observed",
+   "end": "$83:92CB",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$83:92B0",
+   "static_entries": {
+    "JSR": 4
    },
    "vectors": []
   },
@@ -11905,11 +14322,34 @@
   {
    "bytes": 21,
    "callers": [
-    "$80:BBA5"
+    "$80:BCEB",
+    "$80:BF6B",
+    "$80:C087"
+   ],
+   "class": "observed",
+   "end": "$83:9542",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$83:952E",
+   "static_entries": {
+    "JSL": 3
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 21,
+   "callers": [
+    "$80:BBA5",
+    "$80:BCC8",
+    "$80:BF4E",
+    "$80:C09C"
    ],
    "class": "observed",
    "end": "$83:9557",
    "mode_at_entry": [
+    "NMX",
     "NmX"
    ],
    "native": [
@@ -11918,7 +14358,7 @@
    "observed_entries": {},
    "start": "$83:9543",
    "static_entries": {
-    "JSL": 1
+    "JSL": 4
    },
    "vectors": []
   },
@@ -11926,7 +14366,10 @@
    "bytes": 21,
    "callers": [
     "$80:ABC8",
-    "$80:BCA4"
+    "$80:BCA4",
+    "$80:BD08",
+    "$80:BFB7",
+    "$80:C0E0"
    ],
    "class": "observed",
    "end": "$83:956C",
@@ -11938,6 +14381,67 @@
    ],
    "observed_entries": {},
    "start": "$83:9558",
+   "static_entries": {
+    "JSL": 5
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 31,
+   "callers": [
+    "$83:9DA2"
+   ],
+   "class": "observed",
+   "end": "$83:958B",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$83:956D",
+   "static_entries": {
+    "JSL": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 62,
+   "callers": [
+    "$80:BEF9",
+    "$80:BFF9"
+   ],
+   "class": "observed",
+   "end": "$83:95C9",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "native": [
+    "src/core/league_menu.cpp:choose_league_pair",
+    "src/core/league_menu.cpp:restore_league_pair"
+   ],
+   "observed_entries": {},
+   "start": "$83:958C",
+   "static_entries": {
+    "JSL": 2
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 84,
+   "callers": [
+    "$80:BF17",
+    "$80:C012"
+   ],
+   "class": "observed",
+   "end": "$83:961D",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "native": [
+    "src/core/league_menu.cpp:choose_league_pair",
+    "src/core/league_menu.cpp:restore_league_pair"
+   ],
+   "observed_entries": {},
+   "start": "$83:95CA",
    "static_entries": {
     "JSL": 2
    },
@@ -11970,7 +14474,9 @@
   {
    "bytes": 64,
    "callers": [
-    "$80:AD4F"
+    "$80:A54B",
+    "$80:AD4F",
+    "$80:EF8A"
    ],
    "class": "observed",
    "end": "$83:967B",
@@ -11984,6 +14490,23 @@
    "observed_entries": {},
    "start": "$83:963C",
    "static_entries": {
+    "JSL": 3
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 35,
+   "callers": [
+    "$80:8996"
+   ],
+   "class": "observed",
+   "end": "$83:969E",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$83:967C",
+   "static_entries": {
     "JSL": 1
    },
    "vectors": []
@@ -11991,12 +14514,14 @@
   {
    "bytes": 18,
    "callers": [
-    "$83:9675"
+    "$83:9675",
+    "$83:9697"
    ],
    "class": "observed",
    "end": "$83:96B0",
    "mode_at_entry": [
-    "NMX"
+    "NMX",
+    "NmX"
    ],
    "native": [
     "src/core/audio_cpu_menu_league.cpp:read_members"
@@ -12004,14 +14529,16 @@
    "observed_entries": {},
    "start": "$83:969F",
    "static_entries": {
-    "JSR": 1
+    "JSR": 2
    },
    "vectors": []
   },
   {
    "bytes": 66,
    "callers": [
-    "$80:AD90"
+    "$80:A598",
+    "$80:AD90",
+    "$80:EFCB"
    ],
    "class": "observed",
    "end": "$83:96FF",
@@ -12024,7 +14551,78 @@
    "observed_entries": {},
    "start": "$83:96BE",
    "static_entries": {
+    "JSL": 3
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 52,
+   "callers": [
+    "$80:BF1B"
+   ],
+   "class": "observed",
+   "end": "$83:9733",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$83:9700",
+   "static_entries": {
     "JSL": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 137,
+   "callers": [
+    "$83:9715",
+    "$83:972D"
+   ],
+   "class": "observed",
+   "end": "$83:97BC",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$83:9734",
+   "static_entries": {
+    "JSR": 2
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 173,
+   "callers": [
+    "$80:D527"
+   ],
+   "class": "observed",
+   "end": "$83:9869",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$83:97BD",
+   "static_entries": {
+    "JSL": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 19,
+   "callers": [
+    "$83:9821",
+    "$83:9835",
+    "$83:9844"
+   ],
+   "class": "observed",
+   "end": "$83:987C",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$83:986A",
+   "static_entries": {
+    "JSR": 3
    },
    "vectors": []
   },
@@ -12074,11 +14672,31 @@
    "vectors": []
   },
   {
+   "bytes": 117,
+   "callers": [
+    "$80:BEE4"
+   ],
+   "class": "observed",
+   "end": "$83:991F",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$83:98AB",
+   "static_entries": {
+    "JSL": 1
+   },
+   "vectors": []
+  },
+  {
    "bytes": 17,
    "callers": [
-    "$80:BC64"
+    "$80:BC64",
+    "$80:BD8B",
+    "$80:BF25",
+    "$80:C01C"
    ],
-   "class": "inferred",
+   "class": "observed",
    "end": "$83:9982",
    "mode_at_entry": [
     "NmX"
@@ -12086,7 +14704,7 @@
    "observed_entries": {},
    "start": "$83:9972",
    "static_entries": {
-    "JSL": 1
+    "JSL": 4
    },
    "vectors": []
   },
@@ -12094,7 +14712,11 @@
    "bytes": 4,
    "callers": [
     "$80:8C80",
+    "$80:94AD",
+    "$80:AEB0",
+    "$80:B011",
     "$80:B18D",
+    "$80:BFF5",
     "$80:E74F",
     "$80:E9F8"
    ],
@@ -12113,13 +14735,14 @@
    "observed_entries": {},
    "start": "$83:9983",
    "static_entries": {
-    "JSL": 4
+    "JSL": 8
    },
    "vectors": []
   },
   {
    "bytes": 59,
    "callers": [
+    "$83:98B5",
     "$83:9983"
    ],
    "class": "observed",
@@ -12135,7 +14758,24 @@
    "observed_entries": {},
    "start": "$83:9987",
    "static_entries": {
-    "JSR": 1
+    "JSR": 2
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 52,
+   "callers": [
+    "$80:C026"
+   ],
+   "class": "observed",
+   "end": "$83:99F5",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$83:99C2",
+   "static_entries": {
+    "JSL": 1
    },
    "vectors": []
   },
@@ -12190,16 +14830,27 @@
    "callers": [
     "$80:958F",
     "$80:98D6",
+    "$80:B049",
     "$80:B467",
     "$80:C212",
     "$80:C228",
     "$80:C258",
+    "$80:D6D5",
+    "$80:DB4F",
+    "$80:DB88",
+    "$80:DBD2",
     "$80:E251",
-    "$80:E606"
+    "$80:E606",
+    "$80:F202",
+    "$80:F76C",
+    "$80:F7B0",
+    "$80:F7D3",
+    "$80:F804"
    ],
    "class": "observed",
    "end": "$83:9AF8",
    "mode_at_entry": [
+    "NMX",
     "NmX"
    ],
    "native": [
@@ -12213,7 +14864,78 @@
    "observed_entries": {},
    "start": "$83:9A1E",
    "static_entries": {
-    "JSL": 8
+    "JSL": 18
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 4,
+   "callers": [
+    "$80:C19B"
+   ],
+   "class": "observed",
+   "end": "$83:9B48",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$83:9B45",
+   "static_entries": {
+    "JSL": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 254,
+   "callers": [
+    "$83:9B45"
+   ],
+   "class": "observed",
+   "end": "$83:9C46",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "observed_entries": {},
+   "start": "$83:9B49",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 313,
+   "callers": [
+    "$83:9B76"
+   ],
+   "class": "inferred",
+   "end": "$83:9D7F",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$83:9C47",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 51,
+   "callers": [
+    "$80:D84F",
+    "$80:F986",
+    "$83:91DD",
+    "$83:9878"
+   ],
+   "class": "observed",
+   "end": "$83:9DB2",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$83:9D80",
+   "static_entries": {
+    "JSL": 4
    },
    "vectors": []
   },
@@ -12243,7 +14965,8 @@
     "$80:B39A",
     "$80:D072",
     "$80:D099",
-    "$80:D0C0"
+    "$80:D0C0",
+    "$80:EDA8"
    ],
    "class": "observed",
    "end": "$83:9E46",
@@ -12254,16 +14977,21 @@
    "observed_entries": {},
    "start": "$83:9E3A",
    "static_entries": {
-    "JSL": 4
+    "JSL": 5
    },
    "vectors": []
   },
   {
    "bytes": 56,
    "callers": [
+    "$80:9043",
+    "$80:90DB",
     "$80:B5C2",
     "$80:CFAB",
-    "$80:D016"
+    "$80:D016",
+    "$80:F229",
+    "$80:F2AE",
+    "$83:9BB7"
    ],
    "class": "observed",
    "end": "$83:9E7E",
@@ -12276,7 +15004,24 @@
    "observed_entries": {},
    "start": "$83:9E47",
    "static_entries": {
-    "JSL": 3
+    "JSL": 8
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 53,
+   "callers": [
+    "$80:89BD"
+   ],
+   "class": "observed",
+   "end": "$83:9EB3",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "observed_entries": {},
+   "start": "$83:9E7F",
+   "static_entries": {
+    "JSL": 1
    },
    "vectors": []
   },
@@ -12312,22 +15057,44 @@
    "vectors": []
   },
   {
+   "bytes": 13,
+   "callers": [
+    "$83:87F5"
+   ],
+   "class": "observed",
+   "end": "$83:9ED4",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "native": [
+    "src/core/race_result.cpp:score_race"
+   ],
+   "observed_entries": {},
+   "start": "$83:9EC8",
+   "static_entries": {
+    "JSL": 1
+   },
+   "vectors": []
+  },
+  {
    "bytes": 22,
    "callers": [
     "$80:E976",
     "$80:E9C3",
     "$80:EA9B",
+    "$83:8801",
     "$83:8960"
    ],
    "class": "observed",
    "end": "$83:9EEA",
    "mode_at_entry": [
-    "NMX"
+    "NMX",
+    "NmX"
    ],
    "observed_entries": {},
    "start": "$83:9ED5",
    "static_entries": {
-    "JSL": 4
+    "JSL": 5
    },
    "vectors": []
   },
@@ -12335,7 +15102,9 @@
    "bytes": 41,
    "callers": [
     "$80:99ED",
-    "$80:B380"
+    "$80:B380",
+    "$80:F259",
+    "$83:88E3"
    ],
    "class": "observed",
    "end": "$83:9F13",
@@ -12356,7 +15125,7 @@
    "observed_entries": {},
    "start": "$83:9EEB",
    "static_entries": {
-    "JSL": 2
+    "JSL": 4
    },
    "vectors": []
   },
@@ -12364,16 +15133,19 @@
    "bytes": 53,
    "callers": [
     "$80:9788",
+    "$80:AEB8",
     "$80:E55B",
     "$80:E753",
     "$80:E788",
     "$80:E7AD",
+    "$80:ED7E",
     "$83:8855",
     "$83:8DA4"
    ],
    "class": "observed",
    "end": "$83:9F48",
    "mode_at_entry": [
+    "NMX",
     "NmX"
    ],
    "native": [
@@ -12382,7 +15154,7 @@
    "observed_entries": {},
    "start": "$83:9F14",
    "static_entries": {
-    "JSL": 7
+    "JSL": 9
    },
    "vectors": []
   },
@@ -12395,7 +15167,7 @@
     "$83:88AD",
     "$83:88C1"
    ],
-   "class": "inferred",
+   "class": "observed",
    "end": "$83:9F5D",
    "mode_at_entry": [
     "NmX"
@@ -12433,7 +15205,7 @@
     "$83:88B1",
     "$83:88C5"
    ],
-   "class": "inferred",
+   "class": "observed",
    "end": "$83:9F95",
    "mode_at_entry": [
     "NmX"
@@ -12448,9 +15220,10 @@
   {
    "bytes": 21,
    "callers": [
-    "$83:B03A"
+    "$83:B03A",
+    "$83:B374"
    ],
-   "class": "inferred",
+   "class": "observed",
    "end": "$83:A29A",
    "mode_at_entry": [
     "NMX"
@@ -12462,6 +15235,456 @@
    "observed_entries": {},
    "start": "$83:A286",
    "static_entries": {
+    "JSR": 2
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 21,
+   "callers": [
+    "$83:B63F",
+    "$83:C0B5"
+   ],
+   "class": "observed",
+   "end": "$83:A2AF",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "native": [
+    "src/core/award.cpp:build_step",
+    "src/core/front_end_screens.hpp:play_screen_sound"
+   ],
+   "observed_entries": {},
+   "start": "$83:A29B",
+   "static_entries": {
+    "JSR": 2
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 21,
+   "callers": [
+    "$83:B615"
+   ],
+   "class": "observed",
+   "end": "$83:A2C4",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "native": [
+    "src/core/award.cpp:build_step",
+    "src/core/front_end_screens.hpp:play_screen_sound"
+   ],
+   "observed_entries": {},
+   "start": "$83:A2B0",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 21,
+   "callers": [
+    "$83:B69E"
+   ],
+   "class": "observed",
+   "end": "$83:A2D9",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "native": [
+    "src/core/award.cpp:build_step",
+    "src/core/front_end_screens.hpp:play_screen_sound"
+   ],
+   "observed_entries": {},
+   "start": "$83:A2C5",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 21,
+   "callers": [
+    "$83:B757",
+    "$83:B763"
+   ],
+   "class": "observed",
+   "end": "$83:A2EE",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "native": [
+    "src/core/award.cpp:build_step",
+    "src/core/front_end_screens.hpp:play_screen_sound"
+   ],
+   "observed_entries": {},
+   "start": "$83:A2DA",
+   "static_entries": {
+    "JSR": 2
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 21,
+   "callers": [
+    "$83:B8FC",
+    "$83:BA6C",
+    "$83:BB2A"
+   ],
+   "class": "observed",
+   "end": "$83:A318",
+   "mode_at_entry": [
+    "NMX",
+    "NmX"
+   ],
+   "native": [
+    "src/core/award.cpp:build_step",
+    "src/core/front_end_screens.hpp:play_screen_sound"
+   ],
+   "observed_entries": {},
+   "start": "$83:A304",
+   "static_entries": {
+    "JSR": 3
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 21,
+   "callers": [
+    "$83:B918"
+   ],
+   "class": "observed",
+   "end": "$83:A32D",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "native": [
+    "src/core/award.cpp:build_step",
+    "src/core/front_end_screens.hpp:play_screen_sound"
+   ],
+   "observed_entries": {},
+   "start": "$83:A319",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 21,
+   "callers": [
+    "$83:B91B"
+   ],
+   "class": "observed",
+   "end": "$83:A342",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "native": [
+    "src/core/award.cpp:build_step",
+    "src/core/front_end_screens.hpp:play_screen_sound"
+   ],
+   "observed_entries": {},
+   "start": "$83:A32E",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 21,
+   "callers": [
+    "$83:BA10"
+   ],
+   "class": "observed",
+   "end": "$83:A357",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "native": [
+    "src/core/award.cpp:build_step",
+    "src/core/front_end_screens.hpp:play_screen_sound"
+   ],
+   "observed_entries": {},
+   "start": "$83:A343",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 21,
+   "callers": [
+    "$83:BB2D"
+   ],
+   "class": "observed",
+   "end": "$83:A36C",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "native": [
+    "src/core/award.cpp:build_step",
+    "src/core/front_end_screens.hpp:play_screen_sound"
+   ],
+   "observed_entries": {},
+   "start": "$83:A358",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 21,
+   "callers": [
+    "$83:B2EB"
+   ],
+   "class": "observed",
+   "end": "$83:A381",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "native": [
+    "src/core/award.cpp:build_step",
+    "src/core/front_end_screens.hpp:play_screen_sound"
+   ],
+   "observed_entries": {},
+   "start": "$83:A36D",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 21,
+   "callers": [
+    "$83:B436"
+   ],
+   "class": "observed",
+   "end": "$83:A396",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "native": [
+    "src/core/award.cpp:build_step",
+    "src/core/front_end_screens.hpp:play_screen_sound"
+   ],
+   "observed_entries": {},
+   "start": "$83:A382",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 21,
+   "callers": [
+    "$83:BCFC"
+   ],
+   "class": "observed",
+   "end": "$83:A3AB",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "native": [
+    "src/core/award.cpp:build_step",
+    "src/core/front_end_screens.hpp:play_screen_sound"
+   ],
+   "observed_entries": {},
+   "start": "$83:A397",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 21,
+   "callers": [
+    "$83:C081"
+   ],
+   "class": "observed",
+   "end": "$83:A3C0",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "native": [
+    "src/core/award.cpp:build_step",
+    "src/core/front_end_screens.hpp:play_screen_sound"
+   ],
+   "observed_entries": {},
+   "start": "$83:A3AC",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 21,
+   "callers": [
+    "$83:C302"
+   ],
+   "class": "observed",
+   "end": "$83:A3D5",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "native": [
+    "src/core/award.cpp:build_step",
+    "src/core/front_end_screens.hpp:play_screen_sound"
+   ],
+   "observed_entries": {},
+   "start": "$83:A3C1",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 21,
+   "callers": [
+    "$83:BFD2"
+   ],
+   "class": "observed",
+   "end": "$83:A3EA",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "native": [
+    "src/core/award.cpp:build_step",
+    "src/core/front_end_screens.hpp:play_screen_sound"
+   ],
+   "observed_entries": {},
+   "start": "$83:A3D6",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 21,
+   "callers": [
+    "$83:B330",
+    "$83:B7B6",
+    "$83:C82A"
+   ],
+   "class": "observed",
+   "end": "$83:A3FF",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "native": [
+    "src/core/award.cpp:build_step",
+    "src/core/front_end_screens.hpp:play_screen_sound"
+   ],
+   "observed_entries": {},
+   "start": "$83:A3EB",
+   "static_entries": {
+    "JSR": 3
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 21,
+   "callers": [
+    "$83:B338",
+    "$83:B7BE",
+    "$83:C832"
+   ],
+   "class": "observed",
+   "end": "$83:A414",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "native": [
+    "src/core/award.cpp:build_step",
+    "src/core/front_end_screens.hpp:play_screen_sound"
+   ],
+   "observed_entries": {},
+   "start": "$83:A400",
+   "static_entries": {
+    "JSR": 3
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 21,
+   "callers": [
+    "$83:C3BB"
+   ],
+   "class": "observed",
+   "end": "$83:A429",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "native": [
+    "src/core/award.cpp:build_step",
+    "src/core/front_end_screens.hpp:play_screen_sound"
+   ],
+   "observed_entries": {},
+   "start": "$83:A415",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 21,
+   "callers": [
+    "$83:B377"
+   ],
+   "class": "observed",
+   "end": "$83:A43E",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "native": [
+    "src/core/award.cpp:build_step",
+    "src/core/front_end_screens.hpp:play_screen_sound"
+   ],
+   "observed_entries": {},
+   "start": "$83:A42A",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 21,
+   "callers": [
+    "$83:C86E"
+   ],
+   "class": "observed",
+   "end": "$83:A47D",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "native": [
+    "src/core/award.cpp:build_step",
+    "src/core/front_end_screens.hpp:play_screen_sound"
+   ],
+   "observed_entries": {},
+   "start": "$83:A469",
+   "static_entries": {
+    "JSR": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 21,
+   "callers": [
+    "$83:C5DC"
+   ],
+   "class": "observed",
+   "end": "$83:A4A7",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "native": [
+    "src/core/award.cpp:build_step",
+    "src/core/front_end_screens.hpp:play_screen_sound"
+   ],
+   "observed_entries": {},
+   "start": "$83:A493",
+   "static_entries": {
     "JSR": 1
    },
    "vectors": []
@@ -12471,9 +15694,25 @@
    "callers": [
     "$83:AD93",
     "$83:AFE3",
-    "$83:B11C"
+    "$83:B11C",
+    "$83:B2CA",
+    "$83:B4DB",
+    "$83:B5EA",
+    "$83:B78C",
+    "$83:B8B6",
+    "$83:BB40",
+    "$83:BC5F",
+    "$83:BE6B",
+    "$83:BFA2",
+    "$83:C0F2",
+    "$83:C23A",
+    "$83:C454",
+    "$83:C5A1",
+    "$83:C6BC",
+    "$83:C7F4",
+    "$83:C896"
    ],
-   "class": "inferred",
+   "class": "observed",
    "end": "$83:A4E8",
    "mode_at_entry": [
     "NmX"
@@ -12489,7 +15728,7 @@
    "observed_entries": {},
    "start": "$83:A4D2",
    "static_entries": {
-    "JSR": 3
+    "JSR": 19
    },
    "vectors": []
   },
@@ -12501,11 +15740,28 @@
     "$83:AC32",
     "$83:ADFA",
     "$83:AEF8",
-    "$83:B116"
+    "$83:B116",
+    "$83:B1ED",
+    "$83:B4D5",
+    "$83:B508",
+    "$83:B786",
+    "$83:B7D4",
+    "$83:BB3A",
+    "$83:BB82",
+    "$83:BE65",
+    "$83:BED2",
+    "$83:C0EC",
+    "$83:C120",
+    "$83:C44E",
+    "$83:C49E",
+    "$83:C6B6",
+    "$83:C717",
+    "$83:C890"
    ],
-   "class": "inferred",
+   "class": "observed",
    "end": "$83:A506",
    "mode_at_entry": [
+    "NMX",
     "NmX"
    ],
    "native": [
@@ -12521,7 +15777,42 @@
    "observed_entries": {},
    "start": "$83:A4E9",
    "static_entries": {
-    "JSR": 6
+    "JSR": 22
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 269,
+   "callers": [
+    "$83:B1F0",
+    "$83:B50B",
+    "$83:B7D7",
+    "$83:BB85",
+    "$83:BED5",
+    "$83:C123",
+    "$83:C4A1",
+    "$83:C71A"
+   ],
+   "class": "observed",
+   "end": "$83:A613",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "native": [
+    "src/core/audio_cpu_upload.cpp:upload_of",
+    "src/core/audio_cpu_upload.hpp:AudioSoundSetId",
+    "src/core/audio_cue.hpp:AudioSessionLoad",
+    "src/core/audio_cued_scenes.cpp:start_screen_music",
+    "src/core/front_end_screens.hpp:reset_award_screen",
+    "src/core/tour_ending.cpp:(file)",
+    "src/core/tour_ending.cpp:blank_frame, reset_frame, pattern_tiles_frame, bar_map_frame, fade_in_frames",
+    "src/core/tour_ending.cpp:first_loads",
+    "src/core/tour_ending.cpp:tour_ending_frame"
+   ],
+   "observed_entries": {},
+   "start": "$83:A507",
+   "static_entries": {
+    "JSR": 8
    },
    "vectors": []
   },
@@ -12530,7 +15821,7 @@
    "callers": [
     "$83:AEFB"
    ],
-   "class": "inferred",
+   "class": "observed",
    "end": "$83:A720",
    "mode_at_entry": [
     "NmX"
@@ -12553,11 +15844,20 @@
   {
    "bytes": 494,
    "callers": [
-    "$83:B119"
+    "$83:B119",
+    "$83:B4D8",
+    "$83:B789",
+    "$83:BB3D",
+    "$83:BE68",
+    "$83:C0EF",
+    "$83:C451",
+    "$83:C6B9",
+    "$83:C893"
    ],
-   "class": "inferred",
+   "class": "observed",
    "end": "$83:A90E",
    "mode_at_entry": [
+    "NMX",
     "NmX"
    ],
    "native": [
@@ -12574,7 +15874,7 @@
    "observed_entries": {},
    "start": "$83:A721",
    "static_entries": {
-    "JSR": 1
+    "JSR": 9
    },
    "vectors": []
   },
@@ -12584,6 +15884,7 @@
     "$83:87AD",
     "$83:A4DA",
     "$83:A4F3",
+    "$83:A572",
     "$83:A67F",
     "$83:AC22",
     "$83:ADCD",
@@ -12592,11 +15893,59 @@
     "$83:B062",
     "$83:B09B",
     "$83:B0C4",
-    "$83:B10B"
+    "$83:B10B",
+    "$83:B2FE",
+    "$83:B393",
+    "$83:B3A3",
+    "$83:B41C",
+    "$83:B41F",
+    "$83:B465",
+    "$83:B468",
+    "$83:B4B3",
+    "$83:B4B6",
+    "$83:B4CF",
+    "$83:B5F2",
+    "$83:B64F",
+    "$83:B65F",
+    "$83:B6CE",
+    "$83:B71D",
+    "$83:B8D4",
+    "$83:B958",
+    "$83:B9BA",
+    "$83:BA2B",
+    "$83:BA35",
+    "$83:BAA3",
+    "$83:BAB8",
+    "$83:BC7D",
+    "$83:BCCF",
+    "$83:BD2B",
+    "$83:BD51",
+    "$83:BDA9",
+    "$83:BDFA",
+    "$83:BE37",
+    "$83:BFAA",
+    "$83:BFE4",
+    "$83:BFE7",
+    "$83:C04C",
+    "$83:C242",
+    "$83:C2A2",
+    "$83:C2C9",
+    "$83:C323",
+    "$83:C326",
+    "$83:C348",
+    "$83:C37B",
+    "$83:C3D0",
+    "$83:C403",
+    "$83:C5A9",
+    "$83:C5FB",
+    "$83:C6B0",
+    "$83:C7FC",
+    "$83:C886"
    ],
-   "class": "inferred",
+   "class": "observed",
    "end": "$83:A939",
    "mode_at_entry": [
+    "NMX",
     "NmX"
    ],
    "native": [
@@ -12616,7 +15965,7 @@
    "observed_entries": {},
    "start": "$83:A923",
    "static_entries": {
-    "JSR": 12
+    "JSR": 60
    },
    "vectors": []
   },
@@ -12625,7 +15974,7 @@
    "callers": [
     "$83:AD2C"
    ],
-   "class": "inferred",
+   "class": "observed",
    "end": "$83:A95E",
    "mode_at_entry": [
     "NmX"
@@ -12644,9 +15993,11 @@
   {
    "bytes": 87,
    "callers": [
-    "$83:ADDE"
+    "$83:ADDE",
+    "$83:BAB5",
+    "$83:C05D"
    ],
-   "class": "inferred",
+   "class": "observed",
    "end": "$83:AB7B",
    "mode_at_entry": [
     "NmX"
@@ -12659,7 +16010,7 @@
    "observed_entries": {},
    "start": "$83:AB25",
    "static_entries": {
-    "JSR": 1
+    "JSR": 3
    },
    "vectors": []
   },
@@ -12671,7 +16022,7 @@
     "$83:AB58",
     "$83:AB6A"
    ],
-   "class": "inferred",
+   "class": "observed",
    "end": "$83:AB99",
    "mode_at_entry": [
     "NMX"
@@ -12691,11 +16042,13 @@
   {
    "bytes": 615,
    "callers": [
-    "$80:F0EA"
+    "$80:F0EA",
+    "$83:8937"
    ],
-   "class": "inferred",
+   "class": "observed",
    "end": "$83:AE00",
    "mode_at_entry": [
+    "NMX",
     "NmX"
    ],
    "native": [
@@ -12735,7 +16088,8 @@
    "observed_entries": {},
    "start": "$83:AB9A",
    "static_entries": {
-    "JML": 1
+    "JML": 1,
+    "JSL": 1
    },
    "vectors": []
   },
@@ -12744,7 +16098,7 @@
    "callers": [
     "$83:8838"
    ],
-   "class": "inferred",
+   "class": "observed",
    "end": "$83:B11F",
    "mode_at_entry": [
     "NmX"
@@ -12765,6 +16119,303 @@
    ],
    "observed_entries": {},
    "start": "$83:AEF6",
+   "static_entries": {
+    "JSL": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 756,
+   "callers": [
+    "$83:8919"
+   ],
+   "class": "observed",
+   "end": "$83:B4DE",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "native": [
+    "src/core/tour_ending.cpp:endings",
+    "src/core/tour_ending_scripts.cpp:(file)",
+    "src/core/tour_ending_scripts.cpp:bounce_part",
+    "src/core/tour_ending_scripts.cpp:end",
+    "src/core/tour_ending_scripts.cpp:pull_over_part",
+    "src/core/tour_ending_scripts.cpp:roll_end",
+    "src/core/tour_ending_scripts.cpp:roll_start",
+    "src/core/tour_ending_scripts.cpp:set_eating_tiles",
+    "src/core/tour_ending_scripts.cpp:swallow_part",
+    "src/core/tour_ending_scripts.cpp:tongue_out_part"
+   ],
+   "observed_entries": {},
+   "start": "$83:B1EB",
+   "static_entries": {
+    "JSL": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 650,
+   "callers": [
+    "$83:8923"
+   ],
+   "class": "observed",
+   "end": "$83:B78F",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "native": [
+    "src/core/tour_ending.cpp:endings",
+    "src/core/tour_ending_scripts.cpp:(file)",
+    "src/core/tour_ending_scripts.cpp:end",
+    "src/core/tour_ending_scripts.cpp:hit_part",
+    "src/core/tour_ending_scripts.cpp:red_uni_in_part",
+    "src/core/tour_ending_scripts.cpp:roll_on_part",
+    "src/core/tour_ending_scripts.cpp:walk_in_part",
+    "src/core/tour_ending_scripts.cpp:whistle_step, fall_sound_step, first_roll_sound, second_roll_sound"
+   ],
+   "observed_entries": {},
+   "start": "$83:B506",
+   "static_entries": {
+    "JSL": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 54,
+   "callers": [
+    "$83:B609",
+    "$83:B8EB",
+    "$83:BFC1",
+    "$83:C259",
+    "$83:C5C0"
+   ],
+   "class": "observed",
+   "end": "$83:B7D1",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "native": [
+    "src/core/tour_ending_right_column.cpp:walk_in_part",
+    "src/core/tour_ending_scripts.hpp:walk",
+    "src/core/tour_ending_scripts.hpp:walk_sound"
+   ],
+   "observed_entries": {},
+   "start": "$83:B79C",
+   "static_entries": {
+    "JSR": 5
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 882,
+   "callers": [
+    "$83:891E"
+   ],
+   "class": "observed",
+   "end": "$83:BB43",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "native": [
+    "src/core/tour_ending.cpp:endings",
+    "src/core/tour_ending_right_column.cpp:(file)",
+    "src/core/tour_ending_right_column.cpp:after_bound_step",
+    "src/core/tour_ending_right_column.cpp:ball_falls_part",
+    "src/core/tour_ending_right_column.cpp:bound_off_part",
+    "src/core/tour_ending_right_column.cpp:bump_part",
+    "src/core/tour_ending_right_column.cpp:end",
+    "src/core/tour_ending_right_column.cpp:ride_in_part",
+    "src/core/tour_ending_right_column.cpp:rise_sound, bump_sound, ball_sound, ball_gone_sound, bound_sound, second_bound_sound",
+    "src/core/tour_ending_right_column.cpp:scarf_part",
+    "src/core/tour_ending_right_column.cpp:walk_step",
+    "src/core/tour_ending_scripts.hpp:walk_pose"
+   ],
+   "observed_entries": {},
+   "start": "$83:B7D2",
+   "static_entries": {
+    "JSL": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 751,
+   "callers": [
+    "$83:8914"
+   ],
+   "class": "observed",
+   "end": "$83:BE6E",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "native": [
+    "src/core/tour_ending.cpp:endings",
+    "src/core/tour_ending_right_column.cpp:(file)",
+    "src/core/tour_ending_right_column.cpp:drop_part",
+    "src/core/tour_ending_right_column.cpp:end",
+    "src/core/tour_ending_right_column.cpp:flatten_part",
+    "src/core/tour_ending_right_column.cpp:fly_off_part",
+    "src/core/tour_ending_right_column.cpp:ride_in_part",
+    "src/core/tour_ending_right_column.cpp:ride_off_part",
+    "src/core/tour_ending_right_column.cpp:squash_part"
+   ],
+   "observed_entries": {},
+   "start": "$83:BB80",
+   "static_entries": {
+    "JSL": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 43,
+   "callers": [
+    "$83:BC90",
+    "$83:BCE2",
+    "$83:BD64",
+    "$83:BDBC",
+    "$83:BE0D",
+    "$83:BE4A"
+   ],
+   "class": "observed",
+   "end": "$83:BE99",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "native": [
+    "src/core/tour_ending_right_column.cpp:build_ride_pose"
+   ],
+   "observed_entries": {},
+   "start": "$83:BE6F",
+   "static_entries": {
+    "JSR": 6
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 22,
+   "callers": [
+    "$83:BC8D",
+    "$83:BCDF",
+    "$83:BD37",
+    "$83:BD61",
+    "$83:BDB9",
+    "$83:BE0A",
+    "$83:BE47"
+   ],
+   "class": "observed",
+   "end": "$83:BECF",
+   "mode_at_entry": [
+    "NmX"
+   ],
+   "native": [
+    "src/core/tour_ending_right_column.cpp:scroll_pattern"
+   ],
+   "observed_entries": {},
+   "start": "$83:BEBA",
+   "static_entries": {
+    "JSR": 7
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 550,
+   "callers": [
+    "$83:8932"
+   ],
+   "class": "observed",
+   "end": "$83:C0F5",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "native": [
+    "src/core/tour_ending.cpp:endings",
+    "src/core/tour_ending_right_column.cpp:(file)",
+    "src/core/tour_ending_right_column.cpp:end",
+    "src/core/tour_ending_right_column.cpp:knock_part",
+    "src/core/tour_ending_right_column.cpp:script",
+    "src/core/tour_ending_right_column.cpp:tumble_step",
+    "src/core/tour_ending_right_column.cpp:walk_in_part",
+    "src/core/tour_ending_right_column.cpp:wobble_part"
+   ],
+   "observed_entries": {},
+   "start": "$83:BED0",
+   "static_entries": {
+    "JSL": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 826,
+   "callers": [
+    "$83:892D"
+   ],
+   "class": "observed",
+   "end": "$83:C457",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "native": [
+    "src/core/tour_ending.cpp:endings",
+    "src/core/tour_ending_scripts.cpp:(file)",
+    "src/core/tour_ending_scripts.cpp:blast_part",
+    "src/core/tour_ending_scripts.cpp:blast_up_part",
+    "src/core/tour_ending_scripts.cpp:burn_out_part",
+    "src/core/tour_ending_scripts.cpp:end",
+    "src/core/tour_ending_scripts.cpp:fire_part",
+    "src/core/tour_ending_scripts.cpp:firing_pose",
+    "src/core/tour_ending_scripts.cpp:turn_part",
+    "src/core/tour_ending_scripts.cpp:walk_in_part",
+    "src/core/tour_ending_scripts.hpp:clear_third_pose_tiles"
+   ],
+   "observed_entries": {},
+   "start": "$83:C11E",
+   "static_entries": {
+    "JSL": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 548,
+   "callers": [
+    "$83:890F"
+   ],
+   "class": "observed",
+   "end": "$83:C6BF",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "native": [
+    "src/core/tour_ending.cpp:(file)",
+    "src/core/tour_ending.cpp:endings",
+    "src/core/tour_ending.cpp:first_countdown, first_flare, second_flare, burst, white_out, flash_hidden, colour_writes",
+    "src/core/tour_ending.cpp:script",
+    "src/core/tour_ending_scripts.hpp:clear_third_pose_tiles"
+   ],
+   "observed_entries": {},
+   "start": "$83:C49C",
+   "static_entries": {
+    "JSL": 1
+   },
+   "vectors": []
+  },
+  {
+   "bytes": 389,
+   "callers": [
+    "$83:8928"
+   ],
+   "class": "observed",
+   "end": "$83:C899",
+   "mode_at_entry": [
+    "NMX"
+   ],
+   "native": [
+    "src/core/tour_ending.cpp:endings",
+    "src/core/tour_ending_right_column.cpp:(file)",
+    "src/core/tour_ending_right_column.cpp:end",
+    "src/core/tour_ending_right_column.cpp:hold_part",
+    "src/core/tour_ending_right_column.cpp:walk_in_part"
+   ],
+   "observed_entries": {},
+   "start": "$83:C715",
    "static_entries": {
     "JSL": 1
    },
@@ -12831,7 +16482,7 @@
    "callers": [
     "$83:CA1E"
    ],
-   "class": "inferred",
+   "class": "observed",
    "end": "$83:CA71",
    "mode_at_entry": [
     "NMX"
@@ -12877,7 +16528,7 @@
    "callers": [
     "$83:CA1E"
    ],
-   "class": "inferred",
+   "class": "observed",
    "end": "$83:CAFB",
    "mode_at_entry": [
     "NMX"
@@ -12899,7 +16550,7 @@
    "callers": [
     "$83:CA1E"
    ],
-   "class": "inferred",
+   "class": "observed",
    "end": "$83:CB40",
    "mode_at_entry": [
     "NMX"
@@ -12921,7 +16572,7 @@
    "callers": [
     "$83:CA1E"
    ],
-   "class": "inferred",
+   "class": "observed",
    "end": "$83:CB85",
    "mode_at_entry": [
     "NMX"
@@ -12943,7 +16594,7 @@
    "callers": [
     "$83:CA1E"
    ],
-   "class": "inferred",
+   "class": "observed",
    "end": "$83:CBC7",
    "mode_at_entry": [
     "NMX"
@@ -13103,7 +16754,8 @@
    "class": "observed",
    "end": "$83:CDBB",
    "mode_at_entry": [
-    "NMX"
+    "NMX",
+    "NmX"
    ],
    "observed_entries": {},
    "start": "$83:CDB7",
@@ -13120,6 +16772,7 @@
    "class": "observed",
    "end": "$83:CE2B",
    "mode_at_entry": [
+    "NMX",
     "NmX"
    ],
    "native": [
@@ -13139,7 +16792,7 @@
    "callers": [
     "$83:CDC3"
    ],
-   "class": "inferred",
+   "class": "observed",
    "end": "$83:CE42",
    "mode_at_entry": [
     "NMX"
@@ -13226,7 +16879,7 @@
    "callers": [
     "$83:CDB1"
    ],
-   "class": "inferred",
+   "class": "observed",
    "end": "$83:D102",
    "mode_at_entry": [
     "NmX"
@@ -13261,7 +16914,7 @@
     "$83:D0BE",
     "$83:D100"
    ],
-   "class": "inferred",
+   "class": "observed",
    "end": "$83:D103",
    "mode_at_entry": [
     "NMX"
@@ -13285,7 +16938,7 @@
    "callers": [
     "$83:CED6"
    ],
-   "class": "inferred",
+   "class": "observed",
    "end": "$83:D1C1",
    "mode_at_entry": [
     "NMX"
@@ -13313,7 +16966,7 @@
     "$83:D11E",
     "$83:D137"
    ],
-   "class": "inferred",
+   "class": "observed",
    "end": "$83:D1C2",
    "mode_at_entry": [
     "NMX"
@@ -13425,7 +17078,7 @@
    "callers": [
     "$83:D0FD"
    ],
-   "class": "inferred",
+   "class": "observed",
    "end": "$83:D2C8",
    "mode_at_entry": [
     "NMX"
@@ -13700,6 +17353,7 @@
    "class": "observed",
    "end": "$83:E1F6",
    "mode_at_entry": [
+    "NMX",
     "Nmx"
    ],
    "native": [
@@ -13820,7 +17474,7 @@
    "callers": [
     "$83:CD56"
    ],
-   "class": "inferred",
+   "class": "observed",
    "end": "$83:E3BA",
    "mode_at_entry": [
     "Nmx"
@@ -13846,7 +17500,7 @@
    "callers": [
     "$83:E36B"
    ],
-   "class": "inferred",
+   "class": "observed",
    "end": "$83:E3DF",
    "mode_at_entry": [
     "NMX"
@@ -13871,7 +17525,7 @@
     "$83:E35D",
     "$83:E37E"
    ],
-   "class": "inferred",
+   "class": "observed",
    "end": "$83:E3E5",
    "mode_at_entry": [
     "NMX"
@@ -13895,7 +17549,7 @@
    "callers": [
     "$83:E376"
    ],
-   "class": "inferred",
+   "class": "observed",
    "end": "$83:E416",
    "mode_at_entry": [
     "NMX"
@@ -13920,7 +17574,7 @@
     "$83:E31B",
     "$83:E352"
    ],
-   "class": "inferred",
+   "class": "observed",
    "end": "$83:E4FE",
    "mode_at_entry": [
     "NMX"
@@ -13943,7 +17597,7 @@
    "callers": [
     "$83:E4AF"
    ],
-   "class": "inferred",
+   "class": "observed",
    "end": "$83:E523",
    "mode_at_entry": [
     "NMX"
@@ -13967,7 +17621,7 @@
     "$83:E4A1",
     "$83:E4C2"
    ],
-   "class": "inferred",
+   "class": "observed",
    "end": "$83:E529",
    "mode_at_entry": [
     "NMX"
@@ -13991,7 +17645,7 @@
    "callers": [
     "$83:E4BA"
    ],
-   "class": "inferred",
+   "class": "observed",
    "end": "$83:E55A",
    "mode_at_entry": [
     "NMX"
@@ -14017,7 +17671,7 @@
     "$83:E45F",
     "$83:E496"
    ],
-   "class": "inferred",
+   "class": "observed",
    "end": "$83:E55B",
    "mode_at_entry": [
     "NMX"
@@ -14259,7 +17913,7 @@
    "callers": [
     "$83:E7DE"
    ],
-   "class": "inferred",
+   "class": "observed",
    "end": "$83:E8DF",
    "mode_at_entry": [
     "NMX"
@@ -14410,7 +18064,7 @@
     "$83:EAE7",
     "$83:EAF6"
    ],
-   "class": "inferred",
+   "class": "observed",
    "end": "$83:EBA2",
    "mode_at_entry": [
     "NMX"
@@ -14665,7 +18319,7 @@
    "callers": [
     "$82:DE61"
    ],
-   "class": "inferred",
+   "class": "observed",
    "end": "$83:F0FE",
    "mode_at_entry": [
     "NMX"
@@ -14850,7 +18504,7 @@
     "$83:F716",
     "$83:F71E"
    ],
-   "class": "inferred",
+   "class": "observed",
    "end": "$83:F8A9",
    "mode_at_entry": [
     "NMX"
@@ -14872,7 +18526,7 @@
    "callers": [
     "$83:F791"
    ],
-   "class": "inferred",
+   "class": "observed",
    "end": "$83:F961",
    "mode_at_entry": [
     "NMX"
@@ -14902,7 +18556,7 @@
     "$83:F8BA",
     "$83:F8C2"
    ],
-   "class": "inferred",
+   "class": "observed",
    "end": "$83:F97B",
    "mode_at_entry": [
     "NMX"
@@ -14932,6 +18586,8 @@
    "class": "observed",
    "end": "$83:FADA",
    "mode_at_entry": [
+    "NMX",
+    "NMx",
     "NmX"
    ],
    "native": [
@@ -14955,7 +18611,9 @@
    "class": "observed",
    "end": "$83:FADB",
    "mode_at_entry": [
-    "NMx"
+    "NMX",
+    "NMx",
+    "NmX"
    ],
    "observed_entries": {},
    "start": "$83:FADB",
@@ -15083,46 +18741,46 @@
  "schema_version": 1,
  "scope": "ROM offsets $00000-$1FFFF: banks $80-$83 (mirrored at $00-$03)",
  "totals": {
-  "absolute_operands_with_unknown_data_bank": 4232,
+  "absolute_operands_with_unknown_data_bank": 1024,
   "assumptions_used": {
-   "call returns in the calling mode": 1262
+   "call returns in the calling mode": 2454
   },
   "bytes": 131072,
-  "cited_addresses": 1862,
+  "cited_addresses": 1873,
   "cited_by_class": {
-   "data": 33,
-   "inferred": 362,
-   "observed": 1068,
-   "unknown": 399
+   "data": 16,
+   "inferred": 72,
+   "observed": 1606,
+   "unknown": 179
   },
   "cited_by_position": {
-   "dat": 33,
-   "loc": 1041,
-   "mid": 21,
-   "sub": 368,
-   "unk": 399
+   "dat": 16,
+   "loc": 1225,
+   "mid": 29,
+   "sub": 424,
+   "unk": 179
   },
   "conflicts": 0,
-  "data": 92,
+  "data": 74,
   "data_references_into_code": 0,
   "descent_stops": {
    "implausible opcode": 3
   },
-  "gap_sweep_candidate_bytes": 6174,
-  "gap_sweep_candidate_instructions": 2746,
-  "inferred": 36321,
+  "gap_sweep_candidate_bytes": 1341,
+  "gap_sweep_candidate_instructions": 647,
+  "inferred": 12737,
   "instructions": {
-   "descent": 13910,
-   "observed": 17569,
-   "table": 587
+   "descent": 5343,
+   "observed": 35735,
+   "table": 65
   },
   "jump_tables": 2,
-  "mode_ambiguities": 7,
-  "observed": 41778,
-  "routine_bytes_cited_by_native_code": 55854,
-  "routines": 636,
-  "routines_cited_by_native_code": 454,
-  "unknown": 52881,
-  "unknown_share": 0.4035
+  "mode_ambiguities": 6,
+  "observed": 86837,
+  "routine_bytes_cited_by_native_code": 69761,
+  "routines": 759,
+  "routines_cited_by_native_code": 537,
+  "unknown": 31424,
+  "unknown_share": 0.2397
  }
 }

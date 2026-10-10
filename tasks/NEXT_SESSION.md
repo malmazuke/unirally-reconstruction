@@ -11,6 +11,20 @@ Results: the credits picture equal on all 800 pictures and 3,676 sound cues; "fa
 equal on every race row (one-view and the review's split demo, 2,201 rows); every frozen gate and
 sweep equals main. The split picture's HUNTER effects are queued as SPLIT-HUNTER-PICTURES.
 [R-0094](../docs/research/R-0094-name-cheats.md) defines the domain. Pack profile v37.
+**10 October 2026: DATA-COVERAGE is in review (tier 2) on `task/data-coverage`.**
+It measures which ROM data the original reads over R-0089's 236-run corpus: 1,562,774 of
+2,097,152 bytes, with 0 unresolved accesses after the new `access capture --resolve-rmw`. Findings:
+- **The flagged entries are the tracks.** R-0089's 45 flagged directory entries are the 45 track
+  streams. The never-run `$81:BB7A` sits on a branch no call site reaches.
+- **A second directory.** `$82:B7DD` holds the track scenery directory, 41 entries.
+- **Read but not extracted.** The demo's sound set (samples 02, 23, 34) and the rest of the
+  sound uploads, around the driver D-0009 reimplements.
+- **Unread and unpacked.** The credits-cheat picture, now in CREDITS-NAME's PR, and bank `$A2`.
+- **Static map.** Regenerated with a merged corpus map, its unknown share falls from 40.4% to
+  24.0%. Since this task, `coverage static-map` and `disassemble` need a fifth raw capture:
+  `local/evidence/data-coverage/corpus-coverage.json`.
+[R-0093](../docs/research/R-0093-data-coverage.md) and [DATA-COVERAGE](DATA-COVERAGE.md) have the details. It ran beside the
+WIPE-RAM/CREDITS-NAME lane, sharing heavy runs through `local/locks/heavy-run.sh`.
 
 **10 October 2026: WIPE-RAM is accepted (tier 1, #69) and integrated by merge commit.**
 The main menu's hidden code, Left+A+L+R, now opens the original's WIPE RAM menu instead of a

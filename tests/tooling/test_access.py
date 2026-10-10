@@ -470,6 +470,81 @@ class UnresolvedStoreTests(unittest.TestCase):
         self.assertEqual(self.doc["accesses_total"], 7)
 
 
+def rmw_rom() -> bytes:
+    rom = bytearray(0x10000)
+    prog = bytes([
+        0xA7, 0x63,              # 8000 LDA [$63]        pointer $01:8000 from the frame's start
+        0xE6, 0x63,              # 8002 INC $63          16-bit: the pointer's low word plus one
+        0xA7, 0x63,              # 8004 LDA [$63]        $01:8001 only when the INC's result is computed
+        0x54, 0x00, 0x01,        # 8006 MVN $01,$00      block move: writes $00:0063 with an unknown value
+        0xE6, 0x63,              # 8009 INC $63          old value unknown -> stays unknown
+        0xA7, 0x63,              # 800B LDA [$63]        unresolved either way
+    ])
+    rom[0:len(prog)] = prog
+    return bytes(rom)
+
+
+def run_rmw(resolve_rmw: bool, incs: int = 1):
+    """Frame 0: read through [$63], advance it by ``incs`` INCs, read again. Frame 1: a block move
+    clobbers the pointer's low byte before the INC, so the next read is unresolved."""
+    rom = rmw_rom()
+    ring = StubRing()
+    ring.execute(0x8000, d=0, b=0x7E)
+    for _ in range(incs):
+        ring.execute(0x8002, d=0, b=0x7E)
+    ring.execute(0x8004, d=0, b=0x7E)
+    sof = bytearray(derive.WRAM_SIZE)
+    sof[0x63:0x66] = bytes([0x00, 0x80, 0x01])
+    eof = bytearray(sof)
+    end = 0x8000 + incs
+    eof[0x63:0x65] = end.to_bytes(2, "little")
+    d = derive.AccessDrain(rom, incs + 8, resolve_rmw=resolve_rmw)
+    d.set_previous_wram(bytes(sof))
+    d.drain_frame(0, ring.raw(), bytes(eof))
+    ring.execute(0x8006, x=0x8000, y=0x0063, a=0, d=0, b=0x7E)
+    ring.execute(0x8009, d=0, b=0x7E)
+    ring.execute(0x800B, d=0, b=0x7E)
+    d.drain_frame(1, ring.raw(), bytes(eof))
+    doc = d.document({"rom": {"sha256": "a" * 64, "size": len(rom)}, "core": {"name": "stub"}, "script": {"frames": 2}, "status": "complete"}, (0, 1))
+    return derive.validate_document(doc)
+
+
+class ResolveRmwTests(unittest.TestCase):
+    def test_off_by_default_an_inc_leaves_the_pointer_unknown(self) -> None:
+        doc = run_rmw(False)
+        self.assertFalse(doc["resolve_rmw"])
+        self.assertEqual(doc["rom_read_ranges"], [[0x8000, 2]])            # [$63] read at $01:8000 only (16-bit A)
+        self.assertEqual(doc["per_frame_unresolved"], [1, 1])
+
+    def test_an_inc_advances_the_resolved_pointer(self) -> None:
+        doc = run_rmw(True)
+        self.assertTrue(doc["resolve_rmw"])
+        self.assertEqual(doc["rom_read_ranges"], [[0x8000, 3]])            # $01:8000-8001 and $01:8001-8002
+        self.assertEqual(doc["per_frame_unresolved"], [0, 1])              # the clobbered pointer stays unknown
+        rows = {(r[0], r[3]): r for r in doc["rom_reads"]}
+        self.assertEqual((rows[(0x8004, READ)][5], rows[(0x8004, READ)][6]), (0x018001, 0x018001))
+
+    def test_a_long_chain_is_computed_without_recursion(self) -> None:
+        doc = run_rmw(True, incs=5000)
+        self.assertIn([0x8000 + 5000, 2], doc["rom_read_ranges"])
+        self.assertEqual(doc["per_frame_unresolved"], [0, 1])
+
+    def test_every_rmw_result(self) -> None:
+        def op(m, width=1, a=0, carry=0):
+            return derive.RmwOp(0, m, width, a, carry, (0,) * width)
+        self.assertEqual(op("INC").apply(0xFF), 0x00)
+        self.assertEqual(op("INC", 2).apply(0x00FF), 0x0100)
+        self.assertEqual(op("DEC", 2).apply(0x0000), 0xFFFF)
+        self.assertEqual(op("ASL").apply(0x81), 0x02)
+        self.assertEqual(op("LSR", 2).apply(0x8001), 0x4000)
+        self.assertEqual(op("ROL", carry=1).apply(0x80), 0x01)
+        self.assertEqual(op("ROR", 2, carry=1).apply(0x0002), 0x8001)
+        self.assertEqual(op("TSB", a=0x1234).apply(0x01), 0x35)
+        self.assertEqual(op("TRB", 2, a=0x00F0).apply(0x12FF), 0x120F)
+        with self.assertRaises(ValueError):
+            op("LDA").apply(0)
+
+
 class WorkerAndCliTests(unittest.TestCase):
     def test_worker_rejects_bad_access_arguments(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

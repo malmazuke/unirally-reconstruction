@@ -20,7 +20,11 @@ last preceding recorded write has an unknown value (read-modify-write, block
 move, unresolved store) stays unresolved. Resolved accesses that write may
 invalidate other resolutions of the same frame; the frame is re-resolved
 until stable, and after a bounded number of rounds any resolution touched by
-such a write is dropped. What the record cannot show at all is listed in
+such a write is dropped. With ``resolve_rmw`` (``access capture --resolve-rmw``,
+DATA-COVERAGE) a read-modify-write's result is computed from the byte's
+resolved old value and the instruction's own registers (INC, DEC, ASL, LSR;
+ROL and ROR with the carry in P; TSB and TRB with A), so a pointer advanced by
+INC stays resolved; an RMW whose old value is unresolved stays unresolved. What the record cannot show at all is listed in
 ``residual``: writes through unresolved pointers (which could hit any byte,
 so every resolution carries this caveat), DMA engine transfers (only their
 parameter stores are recorded, see ``dma_log``) and VRAM/CGRAM/OAM contents.
@@ -112,13 +116,69 @@ def is_register(address: int) -> bool:
     return 0x2000 <= off < 0x6000 and (bank <= 0x3F or 0x80 <= bank <= 0xBF)
 
 
+class RmwOp:
+    """One read-modify-write whose result follows from its old value (``resolve_rmw``)."""
+
+    __slots__ = ("seq", "mnemonic", "width", "a", "carry", "offsets", "generation", "result", "label")
+
+    def __init__(self, seq: int, mnemonic: str, width: int, a: int, carry: int, offsets: tuple[int, ...]) -> None:
+        self.seq = seq
+        self.mnemonic = mnemonic
+        self.width = width
+        self.a = a
+        self.carry = carry
+        self.offsets = offsets
+        self.generation = -1
+        self.result: int | None = None
+        self.label = 3
+
+    def apply(self, old: int) -> int:
+        bits = 8 * self.width
+        mask = (1 << bits) - 1
+        m = self.mnemonic
+        if m == "INC":
+            return (old + 1) & mask
+        if m == "DEC":
+            return (old - 1) & mask
+        if m == "ASL":
+            return (old << 1) & mask
+        if m == "LSR":
+            return old >> 1
+        if m == "ROL":
+            return ((old << 1) | self.carry) & mask
+        if m == "ROR":
+            return (old >> 1) | (self.carry << (bits - 1))
+        if m == "TSB":
+            return old | (self.a & mask)
+        if m == "TRB":
+            return old & ~self.a & mask
+        raise ValueError(f"not a read-modify-write: {m}")
+
+
+class RmwByte:
+    """Byte ``k`` of an RmwOp's result, as a write list's value."""
+
+    __slots__ = ("op", "k")
+
+    def __init__(self, op: RmwOp, k: int) -> None:
+        self.op = op
+        self.k = k
+
+
 class Resolver:
     """Byte values of work RAM at a point within one frame (see the module docstring)."""
 
-    def __init__(self, writes: dict[int, list[tuple[int, int | None]]], start: bytes, end: bytes) -> None:
+    def __init__(self, writes: dict[int, list[tuple[int, Any]]], start: bytes, end: bytes) -> None:
         self.writes = writes
         self.start = start
         self.end = end
+        self.generation = 0
+        self.rmw_read: set[int] = set()   # bytes whose values computed RMW results depend on
+
+    def invalidate(self) -> None:
+        """Forget computed RMW results after ``writes`` changed."""
+        self.generation += 1
+        self.rmw_read = set()
 
     def byte(self, offset: int, seq: int) -> tuple[int | None, int]:
         w = self.writes.get(offset)
@@ -130,7 +190,44 @@ class Resolver:
         value = w[j - 1][1]
         if value is None:
             return None, 3
+        if isinstance(value, RmwByte):
+            op = value.op
+            if op.generation != self.generation:
+                self._evaluate(op)
+            if op.result is None:
+                return None, 3
+            return (op.result >> (8 * value.k)) & 0xFF, op.label
         return value, 0
+
+    def _previous_op(self, offset: int, seq: int) -> RmwOp | None:
+        w = self.writes.get(offset)
+        if not w:
+            return None
+        j = bisect_left(w, seq, key=itemgetter(0))
+        if j and isinstance(w[j - 1][1], RmwByte):
+            op = w[j - 1][1].op
+            if op.generation != self.generation:
+                return op
+        return None
+
+    def _evaluate(self, op: RmwOp) -> None:
+        """Compute ``op`` and the uncomputed RMWs its old value depends on, oldest first, without recursion."""
+        stack = [op]
+        while stack:
+            cur = stack[-1]
+            if cur.generation == self.generation:
+                stack.pop()
+                continue
+            deps = [d for d in (self._previous_op(o, cur.seq) for o in cur.offsets) if d is not None]
+            if deps:
+                stack.extend(deps)
+                continue
+            self.rmw_read.update(cur.offsets)
+            old, label = self.value(list(cur.offsets), cur.seq)
+            cur.result = None if old is None else cur.apply(old)
+            cur.label = label
+            cur.generation = self.generation
+            stack.pop()
 
     def value(self, offsets: list[int], seq: int) -> tuple[int | None, int]:
         """Little-endian value of the bytes at ``offsets`` and the weakest label."""
@@ -148,12 +245,13 @@ class Resolver:
 
 class AccessDrain:
     def __init__(self, rom: bytes, capacity: int, watch_addresses: list[int] | None = None, watch_pcs: list[int] | None = None,
-                 series: tuple[int, int, int, Path] | None = None) -> None:
+                 series: tuple[int, int, int, Path] | None = None, resolve_rmw: bool = False) -> None:
         if capacity <= 0:
             raise ValueError("ring capacity must be positive")
         self.rom = rom
         self.size = len(rom)
         self.capacity = capacity
+        self.resolve_rmw = resolve_rmw
         self.watch_addresses = sorted({wram_offset(a) if wram_offset(a) is not None else a for a in (watch_addresses or [])})
         self._watch_set = set(self.watch_addresses)
         self.watch_pcs = sorted(set(watch_pcs or []))
@@ -249,7 +347,8 @@ class AccessDrain:
             accesses, items = decode(opcode, operand, pc, a, x, y, s, d, b, p, e, nxt)
             addressing = addressing_of[opcode]
             for acc in accesses:
-                record(keys, writes, frame, i, pc, mode, addressing, acc)
+                record(keys, writes, frame, i, pc, mode, addressing, acc,
+                       rmw=(TABLE[opcode][0], a, p & 1) if acc[0] == RMW and self.resolve_rmw else None)
             for item in items:
                 deferred.append((i, pc, mode, addressing, b, item))
 
@@ -259,7 +358,7 @@ class AccessDrain:
         while True:
             rounds += 1
             rnd = self._resolve_round(entries, n, frame, resolver, wram_code, deferred)
-            conflict = rnd["touched"] & set(rnd["writes"])
+            conflict = (rnd["touched"] | resolver.rmw_read) & set(rnd["writes"])
             if conflict and rounds < MAX_RESOLVE_ROUNDS:
                 # A resolved access wrote a byte that some resolution read from the frame's
                 # work RAM images: merge the round's writes and resolve again from scratch.
@@ -267,6 +366,7 @@ class AccessDrain:
                     merged = writes.get(off, []) + lst
                     merged.sort(key=itemgetter(0))
                     writes[off] = merged
+                resolver.invalidate()
                 continue
             if conflict:
                 self.resolution_conflicts += len(conflict)
@@ -344,7 +444,8 @@ class AccessDrain:
             origin.append((len(keys), frozenset(offsets), len(labels)))
             labels.append((pc, addressing, worst))
             for acc in accesses:
-                self._record(keys, round_writes, frame, seq, pc, mode, addressing, acc, label=worst)
+                self._record(keys, round_writes, frame, seq, pc, mode, addressing, acc, label=worst,
+                             rmw=(TABLE[opcode][0], ent[1], ent[7] & 1) if acc[0] == RMW and self.resolve_rmw else None)
             for item in items:
                 pending.append((seq, pc, mode, addressing, ent[6], item))
         for seq, pc, mode, addressing, dbr, item in pending:
@@ -390,7 +491,7 @@ class AccessDrain:
     # ------------------------------------------------------------------ record
 
     def _record(self, keys: list[int], writes: dict[int, list[tuple[int, int | None]]], frame: int, seq: int, pc: int, mode: int,
-                addressing: int, acc: tuple, label: int | None = None) -> None:
+                addressing: int, acc: tuple, label: int | None = None, rmw: tuple[str, int, int] | None = None) -> None:
         kind, address, width, value, wrap = acc
         bank = address >> 16
         off = address & 0xFFFF
@@ -434,6 +535,14 @@ class AccessDrain:
                     self.values_truncated.add(key)
         if kind in _WRITE_KINDS:
             woff = wram_offset(address)
+            if woff is not None and rmw is not None:
+                offs = tuple(wram_offset(ba) for ba in byte_addresses(address, width, wrap))
+                if all(o is not None for o in offs):
+                    op = RmwOp(seq, rmw[0], width, rmw[1], rmw[2], offs)   # type: ignore[arg-type]
+                    for k, wo in enumerate(offs):
+                        writes.setdefault(wo, []).append((seq, RmwByte(op, k)))
+                    woff = None
+                    rmw = None
             if woff is not None:
                 if width == 1:
                     lst = writes.get(woff)
@@ -570,6 +679,7 @@ class AccessDrain:
             "kind": "access_record",
             **identity,
             "ring_capacity": self.capacity,
+            "resolve_rmw": self.resolve_rmw,
             "frames": {"start": frames[0], "end": frames[1], "count": len(self.per_frame)},
             "instructions": {"total": self.total, "max_frame_delta": self.max_delta, "per_frame": list(self.per_frame)},
             "accesses_total": self.total_accesses,
