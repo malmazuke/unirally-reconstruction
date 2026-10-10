@@ -2,9 +2,9 @@
 
 ## Assignment
 
-- Status: **review**. Claimed 10 October 2026 20:01 UTC (11 October local) at the user's request, on
+- Status: **accepted** (tier 2, #75). Claimed 10 October 2026 20:01 UTC (11 October local) at the user's request, on
   `task/access-round-reads` `1375c9d` (PR #74, ACCESS-ROUND-READS, accepted in its record and
-  not yet merged at claim; this branch takes main once #74 merges). Weekly usage at claim 36%
+  not yet merged at claim). #74 merged (`528e5ff`) and main was merged into this branch. Weekly usage at claim 36%
   (5-hour window 10%).
 - Worker: Claude Code desktop app, Claude Opus 5.5 (`claude-opus-5-5`); coordinator, primary and
   integrator. Branch `task/access-register-order` in `.claude/worktrees/nostalgic-matsumoto-42e59c`.
@@ -116,4 +116,14 @@ cmp local/evidence/access-register-order/aggregate.json local/evidence/data-cove
   lengths and digests equal to `regs/`. Its one observation (watch log order) is answered on #75
   and listed under "Not covered".
 - CI on `bd4aae9`: changes, lab (macos-15) and lab (ubuntu-24.04) passed.
-- Merge: after #74, retargeted to `main` and brought up to date.
+- Merge: after #74 merged, #75 was retargeted to `main` and main merged in (`9cbdba0`);
+  integrated by merge commit once the required checks passed.
+
+## Handoff
+
+- Evidence: main `local/evidence/access-register-order/` (9.9 MB, every file under 1 MiB, so
+  kept whole under D-0011): `captures.sh`, `captures.out`, `compare.py`, `compare.out`,
+  `aggregate.py`, `aggregate.json`, `aggregate.out`, `track_assets.json`, `runs/`, `regs/`,
+  `logs/`. The access records themselves were deleted by `captures.sh` after reduction.
+- Nothing built; no exploration output. The branch `task/access-register-order` stays on origin.
+- Next: no follow-up from this task.

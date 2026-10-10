@@ -1,10 +1,10 @@
 # Project state
 
-**11 October 2026: ACCESS-REGISTER-ORDER is in review (tier 2) on `task/access-register-order`.**
+**11 October 2026: ACCESS-REGISTER-ORDER is accepted (tier 2, #75) and integrated by merge commit.**
 The access derivation now applies the frame's register stores to its DMA parameter shadow in
 instruction order. Before, a store resolved through a pointer reached the shadow after every
 direct store of the frame, so a DMA enable stored that way logged the frame's last channel
-parameters. Two synthetic tests fail before the fix. R-0089's corpus re-measured (236 runs): no
+parameters. Two synthetic tests fail before the fix; the independent review approved. R-0089's corpus re-measured (236 runs): no
 record has a resolved register store, every reduced run and R-0093's totals are byte-identical,
 so R-0093 stands. [ACCESS-REGISTER-ORDER](../tasks/ACCESS-REGISTER-ORDER.md) has the details.
 
