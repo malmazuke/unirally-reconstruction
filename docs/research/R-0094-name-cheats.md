@@ -17,7 +17,7 @@ frame images, work RAM per frame, a sound schedule) and in-process replays of th
 
 ## Findings
 
-- **The test.** Every race's setup (`$83:C8E0`, all modes and the idle demo, ) calls `$83:FB8A` at `$83:C99E`
+- **The test.** Every race's setup (`$83:C8E0`, all modes and the idle demo) calls `$83:FB8A` at `$83:C99E`
   (it first turns NMI and HDMA off, `$83:C8E4-C8E8`; `$83:C9E4` is its split test): `$77:111A` = its value less one, kept within 0-3
   (`$83:FB8C-FB9B`, `$83:FB95`); `$0545` = 0; rider 0's name (`$77:000C`) is compared over 7 bytes
   with "credits" (`$83:FB56`, `$83:FBAE`): a match sets `$0545` = 1 (`$83:FBBA`) and the name
@@ -66,7 +66,8 @@ frame images, work RAM per frame, a sound schedule) and in-process replays of th
 - Two-view races in HUNTER mode: the review's split demo (`demo-faedine-0`, two tags) is equal
   on all 2,201 race rows, but its pictures only on 1,194 of 2,254 (2,129 with the name "mike"):
   the split renderer does not draw HUNTER's effects (wobble mode's mosaic for its 500 frames,
-  parts of the invisible track and hedgehog speed, the two caption rows). Queued as
+  parts of the invisible track and hedgehog speed, the "invisible unis" span at frames
+  3448-3645, the two caption rows). Queued as
   SPLIT-HUNTER-PICTURES. No 2P, VS or league race with a tag is captured. Only `credits` has a sound schedule. `front_end_runner --restore-check` refuses a
   two-pad race forced into HUNTER mode (its layouts H and F have no wrapper); the one-player and
   demo wrappers restore exactly.

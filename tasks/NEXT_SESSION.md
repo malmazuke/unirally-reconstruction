@@ -1,5 +1,17 @@
 # Next session
 
+**10 October 2026: CREDITS-NAME is accepted (tier 1, #70) and integrated by merge commit.**
+The two rider-name cheats are native. Rename rider 0 "credits" and the next race shows the
+original's 500-frame credits picture and ends as a restart; rename it "faedine" and the next
+three races, on any track, run with HUNTER's tag effects and opponent tier. Both rename the
+rider "mike". Making them reachable in split races exposed R-0052's two open variants (the
+opponent's announcement queue and the screen flip's "invisible unis"), now native too.
+
+Results: the credits picture equal on all 800 pictures and 3,676 sound cues; "faedine" races
+equal on every race row (one-view and the review's split demo, 2,201 rows); every frozen gate and
+sweep equals main. The split picture's HUNTER effects are queued as SPLIT-HUNTER-PICTURES.
+[R-0094](../docs/research/R-0094-name-cheats.md) defines the domain. Pack profile v37.
+
 **10 October 2026: WIPE-RAM is accepted (tier 1, #69) and integrated by merge commit.**
 The main menu's hidden code, Left+A+L+R, now opens the original's WIPE RAM menu instead of a
 notice: WIPE RAM shows the warning, Select+Y+A resets the cartridge RAM to its factory state and

@@ -13,7 +13,7 @@
 original (R-0094's `demo-faedine-0`: 2,201 of 2,201 rows), but the split renderer does not draw
 HUNTER's effects: pictures equal on 1,194 of 2,254 frames against 2,129 with the name "mike"
 (wobble mode's mosaic for its 500 frames, parts of the invisible track and hedgehog speed, the
-two caption rows).
+"invisible unis" span at frames 3448-3645, the two caption rows).
 
 ## Outcome
 

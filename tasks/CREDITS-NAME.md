@@ -2,7 +2,8 @@
 
 ## Assignment
 
-- Status: **in progress**, claimed 10 October 2026 on main `6b6790a`, in the session the user asked
+- Status: **accepted** 10 October 2026 (tier 1, [#70](https://github.com/malmazuke/unirally-reconstruction/pull/70)),
+  integrated by merge commit. Claimed 10 October 2026 on main `6b6790a`, in the session the user asked
   to keep working until weekly usage reaches 50% (17% at claim). Queued by
   [COVERAGE-GAPS](COVERAGE-GAPS.md) (R-0089, queue item 4). DATA-COVERAGE runs in a parallel
   session; heavy runs share `local/locks/heavy-run.sh`.
@@ -62,3 +63,25 @@ Notes from the ROM's bytes: main `local/evidence/credits-name/notes.md`.
 - Fixed: `run_screen_flip` returns after the blink flag in a two-view race; `demo-faedine-0` now
   equal on all 2,201 rows; a two-view test in `hunter_effects_tests.cpp`; R-0094's wording. The
   pictures are recorded in R-0094 and queued as SPLIT-HUNTER-PICTURES.
+
+## Review - round 3 (approved)
+
+- [Review](https://github.com/malmazuke/unirally-reconstruction/pull/70#pullrequestreview-5477081988)
+  on `400dd28`: approve. `demo-faedine-0` equal on all 2,201 rows; the picture gap's queuing
+  accepted; the new test checks the right things; one-player replays and the cold path unchanged.
+  Advisories done: the "invisible unis" span added to the recorded picture gap, a typo.
+
+## Gates - head `400dd28` (`local/evidence/credits-name/gates-400dd28.out`)
+
+- Every build and test, the eleven differential gates (main's digests), the race sweep (432 runs,
+  0 differences), the front-end sweep (179 of 179 against main's runner, v36 for main and v37
+  here), the original's track sweeps (main's rows), every capture comparison, WIPE-RAM's eight
+  captures and sound schedules, MODE-AUDIO's and twelve R-0077 cue schedules, the cold cartridge
+  image; this task's `credits` (800 of 800 pictures) and four replays (all rows equal). Tooling
+  tests 556; functions over 80 lines 0. Earlier runs on `6d31dae` and `98e8f56` were cancelled
+  while queued for the lock (review rounds).
+
+## Handoff
+
+- Queued from here: SPLIT-HUNTER-PICTURES. Next in this session's lane (R-0089): TWO-HUMAN-STUNTS,
+  LEAGUE-TOURS, CARTRIDGE-OPTION-BITS, RACE-LISTING-BRANCHES, DEMO-AUDIO, MENU-INPUT.
