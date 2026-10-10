@@ -98,9 +98,22 @@ cmp local/evidence/access-register-order/aggregate.json local/evidence/data-cove
 
 - A corpus frame with a resolved register store: none exists, so the ordering is checked by the
   synthetic tests only.
+- The watch log (`--watch-address`) still lists a frame's direct entries before its resolved
+  ones (review observation, older than this task). Each entry carries its seq and the three
+  readers sort by seq or filter by pc, so no output depends on the order; left unchanged.
 - What resolution cannot see stays as R-0093 states: writes through unresolved pointers, DMA into
   work RAM, and HDMA tables in work RAM.
 
 ## Review and integration
 
-- Tier 2, one independent round: pending.
+- Tier 2, one independent round: a fresh Claude Opus reviewer in its own worktree, comment review
+  on #75 of `bd4aae9`. Verdict: **approve**, no required change. It confirmed both tests fail at
+  `9707f2d` and pass at the head (42 and 574 tests OK), added four cases of its own (an HDMAEN
+  store from work RAM code and a 16-bit resolved store spanning `$420B/$420C`, both failing at
+  `9707f2d`; a discarded or dropped round's store, and nothing carried between frames), checked
+  the corpus counter's test and address range against the derivation, and re-captured runs 052
+  and 136 under the lock: byte-identical reduced runs, no resolved register store, DMA log
+  lengths and digests equal to `regs/`. Its one observation (watch log order) is answered on #75
+  and listed under "Not covered".
+- CI on `bd4aae9`: changes, lab (macos-15) and lab (ubuntu-24.04) passed.
+- Merge: after #74, retargeted to `main` and brought up to date.
