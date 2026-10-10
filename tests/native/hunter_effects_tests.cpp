@@ -47,6 +47,25 @@ int main() {
         update_hunter_effects(other,blink);
         require(other.hunter==HunterEffects{});
     }
+    // A race with two views (R-0094): the screen flip (x & 7 = 3) is announced as "invisible
+    // unis" at the front of both queues ($81:C579-C594, $83:CEE8-CF0F), and neither flips the
+    // picture nor alternates its table ($83:D337-D343).
+    {
+        auto split=tagged_race(0x403);
+        split.split_screen=true;split.hunter_tour=true;
+        auto& opponent=split.movement.rewards;opponent.read_cursor=5;opponent.write_cursor=8;
+        const auto screen=split.race.camera.screen_xy;
+        update_hunter_effects(split,blink);
+        const auto& player=split.player_announcements.queue;
+        require(split.hunter.active && player.entries[10]==36 && player.read_cursor==9);
+        require(opponent.entries[5]==36 && opponent.read_cursor==4);
+        require(split.hunter.blink==1 && split.hunter.wave_phase==0);
+        require(split.race.camera.screen_xy==screen);
+        auto one_view=tagged_race(0x403);one_view.hunter_tour=true;
+        update_hunter_effects(one_view,blink);
+        require(one_view.player_announcements.queue.entries[10]==27 && one_view.movement.rewards.read_cursor==0);
+        require(one_view.hunter.wave_phase==1);
+    }
     // NEON (R-0068): HUNTER's stunt event runs the lighting in the tag effects' place, so riders
     // three transitions apart with their boxes together latch nothing; a HUNTER race does.
     for (const unsigned track : {42U, 41U}) {

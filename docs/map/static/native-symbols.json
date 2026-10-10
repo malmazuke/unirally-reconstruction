@@ -10799,6 +10799,16 @@
    "region": "rom"
   },
   {
+   "address": "$83:D337",
+   "native": [
+    "src/core/hunter_effects.cpp:run_screen_flip"
+   ],
+   "range_ends": [
+    "$83:D343"
+   ],
+   "region": "rom"
+  },
+  {
    "address": "$83:D349",
    "native": [
     "src/core/hunter_effects.cpp:run_blinking_effect"
@@ -14988,6 +14998,7 @@
    "address": "$77:0750",
    "native": [
     "src/core/flat_contact.hpp:ContactContext::cartridge_options",
+    "src/core/hunter_effects.cpp:run_screen_flip",
     "src/core/hunter_effects.cpp:update_hunter_effects",
     "src/core/race_update.cpp:loop_top_step, cartridge_options, split_demo_options",
     "src/core/reward_queue.cpp:push_front_player_announcement",
@@ -18150,8 +18161,12 @@
   "src/core/hunter_effects.cpp:run_screen_flip": {
    "rom": [
     "$83:D2C9",
+    "$83:D337",
     "$83:D581",
     "$83:E04F"
+   ],
+   "sram": [
+    "$77:0750"
    ]
   },
   "src/core/hunter_effects.cpp:run_slow_motion": {
@@ -24117,10 +24132,10 @@
   }
  },
  "totals": {
-  "addresses": 1738,
+  "addresses": 1739,
   "io_addresses": 11,
   "native_symbols": 1311,
-  "rom_addresses": 1336,
+  "rom_addresses": 1337,
   "sram_addresses": 57,
   "wram_addresses": 334
  }

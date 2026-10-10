@@ -127,6 +127,9 @@ void run_screen_flip(ZoomZooState& state, std::span<const std::uint8_t> blink) {
         return;
     }
     hunter.blink = 1;
+    // A race with two views (`$77:0750` bit 3) neither flips nor alternates ($83:D337-D343
+    // return before `JSR $D581`; R-0094).
+    if (state.split_screen) return;
     hunter.wave_phase = static_cast<std::uint16_t>(1U - hunter.wave_phase);
     // $83:D581-E081: either phase's scroll table ends at $83:E04F, which turns the riders'
     // sprites upside down. The player's sprite is the camera's published screen position.

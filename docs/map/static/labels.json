@@ -20424,7 +20424,8 @@
    "src/core/front_end_runner.cpp:start_race"
   ],
   "source_records": [
-   "docs/research/R-0094-name-cheats.md"
+   "docs/research/R-0094-name-cheats.md",
+   "tasks/CREDITS-NAME.md"
   ]
  },
  {
@@ -21303,6 +21304,24 @@
   "source_records": [
    "docs/research/R-0052-hunter-effects.md",
    "tasks/HUNTER-EFFECTS.md"
+  ]
+ },
+ {
+  "address": "$83:D337",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_83D337",
+  "native": [
+   "src/core/hunter_effects.cpp:run_screen_flip",
+   "src/core/hunter_effects.cpp:update_hunter_effects",
+   "src/core/presentation.cpp:ClassicRaceHistoryTracker::observe_update",
+   "src/core/zoom_zoo_movement.hpp:ClassicRaceScenario::hunter_tour",
+   "src/core/zoom_zoo_movement.hpp:HunterEffects",
+   "src/core/zoom_zoo_movement.hpp:update_hunter_effects"
+  ],
+  "source_records": [
+   "docs/research/R-0094-name-cheats.md",
+   "tasks/CREDITS-NAME.md"
   ]
  },
  {

@@ -51,3 +51,14 @@ Notes from the ROM's bytes: main `local/evidence/credits-name/notes.md`.
   `$83:CEE8-CF0F`), which the same case then showed. `demo-faedine-0` now agrees through update
   2001 (its last update, the demo's exit, differs in the camera and `$2054`). R-0094 corrected;
   the brightness expression named.
+
+## Review - round 2 (returned)
+
+- [Review](https://github.com/malmazuke/unirally-reconstruction/pull/70#pullrequestreview-5477027698)
+  on `98e8f56`: return. Blocker: the split race skips the screen flip (`$83:D337-D343`); the
+  difference was 200 updates before the demo's exit, not on it. Should-fix: split-race pictures
+  during HUNTER effects (1,194 of 2,254 against 2,129 with "mike"). Advisories: a native test for
+  two views, the `$83:C9E4` wording.
+- Fixed: `run_screen_flip` returns after the blink flag in a two-view race; `demo-faedine-0` now
+  equal on all 2,201 rows; a two-view test in `hunter_effects_tests.cpp`; R-0094's wording. The
+  pictures are recorded in R-0094 and queued as SPLIT-HUNTER-PICTURES.

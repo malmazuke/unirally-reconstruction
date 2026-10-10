@@ -17,8 +17,8 @@ frame images, work RAM per frame, a sound schedule) and in-process replays of th
 
 ## Findings
 
-- **The test.** Every race's setup (`$83:C8E0`, all modes and the idle demo, entered at
-  `$83:C8E4`/`$83:C9E4`) calls `$83:FB8A` at `$83:C99E`: `$77:111A` = its value less one, kept within 0-3
+- **The test.** Every race's setup (`$83:C8E0`, all modes and the idle demo, ) calls `$83:FB8A` at `$83:C99E`
+  (it first turns NMI and HDMA off, `$83:C8E4-C8E8`; `$83:C9E4` is its split test): `$77:111A` = its value less one, kept within 0-3
   (`$83:FB8C-FB9B`, `$83:FB95`); `$0545` = 0; rider 0's name (`$77:000C`) is compared over 7 bytes
   with "credits" (`$83:FB56`, `$83:FBAE`): a match sets `$0545` = 1 (`$83:FBBA`) and the name
   becomes "mike____" (`$83:FB66`). Otherwise "faedine" (`$83:FB70`, `$83:FBD5`) sets `$77:111A` = 3
@@ -41,7 +41,9 @@ frame images, work RAM per frame, a sound schedule) and in-process replays of th
 - **Two views.** In a race with two views (`$77:0750` bit 3: the split demo, 2P, VS, a two-view
   league) an announcement pushed to the front of the player's queue goes to the front of the
   opponent's too (`$81:C579-C594`, entries `$0CEB`, cursors `$0D11/$0D13`), and the screen flip is
-  named "invisible unis" (`$24`, `$83:CEE8-CF0F`), R-0052's open variants. No split race ran
+  named "invisible unis" (`$24`, `$83:CEE8-CF0F`), and the flip itself is skipped: the blink
+  flag is set, then `$83:D337-D343` return before `JSR $D581`, so neither the picture flips nor
+  its table alternates. R-0052's open variants. No split race ran
   HUNTER's effects before this cheat; the review's `demo-faedine-0` (a split ZOOM ZOO demo with
   tags) found both. [L, C]
 - **Native** (`src/core/credits_name.cpp`): the test at each race start (NOW PLAYING's fade, the
@@ -61,9 +63,11 @@ frame images, work RAM per frame, a sound schedule) and in-process replays of th
 
 - Native renames the rider when the race's setup begins, the original seven frames later; nothing
   reads the name between.
-- Two-view races in HUNTER mode: the review's split demo is equal through its race but for its
-  last update (the demo's exit: the camera and `$2054`); no 2P, VS or league race with a tag is
-  captured. Only `credits` has a sound schedule. `front_end_runner --restore-check` refuses a
+- Two-view races in HUNTER mode: the review's split demo (`demo-faedine-0`, two tags) is equal
+  on all 2,201 race rows, but its pictures only on 1,194 of 2,254 (2,129 with the name "mike"):
+  the split renderer does not draw HUNTER's effects (wobble mode's mosaic for its 500 frames,
+  parts of the invisible track and hedgehog speed, the two caption rows). Queued as
+  SPLIT-HUNTER-PICTURES. No 2P, VS or league race with a tag is captured. Only `credits` has a sound schedule. `front_end_runner --restore-check` refuses a
   two-pad race forced into HUNTER mode (its layouts H and F have no wrapper); the one-player and
   demo wrappers restore exactly.
 - The demo's one-frame-later return after a credits picture is measured on one warm boot.
