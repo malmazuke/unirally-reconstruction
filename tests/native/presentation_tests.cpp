@@ -491,6 +491,7 @@ void caption_queue() {
   unirally::ClassicRaceHudClock tour;
   unirally::ZoomZooState showing{};
   showing.track = two_loops;
+  showing.hunter_tour = true; // `$131F`, as the race's setup sets it on tracks 40 on
   showing.player_announcements.empty_display = 1;
   showing.player_announcements.queue.read_cursor = 4;
   showing.hunter.caption = 5;

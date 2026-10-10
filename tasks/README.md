@@ -92,6 +92,8 @@ The coordinator maintains the status registry below. Work orders further below d
 | DEMO-AUDIO | queued (tier 1) by MODE-AUDIO (R-0091): the idle demos' sound (title set loads, the demo races' cues); the app stops its audio at the first demo | [The idle demos' sound](DEMO-AUDIO.md) |
 | MENU-INPUT | queued (tier 1) by MODE-AUDIO (R-0091): menu input read from the listing and not native (keyboard Start and auto-repeat, the league picker's buttons, VS refusing the champion, the continuation menu's wrap) | [Menu input the listing shows](MENU-INPUT.md) |
 | WIPE-RAM | accepted (tier 1, #69): the main menu's hidden WIPE RAM menu, its warning and the factory reset (R-0092); pack v36 | [The hidden WIPE RAM menu](WIPE-RAM.md) |
+| CREDITS-NAME | accepted (tier 1, #70): the rider-name cheats "credits" and "faedine" (R-0094); pack v37 | [The rider-name cheats](CREDITS-NAME.md) |
+| SPLIT-HUNTER-PICTURES | queued (tier 2) by CREDITS-NAME (R-0094): HUNTER's effects in a two-view race's picture | [HUNTER's effects in a split picture](SPLIT-HUNTER-PICTURES.md) |
 | LEAGUE | reviewed and integrated by PR #48 (tier 1): first CRAWLER tournament, six-slot scoring projection and continuation; closeout in main artifacts | [Native league tournament](LEAGUE.md) |
 | STUNT-EVENTS | fulfilled by #39/#40/#42; tier-3 queue reconciliation in AUDIO-DECISION, no new gameplay domain | [The delivered stunt outcome](STUNT-EVENTS.md) |
 | AUDIO-DECISION | PR #49, tier 3: native audio architecture, cold callback observations and first capability task; integration in its closeout | [Choose the native audio path and its evidence](AUDIO-DECISION.md) |

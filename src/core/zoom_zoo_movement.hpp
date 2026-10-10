@@ -197,7 +197,8 @@ struct ClassicRaceScenario {
     // announcement ($81:81AE) and the result screen: mode 1 publishes the lap
     // graph extrema at load 106 ($83:904A-90F0); the mode-0 screen publishes none.
     bool tour_race{};
-    // `$131F`: the HUNTER tour, whose race runs the tag effects ($83:CEC9, R-0052).
+    // `$131F`: the HUNTER tour, whose race runs the tag effects ($83:CEC9, R-0052): tracks 40 on,
+    // or any track while `$77:111A-111B` is not zero (`$82:D978`, the name "faedine", R-0094).
     bool hunter_tour{};
     // The rider and opponent: MIKE against BRONSEN (ANTI-UNI on the HUNTER tour) unless the
     // menus chose others.
@@ -375,6 +376,9 @@ struct ZoomZooState {
     bool split_screen{}; // $0DE1; separate native demo/two-player state format pending.
     bool demo_ai{};      // $7E:212C; controls both riders in a split demo.
     bool versus{};       // $77:0750 bit 2: a VS race from the menus (R-0081).
+    // $131F: HUNTER's tag effects and tier, which the setup sets on HUNTER's tracks and, while
+    // the name "faedine"'s races last, on any track (`$82:D978`, R-0094).
+    bool hunter_tour{};
     DemoControllers demo;
     ZoomZooPause pause;
     std::array<ZoomZooRoll, 2> rolls{};

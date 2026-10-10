@@ -22,11 +22,11 @@ START_STATE_ID = "classic.crawler.dragster.race-start.v1"
 # The current Classic pack: DRAGSTER, ZOOM ZOO and, from v10 (TRACK-BREADTH part 3), the other
 # race tracks a cold start reaches; v11 (SPECIAL-TILE-RESPONSE) adds the corkscrew heights and
 # v12 (LOCKED-TOURS) the locked tours' race tracks, v13 (TILE-PAIRS-8-12-26) the loop's x steps, v14 (HUNTER-EFFECTS) the HUNTER blink pattern, v15 (FRONT-END-MAIN-MENU) the boot screens and
-# the main menu, v16 (FRONT-END-1P-SETUP) the rider menu, v17 PICK TOUR, PICK TRACK and NOW PLAYING, v18 the one-run result, v19 the lap result, v20 the medal award, v21 the race pairing's tables, v22 the gold endings, v23 HUNTER's ending, v24 (STUNT-EVENT-RACE) the stunt events, v25 (STUNT-RESULT) the stunt result, v26 (STUNT-HUD) NEON's scenery and lighting, v27 (TWO-PLAYER-VS) local-mode menus, v28 (OPTIONS) its two five-choice menus, v30/v31 the title/menu audio, v32 (AUDIO-FIRST-RACE) the first race's sound set, v33 (AUDIO-ONE-PLAYER) the other race songs, v34 the medal award's and gold endings' sound sets, v35 (SPLIT-PAUSE-MENU) the race's pause messages and v36 (WIPE-RAM) the WIPE RAM menu's text. The names keep their two-track origin.
+# the main menu, v16 (FRONT-END-1P-SETUP) the rider menu, v17 PICK TOUR, PICK TRACK and NOW PLAYING, v18 the one-run result, v19 the lap result, v20 the medal award, v21 the race pairing's tables, v22 the gold endings, v23 HUNTER's ending, v24 (STUNT-EVENT-RACE) the stunt events, v25 (STUNT-RESULT) the stunt result, v26 (STUNT-HUD) NEON's scenery and lighting, v27 (TWO-PLAYER-VS) local-mode menus, v28 (OPTIONS) its two five-choice menus, v30/v31 the title/menu audio, v32 (AUDIO-FIRST-RACE) the first race's sound set, v33 (AUDIO-ONE-PLAYER) the other race songs, v34 the medal award's and gold endings' sound sets, v35 (SPLIT-PAUSE-MENU) the race's pause messages, v36 (WIPE-RAM) the WIPE RAM menu's text and v37 (CREDITS-NAME) the rider-name cheats and the credits picture. The names keep their two-track origin.
 TWO_TRACK_RULES_PATH = "tests/manifests/content/classic-crawler-tracks-pack.json"
-TWO_TRACK_PROFILE = "classic.pal.crawler.tracks.v36"
-PREVIOUS_TRACK_PROFILE = "classic.pal.crawler.tracks.v35"
-LEGACY_TRACK_PROFILE = "classic.pal.crawler.tracks.v34"
+TWO_TRACK_PROFILE = "classic.pal.crawler.tracks.v37"
+PREVIOUS_TRACK_PROFILE = "classic.pal.crawler.tracks.v36"
+LEGACY_TRACK_PROFILE = "classic.pal.crawler.tracks.v35"
 OLDER_TRACK_PROFILE = "classic.pal.crawler.tracks.v29"
 TWO_TRACK_START = "classic.crawler.race-start.v2"
 

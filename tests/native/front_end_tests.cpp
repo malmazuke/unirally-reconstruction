@@ -9,6 +9,7 @@
 #include "snes_screen.hpp"
 #include "text_printer.hpp"
 
+#include <algorithm>
 #include <array>
 #include <cstdint>
 #include <cstdio>
@@ -447,6 +448,18 @@ synthetic_content(std::vector<std::vector<std::uint8_t>> &storage) {
   content.wipe_ram_arrow_columns = bytes({4, 3});
   content.wipe_ram_messages =
       bytes({0xfc, 0x02, 'A', 0xff, 0xfc, 0x0c, 'A', 0xff, 0xfc, 0x0d, 'A', 0xff});
+  // The name cheats (profile v37): "credits" and "faedine" padded with spaces
+  // to 16 and the name each writes, 10 bytes; the credits picture's tiles, map and
+  // colours.
+  storage.emplace_back();
+  for (const std::string &text :
+       {std::string("credits         "), std::string("mike____\xff\xff"),
+        std::string("faedine         "), std::string("mike____\xff\xff")})
+    storage.back().insert(storage.back().end(), text.begin(), text.end());
+  content.name_cheats = storage.back();
+  content.assets[0xbf] = keep(64);
+  content.assets[0xc0] = keep(64);
+  content.assets[0xc1] = keep(32);
   return content;
 }
 
@@ -1838,6 +1851,154 @@ void wipe_ram_tests() {
   require(state.records.medals[0] == 3 && !state.mode_chosen);
 }
 
+// CREDITS-NAME (R-0094): each race's setup tests the first rider's name.
+// "credits" shows the picture in place of the race, which ends as a restart;
+// "faedine" gives three races HUNTER's flag; both become "mike". Each setup
+// counts the races down, and the idle demo's clears them first.
+void name_first_rider(unirally::FrontEndState &state, const std::string &name) {
+  for (std::size_t k = 0; k < 8; ++k)
+    state.records.rider_names[k] =
+        k < name.size() ? static_cast<std::uint8_t>(name[k]) : 0xff;
+}
+
+bool first_rider_is_mike(const unirally::FrontEndState &state) {
+  constexpr std::array<std::uint8_t, 10> mike{'m', 'i', 'k', 'e', '_', '_', '_', '_', 0xff, 0xff};
+  return std::equal(mike.begin(), mike.end(), state.records.rider_names.begin());
+}
+
+unirally::FrontEndState to_now_playing(const unirally::FrontEndContent &content,
+                                       const std::string &name) {
+  using unirally::FrontEndScreen;
+  auto state = unirally::start_front_end();
+  run(state, content, 430);
+  name_first_rider(state, name);
+  require(run_to(state, content, FrontEndScreen::rider_menu, {0x1000, 0}));
+  require(run_to(state, content, FrontEndScreen::tour_menu, {0x8000, 0}));
+  require(run_to(state, content, FrontEndScreen::track_menu, {0x1000, 0}));
+  require(run_to(state, content, FrontEndScreen::now_playing, {0x1000, 0}));
+  return state;
+}
+
+void credits_picture_tests() {
+  using unirally::FrontEndScreen;
+  std::vector<std::vector<std::uint8_t>> storage;
+  const auto content = synthetic_content(storage);
+  auto state = to_now_playing(content, "credits");
+  state.records.hunter_races = 2;
+  const auto songs = state.records.race_song_counter;
+  // The fade's last frame: the picture's screen, no race and no race count.
+  require(run_to(state, content, FrontEndScreen::credits_picture, {0x1000, 0}));
+  require(!state.mode_chosen && state.records.race_song_counter == songs &&
+          !first_rider_is_mike(state) && !state.cycle.running);
+  // The setup's test on frame 7: "mike", one race fewer.
+  run(state, content, 6);
+  require(!first_rider_is_mike(state) && state.records.hunter_races == 2);
+  run(state, content, 1);
+  require(first_rider_is_mike(state) && state.records.hunter_races == 1);
+  // Blank to frame 15; the hook's brightness 1 on frame 16, BG1 alone in mode 1.
+  run(state, content, 8);
+  require(state.registers.force_blank);
+  const auto spin = state.arrow.spin;
+  run(state, content, 1);
+  require(!state.registers.force_blank && state.registers.brightness == 1 &&
+          state.registers.mode == 1 && state.registers.main_screen == 1 &&
+          state.arrow.spin == spin);
+  // The fade 2-14 (frames 17-23), the hook's count 9-15, held to frame 524;
+  // every frame from 17 waits and turns the arrow's spin.
+  run(state, content, 7);
+  require(state.registers.brightness == 14 && state.arrow.spin == (spin + 32 - 7) % 32);
+  run(state, content, 1);
+  require(state.registers.brightness == 9);
+  run(state, content, 500);
+  require(state.registers.brightness == 15 && state.screen == FrontEndScreen::credits_picture);
+  run(state, content, 1);
+  require(state.registers.brightness == 13);
+  run(state, content, 5);
+  require(state.registers.brightness == 3);
+  // Frame 531 blanks the screen and ends the race as a restart: NOW PLAYING
+  // at r + 112, nothing scored.
+  run(state, content, 1);
+  require(state.screen == FrontEndScreen::race_return && state.registers.force_blank);
+  require(run_to(state, content, FrontEndScreen::race_restart, {}, 104));
+  require(run_to(state, content, FrontEndScreen::now_playing_entry, {}, 8));
+  require(state.records.statistics[0][0] == 0 && !state.records.race_lost);
+  // The next race is an ordinary one, with the last of the races counted.
+  require(run_to(state, content, FrontEndScreen::now_playing));
+  require(run_to(state, content, FrontEndScreen::race, {0x1000, 0}));
+  require(state.mode_chosen && state.records.hunter_races == 0 &&
+          !unirally::hunter_races_running(state));
+  // An older pack has no cheats: "credits" races.
+  auto old = content;
+  old.name_cheats = {};
+  auto plain = to_now_playing(old, "credits");
+  require(run_to(plain, old, FrontEndScreen::race, {0x1000, 0}));
+  require(!first_rider_is_mike(plain));
+}
+
+void faedine_tests() {
+  using unirally::FrontEndScreen;
+  std::vector<std::vector<std::uint8_t>> storage;
+  const auto content = synthetic_content(storage);
+  auto state = to_now_playing(content, "faedine");
+  require(!unirally::hunter_races_running(state));
+  require(run_to(state, content, FrontEndScreen::race, {0x1000, 0}));
+  require(first_rider_is_mike(state) && state.records.hunter_races == 3);
+  // This race and the next two run HUNTER's flag and tier on any track.
+  for (const unsigned left : {3U, 2U, 1U, 0U}) {
+    require(state.records.hunter_races == left);
+    const auto scenario = unirally::one_player_race_scenario(state);
+    require(scenario.hunter_tour == (left != 0) && scenario.track.index == 0);
+    require((unirally::opponent_tier(scenario, {}) ==
+             unirally::OpponentTier{3, 0x40, 0x60}) == (left != 0));
+    unirally::return_from_race(state, content, state.frame + 200, {0xea62, 0xea60});
+    require(run_to(state, content, FrontEndScreen::now_playing, {}, 300));
+    require(run_to(state, content, FrontEndScreen::race, {0x1000, 0}));
+  }
+  // The count is 8-bit and signed ($83:FB8C-FB9B), and kept in the cartridge
+  // RAM with `$77:111B`, which the flag's test reads with it.
+  for (const auto &[before, after] :
+       std::array<std::pair<std::uint8_t, std::uint8_t>, 5>{
+           {{0, 0}, {4, 3}, {9, 3}, {0x80, 3}, {0x81, 0}}}) {
+    auto counted = to_now_playing(content, "mike");
+    counted.records.hunter_races = before;
+    require(run_to(counted, content, FrontEndScreen::race, {0x1000, 0}));
+    require(counted.records.hunter_races == after);
+  }
+  auto saved = to_now_playing(content, "mike");
+  saved.records.hunter_races = 2;
+  const auto image = unirally::cartridge_image(saved);
+  require(image[0x111a] == 2 && unirally::records_from_cartridge(image).hunter_races == 2);
+  saved.records.hunter_races = 0;
+  saved.cartridge[0x111b] = 1;
+  require(unirally::hunter_races_running(saved));
+}
+
+// The idle demo's setup clears `$77:111A-111B`, then tests the name too:
+// "faedine" gives the demo's race HUNTER's flag, "credits" the picture and
+// then the timer's way back to the main menu.
+void demo_name_tests() {
+  using unirally::FrontEndScreen;
+  std::vector<std::vector<std::uint8_t>> storage;
+  const auto content = synthetic_content(storage);
+  auto faedine = unirally::start_front_end();
+  run(faedine, content, 430);
+  name_first_rider(faedine, "faedine");
+  faedine.records.hunter_races = 2;
+  faedine.cartridge[0x111b] = 7;
+  require(run_to(faedine, content, FrontEndScreen::race, {}, 1100));
+  require(faedine.mode == unirally::FrontEndMode::demo && first_rider_is_mike(faedine) &&
+          faedine.records.hunter_races == 3 && faedine.cartridge[0x111b] == 0);
+  auto credits = unirally::start_front_end();
+  run(credits, content, 430);
+  name_first_rider(credits, "credits");
+  credits.records.hunter_races = 2;
+  require(run_to(credits, content, FrontEndScreen::credits_picture, {}, 1100));
+  require(!credits.mode_chosen && credits.records.hunter_races == 0);
+  require(run_to(credits, content, FrontEndScreen::demo_return, {}, 532));
+  require(first_rider_is_mike(credits) && credits.demo_return_held);
+  require(run_to(credits, content, FrontEndScreen::main_menu, {}, 200));
+}
+
 } // namespace
 
 int main() try {
@@ -1861,6 +2022,9 @@ int main() try {
   code_route_tests();
   save_file_tests();
   wipe_ram_tests();
+  credits_picture_tests();
+  faedine_tests();
+  demo_name_tests();
   return 0;
 } catch (const std::exception &error) {
   std::fprintf(stderr, "%s\n", error.what());

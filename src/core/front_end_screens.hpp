@@ -265,10 +265,13 @@ void turn_markers(FrontEndState& state, const FrontEndContent& content);
 void enter_now_playing(FrontEndState& state);
 void now_playing_entry_frame(FrontEndState& state, const FrontEndContent& content);
 void now_playing_frame(FrontEndState& state, const FrontEndContent& content, FrontEndPads pads);
-void race_fade_frame(FrontEndState& state);
+void race_fade_frame(FrontEndState& state, const FrontEndContent& content);
 
 // race_result.cpp: after a one-player race, the menus' return and the result screen.
 void begin_race_return(FrontEndState& state, const FrontEndContent& content, std::uint32_t frame,
+                       const RaceTimes& times);
+// The same in the frame now running, from the race's last frame on (the credits picture's).
+void start_race_return(FrontEndState& state, const FrontEndContent& content,
                        const RaceTimes& times);
 void race_return_frame(FrontEndState& state, const FrontEndContent& content);
 void race_result_frame(FrontEndState& state, const FrontEndContent& content, FrontEndPads pads);
@@ -361,6 +364,25 @@ void wipe_ram_warning_frame(FrontEndState& state, const FrontEndContent& content
 void wipe_ram_answer_frame(FrontEndState& state, const FrontEndContent& content, FrontEndPads pads);
 // Whether the answer's next frame starts after a frame wait: not during the wipe's busy frames.
 bool wipe_ram_answer_waits(const FrontEndState& state);
+
+// The idle demo's timer exit: its clock `$1387` when the race ends on time (R-0070).
+inline constexpr std::uint16_t idle_demo_timer_exit = 0x076b;
+// The way back to the main menu after an idle demo, from its exit frame (`return_from_demo`).
+void begin_demo_return(FrontEndState& state, std::uint16_t demo_elapsed);
+
+// credits_name.cpp: the rider-name cheats at each race's setup (`$83:FB8A`, R-0094). Whether the
+// first rider is named "credits", which shows the credits picture in place of the race.
+bool credits_named(const FrontEndState& state, const FrontEndContent& content);
+// $83:FB8A: `$77:111A` one race fewer (kept to 0-3); then a first rider named "credits" or
+// "faedine" becomes "mike", and "faedine" sets three races.
+void check_rider_names(FrontEndState& state, const FrontEndContent& content);
+// $83:C914: the idle demo's setup clears `$77:111A-111B` before the test.
+void clear_hunter_races(FrontEndState& state);
+// $83:FADC: the credits picture from the first blank frame after the fade, a frame of it, and
+// whether the frame waits. It ends as a restart (R-0060), or in the demo as the timer's return.
+void enter_credits_picture(FrontEndState& state);
+void credits_picture_frame(FrontEndState& state, const FrontEndContent& content);
+bool credits_picture_waits(const FrontEndState& state);
 
 // $80:9017: the unsigned minimum of the ten lap slots, zero slots not skipped, the result's best
 // lap; `$80:C868`: the minimum of the slots that are not zero, from 0xEA62, the records' best lap.
