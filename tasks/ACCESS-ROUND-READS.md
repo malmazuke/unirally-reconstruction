@@ -2,7 +2,7 @@
 
 ## Assignment
 
-- Status: **claimed** (tier 2). Claimed 10 October 2026 08:12 UTC at the user's request, on
+- Status: **claimed** (tier 2). Claimed 10 October 2026 08:10 UTC at the user's request, on
   `task/data-coverage` `fefe661` (PR #71, DATA-COVERAGE, open and approved at claim). The branch
   moves onto main once #71 merges. Weekly usage at claim 31% (5-hour window 66%).
 - Worker: Claude Code desktop app, Claude Opus 5.5 (`claude-opus-5-5`); coordinator, primary and

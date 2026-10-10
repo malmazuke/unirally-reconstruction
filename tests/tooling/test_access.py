@@ -21,6 +21,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
+import unittest.mock
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -543,6 +544,104 @@ class ResolveRmwTests(unittest.TestCase):
         self.assertEqual(op("TRB", 2, a=0x00F0).apply(0x12FF), 0x120F)
         with self.assertRaises(ValueError):
             op("LDA").apply(0)
+
+
+def round_rom() -> bytes:
+    rom = bytearray(0x10000)
+    prog = bytes([
+        0xA7, 0x63,              # 8000 LDA [$63]        pointer bytes written later in the frame
+        0x87, 0x80,              # 8002 STA [$80]        resolved store to $7E:0063: the later write
+        0xE6, 0x63,              # 8004 INC $63          16-bit RMW of the pointer (resolve_rmw)
+        0x87, 0x63,              # 8006 STA [$63]        store through the pointer
+    ])
+    rom[0:len(prog)] = prog
+    return bytes(rom)
+
+
+def run_rounds(program: list[tuple[int, dict]], sof_bytes: dict[int, bytes], eof_bytes: dict[int, bytes], resolve_rmw: bool = False):
+    """One frame of ``round_rom`` with the given (pc, registers) entries and work RAM images."""
+    rom = round_rom()
+    ring = StubRing()
+    for pc, regs in program:
+        ring.execute(pc, **{"d": 0, "b": 0x7E, **regs})
+    sof = bytearray(derive.WRAM_SIZE)
+    eof = bytearray(derive.WRAM_SIZE)
+    for off, data in sof_bytes.items():
+        sof[off:off + len(data)] = data
+    for off, data in eof_bytes.items():
+        eof[off:off + len(data)] = data
+    d = derive.AccessDrain(rom, 16, resolve_rmw=resolve_rmw)
+    d.set_previous_wram(bytes(sof))
+    d.drain_frame(0, ring.raw(), bytes(eof))
+    doc = d.document({"rom": {"sha256": "a" * 64, "size": len(rom)}, "core": {"name": "stub"}, "script": {"frames": 1}, "status": "complete"}, (0, 0))
+    return derive.validate_document(doc)
+
+
+# LDA [$63] reads the pointer before STA [$80] writes it. The first round has no record of that
+# write, so it takes the pointer from the end-of-frame image ($01:9000); once the round's resolved
+# store is merged, the pointer comes from the start-of-frame image ($01:8000), its value at the load.
+LATER_WRITE = ([(0x8000, {}), (0x8002, {"a": 0x9000})],
+               {0x63: bytes([0x00, 0x80, 0x01]), 0x80: bytes([0x63, 0x00, 0x7E])},
+               {0x63: bytes([0x00, 0x90, 0x01]), 0x80: bytes([0x63, 0x00, 0x7E])})
+
+
+class ResolutionRoundTests(unittest.TestCase):
+    """Only the kept round's kept resolutions reach the record (ACCESS-ROUND-READS)."""
+
+    def test_a_discarded_round_leaves_no_rom_read(self) -> None:
+        doc = run_rounds(*LATER_WRITE)
+        self.assertNotIn([0x9000, 2], doc["rom_read_ranges"])       # the first round's wrong pointer
+        self.assertEqual(doc["rom_bytes_read"], sum(n for _off, n in doc["rom_read_ranges"]))
+        for row in doc["rom_reads"]:
+            self.assertEqual((row[5], row[6]), (0x018000, 0x018000))
+
+    def test_the_frame_settles_on_the_value_at_the_load(self) -> None:
+        doc = run_rounds(*LATER_WRITE)
+        self.assertEqual(doc["rom_read_ranges"], [[0x8000, 2]])
+        self.assertEqual([r[4] for r in doc["rom_reads"]], [1])
+        self.assertEqual(doc["per_frame_unresolved"], [0])
+        self.assertEqual((doc["resolution_conflict_bytes"], doc["resolutions_dropped"]), (0, 0))
+        self.assertEqual(doc["resolution_rounds"], [[2, 1]])
+        names = doc["addressing_names"]
+        res = {(pc, names[ad], label): n for pc, ad, label, n in doc["resolutions"]}
+        self.assertEqual(res, {(0x8000, "ildp", "end_of_frame"): 1, (0x8002, "ildp", "end_of_frame"): 1})
+
+    def test_a_dropped_resolution_leaves_no_rom_read(self) -> None:
+        with unittest.mock.patch.object(derive, "MAX_RESOLVE_ROUNDS", 1):
+            doc = run_rounds(*LATER_WRITE)
+        self.assertEqual(doc["rom_read_ranges"], [])
+        self.assertEqual(doc["rom_reads"], [])
+        self.assertEqual(doc["per_frame_unresolved"], [1])
+        self.assertEqual(doc["resolutions_dropped"], 1)
+        self.assertEqual(doc["resolution_rounds"], [[1, 1]])
+
+    def test_a_discarded_round_leaves_no_register_store(self) -> None:
+        # STA [$63] goes to $00:420B in the first round (end-of-frame pointer) and to $00:1000 at the store.
+        program = [(0x8006, {"a": 0x01, "p": 0x20}), (0x8002, {"a": 0x420B})]
+        doc = run_rounds(program, {0x63: bytes([0x00, 0x10, 0x00]), 0x80: bytes([0x63, 0x00, 0x7E])},
+                         {0x63: bytes([0x0B, 0x42, 0x00]), 0x80: bytes([0x63, 0x00, 0x7E])})
+        self.assertEqual(doc["dma_log"], [])
+        rows = {(r["pc"], r["kind"], r["address"]): r for r in acmd.access_rows(doc)}
+        self.assertEqual(rows[(0x8006, "write", 0x001000)]["values"], [0x01])
+        self.assertNotIn((0x8006, "write", 0x00420B), rows)
+
+    def test_an_rmw_of_a_resolved_store_settles(self) -> None:
+        # PR #71 review finding 4: STA [$80] stores $9000 to the pointer, INC $63 makes it $9001, LDA [$63] reads $01:9001.
+        program = [(0x8002, {"a": 0x9000}), (0x8004, {}), (0x8000, {})]
+        sof = {0x63: bytes([0x00, 0x80, 0x01]), 0x80: bytes([0x63, 0x00, 0x7E])}
+        eof = {0x63: bytes([0x01, 0x90, 0x01]), 0x80: bytes([0x63, 0x00, 0x7E])}
+        doc = run_rounds(program, sof, eof, resolve_rmw=True)
+        self.assertEqual(doc["rom_read_ranges"], [[0x9001, 2]])
+        self.assertEqual(doc["per_frame_unresolved"], [0])
+        self.assertEqual(doc["resolutions_dropped"], 0)
+        with unittest.mock.patch.object(derive, "MAX_RESOLVE_ROUNDS", 1):
+            doc = run_rounds(program, sof, eof, resolve_rmw=True)
+        self.assertEqual(doc["rom_read_ranges"], [])                 # dropped: neither $01:8001 nor $01:9001
+        self.assertEqual(doc["per_frame_unresolved"], [1])
+
+    def test_frames_without_a_conflict_take_one_round(self) -> None:
+        doc, _ = run_synthetic()
+        self.assertEqual(doc["resolution_rounds"], [[1, 2]])
 
 
 class WorkerAndCliTests(unittest.TestCase):
