@@ -27,6 +27,7 @@ OPTIONS_ENTRIES = len(front_end_rules.OPTIONS_TABLES)
 LEAGUE_ENTRIES = 9
 V34_ENTRIES = 561  # the whole v34 inventory, before v35's pause messages
 V35_ENTRIES = 562  # the whole v35 inventory, before v36's WIPE RAM text
+V36_ENTRIES = 565  # the whole v36 inventory, before v37's name cheats
 
 
 def through_league(rules: dict) -> list[dict]:
@@ -671,7 +672,7 @@ class AudioEntryTests(unittest.TestCase):
         encoded = json.dumps(previous, sort_keys=True, separators=(",", ":")).encode()
         self.assertEqual(hashlib.sha256(encoded).hexdigest(),
                          "9f7b258d01bef9b6a8d49becf41c12d2de7e50ca2fb1647ed3b48c32b8a74217")
-        added = rules["entries"][V35_ENTRIES:]
+        added = rules["entries"][V35_ENTRIES:V36_ENTRIES]
         # $80:A9FE, $80:AA19 and $80:AAF9-ABC7: the WIPE RAM menu's text (R-0092).
         self.assertEqual([(e["id"], e["size"], e["source"]) for e in added],
                          [(table[0], table[2], {"kind": "raw", "pieces": [
@@ -679,6 +680,30 @@ class AudioEntryTests(unittest.TestCase):
                           for table in front_end_rules.WIPE_RAM_TABLES])
         source = (ROOT / "src/core/content_pack.cpp").read_text(encoding="utf-8")
         table = source[source.index("wipe_ram_required{{"):]
+        table = table[:table.index("}};")]
+        compiled = re.findall(r'\{"([^"]+)",\s*(\d+),\s*"([0-9a-f]{64})"\}', table)
+        self.assertEqual(compiled, [(e["id"], str(e["size"]), e["sha256"]) for e in added])
+
+    def test_name_cheats_preserve_v36_inventory(self) -> None:
+        import hashlib
+        import re
+        rules = json.loads((ROOT / "tests/manifests/content/classic-crawler-tracks-pack.json")
+                           .read_text(encoding="utf-8"))
+        previous = rules["entries"][:V36_ENTRIES]
+        encoded = json.dumps(previous, sort_keys=True, separators=(",", ":")).encode()
+        self.assertEqual(hashlib.sha256(encoded).hexdigest(),
+                         "e94689508901fecd9644443a3e1803f8cf23411c0edfc41735a00c860e7fccac")
+        added = rules["entries"][V36_ENTRIES:]
+        # $83:FB56-FB89, the name cheats' strings, then assets 0xBF-0xC1, the credits
+        # picture (R-0094).
+        self.assertEqual([(e["id"], e["size"]) for e in added],
+                         [(table[0], table[2]) for table in front_end_rules.CREDITS_NAME_TABLES]
+                         + [(f"front-end.asset.{asset:03d}", size) for asset, size in
+                            zip(front_end_rules.CREDITS_NAME_ASSETS, (13920, 1792, 32))])
+        self.assertEqual(added[0]["source"], {"kind": "raw", "pieces": [
+            {"file_offset": 0x1FB56, "length": 52}]})
+        source = (ROOT / "src/core/content_pack.cpp").read_text(encoding="utf-8")
+        table = source[source.index("credits_name_required{{"):]
         table = table[:table.index("}};")]
         compiled = re.findall(r'\{"([^"]+)",\s*(\d+),\s*"([0-9a-f]{64})"\}', table)
         self.assertEqual(compiled, [(e["id"], str(e["size"]), e["sha256"]) for e in added])

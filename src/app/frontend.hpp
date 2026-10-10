@@ -154,6 +154,8 @@ public:
   }
   // The idle demo now loading is a split race (`$0DE1`, R-0087).
   bool demo_split_race() const { return state_.demo_split_race; }
+  // The name "faedine"'s races are running (`$82:D978`, R-0094).
+  bool hunter_races() const { return hunter_races_running(state_); }
   ClassicRaceTrack race_track() const {
     return ClassicRaceTrack{state_.tour_menu.track};
   }
@@ -174,6 +176,10 @@ public:
       // Labelled by its absolute frame: a demo state's clock gives its start
       // (R-0087).
       scenario.initialization_frame = state_.frame - 1U;
+      // `$82:D978` (R-0094): the name "faedine" gives the demo HUNTER's
+      // effects; its tier only in a one-view race (`$0C6D`).
+      scenario.hunter_tour = scenario.hunter_tour ||
+                             (hunter_races_running(state_) && !demo_split_race());
       return scenario;
     }
     auto scenario =
@@ -188,6 +194,8 @@ public:
             : one_player_race_scenario(state_);
     scenario.race_counter =
         state_.race_song; // `$77:10B1` after this race's count (R-0084)
+    // `$82:D978`: the name "faedine" gives any track HUNTER's effects (R-0094).
+    scenario.hunter_tour = scenario.hunter_tour || hunter_races_running(state_);
     return scenario;
   }
   // Colours 96-111 as the menus leave them to the race: NEON (track 42) never reloads or cycles

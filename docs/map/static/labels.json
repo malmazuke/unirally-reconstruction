@@ -377,6 +377,18 @@
   ]
  },
  {
+  "address": "$80:85A4",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_8085A4",
+  "native": [
+   "src/core/credits_name.cpp:name_test_frame, first_shown_frame, fade_frames, held_frames"
+  ],
+  "source_records": [
+   "docs/research/R-0094-name-cheats.md"
+  ]
+ },
+ {
   "address": "$80:8638",
   "class": "observed",
   "comment": "instruction start",
@@ -1603,6 +1615,7 @@
   "label": "sub_809869",
   "native": [
    "src/core/audio_cpu_scene.cpp:fade",
+   "src/core/credits_name.cpp:name_test_frame, first_shown_frame, fade_frames, held_frames",
    "src/core/front_end.cpp:fade_frames",
    "src/core/race_result.cpp:race_restart_frame",
    "src/core/race_result.cpp:rows_frame, icons_frame, first_fade_frame, fade_frames",
@@ -1625,6 +1638,8 @@
   "label": "sub_809885",
   "native": [
    "src/core/audio_cpu_scene.cpp:fade",
+   "src/core/credits_name.cpp:credits_picture_frame",
+   "src/core/credits_name.cpp:name_test_frame, first_shown_frame, fade_frames, held_frames",
    "src/core/front_end.cpp:fade_frames",
    "src/core/front_end.hpp:FrontEndScreen",
    "src/core/now_playing.cpp:(file)",
@@ -8306,6 +8321,18 @@
   ]
  },
  {
+  "address": "$80:FAF8",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80FAF8",
+  "native": [
+   "src/core/front_end.cpp:turn_arrow"
+  ],
+  "source_records": [
+   "docs/research/R-0094-name-cheats.md"
+  ]
+ },
+ {
   "address": "$80:FB08",
   "class": "observed",
   "comment": "instruction start",
@@ -11962,6 +11989,21 @@
   ]
  },
  {
+  "address": "$81:C579",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_81C579",
+  "native": [
+   "src/core/hunter_effects.cpp:update_hunter_effects",
+   "src/core/race_hud.cpp:ClassicRaceHudClock::request_caption",
+   "src/core/reward_queue.cpp:push_front_player_announcement"
+  ],
+  "source_records": [
+   "docs/research/R-0094-name-cheats.md",
+   "tasks/CREDITS-NAME.md"
+  ]
+ },
+ {
   "address": "$81:C598",
   "class": "observed",
   "comment": "routine start",
@@ -13709,7 +13751,7 @@
   "native": [
    "src/core/audio_cpu_queue.cpp:native_audio_poll_queue",
    "src/core/audio_cue.hpp:AudioDispatchSite",
-   "src/core/front_end.cpp:return_from_demo"
+   "src/core/front_end.cpp:front_end_screens::begin_demo_return"
   ],
   "source_records": [
    "docs/research/R-0070-attract-demo.md",
@@ -16814,6 +16856,18 @@
   ]
  },
  {
+  "address": "$82:D4C4",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_82D4C4",
+  "native": [
+   "src/core/credits_name.cpp:cleared_colour_bytes"
+  ],
+  "source_records": [
+   "docs/research/R-0094-name-cheats.md"
+  ]
+ },
+ {
   "address": "$82:D4C7",
   "class": "observed",
   "comment": "instruction start",
@@ -16897,6 +16951,18 @@
   ]
  },
  {
+  "address": "$82:D6E7",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_82D6E7",
+  "native": [
+   "src/core/credits_name.cpp:load_picture"
+  ],
+  "source_records": [
+   "docs/research/R-0094-name-cheats.md"
+  ]
+ },
+ {
   "address": "$82:D724",
   "class": "observed",
   "comment": "instruction start",
@@ -16931,6 +16997,19 @@
   ],
   "source_records": [
    "docs/research/R-0068-stunt-hud.md"
+  ]
+ },
+ {
+  "address": "$82:D7C2",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_82D7C2",
+  "native": [
+   "src/core/credits_name.cpp:load_picture",
+   "src/core/front_end.cpp:update_front_end"
+  ],
+  "source_records": [
+   "docs/research/R-0094-name-cheats.md"
   ]
  },
  {
@@ -17093,6 +17172,25 @@
   ]
  },
  {
+  "address": "$82:D978",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82D978",
+  "native": [
+   "src/core/credits_name.cpp:hunter_races_high",
+   "src/core/front_end.hpp:hunter_races_running",
+   "src/core/front_end_runner.cpp:start_race",
+   "src/core/race_setup.cpp:classic_crawler_zoom_zoo_start",
+   "src/core/race_setup.cpp:start_countdown, base_speed_cap",
+   "src/core/zoom_zoo_movement.hpp:ClassicRaceScenario::hunter_tour",
+   "src/core/zoom_zoo_movement.hpp:ZoomZooState::hunter_tour",
+   "src/core/zoom_zoo_movement.hpp:classic_crawler_zoom_zoo_start"
+  ],
+  "source_records": [
+   "docs/research/R-0094-name-cheats.md"
+  ]
+ },
+ {
   "address": "$82:D98F",
   "class": "observed",
   "comment": "instruction start",
@@ -17219,7 +17317,8 @@
    "src/core/race_setup.cpp:stunt_scenario"
   ],
   "source_records": [
-   "docs/research/R-0093-data-coverage.md"
+   "docs/research/R-0093-data-coverage.md",
+   "tasks/DATA-COVERAGE.md"
   ]
  },
  {
@@ -17292,12 +17391,36 @@
   ]
  },
  {
+  "address": "$82:DDD5",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_82DDD5",
+  "native": [
+   "src/core/credits_name.cpp:name_test_frame, first_shown_frame, fade_frames, held_frames"
+  ],
+  "source_records": [
+   "docs/research/R-0094-name-cheats.md"
+  ]
+ },
+ {
   "address": "$82:DDDE",
   "class": "observed",
   "comment": "instruction start",
   "label": "loc_82DDDE",
   "source_records": [
    "docs/research/R-0089-coverage-gaps.md"
+  ]
+ },
+ {
+  "address": "$82:DF05",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_82DF05",
+  "native": [
+   "src/core/credits_name.cpp:credits_picture_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0094-name-cheats.md"
   ]
  },
  {
@@ -20304,13 +20427,27 @@
   "comment": "routine start",
   "label": "sub_83C8E0",
   "native": [
+   "src/core/front_end.cpp:demo_title_frame",
    "src/core/front_end.hpp:return_from_race",
    "src/core/race_result.cpp:(file)"
   ],
   "source_records": [
    "docs/research/R-0056-tour-track-now-playing.md",
    "docs/research/R-0057-one-run-result.md",
-   "docs/research/R-0060-pause-exits.md"
+   "docs/research/R-0060-pause-exits.md",
+   "docs/research/R-0094-name-cheats.md"
+  ]
+ },
+ {
+  "address": "$83:C8E4",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83C8E4",
+  "native": [
+   "src/core/credits_name.cpp:enter_credits_picture"
+  ],
+  "source_records": [
+   "docs/research/R-0094-name-cheats.md"
   ]
  },
  {
@@ -20339,6 +20476,21 @@
   ]
  },
  {
+  "address": "$83:C914",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83C914",
+  "native": [
+   "src/core/front_end.cpp:choose_idle_demo",
+   "src/core/front_end.cpp:demo_title_frame",
+   "src/core/front_end.hpp:OnePlayerRecords::hunter_races",
+   "src/core/front_end_screens.hpp:clear_hunter_races"
+  ],
+  "source_records": [
+   "docs/research/R-0094-name-cheats.md"
+  ]
+ },
+ {
   "address": "$83:C91C",
   "class": "observed",
   "comment": "instruction start",
@@ -20364,12 +20516,39 @@
   ]
  },
  {
+  "address": "$83:C99E",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83C99E",
+  "source_records": [
+   "docs/research/R-0094-name-cheats.md",
+   "tasks/CREDITS-NAME.md"
+  ]
+ },
+ {
   "address": "$83:C9AC",
   "class": "inferred",
   "comment": "instruction start",
   "label": "loc_83C9AC",
+  "native": [
+   "src/core/credits_name.cpp:restart_total",
+   "src/core/now_playing.cpp:race_fade_frame"
+  ],
   "source_records": [
    "tasks/RACE-PAUSE-EXITS.md"
+  ]
+ },
+ {
+  "address": "$83:C9E4",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83C9E4",
+  "native": [
+   "src/core/front_end_runner.cpp:start_race"
+  ],
+  "source_records": [
+   "docs/research/R-0094-name-cheats.md",
+   "tasks/CREDITS-NAME.md"
   ]
  },
  {
@@ -20397,6 +20576,7 @@
    "src/core/front_end.cpp:demo_title_frame",
    "src/core/front_end.cpp:idle_demo_loading_frames",
    "src/core/front_end.hpp:choose_race_song",
+   "src/core/now_playing.cpp:race_fade_frame",
    "src/core/race_result.cpp:choose_race_song",
    "src/core/race_setup.cpp:restart_zoom_zoo",
    "src/core/zoom_zoo_movement.hpp:ClassicRaceScenario::race_counter"
@@ -20405,6 +20585,7 @@
    "docs/research/R-0076-first-race-audio.md",
    "docs/research/R-0077-one-player-audio.md",
    "docs/research/R-0084-two-human-restart.md",
+   "docs/research/R-0094-name-cheats.md",
    "tasks/AUDIO-FIRST-RACE.md",
    "tasks/AUDIO-ONE-PLAYER.md"
   ]
@@ -20419,6 +20600,7 @@
    "src/core/front_end.cpp:demo_title_frame",
    "src/core/front_end.cpp:idle_demo_loading_frames",
    "src/core/front_end.hpp:choose_race_song",
+   "src/core/now_playing.cpp:race_fade_frame",
    "src/core/race_result.cpp:choose_race_song",
    "src/core/race_setup.cpp:restart_zoom_zoo",
    "src/core/zoom_zoo_movement.hpp:ClassicRaceScenario::race_counter"
@@ -20938,7 +21120,7 @@
   "label": "sub_83CE2C",
   "native": [
    "src/core/front_end.hpp:OnePlayerRecords::tutorial_bits",
-   "src/core/race_result.cpp:begin_race_return",
+   "src/core/race_result.cpp:start_race_return",
    "src/core/race_setup.cpp:restart_zoom_zoo",
    "src/core/reward_queue.cpp:hint_interval",
    "src/core/reward_queue.cpp:update_player_tutorial_hints",
@@ -20970,7 +21152,7 @@
   "comment": "routine start",
   "label": "sub_83CEB1",
   "native": [
-   "src/core/race_result.cpp:begin_race_return",
+   "src/core/race_result.cpp:start_race_return",
    "src/core/race_setup.cpp:restart_zoom_zoo"
   ],
   "source_records": [
@@ -21027,6 +21209,25 @@
   ],
   "source_records": [
    "docs/research/R-0052-hunter-effects.md"
+  ]
+ },
+ {
+  "address": "$83:CEE8",
+  "class": "inferred",
+  "comment": "inside the instruction at $83:CEE7",
+  "label": "mid_83CEE8",
+  "native": [
+   "src/core/announcements.hpp:invisible_unis",
+   "src/core/hunter_effects.cpp:priority",
+   "src/core/hunter_effects.cpp:update_hunter_effects",
+   "src/core/presentation.cpp:ClassicRaceHistoryTracker::observe_update",
+   "src/core/zoom_zoo_movement.hpp:ClassicRaceScenario::hunter_tour",
+   "src/core/zoom_zoo_movement.hpp:HunterEffects",
+   "src/core/zoom_zoo_movement.hpp:update_hunter_effects"
+  ],
+  "source_records": [
+   "docs/research/R-0094-name-cheats.md",
+   "tasks/CREDITS-NAME.md"
   ]
  },
  {
@@ -21226,6 +21427,24 @@
   "source_records": [
    "docs/research/R-0052-hunter-effects.md",
    "tasks/HUNTER-EFFECTS.md"
+  ]
+ },
+ {
+  "address": "$83:D337",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_83D337",
+  "native": [
+   "src/core/hunter_effects.cpp:run_screen_flip",
+   "src/core/hunter_effects.cpp:update_hunter_effects",
+   "src/core/presentation.cpp:ClassicRaceHistoryTracker::observe_update",
+   "src/core/zoom_zoo_movement.hpp:ClassicRaceScenario::hunter_tour",
+   "src/core/zoom_zoo_movement.hpp:HunterEffects",
+   "src/core/zoom_zoo_movement.hpp:update_hunter_effects"
+  ],
+  "source_records": [
+   "docs/research/R-0094-name-cheats.md",
+   "tasks/CREDITS-NAME.md"
   ]
  },
  {
@@ -21669,7 +21888,7 @@
   "comment": "instruction start",
   "label": "loc_83E267",
   "native": [
-   "src/core/front_end.cpp:return_from_demo",
+   "src/core/front_end.cpp:front_end_screens::begin_demo_return",
    "src/core/race_demo_controls.cpp:(file)",
    "src/core/race_demo_controls.cpp:update_demo_controllers",
    "src/core/race_demo_controls.hpp:(file)",
@@ -24166,6 +24385,9 @@
   "class": "observed",
   "comment": "routine start",
   "label": "sub_83F97C",
+  "native": [
+   "src/core/credits_name.cpp:credits_picture_frame"
+  ],
   "source_records": [
    "docs/research/R-0060-pause-exits.md"
   ]
@@ -24184,8 +24406,45 @@
   "class": "inferred",
   "comment": "routine start",
   "label": "sub_83FADC",
+  "native": [
+   "src/core/front_end_screens.hpp:enter_credits_picture"
+  ],
   "source_records": [
-   "docs/research/R-0089-coverage-gaps.md"
+   "docs/research/R-0089-coverage-gaps.md",
+   "docs/research/R-0094-name-cheats.md"
+  ]
+ },
+ {
+  "address": "$83:FAE0",
+  "class": "inferred",
+  "comment": "routine start",
+  "label": "sub_83FAE0",
+  "native": [
+   "src/core/content_pack.cpp:credits_name_required",
+   "src/core/credits_name.cpp:(file)",
+   "src/core/credits_name.cpp:load_picture",
+   "src/core/credits_name.cpp:picture_mode, picture_tile_bases, picture_main_screen",
+   "src/core/front_end.hpp:FrontEndScreen"
+  ],
+  "source_records": [
+   "docs/research/R-0094-name-cheats.md"
+  ]
+ },
+ {
+  "address": "$83:FB03",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_83FB03",
+  "native": [
+   "src/core/content_pack.cpp:credits_name_required",
+   "src/core/credits_name.cpp:(file)",
+   "src/core/credits_name.cpp:load_picture",
+   "src/core/credits_name.cpp:picture_colours, picture_map, picture_tiles",
+   "src/core/credits_name.cpp:picture_mode, picture_tile_bases, picture_main_screen",
+   "src/core/front_end.hpp:FrontEndScreen"
+  ],
+  "source_records": [
+   "docs/research/R-0094-name-cheats.md"
   ]
  },
  {
@@ -24193,6 +24452,14 @@
   "class": "inferred",
   "comment": "instruction start",
   "label": "loc_83FB06",
+  "native": [
+   "src/core/content_pack.cpp:credits_name_required",
+   "src/core/credits_name.cpp:(file)",
+   "src/core/credits_name.cpp:load_picture",
+   "src/core/credits_name.cpp:picture_colours, picture_map, picture_tiles",
+   "src/core/credits_name.cpp:picture_mode, picture_tile_bases, picture_main_screen",
+   "src/core/front_end.hpp:FrontEndScreen"
+  ],
   "source_records": [
    "docs/research/R-0093-data-coverage.md"
   ]
@@ -24202,8 +24469,33 @@
   "class": "inferred",
   "comment": "instruction start",
   "label": "loc_83FB10",
+  "native": [
+   "src/core/content_pack.cpp:credits_name_required",
+   "src/core/credits_name.cpp:(file)",
+   "src/core/credits_name.cpp:load_picture",
+   "src/core/credits_name.cpp:picture_colours, picture_map, picture_tiles",
+   "src/core/credits_name.cpp:picture_mode, picture_tile_bases, picture_main_screen",
+   "src/core/front_end.hpp:FrontEndScreen"
+  ],
   "source_records": [
    "docs/research/R-0093-data-coverage.md"
+  ]
+ },
+ {
+  "address": "$83:FB1D",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_83FB1D",
+  "native": [
+   "src/core/content_pack.cpp:credits_name_required",
+   "src/core/credits_name.cpp:(file)",
+   "src/core/credits_name.cpp:load_picture",
+   "src/core/credits_name.cpp:picture_colours, picture_map, picture_tiles",
+   "src/core/credits_name.cpp:picture_mode, picture_tile_bases, picture_main_screen",
+   "src/core/front_end.hpp:FrontEndScreen"
+  ],
+  "source_records": [
+   "docs/research/R-0094-name-cheats.md"
   ]
  },
  {
@@ -24211,8 +24503,12 @@
   "class": "inferred",
   "comment": "instruction start",
   "label": "loc_83FB31",
+  "native": [
+   "src/core/credits_name.cpp:name_test_frame, first_shown_frame, fade_frames, held_frames"
+  ],
   "source_records": [
-   "docs/research/R-0089-coverage-gaps.md"
+   "docs/research/R-0089-coverage-gaps.md",
+   "docs/research/R-0094-name-cheats.md"
   ]
  },
  {
@@ -24235,12 +24531,163 @@
   ]
  },
  {
+  "address": "$83:FB56",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_83FB56",
+  "native": [
+   "src/core/content_pack.cpp:credits_name_required",
+   "src/core/credits_name.cpp:name_cheats_bytes, credits_name, credits_written, faedine_name, faedine_written",
+   "src/core/front_end.hpp:FrontEndContent::name_cheats"
+  ],
+  "source_records": [
+   "docs/research/R-0094-name-cheats.md"
+  ]
+ },
+ {
+  "address": "$83:FB66",
+  "class": "data",
+  "comment": "data",
+  "label": "dat_83FB66",
+  "native": [
+   "src/core/content_pack.cpp:credits_name_required",
+   "src/core/credits_name.cpp:name_cheats_bytes, credits_name, credits_written, faedine_name, faedine_written",
+   "src/core/front_end.hpp:FrontEndContent::name_cheats"
+  ],
+  "source_records": [
+   "docs/research/R-0094-name-cheats.md"
+  ]
+ },
+ {
+  "address": "$83:FB70",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_83FB70",
+  "native": [
+   "src/core/content_pack.cpp:credits_name_required",
+   "src/core/credits_name.cpp:name_cheats_bytes, credits_name, credits_written, faedine_name, faedine_written",
+   "src/core/front_end.hpp:FrontEndContent::name_cheats"
+  ],
+  "source_records": [
+   "docs/research/R-0094-name-cheats.md"
+  ]
+ },
+ {
+  "address": "$83:FB80",
+  "class": "data",
+  "comment": "data",
+  "label": "dat_83FB80",
+  "native": [
+   "src/core/content_pack.cpp:credits_name_required",
+   "src/core/credits_name.cpp:name_cheats_bytes, credits_name, credits_written, faedine_name, faedine_written",
+   "src/core/front_end.hpp:FrontEndContent::name_cheats"
+  ],
+  "source_records": [
+   "docs/research/R-0094-name-cheats.md"
+  ]
+ },
+ {
   "address": "$83:FB8A",
   "class": "observed",
   "comment": "routine start",
   "label": "sub_83FB8A",
+  "native": [
+   "src/core/credits_name.cpp:(file)",
+   "src/core/front_end.cpp:demo_title_frame",
+   "src/core/front_end.hpp:OnePlayerRecords::hunter_races",
+   "src/core/front_end_screens.hpp:check_rider_names",
+   "src/core/front_end_screens.hpp:credits_named",
+   "src/core/now_playing.cpp:race_fade_frame"
+  ],
   "source_records": [
-   "docs/research/R-0060-pause-exits.md"
+   "docs/research/R-0060-pause-exits.md",
+   "docs/research/R-0094-name-cheats.md",
+   "tasks/CREDITS-NAME.md"
+  ]
+ },
+ {
+  "address": "$83:FB8C",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83FB8C",
+  "native": [
+   "src/core/credits_name.cpp:one_race_fewer"
+  ],
+  "source_records": [
+   "docs/research/R-0094-name-cheats.md"
+  ]
+ },
+ {
+  "address": "$83:FB95",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83FB95",
+  "native": [
+   "src/core/credits_name.cpp:faedine_races",
+   "src/core/credits_name.cpp:one_race_fewer"
+  ],
+  "source_records": [
+   "docs/research/R-0094-name-cheats.md"
+  ]
+ },
+ {
+  "address": "$83:FBAE",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_83FBAE",
+  "native": [
+   "src/core/credits_name.cpp:name_cheats_bytes, credits_name, credits_written, faedine_name, faedine_written"
+  ],
+  "source_records": [
+   "docs/research/R-0094-name-cheats.md"
+  ]
+ },
+ {
+  "address": "$83:FBBA",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_83FBBA",
+  "native": [
+   "src/core/credits_name.cpp:name_cheats_bytes, credits_name, credits_written, faedine_name, faedine_written"
+  ],
+  "source_records": [
+   "docs/research/R-0094-name-cheats.md"
+  ]
+ },
+ {
+  "address": "$83:FBD5",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_83FBD5",
+  "native": [
+   "src/core/credits_name.cpp:name_cheats_bytes, credits_name, credits_written, faedine_name, faedine_written"
+  ],
+  "source_records": [
+   "docs/research/R-0094-name-cheats.md"
+  ]
+ },
+ {
+  "address": "$83:FBDC",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_83FBDC",
+  "native": [
+   "src/core/credits_name.cpp:faedine_races"
+  ],
+  "source_records": [
+   "docs/research/R-0094-name-cheats.md"
+  ]
+ },
+ {
+  "address": "$83:FBE2",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_83FBE2",
+  "native": [
+   "src/core/credits_name.cpp:name_cheats_bytes, credits_name, credits_written, faedine_name, faedine_written"
+  ],
+  "source_records": [
+   "docs/research/R-0094-name-cheats.md"
   ]
  },
  {

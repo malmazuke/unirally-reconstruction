@@ -370,7 +370,7 @@ void ClassicRaceHudClock::request_caption(const ZoomZooState& previous,
     // in the same update, so the cursor alone can miss a consumption. Two other signs are
     // exact: the display cleared from a dry look (`$81:BED1` clears `$03ED` only after taking an
     // event) and a change of the carried text (`hunter.caption`).
-    const bool hunter = classic_race_scenario(updated.track).hunter_tour;
+    const bool hunter = updated.hunter_tour;
     const bool taken =
         after.queue.read_cursor == (before.queue.read_cursor + 1U) % slots
         || (before.empty_display && !after.empty_display)
@@ -673,8 +673,7 @@ classic_caption_entry(const ZoomZooState& published, std::span<const std::uint8_
     // R-0052: on the HUNTER tour the row is carried, since a front-of-queue
     // announcement overwrites the slot it was drawn from, and a dry queue
     // shows the HUD message buffer there.
-    if (classic_race_scenario(published.track).hunter_tour)
-        return classic_caption_text(published.hunter.caption, captions);
+    if (published.hunter_tour) return classic_caption_text(published.hunter.caption, captions);
     const auto& announcements = published.player_announcements;
     if (announcements.empty_display) return std::nullopt;
     // `movement.rewards` is the opponent's queue ($0D11/$0D13 cursors); the

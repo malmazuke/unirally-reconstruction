@@ -22,6 +22,10 @@
 // and one more byte (1) only while pad 2's pause menu is open in the lower view
 // (`pause.lower_view`, R-0079); a league pair's wrapper appends that byte too.
 //
+// A race whose `$131F` the name "faedine" set on a track whose own setup leaves it clear (R-0094)
+// is wrapped: its identity, a byte telling whether the HUNTER effects follow, the state as it
+// would be without them, then the effects for DRAGSTER and ZOOM ZOO, whose layouts have none.
+//
 // Reading refuses any state the original cannot produce: each section's guards run as it is
 // read, and the natively started race's cross-checks run in the order below.
 
@@ -74,6 +78,7 @@ constexpr std::size_t lower_view_size = 1;
 struct TrailerFlags {
     bool versus{}, opponent_hints{};
     std::optional<RacePairing> demo_pairing; // an idle demo's riders, from its trailer
+    bool forced_hunter{};                    // `$131F` set by the name "faedine" (R-0094)
 };
 // A VS race's two banner drivers, index and life each.
 constexpr std::size_t versus_block_size = 8;
@@ -730,6 +735,7 @@ ZoomZooState deserialize_classic_race(
                             : classic_race_scenario(track);
     if (initialization_frame) scenario.initialization_frame = *initialization_frame;
     if (flags.demo_pairing) scenario.pairing = *flags.demo_pairing; // the demo's (R-0087)
+    if (flags.forced_hunter) scenario.hunter_tour = true;
     const auto magic = race_state_magic;
     // Read only once the size is known to hold the identity.
     const auto family = [&] { return std::equal(magic.begin(), magic.begin() + 7, bytes.begin()); };
@@ -750,6 +756,7 @@ ZoomZooState deserialize_classic_race(
     std::copy(movement_state_magic.begin(), movement_state_magic.end(), prefix.begin());
     ZoomZooState state;
     state.track = track;
+    state.hunter_tour = scenario.hunter_tour;
     state.versus = flags.versus;
     state.opponent_hints.active = flags.opponent_hints;
     state.pairing = scenario.pairing;
@@ -793,7 +800,7 @@ void read_special_tiles(Reader& in, ZoomZooState& state) {
     in.require_end();
 }
 
-void read_hunter_effects(Reader& in, HunterEffects& h, ClassicRaceTrack track) {
+void read_hunter_effects(Reader& in, HunterEffects& h, bool hunter_tour) {
     h.latched = in.u16();
     h.active = in.u16();
     for (auto& v : h.effect) v = in.u16();
@@ -814,7 +821,7 @@ void read_hunter_effects(Reader& in, HunterEffects& h, ClassicRaceTrack track) {
                     || h.mosaic > 1 || h.skip_update > 1 || !message_valid || h.timer[1]
                     || std::any_of(h.effect.begin(), h.effect.end(), [](auto v) { return v > 2; })
                     || std::any_of(h.timer.begin(), h.timer.end(), [](auto v) { return v >= 500; })
-                    || (!classic_race_scenario(track).hunter_tour && h != HunterEffects{})),
+                    || (!hunter_tour && h != HunterEffects{})),
                   "classic race HUNTER effect state is invalid");
 }
 
@@ -954,6 +961,23 @@ std::array<std::uint8_t, 8> classic_race_state_magic(ClassicRaceTrack track) {
 
 namespace {
 constexpr std::array<std::uint8_t, 8> league_magic{'U', 'R', 'L', 'G', '0', '0', '0', '1'};
+constexpr std::array<std::uint8_t, 8> forced_hunter_magic{'U', 'R', 'H', 'F', '0', '0', '0', '1'};
+
+// R-0094: a race the name "faedine" gave HUNTER's `$131F` on a track whose setup leaves it clear.
+std::vector<std::uint8_t> serialize_forced_hunter_race(const ZoomZooState& state) {
+    refuse_unless(state.hunter_tour && state.native_initialization,
+                  "only the name \"faedine\" sets a track's HUNTER flag, at a native setup");
+    auto base = state;
+    base.hunter_tour = false;
+    const bool appended = !is_other_track(state.track);
+    if (appended) base.hunter = {};
+    const auto payload = serialize_zoom_zoo(base);
+    std::vector<std::uint8_t> bytes(forced_hunter_magic.begin(), forced_hunter_magic.end());
+    put_bool(bytes, appended);
+    bytes.insert(bytes.end(), payload.begin(), payload.end());
+    if (appended) write_hunter_effects(bytes, state.hunter);
+    return bytes;
+}
 // An opt-in wrapper retains the established base plus the second camera and league bonus words.
 // Existing race formats are byte-identical when league statistics are disabled (R-0073).
 std::vector<std::uint8_t> serialize_league_race(const ZoomZooState& state) {
@@ -1019,6 +1043,8 @@ void write_split_state(std::vector<std::uint8_t>& bytes, const ZoomZooState& sta
 } // namespace
 
 std::vector<std::uint8_t> serialize_zoom_zoo(const ZoomZooState& state) {
+    if (state.hunter_tour != classic_race_scenario(state.track).hunter_tour)
+        return serialize_forced_hunter_race(state);
     refuse_unless(!state.versus
                       || (state.split_screen && !state.demo_ai && !state.league_statistics.enabled),
                   "only a two-pad race from the VS menu is a VS race");
@@ -1207,6 +1233,8 @@ ZoomZooState read_demo_trailer(ZoomZooState state, std::span<const std::uint8_t>
     auto demo_tier = [&] {
         auto scenario = classic_race_scenario(state.track);
         scenario.pairing = state.pairing;
+        // Only a one-view race's setup sets the tier `$131F` overrides (`$0C6D`, R-0094).
+        scenario.hunter_tour = state.hunter_tour && one_view;
         auto tier = opponent_tier(scenario, {});
         if (!one_view) tier.ai_level = 0;
         return tier;
@@ -1257,7 +1285,7 @@ ZoomZooState deserialize_native_race(std::span<const std::uint8_t> bytes,
                   bytes.begin() + more_flags + (checkpoint_flags - shared_checkpoint_flags),
                   state.race.checkpoint_seen.begin() + shared_checkpoint_flags);
         Reader hunter{bytes.subspan(other_track_size - hunter_effects_size, hunter_effects_size)};
-        read_hunter_effects(hunter, state.hunter, *track);
+        read_hunter_effects(hunter, state.hunter, state.hunter_tour);
         for (auto seen : state.race.checkpoint_seen)
             refuse_unless(seen == 0 || seen == checkpoint_unseen,
                           "classic race checkpoint-seen flag is invalid");
@@ -1361,7 +1389,7 @@ ZoomZooState deserialize_race(std::span<const std::uint8_t> bytes,
             refuse_unless(*pairing == trailer_pairing,
                           "local race pairing differs from state trailer");
         TrailerFlags base_flags{suffixes.versus, bytes[base_size + trailer_hints_at] != 0,
-                                std::nullopt};
+                                std::nullopt, flags.forced_hunter};
         if (demo) base_flags.demo_pairing = trailer_pairing;
         auto state =
             deserialize_race(base,
@@ -1389,7 +1417,34 @@ ZoomZooState deserialize_race(std::span<const std::uint8_t> bytes,
 } // namespace
 
 namespace {
-std::optional<ZoomZooState> deserialize_league_race(std::span<const std::uint8_t> bytes) {
+// The forced-HUNTER wrapper's payload and, for DRAGSTER and ZOOM ZOO, its HUNTER effects.
+struct ForcedHunterParts {
+    std::span<const std::uint8_t> payload, effects;
+};
+std::optional<ForcedHunterParts> forced_hunter_parts(std::span<const std::uint8_t> bytes) {
+    if (bytes.size() < forced_hunter_magic.size() + 1
+        || !std::equal(forced_hunter_magic.begin(), forced_hunter_magic.end(), bytes.begin()))
+        return std::nullopt;
+    const auto appended = bytes[forced_hunter_magic.size()];
+    refuse_unless(appended <= 1, "the HUNTER wrapper's flag is invalid");
+    auto payload = bytes.subspan(forced_hunter_magic.size() + 1);
+    const auto effects_size = appended ? hunter_effects_size : 0U;
+    refuse_unless(payload.size() > effects_size, "the HUNTER wrapper is truncated");
+    return ForcedHunterParts{payload.first(payload.size() - effects_size),
+                             payload.last(effects_size)};
+}
+void read_forced_hunter(const ForcedHunterParts& parts, ZoomZooState& state) {
+    refuse_unless(state.hunter_tour && !classic_race_scenario(state.track).hunter_tour,
+                  "the HUNTER wrapper holds a track whose setup sets the flag itself");
+    refuse_unless(parts.effects.empty() == is_other_track(state.track),
+                  "the HUNTER wrapper's effects belong in the track's own layout");
+    if (parts.effects.empty()) return;
+    Reader in{parts.effects};
+    read_hunter_effects(in, state.hunter, true);
+}
+
+std::optional<ZoomZooState> deserialize_league_race(std::span<const std::uint8_t> bytes,
+                                                    bool forced_hunter) {
     if (bytes.size() < league_magic.size()
         || !std::equal(league_magic.begin(), league_magic.end(), bytes.begin()))
         return std::nullopt;
@@ -1405,8 +1460,9 @@ std::optional<ZoomZooState> deserialize_league_race(std::span<const std::uint8_t
         "league race wrapper width differs");
     // The wrapper's last byte before the lower view: rider 1's hints over.
     const bool opponent_hints = bytes[league_header_size + size + league_trailer_size - 1U] == 0;
-    auto state = deserialize_race(bytes.subspan(league_header_size, size), pairing, true, {},
-                                  std::nullopt, TrailerFlags{false, opponent_hints, std::nullopt});
+    auto state =
+        deserialize_race(bytes.subspan(league_header_size, size), pairing, true, {}, std::nullopt,
+                         TrailerFlags{false, opponent_hints, std::nullopt, forced_hunter});
     refuse_unless(!state.versus, "a league race is not a VS race");
     refuse_unless(state.native_initialization && !state.demo_ai && pairing.rider < rider_characters
                       && split == (pairing.opponent < rider_characters)
@@ -1443,19 +1499,33 @@ std::optional<ZoomZooState> deserialize_league_race(std::span<const std::uint8_t
 } // namespace
 
 ZoomZooState deserialize_zoom_zoo(std::span<const std::uint8_t> bytes) {
-    if (const auto league = deserialize_league_race(bytes)) return *league;
-    return deserialize_race(bytes, std::nullopt, true, {});
+    const auto forced = forced_hunter_parts(bytes);
+    const auto payload = forced ? forced->payload : bytes;
+    auto state = [&] {
+        if (const auto league = deserialize_league_race(payload, forced.has_value()))
+            return *league;
+        return deserialize_race(payload, std::nullopt, true, {}, std::nullopt,
+                                TrailerFlags{false, false, std::nullopt, forced.has_value()});
+    }();
+    if (forced) read_forced_hunter(*forced, state);
+    return state;
 }
 
 ZoomZooState deserialize_zoom_zoo(std::span<const std::uint8_t> bytes, RacePairing pairing,
                                   bool tutorial_hints,
                                   std::span<const std::uint8_t> opponent_catch_up,
                                   std::uint8_t race_counter) {
-    if (const auto league = deserialize_league_race(bytes)) {
+    const auto forced = forced_hunter_parts(bytes);
+    const auto payload = forced ? forced->payload : bytes;
+    if (const auto league = deserialize_league_race(payload, forced.has_value())) {
         refuse_unless(league->pairing == pairing, "league pairing differs from caller");
-        return *league;
+        auto state = *league;
+        if (forced) read_forced_hunter(*forced, state);
+        return state;
     }
-    auto state = deserialize_race(bytes, pairing, tutorial_hints, opponent_catch_up);
+    auto state = deserialize_race(payload, pairing, tutorial_hints, opponent_catch_up, std::nullopt,
+                                  TrailerFlags{false, false, std::nullopt, forced.has_value()});
+    if (forced) read_forced_hunter(*forced, state);
     if (!state.split_screen && !state.demo_ai) {
         refuse_unless(race_counter < race_counter_limit, "the race counter is invalid");
         state.race_counter = race_counter;

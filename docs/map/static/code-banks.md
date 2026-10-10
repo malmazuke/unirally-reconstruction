@@ -22,8 +22,8 @@ The four classes partition all 131,072 bytes. **Unknown share: 24.0%**.
 | Instructions from observed | 35,735 |
 | Instructions from table | 65 |
 | Routines | 759 |
-| Routines cited by native code | 528 |
-| Routine bytes cited by native code | 69,068 |
+| Routines cited by native code | 537 |
+| Routine bytes cited by native code | 69,761 |
 | Gap sweep candidate instructions | 647 |
 | Gap sweep candidate bytes | 1,341 |
 | Jump tables | 2 |
@@ -46,7 +46,7 @@ The four classes partition all 131,072 bytes. **Unknown share: 24.0%**.
 
 ## Cited addresses
 
-1844 distinct code-bank ROM addresses cited by the research, task, inventory and content records (`labels.json`). By position: dat 14, loc 1206, mid 28, sub 419, unk 177 (sub routine start, loc instruction start, mid inside an instruction, dat data, unk unknown). By class: data 14, inferred 62, observed 1591, unknown 177.
+1873 distinct code-bank ROM addresses cited by the research, task, inventory and content records (`labels.json`). By position: dat 16, loc 1225, mid 29, sub 424, unk 179 (sub routine start, loc instruction start, mid inside an instruction, dat data, unk unknown). By class: data 16, inferred 72, observed 1606, unknown 179.
 
 Cited addresses in `unknown` bytes:
 
@@ -225,6 +225,8 @@ Cited addresses in `unknown` bytes:
 | $83:F516 | docs/research/R-0078-pause-menu-picture.md, docs/research/R-0079-two-pad-pause.md, tasks/SPLIT-PAUSE-MENU.md |
 | $83:F616 | docs/research/R-0078-pause-menu-picture.md, tasks/CLASSIC-PAUSE-MENU.md |
 | $83:F636 | docs/research/R-0078-pause-menu-picture.md, tasks/CLASSIC-PAUSE-MENU.md |
+| $83:FB56 | docs/research/R-0094-name-cheats.md |
+| $83:FB70 | docs/research/R-0094-name-cheats.md |
 | $83:FBF5 | docs/research/R-0077-one-player-audio.md, tasks/AUDIO-ONE-PLAYER.md |
 | $83:FC75 | docs/research/R-0076-first-race-audio.md, docs/research/R-0077-one-player-audio.md, tasks/AUDIO-FIRST-RACE.md, tasks/AUDIO-ONE-PLAYER.md |
 | $83:FCF5 | docs/research/R-0076-first-race-audio.md, tasks/AUDIO-TITLE-MENU.md |

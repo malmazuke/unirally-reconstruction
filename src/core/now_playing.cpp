@@ -321,24 +321,31 @@ void now_playing_frame(FrontEndState& state, const FrontEndContent& content, Fro
 
 // $80:9885: seven frames of brightness 13, 11, ..., 1, forced blank in the seventh; the race
 // starts on that frame.
-void race_fade_frame(FrontEndState& state) {
+void race_fade_frame(FrontEndState& state, const FrontEndContent& content) {
     constexpr std::uint32_t fade_frames = 7;
     copy_oam(state);
     const auto step = state.script_frame - 1;
     state.registers.brightness = static_cast<std::uint8_t>(13 - 2 * step);
     if (state.script_frame < fade_frames) return;
     state.registers.force_blank = true;
-    state.mode_chosen = true;
     // $80:99B7-99BE: the race fades the menu music (rate -112 * 8) and sends it at once. Its
     // exception, `$77:10AD` = 5, is never set from NOW PLAYING.
     constexpr std::uint8_t music_fade = 3, race_fade_rate = 0x90;
     state.sound_cues.push_back(audio_enqueue(music_fade, race_fade_rate));
     state.sound_cues.push_back(audio_dispatch(AudioDispatchSite::race_choice));
-    choose_race_song(state);
     // $83:9894 (`$80:9A27`): the menus' words saved for the race's return.
     state.saved = {state.menu,        state.cycle,       state.logo.offset, state.slide,
                    state.decorations, state.latches,     state.rider_menu,  state.tour_menu,
                    state.track_menu,  state.now_playing, state.printer,     state.arrow.spin};
+    // The race's setup tests the first rider's name (`$83:FB8A`, R-0094): "credits" shows the
+    // picture in place of the race, without the race's count (`$83:C9AC` skips `$83:CA08`).
+    if (credits_named(state, content)) {
+        enter_credits_picture(state);
+        return;
+    }
+    state.mode_chosen = true;
+    check_rider_names(state, content);
+    choose_race_song(state);
     state.screen = FrontEndScreen::race;
 }
 

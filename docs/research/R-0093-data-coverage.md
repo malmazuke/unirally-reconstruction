@@ -150,7 +150,7 @@ Tags: **[L]** listing only, **[C]** confirmed in a capture, **[R]** stated by an
 - **Unread and unpacked asset entries** [C]:
   - **Credits-cheat picture:** `$BF` (`$8F:BAC0`, 13,920 bytes), `$C0` (`$8F:F120`, 1,792) and
     `$C1` (`$8F:F820`, 32). `$83:FB06-FB1A` loads them, R-0089's credits name cheat [L].
-    CREDITS-NAME's pack v37 (open PR #70) adds them.
+    CREDITS-NAME's pack v37 (#70) adds them.
   - **No constant call site:**
     - `$49` (`$86:9338`, 7,040), `$4B` (`$86:C2B8`, 2,400), `$51` (`$86:EE78`, 1,920);
     - `$47` (`$85:82F8`, 256), `$4F` (`$86:DEF8`, 2,048);
@@ -183,8 +183,8 @@ Tags: **[L]** listing only, **[C]** confirmed in a capture, **[R]** stated by an
   - The unknown share is now below D-0008's one-quarter trigger.
   - 95,618 sites over the five captures decode at one length, with 0 disagreements.
   - All 2,612 tracked ranges tile.
-- **Routines:** the map now holds 759 routines (was 636). Native code cites 528 of them, covering
-  69,068 routine bytes.
+- **Routines:** the map now holds 759 routines (was 636). On main `ef8e440` (with CREDITS-NAME)
+  native code cites 537 of them, covering 69,761 routine bytes.
 - **Map size:** the corpus map is 1,149,327 bytes. M1-01 keeps a tracked map under about 1 MiB.
   - A corpus reaching most of the code banks passes 1 MiB however it is split (half the corpus
     gave 1,091,108 bytes).

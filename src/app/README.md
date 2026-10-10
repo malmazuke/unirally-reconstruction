@@ -36,7 +36,10 @@ ZOOM ZOO race, then the next idle demo runs one-view track 3; both return to the
 (R-0069, R-0070). 2P and VS use two human controllers through their races and
 result menus (R-0071). The main menu's Left+A+L+R code opens the WIPE RAM menu, whose
 Select+Y+A answer puts the cartridge RAM (and the save file) back to a cold start's (R-0092; with
-a pack older than v36 the code shows a notice). LEAGUE and OPTIONS still show a notice and return to the main menu
+a pack older than v36 the code shows a notice). A first rider renamed "credits" in OPTIONS shows
+the programmers' picture at the next race's start, which then goes back to NOW PLAYING; one named
+"faedine" gives the next three races HUNTER's tag effects and opponent tier on any track; both become
+"mike" (R-0094; with a pack older than v37 neither name does anything). LEAGUE and OPTIONS still show a notice and return to the main menu
 as it first appeared, so the rider and tour chosen last start over (the original keeps them);
 the records are kept. `--track dragster|zoom-zoo|NN` starts directly in that
 race instead (not a stunt event, whose result only the menus show).

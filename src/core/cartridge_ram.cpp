@@ -66,6 +66,7 @@ void transfer_records(Codec& at, OnePlayerRecords& records) {
     at.byte(0x10fd, records.pending_reveal);
     at.byte(0x1115, records.demo_split);
     at.word(0x1116, records.tutorial_bits);
+    at.byte(0x111a, records.hunter_races);
 }
 
 struct Store {

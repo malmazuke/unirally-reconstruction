@@ -127,6 +127,9 @@ void run_screen_flip(ZoomZooState& state, std::span<const std::uint8_t> blink) {
         return;
     }
     hunter.blink = 1;
+    // A race with two views (`$77:0750` bit 3) neither flips nor alternates ($83:D337-D343
+    // return before `JSR $D581`; R-0094).
+    if (state.split_screen) return;
     hunter.wave_phase = static_cast<std::uint16_t>(1U - hunter.wave_phase);
     // $83:D581-E081: either phase's scroll table ends at $83:E04F, which turns the riders'
     // sprites upside down. The player's sprite is the camera's published screen position.
@@ -190,8 +193,7 @@ void run_effect(ZoomZooState& state, unsigned effect, std::span<const std::uint8
 void update_hunter_effects(ZoomZooState& state, std::span<const std::uint8_t> blink) {
     // $83:CECB-CED3: with `$12D1` set (NEON, track 42 in one-player play, R-0068) the update runs
     // NEON's lighting ($83:D1CA) and returns through $83:D103: no tag, no effect.
-    const auto scenario = classic_race_scenario(state.track);
-    if (!scenario.hunter_tour || scenario.neon_lighting) return;
+    if (!state.hunter_tour || classic_race_scenario(state.track).neon_lighting) return;
     if (blink.size() != blink_table_size)
         throw std::invalid_argument("HUNTER blink pattern is missing");
     auto& hunter = state.hunter;
@@ -207,8 +209,13 @@ void update_hunter_effects(ZoomZooState& state, std::span<const std::uint8_t> bl
         if (!hunter.effect[effect]) continue;
         if (hunter.effect[effect] == 1) {
             hunter.effect[effect] = 2;
-            push_front_player_announcement(state, announcement_of[effect]);
-            if (effect != hunter_effect::hedgehog_speed) hunter.message = announcement_of[effect];
+            // A race with two views (`$77:0750` bit 3) names the screen flip "invisible unis"
+            // ($83:CEE8-CF0F; R-0094).
+            const auto name = effect == hunter_effect::screen_flip && state.split_screen
+                                ? announcement::invisible_unis
+                                : announcement_of[effect];
+            push_front_player_announcement(state, name);
+            if (effect != hunter_effect::hedgehog_speed) hunter.message = name;
             race_sound::effect(state, race_sound::hunter_effect_start);
         }
         for (unsigned other = 0; other < hunter_effect::count; ++other)

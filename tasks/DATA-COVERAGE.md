@@ -65,7 +65,7 @@ unused or reached by paths no capture has taken; R-0089 named the 45 entries `$8
   - **Assets without a constant call site:** `$47`, `$49`, `$4B`, `$4F`, `$51`, eight palettes
     `$B7-$BE`, and `$03`, `$04`, `$3D`.
 - **Static map.** The unknown share goes from 40.4% to 24.0% (observed 41,778 to 86,837 bytes),
-  below D-0008's trigger. The map now has 759 routines, and native cites 528 of them.
+  below D-0008's trigger. The map now has 759 routines, and native cites 537 of them (main `ef8e440`).
 
 ## Attempts
 

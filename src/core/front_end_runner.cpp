@@ -5,6 +5,7 @@
 //                         [--race-initialization FRAME]...
 //                         [--reset-upload-delay FRAMES]...
 //                         [--record-write FRAME OFFSET BYTE]...
+//                         [--one-player-timeline FILE]
 //
 // FILE rows are "frame pad1 pad2" (hex controller words, as `$4218`/`$421A` read them); a frame
 // without a row has both pads released. Each frame prints one line: the frame, the arrow (spin,
@@ -15,6 +16,8 @@
 // `--record-write` sets one record byte at its cartridge RAM offset (hex): a name
 // `$77:000C-016B`, done track `$77:1075-10A6` or medal `$77:069C-073B`.
 // Writes happen after FRAME, as in the bounded reference interventions (R-0065).
+// `--one-player-timeline` writes each one-player race update's serialized state, as
+// `--race-timeline` does a two-pad race's or a demo's (CREDITS-NAME, R-0094).
 #include "cartridge_ram.hpp"
 #include "content_pack.hpp"
 #include "front_end.hpp"
@@ -45,7 +48,7 @@ namespace {
 
 struct Options {
     std::filesystem::path pack, inputs;
-    std::filesystem::path race_timeline, look_timeline, sound_cues;
+    std::filesystem::path race_timeline, look_timeline, sound_cues, one_player_timeline;
     std::uint32_t frames{};
     std::map<std::uint32_t, std::filesystem::path> pictures, records, vram;
     // The original's race initialization frames, in race order, from a capture: the loading time
@@ -154,6 +157,8 @@ Options parse_options(int argc, char** argv) {
             options.inputs = value();
         else if (option == "--race-timeline")
             options.race_timeline = value();
+        else if (option == "--one-player-timeline")
+            options.one_player_timeline = value();
         else if (option == "--look-timeline")
             options.look_timeline = value();
         else if (option == "--sound-cues")
@@ -345,6 +350,10 @@ std::string start_race(RaceBetweenMenus& race, const unirally::ClassicContentPac
         scenario.pairing = {front_end.rider_menu.rider, front_end.now_playing.opponent};
         // The demo's setup skips the race count (`$83:C9F6-CA05`): `$77:10B1` as it stands.
         scenario.race_counter = front_end.records.race_song_counter;
+        // `$82:D978` (R-0094): the name "faedine" gives the demo's race HUNTER's effects; its tier
+        // only where the setup sets one (`$0C6D`, a one-view race; `$83:C9E4-C9F1`).
+        const bool hunter_races = unirally::hunter_races_running(front_end);
+        scenario.hunter_tour = scenario.hunter_tour || (hunter_races && !split);
         // Labelled by its absolute frame: a demo state's clock gives its start (R-0087).
         scenario.initialization_frame = front_end.frame - 1U;
         race.content = unirally::classic_race_content(pack, scenario.track);
@@ -354,6 +363,7 @@ std::string start_race(RaceBetweenMenus& race, const unirally::ClassicContentPac
         else
             unirally::initialize_second_camera(race.state);
         race.state.demo_ai = true;
+        race.state.hunter_tour = race.state.hunter_tour || hunter_races;
         // Rider 1's hints run in the demo, but never for MIKE (rider 0, R-0082, R-0087).
         race.state.opponent_hints.active = race.state.pairing.opponent != 0;
         if (split) race.state.opponent_tier.ai_level = 0;
@@ -376,6 +386,8 @@ std::string start_race(RaceBetweenMenus& race, const unirally::ClassicContentPac
                     ((front_end.records.tutorial_bits >> front_end.second_rider) & 1U) == 0)
               : unirally::one_player_race_scenario(front_end);
     scenario.race_counter = front_end.race_song; // `$77:10B1` after this race's count (R-0084)
+    // `$82:D978` (R-0094): the name "faedine" gives any track HUNTER's effects and tier.
+    scenario.hunter_tour = scenario.hunter_tour || unirally::hunter_races_running(front_end);
     const auto loading_frames = unirally::race_loading_frames(front_end);
     if (loading_frames == 0 && initialization == 0) return "its loading time is not known";
     race.content = unirally::classic_race_content(pack, scenario.track);
@@ -594,7 +606,7 @@ void write_frame_outputs(const Options& options, std::uint32_t frame,
 void update_local_race(const Options& options, const unirally::ClassicContentPack& pack,
                        const unirally::FrontEndContent& content, unirally::FrontEndState& front_end,
                        RaceBetweenMenus& race, std::ofstream& race_timeline,
-                       std::ofstream& look_timeline,
+                       std::ofstream& one_player_timeline, std::ofstream& look_timeline,
                        std::optional<unirally::ZoomZooState>& restored_local, std::size_t& races,
                        std::uint32_t frame, unirally::FrontEndPads pads) {
     const auto previous = race.state;
@@ -624,7 +636,7 @@ void update_local_race(const Options& options, const unirally::ClassicContentPac
             write_ppm(picture->second, unirally::render_classic_race(race.state, *race.presentation,
                                                                      &previous, &shown));
     }
-    if (local) write_race_state(race_timeline, frame, race.state);
+    write_race_state(local ? race_timeline : one_player_timeline, frame, race.state);
     if (!over) return;
     const auto& times = *over;
     unirally::return_from_race(front_end, content, frame, times);
@@ -657,19 +669,22 @@ void write_loading_frame(const Options& options, const unirally::FrontEndState& 
         write_records(records->second, state);
 }
 
+// An output timeline, or none when its option is not given.
+std::ofstream open_timeline(const std::filesystem::path& path, const std::string& kind) {
+    std::ofstream out;
+    if (path.empty()) return out;
+    out.open(path);
+    if (!out) throw std::runtime_error("cannot create " + kind + " timeline");
+    return out;
+}
+
 } // namespace
 
 int main(int argc, char** argv) try {
     const auto options = parse_options(argc, argv);
-    std::ofstream race_timeline, look_timeline;
-    if (!options.race_timeline.empty()) {
-        race_timeline.open(options.race_timeline);
-        if (!race_timeline) throw std::runtime_error("cannot create race timeline");
-    }
-    if (!options.look_timeline.empty()) {
-        look_timeline.open(options.look_timeline);
-        if (!look_timeline) throw std::runtime_error("cannot create look timeline");
-    }
+    auto race_timeline = open_timeline(options.race_timeline, "race");
+    auto one_player_timeline = open_timeline(options.one_player_timeline, "one-player");
+    auto look_timeline = open_timeline(options.look_timeline, "look");
     const unirally::ClassicContentPack pack(options.pack);
     const auto content = unirally::front_end_content(pack);
     const auto inputs = read_inputs(options.inputs);
@@ -707,8 +722,9 @@ int main(int argc, char** argv) try {
                 write_loading_frame(options, state, race, frame, sound_cues);
                 continue;
             }
-            update_local_race(options, pack, content, state, race, race_timeline, look_timeline,
-                              restored_local, races, frame, pads);
+            update_local_race(options, pack, content, state, race, race_timeline,
+                              one_player_timeline, look_timeline, restored_local, races, frame,
+                              pads);
             sound_cues.write(frame, race.state.sound_cues);
         } else if (state.mode_chosen) {
             break;

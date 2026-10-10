@@ -67,9 +67,14 @@ std::uint16_t quarter_step(std::uint16_t gap) {
     return step;
 }
 
+// $80:FAF8: the spin's step, 31 down to 0 and round again.
+void turn_arrow(MenuArrow& arrow) {
+    arrow.spin = arrow.spin == 0 ? 31 : static_cast<std::uint8_t>(arrow.spin - 1);
+}
+
 void update_arrow(FrontEndState& state, const FrontEndContent& content) {
     auto& arrow = state.arrow;
-    arrow.spin = arrow.spin == 0 ? 31 : static_cast<std::uint8_t>(arrow.spin - 1);
+    turn_arrow(arrow);
     const auto tile = content.arrow_frames[arrow.spin >> 1U];
     state.oam_buffer[arrow_entry * 4 + 2] = tile;
     state.oam_buffer[shadow_entry * 4 + 2] = tile;
@@ -258,6 +263,7 @@ bool waits_for_frame(const FrontEndState& state) {
     if (state.screen == FrontEndScreen::league_podium_entry) return next <= 7;
     if (state.screen == FrontEndScreen::league_podium) return false;
     if (state.screen == FrontEndScreen::wipe_ram_answer) return wipe_ram_answer_waits(state);
+    if (state.screen == FrontEndScreen::credits_picture) return credits_picture_waits(state);
     if (state.screen == FrontEndScreen::league_podium_exit)
         return next == upload_last_frame + 2 || next == menu_screen_frame + 2
             || next >= restore_frame + 2;
@@ -793,7 +799,8 @@ void load_options_content(FrontEndContent& content, const ClassicContentPack& pa
 }
 
 // STUNT-RESULT (profile v25): the stunt result's heads' colours (asset 0x26 + rider) and texts.
-// WIPE-RAM (profile v36, R-0092): the WIPE RAM menu's text, empty in an older pack.
+// WIPE-RAM (profile v36, R-0092): the WIPE RAM menu's text, empty in an older pack; likewise
+// CREDITS-NAME's (v37).
 void load_late_screens_content(FrontEndContent& content, const ClassicContentPack& pack) {
     for (unsigned id = 0x26; id <= 0x39; ++id) content.assets[id] = pack.entry(asset_name(id));
     content.stunt_result_text = pack.entry("front-end.stunt-result-text");
@@ -801,6 +808,10 @@ void load_late_screens_content(FrontEndContent& content, const ClassicContentPac
     content.wipe_ram_menu_text = pack.optional_entry("front-end.wipe-ram-menu-text");
     content.wipe_ram_arrow_columns = pack.optional_entry("front-end.wipe-ram-arrow-columns");
     content.wipe_ram_messages = pack.optional_entry("front-end.wipe-ram-messages");
+    // CREDITS-NAME (profile v37, R-0094): the name cheats and the credits picture's assets.
+    content.name_cheats = pack.optional_entry("front-end.name-cheats");
+    for (const unsigned id : {0xbfU, 0xc0U, 0xc1U})
+        content.assets[id] = pack.optional_entry(asset_name(id));
 }
 
 } // namespace
@@ -909,14 +920,18 @@ FrontEndState start_front_end() {
 }
 
 void return_from_demo(FrontEndState& state, std::uint32_t exit_frame, std::uint16_t demo_elapsed) {
+    state.frame = exit_frame + 1U;
+    begin_demo_return(state, demo_elapsed);
+}
+
+void front_end_screens::begin_demo_return(FrontEndState& state, std::uint16_t demo_elapsed) {
     // Saturates: only the first title differs (R-0070, R-0087).
     if (state.demo_cycles < 255) ++state.demo_cycles;
-    state.frame = exit_frame + 1U;
     state.screen = FrontEndScreen::demo_return;
     state.script_frame = 0;
     // R-0070: a pad exit before the warning threshold stays blank for two
     // more pictures before the menu's return script. The timer exit does not.
-    state.demo_return_interrupted = demo_elapsed != 0x076b;
+    state.demo_return_interrupted = demo_elapsed != idle_demo_timer_exit;
     // $83:E267-E276 calls $82:8035 twice before testing a late pad press.
     // The observed late-press return has one fewer blank picture.
     state.demo_return_wait = state.demo_return_interrupted ? (demo_elapsed >= 0x0714 ? 1 : 2) : 0;
@@ -1017,12 +1032,22 @@ void demo_title_frame(FrontEndState& state, const FrontEndContent& content) {
             state.line_registers.push_back({static_cast<std::uint8_t>(wave_start + wave.size()),
                                             SnesLineRegisterName::display, 0x80});
     }
-    constexpr unsigned fade_start = 452;
-    if (frame >= fade_start && frame < fade_start + 6U)
+    constexpr unsigned fade_start = 452, setup_frame = fade_start + 6U;
+    if (frame >= fade_start && frame < setup_frame)
         state.registers.brightness = static_cast<std::uint8_t>(13U - 2U * (frame - fade_start));
-    if (frame >= fade_start + 6U) {
+    if (frame >= setup_frame) {
         state.registers.force_blank = true;
         state.cycle.running = false;
+    }
+    // The race's setup (`$83:C8E0`) after the fade: the demo's clears `$77:111A-111B`
+    // (`$83:C914`), then tests the first rider's name (`$83:FB8A`, R-0094).
+    if (frame == setup_frame) {
+        clear_hunter_races(state);
+        if (credits_named(state, content)) {
+            enter_credits_picture(state);
+            return;
+        }
+        check_rider_names(state, content);
     }
     // The race setup chooses the demo on the frame it writes the track (`$77:074A`), and the race
     // starts when the track has loaded (R-0087).
@@ -1107,7 +1132,7 @@ void dispatch_front_end_screen(FrontEndState& state, const FrontEndContent& cont
     case FrontEndScreen::track_menu_exit: track_menu_exit_frame(state, content); break;
     case FrontEndScreen::now_playing_entry: now_playing_entry_frame(state, content); break;
     case FrontEndScreen::now_playing: now_playing_frame(state, content, physical); break;
-    case FrontEndScreen::race_fade: race_fade_frame(state); break;
+    case FrontEndScreen::race_fade: race_fade_frame(state, content); break;
     case FrontEndScreen::race: break; // the race engine's frames
     case FrontEndScreen::race_return: race_return_frame(state, content); break;
     case FrontEndScreen::race_result: race_result_frame(state, content, physical); break;
@@ -1163,6 +1188,7 @@ void dispatch_front_end_screen(FrontEndState& state, const FrontEndContent& cont
         break;
     case FrontEndScreen::wipe_ram_warning: wipe_ram_warning_frame(state, content, physical); break;
     case FrontEndScreen::wipe_ram_answer: wipe_ram_answer_frame(state, content, physical); break;
+    case FrontEndScreen::credits_picture: credits_picture_frame(state, content); break;
     }
 }
 
@@ -1201,7 +1227,14 @@ void update_front_end(FrontEndState& state, const FrontEndContent& content, Fron
     if (state.screen == FrontEndScreen::boot && boot_frame_number(state) == cycle_start_frame)
         state.cycle.running = true;
     if (state.cycle.running) run_nmi_hook(state, content);
-    if (waits_for_frame(state)) update_arrow(state, content);
+    if (waits_for_frame(state)) {
+        // The credits picture's waits turn the arrow's spin, but move an arrow and write an
+        // object buffer that the race's setup has cleared (`$82:D7C2`) and the return restores.
+        if (state.screen == FrontEndScreen::credits_picture)
+            turn_arrow(state.arrow);
+        else
+            update_arrow(state, content);
+    }
     const FrontEndPads physical{physical_pad(pads.one), physical_pad(pads.two)};
     const auto screen = state.screen;
     ++state.script_frame;

@@ -1097,6 +1097,7 @@
    ],
    "native": [
     "src/core/audio_cpu_scene.cpp:fade",
+    "src/core/credits_name.cpp:name_test_frame, first_shown_frame, fade_frames, held_frames",
     "src/core/front_end.cpp:fade_frames",
     "src/core/race_result.cpp:race_restart_frame",
     "src/core/race_result.cpp:rows_frame, icons_frame, first_fade_frame, fade_frames",
@@ -1148,6 +1149,8 @@
    ],
    "native": [
     "src/core/audio_cpu_scene.cpp:fade",
+    "src/core/credits_name.cpp:credits_picture_frame",
+    "src/core/credits_name.cpp:name_test_frame, first_shown_frame, fade_frames, held_frames",
     "src/core/front_end.cpp:fade_frames",
     "src/core/front_end.hpp:FrontEndScreen",
     "src/core/now_playing.cpp:(file)",
@@ -5041,6 +5044,7 @@
    "native": [
     "src/core/audio_cpu_scene.cpp:update_scene_work",
     "src/core/front_end.cpp:quarter_step",
+    "src/core/front_end.cpp:turn_arrow",
     "src/core/front_end.hpp:MenuArrow"
    ],
    "observed_entries": {},
@@ -9653,7 +9657,7 @@
    "native": [
     "src/core/audio_cpu_queue.cpp:native_audio_poll_queue",
     "src/core/audio_cue.hpp:AudioDispatchSite",
-    "src/core/front_end.cpp:return_from_demo"
+    "src/core/front_end.cpp:front_end_screens::begin_demo_return"
    ],
    "observed_entries": {},
    "start": "$82:8035",
@@ -12715,6 +12719,9 @@
    "mode_at_entry": [
     "NmX"
    ],
+   "native": [
+    "src/core/credits_name.cpp:cleared_colour_bytes"
+   ],
    "observed_entries": {},
    "start": "$82:D4C4",
    "static_entries": {
@@ -12791,6 +12798,9 @@
    "mode_at_entry": [
     "NmX"
    ],
+   "native": [
+    "src/core/credits_name.cpp:load_picture"
+   ],
    "observed_entries": {},
    "start": "$82:D6E7",
    "static_entries": {
@@ -12852,6 +12862,10 @@
     "NMX",
     "NmX"
    ],
+   "native": [
+    "src/core/credits_name.cpp:load_picture",
+    "src/core/front_end.cpp:update_front_end"
+   ],
    "observed_entries": {},
    "start": "$82:D7C2",
    "static_entries": {
@@ -12895,7 +12909,10 @@
    ],
    "native": [
     "src/core/audio_cue.hpp:RaceSoundLoadTiming",
+    "src/core/credits_name.cpp:hunter_races_high",
     "src/core/front_end.hpp:OnePlayerRecords::tutorial_bits",
+    "src/core/front_end.hpp:hunter_races_running",
+    "src/core/front_end_runner.cpp:start_race",
     "src/core/race_camera.hpp:initialize_split_cameras",
     "src/core/race_result.cpp:race_start_cue_leads",
     "src/core/race_setup.cpp:classic_crawler_zoom_zoo_start",
@@ -12910,9 +12927,11 @@
     "src/core/race_state_io.cpp:check_opponent_queue",
     "src/core/race_state_io.cpp:check_stunt_content",
     "src/core/stunt_event.cpp:update_stunt_finish",
+    "src/core/zoom_zoo_movement.hpp:ClassicRaceScenario::hunter_tour",
     "src/core/zoom_zoo_movement.hpp:ClassicRaceScenario::laps",
     "src/core/zoom_zoo_movement.hpp:ClassicRaceScenario::tutorial_hints",
     "src/core/zoom_zoo_movement.hpp:ZoomZooOpponentHints",
+    "src/core/zoom_zoo_movement.hpp:ZoomZooState::hunter_tour",
     "src/core/zoom_zoo_movement.hpp:classic_crawler_zoom_zoo_start"
    ],
    "observed_entries": {},
@@ -13031,6 +13050,9 @@
    "mode_at_entry": [
     "Nmx"
    ],
+   "native": [
+    "src/core/credits_name.cpp:name_test_frame, first_shown_frame, fade_frames, held_frames"
+   ],
    "observed_entries": {},
    "start": "$82:DDD1",
    "static_entries": {
@@ -13068,6 +13090,9 @@
    "end": "$82:DF05",
    "mode_at_entry": [
     "NMx"
+   ],
+   "native": [
+    "src/core/credits_name.cpp:credits_picture_frame"
    ],
    "observed_entries": {},
    "start": "$82:DF05",
@@ -16407,9 +16432,13 @@
     "NmX"
    ],
    "native": [
+    "src/core/credits_name.cpp:enter_credits_picture",
     "src/core/front_end.cpp:choose_idle_demo",
+    "src/core/front_end.cpp:demo_title_frame",
     "src/core/front_end.hpp:OnePlayerRecords::demo_split",
+    "src/core/front_end.hpp:OnePlayerRecords::hunter_races",
     "src/core/front_end.hpp:return_from_race",
+    "src/core/front_end_screens.hpp:clear_hunter_races",
     "src/core/race_result.cpp:(file)"
    ],
    "observed_entries": {},
@@ -16431,10 +16460,12 @@
    ],
    "native": [
     "src/core/audio_cue.hpp:race_song_count",
+    "src/core/credits_name.cpp:restart_total",
     "src/core/front_end.cpp:demo_title_frame",
     "src/core/front_end.cpp:idle_demo_loading_frames",
     "src/core/front_end.hpp:choose_race_song",
     "src/core/front_end_runner.cpp:start_race",
+    "src/core/now_playing.cpp:race_fade_frame",
     "src/core/race_result.cpp:choose_race_song",
     "src/core/race_setup.cpp:restart_zoom_zoo",
     "src/core/zoom_zoo_movement.hpp:ClassicRaceScenario::race_counter"
@@ -16768,7 +16799,7 @@
    ],
    "native": [
     "src/core/front_end.hpp:OnePlayerRecords::tutorial_bits",
-    "src/core/race_result.cpp:begin_race_return",
+    "src/core/race_result.cpp:start_race_return",
     "src/core/race_setup.cpp:restart_zoom_zoo",
     "src/core/reward_queue.cpp:hint_interval",
     "src/core/reward_queue.cpp:update_player_tutorial_hints",
@@ -16816,7 +16847,7 @@
     "NMX"
    ],
    "native": [
-    "src/core/race_result.cpp:begin_race_return",
+    "src/core/race_result.cpp:start_race_return",
     "src/core/race_setup.cpp:restart_zoom_zoo"
    ],
    "observed_entries": {},
@@ -16854,6 +16885,7 @@
     "NmX"
    ],
    "native": [
+    "src/core/announcements.hpp:invisible_unis",
     "src/core/hunter_effects.cpp:priority",
     "src/core/hunter_effects.cpp:update_hunter_effects",
     "src/core/presentation.cpp:ClassicRaceHistoryTracker::observe_update",
@@ -17448,7 +17480,7 @@
     "Nmx"
    ],
    "native": [
-    "src/core/front_end.cpp:return_from_demo",
+    "src/core/front_end.cpp:front_end_screens::begin_demo_return",
     "src/core/race_demo_controls.cpp:(file)",
     "src/core/race_demo_controls.cpp:demo_rider",
     "src/core/race_demo_controls.cpp:update_demo_controllers",
@@ -18558,6 +18590,9 @@
     "NMx",
     "NmX"
    ],
+   "native": [
+    "src/core/credits_name.cpp:credits_picture_frame"
+   ],
    "observed_entries": {},
    "start": "$83:F97C",
    "static_entries": {
@@ -18597,6 +18632,9 @@
    "mode_at_entry": [
     "NmX"
    ],
+   "native": [
+    "src/core/front_end_screens.hpp:enter_credits_picture"
+   ],
    "observed_entries": {},
    "start": "$83:FADC",
    "static_entries": {
@@ -18613,6 +18651,15 @@
    "end": "$83:FB40",
    "mode_at_entry": [
     "NmX"
+   ],
+   "native": [
+    "src/core/content_pack.cpp:credits_name_required",
+    "src/core/credits_name.cpp:(file)",
+    "src/core/credits_name.cpp:load_picture",
+    "src/core/credits_name.cpp:name_test_frame, first_shown_frame, fade_frames, held_frames",
+    "src/core/credits_name.cpp:picture_colours, picture_map, picture_tiles",
+    "src/core/credits_name.cpp:picture_mode, picture_tile_bases, picture_main_screen",
+    "src/core/front_end.hpp:FrontEndScreen"
    ],
    "observed_entries": {},
    "start": "$83:FAE0",
@@ -18672,6 +18719,17 @@
    "mode_at_entry": [
     "NmX"
    ],
+   "native": [
+    "src/core/credits_name.cpp:(file)",
+    "src/core/credits_name.cpp:faedine_races",
+    "src/core/credits_name.cpp:name_cheats_bytes, credits_name, credits_written, faedine_name, faedine_written",
+    "src/core/credits_name.cpp:one_race_fewer",
+    "src/core/front_end.cpp:demo_title_frame",
+    "src/core/front_end.hpp:OnePlayerRecords::hunter_races",
+    "src/core/front_end_screens.hpp:check_rider_names",
+    "src/core/front_end_screens.hpp:credits_named",
+    "src/core/now_playing.cpp:race_fade_frame"
+   ],
    "observed_entries": {},
    "start": "$83:FB8A",
    "static_entries": {
@@ -18688,19 +18746,19 @@
    "call returns in the calling mode": 2454
   },
   "bytes": 131072,
-  "cited_addresses": 1844,
+  "cited_addresses": 1873,
   "cited_by_class": {
-   "data": 14,
-   "inferred": 62,
-   "observed": 1591,
-   "unknown": 177
+   "data": 16,
+   "inferred": 72,
+   "observed": 1606,
+   "unknown": 179
   },
   "cited_by_position": {
-   "dat": 14,
-   "loc": 1206,
-   "mid": 28,
-   "sub": 419,
-   "unk": 177
+   "dat": 16,
+   "loc": 1225,
+   "mid": 29,
+   "sub": 424,
+   "unk": 179
   },
   "conflicts": 0,
   "data": 74,
@@ -18719,9 +18777,9 @@
   "jump_tables": 2,
   "mode_ambiguities": 6,
   "observed": 86837,
-  "routine_bytes_cited_by_native_code": 69068,
+  "routine_bytes_cited_by_native_code": 69761,
   "routines": 759,
-  "routines_cited_by_native_code": 528,
+  "routines_cited_by_native_code": 537,
   "unknown": 31424,
   "unknown_share": 0.2397
  }
