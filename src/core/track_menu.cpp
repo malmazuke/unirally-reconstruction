@@ -1,7 +1,7 @@
-// PICK TRACK, the one-player track menu (R-0056): after a tour is chosen, its five tracks and
-// (in 1P) the medal line printed with twelve pictures of the tour and slid in (`$80:E84E`), the
-// done-track markers laid out, and the menu's loop (`$80:BAA4`), the generic list menu's. A
-// track chosen goes on to NOW PLAYING; Y or X slides PICK TOUR back in.
+// PICK TRACK, the track menu (R-0056): after a tour is chosen, its five tracks and (in 1P) the
+// medal line printed with twelve pictures of the tour and slid in (`$80:E84E`), in 1P the
+// done-track markers laid out, and the menu's loop (`$80:BAA4`), the generic list menu's. A track
+// chosen goes on to NOW PLAYING; Y or X slides PICK TOUR back in.
 #include "front_end_screens.hpp"
 
 #include <algorithm>
@@ -16,7 +16,13 @@ namespace {
 constexpr unsigned marker_palette_asset = 37;
 // The items: the five tracks, then (in 1P) the medal line; `$009D` is the last, 5 in 1P (4 in
 // the other modes, which have no medal line).
-constexpr std::uint8_t medal_line = 5, last_item = medal_line;
+constexpr std::uint8_t medal_line = 5;
+
+// $80:E997-E9A3: `$009D`, the last item, the medal line in 1P and the fifth track otherwise
+// (R-0095).
+std::uint8_t last_item(const FrontEndState& state) {
+    return state.one_player ? medal_line : static_cast<std::uint8_t>(medal_line - 1);
+}
 
 // `front-end.track-menu-layout`: the items' arrow columns (8-pixel units), the markers' rows
 // (from the last track's up) and the twelve pictures' places (byte offsets in the text map).
@@ -79,7 +85,7 @@ void print_track_menu(FrontEndState& state, const FrontEndContent& content) {
     variables.track_names = content.track_names;
     print_text(state.text, state.printer, content.track_menu_text, content.character_table,
                &variables);
-    print_medal(state, content);
+    if (state.one_player) print_medal(state, content); // $80:E8FE-E904; R-0095
 }
 
 // $80:E948-E995: a marker beside each track won in this run.
@@ -151,14 +157,14 @@ void move_track_cursor(FrontEndState& state, const FrontEndContent& content, std
     state.latches = {.moved = true};
     play_menu_sound(state, MenuSound::navigate); // $80:BB45 (Down), $80:BAE3 (Up)
     if (down) {
-        if (++cursor > last_item) {
+        if (++cursor > last_item(state)) {
             cursor = 0;
             state.arrow.target_y = wrap_top_y;
         }
         state.arrow.target_y = static_cast<std::uint16_t>(state.arrow.target_y + row_spacing);
     } else {
         if (cursor-- == 0) {
-            cursor = last_item;
+            cursor = last_item(state);
             state.arrow.target_y = item_y(cursor + 1U);
         }
         state.arrow.target_y = static_cast<std::uint16_t>(state.arrow.target_y - row_spacing);
@@ -217,7 +223,7 @@ void track_menu_entry_frame(FrontEndState& state, const FrontEndContent& content
         return;
     default:
         if (!slide_frame(state, content)) return;
-        lay_out_markers(state, content);
+        if (state.one_player) lay_out_markers(state, content); // $80:E93D-E945; R-0095
         open_track_menu(state, content);
         return;
     }
@@ -233,8 +239,8 @@ void track_menu_frame(FrontEndState& state, const FrontEndContent& content, Fron
         turn_markers(state, content);
         return;
     }
-    copy_oam(state); // $80:D1EC
-    const auto pad = pads.one;
+    copy_oam(state);                          // $80:D1EC
+    const auto pad = gated_pads(state, pads); // R-0095
     menu.back = (pad & back_buttons) != 0;
     if (menu.back || (pad & choose_buttons)) {
         if (!menu.back && menu.cursor == medal_line) {
@@ -268,9 +274,14 @@ void track_menu_exit_frame(FrontEndState& state, const FrontEndContent& content)
         state.records.race_lost = false;
         --state.records.tries;
     }
+    if (state.track_menu.back && returns_to_continuation(state, FrontEndScreen::track_menu)) {
+        return_to_local_continue(state, content); // $80:AEFC-AF03
+        return;
+    }
     if (state.track_menu.back) {
         // `$80:BC22-BC34` would clear the run's tracks when the medal to race for is not the
         // best; a cold start's are both 0.
+        state.slide_word = 1; // $80:BC05, $80:BFC3, $80:AF3A
         return_to_tour_menu(state);
         return;
     }

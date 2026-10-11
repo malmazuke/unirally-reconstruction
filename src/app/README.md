@@ -34,7 +34,9 @@ it goes back to NOW PLAYING, after it the result shows QUIT and the race counts 
 A race started with `--track` still restarts from it. The first idle demo runs a two-view
 ZOOM ZOO race, then the next idle demo runs one-view track 3; both return to the main menu
 (R-0069, R-0070). 2P and VS use two human controllers through their races and
-result menus (R-0071). The main menu's Left+A+L+R code opens the WIPE RAM menu, whose
+result menus (R-0071), their stunt events included: each rider's tally and best, VS CHAMPIONS by
+today's VS wins, the loser's pick of a challenger, and a VS tie's REMATCH (R-0095; the REMATCH
+needs pack v38). The main menu's Left+A+L+R code opens the WIPE RAM menu, whose
 Select+Y+A answer puts the cartridge RAM (and the save file) back to a cold start's (R-0092; with
 a pack older than v36 the code shows a notice). A first rider renamed "credits" in OPTIONS shows
 the programmers' picture at the next race's start, which then goes back to NOW PLAYING; one named

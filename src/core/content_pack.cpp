@@ -1091,6 +1091,11 @@ const std::array<RequiredEntry, 4> credits_name_required{{
      "9bdcf67cbf32b5c067828f8de5240b1693905f9d8d84dc8bd06a1c920d5758a8"},
     {"front-end.asset.193", 32, "3bca8aa8b19241b88da7c8faf90ec5be3737f016378eb2eb14e40cf01ebea388"},
 }};
+// A VS tie's REMATCH (`$80:C120`, printed by `$80:C02C`), profile v38. R-0095.
+const std::array<RequiredEntry, 1> two_human_stunts_required{{
+    {"front-end.vs-rematch-text", 10,
+     "1c17a9794525435663680c67107cf78c9f598144f12bc77370dcc93660706615"},
+}};
 // The idle demo's sound set (profile v39): its score (resource 56, `$93:F712`) with its
 // transfer, its sample slot table (`$83:FC35`) and the three samples it adds; its tables are the
 // award's. R-0096.
@@ -1236,13 +1241,13 @@ std::array<std::uint8_t, 32> sha256(std::span<const std::uint8_t> source) {
 } // namespace
 
 namespace {
-constexpr std::array<std::string_view, 11> supported_profiles{
+constexpr std::array<std::string_view, 12> supported_profiles{
     "classic.pal.crawler.dragster.v1", "classic.pal.crawler.tracks.v29",
     "classic.pal.crawler.tracks.v30",  "classic.pal.crawler.tracks.v31",
     "classic.pal.crawler.tracks.v32",  "classic.pal.crawler.tracks.v33",
     "classic.pal.crawler.tracks.v34",  "classic.pal.crawler.tracks.v35",
     "classic.pal.crawler.tracks.v36",  "classic.pal.crawler.tracks.v37",
-    "classic.pal.crawler.tracks.v39"};
+    "classic.pal.crawler.tracks.v38",  "classic.pal.crawler.tracks.v39"};
 } // namespace
 
 std::span<const std::string_view> supported_pack_profiles() {
@@ -1271,8 +1276,10 @@ constexpr std::string_view pause_messages_rules_sha =
     "c8a1e4267b48c8fda51fa963ed534456e67ebf724d8047c97d5709434f54cdc5";
 constexpr std::string_view credits_name_rules_sha =
     "5de464a25ad6f9b637b77b9781437a65630dd32e8d7e6eba243c47b577609df3";
+constexpr std::string_view two_human_stunts_rules_sha =
+    "27d2f294bc5dbc85e2ca572a18322ae191fe711c2e9af18999b85528ce2a22c6";
 constexpr std::string_view demo_audio_rules_sha =
-    "a7e04baf74a89d7d9ecff2a902bfd9fd9d828dde29d6970497288b46ee5200d9";
+    "b924e432850a0b54a0f1ddbc0b51c5dae01d3033b1e712d83befdac0f651c1e2";
 constexpr std::string_view wipe_ram_rules_sha =
     "2197ac131df15667004640dd5f2b62cf4fdbad7b5dfd9e5033a39a525754a089";
 constexpr std::string_view tracks_start = "classic.crawler.race-start.v2";
@@ -1295,6 +1302,7 @@ enum class PackVariant {
     pause_messages,
     wipe_ram,
     credits_name,
+    two_human_stunts,
     demo_audio
 };
 struct PackHeader {
@@ -1314,7 +1322,8 @@ PackHeader read_pack_header(const std::vector<std::uint8_t>& bytes, Reader& in) 
         throw std::invalid_argument("Classic pack source ROM identity is unsupported");
     const auto profile = in.text();
     const auto start = in.text();
-    const auto variant = profile == supported_profiles[10] ? PackVariant::demo_audio
+    const auto variant = profile == supported_profiles[11] ? PackVariant::demo_audio
+                       : profile == supported_profiles[10] ? PackVariant::two_human_stunts
                        : profile == supported_profiles[9]  ? PackVariant::credits_name
                        : profile == supported_profiles[8]  ? PackVariant::wipe_ram
                        : profile == supported_profiles[7]  ? PackVariant::pause_messages
@@ -1332,6 +1341,7 @@ PackHeader read_pack_header(const std::vector<std::uint8_t>& bytes, Reader& in) 
         throw std::invalid_argument("Classic pack start state is unsupported");
     if (rules_identity
         != hex_digest(variant == PackVariant::demo_audio           ? demo_audio_rules_sha
+                      : variant == PackVariant::two_human_stunts   ? two_human_stunts_rules_sha
                       : variant == PackVariant::credits_name       ? credits_name_rules_sha
                       : variant == PackVariant::wipe_ram           ? wipe_ram_rules_sha
                       : variant == PackVariant::pause_messages     ? pause_messages_rules_sha
@@ -1390,6 +1400,8 @@ std::vector<RequiredEntry> required_entries(PackVariant variant) {
         out.insert(out.end(), wipe_ram_required.begin(), wipe_ram_required.end());
     if (variant >= PackVariant::credits_name)
         out.insert(out.end(), credits_name_required.begin(), credits_name_required.end());
+    if (variant >= PackVariant::two_human_stunts)
+        out.insert(out.end(), two_human_stunts_required.begin(), two_human_stunts_required.end());
     if (variant == PackVariant::demo_audio)
         out.insert(out.end(), demo_audio_required.begin(), demo_audio_required.end());
     return out;

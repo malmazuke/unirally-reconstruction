@@ -165,7 +165,7 @@ DEMO_SCORE_RESOURCE = 56
 
 
 def v39_new_entries(rom: bytes) -> list[dict[str, Any]]:
-    """The idle demo's sound set (R-0096); v37 entries are unchanged.
+    """The idle demo's sound set (R-0096); v38 entries are unchanged.
 
     The score resource is kept twice, as the earlier sets' are: its data, and its transfer,
     which also carries the next record's six header bytes. The tables are the award's (v34).

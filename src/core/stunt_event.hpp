@@ -28,10 +28,11 @@ bool update_stunt_finish(ZoomZooState& state);
 // $81:C836-C861: a rider finishes at the clock's end once it is supported (fewer than two
 // updates unsupported) and not falling fast (vertical velocity at least -256).
 bool stunt_rider_can_finish(const RiderMovementState& rider);
-// $81:C0FF-C116 and $81:C173-C184: a shown trick of reward class `trick_class` (the class table,
-// physics.reward.rotation-class) counts in its family's column, and its column adds the
-// `paid` points (the weight the reward added to the score, 0 for none).
-void tally_stunt_trick(StuntEvent& stunt, std::uint8_t trick_class, std::uint8_t paid);
+// $81:C0FF-C116 and $81:C173-C184 (the player's; rider 1's $81:C24E-C2C3): a shown trick of
+// reward class `trick_class` (the class table, physics.reward.rotation-class) counts in its
+// family's column, and its column adds the `paid` points (the weight the reward added to the
+// score, 0 for none).
+void tally_stunt_trick(StuntTallies& tallies, std::uint8_t trick_class, std::uint8_t paid);
 // $83:E940-E957 (the player; $83:EAD2-EAE7 the opponent): a rider's finish caption in a stunt
 // event is `draw` for a score equal to the qualifying score, else `loser` when the 16-bit
 // difference is negative and `winner` when it is not.

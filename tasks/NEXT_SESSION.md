@@ -43,6 +43,22 @@ capture a record cites can be regenerated from its recipe and checked against it
 [GATES-AGAINST-MAIN](GATES-AGAINST-MAIN.md) is queued (tier 1) to compare changes against accepted native code
 rather than stored captures of the original. See [EVIDENCE-RETENTION](EVIDENCE-RETENTION.md).
 
+**11 October 2026: TWO-HUMAN-STUNTS is accepted (tier 1, #72) and integrated by merge commit.**
+The four stunt events (BOWL, JUMPS, HILL CLIMB, DOWNER and their tour repeats) are playable with two
+humans in 2P and VS: both riders' tallies and scores, the split HUD, the result with rider 1's
+columns, VS mode 2's counters and VS CHAMPIONS, REMATCH on a tie, and the challenger. The menus
+around them read pads through the original's `$0742` gate (pad 2 on NOW PLAYING, PICK TOUR and
+PICK TRACK, the challenger's gate held through the continuation), Y returns to the continuation,
+NEXT TRACK wraps and skips unopened tours, and VS CHAMPIONS' row frame follows the number of
+records placed. It also repairs the one-player stunt result that LEAGUE had broken.
+
+Results: race rows equal on every two-human capture (the review's W1-W4b too); W1-W4b's pictures
+equal but 4 race frames of 4 px and one rename-keyboard frame; 11 two-human restore checks continue
+to the race's end; the race sweep 0 differences; sound schedules equal. Recorded limits (R-0095):
+DOWNER's mode-7 latch race, a one-scanline league table overrun, the `$0618` league-total write
+from a 2P/VS result, `$77:10B1`'s 57-frame window. [R-0095](../docs/research/R-0095-two-human-stunts.md)
+defines the domain. Pack profile v38.
+
 **10 October 2026: CREDITS-NAME is accepted (tier 1, #70) and integrated by merge commit.**
 The two rider-name cheats are native. Rename rider 0 "credits" and the next race shows the
 original's 500-frame credits picture and ends as a restart; rename it "faedine" and the next

@@ -176,6 +176,11 @@ struct ClassicHudText {
 // into the character table `$80:81F4` (0-9 the digits, 10-35 the letters, R-0043), so a
 // hundreds count past 9 shows a letter; beyond the letters the domain ends (throws).
 std::array<char, 3> stunt_score_cells(std::uint16_t score, std::array<char, 3> held);
+// R-0095: a split race's score cells, from column 2 of rows 11-12 (the player's, `$12C9`) or
+// 25-26 (rider 1's, `$12CB`), as the split chain writes them (`$81:E705-E82E`): the same digits
+// as stunt_score_cells, but each written cell moves the next one right, so the written digits
+// start at column 2; `held` shows through past them.
+std::array<char, 3> split_stunt_score_cells(std::uint16_t score, std::array<char, 3> held);
 // `$81:CD8D-CE6B`, the race setup's qualifying score from column 27: three cells, the
 // hundreds, tens and units, or below 100 the tens and units then a blank. The tens digit is
 // always written, so a qualifying score under 10 would read `0u`.
@@ -220,6 +225,9 @@ struct ClassicHudPublished {
     unsigned caption_event{}, opponent_caption_event{};
     // A stunt event's score cells, columns 23-25: the setup's `0` until the NMI writes a score.
     std::array<char, 3> score_cells{' ', ' ', '0'};
+    // A split stunt event's score cells, from column 2: the player's and rider 1's, blank until
+    // the split chain first writes them (R-0095).
+    std::array<char, 3> split_score_cells{' ', ' ', ' '}, opponent_score_cells{' ', ' ', ' '};
     bool operator==(const ClassicHudPublished&) const = default;
 };
 // $81:E9AC-$81:E9DB: the arrow's length for a lead of `lead` transitions and
@@ -327,7 +335,7 @@ public:
         race_nmis_ = 0;
         caption_buffer_ = opponent_caption_buffer_ = 0;
         consumed_since_blank_ = opponent_consumed_since_blank_ = menu_lower_view_ = false;
-        score_buffer_ = 0;
+        score_buffer_ = opponent_score_buffer_ = 0;
     }
     void observe_update(const ZoomZooState& previous, const ZoomZooState& updated);
     // The cells as the picture drawn from the earlier of the two states last
@@ -341,7 +349,8 @@ private:
         // `clock_rewrite`: a stunt event's clock stopping sets `$034D` without new digits
         // ($81:C7EC, then $81:C830 skips the cells' update), so the NMI rewrites what the cells
         // hold and spends the update. `score`: `$12C9`, a stunt event's score field.
-        bool left{}, clock_blank{}, clock_rewrite{}, score{}, caption{};
+        // `opponent_score`: `$12CB`, rider 1's in a split stunt event (R-0095).
+        bool left{}, clock_blank{}, clock_rewrite{}, score{}, opponent_score{}, caption{};
         // A split race's `$034F` (digits or, at rider 1's last crossing, blank) and `$0EE9`.
         bool lower_clock{}, lower_clock_blank{}, opponent_caption{};
         std::array<ClassicHudCellRequest, 2> cells{};
@@ -363,6 +372,8 @@ private:
     bool menu_lower_view_{};
     // `$12B9`: the score the update last split into `$12BD/$12C1/$12C5` for the NMI.
     std::uint16_t score_buffer_{};
+    // `$12BB`: rider 1's score (`$77:0825`) as the update last split it (R-0095).
+    std::uint16_t opponent_score_buffer_{};
     // The clock the first rider through each slot stored, minutes, tens,
     // seconds, tenths. Indexed like `checkpoint_seen`, laps remaining * 4 +
     // checkpoint; the original keeps four bytes a slot at `$100D` + 16 * laps

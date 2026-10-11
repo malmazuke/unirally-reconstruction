@@ -136,13 +136,21 @@ void league_podium_frame(FrontEndState& state, const FrontEndContent& content, F
 }
 
 void league_podium_exit_frame(FrontEndState& state, const FrontEndContent& content) {
+    constexpr std::uint32_t podium_restore_frame = restore_frame + 2;
     const auto frame = state.script_frame;
     // Podium teardown has two more blank frames than the retained race returns.
     if (frame <= 2) return;
     if (frame <= 105) {
+        // Left on podium phase 2 or 3, the arrow's spin, which `$83:987D` puts back with the
+        // menus, comes back a frame after the rest (R-0095).
+        const auto spin = state.arrow.spin;
         state.script_frame -= 2;
         race_return_frame(state, content);
         state.script_frame = frame;
+        if (podium_arrow_late(state)) {
+            if (frame == podium_restore_frame) state.arrow.spin = spin;
+            if (frame == podium_restore_frame + 1) state.arrow.spin = state.saved.arrow_spin;
+        }
         return;
     }
     if (frame == 106) {

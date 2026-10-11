@@ -127,12 +127,12 @@ void update_stunt_clock(ZoomZooState& state, bool running) {
     stunt.clock_stopped = 1;                       // $81:C864-C867
 }
 
-void tally_stunt_trick(StuntEvent& stunt, std::uint8_t trick_class, std::uint8_t paid) {
+void tally_stunt_trick(StuntTallies& tallies, std::uint8_t trick_class, std::uint8_t paid) {
     const unsigned family = trick_class / classes_per_family;
     const unsigned column = trick_class % classes_per_family / classes_per_column;
     if (family >= trick_family::count || trick_class % classes_per_column != 0)
         throw std::invalid_argument("a trick's reward class lies outside the stunt tallies");
-    auto& tally = stunt.tallies[family][column];
+    auto& tally = tallies[family][column];
     tally.shown = static_cast<std::uint8_t>(tally.shown + 1U); // one byte ($81:C111-C116)
     tally.points = add_word(tally.points, paid);
 }
