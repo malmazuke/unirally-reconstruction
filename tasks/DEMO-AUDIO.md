@@ -100,6 +100,25 @@ derived cues `*.cues.txt`, `demo-cold-full` (events gzipped, `SHA256SUMS`), `con
 - Optional: control 93 has a unit test; with a pack before v39 the app now reports
   `native_audio_cued_stopped=1` (checked: 0 cued frames, stopped 1).
 
+## Gates - head `39376e1`, after review round 1 (main `local/evidence/demo-audio/gates-39376e1.out`)
+
+- Same script with the review's schedules added; main `2c42589`'s binaries (main's native code is
+  unchanged to `42d4445`). Four presets build, ctest 41 of 41 each; synthetic suite passed on
+  app-debug and lab-debug; v1 contracts, hidden app runs and front end passed; fuzz as on main
+  (40 aborts, recorded non-pass).
+- Eleven differential gates with main's row digests; race sweep 432 runs, 0 differences;
+  front-end sweep 179 of 179; every pause, two-pad, race-end, look, restart and restore
+  comparison as recorded; track sweeps equal main; idle demo lap 34 of 34, pictures 963 of 1,006.
+  CREDITS-NAME, WIPE-RAM, MODE-AUDIO (0, 0, 2, 4, 2), R-0077 (12 equal) and R-0076 (identical to
+  main) as before.
+- DEMO-AUDIO cues: `demo-long` 6, `demo-pad-early` 0, `demo-pad-late` 2, `demo-pad-port2` 4,
+  `demo-cold` 2 differing frames; the review's `rv-early-p2` 2, `rv-long` 12 (six held titles'
+  slides of 27), `rv-late-split` 183 (the held way back; 1 with `late_split_shift.sh`). The
+  conditional check equal. The app: 12,100 cued frames, never stopped, cue log equal to the
+  runner's; this run's host dropped late output twice after the boot (3,400 pairs, peak 19,027),
+  where the earlier runs dropped none: the app-debug build's latency policy, not the cues.
+- Tooling tests 575 passed; functions over 80 lines 0; native symbols current.
+
 ## Gates - head `a5c496c` (main `local/evidence/demo-audio/gates-a5c496c.out`)
 
 Run under `local/locks/heavy-run.sh` with `gates_and_synthetic.sh`, against main `2c42589`'s
@@ -122,12 +141,15 @@ binaries (`base-2c42589`, built from `git archive 2c42589`):
 
 ## Handoff
 
-- Commits: `c61cb41` (native change), `a5c496c` (way back, anchors, R-0096, maps), then this
-  record. Working tree clean.
+- Commits: `c61cb41` (native change), `a5c496c` (way back, anchors, R-0096, maps), `edd6f54`
+  (gates, handoff), the coordinator's `89a1802`/`7b63161`/`5b6ab8d`, then `39376e1` (review round
+  1) and this record. Working tree clean.
+- Review round 1 also changed `race_update.cpp` (`read_second_pad` split out of the two-pad
+  branch; the demo's exit reads pad 2 and the player's A and X) and `race_demo_controls.cpp`.
 - Shared files with TWO-HUMAN-STUNTS, kept small: `front_end.cpp` (include `race_sound.hpp`; one
   call each in `demo_title_frame` and `demo_return_frame`; the start cue's three lines beside the
   race switch; the hold frame's call; two lines in `ends_with_queue_wait`; one in
-  `begin_demo_return`), `front_end.hpp` (`demo_return_blank`), `front_end_screens.hpp` (the
+  `begin_demo_return`), `front_end.hpp` (`demo_return_blank`, and the review's formatting of the line above it), `front_end_screens.hpp` (the
   `demo_sound.cpp` declarations). `content_pack.cpp`: the v39 profile, rules digest, variant and
   `demo_audio_required`. On rebase onto v38, insert v38 before v39 (variant order, `>=` on
   credits_name/v38), recompute the manifest's digest in `demo_audio_rules_sha`, set
