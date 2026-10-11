@@ -893,6 +893,20 @@ void finish_update(const ZoomZooState& state, ZoomZooState& next,
 
 // The second rider's controls for one update: the demo's scripted pads, a second human's pad,
 // an absent stunt opponent or the opponent AI. Returns whether the AI is off this update.
+// A two-pad race's second rider: pad 2's direction and buttons.
+void read_second_pad(ZoomZooState& next, const ControllerButtons& opponent_buttons,
+                     DemoTrickButtons& demo_buttons) {
+    const auto sample = sample_controller(opponent_buttons);
+    next.opponent_horizontal = sample.horizontal;
+    auto& input = next.reflection[1];
+    input.brake_input = opponent_buttons.y;
+    input.jump_input = opponent_buttons.b;
+    input.rotate_negative_input = opponent_buttons.left_shoulder;
+    input.rotate_positive_input = opponent_buttons.right_shoulder;
+    demo_buttons.a[1] = opponent_buttons.a;
+    demo_buttons.x[1] = opponent_buttons.x;
+}
+
 bool read_second_rider_controls(ZoomZooState& next, const ClassicRaceScenario& scenario,
                                 const ControllerButtons& request,
                                 const ControllerButtons& opponent_buttons,
@@ -904,19 +918,14 @@ bool read_second_rider_controls(ZoomZooState& next, const ClassicRaceScenario& s
                 || pad.select || pad.start || pad.up || pad.down || pad.left || pad.right;
         };
         demo_buttons = update_demo_controllers(next, pressed(request) || pressed(opponent_buttons));
+        // The demo's exit leaves a split race's second rider pad 2 (R-0096).
+        if (next.demo.exit_requested && next.split_screen)
+            read_second_pad(next, opponent_buttons, demo_buttons);
         // $83:CD50-CD61; ATTRACT-DEMO: the one-view demo runs normal opponent AI
         // after its demo controls. The split demo suppresses that second pass.
         if (!next.split_screen) ai_off = update_opponent_controller(next);
     } else if (next.split_screen) {
-        const auto sample = sample_controller(opponent_buttons);
-        next.opponent_horizontal = sample.horizontal;
-        auto& input = next.reflection[1];
-        input.brake_input = opponent_buttons.y;
-        input.jump_input = opponent_buttons.b;
-        input.rotate_negative_input = opponent_buttons.left_shoulder;
-        input.rotate_positive_input = opponent_buttons.right_shoulder;
-        demo_buttons.a[1] = opponent_buttons.a;
-        demo_buttons.x[1] = opponent_buttons.x;
+        read_second_pad(next, opponent_buttons, demo_buttons);
     } else if (scenario.stunt_event)
         release_absent_opponent(next);
     else
@@ -986,14 +995,16 @@ void update_zoom_zoo(ZoomZooState& state, const ControllerButtons& requested_but
     DemoTrickButtons demo_buttons{};
     const bool ai_off =
         read_second_rider_controls(next, scenario, request, opponent_buttons, demo_buttons);
-    if (next.demo_ai) pressed_a = demo_buttons.a[0];
+    // The demo's exit leaves the player pad 1's A and X (R-0096).
+    const bool demo_inputs = next.demo_ai && !next.demo.exit_requested;
+    if (demo_inputs) pressed_a = demo_buttons.a[0];
     const bool countdown_holds = run_countdown(
         state, next, scenario.stunt_event ? stunt_countdown : race_countdown, scenario.stunt_event);
     // The opponent's A and X are its selector's bits only on updates the AI stores them;
     // with the AI off both stay released (R-0048).
     const TrickButtons trick_buttons{
         pressed_a && !countdown_holds,
-        (next.demo_ai ? demo_buttons.x[0] : player_buttons.x) && !countdown_holds,
+        (demo_inputs ? demo_buttons.x[0] : player_buttons.x) && !countdown_holds,
         countdown_holds     ? 0U
         : next.split_screen ? unsigned(demo_buttons.a[1]) * 2U + unsigned(demo_buttons.x[1]) * 4U
                             : (unsigned(whole.opponent_ai.trick_selector) & (ai_off ? ~6U : ~0U))};

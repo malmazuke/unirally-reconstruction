@@ -7,7 +7,8 @@
 namespace unirally::front_end_screens {
 namespace {
 
-// $80:9440-9455: the demo's session starts on the title's frame 58, after its picture's loads.
+// $80:9440-9455: the demo's session starts on the title's script frame 57 (`demo-cold`'s frame 957,
+// 57 frames after the main menu's last), after its picture's loads.
 constexpr std::uint32_t demo_session_frame = 57;
 // $80:A0F7: the title set's session five frames after the race's exit, as after a menus' race;
 // a pad exit's extra blank frames (R-0070) follow it.

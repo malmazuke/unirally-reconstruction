@@ -89,6 +89,16 @@ int main() {
         require(slide.state().voices[0].arithmetic.slide_interval == 0 &&
                     slide.state().voices[0].arithmetic.slide_remaining == 0,
                 "control 95 did not end the slide");
+        // 0FD4-0FDF: control 93 sets the release at an absolute count and clears the relative one.
+        const std::uint8_t released[]{0x92, 5, 0x93, 9, 12, 20, 0x80};
+        std::copy(std::begin(released), std::end(released), data.score.begin());
+        unirally::TitleMenuAudioScore release(data, &pitch);
+        release.start_music(1);
+        release.update_voice(0, false, 0);
+        require(release.state().voices[0].release_absolute == 9 &&
+                    release.state().voices[0].release_relative == 0 &&
+                    release.state().voices[0].arithmetic.release_remaining == 9,
+                "control 93 did not set the absolute release");
         std::cout << "native score calls, loops, unsigned duration and restore pass\n";
         return 0;
     } catch (const std::exception& error) { std::cerr << error.what() << '\n'; return 1; }

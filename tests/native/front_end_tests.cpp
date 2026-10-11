@@ -2077,8 +2077,14 @@ void demo_sound_tests() {
   (void)unirally::update_demo_controllers(race, false);
   require(race.sound_cues == fade && !race.demo.exit_requested);
   race.sound_cues.clear();
+  // A pad exit skips the demo's input writes: the second rider's held
+  // rotation is released (the race reads pad 2 for a split race).
+  race.reflection[1].rotate_positive_input = 1;
+  race.opponent_horizontal = 2;
   (void)unirally::update_demo_controllers(race, true);
-  require(race.sound_cues == fade && race.demo.exit_requested);
+  require(race.sound_cues == fade && race.demo.exit_requested &&
+          race.reflection[1].rotate_positive_input == 0 &&
+          race.opponent_horizontal == 1);
   race.sound_cues.clear();
   race.demo = {};
   race.demo.elapsed = unirally::front_end_screens::idle_demo_timer_exit;

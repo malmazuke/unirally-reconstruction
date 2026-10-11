@@ -7756,6 +7756,7 @@
    "address": "$82:AB6F",
    "native": [
     "src/core/opponent_ai.cpp:update_opponent_controller",
+    "src/core/race_demo_controls.cpp:exit_demo",
     "src/core/race_update.cpp:run_pause_menu"
    ],
    "range_ends": [
@@ -11124,6 +11125,13 @@
    "address": "$83:E272",
    "native": [
     "src/core/audio_cue.hpp:AudioDispatchSite"
+   ],
+   "region": "rom"
+  },
+  {
+   "address": "$83:E2BB",
+   "native": [
+    "src/core/race_demo_controls.cpp:exit_demo"
    ],
    "region": "rom"
   },
@@ -19829,6 +19837,12 @@
     "$0300"
    ]
   },
+  "src/core/race_demo_controls.cpp:exit_demo": {
+   "rom": [
+    "$82:AB6F",
+    "$83:E2BB"
+   ]
+  },
   "src/core/race_demo_controls.cpp:update_demo_controllers": {
    "rom": [
     "$83:E256",
@@ -24314,10 +24328,10 @@
   }
  },
  "totals": {
-  "addresses": 1751,
+  "addresses": 1752,
   "io_addresses": 11,
-  "native_symbols": 1323,
-  "rom_addresses": 1346,
+  "native_symbols": 1324,
+  "rom_addresses": 1347,
   "sram_addresses": 57,
   "wram_addresses": 337
  }

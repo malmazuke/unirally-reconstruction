@@ -11642,6 +11642,7 @@
    "native": [
     "src/core/opponent_ai.cpp:update_opponent_controller",
     "src/core/race_demo_controls.cpp:demo_rider",
+    "src/core/race_demo_controls.cpp:exit_demo",
     "src/core/race_update.cpp:release_absent_opponent",
     "src/core/race_update.cpp:run_pause_menu"
    ],
@@ -17498,6 +17499,7 @@
     "src/core/front_end.cpp:front_end_screens::begin_demo_return",
     "src/core/race_demo_controls.cpp:(file)",
     "src/core/race_demo_controls.cpp:demo_rider",
+    "src/core/race_demo_controls.cpp:exit_demo",
     "src/core/race_demo_controls.cpp:update_demo_controllers",
     "src/core/race_demo_controls.hpp:(file)",
     "src/core/race_sound.cpp:demo_fade",
@@ -18763,18 +18765,18 @@
    "call returns in the calling mode": 2454
   },
   "bytes": 131072,
-  "cited_addresses": 1888,
+  "cited_addresses": 1890,
   "cited_by_class": {
    "data": 16,
    "inferred": 73,
-   "observed": 1617,
+   "observed": 1619,
    "unknown": 182
   },
   "cited_by_position": {
    "dat": 16,
-   "loc": 1236,
+   "loc": 1237,
    "mid": 30,
-   "sub": 424,
+   "sub": 425,
    "unk": 182
   },
   "conflicts": 0,

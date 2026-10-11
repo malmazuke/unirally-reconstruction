@@ -16285,6 +16285,16 @@
   ]
  },
  {
+  "address": "$82:AA75",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_82AA75",
+  "source_records": [
+   "docs/research/R-0096-demo-audio.md",
+   "tasks/DEMO-AUDIO.md"
+  ]
+ },
+ {
   "address": "$82:AA7D",
   "class": "observed",
   "comment": "instruction start",
@@ -16443,12 +16453,15 @@
   "native": [
    "src/core/opponent_ai.cpp:update_opponent_controller",
    "src/core/race_demo_controls.cpp:demo_rider",
+   "src/core/race_demo_controls.cpp:exit_demo",
    "src/core/race_update.cpp:release_absent_opponent",
    "src/core/race_update.cpp:run_pause_menu"
   ],
   "source_records": [
    "docs/research/R-0048-race-guards.md",
    "docs/research/R-0079-two-pad-pause.md",
+   "docs/research/R-0096-demo-audio.md",
+   "tasks/DEMO-AUDIO.md",
    "tasks/RACE-GUARDS.md"
   ]
  },
@@ -22065,7 +22078,8 @@
    "src/core/zoom_zoo_movement.hpp:DemoControllers"
   ],
   "source_records": [
-   "docs/research/R-0096-demo-audio.md"
+   "docs/research/R-0096-demo-audio.md",
+   "tasks/DEMO-AUDIO.md"
   ]
  },
  {
@@ -22108,17 +22122,35 @@
   ]
  },
  {
-  "address": "$83:E2BB",
+  "address": "$83:E2A9",
   "class": "observed",
   "comment": "instruction start",
-  "label": "loc_83E2BB",
+  "label": "loc_83E2A9",
   "native": [
    "src/core/race_demo_controls.cpp:(file)",
    "src/core/race_demo_controls.hpp:(file)",
    "src/core/zoom_zoo_movement.hpp:DemoControllers"
   ],
   "source_records": [
-   "docs/research/R-0070-attract-demo.md"
+   "docs/research/R-0096-demo-audio.md",
+   "tasks/DEMO-AUDIO.md"
+  ]
+ },
+ {
+  "address": "$83:E2BB",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83E2BB",
+  "native": [
+   "src/core/race_demo_controls.cpp:(file)",
+   "src/core/race_demo_controls.cpp:exit_demo",
+   "src/core/race_demo_controls.hpp:(file)",
+   "src/core/zoom_zoo_movement.hpp:DemoControllers"
+  ],
+  "source_records": [
+   "docs/research/R-0070-attract-demo.md",
+   "docs/research/R-0096-demo-audio.md",
+   "tasks/DEMO-AUDIO.md"
   ]
  },
  {
@@ -22133,7 +22165,8 @@
    "src/core/zoom_zoo_movement.hpp:DemoControllers"
   ],
   "source_records": [
-   "docs/research/R-0069-split-screen-race.md"
+   "docs/research/R-0069-split-screen-race.md",
+   "docs/research/R-0096-demo-audio.md"
   ]
  },
  {
@@ -24920,7 +24953,8 @@
   ],
   "source_records": [
    "docs/research/R-0096-demo-audio.md",
-   "tasks/DEMO-AUDIO.md"
+   "tasks/DEMO-AUDIO.md",
+   "tasks/NEXT_SESSION.md"
   ]
  },
  {

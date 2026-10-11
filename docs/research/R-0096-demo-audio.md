@@ -27,6 +27,9 @@ R-0077's method) and the anchored PCM measurement (`measure.sh`, R-0091's).
 | `demo-pad-early` | A on pad 1, frames 5000-5003 (one-view race, before its warning) | 9,000 | 2 and a pad exit |
 | `demo-pad-late` | Left on pad 1, frames 6400-6403 (after the warning) | 10,000 | 2 and a late pad exit |
 | `demo-pad-port2` | B on pad 2, frames 8000-8003 (split race) | 11,000 | 3 and a second-pad exit |
+| `rv-late-split` (review, `local/evidence/demo-audio-review/`) | Y on pad 1, frames 3300-3303 (the first split race after its warning, the computer rider rotating) | 10,000 | 3 and a late pad exit |
+| `rv-early-p2` (review) | X on pad 2, frames 1460-1463 (the first split race's countdown) | 10,000 | 1 and an early exit |
+| `rv-long` (review) | none after Start | 99,000 | 32 races, short titles 13, 16, 18, 21, 33 |
 
 `demo-long`'s first 10,000 frames derive to exactly R-0091's `demo-cold` cues (with its labels
 renamed), so the original is deterministic over these schedules.
@@ -61,6 +64,14 @@ renamed), so the original is deterministic over these schedules.
   update enqueues a music fade (command 3, 0x80) and calls the dispatcher twice
   (`$83:E267-E272`). It runs before the pad test, so a late pad exit's update fades too; the
   timer exit's update does not (`$83:E25D`). Native reports the site as `demo-fade` [L, C].
+- **An exit leaves the riders the update's pads.** Both exits branch to `$83:E2BB` (`$83:E25D`
+  the timer, `$83:E2A9` a pad) and skip the demo's input writes (`$83:E2C4` on), so the riders
+  keep what the pad reader (`$82:AA75-AC5A`) gave them that update: the player pad 1's; the second
+  rider pad 2's in a split race, and in a one-view race the released controls `$82:AB6F-AB8B`
+  writes when `$0C6D` is set (the opponent AI then runs). The review's `rv-late-split` shows it:
+  the exit update's Y releases the computer rider's held rotation, and its sound stops
+  (`E 6 43, E 2 12`) on that update. Native's exits kept the demo's last inputs; they now take the
+  pads (the race timelines change only on the split races' exit updates) [L, C].
 - **The way back.** The title set's session (`$80:A0F7`, as after a menus' race) starts five
   frames after the race's exit; a pad exit's one or two extra blank frames (R-0070) follow it.
   - Its two frame waits during the upload are on the way back's frames 74 and 75. After the
@@ -68,6 +79,11 @@ renamed), so the original is deterministic over these schedules.
   - Its frame 101, where NMIs come on, runs late and enters its frame wait (`$80:FADF`) there.
     That is one wait more than the frames that turn the arrow (at 247,358 master clocks into
     `demo-cold`'s frame 3449) [C].
+  - After `rv-late-split`'s exit the upload runs a frame longer again, on track 1 and a pad exit:
+    three upload waits (frames 74-76), no frame-101 wait, and everything after a frame later; the
+    next title is then a short one. Moving native's cues after frame 3401 one frame later and
+    replaying that title short (the review's `late_split_shift.sh`) leaves only the third upload
+    wait (frame 3377). The front end cannot predict it (below) [C].
 - **The score's note-space slide.** The demo's score uses control 94, which the native driver
   had not met (`unrecovered score control: 148`). SPC `$0FE2-$0FEE` stores two inline bytes, the
   slide's amount (`$0281`) then its interval (`$0280`); `$0FF1` (control 95) clears the interval;
@@ -77,7 +93,8 @@ renamed), so the original is deterministic over these schedules.
   interval always 0; controls 93-95 now set it [L, C: the conditional check below].
 - **The app** keeps its cued producer through the idle demos and back to the menus. Its audio
   model's menu idle expiry (`AudioCpuMenuAction::attract`) enters the cued scenes like a menu
-  choice. A pack before v39 stops the producer at the demo's session.
+  choice. A pack before v39 stops the producer at the demo, and the app reports it
+  (`native_audio_cued_stopped=1`; it reported 0 before the review).
 
 ## Results
 
@@ -90,6 +107,9 @@ renamed), so the original is deterministic over these schedules.
 | `demo-pad-early` | 13,194 | 0 | equal |
 | `demo-pad-late` | 16,067 | 2 | the next title's slide (7133) |
 | `demo-pad-port2` | 17,480 | 4 | the slides at 7155 and 8734 |
+| `rv-early-p2` | 15,018 | 2 | a held title's slide (5269) |
+| `rv-long` | 171,170 | 12 | six held titles' slides of 27 (7155, 10210, 34592, 77219, 86361, 92426) |
+| `rv-late-split` | 15,964 | 183 | the way back's extra frame after the exit (3377 on); the exit update itself equal |
 
 - **Anchors** (D-0010 calibration, `anchors.py` on `demo-long`):
   - The demo session's first FF request: median 123,288 master clocks after its frame's boundary
@@ -121,7 +141,13 @@ renamed), so the original is deterministic over these schedules.
 
 ## Not covered
 
-- The slide's frame on held titles whose upload ends near the frame boundary (3 of 16): native
+- A way back whose upload runs a frame longer after a pad exit (`rv-late-split`, track 1). R-0087
+  found the timer exits from tracks 20, 24 and 36 hold every time, and native applies that rule;
+  this hold, like the short titles, follows the sound processor's state, which the front end
+  does not see. The pad exits of `demo-pad-early`, `-late`, `-port2` and `rv-early-p2` do not hold.
+  Native's cues after such a hold are a frame early until the next way back.
+- The slide's frame on held titles whose upload ends near the frame boundary (3 of `demo-long`'s
+  16, 6 of `rv-long`'s 27): native
   keeps the hold frame for both cues. Which way it falls depends on the sound processor's state
   through the race, which the front end does not see (D-0010's upload variation).
 - A pad press during the demo's title: the original leaves at `$80:9487` (`BNE $94D1`), fades,

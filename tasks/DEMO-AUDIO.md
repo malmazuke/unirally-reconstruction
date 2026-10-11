@@ -42,9 +42,11 @@ block at `$93:F712` (2,899 bytes). Only the corpus runs that reach an idle demo 
 | 2 | Score 56 is the unpacked block at `$93:F712` (R-0093) | Resource directory | Yes: resource 56 at `$93:F70C`, data from `$93:F712`, 2,899 bytes; its slots add samples 02, 23, 34 | Pack v39 |
 | 3 | The native driver plays the demo's score as it is | `race_audio_runner` on native demo cues | No: "unrecovered score control: 148". Control 94 (SPC `$0FE2-$0FEE`) sets the note-space slide (`$0281` amount, `$0280` interval) that `$0C80` and `$0A65-$0AA8` run; native had the slide arithmetic but no control setting it | Controls 93-95 native; the conditional check on a full capture |
 | 4 | The remaining differences on `demo-cold` are the demo's own cues | Native cues against R-0091's `demo-cold` capture, relabelled | After the set, slide, start cue and fade-out: the way back's frame 101 wait (timer exits) and the third title's slide (a frame earlier than its wait) | The wait native; the slide's frame measured over more cycles |
-| 5 | Pad exits keep the way back's timing | `demo-pad-early`, `-late`, `-port2` | The session is five frames after the exit, before the pad exit's blank frames; frame 101's wait is in every way back | Session by frames since the exit (`demo_return_blank`) |
+| 5 | Pad exits keep the way back's timing | `demo-pad-early`, `-late`, `-port2` | On these three: the session is five frames after the exit, before the pad exit's blank frames; frame 101's wait is in every way back. Not always: review round 1's `rv-late-split` way back held a frame (attempt 9) | Session by frames since the exit (`demo_return_blank`) |
 | 6 | Held titles and returns keep the first ones' cue frames | `demo-long` (19 races) | The held returns' two upload waits come a frame later; 13 of 16 held titles play the slide and wait in the hold frame, 3 play the slide a frame before | The returns native; the 3 titles recorded (D-0010's upload variation) |
 | 7 | A demo-only way-back anchor improves PCM | 348,212 against 344,450 on `demo-cold` | No: 8,146 against 8,207 windows within 1 dB | Keep the menus' anchor |
+| 8 | A pad exit leaves the demo's last inputs held (review finding 1) | The listing (`$83:E25D`, `$83:E2A9` both to `$83:E2BB`; the pad reader `$82:AA75-AC5A`, `$82:AB6F-AB8B` for a one-view race) and `rv-late-split` | Yes: either exit skips the demo's input writes; the riders take that update's pads (rider 2 pad 2 in a split race, released in a one-view one). Native now does; frame 3300's rotation stop equal, the race timelines differ from main only on split races' exit updates | Done |
+| 9 | Fixing 8 makes `rv-late-split`'s held way back predictable (review finding 2) | Native cues after the fix; the review's `late_split_shift.sh` | No: the exit update is now equal, but the way back's upload still runs a frame longer (three upload waits, no frame-101 wait) and the next title is short; shifting native's cues a frame from 3402 and replaying the title short leaves only the third wait (3377). Nothing in the game's state that the front end sees predicts it | Recorded in R-0096's "Not covered" |
 
 ## Decisions
 
@@ -82,6 +84,21 @@ derived cues `*.cues.txt`, `demo-cold-full` (events gzipped, `SHA256SUMS`), `con
 `capture_full.sh`, `capture_batch.sh`, `derive_cues2.py`, `cues.sh`, `diff_cues.py`, `cond.sh`,
 `measure.sh`, `anchors.py`, `resolve_app_cues.py`), `sets/` (the demo set's sound RAM images),
 `base-2c42589/` (main's binaries for the gates) and `gates.sh`.
+
+## Review - round 1 (returned)
+
+- [Review](https://github.com/malmazuke/unirally-reconstruction/pull/77#pullrequestreview-5482336818)
+  on `5b6ab8d`: return. Captures and scripts in main `local/evidence/demo-audio-review/`.
+- Finding 1, a pad exit drops a race sound (`race_demo_controls.cpp`): confirmed from the listing
+  and `rv-late-split` (attempt 8). Fixed: `exit_demo` releases the second rider and the race
+  update gives it pad 2 in a split race and the player pad 1's A and X. `rv-late-split`'s frame
+  3300 is equal.
+- Finding 2, the held way back after that exit: not predictable from the front end (attempt 9).
+  Recorded in R-0096; attempt 5's claim corrected.
+- Finding 3, `demo_sound.cpp`'s comment: it now says script frame 57.
+- Finding 4, `front_end.hpp`: formatted.
+- Optional: control 93 has a unit test; with a pack before v39 the app now reports
+  `native_audio_cued_stopped=1` (checked: 0 cued frames, stopped 1).
 
 ## Gates - head `a5c496c` (main `local/evidence/demo-audio/gates-a5c496c.out`)
 

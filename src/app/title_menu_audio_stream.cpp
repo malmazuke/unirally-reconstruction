@@ -143,7 +143,12 @@ void TitleMenuAudioStream::run() {
                 run_cued();
                 break;
             }
-            if (action != AudioCpuMenuAction::hunter) break;
+            // Production stops where the game's sound is not recovered: the idle demo with a pack
+            // before v39 (R-0096), or a race set missing.
+            if (action != AudioCpuMenuAction::hunter) {
+                cued_stopped_ = true;
+                break;
+            }
             run_hunter();
         }
     } catch (const StreamStopped&) {
