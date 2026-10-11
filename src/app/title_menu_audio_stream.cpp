@@ -1,4 +1,5 @@
 #include "title_menu_audio_stream.hpp"
+#include <algorithm>
 #include <stdexcept>
 
 namespace unirally::app {
@@ -111,7 +112,11 @@ void TitleMenuAudioStream::run_cued() {
             if (stopping_) throw StreamStopped{};
             input = frames_.at(frame);
         }
-        if (input.stop) {
+        // A pack before v39 has no idle demo set: its demo is silent (R-0096).
+        const bool demo_load = std::any_of(input.cues.begin(), input.cues.end(), [](const auto& cue) {
+            return cue.kind == AudioCueKind::load && cue.load == AudioSessionLoad::demo;
+        });
+        if (input.stop || (demo_load && !content_.has_demo_set())) {
             cued_stopped_ = true;
             return;
         }
@@ -127,15 +132,23 @@ void TitleMenuAudioStream::run() {
         native.reveal_menu();
         for (;;) {
             const auto action = run_menu();
-            // Any of the main menu's entries (1P, 2P, VS, LEAGUE, OPTIONS) or the WIPE RAM
-            // code: from its exit the game reports every frame's sound work (D-0010,
-            // MODE-AUDIO, WIPE-RAM). The idle demo is not covered (DEMO-AUDIO).
-            if ((action == AudioCpuMenuAction::selected || action == AudioCpuMenuAction::wipe_ram)
-                && content_.has_race_set()) {
+            // Any of the main menu's entries (1P, 2P, VS, LEAGUE, OPTIONS), the WIPE RAM
+            // code or the idle demo: from its exit the game reports every frame's sound work
+            // (D-0010, MODE-AUDIO, WIPE-RAM, DEMO-AUDIO).
+            const bool reported = action == AudioCpuMenuAction::selected
+                               || action == AudioCpuMenuAction::wipe_ram
+                               || (action == AudioCpuMenuAction::attract
+                                   && content_.has_demo_set());
+            if (reported && content_.has_race_set()) {
                 run_cued();
                 break;
             }
-            if (action != AudioCpuMenuAction::hunter) break;
+            // Production stops where the game's sound is not recovered: the idle demo with a pack
+            // before v39 (R-0096), or a race set missing.
+            if (action != AudioCpuMenuAction::hunter) {
+                cued_stopped_ = true;
+                break;
+            }
             run_hunter();
         }
     } catch (const StreamStopped&) {

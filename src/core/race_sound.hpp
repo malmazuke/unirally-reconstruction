@@ -33,6 +33,11 @@ void dispatch(ZoomZooState& next, AudioDispatchSite site);
 void countdown(ZoomZooState& next, std::uint16_t countdown, bool stunt_event);
 // $83:E7F2-E830: from the finish display's 180th update, fade the music every update.
 void finish_fade(ZoomZooState& next);
+// $83:E267-E272: the idle demo race's fade-out, every update from its warning on (R-0096).
+void demo_fade(ZoomZooState& next);
+// $82:D84A: the start's countdown cue, which the race's sound session drops on the menus' path
+// (`loading`) and the idle demo, which has no session, plays (R-0096).
+AudioCue start_cue();
 // $81:828E-82B2: a counted crossing sets flag 20 at speed 256 or more, else clears it.
 void checkpoint(ZoomZooState& next, std::uint16_t velocity_x);
 // $82:999A-9A49: the skid flag 21 (player) or 22 (opponent) follows the brake latch.

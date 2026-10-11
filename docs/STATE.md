@@ -1,5 +1,18 @@
 # Project state
 
+**12 October 2026: DEMO-AUDIO is accepted (tier 1, #77) and integrated by merge commit.**
+The idle demos now have native sound, and the app's audio producer runs through them and back to
+the menus. The demo turns out to have its own sound set (driver 50, the award's tables, score 56,
+the slots at `$83:FC35`). Score 56 is R-0093's unpacked block at `$93:F712`, and pack v39 adds it
+with samples 02, 23 and 34. The native driver gained the note-space slide controls 93-95.
+- **Sound cues:** equal to the original's on `demo-pad-early`. The other four schedules differ on
+  2-6 frames, all one held-title slide a frame early (D-0010's upload timing). `demo-long` is 6 of
+  103,162 lines.
+- **Driver check:** every write and raw stereo pair equal on `demo-cold-full` (6,406,928 pairs).
+- **Anchored PCM:** 88.2% of `demo-cold`'s windows within 1 dB.
+- **Gates:** every gate and sweep equals main.
+[R-0096](research/R-0096-demo-audio.md) and [DEMO-AUDIO](../tasks/DEMO-AUDIO.md) define the domain.
+
 **11 October 2026: ACCESS-REGISTER-ORDER is accepted (tier 2, #75) and integrated by merge commit.**
 The access derivation now applies the frame's register stores to its DMA parameter shadow in
 instruction order. Before, a store resolved through a pointer reached the shadow after every

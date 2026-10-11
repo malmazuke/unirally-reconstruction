@@ -1,6 +1,7 @@
 // $83:E254-E55B: the idle demo drives both split-screen riders by the track's
 // markers. The two paths are the same routine on adjacent rider words.
 #include "race_demo_controls.hpp"
+#include "race_sound.hpp"
 
 #include <cstdint>
 
@@ -82,6 +83,17 @@ void demo_rider(ZoomZooState& state, unsigned index, DemoTrickButtons& buttons) 
         && rider.pose.reflected_orientation >= 16 && rider.pose.reflected_orientation < 48)
         rotate(transition, static_cast<std::int16_t>(rider.motion.velocity_x) >= 0);
 }
+// $83:E2BB: either exit skips the demo's input writes, so the riders keep what the pad reader
+// gave them this update: the player pad 1's; the second rider pad 2's in a split race (the race
+// update reads it) and released controls in a one-view race (`$82:AB6F-AB8B`; the opponent AI
+// runs after). R-0096.
+void exit_demo(ZoomZooState& state) {
+    state.demo.exit_requested = true;
+    state.opponent_horizontal = direction::neutral;
+    auto& second = state.reflection[1];
+    second.brake_input = second.jump_input = second.rotate_negative_input =
+        second.rotate_positive_input = 0;
+}
 } // namespace
 
 DemoTrickButtons update_demo_controllers(ZoomZooState& state, bool pad_pressed) {
@@ -89,20 +101,15 @@ DemoTrickButtons update_demo_controllers(ZoomZooState& state, bool pad_pressed) 
     // $83:E256-E25F compares the incremented timer before storing it. A
     // timeout exits with the old value; a pad exit stores the new value.
     if (demo.elapsed + 1U == demo_duration) {
-        demo.exit_requested = true;
-        state.movement.player_input.horizontal = direction::neutral;
-        state.opponent_horizontal = direction::neutral;
-        for (auto& input : state.reflection)
-            input.brake_input = input.jump_input = input.rotate_negative_input =
-                input.rotate_positive_input = 0;
+        exit_demo(state);
         return {};
     }
     ++demo.elapsed;
-    // $83:E267-E276 sends a fade/sound sequence after this point; its visual
-    // state is handled by the demo transition, not the race controller.
-    (void)warning_at;
+    // $83:E262-E272: from the warning on, every update fades the music out, before the pad test
+    // (R-0096). Its picture is the demo transition's, not the race controller's.
+    if (demo.elapsed >= warning_at) race_sound::demo_fade(state);
     if (pad_pressed) {
-        demo.exit_requested = true;
+        exit_demo(state);
         return {};
     }
     DemoTrickButtons buttons;

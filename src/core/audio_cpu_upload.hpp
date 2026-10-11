@@ -5,9 +5,10 @@
 #include <vector>
 
 namespace unirally {
-// The sound sets a session can upload: the title/menu set (R-0075) and the race set with one
+// The sound sets a session can upload: the title/menu set (R-0075), the race set with one
 // of its five songs (R-0076, R-0077: resource 54's tables, the song's resource 62-66 and the
-// `$83:FC75` sample slots). The race ids follow the song resources in order.
+// `$83:FC75` sample slots), the medal award's, the gold endings' and the idle demo's (R-0096).
+// The race ids follow the song resources in order.
 enum class AudioSoundSetId : std::uint8_t {
     title,
     race_song_62,
@@ -15,10 +16,11 @@ enum class AudioSoundSetId : std::uint8_t {
     race_song_64,
     race_song_65,
     race_song_66,
-    award, // $83:A614: driver 50, tables 52, score 58 (R-0077)
-    ending // $83:A507: driver 51, tables 55, score 60
+    award,  // $83:A614: driver 50, tables 52, score 58 (R-0077)
+    ending, // $83:A507: driver 51, tables 55, score 60
+    demo    // $80:9440: driver 50, tables 52 (the award's), score 56 (R-0096)
 };
-constexpr unsigned first_race_song_resource = 62, race_song_resources = 5, sound_set_count = 8;
+constexpr unsigned first_race_song_resource = 62, race_song_resources = 5, sound_set_count = 9;
 inline bool is_race_sound_set(AudioSoundSetId id) {
     return id >= AudioSoundSetId::race_song_62 && id <= AudioSoundSetId::race_song_66;
 }
@@ -48,6 +50,7 @@ struct AudioCpuUploadData {
         std::array<std::uint8_t, 64> sample_slots{};
     };
     ScreenSet award, ending;
+    ScreenSet demo; // pack v39; its tables transfer is the award's (empty before)
     std::array<std::vector<std::uint8_t>, 58> sample_resources;
 };
 // Transport after the session's first native FF write. Ending at the third final

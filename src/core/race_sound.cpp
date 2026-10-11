@@ -71,6 +71,15 @@ void finish_fade(ZoomZooState& next) {
     dispatch(next, site);
     dispatch(next, site);
 }
+void demo_fade(ZoomZooState& next) {
+    constexpr std::uint8_t demo_fade_rate = 0x80; // $83:E267 `LDA #$0380`
+    enqueue(next, music_fade, demo_fade_rate);
+    dispatch(next, AudioDispatchSite::demo_fade);
+    dispatch(next, AudioDispatchSite::demo_fade);
+}
+AudioCue start_cue() {
+    return audio_enqueue(start_effect, countdown_beep);
+}
 void checkpoint(ZoomZooState& next, std::uint16_t velocity_x) {
     const auto speed = static_cast<std::int16_t>(velocity_x);
     const bool fast = speed >= fast_checkpoint || speed < -static_cast<int>(fast_checkpoint);
@@ -113,8 +122,7 @@ AudioCueList loading(std::uint32_t frames_to_initialization, RaceSoundLoadTiming
                      std::uint8_t track, std::uint8_t song_counter) {
     if (timing.upload_frames == 0) return {};
     const auto sound_upload = timing.upload_frames - 1;
-    if (frames_to_initialization == sound_upload + timing.start_cue_lead)
-        return {audio_enqueue(start_effect, countdown_beep)};
+    if (frames_to_initialization == sound_upload + timing.start_cue_lead) return {start_cue()};
     if (frames_to_initialization == sound_upload) return {audio_race_load(track, song_counter)};
     return {};
 }

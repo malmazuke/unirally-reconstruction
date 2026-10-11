@@ -6,6 +6,7 @@
 #include "cartridge_ram.hpp"
 #include "front_end.hpp"
 #include "front_end_screens.hpp"
+#include "race_demo_controls.hpp"
 #include "snes_screen.hpp"
 #include "text_printer.hpp"
 
@@ -2162,6 +2163,98 @@ void demo_name_tests() {
   require(run_to(credits, content, FrontEndScreen::main_menu, {}, 200));
 }
 
+// The cues of front-end frame `frame` (the frames before it run first).
+unirally::AudioCueList cues_of_frame(unirally::FrontEndState &state,
+                                     const unirally::FrontEndContent &content,
+                                     std::uint32_t frame) {
+  while (state.frame < frame)
+    unirally::update_front_end(state, content, {});
+  unirally::update_front_end(state, content, {});
+  return state.sound_cues;
+}
+
+// DEMO-AUDIO (R-0096): the idle demo's title loads the demo's set on its frame
+// 57 and reveals with the forward slide's sound; with no session to drop it,
+// the race's start cue plays (track 1: 6 frames before its initialization);
+// the way back loads the title's set; a later title, which holds its last
+// blank frame, plays the slide and waits in its hold frame.
+void demo_sound_tests() {
+  using unirally::audio_dispatch;
+  using unirally::audio_enqueue;
+  using unirally::audio_load;
+  using unirally::AudioDispatchSite;
+  using unirally::AudioSessionLoad;
+  std::vector<std::vector<std::uint8_t>> storage;
+  const auto content = synthetic_content(storage);
+  auto state = unirally::start_front_end();
+  const unirally::AudioCueList slide{audio_enqueue(8, 79), audio_enqueue(2, 2),
+                                     audio_dispatch(AudioDispatchSite::frame_wait)};
+  require(cues_of_frame(state, content, 957) ==
+          unirally::AudioCueList{audio_load(AudioSessionLoad::demo)});
+  require(cues_of_frame(state, content, 1032).empty());
+  require(cues_of_frame(state, content, 1033) == slide);
+  require(cues_of_frame(state, content, 1442) ==
+          unirally::AudioCueList{audio_enqueue(2, 15)});
+  run(state, content, 6);
+  require(state.mode_chosen && state.frame == 1449);
+  unirally::return_from_demo(state, 3348,
+                             unirally::front_end_screens::idle_demo_timer_exit);
+  require(cues_of_frame(state, content, 3353) ==
+          unirally::AudioCueList{audio_load(AudioSessionLoad::title_return)});
+  require(cues_of_frame(state, content, 4004) ==
+          unirally::AudioCueList{audio_load(AudioSessionLoad::demo)});
+  require(cues_of_frame(state, content, 4080).empty());
+  require(cues_of_frame(state, content, 4081) == slide && state.demo_title_held);
+  // A pad exit's two blank frames follow the way back's session, five frames
+  // after the exit; its frame 101 waits too.
+  auto pad = unirally::start_front_end();
+  run(pad, content, 1449);
+  unirally::return_from_demo(pad, 5000, 476);
+  require(cues_of_frame(pad, content, 5005) ==
+          unirally::AudioCueList{audio_load(AudioSessionLoad::title_return)});
+  require(cues_of_frame(pad, content, 5102).empty());
+  require(cues_of_frame(pad, content, 5103) ==
+          unirally::AudioCueList{audio_dispatch(AudioDispatchSite::frame_wait)});
+  // After the timer's exit from track 20 the session's upload runs a frame
+  // longer: its two waits come a frame later (R-0087).
+  auto held = unirally::start_front_end();
+  run(held, content, 1449);
+  held.tour_menu.track = 20;
+  unirally::return_from_demo(held, 49098,
+                             unirally::front_end_screens::idle_demo_timer_exit);
+  const unirally::AudioCueList wait{
+      audio_dispatch(AudioDispatchSite::frame_wait)};
+  require(held.demo_return_held && cues_of_frame(held, content, 49172).empty());
+  require(cues_of_frame(held, content, 49173) == wait &&
+          cues_of_frame(held, content, 49174) == wait &&
+          cues_of_frame(held, content, 49175).empty());
+  // The race fades the music out on every update from its warning (elapsed
+  // 0x714) on, before the pad test; the timer's exit update does not.
+  const unirally::AudioCueList fade{
+      audio_enqueue(3, 0x80), audio_dispatch(AudioDispatchSite::demo_fade),
+      audio_dispatch(AudioDispatchSite::demo_fade)};
+  unirally::ZoomZooState race{};
+  race.demo.elapsed = 0x0712;
+  (void)unirally::update_demo_controllers(race, false);
+  require(race.sound_cues.empty());
+  (void)unirally::update_demo_controllers(race, false);
+  require(race.sound_cues == fade && !race.demo.exit_requested);
+  race.sound_cues.clear();
+  // A pad exit skips the demo's input writes: the second rider's held
+  // rotation is released (the race reads pad 2 for a split race).
+  race.reflection[1].rotate_positive_input = 1;
+  race.opponent_horizontal = 2;
+  (void)unirally::update_demo_controllers(race, true);
+  require(race.sound_cues == fade && race.demo.exit_requested &&
+          race.reflection[1].rotate_positive_input == 0 &&
+          race.opponent_horizontal == 1);
+  race.sound_cues.clear();
+  race.demo = {};
+  race.demo.elapsed = unirally::front_end_screens::idle_demo_timer_exit;
+  (void)unirally::update_demo_controllers(race, false);
+  require(race.sound_cues.empty() && race.demo.exit_requested);
+}
+
 } // namespace
 
 int main() try {
@@ -2190,6 +2283,7 @@ int main() try {
   credits_picture_tests();
   faedine_tests();
   demo_name_tests();
+  demo_sound_tests();
   return 0;
 } catch (const std::exception &error) {
   std::fprintf(stderr, "%s\n", error.what());

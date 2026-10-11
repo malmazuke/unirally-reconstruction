@@ -1353,6 +1353,7 @@
   "comment": "instruction start",
   "label": "loc_8093FB",
   "source_records": [
+   "docs/research/R-0096-demo-audio.md",
    "tasks/COVERAGE-ROADMAP.md",
    "tasks/SPLIT-SCREEN-RACE.md"
   ]
@@ -1367,6 +1368,94 @@
   ],
   "source_records": [
    "docs/research/R-0082-split-captions.md"
+  ]
+ },
+ {
+  "address": "$80:9440",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_809440",
+  "native": [
+   "src/core/audio_cpu_upload.cpp:upload_of",
+   "src/core/audio_cpu_upload.hpp:AudioSoundSetId",
+   "src/core/audio_cue.hpp:AudioSessionLoad",
+   "src/core/demo_sound.cpp:demo_session_frame",
+   "src/core/title_menu_audio_content.cpp:load_demo_set"
+  ],
+  "source_records": [
+   "docs/research/R-0096-demo-audio.md",
+   "tasks/DEMO-AUDIO.md"
+  ]
+ },
+ {
+  "address": "$80:9452",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_809452",
+  "native": [
+   "src/core/audio_cpu_upload.cpp:upload_of",
+   "src/core/audio_cpu_upload.hpp:AudioSoundSetId",
+   "src/core/audio_cue.hpp:AudioSessionLoad",
+   "src/core/demo_sound.cpp:demo_session_frame",
+   "src/core/title_menu_audio_content.cpp:load_demo_set"
+  ],
+  "source_records": [
+   "docs/research/R-0096-demo-audio.md",
+   "tasks/DEMO-AUDIO.md"
+  ]
+ },
+ {
+  "address": "$80:9459",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_809459",
+  "native": [
+   "src/core/audio_cpu_upload.cpp:upload_of",
+   "src/core/audio_cpu_upload.hpp:AudioSoundSetId",
+   "src/core/audio_cue.hpp:AudioSessionLoad",
+   "src/core/demo_sound.cpp:demo_session_frame",
+   "src/core/title_menu_audio_content.cpp:load_demo_set"
+  ],
+  "source_records": [
+   "docs/research/R-0096-demo-audio.md"
+  ]
+ },
+ {
+  "address": "$80:9460",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_809460",
+  "native": [
+   "src/core/audio_cpu_upload.cpp:upload_of",
+   "src/core/audio_cpu_upload.hpp:AudioSoundSetId",
+   "src/core/audio_cue.hpp:AudioSessionLoad",
+   "src/core/audio_cued_scenes.cpp:start_music_at_full_gain",
+   "src/core/demo_sound.cpp:demo_session_frame",
+   "src/core/title_menu_audio_content.cpp:load_demo_set"
+  ],
+  "source_records": [
+   "docs/research/R-0096-demo-audio.md"
+  ]
+ },
+ {
+  "address": "$80:9477",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_809477",
+  "native": [
+   "src/core/demo_sound.cpp:demo_title_sounds"
+  ],
+  "source_records": [
+   "docs/research/R-0096-demo-audio.md"
+  ]
+ },
+ {
+  "address": "$80:9487",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_809487",
+  "source_records": [
+   "docs/research/R-0096-demo-audio.md"
   ]
  },
  {
@@ -1402,6 +1491,15 @@
   ],
   "source_records": [
    "tasks/IDLE-DEMO-ROTATION.md"
+  ]
+ },
+ {
+  "address": "$80:94D4",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_8094D4",
+  "source_records": [
+   "docs/research/R-0096-demo-audio.md"
   ]
  },
  {
@@ -2149,10 +2247,12 @@
   "label": "loc_80A0F7",
   "native": [
    "src/core/audio_cue.hpp:AudioSessionLoad",
+   "src/core/demo_sound.cpp:return_session_frames",
    "src/core/race_result.cpp:race_return_frame"
   ],
   "source_records": [
-   "docs/research/R-0076-first-race-audio.md"
+   "docs/research/R-0076-first-race-audio.md",
+   "docs/research/R-0096-demo-audio.md"
   ]
  },
  {
@@ -2163,10 +2263,27 @@
   "native": [
    "src/core/audio_cpu_upload.cpp:upload_of",
    "src/core/audio_cue.hpp:AudioSessionLoad",
+   "src/core/demo_sound.cpp:return_session_frames",
    "src/core/race_result.cpp:race_return_frame"
   ],
   "source_records": [
    "docs/research/R-0076-first-race-audio.md"
+  ]
+ },
+ {
+  "address": "$80:A10B",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80A10B",
+  "native": [
+   "src/core/audio_cpu_upload.cpp:upload_of",
+   "src/core/audio_cue.hpp:AudioSessionLoad",
+   "src/core/demo_sound.cpp:return_session_frames",
+   "src/core/race_result.cpp:race_return_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0096-demo-audio.md",
+   "tasks/DEMO-AUDIO.md"
   ]
  },
  {
@@ -2177,6 +2294,7 @@
   "native": [
    "src/core/audio_cpu_queue.cpp:native_audio_bootstrap_queue",
    "src/core/audio_cue.hpp:AudioSessionLoad",
+   "src/core/demo_sound.cpp:return_session_frames",
    "src/core/race_result.cpp:race_return_frame"
   ],
   "source_records": [
@@ -3162,7 +3280,8 @@
    "src/core/local_modes.cpp:return_to_local_continue"
   ],
   "source_records": [
-   "docs/research/R-0095-two-human-stunts.md"
+   "docs/research/R-0095-two-human-stunts.md",
+   "tasks/TWO-HUMAN-STUNTS.md"
   ]
  },
  {
@@ -3219,7 +3338,8 @@
    "src/core/local_modes.cpp:choose_next_track"
   ],
   "source_records": [
-   "docs/research/R-0095-two-human-stunts.md"
+   "docs/research/R-0095-two-human-stunts.md",
+   "tasks/TWO-HUMAN-STUNTS.md"
   ]
  },
  {
@@ -3561,12 +3681,14 @@
   "label": "sub_80B139",
   "native": [
    "src/core/audio_cpu_hunter_reveal.cpp:reveal_cue",
+   "src/core/demo_sound.cpp:demo_title_sounds",
    "src/core/front_end_screens.hpp:MenuSound",
    "src/core/screen_slide.cpp:play_menu_sound"
   ],
   "source_records": [
    "docs/research/R-0055-rider-menu.md",
-   "docs/research/R-0075-title-menu-audio.md"
+   "docs/research/R-0075-title-menu-audio.md",
+   "docs/research/R-0096-demo-audio.md"
   ]
  },
  {
@@ -5338,7 +5460,8 @@
    "src/core/local_modes.cpp:local_continue_frame"
   ],
   "source_records": [
-   "docs/research/R-0095-two-human-stunts.md"
+   "docs/research/R-0095-two-human-stunts.md",
+   "tasks/TWO-HUMAN-STUNTS.md"
   ]
  },
  {
@@ -5352,7 +5475,8 @@
    "src/core/now_playing.cpp:now_playing_frame"
   ],
   "source_records": [
-   "docs/research/R-0095-two-human-stunts.md"
+   "docs/research/R-0095-two-human-stunts.md",
+   "tasks/TWO-HUMAN-STUNTS.md"
   ]
  },
  {
@@ -6232,7 +6356,8 @@
    "src/core/rider_menu.cpp:enter_vs_challenger"
   ],
   "source_records": [
-   "docs/research/R-0095-two-human-stunts.md"
+   "docs/research/R-0095-two-human-stunts.md",
+   "tasks/TWO-HUMAN-STUNTS.md"
   ]
  },
  {
@@ -7321,6 +7446,7 @@
   "label": "loc_80E2D5",
   "native": [
    "src/core/audio_cpu_hunter_reveal.cpp:reveal_page",
+   "src/core/demo_sound.cpp:title_will_hold",
    "src/core/hunter_ending.cpp:(file)",
    "src/core/hunter_ending.cpp:hunter_ending_queue_waits",
    "src/core/hunter_ending.cpp:page_frame"
@@ -7351,12 +7477,14 @@
   "label": "loc_80E322",
   "native": [
    "src/core/audio_cpu_hunter_reveal.cpp:reveal_page",
+   "src/core/demo_sound.cpp:title_will_hold",
    "src/core/hunter_ending.cpp:(file)",
    "src/core/hunter_ending.cpp:hunter_ending_waits",
    "src/core/hunter_ending.cpp:reveal_step"
   ],
   "source_records": [
-   "docs/research/R-0064-hunter-ending-and-soft-reset.md"
+   "docs/research/R-0064-hunter-ending-and-soft-reset.md",
+   "docs/research/R-0096-demo-audio.md"
   ]
  },
  {
@@ -8022,7 +8150,8 @@
   "source_records": [
    "docs/research/R-0056-tour-track-now-playing.md",
    "docs/research/R-0092-wipe-ram.md",
-   "docs/research/R-0095-two-human-stunts.md"
+   "docs/research/R-0095-two-human-stunts.md",
+   "tasks/MENU-INPUT.md"
   ]
  },
  {
@@ -9355,6 +9484,7 @@
   "native": [
    "src/core/audio_cue.hpp:AudioDispatchSite",
    "src/core/audio_cued_scenes.cpp:frame_wait_anchor, race_early_anchor, race_late_anchor, countdown_anchor, finish_fade_anchor, race_choice_anchor, pause_anchor, pause_fade_anchor, pause_continue_anchor",
+   "src/core/demo_sound.cpp:return_first_wait",
    "src/core/front_end.cpp:FrameWaits",
    "src/core/front_end.cpp:ends_with_queue_wait",
    "src/core/front_end.hpp:FrontEndState::sound_cues",
@@ -9366,7 +9496,8 @@
   "source_records": [
    "docs/research/R-0054-boot-title-main-menu.md",
    "docs/research/R-0076-first-race-audio.md",
-   "docs/research/R-0095-two-human-stunts.md"
+   "docs/research/R-0095-two-human-stunts.md",
+   "docs/research/R-0096-demo-audio.md"
   ]
  },
  {
@@ -15091,7 +15222,8 @@
   "source_records": [
    "docs/research/R-0074-audio-foundation.md",
    "docs/research/R-0077-one-player-audio.md",
-   "tasks/AUDIO-ONE-PLAYER.md"
+   "tasks/AUDIO-ONE-PLAYER.md",
+   "tasks/DEMO-AUDIO.md"
   ]
  },
  {
@@ -17369,6 +17501,16 @@
   ]
  },
  {
+  "address": "$82:AA75",
+  "class": "observed",
+  "comment": "routine start",
+  "label": "sub_82AA75",
+  "source_records": [
+   "docs/research/R-0096-demo-audio.md",
+   "tasks/DEMO-AUDIO.md"
+  ]
+ },
+ {
   "address": "$82:AA7D",
   "class": "observed",
   "comment": "instruction start",
@@ -17547,6 +17689,7 @@
   "native": [
    "src/core/opponent_ai.cpp:update_opponent_controller",
    "src/core/race_demo_controls.cpp:demo_rider",
+   "src/core/race_demo_controls.cpp:exit_demo",
    "src/core/race_update.cpp:release_absent_opponent",
    "src/core/race_update.cpp:release_settled_opponent",
    "src/core/race_update.cpp:run_pause_menu",
@@ -17555,6 +17698,8 @@
   "source_records": [
    "docs/research/R-0048-race-guards.md",
    "docs/research/R-0079-two-pad-pause.md",
+   "docs/research/R-0096-demo-audio.md",
+   "tasks/DEMO-AUDIO.md",
    "tasks/RACE-GUARDS.md"
   ]
  },
@@ -18344,11 +18489,13 @@
    "src/core/race_setup.cpp:classic_crawler_zoom_zoo_start",
    "src/core/race_setup.cpp:start_countdown, base_speed_cap",
    "src/core/race_sound.hpp:loading",
+   "src/core/race_sound.hpp:start_cue",
    "src/core/zoom_zoo_movement.hpp:classic_crawler_zoom_zoo_start"
   ],
   "source_records": [
    "docs/research/R-0076-first-race-audio.md",
-   "docs/research/R-0077-one-player-audio.md"
+   "docs/research/R-0077-one-player-audio.md",
+   "docs/research/R-0096-demo-audio.md"
   ]
  },
  {
@@ -20373,7 +20520,8 @@
   ],
   "source_records": [
    "docs/research/R-0056-tour-track-now-playing.md",
-   "docs/research/R-0095-two-human-stunts.md"
+   "docs/research/R-0095-two-human-stunts.md",
+   "tasks/TWO-HUMAN-STUNTS.md"
   ]
  },
  {
@@ -20634,7 +20782,7 @@
   "native": [
    "src/core/audio_cpu_upload.cpp:upload_of",
    "src/core/audio_cue.hpp:AudioSessionLoad",
-   "src/core/audio_cued_scenes.cpp:start_title_music_after_award",
+   "src/core/audio_cued_scenes.cpp:start_music_at_full_gain",
    "src/core/award.cpp:(file)",
    "src/core/award.cpp:exit_blank_frame, menus_frame, exit_fade_in_frame, pick_tour_frame",
    "src/core/front_end.cpp:restore_menu_screen",
@@ -21985,6 +22133,7 @@
   ],
   "source_records": [
    "docs/research/R-0087-idle-demo-rotation.md",
+   "docs/research/R-0096-demo-audio.md",
    "tasks/AUDIO-ONE-PLAYER.md"
   ]
  },
@@ -23319,6 +23468,22 @@
   ]
  },
  {
+  "address": "$83:E25D",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83E25D",
+  "native": [
+   "src/core/race_demo_controls.cpp:(file)",
+   "src/core/race_demo_controls.cpp:update_demo_controllers",
+   "src/core/race_demo_controls.hpp:(file)",
+   "src/core/zoom_zoo_movement.hpp:DemoControllers"
+  ],
+  "source_records": [
+   "docs/research/R-0096-demo-audio.md",
+   "tasks/DEMO-AUDIO.md"
+  ]
+ },
+ {
   "address": "$83:E267",
   "class": "observed",
   "comment": "instruction start",
@@ -23328,10 +23493,48 @@
    "src/core/race_demo_controls.cpp:(file)",
    "src/core/race_demo_controls.cpp:update_demo_controllers",
    "src/core/race_demo_controls.hpp:(file)",
+   "src/core/race_sound.cpp:demo_fade",
+   "src/core/race_sound.hpp:demo_fade",
    "src/core/zoom_zoo_movement.hpp:DemoControllers"
   ],
   "source_records": [
-   "docs/research/R-0070-attract-demo.md"
+   "docs/research/R-0070-attract-demo.md",
+   "docs/research/R-0096-demo-audio.md"
+  ]
+ },
+ {
+  "address": "$83:E26E",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83E26E",
+  "native": [
+   "src/core/audio_cue.hpp:AudioDispatchSite",
+   "src/core/audio_cued_scenes.cpp:demo_fade_anchor, demo_load_anchor",
+   "src/core/front_end.cpp:front_end_screens::begin_demo_return",
+   "src/core/race_demo_controls.cpp:(file)",
+   "src/core/race_demo_controls.cpp:update_demo_controllers",
+   "src/core/race_demo_controls.hpp:(file)",
+   "src/core/race_sound.cpp:demo_fade",
+   "src/core/race_sound.hpp:demo_fade",
+   "src/core/zoom_zoo_movement.hpp:DemoControllers"
+  ],
+  "source_records": [
+   "docs/research/R-0096-demo-audio.md"
+  ]
+ },
+ {
+  "address": "$83:E2A9",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_83E2A9",
+  "native": [
+   "src/core/race_demo_controls.cpp:(file)",
+   "src/core/race_demo_controls.hpp:(file)",
+   "src/core/zoom_zoo_movement.hpp:DemoControllers"
+  ],
+  "source_records": [
+   "docs/research/R-0096-demo-audio.md",
+   "tasks/DEMO-AUDIO.md"
   ]
  },
  {
@@ -23341,11 +23544,14 @@
   "label": "loc_83E2BB",
   "native": [
    "src/core/race_demo_controls.cpp:(file)",
+   "src/core/race_demo_controls.cpp:exit_demo",
    "src/core/race_demo_controls.hpp:(file)",
    "src/core/zoom_zoo_movement.hpp:DemoControllers"
   ],
   "source_records": [
-   "docs/research/R-0070-attract-demo.md"
+   "docs/research/R-0070-attract-demo.md",
+   "docs/research/R-0096-demo-audio.md",
+   "tasks/DEMO-AUDIO.md"
   ]
  },
  {
@@ -23360,7 +23566,8 @@
    "src/core/zoom_zoo_movement.hpp:DemoControllers"
   ],
   "source_records": [
-   "docs/research/R-0069-split-screen-race.md"
+   "docs/research/R-0069-split-screen-race.md",
+   "docs/research/R-0096-demo-audio.md"
   ]
  },
  {
@@ -26134,6 +26341,21 @@
   "source_records": [
    "docs/research/R-0077-one-player-audio.md",
    "tasks/AUDIO-ONE-PLAYER.md"
+  ]
+ },
+ {
+  "address": "$83:FC35",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_83FC35",
+  "native": [
+   "src/core/content_pack.cpp:demo_audio_required",
+   "src/core/title_menu_audio_content.cpp:load_demo_set"
+  ],
+  "source_records": [
+   "docs/research/R-0096-demo-audio.md",
+   "tasks/DEMO-AUDIO.md",
+   "tasks/NEXT_SESSION.md"
   ]
  },
  {

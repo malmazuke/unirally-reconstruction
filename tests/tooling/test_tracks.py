@@ -29,6 +29,7 @@ V34_ENTRIES = 561  # the whole v34 inventory, before v35's pause messages
 V35_ENTRIES = 562  # the whole v35 inventory, before v36's WIPE RAM text
 V36_ENTRIES = 565  # the whole v36 inventory, before v37's name cheats
 V37_ENTRIES = 569  # the whole v37 inventory, before v38's REMATCH
+V38_ENTRIES = 570  # the whole v38 inventory, before v39's demo sound set
 
 
 def through_league(rules: dict) -> list[dict]:
@@ -718,7 +719,7 @@ class AudioEntryTests(unittest.TestCase):
         encoded = json.dumps(previous, sort_keys=True, separators=(",", ":")).encode()
         self.assertEqual(hashlib.sha256(encoded).hexdigest(),
                          "effb7714ee1fc6c7a655d07d21b19db9c2afbc0aa49a5ef9b8494ceaf6a522e7")
-        added = rules["entries"][V37_ENTRIES:]
+        added = rules["entries"][V37_ENTRIES:V38_ENTRIES]
         # $80:C120, a VS tie's REMATCH (R-0095).
         self.assertEqual([(e["id"], e["size"], e["source"]) for e in added],
                          [("front-end.vs-rematch-text", 10,
@@ -727,6 +728,32 @@ class AudioEntryTests(unittest.TestCase):
                          ["front-end.vs-rematch-text"])
         source = (ROOT / "src/core/content_pack.cpp").read_text(encoding="utf-8")
         table = source[source.index("two_human_stunts_required{{"):]
+        table = table[:table.index("}};")]
+        compiled = re.findall(r'\{"([^"]+)",\s*(\d+),\s*"([0-9a-f]{64})"\}', table)
+        self.assertEqual(compiled, [(e["id"], str(e["size"]), e["sha256"]) for e in added])
+
+    def test_demo_sound_set_preserves_v38_inventory(self) -> None:
+        import hashlib
+        import re
+        rules = json.loads((ROOT / "tests/manifests/content/classic-crawler-tracks-pack.json")
+                           .read_text(encoding="utf-8"))
+        previous = rules["entries"][:V38_ENTRIES]
+        encoded = json.dumps(previous, sort_keys=True, separators=(",", ":")).encode()
+        self.assertEqual(hashlib.sha256(encoded).hexdigest(),
+                         "2c4f0af167580fd0c5194e90b86409748d01a2170d82087f6d7ab93c13a3c82f")
+        added = rules["entries"][V38_ENTRIES:]
+        # $80:9440-9459: score 56 (`$93:F70C`, its data from `$93:F712`), the slots at
+        # `$83:FC35` and the samples they add (R-0093, R-0096).
+        self.assertEqual([(e["id"], e["size"]) for e in added],
+                         [("audio.demo-score", 2899), ("audio.demo-score-transfer", 2905),
+                          ("audio.demo-sample-slots", 64), ("audio.sample.02", 2425),
+                          ("audio.sample.23", 2020), ("audio.sample.34", 2911)])
+        self.assertEqual(added[0]["source"], {"kind": "raw", "pieces": [
+            {"file_offset": 0x9F712, "length": 2899}]})
+        self.assertEqual(added[2]["source"], {"kind": "raw", "pieces": [
+            {"file_offset": audio.DEMO_SAMPLE_SLOTS, "length": 64}]})
+        source = (ROOT / "src/core/content_pack.cpp").read_text(encoding="utf-8")
+        table = source[source.index("demo_audio_required{{"):]
         table = table[:table.index("}};")]
         compiled = re.findall(r'\{"([^"]+)",\s*(\d+),\s*"([0-9a-f]{64})"\}', table)
         self.assertEqual(compiled, [(e["id"], str(e["size"]), e["sha256"]) for e in added])

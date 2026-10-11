@@ -413,6 +413,17 @@ bool wipe_ram_answer_waits(const FrontEndState& state);
 inline constexpr std::uint16_t idle_demo_timer_exit = 0x076b;
 // The way back to the main menu after an idle demo, from its exit frame (`return_from_demo`).
 void begin_demo_return(FrontEndState& state, std::uint16_t demo_elapsed);
+// demo_sound.cpp (R-0096): the demo title's sounds on each of its frames: the demo's set on
+// frame 57 and the reveal's slide on the last blank frame, unless the title holds that frame.
+void demo_title_sounds(FrontEndState& state);
+// The title's hold frame plays the reveal's slide and waits (`held_demo_title_sounds`).
+void held_demo_title_sounds(FrontEndState& state);
+// The way back's sounds on each of its frames: the title's set.
+void demo_return_sounds(FrontEndState& state);
+// Where the demo's frame waits differ from the frames that turn the arrow (`waits_for_frame`):
+// the wait the title's hold frame takes over, and the way back's waits its session's upload moves.
+bool demo_frame_wait_dropped(const FrontEndState& state);
+bool demo_frame_wait_added(const FrontEndState& state);
 
 // credits_name.cpp: the rider-name cheats at each race's setup (`$83:FB8A`, R-0094). Whether the
 // first rider is named "credits", which shows the credits picture in place of the race.

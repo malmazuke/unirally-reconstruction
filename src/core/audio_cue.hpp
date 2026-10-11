@@ -20,11 +20,12 @@ enum class AudioDispatchSite : std::uint8_t {
     pause_fade,        // $83:F68A-F68E: the fade-out when the pause opens
     pause_continue,    // $83:F937-F93B: CONTINUE's fade-in
     split_finish_fade, // $83:E7F9, $83:E7FD: a split race's finish fade (MODE-AUDIO)
+    demo_fade,         // $83:E26E, $83:E272: the idle demo race's fade-out (DEMO-AUDIO)
 };
 // The laboratory cue logs' name of each site, in the enum's order.
-constexpr std::array<std::string_view, 10> audio_dispatch_site_names{
-    "wait",   "early", "late",       "countdown",      "finish",
-    "choice", "pause", "pause-fade", "pause-continue", "finish2"};
+constexpr std::array<std::string_view, 11> audio_dispatch_site_names{
+    "wait",  "early",      "late",           "countdown", "finish",   "choice",
+    "pause", "pause-fade", "pause-continue", "finish2",   "demo-fade"};
 inline std::string_view audio_dispatch_site_name(AudioDispatchSite site) {
     return audio_dispatch_site_names.at(static_cast<std::size_t>(site));
 }
@@ -39,14 +40,17 @@ enum class AudioSessionLoad : std::uint8_t {
     award_return, // $83:A721-A770 after either: the title set, then the title music start
     reset_boot,   // $80:A09A after a soft reset: the title set from a running driver, as after a
                   // race (R-0077)
+    demo,         // $80:9440-9471: the idle demo's set at its title, then the music start and
+                  // both gains (R-0096); the demo's race keeps it
 };
 // The laboratory cue logs' names of the sessions other than a race's ("race-RESOURCE").
-constexpr std::array<std::pair<AudioSessionLoad, std::string_view>, 5> audio_session_names{{
+constexpr std::array<std::pair<AudioSessionLoad, std::string_view>, 6> audio_session_names{{
     {AudioSessionLoad::title_return, "title"},
     {AudioSessionLoad::award, "award"},
     {AudioSessionLoad::ending, "ending"},
     {AudioSessionLoad::award_return, "title-award"},
     {AudioSessionLoad::reset_boot, "title-reset"},
+    {AudioSessionLoad::demo, "demo"},
 }};
 inline std::string_view audio_session_name(AudioSessionLoad load) {
     for (const auto& [session, name] : audio_session_names)

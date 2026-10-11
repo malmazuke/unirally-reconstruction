@@ -85,7 +85,8 @@ display, dependency and first-launch contracts.
 The opt-in option `--native-title-menu-audio` requires a v31 tracks pack and
 starts from power-on. Native title/menu music and navigation effects continue
 through the HUNTER pages and credits to a warm title/menu restart. Other menu
-exits stop this bounded audio producer. The default app remains silent; R-0075
+exits stop this bounded audio producer. Since MODE-AUDIO and DEMO-AUDIO (pack v39) it continues
+through 2P, VS, LEAGUE, OPTIONS and the idle demos and back to the menus. The default app remains silent; R-0075
 records the exact differential domain and accepted physical controller/listening
 check. That live run also reports 265,848 underrun pairs; continuous sound
 after every menu exit remains outside the bounded outcome.

@@ -22,6 +22,9 @@ struct TitleMenuAudioContent {
     // The medal award's and the gold endings' sets (pack v34; empty before).
     AudioSoundSet award, ending;
     bool has_screen_sets() const { return !award.tables.empty(); }
+    // The idle demo's set (pack v39; empty before), R-0096.
+    AudioSoundSet demo;
+    bool has_demo_set() const { return !demo.tables.empty(); }
     AudioPitchData pitch;
     AudioCpuUploadData upload;
     std::array<AudioCpuGraphicsAsset, 128> graphics{};

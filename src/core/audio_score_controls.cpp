@@ -227,6 +227,24 @@ void TitleMenuAudioScore::apply_pitch_control(std::uint8_t index, std::uint8_t c
         voice.release_relative = read_byte(index);
         voice.release_absolute = 0;
         break;
+    case 0x93:
+        // 0FD4-0FDF: the release at an absolute count (`$0271`), the relative one cleared.
+        add_work(34);
+        voice.release_absolute = read_byte(index);
+        voice.release_relative = 0;
+        break;
+    case 0x94:
+        // DEMO-AUDIO (R-0096), 0FE2-0FEE: a note-space slide, its amount (`$0281`) then its
+        // interval in updates (`$0280`); 0C80 and 0A65-0AA8 run it. The idle demo's score uses it.
+        add_work(30);
+        voice.arithmetic.slide_amount = read_byte(index);
+        voice.arithmetic.slide_interval = read_byte(index);
+        break;
+    case 0x95:
+        // 0FF1-0FF6: no slide from the next note on.
+        add_work(22);
+        voice.arithmetic.slide_interval = 0;
+        break;
     case 0x96:
         add_work(52);
         for (auto& parameter : voice.pitch_alternate) parameter = read_byte(index);

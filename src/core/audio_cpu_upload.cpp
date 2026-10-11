@@ -244,7 +244,8 @@ struct SetUpload {
     const std::array<std::uint8_t, 64>& slots;
 };
 // $80:A0FC-A10E (title), $83:CA2D-CB9D (a race, by song), $83:A614 (the award), $83:A507 (a gold
-// ending; its driver is resource 51) and $83:A721 (the title set again after either).
+// ending; its driver is resource 51), $83:A721 (the title set again after either) and
+// $80:9440-9455 (the idle demo; R-0096).
 SetUpload upload_of(const AudioCpuUploadData& data, AudioSoundSetId set) {
     if (is_race_sound_set(set)) {
         const auto score = race_song_resource_of(set);
@@ -258,6 +259,10 @@ SetUpload upload_of(const AudioCpuUploadData& data, AudioSoundSetId set) {
     if (set == AudioSoundSetId::ending)
         return {51, 55, 60, data.ending.tables_transfer, data.ending.score_transfer,
                 data.ending.sample_slots};
+    if (set == AudioSoundSetId::demo) {
+        const auto& demo = data.demo;
+        return {50, 52, 56, demo.tables_transfer, demo.score_transfer, demo.sample_slots};
+    }
     return {50, 53, 57, data.menu_transfer, data.title_transfer, data.sample_slots};
 }
 } // namespace

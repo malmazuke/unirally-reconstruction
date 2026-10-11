@@ -3,6 +3,7 @@
 #include "cartridge_ram.hpp"
 #include "content_pack.hpp"
 #include "front_end_screens.hpp"
+#include "race_sound.hpp"
 #include "text_printer.hpp"
 
 #include <algorithm>
@@ -224,7 +225,8 @@ bool waits_for_frame(const FrontEndState& state);
 // leave the arrow alone (the award's, the ending's, and `$83:879A`'s before the result's
 // scoring) poll it too. A race's frames are its own.
 bool ends_with_queue_wait(const FrontEndState& state) {
-    if (state.screen == FrontEndScreen::race) return false;
+    if (state.screen == FrontEndScreen::race || demo_frame_wait_dropped(state)) return false;
+    if (demo_frame_wait_added(state)) return true;
     if (state.screen == FrontEndScreen::race_result_exit
         && state.script_frame + 1 == result_scoring_frame(state))
         return true;
@@ -945,6 +947,7 @@ void front_end_screens::begin_demo_return(FrontEndState& state, std::uint16_t de
     // $83:E267-E276 calls $82:8035 twice before testing a late pad press.
     // The observed late-press return has one fewer blank picture.
     state.demo_return_wait = state.demo_return_interrupted ? (demo_elapsed >= 0x0714 ? 1 : 2) : 0;
+    state.demo_return_blank = state.demo_return_wait;
     // R-0087: after the races on these tracks the timer's return holds its frame 100 once. The
     // original's sound transfer there runs longer; its cause in the sound processor is open.
     constexpr std::array<std::uint8_t, 3> held_return_tracks{20, 24, 36};
@@ -1007,6 +1010,7 @@ std::uint32_t idle_demo_loading_frames(ClassicRaceTrack track) {
 // region above the wave is bright; below it the display is blank (R-0069).
 void demo_title_frame(FrontEndState& state, const FrontEndContent& content) {
     const auto frame = state.script_frame;
+    demo_title_sounds(state);
     if (frame == 1) {
         load_title(state, content);
         clear_oam_buffer(state);
@@ -1063,7 +1067,14 @@ void demo_title_frame(FrontEndState& state, const FrontEndContent& content) {
     // starts when the track has loaded (R-0087).
     constexpr unsigned choice_frame = 451;
     if (frame == choice_frame) choose_idle_demo(state);
-    if (frame == choice_frame + idle_demo_loading_frames(ClassicRaceTrack{state.tour_menu.track})) {
+    const ClassicRaceTrack track{state.tour_menu.track};
+    const auto race_frame = choice_frame + idle_demo_loading_frames(track);
+    // With no sound session to drop it, the race's start cue plays (R-0096).
+    if (frame > choice_frame
+        && frame + race_sound_load_timing(track, state.records.race_song_counter).start_cue_lead
+               == race_frame)
+        state.sound_cues.push_back(race_sound::start_cue());
+    if (frame == race_frame) {
         // The demo's race keeps the song counter: `$83:C9F6-CA05` skips `$83:CA08` (R-0077).
         state.mode_chosen = true;
         state.screen = FrontEndScreen::race;
@@ -1072,6 +1083,7 @@ void demo_title_frame(FrontEndState& state, const FrontEndContent& content) {
 
 void demo_return_frame(FrontEndState& state, const FrontEndContent& content) {
     const auto frame = state.script_frame;
+    demo_return_sounds(state);
     if (frame == 90) {
         load_main_menu_screen(state, content);
         lay_out_menu_objects(state);
@@ -1228,6 +1240,7 @@ void update_front_end(FrontEndState& state, const FrontEndContent& content, Fron
         state.demo_title_was_short = state.demo_title_short;
         state.demo_title_short = false;
         if (!state.demo_title_was_short) {
+            held_demo_title_sounds(state);
             ++state.frame;
             return;
         }

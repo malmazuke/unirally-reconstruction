@@ -1096,6 +1096,19 @@ const std::array<RequiredEntry, 1> two_human_stunts_required{{
     {"front-end.vs-rematch-text", 10,
      "1c17a9794525435663680c67107cf78c9f598144f12bc77370dcc93660706615"},
 }};
+// The idle demo's sound set (profile v39): its score (resource 56, `$93:F712`) with its
+// transfer, its sample slot table (`$83:FC35`) and the three samples it adds; its tables are the
+// award's. R-0096.
+const std::array<RequiredEntry, 6> demo_audio_required{{
+    {"audio.demo-score", 2899, "e98ab242349e8dce9b18b138db8eebc59bb17f85e2ea0b3a519ccf5df1d18c6b"},
+    {"audio.demo-score-transfer", 2905,
+     "2c4915c8d976e041fef6012189d7e88f390b7679fa75a8f45696818dd8d9345c"},
+    {"audio.demo-sample-slots", 64,
+     "960fd76d62a9b985ca50c1d1504aa98e8ec746ebfec7dd6cd71039bef6e32d2f"},
+    {"audio.sample.02", 2425, "b97d2762d8790871772d59d75031d2303fdbd3e70dcd6377d1d64b252cfeaf8b"},
+    {"audio.sample.23", 2020, "d7c50f16a909074560a585ee508709ce4c31eb2cd7b59c3538960a5fbeeacdbb"},
+    {"audio.sample.34", 2911, "f1b4bf29f5cae8df030f5b960c301f80da4cdf1901d9f571387a8cedac7457dd"},
+}};
 const std::array<RequiredEntry, 33> audio_required{{
     {"audio.menu-tables", 621, "e75d7872e341a636dc822616a202db6b8894196471c13d47f1b21d15f38fc407"},
     {"audio.title-score", 2200, "b4e402d0d05207e0ceadc32e8b4ebd4d052677c42f0e36f4ab5883c74ff1eb6b"},
@@ -1228,13 +1241,13 @@ std::array<std::uint8_t, 32> sha256(std::span<const std::uint8_t> source) {
 } // namespace
 
 namespace {
-constexpr std::array<std::string_view, 11> supported_profiles{
+constexpr std::array<std::string_view, 12> supported_profiles{
     "classic.pal.crawler.dragster.v1", "classic.pal.crawler.tracks.v29",
     "classic.pal.crawler.tracks.v30",  "classic.pal.crawler.tracks.v31",
     "classic.pal.crawler.tracks.v32",  "classic.pal.crawler.tracks.v33",
     "classic.pal.crawler.tracks.v34",  "classic.pal.crawler.tracks.v35",
     "classic.pal.crawler.tracks.v36",  "classic.pal.crawler.tracks.v37",
-    "classic.pal.crawler.tracks.v38"};
+    "classic.pal.crawler.tracks.v38",  "classic.pal.crawler.tracks.v39"};
 } // namespace
 
 std::span<const std::string_view> supported_pack_profiles() {
@@ -1265,6 +1278,8 @@ constexpr std::string_view credits_name_rules_sha =
     "5de464a25ad6f9b637b77b9781437a65630dd32e8d7e6eba243c47b577609df3";
 constexpr std::string_view two_human_stunts_rules_sha =
     "27d2f294bc5dbc85e2ca572a18322ae191fe711c2e9af18999b85528ce2a22c6";
+constexpr std::string_view demo_audio_rules_sha =
+    "b924e432850a0b54a0f1ddbc0b51c5dae01d3033b1e712d83befdac0f651c1e2";
 constexpr std::string_view wipe_ram_rules_sha =
     "2197ac131df15667004640dd5f2b62cf4fdbad7b5dfd9e5033a39a525754a089";
 constexpr std::string_view tracks_start = "classic.crawler.race-start.v2";
@@ -1287,7 +1302,8 @@ enum class PackVariant {
     pause_messages,
     wipe_ram,
     credits_name,
-    two_human_stunts
+    two_human_stunts,
+    demo_audio
 };
 struct PackHeader {
     PackVariant variant;
@@ -1306,7 +1322,8 @@ PackHeader read_pack_header(const std::vector<std::uint8_t>& bytes, Reader& in) 
         throw std::invalid_argument("Classic pack source ROM identity is unsupported");
     const auto profile = in.text();
     const auto start = in.text();
-    const auto variant = profile == supported_profiles[10] ? PackVariant::two_human_stunts
+    const auto variant = profile == supported_profiles[11] ? PackVariant::demo_audio
+                       : profile == supported_profiles[10] ? PackVariant::two_human_stunts
                        : profile == supported_profiles[9]  ? PackVariant::credits_name
                        : profile == supported_profiles[8]  ? PackVariant::wipe_ram
                        : profile == supported_profiles[7]  ? PackVariant::pause_messages
@@ -1323,7 +1340,8 @@ PackHeader read_pack_header(const std::vector<std::uint8_t>& bytes, Reader& in) 
     if (start != (tracks ? tracks_start : dragster_start))
         throw std::invalid_argument("Classic pack start state is unsupported");
     if (rules_identity
-        != hex_digest(variant == PackVariant::two_human_stunts     ? two_human_stunts_rules_sha
+        != hex_digest(variant == PackVariant::demo_audio           ? demo_audio_rules_sha
+                      : variant == PackVariant::two_human_stunts   ? two_human_stunts_rules_sha
                       : variant == PackVariant::credits_name       ? credits_name_rules_sha
                       : variant == PackVariant::wipe_ram           ? wipe_ram_rules_sha
                       : variant == PackVariant::pause_messages     ? pause_messages_rules_sha
@@ -1382,8 +1400,10 @@ std::vector<RequiredEntry> required_entries(PackVariant variant) {
         out.insert(out.end(), wipe_ram_required.begin(), wipe_ram_required.end());
     if (variant >= PackVariant::credits_name)
         out.insert(out.end(), credits_name_required.begin(), credits_name_required.end());
-    if (variant == PackVariant::two_human_stunts)
+    if (variant >= PackVariant::two_human_stunts)
         out.insert(out.end(), two_human_stunts_required.begin(), two_human_stunts_required.end());
+    if (variant == PackVariant::demo_audio)
+        out.insert(out.end(), demo_audio_required.begin(), demo_audio_required.end());
     return out;
 }
 

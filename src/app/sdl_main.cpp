@@ -263,8 +263,7 @@ void print_help() {
       << "the analog stick is not mapped. Either gamepad exits the idle demo.\n"
       << "Native audio (opt-in): --native-title-menu-audio (v31 pack: title "
          "and menus; v32: also\n"
-      << "the one-player game, 2P, VS, LEAGUE and OPTIONS; the idle demo stays "
-         "silent).\n"
+      << "the one-player game, 2P, VS, LEAGUE, OPTIONS and the idle demos).\n"
       << "Saves: --save-file PATH keeps the cartridge RAM (records, players, "
          "leagues, open tours)\n"
       << "between runs, loaded at power-on and written when it changes; an "
@@ -519,10 +518,11 @@ int main(int argc, char **argv) try {
   std::optional<unirally::app::FrontEndSession> waiting_front_end;
   std::uint32_t demo_race_updates = 0;
   std::uint32_t scripted_race_frame = 0;
-  // Native audio past the 1P menu exit (D-0010): with it, a race waits its
+  // Native audio past the main menu's exit (D-0010): with it, a race waits its
   // track's measured loading frames, as the original does, while the race's
   // sound program loads (R-0077: every track and song); production stops
-  // where the sound domain is not recovered (another mode, the demo).
+  // where the sound domain is not recovered (a race with no measured loading).
+  // The idle demo's race has no sound session and starts at once (R-0096).
   std::uint32_t race_loading_remaining = 0, race_initialization_frame = 0;
   bool audio_stopped = false;
   std::ofstream audio_cue_log;
@@ -671,14 +671,13 @@ int main(int argc, char **argv) try {
       }
       if (front_end) {
         audio_cues = front_end->sound_cues();
-        if (!front_end->cued_audio_mode())
-          audio_stopped = true;
-        if (race_chosen && native_audio && !audio_stopped) {
+        if (race_chosen && native_audio && !audio_stopped &&
+            !front_end->demo_race()) {
           // The cued producer covers the races the menus reach with a measured
           // loading (R-0076, R-0077: every one-player race, local and league
-          // races on tracks 0-4); any other stops the audio.
+          // races on tracks 0-4) and the idle demos; any other stops the audio.
           const auto loading = front_end->race_loading_frames();
-          if (loading == 0 || front_end->demo_race())
+          if (loading == 0)
             audio_stopped = true;
           else {
             race_loading_remaining = loading;

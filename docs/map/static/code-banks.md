@@ -46,7 +46,7 @@ The four classes partition all 131,072 bytes. **Unknown share: 24.0%**.
 
 ## Cited addresses
 
-1967 distinct code-bank ROM addresses cited by the research, task, inventory and content records (`labels.json`). By position: dat 16, loc 1302, mid 30, sub 436, unk 183 (sub routine start, loc instruction start, mid inside an instruction, dat data, unk unknown). By class: data 16, inferred 86, observed 1682, unknown 183.
+1980 distinct code-bank ROM addresses cited by the research, task, inventory and content records (`labels.json`). By position: dat 16, loc 1313, mid 30, sub 437, unk 184 (sub routine start, loc instruction start, mid inside an instruction, dat data, unk unknown). By class: data 16, inferred 87, observed 1693, unknown 184.
 
 Cited addresses in `unknown` bytes:
 
@@ -232,6 +232,7 @@ Cited addresses in `unknown` bytes:
 | $83:FB56 | docs/research/R-0094-name-cheats.md |
 | $83:FB70 | docs/research/R-0094-name-cheats.md |
 | $83:FBF5 | docs/research/R-0077-one-player-audio.md, tasks/AUDIO-ONE-PLAYER.md |
+| $83:FC35 | docs/research/R-0096-demo-audio.md, tasks/DEMO-AUDIO.md, tasks/NEXT_SESSION.md |
 | $83:FC75 | docs/research/R-0076-first-race-audio.md, docs/research/R-0077-one-player-audio.md, tasks/AUDIO-FIRST-RACE.md, tasks/AUDIO-ONE-PLAYER.md |
 | $83:FCF5 | docs/research/R-0076-first-race-audio.md, tasks/AUDIO-TITLE-MENU.md |
 | $83:FD35 | docs/research/R-0077-one-player-audio.md, tasks/AUDIO-ONE-PLAYER.md |
