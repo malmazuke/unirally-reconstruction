@@ -2,7 +2,7 @@
 
 ## Assignment
 
-- Status: **in review** (PR #72, round 3), claimed 10 October 2026 on main `ef8e440`, in the session the user asked
+- Status: **accepted** (tier 1, PR #72, approved in review round 3 at `0c70896`), claimed 10 October 2026 on main `ef8e440`, in the session the user asked
   to keep working until weekly usage reaches 50% (23% at claim). Queued by
   [COVERAGE-GAPS](COVERAGE-GAPS.md) (R-0089, queue item 5); SAVE-FILES (R-0090) and MODE-AUDIO
   added the two-human restart's records and VS mode 2's counters to it. DATA-COVERAGE runs in a
@@ -106,3 +106,12 @@ the records differing after a two-human restart (`$0422`, `$0486`, `$0829`, `$08
 - Fourth-pass results in `local/evidence/two-human-stunts/pass4/final/`: race sweep 0 differences;
   front-end sweep 61/179 equal against main, the 51 more differing in hidden state only (OPTIONS,
   league slots), pictures as main's, none further from the original but the recorded league ones.
+
+## Review round 3 (approved)
+
+- Approved at `0c70896` (https://github.com/malmazuke/unirally-reconstruction/pull/72#pullrequestreview-5483242370):
+  W4 and W4b equal, the slide word's writers and NEXT TRACK's loop checked against the ROM, and a
+  new capture W5 confirming the OPTIONS change (6 of 51 OPTIONS manifests closer, none further).
+  Gates at `0c70896` passed (`local/evidence/two-human-stunts/gates-0c70896.out`).
+- Advisories handed to [MENU-INPUT](MENU-INPUT.md): OPTIONS' hidden markers after the rename
+  keyboard, and DEFINE PLAYER's pick writing `$017D` (W5).
