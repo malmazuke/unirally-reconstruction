@@ -493,6 +493,13 @@ void check_local_restore(const unirally::ZoomZooState& race_state,
         return;
     }
     const auto saved = unirally::serialize_zoom_zoo(race_state);
+    // A stunt event with two humans (URTRnn0M, R-0095): the round trip, then the continuation.
+    if (saved.size() > 7 && saved[7] == 'M') {
+        restored = unirally::deserialize_zoom_zoo(saved);
+        if (unirally::serialize_zoom_zoo(*restored) != saved)
+            throw std::runtime_error("two-human stunt save did not round-trip");
+        return;
+    }
     // A VS race appends its banner drivers after the trailer (R-0081), pad 2's open pause menu
     // one byte after them (R-0079).
     const auto lower_view = race_state.pause.lower_view ? 1U : 0U;
@@ -500,7 +507,7 @@ void check_local_restore(const unirally::ZoomZooState& race_state,
     // DRAGSTER's two-pad layouts are H and I, ZOOM ZOO's F and G.
     const bool dragster = race_state.track == unirally::ClassicRaceTrack::Dragster;
     if (saved.size() != 831 + versus + lower_view || saved[7] != (dragster ? 'H' : 'F'))
-        throw std::runtime_error("local save is not layout H or F");
+        throw std::runtime_error("local save is not layout H, F or M");
     restored = unirally::deserialize_zoom_zoo(saved);
     if (unirally::serialize_zoom_zoo(*restored) != saved)
         throw std::runtime_error("local DRAGSTER save did not round-trip");
@@ -639,6 +646,10 @@ void update_local_race(const Options& options, const unirally::ClassicContentPac
     write_race_state(local ? race_timeline : one_player_timeline, frame, race.state);
     if (!over) return;
     const auto& times = *over;
+    if (restored_local) {
+        std::cerr << "local restore continued to the race's end at " << frame << '\n';
+        restored_local.reset();
+    }
     unirally::return_from_race(front_end, content, frame, times);
     std::cerr << "race returned at " << frame << "; totals " << times.player_total << '/'
               << times.opponent_total << "; initialized at " << race.initialization_frame

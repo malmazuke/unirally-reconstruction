@@ -38,6 +38,22 @@ inline constexpr std::uint8_t someone = 0x10;
 // arrow on the sound upload's last frame and `$80:D20E`'s first, then from the OAM copy on
 // (the restore frame).
 inline constexpr std::uint32_t upload_last_frame = 74, menu_screen_frame = 75, restore_frame = 101;
+// The podium's way back (R-0095): left on the podium's phase 2 or 3 (`$82:DF06`), its arrow turns
+// and comes back a frame later than on phase 0 or 1. Measured on four podium presses a frame
+// apart (organic-cycle-five and its podium-press variants) and organic-full-tour-turnaround.
+inline bool podium_arrow_late(const FrontEndState& state) {
+    return (state.league.podium_phase & 2U) != 0;
+}
+// The pads the menus' tests read through the gate `$77:0742` (`$80:B6D3-B82B`; R-0095).
+inline std::uint16_t gated_pads(const FrontEndState& state, FrontEndPads pads) {
+    return static_cast<std::uint16_t>((state.pad_one_ignored ? 0U : pads.one)
+                                      | (state.pad_two_ignored ? 0U : pads.two));
+}
+// `$83:9543` (pad 1 alone), `$83:952E` (pad 2 alone) and `$83:9558` (both).
+inline void gate_pads(FrontEndState& state, bool pad_one, bool pad_two) {
+    state.pad_one_ignored = !pad_one;
+    state.pad_two_ignored = !pad_two;
+}
 // The result screen's third frame, its tail (`$80:9579`); after a lap result's second frame's
 // overrun it starts without a frame wait.
 inline constexpr std::uint32_t result_tail_frame = 3;
@@ -77,8 +93,13 @@ inline std::uint8_t& oam_byte(FrontEndState& state, unsigned entry, unsigned fie
 // Leaving the result (R-0057, R-0060): `$83:879A` scores on the exit's second frame, after
 // `$83:A923`'s wait; when `$80:C786` placed a time its checksums run past their frame, and the
 // scoring comes a frame later. Neither of those frames moves the arrow.
+// In a league the pair's points and the awards' printing (about 176 scanlines) come before the
+// awards' first frame wait, so it takes both riders' placings (three checksum runs) to push them a
+// frame on (R-0095: traced on organic-stunt-tricks' DRAGSTER, two placings, and its BOWL, one).
 inline std::uint32_t result_scoring_frame(const FrontEndState& state) {
-    return state.race_result.record_placed ? 3 : 2;
+    const auto placed = state.race_result.records_placed;
+    if (state.mode == FrontEndMode::league) return placed >= 2 ? 3 : 2;
+    return placed != 0 ? 3 : 2;
 }
 // $83:9E47: the rider's best time (or score) on the track, `$77:0829 + 2 x (50 x rider + track)`.
 inline std::uint16_t& personal_best(OnePlayerRecords& records, unsigned rider, unsigned track) {
@@ -94,9 +115,14 @@ std::uint8_t best_medal(const FrontEndState& state);
 std::uint16_t tour_qualifying_score(const FrontEndState& state, const FrontEndContent& content);
 // $80:F53F: the logo held up.
 void raise_logo(FrontEndState& state);
-// A stunt result's third frame (R-0067): its streams' printing ran past the second frame's end,
-// so the text's upload starts without a frame wait.
+// A stunt result's third frame (R-0067): in one-player play its streams' printing ran past the
+// second frame's end, so the text's upload starts without a frame wait. Without the 1P dashes
+// (`$80:F3E0`) the printing ends inside the second frame, which then shows the text, and the
+// result runs a frame earlier from there (R-0095).
 inline constexpr std::uint32_t stunt_text_frame = 3;
+inline bool stunt_text_runs_over(const FrontEndState& state) {
+    return state.one_player;
+}
 
 // $83:A721 after the award: the menus' registers, colours, VRAM, text and objects as `$80:D20E`
 // leaves them, without its reset of the menus' words; the logo held up; NMI on.
@@ -159,7 +185,7 @@ void start_silent_slide(FrontEndState& state, const FrontEndContent& content, bo
 // (command 2) on the sound queue (R-0076): the result's, a choice's, the slides' and a move's.
 // `refused` is $80:B0FA, a move's cue from its own helper, played where a choice is turned down:
 // an empty name, a league of fewer than two or more than eight. The original also plays it when
-// the champion is picked as challenger ($80:C0B1-C0BB); native does not refuse that pick.
+// the champion is picked as challenger ($80:C0B1-C0BB).
 enum class MenuSound : std::uint8_t {
     result,
     select,
@@ -186,9 +212,27 @@ void enter_vs_challenger(FrontEndState& state);
 
 // Local result continuation and VS champion ranking (R-0071).
 void enter_local_continue(FrontEndState& state);
+void return_to_local_continue(FrontEndState& state, const FrontEndContent& content);
+// Whether Y on `from` returns to the two-human continuation (`continuation_back`).
+bool returns_to_continuation(const FrontEndState& state, FrontEndScreen from);
 void local_continue_entry_frame(FrontEndState& state, const FrontEndContent& content);
 void local_continue_frame(FrontEndState& state, const FrontEndContent& content, FrontEndPads pads);
-void enter_vs_champions(FrontEndState& state);
+void enter_vs_champions(FrontEndState& state, const FrontEndContent& content);
+// $83:99C2 (`$80:C026`): a VS race whose totals, or stunt event whose scores, are equal is no
+// contest: it counts nothing and shows REMATCH (`$80:C02C`).
+bool versus_tie(const RaceTimes& times);
+void enter_vs_rematch(FrontEndState& state, const FrontEndContent& content);
+void vs_rematch_frame(FrontEndState& state, const FrontEndContent& content, FrontEndPads pads);
+// VS CHAMPIONS' frames without a row (R-0095): `$80:C786` starts a frame's work, each of its
+// checksum runs (`$83:90F4`, about 165 scanlines; once, and again for each placed time or score)
+// pushes `$80:F8E7` on, and the header, the sort and the first row (about 181 scanlines) end in a
+// frame wait that waits for the next frame. With exactly one placing that wait comes in the frame
+// the header starts; otherwise in the next, and the rows start a frame later. Traced at
+// `$80:C786`, `$80:F8E7`, `$80:F905`, `$80:F949` and `$80:FADF` on vs-bowl (two placings), w3's
+// DRAGSTER (two) and w2b's third race (one).
+inline std::uint32_t champions_overrun_frames(const FrontEndState& state) {
+    return state.race_result.records_placed == 1 ? 0 : 1;
+}
 void vs_champions_entry_frame(FrontEndState& state, const FrontEndContent& content);
 void vs_champions_frame(FrontEndState& state, const FrontEndContent& content, FrontEndPads pads);
 

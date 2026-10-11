@@ -119,6 +119,15 @@ std::array<char, 3> stunt_score_cells(std::uint16_t score, std::array<char, 3> h
     return held;
 }
 
+std::array<char, 3> split_stunt_score_cells(std::uint16_t score, std::array<char, 3> held) {
+    const auto cells = decimal_cells(score);
+    unsigned column = 0; // `$052B`, stepped only by a written cell
+    if (cells.hundreds > 0) held[column++] = hud_character(cells.hundreds);
+    if (cells.hundreds + cells.tens > 0) held[column++] = hud_character(cells.tens);
+    held[column] = hud_character(cells.units);
+    return held;
+}
+
 // $81:CDB8-CE0F: a zero hundreds count becomes -1, and then the tens and units move left one
 // cell and the third takes `$80:822A`, which the pictures show blank (bowl-lose `0/68`).
 std::string stunt_qualifying_text(std::uint16_t qualifying_score) {
@@ -290,7 +299,7 @@ void ClassicRaceHudClock::clear_after_pause(const ZoomZooState& previous,
 // - `$034F`, rider 1's clock: `$81:C6D1-C6DC` asks for its digits on the update after the top
 //   clock's tick (`$0E29` = 1) while rider 1 is unfinished, so a VS race's forced finish leaves
 //   the last digits written; its last crossing asks for the blank (`$81:824E`). A stunt event's
-//   count-down clock asks for both clocks together ($81:C7EE-C7F1).
+//   count-down clock asks for both clocks together on every tick ($81:C7EE-C7F1).
 // - `$0EE9`, rider 1's caption: its consumer (`$81:BEF1-BF31`) takes an event into `$0EC7`
 //   (`$81:C05C-C0A0`), or, on its first dry look after a take (`$11C3`), copies the blank
 //   message (`$81:BFB9-BFD0`).
@@ -301,9 +310,11 @@ void ClassicRaceHudClock::request_split_fields(const ZoomZooState& previous,
     if (before.laps_remaining != 0 && after.laps_remaining == 0) pending_.lower_clock_blank = true;
     const bool stunt_event = classic_race_scenario(updated.track).stunt_event;
     const auto& timer = updated.movement.timer;
-    if (!after.finished
-        && (stunt_event ? latest_.lower_clock != classic_hud_clock(classic_hud_timer(updated))
-                        : timer.subframe == 1U))
+    // A stunt event's tick asks for the lower clock with the top one ($81:C7EE-C7F1), the
+    // stopping tick too, on which both riders finish (R-0095).
+    const bool stunt_tick = latest_.lower_clock != classic_hud_clock(classic_hud_timer(updated))
+                         || (updated.stunt.clock_stopped && !previous.stunt.clock_stopped);
+    if (stunt_event ? stunt_tick : !after.finished && timer.subframe == 1U)
         pending_.lower_clock = true;
     const auto& queue_before = previous.movement.rewards;
     const auto& queue_after = updated.movement.rewards;
@@ -431,14 +442,22 @@ void ClassicRaceHudClock::request_fields(const ZoomZooState& previous,
 // R-0068: a stunt event's own requests. The clock's stopping tick sets `$034D` without new
 // digits. `$81:C357-C3D0`, at the end of the player's queue consumer, compares the score
 // `$77:07BB` with the one it last split (`$12B9`) and, when they differ, splits it and sets
-// `$12C9`: on the update a trick's points are paid, the update its caption is taken.
+// `$12C9`: on the update a trick's points are paid, the update its caption is taken. It then
+// does the same for rider 1's score `$77:0825` (`$12BB`, `$12CB`; `$81:C3D3-C43B`, R-0095),
+// which only the split chain writes.
 void ClassicRaceHudClock::request_stunt_fields(const ZoomZooState& previous,
                                                const ZoomZooState& updated) {
     if (updated.stunt.clock_stopped && !previous.stunt.clock_stopped) pending_.clock_rewrite = true;
     const auto score = updated.player_announcements.queue.feature_total;
-    if (score == score_buffer_) return;
-    score_buffer_ = score;
-    pending_.score = true;
+    if (score != score_buffer_) {
+        score_buffer_ = score;
+        pending_.score = true;
+    }
+    const auto opponent_score = updated.movement.rewards.feature_total;
+    if (opponent_score != opponent_score_buffer_) {
+        opponent_score_buffer_ = opponent_score;
+        pending_.opponent_score = true;
+    }
 }
 
 // A checkpoint crossing's cells: the first rider through a slot stores the clock and draws
@@ -545,10 +564,22 @@ void ClassicRaceHudClock::service_one_field(const ZoomZooState& updated) {
     }
     if (split && service_split_clock(updated)) return;
     if (service_cells(updated)) return;
-    // $81:F28B-F303: a stunt event's score field, before the caption.
+    // $81:F28B-F303: a stunt event's score field, before the caption. The split chain's
+    // (`$81:E705-E82E`, R-0095) writes the player's from column 2, or when the player's is not
+    // pending rider 1's, in its own view.
     if (pending_.score) {
-        latest_.score_cells = stunt_score_cells(score_buffer_, latest_.score_cells);
+        if (split)
+            latest_.split_score_cells =
+                split_stunt_score_cells(score_buffer_, latest_.split_score_cells);
+        else
+            latest_.score_cells = stunt_score_cells(score_buffer_, latest_.score_cells);
         pending_.score = false;
+        return;
+    }
+    if (split && pending_.opponent_score) {
+        latest_.opponent_score_cells =
+            split_stunt_score_cells(opponent_score_buffer_, latest_.opponent_score_cells);
+        pending_.opponent_score = false;
         return;
     }
     // $81:F30C-$81:F34D, the last task: the caption rows take the buffer's sixteen characters.
@@ -891,6 +922,21 @@ void draw_split_hud(RgbFrame& frame, const ZoomZooState& state,
     }
     draw_bg3_text(frame, font, 13, 3, hud.player_cells, ink, inked);
     draw_bg3_text(frame, font, 13, 17, hud.opponent_cells, opponent_ink, inked);
+    // R-0095: a stunt event's scores from column 2 of rows 11 and 25 as the split chain last wrote
+    // them; without that history, from the state (a score only grows, so its digits stand).
+    if (content.scenario.stunt_event) {
+        const auto cells = [](std::uint16_t score) {
+            return score ? split_stunt_score_cells(score, {' ', ' ', ' '})
+                         : std::array<char, 3>{' ', ' ', ' '};
+        };
+        const auto top = published ? published->split_score_cells
+                                   : cells(state.player_announcements.queue.feature_total);
+        const auto bottom = published ? published->opponent_score_cells
+                                      : cells(state.movement.rewards.feature_total);
+        draw_bg3_text(frame, font, 2, 11, std::string(top.begin(), top.end()), ink, inked);
+        draw_bg3_text(frame, font, 2, 25, std::string(bottom.begin(), bottom.end()), opponent_ink,
+                      inked);
+    }
     // $81:E87C-E8C5: rider 1's caption, all sixteen cells from column 8 of rows 19-20 (R-0080).
     if (const auto caption = classic_caption_text(opponent_caption_event, content.captions)) {
         std::string line;

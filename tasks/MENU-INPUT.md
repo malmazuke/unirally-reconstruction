@@ -25,3 +25,12 @@ Placing the menus' sounds (R-0091) read input handling native does not have:
 
 Each captured from the original and made native, with the menus' frozen comparisons unchanged
 elsewhere.
+
+## Added by TWO-HUMAN-STUNTS (review round 3, 11 October 2026)
+
+- OPTIONS' hidden PICK TRACK markers still differ after returning from the rename keyboard (W5:
+  939 frames against main's 1251); the generic list loop's marker turn (`$80:EB23`) is native only
+  in OPTIONS and the continuation, not the league slots or RECORDS.
+- DEFINE PLAYER's pick writes the rider word `$017D` natively (2) but not in the original (0), so
+  the next 1P rider menu starts on another rider (W5 from frame 2943). Capture:
+  `local/evidence/two-human-stunts-review/` W5.

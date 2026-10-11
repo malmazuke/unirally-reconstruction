@@ -176,19 +176,19 @@ void the_finish() {
 
 void tallies_and_captions() {
     StuntEvent stunt;
-    tally_stunt_trick(stunt, 0, 4);   // roll x1
-    tally_stunt_trick(stunt, 0, 0);   // a weight of 0 still counts
-    tally_stunt_trick(stunt, 34, 12); // tabletop: mega x2
-    tally_stunt_trick(stunt, 30, 1);  // z flip city: z flip x4
+    tally_stunt_trick(stunt.tallies, 0, 4);   // roll x1
+    tally_stunt_trick(stunt.tallies, 0, 0);   // a weight of 0 still counts
+    tally_stunt_trick(stunt.tallies, 34, 12); // tabletop: mega x2
+    tally_stunt_trick(stunt.tallies, 30, 1);  // z flip city: z flip x4
     require(stunt.tallies[trick_family::roll][0] == TrickTally{2, 4}, "roll x1");
     require(stunt.tallies[trick_family::mega][1] == TrickTally{1, 12}, "mega x2");
     require(stunt.tallies[trick_family::z_flip][3] == TrickTally{1, 1}, "z flip x4");
-    for (int k = 0; k < 255; ++k) tally_stunt_trick(stunt, 8, 1);
+    for (int k = 0; k < 255; ++k) tally_stunt_trick(stunt.tallies, 8, 1);
     require(stunt.tallies[trick_family::flip][0] == TrickTally{255, 255}, "flip x1");
-    tally_stunt_trick(stunt, 8, 1);
+    tally_stunt_trick(stunt.tallies, 8, 1);
     require(stunt.tallies[trick_family::flip][0] == TrickTally{0, 256}, "a one-byte count");
-    rejects([&] { tally_stunt_trick(stunt, 40, 1); }, "past the table");
-    rejects([&] { tally_stunt_trick(stunt, 3, 1); }, "an odd class");
+    rejects([&] { tally_stunt_trick(stunt.tallies, 40, 1); }, "past the table");
+    rejects([&] { tally_stunt_trick(stunt.tallies, 3, 1); }, "an odd class");
     // $83:E940-E957: a 16-bit difference's sign.
     require(stunt_finish_announcement(68, 68) == announcement::draw, "equal draws");
     require(stunt_finish_announcement(49, 68) == announcement::loser, "below loses");
@@ -319,9 +319,18 @@ void league_state_guards() {
     state.league_statistics.tricks[1][19] = 255;
     state.league_statistics.wipeouts[1] = 65535;
     state.league_statistics.opponent_points[19] = 65535;
+    // R-0095: rider 1's stunt tallies are the league's counts, which add up to its score.
+    state.stunt.opponent_tallies[4][3] = {255, 65535};
+    state.movement.rewards.feature_total = 65535;
     auto saved = serialize_zoom_zoo(state);
     const auto restored = deserialize_zoom_zoo(saved);
     require(serialize_zoom_zoo(restored) == saved, "paired stunt wrapper round trip");
+    require(restored.stunt.opponent_tallies == state.stunt.opponent_tallies,
+            "rider 1's tallies rebuilt from the league's counts");
+    auto unpaid = state;
+    unpaid.movement.rewards.feature_total = 65534;
+    rejects([&] { (void)deserialize_zoom_zoo(serialize_zoom_zoo(unpaid)); },
+            "rider 1's tallies that do not add up to its score");
     auto bad = saved;
     bad[12] = 0;
     rejects([&] { (void)deserialize_zoom_zoo(bad); }, "human opponent needs split view");
@@ -355,6 +364,42 @@ void league_state_guards() {
     race.movement.rewards.cooldown = 118;
     rejects([&] { (void)deserialize_zoom_zoo(serialize_zoom_zoo(race)); },
             "a race's hold of 118 without hints");
+}
+
+// R-0095: a stunt event with two humans from the 2P or VS menus (URTRnn0M): the stunt layout,
+// the split trailer with the pairing, rider 1's tallies, then a VS race's banner drivers. Rider
+// 1's tallies add up to its score; the pairing is the menus'.
+void two_pad_state() {
+    const SyntheticStunt stunt;
+    for (const bool versus : {false, true}) {
+        auto state =
+            classic_race_start(stunt.content, classic_local_race_scenario(ClassicRaceTrack{2}, {0, 2}));
+        state.split_screen = true;
+        state.versus = versus;
+        state.stunt.opponent_tallies[2][0] = {1, 8};
+        state.movement.rewards.feature_total = 8;
+        const auto saved = serialize_zoom_zoo(state);
+        require(saved.size() == 1006U + 89U + 80U + (versus ? 8U : 0U) && saved[7] == 'M',
+                "a two-pad stunt event's layout");
+        const auto restored = deserialize_zoom_zoo(saved, {0, 2}, true, {}, state.race_counter);
+        require(restored.split_screen && restored.versus == versus
+                    && restored.stunt.opponent_tallies == state.stunt.opponent_tallies
+                    && serialize_zoom_zoo(restored) == saved,
+                "a two-pad stunt event round trip");
+        rejects([&] { (void)deserialize_zoom_zoo(saved, {0, 3}, true, {}, state.race_counter); },
+                "another pairing than the state's");
+        auto unpaid = state;
+        unpaid.movement.rewards.feature_total = 9;
+        rejects([&] { (void)deserialize_zoom_zoo(serialize_zoom_zoo(unpaid)); },
+                "rider 1's tallies that do not add up to its score");
+        auto paid_for_nothing = saved;
+        paid_for_nothing[1006 + 89 + 2 * 16] = 0; // TWST x1's count, its points left
+        rejects([&] { (void)deserialize_zoom_zoo(paid_for_nothing); }, "points for no trick");
+    }
+    // One player: rider 1, the switched-off computer, shows no trick to tally.
+    auto alone = classic_race_start(stunt.content, classic_race_scenario(ClassicRaceTrack{2}));
+    alone.stunt.opponent_tallies[0][0] = {1, 0};
+    rejects([&] { (void)serialize_zoom_zoo(alone); }, "a one-player rider 1 tally");
 }
 
 void league_finish_waits_for_both() {
@@ -420,6 +465,7 @@ int main() {
         tallies_and_captions();
         the_state();
         league_state_guards();
+        two_pad_state();
         league_finish_waits_for_both();
         the_finish_sequence();
         the_cooldowns();

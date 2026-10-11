@@ -44,10 +44,12 @@ std::span<const std::uint8_t> tour_text(const FrontEndContent& content, TourText
     return {text.data(), text.size() + 1};
 }
 
-std::uint8_t tour_level(const FrontEndState& state) { // $83:9F14 in 1P
-    if (state.mode == FrontEndMode::league)
+// $83:9F14: in 1P (`$77:10AD` = 1) the rider's level; otherwise (2P, VS, a league) the highest
+// of all riders' ($83:9F30; R-0073, R-0095).
+std::uint8_t tour_level(const FrontEndState& state) {
+    if (!state.one_player)
         return *std::max_element(state.records.tour_levels.begin(),
-                                 state.records.tour_levels.end()); // $83:9F30; R-0073
+                                 state.records.tour_levels.end());
     return state.records.tour_levels[state.rider_menu.rider & 0x0fU];
 }
 
@@ -315,6 +317,14 @@ void tour_menu_entry_frame(FrontEndState& state, const FrontEndContent& content)
             menu.revealing = true;
             return;
         }
+        // $80:E5A5-E5AD: only one-player play shows the medals (`$80:974B`); with two humans the
+        // menu's loop starts in the slide's last frame (R-0095).
+        if (!state.one_player) {
+            menu.cursor = menu.tour;
+            aim_tour_arrow(state, content);
+            state.screen = FrontEndScreen::tour_menu;
+            return;
+        }
         show_medal_entries(state);
         return;
     }
@@ -324,9 +334,10 @@ void tour_menu_frame(FrontEndState& state, const FrontEndContent& content, Front
     auto& menu = state.tour_menu;
     copy_oam(state); // $80:D1EC
     step_decorations(state, content);
-    move_tour_cursor(state, content, pads.one);
-    const bool choose = (pads.one & choose_buttons) != 0;
-    const bool back = (pads.one & back_buttons) != 0;
+    const auto pad = gated_pads(state, pads); // R-0095
+    move_tour_cursor(state, content, pad);
+    const bool choose = (pad & choose_buttons) != 0;
+    const bool back = (pad & back_buttons) != 0;
     if (!choose && !back) {
         aim_tour_arrow(state, content);
         return;
@@ -361,12 +372,17 @@ void tour_menu_frame(FrontEndState& state, const FrontEndContent& content, Front
         }
         return;
     }
+    if (back && returns_to_continuation(state, FrontEndScreen::tour_menu)) {
+        return_to_local_continue(state, content); // $80:AF24-AF2B
+        return;
+    }
     if (back) {
         menu.back = true;
         return_to_rider_menu(state);
         return;
     }
     menu.back = false;
+    state.slide_word = 1; // $80:BC10, $80:BFCE, $80:AF2E
     enter_track_menu(state, false);
 }
 

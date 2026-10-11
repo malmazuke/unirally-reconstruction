@@ -110,6 +110,8 @@ the public interface; `front_end_screens.hpp` is internal to the front end.
 | `now_playing.cpp` | NOW PLAYING (R-0056): the match, the race line, the record, Race's fade and Exit |
 | `race_result.cpp` | After a race (R-0057, R-0060): the race's end for the menus (its result load or its pause menu's quit or restart), the return, the one-run result screen and its waits, the records and the scoring, then PICK TRACK; a restart back to NOW PLAYING |
 | `lap_result.cpp` | A lap race's result (R-0058): the graph's build and animation, the best laps and the streams |
+| `stunt_result.cpp` | A stunt event's result (R-0067, R-0095): the trick tally, the best scores, the qualifying score against the computer or rider 1's own tally with a second human |
+| `local_modes.cpp` | After a 2P or VS result (R-0071, R-0095): the five-choice continuation, VS CHAMPIONS from the VS counts, and a VS tie's REMATCH |
 | `award.cpp` | A tour's completion (R-0059): the medal award screen and its animation, the menus' restore, the unlock rule, PICK TOUR and on to PICK TRACK |
 | `hunter_ending.cpp` | HUNTER's gold ending (HUNTER-ENDING): the newspaper pages and their HDMA reveal, the waits, the credits and the soft reset |
 | `wipe_ram.cpp` | The main menu's WIPE RAM code (R-0092): the WIPE RAM and MAIN MENU menu, the warning, the cartridge RAM's reset or its cancel, their messages and the waits for a press |

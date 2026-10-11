@@ -22,8 +22,8 @@ The four classes partition all 131,072 bytes. **Unknown share: 24.0%**.
 | Instructions from observed | 35,735 |
 | Instructions from table | 65 |
 | Routines | 759 |
-| Routines cited by native code | 537 |
-| Routine bytes cited by native code | 69,761 |
+| Routines cited by native code | 554 |
+| Routine bytes cited by native code | 71,195 |
 | Gap sweep candidate instructions | 647 |
 | Gap sweep candidate bytes | 1,341 |
 | Jump tables | 2 |
@@ -46,7 +46,7 @@ The four classes partition all 131,072 bytes. **Unknown share: 24.0%**.
 
 ## Cited addresses
 
-1873 distinct code-bank ROM addresses cited by the research, task, inventory and content records (`labels.json`). By position: dat 16, loc 1225, mid 29, sub 424, unk 179 (sub routine start, loc instruction start, mid inside an instruction, dat data, unk unknown). By class: data 16, inferred 72, observed 1606, unknown 179.
+1967 distinct code-bank ROM addresses cited by the research, task, inventory and content records (`labels.json`). By position: dat 16, loc 1302, mid 30, sub 436, unk 183 (sub routine start, loc instruction start, mid inside an instruction, dat data, unk unknown). By class: data 16, inferred 86, observed 1682, unknown 183.
 
 Cited addresses in `unknown` bytes:
 
@@ -109,6 +109,7 @@ Cited addresses in `unknown` bytes:
 | $80:ABB9 | docs/research/R-0092-wipe-ram.md |
 | $80:AD1F | docs/research/R-0054-boot-title-main-menu.md, tasks/FRONT-END-MAIN-MENU.md |
 | $80:AE3F | docs/research/R-0071-two-player-versus.md |
+| $80:AE81 | docs/research/R-0095-two-human-stunts.md |
 | $80:B205 | docs/research/R-0056-tour-track-now-playing.md |
 | $80:B4F6 | docs/research/R-0056-tour-track-now-playing.md |
 | $80:B50A | docs/research/R-0084-two-human-restart.md |
@@ -117,6 +118,7 @@ Cited addresses in `unknown` bytes:
 | $80:B6C2 | docs/research/R-0072-options.md |
 | $80:BCAF | docs/research/R-0055-rider-menu.md |
 | $80:C10E | docs/research/R-0071-two-player-versus.md |
+| $80:C120 | docs/research/R-0095-two-human-stunts.md |
 | $80:C1DE | docs/research/R-0072-options.md |
 | $80:C3DC | docs/research/R-0053-result-title-printer.md |
 | $80:C709 | docs/research/R-0046-track-breadth-matrix.md, docs/research/R-0053-result-title-printer.md, tasks/RESULT-TITLE-GLYPHS.md |
@@ -140,7 +142,7 @@ Cited addresses in `unknown` bytes:
 | $80:E80F | docs/research/R-0056-tour-track-now-playing.md |
 | $80:E824 | docs/research/R-0056-tour-track-now-playing.md |
 | $80:E82E | docs/research/R-0056-tour-track-now-playing.md |
-| $80:E842 | docs/research/R-0056-tour-track-now-playing.md |
+| $80:E842 | docs/research/R-0056-tour-track-now-playing.md, docs/research/R-0095-two-human-stunts.md |
 | $80:EA40 | docs/research/R-0056-tour-track-now-playing.md |
 | $80:EA58 | docs/research/R-0056-tour-track-now-playing.md |
 | $80:EB61 | docs/research/R-0056-tour-track-now-playing.md |
@@ -157,7 +159,7 @@ Cited addresses in `unknown` bytes:
 | $80:F491 | docs/research/R-0067-stunt-result.md |
 | $80:F4A3 | docs/research/R-0067-stunt-result.md |
 | $80:F4B4 | docs/research/R-0067-stunt-result.md |
-| $80:F4B5 | docs/research/R-0067-stunt-result.md |
+| $80:F4B5 | docs/research/R-0067-stunt-result.md, docs/research/R-0095-two-human-stunts.md |
 | $80:F618 | docs/research/R-0054-boot-title-main-menu.md |
 | $80:F7E7 | docs/research/R-0067-stunt-result.md |
 | $80:F9EE | docs/research/R-0071-two-player-versus.md |
@@ -166,6 +168,8 @@ Cited addresses in `unknown` bytes:
 | $80:FC2F | docs/research/R-0073-league.md |
 | $80:FC5C | docs/research/R-0056-tour-track-now-playing.md |
 | $80:FFC0 | docs/research/R-0001-rom-identity.md, docs/research/R-0045-static-code-map.md |
+| $81:8000 | tasks/ACCESS-ROUND-READS.md |
+| $81:8001 | tasks/ACCESS-ROUND-READS.md |
 | $81:A342 | docs/research/R-0046-track-breadth-matrix.md |
 | $81:A343 | docs/research/R-0046-track-breadth-matrix.md, docs/research/R-0066-stunt-event-race.md |
 | $81:A388 | docs/research/R-0046-track-breadth-matrix.md |

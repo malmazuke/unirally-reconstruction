@@ -61,7 +61,9 @@ void return_to_main(FrontEndState& state, const FrontEndContent& content) {
 void enter_options_menu(FrontEndState& state, const FrontEndContent& content) {
     // $80:B626-B639, $80:EF4D; R-0072 observation 1.
     state.mode = FrontEndMode::options;
-    state.decorations.delay = 0;
+    // $80:B626-B639; R-0072 observation 1. `$0089`, the main menu's idle count, is the decorations'
+    // delay from here: its low byte counts down until it goes negative, then from 2 (R-0095).
+    state.decorations.delay = static_cast<std::uint8_t>(state.menu.idle);
     print_choices(state, content, content.options_menu_text);
     state.screen = FrontEndScreen::options_entry;
 }
@@ -73,7 +75,7 @@ void return_to_options_menu(FrontEndState& state, const FrontEndContent& content
 
 void options_entry_frame(FrontEndState& state, const FrontEndContent& content) {
     if (state.script_frame == 1) {
-        copy_oam(state);
+        // `$80:EF4D` prints and waits without an OAM copy; the slide's passes copy it (R-0095).
         start_slide(state, content, false);
         return;
     }
@@ -81,6 +83,7 @@ void options_entry_frame(FrontEndState& state, const FrontEndContent& content) {
     state.menu.selection = 0;
     aim_choice(state, content.options_arrow_columns);
     state.latches = {};
+    turn_markers(state, content); // $80:B93C runs into `$80:EB23` (R-0095)
     state.screen = FrontEndScreen::options_menu;
 }
 
@@ -121,7 +124,10 @@ void options_menu_frame(FrontEndState& state, const FrontEndContent& content, Fr
         return_to_main(state, content);
         return;
     }
-    if (!(pad & choose_buttons)) return;
+    if (!(pad & choose_buttons)) {
+        turn_markers(state, content); // $80:B97A's `$80:EB23` (R-0095)
+        return;
+    }
     if (state.menu.selection == 0) {
         enter_records_menu(state, content);
         return;
@@ -923,7 +929,10 @@ void clear_defined_player(FrontEndState& state) {
     std::fill_n(records.rider_names.begin() + static_cast<std::size_t>(rider) * 16, 8,
                 std::uint8_t{'_'});
     records.statistics[rider].fill(0);
+    records.versus_today[rider] = records.versus_races[rider] = records.versus_wins[rider] = 0;
     records.tour_levels[rider] = 0;
+    // $83:9BB5: the best times' loop starts from track 0 in `$00CE`, the chosen track (R-0095).
+    state.tour_menu.track = 0;
     const auto cold = cold_start_records();
     for (unsigned track = 0; track < 50; ++track)
         records.best[static_cast<std::size_t>(rider) * 50 + track] =
