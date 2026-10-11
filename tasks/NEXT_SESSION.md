@@ -1,6 +1,6 @@
 # Next session
 
-**11 October 2026: DEMO-AUDIO is in review (tier 1) on `task/demo-audio`.**
+**12 October 2026: DEMO-AUDIO is accepted (tier 1, #77) and integrated by merge commit.**
 The idle demos now have native sound, and the app's audio producer runs through them and back to
 the menus. The demo turns out to have its own sound set (driver 50, the award's tables, score 56,
 the slots at `$83:FC35`). Score 56 is R-0093's unpacked block at `$93:F712`, and pack v39 adds it

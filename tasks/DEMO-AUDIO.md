@@ -2,7 +2,7 @@
 
 ## Assignment
 
-- Status: **in review** (tier 1). Claimed 11 October 2026 on main `2c42589` by the session that ran DATA-COVERAGE and
+- Status: **accepted** 12 October 2026 (tier 1, [#77](https://github.com/malmazuke/unirally-reconstruction/pull/77)), integrated by merge commit. Claimed 11 October 2026 on main `2c42589` by the session that ran DATA-COVERAGE and
   EVIDENCE-RETENTION (Claude Code desktop app, Claude Opus 5.5 `claude-opus-5-5`; coordinator and
   integrator; a worker subagent implements). Queued 10 October by [MODE-AUDIO](MODE-AUDIO.md)
   (R-0091). Weekly usage at claim 42%.
@@ -190,6 +190,21 @@ binaries (`base-2c42589`, built from `git archive 2c42589`):
   `league-two` 2 differing frames (R-0091's residuals). Twelve R-0077 schedules equal; R-0076's
   seven identical to main; the cold cartridge image equal.
 - Tooling tests 564 passed; functions over 80 lines 0; native symbols current.
+
+## Review
+
+- **Round 1** ([review](https://github.com/malmazuke/unirally-reconstruction/pull/77#pullrequestreview-5482336818),
+  `5b6ab8d`): returned. The findings were a pad exit dropping the rotation sound, the way back
+  holding a frame after it, a comment and formatting. Answered in `39376e1`: the exit inputs are
+  fixed, the held way back is recorded as not predictable, and the comment and formatting are
+  corrected.
+- **Round 2** ([review](https://github.com/malmazuke/unirally-reconstruction/pull/77#pullrequestreview-5483973039),
+  merged head `b24cbbd`): approved, no new findings.
+  - Finding 1 is confirmed fixed on `rv-late-split` and on two new pad exits (`rv-oneview-rot`,
+    `rv-split-r2`).
+  - The merge with TWO-HUMAN-STUNTS (v38) is checked, and v39 rebuilt from the ROM is
+    byte-identical.
+  - The app's late-output drops are only the boot's silent first drop, so not a blocker.
 
 ## Handoff
 
