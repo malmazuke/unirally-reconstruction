@@ -1,5 +1,26 @@
 # Project state
 
+**11 October 2026: ACCESS-REGISTER-ORDER is accepted (tier 2, #75) and integrated by merge commit.**
+The access derivation now applies the frame's register stores to its DMA parameter shadow in
+instruction order. Before, a store resolved through a pointer reached the shadow after every
+direct store of the frame, so a DMA enable stored that way logged the frame's last channel
+parameters. Two synthetic tests fail before the fix; the independent review approved. R-0089's corpus re-measured (236 runs): no
+record has a resolved register store, every reduced run and R-0093's totals are byte-identical,
+so R-0093 stands. [ACCESS-REGISTER-ORDER](../tasks/ACCESS-REGISTER-ORDER.md) has the details.
+
+**11 October 2026: ACCESS-ROUND-READS is accepted (tier 2, #74) and integrated by merge commit.**
+The access derivation now records only the resolution round it keeps. Before, a round discarded for
+a conflict, or a resolution dropped after the last round, left its ROM reads (and stored values,
+register stores and DMA log entries) in the record. A round is now kept once it reproduces the
+writes it was resolved against, so a frame that settles in two or three rounds keeps its accesses
+instead of dropping them; records count frames by rounds (`resolution_rounds`).
+
+Results: R-0089's corpus re-measured (236 runs, 1,666,993 frames): no frame needed more than one
+round, every reduced run and R-0093's totals are byte-identical, so R-0093 stands. Nine synthetic
+tests cover the multi-round paths. Offered as a separate task: resolved register stores reach the
+DMA log's register shadow after the frame's direct stores.
+[ACCESS-ROUND-READS](../tasks/ACCESS-ROUND-READS.md) has the details.
+
 **11 October 2026: EVIDENCE-RETENTION frees 88 GiB of disk (131 GB of files) under [D-0011](decisions/D-0011-evidence-retention.md).**
 On the user's instruction, captures that no current gate, in-flight task, recently merged task
 or tool reference reads are deleted, and their recipes are kept: manifests, capture scripts,
