@@ -100,6 +100,58 @@ derived cues `*.cues.txt`, `demo-cold-full` (events gzipped, `SHA256SUMS`), `con
 - Optional: control 93 has a unit test; with a pack before v39 the app now reports
   `native_audio_cued_stopped=1` (checked: 0 cued frames, stopped 1).
 
+## Merge of main `962fb9b` (TWO-HUMAN-STUNTS) - merge commit `ff98d87`
+
+- Conflicts resolved:
+  - `content_pack.cpp`: v38 (`two_human_stunts`) then v39 (`demo_audio`); v38's entries with
+    `>=`, the demo's with `==`; `demo_audio_rules_sha` is the merged manifest's digest
+    (`b924e432...`).
+  - The rules manifest: main's v38 manifest (570 entries) plus the demo's six from
+    `audio.v39_new_entries`, profile v39.
+  - `pack.py`: `TWO_TRACK_PROFILE` v39, `PREVIOUS_TRACK_PROFILE` v38, `LEGACY_TRACK_PROFILE` v37.
+  - `test_tracks.py`: main's REMATCH test reads `[V37_ENTRIES:V38_ENTRIES]`; the demo test checks
+    v38's inventory digest (`2c4f0af1...`, 570 entries) before its own six.
+  - `test_frontend.py`: the default pack name `tracks-v39`.
+  - The maps: main's, then regenerated.
+  - `race_update.cpp` and the front-end files merged without conflict; both sides kept.
+- `local/classic-pal-crawler-tracks-v39.pack` is rebuilt from the merged rules (576 entries, sha
+  `75137754...`). The pre-merge one (v37 plus the demo entries), which the review's round 1 and
+  round 2 runs read, is kept as `local/classic-pal-crawler-tracks-v39-premerge-acd838b.pack`.
+- Main's binaries for the gates: `local/evidence/demo-audio/base-962fb9b` (built from
+  `git archive 962fb9b`; lab-release, and lab-debug's `zoom_zoo_runner`).
+
+## Gates - head `ff98d87` (main `local/evidence/demo-audio/gates-ff98d87.out`)
+
+- Against main `962fb9b`'s binaries (pack v38), with TWO-HUMAN-STUNTS's two checks added. Four
+  presets build, ctest 41 of 41 each. The synthetic suite passed on app-debug and on lab-debug.
+  The v1 contracts, hidden app runs and front end passed. Fuzz is as on main (40 aborts: a
+  recorded non-pass).
+- Eleven differential gates with main's row digests. Race sweep 432 runs, 0 differences;
+  front-end sweep 179 of 179. Every pause, two-pad, race-end, look, restart and restore
+  comparison as recorded, and the track sweeps equal main. The idle demo lap is 34 of 34, with
+  pictures 963 of 1,006.
+- TWO-HUMAN-STUNTS: the league's frozen pictures rc 0, and `pass4/checks4.sh`'s lines identical
+  to its own run (`gates-0c70896.out`). CREDITS-NAME and WIPE-RAM as recorded.
+- MODE-AUDIO's five schedules: 0 differing frames each (main's slides fixed by TWO-HUMAN-STUNTS).
+  The twelve R-0077 schedules are equal, and R-0076's seven identical to main.
+- DEMO-AUDIO cues as before:
+
+| Schedule | Frames differing |
+|---|---:|
+| `demo-long` | 6 |
+| `demo-pad-early` | 0 |
+| `demo-pad-late` | 2 |
+| `demo-pad-port2` | 4 |
+| `demo-cold` | 2 |
+| `rv-early-p2` | 2 |
+| `rv-long` | 12 |
+| `rv-late-split` | 183 (1 shifted) |
+
+- The conditional driver check is equal.
+- The app: 12,100 cued frames, never stopped, no drops after the boot's silence. Its cue log
+  equals the runner's.
+- Tooling tests 576 passed; functions over 80 lines 0; native symbols current.
+
 ## Gates - head `39376e1`, after review round 1 (main `local/evidence/demo-audio/gates-39376e1.out`)
 
 - Same script with the review's schedules added; main `2c42589`'s binaries (main's native code is
@@ -143,7 +195,7 @@ binaries (`base-2c42589`, built from `git archive 2c42589`):
 
 - Commits: `c61cb41` (native change), `a5c496c` (way back, anchors, R-0096, maps), `edd6f54`
   (gates, handoff), the coordinator's `89a1802`/`7b63161`/`5b6ab8d`, then `39376e1` (review round
-  1) and this record. Working tree clean.
+  1), `acd838b` (its gates), the merge of main `ff98d87` and this record. Working tree clean.
 - Review round 1 also changed `race_update.cpp` (`read_second_pad` split out of the two-pad
   branch; the demo's exit reads pad 2 and the player's A and X) and `race_demo_controls.cpp`.
 - Shared files with TWO-HUMAN-STUNTS, kept small: `front_end.cpp` (include `race_sound.hpp`; one
@@ -151,10 +203,6 @@ binaries (`base-2c42589`, built from `git archive 2c42589`):
   race switch; the hold frame's call; two lines in `ends_with_queue_wait`; one in
   `begin_demo_return`), `front_end.hpp` (`demo_return_blank`, and the review's formatting of the line above it), `front_end_screens.hpp` (the
   `demo_sound.cpp` declarations). `content_pack.cpp`: the v39 profile, rules digest, variant and
-  `demo_audio_required`. On rebase onto v38, insert v38 before v39 (variant order, `>=` on
-  credits_name/v38), recompute the manifest's digest in `demo_audio_rules_sha`, set
-  `PREVIOUS_TRACK_PROFILE` to v38, update `V37_ENTRIES`/the v37 inventory digest in
-  `test_tracks.py`, rebuild `local/classic-pal-crawler-tracks-v39.pack` (the local one is v37 plus
-  the demo entries) and rerun the cue schedules.
-- The static map and native symbols are regenerated at `a5c496c`; regenerate after the rebase.
+  `demo_audio_required`, now after main's v38 (merge `ff98d87`, above).
+- The static map and native symbols are regenerated at the merge `ff98d87`.
 - Next: the demo title's pad exit (picture and sound) and a model of the short titles, if wanted.
