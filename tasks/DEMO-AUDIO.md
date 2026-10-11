@@ -2,7 +2,7 @@
 
 ## Assignment
 
-- Status: **claimed** 11 October 2026 on main `2c42589` by the session that ran DATA-COVERAGE and
+- Status: **in review** (tier 1). Claimed 11 October 2026 on main `2c42589` by the session that ran DATA-COVERAGE and
   EVIDENCE-RETENTION (Claude Code desktop app, Claude Opus 5.5 `claude-opus-5-5`; coordinator and
   integrator; a worker subagent implements). Queued 10 October by [MODE-AUDIO](MODE-AUDIO.md)
   (R-0091). Weekly usage at claim 42%.
