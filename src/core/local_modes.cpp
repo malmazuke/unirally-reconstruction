@@ -119,6 +119,7 @@ void enter_local_continue(FrontEndState& state) {
     state.latches = {};
     state.continuation_back = FrontEndScreen::boot;
     state.continuation_returning = false;
+    state.slide_word = 1; // $80:ADF8
     state.screen = FrontEndScreen::local_continue_entry;
 }
 
@@ -132,6 +133,7 @@ bool returns_to_continuation(const FrontEndState& state, FrontEndScreen from) {
 void return_to_local_continue(FrontEndState& state, const FrontEndContent& content) {
     enter_local_continue(state);
     state.continuation_returning = true;
+    state.slide_word = 2; // $80:ADFA from a choice's Y
     print_continue(state, content);
 }
 
@@ -158,6 +160,19 @@ void local_continue_entry_frame(FrontEndState& state, const FrontEndContent& con
 }
 
 namespace {
+
+// $80:AE96-AECC: the next track, after the last (44) the first, on until its tour is open
+// (`$83:9F14` against `$80:E842`), with the select sound for each track tried ($80:AEAD;
+// R-0095).
+void choose_next_track(FrontEndState& state, const FrontEndContent& content) {
+    constexpr std::uint8_t tracks = 45;
+    auto& track = state.tour_menu.track;
+    do {
+        track = static_cast<std::uint8_t>(track + 1 >= tracks ? 0 : track + 1);
+        play_menu_sound(state, MenuSound::select);
+        state.tour_menu.tour = static_cast<std::uint8_t>(track / tracks_per_tour); // $83:99A8
+    } while (!tour_open(state, content, state.tour_menu.tour));
+}
 
 // $80:B93C: the cursor on NEXT TRACK and the arrow sent to it.
 void open_local_continue(FrontEndState& state) {
@@ -226,11 +241,12 @@ void local_continue_frame(FrontEndState& state, const FrontEndContent& content, 
         turn_markers(state, content);
         return;
     }
-    gate_pads(state, true, true); // $80:C0E0
+    // The pad gate stays as the challenger's pick left it while the continuation (`$80:C0DD JSR
+    // $ADE3`) runs its choice's screens; `$80:C0E0` opens both pads once it returns, on NOW
+    // PLAYING's Race or on QUIT (R-0095).
     switch (state.menu.selection) {
-    case 0: // NEXT TRACK, with the select sound ($80:AEAD)
-        play_menu_sound(state, MenuSound::select);
-        state.tour_menu.track = static_cast<std::uint8_t>(state.tour_menu.track + 1);
+    case 0: // NEXT TRACK
+        choose_next_track(state, content);
         enter_now_playing(state);
         state.continuation_back = FrontEndScreen::now_playing;
         return;
@@ -238,15 +254,18 @@ void local_continue_frame(FrontEndState& state, const FrontEndContent& content, 
         enter_now_playing(state);
         state.continuation_back = FrontEndScreen::now_playing;
         return;
-    case 2: // SELECT TRACK
+    case 2:                   // SELECT TRACK
+        state.slide_word = 1; // $80:AEF5
         enter_track_menu(state, false);
         state.continuation_back = FrontEndScreen::track_menu;
         return;
     case 3: // SELECT TOUR: `$00AC` = 2, `$80:E550` with neither `$80:A858` nor `$80:A82B` before it
+        state.slide_word = 2; // $80:AF1D
         return_to_tour_menu(state, false);
         state.continuation_back = FrontEndScreen::tour_menu;
         return;
-    default: // QUIT
+    default:                          // QUIT
+        gate_pads(state, true, true); // $80:C0E0
         print_main_menu(state, content);
         state.screen = FrontEndScreen::main_menu_return;
         return;

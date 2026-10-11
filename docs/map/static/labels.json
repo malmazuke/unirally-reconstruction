@@ -2653,6 +2653,15 @@
   ]
  },
  {
+  "address": "$80:A9CA",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_80A9CA",
+  "source_records": [
+   "docs/research/R-0095-two-human-stunts.md"
+  ]
+ },
+ {
   "address": "$80:A9CD",
   "class": "inferred",
   "comment": "instruction start",
@@ -3130,12 +3139,26 @@
   ]
  },
  {
+  "address": "$80:ADF8",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80ADF8",
+  "native": [
+   "src/core/front_end.hpp:FrontEndState::slide_word",
+   "src/core/local_modes.cpp:enter_local_continue"
+  ],
+  "source_records": [
+   "docs/research/R-0095-two-human-stunts.md"
+  ]
+ },
+ {
   "address": "$80:ADFA",
   "class": "observed",
   "comment": "instruction start",
   "label": "loc_80ADFA",
   "native": [
    "src/core/front_end.hpp:FrontEndState::continuation_back",
+   "src/core/front_end.hpp:FrontEndState::slide_word",
    "src/core/local_modes.cpp:return_to_local_continue"
   ],
   "source_records": [
@@ -3188,12 +3211,24 @@
   ]
  },
  {
+  "address": "$80:AE96",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80AE96",
+  "native": [
+   "src/core/local_modes.cpp:choose_next_track"
+  ],
+  "source_records": [
+   "docs/research/R-0095-two-human-stunts.md"
+  ]
+ },
+ {
   "address": "$80:AEAD",
   "class": "observed",
   "comment": "instruction start",
   "label": "loc_80AEAD",
   "native": [
-   "src/core/local_modes.cpp:local_continue_frame"
+   "src/core/local_modes.cpp:choose_next_track"
   ],
   "source_records": [
    "docs/research/R-0091-mode-audio.md"
@@ -3237,6 +3272,20 @@
   ]
  },
  {
+  "address": "$80:AEF5",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80AEF5",
+  "native": [
+   "src/core/front_end.hpp:FrontEndState::continuation_back",
+   "src/core/front_end.hpp:FrontEndState::slide_word",
+   "src/core/local_modes.cpp:local_continue_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0095-two-human-stunts.md"
+  ]
+ },
+ {
   "address": "$80:AEFC",
   "class": "inferred",
   "comment": "instruction start",
@@ -3244,6 +3293,19 @@
   "native": [
    "src/core/front_end.hpp:FrontEndState::continuation_back",
    "src/core/track_menu.cpp:track_menu_exit_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0095-two-human-stunts.md"
+  ]
+ },
+ {
+  "address": "$80:AF0E",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_80AF0E",
+  "native": [
+   "src/core/front_end.hpp:FrontEndState::slide_word",
+   "src/core/now_playing.cpp:now_playing_frame"
   ],
   "source_records": [
    "docs/research/R-0095-two-human-stunts.md"
@@ -3262,6 +3324,20 @@
   ]
  },
  {
+  "address": "$80:AF1D",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80AF1D",
+  "native": [
+   "src/core/front_end.hpp:FrontEndState::continuation_back",
+   "src/core/front_end.hpp:FrontEndState::slide_word",
+   "src/core/local_modes.cpp:local_continue_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0095-two-human-stunts.md"
+  ]
+ },
+ {
   "address": "$80:AF24",
   "class": "inferred",
   "comment": "instruction start",
@@ -3269,6 +3345,45 @@
   "native": [
    "src/core/front_end.hpp:FrontEndState::continuation_back",
    "src/core/tour_menu.cpp:tour_menu_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0095-two-human-stunts.md"
+  ]
+ },
+ {
+  "address": "$80:AF2E",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_80AF2E",
+  "native": [
+   "src/core/front_end.hpp:FrontEndState::slide_word",
+   "src/core/tour_menu.cpp:tour_menu_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0095-two-human-stunts.md"
+  ]
+ },
+ {
+  "address": "$80:AF3A",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_80AF3A",
+  "native": [
+   "src/core/front_end.hpp:FrontEndState::slide_word",
+   "src/core/track_menu.cpp:track_menu_exit_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0095-two-human-stunts.md"
+  ]
+ },
+ {
+  "address": "$80:AF47",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_80AF47",
+  "native": [
+   "src/core/front_end.hpp:FrontEndState::slide_word",
+   "src/core/now_playing.cpp:now_playing_frame"
   ],
   "source_records": [
    "docs/research/R-0095-two-human-stunts.md"
@@ -3796,8 +3911,18 @@
   ],
   "source_records": [
    "docs/research/R-0072-options.md",
+   "docs/research/R-0095-two-human-stunts.md",
    "tasks/COVERAGE-ROADMAP.md",
    "tasks/OPTIONS.md"
+  ]
+ },
+ {
+  "address": "$80:B63C",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80B63C",
+  "source_records": [
+   "docs/research/R-0095-two-human-stunts.md"
   ]
  },
  {
@@ -4021,6 +4146,7 @@
    "src/core/front_end.hpp:FrontEndScreen",
    "src/core/local_modes.cpp:local_continue_frame",
    "src/core/local_modes.cpp:open_local_continue",
+   "src/core/options_menu.cpp:options_entry_frame",
    "src/core/wipe_ram.cpp:aim_at_entry",
    "src/core/wipe_ram.cpp:first_row_y, row_height",
    "src/core/wipe_ram.cpp:wipe_ram_menu_entry_frame",
@@ -4042,6 +4168,7 @@
    "src/core/local_modes.cpp:last_choice",
    "src/core/local_modes.cpp:local_continue_frame",
    "src/core/local_modes.cpp:open_local_continue",
+   "src/core/options_menu.cpp:options_entry_frame",
    "src/core/wipe_ram.cpp:aim_at_entry",
    "src/core/wipe_ram.cpp:first_row_y, row_height",
    "src/core/wipe_ram.cpp:wipe_ram_menu_entry_frame",
@@ -4396,6 +4523,21 @@
   ]
  },
  {
+  "address": "$80:BBFF",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80BBFF",
+  "native": [
+   "src/core/front_end.hpp:FrontEndState::slide_word",
+   "src/core/front_end_screens.hpp:enter_tour_menu",
+   "src/core/rider_menu.cpp:rider_menu_exit_frame",
+   "src/core/tour_menu.cpp:(file)"
+  ],
+  "source_records": [
+   "docs/research/R-0095-two-human-stunts.md"
+  ]
+ },
+ {
   "address": "$80:BC03",
   "class": "observed",
   "comment": "instruction start",
@@ -4411,6 +4553,21 @@
   ]
  },
  {
+  "address": "$80:BC05",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80BC05",
+  "native": [
+   "src/core/front_end.hpp:FrontEndState::slide_word",
+   "src/core/front_end_screens.hpp:enter_tour_menu",
+   "src/core/tour_menu.cpp:(file)",
+   "src/core/track_menu.cpp:track_menu_exit_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0095-two-human-stunts.md"
+  ]
+ },
+ {
   "address": "$80:BC07",
   "class": "observed",
   "comment": "instruction start",
@@ -4421,6 +4578,19 @@
   ],
   "source_records": [
    "docs/research/R-0056-tour-track-now-playing.md"
+  ]
+ },
+ {
+  "address": "$80:BC10",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80BC10",
+  "native": [
+   "src/core/front_end.hpp:FrontEndState::slide_word",
+   "src/core/tour_menu.cpp:tour_menu_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0095-two-human-stunts.md"
   ]
  },
  {
@@ -4493,6 +4663,19 @@
   ],
   "source_records": [
    "docs/research/R-0056-tour-track-now-playing.md"
+  ]
+ },
+ {
+  "address": "$80:BC4F",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80BC4F",
+  "native": [
+   "src/core/front_end.hpp:FrontEndState::slide_word",
+   "src/core/now_playing.cpp:now_playing_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0095-two-human-stunts.md"
   ]
  },
  {
@@ -4921,6 +5104,45 @@
   ]
  },
  {
+  "address": "$80:BFBD",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80BFBD",
+  "native": [
+   "src/core/front_end.hpp:FrontEndState::slide_word",
+   "src/core/rider_menu.cpp:rider_menu_exit_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0095-two-human-stunts.md"
+  ]
+ },
+ {
+  "address": "$80:BFC3",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_80BFC3",
+  "native": [
+   "src/core/front_end.hpp:FrontEndState::slide_word",
+   "src/core/track_menu.cpp:track_menu_exit_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0095-two-human-stunts.md"
+  ]
+ },
+ {
+  "address": "$80:BFCE",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80BFCE",
+  "native": [
+   "src/core/front_end.hpp:FrontEndState::slide_word",
+   "src/core/tour_menu.cpp:tour_menu_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0095-two-human-stunts.md"
+  ]
+ },
+ {
   "address": "$80:BFE0",
   "class": "observed",
   "comment": "instruction start",
@@ -4932,6 +5154,19 @@
   "source_records": [
    "docs/research/R-0084-two-human-restart.md",
    "tasks/TWO-HUMAN-RESTART.md"
+  ]
+ },
+ {
+  "address": "$80:BFEA",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_80BFEA",
+  "native": [
+   "src/core/front_end.hpp:FrontEndState::slide_word",
+   "src/core/now_playing.cpp:now_playing_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0095-two-human-stunts.md"
   ]
  },
  {
@@ -5089,6 +5324,32 @@
    "src/core/front_end.hpp:RiderMenu::challenger",
    "src/core/rider_menu.cpp:player_won_versus",
    "src/core/rider_menu.cpp:rider_menu_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0095-two-human-stunts.md"
+  ]
+ },
+ {
+  "address": "$80:C0DD",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80C0DD",
+  "native": [
+   "src/core/local_modes.cpp:local_continue_frame"
+  ],
+  "source_records": [
+   "docs/research/R-0095-two-human-stunts.md"
+  ]
+ },
+ {
+  "address": "$80:C0E0",
+  "class": "inferred",
+  "comment": "instruction start",
+  "label": "loc_80C0E0",
+  "native": [
+   "src/core/front_end.hpp:FrontEndState::pad_one_ignored, FrontEndState::pad_two_ignored",
+   "src/core/local_modes.cpp:local_continue_frame",
+   "src/core/now_playing.cpp:now_playing_frame"
   ],
   "source_records": [
    "docs/research/R-0095-two-human-stunts.md"
@@ -5967,6 +6228,7 @@
   "comment": "instruction start",
   "label": "loc_80CB42",
   "native": [
+   "src/core/front_end.hpp:FrontEndState::slide_word",
    "src/core/rider_menu.cpp:enter_vs_challenger"
   ],
   "source_records": [
@@ -6714,6 +6976,15 @@
   ]
  },
  {
+  "address": "$80:D53F",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80D53F",
+  "source_records": [
+   "docs/research/R-0095-two-human-stunts.md"
+  ]
+ },
+ {
   "address": "$80:D566",
   "class": "observed",
   "comment": "instruction start",
@@ -6998,6 +7269,7 @@
    "src/core/front_end.hpp:ScreenSlide",
    "src/core/front_end_screens.hpp:start_slide",
    "src/core/rider_menu.cpp:(file)",
+   "src/core/rider_menu.cpp:enter_vs_challenger",
    "src/core/rider_menu.cpp:rider_menu_entry_frame",
    "src/core/screen_slide.cpp:(file)",
    "src/core/screen_slide.cpp:slide_passes, accelerate_from, decelerate_below"
@@ -7507,8 +7779,12 @@
   "class": "unknown",
   "comment": "unknown",
   "label": "unk_80E842",
+  "native": [
+   "src/core/local_modes.cpp:choose_next_track"
+  ],
   "source_records": [
-   "docs/research/R-0056-tour-track-now-playing.md"
+   "docs/research/R-0056-tour-track-now-playing.md",
+   "docs/research/R-0095-two-human-stunts.md"
   ]
  },
  {
@@ -7737,13 +8013,16 @@
   "native": [
    "src/core/front_end_screens.hpp:turn_markers",
    "src/core/local_modes.cpp:local_continue_frame",
+   "src/core/options_menu.cpp:options_entry_frame",
+   "src/core/options_menu.cpp:options_menu_frame",
    "src/core/track_menu.cpp:turn_markers",
    "src/core/wipe_ram.cpp:wipe_ram_menu_entry_frame",
    "src/core/wipe_ram.cpp:wipe_ram_menu_frame"
   ],
   "source_records": [
    "docs/research/R-0056-tour-track-now-playing.md",
-   "docs/research/R-0092-wipe-ram.md"
+   "docs/research/R-0092-wipe-ram.md",
+   "docs/research/R-0095-two-human-stunts.md"
   ]
  },
  {
@@ -7858,6 +8137,7 @@
   "native": [
    "src/core/front_end.hpp:FrontEndScreen",
    "src/core/options_menu.cpp:enter_options_menu",
+   "src/core/options_menu.cpp:options_entry_frame",
    "src/core/wipe_ram.cpp:print_wipe_ram_menu"
   ],
   "source_records": [
@@ -9173,6 +9453,15 @@
   "label": "sub_80FBD5",
   "source_records": [
    "docs/research/R-0073-league.md"
+  ]
+ },
+ {
+  "address": "$80:FBEE",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_80FBEE",
+  "source_records": [
+   "docs/research/R-0095-two-human-stunts.md"
   ]
  },
  {
@@ -19811,6 +20100,18 @@
   ]
  },
  {
+  "address": "$83:99A8",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_8399A8",
+  "native": [
+   "src/core/local_modes.cpp:choose_next_track"
+  ],
+  "source_records": [
+   "docs/research/R-0095-two-human-stunts.md"
+  ]
+ },
+ {
   "address": "$83:99AD",
   "class": "observed",
   "comment": "instruction start",
@@ -19944,6 +20245,18 @@
   ]
  },
  {
+  "address": "$83:9BB5",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_839BB5",
+  "native": [
+   "src/core/options_menu.cpp:clear_defined_player"
+  ],
+  "source_records": [
+   "docs/research/R-0095-two-human-stunts.md"
+  ]
+ },
+ {
   "address": "$83:9BE1",
   "class": "observed",
   "comment": "instruction start",
@@ -20055,10 +20368,12 @@
   "comment": "routine start",
   "label": "sub_839F14",
   "native": [
+   "src/core/local_modes.cpp:choose_next_track",
    "src/core/tour_menu.cpp:tour_level"
   ],
   "source_records": [
-   "docs/research/R-0056-tour-track-now-playing.md"
+   "docs/research/R-0056-tour-track-now-playing.md",
+   "docs/research/R-0095-two-human-stunts.md"
   ]
  },
  {
@@ -21693,6 +22008,7 @@
    "docs/research/R-0077-one-player-audio.md",
    "docs/research/R-0084-two-human-restart.md",
    "docs/research/R-0094-name-cheats.md",
+   "docs/research/R-0095-two-human-stunts.md",
    "tasks/AUDIO-FIRST-RACE.md",
    "tasks/AUDIO-ONE-PLAYER.md"
   ]

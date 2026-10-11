@@ -2,7 +2,7 @@
 
 ## Assignment
 
-- Status: **in progress**, claimed 10 October 2026 on main `ef8e440`, in the session the user asked
+- Status: **in review** (PR #72, round 3), claimed 10 October 2026 on main `ef8e440`, in the session the user asked
   to keep working until weekly usage reaches 50% (23% at claim). Queued by
   [COVERAGE-GAPS](COVERAGE-GAPS.md) (R-0089, queue item 5); SAVE-FILES (R-0090) and MODE-AUDIO
   added the two-human restart's records and VS mode 2's counters to it. DATA-COVERAGE runs in a
@@ -69,7 +69,7 @@ the records differing after a two-human restart (`$0422`, `$0486`, `$0829`, `$08
 ## Review candidate
 
 - Records: [R-0095](../docs/research/R-0095-two-human-stunts.md). Pack v38.
-- Gates: `local/evidence/two-human-stunts/gates.sh` (from CREDITS-NAME's; since review round 1 it also runs `pass3/checks3.sh`) against main `ef8e440`'s
+- Gates: `local/evidence/two-human-stunts/gates.sh` (from CREDITS-NAME's; since review round 2 it also runs `pass4/checks4.sh`, the review's W1-W4b and the two-human restore checks) against main `ef8e440`'s
   binaries (`base-ef8e440/`), pack v37 for main and v38 for the candidate, under the shared lock.
 
 ## Review round 1 (PR #72, approved with should-fix)
@@ -86,3 +86,23 @@ the records differing after a two-human restart (`$0422`, `$0486`, `$0829`, `$08
 - Reruns on the final code: race sweep 432 runs 0 differences; front-end sweep 112/179 equal, the
   same 67 differing, none further from the original but the four organic-three manifests; league
   frozen 0 px; R-0076 cues identical to main; this task's five cue schedules equal the original.
+
+## Handoff (round 2)
+
+- Candidate `6c3cf32`: the third pass (`pass3/`) on `3825120`, plus main merged (no `src/` change).
+  Pass 3's checks ran on the uncommitted third pass, which is the same code as `6c3cf32`'s `src/`;
+  the gates at `6c3cf32` (`gates-6c3cf32.out`) rerun them through `pass3/checks3.sh`.
+
+## Review round 2 (returned) and the fourth pass
+
+- Blocker fixed: after a VS challenger pick the pad gate holds through the continuation and its
+  screens and opens (`$80:C0E0`) only on NOW PLAYING's Race or QUIT (`$80:C0DD JSR $ADE3`); W4
+  equal to its end (9250/9250 pictures).
+- Should-fix fixed: the menus' slide word `$00AC` is kept at its writers, so the challenger menu
+  slides forward after a continuation Y (`$80:CB42-CB48`, `$80:ADFA`); W4b 6800/6800.
+- Advisories: NEXT TRACK wraps and skips unopened tours (`$80:AE96-AECC`, `$83:9F14`; new capture
+  `twop-next-wrap`); OPTIONS' delay, hidden markers and DEFINE PLAYER's track fixed (W2b equal but
+  15672); `$77:10B1`'s 57-frame window recorded in R-0095.
+- Fourth-pass results in `local/evidence/two-human-stunts/pass4/final/`: race sweep 0 differences;
+  front-end sweep 61/179 equal against main, the 51 more differing in hidden state only (OPTIONS,
+  league slots), pictures as main's, none further from the original but the recorded league ones.

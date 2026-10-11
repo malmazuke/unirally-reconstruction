@@ -608,6 +608,13 @@ struct FrontEndState {
     // PICK TOUR after SELECT TOUR ($80:AF1B-AF2B).
     FrontEndScreen continuation_back{FrontEndScreen::boot};
     bool continuation_returning{};
+    // `$00AC`, the menus' slide word, as the 2P and VS loops leave it (R-0095): 2 from a rider
+    // pick into PICK TOUR ($80:BBFF, $80:BFBD), NOW PLAYING's Y ($80:BC4F, $80:BFEA, $80:AF0E,
+    // $80:AF47), the continuation's Y ($80:ADFA) and SELECT TOUR ($80:AF1D); 1 from a tour chosen
+    // ($80:BC10, $80:BFCE, $80:AF2E), PICK TRACK's Y ($80:BC05, $80:BFC3, $80:AF3A), the
+    // continuation ($80:ADF8) and SELECT TRACK ($80:AEF5). The VS challenger's menu slides forward
+    // when it is 2 (`$80:CB42-CB48`).
+    std::uint8_t slide_word{};
     OnePlayerRecords records = cold_start_records();
     TourMenu tour_menu{};
     TrackMenu track_menu{};

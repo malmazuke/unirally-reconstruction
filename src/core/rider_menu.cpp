@@ -365,8 +365,11 @@ void open_rider_menu_entry(FrontEndState& state) {
 } // namespace
 
 void enter_rider_menu(FrontEndState& state) {
-    state.logo.raised = true;                                             // $80:F51B
-    state.decorations.delay = static_cast<std::uint8_t>(state.menu.idle); // the shared $0089
+    state.logo.raised = true; // $80:F51B
+    // The shared `$0089`: from the main menu its idle count; from OPTIONS (DEFINE and RENAME
+    // PLAYER, a league's members) already the decorations' delay (R-0095).
+    if (state.rider_menu.purpose == RiderMenuPurpose::normal)
+        state.decorations.delay = static_cast<std::uint8_t>(state.menu.idle);
     state.rider_menu.returning = false;
     state.rider_menu.second = false;
     state.rider_menu.challenger = false;
@@ -383,8 +386,9 @@ bool player_won_versus(const RaceTimes& times) {
 }
 
 void enter_vs_challenger(FrontEndState& state) {
-    // `$00AC` is not 2 here, so `$80:CB42-CB48` slides the menu back in (`$80:E27E`, R-0095).
-    state.rider_menu.returning = true;
+    // `$80:CB42-CB48`: back in (`$80:E27E`) unless `$00AC` is 2, then forward (`$80:E233`, which
+    // steps the decorations; R-0095).
+    state.rider_menu.returning = state.slide_word != 2;
     state.rider_menu.second = false;
     state.rider_menu.challenger = true;
     state.rider_menu.challenger_for_rider_one = player_won_versus(state.race_result.times);
@@ -572,6 +576,7 @@ void rider_menu_exit_frame(FrontEndState& state, const FrontEndContent& content)
         return;
     }
     if (!back) {
+        state.slide_word = 2; // $80:BBFF, $80:BFBD
         enter_tour_menu(state);
         return;
     }

@@ -46,7 +46,7 @@ The four classes partition all 131,072 bytes. **Unknown share: 24.0%**.
 
 ## Cited addresses
 
-1943 distinct code-bank ROM addresses cited by the research, task, inventory and content records (`labels.json`). By position: dat 16, loc 1278, mid 30, sub 436, unk 183 (sub routine start, loc instruction start, mid inside an instruction, dat data, unk unknown). By class: data 16, inferred 78, observed 1666, unknown 183.
+1967 distinct code-bank ROM addresses cited by the research, task, inventory and content records (`labels.json`). By position: dat 16, loc 1302, mid 30, sub 436, unk 183 (sub routine start, loc instruction start, mid inside an instruction, dat data, unk unknown). By class: data 16, inferred 86, observed 1682, unknown 183.
 
 Cited addresses in `unknown` bytes:
 
@@ -142,7 +142,7 @@ Cited addresses in `unknown` bytes:
 | $80:E80F | docs/research/R-0056-tour-track-now-playing.md |
 | $80:E824 | docs/research/R-0056-tour-track-now-playing.md |
 | $80:E82E | docs/research/R-0056-tour-track-now-playing.md |
-| $80:E842 | docs/research/R-0056-tour-track-now-playing.md |
+| $80:E842 | docs/research/R-0056-tour-track-now-playing.md, docs/research/R-0095-two-human-stunts.md |
 | $80:EA40 | docs/research/R-0056-tour-track-now-playing.md |
 | $80:EA58 | docs/research/R-0056-tour-track-now-playing.md |
 | $80:EB61 | docs/research/R-0056-tour-track-now-playing.md |

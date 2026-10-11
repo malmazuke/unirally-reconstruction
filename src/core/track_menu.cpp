@@ -281,6 +281,7 @@ void track_menu_exit_frame(FrontEndState& state, const FrontEndContent& content)
     if (state.track_menu.back) {
         // `$80:BC22-BC34` would clear the run's tracks when the medal to race for is not the
         // best; a cold start's are both 0.
+        state.slide_word = 1; // $80:BC05, $80:BFC3, $80:AF3A
         return_to_tour_menu(state);
         return;
     }

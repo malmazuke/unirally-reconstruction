@@ -1890,6 +1890,8 @@
    ],
    "native": [
     "src/core/front_end.hpp:FrontEndState::continuation_back",
+    "src/core/front_end.hpp:FrontEndState::slide_word",
+    "src/core/local_modes.cpp:enter_local_continue",
     "src/core/local_modes.cpp:last_choice",
     "src/core/local_modes.cpp:local_continue_entry_frame",
     "src/core/local_modes.cpp:local_continue_frame",
@@ -2717,6 +2719,7 @@
     "src/core/front_end.hpp:FrontEndScreen",
     "src/core/local_modes.cpp:local_continue_frame",
     "src/core/local_modes.cpp:open_local_continue",
+    "src/core/options_menu.cpp:options_entry_frame",
     "src/core/wipe_ram.cpp:aim_at_entry",
     "src/core/wipe_ram.cpp:first_row_y, row_height",
     "src/core/wipe_ram.cpp:wipe_ram_menu_entry_frame",
@@ -2744,6 +2747,7 @@
     "src/core/local_modes.cpp:last_choice",
     "src/core/local_modes.cpp:local_continue_frame",
     "src/core/local_modes.cpp:open_local_continue",
+    "src/core/options_menu.cpp:options_entry_frame",
     "src/core/wipe_ram.cpp:aim_at_entry",
     "src/core/wipe_ram.cpp:first_row_y, row_height",
     "src/core/wipe_ram.cpp:wipe_ram_menu_entry_frame",
@@ -2771,6 +2775,7 @@
     "src/core/local_modes.cpp:last_choice",
     "src/core/local_modes.cpp:move_continue_cursor",
     "src/core/options_menu.cpp:move_choice",
+    "src/core/options_menu.cpp:options_menu_frame",
     "src/core/wipe_ram.cpp:aim_at_entry",
     "src/core/wipe_ram.cpp:move_entry"
    ],
@@ -2818,14 +2823,17 @@
     "src/core/front_end.cpp:cold_start_records",
     "src/core/front_end.hpp:FrontEndScreen",
     "src/core/front_end.hpp:FrontEndState::pad_one_ignored, FrontEndState::pad_two_ignored",
+    "src/core/front_end.hpp:FrontEndState::slide_word",
     "src/core/front_end_screens.hpp:enter_rider_menu",
     "src/core/front_end_screens.hpp:enter_tour_menu",
     "src/core/front_end_screens.hpp:enter_track_menu",
     "src/core/front_end_screens.hpp:return_to_tour_menu",
+    "src/core/now_playing.cpp:now_playing_frame",
     "src/core/race_result.cpp:race_restart_frame",
     "src/core/rider_menu.cpp:(file)",
     "src/core/rider_menu.cpp:enter_rider_menu",
     "src/core/rider_menu.cpp:pick_plays_select",
+    "src/core/rider_menu.cpp:rider_menu_exit_frame",
     "src/core/rider_menu.cpp:rider_menu_frame",
     "src/core/tour_menu.cpp:(file)",
     "src/core/tour_menu.cpp:return_to_tour_menu",
@@ -3572,6 +3580,7 @@
    ],
    "native": [
     "src/core/front_end.hpp:FrontEndScreen",
+    "src/core/front_end.hpp:FrontEndState::slide_word",
     "src/core/front_end.hpp:RiderMenuPurpose",
     "src/core/rider_menu.cpp:(file)",
     "src/core/rider_menu.cpp:enter_vs_challenger",
@@ -3964,6 +3973,7 @@
     "src/core/front_end.hpp:ScreenSlide",
     "src/core/front_end_screens.hpp:start_slide",
     "src/core/rider_menu.cpp:(file)",
+    "src/core/rider_menu.cpp:enter_vs_challenger",
     "src/core/rider_menu.cpp:rider_menu_entry_frame",
     "src/core/screen_slide.cpp:(file)",
     "src/core/screen_slide.cpp:slide_passes, accelerate_from, decelerate_below"
@@ -4324,6 +4334,8 @@
    "native": [
     "src/core/front_end_screens.hpp:turn_markers",
     "src/core/local_modes.cpp:local_continue_frame",
+    "src/core/options_menu.cpp:options_entry_frame",
+    "src/core/options_menu.cpp:options_menu_frame",
     "src/core/track_menu.cpp:turn_markers",
     "src/core/wipe_ram.cpp:wipe_ram_menu_entry_frame",
     "src/core/wipe_ram.cpp:wipe_ram_menu_frame"
@@ -4428,6 +4440,7 @@
     "src/core/front_end.hpp:FrontEndScreen",
     "src/core/local_modes.cpp:return_to_local_continue",
     "src/core/options_menu.cpp:enter_options_menu",
+    "src/core/options_menu.cpp:options_entry_frame",
     "src/core/wipe_ram.cpp:print_wipe_ram_menu",
     "src/core/wipe_ram.cpp:wipe_ram_menu_entry_frame"
    ],
@@ -14980,6 +14993,7 @@
    ],
    "native": [
     "src/core/front_end.cpp:wipe_cartridge",
+    "src/core/local_modes.cpp:choose_next_track",
     "src/core/zoom_zoo_movement.hpp:ClassicRaceScenario::stunt_event"
    ],
    "observed_entries": {},
@@ -15126,7 +15140,8 @@
     "NmX"
    ],
    "native": [
-    "src/core/front_end.hpp:OnePlayerRecords::versus_races, OnePlayerRecords::versus_wins, OnePlayerRecords::versus_today"
+    "src/core/front_end.hpp:OnePlayerRecords::versus_races, OnePlayerRecords::versus_wins, OnePlayerRecords::versus_today",
+    "src/core/options_menu.cpp:clear_defined_player"
    ],
    "observed_entries": {},
    "start": "$83:9B49",
@@ -15387,6 +15402,7 @@
     "NmX"
    ],
    "native": [
+    "src/core/local_modes.cpp:choose_next_track",
     "src/core/tour_menu.cpp:tour_level"
    ],
    "observed_entries": {},
@@ -18984,16 +19000,16 @@
    "call returns in the calling mode": 2454
   },
   "bytes": 131072,
-  "cited_addresses": 1943,
+  "cited_addresses": 1967,
   "cited_by_class": {
    "data": 16,
-   "inferred": 78,
-   "observed": 1666,
+   "inferred": 86,
+   "observed": 1682,
    "unknown": 183
   },
   "cited_by_position": {
    "dat": 16,
-   "loc": 1278,
+   "loc": 1302,
    "mid": 30,
    "sub": 436,
    "unk": 183

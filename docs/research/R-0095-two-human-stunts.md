@@ -50,7 +50,32 @@ CLIMB and DOWNER (track 32), a zero-score VS tie, a 2P pad-2 QUIT, the VS challe
   `$80:B8F1`). The main menu opens both pads (`$80:ABC8`); a rider pick from it takes pad 1 alone
   (`$80:BBA5` 1P, `$80:BCC8` 2P, `$80:BF4E` VS), 2P's and VS's second pick pad 2 alone (`$80:BCEB`,
   `$80:BF6B`), and both pads open again after it (`$80:BD08`, `$80:BFB7`). So NOW PLAYING, PICK
-  TOUR and PICK TRACK take either pad with two humans or in a league, pad 1 in 1P. [L, C]
+  TOUR and PICK TRACK take either pad with two humans or in a league, pad 1 in 1P. After a VS
+  challenger pick (`$80:C087`, `$80:C09C`) the picking pad alone drives the continuation and every
+  screen it opens: `$80:C0DD JSR $ADE3` returns only on NOW PLAYING's Race or on QUIT, and only then
+  does `$80:C0E0` open both pads (the review's W4: pad 2's Y at 5450 and its later presses are
+  ignored). [L, C]
+- **The slide word `$00AC`.** The VS challenger's menu slides back in unless `$00AC` is 2, then
+  forward, stepping the decorations (`$80:CB42-CB48`). The 2P and VS loops leave it at 2 from a
+  rider pick into PICK TOUR (`$80:BBFF`, `$80:BFBD`), NOW PLAYING's Y (`$80:BC4F`, `$80:BFEA`,
+  `$80:AF0E`, `$80:AF47`), the continuation's Y (`$80:ADFA`) and SELECT TOUR (`$80:AF1D`), and at 1
+  from a tour chosen (`$80:BC10`, `$80:BFCE`, `$80:AF2E`), PICK TRACK's Y (`$80:BC05`, `$80:BFC3`,
+  `$80:AF3A`), the continuation's entry (`$80:ADF8`) and SELECT TRACK (`$80:AEF5`). The review's W4b
+  (pad 1's Y on NOW PLAYING, then SAME TRACK, a race, VS CHAMPIONS and the challenger at 9504) shows
+  the forward slide; its unplaced race does not matter. [L, C]
+- **NEXT TRACK** (`$80:AE96-AECC`) takes the next track, the first after the last (44), and goes on
+  until its tour (`$83:99A8`, track / 5) is open against `$80:E842` at `$83:9F14`'s level, playing
+  the select sound for each track tried. `$83:9F14-9F46` gives the rider's level in 1P
+  (`$77:10AD` = 1) and the highest of all riders' otherwise. Captured from track 4 with tour 1
+  locked (twop-next-wrap: tracks 5-9 skipped, track 10, tour 2; 800 of 800 pictures equal from
+  3800). [L, C]
+- **OPTIONS after a session.** `$0089`, the main menu's idle count, is also the decorations'
+  delay: from OPTIONS' choice (`$80:B626-B639`) its low byte counts down until it goes negative
+  and only then restarts from 2 (W2b: 180, then 2; W4: 120, 119, ...), and a rider menu from
+  OPTIONS starts from that delay, not from an idle count. OPTIONS runs the generic list loop
+  (`$80:B63C JSR $B93C`), which turns the PICK TRACK markers (`$80:EB23`) each frame. DEFINE
+  PLAYER's confirm leaves the chosen track at 0 (`$83:9BB5`, its best times' loop). The review's
+  W2b is equal from 9900 to 15999, W4 to its end. [L, C]
 - **Y from a screen the continuation opened** returns to the continuation (`$80:ADFA`): NOW
   PLAYING after NEXT or SAME TRACK (`$80:AECE-AEDA`, `$80:AED3`), PICK TRACK after SELECT TRACK
   (`$80:AEF3-AF03`, `$80:AEFC`), PICK TOUR after SELECT TOUR (`$80:AF1B-AF2B`, `$80:AF24`). The
@@ -91,6 +116,13 @@ CLIMB and DOWNER (track 32), a zero-score VS tie, a 2P pad-2 QUIT, the VS challe
   Native leaves `$77:0618`/`$061A` at 0, so a second two-human race's result words differ.
 - One-frame print overruns: VS CHAMPIONS' header frame with two placings and the lap results'
   first frame (race RAM in the text buffer); W2b frame 15672 (the rename keyboard, 256 px).
-- Tracks 7, 17, 27, 37 and 42 with two humans (locked tours) and a race tie are not captured.
+- Tracks 7, 17, 27, 37 and 42 with two humans (locked tours) and a race tie are not captured;
+  nor is NEXT TRACK's wrap after track 44 (it needs HUNTER's tour open).
+- `$77:10B1`, the race count, advances in the race's setup (`$83:CA08`), 64 frames after the race
+  is chosen; native counts it as the race's fade ends (choice + 7). The values agree again once the
+  race has loaded; only cartridge RAM read in those 57 frames differs (the review's W2 at 9900).
+- League slots, RECORDS and the other generic list menus (`$80:A9CA`, `$80:D53F`, `$80:FBEE`) also
+  turn the hidden PICK TRACK markers; native turns them in OPTIONS and the continuation only (OAM
+  entries 64-68's tile bytes, hidden; organic-stunt-tricks from 1060).
 - `$073E-0741` and `$10A7` are not kept; `$106C` differs after a VS result (twop-restart at 8399,
   the review's W2, W2b and W3), and `$1116` at W1's frame 4000.

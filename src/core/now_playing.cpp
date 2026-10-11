@@ -309,10 +309,14 @@ void now_playing_frame(FrontEndState& state, const FrontEndContent& content, Fro
             enter_league_table(state, content);
         else if (returns_to_continuation(state, FrontEndScreen::now_playing))
             return_to_local_continue(state, content); // $80:AED3-AEDA
-        else
+        else {
+            state.slide_word = 2; // $80:BC4F, $80:BFEA, $80:AF0E, $80:AF47
             enter_track_menu(state, true);
+        }
         return;
     case NowPlayingChoice::race:
+        // A race from the two-human continuation ends it: both pads again ($80:C0E0; R-0095).
+        if (state.continuation_back != FrontEndScreen::boot) gate_pads(state, true, true);
         state.continuation_back = FrontEndScreen::boot;
         state.screen = FrontEndScreen::race_fade;
         return;
