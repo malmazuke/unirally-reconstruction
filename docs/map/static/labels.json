@@ -8540,6 +8540,24 @@
   ]
  },
  {
+  "address": "$81:8000",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_818000",
+  "source_records": [
+   "tasks/ACCESS-ROUND-READS.md"
+  ]
+ },
+ {
+  "address": "$81:8001",
+  "class": "unknown",
+  "comment": "unknown",
+  "label": "unk_818001",
+  "source_records": [
+   "tasks/ACCESS-ROUND-READS.md"
+  ]
+ },
+ {
   "address": "$81:8050",
   "class": "observed",
   "comment": "routine start",
@@ -10249,6 +10267,30 @@
   "source_records": [
    "docs/research/R-0032-player-landing-recovery.md",
    "docs/research/R-0033-sustained-traversal.md"
+  ]
+ },
+ {
+  "address": "$81:9000",
+  "class": "observed",
+  "comment": "instruction start",
+  "label": "loc_819000",
+  "native": [
+   "src/core/vertical_contact.cpp:summarize_vertical_contact"
+  ],
+  "source_records": [
+   "tasks/ACCESS-ROUND-READS.md"
+  ]
+ },
+ {
+  "address": "$81:9001",
+  "class": "observed",
+  "comment": "inside the instruction at $81:9000",
+  "label": "mid_819001",
+  "native": [
+   "src/core/vertical_contact.cpp:summarize_vertical_contact"
+  ],
+  "source_records": [
+   "tasks/ACCESS-ROUND-READS.md"
   ]
  },
  {

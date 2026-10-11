@@ -46,7 +46,7 @@ The four classes partition all 131,072 bytes. **Unknown share: 24.0%**.
 
 ## Cited addresses
 
-1884 distinct code-bank ROM addresses cited by the research, task, inventory and content records (`labels.json`). By position: dat 16, loc 1235, mid 29, sub 424, unk 180 (sub routine start, loc instruction start, mid inside an instruction, dat data, unk unknown). By class: data 16, inferred 73, observed 1615, unknown 180.
+1888 distinct code-bank ROM addresses cited by the research, task, inventory and content records (`labels.json`). By position: dat 16, loc 1236, mid 30, sub 424, unk 182 (sub routine start, loc instruction start, mid inside an instruction, dat data, unk unknown). By class: data 16, inferred 73, observed 1617, unknown 182.
 
 Cited addresses in `unknown` bytes:
 
@@ -166,6 +166,8 @@ Cited addresses in `unknown` bytes:
 | $80:FC2F | docs/research/R-0073-league.md |
 | $80:FC5C | docs/research/R-0056-tour-track-now-playing.md |
 | $80:FFC0 | docs/research/R-0001-rom-identity.md, docs/research/R-0045-static-code-map.md |
+| $81:8000 | tasks/ACCESS-ROUND-READS.md |
+| $81:8001 | tasks/ACCESS-ROUND-READS.md |
 | $81:A342 | docs/research/R-0046-track-breadth-matrix.md |
 | $81:A343 | docs/research/R-0046-track-breadth-matrix.md, docs/research/R-0066-stunt-event-race.md |
 | $81:A388 | docs/research/R-0046-track-breadth-matrix.md |

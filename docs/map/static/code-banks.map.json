@@ -18763,19 +18763,19 @@
    "call returns in the calling mode": 2454
   },
   "bytes": 131072,
-  "cited_addresses": 1884,
+  "cited_addresses": 1888,
   "cited_by_class": {
    "data": 16,
    "inferred": 73,
-   "observed": 1615,
-   "unknown": 180
+   "observed": 1617,
+   "unknown": 182
   },
   "cited_by_position": {
    "dat": 16,
-   "loc": 1235,
-   "mid": 29,
+   "loc": 1236,
+   "mid": 30,
    "sub": 424,
-   "unk": 180
+   "unk": 182
   },
   "conflicts": 0,
   "data": 74,
