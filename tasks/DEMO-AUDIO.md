@@ -82,3 +82,40 @@ derived cues `*.cues.txt`, `demo-cold-full` (events gzipped, `SHA256SUMS`), `con
 `capture_full.sh`, `capture_batch.sh`, `derive_cues2.py`, `cues.sh`, `diff_cues.py`, `cond.sh`,
 `measure.sh`, `anchors.py`, `resolve_app_cues.py`), `sets/` (the demo set's sound RAM images),
 `base-2c42589/` (main's binaries for the gates) and `gates.sh`.
+
+## Gates - head `a5c496c` (main `local/evidence/demo-audio/gates-a5c496c.out`)
+
+Run under `local/locks/heavy-run.sh` with `gates_and_synthetic.sh`, against main `2c42589`'s
+binaries (`base-2c42589`, built from `git archive 2c42589`):
+- Four presets build, ctest 41 of 41 each (ASan presets unavailable on this host; Linux CI covers
+  them). Synthetic suite passed on app-debug and on lab-debug. v1 contracts, eight hidden app runs
+  and the front end passed. Fuzz as on main (40 seeds, 40 aborts: recorded non-pass).
+- Eleven differential gates passed with main's row digests. Race sweep 432 runs, 0 differences;
+  front-end sweep 179 of 179 equal to main's runner. Every pause, two-pad, race-end, look,
+  restart and restore comparison as recorded; the original's track sweeps give main's rows.
+- The idle demo lap 34 of 34 exact, 9 demo restores continue, pictures 963 of 1,006 equal (as
+  the other recent gates). CREDITS-NAME's and WIPE-RAM's captures as recorded, their schedules
+  equal.
+- DEMO-AUDIO: the cue results above; the conditional check equal; the app's producer 12,100
+  cued frames, never stopped, and its cue log equals `front_end_runner`'s through frame 12,999.
+- MODE-AUDIO: `options-rename` and `options-league` equal; `twop-next` 2, `vs-champions` 4 and
+  `league-two` 2 differing frames (R-0091's residuals). Twelve R-0077 schedules equal; R-0076's
+  seven identical to main; the cold cartridge image equal.
+- Tooling tests 564 passed; functions over 80 lines 0; native symbols current.
+
+## Handoff
+
+- Commits: `c61cb41` (native change), `a5c496c` (way back, anchors, R-0096, maps), then this
+  record. Working tree clean.
+- Shared files with TWO-HUMAN-STUNTS, kept small: `front_end.cpp` (include `race_sound.hpp`; one
+  call each in `demo_title_frame` and `demo_return_frame`; the start cue's three lines beside the
+  race switch; the hold frame's call; two lines in `ends_with_queue_wait`; one in
+  `begin_demo_return`), `front_end.hpp` (`demo_return_blank`), `front_end_screens.hpp` (the
+  `demo_sound.cpp` declarations). `content_pack.cpp`: the v39 profile, rules digest, variant and
+  `demo_audio_required`. On rebase onto v38, insert v38 before v39 (variant order, `>=` on
+  credits_name/v38), recompute the manifest's digest in `demo_audio_rules_sha`, set
+  `PREVIOUS_TRACK_PROFILE` to v38, update `V37_ENTRIES`/the v37 inventory digest in
+  `test_tracks.py`, rebuild `local/classic-pal-crawler-tracks-v39.pack` (the local one is v37 plus
+  the demo entries) and rerun the cue schedules.
+- The static map and native symbols are regenerated at `a5c496c`; regenerate after the rebase.
+- Next: the demo title's pad exit (picture and sound) and a model of the short titles, if wanted.
