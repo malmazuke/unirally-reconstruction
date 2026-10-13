@@ -73,6 +73,20 @@ void return_to_options_menu(FrontEndState& state, const FrontEndContent& content
     state.screen = FrontEndScreen::options_return;
 }
 
+namespace {
+
+// $80:B63C: the slide ends into the generic list loop (`$80:B93C`), which turns the PICK TRACK
+// markers (`$80:EB23`) in that frame (R-0095).
+void open_options_choices(FrontEndState& state, const FrontEndContent& content) {
+    state.menu.selection = 0;
+    aim_choice(state, content.options_arrow_columns);
+    state.latches = {};
+    turn_markers(state, content);
+    state.screen = FrontEndScreen::options_menu;
+}
+
+} // namespace
+
 void options_entry_frame(FrontEndState& state, const FrontEndContent& content) {
     if (state.script_frame == 1) {
         // `$80:EF4D` prints and waits without an OAM copy; the slide's passes copy it (R-0095).
@@ -80,40 +94,26 @@ void options_entry_frame(FrontEndState& state, const FrontEndContent& content) {
         return;
     }
     if (!slide_frame(state, content)) return;
-    state.menu.selection = 0;
-    aim_choice(state, content.options_arrow_columns);
-    state.latches = {};
-    turn_markers(state, content); // $80:B93C runs into `$80:EB23` (R-0095)
-    state.screen = FrontEndScreen::options_menu;
+    open_options_choices(state, content);
 }
 
+// Back into OPTIONS from RECORDS, the keyboard, a picker or the league slots: `$80:EF4D`'s frame,
+// the back slide, and the loop from the slide's last frame, as on entry (R-0097).
 void options_return_frame(FrontEndState& state, const FrontEndContent& content) {
     if (state.script_frame == 1) {
-        copy_oam(state);
+        // As on entry, no OAM copy before the slide's first pass (`$80:E29F`).
         start_slide(state, content, true);
         return;
     }
-    if (state.script_frame <= 40) {
-        if (slide_frame(state, content)) {
-            state.menu.selection = 0;
-            aim_choice(state, content.options_arrow_columns);
-            state.latches = {};
-        }
-        return;
+    if (!slide_frame(state, content)) return;
+    // Native's restore of the colours the rider picker's HDMA wrote; OPTIONS shows none of them.
+    load_cgram(state, content.base_palette, 0);
+    if (state.options_palette_saved) {
+        std::copy(state.options_upper_palette.begin(), state.options_upper_palette.end(),
+                  state.video.cgram.begin() + 0x100);
+        state.options_palette_saved = false;
     }
-    if (state.script_frame == 41) {
-        reload_menu_palette(state, content);
-        if (state.options_palette_saved) {
-            std::copy(state.options_upper_palette.begin(), state.options_upper_palette.end(),
-                      state.video.cgram.begin() + 0x100);
-            state.options_palette_saved = false;
-        }
-        return;
-    }
-    if (state.script_frame == 42) {
-        reload_menu_text_tiles(state, content);
-    }
-    state.screen = FrontEndScreen::options_menu;
+    open_options_choices(state, content);
 }
 
 void options_menu_frame(FrontEndState& state, const FrontEndContent& content, FrontEndPads pads) {
@@ -168,6 +168,7 @@ void league_slots_entry_frame(FrontEndState& state, const FrontEndContent& conte
     state.arrow.target_x = 0x0100;
     state.arrow.target_y = static_cast<std::uint16_t>(first_row + state.league.slot * row_step);
     state.latches = {};
+    turn_markers(state, content); // $80:9F09 JSR $B93E (R-0097)
     state.screen = FrontEndScreen::league_slots;
 }
 
@@ -183,7 +184,10 @@ void league_slots_frame(FrontEndState& state, const FrontEndContent& content, Fr
             return_to_options_menu(state, content);
         return;
     }
-    if (!(pad & choose_buttons)) return;
+    if (!(pad & choose_buttons)) {
+        turn_markers(state, content); // $80:B97A
+        return;
+    }
     play_menu_sound(state, MenuSound::select); // $80:9F15
     state.league.slot = state.menu.selection;
     if (state.mode == FrontEndMode::league) {
@@ -222,9 +226,8 @@ void league_warning_frame(FrontEndState& state, FrontEndPads pads) {
     constexpr std::uint16_t confirm = pad_select | 0x4000U | pad_a;
     if ((pads.one & confirm) != confirm) return;
     state.league.members = 0;
-    state.league.previous_buttons = 0;
     state.rider_menu.purpose = RiderMenuPurpose::league_members;
-    state.rider_menu.rider = 7; // $80:9D0B: COLIN is the first arrow position
+    state.rider_menu.choice_latched = true; // $80:9D11
     enter_rider_menu(state);
 }
 
@@ -247,6 +250,7 @@ void records_entry_frame(FrontEndState& state, const FrontEndContent& content) {
     aim_choice(state, content.records_arrow_columns);
     state.latches = {};
     state.records_detail.returning = false;
+    turn_markers(state, content); // $80:D53F JSR $B93C (R-0097)
     state.screen = FrontEndScreen::records_menu;
 }
 
@@ -267,7 +271,10 @@ void records_menu_frame(FrontEndState& state, const FrontEndContent& content, Fr
         return_to_options_menu(state, content);
         return;
     }
-    if (!(pad & choose_buttons)) return;
+    if (!(pad & choose_buttons)) {
+        turn_markers(state, content); // $80:B97A
+        return;
+    }
     state.records_detail.category = state.menu.selection;
     state.records_detail.rider = 0;
     state.records_detail.tour = 0;
@@ -896,7 +903,7 @@ void enter_define_player_warning(FrontEndState& state, const FrontEndContent& co
     TextVariables variables;
     variables.word = [&](std::uint16_t address) -> std::uint16_t {
         if (address != 0x00ca) throw std::invalid_argument("unknown warning text operand");
-        return state.rider_menu.rider;
+        return state.rider_menu.options_pick;
     };
     variables.rider_names = state.records.rider_names;
     print_text(state.text, state.printer, content.define_player_warning, content.character_table,
@@ -924,7 +931,7 @@ namespace {
 void clear_defined_player(FrontEndState& state) {
     // The SRAM removal is visible on the same picture as SELECT+Y+A. A name
     // record's first eight characters clear; its remaining bytes stay intact.
-    const auto rider = state.rider_menu.rider;
+    const auto rider = state.rider_menu.options_pick;
     auto& records = state.records;
     std::fill_n(records.rider_names.begin() + static_cast<std::size_t>(rider) * 16, 8,
                 std::uint8_t{'_'});
@@ -999,7 +1006,6 @@ void enter_league_editor(FrontEndState& state, const FrontEndContent& content) {
     state.keyboard.scratch[3] = state.league.marker_column;
     state.keyboard.scratch[4] = state.league.marker_row;
     state.league.editor_active = true;
-    state.rider_menu.rider = 0xff;
     state.menu.selection = 0;
     state.text.words.fill(cleared_text);
     print_text(state.text, state.printer, content.keyboard_text, content.character_table);
@@ -1064,58 +1070,104 @@ void erase_keyboard_character(FrontEndState& state, const FrontEndContent& conte
     --state.printer.position;
 }
 
-} // namespace
+// The keyboard's inputs in the order `$80:A25F-A294` tests them, each on either pad the gate
+// lets in: the first one held is the frame's only input, so a held direction hides every button.
+enum class KeyboardInput : std::uint8_t { none, left, right, up, down, ok, erase, choose };
 
-void rename_keyboard_frame(FrontEndState& state, const FrontEndContent& content,
-                           FrontEndPads pads) {
-    copy_oam(state);
-    load_text(state, state.slide.shown_half);
+KeyboardInput keyboard_input(std::uint16_t pad) {
+    if (pad & pad_left) return KeyboardInput::left;         // $80:B7B9
+    if (pad & pad_right) return KeyboardInput::right;       // $80:B7DE
+    if (pad & pad_up) return KeyboardInput::up;             // $80:B803
+    if (pad & pad_down) return KeyboardInput::down;         // $80:B830
+    if (pad & pad_start) return KeyboardInput::ok;          // $80:B916: Start goes straight to OK
+    if (pad & back_buttons) return KeyboardInput::erase;    // $80:B74A
+    if (pad & choose_buttons) return KeyboardInput::choose; // $80:B71D
+    return KeyboardInput::none;
+}
+
+// The bits of `$008F` the keyboard keeps (KeyboardEditor::latches).
+constexpr std::uint8_t latch_left = 0x01, latch_right = 0x02, latch_down = 0x04, latch_up = 0x08,
+                       latch_choice = 0x10, latch_erase = 0x20;
+
+// $80:A2A0-A2B8 and $80:A2DF-A2F7: Left and Right act on their press, and while held again each
+// time the byte `$0076` counts below zero: 19 frames after the press, then every 7.
+bool held_key_repeats(KeyboardEditor& editor, std::uint8_t latch) {
+    constexpr std::uint8_t first_wait = 18, next_wait = 6;
+    if (!(editor.latches & latch)) {
+        editor.latches = static_cast<std::uint8_t>(editor.latches | latch);
+        editor.repeat_wait = first_wait;
+        return true;
+    }
+    --editor.repeat_wait;
+    if (!(editor.repeat_wait & 0x80U)) return false;
+    editor.repeat_wait = next_wait;
+    return true;
+}
+
+// Up, Down, a choice and Y or X act once a press ($80:A31C, $80:A340, $80:A39A, $80:A364).
+bool first_press(KeyboardEditor& editor, std::uint8_t latch) {
+    if (editor.latches & latch) return false;
+    editor.latches = static_cast<std::uint8_t>(editor.latches | latch);
+    return true;
+}
+
+// $80:A2BA-A2DC (Left) and $80:A2F9-A319 (Right): a column along the row, wrapping, with the
+// navigation sound.
+void step_key_column(FrontEndState& state, bool left) {
     auto& editor = state.keyboard;
-    if (state.script_frame == 1) initialize_keyboard_cursor(state);
-    // $80:A231 positions the cursor before polling, so a direction affects OAM one
-    // frame after it changes the key offsets.
-    if (state.script_frame > 1) position_keyboard_cursor(state);
-    const auto pad = pads.one;
-    const auto pressed = static_cast<std::uint16_t>(pad & ~editor.previous_buttons);
-    editor.previous_buttons = pad;
-    // Each move plays the navigation sound: $80:A2BA (Left), $80:A2F9 (Right), $80:A34A (Up),
-    // $80:A326 (Down).
-    if (pressed & (pad_left | pad_right | pad_up | pad_down))
-        play_menu_sound(state, MenuSound::navigate);
-    if (pressed & pad_left) {
+    play_menu_sound(state, MenuSound::navigate);
+    if (left) {
         editor.offset_x =
             editor.offset_x == 0 ? -192 : static_cast<std::int16_t>(editor.offset_x + 16);
         state.menu.selection = static_cast<std::uint8_t>((state.menu.selection + 1) % 39);
-    } else if (pressed & pad_right) {
+    } else {
         editor.offset_x =
             editor.offset_x == -192 ? 0 : static_cast<std::int16_t>(editor.offset_x - 16);
         state.menu.selection = state.menu.selection == 0 ? 39 : state.menu.selection - 1;
-    } else if (pressed & pad_up) {
+    }
+}
+
+// $80:A34A-A35F (Up) and $80:A326-A33B (Down): a row, wrapping, with the navigation sound.
+void step_key_row(FrontEndState& state, bool up) {
+    auto& editor = state.keyboard;
+    play_menu_sound(state, MenuSound::navigate);
+    if (up)
         editor.offset_y =
             editor.offset_y == 0 ? -72 : static_cast<std::int16_t>(editor.offset_y + 24);
-    } else if (pressed & pad_down) {
+    else
         editor.offset_y =
             editor.offset_y == -72 ? 0 : static_cast<std::int16_t>(editor.offset_y - 24);
-    }
-    if (pressed & back_buttons) { // Y or X: direct backspace, $80:A29B
-        state.arrow.target_x = 0x0100;
-        state.arrow.target_y = 0x04e0;
-        erase_keyboard_character(state, content);
+}
+
+// $80:A491-A4AC: OK, from Start or the OK key. An empty name is refused ($80:A493 to $80:A41A);
+// otherwise the select sound, the name's end, and the keyboard's last frame.
+void press_keyboard_ok(FrontEndState& state) {
+    auto& editor = state.keyboard;
+    if (editor.length == 0) {
+        play_menu_sound(state, MenuSound::refused);
         return;
     }
-    if (!(pressed & choose_buttons)) return;
+    play_menu_sound(state, MenuSound::select); // $80:A495
+    editor.scratch[editor.length] = editor.scratch[editor.length + 1] = 0xff;
+    state.screen = FrontEndScreen::rename_commit;
+}
+
+// $80:A3BF-A3C3: the choice's latch is stored from the accumulator that still holds the arrow's
+// new y target, so the target's low byte (0x70 or 0xF0) comes with it, the Y-or-X bit among it.
+std::uint8_t latches_after_choice(std::uint16_t target_y) {
+    return static_cast<std::uint8_t>((target_y & 0xffU) | latch_choice);
+}
+
+// A choice ($80:A39A-A48E): the arrow sent to the key, then OK, a deletion or a character.
+void choose_key(FrontEndState& state, const FrontEndContent& content) {
+    auto& editor = state.keyboard;
     // $80:A3A0-A3BC aims at the selected key, in sixteenths of a pixel.
     state.arrow.target_x = static_cast<std::uint16_t>(-editor.offset_x * 16);
     state.arrow.target_y = static_cast<std::uint16_t>((31 - editor.offset_y) * 16);
+    editor.latches = latches_after_choice(state.arrow.target_y);
     const auto key = keyboard_key(editor, content.keyboard_text);
     if (key == 0x40) { // OK at $80:A52A
-        if (editor.length == 0) {
-            play_menu_sound(state, MenuSound::refused); // $80:A493 to $80:A41A
-            return;
-        }
-        play_menu_sound(state, MenuSound::select); // $80:A495
-        editor.scratch[editor.length] = editor.scratch[editor.length + 1] = 0xff;
-        state.screen = FrontEndScreen::rename_commit;
+        press_keyboard_ok(state);
         return;
     }
     if (key == 0x3c) { // backspace
@@ -1128,6 +1180,61 @@ void rename_keyboard_frame(FrontEndState& state, const FrontEndContent& content,
     const std::array<std::uint8_t, 2> shown{editor.scratch[editor.length], 0xff};
     print_text(state.text, state.printer, shown, content.character_table);
     ++editor.length;
+}
+
+void read_keyboard_pad(FrontEndState& state, const FrontEndContent& content, std::uint16_t pad) {
+    auto& editor = state.keyboard;
+    const auto input = keyboard_input(pad);
+    switch (input) {
+    case KeyboardInput::none: // $80:A297-A29C
+        editor.repeat_wait = 0;
+        editor.latches = 0;
+        return;
+    case KeyboardInput::left:
+    case KeyboardInput::right: {
+        const bool left = input == KeyboardInput::left;
+        if (held_key_repeats(editor, left ? latch_left : latch_right)) step_key_column(state, left);
+        return;
+    }
+    case KeyboardInput::up:
+    case KeyboardInput::down: {
+        const bool up = input == KeyboardInput::up;
+        if (first_press(editor, up ? latch_up : latch_down)) step_key_row(state, up);
+        return;
+    }
+    case KeyboardInput::ok: press_keyboard_ok(state); return; // no latch: every frame held
+    case KeyboardInput::erase:
+        if (!first_press(editor, latch_erase)) return;
+        // $80:A36E-A37E: the arrow to the backspace key, then the deletion.
+        state.arrow.target_x = 0x0100;
+        state.arrow.target_y = 0x04e0;
+        erase_keyboard_character(state, content);
+        return;
+    case KeyboardInput::choose:
+        if (editor.latches & latch_choice) return;
+        choose_key(state, content);
+        return;
+    }
+}
+
+} // namespace
+
+void rename_keyboard_frame(FrontEndState& state, const FrontEndContent& content,
+                           FrontEndPads pads) {
+    // $80:A207-A22E: the cursor's first place, then the OAM copy; the first poll is the next
+    // frame's.
+    if (state.script_frame == 1) {
+        initialize_keyboard_cursor(state);
+        copy_oam(state);
+        load_text(state, state.slide.shown_half);
+        return;
+    }
+    copy_oam(state);
+    load_text(state, state.slide.shown_half);
+    // $80:A231 positions the cursor before polling, so a direction affects OAM one
+    // frame after it changes the key offsets.
+    position_keyboard_cursor(state);
+    read_keyboard_pad(state, content, gated_pads(state, pads));
 }
 
 void rename_commit_frame(FrontEndState& state, const FrontEndContent& content) {
@@ -1146,7 +1253,7 @@ void rename_commit_frame(FrontEndState& state, const FrontEndContent& content) {
         state.screen = FrontEndScreen::rename_return;
         return;
     }
-    const auto first = static_cast<std::size_t>(state.rider_menu.rider) * 16U;
+    const auto first = static_cast<std::size_t>(state.rider_menu.options_pick) * 16U;
     std::copy_n(state.keyboard.scratch.begin(), 8, state.records.rider_names.begin() + first);
     // $80:D1FA clears the map. The reference's save frame has the last two
     // options and the first five characters of RENAME PLAYER; printing resumes

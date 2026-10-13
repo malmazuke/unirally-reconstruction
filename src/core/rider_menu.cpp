@@ -165,27 +165,31 @@ void set_arrow_palette(FrontEndState& state) {
                                            | ((rider & 7U) << 1U));
 }
 
-// $80:CB50-CBC6, at the end of the slide: the icons, and the arrow on the last rider chosen.
+// $80:CB50-CBC6, at the end of the slide: the icons, and the arrow on the last rider chosen. The
+// league's member picker starts on COLIN instead, without changing `$017D` ($80:9D0B).
 void open_rider_menu(FrontEndState& state) {
     auto& menu = state.rider_menu;
-    high_bits(state, shadow_group) = four_hidden;
+    constexpr std::uint8_t league_first_rider = 7;
+    const bool league = menu.purpose == RiderMenuPurpose::league_members;
+    // The league's way in (`$80:9CEF-9D1F`) leaves the shadow's group to the loop's next frame.
+    if (!league) high_bits(state, shadow_group) = four_hidden;
     lay_out_icons(state);
-    const bool right_column = (menu.rider & 1U) != 0;
+    const std::uint8_t first = league ? league_first_rider : menu.rider;
+    const bool right_column = (first & 1U) != 0;
     // The attribute is written as a word here, so entry 120's x becomes 0.
     arrow_attribute(state) = static_cast<std::uint8_t>(
-        arrow_priority | (right_column ? 0U : unsigned{arrow_mirror}) | ((menu.rider & 7U) << 1U));
+        arrow_priority | (right_column ? 0U : unsigned{arrow_mirror}) | ((first & 7U) << 1U));
     oam_byte(state, arrow_entry + 1, 0) = 0;
-    if (menu.purpose == RiderMenuPurpose::league_members) {
+    if (league) {
         oam_byte(state, arrow_entry + 1, 0) = 1;
         oam_byte(state, shadow_entry, 3) |= 0x20U;
     }
     state.arrow.target_x = right_column ? right_column_x : left_column_x;
-    menu.row = static_cast<std::uint8_t>(menu.rider >> 1U);
+    menu.row = static_cast<std::uint8_t>(first >> 1U);
     state.arrow.target_y = static_cast<std::uint16_t>(
-        static_cast<unsigned>(first_row_y) + menu.row * row_spacing
-        + (menu.purpose == RiderMenuPurpose::league_members ? 0x20U : 0U));
-    menu.intro = menu.purpose == RiderMenuPurpose::league_members ? 0 : intro_start;
-    if (menu.purpose == RiderMenuPurpose::league_members) state.menu.selection = menu.rider;
+        static_cast<unsigned>(first_row_y) + menu.row * row_spacing + (league ? 0x20U : 0U));
+    menu.intro = league ? 0 : intro_start;
+    if (league) state.menu.selection = first;
     state.screen = FrontEndScreen::rider_menu;
 }
 
@@ -259,8 +263,12 @@ bool read_rider_menu_pad(FrontEndState& state, std::uint16_t pad) {
             }
         }
     }
-    // A choice or Y needs no release first: the latch at $0010 bit 0 is never set on this way.
-    if (!(pad & (choose_buttons | back_buttons))) return false;
+    // $80:CD14-CD2B: a choice or Y or X, unless held since the latch `$0010` bit 0 was set.
+    if (!(pad & (choose_buttons | back_buttons))) {
+        menu.choice_latched = false;
+        return false;
+    }
+    if (menu.choice_latched) return false;
     const bool right_column = state.arrow.target_x == right_column_x;
     menu.back = (pad & back_buttons) != 0;
     state.menu.selection =
@@ -268,52 +276,47 @@ bool read_rider_menu_pad(FrontEndState& state, std::uint16_t pad) {
     return true;
 }
 
-void mark_league_member(FrontEndState& state, unsigned rider) {
-    // $80:9D2B-9D9E: the bit order is reverse screen order; Y or B toggles it.
+// $80:9D2B-9D9E: the bit order is reverse screen order. `$80:9E3C` places `$80:9E0F`'s stream at
+// the rider's place: an X for a member, two underscores once unmarked ($80:9D66-9D6A).
+void mark_league_member(FrontEndState& state, const FrontEndContent& content, unsigned rider) {
     const auto bit = static_cast<std::uint16_t>(0x8000U >> rider);
     state.league.members ^= bit;
-    const unsigned column = (rider & 1U) ? 27 : 3;
-    const unsigned row = 4 + 3 * (rider / 2);
-    state.league.marker_column = static_cast<std::uint8_t>(column);
-    state.league.marker_row = static_cast<std::uint8_t>(row);
-    const unsigned at = row * 32 + column;
-    const bool selected = (state.league.members & bit) != 0;
-    state.text.words[at] = selected ? 0x3c40 : cleared_text;
-    state.text.words[at + 1] = selected ? 0x3c41 : cleared_text;
-    state.text.words[at + 32] = selected ? 0x3c90 : cleared_text;
-    state.text.words[at + 33] = selected ? 0x3c91 : cleared_text;
+    const auto column = static_cast<std::uint8_t>((rider & 1U) ? 27 : 3);
+    const auto row = static_cast<std::uint8_t>(4 + 3 * (rider / 2));
+    state.league.marker_column = column;
+    state.league.marker_row = row;
+    constexpr std::uint8_t attribute = 0xf9, place = 0xfe, nothing = 0xfb, underscore = 0x5f;
+    std::array<std::uint8_t, 8> marker{attribute, 0x07, place, column, row, 'X', nothing, 0xff};
+    if (!(state.league.members & bit)) marker[5] = marker[6] = underscore;
+    print_text(state.text, state.printer, marker, content.character_table);
 }
 
+// $80:9D22-9DEF: each choice the picker's loop (`$80:CBC3`) returns with A or Start held
+// ($80:B8C4) asks to finish; with B, Y or X it marks or unmarks the rider with the result's sound
+// ($80:9D5A, $80:9D84) and latches the choice until release. A finish with fewer than two or more
+// than eight members is refused ($80:9DD5, $80:9DF2) without the latch, so again on every frame
+// it is held, the message printed each time.
 bool read_league_members_pad(FrontEndState& state, const FrontEndContent& content,
                              std::uint16_t pad) {
-    const auto pressed = static_cast<std::uint16_t>(pad & ~state.league.previous_buttons);
-    state.league.previous_buttons = pad;
-    (void)read_rider_menu_pad(state, pad & (pad_left | pad_right | pad_up | pad_down));
-    const unsigned rider =
-        state.rider_menu.row * 2U + (state.arrow.target_x == right_column_x ? 1U : 0U);
-    // Y or B marks or unmarks the rider, with the result's sound ($80:9D5A, $80:9D84).
-    if (pressed & (0x4000U | 0x8000U)) {
+    if (!read_rider_menu_pad(state, pad)) return false;
+    const unsigned row = state.rider_menu.row;
+    const unsigned rider = row * 2U + (state.arrow.target_x == right_column_x ? 1U : 0U);
+    if (!(pad & (pad_a | pad_start))) {
         play_menu_sound(state, MenuSound::result);
-        mark_league_member(state, rider);
+        mark_league_member(state, content, rider);
         state.menu.selection = static_cast<std::uint8_t>(rider);
-        load_text(state, state.slide.shown_half);
+        state.rider_menu.choice_latched = true;
         return false;
     }
-    constexpr std::uint16_t pad_start = 0x1000;
-    if (!(pad & pad_start)) return false; // Start finishes a valid selection
     const auto count = std::popcount(state.league.members);
     if (count < 2 || count > 8) {
-        // $80:9DD5, $80:9DF2: refused, and the message printed again, on every frame that Start
-        // is held; the reprint leaves the same text.
         play_menu_sound(state, MenuSound::refused);
-        if (!(pressed & pad_start)) return false;
         print_text(state.text, state.printer,
                    count < 2 ? content.league_minimum : content.league_maximum,
                    content.character_table);
-        load_text(state, state.slide.shown_half);
+        state.menu.selection = static_cast<std::uint8_t>(row * 2U); // $80:9DDE-9DE3
         return false;
     }
-    if (!(pressed & pad_start)) return false;
     state.records.league_members[state.league.slot] = state.league.members;
     reset_league(state);
     return true;
@@ -365,7 +368,8 @@ void open_rider_menu_entry(FrontEndState& state) {
 } // namespace
 
 void enter_rider_menu(FrontEndState& state) {
-    state.logo.raised = true; // $80:F51B
+    // $80:F51B; the league's member picker raises the logo a frame later (`$80:9C34`).
+    if (state.rider_menu.purpose != RiderMenuPurpose::league_members) state.logo.raised = true;
     // The shared `$0089`: from the main menu its idle count; from OPTIONS (DEFINE and RENAME
     // PLAYER, a league's members) already the decorations' delay (R-0095).
     if (state.rider_menu.purpose == RiderMenuPurpose::normal)
@@ -420,6 +424,7 @@ void rider_menu_entry_frame(FrontEndState& state, const FrontEndContent& content
             state.records.league_played[state.league.slot].fill(0);
             state.records.league_naming = true;
             state.text.words.fill(cleared_text);
+            state.logo.raised = true; // $80:9C34
         } else {
             print_rider_menu(state, content);
         }
@@ -462,15 +467,16 @@ void rider_menu_frame(FrontEndState& state, const FrontEndContent& content, Fron
     copy_oam(state); // $80:D1EC, which also reads the pads
     load_rider_palettes(state, content);
     // $80:93A5: the text again, to the half it was first shown in (`$005A`), now hidden; after
-    // 2P's or VS's first pick, to the half on screen.
-    load_text(state,
-              state.rider_menu.text_to_shown ? state.slide.shown_half : state.slide.hidden_half);
-    upload_uni(state, content);
+    // 2P's or VS's first pick, and in the league's member picker ($80:9D1B), to the half on
+    // screen, so a mark printed in one frame shows in the next.
     const bool league = state.rider_menu.purpose == RiderMenuPurpose::league_members;
-    const bool normal = state.rider_menu.purpose == RiderMenuPurpose::normal;
-    const bool finished = league ? read_league_members_pad(state, content, pads.one)
-                        : normal ? read_rider_menu_pad(state, gated_pads(state, pads))
-                                 : read_rider_menu_pad(state, pads.one);
+    load_text(state, state.rider_menu.text_to_shown || league ? state.slide.shown_half
+                                                              : state.slide.hidden_half);
+    upload_uni(state, content);
+    // Every purpose's tests take either pad the gate lets in (`$80:B6D3-B82B`); OPTIONS opens both.
+    const auto pad = gated_pads(state, pads);
+    const bool finished =
+        league ? read_league_members_pad(state, content, pad) : read_rider_menu_pad(state, pad);
     if (!finished) {
         choose_next_picture(state.rider_menu);
         return;
@@ -514,6 +520,8 @@ void rider_menu_frame(FrontEndState& state, const FrontEndContent& content, Fron
             if (state.rider_menu.second) gate_pads(state, true, true); // $80:BD08, $80:BFB7
         } else if (state.rider_menu.challenger) {
             state.rider_menu.rider = state.menu.selection; // $80:C0C0-C0C2 into `$017D`
+        } else if (state.rider_menu.purpose != RiderMenuPurpose::normal) {
+            state.rider_menu.options_pick = state.menu.selection; // $80:C139, $80:D457
         } else {
             state.rider_menu.rider = state.menu.selection;
             state.now_playing.opponent = someone; // $80:BBC3

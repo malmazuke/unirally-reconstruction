@@ -173,16 +173,29 @@ struct RiderMenu {
     // its own slot, with its own pad (`$83:952E`/`$83:9543`); the winner cannot be picked.
     bool challenger{};
     bool challenger_for_rider_one{}; // the player won: pad 2 picks rider 1 (`$017F`)
-    RiderMenuPurpose purpose{};      // OPTIONS reuses the picker for an existing player
+    // $0010 bit 0: a choice (B, Start or A) or Y or X is not taken until all five are released
+    // ($80:CD1E-CD2B). Only the league's member picker sets it, from its start ($80:9D11) and
+    // after each mark ($80:9D72, $80:9D96).
+    bool choice_latched{};
+    RiderMenuPurpose purpose{}; // OPTIONS reuses the picker for an existing player
+    // $00CA: the rider DEFINE or RENAME PLAYER picked ($80:C139, $80:D457). Those picks leave
+    // `$017D` (`rider`) as it was, so the next rider menu still starts on the last rider chosen
+    // there (MENU-INPUT, R-0097). PLAYER SCORES reuses the word for its rider (`RecordsDetail`).
+    std::uint8_t options_pick{};
 };
 
 // $80:A1F2-A529: the shared four-row name keyboard. Offsets are signed pixel steps;
 // the reference keeps the input buffer in work RAM $00DC and leaves its stale tail intact.
 struct KeyboardEditor {
     std::array<std::uint8_t, 12> scratch{};
-    std::int16_t offset_x{-96}, offset_y{-24};
-    std::uint8_t length{};
-    std::uint16_t previous_buttons{};
+    std::int16_t offset_x{-96}, offset_y{-24}; // $007C, $007E
+    std::uint8_t length{};                     // $008D
+    // $008F as the keyboard uses it: a bit per input held since it last acted, Left 0x01, Right
+    // 0x02, Down 0x04, Up 0x08, a choice 0x10, Y or X 0x20; a frame with none of the keyboard's
+    // inputs held clears it. The keyboard starts with the choice's bit set ($80:A1F4).
+    std::uint8_t latches{0x10};
+    // $0076: frames before a held Left or Right moves again, 18 after its press, then 6.
+    std::uint8_t repeat_wait{};
 };
 
 // DEFINE LEAGUE ($80:9BC4-9EBC): six slots, each with a 16-rider membership mask.
