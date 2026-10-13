@@ -809,6 +809,11 @@ void enter_league_editor(FrontEndState& state, const FrontEndContent& content) {
     // $80:9E3C-9E54; R-0073: retain the last marker's column/row, including bytes after FF FF.
     state.keyboard.scratch[3] = state.league.marker_column;
     state.keyboard.scratch[4] = state.league.marker_row;
+    // $00E8-$00EE held underscores in every capture of a league's naming (R-0097; their writer is
+    // not identified): a long name's commit copies them after its end.
+    std::fill(state.keyboard.scratch.begin() + 12, state.keyboard.scratch.end(), std::uint8_t{'_'});
+    constexpr std::uint8_t league_length_limit = 18; // $80:9E78
+    state.keyboard.length_limit = league_length_limit;
     state.league.editor_active = true;
     state.menu.selection = 0;
     state.text.words.fill(cleared_text);
@@ -979,7 +984,7 @@ void choose_key(FrontEndState& state, const FrontEndContent& content) {
         return;
     }
     play_menu_sound(state, MenuSound::result); // $80:A449, before the length test
-    if (editor.length >= 8) return;
+    if (editor.length + 1U == editor.length_limit) return;
     editor.scratch[editor.length] = stored_character(key);
     const std::array<std::uint8_t, 2> shown{editor.scratch[editor.length], 0xff};
     print_text(state.text, state.printer, shown, content.character_table);

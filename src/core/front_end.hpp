@@ -183,9 +183,14 @@ struct RiderMenu {
 // $80:A1F2-A529: the shared four-row name keyboard. Offsets are signed pixel steps;
 // the reference keeps the input buffer in work RAM $00DC and leaves its stale tail intact.
 struct KeyboardEditor {
-    std::array<std::uint8_t, 12> scratch{};
+    // $00DC-$00EE: the name, its FF FF end and what the buffer held before; a league's commit
+    // copies all 19 bytes ($80:9E9D-9EA2), a rider's name the first 8 ($80:D4A0-D4B1).
+    std::array<std::uint8_t, 19> scratch{};
     std::int16_t offset_x{-96}, offset_y{-24}; // $007C, $007E
     std::uint8_t length{};                     // $008D
+    // $004B: one more than the longest name, 9 for a rider ($80:D487), 18 for a league
+    // ($80:9E78); a character is typed only while length + 1 is below it ($80:A44C-A451).
+    std::uint8_t length_limit{9};
     // $008F as the keyboard uses it: a bit per input held since it last acted, Left 0x01, Right
     // 0x02, Down 0x04, Up 0x08, a choice 0x10, Y or X 0x20; a frame with none of the keyboard's
     // inputs held clears it. The keyboard starts with the choice's bit set ($80:A1F4).

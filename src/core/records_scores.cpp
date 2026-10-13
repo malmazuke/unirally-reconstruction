@@ -230,7 +230,7 @@ void print_player_figures(FrontEndState& state, const FrontEndContent& content) 
 
 // $80:DACF-DB0C: the colours for the bars, their objects, and the screen's text.
 void print_player_screen(FrontEndState& state, const FrontEndContent& content) {
-    state.options_rider &= last_rider;
+    state.options_rider = static_cast<std::uint8_t>(state.options_rider & last_rider);
     load_cgram(state, asset(content, bar_colours_asset), 0xe0);
     place_bar_objects(state, player_bars);
     state.text.words.fill(cleared_text);
