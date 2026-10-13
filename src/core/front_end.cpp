@@ -1186,7 +1186,9 @@ void dispatch_front_end_screen(FrontEndState& state, const FrontEndContent& cont
     case FrontEndScreen::define_player_warning_entry:
         define_player_warning_entry_frame(state, content);
         break;
-    case FrontEndScreen::define_player_warning: define_player_warning_frame(state, physical); break;
+    case FrontEndScreen::define_player_warning:
+        define_player_warning_frame(state, content, physical);
+        break;
     case FrontEndScreen::define_player_after_confirm:
         define_player_after_confirm_frame(state, content);
         break;
@@ -1201,7 +1203,7 @@ void dispatch_front_end_screen(FrontEndState& state, const FrontEndContent& cont
     case FrontEndScreen::league_continue_entry: league_continue_entry_frame(state, content); break;
     case FrontEndScreen::league_continue: league_continue_frame(state, content, physical); break;
     case FrontEndScreen::league_warning_entry: league_warning_entry_frame(state, content); break;
-    case FrontEndScreen::league_warning: league_warning_frame(state, physical); break;
+    case FrontEndScreen::league_warning: league_warning_frame(state, content, physical); break;
     case FrontEndScreen::records_detail_entry: records_detail_entry_frame(state, content); break;
     case FrontEndScreen::records_detail: records_detail_frame(state, content, physical); break;
     case FrontEndScreen::records_detail_exit: records_detail_exit_frame(state, content); break;

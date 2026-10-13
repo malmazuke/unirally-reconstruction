@@ -51,6 +51,17 @@ void move_choice(FrontEndState& state, std::span<const std::uint8_t> columns, Fr
     aim_choice(state, columns);
 }
 
+// The two warnings' answer ($80:C17B-C197, $80:9C07-9C23), from either pad's whole word: B, Start,
+// a direction, X, L or R leaves; only Select, Y and A together, with nothing else, confirm.
+enum class WarningAnswer : std::uint8_t { none, leave, confirm };
+
+WarningAnswer warning_answer(FrontEndPads pads) {
+    constexpr std::uint16_t leave = 0x9f70, confirm = pad_select | 0x4000U | pad_a;
+    if ((pads.one & leave) || (pads.two & leave)) return WarningAnswer::leave;
+    if (pads.one == confirm || pads.two == confirm) return WarningAnswer::confirm;
+    return WarningAnswer::none;
+}
+
 void return_to_main(FrontEndState& state, const FrontEndContent& content) {
     print_main_menu(state, content);
     state.screen = FrontEndScreen::main_menu_return;
@@ -221,10 +232,14 @@ void league_warning_entry_frame(FrontEndState& state, const FrontEndContent& con
     state.screen = FrontEndScreen::league_warning;
 }
 
-void league_warning_frame(FrontEndState& state, FrontEndPads pads) {
+void league_warning_frame(FrontEndState& state, const FrontEndContent& content, FrontEndPads pads) {
     copy_oam(state);
-    constexpr std::uint16_t confirm = pad_select | 0x4000U | pad_a;
-    if ((pads.one & confirm) != confirm) return;
+    const auto answer = warning_answer(pads);
+    if (answer == WarningAnswer::leave) { // $80:9C46: back to OPTIONS
+        return_to_options_menu(state, content);
+        return;
+    }
+    if (answer != WarningAnswer::confirm) return;
     state.league.members = 0;
     state.rider_menu.purpose = RiderMenuPurpose::league_members;
     state.rider_menu.choice_latched = true; // $80:9D11
@@ -759,10 +774,16 @@ void clear_defined_player(FrontEndState& state) {
 
 } // namespace
 
-void define_player_warning_frame(FrontEndState& state, FrontEndPads pads) {
+void define_player_warning_frame(FrontEndState& state, const FrontEndContent& content,
+                                 FrontEndPads pads) {
     copy_oam(state);
-    constexpr std::uint16_t confirm = pad_select | 0x4000U | pad_a;
-    if ((pads.one & confirm) != confirm) return;
+    const auto answer = warning_answer(pads);
+    if (answer == WarningAnswer::leave) { // $80:C1A8-C1AD: the logo down, back to OPTIONS
+        state.logo.raised = false;
+        return_to_options_menu(state, content);
+        return;
+    }
+    if (answer != WarningAnswer::confirm) return;
     clear_defined_player(state);
     state.text.words.fill(cleared_text);
     state.screen = FrontEndScreen::define_player_after_confirm;

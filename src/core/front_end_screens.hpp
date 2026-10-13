@@ -252,7 +252,8 @@ void rename_commit_frame(FrontEndState& state, const FrontEndContent& content);
 void rename_return_frame(FrontEndState& state, const FrontEndContent& content);
 void enter_define_player_warning(FrontEndState& state, const FrontEndContent& content);
 void define_player_warning_entry_frame(FrontEndState& state, const FrontEndContent& content);
-void define_player_warning_frame(FrontEndState& state, FrontEndPads pads);
+void define_player_warning_frame(FrontEndState& state, const FrontEndContent& content,
+                                 FrontEndPads pads);
 void define_player_after_confirm_frame(FrontEndState& state, const FrontEndContent& content);
 void reset_league(FrontEndState&);
 void record_league_result(FrontEndState&);
@@ -274,7 +275,7 @@ void enter_league_slots(FrontEndState& state, const FrontEndContent& content);
 void league_slots_entry_frame(FrontEndState& state, const FrontEndContent& content);
 void league_slots_frame(FrontEndState& state, const FrontEndContent& content, FrontEndPads pads);
 void league_warning_entry_frame(FrontEndState& state, const FrontEndContent& content);
-void league_warning_frame(FrontEndState& state, FrontEndPads pads);
+void league_warning_frame(FrontEndState& state, const FrontEndContent& content, FrontEndPads pads);
 void enter_league_editor(FrontEndState& state, const FrontEndContent& content);
 // The RECORDS menu's loop again after PLAYER SCORES or GROUP TABLES (`$80:D53F`): no new print.
 void reopen_records_menu(FrontEndState& state, const FrontEndContent& content);
