@@ -264,7 +264,8 @@ bool waits_for_frame(const FrontEndState& state) {
     // $80:D494-D4BF runs through the name save and return without a frame wait.
     if (state.screen == FrontEndScreen::rename_return) return false;
     if (state.screen == FrontEndScreen::define_player_after_confirm) return false;
-    if (state.screen == FrontEndScreen::records_detail_entry && next == 1) return false;
+    if (state.screen == FrontEndScreen::records_detail_entry)
+        return shows_scores(state) ? scores_frame_waits(state, next) : next != 1;
     if (state.screen == FrontEndScreen::league_podium_entry) return next <= 7;
     if (state.screen == FrontEndScreen::league_podium) return false;
     if (state.screen == FrontEndScreen::wipe_ram_answer) return wipe_ram_answer_waits(state);

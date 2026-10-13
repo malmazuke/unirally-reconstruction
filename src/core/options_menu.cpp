@@ -254,9 +254,17 @@ void records_entry_frame(FrontEndState& state, const FrontEndContent& content) {
     state.screen = FrontEndScreen::records_menu;
 }
 
+void reopen_records_menu(FrontEndState& state, const FrontEndContent& content) {
+    // $80:B93C: the first choice, no latches, the markers turned.
+    state.menu.selection = 0;
+    aim_choice(state, content.records_arrow_columns);
+    state.latches = {};
+    turn_markers(state, content);
+    state.records_detail.returning = false;
+    state.screen = FrontEndScreen::records_menu;
+}
+
 void print_high_scores(FrontEndState& state, const FrontEndContent& content);
-void print_player_scores(FrontEndState& state, const FrontEndContent& content);
-void print_group_scores(FrontEndState& state, const FrontEndContent& content);
 void print_track_records(FrontEndState& state, const FrontEndContent& content);
 
 void records_menu_frame(FrontEndState& state, const FrontEndContent& content, FrontEndPads pads) {
@@ -275,11 +283,19 @@ void records_menu_frame(FrontEndState& state, const FrontEndContent& content, Fr
         turn_markers(state, content); // $80:B97A
         return;
     }
-    state.records_detail.category = state.menu.selection;
-    state.records_detail.rider = 0;
-    state.records_detail.tour = 0;
-    raise_logo(state);
+    auto& detail = state.records_detail;
+    detail.category = state.menu.selection;
     state.screen = FrontEndScreen::records_detail_entry;
+    if (shows_scores(state)) {
+        // $80:D54B: the logo slides up (R-0097); the rider and the league are the last ones.
+        state.logo.raised = true;
+        detail.phase = ScoresPhase::entering;
+        detail.press_seen = detail.group_reprinted = false;
+        return;
+    }
+    detail.rider = 0;
+    detail.tour = 0;
+    raise_logo(state);
 }
 
 namespace {
@@ -373,121 +389,6 @@ void print_high_scores(FrontEndState& state, const FrontEndContent& content) {
     };
     print_text(state.text, state.printer, content.high_scores_text, content.character_table,
                &variables);
-}
-
-void print_player_scores(FrontEndState& state, const FrontEndContent& content) {
-    // $80:DACF-DDE3: base bars, then the selected rider's overprinted values.
-    const auto rider = state.records_detail.rider;
-    const auto& stats = state.records.statistics[rider];
-    const auto races = stats[0], wins = stats[1], failed = stats[2];
-    const auto losses = static_cast<std::uint16_t>(races - wins - failed);
-    TextVariables variables;
-    variables.rider_names = state.records.rider_names;
-    variables.word = [&](std::uint16_t address) -> std::uint16_t {
-        switch (address) {
-        case 0x00ca: return rider;
-        case 0x00b2: return races;
-        case 0x00b4: return static_cast<std::uint16_t>(races == 0 ? 0U : 100U * wins / races);
-        case 0x00b6: return static_cast<std::uint16_t>(races == 0 ? 0U : 100U * losses / races);
-        case 0x00b8: return static_cast<std::uint16_t>(races == 0 ? 0U : 100U * failed / races);
-        case 0x00ba: return stats[3];
-        default: throw std::invalid_argument("unknown PLAYER SCORES text operand");
-        }
-    };
-    variables.place_object = [&](unsigned object, unsigned position) {
-        place_printed_object(state, object, position);
-    };
-    print_text(state.text, state.printer, content.player_scores_text, content.character_table,
-               &variables);
-    print_text(state.text, state.printer, content.player_scores_values, content.character_table,
-               &variables);
-    // $80:DB9E-DC11 rewrites the template's five 16-cell bars. The first
-    // and last cells are fixed; the middle fourteen show a rounded fraction
-    // of the largest rider value (races/score) or 100 (percentages). R-0072's
-    // cold, 1/2/3/4/5/6/10-race and 20/40/60/80/100-percent probes fix the
-    // integer rule and the zero baseline on this screen.
-    const auto maximum = [&](unsigned statistic) {
-        std::uint16_t result = 0;
-        for (const auto& other : state.records.statistics)
-            result = std::max(result, other[statistic]);
-        return result;
-    };
-    const std::array<unsigned, 5> values{races, races == 0 ? 0U : 100U * wins / races,
-                                         races == 0 ? 0U : 100U * losses / races,
-                                         races == 0 ? 0U : 100U * failed / races, stats[3]};
-    const std::array<unsigned, 5> maxima{maximum(0), 100, 100, 100, maximum(3)};
-    for (unsigned row = 0; row < values.size(); ++row) {
-        const unsigned count =
-            maxima[row] == 0
-                ? 1U
-                : std::min(15U, 1U + (14U * values[row] + maxima[row] / 2U) / maxima[row]);
-        for (unsigned cell = 0; cell < 16; ++cell) {
-            const unsigned x = 8 + cell, y = 6 + 2 * row;
-            const std::uint16_t tile = static_cast<std::uint16_t>(cell < count ? 0x0cf : 0x0d0);
-            state.text.words[y * 32 + x] = static_cast<std::uint16_t>(0x3c00 | tile);
-            state.text.words[(y + 1) * 32 + x] = static_cast<std::uint16_t>(0x3c00 | (tile + 0x3c));
-        }
-    }
-    load_cgram(state, asset(content, first_rider_palette + rider), 0x80);
-    load_cgram(state, asset(content, 5), 0xe0); // $80:DB4E: bar gradient
-}
-
-void print_group_scores(FrontEndState& state, const FrontEndContent& content) {
-    // $80:EF89-EFD3 copies the selected slot's eight (row, score) pairs from
-    // $77:02C0, sorts them by score, and resolves row numbers to league members.
-    // $80:DE2E-E008 prints the result and its bar lengths.
-    for (unsigned x = 2; x < 32; ++x) {
-        state.text.words[4 * 32 + x] = 0x3cce;
-        state.text.words[5 * 32 + x] = 0x3d0a;
-    }
-    print_text(state.text, state.printer, content.group_scores_text, content.character_table);
-    TextVariables variables;
-    variables.league_names = state.records.league_names;
-    const std::array<std::uint8_t, 5> name{0xf3, state.records_detail.tour, 0xfc, 0x04, 0xff};
-    print_text(state.text, state.printer, name, content.character_table, &variables);
-    const auto& scores = state.records.league_scores[state.records_detail.tour];
-    std::array<unsigned, 8> order{};
-    std::iota(order.begin(), order.end(), 0U);
-    std::stable_sort(order.begin(), order.end(),
-                     [&](unsigned a, unsigned b) { return scores[a] > scores[b]; });
-    const unsigned top_score = scores[order[0]];
-    const auto digits = std::to_string(top_score);
-    std::vector<std::uint8_t> total{0xfe, static_cast<std::uint8_t>(29 - digits.size()), 0x07};
-    total.insert(total.end(), digits.begin(), digits.end());
-    total.push_back(0xff);
-    print_text(state.text, state.printer, total, content.character_table);
-    print_text(state.text, state.printer, content.group_scores_empty, content.character_table);
-    std::array<unsigned, 8> members{};
-    members.fill(16);
-    unsigned member_count = 0;
-    for (unsigned rider = 0; rider < 16 && member_count < 8; ++rider)
-        if (state.records.league_members[state.records_detail.tour] & (0x8000U >> rider))
-            members[member_count++] = rider;
-    for (unsigned shown = 0; shown < member_count; ++shown) {
-        const unsigned rider = members[order[shown]];
-        if (rider >= 16) continue;
-        variables.rider_names = state.records.rider_names;
-        variables.word = [rider](std::uint16_t address) -> std::uint16_t {
-            if (address != 0x00ca) throw std::invalid_argument("unknown GROUP SCORES name operand");
-            return static_cast<std::uint16_t>(rider);
-        };
-        const std::array<std::uint8_t, 8> row_name{
-            0xfe, 0x02, static_cast<std::uint8_t>(0x09 + 2 * shown), 0xf8, 0xca, 0x00, 0xff, 0xff};
-        print_text(state.text, state.printer, row_name, content.character_table, &variables);
-    }
-    for (unsigned row = 0; row < 8; ++row) {
-        const unsigned y = 9 + 2 * row;
-        const unsigned score = scores[order[row]];
-        const unsigned count =
-            top_score == 0 ? 1U : std::min(15U, 1U + (14U * score + top_score / 2U) / top_score);
-        for (unsigned cell = 0; cell < 16; ++cell) {
-            const std::uint16_t tile = static_cast<std::uint16_t>(cell < count ? 0x0cf : 0x0d0);
-            state.text.words[y * 32 + 13 + cell] = static_cast<std::uint16_t>(0x3c00 | tile);
-            state.text.words[(y + 1) * 32 + 13 + cell] =
-                static_cast<std::uint16_t>(0x3c00 | (tile + 0x3c));
-        }
-    }
-    load_cgram(state, asset(content, 5), 0xe0);
 }
 
 namespace {
@@ -651,26 +552,6 @@ void print_track_records(FrontEndState& state, const FrontEndContent& content) {
     track_records_hdma(state);
 }
 
-void set_bar_objects(FrontEndState& state) {
-    // $80:DDE3 and $80:E043: five and eight large 32-pixel bar ends. Window
-    // 1 masks OBJ outside the red bar, leaving a moving coloured edge.
-    const bool group = state.records_detail.category == 3;
-    const unsigned count = group ? 8U : 5U;
-    const std::uint8_t first_x = static_cast<std::uint8_t>(group ? 164 : 118);
-    const std::uint8_t first_y = static_cast<std::uint8_t>(group ? 72 : 48);
-    for (unsigned k = 0; k < count; ++k) {
-        oam_byte(state, 4 + k, 0) = first_x;
-        oam_byte(state, 4 + k, 1) = static_cast<std::uint8_t>(first_y + 16 * k);
-        oam_byte(state, 4 + k, 2) = 72;
-        oam_byte(state, 4 + k, 3) = 0x3d;
-    }
-    high_bits(state, 4) = 0xaa;
-    high_bits(state, 8) = group ? 0xaa : 0x56;
-    state.registers.object_window_one_inverted = true;
-    state.registers.object_window_left = static_cast<std::uint8_t>(group ? 104 : 64);
-    state.registers.object_window_right = static_cast<std::uint8_t>(group ? 231 : 191);
-}
-
 void load_high_score_palettes(FrontEndState& state, const FrontEndContent& content) {
     // $80:D917-D9A8: the eight leaders supply the eight object palettes.
     const auto leaders = high_score_leaders(state.records);
@@ -714,20 +595,17 @@ void records_detail_entry_frame(FrontEndState& state, const FrontEndContent& con
         }
         return;
     }
+    if (shows_scores(state)) {
+        scores_entry_frame(state, content);
+        return;
+    }
     if (state.script_frame == 1) {
         copy_oam(state);
         state.text.words.fill(cleared_text);
-        if (state.records_detail.category == 1)
-            print_high_scores(state, content);
-        else if (state.records_detail.category == 2)
-            print_player_scores(state, content);
-        else if (state.records_detail.category == 3)
-            print_group_scores(state, content);
-        else
+        if (state.records_detail.category != 1)
             throw std::runtime_error("RECORDS detail category is not yet recovered");
+        print_high_scores(state, content);
         load_text(state, state.slide.hidden_half);
-        if (state.records_detail.category == 2 || state.records_detail.category == 3)
-            set_bar_objects(state);
         high_bits(state, 104) = high_bits(state, 108) = four_hidden;
         return;
     }
@@ -739,10 +617,7 @@ void records_detail_entry_frame(FrontEndState& state, const FrontEndContent& con
     }
     if (!slide_frame(state, content)) return;
     high_bits(state, 104) = high_bits(state, 108) = four_shown;
-    if (state.records_detail.category == 1) load_high_score_palettes(state, content);
-    if (state.records_detail.category == 3)
-        for (unsigned k = 0; k < 8; ++k)
-            oam_byte(state, 4 + k, 0) = static_cast<std::uint8_t>(oam_byte(state, 4 + k, 0) - 8);
+    load_high_score_palettes(state, content);
     state.screen = FrontEndScreen::records_detail;
 }
 
@@ -788,81 +663,19 @@ void update_track_records(FrontEndState& state, const FrontEndContent& content, 
     if (pad & (back_buttons | choose_buttons)) state.screen = FrontEndScreen::records_detail_exit;
 }
 
-std::array<unsigned, 8> score_bar_targets(const FrontEndState& state) {
-    std::array<unsigned, 8> targets{};
-    if (state.records_detail.category == 2) {
-        const auto& stats = state.records.statistics[state.records_detail.rider];
-        const unsigned races = stats[0];
-        const unsigned wins = stats[1];
-        const unsigned failed = stats[2];
-        const std::array<unsigned, 5> values{races, races == 0 ? 0U : 100U * wins / races, 0U,
-                                             races == 0 ? 0U : 100U * failed / races, stats[3]};
-        unsigned max_races = 0, max_score = 0;
-        for (const auto& other : state.records.statistics) {
-            max_races = std::max<unsigned>(max_races, other[0]);
-            max_score = std::max<unsigned>(max_score, other[3]);
-        }
-        const std::array<unsigned, 5> maxima{max_races, 100, 100, 100, max_score};
-        for (unsigned k = 0; k < values.size(); ++k)
-            targets[k] = 48 + (maxima[k] == 0 ? 0U : 128U * values[k] / maxima[k]);
-        // $83:8FDE-8FE8 gives the remaining pixels to LOST after
-        // truncating WON and FAILED separately. At 3/1/1 in five races
-        // the endpoints are 124, 75, 73, rather than three independent
-        // rounded percentages.
-        if (races != 0) targets[2] = 48 + 128 - (targets[1] - 48) - (targets[3] - 48);
-    } else {
-        const auto& scores = state.records.league_scores[state.records_detail.tour];
-        std::array<unsigned, 8> order{};
-        std::iota(order.begin(), order.end(), 0U);
-        std::stable_sort(order.begin(), order.end(),
-                         [&](unsigned a, unsigned b) { return scores[a] > scores[b]; });
-        const unsigned top = scores[order[0]];
-        for (unsigned k = 0; k < order.size(); ++k)
-            targets[k] = 88 + (top == 0 ? 0U : 128U * scores[order[k]] / top);
-    }
-    return targets;
-}
-
-void update_score_bar_objects(FrontEndState& state) {
-    const auto targets = score_bar_targets(state);
-    for (unsigned k = 0; k < (state.records_detail.category == 3 ? 8U : 5U); ++k) {
-        auto& x = oam_byte(state, 4 + k, 0);
-        if (state.records_detail.category == 3 && state.script_frame == 1)
-            --x; // PAL entry-to-loop boundary retains one downward step.
-        else if (x < targets[k])
-            ++x;
-        else if (x > targets[k])
-            --x;
-    }
-}
-
 void records_detail_frame(FrontEndState& state, const FrontEndContent& content, FrontEndPads pads) {
+    if (shows_scores(state)) {
+        scores_frame(state, content, pads);
+        return;
+    }
     copy_oam(state);
     if (state.records_detail.category == 0) {
         update_track_records(state, content, pads);
         return;
     }
-    if (state.records_detail.category == 2 || state.records_detail.category == 3)
-        update_score_bar_objects(state);
     // $80:D9AC-D9B7 runs three waits after the slide before the record loop.
     if (state.script_frame > 3) step_decorations(state, content);
-    if (state.records_detail.category == 2) {
-        const bool down = (pads.one & pad_down) != 0;
-        const bool up = !down && (pads.one & pad_up) != 0;
-        if (!down && !up) state.latches.moved = false;
-        if ((down || up) && !state.latches.moved) {
-            state.latches.moved = true;
-            play_menu_sound(state, MenuSound::result); // $80:DBF8 (Down), $80:DC05 (Up)
-            auto& rider = state.records_detail.rider;
-            rider = static_cast<std::uint8_t>(down ? (rider + 15U) & 15U : (rider + 1U) & 15U);
-            state.text.words.fill(cleared_text);
-            print_player_scores(state, content);
-            load_text(state, state.slide.shown_half);
-        }
-    }
-    if (!(pads.one & (back_buttons | choose_buttons))
-        && !(state.records_detail.category == 2 && (pads.one & pad_right)))
-        return;
+    if (!(pads.one & (back_buttons | choose_buttons))) return;
     state.screen = FrontEndScreen::records_detail_exit;
 }
 
@@ -876,15 +689,6 @@ void records_detail_exit_frame(FrontEndState& state, const FrontEndContent& cont
         reload_menu_palette(state, content);
         reload_menu_text_tiles(state, content);
         high_bits(state, 112) = four_hidden;
-    }
-    if (state.records_detail.category == 2 || state.records_detail.category == 3) {
-        for (unsigned k = 4; k < 12; ++k) {
-            oam_byte(state, k, 0) = 1;
-            oam_byte(state, k, 1) = 1;
-            oam_byte(state, k, 2) = 1;
-            oam_byte(state, k, 3) = 1;
-        }
-        high_bits(state, 4) = high_bits(state, 8) = four_hidden;
     }
     high_bits(state, 104) = high_bits(state, 108) = four_hidden;
     load_object_palette(state, content);
@@ -903,7 +707,7 @@ void enter_define_player_warning(FrontEndState& state, const FrontEndContent& co
     TextVariables variables;
     variables.word = [&](std::uint16_t address) -> std::uint16_t {
         if (address != 0x00ca) throw std::invalid_argument("unknown warning text operand");
-        return state.rider_menu.options_pick;
+        return state.options_rider;
     };
     variables.rider_names = state.records.rider_names;
     print_text(state.text, state.printer, content.define_player_warning, content.character_table,
@@ -931,7 +735,7 @@ namespace {
 void clear_defined_player(FrontEndState& state) {
     // The SRAM removal is visible on the same picture as SELECT+Y+A. A name
     // record's first eight characters clear; its remaining bytes stay intact.
-    const auto rider = state.rider_menu.options_pick;
+    const auto rider = state.options_rider;
     auto& records = state.records;
     std::fill_n(records.rider_names.begin() + static_cast<std::size_t>(rider) * 16, 8,
                 std::uint8_t{'_'});
@@ -1253,7 +1057,7 @@ void rename_commit_frame(FrontEndState& state, const FrontEndContent& content) {
         state.screen = FrontEndScreen::rename_return;
         return;
     }
-    const auto first = static_cast<std::size_t>(state.rider_menu.options_pick) * 16U;
+    const auto first = static_cast<std::size_t>(state.options_rider) * 16U;
     std::copy_n(state.keyboard.scratch.begin(), 8, state.records.rider_names.begin() + first);
     // $80:D1FA clears the map. The reference's save frame has the last two
     // options and the first five characters of RENAME PLAYER; printing resumes

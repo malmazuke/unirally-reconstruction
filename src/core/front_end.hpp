@@ -178,10 +178,6 @@ struct RiderMenu {
     // after each mark ($80:9D72, $80:9D96).
     bool choice_latched{};
     RiderMenuPurpose purpose{}; // OPTIONS reuses the picker for an existing player
-    // $00CA: the rider DEFINE or RENAME PLAYER picked ($80:C139, $80:D457). Those picks leave
-    // `$017D` (`rider`) as it was, so the next rider menu still starts on the last rider chosen
-    // there (MENU-INPUT, R-0097). PLAYER SCORES reuses the word for its rider (`RecordsDetail`).
-    std::uint8_t options_pick{};
 };
 
 // $80:A1F2-A529: the shared four-row name keyboard. Offsets are signed pixel steps;
@@ -216,14 +212,37 @@ struct LeagueSetup {
     bool awards_press_seen{}, awards_left{}; // `$80:C206`'s press on two frames running
 };
 
+// Where PLAYER SCORES (`$80:DACF`) and GROUP TABLES (`$80:DDFC`) are (R-0097).
+enum class ScoresPhase : std::uint8_t {
+    entering,  // the print and the forward slide, fixed frames
+    slid_in,   // PLAYER SCORES' window, icon and first figures, fixed frames
+    reprinted, // the figures printed again: the rider's colours and the text next ($80:DB8F)
+    releasing, // `$80:C24C`: both pads released before the loop goes on
+    running,   // the loop: the bars and the pad tests
+    pressing,  // `$80:C206` on PLAYER SCORES' way out
+    leaving,   // the way back to RECORDS, the back slide
+};
+
 struct RecordsDetail {
     std::uint8_t category{};            // the RECORDS menu's 0-3 choice
-    std::uint8_t rider{};               // PLAYER SCORES' selected rider
+    std::uint8_t rider{};               // TRACK RECORDS' column
     std::uint8_t tour{};                // TRACK RECORDS' first visible tour
     std::uint16_t track_scroll{0x01e7}; // BG2's grid offset during the records HDMA band
     std::uint8_t track_scroll_step{};   // 0 idle, otherwise the next easing-table step
     bool track_scroll_up{};
     bool returning{}; // the detail view slides back into the category menu
+    // PLAYER SCORES and GROUP TABLES (R-0097). Their rider is `FrontEndState::options_rider`
+    // (`$00CA`) and their league `LeagueSetup::slot` (`$00CC`): both screens start on the last.
+    ScoresPhase phase{};
+    std::uint32_t phase_start{}; // the script frame the phase began on
+    // $0151 + row (PLAYER SCORES), $0175 + row (GROUP TABLES): each bar's end object's x target.
+    std::array<std::uint8_t, 8> bar_targets{};
+    std::uint8_t window_left{}, window_right{}; // $007A, $007B: the bars' object window
+    // The hidden half (`$00A8`) the loops set aside while they upload to the half on screen
+    // through it ($80:DB18-DB1D, $80:DED4-DED9) and put back to leave ($80:DC15, $80:DFA3).
+    std::uint16_t hidden_half{};
+    bool press_seen{};      // `$80:C206` saw a press on its last frame
+    bool group_reprinted{}; // GROUP TABLES printed again: the next frame uploads the text
 };
 
 // The one-player records the menus read from SRAM, as a cold start leaves them (`$80:8C4E`):
@@ -249,6 +268,7 @@ struct OnePlayerRecords {
     std::array<std::uint8_t, 6> league_tracks{};                       // $77:067E, current event
     bool league_cycle_complete{}; // $77:0742 bit 13: podium before the next tour
     bool league_naming{};         // $77:0742 bit 1 while the league keyboard is active
+    bool group_table_shown{};     // $77:0742 bit 5 while GROUP TABLES shows (`$80:DEA9`, R-0097)
     std::array<std::uint8_t, 16> tour_levels{}; // $77:10D3 + rider: 0-3, the tours open
     std::array<std::uint8_t, 160> medals{};     // $77:069C + 16 * tour + rider: 0, or 1-3
     std::array<std::uint8_t, 50> tracks_done{}; // $77:1075 + track: won in the current run
@@ -606,6 +626,10 @@ struct FrontEndState {
     std::array<std::uint8_t, 256> options_upper_palette{}; // pre-picker CGRAM colours $80-$FF
     bool options_palette_saved{};
     std::uint8_t second_rider{}; // $017F, second human chosen by port 2 (R-0071)
+    // $00CA: the rider OPTIONS works on: DEFINE or RENAME PLAYER's pick ($80:C139, $80:D457),
+    // which leaves `$017D` (`RiderMenu::rider`) as it was, and PLAYER SCORES' rider, which starts
+    // from it ($80:DACF) and changes with Up and Down (R-0097).
+    std::uint8_t options_rider{};
     // $77:0742 bits 9 and 10, the menus' pad gate: the pad tests (`$80:B6D3-B82B`, `$80:B8F1`)
     // skip pad 1 while bit 9 is set and pad 2 while bit 10 is. `$83:9543` leaves pad 1 alone,
     // `$83:952E` pad 2 alone, `$83:9558` lets both in: the main menu opens both ($80:ABC8); a

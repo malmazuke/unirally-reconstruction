@@ -276,6 +276,8 @@ void league_slots_frame(FrontEndState& state, const FrontEndContent& content, Fr
 void league_warning_entry_frame(FrontEndState& state, const FrontEndContent& content);
 void league_warning_frame(FrontEndState& state, FrontEndPads pads);
 void enter_league_editor(FrontEndState& state, const FrontEndContent& content);
+// The RECORDS menu's loop again after PLAYER SCORES or GROUP TABLES (`$80:D53F`): no new print.
+void reopen_records_menu(FrontEndState& state, const FrontEndContent& content);
 void records_detail_entry_frame(FrontEndState& state, const FrontEndContent& content);
 void records_detail_frame(FrontEndState& state, const FrontEndContent& content, FrontEndPads pads);
 void records_detail_exit_frame(FrontEndState& state, const FrontEndContent& content);
@@ -304,6 +306,14 @@ void track_menu_exit_frame(FrontEndState& state, const FrontEndContent& content)
 // $80:EB23, before each frame wait of PICK TRACK and the two-entry menus: the done-track markers
 // turn (`$77:10A7`).
 void turn_markers(FrontEndState& state, const FrontEndContent& content);
+
+// records_scores.cpp: PLAYER SCORES and GROUP TABLES, RECORDS' choices 2 and 3 (R-0072, R-0097).
+inline constexpr std::uint8_t player_scores_category = 2, group_tables_category = 3;
+bool shows_scores(const FrontEndState& state);
+// Whether the entry's frame `next` starts after a frame wait.
+bool scores_frame_waits(const FrontEndState& state, std::uint32_t next);
+void scores_entry_frame(FrontEndState& state, const FrontEndContent& content);
+void scores_frame(FrontEndState& state, const FrontEndContent& content, FrontEndPads pads);
 
 // now_playing.cpp: NOW PLAYING after a track is chosen, and Race's fade.
 void enter_now_playing(FrontEndState& state);

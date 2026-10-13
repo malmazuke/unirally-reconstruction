@@ -48,6 +48,7 @@ void transfer_records(Codec& at, OnePlayerRecords& records) {
         }
     for (std::size_t k = 0; k < records.medals.size(); ++k) at.byte(0x069c + k, records.medals[k]);
     at.bit(0x0742, 0x0002, records.league_naming);
+    at.bit(0x0742, 0x0020, records.group_table_shown);
     at.bit(0x0742, 0x1000, records.race_lost);
     at.bit(0x0742, 0x2000, records.league_cycle_complete);
     for (std::size_t k = 0; k < records.best.size(); ++k) at.word(0x0829 + 2 * k, records.best[k]);

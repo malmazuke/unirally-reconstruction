@@ -521,7 +521,7 @@ void rider_menu_frame(FrontEndState& state, const FrontEndContent& content, Fron
         } else if (state.rider_menu.challenger) {
             state.rider_menu.rider = state.menu.selection; // $80:C0C0-C0C2 into `$017D`
         } else if (state.rider_menu.purpose != RiderMenuPurpose::normal) {
-            state.rider_menu.options_pick = state.menu.selection; // $80:C139, $80:D457
+            state.options_rider = state.menu.selection; // $80:C139, $80:D457
         } else {
             state.rider_menu.rider = state.menu.selection;
             state.now_playing.opponent = someone; // $80:BBC3
