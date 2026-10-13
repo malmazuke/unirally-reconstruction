@@ -2,9 +2,16 @@
 
 ## Assignment
 
-- Status: **queued** 10 October 2026 by [MODE-AUDIO](MODE-AUDIO.md) (R-0091). Unclaimed.
+- Status: **claimed** 14 October 2026 on main `e304868` (Claude Code desktop app, Claude Opus 5.5
+  `claude-opus-5-5`; coordinator and integrator; a worker subagent implements). Queued 10 October
+  2026 by [MODE-AUDIO](MODE-AUDIO.md) (R-0091). Weekly usage at claim 14%.
+- Choice: the oldest queued row and native game behaviour still missing (the full-coverage goal);
+  ahead of R-0089's LEAGUE-TOURS, CARTRIDGE-OPTION-BITS and RACE-LISTING-BRANCHES and of
+  GATES-AGAINST-MAIN, which are larger or infrastructure. No other session holds a claim.
+- Branch `task/menu-input` in `.worktrees/menu-input`; evidence in main `local/evidence/menu-input/`.
+- Task provider: Anthropic.
 - Milestone: M4 (original game coverage).
-- Review tier: **1** (menu state).
+- Review tier: **1** (menu state in `src/core`: the front end's input handling and its state words).
 - Dependencies: OPTIONS (R-0072), LEAGUE (R-0073), TWO-PLAYER-VS (R-0071).
 
 ## Why
