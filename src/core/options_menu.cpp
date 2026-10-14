@@ -26,6 +26,10 @@ void print_choices(FrontEndState& state, const FrontEndContent& content,
     load_text(state, state.slide.hidden_half);
 }
 
+// $80:9F74: the league slots' arrow columns, signed eighths of 16 pixels as the other menus'.
+constexpr unsigned league_slot_count = 6;
+constexpr std::array<std::uint8_t, league_slot_count> league_slot_columns{2, 2, 0xfe, 0, 0, 2};
+
 void aim_choice(FrontEndState& state, std::span<const std::uint8_t> columns) {
     const auto row = state.menu.selection;
     // The table byte is signed before conversion to sixteenths of a pixel.
@@ -117,13 +121,7 @@ void options_return_frame(FrontEndState& state, const FrontEndContent& content) 
         return;
     }
     if (!slide_frame(state, content)) return;
-    // Native's restore of the colours the rider picker's HDMA wrote; OPTIONS shows none of them.
-    load_cgram(state, content.base_palette, 0);
-    if (state.options_palette_saved) {
-        std::copy(state.options_upper_palette.begin(), state.options_upper_palette.end(),
-                  state.video.cgram.begin() + 0x100);
-        state.options_palette_saved = false;
-    }
+    // The colours a rider picker's HDMA wrote stay (`scores-carry`'s PLAYER SCORES icon, R-0097).
     open_options_choices(state, content);
 }
 
@@ -144,8 +142,6 @@ void options_menu_frame(FrontEndState& state, const FrontEndContent& content, Fr
         return;
     }
     if (state.menu.selection == 1 || state.menu.selection == 2) {
-        std::copy_n(state.video.cgram.begin() + 0x100, 256, state.options_upper_palette.begin());
-        state.options_palette_saved = true;
         state.rider_menu.purpose = state.menu.selection == 1 ? RiderMenuPurpose::define_player
                                                              : RiderMenuPurpose::rename_player;
         enter_rider_menu(state);
@@ -170,14 +166,12 @@ void enter_league_slots(FrontEndState& state, const FrontEndContent& content) {
 
 void league_slots_entry_frame(FrontEndState& state, const FrontEndContent& content) {
     if (state.script_frame == 1) {
-        copy_oam(state);
-        start_slide(state, content, false);
+        start_slide(state, content, false); // `$80:EF4D`: no OAM copy before the first pass
         return;
     }
     if (!slide_frame(state, content)) return;
     state.menu.selection = state.league.slot;
-    state.arrow.target_x = 0x0100;
-    state.arrow.target_y = static_cast<std::uint16_t>(first_row + state.league.slot * row_step);
+    aim_choice(state, league_slot_columns); // $80:B93E keeps `$009B`
     state.latches = {};
     turn_markers(state, content); // $80:9F09 JSR $B93E (R-0097)
     state.screen = FrontEndScreen::league_slots;
@@ -185,8 +179,7 @@ void league_slots_entry_frame(FrontEndState& state, const FrontEndContent& conte
 
 void league_slots_frame(FrontEndState& state, const FrontEndContent& content, FrontEndPads pads) {
     copy_oam(state);
-    constexpr std::array<std::uint8_t, 6> columns{2, 2, 2, 2, 2, 2};
-    move_choice(state, columns, pads, 6);
+    move_choice(state, league_slot_columns, pads, league_slot_count);
     const auto pad = static_cast<std::uint16_t>(pads.one | pads.two);
     if (pad & back_buttons) {
         if (state.mode == FrontEndMode::league)
@@ -222,8 +215,7 @@ void league_slots_frame(FrontEndState& state, const FrontEndContent& content, Fr
 
 void league_warning_entry_frame(FrontEndState& state, const FrontEndContent& content) {
     if (state.script_frame == 1) {
-        copy_oam(state);
-        start_slide(state, content, false);
+        start_slide(state, content, false); // `$80:9BE8-9BEE`: no OAM copy before the first pass
         return;
     }
     if (!slide_frame(state, content)) return;
@@ -247,8 +239,7 @@ void league_warning_frame(FrontEndState& state, const FrontEndContent& content, 
 }
 
 void enter_records_menu(FrontEndState& state, const FrontEndContent& content) {
-    // $80:D525-D53C; R-0072 observation 5.
-    state.decorations.delay = 0;
+    // $80:D525-D53C; R-0072 observation 5. `$0089`, the decorations' delay, goes on (R-0097).
     state.records_detail.returning = false;
     print_choices(state, content, content.records_menu_text);
     state.screen = FrontEndScreen::records_entry;
@@ -256,7 +247,8 @@ void enter_records_menu(FrontEndState& state, const FrontEndContent& content) {
 
 void records_entry_frame(FrontEndState& state, const FrontEndContent& content) {
     if (state.script_frame == 1) {
-        copy_oam(state);
+        // `$80:EF4D` copies no OAM before the slide's first pass; the way back from a detail did.
+        if (state.records_detail.returning) copy_oam(state);
         start_slide(state, content, state.records_detail.returning);
         return;
     }
@@ -735,8 +727,7 @@ void enter_define_player_warning(FrontEndState& state, const FrontEndContent& co
 
 void define_player_warning_entry_frame(FrontEndState& state, const FrontEndContent& content) {
     if (state.script_frame == 1) {
-        copy_oam(state);
-        start_slide(state, content, false);
+        start_slide(state, content, false); // `$80:C15C-C162`: no OAM copy before the first pass
         return;
     }
     if (!slide_frame(state, content)) return;

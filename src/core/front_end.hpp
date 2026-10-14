@@ -628,8 +628,6 @@ struct FrontEndState {
     LeagueSetup league{};
     RecordsDetail records_detail{};
     WipeRamMenu wipe_ram{};
-    std::array<std::uint8_t, 256> options_upper_palette{}; // pre-picker CGRAM colours $80-$FF
-    bool options_palette_saved{};
     std::uint8_t second_rider{}; // $017F, second human chosen by port 2 (R-0071)
     // $00CA: the rider OPTIONS works on: DEFINE or RENAME PLAYER's pick ($80:C139, $80:D457),
     // which leaves `$017D` (`RiderMenu::rider`) as it was, and PLAYER SCORES' rider, which starts
