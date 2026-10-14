@@ -86,3 +86,34 @@ menu not captured.
 - Next: the coordinator's gates (`local/evidence/menu-input/gates.sh`, which calls `checks.sh`)
   and review. Follow-ups worth queueing: the name check's refusal and cycle timing; HIGH SCORES
   and TRACK RECORDS frame by frame; `$80:FBEE`'s menu.
+
+## Gates - head `9cbff08` (main `local/evidence/menu-input/gates-9cbff08.out`)
+
+Run by the coordinator under `local/locks/heavy-run.sh` with `gates_and_synthetic.sh` (DEMO-AUDIO's
+gates on main `e304868`'s binaries `base-e304868/`, pack v39 on both sides, plus this task's
+`checks.sh`), 00:48-03:34 UTC 14 October 2026. The worker's implementation ran 2 h 15 min
+(harness-measured).
+- Four presets build, ctest 41 of 41 each (ASan presets unavailable on this host; Linux CI covers
+  them). v1 contracts, eight hidden app runs and the front end passed. Fuzz as on main (40 seeds,
+  40 aborts: recorded non-pass).
+- Synthetic suite: lab-debug passed; app-debug failed only on the timeout probe
+  (`test_failure_and_timeout_are_distinguished`), with the reviewer's two unlocked builds
+  overlapping it. Rerun on `85b3c18` under the lock: passed
+  (`artifacts/menu-input/synthetic-85b3c18/`).
+- Eleven differential gates passed with main's row digests. Race sweep 432 runs, 0 differences.
+  Every pause, two-pad, race-end, look, restart and restore comparison as recorded; track sweeps
+  equal main; idle demo lap 34 of 34, pictures 963 of 1,006.
+- Earlier tasks' captures as recorded: TWO-HUMAN-STUNTS' league frozen pictures and review
+  captures, CREDITS-NAME, WIPE-RAM (eight of eight, schedules equal), DEMO-AUDIO's schedules
+  (6, 0, 2, 4; review 183, 2, 12; conditional check equal; the app's cue log equal),
+  MODE-AUDIO's five schedules 0 frames, R-0077's twelve equal, R-0076's seven identical to main,
+  the cold cartridge image equal.
+- Front-end sweep: 108 of 179 equal to main, the 71 differing as the worker classified (this
+  task's fields only).
+- This task's `checks.sh`: as the checkpoint's table (W5 3800/3800, `kb-input` 2100/2100,
+  `league-pick` 2400/2400, `league-name` 2143/2400, `warnings` 3200/3200, `records-input`
+  1650/1650, `scores-input` 1950/1950, `scores-carry` 3100/3100); sound schedules 0 frames
+  differing but `league-name` 5 (the long-name lag) and `awards-press` 1.
+- Tooling tests 576 passed; functions over 80 lines 0; native symbols current.
+- Hosted CI on `9cbff08`: Linux GCC failed, `std::invalid_argument` without `<stdexcept>` in
+  `records_scores.cpp` (found by the reviewer). Fixed in `85b3c18`; CI green on all three checks.
